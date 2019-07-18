@@ -38,9 +38,9 @@ package org.preesm.algorithm.memory.script;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -319,8 +319,8 @@ public class Buffer {
     this.name = name;
     this.nbTokens = nbTokens;
     this.tokenSize = tokenSize;
-    this.matchTable = new HashMap<>();
-    this.appliedMatches = new HashMap<>();
+    this.matchTable = new LinkedHashMap<>();
+    this.appliedMatches = new LinkedHashMap<>();
     this.minIndex = 0;
     this.maxIndex = nbTokens * tokenSize;
     this.dagVertex = dagVertex;
@@ -856,7 +856,7 @@ public class Buffer {
     // Find redundant matches
     final List<Match> matches = match.getRemoteBuffer().matchTable.values().stream().flatMap(it -> it.stream())
         .collect(Collectors.toList());
-    final Set<Integer> redundantMatches = new HashSet<>();
+    final Set<Integer> redundantMatches = new LinkedHashSet<>();
     int i = 0;
     while (i < (matches.size() - 1)) {
 

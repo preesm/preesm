@@ -35,7 +35,7 @@
  */
 package org.preesm.algorithm.throughput;
 
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.logging.Level;
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -153,7 +153,7 @@ public class ThroughputEvaluationTask extends AbstractTaskImplementation {
     }
 
     // set the outputs
-    final Map<String, Object> outputs = new HashMap<>();
+    final Map<String, Object> outputs = new LinkedHashMap<>();
     outputs.put("SDF", inputGraph);
     outputs.put("scenario", inputScenario);
     outputs.put("throughput", throughput);
@@ -163,7 +163,7 @@ public class ThroughputEvaluationTask extends AbstractTaskImplementation {
 
   @Override
   public Map<String, String> getDefaultParameters() {
-    final Map<String, String> parameters = new HashMap<>();
+    final Map<String, String> parameters = new LinkedHashMap<>();
     parameters.put(ThroughputEvaluationTask.PARAM_METHOD, ThroughputEvaluationTask.PARAM_METHOD_DEFAULT_VALUE);
     return parameters;
   }

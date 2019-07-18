@@ -39,7 +39,6 @@
  */
 package org.preesm.model.pisdf.brv;
 
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -92,7 +91,7 @@ public abstract class PiBRV {
    * Print the BRV values of every vertex. For debug purposes.
    */
   public static final void printRV(final Map<AbstractVertex, Long> brv) {
-    final Map<PiGraph, Long> levelRV = new HashMap<>();
+    final Map<PiGraph, Long> levelRV = new LinkedHashMap<>();
 
     for (final Entry<AbstractVertex, Long> en : brv.entrySet()) {
       final AbstractVertex av = en.getKey();
@@ -140,7 +139,7 @@ public abstract class PiBRV {
 
   /**
    * Check if both sides of an interface have the same rate, otherwise throws {@link PreesmRuntimeException}.
-   * 
+   *
    * @param graph
    *          Current inner graph.
    * @param ia
@@ -164,7 +163,7 @@ public abstract class PiBRV {
 
   /**
    * Emit a warning if several scale factors have been found.
-   * 
+   *
    * @param graph
    *          Analyzed graph.
    * @param scaleScaleFactors

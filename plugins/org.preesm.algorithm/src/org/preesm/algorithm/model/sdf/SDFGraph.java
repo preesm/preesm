@@ -36,7 +36,6 @@ package org.preesm.algorithm.model.sdf;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -88,7 +87,7 @@ public class SDFGraph extends AbstractGraph<SDFAbstractVertex, SDFEdge> {
 
   /** The old ref. */
   // use HashMap for inheriting serializable
-  private final HashMap<SDFEdge, SDFEdge> oldRef = new LinkedHashMap<>();
+  private final Map<SDFEdge, SDFEdge> oldRef = new LinkedHashMap<>();
 
   /**
    * Construct a new SDFGraph with the default edge factory.

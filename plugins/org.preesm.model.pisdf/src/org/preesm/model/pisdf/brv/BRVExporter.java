@@ -36,7 +36,6 @@
 package org.preesm.model.pisdf.brv;
 
 import java.io.File;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -141,8 +140,8 @@ public class BRVExporter extends AbstractTaskImplementation {
   }
 
   private static void generateXML(final PiGraph graph, final Map<AbstractVertex, Long> brv, final File file) {
-    final Map<PiGraph, Long> levelRV = new HashMap<>();
-    final Map<AbstractVertex, Long> fullRV = new HashMap<>();
+    final Map<PiGraph, Long> levelRV = new LinkedHashMap<>();
+    final Map<AbstractVertex, Long> fullRV = new LinkedHashMap<>();
 
     for (final Entry<AbstractVertex, Long> en : brv.entrySet()) {
       final AbstractVertex av = en.getKey();

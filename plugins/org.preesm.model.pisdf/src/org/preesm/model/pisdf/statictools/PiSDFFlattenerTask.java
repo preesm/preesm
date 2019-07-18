@@ -39,7 +39,6 @@
  */
 package org.preesm.model.pisdf.statictools;
 
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.logging.Level;
@@ -99,7 +98,7 @@ public class PiSDFFlattenerTask extends AbstractTaskImplementation {
 
   @Override
   public Map<String, String> getDefaultParameters() {
-    Map<String, String> defaultParams = new HashMap<>();
+    Map<String, String> defaultParams = new LinkedHashMap<>();
     defaultParams.put(OPTIM_CHOICE, Boolean.toString(DEFAULT_OPTIM));
     return defaultParams;
   }

@@ -36,8 +36,8 @@ package org.preesm.algorithm.model;
 
 import java.beans.PropertyChangeSupport;
 import java.io.Serializable;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
+import java.util.Map;
 import java.util.Observable;
 import java.util.Set;
 
@@ -54,7 +54,7 @@ public class PropertyBean extends Observable implements Serializable {
 
   /** The properties. */
   // use HashMap to inherit Serializable
-  private final HashMap<String, Object> properties;
+  private final Map<String, Object> properties;
 
   /** The property change. */
   private final PropertyChangeSupport propertyChange;

@@ -37,7 +37,7 @@ package org.preesm.algorithm.pisdf.checker;
 
 import java.util.ArrayDeque;
 import java.util.Deque;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
@@ -68,7 +68,7 @@ class HeuristicPeriodicActorSelection {
       return periodicActors;
     }
     if (rate == 0) {
-      return new HashMap<>();
+      return new LinkedHashMap<>();
     }
 
     Map<AbstractActor, ActorVisit> topoRanks = null;
@@ -77,7 +77,7 @@ class HeuristicPeriodicActorSelection {
     } else {
       topoRanks = HeuristicPeriodicActorSelection.topologicalASAPranking(originActors, actorsNbVisits, graph);
     }
-    final Map<Actor, Double> topoRanksPeriodic = new HashMap<>();
+    final Map<Actor, Double> topoRanksPeriodic = new LinkedHashMap<>();
     for (final Entry<Actor, Long> e : periodicActors.entrySet()) {
       final Actor actor = e.getKey();
       if (!topoRanks.containsKey(actor)) {
@@ -110,8 +110,8 @@ class HeuristicPeriodicActorSelection {
 
     final Map<Actor,
         Long> selectedActors = periodicActors.entrySet().stream().sorted(Map.Entry.comparingByValue())
-            .limit(nbActorsToSelect).collect(
-                Collectors.toMap(Map.Entry::getKey, e -> periodicActors.get(e.getKey()), (e1, e2) -> e1, HashMap::new));
+            .limit(nbActorsToSelect).collect(Collectors.toMap(Map.Entry::getKey, e -> periodicActors.get(e.getKey()),
+                (e1, e2) -> e1, LinkedHashMap::new));
 
     // final Map<Actor, Long> selectedActors = new HashMap<>();
     // for (int i = 0; i < nbActorsToSelect; ++i) {
@@ -142,7 +142,7 @@ class HeuristicPeriodicActorSelection {
 
   private static Map<AbstractActor, ActorVisit> topologicalASAPranking(final Set<AbstractActor> sourceActors,
       final Map<AbstractActor, Integer> actorsNbVisits, final PiGraph graph) {
-    final Map<AbstractActor, ActorVisit> topoRanks = new HashMap<>();
+    final Map<AbstractActor, ActorVisit> topoRanks = new LinkedHashMap<>();
     for (final AbstractActor actor : sourceActors) {
       topoRanks.put(actor, new ActorVisit(0, 1));
     }
@@ -182,7 +182,7 @@ class HeuristicPeriodicActorSelection {
 
   private static Map<AbstractActor, ActorVisit> topologicalASAPrankingT(final Set<AbstractActor> sinkActors,
       final Map<AbstractActor, Integer> actorsNbVisits, final PiGraph graph) {
-    final Map<AbstractActor, ActorVisit> topoRanks = new HashMap<>();
+    final Map<AbstractActor, ActorVisit> topoRanks = new LinkedHashMap<>();
     for (final AbstractActor actor : sinkActors) {
       topoRanks.put(actor, new ActorVisit(0, 1));
     }

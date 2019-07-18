@@ -36,7 +36,7 @@
 package org.preesm.algorithm.latency;
 
 import java.util.Collections;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.logging.Level;
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -177,7 +177,7 @@ public class LatencyEvaluationTask extends AbstractTaskImplementation {
     }
 
     // set the outputs
-    final Map<String, Object> outputs = new HashMap<>();
+    final Map<String, Object> outputs = new LinkedHashMap<>();
     outputs.put("SDF", inputGraph);
     outputs.put("scenario", inputScenario);
     outputs.put("latency", latency);
