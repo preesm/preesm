@@ -3,7 +3,7 @@ Bundle-ManifestVersion: 2
 Bundle-Name: %pluginName
 Automatic-Module-Name: org.preesm.algorithm
 Bundle-SymbolicName: org.preesm.algorithm;singleton:=true
-Bundle-Version: 3.13.0
+Bundle-Version: 3.13.0.qualifier
 Bundle-Vendor: %providerName
 Bundle-Localization: plugin
 Require-Bundle: org.eclipse.core.resources,
