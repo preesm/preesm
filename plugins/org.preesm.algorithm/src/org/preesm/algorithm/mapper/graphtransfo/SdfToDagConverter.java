@@ -360,8 +360,8 @@ public class SdfToDagConverter {
    *          the scenario
    */
   private static void addInitialConstraintsProperties(final MapperDAG dag, final Scenario scenario) {
-    final Set<Entry<ComponentInstance, EList<AbstractActor>>> entrySet = scenario.getConstraints().getGroupConstraints()
-        .entrySet();
+    final EList<
+        Entry<ComponentInstance, EList<AbstractActor>>> entrySet = scenario.getConstraints().getGroupConstraints();
 
     for (final Entry<ComponentInstance, EList<AbstractActor>> cg : entrySet) {
       // Iterating over vertices in DAG with their SDF ref in the

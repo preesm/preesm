@@ -49,63 +49,30 @@ import org.preesm.algorithm.model.dag.DAGEdge;
  */
 public class MapperDAGEdge extends DAGEdge {
 
-  /** The initial edge property. */
-  private EdgeInit initialEdgeProperty;
-
-  /** The timing edge property. */
+  private EdgeInit   initialEdgeProperty;
   private EdgeTiming timingEdgeProperty;
 
-  /**
-   * Instantiates a new mapper DAG edge.
-   */
   public MapperDAGEdge() {
     this.initialEdgeProperty = new EdgeInit();
     this.timingEdgeProperty = new EdgeTiming();
   }
 
-  /**
-   * Gets the inits the.
-   *
-   * @return the inits the
-   */
   public EdgeInit getInit() {
     return this.initialEdgeProperty;
   }
 
-  /**
-   * Sets the inits the.
-   *
-   * @param initialEdgeProperty
-   *          the new inits the
-   */
   public void setInit(final EdgeInit initialEdgeProperty) {
     this.initialEdgeProperty = initialEdgeProperty;
   }
 
-  /**
-   * Gets the timing.
-   *
-   * @return the timing
-   */
   public EdgeTiming getTiming() {
     return this.timingEdgeProperty;
   }
 
-  /**
-   * Sets the timing.
-   *
-   * @param timingEdgeProperty
-   *          the new timing
-   */
   public void setTiming(final EdgeTiming timingEdgeProperty) {
     this.timingEdgeProperty = timingEdgeProperty;
   }
 
-  /*
-   * (non-Javadoc)
-   *
-   * @see org.ietr.dftools.algorithm.model.dag.DAGEdge#toString()
-   */
   @Override
   public String toString() {
     return "<" + getSource().getName() + "," + getTarget().getName() + ">";

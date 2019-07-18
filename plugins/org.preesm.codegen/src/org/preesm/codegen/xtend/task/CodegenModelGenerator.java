@@ -1,10 +1,12 @@
 /**
  * Copyright or © or Copr. IETR/INSA - Rennes (2013 - 2019) :
  *
+ * Alexandre Honorat [alexandre.honorat@insa-rennes.fr] (2019)
  * Antoine Morvan [antoine.morvan@insa-rennes.fr] (2017 - 2019)
  * Clément Guy [clement.guy@insa-rennes.fr] (2014 - 2015)
  * Daniel Madroñal [daniel.madronal@upm.es] (2018 - 2019)
  * Florian Arrestier [florian.arrestier@insa-rennes.fr] (2018)
+ * dylangageot [gageot.dylan@gmail.com] (2019)
  * Julien Hascoet [jhascoet@kalray.eu] (2016 - 2017)
  * Karol Desnos [karol.desnos@insa-rennes.fr] (2013 - 2018)
  * Leonardo Suriano [leonardo.suriano@upm.es] (2019)
@@ -79,7 +81,6 @@ import org.preesm.algorithm.mapper.graphtransfo.ImplementationPropertyNames;
 import org.preesm.algorithm.mapper.graphtransfo.VertexType;
 import org.preesm.algorithm.mapper.model.MapperDAG;
 import org.preesm.algorithm.mapper.model.MapperDAGVertex;
-import org.preesm.algorithm.memory.allocation.MemoryAllocator;
 import org.preesm.algorithm.memory.exclusiongraph.MemoryExclusionGraph;
 import org.preesm.algorithm.memory.exclusiongraph.MemoryExclusionVertex;
 import org.preesm.algorithm.memory.script.Range;
@@ -97,7 +98,7 @@ import org.preesm.algorithm.model.sdf.SDFGraph;
 import org.preesm.algorithm.model.sdf.SDFVertex;
 import org.preesm.algorithm.model.sdf.esdf.SDFInitVertex;
 import org.preesm.codegen.model.ActorBlock;
-import org.preesm.codegen.model.ActorCall;
+import org.preesm.codegen.model.ActorFunctionCall;
 import org.preesm.codegen.model.Block;
 import org.preesm.codegen.model.Buffer;
 import org.preesm.codegen.model.Call;
@@ -137,6 +138,7 @@ import org.preesm.codegen.model.util.CodegenModelUserFactory;
 import org.preesm.commons.exceptions.PreesmException;
 import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.preesm.commons.logger.PreesmLogger;
+import org.preesm.commons.model.PreesmCopyTracker;
 import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.PersistenceLevel;
 import org.preesm.model.scenario.PapiComponent;
@@ -160,15 +162,12 @@ import org.preesm.workflow.elements.Workflow;
  * @author kdesnos
  *
  */
-public class CodegenModelGenerator {
+public class CodegenModelGenerator extends AbstractCodegenModelGenerator {
 
   private static final String PAPIFY_PE_ID_CONSTANT_NAME = "PE_id";
 
   private static final String ERROR_PATTERN_1 = "MemEx graph memory object (%s) refers to a DAG Vertex %s that does "
       + "not exist in the input DAG.\n" + "Make sure that the MemEx is derived from the input DAG of the codegen.";
-
-  /** Targeted {@link Design Architecture} of the code generation. */
-  private final Design archi;
 
   /**
    * {@link Map} of the main {@link Buffer} for the code generation. Each {@link Buffer} in this {@link List} contains
@@ -182,29 +181,6 @@ public class CodegenModelGenerator {
    * ports names, duplicates name may happen and number must be added to ensure correctness.
    */
   private final Map<String, Integer> bufferNames;
-
-  /**
-   * {@link DirectedAcyclicGraph DAG} used to generate code. This {@link DirectedAcyclicGraph DAG} must be the result of
-   * mapping/scheduling process.
-   */
-  private final MapperDAG algo;
-
-  /**
-   * {@link Map} of {@link String} and {@link MemoryExclusionGraph MEG} used to generate code. These
-   * {@link MemoryExclusionGraph MemEx MEGs} must be the result of an allocation process. Each {@link String}
-   * corresponds to a memory bank where the associated MEG is allocated.
-   *
-   * @see MemoryAllocator
-   */
-  private final Map<String, MemoryExclusionGraph> megs;
-
-  /**
-   * {@link PreesmScenario Scenario} at the origin of the call to the {@link AbstractCodegenPrinter Code Generator}.
-   */
-  private final Scenario scenario;
-
-  /** The workflow. */
-  private final Workflow workflow;
 
   /**
    * This {@link Map} associates each {@link ComponentInstance} to its corresponding {@link CoreBlock}.
@@ -290,11 +266,7 @@ public class CodegenModelGenerator {
    */
   public CodegenModelGenerator(final Design archi, final MapperDAG algo, final Map<String, MemoryExclusionGraph> megs,
       final Scenario scenario, final Workflow workflow) {
-    this.archi = archi;
-    this.algo = algo;
-    this.megs = megs;
-    this.scenario = scenario;
-    this.workflow = workflow;
+    super(archi, algo, megs, scenario, workflow);
 
     checkInputs(this.archi, this.algo, this.megs);
     this.bufferNames = new LinkedHashMap<>();
@@ -310,38 +282,6 @@ public class CodegenModelGenerator {
     this.papifiedPEs = new ArrayList<>();
     this.configsAdded = new ArrayList<>();
     this.papifyActive = false;
-  }
-
-  public final Design getArchi() {
-    return this.archi;
-  }
-
-  public final MapperDAG getAlgo() {
-    return this.algo;
-  }
-
-  public final Map<String, MemoryExclusionGraph> getMegs() {
-    return this.megs;
-  }
-
-  public final Scenario getScenario() {
-    return this.scenario;
-  }
-
-  /**
-   * Sets PAPIFY flag.
-   *
-   * @param papifyMonitoring
-   *          the flag to set papify instrumentation
-   */
-  public void registerPapify(final String papifyMonitoring) {
-
-    if (!papifyMonitoring.equalsIgnoreCase("true")) {
-      this.papifyActive = false;
-    } else {
-      this.papifyActive = true;
-    }
-
   }
 
   /**
@@ -626,7 +566,14 @@ public class CodegenModelGenerator {
           }
         }
         /*
-         * Minimizing the number of #ifdef _PREESM_MONITORING_INIT in the init
+         * Minimizing the nu public final Design getArchi() { return this.generator.getArchi(); }
+         * 
+         * public final MapperDAG getAlgo() { return this.generator.getAlgo(); }
+         * 
+         * public final Map<String, MemoryExclusionGraph> getMegs() { return this.generator.getMegs(); }
+         * 
+         * public final Scenario getScenario() { return this.generator.getScenario(); }mber of #ifdef
+         * _PREESM_MONITORING_INIT in the init
          */
         if (!initBlockElts.isEmpty()) {
           if (initBlockElts.get(0) instanceof PapifyFunctionCall) {
@@ -723,7 +670,7 @@ public class CodegenModelGenerator {
             loopPrototype, false);
         final OutputDataTransfer outputDataTransferFunctionCall = generateOutputDataTransferFunctionCall(dagVertex,
             loopPrototype, false);
-        final FunctionCall functionCall = generateFunctionCall(dagVertex, loopPrototype, false);
+        final ActorFunctionCall functionCall = generateFunctionCall(dagVertex, loopPrototype, false);
 
         boolean monitoringTiming = false;
         boolean monitoringEvents = false;
@@ -1808,12 +1755,15 @@ public class CodegenModelGenerator {
    *          in the prototype.
    * @return The {@link FunctionCall} corresponding to the {@link DAGVertex actor} firing.
    */
-  protected FunctionCall generateFunctionCall(final DAGVertex dagVertex, final Prototype prototype,
+  protected ActorFunctionCall generateFunctionCall(final DAGVertex dagVertex, final Prototype prototype,
       final boolean isInit) {
     // Create the corresponding FunctionCall
-    final FunctionCall func = CodegenFactory.eINSTANCE.createFunctionCall();
+    final ActorFunctionCall func = CodegenFactory.eINSTANCE.createActorFunctionCall();
     func.setName(prototype.getFunctionName());
     func.setActorName(dagVertex.getName());
+    org.preesm.model.pisdf.AbstractVertex oriPiActor = PreesmCopyTracker.<
+        org.preesm.model.pisdf.AbstractVertex>getOriginalSource(dagVertex.getReferencePiVertex());
+    func.setOriginalVertexPath(oriPiActor.getVertexPath());
     // Retrieve the Arguments that must correspond to the incoming data
     // fifos
     final Entry<List<Variable>, List<PortDirection>> callVars = generateCallVariables(dagVertex, prototype, isInit);

@@ -36,55 +36,30 @@
  */
 package org.preesm.algorithm.mapper.tools;
 
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Random;
 
 /**
- * This iterator iterates any list of objects with type E.
+ * Provides a random iteration over the given list of unknown object.
  *
  * @author pmenuet
- * @param <E> the element type
- */
-
-/**
- * Provides a random iteration over the given list of unknown object.
  *
  * @param <E>
  *          The generic type to iterate over.
  */
 public class RandomIterator<E> implements Iterator<E> {
 
-  // variables
-
-  /** The list. */
-  // the list which is iterated
-  private List<E> list = null;
-
-  /** The list size. */
-  // size of the list where the iterator is set
-  private final int listSize;
-
-  /** The rand. */
-  // random
-  private final Random rand;
+  private final List<E> list;
+  private final Random  rand;
 
   /**
-   * RandomIterator constructor.
-   *
-   * @param list
-   *          the list
-   * @param rand
-   *          the rand
    */
-  public RandomIterator(final List<E> list, final Random rand) {
-
-    this.list = list;
-    this.listSize = list.size();
-    final long seed = System.nanoTime();
-    rand.setSeed(seed);
-    this.rand = rand;
+  public RandomIterator(final List<E> list) {
+    this.list = new ArrayList<>(list);
+    this.rand = new Random(System.nanoTime());
   }
 
   /**
@@ -94,7 +69,7 @@ public class RandomIterator<E> implements Iterator<E> {
    */
   @Override
   public boolean hasNext() {
-    throw new UnsupportedOperationException();
+    return !list.isEmpty();
   }
 
   /**
@@ -104,11 +79,11 @@ public class RandomIterator<E> implements Iterator<E> {
    */
   @Override
   public E next() {
-    final int index = this.rand.nextInt(this.listSize);
+    final int index = this.rand.nextInt(this.list.size());
     if (index > this.list.size() - 1) {
       throw new NoSuchElementException();
     }
-    return this.list.get(index);
+    return this.list.remove(index);
   }
 
   /**

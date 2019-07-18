@@ -38,6 +38,7 @@ package org.preesm.algorithm.mapper.model.property;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Map.Entry;
 import org.preesm.algorithm.mapper.model.MapperDAGVertex;
 import org.preesm.commons.CloneableProperty;
 
@@ -80,39 +81,22 @@ public class DAGTimings implements CloneableProperty<DAGTimings> {
     put(vertex.getName(), newTiming);
   }
 
-  /**
-   * Put.
-   *
-   * @param vertexId
-   *          the vertex id
-   * @param m
-   *          the m
-   */
   private void put(final String vertexId, final VertexTiming m) {
     this.timings.put(vertexId, m);
     m.addVertexID(vertexId);
   }
 
-  /**
-   * Removes the.
-   *
-   * @param vertex
-   *          the vertex
-   */
   public void remove(final MapperDAGVertex vertex) {
     this.timings.remove(vertex.getName());
   }
 
-  /*
-   * (non-Javadoc)
-   *
-   * @see java.lang.Object#clone()
-   */
   @Override
   public DAGTimings copy() {
     final DAGTimings newTimings = new DAGTimings();
-    for (final String s : this.timings.keySet()) {
-      newTimings.put(s, this.timings.get(s).copy());
+    for (final Entry<String, VertexTiming> entry : this.timings.entrySet()) {
+      final String s = entry.getKey();
+      final VertexTiming value = entry.getValue();
+      newTimings.put(s, value.copy());
     }
     return newTimings;
   }

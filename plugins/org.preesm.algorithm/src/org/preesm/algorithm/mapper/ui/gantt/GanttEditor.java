@@ -63,31 +63,16 @@ public class GanttEditor extends EditorPart {
     super();
   }
 
-  /*
-   * (non-Javadoc)
-   *
-   * @see org.eclipse.ui.part.EditorPart#doSave(org.eclipse.core.runtime.IProgressMonitor)
-   */
   @Override
   public void doSave(final IProgressMonitor monitor) {
     // actually not meant to be edited, so no save action
   }
 
-  /*
-   * (non-Javadoc)
-   *
-   * @see org.eclipse.ui.part.EditorPart#doSaveAs()
-   */
   @Override
   public void doSaveAs() {
     // actually not meant to be edited, so no save action
   }
 
-  /*
-   * (non-Javadoc)
-   *
-   * @see org.eclipse.ui.part.EditorPart#init(org.eclipse.ui.IEditorSite, org.eclipse.ui.IEditorInput)
-   */
   @Override
   public void init(final IEditorSite site, final IEditorInput input) throws PartInitException {
 
@@ -109,45 +94,23 @@ public class GanttEditor extends EditorPart {
 
   }
 
-  /*
-   * (non-Javadoc)
-   *
-   * @see org.eclipse.ui.part.EditorPart#isDirty()
-   */
   @Override
   public boolean isDirty() {
     return false;
   }
 
-  /*
-   * (non-Javadoc)
-   *
-   * @see org.eclipse.ui.part.EditorPart#isSaveAsAllowed()
-   */
   @Override
   public boolean isSaveAsAllowed() {
     return false;
   }
 
-  /*
-   * (non-Javadoc)
-   *
-   * @see org.eclipse.ui.part.WorkbenchPart#createPartControl(org.eclipse.swt.widgets.Composite)
-   */
   @Override
   public void createPartControl(final Composite parent) {
-
     if (this.ganttData != null) {
       GanttPlotter.plotDeployment(this.ganttData, null);
     }
-
   }
 
-  /*
-   * (non-Javadoc)
-   *
-   * @see org.eclipse.ui.part.WorkbenchPart#setFocus()
-   */
   @Override
   public void setFocus() {
     // nothing special

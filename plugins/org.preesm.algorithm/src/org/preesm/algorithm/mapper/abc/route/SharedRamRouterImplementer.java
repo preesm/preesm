@@ -69,12 +69,6 @@ public class SharedRamRouterImplementer extends CommunicationRouterImplementer {
     super(user);
   }
 
-  /*
-   * (non-Javadoc)
-   *
-   * @see org.ietr.preesm.mapper.abc.route.CommunicationRouterImplementer#removeVertices(org.ietr.preesm.
-   * mapper.model.MapperDAGEdge, org.ietr.preesm.mapper.abc.transaction.TransactionManager)
-   */
   @Override
   public void removeVertices(final MapperDAGEdge edge, final TransactionManager transactions) {
     // nothing

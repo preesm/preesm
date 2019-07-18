@@ -51,7 +51,6 @@ import org.preesm.algorithm.mapper.abc.SpecialVertexManager;
 import org.preesm.algorithm.mapper.abc.impl.latency.InfiniteHomogeneousAbc;
 import org.preesm.algorithm.mapper.abc.impl.latency.LatencyAbc;
 import org.preesm.algorithm.mapper.abc.impl.latency.SpanLengthCalculator;
-import org.preesm.algorithm.mapper.abc.route.RouteCalculator;
 import org.preesm.algorithm.mapper.abc.taskscheduling.AbstractTaskSched;
 import org.preesm.algorithm.mapper.abc.taskscheduling.TaskSchedType;
 import org.preesm.algorithm.mapper.abc.taskscheduling.TopologicalTaskSched;
@@ -70,6 +69,7 @@ import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.model.scenario.Scenario;
 import org.preesm.model.slam.ComponentInstance;
 import org.preesm.model.slam.Design;
+import org.preesm.model.slam.route.RouteCalculator;
 import org.preesm.workflow.elements.Workflow;
 import org.preesm.workflow.implement.AbstractTaskImplementation;
 import org.preesm.workflow.implement.AbstractWorkflowNodeImplementation;
@@ -112,7 +112,7 @@ public abstract class AbstractMappingFromDAG extends AbstractTaskImplementation 
     final Scenario scenario = (Scenario) inputs.get(AbstractWorkflowNodeImplementation.KEY_SCENARIO);
 
     // Asking to recalculate routes
-    RouteCalculator.recalculate(architecture, scenario);
+    RouteCalculator.recalculate(architecture, scenario.getSimulationInfo().getAverageDataSize());
 
     if (dag == null) {
       throw new PreesmRuntimeException(" graph can't be scheduled, check console messages");

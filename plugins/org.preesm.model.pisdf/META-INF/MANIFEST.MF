@@ -3,7 +3,7 @@ Bundle-ManifestVersion: 2
 Bundle-Name: %pluginName
 Automatic-Module-Name: org.preesm.model.pisdf
 Bundle-SymbolicName: org.preesm.model.pisdf;singleton:=true
-Bundle-Version: 3.12.0
+Bundle-Version: 3.13.0
 Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.emf.ecore;visibility:=reexport,
  org.eclipse.xtext.xbase.lib,
@@ -23,12 +23,14 @@ Export-Package: org.preesm.model.pisdf,
  org.preesm.model.pisdf.factory,
  org.preesm.model.pisdf.header.parser,
  org.preesm.model.pisdf.impl,
+ org.preesm.model.pisdf.reconnection,
  org.preesm.model.pisdf.serialize,
  org.preesm.model.pisdf.statictools,
  org.preesm.model.pisdf.statictools.optims,
- org.preesm.model.pisdf.switches,
- org.preesm.model.pisdf.util
+ org.preesm.model.pisdf.util,
+ org.preesm.model.pisdf.util.topology
 Bundle-ActivationPolicy: lazy
 Bundle-ClassPath: .
 Bundle-Vendor: %providerName
 Bundle-Localization: plugin
+Import-Package: org.apache.commons.lang3.tuple

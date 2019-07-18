@@ -39,7 +39,6 @@ package org.preesm.algorithm.mapper.tools;
 import org.preesm.algorithm.mapper.model.MapperDAG;
 import org.preesm.algorithm.mapper.model.MapperDAGVertex;
 
-// TODO: Auto-generated Javadoc
 /**
  * Iterates the graph in ascending or descending TLevel order.
  *
@@ -48,23 +47,11 @@ import org.preesm.algorithm.mapper.model.MapperDAGVertex;
 public class TLevelIterator extends ImplementationIterator {
 
   /**
-   * Instantiates a new t level iterator.
-   *
-   * @param dag
-   *          the dag
-   * @param directOrder
-   *          the direct order
    */
   public TLevelIterator(final MapperDAG dag, final boolean directOrder) {
     super(null, dag, directOrder);
   }
 
-  /*
-   * (non-Javadoc)
-   *
-   * @see org.ietr.preesm.mapper.tools.ImplementationIterator#compare(org.ietr.preesm.mapper.model. MapperDAGVertex,
-   * org.ietr.preesm.mapper.model.MapperDAGVertex)
-   */
   @Override
   public int compare(final MapperDAGVertex arg0, final MapperDAGVertex arg1) {
 

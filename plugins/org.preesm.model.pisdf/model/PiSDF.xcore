@@ -61,12 +61,15 @@
 package org.preesm.model.pisdf
 
 import java.io.File
+import java.util.Collections
 import java.util.Optional
 import org.preesm.commons.exceptions.PreesmRuntimeException
-import org.preesm.model.pisdf.util.RefinementResolver
 import org.preesm.model.pisdf.expression.ExpressionEvaluator
 import org.preesm.model.pisdf.factory.PiMMUserFactory
-import java.util.Collections
+import org.preesm.model.pisdf.util.RefinementResolver
+import org.preesm.commons.graph.Vertex
+import org.preesm.commons.graph.Graph
+import org.preesm.commons.graph.Edge
 
 // !!! This is needed as of the current versions of xcore/xtext
 // For some reason when using the default String/... (i.e. without the following)
@@ -78,34 +81,6 @@ type String wraps String
 type int wraps int
 type long wraps long
 type double wraps double
-
-/*************************************
- *
- * Generic Graph Definition
- *
- **************************************/
-
-interface Vertex {
-	container Graph containingGraph opposite vertices
-	op Edge[] getOutgoingEdges() {
-		return containingGraph.edges.filter[it.source === this].toEList.unmodifiableEList
-	}
-	op Edge[] getIncomingEdges() {
-		return containingGraph.edges.filter[it.target === this].toEList.unmodifiableEList
-	}
-}
-
-interface Edge {
-	container Graph containingGraph opposite edges
-	op Vertex getSource()
-	op Vertex getTarget()
-}
-
-interface Graph {
-	contains Vertex[] vertices opposite containingGraph
-	contains Edge[] edges opposite containingGraph
-}
-
 
 /*************************************
  *

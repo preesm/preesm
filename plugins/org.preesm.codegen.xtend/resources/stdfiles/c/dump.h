@@ -67,7 +67,7 @@ typedef unsigned _int64 uint64_t;
 */
 #define DUMP_FILE "analysis.csv"
 
-#define MIN_TIME_MEASURE 5e5
+#define MIN_TIME_MEASURE 1e5
 #define MAX_ITER_MEASURE 10000
 
 
@@ -181,7 +181,15 @@ static inline double getElapsedNanoSec(uint64_t *start, uint64_t *end) {
 	return ((*end) - (*start)) / (freq / ((double) 1e9));
 }
 
-#elif defined(__gnu_linux__) && _POSIX_C_SOURCE >= 199309L // should be compiled with -std=gnu99 at least
+#elif defined(__gnu_linux__) && _POSIX_C_SOURCE >= 199309L
+// should be compiled with -std=gnu99 at least or have _GNU_SOURCE defined
+
+// For Linux
+// clock_gettime defined in POSIX 1999 version
+// For the 1990 revision compliance the defined value of _POSIX_VERSION should be 1.
+// For the 1995 revision compliance the defined value of _POSIX_VERSION should be 199506L.
+// For the 2001 revision compliance the defined value of _POSIX_VERSION should be 200112L.
+
 
 #include <time.h>
 

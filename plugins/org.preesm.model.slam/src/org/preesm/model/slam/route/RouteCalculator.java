@@ -35,7 +35,7 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL license and that you accept its terms.
  */
-package org.preesm.algorithm.mapper.abc.route;
+package org.preesm.model.slam.route;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -44,19 +44,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.logging.Level;
-import org.preesm.algorithm.mapper.model.MapperDAGEdge;
-import org.preesm.algorithm.mapper.model.MapperDAGVertex;
 import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.preesm.commons.logger.PreesmLogger;
-import org.preesm.model.scenario.Scenario;
 import org.preesm.model.slam.ComponentInstance;
 import org.preesm.model.slam.Design;
 import org.preesm.model.slam.Link;
 import org.preesm.model.slam.Operator;
 import org.preesm.model.slam.impl.ComNodeImpl;
-import org.preesm.model.slam.route.AbstractRouteStep;
-import org.preesm.model.slam.route.Route;
-import org.preesm.model.slam.route.RouteStepFactory;
 
 /**
  * This class can evaluate a given transfer and choose the best route between two operators.
@@ -78,20 +72,14 @@ public class RouteCalculator {
   private RouteStepFactory stepFactory = null;
 
   /** The scenario. */
-  private Scenario scenario = null;
 
   /**
    * Gets the single instance of RouteCalculator.
    *
-   * @param archi
-   *          the archi
-   * @param scenario
-   *          the scenario
-   * @return single instance of RouteCalculator
    */
-  public static RouteCalculator getInstance(final Design archi, final Scenario scenario) {
+  public static RouteCalculator getInstance(final Design archi, final long averageDataSize) {
     if (RouteCalculator.instances.get(archi) == null) {
-      RouteCalculator.instances.put(archi, new RouteCalculator(archi, scenario));
+      RouteCalculator.instances.put(archi, new RouteCalculator(archi, averageDataSize));
     }
     return RouteCalculator.instances.get(archi);
   }
@@ -99,13 +87,9 @@ public class RouteCalculator {
   /**
    * Recalculate.
    *
-   * @param archi
-   *          the archi
-   * @param scenario
-   *          the scenario
    */
-  public static void recalculate(final Design archi, final Scenario scenario) {
-    RouteCalculator.instances.put(archi, new RouteCalculator(archi, scenario));
+  public static void recalculate(final Design archi, final long averageDataSize) {
+    RouteCalculator.instances.put(archi, new RouteCalculator(archi, averageDataSize));
   }
 
   /**
@@ -126,30 +110,29 @@ public class RouteCalculator {
    * @param scenario
    *          the scenario
    */
-  private RouteCalculator(final Design archi, final Scenario scenario) {
+  private RouteCalculator(final Design archi, final long averageDataSize) {
 
     this.archi = archi;
-    this.table = new RoutingTable(scenario);
+    this.table = new RoutingTable();
     this.stepFactory = new RouteStepFactory(archi);
-    this.scenario = scenario;
 
     // Creating the route steps between directly connected operators
-    createRouteSteps();
+    createRouteSteps(averageDataSize);
     // Concatenation of route steps to generate optimal routes using
     // the Floyd Warshall algorithm
-    createRoutes();
+    createRoutes(averageDataSize);
   }
 
   /**
    * Creating recursively the route steps from the architecture.
    */
-  private void createRouteSteps() {
+  private void createRouteSteps(final long averageDataSize) {
     PreesmLogger.getLogger().log(Level.INFO, "creating route steps.");
 
     for (final ComponentInstance c : this.archi.getOperatorComponentInstances()) {
       final ComponentInstance o = c;
 
-      createRouteSteps(o);
+      createRouteSteps(o, averageDataSize);
     }
   }
 
@@ -159,7 +142,7 @@ public class RouteCalculator {
    * @param source
    *          the source
    */
-  private void createRouteSteps(final ComponentInstance source) {
+  private void createRouteSteps(final ComponentInstance source, final long averageDataSize) {
 
     // Iterating on outgoing and undirected edges
     final Set<Link> outgoingAndUndirected = new LinkedHashSet<>();
@@ -174,7 +157,7 @@ public class RouteCalculator {
 
         final List<ComponentInstance> alreadyVisitedNodes = new ArrayList<>();
         alreadyVisitedNodes.add(node);
-        exploreRoute(source, node, alreadyVisitedNodes);
+        exploreRoute(source, node, alreadyVisitedNodes, averageDataSize);
       }
     }
   }
@@ -190,7 +173,7 @@ public class RouteCalculator {
    *          the already visited nodes
    */
   private void exploreRoute(final ComponentInstance source, final ComponentInstance node,
-      final List<ComponentInstance> alreadyVisitedNodes) {
+      final List<ComponentInstance> alreadyVisitedNodes, final long avgSize) {
 
     // Iterating on outgoing and undirected edges
     final Set<Link> outgoingAndUndirected = new LinkedHashSet<>();
@@ -204,13 +187,13 @@ public class RouteCalculator {
         if (!alreadyVisitedNodes.contains(newNode)) {
           final List<ComponentInstance> newAlreadyVisitedNodes = new ArrayList<>(alreadyVisitedNodes);
           newAlreadyVisitedNodes.add(newNode);
-          exploreRoute(source, newNode, newAlreadyVisitedNodes);
+          exploreRoute(source, newNode, newAlreadyVisitedNodes, avgSize);
         }
       } else if ((otherEnd.getComponent() instanceof Operator)
           && !otherEnd.getInstanceName().equals(source.getInstanceName())) {
         final ComponentInstance target = otherEnd;
         final AbstractRouteStep step = this.stepFactory.getRouteStep(source, alreadyVisitedNodes, target);
-        this.table.addRoute(source, target, new Route(step));
+        this.table.addRoute(source, target, new Route(step), avgSize);
       }
     }
   }
@@ -218,10 +201,10 @@ public class RouteCalculator {
   /**
    * Building recursively the routes between the cores.
    */
-  private void createRoutes() {
+  private void createRoutes(final long avgSize) {
     PreesmLogger.getLogger().log(Level.INFO, "Initializing routing table.");
 
-    floydWarshall(this.table, this.archi.getOperatorComponentInstances());
+    floydWarshall(this.table, this.archi.getOperatorComponentInstances(), avgSize);
   }
 
   /**
@@ -232,7 +215,8 @@ public class RouteCalculator {
    * @param operators
    *          the operators
    */
-  private void floydWarshall(final RoutingTable table, final List<ComponentInstance> operators) {
+  private void floydWarshall(final RoutingTable table, final List<ComponentInstance> operators,
+      final long averageDataSize) {
 
     for (final ComponentInstance k : operators) {
 
@@ -247,15 +231,14 @@ public class RouteCalculator {
             if ((routeSrcK != null) && (routeKTgt != null)) {
               final Route compoundRoute = new Route(routeSrcK, routeKTgt);
               if (compoundRoute.isSingleAppearance()) {
-                final long averageDataSize = this.scenario.getSimulationInfo().getAverageDataSize();
                 // If this if statement is removed, several
                 // routes become available
                 if (table.getBestRoute(src, tgt) == null) {
-                  table.addRoute(src, tgt, compoundRoute);
+                  table.addRoute(src, tgt, compoundRoute, averageDataSize);
                 } else if (table.getBestRoute(src, tgt).evaluateTransferCost(averageDataSize) > compoundRoute
                     .evaluateTransferCost(averageDataSize)) {
                   table.removeRoutes(src, tgt);
-                  table.addRoute(src, tgt, compoundRoute);
+                  table.addRoute(src, tgt, compoundRoute, averageDataSize);
                 }
               }
             }
@@ -283,21 +266,6 @@ public class RouteCalculator {
     }
 
     return r;
-  }
-
-  /**
-   * Choosing a route between 2 operators.
-   *
-   * @param edge
-   *          the edge
-   * @return the route
-   */
-  public Route getRoute(final MapperDAGEdge edge) {
-    final MapperDAGVertex source = (MapperDAGVertex) edge.getSource();
-    final MapperDAGVertex target = (MapperDAGVertex) edge.getTarget();
-    final ComponentInstance sourceOp = source.getEffectiveOperator();
-    final ComponentInstance targetOp = target.getEffectiveOperator();
-    return getRoute(sourceOp, targetOp);
   }
 
 }

@@ -48,17 +48,17 @@ import org.preesm.algorithm.mapper.abc.taskscheduling.TaskSchedType;
 public enum AbcType {
 
   /** Available Abc types. */
-  InfiniteHomogeneous("InfiniteHomogeneous"),
+  INFINITE_HOMOGENEOUS("InfiniteHomogeneous"),
   /** The Constant LooselyTimed. */
-  LooselyTimed("LooselyTimed"),
+  LOSSELY_TIMED("LooselyTimed"),
   /** The Constant ApproximatelyTimed. */
-  ApproximatelyTimed("ApproximatelyTimed"),
+  APPROXIMATELY_TIMED("ApproximatelyTimed"),
   /** The Constant AccuratelyTimed. */
-  AccuratelyTimed("AccuratelyTimed"),
+  ACCURATELY_TIMED("AccuratelyTimed"),
   /** The Constant CommConten. */
-  CommConten("CommConten"),
+  COMM_CONTEN("CommConten"),
   /** The Constant DynamicQueuing. */
-  DynamicQueuing("DynamicQueuing");
+  DYNAMIC_QUEUING("DynamicQueuing");
 
   /** Name of the current type. */
   private String name = null;
@@ -100,18 +100,18 @@ public enum AbcType {
    */
   public static AbcType fromString(final String type) {
 
-    if (InfiniteHomogeneous.name.equalsIgnoreCase(type)) {
-      return InfiniteHomogeneous;
-    } else if (LooselyTimed.name.equalsIgnoreCase(type)) {
-      return LooselyTimed;
-    } else if (ApproximatelyTimed.name.equalsIgnoreCase(type)) {
-      return ApproximatelyTimed;
-    } else if (AccuratelyTimed.name.equalsIgnoreCase(type)) {
-      return AccuratelyTimed;
-    } else if (CommConten.name.equalsIgnoreCase(type)) {
-      return CommConten;
-    } else if (DynamicQueuing.name.equalsIgnoreCase(type)) {
-      return DynamicQueuing;
+    if (INFINITE_HOMOGENEOUS.name.equalsIgnoreCase(type)) {
+      return INFINITE_HOMOGENEOUS;
+    } else if (LOSSELY_TIMED.name.equalsIgnoreCase(type)) {
+      return LOSSELY_TIMED;
+    } else if (APPROXIMATELY_TIMED.name.equalsIgnoreCase(type)) {
+      return APPROXIMATELY_TIMED;
+    } else if (ACCURATELY_TIMED.name.equalsIgnoreCase(type)) {
+      return ACCURATELY_TIMED;
+    } else if (COMM_CONTEN.name.equalsIgnoreCase(type)) {
+      return COMM_CONTEN;
+    } else if (DYNAMIC_QUEUING.name.equalsIgnoreCase(type)) {
+      return DYNAMIC_QUEUING;
     }
 
     return null;

@@ -39,7 +39,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -78,7 +78,7 @@ public class Schedule {
   @JsonProperty("delay")
   private Double                    delay;
   @JsonIgnore
-  private final Map<String, Object> additionalProperties = new HashMap<>();
+  private final Map<String, Object> additionalProperties = new LinkedHashMap<>();
 
   @JsonProperty("scheduleEntries")
   public List<ScheduleEntry> getScheduleEntries() {

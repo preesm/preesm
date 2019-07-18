@@ -327,9 +327,7 @@ public class OrderManager extends Observable {
    * @return the architecture components
    */
   public Set<ComponentInstance> getArchitectureComponents() {
-
     return this.schedules.keySet();
-
   }
 
   /**

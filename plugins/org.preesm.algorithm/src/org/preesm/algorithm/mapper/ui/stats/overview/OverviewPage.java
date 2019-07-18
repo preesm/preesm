@@ -63,7 +63,6 @@ import org.eclipse.ui.forms.widgets.Section;
 import org.preesm.algorithm.mapper.ui.Messages;
 import org.preesm.algorithm.mapper.ui.stats.StatGenerator;
 
-// TODO: Auto-generated Javadoc
 /**
  * This page contains general informations of the scenario including current algorithm and current architecture.
  *
@@ -102,7 +101,6 @@ public class OverviewPage extends FormPage {
   protected void createFormContent(final IManagedForm managedForm) {
 
     final ScrolledForm form = managedForm.getForm();
-    // FormToolkit toolkit = managedForm.getToolkit();
     form.setText(Messages.getString("Overview.title"));
 
     final GridLayout layout = new GridLayout();

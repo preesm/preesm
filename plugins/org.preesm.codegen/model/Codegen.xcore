@@ -1,6 +1,7 @@
 /**
  * Copyright or © or Copr. IETR/INSA - Rennes (2018 - 2019) :
  *
+ * Alexandre Honorat [alexandre.honorat@insa-rennes.fr] (2019)
  * Antoine Morvan [antoine.morvan@insa-rennes.fr] (2018 - 2019)
  * Daniel Madroñal [daniel.madronal@upm.es] (2019)
  * Leonardo Suriano [leonardo.suriano@upm.es] (2019)
@@ -138,6 +139,10 @@ class FunctionCall extends Call {
 	String actorName
 }
 
+class ActorFunctionCall extends FunctionCall {
+	String originalVertexPath
+}
+
 class PapifyFunctionCall extends FunctionCall {
 	PapifyType papifyType
 	boolean opening = "false"
@@ -203,9 +208,6 @@ class ActorBlock extends Block {
 }
 
 class LoopBlock extends Block {
-}
-
-class ActorCall extends Call {
 }
 
 class CallBlock extends Block {

@@ -4,6 +4,7 @@
  * Antoine Morvan [antoine.morvan@insa-rennes.fr] (2017 - 2019)
  * Clément Guy [clement.guy@insa-rennes.fr] (2014 - 2015)
  * Daniel Madroñal [daniel.madronal@upm.es] (2019)
+ * dylangageot [gageot.dylan@gmail.com] (2019)
  * Julien Hascoet [jhascoet@kalray.eu] (2016)
  * Julien Heulot [julien.heulot@insa-rennes.fr] (2015)
  * Karol Desnos [karol.desnos@insa-rennes.fr] (2013)
@@ -105,13 +106,14 @@ public class CodegenEngine {
   /** The real printers. */
   private Map<IConfigurationElement, CodegenAbstractPrinter> realPrinters;
 
-  private final CodegenModelGenerator generator;
+  private final AbstractCodegenModelGenerator generator;
 
   /**
    * Instantiates a new codegen engine.
    *
    */
-  public CodegenEngine(final String codegenPath, final Collection<Block> codeBlocks, CodegenModelGenerator generator) {
+  public CodegenEngine(final String codegenPath, final Collection<Block> codeBlocks,
+      AbstractCodegenModelGenerator generator) {
     this.codegenPath = codegenPath;
     this.codeBlocks = codeBlocks;
     this.generator = generator;

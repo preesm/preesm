@@ -64,22 +64,17 @@ import org.preesm.commons.logger.PreesmLogger;
  */
 public class InitialLists implements Cloneable {
 
-  /** The blocking nodes. */
   // List of the nodes with a link with the critical path
   private List<MapperDAGVertex> blockingNodes;
 
-  /** The cpn dominant. */
   // List of the nodes which are ordered by the CPNDominant Sequence List
   private List<MapperDAGVertex> cpnDominant;
 
-  /** The critical path. */
   // List of the nodes of the critical path
   private List<MapperDAGVertex> criticalPath;
 
   /**
-   * constructors.
    */
-
   public InitialLists() {
     super();
     this.cpnDominant = new ArrayList<>();
@@ -87,12 +82,6 @@ public class InitialLists implements Cloneable {
     this.criticalPath = new ArrayList<>();
 
   }
-
-  /**
-   * clone: Clone the initial lists.
-   *
-   * @return : InitialLists
-   */
 
   @Override
   public InitialLists clone() {
@@ -394,60 +383,26 @@ public class InitialLists implements Cloneable {
     return true;
   }
 
-  /**
-   * getters and setters.
-   *
-   * @return the blocking nodes
-   */
-
   public List<MapperDAGVertex> getBlockingNodes() {
     return this.blockingNodes;
   }
 
-  /**
-   * Gets the cpn dominant.
-   *
-   * @return the cpn dominant
-   */
   public List<MapperDAGVertex> getCpnDominant() {
     return this.cpnDominant;
   }
 
-  /**
-   * Gets the criticalpath.
-   *
-   * @return the criticalpath
-   */
   public List<MapperDAGVertex> getCriticalpath() {
     return this.criticalPath;
   }
 
-  /**
-   * Sets the blocking nodes list.
-   *
-   * @param blockingNodesList
-   *          the new blocking nodes list
-   */
   public void setBlockingNodesList(final List<MapperDAGVertex> blockingNodesList) {
     this.blockingNodes = blockingNodesList;
   }
 
-  /**
-   * Sets the cpn dominant list.
-   *
-   * @param cpnDominantList
-   *          the new cpn dominant list
-   */
   public void setCpnDominantList(final List<MapperDAGVertex> cpnDominantList) {
     this.cpnDominant = cpnDominantList;
   }
 
-  /**
-   * Sets the finalcriticalpath list.
-   *
-   * @param finalcriticalpathList
-   *          the new finalcriticalpath list
-   */
   public void setFinalcriticalpathList(final List<MapperDAGVertex> finalcriticalpathList) {
     this.criticalPath = finalcriticalpathList;
   }

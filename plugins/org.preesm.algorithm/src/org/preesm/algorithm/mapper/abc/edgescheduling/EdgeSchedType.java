@@ -35,7 +35,6 @@
  */
 package org.preesm.algorithm.mapper.abc.edgescheduling;
 
-// TODO: Auto-generated Javadoc
 /**
  * Types of edge scheduler to be used in parameters.
  *
@@ -44,13 +43,10 @@ package org.preesm.algorithm.mapper.abc.edgescheduling;
 public enum EdgeSchedType {
 
   /** The Simple. */
-  Simple,
+  SIMPLE,
 
   /** The Switcher. */
-  Switcher,
-
-  /** The Advanced. */
-  Advanced;
+  SWITCHER;
 
   /*
    * (non-Javadoc)
@@ -60,12 +56,10 @@ public enum EdgeSchedType {
   @Override
   public String toString() {
 
-    if (this == Simple) {
+    if (this == SIMPLE) {
       return "Simple";
-    } else if (this == Switcher) {
+    } else if (this == SWITCHER) {
       return "Switcher";
-    } else if (this == Advanced) {
-      return "Advanced";
     } else {
       throw new UnsupportedOperationException();
     }
@@ -81,11 +75,9 @@ public enum EdgeSchedType {
   public static EdgeSchedType fromString(final String type) {
 
     if (type.equalsIgnoreCase("Simple")) {
-      return Simple;
+      return SIMPLE;
     } else if (type.equalsIgnoreCase("Switcher")) {
-      return Switcher;
-    } else if (type.equalsIgnoreCase("Advanced")) {
-      return Advanced;
+      return SWITCHER;
     }
 
     return null;

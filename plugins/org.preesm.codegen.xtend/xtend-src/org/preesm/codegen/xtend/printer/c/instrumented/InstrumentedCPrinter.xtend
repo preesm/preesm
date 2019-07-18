@@ -56,10 +56,15 @@ import org.preesm.codegen.model.SpecialCall
 import org.preesm.codegen.model.Variable
 import org.preesm.codegen.printer.PrinterState
 import org.preesm.codegen.xtend.printer.c.CPrinter
+import org.preesm.codegen.model.ActorFunctionCall
+import org.preesm.commons.logger.PreesmLogger
+import org.preesm.commons.exceptions.PreesmRuntimeException
 
 /**
  * This printer currently prints instrumented C code for X86 cores with all
  * communications made in the shared memory.
+ * 
+ * Only actor firings are instrumented now.
  *
  * @author kdesnos
  */
@@ -101,7 +106,7 @@ class InstrumentedCPrinter extends CPrinter {
 	 * Add instrumentation code to the {@link Block blocks}.<br>
 	 * In the current version, the instrumentation consists of:<br>
 	 * - A shared {@link Buffer} that stores all measured durations.<br>
-	 * - Calls to <code>dumpTime(ID, Buffer)</code> between all actors.<br>
+	 * - Calls to two <code>dumpTime(ID, Buffer)</code> around each actor firings.<br>
 	 *
 	 * @param blocks
 	 * 			List of the blocks printed by the printer. (will be
@@ -137,40 +142,9 @@ class InstrumentedCPrinter extends CPrinter {
 
 			var coreLoop = (block as CoreBlock).loopBlock
 
-			// Insert first dumpCall of the core (does not correspond to any actor)
-			{
-				var dumpCall = CodegenFactory.eINSTANCE.createFunctionCall
-				dumpCall.name = "dumpTime"
-				dumpCall.addParameter(
-					{
-						var const = CodegenFactory::eINSTANCE.createConstant
-						const.name = "globalID"
-						const.type = "int"
-						const.value = globalID
-						const
-					}, PortDirection.NONE)
-				globalID = globalID + 1
-				dumpCall.addParameter(dumpTimedBuffer, PortDirection.NONE)
-				coreLoop.codeElts.add(0, dumpCall)
-			}
-
 			// Insert a call after each codeElt.
 			var i = 1;
 			while (i < coreLoop.codeElts.size) {
-
-				// Do the insertion
-				val dumpCall = CodegenFactory.eINSTANCE.createFunctionCall
-				dumpCall.name = "dumpTime"
-				dumpCall.addParameter(
-					{
-						val const = CodegenFactory::eINSTANCE.createConstant
-						const.name = "globalID"
-						const.type = "int"
-						const.value = globalID
-						const
-					}, PortDirection.NONE)
-				dumpCall.addParameter(dumpTimedBuffer, PortDirection.NONE)
-				coreLoop.codeElts.add(i + 1, dumpCall)
 
 				// Retrieve the function ID
 				val elt = coreLoop.codeElts.get(i)
@@ -188,24 +162,62 @@ class InstrumentedCPrinter extends CPrinter {
 						"undefined"
 				}
 
-				// Register the call
-				globalFunctionID.put(globalID, functionID)
-				var actorID = actorIDs.get(functionID) ?: {
-					actorIDs.put(functionID, new ArrayList<Integer>)
-					actorIDs.get(functionID)
-				}
-				actorID.add(globalID);
-				codeEltID.put(elt, globalID)
+				if (elt instanceof ActorFunctionCall) {
+					val ovp = elt.originalVertexPath
+					System.err.println("Firing of: " + functionID + " >>> " + ovp  /*elt.getClass()*/)
 
-				// Increment the indices
-				globalID = globalID + 1;
-				i = i + 2;
+					// Do the pre insertion
+					val preDumpCall = CodegenFactory.eINSTANCE.createFunctionCall
+					preDumpCall.name = "dumpTime"
+					preDumpCall.addParameter(
+					{
+						val const = CodegenFactory::eINSTANCE.createConstant
+						const.name = "globalID"
+						const.type = "int"
+						const.value = globalID
+						const
+					}, PortDirection.NONE)
+					preDumpCall.addParameter(dumpTimedBuffer, PortDirection.NONE)
+					coreLoop.codeElts.add(i, preDumpCall)
+
+					// Register the call
+					globalFunctionID.put(globalID, ovp)
+					var actorID = actorIDs.get(ovp) ?: {
+						actorIDs.put(ovp, new ArrayList<Integer>)
+						actorIDs.get(ovp)
+					}
+					actorID.add(globalID/2);
+					codeEltID.put(elt, globalID+1)
+
+					// Do the pre insertion
+					val postDumpCall = CodegenFactory.eINSTANCE.createFunctionCall
+					postDumpCall.name = "dumpTime"
+					postDumpCall.addParameter(
+					{
+						val const = CodegenFactory::eINSTANCE.createConstant
+						const.name = "globalID"
+						const.type = "int"
+						const.value = globalID+1
+						const
+					}, PortDirection.NONE)
+					postDumpCall.addParameter(dumpTimedBuffer, PortDirection.NONE)
+					coreLoop.codeElts.add(i + 2, postDumpCall)
+
+
+					// Increment the indices
+					globalID = globalID + 2
+					i = i + 3
+
+				} else {
+					i = i + 1
+	
+				}			
 			}
 		}
 
 		// Set the final size of the Buffer
 		dumpTimedBuffer.size = globalID
-		nbExec.size = globalID
+		nbExec.size = globalID/2
 
 		// Create the init method
 		var initCall = CodegenFactory.eINSTANCE.createFunctionCall;
@@ -216,7 +228,7 @@ class InstrumentedCPrinter extends CPrinter {
 				var const = CodegenFactory::eINSTANCE.createConstant
 				const.name = "nbDump"
 				const.type = "int"
-				const.value = globalID
+				const.value = dumpTimedBuffer.size
 				const
 			}, PortDirection.NONE)
 		(printerBlocks.head as CoreBlock).initBlock.codeElts.add(initCall)
@@ -243,7 +255,7 @@ class InstrumentedCPrinter extends CPrinter {
 
 	def String printInstrumentedCall(CodeElt elt, CharSequence superPrint)'''
 	«IF (getState()== PrinterState::PRINTING_LOOP_BLOCK) && codeEltID.get(elt) !== null»
-	for(idx=0; idx<*(«nbExec.doSwitch»+«codeEltID.get(elt)»); idx++){
+	for(idx=0; idx<*(«nbExec.doSwitch»+«codeEltID.get(elt)/2»); idx++){
 		«superPrint»
 	}
 	«ELSE»
@@ -255,7 +267,7 @@ class InstrumentedCPrinter extends CPrinter {
 	 * We do not instrument fifo call since this would mess up with the semaphores
 	 */
 	override printSharedMemoryCommunication(SharedMemoryCommunication communication) '''
-		«IF (state == PrinterState::PRINTING_LOOP_BLOCK) && codeEltID.get(communication) !== null»*(«nbExec.doSwitch»+«codeEltID.get(communication)») = 0;«ENDIF»
+		«IF (state == PrinterState::PRINTING_LOOP_BLOCK) && codeEltID.get(communication) !== null»*(«nbExec.doSwitch»+«codeEltID.get(communication)/2») = 0;«ENDIF»
 		«super.printSharedMemoryCommunication(communication)»
 	'''
 
@@ -274,7 +286,7 @@ class InstrumentedCPrinter extends CPrinter {
 	 * We do not instrument fifo call since this would mess up with the memory
 	 */
 	override printFifoCall(FifoCall fifoCall)'''
-	«IF (state == PrinterState::PRINTING_LOOP_BLOCK) && codeEltID.get(fifoCall) !== null»*(«nbExec.doSwitch»+«codeEltID.get(fifoCall)») = 0;«ENDIF»
+	«IF (state == PrinterState::PRINTING_LOOP_BLOCK) && codeEltID.get(fifoCall) !== null»*(«nbExec.doSwitch»+«codeEltID.get(fifoCall)/2») = 0;«ENDIF»
 	«super.printFifoCall(fifoCall)»
 	'''
 
@@ -290,16 +302,23 @@ class InstrumentedCPrinter extends CPrinter {
 	«ENDFOR»
 	'''
 
+	/**
+	 * Returns corresponding number in the base of the 26 letters A-Z.
+	 * Starts from 0 (returns A).
+	 */
 	def String intToColumn(int i){
+		if (i < 0) {
+			throw new PreesmRuntimeException ("Invalid negative argument.")
+		}
 		val alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
 		var result = ""
 		var digit = 0
 		var rest = i
 		do {
-			digit = (rest-1)%26
-			rest = (rest-digit)/26
+			digit = rest % 26
+			rest = (rest-digit) / 26
 			result = alphabet.charAt(digit) + result
-		} while(rest>0)
+		} while (rest > 0)
 		return result
 	}
 

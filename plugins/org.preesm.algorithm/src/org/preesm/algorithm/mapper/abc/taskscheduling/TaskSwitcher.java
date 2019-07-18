@@ -47,34 +47,18 @@ import org.preesm.algorithm.mapper.model.MapperDAGVertex;
  */
 public class TaskSwitcher extends AbstractTaskSched {
 
-  /** The interval finder. */
   private IntervalFinder intervalFinder;
 
-  /**
-   * Instantiates a new task switcher.
-   */
   public TaskSwitcher() {
     super();
   }
 
-  /*
-   * (non-Javadoc)
-   *
-   * @see org.ietr.preesm.mapper.abc.taskscheduling.AbstractTaskSched#setOrderManager(org.ietr.preesm.
-   * mapper.abc.order.OrderManager)
-   */
   @Override
   public void setOrderManager(final OrderManager orderManager) {
     super.setOrderManager(orderManager);
     this.intervalFinder = new IntervalFinder(orderManager);
   }
 
-  /*
-   * (non-Javadoc)
-   *
-   * @see org.ietr.preesm.mapper.abc.taskscheduling.AbstractTaskSched#insertVertex(org.ietr.preesm.mapper
-   * .model.MapperDAGVertex)
-   */
   @Override
   public void insertVertex(final MapperDAGVertex vertex) {
 

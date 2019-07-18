@@ -35,7 +35,7 @@
  */
 package org.preesm.algorithm.moa.activity;
 
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import org.preesm.model.slam.Component;
 
@@ -82,7 +82,7 @@ public class CustomQuanta {
   private Map<MapKeyPair, String> customQuanta = null;
 
   public CustomQuanta() {
-    this.customQuanta = new HashMap<>();
+    this.customQuanta = new LinkedHashMap<>();
   }
 
   public void addQuantaExpression(final String actor, final Component operator, final String expression) {

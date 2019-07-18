@@ -42,13 +42,26 @@ import org.preesm.model.slam.ComponentInstance;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
-// TODO: Auto-generated Javadoc
 /**
  * Represents a single step in a route between two operators.
  *
  * @author mpelcat
  */
 public abstract class AbstractRouteStep implements CloneableProperty<AbstractRouteStep> {
+  /**
+   * The route step type determines how the communication will be simulated.
+   */
+  public static final String MEM_TYPE = "RamRouteStep";
+
+  /**
+   * The route step type determines how the communication will be simulated.
+   */
+  public static final String DMA_TYPE = "DmaRouteStep";
+
+  /**
+   * The route step type determines how the communication will be simulated.
+   */
+  public static final String NODE_TYPE = "NodeRouteStep";
 
   /**
    * The sender of the route step. A route step is always directed.
@@ -66,7 +79,7 @@ public abstract class AbstractRouteStep implements CloneableProperty<AbstractRou
    * @param receiver
    *          the receiver
    */
-  public AbstractRouteStep(final ComponentInstance sender, final ComponentInstance receiver) {
+  protected AbstractRouteStep(final ComponentInstance sender, final ComponentInstance receiver) {
     super();
     this.sender = sender;
     this.receiver = receiver;
@@ -170,17 +183,17 @@ public abstract class AbstractRouteStep implements CloneableProperty<AbstractRou
     final Element routeStep = dom.createElement("routeStep");
     comFct.appendChild(routeStep);
 
-    final Element sender = dom.createElement("sender");
-    sender.setAttribute("name", getSender().getInstanceName());
-    sender.setAttribute("def", getSender().getComponent().getVlnv().getName());
-    routeStep.appendChild(sender);
+    final Element newSender = dom.createElement("sender");
+    newSender.setAttribute("name", getSender().getInstanceName());
+    newSender.setAttribute("def", getSender().getComponent().getVlnv().getName());
+    routeStep.appendChild(newSender);
 
-    final Element receiver = dom.createElement("receiver");
-    receiver.setAttribute("name", getReceiver().getInstanceName());
-    receiver.setAttribute("def", getReceiver().getComponent().getVlnv().getName());
-    routeStep.appendChild(receiver);
+    final Element newReceiver = dom.createElement("receiver");
+    newReceiver.setAttribute("name", getReceiver().getInstanceName());
+    newReceiver.setAttribute("def", getReceiver().getComponent().getVlnv().getName());
+    routeStep.appendChild(newReceiver);
 
-    if (getType() == DmaRouteStep.type) {
+    if (DMA_TYPE.equals(getType())) {
       routeStep.setAttribute("type", "dma");
       final DmaRouteStep dStep = (DmaRouteStep) this;
       routeStep.setAttribute("dmaDef", dStep.getDma().getVlnv().getName());
@@ -191,7 +204,7 @@ public abstract class AbstractRouteStep implements CloneableProperty<AbstractRou
         eNode.setAttribute("def", node.getComponent().getVlnv().getName());
         routeStep.appendChild(eNode);
       }
-    } else if (getType() == MessageRouteStep.type) {
+    } else if (NODE_TYPE.equals(getType())) {
       routeStep.setAttribute("type", "msg");
       final MessageRouteStep nStep = (MessageRouteStep) this;
 
@@ -201,7 +214,7 @@ public abstract class AbstractRouteStep implements CloneableProperty<AbstractRou
         eNode.setAttribute("def", node.getComponent().getVlnv().getName());
         routeStep.appendChild(eNode);
       }
-    } else if (getType() == MemRouteStep.type) {
+    } else if (MEM_TYPE.equals(getType())) {
       routeStep.setAttribute("type", "ram");
       final MemRouteStep rStep = (MemRouteStep) this;
       routeStep.setAttribute("ramDef", rStep.getMem().getVlnv().getName());

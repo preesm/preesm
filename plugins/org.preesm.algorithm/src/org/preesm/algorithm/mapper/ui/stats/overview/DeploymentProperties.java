@@ -54,7 +54,6 @@ import org.preesm.model.slam.ComponentInstance;
 import org.preesm.model.slam.Design;
 import org.preesm.model.slam.utils.LexicographicComponentInstanceComparator;
 
-// TODO: Auto-generated Javadoc
 /**
  * Gathering the properties that will be displayed in the overview page of the stat display.
  *
@@ -62,36 +61,17 @@ import org.preesm.model.slam.utils.LexicographicComponentInstanceComparator;
  */
 public class DeploymentProperties implements IStructuredContentProvider, ITableLabelProvider {
 
-  /** The column order. */
-  private String columnOrder;
-
-  /** The stat gen. */
-  private final StatGenerator statGen;
-
-  /** The loads. */
+  private String                             columnOrder;
+  private final StatGenerator                statGen;
   private final Map<ComponentInstance, Long> loads;
-
-  /** The memory needs. */
   private final Map<ComponentInstance, Long> memoryNeeds;
+  private long                               repetitionPeriod;
 
-  /** The repetition period. */
-  private long repetitionPeriod;
-
-  /**
-   * Sets the column order.
-   *
-   * @param columnOrder
-   *          the new column order
-   */
   public void setColumnOrder(final String columnOrder) {
     this.columnOrder = columnOrder;
   }
 
   /**
-   * Instantiates a new deployment properties.
-   *
-   * @param statGen
-   *          the stat gen
    */
   public DeploymentProperties(final StatGenerator statGen) {
     super();
@@ -120,11 +100,6 @@ public class DeploymentProperties implements IStructuredContentProvider, ITableL
 
   }
 
-  /*
-   * (non-Javadoc)
-   *
-   * @see org.eclipse.jface.viewers.IStructuredContentProvider#getElements(java.lang.Object)
-   */
   @Override
   public Object[] getElements(final Object inputElement) {
     final List<ComponentInstance> elements = new ArrayList<>(this.loads.keySet());
@@ -162,45 +137,21 @@ public class DeploymentProperties implements IStructuredContentProvider, ITableL
     return elements.toArray();
   }
 
-  /*
-   * (non-Javadoc)
-   *
-   * @see org.eclipse.jface.viewers.IContentProvider#dispose()
-   */
   @Override
   public void dispose() {
-    // TODO Auto-generated method stub
-
+    // nothing
   }
 
-  /*
-   * (non-Javadoc)
-   *
-   * @see org.eclipse.jface.viewers.IContentProvider#inputChanged(org.eclipse.jface.viewers.Viewer, java.lang.Object,
-   * java.lang.Object)
-   */
   @Override
   public void inputChanged(final Viewer viewer, final Object oldInput, final Object newInput) {
-    // TODO Auto-generated method stub
-
+    // nothing
   }
 
-  /*
-   * (non-Javadoc)
-   *
-   * @see org.eclipse.jface.viewers.ITableLabelProvider#getColumnImage(java.lang.Object, int)
-   */
   @Override
   public Image getColumnImage(final Object element, final int columnIndex) {
-    // TODO Auto-generated method stub
     return null;
   }
 
-  /*
-   * (non-Javadoc)
-   *
-   * @see org.eclipse.jface.viewers.ITableLabelProvider#getColumnText(java.lang.Object, int)
-   */
   @Override
   public String getColumnText(final Object element, final int columnIndex) {
     String text = "";
@@ -226,34 +177,19 @@ public class DeploymentProperties implements IStructuredContentProvider, ITableL
     return text;
   }
 
-  /*
-   * (non-Javadoc)
-   *
-   * @see org.eclipse.jface.viewers.IBaseLabelProvider#addListener(org.eclipse.jface.viewers. ILabelProviderListener)
-   */
   @Override
   public void addListener(final ILabelProviderListener listener) {
-
+    // nothing
   }
 
-  /*
-   * (non-Javadoc)
-   *
-   * @see org.eclipse.jface.viewers.IBaseLabelProvider#isLabelProperty(java.lang.Object, java.lang.String)
-   */
   @Override
   public boolean isLabelProperty(final Object element, final String property) {
     return false;
   }
 
-  /*
-   * (non-Javadoc)
-   *
-   * @see org.eclipse.jface.viewers.IBaseLabelProvider#removeListener(org.eclipse.jface.viewers. ILabelProviderListener)
-   */
   @Override
   public void removeListener(final ILabelProviderListener listener) {
-
+    // nothing
   }
 
   /**
@@ -268,11 +204,6 @@ public class DeploymentProperties implements IStructuredContentProvider, ITableL
     }
   }
 
-  /**
-   * Gets the repetition period.
-   *
-   * @return the repetition period
-   */
   public long getRepetitionPeriod() {
     return this.repetitionPeriod;
   }

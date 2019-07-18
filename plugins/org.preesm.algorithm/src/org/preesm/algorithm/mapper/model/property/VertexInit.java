@@ -69,11 +69,6 @@ public class VertexInit implements CloneableProperty<VertexInit> {
   /** Number of repetitions that may ponderate the timing. */
   private long nbRepeat;
 
-  /**
-   * Gets the nb repeat.
-   *
-   * @return the nb repeat
-   */
   public long getNbRepeat() {
     return this.nbRepeat;
   }
@@ -89,12 +84,6 @@ public class VertexInit implements CloneableProperty<VertexInit> {
     this.operators = new ArrayList<>();
   }
 
-  /**
-   * Sets the nb repeat.
-   *
-   * @param nbRepeat
-   *          the new nb repeat
-   */
   public void setNbRepeat(final long nbRepeat) {
     this.nbRepeat = nbRepeat;
   }
@@ -199,40 +188,50 @@ public class VertexInit implements CloneableProperty<VertexInit> {
    * @return the time
    */
   public long getTime(final ComponentInstance operator) {
-
-    long time = 0;
-
+    final long time;
     if (operator != null) {
-
       // Non special vertex timings are retrieved from scenario
       // Special vertex timings were computed from scenario
       final Timing returntiming = getTiming(operator.getComponent());
-
       if (!SpecialVertexManager.isSpecial(this.parentVertex)) {
-
-        if (returntiming != null) {
-          if (returntiming.getTime() != 0) {
-            // The basic timing is multiplied by the number of
-            // repetitions
-            time = returntiming.getTime() * this.nbRepeat;
-          } else {
-            time = ScenarioConstants.DEFAULT_TIMING_TASK.getValue();
-          }
-        }
+        time = getDefaultTime(returntiming);
       } else {
-        // Special vertex timings are retrieved
-        if (returntiming != null) {
-          if (returntiming.getTime() != 0) {
-            time = returntiming.getTime();
-          } else {
-            time = ScenarioConstants.DEFAULT_TIMING_SPECIAL_TASK.getValue();
-          }
-        } else {
-          time = ScenarioConstants.DEFAULT_TIMING_SPECIAL_TASK.getValue();
-        }
+        time = getSpecialVertexTime(returntiming);
       }
+    } else {
+      time = 0;
     }
+    return time;
+  }
 
+  private long getSpecialVertexTime(final Timing returntiming) {
+    long time;
+    // Special vertex timings are retrieved
+    if (returntiming != null) {
+      if (returntiming.getTime() != 0) {
+        time = returntiming.getTime();
+      } else {
+        time = ScenarioConstants.DEFAULT_TIMING_SPECIAL_TASK.getValue();
+      }
+    } else {
+      time = ScenarioConstants.DEFAULT_TIMING_SPECIAL_TASK.getValue();
+    }
+    return time;
+  }
+
+  private long getDefaultTime(final Timing returntiming) {
+    final long time;
+    if (returntiming != null) {
+      if (returntiming.getTime() != 0) {
+        // The basic timing is multiplied by the number of
+        // repetitions
+        time = returntiming.getTime() * this.nbRepeat;
+      } else {
+        time = ScenarioConstants.DEFAULT_TIMING_TASK.getValue();
+      }
+    } else {
+      time = 0;
+    }
     return time;
   }
 

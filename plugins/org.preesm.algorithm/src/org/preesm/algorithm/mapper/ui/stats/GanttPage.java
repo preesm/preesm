@@ -50,7 +50,6 @@ import org.preesm.algorithm.mapper.ui.GanttPlotter;
  */
 public class GanttPage extends FormPage {
 
-  /** The stat gen. */
   private StatGenerator statGen = null;
 
   /**
@@ -98,11 +97,6 @@ public class GanttPage extends FormPage {
 
   }
 
-  /**
-   * Gets the stat gen.
-   *
-   * @return the stat gen
-   */
   public StatGenerator getStatGen() {
     return this.statGen;
   }

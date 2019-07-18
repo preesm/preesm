@@ -43,7 +43,6 @@ package org.preesm.codegen.xtend.spider.visitor;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
@@ -212,8 +211,8 @@ public class SpiderCodegen {
 
     // Generate constraints
     this.constraints = new LinkedHashMap<>();
-    for (final Entry<ComponentInstance, EList<AbstractActor>> cg : this.scenario.getConstraints().getGroupConstraints()
-        .entrySet()) {
+    for (final Entry<ComponentInstance, EList<AbstractActor>> cg : this.scenario.getConstraints()
+        .getGroupConstraints()) {
       for (final AbstractActor aa : cg.getValue()) {
         if (this.constraints.get(aa) == null) {
           this.constraints.put(aa, new LinkedHashSet<ComponentInstance>());
@@ -422,7 +421,7 @@ public class SpiderCodegen {
     // Papify pre-processing
     PapifyConfig papifyConfigManager = scenario.getPapifyConfig();
 
-    final HashMap<EList<PapiEvent>, Integer> uniqueEventSets = new HashMap<>();
+    final Map<EList<PapiEvent>, Integer> uniqueEventSets = new LinkedHashMap<>();
     int eventSetID = 0;
 
     final ArrayList<AbstractActor> papifiedActors = new ArrayList<>();
@@ -474,7 +473,7 @@ public class SpiderCodegen {
    * @return true if the actor has the same event set as an existing one, false else
    */
   private boolean generatePapifyConfig(PapifyConfig papifyConfigManager, final AbstractActor actor,
-      final HashMap<EList<PapiEvent>, Integer> uniqueEventSets, final Integer eventSetID) {
+      final Map<EList<PapiEvent>, Integer> uniqueEventSets, final Integer eventSetID) {
 
     boolean eventMonitoring = false;
     boolean timingMonitoring = false;

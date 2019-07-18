@@ -35,7 +35,6 @@
  */
 package org.preesm.algorithm.mapper.abc.edgescheduling;
 
-// TODO: Auto-generated Javadoc
 /**
  * Time interval for the transfer scheduling.
  *

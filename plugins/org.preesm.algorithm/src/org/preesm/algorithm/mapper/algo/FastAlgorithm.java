@@ -199,14 +199,15 @@ public class FastAlgorithm extends Observable {
     // the same level, in alphabetical name order
     simulator.setTaskScheduler(taskSched);
 
-    final Iterator<MapperDAGVertex> vertexiter = new RandomIterator<>(blockingNodesList, randomGenerator);
+    final Iterator<MapperDAGVertex> vertexiter = new RandomIterator<>(blockingNodesList);
+    final Iterator<MapperDAGVertex> iter = new RandomIterator<>(finalcriticalpathList);
 
-    final RandomIterator<MapperDAGVertex> iter = new RandomIterator<>(finalcriticalpathList, randomGenerator);
     MapperDAGVertex currentvertex = null;
     MapperDAGVertex fcpvertex = null;
     ComponentInstance operatortest;
     ComponentInstance operatorfcp;
     ComponentInstance operatorprec;
+
     final Logger logger = PreesmLogger.getLogger();
 
     // these steps are linked to the description of the FAST algorithm to

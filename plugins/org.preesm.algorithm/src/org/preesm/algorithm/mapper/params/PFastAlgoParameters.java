@@ -42,7 +42,6 @@ import java.util.Map;
 import java.util.logging.Level;
 import org.preesm.commons.logger.PreesmLogger;
 
-// TODO: Auto-generated Javadoc
 /**
  * Parameters for task scheduling FAST algorithm multithread.
  *
@@ -101,60 +100,26 @@ public class PFastAlgoParameters {
 
   }
 
-  /**
-   * Getters and Setters.
-   *
-   * @return the proc number
-   */
-
   public int getProcNumber() {
     return this.procNumber;
   }
 
-  /**
-   * Sets the proc number.
-   *
-   * @param procNumber
-   *          the new proc number
-   */
   public void setProcNumber(final int procNumber) {
     this.procNumber = procNumber;
   }
 
-  /**
-   * Checks if is display solutions.
-   *
-   * @return true, if is display solutions
-   */
   public boolean isDisplaySolutions() {
     return this.displaySolutions;
   }
 
-  /**
-   * Sets the display solutions.
-   *
-   * @param displaySolutions
-   *          the new display solutions
-   */
   public void setDisplaySolutions(final boolean displaySolutions) {
     this.displaySolutions = displaySolutions;
   }
 
-  /**
-   * Gets the nodesmin.
-   *
-   * @return the nodesmin
-   */
   public int getNodesmin() {
     return this.nodesMin;
   }
 
-  /**
-   * Sets the nodesmin.
-   *
-   * @param nodesmin
-   *          the new nodesmin
-   */
   public void setNodesmin(final int nodesmin) {
     this.nodesMin = nodesmin;
   }

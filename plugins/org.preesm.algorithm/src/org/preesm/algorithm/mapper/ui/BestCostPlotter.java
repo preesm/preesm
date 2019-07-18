@@ -80,16 +80,10 @@ import org.preesm.commons.exceptions.PreesmRuntimeException;
  */
 public class BestCostPlotter extends ApplicationFrame implements ActionListener, Observer {
 
-  /** The Constant serialVersionUID. */
   private static final long serialVersionUID = -6939533490316310961L;
 
-  /** The number of subplots. */
-  private int subplotCount = 1;
-
-  /** The action type. */
-  private int actionType = 0;
-
-  /** The datasets. */
+  private int                    subplotCount = 1;
+  private int                    actionType   = 0;
   private TimeSeriesCollection[] datasets;
 
   /** The most recent value added to series 1. */

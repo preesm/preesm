@@ -72,14 +72,6 @@ public abstract class ImplementationIterator extends AbstractGraphIterator<DAGVe
   private List<MapperDAGVertex> orderedlist;
 
   /**
-   * Instantiates a new implementation iterator.
-   *
-   * @param abc
-   *          the abc
-   * @param dag
-   *          the dag
-   * @param directOrder
-   *          the direct order
    */
   public ImplementationIterator(final LatencyAbc abc, final MapperDAG dag, final boolean directOrder) {
     super(dag);
@@ -105,30 +97,15 @@ public abstract class ImplementationIterator extends AbstractGraphIterator<DAGVe
     Collections.sort(this.orderedlist, this);
   }
 
-  /**
-   * Gets the orderedlist.
-   *
-   * @return the orderedlist
-   */
   public List<MapperDAGVertex> getOrderedlist() {
     return this.orderedlist;
   }
 
-  /*
-   * (non-Javadoc)
-   *
-   * @see java.util.Iterator#hasNext()
-   */
   @Override
   public boolean hasNext() {
     return (this.currentIndex < this.orderedlist.size());
   }
 
-  /*
-   * (non-Javadoc)
-   *
-   * @see java.util.Iterator#next()
-   */
   @Override
   public MapperDAGVertex next() {
     final int index = this.currentIndex++;

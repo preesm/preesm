@@ -47,7 +47,6 @@ import org.preesm.algorithm.model.dag.DAGEdge;
 import org.preesm.algorithm.model.dag.DirectedAcyclicGraph;
 import org.preesm.model.slam.route.AbstractRouteStep;
 
-// TODO: Auto-generated Javadoc
 /**
  * A transfer vertex represents a route step.
  *
@@ -55,16 +54,12 @@ import org.preesm.model.slam.route.AbstractRouteStep;
  */
 public class TransferVertex extends MapperDAGVertex {
 
-  /** The Constant SEND_RECEIVE_COST. */
   public static final long SEND_RECEIVE_COST = 100;
 
-  /** The step. */
   private AbstractRouteStep step;
 
   /** Source and target of the vertex that originated this transfer. */
   private final MapperDAGVertex source;
-
-  /** The target. */
   private final MapperDAGVertex target;
 
   /** Index of the route step corresponding to this transfer in the route. */
@@ -77,10 +72,8 @@ public class TransferVertex extends MapperDAGVertex {
   private InvolvementVertex involvementVertex = null;
 
   static {
-    {
-      AbstractVertex.public_properties.add(ImplementationPropertyNames.SendReceive_OperatorDef);
-      AbstractVertex.public_properties.add(ImplementationPropertyNames.SendReceive_dataSize);
-    }
+    AbstractVertex.public_properties.add(ImplementationPropertyNames.SendReceive_OperatorDef);
+    AbstractVertex.public_properties.add(ImplementationPropertyNames.SendReceive_dataSize);
   }
 
   /**
@@ -102,7 +95,7 @@ public class TransferVertex extends MapperDAGVertex {
   public TransferVertex(final String id, final MapperDAG base, final MapperDAGVertex source,
       final MapperDAGVertex target, final int routeStepIndex, final int nodeIndex,
       org.preesm.model.pisdf.AbstractVertex origVertex) {
-    super(id, base, origVertex);
+    super(id, origVertex);
     this.source = source;
     this.target = target;
     this.routeStepIndex = routeStepIndex;

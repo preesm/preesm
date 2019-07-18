@@ -46,7 +46,6 @@ import org.preesm.model.slam.Mem;
 import org.preesm.model.slam.impl.DmaImpl;
 import org.preesm.model.slam.impl.MemImpl;
 
-// TODO: Auto-generated Javadoc
 /**
  * Depending on the architecture nodes separating two operators, generates a suited route step. The route steps
  * represents one type of connection between two connected operators

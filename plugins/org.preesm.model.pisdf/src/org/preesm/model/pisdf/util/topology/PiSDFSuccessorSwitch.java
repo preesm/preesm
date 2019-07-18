@@ -32,25 +32,23 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL license and that you accept its terms.
  */
-package org.preesm.model.pisdf.switches;
+package org.preesm.model.pisdf.util.topology;
 
 import java.util.ArrayList;
 import java.util.List;
-import org.eclipse.emf.common.util.EList;
 import org.preesm.model.pisdf.AbstractActor;
-import org.preesm.model.pisdf.DataInputInterface;
 import org.preesm.model.pisdf.DataInputPort;
+import org.preesm.model.pisdf.DataOutputInterface;
 import org.preesm.model.pisdf.DataOutputPort;
-import org.preesm.model.pisdf.DelayActor;
 import org.preesm.model.pisdf.Fifo;
 import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.pisdf.Port;
 import org.preesm.model.pisdf.util.PiMMSwitch;
 
 /**
- *
+ * Visits all successors of a given PiSDF element through the connected Fifos.
  */
-public abstract class PiSDFPredecessorSwitch extends PiMMSwitch<Boolean> {
+public abstract class PiSDFSuccessorSwitch extends PiMMSwitch<Boolean> {
 
   private final List<AbstractActor> visitedElements = new ArrayList<>();
 
@@ -58,40 +56,39 @@ public abstract class PiSDFPredecessorSwitch extends PiMMSwitch<Boolean> {
   public Boolean caseAbstractActor(final AbstractActor actor) {
     if (!this.visitedElements.contains(actor)) {
       this.visitedElements.add(actor);
-      actor.getDataInputPorts().forEach(this::doSwitch);
-      final EList<AbstractActor> delayActors = actor.getContainingPiGraph().getDelayActors();
-      delayActors.forEach(this::doSwitch);
+      actor.getDataOutputPorts().forEach(this::doSwitch);
     }
     return true;
   }
 
   @Override
   public Boolean caseFifo(final Fifo fifo) {
-    final DataOutputPort sourcePort = fifo.getSourcePort();
+    final DataInputPort sourcePort = fifo.getTargetPort();
     doSwitch(sourcePort);
     return true;
   }
 
   @Override
   public Boolean caseDataOutputPort(final DataOutputPort dop) {
-    final AbstractActor containingActor = dop.getContainingActor();
+    final Fifo fifo = dop.getFifo();
+    if (fifo != null) {
+      doSwitch(fifo);
+    }
+    return true;
+
+  }
+
+  @Override
+  public Boolean caseDataInputPort(final DataInputPort dip) {
+    final AbstractActor containingActor = dip.getContainingActor();
     doSwitch(containingActor);
     return true;
   }
 
   @Override
-  public Boolean caseDataInputPort(final DataInputPort dip) {
-    final Fifo fifo = dip.getFifo();
-    if (fifo != null) {
-      doSwitch(fifo);
-    }
-    return true;
-  }
-
-  @Override
-  public Boolean caseDataInputInterface(final DataInputInterface inputInterface) {
-    caseAbstractActor(inputInterface);
-    final Port graphPort = inputInterface.getGraphPort();
+  public Boolean caseDataOutputInterface(final DataOutputInterface outputInterface) {
+    caseAbstractActor(outputInterface);
+    final Port graphPort = outputInterface.getGraphPort();
     doSwitch(graphPort);
     return true;
   }
@@ -106,24 +103,13 @@ public abstract class PiSDFPredecessorSwitch extends PiMMSwitch<Boolean> {
     return true;
   }
 
-  @Override
-  public Boolean caseDelayActor(final DelayActor delayActor) {
-    caseAbstractActor(delayActor);
-    final PiGraph graph = delayActor.getContainingPiGraph();
-    graph.getDataInputInterfaces().forEach(this::doSwitch);
-    return true;
-  }
-
   /**
-   * returns true if potentialPred is actually a predecessor of target
+   *
+   * @author anmorvan
+   *
    */
-  public static final boolean isPredecessor(final AbstractActor potentialPred, final AbstractActor target) {
-    try {
-      new IsPredecessorSwitch(target).doSwitch(potentialPred);
-      return false;
-    } catch (final PredecessorFoundException e) {
-      return true;
-    }
+  static class SuccessorFoundException extends RuntimeException {
+    private static final long serialVersionUID = 4039813342986334156L;
   }
 
   /**
@@ -131,26 +117,17 @@ public abstract class PiSDFPredecessorSwitch extends PiMMSwitch<Boolean> {
    * @author anmorvan
    *
    */
-  private static class PredecessorFoundException extends RuntimeException {
-    private static final long serialVersionUID = -566281860304717658L;
-  }
-
-  /**
-   *
-   * @author anmorvan
-   *
-   */
-  private static class IsPredecessorSwitch extends PiSDFPredecessorSwitch {
+  static class IsSuccessorSwitch extends PiSDFSuccessorSwitch {
     private final AbstractActor potentialPred;
 
-    public IsPredecessorSwitch(final AbstractActor potentialPred) {
+    public IsSuccessorSwitch(final AbstractActor potentialPred) {
       this.potentialPred = potentialPred;
     }
 
     @Override
     public Boolean caseAbstractActor(final AbstractActor actor) {
       if (actor.equals(this.potentialPred)) {
-        throw new PredecessorFoundException();
+        throw new SuccessorFoundException();
       }
       return super.caseAbstractActor(actor);
     }

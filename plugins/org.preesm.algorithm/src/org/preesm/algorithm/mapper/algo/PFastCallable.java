@@ -160,13 +160,13 @@ class PFastCallable implements Callable<MapperDAG> {
     }
 
     // Create the CPN Dominant Sequence
-    final LatencyAbc IHsimu = new InfiniteHomogeneousAbc(this.abcParams, callableDAG.copy(), callableArchi,
+    final LatencyAbc iHsimu = new InfiniteHomogeneousAbc(this.abcParams, callableDAG.copy(), callableArchi,
         this.scenario);
     final InitialLists initialLists = new InitialLists();
-    initialLists.constructInitialLists(callableDAG, IHsimu);
+    initialLists.constructInitialLists(callableDAG, iHsimu);
 
-    final TopologicalTaskSched taskSched = new TopologicalTaskSched(IHsimu.getTotalOrder());
-    IHsimu.resetDAG();
+    final TopologicalTaskSched taskSched = new TopologicalTaskSched(iHsimu.getTotalOrder());
+    iHsimu.resetDAG();
 
     // performing the fast algorithm
     final FastAlgorithm algo = new FastAlgorithm(initialLists, this.scenario);

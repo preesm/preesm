@@ -42,7 +42,6 @@ import org.preesm.algorithm.mapper.model.MapperDAG;
 import org.preesm.algorithm.mapper.model.MapperDAGVertex;
 import org.preesm.commons.exceptions.PreesmRuntimeException;
 
-// TODO: Auto-generated Javadoc
 /**
  * Iterates an implementation in the rank order.
  *
@@ -50,30 +49,12 @@ import org.preesm.commons.exceptions.PreesmRuntimeException;
  */
 public class SchedulingOrderIterator extends ImplementationIterator {
 
-  /** The abc. */
-  private LatencyAbc abc = null;
-
   /**
-   * Instantiates a new scheduling order iterator.
-   *
-   * @param implementation
-   *          the implementation
-   * @param abc
-   *          the abc
-   * @param directOrder
-   *          the direct order
    */
   public SchedulingOrderIterator(final MapperDAG implementation, final LatencyAbc abc, final boolean directOrder) {
-    super(null, implementation, directOrder);
-    this.abc = abc;
+    super(abc, implementation, directOrder);
   }
 
-  /*
-   * (non-Javadoc)
-   *
-   * @see org.ietr.preesm.plugin.mapper.tools.ImplantationIterator#compare(org.
-   * ietr.preesm.plugin.mapper.model.MapperDAGVertex, org.ietr.preesm.plugin.mapper.model.MapperDAGVertex)
-   */
   @Override
   public int compare(final MapperDAGVertex arg0, final MapperDAGVertex arg1) {
     final int dif = this.abc.getSchedTotalOrder(arg0) - this.abc.getSchedTotalOrder(arg1);

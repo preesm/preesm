@@ -37,7 +37,7 @@ package org.preesm.algorithm.moa.activity;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.nio.file.Paths;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
@@ -173,12 +173,12 @@ public class CustomQuantaExporter extends AbstractTaskImplementation {
     final String msg = "Activity: " + this.activity;
     logger.log(Level.INFO, msg);
 
-    return new HashMap<>();
+    return new LinkedHashMap<>();
   }
 
   @Override
   public Map<String, String> getDefaultParameters() {
-    final Map<String, String> defaultParams = new HashMap<>();
+    final Map<String, String> defaultParams = new LinkedHashMap<>();
     defaultParams.put(CustomQuantaExporter.INPUT_XLS_FILE, "stats/mat/custom_quanta_in/quanta_in_$SCENARIO$.xls");
     defaultParams.put(CustomQuantaExporter.PATH, "stats/mat/activity");
     defaultParams.put(CustomQuantaExporter.HUMAN_READABLE, "Yes");

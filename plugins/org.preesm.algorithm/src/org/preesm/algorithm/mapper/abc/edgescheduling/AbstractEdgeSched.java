@@ -52,9 +52,6 @@ public abstract class AbstractEdgeSched implements IEdgeSched {
 
   /**
    * Instantiates a new abstract edge sched.
-   *
-   * @param orderManager
-   *          the order manager
    */
   public AbstractEdgeSched(final OrderManager orderManager) {
     super();
@@ -74,12 +71,10 @@ public abstract class AbstractEdgeSched implements IEdgeSched {
 
     final IEdgeSched edgeSched;
 
-    if (edgeSchedType == EdgeSchedType.Simple) {
+    if (edgeSchedType == EdgeSchedType.SIMPLE) {
       edgeSched = new SimpleEdgeSched(orderManager);
-    } else if (edgeSchedType == EdgeSchedType.Switcher) {
+    } else if (edgeSchedType == EdgeSchedType.SWITCHER) {
       edgeSched = new SwitcherEdgeSched(orderManager);
-    } else if (edgeSchedType == EdgeSchedType.Advanced) {
-      edgeSched = new AdvancedEdgeSched(orderManager);
     } else {
       // Default scheduler
       edgeSched = new SimpleEdgeSched(orderManager);
@@ -88,11 +83,6 @@ public abstract class AbstractEdgeSched implements IEdgeSched {
     return edgeSched;
   }
 
-  /*
-   * (non-Javadoc)
-   *
-   * @see org.ietr.preesm.mapper.abc.edgescheduling.IEdgeSched#getOrderManager()
-   */
   @Override
   public OrderManager getOrderManager() {
     return this.orderManager;

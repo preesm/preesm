@@ -54,50 +54,39 @@ import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.model.slam.ComponentInstance;
 import org.preesm.model.slam.route.AbstractRouteStep;
 
-// TODO: Auto-generated Javadoc
 /**
  * A transaction that adds a send and a receive vertex in an implementation.
  *
  * @author mpelcat
  */
-public class AddSendReceiveTransaction extends Transaction {
+public class AddSendReceiveTransaction implements Transaction {
   // Inputs
   /** If not null, the transfer vertices need to be chained with formerly added ones. */
-  private Transaction precedingTransaction = null;
+  private final Transaction precedingTransaction;
 
   /** Implementation DAG to which the vertex is added. */
-  private MapperDAG implementation = null;
+  private final MapperDAG implementation;
 
   /** Route step corresponding to this overhead. */
-  private AbstractRouteStep step = null;
+  private final AbstractRouteStep step;
 
   /** Original edge corresponding to this overhead. */
-  private MapperDAGEdge edge = null;
+  private final MapperDAGEdge edge;
 
   /** manager keeping scheduling orders. */
-  private OrderManager orderManager = null;
+  private final OrderManager orderManager;
 
   /** Cost of the transfer to give to the transfer vertex. */
-  private long transferCost = 0;
+  private final long transferCost;
 
   /** Index of the route step within its route. */
-  private int routeIndex = 0;
+  private final int routeIndex;
 
-  // Generated objects
   /** overhead vertex added. */
   private TransferVertex sendVertex = null;
 
   /** The receive vertex. */
   private TransferVertex receiveVertex = null;
-
-  /** edges added. */
-  private MapperDAGEdge newEdge1 = null;
-
-  /** The new edge 2. */
-  private MapperDAGEdge newEdge2 = null;
-
-  /** The new edge 3. */
-  private MapperDAGEdge newEdge3 = null;
 
   /**
    * Instantiates a new adds the send receive transaction.
@@ -137,11 +126,10 @@ public class AddSendReceiveTransaction extends Transaction {
    */
   @Override
   public void execute(final List<Object> resultList) {
-    super.execute(resultList);
 
     MapperDAGVertex currentSource = null;
     final MapperDAGVertex currentTarget = (MapperDAGVertex) this.edge.getTarget();
-    if ((this.precedingTransaction != null) && (this.precedingTransaction instanceof AddSendReceiveTransaction)) {
+    if (this.precedingTransaction instanceof AddSendReceiveTransaction) {
       currentSource = ((AddSendReceiveTransaction) this.precedingTransaction).receiveVertex;
 
       ((MapperDAG) currentSource.getBase()).removeAllEdges(currentSource, currentTarget);
@@ -172,7 +160,7 @@ public class AddSendReceiveTransaction extends Transaction {
     this.sendVertex.setRouteStep(this.step);
     this.implementation.addVertex(this.sendVertex);
     this.sendVertex.getTiming().setCost(this.transferCost);
-    this.sendVertex.setEffectiveOperator(senderOperator);
+    this.sendVertex.setEffectiveComponent(senderOperator);
 
     // Find insertion position
     // Insert sendVertices after the current source, and after sendVertex(es) immediately following it. This is done to
@@ -192,39 +180,31 @@ public class AddSendReceiveTransaction extends Transaction {
     this.receiveVertex.setRouteStep(this.step);
     this.implementation.addVertex(this.receiveVertex);
     this.receiveVertex.getTiming().setCost(this.transferCost);
-    this.receiveVertex.setEffectiveOperator(receiverOperator);
+    this.receiveVertex.setEffectiveComponent(receiverOperator);
 
     // Place the receive just before the vertex consuming the corresponding data.
     // (position is not definitive, cf. reorderReceive method)
     this.orderManager.insertBefore(currentTarget, this.receiveVertex);
 
-    this.newEdge1 = (MapperDAGEdge) this.implementation.addEdge(currentSource, this.sendVertex);
-    this.newEdge2 = (MapperDAGEdge) this.implementation.addEdge(this.sendVertex, this.receiveVertex);
-    this.newEdge3 = (MapperDAGEdge) this.implementation.addEdge(this.receiveVertex, currentTarget);
+    final MapperDAGEdge newEdge1 = (MapperDAGEdge) this.implementation.addEdge(currentSource, this.sendVertex);
+    final MapperDAGEdge newEdge2 = (MapperDAGEdge) this.implementation.addEdge(this.sendVertex, this.receiveVertex);
+    final MapperDAGEdge newEdge3 = (MapperDAGEdge) this.implementation.addEdge(this.receiveVertex, currentTarget);
 
-    this.newEdge1.setInit(this.edge.getInit().copy());
-    this.newEdge2.setInit(this.edge.getInit().copy());
-    this.newEdge3.setInit(this.edge.getInit().copy());
+    newEdge1.setInit(this.edge.getInit().copy());
+    newEdge2.setInit(this.edge.getInit().copy());
+    newEdge3.setInit(this.edge.getInit().copy());
 
-    this.newEdge1.getTiming().setCost(0);
-    this.newEdge2.getTiming().setCost(0);
-    this.newEdge3.getTiming().setCost(0);
+    newEdge1.getTiming().setCost(0);
+    newEdge2.getTiming().setCost(0);
+    newEdge3.getTiming().setCost(0);
 
-    this.newEdge1.setAggregate(this.edge.getAggregate());
-    this.newEdge2.setAggregate(this.edge.getAggregate());
-    this.newEdge3.setAggregate(this.edge.getAggregate());
+    newEdge1.setAggregate(this.edge.getAggregate());
+    newEdge2.setAggregate(this.edge.getAggregate());
+    newEdge3.setAggregate(this.edge.getAggregate());
 
     // Reorder receiveVertex if needed.
     // This is done to ensure that send and receive operation between a pair of cores are always in the same order.
     reorderReceiveVertex(senderOperator, receiverOperator);
-
-    // TODO: Consider the need for transfer vertex rescheduling
-    /*
-     * if (false) { // Remove original edges implementation.removeAllEdges(currentSource, currentTarget); }
-     *
-     * if (false) { // Scheduling transfer vertex PrecedenceEdgeAdder adder = new PrecedenceEdgeAdder(orderManager,
-     * implementation); adder.scheduleVertex(sendVertex); adder.scheduleVertex(receiveVertex); }
-     */
 
     if (resultList != null) {
       resultList.add(this.sendVertex);
@@ -257,8 +237,8 @@ public class AddSendReceiveTransaction extends Transaction {
         .filter(vertex -> (((MapperDAGVertex) this.implementation.incomingEdgesOf(vertex).iterator().next().getSource())
             .getEffectiveOperator()).equals(senderOperator))
         // Keep only those whose sender is scheduled before the current one
-        .filter(vertex -> this.orderManager.totalIndexOf((((MapperDAGVertex) this.implementation.incomingEdgesOf(vertex)
-            .iterator().next().getSource()))) < this.orderManager.totalIndexOf(this.sendVertex));
+        .filter(vertex -> this.orderManager.totalIndexOf(((MapperDAGVertex) this.implementation.incomingEdgesOf(vertex)
+            .iterator().next().getSource())) < this.orderManager.totalIndexOf(this.sendVertex));
 
     // Insert all receiveVertices satisfying previous filters before the current receiveVertex
     verticesOnRecivingOperator2.peek(vertex -> this.orderManager.remove(vertex, true))

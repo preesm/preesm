@@ -35,7 +35,7 @@
 package org.preesm.algorithm.moa.activity;
 
 import java.io.ByteArrayInputStream;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
@@ -131,12 +131,12 @@ public class ActivityExporter extends AbstractTaskImplementation {
     final String msg = "Activity: " + this.activity;
     logger.log(Level.INFO, msg);
 
-    return new HashMap<>();
+    return new LinkedHashMap<>();
   }
 
   @Override
   public Map<String, String> getDefaultParameters() {
-    final Map<String, String> defaultParams = new HashMap<>();
+    final Map<String, String> defaultParams = new LinkedHashMap<>();
     defaultParams.put(ActivityExporter.PATH, "stats/mat/activity");
     defaultParams.put(ActivityExporter.HUMAN_READABLE, "Yes");
     return defaultParams;

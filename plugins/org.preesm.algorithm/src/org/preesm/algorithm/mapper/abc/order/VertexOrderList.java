@@ -43,7 +43,6 @@ import java.util.List;
 import java.util.Map;
 import org.preesm.commons.exceptions.PreesmRuntimeException;
 
-// TODO: Auto-generated Javadoc
 /**
  * Association of a rank and a vertex name to export a graph total ordering.
  *
@@ -56,19 +55,10 @@ public class VertexOrderList {
    */
   public class OrderProperty {
 
-    /** The name. */
     private final String name;
-
-    /** The order. */
-    private final int order;
+    private final int    order;
 
     /**
-     * Instantiates a new order property.
-     *
-     * @param name
-     *          the name
-     * @param order
-     *          the order
      */
     public OrderProperty(final String name, final int order) {
       super();
@@ -76,41 +66,23 @@ public class VertexOrderList {
       this.order = order;
     }
 
-    /**
-     * Gets the name.
-     *
-     * @return the name
-     */
     public String getName() {
       return this.name;
     }
 
-    /**
-     * Gets the order.
-     *
-     * @return the order
-     */
     public int getOrder() {
       return this.order;
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see java.lang.Object#toString()
-     */
     @Override
     public String toString() {
       return this.name;
     }
   }
 
-  // Maintaining a list of the properties for iterating purpose in the given
-  /** The ordered list. */
-  // order
+  // Maintaining a list of the properties for iterating purpose in the given order
   private final List<OrderProperty> orderedList;
 
-  /** The name map. */
   // Maintaining a map of the properties for research purpose of a given name
   private final Map<String, OrderProperty> nameMap;
 
@@ -123,11 +95,6 @@ public class VertexOrderList {
     this.nameMap = new LinkedHashMap<>();
   }
 
-  /**
-   * Elements.
-   *
-   * @return the list
-   */
   public List<OrderProperty> elements() {
     return Collections.unmodifiableList(this.orderedList);
   }
@@ -148,33 +115,15 @@ public class VertexOrderList {
     }
   }
 
-  /**
-   * Contains.
-   *
-   * @param name
-   *          the name
-   * @return true, if successful
-   */
   public boolean contains(final String name) {
     return this.nameMap.containsKey(name);
   }
 
-  /**
-   * Adds the last.
-   *
-   * @param p
-   *          the p
-   */
   public void addLast(final OrderProperty p) {
     this.orderedList.add(p);
     this.nameMap.put(p.getName(), p);
   }
 
-  /**
-   * Gets the ordered list.
-   *
-   * @return the ordered list
-   */
   public List<OrderProperty> getOrderedList() {
     return Collections.unmodifiableList(this.orderedList);
   }

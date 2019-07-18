@@ -45,22 +45,16 @@ import org.preesm.algorithm.mapper.model.MapperDAGVertex;
 import org.preesm.algorithm.mapper.model.special.PrecedenceEdgeAdder;
 import org.preesm.algorithm.model.dag.DAGEdge;
 
-// TODO: Auto-generated Javadoc
 /**
  * A transaction that removes one vertex in an implementation.
  *
  * @author mpelcat
  */
-public class RemoveVertexTransaction extends Transaction {
-  // Inputs
-  /** Implementation DAG from which the vertex is removed. */
-  private MapperDAG implementation = null;
+public class RemoveVertexTransaction implements Transaction {
 
-  /** vertex removed. */
-  private MapperDAGVertex vertex = null;
-
-  /** Order manager. */
-  private OrderManager orderManager = null;
+  private MapperDAG       implementation = null;
+  private MapperDAGVertex vertex         = null;
+  private OrderManager    orderManager   = null;
 
   /**
    * Instantiates a new removes the vertex transaction.
@@ -80,15 +74,8 @@ public class RemoveVertexTransaction extends Transaction {
     this.orderManager = orderManager;
   }
 
-  /*
-   * (non-Javadoc)
-   *
-   * @see org.ietr.preesm.mapper.abc.transaction.Transaction#execute(java.util.List)
-   */
   @Override
   public void execute(final List<Object> resultList) {
-    super.execute(resultList);
-
     // Unscheduling first
     final MapperDAGVertex prev = this.orderManager.getPrevious(this.vertex);
     final MapperDAGVertex next = this.orderManager.getNext(this.vertex);
@@ -122,11 +109,6 @@ public class RemoveVertexTransaction extends Transaction {
     this.implementation.removeVertex(this.vertex);
   }
 
-  /*
-   * (non-Javadoc)
-   *
-   * @see org.ietr.preesm.mapper.abc.transaction.Transaction#toString()
-   */
   @Override
   public String toString() {
     return ("RemoveVertex(" + this.vertex.toString() + ")");

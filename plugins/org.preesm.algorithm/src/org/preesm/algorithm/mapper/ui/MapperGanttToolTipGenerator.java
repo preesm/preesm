@@ -48,12 +48,6 @@ import org.jfree.data.gantt.TaskSeriesCollection;
  */
 public class MapperGanttToolTipGenerator implements CategoryToolTipGenerator {
 
-  /*
-   * (non-Javadoc)
-   *
-   * @see org.jfree.chart.labels.CategoryToolTipGenerator#generateToolTip(org.jfree .data.category.CategoryDataset, int,
-   * int)
-   */
   @Override
   public String generateToolTip(final CategoryDataset set, final int row, final int column) {
 

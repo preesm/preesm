@@ -35,7 +35,7 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL license and that you accept its terms.
  */
-package org.preesm.algorithm.mapper.abc.route;
+package org.preesm.model.slam.route;
 
 import java.util.Comparator;
 import java.util.LinkedHashMap;
@@ -43,9 +43,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentSkipListSet;
 import org.apache.commons.lang3.tuple.MutablePair;
-import org.preesm.model.scenario.Scenario;
 import org.preesm.model.slam.ComponentInstance;
-import org.preesm.model.slam.route.Route;
 
 /**
  * Table representing the different routes available to go from one operator to another.
@@ -160,19 +158,13 @@ public class RoutingTable {
   /** List of available routes. */
   private final Map<OperatorCouple, RouteList> table;
 
-  /** Scenario. */
-  private final Scenario scenario;
-
   /**
    * Instantiates a new routing table.
    *
-   * @param scenario
-   *          the scenario
    */
-  public RoutingTable(final Scenario scenario) {
+  public RoutingTable() {
     super();
     this.table = new LinkedHashMap<>();
-    this.scenario = scenario;
   }
 
   /**
@@ -226,7 +218,8 @@ public class RoutingTable {
    * @param route
    *          the route
    */
-  public void addRoute(final ComponentInstance op1, final ComponentInstance op2, final Route route) {
+  public void addRoute(final ComponentInstance op1, final ComponentInstance op2, final Route route,
+      final long avgSize) {
     OperatorCouple key = null;
     final OperatorCouple opCouple = new OperatorCouple(op1, op2);
     for (final OperatorCouple c : this.table.keySet()) {
@@ -238,7 +231,7 @@ public class RoutingTable {
     if (key != null) {
       list = this.table.get(key);
     } else {
-      list = new RouteList(this.scenario.getSimulationInfo().getAverageDataSize());
+      list = new RouteList(avgSize);
       this.table.put(opCouple, list);
     }
     list.add(route);
