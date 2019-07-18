@@ -29,6 +29,8 @@ addons:
       secure: "7edfa331c5de80bf665aee04f0e9dbcbc3efa122"
 
 script: 
+  - git fetch --unshallow --quiet
+  - if [ "$TRAVIS_BRANCH" != "master" ]; then git fetch --no-tags https://github.com/$TRAVIS_REPO_SLUG.git +refs/heads/master:refs/remotes/origin/master ;fi
   - ./releng/build_and_test.sh --fast
 
 

@@ -15,6 +15,7 @@ PREESM Changelog
   * Refactor legacy scheduler to make it deterministic;
 * Releng:
   * Update jacoco/sonar config;
+  * Update travis/sonar config;
 * PiSDF:
   * Added method to ease regroupment of actors (for clustering process);
   * Refactor Topology helper methods and classes;
