@@ -21,9 +21,7 @@ import org.preesm.model.pisdf.DataOutputInterface;
 import org.preesm.model.pisdf.DataOutputPort;
 import org.preesm.model.pisdf.Dependency;
 import org.preesm.model.pisdf.Fifo;
-import org.preesm.model.pisdf.InterfaceActor;
 import org.preesm.model.pisdf.PiGraph;
-import org.preesm.model.pisdf.Port;
 import org.preesm.model.pisdf.brv.BRVMethod;
 import org.preesm.model.pisdf.brv.PiBRV;
 import org.preesm.model.pisdf.factory.PiMMUserFactory;
@@ -235,7 +233,7 @@ public class ClusteringBuilder {
       for (DataInputPort dip : dipTmp) {
         // We only deport the output if FIFO is not internal
         if (!actorList.contains(dip.getIncomingFifo().getSourcePort().getContainingActor())) {
-          setPortAsHInterface(cluster, dip, "in_" + nbIn++,
+          setDataInputPortAsHInterface(cluster, dip, "in_" + nbIn++,
               dip.getExpression().evaluate() * actorRepetition / clusterRepetition);
         } else {
           cluster.addFifo(dip.getIncomingFifo());
@@ -248,7 +246,7 @@ public class ClusteringBuilder {
       for (DataOutputPort dop : dopTmp) {
         // We only deport the output if FIFO is not internal
         if (!actorList.contains(dop.getOutgoingFifo().getTargetPort().getContainingActor())) {
-          setPortAsHInterface(cluster, dop, "out_" + nbOut++,
+          setDataOutputPortAsHInterface(cluster, dop, "out_" + nbOut++,
               dop.getExpression().evaluate() * actorRepetition / clusterRepetition);
         } else {
           cluster.addFifo(dop.getOutgoingFifo());
@@ -267,26 +265,6 @@ public class ClusteringBuilder {
     }
 
     return cluster;
-  }
-
-  /**
-   * @param newHierarchy
-   *          new hierarchy
-   * @param port
-   *          port to connect outside
-   * @param name
-   *          name of port
-   * @param newExpression
-   *          prod/cons value
-   */
-  private final InterfaceActor setPortAsHInterface(PiGraph newHierarchy, Port port, String name, long newExpression) {
-    if (port instanceof DataInputPort) {
-      return setDataInputPortAsHInterface(newHierarchy, (DataInputPort) port, name, newExpression);
-    } else if (port instanceof DataOutputPort) {
-      return setDataOutputPortAsHInterface(newHierarchy, (DataOutputPort) port, name, newExpression);
-    } else {
-      return null;
-    }
   }
 
   /**
