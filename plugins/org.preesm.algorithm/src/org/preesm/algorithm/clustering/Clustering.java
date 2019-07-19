@@ -26,8 +26,12 @@ import org.preesm.workflow.implement.AbstractTaskImplementation;
     inputs = { @Port(name = "PiMM", type = PiGraph.class) },
     outputs = { @Port(name = "PiMM", type = PiGraph.class), @Port(name = "schedules", type = Map.class) },
     description = "Workflow task responsible for clustering hierarchical actors.",
-    parameters = { @Parameter(name = "Algorithm", values = { @Value(name = "APGAN", effect = ""),
-        @Value(name = "Dummy", effect = ""), @Value(name = "Random", effect = "") }) })
+    parameters = {
+        @Parameter(name = "Algorithm",
+            values = { @Value(name = "APGAN", effect = ""), @Value(name = "Dummy", effect = ""),
+                @Value(name = "Random", effect = "") }),
+        @Parameter(name = "Maximum parallelism depth", description = "Maximum parallelism depth allowed",
+            values = { @Value(name = "$$n\\in \\mathbb{N}^*$$", effect = "Maximum parallelism depth") }) })
 public class Clustering extends AbstractTaskImplementation {
 
   @Override
@@ -36,10 +40,18 @@ public class Clustering extends AbstractTaskImplementation {
     // Retrieve inputs and parameters
     final PiGraph algorithm = (PiGraph) inputs.get("PiMM");
     String clusteringAlgorithm = parameters.get("Algorithm");
+    String depthLimitation = parameters.get("Maximum parallelism depth");
 
     // Instantiate a ClusteringBuilder and process clustering
     ClusteringBuilder clusteringBuilder = new ClusteringBuilder(algorithm, clusteringAlgorithm);
     Map<AbstractActor, Schedule> scheduleMapping = clusteringBuilder.processClustering();
+
+    if (depthLimitation != null) {
+      // Perform parallelism depth limitation
+      for (Schedule schedule : scheduleMapping.values()) {
+        ClusteringHelper.limitParallelismDepth(schedule, Long.parseLong(depthLimitation));
+      }
+    }
 
     // Print corresponding schedule to console
     for (Entry<AbstractActor, Schedule> clusterSet : scheduleMapping.entrySet()) {
