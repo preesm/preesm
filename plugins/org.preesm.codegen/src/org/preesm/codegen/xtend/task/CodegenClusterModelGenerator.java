@@ -5,7 +5,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
-import java.util.stream.Collectors;
 import org.preesm.codegen.model.Block;
 import org.preesm.codegen.model.Buffer;
 import org.preesm.codegen.model.ClusterBlock;
@@ -256,8 +255,7 @@ public class CodegenClusterModelGenerator {
       // Associate argument with buffer
       for (FunctionArgument a : arguments) {
         // Search for the corresponding port into actor ports list
-        Port associatedPort = actor.getAllPorts().stream().filter(x -> x.getName().contentEquals(a.getName()))
-            .collect(Collectors.toList()).get(0);
+        Port associatedPort = actor.lookupPort(a.getName());
 
         if (associatedPort instanceof ConfigInputPort) {
           addConfigInputPortParameter(functionCall, actor, (ConfigInputPort) associatedPort, a);
@@ -281,8 +279,7 @@ public class CodegenClusterModelGenerator {
       // Associate argument with buffer
       for (FunctionArgument a : arguments) {
         // Search for the corresponding port into actor ports list
-        Port associatedPort = actor.getAllPorts().stream().filter(x -> x.getName().contentEquals(a.getName()))
-            .collect(Collectors.toList()).get(0);
+        Port associatedPort = actor.lookupPort(a.getName());
 
         if (associatedPort instanceof DataPort) {
           addDataPortParameter(functionCall, actor, (DataPort) associatedPort, a);
