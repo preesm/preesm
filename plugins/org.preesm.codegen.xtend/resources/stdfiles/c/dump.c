@@ -146,10 +146,13 @@ void writeTime(uint64_t* dumpBuffer, int nbDump, int* nbExec) {
 
 	for (i = 0; i < nbDump/2; i++) {
 		//fprintf(stderr, "nbExec[%d]: %d\n", i, nbExec[i]);
-		double nbEx = (double) nbExec[i];
+		int nbEx = nbExec[i];
 		double res;
-		nbEx = (nbEx != 0) ? 1/nbEx : 0;
-		res = getElapsedNanoSec(dumpBuffer+i*2, dumpBuffer+i*2+1) * nbEx;
+		if (nbExec == 0) {
+			res = 0.0;
+		} else {
+			res = getElapsedNanoSec(dumpBuffer+i*2, dumpBuffer+i*2+1) / nbEx;
+		}
 		fprintf(ptfile, "%.0lf;", res);
 	}
 	fprintf(ptfile, "\n");

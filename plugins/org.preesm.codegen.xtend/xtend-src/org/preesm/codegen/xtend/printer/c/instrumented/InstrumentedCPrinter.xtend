@@ -164,7 +164,6 @@ class InstrumentedCPrinter extends CPrinter {
 
 				if (elt instanceof ActorFunctionCall) {
 					val ovp = elt.originalVertexPath
-					System.err.println("Firing of: " + functionID + " >>> " + ovp  /*elt.getClass()*/)
 
 					// Do the pre insertion
 					val preDumpCall = CodegenFactory.eINSTANCE.createFunctionCall
@@ -298,24 +297,25 @@ class InstrumentedCPrinter extends CPrinter {
 
 	def String printAnalysisCsvFile()'''
 	«FOR entry : actorIDs.entrySet»
-	«entry.key»;"=MROUND(AVERAGE(«FOR id : entry.value SEPARATOR ';'»«(id).intToColumn»«actorIDs.size + 3»:«(id).intToColumn»65536«ENDFOR»);10)"
+	// Or MROUND(AVERGAE(...);10)
+	«entry.key»;"=AVERAGE(«FOR id : entry.value SEPARATOR ';'»«(id+1).intToColumn»«actorIDs.size + 3»:«(id+1).intToColumn»65536«ENDFOR»)"
 	«ENDFOR»
 	'''
 
 	/**
 	 * Returns corresponding number in the base of the 26 letters A-Z.
-	 * Starts from 0 (returns A).
+	 * Starts from 1 (returns A).
 	 */
 	def String intToColumn(int i){
-		if (i < 0) {
-			throw new PreesmRuntimeException ("Invalid negative argument.")
+		if (i <= 0) {
+			throw new PreesmRuntimeException ("Invalid non strictly positive argument.")
 		}
 		val alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
 		var result = ""
 		var digit = 0
 		var rest = i
 		do {
-			digit = rest % 26
+			digit = (rest-1) % 26
 			rest = (rest-digit) / 26
 			result = alphabet.charAt(digit) + result
 		} while (rest > 0)
