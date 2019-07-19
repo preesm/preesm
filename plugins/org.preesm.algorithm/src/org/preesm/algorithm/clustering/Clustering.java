@@ -45,6 +45,8 @@ public class Clustering extends AbstractTaskImplementation {
     for (Entry<AbstractActor, Schedule> clusterSet : scheduleMapping.entrySet()) {
       PreesmLogger.getLogger().log(Level.INFO, "Schedule for cluster " + clusterSet.getKey().getName() + ":");
       PreesmLogger.getLogger().log(Level.INFO, clusterSet.getValue().shortPrint());
+      PreesmLogger.getLogger().log(Level.INFO,
+          "has a parallelism depth of " + ClusteringHelper.getParallelismDepth(clusterSet.getValue(), 0));
     }
 
     // Output PiSDF and Schedule Mapping attachment
