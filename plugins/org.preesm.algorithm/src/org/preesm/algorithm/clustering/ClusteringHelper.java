@@ -42,6 +42,7 @@ import org.apache.commons.math3.util.ArithmeticUtils;
 import org.eclipse.emf.common.util.ECollections;
 import org.eclipse.emf.common.util.EList;
 import org.preesm.algorithm.schedule.model.HierarchicalSchedule;
+import org.preesm.algorithm.schedule.model.ParallelSchedule;
 import org.preesm.algorithm.schedule.model.Schedule;
 import org.preesm.algorithm.schedule.model.SequentialActorSchedule;
 import org.preesm.commons.exceptions.PreesmRuntimeException;
@@ -151,6 +152,35 @@ public class ClusteringHelper {
       return true;
     }
     return false;
+  }
+
+  /**
+   * @param schedule
+   *          schedule to analyze
+   * @param iterator
+   *          iterator to exploration counter on
+   * @return depth of parallelism
+   */
+  public static final long getParallelismDepth(Schedule schedule, long iterator) {
+
+    if (schedule instanceof HierarchicalSchedule) {
+      HierarchicalSchedule hierSchedule = (HierarchicalSchedule) schedule;
+      long maxDepth = iterator;
+      long tmpIterator = iterator;
+      for (Schedule child : hierSchedule.getChildren()) {
+        tmpIterator = getParallelismDepth(child, iterator);
+        if (tmpIterator > maxDepth) {
+          maxDepth = tmpIterator;
+        }
+      }
+      iterator = maxDepth;
+    }
+
+    if (schedule instanceof ParallelSchedule) {
+      iterator++;
+    }
+
+    return iterator;
   }
 
 }
