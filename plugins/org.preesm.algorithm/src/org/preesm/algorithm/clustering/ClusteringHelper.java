@@ -41,10 +41,13 @@ import java.util.Map;
 import org.apache.commons.math3.util.ArithmeticUtils;
 import org.eclipse.emf.common.util.ECollections;
 import org.eclipse.emf.common.util.EList;
+import org.preesm.algorithm.schedule.model.ActorSchedule;
 import org.preesm.algorithm.schedule.model.HierarchicalSchedule;
 import org.preesm.algorithm.schedule.model.ParallelSchedule;
 import org.preesm.algorithm.schedule.model.Schedule;
+import org.preesm.algorithm.schedule.model.ScheduleFactory;
 import org.preesm.algorithm.schedule.model.SequentialActorSchedule;
+import org.preesm.algorithm.schedule.model.SequentialHiearchicalSchedule;
 import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.AbstractVertex;
@@ -181,6 +184,69 @@ public class ClusteringHelper {
     }
 
     return iterator;
+  }
+
+  /**
+   * @param schedule
+   *          schedule to rework
+   * @param depthTarget
+   *          depth target
+   * @return reworked schedule
+   */
+  public static final boolean limitParallelismDepth(Schedule schedule, long depthTarget) {
+    // Check if limitation has to be performed
+    if (getParallelismDepth(schedule, 0) <= depthTarget) {
+      return false;
+    }
+
+    // Perform limitation
+    setParallelismDepth(schedule, 0, depthTarget);
+
+    return true;
+  }
+
+  /**
+   * @param schedule
+   *          schedule to analyze
+   * @param iterator
+   *          iterator to exploration counter on
+   * @return reworked schedule
+   */
+  public static final Schedule setParallelismDepth(Schedule schedule, long iterator, long depthTarget) {
+
+    // Parallel schedule? Increment iterator because of new parallel layer
+    if (schedule instanceof ParallelSchedule) {
+      iterator++;
+    }
+
+    // Explore and replace children
+    if (schedule instanceof HierarchicalSchedule) {
+      HierarchicalSchedule hierSchedule = (HierarchicalSchedule) schedule;
+      int i = 0;
+      for (Schedule child : hierSchedule.getChildren()) {
+        hierSchedule.getChildren().set(i, setParallelismDepth(child, iterator, depthTarget));
+        i++;
+      }
+    }
+
+    // Rework if parallel is below the depth target
+    if ((schedule instanceof ParallelSchedule) && (iterator > depthTarget)) {
+      if (schedule instanceof HierarchicalSchedule) {
+        SequentialHiearchicalSchedule sequenceSchedule = ScheduleFactory.eINSTANCE
+            .createSequentialHiearchicalSchedule();
+        sequenceSchedule.setAttachedActor(((HierarchicalSchedule) schedule).getAttachedActor());
+        sequenceSchedule.setRepetition(schedule.getRepetition());
+        sequenceSchedule.getChildren().addAll(schedule.getChildren());
+        return sequenceSchedule;
+      } else if (schedule instanceof ActorSchedule) {
+        SequentialActorSchedule actorSchedule = ScheduleFactory.eINSTANCE.createSequentialActorSchedule();
+        actorSchedule.setRepetition(schedule.getRepetition());
+        actorSchedule.getActors().addAll(((ActorSchedule) schedule).getActors());
+        return actorSchedule;
+      }
+    }
+
+    return schedule;
   }
 
 }
