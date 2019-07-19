@@ -4,13 +4,12 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import org.apache.commons.lang3.tuple.Pair;
 import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.preesm.model.algorithm.schedule.ActorSchedule;
 import org.preesm.model.algorithm.schedule.HierarchicalSchedule;
-import org.preesm.model.algorithm.schedule.ParallelActorSchedule;
 import org.preesm.model.algorithm.schedule.Schedule;
 import org.preesm.model.algorithm.schedule.ScheduleFactory;
-import org.preesm.model.algorithm.schedule.SequentialActorSchedule;
 import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.AbstractVertex;
 import org.preesm.model.pisdf.ConfigInputInterface;
@@ -75,9 +74,9 @@ public class ClusteringBuilder {
       // Compute BRV with the corresponding graph
       repetitionVector = PiBRV.compute(algorithm, BRVMethod.LCM);
       // Search actors to clusterize
-      ActorSchedule actorSchedule = clusteringAlgorithm.findActors(this);
+      Pair<ScheduleType, List<AbstractActor>> actorFound = clusteringAlgorithm.findActors(this);
       // Clusterize given actors
-      clusterizeActors(actorSchedule);
+      clusterizeActors(actorFound);
     }
 
     // Verify consistency of result graph
@@ -112,13 +111,13 @@ public class ClusteringBuilder {
    *          schedule of actor inside of cluster
    * @return
    */
-  private final void clusterizeActors(ActorSchedule actorSchedule) {
+  private final void clusterizeActors(Pair<ScheduleType, List<AbstractActor>> actorFound) {
 
     // Build corresponding hierarchical actor
-    AbstractActor cluster = buildClusterGraph(actorSchedule.getOrderedActors());
+    AbstractActor cluster = buildClusterGraph(actorFound.getValue());
 
     // Build corresponding hierarchical schedule
-    HierarchicalSchedule schedule = buildHierarchicalSchedule(actorSchedule);
+    HierarchicalSchedule schedule = buildHierarchicalSchedule(actorFound);
 
     // Attach cluster to hierarchical schedule
     schedule.setAttachedActor(cluster);
@@ -128,7 +127,7 @@ public class ClusteringBuilder {
   }
 
   /**
-   * @param actorSchedule
+   * @param actorFound
    *          schedule of actor to add to the hierarchical schedule
    * @param repetitionVector
    *          repetition vector corresponding to the graph
@@ -136,20 +135,23 @@ public class ClusteringBuilder {
    *          scheduling mapping of current clustering process
    * @return hierarchical schedule created
    */
-  private final HierarchicalSchedule buildHierarchicalSchedule(ActorSchedule actorSchedule) {
+  private final HierarchicalSchedule buildHierarchicalSchedule(Pair<ScheduleType, List<AbstractActor>> actorFound) {
 
     // Create parallel or sequential schedule
     HierarchicalSchedule schedule = null;
-    if (actorSchedule instanceof ParallelActorSchedule) {
-      schedule = ScheduleFactory.eINSTANCE.createParallelHiearchicalSchedule();
-    } else if (actorSchedule instanceof SequentialActorSchedule) {
-      schedule = ScheduleFactory.eINSTANCE.createSequentialHiearchicalSchedule();
-    } else {
-      throw new PreesmRuntimeException("ClusteringHelper: Cannot create schedule for unknown actor schedule");
+    switch (actorFound.getKey()) {
+      case Sequential:
+        schedule = ScheduleFactory.eINSTANCE.createSequentialHiearchicalSchedule();
+        break;
+      case Parallel:
+        schedule = ScheduleFactory.eINSTANCE.createParallelHiearchicalSchedule();
+        break;
+      default:
+        throw new PreesmRuntimeException("ClusteringBuilder: Unknown type of schedule");
     }
 
     // Retrieve actor list
-    List<AbstractActor> actorList = actorSchedule.getOrderedActors();
+    List<AbstractActor> actorList = actorFound.getValue();
 
     // Compute rvCluster
     long clusterRepetition = ClusteringHelper.computeGcdRepetition(actorList, repetitionVector);

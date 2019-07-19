@@ -1,13 +1,12 @@
 package org.preesm.algorithm.clustering;
 
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.commons.math3.util.ArithmeticUtils;
 import org.preesm.commons.exceptions.PreesmRuntimeException;
-import org.preesm.model.algorithm.schedule.ActorSchedule;
-import org.preesm.model.algorithm.schedule.ScheduleFactory;
-import org.preesm.model.algorithm.schedule.SequentialActorSchedule;
 import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.AbstractVertex;
 import org.preesm.model.pisdf.util.PiSDFMergeabilty;
@@ -19,7 +18,7 @@ import org.preesm.model.pisdf.util.PiSDFMergeabilty;
 public class APGANClusteringAlgorithm implements IClusteringAlgorithm {
 
   @Override
-  public ActorSchedule findActors(ClusteringBuilder clusteringBuilder) {
+  public Pair<ScheduleType, List<AbstractActor>> findActors(ClusteringBuilder clusteringBuilder) {
     // Get list of mergeable couple
     List<Pair<AbstractActor, AbstractActor>> listCouple = PiSDFMergeabilty
         .getConnectedCouple(clusteringBuilder.getAlgorithm());
@@ -43,12 +42,12 @@ public class APGANClusteringAlgorithm implements IClusteringAlgorithm {
       throw new PreesmRuntimeException("APGANClusteringAlgorithm: Cannot find a couple to work on");
     }
 
-    // Build corresponding sequential schedule
-    SequentialActorSchedule schedule = ScheduleFactory.eINSTANCE.createSequentialActorSchedule();
-    schedule.getOrderedActors().add(maxCouple.getLeft());
-    schedule.getOrderedActors().add(maxCouple.getRight());
+    // Build corresponding actor list
+    List<AbstractActor> actorsList = new LinkedList<>();
+    actorsList.add(maxCouple.getLeft());
+    actorsList.add(maxCouple.getRight());
 
-    return schedule;
+    return new ImmutablePair<>(ScheduleType.Sequential, actorsList);
   }
 
   @Override

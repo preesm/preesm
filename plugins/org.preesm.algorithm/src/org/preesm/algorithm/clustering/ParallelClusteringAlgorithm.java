@@ -3,10 +3,9 @@ package org.preesm.algorithm.clustering;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.Collectors;
+import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
 import org.preesm.commons.exceptions.PreesmRuntimeException;
-import org.preesm.model.algorithm.schedule.ActorSchedule;
-import org.preesm.model.algorithm.schedule.ScheduleFactory;
 import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.DataInputPort;
 import org.preesm.model.pisdf.DataOutputPort;
@@ -43,7 +42,7 @@ public class ParallelClusteringAlgorithm implements IClusteringAlgorithm {
   }
 
   @Override
-  public ActorSchedule findActors(ClusteringBuilder clusteringBuilder) {
+  public Pair<ScheduleType, List<AbstractActor>> findActors(ClusteringBuilder clusteringBuilder) {
 
     // Clustering state variable
     ClusteringState clusteringState = ClusteringState.SEQUENCE_FIRST;
@@ -103,25 +102,25 @@ public class ParallelClusteringAlgorithm implements IClusteringAlgorithm {
     }
 
     // Build corresponding actor schedule
-    ActorSchedule schedule = null;
+    List<AbstractActor> actorsList = new LinkedList<>();
+    ScheduleType scheduleType = null;
     switch (clusteringState) {
       case PARALLEL_PASS:
-        schedule = ScheduleFactory.eINSTANCE.createParallelActorSchedule();
-        schedule.getOrderedActors().addAll(listParallel.get(0));
+        scheduleType = ScheduleType.Parallel;
+        actorsList.addAll(listParallel.get(0));
         break;
       case SEQUENCE_FIRST:
-        schedule = ScheduleFactory.eINSTANCE.createSequentialActorSchedule();
-        schedule.getOrderedActors().add(listCouple.get(0).getLeft());
-        schedule.getOrderedActors().add(listCouple.get(0).getRight());
+        scheduleType = ScheduleType.Sequential;
+        actorsList.add(listCouple.get(0).getLeft());
+        actorsList.add(listCouple.get(0).getRight());
         break;
       case SEQUENCE_FINAL:
-        schedule = secondHandAlgorithm.findActors(clusteringBuilder);
-        break;
+        return secondHandAlgorithm.findActors(clusteringBuilder);
       default:
         throw new PreesmRuntimeException("ParallelClustering: Unexepected clustering state");
     }
 
-    return schedule;
+    return new ImmutablePair<>(scheduleType, actorsList);
   }
 
   @Override
