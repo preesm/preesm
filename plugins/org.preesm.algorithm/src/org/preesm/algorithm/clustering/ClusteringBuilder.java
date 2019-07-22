@@ -113,10 +113,15 @@ public class ClusteringBuilder {
       }
 
       // Explore childrens
+      int i = 0;
       for (Schedule child : schedule.getChildren()) {
-        schedule.getChildren().set(schedule.getChildren().indexOf(child), performDataParallelismExhibition(child));
+        int indexOfChild = schedule.getChildren().indexOf(child);
+        Schedule newSched = performDataParallelismExhibition(child);
+        if (!schedule.getChildren().contains(newSched)) {
+          schedule.getChildren().add(newSched);
+          schedule.getChildren().move(indexOfChild, schedule.getChildren().indexOf(newSched));
+        }
       }
-
     }
 
     return schedule;
@@ -226,7 +231,7 @@ public class ClusteringBuilder {
         actorSchedule = ScheduleFactory.eINSTANCE.createParallelActorSchedule();
       }
       actorSchedule.setRepetition(repetition);
-      actorSchedule.getActors().add(actor);
+      actorSchedule.getActorList().add(actor);
       schedule.getScheduleTree().add(actorSchedule);
     }
   }
