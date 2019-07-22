@@ -107,7 +107,7 @@ public class CodegenClusterModelGenerator {
     // Print cluster into operatorBlock
     operatorBlock.getLoopBlock().getCodeElts().add(buildClusterBlockRec(schedule));
     // Add internal buffer definition
-    operatorBlock.getDefinitions().addAll(internalBufferMap.values());
+    // operatorBlock.getDefinitions().addAll(internalBufferMap.values());
     // Print memory consumption of the cluster
     PreesmLogger.getLogger().log(Level.INFO,
         "Memory allocation for cluster " + graph.getName() + ": " + computeMemorySize() + " bytes");
@@ -168,7 +168,7 @@ public class CodegenClusterModelGenerator {
     }
 
     // Make memory allocation for internal buffer
-    buildInternalClusterBuffer(cluster);
+    clusterBlock.getDefinitions().addAll(buildInternalClusterBuffer(cluster));
     // Make memory allocation for external buffer i.e. fifo that goes outside of the hierarchical actor of the cluster
     buildExternalClusterBuffer(cluster);
 
