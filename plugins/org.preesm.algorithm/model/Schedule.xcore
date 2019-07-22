@@ -45,10 +45,9 @@
 @Ecore(nsURI="http://org.preesm/algos/schedule")
 package org.preesm.model.algorithm.schedule
 
-import org.preesm.model.pisdf.AbstractActor
 import org.eclipse.emf.common.util.ECollections
+import org.preesm.model.pisdf.AbstractActor
 import org.preesm.model.pisdf.SpecialActor
-import org.preesm.model.slam.Dma
 import org.preesm.model.slam.ComponentInstance
 
 // !!! This is needed as of the current versions of xcore/xtext
@@ -108,9 +107,23 @@ interface Schedule {
 	 */
 	op boolean isParallel()
 	/*
+	 * Returns whether there is data parallelism (i.e. the same processing is done on different chunks
+	 * of data).
+	 */
+	op boolean isDataParallel() {
+		return isParallel && repetition > 1
+	}
+	/*
 	 * returns a String representing the schedule informally.
 	 */
 	op String shortPrint()
+	/*
+	 * Return true if the schedule is linked with an actor. This is the case when applying clustering, where
+	 * the attached actor of a HierarchicalSchedule is the clustered subraph.
+	 */
+	op boolean hasAttachedActor() {
+		return false
+	}
 }
 
 /*
@@ -150,6 +163,9 @@ interface HierarchicalSchedule extends Schedule {
 	 * For instance, when clustering, it can refer the corresponding subgraph.
 	 */
 	refers AbstractActor attachedActor
+	op boolean hasAttachedActor() {
+		return attachedActor !== null
+	}
 	contains Schedule[] scheduleTree
 	op Schedule[] getChildren() {
 		return scheduleTree
