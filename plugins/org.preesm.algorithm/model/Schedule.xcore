@@ -178,9 +178,14 @@ interface HierarchicalSchedule extends Schedule {
  * There is no hypothesis on the order on the execution of its children.
  */
 interface ActorSchedule extends Schedule {
-	// this Map associate for every actor a virtual 'execution date'.
-	// All dates should be different to define a total order.
-	refers AbstractActor[] actors
+	/* list of actors to execute in this schedule.
+	 * The list may be ordered if {@link #isParallel} returns true.
+	 */
+	refers AbstractActor[] actorList
+
+	op AbstractActor[] getActors() {
+		return actorList.unmodifiableEList
+	}
 
 	op String shortPrint() {
 		val StringBuilder toPrint = new StringBuilder()
