@@ -4,12 +4,15 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import org.apache.commons.lang3.tuple.Pair;
 import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.preesm.model.algorithm.schedule.ActorSchedule;
 import org.preesm.model.algorithm.schedule.HierarchicalSchedule;
+import org.preesm.model.algorithm.schedule.ParallelHiearchicalSchedule;
 import org.preesm.model.algorithm.schedule.Schedule;
 import org.preesm.model.algorithm.schedule.ScheduleFactory;
+import org.preesm.model.algorithm.schedule.SequentialHiearchicalSchedule;
 import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.AbstractVertex;
 import org.preesm.model.pisdf.ConfigInputInterface;
@@ -79,10 +82,44 @@ public class ClusteringBuilder {
       clusterizeActors(actorFound);
     }
 
+    // Exhibit data parallelism
+    exhibitDataParallelism();
+
     // Verify consistency of result graph
     PiGraphConsistenceChecker.check(algorithm);
 
     return scheduleMapping;
+  }
+
+  private final void exhibitDataParallelism() {
+    for (Entry<AbstractActor, Schedule> entry : scheduleMapping.entrySet()) {
+      Schedule schedule = entry.getValue();
+      schedule = performDataParallelismExhibition(schedule);
+      scheduleMapping.replace(entry.getKey(), schedule);
+    }
+  }
+
+  private final Schedule performDataParallelismExhibition(Schedule schedule) {
+
+    if (schedule instanceof SequentialHiearchicalSchedule) {
+
+      // if data parallelism can be exhibited
+      if ((schedule.getRepetition() > 1) && !ClusteringHelper.isSequentialActorScheduleInside(schedule)) {
+        ParallelHiearchicalSchedule parallelSchedule = ScheduleFactory.eINSTANCE.createParallelHiearchicalSchedule();
+        parallelSchedule.setRepetition(schedule.getRepetition());
+        schedule.setRepetition(1);
+        parallelSchedule.getChildren().add(schedule);
+        return parallelSchedule;
+      }
+
+      // Explore childrens
+      for (Schedule child : schedule.getChildren()) {
+        schedule.getChildren().set(schedule.getChildren().indexOf(child), performDataParallelismExhibition(child));
+      }
+
+    }
+
+    return schedule;
   }
 
   private final IClusteringAlgorithm clusteringAlgorithmFactory(String clusteringAlgorithm) {
