@@ -49,6 +49,7 @@ import org.eclipse.emf.common.util.ECollections
 import org.preesm.model.pisdf.AbstractActor
 import org.preesm.model.pisdf.SpecialActor
 import org.preesm.model.slam.ComponentInstance
+import org.preesm.model.pisdf.Fifo
 
 // !!! This is needed as of the current versions of xcore/xtext
 // For some reason when using the default String/... (i.e. without the following)
@@ -289,7 +290,7 @@ class StagedHiearchicalSchedule extends SequentialHiearchicalSchedule {
 }
 
 interface CommunicationActor extends SpecialActor {
-
+	refers Fifo fifo
 }
 
 class SendActor extends CommunicationActor {
