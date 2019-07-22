@@ -61,10 +61,11 @@ import org.preesm.model.slam.utils.LexicographicComponentInstanceComparator;
 public class SimpleScheduler extends AbstractScheduler {
 
   @Override
-  protected SchedulerResult exec(final PiGraph piGraph, final Design slamDesign, final Scenario scenario) {
+  protected SchedulerResult exec(final PiGraph piGraph /* SRDAG */, final Design slamDesign, final Scenario scenario) {
 
     final HierarchicalSchedule topParallelSchedule = ScheduleFactory.eINSTANCE.createParallelHiearchicalSchedule();
     final Mapping createMapping = MappingFactory.eINSTANCE.createMapping();
+
     final Map<ComponentInstance, ActorSchedule> cmpSchedules = new LinkedHashMap<>();
 
     final List<AbstractActor> allActors = piGraph.getAllActors();
@@ -86,7 +87,7 @@ public class SimpleScheduler extends AbstractScheduler {
     final int span = topParallelSchedule.getSpan();
     PreesmLogger.getLogger().log(Level.INFO, "span = " + span);
 
-    return new SchedulerResult(createMapping, topParallelSchedule);
+    return new SchedulerResult(createMapping, topParallelSchedule, null);
   }
 
 }

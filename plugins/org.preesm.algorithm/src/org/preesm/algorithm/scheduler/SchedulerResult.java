@@ -37,6 +37,7 @@ package org.preesm.algorithm.scheduler;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.preesm.model.algorithm.mapping.Mapping;
+import org.preesm.model.algorithm.memalloc.Allocation;
 import org.preesm.model.algorithm.schedule.HierarchicalSchedule;
 import org.preesm.model.algorithm.schedule.Schedule;
 import org.preesm.model.pisdf.AbstractActor;
@@ -45,12 +46,17 @@ import org.preesm.model.pisdf.AbstractActor;
  *
  */
 public class SchedulerResult {
-  public final Mapping  mapping;
-  public final Schedule schedule;
+  public final Mapping    mapping;
+  public final Allocation alloc;
+  public final Schedule   schedule;
 
-  public SchedulerResult(final Mapping mapping, final Schedule schedule) {
+  /**
+   *
+   */
+  public SchedulerResult(final Mapping mapping, final Schedule schedule, final Allocation alloc) {
     this.mapping = mapping;
     this.schedule = schedule;
+    this.alloc = alloc;
   }
 
   @Override
