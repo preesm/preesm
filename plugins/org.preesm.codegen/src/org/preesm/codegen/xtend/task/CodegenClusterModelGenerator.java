@@ -117,8 +117,12 @@ public class CodegenClusterModelGenerator {
     Block outputBlock = null;
 
     if (schedule instanceof HierarchicalSchedule) {
-      // If it's a sequential schedule i.e. cluster, fill information for ClusterBlock
-      outputBlock = buildClusterBlock(schedule);
+      if (schedule.isDataParallel() && !schedule.hasAttachedActor()) {
+        outputBlock = buildDataParallelismBlock(schedule);
+      } else {
+        // If it's a sequential schedule i.e. cluster, fill information for ClusterBlock
+        outputBlock = buildClusterBlock(schedule);
+      }
     } else if (schedule instanceof ActorSchedule) {
       // If it's an actor firing, fill information for FunctionCall
       outputBlock = buildActorCall((ActorSchedule) schedule);
@@ -133,6 +137,26 @@ public class CodegenClusterModelGenerator {
       size += buffer.getSize();
     }
     return size;
+  }
+
+  private final Block buildDataParallelismBlock(Schedule schedule) {
+    // Retrieve cluster from children hierarchical schedule
+    HierarchicalSchedule childrenSchedule = (HierarchicalSchedule) schedule.getChildren().get(0);
+    PiGraph cluster = (PiGraph) childrenSchedule.getAttachedActor();
+    // Build FiniteLoopBlock
+    FiniteLoopBlock flb = CodegenFactory.eINSTANCE.createFiniteLoopBlock();
+    IntVar iterator = CodegenFactory.eINSTANCE.createIntVar();
+    iterator.setName("index_" + cluster.getName());
+    // Register the iteration var for that specific actor/cluster
+    iterMap.put(cluster, iterator);
+    flb.setIter(iterator);
+    flb.setNbIter((int) schedule.getRepetition());
+    // Insert ClusterBlock inside FinitLoopBlock
+    flb.getCodeElts().add(buildClusterBlockRec(childrenSchedule));
+    // Set the loop parallelizable if needed
+    flb.setParallel(true);
+    // Output the FiniteLoopBlock incorporating the ClusterBlock
+    return flb;
   }
 
   private final Block buildClusterBlock(Schedule schedule) {
@@ -156,10 +180,10 @@ public class CodegenClusterModelGenerator {
       iterMap.put(cluster, iterator);
       flb.setIter(iterator);
       flb.setNbIter((int) schedule.getRepetition());
-      // Insert ClusterBlock inside FinitLoopBlock
+      // Insert ClusterBlock inside FiniteLoopBlock
       flb.getCodeElts().add(clusterBlock);
-      // Set the loop parallelizable if needed
-      flb.setParallel(schedule.isParallel());
+      // Disable loop parallelism
+      flb.setParallel(false);
       // Output the FiniteLoopBlock incorporating the ClusterBlock
       outputBlock = flb;
     } else {
