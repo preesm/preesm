@@ -240,9 +240,6 @@ public class CodegenModelGenerator extends AbstractCodegenModelGenerator {
    */
   protected final List<EList<PapiEvent>> configsAdded;
 
-  /** The flag to activate PAPIFY instrumentation. */
-  private boolean papifyActive;
-
   /**
    * Constructor of the {@link CodegenModelGenerator}. The constructor performs verification to ensure that the inputs
    * are valid:

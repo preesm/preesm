@@ -31,7 +31,8 @@ PREESM Changelog
   * Refactor Topology helper methods and classes;
 
 ### Bug fix
-
+* PAPIFY:
+  * Fix PAPIFY code generation
 
 ## Release version 3.12.0
 *2019.07.11*
