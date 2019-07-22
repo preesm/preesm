@@ -241,7 +241,7 @@ public class ClusteringHelper {
       } else if (schedule instanceof ActorSchedule) {
         SequentialActorSchedule actorSchedule = ScheduleFactory.eINSTANCE.createSequentialActorSchedule();
         actorSchedule.setRepetition(schedule.getRepetition());
-        actorSchedule.getActors().addAll(((ActorSchedule) schedule).getActors());
+        actorSchedule.getActorList().addAll(((ActorSchedule) schedule).getActors());
         return actorSchedule;
       }
     }
