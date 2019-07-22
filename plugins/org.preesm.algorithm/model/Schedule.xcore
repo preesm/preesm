@@ -85,10 +85,12 @@ interface Schedule {
 		return ECollections.emptyEList
 	}
 	/*
-	 * Return the list of all the actors contained by this schedule and all of its children
+	 * Return the list of all the actors contained by this schedule and all of its children.
+	 *
+	 * This list is unmodifiable.
 	 */
 	op AbstractActor[] getActors() {
-		return children.map[it.actors].flatten.asEList
+		return children.map[it.actors].flatten.asEList.unmodifiableEList
 	}
 	/*
 	 * Returns the number of extra top iterations this schedule can cross. It is used to
