@@ -699,6 +699,14 @@ public abstract class CodegenAbstractPrinter extends CodegenSwitch<CharSequence>
       hasNewLine = false;
     }
 
+    final EList<Variable> variables = clusterBlock.getDefinitions();
+    for (final Variable variable : variables) {
+      if (variable instanceof Buffer) {
+        final CharSequence code = printBufferDefinition((Buffer) variable);
+        result.append(code, indentation);
+      }
+    }
+
     // Visit all codeElements
     final EList<CodeElt> codeElts = clusterBlock.getCodeElts();
     for (final CodeElt codeElt : codeElts) {
