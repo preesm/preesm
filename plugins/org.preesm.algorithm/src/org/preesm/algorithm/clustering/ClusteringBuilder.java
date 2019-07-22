@@ -2,6 +2,7 @@ package org.preesm.algorithm.clustering;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -113,9 +114,10 @@ public class ClusteringBuilder {
       }
 
       // Explore childrens
-      int i = 0;
-      for (Schedule child : schedule.getChildren()) {
-        int indexOfChild = schedule.getChildren().indexOf(child);
+      List<Schedule> listActor = new LinkedList<>();
+      listActor.addAll(schedule.getChildren());
+      for (Schedule child : listActor) {
+        int indexOfChild = listActor.indexOf(child);
         Schedule newSched = performDataParallelismExhibition(child);
         if (!schedule.getChildren().contains(newSched)) {
           schedule.getChildren().add(newSched);
