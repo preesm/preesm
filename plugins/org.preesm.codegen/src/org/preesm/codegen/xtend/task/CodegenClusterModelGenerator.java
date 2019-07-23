@@ -97,7 +97,7 @@ public class CodegenClusterModelGenerator {
     this.iterMap = new HashMap<>();
     this.outsideFetcher = outsideFetcher;
     this.fetcherMap = fetcherMap;
-    this.repVector = null;
+    this.repVector = null;str
   }
 
   private final void addConfigInputPortArgument(final FunctionCall functionCall, final ConfigInputPort port,
@@ -229,17 +229,17 @@ public class CodegenClusterModelGenerator {
       // If it's a parallel schedule, print section
       if (schedule.isParallel()) {
         final SectionBlock sectionBlock = CodegenFactory.eINSTANCE.createSectionBlock();
-        sectionBlock.getCodeElts().add(buildClusterBlockRec(e));
+        sectionBlock.getCodeElts().add(buildBlockFrom(e));
         clusterBlock.getCodeElts().add(sectionBlock);
       } else {
-        clusterBlock.getCodeElts().add(buildClusterBlockRec(e));
+        clusterBlock.getCodeElts().add(buildBlockFrom(e));
       }
     }
 
     return outputBlock;
   }
 
-  private final Block buildClusterBlockRec(final Schedule schedule) {
+  private final Block buildBlockFrom(final Schedule schedule) {
     Block outputBlock = null;
 
     if (schedule instanceof HierarchicalSchedule) {
@@ -262,7 +262,7 @@ public class CodegenClusterModelGenerator {
     final HierarchicalSchedule childrenSchedule = (HierarchicalSchedule) schedule.getChildren().get(0);
     final PiGraph cluster = (PiGraph) childrenSchedule.getAttachedActor();
     // Build FiniteLoopBlock
-    return buildFiniteLoopBlock(buildClusterBlockRec(childrenSchedule), (int) schedule.getRepetition(), cluster, true);
+    return buildFiniteLoopBlock(buildBlockFrom(childrenSchedule), (int) schedule.getRepetition(), cluster, true);
   }
 
   private final FunctionCall buildExecutableActorCall(final ExecutableActor actor) {
@@ -453,10 +453,10 @@ public class CodegenClusterModelGenerator {
     // Compute repetition vector for the whole process
     this.repVector = PiBRV.compute(graph, BRVMethod.LCM);
     // Print cluster into operatorBlock
-    this.operatorBlock.getLoopBlock().getCodeElts().add(buildClusterBlockRec(this.schedule));
+    this.operatorBlock.getLoopBlock().getCodeElts().add(buildBlockFrom(this.schedule));
     // Print memory consumption of the cluster
-    PreesmLogger.getLogger().log(Level.INFO,
-        "Memory allocation for cluster " + graph.getName() + ": " + computeMemorySize() + " bytes");
+    String memoryLog = "Memory allocation for cluster " + graph.getName() + ": " + computeMemorySize() + " bytes";
+    PreesmLogger.getLogger().log(Level.INFO, memoryLog);
   }
 
   private Buffer getOuterClusterBuffer(final DataPort graphPort) {
