@@ -46,6 +46,10 @@
 #ifndef CLOCK_PREESM_H
 #define CLOCK_PREESM_H
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #ifdef _WIN32
 
 #include <windows.h>
@@ -221,6 +225,8 @@ static inline double getElapsedNanoSec(uint64_t *start, uint64_t *end) {
 #endif
 
 
-
+#ifdef __cplusplus
+}
+#endif
 
 #endif // CLOCK_PREESM_H
