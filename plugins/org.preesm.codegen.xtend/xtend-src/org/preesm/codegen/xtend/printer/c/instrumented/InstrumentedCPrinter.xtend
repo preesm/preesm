@@ -40,8 +40,11 @@ package org.preesm.codegen.xtend.printer.c.instrumented
 
 import java.util.ArrayList
 import java.util.Collection
+import java.util.HashMap
 import java.util.LinkedHashMap
 import java.util.List
+import java.util.Map
+import org.preesm.codegen.model.ActorFunctionCall
 import org.preesm.codegen.model.Block
 import org.preesm.codegen.model.Buffer
 import org.preesm.codegen.model.CodeElt
@@ -56,8 +59,6 @@ import org.preesm.codegen.model.SpecialCall
 import org.preesm.codegen.model.Variable
 import org.preesm.codegen.printer.PrinterState
 import org.preesm.codegen.xtend.printer.c.CPrinter
-import org.preesm.codegen.model.ActorFunctionCall
-import org.preesm.commons.logger.PreesmLogger
 import org.preesm.commons.exceptions.PreesmRuntimeException
 
 /**
@@ -164,7 +165,6 @@ class InstrumentedCPrinter extends CPrinter {
 
 				if (elt instanceof ActorFunctionCall) {
 					val ovp = elt.originalVertexPath
-					System.err.println("Firing of: " + functionID + " >>> " + ovp  /*elt.getClass()*/)
 
 					// Do the pre insertion
 					val preDumpCall = CodegenFactory.eINSTANCE.createFunctionCall
@@ -290,32 +290,50 @@ class InstrumentedCPrinter extends CPrinter {
 	«super.printFifoCall(fifoCall)»
 	'''
 
+	/**
+ 	 * Write the csv file.
+	 */
 	override createSecondaryFiles(List<Block> printerBlocks, Collection<Block> allBlocks) {
 		val result = super.createSecondaryFiles(printerBlocks,allBlocks);
-		result.put("analysis.csv", printAnalysisCsvFile)
+		val mapActorNbRow = new HashMap<String, Integer>()
+		val mapActorNbFiring = new HashMap<String, Integer>()
+		var i = 1
+		for (entry: actorIDs.entrySet) {
+			val name = entry.key
+			// We can register the apparition order because it is a LinkedHashMap
+			// And we need that fot the SUM generation
+			mapActorNbRow.put(name, i)
+			mapActorNbFiring.put(name, entry.value.size)
+			i += 1
+		}
+		result.put("analysis.csv", printAnalysisCsvFile(mapActorNbRow, mapActorNbFiring))
 		return result
 	}
 
-	def String printAnalysisCsvFile()'''
+	/**
+	 * Generate the average formula for each actor, and the sum of everything.
+	 */
+	def String printAnalysisCsvFile(Map<String,Integer> mapActorNbRow, Map<String,Integer> mapActorNbFiring)'''
 	«FOR entry : actorIDs.entrySet»
-	«entry.key»;"=MROUND(AVERAGE(«FOR id : entry.value SEPARATOR ';'»«(id).intToColumn»«actorIDs.size + 3»:«(id).intToColumn»65536«ENDFOR»);10)"
+	«entry.key»;"=MROUND(AVERAGE(«FOR id : entry.value SEPARATOR ';'»«(id+1).intToColumn»«actorIDs.size + 4»:«(id+1).intToColumn»65536«ENDFOR»);1)"
 	«ENDFOR»
+	"TIMINGS WEIGHTED SUM";"=SUM(«FOR entry : actorIDs.entrySet SEPARATOR ','»«mapActorNbFiring.get(entry.key)»*B«mapActorNbRow.get(entry.key)»«ENDFOR»)"
 	'''
 
 	/**
 	 * Returns corresponding number in the base of the 26 letters A-Z.
-	 * Starts from 0 (returns A).
+	 * Starts from 1 (returns A).
 	 */
 	def String intToColumn(int i){
-		if (i < 0) {
-			throw new PreesmRuntimeException ("Invalid negative argument.")
+		if (i <= 0) {
+			throw new PreesmRuntimeException ("Invalid non strictly positive argument.")
 		}
 		val alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
 		var result = ""
 		var digit = 0
 		var rest = i
 		do {
-			digit = rest % 26
+			digit = (rest-1) % 26
 			rest = (rest-digit) / 26
 			result = alphabet.charAt(digit) + result
 		} while (rest > 0)

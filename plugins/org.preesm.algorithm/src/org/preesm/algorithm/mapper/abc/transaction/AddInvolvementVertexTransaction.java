@@ -54,6 +54,8 @@ import org.preesm.model.slam.route.AbstractRouteStep;
 /**
  * Transaction executing the addition of an involvement vertex.
  *
+ * Involvement vertex represents the time needed for a PE to send/copy data to another PE;
+ *
  * @author mpelcat
  */
 public class AddInvolvementVertexTransaction implements Transaction {

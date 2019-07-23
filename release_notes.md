@@ -1,6 +1,19 @@
 PREESM Changelog
 ================
 
+## Release version 3.13.1
+*2019.07.23*
+
+### New Feature
+
+### Changes
+* Update CPrinter to support mixed C/C++ projects;
+
+### Bug fix
+* PAPIFY:
+  * Fix PAPIFY code generation
+
+
 ## Release version 3.13.0
 *2019.07.18*
 
@@ -21,7 +34,6 @@ PREESM Changelog
   * Refactor Topology helper methods and classes;
 
 ### Bug fix
-
 
 ## Release version 3.12.0
 *2019.07.11*

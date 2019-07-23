@@ -47,6 +47,10 @@
 #ifndef _PREESM_FIFO_H
 #define _PREESM_FIFO_H
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /**
 * Initialize a FIFO by filling its memory with 0.
 *
@@ -95,5 +99,9 @@ void fifoPush(void * inputBuffer, void* headBuffer, int headSize, void* bodyBuff
 *        Size of the body of the fifo (>=0)
 */
 void fifoPop(void * outputBuffer, void* headBuffer, int headSize, void* bodyBuffer, int bodySize);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif

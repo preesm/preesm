@@ -53,6 +53,8 @@ import org.preesm.model.slam.route.AbstractRouteStep;
 /**
  * Transaction executing the addition of an overhead (or set-up) vertex.
  *
+ * Overhead vertex represents the setup time for the DMA;
+ *
  * @author mpelcat
  */
 public class AddOverheadVertexTransaction implements Transaction {

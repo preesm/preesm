@@ -45,8 +45,11 @@
 @Ecore(nsURI="http://org.preesm/algos/schedule")
 package org.preesm.model.algorithm.schedule
 
-import org.preesm.model.pisdf.AbstractActor
 import org.eclipse.emf.common.util.ECollections
+import org.preesm.model.pisdf.AbstractActor
+import org.preesm.model.pisdf.SpecialActor
+import org.preesm.model.slam.ComponentInstance
+import org.preesm.model.pisdf.Fifo
 
 // !!! This is needed as of the current versions of xcore/xtext
 // For some reason when using the default String/... (i.e. without the following)
@@ -82,10 +85,12 @@ interface Schedule {
 		return ECollections.emptyEList
 	}
 	/*
-	 * Return the list of all the actors contained by this schedule and all of its children
+	 * Return the list of all the actors contained by this schedule and all of its children.
+	 *
+	 * This list is unmodifiable.
 	 */
 	op AbstractActor[] getActors() {
-		return children.map[it.actors].flatten.asEList
+		return children.map[it.actors].flatten.asEList.unmodifiableEList
 	}
 	/*
 	 * Returns the number of extra top iterations this schedule can cross. It is used to
@@ -105,9 +110,23 @@ interface Schedule {
 	 */
 	op boolean isParallel()
 	/*
+	 * Returns whether there is data parallelism (i.e. the same processing is done on different chunks
+	 * of data).
+	 */
+	op boolean isDataParallel() {
+		return isParallel && repetition > 1
+	}
+	/*
 	 * returns a String representing the schedule informally.
 	 */
 	op String shortPrint()
+	/*
+	 * Return true if the schedule is linked with an actor. This is the case when applying clustering, where
+	 * the attached actor of a HierarchicalSchedule is the clustered subraph.
+	 */
+	op boolean hasAttachedActor() {
+		return false
+	}
 }
 
 /*
@@ -147,6 +166,9 @@ interface HierarchicalSchedule extends Schedule {
 	 * For instance, when clustering, it can refer the corresponding subgraph.
 	 */
 	refers AbstractActor attachedActor
+	op boolean hasAttachedActor() {
+		return attachedActor !== null
+	}
 	contains Schedule[] scheduleTree
 	op Schedule[] getChildren() {
 		return scheduleTree
@@ -158,11 +180,13 @@ interface HierarchicalSchedule extends Schedule {
  * There is no hypothesis on the order on the execution of its children.
  */
 interface ActorSchedule extends Schedule {
-	// this Map associate for every actor a virtual 'execution date'.
-	// All dates should be different to define a total order.
-	refers AbstractActor[] orderedActors
+	/* list of actors to execute in this schedule.
+	 * The list may be ordered if {@link #isParallel} returns true.
+	 */
+	refers AbstractActor[] actorList
+
 	op AbstractActor[] getActors() {
-		return orderedActors
+		return actorList.unmodifiableEList
 	}
 
 	op String shortPrint() {
@@ -270,5 +294,24 @@ class StagedHiearchicalSchedule extends SequentialHiearchicalSchedule {
 	op int getSpan() {
 		return children.stream.mapToInt(it|Math.max(it.span, 1)).sum
 	}
+}
+
+interface CommunicationActor extends SpecialActor {
+	refers Fifo fifo
+}
+
+class SendActor extends CommunicationActor {
+	refers ReceiveActor receive opposite send
+}
+class ReceiveActor extends CommunicationActor {
+	refers SendActor send opposite receive
+}
+
+class InvolvementActor extends CommunicationActor {
+	refers ComponentInstance receiver
+}
+
+class OverheadActor extends CommunicationActor {
+	refers ComponentInstance dma
 }
 
