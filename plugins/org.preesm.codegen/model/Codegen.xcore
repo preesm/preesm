@@ -324,8 +324,6 @@ class BufferIterator extends SubBuffer {
 class IteratedBuffer extends Buffer {
 	refers Buffer buffer
 	refers IntVar iter
-	long iterSize
-	
 }
 
 class PapifyAction extends Variable {

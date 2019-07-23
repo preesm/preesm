@@ -667,7 +667,7 @@ class CPrinter extends DefaultPrinter {
 
 	override printBufferIteratorDefinition(BufferIterator bufferIterator) ''''''
 
-	override printIteratedBuffer(IteratedBuffer iteratedBuffer) '''«doSwitch(iteratedBuffer.buffer)» + «printIntVar(iteratedBuffer.iter)» * «iteratedBuffer.iterSize»'''
+	override printIteratedBuffer(IteratedBuffer iteratedBuffer) '''«doSwitch(iteratedBuffer.buffer)» + «printIntVar(iteratedBuffer.iter)» * «iteratedBuffer.size»'''
 
 	override printIntVar(IntVar intVar) '''«intVar.name»'''
 
