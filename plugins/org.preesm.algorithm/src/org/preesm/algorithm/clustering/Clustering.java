@@ -48,8 +48,10 @@ public class Clustering extends AbstractTaskImplementation {
 
     if (depthLimitation != null) {
       // Perform parallelism depth limitation
-      for (Schedule schedule : scheduleMapping.values()) {
-        ClusteringHelper.limitParallelismDepth(schedule, Long.parseLong(depthLimitation));
+      for (Entry<AbstractActor, Schedule> entry : scheduleMapping.entrySet()) {
+        Schedule schedule = entry.getValue();
+        schedule = ClusteringHelper.setParallelismDepth(schedule, 0, Long.parseLong(depthLimitation));
+        scheduleMapping.replace(entry.getKey(), schedule);
       }
     }
 
