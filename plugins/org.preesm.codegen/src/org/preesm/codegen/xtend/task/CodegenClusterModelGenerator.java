@@ -262,7 +262,9 @@ public class CodegenClusterModelGenerator {
     final HierarchicalSchedule childrenSchedule = (HierarchicalSchedule) schedule.getChildren().get(0);
     final PiGraph cluster = (PiGraph) childrenSchedule.getAttachedActor();
     // Build FiniteLoopBlock
-    return buildFiniteLoopBlock(buildBlockFrom(childrenSchedule), (int) schedule.getRepetition(), cluster, true);
+    FiniteLoopBlock flb = buildFiniteLoopBlock(null, (int) schedule.getRepetition(), cluster, true);
+    flb.getCodeElts().add(buildBlockFrom(childrenSchedule));
+    return flb;
   }
 
   private final FunctionCall buildExecutableActorCall(final ExecutableActor actor) {
@@ -333,8 +335,10 @@ public class CodegenClusterModelGenerator {
     this.iterMap.put(actor, iterator);
     flb.setIter(iterator);
     flb.setNbIter(repetition);
-    // Insert ClusterBlock inside FiniteLoopBlock
-    flb.getCodeElts().add(toInclude);
+    // Insert block inside FiniteLoopBlock
+    if (toInclude != null) {
+      flb.getCodeElts().add(toInclude);
+    }
     // Disable loop parallelism
     flb.setParallel(parallel);
     return flb;
@@ -368,9 +372,6 @@ public class CodegenClusterModelGenerator {
       IteratedBuffer iteratedBuffer = null;
       iteratedBuffer = CodegenFactory.eINSTANCE.createIteratedBuffer();
       iteratedBuffer.setBuffer(buffer);
-      if (!this.iterMap.containsKey(actor)) {
-        throw new PreesmRuntimeException("CodegenClusterModelGenerator: cannot find iteration for " + actor);
-      }
       iteratedBuffer.setIter(this.iterMap.get(actor));
       iteratedBuffer.setSize(dataPort.getExpression().evaluate());
       return iteratedBuffer;
