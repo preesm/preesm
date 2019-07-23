@@ -97,7 +97,7 @@ public class CodegenClusterModelGenerator {
     this.iterMap = new HashMap<>();
     this.outsideFetcher = outsideFetcher;
     this.fetcherMap = fetcherMap;
-    this.repVector = null;str
+    this.repVector = null;
   }
 
   private final void addConfigInputPortArgument(final FunctionCall functionCall, final ConfigInputPort port,
