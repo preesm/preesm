@@ -5,6 +5,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
+import org.preesm.algorithm.clustering.ClusteringHelper;
 import org.preesm.codegen.model.Block;
 import org.preesm.codegen.model.Buffer;
 import org.preesm.codegen.model.ClusterBlock;
@@ -30,11 +31,9 @@ import org.preesm.model.pisdf.AbstractVertex;
 import org.preesm.model.pisdf.Actor;
 import org.preesm.model.pisdf.BroadcastActor;
 import org.preesm.model.pisdf.CHeaderRefinement;
-import org.preesm.model.pisdf.ConfigInputInterface;
 import org.preesm.model.pisdf.ConfigInputPort;
 import org.preesm.model.pisdf.DataInputInterface;
 import org.preesm.model.pisdf.DataInputPort;
-import org.preesm.model.pisdf.DataOutputInterface;
 import org.preesm.model.pisdf.DataOutputPort;
 import org.preesm.model.pisdf.DataPort;
 import org.preesm.model.pisdf.Direction;
@@ -42,7 +41,6 @@ import org.preesm.model.pisdf.ExecutableActor;
 import org.preesm.model.pisdf.Fifo;
 import org.preesm.model.pisdf.ForkActor;
 import org.preesm.model.pisdf.FunctionArgument;
-import org.preesm.model.pisdf.ISetter;
 import org.preesm.model.pisdf.JoinActor;
 import org.preesm.model.pisdf.Parameter;
 import org.preesm.model.pisdf.PiGraph;
@@ -90,7 +88,7 @@ public class CodegenClusterModelGenerator {
    *          argument for fetcher algorithm
    */
   public CodegenClusterModelGenerator(final CoreBlock operatorBlock, final Schedule schedule, final Scenario scenario,
-      IOutsideFetcher outsideFetcher, Map<String, Object> fetcherMap) {
+      final IOutsideFetcher outsideFetcher, final Map<String, Object> fetcherMap) {
     this.schedule = schedule;
     this.scenario = scenario;
     this.operatorBlock = operatorBlock;
@@ -102,19 +100,143 @@ public class CodegenClusterModelGenerator {
     this.repVector = null;
   }
 
-  /**
-   * 
-   */
-  public void generate() {
-    // Get PiGraph
-    PiGraph graph = (PiGraph) ((HierarchicalSchedule) schedule).getAttachedActor();
-    // Compute repetition vector for the whole process
-    this.repVector = PiBRV.compute(graph, BRVMethod.LCM);
-    // Print cluster into operatorBlock
-    operatorBlock.getLoopBlock().getCodeElts().add(buildClusterBlockRec(schedule));
-    // Print memory consumption of the cluster
-    PreesmLogger.getLogger().log(Level.INFO,
-        "Memory allocation for cluster " + graph.getName() + ": " + computeMemorySize() + " bytes");
+  private final void addConfigInputPortArgument(final FunctionCall functionCall, final ConfigInputPort port,
+      final FunctionArgument arg) {
+    // Search for origin parameter
+    final Parameter parameter = ClusteringHelper.getSetterParameter(port);
+
+    // Build a constant
+    final Constant constant = CodegenFactory.eINSTANCE.createConstant();
+    constant.setValue(parameter.getExpression().evaluate());
+
+    // Set variable name to argument name
+    constant.setName(arg.getName());
+
+    // Add parameter to functionCall
+    functionCall.addParameter(constant, PortDirection.INPUT);
+  }
+
+  private final void addDataPortArgument(final FunctionCall functionCall, final Actor actor, final DataPort port,
+      final FunctionArgument arg) {
+    // Retrieve associated Fifo
+    Fifo associatedFifo = null;
+    if (arg.getDirection().equals(Direction.IN)) {
+      associatedFifo = ((DataInputPort) port).getIncomingFifo();
+    } else {
+      associatedFifo = ((DataOutputPort) port).getOutgoingFifo();
+    }
+
+    // Retrieve associated Buffer
+    Buffer associatedBuffer = retrieveAssociatedBuffer(associatedFifo);
+
+    // If there is an iteration to run actor, iterate the buffer
+    associatedBuffer = buildIteratedBuffer(associatedBuffer, actor, port);
+
+    // Add parameter to functionCall
+    functionCall.addParameter(associatedBuffer,
+        (arg.getDirection().equals(Direction.IN) ? PortDirection.INPUT : PortDirection.OUTPUT));
+  }
+
+  private final void addInitFunctionCall(final Actor actor) {
+    // Retrieve Refinement from actor
+    if (actor.getRefinement() instanceof CHeaderRefinement) {
+
+      final CHeaderRefinement cheader = (CHeaderRefinement) actor.getRefinement();
+      // Verify that a init prototype is present
+      if (cheader.getInitPrototype() == null) {
+        return;
+      }
+
+      // Create function call
+      final FunctionCall functionCall = CodegenFactory.eINSTANCE.createFunctionCall();
+      functionCall.setActorName(actor.getName());
+
+      // Retrieve function argument
+      final List<FunctionArgument> arguments = cheader.getInitPrototype().getArguments();
+      // Retrieve function name
+      functionCall.setName(cheader.getInitPrototype().getName());
+
+      // Associate argument with buffer
+      for (final FunctionArgument a : arguments) {
+        // Search for the corresponding port into actor ports list
+        final Port associatedPort = actor.lookupPort(a.getName());
+        // Add argument to function call
+        if (associatedPort instanceof ConfigInputPort) {
+          addConfigInputPortArgument(functionCall, (ConfigInputPort) associatedPort, a);
+        }
+      }
+
+      // Add function call to core block init loop
+      this.operatorBlock.getInitBlock().getCodeElts().add(functionCall);
+    }
+  }
+
+  private final Block buildAbstractActorCall(final ActorSchedule schedule) {
+    Block outputBlock = null;
+
+    // Retrieve actor to fire
+    final AbstractActor actor = schedule.getActors().get(0);
+
+    // Call set block to put function call element into
+    final LoopBlock callSet = CodegenFactory.eINSTANCE.createLoopBlock();
+
+    // If actors has to be repeated few times, build a FiniteLoopBlock
+    if (schedule.getRepetition() > 1) {
+      outputBlock = buildFiniteLoopBlock(callSet, (int) schedule.getRepetition(), actor, schedule.isParallel());
+    } else {
+      // Output the LoopBlock
+      outputBlock = callSet;
+    }
+
+    // Build corresponding actor function/special call
+    if (actor instanceof SpecialActor) {
+      callSet.getCodeElts().add(buildSpecialActorCall((SpecialActor) actor));
+    } else if (actor instanceof ExecutableActor) {
+      callSet.getCodeElts().add(buildExecutableActorCall((ExecutableActor) actor));
+    }
+
+    return outputBlock;
+  }
+
+  private final Block buildClusterBlock(final Schedule schedule) {
+    Block outputBlock = null;
+
+    // Retrieve cluster actor
+    final PiGraph cluster = (PiGraph) ((HierarchicalSchedule) schedule).getAttachedActor();
+
+    // Build and fill ClusterBlock attributes
+    final ClusterBlock clusterBlock = CodegenFactory.eINSTANCE.createClusterBlock();
+    clusterBlock.setName(cluster.getName());
+    clusterBlock.setSchedule(schedule.shortPrint());
+    clusterBlock.setParallel(schedule.isParallel());
+
+    // If the cluster has to be repeated few times, build a FiniteLoopBlock
+    if (schedule.getRepetition() > 1) {
+      outputBlock = buildFiniteLoopBlock(clusterBlock, (int) schedule.getRepetition(), cluster, false);
+    } else {
+      // Output the ClusterBlock
+      outputBlock = clusterBlock;
+    }
+
+    // Make memory allocation for internal buffer
+    final List<Buffer> internalClusterBuffer = buildInternalClusterBuffer(cluster);
+    clusterBlock.getDefinitions().addAll(internalClusterBuffer);
+    // Make memory allocation for external buffer i.e. fifo that goes outside of the hierarchical actor of the cluster
+    buildExternalClusterBuffer(cluster);
+
+    // Call again buildClusterBlockRec to explore and build child
+    for (final Schedule e : schedule.getChildren()) {
+      // If it's a parallel schedule, print section
+      if (schedule.isParallel()) {
+        final SectionBlock sectionBlock = CodegenFactory.eINSTANCE.createSectionBlock();
+        sectionBlock.getCodeElts().add(buildClusterBlockRec(e));
+        clusterBlock.getCodeElts().add(sectionBlock);
+      } else {
+        clusterBlock.getCodeElts().add(buildClusterBlockRec(e));
+      }
+    }
+
+    return outputBlock;
   }
 
   private final Block buildClusterBlockRec(final Schedule schedule) {
@@ -135,21 +257,80 @@ public class CodegenClusterModelGenerator {
     return outputBlock;
   }
 
-  private final long computeMemorySize() {
-    long size = 0;
-    for (Buffer buffer : internalBufferMap.values()) {
-      size += buffer.getSize();
-    }
-    return size;
+  private final Block buildDataParallelismBlock(final Schedule schedule) {
+    // Retrieve cluster from children hierarchical schedule
+    final HierarchicalSchedule childrenSchedule = (HierarchicalSchedule) schedule.getChildren().get(0);
+    final PiGraph cluster = (PiGraph) childrenSchedule.getAttachedActor();
+    // Build FiniteLoopBlock
+    return buildFiniteLoopBlock(buildClusterBlockRec(childrenSchedule), (int) schedule.getRepetition(), cluster, true);
   }
 
-  private final FiniteLoopBlock buildFiniteLoopBlock(Block toInclude, int repetition, AbstractActor actor,
-      boolean parallel) {
-    FiniteLoopBlock flb = CodegenFactory.eINSTANCE.createFiniteLoopBlock();
-    IntVar iterator = CodegenFactory.eINSTANCE.createIntVar();
+  private final FunctionCall buildExecutableActorCall(final ExecutableActor actor) {
+    // Build FunctionCall
+    final FunctionCall functionCall = CodegenFactory.eINSTANCE.createFunctionCall();
+    functionCall.setActorName(actor.getName());
+
+    // Retrieve Refinement from actor for loop function
+    fillFunctionCallArgument(functionCall, (Actor) actor);
+
+    // Retrieve and add init function to operator core block
+    addInitFunctionCall((Actor) actor);
+
+    return functionCall;
+  }
+
+  private final void buildExternalClusterBuffer(final PiGraph cluster) {
+    // Get the list of external Fifo in the current cluster
+    final List<Fifo> externalFifo = new LinkedList<>();
+    externalFifo.addAll(cluster.getFifos());
+    externalFifo.removeAll(ClusteringHelper.getInternalClusterFifo(cluster));
+
+    // For all external Fifo
+    for (final Fifo fifo : externalFifo) {
+      Fifo outsideFifo = null;
+      DataPort outsidePort = null;
+      // Determine Fifo direction
+      if (fifo.getSource() instanceof DataInputInterface) {
+        outsideFifo = ClusteringHelper.getOutsideIncomingFifo(fifo);
+        outsidePort = outsideFifo.getTargetPort();
+      } else {
+        outsideFifo = ClusteringHelper.getOutsideOutgoingFifo(fifo);
+        outsidePort = outsideFifo.getSourcePort();
+      }
+
+      if ((outsideFifo == null) || (outsidePort == null)) {
+        throw new PreesmRuntimeException(
+            "CodegenClusterModelGenerator: cannot retrieve external fifo of cluster " + cluster);
+      }
+
+      // Retrieve from map the corresponding parent buffer
+      Buffer buffer = null;
+      if (this.internalBufferMap.containsKey(outsideFifo)) {
+        buffer = this.internalBufferMap.get(outsideFifo);
+      } else if (this.externalBufferMap.containsKey(outsideFifo)) {
+        buffer = this.externalBufferMap.get(outsideFifo);
+      } else {
+        // This is actually an outside cluster fifo, so we need to get from outside
+        buffer = getOuterClusterBuffer(outsidePort);
+      }
+
+      // If cluster is repeated few times, create an iterated buffer
+      if (this.repVector.get(cluster) > 1) {
+        buffer = buildIteratedBuffer(buffer, cluster, outsidePort);
+      }
+
+      // Register external buffer with corresponding fifo
+      this.externalBufferMap.put(fifo, buffer);
+    }
+  }
+
+  private final FiniteLoopBlock buildFiniteLoopBlock(final Block toInclude, final int repetition,
+      final AbstractActor actor, final boolean parallel) {
+    final FiniteLoopBlock flb = CodegenFactory.eINSTANCE.createFiniteLoopBlock();
+    final IntVar iterator = CodegenFactory.eINSTANCE.createIntVar();
     iterator.setName("index_" + actor.getName());
     // Register the iteration var for that specific actor/cluster
-    iterMap.put(actor, iterator);
+    this.iterMap.put(actor, iterator);
     flb.setIter(iterator);
     flb.setNbIter(repetition);
     // Insert ClusterBlock inside FiniteLoopBlock
@@ -159,85 +340,48 @@ public class CodegenClusterModelGenerator {
     return flb;
   }
 
-  private final Block buildDataParallelismBlock(Schedule schedule) {
-    // Retrieve cluster from children hierarchical schedule
-    HierarchicalSchedule childrenSchedule = (HierarchicalSchedule) schedule.getChildren().get(0);
-    PiGraph cluster = (PiGraph) childrenSchedule.getAttachedActor();
-    // Build FiniteLoopBlock
-    return buildFiniteLoopBlock(buildClusterBlockRec(childrenSchedule), (int) schedule.getRepetition(), cluster, true);
-  }
+  private final List<Buffer> buildInternalClusterBuffer(final PiGraph cluster) {
+    // List of local internal buffer that will be defined in cluster scope
+    final List<Buffer> localInternalBuffer = new LinkedList<>();
 
-  private final Block buildClusterBlock(Schedule schedule) {
-    Block outputBlock = null;
-
-    // Retrieve cluster actor
-    PiGraph cluster = (PiGraph) ((HierarchicalSchedule) schedule).getAttachedActor();
-
-    // Build and fill ClusterBlock attributes
-    ClusterBlock clusterBlock = CodegenFactory.eINSTANCE.createClusterBlock();
-    clusterBlock.setName(cluster.getName());
-    clusterBlock.setSchedule(schedule.shortPrint());
-    clusterBlock.setParallel(schedule.isParallel());
-
-    // If the cluster has to be repeated few times, build a FiniteLoopBlock
-    if (schedule.getRepetition() > 1) {
-      outputBlock = buildFiniteLoopBlock(clusterBlock, (int) schedule.getRepetition(), cluster, false);
-    } else {
-      // Output the ClusterBlock
-      outputBlock = clusterBlock;
+    int i = 0;
+    for (final Fifo fifo : ClusteringHelper.getInternalClusterFifo(cluster)) {
+      // Allocate a buffer for each internalFifo
+      final Buffer buffer = CodegenFactory.eINSTANCE.createBuffer();
+      buffer.setName("mem_" + ((AbstractActor) fifo.getSource()).getName() + "_to_"
+          + ((AbstractActor) fifo.getTarget()).getName() + "_" + i++);
+      // Fill buffer information by looking at the Fifo
+      buffer.setType(fifo.getType());
+      buffer.setTypeSize(this.scenario.getSimulationInfo().getDataTypeSizeOrDefault(fifo.getType()));
+      buffer.setSize(fifo.getSourcePort().getExpression().evaluate() * this.repVector.get(fifo.getSource()));
+      // Register the buffer to the corresponding Fifo
+      this.internalBufferMap.put(fifo, buffer);
+      localInternalBuffer.add(buffer);
     }
 
-    // Make memory allocation for internal buffer
-    List<Buffer> internalClusterBuffer = buildInternalClusterBuffer(cluster);
-    clusterBlock.getDefinitions().addAll(internalClusterBuffer);
-    // Make memory allocation for external buffer i.e. fifo that goes outside of the hierarchical actor of the cluster
-    buildExternalClusterBuffer(cluster);
+    return localInternalBuffer;
+  }
 
-    // Call again buildClusterBlockRec to explore and build child
-    for (Schedule e : schedule.getChildren()) {
-      // If it's a parallel schedule, print section
-      if (schedule.isParallel()) {
-        SectionBlock sectionBlock = CodegenFactory.eINSTANCE.createSectionBlock();
-        sectionBlock.getCodeElts().add(buildClusterBlockRec(e));
-        clusterBlock.getCodeElts().add(sectionBlock);
-      } else {
-        clusterBlock.getCodeElts().add(buildClusterBlockRec(e));
+  private final Buffer buildIteratedBuffer(final Buffer buffer, final AbstractActor actor, final DataPort dataPort) {
+    // If iteration map contain actor, it means that buffer has to be iterated
+    if (this.iterMap.containsKey(actor)) {
+      IteratedBuffer iteratedBuffer = null;
+      iteratedBuffer = CodegenFactory.eINSTANCE.createIteratedBuffer();
+      iteratedBuffer.setBuffer(buffer);
+      if (!this.iterMap.containsKey(actor)) {
+        throw new PreesmRuntimeException("CodegenClusterModelGenerator: cannot find iteration for " + actor);
       }
-    }
-
-    return outputBlock;
-  }
-
-  private final Block buildAbstractActorCall(ActorSchedule schedule) {
-    Block outputBlock = null;
-
-    // Retrieve actor to fire
-    AbstractActor actor = schedule.getActors().get(0);
-
-    // Call set block to put function call element into
-    LoopBlock callSet = CodegenFactory.eINSTANCE.createLoopBlock();
-
-    // If actors has to be repeated few times, build a FiniteLoopBlock
-    if (schedule.getRepetition() > 1) {
-      outputBlock = buildFiniteLoopBlock(callSet, (int) schedule.getRepetition(), actor, schedule.isParallel());
+      iteratedBuffer.setIter(this.iterMap.get(actor));
+      iteratedBuffer.setSize(dataPort.getExpression().evaluate());
+      return iteratedBuffer;
     } else {
-      // Output the LoopBlock
-      outputBlock = callSet;
+      return buffer;
     }
-
-    // Build corresponding actor function/special call
-    if (actor instanceof SpecialActor) {
-      callSet.getCodeElts().add(buildSpecialActorCall((SpecialActor) actor));
-    } else if (actor instanceof ExecutableActor) {
-      callSet.getCodeElts().add(buildExecutableActorCall((ExecutableActor) actor));
-    }
-
-    return outputBlock;
   }
 
-  private final SpecialCall buildSpecialActorCall(SpecialActor actor) {
+  private final SpecialCall buildSpecialActorCall(final SpecialActor actor) {
     // Instantiate special call object
-    SpecialCall specialCall = CodegenFactory.eINSTANCE.createSpecialCall();
+    final SpecialCall specialCall = CodegenFactory.eINSTANCE.createSpecialCall();
 
     // Set type of special call
     if (actor instanceof ForkActor) {
@@ -253,7 +397,7 @@ public class CodegenClusterModelGenerator {
     }
 
     // Retrieve associated fifo/buffer
-    for (DataPort dp : actor.getAllDataPorts()) {
+    for (final DataPort dp : actor.getAllDataPorts()) {
       Buffer associatedBuffer = null;
       if (dp instanceof DataInputPort) {
         associatedBuffer = retrieveAssociatedBuffer(((DataInputPort) dp).getIncomingFifo());
@@ -269,256 +413,66 @@ public class CodegenClusterModelGenerator {
     return specialCall;
   }
 
-  private final FunctionCall buildExecutableActorCall(ExecutableActor actor) {
-    // Build FunctionCall
-    FunctionCall functionCall = CodegenFactory.eINSTANCE.createFunctionCall();
-    functionCall.setActorName(actor.getName());
-
-    // Retrieve Refinement from actor for loop function
-    fillFunctionCallArgument(functionCall, (Actor) actor);
-
-    // Retrieve and add init function to operator core block
-    addInitFunctionCall((Actor) actor);
-
-    return functionCall;
-  }
-
-  private final Buffer retrieveAssociatedBuffer(Fifo fifo) {
-    Buffer associatedBuffer = null;
-    if (internalBufferMap.containsKey(fifo)) {
-      associatedBuffer = internalBufferMap.get(fifo);
-    } else if (externalBufferMap.containsKey(fifo)) {
-      associatedBuffer = externalBufferMap.get(fifo);
-    } else {
-      throw new PreesmRuntimeException("Cannot associate actors FIFO with buffer in Codegen model generation");
+  private final long computeMemorySize() {
+    long size = 0;
+    for (final Buffer buffer : this.internalBufferMap.values()) {
+      size += buffer.getSize();
     }
-    return associatedBuffer;
+    return size;
   }
 
-  private final Buffer buildIteratedBuffer(Buffer buffer, AbstractActor actor, DataPort dataPort) {
-    // If iteration map contain actor, it means that buffer has to be iterated
-    if (iterMap.containsKey(actor)) {
-      IteratedBuffer iteratedBuffer = null;
-      iteratedBuffer = CodegenFactory.eINSTANCE.createIteratedBuffer();
-      iteratedBuffer.setBuffer(buffer);
-      if (!iterMap.containsKey(actor)) {
-        throw new PreesmRuntimeException("CodegenClusterModelGenerator: cannot find iteration for " + actor.toString());
-      }
-      iteratedBuffer.setIter(iterMap.get(actor));
-      iteratedBuffer.setSize(dataPort.getExpression().evaluate());
-      return iteratedBuffer;
-    } else {
-      return buffer;
-    }
-  }
-
-  private final void addInitFunctionCall(Actor actor) {
+  private final void fillFunctionCallArgument(final FunctionCall functionCall, final Actor actor) {
     // Retrieve Refinement from actor
     if (actor.getRefinement() instanceof CHeaderRefinement) {
-      // Create function call
-      FunctionCall functionCall = CodegenFactory.eINSTANCE.createFunctionCall();
-      functionCall.setActorName(actor.getName());
-
-      CHeaderRefinement cheader = (CHeaderRefinement) actor.getRefinement();
-      // Verify that a init prototype is present
-      if (cheader.getInitPrototype() == null) {
-        return;
-      }
-
+      final CHeaderRefinement cheader = (CHeaderRefinement) actor.getRefinement();
       // Retrieve function argument
-      List<FunctionArgument> arguments = cheader.getInitPrototype().getArguments();
-      // Retrieve function name
-      functionCall.setName(cheader.getInitPrototype().getName());
-
-      // Associate argument with buffer
-      for (FunctionArgument a : arguments) {
-        // Search for the corresponding port into actor ports list
-        Port associatedPort = actor.lookupPort(a.getName());
-
-        if (associatedPort instanceof ConfigInputPort) {
-          addConfigInputPortParameter(functionCall, actor, (ConfigInputPort) associatedPort, a);
-        }
-      }
-
-      // Add function call to core block init loop
-      operatorBlock.getInitBlock().getCodeElts().add(functionCall);
-    }
-  }
-
-  private final void fillFunctionCallArgument(FunctionCall functionCall, Actor actor) {
-    // Retrieve Refinement from actor
-    if (actor.getRefinement() instanceof CHeaderRefinement) {
-      CHeaderRefinement cheader = (CHeaderRefinement) actor.getRefinement();
-      // Retrieve function argument
-      List<FunctionArgument> arguments = cheader.getLoopPrototype().getArguments();
+      final List<FunctionArgument> arguments = cheader.getLoopPrototype().getArguments();
       // Retrieve function name
       functionCall.setName(cheader.getLoopPrototype().getName());
 
       // Associate argument with buffer
-      for (FunctionArgument a : arguments) {
+      for (final FunctionArgument a : arguments) {
         // Search for the corresponding port into actor ports list
-        Port associatedPort = actor.lookupPort(a.getName());
-
+        final Port associatedPort = actor.lookupPort(a.getName());
+        // Add argument into function call
         if (associatedPort instanceof DataPort) {
-          addDataPortParameter(functionCall, actor, (DataPort) associatedPort, a);
+          addDataPortArgument(functionCall, actor, (DataPort) associatedPort, a);
         } else if (associatedPort instanceof ConfigInputPort) {
-          addConfigInputPortParameter(functionCall, actor, (ConfigInputPort) associatedPort, a);
+          addConfigInputPortArgument(functionCall, (ConfigInputPort) associatedPort, a);
         }
       }
     }
   }
 
-  private final void addDataPortParameter(FunctionCall functionCall, Actor actor, DataPort port, FunctionArgument arg) {
-    // Retrieve associated Fifo
-    Fifo associatedFifo = null;
-    if (arg.getDirection().equals(Direction.IN)) {
-      associatedFifo = ((DataInputPort) port).getIncomingFifo();
+  /**
+   *
+   */
+  public void generate() {
+    // Get PiGraph
+    final PiGraph graph = (PiGraph) ((HierarchicalSchedule) this.schedule).getAttachedActor();
+    // Compute repetition vector for the whole process
+    this.repVector = PiBRV.compute(graph, BRVMethod.LCM);
+    // Print cluster into operatorBlock
+    this.operatorBlock.getLoopBlock().getCodeElts().add(buildClusterBlockRec(this.schedule));
+    // Print memory consumption of the cluster
+    PreesmLogger.getLogger().log(Level.INFO,
+        "Memory allocation for cluster " + graph.getName() + ": " + computeMemorySize() + " bytes");
+  }
+
+  private Buffer getOuterClusterBuffer(final DataPort graphPort) {
+    return this.outsideFetcher.getOuterClusterBuffer(graphPort, this.fetcherMap);
+  }
+
+  private final Buffer retrieveAssociatedBuffer(final Fifo fifo) {
+    Buffer associatedBuffer = null;
+    if (this.internalBufferMap.containsKey(fifo)) {
+      associatedBuffer = this.internalBufferMap.get(fifo);
+    } else if (this.externalBufferMap.containsKey(fifo)) {
+      associatedBuffer = this.externalBufferMap.get(fifo);
     } else {
-      associatedFifo = ((DataOutputPort) port).getOutgoingFifo();
+      throw new PreesmRuntimeException("Cannot associate actors FIFO with buffer in Codegen model generation");
     }
-
-    // Retrieve associated Buffer
-    Buffer associatedBuffer = retrieveAssociatedBuffer(associatedFifo);
-
-    // If there is an iteration to run actor, iterate the buffer
-    associatedBuffer = buildIteratedBuffer(associatedBuffer, actor, port);
-
-    // Add parameter to functionCall
-    functionCall.addParameter(associatedBuffer,
-        (arg.getDirection().equals(Direction.IN) ? PortDirection.INPUT : PortDirection.OUTPUT));
-  }
-
-  private final void addConfigInputPortParameter(FunctionCall functionCall, Actor actor, ConfigInputPort port,
-      FunctionArgument arg) {
-    // Search for origin parameter
-    Parameter parameter = getSetterParameterRec(port);
-
-    // Build a constant
-    Constant constant = CodegenFactory.eINSTANCE.createConstant();
-    constant.setValue(parameter.getExpression().evaluate());
-
-    // Set variable name to argument name
-    constant.setName(arg.getName());
-
-    // Add parameter to functionCall
-    functionCall.addParameter(constant, PortDirection.INPUT);
-  }
-
-  private static Parameter getSetterParameterRec(ConfigInputPort port) {
-    ISetter setter = port.getIncomingDependency().getSetter();
-    if (setter instanceof ConfigInputInterface) {
-      return getSetterParameterRec(
-          (ConfigInputPort) ((ConfigInputInterface) port.getIncomingDependency().getSetter()).getGraphPort());
-    } else {
-      return (Parameter) setter;
-
-    }
-  }
-
-  private static final List<Fifo> getInternalClusterFifo(PiGraph cluster) {
-    List<Fifo> internalFifo = new LinkedList<>();
-    for (Fifo fifo : cluster.getFifos()) {
-      if ((fifo.getSource() instanceof DataInputInterface) || (fifo.getTarget() instanceof DataOutputInterface)) {
-        // Do nothing
-      } else {
-        // Add Fifo to internalFifo list
-        internalFifo.add(fifo);
-      }
-    }
-    return internalFifo;
-  }
-
-  private final List<Buffer> buildInternalClusterBuffer(PiGraph cluster) {
-    List<Buffer> internalBuffer = new LinkedList<>();
-
-    int i = 0;
-    for (Fifo fifo : getInternalClusterFifo(cluster)) {
-      // Allocate a buffer for each internalFifo
-      Buffer buffer = CodegenFactory.eINSTANCE.createBuffer();
-      buffer.setName("mem_" + ((AbstractActor) fifo.getSource()).getName() + "_to_"
-          + ((AbstractActor) fifo.getTarget()).getName() + "_" + i++);
-      // Fill buffer information by looking at the Fifo
-      buffer.setType(fifo.getType());
-      buffer.setTypeSize(scenario.getSimulationInfo().getDataTypeSizeOrDefault(fifo.getType()));
-      buffer.setSize(fifo.getSourcePort().getExpression().evaluate() * this.repVector.get(fifo.getSource()));
-      // Register the buffer to the corresponding Fifo
-      internalBufferMap.put(fifo, buffer);
-      internalBuffer.add(buffer);
-    }
-
-    return internalBuffer;
-  }
-
-  private final List<Buffer> buildExternalClusterBuffer(PiGraph cluster) {
-    List<Buffer> externalBuffer = new LinkedList<>();
-
-    // Get the list of external Fifo in the current cluster
-    List<Fifo> externalFifo = new LinkedList<Fifo>();
-    externalFifo.addAll(cluster.getFifos());
-    externalFifo.removeAll(getInternalClusterFifo(cluster));
-
-    // For all external Fifo
-    for (Fifo fifo : externalFifo) {
-      Fifo outsideFifo = null;
-      DataPort outsidePort = null;
-      // Determine Fifo direction
-      if (fifo.getSource() instanceof DataInputInterface) {
-        outsideFifo = getOutsideIncomingFifo(fifo);
-        outsidePort = outsideFifo.getTargetPort();
-      } else {
-        outsideFifo = getOutsideOutgoingFifo(fifo);
-        outsidePort = outsideFifo.getSourcePort();
-      }
-
-      if ((outsideFifo == null) || (outsidePort == null)) {
-        throw new PreesmRuntimeException(
-            "CodegenClusterModelGenerator: cannot retrieve external fifo of cluster " + cluster.toString());
-      }
-
-      // Retrieve from map the corresponding parent buffer
-      Buffer buffer = null;
-      if (internalBufferMap.containsKey(outsideFifo)) {
-        buffer = internalBufferMap.get(outsideFifo);
-      } else if (externalBufferMap.containsKey(outsideFifo)) {
-        buffer = externalBufferMap.get(outsideFifo);
-      } else {
-        // This is actually an outside cluster fifo, so we need to get from outside
-        buffer = getOuterClusterBuffer(outsidePort);
-      }
-
-      // If cluster is repeated few times, create an iterated buffer
-      if (this.repVector.get(cluster) > 1) {
-        buffer = buildIteratedBuffer(buffer, cluster, outsidePort);
-      }
-
-      // Register external buffer with corresponding fifo
-      externalBufferMap.put(fifo, buffer);
-      externalBuffer.add(buffer);
-    }
-
-    return externalBuffer;
-  }
-
-  private Fifo getOutsideOutgoingFifo(Fifo inFifo) {
-    AbstractActor targetActor = (AbstractActor) inFifo.getTarget();
-    Fifo outFifo = null;
-    if (targetActor instanceof DataOutputInterface) {
-      outFifo = ((DataOutputPort) ((DataOutputInterface) targetActor).getGraphPort()).getOutgoingFifo();
-    }
-    return outFifo;
-  }
-
-  private Fifo getOutsideIncomingFifo(Fifo inFifo) {
-    AbstractActor sourceActor = (AbstractActor) inFifo.getSource();
-    Fifo outFifo = null;
-    if (sourceActor instanceof DataInputInterface) {
-      outFifo = ((DataInputPort) ((DataInputInterface) sourceActor).getGraphPort()).getIncomingFifo();
-    }
-    return outFifo;
-  }
-
-  private Buffer getOuterClusterBuffer(DataPort graphPort) {
-    return outsideFetcher.getOuterClusterBuffer(graphPort, this.fetcherMap);
+    return associatedBuffer;
   }
 
 }
