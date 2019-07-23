@@ -18,6 +18,8 @@ import org.preesm.codegen.model.IteratedBuffer;
 import org.preesm.codegen.model.LoopBlock;
 import org.preesm.codegen.model.PortDirection;
 import org.preesm.codegen.model.SectionBlock;
+import org.preesm.codegen.model.SpecialCall;
+import org.preesm.codegen.model.SpecialType;
 import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.model.algorithm.schedule.ActorSchedule;
@@ -26,6 +28,7 @@ import org.preesm.model.algorithm.schedule.Schedule;
 import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.AbstractVertex;
 import org.preesm.model.pisdf.Actor;
+import org.preesm.model.pisdf.BroadcastActor;
 import org.preesm.model.pisdf.CHeaderRefinement;
 import org.preesm.model.pisdf.ConfigInputInterface;
 import org.preesm.model.pisdf.ConfigInputPort;
@@ -37,11 +40,14 @@ import org.preesm.model.pisdf.DataPort;
 import org.preesm.model.pisdf.Direction;
 import org.preesm.model.pisdf.ExecutableActor;
 import org.preesm.model.pisdf.Fifo;
+import org.preesm.model.pisdf.ForkActor;
 import org.preesm.model.pisdf.FunctionArgument;
 import org.preesm.model.pisdf.ISetter;
+import org.preesm.model.pisdf.JoinActor;
 import org.preesm.model.pisdf.Parameter;
 import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.pisdf.Port;
+import org.preesm.model.pisdf.RoundBufferActor;
 import org.preesm.model.pisdf.SpecialActor;
 import org.preesm.model.pisdf.brv.BRVMethod;
 import org.preesm.model.pisdf.brv.PiBRV;
@@ -215,47 +221,104 @@ public class CodegenClusterModelGenerator {
     Block outputBlock = null;
 
     // Retrieve actor to fire
-    Actor actor = (Actor) schedule.getActors().get(0);
+    AbstractActor actor = schedule.getActors().get(0);
+
+    // Call set block to put function call element into
+    LoopBlock callSet = CodegenFactory.eINSTANCE.createLoopBlock();
+
+    // If actors has to be repeated few times, build a FiniteLoopBlock
+    if (schedule.getRepetition() > 1) {
+      FiniteLoopBlock flb = CodegenFactory.eINSTANCE.createFiniteLoopBlock();
+      IntVar iterator = CodegenFactory.eINSTANCE.createIntVar();
+      iterator.setName("index_" + actor.getName());
+      // Register the iteration var for that specific actor/cluster
+      iterMap.put(actor, iterator);
+      flb.setIter(iterator);
+      flb.setNbIter((int) schedule.getRepetition());
+      flb.getCodeElts().add(callSet);
+      // Register FiniteLoopBlock as parallelizable if it's a ParallelActorSchedule
+      flb.setParallel(schedule.isParallel());
+      // Output the FiniteLoopBlock incorporating the LoopBlock
+      outputBlock = flb;
+    } else {
+      // Output the LoopBlock
+      outputBlock = callSet;
+    }
 
     if (actor instanceof SpecialActor) {
-      throw new PreesmRuntimeException(
-          "CodegenClusterModelGenerator does not handle special actor at this point of developement");
+      SpecialCall specialCall = CodegenFactory.eINSTANCE.createSpecialCall();
+
+      // Add special call to call set
+      callSet.getCodeElts().add(specialCall);
+
+      // Set type of special call
+      if (actor instanceof ForkActor) {
+        specialCall.setType(SpecialType.FORK);
+      } else if (actor instanceof JoinActor) {
+        specialCall.setType(SpecialType.JOIN);
+      } else if (actor instanceof BroadcastActor) {
+        specialCall.setType(SpecialType.BROADCAST);
+      } else if (actor instanceof RoundBufferActor) {
+        specialCall.setType(SpecialType.ROUND_BUFFER);
+      } else {
+        throw new PreesmRuntimeException("CodegenClusterModelGenerator can't retrieve type of special actor");
+      }
+
+      for (DataPort dp : actor.getAllDataPorts()) {
+        Buffer associatedBuffer = null;
+        if (dp instanceof DataInputPort) {
+          associatedBuffer = retrieveAssociatedBuffer(((DataInputPort) dp).getIncomingFifo());
+          associatedBuffer = buildIteratedBuffer(associatedBuffer, actor, dp);
+          specialCall.addInputBuffer(associatedBuffer);
+        } else {
+          associatedBuffer = retrieveAssociatedBuffer(((DataOutputPort) dp).getOutgoingFifo());
+          associatedBuffer = buildIteratedBuffer(associatedBuffer, actor, dp);
+          specialCall.addOutputBuffer(associatedBuffer);
+        }
+      }
+
     } else if (actor instanceof ExecutableActor) {
       // Retrieve and add init function
-      addInitFunctionCall(actor);
+      addInitFunctionCall((Actor) actor);
 
       // Build FunctionCall
       FunctionCall functionCall = CodegenFactory.eINSTANCE.createFunctionCall();
       functionCall.setActorName(actor.getName());
 
-      // Put FunctionCall in a block
-      LoopBlock callSet = CodegenFactory.eINSTANCE.createLoopBlock();
+      // Put FunctionCall in call set
       callSet.getCodeElts().add(functionCall);
 
-      // If actors has to be repeated few times, build a FiniteLoopBlock
-      if (schedule.getRepetition() > 1) {
-        FiniteLoopBlock flb = CodegenFactory.eINSTANCE.createFiniteLoopBlock();
-        IntVar iterator = CodegenFactory.eINSTANCE.createIntVar();
-        iterator.setName("index_" + actor.getName());
-        // Register the iteration var for that specific actor/cluster
-        iterMap.put(actor, iterator);
-        flb.setIter(iterator);
-        flb.setNbIter((int) schedule.getRepetition());
-        flb.getCodeElts().addAll(callSet.getCodeElts());
-        // Register FiniteLoopBlock as parallelizable if it's a ParallelActorSchedule
-        flb.setParallel(schedule.isParallel());
-        // Output the FiniteLoopBlock incorporating the LoopBlock
-        outputBlock = flb;
-      } else {
-        // Output the LoopBlock
-        outputBlock = callSet;
-      }
-
       // Retrieve Refinement from actor for loop function
-      fillFunctionCallArgument(functionCall, actor);
+      fillFunctionCallArgument(functionCall, (Actor) actor);
     }
 
     return outputBlock;
+  }
+
+  private final Buffer retrieveAssociatedBuffer(Fifo fifo) {
+    Buffer associatedBuffer = null;
+    if (internalBufferMap.containsKey(fifo)) {
+      associatedBuffer = internalBufferMap.get(fifo);
+    } else if (externalBufferMap.containsKey(fifo)) {
+      associatedBuffer = externalBufferMap.get(fifo);
+    } else {
+      throw new PreesmRuntimeException("Cannot associate actors FIFO with buffer in Codegen model generation");
+    }
+    return associatedBuffer;
+  }
+
+  private final Buffer buildIteratedBuffer(Buffer buffer, AbstractActor actor, DataPort dataPort) {
+    // If iteration map contain actor, it means that buffer has to be iterated
+    if (iterMap.containsKey(actor)) {
+      IteratedBuffer iteratedBuffer = null;
+      iteratedBuffer = CodegenFactory.eINSTANCE.createIteratedBuffer();
+      iteratedBuffer.setBuffer(buffer);
+      iteratedBuffer.setIter(iterMap.get(actor));
+      iteratedBuffer.setSize(dataPort.getExpression().evaluate());
+      return iteratedBuffer;
+    } else {
+      return buffer;
+    }
   }
 
   private final void addInitFunctionCall(Actor actor) {
@@ -318,32 +381,16 @@ public class CodegenClusterModelGenerator {
     // Retrieve associated Fifo
     Fifo associatedFifo = null;
     if (arg.getDirection().equals(Direction.IN)) {
-      DataInputPort dip = (DataInputPort) port;
-      associatedFifo = dip.getIncomingFifo();
+      associatedFifo = ((DataInputPort) port).getIncomingFifo();
     } else {
-      DataOutputPort dop = (DataOutputPort) port;
-      associatedFifo = dop.getOutgoingFifo();
+      associatedFifo = ((DataOutputPort) port).getOutgoingFifo();
     }
 
     // Retrieve associated Buffer
-    Buffer associatedBuffer = null;
-    if (internalBufferMap.containsKey(associatedFifo)) {
-      associatedBuffer = internalBufferMap.get(associatedFifo);
-    } else if (externalBufferMap.containsKey(associatedFifo)) {
-      associatedBuffer = externalBufferMap.get(associatedFifo);
-    } else {
-      throw new PreesmRuntimeException("Cannot associate actors FIFO with buffer in Codegen model generation");
-    }
+    Buffer associatedBuffer = retrieveAssociatedBuffer(associatedFifo);
 
     // If there is an iteration to run actor, iterate the buffer
-    if (iterMap.containsKey(actor)) {
-      IteratedBuffer iteratedBuffer = null;
-      iteratedBuffer = CodegenFactory.eINSTANCE.createIteratedBuffer();
-      iteratedBuffer.setBuffer(associatedBuffer);
-      iteratedBuffer.setIter(iterMap.get(actor));
-      iteratedBuffer.setIterSize(port.getExpression().evaluate());
-      associatedBuffer = iteratedBuffer;
-    }
+    associatedBuffer = buildIteratedBuffer(associatedBuffer, actor, port);
 
     // Add parameter to functionCall
     functionCall.addParameter(associatedBuffer,
@@ -457,9 +504,9 @@ public class CodegenClusterModelGenerator {
         iteratedBuffer.setIter(iterMap.get(cluster));
         // Retrieve prod/cons of cluster port
         if (direction.equals(PortDirection.INPUT)) {
-          iteratedBuffer.setIterSize(outsideFifo.getTargetPort().getExpression().evaluate());
+          iteratedBuffer.setSize(outsideFifo.getTargetPort().getExpression().evaluate());
         } else {
-          iteratedBuffer.setIterSize(outsideFifo.getSourcePort().getExpression().evaluate());
+          iteratedBuffer.setSize(outsideFifo.getSourcePort().getExpression().evaluate());
         }
         // Output a IteratedBuffer instead of parent Buffer
         buffer = iteratedBuffer;
