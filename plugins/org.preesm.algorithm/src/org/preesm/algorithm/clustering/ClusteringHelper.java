@@ -51,8 +51,16 @@ import org.preesm.algorithm.schedule.model.SequentialHiearchicalSchedule;
 import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.AbstractVertex;
+import org.preesm.model.pisdf.ConfigInputInterface;
+import org.preesm.model.pisdf.ConfigInputPort;
+import org.preesm.model.pisdf.DataInputInterface;
 import org.preesm.model.pisdf.DataInputPort;
+import org.preesm.model.pisdf.DataOutputInterface;
+import org.preesm.model.pisdf.DataOutputPort;
 import org.preesm.model.pisdf.Fifo;
+import org.preesm.model.pisdf.ISetter;
+import org.preesm.model.pisdf.Parameter;
+import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.scenario.Scenario;
 
 /**
@@ -169,7 +177,7 @@ public class ClusteringHelper {
     if (schedule instanceof HierarchicalSchedule) {
       HierarchicalSchedule hierSchedule = (HierarchicalSchedule) schedule;
       long maxDepth = iterator;
-      long tmpIterator = iterator;
+      long tmpIterator;
       for (Schedule child : hierSchedule.getChildren()) {
         tmpIterator = getParallelismDepth(child, iterator);
         if (tmpIterator > maxDepth) {
@@ -247,6 +255,75 @@ public class ClusteringHelper {
     }
 
     return schedule;
+  }
+
+  /**
+   * Used to get list of Fifo that interconnect actor included in the graph
+   * 
+   * @param graph
+   *          graph to get internal cluster Fifo from
+   * @return list of Fifo that connect actor inside of graph
+   */
+  public static final List<Fifo> getInternalClusterFifo(final PiGraph graph) {
+    final List<Fifo> internalFifo = new LinkedList<>();
+    for (final Fifo fifo : graph.getFifos()) {
+      // If the fifo connect two included actor,
+      if (!(fifo.getSource() instanceof DataInputInterface) && !(fifo.getTarget() instanceof DataOutputInterface)) {
+        // add it to internalFifo list
+        internalFifo.add(fifo);
+      }
+    }
+    return internalFifo;
+  }
+
+  /**
+   * Used to get the incoming Fifo from top level graph
+   * 
+   * @param inFifo
+   *          inside incoming fifo
+   * @return outside incoming fifo
+   */
+  public static Fifo getOutsideIncomingFifo(final Fifo inFifo) {
+    final AbstractActor sourceActor = (AbstractActor) inFifo.getSource();
+    if (sourceActor instanceof DataInputInterface) {
+      return ((DataInputPort) ((DataInputInterface) sourceActor).getGraphPort()).getIncomingFifo();
+    } else {
+      throw new PreesmRuntimeException(
+          "CodegenClusterModelGenerator: cannot find outside-cluster incoming fifo from " + inFifo.getTarget());
+    }
+  }
+
+  /**
+   * Used to get the outgoing Fifo from top level graph
+   * 
+   * @param inFifo
+   *          inside outgoing fifo
+   * @return outside outgoing fifo
+   */
+  public static Fifo getOutsideOutgoingFifo(final Fifo inFifo) {
+    final AbstractActor targetActor = (AbstractActor) inFifo.getTarget();
+    if (targetActor instanceof DataOutputInterface) {
+      return ((DataOutputPort) ((DataOutputInterface) targetActor).getGraphPort()).getOutgoingFifo();
+    } else {
+      throw new PreesmRuntimeException(
+          "CodegenClusterModelGenerator: cannot find outside-cluster outgoing fifo from " + inFifo.getSource());
+    }
+  }
+
+  /**
+   * Used to get setter parameter for a specific ConfigInputPort
+   * 
+   * @param port
+   *          port to get parameter from
+   * @return parameter
+   */
+  public static Parameter getSetterParameter(final ConfigInputPort port) {
+    final ISetter setter = port.getIncomingDependency().getSetter();
+    if (setter instanceof ConfigInputInterface) {
+      return getSetterParameter(((ConfigInputInterface) port.getIncomingDependency().getSetter()).getGraphPort());
+    } else {
+      return (Parameter) setter;
+    }
   }
 
 }
