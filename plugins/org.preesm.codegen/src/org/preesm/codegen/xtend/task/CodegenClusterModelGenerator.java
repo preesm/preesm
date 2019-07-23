@@ -112,8 +112,6 @@ public class CodegenClusterModelGenerator {
     this.repVector = PiBRV.compute(graph, BRVMethod.LCM);
     // Print cluster into operatorBlock
     operatorBlock.getLoopBlock().getCodeElts().add(buildClusterBlockRec(schedule));
-    // Add internal buffer definition
-    // operatorBlock.getDefinitions().addAll(internalBufferMap.values());
     // Print memory consumption of the cluster
     PreesmLogger.getLogger().log(Level.INFO,
         "Memory allocation for cluster " + graph.getName() + ": " + computeMemorySize() + " bytes");
@@ -131,7 +129,7 @@ public class CodegenClusterModelGenerator {
       }
     } else if (schedule instanceof ActorSchedule) {
       // If it's an actor firing, fill information for FunctionCall
-      outputBlock = buildActorCall((ActorSchedule) schedule);
+      outputBlock = buildAbstractActorCall((ActorSchedule) schedule);
     }
 
     return outputBlock;
@@ -145,24 +143,28 @@ public class CodegenClusterModelGenerator {
     return size;
   }
 
+  private final FiniteLoopBlock buildFiniteLoopBlock(Block toInclude, int repetition, AbstractActor actor,
+      boolean parallel) {
+    FiniteLoopBlock flb = CodegenFactory.eINSTANCE.createFiniteLoopBlock();
+    IntVar iterator = CodegenFactory.eINSTANCE.createIntVar();
+    iterator.setName("index_" + actor.getName());
+    // Register the iteration var for that specific actor/cluster
+    iterMap.put(actor, iterator);
+    flb.setIter(iterator);
+    flb.setNbIter(repetition);
+    // Insert ClusterBlock inside FiniteLoopBlock
+    flb.getCodeElts().add(toInclude);
+    // Disable loop parallelism
+    flb.setParallel(parallel);
+    return flb;
+  }
+
   private final Block buildDataParallelismBlock(Schedule schedule) {
     // Retrieve cluster from children hierarchical schedule
     HierarchicalSchedule childrenSchedule = (HierarchicalSchedule) schedule.getChildren().get(0);
     PiGraph cluster = (PiGraph) childrenSchedule.getAttachedActor();
     // Build FiniteLoopBlock
-    FiniteLoopBlock flb = CodegenFactory.eINSTANCE.createFiniteLoopBlock();
-    IntVar iterator = CodegenFactory.eINSTANCE.createIntVar();
-    iterator.setName("index_" + cluster.getName());
-    // Register the iteration var for that specific actor/cluster
-    iterMap.put(cluster, iterator);
-    flb.setIter(iterator);
-    flb.setNbIter((int) schedule.getRepetition());
-    // Insert ClusterBlock inside FinitLoopBlock
-    flb.getCodeElts().add(buildClusterBlockRec(childrenSchedule));
-    // Set the loop parallelizable if needed
-    flb.setParallel(true);
-    // Output the FiniteLoopBlock incorporating the ClusterBlock
-    return flb;
+    return buildFiniteLoopBlock(buildClusterBlockRec(childrenSchedule), (int) schedule.getRepetition(), cluster, true);
   }
 
   private final Block buildClusterBlock(Schedule schedule) {
@@ -171,7 +173,7 @@ public class CodegenClusterModelGenerator {
     // Retrieve cluster actor
     PiGraph cluster = (PiGraph) ((HierarchicalSchedule) schedule).getAttachedActor();
 
-    // Build and fill ClusterBlock
+    // Build and fill ClusterBlock attributes
     ClusterBlock clusterBlock = CodegenFactory.eINSTANCE.createClusterBlock();
     clusterBlock.setName(cluster.getName());
     clusterBlock.setSchedule(schedule.shortPrint());
@@ -179,26 +181,15 @@ public class CodegenClusterModelGenerator {
 
     // If the cluster has to be repeated few times, build a FiniteLoopBlock
     if (schedule.getRepetition() > 1) {
-      FiniteLoopBlock flb = CodegenFactory.eINSTANCE.createFiniteLoopBlock();
-      IntVar iterator = CodegenFactory.eINSTANCE.createIntVar();
-      iterator.setName("index_" + cluster.getName());
-      // Register the iteration var for that specific actor/cluster
-      iterMap.put(cluster, iterator);
-      flb.setIter(iterator);
-      flb.setNbIter((int) schedule.getRepetition());
-      // Insert ClusterBlock inside FiniteLoopBlock
-      flb.getCodeElts().add(clusterBlock);
-      // Disable loop parallelism
-      flb.setParallel(false);
-      // Output the FiniteLoopBlock incorporating the ClusterBlock
-      outputBlock = flb;
+      outputBlock = buildFiniteLoopBlock(clusterBlock, (int) schedule.getRepetition(), cluster, false);
     } else {
       // Output the ClusterBlock
       outputBlock = clusterBlock;
     }
 
     // Make memory allocation for internal buffer
-    clusterBlock.getDefinitions().addAll(buildInternalClusterBuffer(cluster));
+    List<Buffer> internalClusterBuffer = buildInternalClusterBuffer(cluster);
+    clusterBlock.getDefinitions().addAll(internalClusterBuffer);
     // Make memory allocation for external buffer i.e. fifo that goes outside of the hierarchical actor of the cluster
     buildExternalClusterBuffer(cluster);
 
@@ -217,7 +208,7 @@ public class CodegenClusterModelGenerator {
     return outputBlock;
   }
 
-  private final Block buildActorCall(ActorSchedule schedule) {
+  private final Block buildAbstractActorCall(ActorSchedule schedule) {
     Block outputBlock = null;
 
     // Retrieve actor to fire
@@ -228,71 +219,68 @@ public class CodegenClusterModelGenerator {
 
     // If actors has to be repeated few times, build a FiniteLoopBlock
     if (schedule.getRepetition() > 1) {
-      FiniteLoopBlock flb = CodegenFactory.eINSTANCE.createFiniteLoopBlock();
-      IntVar iterator = CodegenFactory.eINSTANCE.createIntVar();
-      iterator.setName("index_" + actor.getName());
-      // Register the iteration var for that specific actor/cluster
-      iterMap.put(actor, iterator);
-      flb.setIter(iterator);
-      flb.setNbIter((int) schedule.getRepetition());
-      flb.getCodeElts().add(callSet);
-      // Register FiniteLoopBlock as parallelizable if it's a ParallelActorSchedule
-      flb.setParallel(schedule.isParallel());
-      // Output the FiniteLoopBlock incorporating the LoopBlock
-      outputBlock = flb;
+      outputBlock = buildFiniteLoopBlock(callSet, (int) schedule.getRepetition(), actor, schedule.isParallel());
     } else {
       // Output the LoopBlock
       outputBlock = callSet;
     }
 
+    // Build corresponding actor function/special call
     if (actor instanceof SpecialActor) {
-      SpecialCall specialCall = CodegenFactory.eINSTANCE.createSpecialCall();
-
-      // Add special call to call set
-      callSet.getCodeElts().add(specialCall);
-
-      // Set type of special call
-      if (actor instanceof ForkActor) {
-        specialCall.setType(SpecialType.FORK);
-      } else if (actor instanceof JoinActor) {
-        specialCall.setType(SpecialType.JOIN);
-      } else if (actor instanceof BroadcastActor) {
-        specialCall.setType(SpecialType.BROADCAST);
-      } else if (actor instanceof RoundBufferActor) {
-        specialCall.setType(SpecialType.ROUND_BUFFER);
-      } else {
-        throw new PreesmRuntimeException("CodegenClusterModelGenerator can't retrieve type of special actor");
-      }
-
-      for (DataPort dp : actor.getAllDataPorts()) {
-        Buffer associatedBuffer = null;
-        if (dp instanceof DataInputPort) {
-          associatedBuffer = retrieveAssociatedBuffer(((DataInputPort) dp).getIncomingFifo());
-          associatedBuffer = buildIteratedBuffer(associatedBuffer, actor, dp);
-          specialCall.addInputBuffer(associatedBuffer);
-        } else {
-          associatedBuffer = retrieveAssociatedBuffer(((DataOutputPort) dp).getOutgoingFifo());
-          associatedBuffer = buildIteratedBuffer(associatedBuffer, actor, dp);
-          specialCall.addOutputBuffer(associatedBuffer);
-        }
-      }
-
+      callSet.getCodeElts().add(buildSpecialActorCall((SpecialActor) actor));
     } else if (actor instanceof ExecutableActor) {
-      // Retrieve and add init function
-      addInitFunctionCall((Actor) actor);
-
-      // Build FunctionCall
-      FunctionCall functionCall = CodegenFactory.eINSTANCE.createFunctionCall();
-      functionCall.setActorName(actor.getName());
-
-      // Put FunctionCall in call set
-      callSet.getCodeElts().add(functionCall);
-
-      // Retrieve Refinement from actor for loop function
-      fillFunctionCallArgument(functionCall, (Actor) actor);
+      callSet.getCodeElts().add(buildExecutableActorCall((ExecutableActor) actor));
     }
 
     return outputBlock;
+  }
+
+  private final SpecialCall buildSpecialActorCall(SpecialActor actor) {
+    // Instantiate special call object
+    SpecialCall specialCall = CodegenFactory.eINSTANCE.createSpecialCall();
+
+    // Set type of special call
+    if (actor instanceof ForkActor) {
+      specialCall.setType(SpecialType.FORK);
+    } else if (actor instanceof JoinActor) {
+      specialCall.setType(SpecialType.JOIN);
+    } else if (actor instanceof BroadcastActor) {
+      specialCall.setType(SpecialType.BROADCAST);
+    } else if (actor instanceof RoundBufferActor) {
+      specialCall.setType(SpecialType.ROUND_BUFFER);
+    } else {
+      throw new PreesmRuntimeException("CodegenClusterModelGenerator can't retrieve type of special actor");
+    }
+
+    // Retrieve associated fifo/buffer
+    for (DataPort dp : actor.getAllDataPorts()) {
+      Buffer associatedBuffer = null;
+      if (dp instanceof DataInputPort) {
+        associatedBuffer = retrieveAssociatedBuffer(((DataInputPort) dp).getIncomingFifo());
+        associatedBuffer = buildIteratedBuffer(associatedBuffer, actor, dp);
+        specialCall.addInputBuffer(associatedBuffer);
+      } else {
+        associatedBuffer = retrieveAssociatedBuffer(((DataOutputPort) dp).getOutgoingFifo());
+        associatedBuffer = buildIteratedBuffer(associatedBuffer, actor, dp);
+        specialCall.addOutputBuffer(associatedBuffer);
+      }
+    }
+
+    return specialCall;
+  }
+
+  private final FunctionCall buildExecutableActorCall(ExecutableActor actor) {
+    // Build FunctionCall
+    FunctionCall functionCall = CodegenFactory.eINSTANCE.createFunctionCall();
+    functionCall.setActorName(actor.getName());
+
+    // Retrieve Refinement from actor for loop function
+    fillFunctionCallArgument(functionCall, (Actor) actor);
+
+    // Retrieve and add init function to operator core block
+    addInitFunctionCall((Actor) actor);
+
+    return functionCall;
   }
 
   private final Buffer retrieveAssociatedBuffer(Fifo fifo) {
@@ -313,6 +301,9 @@ public class CodegenClusterModelGenerator {
       IteratedBuffer iteratedBuffer = null;
       iteratedBuffer = CodegenFactory.eINSTANCE.createIteratedBuffer();
       iteratedBuffer.setBuffer(buffer);
+      if (!iterMap.containsKey(actor)) {
+        throw new PreesmRuntimeException("CodegenClusterModelGenerator: cannot find iteration for " + actor.toString());
+      }
       iteratedBuffer.setIter(iterMap.get(actor));
       iteratedBuffer.setSize(dataPort.getExpression().evaluate());
       return iteratedBuffer;
@@ -469,15 +460,19 @@ public class CodegenClusterModelGenerator {
     // For all external Fifo
     for (Fifo fifo : externalFifo) {
       Fifo outsideFifo = null;
-
+      DataPort outsidePort = null;
       // Determine Fifo direction
-      PortDirection direction;
       if (fifo.getSource() instanceof DataInputInterface) {
         outsideFifo = getOutsideIncomingFifo(fifo);
-        direction = PortDirection.INPUT;
+        outsidePort = outsideFifo.getTargetPort();
       } else {
         outsideFifo = getOutsideOutgoingFifo(fifo);
-        direction = PortDirection.OUTPUT;
+        outsidePort = outsideFifo.getSourcePort();
+      }
+
+      if ((outsideFifo == null) || (outsidePort == null)) {
+        throw new PreesmRuntimeException(
+            "CodegenClusterModelGenerator: cannot retrieve external fifo of cluster " + cluster.toString());
       }
 
       // Retrieve from map the corresponding parent buffer
@@ -488,28 +483,12 @@ public class CodegenClusterModelGenerator {
         buffer = externalBufferMap.get(outsideFifo);
       } else {
         // This is actually an outside cluster fifo, so we need to get from outside
-        if (direction.equals(PortDirection.OUTPUT)) {
-          buffer = getOuterClusterBuffer(outsideFifo.getSourcePort());
-        } else {
-          buffer = getOuterClusterBuffer(outsideFifo.getTargetPort());
-        }
+        buffer = getOuterClusterBuffer(outsidePort);
       }
 
       // If cluster is repeated few times, create an iterated buffer
       if (this.repVector.get(cluster) > 1) {
-        IteratedBuffer iteratedBuffer = CodegenFactory.eINSTANCE.createIteratedBuffer();
-        // Iterative buffer contains parent buffer
-        iteratedBuffer.setBuffer(buffer);
-        // Get iterator for this repeated cluster
-        iteratedBuffer.setIter(iterMap.get(cluster));
-        // Retrieve prod/cons of cluster port
-        if (direction.equals(PortDirection.INPUT)) {
-          iteratedBuffer.setSize(outsideFifo.getTargetPort().getExpression().evaluate());
-        } else {
-          iteratedBuffer.setSize(outsideFifo.getSourcePort().getExpression().evaluate());
-        }
-        // Output a IteratedBuffer instead of parent Buffer
-        buffer = iteratedBuffer;
+        buffer = buildIteratedBuffer(buffer, cluster, outsidePort);
       }
 
       // Register external buffer with corresponding fifo
