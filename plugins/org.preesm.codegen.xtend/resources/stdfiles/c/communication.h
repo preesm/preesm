@@ -51,6 +51,9 @@ communications.
 #ifndef _PREESM_COMMUNICATION_H
 #define _PREESM_COMMUNICATION_H
 
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 #ifdef __APPLE__
 #include <dispatch/dispatch.h>
@@ -125,5 +128,9 @@ void receiveStart();
 *        the ID of the receiver core
 */
 void receiveEnd(int senderID, int receveirID);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif

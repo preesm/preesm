@@ -35,7 +35,13 @@
 #ifndef _PREESM_SOCKETCOM_H_
 #define _PREESM_SOCKETCOM_H_
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+#ifndef
 #define _GNU_SOURCE
+#endif
 
 //#define _PREESM_TCP_DEBUG_ 1
 
@@ -91,5 +97,9 @@ void preesm_open(int* socketFileDescriptors, int processingElementID, int number
 void preesm_close(int * socketRegistry, int processingElementID, int numberOfProcessingElements);
 
 void preesm_barrier(int * socketRegistry, int processingElementID, int numberOfProcessingElements);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif

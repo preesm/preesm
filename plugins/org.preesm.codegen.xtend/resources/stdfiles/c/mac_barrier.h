@@ -35,13 +35,13 @@
 #ifndef _PREESM_MAC_BARRIER_H
 #define _PREESM_MAC_BARRIER_H
 
-#include <pthread.h>
-
-#ifdef __APPLE__
-
 #ifdef __cplusplus
 extern "C" {
 #endif
+
+#include <pthread.h>
+
+#ifdef __APPLE__
 
 #if !defined(PTHREAD_BARRIER_SERIAL_THREAD)
 # define PTHREAD_BARRIER_SERIAL_THREAD	(1)
@@ -80,10 +80,10 @@ int pthread_barrier_destroy(pthread_barrier_t *barrier);
 
 int pthread_barrier_wait(pthread_barrier_t *barrier);
 
-#ifdef  __cplusplus
+#endif /* __APPLE__ */
+
+#ifdef __cplusplus
 }
 #endif
-
-#endif /* __APPLE__ */
 
 #endif /* PTHREAD_BARRIER_H */
