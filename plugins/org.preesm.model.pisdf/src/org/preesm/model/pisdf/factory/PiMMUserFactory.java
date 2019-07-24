@@ -36,7 +36,11 @@
  */
 package org.preesm.model.pisdf.factory;
 
+import org.eclipse.emf.common.util.EList;
+import org.preesm.commons.exceptions.PreesmRuntimeException;
+import org.preesm.commons.model.PreesmCopyTracker;
 import org.preesm.commons.model.PreesmUserFactory;
+import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.Actor;
 import org.preesm.model.pisdf.ConfigInputInterface;
 import org.preesm.model.pisdf.ConfigInputPort;
@@ -50,11 +54,9 @@ import org.preesm.model.pisdf.Delay;
 import org.preesm.model.pisdf.DelayActor;
 import org.preesm.model.pisdf.DelayLinkedExpression;
 import org.preesm.model.pisdf.Dependency;
-import org.preesm.model.pisdf.EndActor;
 import org.preesm.model.pisdf.Expression;
 import org.preesm.model.pisdf.Fifo;
 import org.preesm.model.pisdf.ISetter;
-import org.preesm.model.pisdf.InitActor;
 import org.preesm.model.pisdf.LongExpression;
 import org.preesm.model.pisdf.Parameter;
 import org.preesm.model.pisdf.PersistenceLevel;
@@ -74,6 +76,70 @@ public final class PiMMUserFactory extends PiMMFactoryImpl implements PreesmUser
 
   private PiMMUserFactory() {
     // forbid instantiation
+  }
+
+  /**
+   * Copy PiGraph tracking history of its children (actors, fifos, parameters, dependencies).
+   */
+  public PiGraph copyPiGraphWithHistory(final PiGraph origGraph) {
+    // generic type forced to EObject to call the default copy from PreesmUserFactory
+    final PiGraph copyGraph = this.copyWithHistory(origGraph);
+
+    // track parameters
+    final EList<Parameter> allOrigParams = origGraph.getAllParameters();
+    final EList<Parameter> allCopyParams = copyGraph.getAllParameters();
+    if (allOrigParams.size() != allCopyParams.size()) {
+      throw new PreesmRuntimeException("Copy is not consistent regarding parameters");
+    }
+    for (int i = 0; i < allOrigParams.size(); i++) {
+      final Parameter paramOrig = allOrigParams.get(i);
+      final Parameter paramCopy = allCopyParams.get(i);
+      if (!paramOrig.getVertexPath().equals(paramCopy.getVertexPath())) {
+        throw new PreesmRuntimeException("Copy did not preserve order on parameters");
+      }
+      PreesmCopyTracker.trackCopy(paramOrig, paramCopy);
+    }
+
+    // track actors
+    final EList<AbstractActor> allOrigActors = origGraph.getAllActors();
+    final EList<AbstractActor> allCopyActors = copyGraph.getAllActors();
+    if (allOrigActors.size() != allCopyActors.size()) {
+      throw new PreesmRuntimeException("Copy is not consistent regarding actors");
+    }
+    for (int i = 0; i < allOrigActors.size(); i++) {
+      final AbstractActor actorOrig = allOrigActors.get(i);
+      final AbstractActor actorCopy = allCopyActors.get(i);
+      if (!actorOrig.getVertexPath().equals(actorCopy.getVertexPath())) {
+        throw new PreesmRuntimeException("Copy did not preserve order on actors");
+      }
+      PreesmCopyTracker.trackCopy(actorOrig, actorCopy);
+    }
+
+    // track dependencies
+    final EList<Dependency> allOrigDeps = origGraph.getAllDependencies();
+    final EList<Dependency> allCopyDeps = copyGraph.getAllDependencies();
+    if (allOrigDeps.size() != allCopyDeps.size()) {
+      throw new PreesmRuntimeException("Copy is not consistent regarding dependencies");
+    }
+    for (int i = 0; i < allOrigDeps.size(); i++) {
+      final Dependency depOrig = allOrigDeps.get(i);
+      final Dependency depCopy = allCopyDeps.get(i);
+      PreesmCopyTracker.trackCopy(depOrig, depCopy);
+    }
+
+    // track fifos
+    final EList<Fifo> allOrigFifos = origGraph.getAllFifos();
+    final EList<Fifo> allCopyFifos = copyGraph.getAllFifos();
+    if (allOrigFifos.size() != allCopyFifos.size()) {
+      throw new PreesmRuntimeException("Copy is not consistent regarding fifos");
+    }
+    for (int i = 0; i < allOrigFifos.size(); i++) {
+      final Fifo fifoOrig = allOrigFifos.get(i);
+      final Fifo fifoCopy = allCopyFifos.get(i);
+      PreesmCopyTracker.trackCopy(fifoOrig, fifoCopy);
+    }
+
+    return copyGraph;
   }
 
   /**
@@ -217,18 +283,6 @@ public final class PiMMUserFactory extends PiMMFactoryImpl implements PreesmUser
     final Actor res = super.createActor();
     final Expression exp = createExpression();
     res.setExpression(exp);
-    return res;
-  }
-
-  @Override
-  public InitActor createInitActor() {
-    final InitActor res = super.createInitActor();
-    return res;
-  }
-
-  @Override
-  public EndActor createEndActor() {
-    final EndActor res = super.createEndActor();
     return res;
   }
 

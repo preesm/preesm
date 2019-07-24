@@ -8,6 +8,7 @@ PREESM Changelog
 
 ### Changes
 * Update Codegen to properly clean the directory before generating code;
+* Update Preesm adapters and copy;
 
 ### Bug fix
 

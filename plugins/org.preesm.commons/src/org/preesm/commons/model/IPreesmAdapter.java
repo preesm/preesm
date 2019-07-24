@@ -34,33 +34,49 @@
  */
 package org.preesm.commons.model;
 
+import java.util.ArrayList;
+import java.util.List;
+import org.eclipse.emf.common.notify.Adapter;
 import org.eclipse.emf.common.notify.Notifier;
-import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.util.EcoreUtil;
 
 /**
+ * @author anmorvan
  *
  */
-public interface PreesmUserFactory {
+public interface IPreesmAdapter extends Adapter {
 
-  /**
-   * Copy an existing Preesm object.
-   */
-  public default <T extends EObject> T copy(final T eObject) {
-    final EcoreUtil.Copier copier = new EcoreUtil.Copier(false);
-    @SuppressWarnings("unchecked")
-    final T copy = (T) copier.copy(eObject);
-    copier.copyReferences();
-    return copy;
+  public static <T extends IPreesmAdapter> void unadapt(final Notifier notifier, final Class<T> target) {
+    unadapt(notifier.eAdapters(), target);
   }
 
   /**
-   * Copy an existing Preesm object. The original version of the object can be accessed using
-   * {@link PreesmCopyTracker#getSource(Notifier)} and {@link PreesmCopyTracker#getOriginalSource(Notifier)}.
+   *
    */
-  public default <T extends EObject> T copyWithHistory(final T eObject) {
-    final T copy = copy(eObject);
-    PreesmCopyTracker.trackCopy(eObject, copy);
-    return copy;
+  public static <T extends IPreesmAdapter> void unadapt(final List<? extends Adapter> adapters, final Class<T> target) {
+    final List<Adapter> arrayList = new ArrayList<>(adapters);
+    final Adapter adapter = EcoreUtil.getAdapter(arrayList, target);
+    if (adapter != null) {
+      adapters.remove(adapter);
+    }
+  }
+
+  public static <T extends IPreesmAdapter> T adapt(final Notifier notifier, final Class<T> target) {
+    return adapt(notifier.eAdapters(), target);
+  }
+
+  /**
+   *
+   */
+  public static <T extends IPreesmAdapter> T adapt(final List<? extends Adapter> adapters, final Class<T> target) {
+    final List<Adapter> arrayList = new ArrayList<>(adapters);
+    final Adapter adapter = EcoreUtil.getAdapter(arrayList, target);
+    @SuppressWarnings("unchecked")
+    final T result = (T) adapter;
+    return result;
+  }
+
+  default boolean isAdapterForClass(final Class<?> type) {
+    return this.getClass() == type;
   }
 }
