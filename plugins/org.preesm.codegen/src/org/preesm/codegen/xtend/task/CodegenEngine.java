@@ -366,6 +366,8 @@ public class CodegenEngine {
     final String ext = iFile.getFileExtension();
     switch (ext) {
       case "c":
+      case "h":
+      case "cpp":
         PreesmCFormatter.format(iFile);
         break;
       case "xml":
