@@ -7,6 +7,7 @@ PREESM Changelog
 ### New Feature
 
 ### Changes
+* Update Codegen to properly clean the directory before generating code;
 
 ### Bug fix
 
