@@ -26,12 +26,8 @@ import org.preesm.workflow.implement.AbstractTaskImplementation;
     inputs = { @Port(name = "PiMM", type = PiGraph.class) },
     outputs = { @Port(name = "PiMM", type = PiGraph.class), @Port(name = "schedules", type = Map.class) },
     description = "Workflow task responsible for clustering hierarchical actors.",
-    parameters = {
-        @Parameter(name = "Algorithm",
-            values = { @Value(name = "APGAN", effect = ""), @Value(name = "Dummy", effect = ""),
-                @Value(name = "Random", effect = "") }),
-        @Parameter(name = "Maximum parallelism depth", description = "Maximum parallelism depth allowed",
-            values = { @Value(name = "$$n\\in \\mathbb{N}^*$$", effect = "Maximum parallelism depth") }) })
+    parameters = { @Parameter(name = "Algorithm", values = { @Value(name = "APGAN", effect = ""),
+        @Value(name = "Dummy", effect = ""), @Value(name = "Random", effect = "") }) })
 public class Clustering extends AbstractTaskImplementation {
 
   @Override
@@ -40,27 +36,22 @@ public class Clustering extends AbstractTaskImplementation {
     // Retrieve inputs and parameters
     final PiGraph algorithm = (PiGraph) inputs.get("PiMM");
     String clusteringAlgorithm = parameters.get("Algorithm");
-    String depthLimitation = parameters.get("Maximum parallelism depth");
 
     // Instantiate a ClusteringBuilder and process clustering
     ClusteringBuilder clusteringBuilder = new ClusteringBuilder(algorithm, clusteringAlgorithm);
     Map<AbstractActor, Schedule> scheduleMapping = clusteringBuilder.processClustering();
 
-    if (depthLimitation != null) {
-      // Perform parallelism depth limitation
-      for (Entry<AbstractActor, Schedule> entry : scheduleMapping.entrySet()) {
-        Schedule schedule = entry.getValue();
-        schedule = ClusteringHelper.setParallelismDepth(schedule, 0, Long.parseLong(depthLimitation));
-        scheduleMapping.replace(entry.getKey(), schedule);
-      }
-    }
-
-    // Print corresponding schedule to console
-    for (Entry<AbstractActor, Schedule> clusterSet : scheduleMapping.entrySet()) {
-      PreesmLogger.getLogger().log(Level.INFO, "Schedule for cluster " + clusterSet.getKey().getName() + ":");
-      PreesmLogger.getLogger().log(Level.INFO, clusterSet.getValue().shortPrint());
-      PreesmLogger.getLogger().log(Level.INFO,
-          "has a parallelism depth of " + ClusteringHelper.getParallelismDepth(clusterSet.getValue(), 0));
+    // Perform parallelism depth limitation and print information in console
+    for (Entry<AbstractActor, Schedule> entry : scheduleMapping.entrySet()) {
+      // Depth control
+      Schedule schedule = entry.getValue();
+      schedule = ClusteringHelper.setParallelismDepth(schedule, 0 /* depth-iterator */, 1 /* depth */);
+      scheduleMapping.replace(entry.getKey(), schedule);
+      // Printing
+      String scheduleStr = "Schedule for cluster " + entry.getKey().getName() + ":";
+      PreesmLogger.getLogger().log(Level.INFO, scheduleStr);
+      scheduleStr = schedule.shortPrint();
+      PreesmLogger.getLogger().log(Level.INFO, scheduleStr);
     }
 
     // Output PiSDF and Schedule Mapping attachment
