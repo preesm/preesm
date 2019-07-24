@@ -175,7 +175,7 @@ public class PiParser {
    *          The name of the property
    * @return The property value or null if the property was not found
    */
-  protected static String getProperty(final Element elt, final String propertyName) {
+  private static String getProperty(final Element elt, final String propertyName) {
     final NodeList childList = elt.getChildNodes();
     for (int i = 0; i < childList.getLength(); i++) {
       if (childList.item(i).getNodeName().equals("data")
@@ -195,7 +195,7 @@ public class PiParser {
    * @param uri
    *          the uri
    */
-  public PiParser(final URI uri) {
+  PiParser(final URI uri) {
     this.documentURI = uri;
   }
 
@@ -206,7 +206,7 @@ public class PiParser {
    *          The Parsed input stream
    * @return The parsed Graph or null is something went wrong
    */
-  public PiGraph parse(final InputStream inputStream) {
+  PiGraph parse(final InputStream inputStream) {
     // Instantiate the graph that will be filled with parser informations
     final PiGraph graph = PiMMUserFactory.instance.createPiGraph();
 
@@ -247,7 +247,7 @@ public class PiParser {
    *          the deserialized {@link PiGraph}
    * @return the created actor
    */
-  protected Actor parseActor(final Element nodeElt, final PiGraph graph) {
+  private Actor parseActor(final Element nodeElt, final PiGraph graph) {
     // Instantiate the new actor
     final Actor actor = PiMMUserFactory.instance.createActor();
 
@@ -399,7 +399,7 @@ public class PiParser {
    *          the deserialized {@link PiGraph}.
    * @return the {@link AbstractVertex} of the {@link Parameter}.
    */
-  protected ConfigInputInterface parseConfigInputInterface(final Element nodeElt, final PiGraph graph) {
+  private ConfigInputInterface parseConfigInputInterface(final Element nodeElt, final PiGraph graph) {
     // Instantiate the new Config Input Interface
     final ConfigInputInterface param = PiMMUserFactory.instance.createConfigInputInterface();
 
@@ -422,7 +422,7 @@ public class PiParser {
    * @param graph
    *          the deserialized {@link PiGraph}
    */
-  protected void parseDependencies(final Element edgeElt, final PiGraph graph) {
+  private void parseDependencies(final Element edgeElt, final PiGraph graph) {
     // Instantiate the new Dependency
     final Dependency dependency = PiMMUserFactory.instance.createDependency();
 
@@ -505,7 +505,7 @@ public class PiParser {
    * @param graph
    *          The deserialized graph
    */
-  protected void parseEdge(final Element edgeElt, final PiGraph graph) {
+  private void parseEdge(final Element edgeElt, final PiGraph graph) {
     // Identify if the node is an actor or a parameter
     final String edgeKind = edgeElt.getAttribute(PiIdentifiers.EDGE_KIND);
 
@@ -547,7 +547,7 @@ public class PiParser {
    * @param graph
    *          the deserialized {@link PiGraph}
    */
-  protected void parseFifo(final Element edgeElt, final PiGraph graph) {
+  private void parseFifo(final Element edgeElt, final PiGraph graph) {
     // Instantiate the new FIFO
 
     // Find the source and target of the fifo
@@ -622,7 +622,7 @@ public class PiParser {
    *          the deserialized {@link PiGraph}
    * @return the created delay
    */
-  protected DelayActor parseDelay(final Element nodeElt, final PiGraph graph) {
+  private DelayActor parseDelay(final Element nodeElt, final PiGraph graph) {
     // 1. Instantiate the new delay
     final Delay delay = PiMMUserFactory.instance.createDelay();
 
@@ -691,7 +691,7 @@ public class PiParser {
    * @param graph
    *          The deserialized {@link PiGraph}
    */
-  protected void parseGraph(final Element rootElt, final PiGraph graph) {
+  private void parseGraph(final Element rootElt, final PiGraph graph) {
     // Retrieve the Graph Element
     final NodeList graphElts = rootElt.getElementsByTagName(PiIdentifiers.GRAPH);
     if (graphElts.getLength() == 0) {
@@ -743,7 +743,7 @@ public class PiParser {
    * @param graph
    *          The deserialized {@link PiGraph}
    */
-  protected void parseNode(final Element nodeElt, final PiGraph graph) {
+  private void parseNode(final Element nodeElt, final PiGraph graph) {
     String nodeName = nodeElt.getNodeName();
     // Identify if the node is an actor or a parameter
     final String nodeKind = nodeElt.getAttribute(PiIdentifiers.NODE_KIND);
@@ -823,7 +823,7 @@ public class PiParser {
    *          the deserialized {@link PiGraph}.
    * @return the {@link AbstractVertex} of the {@link Parameter}.
    */
-  protected Parameter parseParameter(final Element nodeElt, final PiGraph graph) {
+  private Parameter parseParameter(final Element nodeElt, final PiGraph graph) {
     // Instantiate the new Parameter
     final Parameter param = PiMMUserFactory.instance.createParameter();
     param.setExpression(nodeElt.getAttribute(PiIdentifiers.PARAMETER_EXPRESSION));
@@ -847,7 +847,7 @@ public class PiParser {
    * @param graph
    *          The deserialized {@link PiGraph}
    */
-  protected void parsePi(final Element rootElt, final PiGraph graph) {
+  private void parsePi(final Element rootElt, final PiGraph graph) {
     // Parse the graph element
     parseGraph(rootElt, graph);
   }
@@ -860,7 +860,7 @@ public class PiParser {
    * @param vertex
    *          the {@link AbstractVertex} owning this {@link Port}
    */
-  protected void parsePort(final Element elt, final Configurable vertex) {
+  private void parsePort(final Element elt, final Configurable vertex) {
     final String portName = elt.getAttribute(PiIdentifiers.PORT_NAME);
     NameCheckerC.checkValidName(Port.class.getName(), portName);
 
@@ -945,7 +945,7 @@ public class PiParser {
    *          the deserialized {@link PiGraph}
    * @return the created {@link ConfigOutputInterface}
    */
-  protected AbstractActor parseConfigOutputInterface(final Element nodeElt, final PiGraph graph) {
+  private AbstractActor parseConfigOutputInterface(final Element nodeElt, final PiGraph graph) {
     // Instantiate the new Interface and its corresponding port
     final ConfigOutputInterface cfgOutIf = PiMMUserFactory.instance.createConfigOutputInterface();
 
@@ -971,7 +971,7 @@ public class PiParser {
    *          the deserialized {@link PiGraph}
    * @return the created {@link DataOutputInterface}
    */
-  protected AbstractActor parseSinkInterface(final Element nodeElt, final PiGraph graph) {
+  private AbstractActor parseSinkInterface(final Element nodeElt, final PiGraph graph) {
     // Instantiate the new Interface and its corresponding port
     final DataOutputInterface snkInterface = PiMMUserFactory.instance.createDataOutputInterface();
 
@@ -1000,7 +1000,7 @@ public class PiParser {
    *          the deserialized {@link PiGraph}
    * @return the created {@link DataInputInterface}
    */
-  protected AbstractActor parseSourceInterface(final Element nodeElt, final PiGraph graph) {
+  private AbstractActor parseSourceInterface(final Element nodeElt, final PiGraph graph) {
     // Instantiate the new Interface and its corresponding port
     final DataInputInterface srcInterface = PiMMUserFactory.instance.createDataInputInterface();
 
@@ -1026,7 +1026,7 @@ public class PiParser {
    *          the deserialized {@link PiGraph}
    * @return the created actor
    */
-  protected AbstractActor parseSpecialActor(final Element nodeElt, final PiGraph graph) {
+  private AbstractActor parseSpecialActor(final Element nodeElt, final PiGraph graph) {
     // Identify if the node is an actor or a parameter
     final String nodeKind = nodeElt.getAttribute(PiIdentifiers.NODE_KIND);
     AbstractActor actor = null;
