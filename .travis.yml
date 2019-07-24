@@ -31,7 +31,7 @@ addons:
 script: 
   - git fetch --unshallow --quiet
   - if [ "$TRAVIS_BRANCH" != "master" ]; then git fetch --no-tags https://github.com/$TRAVIS_REPO_SLUG.git +refs/heads/master:refs/remotes/origin/master ;fi
-  - ./releng/build_and_test.sh --fast
+  - ./releng/build_and_test.sh
 
 
 
