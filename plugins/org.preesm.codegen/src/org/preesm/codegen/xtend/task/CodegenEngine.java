@@ -76,6 +76,8 @@ import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
 import org.eclipse.emf.ecore.xmi.impl.XMIResourceFactoryImpl;
 import org.preesm.algorithm.mapper.model.MapperDAG;
 import org.preesm.algorithm.memory.exclusiongraph.MemoryExclusionGraph;
+import org.preesm.codegen.format.PreesmCFormatter;
+import org.preesm.codegen.format.PreesmXMLFormatter;
 import org.preesm.codegen.model.Block;
 import org.preesm.codegen.model.CoreBlock;
 import org.preesm.codegen.printer.CodegenAbstractPrinter;
@@ -354,9 +356,27 @@ public class CodegenEngine {
       }
       iFile.setContents(new ByteArrayInputStream(fileContent.toString().getBytes()), true, false,
           new NullProgressMonitor());
-
+      format(iFile);
     } catch (final CoreException ex) {
       throw new PreesmRuntimeException("Could not generated source file for " + fileName, ex);
     }
+  }
+
+  private void format(final IFile iFile) {
+    final String ext = iFile.getFileExtension();
+    switch (ext) {
+      case "c":
+      case "h":
+      case "cpp":
+        PreesmCFormatter.format(iFile);
+        break;
+      case "xml":
+        PreesmXMLFormatter.format(iFile);
+        break;
+      default:
+        final String msg = "Unsupported file extension : '" + ext + "'";
+        PreesmLogger.getLogger().log(Level.INFO, msg);
+    }
+
   }
 }
