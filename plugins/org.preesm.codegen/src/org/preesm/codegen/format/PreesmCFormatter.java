@@ -35,6 +35,7 @@ public class PreesmCFormatter {
     options.put("org.eclipse.cdt.core.formatter.tabulation.char", "space");
     options.put("org.eclipse.cdt.core.formatter.tabulation.size", "2");
     options.put("org.eclipse.cdt.core.formatter.lineSplit", "120");
+    options.put("org.eclipse.cdt.core.encoding", "UTF-8");
     final CodeFormatter formatter = ToolFactory.createDefaultCodeFormatter(options);
     PreesmCFormatter.formatFile(file.getRawLocation().toFile(), formatter);
   }
