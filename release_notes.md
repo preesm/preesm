@@ -7,7 +7,9 @@ PREESM Changelog
 ### New Feature
 
 ### Changes
-* Update Codegen to properly clean the directory before generating code;
+* Codegen:
+  * Update Codegen to properly clean the directory before generating code;
+  * Add C/C++ and XML code formatters;
 * Update Preesm adapters and copy;
 
 ### Bug fix
