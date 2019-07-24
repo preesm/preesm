@@ -48,7 +48,7 @@ public abstract class PreesmAdapter extends AdapterImpl implements IPreesmAdapte
   @Override
   public boolean isAdapterForType(Object type) {
     if (type instanceof Class) {
-      return isAdapterForType((Class<?>) type);
+      return isAdapterForClass((Class<?>) type);
     } else {
       return super.isAdapterForType(type);
     }

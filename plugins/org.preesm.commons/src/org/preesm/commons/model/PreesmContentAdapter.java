@@ -48,9 +48,10 @@ public abstract class PreesmContentAdapter extends EContentAdapter implements IP
   @Override
   public boolean isAdapterForType(Object type) {
     if (type instanceof Class) {
-      return isAdapterForType((Class<?>) type);
+      return isAdapterForClass((Class<?>) type);
     } else {
       return super.isAdapterForType(type);
     }
   }
+
 }

@@ -76,7 +76,7 @@ public interface IPreesmAdapter extends Adapter {
     return result;
   }
 
-  default boolean isAdapterForType(Class<?> type) {
+  default boolean isAdapterForClass(final Class<?> type) {
     return this.getClass() == type;
   }
 }
