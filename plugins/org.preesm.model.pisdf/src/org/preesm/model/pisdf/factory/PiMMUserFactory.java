@@ -85,18 +85,6 @@ public final class PiMMUserFactory extends PiMMFactoryImpl implements PreesmUser
     // generic type forced to EObject to call the default copy from PreesmUserFactory
     final PiGraph copyGraph = this.copyWithHistory(origGraph);
 
-    // track dependencies
-    final EList<Dependency> allOrigDeps = origGraph.getAllDependencies();
-    final EList<Dependency> allCopyDeps = copyGraph.getAllDependencies();
-    if (allOrigDeps.size() != allCopyDeps.size()) {
-      throw new PreesmRuntimeException("Copy is not consistent regarding dependencies");
-    }
-    for (int i = 0; i < allOrigDeps.size(); i++) {
-      final Dependency depOrig = allOrigDeps.get(i);
-      final Dependency depCopy = allCopyDeps.get(i);
-      PreesmCopyTracker.trackCopy(depOrig, depCopy);
-    }
-
     // track parameters
     final EList<Parameter> allOrigParams = origGraph.getAllParameters();
     final EList<Parameter> allCopyParams = copyGraph.getAllParameters();
@@ -110,17 +98,6 @@ public final class PiMMUserFactory extends PiMMFactoryImpl implements PreesmUser
         throw new PreesmRuntimeException("Copy did not preserve order on parameters");
       }
       PreesmCopyTracker.trackCopy(paramOrig, paramCopy);
-    }
-    // track fifos
-    final EList<Fifo> allOrigFifos = origGraph.getAllFifos();
-    final EList<Fifo> allCopyFifos = copyGraph.getAllFifos();
-    if (allOrigFifos.size() != allCopyFifos.size()) {
-      throw new PreesmRuntimeException("Copy is not consistent regarding fifos");
-    }
-    for (int i = 0; i < allOrigFifos.size(); i++) {
-      final Fifo fifoOrig = allOrigFifos.get(i);
-      final Fifo fifoCopy = allCopyFifos.get(i);
-      PreesmCopyTracker.trackCopy(fifoOrig, fifoCopy);
     }
 
     // track actors
@@ -136,6 +113,30 @@ public final class PiMMUserFactory extends PiMMFactoryImpl implements PreesmUser
         throw new PreesmRuntimeException("Copy did not preserve order on actors");
       }
       PreesmCopyTracker.trackCopy(actorOrig, actorCopy);
+    }
+
+    // track dependencies
+    final EList<Dependency> allOrigDeps = origGraph.getAllDependencies();
+    final EList<Dependency> allCopyDeps = copyGraph.getAllDependencies();
+    if (allOrigDeps.size() != allCopyDeps.size()) {
+      throw new PreesmRuntimeException("Copy is not consistent regarding dependencies");
+    }
+    for (int i = 0; i < allOrigDeps.size(); i++) {
+      final Dependency depOrig = allOrigDeps.get(i);
+      final Dependency depCopy = allCopyDeps.get(i);
+      PreesmCopyTracker.trackCopy(depOrig, depCopy);
+    }
+
+    // track fifos
+    final EList<Fifo> allOrigFifos = origGraph.getAllFifos();
+    final EList<Fifo> allCopyFifos = copyGraph.getAllFifos();
+    if (allOrigFifos.size() != allCopyFifos.size()) {
+      throw new PreesmRuntimeException("Copy is not consistent regarding fifos");
+    }
+    for (int i = 0; i < allOrigFifos.size(); i++) {
+      final Fifo fifoOrig = allOrigFifos.get(i);
+      final Fifo fifoCopy = allCopyFifos.get(i);
+      PreesmCopyTracker.trackCopy(fifoOrig, fifoCopy);
     }
 
     return copyGraph;

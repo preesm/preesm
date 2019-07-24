@@ -48,9 +48,9 @@ public interface PreesmUserFactory {
    */
   public default <T extends EObject> T copy(final T eObject) {
     final EcoreUtil.Copier copier = new EcoreUtil.Copier(false);
-    copier.copyReferences();
     @SuppressWarnings("unchecked")
     final T copy = (T) copier.copy(eObject);
+    copier.copyReferences();
     return copy;
   }
 
