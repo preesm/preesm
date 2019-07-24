@@ -304,6 +304,12 @@ class PiGraph extends AbstractActor, Graph {
 	op unique AbstractActor[] getAllActors() {
 		return (actors + childrenGraphs.map[allActors].flatten).toEList.unmodifiableView
 	}
+	op unique Fifo[] getAllFifos() {
+		return (fifos + childrenGraphs.map[allFifos].flatten).toEList.unmodifiableView
+	}
+	op unique Dependency[] getAllDependencies() {
+		return (dependencies + childrenGraphs.map[allDependencies].flatten).toEList.unmodifiableView
+	}
 
 	op unique Delay[] getAllDelays() {
 		return (delays + childrenGraphs.map[allDelays].flatten).toEList.unmodifiableView
