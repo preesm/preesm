@@ -66,6 +66,10 @@ interface Buffer {
 	contains LogicalBuffer[] children opposite memory
 }
 
+class DistributedBuffer extends Buffer {
+	refers Buffer[] distributedCopies
+}
+
 class PhysicalBuffer extends Buffer {
 	refers ComponentInstance memory
 }
