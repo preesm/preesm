@@ -8,6 +8,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import org.apache.commons.lang3.tuple.Pair;
 import org.preesm.commons.exceptions.PreesmRuntimeException;
+import org.preesm.commons.model.PreesmCopyTracker;
 import org.preesm.model.algorithm.schedule.ActorSchedule;
 import org.preesm.model.algorithm.schedule.HierarchicalSchedule;
 import org.preesm.model.algorithm.schedule.ParallelHiearchicalSchedule;
@@ -73,14 +74,37 @@ public class ClusteringBuilder {
    * @return schedule mapping including all cluster with corresponding scheduling
    */
   public final Map<AbstractActor, Schedule> processClustering() {
+
+    // Keep original algorithm
+    PiGraph origAlgorithm = this.algorithm;
+
+    // Copy input graph for first stage of clustering with clustering algorithm
+    PiGraph firstStageGraph = PiMMUserFactory.instance.copyPiGraphWithHistory(origAlgorithm);
+    this.algorithm = firstStageGraph;
+
     // Until the algorithm has to work
     while (!clusteringAlgorithm.clusteringComplete(this)) {
       // Compute BRV with the corresponding graph
-      repetitionVector = PiBRV.compute(algorithm, BRVMethod.LCM);
+      repetitionVector = PiBRV.compute(firstStageGraph, BRVMethod.LCM);
       // Search actors to clusterize
       Pair<ScheduleType, List<AbstractActor>> actorFound = clusteringAlgorithm.findActors(this);
       // Clusterize given actors
       clusterizeActors(actorFound);
+    }
+
+    // Perform transformation on schedule graph
+    scheduleFlattening();
+
+    // Set input graph for second stage of clustering from transformed schedule graph
+    this.algorithm = origAlgorithm;
+
+    // Recluster from schedule graph
+    List<Schedule> schedules = new LinkedList<>();
+    schedules.addAll(scheduleMapping.values());
+    scheduleMapping.clear();
+    for (Schedule schedule : schedules) {
+      HierarchicalSchedule processedSchedule = (HierarchicalSchedule) processClusteringFrom(schedule);
+      scheduleMapping.put(processedSchedule.getAttachedActor(), processedSchedule);
     }
 
     // Exhibit data parallelism
@@ -124,6 +148,69 @@ public class ClusteringBuilder {
           schedule.getChildren().move(indexOfChild, schedule.getChildren().indexOf(newSched));
         }
       }
+    }
+
+    return schedule;
+  }
+
+  private final void scheduleFlattening() {
+    for (Entry<AbstractActor, Schedule> entry : scheduleMapping.entrySet()) {
+      Schedule schedule = entry.getValue();
+      schedule = performFlattening(schedule);
+      scheduleMapping.replace(entry.getKey(), schedule);
+    }
+  }
+
+  private final Schedule performFlattening(Schedule schedule) {
+    // If it is an hierarchical schedule, explore and cluster actors
+    if (schedule instanceof HierarchicalSchedule) {
+      HierarchicalSchedule hierSchedule = (HierarchicalSchedule) schedule;
+      // Retrieve childrens schedule and actors
+      List<Schedule> childSchedules = new LinkedList<>();
+      childSchedules.addAll(hierSchedule.getChildren());
+      // Clear list of children schedule
+      hierSchedule.getChildren().clear();
+      for (Schedule child : childSchedules) {
+        Schedule processesChild = performFlattening(child);
+        if ((child instanceof SequentialHiearchicalSchedule) && (child.getRepetition() == 1)) {
+          hierSchedule.getChildren().addAll(processesChild.getChildren());
+        } else {
+          hierSchedule.getChildren().add(processesChild);
+        }
+      }
+    }
+
+    return schedule;
+  }
+
+  private final Schedule processClusteringFrom(Schedule schedule) {
+    // If it is an hierarchical schedule, explore and cluster actors
+    if (schedule instanceof HierarchicalSchedule) {
+      HierarchicalSchedule hierSchedule = (HierarchicalSchedule) schedule;
+      // Retrieve childrens schedule and actors
+      List<Schedule> childSchedules = new LinkedList<>();
+      childSchedules.addAll(hierSchedule.getChildren());
+      List<AbstractActor> childActors = new LinkedList<>();
+      // Clear list of children schedule
+      hierSchedule.getChildren().clear();
+      for (Schedule child : childSchedules) {
+        // Explore children and process clustering into
+        Schedule processedChild = processClusteringFrom(child);
+        hierSchedule.getChildren().add(processedChild);
+        // Retrieve list of children AbstractActor (needed for clusterization)
+        if (child instanceof HierarchicalSchedule) {
+          childActors.add(((HierarchicalSchedule) processedChild).getAttachedActor());
+        } else {
+          childActors.addAll(processedChild.getActors());
+        }
+      }
+
+      // Compute repetition vector
+      repetitionVector = PiBRV.compute(algorithm, BRVMethod.LCM);
+
+      // Build new cluster
+      PiGraph newCluster = buildClusterGraph(childActors);
+      hierSchedule.setAttachedActor(newCluster);
     }
 
     return schedule;
@@ -233,7 +320,7 @@ public class ClusteringBuilder {
         actorSchedule = ScheduleFactory.eINSTANCE.createParallelActorSchedule();
       }
       actorSchedule.setRepetition(repetition);
-      actorSchedule.getActorList().add(actor);
+      actorSchedule.getActorList().add(PreesmCopyTracker.getOriginalSource(actor));
       schedule.getScheduleTree().add(actorSchedule);
     }
   }
