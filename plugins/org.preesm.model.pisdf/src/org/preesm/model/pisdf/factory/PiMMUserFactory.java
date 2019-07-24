@@ -120,9 +120,6 @@ public final class PiMMUserFactory extends PiMMFactoryImpl implements PreesmUser
     for (int i = 0; i < allOrigFifos.size(); i++) {
       final Fifo fifoOrig = allOrigFifos.get(i);
       final Fifo fifoCopy = allCopyFifos.get(i);
-      if (!fifoOrig.getId().equals(fifoCopy.getId())) {
-        throw new PreesmRuntimeException("Copy did not preserve order on fifos");
-      }
       PreesmCopyTracker.trackCopy(fifoOrig, fifoCopy);
     }
 

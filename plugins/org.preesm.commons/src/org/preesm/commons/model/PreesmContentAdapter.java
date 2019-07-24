@@ -32,55 +32,25 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL license and that you accept its terms.
  */
-package org.preesm.model.pisdf.reconnection;
+package org.preesm.commons.model;
 
-import org.preesm.commons.exceptions.PreesmRuntimeException;
-import org.preesm.commons.model.IPreesmAdapter;
-import org.preesm.commons.model.PreesmAdapter;
-import org.preesm.model.pisdf.Actor;
-import org.preesm.model.pisdf.PiGraph;
+import org.eclipse.emf.ecore.util.EContentAdapter;
 
 /**
+ * Adapter implementation for Preesm. Wraps EMF adapter implementation and adds Generic return types. Also properly
+ * implements {@link #isAdapterForType(Object)}.
+ *
+ * @author anmorvan
  *
  */
-public class SubgraphOriginalActorTracker extends PreesmAdapter {
+public abstract class PreesmContentAdapter extends EContentAdapter implements IPreesmAdapter {
 
-  public static final void untrackOriginalActor(final PiGraph subGraph) {
-    IPreesmAdapter.unadapt(subGraph, SubgraphOriginalActorTracker.class);
-  }
-
-  /**
-   *
-   */
-  public static final void trackOriginalActor(final Actor actor, final PiGraph graph) {
-    final Actor originalActor2 = getOriginalActor(graph);
-    if (originalActor2 != null && originalActor2 != actor) {
-      throw new PreesmRuntimeException();
-    }
-    final SubgraphOriginalActorTracker adapter = new SubgraphOriginalActorTracker(actor);
-    graph.eAdapters().add(adapter);
-  }
-
-  /**
-   *
-   */
-  public static final Actor getOriginalActor(final PiGraph graph) {
-    final SubgraphOriginalActorTracker adapter = IPreesmAdapter.adapt(graph, SubgraphOriginalActorTracker.class);
-    if (adapter != null) {
-      return adapter.getOriginalActor();
+  @Override
+  public boolean isAdapterForType(Object type) {
+    if (type instanceof Class) {
+      return isAdapterForType((Class<?>) type);
     } else {
-      return null;
+      return super.isAdapterForType(type);
     }
-  }
-
-  private final Actor originalActor;
-
-  public SubgraphOriginalActorTracker(final Actor originalActor) {
-    super();
-    this.originalActor = originalActor;
-  }
-
-  public Actor getOriginalActor() {
-    return originalActor;
   }
 }

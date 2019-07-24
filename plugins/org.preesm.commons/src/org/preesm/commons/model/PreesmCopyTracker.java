@@ -74,7 +74,7 @@ public class PreesmCopyTracker<T extends Notifier> extends PreesmAdapter {
       return null;
     }
     @SuppressWarnings("unchecked")
-    final PreesmCopyTracker<V> adapt = PreesmAdapter.adapt(copy, PreesmCopyTracker.class);
+    final PreesmCopyTracker<V> adapt = IPreesmAdapter.adapt(copy, PreesmCopyTracker.class);
     if (adapt != null) {
       return adapt.getSourceObject();
     }
@@ -97,6 +97,9 @@ public class PreesmCopyTracker<T extends Notifier> extends PreesmAdapter {
    *
    */
   public static final <V extends Notifier> void trackCopy(final V source, final V copy) {
+    if (!source.getClass().equals(copy.getClass())) {
+      throw new PreesmRuntimeException();
+    }
     final V existingSource = getSource(copy);
     if (existingSource != null && existingSource != source) {
       throw new PreesmRuntimeException();

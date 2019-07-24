@@ -747,7 +747,9 @@ class Delay extends Configurable, ExpressionHolder {
 			} else {
 				super.setName(newName)
 			}
-			actor.setName(name)
+			if (actor !== null) {
+				actor.setName(name)
+			}
 		}
 	}
 
