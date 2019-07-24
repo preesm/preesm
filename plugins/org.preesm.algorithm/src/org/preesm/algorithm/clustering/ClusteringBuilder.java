@@ -320,7 +320,7 @@ public class ClusteringBuilder {
         actorSchedule = ScheduleFactory.eINSTANCE.createParallelActorSchedule();
       }
       actorSchedule.setRepetition(repetition);
-      actorSchedule.getActorList().add(PreesmCopyTracker.getOriginalSource(actor));
+      actorSchedule.getActorList().add(PreesmCopyTracker.getSource(actor));
       schedule.getScheduleTree().add(actorSchedule);
     }
   }
