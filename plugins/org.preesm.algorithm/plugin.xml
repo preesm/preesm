@@ -72,26 +72,26 @@
    </extension>
 
    <extension point="org.eclipse.emf.ecore.generated_package">
-      <!-- @generated Mapping -->
-      <package
-            uri="http://org.preesm/algos/mapping"
-            class="org.preesm.model.algorithm.mapping.MappingPackage"
-            genModel="model/Mapping.xcore"/>
-   </extension>
-
-   <extension point="org.eclipse.emf.ecore.generated_package">
       <!-- @generated Schedule -->
       <package
             uri="http://org.preesm/algos/schedule"
-            class="org.preesm.model.algorithm.schedule.SchedulePackage"
+            class="org.preesm.algorithm.schedule.model.SchedulePackage"
             genModel="model/Schedule.xcore"/>
+   </extension>
+
+   <extension point="org.eclipse.emf.ecore.generated_package">
+      <!-- @generated Mapping -->
+      <package
+            uri="http://org.preesm/algos/mapping"
+            class="org.preesm.algorithm.mapping.model.MappingPackage"
+            genModel="model/Mapping.xcore"/>
    </extension>
 
    <extension point="org.eclipse.emf.ecore.generated_package">
       <!-- @generated MemoryAllocation -->
       <package
             uri="http://org.preesm/algos/memalloc"
-            class="org.preesm.model.algorithm.memalloc.MemoryAllocationPackage"
+            class="org.preesm.algorithm.memalloc.model.MemoryAllocationPackage"
             genModel="model/MemoryAllocation.xcore"/>
    </extension>
 

@@ -38,7 +38,7 @@ import java.util.ArrayList;
 import java.util.List;
 import org.eclipse.emf.common.util.ECollections;
 import org.eclipse.emf.common.util.EList;
-import org.preesm.model.algorithm.schedule.Schedule;
+import org.preesm.algorithm.schedule.model.Schedule;
 import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.DataInputPort;
 import org.preesm.model.pisdf.Fifo;

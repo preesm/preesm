@@ -39,7 +39,7 @@ import java.util.logging.Level;
 import org.preesm.algorithm.model.sdf.SDFAbstractVertex;
 import org.preesm.algorithm.model.sdf.SDFEdge;
 import org.preesm.algorithm.model.sdf.SDFGraph;
-import org.preesm.algorithm.schedule.PeriodicSchedulerSDF;
+import org.preesm.algorithm.schedule.old.PeriodicSchedulerSDF;
 import org.preesm.algorithm.throughput.tools.GraphStructureHelper;
 import org.preesm.algorithm.throughput.tools.Identifier;
 import org.preesm.algorithm.throughput.tools.SDFTransformer;

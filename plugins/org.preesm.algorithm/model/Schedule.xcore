@@ -43,7 +43,7 @@
 	loadInitialization="false", creationCommands="false", creationIcons="false", dataTypeConverters="false",
 	operationReflection="false", complianceLevel="8.0")
 @Ecore(nsURI="http://org.preesm/algos/schedule")
-package org.preesm.model.algorithm.schedule
+package org.preesm.algorithm.schedule.model
 
 import org.eclipse.emf.common.util.ECollections
 import org.preesm.model.pisdf.AbstractActor
