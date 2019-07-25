@@ -7,6 +7,9 @@ PREESM Changelog
 ### New Feature
 
 ### Changes
+* Schedule API:
+  * Rename/move packages;
+  * Add evaluation API;
 
 ### Bug fix
 
