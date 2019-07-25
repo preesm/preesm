@@ -139,7 +139,7 @@ public class CodegenTask extends AbstractTaskImplementation {
     final MapperDAG algo = (MapperDAG) algoDAG;
 
     // Generate intermediate model
-    final CodegenModelGenerator generator = new CodegenModelGenerator(archi, algo, megs, scenario, workflow);
+    final CodegenModelGenerator generator = new CodegenModelGenerator(archi, algo, megs, scenario);
     // Retrieve the PAPIFY flag
     final String papifyMonitoring = parameters.get(CodegenTask.PARAM_PAPIFY);
     generator.registerPapify(papifyMonitoring);

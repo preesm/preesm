@@ -57,12 +57,10 @@ import java.util.TreeMap;
 import java.util.logging.Level;
 import java.util.stream.Collectors;
 import org.eclipse.core.resources.IFile;
-import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IWorkspace;
 import org.eclipse.core.resources.IWorkspaceRoot;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.IPath;
-import org.eclipse.core.runtime.Path;
 import org.eclipse.emf.common.util.BasicEList;
 import org.eclipse.emf.common.util.ECollections;
 import org.eclipse.emf.common.util.EList;
@@ -149,7 +147,6 @@ import org.preesm.model.slam.Component;
 import org.preesm.model.slam.ComponentInstance;
 import org.preesm.model.slam.Design;
 import org.preesm.model.slam.route.MessageRouteStep;
-import org.preesm.workflow.elements.Workflow;
 
 /**
  * The objective of this class is to generate an intermediate model that will be used to print the generated code. <br>
@@ -258,12 +255,10 @@ public class CodegenModelGenerator extends AbstractCodegenModelGenerator {
    *          See {@link AbstractCodegenPrinter#megs}
    * @param scenario
    *          See {@link AbstractCodegenPrinter#scenario}
-   * @param workflow
-   *          the workflow
    */
   public CodegenModelGenerator(final Design archi, final MapperDAG algo, final Map<String, MemoryExclusionGraph> megs,
-      final Scenario scenario, final Workflow workflow) {
-    super(archi, algo, megs, scenario, workflow);
+      final Scenario scenario) {
+    super(archi, algo, megs, scenario);
 
     checkInputs(this.archi, this.algo, this.megs);
     this.bufferNames = new LinkedHashMap<>();
@@ -564,11 +559,11 @@ public class CodegenModelGenerator extends AbstractCodegenModelGenerator {
         }
         /*
          * Minimizing the nu public final Design getArchi() { return this.generator.getArchi(); }
-         * 
+         *
          * public final MapperDAG getAlgo() { return this.generator.getAlgo(); }
-         * 
+         *
          * public final Map<String, MemoryExclusionGraph> getMegs() { return this.generator.getMegs(); }
-         * 
+         *
          * public final Scenario getScenario() { return this.generator.getScenario(); }mber of #ifdef
          * _PREESM_MONITORING_INIT in the init
          */
@@ -2623,17 +2618,7 @@ public class CodegenModelGenerator extends AbstractCodegenModelGenerator {
     final IWorkspaceRoot root = workspace.getRoot();
 
     IPath path = ((CodeRefinement) refinement).getPath();
-    IFile idlFile;
-    // XXX: workaround for existing IBSDF projects where refinements are
-    // under the form "../folder/file"
-    if (path.toOSString().startsWith("..")) {
-      final String projectName = this.workflow.getProjectName();
-      final IProject project = root.getProject(projectName);
-      path = new Path(project.getLocation() + path.toString().substring(2));
-      idlFile = root.getFileForLocation(path);
-    } else {
-      idlFile = root.getFile(path);
-    }
+    IFile idlFile = root.getFile(path);
 
     // Retrieve the ActorPrototype
     if (idlFile != null) {

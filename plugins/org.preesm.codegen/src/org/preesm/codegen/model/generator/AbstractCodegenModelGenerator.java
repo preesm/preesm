@@ -46,7 +46,6 @@ import org.preesm.codegen.model.Block;
 import org.preesm.codegen.model.CoreBlock;
 import org.preesm.model.scenario.Scenario;
 import org.preesm.model.slam.Design;
-import org.preesm.workflow.elements.Workflow;
 
 /**
  * @author dgageot
@@ -77,9 +76,6 @@ public abstract class AbstractCodegenModelGenerator {
    */
   protected Scenario scenario;
 
-  /** The workflow. */
-  protected Workflow workflow;
-
   /** The flag to activate PAPIFY instrumentation. */
   protected boolean papifyActive;
 
@@ -92,16 +88,13 @@ public abstract class AbstractCodegenModelGenerator {
    *          See {@link AbstractCodegenPrinter#megs}
    * @param scenario
    *          See {@link AbstractCodegenPrinter#scenario}
-   * @param workflow
-   *          the workflow
    */
   public AbstractCodegenModelGenerator(final Design archi, final MapperDAG algo,
-      final Map<String, MemoryExclusionGraph> megs, final Scenario scenario, final Workflow workflow) {
+      final Map<String, MemoryExclusionGraph> megs, final Scenario scenario) {
     this.archi = archi;
     this.algo = algo;
     this.megs = megs;
     this.scenario = scenario;
-    this.workflow = workflow;
   }
 
   /**
@@ -130,21 +123,5 @@ public abstract class AbstractCodegenModelGenerator {
    *         </ul>
    */
   public abstract List<Block> generate();
-
-  public final Design getArchi() {
-    return this.archi;
-  }
-
-  public final MapperDAG getAlgo() {
-    return this.algo;
-  }
-
-  public final Map<String, MemoryExclusionGraph> getMegs() {
-    return this.megs;
-  }
-
-  public final Scenario getScenario() {
-    return this.scenario;
-  }
 
 }
