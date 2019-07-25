@@ -42,7 +42,7 @@
 	loadInitialization="false", creationCommands="false", creationIcons="false", dataTypeConverters="false",
 	operationReflection="false", complianceLevel="8.0")
 @Ecore(nsURI="http://org.preesm/algos/memalloc")
-package org.preesm.model.algorithm.memalloc
+package org.preesm.algorithm.memalloc.model
 
 import org.preesm.model.pisdf.Fifo
 import org.preesm.model.slam.ComponentInstance
