@@ -36,12 +36,10 @@ package org.preesm.algorithm.synthesis.schedule;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Level;
 import org.preesm.algorithm.mapping.model.Mapping;
 import org.preesm.algorithm.schedule.model.Schedule;
 import org.preesm.algorithm.synthesis.PreesmSynthesisException;
 import org.preesm.algorithm.synthesis.SynthesisResult;
-import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.commons.model.PreesmCopyTracker;
 import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.EndActor;
@@ -60,10 +58,10 @@ public abstract class AbstractScheduler implements IScheduler {
   public SynthesisResult scheduleAndMap(final PiGraph piGraph, final Design slamDesign, final Scenario scenario) {
     verifyInputs(piGraph, slamDesign, scenario);
     final SynthesisResult res = exec(piGraph, slamDesign, scenario);
+    if (res.alloc != null) {
+      throw new PreesmSynthesisException("Simple scheduling API should not allocate memory");
+    }
     verifyOutputs(piGraph, slamDesign, scenario, res.schedule, res.mapping);
-
-    PreesmLogger.getLogger().log(Level.FINEST, res.toString());
-
     return res;
   }
 

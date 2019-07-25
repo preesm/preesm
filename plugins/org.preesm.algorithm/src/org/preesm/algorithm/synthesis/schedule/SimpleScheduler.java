@@ -82,7 +82,7 @@ public class SimpleScheduler extends AbstractScheduler {
         cmpSchedules.put(targetCmpIntance, createActorSchedule);
         topParallelSchedule.getScheduleTree().add(createActorSchedule);
       }
-      cmpSchedules.get(targetCmpIntance).getActors().add(orderedActor);
+      cmpSchedules.get(targetCmpIntance).getActorList().add(orderedActor);
     }
 
     final int span = topParallelSchedule.getSpan();

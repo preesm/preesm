@@ -56,7 +56,9 @@ import org.preesm.workflow.implement.AbstractWorkflowNodeImplementation;
  *
  * @author anmorvan
  *
+ * @deprecated for debug purpose
  */
+@Deprecated
 @PreesmTask(id = "pisdf-scheduler.simple", name = "Simple Scheduling", category = "Schedulers",
 
     inputs = { @Port(name = "PiMM", type = PiGraph.class), @Port(name = "architecture", type = Design.class),
