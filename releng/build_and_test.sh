@@ -1,29 +1,5 @@
 #!/bin/bash -eu
 
-DIR=$(cd `dirname $0` && echo `git rev-parse --show-toplevel`)
-
-FETCH=NO
-FAST=NO
-CHECK=NO
-if [ ! -z ${1+x} ]; then
-  if [ "$1" == "--fetch" ]; then
-    FETCH=YES
-  fi
-  if [ "$1" == "--check" ]; then
-    CHECK=YES
-  fi
-  if [ "$1" == "--fast" ]; then
-    FAST=YES
-  fi
-fi
-
-# enable Sonar on Travis, from preesm/preesm only
-if [ ! -z ${TRAVIS+x} ] && [ ! -z ${TRAVIS_REPO_SLUG+x} ] && [ "${TRAVIS_REPO_SLUG}" == "preesm/preesm" ] && [ ! -z ${TRAVIS_PULL_REQUEST+x} ] && [ "${TRAVIS_PULL_REQUEST}" == "false" ]; then
-  SONAR="sonar:sonar"
-else
-  SONAR=
-fi
-
 function find_free_display_number {
   USEDXDISPLAYS=`find /tmp -maxdepth 1 -type f -name ".X*-lock" | rev | cut -d"/" -f 1 | colrm 1 5 | rev | colrm 1 2`
   for i in {99..1}
@@ -41,6 +17,41 @@ function find_free_display_number {
     fi
   done
 }
+
+DIR=$(cd `dirname $0` && echo `git rev-parse --show-toplevel`)
+
+SONAR=NO
+CI=NO
+RUNTEST=YES
+
+if [ ! -z ${1+x} ]; then
+  if [ "$1" == "--sonar" ]; then
+    SONAR=YES
+  fi
+  if [ "$1" == "--notest" ]; then
+    RUNTEST=NO
+  fi
+fi
+if [ ! -z ${TRAVIS+x} ]; then
+  CI=YES
+  SONAR=YES
+fi
+
+if [ "${RUNTEST}" == "NO" ]; then
+  TESTMODE="-DskipTests=true -Dmaven.test.skip=true"
+  BUILDGOAL=package
+  SONAR=NO
+else
+  TESTMODE=
+  BUILDGOAL=verify
+fi
+
+if [ "${CI}" == "YES" ]; then
+  BATCHMODE=-B
+else
+  BATCHMODE=
+fi
+
 if [ -x /usr/bin/Xvfb ]; then
   XDN=$(find_free_display_number)
   export DISPLAY=:${XDN}.0
@@ -48,73 +59,25 @@ if [ -x /usr/bin/Xvfb ]; then
   XVFBPID=$!
 fi
 
+echo ""
+echo " -- Build script values --"
+echo "Batch mode = ${BATCHMODE}"
+echo "Run tests = ${RUNTEST}"
+echo "Test mode = ${TESTMODE}"
+echo "Sonar = ${SONAR}"
+echo "Build goal = ${BUILDGOAL}"
+echo " --"
+echo ""
 
-#fetch version:
-if [ "$FETCH" == "YES" ]; then
-  echo "Fetch dependencies ..."
-  time (
-    (cd $DIR && ./releng/fetch-rcptt-runner.sh)
-    (cd $DIR && mvn -U -e -C -B -Dtycho.mode=maven dependency:go-offline)
-    (cd $DIR && mvn -U -e -C -B help:help)
-  )
-  exit 0
+
+time (cd $DIR && mvn -e -c ${BATCHMODE} clean ${BUILDGOAL} ${TESTMODE})
+
+# Sonar
+if [ "${SONAR}" == "YES" ]; then
+  # needs to be run in a second step; See:
+  # https://community.sonarsource.com/t/jacoco-coverage-switch-from-deprecated-binary-to-xml-format-in-a-tycho-build-shows-0/
+  (cd $DIR && mvn -e -c ${BATCHMODE} -Dtycho.mode=maven jacoco:report -Djacoco.dataFile=../../target/jacoco.exec sonar:sonar)
 fi
-
-#check version:
-if [ "$CHECK" == "YES" ]; then
-  echo "Check code ..."
-  time (cd $DIR && mvn  -e -C -B -Dtycho.mode=maven checkstyle:check)
-  exit 0
-fi
-
-#fast version:
-if [ "$FAST" == "YES" ]; then
-  echo "Fast build ..."
-  time (
-    (cd $DIR && ./releng/fetch-rcptt-runner.sh)
-    (cd $DIR && mvn -e -B -c clean verify ${SONAR})
-  )
-  exit 0
-fi
-
-time (
-  #validate POM
-  echo ""
-  echo "Validate POM"
-  echo ""
-  (cd $DIR && mvn -U -e -C -B -V -Dtycho.mode=maven help:help -q) || exit 1
-  #fetch maven deps
-  echo ""
-  echo "Fetch Maven Deps"
-  echo ""
-  (cd $DIR && ./releng/fetch-rcptt-runner.sh) || exit 21
-  (cd $DIR && mvn -U -e -C -B -V -Dtycho.mode=maven dependency:go-offline) || exit 22
-  #CHECKSTYLE (offline)
-  echo ""
-  echo "Checkstyle"
-  echo ""
-  (cd $DIR && mvn -e -C -B -V -Dtycho.mode=maven checkstyle:check) || exit 3
-  #fetch P2 deps
-  echo ""
-  echo "Fetch P2 Deps"
-  echo ""
-  (cd $DIR && mvn -U -e -C -B -V help:help) || exit 4
-  #clean (offline)
-  echo ""
-  echo "Clean"
-  echo ""
-  (cd $DIR && mvn -e -C -B -V -Dtycho.mode=maven clean) || exit 5
-  #build code and package (offline, no tests)
-  echo ""
-  echo "Build & Package"
-  echo ""
-  (cd $DIR && mvn -e -C -B -V package -fae -Dmaven.test.skip=true) || exit 6
-  # build and run tests (offline)
-  echo ""
-  echo "Test all & Run Sonar"
-  echo ""
-  (cd $DIR && mvn -e -C -B -V verify ${SONAR} -fae) || exit 7
-)
 
 
 if [ -x /usr/bin/Xvfb ]; then
