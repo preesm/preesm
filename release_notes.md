@@ -7,6 +7,9 @@ PREESM Changelog
 ### New Feature
 
 ### Changes
+* Refactor: rename/move packages in algo & codegen;
+* Implement simple memory allocation in the new synthesis API;
+* Prepare codegen model generator for the new synthesis API;
 
 ### Bug fix
 
