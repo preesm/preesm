@@ -33,7 +33,7 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL license and that you accept its terms.
  */
-package org.preesm.algorithm.schedule.old;
+package org.preesm.algorithm.schedule;
 
 import java.util.Hashtable;
 import java.util.LinkedHashMap;

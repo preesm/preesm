@@ -32,18 +32,21 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL license and that you accept its terms.
  */
-package org.preesm.algorithm.schedule;
+package org.preesm.algorithm.synthesis;
 
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.preesm.algorithm.mapping.model.Mapping;
+import org.preesm.algorithm.memalloc.model.Allocation;
 import org.preesm.algorithm.schedule.model.Schedule;
-import org.preesm.commons.doc.annotations.Parameter;
+import org.preesm.algorithm.synthesis.memalloc.IMemoryAllocation;
+import org.preesm.algorithm.synthesis.memalloc.SimpleMemoryAllocation;
+import org.preesm.algorithm.synthesis.schedule.IScheduler;
+import org.preesm.algorithm.synthesis.schedule.SimpleScheduler;
 import org.preesm.commons.doc.annotations.Port;
 import org.preesm.commons.doc.annotations.PreesmTask;
-import org.preesm.commons.doc.annotations.Value;
 import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.scenario.Scenario;
 import org.preesm.model.slam.Design;
@@ -55,16 +58,17 @@ import org.preesm.workflow.implement.AbstractWorkflowNodeImplementation;
  *
  * @author anmorvan
  *
+ * @deprecated for debug purpose
  */
-@PreesmTask(id = "pisdf-scheduler.simple", name = "Simple Scheduling", category = "Schedulers",
+@Deprecated
+@PreesmTask(id = "pisdf-synthesis.simple", name = "Simple Synhtesis", category = "Synhtesis",
 
     inputs = { @Port(name = "PiMM", type = PiGraph.class), @Port(name = "architecture", type = Design.class),
         @Port(name = "scenario", type = Scenario.class) },
 
-    outputs = { @Port(name = "Schedule", type = Schedule.class), @Port(name = "Mapping", type = Mapping.class) },
-
-    parameters = { @Parameter(name = "todo", values = { @Value(name = "todo") }) })
-public class PreesmScheduleTask extends AbstractTaskImplementation {
+    outputs = { @Port(name = "Schedule", type = Schedule.class), @Port(name = "Mapping", type = Mapping.class),
+        @Port(name = "Allocation", type = Allocation.class) })
+public class PreesmSynthesisTask extends AbstractTaskImplementation {
 
   @Override
   public Map<String, Object> execute(Map<String, Object> inputs, Map<String, String> parameters,
@@ -75,11 +79,16 @@ public class PreesmScheduleTask extends AbstractTaskImplementation {
     final Scenario scenario = (Scenario) inputs.get(AbstractWorkflowNodeImplementation.KEY_SCENARIO);
 
     final IScheduler scheduler = new SimpleScheduler();
-    final SchedulerResult scheduleAndMap = scheduler.scheduleAndMap(algorithm, architecture, scenario);
+    final SynthesisResult scheduleAndMap = scheduler.scheduleAndMap(algorithm, architecture, scenario);
+
+    final IMemoryAllocation alloc = new SimpleMemoryAllocation();
+    final Allocation memalloc = alloc.allocateMemory(algorithm, architecture, scenario, scheduleAndMap.schedule,
+        scheduleAndMap.mapping);
 
     final Map<String, Object> outputs = new LinkedHashMap<>();
     outputs.put("Schedule", scheduleAndMap.schedule);
     outputs.put("Mapping", scheduleAndMap.mapping);
+    outputs.put("Allocation", memalloc);
     return outputs;
   }
 

@@ -44,7 +44,7 @@ import org.preesm.algorithm.deadlock.IBSDFConsistency;
 import org.preesm.algorithm.deadlock.IBSDFLiveness;
 import org.preesm.algorithm.model.sdf.SDFAbstractVertex;
 import org.preesm.algorithm.model.sdf.SDFGraph;
-import org.preesm.algorithm.schedule.old.ASAPSchedulerDAG;
+import org.preesm.algorithm.schedule.ASAPSchedulerDAG;
 import org.preesm.algorithm.throughput.tools.GraphStructureHelper;
 import org.preesm.algorithm.throughput.tools.IBSDFTransformer;
 import org.preesm.algorithm.throughput.tools.SrSDFTransformer;

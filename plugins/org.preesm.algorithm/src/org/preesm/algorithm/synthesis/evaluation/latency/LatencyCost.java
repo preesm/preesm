@@ -32,21 +32,31 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL license and that you accept its terms.
  */
-package org.preesm.algorithm.schedule.evaluation;
+package org.preesm.algorithm.synthesis.evaluation.latency;
 
-import org.preesm.algorithm.mapping.model.Mapping;
-import org.preesm.algorithm.memalloc.model.Allocation;
-import org.preesm.algorithm.schedule.model.Schedule;
+import org.preesm.algorithm.synthesis.evaluation.ISynthesisCost;
 
 /**
  *
  * @author anmorvan
  *
- * @param <T>
- *          The schedule cost type. See {@link IScheduleCost}
  */
-public interface IScheduleEvaluator<T extends IScheduleCost<?>> {
+public class LatencyCost implements ISynthesisCost<Long> {
 
-  public T evaluate(final Mapping mapping, final Schedule schedule, final Allocation alloc);
+  private final long latency;
+
+  public LatencyCost(final long latency) {
+    this.latency = latency;
+  }
+
+  public Long getValue() {
+    return latency;
+  }
+
+  @Override
+  public int compareTo(ISynthesisCost<Long> o) {
+    final long diff = this.latency - o.getValue();
+    return (diff > 0) ? 1 : ((diff < 0) ? -1 : 0);
+  }
 
 }

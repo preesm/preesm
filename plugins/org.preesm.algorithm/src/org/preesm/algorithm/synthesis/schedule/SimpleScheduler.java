@@ -32,7 +32,7 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL license and that you accept its terms.
  */
-package org.preesm.algorithm.schedule;
+package org.preesm.algorithm.synthesis.schedule;
 
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -44,6 +44,7 @@ import org.preesm.algorithm.mapping.model.MappingFactory;
 import org.preesm.algorithm.schedule.model.ActorSchedule;
 import org.preesm.algorithm.schedule.model.HierarchicalSchedule;
 import org.preesm.algorithm.schedule.model.ScheduleFactory;
+import org.preesm.algorithm.synthesis.SynthesisResult;
 import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.PiGraph;
@@ -61,7 +62,7 @@ import org.preesm.model.slam.utils.LexicographicComponentInstanceComparator;
 public class SimpleScheduler extends AbstractScheduler {
 
   @Override
-  protected SchedulerResult exec(final PiGraph piGraph /* SRDAG */, final Design slamDesign, final Scenario scenario) {
+  protected SynthesisResult exec(final PiGraph piGraph /* SRDAG */, final Design slamDesign, final Scenario scenario) {
 
     final HierarchicalSchedule topParallelSchedule = ScheduleFactory.eINSTANCE.createParallelHiearchicalSchedule();
     final Mapping createMapping = MappingFactory.eINSTANCE.createMapping();
@@ -81,13 +82,13 @@ public class SimpleScheduler extends AbstractScheduler {
         cmpSchedules.put(targetCmpIntance, createActorSchedule);
         topParallelSchedule.getScheduleTree().add(createActorSchedule);
       }
-      cmpSchedules.get(targetCmpIntance).getActors().add(orderedActor);
+      cmpSchedules.get(targetCmpIntance).getActorList().add(orderedActor);
     }
 
     final int span = topParallelSchedule.getSpan();
     PreesmLogger.getLogger().log(Level.INFO, "span = " + span);
 
-    return new SchedulerResult(createMapping, topParallelSchedule, null);
+    return new SynthesisResult(createMapping, topParallelSchedule, null);
   }
 
 }

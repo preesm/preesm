@@ -32,33 +32,25 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL license and that you accept its terms.
  */
-package org.preesm.algorithm.schedule;
+package org.preesm.algorithm.synthesis.schedule;
 
-import org.preesm.commons.exceptions.PreesmRuntimeException;
+import org.preesm.algorithm.synthesis.SynthesisResult;
+import org.preesm.model.pisdf.PiGraph;
+import org.preesm.model.scenario.Scenario;
+import org.preesm.model.slam.Design;
 
 /**
  *
  * @author anmorvan
  *
  */
-public class PreesmSchedulerException extends PreesmRuntimeException {
+public interface IScheduler {
 
-  private static final long serialVersionUID = 8953229077928699904L;
-
-  public PreesmSchedulerException() {
-    this((String) null);
-  }
-
-  public PreesmSchedulerException(String message) {
-    this(message, null);
-  }
-
-  public PreesmSchedulerException(String message, Throwable cause) {
-    super(true, message, cause);
-  }
-
-  public PreesmSchedulerException(Throwable cause) {
-    this(null, cause);
-
-  }
+  /**
+   *
+   * Builds a {@link SynthesisResult} for the given PiGraph, SlamDesign and scenario.
+   *
+   * The memory allocation in the result is null;
+   */
+  public SynthesisResult scheduleAndMap(final PiGraph piGraph, final Design slamDesign, final Scenario scenario);
 }

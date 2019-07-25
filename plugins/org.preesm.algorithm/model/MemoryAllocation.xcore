@@ -62,7 +62,7 @@ type long wraps long
 type double wraps double
 
 interface Buffer {
-	int size
+	long size
 	contains LogicalBuffer[] children opposite memory
 }
 
@@ -75,11 +75,12 @@ class PhysicalBuffer extends Buffer {
 }
 
 class LogicalBuffer extends Buffer {
-	int offset
+	long offset
 	refers Buffer memory opposite children
 }
 
 class Allocation {
+	contains PhysicalBuffer[] physicalBuffers
 	contains AllocationEntry[] allocations
 }
 

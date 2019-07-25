@@ -32,54 +32,24 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL license and that you accept its terms.
  */
-package org.preesm.algorithm.schedule;
+package org.preesm.algorithm.synthesis.evaluation.latency;
 
-import java.util.List;
-import java.util.stream.Collectors;
 import org.preesm.algorithm.mapping.model.Mapping;
 import org.preesm.algorithm.memalloc.model.Allocation;
-import org.preesm.algorithm.schedule.model.HierarchicalSchedule;
 import org.preesm.algorithm.schedule.model.Schedule;
-import org.preesm.model.pisdf.AbstractActor;
+import org.preesm.algorithm.synthesis.evaluation.ISynthesisEvaluator;
 
 /**
  *
+ * @author anmorvan
+ *
  */
-public class SchedulerResult {
-  public final Mapping    mapping;
-  public final Allocation alloc;
-  public final Schedule   schedule;
-
-  /**
-   *
-   */
-  public SchedulerResult(final Mapping mapping, final Schedule schedule, final Allocation alloc) {
-    this.mapping = mapping;
-    this.schedule = schedule;
-    this.alloc = alloc;
-  }
+public class SimpleLatencyEvaluation implements ISynthesisEvaluator<LatencyCost> {
 
   @Override
-  public String toString() {
-    return "\n\n" + buildString(schedule, mapping, "").toString();
-  }
-
-  private static StringBuilder buildString(final Schedule sched, final Mapping mapp, final String indent) {
-    final StringBuilder res = new StringBuilder("");
-    res.append(indent + sched.getClass().getSimpleName() + " {\n");
-    if (sched instanceof HierarchicalSchedule) {
-      for (final Schedule child : sched.getChildren()) {
-        res.append(buildString(child, mapp, indent + "  ").toString());
-      }
-    } else {
-      for (final AbstractActor actor : sched.getActors()) {
-        final List<String> collect = mapp.getMapping(actor).stream().map(m -> m.getInstanceName())
-            .collect(Collectors.toList());
-        res.append(indent + "  " + collect + " " + actor.getName() + "\n");
-      }
-    }
-    res.append(indent + "}\n");
-    return res;
+  public LatencyCost evaluate(final Mapping mapping, final Schedule schedule, final Allocation alloc) {
+    // TODO
+    return new LatencyCost(0);
   }
 
 }

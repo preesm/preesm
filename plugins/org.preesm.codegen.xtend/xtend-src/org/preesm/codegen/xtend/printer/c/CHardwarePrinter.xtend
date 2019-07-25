@@ -435,7 +435,7 @@ class CHardwarePrinter extends DefaultPrinter {
 
 	    // 2- init context
 	    val VelocityContext context = new VelocityContext();
-	    val findAllCHeaderFileNamesUsed = CHeaderUsedLocator.findAllCHeaderFileNamesUsed(getEngine.algo.referencePiMMGraph)
+	    val findAllCHeaderFileNamesUsed = CHeaderUsedLocator.findAllCHeaderFileNamesUsed(getEngine.algo)
 	    context.put("USER_INCLUDES", findAllCHeaderFileNamesUsed.map["#include \""+ it +"\""].join("\n"));
 		if(this.usingPapify == 1){
 	    	context.put("CONSTANTS", "\n#ifdef _PREESM_PAPIFY_MONITOR\n#include \"eventLib.h\"\n#endif");
@@ -932,7 +932,7 @@ class CHardwarePrinter extends DefaultPrinter {
 					positionOfNewDataTransfer++;
 					if (DataTransferActionNumber > 0) {
 						//coreLoop.codeElts.remove(i);
-					}	
+					}
 				}
 				i++;
 			}

@@ -32,18 +32,33 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL license and that you accept its terms.
  */
-package org.preesm.algorithm.schedule.evaluation;
+package org.preesm.algorithm.synthesis;
+
+import org.preesm.commons.exceptions.PreesmRuntimeException;
 
 /**
  *
  * @author anmorvan
  *
- * @param <T>
- *          The schedule cost type. Can be a single value (i.e. an Long representing the latency) or a multidimensional
- *          value (i.e. latency + energy). Or any
  */
-public interface IScheduleCost<T> extends Comparable<IScheduleCost<T>> {
+public class PreesmSynthesisException extends PreesmRuntimeException {
 
-  public T getValue();
+  private static final long serialVersionUID = 8953229077928699904L;
 
+  public PreesmSynthesisException() {
+    this((String) null);
+  }
+
+  public PreesmSynthesisException(String message) {
+    this(message, null);
+  }
+
+  public PreesmSynthesisException(String message, Throwable cause) {
+    super(true, message, cause);
+  }
+
+  public PreesmSynthesisException(Throwable cause) {
+    this(null, cause);
+
+  }
 }

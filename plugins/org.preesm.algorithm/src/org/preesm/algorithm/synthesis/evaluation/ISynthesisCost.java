@@ -32,31 +32,18 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL license and that you accept its terms.
  */
-package org.preesm.algorithm.schedule.evaluation.latency;
-
-import org.preesm.algorithm.schedule.evaluation.IScheduleCost;
+package org.preesm.algorithm.synthesis.evaluation;
 
 /**
  *
  * @author anmorvan
  *
+ * @param <T>
+ *          The schedule cost type. Can be a single value (i.e. an Long representing the latency) or a multidimensional
+ *          value (i.e. latency + energy). Or any
  */
-public class LatencyCost implements IScheduleCost<Long> {
+public interface ISynthesisCost<T> extends Comparable<ISynthesisCost<T>> {
 
-  private final long latency;
-
-  public LatencyCost(final long latency) {
-    this.latency = latency;
-  }
-
-  public Long getValue() {
-    return latency;
-  }
-
-  @Override
-  public int compareTo(IScheduleCost<Long> o) {
-    final long diff = this.latency - o.getValue();
-    return (diff > 0) ? 1 : ((diff < 0) ? -1 : 0);
-  }
+  public T getValue();
 
 }
