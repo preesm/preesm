@@ -96,19 +96,20 @@ Export-Package: org.preesm.algorithm,
  org.preesm.algorithm.pisdf.checker,
  org.preesm.algorithm.pisdf.pimm2sdf,
  org.preesm.algorithm.pisdf.pimm2srdag,
- org.preesm.algorithm.schedule,
+ org.preesm.algorithm.schedule.old,
+ org.preesm.algorithm.scheduler,
  org.preesm.algorithm.throughput,
  org.preesm.algorithm.throughput.tools,
  org.preesm.algorithm.transforms,
- org.preesm.model.algorithm.schedule,
- org.preesm.model.algorithm.schedule.impl,
- org.preesm.model.algorithm.schedule.util,
  org.preesm.model.algorithm.mapping,
  org.preesm.model.algorithm.mapping.impl,
  org.preesm.model.algorithm.mapping.util,
  org.preesm.model.algorithm.memalloc,
  org.preesm.model.algorithm.memalloc.impl,
- org.preesm.model.algorithm.memalloc.util
+ org.preesm.model.algorithm.memalloc.util,
+ org.preesm.model.algorithm.schedule,
+ org.preesm.model.algorithm.schedule.impl,
+ org.preesm.model.algorithm.schedule.util
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-ActivationPolicy: lazy
 Bundle-Activator: org.preesm.algorithm.PreesmAlgorithmPlugin

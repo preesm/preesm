@@ -38,7 +38,7 @@ package org.ietr.preesm.schedule.test;
 import org.junit.Assert;
 import org.junit.Test;
 import org.preesm.algorithm.model.sdf.SDFGraph;
-import org.preesm.algorithm.schedule.ASAPSchedulerSDF;
+import org.preesm.algorithm.schedule.old.ASAPSchedulerSDF;
 import org.preesm.algorithm.throughput.tools.GraphStructureHelper;
 
 /**
