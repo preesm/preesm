@@ -172,7 +172,8 @@ public class ClusteringBuilder {
       hierSchedule.getChildren().clear();
       for (Schedule child : childSchedules) {
         Schedule processesChild = performFlattening(child);
-        if ((child instanceof SequentialHiearchicalSchedule) && (child.getRepetition() == 1)) {
+        if ((hierSchedule instanceof SequentialHiearchicalSchedule) && (child instanceof SequentialHiearchicalSchedule)
+            && (child.getRepetition() == 1)) {
           hierSchedule.getChildren().addAll(processesChild.getChildren());
         } else {
           hierSchedule.getChildren().add(processesChild);
