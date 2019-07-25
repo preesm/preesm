@@ -27,14 +27,15 @@ public class SimpleMemoryAllocation implements IMemoryAllocation {
 
     final ComponentInstance mainComNode = scenario.getSimulationInfo().getMainComNode();
 
-    final Allocation createAllocation = MemoryAllocationFactory.eINSTANCE.createAllocation();
+    final Allocation memAlloc = MemoryAllocationFactory.eINSTANCE.createAllocation();
 
     final PhysicalBuffer physBuff = MemoryAllocationFactory.eINSTANCE.createPhysicalBuffer();
+    memAlloc.getPhysicalBuffers().add(physBuff);
     physBuff.setMemory(mainComNode);
 
     long totalSize = 0L;
     final EList<Fifo> fifos = piGraph.getFifos();
-    for (Fifo fifo : fifos) {
+    for (final Fifo fifo : fifos) {
       final String fifoType = fifo.getType();
       final long dataTypeSize = scenario.getSimulationInfo().getDataTypeSizeOrDefault(fifoType);
       final long fifoTokenSize = fifo.getTargetPort().getPortRateExpression().evaluate();
@@ -45,13 +46,13 @@ public class SimpleMemoryAllocation implements IMemoryAllocation {
       logicBuff.setSize(fifoSize);
       logicBuff.setOffset(totalSize);
 
-      createAllocation.getAllocations().put(fifo, logicBuff);
+      memAlloc.getAllocations().put(fifo, logicBuff);
 
       totalSize += fifoSize;
     }
 
     physBuff.setSize(totalSize);
-    return createAllocation;
+    return memAlloc;
   }
 
 }
