@@ -3,7 +3,7 @@ Bundle-ManifestVersion: 2
 Bundle-Name: %pluginName
 Automatic-Module-Name: org.preesm.algorithm
 Bundle-SymbolicName: org.preesm.algorithm;singleton:=true
-Bundle-Version: 3.14.0
+Bundle-Version: 3.14.1
 Bundle-Vendor: %providerName
 Bundle-Localization: plugin
 Require-Bundle: org.eclipse.core.resources,
@@ -75,7 +75,13 @@ Export-Package: org.preesm.algorithm,
  org.preesm.algorithm.mapper.ui.gantt,
  org.preesm.algorithm.mapper.ui.stats,
  org.preesm.algorithm.mapper.ui.stats.overview,
+ org.preesm.algorithm.mapping.model,
+ org.preesm.algorithm.mapping.model.impl,
+ org.preesm.algorithm.mapping.model.util,
  org.preesm.algorithm.mathematicalModels,
+ org.preesm.algorithm.memalloc.model,
+ org.preesm.algorithm.memalloc.model.impl,
+ org.preesm.algorithm.memalloc.model.util,
  org.preesm.algorithm.memory.allocation,
  org.preesm.algorithm.memory.bounds,
  org.preesm.algorithm.memory.distributed,
@@ -97,18 +103,15 @@ Export-Package: org.preesm.algorithm,
  org.preesm.algorithm.pisdf.pimm2sdf,
  org.preesm.algorithm.pisdf.pimm2srdag,
  org.preesm.algorithm.schedule,
+ org.preesm.algorithm.schedule.evaluation,
+ org.preesm.algorithm.schedule.evaluation.latency,
+ org.preesm.algorithm.schedule.model,
+ org.preesm.algorithm.schedule.model.impl,
+ org.preesm.algorithm.schedule.model.util,
+ org.preesm.algorithm.schedule.old,
  org.preesm.algorithm.throughput,
  org.preesm.algorithm.throughput.tools,
- org.preesm.algorithm.transforms,
- org.preesm.model.algorithm.schedule,
- org.preesm.model.algorithm.schedule.impl,
- org.preesm.model.algorithm.schedule.util,
- org.preesm.model.algorithm.mapping,
- org.preesm.model.algorithm.mapping.impl,
- org.preesm.model.algorithm.mapping.util,
- org.preesm.model.algorithm.memalloc,
- org.preesm.model.algorithm.memalloc.impl,
- org.preesm.model.algorithm.memalloc.util
+ org.preesm.algorithm.transforms
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-ActivationPolicy: lazy
 Bundle-Activator: org.preesm.algorithm.PreesmAlgorithmPlugin

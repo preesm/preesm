@@ -40,7 +40,7 @@ import java.util.Map;
 import org.preesm.algorithm.model.sdf.SDFAbstractVertex;
 import org.preesm.algorithm.model.sdf.SDFEdge;
 import org.preesm.algorithm.model.sdf.SDFGraph;
-import org.preesm.algorithm.schedule.ASAPSchedulerSDF;
+import org.preesm.algorithm.schedule.old.ASAPSchedulerSDF;
 import org.preesm.algorithm.throughput.tools.Identifier;
 import org.preesm.algorithm.throughput.tools.SDFTransformer;
 import org.preesm.algorithm.throughput.tools.Stopwatch;

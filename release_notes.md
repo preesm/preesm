@@ -1,6 +1,21 @@
 PREESM Changelog
 ================
 
+## Release version 3.14.1
+*2019.07.25*
+
+### New Feature
+
+### Changes
+* Schedule API:
+  * Rename/move packages;
+  * Add evaluation API;
+* Releng:
+  * Fix build script to fetch RCPTT from mirrors;
+
+### Bug fix
+
+
 ## Release version 3.14.0
 *2019.07.25*
 

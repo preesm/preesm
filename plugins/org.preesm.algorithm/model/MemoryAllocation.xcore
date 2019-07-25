@@ -42,7 +42,7 @@
 	loadInitialization="false", creationCommands="false", creationIcons="false", dataTypeConverters="false",
 	operationReflection="false", complianceLevel="8.0")
 @Ecore(nsURI="http://org.preesm/algos/memalloc")
-package org.preesm.model.algorithm.memalloc
+package org.preesm.algorithm.memalloc.model
 
 import org.preesm.model.pisdf.Fifo
 import org.preesm.model.slam.ComponentInstance
@@ -62,7 +62,12 @@ type long wraps long
 type double wraps double
 
 interface Buffer {
+	int size
 	contains LogicalBuffer[] children opposite memory
+}
+
+class DistributedBuffer extends Buffer {
+	refers Buffer[] distributedCopies
 }
 
 class PhysicalBuffer extends Buffer {
@@ -70,6 +75,7 @@ class PhysicalBuffer extends Buffer {
 }
 
 class LogicalBuffer extends Buffer {
+	int offset
 	refers Buffer memory opposite children
 }
 

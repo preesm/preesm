@@ -32,15 +32,24 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL license and that you accept its terms.
  */
-package org.preesm.algorithm.scheduler;
+package org.preesm.algorithm.schedule.evaluation.latency;
 
-import org.preesm.model.pisdf.PiGraph;
-import org.preesm.model.scenario.Scenario;
-import org.preesm.model.slam.Design;
+import org.preesm.algorithm.mapping.model.Mapping;
+import org.preesm.algorithm.memalloc.model.Allocation;
+import org.preesm.algorithm.schedule.evaluation.IScheduleEvaluator;
+import org.preesm.algorithm.schedule.model.Schedule;
 
 /**
  *
+ * @author anmorvan
+ *
  */
-public interface IScheduler {
-  public SchedulerResult scheduleAndMap(final PiGraph piGraph, final Design slamDesign, final Scenario scenario);
+public class SimpleLatencyEvaluation implements IScheduleEvaluator<LatencyCost> {
+
+  @Override
+  public LatencyCost evaluate(final Mapping mapping, final Schedule schedule, final Allocation alloc) {
+    // TODO
+    return new LatencyCost(0);
+  }
+
 }

@@ -32,14 +32,14 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL license and that you accept its terms.
  */
-package org.preesm.algorithm.scheduler;
+package org.preesm.algorithm.schedule;
 
 import java.util.List;
 import java.util.stream.Collectors;
-import org.preesm.model.algorithm.mapping.Mapping;
-import org.preesm.model.algorithm.memalloc.Allocation;
-import org.preesm.model.algorithm.schedule.HierarchicalSchedule;
-import org.preesm.model.algorithm.schedule.Schedule;
+import org.preesm.algorithm.mapping.model.Mapping;
+import org.preesm.algorithm.memalloc.model.Allocation;
+import org.preesm.algorithm.schedule.model.HierarchicalSchedule;
+import org.preesm.algorithm.schedule.model.Schedule;
 import org.preesm.model.pisdf.AbstractActor;
 
 /**

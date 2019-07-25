@@ -33,22 +33,23 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL license and that you accept its terms.
  */
-package org.preesm.algorithm.schedule;
+package org.preesm.algorithm.schedule.old;
 
 import java.util.ArrayList;
 import org.preesm.algorithm.model.sdf.SDFAbstractVertex;
 import org.preesm.algorithm.model.sdf.SDFEdge;
 import org.preesm.algorithm.model.sdf.SDFGraph;
 import org.preesm.algorithm.model.sdf.SDFInterfaceVertex;
+import org.preesm.algorithm.model.sdf.esdf.SDFSinkInterfaceVertex;
 import org.preesm.algorithm.throughput.tools.GraphSimulationHelper;
-import org.preesm.algorithm.throughput.tools.Stopwatch;
 
 /**
  * @author hderoui
  *
  */
-public class ASAPSchedulerDAG {
+public class ALAPSchedulerDAG {
   private GraphSimulationHelper        simulator;       // simulator helper
+  private Double                       maxDate;         // throughput constraint
   private ArrayList<SDFAbstractVertex> actorsToExecute; // list of actors to execute
 
   /**
@@ -56,44 +57,41 @@ public class ASAPSchedulerDAG {
    *
    * @param graph
    *          SDF graph
+   * @param simulator
+   *          graph simulator helper
+   * @param ThConstDate
+   *          throughput constraint
    * @return the duration of a graph iteration
    */
-  public double schedule(final SDFGraph graph) {
-    final Stopwatch timer = new Stopwatch();
-    timer.start();
+  public double schedule(final SDFGraph graph, final GraphSimulationHelper simulator, final double ThConstDate) {
 
     // initialize the simulator and the list of actor to execute
-    this.setSimulator(new GraphSimulationHelper(graph));
+    this.setSimulator(simulator);
+    this.maxDate = ThConstDate;
     this.actorsToExecute = new ArrayList<>();
     initialzeList(graph);
-    double dur1Iter = 0.;
 
     while (!this.actorsToExecute.isEmpty()) {
       // execute the first actor of the list
       final SDFAbstractVertex currentActor = this.actorsToExecute.get(0);
-      this.getSimulator().produce(currentActor, 1);
-
-      // update the duration of the iteration
-      if (dur1Iter < this.getSimulator().getFinishDate(currentActor)) {
-        dur1Iter = this.getSimulator().getFinishDate(currentActor);
-      }
+      this.getSimulator().consume(currentActor, -1);
 
       // verify the target actors of the executed actor if they are ready to be executed
-      for (final SDFInterfaceVertex output : currentActor.getSinks()) {
+      for (final SDFInterfaceVertex input : currentActor.getSources()) {
 
         // execute 1 time the target actor if it is ready
-        final SDFAbstractVertex targetActor = currentActor.getAssociatedEdge(output).getTarget();
-        if (isReady(targetActor)) {
+        final SDFAbstractVertex sourceActor = currentActor.getAssociatedEdge(input).getSource();
+        if (isReady(sourceActor)) {
           // consume 1 time
-          this.getSimulator().consume(targetActor, 1);
+          this.getSimulator().produce(sourceActor, -1);
 
           // set the finish date
-          final double finishDate = this.getSimulator().getStartDate(targetActor)
-              + this.getSimulator().getActorDuration(targetActor);
-          this.getSimulator().setfinishDate(targetActor, finishDate);
+          final double startDate = this.getSimulator().getFinishDate(sourceActor)
+              - this.getSimulator().getActorDuration(sourceActor);
+          this.getSimulator().setStartDate(sourceActor, startDate);
 
           // add the execution to the list
-          this.actorsToExecute.add(targetActor);
+          this.actorsToExecute.add(sourceActor);
         }
       }
 
@@ -101,8 +99,7 @@ public class ASAPSchedulerDAG {
       this.actorsToExecute.remove(0);
     }
 
-    timer.stop();
-    return dur1Iter;
+    return this.maxDate;
   }
 
   /**
@@ -117,10 +114,10 @@ public class ASAPSchedulerDAG {
       // if ready
       if (isReady(actor)) {
         // consume N data tokens
-        this.getSimulator().consume(actor, 1);
+        this.getSimulator().produce(actor, -1);
         // set the finish date
-        final double finishDate = this.getSimulator().getStartDate(actor) + this.getSimulator().getActorDuration(actor);
-        this.getSimulator().setfinishDate(actor, finishDate);
+        final double startDate = this.getSimulator().getFinishDate(actor) - this.getSimulator().getActorDuration(actor);
+        this.getSimulator().setStartDate(actor, startDate);
         // add the execution to the list
         this.actorsToExecute.add(actor);
       }
@@ -135,23 +132,26 @@ public class ASAPSchedulerDAG {
    * @return true if it is ready
    */
   private boolean isReady(final SDFAbstractVertex actor) {
-    double maxStartDate = 0;
+    double maxFinishDate = this.maxDate;
     if (this.getSimulator().getExecutionCounter(actor) > 0) {
       return false;
     } else {
       boolean ready = true;
-      for (final SDFInterfaceVertex input : actor.getSources()) {
-        final SDFEdge edge = actor.getAssociatedEdge(input);
+      for (final SDFInterfaceVertex output : actor.getSinks()) {
+        final SDFEdge edge = actor.getAssociatedEdge(output);
         if (edge.getDelay().longValue() == 0) {
           ready = false;
           break;
         } else {
-          if (this.getSimulator().getFinishDate(edge.getSource()) > maxStartDate) {
-            maxStartDate = this.getSimulator().getFinishDate(edge.getSource());
+          if (this.getSimulator().getStartDate(edge.getTarget()) < maxFinishDate) {
+            maxFinishDate = this.getSimulator().getStartDate(edge.getTarget());
           }
         }
       }
-      this.getSimulator().setStartDate(actor, maxStartDate);
+      final SDFAbstractVertex baseActor = actor.getPropertyBean().getValue("baseActor");
+      if (!(baseActor instanceof SDFSinkInterfaceVertex)) {
+        this.getSimulator().setfinishDate(actor, maxFinishDate);
+      }
       return ready;
     }
   }
