@@ -34,14 +34,14 @@
  */
 package org.preesm.algorithm.schedule.evaluation.latency;
 
-import org.preesm.algorithm.schedule.evaluation.IScheduleCost;
+import org.preesm.algorithm.synthesis.evaluation.ISynthesisCost;
 
 /**
  *
  * @author anmorvan
  *
  */
-public class LatencyCost implements IScheduleCost<Long> {
+public class LatencyCost implements ISynthesisCost<Long> {
 
   private final long latency;
 
@@ -54,7 +54,7 @@ public class LatencyCost implements IScheduleCost<Long> {
   }
 
   @Override
-  public int compareTo(IScheduleCost<Long> o) {
+  public int compareTo(ISynthesisCost<Long> o) {
     final long diff = this.latency - o.getValue();
     return (diff > 0) ? 1 : ((diff < 0) ? -1 : 0);
   }

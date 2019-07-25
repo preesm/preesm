@@ -32,7 +32,7 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL license and that you accept its terms.
  */
-package org.preesm.algorithm.schedule;
+package org.preesm.algorithm.synthesis.schedule;
 
 import java.util.Collections;
 import java.util.LinkedHashMap;
@@ -40,6 +40,7 @@ import java.util.Map;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.preesm.algorithm.mapping.model.Mapping;
 import org.preesm.algorithm.schedule.model.Schedule;
+import org.preesm.algorithm.synthesis.SynthesisResult;
 import org.preesm.commons.doc.annotations.Parameter;
 import org.preesm.commons.doc.annotations.Port;
 import org.preesm.commons.doc.annotations.PreesmTask;
@@ -75,7 +76,7 @@ public class PreesmScheduleTask extends AbstractTaskImplementation {
     final Scenario scenario = (Scenario) inputs.get(AbstractWorkflowNodeImplementation.KEY_SCENARIO);
 
     final IScheduler scheduler = new SimpleScheduler();
-    final SchedulerResult scheduleAndMap = scheduler.scheduleAndMap(algorithm, architecture, scenario);
+    final SynthesisResult scheduleAndMap = scheduler.scheduleAndMap(algorithm, architecture, scenario);
 
     final Map<String, Object> outputs = new LinkedHashMap<>();
     outputs.put("Schedule", scheduleAndMap.schedule);

@@ -32,18 +32,16 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL license and that you accept its terms.
  */
-package org.preesm.algorithm.schedule.evaluation;
+package org.preesm.algorithm.synthesis.schedule;
+
+import org.preesm.algorithm.synthesis.SynthesisResult;
+import org.preesm.model.pisdf.PiGraph;
+import org.preesm.model.scenario.Scenario;
+import org.preesm.model.slam.Design;
 
 /**
  *
- * @author anmorvan
- *
- * @param <T>
- *          The schedule cost type. Can be a single value (i.e. an Long representing the latency) or a multidimensional
- *          value (i.e. latency + energy). Or any
  */
-public interface IScheduleCost<T> extends Comparable<IScheduleCost<T>> {
-
-  public T getValue();
-
+public interface IScheduler {
+  public SynthesisResult scheduleAndMap(final PiGraph piGraph, final Design slamDesign, final Scenario scenario);
 }

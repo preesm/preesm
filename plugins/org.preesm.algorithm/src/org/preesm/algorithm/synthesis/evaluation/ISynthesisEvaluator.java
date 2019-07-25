@@ -43,9 +43,9 @@ import org.preesm.algorithm.schedule.model.Schedule;
  * @author anmorvan
  *
  * @param <T>
- *          The schedule cost type. See {@link IScheduleCost}
+ *          The schedule cost type. See {@link ISynthesisCost}
  */
-public interface IScheduleEvaluator<T extends IScheduleCost<?>> {
+public interface ISynthesisEvaluator<T extends ISynthesisCost<?>> {
 
   public T evaluate(final Mapping mapping, final Schedule schedule, final Allocation alloc);
 

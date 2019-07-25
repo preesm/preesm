@@ -38,7 +38,7 @@ package org.preesm.algorithm.throughput;
 import java.util.logging.Level;
 import org.apache.commons.lang3.math.Fraction;
 import org.preesm.algorithm.model.sdf.SDFGraph;
-import org.preesm.algorithm.schedule.old.PeriodicSchedulerSDF;
+import org.preesm.algorithm.schedule.PeriodicSchedulerSDF;
 import org.preesm.algorithm.throughput.tools.IBSDFTransformer;
 import org.preesm.algorithm.throughput.tools.SDFTransformer;
 import org.preesm.commons.logger.PreesmLogger;

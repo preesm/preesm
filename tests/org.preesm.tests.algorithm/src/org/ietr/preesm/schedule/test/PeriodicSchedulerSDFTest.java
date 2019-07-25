@@ -40,7 +40,7 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.preesm.algorithm.deadlock.SDFConsistency;
 import org.preesm.algorithm.model.sdf.SDFGraph;
-import org.preesm.algorithm.schedule.old.PeriodicSchedulerSDF;
+import org.preesm.algorithm.schedule.PeriodicSchedulerSDF;
 import org.preesm.algorithm.throughput.tools.GraphStructureHelper;
 
 /**

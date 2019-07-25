@@ -36,15 +36,15 @@ package org.preesm.algorithm.schedule.evaluation.latency;
 
 import org.preesm.algorithm.mapping.model.Mapping;
 import org.preesm.algorithm.memalloc.model.Allocation;
-import org.preesm.algorithm.schedule.evaluation.IScheduleEvaluator;
 import org.preesm.algorithm.schedule.model.Schedule;
+import org.preesm.algorithm.synthesis.evaluation.ISynthesisEvaluator;
 
 /**
  *
  * @author anmorvan
  *
  */
-public class SimpleLatencyEvaluation implements IScheduleEvaluator<LatencyCost> {
+public class SimpleLatencyEvaluation implements ISynthesisEvaluator<LatencyCost> {
 
   @Override
   public LatencyCost evaluate(final Mapping mapping, final Schedule schedule, final Allocation alloc) {

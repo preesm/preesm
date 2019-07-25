@@ -32,15 +32,33 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL license and that you accept its terms.
  */
-package org.preesm.algorithm.schedule;
+package org.preesm.algorithm.synthesis;
 
-import org.preesm.model.pisdf.PiGraph;
-import org.preesm.model.scenario.Scenario;
-import org.preesm.model.slam.Design;
+import org.preesm.commons.exceptions.PreesmRuntimeException;
 
 /**
  *
+ * @author anmorvan
+ *
  */
-public interface IScheduler {
-  public SchedulerResult scheduleAndMap(final PiGraph piGraph, final Design slamDesign, final Scenario scenario);
+public class PreesmSynthesisException extends PreesmRuntimeException {
+
+  private static final long serialVersionUID = 8953229077928699904L;
+
+  public PreesmSynthesisException() {
+    this((String) null);
+  }
+
+  public PreesmSynthesisException(String message) {
+    this(message, null);
+  }
+
+  public PreesmSynthesisException(String message, Throwable cause) {
+    super(true, message, cause);
+  }
+
+  public PreesmSynthesisException(Throwable cause) {
+    this(null, cause);
+
+  }
 }
