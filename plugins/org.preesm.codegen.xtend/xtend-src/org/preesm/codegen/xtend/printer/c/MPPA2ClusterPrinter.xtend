@@ -347,7 +347,7 @@ class MPPA2ClusterPrinter extends DefaultPrinter {
 	«ENDIF»
 	'''
 	override printPapifyActionParam(PapifyAction action) '''&«action.name»'''
-	
+
 	override printFunctionCall(FunctionCall functionCall) '''
 	«{
 		var gets = ""
@@ -696,15 +696,15 @@ class MPPA2ClusterPrinter extends DefaultPrinter {
 	override printIntVarDeclaration(IntVar intVar) '''
 	extern int «intVar.name»;
 	'''
-	
+
 	override printIntVarDefinition(IntVar intVar) '''
 	int «intVar.name»;
 	'''
-	
+
 	override printDataTansfer(DataTransferAction action) ''''''
 
 	override printRegisterSetUp(RegisterSetUpAction action) ''''''
-	
+
 	def CharSequence generatePreesmHeader() {
 	    // 0- without the following class loader initialization, I get the following exception when running as Eclipse
 	    // plugin:
@@ -720,7 +720,7 @@ class MPPA2ClusterPrinter extends DefaultPrinter {
 
 	    // 2- init context
 	    val VelocityContext context = new VelocityContext();
-	    val findAllCHeaderFileNamesUsed = CHeaderUsedLocator.findAllCHeaderFileNamesUsed(getEngine.algo.referencePiMMGraph)
+	    val findAllCHeaderFileNamesUsed = CHeaderUsedLocator.findAllCHeaderFileNamesUsed(getEngine.algo)
 	    context.put("USER_INCLUDES", findAllCHeaderFileNamesUsed.map["#include \""+ it +"\""].join("\n"));
 
 		var String constants = "#define NB_DESIGN_ELTS "+getEngine.archi.componentInstances.size+"\n";
@@ -1164,7 +1164,7 @@ class MPPA2ClusterPrinter extends DefaultPrinter {
 								this.sharedOnly = 0;
 	       		 			}
 	       		 		}
-	       		 	}	       		 	
+	       		 	}
 	       		 }
 			}
 		}

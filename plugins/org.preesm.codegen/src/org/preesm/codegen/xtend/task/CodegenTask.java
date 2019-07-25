@@ -53,6 +53,7 @@ import org.preesm.algorithm.mapper.model.MapperDAG;
 import org.preesm.algorithm.memory.exclusiongraph.MemoryExclusionGraph;
 import org.preesm.algorithm.model.dag.DirectedAcyclicGraph;
 import org.preesm.codegen.model.Block;
+import org.preesm.codegen.model.generator.CodegenModelGenerator;
 import org.preesm.commons.doc.annotations.Parameter;
 import org.preesm.commons.doc.annotations.Port;
 import org.preesm.commons.doc.annotations.PreesmTask;
@@ -129,9 +130,9 @@ public class CodegenTask extends AbstractTaskImplementation {
     // Retrieve inputs
     final Scenario scenario = (Scenario) inputs.get("scenario");
     final Design archi = (Design) inputs.get("architecture");
+    final DirectedAcyclicGraph algoDAG = (DirectedAcyclicGraph) inputs.get("DAG");
     @SuppressWarnings("unchecked")
     final Map<String, MemoryExclusionGraph> megs = (Map<String, MemoryExclusionGraph>) inputs.get("MEGs");
-    final DirectedAcyclicGraph algoDAG = (DirectedAcyclicGraph) inputs.get("DAG");
     if (!(algoDAG instanceof MapperDAG)) {
       throw new PreesmRuntimeException("The input DAG has not been scheduled");
     }
@@ -150,7 +151,8 @@ public class CodegenTask extends AbstractTaskImplementation {
     final String codegenPath = scenario.getCodegenDirectory() + File.separator;
 
     // Create the codegen engine
-    final CodegenEngine engine = new CodegenEngine(codegenPath, codeBlocks, generator);
+    final CodegenEngine engine = new CodegenEngine(codegenPath, codeBlocks, algo.getReferencePiMMGraph(), archi,
+        scenario);
 
     if (CodegenTask.VALUE_PRINTER_IR.equals(selectedPrinter)) {
       engine.initializePrinterIR(codegenPath);

@@ -41,7 +41,7 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL license and that you accept its terms.
  */
-package org.preesm.codegen.xtend.task;
+package org.preesm.codegen.model.generator;
 
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;

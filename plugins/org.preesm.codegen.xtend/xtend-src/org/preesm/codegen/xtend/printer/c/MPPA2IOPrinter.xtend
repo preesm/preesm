@@ -309,7 +309,7 @@ class MPPA2IOPrinter extends MPPA2ClusterPrinter {
 
 	    // 2- init context
 	    val VelocityContext context = new VelocityContext();
-	    val findAllCHeaderFileNamesUsed = CHeaderUsedLocator.findAllCHeaderFileNamesUsed(getEngine.algo.referencePiMMGraph)
+	    val findAllCHeaderFileNamesUsed = CHeaderUsedLocator.findAllCHeaderFileNamesUsed(getEngine.algo)
 	    context.put("USER_INCLUDES", findAllCHeaderFileNamesUsed.map["#include \""+ it +"\""].join("\n"));
 
 		var String constants = "#define NB_DESIGN_ELTS "+getEngine.archi.componentInstances.size+"\n";
@@ -505,7 +505,7 @@ class MPPA2IOPrinter extends MPPA2ClusterPrinter {
 
 	'''
 	override printPapifyActionParam(PapifyAction action) '''&«action.name»'''
-	
+
 	override printSharedMemoryCommunication(SharedMemoryCommunication communication) '''
 		«communication.direction.toString.toLowerCase»«communication.delimiter.toString.toLowerCase.toFirstUpper»(«IF (communication.
 			direction == Direction::SEND && communication.delimiter == Delimiter::START) ||
@@ -566,7 +566,7 @@ class MPPA2IOPrinter extends MPPA2ClusterPrinter {
 								this.sharedOnly = 0;
 	       		 			}
 	       		 		}
-	       		 	}	       		 	
+	       		 	}
        		 	}
 			}
 		}
