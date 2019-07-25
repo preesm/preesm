@@ -10,6 +10,8 @@ PREESM Changelog
 * Schedule API:
   * Rename/move packages;
   * Add evaluation API;
+* Releng:
+  * Fix build script to fetch RCPTT from mirrors;
 
 ### Bug fix
 
