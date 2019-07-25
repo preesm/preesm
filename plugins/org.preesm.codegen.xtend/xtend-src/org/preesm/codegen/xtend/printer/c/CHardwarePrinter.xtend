@@ -353,7 +353,8 @@ class CHardwarePrinter extends CPrinter {
 
 		this.numberHardwareAcceleratorSlots = printerBlocks.size();
 
-		var Block coreLoopMerged = CodegenModelUserFactory.createCoreBlock();
+//		var CoreBlock coreLoopMerged = CodegenModelUserFactory.createCoreBlock(null);
+		var Block coreLoopMerged = CodegenModelUserFactory.createCoreBlock(null);
 
 		/*
 		 * To insert all the elements of loopBlock of every instance of printerBlocks in a Unique Block
