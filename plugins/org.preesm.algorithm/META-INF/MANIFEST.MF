@@ -109,6 +109,8 @@ Export-Package: org.preesm.algorithm,
  org.preesm.algorithm.synthesis,
  org.preesm.algorithm.synthesis.evaluation,
  org.preesm.algorithm.synthesis.evaluation.latency,
+ org.preesm.algorithm.synthesis.memalloc,
+ org.preesm.algorithm.synthesis.schedule,
  org.preesm.algorithm.throughput,
  org.preesm.algorithm.throughput.tools,
  org.preesm.algorithm.transforms
