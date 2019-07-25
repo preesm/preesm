@@ -80,6 +80,7 @@ class LogicalBuffer extends Buffer {
 }
 
 class Allocation {
+	contains PhysicalBuffer[] physicalBuffers
 	contains AllocationEntry[] allocations
 }
 
