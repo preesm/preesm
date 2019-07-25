@@ -11,6 +11,9 @@ PREESM Changelog
   * Update Codegen to properly clean the directory before generating code;
   * Add C/C++ and XML code formatters;
 * Update Preesm adapters and copy;
+* Releng:
+  * Update build script;
+  * Fix Jacoco/Sonar config;
 
 ### Bug fix
 
