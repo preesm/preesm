@@ -44,7 +44,7 @@
 	<parent>
 		<groupId>org.preesm</groupId>
 		<artifactId>org.preesm.tests</artifactId>
-		<version>3.13.1</version>
+		<version>3.14.0</version>
 		<relativePath>..</relativePath>
 	</parent>
 
@@ -125,7 +125,7 @@
               <artifactId>org.preesm.product</artifactId>
               <version>${project.version}</version>
               <vmArgs>
-                <vmArg>-javaagent:${settings.localRepository}/org/jacoco/org.jacoco.agent/${jacoco-version}/org.jacoco.agent-${jacoco-version}-runtime.jar=destfile=${project.basedir}/${sonar.jacoco.reportPaths},append=true,excludes=**/tests/**:**/test-fragments/**:**/releng/**</vmArg>
+                <vmArg>-javaagent:${settings.localRepository}/org/jacoco/org.jacoco.agent/${jacoco-version}/org.jacoco.agent-${jacoco-version}-runtime.jar=destfile=${project.basedir}/${jacoco.destFile},append=true</vmArg>
               </vmArgs>
             </aut>
           </configuration>

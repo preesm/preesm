@@ -46,6 +46,7 @@ import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -55,9 +56,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
+import java.util.logging.Level;
+import org.apache.commons.io.FileUtils;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
-import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IWorkspace;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
@@ -74,11 +76,14 @@ import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
 import org.eclipse.emf.ecore.xmi.impl.XMIResourceFactoryImpl;
 import org.preesm.algorithm.mapper.model.MapperDAG;
 import org.preesm.algorithm.memory.exclusiongraph.MemoryExclusionGraph;
+import org.preesm.codegen.format.PreesmCFormatter;
+import org.preesm.codegen.format.PreesmXMLFormatter;
 import org.preesm.codegen.model.Block;
 import org.preesm.codegen.model.CoreBlock;
 import org.preesm.codegen.printer.CodegenAbstractPrinter;
 import org.preesm.commons.exceptions.PreesmException;
 import org.preesm.commons.exceptions.PreesmRuntimeException;
+import org.preesm.commons.files.WorkspaceUtils;
 import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.model.scenario.Scenario;
 import org.preesm.model.slam.Design;
@@ -164,9 +169,9 @@ public class CodegenEngine {
     // Now save the content.
     for (final Resource resource : resSet.getResources()) {
       try {
-        resource.save(Collections.EMPTY_MAP);
+        resource.save(Collections.emptyMap());
       } catch (final IOException e) {
-        e.printStackTrace();
+        PreesmLogger.getLogger().log(Level.WARNING, "Could not initialize the printer IR", e);
       }
     }
 
@@ -180,7 +185,7 @@ public class CodegenEngine {
    * @throws PreesmException
    *           the workflow exception
    */
-  public void registerPrintersAndBlocks(final String selectedPrinter) throws PreesmException {
+  public void registerPrintersAndBlocks(final String selectedPrinter) {
     this.registeredPrintersAndBlocks = new LinkedHashMap<>();
 
     // 1. Get the printers of the desired "language"
@@ -249,7 +254,6 @@ public class CodegenEngine {
       CodegenAbstractPrinter printer = null;
       try {
         printer = (CodegenAbstractPrinter) printerAndBlocks.getKey().createExecutableExtension("class");
-        // PreesmLogger.getLogger().info("[LEO]" + extension + " ---> The printer is " + printer.toString());
       } catch (final CoreException e) {
         throw new PreesmRuntimeException(e.getMessage(), e);
       }
@@ -258,14 +262,8 @@ public class CodegenEngine {
       // Lists all files in folder
       try {
         final IWorkspace workspace = ResourcesPlugin.getWorkspace();
-        workspace.getRoot().refreshLocal(IResource.DEPTH_INFINITE, null);
-        final IFolder f;
-        try {
-          f = workspace.getRoot().getFolder(new Path(this.codegenPath));
-        } catch (final Exception e) {
-          throw new PreesmRuntimeException(
-              "Could not access code generation target path folder. Please check its value in the scenario.", e);
-        }
+        WorkspaceUtils.updateWorkspace();
+        final IFolder f = workspace.getRoot().getFolder(new Path(this.codegenPath));
         final IPath rawLocation = f.getRawLocation();
         if (rawLocation == null) {
           throw new PreesmRuntimeException("Could not find target project for given path [" + this.codegenPath
@@ -276,11 +274,14 @@ public class CodegenEngine {
         if (!folder.exists()) {
           folder.mkdirs();
           PreesmLogger.getLogger().info("Created missing target dir [" + folder.getAbsolutePath() + "] during codegen");
+        } else {
+          FileUtils.deleteDirectory(folder);
         }
-        workspace.getRoot().refreshLocal(IResource.DEPTH_INFINITE, null);
+        WorkspaceUtils.updateWorkspace();
         if (!f.exists()) {
           f.create(true, true, null);
         }
+        WorkspaceUtils.updateWorkspace();
         if (!folder.exists()) {
           throw new FileNotFoundException("Target generation folder [" + folder.getAbsolutePath() + "] does not exist");
         }
@@ -291,12 +292,11 @@ public class CodegenEngine {
             final String pes = element.getName();
             if (pes.endsWith(extension)) {
               // and deletes
-              // PreesmLogger.getLogger().info("[LEO] deleting " + pes);
-              element.delete();
+              Files.delete(element.toPath());
             }
           }
         }
-      } catch (CoreException | FileNotFoundException e) {
+      } catch (CoreException | IOException e) {
         throw new PreesmRuntimeException(
             "Could not access target directory [" + this.codegenPath + "] during code generation", e);
       }
@@ -324,7 +324,6 @@ public class CodegenEngine {
       for (final Block b : printerAndBlocks.getValue()) {
         final String fileContentString = printer.postProcessing(printer.doSwitch(b)).toString();
         final String fileName = b.getName() + extension;
-        // PreesmLogger.getLogger().info("[LEO] new file: " + fileName);
         print(fileName, fileContentString);
       }
 
@@ -357,9 +356,27 @@ public class CodegenEngine {
       }
       iFile.setContents(new ByteArrayInputStream(fileContent.toString().getBytes()), true, false,
           new NullProgressMonitor());
-
+      format(iFile);
     } catch (final CoreException ex) {
       throw new PreesmRuntimeException("Could not generated source file for " + fileName, ex);
     }
+  }
+
+  private void format(final IFile iFile) {
+    final String ext = iFile.getFileExtension();
+    switch (ext) {
+      case "c":
+      case "h":
+      case "cpp":
+        PreesmCFormatter.format(iFile);
+        break;
+      case "xml":
+        PreesmXMLFormatter.format(iFile);
+        break;
+      default:
+        final String msg = "Unsupported file extension : '" + ext + "'";
+        PreesmLogger.getLogger().log(Level.INFO, msg);
+    }
+
   }
 }

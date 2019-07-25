@@ -35,6 +35,7 @@
 package org.preesm.model.pisdf.reconnection;
 
 import org.preesm.commons.exceptions.PreesmRuntimeException;
+import org.preesm.commons.model.IPreesmAdapter;
 import org.preesm.commons.model.PreesmAdapter;
 import org.preesm.model.pisdf.Actor;
 import org.preesm.model.pisdf.PiGraph;
@@ -45,7 +46,7 @@ import org.preesm.model.pisdf.PiGraph;
 public class SubgraphOriginalActorTracker extends PreesmAdapter {
 
   public static final void untrackOriginalActor(final PiGraph subGraph) {
-    PreesmAdapter.unadapt(subGraph, SubgraphOriginalActorTracker.class);
+    IPreesmAdapter.unadapt(subGraph, SubgraphOriginalActorTracker.class);
   }
 
   /**
@@ -64,7 +65,7 @@ public class SubgraphOriginalActorTracker extends PreesmAdapter {
    *
    */
   public static final Actor getOriginalActor(final PiGraph graph) {
-    final SubgraphOriginalActorTracker adapter = PreesmAdapter.adapt(graph, SubgraphOriginalActorTracker.class);
+    final SubgraphOriginalActorTracker adapter = IPreesmAdapter.adapt(graph, SubgraphOriginalActorTracker.class);
     if (adapter != null) {
       return adapter.getOriginalActor();
     } else {

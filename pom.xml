@@ -43,7 +43,7 @@
    <modelVersion>4.0.0</modelVersion>
    <groupId>org.preesm</groupId>
    <artifactId>org.preesm.parent</artifactId>
-   <version>3.13.1</version>
+   <version>3.14.0</version>
    <packaging>pom</packaging>
 
    <!-- More Project Information -->
@@ -126,9 +126,8 @@
       <!-- ############## -->
       <!-- SONAR CONFIG -->
       <!-- ############## -->
-      <sonar.core.codeCoveragePlugin>jacoco</sonar.core.codeCoveragePlugin>
-      <sonar.dynamicAnalysis>reuseReports</sonar.dynamicAnalysis>
-
+      <jacoco.destFile>../../target/jacoco.exec</jacoco.destFile>
+      <sonar.coverage.jacoco.xmlReportPaths>${project.reporting.outputDirectory}/jacoco/jacoco.xml</sonar.coverage.jacoco.xmlReportPaths>
    </properties>
 
    <repositories>
@@ -370,16 +369,14 @@
             <version>${jacoco-version}</version>
             <executions>
               <execution>
+                <id>prepare-agent</id>
                 <goals>
                   <goal>prepare-agent</goal>
                 </goals>
-              </execution>
-              <execution>
-                <id>jacoco-report</id>
-                <phase>verify</phase>
-                <goals>
-                  <goal>report</goal>
-                </goals>
+                <configuration>
+                  <append>true</append>
+                  <destFile>${jacoco.destFile}</destFile>
+                </configuration>
               </execution>
             </executions>
           </plugin>

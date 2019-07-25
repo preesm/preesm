@@ -34,33 +34,24 @@
  */
 package org.preesm.commons.model;
 
-import org.eclipse.emf.common.notify.Notifier;
-import org.eclipse.emf.ecore.EObject;
-import org.eclipse.emf.ecore.util.EcoreUtil;
+import org.eclipse.emf.ecore.util.EContentAdapter;
 
 /**
+ * Adapter implementation for Preesm. Wraps EMF adapter implementation and adds Generic return types. Also properly
+ * implements {@link #isAdapterForType(Object)}.
+ *
+ * @author anmorvan
  *
  */
-public interface PreesmUserFactory {
+public abstract class PreesmContentAdapter extends EContentAdapter implements IPreesmAdapter {
 
-  /**
-   * Copy an existing Preesm object.
-   */
-  public default <T extends EObject> T copy(final T eObject) {
-    final EcoreUtil.Copier copier = new EcoreUtil.Copier(false);
-    @SuppressWarnings("unchecked")
-    final T copy = (T) copier.copy(eObject);
-    copier.copyReferences();
-    return copy;
+  @Override
+  public boolean isAdapterForType(Object type) {
+    if (type instanceof Class) {
+      return isAdapterForClass((Class<?>) type);
+    } else {
+      return super.isAdapterForType(type);
+    }
   }
 
-  /**
-   * Copy an existing Preesm object. The original version of the object can be accessed using
-   * {@link PreesmCopyTracker#getSource(Notifier)} and {@link PreesmCopyTracker#getOriginalSource(Notifier)}.
-   */
-  public default <T extends EObject> T copyWithHistory(final T eObject) {
-    final T copy = copy(eObject);
-    PreesmCopyTracker.trackCopy(eObject, copy);
-    return copy;
-  }
 }

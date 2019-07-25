@@ -1,6 +1,23 @@
 PREESM Changelog
 ================
 
+## Release version 3.14.0
+*2019.07.25*
+
+### New Feature
+
+### Changes
+* Codegen:
+  * Update Codegen to properly clean the directory before generating code;
+  * Add C/C++ and XML code formatters;
+* Update Preesm adapters and copy;
+* Releng:
+  * Update build script;
+  * Fix Jacoco/Sonar config;
+
+### Bug fix
+
+
 ## Release version 3.13.1
 *2019.07.23*
 
