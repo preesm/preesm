@@ -36,66 +36,91 @@
  */
 /*
 	============================================================================
-	Name        : fifo.h
+	Name        : communication.h
 	Author      : kdesnos
 	Version     : 1.0
 	Copyright   : CECILL-C
-	Description : FIFO primitive for Preesm Codegen.
-                  Currently, primitives were tested only for x86 with shared_mem.
+	Description : Communication primitive for Preesm Codegen.
+                  Currently, primitives were tested only for x86, shared_mem
+                  communications.
 	============================================================================
 */
 
-#ifndef FIFO_H
-#define FIFO_H
+#ifndef COMMUNICATION_MPPA_H
+#define COMMUNICATION_MPPA_H
 
-#include <string.h>
-/**
-* Initialize a FIFO by filling its memory with 0.
-*
-* @param headBuffer
-*        pointer to the memory space containing the first element of the fifo.
-* @param headSize
-*        Size of the first element of the fifo (>0)
-* @param bodyBuffer
-*        pointer to the memory space containing all but the first element of 
-*        the fifo.
-* @param bodySize
-*        Size of the body of the fifo (>=0)
-*/
-void fifoInit(void* headBuffer, int headSize, void* bodyBuffer, int bodySize);
+#include "preesm_gen_mppa.h"
+
+#include <semaphore.h>
+#include <mppa_rpc.h>
+#include <mppa_async.h>
+#include <HAL/hal/hal_ext.h>
+#include <mOS_vcore_u.h>
+#include <assert.h>
 
 /**
-* Push a new element in the FIFO from an input buffer.
-*
-* @param inputBuffer
-*        pointer to the data pushed in the fifo.
-* @param headBuffer
-*        pointer to the memory space containing the first element of the fifo.
-* @param headSize
-*        Size of the pushed data and of the first element of the fifo (>0)
-* @param bodyBuffer
-*        pointer to the memory space containing all but the first element of 
-*        the fifo.
-* @param bodySize
-*        Size of the body of the fifo (>=0)
+* Communication Initialization (archi dependent)
 */
-void fifoPush(void * inputBuffer, void* headBuffer, int headSize, void* bodyBuffer, int bodySize);
+void communicationInit();
 
 /**
-* Pop the head element from the FIFO to an output buffer.
-*
-* @param outputBuffer
-*        pointer to the destination of the popped data.
-* @param headBuffer
-*        pointer to the memory space containing the first element of the fifo.
-* @param headSize
-*        Size of the popped data and of the first element of the fifo (>0)
-* @param bodyBuffer
-*        pointer to the memory space containing all but the first element of 
-*        the fifo.
-* @param bodySize
-*        Size of the body of the fifo (>=0)
+* Non-blocking function called by the sender to signal that a buffer is ready
+* to be sent.
+* 
+* @param cluster
+*        the id of the cluster to post the token.
 */
-void fifoPop(void * outputBuffer, void* headBuffer, int headSize, void* bodyBuffer, int bodySize);
+void sendStart(int cluster);
+
+/**
+* Blocking function (not for shared_mem communication) called by the sender to
+* signal that communication is completed.
+*/
+void sendEnd();
+
+/**
+* Non-blocking function called by the receiver begin receiving the
+* data. (not implemented with shared memory communications).
+*/
+void receiveStart();
+
+/**
+* Blocking function called by the sender to wait for the received data 
+* availability.
+*
+* @param cluster
+*        the id of the cluster to sync.
+*/
+void receiveEnd(int cluster);
+
+/**
+* Blocking function (for distributed_mem communication) called by the sender to
+* signal that a buffer is ready to be sent.
+*
+* @param cluster
+*        the id of the cluster to post the token.
+*/
+void sendDistributedStart(int cluster);
+
+/**
+* Blocking function (for distributed_mem communication) called by the sender to
+* signal that communication is completed.
+*/
+void sendDistributedEnd(int cluster);
+
+/**
+* Blocking function (for distributed_mem communication) called by the receiver to
+* begin receiving the data.
+*/
+void receiveDistributedStart(int remotePE, off64_t remoteOffset, void* localAddress, size_t transmissionSize);
+
+/**
+* Blocking function (for distributed_mem communication) called by the receiver to
+* signal that data has already been copied.
+*
+* @param cluster
+*        the id of the cluster to sync.
+*/
+void receiveDistributedEnd(int cluster);
 
 #endif
