@@ -1141,12 +1141,12 @@ public class CodegenModelGenerator extends AbstractCodegenModelGenerator {
       Variable var = null;
       if (varFirstFound instanceof DistributedBuffer) {
         DistributedBuffer distributedBuffer = (DistributedBuffer) varFirstFound;
-        EList<Buffer> twins = distributedBuffer.getDistributedCopies();
+        EList<Buffer> repeatedBuffers = distributedBuffer.getDistributedCopies();
         String coreBlockName = dagVertex.getPropertyStringValue("Operator");
-        for (Buffer bufferTwinChecker : twins) {
-          SubBuffer subBufferChecker = (SubBuffer) bufferTwinChecker;
-          SubBuffer twinContainer = (SubBuffer) subBufferChecker.getContainer();
-          if (twinContainer.getContainer().getName().equals(coreBlockName)) {
+        for (Buffer bufferRepeatedChecker : repeatedBuffers) {
+          SubBuffer subBufferChecker = (SubBuffer) bufferRepeatedChecker;
+          SubBuffer repeatedContainer = (SubBuffer) subBufferChecker.getContainer();
+          if (repeatedContainer.getContainer().getName().equals(coreBlockName)) {
             var = subBufferChecker;
             break;
           }
@@ -1290,12 +1290,12 @@ public class CodegenModelGenerator extends AbstractCodegenModelGenerator {
       String coreBlockName = dagVertex.getPropertyStringValue("Operator");
       if (firstFound instanceof DistributedBuffer) {
         DistributedBuffer distributedBuffer = (DistributedBuffer) firstFound;
-        EList<Buffer> twins = distributedBuffer.getDistributedCopies();
-        for (Buffer twinChecker : twins) {
-          SubBuffer twinSubBuffer = (SubBuffer) twinChecker;
-          SubBuffer twinContainer = (SubBuffer) twinSubBuffer.getContainer();
-          if (twinContainer.getContainer().getName().equals(coreBlockName)) {
-            buffer = twinSubBuffer;
+        EList<Buffer> repeatedBuffers = distributedBuffer.getDistributedCopies();
+        for (Buffer repeatedBufferChecker : repeatedBuffers) {
+          SubBuffer repeatedSubBuffer = (SubBuffer) repeatedBufferChecker;
+          SubBuffer repeatedContainer = (SubBuffer) repeatedSubBuffer.getContainer();
+          if (repeatedContainer.getContainer().getName().equals(coreBlockName)) {
+            buffer = repeatedSubBuffer;
             break;
           }
         }
@@ -1503,10 +1503,10 @@ public class CodegenModelGenerator extends AbstractCodegenModelGenerator {
     final DistributedBuffer distributedBuffer = (DistributedBuffer) this.dagEdgeBuffers.get(dagEdge);
     final String coreBlockName = operatorBlock.getName();
 
-    final List<Buffer> twins = distributedBuffer.getDistributedCopies();
+    final List<Buffer> repeatedBuffers = distributedBuffer.getDistributedCopies();
     Buffer buffer = null;
-    for (Buffer bufferTwinChecker : twins) {
-      SubBuffer subBufferChecker = (SubBuffer) bufferTwinChecker;
+    for (Buffer bufferRepeatedChecker : repeatedBuffers) {
+      SubBuffer subBufferChecker = (SubBuffer) bufferRepeatedChecker;
       if (subBufferChecker.getContainer().getName().equals(coreBlockName)) {
         buffer = subBufferChecker;
         break;
@@ -2232,11 +2232,11 @@ public class CodegenModelGenerator extends AbstractCodegenModelGenerator {
           coreBlockName = target.getPropertyStringValue("Operator");
         }
         DistributedBuffer distributedBuffer = (DistributedBuffer) firstFound;
-        EList<Buffer> twins = distributedBuffer.getDistributedCopies();
-        for (Buffer bufferTwinChecker : twins) {
-          SubBuffer subBufferChecker = (SubBuffer) bufferTwinChecker;
-          SubBuffer twinContainer = (SubBuffer) subBufferChecker.getContainer();
-          if (twinContainer.getContainer().getName().equals(coreBlockName)) {
+        EList<Buffer> repeatedBuffers = distributedBuffer.getDistributedCopies();
+        for (Buffer bufferRepeatedChecker : repeatedBuffers) {
+          SubBuffer subBufferChecker = (SubBuffer) bufferRepeatedChecker;
+          SubBuffer repeatedContainer = (SubBuffer) subBufferChecker.getContainer();
+          if (repeatedContainer.getContainer().getName().equals(coreBlockName)) {
             buffer = subBufferChecker;
             break;
           }
@@ -2348,11 +2348,11 @@ public class CodegenModelGenerator extends AbstractCodegenModelGenerator {
     if (lastBufferFirstFound instanceof DistributedBuffer) {
       String coreBlockName = operatorBlock.getName();
       DistributedBuffer distributedBuffer = (DistributedBuffer) lastBufferFirstFound;
-      EList<Buffer> twins = distributedBuffer.getDistributedCopies();
-      for (Buffer bufferTwinChecker : twins) {
-        SubBuffer subBufferChecker = (SubBuffer) bufferTwinChecker;
-        SubBuffer twinContainer = (SubBuffer) subBufferChecker.getContainer();
-        if (twinContainer.getContainer().getName().equals(coreBlockName)) {
+      EList<Buffer> repeatedBuffers = distributedBuffer.getDistributedCopies();
+      for (Buffer bufferRepeatedChecker : repeatedBuffers) {
+        SubBuffer subBufferChecker = (SubBuffer) bufferRepeatedChecker;
+        SubBuffer repeatedContainer = (SubBuffer) subBufferChecker.getContainer();
+        if (repeatedContainer.getContainer().getName().equals(coreBlockName)) {
           lastBuffer = subBufferChecker;
           break;
         }
@@ -2483,7 +2483,7 @@ public class CodegenModelGenerator extends AbstractCodegenModelGenerator {
    * @return the total size of the subbuffers
    *
    */
-  protected long generateTwinSubBuffers(final Buffer twinParentBuffer, final DAGEdge dagEdge) {
+  protected long generateTwinSubBuffers(final Buffer repeatedParentBuffer, final DAGEdge dagEdge) {
 
     /*
      * Backup original
@@ -2496,9 +2496,9 @@ public class CodegenModelGenerator extends AbstractCodegenModelGenerator {
       backUpOriginal.put(subBufferProperties, buff);
     }
     /*
-     * Generate subbuffers for the twin buffer
+     * Generate subbuffers for the distributed buffer
      */
-    final long aggregateOffset = generateSubBuffers(twinParentBuffer, dagEdge);
+    final long aggregateOffset = generateSubBuffers(repeatedParentBuffer, dagEdge);
 
     /*
      * Get new buffers
@@ -2509,7 +2509,7 @@ public class CodegenModelGenerator extends AbstractCodegenModelGenerator {
       newBuffers.put(subBufferProperties, buff);
     }
     /*
-     * Generate and store twin buffers
+     * Generate and store repeated buffers
      */
     for (final BufferProperties subBufferProperties : buffers) {
       DistributedBuffer duplicatedBuffer = generateDistributedBuffer(backUpOriginal.get(subBufferProperties),
@@ -2526,7 +2526,7 @@ public class CodegenModelGenerator extends AbstractCodegenModelGenerator {
    *          the {@link Buffer} containing the originalBuffer
    * @param repeatedBuffer
    *          the {@link Buffer} repeatedBuffer
-   * @return the twin buffer
+   * @return the distributed buffer
    *
    */
   protected DistributedBuffer generateDistributedBuffer(final Buffer originalBuffer, final Buffer repeatedBuffer) {
