@@ -127,8 +127,7 @@ class SubBuffer extends Buffer {
     }
 }
 class DistributedBuffer extends Buffer{
-	contains Buffer original
-	contains Buffer[] twins
+	contains Buffer[] distributedCopies
 }
 
 class Constant extends Variable {

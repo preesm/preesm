@@ -1141,20 +1141,14 @@ public class CodegenModelGenerator extends AbstractCodegenModelGenerator {
       Variable var = null;
       if (varFirstFound instanceof DistributedBuffer) {
         DistributedBuffer distributedBuffer = (DistributedBuffer) varFirstFound;
-        SubBuffer original = (SubBuffer) distributedBuffer.getOriginal();
-        EList<Buffer> twins = distributedBuffer.getTwins();
-        SubBuffer originalContainer = (SubBuffer) original.getContainer();
+        EList<Buffer> twins = distributedBuffer.getDistributedCopies();
         String coreBlockName = dagVertex.getPropertyStringValue("Operator");
-        if (originalContainer.getContainer().getName().equals(coreBlockName)) {
-          var = original;
-        } else {
-          for (Buffer bufferTwinChecker : twins) {
-            SubBuffer subBufferChecker = (SubBuffer) bufferTwinChecker;
-            SubBuffer twinContainer = (SubBuffer) subBufferChecker.getContainer();
-            if (twinContainer.getContainer().getName().equals(coreBlockName)) {
-              var = subBufferChecker;
-              break;
-            }
+        for (Buffer bufferTwinChecker : twins) {
+          SubBuffer subBufferChecker = (SubBuffer) bufferTwinChecker;
+          SubBuffer twinContainer = (SubBuffer) subBufferChecker.getContainer();
+          if (twinContainer.getContainer().getName().equals(coreBlockName)) {
+            var = subBufferChecker;
+            break;
           }
         }
       } else {
@@ -1296,19 +1290,13 @@ public class CodegenModelGenerator extends AbstractCodegenModelGenerator {
       String coreBlockName = dagVertex.getPropertyStringValue("Operator");
       if (firstFound instanceof DistributedBuffer) {
         DistributedBuffer distributedBuffer = (DistributedBuffer) firstFound;
-        SubBuffer original = (SubBuffer) distributedBuffer.getOriginal();
-        SubBuffer originalContainer = (SubBuffer) original.getContainer();
-        EList<Buffer> twins = distributedBuffer.getTwins();
-        if (originalContainer.getContainer().getName().equals(coreBlockName)) {
-          buffer = original;
-        } else {
-          for (Buffer twinChecker : twins) {
-            SubBuffer twinSubBuffer = (SubBuffer) twinChecker;
-            SubBuffer twinContainer = (SubBuffer) twinSubBuffer.getContainer();
-            if (twinContainer.getContainer().getName().equals(coreBlockName)) {
-              buffer = twinSubBuffer;
-              break;
-            }
+        EList<Buffer> twins = distributedBuffer.getDistributedCopies();
+        for (Buffer twinChecker : twins) {
+          SubBuffer twinSubBuffer = (SubBuffer) twinChecker;
+          SubBuffer twinContainer = (SubBuffer) twinSubBuffer.getContainer();
+          if (twinContainer.getContainer().getName().equals(coreBlockName)) {
+            buffer = twinSubBuffer;
+            break;
           }
         }
       } else {
@@ -1515,18 +1503,13 @@ public class CodegenModelGenerator extends AbstractCodegenModelGenerator {
     final DistributedBuffer distributedBuffer = (DistributedBuffer) this.dagEdgeBuffers.get(dagEdge);
     final String coreBlockName = operatorBlock.getName();
 
-    final SubBuffer original = (SubBuffer) distributedBuffer.getOriginal();
-    final List<Buffer> twins = distributedBuffer.getTwins();
+    final List<Buffer> twins = distributedBuffer.getDistributedCopies();
     Buffer buffer = null;
-    if (original.getContainer().getName().equals(coreBlockName)) {
-      buffer = original;
-    } else {
-      for (Buffer bufferTwinChecker : twins) {
-        SubBuffer subBufferChecker = (SubBuffer) bufferTwinChecker;
-        if (subBufferChecker.getContainer().getName().equals(coreBlockName)) {
-          buffer = subBufferChecker;
-          break;
-        }
+    for (Buffer bufferTwinChecker : twins) {
+      SubBuffer subBufferChecker = (SubBuffer) bufferTwinChecker;
+      if (subBufferChecker.getContainer().getName().equals(coreBlockName)) {
+        buffer = subBufferChecker;
+        break;
       }
     }
     if (buffer == null) {
@@ -2249,19 +2232,13 @@ public class CodegenModelGenerator extends AbstractCodegenModelGenerator {
           coreBlockName = target.getPropertyStringValue("Operator");
         }
         DistributedBuffer distributedBuffer = (DistributedBuffer) firstFound;
-        SubBuffer original = (SubBuffer) distributedBuffer.getOriginal();
-        EList<Buffer> twins = distributedBuffer.getTwins();
-        SubBuffer originalContainer = (SubBuffer) original.getContainer();
-        if (originalContainer.getContainer().getName().equals(coreBlockName)) {
-          buffer = original;
-        } else {
-          for (Buffer bufferTwinChecker : twins) {
-            SubBuffer subBufferChecker = (SubBuffer) bufferTwinChecker;
-            SubBuffer twinContainer = (SubBuffer) subBufferChecker.getContainer();
-            if (twinContainer.getContainer().getName().equals(coreBlockName)) {
-              buffer = subBufferChecker;
-              break;
-            }
+        EList<Buffer> twins = distributedBuffer.getDistributedCopies();
+        for (Buffer bufferTwinChecker : twins) {
+          SubBuffer subBufferChecker = (SubBuffer) bufferTwinChecker;
+          SubBuffer twinContainer = (SubBuffer) subBufferChecker.getContainer();
+          if (twinContainer.getContainer().getName().equals(coreBlockName)) {
+            buffer = subBufferChecker;
+            break;
           }
         }
       } else {
@@ -2371,19 +2348,13 @@ public class CodegenModelGenerator extends AbstractCodegenModelGenerator {
     if (lastBufferFirstFound instanceof DistributedBuffer) {
       String coreBlockName = operatorBlock.getName();
       DistributedBuffer distributedBuffer = (DistributedBuffer) lastBufferFirstFound;
-      SubBuffer original = (SubBuffer) distributedBuffer.getOriginal();
-      EList<Buffer> twins = distributedBuffer.getTwins();
-      SubBuffer originalContainer = (SubBuffer) original.getContainer();
-      if (originalContainer.getContainer().getName().equals(coreBlockName)) {
-        lastBuffer = original;
-      } else {
-        for (Buffer bufferTwinChecker : twins) {
-          SubBuffer subBufferChecker = (SubBuffer) bufferTwinChecker;
-          SubBuffer twinContainer = (SubBuffer) subBufferChecker.getContainer();
-          if (twinContainer.getContainer().getName().equals(coreBlockName)) {
-            lastBuffer = subBufferChecker;
-            break;
-          }
+      EList<Buffer> twins = distributedBuffer.getDistributedCopies();
+      for (Buffer bufferTwinChecker : twins) {
+        SubBuffer subBufferChecker = (SubBuffer) bufferTwinChecker;
+        SubBuffer twinContainer = (SubBuffer) subBufferChecker.getContainer();
+        if (twinContainer.getContainer().getName().equals(coreBlockName)) {
+          lastBuffer = subBufferChecker;
+          break;
         }
       }
     } else {
@@ -2562,12 +2533,11 @@ public class CodegenModelGenerator extends AbstractCodegenModelGenerator {
 
     DistributedBuffer duplicatedBuffer = CodegenFactory.eINSTANCE.createDistributedBuffer();
     if (originalBuffer instanceof DistributedBuffer) {
-      duplicatedBuffer.setOriginal(((DistributedBuffer) originalBuffer).getOriginal());
-      duplicatedBuffer.getTwins().addAll(((DistributedBuffer) originalBuffer).getTwins());
+      duplicatedBuffer.getDistributedCopies().addAll(((DistributedBuffer) originalBuffer).getDistributedCopies());
     } else {
-      duplicatedBuffer.setOriginal(originalBuffer);
+      duplicatedBuffer.getDistributedCopies().add(originalBuffer);
     }
-    duplicatedBuffer.getTwins().add(repeatedBuffer);
+    duplicatedBuffer.getDistributedCopies().add(repeatedBuffer);
     return duplicatedBuffer;
   }
 

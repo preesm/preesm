@@ -511,20 +511,14 @@ public class CodegenHierarchicalModelGenerator {
         var = this.srSDFEdgeBuffers.get(subBufferProperties);
         if (var instanceof DistributedBuffer) {
           DistributedBuffer distributedBuffer = (DistributedBuffer) var;
-          SubBuffer original = (SubBuffer) distributedBuffer.getOriginal();
-          EList<Buffer> twins = distributedBuffer.getTwins();
-          SubBuffer originalContainer = (SubBuffer) original.getContainer();
+          EList<Buffer> twins = distributedBuffer.getDistributedCopies();
           String coreBlockName = operatorBlock.getName();
-          if (originalContainer.getContainer().getName().equals(coreBlockName)) {
-            var = original;
-          } else {
-            for (Buffer bufferTwinChecker : twins) {
-              SubBuffer subBufferChecker = (SubBuffer) bufferTwinChecker;
-              SubBuffer twinContainer = (SubBuffer) subBufferChecker.getContainer();
-              if (twinContainer.getContainer().getName().equals(coreBlockName)) {
-                var = subBufferChecker;
-                break;
-              }
+          for (Buffer bufferTwinChecker : twins) {
+            SubBuffer subBufferChecker = (SubBuffer) bufferTwinChecker;
+            SubBuffer twinContainer = (SubBuffer) subBufferChecker.getContainer();
+            if (twinContainer.getContainer().getName().equals(coreBlockName)) {
+              var = subBufferChecker;
+              break;
             }
           }
         }
