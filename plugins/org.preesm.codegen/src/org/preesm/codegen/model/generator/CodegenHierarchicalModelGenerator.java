@@ -85,6 +85,7 @@ import org.preesm.codegen.model.Communication;
 import org.preesm.codegen.model.Constant;
 import org.preesm.codegen.model.ConstantString;
 import org.preesm.codegen.model.CoreBlock;
+import org.preesm.codegen.model.DistributedBuffer;
 import org.preesm.codegen.model.FiniteLoopBlock;
 import org.preesm.codegen.model.FunctionCall;
 import org.preesm.codegen.model.IntVar;
@@ -96,7 +97,6 @@ import org.preesm.codegen.model.PortDirection;
 import org.preesm.codegen.model.SpecialCall;
 import org.preesm.codegen.model.SpecialType;
 import org.preesm.codegen.model.SubBuffer;
-import org.preesm.codegen.model.TwinBuffer;
 import org.preesm.codegen.model.Variable;
 import org.preesm.commons.exceptions.PreesmException;
 import org.preesm.commons.exceptions.PreesmRuntimeException;
@@ -509,10 +509,10 @@ public class CodegenHierarchicalModelGenerator {
 
       if (isInputActorTmp || isOutputActorTmp) {
         var = this.srSDFEdgeBuffers.get(subBufferProperties);
-        if (var instanceof TwinBuffer) {
-          TwinBuffer twinBuffer = (TwinBuffer) var;
-          SubBuffer original = (SubBuffer) twinBuffer.getOriginal();
-          EList<Buffer> twins = twinBuffer.getTwins();
+        if (var instanceof DistributedBuffer) {
+          DistributedBuffer distributedBuffer = (DistributedBuffer) var;
+          SubBuffer original = (SubBuffer) distributedBuffer.getOriginal();
+          EList<Buffer> twins = distributedBuffer.getTwins();
           SubBuffer originalContainer = (SubBuffer) original.getContainer();
           String coreBlockName = operatorBlock.getName();
           if (originalContainer.getContainer().getName().equals(coreBlockName)) {

@@ -111,6 +111,7 @@ import org.preesm.codegen.model.CoreBlock;
 import org.preesm.codegen.model.DataTransferAction;
 import org.preesm.codegen.model.Delimiter;
 import org.preesm.codegen.model.Direction;
+import org.preesm.codegen.model.DistributedBuffer;
 import org.preesm.codegen.model.DistributedMemoryCommunication;
 import org.preesm.codegen.model.FifoCall;
 import org.preesm.codegen.model.FifoOperation;
@@ -130,7 +131,6 @@ import org.preesm.codegen.model.SharedMemoryCommunication;
 import org.preesm.codegen.model.SpecialCall;
 import org.preesm.codegen.model.SpecialType;
 import org.preesm.codegen.model.SubBuffer;
-import org.preesm.codegen.model.TwinBuffer;
 import org.preesm.codegen.model.Variable;
 import org.preesm.codegen.model.util.CodegenModelUserFactory;
 import org.preesm.commons.exceptions.PreesmException;
@@ -471,7 +471,7 @@ public class CodegenModelGenerator extends AbstractCodegenModelGenerator {
           break;
 
         case VertexType.TYPE_SEND:
-          if (buffer instanceof TwinBuffer) {
+          if (buffer instanceof DistributedBuffer) {
             generateDistributedCommunication(operatorBlock, vert, VertexType.TYPE_SEND);
           } else {
             generateCommunication(operatorBlock, vert, VertexType.TYPE_SEND);
@@ -479,7 +479,7 @@ public class CodegenModelGenerator extends AbstractCodegenModelGenerator {
           break;
 
         case VertexType.TYPE_RECEIVE:
-          if (buffer instanceof TwinBuffer) {
+          if (buffer instanceof DistributedBuffer) {
             generateDistributedCommunication(operatorBlock, vert, VertexType.TYPE_RECEIVE);
           } else {
             generateCommunication(operatorBlock, vert, VertexType.TYPE_RECEIVE);
@@ -949,7 +949,8 @@ public class CodegenModelGenerator extends AbstractCodegenModelGenerator {
 
             // also accessible with dagAlloc.getKey().getWeight()
             dagEdgeBuffer.setSize(dagEdgeSize);
-            TwinBuffer duplicatedBuffer = generateTwinBuffer(this.dagEdgeBuffers.get(originalDagEdge), dagEdgeBuffer);
+            DistributedBuffer duplicatedBuffer = generateDistributedBuffer(this.dagEdgeBuffers.get(originalDagEdge),
+                dagEdgeBuffer);
             this.dagEdgeBuffers.put(originalDagEdge, duplicatedBuffer);
             /**
              * Notes for future development of this feature If you are reading this because you want to adapt the code
@@ -1138,10 +1139,10 @@ public class CodegenModelGenerator extends AbstractCodegenModelGenerator {
       // Get the corresponding Variable
       final Variable varFirstFound = this.srSDFEdgeBuffers.get(subBufferProperties);
       Variable var = null;
-      if (varFirstFound instanceof TwinBuffer) {
-        TwinBuffer twinBuffer = (TwinBuffer) varFirstFound;
-        SubBuffer original = (SubBuffer) twinBuffer.getOriginal();
-        EList<Buffer> twins = twinBuffer.getTwins();
+      if (varFirstFound instanceof DistributedBuffer) {
+        DistributedBuffer distributedBuffer = (DistributedBuffer) varFirstFound;
+        SubBuffer original = (SubBuffer) distributedBuffer.getOriginal();
+        EList<Buffer> twins = distributedBuffer.getTwins();
         SubBuffer originalContainer = (SubBuffer) original.getContainer();
         String coreBlockName = dagVertex.getPropertyStringValue("Operator");
         if (originalContainer.getContainer().getName().equals(coreBlockName)) {
@@ -1293,11 +1294,11 @@ public class CodegenModelGenerator extends AbstractCodegenModelGenerator {
       final Buffer firstFound = this.srSDFEdgeBuffers.get(subBufferProperties);
       Buffer buffer = null;
       String coreBlockName = dagVertex.getPropertyStringValue("Operator");
-      if (firstFound instanceof TwinBuffer) {
-        TwinBuffer twinBuffer = (TwinBuffer) firstFound;
-        SubBuffer original = (SubBuffer) twinBuffer.getOriginal();
+      if (firstFound instanceof DistributedBuffer) {
+        DistributedBuffer distributedBuffer = (DistributedBuffer) firstFound;
+        SubBuffer original = (SubBuffer) distributedBuffer.getOriginal();
         SubBuffer originalContainer = (SubBuffer) original.getContainer();
-        EList<Buffer> twins = twinBuffer.getTwins();
+        EList<Buffer> twins = distributedBuffer.getTwins();
         if (originalContainer.getContainer().getName().equals(coreBlockName)) {
           buffer = original;
         } else {
@@ -1511,11 +1512,11 @@ public class CodegenModelGenerator extends AbstractCodegenModelGenerator {
     // Find the corresponding DAGEdge buffer(s)
     final DAGEdge dagEdge = dagVertex.getPropertyBean()
         .getValue(ImplementationPropertyNames.SendReceive_correspondingDagEdge);
-    final TwinBuffer twinBuffer = (TwinBuffer) this.dagEdgeBuffers.get(dagEdge);
+    final DistributedBuffer distributedBuffer = (DistributedBuffer) this.dagEdgeBuffers.get(dagEdge);
     final String coreBlockName = operatorBlock.getName();
 
-    final SubBuffer original = (SubBuffer) twinBuffer.getOriginal();
-    final List<Buffer> twins = twinBuffer.getTwins();
+    final SubBuffer original = (SubBuffer) distributedBuffer.getOriginal();
+    final List<Buffer> twins = distributedBuffer.getTwins();
     Buffer buffer = null;
     if (original.getContainer().getName().equals(coreBlockName)) {
       buffer = original;
@@ -2240,16 +2241,16 @@ public class CodegenModelGenerator extends AbstractCodegenModelGenerator {
       // Get the corresponding Buffer
       final Buffer firstFound = this.srSDFEdgeBuffers.get(subBuffProperty);
       Buffer buffer = null;
-      if (firstFound instanceof TwinBuffer) {
+      if (firstFound instanceof DistributedBuffer) {
         String coreBlockName = "";
         if (f.getType().equals(SpecialType.FORK) || f.getType().equals(SpecialType.BROADCAST)) {
           coreBlockName = source.getPropertyStringValue("Operator");
         } else {
           coreBlockName = target.getPropertyStringValue("Operator");
         }
-        TwinBuffer twinBuffer = (TwinBuffer) firstFound;
-        SubBuffer original = (SubBuffer) twinBuffer.getOriginal();
-        EList<Buffer> twins = twinBuffer.getTwins();
+        DistributedBuffer distributedBuffer = (DistributedBuffer) firstFound;
+        SubBuffer original = (SubBuffer) distributedBuffer.getOriginal();
+        EList<Buffer> twins = distributedBuffer.getTwins();
         SubBuffer originalContainer = (SubBuffer) original.getContainer();
         if (originalContainer.getContainer().getName().equals(coreBlockName)) {
           buffer = original;
@@ -2367,11 +2368,11 @@ public class CodegenModelGenerator extends AbstractCodegenModelGenerator {
     final BufferProperties lastBuffProperty = bufferAggregate.get(0);
     final Buffer lastBufferFirstFound = this.srSDFEdgeBuffers.get(lastBuffProperty);
     Buffer lastBuffer = null;
-    if (lastBufferFirstFound instanceof TwinBuffer) {
+    if (lastBufferFirstFound instanceof DistributedBuffer) {
       String coreBlockName = operatorBlock.getName();
-      TwinBuffer twinBuffer = (TwinBuffer) lastBufferFirstFound;
-      SubBuffer original = (SubBuffer) twinBuffer.getOriginal();
-      EList<Buffer> twins = twinBuffer.getTwins();
+      DistributedBuffer distributedBuffer = (DistributedBuffer) lastBufferFirstFound;
+      SubBuffer original = (SubBuffer) distributedBuffer.getOriginal();
+      EList<Buffer> twins = distributedBuffer.getTwins();
       SubBuffer originalContainer = (SubBuffer) original.getContainer();
       if (originalContainer.getContainer().getName().equals(coreBlockName)) {
         lastBuffer = original;
@@ -2500,9 +2501,9 @@ public class CodegenModelGenerator extends AbstractCodegenModelGenerator {
   }
 
   /**
-   * This method create a {@link TwinBuffer} for each {@link SubBuffer}. {@link SubBuffer} information are retrieved
-   * from the {@link #megs} of the {@link CodegenModelGenerator} . All created {@link SubBuffer} are referenced in the
-   * {@link #srSDFEdgeBuffers} map.
+   * This method create a {@link DistributedBuffer} for each {@link SubBuffer}. {@link SubBuffer} information are
+   * retrieved from the {@link #megs} of the {@link CodegenModelGenerator} . All created {@link SubBuffer} are
+   * referenced in the {@link #srSDFEdgeBuffers} map.
    *
    * @param parentBuffer
    *          the {@link Buffer} containing the generated {@link SubBuffer}
@@ -2540,7 +2541,7 @@ public class CodegenModelGenerator extends AbstractCodegenModelGenerator {
      * Generate and store twin buffers
      */
     for (final BufferProperties subBufferProperties : buffers) {
-      TwinBuffer duplicatedBuffer = generateTwinBuffer(backUpOriginal.get(subBufferProperties),
+      DistributedBuffer duplicatedBuffer = generateDistributedBuffer(backUpOriginal.get(subBufferProperties),
           newBuffers.get(subBufferProperties));
       this.srSDFEdgeBuffers.put(subBufferProperties, duplicatedBuffer);
     }
@@ -2548,25 +2549,25 @@ public class CodegenModelGenerator extends AbstractCodegenModelGenerator {
   }
 
   /**
-   * This method create a {@link TwinBuffer} aggregated in the given original {@link Buffer}.
+   * This method create a {@link DistributedBuffer} aggregated in the given original {@link Buffer}.
    *
    * @param originalBuffer
    *          the {@link Buffer} containing the originalBuffer
-   * @param twinBuffer
-   *          the {@link Buffer} twinBuffer
+   * @param repeatedBuffer
+   *          the {@link Buffer} repeatedBuffer
    * @return the twin buffer
    *
    */
-  protected TwinBuffer generateTwinBuffer(final Buffer originalBuffer, final Buffer twinBuffer) {
+  protected DistributedBuffer generateDistributedBuffer(final Buffer originalBuffer, final Buffer repeatedBuffer) {
 
-    TwinBuffer duplicatedBuffer = CodegenFactory.eINSTANCE.createTwinBuffer();
-    if (originalBuffer instanceof TwinBuffer) {
-      duplicatedBuffer.setOriginal(((TwinBuffer) originalBuffer).getOriginal());
-      duplicatedBuffer.getTwins().addAll(((TwinBuffer) originalBuffer).getTwins());
+    DistributedBuffer duplicatedBuffer = CodegenFactory.eINSTANCE.createDistributedBuffer();
+    if (originalBuffer instanceof DistributedBuffer) {
+      duplicatedBuffer.setOriginal(((DistributedBuffer) originalBuffer).getOriginal());
+      duplicatedBuffer.getTwins().addAll(((DistributedBuffer) originalBuffer).getTwins());
     } else {
       duplicatedBuffer.setOriginal(originalBuffer);
     }
-    duplicatedBuffer.getTwins().add(twinBuffer);
+    duplicatedBuffer.getTwins().add(repeatedBuffer);
     return duplicatedBuffer;
   }
 
