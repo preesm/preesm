@@ -480,6 +480,10 @@ public class BeanShellInterpreterTest {
     final Object eval = interpreter.eval(content.toString());
     Assert.assertNotNull(eval);
     Assert.assertTrue(eval instanceof List);
+    Assert.assertEquals(resList, eval);
+    final int size = resList.size();
+    Assert.assertEquals(1, size);
+
   }
 
   /**
