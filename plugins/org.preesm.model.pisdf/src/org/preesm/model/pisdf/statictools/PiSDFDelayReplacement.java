@@ -2,6 +2,7 @@ package org.preesm.model.pisdf.statictools;
 
 import java.util.Map;
 import org.preesm.model.pisdf.AbstractVertex;
+import org.preesm.model.pisdf.ConfigInputPort;
 import org.preesm.model.pisdf.DataInputPort;
 import org.preesm.model.pisdf.DataOutputPort;
 import org.preesm.model.pisdf.Delay;
@@ -69,12 +70,16 @@ public class PiSDFDelayReplacement {
         String dataType = fifo.getType();
         Fifo sourceFifo = PiMMUserFactory.instance.createFifo(sourceOutput, endActor.getDataInputPort(), dataType);
         Fifo targetFifo = PiMMUserFactory.instance.createFifo(initActor.getDataOutputPort(), targetInput, dataType);
+        for (ConfigInputPort cip : delay.getConfigInputPorts()) {
+          copyGraph.getEdges().remove(cip.getIncomingDependency());
+        }
         copyGraph.removeDelay(delay);
         copyGraph.removeFifo(fifo);
         copyGraph.addActor(initActor);
         copyGraph.addActor(endActor);
         copyGraph.addFifo(sourceFifo);
         copyGraph.addFifo(targetFifo);
+
       }
     }
 
