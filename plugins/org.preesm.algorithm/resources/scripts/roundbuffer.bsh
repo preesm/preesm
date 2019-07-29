@@ -35,17 +35,34 @@
  */
 // Roundbuffers script
 
-// Test if roundbuffer is supported
-// Only roundbuffer with all inputs size equal to the outputs size are currently supported
+/* Roundbuffer actually acts as a "decimate" actor: only lasts token are kept.
+ * It means that if there are six inputs (identified from 1 to 6) consuming one 
+ * token each, and one output producing four tokens: only token 3, 4, 5, 6 will be present
+ * in the same order on the output.
+ *
+ * It is slightly different than a strict roundbuffer, where token 1 to 6 would
+ * be written in the same order, erasing previous values if the output is full.
+ * This would lead to the output composed of the token 5, 6, 3, 4, note that the
+ * order is different.
+ */
+
 output = outputs.get(0);
-Buffer lastInput = null;
-for(input : inputs){
-	if(input.getNbTokens() == output.getNbTokens()){
-		lastInput = input;
-	} else {
-		throw new RuntimeException("Unsupported roundbuffer with input.nbTokens != output.nbTokens.");
+
+// https://stackoverflow.com/questions/3962766/how-to-get-a-reversed-list-view-on-a-list-in-java
+reversedInputs = inputs.subList(0, inputs.size());
+Collections.reverse(reversedInputs);
+totalLengthMatched = 0L;
+outSize = output.getNbTokens();
+
+for(input : reversedInputs){
+	if (totalLengthMatched < outSize) {
+		inSize = input.getNbTokens();
+		matchSize = Math.min(outSize - totalLengthMatched, inSize);
+		totalLengthMatched = totalLengthMatched  + matchSize;
+		input.matchWith(inSize - matchSize, output, outSize - totalLengthMatched, matchSize);
 	}
 }
 
-// Match last input with output
-lastInput.matchWith(0,output,0,output.getNbTokens());
+if (totalLengthMatched != outSize) {
+		throw new RuntimeException("Unsupported roundbuffer with input.nbTokens != output.nbTokens.");
+}

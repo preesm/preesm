@@ -1717,10 +1717,10 @@ public class ScriptRunner {
 
     final List<Buffer> outputs = outgoingEdges.stream().map(it -> {
       final Object dataType = it.getPropertyBean().getValue(SDFEdge.DATA_TYPE);
-      // An input buffer is backward mergeable if it is read_only OR if it is unused
+      // An output buffer is forward mergeable if itd target port is unused OR if its target port is read_only
       final String portModiferString = it.getTargetPortModifier() == null ? "" : it.getTargetPortModifier().toString();
       final boolean isMergeable = portModiferString.contains(SDFEdge.MODIFIER_READ_ONLY)
-          || (portModiferString.contains(SDFEdge.MODIFIER_UNUSED));
+          || portModiferString.contains(SDFEdge.MODIFIER_UNUSED);
       final long dataSize = this.dataTypes.get(dataType.toString());
       // Weight is already dataSize * (Cons || prod)
       final long nbTokens = it.getWeight().longValue(); // / dataSize
