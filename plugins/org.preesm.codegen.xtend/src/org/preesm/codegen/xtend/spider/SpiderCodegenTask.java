@@ -136,7 +136,7 @@ public class SpiderCodegenTask extends AbstractTaskImplementation {
     final String papifyParameter = parameters.get(SpiderCodegenTask.PARAM_PAPIFY);
     final boolean usingPapify;
     if (papifyParameter != null) {
-      usingPapify = papifyParameter.equals("true");
+      usingPapify = papifyParameter.equalsIgnoreCase("true");
     } else {
       usingPapify = false;
     }
