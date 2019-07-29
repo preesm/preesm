@@ -15,6 +15,8 @@ import org.preesm.codegen.model.ClusterBlock;
 import org.preesm.codegen.model.CodegenFactory;
 import org.preesm.codegen.model.Constant;
 import org.preesm.codegen.model.CoreBlock;
+import org.preesm.codegen.model.FifoCall;
+import org.preesm.codegen.model.FifoOperation;
 import org.preesm.codegen.model.FiniteLoopBlock;
 import org.preesm.codegen.model.FunctionCall;
 import org.preesm.codegen.model.IntVar;
@@ -37,10 +39,12 @@ import org.preesm.model.pisdf.DataInputPort;
 import org.preesm.model.pisdf.DataOutputPort;
 import org.preesm.model.pisdf.DataPort;
 import org.preesm.model.pisdf.Direction;
+import org.preesm.model.pisdf.EndActor;
 import org.preesm.model.pisdf.ExecutableActor;
 import org.preesm.model.pisdf.Fifo;
 import org.preesm.model.pisdf.ForkActor;
 import org.preesm.model.pisdf.FunctionArgument;
+import org.preesm.model.pisdf.InitActor;
 import org.preesm.model.pisdf.JoinActor;
 import org.preesm.model.pisdf.Parameter;
 import org.preesm.model.pisdf.PiGraph;
@@ -66,6 +70,8 @@ public class CodegenClusterModelGenerator {
   final Map<Fifo, Buffer> internalBufferMap;
 
   final Map<Fifo, Buffer> externalBufferMap;
+
+  final Map<InitActor, Buffer> pipelineBufferMap;
 
   final Map<AbstractActor, IntVar> iterMap;
 
@@ -94,6 +100,7 @@ public class CodegenClusterModelGenerator {
     this.operatorBlock = operatorBlock;
     this.internalBufferMap = new HashMap<>();
     this.externalBufferMap = new HashMap<>();
+    this.pipelineBufferMap = new HashMap<>();
     this.iterMap = new HashMap<>();
     this.outsideFetcher = outsideFetcher;
     this.fetcherMap = fetcherMap;
@@ -189,7 +196,9 @@ public class CodegenClusterModelGenerator {
     }
 
     // Build corresponding actor function/special call
-    if (actor instanceof SpecialActor) {
+    if (actor instanceof EndActor || actor instanceof InitActor) {
+      callSet.getCodeElts().add(buildEndInitActorCall((SpecialActor) actor));
+    } else if (actor instanceof SpecialActor) {
       callSet.getCodeElts().add(buildSpecialActorCall((SpecialActor) actor));
     } else if (actor instanceof ExecutableActor) {
       callSet.getCodeElts().add(buildExecutableActorCall((ExecutableActor) actor));
@@ -265,6 +274,49 @@ public class CodegenClusterModelGenerator {
     FiniteLoopBlock flb = buildFiniteLoopBlock(null, (int) schedule.getRepetition(), cluster, true);
     flb.getCodeElts().add(buildBlockFrom(childrenSchedule));
     return flb;
+  }
+
+  private final FifoCall buildEndInitActorCall(final SpecialActor actor) {
+    FifoCall fifoCall = CodegenFactory.eINSTANCE.createFifoCall();
+
+    DataPort dp = null;
+    InitActor initReference = null;
+
+    if (actor instanceof InitActor) {
+      initReference = (InitActor) actor;
+      if (!pipelineBufferMap.containsKey(initReference)) {
+        buildPipelineBuffer(initReference);
+      }
+      fifoCall.setOperation(FifoOperation.POP);
+      dp = initReference.getDataOutputPort();
+    } else if (actor instanceof EndActor) {
+      initReference = (InitActor) ((EndActor) actor).getInitReference();
+      if (!pipelineBufferMap.containsKey(initReference)) {
+        buildPipelineBuffer(initReference);
+      }
+      fifoCall.setOperation(FifoOperation.PUSH);
+      dp = ((EndActor) actor).getDataInputPort();
+    } else {
+      throw new PreesmRuntimeException("CodegenClusterModelGenerator: can't generate model for " + actor);
+    }
+
+    Buffer associatedBuffer = retrieveAssociatedBuffer(dp.getFifo());
+    Buffer newBuffer = buildIteratedBuffer(associatedBuffer, actor, dp);
+    fifoCall.setHeadBuffer(pipelineBufferMap.get(initReference));
+    fifoCall.addParameter(newBuffer, PortDirection.NONE);
+
+    return fifoCall;
+  }
+
+  private final Buffer buildPipelineBuffer(final InitActor actor) {
+    Buffer pipelineBuffer = CodegenFactory.eINSTANCE.createBuffer();
+    Fifo outgoingFifo = actor.getDataOutputPort().getOutgoingFifo();
+    pipelineBuffer.setType(outgoingFifo.getType());
+    pipelineBuffer.setTypeSize(this.scenario.getSimulationInfo().getDataTypeSizeOrDefault(outgoingFifo.getType()));
+    pipelineBuffer.setSize(actor.getDataOutputPort().getExpression().evaluate());
+    pipelineBuffer.setName("fifo_" + actor.getName().substring(5));
+    pipelineBufferMap.put(actor, pipelineBuffer);
+    return pipelineBuffer;
   }
 
   private final FunctionCall buildExecutableActorCall(final ExecutableActor actor) {
@@ -455,6 +507,8 @@ public class CodegenClusterModelGenerator {
     this.repVector = PiBRV.compute(graph, BRVMethod.LCM);
     // Print cluster into operatorBlock
     this.operatorBlock.getLoopBlock().getCodeElts().add(buildBlockFrom(this.schedule));
+    // Set pipeline buffer in global
+    this.operatorBlock.getDefinitions().addAll(pipelineBufferMap.values());
     // Print memory consumption of the cluster
     String memoryLog = "Memory allocation for cluster " + graph.getName() + ": " + computeMemorySize() + " bytes";
     PreesmLogger.getLogger().log(Level.INFO, memoryLog);
