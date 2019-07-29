@@ -11,6 +11,7 @@ PREESM Changelog
 * Implement simple memory allocation in the new synthesis API;
 * Prepare codegen model generator for the new synthesis API;
 * Refactor: TwinBuffer now is called DistributedBuffer;
+* SPiDER codegen considers empty PAPIFY configs as papify=false;
 
 ### Bug fix
 * fix #186
