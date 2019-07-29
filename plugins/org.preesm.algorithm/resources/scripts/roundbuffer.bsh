@@ -54,6 +54,7 @@ Collections.reverse(reversedInputs);
 totalLengthMatched = 0L;
 outSize = output.getNbTokens();
 
+
 for(input : reversedInputs){
 	if (totalLengthMatched < outSize) {
 		inSize = input.getNbTokens();
