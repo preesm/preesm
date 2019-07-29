@@ -17,19 +17,22 @@ import org.preesm.model.pisdf.util.PiSDFMergeabilty;
  */
 public class APGANClusteringAlgorithm implements IClusteringAlgorithm {
 
+  List<Pair<AbstractActor, AbstractActor>> couples;
+
   @Override
   public Pair<ScheduleType, List<AbstractActor>> findActors(ClusteringBuilder clusteringBuilder) {
-    // Get list of mergeable couple
-    List<Pair<AbstractActor, AbstractActor>> listCouple = PiSDFMergeabilty
-        .getConnectedCouple(clusteringBuilder.getAlgorithm());
-
+    // TODO : Refactor this way of fetching...
+    // If list of mergeable couple is empty, clusterize every actors
+    if (couples.isEmpty()) {
+      return new ImmutablePair<>(ScheduleType.Parallel, clusteringBuilder.getAlgorithm().getActors());
+    }
     // Compute RV
     Map<AbstractVertex, Long> rv = clusteringBuilder.getRepetitionVector();
     // Find the couple that maximize gcd
     long maxGcdRv = 0;
     long tmpGcdRv;
     Pair<AbstractActor, AbstractActor> maxCouple = null;
-    for (Pair<AbstractActor, AbstractActor> l : listCouple) {
+    for (Pair<AbstractActor, AbstractActor> l : couples) {
       // Comptute RV gcd
       tmpGcdRv = ArithmeticUtils.gcd(rv.get(l.getLeft()), rv.get(l.getRight()));
       if (tmpGcdRv > maxGcdRv) {
@@ -53,7 +56,8 @@ public class APGANClusteringAlgorithm implements IClusteringAlgorithm {
   @Override
   public boolean clusteringComplete(ClusteringBuilder clusteringBuilder) {
     boolean returnValue = true;
-    if (clusteringBuilder.getAlgorithm().getActors().size() > 1) {
+    couples = PiSDFMergeabilty.getConnectedCouple(clusteringBuilder.getAlgorithm());
+    if (!couples.isEmpty() || (clusteringBuilder.getAlgorithm().getActors().size() > 1)) {
       returnValue = false;
     }
     return returnValue;
