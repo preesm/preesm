@@ -58,8 +58,10 @@ public class PiSDFDelayReplacement {
         initActor.setEndReference(endActor);
         endActor.setInitReference(initActor);
         // Set name
-        initActor.setName("init_" + targetInput.getContainingActor().getName());
-        endActor.setName("end_" + sourceOutput.getContainingActor().getName());
+        String actorCouple = sourceOutput.getContainingActor().getName() + "_"
+            + targetInput.getContainingActor().getName();
+        initActor.setName("init_" + actorCouple);
+        endActor.setName("end_" + actorCouple);
         // Set consumption/production
         initActor.getDataOutputPort().setExpression(delayTokens);
         endActor.getDataInputPort().setExpression(delayTokens);
