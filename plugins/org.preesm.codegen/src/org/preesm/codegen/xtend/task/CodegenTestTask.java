@@ -6,10 +6,10 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.preesm.algorithm.schedule.model.Schedule;
 import org.preesm.codegen.model.Block;
 import org.preesm.commons.doc.annotations.Port;
 import org.preesm.commons.doc.annotations.PreesmTask;
-import org.preesm.model.algorithm.schedule.Schedule;
 import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.scenario.Scenario;
@@ -43,7 +43,8 @@ public class CodegenTestTask extends AbstractTaskImplementation {
     CodegenTestModelGenerator modelGen = new CodegenTestModelGenerator(architecture, algorithm, scenario, workflow,
         mapper);
     List<Block> blocks = modelGen.generate();
-    CodegenEngine engine = new CodegenEngine(codegenPath, blocks, modelGen);
+    CodegenEngine engine = new CodegenEngine(codegenPath, blocks, algorithm, architecture, scenario);
+
     engine.registerPrintersAndBlocks("C");
     engine.preprocessPrinters();
     engine.print();

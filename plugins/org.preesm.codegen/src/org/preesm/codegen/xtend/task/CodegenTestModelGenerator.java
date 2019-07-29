@@ -5,10 +5,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import org.preesm.algorithm.mapper.model.MapperDAG;
+import org.preesm.algorithm.schedule.model.Schedule;
 import org.preesm.codegen.model.Block;
 import org.preesm.codegen.model.CoreBlock;
+import org.preesm.codegen.model.generator.AbstractCodegenModelGenerator;
 import org.preesm.codegen.model.util.CodegenModelUserFactory;
-import org.preesm.model.algorithm.schedule.Schedule;
 import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.scenario.Scenario;
@@ -39,7 +40,7 @@ public class CodegenTestModelGenerator extends AbstractCodegenModelGenerator {
    */
   public CodegenTestModelGenerator(final Design archi, final PiGraph algo, final Scenario scenario,
       final Workflow workflow, final Map<AbstractActor, Schedule> mapper) {
-    super(archi, new MapperDAG(algo), null, scenario, workflow);
+    super(archi, new MapperDAG(algo), null, scenario);
     this.mapper = mapper;
     this.piAlgo = algo;
   }
