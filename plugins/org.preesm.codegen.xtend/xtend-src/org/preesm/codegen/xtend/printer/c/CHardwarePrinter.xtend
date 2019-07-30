@@ -43,9 +43,6 @@
 package org.preesm.codegen.xtend.printer.c
 
 import java.io.IOException
-import java.io.InputStreamReader
-import java.io.StringWriter
-import java.net.URL
 import java.util.ArrayList
 import java.util.Arrays
 import java.util.Collection
@@ -54,14 +51,11 @@ import java.util.LinkedHashMap
 import java.util.List
 import java.util.Map
 import java.util.logging.Level
-import org.apache.velocity.VelocityContext
-import org.apache.velocity.app.VelocityEngine
 import org.preesm.codegen.model.Block
 import org.preesm.codegen.model.Buffer
 import org.preesm.codegen.model.BufferIterator
 import org.preesm.codegen.model.CallBlock
 import org.preesm.codegen.model.CodeElt
-import org.preesm.codegen.model.Communication
 import org.preesm.codegen.model.Constant
 import org.preesm.codegen.model.ConstantString
 import org.preesm.codegen.model.CoreBlock
@@ -69,68 +63,35 @@ import org.preesm.codegen.model.DataTransferAction
 import org.preesm.codegen.model.Delimiter
 import org.preesm.codegen.model.Direction
 import org.preesm.codegen.model.DistributedMemoryCommunication
-import org.preesm.codegen.model.FifoCall
-import org.preesm.codegen.model.FifoOperation
-import org.preesm.codegen.model.FiniteLoopBlock
 import org.preesm.codegen.model.FpgaLoadAction
 import org.preesm.codegen.model.FreeDataTransferBuffer
 import org.preesm.codegen.model.FunctionCall
 import org.preesm.codegen.model.GlobalBufferDeclaration
 import org.preesm.codegen.model.IntVar
 import org.preesm.codegen.model.LoopBlock
-import org.preesm.codegen.model.NullBuffer
 import org.preesm.codegen.model.OutputDataTransfer
 import org.preesm.codegen.model.PapifyAction
 import org.preesm.codegen.model.PapifyFunctionCall
 import org.preesm.codegen.model.RegisterSetUpAction
 import org.preesm.codegen.model.SharedMemoryCommunication
-import org.preesm.codegen.model.SpecialCall
 import org.preesm.codegen.model.SubBuffer
-import org.preesm.codegen.model.Variable
 import org.preesm.codegen.model.util.CodegenModelUserFactory
-import org.preesm.codegen.printer.DefaultPrinter
 import org.preesm.commons.exceptions.PreesmRuntimeException
 import org.preesm.commons.files.PreesmResourcesHelper
 import org.preesm.commons.logger.PreesmLogger
-import org.preesm.model.pisdf.util.CHeaderUsedLocator
 import org.preesm.codegen.model.ActorFunctionCall
 
 /**
- * This printer is currently used to print C code only for GPP processors
- * supporting pthreads and shared memory communication.
+ * This printer extends the CPrinter and override some of its methods
  *
- * @author kdesnos
- * @author mpelcat
+ * @author lsuriano
  */
-class CHardwarePrinter extends DefaultPrinter {
-
+class CHardwarePrinter extends CPrinter {
+	
 	/*
 	 * Variable to check if we are using PAPIFY or not --> Will be updated during preprocessing
 	 */
 	int usingPapify = 0;
-	/**
-	 * Set to true if a main file should be generated. Set at object creation in constructor.
-	 */
-	final boolean generateMainFile;
-
-	def boolean generateMainFile() {
-		return this.generateMainFile;
-	}
-
-	new() {
-		// generate a main file by default
-		this(true);
-	}
-
-	new(boolean generateMainFile) {
-		this.generateMainFile = generateMainFile;
-	}
-
-	/**
-	 * Temporary global var to ignore the automatic suppression of memcpy
-	 * whose target and destination are identical.
-	 */
-	protected var boolean IGNORE_USELESS_MEMCPY = true
 
 	/**
 	 * Variable that store the number or iteration in hardware. Using it, it will be possible to
@@ -145,9 +106,6 @@ class CHardwarePrinter extends DefaultPrinter {
 	protected var int threadHardwarePrintedUsage = 0;
 	protected var Map<String, String> listOfHwFunctions = new LinkedHashMap<String,String>();
 
-//	int getFactorNumber(){
-//		return this.factorNunber;
-//	}
 
 	override printCoreBlockHeader(CoreBlock block) '''
 			/**
@@ -164,55 +122,6 @@ class CHardwarePrinter extends DefaultPrinter {
 
 	'''
 
-	override printDefinitionsHeader(List<Variable> list) '''
-	«IF !list.empty»
-		// Core Global Definitions
-
-	«ENDIF»
-	'''
-
-	override printBufferDefinition(Buffer buffer) '''
-	«buffer.type» «buffer.name»[«buffer.size»]; // «buffer.comment» size:= «buffer.size»*«buffer.type» ([LEO] printBufferDefinition)
-	'''
-
-	override printSubBufferDefinition(SubBuffer buffer) '''
-	«buffer.type» *const «buffer.name» = («buffer.type»*) («var offset = 0L»«
-	{offset = buffer.offset
-	 var b = buffer.container;
-	 while(b instanceof SubBuffer){
-	 	offset = offset + b.offset
-	  	b = b.container
-	  }
-	 b}.name»+«offset»);  // «buffer.comment» size:= «buffer.size»*«buffer.type»
-	'''
-
-	override printDefinitionsFooter(List<Variable> list) '''
-	«IF !list.empty»
-
-	«ENDIF»
-	'''
-
-	override printDeclarationsHeader(List<Variable> list) '''
-	// Core Global Declaration
-	extern pthread_barrier_t iter_barrier;
-	extern int preesmStopThreads;
-
-	'''
-
-	override printBufferDeclaration(Buffer buffer) '''
-	extern «printBufferDefinition(buffer)»
-	'''
-
-	override printSubBufferDeclaration(SubBuffer buffer) '''
-	extern «buffer.type» *const «buffer.name»;  // «buffer.comment» size:= «buffer.size»*«buffer.type» defined in «buffer.creator.name»
-	'''
-
-	override printDeclarationsFooter(List<Variable> list) '''
-	«IF !list.empty»
-
-	«ENDIF»
-	'''
-
 	override printCoreInitBlockHeader(CallBlock callBlock) '''
 	void *computationThread_Core«(callBlock.eContainer as CoreBlock).coreID»(void *arg){
 		if (arg != NULL) {
@@ -222,19 +131,6 @@ class CHardwarePrinter extends DefaultPrinter {
 		hardware_init();
 
 		«IF !callBlock.codeElts.empty»// Initialisation(s)«"\n\n"»«ENDIF»
-	'''
-
-	override printCoreLoopBlockHeader(LoopBlock block2) '''
-
-		«"\t"»// Begin the execution loop
-		pthread_barrier_wait(&iter_barrier);
-#ifdef PREESM_LOOP_SIZE // Case of a finite loop
-			int index;
-			for(index=0;index<PREESM_LOOP_SIZE || preesmStopThreads;index++){
-#else // Default case of an infinite loop
-			while(!preesmStopThreads){
-#endif
-				// loop body«"\n\n"»
 	'''
 
 	override printCoreLoopBlockFooter(LoopBlock block2) '''
@@ -256,214 +152,6 @@ class CHardwarePrinter extends DefaultPrinter {
 	}
 	«ENDIF»
 	'''
-
-	//#pragma omp parallel for private(«block2.iter.name»)
-	override printFiniteLoopBlockHeader(FiniteLoopBlock block2) '''
-
-		// Begin the for loop
-		{
-			int «block2.iter.name»;
-			for(«block2.iter.name»=0;«block2.iter.name»<«block2.nbIter»;«block2.iter.name»++){
-
-	'''
-
-	override printFiniteLoopBlockFooter(FiniteLoopBlock block2) '''
-		}
-	}
-	'''
-
-	override String printFifoCall(FifoCall fifoCall) {
-		var result = "fifo" + fifoCall.operation.toString.toLowerCase.toFirstUpper + "("
-
-		if (fifoCall.operation != FifoOperation::INIT) {
-			var buffer = fifoCall.parameters.head as Buffer
-			result = result + '''«buffer.doSwitch», '''
-		}
-
-		result = result +
-			'''«fifoCall.headBuffer.name», «fifoCall.headBuffer.size»*sizeof(«fifoCall.headBuffer.type»), '''
-		return result = result + '''«IF fifoCall.bodyBuffer !== null»«fifoCall.bodyBuffer.name», «fifoCall.bodyBuffer.size»*sizeof(«fifoCall.
-			bodyBuffer.type»)«ELSE»NULL, 0«ENDIF»);
-			'''
-	}
-
-	override printFork(SpecialCall call) '''
-	// Fork «call.name»«var input = call.inputBuffers.head»«var index = 0L»
-	{
-		«FOR output : call.outputBuffers»
-			«printMemcpy(output,0,input,index,output.size,output.type)»«{index=(output.size+index); ""}»
-		«ENDFOR»
-	}
-	'''
-
-	override printBroadcast(SpecialCall call) '''
-	// Broadcast «call.name»«var input = call.inputBuffers.head»«var index = 0L»
-	{
-	«FOR output : call.outputBuffers»«var outputIdx = 0L»
-		«// TODO: Change how this loop iterates (nbIter is used in a comment only ...)
-		FOR nbIter : 0..(output.size/input.size+1) as int/*Worst case is output.size exec of the loop */»
-			«IF outputIdx < output.size /* Execute loop core until all output for current buffer are produced */»
-				«val value = Math::min(output.size-outputIdx,input.size-index)»// memcpy #«nbIter»
-				«printMemcpy(output,outputIdx,input,index,value,output.type)»«
-				{index=(index+value)%input.size;outputIdx=(outputIdx+value); ""}»
-			«ENDIF»
-		«ENDFOR»
-	«ENDFOR»
-	}
-	'''
-
-
-
-	override printRoundBuffer(SpecialCall call) '''
-	// RoundBuffer «call.name»«var output = call.outputBuffers.head»«var index = 0L»«var inputIdx = 0L»
-	«/*Compute a list of useful memcpy (the one writing the outputed value) */
-	var copiedInBuffers = {var totalSize = call.inputBuffers.fold(0L)[res, buf | res+buf.size]
-		 var lastInputs = new ArrayList
-		 inputIdx = totalSize
-		 var i = call.inputBuffers.size	- 1
-		 while(totalSize-inputIdx < output.size){
-		 	inputIdx = inputIdx - call.inputBuffers.get(i).size
-		 	lastInputs.add(0,call.inputBuffers.get(i))
-			if (i < 0) {
-				throw new PreesmRuntimeException("Invalid RoundBuffer sizes: output size is greater than cumulative input size.")
-			}
-		 	i=i-1
-		 }
-		 inputIdx = inputIdx %  output.size
-		 lastInputs
-		 }»
-	{
-		«FOR input : copiedInBuffers»
-			«// TODO: Change how this loop iterates (nbIter is used in a comment only ...)
-			FOR nbIter : 0..(input.size/output.size+1) as int/*Worst number the loop exec */»
-				«IF inputIdx < input.size /* Execute loop core until all input for current buffer are produced */»
-					«val value = Math::min(input.size-inputIdx,output.size-index)»// memcpy #«nbIter»
-					«printMemcpy(output,index,input,inputIdx,value,input.type)»«{
-						index=(index+value)%output.size;
-						inputIdx=(inputIdx+value); ""
-					}»
-				«ENDIF»
-			«ENDFOR»
-		«ENDFOR»
-	}
-	'''
-
-	override printJoin(SpecialCall call) '''
-	// Join «call.name»«var output = call.outputBuffers.head»«var index = 0L»
-	{
-		«FOR input : call.inputBuffers»
-			«printMemcpy(output,index,input,0,input.size,input.type)»«{index=(input.size+index); ""}»
-		«ENDFOR»
-	}
-	'''
-
-	/**
-	 * Print a memcpy call in the generated code. Unless
-	 * {@link #IGNORE_USELESS_MEMCPY} is set to <code>true</code>, this method
-	 * checks if the destination and the source of the memcpy are superimposed.
-	 * In such case, the memcpy is useless and nothing is printed.
-	 *
-	 * @param output
-	 *            the destination {@link Buffer}
-	 * @param outOffset
-	 *            the offset in the destination {@link Buffer}
-	 * @param input
-	 *            the source {@link Buffer}
-	 * @param inOffset
-	 *            the offset in the source {@link Buffer}
-	 * @param size
-	 *            the amount of memory to copy
-	 * @param type
-	 *            the type of objects copied
-	 * @return a {@link CharSequence} containing the memcpy call (if any)
-	 */
-	def String printMemcpy(Buffer output, long outOffset, Buffer input, long inOffset, long size, String type) {
-
-		// Retrieve the container buffer of the input and output as well
-		// as their offset in this buffer
-		var totalOffsetOut = outOffset*output.typeSize
-		var bOutput = output
-		while (bOutput instanceof SubBuffer) {
-			totalOffsetOut = totalOffsetOut + bOutput.offset
-			bOutput = bOutput.container
-		}
-
-		var totalOffsetIn = inOffset*input.typeSize
-		var bInput = input
-		while (bInput instanceof SubBuffer) {
-			totalOffsetIn = totalOffsetIn + bInput.offset
-			bInput = bInput.container
-		}
-
-		// If the Buffer and offsets are identical, or one buffer is null
-		// there is nothing to print
-		if((IGNORE_USELESS_MEMCPY && bInput == bOutput && totalOffsetIn == totalOffsetOut) ||
-			output instanceof NullBuffer || input instanceof NullBuffer){
-			return ''''''
-		} else {
-			return '''memcpy(«output.doSwitch»+«outOffset», «input.doSwitch»+«inOffset», «size»*sizeof(«type»));'''
-		}
-	}
-
-	override printNullBuffer(NullBuffer Buffer) {
-		return printBuffer(Buffer)
-	}
-
-	override caseCommunication(Communication communication) {
-
-		if(communication.nodes.forall[type == "SHARED_MEM"]) {
-			return super.caseCommunication(communication)
-		} else {
-			throw new PreesmRuntimeException("Communication "+ communication.name +
-				 " has at least one unsupported communication node"+
-				 " for the " + this.class.name + " printer")
-		}
-	}
-
-	def CharSequence generatePreesmHeader() {
-	    // 0- without the following class loader initialization, I get the following exception when running as Eclipse
-	    // plugin:
-	    // org.apache.velocity.exception.VelocityException: The specified class for ResourceManager
-	    // (org.apache.velocity.runtime.resource.ResourceManagerImpl) does not implement
-	    // org.apache.velocity.runtime.resource.ResourceManager; Velocity is not initialized correctly.
-	    val ClassLoader oldContextClassLoader = Thread.currentThread().getContextClassLoader();
-	    Thread.currentThread().setContextClassLoader(CPrinter.classLoader);
-
-	    // 1- init engine
-	    val VelocityEngine engine = new VelocityEngine();
-	    engine.init();
-
-	    // 2- init context
-	    val VelocityContext context = new VelocityContext();
-	    val findAllCHeaderFileNamesUsed = CHeaderUsedLocator.findAllCHeaderFileNamesUsed(getEngine.algo)
-	    context.put("USER_INCLUDES", findAllCHeaderFileNamesUsed.map["#include \""+ it +"\""].join("\n"));
-		if(this.usingPapify == 1){
-	    	context.put("CONSTANTS", "\n#ifdef _PREESM_PAPIFY_MONITOR\n#include \"eventLib.h\"\n#endif");
-		}
-
-
-	    context.put("CONSTANTS", "#define NB_DESIGN_ELTS "+getEngine.archi.componentInstances.size+"\n#define NB_CORES "+getEngine.codeBlocks.size);
-
-	    // 3- init template reader
-	    val String templateLocalPath = "templates/c/preesm_gen.h";
-	    val URL mainTemplate = PreesmResourcesHelper.getInstance().resolve(templateLocalPath,this.class);
-	    var InputStreamReader reader = null;
-	    try {
-	      reader = new InputStreamReader(mainTemplate.openStream());
-	    } catch (IOException e) {
-	      throw new PreesmRuntimeException("Could not locate main template [" + templateLocalPath + "].", e);
-	    }
-
-	    // 4- init output writer
-	    val StringWriter writer = new StringWriter();
-
-	    engine.evaluate(context, writer, "org.apache.velocity", reader);
-
-	    // 99- set back default class loader
-	    Thread.currentThread().setContextClassLoader(oldContextClassLoader);
-
-	    return writer.getBuffer().toString();
-	}
 
 	override generateStandardLibFiles() {
 		val result = super.generateStandardLibFiles();
@@ -500,15 +188,7 @@ class CHardwarePrinter extends DefaultPrinter {
 		return result
 	}
 
-	override createSecondaryFiles(List<Block> printerBlocks, Collection<Block> allBlocks) {
-		val result = super.createSecondaryFiles(printerBlocks, allBlocks);
-		if (generateMainFile()) {
-			result.put("main.c", printMain(printerBlocks))
-		}
-		return result
-	}
-
-	def String printMain(List<Block> printerBlocks) '''
+	override String printMain(List<Block> printerBlocks) '''
 		/**
 		 * @file main.c
 		 * @generated by «this.class.simpleName»
@@ -636,65 +316,9 @@ class CHardwarePrinter extends DefaultPrinter {
 
 	'''
 
-
-	override printSharedMemoryCommunication(SharedMemoryCommunication communication) '''
-	«/*Since everything is already in shared memory, communications are simple synchronizations here*/
-	IF (communication.comment !== null && !communication.comment.empty)
-	»«IF (communication.comment.contains("\n"))
-	»/* «ELSE»// «ENDIF»«communication.comment»
-	«IF (communication.comment.contains("\n"))» */
-	«ENDIF»«ENDIF»«IF communication.isRedundant»//«ENDIF»«communication.direction.toString.toLowerCase»«communication.delimiter.toString.toLowerCase.toFirstUpper»(«IF (communication.
-		direction == Direction::SEND && communication.delimiter == Delimiter::START) ||
-		(communication.direction == Direction::RECEIVE && communication.delimiter == Delimiter::END)»«communication.sendStart.coreContainer.coreID», «communication.receiveStart.coreContainer.coreID»«ENDIF»); // «communication.sendStart.coreContainer.name» > «communication.receiveStart.coreContainer.name»: «communication.
-		data.doSwitch»
-	'''
-
-	override printDistributedMemoryCommunication(DistributedMemoryCommunication communication) ''''''
-
 	override printFunctionCall(FunctionCall functionCall) '''
 	hardware_kernel_execute("«functionCall.name»",gsize_TO_BE_CHANGED«IF (functionCall.factorNumber > 0)» * «functionCall.factorNumber»«ENDIF», lsize_TO_BE_CHANGED); // executing hardware kernel
 	hardware_kernel_wait("«functionCall.name»");
-	'''
-
-	override printPapifyFunctionCall(PapifyFunctionCall papifyFunctionCall) '''
-	«IF papifyFunctionCall.opening == true»
-		#ifdef _PREESM_PAPIFY_MONITOR
-	«ENDIF»
-	«papifyFunctionCall.name»(«FOR param : papifyFunctionCall.parameters SEPARATOR ','»«param.doSwitch»«ENDFOR»); // «papifyFunctionCall.actorName»
-	«IF papifyFunctionCall.closing == true»
-		#endif
-	«ENDIF»
-	'''
-
-	override printConstant(Constant constant) '''«constant.value»«IF !constant.name.nullOrEmpty»/*«constant.name»*/«ENDIF»'''
-
-	override printConstantString(ConstantString constant) '''"«constant.value»"'''
-
-	override printPapifyActionDefinition(PapifyAction action) '''
-	«IF action.opening == true»
-		#ifdef _PREESM_PAPIFY_MONITOR
-	«ENDIF»
-	«action.type» «action.name»; // «action.comment»
-	«IF action.closing == true»
-		#endif
-	«ENDIF»
-	'''
-	override printPapifyActionParam(PapifyAction action) '''&«action.name»'''
-
-	override printBuffer(Buffer buffer) '''«buffer.name»'''
-
-	override printSubBuffer(SubBuffer buffer) {return printBuffer(buffer)}
-
-	override printBufferIterator(BufferIterator bufferIterator) '''«bufferIterator.name» + «printIntVar(bufferIterator.iter)» * «bufferIterator.iterSize»'''
-
-	override printBufferIteratorDeclaration(BufferIterator bufferIterator) ''''''
-
-	override printBufferIteratorDefinition(BufferIterator bufferIterator) ''''''
-
-	override printIntVar(IntVar intVar) '''«intVar.name»'''
-
-	override printIntVarDeclaration(IntVar intVar) '''
-	extern int «intVar.name»;
 	'''
 
 	override printIntVarDefinition(IntVar intVar) '''
