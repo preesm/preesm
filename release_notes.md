@@ -34,7 +34,7 @@ PREESM Changelog
 * Refactor: rename/move packages in algo & codegen;
 * Implement simple memory allocation in the new synthesis API;
 * Prepare codegen model generator for the new synthesis API;
-* Refactor: TwinBuffer now is called DistributedBuffer;
+* Hardware Codegen Refactor: CHardwarePrinter extends now the CPrinter and override some of the methods;
 * Hardware Codegen Refactor: CHardwarePrinter extends now the CPrinter and override some of the methods;
 * SPiDER codegen considers empty PAPIFY configs as papify=false;
 * Update round buffer memory script to handle multiple inputs;
