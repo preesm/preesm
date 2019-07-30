@@ -178,7 +178,7 @@ public abstract class AbstractMemoryAllocatorTask extends AbstractTaskImplementa
   private String valueAlignment;
 
   /** The alignment. */
-  protected int alignment;
+  protected long alignment;
 
   /** The nb shuffle. */
   private int nbShuffle;

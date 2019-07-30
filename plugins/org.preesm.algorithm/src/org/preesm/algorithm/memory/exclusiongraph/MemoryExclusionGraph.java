@@ -633,7 +633,7 @@ public class MemoryExclusionGraph extends SimpleGraph<MemoryExclusionVertex, Def
               // If the merged vertex is not split
               if (mergedVertex.getWeight() != 0) {
                 // Put it back to its real weight
-                final int emptySpace = (int) mergedVertex.getPropertyBean()
+                final long emptySpace = mergedVertex.getPropertyBean()
                     .getValue(MemoryExclusionVertex.EMPTY_SPACE_BEFORE);
                 mergedVertex.setWeight(mergedVertex.getWeight() - emptySpace);
               } else {

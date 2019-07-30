@@ -64,7 +64,8 @@ public class BLevelIterator extends ImplementationIterator {
     }
 
     if (!arg0.getTiming().hasBLevel() || !arg1.getTiming().hasBLevel()) {
-      final String msg = "B Level Iterator problem";
+      final String msg = "B Level Iterator problem on vertices: " + arg0.getName() + "(" + arg0.getTiming().hasBLevel()
+          + ") / " + arg1.getName() + "(" + arg1.getTiming().hasBLevel() + ")";
       throw new PreesmRuntimeException(msg);
     }
 

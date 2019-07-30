@@ -291,8 +291,10 @@ public class DeGreefAllocator extends MemoryAllocator {
     public int compareTo(final IntegerAndVertex o) {
       // If the offsets are different, use them as a comparison
       final long firstDiff = this.first - o.first;
-      if (firstDiff != 0) {
-        return (int) firstDiff;
+      if (firstDiff > 0) {
+        return 1;
+      } else if (firstDiff < 0) {
+        return -1;
       }
 
       // Else, compare the vertices

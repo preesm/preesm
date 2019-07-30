@@ -244,8 +244,8 @@ public class Buffer {
   long minIndex;
 
   /**
-   * This table is protected to ensure that matches are set only by using {@link #matchWith(int,Buffer,int)} methods in
-   * the scripts.
+   * This table is protected to ensure that matches are set only by using {@link #matchWith(long,Buffer,long)} methods
+   * in the scripts.
    */
   final Map<Long, List<Match>> matchTable;
 

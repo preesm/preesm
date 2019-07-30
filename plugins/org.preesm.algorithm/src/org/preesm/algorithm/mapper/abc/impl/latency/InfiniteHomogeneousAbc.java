@@ -201,9 +201,9 @@ public class InfiniteHomogeneousAbc extends LatencyAbc {
 
       edge.getTiming().setCost(cost);
     } else {
-      Float speed = 1f;
+      Double speed = 1d;
       speed = edgesize * speed;
-      edge.getTiming().setCost(speed.intValue());
+      edge.getTiming().setCost(speed.longValue());
     }
   }
 

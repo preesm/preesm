@@ -237,7 +237,7 @@ class Dma extends Enabler {
 }
 
 class Mem extends Enabler {
-	int size = "1"
+	long size = "1"
 }
 
 class HierarchyPort {
