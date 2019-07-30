@@ -84,8 +84,13 @@ import org.preesm.workflow.implement.AbstractWorkflowNodeImplementation;
             values = { @Value(name = "special-actors"), @Value(name = "dummy", effect = "(Default)") }),
         @Parameter(name = "shared-memory-size", description = "Size of the shared memory allocated by Spider.",
             values = { @Value(name = "$$n$$", effect = "$$n > 0$$ bytes. (Default = 67108864)") }),
-        @Parameter(name = "papify", description = "Wether to use Papify.",
+        @Parameter(name = "papify", description = "Whether to use Papify.",
             values = { @Value(name = "true / false", effect = "") }),
+        @Parameter(name = "papify-feedback", description = "Type of feedback given by Papify",
+            values = { @Value(name = "none", effect = "No feedback is provided"),
+                @Value(name = "dump", effect = "Print csv files"),
+                @Value(name = "feedback", effect = "Give feedback to the GRT"),
+                @Value(name = "both", effect = "Print csv files and give feedback to the GRT") }),
         @Parameter(name = "verbose", description = "Wether to log.",
             values = { @Value(name = "true / false", effect = "") }),
         @Parameter(name = "trace", description = "Wether to trace what is happening at runtime.",
@@ -102,21 +107,23 @@ import org.preesm.workflow.implement.AbstractWorkflowNodeImplementation;
 public class SpiderCodegenTask extends AbstractTaskImplementation {
 
   /** The Constant PARAM_PAPIFY. */
-  public static final String PARAM_PAPIFY        = "papify";
+  public static final String PARAM_PAPIFY          = "papify";
+  /** The Constant PARAM_PAPIFY_FEEDBACK. */
+  public static final String PARAM_PAPIFY_FEEDBACK = "papify-feedback";
   /** The Constant PARAM_VERBOSE. */
-  public static final String PARAM_VERBOSE       = "verbose";
+  public static final String PARAM_VERBOSE         = "verbose";
   /** The Constant PARAM_TRACE. */
-  public static final String PARAM_TRACE         = "trace";
+  public static final String PARAM_TRACE           = "trace";
   /** The Constant PARAM_MEMALLOC. */
-  public static final String PARAM_MEMALLOC      = "memory-alloc";
+  public static final String PARAM_MEMALLOC        = "memory-alloc";
   /** The Constant PARAM_SHMEMORY_SIZE. */
-  public static final String PARAM_SHMEMORY_SIZE = "shared-memory-size";
+  public static final String PARAM_SHMEMORY_SIZE   = "shared-memory-size";
   /** The Constant PARAM_STACK_TYPE. */
-  public static final String PARAM_STACK_TYPE    = "stack-type";
+  public static final String PARAM_STACK_TYPE      = "stack-type";
   /** The Constant PARAM_SCHEDULER. */
-  public static final String PARAM_SCHEDULER     = "scheduler";
+  public static final String PARAM_SCHEDULER       = "scheduler";
   /** The Constant PARAM_GRAPH_OPTIMS. */
-  public static final String PARAM_GRAPH_OPTIMS  = "graph-optims";
+  public static final String PARAM_GRAPH_OPTIMS    = "graph-optims";
 
   /*
    * (non-Javadoc)

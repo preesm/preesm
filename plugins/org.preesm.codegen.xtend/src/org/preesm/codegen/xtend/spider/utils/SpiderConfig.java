@@ -49,6 +49,8 @@ public class SpiderConfig {
   public static final Long DEFAULT_SHARED_MEMORY_SIZE = (long) 67108864;
 
   private boolean usePapify;
+  private boolean dumpPapifyInfo;
+  private boolean feedbackPapifyInfo;
   private boolean useVerbose;
   private boolean useTrace;
   private boolean useGraphOptims;
@@ -77,6 +79,22 @@ public class SpiderConfig {
     }
   }
 
+  private void setPapifyFeedbackType(final String papifyFeedbackParameter) {
+    if ("none".equalsIgnoreCase(papifyFeedbackParameter)) {
+      dumpPapifyInfo = false;
+      feedbackPapifyInfo = false;
+    } else if ("feedback".equalsIgnoreCase(papifyFeedbackParameter)) {
+      dumpPapifyInfo = false;
+      feedbackPapifyInfo = true;
+    } else if ("both".equalsIgnoreCase(papifyFeedbackParameter)) {
+      dumpPapifyInfo = true;
+      feedbackPapifyInfo = true;
+    } else { // dump info is the default option
+      dumpPapifyInfo = true;
+      feedbackPapifyInfo = false;
+    }
+  }
+
   /**
    * 
    * @param workflowParameters
@@ -84,6 +102,7 @@ public class SpiderConfig {
    */
   public SpiderConfig(final Map<String, String> workflowParameters) {
     final String papifyParameter = workflowParameters.get(SpiderCodegenTask.PARAM_PAPIFY);
+    final String papifyFeedbackParameter = workflowParameters.get(SpiderCodegenTask.PARAM_PAPIFY_FEEDBACK);
     final String verboseParameter = workflowParameters.get(SpiderCodegenTask.PARAM_VERBOSE);
     final String traceParameter = workflowParameters.get(SpiderCodegenTask.PARAM_TRACE);
     final String graphOptimsParameter = workflowParameters.get(SpiderCodegenTask.PARAM_GRAPH_OPTIMS);
@@ -93,6 +112,7 @@ public class SpiderConfig {
     final String sharedMemoryParameter = workflowParameters.get(SpiderCodegenTask.PARAM_SHMEMORY_SIZE);
 
     usePapify = "true".equalsIgnoreCase(papifyParameter);
+    setPapifyFeedbackType(papifyFeedbackParameter);
     useVerbose = "true".equalsIgnoreCase(verboseParameter);
     useTrace = "true".equalsIgnoreCase(traceParameter);
     useGraphOptims = !"false".equalsIgnoreCase(graphOptimsParameter);
@@ -104,6 +124,14 @@ public class SpiderConfig {
 
   public boolean getUseOfPapify() {
     return usePapify;
+  }
+
+  public boolean getDumpPapifyInfo() {
+    return dumpPapifyInfo;
+  }
+
+  public boolean getFeedbackPapifyInfo() {
+    return feedbackPapifyInfo;
   }
 
   public boolean getUseOfVerbose() {
