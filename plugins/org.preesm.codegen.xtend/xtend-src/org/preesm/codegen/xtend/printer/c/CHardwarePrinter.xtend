@@ -52,17 +52,10 @@ import java.util.List
 import java.util.Map
 import java.util.logging.Level
 import org.preesm.codegen.model.Block
-import org.preesm.codegen.model.Buffer
-import org.preesm.codegen.model.BufferIterator
 import org.preesm.codegen.model.CallBlock
 import org.preesm.codegen.model.CodeElt
-import org.preesm.codegen.model.Constant
-import org.preesm.codegen.model.ConstantString
 import org.preesm.codegen.model.CoreBlock
 import org.preesm.codegen.model.DataTransferAction
-import org.preesm.codegen.model.Delimiter
-import org.preesm.codegen.model.Direction
-import org.preesm.codegen.model.DistributedMemoryCommunication
 import org.preesm.codegen.model.FpgaLoadAction
 import org.preesm.codegen.model.FreeDataTransferBuffer
 import org.preesm.codegen.model.FunctionCall
@@ -70,11 +63,8 @@ import org.preesm.codegen.model.GlobalBufferDeclaration
 import org.preesm.codegen.model.IntVar
 import org.preesm.codegen.model.LoopBlock
 import org.preesm.codegen.model.OutputDataTransfer
-import org.preesm.codegen.model.PapifyAction
 import org.preesm.codegen.model.PapifyFunctionCall
 import org.preesm.codegen.model.RegisterSetUpAction
-import org.preesm.codegen.model.SharedMemoryCommunication
-import org.preesm.codegen.model.SubBuffer
 import org.preesm.codegen.model.util.CodegenModelUserFactory
 import org.preesm.commons.exceptions.PreesmRuntimeException
 import org.preesm.commons.files.PreesmResourcesHelper
@@ -104,6 +94,8 @@ class CHardwarePrinter extends CPrinter {
 	protected var int numberHardwareAcceleratorSlots = 0;
 	protected var int threadHardwarePrintedDeclaration = 0;
 	protected var int threadHardwarePrintedUsage = 0;
+	protected var int DataTransferActionNumber = 0;
+	protected var int FreeDataTransferBufferNumber = 0;
 	protected var Map<String, String> listOfHwFunctions = new LinkedHashMap<String,String>();
 
 
@@ -380,14 +372,12 @@ class CHardwarePrinter extends CPrinter {
 	«var count = 0»
 	«FOR buffer : action.buffers»
 		a3data_t *global_hardware_«count» = NULL;
-		global_hardware_«count» = hardware_alloc(«this.numberHardwareAcceleratorSlots» * «buffer.size»«IF (this.factorNumber > 0)» * «this.factorNumber»«ENDIF» * sizeof *«buffer.name», "«action.name»", "«buffer.doSwitch»",  «action.parameterDirections.get(count++)»);
+		global_hardware_«count» = hardware_alloc(«buffer.size»«IF (this.factorNumber > 0)» * «this.factorNumber»«ENDIF» * sizeof *«buffer.name», "«action.name»", "«buffer.doSwitch»",  «action.parameterDirections.get(count++)»);
 	«ENDFOR»
 	'''
 
 	override preProcessing(List<Block> printerBlocks, Collection<Block> allBlocks) {
-		PreesmLogger.getLogger().info("[LEO] preProcessing for Hardware. The elements to be processed are " + printerBlocks.size());
-		var DataTransferActionNumber = 0;
-		var FreeDataTransferBufferNumber = 0;
+		PreesmLogger.getLogger().info("[HARDWARE] preProcessing for Hardware. The elements to be processed are " + printerBlocks.size());
 		var RegisterSetUpNumber = 0;
 		var lastFunctionCallIndex = 0;
 		var currentFunctionPosition = 0;
@@ -398,7 +388,7 @@ class CHardwarePrinter extends CPrinter {
 
 		/*
 		 * To insert all the elements of loopBlock of every instance of printerBlocks in a Unique Block
-		 * called blockMerged
+		 * called blockMerged.
 		 */
 		for (Block block : printerBlocks) {
 			var coreLoop = (block as CoreBlock).loopBlock
@@ -406,8 +396,9 @@ class CHardwarePrinter extends CPrinter {
 			var clonedElts = coreLoop.codeElts.clone()
 			blockMerged.loopBlock.codeElts.addAll(clonedElts)
 		}
+		
 		/* to add all the elements of the blockMerged.loopBlock.codeElts inside
-		 * the first block of the printersBlock */
+		 * the first block of the printersBlock: only this one will be printed and the others deleted */
 
         var Block firstBlock = printerBlocks.get(0)
 		var coreLoopFinal = (firstBlock as CoreBlock).loopBlock
@@ -454,186 +445,186 @@ class CHardwarePrinter extends CPrinter {
 		var bufferCopyDeclarationList = new ArrayList();
 		for (Block block : printerBlocks) {
 			bufferCopyDeclarationList.addAll((block as CoreBlock).declarations)
-			PreesmLogger.getLogger().info("[LEO] try to copy the buffers and subbuffers.");
+			PreesmLogger.getLogger().info("[HARDWARE] copying buffers and subbuffers.");
 		}
 		(firstBlock as CoreBlock).declarations.addAll(bufferCopyDeclarationList)
 
 
 
 
-		for (Block block : printerBlocks) {
 
-			/*
-			 * The strategy is:
-			 * to delete all the FunctionCallImpl and to keep just the LAST one. All the other FunctionCallImpl are
-			 * replaced with the "Data Motion".
-			 *
-			 */
+		var block = printerBlocks.get(0);
 
-			 /*
-			  * In order to have a unique file calling all the PEs of the Hardware (many SLOTs can be used), the
-			  * operation (described above) MUST be performed for every element of the printerBlocks.
-			  * Operator in the S-LAM ---> one element of the printerBlocks.
-			  * Additionally, only one element of the printerBlocks should be kept in the list (that MUST be created to reflect the actors firing
-			  * of the original set of files).
-			  *
-			  */
+		/*
+		 * The strategy is:
+		 * to delete all the FunctionCallImpl and to keep just the LAST one. All the other FunctionCallImpl are
+		 * replaced with the "Data Motion".
+		 *
+		 */
 
-			var coreLoop = (block as CoreBlock).loopBlock
-			var i = 0;
-			this.functionCallNumber = 0;
-			// This Loop just locate where the function are and how many they are.
-			while (i < coreLoop.codeElts.size) {
-				// Retrieve the function ID
-				val elt = coreLoop.codeElts.get(i)
-				if (elt instanceof ActorFunctionCall) {
-					this.functionCallNumber++;
-					lastFunctionCallIndex = i;
-					if (this.functionCallNumber > 0) {
-						//coreLoop.codeElts.remove(i);
-					}
-				}
-				i++;
-			}
+		 /*
+		  * In order to have a unique file calling all the PEs of the Hardware (many SLOTs can be used), the
+		  * operation (described above) MUST be performed for every element of the printerBlocks.
+		  * Operator in the S-LAM ---> one element of the printerBlocks.
+		  * Additionally, only one element of the printerBlocks should be kept in the list (that MUST be created to reflect the actors firing
+		  * of the original set of files).
+		  *
+		  */
 
-			// This loop adds the new information on the class to be printed and substitute the old with the new one
-			// Note that the function to be kept is the last one!
-			if (this.functionCallNumber > 0) {
-				currentFunctionPosition = lastFunctionCallIndex;
-				var functionCallImplOld = (block as CoreBlock).loopBlock.codeElts.get(lastFunctionCallIndex);
-				// checking that the function to be changed is the right one
-				 if (! (functionCallImplOld instanceof ActorFunctionCall)) {
-				 	PreesmLogger.getLogger().log(Level.SEVERE, "Hardware Codegen ERROR in the preProcessing function. The functionCall to be modified was NOT found");
-				 } else {
-				 	// create a new function identical to the Old one
-					var functionCallImplNew = (functionCallImplOld as FunctionCall);
-					//storing the name of the function to be executed in hardware in a global dictionary
-					if(this.listOfHwFunctions.empty){
-						this.listOfHwFunctions.put(functionCallImplNew.name,functionCallImplNew.name);
-					}
-					else {
-						if (!this.listOfHwFunctions.containsKey(functionCallImplNew.name)) {
-							this.listOfHwFunctions.put(functionCallImplNew.name,functionCallImplNew.name);
-						}
-					}
-
-					// set the new value in the new version of the element of the list
-					functionCallImplNew.factorNumber = this.functionCallNumber;
-					// replace the old element with the new one
-					(block as CoreBlock).loopBlock.codeElts.set(lastFunctionCallIndex,functionCallImplNew);
-				 }
-				PreesmLogger.getLogger().info("[LEO] number of FunctionCallImpl " + this.functionCallNumber);
-			}
-
-			// this loop is to delete all the functions but not the last one (the new one!)
-			i = coreLoop.codeElts.size-1;
-			var flagFirstFunctionFound = 0;
-			while (i > 0) {
-				// Retrieve the function ID
-				val elt = coreLoop.codeElts.get(i)
-				if ((elt instanceof ActorFunctionCall) && flagFirstFunctionFound == 0) {
-					flagFirstFunctionFound++;
-
-				}
-				else if ((elt instanceof ActorFunctionCall) && flagFirstFunctionFound > 0) {
-					coreLoop.codeElts.remove(i);
-					currentFunctionPosition--;
-				}
-				i--;
-			}
-
-			// this loop is for the data transfer. A new DataTrasfer (a replica) is added AFTER the FunctionCall,
-			// one for every buffer used!
-
-			i=0;
-			DataTransferActionNumber = 0;
-			var positionOfNewDataTransfer = currentFunctionPosition;
-			while (i < coreLoop.codeElts.size) {
-				// Retrieve the function ID
-				val elt = coreLoop.codeElts.get(i)
-				if (elt instanceof DataTransferAction) {
-					DataTransferActionNumber++;
-					positionOfNewDataTransfer++;
-					if (DataTransferActionNumber > 0) {
-						//coreLoop.codeElts.remove(i);
-					}
-				}
-				i++;
-			}
-			//the last loop is for the Free data transfer (that actually does nothing)
-			i=0;
-			FreeDataTransferBufferNumber = 0;
-			while (i < coreLoop.codeElts.size) {
-				// Retrieve the function ID
-				val elt = coreLoop.codeElts.get(i)
-				if ((elt instanceof FreeDataTransferBuffer) && FreeDataTransferBufferNumber == 0) {
-					FreeDataTransferBufferNumber++;
-					//firstFreeDataIndex = i;
-				}
-				else if ((elt instanceof FreeDataTransferBuffer) && FreeDataTransferBufferNumber > 0) {
-					FreeDataTransferBufferNumber++;
+		var coreLoop = (block as CoreBlock).loopBlock
+		var i = 0;
+		this.functionCallNumber = 0;
+		// This Loop just locate where the function are and how many they are.
+		while (i < coreLoop.codeElts.size) {
+			// Retrieve the function ID
+			val elt = coreLoop.codeElts.get(i)
+			if (elt instanceof ActorFunctionCall) {
+				this.functionCallNumber++;
+				lastFunctionCallIndex = i;
+				if (this.functionCallNumber > 0) {
 					//coreLoop.codeElts.remove(i);
 				}
-				i++;
 			}
-
-			// this loop is for the OutputDataTransfer. All the OUTPUT DataTransfer will be deleted
-			// and inserted after the function execution
-
-			i=0;
-			var OutputDataTransferActionNumber = 0;
-			val cloneCoreLoop = coreLoop.codeElts.clone
-			while (i < coreLoop.codeElts.size) {
-				// Retrieve the function ID
-				val elt = coreLoop.codeElts.get(i)
-				if (elt instanceof OutputDataTransfer) {
-					OutputDataTransferActionNumber++;
-					currentFunctionPosition--
-					coreLoop.codeElts.remove(i);
-				}
-				i++;
-			}
-			// the last one is deleted after the function execution and does not count
-			currentFunctionPosition++
-
-			// all the OutputDataTransfer should be inserted again but AFTER the function call
-			var countOutputDataTransferInserted = 0
-			i=0
-			while (i < cloneCoreLoop.size){
-				// Retrieve the function ID
-				val elt = cloneCoreLoop.get(i)
-				if (elt instanceof OutputDataTransfer){
-					countOutputDataTransferInserted++
-					coreLoop.codeElts.add(currentFunctionPosition+countOutputDataTransferInserted,elt)
-				}
-				i++
-			}
-			PreesmLogger.getLogger().info("[LEO] number of OutputDataTransfer inserted is " + countOutputDataTransferInserted);
-			// it is enough to set up the register just once at the beginning.
-			i=0;
-			RegisterSetUpNumber = 0;
-			while (i < coreLoop.codeElts.size) {
-				// Retrieve the function ID
-				val elt = coreLoop.codeElts.get(i)
-				if ((elt instanceof RegisterSetUpAction) && RegisterSetUpNumber == 0) {
-					RegisterSetUpNumber++;
-					//firstRegisterSetUp = i;
-				}
-				else if ((elt instanceof RegisterSetUpAction) && RegisterSetUpNumber > 0) {
-					RegisterSetUpNumber++;
-					coreLoop.codeElts.remove(i);
-				}
-				i++;
-			}
-
-			// storing the functionCallNumber that may be used by other printers
-			if (this.functionCallNumber == DataTransferActionNumber && this.functionCallNumber == FreeDataTransferBufferNumber){
-				this.factorNumber = this.functionCallNumber;
-			} else {
-				PreesmLogger.getLogger().log(Level.SEVERE, "Hardware Codegen ERROR in the preProcessing function. Different number of function calls and data transfers were detected");
-			}
-
+			i++;
 		}
+
+		// This loop adds the new information on the class to be printed and substitute the old functions with the new ones
+		// Note that the function to be kept is the last one!
+		if (this.functionCallNumber > 0) {
+			currentFunctionPosition = lastFunctionCallIndex;
+			var functionCallImplOld = (block as CoreBlock).loopBlock.codeElts.get(lastFunctionCallIndex);
+			// checking that the function to be changed is the right one
+			 if (! (functionCallImplOld instanceof ActorFunctionCall)) {
+			 	PreesmLogger.getLogger().log(Level.SEVERE, "Hardware Codegen ERROR in the preProcessing function. The functionCall to be modified was NOT found");
+			 } else {
+			 	// create a new function identical to the Old one
+				var functionCallImplNew = (functionCallImplOld as FunctionCall);
+				//storing the name of the function to be executed in hardware in a global dictionary
+				if(this.listOfHwFunctions.empty){
+					this.listOfHwFunctions.put(functionCallImplNew.name,functionCallImplNew.name);
+				}
+				else {
+					if (!this.listOfHwFunctions.containsKey(functionCallImplNew.name)) {
+						this.listOfHwFunctions.put(functionCallImplNew.name,functionCallImplNew.name);
+					}
+				}
+
+				// set the new value in the new version of the element of the list
+				functionCallImplNew.factorNumber = this.functionCallNumber;
+				// replace the old element with the new one
+				(block as CoreBlock).loopBlock.codeElts.set(lastFunctionCallIndex,functionCallImplNew);
+			 }
+			PreesmLogger.getLogger().info("[HARDWARE] number of FunctionCallImpl " + this.functionCallNumber);
+		}
+
+		// this loop is to delete all the functions but not the last one (the new one!)
+		i = coreLoop.codeElts.size-1;
+		var flagFirstFunctionFound = 0;
+		while (i > 0) {
+			// Retrieve the function ID
+			val elt = coreLoop.codeElts.get(i)
+			if ((elt instanceof ActorFunctionCall) && flagFirstFunctionFound == 0) {
+				flagFirstFunctionFound++;
+
+			}
+			else if ((elt instanceof ActorFunctionCall) && flagFirstFunctionFound > 0) {
+				coreLoop.codeElts.remove(i);
+				currentFunctionPosition--;
+			}
+			i--;
+		}
+
+		// this loop is for the data transfer. A new DataTrasfer (a replica) is added AFTER the FunctionCall,
+		// one for every buffer used!
+
+		i=0;
+		this.DataTransferActionNumber = 0;
+		var positionOfNewDataTransfer = currentFunctionPosition;
+		while (i < coreLoop.codeElts.size) {
+			// Retrieve the function ID
+			val elt = coreLoop.codeElts.get(i)
+			if (elt instanceof DataTransferAction) {
+				this.DataTransferActionNumber++;
+				positionOfNewDataTransfer++;
+				if (DataTransferActionNumber > 0) {
+					//coreLoop.codeElts.remove(i);
+				}
+			}
+			i++;
+		}
+		//the last loop is for the Free data transfer (that actually does nothing)
+		i=0;
+		FreeDataTransferBufferNumber = 0;
+		while (i < coreLoop.codeElts.size) {
+			// Retrieve the function ID
+			val elt = coreLoop.codeElts.get(i)
+			if ((elt instanceof FreeDataTransferBuffer) && FreeDataTransferBufferNumber == 0) {
+				FreeDataTransferBufferNumber++;
+				//firstFreeDataIndex = i;
+			}
+			else if ((elt instanceof FreeDataTransferBuffer) && FreeDataTransferBufferNumber > 0) {
+				FreeDataTransferBufferNumber++;
+				//coreLoop.codeElts.remove(i);
+			}
+			i++;
+		}
+
+		// this loop is for the OutputDataTransfer. All the OUTPUT DataTransfer will be deleted
+		// and inserted after the function execution
+
+		i=0;
+		var OutputDataTransferActionNumber = 0;
+		val cloneCoreLoop = coreLoop.codeElts.clone
+		while (i < coreLoop.codeElts.size) {
+			// Retrieve the function ID
+			val elt = coreLoop.codeElts.get(i)
+			if (elt instanceof OutputDataTransfer) {
+				OutputDataTransferActionNumber++;
+				currentFunctionPosition--
+				coreLoop.codeElts.remove(i);
+			}
+			i++;
+		}
+		// the last one is deleted after the function execution and does not count
+		currentFunctionPosition++
+
+		// all the OutputDataTransfer should be inserted again but AFTER the function call
+		var countOutputDataTransferInserted = 0
+		i=0
+		while (i < cloneCoreLoop.size){
+			// Retrieve the function ID
+			val elt = cloneCoreLoop.get(i)
+			if (elt instanceof OutputDataTransfer){
+				countOutputDataTransferInserted++
+				coreLoop.codeElts.add(currentFunctionPosition+countOutputDataTransferInserted,elt)
+			}
+			i++
+		}
+		PreesmLogger.getLogger().info("[HARDWARE] number of OutputDataTransfer inserted is " + countOutputDataTransferInserted);
+		// it is enough to set up the register just once at the beginning.
+		i=0;
+		RegisterSetUpNumber = 0;
+		while (i < coreLoop.codeElts.size) {
+			// Retrieve the function ID
+			val elt = coreLoop.codeElts.get(i)
+			if ((elt instanceof RegisterSetUpAction) && RegisterSetUpNumber == 0) {
+				RegisterSetUpNumber++;
+				//firstRegisterSetUp = i;
+			}
+			else if ((elt instanceof RegisterSetUpAction) && RegisterSetUpNumber > 0) {
+				RegisterSetUpNumber++;
+				coreLoop.codeElts.remove(i);
+			}
+			i++;
+		}
+
+		// storing the functionCallNumber that may be used by other printers
+		if (functionCallNumber == DataTransferActionNumber && functionCallNumber == FreeDataTransferBufferNumber){
+			factorNumber = functionCallNumber;
+		} else {
+			PreesmLogger.getLogger().log(Level.SEVERE, "Hardware Codegen ERROR in the preProcessing function. Different number of function calls and data transfers were detected");
+		}
+
 
 		/* Removing unuseful elements in the list of printersBlock. To keep just the fist one */
 		var numberOfSlotDetected = printerBlocks.size
@@ -641,7 +632,7 @@ class CHardwarePrinter extends CPrinter {
 			printerBlocks.remove(j)
 		}
 
-		PreesmLogger.getLogger().info("[LEO] End of the Hardware preProcessing.");
+		PreesmLogger.getLogger().info("[HARDWARE] End of the Hardware preProcessing.");
 		/*
 		 * Preprocessing for Papify
 		 */
