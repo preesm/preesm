@@ -169,6 +169,8 @@ class SpiderMainFilePrinter {
 			cfg.papifyJobInfo = get_«pg.name»_papifyConfigs();
 		«ELSE»
 			cfg.usePapify = false;
+			cfg.dumpPapifyInfo = false;
+			cfg.feedbackPapifyInfo = false;
 		«ENDIF»
 
 		try {
