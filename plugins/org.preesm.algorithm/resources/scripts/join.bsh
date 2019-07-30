@@ -35,9 +35,9 @@
  */
 // Join script
 
-outIdx = 0;
+outIdx = 0L;
 for(input : inputs){
 	inSize = input.getNbTokens();
 	outputs.get(0).matchWith(outIdx,input,0,inSize);
-	outIdx +=  inSize;
+	outIdx += inSize;
 }
