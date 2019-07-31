@@ -64,11 +64,11 @@ public class Schedule {
   @JsonProperty("processingUnits")
   private List<ProcessingUnit>      processingUnits      = null;
   @JsonProperty("period")
-  private Integer                   period;
+  private Long                      period;
   @JsonProperty("intervals")
-  private Integer                   intervals;
+  private Long                      intervals;
   @JsonProperty("step")
-  private Integer                   step;
+  private Long                      step;
   @JsonProperty("applicationName")
   private String                    applicationName;
   @JsonProperty("runID")
@@ -131,32 +131,32 @@ public class Schedule {
   }
 
   @JsonProperty("period")
-  public Integer getPeriod() {
+  public Long getPeriod() {
     return this.period;
   }
 
   @JsonProperty("period")
-  public void setPeriod(final Integer period) {
+  public void setPeriod(final Long period) {
     this.period = period;
   }
 
   @JsonProperty("intervals")
-  public Integer getIntervals() {
+  public Long getIntervals() {
     return this.intervals;
   }
 
   @JsonProperty("intervals")
-  public void setIntervals(final Integer intervals) {
+  public void setIntervals(final Long intervals) {
     this.intervals = intervals;
   }
 
   @JsonProperty("step")
-  public Integer getStep() {
+  public Long getStep() {
     return this.step;
   }
 
   @JsonProperty("step")
-  public void setStep(final Integer step) {
+  public void setStep(final Long step) {
     this.step = step;
   }
 

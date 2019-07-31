@@ -121,6 +121,7 @@ public class InfiniteHomogeneousAbc extends LatencyAbc {
     mapAllVerticesOnOperator(mainOperator);
 
     updateFinalCosts();
+
     this.orderManager.resetTotalOrder();
     final TLevelIterator iterator = new TLevelIterator(this.implementation, true);
 

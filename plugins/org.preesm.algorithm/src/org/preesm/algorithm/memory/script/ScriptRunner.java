@@ -1460,7 +1460,7 @@ public class ScriptRunner {
   /**
   *
   */
-  public ScriptRunner(final int alignment) {
+  public ScriptRunner(final long alignment) {
     // kdesnos: Data alignment is supposed to be equivalent
     // to no alignment from the script POV. (not 100% sure of this)
     this.alignment = (alignment <= 0) ? -1 : alignment;

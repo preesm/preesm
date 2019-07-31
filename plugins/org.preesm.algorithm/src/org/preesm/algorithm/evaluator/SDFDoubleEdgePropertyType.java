@@ -67,7 +67,7 @@ public class SDFDoubleEdgePropertyType extends AbstractEdgePropertyType<Double> 
 
   @Override
   public long longValue() {
-    return this.value.intValue();
+    return this.value.longValue();
   }
 
   /*

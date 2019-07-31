@@ -96,7 +96,7 @@ public class MemoryScriptEngine {
     this.verbose = verbose;
     // Get the logger
     this.logger = PreesmLogger.getLogger();
-    int alignment;
+    long alignment;
     switch (valueAlignment.substring(0, Math.min(valueAlignment.length(), 7))) {
       case AbstractMemoryAllocatorTask.VALUE_ALIGNEMENT_NONE:
         alignment = -1;
@@ -106,7 +106,7 @@ public class MemoryScriptEngine {
         break;
       case AbstractMemoryAllocatorTask.VALUE_ALIGNEMENT_FIXED:
         final String fixedValue = valueAlignment.substring(7);
-        alignment = Integer.parseInt(fixedValue);
+        alignment = Long.parseLong(fixedValue);
         break;
       default:
         alignment = -1;

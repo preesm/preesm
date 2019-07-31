@@ -234,8 +234,8 @@ public class HeuristicSolver<V extends IWeightedVertex<Long> & Comparable<V>, E 
             .getNeighborsWeight());
         final boolean equalWeight = (entry.getValue().getNeighborsWeight() == selectedEntry.getValue()
             .getNeighborsWeight());
-        final boolean smallerVertexWeight = (entry.getKey().getWeight().intValue() < selectedEntry.getKey().getWeight()
-            .intValue());
+        final boolean smallerVertexWeight = (entry.getKey().getWeight().longValue() < selectedEntry.getKey().getWeight()
+            .longValue());
 
         // Explanation :
         // The vertex with the lowest neighborhood weight is selected.

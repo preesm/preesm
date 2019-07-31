@@ -87,7 +87,6 @@ public class TLevelVisitor implements IGraphVisitor<MapperDAG, MapperDAGVertex, 
     // Visiting a DAG consists in computing T Levels for all its vertices,
     // starting from vertices without predecessors
     final TopologicalDAGIterator iterator = new TopologicalDAGIterator(dag);
-
     DAGVertex next = null;
     try {
       // Recomputing all TLevels
@@ -109,7 +108,6 @@ public class TLevelVisitor implements IGraphVisitor<MapperDAG, MapperDAGVertex, 
         }
       }
     } catch (final NoSuchElementException | IllegalArgumentException e) {
-      System.err.println("Stopped at: " + next.getName());
       throw new PreesmRuntimeException(e);
     }
   }

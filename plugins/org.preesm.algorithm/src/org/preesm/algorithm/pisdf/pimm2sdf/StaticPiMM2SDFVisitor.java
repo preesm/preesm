@@ -201,7 +201,7 @@ public class StaticPiMM2SDFVisitor extends PiMMSwitch<Boolean> {
       // If there is only one value available for Parameter p, we can set
       // its
       if (this.execution.hasValue(p)) {
-        final Integer value = this.execution.getValue(p);
+        final Long value = this.execution.getValue(p);
         p.setExpression(value.longValue());
       }
     }

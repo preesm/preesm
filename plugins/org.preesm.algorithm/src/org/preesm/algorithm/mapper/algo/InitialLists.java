@@ -238,7 +238,6 @@ public class InitialLists implements Cloneable {
     PreesmLogger.getLogger().log(Level.INFO, "Starting to build CPN list");
 
     // variables
-    MapperDAGVertex currentvertex;
     MapperDAGVertex tempvertex = null;
     long commax = 0;
 
@@ -250,6 +249,7 @@ public class InitialLists implements Cloneable {
 
     // The DAG is entirely read in b-level order by the iterator to find the
     // Critical Path
+    MapperDAGVertex currentvertex;
     currentvertex = iterator.next();
     while (!(currentvertex.incomingEdges().isEmpty())) {
       currentvertex = iterator.next();
