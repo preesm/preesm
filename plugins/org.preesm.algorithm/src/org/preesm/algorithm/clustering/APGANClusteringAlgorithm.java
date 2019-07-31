@@ -19,12 +19,14 @@ public class APGANClusteringAlgorithm implements IClusteringAlgorithm {
 
   List<Pair<AbstractActor, AbstractActor>> couples;
 
+  List<AbstractActor> clusterizableActor;
+
   @Override
   public Pair<ScheduleType, List<AbstractActor>> findActors(ClusteringBuilder clusteringBuilder) {
     // TODO : Refactor this way of fetching...
     // If list of mergeable couple is empty, clusterize every actors
     if (couples.isEmpty()) {
-      return new ImmutablePair<>(ScheduleType.Parallel, clusteringBuilder.getAlgorithm().getActors());
+      return new ImmutablePair<>(ScheduleType.Parallel, clusterizableActor);
     }
     // Compute RV
     Map<AbstractVertex, Long> rv = clusteringBuilder.getRepetitionVector();
@@ -57,7 +59,10 @@ public class APGANClusteringAlgorithm implements IClusteringAlgorithm {
   public boolean clusteringComplete(ClusteringBuilder clusteringBuilder) {
     boolean returnValue = true;
     couples = PiSDFMergeabilty.getConnectedCouple(clusteringBuilder.getAlgorithm());
-    if (!couples.isEmpty() || (clusteringBuilder.getAlgorithm().getActors().size() > 1)) {
+    clusterizableActor = new LinkedList<>();
+    clusterizableActor.addAll(clusteringBuilder.getAlgorithm().getActors());
+    clusterizableActor.removeAll(clusteringBuilder.getAlgorithm().getDelayActors());
+    if (!couples.isEmpty() || (clusterizableActor.size() > 1)) {
       returnValue = false;
     }
     return returnValue;
