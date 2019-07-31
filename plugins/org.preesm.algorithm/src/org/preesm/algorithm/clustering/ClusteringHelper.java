@@ -37,8 +37,6 @@ package org.preesm.algorithm.clustering;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
-import org.apache.commons.math3.util.ArithmeticUtils;
 import org.eclipse.emf.common.util.ECollections;
 import org.eclipse.emf.common.util.EList;
 import org.preesm.algorithm.schedule.model.ActorSchedule;
@@ -50,13 +48,13 @@ import org.preesm.algorithm.schedule.model.SequentialActorSchedule;
 import org.preesm.algorithm.schedule.model.SequentialHiearchicalSchedule;
 import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.preesm.model.pisdf.AbstractActor;
-import org.preesm.model.pisdf.AbstractVertex;
 import org.preesm.model.pisdf.ConfigInputInterface;
 import org.preesm.model.pisdf.ConfigInputPort;
 import org.preesm.model.pisdf.DataInputInterface;
 import org.preesm.model.pisdf.DataInputPort;
 import org.preesm.model.pisdf.DataOutputInterface;
 import org.preesm.model.pisdf.DataOutputPort;
+import org.preesm.model.pisdf.Delay;
 import org.preesm.model.pisdf.Fifo;
 import org.preesm.model.pisdf.ISetter;
 import org.preesm.model.pisdf.Parameter;
@@ -104,35 +102,6 @@ public class ClusteringHelper {
   }
 
   /**
-   * Used to get great common divisor repetition count of a list of actors
-   * 
-   * @param actorList
-   *          actor to compute gcd repetition from
-   * @param repetitionVector
-   *          repetition vector of corresponding graph
-   * 
-   * @return gcd repetition count
-   */
-  public static final long computeGcdRepetition(List<AbstractActor> actorList,
-      Map<AbstractVertex, Long> repetitionVector) {
-    // Retrieve all repetition value
-    List<Long> actorsRepetition = new LinkedList<>();
-    for (AbstractActor a : actorList) {
-      if (repetitionVector.containsKey(a)) {
-        actorsRepetition.add(repetitionVector.get(a));
-      } else {
-        throw new PreesmRuntimeException("ClusteringHelper: Repetition vector does not contains key of " + a.getName());
-      }
-    }
-    // Compute gcd
-    long clusterRepetition = actorsRepetition.get(0);
-    for (int i = 1; i < actorsRepetition.size(); i++) {
-      clusterRepetition = ArithmeticUtils.gcd(clusterRepetition, actorsRepetition.get(i));
-    }
-    return clusterRepetition;
-  }
-
-  /**
    * @param actor
    *          actor to check if it is self looped
    * @return true if actor is self looped, false otherwise
@@ -145,6 +114,22 @@ public class ClusteringHelper {
       }
     }
     return false;
+  }
+
+  /**
+   * @param actor
+   *          actor to retrieve self looped delay from
+   * @return list of delays
+   */
+  public static final List<Delay> getSelfLoopedDelays(AbstractActor actor) {
+    List<Delay> delays = new LinkedList<>();
+    for (DataInputPort dip : actor.getDataInputPorts()) {
+      AbstractActor source = (AbstractActor) dip.getIncomingFifo().getSource();
+      if (source.equals(actor)) {
+        delays.add(dip.getIncomingFifo().getDelay());
+      }
+    }
+    return delays;
   }
 
   /**
