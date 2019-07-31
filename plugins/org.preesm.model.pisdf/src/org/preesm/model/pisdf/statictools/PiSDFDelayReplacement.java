@@ -1,5 +1,7 @@
 package org.preesm.model.pisdf.statictools;
 
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 import org.preesm.model.pisdf.AbstractVertex;
 import org.preesm.model.pisdf.ConfigInputPort;
@@ -31,12 +33,14 @@ public class PiSDFDelayReplacement {
    */
   public PiGraph replaceDelay() {
     // Perform copy of input graph
-    PiGraph copyGraph = PiMMUserFactory.instance.copyPiGraphWithHistory(inputGraph);
-    copyGraph.setName(copyGraph.getName() + "_undelayed");
+    // PiGraph copyGraph = PiMMUserFactory.instance.copyPiGraphWithHistory(inputGraph);
+    inputGraph.setName(inputGraph.getName() + "_undelayed");
     // Compute BRV
-    Map<AbstractVertex, Long> brv = PiBRV.compute(copyGraph, BRVMethod.LCM);
+    Map<AbstractVertex, Long> brv = PiBRV.compute(inputGraph, BRVMethod.LCM);
     // Process on delay that are pipeline
-    for (Delay delay : copyGraph.getAllDelays()) {
+    List<Delay> delays = new LinkedList<>();
+    delays.addAll(inputGraph.getAllDelays());
+    for (Delay delay : delays) {
       // Retrieve output and input port
       Fifo fifo = delay.getContainingFifo();
       DataOutputPort sourceOutput = fifo.getSourcePort();
@@ -70,20 +74,19 @@ public class PiSDFDelayReplacement {
         String dataType = fifo.getType();
         Fifo sourceFifo = PiMMUserFactory.instance.createFifo(sourceOutput, endActor.getDataInputPort(), dataType);
         Fifo targetFifo = PiMMUserFactory.instance.createFifo(initActor.getDataOutputPort(), targetInput, dataType);
+        inputGraph.addActor(initActor);
+        inputGraph.addActor(endActor);
+        inputGraph.addFifo(sourceFifo);
+        inputGraph.addFifo(targetFifo);
         for (ConfigInputPort cip : delay.getConfigInputPorts()) {
-          copyGraph.getEdges().remove(cip.getIncomingDependency());
+          inputGraph.getEdges().remove(cip.getIncomingDependency());
         }
-        copyGraph.removeDelay(delay);
-        copyGraph.removeFifo(fifo);
-        copyGraph.addActor(initActor);
-        copyGraph.addActor(endActor);
-        copyGraph.addFifo(sourceFifo);
-        copyGraph.addFifo(targetFifo);
-
+        inputGraph.removeDelay(delay);
+        inputGraph.removeFifo(fifo);
       }
     }
 
-    return copyGraph;
+    return inputGraph;
   }
 
 }
