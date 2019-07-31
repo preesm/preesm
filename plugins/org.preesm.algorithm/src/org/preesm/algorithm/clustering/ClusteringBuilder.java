@@ -23,6 +23,7 @@ import org.preesm.model.pisdf.DataInputInterface;
 import org.preesm.model.pisdf.DataInputPort;
 import org.preesm.model.pisdf.DataOutputInterface;
 import org.preesm.model.pisdf.DataOutputPort;
+import org.preesm.model.pisdf.Delay;
 import org.preesm.model.pisdf.Dependency;
 import org.preesm.model.pisdf.Fifo;
 import org.preesm.model.pisdf.PiGraph;
@@ -30,6 +31,7 @@ import org.preesm.model.pisdf.brv.BRVMethod;
 import org.preesm.model.pisdf.brv.PiBRV;
 import org.preesm.model.pisdf.factory.PiMMUserFactory;
 import org.preesm.model.pisdf.util.PiGraphConsistenceChecker;
+import org.preesm.model.pisdf.util.PiSDFMergeabilty;
 
 /**
  * @author dgageot
@@ -44,6 +46,8 @@ public class ClusteringBuilder {
   private IClusteringAlgorithm clusteringAlgorithm;
 
   private Map<AbstractVertex, Long> repetitionVector;
+
+  private int nbCluster;
 
   /**
    * @param algorithm
@@ -74,7 +78,6 @@ public class ClusteringBuilder {
    * @return schedule mapping including all cluster with corresponding scheduling
    */
   public final Map<AbstractActor, Schedule> processClustering() {
-
     // Keep original algorithm
     PiGraph origAlgorithm = this.algorithm;
 
@@ -82,6 +85,7 @@ public class ClusteringBuilder {
     PiGraph firstStageGraph = PiMMUserFactory.instance.copyPiGraphWithHistory(origAlgorithm);
     this.algorithm = firstStageGraph;
 
+    nbCluster = 0;
     // Until the algorithm has to work
     while (!clusteringAlgorithm.clusteringComplete(this)) {
       // Compute BRV with the corresponding graph
@@ -102,6 +106,7 @@ public class ClusteringBuilder {
     List<Schedule> schedules = new LinkedList<>();
     schedules.addAll(scheduleMapping.values());
     scheduleMapping.clear();
+    nbCluster = 0;
     for (Schedule schedule : schedules) {
       HierarchicalSchedule processedSchedule = (HierarchicalSchedule) processClusteringFrom(schedule);
       scheduleMapping.put(processedSchedule.getAttachedActor(), processedSchedule);
@@ -286,7 +291,7 @@ public class ClusteringBuilder {
     List<AbstractActor> actorList = actorFound.getValue();
 
     // Compute rvCluster
-    long clusterRepetition = ClusteringHelper.computeGcdRepetition(actorList, repetitionVector);
+    long clusterRepetition = PiSDFMergeabilty.computeGcdRepetition(actorList, repetitionVector);
 
     // Construct a sequential schedule
     for (AbstractActor a : actorList) {
@@ -333,26 +338,28 @@ public class ClusteringBuilder {
    */
   private final PiGraph buildClusterGraph(List<AbstractActor> actorList) {
     // Set cluster name to concatenated name of all actor involve in the list
-    StringBuilder clusterName = new StringBuilder();
-    for (AbstractActor a : actorList) {
-      clusterName.append(a.getName());
-      clusterName.append("_");
-    }
-    clusterName.deleteCharAt(clusterName.length() - 1);
+    // StringBuilder clusterName = new StringBuilder();
+    // for (AbstractActor a : actorList) {
+    // clusterName.append(a.getName());
+    // clusterName.append("_");
+    // }
+    // clusterName.deleteCharAt(clusterName.length() - 1);
+
+    String clusterName = "cluster_" + this.nbCluster++;
 
     // Create the cluster actor and set it name
     PiGraph cluster = PiMMUserFactory.instance.createPiGraph();
     cluster.setName(clusterName.toString());
     cluster.setUrl(algorithm.getUrl() + "/" + cluster.getName() + ".pi");
 
-    // Add cluster to the parent graph and remove actors from parent
+    // Add cluster to the parent graph
     algorithm.addActor(cluster);
     for (AbstractActor a : actorList) {
       cluster.addActor(a);
     }
 
     // Compute clusterRepetition
-    long clusterRepetition = ClusteringHelper.computeGcdRepetition(actorList, repetitionVector);
+    long clusterRepetition = PiSDFMergeabilty.computeGcdRepetition(actorList, repetitionVector);
 
     int nbOut = 0;
     int nbIn = 0;
@@ -371,6 +378,10 @@ public class ClusteringBuilder {
               dip.getExpression().evaluate() * actorRepetition / clusterRepetition);
         } else {
           cluster.addFifo(dip.getIncomingFifo());
+          Delay delay = dip.getIncomingFifo().getDelay();
+          if (delay != null) {
+            cluster.addDelay(delay);
+          }
         }
       }
 
@@ -384,6 +395,10 @@ public class ClusteringBuilder {
               dop.getExpression().evaluate() * actorRepetition / clusterRepetition);
         } else {
           cluster.addFifo(dop.getOutgoingFifo());
+          Delay delay = dop.getOutgoingFifo().getDelay();
+          if (delay != null) {
+            cluster.addDelay(delay);
+          }
         }
       }
     }
@@ -392,6 +407,10 @@ public class ClusteringBuilder {
     List<ConfigInputPort> cfgipTmp = new ArrayList<>();
     for (AbstractActor a : actorList) {
       cfgipTmp.addAll(a.getConfigInputPorts());
+    }
+    for (Delay delay : cluster.getAllDelays()) {
+      cfgipTmp.addAll(delay.getConfigInputPorts());
+      delay.setExpression(delay.getExpression().evaluate());
     }
     int nbCfg = 0;
     for (ConfigInputPort cfgip : cfgipTmp) {
@@ -428,6 +447,9 @@ public class ClusteringBuilder {
     inputPort.setIncomingFifo(PiMMUserFactory.instance.createFifo());
     newHierarchy.getContainingPiGraph().addFifo(inputPort.getFifo());
     Fifo oldFifo = insideInputPort.getFifo();
+    if (oldFifo.getDelay() != null) {
+      inputPort.getFifo().setDelay(oldFifo.getDelay());
+    }
     String dataType = oldFifo.getType();
     inputPort.getIncomingFifo().setSourcePort(oldFifo.getSourcePort());
     inputPort.getIncomingFifo().setType(dataType);
@@ -472,6 +494,9 @@ public class ClusteringBuilder {
     outputPort.setOutgoingFifo(PiMMUserFactory.instance.createFifo());
     newHierarchy.getContainingPiGraph().addFifo(outputPort.getFifo());
     Fifo oldFifo = insideOutputPort.getFifo();
+    if (oldFifo.getDelay() != null) {
+      outputPort.getFifo().setDelay(oldFifo.getDelay());
+    }
     String dataType = oldFifo.getType();
     outputPort.getOutgoingFifo().setTargetPort(oldFifo.getTargetPort());
     outputPort.getOutgoingFifo().setType(dataType);
