@@ -5,6 +5,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
+import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.preesm.algorithm.clustering.ClusteringHelper;
 import org.preesm.algorithm.schedule.model.ActorSchedule;
 import org.preesm.algorithm.schedule.model.HierarchicalSchedule;
@@ -73,6 +74,8 @@ public class CodegenClusterModelGenerator {
 
   final Map<InitActor, Buffer> pipelineBufferMap;
 
+  final List<Buffer> delayedBufferList;
+
   final Map<AbstractActor, IntVar> iterMap;
 
   Map<AbstractVertex, Long> repVector;
@@ -101,6 +104,7 @@ public class CodegenClusterModelGenerator {
     this.internalBufferMap = new HashMap<>();
     this.externalBufferMap = new HashMap<>();
     this.pipelineBufferMap = new HashMap<>();
+    this.delayedBufferList = new LinkedList<>();
     this.iterMap = new HashMap<>();
     this.outsideFetcher = outsideFetcher;
     this.fetcherMap = fetcherMap;
@@ -138,6 +142,10 @@ public class CodegenClusterModelGenerator {
 
     // If there is an iteration to run actor, iterate the buffer
     associatedBuffer = buildIteratedBuffer(associatedBuffer, actor, port);
+
+    if (functionCall.getParameters().contains(associatedBuffer)) {
+      associatedBuffer = EcoreUtil.copy(associatedBuffer);
+    }
 
     // Add parameter to functionCall
     functionCall.addParameter(associatedBuffer,
@@ -409,7 +417,14 @@ public class CodegenClusterModelGenerator {
       // Fill buffer information by looking at the Fifo
       buffer.setType(fifo.getType());
       buffer.setTypeSize(this.scenario.getSimulationInfo().getDataTypeSizeOrDefault(fifo.getType()));
-      buffer.setSize(fifo.getSourcePort().getExpression().evaluate() * this.repVector.get(fifo.getSource()));
+      // If it is a self-loop fifo or a normal fifo
+      if (fifo.getDelay() != null) {
+        buffer.setSize(fifo.getSourcePort().getExpression().evaluate());
+        // Register as a self loop buffer (cannot be subject of repetition of actor)
+        this.delayedBufferList.add(buffer);
+      } else {
+        buffer.setSize(fifo.getSourcePort().getExpression().evaluate() * this.repVector.get(fifo.getSource()));
+      }
       // Register the buffer to the corresponding Fifo
       this.internalBufferMap.put(fifo, buffer);
       localInternalBuffer.add(buffer);
@@ -420,12 +435,14 @@ public class CodegenClusterModelGenerator {
 
   private final Buffer buildIteratedBuffer(final Buffer buffer, final AbstractActor actor, final DataPort dataPort) {
     // If iteration map contain actor, it means that buffer has to be iterated
-    if (this.iterMap.containsKey(actor)) {
+    if (this.iterMap.containsKey(actor) && !this.delayedBufferList.contains(buffer)) {
       IteratedBuffer iteratedBuffer = null;
       iteratedBuffer = CodegenFactory.eINSTANCE.createIteratedBuffer();
       iteratedBuffer.setBuffer(buffer);
       iteratedBuffer.setIter(this.iterMap.get(actor));
       iteratedBuffer.setSize(dataPort.getExpression().evaluate());
+      iteratedBuffer.setType(buffer.getType());
+      iteratedBuffer.setTypeSize(buffer.getTypeSize());
       return iteratedBuffer;
     } else {
       return buffer;
