@@ -80,17 +80,21 @@ public class SpiderConfig {
   }
 
   private void setPapifyFeedbackType(final String papifyFeedbackParameter) {
-    if ("none".equalsIgnoreCase(papifyFeedbackParameter)) {
-      dumpPapifyInfo = false;
+    if ("dump".equalsIgnoreCase(papifyFeedbackParameter)) {
+      usePapify = true;
+      dumpPapifyInfo = true;
       feedbackPapifyInfo = false;
     } else if ("feedback".equalsIgnoreCase(papifyFeedbackParameter)) {
+      usePapify = true;
       dumpPapifyInfo = false;
       feedbackPapifyInfo = true;
     } else if ("both".equalsIgnoreCase(papifyFeedbackParameter)) {
+      usePapify = true;
       dumpPapifyInfo = true;
       feedbackPapifyInfo = true;
-    } else { // dump info is the default option
-      dumpPapifyInfo = true;
+    } else { // papify is off by default
+      usePapify = false;
+      dumpPapifyInfo = false;
       feedbackPapifyInfo = false;
     }
   }
@@ -102,7 +106,6 @@ public class SpiderConfig {
    */
   public SpiderConfig(final Map<String, String> workflowParameters) {
     final String papifyParameter = workflowParameters.get(SpiderCodegenTask.PARAM_PAPIFY);
-    final String papifyFeedbackParameter = workflowParameters.get(SpiderCodegenTask.PARAM_PAPIFY_FEEDBACK);
     final String verboseParameter = workflowParameters.get(SpiderCodegenTask.PARAM_VERBOSE);
     final String traceParameter = workflowParameters.get(SpiderCodegenTask.PARAM_TRACE);
     final String graphOptimsParameter = workflowParameters.get(SpiderCodegenTask.PARAM_GRAPH_OPTIMS);
@@ -111,8 +114,7 @@ public class SpiderConfig {
     final String memAllocParameter = workflowParameters.get(SpiderCodegenTask.PARAM_MEMALLOC);
     final String sharedMemoryParameter = workflowParameters.get(SpiderCodegenTask.PARAM_SHMEMORY_SIZE);
 
-    usePapify = "true".equalsIgnoreCase(papifyParameter);
-    setPapifyFeedbackType(papifyFeedbackParameter);
+    setPapifyFeedbackType(papifyParameter);
     useVerbose = "true".equalsIgnoreCase(verboseParameter);
     useTrace = "true".equalsIgnoreCase(traceParameter);
     useGraphOptims = !"false".equalsIgnoreCase(graphOptimsParameter);
