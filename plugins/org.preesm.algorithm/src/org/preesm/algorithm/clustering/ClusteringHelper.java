@@ -260,10 +260,6 @@ public class ClusteringHelper {
       // repetition of it
       if (!schedule.hasAttachedActor()) {
         long rep = schedule.getRepetition();
-        // Saturate repetition to the number of core available
-        if (rep > 4) {
-          rep = 4;
-        }
         result *= rep;
       } else {
         // Estimate every interal buffer size
