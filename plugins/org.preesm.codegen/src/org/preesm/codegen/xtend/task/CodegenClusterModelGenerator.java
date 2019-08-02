@@ -72,9 +72,9 @@ public class CodegenClusterModelGenerator {
 
   final Map<Fifo, Buffer> externalBufferMap;
 
-  final Map<InitActor, Buffer> pipelineBufferMap;
+  final Map<Fifo, Buffer> delayBufferMap;
 
-  final List<Buffer> delayedBufferList;
+  final Map<InitActor, Buffer> pipelineBufferMap;
 
   final Map<AbstractActor, IntVar> iterMap;
 
@@ -104,7 +104,7 @@ public class CodegenClusterModelGenerator {
     this.internalBufferMap = new HashMap<>();
     this.externalBufferMap = new HashMap<>();
     this.pipelineBufferMap = new HashMap<>();
-    this.delayedBufferList = new LinkedList<>();
+    this.delayBufferMap = new HashMap<>();
     this.iterMap = new HashMap<>();
     this.outsideFetcher = outsideFetcher;
     this.fetcherMap = fetcherMap;
@@ -322,7 +322,7 @@ public class CodegenClusterModelGenerator {
     pipelineBuffer.setType(outgoingFifo.getType());
     pipelineBuffer.setTypeSize(this.scenario.getSimulationInfo().getDataTypeSizeOrDefault(outgoingFifo.getType()));
     pipelineBuffer.setSize(actor.getDataOutputPort().getExpression().evaluate());
-    pipelineBuffer.setName("fifo_" + actor.getName().substring(5));
+    pipelineBuffer.setName("pipeline_" + actor.getName().substring(5));
     pipelineBufferMap.put(actor, pipelineBuffer);
     return pipelineBuffer;
   }
@@ -371,6 +371,8 @@ public class CodegenClusterModelGenerator {
         buffer = this.internalBufferMap.get(outsideFifo);
       } else if (this.externalBufferMap.containsKey(outsideFifo)) {
         buffer = this.externalBufferMap.get(outsideFifo);
+      } else if (this.delayBufferMap.containsKey(outsideFifo)) {
+        buffer = this.delayBufferMap.get(outsideFifo);
       } else {
         // This is actually an outside cluster fifo, so we need to get from outside
         buffer = getOuterClusterBuffer(outsidePort);
@@ -410,32 +412,58 @@ public class CodegenClusterModelGenerator {
 
     int i = 0;
     for (final Fifo fifo : ClusteringHelper.getInternalClusterFifo(cluster)) {
-      // Allocate a buffer for each internalFifo
-      final Buffer buffer = CodegenFactory.eINSTANCE.createBuffer();
-      buffer.setName("mem_" + ((AbstractActor) fifo.getSource()).getName() + "_to_"
-          + ((AbstractActor) fifo.getTarget()).getName() + "_" + i++);
-      // Fill buffer information by looking at the Fifo
-      buffer.setType(fifo.getType());
-      buffer.setTypeSize(this.scenario.getSimulationInfo().getDataTypeSizeOrDefault(fifo.getType()));
-      // If it is a self-loop fifo or a normal fifo
+      // Build different buffer regarding of delay on the fifo
       if (fifo.getDelay() != null) {
-        buffer.setSize(fifo.getSourcePort().getExpression().evaluate());
-        // Register as a self loop buffer (cannot be subject of repetition of actor)
-        this.delayedBufferList.add(buffer);
+        buildDelayedBuffer(fifo, i);
       } else {
-        buffer.setSize(fifo.getSourcePort().getExpression().evaluate() * this.repVector.get(fifo.getSource()));
+        Buffer buffer = buildStandardBuffer(fifo, i);
+        localInternalBuffer.add(buffer);
       }
-      // Register the buffer to the corresponding Fifo
-      this.internalBufferMap.put(fifo, buffer);
-      localInternalBuffer.add(buffer);
+      i++;
     }
 
     return localInternalBuffer;
   }
 
+  private final Buffer buildDelayedBuffer(Fifo fifo, int iterator) {
+    final Buffer buffer = CodegenFactory.eINSTANCE.createBuffer();
+
+    // Fill buffer information by looking at the Fifo
+    buffer.setName("delay_" + ((AbstractActor) fifo.getSource()).getName() + "_to_"
+        + ((AbstractActor) fifo.getTarget()).getName() + "_" + iterator);
+    buffer.setType(fifo.getType());
+    buffer.setTypeSize(this.scenario.getSimulationInfo().getDataTypeSizeOrDefault(fifo.getType()));
+    buffer.setSize(fifo.getSourcePort().getExpression().evaluate());
+    this.delayBufferMap.put(fifo, buffer);
+    // Build call for fifo initialization
+    FifoCall fifoInit = CodegenFactory.eINSTANCE.createFifoCall();
+    fifoInit.setHeadBuffer(buffer);
+    fifoInit.setOperation(FifoOperation.INIT);
+    this.operatorBlock.getInitBlock().getCodeElts().add(fifoInit);
+
+    return buffer;
+  }
+
+  private final Buffer buildStandardBuffer(Fifo fifo, int iterator) {
+    // Allocate a buffer for each internalFifo
+    final Buffer buffer = CodegenFactory.eINSTANCE.createBuffer();
+
+    // Fill buffer information by looking at the Fifo
+    buffer.setName("mem_" + ((AbstractActor) fifo.getSource()).getName() + "_to_"
+        + ((AbstractActor) fifo.getTarget()).getName() + "_" + iterator);
+    buffer.setType(fifo.getType());
+    buffer.setTypeSize(this.scenario.getSimulationInfo().getDataTypeSizeOrDefault(fifo.getType()));
+    buffer.setSize(fifo.getSourcePort().getExpression().evaluate() * this.repVector.get(fifo.getSource()));
+
+    // Register the buffer to the corresponding Fifo
+    this.internalBufferMap.put(fifo, buffer);
+
+    return buffer;
+  }
+
   private final Buffer buildIteratedBuffer(final Buffer buffer, final AbstractActor actor, final DataPort dataPort) {
     // If iteration map contain actor, it means that buffer has to be iterated
-    if (this.iterMap.containsKey(actor) && !this.delayedBufferList.contains(buffer)) {
+    if (this.iterMap.containsKey(actor) && !this.delayBufferMap.values().contains(buffer)) {
       IteratedBuffer iteratedBuffer = null;
       iteratedBuffer = CodegenFactory.eINSTANCE.createIteratedBuffer();
       iteratedBuffer.setBuffer(buffer);
@@ -524,8 +552,9 @@ public class CodegenClusterModelGenerator {
     this.repVector = PiBRV.compute(graph, BRVMethod.LCM);
     // Print cluster into operatorBlock
     this.operatorBlock.getLoopBlock().getCodeElts().add(buildBlockFrom(this.schedule));
-    // Set pipeline buffer in global
+    // Set pipeline and delay buffer in global
     this.operatorBlock.getDefinitions().addAll(pipelineBufferMap.values());
+    this.operatorBlock.getDefinitions().addAll(delayBufferMap.values());
     // Print memory consumption of the cluster
     String memoryLog = "Memory allocation for cluster " + graph.getName() + ": " + computeMemorySize() + " bytes";
     PreesmLogger.getLogger().log(Level.INFO, memoryLog);
@@ -536,15 +565,15 @@ public class CodegenClusterModelGenerator {
   }
 
   private final Buffer retrieveAssociatedBuffer(final Fifo fifo) {
-    Buffer associatedBuffer = null;
     if (this.internalBufferMap.containsKey(fifo)) {
-      associatedBuffer = this.internalBufferMap.get(fifo);
+      return this.internalBufferMap.get(fifo);
     } else if (this.externalBufferMap.containsKey(fifo)) {
-      associatedBuffer = this.externalBufferMap.get(fifo);
+      return this.externalBufferMap.get(fifo);
+    } else if (this.delayBufferMap.containsKey(fifo)) {
+      return this.delayBufferMap.get(fifo);
     } else {
       throw new PreesmRuntimeException("Cannot associate actors FIFO with buffer in Codegen model generation");
     }
-    return associatedBuffer;
   }
 
 }
