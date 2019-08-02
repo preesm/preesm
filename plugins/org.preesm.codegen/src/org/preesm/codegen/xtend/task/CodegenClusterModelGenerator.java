@@ -4,7 +4,6 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Level;
 import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.preesm.algorithm.clustering.ClusteringHelper;
 import org.preesm.algorithm.schedule.model.ActorSchedule;
@@ -28,7 +27,6 @@ import org.preesm.codegen.model.SectionBlock;
 import org.preesm.codegen.model.SpecialCall;
 import org.preesm.codegen.model.SpecialType;
 import org.preesm.commons.exceptions.PreesmRuntimeException;
-import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.AbstractVertex;
 import org.preesm.model.pisdf.Actor;
@@ -511,14 +509,6 @@ public class CodegenClusterModelGenerator {
     return specialCall;
   }
 
-  private final long computeMemorySize() {
-    long size = 0;
-    for (final Buffer buffer : this.internalBufferMap.values()) {
-      size += buffer.getSize();
-    }
-    return size;
-  }
-
   private final void fillFunctionCallArgument(final FunctionCall functionCall, final Actor actor) {
     // Retrieve Refinement from actor
     if (actor.getRefinement() instanceof CHeaderRefinement) {
@@ -555,9 +545,6 @@ public class CodegenClusterModelGenerator {
     // Set pipeline and delay buffer in global
     this.operatorBlock.getDefinitions().addAll(pipelineBufferMap.values());
     this.operatorBlock.getDefinitions().addAll(delayBufferMap.values());
-    // Print memory consumption of the cluster
-    String memoryLog = "Memory allocation for cluster " + graph.getName() + ": " + computeMemorySize() + " bytes";
-    PreesmLogger.getLogger().log(Level.INFO, memoryLog);
   }
 
   private Buffer getOuterClusterBuffer(final DataPort graphPort) {
