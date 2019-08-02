@@ -52,11 +52,12 @@ import java.util.Map;
 public class BufferEntity {
 
   @JsonProperty("producer")
-  private String                    producer;
+  private String producer;
   @JsonProperty("consumer")
-  private String                    consumer;
+  private String consumer;
   @JsonProperty("initValue")
-  private Double                    initValue;
+  private Double initValue;
+  // same as initValue
   @JsonProperty("initValueN")
   private Double                    initValueN;
   @JsonIgnore

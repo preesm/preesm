@@ -53,23 +53,26 @@ import java.util.Map;
 public class ScheduleEntry {
 
   @JsonProperty("taskName")
-  private String                    taskName;
+  private String  taskName;
   @JsonProperty("singleRateInstanceNumber")
-  private Integer                   singleRateInstanceNumber;
+  private Integer singleRateInstanceNumber;
+  // start in our units
   @JsonProperty("start")
   private Long                      start;
+  // start in AOW units (subintervals of the while execution time)
   @JsonProperty("startN")
-  private Integer                   startN;
+  private Integer startN;
   @JsonProperty("end")
   private Long                      end;
   @JsonProperty("endN")
-  private Integer                   endN;
+  private Integer endN;
   @JsonProperty("core")
-  private Integer                   core;
+  private Integer core;
   @JsonProperty("processingUnitName")
-  private String                    processingUnitName;
+  private String  processingUnitName;
   @JsonProperty("graphIteration")
-  private Integer                   graphIteration;
+  private Integer graphIteration;
+  // start in our units, taking into account delays WE SHOULD USE THIS
   @JsonProperty("topologicalStart")
   private Integer                   topologicalStart;
   @JsonProperty("topologicalEnd")
