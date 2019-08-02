@@ -13,6 +13,7 @@ import org.preesm.commons.doc.annotations.Value;
 import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.PiGraph;
+import org.preesm.model.scenario.Scenario;
 import org.preesm.workflow.elements.Workflow;
 import org.preesm.workflow.implement.AbstractTaskImplementation;
 
@@ -22,7 +23,7 @@ import org.preesm.workflow.implement.AbstractTaskImplementation;
  */
 @PreesmTask(id = "org.ietr.preesm.pisdfclustering", name = "Clustering",
 
-    inputs = { @Port(name = "PiMM", type = PiGraph.class) },
+    inputs = { @Port(name = "PiMM", type = PiGraph.class), @Port(name = "scenario", type = Scenario.class) },
     outputs = { @Port(name = "PiMM", type = PiGraph.class), @Port(name = "schedules", type = Map.class) },
     description = "Workflow task responsible for clustering hierarchical actors.",
     parameters = {
@@ -44,6 +45,7 @@ public class Clustering extends AbstractTaskImplementation {
       final IProgressMonitor monitor, final String nodeName, final Workflow workflow) {
     // Retrieve inputs and parameters
     final PiGraph graph = (PiGraph) inputs.get("PiMM");
+    final Scenario scenario = (Scenario) inputs.get("scenario");
     String algorithm = parameters.get("Algorithm");
     String seed = parameters.get("Seed");
 
@@ -60,6 +62,8 @@ public class Clustering extends AbstractTaskImplementation {
       scheduleStr = schedule.shortPrint();
       PreesmLogger.getLogger().log(Level.INFO, scheduleStr);
       scheduleStr = "Estimated memory space needed: " + ClusteringHelper.getMemorySpaceNeededFor(schedule) + " bytes";
+      PreesmLogger.getLogger().log(Level.INFO, scheduleStr);
+      scheduleStr = "Estimated execution time: " + ClusteringHelper.getExecutionTimeOf(schedule, scenario);
       PreesmLogger.getLogger().log(Level.INFO, scheduleStr);
     }
 
