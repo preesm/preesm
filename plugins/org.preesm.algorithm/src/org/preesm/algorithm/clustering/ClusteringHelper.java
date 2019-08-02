@@ -37,6 +37,7 @@ package org.preesm.algorithm.clustering;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import org.eclipse.emf.common.util.ECollections;
 import org.eclipse.emf.common.util.EList;
 import org.preesm.algorithm.schedule.model.ActorSchedule;
@@ -48,6 +49,7 @@ import org.preesm.algorithm.schedule.model.SequentialActorSchedule;
 import org.preesm.algorithm.schedule.model.SequentialHiearchicalSchedule;
 import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.preesm.model.pisdf.AbstractActor;
+import org.preesm.model.pisdf.AbstractVertex;
 import org.preesm.model.pisdf.ConfigInputInterface;
 import org.preesm.model.pisdf.ConfigInputPort;
 import org.preesm.model.pisdf.DataInputInterface;
@@ -60,6 +62,8 @@ import org.preesm.model.pisdf.Fifo;
 import org.preesm.model.pisdf.ISetter;
 import org.preesm.model.pisdf.Parameter;
 import org.preesm.model.pisdf.PiGraph;
+import org.preesm.model.pisdf.brv.BRVMethod;
+import org.preesm.model.pisdf.brv.PiBRV;
 import org.preesm.model.scenario.Scenario;
 
 /**
@@ -238,6 +242,40 @@ public class ClusteringHelper {
   }
 
   /**
+   * @param schedule
+   *          schedule to get memory space needed for
+   * @return bytes needed for execution of schedule
+   */
+  public static final long getMemorySpaceNeededFor(Schedule schedule) {
+    long result = 0;
+    if (schedule instanceof HierarchicalSchedule) {
+      // Add memory space needed for children in result
+      for (Schedule child : schedule.getChildren()) {
+        result += getMemorySpaceNeededFor(child);
+      }
+      // If it is a parallel hierarchical schedule with no attached actor, multiply child memory space result by the
+      // repetition of it
+      if (!schedule.hasAttachedActor()) {
+        long rep = schedule.getRepetition();
+        // Saturate repetition to the number of core available
+        if (rep > 4) {
+          rep = 4;
+        }
+        result *= rep;
+      } else {
+        // Estimate every interal buffer size
+        PiGraph graph = (PiGraph) ((HierarchicalSchedule) schedule).getAttachedActor();
+        List<Fifo> fifos = ClusteringHelper.getInternalClusterFifo(graph);
+        Map<AbstractVertex, Long> brv = PiBRV.compute(graph, BRVMethod.LCM);
+        for (Fifo fifo : fifos) {
+          result += brv.get(fifo.getSource()) * fifo.getSourcePort().getExpression().evaluate();
+        }
+      }
+    }
+    return result;
+  }
+
+  /**
    * Used to get list of Fifo that interconnect actor included in the graph
    * 
    * @param graph
@@ -269,7 +307,7 @@ public class ClusteringHelper {
       return ((DataInputPort) ((DataInputInterface) sourceActor).getGraphPort()).getIncomingFifo();
     } else {
       throw new PreesmRuntimeException(
-          "CodegenClusterModelGenerator: cannot find outside-cluster incoming fifo from " + inFifo.getTarget());
+          "ClusteringHelper: cannot find outside-cluster incoming fifo from " + inFifo.getTarget());
     }
   }
 
@@ -286,7 +324,7 @@ public class ClusteringHelper {
       return ((DataOutputPort) ((DataOutputInterface) targetActor).getGraphPort()).getOutgoingFifo();
     } else {
       throw new PreesmRuntimeException(
-          "CodegenClusterModelGenerator: cannot find outside-cluster outgoing fifo from " + inFifo.getSource());
+          "ClusteringHelper: cannot find outside-cluster outgoing fifo from " + inFifo.getSource());
     }
   }
 
