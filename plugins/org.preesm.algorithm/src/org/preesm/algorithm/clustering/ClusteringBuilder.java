@@ -7,12 +7,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import org.apache.commons.lang3.tuple.Pair;
+import org.preesm.algorithm.model.schedule.util.IScheduleTransform;
+import org.preesm.algorithm.model.schedule.util.ScheduleDataParallelismExhibiter;
+import org.preesm.algorithm.model.schedule.util.ScheduleFlattener;
+import org.preesm.algorithm.model.schedule.util.ScheduleParallelismDepthLimiter;
 import org.preesm.algorithm.schedule.model.ActorSchedule;
 import org.preesm.algorithm.schedule.model.HierarchicalSchedule;
-import org.preesm.algorithm.schedule.model.ParallelHiearchicalSchedule;
 import org.preesm.algorithm.schedule.model.Schedule;
 import org.preesm.algorithm.schedule.model.ScheduleFactory;
-import org.preesm.algorithm.schedule.model.SequentialHiearchicalSchedule;
 import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.preesm.commons.model.PreesmCopyTracker;
 import org.preesm.model.pisdf.AbstractActor;
@@ -41,7 +43,9 @@ public class ClusteringBuilder {
 
   private Map<AbstractActor, Schedule> scheduleMapping;
 
-  private PiGraph algorithm;
+  private PiGraph pigraph;
+
+  private long seed;
 
   private IClusteringAlgorithm clusteringAlgorithm;
 
@@ -50,20 +54,23 @@ public class ClusteringBuilder {
   private int nbCluster;
 
   /**
-   * @param algorithm
+   * @param graph
    *          PiGraph to clusterize
-   * @param clusteringAlgorithm
+   * @param algorithm
    *          type of clustering algorithm
+   * @param seed
+   *          seed for random clustering algorithm
    */
-  public ClusteringBuilder(final PiGraph algorithm, final String clusteringAlgorithm) {
+  public ClusteringBuilder(final PiGraph graph, final String algorithm, final long seed) {
     this.scheduleMapping = new LinkedHashMap<>();
-    this.algorithm = algorithm;
-    this.clusteringAlgorithm = clusteringAlgorithmFactory(clusteringAlgorithm);
+    this.pigraph = graph;
+    this.seed = seed;
+    this.clusteringAlgorithm = clusteringAlgorithmFactory(algorithm);
     this.repetitionVector = null;
   }
 
   public PiGraph getAlgorithm() {
-    return algorithm;
+    return pigraph;
   }
 
   public Map<AbstractActor, Schedule> getScheduleMapping() {
@@ -79,11 +86,11 @@ public class ClusteringBuilder {
    */
   public final Map<AbstractActor, Schedule> processClustering() {
     // Keep original algorithm
-    PiGraph origAlgorithm = this.algorithm;
+    PiGraph origAlgorithm = this.pigraph;
 
     // Copy input graph for first stage of clustering with clustering algorithm
     PiGraph firstStageGraph = PiMMUserFactory.instance.copyPiGraphWithHistory(origAlgorithm);
-    this.algorithm = firstStageGraph;
+    this.pigraph = firstStageGraph;
 
     nbCluster = 0;
     repetitionVector = PiBRV.compute(firstStageGraph, BRVMethod.LCM);
@@ -97,11 +104,11 @@ public class ClusteringBuilder {
       repetitionVector = PiBRV.compute(firstStageGraph, BRVMethod.LCM);
     }
 
-    // Perform transformation on schedule graph
-    scheduleFlattening();
+    // Perform flattening transformation on schedule graph
+    scheduleTransform(new ScheduleFlattener());
 
     // Set input graph for second stage of clustering from transformed schedule graph
-    this.algorithm = origAlgorithm;
+    this.pigraph = origAlgorithm;
 
     // Recluster from schedule graph
     List<Schedule> schedules = new LinkedList<>();
@@ -114,83 +121,23 @@ public class ClusteringBuilder {
     }
 
     // Exhibit data parallelism
-    exhibitDataParallelism();
+    scheduleTransform(new ScheduleDataParallelismExhibiter());
+
+    // Limit parallelism at the first layer
+    scheduleTransform(new ScheduleParallelismDepthLimiter(1));
 
     // Verify consistency of result graph
-    PiGraphConsistenceChecker.check(algorithm);
+    PiGraphConsistenceChecker.check(pigraph);
 
     return scheduleMapping;
   }
 
-  private final void exhibitDataParallelism() {
+  private final void scheduleTransform(IScheduleTransform transformer) {
     for (Entry<AbstractActor, Schedule> entry : scheduleMapping.entrySet()) {
       Schedule schedule = entry.getValue();
-      schedule = performDataParallelismExhibition(schedule);
+      schedule = transformer.performTransform(schedule);
       scheduleMapping.replace(entry.getKey(), schedule);
     }
-  }
-
-  private final Schedule performDataParallelismExhibition(Schedule schedule) {
-
-    if (schedule instanceof SequentialHiearchicalSchedule) {
-
-      // if data parallelism can be exhibited
-      PiGraph graph = (PiGraph) ((SequentialHiearchicalSchedule) schedule).getAttachedActor();
-      boolean sequentialPersistenceInside = !graph.getFifosWithDelay().isEmpty();
-
-      if ((schedule.getRepetition() > 1) && !sequentialPersistenceInside) {
-        ParallelHiearchicalSchedule parallelSchedule = ScheduleFactory.eINSTANCE.createParallelHiearchicalSchedule();
-        parallelSchedule.setRepetition(schedule.getRepetition());
-        schedule.setRepetition(1);
-        parallelSchedule.getChildren().add(schedule);
-        return parallelSchedule;
-      }
-
-      // Explore childrens
-      List<Schedule> listActor = new LinkedList<>();
-      listActor.addAll(schedule.getChildren());
-      for (Schedule child : listActor) {
-        int indexOfChild = listActor.indexOf(child);
-        Schedule newSched = performDataParallelismExhibition(child);
-        if (!schedule.getChildren().contains(newSched)) {
-          schedule.getChildren().add(newSched);
-          schedule.getChildren().move(indexOfChild, schedule.getChildren().indexOf(newSched));
-        }
-      }
-    }
-
-    return schedule;
-  }
-
-  private final void scheduleFlattening() {
-    for (Entry<AbstractActor, Schedule> entry : scheduleMapping.entrySet()) {
-      Schedule schedule = entry.getValue();
-      schedule = performFlattening(schedule);
-      scheduleMapping.replace(entry.getKey(), schedule);
-    }
-  }
-
-  private final Schedule performFlattening(Schedule schedule) {
-    // If it is an hierarchical schedule, explore and cluster actors
-    if (schedule instanceof HierarchicalSchedule) {
-      HierarchicalSchedule hierSchedule = (HierarchicalSchedule) schedule;
-      // Retrieve childrens schedule and actors
-      List<Schedule> childSchedules = new LinkedList<>();
-      childSchedules.addAll(hierSchedule.getChildren());
-      // Clear list of children schedule
-      hierSchedule.getChildren().clear();
-      for (Schedule child : childSchedules) {
-        Schedule processesChild = performFlattening(child);
-        if ((hierSchedule instanceof SequentialHiearchicalSchedule) && (child instanceof SequentialHiearchicalSchedule)
-            && (child.getRepetition() == 1)) {
-          hierSchedule.getChildren().addAll(processesChild.getChildren());
-        } else {
-          hierSchedule.getChildren().add(processesChild);
-        }
-      }
-    }
-
-    return schedule;
   }
 
   private final Schedule processClusteringFrom(Schedule schedule) {
@@ -216,7 +163,7 @@ public class ClusteringBuilder {
       }
 
       // Compute repetition vector
-      repetitionVector = PiBRV.compute(algorithm, BRVMethod.LCM);
+      repetitionVector = PiBRV.compute(pigraph, BRVMethod.LCM);
 
       // Build new cluster
       PiGraph newCluster = buildClusterGraph(childActors);
@@ -235,7 +182,7 @@ public class ClusteringBuilder {
         return new DummyClusteringAlgorithm();
       }
       if (clusteringAlgorithm.equals("Random")) {
-        return new RandomClusteringAlgorithm(System.currentTimeMillis());
+        return new RandomClusteringAlgorithm(this.seed);
       }
       if (clusteringAlgorithm.equals("Parallel")) {
         return new ParallelClusteringAlgorithm();
@@ -345,10 +292,10 @@ public class ClusteringBuilder {
     // Create the cluster actor and set it name
     PiGraph cluster = PiMMUserFactory.instance.createPiGraph();
     cluster.setName("cluster_" + this.nbCluster++);
-    cluster.setUrl(algorithm.getUrl() + "/" + cluster.getName() + ".pi");
+    cluster.setUrl(pigraph.getUrl() + "/" + cluster.getName() + ".pi");
 
     // Add cluster to the parent graph
-    algorithm.addActor(cluster);
+    pigraph.addActor(cluster);
     for (AbstractActor a : actorList) {
       cluster.addActor(a);
     }
