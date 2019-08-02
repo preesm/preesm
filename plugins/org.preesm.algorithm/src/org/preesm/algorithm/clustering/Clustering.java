@@ -1,6 +1,5 @@
 package org.preesm.algorithm.clustering;
 
-import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -26,27 +25,35 @@ import org.preesm.workflow.implement.AbstractTaskImplementation;
     inputs = { @Port(name = "PiMM", type = PiGraph.class) },
     outputs = { @Port(name = "PiMM", type = PiGraph.class), @Port(name = "schedules", type = Map.class) },
     description = "Workflow task responsible for clustering hierarchical actors.",
-    parameters = { @Parameter(name = "Algorithm", values = { @Value(name = "APGAN", effect = ""),
-        @Value(name = "Dummy", effect = ""), @Value(name = "Random", effect = "") }) })
+    parameters = {
+        @Parameter(name = "Algorithm",
+            values = { @Value(name = "APGAN", effect = ""), @Value(name = "Dummy", effect = ""),
+                @Value(name = "Random", effect = ""), @Value(name = "Parallel", effect = "") }),
+        @Parameter(name = "Seed",
+            values = { @Value(name = "$$n\\in \\mathbb{N}^*$$", effect = "Seed for random generator") }) })
 public class Clustering extends AbstractTaskImplementation {
+
+  public static final String ALGORITHM_CHOICE  = "Algorithm";
+  public static final String DEFAULT_ALGORITHM = "APGAN";
+
+  public static final String SEED_CHOICE  = "Seed";
+  public static final String DEFAULT_SEED = "0";
 
   @Override
   public Map<String, Object> execute(final Map<String, Object> inputs, final Map<String, String> parameters,
       final IProgressMonitor monitor, final String nodeName, final Workflow workflow) {
     // Retrieve inputs and parameters
-    final PiGraph algorithm = (PiGraph) inputs.get("PiMM");
-    String clusteringAlgorithm = parameters.get("Algorithm");
+    final PiGraph graph = (PiGraph) inputs.get("PiMM");
+    String algorithm = parameters.get("Algorithm");
+    String seed = parameters.get("Seed");
 
     // Instantiate a ClusteringBuilder and process clustering
-    ClusteringBuilder clusteringBuilder = new ClusteringBuilder(algorithm, clusteringAlgorithm);
+    ClusteringBuilder clusteringBuilder = new ClusteringBuilder(graph, algorithm, Long.parseLong(seed));
     Map<AbstractActor, Schedule> scheduleMapping = clusteringBuilder.processClustering();
 
-    // Perform parallelism depth limitation and print information in console
+    // Print information in console
     for (Entry<AbstractActor, Schedule> entry : scheduleMapping.entrySet()) {
-      // Depth control
       Schedule schedule = entry.getValue();
-      schedule = ClusteringHelper.setParallelismDepth(schedule, 0 /* depth-iterator */, 1 /* depth */);
-      scheduleMapping.replace(entry.getKey(), schedule);
       // Printing
       String scheduleStr = "Schedule for cluster " + entry.getKey().getName() + ":";
       PreesmLogger.getLogger().log(Level.INFO, scheduleStr);
@@ -58,7 +65,7 @@ public class Clustering extends AbstractTaskImplementation {
 
     // Output PiSDF and Schedule Mapping attachment
     Map<String, Object> outputs = new LinkedHashMap<>();
-    outputs.put("PiMM", algorithm);
+    outputs.put("PiMM", graph);
     outputs.put("schedules", scheduleMapping);
 
     return outputs;
@@ -66,7 +73,10 @@ public class Clustering extends AbstractTaskImplementation {
 
   @Override
   public Map<String, String> getDefaultParameters() {
-    return Collections.emptyMap();
+    Map<String, String> defaultParams = new LinkedHashMap<>();
+    defaultParams.put(ALGORITHM_CHOICE, DEFAULT_ALGORITHM);
+    defaultParams.put(SEED_CHOICE, DEFAULT_SEED);
+    return defaultParams;
   }
 
   @Override
