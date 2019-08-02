@@ -42,11 +42,13 @@ import org.eclipse.emf.common.util.ECollections;
 import org.eclipse.emf.common.util.EList;
 import org.preesm.algorithm.schedule.model.ActorSchedule;
 import org.preesm.algorithm.schedule.model.HierarchicalSchedule;
+import org.preesm.algorithm.schedule.model.ParallelActorSchedule;
 import org.preesm.algorithm.schedule.model.ParallelSchedule;
 import org.preesm.algorithm.schedule.model.Schedule;
 import org.preesm.algorithm.schedule.model.ScheduleFactory;
 import org.preesm.algorithm.schedule.model.SequentialActorSchedule;
 import org.preesm.algorithm.schedule.model.SequentialHiearchicalSchedule;
+import org.preesm.algorithm.schedule.model.SequentialSchedule;
 import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.AbstractVertex;
@@ -65,6 +67,7 @@ import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.pisdf.brv.BRVMethod;
 import org.preesm.model.pisdf.brv.PiBRV;
 import org.preesm.model.scenario.Scenario;
+import org.preesm.model.slam.Component;
 
 /**
  *
@@ -273,6 +276,49 @@ public class ClusteringHelper {
       }
     }
     return result;
+  }
+
+  /**
+   * @param schedule
+   *          schedule to get execution time from
+   * @return execution time
+   */
+  public static final long getExecutionTimeOf(Schedule schedule, Scenario scenario) {
+    long timing = 0;
+
+    if (schedule instanceof HierarchicalSchedule) {
+
+      if (schedule instanceof SequentialSchedule) {
+        for (Schedule child : schedule.getChildren()) {
+          timing += getExecutionTimeOf(child, scenario);
+        }
+      } else {
+        long max = 0;
+        for (Schedule child : schedule.getChildren()) {
+          long result = getExecutionTimeOf(child, scenario);
+          if (result > max) {
+            max = result;
+          }
+        }
+        timing += max;
+      }
+
+      if (schedule.getRepetition() > 1) {
+        timing *= schedule.getRepetition();
+      }
+
+    } else {
+      AbstractActor actor = schedule.getActors().get(0);
+      Component component = scenario.getPossibleMappings(actor).get(0).getComponent();
+      long actorTiming = scenario.getTimings().evaluateTimingOrDefault(actor, component);
+      if ((schedule instanceof ParallelActorSchedule)) {
+        timing = actorTiming;
+      } else {
+        timing = schedule.getRepetition() * actorTiming;
+      }
+    }
+
+    return timing;
   }
 
   /**
