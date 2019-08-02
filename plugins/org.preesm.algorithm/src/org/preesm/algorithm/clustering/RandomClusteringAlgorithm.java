@@ -20,29 +20,27 @@ public class RandomClusteringAlgorithm implements IClusteringAlgorithm {
     generator = new Random(seed);
   }
 
+  List<Pair<AbstractActor, AbstractActor>> couples;
+
   @Override
   public Pair<ScheduleType, List<AbstractActor>> findActors(ClusteringBuilder clusteringBuilder) {
-    // Search for the first mergeable couple
-    List<Pair<AbstractActor, AbstractActor>> listCouple = PiSDFMergeabilty
-        .getConnectedCouple(clusteringBuilder.getAlgorithm());
     // Get a random number based on the given generator
-    int randomInt = generator.nextInt(listCouple.size());
+    int randomInt = generator.nextInt(couples.size());
     // Return a random couple
     // Build corresponding actor list
     List<AbstractActor> actorsList = new LinkedList<>();
-    actorsList.add(listCouple.get(randomInt).getLeft());
-    actorsList.add(listCouple.get(randomInt).getRight());
+    actorsList.add(couples.get(randomInt).getLeft());
+    actorsList.add(couples.get(randomInt).getRight());
 
     return new ImmutablePair<>(ScheduleType.Sequential, actorsList);
   }
 
   @Override
   public boolean clusteringComplete(ClusteringBuilder clusteringBuilder) {
-    boolean returnValue = true;
-    if (clusteringBuilder.getAlgorithm().getActors().size() > 1) {
-      returnValue = false;
-    }
-    return returnValue;
+    // Get mergeable couple
+    couples = PiSDFMergeabilty.getConnectedCouple(clusteringBuilder.getAlgorithm(),
+        clusteringBuilder.getRepetitionVector());
+    return couples.isEmpty();
   }
 
 }

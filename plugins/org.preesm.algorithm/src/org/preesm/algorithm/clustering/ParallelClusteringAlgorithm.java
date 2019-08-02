@@ -30,7 +30,7 @@ public class ParallelClusteringAlgorithm implements IClusteringAlgorithm {
 
   private List<AbstractActor> joinActors;
 
-  private IClusteringAlgorithm secondHandAlgorithm;
+  List<Pair<AbstractActor, AbstractActor>> couples;
 
   /**
    * 
@@ -38,7 +38,6 @@ public class ParallelClusteringAlgorithm implements IClusteringAlgorithm {
   public ParallelClusteringAlgorithm() {
     this.forkActors = null;
     this.joinActors = null;
-    this.secondHandAlgorithm = new APGANClusteringAlgorithm();
   }
 
   @Override
@@ -46,10 +45,10 @@ public class ParallelClusteringAlgorithm implements IClusteringAlgorithm {
 
     // Clustering state variable
     ClusteringState clusteringState = ClusteringState.SEQUENCE_FIRST;
+    List<Pair<AbstractActor, AbstractActor>> couplesSave = new LinkedList<>();
+    couplesSave.addAll(couples);
 
-    // Get list of mergeable couple
-    List<Pair<AbstractActor, AbstractActor>> listCouple = PiSDFMergeabilty
-        .getConnectedCouple(clusteringBuilder.getAlgorithm());
+    // Instantiate list of parallel actors
     List<List<AbstractActor>> listParallel = new LinkedList<>();
     // Get list of fork and join actor
     forkActors = getAllForkActors(clusteringBuilder.getAlgorithm());
@@ -59,7 +58,7 @@ public class ParallelClusteringAlgorithm implements IClusteringAlgorithm {
     {
       List<Pair<AbstractActor, AbstractActor>> toRemove = new LinkedList<>();
       // Remove every couple involving fork and join actors
-      for (Pair<AbstractActor, AbstractActor> couple : listCouple) {
+      for (Pair<AbstractActor, AbstractActor> couple : couples) {
         List<AbstractActor> actors = new LinkedList<>();
         actors.add(couple.getLeft());
         actors.add(couple.getRight());
@@ -69,8 +68,8 @@ public class ParallelClusteringAlgorithm implements IClusteringAlgorithm {
           toRemove.add(couple);
         }
       }
-      listCouple.removeAll(toRemove);
-      if (listCouple.isEmpty()) {
+      couples.removeAll(toRemove);
+      if (couples.isEmpty()) {
         clusteringState = ClusteringState.PARALLEL_PASS;
       }
     }
@@ -104,6 +103,7 @@ public class ParallelClusteringAlgorithm implements IClusteringAlgorithm {
     // Build corresponding actor schedule
     List<AbstractActor> actorsList = new LinkedList<>();
     ScheduleType scheduleType = null;
+    Pair<AbstractActor, AbstractActor> bestCouple = null;
     switch (clusteringState) {
       case PARALLEL_PASS:
         scheduleType = ScheduleType.Parallel;
@@ -111,13 +111,18 @@ public class ParallelClusteringAlgorithm implements IClusteringAlgorithm {
         break;
       case SEQUENCE_FIRST:
         scheduleType = ScheduleType.Sequential;
-        actorsList.add(listCouple.get(0).getLeft());
-        actorsList.add(listCouple.get(0).getRight());
+        bestCouple = APGANAlgorithm.getBestCouple(couples, clusteringBuilder.getRepetitionVector());
+        actorsList.add(bestCouple.getLeft());
+        actorsList.add(bestCouple.getRight());
         break;
       case SEQUENCE_FINAL:
-        return secondHandAlgorithm.findActors(clusteringBuilder);
+        scheduleType = ScheduleType.Sequential;
+        bestCouple = APGANAlgorithm.getBestCouple(couplesSave, clusteringBuilder.getRepetitionVector());
+        actorsList.add(bestCouple.getLeft());
+        actorsList.add(bestCouple.getRight());
+        break;
       default:
-        throw new PreesmRuntimeException("ParallelClustering: Unexepected clustering state");
+        throw new PreesmRuntimeException("ParallelClustering: Unexpected clustering state");
     }
 
     return new ImmutablePair<>(scheduleType, actorsList);
@@ -125,11 +130,10 @@ public class ParallelClusteringAlgorithm implements IClusteringAlgorithm {
 
   @Override
   public boolean clusteringComplete(ClusteringBuilder clusteringBuilder) {
-    boolean returnValue = true;
-    if (clusteringBuilder.getAlgorithm().getActors().size() > 1) {
-      returnValue = false;
-    }
-    return returnValue;
+    // Get mergeable couple
+    couples = PiSDFMergeabilty.getConnectedCouple(clusteringBuilder.getAlgorithm(),
+        clusteringBuilder.getRepetitionVector());
+    return couples.isEmpty();
   }
 
   private final List<AbstractActor> getAllForkActors(PiGraph graph) {

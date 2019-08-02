@@ -86,14 +86,15 @@ public class ClusteringBuilder {
     this.algorithm = firstStageGraph;
 
     nbCluster = 0;
+    repetitionVector = PiBRV.compute(firstStageGraph, BRVMethod.LCM);
     // Until the algorithm has to work
     while (!clusteringAlgorithm.clusteringComplete(this)) {
-      // Compute BRV with the corresponding graph
-      repetitionVector = PiBRV.compute(firstStageGraph, BRVMethod.LCM);
       // Search actors to clusterize
       Pair<ScheduleType, List<AbstractActor>> actorFound = clusteringAlgorithm.findActors(this);
       // Clusterize given actors
       clusterizeActors(actorFound);
+      // Compute BRV with the corresponding graph
+      repetitionVector = PiBRV.compute(firstStageGraph, BRVMethod.LCM);
     }
 
     // Perform transformation on schedule graph
@@ -134,7 +135,10 @@ public class ClusteringBuilder {
     if (schedule instanceof SequentialHiearchicalSchedule) {
 
       // if data parallelism can be exhibited
-      if ((schedule.getRepetition() > 1) && !ClusteringHelper.isSequentialActorScheduleInside(schedule)) {
+      PiGraph graph = (PiGraph) ((SequentialHiearchicalSchedule) schedule).getAttachedActor();
+      boolean sequentialPersistenceInside = !graph.getFifosWithDelay().isEmpty();
+
+      if ((schedule.getRepetition() > 1) && !sequentialPersistenceInside) {
         ParallelHiearchicalSchedule parallelSchedule = ScheduleFactory.eINSTANCE.createParallelHiearchicalSchedule();
         parallelSchedule.setRepetition(schedule.getRepetition());
         schedule.setRepetition(1);
@@ -312,6 +316,7 @@ public class ClusteringBuilder {
    */
   private final void addActorToHierarchicalSchedule(HierarchicalSchedule schedule, AbstractActor actor,
       long repetition) {
+    // If we already had clustered actor, retrieve it schedule
     if (scheduleMapping.containsKey(actor)) {
       Schedule subSched = scheduleMapping.get(actor);
       scheduleMapping.remove(actor);
@@ -319,8 +324,8 @@ public class ClusteringBuilder {
       schedule.getScheduleTree().add(subSched);
     } else {
       ActorSchedule actorSchedule = null;
-      // If actor is self looped, it is a sequential actor schedule
-      if (ClusteringHelper.isActorSelfLooped(actor)) {
+      // If actor is delayed, build a sequential actor schedule, otherwise build a parallel actor schedule
+      if (ClusteringHelper.isActorDelayed(actor)) {
         actorSchedule = ScheduleFactory.eINSTANCE.createSequentialActorSchedule();
       } else {
         actorSchedule = ScheduleFactory.eINSTANCE.createParallelActorSchedule();
@@ -337,19 +342,9 @@ public class ClusteringBuilder {
    * @return generated PiGraph connected with the parent graph
    */
   private final PiGraph buildClusterGraph(List<AbstractActor> actorList) {
-    // Set cluster name to concatenated name of all actor involve in the list
-    // StringBuilder clusterName = new StringBuilder();
-    // for (AbstractActor a : actorList) {
-    // clusterName.append(a.getName());
-    // clusterName.append("_");
-    // }
-    // clusterName.deleteCharAt(clusterName.length() - 1);
-
-    String clusterName = "cluster_" + this.nbCluster++;
-
     // Create the cluster actor and set it name
     PiGraph cluster = PiMMUserFactory.instance.createPiGraph();
-    cluster.setName(clusterName.toString());
+    cluster.setName("cluster_" + this.nbCluster++);
     cluster.setUrl(algorithm.getUrl() + "/" + cluster.getName() + ".pi");
 
     // Add cluster to the parent graph

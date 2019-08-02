@@ -13,28 +13,25 @@ import org.preesm.model.pisdf.util.PiSDFMergeabilty;
  */
 public class DummyClusteringAlgorithm implements IClusteringAlgorithm {
 
+  List<Pair<AbstractActor, AbstractActor>> couples;
+
   @Override
   public Pair<ScheduleType, List<AbstractActor>> findActors(ClusteringBuilder clusteringBuilder) {
 
-    // Search for the first mergeable couple
-    List<Pair<AbstractActor, AbstractActor>> listCouple = PiSDFMergeabilty
-        .getConnectedCouple(clusteringBuilder.getAlgorithm());
-
     // Build corresponding actor list
     List<AbstractActor> actorsList = new LinkedList<>();
-    actorsList.add(listCouple.get(0).getLeft());
-    actorsList.add(listCouple.get(0).getRight());
+    actorsList.add(couples.get(0).getLeft());
+    actorsList.add(couples.get(0).getRight());
 
     return new ImmutablePair<>(ScheduleType.Sequential, actorsList);
   }
 
   @Override
   public boolean clusteringComplete(ClusteringBuilder clusteringBuilder) {
-    boolean returnValue = true;
-    if (clusteringBuilder.getAlgorithm().getActors().size() > 1) {
-      returnValue = false;
-    }
-    return returnValue;
+    // Get mergeable couple
+    couples = PiSDFMergeabilty.getConnectedCouple(clusteringBuilder.getAlgorithm(),
+        clusteringBuilder.getRepetitionVector());
+    return couples.isEmpty();
   }
 
 }
