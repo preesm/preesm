@@ -54,6 +54,7 @@ import org.preesm.model.pisdf.DataInputInterface;
 import org.preesm.model.pisdf.DataInputPort;
 import org.preesm.model.pisdf.DataOutputInterface;
 import org.preesm.model.pisdf.DataOutputPort;
+import org.preesm.model.pisdf.DataPort;
 import org.preesm.model.pisdf.Delay;
 import org.preesm.model.pisdf.Fifo;
 import org.preesm.model.pisdf.ISetter;
@@ -103,16 +104,23 @@ public class ClusteringHelper {
 
   /**
    * @param actor
-   *          actor to check if it is self looped
-   * @return true if actor is self looped, false otherwise
+   *          actor to check if it is delayed
+   * @return true if actor is delayed, false otherwise
    */
-  public static final boolean isActorSelfLooped(AbstractActor actor) {
-    for (DataInputPort dip : actor.getDataInputPorts()) {
-      AbstractActor source = (AbstractActor) dip.getIncomingFifo().getSource();
-      if (source.equals(actor)) {
+  public static final boolean isActorDelayed(AbstractActor actor) {
+    // Retrieve every Fifo with delay connected to actor
+    for (DataPort dp : actor.getAllDataPorts()) {
+      if (dp.getFifo().getDelay() != null) {
         return true;
       }
     }
+    // // For each delay, check if it is permenant or local
+    // for (Delay delay : delays) {
+    // if (delay.getLevel().equals(PersistenceLevel.PERMANENT) || delay.getLevel().equals(PersistenceLevel.LOCAL)) {
+    // return true;
+    // }
+    // }
+
     return false;
   }
 
