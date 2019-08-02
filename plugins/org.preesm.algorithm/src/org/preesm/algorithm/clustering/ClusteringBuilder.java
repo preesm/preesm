@@ -85,6 +85,12 @@ public class ClusteringBuilder {
    * @return schedule mapping including all cluster with corresponding scheduling
    */
   public final Map<AbstractActor, Schedule> processClustering() {
+    // Check for delay and verify if it is clusterizable
+    if (isGraphNotClusterizable()) {
+      throw new PreesmRuntimeException(
+          "ClusteringBuilder: cannot clusterize input graph because of non-compatible delay(s)");
+    }
+
     // Keep original algorithm
     PiGraph origAlgorithm = this.pigraph;
 
@@ -130,6 +136,18 @@ public class ClusteringBuilder {
     PiGraphConsistenceChecker.check(pigraph);
 
     return scheduleMapping;
+  }
+
+  private final boolean isGraphNotClusterizable() {
+    for (Fifo fifo : pigraph.getFifosWithDelay()) {
+      long prod = fifo.getSourcePort().getExpression().evaluate();
+      long cons = fifo.getTargetPort().getExpression().evaluate();
+      long delay = fifo.getDelay().getExpression().evaluate();
+      if ((delay != prod) || (delay != cons)) {
+        return true;
+      }
+    }
+    return false;
   }
 
   private final void scheduleTransform(IScheduleTransform transformer) {
