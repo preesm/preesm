@@ -112,8 +112,7 @@ public class PapifyTimingParser {
       if (line != null) {
         final String[] opNames = line.split(",");
         if (opNames.length <= 1) {
-          PreesmLogger.getLogger().log(Level.WARNING,
-              "Timing csv file must have an header line starting with \"Actors\"\nNothing done");
+          PreesmLogger.getLogger().log(Level.WARNING, "Timing papify csv file must have values inside");
           return;
         }
 
