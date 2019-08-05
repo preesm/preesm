@@ -420,7 +420,7 @@ class PapifyConfig {
 	}
 	op String getActorOriginalIdentifier(AbstractActor actor) {
 		var AbstractActor source = PreesmCopyTracker.getOriginalSource(actor);
-		return source.vertexPath.substring(source.vertexPath.indexOf('/') + 1).replace('/', '_')
+		return source.vertexPath
 	}
 	op PapiComponent[] getSupportedPapiComponents(Component component) {
 		if (papifyConfigGroupsPEs.containsKey(component)) {
