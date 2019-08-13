@@ -439,6 +439,8 @@ class PapifyConfig {
 	}
 	op boolean hasValidPapifyConfig(){
 		return !this.papifyConfigGroupsActors.filter[e|!e.value.isEmpty].isEmpty && !this.papifyConfigGroupsPEs.filter[e|!e.value.isEmpty].isEmpty
+	op void addEnergyModel(Component component){
+		papifyEnergyKPIModels.put(component, ECollections.asEMap(newLinkedHashMap));		
 	}
 	op void addEnergyModel(Component component){
 		papifyEnergyKPIModels.put(component, ECollections.asEMap(newLinkedHashMap));		
