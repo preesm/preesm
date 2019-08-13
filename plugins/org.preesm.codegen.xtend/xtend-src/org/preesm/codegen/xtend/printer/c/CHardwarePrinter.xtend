@@ -97,6 +97,7 @@ class CHardwarePrinter extends CPrinter {
 	protected var int threadHardwarePrintedUsage = 0;
 	protected var int DataTransferActionNumber = 0;
 	protected var int FreeDataTransferBufferNumber = 0;
+	protected var int PapifyFunctionCallNumberInitBlock = 0;
 	protected var Map<String, String> listOfHwFunctions = new LinkedHashMap<String, String>();
 
 	override printCoreBlockHeader(CoreBlock block) '''
@@ -680,6 +681,25 @@ class CHardwarePrinter extends CPrinter {
 			}
 			i--;
 		}
+		
+		//deleting all the PAPIFY function useless when using hardware. Keeping just the last one.
+		//var coreLoop = (block as CoreBlock).loopBlock
+		var initBlock = (block as CoreBlock).initBlock
+		var iteratorPapify = initBlock.codeElts.size-1;
+		// This Loop just locate where the function are and how many they are.
+		while (iteratorPapify > 0) {
+			// Retrieve the function ID
+			val elt = initBlock.codeElts.get(iteratorPapify)
+			if (elt instanceof PapifyFunctionCall) {
+				if (this.PapifyFunctionCallNumberInitBlock != 0 && (elt.papifyType != PapifyType.CONFIGPE ) ) {
+					initBlock.codeElts.remove(iteratorPapify);
+				}
+				this.PapifyFunctionCallNumberInitBlock++;
+			}
+			iteratorPapify--;
+		}
+		
+		
 
 		/* Removing unuseful elements in the list of printersBlock. To keep just the fist one */
 		var numberOfSlotDetected = printerBlocks.size
