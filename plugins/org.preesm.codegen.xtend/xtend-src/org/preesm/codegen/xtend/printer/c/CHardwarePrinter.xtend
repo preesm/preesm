@@ -70,6 +70,7 @@ import org.preesm.commons.exceptions.PreesmRuntimeException
 import org.preesm.commons.files.PreesmResourcesHelper
 import org.preesm.commons.logger.PreesmLogger
 import org.preesm.codegen.model.ActorFunctionCall
+import org.preesm.codegen.model.PapifyType
 
 /**
  * This printer extends the CPrinter and override some of its methods
@@ -478,15 +479,18 @@ class CHardwarePrinter extends CPrinter {
 		}
 
 		// this loop is to delete all the functions but not the last one (the new one!)
+		// the variable i start from the end and goes back until the first function
 		i = coreLoop.codeElts.size - 1;
 		var flagFirstFunctionFound = 0;
 		while (i > 0) {
 			// Retrieve the function ID
 			val elt = coreLoop.codeElts.get(i)
 			if ((elt instanceof ActorFunctionCall) && flagFirstFunctionFound == 0) {
+				//keep the last one detected
 				flagFirstFunctionFound++;
 
 			} else if ((elt instanceof ActorFunctionCall) && flagFirstFunctionFound > 0) {
+				//remove all the other different from the last one
 				coreLoop.codeElts.remove(i);
 				currentFunctionPosition--;
 			}
@@ -580,6 +584,101 @@ class CHardwarePrinter extends CPrinter {
 		} else {
 			PreesmLogger.getLogger().log(Level.SEVERE,
 				"Hardware Codegen ERROR in the preProcessing function. Different number of function calls and data transfers were detected");
+		
+		// ----------- PAPIFY - automatic instrumentation of ARTICo³ using PAPIFY --------------
+		
+		//PAPIFY - delete all functions
+		// this loop is to delete all the functions but not the last one (the new one!)
+		// the variable i start from the end and goes back until the first function
+		i = coreLoop.codeElts.size-1;
+		var flagFirstFunctionPAPIFYFoundEVENTSTART = 0;
+		var flagFirstFunctionPAPIFYFoundEVENTSTOP = 0;
+		var flagFirstFunctionPAPIFYFoundTIMINGSTART = 0;
+		var flagFirstFunctionPAPIFYFoundTIMINGSTOP = 0;
+		var flagFirstFunctionPAPIFYFoundWRITE = 0;
+		//var flagFirstFunctionPAPIFYFoundCONFIGACTOR = 0;
+		//var flagFirstFunctionPAPIFYFoundCONFIGPE = 0;
+		while (i > 0) {
+			// Retrieve the function ID
+			val elt = coreLoop.codeElts.get(i)
+			if ((elt instanceof PapifyFunctionCall)) {
+				var papifyTypeVariable =elt.papifyType
+				switch (papifyTypeVariable){
+					case EVENTSTART:
+						if(flagFirstFunctionPAPIFYFoundEVENTSTART == 0){
+							//keep the last one detected
+							flagFirstFunctionPAPIFYFoundEVENTSTART++;
+						}
+						else if(flagFirstFunctionPAPIFYFoundEVENTSTART > 0 ){
+							//remove all the other different from the last one
+							flagFirstFunctionPAPIFYFoundEVENTSTART++;
+							coreLoop.codeElts.remove(i);
+						} 
+					case EVENTSTOP:
+						if(flagFirstFunctionPAPIFYFoundEVENTSTOP == 0){
+							//keep the last one detected
+							flagFirstFunctionPAPIFYFoundEVENTSTOP++;
+						}
+						else if(flagFirstFunctionPAPIFYFoundEVENTSTOP > 0 ){
+							//remove all the other different from the last one
+							flagFirstFunctionPAPIFYFoundEVENTSTOP++;
+							coreLoop.codeElts.remove(i);
+						}
+					case TIMINGSTART:
+						if(flagFirstFunctionPAPIFYFoundTIMINGSTART == 0){
+							//keep the last one detected
+							flagFirstFunctionPAPIFYFoundTIMINGSTART++;
+						}
+						else if(flagFirstFunctionPAPIFYFoundTIMINGSTART > 0 ){
+							//remove all the other different from the last one
+							flagFirstFunctionPAPIFYFoundTIMINGSTART++;
+							coreLoop.codeElts.remove(i);
+						}
+					case TIMINGSTOP:
+						if(flagFirstFunctionPAPIFYFoundTIMINGSTOP == 0){
+							//keep the last one detected
+							flagFirstFunctionPAPIFYFoundTIMINGSTOP++;
+						}
+						else if(flagFirstFunctionPAPIFYFoundTIMINGSTOP > 0 ){
+							//remove all the other different from the last one
+							flagFirstFunctionPAPIFYFoundTIMINGSTOP++;
+							coreLoop.codeElts.remove(i);
+						}
+					case WRITE:
+						if(flagFirstFunctionPAPIFYFoundWRITE == 0){
+							//keep the last one detected
+							flagFirstFunctionPAPIFYFoundWRITE++;
+						}
+						else if(flagFirstFunctionPAPIFYFoundWRITE > 0 ){
+							//remove all the other different from the last one
+							flagFirstFunctionPAPIFYFoundWRITE++;
+							coreLoop.codeElts.remove(i);
+						}
+//					case CONFIGACTOR:
+//						if(flagFirstFunctionPAPIFYFoundCONFIGACTOR == 0){
+//							//keep the last one detected
+//							flagFirstFunctionPAPIFYFoundCONFIGACTOR++;
+//						}
+//						else if(flagFirstFunctionPAPIFYFoundCONFIGACTOR > 0 ){
+//							//remove all the other different from the last one
+//							flagFirstFunctionPAPIFYFoundCONFIGACTOR++;
+//							coreLoop.codeElts.remove(i);
+//						}
+//					case CONFIGPE:
+//						if(flagFirstFunctionPAPIFYFoundCONFIGPE == 0){
+//							//keep the last one detected
+//							flagFirstFunctionPAPIFYFoundCONFIGPE++;
+//						}
+//						else if(flagFirstFunctionPAPIFYFoundCONFIGPE > 0 ){
+//							//remove all the other different from the last one
+//							flagFirstFunctionPAPIFYFoundCONFIGPE++;
+//							coreLoop.codeElts.remove(i);
+//						}
+					default:
+					PreesmLogger.getLogger().log(Level.SEVERE, "Hardware Codegen ERROR in the preProcessing function. papifyType NOT recognized.")
+				}				
+			}
+			i--;
 		}
 
 		/* Removing unuseful elements in the list of printersBlock. To keep just the fist one */
