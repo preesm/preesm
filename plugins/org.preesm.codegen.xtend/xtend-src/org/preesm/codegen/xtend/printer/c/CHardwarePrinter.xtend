@@ -347,6 +347,28 @@ class CHardwarePrinter extends CPrinter {
 			global_hardware_«count» = hardware_alloc(«buffer.size»«IF (this.factorNumber > 0)» * «this.factorNumber»«ENDIF» * sizeof *«buffer.name», "«action.name»", "«buffer.doSwitch»",  «action.parameterDirections.get(count++)»);
 		«ENDFOR»
 	'''
+	
+	override printPapifyFunctionCall(PapifyFunctionCall papifyFunctionCall) '''
+	«IF papifyFunctionCall.opening == true»
+		#ifdef _PREESM_PAPIFY_MONITOR
+	«ENDIF»
+	«papifyFunctionCall.name»(«FOR param : papifyFunctionCall.parameters SEPARATOR ','»«param.doSwitch»«ENDFOR»); // «papifyFunctionCall.actorName»
+	«IF papifyFunctionCall.closing == true»
+		#endif
+	«ENDIF»
+	'''
+	
+	override printPapifyActionDefinition(PapifyAction action) '''
+	«IF action.opening == true»
+		#ifdef _PREESM_PAPIFY_MONITOR
+	«ENDIF»
+	«action.type» «action.name»; // «action.comment»
+	«IF action.closing == true»
+		#endif
+	«ENDIF»
+	'''
+	
+	override printPapifyActionParam(PapifyAction action) '''&«action.name»'''
 
 	override preProcessing(List<Block> printerBlocks, Collection<Block> allBlocks) {
 		PreesmLogger.getLogger().info("[HARDWARE] preProcessing for Hardware. The elements to be processed are " +
