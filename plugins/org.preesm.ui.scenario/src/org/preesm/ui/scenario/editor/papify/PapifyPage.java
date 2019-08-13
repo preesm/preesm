@@ -100,7 +100,6 @@ import org.preesm.ui.scenario.editor.FileSelectionAdapter;
 import org.preesm.ui.scenario.editor.Messages;
 import org.preesm.ui.scenario.editor.PreesmAlgorithmTreeLabelProvider;
 import org.preesm.ui.scenario.editor.ScenarioPage;
-import org.preesm.ui.scenario.editor.energy.ExcelEnergyWriter;
 
 /**
  * Papify editor within the implementation editor.
@@ -348,7 +347,7 @@ public class PapifyPage extends ScenarioPage {
     addModelTreeViewer(container, toolkit);
 
     final Button exportButton = toolkit.createButton(container, browseText, SWT.PUSH);
-    exportButton.addSelectionListener(new ExcelEnergyWriter(this.scenario));
+    exportButton.addSelectionListener(new EnergyModelExporter(this.scenario));
 
   }
 
@@ -652,7 +651,7 @@ public class PapifyPage extends ScenarioPage {
 
     final GridData gd = new GridData(
         GridData.VERTICAL_ALIGN_BEGINNING | GridData.FILL_HORIZONTAL | GridData.FILL_VERTICAL);
-    gd.heightHint = Math.min(300, this.scenario.getAlgorithm().getAllActors().size() * 25 + 50);
+    gd.heightHint = Math.min(300, this.scenario.getAlgorithm().getAllActors().size() * 20 + 50);
     gd.widthHint = managedForm.getForm().getBody().getClientArea().width;
     treeViewerParent.setLayout(new GridLayout());
     treeViewerParent.setLayoutData(gd);
@@ -692,7 +691,7 @@ public class PapifyPage extends ScenarioPage {
     this.modelTableViewer.setInput(this.scenario);
     final GridData gd = new GridData(GridData.FILL_BOTH);
     final Integer peTypes = scenario.getDesign().getOperatorComponents().size();
-    gd.heightHint = Math.min(300, peTypes * 25 + 50);
+    gd.heightHint = Math.min(300, peTypes * 20 + 50);
     gd.widthHint = 400;
     gd.grabExcessVerticalSpace = true;
     this.modelTableCps.setLayoutData(gd);
@@ -877,7 +876,7 @@ public class PapifyPage extends ScenarioPage {
     this.modelTableCps.addControlListener(new ControlAdapter() {
       @Override
       public void controlResized(final ControlEvent e) {
-        table.setSize(totalWidthInner, PapifyPage.this.scenario.getDesign().getOperatorComponents().size() * 25 + 50);
+        table.setSize(totalWidthInner, PapifyPage.this.scenario.getDesign().getOperatorComponents().size() * 20 + 50);
       }
     });
   }
