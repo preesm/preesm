@@ -100,6 +100,7 @@ import org.preesm.ui.scenario.editor.FileSelectionAdapter;
 import org.preesm.ui.scenario.editor.Messages;
 import org.preesm.ui.scenario.editor.PreesmAlgorithmTreeLabelProvider;
 import org.preesm.ui.scenario.editor.ScenarioPage;
+import org.preesm.ui.scenario.editor.energy.ExcelEnergyWriter;
 
 /**
  * Papify editor within the implementation editor.
@@ -178,7 +179,7 @@ public class PapifyPage extends ScenarioPage {
           Messages.getString("Papify.descriptionActor"));
 
       createPapifyModelSection(managedForm, Messages.getString("Papify.titleModelSection"),
-          Messages.getString("Papify.descriptionModel"));
+          Messages.getString("Papify.descriptionModel"), Messages.getString("Papify.exportButtonText"));
 
       if (!this.scenario.getPapifyConfig().getXmlFileURL().equals("")) {
         final String xmlFullPath = getFullXmlPath(this.scenario.getPapifyConfig().getXmlFileURL());
@@ -333,17 +334,21 @@ public class PapifyPage extends ScenarioPage {
    * @param desc
    *          the desc
    */
-  private void createPapifyModelSection(final IManagedForm managedForm, final String title, final String desc) {
+  private void createPapifyModelSection(final IManagedForm managedForm, final String title, final String desc,
+      final String browseText) {
 
     // Creates the section
     managedForm.getForm().setLayout(new FillLayout());
     final GridData gridData = new GridData(GridData.FILL_HORIZONTAL | GridData.VERTICAL_ALIGN_FILL);
     gridData.horizontalSpan = 2;
     gridData.grabExcessVerticalSpace = true;
-    final Composite container = createSection(managedForm, title, desc, 2, gridData);
+    final Composite container = createSection(managedForm, title, desc, 1, gridData);
 
     final FormToolkit toolkit = managedForm.getToolkit();
     addModelTreeViewer(container, toolkit);
+
+    final Button exportButton = toolkit.createButton(container, browseText, SWT.PUSH);
+    exportButton.addSelectionListener(new ExcelEnergyWriter(this.scenario));
 
   }
 
