@@ -71,6 +71,7 @@ import org.preesm.commons.files.PreesmResourcesHelper
 import org.preesm.commons.logger.PreesmLogger
 import org.preesm.codegen.model.ActorFunctionCall
 import org.preesm.codegen.model.PapifyType
+import org.preesm.codegen.model.PapifyAction
 
 /**
  * This printer extends the CPrinter and override some of its methods
@@ -98,6 +99,7 @@ class CHardwarePrinter extends CPrinter {
 	protected var int DataTransferActionNumber = 0;
 	protected var int FreeDataTransferBufferNumber = 0;
 	protected var int PapifyFunctionCallNumberInitBlock = 0;
+	protected var int PapifyDefinitionsNumbers =0
 	protected var Map<String, String> listOfHwFunctions = new LinkedHashMap<String, String>();
 
 	override printCoreBlockHeader(CoreBlock block) '''
@@ -597,13 +599,13 @@ class CHardwarePrinter extends CPrinter {
 		var flagFirstFunctionPAPIFYFoundTIMINGSTART = 0;
 		var flagFirstFunctionPAPIFYFoundTIMINGSTOP = 0;
 		var flagFirstFunctionPAPIFYFoundWRITE = 0;
-		//var flagFirstFunctionPAPIFYFoundCONFIGACTOR = 0;
-		//var flagFirstFunctionPAPIFYFoundCONFIGPE = 0;
 		while (i > 0) {
 			// Retrieve the function ID
 			val elt = coreLoop.codeElts.get(i)
 			if ((elt instanceof PapifyFunctionCall)) {
 				var papifyTypeVariable =elt.papifyType
+				elt.closing = false
+				elt.opening = false
 				switch (papifyTypeVariable){
 					case EVENTSTART:
 						if(flagFirstFunctionPAPIFYFoundEVENTSTART == 0){
@@ -655,26 +657,6 @@ class CHardwarePrinter extends CPrinter {
 							flagFirstFunctionPAPIFYFoundWRITE++;
 							coreLoop.codeElts.remove(i);
 						}
-//					case CONFIGACTOR:
-//						if(flagFirstFunctionPAPIFYFoundCONFIGACTOR == 0){
-//							//keep the last one detected
-//							flagFirstFunctionPAPIFYFoundCONFIGACTOR++;
-//						}
-//						else if(flagFirstFunctionPAPIFYFoundCONFIGACTOR > 0 ){
-//							//remove all the other different from the last one
-//							flagFirstFunctionPAPIFYFoundCONFIGACTOR++;
-//							coreLoop.codeElts.remove(i);
-//						}
-//					case CONFIGPE:
-//						if(flagFirstFunctionPAPIFYFoundCONFIGPE == 0){
-//							//keep the last one detected
-//							flagFirstFunctionPAPIFYFoundCONFIGPE++;
-//						}
-//						else if(flagFirstFunctionPAPIFYFoundCONFIGPE > 0 ){
-//							//remove all the other different from the last one
-//							flagFirstFunctionPAPIFYFoundCONFIGPE++;
-//							coreLoop.codeElts.remove(i);
-//						}
 					default:
 					PreesmLogger.getLogger().log(Level.SEVERE, "Hardware Codegen ERROR in the preProcessing function. papifyType NOT recognized.")
 				}				
@@ -687,7 +669,7 @@ class CHardwarePrinter extends CPrinter {
 		var initBlock = (block as CoreBlock).initBlock
 		var iteratorPapify = initBlock.codeElts.size-1;
 		// This Loop just locate where the function are and how many they are.
-		while (iteratorPapify > 0) {
+		while (iteratorPapify >= 0) {
 			// Retrieve the function ID
 			val elt = initBlock.codeElts.get(iteratorPapify)
 			if (elt instanceof PapifyFunctionCall) {
@@ -695,10 +677,26 @@ class CHardwarePrinter extends CPrinter {
 					initBlock.codeElts.remove(iteratorPapify);
 				}
 				this.PapifyFunctionCallNumberInitBlock++;
+				elt.closing = false
+				elt.opening = false
 			}
 			iteratorPapify--;
 		}
 		
+		var definitionsBlock = (block as CoreBlock).definitions
+		var iteratorDefinitionsPapify = definitionsBlock.size -1
+		while (iteratorDefinitionsPapify >= 0) {
+			val elt = definitionsBlock.get(iteratorDefinitionsPapify)
+			if (elt instanceof PapifyAction) {
+				if (this.PapifyDefinitionsNumbers != 0){
+					definitionsBlock.remove(iteratorDefinitionsPapify)
+				}
+				this.PapifyDefinitionsNumbers++
+				elt.closing = false
+				elt.opening = false
+			} 
+			iteratorDefinitionsPapify--
+		}
 		
 
 		/* Removing unuseful elements in the list of printersBlock. To keep just the fist one */
