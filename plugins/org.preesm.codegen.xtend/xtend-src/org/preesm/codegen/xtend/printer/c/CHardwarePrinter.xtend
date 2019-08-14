@@ -55,6 +55,7 @@ import org.preesm.codegen.model.Block
 import org.preesm.codegen.model.CallBlock
 import org.preesm.codegen.model.CodeElt
 import org.preesm.codegen.model.CoreBlock
+import org.preesm.codegen.model.impl.ConstantImpl
 import org.preesm.codegen.model.DataTransferAction
 import org.preesm.codegen.model.FpgaLoadAction
 import org.preesm.codegen.model.FreeDataTransferBuffer
@@ -100,6 +101,7 @@ class CHardwarePrinter extends CPrinter {
 	protected var int FreeDataTransferBufferNumber = 0;
 	protected var int PapifyFunctionCallNumberInitBlock = 0;
 	protected var int PapifyDefinitionsNumbers =0
+	protected var int CoreIDHardwareFpgaPapify = -1;
 	protected var Map<String, String> listOfHwFunctions = new LinkedHashMap<String, String>();
 
 	override printCoreBlockHeader(CoreBlock block) '''
@@ -434,13 +436,28 @@ class CHardwarePrinter extends CPrinter {
 //			}
 //		}
 		/* the same operation MUST be done with the global declaration as well. The declaration and definition can be found directly inside the codeBlock */
+		
+		// Declarations
 		var bufferCopyDeclarationList = new ArrayList();
+		// Definitions
+		var bufferCopyDefinitionsList = new ArrayList();
+		// init
+		var bufferCopyInitList = new ArrayList();
+		
+		
 		for (Block block : printerBlocks) {
 			bufferCopyDeclarationList.addAll((block as CoreBlock).declarations)
-			PreesmLogger.getLogger().info("[HARDWARE] copying buffers and subbuffers.");
+			bufferCopyDefinitionsList.addAll((block as CoreBlock).definitions)
+			bufferCopyInitList.addAll((block as CoreBlock).initBlock.codeElts)
+			PreesmLogger.getLogger().info("[HARDWARE] copying buffers and subbuffers and definitions.");
 		}
 		(firstBlock as CoreBlock).declarations.addAll(bufferCopyDeclarationList)
-
+		(firstBlock as CoreBlock).definitions.addAll(bufferCopyDefinitionsList)
+		(firstBlock as CoreBlock).initBlock.codeElts.addAll(bufferCopyInitList)
+		
+		// even with more that one hardware SLOT, the file that should be created is just one.
+		// Storing the values that MUST be always used
+		this.CoreIDHardwareFpgaPapify = (firstBlock as CoreBlock).coreID
 		var block = printerBlocks.get(0);
 
 		/*
@@ -621,67 +638,80 @@ class CHardwarePrinter extends CPrinter {
 		var flagFirstFunctionPAPIFYFoundTIMINGSTART = 0;
 		var flagFirstFunctionPAPIFYFoundTIMINGSTOP = 0;
 		var flagFirstFunctionPAPIFYFoundWRITE = 0;
+		var firstPapifyFunctionFound = 0;
 		while (i > 0) {
 			// Retrieve the function ID
 			val elt = coreLoop.codeElts.get(i)
 			if ((elt instanceof PapifyFunctionCall)) {
 				var papifyTypeVariable =elt.papifyType
-				elt.closing = false
-				elt.opening = false
-				switch (papifyTypeVariable){
-					case EVENTSTART:
-						if(flagFirstFunctionPAPIFYFoundEVENTSTART == 0){
-							//keep the last one detected
-							flagFirstFunctionPAPIFYFoundEVENTSTART++;
+				// even with more that one hardware SLOT, the file that should be created is just one.
+				// Storing the values that MUST be always used
+				//this.CoreIDHardwareFpgaPapify
+				if (firstPapifyFunctionFound == 0 ){
+					for (param : elt.parameters){
+						if (param instanceof ConstantImpl){
+							PreesmLogger.getLogger().info("[HARDWARE] something");
 						}
-						else if(flagFirstFunctionPAPIFYFoundEVENTSTART > 0 ){
-							//remove all the other different from the last one
-							flagFirstFunctionPAPIFYFoundEVENTSTART++;
-							coreLoop.codeElts.remove(i);
-						} 
-					case EVENTSTOP:
-						if(flagFirstFunctionPAPIFYFoundEVENTSTOP == 0){
-							//keep the last one detected
-							flagFirstFunctionPAPIFYFoundEVENTSTOP++;
-						}
-						else if(flagFirstFunctionPAPIFYFoundEVENTSTOP > 0 ){
-							//remove all the other different from the last one
-							flagFirstFunctionPAPIFYFoundEVENTSTOP++;
-							coreLoop.codeElts.remove(i);
-						}
-					case TIMINGSTART:
-						if(flagFirstFunctionPAPIFYFoundTIMINGSTART == 0){
-							//keep the last one detected
-							flagFirstFunctionPAPIFYFoundTIMINGSTART++;
-						}
-						else if(flagFirstFunctionPAPIFYFoundTIMINGSTART > 0 ){
-							//remove all the other different from the last one
-							flagFirstFunctionPAPIFYFoundTIMINGSTART++;
-							coreLoop.codeElts.remove(i);
-						}
-					case TIMINGSTOP:
-						if(flagFirstFunctionPAPIFYFoundTIMINGSTOP == 0){
-							//keep the last one detected
-							flagFirstFunctionPAPIFYFoundTIMINGSTOP++;
-						}
-						else if(flagFirstFunctionPAPIFYFoundTIMINGSTOP > 0 ){
-							//remove all the other different from the last one
-							flagFirstFunctionPAPIFYFoundTIMINGSTOP++;
-							coreLoop.codeElts.remove(i);
-						}
-					case WRITE:
-						if(flagFirstFunctionPAPIFYFoundWRITE == 0){
-							//keep the last one detected
-							flagFirstFunctionPAPIFYFoundWRITE++;
-						}
-						else if(flagFirstFunctionPAPIFYFoundWRITE > 0 ){
-							//remove all the other different from the last one
-							flagFirstFunctionPAPIFYFoundWRITE++;
-							coreLoop.codeElts.remove(i);
-						}
-					default:
-					PreesmLogger.getLogger().log(Level.SEVERE, "Hardware Codegen ERROR in the preProcessing function. papifyType NOT recognized.")
-				}				
+					}
+					//this.CoreIDHardwareFpgaPapify = elt.parameters
+					firstPapifyFunctionFound++
+				}
+//				elt.closing = false
+//				elt.opening = false
+//				switch (papifyTypeVariable){
+//					case EVENTSTART:
+//						if(flagFirstFunctionPAPIFYFoundEVENTSTART == 0){
+//							//keep the last one detected
+//							flagFirstFunctionPAPIFYFoundEVENTSTART++;
+//						}
+//						else if(flagFirstFunctionPAPIFYFoundEVENTSTART > 0 ){
+//							//remove all the other different from the last one
+//							flagFirstFunctionPAPIFYFoundEVENTSTART++;
+//							coreLoop.codeElts.remove(i);
+//						} 
+//					case EVENTSTOP:
+//						if(flagFirstFunctionPAPIFYFoundEVENTSTOP == 0){
+//							//keep the last one detected
+//							flagFirstFunctionPAPIFYFoundEVENTSTOP++;
+//						}
+//						else if(flagFirstFunctionPAPIFYFoundEVENTSTOP > 0 ){
+//							//remove all the other different from the last one
+//							flagFirstFunctionPAPIFYFoundEVENTSTOP++;
+//							coreLoop.codeElts.remove(i);
+//						}
+//					case TIMINGSTART:
+//						if(flagFirstFunctionPAPIFYFoundTIMINGSTART == 0){
+//							//keep the last one detected
+//							flagFirstFunctionPAPIFYFoundTIMINGSTART++;
+//						}
+//						else if(flagFirstFunctionPAPIFYFoundTIMINGSTART > 0 ){
+//							//remove all the other different from the last one
+//							flagFirstFunctionPAPIFYFoundTIMINGSTART++;
+//							coreLoop.codeElts.remove(i);
+//						}
+//					case TIMINGSTOP:
+//						if(flagFirstFunctionPAPIFYFoundTIMINGSTOP == 0){
+//							//keep the last one detected
+//							flagFirstFunctionPAPIFYFoundTIMINGSTOP++;
+//						}
+//						else if(flagFirstFunctionPAPIFYFoundTIMINGSTOP > 0 ){
+//							//remove all the other different from the last one
+//							flagFirstFunctionPAPIFYFoundTIMINGSTOP++;
+//							coreLoop.codeElts.remove(i);
+//						}
+//					case WRITE:
+//						if(flagFirstFunctionPAPIFYFoundWRITE == 0){
+//							//keep the last one detected
+//							flagFirstFunctionPAPIFYFoundWRITE++;
+//						}
+//						else if(flagFirstFunctionPAPIFYFoundWRITE > 0 ){
+//							//remove all the other different from the last one
+//							flagFirstFunctionPAPIFYFoundWRITE++;
+//							coreLoop.codeElts.remove(i);
+//						}
+//					default:
+//					PreesmLogger.getLogger().log(Level.SEVERE, "Hardware Codegen ERROR in the preProcessing function. papifyType NOT recognized.")
+//				}				
 			}
 			i--;
 		}
@@ -704,6 +734,8 @@ class CHardwarePrinter extends CPrinter {
 			}
 			iteratorPapify--;
 		}
+		
+		//deleting all the definitions and keeping just the last one
 		
 		var definitionsBlock = (block as CoreBlock).definitions
 		var iteratorDefinitionsPapify = definitionsBlock.size -1
