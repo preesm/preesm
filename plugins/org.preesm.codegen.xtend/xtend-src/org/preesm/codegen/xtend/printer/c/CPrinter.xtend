@@ -434,6 +434,9 @@ class CPrinter extends DefaultPrinter {
 		if(this.usingPapify == 1){
 			constants = constants.concat("\n\n#ifdef _PREESM_PAPIFY_MONITOR\n#include \"eventLib.h\"\n#endif");
 		}
+		if(this.apolloEnabled){
+			constants = constants.concat("\n\n#ifdef PREESM_APOLLO_ENABLED\n#include \"apolloAPI.h\"\n#endif");
+		}
 	    context.put("CONSTANTS", constants);
 
 	    // 3- init template reader
@@ -560,7 +563,14 @@ class CPrinter extends DefaultPrinter {
 			cpu_set_t cpuset;
 			CPU_ZERO(&cpuset);
 			CPU_SET(_PREESM_MAIN_THREAD_, &cpuset);
+			«IF this.apolloEnabled»
+			#ifdef PREESM_APOLLO_ENABLED
+			«ENDIF»
 			sched_setaffinity(getpid(),  sizeof(cpuset), &cpuset);
+			«IF this.apolloEnabled»
+			#endif
+			«ENDIF»
+			
 		#endif
 		#endif
 
@@ -585,6 +595,12 @@ class CPrinter extends DefaultPrinter {
 			pthread_barrier_init(&iter_barrier, NULL, _PREESM_NBTHREADS_);
 
 			communicationInit();
+			
+			«IF this.apolloEnabled»
+			#ifdef PREESM_APOLLO_ENABLED
+			initApolloForDataflow();
+			#endif
+			«ENDIF»
 
 			// Creating threads
 			for (int i = 0; i < _PREESM_NBTHREADS_; i++) {
@@ -630,6 +646,11 @@ class CPrinter extends DefaultPrinter {
 	'''
 
 	override printFunctionCall(FunctionCall functionCall) '''
+	«IF this.apolloEnabled»
+	#ifdef PREESM_APOLLO_ENABLED
+	apolloAddActorConfig(NULL, 0, pthread_self(), "«functionCall.actorName»");
+	#endif
+	«ENDIF»
 	«functionCall.name»(«FOR param : functionCall.parameters SEPARATOR ','»«param.doSwitch»«ENDFOR»); // «functionCall.actorName»
 	'''
 
