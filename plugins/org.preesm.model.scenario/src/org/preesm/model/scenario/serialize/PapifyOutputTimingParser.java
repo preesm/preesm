@@ -60,7 +60,7 @@ import org.preesm.model.slam.Component;
 import org.preesm.model.slam.ComponentInstance;
 
 /**
- * Importing timings in a scenario from a papify generated csv file. task names are rows while operators are columns
+ * Importing timings in a scenario from a papify-output folder.
  *
  * @author dmadronal
  */
@@ -116,7 +116,7 @@ public class PapifyOutputTimingParser {
             int tinit = Integer.parseInt(cells[2]);
             int tend = Integer.parseInt(cells[3]);
             if (tinit != 0 && tend != 0) {
-              if (!timings.containsKey(coreName)) {
+              if (!timingsParsed.containsKey(coreName)) {
                 timingsParsed.put(coreName, tend - tinit);
                 times.put(coreName, 1);
               } else {
@@ -143,14 +143,18 @@ public class PapifyOutputTimingParser {
                 timing.put(comp, Integer.toString(averageTiming));
               }
             }
-            timings.put(lookupActor, timing);
+            if (!timing.isEmpty()) {
+              timings.put(lookupActor, timing);
+            }
           }
         }
       } catch (final IOException | CoreException e) {
         e.printStackTrace();
       }
     }
-    parseTimings(timings, opDefIds);
+    if (!timings.isEmpty()) {
+      parseTimings(timings, opDefIds);
+    }
   }
 
   /**
