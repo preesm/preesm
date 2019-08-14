@@ -287,6 +287,20 @@ public abstract class CodegenAbstractPrinter extends CodegenSwitch<CharSequence>
   }
 
   /**
+   * apolloEnabled Enable intra-actor optimization with Apollo
+   */
+
+  private boolean apolloEnabled = false;
+
+  public boolean getApolloEnabled() {
+    return this.apolloEnabled;
+  }
+
+  public void setApolloEnabled(final boolean apolloEnabled) {
+    this.apolloEnabled = apolloEnabled;
+  }
+
+  /**
    * Method called before printing a set of {@link Block blocks}. This method can perform some printer specific
    * modification on the blocks passed as parameters. For example, it can be used to insert instrumentation primitives
    * in the code. This method will NOT print the code of the {@link Block blocks}, use {@link #doSwitch()} on each
