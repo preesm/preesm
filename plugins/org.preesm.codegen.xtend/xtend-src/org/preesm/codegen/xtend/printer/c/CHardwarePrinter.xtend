@@ -55,7 +55,7 @@ import org.preesm.codegen.model.Block
 import org.preesm.codegen.model.CallBlock
 import org.preesm.codegen.model.CodeElt
 import org.preesm.codegen.model.CoreBlock
-import org.preesm.codegen.model.impl.ConstantImpl
+import org.preesm.codegen.model.Constant
 import org.preesm.codegen.model.DataTransferAction
 import org.preesm.codegen.model.FpgaLoadAction
 import org.preesm.codegen.model.FreeDataTransferBuffer
@@ -101,12 +101,12 @@ class CHardwarePrinter extends CPrinter {
 	protected var int FreeDataTransferBufferNumber = 0;
 	protected var int PapifyFunctionCallNumberInitBlock = 0;
 	protected var int PapifyDefinitionsNumbers =0
-	protected var int CoreIDHardwareFpgaPapify = -1;
+	protected var long CoreIDHardwareFpgaPapify = -1;
 	protected var Map<String, String> listOfHwFunctions = new LinkedHashMap<String, String>();
 
 	override printCoreBlockHeader(CoreBlock block) '''
 		«super.printCoreBlockHeader(block)»
-		#include "hardware.h"
+			#include "hardwarelib.h"
 		#include "hardware_accelerator_setup.h"
 	'''
 
@@ -649,69 +649,76 @@ class CHardwarePrinter extends CPrinter {
 				//this.CoreIDHardwareFpgaPapify
 				if (firstPapifyFunctionFound == 0 ){
 					for (param : elt.parameters){
-						if (param instanceof ConstantImpl){
-							PreesmLogger.getLogger().info("[HARDWARE] something");
+						if (param instanceof Constant && param.name.equals("PE_id")){
+							this.CoreIDHardwareFpgaPapify = (param as Constant).value
+							PreesmLogger.getLogger().info("[HARDWARE] PE_id set up to " + this.CoreIDHardwareFpgaPapify);
 						}
 					}
 					//this.CoreIDHardwareFpgaPapify = elt.parameters
 					firstPapifyFunctionFound++
+				} else {
+					for (param : elt.parameters){
+						if (param instanceof Constant && param.name.equals("PE_id")){
+							(param as Constant).value = this.CoreIDHardwareFpgaPapify
+						}
+					}
 				}
-//				elt.closing = false
-//				elt.opening = false
-//				switch (papifyTypeVariable){
-//					case EVENTSTART:
-//						if(flagFirstFunctionPAPIFYFoundEVENTSTART == 0){
-//							//keep the last one detected
-//							flagFirstFunctionPAPIFYFoundEVENTSTART++;
-//						}
-//						else if(flagFirstFunctionPAPIFYFoundEVENTSTART > 0 ){
-//							//remove all the other different from the last one
-//							flagFirstFunctionPAPIFYFoundEVENTSTART++;
-//							coreLoop.codeElts.remove(i);
-//						} 
-//					case EVENTSTOP:
-//						if(flagFirstFunctionPAPIFYFoundEVENTSTOP == 0){
-//							//keep the last one detected
-//							flagFirstFunctionPAPIFYFoundEVENTSTOP++;
-//						}
-//						else if(flagFirstFunctionPAPIFYFoundEVENTSTOP > 0 ){
-//							//remove all the other different from the last one
-//							flagFirstFunctionPAPIFYFoundEVENTSTOP++;
-//							coreLoop.codeElts.remove(i);
-//						}
-//					case TIMINGSTART:
-//						if(flagFirstFunctionPAPIFYFoundTIMINGSTART == 0){
-//							//keep the last one detected
-//							flagFirstFunctionPAPIFYFoundTIMINGSTART++;
-//						}
-//						else if(flagFirstFunctionPAPIFYFoundTIMINGSTART > 0 ){
-//							//remove all the other different from the last one
-//							flagFirstFunctionPAPIFYFoundTIMINGSTART++;
-//							coreLoop.codeElts.remove(i);
-//						}
-//					case TIMINGSTOP:
-//						if(flagFirstFunctionPAPIFYFoundTIMINGSTOP == 0){
-//							//keep the last one detected
-//							flagFirstFunctionPAPIFYFoundTIMINGSTOP++;
-//						}
-//						else if(flagFirstFunctionPAPIFYFoundTIMINGSTOP > 0 ){
-//							//remove all the other different from the last one
-//							flagFirstFunctionPAPIFYFoundTIMINGSTOP++;
-//							coreLoop.codeElts.remove(i);
-//						}
-//					case WRITE:
-//						if(flagFirstFunctionPAPIFYFoundWRITE == 0){
-//							//keep the last one detected
-//							flagFirstFunctionPAPIFYFoundWRITE++;
-//						}
-//						else if(flagFirstFunctionPAPIFYFoundWRITE > 0 ){
-//							//remove all the other different from the last one
-//							flagFirstFunctionPAPIFYFoundWRITE++;
-//							coreLoop.codeElts.remove(i);
-//						}
-//					default:
-//					PreesmLogger.getLogger().log(Level.SEVERE, "Hardware Codegen ERROR in the preProcessing function. papifyType NOT recognized.")
-//				}				
+				elt.closing = false
+				elt.opening = false
+				switch (papifyTypeVariable){
+					case EVENTSTART:
+						if(flagFirstFunctionPAPIFYFoundEVENTSTART == 0){
+							//keep the last one detected
+							flagFirstFunctionPAPIFYFoundEVENTSTART++;
+						}
+						else if(flagFirstFunctionPAPIFYFoundEVENTSTART > 0 ){
+							//remove all the other different from the last one
+							flagFirstFunctionPAPIFYFoundEVENTSTART++;
+							coreLoop.codeElts.remove(i);
+						} 
+					case EVENTSTOP:
+						if(flagFirstFunctionPAPIFYFoundEVENTSTOP == 0){
+							//keep the last one detected
+							flagFirstFunctionPAPIFYFoundEVENTSTOP++;
+						}
+						else if(flagFirstFunctionPAPIFYFoundEVENTSTOP > 0 ){
+							//remove all the other different from the last one
+							flagFirstFunctionPAPIFYFoundEVENTSTOP++;
+							coreLoop.codeElts.remove(i);
+						}
+					case TIMINGSTART:
+						if(flagFirstFunctionPAPIFYFoundTIMINGSTART == 0){
+							//keep the last one detected
+							flagFirstFunctionPAPIFYFoundTIMINGSTART++;
+						}
+						else if(flagFirstFunctionPAPIFYFoundTIMINGSTART > 0 ){
+							//remove all the other different from the last one
+							flagFirstFunctionPAPIFYFoundTIMINGSTART++;
+							coreLoop.codeElts.remove(i);
+						}
+					case TIMINGSTOP:
+						if(flagFirstFunctionPAPIFYFoundTIMINGSTOP == 0){
+							//keep the last one detected
+							flagFirstFunctionPAPIFYFoundTIMINGSTOP++;
+						}
+						else if(flagFirstFunctionPAPIFYFoundTIMINGSTOP > 0 ){
+							//remove all the other different from the last one
+							flagFirstFunctionPAPIFYFoundTIMINGSTOP++;
+							coreLoop.codeElts.remove(i);
+						}
+					case WRITE:
+						if(flagFirstFunctionPAPIFYFoundWRITE == 0){
+							//keep the last one detected
+							flagFirstFunctionPAPIFYFoundWRITE++;
+						}
+						else if(flagFirstFunctionPAPIFYFoundWRITE > 0 ){
+							//remove all the other different from the last one
+							flagFirstFunctionPAPIFYFoundWRITE++;
+							coreLoop.codeElts.remove(i);
+						}
+					default:
+					PreesmLogger.getLogger().log(Level.SEVERE, "Hardware Codegen ERROR in the preProcessing function. papifyType NOT recognized.")
+				}				
 			}
 			i--;
 		}
