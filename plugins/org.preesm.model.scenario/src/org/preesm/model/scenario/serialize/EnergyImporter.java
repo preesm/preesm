@@ -51,6 +51,7 @@ public class EnergyImporter {
     if (!excelFileURL.isEmpty()) {
       final ExcelEnergyParser excelParser = new ExcelEnergyParser(currentScenario);
       final PapifyEnergyParser papifyParser = new PapifyEnergyParser(currentScenario);
+      final PapifyOutputEnergyParser papifyOutputParser = new PapifyOutputEnergyParser(currentScenario);
 
       try {
         final String[] fileExt = excelFileURL.split("\\.");
@@ -64,6 +65,9 @@ public class EnergyImporter {
             break;
           default:
             break;
+        }
+        if (excelFileURL.endsWith("papify-output")) {
+          papifyOutputParser.parse(excelFileURL, design.getOperatorComponents());
         }
       } catch (final Exception e) {
         e.printStackTrace();

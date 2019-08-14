@@ -163,6 +163,7 @@ public class EnergyPage extends ScenarioPage {
       createFileSection(managedForm, Messages.getString("Energy.fileTitle"),
           Messages.getString("Energy.fileDescription"), Messages.getString("Energy.fileEdit"),
           this.scenario.getEnergyConfig().getExcelFileURL(), Messages.getString("Energy.timingFileBrowseTitle"),
+          Messages.getString("Energy.energyImportPapifyFolder"),
           new LinkedHashSet<>(Arrays.asList("xls", "csv", "papify")));
       createObjectiveSection(managedForm, Messages.getString("Energy.objectiveTitle"),
           Messages.getString("Energy.objectiveDescription"));
@@ -711,7 +712,8 @@ public class EnergyPage extends ScenarioPage {
    *          the file extension
    */
   private void createFileSection(final IManagedForm mform, final String title, final String desc, final String fileEdit,
-      final String initValue, final String browseTitle, final Set<String> fileExtension) {
+      final String initValue, final String browseTitle, final String importPapifyOutput,
+      final Set<String> fileExtension) {
 
     final GridData gridData = new GridData(GridData.FILL_HORIZONTAL | GridData.VERTICAL_ALIGN_BEGINNING);
     final Composite client = createSection(mform, title, desc, 3, gridData);
@@ -783,6 +785,11 @@ public class EnergyPage extends ScenarioPage {
 
     final Button exportButton = toolkit.createButton(client, Messages.getString("Energy.energyExportExcel"), SWT.PUSH);
     exportButton.addSelectionListener(new ExcelEnergyWriter(this.scenario));
+
+    final Button importPapifyButton = toolkit.createButton(client, importPapifyOutput, SWT.PUSH);
+    final SelectionAdapter importPapifyAdapter = new FileSelectionAdapter(text, client.getShell(),
+        Messages.getString("Energy.energyImportPapifyFolderTitle"));
+    importPapifyButton.addSelectionListener(importPapifyAdapter);
 
   }
 
