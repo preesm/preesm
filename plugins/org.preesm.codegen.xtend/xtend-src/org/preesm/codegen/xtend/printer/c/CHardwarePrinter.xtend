@@ -108,6 +108,7 @@ class CHardwarePrinter extends CPrinter {
 		«super.printCoreBlockHeader(block)»
 			#include "hardwarelib.h"
 		#include "hardware_accelerator_setup.h"
+			#include "eventLib.h"
 	'''
 
 	override printCoreInitBlockHeader(CallBlock callBlock) '''
