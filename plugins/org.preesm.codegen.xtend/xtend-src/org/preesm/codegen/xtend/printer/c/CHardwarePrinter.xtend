@@ -445,15 +445,21 @@ class CHardwarePrinter extends CPrinter {
 		// init
 		var bufferCopyInitList = new ArrayList();
 		
-		
+		var sizePrinterBlock = printerBlocks.size
+		var iteratorPrinterBlock = 0
 		for (Block block : printerBlocks) {
 			bufferCopyDeclarationList.addAll((block as CoreBlock).declarations)
 			bufferCopyDefinitionsList.addAll((block as CoreBlock).definitions)
-			bufferCopyInitList.addAll((block as CoreBlock).initBlock.codeElts)
+			if (iteratorPrinterBlock == sizePrinterBlock -1){
+				bufferCopyInitList.addAll((block as CoreBlock).initBlock.codeElts)
+			}
+			//bufferCopyInitList.addAll((block as CoreBlock).initBlock.codeElts)
 			PreesmLogger.getLogger().info("[HARDWARE] copying buffers and subbuffers and definitions.");
+			iteratorPrinterBlock++
 		}
 		(firstBlock as CoreBlock).declarations.addAll(bufferCopyDeclarationList)
 		(firstBlock as CoreBlock).definitions.addAll(bufferCopyDefinitionsList)
+		(firstBlock as CoreBlock).initBlock.codeElts.clear()
 		(firstBlock as CoreBlock).initBlock.codeElts.addAll(bufferCopyInitList)
 		
 		// even with more that one hardware SLOT, the file that should be created is just one.
