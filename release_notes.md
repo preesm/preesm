@@ -17,6 +17,7 @@ PREESM Changelog
 ### Bug fix
 * fix #186
 * Fix #189
+* Fix #193
 
 ## Release version 3.14.1
 *2019.07.25*
