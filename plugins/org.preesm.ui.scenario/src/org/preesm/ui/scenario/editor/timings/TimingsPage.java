@@ -161,6 +161,7 @@ public class TimingsPage extends ScenarioPage {
       createFileSection(managedForm, Messages.getString("Timings.timingFile"),
           Messages.getString("Timings.timingFileDescription"), Messages.getString("Timings.timingFileEdit"),
           this.scenario.getTimings().getExcelFileURL(), Messages.getString("Timings.timingFileBrowseTitle"),
+          Messages.getString("Timings.timingImportPapifyFolder"),
           new LinkedHashSet<>(Arrays.asList("xls", "csv", "papify")));
 
       createTimingsSection(managedForm, Messages.getString("Timings.title"), Messages.getString("Timings.description"));
@@ -553,7 +554,8 @@ public class TimingsPage extends ScenarioPage {
    *          the file extension
    */
   private void createFileSection(final IManagedForm mform, final String title, final String desc, final String fileEdit,
-      final String initValue, final String browseTitle, final Set<String> fileExtension) {
+      final String initValue, final String browseTitle, final String importPapifyOutput,
+      final Set<String> fileExtension) {
 
     final GridData gridData = new GridData(GridData.FILL_HORIZONTAL | GridData.VERTICAL_ALIGN_BEGINNING);
     final Composite client = createSection(mform, title, desc, 3, gridData);
@@ -626,6 +628,11 @@ public class TimingsPage extends ScenarioPage {
 
     final Button exportButton = toolkit.createButton(client, Messages.getString("Timings.timingExportExcel"), SWT.PUSH);
     exportButton.addSelectionListener(new ExcelTimingWriter(this.scenario));
+
+    final Button importPapifyButton = toolkit.createButton(client, importPapifyOutput, SWT.PUSH);
+    final SelectionAdapter importPapifyAdapter = new FileSelectionAdapter(text, client.getShell(),
+        Messages.getString("Timings.timingImportPapifyFolderTitle"));
+    importPapifyButton.addSelectionListener(importPapifyAdapter);
 
   }
 

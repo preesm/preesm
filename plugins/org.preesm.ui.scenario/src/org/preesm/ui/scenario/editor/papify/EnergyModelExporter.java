@@ -103,9 +103,6 @@ public class EnergyModelExporter extends ExcelWriter {
    */
   @Override
   public void write(final OutputStream os) {
-
-    System.out.println("Adsafdsafs: " + os.toString());
-
     try {
       os.write(addFirstLine().getBytes());
       os.write(addModels().getBytes());

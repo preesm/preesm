@@ -10,6 +10,9 @@ PREESM Changelog
   * Energy: the energy consumed when executing an actor on each Component is updated;
 * PAPIFY tab in scenario now has a new section to include an energy model based on PAPIFY events:
   * The model can be exported as a csv file to apply PAPIFY script and compute the energy;
+* PAPIFY output folder 'papify-output' now can be directly parsed from scenario:
+  * Timings: the timing of the actor being executed on each Component is updated;
+  * Energy: the energy consumed when executing an actor on each Component is updated. To do so, the energy model (included in PAPIFY tab) is considered when parsing the folder;
 
 ### Changes
 * Refactor: rename/move packages in algo & codegen;

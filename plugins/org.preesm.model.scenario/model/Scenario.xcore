@@ -441,14 +441,14 @@ class PapifyConfig {
 		return !this.papifyConfigGroupsActors.filter[e|!e.value.isEmpty].isEmpty && !this.papifyConfigGroupsPEs.filter[e|!e.value.isEmpty].isEmpty
 	}
 	op void addEnergyModel(Component component){
-		papifyEnergyKPIModels.put(component, ECollections.asEMap(newLinkedHashMap));		
+		papifyEnergyKPIModels.put(component, ECollections.asEMap(newLinkedHashMap))	
 	}
 	op PapiEvent getEventByName(String eventName){
 		for (component : papiData.components){
 			for(eventSet : component.value.eventSets){
 				for(event : eventSet.events){
 					if(event.name.equals(eventName)){
-						return event;
+						return event
 					}
 				}
 			}
