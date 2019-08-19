@@ -141,6 +141,8 @@ public class SpiderCodegenVisitor extends PiMMSwitch<Boolean> {
 
   private final Map<AbstractActor, Set<ComponentInstance>> constraints;
 
+  private final Map<AbstractActor, Map<Component, Double>> energies;
+
   public Set<String> getPrototypes() {
     return this.prototypes;
   }
@@ -158,7 +160,8 @@ public class SpiderCodegenVisitor extends PiMMSwitch<Boolean> {
    */
   public SpiderCodegenVisitor(final SpiderCodegen callerSpiderCodegen, final StringBuilder topMethod,
       final SpiderPreProcessVisitor prepocessor, final Map<AbstractActor, Map<Component, String>> timings,
-      final Map<AbstractActor, Set<ComponentInstance>> constraints, final EMap<String, Long> dataTypes) {
+      final Map<AbstractActor, Set<ComponentInstance>> constraints, final EMap<String, Long> dataTypes,
+      Map<AbstractActor, Map<Component, Double>> energies) {
     this.callerSpiderCodegen = callerSpiderCodegen;
     this.currentMethod = topMethod;
     this.preprocessor = prepocessor;
@@ -167,6 +170,7 @@ public class SpiderCodegenVisitor extends PiMMSwitch<Boolean> {
     this.timings = timings;
     this.constraints = constraints;
     this.dataTypes = dataTypes;
+    this.energies = energies;
   }
 
   /**
@@ -507,6 +511,20 @@ public class SpiderCodegenVisitor extends PiMMSwitch<Boolean> {
       }
     } else {
       PreesmLogger.getLogger().log(Level.WARNING, "Actor " + aa.getName() + " does not have timing information.");
+    }
+
+    final Map<Component, Double> aaEnergies = this.energies.get(aa);
+    if (aaEnergies != null) {
+      append("\t/* == Setting energies on corresponding PEs == */\n");
+      for (final Component coreType : aaEnergies.keySet()) {
+        append("\tSpider::setEnergyOnType(");
+        append(vertexName + ", static_cast<std::uint32_t>(PEType::");
+        append(SpiderNameGenerator.getCoreTypeName(coreType) + "), \"");
+        append(aaEnergies.get(coreType));
+        append("\");\n");
+      }
+    } else {
+      PreesmLogger.getLogger().log(Level.WARNING, "Actor " + aa.getName() + " does not have energy information.");
     }
 
     append("\n");

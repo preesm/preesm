@@ -116,6 +116,10 @@ public class SpiderCodegen {
   /* Map timing strings to actors */
   private Map<AbstractActor, Map<Component, String>> timings;
 
+  /** The energies. */
+  /* Map energy doubles to actors */
+  private Map<AbstractActor, Map<Component, Double>> energies;
+
   /** The function map. */
   /* Map functions to function ix */
   private Map<AbstractActor, Integer> functionMap;
@@ -209,6 +213,27 @@ public class SpiderCodegen {
       }
     }
 
+    // Generate energies
+    this.energies = new LinkedHashMap<>();
+    for (final AbstractActor actor : actorsByNames.values()) {
+      if (actor != null) {
+        if (!this.energies.containsKey(actor)) {
+          this.energies.put(actor, new LinkedHashMap<Component, Double>());
+        }
+        for (final Component coreType : this.coreTypesIds.keySet()) {
+          if (this.scenario.getEnergyConfig().getAlgorithmEnergy().containsKey(coreType)) {
+            final EMap<AbstractActor,
+                Double> listEnergies = this.scenario.getEnergyConfig().getAlgorithmEnergy().get(coreType);
+            if (listEnergies.containsKey(actor)) {
+              this.energies.get(actor).put(coreType, listEnergies.get(actor));
+            }
+          }
+        }
+      } else {
+        throw new PreesmRuntimeException();
+      }
+    }
+
     // Generate constraints
     this.constraints = new LinkedHashMap<>();
     for (final Entry<ComponentInstance, EList<AbstractActor>> cg : this.scenario.getConstraints()
@@ -230,6 +255,18 @@ public class SpiderCodegen {
       for (final Component coreType : this.coreTypesIds.keySet()) {
         if (!this.timings.get(aa).containsKey(coreType)) {
           this.timings.get(aa).put(coreType, Integer.toString(ScenarioConstants.DEFAULT_TIMING_TASK.getValue()));
+        }
+      }
+    }
+
+    // Add Default energies if needed
+    for (final AbstractActor aa : actorsByNames.values()) {
+      if (!this.energies.containsKey(aa)) {
+        this.energies.put(aa, new LinkedHashMap<Component, Double>());
+      }
+      for (final Component coreType : this.coreTypesIds.keySet()) {
+        if (!this.energies.get(aa).containsKey(coreType)) {
+          this.energies.get(aa).put(coreType, (double) ScenarioConstants.DEFAULT_ENERGY_TASK.getValue());
         }
       }
     }
@@ -374,7 +411,7 @@ public class SpiderCodegen {
 
     final StringBuilder tmp = new StringBuilder();
     final SpiderCodegenVisitor codeGenerator = new SpiderCodegenVisitor(this, tmp, this.preprocessor, this.timings,
-        this.constraints, this.scenario.getSimulationInfo().getDataTypes());
+        this.constraints, this.scenario.getSimulationInfo().getDataTypes(), this.energies);
     // Generate C++ code for the whole PiGraph, at the end, tmp will contain
     // the vertex declaration for pg
     codeGenerator.doSwitch(pg);
