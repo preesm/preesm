@@ -96,13 +96,12 @@ class CHardwarePrinter extends CPrinter {
 	protected var int threadHardwarePrintedUsage = 0;
 	protected var int DataTransferActionNumber = 0;
 	protected var int FreeDataTransferBufferNumber = 0;
-	protected var Map<String, String> listOfHwFunctions = new LinkedHashMap<String,String>();
-
+	protected var Map<String, String> listOfHwFunctions = new LinkedHashMap<String, String>();
 
 	override printCoreBlockHeader(CoreBlock block) '''
-			«super.printCoreBlockHeader(block)»
-			#include "hardware.h"
-			#include "hardware_accelerator_setup.h"
+		«super.printCoreBlockHeader(block)»
+		#include "hardware.h"
+		#include "hardware_accelerator_setup.h"
 	'''
 
 	override printCoreInitBlockHeader(CallBlock callBlock) '''
@@ -121,33 +120,35 @@ class CHardwarePrinter extends CPrinter {
 		hardware_exit();
 
 		return NULL;
-	}
+		}
 
-	«IF block2.codeElts.empty»
-	// This call may inform the compiler that the main loop of the thread does not call any function.
-	void emptyLoop_«(block2.eContainer as CoreBlock).name»(){
+		«IF block2.codeElts.empty»
+		// This call may inform the compiler that the main loop of the thread does not call any function.
+		void emptyLoop_«(block2.eContainer as CoreBlock).name»(){
 
-	}
-	«ENDIF»
+		}
+		«ENDIF»
 	'''
 
 	override generateStandardLibFiles() {
 		val result = super.generateStandardLibFiles();
 		val String stdFileFolderHardware = "/stdfiles/hardware/"
 		val filesHardware = Arrays.asList(#[
-						"hardware.c",
-						"hardware.h",
-						"hardware_hw.c",
-						"hardware_hw.h",
-						"hardware_rcfg.c",
-						"hardware_rcfg.h",
-						"hardware_dbg.h"
-					]);
-		filesHardware.forEach[it | try {
-			result.put(it, PreesmResourcesHelper.instance.read(stdFileFolderHardware + it, this.class))
-		} catch (IOException exc) {
-			throw new PreesmRuntimeException("Could not generated content for " + it, exc)
-		}]
+			"hardware.c",
+			"hardware.h",
+			"hardware_hw.c",
+			"hardware_hw.h",
+			"hardware_rcfg.c",
+			"hardware_rcfg.h",
+			"hardware_dbg.h"
+		]);
+		filesHardware.forEach [ it |
+			try {
+				result.put(it, PreesmResourcesHelper.instance.read(stdFileFolderHardware + it, this.class))
+			} catch (IOException exc) {
+				throw new PreesmRuntimeException("Could not generated content for " + it, exc)
+			}
+		]
 		return result
 	}
 
@@ -168,14 +169,14 @@ class CHardwarePrinter extends CPrinter {
 
 		// Declare computation thread functions
 		«FOR coreBlock : engine.codeBlocks»
-		«IF !((coreBlock as CoreBlock).coreType.equals("Hardware"))»
-			void *computationThread_Core«(coreBlock as CoreBlock).coreID»(void *arg);
-		«ELSE»
-			«IF this.threadHardwarePrintedDeclaration == 0»
+			«IF !((coreBlock as CoreBlock).coreType.equals("Hardware"))»
 				void *computationThread_Core«(coreBlock as CoreBlock).coreID»(void *arg);
-				//«this.threadHardwarePrintedDeclaration=1»
+			«ELSE»
+				«IF this.threadHardwarePrintedDeclaration == 0»
+					void *computationThread_Core«(coreBlock as CoreBlock).coreID»(void *arg);
+					//«this.threadHardwarePrintedDeclaration=1»
+				«ENDIF»
 			«ENDIF»
-		«ENDIF»
 		«ENDFOR»
 
 		pthread_barrier_t iter_barrier;
@@ -198,8 +199,8 @@ class CHardwarePrinter extends CPrinter {
 
 			// check CPU id is valid
 			if (core_id >= numCPU) {
-				// leave attribute uninitialized
-				printf("** Warning: thread %d will not be set with specific core affinity \n   due to the lack of available dedicated cores.\n",core_id);
+			// leave attribute uninitialized
+			printf("** Warning: thread %d will not be set with specific core affinity \n   due to the lack of available dedicated cores.\n",core_id);
 			} else {
 		#ifdef __APPLE__
 				// NOT SUPPORTED
@@ -231,12 +232,12 @@ class CHardwarePrinter extends CPrinter {
 			pthread_t coreThreads[_PREESM_NBTHREADS_];
 			void *(*coreThreadComputations[_PREESM_NBTHREADS_])(void *) = {
 		«FOR coreBlock : engine.codeBlocks»
-		«IF !((coreBlock as CoreBlock).coreType.equals("Hardware"))»		&computationThread_Core«(coreBlock as CoreBlock).coreID»«if(engine.codeBlocks.last == coreBlock) {""} else {", "}»
-		«ELSE»
-			«IF this.threadHardwarePrintedUsage == 0»		&computationThread_Core«(coreBlock as CoreBlock).coreID»
-			// «this.threadHardwarePrintedUsage=1»
+			«IF !((coreBlock as CoreBlock).coreType.equals("Hardware"))»		&computationThread_Core«(coreBlock as CoreBlock).coreID»«if(engine.codeBlocks.last == coreBlock) {""} else {", "}»
+			«ELSE»
+				«IF this.threadHardwarePrintedUsage == 0»		&computationThread_Core«(coreBlock as CoreBlock).coreID»
+					// «this.threadHardwarePrintedUsage=1»
+				«ENDIF»
 			«ENDIF»
-		«ENDIF»
 		«ENDFOR»
 			};
 
@@ -252,12 +253,12 @@ class CHardwarePrinter extends CPrinter {
 
 			// Creating threads
 			for (int i = 0; i < _PREESM_NBTHREADS_; i++) {
-				if (i != _PREESM_MAIN_THREAD_) {
-					if(launch(i,&coreThreads[i],coreThreadComputations[i])) {
-						printf("Error: could not launch thread %d\n",i);
-						return 1;
-					}
+			if (i != _PREESM_MAIN_THREAD_) {
+				if(launch(i,&coreThreads[i],coreThreadComputations[i])) {
+					printf("Error: could not launch thread %d\n",i);
+					return 1;
 				}
+			}
 			}
 
 			// run main operator code in this thread
@@ -265,9 +266,9 @@ class CHardwarePrinter extends CPrinter {
 
 			// Waiting for thread terminations
 			for (int i = 0; i < _PREESM_NBTHREADS_; i++) {
-				if (i != _PREESM_MAIN_THREAD_) {
-					pthread_join(coreThreads[i], NULL);
-				}
+			if (i != _PREESM_MAIN_THREAD_) {
+				pthread_join(coreThreads[i], NULL);
+			}
 			}
 			«IF this.usingPapify == 1»
 				#ifdef _PREESM_PAPIFY_MONITOR
@@ -280,48 +281,48 @@ class CHardwarePrinter extends CPrinter {
 	'''
 
 	override printFunctionCall(FunctionCall functionCall) '''
-	hardware_kernel_execute("«functionCall.name»",gsize_TO_BE_CHANGED«IF (functionCall.factorNumber > 0)» * «functionCall.factorNumber»«ENDIF», lsize_TO_BE_CHANGED); // executing hardware kernel
-	hardware_kernel_wait("«functionCall.name»");
+		hardware_kernel_execute("«functionCall.name»",gsize_TO_BE_CHANGED«IF (functionCall.factorNumber > 0)» * «functionCall.factorNumber»«ENDIF», lsize_TO_BE_CHANGED); // executing hardware kernel
+		hardware_kernel_wait("«functionCall.name»");
 	'''
 
 	override printIntVarDefinition(IntVar intVar) '''
-	int «intVar.name»;
+		int «intVar.name»;
 	'''
 
 	override printDataTansfer(DataTransferAction action) '''
-	// Hardware³ data transfer token into Global Buffer
-	«var count = 0»
-	«FOR buffer : action.buffers»
-	«IF (action.parameterDirections.get(count).toString == 'INPUT')»
-		memcpy((void *) global_hardware_«count» + («buffer.size» * «this.dataTransferCallNumber» * sizeof(a3data_t)), (void *)«buffer.name», «buffer.size»*sizeof(a3data_t)); // input «count++»
-	«ELSE»
-	    // output «count++»
-	«ENDIF»
-	«ENDFOR»
-	//«this.dataTransferCallNumber++»
+		// Hardware³ data transfer token into Global Buffer
+		«var count = 0»
+		«FOR buffer : action.buffers»
+			«IF (action.parameterDirections.get(count).toString == 'INPUT')»
+				memcpy((void *) global_hardware_«count» + («buffer.size» * «this.dataTransferCallNumber» * sizeof(a3data_t)), (void *)«buffer.name», «buffer.size»*sizeof(a3data_t)); // input «count++»
+			«ELSE»
+				// output «count++»
+			«ENDIF»
+		«ENDFOR»
+		//«this.dataTransferCallNumber++»
 	'''
 
 	override printOutputDataTransfer(OutputDataTransfer action) '''
-	// Hardware³ data transfer token output
-	«var count = 0»
-	«FOR buffer : action.buffers»
-	«IF (action.parameterDirections.get(count).toString == 'INPUT')»
-		// input «count++»
-	«ELSE»
-		memcpy((void *)«buffer.name», (void *) global_hardware_«count» + («buffer.size» * «this.dataOutputTransferCallNumber» * sizeof(a3data_t)), «buffer.size»*sizeof(a3data_t)); // output «count++»
-	«ENDIF»
-	«ENDFOR»
-	//«this.dataOutputTransferCallNumber++»
+		// Hardware³ data transfer token output
+		«var count = 0»
+		«FOR buffer : action.buffers»
+			«IF (action.parameterDirections.get(count).toString == 'INPUT')»
+				// input «count++»
+			«ELSE»
+				memcpy((void *)«buffer.name», (void *) global_hardware_«count» + («buffer.size» * «this.dataOutputTransferCallNumber» * sizeof(a3data_t)), «buffer.size»*sizeof(a3data_t)); // output «count++»
+			«ENDIF»
+		«ENDFOR»
+		//«this.dataOutputTransferCallNumber++»
 	'''
 
 	override printRegisterSetUp(RegisterSetUpAction action) '''
-	«var count = 0»
-	«FOR param : action.parameters»
-		for (int i = 0; i < MAX_NACCS; i++) {
-			wcfg_temp[i] = «param.doSwitch»;
-		}
-		hardware_kernel_wcfg("«action.name»", A3_ACCELERATOR_REG_«(count++).toString()», wcfg_temp);
-	«ENDFOR»
+		«var count = 0»
+		«FOR param : action.parameters»
+			for (int i = 0; i < MAX_NACCS; i++) {
+				wcfg_temp[i] = «param.doSwitch»;
+			}
+			hardware_kernel_wcfg("«action.name»", A3_ACCELERATOR_REG_«(count++).toString()», wcfg_temp);
+		«ENDFOR»
 	'''
 
 	override printFpgaLoad(FpgaLoadAction action) '''
@@ -339,16 +340,17 @@ class CHardwarePrinter extends CPrinter {
 	override printFreeDataTransferBuffer(FreeDataTransferBuffer action) ''''''
 
 	override printGlobalBufferDeclaration(GlobalBufferDeclaration action) '''
-	// Hardware³ global data buffer declaration
-	«var count = 0»
-	«FOR buffer : action.buffers»
-		a3data_t *global_hardware_«count» = NULL;
-		global_hardware_«count» = hardware_alloc(«buffer.size»«IF (this.factorNumber > 0)» * «this.factorNumber»«ENDIF» * sizeof *«buffer.name», "«action.name»", "«buffer.doSwitch»",  «action.parameterDirections.get(count++)»);
-	«ENDFOR»
+		// Hardware³ global data buffer declaration
+		«var count = 0»
+		«FOR buffer : action.buffers»
+			a3data_t *global_hardware_«count» = NULL;
+			global_hardware_«count» = hardware_alloc(«buffer.size»«IF (this.factorNumber > 0)» * «this.factorNumber»«ENDIF» * sizeof *«buffer.name», "«action.name»", "«buffer.doSwitch»",  «action.parameterDirections.get(count++)»);
+		«ENDFOR»
 	'''
 
 	override preProcessing(List<Block> printerBlocks, Collection<Block> allBlocks) {
-		PreesmLogger.getLogger().info("[HARDWARE] preProcessing for Hardware. The elements to be processed are " + printerBlocks.size());
+		PreesmLogger.getLogger().info("[HARDWARE] preProcessing for Hardware. The elements to be processed are " +
+			printerBlocks.size());
 		var RegisterSetUpNumber = 0;
 		var lastFunctionCallIndex = 0;
 		var currentFunctionPosition = 0;
@@ -370,8 +372,7 @@ class CHardwarePrinter extends CPrinter {
 
 		/* to add all the elements of the blockMerged.loopBlock.codeElts inside
 		 * the first block of the printersBlock: only this one will be printed and the others deleted */
-
-        var Block firstBlock = printerBlocks.get(0)
+		var Block firstBlock = printerBlocks.get(0)
 		var coreLoopFinal = (firstBlock as CoreBlock).loopBlock
 		var blockLoopMerged = (coreLoopMerged as CoreBlock).loopBlock
 		var clonedElts = blockLoopMerged.codeElts.clone()
@@ -379,8 +380,7 @@ class CHardwarePrinter extends CPrinter {
 
 		/* The following commented lines are going to be VERY important for possible future modification where
 		 * multiple GlobalBufferDeclaration should be used in the same file.
-		  */
-
+		 */
 //		/* to repeat the same operation for the initBlock (only the buffers declarations) */
 //
 //		var List bufferCopyList = new ArrayList();
@@ -410,19 +410,13 @@ class CHardwarePrinter extends CPrinter {
 //				(elementInit as GlobalBufferDeclarationImpl).getParameterDirections.addAll(parameterDirectionsCopyList)
 //			}
 //		}
-
 		/* the same operation MUST be done with the global declaration as well. The declaration and definition can be found directly inside the codeBlock */
-
 		var bufferCopyDeclarationList = new ArrayList();
 		for (Block block : printerBlocks) {
 			bufferCopyDeclarationList.addAll((block as CoreBlock).declarations)
 			PreesmLogger.getLogger().info("[HARDWARE] copying buffers and subbuffers.");
 		}
 		(firstBlock as CoreBlock).declarations.addAll(bufferCopyDeclarationList)
-
-
-
-
 
 		var block = printerBlocks.get(0);
 
@@ -432,16 +426,14 @@ class CHardwarePrinter extends CPrinter {
 		 * replaced with the "Data Motion".
 		 *
 		 */
-
-		 /*
-		  * In order to have a unique file calling all the PEs of the Hardware (many SLOTs can be used), the
-		  * operation (described above) MUST be performed for every element of the printerBlocks.
-		  * Operator in the S-LAM ---> one element of the printerBlocks.
-		  * Additionally, only one element of the printerBlocks should be kept in the list (that MUST be created to reflect the actors firing
-		  * of the original set of files).
-		  *
-		  */
-
+		/*
+		 * In order to have a unique file calling all the PEs of the Hardware (many SLOTs can be used), the
+		 * operation (described above) MUST be performed for every element of the printerBlocks.
+		 * Operator in the S-LAM ---> one element of the printerBlocks.
+		 * Additionally, only one element of the printerBlocks should be kept in the list (that MUST be created to reflect the actors firing
+		 * of the original set of files).
+		 *
+		 */
 		var coreLoop = (block as CoreBlock).loopBlock
 		var i = 0;
 		this.functionCallNumber = 0;
@@ -453,7 +445,7 @@ class CHardwarePrinter extends CPrinter {
 				this.functionCallNumber++;
 				lastFunctionCallIndex = i;
 				if (this.functionCallNumber > 0) {
-					//coreLoop.codeElts.remove(i);
+					// coreLoop.codeElts.remove(i);
 				}
 			}
 			i++;
@@ -465,31 +457,31 @@ class CHardwarePrinter extends CPrinter {
 			currentFunctionPosition = lastFunctionCallIndex;
 			var functionCallImplOld = (block as CoreBlock).loopBlock.codeElts.get(lastFunctionCallIndex);
 			// checking that the function to be changed is the right one
-			 if (! (functionCallImplOld instanceof ActorFunctionCall)) {
-			 	PreesmLogger.getLogger().log(Level.SEVERE, "Hardware Codegen ERROR in the preProcessing function. The functionCall to be modified was NOT found");
-			 } else {
-			 	// create a new function identical to the Old one
+			if (! (functionCallImplOld instanceof ActorFunctionCall)) {
+				PreesmLogger.getLogger().log(Level.SEVERE,
+					"Hardware Codegen ERROR in the preProcessing function. The functionCall to be modified was NOT found");
+			} else {
+				// create a new function identical to the Old one
 				var functionCallImplNew = (functionCallImplOld as FunctionCall);
-				//storing the name of the function to be executed in hardware in a global dictionary
-				if(this.listOfHwFunctions.empty){
-					this.listOfHwFunctions.put(functionCallImplNew.name,functionCallImplNew.name);
-				}
-				else {
+				// storing the name of the function to be executed in hardware in a global dictionary
+				if (this.listOfHwFunctions.empty) {
+					this.listOfHwFunctions.put(functionCallImplNew.name, functionCallImplNew.name);
+				} else {
 					if (!this.listOfHwFunctions.containsKey(functionCallImplNew.name)) {
-						this.listOfHwFunctions.put(functionCallImplNew.name,functionCallImplNew.name);
+						this.listOfHwFunctions.put(functionCallImplNew.name, functionCallImplNew.name);
 					}
 				}
 
 				// set the new value in the new version of the element of the list
 				functionCallImplNew.factorNumber = this.functionCallNumber;
 				// replace the old element with the new one
-				(block as CoreBlock).loopBlock.codeElts.set(lastFunctionCallIndex,functionCallImplNew);
-			 }
+				(block as CoreBlock).loopBlock.codeElts.set(lastFunctionCallIndex, functionCallImplNew);
+			}
 			PreesmLogger.getLogger().info("[HARDWARE] number of FunctionCallImpl " + this.functionCallNumber);
 		}
 
 		// this loop is to delete all the functions but not the last one (the new one!)
-		i = coreLoop.codeElts.size-1;
+		i = coreLoop.codeElts.size - 1;
 		var flagFirstFunctionFound = 0;
 		while (i > 0) {
 			// Retrieve the function ID
@@ -497,8 +489,7 @@ class CHardwarePrinter extends CPrinter {
 			if ((elt instanceof ActorFunctionCall) && flagFirstFunctionFound == 0) {
 				flagFirstFunctionFound++;
 
-			}
-			else if ((elt instanceof ActorFunctionCall) && flagFirstFunctionFound > 0) {
+			} else if ((elt instanceof ActorFunctionCall) && flagFirstFunctionFound > 0) {
 				coreLoop.codeElts.remove(i);
 				currentFunctionPosition--;
 			}
@@ -507,8 +498,7 @@ class CHardwarePrinter extends CPrinter {
 
 		// this loop is for the data transfer. A new DataTrasfer (a replica) is added AFTER the FunctionCall,
 		// one for every buffer used!
-
-		i=0;
+		i = 0;
 		this.DataTransferActionNumber = 0;
 		var positionOfNewDataTransfer = currentFunctionPosition;
 		while (i < coreLoop.codeElts.size) {
@@ -518,32 +508,30 @@ class CHardwarePrinter extends CPrinter {
 				this.DataTransferActionNumber++;
 				positionOfNewDataTransfer++;
 				if (DataTransferActionNumber > 0) {
-					//coreLoop.codeElts.remove(i);
+					// coreLoop.codeElts.remove(i);
 				}
 			}
 			i++;
 		}
-		//the last loop is for the Free data transfer (that actually does nothing)
-		i=0;
+		// the last loop is for the Free data transfer (that actually does nothing)
+		i = 0;
 		FreeDataTransferBufferNumber = 0;
 		while (i < coreLoop.codeElts.size) {
 			// Retrieve the function ID
 			val elt = coreLoop.codeElts.get(i)
 			if ((elt instanceof FreeDataTransferBuffer) && FreeDataTransferBufferNumber == 0) {
 				FreeDataTransferBufferNumber++;
-				//firstFreeDataIndex = i;
-			}
-			else if ((elt instanceof FreeDataTransferBuffer) && FreeDataTransferBufferNumber > 0) {
+			// firstFreeDataIndex = i;
+			} else if ((elt instanceof FreeDataTransferBuffer) && FreeDataTransferBufferNumber > 0) {
 				FreeDataTransferBufferNumber++;
-				//coreLoop.codeElts.remove(i);
+			// coreLoop.codeElts.remove(i);
 			}
 			i++;
 		}
 
 		// this loop is for the OutputDataTransfer. All the OUTPUT DataTransfer will be deleted
 		// and inserted after the function execution
-
-		i=0;
+		i = 0;
 		var OutputDataTransferActionNumber = 0;
 		val cloneCoreLoop = coreLoop.codeElts.clone
 		while (i < coreLoop.codeElts.size) {
@@ -561,28 +549,28 @@ class CHardwarePrinter extends CPrinter {
 
 		// all the OutputDataTransfer should be inserted again but AFTER the function call
 		var countOutputDataTransferInserted = 0
-		i=0
-		while (i < cloneCoreLoop.size){
+		i = 0
+		while (i < cloneCoreLoop.size) {
 			// Retrieve the function ID
 			val elt = cloneCoreLoop.get(i)
-			if (elt instanceof OutputDataTransfer){
+			if (elt instanceof OutputDataTransfer) {
 				countOutputDataTransferInserted++
-				coreLoop.codeElts.add(currentFunctionPosition+countOutputDataTransferInserted,elt)
+				coreLoop.codeElts.add(currentFunctionPosition + countOutputDataTransferInserted, elt)
 			}
 			i++
 		}
-		PreesmLogger.getLogger().info("[HARDWARE] number of OutputDataTransfer inserted is " + countOutputDataTransferInserted);
+		PreesmLogger.getLogger().info("[HARDWARE] number of OutputDataTransfer inserted is " +
+			countOutputDataTransferInserted);
 		// it is enough to set up the register just once at the beginning.
-		i=0;
+		i = 0;
 		RegisterSetUpNumber = 0;
 		while (i < coreLoop.codeElts.size) {
 			// Retrieve the function ID
 			val elt = coreLoop.codeElts.get(i)
 			if ((elt instanceof RegisterSetUpAction) && RegisterSetUpNumber == 0) {
 				RegisterSetUpNumber++;
-				//firstRegisterSetUp = i;
-			}
-			else if ((elt instanceof RegisterSetUpAction) && RegisterSetUpNumber > 0) {
+			// firstRegisterSetUp = i;
+			} else if ((elt instanceof RegisterSetUpAction) && RegisterSetUpNumber > 0) {
 				RegisterSetUpNumber++;
 				coreLoop.codeElts.remove(i);
 			}
@@ -590,16 +578,16 @@ class CHardwarePrinter extends CPrinter {
 		}
 
 		// storing the functionCallNumber that may be used by other printers
-		if (functionCallNumber == DataTransferActionNumber && functionCallNumber == FreeDataTransferBufferNumber){
+		if (functionCallNumber == DataTransferActionNumber && functionCallNumber == FreeDataTransferBufferNumber) {
 			factorNumber = functionCallNumber;
 		} else {
-			PreesmLogger.getLogger().log(Level.SEVERE, "Hardware Codegen ERROR in the preProcessing function. Different number of function calls and data transfers were detected");
+			PreesmLogger.getLogger().log(Level.SEVERE,
+				"Hardware Codegen ERROR in the preProcessing function. Different number of function calls and data transfers were detected");
 		}
-
 
 		/* Removing unuseful elements in the list of printersBlock. To keep just the fist one */
 		var numberOfSlotDetected = printerBlocks.size
-		for(var j = numberOfSlotDetected-1; j >= 1; j--){
+		for (var j = numberOfSlotDetected - 1; j >= 1; j--) {
 			printerBlocks.remove(j)
 		}
 
@@ -607,10 +595,10 @@ class CHardwarePrinter extends CPrinter {
 		/*
 		 * Preprocessing for Papify
 		 */
-		for (cluster : allBlocks){
+		for (cluster : allBlocks) {
 			if (cluster instanceof CoreBlock) {
-				for(CodeElt codeElt : cluster.loopBlock.codeElts){
-					if(codeElt instanceof PapifyFunctionCall){
+				for (CodeElt codeElt : cluster.loopBlock.codeElts) {
+					if (codeElt instanceof PapifyFunctionCall) {
 						this.usingPapify = 1;
 					}
 				}
@@ -619,6 +607,3 @@ class CHardwarePrinter extends CPrinter {
 	}
 
 }
-
-
-
