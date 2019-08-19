@@ -40,6 +40,7 @@ import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Deque;
 import java.util.List;
+import java.util.Optional;
 import org.eclipse.emf.ecore.EObject;
 import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.preesm.commons.graph.Graph;
@@ -48,6 +49,7 @@ import org.preesm.model.pisdf.ConfigInputPort;
 import org.preesm.model.pisdf.ConfigOutputPort;
 import org.preesm.model.pisdf.Configurable;
 import org.preesm.model.pisdf.DataPort;
+import org.preesm.model.pisdf.Delay;
 import org.preesm.model.pisdf.DelayActor;
 import org.preesm.model.pisdf.Dependency;
 import org.preesm.model.pisdf.Fifo;
@@ -140,15 +142,32 @@ public class PiGraphConsistenceChecker extends PiMMSwitch<Boolean> {
       error("Fifo [%s] is not valid", fifo);
     }
 
+    Optional.ofNullable(fifo.getDelay()).ifPresent(this::doSwitch);
     final Boolean doSwitch = doSwitch(fifo.getSourcePort());
     final Boolean doSwitch2 = doSwitch(fifo.getTargetPort());
     return fifoValid && doSwitch && doSwitch2;
   }
 
   @Override
-  public Boolean caseDelayActor(DelayActor object) {
-    // no check
-    return true;
+  public Boolean caseDelayActor(final DelayActor actor) {
+    final Delay linkedDelay = actor.getLinkedDelay();
+    final boolean hasLinkedDelay = linkedDelay != null && linkedDelay.getActor() == actor;
+
+    final boolean delayActorValid = hasLinkedDelay;
+    if (!delayActorValid) {
+      error("DelayActor [%s] is not valid", actor);
+    }
+    return delayActorValid;
+  }
+
+  @Override
+  public Boolean caseDelay(final Delay delay) {
+    final DelayActor actor = delay.getActor();
+    final boolean delayValid = actor != null && actor.getLinkedDelay() == delay;
+    if (!delayValid) {
+      error("Delay [%s] is not valid", delay);
+    }
+    return delayValid;
   }
 
   @Override
@@ -258,8 +277,8 @@ public class PiGraphConsistenceChecker extends PiMMSwitch<Boolean> {
     final PiGraph peek = this.graphStack.peek();
     final AbstractActor containingActor = port.getContainingActor();
     final boolean isContained = containingActor != null;
-    String portName = port.getName();
-    String actorName = isContained ? containingActor.getName() : "unknown";
+    final String portName = port.getName();
+    final String actorName = isContained ? containingActor.getName() : "unknown";
     boolean wellContained = true;
     if (!isContained) {
       error("port [%s] has not containing actor", portName);
