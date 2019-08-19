@@ -77,7 +77,7 @@ import org.preesm.codegen.model.ActorFunctionCall
  * @author lsuriano
  */
 class CHardwarePrinter extends CPrinter {
-	
+
 	/*
 	 * Variable to check if we are using PAPIFY or not --> Will be updated during preprocessing
 	 */
@@ -147,16 +147,7 @@ class CHardwarePrinter extends CPrinter {
 
 	override generateStandardLibFiles() {
 		val result = super.generateStandardLibFiles();
-		val String stdFilesFolder = "/stdfiles/c/"
 		val String stdFileFolderHardware = "/stdfiles/hardware/"
-		val files = Arrays.asList(#[
-						"dump.c",
-						"dump.h",
-						"fifo.c",
-						"fifo.h",
-						"communication.c",
-						"communication.h"
-					]);
 		val filesHardware = Arrays.asList(#[
 						"hardware.c",
 						"hardware.h",
@@ -166,17 +157,11 @@ class CHardwarePrinter extends CPrinter {
 						"hardware_rcfg.h",
 						"hardware_dbg.h"
 					]);
-		files.forEach[it | try {
-			result.put(it, PreesmResourcesHelper.instance.read(stdFilesFolder + it, this.class))
-		} catch (IOException exc) {
-			throw new PreesmRuntimeException("Could not generated content for " + it, exc)
-		}]
 		filesHardware.forEach[it | try {
 			result.put(it, PreesmResourcesHelper.instance.read(stdFileFolderHardware + it, this.class))
 		} catch (IOException exc) {
 			throw new PreesmRuntimeException("Could not generated content for " + it, exc)
 		}]
-		result.put("preesm_gen.h",generatePreesmHeader())
 		return result
 	}
 
@@ -396,7 +381,7 @@ class CHardwarePrinter extends CPrinter {
 			var clonedElts = coreLoop.codeElts.clone()
 			blockMerged.loopBlock.codeElts.addAll(clonedElts)
 		}
-		
+
 		/* to add all the elements of the blockMerged.loopBlock.codeElts inside
 		 * the first block of the printersBlock: only this one will be printed and the others deleted */
 
