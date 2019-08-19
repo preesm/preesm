@@ -106,14 +106,9 @@ class CHardwarePrinter extends CPrinter {
 	'''
 
 	override printCoreInitBlockHeader(CallBlock callBlock) '''
-	void *computationThread_Core«(callBlock.eContainer as CoreBlock).coreID»(void *arg){
-		if (arg != NULL) {
-			printf("Warning: expecting NULL arguments\n");
-		}
+		«super.printCoreInitBlockHeader(callBlock)»
 		// Initialize Hardware infrastructure
 		hardware_init();
-
-		«IF !callBlock.codeElts.empty»// Initialisation(s)«"\n\n"»«ENDIF»
 	'''
 
 	override printCoreLoopBlockFooter(LoopBlock block2) '''
