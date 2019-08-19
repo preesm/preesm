@@ -1,38 +1,3 @@
-/**
- * Copyright or © or Copr. IETR/INSA - Rennes (2019) :
- *
- * Alexandre Honorat [alexandre.honorat@insa-rennes.fr] (2019)
- * Antoine Morvan [antoine.morvan@insa-rennes.fr] (2019)
- *
- * This software is a computer program whose purpose is to help prototyping
- * parallel applications using dataflow formalism.
- *
- * This software is governed by the CeCILL  license under French law and
- * abiding by the rules of distribution of free software.  You can  use,
- * modify and/ or redistribute the software under the terms of the CeCILL
- * license as circulated by CEA, CNRS and INRIA at the following URL
- * "http://www.cecill.info".
- *
- * As a counterpart to the access to the source code and  rights to copy,
- * modify and redistribute granted by the license, users are provided only
- * with a limited warranty  and the software's author,  the holder of the
- * economic rights,  and the successive licensors  have only  limited
- * liability.
- *
- * In this respect, the user's attention is drawn to the risks associated
- * with loading,  using,  modifying and/or developing or reproducing the
- * software by the user in light of its specific status of free software,
- * that may mean  that it is complicated to manipulate,  and  that  also
- * therefore means  that it is reserved for developers  and  experienced
- * professionals having in-depth computer knowledge. Users are therefore
- * encouraged to load and test the software's suitability as regards their
- * requirements in conditions enabling the security of their systems and/or
- * data to be ensured and,  more generally, to use and operate it in the
- * same conditions as regards security.
- *
- * The fact that you are presently reading this means that you have had
- * knowledge of the CeCILL license and that you accept its terms.
- */
 package org.preesm.ui.pisdf.popup.actions;
 
 import java.util.Iterator;
@@ -45,7 +10,6 @@ import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
-import org.eclipse.emf.common.util.EList;
 import org.eclipse.graphiti.ui.editor.DiagramEditorInput;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.StructuredSelection;
@@ -54,19 +18,19 @@ import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IWorkbenchPage;
 import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.preesm.commons.logger.PreesmLogger;
-import org.preesm.model.pisdf.ConfigInputPort;
 import org.preesm.model.pisdf.PiGraph;
-import org.preesm.model.pisdf.brv.BRVMethod;
 import org.preesm.model.pisdf.serialize.PiParser;
-import org.preesm.model.pisdf.statictools.PiSDFToSingleRate;
+import org.preesm.model.pisdf.statictools.PiSDFFlattener;
 import org.preesm.ui.PreesmUIPlugin;
 import org.preesm.ui.pisdf.util.SavePiGraph;
 import org.preesm.ui.utils.ErrorWithExceptionDialog;
 
 /**
- *
+ * Enables to call the PiSDF flat transformation directly from the menu.
+ * 
+ * @author ahonorat
  */
-public class PiSDFSRDAGComputePopup extends AbstractHandler {
+public class PiSDFFlatComputePopup extends AbstractHandler {
 
   @Override
   public Object execute(ExecutionEvent event) throws ExecutionException {
@@ -108,23 +72,18 @@ public class PiSDFSRDAGComputePopup extends AbstractHandler {
   }
 
   private void processPiSDF(final PiGraph pigraph, final IProject iProject) {
-    PreesmLogger.getLogger().log(Level.INFO, "Computing Single Rate DAG for " + pigraph.getName());
 
-    final EList<ConfigInputPort> configInputPorts = pigraph.getConfigInputPorts();
-    if (!configInputPorts.isEmpty()) {
-      PreesmLogger.getLogger().log(Level.WARNING, "Cannot compute the Single Rate DAG of a subgraph");
-      return;
-    }
+    // performs optim only if already flat
+    boolean optim = pigraph.getChildrenGraphs().isEmpty();
+    String message = optim ? "Computing optimized graph of " : "Computing flat graph of ";
 
-    final boolean locallyStatic = pigraph.isLocallyStatic();
-    if (!locallyStatic) {
-      PreesmLogger.getLogger().log(Level.WARNING, "Cannot compute the Single Rate DAG of a dynamic graph");
-      return;
-    }
+    PreesmLogger.getLogger().log(Level.INFO, message + pigraph.getName());
 
-    final PiGraph srdag = PiSDFToSingleRate.compute(pigraph, BRVMethod.LCM);
+    final PiGraph flat = PiSDFFlattener.flatten(pigraph, optim);
 
-    SavePiGraph.save(iProject, srdag, "_srdag");
+    String suffix = optim ? "_optimzed" : "";
+
+    SavePiGraph.save(iProject, flat, suffix);
   }
 
 }
