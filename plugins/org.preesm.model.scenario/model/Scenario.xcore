@@ -315,7 +315,7 @@ class MemoryCopySpeedValue {
  *  		  Papify
  ##################### */
 enum PapifyConstants {
-	PAPIFY_CONFIGURATION   as  "papifyConfig"
+	PAPIFY_CONFIGURATION   as "papifyConfig"
 	PAPIFY_ACTION_NAME     as "papifyActionName"
 	PAPIFY_CONFIG_NUMBER   as "papifyConfigNumber"
 	PAPIFY_MONITOR_EVENTS  as "papifyMonitorEvents"
@@ -333,6 +333,8 @@ class PapifyConfig {
 	contains PapifyConfigActor[] papifyConfigGroupsActors
 	contains PapifyConfigPE[] papifyConfigGroupsPEs
 	String xmlFileURL = ""
+	contains PapifyPeTypeEnergyModel[] papifyEnergyKPIModels
+	
 	op void addComponent(Component slamComponent, PapiComponent papiComponents) {
 		addComponent(slamComponent, ECollections.asEList(papiComponents))
 	}
@@ -438,6 +440,32 @@ class PapifyConfig {
 	op boolean hasValidPapifyConfig(){
 		return !this.papifyConfigGroupsActors.filter[e|!e.value.isEmpty].isEmpty && !this.papifyConfigGroupsPEs.filter[e|!e.value.isEmpty].isEmpty
 	}
+	op void addEnergyModel(Component component){
+		papifyEnergyKPIModels.put(component, ECollections.asEMap(newLinkedHashMap));		
+	}
+	op PapiEvent getEventByName(String eventName){
+		for (component : papiData.components){
+			for(eventSet : component.value.eventSets){
+				for(event : eventSet.events){
+					if(event.name.equals(eventName)){
+						return event;
+					}
+				}
+			}
+		}
+		return null
+	}
+	op void addEnergyParam(Component component, PapiEvent event, Double value){
+		if(!papifyEnergyKPIModels.containsKey(component)){
+			addEnergyModel(component)
+		}
+		papifyEnergyKPIModels.get(component).put(event, value)
+	}
+	op void removeEnergyParam(Component component, PapiEvent event){
+		if(papifyEnergyKPIModels.get(component).containsKey(event)){
+			papifyEnergyKPIModels.get(component).remove(event)
+		}
+	}
 	op void clear() {
 		if (papiData !== null) {
 			papiData.components.clear
@@ -445,6 +473,16 @@ class PapifyConfig {
 		papifyConfigGroupsActors.clear
 		papifyConfigGroupsPEs.clear
 	}
+}
+
+class PapifyPeTypeEnergyModel wraps java.util.Map$Entry {
+	refers Component key
+	contains PapifyModelParam[] value
+}
+
+class PapifyModelParam wraps java.util.Map$Entry {
+	refers PapiEvent key
+	Double value
 }
 
 class PapifyConfigPE wraps java.util.Map$Entry {
