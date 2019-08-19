@@ -85,6 +85,7 @@ import org.preesm.codegen.model.Communication;
 import org.preesm.codegen.model.Constant;
 import org.preesm.codegen.model.ConstantString;
 import org.preesm.codegen.model.CoreBlock;
+import org.preesm.codegen.model.DistributedBuffer;
 import org.preesm.codegen.model.FiniteLoopBlock;
 import org.preesm.codegen.model.FunctionCall;
 import org.preesm.codegen.model.IntVar;
@@ -96,7 +97,6 @@ import org.preesm.codegen.model.PortDirection;
 import org.preesm.codegen.model.SpecialCall;
 import org.preesm.codegen.model.SpecialType;
 import org.preesm.codegen.model.SubBuffer;
-import org.preesm.codegen.model.TwinBuffer;
 import org.preesm.codegen.model.Variable;
 import org.preesm.commons.exceptions.PreesmException;
 import org.preesm.commons.exceptions.PreesmRuntimeException;
@@ -509,22 +509,16 @@ public class CodegenHierarchicalModelGenerator {
 
       if (isInputActorTmp || isOutputActorTmp) {
         var = this.srSDFEdgeBuffers.get(subBufferProperties);
-        if (var instanceof TwinBuffer) {
-          TwinBuffer twinBuffer = (TwinBuffer) var;
-          SubBuffer original = (SubBuffer) twinBuffer.getOriginal();
-          EList<Buffer> twins = twinBuffer.getTwins();
-          SubBuffer originalContainer = (SubBuffer) original.getContainer();
+        if (var instanceof DistributedBuffer) {
+          DistributedBuffer distributedBuffer = (DistributedBuffer) var;
+          EList<Buffer> repeatedBuffers = distributedBuffer.getDistributedCopies();
           String coreBlockName = operatorBlock.getName();
-          if (originalContainer.getContainer().getName().equals(coreBlockName)) {
-            var = original;
-          } else {
-            for (Buffer bufferTwinChecker : twins) {
-              SubBuffer subBufferChecker = (SubBuffer) bufferTwinChecker;
-              SubBuffer twinContainer = (SubBuffer) subBufferChecker.getContainer();
-              if (twinContainer.getContainer().getName().equals(coreBlockName)) {
-                var = subBufferChecker;
-                break;
-              }
+          for (Buffer bufferRepeatedChecker : repeatedBuffers) {
+            SubBuffer subBufferChecker = (SubBuffer) bufferRepeatedChecker;
+            SubBuffer repeatedContainer = (SubBuffer) subBufferChecker.getContainer();
+            if (repeatedContainer.getContainer().getName().equals(coreBlockName)) {
+              var = subBufferChecker;
+              break;
             }
           }
         }

@@ -10,9 +10,11 @@ PREESM Changelog
 * Refactor: rename/move packages in algo & codegen;
 * Implement simple memory allocation in the new synthesis API;
 * Prepare codegen model generator for the new synthesis API;
+* Refactor: TwinBuffer now is called DistributedBuffer;
 
 ### Bug fix
 * fix #186
+* Fix #189
 
 ## Release version 3.14.1
 *2019.07.25*
