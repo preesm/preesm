@@ -50,12 +50,20 @@ public class EnergyImporter {
     final String excelFileURL = currentScenario.getEnergyConfig().getExcelFileURL();
     if (!excelFileURL.isEmpty()) {
       final ExcelEnergyParser excelParser = new ExcelEnergyParser(currentScenario);
+      final PapifyEnergyParser papifyParser = new PapifyEnergyParser(currentScenario);
 
       try {
         final String[] fileExt = excelFileURL.split("\\.");
         final Design design = currentScenario.getDesign();
-        if (fileExt[fileExt.length - 1].equals("xls")) {
-          excelParser.parse(excelFileURL, design.getOperatorComponents());
+        switch (fileExt[fileExt.length - 1]) {
+          case "xls":
+            excelParser.parse(excelFileURL, design.getOperatorComponents());
+            break;
+          case "papify":
+            papifyParser.parse(excelFileURL, design.getOperatorComponents());
+            break;
+          default:
+            break;
         }
       } catch (final Exception e) {
         e.printStackTrace();

@@ -163,7 +163,7 @@ public class EnergyPage extends ScenarioPage {
       createFileSection(managedForm, Messages.getString("Energy.fileTitle"),
           Messages.getString("Energy.fileDescription"), Messages.getString("Energy.fileEdit"),
           this.scenario.getEnergyConfig().getExcelFileURL(), Messages.getString("Energy.timingFileBrowseTitle"),
-          new LinkedHashSet<>(Arrays.asList("xls", "csv")));
+          new LinkedHashSet<>(Arrays.asList("xls", "csv", "papify")));
       createObjectiveSection(managedForm, Messages.getString("Energy.objectiveTitle"),
           Messages.getString("Energy.objectiveDescription"));
 

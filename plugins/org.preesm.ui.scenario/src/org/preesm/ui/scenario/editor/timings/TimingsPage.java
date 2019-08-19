@@ -161,7 +161,7 @@ public class TimingsPage extends ScenarioPage {
       createFileSection(managedForm, Messages.getString("Timings.timingFile"),
           Messages.getString("Timings.timingFileDescription"), Messages.getString("Timings.timingFileEdit"),
           this.scenario.getTimings().getExcelFileURL(), Messages.getString("Timings.timingFileBrowseTitle"),
-          new LinkedHashSet<>(Arrays.asList("xls", "csv")));
+          new LinkedHashSet<>(Arrays.asList("xls", "csv", "papify")));
 
       createTimingsSection(managedForm, Messages.getString("Timings.title"), Messages.getString("Timings.description"));
 
