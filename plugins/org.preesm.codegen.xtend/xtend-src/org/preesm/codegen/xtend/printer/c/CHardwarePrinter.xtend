@@ -285,10 +285,6 @@ class CHardwarePrinter extends CPrinter {
 		hardware_kernel_wait("«functionCall.name»");
 	'''
 
-	override printIntVarDefinition(IntVar intVar) '''
-		int «intVar.name»;
-	'''
-
 	override printDataTansfer(DataTransferAction action) '''
 		// Hardware³ data transfer token into Global Buffer
 		«var count = 0»
