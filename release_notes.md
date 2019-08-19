@@ -12,7 +12,7 @@ PREESM Changelog
 * Prepare codegen model generator for the new synthesis API;
 
 ### Bug fix
-
+* fix #186
 
 ## Release version 3.14.1
 *2019.07.25*

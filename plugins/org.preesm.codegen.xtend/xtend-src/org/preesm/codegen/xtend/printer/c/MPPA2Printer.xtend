@@ -55,6 +55,7 @@ import org.preesm.codegen.model.SubBuffer
 import org.preesm.codegen.model.Variable
 import org.preesm.commons.exceptions.PreesmRuntimeException
 
+@ Deprecated
 class MPPA2Printer extends CPrinter {
 
 	new() {

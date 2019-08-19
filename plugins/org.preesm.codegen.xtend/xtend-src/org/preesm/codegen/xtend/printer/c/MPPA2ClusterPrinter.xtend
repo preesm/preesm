@@ -158,7 +158,7 @@ class MPPA2ClusterPrinter extends DefaultPrinter {
 		#endif
 
 		/* user includes */
-		#include "preesm_gen.h"
+		#include "preesm_gen_mppa.h"
 
 		extern void *__wrap_memset(void *s, int c, size_t n);
 		extern void *__wrap_memcpy(void *dest, const void *src, size_t n);
@@ -732,7 +732,7 @@ class MPPA2ClusterPrinter extends DefaultPrinter {
 	    context.put("CONSTANTS", constants);
 
 	    // 3- init template reader
-	    val String templateLocalPath = "templates/mppa2Explicit/preesm_gen.h";
+	    val String templateLocalPath = "templates/c/preesm_gen.h";
 	    val URL mainTemplate = PreesmResourcesHelper.instance.resolve(templateLocalPath, this.class);
 	    var InputStreamReader reader = null;
 	    try {
@@ -753,21 +753,28 @@ class MPPA2ClusterPrinter extends DefaultPrinter {
 	}
 	override generateStandardLibFiles() {
 		val result = new LinkedHashMap<String, CharSequence>()
-		val String stdFilesFolder = "/stdfiles/mppa2Explicit/"
+		val String stdFilesFolder = "/stdfiles/c/"
 		val files = Arrays.asList(#[
-						"communication.c",
-						"communication.h",
 						"dump.c",
 						"dump.h",
 						"fifo.c",
-						"fifo.h",
-						"memory.c",
-						"memory.h",
-						"clock.c",
-						"clock.h"
+						"fifo.h"
 					]);
 		files.forEach[it | try {
 			result.put(it, PreesmResourcesHelper.instance.read(stdFilesFolder + it, this.class))
+		} catch (IOException exc) {
+			throw new PreesmRuntimeException("Could not generated content for " + it, exc)
+		}]
+		val String stdFilesFolderMPPA = "/stdfiles/mppa2Explicit/"
+		val filesMPPA = Arrays.asList(#[
+						"communication_mppa.c",
+						"communication_mppa.h",
+						"clock.c",
+						"clock.h",
+						"preesm_gen_mppa.h"
+					]);
+		filesMPPA.forEach[it | try {
+			result.put(it, PreesmResourcesHelper.instance.read(stdFilesFolderMPPA + it, this.class))
 		} catch (IOException exc) {
 			throw new PreesmRuntimeException("Could not generated content for " + it, exc)
 		}]
@@ -825,8 +832,7 @@ class MPPA2ClusterPrinter extends DefaultPrinter {
 
 		#include <assert.h>
 
-		#include "preesm_gen.h"
-		#include "communication.h"
+		#include "preesm_gen_mppa.h"
 
 		«IF (this.distributedOnly == 0)»
 		/* Shared Segment ID */
@@ -994,7 +1000,7 @@ class MPPA2ClusterPrinter extends DefaultPrinter {
 		#include <mppa_remote.h>
 		#include <mppa_async.h>
 		#include <HAL/hal/board/boot_args.h>
-		#include "preesm_gen.h"
+		#include "preesm_gen_mppa.h"
 
 		static utask_t t;
 		static mppadesc_t pcie_fd = 0;

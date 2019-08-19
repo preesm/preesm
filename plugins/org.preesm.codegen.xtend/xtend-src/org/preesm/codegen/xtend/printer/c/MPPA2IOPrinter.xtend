@@ -121,7 +121,7 @@ class MPPA2IOPrinter extends MPPA2ClusterPrinter {
 		#endif
 
 		/* user includes */
-		#include "preesm_gen.h"
+		#include "preesm_gen_mppa.h"
 
 		extern void *__wrap_memset(void *s, int c, size_t n);
 		extern void *__wrap_memcpy(void *dest, const void *src, size_t n);
@@ -321,7 +321,7 @@ class MPPA2IOPrinter extends MPPA2ClusterPrinter {
 	    context.put("CONSTANTS", constants);
 
 	    // 3- init template reader
-	    val String templateLocalPath = "templates/mppa2Explicit/preesm_gen.h";
+	    val String templateLocalPath = "templates/c/preesm_gen.h";
 	    val URL mainTemplate = PreesmResourcesHelper.instance.resolve(templateLocalPath, this.class);
 	    var InputStreamReader reader = null;
 	    try {
@@ -375,8 +375,7 @@ class MPPA2IOPrinter extends MPPA2ClusterPrinter {
 		#include <mppa_remote.h>
 		#include <mppa_async.h>
 		#include <HAL/hal/board/boot_args.h>
-		#include "preesm_gen.h"
-		#include "communication.h"
+		#include "preesm_gen_mppa.h"
 		«IF (this.distributedOnly == 0)»
 		/* Shared Segment ID */
 		mppa_async_segment_t shared_segment;

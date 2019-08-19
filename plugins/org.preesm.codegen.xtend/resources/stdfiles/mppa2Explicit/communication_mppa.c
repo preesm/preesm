@@ -44,7 +44,7 @@
 	============================================================================
 */
 
-#include "communication.h"
+#include "communication_mppa.h"
 
 extern mppa_async_segment_t shared_segment __attribute__((weak));
 extern mppa_async_segment_t distributed_segment[PREESM_NB_CLUSTERS + PREESM_IO_USED] __attribute__((weak));
