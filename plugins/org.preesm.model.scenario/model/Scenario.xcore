@@ -435,6 +435,9 @@ class PapifyConfig {
 		}
 		return ECollections.emptyEList;
 	}
+	op boolean hasValidPapifyConfig(){
+		return !this.papifyConfigGroupsActors.filter[e|!e.value.isEmpty].isEmpty && !this.papifyConfigGroupsPEs.filter[e|!e.value.isEmpty].isEmpty
+	}
 	op void clear() {
 		if (papiData !== null) {
 			papiData.components.clear
