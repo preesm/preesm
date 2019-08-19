@@ -52,6 +52,7 @@ import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -64,6 +65,8 @@ import org.preesm.commons.exceptions.PreesmRuntimeException;
 
 /**
  * Non regression tests for the BeanShell2 third party dependency.
+ * 
+ * The evaluation of import statement before calling the scripts seem to be useless (ahonorat).
  */
 public class BeanShellInterpreterTest {
 
@@ -437,9 +440,18 @@ public class BeanShellInterpreterTest {
       String inputLine;
       // instrument code to return the list of matches
       while ((inputLine = in.readLine()) != null) {
+        final boolean contains = inputLine.contains("input.matchWith(");
+        if (contains) {
+          content.append("match = ");
+        }
         content.append(inputLine + "\n");
+        if (contains) {
+          content.append("resList.add(match);\n");
+        }
       }
     }
+    content.append("resList;");
+
     Assert.assertTrue(content.toString().contains("RuntimeException"));
 
     final int bufferToBroadcastSize = 1024 * 1024 * 8; // 8MB
@@ -450,19 +462,28 @@ public class BeanShellInterpreterTest {
     outputs
         .add(new Buffer(null, new DAGVertex("v1", null, null, null), "outputBuffer", bufferToBroadcastSize, 1, true));
 
+    final List<Match> resList = new ArrayList<>();
+
     final Interpreter interpreter = new Interpreter();
     final BshClassManager classManager = interpreter.getClassManager();
-    classManager.cacheClassInfo("Buffer", Buffer.class);
+    // classManager.cacheClassInfo("Buffer", Buffer.class);
     interpreter.eval("import " + Buffer.class.getName() + ";");
     interpreter.eval("import " + Match.class.getName() + ";");
     interpreter.eval("import " + List.class.getName() + ";");
     interpreter.eval("import " + ArrayList.class.getName() + ";");
     interpreter.eval("import " + Arrays.class.getName() + ".*;");
+    interpreter.eval("import " + Collections.class.getName() + ";");
+    interpreter.eval("import " + Math.class.getName() + ";");
     interpreter.set("inputs", inputs);
     interpreter.set("outputs", outputs);
+    interpreter.set("resList", resList);
     final Object eval = interpreter.eval(content.toString());
     Assert.assertNotNull(eval);
-    Assert.assertTrue(eval instanceof Match);
+    Assert.assertTrue(eval instanceof List);
+    Assert.assertEquals(resList, eval);
+    final int size = resList.size();
+    Assert.assertEquals(1, size);
+
   }
 
   /**
