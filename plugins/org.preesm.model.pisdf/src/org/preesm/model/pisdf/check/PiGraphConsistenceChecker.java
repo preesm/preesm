@@ -152,11 +152,14 @@ public class PiGraphConsistenceChecker extends PiMMSwitch<Boolean> {
   public Boolean caseDelayActor(final DelayActor actor) {
     final Delay linkedDelay = actor.getLinkedDelay();
     final boolean hasLinkedDelay = linkedDelay != null && linkedDelay.getActor() == actor;
-    final boolean delayProperlyContained = this.graphStack.peek().getVertices().contains(linkedDelay);
+    final boolean delayProperlyContained = actor.getContainingPiGraph().getVertices().contains(linkedDelay);
 
     final boolean delayActorValid = hasLinkedDelay && delayProperlyContained;
-    if (!delayActorValid) {
-      error("DelayActor [%s] is not valid", actor);
+    if (!hasLinkedDelay) {
+      error("DelayActor [%s] has no proper linked delay", actor);
+    }
+    if (!delayProperlyContained) {
+      error("DelayActor [%s] has a delay not contained in the graph", actor);
     }
     return delayActorValid;
   }
@@ -165,10 +168,13 @@ public class PiGraphConsistenceChecker extends PiMMSwitch<Boolean> {
   public Boolean caseDelay(final Delay delay) {
     final DelayActor actor = delay.getActor();
     final boolean actorLinkedProperly = actor != null && actor.getLinkedDelay() == delay;
-    final boolean delayActorProperlyContained = this.graphStack.peek().getVertices().contains(actor);
+    final boolean delayActorProperlyContained = delay.getContainingPiGraph().getVertices().contains(actor);
     final boolean delayValid = actorLinkedProperly && delayActorProperlyContained;
-    if (!delayValid) {
-      error("Delay [%s] is not valid", delay);
+    if (!actorLinkedProperly) {
+      error("Delay [%s] is no proper linked actor", delay);
+    }
+    if (!delayActorProperlyContained) {
+      error("Delay [%s] has an actor not contained in the graph", delay);
     }
     return delayValid;
   }
