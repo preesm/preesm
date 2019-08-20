@@ -494,8 +494,74 @@ public class SpiderCodegen {
     append("\t\tdelete it->second.begin()->second;\n");
     append("\t}\n");
     append("}\n");
+
+    // Adding energy consumption models based on PAPIFY events
+    generatePapifyEnergyModel(pg, scenario);
+
     // Returns the final C++ code
     return this.cppString.toString();
+  }
+
+  /**
+   * Generate the information related to energy consumption estimation based on PAPIFY events
+   */
+  private void generatePapifyEnergyModel(final PiGraph pg, final Scenario scenario) {
+    final ArrayList<AbstractActor> actorsWithEnergyModel = new ArrayList<>();
+
+    for (final AbstractActor actor : this.functionMap.keySet()) {
+      if (generateActorComponentEnergyModel(actor)) {
+        actorsWithEnergyModel.add(actor);
+      }
+    }
+    append(
+        "std::map<lrtFct, std::map<const char *, std::map<int, double>>> get_" + pg.getName() + "_energyModels() {\n");
+    append("\tstd::map<lrtFct, std::map<const char *, std::map<int, double>>> map;\n");
+    append("\tstd::map<const char *, std::map<int, double>> mapPapifyConfigs;\n");
+    append("\t// Initializing the map\n");
+    for (final AbstractActor actor : actorsWithEnergyModel) {
+      append("\tmapPapifyConfigs = create_" + SpiderNameGenerator.getFunctionName(actor) + "_EnergyModel();\n");
+      append("\tif(!mapPapifyConfigs.empty()) {\n");
+      append("\t\tmap.insert(std::make_pair(" + pg.getName() + "_fcts["
+          + SpiderNameGenerator.getFunctionName(actor).toUpperCase() + "_FCT" + "], mapPapifyConfigs));\n");
+      append("\t}\n");
+    }
+    append("\treturn map;\n");
+    append("}\n\n");
+
+    append("void free_" + pg.getName()
+        + "_papifyConfigs(std::map<lrtFct, std::map<const char *, PapifyConfig*>>& map) {\n");
+    append("\tstd::map<lrtFct, std::map<const char *, PapifyConfig*>>::iterator it;\n");
+    append("\t// Freeing memory of the map \n");
+    append("\tfor(it = map.begin(); it != map.end(); ++it) { \n");
+    append("\t\tdelete it->second.begin()->second;\n");
+    append("\t}\n");
+    append("}\n");
+  }
+
+  private boolean generateActorComponentEnergyModel(AbstractActor actor) {
+    boolean canEstimateEnergy = false;
+    PapifyConfig papifyConfigManager = scenario.getPapifyConfig();
+    EMap<Component, EMap<PapiEvent, Double>> energyModels = scenario.getPapifyConfig().getPapifyEnergyKPIModels();
+    Map<Component, String> componentsWithMode = new LinkedHashMap<>();
+    if (papifyConfigManager.hasValidPapifyConfig() && papifyConfigManager.hasPapifyConfig(actor)) {
+      for (Component coreType : this.coresFromCoreType.keySet()) {
+        if (energyModels.containsKey(coreType)) {
+          EList<PapiComponent> componentPAPIComponents = papifyConfigManager.getSupportedPapiComponents(coreType);
+          for (PapiComponent singleComponent : componentPAPIComponents) {
+            for (String compName : papifyConfigManager.getActorAssociatedPapiComponents(actor)) {
+              if (singleComponent.getId().equalsIgnoreCase(compName)) {
+                componentsWithMode.put(coreType, compName);
+                canEstimateEnergy = true;
+              }
+            }
+          }
+        }
+      }
+      for (Entry<Component, String> componentToPrint : componentsWithMode.entrySet()) {
+
+      }
+    }
+    return canEstimateEnergy;
   }
 
   /**
