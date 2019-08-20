@@ -141,6 +141,7 @@ public class ClusteringHelper {
       iterator = maxDepth;
     }
 
+    // Increment iterator because we found a parallel area
     if (schedule instanceof ParallelSchedule) {
       iterator++;
     }
@@ -166,7 +167,7 @@ public class ClusteringHelper {
         long rep = schedule.getRepetition();
         result *= rep;
       } else {
-        // Estimate every interal buffer size
+        // Estimate every internal buffer size
         PiGraph graph = (PiGraph) ((HierarchicalSchedule) schedule).getAttachedActor();
         List<Fifo> fifos = ClusteringHelper.getInternalClusterFifo(graph);
         Map<AbstractVertex, Long> brv = PiBRV.compute(graph, BRVMethod.LCM);
@@ -186,13 +187,18 @@ public class ClusteringHelper {
   public static final long getExecutionTimeOf(Schedule schedule, Scenario scenario) {
     long timing = 0;
 
+    // If schedule is hierarchical
     if (schedule instanceof HierarchicalSchedule) {
 
+      // If schedule is sequential
       if (schedule instanceof SequentialSchedule) {
+        // Sum timings of all childrens together
         for (Schedule child : schedule.getChildren()) {
           timing += getExecutionTimeOf(child, scenario);
         }
       } else {
+        // If schedule is parallel
+        // Search for the maximun time taken by childrens
         long max = 0;
         for (Schedule child : schedule.getChildren()) {
           long result = getExecutionTimeOf(child, scenario);
@@ -200,14 +206,21 @@ public class ClusteringHelper {
             max = result;
           }
         }
+        // Add max execution time to timing
         timing += max;
       }
 
+      // If it is repeated, multiply timing by the time of
       if (schedule.getRepetition() > 1) {
         timing *= schedule.getRepetition();
       }
 
     } else {
+      // Retrieve timing from actors
+      /*
+       * TODO: this implementation is not perfect: it takes the first component that it found in the list to get timing
+       * from
+       */
       AbstractActor actor = schedule.getActors().get(0);
       Component component = scenario.getPossibleMappings(actor).get(0).getComponent();
       long actorTiming = scenario.getTimings().evaluateTimingOrDefault(actor, component);
