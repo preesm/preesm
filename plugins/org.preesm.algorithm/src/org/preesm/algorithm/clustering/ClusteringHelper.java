@@ -40,14 +40,10 @@ import java.util.List;
 import java.util.Map;
 import org.eclipse.emf.common.util.ECollections;
 import org.eclipse.emf.common.util.EList;
-import org.preesm.algorithm.schedule.model.ActorSchedule;
 import org.preesm.algorithm.schedule.model.HierarchicalSchedule;
 import org.preesm.algorithm.schedule.model.ParallelActorSchedule;
 import org.preesm.algorithm.schedule.model.ParallelSchedule;
 import org.preesm.algorithm.schedule.model.Schedule;
-import org.preesm.algorithm.schedule.model.ScheduleFactory;
-import org.preesm.algorithm.schedule.model.SequentialActorSchedule;
-import org.preesm.algorithm.schedule.model.SequentialHiearchicalSchedule;
 import org.preesm.algorithm.schedule.model.SequentialSchedule;
 import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.preesm.model.pisdf.AbstractActor;
@@ -59,7 +55,6 @@ import org.preesm.model.pisdf.DataInputPort;
 import org.preesm.model.pisdf.DataOutputInterface;
 import org.preesm.model.pisdf.DataOutputPort;
 import org.preesm.model.pisdf.DataPort;
-import org.preesm.model.pisdf.Delay;
 import org.preesm.model.pisdf.Fifo;
 import org.preesm.model.pisdf.ISetter;
 import org.preesm.model.pisdf.Parameter;
@@ -121,47 +116,6 @@ public class ClusteringHelper {
         return true;
       }
     }
-    // // For each delay, check if it is permenant or local
-    // for (Delay delay : delays) {
-    // if (delay.getLevel().equals(PersistenceLevel.PERMANENT) || delay.getLevel().equals(PersistenceLevel.LOCAL)) {
-    // return true;
-    // }
-    // }
-
-    return false;
-  }
-
-  /**
-   * @param actor
-   *          actor to retrieve self looped delay from
-   * @return list of delays
-   */
-  public static final List<Delay> getSelfLoopedDelays(AbstractActor actor) {
-    List<Delay> delays = new LinkedList<>();
-    for (DataInputPort dip : actor.getDataInputPorts()) {
-      AbstractActor source = (AbstractActor) dip.getIncomingFifo().getSource();
-      if (source.equals(actor)) {
-        delays.add(dip.getIncomingFifo().getDelay());
-      }
-    }
-    return delays;
-  }
-
-  /**
-   * @param schedule
-   *          schedule to look at if there is sequential actor schedule inside
-   * @return true if there is sequential actor schedule inside
-   */
-  public static final boolean isSequentialActorScheduleInside(Schedule schedule) {
-    if (schedule instanceof HierarchicalSchedule) {
-      for (Schedule child : schedule.getChildren()) {
-        if (isSequentialActorScheduleInside(child)) {
-          return true;
-        }
-      }
-    } else if (schedule instanceof SequentialActorSchedule) {
-      return true;
-    }
     return false;
   }
 
@@ -192,56 +146,6 @@ public class ClusteringHelper {
     }
 
     return iterator;
-  }
-
-  /**
-   * @param schedule
-   *          schedule to analyze
-   * @param iterator
-   *          iterator to exploration counter on
-   * @return reworked schedule
-   */
-  public static final Schedule setParallelismDepth(Schedule schedule, long iterator, long depthTarget) {
-
-    // Parallel schedule? Increment iterator because of new parallel layer
-    if (schedule instanceof ParallelSchedule) {
-      iterator++;
-    }
-
-    // Explore and replace children
-    if (schedule instanceof HierarchicalSchedule) {
-      HierarchicalSchedule hierSchedule = (HierarchicalSchedule) schedule;
-      int i = 0;
-      for (Schedule child : hierSchedule.getChildren()) {
-        hierSchedule.getChildren().set(i, setParallelismDepth(child, iterator, depthTarget));
-        i++;
-      }
-    }
-
-    // Rework if parallel is below the depth target
-    if ((schedule instanceof ParallelSchedule) && (iterator > depthTarget)) {
-      if (schedule instanceof HierarchicalSchedule) {
-        if (!schedule.hasAttachedActor()) {
-          Schedule childrenSchedule = schedule.getChildren().get(0);
-          childrenSchedule.setRepetition(schedule.getRepetition());
-          return childrenSchedule;
-        } else {
-          SequentialHiearchicalSchedule sequenceSchedule = ScheduleFactory.eINSTANCE
-              .createSequentialHiearchicalSchedule();
-          sequenceSchedule.setAttachedActor(((HierarchicalSchedule) schedule).getAttachedActor());
-          sequenceSchedule.setRepetition(schedule.getRepetition());
-          sequenceSchedule.getChildren().addAll(schedule.getChildren());
-          return sequenceSchedule;
-        }
-      } else if (schedule instanceof ActorSchedule) {
-        SequentialActorSchedule actorSchedule = ScheduleFactory.eINSTANCE.createSequentialActorSchedule();
-        actorSchedule.setRepetition(schedule.getRepetition());
-        actorSchedule.getActorList().addAll(((ActorSchedule) schedule).getActors());
-        return actorSchedule;
-      }
-    }
-
-    return schedule;
   }
 
   /**
