@@ -646,6 +646,11 @@ public class SpiderCodegen {
     append("\tconfig.nMemoryUnit = 1;\n\n");
     append("\t/* === Create Archi === */\n\n");
     append("\tauto *archi = Spider::createArchi(config);\n\n");
+    if (!this.scenario.getEnergyConfig().getPlatformPower().isEmpty()) {
+      double basePower = this.scenario.getEnergyConfig().getPlatformPower().get("Base");
+      append("\t/* === Add base energy === */\n\n");
+      append("\tSpider::setBasePower(" + basePower + ");\n\n");
+    }
     append("\t/* === Create the different MemoryUnit(s) === */\n\n");
     append("\tshMemBuffer = (char *) std::malloc(SH_MEM_SIZE);\n");
     append("\tif (!shMemBuffer) {\n");
