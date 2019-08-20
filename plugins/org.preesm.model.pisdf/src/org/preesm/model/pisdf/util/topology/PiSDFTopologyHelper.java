@@ -39,11 +39,10 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import org.preesm.model.pisdf.AbstractActor;
+import org.preesm.model.pisdf.util.topology.IsThereALongPathSwitch.ThereIsALongPath;
 import org.preesm.model.pisdf.util.topology.PiSDFPredecessorSwitch.IsPredecessorSwitch;
 import org.preesm.model.pisdf.util.topology.PiSDFPredecessorSwitch.PredecessorFoundException;
-import org.preesm.model.pisdf.util.topology.PiSDFSuccessorSwitch.IsMoreThanOneSimplePathSwitch;
 import org.preesm.model.pisdf.util.topology.PiSDFSuccessorSwitch.IsSuccessorSwitch;
-import org.preesm.model.pisdf.util.topology.PiSDFSuccessorSwitch.MoreThanOneSimplePathException;
 import org.preesm.model.pisdf.util.topology.PiSDFSuccessorSwitch.SuccessorFoundException;
 
 /**
@@ -114,11 +113,11 @@ public class PiSDFTopologyHelper {
   /**
    * returns true if there is more than one simple path to get from potential successor to target
    */
-  public static final boolean isMoreThanOneSimplePath(final AbstractActor potentialSucc, final AbstractActor target) {
+  public static final boolean isThereIsALongPath(final AbstractActor potentialSucc, final AbstractActor target) {
     try {
-      new IsMoreThanOneSimplePathSwitch(target).doSwitch(potentialSucc);
+      new IsThereALongPathSwitch(target).doSwitch(potentialSucc);
       return false;
-    } catch (final MoreThanOneSimplePathException e) {
+    } catch (final ThereIsALongPath e) {
       return true;
     }
   }
