@@ -64,8 +64,7 @@ public class BLevelIterator extends ImplementationIterator {
     }
 
     if (!arg0.getTiming().hasBLevel() || !arg1.getTiming().hasBLevel()) {
-      final String msg = "B Level Iterator problem";
-      throw new PreesmRuntimeException(msg);
+      throw new PreesmRuntimeException("B Level Iterator problem");
     }
 
     long bLevelDifference = (arg0.getTiming().getBLevel() - arg1.getTiming().getBLevel());
@@ -79,7 +78,7 @@ public class BLevelIterator extends ImplementationIterator {
     }
 
     // Preventing overflows in conversion from long to int
-    if (bLevelDifference >= 0) {
+    if (bLevelDifference > 0) {
       bLevelDifference = 1;
     } else {
       bLevelDifference = -1;

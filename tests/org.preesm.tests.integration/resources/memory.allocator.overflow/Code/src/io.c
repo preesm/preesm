@@ -34,30 +34,31 @@ void write_data2ppm(const char* filename, unsigned char* data, int w, int h) {
   fclose(fp);
 }
 
-void write_rgb2ppm(const char * filename, unsigned char* r, unsigned char* g, unsigned char* b, int w, int h) {
-  unsigned char obuf[3*SIFT_IMG_TOT];
-
-  for(int i = 0; i < w*h; i++){
-    obuf[3*i] = r[i];
-    obuf[3*i + 1] = g[i];
-    obuf[3*i + 2] = b[i];
+void write_rgb2ppm(const char * filename, unsigned char* r, unsigned char* g, unsigned char* b, int w, int h, int tot_image_size) {
+  unsigned char obuf[3*tot_image_size];
+  unsigned char * dst = obuf;
+  for(int i = 0; i < tot_image_size; i++){
+    *(dst++) = r[i];
+    *(dst++) = g[i];
+    *(dst++) = b[i];
   }
 
   write_data2ppm(filename, obuf, w, h);
 }
 
 void setPixelRed(unsigned char* img_r, unsigned char* img_g, unsigned char* img_b, int w, int h, int r, int c) {
+  size_t index = r*w + c;
   if( (r >= 0) && (r < h) && (c >= 0) && (c < w)){
-    img_r[r*w + c] = 0;
-    img_g[r*w + c] = 0;
-    img_b[r*w + c] = 255;
+    img_r[index] = 0;
+    img_g[index] = 0;
+    img_b[index] = 255;
   }
 }
 
 
 void export_kpt_list_to_file(const char * filename, int nb_kpt, 
-			    struct SiftKeypoint * kpt_list,
-			    int bIncludeDescpritor) {
+			     struct SiftKeypoint * kpt_list,
+			     int bIncludeDescriptor, int nBins) {
   FILE * fp;
   fp = fopen(filename, "wb");
   if (! fp){
@@ -65,24 +66,33 @@ void export_kpt_list_to_file(const char * filename, int nb_kpt,
     //exit(1);
   }
 
-  fprintf(fp, "%d\t%d\n", nb_kpt, DEGREE_OF_DESCRIPTORS);
+  fprintf(fp, "%d\t%d\n", nb_kpt, nBins);
 
-  for (size_t index = 0; index < nb_kpt; ++index) {
-    struct SiftKeypoint * kpt = kpt_list + index;
-    fprintf(fp, "%d\t%d\t%.2f\t%.2f\t%.2f\t%.2f\t", kpt->octave, kpt->layer, kpt->r, kpt->c, kpt->scale, kpt->ori);
-    if (bIncludeDescpritor) {
-      for (int i = 0; i < DEGREE_OF_DESCRIPTORS; i ++){
+  // initialize buffer with max mem: max chars taken by %d and %.2f
+  // compute length a posteriori with str_len on buffer+current_tot_length
+  
+  if (bIncludeDescriptor) {
+    for (size_t index = 0; index < nb_kpt; ++index) {
+      struct SiftKeypoint * kpt = kpt_list + index;
+      fprintf(fp, "%d\t%d\t%.2f\t%.2f\t%.2f\t%.2f\t", kpt->octave, kpt->layer, kpt->r, kpt->c, kpt->scale, kpt->ori);
+      for (int i = 0; i < nBins; i ++){
 	fprintf(fp, "%d\t", (int)(kpt->descriptors[i]));
       }
+      fprintf(fp, "\n");
     }
-    fprintf(fp, "\n");
+  } else {
+    for (size_t index = 0; index < nb_kpt; ++index) {
+      struct SiftKeypoint * kpt = kpt_list + index;
+      fprintf(fp, "%d\t%d\t%.2f\t%.2f\t%.2f\t%.2f\t\n", kpt->octave, kpt->layer, kpt->r, kpt->c, kpt->scale, kpt->ori);
+    }
   }
 
   fclose(fp);
 }
 
 
-void export_keypoints_to_key_file(int FilePathLength, int nbKptMax,
+void export_keypoints_to_key_file(int FilePathLength, int nKeypointsMax,
+				  int DumpDescriptor, int nBins,
 				  IN char * filename,
 				  IN int * nbKeypoints, 
 				  IN SiftKpt * keypoints) {
@@ -102,12 +112,12 @@ void export_keypoints_to_key_file(int FilePathLength, int nbKptMax,
   }
   strcat(newFileName, "_keypoints.key");
 
-  export_kpt_list_to_file(newFileName, *nbKeypoints, keypoints, SIFT_DUMP_DESCRIPTOR);
+  export_kpt_list_to_file(newFileName, *nbKeypoints, keypoints, DumpDescriptor, nBins);
 }
 
 
 void read_pgm(int FilePathLength, IN char * filename,
-	     int imgW, int imgH, OUT unsigned char * img) {
+	     int image_width, int image_height, OUT unsigned char * img) {
   FILE* in_file;
   char ch, type;
   int dummy;
@@ -145,9 +155,9 @@ void read_pgm(int FilePathLength, IN char * filename,
   fscanf(in_file,"%d", &w);
   fscanf(in_file,"%d", &h);
 
-  if (imgW != w || imgH != h) {
+  if (image_width != w || image_height != h) {
     fprintf(stderr, "Image size parameters are not corresponding the image loaded, leaving now.\n");
-    fprintf(stderr, "Found: %dx%d, expected: %dx%d", w, h, imgW, imgH);
+    fprintf(stderr, "Found: %dx%d, expected: %dx%d", w, h, image_width, image_height);
     exit(1);
   }
 	
@@ -184,29 +194,36 @@ int write_pgm(int w, int h, unsigned char * img,  const char * filename) {
 
 void write_float_pgm(char* filename, float* data, unsigned char * buffer, int w, int h, int mode) {
   int i, j;
-  for (i = 0; i < h; i++) {
-    for (j = 0; j < w; j++) {
-      if (mode == 1) { // clop
-	if (data[i*w+j] >= 255.0) {
-	  buffer[i*w+j] = 255;
-	} else if (data[i*w+j] <= 0.0) {
-	  buffer[i*w+j] = 0;
+  unsigned char * dst = buffer;
+  if (mode == 1) { // clop
+    for (i = 0; i < h; i++) {
+      size_t iw = i * w;
+      for (j = 0; j < w; j++) {
+	if (data[iw+j] >= 255.0) {
+	  *(dst++) = 255;
+	} else if (data[iw+j] <= 0.0) {
+	  *(dst++) = 0;
 	} else{
-	  buffer[i*w+j] = (int) data[i*w+j];
+	  *(dst++) = (int) data[iw+j];
 	}
-      } else if(mode == 2) { // abs, x10, clop
-	int tmpInt = (int)(fabs(data[i*w+j])*10.0);
-	if (fabs(data[i*w+j]) >= 255) {
-	  buffer[i*w+j] = 255;
-	} else if (tmpInt <= 0){
-	  buffer[i*w+j] = 0;
-	} else {
-	  buffer[i*w+j] = tmpInt;
-	}
-      } else {
-	return;
       }
     }
+  } else if(mode == 2) { // abs, x10, clop
+    for (i = 0; i < h; i++) {
+      size_t iw = i * w;
+      for (j = 0; j < w; j++) {
+	int tmpInt = (int)(fabs(data[iw+j])*10.0);
+	if (fabs(data[iw+j]) >= 255) {
+	  *(dst++) = 255;
+	} else if (tmpInt <= 0){
+	  *(dst++) = 0;
+	} else {
+	  *(dst++) = tmpInt;
+	}
+      }
+    }
+  } else {
+    return;
   }
   write_pgm(w, h, buffer, filename);
 }
@@ -310,8 +327,9 @@ int combine_image(unsigned char * out_image,
 }
 
 
-void draw_keypoints_to_ppm_file(int FilePathLength, int nbKptMax,
-				int imgW, int imgH,
+void draw_keypoints_to_ppm_file(int FilePathLength, int nKeypointsMax,
+				int image_width, int image_height,
+				int tot_image_size,
 				IN int * nbKeypoints,
 				IN char * filename,
 				IN unsigned char * image, 
@@ -331,14 +349,14 @@ void draw_keypoints_to_ppm_file(int FilePathLength, int nbKptMax,
   int cR;
 
   // initialize the imgPPM
-  unsigned char img_r[SIFT_IMG_TOT];
-  unsigned char img_g[SIFT_IMG_TOT];
-  unsigned char img_b[SIFT_IMG_TOT];
+  unsigned char img_r[tot_image_size];
+  unsigned char img_g[tot_image_size];
+  unsigned char img_b[tot_image_size];
 
   // Copy gray PGM images to color PPM images
-  memcpy(img_r, image, sizeof(unsigned char) * imgW * imgH);
-  memcpy(img_g, image, sizeof(unsigned char) * imgW * imgH);
-  memcpy(img_b, image, sizeof(unsigned char) * imgW * imgH);
+  memcpy(img_r, image, sizeof(unsigned char) * tot_image_size);
+  memcpy(img_g, image, sizeof(unsigned char) * tot_image_size);
+  memcpy(img_b, image, sizeof(unsigned char) * tot_image_size);
 	
   for (int index = 0; index < *nbKeypoints; ++index) {
     struct SiftKeypoint * kpt = keypoints + index;
@@ -350,10 +368,10 @@ void draw_keypoints_to_ppm_file(int FilePathLength, int nbKptMax,
     r = (int) kpt->r;
     c = (int) kpt->c;
     //	draw_red_circle(&imgPPM, r, c, cR);
-    rasterCircle(img_r, img_g, img_b, imgW, imgH, r, c, cR);
-    rasterCircle(img_r, img_g, img_b, imgW, imgH, r, c, cR + 1);
+    rasterCircle(img_r, img_g, img_b, image_width, image_height, r, c, cR);
+    rasterCircle(img_r, img_g, img_b, image_width, image_height, r, c, cR + 1);
     float ori = kpt->ori;
-    draw_red_orientation(img_r, img_g, img_b, imgW, imgH, c, r, ori, cR);
+    draw_red_orientation(img_r, img_g, img_b, image_width, image_height, c, r, ori, cR);
   }
 
   // write rendered image to output
@@ -369,7 +387,7 @@ void draw_keypoints_to_ppm_file(int FilePathLength, int nbKptMax,
   }
   strcat(newFileName, "_wkpts.ppm");
 
-  write_rgb2ppm(newFileName, img_r, img_g, img_b, imgW, imgH);
+  write_rgb2ppm(newFileName, img_r, img_g, img_b, image_width, image_height, tot_image_size);
 
 }
 
@@ -383,15 +401,18 @@ int draw_line_to_rgb_image(unsigned char* data,
   int c2 = mp->c2+offset;
 
   float k = (float)(r2 - r1) / (float)(c2 - c1);
+  size_t indexTmp = 3 * c1;
+  size_t w3 = 3 * w;
   for (int c = c1; c < c2; c ++){
     // Line equation
     int r = (int)(k * (c - c1) + r1);
-    int index = r * w * 3 + 3 * c;
+    size_t index = r * w3 + indexTmp;
     
     // Draw a blue line
     data[index] = 0;
     data[index + 1] = 0;
     data[index + 2] = 255;
+    indexTmp += 3;
   }
 
   return 0;
@@ -409,16 +430,17 @@ int draw_match_lines_to_ppm_file(const char * filename,
 
   //tmpImage has to be initialized by preesm
 
-  unsigned char tmpImage[2*SIFT_IMG_TOT];
-  unsigned char dstData[6*SIFT_IMG_TOT];
+  int w = tmax_i(h1, h2);
+  int h = w1+w2;
+  size_t tot_size = w*h;
+  unsigned char tmpImage[tot_size];
+  unsigned char dstData[3*tot_size];
   
   combine_image(tmpImage, w1, h1, image1, w2, h2, image2);
 
-  int w = tmax_i(h1, h2);
-  int h = w1+w2;
   unsigned char * srcData = tmpImage;
 
-  for (int i = 0; i < w * h; i ++){
+  for (size_t i = 0; i < tot_size; i ++){
     dstData[i * 3] = srcData[i];
     dstData[i * 3 + 1] = srcData[i];
     dstData[i * 3 + 2] = srcData[i];
@@ -454,11 +476,16 @@ void draw_red_circle(unsigned char* img_r, unsigned char* img_g, unsigned char* 
 
 void draw_circle(unsigned char* img_r, unsigned char* img_g, unsigned char* img_b, int w, int h, int r, int c, int cR, float thickness) {
   int x,y;
-  float f = thickness;
-  for(x=-cR; x<=+cR; x++)	{
-    for(y=-cR; y<=+cR; y++) {
-      if ( (((x*x)+(y*y))>(cR*cR)-(f/2)) && (((x*x)+(y*y))<(cR*cR)+(f/2)) ) 
-	setPixelRed(img_r, img_g, img_b, w, h, y + r, x + c);
+  int cR2 = cR*cR;
+  float f = thickness/2;
+  for (x=-cR; x<=+cR; x++) {
+    int x2 = x*x;
+    int xpc = x + c;
+    for (y=-cR; y<=+cR; y++) {
+      int y2 = y*y;
+      if ( (x2 + y2) > (cR2 - f) && (x2 + y2) < (cR2 + f) ) { 
+	setPixelRed(img_r, img_g, img_b, w, h, y + r, xpc);
+      }
     }
   }
 }

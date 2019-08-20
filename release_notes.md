@@ -27,6 +27,7 @@ PREESM Changelog
 * fix #186
 * Fix #189
 * Fix #193
+* Fix scheduling of graphs with large data rates.
 
 ## Release version 3.14.1
 *2019.07.25*

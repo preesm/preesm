@@ -66,7 +66,7 @@ public class TLevelIterator extends ImplementationIterator {
     }
 
     // Preventing overflows in conversion from long to int
-    if (tLevelDifference >= 0) {
+    if (tLevelDifference > 0) {
       tLevelDifference = 1;
     } else {
       tLevelDifference = -1;

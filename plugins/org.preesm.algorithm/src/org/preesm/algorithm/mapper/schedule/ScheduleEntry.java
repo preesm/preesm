@@ -57,11 +57,11 @@ public class ScheduleEntry {
   @JsonProperty("singleRateInstanceNumber")
   private Integer                   singleRateInstanceNumber;
   @JsonProperty("start")
-  private Integer                   start;
+  private Long                      start;
   @JsonProperty("startN")
   private Integer                   startN;
   @JsonProperty("end")
-  private Integer                   end;
+  private Long                      end;
   @JsonProperty("endN")
   private Integer                   endN;
   @JsonProperty("core")
@@ -98,12 +98,12 @@ public class ScheduleEntry {
   }
 
   @JsonProperty("start")
-  public Integer getStart() {
+  public Long getStart() {
     return this.start;
   }
 
   @JsonProperty("start")
-  public void setStart(final Integer start) {
+  public void setStart(final Long start) {
     this.start = start;
   }
 
@@ -118,12 +118,12 @@ public class ScheduleEntry {
   }
 
   @JsonProperty("end")
-  public Integer getEnd() {
+  public Long getEnd() {
     return this.end;
   }
 
   @JsonProperty("end")
-  public void setEnd(final Integer end) {
+  public void setEnd(final Long end) {
     this.end = end;
   }
 

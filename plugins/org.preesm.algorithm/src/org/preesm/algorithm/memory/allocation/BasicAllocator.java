@@ -70,7 +70,7 @@ public class BasicAllocator extends MemoryAllocator {
   public void allocate() {
     clear();
 
-    int offset = 0;
+    long offset = 0;
 
     if (this.inputExclusionGraph != null) {
       // Iterate on a copy of the vertex set because the meg might be

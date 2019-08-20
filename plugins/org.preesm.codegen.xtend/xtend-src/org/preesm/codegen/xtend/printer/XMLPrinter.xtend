@@ -184,7 +184,7 @@ class XMLPrinter extends DefaultPrinter {
 			«ENDIF»
 			«IF fifoCall.operation != FifoOperation::INIT»
 				«fifoCall.parameters.head.doSwitch»
-				<constant name="nb_token" type="int" value="«(fifoCall.parameters.head as Buffer).size»"/>
+				<constant name="nb_token" type="long" value="«(fifoCall.parameters.head as Buffer).size»"/>
 			«ENDIF»
 			<constant name="size" type="string" value="sizeof(«fifoCall.headBuffer.type»)"/>
 			«{

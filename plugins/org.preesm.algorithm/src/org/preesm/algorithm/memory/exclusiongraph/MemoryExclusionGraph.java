@@ -355,7 +355,7 @@ public class MemoryExclusionGraph extends SimpleGraph<MemoryExclusionVertex, Def
 
         // Create the Memory Object for the remaining of the FIFO (if
         // any)
-        final long fifoDepth = ((Long) dagInitVertex.getPropertyBean().getValue(SDFInitVertex.INIT_SIZE)).intValue();
+        final long fifoDepth = ((Long) dagInitVertex.getPropertyBean().getValue(SDFInitVertex.INIT_SIZE)).longValue();
         if (fifoDepth > (headMemoryNode.getWeight() / typeSize)) {
           final MemoryExclusionVertex fifoMemoryNode = new MemoryExclusionVertex("FIFO_Body_" + dagEndVertex.getName(),
               dagInitVertex.getName(), (fifoDepth * typeSize) - headMemoryNode.getWeight());
@@ -633,7 +633,7 @@ public class MemoryExclusionGraph extends SimpleGraph<MemoryExclusionVertex, Def
               // If the merged vertex is not split
               if (mergedVertex.getWeight() != 0) {
                 // Put it back to its real weight
-                final int emptySpace = (int) mergedVertex.getPropertyBean()
+                final long emptySpace = mergedVertex.getPropertyBean()
                     .getValue(MemoryExclusionVertex.EMPTY_SPACE_BEFORE);
                 mergedVertex.setWeight(mergedVertex.getWeight() - emptySpace);
               } else {

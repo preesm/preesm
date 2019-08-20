@@ -2,11 +2,12 @@
 
 #include <stdio.h>
 
-void initMemKpt(struct OrderedKptList * list, struct SiftKeypoint * mem) {
+void initMemKpt(struct OrderedKptList * list, size_t nbElts, struct ElementOrdList * elts, struct SiftKeypoint * mem) {
+  list->allEl = elts;
   list->allVal = mem;
   list->beginIndex = 0;
   list->size = 0;
-  list->max = SIFT_localKPTmax;
+  list->max = nbElts;
 }
 
 int getSizeKpt(struct OrderedKptList * list) {
@@ -30,8 +31,8 @@ void addElementKpt(struct OrderedKptList * list, struct SiftKeypoint * val, int 
   }
 
   short goForward = 1;
-  struct Element * el = &(list->allEl[list->beginIndex]);
-  struct Element * prev_el = NULL;
+  struct ElementOrdList * el = &(list->allEl[list->beginIndex]);
+  struct ElementOrdList * prev_el = NULL;
   while (el != NULL) {
     goForward = (*comparisonFunction)(&(list->allVal[el->elementIndex]), val);
     if (goForward == 1) {
@@ -84,11 +85,12 @@ void addElementKpt(struct OrderedKptList * list, struct SiftKeypoint * val, int 
 /* -------- for MatchPair ---------- */
 
 
-void initMemMatch(struct OrderedMatchList * list, struct MatchPair * mem) {
+void initMemMatch(struct OrderedMatchList * list, size_t nbElts, struct ElementOrdList * elts, struct MatchPair * mem) {
+  list->allEl = elts;
   list->allVal = mem;
   list->beginIndex = 0;
   list->size = 0;
-  list->max = SIFT_localMatchMax;
+  list->max = nbElts;
 }
 
 int getSizeMatch(struct OrderedMatchList * list) {
@@ -112,8 +114,8 @@ void addElementMatch(struct OrderedMatchList * list, struct MatchPair * val, int
   }
 
   short goForward = 1;
-  struct Element * el = &(list->allEl[list->beginIndex]);
-  struct Element * prev_el = NULL;
+  struct ElementOrdList * el = &(list->allEl[list->beginIndex]);
+  struct ElementOrdList * prev_el = NULL;
   while (el != NULL) {
     goForward = (*comparisonFunction)(&(list->allVal[el->elementIndex]), val);
     if (goForward == 1) {

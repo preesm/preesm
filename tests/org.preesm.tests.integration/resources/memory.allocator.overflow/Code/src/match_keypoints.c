@@ -25,10 +25,14 @@ int compareMatchPairThreshold(struct MatchPair * match_in_list, struct MatchPair
 }
 
 
+// to call after the two complete SIFT, or after one keypoint list is finished and then one by one?
+// may need to parallelize the list access
+
 // Match keypoints from two images, using brutal force method.
 // Use Euclidean distance as matching score. 
-int match_keypoints(IN struct SiftKeypoint * kpt_list1,
-		    struct SiftKeypoint * kpt_list2,
+int match_keypoints(int nBins, int nLocalMatchMax,
+		    IN struct SiftKeypoint * kpt_list1,
+		    IN struct SiftKeypoint * kpt_list2,
 		    IN int * nbKeypoints1, IN int * nbKeypoints2,
 		    OUT struct MatchPair * matches,
 		    OUT int * nbMatches) {
@@ -36,7 +40,8 @@ int match_keypoints(IN struct SiftKeypoint * kpt_list1,
   struct MatchPair mp;
 
   struct OrderedMatchList match_list;
-  initMemMatch(&match_list, matches);
+  struct ElementOrdList elts[nLocalMatchMax];
+  initMemMatch(&match_list, nLocalMatchMax, elts, matches);
 
   
   for (int index1 = 0; index1 < *nbKeypoints1; ++index1) {
@@ -56,7 +61,7 @@ int match_keypoints(IN struct SiftKeypoint * kpt_list1,
       float score = 0;
       float * descr2 =  kpt2->descriptors;
       float dif;
-      for (int i = 0; i < DEGREE_OF_DESCRIPTORS; i ++) {
+      for (int i = 0; i < nBins; i ++) {
 	dif = descr1[i] - descr2[i];
 	score += dif * dif;
       }

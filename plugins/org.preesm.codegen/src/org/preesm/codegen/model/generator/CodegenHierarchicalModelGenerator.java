@@ -576,8 +576,8 @@ public class CodegenHierarchicalModelGenerator {
       bufIter.setTypeSize(((SubBuffer) var).getTypeSize());
       bufIter.setType(((SubBuffer) var).getType());
       bufIter.setOffset(((SubBuffer) var).getOffset());
-      bufIter.setIterSize((int) bufIterSize);
-      bufIter.setSize((int) bufSize);
+      bufIter.setIterSize(bufIterSize);
+      bufIter.setSize(bufSize);
 
       if (arg.getDirection() == CodeGenArgument.INPUT) {
         loopBlock.getInBuffers().add(bufIter);
@@ -718,7 +718,7 @@ public class CodegenHierarchicalModelGenerator {
           buf.setName(workingMemBuf.getName() + "_" + Integer.toString(this.currentWorkingMemOffset));
           buf.reaffectContainer(workingMemBuf);
           buf.setOffset(this.currentWorkingMemOffset);
-          buf.setSize((int) bufSize);
+          buf.setSize(bufSize);
           buf.setType(currentEdge.getDataType().toString());
           final long value = this.dataTypes.get(currentEdge.getDataType().toString());
           buf.setTypeSize(value);

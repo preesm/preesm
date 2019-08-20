@@ -52,7 +52,7 @@ public class PiGraphExecution {
   private final int executionNumber;
 
   /** The parameter values. */
-  private final Map<Parameter, Integer> parameterValues;
+  private final Map<Parameter, Long> parameterValues;
 
   /**
    * Instantiates a new pi graph execution.
@@ -60,7 +60,7 @@ public class PiGraphExecution {
    * @param values
    *          the values
    */
-  public PiGraphExecution(final Map<Parameter, Integer> values) {
+  public PiGraphExecution(final Map<Parameter, Long> values) {
     this(values, "", 0);
   }
 
@@ -74,7 +74,7 @@ public class PiGraphExecution {
    * @param number
    *          the number
    */
-  public PiGraphExecution(final Map<Parameter, Integer> values, final String label, final int number) {
+  public PiGraphExecution(final Map<Parameter, Long> values, final String label, final int number) {
     this.parameterValues = values;
     this.executionLabel = label;
     this.executionNumber = number;
@@ -87,8 +87,8 @@ public class PiGraphExecution {
    *          the p
    * @return the values
    */
-  public int getValue(final Parameter param) {
-    final Map<Parameter, Integer> paramVals = this.parameterValues;
+  public long getValue(final Parameter param) {
+    final Map<Parameter, Long> paramVals = this.parameterValues;
     return paramVals.get(param);
   }
 

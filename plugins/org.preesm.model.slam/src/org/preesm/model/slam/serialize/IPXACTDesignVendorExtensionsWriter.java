@@ -170,7 +170,7 @@ public class IPXACTDesignVendorExtensionsWriter {
     if (component instanceof ComNode) {
       componentElt.setAttribute("slam:speed", Float.toString(((ComNode) component).getSpeed()));
     } else if (component instanceof Mem) {
-      componentElt.setAttribute("slam:size", Integer.toString(((Mem) component).getSize()));
+      componentElt.setAttribute("slam:size", Long.toString(((Mem) component).getSize()));
     } else if (component instanceof Dma) {
       componentElt.setAttribute("slam:setupTime", Integer.toString(((Dma) component).getSetupTime()));
     }

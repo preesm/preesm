@@ -359,7 +359,7 @@ public class CodegenEngine {
           new NullProgressMonitor());
       format(iFile);
     } catch (final CoreException ex) {
-      throw new PreesmRuntimeException("Could not generated source file for " + fileName, ex);
+      throw new PreesmRuntimeException("Could not generate source file for " + fileName, ex);
     }
   }
 
@@ -375,8 +375,8 @@ public class CodegenEngine {
         PreesmXMLFormatter.format(iFile);
         break;
       default:
-        final String msg = "Unsupported file extension : '" + ext + "'";
-        PreesmLogger.getLogger().log(Level.INFO, msg);
+        final String msg = "One file with extension '" + ext + "' has been generated but not formatted.";
+        PreesmLogger.getLogger().log(Level.FINE, msg);
     }
 
   }

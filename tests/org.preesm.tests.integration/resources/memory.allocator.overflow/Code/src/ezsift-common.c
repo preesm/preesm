@@ -11,16 +11,17 @@ void counterOctaveDownN(int nOctavesDownN, OUT int * iter) {
   }
 }
 
-void counterPLevels(int parallelismLevels, OUT int * iter) {
+void counterPLevels(int parallelismLevel, OUT int * iter) {
 #ifdef SIFT_DEBUG
   fprintf(stderr, "Enter function: %s\n", __FUNCTION__);
 #endif
-  for (int i = 0; i < parallelismLevels; i++) {
+  for (int i = 0; i < parallelismLevel; i++) {
     iter[i] = i;
   }
 }
 
-void ITERATOR_generic(int parallelismLevels, int nbLayers,
+void ITERATOR_generic(int parallelismLevel, int nbOctaves, int nbLayers,
+		      int image_width, int image_height, int imgDouble,
 		      int * start_octave, int * stop_octave,
 		      int * start_layer, int * stop_layer,
 		      int * start_line,  int * stop_line,
@@ -31,42 +32,42 @@ void ITERATOR_generic(int parallelismLevels, int nbLayers,
   start_line[0] = 0;
   start_col[0] = 0;
 
-  int w[SIFT_nOctaves];
-  w[0] = SIFT_IMAGE_W;
-  int h[SIFT_nOctaves];
-  h[0] = SIFT_IMAGE_H;
-  if (SIFT_IMG_DBL) {
+  int w[nbOctaves];
+  w[0] = image_width;
+  int h[nbOctaves];
+  h[0] = image_height;
+  if (imgDouble) {
     w[0] *= 2;
     h[0] *= 2;
   }
-  if (parallelismLevels == 1) {
-    stop_octave[0] = SIFT_nOctaves;
-    stop_layer[0] = nbLayers;
-    stop_line[0] = h[SIFT_nOctaves-1];
-    stop_col[0] = w[SIFT_nOctaves-1];
-    return;
-  }
-  for (int i = 1; i < SIFT_nOctaves; i++) {
+  for (int i = 1; i < nbOctaves; i++) {
     w[i] = w[i-1] / 2;
     h[i] = h[i-1] / 2;
+  }
+  if (parallelismLevel == 1) {
+    stop_octave[0] = nbOctaves;
+    stop_layer[0] = nbLayers;
+    stop_line[0] = h[nbOctaves-1];
+    stop_col[0] = w[nbOctaves-1];
+    return;
   }
 
   unsigned long iter_space = 0;
 
-  for (int i = 0; i < SIFT_nOctaves; i++) {
+  for (int i = 0; i < nbOctaves; i++) {
     iter_space += w[i]*h[i];
   }
   iter_space *= nbLayers;
 
-  unsigned long piter_space = iter_space/parallelismLevels;
+  unsigned long piter_space = iter_space/parallelismLevel;
 
   unsigned long citer_space = 0;
-  int nOctaves = SIFT_nOctaves;
+  int nOctaves = nbOctaves;
   int nLayers = nbLayers;
   int nLines = h[0];
   int nCols = w[0];
   
-  for (int i = 0; i < SIFT_nOctaves; i++) {
+  for (int i = 0; i < nbOctaves; i++) {
     long tmp = citer_space + w[i]*h[i]*nbLayers;
     if (tmp <= piter_space) {
       citer_space = tmp;
@@ -110,13 +111,13 @@ void ITERATOR_generic(int parallelismLevels, int nbLayers,
   stop_col[0] = nCols;
 
   unsigned long oiter_space = piter_space;
-  for (int p = 1; p < parallelismLevels - 1; p++) {
+  for (int p = 1; p < parallelismLevel - 1; p++) {
     long prev_lack = oiter_space - citer_space;
     oiter_space = piter_space + prev_lack;
     int hC = h[stop_octave[p-1]-1];
     int cC = w[stop_octave[p-1]-1];
     citer_space = 0;
-    nOctaves = SIFT_nOctaves;
+    nOctaves = nbOctaves;
     nLayers = nbLayers;
     nLines = hC;
     nCols = cC;
@@ -166,7 +167,7 @@ void ITERATOR_generic(int parallelismLevels, int nbLayers,
     start_octave[p] = ((stop_col[p - 1] == cC) && (stop_line[p - 1] == hC) && (stop_layer[p - 1] == nbLayers)) ? stop_octave[p-1] : stop_octave[p-1] - 1;
     nOctaves = start_octave[p]+1;
     if (citer_space < oiter_space) {
-      for (int i = start_octave[p] + endsOctave; i < SIFT_nOctaves; i++) {
+      for (int i = start_octave[p] + endsOctave; i < nbOctaves; i++) {
 	long tmp = citer_space + w[i]*h[i]*nbLayers;
 	if (tmp <= oiter_space) {
 	  citer_space = tmp;
@@ -221,17 +222,17 @@ void ITERATOR_generic(int parallelismLevels, int nbLayers,
     stop_col[p] = nCols;
   }
 
-  int hC = h[stop_octave[parallelismLevels-2]-1];
-  int cC = w[stop_octave[parallelismLevels-2]-1];
-  start_col[parallelismLevels - 1] = stop_col[parallelismLevels - 2] % cC;
-  start_line[parallelismLevels - 1] = (stop_col[parallelismLevels - 2] == cC) ? stop_line[parallelismLevels - 2] % hC: stop_line[parallelismLevels - 2] - 1;
-  start_layer[parallelismLevels - 1] = (stop_col[parallelismLevels - 2] == cC) && (stop_line[parallelismLevels - 2] == hC) ? stop_layer[parallelismLevels - 2] % nbLayers : stop_layer[parallelismLevels - 2] - 1;
-  start_octave[parallelismLevels - 1] = (stop_col[parallelismLevels - 2] == cC) && (stop_line[parallelismLevels - 2] == hC) &&  (stop_layer[parallelismLevels - 2] == nbLayers) ? stop_octave[parallelismLevels - 2] : stop_octave[parallelismLevels - 2] - 1;
+  int hC = h[stop_octave[parallelismLevel-2]-1];
+  int cC = w[stop_octave[parallelismLevel-2]-1];
+  start_col[parallelismLevel - 1] = stop_col[parallelismLevel - 2] % cC;
+  start_line[parallelismLevel - 1] = (stop_col[parallelismLevel - 2] == cC) ? stop_line[parallelismLevel - 2] % hC: stop_line[parallelismLevel - 2] - 1;
+  start_layer[parallelismLevel - 1] = (stop_col[parallelismLevel - 2] == cC) && (stop_line[parallelismLevel - 2] == hC) ? stop_layer[parallelismLevel - 2] % nbLayers : stop_layer[parallelismLevel - 2] - 1;
+  start_octave[parallelismLevel - 1] = (stop_col[parallelismLevel - 2] == cC) && (stop_line[parallelismLevel - 2] == hC) &&  (stop_layer[parallelismLevel - 2] == nbLayers) ? stop_octave[parallelismLevel - 2] : stop_octave[parallelismLevel - 2] - 1;
   
-  stop_octave[parallelismLevels - 1] = SIFT_nOctaves;
-  stop_layer[parallelismLevels - 1] = nbLayers;
-  stop_line[parallelismLevels - 1] = h[SIFT_nOctaves - 1];
-  stop_col[parallelismLevels - 1] = w[SIFT_nOctaves - 1];
+  stop_octave[parallelismLevel - 1] = nbOctaves;
+  stop_layer[parallelismLevel - 1] = nbLayers;
+  stop_line[parallelismLevel - 1] = h[nbOctaves - 1];
+  stop_col[parallelismLevel - 1] = w[nbOctaves - 1];
   
 }
 

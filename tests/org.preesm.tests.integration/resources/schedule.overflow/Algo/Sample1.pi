@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<graphml xmlns="http://graphml.graphdrawing.org/xmlns">
+    <key attr.name="parameters" for="graph" id="parameters"/>
+    <key attr.name="variables" for="graph" id="variables"/>
+    <key attr.name="arguments" for="node" id="arguments"/>
+    <key attr.name="name" attr.type="string" for="graph"/>
+    <key attr.name="graph_desc" attr.type="string" for="node"/>
+    <graph edgedefault="directed">
+        <data key="name">Sample1</data>
+        <node id="A1" kind="actor" period="0">
+            <data key="graph_desc">Code/sample/sample2.h</data>
+            <loop name="Actor1">
+                <param direction="OUT" isConfig="false"
+                    name="newPort" type="int "/>
+            </loop>
+            <port annotation="NONE" expr="3000000000"
+                kind="output" name="newPort"/>
+        </node>
+        <node id="A3" kind="actor" period="0">
+            <data key="graph_desc">Code/sample/sample2.h</data>
+            <loop name="Actor1">
+                <param direction="IN" isConfig="false"
+                    name="newPort" type="int "/>
+            </loop>
+            <port annotation="NONE" expr="6000000000"
+                kind="input" name="newPort"/>
+        </node>
+        <edge kind="fifo" source="A1" sourceport="newPort"
+            target="A3" targetport="newPort" type="int"/>
+    </graph>
+</graphml>

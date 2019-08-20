@@ -780,6 +780,7 @@ public abstract class LatencyAbc {
     this.edgeScheduler = AbstractEdgeSched.getInstance(params.getEdgeSchedType(), this.orderManager);
     this.comRouter = new CommunicationRouter(archi, scenario, this.implementation, this.edgeScheduler,
         this.orderManager);
+
   }
 
   /**
@@ -881,7 +882,7 @@ public abstract class LatencyAbc {
   }
 
   /**
-   * Asks the time keeper to update timings. Crucial and costly operation. Depending on the king of timings we want,
+   * Asks the time keeper to update timings. Crucial and costly operation. Depending on the kind of timings we want,
    * calls the necessary updates.
    */
   public void updateTimings() {

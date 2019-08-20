@@ -7,7 +7,8 @@
 #include "ordered_chained_list.h"
 
 
-void ITERATOR_detect_keypoints(int parallelismLevels,
+void ITERATOR_detect_keypoints(int parallelismLevel, int nOctaves, int nLayers,
+			       int image_width, int image_height, int imgDouble,
 			       OUT int * start_octave, OUT int * stop_octave,
 			       OUT int * start_layer, OUT int * stop_layer,
 			       OUT int * start_line,  OUT int * stop_line,
@@ -17,7 +18,8 @@ void ITERATOR_detect_keypoints(int parallelismLevels,
 #ifdef SIFT_DEBUG
   fprintf(stderr, "Enter function: %s\n", __FUNCTION__);
 #endif
-  ITERATOR_generic(parallelismLevels, SIFT_nLayers,
+  ITERATOR_generic(parallelismLevel, nOctaves, nLayers,
+		   image_width, image_height, imgDouble,
 		   start_octave, stop_octave,
 		   start_layer, stop_layer,
 		   start_line, stop_line,
@@ -49,7 +51,7 @@ float compute_orientation_hist_with_gradient(int w, int h,
   int win_radius = (int) (SIFT_ORI_RADIUS * kpt_scale);
   float exp_factor = -1.0f / (2.0f * sigma * sigma);
 
-  int r, c;
+  size_t r, c, rw;
   float magni, angle, weight;
   int bin;
   float fbin; // float point bin
@@ -61,13 +63,15 @@ float compute_orientation_hist_with_gradient(int w, int h,
     r = kptr_i + i;
     if (r <= 0 || r >= h-1) // Cannot calculate dy
       continue;
+
+    rw = r * w;
     for (int j = -win_radius; j <= win_radius; j ++) { // columns
       c = kptc_i + j;
       if (c <= 0 || c >= w-1)
 	continue;
 
-      magni = grdImage[r * w + c];
-      angle = rotImage[r * w + c];
+      magni = grdImage[rw + c];
+      angle = rotImage[rw + c];
 
       fbin = angle * SIFT_ORI_HIST_BINS / _2PI;
       weight = expf(((i-d_kptr) * (i-d_kptr) + (j-d_kptc) * (j-d_kptc)) * exp_factor);
@@ -145,7 +149,8 @@ float compute_orientation_hist_with_gradient(int w, int h,
 // Refine local keypoint extrema.
 bool refine_local_extrema(float * dogPyr,
 			  int w, int h,
-			  int nDogLayers, 
+			  int nDogLayers,
+			  int imgDouble,
 			  struct SiftKeypoint * kpt){
 
   int octave = kpt->octave;
@@ -154,8 +159,9 @@ bool refine_local_extrema(float * dogPyr,
   int c = (int)kpt->ci;
 
   float * currData = dogPyr;
-  float * lowData = dogPyr - w*h;
-  float * highData = dogPyr + w*h;
+  size_t tot_size = w*h;
+  float * lowData = dogPyr - tot_size;
+  float * highData = dogPyr + tot_size;
 
   int xs_i = 0, xr_i = 0, xc_i = 0;
   float tmp_r, tmp_c, tmp_layer;
@@ -259,7 +265,7 @@ bool refine_local_extrema(float * dogPyr,
   kpt->ri = tmp_r;
   kpt->layer_scale = SIFT_SIGMA * powf(2.0f, tmp_layer/SIFT_INTVLS);
 
-  float norm = powf(2.0f, (float) (octave - SIFT_IMG_DBL));
+  float norm = powf(2.0f, (float) (octave - imgDouble));
   // Coordinates in the normalized format (compared to the original image).
   kpt->c = tmp_c * norm;
   kpt->r = tmp_r * norm;
@@ -285,8 +291,9 @@ int compareKeypointThreshold(struct SiftKeypoint * kpt_in_list, struct SiftKeypo
 
 // Keypoint detection.
 void detect_keypoints(int nLayers, int totSizeWithoutLayers,
-		      int parallelismLevels, int nDogLayers,
-		      int nbKeypointsMax,
+		      int parallelismLevel, int nDogLayers,int nLocalKptMax,
+		      int image_width, int image_height,
+		      int nOctaves /* needed only for debug */, int imgDouble,
 		      IN float * dogPyr, IN float * grdPyr,  IN float * rotPyr, 
 		      IN int * start_octave, IN int * stop_octave,
 		      IN int * start_layer, IN int * stop_layer,
@@ -301,20 +308,16 @@ void detect_keypoints(int nLayers, int totSizeWithoutLayers,
 /* #ifdef SIFT_DEBUG */
 /*   if (*start_octave == 0 && *start_layer == 0 && *start_line == 0 && *start_col == 0) { */
 /*     char fd[512]; */
-/*     int h = SIFT_IMAGE_H; */
-/*     int w = SIFT_IMAGE_W; */
+/*     int w = image_width; */
+/*     int h = image_height; */
 /*     size_t offset = 0; */
-/*     int sizeIn = w*h; */
-/*     if (SIFT_IMG_DBL) { */
+/*     size_t sizeIn = w*h; */
+/*     if (imgDouble) { */
 /*       sizeIn *= 4; */
 /*       h *= 2; w *= 2; */
 /*     } */
-/* #if SIFT_IMG_DBL */
-/*     unsigned char buffer[SIFT_IMG_TOT*4]; */
-/* #else */
-/*     unsigned char buffer[SIFT_IMG_TOT]; */
-/* #endif */
-/*     for (int i = 0; i < SIFT_nOctaves; i ++) { */
+/*     unsigned char buffer[sizeIn]; */
+/*     for (int i = 0; i < nOctaves; i ++) { */
 /*       for (int j = 0; j < nDogLayers; j ++) { */
 /*       	sprintf(fd, "dog-%d-%d.pgm", i, j); */
 /*       	write_float_pgm(fd, dogPyr+offset, buffer, w, h, 2); */
@@ -326,31 +329,34 @@ void detect_keypoints(int nLayers, int totSizeWithoutLayers,
 /*       /\* 	write_float_pgm(fd, rotPyr+offset, buffer, w, h, 2); *\/ */
 /*       	offset += sizeIn; */
 /*       } */
-/*       sizeIn /= 4; */
-/*       h /= 2; w /= 2; */
+/*       sizeIn >>= 2; */
+/*       h >>= 1; w >>= 1; */
 /*     } */
 /*   } */
 /* #endif */
   
   struct OrderedKptList kpt_list;
-  initMemKpt(&kpt_list, keypoints);
+  struct ElementOrdList elts[nLocalKptMax];
+  initMemKpt(&kpt_list, nLocalKptMax, elts, keypoints);
   
   size_t offset_dogPyr = 0;
   size_t offset_gpyr = 0;
-  size_t w = SIFT_IMAGE_W;
-  size_t h = SIFT_IMAGE_H;
-  if (SIFT_IMG_DBL) {
+  size_t w = image_width;
+  size_t h = image_height;
+  if (imgDouble) {
     w *= 2;
     h *= 2;
   }
+  size_t tot_size = w*h;
   for (int k = 0; k < *start_octave; k++) {
-    offset_dogPyr +=  w*h*nDogLayers;
-    offset_gpyr += w*h*nLayers;
-    w /= 2;
-    h /= 2;
+    offset_dogPyr +=  tot_size*nDogLayers;
+    offset_gpyr += tot_size*nLayers;
+    w >>= 1;
+    h >>= 1;
+    tot_size >>= 2;
   }
 
-  offset_gpyr += w*h*(*start_layer);
+  offset_gpyr += tot_size*(*start_layer);
 
   struct SiftKeypoint kpt;
 
@@ -366,13 +372,12 @@ void detect_keypoints(int nLayers, int totSizeWithoutLayers,
   /* fprintf(stderr, "%d-%d\t%d-%d\t%d-%d\t%d-%d\n", *start_octave, *stop_octave, *start_layer, *stop_layer, *start_line, *stop_line, *start_col, *stop_col); */
   for (int i = *start_octave; i < *stop_octave; i ++) {
 
-    size_t image_size = h*w;
     float * lowData = dogPyr + offset_dogPyr;
-    float * currData = lowData + image_size;
-    float * highData = currData + image_size;
+    float * currData = lowData + tot_size;
+    float * highData = currData + tot_size;
 
     if (i == *start_octave) {
-      size_t layer_offset = w*h*(*start_layer);
+      size_t layer_offset = tot_size*(*start_layer);
       currData += layer_offset;
       highData += layer_offset;
       lowData += layer_offset;
@@ -391,8 +396,10 @@ void detect_keypoints(int nLayers, int totSizeWithoutLayers,
 
 	int begin_col = (i == *start_octave) && (j-1 == *start_layer) && (r == *start_line) ? *start_col : 0;
 	int end_col = (i+1 == *stop_octave) && (j == *stop_layer) && (r+1 == *stop_line) ? *stop_col : w;
+
+	size_t indexTmp = r*w;
 	for (int c = tmax_i(SIFT_IMG_BORDER, begin_col); c < tmin_i(end_col, w - SIFT_IMG_BORDER); c ++) {
-	  size_t index = r * w + c;
+	  size_t index = indexTmp + c;
 	  float val = currData[index];
 
 	  bool bExtrema = 
@@ -418,7 +425,7 @@ void detect_keypoints(int nLayers, int totSizeWithoutLayers,
 	     val < lowData[index - w - 1] && val < lowData[index - w] && val < lowData[index - w + 1] && 
 	     val < lowData[index - 1] && val < lowData[index] && val < lowData[index + 1] &&
 	     val < lowData[index + w - 1] && val < lowData[index + w ] && val < lowData[index  + w + 1]);					
-
+	  
 	  if (bExtrema) {
 	    /* nb1++; */
 	    kpt.octave = i;
@@ -426,7 +433,7 @@ void detect_keypoints(int nLayers, int totSizeWithoutLayers,
 	    kpt.ri = (float) r;
 	    kpt.ci = (float) c;
 
-	    bool bGoodKeypoint = refine_local_extrema(currData, w, h, nDogLayers, &kpt);
+	    bool bGoodKeypoint = refine_local_extrema(currData, w, h, nDogLayers, imgDouble, &kpt);
 
 	    if(!bGoodKeypoint)
 	      continue;
@@ -475,21 +482,22 @@ void detect_keypoints(int nLayers, int totSizeWithoutLayers,
 	  }
 	}
       }
-      currData += image_size;
-      highData += image_size;
-      lowData += image_size;
-      offset_gpyr += image_size;
+      currData += tot_size;
+      highData += tot_size;
+      lowData += tot_size;
+      offset_gpyr += tot_size;
     }
-    offset_dogPyr += image_size*nDogLayers;
-    w /= 2;
-    h /= 2;
+    offset_dogPyr += tot_size*nDogLayers;
+    w >>= 1;
+    h >>= 1;
+    tot_size >>= 2;
   }
 
   //  *nbKeypoints = getSizeKpt(&kpt_list);
   // last keypoint is void and is used to store the number of keypoints detected in the octave attribute
-  keypoints[SIFT_localKPTmax].octave = getSizeKpt(&kpt_list);
+  keypoints[nLocalKptMax].octave = getSizeKpt(&kpt_list);
   
-  //  fprintf(stderr, "keypoints detected: %d\n", *nbKeypoints);
+  /* fprintf(stderr, "keypoints detected: %d\n", keypoints[nLocalKptMax].octave); */
 
   /* fprintf(stderr, "nb1: %d\tnb2: %d\n", nb1, nb2); */
   /* for (int i = 0; i < getSizeKpt(&kpt_list); i++) { */

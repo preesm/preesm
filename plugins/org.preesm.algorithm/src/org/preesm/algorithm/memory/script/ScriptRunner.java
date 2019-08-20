@@ -1270,8 +1270,10 @@ public class ScriptRunner {
       // Largest buffer first
       final long size = (a.minIndex - a.maxIndex) - (b.minIndex - b.maxIndex);
       // Alphabetical order for buffers of equal size
-      if (size != 0) {
-        return (int) size;
+      if (size > 0) {
+        return 1;
+      } else if (size < 0) {
+        return -1;
       } else {
         final int nameRes = a.dagVertex.getName().compareTo(b.dagVertex.getName());
         return (nameRes != 0) ? nameRes : a.name.compareTo(b.name);
@@ -1458,7 +1460,7 @@ public class ScriptRunner {
   /**
   *
   */
-  public ScriptRunner(final int alignment) {
+  public ScriptRunner(final long alignment) {
     // kdesnos: Data alignment is supposed to be equivalent
     // to no alignment from the script POV. (not 100% sure of this)
     this.alignment = (alignment <= 0) ? -1 : alignment;
@@ -1498,9 +1500,9 @@ public class ScriptRunner {
    * <li>{@link DAGVertex Vertices} of the same group are strongly connected via {@link DAGEdge FIFOs}</li>
    * </ul>
    * The {@link #scriptResults} attribute of the calling {@link ScriptRunner} are updated by this method. In particular,
-   * a {@link Buffer#matchWith(int,Buffer,int,int) match} is added between buffers of different actors that correspond
-   * to the same SDFEdges. This method must be called after {@link ScriptRunner#identifyDivisibleBuffer()} as it set to
-   * indivisible the buffers that are on the border of groups.
+   * a {@link Buffer#matchWith(long,Buffer,long,long) match} is added between buffers of different actors that
+   * correspond to the same SDFEdges. This method must be called after {@link ScriptRunner#identifyDivisibleBuffer()} as
+   * it set to indivisible the buffers that are on the border of groups.
    *
    * @return a {@link List} of groups. Each group is itself a {@link List} of {@link DAGVertex}.
    */
@@ -1954,8 +1956,15 @@ public class ScriptRunner {
         }
 
         // Sort mObjRoots in order of contiguous ranges
-        Collections.sort(mObjRoots,
-            (m1, m2) -> (int) (m1.getValue().getKey().getStart() - m2.getValue().getKey().getStart()));
+        Collections.sort(mObjRoots, (m1, m2) -> {
+          long dif = m1.getValue().getKey().getStart() - m2.getValue().getKey().getStart();
+          if (dif > 0) {
+            return 1;
+          } else if (dif < 0) {
+            return -1;
+          }
+          return 0;
+        });
       }
     }
     //
