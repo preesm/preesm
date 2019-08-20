@@ -3,6 +3,7 @@ package org.preesm.algorithm.model.schedule.util;
 import java.util.LinkedList;
 import java.util.List;
 import org.preesm.algorithm.schedule.model.HierarchicalSchedule;
+import org.preesm.algorithm.schedule.model.ParallelHiearchicalSchedule;
 import org.preesm.algorithm.schedule.model.Schedule;
 import org.preesm.algorithm.schedule.model.SequentialHiearchicalSchedule;
 
@@ -26,8 +27,13 @@ public class ScheduleFlattener implements IScheduleTransform {
       hierSchedule.getChildren().clear();
       for (Schedule child : childSchedules) {
         Schedule processesChild = performTransform(child);
+        // Sequential flattening
         if ((hierSchedule instanceof SequentialHiearchicalSchedule) && (child instanceof SequentialHiearchicalSchedule)
             && (child.getRepetition() == 1)) {
+          hierSchedule.getChildren().addAll(processesChild.getChildren());
+          // Parallel flattening
+        } else if ((hierSchedule instanceof ParallelHiearchicalSchedule)
+            && (child instanceof ParallelHiearchicalSchedule) && (child.getRepetition() == 1)) {
           hierSchedule.getChildren().addAll(processesChild.getChildren());
         } else {
           hierSchedule.getChildren().add(processesChild);
