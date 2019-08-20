@@ -35,6 +35,7 @@ PREESM Changelog
 * Fix #189
 * Fix #193
 * Fix scheduling of graphs with large data rates.
+* Fix optimizations of PiSDF flattening task.
 
 ## Release version 3.14.1
 *2019.07.25*
