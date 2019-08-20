@@ -97,7 +97,7 @@ public class PiSDFMergeabilty {
     }
 
     // Compute cluster repetition
-    List<AbstractVertex> actorList = new LinkedList<>();
+    List<AbstractActor> actorList = new LinkedList<>();
     actorList.add(x);
     actorList.add(y);
     long clusterRepetition = MathFunctionsHelper.gcd(CollectionUtil.mapGetAll(brv, actorList));
