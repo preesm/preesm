@@ -114,6 +114,15 @@ public abstract class PiSDFSuccessorSwitch extends PiMMSwitch<Boolean> {
 
   /**
    *
+   * @author dgageot
+   *
+   */
+  static class MoreThanOneSimplePathException extends RuntimeException {
+    private static final long serialVersionUID = 8123950588521527792L;
+  }
+
+  /**
+   *
    * @author anmorvan
    *
    */
@@ -130,6 +139,43 @@ public abstract class PiSDFSuccessorSwitch extends PiMMSwitch<Boolean> {
         throw new SuccessorFoundException();
       }
       return super.caseAbstractActor(actor);
+    }
+
+  }
+
+  /**
+   *
+   * @author dgageot
+   *
+   */
+  static class IsMoreThanOneSimplePathSwitch extends PiSDFSuccessorSwitch {
+    private final AbstractActor potentialSucc;
+
+    private long pathCount;
+
+    public IsMoreThanOneSimplePathSwitch(final AbstractActor potentialSucc) {
+      this.potentialSucc = potentialSucc;
+      this.pathCount = 0;
+    }
+
+    @Override
+    public Boolean caseAbstractActor(final AbstractActor actor) {
+      if (actor.equals(this.potentialSucc)) {
+        this.pathCount = this.pathCount + 1;
+        if (this.pathCount > 1) {
+          throw new MoreThanOneSimplePathException();
+        }
+      }
+      return super.caseAbstractActor(actor);
+    }
+
+    @Override
+    public Boolean caseFifo(final Fifo fifo) {
+      // If there is a delay on fifo, stop here
+      if (fifo.getDelay() != null) {
+        return true;
+      }
+      return super.caseFifo(fifo);
     }
 
   }
