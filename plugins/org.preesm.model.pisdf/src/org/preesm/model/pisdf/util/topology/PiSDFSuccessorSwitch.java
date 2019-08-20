@@ -116,6 +116,10 @@ public abstract class PiSDFSuccessorSwitch extends PiMMSwitch<Boolean> {
    *
    * @author anmorvan
    *
+   *         Package visible helper switch that throws a {@link SuccessorFoundException} when an actor equals to the
+   *         local attribute is encountered while visiting the successors of the subject of the switch. See
+   *         {@link PiSDFTopologyHelper#isSuccessor(AbstractActor, AbstractActor)} for usage.
+   *
    */
   static class IsSuccessorSwitch extends PiSDFSuccessorSwitch {
     private final AbstractActor potentialPred;
