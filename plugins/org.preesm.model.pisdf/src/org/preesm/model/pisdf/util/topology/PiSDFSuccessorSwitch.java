@@ -50,7 +50,7 @@ import org.preesm.model.pisdf.util.PiMMSwitch;
  */
 public abstract class PiSDFSuccessorSwitch extends PiMMSwitch<Boolean> {
 
-  private final List<AbstractActor> visitedElements = new ArrayList<>();
+  protected final List<AbstractActor> visitedElements = new ArrayList<>();
 
   @Override
   public Boolean caseAbstractActor(final AbstractActor actor) {
@@ -151,22 +151,30 @@ public abstract class PiSDFSuccessorSwitch extends PiMMSwitch<Boolean> {
   static class IsMoreThanOneSimplePathSwitch extends PiSDFSuccessorSwitch {
     private final AbstractActor potentialSucc;
 
-    private long pathCount;
+    private long fifoCount;
 
     public IsMoreThanOneSimplePathSwitch(final AbstractActor potentialSucc) {
       this.potentialSucc = potentialSucc;
-      this.pathCount = 0;
+      this.fifoCount = 0;
     }
 
     @Override
     public Boolean caseAbstractActor(final AbstractActor actor) {
       if (actor.equals(this.potentialSucc)) {
-        this.pathCount = this.pathCount + 1;
-        if (this.pathCount > 1) {
+        if (this.fifoCount > 1) {
           throw new MoreThanOneSimplePathException();
         }
+        return true;
       }
-      return super.caseAbstractActor(actor);
+      if (!this.visitedElements.contains(actor)) {
+        this.visitedElements.add(actor);
+        long tempFifoCount = this.fifoCount;
+        for (DataOutputPort dop : actor.getDataOutputPorts()) {
+          this.fifoCount = tempFifoCount;
+          doSwitch(dop);
+        }
+      }
+      return true;
     }
 
     @Override
@@ -175,7 +183,13 @@ public abstract class PiSDFSuccessorSwitch extends PiMMSwitch<Boolean> {
       if (fifo.getDelay() != null) {
         return true;
       }
+      this.fifoCount = this.fifoCount + 1;
       return super.caseFifo(fifo);
+    }
+
+    @Override
+    public Boolean casePiGraph(final PiGraph graph) {
+      return caseAbstractActor(graph);
     }
 
   }
