@@ -22,6 +22,7 @@ PREESM Changelog
 * Hardware Codegen Refactor: CHardwarePrinter extends now the CPrinter and override some of the methods;
 * SPiDER codegen considers empty PAPIFY configs as papify=false;
 * Update round buffer memory script to handle multiple inputs;
+* Schedule: Add an interface to perform transform
 
 ### Bug fix
 * fix #186
