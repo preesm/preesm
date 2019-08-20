@@ -647,7 +647,7 @@ public class SpiderCodegen {
     append("\t/* === Create Archi === */\n\n");
     append("\tauto *archi = Spider::createArchi(config);\n\n");
     if (!this.scenario.getEnergyConfig().getPlatformPower().isEmpty()) {
-      double basePower = this.scenario.getEnergyConfig().getPlatformPower().get("Base");
+      double basePower = this.scenario.getEnergyConfig().getPePowerOrDefault("Base");
       append("\t/* === Add base energy === */\n\n");
       append("\tSpider::setBasePower(" + basePower + ");\n\n");
     }
@@ -672,6 +672,10 @@ public class SpiderCodegen {
             + "\t\tstatic_cast<std::uint32_t>(PEVirtID::" + coreName + "),\n" + "\t\t\"" + coreType + "-"
             + c.getInstanceName() + "\",\n" + "\t\tSpiderPEType::LRT_PE,\n" + "\t\tSpiderHWType::PHYS_PE);\n");
         append("\tSpider::setPEMemoryUnit(" + peName + ", shMem);\n");
+        if (!this.scenario.getEnergyConfig().getPlatformPower().isEmpty()) {
+          double pePower = this.scenario.getEnergyConfig().getPePowerOrDefault(coreType.getVlnv().getName());
+          append("\tSpider::setPEPower(" + peName + ", " + pePower + ");\n");
+        }
       }
       append("\n\t/* === Set Spider GRT core === */\n\n");
       append("\tSpider::setSpiderGRTVirtualID(archi, static_cast<std::uint32_t>(PEVirtID::"

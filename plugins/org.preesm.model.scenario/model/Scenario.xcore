@@ -637,6 +637,13 @@ class PapiCpuID {
 		createNewCommNodeIfNeeded(source)		
 		commsEnergy.get(source).put(destination, energy)
 	}
+	op Double getPePowerOrDefault(String componentName){
+		if (this.platformPower.containsKey(componentName)) {
+			return this.platformPower.get(componentName)
+		}
+		var double value = ScenarioConstants.DEFAULT_POWER_PE.value
+		return value		
+	}
  }
  class PerformanceObjective{
  	double objectiveEPS
