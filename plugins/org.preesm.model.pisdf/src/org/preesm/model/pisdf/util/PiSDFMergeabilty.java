@@ -40,8 +40,9 @@ import java.util.List;
 import java.util.Map;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
-import org.apache.commons.math3.util.ArithmeticUtils;
+import org.preesm.commons.CollectionUtil;
 import org.preesm.commons.exceptions.PreesmRuntimeException;
+import org.preesm.commons.math.MathFunctionsHelper;
 import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.AbstractVertex;
 import org.preesm.model.pisdf.DataInputPort;
@@ -62,35 +63,6 @@ import org.preesm.model.pisdf.util.topology.PiSDFTopologyHelper;
  *
  */
 public class PiSDFMergeabilty {
-
-  /**
-   * Used to get great common divisor repetition count of a list of actors
-   * 
-   * @param actorList
-   *          actor to compute gcd repetition from
-   * @param repetitionVector
-   *          repetition vector of corresponding graph
-   * 
-   * @return gcd repetition count
-   */
-  public static final long computeGcdRepetition(List<AbstractActor> actorList,
-      Map<AbstractVertex, Long> repetitionVector) {
-    // Retrieve all repetition value
-    List<Long> actorsRepetition = new LinkedList<>();
-    for (AbstractActor a : actorList) {
-      if (repetitionVector.containsKey(a)) {
-        actorsRepetition.add(repetitionVector.get(a));
-      } else {
-        throw new PreesmRuntimeException("ClusteringHelper: Repetition vector does not contains key of " + a.getName());
-      }
-    }
-    // Compute gcd
-    long clusterRepetition = actorsRepetition.get(0);
-    for (int i = 1; i < actorsRepetition.size(); i++) {
-      clusterRepetition = ArithmeticUtils.gcd(clusterRepetition, actorsRepetition.get(i));
-    }
-    return clusterRepetition;
-  }
 
   /**
    * 
@@ -125,10 +97,10 @@ public class PiSDFMergeabilty {
     }
 
     // Compute cluster repetition
-    List<AbstractActor> actorList = new LinkedList<>();
+    List<AbstractVertex> actorList = new LinkedList<>();
     actorList.add(x);
     actorList.add(y);
-    long clusterRepetition = computeGcdRepetition(actorList, brv);
+    long clusterRepetition = MathFunctionsHelper.gcd(CollectionUtil.mapGetAll(brv, actorList));
 
     boolean result = true;
     boolean delayInside = false;
