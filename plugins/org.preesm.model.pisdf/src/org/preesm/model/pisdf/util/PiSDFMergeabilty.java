@@ -35,6 +35,7 @@
  */
 package org.preesm.model.pisdf.util;
 
+import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -97,10 +98,7 @@ public class PiSDFMergeabilty {
     }
 
     // Compute cluster repetition
-    List<AbstractActor> actorList = new LinkedList<>();
-    actorList.add(x);
-    actorList.add(y);
-    long clusterRepetition = MathFunctionsHelper.gcd(CollectionUtil.mapGetAll(brv, actorList));
+    long clusterRepetition = MathFunctionsHelper.gcd(CollectionUtil.mapGetAll(brv, Arrays.asList(x, y)));
 
     boolean result = true;
     boolean delayInside = false;
