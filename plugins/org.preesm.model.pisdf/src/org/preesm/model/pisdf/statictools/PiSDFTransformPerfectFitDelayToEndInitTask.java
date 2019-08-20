@@ -40,7 +40,7 @@ public class PiSDFTransformPerfectFitDelayToEndInitTask extends AbstractTaskImpl
 
   @Override
   public String monitorMessage() {
-    return "Starting Execution of PiSDF Delay Replacement ";
+    return "Starting Execution of PiSDF Transform Perfect Fit Delay To End/Init";
   }
 
 }
