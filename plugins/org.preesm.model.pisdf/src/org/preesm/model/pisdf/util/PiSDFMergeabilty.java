@@ -37,12 +37,21 @@ package org.preesm.model.pisdf.util;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
+import org.apache.commons.math3.util.ArithmeticUtils;
+import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.preesm.model.pisdf.AbstractActor;
+import org.preesm.model.pisdf.AbstractVertex;
+import org.preesm.model.pisdf.DataInputPort;
 import org.preesm.model.pisdf.DataOutputPort;
+import org.preesm.model.pisdf.Delay;
+import org.preesm.model.pisdf.Fifo;
 import org.preesm.model.pisdf.InterfaceActor;
 import org.preesm.model.pisdf.PiGraph;
+import org.preesm.model.pisdf.brv.BRVMethod;
+import org.preesm.model.pisdf.brv.PiBRV;
 import org.preesm.model.pisdf.util.topology.PiSDFTopologyHelper;
 
 /**
@@ -56,22 +65,169 @@ import org.preesm.model.pisdf.util.topology.PiSDFTopologyHelper;
 public class PiSDFMergeabilty {
 
   /**
-   * Used to check if these actors are mergeable i.e. do not introduce cycle if clustered
-   *
-   * @param a
-   *          first actor
-   * @param b
-   *          second actor
-   * @return true if the couple is mergeable
+   * Used to get great common divisor repetition count of a list of actors
+   * 
+   * @param actorList
+   *          actor to compute gcd repetition from
+   * @param repetitionVector
+   *          repetition vector of corresponding graph
+   * 
+   * @return gcd repetition count
    */
-  public static boolean isMergeable(final AbstractActor a, final AbstractActor b) {
-    final List<AbstractActor> predA = PiSDFTopologyHelper.getPredecessors(a);
-    final List<AbstractActor> predB = PiSDFTopologyHelper.getPredecessors(b);
-    final List<AbstractActor> succA = PiSDFTopologyHelper.getSuccessors(a);
-    final List<AbstractActor> succB = PiSDFTopologyHelper.getSuccessors(b);
-    predA.retainAll(succB);
-    predB.retainAll(succA);
-    return predA.isEmpty() && predB.isEmpty();
+  public static final long computeGcdRepetition(List<AbstractActor> actorList,
+      Map<AbstractVertex, Long> repetitionVector) {
+    // Retrieve all repetition value
+    List<Long> actorsRepetition = new LinkedList<>();
+    for (AbstractActor a : actorList) {
+      if (repetitionVector.containsKey(a)) {
+        actorsRepetition.add(repetitionVector.get(a));
+      } else {
+        throw new PreesmRuntimeException("ClusteringHelper: Repetition vector does not contains key of " + a.getName());
+      }
+    }
+    // Compute gcd
+    long clusterRepetition = actorsRepetition.get(0);
+    for (int i = 1; i < actorsRepetition.size(); i++) {
+      clusterRepetition = ArithmeticUtils.gcd(clusterRepetition, actorsRepetition.get(i));
+    }
+    return clusterRepetition;
+  }
+
+  /**
+   * Used to check if these actors do not introduce cycle if clustered
+   *
+   * @param x
+   *          first actor
+   * @param y
+   *          second actor
+   * @return true if the couple does not introduce cycle
+   */
+  public static boolean isCycleIntroductionConditionValid(final AbstractActor x, final AbstractActor y) {
+    final List<AbstractActor> predX = PiSDFTopologyHelper.getPredecessors(x);
+    final List<AbstractActor> predY = PiSDFTopologyHelper.getPredecessors(y);
+    final List<AbstractActor> succX = PiSDFTopologyHelper.getSuccessors(x);
+    final List<AbstractActor> succY = PiSDFTopologyHelper.getSuccessors(y);
+    predX.retainAll(succY);
+    predY.retainAll(succX);
+    return predX.isEmpty() && predY.isEmpty();
+  }
+
+  /**
+   * @param x
+   *          first actor
+   * @param y
+   *          second actor
+   * @param brv
+   *          repetition vector
+   * @return true if condition is verified
+   */
+  public static boolean isPrecedenceShiftConditionValid(AbstractActor x, AbstractActor y,
+      Map<AbstractVertex, Long> brv) {
+
+    List<Fifo> incomingFifos = new LinkedList<>();
+    List<Fifo> outgoingFifos = new LinkedList<>();
+
+    for (DataInputPort dip : x.getDataInputPorts()) {
+      // Add all incoming fifo that are not contained in the future cluster
+      if (dip.getIncomingFifo().getSource() != y) {
+        incomingFifos.add(dip.getIncomingFifo());
+      }
+    }
+
+    for (DataOutputPort dop : x.getDataOutputPorts()) {
+      // Add all outgoing fifo that are not contained in the future cluster
+      if (dop.getOutgoingFifo().getTarget() != y) {
+        outgoingFifos.add(dop.getOutgoingFifo());
+      }
+    }
+
+    // Compute cluster repetition
+    List<AbstractActor> actorList = new LinkedList<>();
+    actorList.add(x);
+    actorList.add(y);
+    long clusterRepetition = computeGcdRepetition(actorList, brv);
+
+    for (Fifo incomingFifo : incomingFifos) {
+      long prod = incomingFifo.getSourcePort().getExpression().evaluate();
+      long cons = incomingFifo.getTargetPort().getExpression().evaluate();
+      long xRepetition = brv.get(x) / clusterRepetition;
+      Delay delay = incomingFifo.getDelay();
+      long delayValue;
+      if (delay == null) {
+        delayValue = 0;
+      } else {
+        delayValue = delay.getExpression().evaluate();
+      }
+      long k1 = prod / (xRepetition * cons);
+      long k2 = delayValue / (xRepetition * cons);
+      // Precedence shift condition verification
+      if (!((k1 == (int) (k1)) && (k2 == (int) (k2)) && (k1 > 0) && (k2 >= 0))) {
+        return false;
+      }
+    }
+
+    for (Fifo outgoingFifo : outgoingFifos) {
+      double prod = outgoingFifo.getSourcePort().getExpression().evaluate();
+      double cons = outgoingFifo.getTargetPort().getExpression().evaluate();
+      double xRepetition = brv.get(x) / clusterRepetition;
+      Delay delay = outgoingFifo.getDelay();
+      double delayValue;
+      if (delay == null) {
+        delayValue = 0;
+      } else {
+        delayValue = delay.getExpression().evaluate();
+      }
+      double k1 = cons / (xRepetition * prod);
+      double k2 = delayValue / (xRepetition * prod);
+      // Precedence shift condition verification
+      if (!((k1 == (int) (k1)) && (k2 == (int) (k2)) && (k1 > 0) && (k2 >= 0))) {
+        return false;
+      }
+    }
+
+    return true;
+  }
+
+  /**
+   * @param x
+   *          first actor
+   * @param y
+   *          second actor
+   * @param brv
+   *          repetitionVector
+   * @return true if condition is verified
+   */
+  public static boolean isHiddenDelayConditionValid(AbstractActor x, AbstractActor y, Map<AbstractVertex, Long> brv) {
+
+    List<Fifo> outgoingFifos = new LinkedList<>();
+
+    for (DataOutputPort dop : x.getDataOutputPorts()) {
+      // Add all outgoing fifo that are not contained in the future cluster
+      if (dop.getOutgoingFifo().getDelay() == null) {
+        outgoingFifos.add(dop.getOutgoingFifo());
+      }
+    }
+
+    long k1 = brv.get(x) / brv.get(y);
+    long k2 = brv.get(y) / brv.get(x);
+    return !outgoingFifos.isEmpty() && ((k1 == (int) (k1)) || (k2 == (int) (k2)));
+  }
+
+  /**
+   * @param x
+   *          first actor
+   * @param y
+   *          second actor
+   * @param brv
+   *          repetition vector
+   * @return true if mergeability is verified
+   */
+  public static boolean isMergeable(AbstractActor x, AbstractActor y, Map<AbstractVertex, Long> brv) {
+    boolean cycleIntroduction = isCycleIntroductionConditionValid(x, y);
+    boolean hiddenDelay = isHiddenDelayConditionValid(x, y, brv);
+    // boolean precedenceShiftA = isPrecedenceShiftConditionValid(x, y, brv);
+    // boolean precedenceShiftB = isPrecedenceShiftConditionValid(y, x, brv);
+    return cycleIntroduction && hiddenDelay; // && precedenceShiftA && precedenceShiftB;
   }
 
   /**
@@ -84,14 +240,17 @@ public class PiSDFMergeabilty {
    */
   public static List<Pair<AbstractActor, AbstractActor>> getConnectedCouple(final PiGraph graph) {
     List<Pair<AbstractActor, AbstractActor>> listCouple = new LinkedList<>();
-    List<AbstractActor> graphActors = graph.getActors();
+    List<AbstractActor> graphActors = new LinkedList<>();
+    graphActors.addAll(graph.getActors());
+    graphActors.removeAll(graph.getDelayActors());
+    Map<AbstractVertex, Long> brv = PiBRV.compute(graph, BRVMethod.LCM);
 
     // Get every mergeable connected-couple
     for (AbstractActor a : graphActors) {
       for (DataOutputPort dop : a.getDataOutputPorts()) {
         AbstractActor b = dop.getOutgoingFifo().getTargetPort().getContainingActor();
         // Verify that actor are connected together
-        if (PiSDFMergeabilty.isMergeable(a, b) && !(b instanceof InterfaceActor)) {
+        if (PiSDFMergeabilty.isMergeable(a, b, brv) && !(b instanceof InterfaceActor) && (b != a)) {
           Pair<AbstractActor, AbstractActor> couple = new ImmutablePair<>(a, b);
           listCouple.add(couple);
         }
