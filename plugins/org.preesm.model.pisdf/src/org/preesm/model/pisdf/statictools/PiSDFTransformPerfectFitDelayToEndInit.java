@@ -20,26 +20,26 @@ import org.preesm.model.pisdf.factory.PiMMUserFactory;
  * @author dgageot
  *
  */
-public class PiSDFDelayReplacement {
+public class PiSDFTransformPerfectFitDelayToEndInit {
 
   final PiGraph inputGraph;
 
-  public PiSDFDelayReplacement(PiGraph inputGraph) {
+  public PiSDFTransformPerfectFitDelayToEndInit(PiGraph inputGraph) {
     this.inputGraph = inputGraph;
   }
 
   /**
    * @return
    */
-  public PiGraph replaceDelay() {
+  public PiGraph replacePerfectFitDelay() {
     // Perform copy of input graph
-    // PiGraph copyGraph = PiMMUserFactory.instance.copyPiGraphWithHistory(inputGraph);
-    inputGraph.setName(inputGraph.getName() + "_undelayed");
+    PiGraph copyGraph = PiMMUserFactory.instance.copyPiGraphWithHistory(inputGraph);
+    copyGraph.setName(inputGraph.getName() + "_without_perfect_fit");
     // Compute BRV
     Map<AbstractVertex, Long> brv = PiBRV.compute(inputGraph, BRVMethod.LCM);
     // Process on delay that are pipeline
     List<Delay> delays = new LinkedList<>();
-    delays.addAll(inputGraph.getAllDelays());
+    delays.addAll(copyGraph.getAllDelays());
     for (Delay delay : delays) {
       // Retrieve output and input port
       Fifo fifo = delay.getContainingFifo();
@@ -49,7 +49,7 @@ public class PiSDFDelayReplacement {
       long delayTokens = delay.getExpression().evaluate();
       long sourceTokens = brv.get(sourceOutput.getContainingActor()) * sourceOutput.getExpression().evaluate();
       long targetTokens = brv.get(targetInput.getContainingActor()) * targetInput.getExpression().evaluate();
-      // Verify that it is a pipeline
+      // Verify that it is a perfect fit delay
       if ((delayTokens == sourceTokens) && (delayTokens == targetTokens)) {
         // Create InitActor and EndActor
         InitActor initActor = PiMMUserFactory.instance.createInitActor();
@@ -74,19 +74,19 @@ public class PiSDFDelayReplacement {
         String dataType = fifo.getType();
         Fifo sourceFifo = PiMMUserFactory.instance.createFifo(sourceOutput, endActor.getDataInputPort(), dataType);
         Fifo targetFifo = PiMMUserFactory.instance.createFifo(initActor.getDataOutputPort(), targetInput, dataType);
-        inputGraph.addActor(initActor);
-        inputGraph.addActor(endActor);
-        inputGraph.addFifo(sourceFifo);
-        inputGraph.addFifo(targetFifo);
+        copyGraph.addActor(initActor);
+        copyGraph.addActor(endActor);
+        copyGraph.addFifo(sourceFifo);
+        copyGraph.addFifo(targetFifo);
         for (ConfigInputPort cip : delay.getConfigInputPorts()) {
-          inputGraph.getEdges().remove(cip.getIncomingDependency());
+          copyGraph.getEdges().remove(cip.getIncomingDependency());
         }
-        inputGraph.removeDelay(delay);
-        inputGraph.removeFifo(fifo);
+        copyGraph.removeDelay(delay);
+        copyGraph.removeFifo(fifo);
       }
     }
 
-    return inputGraph;
+    return copyGraph;
   }
 
 }
