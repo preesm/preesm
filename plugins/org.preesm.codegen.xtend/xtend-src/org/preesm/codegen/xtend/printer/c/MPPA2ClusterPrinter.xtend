@@ -264,16 +264,15 @@ class MPPA2ClusterPrinter extends DefaultPrinter {
 			if(block2.nbIter > 1 && this.sharedOnly == 0){
 				gets += "#pragma omp parallel for private(" + block2.iter.name + ")\n"
 			}
-			gets += "for(" + block2.iter.name + "=0;" + block2.iter.name +"<" + block2.nbIter + ";" + block2.iter.name + "++){\n"
+			gets += "for(" + block2.iter.name + "=0;" + block2.iter.name +"<" + block2.nbIter + ";" + block2.iter.name + "++) {"
 
 			if(local_offset > local_buffer_size)
 				local_buffer_size = local_offset
 	gets}»
-
-	'''
+			
+			'''
 
 	override printFiniteLoopBlockFooter(FiniteLoopBlock block2) '''
-
 			}// End the for loop
 		«{
 				var puts = ""

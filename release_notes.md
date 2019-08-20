@@ -25,6 +25,9 @@ PREESM Changelog
 * SPiDER codegen considers empty PAPIFY configs as papify=false;
 * Update round buffer memory script to handle multiple inputs;
 * Schedule: Add an interface to perform transform
+* Codegen:
+  * Add IteratedBuffer, ClusterBlock, SectionBlock for clustering codegen
+  * Add conditional "#pragma omp parallel for" on FiniteLoopBlock
 
 ### Bug fix
 * fix #186

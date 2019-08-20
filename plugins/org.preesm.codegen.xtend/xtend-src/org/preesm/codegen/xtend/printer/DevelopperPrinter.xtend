@@ -69,6 +69,9 @@ import org.preesm.codegen.model.Variable
 import org.preesm.codegen.printer.CodegenAbstractPrinter
 import org.preesm.codegen.model.DistributedMemoryCommunication
 import org.preesm.codegen.model.PapifyFunctionCall
+import org.preesm.codegen.model.IteratedBuffer
+import org.preesm.codegen.model.ClusterBlock
+import org.preesm.codegen.model.SectionBlock
 
 /**
  * This {@link DevelopperPrinter} is a dummy implementation of the
@@ -170,6 +173,14 @@ class DevelopperPrinter extends CodegenAbstractPrinter {
 
 	override printFiniteLoopBlockHeader(FiniteLoopBlock block) '''<Finite_Loop_Block_Head>'''
 
+	override printClusterBlockFooter(ClusterBlock block) '''<Cluster_Block_Foot>'''
+
+	override printClusterBlockHeader(ClusterBlock block) '''<Cluster_Block_Head>'''
+	
+	override printSectionBlockFooter(SectionBlock block) '''<Section_Block_Foot>'''
+
+	override printSectionBlockHeader(SectionBlock block) '''<Section_Block_Head>'''
+
 	override printNullBuffer(NullBuffer nullBuffer) '''<NullBuffer>'''
 
 	override printNullBufferDeclaration(NullBuffer buffer) '''<NullBuffer_Declaration>'''
@@ -201,6 +212,8 @@ class DevelopperPrinter extends CodegenAbstractPrinter {
 	override printBufferIteratorDeclaration(BufferIterator bufferIterator) '''<BufferIterator_Declaration>'''
 
 	override printBufferIteratorDefinition(BufferIterator bufferIterator) '''<BufferIterator_Definition>'''
+	
+	override printIteratedBuffer(IteratedBuffer iteratedBuffer) '''<IteratedBuffer>'''
 	
 	override printDataTansfer(DataTransferAction action) '''<Data_Transfer>'''
 	

@@ -83,6 +83,9 @@ import org.preesm.codegen.printer.DefaultPrinter
 import org.preesm.commons.exceptions.PreesmRuntimeException
 import org.preesm.commons.files.PreesmResourcesHelper
 import org.preesm.model.pisdf.util.CHeaderUsedLocator
+import org.preesm.codegen.model.IteratedBuffer
+import org.preesm.codegen.model.ClusterBlock
+import org.preesm.codegen.model.SectionBlock
 
 /**
  * This printer is currently used to print C code only for GPP processors
@@ -221,17 +224,43 @@ class CPrinter extends DefaultPrinter {
 
 	//#pragma omp parallel for private(«block2.iter.name»)
 	override printFiniteLoopBlockHeader(FiniteLoopBlock block2) '''
-
 		// Begin the for loop
 		{
 			int «block2.iter.name»;
-			for(«block2.iter.name»=0;«block2.iter.name»<«block2.nbIter»;«block2.iter.name»++){
-
-	'''
+			«IF block2.parallel.equals(true)»
+			#pragma omp parallel for private(«block2.iter.name»)
+			«ENDIF»
+			for(«block2.iter.name»=0;«block2.iter.name»<«block2.nbIter»;«block2.iter.name»++) {
+				
+				'''
 
 	override printFiniteLoopBlockFooter(FiniteLoopBlock block2) '''
+			}
 		}
-	}
+	'''
+
+	override printClusterBlockHeader(ClusterBlock block) '''
+		// Cluster: «block.name»
+		// Schedule: «block.schedule»
+		«IF block.parallel.equals(true)»
+		#pragma omp parallel sections
+		«ENDIF»
+		{
+			
+			'''
+
+	override printClusterBlockFooter(ClusterBlock block) '''
+		}
+	'''
+
+	override printSectionBlockHeader(SectionBlock block) '''
+		#pragma omp section
+		{
+			
+			'''
+
+	override printSectionBlockFooter(SectionBlock block) '''
+		}
 	'''
 
 	override String printFifoCall(FifoCall fifoCall) {
@@ -637,6 +666,8 @@ class CPrinter extends DefaultPrinter {
 	override printBufferIteratorDeclaration(BufferIterator bufferIterator) ''''''
 
 	override printBufferIteratorDefinition(BufferIterator bufferIterator) ''''''
+
+	override printIteratedBuffer(IteratedBuffer iteratedBuffer) '''«doSwitch(iteratedBuffer.buffer)» + «printIntVar(iteratedBuffer.iter)» * «iteratedBuffer.size»'''
 
 	override printIntVar(IntVar intVar) '''«intVar.name»'''
 

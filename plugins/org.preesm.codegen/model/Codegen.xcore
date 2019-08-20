@@ -201,6 +201,14 @@ class CoreBlock extends Block {
 	unordered id int coreID
 }
 
+class ClusterBlock extends Block {
+	String schedule
+	boolean parallel
+}
+
+class SectionBlock extends Block {
+}
+
 class ActorBlock extends Block {
 	refers LoopBlock loopBlock
 	refers CallBlock initBlock
@@ -299,6 +307,7 @@ type range wraps org.preesm.algorithm.memory.script.Range
 
 class FiniteLoopBlock extends LoopBlock {
 	int nbIter
+	boolean parallel
 	refers IntVar iter
 	refers BufferIterator[] inBuffers
 	refers BufferIterator[] outBuffers
@@ -309,6 +318,11 @@ class IntVar extends Variable {
 
 class BufferIterator extends SubBuffer {
 	long iterSize
+	refers IntVar iter
+}
+
+class IteratedBuffer extends Buffer {
+	refers Buffer buffer
 	refers IntVar iter
 }
 
