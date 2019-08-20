@@ -41,7 +41,9 @@ import java.util.List;
 import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.util.topology.PiSDFPredecessorSwitch.IsPredecessorSwitch;
 import org.preesm.model.pisdf.util.topology.PiSDFPredecessorSwitch.PredecessorFoundException;
+import org.preesm.model.pisdf.util.topology.PiSDFSuccessorSwitch.IsMoreThanOneSimplePathSwitch;
 import org.preesm.model.pisdf.util.topology.PiSDFSuccessorSwitch.IsSuccessorSwitch;
+import org.preesm.model.pisdf.util.topology.PiSDFSuccessorSwitch.MoreThanOneSimplePathException;
 import org.preesm.model.pisdf.util.topology.PiSDFSuccessorSwitch.SuccessorFoundException;
 
 /**
@@ -84,7 +86,7 @@ public class PiSDFTopologyHelper {
   }
 
   /**
-   * Used to get actors connected in input a specified PiSDF actor
+   * Used to get actors connected in input of a specified PiSDF actor
    *
    * @param a
    *          actor
@@ -110,58 +112,15 @@ public class PiSDFTopologyHelper {
   }
 
   /**
-   * Used to get all predecessors of a specified PiSDF actor
-   *
-   * @param a
-   *          actor
-   * @return predecessors of actor a
+   * returns true if there is more than one simple path to get from potential successor to target
    */
-  public static final List<AbstractActor> getPredecessors(final AbstractActor a) {
-    List<AbstractActor> result = new ArrayList<>();
-    List<AbstractActor> tmp = getDirectPredecessorsOf(a);
-    boolean exit = false;
-    do {
-      // avoid cycles deadlock
-      tmp.removeAll(result);
-      result.addAll(tmp);
-      final List<AbstractActor> tmp1 = new ArrayList<>();
-      tmp1.addAll(tmp);
-      if (tmp.isEmpty()) {
-        exit = true;
-      }
-      tmp.clear();
-      for (final AbstractActor e : tmp1) {
-        tmp.addAll(getDirectPredecessorsOf(e));
-      }
-    } while (!exit);
-    return result;
+  public static final boolean isMoreThanOneSimplePath(final AbstractActor potentialSucc, final AbstractActor target) {
+    try {
+      new IsMoreThanOneSimplePathSwitch(target).doSwitch(potentialSucc);
+      return false;
+    } catch (final MoreThanOneSimplePathException e) {
+      return true;
+    }
   }
 
-  /**
-   * Used to get all successors of a specified PiSDF actor
-   *
-   * @param a
-   *          actor
-   * @return successors of actor a
-   */
-  public static final List<AbstractActor> getSuccessors(final AbstractActor a) {
-    List<AbstractActor> result = new ArrayList<>();
-    List<AbstractActor> tmp = getDirectSuccessorsOf(a);
-    boolean exit = false;
-    do {
-      // avoid cycles deadlock
-      tmp.removeAll(result);
-      result.addAll(tmp);
-      final List<AbstractActor> tmp1 = new ArrayList<>();
-      tmp1.addAll(tmp);
-      if (tmp.isEmpty()) {
-        exit = true;
-      }
-      tmp.clear();
-      for (final AbstractActor e : tmp1) {
-        tmp.addAll(getDirectSuccessorsOf(e));
-      }
-    } while (!exit);
-    return result;
-  }
 }
