@@ -39,7 +39,7 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import org.preesm.model.pisdf.AbstractActor;
-import org.preesm.model.pisdf.util.topology.IsThereALongPathSwitch.ThereIsALongPath;
+import org.preesm.model.pisdf.util.topology.IsThereALongPathSwitch.ThereIsALongPathException;
 import org.preesm.model.pisdf.util.topology.PiSDFPredecessorSwitch.IsPredecessorSwitch;
 import org.preesm.model.pisdf.util.topology.PiSDFPredecessorSwitch.PredecessorFoundException;
 import org.preesm.model.pisdf.util.topology.PiSDFSuccessorSwitch.IsSuccessorSwitch;
@@ -111,13 +111,14 @@ public class PiSDFTopologyHelper {
   }
 
   /**
-   * returns true if there is more than one simple path to get from potential successor to target
+   * Returns true if there is a long path from potentialSucc to target. A long path is defined as a path that encounters
+   * more than one Fifo.
    */
   public static final boolean isThereIsALongPath(final AbstractActor potentialSucc, final AbstractActor target) {
     try {
       new IsThereALongPathSwitch(target).doSwitch(potentialSucc);
       return false;
-    } catch (final ThereIsALongPath e) {
+    } catch (final ThereIsALongPathException e) {
       return true;
     }
   }

@@ -8,10 +8,15 @@ import org.preesm.model.pisdf.PiGraph;
 /**
  * @author dgageot
  *
- *         A long path is defined as a path that encounters more than one Fifo
+ *         Package visible helper switch that throws a {@link ThereIsALongPathException} when an actor equals to the
+ *         local attribute 'potentialSucc' is encountered while visiting the successors of the subject of the switch and
+ *         the path is strictly longer than 1. See
+ *         {@link PiSDFTopologyHelper#isThereIsALongPath(AbstractActor, AbstractActor)} for usage.
+ *
+ *         A long path is defined as a path that encounters more than one Fifo.
  *
  */
-public class IsThereALongPathSwitch extends PiSDFSuccessorSwitch {
+class IsThereALongPathSwitch extends PiSDFSuccessorSwitch {
 
   private final AbstractActor potentialSucc;
   private long                fifoCount;
@@ -19,11 +24,11 @@ public class IsThereALongPathSwitch extends PiSDFSuccessorSwitch {
   /**
    * @author dgageot
    */
-  static class ThereIsALongPath extends RuntimeException {
+  static class ThereIsALongPathException extends RuntimeException {
     private static final long serialVersionUID = 8123950588521527792L;
   }
 
-  public IsThereALongPathSwitch(final AbstractActor potentialSucc) {
+  IsThereALongPathSwitch(final AbstractActor potentialSucc) {
     this.potentialSucc = potentialSucc;
     this.fifoCount = 0;
   }
@@ -33,7 +38,7 @@ public class IsThereALongPathSwitch extends PiSDFSuccessorSwitch {
     // If we reached the target
     if (actor.equals(this.potentialSucc)) {
       if (this.fifoCount > 1) {
-        throw new ThereIsALongPath();
+        throw new ThereIsALongPathException();
       }
       return false;
     }
