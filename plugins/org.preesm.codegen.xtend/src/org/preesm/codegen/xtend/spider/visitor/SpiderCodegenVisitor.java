@@ -519,9 +519,9 @@ public class SpiderCodegenVisitor extends PiMMSwitch<Boolean> {
       for (final Component coreType : aaEnergies.keySet()) {
         append("\tSpider::setEnergyOnType(");
         append(vertexName + ", static_cast<std::uint32_t>(PEType::");
-        append(SpiderNameGenerator.getCoreTypeName(coreType) + "), \"");
+        append(SpiderNameGenerator.getCoreTypeName(coreType) + "), ");
         append(aaEnergies.get(coreType));
-        append("\");\n");
+        append(");\n");
       }
     } else {
       PreesmLogger.getLogger().log(Level.WARNING, "Actor " + aa.getName() + " does not have energy information.");
