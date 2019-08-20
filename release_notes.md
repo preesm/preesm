@@ -13,6 +13,8 @@ PREESM Changelog
 * PAPIFY output folder 'papify-output' now can be directly parsed from scenario:
   * Timings: the timing of the actor being executed on each Component is updated;
   * Energy: the energy consumed when executing an actor on each Component is updated. To do so, the energy model (included in PAPIFY tab) is considered when parsing the folder;
+* PiSDF:
+  * Add transform and task to replace "perfect fit delays" with init/end actors;
 
 ### Changes
 * Refactor: rename/move packages in algo & codegen;
