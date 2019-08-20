@@ -152,8 +152,9 @@ public class PiGraphConsistenceChecker extends PiMMSwitch<Boolean> {
   public Boolean caseDelayActor(final DelayActor actor) {
     final Delay linkedDelay = actor.getLinkedDelay();
     final boolean hasLinkedDelay = linkedDelay != null && linkedDelay.getActor() == actor;
+    final boolean delayProperlyContained = this.graphStack.peek().getVertices().contains(linkedDelay);
 
-    final boolean delayActorValid = hasLinkedDelay;
+    final boolean delayActorValid = hasLinkedDelay && delayProperlyContained;
     if (!delayActorValid) {
       error("DelayActor [%s] is not valid", actor);
     }
@@ -163,7 +164,9 @@ public class PiGraphConsistenceChecker extends PiMMSwitch<Boolean> {
   @Override
   public Boolean caseDelay(final Delay delay) {
     final DelayActor actor = delay.getActor();
-    final boolean delayValid = actor != null && actor.getLinkedDelay() == delay;
+    final boolean actorLinkedProperly = actor != null && actor.getLinkedDelay() == delay;
+    final boolean delayActorProperlyContained = this.graphStack.peek().getVertices().contains(actor);
+    final boolean delayValid = actorLinkedProperly && delayActorProperlyContained;
     if (!delayValid) {
       error("Delay [%s] is not valid", delay);
     }
