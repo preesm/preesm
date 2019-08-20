@@ -1,4 +1,4 @@
-package org.preesm.algorithm.model.schedule.util;
+package org.preesm.algorithm.synthesis.schedule.transform;
 
 import org.preesm.algorithm.schedule.model.Schedule;
 
@@ -8,6 +8,7 @@ import org.preesm.algorithm.schedule.model.Schedule;
  *         Interface to ease execution of schedule transform
  *
  */
+@FunctionalInterface
 public interface IScheduleTransform {
 
   public Schedule performTransform(Schedule schedule);

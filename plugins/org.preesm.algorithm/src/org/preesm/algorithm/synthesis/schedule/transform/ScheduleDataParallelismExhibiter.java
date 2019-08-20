@@ -1,4 +1,4 @@
-package org.preesm.algorithm.model.schedule.util;
+package org.preesm.algorithm.synthesis.schedule.transform;
 
 import java.util.LinkedList;
 import java.util.List;
