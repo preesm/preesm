@@ -50,7 +50,7 @@ import org.preesm.model.pisdf.util.PiMMSwitch;
  */
 public abstract class PiSDFSuccessorSwitch extends PiMMSwitch<Boolean> {
 
-  private final List<AbstractActor> visitedElements = new ArrayList<>();
+  protected final List<AbstractActor> visitedElements = new ArrayList<>();
 
   @Override
   public Boolean caseAbstractActor(final AbstractActor actor) {
@@ -115,6 +115,10 @@ public abstract class PiSDFSuccessorSwitch extends PiMMSwitch<Boolean> {
   /**
    *
    * @author anmorvan
+   *
+   *         Package visible helper switch that throws a {@link SuccessorFoundException} when an actor equals to the
+   *         local attribute is encountered while visiting the successors of the subject of the switch. See
+   *         {@link PiSDFTopologyHelper#isSuccessor(AbstractActor, AbstractActor)} for usage.
    *
    */
   static class IsSuccessorSwitch extends PiSDFSuccessorSwitch {

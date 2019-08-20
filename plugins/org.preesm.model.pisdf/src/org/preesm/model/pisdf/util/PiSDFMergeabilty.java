@@ -35,12 +35,22 @@
  */
 package org.preesm.model.pisdf.util;
 
+import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
+import org.preesm.commons.CollectionUtil;
+import org.preesm.commons.exceptions.PreesmRuntimeException;
+import org.preesm.commons.math.MathFunctionsHelper;
 import org.preesm.model.pisdf.AbstractActor;
+import org.preesm.model.pisdf.AbstractVertex;
+import org.preesm.model.pisdf.DataInputPort;
 import org.preesm.model.pisdf.DataOutputPort;
+import org.preesm.model.pisdf.Delay;
+import org.preesm.model.pisdf.DelayActor;
+import org.preesm.model.pisdf.Fifo;
 import org.preesm.model.pisdf.InterfaceActor;
 import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.pisdf.util.topology.PiSDFTopologyHelper;
@@ -56,22 +66,145 @@ import org.preesm.model.pisdf.util.topology.PiSDFTopologyHelper;
 public class PiSDFMergeabilty {
 
   /**
-   * Used to check if these actors are mergeable i.e. do not introduce cycle if clustered
-   *
-   * @param a
+   * 
+   * One of the three conditions to ensure that mergeability is possible
+   * 
+   * @param x
    *          first actor
-   * @param b
+   * @param y
    *          second actor
-   * @return true if the couple is mergeable
+   * @param brv
+   *          repetition vector
+   * @return true if precedence shift condition is valid, false otherwise
    */
-  public static boolean isMergeable(final AbstractActor a, final AbstractActor b) {
-    final List<AbstractActor> predA = PiSDFTopologyHelper.getPredecessors(a);
-    final List<AbstractActor> predB = PiSDFTopologyHelper.getPredecessors(b);
-    final List<AbstractActor> succA = PiSDFTopologyHelper.getSuccessors(a);
-    final List<AbstractActor> succB = PiSDFTopologyHelper.getSuccessors(b);
-    predA.retainAll(succB);
-    predB.retainAll(succA);
-    return predA.isEmpty() && predB.isEmpty();
+  public static boolean isPrecedenceShiftConditionValid(AbstractActor x, AbstractActor y,
+      Map<AbstractVertex, Long> brv) {
+
+    List<Fifo> incomingFifos = new LinkedList<>();
+    List<Fifo> outgoingFifos = new LinkedList<>();
+
+    for (DataInputPort dip : x.getDataInputPorts()) {
+      // Add all incoming fifo that are not contained in the future cluster
+      if (dip.getIncomingFifo().getSource() != y) {
+        incomingFifos.add(dip.getIncomingFifo());
+      }
+    }
+
+    for (DataOutputPort dop : x.getDataOutputPorts()) {
+      // Add all outgoing fifo that are not contained in the future cluster
+      if (dop.getOutgoingFifo().getTarget() != y) {
+        outgoingFifos.add(dop.getOutgoingFifo());
+      }
+    }
+
+    // Compute cluster repetition
+    long clusterRepetition = MathFunctionsHelper.gcd(CollectionUtil.mapGetAll(brv, Arrays.asList(x, y)));
+
+    boolean result = true;
+    boolean delayInside = false;
+
+    for (Fifo incomingFifo : incomingFifos) {
+      long prod = incomingFifo.getSourcePort().getExpression().evaluate();
+      long cons = incomingFifo.getTargetPort().getExpression().evaluate();
+      long individualRepetition = brv.get(x) / clusterRepetition;
+      Delay delay = incomingFifo.getDelay();
+      long delayValue;
+      // If there is a delay, evaluate it capacity
+      if (delay == null) {
+        delayValue = 0;
+      } else {
+        delayValue = delay.getExpression().evaluate();
+        delayInside = true;
+      }
+      long k1 = prod / (individualRepetition * cons);
+      long k2 = delayValue / (individualRepetition * cons);
+      // Precedence shift condition verification
+      if (!((k1 == (int) (k1)) && (k2 == (int) (k2)) && (k1 > 0) && (k2 >= 0))) {
+        result = false;
+      }
+    }
+
+    for (Fifo outgoingFifo : outgoingFifos) {
+      double prod = outgoingFifo.getSourcePort().getExpression().evaluate();
+      double cons = outgoingFifo.getTargetPort().getExpression().evaluate();
+      double individualRepetition = brv.get(x) / clusterRepetition;
+      Delay delay = outgoingFifo.getDelay();
+      double delayValue;
+      if (delay == null) {
+        delayValue = 0;
+      } else {
+        delayValue = delay.getExpression().evaluate();
+        delayInside = true;
+      }
+      double k1 = cons / (individualRepetition * prod);
+      double k2 = delayValue / (individualRepetition * prod);
+      // Precedence shift condition verification
+      if (!((k1 == (int) (k1)) && (k2 == (int) (k2)) && (k1 > 0) && (k2 >= 0))) {
+        result = false;
+      }
+    }
+
+    // If no delay was present on all fifos, the result can be true without compromising clustering
+    return result || !delayInside;
+  }
+
+  /**
+   * Used to check if these actors do not introduce cycle if clustered
+   *
+   * @param x
+   *          first actor
+   * @param y
+   *          second actor
+   * @return true if the couple does not introduce cycle
+   */
+  public static boolean isCycleIntroductionConditionValid(final AbstractActor x, final AbstractActor y) {
+    return !PiSDFTopologyHelper.isThereIsALongPath(x, y);
+  }
+
+  /**
+   * @param x
+   *          first actor
+   * @param y
+   *          second actor
+   * @param brv
+   *          repetitionVector
+   * @return true if condition is verified
+   */
+  public static boolean isHiddenDelayConditionValid(AbstractActor x, AbstractActor y, Map<AbstractVertex, Long> brv) {
+    List<Fifo> outgoingFifos = new LinkedList<>();
+
+    for (DataOutputPort dop : x.getDataOutputPorts()) {
+      // Add all outgoing fifo that are not contained in the future cluster
+      if (dop.getOutgoingFifo().getDelay() == null) {
+        outgoingFifos.add(dop.getOutgoingFifo());
+      }
+    }
+
+    long k1 = brv.get(x) / brv.get(y);
+    long k2 = brv.get(y) / brv.get(x);
+    return !outgoingFifos.isEmpty() && ((k1 == (int) (k1)) || (k2 == (int) (k2)));
+  }
+
+  /**
+   * @param x
+   *          first actor
+   * @param y
+   *          second actor
+   * @param brv
+   *          repetition vector
+   * @return true if mergeability is verified
+   */
+  public static boolean isMergeable(AbstractActor x, AbstractActor y, Map<AbstractVertex, Long> brv) {
+    // Verify that actors are contained into BRV
+    if (!brv.containsKey(x) || !brv.containsKey(y)) {
+      throw new PreesmRuntimeException("PiSDFMergeability: Actors not contained into repetition vector");
+    }
+    // Verify theses fourth conditions
+    boolean precedenceShiftA = isPrecedenceShiftConditionValid(x, y, brv);
+    boolean precedenceShiftB = isPrecedenceShiftConditionValid(y, x, brv);
+    boolean cycleIntroduction = isCycleIntroductionConditionValid(x, y);
+    boolean hiddenDelay = isHiddenDelayConditionValid(x, y, brv);
+    return cycleIntroduction && hiddenDelay && precedenceShiftA && precedenceShiftB;
   }
 
   /**
@@ -82,16 +215,24 @@ public class PiSDFMergeabilty {
    *          input graph
    * @return list of mergeable connected-couple
    */
-  public static List<Pair<AbstractActor, AbstractActor>> getConnectedCouple(final PiGraph graph) {
+  public static List<Pair<AbstractActor, AbstractActor>> getConnectedCouple(final PiGraph graph,
+      final Map<AbstractVertex, Long> brv) {
     List<Pair<AbstractActor, AbstractActor>> listCouple = new LinkedList<>();
-    List<AbstractActor> graphActors = graph.getActors();
+
+    // Retrieve actors that are not interface nor delay
+    List<AbstractActor> graphActors = new LinkedList<>();
+    for (AbstractActor actor : graph.getActors()) {
+      if (!(actor instanceof InterfaceActor) && !(actor instanceof DelayActor)) {
+        graphActors.add(actor);
+      }
+    }
 
     // Get every mergeable connected-couple
     for (AbstractActor a : graphActors) {
       for (DataOutputPort dop : a.getDataOutputPorts()) {
         AbstractActor b = dop.getOutgoingFifo().getTargetPort().getContainingActor();
-        // Verify that actor are connected together
-        if (PiSDFMergeabilty.isMergeable(a, b) && !(b instanceof InterfaceActor)) {
+        // Verify that actor are connected together and mergeable
+        if (!(b instanceof InterfaceActor) && (b != a) && PiSDFMergeabilty.isMergeable(a, b, brv)) {
           Pair<AbstractActor, AbstractActor> couple = new ImmutablePair<>(a, b);
           listCouple.add(couple);
         }

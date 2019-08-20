@@ -39,6 +39,7 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import org.preesm.model.pisdf.AbstractActor;
+import org.preesm.model.pisdf.util.topology.IsThereALongPathSwitch.ThereIsALongPathException;
 import org.preesm.model.pisdf.util.topology.PiSDFPredecessorSwitch.IsPredecessorSwitch;
 import org.preesm.model.pisdf.util.topology.PiSDFPredecessorSwitch.PredecessorFoundException;
 import org.preesm.model.pisdf.util.topology.PiSDFSuccessorSwitch.IsSuccessorSwitch;
@@ -84,7 +85,7 @@ public class PiSDFTopologyHelper {
   }
 
   /**
-   * Used to get actors connected in input a specified PiSDF actor
+   * Used to get actors connected in input of a specified PiSDF actor
    *
    * @param a
    *          actor
@@ -110,58 +111,16 @@ public class PiSDFTopologyHelper {
   }
 
   /**
-   * Used to get all predecessors of a specified PiSDF actor
-   *
-   * @param a
-   *          actor
-   * @return predecessors of actor a
+   * Returns true if there is a long path from potentialSucc to target. A long path is defined as a path that encounters
+   * more than one Fifo.
    */
-  public static final List<AbstractActor> getPredecessors(final AbstractActor a) {
-    List<AbstractActor> result = new ArrayList<>();
-    List<AbstractActor> tmp = getDirectPredecessorsOf(a);
-    boolean exit = false;
-    do {
-      // avoid cycles deadlock
-      tmp.removeAll(result);
-      result.addAll(tmp);
-      final List<AbstractActor> tmp1 = new ArrayList<>();
-      tmp1.addAll(tmp);
-      if (tmp.isEmpty()) {
-        exit = true;
-      }
-      tmp.clear();
-      for (final AbstractActor e : tmp1) {
-        tmp.addAll(getDirectPredecessorsOf(e));
-      }
-    } while (!exit);
-    return result;
+  public static final boolean isThereIsALongPath(final AbstractActor potentialSucc, final AbstractActor target) {
+    try {
+      new IsThereALongPathSwitch(target).doSwitch(potentialSucc);
+      return false;
+    } catch (final ThereIsALongPathException e) {
+      return true;
+    }
   }
 
-  /**
-   * Used to get all successors of a specified PiSDF actor
-   *
-   * @param a
-   *          actor
-   * @return successors of actor a
-   */
-  public static final List<AbstractActor> getSuccessors(final AbstractActor a) {
-    List<AbstractActor> result = new ArrayList<>();
-    List<AbstractActor> tmp = getDirectSuccessorsOf(a);
-    boolean exit = false;
-    do {
-      // avoid cycles deadlock
-      tmp.removeAll(result);
-      result.addAll(tmp);
-      final List<AbstractActor> tmp1 = new ArrayList<>();
-      tmp1.addAll(tmp);
-      if (tmp.isEmpty()) {
-        exit = true;
-      }
-      tmp.clear();
-      for (final AbstractActor e : tmp1) {
-        tmp.addAll(getDirectSuccessorsOf(e));
-      }
-    } while (!exit);
-    return result;
-  }
 }
