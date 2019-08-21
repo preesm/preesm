@@ -598,6 +598,7 @@ public class SpiderCodegen {
       }
       append("\tcolumnToParamValueMap.clear();\n");
     }
+    append("\treturn energyModelsMap;\n");
     append("}\n\n");
   }
 
