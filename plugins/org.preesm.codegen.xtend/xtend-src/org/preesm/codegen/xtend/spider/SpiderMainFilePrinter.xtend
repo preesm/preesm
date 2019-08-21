@@ -164,9 +164,14 @@ class SpiderMainFilePrinter {
 		/* == Papify instrumentation == */
 		«IF spiderConfig.useOfPapify»
 			cfg.usePapify = true;
+			cfg.dumpPapifyInfo = «spiderConfig.dumpPapifyInfo»;
+			cfg.feedbackPapifyInfo = «spiderConfig.feedbackPapifyInfo»;
 			cfg.papifyJobInfo = get_«pg.name»_papifyConfigs();
+			cfg.energyModelsInfo = get_«pg.name»_energyModels();
 		«ELSE»
 			cfg.usePapify = false;
+			cfg.dumpPapifyInfo = false;
+			cfg.feedbackPapifyInfo = false;
 		«ENDIF»
 
 		try {
