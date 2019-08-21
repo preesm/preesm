@@ -19,13 +19,6 @@
             <dftools:variable name="simulatorType" value="LooselyTimed"/>
         </dftools:data>
     </dftools:task>
-    <dftools:task
-        pluginId="org.ietr.preesm.mapper.exporter.DAGExportTransform" taskId="DAG Exporter">
-        <dftools:data key="variables">
-            <dftools:variable name="openFile" value="false"/>
-            <dftools:variable name="path" value="DAG/dag.graphml"/>
-        </dftools:data>
-    </dftools:task>
     <dftools:task pluginId="pisdf-srdag" taskId="pisdf-srdag">
         <dftools:data key="variables">
             <dftools:variable name="Consistency_Method" value="LCM"/>
@@ -39,8 +32,6 @@
         sourceport="architecture" targetport="architecture" to="Scheduling"/>
     <dftools:dataTransfer from="scenario" sourceport="scenario"
         targetport="scenario" to="Scheduling"/>
-    <dftools:dataTransfer from="Scheduling" sourceport="DAG"
-        targetport="DAG" to="DAG Exporter"/>
     <dftools:dataTransfer from="scenario" sourceport="PiMM"
         targetport="PiMM" to="pisdf-srdag"/>
     <dftools:dataTransfer from="pisdf-srdag" sourceport="PiMM"

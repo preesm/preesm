@@ -1,21 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<dftools:workflow xmlns:dftools="http://net.sf.dftools">
+<dftools:workflow errorOnWarning="true" verboseLevel="INFO" xmlns:dftools="http://net.sf.dftools">
     <dftools:scenario pluginId="org.ietr.preesm.scenario.task"/>
-    <dftools:task
-        pluginId="org.ietr.preesm.experiment.pimm2srdag.StaticPiMM2SrDAGTask" taskId="PiMM2SrDaGTask">
+    <dftools:task pluginId="pisdf-srdag" taskId="PiMM2SrDaGTask">
         <dftools:data key="variables">
             <dftools:variable name="Consistency_Method" value="LCM"/>
         </dftools:data>
     </dftools:task>
-    <dftools:task
-        pluginId="org.ietr.preesm.mapper.exporter.DAGExportTransform" taskId="DAG Exporter">
-        <dftools:data key="variables">
-            <dftools:variable name="openFile" value="false"/>
-            <dftools:variable name="path" value="Algo/generated/dag/dag.graphml"/>
-        </dftools:data>
-    </dftools:task>
-    <dftools:task
-        pluginId="org.ietr.preesm.plugin.mapper.listschedulingfromdag" taskId="Scheduling">
+    <dftools:task pluginId="pisdf-mapper.list" taskId="Scheduling">
         <dftools:data key="variables">
             <dftools:variable name="Check" value="true"/>
             <dftools:variable name="Optimize synchronization" value="False"/>
@@ -36,8 +27,8 @@
     <dftools:task
         pluginId="org.ietr.preesm.codegen.xtend.task.CodegenTask" taskId="Code Generation">
         <dftools:data key="variables">
-            <dftools:variable name="Printer" value="C"/>
             <dftools:variable name="Papify" value="false"/>
+            <dftools:variable name="Printer" value="C"/>
         </dftools:data>
     </dftools:task>
     <dftools:task
@@ -59,24 +50,16 @@
             <dftools:variable name="Verbose" value="True"/>
         </dftools:data>
     </dftools:task>
-    <dftools:dataTransfer from="scenario" sourceport="scenario"
-        targetport="scenario" to="PiMM2SrDaGTask"/>
     <dftools:dataTransfer from="scenario" sourceport="PiMM"
         targetport="PiMM" to="PiMM2SrDaGTask"/>
     <dftools:dataTransfer from="scenario" sourceport="scenario"
         targetport="scenario" to="Scheduling"/>
-    <dftools:dataTransfer from="scenario" sourceport="architecture"
-        targetport="architecture" to="Scheduling"/>
-    <dftools:dataTransfer from="Scheduling" sourceport="DAG"
-        targetport="DAG" to="DAG Exporter"/>
-    <dftools:dataTransfer from="scenario" sourceport="architecture"
-        targetport="architecture" to="PiMM2SrDaGTask"/>
+    <dftools:dataTransfer from="scenario"
+        sourceport="architecture" targetport="architecture" to="Scheduling"/>
     <dftools:dataTransfer from="Scheduling" sourceport="ABC"
         targetport="ABC" to="Display Gantt"/>
     <dftools:dataTransfer from="scenario" sourceport="scenario"
         targetport="scenario" to="Display Gantt"/>
-    <dftools:dataTransfer from="DAG Exporter" sourceport="void"
-        targetport="void" to="MEG Builder"/>
     <dftools:dataTransfer from="MEG Builder" sourceport="MemEx"
         targetport="MemEx" to="Memory Allocation"/>
     <dftools:dataTransfer from="Scheduling" sourceport="DAG"
@@ -85,12 +68,12 @@
         targetport="scenario" to="MEG Builder"/>
     <dftools:dataTransfer from="Scheduling" sourceport="DAG"
         targetport="DAG" to="Code Generation"/>
-    <dftools:dataTransfer from="Memory Allocation" sourceport="MEGs"
-        targetport="MEGs" to="Code Generation"/>
+    <dftools:dataTransfer from="Memory Allocation"
+        sourceport="MEGs" targetport="MEGs" to="Code Generation"/>
     <dftools:dataTransfer from="scenario" sourceport="scenario"
         targetport="scenario" to="Code Generation"/>
-    <dftools:dataTransfer from="scenario" sourceport="architecture"
-        targetport="architecture" to="Code Generation"/>
-    <dftools:dataTransfer from="PiMM2SrDaGTask" sourceport="DAG"
-        targetport="DAG" to="Scheduling"/>
+    <dftools:dataTransfer from="scenario"
+        sourceport="architecture" targetport="architecture" to="Code Generation"/>
+    <dftools:dataTransfer from="PiMM2SrDaGTask" sourceport="PiMM"
+        targetport="PiMM" to="Scheduling"/>
 </dftools:workflow>
