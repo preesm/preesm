@@ -77,7 +77,7 @@ public class PiSDFMergeabilty {
    *          repetition vector
    * @return true if precedence shift condition is valid, false otherwise
    */
-  public static boolean isPrecedenceShiftConditionValid(AbstractActor x, AbstractActor y,
+  public static boolean isPrecedenceShiftConditionValid(AbstractActor x, AbstractActor y, AbstractActor first,
       Map<AbstractVertex, Long> brv) {
 
     List<Fifo> incomingFifos = new LinkedList<>();
@@ -106,7 +106,7 @@ public class PiSDFMergeabilty {
     for (Fifo incomingFifo : incomingFifos) {
       long prod = incomingFifo.getSourcePort().getExpression().evaluate();
       long cons = incomingFifo.getTargetPort().getExpression().evaluate();
-      long individualRepetition = brv.get(x) / clusterRepetition;
+      long individualRepetition = brv.get(first) / clusterRepetition;
       Delay delay = incomingFifo.getDelay();
       long delayValue;
       // If there is a delay, evaluate it capacity
@@ -127,7 +127,7 @@ public class PiSDFMergeabilty {
     for (Fifo outgoingFifo : outgoingFifos) {
       double prod = outgoingFifo.getSourcePort().getExpression().evaluate();
       double cons = outgoingFifo.getTargetPort().getExpression().evaluate();
-      double individualRepetition = brv.get(x) / clusterRepetition;
+      double individualRepetition = brv.get(first) / clusterRepetition;
       Delay delay = outgoingFifo.getDelay();
       double delayValue;
       if (delay == null) {
@@ -200,8 +200,8 @@ public class PiSDFMergeabilty {
       throw new PreesmRuntimeException("PiSDFMergeability: Actors not contained into repetition vector");
     }
     // Verify theses fourth conditions
-    boolean precedenceShiftA = isPrecedenceShiftConditionValid(x, y, brv);
-    boolean precedenceShiftB = isPrecedenceShiftConditionValid(y, x, brv);
+    boolean precedenceShiftA = isPrecedenceShiftConditionValid(x, y, x, brv);
+    boolean precedenceShiftB = isPrecedenceShiftConditionValid(y, x, x, brv);
     boolean cycleIntroduction = isCycleIntroductionConditionValid(x, y);
     boolean hiddenDelay = isHiddenDelayConditionValid(x, y, brv);
     return cycleIntroduction && hiddenDelay && precedenceShiftA && precedenceShiftB;
