@@ -7,15 +7,17 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import org.apache.commons.lang3.tuple.Pair;
-import org.preesm.algorithm.model.schedule.util.IScheduleTransform;
-import org.preesm.algorithm.model.schedule.util.ScheduleDataParallelismExhibiter;
-import org.preesm.algorithm.model.schedule.util.ScheduleFlattener;
-import org.preesm.algorithm.model.schedule.util.ScheduleParallelismDepthLimiter;
 import org.preesm.algorithm.schedule.model.ActorSchedule;
 import org.preesm.algorithm.schedule.model.HierarchicalSchedule;
 import org.preesm.algorithm.schedule.model.Schedule;
 import org.preesm.algorithm.schedule.model.ScheduleFactory;
+import org.preesm.algorithm.synthesis.schedule.transform.IScheduleTransform;
+import org.preesm.algorithm.synthesis.schedule.transform.ScheduleDataParallelismExhibiter;
+import org.preesm.algorithm.synthesis.schedule.transform.ScheduleFlattener;
+import org.preesm.algorithm.synthesis.schedule.transform.ScheduleParallelismDepthLimiter;
+import org.preesm.commons.CollectionUtil;
 import org.preesm.commons.exceptions.PreesmRuntimeException;
+import org.preesm.commons.math.MathFunctionsHelper;
 import org.preesm.commons.model.PreesmCopyTracker;
 import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.AbstractVertex;
@@ -31,9 +33,8 @@ import org.preesm.model.pisdf.Fifo;
 import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.pisdf.brv.BRVMethod;
 import org.preesm.model.pisdf.brv.PiBRV;
+import org.preesm.model.pisdf.check.PiGraphConsistenceChecker;
 import org.preesm.model.pisdf.factory.PiMMUserFactory;
-import org.preesm.model.pisdf.util.PiGraphConsistenceChecker;
-import org.preesm.model.pisdf.util.PiSDFMergeabilty;
 
 /**
  * @author dgageot
@@ -260,7 +261,7 @@ public class ClusteringBuilder {
     List<AbstractActor> actorList = actorFound.getValue();
 
     // Compute rvCluster
-    long clusterRepetition = PiSDFMergeabilty.computeGcdRepetition(actorList, repetitionVector);
+    long clusterRepetition = MathFunctionsHelper.gcd(CollectionUtil.mapGetAll(repetitionVector, actorList));
 
     // Construct a sequential schedule
     for (AbstractActor a : actorList) {
@@ -319,7 +320,7 @@ public class ClusteringBuilder {
     }
 
     // Compute clusterRepetition
-    long clusterRepetition = PiSDFMergeabilty.computeGcdRepetition(actorList, repetitionVector);
+    long clusterRepetition = MathFunctionsHelper.gcd(CollectionUtil.mapGetAll(repetitionVector, actorList));
 
     int nbOut = 0;
     int nbIn = 0;
