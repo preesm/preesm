@@ -20,13 +20,6 @@
         </dftools:data>
     </dftools:task>
     <dftools:task
-        pluginId="org.ietr.preesm.mapper.exporter.DAGExportTransform" taskId="DAG Exporter">
-        <dftools:data key="variables">
-            <dftools:variable name="openFile" value="false"/>
-            <dftools:variable name="path" value="DAG/dag.graphml"/>
-        </dftools:data>
-    </dftools:task>
-    <dftools:task
         pluginId="org.ietr.preesm.memory.exclusiongraph.MemoryExclusionGraphBuilder" taskId="MEG Builder">
         <dftools:data key="variables">
             <dftools:variable name="Suppr Fork/Join" value="False"/>
@@ -52,6 +45,7 @@
     </dftools:task>
     <dftools:task pluginId="pisdf-export" taskId="pisdf-export">
         <dftools:data key="variables">
+            <dftools:variable name="hierarchical" value="true"/>
             <dftools:variable name="path" value="Algo/generated"/>
         </dftools:data>
     </dftools:task>
@@ -89,8 +83,6 @@
     <dftools:dataTransfer from="scenario" sourceport="scenario"
         targetport="scenario" to="Scheduling"/>
     <dftools:dataTransfer from="Scheduling" sourceport="DAG"
-        targetport="DAG" to="DAG Exporter"/>
-    <dftools:dataTransfer from="Scheduling" sourceport="DAG"
         targetport="DAG" to="MEG Builder"/>
     <dftools:dataTransfer from="scenario" sourceport="scenario"
         targetport="scenario" to="MEG Builder"/>
@@ -98,8 +90,6 @@
         targetport="PiMM" to="pisdf-srdag"/>
     <dftools:dataTransfer from="pisdf-srdag" sourceport="PiMM"
         targetport="PiMM" to="pisdf-export"/>
-    <dftools:dataTransfer from="DAG Exporter" sourceport="void"
-        targetport="void" to="MEG Builder"/>
     <dftools:dataTransfer from="MEG Builder" sourceport="MemEx"
         targetport="MemEx" to="MemEx Updater"/>
     <dftools:dataTransfer from="Scheduling" sourceport="DAG"

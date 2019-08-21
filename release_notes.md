@@ -15,6 +15,8 @@ PREESM Changelog
   * Energy: the energy consumed when executing an actor on each Component is updated. To do so, the energy model (included in PAPIFY tab) is considered when parsing the folder;
 * PiSDF:
   * Add transform and task to replace "perfect fit delays" with init/end actors;
+* Workflow:
+  * Throws warning when executing deprecated tasks;
 
 ### Changes
 * Refactor: rename/move packages in algo & codegen;

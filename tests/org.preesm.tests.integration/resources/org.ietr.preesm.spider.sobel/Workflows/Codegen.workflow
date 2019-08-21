@@ -5,13 +5,6 @@
         <dftools:data key="variables"/>
     </dftools:task>
     <dftools:task
-        pluginId="org.ietr.preesm.mapper.exporter.DAGExportTransform" taskId="DAG Exporter">
-        <dftools:data key="variables">
-            <dftools:variable name="openFile" value="false"/>
-            <dftools:variable name="path" value="Algo/generated/DAG/dag.graphml"/>
-        </dftools:data>
-    </dftools:task>
-    <dftools:task
         pluginId="org.ietr.preesm.memory.exclusiongraph.MemoryExclusionGraphBuilder" taskId="MEG Builder">
         <dftools:data key="variables">
             <dftools:variable name="Suppr Fork/Join" value="False"/>
@@ -33,8 +26,8 @@
     <dftools:task
         pluginId="org.ietr.preesm.codegen.xtend.task.CodegenTask" taskId="Code Generation">
         <dftools:data key="variables">
-            <dftools:variable name="Printer" value="C"/>
             <dftools:variable name="Papify" value="false"/>
+            <dftools:variable name="Printer" value="C"/>
         </dftools:data>
     </dftools:task>
     <dftools:task
@@ -67,16 +60,12 @@
         targetport="scenario" to="Code Generation"/>
     <dftools:dataTransfer from="scenario"
         sourceport="architecture" targetport="architecture" to="Code Generation"/>
-    <dftools:dataTransfer from="DAG Exporter" sourceport="void"
-        targetport="void" to="MEG Builder"/>
     <dftools:dataTransfer from="scenario" sourceport="scenario"
         targetport="scenario" to="Gantt Exporter"/>
     <dftools:dataTransfer from="Sceduling" sourceport="ABC"
         targetport="ABC" to="Display Gantt"/>
     <dftools:dataTransfer from="Sceduling" sourceport="ABC"
         targetport="ABC" to="Gantt Exporter"/>
-    <dftools:dataTransfer from="Sceduling" sourceport="DAG"
-        targetport="DAG" to="DAG Exporter"/>
     <dftools:dataTransfer from="Sceduling" sourceport="DAG"
         targetport="DAG" to="MEG Builder"/>
     <dftools:dataTransfer from="Sceduling" sourceport="DAG"
