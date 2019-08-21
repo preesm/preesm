@@ -33,13 +33,14 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL license and that you accept its terms.
  */
-package org.preesm.model.pisdf.util;
+package org.preesm.model.pisdf.check;
 
 import com.google.common.base.Strings;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Deque;
 import java.util.List;
+import java.util.Optional;
 import org.eclipse.emf.ecore.EObject;
 import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.preesm.commons.graph.Graph;
@@ -48,6 +49,7 @@ import org.preesm.model.pisdf.ConfigInputPort;
 import org.preesm.model.pisdf.ConfigOutputPort;
 import org.preesm.model.pisdf.Configurable;
 import org.preesm.model.pisdf.DataPort;
+import org.preesm.model.pisdf.Delay;
 import org.preesm.model.pisdf.DelayActor;
 import org.preesm.model.pisdf.Dependency;
 import org.preesm.model.pisdf.Fifo;
@@ -56,6 +58,7 @@ import org.preesm.model.pisdf.InterfaceActor;
 import org.preesm.model.pisdf.Parameter;
 import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.pisdf.Port;
+import org.preesm.model.pisdf.util.PiMMSwitch;
 
 /**
  *
@@ -139,15 +142,41 @@ public class PiGraphConsistenceChecker extends PiMMSwitch<Boolean> {
       error("Fifo [%s] is not valid", fifo);
     }
 
+    Optional.ofNullable(fifo.getDelay()).ifPresent(this::doSwitch);
     final Boolean doSwitch = doSwitch(fifo.getSourcePort());
     final Boolean doSwitch2 = doSwitch(fifo.getTargetPort());
     return fifoValid && doSwitch && doSwitch2;
   }
 
   @Override
-  public Boolean caseDelayActor(DelayActor object) {
-    // no check
-    return true;
+  public Boolean caseDelayActor(final DelayActor actor) {
+    final Delay linkedDelay = actor.getLinkedDelay();
+    final boolean hasLinkedDelay = linkedDelay != null && linkedDelay.getActor() == actor;
+    final boolean delayProperlyContained = actor.getContainingPiGraph().getVertices().contains(linkedDelay);
+
+    final boolean delayActorValid = hasLinkedDelay && delayProperlyContained;
+    if (!hasLinkedDelay) {
+      error("DelayActor [%s] has no proper linked delay", actor);
+    }
+    if (!delayProperlyContained) {
+      error("DelayActor [%s] has a delay not contained in the graph", actor);
+    }
+    return delayActorValid;
+  }
+
+  @Override
+  public Boolean caseDelay(final Delay delay) {
+    final DelayActor actor = delay.getActor();
+    final boolean actorLinkedProperly = actor != null && actor.getLinkedDelay() == delay;
+    final boolean delayActorProperlyContained = delay.getContainingPiGraph().getVertices().contains(actor);
+    final boolean delayValid = actorLinkedProperly && delayActorProperlyContained;
+    if (!actorLinkedProperly) {
+      error("Delay [%s] is no proper linked actor", delay);
+    }
+    if (!delayActorProperlyContained) {
+      error("Delay [%s] has an actor not contained in the graph", delay);
+    }
+    return delayValid;
   }
 
   @Override
@@ -257,8 +286,8 @@ public class PiGraphConsistenceChecker extends PiMMSwitch<Boolean> {
     final PiGraph peek = this.graphStack.peek();
     final AbstractActor containingActor = port.getContainingActor();
     final boolean isContained = containingActor != null;
-    String portName = port.getName();
-    String actorName = isContained ? containingActor.getName() : "unknown";
+    final String portName = port.getName();
+    final String actorName = isContained ? containingActor.getName() : "unknown";
     boolean wellContained = true;
     if (!isContained) {
       error("port [%s] has not containing actor", portName);

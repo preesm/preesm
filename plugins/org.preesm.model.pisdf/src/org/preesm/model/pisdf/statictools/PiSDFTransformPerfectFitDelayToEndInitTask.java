@@ -6,7 +6,6 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.preesm.commons.doc.annotations.Port;
 import org.preesm.commons.doc.annotations.PreesmTask;
 import org.preesm.model.pisdf.PiGraph;
-import org.preesm.model.pisdf.util.PiGraphConsistenceChecker;
 import org.preesm.workflow.elements.Workflow;
 import org.preesm.workflow.implement.AbstractTaskImplementation;
 
@@ -26,7 +25,6 @@ public class PiSDFTransformPerfectFitDelayToEndInitTask extends AbstractTaskImpl
     // Process graph
     PiSDFTransformPerfectFitDelayToEndInit process = new PiSDFTransformPerfectFitDelayToEndInit(algorithm);
     PiGraph processedAlgorithm = process.replacePerfectFitDelay();
-    PiGraphConsistenceChecker.check(processedAlgorithm);
     // Return processed graph
     Map<String, Object> outputs = new HashMap<>();
     outputs.put("PiMM", processedAlgorithm);

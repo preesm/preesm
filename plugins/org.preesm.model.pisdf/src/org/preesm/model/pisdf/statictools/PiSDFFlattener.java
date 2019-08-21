@@ -39,6 +39,7 @@
  */
 package org.preesm.model.pisdf.statictools;
 
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -76,10 +77,10 @@ import org.preesm.model.pisdf.PortMemoryAnnotation;
 import org.preesm.model.pisdf.RoundBufferActor;
 import org.preesm.model.pisdf.brv.BRVMethod;
 import org.preesm.model.pisdf.brv.PiBRV;
+import org.preesm.model.pisdf.check.PiGraphConsistenceChecker;
 import org.preesm.model.pisdf.factory.PiMMUserFactory;
 import org.preesm.model.pisdf.statictools.optims.BroadcastRoundBufferOptimization;
 import org.preesm.model.pisdf.statictools.optims.ForkJoinOptimization;
-import org.preesm.model.pisdf.util.PiGraphConsistenceChecker;
 import org.preesm.model.pisdf.util.PiMMSwitch;
 
 /**
@@ -110,8 +111,6 @@ public class PiSDFFlattener extends PiMMSwitch<Boolean> {
     PiSDFFlattener staticPiMM2FlatPiMMVisitor = new PiSDFFlattener(brv);
     staticPiMM2FlatPiMMVisitor.doSwitch(graph);
     PiGraph result = staticPiMM2FlatPiMMVisitor.result;
-    PiGraphConsistenceChecker.check(result);
-    flattenCheck(result);
 
     if (performOptim) {
       // 6- do some optimization on the graph
@@ -119,25 +118,28 @@ public class PiSDFFlattener extends PiMMSwitch<Boolean> {
       forkJoinOptimization.optimize(result);
       final BroadcastRoundBufferOptimization brRbOptimization = new BroadcastRoundBufferOptimization();
       brRbOptimization.optimize(result);
-
       removeUselessStuffAfterOptim(result);
-      PiGraphConsistenceChecker.check(result);
-      flattenCheck(result);
     }
+
+    PiGraphConsistenceChecker.check(result);
+    flattenCheck(result);
 
     return result;
   }
 
   private static final void removeUselessStuffAfterOptim(final PiGraph graph) {
+    // remove loops on DelayActor, including their own redundant DelayActors
+    List<AbstractActor> originalDAs = new ArrayList<>(graph.getDelayActors());
+    for (AbstractActor da : originalDAs) {
+      if (graph.getDelayActors().contains(da)) {
+        removeLoopOnDelayActor(graph, (DelayActor) da);
+      }
+    }
     // remove params that are not anymore connected to anything
     for (final Parameter p : graph.getParameters()) {
       if (p.getOutgoingDependencies().isEmpty()) {
         graph.getVertices().remove(p);
       }
-    }
-    // remove loops on DelayActor
-    for (AbstractActor da : graph.getDelayActors()) {
-      removeLoopOnDelayActor(graph, (DelayActor) da);
     }
   }
 
@@ -158,24 +160,26 @@ public class PiSDFFlattener extends PiMMSwitch<Boolean> {
       graph.removeFifo(f1);
       return;
     }
-    Delay d = da.getLinkedDelay();
-    long value = d.getExpression().evaluate();
+
     DelayActor daExt = dExt.getActor();
     if (daExt == null) {
-      if (dExt.getExpression().evaluate() != value) {
-        PreesmLogger.getLogger().log(Level.WARNING,
-            "A delay actor loop  on <" + da.getName() + "had a wrong delay size, it is removed anyway.");
-      }
-      PersistenceLevel plExt = dExt.getLevel();
-      graph.removeDelay(dExt);
-      graph.removeFifo(f1);
-      d.setLevel(plExt);
-      return;
+      throw new PreesmRuntimeException("Delay <" + dExt.getName() + "> without DelayActor.");
+    }
+
+    Delay d = da.getLinkedDelay();
+    long value = d.getExpression().evaluate();
+    dExt.setActor(null);
+    if (dExt.getExpression().evaluate() != value) {
+      PreesmLogger.getLogger().log(Level.WARNING,
+          "A delay actor loop  on <" + da.getName() + "had a wrong delay size, it is removed anyway.");
     }
     graph.removeDelay(dExt);
     graph.removeFifo(f1);
-    PiMMHelper.removeActorAndDependencies(graph, da);
+
+    PersistenceLevel plExt = dExt.getLevel();
+    d.setLevel(plExt);
     d.setActor(daExt);
+    PiMMHelper.removeActorAndDependencies(graph, da);
   }
 
   /**

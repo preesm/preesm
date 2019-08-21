@@ -24,8 +24,10 @@ PREESM Changelog
 * Hardware Codegen Refactor: CHardwarePrinter extends now the CPrinter and override some of the methods;
 * SPiDER codegen considers empty PAPIFY configs as papify=false;
 * Update round buffer memory script to handle multiple inputs;
-* Schedule: Add an interface to perform transform
-* PiSDF: Add more rules to check mergeability, remove getPreds/Succs from TopologyHelper
+* Schedule: Add an interface to perform transform;
+* PiSDF: 
+  * Add more rules to check mergeability, remove getPreds/Succs from TopologyHelper;
+  * Add rules in the consistency checker;
 * Codegen:
   * Add IteratedBuffer, ClusterBlock, SectionBlock for clustering codegen
   * Add conditional "#pragma omp parallel for" on FiniteLoopBlock
@@ -35,6 +37,7 @@ PREESM Changelog
 * Fix #189
 * Fix #193
 * Fix scheduling of graphs with large data rates.
+* Fix optimizations of PiSDF flattening task.
 
 ## Release version 3.14.1
 *2019.07.25*
