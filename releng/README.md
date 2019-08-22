@@ -469,6 +469,7 @@ Approximately every 3 months, the Eclipse foundation releases a new Eclipse vers
 *   Update the `<repositories>` section in the parent POM file (the two first P2 repositories reference latest Eclipse and Eclipse updates repositories);
 *   Update versions in the feature, site, product;
 *   Update the feature and dev feature discovery sites with new repository URLs and names;
+*   Update Maven plugins if necessary (i.e. there is no support for new versions of Eclipse in the current version of the Maven plugin, this is the case for Tycho or RCPTT usually)
 *   Build locally and tryout the product, the update site using the Java package of the latest Eclipse version, the dev meta feature + source code;
 *   Fix errors, if any;
 *   Keep consistent Eclipse versions with Graphiti, Preesm and dev features.
