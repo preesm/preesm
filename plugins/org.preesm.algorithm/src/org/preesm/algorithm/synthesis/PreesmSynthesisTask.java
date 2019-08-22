@@ -58,9 +58,7 @@ import org.preesm.workflow.implement.AbstractWorkflowNodeImplementation;
  *
  * @author anmorvan
  *
- * @deprecated for debug purpose
  */
-@Deprecated
 @PreesmTask(id = "pisdf-synthesis.simple", name = "Simple Synhtesis", category = "Synhtesis",
 
     inputs = { @Port(name = "PiMM", type = PiGraph.class), @Port(name = "architecture", type = Design.class),
