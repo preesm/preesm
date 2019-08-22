@@ -91,14 +91,16 @@ import org.preesm.workflow.implement.AbstractWorkflowNodeImplementation;
                 @Value(name = "dump", effect = "PAPIFY is on. Print csv files"),
                 @Value(name = "feedback", effect = "PAPIFY is on. Give feedback to the GRT"),
                 @Value(name = "both", effect = "PAPIFY is on. Print csv files and give feedback to the GRT") }),
-        @Parameter(name = "verbose", description = "Wether to log.",
+        @Parameter(name = "apollo", description = "Whether to use Apollo.",
             values = { @Value(name = "true / false", effect = "") }),
-        @Parameter(name = "trace", description = "Wether to trace what is happening at runtime.",
+        @Parameter(name = "verbose", description = "Whether to log.",
+            values = { @Value(name = "true / false", effect = "") }),
+        @Parameter(name = "trace", description = "Whether to trace what is happening at runtime.",
             values = { @Value(name = "true / false", effect = "") }),
         @Parameter(name = "stack-type", description = "Type of stack to use",
             values = { @Value(name = "static", effect = "Use static stack"),
                 @Value(name = "dynamic", effect = "Use dynamic stack") }),
-        @Parameter(name = "graph-optims", description = "Wether to optimize the graph at runtime or not",
+        @Parameter(name = "graph-optims", description = "Whether to optimize the graph at runtime or not",
             values = { @Value(name = "true / false", effect = "") }) },
 
     seeAlso = { "**Spider**: Heulot, Julien; Pelcat, Maxime; Desnos, Karol; Nezan, Jean-François; Aridhi, Slaheddine "
@@ -108,6 +110,8 @@ public class SpiderCodegenTask extends AbstractTaskImplementation {
 
   /** The Constant PARAM_PAPIFY. */
   public static final String PARAM_PAPIFY        = "papify";
+  /** The Constant PARAM_APOLLO. */
+  public static final String PARAM_APOLLO        = "apollo";
   /** The Constant PARAM_VERBOSE. */
   public static final String PARAM_VERBOSE       = "verbose";
   /** The Constant PARAM_TRACE. */
@@ -158,7 +162,7 @@ public class SpiderCodegenTask extends AbstractTaskImplementation {
 
     launcher.initGenerator(pg);
     final String graphCode = launcher.generateGraphCode(pg);
-    final String fctCode = launcher.generateFunctionCode(pg);
+    final String fctCode = launcher.generateFunctionCode(pg, spiderConfig);
     final String hCode = launcher.generateHeaderCode(pg, spiderConfig);
     // TODO: add config as parameters from workflow
     final String mCode = launcher.generateMainCode(pg, spiderConfig);

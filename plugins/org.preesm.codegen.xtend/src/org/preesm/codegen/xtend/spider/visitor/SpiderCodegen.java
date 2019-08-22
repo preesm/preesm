@@ -62,6 +62,7 @@ import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.Actor;
 import org.preesm.model.pisdf.CHeaderRefinement;
+import org.preesm.model.pisdf.ConfigInputPort;
 import org.preesm.model.pisdf.FunctionArgument;
 import org.preesm.model.pisdf.FunctionPrototype;
 import org.preesm.model.pisdf.Parameter;
@@ -134,6 +135,10 @@ public class SpiderCodegen {
 
   /** **/
   private final List<String> coreTypeName = new LinkedList<>();
+
+  /** **/
+  private final List<Parameter>                 dynamicParams = new LinkedList<>();
+  private final Map<ConfigInputPort, Parameter> cipToParam    = new LinkedHashMap<>();
 
   /**
    * Instantiates a new spider codegen.
@@ -305,6 +310,7 @@ public class SpiderCodegen {
 
     /* Declare Include Files */
     append("#include <spider.h>\n\n");
+    append("#include <apolloAPI.h>\n\n");
 
     append("#define N_PE_TYPE " + Integer.toString(this.coreTypesIds.keySet().size()) + "\n");
     for (final Component coreType : this.coreTypesIds.keySet()) {
@@ -805,7 +811,7 @@ public class SpiderCodegen {
    *          the pg
    * @return the string
    */
-  public String generateFunctionCode(final PiGraph pg) {
+  public String generateFunctionCode(final PiGraph pg, final SpiderConfig spiderConfig) {
     this.cppString.setLength(0);
 
     // /Generate the header (license, includes and constants)
@@ -845,9 +851,14 @@ public class SpiderCodegen {
     }
     append("};\n\n");
 
+    for (Parameter parameter : pg.getAllParameters()) {
+      if (parameter.isConfigurable() || parameter.isDependent()) {
+        this.dynamicParams.add(parameter);
+      }
+    }
     // Generate functions
     for (final AbstractActor aa : this.functionMap.keySet()) {
-      generateFunctionBody(aa);
+      generateFunctionBody(aa, spiderConfig);
     }
 
     // Returns the final C++ code
@@ -915,7 +926,7 @@ public class SpiderCodegen {
    * @param aa
    *          the aa
    */
-  private void generateFunctionBody(final AbstractActor aa) {
+  private void generateFunctionBody(final AbstractActor aa, final SpiderConfig spiderConfig) {
     append("void ");
     append(SpiderNameGenerator.getFunctionName(aa));
     append("(void* inputFIFOs[], void* outputFIFOs[], Param inParams[], Param outParams[]){\n");
@@ -924,7 +935,32 @@ public class SpiderCodegen {
     if (a.getRefinement() instanceof CHeaderRefinement) {
       final CHeaderRefinement href = (CHeaderRefinement) a.getRefinement();
       final FunctionPrototype proto = href.getLoopPrototype();
-
+      if (spiderConfig.getUseOfApollo()) {
+        Set<ConfigInputPort> dynamicPorts = new LinkedHashSet<>();
+        int dynPortsSize = 0;
+        for (Parameter parameter : this.dynamicParams) {
+          final EList<ConfigInputPort> paramList = aa.lookupConfigInputPortsConnectedWithParameter(parameter);
+          if (paramList != null && !paramList.isEmpty()) {
+            for (ConfigInputPort singleCIP : paramList) {
+              dynamicPorts.add(singleCIP);
+              cipToParam.put(singleCIP, parameter);
+              dynPortsSize++;
+            }
+          }
+        }
+        if (!dynamicPorts.isEmpty()) {
+          append("\tstd::int64_t* params = new std::int64_t[" + dynPortsSize + "];\n");
+          int counter = 0;
+          for (ConfigInputPort singleCIP : dynamicPorts) {
+            append("\tparams[" + counter + "] = inParams[" + this.portMap.get(singleCIP) + "]; /* "
+                + singleCIP.getName() + " is connected to " + cipToParam.get(singleCIP).getName() + "*/\n");
+            counter++;
+          }
+          append("\tapolloAddActorConfig(params, " + counter + ", pthread_self(), \"" + a.getName() + "\");\n");
+        } else {
+          append("\tapolloAddActorConfig(NULL, 0, pthread_self(), \"" + a.getName() + "\");\n");
+        }
+      }
       append("\t" + proto.getName() + "(\n");
       int maxParamSize = 0;
       for (final FunctionArgument param : proto.getArguments()) {
@@ -942,6 +978,7 @@ public class SpiderCodegen {
         switch (param.getDirection()) {
           case IN:
             if (param.isIsConfigurationParameter()) {
+              aa.isLocallyStatic();
               for (final Port port : a.getConfigInputPorts()) {
                 if (port.getName().equals(param.getName())) {
                   append("\t\t/* " + String.format("%1$-" + maxParamSize + "s", param.getName())

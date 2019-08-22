@@ -174,6 +174,13 @@ class SpiderMainFilePrinter {
 			cfg.dumpPapifyInfo = false;
 			cfg.feedbackPapifyInfo = false;
 		«ENDIF»
+		
+		/* == Apollo optimization == */
+		«IF spiderConfig.useOfApollo»
+			//cfg.useApollo = true;
+		«ELSE»
+			cfg.useApollo = false;
+		«ENDIF»
 
 		try {
 			/* == Spider stacks init == */
@@ -188,6 +195,11 @@ class SpiderMainFilePrinter {
 «printInitCallRec(pg)»
 			/* == PiSDF graph construction == */
 			init_«pg.name»();
+			
+			«IF spiderConfig.useOfApollo»
+				/* == Apollo initialization == */
+				initApolloForDataflow();
+			«ENDIF»
 
 			/* == Reserving memory for persistent delays == */
 			Spider::initReservedMemory();

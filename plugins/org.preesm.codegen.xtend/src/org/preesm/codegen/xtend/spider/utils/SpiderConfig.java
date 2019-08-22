@@ -52,6 +52,7 @@ public class SpiderConfig {
   private boolean usePapify;
   private boolean dumpPapifyInfo;
   private boolean feedbackPapifyInfo;
+  private boolean useApollo;
   private boolean useVerbose;
   private boolean useTrace;
   private boolean useGraphOptims;
@@ -107,6 +108,7 @@ public class SpiderConfig {
    */
   public SpiderConfig(final Map<String, String> workflowParameters) {
     final String papifyParameter = workflowParameters.get(SpiderCodegenTask.PARAM_PAPIFY);
+    final String apolloParameter = workflowParameters.get(SpiderCodegenTask.PARAM_APOLLO);
     final String verboseParameter = workflowParameters.get(SpiderCodegenTask.PARAM_VERBOSE);
     final String traceParameter = workflowParameters.get(SpiderCodegenTask.PARAM_TRACE);
     final String graphOptimsParameter = workflowParameters.get(SpiderCodegenTask.PARAM_GRAPH_OPTIMS);
@@ -116,6 +118,7 @@ public class SpiderConfig {
     final String sharedMemoryParameter = workflowParameters.get(SpiderCodegenTask.PARAM_SHMEMORY_SIZE);
 
     setPapifyFeedbackType(papifyParameter);
+    useApollo = "true".equalsIgnoreCase(apolloParameter);
     useVerbose = "true".equalsIgnoreCase(verboseParameter);
     useTrace = "true".equalsIgnoreCase(traceParameter);
     useGraphOptims = !"false".equalsIgnoreCase(graphOptimsParameter);
@@ -135,6 +138,10 @@ public class SpiderConfig {
 
   public boolean getFeedbackPapifyInfo() {
     return feedbackPapifyInfo;
+  }
+  
+  public boolean getUseOfApollo() {
+    return useApollo;
   }
 
   public boolean getUseOfVerbose() {
