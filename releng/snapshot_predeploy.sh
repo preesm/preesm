@@ -54,7 +54,7 @@ CURRENT_SITE_FOLDER=current-site
 rm -rf ${CURRENT_SITE_FOLDER}
 git clone https://github.com/${TARGET_GH_REPO}.git -b ${SITE_GITHUB_BRANCH} ${CURRENT_SITE_FOLDER}
 
-CURRENT_PUBLISHED_RELEASES=$(find ${CURRENT_SITE_FOLDER} -maxdepth 1 -regextype posix-egrep -regex "${CURRENT_SITE_FOLDER}/org.preesm-[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+\$" | rev | cut -d'/' -f 1 | rev | sort sort -t. -k 1,1n -k 2,2n -k 3,3n -k 4,4n | tail -n ${MAX_VERSIONS_COUNT})
+CURRENT_PUBLISHED_RELEASES=$(find ${CURRENT_SITE_FOLDER} -maxdepth 1 -regextype posix-egrep -regex "${CURRENT_SITE_FOLDER}/org.preesm-[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+\$" | rev | cut -d'/' -f 1 | rev | sort -t. -k 1,1n -k 2,2n -k 3,3n -k 4,4n | tail -n ${MAX_VERSIONS_COUNT})
 
 NEW_REPO_FOLDER=releng/org.preesm.site/target/gensite/update-site
 
