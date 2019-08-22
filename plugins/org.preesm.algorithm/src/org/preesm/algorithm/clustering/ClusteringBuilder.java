@@ -99,8 +99,10 @@ public class ClusteringBuilder {
     PiGraph firstStageGraph = PiMMUserFactory.instance.copyPiGraphWithHistory(origAlgorithm);
     this.pigraph = firstStageGraph;
 
+    PiGraphConsistenceChecker.check(this.pigraph);
+
     nbCluster = 0;
-    repetitionVector = PiBRV.compute(firstStageGraph, BRVMethod.LCM);
+    repetitionVector = PiBRV.compute(this.pigraph, BRVMethod.LCM);
     // Until the algorithm has to work
     while (!clusteringAlgorithm.clusteringComplete(this)) {
       // Search actors to clusterize
@@ -108,7 +110,7 @@ public class ClusteringBuilder {
       // Clusterize given actors
       clusterizeActors(actorFound);
       // Compute BRV with the corresponding graph
-      repetitionVector = PiBRV.compute(firstStageGraph, BRVMethod.LCM);
+      repetitionVector = PiBRV.compute(this.pigraph, BRVMethod.LCM);
     }
 
     // Perform flattening transformation on schedule graph
@@ -134,7 +136,7 @@ public class ClusteringBuilder {
     scheduleTransform(new ScheduleParallelismDepthLimiter(1));
 
     // Verify consistency of result graph
-    PiGraphConsistenceChecker.check(pigraph);
+    PiGraphConsistenceChecker.check(this.pigraph);
 
     return scheduleMapping;
   }
@@ -334,7 +336,7 @@ public class ClusteringBuilder {
       dipTmp.addAll(a.getDataInputPorts());
       for (DataInputPort dip : dipTmp) {
         // We only deport the output if FIFO is not internal
-        if (!actorList.contains(dip.getIncomingFifo().getSourcePort().getContainingActor())) {
+        if (!actorList.contains(dip.getIncomingFifo().getSource())) {
           setDataInputPortAsHInterface(cluster, dip, "in_" + nbIn++,
               dip.getExpression().evaluate() * actorRepetition / clusterRepetition);
         } else {
@@ -351,7 +353,7 @@ public class ClusteringBuilder {
       dopTmp.addAll(a.getDataOutputPorts());
       for (DataOutputPort dop : dopTmp) {
         // We only deport the output if FIFO is not internal
-        if (!actorList.contains(dop.getOutgoingFifo().getTargetPort().getContainingActor())) {
+        if (!actorList.contains(dop.getOutgoingFifo().getTarget())) {
           setDataOutputPortAsHInterface(cluster, dop, "out_" + nbOut++,
               dop.getExpression().evaluate() * actorRepetition / clusterRepetition);
         } else {
