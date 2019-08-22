@@ -1,7 +1,7 @@
 Preesm Maintainer Documentation
 ===============================
 
-**NOTE: part of this documentation is outdated.**
+**NOTE: part of this documentation might be outdated.**
 
 This document explains the build process of Preesm and its components (Graphiti and their dependencies), all the configuration of the release and deploy procedures, automatic documentation for tasks, website management, as well as the IDE automatic setup with custom Eclipse plugins.
 
