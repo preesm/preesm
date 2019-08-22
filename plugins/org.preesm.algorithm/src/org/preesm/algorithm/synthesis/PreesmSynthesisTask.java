@@ -43,10 +43,13 @@ import org.preesm.algorithm.memalloc.model.Allocation;
 import org.preesm.algorithm.schedule.model.Schedule;
 import org.preesm.algorithm.synthesis.memalloc.IMemoryAllocation;
 import org.preesm.algorithm.synthesis.memalloc.SimpleMemoryAllocation;
+import org.preesm.algorithm.synthesis.schedule.EnergyAwareScheduler;
 import org.preesm.algorithm.synthesis.schedule.IScheduler;
 import org.preesm.algorithm.synthesis.schedule.SimpleScheduler;
+import org.preesm.commons.doc.annotations.Parameter;
 import org.preesm.commons.doc.annotations.Port;
 import org.preesm.commons.doc.annotations.PreesmTask;
+import org.preesm.commons.doc.annotations.Value;
 import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.scenario.Scenario;
 import org.preesm.model.slam.Design;
@@ -63,10 +66,14 @@ import org.preesm.workflow.implement.AbstractWorkflowNodeImplementation;
 
     inputs = { @Port(name = "PiMM", type = PiGraph.class), @Port(name = "architecture", type = Design.class),
         @Port(name = "scenario", type = Scenario.class) },
-
+    parameters = { @Parameter(name = "Energy", description = "Enables energy-aware mapping/scheduling",
+        values = { @Value(name = "true/false", effect = "Turns on/off energy-awareness") }) },
     outputs = { @Port(name = "Schedule", type = Schedule.class), @Port(name = "Mapping", type = Mapping.class),
         @Port(name = "Allocation", type = Allocation.class) })
 public class PreesmSynthesisTask extends AbstractTaskImplementation {
+
+  /** The Constant ENERGY_PARAMETER. */
+  public static final String ENERGY_PARAMETER = "Energy";
 
   @Override
   public Map<String, Object> execute(Map<String, Object> inputs, Map<String, String> parameters,
@@ -76,7 +83,12 @@ public class PreesmSynthesisTask extends AbstractTaskImplementation {
     final Design architecture = (Design) inputs.get(AbstractWorkflowNodeImplementation.KEY_ARCHITECTURE);
     final Scenario scenario = (Scenario) inputs.get(AbstractWorkflowNodeImplementation.KEY_SCENARIO);
 
-    final IScheduler scheduler = new SimpleScheduler();
+    IScheduler scheduler = null;
+    if (parameters.get(PreesmSynthesisTask.ENERGY_PARAMETER).equalsIgnoreCase("true")) {
+      scheduler = new EnergyAwareScheduler();
+    } else {
+      scheduler = new SimpleScheduler();
+    }
     final SynthesisResult scheduleAndMap = scheduler.scheduleAndMap(algorithm, architecture, scenario);
 
     final IMemoryAllocation alloc = new SimpleMemoryAllocation();

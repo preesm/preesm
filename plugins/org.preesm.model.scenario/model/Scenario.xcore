@@ -657,13 +657,6 @@ class PapiCpuID {
 		var double value = ScenarioConstants.DEFAULT_POWER_PE.value
 		return value
 	}
-	op double getPeTypePowerOrDefault(String peType) {
-		if (platformPower.containsKey(peType)) {
-			return platformPower.get(peType)			
-		}		
-		var double value = ScenarioConstants.DEFAULT_POWER_PE.value
-		return value
-	}
  }
  class PerformanceObjective{
  	double objectiveEPS
