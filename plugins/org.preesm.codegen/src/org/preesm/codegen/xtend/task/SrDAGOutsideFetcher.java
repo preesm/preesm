@@ -10,8 +10,8 @@ import org.preesm.algorithm.model.dag.DAGVertex;
 import org.preesm.algorithm.model.dag.DirectedAcyclicGraph;
 import org.preesm.codegen.model.Buffer;
 import org.preesm.codegen.model.CoreBlock;
+import org.preesm.codegen.model.DistributedBuffer;
 import org.preesm.codegen.model.SubBuffer;
-import org.preesm.codegen.model.TwinBuffer;
 import org.preesm.model.pisdf.DataInputPort;
 import org.preesm.model.pisdf.DataOutputPort;
 import org.preesm.model.pisdf.DataPort;
@@ -28,7 +28,6 @@ public class SrDAGOutsideFetcher implements IOutsideFetcher {
     // Search corresponding port
     DirectedAcyclicGraph dag = (DirectedAcyclicGraph) input.get("dag");
     DAGVertex dagVertex = (DAGVertex) input.get("dagVertex");
-    DAGEdge dagEdge = null;
     BufferProperties subBufferProperties = null;
     if (graphPort instanceof DataInputPort) {
       Set<DAGEdge> inEdges = dag.incomingEdgesOf(dagVertex);
@@ -37,7 +36,6 @@ public class SrDAGOutsideFetcher implements IOutsideFetcher {
         for (final BufferProperties buffProperty : bufferAggregate) {
           final String portHsdfName = graphPort.getName();
           if (buffProperty.getDestInputPortID().equals(portHsdfName) && edge.getSource().getKind() != null) {
-            dagEdge = edge;
             subBufferProperties = buffProperty;
           }
         }
@@ -49,34 +47,27 @@ public class SrDAGOutsideFetcher implements IOutsideFetcher {
         for (final BufferProperties buffProperty : bufferAggregate) {
           final String portHsdfName = graphPort.getName();
           if (buffProperty.getSourceOutputPortID().equals(portHsdfName) && edge.getTarget().getKind() != null) {
-            dagEdge = edge;
             subBufferProperties = buffProperty;
           }
         }
       }
     }
 
-    // Is the buffer a TwinBuffer ?
+    // Is the buffer a DistributedBuffer ?
     @SuppressWarnings("unchecked")
     Map<BufferProperties, Buffer> srSDFEdgeBuffers = (Map<BufferProperties, Buffer>) input.get("srSDFEdgeBuffers");
     CoreBlock operatorBlock = (CoreBlock) input.get("coreBlock");
     Buffer var = srSDFEdgeBuffers.get(subBufferProperties);
-    if (var instanceof TwinBuffer) {
-      TwinBuffer twinBuffer = (TwinBuffer) var;
-      SubBuffer original = (SubBuffer) twinBuffer.getOriginal();
-      EList<Buffer> twins = twinBuffer.getTwins();
-      SubBuffer originalContainer = (SubBuffer) original.getContainer();
+    if (var instanceof DistributedBuffer) {
+      DistributedBuffer twinBuffer = (DistributedBuffer) var;
+      EList<Buffer> copies = twinBuffer.getDistributedCopies();
       String coreBlockName = operatorBlock.getName();
-      if (originalContainer.getContainer().getName().equals(coreBlockName)) {
-        var = original;
-      } else {
-        for (Buffer bufferTwinChecker : twins) {
-          SubBuffer subBufferChecker = (SubBuffer) bufferTwinChecker;
-          SubBuffer twinContainer = (SubBuffer) subBufferChecker.getContainer();
-          if (twinContainer.getContainer().getName().equals(coreBlockName)) {
-            var = subBufferChecker;
-            break;
-          }
+      for (Buffer bufferTwinChecker : copies) {
+        SubBuffer subBufferChecker = (SubBuffer) bufferTwinChecker;
+        SubBuffer twinContainer = (SubBuffer) subBufferChecker.getContainer();
+        if (twinContainer.getContainer().getName().equals(coreBlockName)) {
+          var = subBufferChecker;
+          break;
         }
       }
     }
