@@ -200,6 +200,7 @@ public class EnergyAwarenessHelper {
    *          {@link Scenario} to be updated
    */
   public static void updateConfigSimu(Scenario scenario, Scenario scenarioMapping) {
+    scenarioMapping.getSimulationInfo().setMainOperator(null);
     if (!scenarioMapping.getConstraints()
         .isCoreContained(scenario.getSimulationInfo().getMainOperator().getInstanceName())) {
       ComponentInstance newMainNode = scenarioMapping.getConstraints().getGroupConstraints().get(0).getKey();
@@ -209,6 +210,7 @@ public class EnergyAwarenessHelper {
     }
     scenarioMapping.getSimulationInfo().setMainComNode(scenario.getSimulationInfo().getMainComNode());
     boolean needToUpdate = true;
+    scenarioMapping.getSimulationInfo().getSpecialVertexOperators().clear();
     for (ComponentInstance specialVertex : scenario.getSimulationInfo().getSpecialVertexOperators()) {
       if (scenarioMapping.getConstraints().isCoreContained(specialVertex.getInstanceName())) {
         scenarioMapping.getSimulationInfo().addSpecialVertexOperator(specialVertex);
@@ -336,7 +338,7 @@ public class EnergyAwarenessHelper {
         }
         break;
       case "down":
-        messageLogger = "FPS below the required ones, decreasing number of PEs ...";
+        messageLogger = "FPS above the required ones, decreasing number of PEs ...";
         PreesmLogger.getLogger().log(Level.INFO, messageLogger);
         for (Entry<String, Integer> peType : coresUsedOfEachType.entrySet()) {
           int valueUsedBefore = peType.getValue();
@@ -421,4 +423,5 @@ public class EnergyAwarenessHelper {
       coresOfEachType.put(peType, coresOfEachType.get(peType) - 1);
     }
   }
+
 }

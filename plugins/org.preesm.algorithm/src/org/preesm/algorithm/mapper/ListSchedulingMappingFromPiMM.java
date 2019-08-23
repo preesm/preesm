@@ -131,18 +131,17 @@ public class ListSchedulingMappingFromPiMM extends ListSchedulingMappingFromDAG 
       Set<Map<String, Integer>> configsAlreadyUsed = new LinkedHashSet<>();
       Map<String, Integer> coresOfEachType = EnergyAwarenessHelper.getCoresOfEachType(scenarioMapping);
       Set<String> pesAlwaysAdded = EnergyAwarenessHelper.getImprescindiblePes(scenarioMapping);
-      // EnergyAwarenessHelper.removeImprescindibleFromAvailableCores(scenarioMapping, coresOfEachType, pesAlwaysAdded);
 
       messageLogger = "PE instances that will always be added are = " + pesAlwaysAdded.toString();
       PreesmLogger.getLogger().log(Level.INFO, messageLogger);
-      // System.out.println("A: " + pesAlwaysAdded.toString());
 
       Map<String, Integer> coresUsedOfEachType = EnergyAwarenessHelper.getFirstConfig(coresOfEachType, "first");
 
       while (true) {
         /**
-         * Reset
+         * Reset --> Like this so as to keep group constraints order unaltered
          */
+        scenarioMapping.getConstraints().getGroupConstraints().addAll(scenario.getConstraints().getGroupConstraints());
         scenario.getConstraints().getGroupConstraints().addAll(scenarioMapping.getConstraints().getGroupConstraints());
 
         /**
@@ -164,10 +163,8 @@ public class ListSchedulingMappingFromPiMM extends ListSchedulingMappingFromDAG 
         /**
          * Try the mapping
          */
-        messageLogger = "Using (coreType = NbPEs) combination = " + coresUsedOfEachType.toString();
+        messageLogger = "Using (coreType = NbPEs) combination = " + configToAdd.toString();
         PreesmLogger.getLogger().log(Level.INFO, messageLogger);
-        // System.out.println("Doing: " + coresUsedOfEachType.toString());
-        // System.out.println("Added: " + configToAdd.toString());
         final MapperDAG dag = StaticPiMM2MapperDAGVisitor.convert(algorithm, architecture, scenarioMapping);
         inputs.put(AbstractWorkflowNodeImplementation.KEY_SDF_DAG, dag);
         mapping = super.execute(inputs, parameters, monitor, nodeName, workflow);
@@ -185,11 +182,9 @@ public class ListSchedulingMappingFromPiMM extends ListSchedulingMappingFromDAG 
         // We consider that energy tab is filled with uJ
         double totalDynamicEnergy = (energyDynamic / 1000000.0) * fps;
         double energyThisOne = powerPlatform + totalDynamicEnergy;
-        // System.out.println("Tried: " + scenarioMapping.getConstraints().getGroupConstraints().keySet().toString());
         messageLogger = coresUsedOfEachType.toString() + " reaches " + fps + " FPS consuming " + energyThisOne
             + " joules per second";
         PreesmLogger.getLogger().log(Level.INFO, messageLogger);
-        // System.out.println("Total energy = " + energyThisOne + " --- FPS = " + fps);
 
         /**
          * Check if it is the best one
@@ -219,15 +214,14 @@ public class ListSchedulingMappingFromPiMM extends ListSchedulingMappingFromDAG 
         }
       }
       /**
-       * Reset
+       * Reset --> Like this so as to keep group constraints order unaltered
        */
+      scenarioMapping.getConstraints().getGroupConstraints().addAll(scenario.getConstraints().getGroupConstraints());
       scenario.getConstraints().getGroupConstraints().addAll(scenarioMapping.getConstraints().getGroupConstraints());
 
       /**
        * Getting the best one
        */
-      EnergyAwarenessHelper.updateConfigConstrains(scenario, scenarioMapping, pesAlwaysAdded, bestConfig);
-      EnergyAwarenessHelper.updateConfigSimu(scenario, scenarioMapping);
       if (minEnergy == Double.MAX_VALUE) {
         minEnergy = energyNoObjective;
         mapping.putAll(mappingFPS);
@@ -240,14 +234,9 @@ public class ListSchedulingMappingFromPiMM extends ListSchedulingMappingFromDAG 
       messageLogger = "Performance reached =  " + closestFPS + " FPS with an energy consumption of " + minEnergy
           + " joules per second";
       PreesmLogger.getLogger().log(Level.INFO, messageLogger);
-      // System.out.println("Getting the best one");
-      // System.out.println("Best: " + bestConfig.toString());
-      // System.out.println("Best energy = " + minEnergy + " --- best FPS = " + closestFPS);
-
       /**
        * Fill scenario with everything again to avoid further problems
        */
-      scenario.getConstraints().getGroupConstraints().addAll(scenarioMapping.getConstraints().getGroupConstraints());
       EnergyAwarenessHelper.copyScenario(scenarioMapping, scenario);
       inputs.put(AbstractWorkflowNodeImplementation.KEY_SCENARIO, scenario);
     } else {
