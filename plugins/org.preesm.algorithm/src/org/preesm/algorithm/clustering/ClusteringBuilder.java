@@ -83,32 +83,30 @@ public class ClusteringBuilder {
   }
 
   /**
-   * @return schedule mapping including all cluster with corresponding scheduling
+   * @return schedule mapping including all clusters with corresponding schedule tree
    */
   public final Map<AbstractActor, Schedule> processClustering() {
-    // Check for delay and verify if it is clusterizable
-    if (isGraphNotClusterizable()) {
-      throw new PreesmRuntimeException(
-          "ClusteringBuilder: cannot clusterize input graph because of non-compatible delay(s)");
-    }
+    // Check for uncompatible delay
+    clusterizableCheck();
 
     // Keep original algorithm
     PiGraph origAlgorithm = this.pigraph;
 
     // Copy input graph for first stage of clustering with clustering algorithm
     PiGraph firstStageGraph = PiMMUserFactory.instance.copyPiGraphWithHistory(origAlgorithm);
-    this.pigraph = firstStageGraph;
-
     PiGraphConsistenceChecker.check(this.pigraph);
+    // Set copy as graph to cluster
+    this.pigraph = firstStageGraph;
 
     nbCluster = 0;
     repetitionVector = PiBRV.compute(this.pigraph, BRVMethod.LCM);
     // Until the algorithm has to work
     while (!clusteringAlgorithm.clusteringComplete(this)) {
       // Search actors to clusterize
-      Pair<ScheduleType, List<AbstractActor>> actorFound = clusteringAlgorithm.findActors(this);
+      Pair<ScheduleType, List<AbstractActor>> actorsFound = clusteringAlgorithm.findActors(this);
       // Clusterize given actors
-      clusterizeActors(actorFound);
+      HierarchicalSchedule clusterSchedule = (HierarchicalSchedule) clusterize(actorsFound);
+      scheduleMapping.put(clusterSchedule.getAttachedActor(), clusterSchedule);
       // Compute BRV with the corresponding graph
       repetitionVector = PiBRV.compute(this.pigraph, BRVMethod.LCM);
     }
@@ -125,7 +123,7 @@ public class ClusteringBuilder {
     scheduleMapping.clear();
     nbCluster = 0;
     for (Schedule schedule : schedules) {
-      HierarchicalSchedule processedSchedule = (HierarchicalSchedule) processClusteringFrom(schedule);
+      HierarchicalSchedule processedSchedule = (HierarchicalSchedule) clusterize(schedule);
       scheduleMapping.put(processedSchedule.getAttachedActor(), processedSchedule);
     }
 
@@ -141,57 +139,35 @@ public class ClusteringBuilder {
     return scheduleMapping;
   }
 
-  private final boolean isGraphNotClusterizable() {
+  private final void clusterizableCheck() {
     for (Fifo fifo : pigraph.getFifosWithDelay()) {
+      Delay delay = fifo.getDelay();
+
+      // If delay has getter/setter, throw an exception
+      if (delay.getActor().getDataInputPort().getIncomingFifo() != null
+          || delay.getActor().getDataOutputPort().getOutgoingFifo() != null) {
+        throw new PreesmRuntimeException(
+            "ClusteringBuilder: Actually, " + delay.getActor().getName() + " getter/setter are not handled");
+      }
+
       long prod = fifo.getSourcePort().getExpression().evaluate();
       long cons = fifo.getTargetPort().getExpression().evaluate();
-      long delay = fifo.getDelay().getExpression().evaluate();
-      if ((delay != prod) || (delay != cons)) {
-        return true;
+      long delayCapacity = delay.getExpression().evaluate();
+      // If delay is not a self-loop
+      if ((delayCapacity != prod) || (delayCapacity != cons)) {
+        throw new PreesmRuntimeException(
+            "ClusteringBuilder: Actually, delay that are not self-loop aren't clusterizable");
       }
     }
-    return false;
   }
 
   private final void scheduleTransform(IScheduleTransform transformer) {
+    // Perform transform on every schedule tree contained in scheduleMapping
     for (Entry<AbstractActor, Schedule> entry : scheduleMapping.entrySet()) {
       Schedule schedule = entry.getValue();
       schedule = transformer.performTransform(schedule);
       scheduleMapping.replace(entry.getKey(), schedule);
     }
-  }
-
-  private final Schedule processClusteringFrom(Schedule schedule) {
-    // If it is an hierarchical schedule, explore and cluster actors
-    if (schedule instanceof HierarchicalSchedule) {
-      HierarchicalSchedule hierSchedule = (HierarchicalSchedule) schedule;
-      // Retrieve childrens schedule and actors
-      List<Schedule> childSchedules = new LinkedList<>();
-      childSchedules.addAll(hierSchedule.getChildren());
-      List<AbstractActor> childActors = new LinkedList<>();
-      // Clear list of children schedule
-      hierSchedule.getChildren().clear();
-      for (Schedule child : childSchedules) {
-        // Explore children and process clustering into
-        Schedule processedChild = processClusteringFrom(child);
-        hierSchedule.getChildren().add(processedChild);
-        // Retrieve list of children AbstractActor (needed for clusterization)
-        if (child instanceof HierarchicalSchedule) {
-          childActors.add(((HierarchicalSchedule) processedChild).getAttachedActor());
-        } else {
-          childActors.addAll(processedChild.getActors());
-        }
-      }
-
-      // Compute repetition vector
-      repetitionVector = PiBRV.compute(pigraph, BRVMethod.LCM);
-
-      // Build new cluster
-      PiGraph newCluster = buildClusterGraph(childActors);
-      hierSchedule.setAttachedActor(newCluster);
-    }
-
-    return schedule;
   }
 
   private final IClusteringAlgorithm clusteringAlgorithmFactory(String clusteringAlgorithm) {
@@ -214,25 +190,64 @@ public class ClusteringBuilder {
   }
 
   /**
-   * clusterize two actors (left -> right, it means that left produce token for right)
+   * clusterize actors together
    * 
-   * @param actorSchedule
-   *          schedule of actor inside of cluster
-   * @return
+   * @param actors
+   *          list of actors to clusterize
+   * @return schedule tree of cluster
    */
-  private final void clusterizeActors(Pair<ScheduleType, List<AbstractActor>> actorFound) {
+  private final Schedule clusterize(Pair<ScheduleType, List<AbstractActor>> actors) {
 
     // Build corresponding hierarchical actor
-    AbstractActor cluster = buildClusterGraph(actorFound.getValue());
+    AbstractActor cluster = buildCluster(actors.getValue());
 
     // Build corresponding hierarchical schedule
-    HierarchicalSchedule schedule = buildHierarchicalSchedule(actorFound);
+    HierarchicalSchedule schedule = buildHierarchicalSchedule(actors);
 
     // Attach cluster to hierarchical schedule
     schedule.setAttachedActor(cluster);
 
-    // Register the new cluster with it corresponding key
-    scheduleMapping.put(cluster, schedule);
+    return schedule;
+  }
+
+  /**
+   * clusterize actors regarding to the specified schedule
+   * 
+   * @param schedule
+   *          schedule to clusterize from
+   * @return schedule tree of cluster
+   */
+  private final Schedule clusterize(Schedule schedule) {
+    // If it is an hierarchical schedule, explore
+    if (schedule instanceof HierarchicalSchedule) {
+      HierarchicalSchedule hierSchedule = (HierarchicalSchedule) schedule;
+      // Retrieve childrens schedule and actors
+      List<Schedule> childSchedules = new LinkedList<>();
+      childSchedules.addAll(hierSchedule.getChildren());
+      List<AbstractActor> childActors = new LinkedList<>();
+      // Clear list of children schedule
+      hierSchedule.getChildren().clear();
+      for (Schedule child : childSchedules) {
+        // Explore children and process clustering into
+        Schedule processedChild = clusterize(child);
+        hierSchedule.getChildren().add(processedChild);
+        // Retrieve list of children AbstractActor (needed for clusterization)
+        if (child instanceof HierarchicalSchedule) {
+          childActors.add(((HierarchicalSchedule) processedChild).getAttachedActor());
+        } else {
+          childActors.addAll(processedChild.getActors());
+        }
+      }
+
+      // Compute repetition vector
+      repetitionVector = PiBRV.compute(pigraph, BRVMethod.LCM);
+
+      // Build new cluster
+      PiGraph newCluster = buildCluster(childActors);
+      hierSchedule.setAttachedActor(newCluster);
+    }
+
+    return schedule;
   }
 
   /**
@@ -299,6 +314,7 @@ public class ClusteringBuilder {
         actorSchedule = ScheduleFactory.eINSTANCE.createParallelActorSchedule();
       }
       actorSchedule.setRepetition(repetition);
+      // Register in the schedule with original actor to be able to clusterize the non-copy graph
       actorSchedule.getActorList().add(PreesmCopyTracker.getSource(actor));
       schedule.getScheduleTree().add(actorSchedule);
     }
@@ -309,10 +325,10 @@ public class ClusteringBuilder {
    *          list of actor to clusterize
    * @return generated PiGraph connected with the parent graph
    */
-  private final PiGraph buildClusterGraph(List<AbstractActor> actorList) {
+  private final PiGraph buildCluster(List<AbstractActor> actorList) {
     // Create the cluster actor and set it name
     PiGraph cluster = PiMMUserFactory.instance.createPiGraph();
-    cluster.setName("cluster_" + this.nbCluster++);
+    cluster.setName("cluster_" + nbCluster++);
     cluster.setUrl(pigraph.getUrl() + "/" + cluster.getName() + ".pi");
 
     // Add cluster to the parent graph
@@ -335,13 +351,14 @@ public class ClusteringBuilder {
       List<DataInputPort> dipTmp = new ArrayList<>();
       dipTmp.addAll(a.getDataInputPorts());
       for (DataInputPort dip : dipTmp) {
-        // We only deport the output if FIFO is not internal
+        // We only deport the input if FIFO is not internal
         if (!actorList.contains(dip.getIncomingFifo().getSource())) {
-          setDataInputPortAsHInterface(cluster, dip, "in_" + nbIn++,
+          setDataInputPortAsInterface(cluster, dip, "in_" + nbIn++,
               dip.getExpression().evaluate() * actorRepetition / clusterRepetition);
         } else {
           cluster.addFifo(dip.getIncomingFifo());
           Delay delay = dip.getIncomingFifo().getDelay();
+          // If there is a delay, add it into the cluster
           if (delay != null) {
             cluster.addDelay(delay);
           }
@@ -354,11 +371,12 @@ public class ClusteringBuilder {
       for (DataOutputPort dop : dopTmp) {
         // We only deport the output if FIFO is not internal
         if (!actorList.contains(dop.getOutgoingFifo().getTarget())) {
-          setDataOutputPortAsHInterface(cluster, dop, "out_" + nbOut++,
+          setDataOutputPortAsInterface(cluster, dop, "out_" + nbOut++,
               dop.getExpression().evaluate() * actorRepetition / clusterRepetition);
         } else {
           cluster.addFifo(dop.getOutgoingFifo());
           Delay delay = dop.getOutgoingFifo().getDelay();
+          // If there is a delay, add it into the cluster
           if (delay != null) {
             cluster.addDelay(delay);
           }
@@ -377,7 +395,7 @@ public class ClusteringBuilder {
     }
     int nbCfg = 0;
     for (ConfigInputPort cfgip : cfgipTmp) {
-      setConfigInputPortAsHInterface(cluster, cfgip, "config_" + nbCfg++);
+      setConfigInputPortAsInterface(cluster, cfgip, "config_" + nbCfg++);
     }
 
     return cluster;
@@ -393,7 +411,7 @@ public class ClusteringBuilder {
    * @param newExpression
    *          prod/cons value
    */
-  private final DataInputInterface setDataInputPortAsHInterface(PiGraph newHierarchy, DataInputPort insideInputPort,
+  private final DataInputInterface setDataInputPortAsInterface(PiGraph newHierarchy, DataInputPort insideInputPort,
       String name, long newExpression) {
     // Setup DataInputInterface
     DataInputInterface inputInterface = PiMMUserFactory.instance.createDataInputInterface();
@@ -440,7 +458,7 @@ public class ClusteringBuilder {
    * @param newExpression
    *          prod/cons value
    */
-  private final DataOutputInterface setDataOutputPortAsHInterface(PiGraph newHierarchy, DataOutputPort insideOutputPort,
+  private final DataOutputInterface setDataOutputPortAsInterface(PiGraph newHierarchy, DataOutputPort insideOutputPort,
       String name, long newExpression) {
     // Setup DataOutputInterface
     DataOutputInterface outputInterface = PiMMUserFactory.instance.createDataOutputInterface();
@@ -484,7 +502,7 @@ public class ClusteringBuilder {
    *          ConfigInputPort to connect outside
    * @return generated ConfigInputInterface
    */
-  private final ConfigInputInterface setConfigInputPortAsHInterface(PiGraph newHierarchy,
+  private final ConfigInputInterface setConfigInputPortAsInterface(PiGraph newHierarchy,
       ConfigInputPort insideInputPort, String name) {
     // Setup ConfigInputInterface
     ConfigInputInterface inputInterface = PiMMUserFactory.instance.createConfigInputInterface();
