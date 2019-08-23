@@ -213,7 +213,7 @@ class Constraints {
 		return groupConstraints.filter[e | e.key.component.vlnv.name.equals(compType)].size;
 	}
 	op boolean isCoreContained(String peName) {
-		return groupConstraints.filter[e | e.key.instanceName.equals(peName)].empty;
+		return !groupConstraints.filter[e | e.key.instanceName.equals(peName)].empty;
 	}
 }
 
