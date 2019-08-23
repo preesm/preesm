@@ -811,7 +811,7 @@ public class SpiderCodegen {
    *          the pg
    * @return the string
    */
-  public String generateFunctionCode(final PiGraph pg, final SpiderConfig spiderConfig) {
+  public String generateFunctionCode(final PiGraph pg) {
     this.cppString.setLength(0);
 
     // /Generate the header (license, includes and constants)
@@ -858,7 +858,7 @@ public class SpiderCodegen {
     }
     // Generate functions
     for (final AbstractActor aa : this.functionMap.keySet()) {
-      generateFunctionBody(aa, spiderConfig);
+      generateFunctionBody(aa);
     }
 
     // Returns the final C++ code
@@ -926,7 +926,7 @@ public class SpiderCodegen {
    * @param aa
    *          the aa
    */
-  private void generateFunctionBody(final AbstractActor aa, final SpiderConfig spiderConfig) {
+  private void generateFunctionBody(final AbstractActor aa) {
     append("void ");
     append(SpiderNameGenerator.getFunctionName(aa));
     append("(void* inputFIFOs[], void* outputFIFOs[], Param inParams[], Param outParams[]){\n");
@@ -935,32 +935,7 @@ public class SpiderCodegen {
     if (a.getRefinement() instanceof CHeaderRefinement) {
       final CHeaderRefinement href = (CHeaderRefinement) a.getRefinement();
       final FunctionPrototype proto = href.getLoopPrototype();
-      if (spiderConfig.getUseOfApollo()) {
-        Set<ConfigInputPort> dynamicPorts = new LinkedHashSet<>();
-        int dynPortsSize = 0;
-        for (Parameter parameter : this.dynamicParams) {
-          final EList<ConfigInputPort> paramList = aa.lookupConfigInputPortsConnectedWithParameter(parameter);
-          if (paramList != null && !paramList.isEmpty()) {
-            for (ConfigInputPort singleCIP : paramList) {
-              dynamicPorts.add(singleCIP);
-              cipToParam.put(singleCIP, parameter);
-              dynPortsSize++;
-            }
-          }
-        }
-        if (!dynamicPorts.isEmpty()) {
-          append("\tstd::int64_t* params = new std::int64_t[" + dynPortsSize + "];\n");
-          int counter = 0;
-          for (ConfigInputPort singleCIP : dynamicPorts) {
-            append("\tparams[" + counter + "] = inParams[" + this.portMap.get(singleCIP) + "]; /* "
-                + singleCIP.getName() + " is connected to " + cipToParam.get(singleCIP).getName() + "*/\n");
-            counter++;
-          }
-          append("\tapolloAddActorConfig(params, " + counter + ", pthread_self(), \"" + a.getName() + "\");\n");
-        } else {
-          append("\tapolloAddActorConfig(NULL, 0, pthread_self(), \"" + a.getName() + "\");\n");
-        }
-      }
+
       append("\t" + proto.getName() + "(\n");
       int maxParamSize = 0;
       for (final FunctionArgument param : proto.getArguments()) {

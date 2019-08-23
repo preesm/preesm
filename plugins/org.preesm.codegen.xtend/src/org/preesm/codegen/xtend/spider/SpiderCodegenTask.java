@@ -162,7 +162,7 @@ public class SpiderCodegenTask extends AbstractTaskImplementation {
 
     launcher.initGenerator(pg);
     final String graphCode = launcher.generateGraphCode(pg);
-    final String fctCode = launcher.generateFunctionCode(pg, spiderConfig);
+    final String fctCode = launcher.generateFunctionCode(pg);
     final String hCode = launcher.generateHeaderCode(pg, spiderConfig);
     // TODO: add config as parameters from workflow
     final String mCode = launcher.generateMainCode(pg, spiderConfig);
