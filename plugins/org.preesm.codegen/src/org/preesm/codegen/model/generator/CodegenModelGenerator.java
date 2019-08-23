@@ -415,10 +415,7 @@ public class CodegenModelGenerator extends AbstractCodegenModelGenerator {
     // init coreBlocks
     for (final ComponentInstance cmp : this.archi.getOperatorComponentInstances()) {
       if (!this.coreBlocks.containsKey(cmp)) {
-        CoreBlock operatorBlock = CodegenModelUserFactory.createCoreBlock();
-        operatorBlock.setName(cmp.getInstanceName());
-        operatorBlock.setCoreID(cmp.getHardwareId());
-        operatorBlock.setCoreType(cmp.getComponent().getVlnv().getName());
+        CoreBlock operatorBlock = CodegenModelUserFactory.createCoreBlock(cmp);
         this.coreBlocks.put(cmp, operatorBlock);
       }
     }
@@ -813,10 +810,8 @@ public class CodegenModelGenerator extends AbstractCodegenModelGenerator {
         // If the main operator does not exist
         if (mainOperatorBlock == null) {
           // Create it
-          mainOperatorBlock = CodegenModelUserFactory.createCoreBlock();
           final ComponentInstance componentInstance = this.archi.getComponentInstance(correspondingOperatorID);
-          mainOperatorBlock.setName(componentInstance.getInstanceName());
-          mainOperatorBlock.setCoreType(componentInstance.getComponent().getVlnv().getName());
+          mainOperatorBlock = CodegenModelUserFactory.createCoreBlock(componentInstance);
           this.coreBlocks.put(componentInstance, mainOperatorBlock);
         }
 
@@ -908,7 +903,8 @@ public class CodegenModelGenerator extends AbstractCodegenModelGenerator {
         final DAGVertex source = edge.getSource();
         final DAGVertex target = edge.getTarget();
         // If the buffer is not a null buffer
-        if (dagAlloc.getValue() != -1) {
+        final Long alloc = dagAlloc.getValue();
+        if (alloc != -1) {
           final SubBuffer dagEdgeBuffer = CodegenFactory.eINSTANCE.createSubBuffer();
 
           // Old Naming (too long)
@@ -920,7 +916,7 @@ public class CodegenModelGenerator extends AbstractCodegenModelGenerator {
           name = generateUniqueBufferName(name);
           dagEdgeBuffer.setName(name);
           dagEdgeBuffer.reaffectContainer(mainBuffer);
-          dagEdgeBuffer.setOffset(dagAlloc.getValue());
+          dagEdgeBuffer.setOffset(alloc);
           dagEdgeBuffer.setType("char");
           dagEdgeBuffer.setTypeSize(1);
 
