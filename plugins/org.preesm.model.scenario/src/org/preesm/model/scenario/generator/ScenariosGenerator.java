@@ -148,7 +148,7 @@ public class ScenariosGenerator {
       if (resource instanceof IFile) {
         final IFile file = (IFile) resource;
         if (file.getProjectRelativePath().getFileExtension().equals(ScenariosGenerator.ARCHI_EXT)) {
-          archis.add(file.getFullPath().toOSString());
+          archis.add(file.getFullPath().toString());
         }
       }
     }
@@ -157,7 +157,7 @@ public class ScenariosGenerator {
         final IFile file = (IFile) resource;
         final String ext = file.getProjectRelativePath().getFileExtension();
         if (ext.equals(ScenariosGenerator.PI_GRAPH_EXT)) {
-          algos.add(file.getFullPath().toOSString());
+          algos.add(file.getFullPath().toString());
         }
       }
     }
