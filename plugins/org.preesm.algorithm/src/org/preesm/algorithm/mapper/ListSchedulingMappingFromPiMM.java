@@ -172,7 +172,7 @@ public class ListSchedulingMappingFromPiMM extends ListSchedulingMappingFromDAG 
         /**
          * Check the energy
          */
-        double powerPlatform = EnergyAwarenessHelper.computePlatformPower(coresUsedOfEachType, scenarioMapping);
+        double powerPlatform = EnergyAwarenessHelper.computePlatformPower(configToAdd, scenarioMapping);
         MapperDAG dagMapping = (MapperDAG) mapping.get("DAG");
         double energyDynamic = EnergyAwarenessHelper.computeDynamicEnergy(dagMapping, scenarioMapping);
 
@@ -182,7 +182,7 @@ public class ListSchedulingMappingFromPiMM extends ListSchedulingMappingFromDAG 
         // We consider that energy tab is filled with uJ
         double totalDynamicEnergy = (energyDynamic / 1000000.0) * fps;
         double energyThisOne = powerPlatform + totalDynamicEnergy;
-        messageLogger = coresUsedOfEachType.toString() + " reaches " + fps + " FPS consuming " + energyThisOne
+        messageLogger = configToAdd.toString() + " reaches " + fps + " FPS consuming " + energyThisOne
             + " joules per second";
         PreesmLogger.getLogger().log(Level.INFO, messageLogger);
 
