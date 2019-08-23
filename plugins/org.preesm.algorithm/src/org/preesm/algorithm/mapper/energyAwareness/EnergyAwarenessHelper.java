@@ -204,7 +204,18 @@ public class EnergyAwarenessHelper {
       scenarioMapping.getSimulationInfo().setMainOperator(scenario.getSimulationInfo().getMainOperator());
     }
     scenarioMapping.getSimulationInfo().setMainComNode(scenario.getSimulationInfo().getMainComNode());
-
+    boolean needToUpdate = true;
+    for (ComponentInstance specialVertex : scenario.getSimulationInfo().getSpecialVertexOperators()) {
+      if (scenarioMapping.getConstraints().isCoreContained(specialVertex.getInstanceName())) {
+        scenarioMapping.getSimulationInfo().addSpecialVertexOperator(specialVertex);
+        needToUpdate = false;
+        break;
+      }
+    }
+    if (needToUpdate) {
+      scenarioMapping.getSimulationInfo()
+          .addSpecialVertexOperator(scenarioMapping.getConstraints().getGroupConstraints().get(0).getKey());
+    }
   }
 
   /**
