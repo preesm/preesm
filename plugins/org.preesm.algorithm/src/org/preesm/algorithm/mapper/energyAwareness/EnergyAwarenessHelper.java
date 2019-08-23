@@ -85,10 +85,12 @@ public class EnergyAwarenessHelper {
    */
   public static Map<String, Integer> getCoresOfEachType(Scenario scenario) {
     Map<String, Integer> coresOfEachType = new LinkedHashMap<>();
-    for (Component component : scenario.getDesign().getComponents()) {
+    for (Component component : scenario.getDesign().getOperatorComponents()) {
       int numOfConstrainedComps = scenario.getConstraints().nbConstrainsWithComp(component.getVlnv().getName());
       if (numOfConstrainedComps > 0) {
         coresOfEachType.put(component.getVlnv().getName(), numOfConstrainedComps);
+      } else {
+        coresOfEachType.put(component.getVlnv().getName(), 0);
       }
     }
     return coresOfEachType;
