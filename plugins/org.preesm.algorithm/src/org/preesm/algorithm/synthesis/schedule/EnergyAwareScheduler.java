@@ -95,6 +95,8 @@ public class EnergyAwareScheduler extends AbstractScheduler {
 
     Map<String, Integer> coresOfEachType = new LinkedHashMap<>();
     Map<String, Integer> coresUsedOfEachType = new LinkedHashMap<>();
+    PreesmLogger.getLogger().log(Level.INFO,
+        "Running energy awareness mapping/scheduling. This process will take longer than non-energy awareness one");
 
     /**
      * Analyze the constraints and initialize the configs
@@ -132,11 +134,12 @@ public class EnergyAwareScheduler extends AbstractScheduler {
       /**
        * Try the mapping
        */
-      System.out.println("Doing: " + coresUsedOfEachType.toString());
+      String message = "Trying with - coreType: quantity --> " + coresUsedOfEachType.toString();
+      PreesmLogger.getLogger().log(Level.INFO, message);
       mappingAndScheduling(createMapping, topParallelSchedule, piGraph, scenarioMapping, depthFirstSort);
       for (Entry<AbstractActor, EList<ComponentInstance>> coreMapping : createMapping.getMappings()) {
-        System.out.println(
-            "actor = " + coreMapping.getKey().getVertexPath() + " mapped on " + coreMapping.getValue().toString());
+        message = "Mapping " + coreMapping.getKey().getVertexPath() + " on " + coreMapping.getValue().toString();
+        PreesmLogger.getLogger().log(Level.INFO, message);
       }
 
       /**

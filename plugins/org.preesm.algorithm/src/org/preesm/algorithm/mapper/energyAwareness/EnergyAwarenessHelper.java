@@ -46,10 +46,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
+import java.util.logging.Level;
 import java.util.stream.Collectors;
 import org.eclipse.emf.common.util.EList;
 import org.preesm.algorithm.mapper.model.MapperDAG;
 import org.preesm.algorithm.model.dag.DAGVertex;
+import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.impl.ActorImpl;
 import org.preesm.model.scenario.Scenario;
@@ -311,9 +313,11 @@ public class EnergyAwarenessHelper {
     previousConfig.putAll(coresUsedOfEachType);
     boolean end = false;
     boolean foundSomething = false;
+    String messageLogger = "";
     switch (typeOfSearch) {
       case "up":
-        System.out.println("Going UP");
+        messageLogger = "FPS below the required ones, increasing number of PEs ...";
+        PreesmLogger.getLogger().log(Level.INFO, messageLogger);
         for (Entry<String, Integer> peType : coresUsedOfEachType.entrySet()) {
           int valueUsedBefore = peType.getValue();
           int valueToMakeAverage = coresOfEachType.get(peType.getKey());
@@ -332,7 +336,8 @@ public class EnergyAwarenessHelper {
         }
         break;
       case "down":
-        System.out.println("Going DOWN");
+        messageLogger = "FPS below the required ones, decreasing number of PEs ...";
+        PreesmLogger.getLogger().log(Level.INFO, messageLogger);
         for (Entry<String, Integer> peType : coresUsedOfEachType.entrySet()) {
           int valueUsedBefore = peType.getValue();
           int valueToMakeAverage = 0;

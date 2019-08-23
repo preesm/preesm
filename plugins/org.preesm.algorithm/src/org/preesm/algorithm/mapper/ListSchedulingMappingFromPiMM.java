@@ -44,6 +44,7 @@ import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
+import java.util.logging.Level;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.preesm.algorithm.mapper.abc.impl.latency.LatencyAbc;
 import org.preesm.algorithm.mapper.energyAwareness.EnergyAwarenessHelper;
@@ -54,6 +55,7 @@ import org.preesm.commons.doc.annotations.Parameter;
 import org.preesm.commons.doc.annotations.Port;
 import org.preesm.commons.doc.annotations.PreesmTask;
 import org.preesm.commons.doc.annotations.Value;
+import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.scenario.Scenario;
 import org.preesm.model.scenario.util.ScenarioUserFactory;
@@ -90,8 +92,9 @@ public class ListSchedulingMappingFromPiMM extends ListSchedulingMappingFromDAG 
     final Scenario scenario = (Scenario) inputs.get(AbstractWorkflowNodeImplementation.KEY_SCENARIO);
 
     boolean usingEnergy = false;
+    String messageLogger = "";
 
-    if (parameters.get("EnergyAwareness").equalsIgnoreCase("true")) {
+    if (parameters.containsKey("EnergyAwareness") && parameters.get("EnergyAwareness").equalsIgnoreCase("true")) {
       usingEnergy = true;
     }
 
@@ -100,6 +103,9 @@ public class ListSchedulingMappingFromPiMM extends ListSchedulingMappingFromDAG 
     Map<String, Object> mappingBest = new LinkedHashMap<>();
 
     if (usingEnergy) {
+      messageLogger = "Energy-awareness enabled. This option will increase the mapping/scheduling "
+          + "task so it may take a while";
+      PreesmLogger.getLogger().log(Level.INFO, messageLogger);
       /**
        * Energy stuff
        */
@@ -127,7 +133,9 @@ public class ListSchedulingMappingFromPiMM extends ListSchedulingMappingFromDAG 
       Set<String> pesAlwaysAdded = EnergyAwarenessHelper.getImprescindiblePes(scenarioMapping);
       // EnergyAwarenessHelper.removeImprescindibleFromAvailableCores(scenarioMapping, coresOfEachType, pesAlwaysAdded);
 
-      System.out.println("A: " + pesAlwaysAdded.toString());
+      messageLogger = "PE instances that will always be added are = " + pesAlwaysAdded.toString();
+      PreesmLogger.getLogger().log(Level.INFO, messageLogger);
+      // System.out.println("A: " + pesAlwaysAdded.toString());
 
       Map<String, Integer> coresUsedOfEachType = EnergyAwarenessHelper.getFirstConfig(coresOfEachType, "first");
 
@@ -156,8 +164,10 @@ public class ListSchedulingMappingFromPiMM extends ListSchedulingMappingFromDAG 
         /**
          * Try the mapping
          */
-        System.out.println("Doing: " + coresUsedOfEachType.toString());
-        System.out.println("Added: " + configToAdd.toString());
+        messageLogger = "Using (coreType = NbPEs) combination = " + coresUsedOfEachType.toString();
+        PreesmLogger.getLogger().log(Level.INFO, messageLogger);
+        // System.out.println("Doing: " + coresUsedOfEachType.toString());
+        // System.out.println("Added: " + configToAdd.toString());
         final MapperDAG dag = StaticPiMM2MapperDAGVisitor.convert(algorithm, architecture, scenarioMapping);
         inputs.put(AbstractWorkflowNodeImplementation.KEY_SDF_DAG, dag);
         mapping = super.execute(inputs, parameters, monitor, nodeName, workflow);
@@ -175,7 +185,11 @@ public class ListSchedulingMappingFromPiMM extends ListSchedulingMappingFromDAG 
         // We consider that energy tab is filled with uJ
         double totalDynamicEnergy = (energyDynamic / 1000000.0) * fps;
         double energyThisOne = powerPlatform + totalDynamicEnergy;
-        System.out.println("Total energy = " + energyThisOne + " --- FPS = " + fps);
+        // System.out.println("Tried: " + scenarioMapping.getConstraints().getGroupConstraints().keySet().toString());
+        messageLogger = coresUsedOfEachType.toString() + " reaches " + fps + " FPS consuming " + energyThisOne
+            + " joules per second";
+        PreesmLogger.getLogger().log(Level.INFO, messageLogger);
+        // System.out.println("Total energy = " + energyThisOne + " --- FPS = " + fps);
 
         /**
          * Check if it is the best one
@@ -193,7 +207,6 @@ public class ListSchedulingMappingFromPiMM extends ListSchedulingMappingFromDAG 
           bestConfig.putAll(configToAdd);
           mappingFPS.putAll(mapping);
         }
-        System.out.println("Best energy = " + minEnergy + " --- best FPS = " + closestFPS);
         /**
          * Compute the next configuration
          */
@@ -222,9 +235,14 @@ public class ListSchedulingMappingFromPiMM extends ListSchedulingMappingFromDAG 
         mapping.putAll(mappingBest);
       }
 
-      System.out.println("Getting the best one");
-      System.out.println("Best: " + bestConfig.toString());
-      System.out.println("Best energy = " + minEnergy + " --- best FPS = " + closestFPS);
+      messageLogger = "The best one is " + bestConfig.toString() + ". Retrieving its result";
+      PreesmLogger.getLogger().log(Level.INFO, messageLogger);
+      messageLogger = "Performance reached =  " + closestFPS + " FPS with an energy consumption of " + minEnergy
+          + " joules per second";
+      PreesmLogger.getLogger().log(Level.INFO, messageLogger);
+      // System.out.println("Getting the best one");
+      // System.out.println("Best: " + bestConfig.toString());
+      // System.out.println("Best energy = " + minEnergy + " --- best FPS = " + closestFPS);
 
       /**
        * Fill scenario with everything again to avoid further problems
