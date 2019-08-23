@@ -26,6 +26,9 @@ PREESM Changelog
   * Add transform and task to replace "perfect fit delays" with init/end actors;
 * Workflow:
   * Throws warning when executing deprecated tasks;
+* Clustering:
+  * Add 4 clustering algorithm: APGAN, Dummy, Random and Parallel
+  * Cluster by generating sub-graph and associated schedule tree
 
 ### Changes
 * Refactor: rename/move packages in algo & codegen;
