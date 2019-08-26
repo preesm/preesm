@@ -215,12 +215,18 @@ abstract class AbstractActor extends Configurable {
 	op String getActorPath() {
 		return vertexPath
 	}
+	
+	op boolean isCluster() {
+		return false
+	}
 }
 
 class PiGraph extends AbstractActor, Graph {
 
 	// URL to the file where this graph is saved
 	String url
+	
+	boolean cluster
 
 	op boolean isLocallyStatic() {
 		// a PiGraph is static if all the parameters it contains are static
