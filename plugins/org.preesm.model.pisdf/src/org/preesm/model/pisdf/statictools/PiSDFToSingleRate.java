@@ -149,7 +149,7 @@ public class PiSDFToSingleRate extends PiMMSwitch<Boolean> {
   private static final void srCheck(final PiGraph graph) {
     final List<AbstractActor> actors = graph.getActors();
     for (final AbstractActor a : actors) {
-      if (a instanceof PiGraph) {
+      if (a instanceof PiGraph && !a.isCluster()) {
         throw new PreesmRuntimeException("Flatten graph should have no children graph");
       }
       if (a instanceof InterfaceActor) {
@@ -244,6 +244,7 @@ public class PiSDFToSingleRate extends PiMMSwitch<Boolean> {
   @Override
   public Boolean caseAbstractActor(final AbstractActor actor) {
     if (actor instanceof PiGraph) {
+
       // Here we handle the replacement of the interfaces by what should be
       // Copy the actor
       final PiGraph copyActor = PiMMUserFactory.instance.copyWithHistory((PiGraph) actor);
@@ -451,7 +452,7 @@ public class PiSDFToSingleRate extends PiMMSwitch<Boolean> {
     // Otherwise, we fall in "standard" case
     if (sourceActor instanceof InterfaceActor) {
       return handleDataInputInterface(targetPort, ((DataInputInterface) sourceActor), sinkActor);
-    } else if (sourceActor instanceof PiGraph) {
+    } else if (sourceActor instanceof PiGraph && !sourceActor.isCluster()) {
       // We should retrieve the correct source set
       if (!this.outPort2SRActors.containsKey(sourcePort)) {
         throw new PreesmRuntimeException("No replacement found for DataOutputPort [" + sourcePort.getName()
@@ -582,7 +583,7 @@ public class PiSDFToSingleRate extends PiMMSwitch<Boolean> {
 
     if (sinkActor instanceof InterfaceActor) {
       return handleDataOutputInterface(sourcePort, sourceActor, (DataOutputInterface) sinkActor, sourceSet);
-    } else if (sinkActor instanceof PiGraph) {
+    } else if (sinkActor instanceof PiGraph && !sinkActor.isCluster()) {
       // We should retrieve the correct source set
       if (!this.inPort2SRActors.containsKey(targetPort)) {
         throw new PreesmRuntimeException("No replacement found for DataInputPort [" + targetPort.getName()
@@ -799,6 +800,11 @@ public class PiSDFToSingleRate extends PiMMSwitch<Boolean> {
 
   @Override
   public Boolean casePiGraph(final PiGraph graph) {
+
+    // If it is a cluster, do nothing
+    if (graph.isCluster()) {
+      return true;
+    }
 
     // If there are no actors in the graph we leave
     if (graph.getActors().isEmpty()) {
