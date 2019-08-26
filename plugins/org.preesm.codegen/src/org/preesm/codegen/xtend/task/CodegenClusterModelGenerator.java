@@ -35,7 +35,6 @@ import org.preesm.model.pisdf.CHeaderRefinement;
 import org.preesm.model.pisdf.ConfigInputPort;
 import org.preesm.model.pisdf.DataInputInterface;
 import org.preesm.model.pisdf.DataInputPort;
-import org.preesm.model.pisdf.DataOutputPort;
 import org.preesm.model.pisdf.DataPort;
 import org.preesm.model.pisdf.Direction;
 import org.preesm.model.pisdf.EndActor;
@@ -72,7 +71,7 @@ public class CodegenClusterModelGenerator {
 
   final Map<Fifo, Buffer> delayBufferMap;
 
-  final Map<InitActor, Buffer> pipelineBufferMap;
+  final Map<InitActor, Buffer> endInitBufferMap;
 
   final Map<AbstractActor, IntVar> iterMap;
 
@@ -101,7 +100,7 @@ public class CodegenClusterModelGenerator {
     this.operatorBlock = operatorBlock;
     this.internalBufferMap = new HashMap<>();
     this.externalBufferMap = new HashMap<>();
-    this.pipelineBufferMap = new HashMap<>();
+    this.endInitBufferMap = new HashMap<>();
     this.delayBufferMap = new HashMap<>();
     this.iterMap = new HashMap<>();
     this.outsideFetcher = outsideFetcher;
@@ -128,19 +127,16 @@ public class CodegenClusterModelGenerator {
   private final void addDataPortArgument(final FunctionCall functionCall, final Actor actor, final DataPort port,
       final FunctionArgument arg) {
     // Retrieve associated Fifo
-    Fifo associatedFifo = null;
-    if (arg.getDirection().equals(Direction.IN)) {
-      associatedFifo = ((DataInputPort) port).getIncomingFifo();
-    } else {
-      associatedFifo = ((DataOutputPort) port).getOutgoingFifo();
-    }
+    Fifo associatedFifo = port.getFifo();
 
     // Retrieve associated Buffer
     Buffer associatedBuffer = retrieveAssociatedBuffer(associatedFifo);
 
-    // If there is an iteration to run actor, iterate the buffer
+    // If there is an repetion over actor, iterate the buffer
     associatedBuffer = buildIteratedBuffer(associatedBuffer, actor, port);
 
+    // If function call already has this parameter, we need to copy it because parameter list of FunctionCall accept
+    // only unique reference
     if (functionCall.getParameters().contains(associatedBuffer)) {
       associatedBuffer = EcoreUtil.copy(associatedBuffer);
     }
@@ -283,22 +279,24 @@ public class CodegenClusterModelGenerator {
   }
 
   private final FifoCall buildEndInitActorCall(final SpecialActor actor) {
+    // Build a FifoCall
     FifoCall fifoCall = CodegenFactory.eINSTANCE.createFifoCall();
 
     DataPort dp = null;
     InitActor initReference = null;
 
+    // Build Buffer corresponding to the End-Init couple
     if (actor instanceof InitActor) {
       initReference = (InitActor) actor;
-      if (!pipelineBufferMap.containsKey(initReference)) {
-        buildPipelineBuffer(initReference);
+      if (!endInitBufferMap.containsKey(initReference)) {
+        buildEndInitBuffer(initReference);
       }
       fifoCall.setOperation(FifoOperation.POP);
       dp = initReference.getDataOutputPort();
     } else if (actor instanceof EndActor) {
       initReference = (InitActor) ((EndActor) actor).getInitReference();
-      if (!pipelineBufferMap.containsKey(initReference)) {
-        buildPipelineBuffer(initReference);
+      if (!endInitBufferMap.containsKey(initReference)) {
+        buildEndInitBuffer(initReference);
       }
       fifoCall.setOperation(FifoOperation.PUSH);
       dp = ((EndActor) actor).getDataInputPort();
@@ -308,20 +306,20 @@ public class CodegenClusterModelGenerator {
 
     Buffer associatedBuffer = retrieveAssociatedBuffer(dp.getFifo());
     Buffer newBuffer = buildIteratedBuffer(associatedBuffer, actor, dp);
-    fifoCall.setHeadBuffer(pipelineBufferMap.get(initReference));
+    fifoCall.setHeadBuffer(endInitBufferMap.get(initReference));
     fifoCall.addParameter(newBuffer, PortDirection.NONE);
 
     return fifoCall;
   }
 
-  private final Buffer buildPipelineBuffer(final InitActor actor) {
+  private final Buffer buildEndInitBuffer(final InitActor actor) {
     Buffer pipelineBuffer = CodegenFactory.eINSTANCE.createBuffer();
     Fifo outgoingFifo = actor.getDataOutputPort().getOutgoingFifo();
     pipelineBuffer.setType(outgoingFifo.getType());
     pipelineBuffer.setTypeSize(this.scenario.getSimulationInfo().getDataTypeSizeOrDefault(outgoingFifo.getType()));
     pipelineBuffer.setSize(actor.getDataOutputPort().getExpression().evaluate());
     pipelineBuffer.setName("pipeline_" + actor.getName().substring(5));
-    pipelineBufferMap.put(actor, pipelineBuffer);
+    endInitBufferMap.put(actor, pipelineBuffer);
     return pipelineBuffer;
   }
 
@@ -399,7 +397,7 @@ public class CodegenClusterModelGenerator {
     if (toInclude != null) {
       flb.getCodeElts().add(toInclude);
     }
-    // Disable loop parallelism
+    // Set loop parallelism
     flb.setParallel(parallel);
     return flb;
   }
@@ -495,13 +493,11 @@ public class CodegenClusterModelGenerator {
     // Retrieve associated fifo/buffer
     for (final DataPort dp : actor.getAllDataPorts()) {
       Buffer associatedBuffer = null;
+      associatedBuffer = retrieveAssociatedBuffer(dp.getFifo());
+      associatedBuffer = buildIteratedBuffer(associatedBuffer, actor, dp);
       if (dp instanceof DataInputPort) {
-        associatedBuffer = retrieveAssociatedBuffer(((DataInputPort) dp).getIncomingFifo());
-        associatedBuffer = buildIteratedBuffer(associatedBuffer, actor, dp);
         specialCall.addInputBuffer(associatedBuffer);
       } else {
-        associatedBuffer = retrieveAssociatedBuffer(((DataOutputPort) dp).getOutgoingFifo());
-        associatedBuffer = buildIteratedBuffer(associatedBuffer, actor, dp);
         specialCall.addOutputBuffer(associatedBuffer);
       }
     }
@@ -542,8 +538,8 @@ public class CodegenClusterModelGenerator {
     this.repVector = PiBRV.compute(graph, BRVMethod.LCM);
     // Print cluster into operatorBlock
     this.operatorBlock.getLoopBlock().getCodeElts().add(buildBlockFrom(this.schedule));
-    // Set pipeline and delay buffer in global
-    this.operatorBlock.getDefinitions().addAll(pipelineBufferMap.values());
+    // Set end-init and delay buffer in global
+    this.operatorBlock.getDefinitions().addAll(endInitBufferMap.values());
     this.operatorBlock.getDefinitions().addAll(delayBufferMap.values());
   }
 
