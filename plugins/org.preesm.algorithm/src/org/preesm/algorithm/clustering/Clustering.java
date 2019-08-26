@@ -90,7 +90,7 @@ public class Clustering extends AbstractTaskImplementation {
     String seed = parameters.get("Seed");
 
     // Instantiate a ClusteringBuilder and process clustering
-    ClusteringBuilder clusteringBuilder = new ClusteringBuilder(graph, algorithm, Long.parseLong(seed));
+    ClusteringBuilder clusteringBuilder = new ClusteringBuilder(graph, scenario, algorithm, Long.parseLong(seed));
     Map<AbstractActor, Schedule> scheduleMapping = clusteringBuilder.processClustering();
 
     // Print information in console

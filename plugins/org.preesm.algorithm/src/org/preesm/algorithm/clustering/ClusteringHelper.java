@@ -36,9 +36,11 @@
 package org.preesm.algorithm.clustering;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import org.apache.commons.lang3.tuple.Pair;
 import org.eclipse.emf.common.util.ECollections;
 import org.eclipse.emf.common.util.EList;
 import org.preesm.algorithm.schedule.model.HierarchicalSchedule;
@@ -64,6 +66,7 @@ import org.preesm.model.pisdf.brv.BRVMethod;
 import org.preesm.model.pisdf.brv.PiBRV;
 import org.preesm.model.scenario.Scenario;
 import org.preesm.model.slam.Component;
+import org.preesm.model.slam.ComponentInstance;
 
 /**
  *
@@ -302,6 +305,42 @@ public class ClusteringHelper {
     } else {
       return (Parameter) setter;
     }
+  }
+
+  /**
+   * @param couples
+   *          list of mergeable couple
+   * @param scenario
+   *          scenario
+   */
+  public static void removeConstrainedCouples(List<Pair<AbstractActor, AbstractActor>> couples, Scenario scenario) {
+    List<Pair<AbstractActor, AbstractActor>> tmpCouples = new LinkedList<>();
+    tmpCouples.addAll(couples);
+    couples.clear();
+    for (Pair<AbstractActor, AbstractActor> couple : tmpCouples) {
+      List<ComponentInstance> componentList = getListOfCommonComponent(
+          Arrays.asList(couple.getLeft(), couple.getRight()), scenario);
+      if (!componentList.isEmpty()) {
+        couples.add(couple);
+      }
+    }
+  }
+
+  /**
+   * @param actorList
+   *          list of actor
+   * @param scenario
+   *          scenario
+   * @return
+   */
+  public static List<ComponentInstance> getListOfCommonComponent(List<AbstractActor> actorList, Scenario scenario) {
+    List<ComponentInstance> globalList = new LinkedList<>();
+    globalList.addAll(scenario.getPossibleMappings(actorList.get(0)));
+    for (AbstractActor actor : actorList) {
+      List<ComponentInstance> componentList = scenario.getPossibleMappings(actor);
+      globalList.retainAll(componentList);
+    }
+    return globalList;
   }
 
 }
