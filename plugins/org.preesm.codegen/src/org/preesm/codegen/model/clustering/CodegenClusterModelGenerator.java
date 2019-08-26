@@ -398,6 +398,7 @@ public class CodegenClusterModelGenerator {
 
       // Retrieve from map the corresponding parent buffer
       Buffer buffer = null;
+      boolean inside = true;
       if (this.internalBufferMap.containsKey(outsideFifo)) {
         buffer = this.internalBufferMap.get(outsideFifo);
       } else if (this.externalBufferMap.containsKey(outsideFifo)) {
@@ -407,11 +408,14 @@ public class CodegenClusterModelGenerator {
       } else {
         // This is actually an outside cluster fifo, so we need to get from outside
         buffer = getOuterClusterBuffer(outsidePort);
+        inside = false;
       }
 
       // If cluster is repeated few times, create an iterated buffer
-      if (this.repVector.get(cluster) > 1) {
-        buffer = generateIteratedBuffer(buffer, cluster, outsidePort);
+      if (inside) {
+        if (this.repVector.get(cluster) > 1) {
+          buffer = generateIteratedBuffer(buffer, cluster, outsidePort);
+        }
       }
 
       // Register external buffer with corresponding fifo

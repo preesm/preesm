@@ -48,6 +48,7 @@ import com.google.common.collect.HashBiMap;
 import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -83,7 +84,6 @@ import org.preesm.algorithm.memory.exclusiongraph.MemoryExclusionGraph;
 import org.preesm.algorithm.memory.exclusiongraph.MemoryExclusionVertex;
 import org.preesm.algorithm.memory.script.Range;
 import org.preesm.algorithm.model.AbstractEdge;
-import org.preesm.algorithm.model.AbstractGraph;
 import org.preesm.algorithm.model.AbstractVertex;
 import org.preesm.algorithm.model.CodeRefinement;
 import org.preesm.algorithm.model.CodeRefinement.Language;
@@ -95,6 +95,7 @@ import org.preesm.algorithm.model.sdf.SDFEdge;
 import org.preesm.algorithm.model.sdf.SDFGraph;
 import org.preesm.algorithm.model.sdf.SDFVertex;
 import org.preesm.algorithm.model.sdf.esdf.SDFInitVertex;
+import org.preesm.algorithm.schedule.model.Schedule;
 import org.preesm.codegen.model.ActorBlock;
 import org.preesm.codegen.model.ActorFunctionCall;
 import org.preesm.codegen.model.Block;
@@ -132,7 +133,8 @@ import org.preesm.codegen.model.SpecialType;
 import org.preesm.codegen.model.SubBuffer;
 import org.preesm.codegen.model.Variable;
 import org.preesm.codegen.model.util.CodegenModelUserFactory;
-import org.preesm.commons.exceptions.PreesmException;
+import org.preesm.codegen.xtend.task.CodegenClusterModelGenerator;
+import org.preesm.codegen.xtend.task.SrDAGOutsideFetcher;
 import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.commons.model.PreesmCopyTracker;
@@ -226,6 +228,8 @@ public class CodegenModelGenerator extends AbstractCodegenModelGenerator {
    */
   private final Map<DAGVertex, Buffer> linkHSDFVertexBuffer;
 
+  private final Map<AbstractActor, Schedule> scheduleMapping;
+
   /**
    * This {@link List} stores the PEs that has been already configured for Papify usage.
    */
@@ -256,7 +260,7 @@ public class CodegenModelGenerator extends AbstractCodegenModelGenerator {
    *          See {@link AbstractCodegenPrinter#scenario}
    */
   public CodegenModelGenerator(final Design archi, final MapperDAG algo, final Map<String, MemoryExclusionGraph> megs,
-      final Scenario scenario) {
+      final Scenario scenario, final Map<AbstractActor, Schedule> scheduleMapping) {
     super(archi, algo, megs, scenario);
 
     checkInputs(this.archi, this.algo, this.megs);
@@ -273,6 +277,7 @@ public class CodegenModelGenerator extends AbstractCodegenModelGenerator {
     this.papifiedPEs = new ArrayList<>();
     this.configsAdded = new ArrayList<>();
     this.papifyActive = false;
+    this.scheduleMapping = scheduleMapping;
   }
 
   /**
@@ -608,17 +613,26 @@ public class CodegenModelGenerator extends AbstractCodegenModelGenerator {
     final Object refinement = dagVertex.getRefinement();
 
     // If the actor is hierarchical
-    if (refinement instanceof AbstractGraph) {
+    if (dagVertex.getPropertyBean().getValue("isCluster") != null) {
       // try to generate for loop on a hierarchical actor
       PreesmLogger.getLogger().log(Level.FINE, "tryGenerateRepeatActorFiring " + dagVertex.getName());
-      try {
-        final CodegenHierarchicalModelGenerator hiearchicalCodeGen = new CodegenHierarchicalModelGenerator(
-            this.scenario, this.algo, this.linkHSDFVertexBuffer, this.srSDFEdgeBuffers, this.dagVertexCalls,
-            this.papifiedPEs, this.configsAdded, this.papifyActive);
-        hiearchicalCodeGen.execute(operatorBlock, dagVertex);
-      } catch (final PreesmException e) {
-        throw new PreesmRuntimeException("Codegen for " + dagVertex.getName() + "failed.", e);
+
+      Map<String, Object> outsideFetcherOption = new HashMap<String, Object>();
+      outsideFetcherOption.put("dagVertex", dagVertex);
+      outsideFetcherOption.put("dag", this.algo);
+      outsideFetcherOption.put("coreBlock", operatorBlock);
+      outsideFetcherOption.put("srSDFEdgeBuffers", this.srSDFEdgeBuffers);
+
+      AbstractActor actor = dagVertex.getPropertyBean().getValue("PiSDFActor");
+      AbstractActor originalActor = PreesmCopyTracker.getSource(actor);
+      if (this.scheduleMapping.containsKey(originalActor)) {
+        CodegenClusterModelGenerator clusterGenerator = new CodegenClusterModelGenerator(operatorBlock,
+            this.scheduleMapping.get(originalActor), scenario, new SrDAGOutsideFetcher(), outsideFetcherOption);
+        clusterGenerator.generate();
+      } else {
+        throw new PreesmRuntimeException("Codegen for " + dagVertex.getName() + " failed.");
       }
+
     } else {
       ActorPrototypes prototypes = null;
       // If the actor has an IDL refinement
