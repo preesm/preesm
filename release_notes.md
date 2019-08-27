@@ -29,6 +29,7 @@ PREESM Changelog
 * Clustering:
   * Add 4 clustering algorithm: APGAN, Dummy, Random and Parallel
   * Cluster by generating sub-graph and associated schedule tree
+  * [Hardware Codegen] Use of PAPIFY was extended to the Hardware on the FPGA side.
 
 ### Changes
 * Refactor: rename/move packages in algo & codegen;
