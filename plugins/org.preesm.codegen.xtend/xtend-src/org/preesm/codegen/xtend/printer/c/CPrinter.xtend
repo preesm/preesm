@@ -597,8 +597,12 @@ class CPrinter extends DefaultPrinter {
 			communicationInit();
 			
 			«IF this.apolloEnabled»
-			#ifdef PREESM_APOLLO_ENABLED
-			initApolloForDataflow();
+			#ifdef APOLLO_AVAILABLE
+				#ifdef PREESM_APOLLO_ENABLED
+				initApolloForDataflow();
+				#else
+				disableApollo();
+				#endif
 			#endif
 			«ENDIF»
 
