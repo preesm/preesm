@@ -38,7 +38,7 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL license and that you accept its terms.
  */
-package org.preesm.algorithm.mapper.energyAwareness;
+package org.preesm.algorithm.mapper.energyawareness;
 
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
@@ -49,12 +49,14 @@ import java.util.Set;
 import java.util.logging.Level;
 import java.util.stream.Collectors;
 import org.eclipse.emf.common.util.EList;
+import org.preesm.algorithm.mapper.abc.impl.latency.LatencyAbc;
 import org.preesm.algorithm.mapper.model.MapperDAG;
 import org.preesm.algorithm.model.dag.DAGVertex;
 import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.impl.ActorImpl;
 import org.preesm.model.scenario.Scenario;
+import org.preesm.model.scenario.util.ScenarioUserFactory;
 import org.preesm.model.slam.Component;
 import org.preesm.model.slam.ComponentInstance;
 
@@ -63,7 +65,220 @@ import org.preesm.model.slam.ComponentInstance;
  * @author dmadronal
  *
  */
-public class EnergyAwarenessHelper {
+public class EnergyAwarenessProvider {
+
+  /** The original scenario **/
+  private Scenario scenarioOriginal;
+
+  /** The mapping scenario **/
+  private Scenario scenarioMapping;
+
+  /** The solution if the FPS objective is not reached **/
+  private Map<String, Object> mappingFPS = new LinkedHashMap<>();
+
+  /** The solution if the FPS objective is reached **/
+  private Map<String, Object> mappingBest = new LinkedHashMap<>();
+
+  /** The best configuration (Type of PE - Number of PEs of that type) **/
+  Map<String, Integer> bestConfig = new LinkedHashMap<>();
+
+  /** Objective data **/
+  double objective    = Double.MAX_VALUE;
+  double tolerance    = Double.MAX_VALUE;
+  double maxObjective = Double.MAX_VALUE;
+  double minObjective = Double.MAX_VALUE;
+
+  /** Searching info **/
+  Set<Map<String, Integer>> configsAlreadyUsed  = new LinkedHashSet<>();
+  Map<String, Integer>      coresOfEachType     = new LinkedHashMap<>();
+  Set<String>               pesAlwaysAdded      = new LinkedHashSet<>();
+  Map<String, Integer>      coresUsedOfEachType = new LinkedHashMap<>();
+  Map<String, Integer>      configToAdd         = new LinkedHashMap<>();
+  double                    minEnergy           = Double.MAX_VALUE;
+  double                    energyNoObjective   = Double.MAX_VALUE;
+  double                    closestFPS          = Double.MAX_VALUE;
+  boolean                   finished            = false;
+
+  /** Configuration variables **/
+  String startingPoint = "";
+  String searchingMode = "";
+  String nextChange    = "";
+
+  /**
+   * @brief This constructor initializes everything related to energy awareness in mapping/scheduling process
+   * @param scenarioOriginal
+   *          original {@link Scenario}
+   */
+
+  public EnergyAwarenessProvider(Scenario scenarioOriginal, String startingPoint, String searchingMode) {
+    /** Backup the original scenario **/
+    this.scenarioOriginal = scenarioOriginal;
+
+    /** Update everything related to the objective **/
+    this.objective = this.scenarioOriginal.getEnergyConfig().getPerformanceObjective().getObjectiveEPS();
+    this.tolerance = this.scenarioOriginal.getEnergyConfig().getPerformanceObjective().getToleranceEPS();
+    this.maxObjective = this.objective + (this.objective * this.tolerance / 100);
+    this.minObjective = this.objective - (this.objective * this.tolerance / 100);
+
+    /** Create the mapping scenario **/
+    this.scenarioMapping = ScenarioUserFactory.createScenario();
+    copyScenario(this.scenarioOriginal, this.scenarioMapping);
+
+    /** Analyze the constraints and initialize the configs **/
+    this.coresOfEachType = getCoresOfEachType(this.scenarioMapping);
+    this.pesAlwaysAdded = getImprescindiblePes(this.scenarioMapping);
+
+    String messageLogger = "Imprescendible PEs = " + this.pesAlwaysAdded.toString();
+    PreesmLogger.getLogger().log(Level.INFO, messageLogger);
+    /** Save the searching parameters **/
+    this.startingPoint = startingPoint;
+    this.searchingMode = searchingMode;
+    this.finished = false;
+  }
+
+  /**
+   * @return return the current status of scenario mapping
+   */
+  public Scenario getScenarioMapping() {
+    return this.scenarioMapping;
+  }
+
+  /**
+   * @brief update scenario mapping with the current configuration
+   */
+  public void updateScenario() {
+    /**
+     * Reset --> Like this so as to keep group constraints order unaltered
+     */
+    this.scenarioMapping.getConstraints().getGroupConstraints()
+        .addAll(this.scenarioOriginal.getConstraints().getGroupConstraints());
+    this.scenarioOriginal.getConstraints().getGroupConstraints()
+        .addAll(this.scenarioMapping.getConstraints().getGroupConstraints());
+    /**
+     * Add the constraints that represents the new config
+     */
+    updateConfigConstrains(this.scenarioOriginal, this.scenarioMapping, this.pesAlwaysAdded, this.coresUsedOfEachType);
+    updateConfigSimu(this.scenarioOriginal, this.scenarioMapping);
+    this.configToAdd = getCoresOfEachType(this.scenarioMapping);
+    /**
+     * Check whether we have tested everything or not
+     */
+    String messageLogger = this.configToAdd.toString() + " is being checked";
+    PreesmLogger.getLogger().log(Level.INFO, messageLogger);
+    if (!configValid(this.configToAdd, this.configsAlreadyUsed)) {
+      this.finished = true;
+    } else {
+      this.configsAlreadyUsed.add(this.configToAdd);
+    }
+  }
+
+  /**
+   * @brief Checks if the energy awareness algorithm has already finished
+   */
+  public boolean hasFinished() {
+    return this.finished;
+  }
+
+  /**
+   * @param mapping
+   *          mapping done
+   */
+
+  public void evaluateMapping(Map<String, Object> mapping) {
+    /** Check the energy **/
+    double powerPlatform = computePlatformPower(this.configToAdd, this.scenarioMapping);
+    MapperDAG dagMapping = (MapperDAG) mapping.get("DAG");
+    double energyDynamic = computeDynamicEnergy(dagMapping, this.scenarioMapping);
+
+    LatencyAbc abcMapping = (LatencyAbc) mapping.get("ABC");
+    // We consider that timing tab is filled with us (extracted with PAPIFY timing, for example)
+    double fps = 1000000.0 / abcMapping.getFinalLatency();
+    // We consider that energy tab is filled with uJ
+    double totalDynamicEnergy = (energyDynamic / 1000000.0) * fps;
+    double energyThisOne = powerPlatform + totalDynamicEnergy;
+    String messageLogger = this.configToAdd.toString() + " reaches " + fps + " FPS consuming " + energyThisOne
+        + " joules per second";
+    PreesmLogger.getLogger().log(Level.INFO, messageLogger);
+
+    /**
+     * Check if it is the best one
+     */
+    if (fps <= this.maxObjective && fps >= this.minObjective) {
+      if (this.minEnergy > energyThisOne) {
+        this.minEnergy = energyThisOne;
+        this.closestFPS = fps;
+        this.bestConfig.putAll(this.configToAdd);
+        this.mappingBest.putAll(mapping);
+      }
+    } else if (Math.abs(this.objective - fps) < Math.abs(this.objective - this.closestFPS)) {
+      this.closestFPS = fps;
+      this.energyNoObjective = energyThisOne;
+      this.bestConfig.putAll(this.configToAdd);
+      this.mappingFPS.putAll(mapping);
+    }
+    /**
+     * Compute the next configuration
+     */
+    if (fps < this.objective) {
+      this.nextChange = "up";
+    } else {
+      this.nextChange = "down";
+    }
+  }
+
+  /**
+   * @brief Computes the next configuration to perform mapping/scheduling
+   */
+  public void computeNextConfig() {
+    if (this.coresUsedOfEachType.isEmpty()) {
+      this.coresUsedOfEachType = getFirstConfig(this.coresOfEachType, this.startingPoint);
+    } else {
+      if (this.searchingMode.equalsIgnoreCase("halves")) {
+        getNextConditionalConfig(this.coresUsedOfEachType, this.coresOfEachType, this.nextChange,
+            this.configsAlreadyUsed);
+      } else if (this.searchingMode.equalsIgnoreCase("thorough")) {
+        getNextConfig(this.coresUsedOfEachType, this.coresOfEachType, this.nextChange);
+      } else {
+        PreesmLogger.getLogger().log(Level.SEVERE,
+            "Searching mode in energy-aware mapping/scheduling may be either 'halves' or 'thorough'");
+      }
+    }
+  }
+
+  /**
+   * @brief this method checks which is the best mapping and returns its value
+   */
+
+  public Map<String, Object> getFinalMapping() {
+    /** Getting the best one **/
+    Map<String, Object> finalMapping;
+    if (this.minEnergy == Double.MAX_VALUE) {
+      this.minEnergy = this.energyNoObjective;
+      finalMapping = this.mappingFPS;
+    } else {
+      finalMapping = this.mappingBest;
+    }
+    String messageLogger = "";
+    messageLogger = "The best one is " + this.bestConfig.toString() + ". Retrieving its result";
+    PreesmLogger.getLogger().log(Level.INFO, messageLogger);
+    messageLogger = "Performance reached =  " + this.closestFPS + " FPS with an energy consumption of " + this.minEnergy
+        + " joules per second";
+    PreesmLogger.getLogger().log(Level.INFO, messageLogger);
+    return finalMapping;
+  }
+
+  /**
+   * @brief this method updates the scenario and returns it
+   */
+
+  public Scenario getFinalScenario() {
+    this.scenarioMapping.getConstraints().getGroupConstraints()
+        .addAll(this.scenarioOriginal.getConstraints().getGroupConstraints());
+    this.scenarioOriginal.getConstraints().getGroupConstraints()
+        .addAll(this.scenarioMapping.getConstraints().getGroupConstraints());
+    copyScenario(this.scenarioMapping, this.scenarioOriginal);
+    return this.scenarioOriginal;
+  }
 
   /**
    * 
@@ -135,6 +350,8 @@ public class EnergyAwarenessHelper {
         } while (!configValid(coresUsedOfEachType, null));
         break;
       default:
+        PreesmLogger.getLogger().log(Level.SEVERE,
+            "Init mode in energy-aware mapping/scheduling may be 'first', 'max', 'middle' or 'random'");
         break;
     }
     return coresUsedOfEachType;
@@ -175,7 +392,7 @@ public class EnergyAwarenessHelper {
       Entry<ComponentInstance, EList<AbstractActor>> constraint = getConstraintByPeName(scenario, peName);
       scenarioMapping.getConstraints().getGroupConstraints().add(constraint);
     }
-    Map<String, Integer> coresOfEachTypeAlreadyAdded = EnergyAwarenessHelper.getCoresOfEachType(scenarioMapping);
+    Map<String, Integer> coresOfEachTypeAlreadyAdded = EnergyAwarenessProvider.getCoresOfEachType(scenarioMapping);
     for (Entry<String, Integer> instance : coresUsedOfEachType.entrySet()) {
       List<Entry<ComponentInstance, EList<AbstractActor>>> constraints = getConstraintsOfType(scenario,
           instance.getKey());
@@ -296,6 +513,8 @@ public class EnergyAwarenessHelper {
         }
         break;
       default:
+        PreesmLogger.getLogger().log(Level.SEVERE,
+            "Searching steps in 'thorough' energy-aware mapping/scheduling mode may be either 'oneMore' or 'oneLess'");
         break;
     }
   }
@@ -360,6 +579,8 @@ public class EnergyAwarenessHelper {
         }
         break;
       default:
+        PreesmLogger.getLogger().log(Level.SEVERE,
+            "Searching steps in 'halves' energy-aware mapping/scheduling mode may be either 'up' or 'down'");
         break;
     }
   }
