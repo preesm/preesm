@@ -134,6 +134,10 @@ public class SpiderCodegenTask extends AbstractTaskImplementation {
     // Retrieve inputs
     final Design architecture = (Design) inputs.get(AbstractWorkflowNodeImplementation.KEY_ARCHITECTURE);
     final Scenario scenario = (Scenario) inputs.get(AbstractWorkflowNodeImplementation.KEY_SCENARIO);
+    if (scenario.getCodegenDirectory() == null) {
+      throw new PreesmRuntimeException("Codegen path has not been specified in scenario, cannot go further.");
+    }
+
     final PiGraph pg = (PiGraph) inputs.get(AbstractWorkflowNodeImplementation.KEY_PI_GRAPH);
     // Check if we are using papify instrumentation
     final String papifyParameter = parameters.get(SpiderCodegenTask.PARAM_PAPIFY);

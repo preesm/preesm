@@ -129,6 +129,10 @@ public class CodegenTask extends AbstractTaskImplementation {
 
     // Retrieve inputs
     final Scenario scenario = (Scenario) inputs.get("scenario");
+    if (scenario.getCodegenDirectory() == null) {
+      throw new PreesmRuntimeException("Codegen path has not been specified in scenario, cannot go further.");
+    }
+
     final Design archi = (Design) inputs.get("architecture");
     final DirectedAcyclicGraph algoDAG = (DirectedAcyclicGraph) inputs.get("DAG");
     @SuppressWarnings("unchecked")

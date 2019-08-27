@@ -212,6 +212,9 @@ public class MemoryScriptEngine {
    *
    */
   public void generateCode(final Scenario scenario, final String log) {
+    if (scenario.getCodegenDirectory() == null) {
+      throw new PreesmRuntimeException("Codegen path has not been specified in scenario, cannot go further.");
+    }
     final String codegenPath = scenario.getCodegenDirectory() + "/";
     final IFile iFile;
     try {
