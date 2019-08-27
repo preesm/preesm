@@ -106,9 +106,9 @@ class CHardwarePrinter extends CPrinter {
 
 	override printCoreBlockHeader(CoreBlock block) '''
 		«super.printCoreBlockHeader(block)»
-			#include "hardwarelib.h"
+		#include "hardwarelib.h"
 		#include "hardware_accelerator_setup.h"
-			#include "eventLib.h"
+		#include "eventLib.h"
 	'''
 
 	override printCoreInitBlockHeader(CallBlock callBlock) '''
@@ -633,6 +633,7 @@ class CHardwarePrinter extends CPrinter {
 		} else {
 			PreesmLogger.getLogger().log(Level.SEVERE,
 				"Hardware Codegen ERROR in the preProcessing function. Different number of function calls and data transfers were detected");
+				}
 		
 		// ----------- PAPIFY - automatic instrumentation of ARTICo³ using PAPIFY --------------
 		
