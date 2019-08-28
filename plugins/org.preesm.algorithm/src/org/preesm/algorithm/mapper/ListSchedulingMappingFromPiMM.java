@@ -40,14 +40,10 @@
  */
 package org.preesm.algorithm.mapper;
 
-import java.util.LinkedHashMap;
-import java.util.LinkedHashSet;
 import java.util.Map;
-import java.util.Set;
 import java.util.logging.Level;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.preesm.algorithm.mapper.abc.impl.latency.LatencyAbc;
-import org.preesm.algorithm.mapper.energyawareness.EnergyAwarenessHelper;
 import org.preesm.algorithm.mapper.energyawareness.EnergyAwarenessProvider;
 import org.preesm.algorithm.mapper.model.MapperDAG;
 import org.preesm.algorithm.model.dag.DirectedAcyclicGraph;
@@ -59,7 +55,6 @@ import org.preesm.commons.doc.annotations.Value;
 import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.scenario.Scenario;
-import org.preesm.model.scenario.util.ScenarioUserFactory;
 import org.preesm.model.slam.Design;
 import org.preesm.workflow.elements.Workflow;
 import org.preesm.workflow.implement.AbstractWorkflowNodeImplementation;
@@ -92,182 +87,35 @@ public class ListSchedulingMappingFromPiMM extends ListSchedulingMappingFromDAG 
     final Design architecture = (Design) inputs.get(AbstractWorkflowNodeImplementation.KEY_ARCHITECTURE);
     final Scenario scenario = (Scenario) inputs.get(AbstractWorkflowNodeImplementation.KEY_SCENARIO);
 
-    boolean usingEnergy = false;
     String messageLogger = "";
-
-    if (parameters.containsKey("EnergyAwareness") && parameters.get("EnergyAwareness").equalsIgnoreCase("true")) {
-      usingEnergy = true;
-    }
-
     Map<String, Object> mapping = null;
 
-    if (usingEnergy) {
+    if (parameters.containsKey("EnergyAwareness") && parameters.get("EnergyAwareness").equalsIgnoreCase("true")) {
       messageLogger = "Energy-awareness enabled. This option will increase the mapping/scheduling "
           + "task so it may take a while";
       PreesmLogger.getLogger().log(Level.INFO, messageLogger);
-      if (false) {
-        /**
-         * Energy stuff
-         */
-        Map<String, Object> mappingFPS = new LinkedHashMap<>();
-        Map<String, Object> mappingBest = new LinkedHashMap<>();
-        Map<String, Integer> bestConfig = new LinkedHashMap<>();
-        double minEnergy = Double.MAX_VALUE;
-        double energyNoObjective = Double.MAX_VALUE;
-        double closestFPS = Double.MAX_VALUE;
-        double objective = scenario.getEnergyConfig().getPerformanceObjective().getObjectiveEPS();
-        double tolerance = scenario.getEnergyConfig().getPerformanceObjective().getToleranceEPS();
-        double maxObjective = objective + (objective * tolerance / 100);
-        double minObjective = objective - (objective * tolerance / 100);
-
-        /**
-         * Copy scenario
-         */
-        Scenario scenarioMapping = ScenarioUserFactory.createScenario();
-        EnergyAwarenessHelper.copyScenario(scenario, scenarioMapping);
-        inputs.put(AbstractWorkflowNodeImplementation.KEY_SCENARIO, scenarioMapping);
-
-        /**
-         * Analyze the constraints and initialize the configs
-         */
-        Set<Map<String, Integer>> configsAlreadyUsed = new LinkedHashSet<>();
-        Map<String, Integer> coresOfEachType = EnergyAwarenessHelper.getCoresOfEachType(scenarioMapping);
-        Set<String> pesAlwaysAdded = EnergyAwarenessHelper.getImprescindiblePes(scenarioMapping);
-
-        messageLogger = "PE instances that will always be added are = " + pesAlwaysAdded.toString();
-        PreesmLogger.getLogger().log(Level.INFO, messageLogger);
-
-        Map<String, Integer> coresUsedOfEachType = EnergyAwarenessHelper.getFirstConfig(coresOfEachType, "first");
-
-        while (true) {
-          /**
-           * Reset --> Like this so as to keep group constraints order unaltered
-           */
-          scenarioMapping.getConstraints().getGroupConstraints()
-              .addAll(scenario.getConstraints().getGroupConstraints());
-          scenario.getConstraints().getGroupConstraints()
-              .addAll(scenarioMapping.getConstraints().getGroupConstraints());
-
-          /**
-           * Add the constraints that represents the new config
-           */
-          EnergyAwarenessHelper.updateConfigConstrains(scenario, scenarioMapping, pesAlwaysAdded, coresUsedOfEachType);
-          EnergyAwarenessHelper.updateConfigSimu(scenario, scenarioMapping);
-          Map<String, Integer> configToAdd = EnergyAwarenessHelper.getCoresOfEachType(scenarioMapping);
-
-          /**
-           * Check whether we have tested everything or not
-           */
-          if (!EnergyAwarenessHelper.configValid(configToAdd, configsAlreadyUsed)) {
-            break;
-          } else {
-            configsAlreadyUsed.add(configToAdd);
-          }
-
-          /**
-           * Try the mapping
-           */
-          messageLogger = "Using (coreType = NbPEs) combination = " + configToAdd.toString();
-          PreesmLogger.getLogger().log(Level.INFO, messageLogger);
-          final MapperDAG dag = StaticPiMM2MapperDAGVisitor.convert(algorithm, architecture, scenarioMapping);
-          inputs.put(AbstractWorkflowNodeImplementation.KEY_SDF_DAG, dag);
-          mapping = super.execute(inputs, parameters, monitor, nodeName, workflow);
-
-          /**
-           * Check the energy
-           */
-          double powerPlatform = EnergyAwarenessHelper.computePlatformPower(configToAdd, scenarioMapping);
-          MapperDAG dagMapping = (MapperDAG) mapping.get("DAG");
-          double energyDynamic = EnergyAwarenessHelper.computeDynamicEnergy(dagMapping, scenarioMapping);
-
-          LatencyAbc abcMapping = (LatencyAbc) mapping.get("ABC");
-          // We consider that timing tab is filled with us (extracted with PAPIFY timing, for example)
-          double fps = 1000000.0 / abcMapping.getFinalLatency();
-          // We consider that energy tab is filled with uJ
-          double totalDynamicEnergy = (energyDynamic / 1000000.0) * fps;
-          double energyThisOne = powerPlatform + totalDynamicEnergy;
-          messageLogger = configToAdd.toString() + " reaches " + fps + " FPS consuming " + energyThisOne
-              + " joules per second";
-          PreesmLogger.getLogger().log(Level.INFO, messageLogger);
-
-          /**
-           * Check if it is the best one
-           */
-          if (fps <= maxObjective && fps >= minObjective) {
-            if (minEnergy > energyThisOne) {
-              minEnergy = energyThisOne;
-              closestFPS = fps;
-              bestConfig.putAll(configToAdd);
-              mappingBest.putAll(mapping);
-            }
-          } else if (Math.abs(objective - fps) < Math.abs(objective - closestFPS)) {
-            closestFPS = fps;
-            energyNoObjective = energyThisOne;
-            bestConfig.putAll(configToAdd);
-            mappingFPS.putAll(mapping);
-          }
-          /**
-           * Compute the next configuration
-           */
-          if (fps < objective) {
-            EnergyAwarenessHelper.getNextConditionalConfig(coresUsedOfEachType, coresOfEachType, "up",
-                configsAlreadyUsed);
-          } else {
-            EnergyAwarenessHelper.getNextConditionalConfig(coresUsedOfEachType, coresOfEachType, "down",
-                configsAlreadyUsed);
-          }
+      EnergyAwarenessProvider provider = new EnergyAwarenessProvider(scenario, "middle", "halves");
+      /** iterate **/
+      while (true) {
+        /** Get configuration **/
+        provider.computeNextConfig();
+        /** Update scenario mapping for the current configuration **/
+        provider.updateScenario();
+        /** Check if the configuration is valid **/
+        if (provider.hasFinished()) {
+          break;
         }
-        /**
-         * Reset --> Like this so as to keep group constraints order unaltered
-         */
-        scenarioMapping.getConstraints().getGroupConstraints().addAll(scenario.getConstraints().getGroupConstraints());
-        scenario.getConstraints().getGroupConstraints().addAll(scenarioMapping.getConstraints().getGroupConstraints());
-
-        /**
-         * Getting the best one
-         */
-        if (minEnergy == Double.MAX_VALUE) {
-          minEnergy = energyNoObjective;
-          mapping.putAll(mappingFPS);
-        } else {
-          mapping.putAll(mappingBest);
-        }
-
-        messageLogger = "The best one is " + bestConfig.toString() + ". Retrieving its result";
-        PreesmLogger.getLogger().log(Level.INFO, messageLogger);
-        messageLogger = "Performance reached =  " + closestFPS + " FPS with an energy consumption of " + minEnergy
-            + " joules per second";
-        PreesmLogger.getLogger().log(Level.INFO, messageLogger);
-        /**
-         * Fill scenario with everything again to avoid further problems
-         */
-        EnergyAwarenessHelper.copyScenario(scenarioMapping, scenario);
-        inputs.put(AbstractWorkflowNodeImplementation.KEY_SCENARIO, scenario);
-      } else {
-        EnergyAwarenessProvider provider = new EnergyAwarenessProvider(scenario, "first", "halves");
+        /** Try the mapping */
+        final MapperDAG dag = StaticPiMM2MapperDAGVisitor.convert(algorithm, architecture,
+            provider.getScenarioMapping());
+        inputs.put(AbstractWorkflowNodeImplementation.KEY_SDF_DAG, dag);
         inputs.put(AbstractWorkflowNodeImplementation.KEY_SCENARIO, provider.getScenarioMapping());
-        /** iterate **/
-        while (true) {
-          /** Get configuration **/
-          provider.computeNextConfig();
-          /** Update scenario mapping for the current configuration **/
-          provider.updateScenario();
-          /** Check if the configuration is valid **/
-          if (provider.hasFinished()) {
-            break;
-          }
-          /** Try the mapping */
-          final MapperDAG dag = StaticPiMM2MapperDAGVisitor.convert(algorithm, architecture,
-              provider.getScenarioMapping());
-          inputs.put(AbstractWorkflowNodeImplementation.KEY_SCENARIO, provider.getScenarioMapping());
-          inputs.put(AbstractWorkflowNodeImplementation.KEY_SDF_DAG, dag);
-          mapping = super.execute(inputs, parameters, monitor, nodeName, workflow);
-          /** Evaluate mapping **/
-          provider.evaluateMapping(mapping);
-        }
-        mapping = provider.getFinalMapping();
-        inputs.put(AbstractWorkflowNodeImplementation.KEY_SCENARIO, provider.getFinalScenario());
+        mapping = super.execute(inputs, parameters, monitor, nodeName, workflow);
+        /** Evaluate mapping **/
+        provider.evaluateMapping(mapping);
       }
+      mapping = provider.getFinalMapping();
+      // inputs.put(AbstractWorkflowNodeImplementation.KEY_SCENARIO, provider.getFinalScenario());
     } else {
       final MapperDAG dag = StaticPiMM2MapperDAGVisitor.convert(algorithm, architecture, scenario);
       inputs.put(AbstractWorkflowNodeImplementation.KEY_SDF_DAG, dag);
