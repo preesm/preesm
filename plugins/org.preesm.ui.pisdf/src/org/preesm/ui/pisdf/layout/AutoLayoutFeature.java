@@ -1160,7 +1160,7 @@ public class AutoLayoutFeature extends AbstractCustomFeature {
         final AddDelayFeature ad = new AddDelayFeature(getFeatureProvider());
         // Add the delaySize / 2 to compute distance of the center of
         // the delay to the segments of the ffc
-        ad.connectDelayToFifo(ffc, fifo, pe, cba, posX + (AddDelayFeature.DELAY_SIZE / 2),
+        ad.connectDelayToFifo(ffc, fifo, cba, posX + (AddDelayFeature.DELAY_SIZE / 2),
             posY + (AddDelayFeature.DELAY_SIZE / 2));
 
       }

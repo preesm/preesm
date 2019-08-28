@@ -116,7 +116,7 @@ public class UpdatePortFeature extends AbstractUpdateFeature {
     final boolean updateNameNeeded = (((pictogramName == null) && (businessName != null))
         || ((pictogramName != null) && !pictogramName.equals(businessName)));
     if (updateNameNeeded) {
-      return Reason.createTrueReason("Name is out of date\nNew name: " + businessName);
+      return Reason.createTrueReason("Name <" + pictogramName + "> is out of date\nNew name: " + businessName);
     } else {
       return Reason.createFalseReason();
     }
