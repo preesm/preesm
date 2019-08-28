@@ -76,7 +76,8 @@ import org.preesm.workflow.implement.AbstractWorkflowNodeImplementation;
         @Parameter(name = "fastLocalSearchTime", values = { @Value(name = "10") }),
         @Parameter(name = "nodesMin", values = { @Value(name = "5") }),
         @Parameter(name = "procNumber", values = { @Value(name = "1") }),
-        @Parameter(name = "fastNumber", values = { @Value(name = "100") })
+        @Parameter(name = "fastNumber", values = { @Value(name = "100") }),
+        @Parameter(name = "EnergyAwareness", values = { @Value(name = "False") })
 
     })
 public class PFASTMappingFromPiMM extends PFASTMappingFromDAG {
