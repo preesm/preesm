@@ -322,7 +322,7 @@ public class EnergyAwarenessProvider {
    */
   public static Map<String, Integer> getFirstConfig(Map<String, Integer> coresOfEachType, String typeOfSearch) {
     Map<String, Integer> coresUsedOfEachType = new LinkedHashMap<>();
-    switch (typeOfSearch) {
+    switch (typeOfSearch.toLowerCase()) {
       case "first":
         for (Entry<String, Integer> instance : coresOfEachType.entrySet()) {
           if (coresUsedOfEachType.isEmpty()) {
@@ -491,7 +491,7 @@ public class EnergyAwarenessProvider {
    */
   public static void getNextConfig(Map<String, Integer> coresUsedOfEachType, Map<String, Integer> coresOfEachType,
       String typeOfSearch) {
-    switch (typeOfSearch) {
+    switch (typeOfSearch.toLowerCase()) {
       case "oneMore":
         for (Entry<String, Integer> peType : coresUsedOfEachType.entrySet()) {
           peType.setValue(peType.getValue() + 1);
@@ -535,7 +535,7 @@ public class EnergyAwarenessProvider {
     boolean end = false;
     boolean foundSomething = false;
     String messageLogger = "";
-    switch (typeOfSearch) {
+    switch (typeOfSearch.toLowerCase()) {
       case "up":
         messageLogger = "FPS below the required ones, increasing number of PEs ...";
         PreesmLogger.getLogger().log(Level.INFO, messageLogger);

@@ -74,7 +74,18 @@ import org.preesm.workflow.implement.AbstractWorkflowNodeImplementation;
         @Parameter(name = "Check", values = { @Value(name = "True") }),
         @Parameter(name = "Optimize synchronization", values = { @Value(name = "False") }),
         @Parameter(name = "balanceLoads", values = { @Value(name = "false") }),
-        @Parameter(name = "EnergyAwareness", values = { @Value(name = "False") })
+        @Parameter(name = "EnergyAwareness",
+            values = { @Value(name = "True", effect = "Turns on energy aware mapping/scheduling") }),
+        @Parameter(name = "EnergyAwarenessFirstConfig",
+            values = { @Value(name = "First", effect = "Takes as starting point the first valid combination of PEs"),
+                @Value(name = "Middle", effect = "Takes as starting point half of the available PEs"),
+                @Value(name = "Max", effect = "Takes as starting point all the available PEs"),
+                @Value(name = "Random", effect = "Takes as starting point a random number of PEs") }),
+        @Parameter(name = "EnergyAwarenessSearchType", values = {
+            @Value(name = "Thorough",
+                effect = "Analyzes PE combinations one by one until the performance objective is reached"),
+            @Value(name = "Halves", effect = "Divides in halves the remaining available PEs and goes up/down depending"
+                + " if the FPS reached are below/above the objective") })
 
     })
 public class ListSchedulingMappingFromPiMM extends ListSchedulingMappingFromDAG {
@@ -115,7 +126,6 @@ public class ListSchedulingMappingFromPiMM extends ListSchedulingMappingFromDAG 
         provider.evaluateMapping(mapping);
       }
       mapping = provider.getFinalMapping();
-      // inputs.put(AbstractWorkflowNodeImplementation.KEY_SCENARIO, provider.getFinalScenario());
     } else {
       final MapperDAG dag = StaticPiMM2MapperDAGVisitor.convert(algorithm, architecture, scenario);
       inputs.put(AbstractWorkflowNodeImplementation.KEY_SDF_DAG, dag);
