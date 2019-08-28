@@ -58,6 +58,7 @@ import org.preesm.commons.doc.annotations.Parameter;
 import org.preesm.commons.doc.annotations.Port;
 import org.preesm.commons.doc.annotations.PreesmTask;
 import org.preesm.commons.doc.annotations.Value;
+import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.scenario.Scenario;
 import org.preesm.model.slam.Design;
@@ -115,6 +116,10 @@ public class CodegenTask2 extends AbstractTaskImplementation {
 
     // Retrieve inputs
     final Scenario scenario = (Scenario) inputs.get("scenario");
+    if (scenario.getCodegenDirectory() == null) {
+      throw new PreesmRuntimeException("Codegen path has not been specified in scenario, cannot go further.");
+    }
+
     final Design archi = (Design) inputs.get("architecture");
     final PiGraph algo = (PiGraph) inputs.get("PiMM");
 

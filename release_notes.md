@@ -48,6 +48,7 @@ PREESM Changelog
 * Codegen:
   * Add IteratedBuffer, ClusterBlock, SectionBlock for clustering codegen
   * Add conditional "#pragma omp parallel for" on FiniteLoopBlock
+  * Add null checks for codeGenDir (since not set when the parser sees a null length);
 
 ### Bug fix
 * fix #186
