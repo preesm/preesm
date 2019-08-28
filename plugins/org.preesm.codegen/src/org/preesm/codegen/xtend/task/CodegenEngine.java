@@ -74,8 +74,6 @@ import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
 import org.eclipse.emf.ecore.xmi.impl.XMIResourceFactoryImpl;
-import org.preesm.algorithm.mapper.model.MapperDAG;
-import org.preesm.algorithm.memory.exclusiongraph.MemoryExclusionGraph;
 import org.preesm.codegen.format.PreesmCFormatter;
 import org.preesm.codegen.format.PreesmXMLFormatter;
 import org.preesm.codegen.model.Block;
@@ -85,6 +83,7 @@ import org.preesm.commons.exceptions.PreesmException;
 import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.preesm.commons.files.WorkspaceUtils;
 import org.preesm.commons.logger.PreesmLogger;
+import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.scenario.Scenario;
 import org.preesm.model.slam.Design;
 
@@ -102,7 +101,7 @@ public class CodegenEngine {
   private final Collection<Block> codeBlocks;
 
   public Collection<Block> getCodeBlocks() {
-    return codeBlocks;
+    return this.codeBlocks;
   }
 
   /** The registered printers and blocks. */
@@ -111,33 +110,35 @@ public class CodegenEngine {
   /** The real printers. */
   private Map<IConfigurationElement, CodegenAbstractPrinter> realPrinters;
 
-  private final AbstractCodegenModelGenerator generator;
+  private final PiGraph algo;
+
+  private final Design archi;
+
+  private final Scenario scenario;
 
   /**
-   * Instantiates a new codegen engine.
    *
    */
-  public CodegenEngine(final String codegenPath, final Collection<Block> codeBlocks,
-      AbstractCodegenModelGenerator generator) {
+  public CodegenEngine(final String codegenPath, final Collection<Block> codeBlocks, final PiGraph algo,
+      final Design archi, final Scenario scenario) {
     this.codegenPath = codegenPath;
     this.codeBlocks = codeBlocks;
-    this.generator = generator;
+    this.algo = algo;
+    this.archi = archi;
+    this.scenario = scenario;
+
   }
 
   public final Design getArchi() {
-    return this.generator.getArchi();
+    return this.archi;
   }
 
-  public final MapperDAG getAlgo() {
-    return this.generator.getAlgo();
-  }
-
-  public final Map<String, MemoryExclusionGraph> getMegs() {
-    return this.generator.getMegs();
+  public final PiGraph getAlgo() {
+    return this.algo;
   }
 
   public final Scenario getScenario() {
-    return this.generator.getScenario();
+    return this.scenario;
   }
 
   /**
@@ -191,7 +192,7 @@ public class CodegenEngine {
     // 1. Get the printers of the desired "language"
     final Set<IConfigurationElement> usablePrinters = new LinkedHashSet<>();
     final IExtensionRegistry registry = Platform.getExtensionRegistry();
-    final IConfigurationElement[] elements = registry.getConfigurationElementsFor(PRINTERS_EXTENSION_ID);
+    final IConfigurationElement[] elements = registry.getConfigurationElementsFor(CodegenEngine.PRINTERS_EXTENSION_ID);
     for (final IConfigurationElement element : elements) {
       if (element.getAttribute("language").equals(selectedPrinter)) {
         for (final IConfigurationElement child : element.getChildren()) {
@@ -270,7 +271,7 @@ public class CodegenEngine {
               + "]. Please change path in the scenario editor.");
         }
         final String osString = rawLocation.toOSString();
-        File folder = new File(osString);
+        final File folder = new File(osString);
         if (!folder.exists()) {
           folder.mkdirs();
           PreesmLogger.getLogger().info("Created missing target dir [" + folder.getAbsolutePath() + "] during codegen");
@@ -358,7 +359,7 @@ public class CodegenEngine {
           new NullProgressMonitor());
       format(iFile);
     } catch (final CoreException ex) {
-      throw new PreesmRuntimeException("Could not generated source file for " + fileName, ex);
+      throw new PreesmRuntimeException("Could not generate source file for " + fileName, ex);
     }
   }
 
@@ -374,8 +375,8 @@ public class CodegenEngine {
         PreesmXMLFormatter.format(iFile);
         break;
       default:
-        final String msg = "Unsupported file extension : '" + ext + "'";
-        PreesmLogger.getLogger().log(Level.INFO, msg);
+        final String msg = "One file with extension '" + ext + "' has been generated but not formatted.";
+        PreesmLogger.getLogger().log(Level.FINE, msg);
     }
 
   }

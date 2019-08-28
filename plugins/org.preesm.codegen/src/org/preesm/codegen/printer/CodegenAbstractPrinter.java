@@ -3,6 +3,7 @@
  *
  * Antoine Morvan [antoine.morvan@insa-rennes.fr] (2018 - 2019)
  * Daniel Madroñal [daniel.madronal@upm.es] (2019)
+ * dylangageot [gageot.dylan@gmail.com] (2019)
  * Leonardo Suriano [leonardo.suriano@upm.es] (2019)
  *
  * This software is a computer program whose purpose is to help prototyping
@@ -49,6 +50,7 @@ import org.preesm.codegen.model.Block;
 import org.preesm.codegen.model.Buffer;
 import org.preesm.codegen.model.BufferIterator;
 import org.preesm.codegen.model.CallBlock;
+import org.preesm.codegen.model.ClusterBlock;
 import org.preesm.codegen.model.CodeElt;
 import org.preesm.codegen.model.CodegenPackage;
 import org.preesm.codegen.model.Communication;
@@ -64,12 +66,14 @@ import org.preesm.codegen.model.FreeDataTransferBuffer;
 import org.preesm.codegen.model.FunctionCall;
 import org.preesm.codegen.model.GlobalBufferDeclaration;
 import org.preesm.codegen.model.IntVar;
+import org.preesm.codegen.model.IteratedBuffer;
 import org.preesm.codegen.model.LoopBlock;
 import org.preesm.codegen.model.NullBuffer;
 import org.preesm.codegen.model.OutputDataTransfer;
 import org.preesm.codegen.model.PapifyAction;
 import org.preesm.codegen.model.PapifyFunctionCall;
 import org.preesm.codegen.model.RegisterSetUpAction;
+import org.preesm.codegen.model.SectionBlock;
 import org.preesm.codegen.model.SharedMemoryCommunication;
 import org.preesm.codegen.model.SpecialCall;
 import org.preesm.codegen.model.SpecialType;
@@ -672,10 +676,83 @@ public abstract class CodegenAbstractPrinter extends CodegenSwitch<CharSequence>
 
     if (hasNewLine) {
       result.newLineIfNotEmpty();
-      result.append(indentation);
     }
 
     result.append(printFiniteLoopBlockFooter(loopBlock), "");
+
+    return result;
+  }
+
+  @Override
+  public CharSequence caseClusterBlock(final ClusterBlock clusterBlock) {
+    StringConcatenation result = new StringConcatenation();
+    String indentation = "";
+    boolean hasNewLine;
+
+    final CharSequence clusterBlockheader = printClusterBlockHeader(clusterBlock);
+    result.append(clusterBlockheader, indentation);
+
+    if (clusterBlockheader.length() > 0) {
+      indentation = CodegenAbstractPrinter.getLastLineIndentation(result);
+      result = CodegenAbstractPrinter.trimLastEOL(result);
+      hasNewLine = CodegenAbstractPrinter.endWithEOL(result);
+    } else {
+      hasNewLine = false;
+    }
+
+    final EList<Variable> variables = clusterBlock.getDefinitions();
+    for (final Variable variable : variables) {
+      if (variable instanceof Buffer) {
+        final CharSequence code = printBufferDefinition((Buffer) variable);
+        result.append(code, indentation);
+      }
+    }
+
+    // Visit all codeElements
+    final EList<CodeElt> codeElts = clusterBlock.getCodeElts();
+    for (final CodeElt codeElt : codeElts) {
+      final CharSequence code = doSwitch(codeElt);
+      result.append(code, indentation);
+    }
+
+    if (hasNewLine) {
+      result.newLineIfNotEmpty();
+    }
+
+    result.append(printClusterBlockFooter(clusterBlock), "");
+
+    return result;
+  }
+
+  @Override
+  public CharSequence caseSectionBlock(final SectionBlock sectionBlock) {
+    StringConcatenation result = new StringConcatenation();
+    String indentation = "";
+    boolean hasNewLine;
+
+    final CharSequence sectionBlockheader = printSectionBlockHeader(sectionBlock);
+    result.append(sectionBlockheader, indentation);
+
+    if (sectionBlockheader.length() > 0) {
+      indentation = CodegenAbstractPrinter.getLastLineIndentation(result);
+      result = CodegenAbstractPrinter.trimLastEOL(result);
+      hasNewLine = CodegenAbstractPrinter.endWithEOL(result);
+    } else {
+      hasNewLine = false;
+    }
+
+    // Visit all codeElements
+    final EList<CodeElt> codeElts = sectionBlock.getCodeElts();
+    for (final CodeElt codeElt : codeElts) {
+      final CharSequence code = doSwitch(codeElt);
+      result.append(code, indentation);
+    }
+
+    if (hasNewLine) {
+      result.newLineIfNotEmpty();
+    }
+
+    result.append(printSectionBlockFooter(sectionBlock), "");
 
     return result;
   }
@@ -739,6 +816,11 @@ public abstract class CodegenAbstractPrinter extends CodegenSwitch<CharSequence>
     }
 
     return printBufferIterator(bufferIterator);
+  }
+
+  @Override
+  public CharSequence caseIteratedBuffer(final IteratedBuffer iteratedBuffer) {
+    return printIteratedBuffer(iteratedBuffer);
   }
 
   @Override
@@ -1132,6 +1214,42 @@ public abstract class CodegenAbstractPrinter extends CodegenSwitch<CharSequence>
   public abstract CharSequence printFiniteLoopBlockHeader(FiniteLoopBlock block);
 
   /**
+   * Method called after printing all {@link CodeElt} belonging to a {@link ClusterBlock}.
+   *
+   * @param block
+   *          the {@link ClusterBlock} whose {@link CodeElt} were printed before calling this method.
+   * @return the printed {@link CharSequence}
+   */
+  public abstract CharSequence printClusterBlockFooter(ClusterBlock block);
+
+  /**
+   * Method called before printing all {@link CodeElt} belonging to a {@link ClusterBlock}.
+   *
+   * @param block
+   *          the {@link ClusterBlock} whose {@link CodeElt} will be printed after calling this method.
+   * @return the printed {@link CharSequence}
+   */
+  public abstract CharSequence printClusterBlockHeader(ClusterBlock block);
+
+  /**
+   * Method called after printing all {@link CodeElt} belonging to a {@link SectionBlock}.
+   *
+   * @param block
+   *          the {@link SectionBlock} whose {@link CodeElt} were printed before calling this method.
+   * @return the printed {@link CharSequence}
+   */
+  public abstract CharSequence printSectionBlockFooter(SectionBlock block);
+
+  /**
+   * Method called before printing all {@link CodeElt} belonging to a {@link SectionBlock}.
+   *
+   * @param block
+   *          the {@link SectionBlock} whose {@link CodeElt} will be printed after calling this method.
+   * @return the printed {@link CharSequence}
+   */
+  public abstract CharSequence printSectionBlockHeader(SectionBlock block);
+
+  /**
    * Method called to print a {@link NullBuffer} outside the {@link CoreBlock#getDefinitions() definition} or the
    * {@link CoreBlock#getDeclarations() declaration} of a {@link CoreBlock}
    *
@@ -1238,6 +1356,16 @@ public abstract class CodegenAbstractPrinter extends CodegenSwitch<CharSequence>
    * @return the printed {@link CharSequence}
    */
   public abstract CharSequence printBufferIterator(BufferIterator bufferIterator);
+
+  /**
+   * Method called to print a {@link IteratedBuffer} outside the {@link CoreBlock#getDefinitions() definition} or the
+   * {@link CoreBlock#getDeclarations() declaration} of a {@link CoreBlock}
+   *
+   * @param iteratedBuffer
+   *          the {@link IteratedBuffer} to print.
+   * @return the printed {@link CharSequence}
+   */
+  public abstract CharSequence printIteratedBuffer(IteratedBuffer iteratedBuffer);
 
   /**
    * Method called to print a {@link BufferIterator} within the {@link CoreBlock#getDeclarations() declaration}

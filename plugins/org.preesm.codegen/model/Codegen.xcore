@@ -4,6 +4,7 @@
  * Alexandre Honorat [alexandre.honorat@insa-rennes.fr] (2019)
  * Antoine Morvan [antoine.morvan@insa-rennes.fr] (2018 - 2019)
  * Daniel Madroñal [daniel.madronal@upm.es] (2019)
+ * dylangageot [gageot.dylan@gmail.com] (2019)
  * Leonardo Suriano [leonardo.suriano@upm.es] (2019)
  *
  * This software is a computer program whose purpose is to help prototyping
@@ -126,9 +127,8 @@ class SubBuffer extends Buffer {
 	    }
     }
 }
-class TwinBuffer extends Buffer{
-	contains Buffer original
-	contains Buffer[] twins
+class DistributedBuffer extends Buffer{
+	contains Buffer[] distributedCopies
 }
 
 class Constant extends Variable {
@@ -200,6 +200,14 @@ class CoreBlock extends Block {
 	refers CallBlock initBlock
 	String coreType
 	unordered id int coreID
+}
+
+class ClusterBlock extends Block {
+	String schedule
+	boolean parallel
+}
+
+class SectionBlock extends Block {
 }
 
 class ActorBlock extends Block {
@@ -300,6 +308,7 @@ type range wraps org.preesm.algorithm.memory.script.Range
 
 class FiniteLoopBlock extends LoopBlock {
 	int nbIter
+	boolean parallel
 	refers IntVar iter
 	refers BufferIterator[] inBuffers
 	refers BufferIterator[] outBuffers
@@ -310,6 +319,11 @@ class IntVar extends Variable {
 
 class BufferIterator extends SubBuffer {
 	long iterSize
+	refers IntVar iter
+}
+
+class IteratedBuffer extends Buffer {
+	refers Buffer buffer
 	refers IntVar iter
 }
 

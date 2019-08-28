@@ -85,11 +85,8 @@ public class JoinOptimization extends AbstractPiGraphSpecialActorRemover<DataInp
     for (final DataInputPort dip : actor.getDataInputPorts()) {
       final Fifo incomingFifo = dip.getIncomingFifo();
       if (incomingFifo.getDelay() != null) {
-        return false;
+        continue;
       }
-    }
-    for (final DataInputPort dip : actor.getDataInputPorts()) {
-      final Fifo incomingFifo = dip.getIncomingFifo();
       final DataOutputPort sourcePort = incomingFifo.getSourcePort();
       final AbstractActor sourceActor = sourcePort.getContainingActor();
       if (sourceActor instanceof JoinActor) {

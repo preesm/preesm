@@ -3,6 +3,7 @@
  *
  * Antoine Morvan [antoine.morvan@insa-rennes.fr] (2017 - 2019)
  * Daniel Madroñal [daniel.madronal@upm.es] (2019)
+ * dylangageot [gageot.dylan@gmail.com] (2019)
  * Julien Hascoet [jhascoet@kalray.eu] (2016 - 2017)
  * Karol Desnos [karol.desnos@insa-rennes.fr] (2013 - 2017)
  *
@@ -158,7 +159,7 @@ class MPPA2ClusterPrinter extends DefaultPrinter {
 		#endif
 
 		/* user includes */
-		#include "preesm_gen.h"
+		#include "preesm_gen_mppa.h"
 
 		extern void *__wrap_memset(void *s, int c, size_t n);
 		extern void *__wrap_memcpy(void *dest, const void *src, size_t n);
@@ -264,16 +265,15 @@ class MPPA2ClusterPrinter extends DefaultPrinter {
 			if(block2.nbIter > 1 && this.sharedOnly == 0){
 				gets += "#pragma omp parallel for private(" + block2.iter.name + ")\n"
 			}
-			gets += "for(" + block2.iter.name + "=0;" + block2.iter.name +"<" + block2.nbIter + ";" + block2.iter.name + "++){\n"
+			gets += "for(" + block2.iter.name + "=0;" + block2.iter.name +"<" + block2.nbIter + ";" + block2.iter.name + "++) {"
 
 			if(local_offset > local_buffer_size)
 				local_buffer_size = local_offset
 	gets}»
-
-	'''
+			
+			'''
 
 	override printFiniteLoopBlockFooter(FiniteLoopBlock block2) '''
-
 			}// End the for loop
 		«{
 				var puts = ""
@@ -347,7 +347,7 @@ class MPPA2ClusterPrinter extends DefaultPrinter {
 	«ENDIF»
 	'''
 	override printPapifyActionParam(PapifyAction action) '''&«action.name»'''
-	
+
 	override printFunctionCall(FunctionCall functionCall) '''
 	«{
 		var gets = ""
@@ -696,15 +696,15 @@ class MPPA2ClusterPrinter extends DefaultPrinter {
 	override printIntVarDeclaration(IntVar intVar) '''
 	extern int «intVar.name»;
 	'''
-	
+
 	override printIntVarDefinition(IntVar intVar) '''
 	int «intVar.name»;
 	'''
-	
+
 	override printDataTansfer(DataTransferAction action) ''''''
 
 	override printRegisterSetUp(RegisterSetUpAction action) ''''''
-	
+
 	def CharSequence generatePreesmHeader() {
 	    // 0- without the following class loader initialization, I get the following exception when running as Eclipse
 	    // plugin:
@@ -720,7 +720,7 @@ class MPPA2ClusterPrinter extends DefaultPrinter {
 
 	    // 2- init context
 	    val VelocityContext context = new VelocityContext();
-	    val findAllCHeaderFileNamesUsed = CHeaderUsedLocator.findAllCHeaderFileNamesUsed(getEngine.algo.referencePiMMGraph)
+	    val findAllCHeaderFileNamesUsed = CHeaderUsedLocator.findAllCHeaderFileNamesUsed(getEngine.algo)
 	    context.put("USER_INCLUDES", findAllCHeaderFileNamesUsed.map["#include \""+ it +"\""].join("\n"));
 
 		var String constants = "#define NB_DESIGN_ELTS "+getEngine.archi.componentInstances.size+"\n";
@@ -732,7 +732,7 @@ class MPPA2ClusterPrinter extends DefaultPrinter {
 	    context.put("CONSTANTS", constants);
 
 	    // 3- init template reader
-	    val String templateLocalPath = "templates/mppa2Explicit/preesm_gen.h";
+	    val String templateLocalPath = "templates/c/preesm_gen.h";
 	    val URL mainTemplate = PreesmResourcesHelper.instance.resolve(templateLocalPath, this.class);
 	    var InputStreamReader reader = null;
 	    try {
@@ -753,21 +753,28 @@ class MPPA2ClusterPrinter extends DefaultPrinter {
 	}
 	override generateStandardLibFiles() {
 		val result = new LinkedHashMap<String, CharSequence>()
-		val String stdFilesFolder = "/stdfiles/mppa2Explicit/"
+		val String stdFilesFolder = "/stdfiles/c/"
 		val files = Arrays.asList(#[
-						"communication.c",
-						"communication.h",
 						"dump.c",
 						"dump.h",
 						"fifo.c",
-						"fifo.h",
-						"memory.c",
-						"memory.h",
-						"clock.c",
-						"clock.h"
+						"fifo.h"
 					]);
 		files.forEach[it | try {
 			result.put(it, PreesmResourcesHelper.instance.read(stdFilesFolder + it, this.class))
+		} catch (IOException exc) {
+			throw new PreesmRuntimeException("Could not generated content for " + it, exc)
+		}]
+		val String stdFilesFolderMPPA = "/stdfiles/mppa2Explicit/"
+		val filesMPPA = Arrays.asList(#[
+						"communication_mppa.c",
+						"communication_mppa.h",
+						"clock.c",
+						"clock.h",
+						"preesm_gen_mppa.h"
+					]);
+		filesMPPA.forEach[it | try {
+			result.put(it, PreesmResourcesHelper.instance.read(stdFilesFolderMPPA + it, this.class))
 		} catch (IOException exc) {
 			throw new PreesmRuntimeException("Could not generated content for " + it, exc)
 		}]
@@ -825,8 +832,7 @@ class MPPA2ClusterPrinter extends DefaultPrinter {
 
 		#include <assert.h>
 
-		#include "preesm_gen.h"
-		#include "communication.h"
+		#include "preesm_gen_mppa.h"
 
 		«IF (this.distributedOnly == 0)»
 		/* Shared Segment ID */
@@ -994,7 +1000,7 @@ class MPPA2ClusterPrinter extends DefaultPrinter {
 		#include <mppa_remote.h>
 		#include <mppa_async.h>
 		#include <HAL/hal/board/boot_args.h>
-		#include "preesm_gen.h"
+		#include "preesm_gen_mppa.h"
 
 		static utask_t t;
 		static mppadesc_t pcie_fd = 0;
@@ -1164,7 +1170,7 @@ class MPPA2ClusterPrinter extends DefaultPrinter {
 								this.sharedOnly = 0;
 	       		 			}
 	       		 		}
-	       		 	}	       		 	
+	       		 	}
 	       		 }
 			}
 		}

@@ -1,6 +1,7 @@
 /**
  * Copyright or © or Copr. IETR/INSA - Rennes (2008 - 2019) :
  *
+ * Alexandre Honorat [alexandre.honorat@insa-rennes.fr] (2019)
  * Antoine Morvan [antoine.morvan@insa-rennes.fr] (2017 - 2019)
  * Matthieu Wipliez [matthieu.wipliez@insa-rennes.fr] (2008)
  * Maxime Pelcat [maxime.pelcat@insa-rennes.fr] (2008 - 2012)
@@ -47,7 +48,7 @@ public class BufferProperties {
 
   private final String dataTypeName;
   private final String destInputPortID;
-  private final int    size;
+  private final long   size;
   private final String sourceOutputPortID;
 
   /**
@@ -61,7 +62,7 @@ public class BufferProperties {
    *          the size
    */
   public BufferProperties(final String dataTypeName, final String sourceOutputPortID, final String destInputPortID,
-      final int size) {
+      final long size) {
     super();
     this.dataTypeName = dataTypeName;
     this.destInputPortID = destInputPortID;
@@ -77,7 +78,7 @@ public class BufferProperties {
     return this.destInputPortID;
   }
 
-  public int getSize() {
+  public long getSize() {
     return this.size;
   }
 

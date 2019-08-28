@@ -142,7 +142,7 @@ public abstract class AbstractMappingFromDAG extends AbstractTaskImplementation 
       final TopologicalTaskSched taskSched = new TopologicalTaskSched(simu.getTotalOrder());
       simu.resetDAG();
 
-      PreesmLogger.getLogger().log(Level.INFO, "Mapping");
+      PreesmLogger.getLogger().log(Level.INFO, "Mapping " + dag.vertexSet().size() + " tasks.");
       final LatencyAbc resSimu = schedule(outputs, parameters, initial, scenario, abcParams, dag, architecture,
           taskSched);
       PreesmLogger.getLogger().log(Level.INFO, "Mapping finished, now add communications tasks.");

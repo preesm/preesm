@@ -79,11 +79,8 @@ public class ForkOptimization extends AbstractPiGraphSpecialActorRemover<DataOut
     for (final DataOutputPort dop : actor.getDataOutputPorts()) {
       final Fifo outgoingFifo = dop.getOutgoingFifo();
       if (outgoingFifo.getDelay() != null) {
-        return false;
+        continue;
       }
-    }
-    for (final DataOutputPort dop : actor.getDataOutputPorts()) {
-      final Fifo outgoingFifo = dop.getOutgoingFifo();
       final DataInputPort targetPort = outgoingFifo.getTargetPort();
       final AbstractActor targetActor = targetPort.getContainingActor();
       if (targetActor instanceof ForkActor) {
@@ -91,6 +88,7 @@ public class ForkOptimization extends AbstractPiGraphSpecialActorRemover<DataOut
         PiMMHelper.removeActorAndFifo(graph, outgoingFifo, targetActor);
       }
     }
+
     if (!removeAndReplaceDataPorts(actor.getDataOutputPorts())) {
       return removeUnused(graph, actor);
     }

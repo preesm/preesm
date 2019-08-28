@@ -1,6 +1,7 @@
 /**
  * Copyright or © or Copr. IETR/INSA - Rennes (2008 - 2019) :
  *
+ * Alexandre Honorat [alexandre.honorat@insa-rennes.fr] (2019)
  * Antoine Morvan [antoine.morvan@insa-rennes.fr] (2017 - 2019)
  * Clément Guy [clement.guy@insa-rennes.fr] (2014)
  * Daniel Madroñal [daniel.madronal@upm.es] (2018 - 2019)
@@ -186,6 +187,9 @@ public class ScenarioWriter {
     for (final Entry<Component, EList<PapiComponent>> config : manager.getPapifyConfigGroupsPEs()) {
       writePapifyConfigPE(papifyConfigs, config.getKey(), config.getValue());
     }
+    for (final Entry<Component, EMap<PapiEvent, Double>> energyKPIModel : manager.getPapifyEnergyKPIModels()) {
+      writePapifyEnergyKPIModel(papifyConfigs, energyKPIModel.getKey(), energyKPIModel.getValue());
+    }
   }
 
   /**
@@ -251,6 +255,39 @@ public class ScenarioWriter {
   }
 
   /**
+   * Adds the papify energy KPI model.
+   *
+   * @param parent
+   *          the parent
+   * @param slamComponent
+   *          the slamComponent
+   * @param modelParams
+   *          the model parameters
+   */
+  private void writePapifyEnergyKPIModel(final Element parent, final Component slamComponent,
+      final EMap<PapiEvent, Double> modelParams) {
+    if (slamComponent != null && (modelParams != null) && !modelParams.isEmpty()) {
+      final Element energyModelPETypeElt = this.dom.createElement("energyModelPEType");
+      parent.appendChild(energyModelPETypeElt);
+
+      final Element peType = this.dom.createElement("peType");
+      energyModelPETypeElt.appendChild(peType);
+      peType.setAttribute("peType", slamComponent.getVlnv().getName());
+      for (ComponentInstance compInstance : slamComponent.getInstances()) {
+        final Element peInstance = this.dom.createElement("peInstance");
+        peType.appendChild(peInstance);
+        peInstance.setAttribute("peInstance", compInstance.getInstanceName());
+      }
+
+      for (final Entry<PapiEvent, Double> singleParameter : modelParams) {
+        final Element modelParameter = this.dom.createElement("modelParameter");
+        peType.appendChild(modelParameter);
+        writePapifyEnergyKPIModelParameter(modelParameter, singleParameter);
+      }
+    }
+  }
+
+  /**
    * Adds the papify component.
    *
    * @param component
@@ -274,6 +311,23 @@ public class ScenarioWriter {
         writePapifyEvent(singleEvent, event);
       }
     }
+  }
+
+  /**
+   * Adds the papify energy KPI model parameter.
+   *
+   * @param modelParameter
+   *          the parent modelParameter
+   * @param modelEnergyKPIModel
+   *          the single parameter
+   */
+  private void writePapifyEnergyKPIModelParameter(final Element modelParameter,
+      final Entry<PapiEvent, Double> modelEnergyKPIModel) {
+
+    final Element papiEvent = this.dom.createElement("papiEvent");
+    writePapifyEvent(papiEvent, modelEnergyKPIModel.getKey());
+    modelParameter.appendChild(papiEvent);
+    modelParameter.setAttribute("paramValue", modelEnergyKPIModel.getValue().toString());
   }
 
   /**
@@ -407,8 +461,11 @@ public class ScenarioWriter {
 
     final Element codeGenDir = this.dom.createElement("codegenDirectory");
     files.appendChild(codeGenDir);
-    codeGenDir.setAttribute("url", this.scenario.getCodegenDirectory());
-
+    String codeGenDirStr = this.scenario.getCodegenDirectory();
+    if (codeGenDirStr == null) {
+      codeGenDirStr = "";
+    }
+    codeGenDir.setAttribute("url", codeGenDirStr);
   }
 
   /**

@@ -518,7 +518,8 @@ public class ScenarioParser {
           parsePapifyConfigActor(elt);
         } else if (type.equals("papifyConfigPE")) {
           parsePapifyConfigPE(elt);
-
+        } else if (type.equals("energyModelPEType")) {
+          parsePapifyEnergyKPIModel(elt);
         }
       }
 
@@ -595,6 +596,30 @@ public class ScenarioParser {
   }
 
   /**
+   * Retrieves a papify energy KPI model.
+   *
+   * @param papifyModelElt
+   *          the papifyModelElt elt
+   * @return the papifyConfig
+   */
+  private void parsePapifyEnergyKPIModel(final Element papifyModelElt) {
+
+    Node node = papifyModelElt.getFirstChild();
+
+    Component slamComponent = null;
+
+    while (node != null) {
+      if (node instanceof Element) {
+        final Element elt = (Element) node;
+        final String peType = elt.getAttribute("peType");
+        slamComponent = this.scenario.getDesign().getComponent(peType);
+        parsePapifyEnergyKPIModelParameter(elt, slamComponent);
+      }
+      node = node.getNextSibling();
+    }
+  }
+
+  /**
    * Retrieves all the PAPI components.
    *
    * @param componentsElt
@@ -612,7 +637,28 @@ public class ScenarioParser {
           parsePapifyComponent(elt, slamComponent);
         }
       }
+      node = node.getNextSibling();
+    }
+  }
 
+  /**
+   * Retrieves all the parameters of the model.
+   *
+   * @param modelElt
+   *          the model parameters elt
+   */
+  private void parsePapifyEnergyKPIModelParameter(final Element modelElt, Component slamComponent) {
+
+    Node node = modelElt.getFirstChild();
+
+    while (node != null) {
+      if (node instanceof Element) {
+        final Element elt = (Element) node;
+        final String type = elt.getTagName();
+        if (type.equals("modelParameter")) {
+          parsePapifyModelParameter(elt, slamComponent);
+        }
+      }
       node = node.getNextSibling();
     }
   }
@@ -655,6 +701,28 @@ public class ScenarioParser {
 
     this.scenario.getPapifyConfig().addComponent(slamComponent, component);
 
+  }
+
+  /**
+   * Retrieves the model info.
+   *
+   * @param node
+   *          the papi component elt
+   * @return the papi component
+   */
+  private void parsePapifyModelParameter(final Element papifyParameterElt, Component slamComponent) {
+
+    Node papiEventNode = papifyParameterElt.getFirstChild();
+    while (papiEventNode != null) {
+      if (papiEventNode instanceof Element) {
+        final Element elt = (Element) papiEventNode;
+        final PapiEvent papiEvent = getPapifyEvent(elt);
+        final String paramValueRead = papifyParameterElt.getAttribute("paramValue");
+        final double paramValue = Double.parseDouble(paramValueRead);
+        this.scenario.getPapifyConfig().addEnergyParam(slamComponent, papiEvent, paramValue);
+      }
+      papiEventNode = papiEventNode.getNextSibling();
+    }
   }
 
   /**

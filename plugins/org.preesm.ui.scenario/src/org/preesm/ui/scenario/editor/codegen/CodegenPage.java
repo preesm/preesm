@@ -1,6 +1,7 @@
 /**
  * Copyright or © or Copr. IETR/INSA - Rennes (2008 - 2019) :
  *
+ * Alexandre Honorat [alexandre.honorat@insa-rennes.fr] (2019)
  * Antoine Morvan [antoine.morvan@insa-rennes.fr] (2017 - 2019)
  * Clément Guy [clement.guy@insa-rennes.fr] (2015)
  * Maxime Pelcat [maxime.pelcat@insa-rennes.fr] (2008 - 2011)
@@ -116,10 +117,14 @@ public class CodegenPage extends ScenarioPage {
     final Set<String> algoExtensions = new LinkedHashSet<>();
     algoExtensions.add("graphml");
 
+    String codeGenDirStr = this.scenario.getCodegenDirectory();
+    if (codeGenDirStr == null) {
+      codeGenDirStr = "";
+    }
     // Algorithm file chooser section
     createDirectorySection(managedForm, Messages.getString("Codegen.codeDirectory"),
         Messages.getString("Codegen.codeDirectoryDescription"), Messages.getString("Codegen.codeDirectoryEdit"),
-        this.scenario.getCodegenDirectory(), Messages.getString("Codegen.codeDirectoryBrowseTitle"));
+        codeGenDirStr, Messages.getString("Codegen.codeDirectoryBrowseTitle"));
 
     managedForm.refresh();
     managedForm.reflow(true);
@@ -200,7 +205,6 @@ public class CodegenPage extends ScenarioPage {
       final String path = FilenameUtils.separatorsToUnix(text1.getText());
       CodegenPage.this.scenario.setCodegenDirectory(path);
       firePropertyChange(IEditorPart.PROP_DIRTY);
-
     });
 
     gd.widthHint = 400;
@@ -214,6 +218,10 @@ public class CodegenPage extends ScenarioPage {
   }
 
   private void colorRedIfFileAbsent(final Text text) {
+    if (scenario.getCodegenDirectory() == null) {
+      FieldUtils.colorRedOnCondition(text, true);
+      return;
+    }
     final String codegenDirPath = text.getText().replaceAll("//", "/");
     final String sanitizedPath;
     if (codegenDirPath.startsWith("/")) {

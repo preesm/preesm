@@ -6,6 +6,7 @@
  * Clément Guy [clement.guy@insa-rennes.fr] (2015)
  * Daniel Madroñal [daniel.madronal@upm.es] (2018 - 2019)
  * Florian Arrestier [florian.arrestier@insa-rennes.fr] (2018)
+ * dylangageot [gageot.dylan@gmail.com] (2019)
  * Julien Hascoet [jhascoet@kalray.eu] (2016)
  * Karol Desnos [karol.desnos@insa-rennes.fr] (2013 - 2018)
  * Leonardo Suriano [leonardo.suriano@upm.es] (2019)
@@ -83,6 +84,9 @@ import org.preesm.codegen.printer.DefaultPrinter
 import org.preesm.commons.exceptions.PreesmRuntimeException
 import org.preesm.commons.files.PreesmResourcesHelper
 import org.preesm.model.pisdf.util.CHeaderUsedLocator
+import org.preesm.codegen.model.IteratedBuffer
+import org.preesm.codegen.model.ClusterBlock
+import org.preesm.codegen.model.SectionBlock
 
 /**
  * This printer is currently used to print C code only for GPP processors
@@ -221,17 +225,43 @@ class CPrinter extends DefaultPrinter {
 
 	//#pragma omp parallel for private(«block2.iter.name»)
 	override printFiniteLoopBlockHeader(FiniteLoopBlock block2) '''
-
 		// Begin the for loop
 		{
 			int «block2.iter.name»;
-			for(«block2.iter.name»=0;«block2.iter.name»<«block2.nbIter»;«block2.iter.name»++){
-
-	'''
+			«IF block2.parallel.equals(true)»
+			#pragma omp parallel for private(«block2.iter.name»)
+			«ENDIF»
+			for(«block2.iter.name»=0;«block2.iter.name»<«block2.nbIter»;«block2.iter.name»++) {
+				
+				'''
 
 	override printFiniteLoopBlockFooter(FiniteLoopBlock block2) '''
+			}
 		}
-	}
+	'''
+
+	override printClusterBlockHeader(ClusterBlock block) '''
+		// Cluster: «block.name»
+		// Schedule: «block.schedule»
+		«IF block.parallel.equals(true)»
+		#pragma omp parallel sections
+		«ENDIF»
+		{
+			
+			'''
+
+	override printClusterBlockFooter(ClusterBlock block) '''
+		}
+	'''
+
+	override printSectionBlockHeader(SectionBlock block) '''
+		#pragma omp section
+		{
+			
+			'''
+
+	override printSectionBlockFooter(SectionBlock block) '''
+		}
 	'''
 
 	override String printFifoCall(FifoCall fifoCall) {
@@ -397,7 +427,7 @@ class CPrinter extends DefaultPrinter {
 
 	    // 2- init context
 	    val VelocityContext context = new VelocityContext();
-	    val findAllCHeaderFileNamesUsed = CHeaderUsedLocator.findAllCHeaderFileNamesUsed(getEngine.algo.referencePiMMGraph)
+	    val findAllCHeaderFileNamesUsed = CHeaderUsedLocator.findAllCHeaderFileNamesUsed(getEngine.algo)
 	    context.put("USER_INCLUDES", findAllCHeaderFileNamesUsed.map["#include \""+ it +"\""].join("\n"));
 
 		var String constants = "#define NB_DESIGN_ELTS "+getEngine.archi.componentInstances.size+"\n#define NB_CORES "+getEngine.codeBlocks.size;
@@ -637,6 +667,8 @@ class CPrinter extends DefaultPrinter {
 	override printBufferIteratorDeclaration(BufferIterator bufferIterator) ''''''
 
 	override printBufferIteratorDefinition(BufferIterator bufferIterator) ''''''
+
+	override printIteratedBuffer(IteratedBuffer iteratedBuffer) '''«doSwitch(iteratedBuffer.buffer)» + «printIntVar(iteratedBuffer.iter)» * «iteratedBuffer.size»'''
 
 	override printIntVar(IntVar intVar) '''«intVar.name»'''
 

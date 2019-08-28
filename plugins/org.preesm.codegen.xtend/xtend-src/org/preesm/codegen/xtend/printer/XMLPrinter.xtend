@@ -1,6 +1,7 @@
 /**
  * Copyright or © or Copr. IETR/INSA - Rennes (2013 - 2019) :
  *
+ * Alexandre Honorat [alexandre.honorat@insa-rennes.fr] (2019)
  * Antoine Morvan [antoine.morvan@insa-rennes.fr] (2017 - 2019)
  * Karol Desnos [karol.desnos@insa-rennes.fr] (2013)
  *
@@ -184,7 +185,7 @@ class XMLPrinter extends DefaultPrinter {
 			«ENDIF»
 			«IF fifoCall.operation != FifoOperation::INIT»
 				«fifoCall.parameters.head.doSwitch»
-				<constant name="nb_token" type="int" value="«(fifoCall.parameters.head as Buffer).size»"/>
+				<constant name="nb_token" type="long" value="«(fifoCall.parameters.head as Buffer).size»"/>
 			«ENDIF»
 			<constant name="size" type="string" value="sizeof(«fifoCall.headBuffer.type»)"/>
 			«{

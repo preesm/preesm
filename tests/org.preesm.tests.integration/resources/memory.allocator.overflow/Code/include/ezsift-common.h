@@ -28,7 +28,8 @@
 #define EPSILON_F	1.19209290E-07F
 
 
-void ITERATOR_generic(int parallelismLevels, int nbLayers,
+void ITERATOR_generic(int parallelismLevel, int nbOctaves, int nbLayers,
+		      int image_width, int image_height, int imgDouble,
 		      OUT int * start_octave, OUT int * stop_octave,
 		      OUT int * start_layer, OUT int * stop_layer,
 		      OUT int * start_line,  OUT int * stop_line,

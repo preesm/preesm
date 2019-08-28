@@ -1,6 +1,7 @@
 /**
  * Copyright or © or Copr. IETR/INSA - Rennes (2012 - 2019) :
  *
+ * Alexandre Honorat [alexandre.honorat@insa-rennes.fr] (2019)
  * Antoine Morvan [antoine.morvan@insa-rennes.fr] (2017 - 2019)
  * Clément Guy [clement.guy@insa-rennes.fr] (2015)
  * Julien Hascoet [jhascoet@kalray.eu] (2017)
@@ -70,7 +71,7 @@ public class BasicAllocator extends MemoryAllocator {
   public void allocate() {
     clear();
 
-    int offset = 0;
+    long offset = 0;
 
     if (this.inputExclusionGraph != null) {
       // Iterate on a copy of the vertex set because the meg might be

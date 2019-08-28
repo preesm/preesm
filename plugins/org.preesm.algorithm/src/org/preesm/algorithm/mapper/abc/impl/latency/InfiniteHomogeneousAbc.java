@@ -1,6 +1,7 @@
 /**
  * Copyright or © or Copr. IETR/INSA - Rennes (2008 - 2019) :
  *
+ * Alexandre Honorat [alexandre.honorat@insa-rennes.fr] (2019)
  * Antoine Morvan [antoine.morvan@insa-rennes.fr] (2017 - 2019)
  * Clément Guy [clement.guy@insa-rennes.fr] (2014 - 2015)
  * Matthieu Wipliez [matthieu.wipliez@insa-rennes.fr] (2008)
@@ -121,6 +122,7 @@ public class InfiniteHomogeneousAbc extends LatencyAbc {
     mapAllVerticesOnOperator(mainOperator);
 
     updateFinalCosts();
+
     this.orderManager.resetTotalOrder();
     final TLevelIterator iterator = new TLevelIterator(this.implementation, true);
 
@@ -201,9 +203,9 @@ public class InfiniteHomogeneousAbc extends LatencyAbc {
 
       edge.getTiming().setCost(cost);
     } else {
-      Float speed = 1f;
+      Double speed = 1d;
       speed = edgesize * speed;
-      edge.getTiming().setCost(speed.intValue());
+      edge.getTiming().setCost(speed.longValue());
     }
   }
 

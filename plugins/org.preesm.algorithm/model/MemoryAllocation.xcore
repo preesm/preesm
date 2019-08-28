@@ -62,8 +62,9 @@ type long wraps long
 type double wraps double
 
 interface Buffer {
-	int size
+	long size
 	contains LogicalBuffer[] children opposite memory
+	op PhysicalBuffer getBank()
 }
 
 class DistributedBuffer extends Buffer {
@@ -72,14 +73,21 @@ class DistributedBuffer extends Buffer {
 
 class PhysicalBuffer extends Buffer {
 	refers ComponentInstance memory
+	op PhysicalBuffer getBank() {
+		return this
+	}
 }
 
 class LogicalBuffer extends Buffer {
-	int offset
+	long offset
 	refers Buffer memory opposite children
+	op PhysicalBuffer getBank() {
+		return memory.getBank()
+	}
 }
 
 class Allocation {
+	contains PhysicalBuffer[] physicalBuffers
 	contains AllocationEntry[] allocations
 }
 

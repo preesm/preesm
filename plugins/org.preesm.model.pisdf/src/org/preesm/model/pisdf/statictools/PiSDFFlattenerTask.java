@@ -62,8 +62,8 @@ import org.preesm.workflow.implement.AbstractWorkflowNodeImplementation;
 
     inputs = { @Port(name = "PiMM", type = PiGraph.class) }, outputs = { @Port(name = "PiMM", type = PiGraph.class) },
 
-    parameters = {
-        @Parameter(name = "Perform optimizations", values = { @Value(name = "true / false", effect = "") }) })
+    parameters = { @Parameter(name = "Perform optimizations", values = { @Value(name = "true / false",
+        effect = "If true, tries to remove redundant special actors and self loops on delays.") }) })
 public class PiSDFFlattenerTask extends AbstractTaskImplementation {
 
   final Logger logger = PreesmLogger.getLogger();

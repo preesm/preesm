@@ -371,6 +371,11 @@ public abstract class AbstractWorkflowExecutor {
             }
             log(Level.INFO, "Workflow.Step", node.getName(), node.getID(), monitorMessageStr);
 
+            final boolean isDeprecated = task.getClass().isAnnotationPresent(Deprecated.class);
+            if (isDeprecated) {
+              log(Level.WARNING, node.getName() + " refers a deprecated task (" + node.getID() + ")");
+            }
+
             // Workflow cancellation was requested
             if ((monitor != null) && monitor.isCanceled()) {
 

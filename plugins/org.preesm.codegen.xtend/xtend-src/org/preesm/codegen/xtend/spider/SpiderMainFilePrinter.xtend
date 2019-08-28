@@ -2,6 +2,7 @@
  * Copyright or © or Copr. IETR/INSA - Rennes (2017 - 2019) :
  *
  * Antoine Morvan [antoine.morvan@insa-rennes.fr] (2017 - 2019)
+ * Daniel Madroñal [daniel.madronal@upm.es] (2019)
  * Florian Arrestier [florian.arrestier@insa-rennes.fr] (2018 - 2019)
  * Karol Desnos [karol.desnos@insa-rennes.fr] (2017)
  *
@@ -164,9 +165,14 @@ class SpiderMainFilePrinter {
 		/* == Papify instrumentation == */
 		«IF spiderConfig.useOfPapify»
 			cfg.usePapify = true;
+			cfg.dumpPapifyInfo = «spiderConfig.dumpPapifyInfo»;
+			cfg.feedbackPapifyInfo = «spiderConfig.feedbackPapifyInfo»;
 			cfg.papifyJobInfo = get_«pg.name»_papifyConfigs();
+			cfg.energyModelsInfo = get_«pg.name»_energyModels();
 		«ELSE»
 			cfg.usePapify = false;
+			cfg.dumpPapifyInfo = false;
+			cfg.feedbackPapifyInfo = false;
 		«ENDIF»
 
 		try {

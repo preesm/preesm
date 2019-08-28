@@ -1,6 +1,7 @@
 /**
  * Copyright or © or Copr. IETR/INSA - Rennes (2009 - 2019) :
  *
+ * Alexandre Honorat [alexandre.honorat@insa-rennes.fr] (2019)
  * Antoine Morvan [antoine.morvan@insa-rennes.fr] (2017 - 2019)
  * Clément Guy [clement.guy@insa-rennes.fr] (2014 - 2015)
  * Jonathan Piat [jpiat@laas.fr] (2011)
@@ -780,6 +781,7 @@ public abstract class LatencyAbc {
     this.edgeScheduler = AbstractEdgeSched.getInstance(params.getEdgeSchedType(), this.orderManager);
     this.comRouter = new CommunicationRouter(archi, scenario, this.implementation, this.edgeScheduler,
         this.orderManager);
+
   }
 
   /**
@@ -881,7 +883,7 @@ public abstract class LatencyAbc {
   }
 
   /**
-   * Asks the time keeper to update timings. Crucial and costly operation. Depending on the king of timings we want,
+   * Asks the time keeper to update timings. Crucial and costly operation. Depending on the kind of timings we want,
    * calls the necessary updates.
    */
   public void updateTimings() {

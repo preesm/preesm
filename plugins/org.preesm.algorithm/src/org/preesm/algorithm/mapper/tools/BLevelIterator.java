@@ -1,6 +1,7 @@
 /**
  * Copyright or © or Copr. IETR/INSA - Rennes (2008 - 2019) :
  *
+ * Alexandre Honorat [alexandre.honorat@insa-rennes.fr] (2019)
  * Antoine Morvan [antoine.morvan@insa-rennes.fr] (2017 - 2019)
  * Clément Guy [clement.guy@insa-rennes.fr] (2014)
  * Matthieu Wipliez [matthieu.wipliez@insa-rennes.fr] (2008)
@@ -64,8 +65,7 @@ public class BLevelIterator extends ImplementationIterator {
     }
 
     if (!arg0.getTiming().hasBLevel() || !arg1.getTiming().hasBLevel()) {
-      final String msg = "B Level Iterator problem";
-      throw new PreesmRuntimeException(msg);
+      throw new PreesmRuntimeException("B Level Iterator problem");
     }
 
     long bLevelDifference = (arg0.getTiming().getBLevel() - arg1.getTiming().getBLevel());
@@ -79,7 +79,7 @@ public class BLevelIterator extends ImplementationIterator {
     }
 
     // Preventing overflows in conversion from long to int
-    if (bLevelDifference >= 0) {
+    if (bLevelDifference > 0) {
       bLevelDifference = 1;
     } else {
       bLevelDifference = -1;

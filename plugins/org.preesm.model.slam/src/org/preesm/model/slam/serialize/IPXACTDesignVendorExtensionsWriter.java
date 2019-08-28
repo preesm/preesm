@@ -1,6 +1,7 @@
 /**
  * Copyright or © or Copr. IETR/INSA - Rennes (2018 - 2019) :
  *
+ * Alexandre Honorat [alexandre.honorat@insa-rennes.fr] (2019)
  * Antoine Morvan [antoine.morvan@insa-rennes.fr] (2018 - 2019)
  *
  * This software is a computer program whose purpose is to help prototyping
@@ -170,7 +171,7 @@ public class IPXACTDesignVendorExtensionsWriter {
     if (component instanceof ComNode) {
       componentElt.setAttribute("slam:speed", Float.toString(((ComNode) component).getSpeed()));
     } else if (component instanceof Mem) {
-      componentElt.setAttribute("slam:size", Integer.toString(((Mem) component).getSize()));
+      componentElt.setAttribute("slam:size", Long.toString(((Mem) component).getSize()));
     } else if (component instanceof Dma) {
       componentElt.setAttribute("slam:setupTime", Integer.toString(((Dma) component).getSetupTime()));
     }

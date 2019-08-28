@@ -196,8 +196,8 @@ public class SdfToDagConverter {
    *          the v
    * @return the vertex input buffers size
    */
-  private static int getVertexInputBuffersSize(final MapperDAGVertex v) {
-    int inputDataSize = 0;
+  private static long getVertexInputBuffersSize(final MapperDAGVertex v) {
+    long inputDataSize = 0;
 
     for (final DAGEdge e : v.incomingEdges()) {
       final MapperDAGEdge me = (MapperDAGEdge) e;
@@ -216,8 +216,8 @@ public class SdfToDagConverter {
    *          the v
    * @return the vertex output buffers size
    */
-  private static int getVertexOutputBuffersSize(final MapperDAGVertex v) {
-    int outputDataSize = 0;
+  private static long getVertexOutputBuffersSize(final MapperDAGVertex v) {
+    long outputDataSize = 0;
 
     for (final DAGEdge e : v.outgoingEdges()) {
       final MapperDAGEdge me = (MapperDAGEdge) e;
@@ -316,9 +316,9 @@ public class SdfToDagConverter {
             // Depending on the type of vertex, time is given by the size of output or input buffers
             if (SpecialVertexManager.isFork(currentVertex) || SpecialVertexManager.isJoin(currentVertex)
                 || SpecialVertexManager.isEnd(currentVertex)) {
-              timing.setTime(sut + (long) (tpu * SdfToDagConverter.getVertexInputBuffersSize(currentVertex)));
+              timing.setTime(sut + (long) (tpu * getVertexInputBuffersSize(currentVertex)));
             } else if (SpecialVertexManager.isBroadCast(currentVertex) || SpecialVertexManager.isInit(currentVertex)) {
-              timing.setTime(sut + (long) (tpu * SdfToDagConverter.getVertexOutputBuffersSize(currentVertex)));
+              timing.setTime(sut + (long) (tpu * getVertexOutputBuffersSize(currentVertex)));
             }
 
             currentVertexInit.addTiming(timing);

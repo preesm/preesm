@@ -1,6 +1,7 @@
 /**
  * Copyright or © or Copr. IETR/INSA - Rennes (2018 - 2019) :
  *
+ * Alexandre Honorat [alexandre.honorat@insa-rennes.fr] (2019)
  * Antoine Morvan [antoine.morvan@insa-rennes.fr] (2018 - 2019)
  *
  * This software is a computer program whose purpose is to help prototyping
@@ -52,11 +53,12 @@ import java.util.Map;
 public class BufferEntity {
 
   @JsonProperty("producer")
-  private String                    producer;
+  private String producer;
   @JsonProperty("consumer")
-  private String                    consumer;
+  private String consumer;
   @JsonProperty("initValue")
-  private Double                    initValue;
+  private Double initValue;
+  // same as initValue
   @JsonProperty("initValueN")
   private Double                    initValueN;
   @JsonIgnore

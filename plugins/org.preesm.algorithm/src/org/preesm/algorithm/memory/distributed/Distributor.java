@@ -1,7 +1,7 @@
 /**
  * Copyright or © or Copr. IETR/INSA - Rennes (2018 - 2019) :
  *
- * Alexandre Honorat [alexandre.honorat@insa-rennes.fr] (2018)
+ * Alexandre Honorat [alexandre.honorat@insa-rennes.fr] (2018 - 2019)
  * Antoine Morvan [antoine.morvan@insa-rennes.fr] (2018 - 2019)
  * Daniel Madroñal [daniel.madronal@upm.es] (2019)
  *
@@ -109,7 +109,7 @@ public class Distributor {
    *           </ul>
    */
   public static Map<String, MemoryExclusionGraph> distributeMeg(final String valuePolicy,
-      final MemoryExclusionGraph memEx, final int alignment) {
+      final MemoryExclusionGraph memEx, final long alignment) {
     final Map<String, MemoryExclusionGraph> memExes = new LinkedHashMap<>();
 
     // Generate output
@@ -196,7 +196,7 @@ public class Distributor {
    *          {@link MemoryExclusionGraph} when the split is applied. (others will be removed).
    *
    */
-  private static void splitMergedBuffersDistributedOnly(final MemoryExclusionGraph meg, final int alignment,
+  private static void splitMergedBuffersDistributedOnly(final MemoryExclusionGraph meg, final long alignment,
       final String memory) {
     // Get the map of host Mobjects
     // (A copy of the map is used because the original map will be modified during iterations)
@@ -276,7 +276,7 @@ public class Distributor {
    *          should always be used in the memory allocation.
    *
    */
-  private static void splitMergedBuffersMixed(final MemoryExclusionGraph meg, final int alignment) {
+  private static void splitMergedBuffersMixed(final MemoryExclusionGraph meg, final long alignment) {
     // Get the map of host Mobjects
     // (A copy of the map is used because the original map will be modified during iterations)
     @SuppressWarnings("unchecked")
@@ -337,7 +337,7 @@ public class Distributor {
    */
   private static void splitMergedBuffers(final Map<String, Set<MemoryExclusionVertex>> mobjByBank,
       final Set<String> banks, final Entry<MemoryExclusionVertex, Set<MemoryExclusionVertex>> entry,
-      final MemoryExclusionGraph meg, final int alignment) {
+      final MemoryExclusionGraph meg, final long alignment) {
     @SuppressWarnings("unchecked")
     final Map<MemoryExclusionVertex, Set<MemoryExclusionVertex>> hosts = (Map<MemoryExclusionVertex,
         Set<MemoryExclusionVertex>>) meg.getPropertyBean().getValue(MemoryExclusionGraph.HOST_MEMORY_OBJECT_PROPERTY);

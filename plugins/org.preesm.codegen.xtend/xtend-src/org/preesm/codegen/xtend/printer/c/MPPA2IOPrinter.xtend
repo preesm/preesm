@@ -3,6 +3,7 @@
  *
  * Antoine Morvan [antoine.morvan@insa-rennes.fr] (2017 - 2019)
  * Daniel Madroñal [daniel.madronal@upm.es] (2019)
+ * dylangageot [gageot.dylan@gmail.com] (2019)
  * Julien Hascoet [jhascoet@kalray.eu] (2016 - 2017)
  * Karol Desnos [karol.desnos@insa-rennes.fr] (2013 - 2017)
  *
@@ -121,7 +122,7 @@ class MPPA2IOPrinter extends MPPA2ClusterPrinter {
 		#endif
 
 		/* user includes */
-		#include "preesm_gen.h"
+		#include "preesm_gen_mppa.h"
 
 		extern void *__wrap_memset(void *s, int c, size_t n);
 		extern void *__wrap_memcpy(void *dest, const void *src, size_t n);
@@ -197,16 +198,15 @@ class MPPA2IOPrinter extends MPPA2ClusterPrinter {
 			if(block2.nbIter > 1 && this.sharedOnly == 0){
 				gets += "#pragma omp parallel for private(" + block2.iter.name + ")\n"
 			}
-			gets += "for(" + block2.iter.name + "=0;" + block2.iter.name +"<" + block2.nbIter + ";" + block2.iter.name + "++){\n"
+			gets += "for(" + block2.iter.name + "=0;" + block2.iter.name +"<" + block2.nbIter + ";" + block2.iter.name + "++) {"
 
 			if(local_offset > local_buffer_size)
 				local_buffer_size = local_offset
 	gets}»
-
-	'''
+			
+			'''
 
 	override printFiniteLoopBlockFooter(FiniteLoopBlock block2) '''
-
 			}// End the for loop
 		«{
 				var puts = ""
@@ -309,7 +309,7 @@ class MPPA2IOPrinter extends MPPA2ClusterPrinter {
 
 	    // 2- init context
 	    val VelocityContext context = new VelocityContext();
-	    val findAllCHeaderFileNamesUsed = CHeaderUsedLocator.findAllCHeaderFileNamesUsed(getEngine.algo.referencePiMMGraph)
+	    val findAllCHeaderFileNamesUsed = CHeaderUsedLocator.findAllCHeaderFileNamesUsed(getEngine.algo)
 	    context.put("USER_INCLUDES", findAllCHeaderFileNamesUsed.map["#include \""+ it +"\""].join("\n"));
 
 		var String constants = "#define NB_DESIGN_ELTS "+getEngine.archi.componentInstances.size+"\n";
@@ -321,7 +321,7 @@ class MPPA2IOPrinter extends MPPA2ClusterPrinter {
 	    context.put("CONSTANTS", constants);
 
 	    // 3- init template reader
-	    val String templateLocalPath = "templates/mppa2Explicit/preesm_gen.h";
+	    val String templateLocalPath = "templates/c/preesm_gen.h";
 	    val URL mainTemplate = PreesmResourcesHelper.instance.resolve(templateLocalPath, this.class);
 	    var InputStreamReader reader = null;
 	    try {
@@ -375,8 +375,7 @@ class MPPA2IOPrinter extends MPPA2ClusterPrinter {
 		#include <mppa_remote.h>
 		#include <mppa_async.h>
 		#include <HAL/hal/board/boot_args.h>
-		#include "preesm_gen.h"
-		#include "communication.h"
+		#include "preesm_gen_mppa.h"
 		«IF (this.distributedOnly == 0)»
 		/* Shared Segment ID */
 		mppa_async_segment_t shared_segment;
@@ -505,7 +504,7 @@ class MPPA2IOPrinter extends MPPA2ClusterPrinter {
 
 	'''
 	override printPapifyActionParam(PapifyAction action) '''&«action.name»'''
-	
+
 	override printSharedMemoryCommunication(SharedMemoryCommunication communication) '''
 		«communication.direction.toString.toLowerCase»«communication.delimiter.toString.toLowerCase.toFirstUpper»(«IF (communication.
 			direction == Direction::SEND && communication.delimiter == Delimiter::START) ||
@@ -566,7 +565,7 @@ class MPPA2IOPrinter extends MPPA2ClusterPrinter {
 								this.sharedOnly = 0;
 	       		 			}
 	       		 		}
-	       		 	}	       		 	
+	       		 	}
        		 	}
 			}
 		}

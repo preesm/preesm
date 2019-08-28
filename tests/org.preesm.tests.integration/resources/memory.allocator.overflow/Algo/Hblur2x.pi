@@ -1,0 +1,199 @@
+<?xml version="1.0" encoding="UTF-8"?><graphml xmlns="http://graphml.graphdrawing.org/xmlns">
+    <key attr.name="parameters" for="graph" id="parameters"/>
+    <key attr.name="variables" for="graph" id="variables"/>
+    <key attr.name="arguments" for="node" id="arguments"/>
+    <key attr.name="name" attr.type="string" for="graph"/>
+    <key attr.name="graph_desc" attr.type="string" for="node"/>
+    <graph edgedefault="directed">
+        <data key="name">blur2x</data>
+        <node id="imgDouble" kind="cfg_in_iface"/>
+        <node id="image_width" kind="cfg_in_iface"/>
+        <node id="image_height" kind="cfg_in_iface"/>
+        <node id="gWmax" kind="cfg_in_iface"/>
+        <node id="parallelismLevel" kind="cfg_in_iface"/>
+        <node id="nGpyrLayers" kind="cfg_in_iface"/>
+        <node id="tot_image_size" kind="cfg_in_iface"/>
+        <node id="row_filter_transpose2x_1" kind="actor" period="0">
+            <data key="graph_desc">Code/include/ezsift-preesm.h</data>
+            <loop name="row_filter_transpose2x_1">
+                <param direction="IN" isConfig="true" name="image_height" type="int"/>
+                <param direction="IN" isConfig="true" name="image_width" type="int"/>
+                <param direction="IN" isConfig="true" name="nGpyrLayers" type="int"/>
+                <param direction="IN" isConfig="true" name="gWmax" type="int"/>
+                <param direction="IN" isConfig="true" name="parallelismLevel" type="int"/>
+                <param direction="IN" isConfig="true" name="imgDouble" type="int"/>
+                <param direction="IN" isConfig="false" name="gaussian_coefs" type="float "/>
+                <param direction="IN" isConfig="false" name="column_sizes" type="int "/>
+                <param direction="IN" isConfig="false" name="img" type="float "/>
+                <param direction="IN" isConfig="false" name="imgIterPrev" type="float "/>
+                <param direction="IN" isConfig="false" name="iter" type="int "/>
+                <param direction="OUT" isConfig="false" name="imgGT" type="float "/>
+            </loop>
+            <port kind="cfg_input" name="image_height"/>
+            <port kind="cfg_input" name="image_width"/>
+            <port kind="cfg_input" name="imgDouble"/>
+            <port kind="cfg_input" name="nGpyrLayers"/>
+            <port kind="cfg_input" name="parallelismLevel"/>
+            <port kind="cfg_input" name="gWmax"/>
+            <port kind="cfg_input" name="tot_image_size"/>
+            <port annotation="READ_ONLY" expr="nGpyrLayers*gWmax" kind="input" name="gaussian_coefs"/>
+            <port annotation="READ_ONLY" expr="if(imgDouble,(4*tot_image_size)/parallelismLevel,1)" kind="input" name="img"/>
+            <port annotation="READ_ONLY" expr="nGpyrLayers" kind="input" name="column_sizes"/>
+            <port annotation="READ_ONLY" expr="if(imgDouble,(4*tot_image_size)/parallelismLevel,1)" kind="input" name="imgIterPrev"/>
+            <port annotation="READ_ONLY" expr="1" kind="input" name="iter"/>
+            <port annotation="WRITE_ONLY" expr="if(imgDouble, (4*tot_image_size)/parallelismLevel, 1)" kind="output" name="imgGT"/>
+        </node>
+        <node id="row_filter_transpose2x_2" kind="actor" period="0">
+            <data key="graph_desc">Code/include/ezsift-preesm.h</data>
+            <loop name="row_filter_transpose2x_2">
+                <param direction="IN" isConfig="true" name="image_height" type="int"/>
+                <param direction="IN" isConfig="true" name="image_width" type="int"/>
+                <param direction="IN" isConfig="true" name="nGpyrLayers" type="int"/>
+                <param direction="IN" isConfig="true" name="gWmax" type="int"/>
+                <param direction="IN" isConfig="true" name="parallelismLevel" type="int"/>
+                <param direction="IN" isConfig="true" name="imgDouble" type="int"/>
+                <param direction="IN" isConfig="false" name="gaussian_coefs" type="float "/>
+                <param direction="IN" isConfig="false" name="column_sizes" type="int "/>
+                <param direction="IN" isConfig="false" name="img" type="float "/>
+                <param direction="IN" isConfig="false" name="iter" type="int "/>
+                <param direction="OUT" isConfig="false" name="imgGT" type="float "/>
+            </loop>
+            <port kind="cfg_input" name="image_height"/>
+            <port kind="cfg_input" name="image_width"/>
+            <port kind="cfg_input" name="imgDouble"/>
+            <port kind="cfg_input" name="nGpyrLayers"/>
+            <port kind="cfg_input" name="parallelismLevel"/>
+            <port kind="cfg_input" name="gWmax"/>
+            <port kind="cfg_input" name="tot_image_size"/>
+            <port annotation="READ_ONLY" expr="nGpyrLayers" kind="input" name="column_sizes"/>
+            <port annotation="READ_ONLY" expr="if(imgDouble, (4*tot_image_size)/parallelismLevel, 1)" kind="input" name="img"/>
+            <port annotation="READ_ONLY" expr="nGpyrLayers*gWmax" kind="input" name="gaussian_coefs"/>
+            <port annotation="READ_ONLY" expr="1" kind="input" name="iter"/>
+            <port annotation="WRITE_ONLY" expr="if(imgDouble, (4*tot_image_size)/parallelismLevel, 1)" kind="output" name="imgGT"/>
+        </node>
+        <node id="BarrierTranspose2x_1" kind="actor" period="0">
+            <data key="graph_desc">Code/include/ezsift-preesm.h</data>
+            <loop name="BarrierTranspose2x_1">
+                <param direction="IN" isConfig="true" name="image_width" type="int"/>
+                <param direction="IN" isConfig="true" name="image_height" type="int"/>
+                <param direction="IN" isConfig="true" name="imgDouble" type="int"/>
+                <param direction="IN" isConfig="true" name="parallelismLevel" type="int"/>
+                <param direction="IN" isConfig="true" name="tot_image_size" type="int"/>
+                <param direction="IN" isConfig="false" name="img_in" type="float "/>
+                <param direction="OUT" isConfig="false" name="img_out" type="float "/>
+            </loop>
+            <port kind="cfg_input" name="image_width"/>
+            <port kind="cfg_input" name="image_height"/>
+            <port kind="cfg_input" name="imgDouble"/>
+            <port kind="cfg_input" name="parallelismLevel"/>
+            <port kind="cfg_input" name="tot_image_size"/>
+            <port annotation="READ_ONLY" expr="if(imgDouble, 4*tot_image_size, parallelismLevel)" kind="input" name="img_in"/>
+            <port annotation="WRITE_ONLY" expr="if(imgDouble, 4*tot_image_size, parallelismLevel)" kind="output" name="img_out"/>
+        </node>
+        <node id="BarrierTranspose2x_2" kind="actor" period="0">
+            <data key="graph_desc">Code/include/ezsift-preesm.h</data>
+            <loop name="BarrierTranspose2x_2">
+                <param direction="IN" isConfig="true" name="image_width" type="int"/>
+                <param direction="IN" isConfig="true" name="image_height" type="int"/>
+                <param direction="IN" isConfig="true" name="imgDouble" type="int"/>
+                <param direction="IN" isConfig="true" name="parallelismLevel" type="int"/>
+                <param direction="IN" isConfig="true" name="tot_image_size" type="int"/>
+                <param direction="IN" isConfig="false" name="img_in" type="float "/>
+                <param direction="OUT" isConfig="false" name="img_out" type="float "/>
+            </loop>
+            <port kind="cfg_input" name="image_width"/>
+            <port kind="cfg_input" name="image_height"/>
+            <port kind="cfg_input" name="imgDouble"/>
+            <port kind="cfg_input" name="parallelismLevel"/>
+            <port kind="cfg_input" name="tot_image_size"/>
+            <port annotation="READ_ONLY" expr="if(imgDouble, 4*tot_image_size, parallelismLevel)" kind="input" name="img_in"/>
+            <port annotation="WRITE_ONLY" expr="if(imgDouble, 4*tot_image_size, parallelismLevel)" kind="output" name="img_out"/>
+        </node>
+        <node id="imgBlurred" kind="snk">
+            <port annotation="NONE" expr="if(imgDouble, 4*tot_image_size, parallelismLevel)" kind="input" name="imgBlurred"/>
+        </node>
+        <node id="gauss_coefs1" kind="src">
+            <port annotation="NONE" expr="nGpyrLayers*gWmax*parallelismLevel" kind="output" name="gauss_coefs1"/>
+        </node>
+        <node id="imgOri" kind="src">
+            <port annotation="NONE" expr="if(imgDouble,(4*tot_image_size),parallelismLevel)" kind="output" name="imgOri"/>
+        </node>
+        <node id="col_sizes1" kind="src">
+            <port annotation="NONE" expr="nGpyrLayers*parallelismLevel" kind="output" name="col_sizes1"/>
+        </node>
+        <node id="iterPrev" kind="src">
+            <port annotation="NONE" expr="if(imgDouble,(4*tot_image_size),parallelismLevel)" kind="output" name="iterPrev"/>
+        </node>
+        <node id="iter_nb1" kind="src">
+            <port annotation="NONE" expr="1*parallelismLevel" kind="output" name="iter_nb1"/>
+        </node>
+        <node id="col_sizes2" kind="src">
+            <port annotation="NONE" expr="nGpyrLayers*parallelismLevel" kind="output" name="col_sizes2"/>
+        </node>
+        <node id="gauss_coefs2" kind="src">
+            <port annotation="NONE" expr="nGpyrLayers*gWmax*parallelismLevel" kind="output" name="gauss_coefs2"/>
+        </node>
+        <node id="iter_nb2" kind="src">
+            <port annotation="NONE" expr="1*parallelismLevel" kind="output" name="iter_nb2"/>
+        </node>
+        <edge kind="fifo" source="row_filter_transpose2x_1" sourceport="imgGT" target="BarrierTranspose2x_1" targetport="img_in" type="float"/>
+        <edge kind="fifo" source="BarrierTranspose2x_1" sourceport="img_out" target="row_filter_transpose2x_2" targetport="img" type="float"/>
+        <edge kind="fifo" source="row_filter_transpose2x_2" sourceport="imgGT" target="BarrierTranspose2x_2" targetport="img_in" type="float"/>
+        <edge kind="fifo" source="col_sizes1" sourceport="col_sizes1" target="row_filter_transpose2x_1" targetport="column_sizes" type="int"/>
+        <edge kind="fifo" source="gauss_coefs1" sourceport="gauss_coefs1" target="row_filter_transpose2x_1" targetport="gaussian_coefs" type="float"/>
+        <edge kind="fifo" source="imgOri" sourceport="imgOri" target="row_filter_transpose2x_1" targetport="img" type="float"/>
+        <edge kind="fifo" source="iterPrev" sourceport="iterPrev" target="row_filter_transpose2x_1" targetport="imgIterPrev" type="float"/>
+        <edge kind="fifo" source="iter_nb1" sourceport="iter_nb1" target="row_filter_transpose2x_1" targetport="iter" type="int"/>
+        <edge kind="fifo" source="BarrierTranspose2x_2" sourceport="img_out" target="imgBlurred" targetport="imgBlurred" type="float"/>
+        <edge kind="fifo" source="iter_nb2" sourceport="iter_nb2" target="row_filter_transpose2x_2" targetport="iter" type="int"/>
+        <edge kind="fifo" source="gauss_coefs2" sourceport="gauss_coefs2" target="row_filter_transpose2x_2" targetport="gaussian_coefs" type="float"/>
+        <edge kind="fifo" source="col_sizes2" sourceport="col_sizes2" target="row_filter_transpose2x_2" targetport="column_sizes" type="int"/>
+        <edge kind="dependency" source="image_height" target="row_filter_transpose2x_1" targetport="image_height"/>
+        <edge kind="dependency" source="image_height" target="row_filter_transpose2x_2" targetport="image_height"/>
+        <edge kind="dependency" source="image_width" target="row_filter_transpose2x_2" targetport="image_width"/>
+        <edge kind="dependency" source="image_width" target="row_filter_transpose2x_1" targetport="image_width"/>
+        <edge kind="dependency" source="imgDouble" target="row_filter_transpose2x_1" targetport="imgDouble"/>
+        <edge kind="dependency" source="imgDouble" target="row_filter_transpose2x_2" targetport="imgDouble"/>
+        <edge kind="dependency" source="gWmax" target="row_filter_transpose2x_1" targetport="gWmax"/>
+        <edge kind="dependency" source="gWmax" target="row_filter_transpose2x_2" targetport="gWmax"/>
+        <edge kind="dependency" source="nGpyrLayers" target="row_filter_transpose2x_1" targetport="nGpyrLayers"/>
+        <edge kind="dependency" source="nGpyrLayers" target="row_filter_transpose2x_2" targetport="nGpyrLayers"/>
+        <edge kind="dependency" source="parallelismLevel" target="row_filter_transpose2x_1" targetport="parallelismLevel"/>
+        <edge kind="dependency" source="parallelismLevel" target="row_filter_transpose2x_2" targetport="parallelismLevel"/>
+        <edge kind="dependency" source="image_width" target="BarrierTranspose2x_1" targetport="image_width"/>
+        <edge kind="dependency" source="image_height" target="BarrierTranspose2x_1" targetport="image_height"/>
+        <edge kind="dependency" source="imgDouble" target="BarrierTranspose2x_1" targetport="imgDouble"/>
+        <edge kind="dependency" source="image_width" target="BarrierTranspose2x_2" targetport="image_width"/>
+        <edge kind="dependency" source="image_height" target="BarrierTranspose2x_2" targetport="image_height"/>
+        <edge kind="dependency" source="imgDouble" target="BarrierTranspose2x_2" targetport="imgDouble"/>
+        <edge kind="dependency" source="nGpyrLayers" target="col_sizes1"/>
+        <edge kind="dependency" source="gWmax" target="gauss_coefs1"/>
+        <edge kind="dependency" source="nGpyrLayers" target="gauss_coefs1"/>
+        <edge kind="dependency" source="nGpyrLayers" target="col_sizes2"/>
+        <edge kind="dependency" source="gWmax" target="gauss_coefs2"/>
+        <edge kind="dependency" source="nGpyrLayers" target="gauss_coefs2"/>
+        <edge kind="dependency" source="imgDouble" target="iterPrev"/>
+        <edge kind="dependency" source="imgDouble" target="imgOri"/>
+        <edge kind="dependency" source="parallelismLevel" target="BarrierTranspose2x_1" targetport="parallelismLevel"/>
+        <edge kind="dependency" source="parallelismLevel" target="BarrierTranspose2x_2" targetport="parallelismLevel"/>
+        <edge kind="dependency" source="parallelismLevel" target="col_sizes1"/>
+        <edge kind="dependency" source="parallelismLevel" target="col_sizes2"/>
+        <edge kind="dependency" source="parallelismLevel" target="gauss_coefs1"/>
+        <edge kind="dependency" source="parallelismLevel" target="gauss_coefs2"/>
+        <edge kind="dependency" source="parallelismLevel" target="iter_nb1"/>
+        <edge kind="dependency" source="parallelismLevel" target="iter_nb2"/>
+        <edge kind="dependency" source="parallelismLevel" target="imgOri"/>
+        <edge kind="dependency" source="parallelismLevel" target="iterPrev"/>
+        <edge kind="dependency" source="imgDouble" target="imgOri"/>
+        <edge kind="dependency" source="imgDouble" target="iterPrev"/>
+        <edge kind="dependency" source="imgDouble" target="imgBlurred"/>
+        <edge kind="dependency" source="parallelismLevel" target="imgBlurred"/>
+        <edge kind="dependency" source="tot_image_size" target="row_filter_transpose2x_1" targetport="tot_image_size"/>
+        <edge kind="dependency" source="tot_image_size" target="BarrierTranspose2x_1" targetport="tot_image_size"/>
+        <edge kind="dependency" source="tot_image_size" target="row_filter_transpose2x_2" targetport="tot_image_size"/>
+        <edge kind="dependency" source="tot_image_size" target="BarrierTranspose2x_2" targetport="tot_image_size"/>
+        <edge kind="dependency" source="tot_image_size" target="imgBlurred"/>
+        <edge kind="dependency" source="tot_image_size" target="imgOri"/>
+        <edge kind="dependency" source="tot_image_size" target="iterPrev"/>
+    </graph>
+</graphml>

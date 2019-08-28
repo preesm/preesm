@@ -5,7 +5,8 @@
 #include "ezsift-common.h"
 
 
-void ITERATOR_build_grd_rot_pyr(int parallelismLevels,
+void ITERATOR_build_grd_rot_pyr(int parallelismLevel, int nOctaves, int nLayers,
+				int image_width, int image_height, int imgDouble,
 				OUT int * start_octave, OUT int * stop_octave,
 				OUT int * start_layer, OUT int * stop_layer,
 				OUT int * start_line,  OUT int * stop_line,
@@ -14,7 +15,8 @@ void ITERATOR_build_grd_rot_pyr(int parallelismLevels,
 #ifdef SIFT_DEBUG
   fprintf(stderr, "Enter function: %s\n", __FUNCTION__);
 #endif
-  ITERATOR_generic(parallelismLevels, SIFT_nLayers,
+  ITERATOR_generic(parallelismLevel, nOctaves, nLayers,
+		   image_width, image_height, imgDouble,
 		   start_octave, stop_octave,
 		   start_layer, stop_layer,
 		   start_line, stop_line,
@@ -24,7 +26,8 @@ void ITERATOR_build_grd_rot_pyr(int parallelismLevels,
 
 // Build gradient pyramids.
 void build_grd_rot_pyr(int nGpyrLayers, int totSizeWithoutLayers,
-		       int parallelismLevels, int nLayers,
+		       int parallelismLevel, int nLayers,
+		       int image_width, int image_height, int imgDouble,
 		       IN float * gpyr, OUT float * grdPyr,  OUT float * rotPyr, 
 		       IN int * start_octave, IN int * stop_octave,
 		       IN int * start_layer, IN int * stop_layer,
@@ -34,29 +37,28 @@ void build_grd_rot_pyr(int nGpyrLayers, int totSizeWithoutLayers,
   fprintf(stderr, "Enter function: %s\n", __FUNCTION__);
 #endif
   size_t offset_pyr = 0;
-  size_t w = SIFT_IMAGE_W;
-  size_t h = SIFT_IMAGE_H;
-  if (SIFT_IMG_DBL) {
+  size_t w = image_width;
+  size_t h = image_height;
+  if (imgDouble) {
     w *= 2;
     h *= 2;
   }
+  size_t tot_size = w*h;
+
+/* #ifdef SIFT_DEBUG */
+/* char fdog[512]; */
+/* unsigned char buffer[tot_size]; */
+/* #endif */
+
   for (int k = 0; k < *start_octave; k++) {
-    offset_pyr +=  w*h*nGpyrLayers;
-    w /= 2;
-    h /= 2;
+    offset_pyr +=  tot_size*nGpyrLayers;
+    w >>= 1;
+    h >>= 1;
+    tot_size >>= 2;
   }
   
   float * grdData = grdPyr;
   float * rotData = rotPyr;
-
-/* #ifdef SIFT_DEBUG */
-/*     char fdog[512]; */
-/* #if SIFT_IMG_DBL */
-/*     unsigned char buffer[SIFT_IMG_TOT*4]; */
-/* #else */
-/*     unsigned char buffer[SIFT_IMG_TOT]; */
-/* #endif */
-/* #endif */
 
   
   /* fprintf(stderr, "ptr: %lu, %d-%d\t%d-%d\t%d-%d\t%d-%d\n", (unsigned long) grdPyr, *start_octave, *stop_octave, *start_layer, *stop_layer, *start_line, *stop_line, *start_col, *stop_col); */
@@ -65,8 +67,8 @@ void build_grd_rot_pyr(int nGpyrLayers, int totSizeWithoutLayers,
     // Since keypoints only occur at these layers.
 
     int begin_layer = (i == *start_octave) ? *start_layer+1 : 1;
-    int end_layer = (i+1 == *stop_octave) ? *stop_layer+1 : SIFT_nLayers+1;
-    size_t index_src = begin_layer*w*h;
+    int end_layer = (i+1 == *stop_octave) ? *stop_layer+1 : nLayers+1;
+    size_t index_src = begin_layer*tot_size;
     for (int j = begin_layer; j < end_layer; j ++) {
       float * srcData = gpyr + offset_pyr + index_src;
       
@@ -93,7 +95,7 @@ void build_grd_rot_pyr(int nGpyrLayers, int totSizeWithoutLayers,
 	  *(rotData ++) = angle;
 	}
 /* #ifdef SIFT_DEBUG */
-/*       size_t sizeIn = w*h; */
+/*       size_t sizeIn = tot_size; */
 /*       if (begin_line == 0 && r == h - 1 && begin_col == 0 && end_col == w) { */
 /* 	sprintf(fdog, "raw_ang-%d-%d.pgm", i, j); */
 /* 	write_float_pgm(fdog, rotData-sizeIn, buffer, w, h, 2); */
@@ -101,11 +103,12 @@ void build_grd_rot_pyr(int nGpyrLayers, int totSizeWithoutLayers,
 /* #endif */
       }
 
-      index_src += w * h;
+      index_src += tot_size;
       /* fprintf(stderr, "index_src: %lu\n", index_src); */
     }
-    offset_pyr += w*h*nGpyrLayers;
-    w /= 2;
-    h /= 2;
+    offset_pyr += tot_size*nGpyrLayers;
+    w >>= 1;
+    h >>= 1;
+    tot_size >>= 2;
   }
 }

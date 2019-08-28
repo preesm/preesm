@@ -10,8 +10,9 @@
 /* static int nb = -1; */
 
 
-void SPLIT_upsample2x(int parallelismLevels, int imgDouble,
+void SPLIT_upsample2x(int parallelismLevel, int imgDouble,
 		      int image_width, int image_height,
+		      int tot_image_size,
 		      IN float * in, OUT float * out) {
 #ifdef SIFT_DEBUG
   fprintf(stderr, "Enter function: %s\n", __FUNCTION__);
@@ -19,11 +20,11 @@ void SPLIT_upsample2x(int parallelismLevels, int imgDouble,
 
   if (imgDouble) {
     if (out != NULL) {
-      size_t rChunckSize = (image_width * image_height) / parallelismLevels; 
+      size_t rChunckSize = tot_image_size / parallelismLevel; 
       size_t chunckSize = rChunckSize + image_width;
       size_t offset_in = 0;
       size_t offset_out = 0;
-      for (int p = 0; p < parallelismLevels - 1; p++) {
+      for (int p = 0; p < parallelismLevel - 1; p++) {
 	memcpy(out+offset_out, in+offset_in, sizeof(float)*chunckSize);
 	offset_in += rChunckSize;
 	offset_out += chunckSize;
@@ -42,7 +43,7 @@ void SPLIT_upsample2x(int parallelismLevels, int imgDouble,
 
 /* #ifdef SIFT_DEBUG */
 /*   char ff[512]; */
-/*   unsigned char buffer[SIFT_IMG_TOT]; */
+/*   unsigned char buffer[tot_image_size]; */
 /*   sprintf(ff, "tofloat.pgm"); */
 /*   write_float_pgm(ff, in, buffer, image_width, image_height, 1); */
 /* #endif */
@@ -50,31 +51,36 @@ void SPLIT_upsample2x(int parallelismLevels, int imgDouble,
 
 
 void to_uchar(int w, int h, float * img_in, unsigned char * img_out) {
+  float * src = img_in;
+  unsigned char * dst = img_out;
   for (int r = 0; r < h; r ++) {
     for(int c = 0; c < w; c ++) {
       // Negative number, truncate to zero.
-      float temp = img_in[r * w  + c];
-      img_out[r * w + c] = temp >= 0 ? (unsigned char)temp : 0;
+      float tmp = *src;
+      *(dst++) = tmp >= 0 ? (unsigned char) tmp : 0;
+      src++;
     }
   }
 }
 
 
-void to_float(int parallelismLevels, int image_width, int image_height,
+void to_float(int parallelismLevel, int image_width, int image_height,
 	      IN unsigned char * uchar_img, OUT float * float_img) {
 #ifdef SIFT_DEBUG
   fprintf(stderr, "Enter function: %s\n", __FUNCTION__);
 #endif
-  for (int i = 0; i < image_height/parallelismLevels; i ++) {
+  unsigned char * src = uchar_img;
+  float * dst = float_img;
+  for (int i = 0; i < image_height/parallelismLevel; i ++) {
     for (int j = 0; j < image_width; j ++) {
-      float_img[i * image_width + j] = uchar_img[i * image_width + j];
+      *(dst++) = *(src++);
     }
   }
 }
 
 // Upsample the image by 2x, linear interpolation.
 void upsample2x(int image_width, int image_height,
-		int parallelismLevels, int imgDouble,
+		int parallelismLevel, int imgDouble,
 		IN int * iter, IN float * img, OUT float * img2x) {
 #ifdef SIFT_DEBUG
   fprintf(stderr, "Enter function: %s\n", __FUNCTION__);
@@ -85,26 +91,28 @@ void upsample2x(int image_width, int image_height,
 
     /* #ifdef SIFT_DEBUG */
     /*     char fgpyr[512]; */
-    /*     int h = (image_height*2)/parallelismLevels; */
+    /*     int h = (image_height*2)/parallelismLevel; */
     /*     int w = image_width*2; */
-    /*     unsigned char buffer[(SIFT_IMG_TOT*4)/SIFT_pLevels]; */
+    /*     unsigned char buffer[(image_width*image_height*4)/parallelismLevel]; */
     /*     sprintf(fgpyr, "origin_%d.pgm", index); */
     /*     write_float_pgm(fgpyr, img, buffer, w/2, h/2, 1); */
     /* #endif */
-    int chunckSize = dstH/parallelismLevels;
-    int end_line = (*iter == parallelismLevels-1) ? chunckSize - ceilf(scale) : chunckSize;
+    int chunckSize = dstH/parallelismLevel;
+    int end_line = (*iter == parallelismLevel-1) ? chunckSize - ceilf(scale) : chunckSize;
     int end_col = dstW - ceilf(scale);	
     for (int r = 0; r < end_line; r ++) {
       float ori_r = r / scale;
       int r1 = (int) ori_r;
       float dr = ori_r - r1;
+      size_t rdstW = r*dstW;
+      size_t r1imgW = r1 * image_width;
       for (int c = 0; c < end_col ; c ++) {
 	float ori_c = c / scale;
 	int c1 = (int) ori_c;
 	float dc = ori_c - c1;
 
-	int idx = r1 * image_width + c1;
-	img2x[r * dstW + c] = /* (unsigned char) */ ((1-dr) * (1-dc) * img[idx]
+	int idx = r1imgW + c1;
+	img2x[rdstW + c] = /* (unsigned char) */ ((1-dr) * (1-dc) * img[idx]
 						       + dr * (1-dc) * (r1 < image_height - 1 ? img[idx + image_width] : img[idx])
 						       + (1-dr)* dc * img[idx + 1]
 						       + dr * dc * ((r1 < image_height - 1) ? img[idx + image_width + 1] : img[idx]));
@@ -114,25 +122,27 @@ void upsample2x(int image_width, int image_height,
 	float ori_c = c / scale;
 	int c1 = (int) ori_c;
 	float dc = ori_c - c1;
-	int idx = r1 * image_width + c1;
-	img2x[r * dstW + c] = /* (unsigned char) */ ((1-dr) * (1-dc) * img[idx]
+	int idx = r1imgW + c1;
+	img2x[rdstW + c] = /* (unsigned char) */ ((1-dr) * (1-dc) * img[idx]
 						       + dr * (1-dc) * (r1 < image_height - 1 ? img[idx + image_width] : img[idx])
 						       + (1-dr)* dc * img[idx]
 						       + dr * dc * img[idx]);
       }
     }
-    if (*iter == parallelismLevels-1) {
+    if (*iter == parallelismLevel-1) {
       for (int r = end_line; r < end_line+ceilf(scale); r ++) {
 	float ori_r = r / scale;
 	int r1 = (int) ori_r;
 	float dr = ori_r - r1;
+	size_t rdstW = r*dstW;
+	size_t r1imgW = r1 * image_width;
 	for (int c = 0; c < end_col ; c ++) {
 	  float ori_c = c / scale;
 	  int c1 = (int) ori_c;
 	  float dc = ori_c - c1;
 
-	  int idx = r1 * image_width + c1;
-	  img2x[r * dstW + c] = /* (unsigned char) */ ((1-dr) * (1-dc) * img[idx]
+	  int idx = r1imgW + c1;
+	  img2x[rdstW + c] = /* (unsigned char) */ ((1-dr) * (1-dc) * img[idx]
 							 + dr * (1-dc) * img[idx]
 							 + (1-dr)* dc * img[idx + 1]
 							 + dr * dc * img[idx]);
@@ -141,8 +151,8 @@ void upsample2x(int image_width, int image_height,
 			
 	  float ori_c = c / scale;
 	  int c1 = (int) ori_c;
-	  int idx = r1 * image_width + c1;
-	  img2x[r * dstW + c] = /* (unsigned char) */ img[idx];
+	  int idx = r1imgW + c1;
+	  img2x[rdstW + c] = /* (unsigned char) */ img[idx];
 	}
       }
     }
@@ -157,18 +167,19 @@ void upsample2x(int image_width, int image_height,
 
 // Downsample the image by 2x, nearest neighbor interpolation.
 void downsample2x1(int image_width, int image_height,
-		   int parallelismLevels,
+		   int parallelismLevel,
 		   IN float * img2x, OUT float * img) {
 #ifdef SIFT_DEBUG
   fprintf(stderr, "Enter function: %s\n", __FUNCTION__);
 #endif
   int dstW = image_width >> 1, dstH = image_height >> 1;
-
-  for (int r = 0; r < dstH/parallelismLevels; r ++)	{
+  float * dst = img;
+  for (int r = 0; r < dstH/parallelismLevel; r ++)	{
     int ori_r = r << 1;
+    size_t indexTmp = ori_r * image_width;
     for (int c = 0; c < dstW; c ++) {
       int ori_c = c << 1;
-      img[r * dstW + c] = img2x[ori_r * image_width + ori_c];
+      *(dst++) = img2x[indexTmp + ori_c];
     }
   }
 }
@@ -186,12 +197,13 @@ void downsample2xN(int image_width, int image_height,
   int dstH = image_height >> ((*iter)+2);
 
   float * src = (*iter) ? imgDownPrev : fst_img;
-  
+  float * dst = imgDown2x;
   for (int r = 0; r < dstH; r ++)	{
     int ori_r = r << 1;
+    size_t indexTmp = ori_r * srcW;
     for (int c = 0; c < dstW; c ++) {
       int ori_c = c << 1;
-      imgDown2x[r * dstW + c] = src[ori_r * srcW + ori_c];
+      *(dst++) = src[indexTmp + ori_c];
     }
   }
 }

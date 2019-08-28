@@ -1,6 +1,7 @@
 /**
  * Copyright or © or Copr. IETR/INSA - Rennes (2012 - 2019) :
  *
+ * Alexandre Honorat [alexandre.honorat@insa-rennes.fr] (2019)
  * Antoine Morvan [antoine.morvan@insa-rennes.fr] (2017 - 2019)
  * Clément Guy [clement.guy@insa-rennes.fr] (2015)
  * Julien Hascoet [jhascoet@kalray.eu] (2017)
@@ -291,8 +292,10 @@ public class DeGreefAllocator extends MemoryAllocator {
     public int compareTo(final IntegerAndVertex o) {
       // If the offsets are different, use them as a comparison
       final long firstDiff = this.first - o.first;
-      if (firstDiff != 0) {
-        return (int) firstDiff;
+      if (firstDiff > 0) {
+        return 1;
+      } else if (firstDiff < 0) {
+        return -1;
       }
 
       // Else, compare the vertices

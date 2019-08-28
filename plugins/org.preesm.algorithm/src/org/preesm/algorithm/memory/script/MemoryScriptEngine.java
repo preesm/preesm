@@ -1,7 +1,7 @@
 /**
  * Copyright or © or Copr. IETR/INSA - Rennes (2014 - 2019) :
  *
- * Alexandre Honorat [alexandre.honorat@insa-rennes.fr] (2018)
+ * Alexandre Honorat [alexandre.honorat@insa-rennes.fr] (2018 - 2019)
  * Antoine Morvan [antoine.morvan@insa-rennes.fr] (2017 - 2019)
  * Clément Guy [clement.guy@insa-rennes.fr] (2014 - 2015)
  * Julien Heulot [julien.heulot@insa-rennes.fr] (2015)
@@ -96,7 +96,7 @@ public class MemoryScriptEngine {
     this.verbose = verbose;
     // Get the logger
     this.logger = PreesmLogger.getLogger();
-    int alignment;
+    long alignment;
     switch (valueAlignment.substring(0, Math.min(valueAlignment.length(), 7))) {
       case AbstractMemoryAllocatorTask.VALUE_ALIGNEMENT_NONE:
         alignment = -1;
@@ -106,7 +106,7 @@ public class MemoryScriptEngine {
         break;
       case AbstractMemoryAllocatorTask.VALUE_ALIGNEMENT_FIXED:
         final String fixedValue = valueAlignment.substring(7);
-        alignment = Integer.parseInt(fixedValue);
+        alignment = Long.parseLong(fixedValue);
         break;
       default:
         alignment = -1;
@@ -212,6 +212,9 @@ public class MemoryScriptEngine {
    *
    */
   public void generateCode(final Scenario scenario, final String log) {
+    if (scenario.getCodegenDirectory() == null) {
+      throw new PreesmRuntimeException("Codegen path has not been specified in scenario, cannot go further.");
+    }
     final String codegenPath = scenario.getCodegenDirectory() + "/";
     final IFile iFile;
     try {

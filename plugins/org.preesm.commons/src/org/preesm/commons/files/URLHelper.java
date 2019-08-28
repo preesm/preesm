@@ -99,7 +99,7 @@ public class URLHelper {
       throw new IllegalArgumentException("Could not convert URL", e);
     }
 
-    Path myPath;
+    final Path myPath;
     if ("jar".equals(uri.getScheme())) {
       FileSystem fileSystem = FileSystems.newFileSystem(uri, Collections.<String, Object>emptyMap());
       myPath = fileSystem.getPath("/");
@@ -109,10 +109,11 @@ public class URLHelper {
     final List<Path> collect = Files.walk(myPath).map(p -> myPath.relativize(p)).collect(Collectors.toList());
     final List<String> res = new ArrayList<>();
     for (final Path pathToTest : collect) {
+      final String pathString = pathToTest.toString().replace('\\', '/');
       if (collect.stream().anyMatch(currentPath -> currentPath != pathToTest && currentPath.startsWith(pathToTest))) {
-        res.add(pathToTest.toString() + "/");
+        res.add(pathString + "/");
       } else {
-        res.add(pathToTest.toString());
+        res.add(pathString);
       }
     }
     return res;

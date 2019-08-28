@@ -51,10 +51,6 @@
 // The keypoint refinement smaller than this threshold will be discarded.
 #define SIFT_KEYPOINT_SUBPiXEL_THR 0.6f
 
-// double image size before pyramid construction?
-// 1 if true, 0 otherwise
-#define SIFT_IMG_DBL 1 
-
 // assumed gaussian blur for input image
 #define SIFT_INIT_SIGMA 0.5f
 
@@ -88,12 +84,6 @@
 // factor used to convert floating-point descriptor to unsigned char
 #define SIFT_INT_DESCR_FCTR 512.f
 
-// default width of descriptor histogram array
-#define SIFT_DESCR_WIDTH 4
-
-// default number of bins per histogram in descriptor array
-#define SIFT_DESCR_HIST_BINS 8
-
 // default value of the nearest-neighbour distance ratio threshold
 // |DR_nearest|/|DR_2nd_nearest|<SIFT_MATCH_NNDR_THR is considered as a match.
 #define SIFT_MATCH_NNDR_THR 0.65f
@@ -104,20 +94,9 @@
 
 
 /****************************************
- * Parameters added by ahonorat
- ***************************************/
-// arbritary max number of detected keypoints
-#define SIFT_MAX_KEYPOINTS 1600 
-#define SIFT_MAX_MATCHES 1000
-
-/****************************************
  * Definitions
  ***************************************/
 
-// this static allocation actually forbids
-// to use other image sizes than 800x640
-// it corresponds to nBins in extract_descriptor
-#define DEGREE_OF_DESCRIPTORS 128
 typedef struct SiftKeypoint {
 	int octave; // octave number
 	int layer;  // layer number
@@ -134,7 +113,7 @@ typedef struct SiftKeypoint {
 	float ori; // orientation in degrees.
 	float mag; // magnitude
 
-	float descriptors[DEGREE_OF_DESCRIPTORS];
+	float descriptors[SIFT_nBins];
 } SiftKpt;
 
 // Match pair structure. Use for interest point matching.
@@ -150,71 +129,78 @@ typedef struct MatchPair {
 /* for sift */
 
 
-void to_float(int parallelismLevels, int image_width, int image_height,
+void to_float(int parallelismLevel, int image_width, int image_height,
 	      IN unsigned char * uchar_img, OUT float * float_img);
 
 void compute_gaussian_coefs(int gWmax, int nGpyrLayers,
+			    int nLayers, int imgDouble,
 			    OUT int * columns_sizes,
 			    OUT float * gaussian_coefs);
 
 void counterGpyrLayer(int nGpyrLayers, OUT int * iter);
 
 void BarrierTranspose_1(int image_width, int image_height,
-		      IN float * img_in, OUT float * img_out);
+			int parallelismLevel, int tot_image_size,
+			IN float * img_in, OUT float * img_out);
 
 void BarrierTranspose2x_1(int image_width, int image_height, int imgDouble,
-			IN float * img_in, OUT float * img_out);
+			  int parallelismLevel, int tot_image_size,
+			  IN float * img_in, OUT float * img_out);
 
 void BarrierTranspose_2(int image_width, int image_height,
-		      IN float * img_in, OUT float * img_out);
+			int parallelismLevel, int tot_image_size,
+			IN float * img_in, OUT float * img_out);
 
 void BarrierTranspose2x_2(int image_width, int image_height, int imgDouble,
-			IN float * img_in, OUT float * img_out);
+			  int parallelismLevel, int tot_image_size,
+			  IN float * img_in, OUT float * img_out);
 
 
 void row_filter_transpose_1(int image_height, int image_width, int nGpyrLayers,
-			    int gWmax, int parallelismLevels,
+			    int gWmax, int parallelismLevel,
 			    IN float * gaussian_coefs, IN int * column_sizes,
 			    IN float * img, IN float *imgIterPrev,
 			    IN int * iter, OUT float * imgGT);
 
 void row_filter_transpose2x_1(int image_height, int image_width, int nGpyrLayers,
-			      int gWmax, int parallelismLevels, int imgDouble,
+			      int gWmax, int parallelismLevel, int imgDouble,
 			      IN float * gaussian_coefs, IN int * column_sizes,
 			      IN float * img, IN float *imgIterPrev,
 			      IN int * iter, OUT float * imgGT);
 
 void row_filter_transpose_2(int image_height, int image_width, int nGpyrLayers,
-			    int gWmax, int parallelismLevels,
+			    int gWmax, int parallelismLevel,
 			    IN float * gaussian_coefs, IN int * column_sizes,
 			    IN float * img, IN int * iter, OUT float * imgGT);
 
 void row_filter_transpose2x_2(int image_height, int image_width, int nGpyrLayers,
-			      int gWmax, int parallelismLevels, int imgDouble,
+			      int gWmax, int parallelismLevel, int imgDouble,
 			      IN float * gaussian_coefs, IN int * column_sizes,
 			      IN float * img, IN int * iter, OUT float * imgGT);
 
-void seq_blur1(int image_height, int image_width, int nGpyrLayers, int gWmax,
-	       IN float * gaussian_coefs, IN int * column_sizes,
+void seq_blur1(int image_height, int image_width, int tot_image_size, int nGpyrLayers, int gWmax,
+	       int image_maxWH, IN float * gaussian_coefs, IN int * column_sizes,
 	       IN float * fst_img, IN float * imgBlurPrev, IN int * iter, OUT float * imgBlurred);
 
-void seq_blurN(int image_height, int image_width, int nGpyrLayers, int gWmax,
-	       IN int * octaveLevel, IN float * gaussian_coefs, IN int * column_sizes,
+void seq_blurN(int image_height, int image_width, int tot_image_size, int nGpyrLayers, int gWmax,
+	       int image_maxWH, IN int * octaveLevel, IN float * gaussian_coefs, IN int * column_sizes,
 	       IN float * fst_img, IN float * imgBlurPrev, IN int * iter, OUT float * imgBlurred);
 
-void MERGE_gpyr(int image_height, int image_width, int nGpyrLayers, int imgDouble,
-		int nOctavesDownN, int totSizeWithoutLayers, OUT float * gpyr,
+void MERGE_gpyr(int nGpyrLayers, int imgDouble,
+		int image_width /* needed only for debug */, 
+		int image_height /* needed only for debug */, 
+		int nOctavesDownN, int totSizeWithoutLayers, int tot_image_size, OUT float * gpyr,
 		/* IN float * img, IN float * imgUp2x, IN float * imgDown2x1, IN float * imgDown2xN, */
 		IN float * gpyrs, IN float * gpyrsUp2x, IN float * gpyrsDown2x1, IN float * gpyrsDown2xN);
 
 void counterOctaveDownN(int nOctavesDownN, OUT int * iter);
 
 void upsample2x(int image_width, int image_height,
-		int parallelismLevels, int imgDouble,
+		int parallelismLevel, int imgDouble,
 		IN int * iter, IN float * img, OUT float * img2x);
 
 void downsample2x1(int image_width, int image_height,
-		   int parallelismLevels,
+		   int parallelismLevel,
 		   IN float * img2x, OUT float * img);
 
 void downsample2xN(int image_width, int image_height,
@@ -222,7 +208,8 @@ void downsample2xN(int image_width, int image_height,
 		   IN int * iter, OUT float * imgDown2x);
 
 void build_grd_rot_pyr(int nGpyrLayers, int totSizeWithoutLayers,
-		       int parallelismLevels, int nLayers,
+		       int parallelismLevel, int nLayers,
+		       int image_width, int image_height, int imgDouble,
 		       IN float * gpyr, OUT float * grdPyr,  OUT float * rotPyr, 
 		       IN int * start_octave, IN int * stop_octave,
 		       IN int * start_layer, IN int * stop_layer,
@@ -230,7 +217,8 @@ void build_grd_rot_pyr(int nGpyrLayers, int totSizeWithoutLayers,
 		       IN int * start_col, IN int * stop_col);
 
 void build_dog_pyr(int nGpyrLayers, int totSizeWithoutLayers,
-		   int parallelismLevels, int nDogLayers,
+		   int parallelismLevel, int nDogLayers,
+		   int image_width, int image_height, int imgDouble,
 		   IN float * gpyr, OUT float * dogPyr, 
 		   IN int * start_octave, IN int * stop_octave,
 		   IN int * start_layer, IN int * stop_layer,
@@ -238,8 +226,9 @@ void build_dog_pyr(int nGpyrLayers, int totSizeWithoutLayers,
 		   IN int * start_col, IN int * stop_col);
 
 void detect_keypoints(int nLayers, int totSizeWithoutLayers,
-		      int parallelismLevels, int nDogLayers,
-		      int nbKeypointsMax,
+		      int parallelismLevel, int nDogLayers, int nLocalKptMax,
+		      int image_width, int image_height,
+		      int nOctaves /* needed only for debug */, int imgDouble,
 		      IN float * dogPyr, IN float * grdPyr,  IN float * rotPyr, 
 		      IN int * start_octave, IN int * stop_octave,
 		      IN int * start_layer, IN int * stop_layer,
@@ -248,29 +237,35 @@ void detect_keypoints(int nLayers, int totSizeWithoutLayers,
 		      OUT SiftKpt * keypoints/* , OUT int * nbKeypoints */);
 
 void extract_descriptor(int nLayers, int totSizeWithoutLayers,
-			int parallelismLevels, int nbKeypointsMax,
+			int parallelismLevel, int nLocalKptMax,
+			int image_width, int image_height,
+			int imgDouble, int nBins, int nHistBins,
+			int descrWidth, int descrHistBins,
 			IN float * grdPyr,  IN float * rotPyr, 
 			IN SiftKpt * keypoints_in, /* IN int * nbKeypoints_in, */
 			OUT SiftKpt * keypoints_out/* , OUT int * nbKeypoints_out */);
 
-void MERGE_keypoints(int nbKeypointsMax, int parallelismLevels,
+void MERGE_keypoints(int nKeypointsMax, int parallelismLevel, int nLocalKptMax,
 		     IN SiftKpt * keypoints_in, /* IN int * nbKeypoints_in, */
 		     OUT SiftKpt * keypoints_out, OUT int * nbKeypoints_out);
 
 
-void ITERATOR_build_dog_pyr(int parallelismLevels,
+void ITERATOR_build_dog_pyr(int parallelismLevel, int nOctaves, int nDogLayers,
+			    int image_width, int image_height, int imgDouble,
 			    OUT int * start_octave, OUT int * stop_octave,
 			    OUT int * start_layer, OUT int * stop_layer,
 			    OUT int * start_line,  OUT int * stop_line,
 			    OUT int * start_col, OUT int * stop_col);
 
-void ITERATOR_build_grd_rot_pyr(int parallelismLevels,
+void ITERATOR_build_grd_rot_pyr(int parallelismLevel, int nOctaves, int nLayers,
+				int image_width, int image_height, int imgDouble,
 				OUT int * start_octave, OUT int * stop_octave,
 				OUT int * start_layer, OUT int * stop_layer,
 				OUT int * start_line,  OUT int * stop_line,
 				OUT int * start_col, OUT int * stop_col);
 
-void ITERATOR_detect_keypoints(int parallelismLevels,
+void ITERATOR_detect_keypoints(int parallelismLevel, int nOctaves, int nLayers,
+			       int image_width, int image_height, int imgDouble,
 			       OUT int * start_octave, OUT int * stop_octave,
 			       OUT int * start_layer, OUT int * stop_layer,
 			       OUT int * start_line,  OUT int * stop_line,
@@ -279,11 +274,12 @@ void ITERATOR_detect_keypoints(int parallelismLevels,
 void BarrierCounterGpyr(int nGpyrLayers, IN int * iters_in, OUT int * iters_out);
 
 
-void SPLIT_upsample2x(int parallelismLevels, int imgDouble,
+void SPLIT_upsample2x(int parallelismLevel, int imgDouble,
 		      int image_width, int image_height,
+		      int tot_image_size,
 		      IN float * in, OUT float * out);
 
-void counterPLevels(int parallelismLevels, OUT int * iter);
+void counterPLevels(int parallelismLevel, OUT int * iter);
 
 
 /* for extract */
@@ -291,17 +287,19 @@ void counterPLevels(int parallelismLevels, OUT int * iter);
 void filename1(int FilePathLength, OUT char * filename);
 
 void read_pgm(int FilePathLength, IN char * filename,
-	      int imgW, int imgH, OUT unsigned char * img);
+	      int image_width, int image_height, OUT unsigned char * img);
 
-void draw_keypoints_to_ppm_file(int FilePathLength, int nbKptMax,
-				int imgW, int imgH,
+void draw_keypoints_to_ppm_file(int FilePathLength, int nKeypointsMax,
+				int image_width, int image_height,
+				int tot_image_size,
 				IN int * nbKeypoints,
 				IN char * filename,
 				IN unsigned char * image, 
 				IN struct SiftKeypoint * keypoints);
 
 
-void export_keypoints_to_key_file(int FilePathLength, int nbKptMax,
+void export_keypoints_to_key_file(int FilePathLength, int nKeypointsMax,
+				  int DumpDescriptor, int nBins,
 				  IN char * filename,
 				  IN int * nbKeypoints, 
 				  IN SiftKpt * keypoints);

@@ -2,6 +2,7 @@
  * Copyright or © or Copr. IETR/INSA - Rennes (2018 - 2019) :
  *
  * Antoine Morvan [antoine.morvan@insa-rennes.fr] (2018 - 2019)
+ * Daniel Madroñal [daniel.madronal@upm.es] (2019)
  * Florian Arrestier [florian.arrestier@insa-rennes.fr] (2018)
  *
  * This software is a computer program whose purpose is to help prototyping
@@ -49,6 +50,8 @@ public class SpiderConfig {
   public static final Long DEFAULT_SHARED_MEMORY_SIZE = (long) 67108864;
 
   private boolean usePapify;
+  private boolean dumpPapifyInfo;
+  private boolean feedbackPapifyInfo;
   private boolean useVerbose;
   private boolean useTrace;
   private boolean useGraphOptims;
@@ -77,6 +80,26 @@ public class SpiderConfig {
     }
   }
 
+  private void setPapifyFeedbackType(final String papifyFeedbackParameter) {
+    if ("dump".equalsIgnoreCase(papifyFeedbackParameter)) {
+      usePapify = true;
+      dumpPapifyInfo = true;
+      feedbackPapifyInfo = false;
+    } else if ("feedback".equalsIgnoreCase(papifyFeedbackParameter)) {
+      usePapify = true;
+      dumpPapifyInfo = false;
+      feedbackPapifyInfo = true;
+    } else if ("both".equalsIgnoreCase(papifyFeedbackParameter)) {
+      usePapify = true;
+      dumpPapifyInfo = true;
+      feedbackPapifyInfo = true;
+    } else { // papify is off by default
+      usePapify = false;
+      dumpPapifyInfo = false;
+      feedbackPapifyInfo = false;
+    }
+  }
+
   /**
    * 
    * @param workflowParameters
@@ -92,7 +115,7 @@ public class SpiderConfig {
     final String memAllocParameter = workflowParameters.get(SpiderCodegenTask.PARAM_MEMALLOC);
     final String sharedMemoryParameter = workflowParameters.get(SpiderCodegenTask.PARAM_SHMEMORY_SIZE);
 
-    usePapify = "true".equalsIgnoreCase(papifyParameter);
+    setPapifyFeedbackType(papifyParameter);
     useVerbose = "true".equalsIgnoreCase(verboseParameter);
     useTrace = "true".equalsIgnoreCase(traceParameter);
     useGraphOptims = !"false".equalsIgnoreCase(graphOptimsParameter);
@@ -104,6 +127,14 @@ public class SpiderConfig {
 
   public boolean getUseOfPapify() {
     return usePapify;
+  }
+
+  public boolean getDumpPapifyInfo() {
+    return dumpPapifyInfo;
+  }
+
+  public boolean getFeedbackPapifyInfo() {
+    return feedbackPapifyInfo;
   }
 
   public boolean getUseOfVerbose() {

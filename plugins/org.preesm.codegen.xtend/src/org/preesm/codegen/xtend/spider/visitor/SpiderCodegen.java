@@ -50,6 +50,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
+import org.eclipse.emf.common.util.ECollections;
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.common.util.EMap;
 import org.eclipse.emf.ecore.util.EcoreUtil;
@@ -115,6 +116,10 @@ public class SpiderCodegen {
   /** The timings. */
   /* Map timing strings to actors */
   private Map<AbstractActor, Map<Component, String>> timings;
+
+  /** The energies. */
+  /* Map energy doubles to actors */
+  private Map<AbstractActor, Map<Component, Double>> energies;
 
   /** The function map. */
   /* Map functions to function ix */
@@ -209,6 +214,27 @@ public class SpiderCodegen {
       }
     }
 
+    // Generate energies
+    this.energies = new LinkedHashMap<>();
+    for (final AbstractActor actor : actorsByNames.values()) {
+      if (actor != null) {
+        if (!this.energies.containsKey(actor)) {
+          this.energies.put(actor, new LinkedHashMap<Component, Double>());
+        }
+        for (final Component coreType : this.coreTypesIds.keySet()) {
+          if (this.scenario.getEnergyConfig().getAlgorithmEnergy().containsKey(coreType)) {
+            final EMap<AbstractActor,
+                Double> listEnergies = this.scenario.getEnergyConfig().getAlgorithmEnergy().get(coreType);
+            if (listEnergies.containsKey(actor)) {
+              this.energies.get(actor).put(coreType, listEnergies.get(actor));
+            }
+          }
+        }
+      } else {
+        throw new PreesmRuntimeException();
+      }
+    }
+
     // Generate constraints
     this.constraints = new LinkedHashMap<>();
     for (final Entry<ComponentInstance, EList<AbstractActor>> cg : this.scenario.getConstraints()
@@ -230,6 +256,18 @@ public class SpiderCodegen {
       for (final Component coreType : this.coreTypesIds.keySet()) {
         if (!this.timings.get(aa).containsKey(coreType)) {
           this.timings.get(aa).put(coreType, Integer.toString(ScenarioConstants.DEFAULT_TIMING_TASK.getValue()));
+        }
+      }
+    }
+
+    // Add Default energies if needed
+    for (final AbstractActor aa : actorsByNames.values()) {
+      if (!this.energies.containsKey(aa)) {
+        this.energies.put(aa, new LinkedHashMap<Component, Double>());
+      }
+      for (final Component coreType : this.coreTypesIds.keySet()) {
+        if (!this.energies.get(aa).containsKey(coreType)) {
+          this.energies.get(aa).put(coreType, (double) ScenarioConstants.DEFAULT_ENERGY_TASK.getValue());
         }
       }
     }
@@ -307,6 +345,8 @@ public class SpiderCodegen {
     append("std::map<lrtFct, std::map<const char *, PapifyConfig*>> get_" + pg.getName() + "_papifyConfigs();\n");
     append("void free_" + pg.getName()
         + "_papifyConfigs(std::map<lrtFct, std::map<const char *, PapifyConfig*>>& map);\n");
+    append(
+        "std::map<lrtFct, std::map<const char *, std::map<int, double>>> get_" + pg.getName() + "_energyModels();\n");
     append("\n");
 
     /* Core */
@@ -374,7 +414,7 @@ public class SpiderCodegen {
 
     final StringBuilder tmp = new StringBuilder();
     final SpiderCodegenVisitor codeGenerator = new SpiderCodegenVisitor(this, tmp, this.preprocessor, this.timings,
-        this.constraints, this.scenario.getSimulationInfo().getDataTypes());
+        this.constraints, this.scenario.getSimulationInfo().getDataTypes(), this.energies);
     // Generate C++ code for the whole PiGraph, at the end, tmp will contain
     // the vertex declaration for pg
     codeGenerator.doSwitch(pg);
@@ -457,8 +497,109 @@ public class SpiderCodegen {
     append("\t\tdelete it->second.begin()->second;\n");
     append("\t}\n");
     append("}\n");
+
+    // Adding energy consumption models based on PAPIFY events
+    generatePapifyEnergyModel(pg, scenario);
+
     // Returns the final C++ code
     return this.cppString.toString();
+  }
+
+  /**
+   * Generate the information related to energy consumption estimation based on PAPIFY events
+   */
+  private void generatePapifyEnergyModel(final PiGraph pg, final Scenario scenario) {
+    final ArrayList<AbstractActor> actorsWithEnergyModel = new ArrayList<>();
+
+    for (final AbstractActor actor : this.functionMap.keySet()) {
+      if (generateActorComponentEnergyModel(actor)) {
+        actorsWithEnergyModel.add(actor);
+      }
+    }
+    append(
+        "std::map<lrtFct, std::map<const char *, std::map<int, double>>> get_" + pg.getName() + "_energyModels() {\n");
+    append("\tstd::map<lrtFct, std::map<const char *, std::map<int, double>>> map;\n");
+    append("\tstd::map<const char *, std::map<int, double>> mapEnergyModels;\n");
+    append("\t// Initializing the map\n");
+    for (final AbstractActor actor : actorsWithEnergyModel) {
+      append("\tmapEnergyModels = create_" + SpiderNameGenerator.getFunctionName(actor) + "_EnergyModel();\n");
+      append("\tif(!mapEnergyModels.empty()) {\n");
+      append("\t\tmap.insert(std::make_pair(" + pg.getName() + "_fcts["
+          + SpiderNameGenerator.getFunctionName(actor).toUpperCase() + "_FCT" + "], mapEnergyModels));\n");
+      append("\t}\n");
+    }
+    append("\treturn map;\n");
+    append("}\n\n");
+
+    /*
+     * append("void free_" + pg.getName() +
+     * "_energyModels(std::map<lrtFct, std::map<const char *, std::map<int, double>>>& map) {\n");
+     * append("\tstd::map<lrtFct, std::map<const char *, std::map<int, double>>>>::iterator it;\n");
+     * append("\t// Freeing memory of the map \n"); append("\tfor(it = map.begin(); it != map.end(); ++it) { \n");
+     * append("\t\tstd::map<const char *, std::map<int, double>>::iterator itInner;\n");
+     * append("\t\tfor(itInner = it->second.begin(); itInner != it->second.end(); ++itInner) { \n");
+     * append("\t\t\tdelete itInner->second;\n"); append("\t\t}\n"); append("\t\tdelete it->second;\n");
+     * append("\t}\n"); append("}\n");
+     */
+  }
+
+  private boolean generateActorComponentEnergyModel(AbstractActor actor) {
+    boolean canEstimateEnergy = false;
+    PapifyConfig papifyConfigManager = this.scenario.getPapifyConfig();
+    EMap<Component, EMap<PapiEvent, Double>> energyModels = papifyConfigManager.getPapifyEnergyKPIModels();
+    Map<Component, String> componentsWithMode = new LinkedHashMap<>();
+    if (papifyConfigManager.hasValidPapifyConfig() && papifyConfigManager.hasPapifyConfig(actor)) {
+      for (Component coreType : this.coresFromCoreType.keySet()) {
+        if (energyModels.containsKey(coreType)) {
+          EList<PapiComponent> componentPAPIComponents = papifyConfigManager.getSupportedPapiComponents(coreType);
+          for (PapiComponent singleComponent : componentPAPIComponents) {
+            for (String compName : papifyConfigManager.getActorAssociatedPapiComponents(actor)) {
+              if (singleComponent.getId().equalsIgnoreCase(compName)) {
+                EMap<PapiEvent, Double> energyModel = energyModels.get(coreType);
+                List<PapiEvent> actorEventsOnComponent = papifyConfigManager.getActorComponentEvents(actor, compName);
+                Set<PapiEvent> actorEventsOnComponentAsSet = new LinkedHashSet<>(actorEventsOnComponent);
+                if (actorEventsOnComponentAsSet.containsAll(energyModel.keySet())) {
+                  componentsWithMode.put(coreType, compName);
+                }
+              }
+            }
+          }
+        }
+      }
+      if (!componentsWithMode.isEmpty()) {
+        addEnergyModelEntry(actor, componentsWithMode);
+        canEstimateEnergy = true;
+      }
+    }
+    return canEstimateEnergy;
+  }
+
+  private void addEnergyModelEntry(AbstractActor actor, Map<Component, String> componentsWithMode) {
+    PapifyConfig papifyConfigManager = this.scenario.getPapifyConfig();
+    EMap<Component, EMap<PapiEvent, Double>> energyModels = papifyConfigManager.getPapifyEnergyKPIModels();
+    append("\nstatic std::map<const char *, std::map<int, double>> " + "create_"
+        + SpiderNameGenerator.getFunctionName(actor) + "_EnergyModel() {\n");
+    append("\t// Setting the EnergyModels for actor: " + SpiderNameGenerator.getFunctionName(actor) + "\n");
+    append("\tstd::map<const char *, std::map<int, double>> energyModelsMap;\n");
+    append("\tstd::map<int, double> columnToParamValueMap;\n");
+    for (Entry<Component, String> componentToPrint : componentsWithMode.entrySet()) {
+      append("\t// Inserting energy model for " + componentToPrint.getKey().getVlnv().getName() + "\n");
+      EMap<PapiEvent, Double> energyModel = energyModels.get(componentToPrint.getKey());
+      List<PapiEvent> actorEventsOnComponent = papifyConfigManager.getActorComponentEvents(actor,
+          componentToPrint.getValue());
+      for (PapiEvent singleEvent : energyModel.keySet()) {
+        append("\tcolumnToParamValueMap.insert(std::make_pair("
+            + ECollections.indexOf(actorEventsOnComponent, singleEvent, 0) + ", " + energyModel.get(singleEvent)
+            + "));\n");
+      }
+      for (ComponentInstance compInst : this.coresFromCoreType.get(componentToPrint.getKey())) {
+        append("\tenergyModelsMap.insert(std::make_pair(\"LRT_" + this.coreIds.get(compInst)
+            + "\", columnToParamValueMap));\n");
+      }
+      append("\tcolumnToParamValueMap.clear();\n");
+    }
+    append("\treturn energyModelsMap;\n");
+    append("}\n\n");
   }
 
   /**
@@ -609,6 +750,11 @@ public class SpiderCodegen {
     append("\tconfig.nMemoryUnit = 1;\n\n");
     append("\t/* === Create Archi === */\n\n");
     append("\tauto *archi = Spider::createArchi(config);\n\n");
+    if (!this.scenario.getEnergyConfig().getPlatformPower().isEmpty()) {
+      double basePower = this.scenario.getEnergyConfig().getPePowerOrDefault("Base");
+      append("\t/* === Add base energy === */\n\n");
+      append("\tSpider::setBasePower(" + basePower + ");\n\n");
+    }
     append("\t/* === Create the different MemoryUnit(s) === */\n\n");
     append("\tshMemBuffer = (char *) std::malloc(SH_MEM_SIZE);\n");
     append("\tif (!shMemBuffer) {\n");
@@ -630,6 +776,10 @@ public class SpiderCodegen {
             + "\t\tstatic_cast<std::uint32_t>(PEVirtID::" + coreName + "),\n" + "\t\t\"" + coreType + "-"
             + c.getInstanceName() + "\",\n" + "\t\tSpiderPEType::LRT_PE,\n" + "\t\tSpiderHWType::PHYS_PE);\n");
         append("\tSpider::setPEMemoryUnit(" + peName + ", shMem);\n");
+        if (!this.scenario.getEnergyConfig().getPlatformPower().isEmpty()) {
+          double pePower = this.scenario.getEnergyConfig().getPePowerOrDefault(coreType.getVlnv().getName());
+          append("\tSpider::setPEPower(" + peName + ", " + pePower + ");\n");
+        }
       }
       append("\n\t/* === Set Spider GRT core === */\n\n");
       append("\tSpider::setSpiderGRTVirtualID(archi, static_cast<std::uint32_t>(PEVirtID::"

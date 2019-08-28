@@ -1,6 +1,7 @@
 /**
  * Copyright or © or Copr. IETR/INSA - Rennes (2014 - 2019) :
  *
+ * Alexandre Honorat [alexandre.honorat@insa-rennes.fr] (2019)
  * Antoine Morvan [antoine.morvan@insa-rennes.fr] (2017 - 2019)
  * Clément Guy [clement.guy@insa-rennes.fr] (2014 - 2015)
  * Karol Desnos [karol.desnos@insa-rennes.fr] (2015)
@@ -178,7 +179,7 @@ public abstract class AbstractMemoryAllocatorTask extends AbstractTaskImplementa
   private String valueAlignment;
 
   /** The alignment. */
-  protected int alignment;
+  protected long alignment;
 
   /** The nb shuffle. */
   private int nbShuffle;
@@ -224,7 +225,7 @@ public abstract class AbstractMemoryAllocatorTask extends AbstractTaskImplementa
         break;
       case VALUE_ALIGNEMENT_FIXED:
         final String fixedValue = this.valueAlignment.substring(7);
-        this.alignment = Integer.parseInt(fixedValue);
+        this.alignment = Long.parseLong(fixedValue);
         break;
       default:
         this.alignment = -1;
@@ -359,7 +360,7 @@ public abstract class AbstractMemoryAllocatorTask extends AbstractTaskImplementa
   private String computeLog(final MemoryAllocator allocator, final long tStart, final String sAllocator,
       final long tFinish) {
     String unit = "bytes";
-    float size = allocator.getMemorySize();
+    double size = allocator.getMemorySize();
     if (size > 1024) {
       size /= 1024.0;
       unit = "kBytes";

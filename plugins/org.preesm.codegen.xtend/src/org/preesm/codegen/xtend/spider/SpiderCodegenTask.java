@@ -1,8 +1,10 @@
 /**
  * Copyright or © or Copr. IETR/INSA - Rennes (2014 - 2019) :
  *
+ * Alexandre Honorat [alexandre.honorat@insa-rennes.fr] (2019)
  * Antoine Morvan [antoine.morvan@insa-rennes.fr] (2017 - 2019)
  * Clément Guy [clement.guy@insa-rennes.fr] (2014 - 2015)
+ * Daniel Madroñal [daniel.madronal@upm.es] (2019)
  * Florian Arrestier [florian.arrestier@insa-rennes.fr] (2018 - 2019)
  * Julien Heulot [julien.heulot@insa-rennes.fr] (2015 - 2016)
  * Karol Desnos [karol.desnos@insa-rennes.fr] (2017)
@@ -84,8 +86,11 @@ import org.preesm.workflow.implement.AbstractWorkflowNodeImplementation;
             values = { @Value(name = "special-actors"), @Value(name = "dummy", effect = "(Default)") }),
         @Parameter(name = "shared-memory-size", description = "Size of the shared memory allocated by Spider.",
             values = { @Value(name = "$$n$$", effect = "$$n > 0$$ bytes. (Default = 67108864)") }),
-        @Parameter(name = "papify", description = "Wether to use Papify.",
-            values = { @Value(name = "true / false", effect = "") }),
+        @Parameter(name = "papify", description = "Use of PAPIFY. Select type of feedback given too",
+            values = { @Value(name = "off", effect = "PAPIFY is off"),
+                @Value(name = "dump", effect = "PAPIFY is on. Print csv files"),
+                @Value(name = "feedback", effect = "PAPIFY is on. Give feedback to the GRT"),
+                @Value(name = "both", effect = "PAPIFY is on. Print csv files and give feedback to the GRT") }),
         @Parameter(name = "verbose", description = "Wether to log.",
             values = { @Value(name = "true / false", effect = "") }),
         @Parameter(name = "trace", description = "Wether to trace what is happening at runtime.",
@@ -131,18 +136,25 @@ public class SpiderCodegenTask extends AbstractTaskImplementation {
     // Retrieve inputs
     final Design architecture = (Design) inputs.get(AbstractWorkflowNodeImplementation.KEY_ARCHITECTURE);
     final Scenario scenario = (Scenario) inputs.get(AbstractWorkflowNodeImplementation.KEY_SCENARIO);
+    if (scenario.getCodegenDirectory() == null) {
+      throw new PreesmRuntimeException("Codegen path has not been specified in scenario, cannot go further.");
+    }
+
     final PiGraph pg = (PiGraph) inputs.get(AbstractWorkflowNodeImplementation.KEY_PI_GRAPH);
     // Check if we are using papify instrumentation
     final String papifyParameter = parameters.get(SpiderCodegenTask.PARAM_PAPIFY);
-    final boolean usingPapify;
     if (papifyParameter != null) {
-      usingPapify = papifyParameter.equals("true");
+      if (!scenario.getPapifyConfig().hasValidPapifyConfig()) {
+        parameters.put(PARAM_PAPIFY, "off");
+      }
     } else {
-      usingPapify = false;
+      parameters.put(PARAM_PAPIFY, "off");
     }
 
     final SpiderCodegen launcher = new SpiderCodegen(scenario, architecture);
     final SpiderConfig spiderConfig = new SpiderConfig(parameters);
+
+    final boolean usingPapify = spiderConfig.getUseOfPapify();
 
     launcher.initGenerator(pg);
     final String graphCode = launcher.generateGraphCode(pg);

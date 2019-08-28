@@ -35,11 +35,11 @@
  */
 // Broadcast script
 
-inIdx=0;
-final int inSize = inputs.get(0).getNbTokens();
+inIdx=0L;
+inSize = inputs.get(0).getNbTokens();
 for(output : outputs) {
 	remaining = output.getNbTokens();
-	outIdx=0;
+	outIdx=0L;
 	do {		
 		// Do the match
 		matchSize = ((remaining+inIdx)<=inSize)?remaining:inSize-inIdx;

@@ -34,12 +34,27 @@
  */
 package org.preesm.codegen.model.util;
 
+import java.util.Map;
+import org.eclipse.emf.common.util.EList;
 import org.preesm.codegen.model.ActorBlock;
+import org.preesm.codegen.model.ActorFunctionCall;
 import org.preesm.codegen.model.CallBlock;
 import org.preesm.codegen.model.CodegenFactory;
+import org.preesm.codegen.model.Constant;
 import org.preesm.codegen.model.CoreBlock;
 import org.preesm.codegen.model.LoopBlock;
 import org.preesm.codegen.model.NullBuffer;
+import org.preesm.codegen.model.PortDirection;
+import org.preesm.codegen.model.Variable;
+import org.preesm.commons.exceptions.PreesmRuntimeException;
+import org.preesm.commons.model.PreesmCopyTracker;
+import org.preesm.model.pisdf.Actor;
+import org.preesm.model.pisdf.Direction;
+import org.preesm.model.pisdf.FunctionArgument;
+import org.preesm.model.pisdf.FunctionPrototype;
+import org.preesm.model.pisdf.Port;
+import org.preesm.model.pisdf.PortKind;
+import org.preesm.model.slam.ComponentInstance;
 
 /**
  *
@@ -57,7 +72,7 @@ public class CodegenModelUserFactory {
   /**
    *
    */
-  public static final CoreBlock createCoreBlock() {
+  public static final CoreBlock createCoreBlock(final ComponentInstance cmp) {
     final CoreBlock coreBlock = factory.createCoreBlock();
     final CallBlock initBlock = CodegenFactory.eINSTANCE.createCallBlock();
     final LoopBlock loopBlock = CodegenFactory.eINSTANCE.createLoopBlock();
@@ -65,7 +80,78 @@ public class CodegenModelUserFactory {
     coreBlock.setLoopBlock(loopBlock);
     coreBlock.getCodeElts().add(initBlock);
     coreBlock.getCodeElts().add(loopBlock);
+
+    if (cmp != null) {
+      coreBlock.setName(cmp.getInstanceName());
+      coreBlock.setCoreID(cmp.getHardwareId());
+      coreBlock.setCoreType(cmp.getComponent().getVlnv().getName());
+    }
     return coreBlock;
+  }
+
+  /**
+   *
+   */
+  public static final Constant createConstant(final String name, final long value) {
+    final Constant res = factory.createConstant();
+    res.setType("long");
+    res.setName(name);
+    res.setValue(value);
+    return res;
+  }
+
+  /**
+   *
+   */
+  public static final ActorFunctionCall createActorFunctionCall(final Actor actor, final FunctionPrototype prototype,
+      final Map<Port, Variable> portValues) {
+    final ActorFunctionCall afc = factory.createActorFunctionCall();
+    afc.setActorName(actor.getName());
+    afc.setName(prototype.getName());
+    afc.setOriginalVertexPath(PreesmCopyTracker.getOriginalSource(actor).getVertexPath());
+    final EList<FunctionArgument> arguments = prototype.getArguments();
+    for (FunctionArgument a : arguments) {
+      final String name = a.getName();
+      final Port lookupPort = actor.lookupPort(name);
+      if (lookupPort == null) {
+        throw new PreesmRuntimeException();
+      }
+      final PortKind portKind = lookupPort.getKind();
+      final Variable variable = portValues.get(lookupPort);
+      afc.addParameter(variable, createPortDirection(portKind));
+    }
+    return afc;
+  }
+
+  /**
+   *
+   */
+  public static final PortDirection createPortDirection(final PortKind direction) {
+    switch (direction) {
+      case CFG_INPUT:
+        return PortDirection.NONE;
+      case DATA_INPUT:
+        return PortDirection.INPUT;
+      case DATA_OUTPUT:
+        return PortDirection.OUTPUT;
+      case CFG_OUTPUT:
+      default:
+        throw new PreesmRuntimeException();
+    }
+  }
+
+  /**
+   *
+   */
+  public static final PortDirection createPortDirection(final Direction direction) {
+    switch (direction) {
+      case IN:
+        return PortDirection.INPUT;
+      case OUT:
+        return PortDirection.OUTPUT;
+      default:
+        return PortDirection.NONE;
+    }
   }
 
   /**

@@ -3,7 +3,7 @@ Bundle-ManifestVersion: 2
 Bundle-Name: %pluginName
 Automatic-Module-Name: org.preesm.algorithm
 Bundle-SymbolicName: org.preesm.algorithm;singleton:=true
-Bundle-Version: 3.14.1
+Bundle-Version: 3.15.0
 Bundle-Vendor: %providerName
 Bundle-Localization: plugin
 Require-Bundle: org.eclipse.core.resources,
@@ -103,12 +103,14 @@ Export-Package: org.preesm.algorithm,
  org.preesm.algorithm.pisdf.pimm2sdf,
  org.preesm.algorithm.pisdf.pimm2srdag,
  org.preesm.algorithm.schedule,
- org.preesm.algorithm.schedule.evaluation,
- org.preesm.algorithm.schedule.evaluation.latency,
  org.preesm.algorithm.schedule.model,
  org.preesm.algorithm.schedule.model.impl,
  org.preesm.algorithm.schedule.model.util,
- org.preesm.algorithm.schedule.old,
+ org.preesm.algorithm.synthesis,
+ org.preesm.algorithm.synthesis.evaluation,
+ org.preesm.algorithm.synthesis.evaluation.latency,
+ org.preesm.algorithm.synthesis.memalloc,
+ org.preesm.algorithm.synthesis.schedule,
  org.preesm.algorithm.throughput,
  org.preesm.algorithm.throughput.tools,
  org.preesm.algorithm.transforms

@@ -45,11 +45,12 @@ import org.junit.Test;
  *
  */
 public class MemoryAllocationOverflowTest {
+
   @Test
   public void testMemoryAllocationOverflow() throws IOException, CoreException {
     final String projectName = "memory.allocator.overflow";
+    final String scenario = "HextractSIFT4Corex86_64.scenario";
     final String workflow = "Codegen.workflow";
-    final String scenario = "extractSIFT4Corex86_64.scenario";
 
     final String workflowFilePathStr = "/Workflows/" + workflow;
     final String scenarioFilePathStr = "/Scenarios/" + scenario;

@@ -1,6 +1,7 @@
 /**
  * Copyright or © or Copr. IETR/INSA - Rennes (2014 - 2019) :
  *
+ * Alexandre Honorat [alexandre.honorat@insa-rennes.fr] (2019)
  * Antoine Morvan [antoine.morvan@insa-rennes.fr] (2017 - 2019)
  * Clément Guy [clement.guy@insa-rennes.fr] (2014 - 2015)
  * Florian Arrestier [florian.arrestier@insa-rennes.fr] (2018)
@@ -81,7 +82,7 @@ public class StaticPiMM2SDFLauncher {
     SDFGraph result;
 
     // Get all the available values for all the parameters
-    final Map<Parameter, Integer> parametersValues = getParametersValues();
+    final Map<Parameter, Long> parametersValues = getParametersValues();
 
     // Visitor creating the SDFGraph
     final PiGraphExecution execution = new PiGraphExecution(parametersValues);
@@ -97,8 +98,8 @@ public class StaticPiMM2SDFLauncher {
    *
    * @return the parameters values
    */
-  private Map<Parameter, Integer> getParametersValues() {
-    final Map<Parameter, Integer> result = new LinkedHashMap<>();
+  private Map<Parameter, Long> getParametersValues() {
+    final Map<Parameter, Long> result = new LinkedHashMap<>();
 
     final Set<Entry<Parameter, String>> parameterValues = this.scenario.getParameterValues().entrySet();
     for (final Entry<Parameter, String> paramValue : parameterValues) {
@@ -110,11 +111,11 @@ public class StaticPiMM2SDFLauncher {
             + " transformation (id: org.ietr.preesm.experiment.pimm2sdf.PiMM2SDFTask)");
       } else {
         try {
-          final int value = Integer.parseInt(paramValue.getValue());
+          final long value = Long.parseLong(paramValue.getValue());
           result.put(paramValue.getKey(), value);
         } catch (final NumberFormatException e) {
           // The expression associated to the parameter is an
-          // expression (and not an constant int value).
+          // expression (and not an constant long value).
           // Leave it as it is, it will be solved later.
         }
       }

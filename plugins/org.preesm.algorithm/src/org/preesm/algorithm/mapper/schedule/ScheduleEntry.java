@@ -1,6 +1,7 @@
 /**
  * Copyright or © or Copr. IETR/INSA - Rennes (2018 - 2019) :
  *
+ * Alexandre Honorat [alexandre.honorat@insa-rennes.fr] (2019)
  * Antoine Morvan [antoine.morvan@insa-rennes.fr] (2018 - 2019)
  *
  * This software is a computer program whose purpose is to help prototyping
@@ -53,23 +54,26 @@ import java.util.Map;
 public class ScheduleEntry {
 
   @JsonProperty("taskName")
-  private String                    taskName;
+  private String  taskName;
   @JsonProperty("singleRateInstanceNumber")
-  private Integer                   singleRateInstanceNumber;
+  private Integer singleRateInstanceNumber;
+  // start in our units
   @JsonProperty("start")
-  private Integer                   start;
+  private Long                      start;
+  // start in AOW units (subintervals of the while execution time)
   @JsonProperty("startN")
-  private Integer                   startN;
+  private Integer startN;
   @JsonProperty("end")
-  private Integer                   end;
+  private Long                      end;
   @JsonProperty("endN")
-  private Integer                   endN;
+  private Integer endN;
   @JsonProperty("core")
-  private Integer                   core;
+  private Integer core;
   @JsonProperty("processingUnitName")
-  private String                    processingUnitName;
+  private String  processingUnitName;
   @JsonProperty("graphIteration")
-  private Integer                   graphIteration;
+  private Integer graphIteration;
+  // start in our units, taking into account delays WE SHOULD USE THIS
   @JsonProperty("topologicalStart")
   private Integer                   topologicalStart;
   @JsonProperty("topologicalEnd")
@@ -98,12 +102,12 @@ public class ScheduleEntry {
   }
 
   @JsonProperty("start")
-  public Integer getStart() {
+  public Long getStart() {
     return this.start;
   }
 
   @JsonProperty("start")
-  public void setStart(final Integer start) {
+  public void setStart(final Long start) {
     this.start = start;
   }
 
@@ -118,12 +122,12 @@ public class ScheduleEntry {
   }
 
   @JsonProperty("end")
-  public Integer getEnd() {
+  public Long getEnd() {
     return this.end;
   }
 
   @JsonProperty("end")
-  public void setEnd(final Integer end) {
+  public void setEnd(final Long end) {
     this.end = end;
   }
 

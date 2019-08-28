@@ -1,6 +1,7 @@
 /**
  * Copyright or © or Copr. IETR/INSA - Rennes (2014 - 2019) :
  *
+ * Alexandre Honorat [alexandre.honorat@insa-rennes.fr] (2019)
  * Antoine Morvan [antoine.morvan@insa-rennes.fr] (2017 - 2019)
  * Clément Guy [clement.guy@insa-rennes.fr] (2014 - 2015)
  * Florian Arrestier [florian.arrestier@insa-rennes.fr] (2018)
@@ -56,6 +57,7 @@ import org.preesm.model.pisdf.DataOutputPort;
 import org.preesm.model.pisdf.DataPort;
 import org.preesm.model.pisdf.Delay;
 import org.preesm.model.pisdf.Dependency;
+import org.preesm.model.pisdf.EndActor;
 import org.preesm.model.pisdf.ExecutableActor;
 import org.preesm.model.pisdf.Expression;
 import org.preesm.model.pisdf.Fifo;
@@ -63,6 +65,7 @@ import org.preesm.model.pisdf.ForkActor;
 import org.preesm.model.pisdf.FunctionArgument;
 import org.preesm.model.pisdf.FunctionPrototype;
 import org.preesm.model.pisdf.ISetter;
+import org.preesm.model.pisdf.InitActor;
 import org.preesm.model.pisdf.InterfaceActor;
 import org.preesm.model.pisdf.JoinActor;
 import org.preesm.model.pisdf.Parameter;
@@ -382,7 +385,20 @@ public class SpiderPreProcessVisitor extends PiMMSwitch<Boolean> {
   }
 
   @Override
+  public Boolean caseInitActor(final InitActor rba) {
+    caseAbstractActor(rba);
+    return true;
+  }
+
+  @Override
+  public Boolean caseEndActor(final EndActor rba) {
+    caseAbstractActor(rba);
+    return true;
+  }
+
+  @Override
   public Boolean caseExecutableActor(final ExecutableActor ea) {
-    throw new UnsupportedOperationException();
+    throw new UnsupportedOperationException(
+        "Actor <" + ea.getVertexPath() + "> of type" + ea.getClass().getName() + ", has an unsupported type.");
   }
 }

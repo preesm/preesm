@@ -1,6 +1,7 @@
 /**
  * Copyright or © or Copr. IETR/INSA - Rennes (2012 - 2019) :
  *
+ * Alexandre Honorat [alexandre.honorat@insa-rennes.fr] (2019)
  * Antoine Morvan [antoine.morvan@insa-rennes.fr] (2017 - 2019)
  * Clément Guy [clement.guy@insa-rennes.fr] (2015)
  * Karol Desnos [karol.desnos@insa-rennes.fr] (2012)
@@ -234,8 +235,8 @@ public class HeuristicSolver<V extends IWeightedVertex<Long> & Comparable<V>, E 
             .getNeighborsWeight());
         final boolean equalWeight = (entry.getValue().getNeighborsWeight() == selectedEntry.getValue()
             .getNeighborsWeight());
-        final boolean smallerVertexWeight = (entry.getKey().getWeight().intValue() < selectedEntry.getKey().getWeight()
-            .intValue());
+        final boolean smallerVertexWeight = (entry.getKey().getWeight().longValue() < selectedEntry.getKey().getWeight()
+            .longValue());
 
         // Explanation :
         // The vertex with the lowest neighborhood weight is selected.

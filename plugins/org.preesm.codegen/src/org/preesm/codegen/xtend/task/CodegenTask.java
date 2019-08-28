@@ -1,6 +1,7 @@
 /**
  * Copyright or © or Copr. IETR/INSA - Rennes (2013 - 2019) :
  *
+ * Alexandre Honorat [alexandre.honorat@insa-rennes.fr] (2019)
  * Antoine Morvan [antoine.morvan@insa-rennes.fr] (2017 - 2019)
  * Clément Guy [clement.guy@insa-rennes.fr] (2014 - 2015)
  * Daniel Madroñal [daniel.madronal@upm.es] (2019)
@@ -53,6 +54,7 @@ import org.preesm.algorithm.mapper.model.MapperDAG;
 import org.preesm.algorithm.memory.exclusiongraph.MemoryExclusionGraph;
 import org.preesm.algorithm.model.dag.DirectedAcyclicGraph;
 import org.preesm.codegen.model.Block;
+import org.preesm.codegen.model.generator.CodegenModelGenerator;
 import org.preesm.commons.doc.annotations.Parameter;
 import org.preesm.commons.doc.annotations.Port;
 import org.preesm.commons.doc.annotations.PreesmTask;
@@ -128,17 +130,21 @@ public class CodegenTask extends AbstractTaskImplementation {
 
     // Retrieve inputs
     final Scenario scenario = (Scenario) inputs.get("scenario");
+    if (scenario.getCodegenDirectory() == null) {
+      throw new PreesmRuntimeException("Codegen path has not been specified in scenario, cannot go further.");
+    }
+
     final Design archi = (Design) inputs.get("architecture");
+    final DirectedAcyclicGraph algoDAG = (DirectedAcyclicGraph) inputs.get("DAG");
     @SuppressWarnings("unchecked")
     final Map<String, MemoryExclusionGraph> megs = (Map<String, MemoryExclusionGraph>) inputs.get("MEGs");
-    final DirectedAcyclicGraph algoDAG = (DirectedAcyclicGraph) inputs.get("DAG");
     if (!(algoDAG instanceof MapperDAG)) {
       throw new PreesmRuntimeException("The input DAG has not been scheduled");
     }
     final MapperDAG algo = (MapperDAG) algoDAG;
 
     // Generate intermediate model
-    final CodegenModelGenerator generator = new CodegenModelGenerator(archi, algo, megs, scenario, workflow);
+    final CodegenModelGenerator generator = new CodegenModelGenerator(archi, algo, megs, scenario);
     // Retrieve the PAPIFY flag
     final String papifyMonitoring = parameters.get(CodegenTask.PARAM_PAPIFY);
     generator.registerPapify(papifyMonitoring);
@@ -150,7 +156,8 @@ public class CodegenTask extends AbstractTaskImplementation {
     final String codegenPath = scenario.getCodegenDirectory() + File.separator;
 
     // Create the codegen engine
-    final CodegenEngine engine = new CodegenEngine(codegenPath, codeBlocks, generator);
+    final CodegenEngine engine = new CodegenEngine(codegenPath, codeBlocks, algo.getReferencePiMMGraph(), archi,
+        scenario);
 
     if (CodegenTask.VALUE_PRINTER_IR.equals(selectedPrinter)) {
       engine.initializePrinterIR(codegenPath);

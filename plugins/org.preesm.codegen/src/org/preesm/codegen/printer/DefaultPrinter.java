@@ -3,6 +3,7 @@
  *
  * Antoine Morvan [antoine.morvan@insa-rennes.fr] (2018 - 2019)
  * Daniel Madroñal [daniel.madronal@upm.es] (2019)
+ * dylangageot [gageot.dylan@gmail.com] (2019)
  * Leonardo Suriano [leonardo.suriano@upm.es] (2019)
  *
  * This software is a computer program whose purpose is to help prototyping
@@ -44,6 +45,7 @@ import org.preesm.codegen.model.Block;
 import org.preesm.codegen.model.Buffer;
 import org.preesm.codegen.model.BufferIterator;
 import org.preesm.codegen.model.CallBlock;
+import org.preesm.codegen.model.ClusterBlock;
 import org.preesm.codegen.model.Communication;
 import org.preesm.codegen.model.Constant;
 import org.preesm.codegen.model.ConstantString;
@@ -57,12 +59,14 @@ import org.preesm.codegen.model.FreeDataTransferBuffer;
 import org.preesm.codegen.model.FunctionCall;
 import org.preesm.codegen.model.GlobalBufferDeclaration;
 import org.preesm.codegen.model.IntVar;
+import org.preesm.codegen.model.IteratedBuffer;
 import org.preesm.codegen.model.LoopBlock;
 import org.preesm.codegen.model.NullBuffer;
 import org.preesm.codegen.model.OutputDataTransfer;
 import org.preesm.codegen.model.PapifyAction;
 import org.preesm.codegen.model.PapifyFunctionCall;
 import org.preesm.codegen.model.RegisterSetUpAction;
+import org.preesm.codegen.model.SectionBlock;
 import org.preesm.codegen.model.SharedMemoryCommunication;
 import org.preesm.codegen.model.SpecialCall;
 import org.preesm.codegen.model.SubBuffer;
@@ -232,6 +236,22 @@ public class DefaultPrinter extends CodegenAbstractPrinter {
     return "";
   }
 
+  public CharSequence printClusterBlockFooter(ClusterBlock block) {
+    return "";
+  }
+
+  public CharSequence printClusterBlockHeader(ClusterBlock block) {
+    return "";
+  }
+
+  public CharSequence printSectionBlockFooter(SectionBlock block) {
+    return "";
+  }
+
+  public CharSequence printSectionBlockHeader(SectionBlock block) {
+    return "";
+  }
+
   public CharSequence printNullBuffer(NullBuffer buffer) {
     return "";
   }
@@ -281,6 +301,10 @@ public class DefaultPrinter extends CodegenAbstractPrinter {
   }
 
   public CharSequence printBufferIteratorDefinition(BufferIterator bufferIterator) {
+    return "";
+  }
+
+  public CharSequence printIteratedBuffer(IteratedBuffer iteratedBuffer) {
     return "";
   }
 

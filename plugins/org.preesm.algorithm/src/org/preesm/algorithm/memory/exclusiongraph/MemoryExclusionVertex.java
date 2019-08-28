@@ -1,6 +1,7 @@
 /**
  * Copyright or © or Copr. IETR/INSA - Rennes (2012 - 2019) :
  *
+ * Alexandre Honorat [alexandre.honorat@insa-rennes.fr] (2019)
  * Antoine Morvan [antoine.morvan@insa-rennes.fr] (2017 - 2019)
  * Clément Guy [clement.guy@insa-rennes.fr] (2014 - 2015)
  * Florian Arrestier [florian.arrestier@insa-rennes.fr] (2018)
@@ -206,7 +207,7 @@ public class MemoryExclusionVertex extends AbstractVertex<MemoryExclusionGraph>
     // if datatype is defined, correct the vertex weight
     final BufferAggregate buffers = inputEdge.getPropertyBean().getValue(BufferAggregate.propertyBeanName);
     final Iterator<BufferProperties> iter = buffers.iterator();
-    int vertexWeight = 0;
+    long vertexWeight = 0;
     while (iter.hasNext()) {
       final BufferProperties properties = iter.next();
 
@@ -265,7 +266,12 @@ public class MemoryExclusionVertex extends AbstractVertex<MemoryExclusionGraph>
    */
   @Override
   public int compareTo(final MemoryExclusionVertex o) {
-    return (int) (this.size - o.size);
+    if (this.size > o.size) {
+      return 1;
+    } else if (this.size < o.size) {
+      return -1;
+    }
+    return 0;
   }
 
   /**

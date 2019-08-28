@@ -2,6 +2,7 @@
  * Copyright or © or Copr. IETR/INSA - Rennes (2019) :
  *
  * Antoine Morvan [antoine.morvan@insa-rennes.fr] (2019)
+ * Daniel Madroñal [daniel.madronal@upm.es] (2019)
  *
  * This software is a computer program whose purpose is to help prototyping
  * parallel applications using dataflow formalism.
@@ -37,6 +38,8 @@ package org.preesm.ui.scenario.editor.timings;
 import org.preesm.model.scenario.Scenario;
 import org.preesm.model.scenario.serialize.CsvTimingParser;
 import org.preesm.model.scenario.serialize.ExcelTimingParser;
+import org.preesm.model.scenario.serialize.PapifyOutputTimingParser;
+import org.preesm.model.scenario.serialize.PapifyTimingParser;
 import org.preesm.model.slam.Design;
 
 /**
@@ -52,6 +55,8 @@ public class TimingImporter {
     if (!excelFileURL.isEmpty()) {
       final ExcelTimingParser excelParser = new ExcelTimingParser(currentScenario);
       final CsvTimingParser csvParser = new CsvTimingParser(currentScenario);
+      final PapifyTimingParser papifyParser = new PapifyTimingParser(currentScenario);
+      final PapifyOutputTimingParser papifyOutputParser = new PapifyOutputTimingParser(currentScenario);
 
       try {
         final String[] fileExt = excelFileURL.split("\\.");
@@ -63,7 +68,13 @@ public class TimingImporter {
           case "csv":
             csvParser.parse(excelFileURL, design.getOperatorComponents());
             break;
+          case "papify":
+            papifyParser.parse(excelFileURL, design.getOperatorComponents());
+            break;
           default:
+        }
+        if (excelFileURL.endsWith("papify-output")) {
+          papifyOutputParser.parse(excelFileURL, design.getOperatorComponents());
         }
       } catch (final Exception e) {
         e.printStackTrace();

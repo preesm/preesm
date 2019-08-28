@@ -209,7 +209,7 @@ public class StatGenerator {
    */
   public long getMem(final ComponentInstance operator) {
 
-    int mem = 0;
+    long mem = 0;
 
     if (this.abc != null) {
 

@@ -1,6 +1,7 @@
 /**
  * Copyright or © or Copr. IETR/INSA - Rennes (2012 - 2019) :
  *
+ * Alexandre Honorat [alexandre.honorat@insa-rennes.fr] (2019)
  * Antoine Morvan [antoine.morvan@insa-rennes.fr] (2017 - 2019)
  * Karol Desnos [karol.desnos@insa-rennes.fr] (2012)
  *
@@ -190,7 +191,7 @@ public class OstergardSolver<V extends IWeightedVertex<Long> & Comparable<V>, E 
       final Iterator<V> iter = unorderedSet.iterator();
       V selectedVertex = unorderedSet.get(0);
       final long selectedWeight = unorderedSet.get(0).getWeight();
-      int selectedAdjacentWeight = 0;
+      long selectedAdjacentWeight = 0;
 
       while (iter.hasNext()) {
         final V currentVertex = iter.next();
@@ -200,7 +201,7 @@ public class OstergardSolver<V extends IWeightedVertex<Long> & Comparable<V>, E 
 
           // Sum the weight of vertices adjacent to the current vertex
           // in graphCopy
-          int currentAdjacentWeight = 0;
+          long currentAdjacentWeight = 0;
           final Set<E> edges = graphCopy.edgesOf(currentVertex);
           for (final E edge : edges) {
             // As we don't know if the current vertex is source or
