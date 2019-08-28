@@ -55,6 +55,7 @@ import org.preesm.codegen.model.Block
 import org.preesm.codegen.model.CallBlock
 import org.preesm.codegen.model.CodeElt
 import org.preesm.codegen.model.CoreBlock
+import org.preesm.codegen.model.Constant
 import org.preesm.codegen.model.DataTransferAction
 import org.preesm.codegen.model.FpgaLoadAction
 import org.preesm.codegen.model.FreeDataTransferBuffer
@@ -70,6 +71,8 @@ import org.preesm.commons.exceptions.PreesmRuntimeException
 import org.preesm.commons.files.PreesmResourcesHelper
 import org.preesm.commons.logger.PreesmLogger
 import org.preesm.codegen.model.ActorFunctionCall
+import org.preesm.codegen.model.PapifyType
+import org.preesm.codegen.model.PapifyAction
 
 /**
  * This printer extends the CPrinter and override some of its methods
@@ -96,12 +99,16 @@ class CHardwarePrinter extends CPrinter {
 	protected var int threadHardwarePrintedUsage = 0;
 	protected var int DataTransferActionNumber = 0;
 	protected var int FreeDataTransferBufferNumber = 0;
+	protected var int PapifyFunctionCallNumberInitBlock = 0;
+	protected var int PapifyDefinitionsNumbers =0
+	protected var long CoreIDHardwareFpgaPapify = -1;
 	protected var Map<String, String> listOfHwFunctions = new LinkedHashMap<String, String>();
 
 	override printCoreBlockHeader(CoreBlock block) '''
 		«super.printCoreBlockHeader(block)»
-		#include "hardware.h"
+		#include "hardwarelib.h"
 		#include "hardware_accelerator_setup.h"
+		#include "eventLib.h"
 	'''
 
 	override printCoreInitBlockHeader(CallBlock callBlock) '''
@@ -343,6 +350,28 @@ class CHardwarePrinter extends CPrinter {
 			global_hardware_«count» = hardware_alloc(«buffer.size»«IF (this.factorNumber > 0)» * «this.factorNumber»«ENDIF» * sizeof *«buffer.name», "«action.name»", "«buffer.doSwitch»",  «action.parameterDirections.get(count++)»);
 		«ENDFOR»
 	'''
+	
+	override printPapifyFunctionCall(PapifyFunctionCall papifyFunctionCall) '''
+	«IF papifyFunctionCall.opening == true»
+		#ifdef _PREESM_PAPIFY_MONITOR
+	«ENDIF»
+	«papifyFunctionCall.name»(«FOR param : papifyFunctionCall.parameters SEPARATOR ','»«param.doSwitch»«ENDFOR»); // «papifyFunctionCall.actorName»
+	«IF papifyFunctionCall.closing == true»
+		#endif
+	«ENDIF»
+	'''
+	
+	override printPapifyActionDefinition(PapifyAction action) '''
+	«IF action.opening == true»
+		#ifdef _PREESM_PAPIFY_MONITOR
+	«ENDIF»
+	«action.type» «action.name»; // «action.comment»
+	«IF action.closing == true»
+		#endif
+	«ENDIF»
+	'''
+	
+	override printPapifyActionParam(PapifyAction action) '''&«action.name»'''
 
 	override preProcessing(List<Block> printerBlocks, Collection<Block> allBlocks) {
 		PreesmLogger.getLogger().info("[HARDWARE] preProcessing for Hardware. The elements to be processed are " +
@@ -408,13 +437,34 @@ class CHardwarePrinter extends CPrinter {
 //			}
 //		}
 		/* the same operation MUST be done with the global declaration as well. The declaration and definition can be found directly inside the codeBlock */
+		
+		// Declarations
 		var bufferCopyDeclarationList = new ArrayList();
+		// Definitions
+		var bufferCopyDefinitionsList = new ArrayList();
+		// init
+		var bufferCopyInitList = new ArrayList();
+		
+		var sizePrinterBlock = printerBlocks.size
+		var iteratorPrinterBlock = 0
 		for (Block block : printerBlocks) {
 			bufferCopyDeclarationList.addAll((block as CoreBlock).declarations)
-			PreesmLogger.getLogger().info("[HARDWARE] copying buffers and subbuffers.");
+			bufferCopyDefinitionsList.addAll((block as CoreBlock).definitions)
+			if (iteratorPrinterBlock == sizePrinterBlock -1){
+				bufferCopyInitList.addAll((block as CoreBlock).initBlock.codeElts)
+			}
+			//bufferCopyInitList.addAll((block as CoreBlock).initBlock.codeElts)
+			PreesmLogger.getLogger().info("[HARDWARE] copying buffers and subbuffers and definitions.");
+			iteratorPrinterBlock++
 		}
 		(firstBlock as CoreBlock).declarations.addAll(bufferCopyDeclarationList)
-
+		(firstBlock as CoreBlock).definitions.addAll(bufferCopyDefinitionsList)
+		(firstBlock as CoreBlock).initBlock.codeElts.clear()
+		(firstBlock as CoreBlock).initBlock.codeElts.addAll(bufferCopyInitList)
+		
+		// even with more that one hardware SLOT, the file that should be created is just one.
+		// Storing the values that MUST be always used
+		this.CoreIDHardwareFpgaPapify = (firstBlock as CoreBlock).coreID
 		var block = printerBlocks.get(0);
 
 		/*
@@ -478,15 +528,18 @@ class CHardwarePrinter extends CPrinter {
 		}
 
 		// this loop is to delete all the functions but not the last one (the new one!)
+		// the variable i start from the end and goes back until the first function
 		i = coreLoop.codeElts.size - 1;
 		var flagFirstFunctionFound = 0;
 		while (i > 0) {
 			// Retrieve the function ID
 			val elt = coreLoop.codeElts.get(i)
 			if ((elt instanceof ActorFunctionCall) && flagFirstFunctionFound == 0) {
+				//keep the last one detected
 				flagFirstFunctionFound++;
 
 			} else if ((elt instanceof ActorFunctionCall) && flagFirstFunctionFound > 0) {
+				//remove all the other different from the last one
 				coreLoop.codeElts.remove(i);
 				currentFunctionPosition--;
 			}
@@ -580,7 +633,140 @@ class CHardwarePrinter extends CPrinter {
 		} else {
 			PreesmLogger.getLogger().log(Level.SEVERE,
 				"Hardware Codegen ERROR in the preProcessing function. Different number of function calls and data transfers were detected");
+				}
+		
+		// ----------- PAPIFY - automatic instrumentation of ARTICo³ using PAPIFY --------------
+		
+		//PAPIFY - delete all functions
+		// this loop is to delete all the functions but not the last one (the new one!)
+		// the variable i start from the end and goes back until the first function
+		i = coreLoop.codeElts.size-1;
+		var flagFirstFunctionPAPIFYFoundEVENTSTART = 0;
+		var flagFirstFunctionPAPIFYFoundEVENTSTOP = 0;
+		var flagFirstFunctionPAPIFYFoundTIMINGSTART = 0;
+		var flagFirstFunctionPAPIFYFoundTIMINGSTOP = 0;
+		var flagFirstFunctionPAPIFYFoundWRITE = 0;
+		var firstPapifyFunctionFound = 0;
+		while (i > 0) {
+			// Retrieve the function ID
+			val elt = coreLoop.codeElts.get(i)
+			if ((elt instanceof PapifyFunctionCall)) {
+				var papifyTypeVariable =elt.papifyType
+				// even with more that one hardware SLOT, the file that should be created is just one.
+				// Storing the values that MUST be always used
+				//this.CoreIDHardwareFpgaPapify
+				if (firstPapifyFunctionFound == 0 ){
+					for (param : elt.parameters){
+						if (param instanceof Constant && param.name.equals("PE_id")){
+							this.CoreIDHardwareFpgaPapify = (param as Constant).value
+							PreesmLogger.getLogger().info("[HARDWARE] PE_id set up to " + this.CoreIDHardwareFpgaPapify);
+						}
+					}
+					//this.CoreIDHardwareFpgaPapify = elt.parameters
+					firstPapifyFunctionFound++
+				} else {
+					for (param : elt.parameters){
+						if (param instanceof Constant && param.name.equals("PE_id")){
+							(param as Constant).value = this.CoreIDHardwareFpgaPapify
+						}
+					}
+				}
+				elt.closing = false
+				elt.opening = false
+				switch (papifyTypeVariable){
+					case EVENTSTART:
+						if(flagFirstFunctionPAPIFYFoundEVENTSTART == 0){
+							//keep the last one detected
+							flagFirstFunctionPAPIFYFoundEVENTSTART++;
+						}
+						else if(flagFirstFunctionPAPIFYFoundEVENTSTART > 0 ){
+							//remove all the other different from the last one
+							flagFirstFunctionPAPIFYFoundEVENTSTART++;
+							coreLoop.codeElts.remove(i);
+						} 
+					case EVENTSTOP:
+						if(flagFirstFunctionPAPIFYFoundEVENTSTOP == 0){
+							//keep the last one detected
+							flagFirstFunctionPAPIFYFoundEVENTSTOP++;
+						}
+						else if(flagFirstFunctionPAPIFYFoundEVENTSTOP > 0 ){
+							//remove all the other different from the last one
+							flagFirstFunctionPAPIFYFoundEVENTSTOP++;
+							coreLoop.codeElts.remove(i);
+						}
+					case TIMINGSTART:
+						if(flagFirstFunctionPAPIFYFoundTIMINGSTART == 0){
+							//keep the last one detected
+							flagFirstFunctionPAPIFYFoundTIMINGSTART++;
+						}
+						else if(flagFirstFunctionPAPIFYFoundTIMINGSTART > 0 ){
+							//remove all the other different from the last one
+							flagFirstFunctionPAPIFYFoundTIMINGSTART++;
+							coreLoop.codeElts.remove(i);
+						}
+					case TIMINGSTOP:
+						if(flagFirstFunctionPAPIFYFoundTIMINGSTOP == 0){
+							//keep the last one detected
+							flagFirstFunctionPAPIFYFoundTIMINGSTOP++;
+						}
+						else if(flagFirstFunctionPAPIFYFoundTIMINGSTOP > 0 ){
+							//remove all the other different from the last one
+							flagFirstFunctionPAPIFYFoundTIMINGSTOP++;
+							coreLoop.codeElts.remove(i);
+						}
+					case WRITE:
+						if(flagFirstFunctionPAPIFYFoundWRITE == 0){
+							//keep the last one detected
+							flagFirstFunctionPAPIFYFoundWRITE++;
+						}
+						else if(flagFirstFunctionPAPIFYFoundWRITE > 0 ){
+							//remove all the other different from the last one
+							flagFirstFunctionPAPIFYFoundWRITE++;
+							coreLoop.codeElts.remove(i);
+						}
+					default:
+					PreesmLogger.getLogger().log(Level.SEVERE, "Hardware Codegen ERROR in the preProcessing function. papifyType NOT recognized.")
+				}				
+			}
+			i--;
 		}
+		
+		//deleting all the PAPIFY function useless when using hardware. Keeping just the last one.
+		//var coreLoop = (block as CoreBlock).loopBlock
+		var initBlock = (block as CoreBlock).initBlock
+		var iteratorPapify = initBlock.codeElts.size-1;
+		// This Loop just locate where the function are and how many they are.
+		while (iteratorPapify >= 0) {
+			// Retrieve the function ID
+			val elt = initBlock.codeElts.get(iteratorPapify)
+			if (elt instanceof PapifyFunctionCall) {
+				if (this.PapifyFunctionCallNumberInitBlock != 0 && (elt.papifyType != PapifyType.CONFIGPE ) ) {
+					initBlock.codeElts.remove(iteratorPapify);
+				}
+				this.PapifyFunctionCallNumberInitBlock++;
+				elt.closing = false
+				elt.opening = false
+			}
+			iteratorPapify--;
+		}
+		
+		//deleting all the definitions and keeping just the last one
+		
+		var definitionsBlock = (block as CoreBlock).definitions
+		var iteratorDefinitionsPapify = definitionsBlock.size -1
+		while (iteratorDefinitionsPapify >= 0) {
+			val elt = definitionsBlock.get(iteratorDefinitionsPapify)
+			if (elt instanceof PapifyAction) {
+				if (this.PapifyDefinitionsNumbers != 0){
+					definitionsBlock.remove(iteratorDefinitionsPapify)
+				}
+				this.PapifyDefinitionsNumbers++
+				elt.closing = false
+				elt.opening = false
+			} 
+			iteratorDefinitionsPapify--
+		}
+		
 
 		/* Removing unuseful elements in the list of printersBlock. To keep just the fist one */
 		var numberOfSlotDetected = printerBlocks.size
