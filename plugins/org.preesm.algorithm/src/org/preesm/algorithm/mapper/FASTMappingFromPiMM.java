@@ -108,7 +108,15 @@ public class FASTMappingFromPiMM extends FASTMappingFromDAG {
       messageLogger = "Energy-awareness enabled. This option will increase the mapping/scheduling "
           + "task so it may take a while";
       PreesmLogger.getLogger().log(Level.INFO, messageLogger);
-      EnergyAwarenessProvider provider = new EnergyAwarenessProvider(scenario, "middle", "halves");
+      String firstConfig = "middle";
+      String searchingMode = "halves";
+      if (parameters.containsKey("EnergyAwarenessFirstConfig")) {
+        firstConfig = parameters.get("EnergyAwarenessFirstConfig");
+      }
+      if (parameters.containsKey("EnergyAwarenessSearchType")) {
+        searchingMode = parameters.get("EnergyAwarenessSearchType");
+      }
+      EnergyAwarenessProvider provider = new EnergyAwarenessProvider(scenario, firstConfig, searchingMode);
       /** iterate **/
       while (true) {
         /** Get configuration **/
