@@ -188,7 +188,7 @@ public class AddDelayFeature extends AbstractCustomFeature {
     final int posY = context.getY();
 
     // Connect the polyline to the delay appropriately
-    connectDelayToFifo(connection, fifo, containerShape, cba, posX, posY);
+    connectDelayToFifo(connection, fifo, cba, posX, posY);
 
     // Select the whole fifo
     getDiagramBehavior().getDiagramContainer().setPictogramElementForSelection(containerShape);
@@ -202,8 +202,6 @@ public class AddDelayFeature extends AbstractCustomFeature {
    *          the connection
    * @param fifo
    *          the fifo
-   * @param containerShape
-   *          the container shape
    * @param cba
    *          the cba
    * @param posX
@@ -211,8 +209,8 @@ public class AddDelayFeature extends AbstractCustomFeature {
    * @param posY
    *          the pos Y
    */
-  public void connectDelayToFifo(final FreeFormConnection connection, final Fifo fifo,
-      final ContainerShape containerShape, final ChopboxAnchor cba, final int posX, final int posY) {
+  public void connectDelayToFifo(final FreeFormConnection connection, final Fifo fifo, final ChopboxAnchor cba,
+      final int posX, final int posY) {
 
     final IGaService gaService = Graphiti.getGaService();
 

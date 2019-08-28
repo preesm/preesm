@@ -37,12 +37,16 @@
  */
 package org.preesm.ui.pisdf.features;
 
+import java.util.List;
 import org.eclipse.graphiti.features.IFeatureProvider;
+import org.eclipse.graphiti.features.IRemoveFeature;
 import org.eclipse.graphiti.features.context.IDeleteContext;
 import org.eclipse.graphiti.features.context.IRemoveContext;
 import org.eclipse.graphiti.features.context.impl.DeleteContext;
 import org.eclipse.graphiti.features.context.impl.MultiDeleteInfo;
 import org.eclipse.graphiti.features.context.impl.RemoveContext;
+import org.eclipse.graphiti.mm.pictograms.AnchorContainer;
+import org.eclipse.graphiti.mm.pictograms.ChopboxAnchor;
 import org.eclipse.graphiti.mm.pictograms.Connection;
 import org.eclipse.graphiti.ui.features.DefaultDeleteFeature;
 import org.preesm.model.pisdf.Delay;
@@ -86,59 +90,71 @@ public class DeleteFifoFeature extends DefaultDeleteFeature {
     final Connection connection = (Connection) context.getPictogramElement();
     final Fifo fifo = (Fifo) getBusinessObjectForPictogramElement(connection);
 
+    AnchorContainer delayFeature = null;
+    Connection targetConnection = null;
+
     if (fifo.getDelay() != null) {
       // Is the "first half" of the connection (the one before the delay)
       // the one given to the delete context.
-      Object obj = getBusinessObjectForPictogramElement(connection.getStart().getParent());
+      AnchorContainer parent = connection.getStart().getParent();
+      Object obj = getBusinessObjectForPictogramElement(parent);
       if (obj instanceof Delay) {
-        final DeleteContext delCtxt = new DeleteContext(connection.getStart().getParent());
-        // To deactivate dialog box
-        delCtxt.setMultiDeleteInfo(new MultiDeleteInfo(false, false, 0));
-
-        getFeatureProvider().getDeleteFeature(delCtxt).delete(delCtxt);
+        delayFeature = parent;
       }
 
       // Is the second half of the connection the one given to the delete
       // context.
-      obj = getBusinessObjectForPictogramElement(connection.getEnd().getParent());
+      parent = connection.getEnd().getParent();
+      obj = getBusinessObjectForPictogramElement(parent);
       if (obj instanceof Delay) {
-        // In this case, only the first half of the connection, and the
-        // delay will be removed by the delete function.
-        // Backup the remaining second half to remove it in postDelete()
-
-        // The only outgoing connection from the unique anchor of the
-        // delay is the second half of the removed fifo connection
-        this.remainingConnection = connection.getEnd().getParent().getAnchors().get(0).getOutgoingConnections().get(0);
-
-        final DeleteContext delCtxt = new DeleteContext(connection.getEnd().getParent());
-        // To deactivate dialog box
-        delCtxt.setMultiDeleteInfo(new MultiDeleteInfo(false, false, 0));
-        getFeatureProvider().getDeleteFeature(delCtxt).delete(delCtxt);
+        delayFeature = parent;
+        targetConnection = getTargetConnection(delayFeature, connection);
       }
 
-    }
+      final DeleteContext delCtxt = new DeleteContext(delayFeature);
+      // To deactivate dialog box
+      delCtxt.setMultiDeleteInfo(new MultiDeleteInfo(false, false, 0));
+      getFeatureProvider().getDeleteFeature(delCtxt).delete(delCtxt);
 
+      // delay removal already removed our own connection, so we have to remove the opposite one
+      if (targetConnection != null) {
+        final IRemoveContext rmCtxt = new RemoveContext(targetConnection);
+        final IRemoveFeature rmFeature = getFeatureProvider().getRemoveFeature(rmCtxt);
+        if (rmFeature.canRemove(rmCtxt)) {
+          rmFeature.remove(rmCtxt);
+        } else {
+          throw new RuntimeException("Could not delete a connection.");
+        }
+      }
+    }
     // Super call
     super.preDelete(context);
   }
 
-  /*
-   * (non-Javadoc)
-   *
-   * @see org.eclipse.graphiti.ui.features.DefaultDeleteFeature#postDelete(org.eclipse.graphiti.features.context.
-   * IDeleteContext)
+  /**
+   * Retrieve the target connection when fifo contains a delay
+   * 
+   * @param delayFeature
+   *          Parent delay of the Fifo.
+   * @param connec
+   *          Half of the fifo, source part
+   * @return
    */
-  @Override
-  public void postDelete(final IDeleteContext context) {
-    // If there was a remaining connection, remove it !
-    // The Fifo was also associated to the other half of the connection wich
-    // was removed during the delete() method call.
-    if (this.remainingConnection != null) {
-      final IRemoveContext rmCtxt = new RemoveContext(this.remainingConnection);
-      getFeatureProvider().getRemoveFeature(rmCtxt).remove(rmCtxt);
+  private Connection getTargetConnection(AnchorContainer delayFeature, Connection connec) {
+    final Delay delay = (Delay) getBusinessObjectForPictogramElement(delayFeature);
+    final ChopboxAnchor cba = (ChopboxAnchor) delayFeature.getAnchors().get(0);
+    final List<Connection> outgoingConnections = cba.getOutgoingConnections();
+    Connection targetConnection = null;
+    for (final Connection connection : outgoingConnections) {
+      final Object obj = getBusinessObjectForPictogramElement(connection);
+      // With setter delay, there can be multiple FIFOs
+      // We have to choose the correct one
+      if (obj instanceof Fifo && (((Fifo) obj).getDelay() == delay) && connection != connec) {
+        targetConnection = connection;
+        break;
+      }
     }
-
-    // Super call !
-    super.postDelete(context);
+    return targetConnection;
   }
+
 }
