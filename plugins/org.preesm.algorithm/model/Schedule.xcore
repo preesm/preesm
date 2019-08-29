@@ -109,7 +109,7 @@ interface Schedule {
 	 * of data).
 	 */
 	op boolean isDataParallel() {
-		return isParallel && repetition > 1
+		return isParallel && children.size == 1
 	}
 	/*
 	 * returns a String representing the schedule informally.
