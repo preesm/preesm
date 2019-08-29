@@ -7,6 +7,7 @@ PREESM Changelog
 ### New Feature
 
 ### Changes
+- PiSDF: PiGraph can be declared as a cluster. Hierarchy of cluster may be ignore by SR and DAG transformation.
 
 ### Bug fix
 
