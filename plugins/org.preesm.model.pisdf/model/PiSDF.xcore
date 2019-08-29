@@ -374,22 +374,33 @@ interface PeriodicElement extends ExpressionHolder {
 	}
 }
 
+// Generic Special actors
 abstract class SpecialActor extends ExecutableActor {
 }
 
-class BroadcastActor extends SpecialActor {
+// special abstract class for special actors that the user can insert in the
+// input PiSDF graph
+abstract class UserSpecialActor extends SpecialActor {
 }
 
-class JoinActor extends SpecialActor {
+class BroadcastActor extends UserSpecialActor {
 }
 
-class ForkActor extends SpecialActor {
+class JoinActor extends UserSpecialActor {
 }
 
-class RoundBufferActor extends SpecialActor {
+class ForkActor extends UserSpecialActor {
 }
 
-class InitActor extends SpecialActor {
+class RoundBufferActor extends UserSpecialActor {
+}
+
+
+// special abstract class for special actors generated in the SRDAG
+abstract class SrdagActor extends SpecialActor {
+}
+
+class InitActor extends SrdagActor {
 	PersistenceLevel level
 	refers AbstractActor endReference
 	op DataOutputPort getDataOutputPort() {
@@ -398,7 +409,7 @@ class InitActor extends SpecialActor {
 	}
 }
 
-class EndActor extends SpecialActor {
+class EndActor extends SrdagActor {
 	PersistenceLevel level
 	refers AbstractActor initReference
 	op DataInputPort getDataInputPort() {
