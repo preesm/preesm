@@ -1,4 +1,4 @@
-package org.preesm.codegen.xtend.task;
+package org.preesm.codegen.model.clustering;
 
 import java.util.Map;
 import java.util.Set;
