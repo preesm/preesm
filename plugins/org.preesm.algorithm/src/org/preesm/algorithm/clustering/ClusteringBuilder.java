@@ -234,7 +234,7 @@ public class ClusteringBuilder {
 
   /**
    * clusterize actors together
-   * 
+   *
    * @param actors
    *          list of actors to clusterize
    * @return schedule tree of cluster
@@ -255,7 +255,7 @@ public class ClusteringBuilder {
 
   /**
    * clusterize actors regarding to the specified schedule
-   * 
+   *
    * @param schedule
    *          schedule to clusterize from
    * @return schedule tree of cluster
@@ -371,7 +371,7 @@ public class ClusteringBuilder {
   private final PiGraph buildCluster(List<AbstractActor> actorList) {
     // Create the cluster actor and set it name
     PiGraph cluster = PiMMUserFactory.instance.createPiGraph();
-    cluster.setCluster(true);
+    cluster.setClusterValue(true);
     cluster.setName("cluster_" + nbCluster++);
     cluster.setUrl(pigraph.getUrl() + "/" + cluster.getName() + ".pi");
 
