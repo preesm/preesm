@@ -49,6 +49,7 @@ import org.eclipse.graphiti.mm.pictograms.AnchorContainer;
 import org.eclipse.graphiti.mm.pictograms.ChopboxAnchor;
 import org.eclipse.graphiti.mm.pictograms.Connection;
 import org.eclipse.graphiti.ui.features.DefaultDeleteFeature;
+import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.preesm.model.pisdf.Delay;
 import org.preesm.model.pisdf.Fifo;
 
@@ -88,27 +89,31 @@ public class DeleteFifoFeature extends DefaultDeleteFeature {
   public void preDelete(final IDeleteContext context) {
     // If the Fifo has a delay, first delete it.
     final Connection connection = (Connection) context.getPictogramElement();
+
     final Fifo fifo = (Fifo) getBusinessObjectForPictogramElement(connection);
 
     AnchorContainer delayFeature = null;
     Connection targetConnection = null;
 
-    if (fifo.getDelay() != null) {
+    Delay delay = fifo.getDelay();
+
+    if (delay != null) {
       // Is the "first half" of the connection (the one before the delay)
-      // the one given to the delete context.
+      // the one given to the delete context, except if delay on getter.
+
       AnchorContainer parent = connection.getStart().getParent();
       Object obj = getBusinessObjectForPictogramElement(parent);
-      if (obj instanceof Delay) {
+      if (obj instanceof Delay && obj == delay) {
         delayFeature = parent;
       }
 
       // Is the second half of the connection the one given to the delete
-      // context.
+      // context, except if delay on setter.
       parent = connection.getEnd().getParent();
       obj = getBusinessObjectForPictogramElement(parent);
-      if (obj instanceof Delay) {
+      if (obj instanceof Delay && obj == delay) {
         delayFeature = parent;
-        targetConnection = getTargetConnection(delayFeature, connection);
+        targetConnection = getTargetConnection((Delay) obj, delayFeature, connection);
       }
 
       final DeleteContext delCtxt = new DeleteContext(delayFeature);
@@ -123,10 +128,11 @@ public class DeleteFifoFeature extends DefaultDeleteFeature {
         if (rmFeature.canRemove(rmCtxt)) {
           rmFeature.remove(rmCtxt);
         } else {
-          throw new RuntimeException("Could not delete a connection.");
+          throw new PreesmRuntimeException("Could not delete a connection.");
         }
       }
     }
+
     // Super call
     super.preDelete(context);
   }
@@ -134,14 +140,15 @@ public class DeleteFifoFeature extends DefaultDeleteFeature {
   /**
    * Retrieve the target connection when fifo contains a delay
    * 
+   * @param delay
+   *          Delay object.
    * @param delayFeature
    *          Parent delay of the Fifo.
    * @param connec
-   *          Half of the fifo, source part
+   *          Half of the Fifo, source part
    * @return
    */
-  private Connection getTargetConnection(AnchorContainer delayFeature, Connection connec) {
-    final Delay delay = (Delay) getBusinessObjectForPictogramElement(delayFeature);
+  private Connection getTargetConnection(Delay delay, AnchorContainer delayFeature, Connection connec) {
     final ChopboxAnchor cba = (ChopboxAnchor) delayFeature.getAnchors().get(0);
     final List<Connection> outgoingConnections = cba.getOutgoingConnections();
     Connection targetConnection = null;

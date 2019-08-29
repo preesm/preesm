@@ -52,11 +52,10 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.ecore.EObject;
+import org.eclipse.graphiti.datatypes.ILocation;
 import org.eclipse.graphiti.features.IFeatureProvider;
 import org.eclipse.graphiti.features.ILayoutFeature;
 import org.eclipse.graphiti.features.context.ICustomContext;
-import org.eclipse.graphiti.features.context.IDeleteContext;
-import org.eclipse.graphiti.features.context.impl.DeleteContext;
 import org.eclipse.graphiti.features.context.impl.LayoutContext;
 import org.eclipse.graphiti.features.context.impl.MoveShapeContext;
 import org.eclipse.graphiti.features.custom.AbstractCustomFeature;
@@ -70,6 +69,7 @@ import org.eclipse.graphiti.mm.pictograms.FreeFormConnection;
 import org.eclipse.graphiti.mm.pictograms.PictogramElement;
 import org.eclipse.graphiti.mm.pictograms.Shape;
 import org.eclipse.graphiti.services.Graphiti;
+import org.eclipse.graphiti.services.IPeLayoutService;
 import org.eclipse.jface.dialogs.ErrorDialog;
 import org.eclipse.ui.PlatformUI;
 import org.preesm.model.pisdf.AbstractActor;
@@ -1036,7 +1036,12 @@ public class AutoLayoutFeature extends AbstractCustomFeature {
       // Do the layout for each stage
       for (int stageIdx = srcStage; stageIdx >= dstStage; stageIdx--) {
         // Find the closest gap to the feedback fifo
-        final Point penultimate = ffc.getBendpoints().get(ffc.getBendpoints().size() - 2);
+        int fccBpsize = ffc.getBendpoints().size();
+        if (fccBpsize < 2) {
+          break;
+        }
+        final Point penultimate = ffc.getBendpoints().get(fccBpsize - 2);
+
         final Range closestGap = new Range(-1, -1);
 
         final boolean isTop = findClosestGap(stagesGaps.get(stageIdx), penultimate.getY(), closestGap);
@@ -1074,13 +1079,13 @@ public class AutoLayoutFeature extends AbstractCustomFeature {
     // 0. Disconnect all delays from FIFOs
     final List<Fifo> fifos = graph.getFifos();
     for (final Fifo fifo : fifos) {
-      if (fifo.getDelay() != null) {
-        final PictogramElement pe = DiagramPiGraphLinkHelper.getDelayPE(diagram, fifo);
+      Delay delay = fifo.getDelay();
+      if (delay != null) {
+        final ContainerShape cs = DiagramPiGraphLinkHelper.getDelayPE(diagram, fifo);
 
         // Do the disconnection
         final DeleteDelayFeature df = new DeleteDelayFeature(getFeatureProvider());
-        final IDeleteContext dc = new DeleteContext(pe);
-        df.disconnectDelayFromFifo(dc);
+        df.disconnectDelayFromFifo(cs, delay);
       }
     }
 
@@ -1117,7 +1122,7 @@ public class AutoLayoutFeature extends AbstractCustomFeature {
 
     // 2. Layout feedback FIFOs
     layoutFeedbackFifos(diagram, this.feedbackFifos, this.stagedActors, this.stagesGaps, this.stageWidth);
-
+    //
     // 3. Reconnect Delays to fifos
     for (final Fifo fifo : fifos) {
       if (fifo.getDelay() != null) {
@@ -1126,6 +1131,7 @@ public class AutoLayoutFeature extends AbstractCustomFeature {
         int posX = 0;
         final int srcStage = getActorStage((AbstractActor) fifo.getSourcePort().eContainer(), this.stagedActors);
         final int dstStage = getActorStage((AbstractActor) fifo.getTargetPort().eContainer(), this.stagedActors);
+
         // If there is only one stage
         if (srcStage == dstStage) {
           posX = (this.stageWidth.get(dstStage).end + this.stageWidth.get(dstStage).start) / 2;
@@ -1144,10 +1150,19 @@ public class AutoLayoutFeature extends AbstractCustomFeature {
           bPoints.remove(bPoints.size() - 1);
           bPoints.remove(0);
         }
-        final int pX = posX;
-        bPoints.sort((p1, p2) -> Math.abs(p1.getX() - pX) - Math.abs(p2.getX() - pX));
+        int posY;
+        if (bPoints.size() > 1) {
+          final int pX = posX;
+          bPoints.sort((p1, p2) -> Math.abs(p1.getX() - pX) - Math.abs(p2.getX() - pX));
 
-        final int posY = ((bPoints.get(0).getY() + bPoints.get(1).getY()) - AddDelayFeature.DELAY_SIZE) / 2;
+          posY = ((bPoints.get(0).getY() + bPoints.get(1).getY()) - AddDelayFeature.DELAY_SIZE) / 2;
+
+        } else {
+          final IPeLayoutService peLayoutService = Graphiti.getPeLayoutService();
+          final ILocation srcLoc = peLayoutService.getLocationRelativeToDiagram(ffc.getStart());
+          final ILocation tgtLoc = peLayoutService.getLocationRelativeToDiagram(ffc.getEnd());
+          posY = (srcLoc.getY() + tgtLoc.getY()) / 2;
+        }
 
         // Move the delay to this position
         final ContainerShape pe = DiagramPiGraphLinkHelper.getDelayPE(diagram, fifo);
