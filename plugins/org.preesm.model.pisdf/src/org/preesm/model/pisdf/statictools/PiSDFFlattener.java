@@ -122,7 +122,7 @@ public class PiSDFFlattener extends PiMMSwitch<Boolean> {
     }
 
     PiGraphConsistenceChecker.check(result);
-    flattenCheck(result);
+    flattenCheck(graph, result);
 
     return result;
   }
@@ -183,10 +183,16 @@ public class PiSDFFlattener extends PiMMSwitch<Boolean> {
   }
 
   /**
+   * @param originalGraph
    *
    */
-  private static final void flattenCheck(final PiGraph graph) {
+  private static final void flattenCheck(final PiGraph originalGraph, final PiGraph graph) {
     final List<AbstractActor> actors = graph.getActors();
+
+    if (!originalGraph.getAllActors().isEmpty() && graph.getAllActors().isEmpty()) {
+      throw new PreesmRuntimeException("Flatten graph should not be empty if input graph is not empty");
+    }
+
     for (final AbstractActor a : actors) {
       if (a instanceof PiGraph) {
         throw new PreesmRuntimeException("Flatten graph should have no children graph");
