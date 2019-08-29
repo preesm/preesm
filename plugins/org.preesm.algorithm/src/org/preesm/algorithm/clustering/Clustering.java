@@ -76,6 +76,10 @@ public class Clustering extends AbstractTaskImplementation {
   public static final String SEED_CHOICE  = "Seed";
   public static final String DEFAULT_SEED = "0";
 
+  public static final String PISDF_REFERENCE_ACTOR = "PiSDFActor";
+
+  public static final String PISDF_ACTOR_IS_CLUSTER = "isCluster";
+
   @Override
   public Map<String, Object> execute(final Map<String, Object> inputs, final Map<String, String> parameters,
       final IProgressMonitor monitor, final String nodeName, final Workflow workflow) {
