@@ -448,7 +448,6 @@ public class CodegenModelGenerator extends AbstractCodegenModelGenerator {
           .getValue(ImplementationPropertyNames.SendReceive_correspondingDagEdge);
       final Buffer buffer = this.dagEdgeBuffers.get(dagEdge);
       switch (vertexType) {
-
         case VertexType.TYPE_TASK:
           // May be an actor (Hierarchical or not) call
           // or a Fork Join call
@@ -473,18 +472,11 @@ public class CodegenModelGenerator extends AbstractCodegenModelGenerator {
           break;
 
         case VertexType.TYPE_SEND:
-          if (buffer instanceof DistributedBuffer) {
-            generateDistributedCommunication(operatorBlock, vert, VertexType.TYPE_SEND);
-          } else {
-            generateCommunication(operatorBlock, vert, VertexType.TYPE_SEND);
-          }
-          break;
-
         case VertexType.TYPE_RECEIVE:
           if (buffer instanceof DistributedBuffer) {
-            generateDistributedCommunication(operatorBlock, vert, VertexType.TYPE_RECEIVE);
+            generateDistributedCommunication(operatorBlock, vert, vertexType);
           } else {
-            generateCommunication(operatorBlock, vert, VertexType.TYPE_RECEIVE);
+            generateCommunication(operatorBlock, vert, vertexType);
           }
           break;
         default:
