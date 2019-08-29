@@ -47,6 +47,7 @@ import java.util.Map.Entry;
 import java.util.Optional;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.emf.common.util.EList;
+import org.preesm.algorithm.clustering.Clustering;
 import org.preesm.algorithm.codegen.idl.ActorPrototypes;
 import org.preesm.algorithm.codegen.idl.Prototype;
 import org.preesm.algorithm.codegen.model.CodeGenArgument;
@@ -161,6 +162,7 @@ public class StaticPiMM2MapperDAGVisitor extends PiMMSwitch<Boolean> {
     vertex.setName(actor.getName());
     vertex.setInfo(actor.getVertexPath());
     vertex.setNbRepeat(new LongVertexPropertyType(1));
+    vertex.setPropertyValue(Clustering.PISDF_REFERENCE_ACTOR, actor);
 
     // Set default time property
     vertex.setTime(new LongVertexPropertyType(0));
@@ -186,6 +188,10 @@ public class StaticPiMM2MapperDAGVisitor extends PiMMSwitch<Boolean> {
     final MapperDAGVertex vertex = (MapperDAGVertex) this.vertexFactory.createVertex(DAGVertex.DAG_VERTEX, actor);
     // Set default properties from the PiMM actor
     setDAGVertexPropertiesFromPiMM(actor, vertex);
+    // Set hierarchical refinement if AbstractActor is a cluster
+    if (actor.isCluster()) {
+      vertex.setPropertyValue(Clustering.PISDF_ACTOR_IS_CLUSTER, true);
+    }
     // Add the vertex to the DAG
     this.result.addVertex(vertex);
     return true;
@@ -640,6 +646,11 @@ public class StaticPiMM2MapperDAGVisitor extends PiMMSwitch<Boolean> {
 
   @Override
   public Boolean casePiGraph(final PiGraph graph) {
+
+    if (graph.isCluster()) {
+      return caseAbstractActor(graph);
+    }
+
     checkInput(graph);
 
     // Convert vertices
@@ -668,9 +679,12 @@ public class StaticPiMM2MapperDAGVisitor extends PiMMSwitch<Boolean> {
     }
 
     // Check that we are indeed in a flat graph
-    if (!graph.getChildrenGraphs().isEmpty()) {
-      throw new UnsupportedOperationException("This method is not applicable for non flatten PiMM Graphs.");
+    for (PiGraph childrenGraph : graph.getChildrenGraphs()) {
+      if (!childrenGraph.isCluster()) {
+        throw new UnsupportedOperationException("This method is not applicable for non flatten PiMM Graphs.");
+      }
     }
+
   }
 
   /**

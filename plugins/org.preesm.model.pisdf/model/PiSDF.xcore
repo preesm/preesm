@@ -34,29 +34,15 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL license and that you accept its terms.
  */
-@GenModel(
-	modelName="PiMM", prefix="PiMM",
-	modelDirectory="/org.preesm.model.pisdf/ecore-gen",
-
-	// redirection="",
+@GenModel(modelName="PiMM", prefix="PiMM", modelDirectory="/org.preesm.model.pisdf/ecore-gen", // redirection="",
 	// classNamePattern="",
-
 	// codeFormatting="true",
 	// cleanup="true",
-
-	importerID="org.eclipse.emf.importer.ecore",
-
-	// !! if true a instrs.ecore is generated in .impl and is used by xxpackage.init() to
+	importerID="org.eclipse.emf.importer.ecore", // !! if true a instrs.ecore is generated in .impl and is used by xxpackage.init() to
 	// load the intrs packages (by default this false unless the generated XyzPackage might
 	// exceed Java's byte code limit of 64k)
-	loadInitialization="false",
-	creationCommands="false",
-	creationIcons="false",
-	dataTypeConverters="false",
-	operationReflection="false",
-	complianceLevel="8.0"
-)
-
+	loadInitialization="false", creationCommands="false", creationIcons="false", dataTypeConverters="false",
+	operationReflection="false", complianceLevel="8.0")
 @Ecore(nsURI="http://org.preesm/model/pisdf")
 package org.preesm.model.pisdf
 
@@ -78,8 +64,11 @@ import org.preesm.commons.graph.Edge
 // This causes a problem for Tom mapping generation for instance.
 // The following fixes this problem.
 type String wraps String
+
 type int wraps int
+
 type long wraps long
+
 type double wraps double
 
 /*************************************
@@ -87,8 +76,6 @@ type double wraps double
  * PiSDF Specification
  *
  **************************************/
-
-
 interface Parameterizable {
 	op unique Parameter[] getInputParameters()
 	op boolean isLocallyStatic() {
@@ -135,14 +122,15 @@ interface ExpressionProxy extends Expression {
 
 interface ExpressionHolder extends Parameterizable {
 	contains Expression expression opposite holder
-	op void setExpression (String newExpression) {
+	op void setExpression(String newExpression) {
 		if (expression instanceof ExpressionProxy) {
-			(expression as ExpressionProxy).proxy.setExpression(PiMMUserFactory.instance.createExpression(newExpression))
+			(expression as ExpressionProxy).proxy.setExpression(
+				PiMMUserFactory.instance.createExpression(newExpression))
 		} else {
 			expression = PiMMUserFactory.instance.createExpression(newExpression)
 		}
 	}
-	op void setExpression (long value) {
+	op void setExpression(long value) {
 		if (expression instanceof ExpressionProxy) {
 			(expression as ExpressionProxy).proxy.setExpression(PiMMUserFactory.instance.createExpression(value))
 		} else {
@@ -151,9 +139,7 @@ interface ExpressionHolder extends Parameterizable {
 	}
 }
 
-
 class DelayLinkedExpression extends ExpressionProxy {
-
 }
 
 interface AbstractVertex extends Vertex {
@@ -215,20 +201,24 @@ abstract class AbstractActor extends Configurable {
 	op String getActorPath() {
 		return vertexPath
 	}
+	op boolean isCluster() {
+		return false
+	}
 }
 
 class PiGraph extends AbstractActor, Graph {
-
 	// URL to the file where this graph is saved
 	String url
-
+	boolean clusterValue = "false"
+	op boolean isCluster() {
+		return clusterValue
+	}
 	op boolean isLocallyStatic() {
 		// a PiGraph is static if all the parameters it contains are static
 		// and if the input setters on its config interfaces are static
 		// and if all its children graphs are locally static
 		return super.isLocallyStatic && parameters.forall[isLocallyStatic] && childrenGraphs.forall[isLocallyStatic]
 	}
-
 	op unique boolean addActor(AbstractActor actor) {
 		vertices.add(actor)
 	}
@@ -245,20 +235,19 @@ class PiGraph extends AbstractActor, Graph {
 	op unique boolean addDependency(Dependency dependency) {
 		edges.add(dependency)
 	}
-
-	op unique Parameter[] getParameters(){
+	op unique Parameter[] getParameters() {
 		return vertices.filter(Parameter).toEList.unmodifiableView
 	}
-	op unique AbstractActor[] getActors(){
+	op unique AbstractActor[] getActors() {
 		return vertices.filter(AbstractActor).toEList.unmodifiableView
 	}
-	op unique AbstractActor[] getOnlyActors(){
+	op unique AbstractActor[] getOnlyActors() {
 		return (actors.filter(it|!(it instanceof PiGraph))).toEList.unmodifiableView
 	}
 	op unique Delay[] getDelays() {
 		return vertices.filter(Delay).toEList.unmodifiableView
 	}
-	op unique AbstractActor[] getDelayActors(){
+	op unique AbstractActor[] getDelayActors() {
 		return (actors.filter(it|(it instanceof DelayActor))).toEList.unmodifiableView
 	}
 	op unique Fifo[] getFifos() {
@@ -267,24 +256,20 @@ class PiGraph extends AbstractActor, Graph {
 	op unique Dependency[] getDependencies() {
 		return edges.filter(Dependency).toEList.unmodifiableView
 	}
-
 	op unique boolean removeActor(AbstractActor actor) {
 		vertices.remove(actor);
 	}
-
 	op unique boolean removeDelay(Delay delay) {
 		removeActor(delay.actor)
 		vertices.remove(delay)
 	}
-
 	op unique boolean removeFifo(Fifo fifo) {
 		edges.remove(fifo)
 	}
-
-	op unique Parameter[] getOnlyParameters(){
-		return parameters.filter(it | !((it instanceof ConfigInputInterface) || (it instanceof ConfigOutputInterface) )).toEList.unmodifiableView
+	op unique Parameter[] getOnlyParameters() {
+		return parameters.filter(it|!((it instanceof ConfigInputInterface) || (it instanceof ConfigOutputInterface) )).
+			toEList.unmodifiableView
 	}
-
 	op unique String[] getActorsNames() {
 		return actors.map[name].unmodifiableView
 	}
@@ -310,54 +295,43 @@ class PiGraph extends AbstractActor, Graph {
 	op unique Dependency[] getAllDependencies() {
 		return (dependencies + childrenGraphs.map[allDependencies].flatten).toEList.unmodifiableView
 	}
-
 	op unique Delay[] getAllDelays() {
 		return (delays + childrenGraphs.map[allDelays].flatten).toEList.unmodifiableView
 	}
-
 	op unique ConfigInputInterface[] getConfigInputInterfaces() {
 		return parameters.filter(ConfigInputInterface).toEList.unmodifiableView
 	}
-
 	op unique DataInputInterface[] getDataInputInterfaces() {
 		return actors.filter(DataInputInterface).toEList.unmodifiableView
 	}
-
 	op unique DataOutputInterface[] getDataOutputInterfaces() {
 		return actors.filter(DataOutputInterface).toEList.unmodifiableView
 	}
-
 	op Parameter lookupParameterGivenGraph(String parameterName , String graphName) {
 		return allParameters.findFirst[it.name == parameterName && (it.containingPiGraph).name == graphName]
 	}
-
-    /*
-     * Find the first {@link DataPort} of this {@link PiGraph} whose name matches the name of the {@link InterfaceActor} given as argument.
-     * Return null if none matches.
+	/*
+	 * Find the first {@link DataPort} of this {@link PiGraph} whose name matches the name of the {@link InterfaceActor} given as argument.
+	 * Return null if none matches.
 	 */
 	op DataPort lookupGraphDataPortForInterfaceActor(InterfaceActor interfaceActor) {
 		return allDataPorts.findFirst[it.name == interfaceActor.name]
 	}
-
 	op AbstractVertex lookupVertex(String vertexName) {
 		return (actors + parameters).findFirst[it.name == vertexName]
 	}
-
 	op AbstractVertex lookupAllVertex(String vertexName) {
 		return (allActors + allParameters).findFirst[it.name == vertexName]
 	}
-
 	op Fifo lookupFifo(String fifoId) {
 		return fifos.findFirst[it.id == fifoId]
 	}
 	op Delay lookupDelay(String delayId) {
 		return delays.findFirst[it.name == delayId]
 	}
-
 	op unique Fifo[] getFifosWithDelay() {
 		return (fifos.filter[delay !== null]).toEList.unmodifiableView
 	}
-
 	op unique Fifo[] getFifosWithoutDelay() {
 		return (fifos.filter[delay === null]).toEList.unmodifiableView
 	}
@@ -393,7 +367,6 @@ class Actor extends ExecutableActor, RefinementContainer, PeriodicElement {
 		}
 	}
 }
-
 
 interface PeriodicElement extends ExpressionHolder {
 	op Expression getPeriod() {
@@ -439,7 +412,6 @@ abstract class NonExecutableActor extends AbstractActor {
 
 class DelayActor extends NonExecutableActor, RefinementContainer {
 	refers Delay linkedDelay opposite actor
-
 	// Return parameter of delays
 	op Parameter[] getInputParameters() {
 		return linkedDelay.inputParameters
@@ -459,15 +431,18 @@ class DelayActor extends NonExecutableActor, RefinementContainer {
 	}
 	// Return the actor that set / get the delay
 	op AbstractActor getSetterActor() {
-		return Optional.ofNullable(Optional.ofNullable(dataInputPort).map[incomingFifo].orElse(null)).map[sourcePort.containingActor].orElse(null)
+		return Optional.ofNullable(Optional.ofNullable(dataInputPort).map[incomingFifo].orElse(null)).map [
+			sourcePort.containingActor
+		].orElse(null)
 	}
 	op AbstractActor getGetterActor() {
-		return Optional.ofNullable(Optional.ofNullable(dataOutputPort).map[outgoingFifo].orElse(null)).map[targetPort.containingActor].orElse(null)
+		return Optional.ofNullable(Optional.ofNullable(dataOutputPort).map[outgoingFifo].orElse(null)).map [
+			targetPort.containingActor
+		].orElse(null)
 	}
 	op ConfigInputPort[] lookupConfigInputPortsConnectedWithParameter(Parameter p) {
 		return linkedDelay.lookupConfigInputPortsConnectedWithParameter(p)
 	}
-
 	// Checks that the prototype matches the template
 	// void delayInitRefinement(IN int size, OUT <type> *fifo);
 	op boolean isValidRefinement(CHeaderRefinement hrefinement) {
@@ -557,19 +532,15 @@ class Fifo extends Edge {
 	refers DataInputPort targetPort opposite incomingFifo
 	refers Delay delay opposite containingFifo
 	String ^type = "void"
-
 	op Vertex getSource() {
 		sourcePort.containingActor
 	}
-
 	op Vertex getTarget() {
 		targetPort.containingActor
 	}
-
 	op PiGraph getContainingPiGraph() {
 		return containingGraph as PiGraph
 	}
-
 	/*
 	 * Return a {@link String} composed as follow:<br>
 	 * "&ltSourceName&gt[.&ltSourcePortName&gt]-&ltTargetName&gt[.&ltTargetPortName&gt]" <br>
@@ -578,8 +549,11 @@ class Fifo extends Edge {
 	 * unique data {@link Port} of its owner.
 	 */
 	op String getId() {
-		return Optional.ofNullable(sourcePort).map[id].orElseThrow[new PreesmRuntimeException("Fifo has no source port.")] +
-			"-" + Optional.ofNullable(targetPort).map[id].orElseThrow[new PreesmRuntimeException("Fifo has no target port.")]
+		return Optional.ofNullable(sourcePort).map[id].orElseThrow [
+			new PreesmRuntimeException("Fifo has no source port.")
+		] + "-" + Optional.ofNullable(targetPort).map[id].orElseThrow [
+			new PreesmRuntimeException("Fifo has no target port.")
+		]
 	}
 }
 
@@ -606,13 +580,11 @@ class DataOutputInterface extends InterfaceActor {
 
 class ConfigInputInterface extends Parameter {
 	refers ConfigInputPort graphPort
-
 	// A ConfigInputInterface gets its value from the parent graph once per execution.
 	// During one iteration, its value does not change, thus it is locally static.
 	op boolean isLocallyStatic() {
 		return true
 	}
-
 	op boolean isConfigurable() {
 		return false
 	}
@@ -629,13 +601,12 @@ class ConfigOutputInterface extends InterfaceActor {
 
 interface Refinement {
 	refers RefinementContainer refinementContainer opposite refinement
-
 	String filePath
 	op AbstractActor getAbstractActor() {
 		return RefinementResolver.resolveAbstractActor(this)
 	}
 	op String getFileName() {
-		return Optional.ofNullable(filePath).map[it | new File(it).getName()].orElse(null)
+		return Optional.ofNullable(filePath).map[it|new File(it).getName()].orElse(null)
 	}
 	op boolean isHierarchical()
 }
@@ -645,7 +616,6 @@ class PiSDFRefinement extends Refinement {
 		return (getFilePath() !== null) && !getFilePath().isEmpty()
 	}
 }
-
 
 class CHeaderRefinement extends Refinement {
 	contains FunctionPrototype loopPrototype
@@ -666,7 +636,8 @@ class Parameter extends Vertex, Configurable, ISetter, ExpressionHolder {
 	}
 	// a parameter is said 'configurable' if it has exactly one dependency, coming from a Configuration Actor.
 	op boolean isConfigurable() {
-		return !isLocallyStatic && isDependent && configInputPorts.size == 1 && configInputPorts.get(0).incomingDependency.setter instanceof ConfigOutputPort;
+		return !isLocallyStatic && isDependent && configInputPorts.size == 1 &&
+			configInputPorts.get(0).incomingDependency.setter instanceof ConfigOutputPort;
 	}
 	// a parameter is dependent if it has at least one incoming dependency
 	op boolean isDependent() {
@@ -680,17 +651,15 @@ class Parameter extends Vertex, Configurable, ISetter, ExpressionHolder {
 class Dependency extends Edge {
 	refers ISetter setter opposite outgoingDependencies
 	refers ConfigInputPort getter opposite incomingDependency
-
 	op Vertex getSource() {
 		if (setter instanceof Parameter) {
 			return setter as Parameter;
-		} else  if (setter instanceof ConfigOutputPort) {
+		} else if (setter instanceof ConfigOutputPort) {
 			return (setter as ConfigOutputPort).containingActor
 		} else {
 			return null
 		}
 	}
-
 	op Vertex getTarget() {
 		return getter.configurable
 	}
@@ -701,7 +670,6 @@ interface ISetter {
 	op boolean isLocallyStatic()
 }
 
-
 class Delay extends Configurable, ExpressionHolder {
 	op Expression getSizeExpression() {
 		return getExpression
@@ -709,40 +677,34 @@ class Delay extends Configurable, ExpressionHolder {
 	refers DelayActor actor opposite linkedDelay
 	refers Fifo containingFifo opposite delay
 	PersistenceLevel ^level = "permanent"
-
 	op boolean hasSetterActor() {
 		return Optional.ofNullable(actor).map[dataInputPort.incomingFifo !== null].orElse(false)
 	}
-
 	op boolean hasGetterActor() {
 		return Optional.ofNullable(actor).map[dataOutputPort.outgoingFifo !== null].orElse(false)
 	}
-
 	op boolean isDynamic() {
 		return hasSetterActor || hasGetterActor
 	}
-
 	op AbstractActor getGetterActor() {
 		return actor.getterActor
 	}
-
 	op AbstractActor getSetterActor() {
 		return actor.setterActor
 	}
-
 	op DataInputPort getGetterPort() {
 		return Optional.ofNullable(actor.dataOutputPort.outgoingFifo.targetPort).orElse(null)
 	}
-
 	op DataOutputPort getSetterPort() {
 		return Optional.ofNullable(actor.dataInputPort.incomingFifo.sourcePort).orElse(null)
 	}
-
 	op unique void setName(String newName) {
 		if (newName !== null) {
 			if (newName.empty) {
-				var String srcName = Optional.ofNullable(containingFifo).map[sourcePort.containingActor.getName()].orElse("")
-				var String tgtName = Optional.ofNullable(containingFifo).map[targetPort.containingActor.getName()].orElse("")
+				var String srcName = Optional.ofNullable(containingFifo).map[sourcePort.containingActor.getName()].
+					orElse("")
+				var String tgtName = Optional.ofNullable(containingFifo).map[targetPort.containingActor.getName()].
+					orElse("")
 				super.setName("delay_" + srcName + "--" + tgtName)
 			} else {
 				super.setName(newName)
@@ -752,8 +714,7 @@ class Delay extends Configurable, ExpressionHolder {
 			}
 		}
 	}
-
-	 /*
+	/*
 	 * Return a {@link String} unique ID for Delay.
 	 * This ID should be unique.
 	 */
