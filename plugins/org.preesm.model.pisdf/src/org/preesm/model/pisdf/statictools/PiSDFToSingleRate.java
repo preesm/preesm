@@ -122,6 +122,8 @@ public class PiSDFToSingleRate extends PiMMSwitch<Boolean> {
     staticPiMM2ASrPiMMVisitor.doSwitch(graph);
     final PiGraph acyclicSRPiMM = staticPiMM2ASrPiMMVisitor.getResult();
 
+    srCheck(graph, acyclicSRPiMM);
+
     PreesmLogger.getLogger().log(Level.FINE, " >>   - check");
     PiGraphConsistenceChecker.check(acyclicSRPiMM);
     // 6- do some optimization on the graph
@@ -138,7 +140,7 @@ public class PiSDFToSingleRate extends PiMMSwitch<Boolean> {
     PreesmLogger.getLogger().log(Level.FINE, " >>   - check");
     PiGraphConsistenceChecker.check(acyclicSRPiMM);
 
-    srCheck(acyclicSRPiMM);
+    srCheck(graph, acyclicSRPiMM);
     PreesmLogger.getLogger().log(Level.FINE, " >> End srdag transfo");
     return acyclicSRPiMM;
   }
@@ -146,8 +148,13 @@ public class PiSDFToSingleRate extends PiMMSwitch<Boolean> {
   /**
    *
    */
-  private static final void srCheck(final PiGraph graph) {
+  private static final void srCheck(final PiGraph originalGraph, final PiGraph graph) {
     final List<AbstractActor> actors = graph.getActors();
+
+    if (!originalGraph.getAllActors().isEmpty() && graph.getAllActors().isEmpty()) {
+      throw new PreesmRuntimeException(true, "Flatten graph should not be empty if input graph is not empty", null);
+    }
+
     for (final AbstractActor a : actors) {
       if (a instanceof PiGraph && !a.isCluster()) {
         throw new PreesmRuntimeException("Flatten graph should have no children graph");
@@ -234,29 +241,22 @@ public class PiSDFToSingleRate extends PiMMSwitch<Boolean> {
     }
   }
 
-  /*
-   * (non-Javadoc)
-   *
-   * @see
-   * org.ietr.preesm.experiment.model.pimm.util.PiMMVisitor#caseAbstractActor(org.ietr.preesm.experiment.model.pimm.
-   * AbstractActor)
-   */
   @Override
   public Boolean caseAbstractActor(final AbstractActor actor) {
     if (actor instanceof PiGraph) {
 
       // Here we handle the replacement of the interfaces by what should be
       // Copy the actor
-      final PiGraph copyActor = PiMMUserFactory.instance.copyWithHistory((PiGraph) actor);
+      final PiGraph copyGraph = PiMMUserFactory.instance.copyWithHistory((PiGraph) actor);
       // Set the properties
-      copyActor.setName(this.currentActorName);
+      copyGraph.setName(this.currentActorName);
 
       // Add the actor to the graph
-      this.result.addActor(copyActor);
+      this.result.addActor(copyGraph);
 
       // Add the actor to the FIFO source/sink sets
-      this.actor2SRActors.get(this.graphPrefix + actor.getName()).add(copyActor);
-      instantiateParameters(actor, copyActor);
+      this.actor2SRActors.get(this.graphPrefix + actor.getName()).add(copyGraph);
+      instantiateParameters(actor, copyGraph);
     } else {
       doSwitch(actor);
     }
@@ -369,7 +369,11 @@ public class PiSDFToSingleRate extends PiMMSwitch<Boolean> {
     this.result.addActor(copyActor);
 
     // Add the actor to the FIFO source/sink sets
-    this.actor2SRActors.get(this.graphPrefix + actor.getName()).add(copyActor);
+    final String graphPrefix2 = this.graphPrefix;
+    final String name = actor.getName();
+    final String key = graphPrefix2 + name;
+    final List<AbstractVertex> list = this.actor2SRActors.get(key);
+    list.add(copyActor);
 
     // Set the properties
     instantiateParameters(actor, copyActor);
@@ -807,10 +811,12 @@ public class PiSDFToSingleRate extends PiMMSwitch<Boolean> {
     }
 
     // If there are no actors in the graph we leave
-    if (graph.getActors().isEmpty()) {
+    final List<AbstractActor> actors = graph.getActors();
+    if (actors.isEmpty()) {
       throw new UnsupportedOperationException(
           "Can not convert an empty graph. Check the refinement for [" + graph.getVertexPath() + "].");
     }
+
     // Set the current graph name
     this.graphName = graph.getContainingPiGraph() == null ? "" : graph.getName();
     this.graphName = this.graphPrefix + this.graphName;
@@ -848,6 +854,9 @@ public class PiSDFToSingleRate extends PiMMSwitch<Boolean> {
         doSwitch(f);
       }
     }
+
+    // handle non connected actors (BRV = 1)
+    actors.stream().filter(a -> a.getAllDataPorts().isEmpty()).forEach(this::populateSingleRatePiMMActor);
 
     return true;
   }
