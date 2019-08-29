@@ -45,8 +45,8 @@
 @Ecore(nsURI="http://org.preesm/algos/schedule")
 package org.preesm.algorithm.schedule.model
 
-import org.eclipse.emf.common.util.ECollections
 import org.preesm.model.pisdf.AbstractActor
+import org.eclipse.emf.common.util.ECollections
 
 // !!! This is needed as of the current versions of xcore/xtext
 // For some reason when using the default String/... (i.e. without the following)
@@ -75,12 +75,10 @@ interface Schedule {
 	 * Used when building schedules for non-srdag PiGraphs.
 	 */
 	long repetition
-	/*
-	 * Returns the next level of schedule in the hierarchy
-	 */
-	op Schedule[] getChildren() {
-		return ECollections.emptyEList
-	}
+
+	contains volatile Schedule[] children opposite parent
+	refers Schedule parent opposite children
+
 	/*
 	 * Return the list of all the actors contained by this schedule and all of its children.
 	 *
@@ -201,6 +199,9 @@ interface ActorSchedule extends Schedule {
 			toPrint.append(")")
 		}
 		return toPrint.toString()
+	}
+	op Schedule[] getChildren() {
+		return ECollections.emptyEList
 	}
 }
 
