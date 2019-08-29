@@ -47,6 +47,9 @@ package org.preesm.algorithm.schedule.model
 
 import org.preesm.model.pisdf.AbstractActor
 import org.preesm.algorithm.synthesis.schedule.SchedulePrinterSwitch
+import org.preesm.model.pisdf.Fifo
+import org.preesm.model.pisdf.SpecialActor
+import org.preesm.model.slam.ComponentInstance
 
 // !!! This is needed as of the current versions of xcore/xtext
 // For some reason when using the default String/... (i.e. without the following)
@@ -75,10 +78,8 @@ interface Schedule {
 	 * Used when building schedules for non-srdag PiGraphs.
 	 */
 	long repetition
-
 	contains volatile Schedule[] children opposite parent
 	refers Schedule parent opposite children
-
 	/*
 	 * Return the list of all the actors contained by this schedule and all of its children.
 	 *
@@ -244,24 +245,33 @@ class StagedHiearchicalSchedule extends SequentialHiearchicalSchedule {
 	}
 }
 
-/*
-interface CommunicationActor extends SpecialActor {
+// Special actors to fire communication. They are used to schedule the Fifos
+abstract class CommunicationActor extends SpecialActor {
 	refers Fifo fifo
 }
 
-class SendActor extends CommunicationActor {
+abstract class SendActor extends CommunicationActor {
+	// optional enable to delegate the copy to (DMA, ...)
+	refers ComponentInstance snedEnabler
+
 	refers ReceiveActor receive opposite send
 }
+class SendStartActor extends CommunicationActor {
+}
+class SendEndActor extends CommunicationActor {
+}
 
-class ReceiveActor extends CommunicationActor {
+abstract class ReceiveActor extends CommunicationActor {
+	// optional enable to delegate the copy to (DMA, ...)
+	refers ComponentInstance receiveEnabler
+
 	refers SendActor send opposite receive
 }
-
-class InvolvementActor extends CommunicationActor {
-	refers ComponentInstance receiver
+class ReceiveStartActor extends CommunicationActor {
+}
+class ReceiveEndActor extends CommunicationActor {
 }
 
-class OverheadActor extends CommunicationActor {
-	refers ComponentInstance dma
+// Receive then Send. Atomic: simplifies allocation.
+class ForwardActor extends ReceiveActor, SendActor {
 }
- */
