@@ -415,7 +415,7 @@ public class ClusteringBuilder {
 
   private void manageClusteredActorsPort(List<AbstractActor> actors, PiGraph cluster) {
 
-    // Set to zero counter
+    // Set to zero counters
     int nbDataOutput = 0;
     int nbDataInput = 0;
     int nbConfigInput = 0;
