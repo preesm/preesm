@@ -855,6 +855,9 @@ public class PiSDFToSingleRate extends PiMMSwitch<Boolean> {
       }
     }
 
+    // handle non connected actors (BRV = 1)
+    actors.stream().filter(a -> a.getAllDataPorts().isEmpty()).forEach(this::populateSingleRatePiMMActor);
+
     return true;
   }
 
