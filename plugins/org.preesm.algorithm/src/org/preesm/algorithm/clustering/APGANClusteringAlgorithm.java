@@ -69,6 +69,8 @@ public class APGANClusteringAlgorithm implements IClusteringAlgorithm {
     // Get mergeable couple
     couples = PiSDFMergeabilty.getConnectedCouple(clusteringBuilder.getAlgorithm(),
         clusteringBuilder.getRepetitionVector());
+    // Remove couples of actors that are not in the same constraints
+    ClusteringHelper.removeConstrainedCouples(couples, clusteringBuilder.getScenario());
     return couples.isEmpty();
   }
 

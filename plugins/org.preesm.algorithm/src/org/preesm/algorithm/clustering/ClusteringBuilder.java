@@ -69,6 +69,8 @@ import org.preesm.model.pisdf.brv.BRVMethod;
 import org.preesm.model.pisdf.brv.PiBRV;
 import org.preesm.model.pisdf.check.PiGraphConsistenceChecker;
 import org.preesm.model.pisdf.factory.PiMMUserFactory;
+import org.preesm.model.scenario.Scenario;
+import org.preesm.model.slam.ComponentInstance;
 
 /**
  * @author dgageot
@@ -79,6 +81,8 @@ public class ClusteringBuilder {
   private Map<AbstractActor, Schedule> scheduleMapping;
 
   private PiGraph pigraph;
+
+  private Scenario scenario;
 
   private long seed;
 
@@ -96,9 +100,10 @@ public class ClusteringBuilder {
    * @param seed
    *          seed for random clustering algorithm
    */
-  public ClusteringBuilder(final PiGraph graph, final String algorithm, final long seed) {
+  public ClusteringBuilder(final PiGraph graph, final Scenario scenario, final String algorithm, final long seed) {
     this.scheduleMapping = new LinkedHashMap<>();
     this.pigraph = graph;
+    this.scenario = scenario;
     this.seed = seed;
     this.clusteringAlgorithm = clusteringAlgorithmFactory(algorithm);
     this.repetitionVector = null;
@@ -114,6 +119,10 @@ public class ClusteringBuilder {
 
   public Map<AbstractVertex, Long> getRepetitionVector() {
     return repetitionVector;
+  }
+
+  public Scenario getScenario() {
+    return scenario;
   }
 
   /**
@@ -225,7 +234,7 @@ public class ClusteringBuilder {
 
   /**
    * clusterize actors together
-   * 
+   *
    * @param actors
    *          list of actors to clusterize
    * @return schedule tree of cluster
@@ -246,7 +255,7 @@ public class ClusteringBuilder {
 
   /**
    * clusterize actors regarding to the specified schedule
-   * 
+   *
    * @param schedule
    *          schedule to clusterize from
    * @return schedule tree of cluster
@@ -362,8 +371,13 @@ public class ClusteringBuilder {
   private final PiGraph buildCluster(List<AbstractActor> actorList) {
     // Create the cluster actor and set it name
     PiGraph cluster = PiMMUserFactory.instance.createPiGraph();
+    cluster.setClusterValue(true);
     cluster.setName("cluster_" + nbCluster++);
     cluster.setUrl(pigraph.getUrl() + "/" + cluster.getName() + ".pi");
+
+    for (ComponentInstance component : ClusteringHelper.getListOfCommonComponent(actorList, scenario)) {
+      scenario.getConstraints().addConstraint(component, cluster);
+    }
 
     // Add cluster to the parent graph
     pigraph.addActor(cluster);
