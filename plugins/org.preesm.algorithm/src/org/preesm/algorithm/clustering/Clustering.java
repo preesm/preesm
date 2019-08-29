@@ -86,8 +86,8 @@ public class Clustering extends AbstractTaskImplementation {
     // Retrieve inputs and parameters
     final PiGraph graph = (PiGraph) inputs.get("PiMM");
     final Scenario scenario = (Scenario) inputs.get("scenario");
-    String algorithm = parameters.get("Algorithm");
-    String seed = parameters.get("Seed");
+    String algorithm = parameters.get(ALGORITHM_CHOICE);
+    String seed = parameters.get(SEED_CHOICE);
 
     // Instantiate a ClusteringBuilder and process clustering
     ClusteringBuilder clusteringBuilder = new ClusteringBuilder(graph, scenario, algorithm, Long.parseLong(seed));
@@ -97,14 +97,14 @@ public class Clustering extends AbstractTaskImplementation {
     for (Entry<AbstractActor, Schedule> entry : scheduleMapping.entrySet()) {
       Schedule schedule = entry.getValue();
       // Printing
-      String scheduleStr = "Schedule for cluster " + entry.getKey().getName() + ":";
-      PreesmLogger.getLogger().log(Level.INFO, scheduleStr);
-      scheduleStr = schedule.shortPrint();
-      PreesmLogger.getLogger().log(Level.INFO, scheduleStr);
-      scheduleStr = "Estimated memory space needed: " + ClusteringHelper.getMemorySpaceNeededFor(schedule) + " bytes";
-      PreesmLogger.getLogger().log(Level.INFO, scheduleStr);
-      scheduleStr = "Estimated execution time: " + ClusteringHelper.getExecutionTimeOf(schedule, scenario);
-      PreesmLogger.getLogger().log(Level.INFO, scheduleStr);
+      String str = "Schedule for cluster " + entry.getKey().getName() + ":";
+      PreesmLogger.getLogger().log(Level.INFO, str);
+      str = schedule.shortPrint();
+      PreesmLogger.getLogger().log(Level.INFO, str);
+      str = "Estimated memory space needed: " + ClusteringHelper.getMemorySpaceNeededFor(schedule) + " bytes";
+      PreesmLogger.getLogger().log(Level.INFO, str);
+      str = "Estimated execution time: " + ClusteringHelper.getExecutionTimeOf(schedule, scenario);
+      PreesmLogger.getLogger().log(Level.INFO, str);
     }
 
     // Output PiSDF and Schedule Mapping attachment

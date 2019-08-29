@@ -78,18 +78,39 @@ import org.preesm.model.slam.ComponentInstance;
  */
 public class ClusteringBuilder {
 
+  /**
+   * {@link Map} that register cluster {@link AbstractActor} with it corresponding {@link Schedule}.
+   */
   private Map<AbstractActor, Schedule> scheduleMapping;
 
+  /**
+   * @{link PiGraph} to process clustering on.
+   */
   private PiGraph pigraph;
 
+  /**
+   * {@link Scenario} to retrieve information about constraints and timings
+   */
   private Scenario scenario;
 
+  /**
+   * Seed for Random clustering algorithm.
+   */
   private long seed;
 
+  /**
+   * {@link IClusteringAlgorithm} used to cluster the input graph.
+   */
   private IClusteringAlgorithm clusteringAlgorithm;
 
+  /**
+   * Repetition vector saved for every step of clustering
+   */
   private Map<AbstractVertex, Long> repetitionVector;
 
+  /**
+   * Integer that count the number of cluster, used to named them like cluster_$nbCluster$.
+   */
   private int nbCluster;
 
   /**
@@ -102,10 +123,10 @@ public class ClusteringBuilder {
    */
   public ClusteringBuilder(final PiGraph graph, final Scenario scenario, final String algorithm, final long seed) {
     this.scheduleMapping = new LinkedHashMap<>();
+    this.clusteringAlgorithm = clusteringAlgorithmFactory(algorithm);
     this.pigraph = graph;
     this.scenario = scenario;
     this.seed = seed;
-    this.clusteringAlgorithm = clusteringAlgorithmFactory(algorithm);
     this.repetitionVector = null;
   }
 
@@ -129,8 +150,8 @@ public class ClusteringBuilder {
    * @return schedule mapping including all clusters with corresponding schedule tree
    */
   public final Map<AbstractActor, Schedule> processClustering() {
-    // Check for uncompatible delay
-    clusterizableCheck();
+    // Check for uncompatible features in the input graph
+    isClusterizable();
 
     // Keep original algorithm
     PiGraph origAlgorithm = this.pigraph;
@@ -182,7 +203,8 @@ public class ClusteringBuilder {
     return scheduleMapping;
   }
 
-  private final void clusterizableCheck() {
+  private final void isClusterizable() {
+    // Check for uncompatible delay
     for (Fifo fifo : pigraph.getFifosWithDelay()) {
       Delay delay = fifo.getDelay();
 
@@ -190,13 +212,13 @@ public class ClusteringBuilder {
       if (delay.getActor().getDataInputPort().getIncomingFifo() != null
           || delay.getActor().getDataOutputPort().getOutgoingFifo() != null) {
         throw new PreesmRuntimeException(
-            "ClusteringBuilder: Actually, " + delay.getActor().getName() + " getter/setter are not handled");
+            "ClusteringBuilder: Actually, on [" + delay.getActor().getName() + "], getter/setter are not handled");
       }
 
+      // If delay is not a self-loop
       long prod = fifo.getSourcePort().getExpression().evaluate();
       long cons = fifo.getTargetPort().getExpression().evaluate();
       long delayCapacity = delay.getExpression().evaluate();
-      // If delay is not a self-loop
       if ((delayCapacity != prod) || (delayCapacity != cons)) {
         throw new PreesmRuntimeException(
             "ClusteringBuilder: Actually, delay that are not self-loop aren't clusterizable");
@@ -364,44 +386,54 @@ public class ClusteringBuilder {
   }
 
   /**
-   * @param actorList
+   * @param actors
    *          list of actor to clusterize
    * @return generated PiGraph connected with the parent graph
    */
-  private final PiGraph buildCluster(List<AbstractActor> actorList) {
+  private final PiGraph buildCluster(List<AbstractActor> actors) {
     // Create the cluster actor and set it name
     PiGraph cluster = PiMMUserFactory.instance.createPiGraph();
     cluster.setClusterValue(true);
     cluster.setName("cluster_" + nbCluster++);
     cluster.setUrl(pigraph.getUrl() + "/" + cluster.getName() + ".pi");
 
-    for (ComponentInstance component : ClusteringHelper.getListOfCommonComponent(actorList, scenario)) {
+    for (ComponentInstance component : ClusteringHelper.getListOfCommonComponent(actors, scenario)) {
       scenario.getConstraints().addConstraint(component, cluster);
     }
 
     // Add cluster to the parent graph
     pigraph.addActor(cluster);
-    for (AbstractActor a : actorList) {
-      cluster.addActor(a);
+    for (AbstractActor actor : actors) {
+      cluster.addActor(actor);
     }
 
-    // Compute clusterRepetition
-    long clusterRepetition = MathFunctionsHelper.gcd(CollectionUtil.mapGetAll(repetitionVector, actorList));
-
-    int nbOut = 0;
-    int nbIn = 0;
     // Export ports on cluster actor
-    for (AbstractActor a : actorList) {
+    manageClusteredActorsPort(actors, cluster);
+
+    return cluster;
+  }
+
+  private void manageClusteredActorsPort(List<AbstractActor> actors, PiGraph cluster) {
+
+    // Set to zero counters
+    int nbDataOutput = 0;
+    int nbDataInput = 0;
+    int nbConfigInput = 0;
+
+    // Compute clusterRepetition
+    long clusterRepetition = MathFunctionsHelper.gcd(CollectionUtil.mapGetAll(repetitionVector, actors));
+
+    for (AbstractActor actor : actors) {
       // Retrieve actor repetition number
-      long actorRepetition = repetitionVector.get(a);
+      long actorRepetition = repetitionVector.get(actor);
 
       // Attach DataInputPort on the cluster actor
       List<DataInputPort> dipTmp = new ArrayList<>();
-      dipTmp.addAll(a.getDataInputPorts());
+      dipTmp.addAll(actor.getDataInputPorts());
       for (DataInputPort dip : dipTmp) {
         // We only deport the input if FIFO is not internal
-        if (!actorList.contains(dip.getIncomingFifo().getSource())) {
-          setDataInputPortAsInterface(cluster, dip, "in_" + nbIn++,
+        if (!actors.contains(dip.getIncomingFifo().getSource())) {
+          setDataInputPortAsInterface(cluster, dip, "in_" + nbDataInput++,
               dip.getExpression().evaluate() * actorRepetition / clusterRepetition);
         } else {
           cluster.addFifo(dip.getIncomingFifo());
@@ -415,11 +447,11 @@ public class ClusteringBuilder {
 
       // Attach DataOutputPort on the cluster actor
       List<DataOutputPort> dopTmp = new ArrayList<>();
-      dopTmp.addAll(a.getDataOutputPorts());
+      dopTmp.addAll(actor.getDataOutputPorts());
       for (DataOutputPort dop : dopTmp) {
         // We only deport the output if FIFO is not internal
-        if (!actorList.contains(dop.getOutgoingFifo().getTarget())) {
-          setDataOutputPortAsInterface(cluster, dop, "out_" + nbOut++,
+        if (!actors.contains(dop.getOutgoingFifo().getTarget())) {
+          setDataOutputPortAsInterface(cluster, dop, "out_" + nbDataOutput++,
               dop.getExpression().evaluate() * actorRepetition / clusterRepetition);
         } else {
           cluster.addFifo(dop.getOutgoingFifo());
@@ -434,47 +466,45 @@ public class ClusteringBuilder {
 
     // Attach ConfigInputPort on the cluster actor
     List<ConfigInputPort> cfgipTmp = new ArrayList<>();
-    for (AbstractActor a : actorList) {
+    for (AbstractActor a : actors) {
       cfgipTmp.addAll(a.getConfigInputPorts());
     }
     for (Delay delay : cluster.getAllDelays()) {
       cfgipTmp.addAll(delay.getConfigInputPorts());
       delay.setExpression(delay.getExpression().evaluate());
     }
-    int nbCfg = 0;
     for (ConfigInputPort cfgip : cfgipTmp) {
-      setConfigInputPortAsInterface(cluster, cfgip, "config_" + nbCfg++);
+      setConfigInputPortAsInterface(cluster, cfgip, "config_" + nbConfigInput++);
     }
 
-    return cluster;
   }
 
   /**
-   * @param newHierarchy
-   *          new hierarchy
+   * @param cluster
+   *          cluster hierarchy
    * @param insideInputPort
    *          DataInputPort to connect outside
    * @param name
    *          name of port
-   * @param newExpression
+   * @param portExpression
    *          prod/cons value
    */
-  private final DataInputInterface setDataInputPortAsInterface(PiGraph newHierarchy, DataInputPort insideInputPort,
-      String name, long newExpression) {
+  private final DataInputInterface setDataInputPortAsInterface(PiGraph cluster, DataInputPort insideInputPort,
+      String name, long portExpression) {
     // Setup DataInputInterface
     DataInputInterface inputInterface = PiMMUserFactory.instance.createDataInputInterface();
     inputInterface.setName(name);
     inputInterface.getDataPort().setName(name);
-    newHierarchy.addActor(inputInterface);
+    cluster.addActor(inputInterface);
 
     // Setup input of hierarchical actor
     DataInputPort inputPort = (DataInputPort) inputInterface.getGraphPort();
     inputPort.setName(name); // same name than DataInputInterface
-    inputPort.setExpression(newExpression);
+    inputPort.setExpression(portExpression);
 
     // Interconnect the outside with hierarchical actor
     inputPort.setIncomingFifo(PiMMUserFactory.instance.createFifo());
-    newHierarchy.getContainingPiGraph().addFifo(inputPort.getFifo());
+    cluster.getContainingPiGraph().addFifo(inputPort.getFifo());
     Fifo oldFifo = insideInputPort.getFifo();
     if (oldFifo.getDelay() != null) {
       inputPort.getFifo().setDelay(oldFifo.getDelay());
@@ -482,46 +512,46 @@ public class ClusteringBuilder {
     String dataType = oldFifo.getType();
     inputPort.getIncomingFifo().setSourcePort(oldFifo.getSourcePort());
     inputPort.getIncomingFifo().setType(dataType);
-    newHierarchy.getContainingPiGraph().removeFifo(oldFifo); // remove FIFO from containing graph
+    cluster.getContainingPiGraph().removeFifo(oldFifo); // remove FIFO from containing graph
 
     // Setup inside communication with DataInputInterface
     DataOutputPort outputDataPort = (DataOutputPort) inputInterface.getDataPort();
-    outputDataPort.setExpression(newExpression);
+    outputDataPort.setExpression(portExpression);
     outputDataPort.setOutgoingFifo(PiMMUserFactory.instance.createFifo());
     outputDataPort.getOutgoingFifo().setTargetPort(insideInputPort);
     outputDataPort.getOutgoingFifo().setType(dataType);
     inputInterface.getDataOutputPorts().add(outputDataPort);
-    newHierarchy.addFifo(outputDataPort.getFifo());
+    cluster.addFifo(outputDataPort.getFifo());
 
     return inputInterface;
   }
 
   /**
-   * @param newHierarchy
-   *          new hierarchy
+   * @param cluster
+   *          cluster hierarchy
    * @param insideOutputPort
    *          DataOutputPort to connect outside
    * @param name
    *          name of port
-   * @param newExpression
+   * @param portExpression
    *          prod/cons value
    */
-  private final DataOutputInterface setDataOutputPortAsInterface(PiGraph newHierarchy, DataOutputPort insideOutputPort,
-      String name, long newExpression) {
+  private final DataOutputInterface setDataOutputPortAsInterface(PiGraph cluster, DataOutputPort insideOutputPort,
+      String name, long portExpression) {
     // Setup DataOutputInterface
     DataOutputInterface outputInterface = PiMMUserFactory.instance.createDataOutputInterface();
     outputInterface.setName(name);
     outputInterface.getDataPort().setName(name);
-    newHierarchy.addActor(outputInterface);
+    cluster.addActor(outputInterface);
 
     // Setup output of hierarchical actor
     DataOutputPort outputPort = (DataOutputPort) outputInterface.getGraphPort();
     outputPort.setName(name); // same name than DataOutputInterface
-    outputPort.setExpression(newExpression);
+    outputPort.setExpression(portExpression);
 
     // Interconnect the outside with hierarchical actor
     outputPort.setOutgoingFifo(PiMMUserFactory.instance.createFifo());
-    newHierarchy.getContainingPiGraph().addFifo(outputPort.getFifo());
+    cluster.getContainingPiGraph().addFifo(outputPort.getFifo());
     Fifo oldFifo = insideOutputPort.getFifo();
     if (oldFifo.getDelay() != null) {
       outputPort.getFifo().setDelay(oldFifo.getDelay());
@@ -529,33 +559,33 @@ public class ClusteringBuilder {
     String dataType = oldFifo.getType();
     outputPort.getOutgoingFifo().setTargetPort(oldFifo.getTargetPort());
     outputPort.getOutgoingFifo().setType(dataType);
-    newHierarchy.getContainingPiGraph().removeFifo(oldFifo); // remove FIFO from containing graph
+    cluster.getContainingPiGraph().removeFifo(oldFifo); // remove FIFO from containing graph
 
     // Setup inside communication with DataOutputInterface
     DataInputPort inputDataPort = (DataInputPort) outputInterface.getDataPort();
-    inputDataPort.setExpression(newExpression);
+    inputDataPort.setExpression(portExpression);
     inputDataPort.setIncomingFifo(PiMMUserFactory.instance.createFifo());
     inputDataPort.getIncomingFifo().setSourcePort(insideOutputPort);
     inputDataPort.getIncomingFifo().setType(dataType);
     outputInterface.getDataInputPorts().add(inputDataPort);
-    newHierarchy.addFifo(inputDataPort.getFifo());
+    cluster.addFifo(inputDataPort.getFifo());
 
     return outputInterface;
   }
 
   /**
-   * @param newHierarchy
+   * @param cluster
    *          new hierarchy
    * @param insideInputPort
    *          ConfigInputPort to connect outside
    * @return generated ConfigInputInterface
    */
-  private final ConfigInputInterface setConfigInputPortAsInterface(PiGraph newHierarchy,
-      ConfigInputPort insideInputPort, String name) {
+  private final ConfigInputInterface setConfigInputPortAsInterface(PiGraph cluster, ConfigInputPort insideInputPort,
+      String name) {
     // Setup ConfigInputInterface
     ConfigInputInterface inputInterface = PiMMUserFactory.instance.createConfigInputInterface();
     inputInterface.setName(name);
-    newHierarchy.addParameter(inputInterface);
+    cluster.addParameter(inputInterface);
 
     // Setup input of hierarchical actor
     ConfigInputPort inputPort = inputInterface.getGraphPort();
@@ -563,14 +593,14 @@ public class ClusteringBuilder {
 
     // Interconnect the outside with hierarchical actor
     inputPort.setIncomingDependency(PiMMUserFactory.instance.createDependency());
-    newHierarchy.getContainingPiGraph().addDependency(inputPort.getIncomingDependency());
+    cluster.getContainingPiGraph().addDependency(inputPort.getIncomingDependency());
     Dependency oldDependency = insideInputPort.getIncomingDependency();
     inputPort.getIncomingDependency().setSetter(oldDependency.getSetter());
 
     // Setup inside communication with ConfigInputInterface
     Dependency dependency = insideInputPort.getIncomingDependency();
     dependency.setSetter(inputInterface);
-    newHierarchy.addDependency(dependency);
+    cluster.addDependency(dependency);
 
     return inputInterface;
   }

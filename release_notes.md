@@ -8,7 +8,9 @@ PREESM Changelog
 
 ### Changes
 - PiSDF: PiGraph can be declared as a cluster. Hierarchy of cluster may be ignore by SR and DAG transformation.
-- Clustering: cluster are now mappable into component by retrieving common possible mapping of included actors
+- Clustering: 
+  - cluster are now mappable into component by retrieving common possible mapping of included actors
+  - make code clearer for ClusteringBuilder
 
 ### Bug fix
 
