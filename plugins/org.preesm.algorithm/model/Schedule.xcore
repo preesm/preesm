@@ -114,7 +114,7 @@ interface Schedule {
 	/*
 	 * returns a String representing the schedule informally.
 	 */
-	op String shortPrint()
+	op String shortPrint(boolean parallel)
 	/*
 	 * Return true if the schedule is linked with an actor. This is the case when applying clustering, where
 	 * the attached actor of a HierarchicalSchedule is the clustered subraph.
@@ -182,7 +182,7 @@ interface ActorSchedule extends Schedule {
 	op AbstractActor[] getActors() {
 		return actorList.unmodifiableEList
 	}
-	op String shortPrint() {
+	op String shortPrint(boolean parallel) {
 		val StringBuilder toPrint = new StringBuilder()
 		// Print sequential operator
 		if (getRepetition() > 1) {
@@ -228,13 +228,17 @@ class ParallelActorSchedule extends ActorSchedule, ParallelSchedule {
  * sequential, in the order of apparition in the list.
  */
 class SequentialHiearchicalSchedule extends HierarchicalSchedule, SequentialSchedule {
-	op String shortPrint() {
+	op String shortPrint(boolean parallel) {
 		val StringBuilder toPrint = new StringBuilder()
 		// Print sequential operator
 		if (getRepetition() > 1) {
-			toPrint.append(getRepetition() + "(")
+			if (parallel) {
+				toPrint.append(getRepetition() + "/(")
+			} else {
+				toPrint.append(getRepetition() + "(")
+			}
 		}
-		toPrint.append(children.map[it.shortPrint()].join("*"))
+		toPrint.append(children.map[it.shortPrint(false)].join("*"))
 		if (getRepetition() > 1) {
 			toPrint.append(")")
 		}
@@ -247,13 +251,13 @@ class SequentialHiearchicalSchedule extends HierarchicalSchedule, SequentialSche
  * simultaneous (i.e. parallel).
  */
 class ParallelHiearchicalSchedule extends HierarchicalSchedule, ParallelSchedule {
-	op String shortPrint() {
+	op String shortPrint(boolean parallel) {
 		val StringBuilder toPrint = new StringBuilder()
 		// Print sequential operator
 		if (getRepetition() > 1) {
 			toPrint.append(getRepetition() + "/")
 		}
-		val String join = children.map[it.shortPrint()].join("|");
+		val String join = children.map[it.shortPrint(true)].join("|");
 		toPrint.append("(" + join + ")")
 		return toPrint.toString()
 	}
