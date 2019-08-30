@@ -189,7 +189,7 @@ public class ClusteringHelper {
    *          schedule to get execution time from
    * @return execution time
    */
-  public static final long getExecutionTimeOf(Schedule schedule, Scenario scenario) {
+  public static final long getExecutionTimeOf(Schedule schedule, Scenario scenario, Component component) {
     long timing = 0;
 
     // If schedule is hierarchical
@@ -199,14 +199,14 @@ public class ClusteringHelper {
       if (schedule instanceof SequentialSchedule) {
         // Sum timings of all childrens together
         for (Schedule child : schedule.getChildren()) {
-          timing += getExecutionTimeOf(child, scenario);
+          timing += getExecutionTimeOf(child, scenario, component);
         }
       } else {
         // If schedule is parallel
         // Search for the maximun time taken by childrens
         long max = 0;
         for (Schedule child : schedule.getChildren()) {
-          long result = getExecutionTimeOf(child, scenario);
+          long result = getExecutionTimeOf(child, scenario, component);
           if (result > max) {
             max = result;
           }
@@ -222,12 +222,7 @@ public class ClusteringHelper {
 
     } else {
       // Retrieve timing from actors
-      /*
-       * TODO: this implementation is not perfect: it takes the first component that it found in the list to get timing
-       * from
-       */
       AbstractActor actor = schedule.getActors().get(0);
-      Component component = scenario.getPossibleMappings(actor).get(0).getComponent();
       long actorTiming = scenario.getTimings().evaluateTimingOrDefault(actor, component);
       if ((schedule instanceof ParallelActorSchedule)) {
         timing = actorTiming;
