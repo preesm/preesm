@@ -55,18 +55,19 @@ public class SchedulePrinterSwitch extends ScheduleSwitch<String> {
     StringBuilder toPrint = new StringBuilder();
 
     if (object.getRepetition() > 1) {
+      toPrint.append(object.getRepetition());
       if (this.parentNode != null) {
         if (this.parentNode.isParallel()) {
-          toPrint.append(object.getRepetition() + "/(");
+          toPrint.append("/");
         }
-      } else {
-        toPrint.append(object.getRepetition() + "(");
       }
+      toPrint.append("(");
     }
 
     // Print sequential operator
     List<String> schedulesExpressions = new LinkedList<>();
     for (Schedule children : object.getChildren()) {
+      this.parentNode = object;
       schedulesExpressions.add(doSwitch(children));
     }
     toPrint.append(String.join("*", schedulesExpressions));
