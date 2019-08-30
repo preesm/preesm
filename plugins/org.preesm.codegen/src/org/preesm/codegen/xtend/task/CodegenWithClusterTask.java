@@ -43,16 +43,12 @@ package org.preesm.codegen.xtend.task;
 import java.io.File;
 import java.util.Collection;
 import java.util.LinkedHashMap;
-import java.util.LinkedHashSet;
 import java.util.Map;
-import java.util.Set;
-import org.eclipse.core.runtime.IConfigurationElement;
-import org.eclipse.core.runtime.IExtensionRegistry;
 import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.core.runtime.Platform;
 import org.preesm.algorithm.mapper.model.MapperDAG;
 import org.preesm.algorithm.memory.exclusiongraph.MemoryExclusionGraph;
 import org.preesm.algorithm.model.dag.DirectedAcyclicGraph;
+import org.preesm.algorithm.schedule.model.Schedule;
 import org.preesm.codegen.model.Block;
 import org.preesm.codegen.model.generator.CodegenModelGenerator;
 import org.preesm.commons.doc.annotations.Parameter;
@@ -60,19 +56,20 @@ import org.preesm.commons.doc.annotations.Port;
 import org.preesm.commons.doc.annotations.PreesmTask;
 import org.preesm.commons.doc.annotations.Value;
 import org.preesm.commons.exceptions.PreesmRuntimeException;
+import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.scenario.Scenario;
 import org.preesm.model.slam.Design;
 import org.preesm.workflow.elements.Workflow;
-import org.preesm.workflow.implement.AbstractTaskImplementation;
 
 /**
- * The Class CodegenTask.
+ * The Class CodegenWithClusterTask.
  */
 @PreesmTask(id = "org.ietr.preesm.codegen.xtend.task.CodegenClusterTask", name = "Code Generation with cluster",
     category = "Code Generation",
 
     inputs = { @Port(name = "MEGs", type = Map.class), @Port(name = "DAG", type = DirectedAcyclicGraph.class),
-        @Port(name = "scenario", type = Scenario.class), @Port(name = "architecture", type = Design.class) },
+        @Port(name = "scenario", type = Scenario.class), @Port(name = "architecture", type = Design.class),
+        @Port(name = "schedules", type = Map.class) },
 
     shortDescription = "Generate code for the application deployment resulting from the workflow execution.",
 
@@ -107,16 +104,7 @@ import org.preesm.workflow.implement.AbstractTaskImplementation;
             values = { @Value(name = "true/false",
                 effect = "Print C code instrumented with PAPIFY function calls based on the user-defined configuration"
                     + " of PAPIFY tab in the scenario. Currently compatibe with x86 and MPPA-256") }) })
-public class CodegenClusterTask extends AbstractTaskImplementation {
-
-  /** The Constant PARAM_PRINTER. */
-  public static final String PARAM_PRINTER = "Printer";
-
-  /** The Constant VALUE_PRINTER_IR. */
-  public static final String VALUE_PRINTER_IR = "IR";
-
-  /** The Constant PARAM_PAPIFY. */
-  public static final String PARAM_PAPIFY = "Papify";
+public class CodegenWithClusterTask extends CodegenTask {
 
   /*
    * (non-Javadoc)
@@ -136,6 +124,7 @@ public class CodegenClusterTask extends AbstractTaskImplementation {
 
     final Design archi = (Design) inputs.get("architecture");
     final DirectedAcyclicGraph algoDAG = (DirectedAcyclicGraph) inputs.get("DAG");
+    final Map<AbstractActor, Schedule> scheduleMapping = (Map<AbstractActor, Schedule>) inputs.get("schedules");
     @SuppressWarnings("unchecked")
     final Map<String, MemoryExclusionGraph> megs = (Map<String, MemoryExclusionGraph>) inputs.get("MEGs");
     if (!(algoDAG instanceof MapperDAG)) {
@@ -144,22 +133,22 @@ public class CodegenClusterTask extends AbstractTaskImplementation {
     final MapperDAG algo = (MapperDAG) algoDAG;
 
     // Generate intermediate model
-    final CodegenModelGenerator generator = new CodegenModelGenerator(archi, algo, megs, scenario);
+    final CodegenModelGenerator generator = new CodegenModelGenerator(archi, algo, megs, scenario, scheduleMapping);
     // Retrieve the PAPIFY flag
-    final String papifyMonitoring = parameters.get(CodegenClusterTask.PARAM_PAPIFY);
+    final String papifyMonitoring = parameters.get(CodegenTask.PARAM_PAPIFY);
     generator.registerPapify(papifyMonitoring);
 
     final Collection<Block> codeBlocks = generator.generate();
 
     // Retrieve the desired printer and target folder path
-    final String selectedPrinter = parameters.get(CodegenClusterTask.PARAM_PRINTER);
+    final String selectedPrinter = parameters.get(CodegenTask.PARAM_PRINTER);
     final String codegenPath = scenario.getCodegenDirectory() + File.separator;
 
     // Create the codegen engine
     final CodegenEngine engine = new CodegenEngine(codegenPath, codeBlocks, algo.getReferencePiMMGraph(), archi,
         scenario);
 
-    if (CodegenClusterTask.VALUE_PRINTER_IR.equals(selectedPrinter)) {
+    if (CodegenTask.VALUE_PRINTER_IR.equals(selectedPrinter)) {
       engine.initializePrinterIR(codegenPath);
     }
 
@@ -174,42 +163,11 @@ public class CodegenClusterTask extends AbstractTaskImplementation {
   /*
    * (non-Javadoc)
    *
-   * @see org.ietr.dftools.workflow.implement.AbstractTaskImplementation#getDefaultParameters()
-   */
-  @Override
-  public Map<String, String> getDefaultParameters() {
-    final Map<String, String> parameters = new LinkedHashMap<>();
-    String avilableLanguages = "? C {";
-
-    // Retrieve the languages registered with the printers
-    final Set<String> languages = new LinkedHashSet<>();
-    final IExtensionRegistry registry = Platform.getExtensionRegistry();
-
-    final IConfigurationElement[] elements = registry
-        .getConfigurationElementsFor("org.ietr.preesm.codegen.xtend.printers");
-    for (final IConfigurationElement element : elements) {
-      languages.add(element.getAttribute("language"));
-    }
-
-    for (final String lang : languages) {
-      avilableLanguages += lang + ", ";
-    }
-    avilableLanguages += CodegenClusterTask.VALUE_PRINTER_IR + "}";
-
-    parameters.put(CodegenClusterTask.PARAM_PRINTER, avilableLanguages);
-    // Papify default
-    parameters.put(CodegenClusterTask.PARAM_PAPIFY, "false");
-    return parameters;
-  }
-
-  /*
-   * (non-Javadoc)
-   *
    * @see org.ietr.dftools.workflow.implement.AbstractWorkflowNodeImplementation#monitorMessage()
    */
   @Override
   public String monitorMessage() {
-    return "Generate xtend code";
+    return "Generate xtend code with cluster";
   }
 
 }

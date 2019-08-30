@@ -53,7 +53,6 @@ import org.eclipse.core.runtime.Platform;
 import org.preesm.algorithm.mapper.model.MapperDAG;
 import org.preesm.algorithm.memory.exclusiongraph.MemoryExclusionGraph;
 import org.preesm.algorithm.model.dag.DirectedAcyclicGraph;
-import org.preesm.algorithm.schedule.model.Schedule;
 import org.preesm.codegen.model.Block;
 import org.preesm.codegen.model.generator.CodegenModelGenerator;
 import org.preesm.commons.doc.annotations.Parameter;
@@ -61,7 +60,6 @@ import org.preesm.commons.doc.annotations.Port;
 import org.preesm.commons.doc.annotations.PreesmTask;
 import org.preesm.commons.doc.annotations.Value;
 import org.preesm.commons.exceptions.PreesmRuntimeException;
-import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.scenario.Scenario;
 import org.preesm.model.slam.Design;
 import org.preesm.workflow.elements.Workflow;
@@ -74,8 +72,7 @@ import org.preesm.workflow.implement.AbstractTaskImplementation;
     category = "Code Generation",
 
     inputs = { @Port(name = "MEGs", type = Map.class), @Port(name = "DAG", type = DirectedAcyclicGraph.class),
-        @Port(name = "scenario", type = Scenario.class), @Port(name = "architecture", type = Design.class),
-        @Port(name = "schedules", type = Map.class) },
+        @Port(name = "scenario", type = Scenario.class), @Port(name = "architecture", type = Design.class) },
 
     shortDescription = "Generate code for the application deployment resulting from the workflow execution.",
 
@@ -139,7 +136,6 @@ public class CodegenTask extends AbstractTaskImplementation {
 
     final Design archi = (Design) inputs.get("architecture");
     final DirectedAcyclicGraph algoDAG = (DirectedAcyclicGraph) inputs.get("DAG");
-    final Map<AbstractActor, Schedule> scheduleMapping = (Map<AbstractActor, Schedule>) inputs.get("schedules");
     @SuppressWarnings("unchecked")
     final Map<String, MemoryExclusionGraph> megs = (Map<String, MemoryExclusionGraph>) inputs.get("MEGs");
     if (!(algoDAG instanceof MapperDAG)) {
@@ -148,7 +144,7 @@ public class CodegenTask extends AbstractTaskImplementation {
     final MapperDAG algo = (MapperDAG) algoDAG;
 
     // Generate intermediate model
-    final CodegenModelGenerator generator = new CodegenModelGenerator(archi, algo, megs, scenario, scheduleMapping);
+    final CodegenModelGenerator generator = new CodegenModelGenerator(archi, algo, megs, scenario, null);
     // Retrieve the PAPIFY flag
     final String papifyMonitoring = parameters.get(CodegenTask.PARAM_PAPIFY);
     generator.registerPapify(papifyMonitoring);

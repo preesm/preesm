@@ -68,6 +68,7 @@ import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.common.util.EMap;
 import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.eclipse.xtext.xbase.lib.Pair;
+import org.preesm.algorithm.clustering.Clustering;
 import org.preesm.algorithm.codegen.idl.ActorPrototypes;
 import org.preesm.algorithm.codegen.idl.IDLPrototypeFactory;
 import org.preesm.algorithm.codegen.idl.Prototype;
@@ -132,9 +133,9 @@ import org.preesm.codegen.model.SpecialCall;
 import org.preesm.codegen.model.SpecialType;
 import org.preesm.codegen.model.SubBuffer;
 import org.preesm.codegen.model.Variable;
+import org.preesm.codegen.model.clustering.CodegenClusterModelGenerator;
+import org.preesm.codegen.model.clustering.SrDAGOutsideFetcher;
 import org.preesm.codegen.model.util.CodegenModelUserFactory;
-import org.preesm.codegen.xtend.task.CodegenClusterModelGenerator;
-import org.preesm.codegen.xtend.task.SrDAGOutsideFetcher;
 import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.commons.model.PreesmCopyTracker;
@@ -613,17 +614,19 @@ public class CodegenModelGenerator extends AbstractCodegenModelGenerator {
     final Object refinement = dagVertex.getRefinement();
 
     // If the actor is hierarchical
-    if (dagVertex.getPropertyBean().getValue("isCluster") != null) {
+    if (dagVertex.getPropertyBean().getValue(Clustering.PISDF_ACTOR_IS_CLUSTER) != null) {
       // try to generate for loop on a hierarchical actor
       PreesmLogger.getLogger().log(Level.FINE, "tryGenerateRepeatActorFiring " + dagVertex.getName());
 
+      // prepare option for SrDAGOutsideFetcher
       Map<String, Object> outsideFetcherOption = new HashMap<String, Object>();
       outsideFetcherOption.put("dagVertex", dagVertex);
       outsideFetcherOption.put("dag", this.algo);
       outsideFetcherOption.put("coreBlock", operatorBlock);
       outsideFetcherOption.put("srSDFEdgeBuffers", this.srSDFEdgeBuffers);
 
-      AbstractActor actor = dagVertex.getPropertyBean().getValue("PiSDFActor");
+      // Retrieve original cluster actor
+      AbstractActor actor = dagVertex.getPropertyBean().getValue(Clustering.PISDF_REFERENCE_ACTOR);
       AbstractActor originalActor = PreesmCopyTracker.getSource(actor);
       if (this.scheduleMapping.containsKey(originalActor)) {
         CodegenClusterModelGenerator clusterGenerator = new CodegenClusterModelGenerator(operatorBlock,
