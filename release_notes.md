@@ -11,6 +11,7 @@ PREESM Changelog
 * Clustering: 
   * cluster are now mappable into component by retrieving common possible mapping of included actors
   * make code clearer for ClusteringBuilder
+* Schedule: Readapt the way of exhibiting data parallelism and print expression
 
 ### Bug fix
 * Fix #218: add support for non connected actors in SRDAG transform;
