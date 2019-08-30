@@ -18,7 +18,6 @@ import org.preesm.codegen.model.Block;
 import org.preesm.codegen.model.Buffer;
 import org.preesm.codegen.model.ClusterBlock;
 import org.preesm.codegen.model.CodeElt;
-import org.preesm.codegen.model.CodegenFactory;
 import org.preesm.codegen.model.Constant;
 import org.preesm.codegen.model.CoreBlock;
 import org.preesm.codegen.model.FifoCall;
@@ -32,6 +31,7 @@ import org.preesm.codegen.model.PortDirection;
 import org.preesm.codegen.model.SectionBlock;
 import org.preesm.codegen.model.SpecialCall;
 import org.preesm.codegen.model.SpecialType;
+import org.preesm.codegen.model.util.CodegenModelUserFactory;
 import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.AbstractVertex;
@@ -196,7 +196,7 @@ public class CodegenClusterModelGeneratorSwitch extends ScheduleSwitch<CodeElt> 
     // Explore and generate child schedule
     for (final Schedule e : schedule.getChildren()) {
       this.parentNode = schedule;
-      final SectionBlock sectionBlock = CodegenFactory.eINSTANCE.createSectionBlock();
+      final SectionBlock sectionBlock = CodegenModelUserFactory.eINSTANCE.createSectionBlock();
       sectionBlock.getCodeElts().add(doSwitch(e));
       outputPair.getValue().getCodeElts().add(sectionBlock);
     }
@@ -212,7 +212,7 @@ public class CodegenClusterModelGeneratorSwitch extends ScheduleSwitch<CodeElt> 
     final AbstractActor actor = schedule.getActors().get(0);
 
     // Generate a LoopBlock to put function call element into
-    final LoopBlock loopBlock = CodegenFactory.eINSTANCE.createLoopBlock();
+    final LoopBlock loopBlock = CodegenModelUserFactory.eINSTANCE.createLoopBlock();
 
     // If actors has to be repeated few times, build a FiniteLoopBlock
     CodeElt outputBlock = null;
@@ -241,7 +241,7 @@ public class CodegenClusterModelGeneratorSwitch extends ScheduleSwitch<CodeElt> 
     final PiGraph clusterGraph = (PiGraph) schedule.getAttachedActor();
 
     // Build and fill ClusterBlock attributes
-    final ClusterBlock clusterBlock = CodegenFactory.eINSTANCE.createClusterBlock();
+    final ClusterBlock clusterBlock = CodegenModelUserFactory.eINSTANCE.createClusterBlock();
     clusterBlock.setName(clusterGraph.getName());
     clusterBlock.setSchedule(schedule.shortPrint());
     clusterBlock.setParallel(schedule.isParallel());
@@ -270,7 +270,7 @@ public class CodegenClusterModelGeneratorSwitch extends ScheduleSwitch<CodeElt> 
 
   private final FunctionCall generateExecutableActorFiring(final ExecutableActor actor) {
     // Build FunctionCall
-    final FunctionCall functionCall = CodegenFactory.eINSTANCE.createFunctionCall();
+    final FunctionCall functionCall = CodegenModelUserFactory.eINSTANCE.createFunctionCall();
     functionCall.setActorName(actor.getName());
 
     // Retrieve Refinement from actor for loop function
@@ -284,7 +284,7 @@ public class CodegenClusterModelGeneratorSwitch extends ScheduleSwitch<CodeElt> 
 
   private final SpecialCall generateSpecialActorFiring(final SpecialActor actor) {
     // Instantiate special call object
-    final SpecialCall specialCall = CodegenFactory.eINSTANCE.createSpecialCall();
+    final SpecialCall specialCall = CodegenModelUserFactory.eINSTANCE.createSpecialCall();
 
     // Set type of special call
     if (actor instanceof ForkActor) {
@@ -317,7 +317,7 @@ public class CodegenClusterModelGeneratorSwitch extends ScheduleSwitch<CodeElt> 
 
   private final FifoCall generateEndInitActorFiring(final SpecialActor actor) {
     // Build a FifoCall
-    FifoCall fifoCall = CodegenFactory.eINSTANCE.createFifoCall();
+    FifoCall fifoCall = CodegenModelUserFactory.eINSTANCE.createFifoCall();
 
     DataPort dp = null;
     InitActor initReference = null;
@@ -350,7 +350,7 @@ public class CodegenClusterModelGeneratorSwitch extends ScheduleSwitch<CodeElt> 
   }
 
   private final Buffer generateDelayedBuffer(Fifo fifo, int iterator) {
-    final Buffer buffer = CodegenFactory.eINSTANCE.createBuffer();
+    final Buffer buffer = CodegenModelUserFactory.eINSTANCE.createBuffer();
 
     // Fill buffer information by looking at the Fifo
     buffer.setName("delay_" + ((AbstractActor) fifo.getSource()).getName() + "_to_"
@@ -360,7 +360,7 @@ public class CodegenClusterModelGeneratorSwitch extends ScheduleSwitch<CodeElt> 
     buffer.setSize(fifo.getSourcePort().getExpression().evaluate());
     this.delayBufferMap.put(fifo, buffer);
     // Build call for fifo initialization
-    FifoCall fifoInit = CodegenFactory.eINSTANCE.createFifoCall();
+    FifoCall fifoInit = CodegenModelUserFactory.eINSTANCE.createFifoCall();
     fifoInit.setHeadBuffer(buffer);
     fifoInit.setOperation(FifoOperation.INIT);
     this.operatorBlock.getInitBlock().getCodeElts().add(fifoInit);
@@ -369,7 +369,7 @@ public class CodegenClusterModelGeneratorSwitch extends ScheduleSwitch<CodeElt> 
   }
 
   private final Buffer generateEndInitBuffer(final InitActor actor) {
-    Buffer pipelineBuffer = CodegenFactory.eINSTANCE.createBuffer();
+    Buffer pipelineBuffer = CodegenModelUserFactory.eINSTANCE.createBuffer();
     Fifo outgoingFifo = actor.getDataOutputPort().getOutgoingFifo();
     pipelineBuffer.setType(outgoingFifo.getType());
     pipelineBuffer.setTypeSize(this.scenario.getSimulationInfo().getDataTypeSizeOrDefault(outgoingFifo.getType()));
@@ -432,8 +432,8 @@ public class CodegenClusterModelGeneratorSwitch extends ScheduleSwitch<CodeElt> 
 
   private final FiniteLoopBlock generateFiniteLoopBlock(final Block toInclude, final int repetition,
       final AbstractActor actor, final boolean parallel) {
-    final FiniteLoopBlock flb = CodegenFactory.eINSTANCE.createFiniteLoopBlock();
-    final IntVar iterator = CodegenFactory.eINSTANCE.createIntVar();
+    final FiniteLoopBlock flb = CodegenModelUserFactory.eINSTANCE.createFiniteLoopBlock();
+    final IntVar iterator = CodegenModelUserFactory.eINSTANCE.createIntVar();
     iterator.setName("index_" + actor.getName());
     // Register the iteration var for that specific actor/cluster
     this.iterMap.put(actor, iterator);
@@ -472,7 +472,7 @@ public class CodegenClusterModelGeneratorSwitch extends ScheduleSwitch<CodeElt> 
     // The last condition about delay prevent to iterate into a delay that is permanent or none-persistant
     if (this.iterMap.containsKey(actor) && !this.delayBufferMap.values().contains(buffer)) {
       IteratedBuffer iteratedBuffer = null;
-      iteratedBuffer = CodegenFactory.eINSTANCE.createIteratedBuffer();
+      iteratedBuffer = CodegenModelUserFactory.eINSTANCE.createIteratedBuffer();
       iteratedBuffer.setBuffer(buffer);
       iteratedBuffer.setIter(this.iterMap.get(actor));
       iteratedBuffer.setSize(dataPort.getExpression().evaluate());
@@ -486,7 +486,7 @@ public class CodegenClusterModelGeneratorSwitch extends ScheduleSwitch<CodeElt> 
 
   private final Buffer generateBuffer(Fifo fifo, int iterator) {
     // Allocate a buffer for each internalFifo
-    final Buffer buffer = CodegenFactory.eINSTANCE.createBuffer();
+    final Buffer buffer = CodegenModelUserFactory.eINSTANCE.createBuffer();
 
     // Fill buffer information by looking at the Fifo
     buffer.setName("mem_" + ((AbstractActor) fifo.getSource()).getName() + "_to_"
@@ -530,7 +530,7 @@ public class CodegenClusterModelGeneratorSwitch extends ScheduleSwitch<CodeElt> 
     final Parameter parameter = ClusteringHelper.getSetterParameter(port);
 
     // Build a constant
-    final Constant constant = CodegenFactory.eINSTANCE.createConstant();
+    final Constant constant = CodegenModelUserFactory.eINSTANCE.createConstant();
     constant.setValue(parameter.getExpression().evaluate());
 
     // Set variable name to argument name
@@ -573,7 +573,7 @@ public class CodegenClusterModelGeneratorSwitch extends ScheduleSwitch<CodeElt> 
       }
 
       // Create function call
-      final FunctionCall functionCall = CodegenFactory.eINSTANCE.createFunctionCall();
+      final FunctionCall functionCall = CodegenModelUserFactory.eINSTANCE.createFunctionCall();
       functionCall.setActorName(actor.getName());
 
       // Retrieve function argument
