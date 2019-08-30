@@ -47,7 +47,7 @@ public class ActorBlockTest {
 
   @Test
   public void testConstruct() {
-    final ActorBlock actor = CodegenModelUserFactory.createActorBlock();
+    final ActorBlock actor = CodegenModelUserFactory.eINSTANCE.createActorBlock();
     Assert.assertNotNull(actor);
     final EList<CodeElt> codeElts = actor.getCodeElts();
     Assert.assertNotNull(codeElts);

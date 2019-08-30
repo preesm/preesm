@@ -57,7 +57,6 @@ import org.preesm.codegen.model.ActorFunctionCall;
 import org.preesm.codegen.model.Block;
 import org.preesm.codegen.model.Buffer;
 import org.preesm.codegen.model.Call;
-import org.preesm.codegen.model.CodegenFactory;
 import org.preesm.codegen.model.Constant;
 import org.preesm.codegen.model.CoreBlock;
 import org.preesm.codegen.model.SpecialCall;
@@ -181,7 +180,7 @@ public class CodegenModelGenerator2 {
 
     @Override
     public Boolean caseLogicalBuffer(final LogicalBuffer logicalBuffer) {
-      final SubBuffer subBuffer = CodegenFactory.eINSTANCE.createSubBuffer();
+      final SubBuffer subBuffer = CodegenModelUserFactory.eINSTANCE.createSubBuffer();
       subBuffer.setSize(logicalBuffer.getSize());
       subBuffer.setOffset(logicalBuffer.getOffset());
 
@@ -204,7 +203,7 @@ public class CodegenModelGenerator2 {
 
     @Override
     public Boolean casePhysicalBuffer(final PhysicalBuffer phys) {
-      final Buffer mainBuffer = CodegenFactory.eINSTANCE.createBuffer();
+      final Buffer mainBuffer = CodegenModelUserFactory.eINSTANCE.createBuffer();
       mainBuffer.setSize(phys.getSize());
       mainBuffer.setName("Shared_" + phys.getMemory().getHardwareId());
       mainBuffer.setType("char");
@@ -236,7 +235,7 @@ public class CodegenModelGenerator2 {
     // 0- init blocks
     final EList<ComponentInstance> cmps = this.archi.getOperatorComponentInstances();
     for (final ComponentInstance cmp : cmps) {
-      final CoreBlock createCoreBlock = CodegenModelUserFactory.createCoreBlock(cmp);
+      final CoreBlock createCoreBlock = CodegenModelUserFactory.eINSTANCE.createCoreBlock(cmp);
       coreBlocks.put(cmp, createCoreBlock);
     }
 
@@ -290,7 +289,7 @@ public class CodegenModelGenerator2 {
         // If the main operator does not exist
         if (mainOperatorBlock == null) {
           // Create it
-          mainOperatorBlock = CodegenModelUserFactory.createCoreBlock(null);
+          mainOperatorBlock = CodegenModelUserFactory.eINSTANCE.createCoreBlock(null);
           final ComponentInstance componentInstance = this.archi.getComponentInstance(correspondingOperatorID);
           mainOperatorBlock.setName(componentInstance.getInstanceName());
           mainOperatorBlock.setCoreType(componentInstance.getComponent().getVlnv().getName());
@@ -384,7 +383,7 @@ public class CodegenModelGenerator2 {
     if (actor instanceof InitActor || actor instanceof EndActor) {
       // nothing
     } else {
-      final SpecialCall f = CodegenFactory.eINSTANCE.createSpecialCall();
+      final SpecialCall f = CodegenModelUserFactory.eINSTANCE.createSpecialCall();
       f.setName(actor.getName());
 
       final Fifo uniqueFifo;
@@ -439,12 +438,12 @@ public class CodegenModelGenerator2 {
     if (refinement instanceof CHeaderRefinement) {
       final FunctionPrototype initPrototype = ((CHeaderRefinement) refinement).getInitPrototype();
       if (initPrototype != null) {
-        final ActorFunctionCall init = CodegenModelUserFactory.createActorFunctionCall(actor, initPrototype,
+        final ActorFunctionCall init = CodegenModelUserFactory.eINSTANCE.createActorFunctionCall(actor, initPrototype,
             portToVariable);
         coreBlock.getInitBlock().getCodeElts().add(init);
       }
       final FunctionPrototype loopPrototype = ((CHeaderRefinement) refinement).getLoopPrototype();
-      final ActorFunctionCall loop = CodegenModelUserFactory.createActorFunctionCall(actor, loopPrototype,
+      final ActorFunctionCall loop = CodegenModelUserFactory.eINSTANCE.createActorFunctionCall(actor, loopPrototype,
           portToVariable);
       coreBlock.getLoopBlock().getCodeElts().add(loop);
     }
@@ -461,7 +460,7 @@ public class CodegenModelGenerator2 {
         final ISetter setter = cip.getIncomingDependency().getSetter();
         if (setter instanceof Parameter) {
           final long evaluate = ((Parameter) setter).getValueExpression().evaluate();
-          portToVariable.put(cip, CodegenModelUserFactory.createConstant(cip.getName(), evaluate));
+          portToVariable.put(cip, CodegenModelUserFactory.eINSTANCE.createConstant(cip.getName(), evaluate));
         } else {
           throw new PreesmRuntimeException();
         }

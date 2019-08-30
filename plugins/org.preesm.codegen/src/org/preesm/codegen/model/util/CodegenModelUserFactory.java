@@ -38,14 +38,31 @@ import java.util.Map;
 import org.eclipse.emf.common.util.EList;
 import org.preesm.codegen.model.ActorBlock;
 import org.preesm.codegen.model.ActorFunctionCall;
+import org.preesm.codegen.model.Call;
 import org.preesm.codegen.model.CallBlock;
-import org.preesm.codegen.model.CodegenFactory;
+import org.preesm.codegen.model.CodegenPackage;
+import org.preesm.codegen.model.Communication;
 import org.preesm.codegen.model.Constant;
 import org.preesm.codegen.model.CoreBlock;
+import org.preesm.codegen.model.DataTransferAction;
+import org.preesm.codegen.model.DistributedMemoryCommunication;
+import org.preesm.codegen.model.FifoCall;
+import org.preesm.codegen.model.FpgaLoadAction;
+import org.preesm.codegen.model.FreeDataTransferBuffer;
+import org.preesm.codegen.model.FunctionCall;
+import org.preesm.codegen.model.GlobalBufferDeclaration;
 import org.preesm.codegen.model.LoopBlock;
 import org.preesm.codegen.model.NullBuffer;
+import org.preesm.codegen.model.OutputDataTransfer;
+import org.preesm.codegen.model.PapifyFunctionCall;
 import org.preesm.codegen.model.PortDirection;
+import org.preesm.codegen.model.RegisterSetUpAction;
+import org.preesm.codegen.model.SharedMemoryCommunication;
+import org.preesm.codegen.model.SpecialCall;
 import org.preesm.codegen.model.Variable;
+import org.preesm.codegen.model.impl.CallImpl;
+import org.preesm.codegen.model.impl.CodegenFactoryImpl;
+import org.preesm.commons.ecore.EObjectResolvingNonUniqueEList;
 import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.preesm.commons.model.PreesmCopyTracker;
 import org.preesm.model.pisdf.Actor;
@@ -61,21 +78,21 @@ import org.preesm.model.slam.ComponentInstance;
  * @author anmorvan
  *
  */
-public class CodegenModelUserFactory {
+public class CodegenModelUserFactory extends CodegenFactoryImpl {
 
   private CodegenModelUserFactory() {
     // Not meant to be instantiated: use static methods.
   }
 
-  private static final CodegenFactory factory = CodegenFactory.eINSTANCE;
+  public static final CodegenModelUserFactory eINSTANCE = new CodegenModelUserFactory();
 
   /**
    *
    */
-  public static final CoreBlock createCoreBlock(final ComponentInstance cmp) {
-    final CoreBlock coreBlock = factory.createCoreBlock();
-    final CallBlock initBlock = CodegenFactory.eINSTANCE.createCallBlock();
-    final LoopBlock loopBlock = CodegenFactory.eINSTANCE.createLoopBlock();
+  public final CoreBlock createCoreBlock(final ComponentInstance cmp) {
+    final CoreBlock coreBlock = super.createCoreBlock();
+    final CallBlock initBlock = super.createCallBlock();
+    final LoopBlock loopBlock = super.createLoopBlock();
     coreBlock.setInitBlock(initBlock);
     coreBlock.setLoopBlock(loopBlock);
     coreBlock.getCodeElts().add(initBlock);
@@ -92,8 +109,8 @@ public class CodegenModelUserFactory {
   /**
    *
    */
-  public static final Constant createConstant(final String name, final long value) {
-    final Constant res = factory.createConstant();
+  public final Constant createConstant(final String name, final long value) {
+    final Constant res = super.createConstant();
     res.setType("long");
     res.setName(name);
     res.setValue(value);
@@ -103,9 +120,65 @@ public class CodegenModelUserFactory {
   /**
    *
    */
-  public static final ActorFunctionCall createActorFunctionCall(final Actor actor, final FunctionPrototype prototype,
+  public final PortDirection createPortDirection(final PortKind direction) {
+    switch (direction) {
+      case CFG_INPUT:
+        return PortDirection.NONE;
+      case DATA_INPUT:
+        return PortDirection.INPUT;
+      case DATA_OUTPUT:
+        return PortDirection.OUTPUT;
+      case CFG_OUTPUT:
+      default:
+        throw new PreesmRuntimeException();
+    }
+  }
+
+  /**
+   *
+   */
+  public final PortDirection createPortDirection(final Direction direction) {
+    switch (direction) {
+      case IN:
+        return PortDirection.INPUT;
+      case OUT:
+        return PortDirection.OUTPUT;
+      default:
+        return PortDirection.NONE;
+    }
+  }
+
+  /**
+   *
+   */
+  @Override
+  public final ActorBlock createActorBlock() {
+    final ActorBlock actorBlock = super.createActorBlock();
+    final CallBlock initBlock = super.createCallBlock();
+    final LoopBlock loopBlock = super.createLoopBlock();
+    actorBlock.setInitBlock(initBlock);
+    actorBlock.setLoopBlock(loopBlock);
+    actorBlock.getCodeElts().add(initBlock);
+    actorBlock.getCodeElts().add(loopBlock);
+    return actorBlock;
+  }
+
+  /**
+   *
+   */
+  @Override
+  public final NullBuffer createNullBuffer() {
+    final NullBuffer nullBuffer = super.createNullBuffer();
+    nullBuffer.setName("NULL");
+    return nullBuffer;
+  }
+
+  /**
+   *
+   */
+  public final ActorFunctionCall createActorFunctionCall(final Actor actor, final FunctionPrototype prototype,
       final Map<Port, Variable> portValues) {
-    final ActorFunctionCall afc = factory.createActorFunctionCall();
+    final ActorFunctionCall afc = createActorFunctionCall();
     afc.setActorName(actor.getName());
     afc.setName(prototype.getName());
     afc.setOriginalVertexPath(PreesmCopyTracker.getOriginalSource(actor).getVertexPath());
@@ -123,57 +196,108 @@ public class CodegenModelUserFactory {
     return afc;
   }
 
-  /**
-   *
-   */
-  public static final PortDirection createPortDirection(final PortKind direction) {
-    switch (direction) {
-      case CFG_INPUT:
-        return PortDirection.NONE;
-      case DATA_INPUT:
-        return PortDirection.INPUT;
-      case DATA_OUTPUT:
-        return PortDirection.OUTPUT;
-      case CFG_OUTPUT:
-      default:
-        throw new PreesmRuntimeException();
-    }
+  @Override
+  public ActorFunctionCall createActorFunctionCall() {
+    final ActorFunctionCall res = super.createActorFunctionCall();
+    initCall(res);
+    return res;
   }
 
-  /**
-   *
-   */
-  public static final PortDirection createPortDirection(final Direction direction) {
-    switch (direction) {
-      case IN:
-        return PortDirection.INPUT;
-      case OUT:
-        return PortDirection.OUTPUT;
-      default:
-        return PortDirection.NONE;
-    }
+  @Override
+  public Communication createCommunication() {
+    final Communication res = super.createCommunication();
+    initCall(res);
+    return res;
   }
 
-  /**
-   *
-   */
-  public static final ActorBlock createActorBlock() {
-    final ActorBlock actorBlock = factory.createActorBlock();
-    final CallBlock initBlock = CodegenFactory.eINSTANCE.createCallBlock();
-    final LoopBlock loopBlock = CodegenFactory.eINSTANCE.createLoopBlock();
-    actorBlock.setInitBlock(initBlock);
-    actorBlock.setLoopBlock(loopBlock);
-    actorBlock.getCodeElts().add(initBlock);
-    actorBlock.getCodeElts().add(loopBlock);
-    return actorBlock;
+  @Override
+  public DistributedMemoryCommunication createDistributedMemoryCommunication() {
+    final DistributedMemoryCommunication res = super.createDistributedMemoryCommunication();
+    initCall(res);
+    return res;
   }
 
-  /**
-   *
-   */
-  public static final NullBuffer createNullBuffer() {
-    final NullBuffer nullBuffer = factory.createNullBuffer();
-    nullBuffer.setName("NULL");
-    return nullBuffer;
+  @Override
+  public SharedMemoryCommunication createSharedMemoryCommunication() {
+    final SharedMemoryCommunication res = super.createSharedMemoryCommunication();
+    initCall(res);
+    return res;
   }
+
+  @Override
+  public FifoCall createFifoCall() {
+    final FifoCall res = super.createFifoCall();
+    initCall(res);
+    return res;
+  }
+
+  @Override
+  public DataTransferAction createDataTransferAction() {
+    final DataTransferAction res = super.createDataTransferAction();
+    initCall(res);
+    return res;
+  }
+
+  @Override
+  public FunctionCall createFunctionCall() {
+    final FunctionCall res = super.createFunctionCall();
+    initCall(res);
+    return res;
+  }
+
+  @Override
+  public FpgaLoadAction createFpgaLoadAction() {
+    final FpgaLoadAction res = super.createFpgaLoadAction();
+    initCall(res);
+    return res;
+  }
+
+  @Override
+  public FreeDataTransferBuffer createFreeDataTransferBuffer() {
+    final FreeDataTransferBuffer res = super.createFreeDataTransferBuffer();
+    initCall(res);
+    return res;
+  }
+
+  @Override
+  public GlobalBufferDeclaration createGlobalBufferDeclaration() {
+    final GlobalBufferDeclaration res = super.createGlobalBufferDeclaration();
+    initCall(res);
+    return res;
+  }
+
+  @Override
+  public OutputDataTransfer createOutputDataTransfer() {
+    final OutputDataTransfer res = super.createOutputDataTransfer();
+    initCall(res);
+    return res;
+  }
+
+  @Override
+  public PapifyFunctionCall createPapifyFunctionCall() {
+    final PapifyFunctionCall res = super.createPapifyFunctionCall();
+    initCall(res);
+    return res;
+  }
+
+  @Override
+  public RegisterSetUpAction createRegisterSetUpAction() {
+    final RegisterSetUpAction res = super.createRegisterSetUpAction();
+    initCall(res);
+    return res;
+  }
+
+  @Override
+  public SpecialCall createSpecialCall() {
+    final SpecialCall res = super.createSpecialCall();
+    initCall(res);
+    return res;
+  }
+
+  private void initCall(Call res) {
+    final EObjectResolvingNonUniqueEList<Variable> newValue = new EObjectResolvingNonUniqueEList<>(Variable.class,
+        (CallImpl) res, CodegenPackage.CALL__PARAMETERS);
+    res.eSet(CodegenPackage.eINSTANCE.getCall_Parameters(), newValue);
+  }
+
 }
