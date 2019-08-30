@@ -99,7 +99,7 @@ public class Clustering extends AbstractTaskImplementation {
       // Printing
       String str = "Schedule for cluster " + entry.getKey().getName() + ":";
       PreesmLogger.getLogger().log(Level.INFO, str);
-      str = schedule.shortPrint(false);
+      str = schedule.shortPrint();
       PreesmLogger.getLogger().log(Level.INFO, str);
       str = "Estimated memory space needed: " + ClusteringHelper.getMemorySpaceNeededFor(schedule) + " bytes";
       PreesmLogger.getLogger().log(Level.INFO, str);

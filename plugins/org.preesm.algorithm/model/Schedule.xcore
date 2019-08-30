@@ -46,7 +46,7 @@
 package org.preesm.algorithm.schedule.model
 
 import org.preesm.model.pisdf.AbstractActor
-import org.eclipse.emf.common.util.ECollections
+import org.preesm.algorithm.synthesis.schedule.SchedulePrinterSwitch
 
 // !!! This is needed as of the current versions of xcore/xtext
 // For some reason when using the default String/... (i.e. without the following)
@@ -105,16 +105,11 @@ interface Schedule {
 	 */
 	op boolean isParallel()
 	/*
-	 * Returns whether there is data parallelism (i.e. the same processing is done on different chunks
-	 * of data).
-	 */
-	op boolean isDataParallel() {
-		return isParallel && children.size == 1
-	}
-	/*
 	 * returns a String representing the schedule informally.
 	 */
-	op String shortPrint(boolean parallel)
+	op String shortPrint() {
+		return SchedulePrinterSwitch.print(this)
+	}
 	/*
 	 * Return true if the schedule is linked with an actor. This is the case when applying clustering, where
 	 * the attached actor of a HierarchicalSchedule is the clustered subraph.
@@ -182,27 +177,6 @@ interface ActorSchedule extends Schedule {
 	op AbstractActor[] getActors() {
 		return actorList.unmodifiableEList
 	}
-	op String shortPrint(boolean parallel) {
-		val StringBuilder toPrint = new StringBuilder()
-		// Print sequential operator
-		if (getRepetition() > 1) {
-			toPrint.append(getRepetition())
-			if (isParallel) {
-				toPrint.append("/")
-			}
-			toPrint.append("(")
-		}
-
-		toPrint.append(actors.map[it.getName()].join(""))
-
-		if (getRepetition() > 1) {
-			toPrint.append(")")
-		}
-		return toPrint.toString()
-	}
-	op Schedule[] getChildren() {
-		return ECollections.emptyEList
-	}
 }
 
 /*
@@ -228,22 +202,6 @@ class ParallelActorSchedule extends ActorSchedule, ParallelSchedule {
  * sequential, in the order of apparition in the list.
  */
 class SequentialHiearchicalSchedule extends HierarchicalSchedule, SequentialSchedule {
-	op String shortPrint(boolean parallel) {
-		val StringBuilder toPrint = new StringBuilder()
-		// Print sequential operator
-		if (getRepetition() > 1) {
-			if (parallel) {
-				toPrint.append(getRepetition() + "/(")
-			} else {
-				toPrint.append(getRepetition() + "(")
-			}
-		}
-		toPrint.append(children.map[it.shortPrint(false)].join("*"))
-		if (getRepetition() > 1) {
-			toPrint.append(")")
-		}
-		return toPrint.toString()
-	}
 }
 
 /*
@@ -251,16 +209,6 @@ class SequentialHiearchicalSchedule extends HierarchicalSchedule, SequentialSche
  * simultaneous (i.e. parallel).
  */
 class ParallelHiearchicalSchedule extends HierarchicalSchedule, ParallelSchedule {
-	op String shortPrint(boolean parallel) {
-		val StringBuilder toPrint = new StringBuilder()
-		// Print sequential operator
-		if (getRepetition() > 1) {
-			toPrint.append(getRepetition() + "/")
-		}
-		val String join = children.map[it.shortPrint(true)].join("|");
-		toPrint.append("(" + join + ")")
-		return toPrint.toString()
-	}
 }
 
 /*
