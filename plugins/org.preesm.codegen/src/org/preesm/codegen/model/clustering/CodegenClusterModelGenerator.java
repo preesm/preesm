@@ -180,7 +180,7 @@ public class CodegenClusterModelGenerator {
 
     // Check if it a data parallelism exhibition node or a standard hierarchical schedule
     if (!inputSchedule.hasAttachedActor()) {
-      if (inputSchedule.isDataParallel()) {
+      if (inputSchedule.isParallel() && inputSchedule.getChildren().size() == 1) {
         scheduleTree = (HierarchicalSchedule) inputSchedule.getChildren().get(0);
         parallel = true;
       } else {
@@ -197,7 +197,7 @@ public class CodegenClusterModelGenerator {
     // Build and fill ClusterBlock attributes
     final ClusterBlock clusterBlock = CodegenFactory.eINSTANCE.createClusterBlock();
     clusterBlock.setName(clusterGraph.getName());
-    clusterBlock.setSchedule(scheduleTree.shortPrint(false));
+    clusterBlock.setSchedule(scheduleTree.shortPrint());
     clusterBlock.setParallel(scheduleTree.isParallel());
 
     // If the cluster has to be repeated few times, build a FiniteLoopBlock
