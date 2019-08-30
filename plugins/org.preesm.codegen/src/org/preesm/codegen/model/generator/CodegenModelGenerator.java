@@ -133,7 +133,7 @@ import org.preesm.codegen.model.SpecialCall;
 import org.preesm.codegen.model.SpecialType;
 import org.preesm.codegen.model.SubBuffer;
 import org.preesm.codegen.model.Variable;
-import org.preesm.codegen.model.clustering.CodegenClusterModelGenerator;
+import org.preesm.codegen.model.clustering.CodegenClusterModelGeneratorSwitch;
 import org.preesm.codegen.model.clustering.SrDAGOutsideFetcher;
 import org.preesm.codegen.model.util.CodegenModelUserFactory;
 import org.preesm.commons.exceptions.PreesmRuntimeException;
@@ -629,9 +629,8 @@ public class CodegenModelGenerator extends AbstractCodegenModelGenerator {
       AbstractActor actor = dagVertex.getPropertyBean().getValue(Clustering.PISDF_REFERENCE_ACTOR);
       AbstractActor originalActor = PreesmCopyTracker.getSource(actor);
       if (this.scheduleMapping.containsKey(originalActor)) {
-        CodegenClusterModelGenerator clusterGenerator = new CodegenClusterModelGenerator(operatorBlock,
-            this.scheduleMapping.get(originalActor), scenario, new SrDAGOutsideFetcher(), outsideFetcherOption);
-        clusterGenerator.generate();
+        new CodegenClusterModelGeneratorSwitch(operatorBlock, scenario, new SrDAGOutsideFetcher(), outsideFetcherOption)
+            .generate(this.scheduleMapping.get(originalActor));
       } else {
         throw new PreesmRuntimeException("Codegen for " + dagVertex.getName() + " failed.");
       }
