@@ -564,7 +564,7 @@ class CPrinter extends DefaultPrinter {
 			CPU_ZERO(&cpuset);
 			CPU_SET(_PREESM_MAIN_THREAD_, &cpuset);
 			«IF this.apolloEnabled»
-			#ifndef PREESM_APOLLO_ENABLED
+			#ifndef APOLLO_AVAILABLE
 			«ENDIF»
 			sched_setaffinity(getpid(),  sizeof(cpuset), &cpuset);
 			«IF this.apolloEnabled»
@@ -598,11 +598,7 @@ class CPrinter extends DefaultPrinter {
 			
 			«IF this.apolloEnabled»
 			#ifdef APOLLO_AVAILABLE
-				#ifdef PREESM_APOLLO_ENABLED
 				initApolloForDataflow();
-				#else
-				disableApollo();
-				#endif
 			#endif
 			«ENDIF»
 
@@ -651,7 +647,7 @@ class CPrinter extends DefaultPrinter {
 
 	override printFunctionCall(FunctionCall functionCall) '''
 	«IF this.apolloEnabled»
-	#ifdef PREESM_APOLLO_ENABLED
+	#ifdef APOLLO_AVAILABLE
 	apolloAddActorConfig(0, pthread_self(), "«functionCall.actorName»");
 	#endif
 	«ENDIF»

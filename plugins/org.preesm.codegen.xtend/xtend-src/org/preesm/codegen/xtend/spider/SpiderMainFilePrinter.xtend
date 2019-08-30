@@ -176,6 +176,11 @@ class SpiderMainFilePrinter {
 		«ENDIF»
 		
 		/* == Apollo optimization == */
+		#ifdef APOLLO_COMPILATION
+			cfg.apolloCompiled = true;
+		#else
+			cfg.apolloCompiled = false;
+		#endif
 		«IF spiderConfig.useOfApollo»
 			cfg.apolloEnabled = true;
 		«ELSE»
