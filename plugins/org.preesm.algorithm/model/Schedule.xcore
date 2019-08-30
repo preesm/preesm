@@ -45,8 +45,8 @@
 @Ecore(nsURI="http://org.preesm/algos/schedule")
 package org.preesm.algorithm.schedule.model
 
-import org.preesm.model.pisdf.AbstractActor
 import org.preesm.algorithm.synthesis.schedule.SchedulePrinterSwitch
+import org.preesm.model.pisdf.AbstractActor
 import org.preesm.model.pisdf.Fifo
 import org.preesm.model.pisdf.SpecialActor
 import org.preesm.model.slam.ComponentInstance
@@ -251,27 +251,52 @@ abstract class CommunicationActor extends SpecialActor {
 }
 
 abstract class SendActor extends CommunicationActor {
-	// optional enable to delegate the copy to (DMA, ...)
-	refers ComponentInstance snedEnabler
+	op ComponentInstance getSendEnabler()
+}
+class SendStartActor extends SendActor {
+	// to track when com ends
+	refers SendEndActor sendEnd opposite sendStart
 
-	refers ReceiveActor receive opposite send
+	// to track to who data is sent
+	refers ReceiveEndActor targetReceiveEnd opposite sourceSendStart
+
+	// optional enable to delegate the copy to (DMA, ...)
+	refers ComponentInstance sendEnabler
 }
-class SendStartActor extends CommunicationActor {
-}
-class SendEndActor extends CommunicationActor {
+class SendEndActor extends SendActor {
+	// to track when com started
+	refers SendStartActor sendStart opposite sendEnd
+
+	// start & end have same enabler
+	op ComponentInstance getSendEnabler() {
+		return sendStart.sendEnabler
+	}
 }
 
 abstract class ReceiveActor extends CommunicationActor {
+	op ComponentInstance getReceiveEnabler()
+}
+class ReceiveStartActor extends ReceiveActor {
+	// to track when com ends
+	refers ReceiveEndActor receiveEnd opposite receiveStart
+
 	// optional enable to delegate the copy to (DMA, ...)
 	refers ComponentInstance receiveEnabler
+}
+class ReceiveEndActor extends ReceiveActor {
+	// to track who sent
+	refers SendStartActor sourceSendStart opposite targetReceiveEnd
 
-	refers SendActor send opposite receive
-}
-class ReceiveStartActor extends CommunicationActor {
-}
-class ReceiveEndActor extends CommunicationActor {
+	// to track when com started
+	refers ReceiveStartActor receiveStart opposite receiveEnd
+
+	// start & end have same enabler
+	op ComponentInstance getReceiveEnabler() {
+		return receiveStart.receiveEnabler
+	}
 }
 
 // Receive then Send. Atomic: simplifies allocation.
-class ForwardActor extends ReceiveActor, SendActor {
+class ForwardActor extends SendEndActor, SendStartActor, ReceiveStartActor, ReceiveEndActor {
 }
+
