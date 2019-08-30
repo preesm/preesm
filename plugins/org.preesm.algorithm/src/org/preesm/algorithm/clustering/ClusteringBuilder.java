@@ -70,6 +70,7 @@ import org.preesm.model.pisdf.brv.PiBRV;
 import org.preesm.model.pisdf.check.PiGraphConsistenceChecker;
 import org.preesm.model.pisdf.factory.PiMMUserFactory;
 import org.preesm.model.scenario.Scenario;
+import org.preesm.model.slam.Component;
 import org.preesm.model.slam.ComponentInstance;
 
 /**
@@ -196,6 +197,17 @@ public class ClusteringBuilder {
 
     // Limit parallelism at the first layer
     scheduleTransform(new ScheduleParallelismDepthLimiter(1));
+
+    // Set timing information
+    for (Entry<AbstractActor, Schedule> entry : this.scheduleMapping.entrySet()) {
+      AbstractActor actor = entry.getKey();
+      HierarchicalSchedule schedule = (HierarchicalSchedule) entry.getValue();
+      for (ComponentInstance componentInstance : this.scenario.getPossibleMappings(entry.getKey())) {
+        Component component = componentInstance.getComponent();
+        this.scenario.getTimings().setTiming(actor, component,
+            ClusteringHelper.getExecutionTimeOf(schedule, this.scenario, component));
+      }
+    }
 
     // Verify consistency of result graph
     PiGraphConsistenceChecker.check(this.pigraph);
