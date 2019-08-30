@@ -5,8 +5,8 @@ PREESM Changelog
 *XXXX.XX.XX*
 
 ### New Feature
-- Codegen:
-  - clusters can now be printed by using CodegenClusterTask
+* Codegen:
+  * clusters can now be printed by using CodegenClusterTask
 
 ### Changes
 * PiSDF: PiGraph can be declared as a cluster. Hierarchy of cluster may be ignore by SR and DAG transformation.
