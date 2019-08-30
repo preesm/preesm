@@ -24,15 +24,16 @@ Bundle-ActivationPolicy: lazy
 Export-Package: org.preesm.commons,
  org.preesm.commons.doc.annotations,
  org.preesm.commons.doc.generators,
+ org.preesm.commons.ecore,
  org.preesm.commons.exceptions,
  org.preesm.commons.files,
+ org.preesm.commons.graph,
+ org.preesm.commons.graph.impl,
+ org.preesm.commons.graph.util,
  org.preesm.commons.logger,
  org.preesm.commons.math,
  org.preesm.commons.math.functions,
  org.preesm.commons.messages,
- org.preesm.commons.model,
- org.preesm.commons.graph,
- org.preesm.commons.graph.impl,
- org.preesm.commons.graph.util
+ org.preesm.commons.model
 Bundle-Activator: org.preesm.commons.PreesmPlugin
 

@@ -270,7 +270,7 @@ class MPPA2ClusterPrinter extends DefaultPrinter {
 			if(local_offset > local_buffer_size)
 				local_buffer_size = local_offset
 	gets}»
-			
+
 			'''
 
 	override printFiniteLoopBlockFooter(FiniteLoopBlock block2) '''
@@ -576,7 +576,7 @@ class MPPA2ClusterPrinter extends DefaultPrinter {
 	 *            the type of objects copied
 	 * @return a {@link CharSequence} containing the memcpy call (if any)
 	 */
-	def printMemcpy(Buffer output, long outOffset, Buffer input, long inOffset, long size, String type) {
+	def CharSequence printMemcpy(Buffer output, long outOffset, Buffer input, long inOffset, long size, String type) {
 
 		// Retrieve the container buffer of the input and output as well
 		// as their offset in this buffer

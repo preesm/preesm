@@ -80,7 +80,6 @@ import org.preesm.codegen.model.Buffer;
 import org.preesm.codegen.model.BufferIterator;
 import org.preesm.codegen.model.Call;
 import org.preesm.codegen.model.CodeElt;
-import org.preesm.codegen.model.CodegenFactory;
 import org.preesm.codegen.model.CodegenPackage;
 import org.preesm.codegen.model.Communication;
 import org.preesm.codegen.model.Constant;
@@ -99,6 +98,7 @@ import org.preesm.codegen.model.SpecialCall;
 import org.preesm.codegen.model.SpecialType;
 import org.preesm.codegen.model.SubBuffer;
 import org.preesm.codegen.model.Variable;
+import org.preesm.codegen.model.util.CodegenModelUserFactory;
 import org.preesm.commons.exceptions.PreesmException;
 import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.preesm.commons.logger.PreesmLogger;
@@ -287,9 +287,9 @@ public class CodegenHierarchicalModelGenerator {
               final Prototype loopPrototype = prototypes.getLoopPrototype();
               final long vertexRep = current.getRepeat();
               // create code elements and setup them
-              final FunctionCall repFunc = CodegenFactory.eINSTANCE.createFunctionCall();
-              final FiniteLoopBlock forLoop = CodegenFactory.eINSTANCE.createFiniteLoopBlock();
-              final IntVar var = CodegenFactory.eINSTANCE.createIntVar();
+              final FunctionCall repFunc = CodegenModelUserFactory.eINSTANCE.createFunctionCall();
+              final FiniteLoopBlock forLoop = CodegenModelUserFactory.eINSTANCE.createFiniteLoopBlock();
+              final IntVar var = CodegenModelUserFactory.eINSTANCE.createIntVar();
               var.setName(iteratorIndex);
               forLoop.setIter(var);
               forLoop.setNbIter((int) vertexRep);
@@ -333,8 +333,8 @@ public class CodegenHierarchicalModelGenerator {
             final SDFAbstractVertex repVertexCallVar = resultGraph
                 .getVertex(((ClustVertex) current).getVertex().getName());
             final String iteratorIndex = "iteratorIndex" + Integer.toString(forLoopIter++);
-            final FiniteLoopBlock forLoop = CodegenFactory.eINSTANCE.createFiniteLoopBlock();
-            final IntVar var = CodegenFactory.eINSTANCE.createIntVar();
+            final FiniteLoopBlock forLoop = CodegenModelUserFactory.eINSTANCE.createFiniteLoopBlock();
+            final IntVar var = CodegenModelUserFactory.eINSTANCE.createIntVar();
             final long vertexRep = current.getRepeat();
             var.setName(iteratorIndex);
             forLoop.setIter(var);
@@ -354,8 +354,8 @@ public class CodegenHierarchicalModelGenerator {
           // clust Sequence ForLoop only
         } else if (current instanceof ClustSequence && current.getRepeat() != 1) {
           final String iteratorIndex = "clustSeqIteratorIndex" + Integer.toString(forLoopIter++);
-          final FiniteLoopBlock forLoop = CodegenFactory.eINSTANCE.createFiniteLoopBlock();
-          final IntVar var = CodegenFactory.eINSTANCE.createIntVar();
+          final FiniteLoopBlock forLoop = CodegenModelUserFactory.eINSTANCE.createFiniteLoopBlock();
+          final IntVar var = CodegenModelUserFactory.eINSTANCE.createIntVar();
           var.setName(iteratorIndex);
           forLoop.setIter(var);
           forLoop.setNbIter((int) current.getRepeat());
@@ -419,7 +419,7 @@ public class CodegenHierarchicalModelGenerator {
     // Retrieve the Variable corresponding to the arguments of the prototype
     // This loop manages only buffers (data buffer and NOT parameters)
     for (final CodeGenArgument arg : prototype.getArguments().keySet()) {
-      final IntVar currentIterVar = CodegenFactory.eINSTANCE.createIntVar();
+      final IntVar currentIterVar = CodegenModelUserFactory.eINSTANCE.createIntVar();
       currentIterVar.setName(iterVar.getName());
 
       PortDirection dir = null;
@@ -537,7 +537,7 @@ public class CodegenHierarchicalModelGenerator {
         final SubBuffer workingMemBuf = (SubBuffer) this.linkHSDFVertexBuffer.get(dagVertex);
         SubBuffer buf = (SubBuffer) this.linkHSDFEdgeBuffer.get(currentEdge);
         if (buf == null) {
-          buf = CodegenFactory.eINSTANCE.createSubBuffer();
+          buf = CodegenModelUserFactory.eINSTANCE.createSubBuffer();
           buf.setName(workingMemBuf.getName() + "_" + Integer.toString(this.currentWorkingMemOffset));
           buf.reaffectContainer(workingMemBuf);
           buf.setOffset(this.currentWorkingMemOffset);
@@ -552,7 +552,7 @@ public class CodegenHierarchicalModelGenerator {
         var = buf;
       }
 
-      final BufferIterator bufIter = CodegenFactory.eINSTANCE.createBufferIterator();
+      final BufferIterator bufIter = CodegenModelUserFactory.eINSTANCE.createBufferIterator();
       if (var == null) {
         throw new PreesmRuntimeException(
             "Edge connected to " + arg.getDirection() + " port " + arg.getName() + " of DAG Actor " + dagVertex
@@ -610,7 +610,7 @@ public class CodegenHierarchicalModelGenerator {
             "Actor " + sdfVertex + " has no match for parameter " + param.getName() + " declared in the IDL.");
       }
 
-      final Constant constant = CodegenFactory.eINSTANCE.createConstant();
+      final Constant constant = CodegenModelUserFactory.eINSTANCE.createConstant();
       constant.setName(param.getName());
       try {
         constant.setValue(actorParam.longValue());
@@ -642,7 +642,7 @@ public class CodegenHierarchicalModelGenerator {
     final boolean isOutputActor = outputRepVertexs.contains(repVertex);
     p("generateRepeatedSpecialCall " + repVertex.getName() + " isInputActor: " + isInputActor + " isOutputActor: "
         + isOutputActor);
-    final SpecialCall f = CodegenFactory.eINSTANCE.createSpecialCall();
+    final SpecialCall f = CodegenModelUserFactory.eINSTANCE.createSpecialCall();
     final String vertexType = repVertex.getPropertyStringValue(AbstractVertex.KIND_LITERAL);
     f.setName(repVertex.getName());
     if (repVertex instanceof SDFRoundBufferVertex) {
@@ -715,7 +715,7 @@ public class CodegenHierarchicalModelGenerator {
           } else {
             bufSize = currentEdge.getProd().longValue() * rep;
           }
-          buf = CodegenFactory.eINSTANCE.createSubBuffer();
+          buf = CodegenModelUserFactory.eINSTANCE.createSubBuffer();
           buf.setName(workingMemBuf.getName() + "_" + Integer.toString(this.currentWorkingMemOffset));
           buf.reaffectContainer(workingMemBuf);
           buf.setOffset(this.currentWorkingMemOffset);
@@ -759,8 +759,8 @@ public class CodegenHierarchicalModelGenerator {
   private void papifyStartingFunctions(CoreBlock operatorBlock, DAGVertex dagVertex, FiniteLoopBlock forLoop,
       SDFVertex repVertex) {
 
-    PapifyAction papifyActionS = CodegenFactory.eINSTANCE.createPapifyAction();
-    Constant papifyPEId = CodegenFactory.eINSTANCE.createConstant();
+    PapifyAction papifyActionS = CodegenModelUserFactory.eINSTANCE.createPapifyAction();
+    Constant papifyPEId = CodegenModelUserFactory.eINSTANCE.createConstant();
     // Check if this actor has a monitoring configuration
     PapifyConfig papifyConfig = this.scenario.getPapifyConfig();
     AbstractActor referencePiVertex = repVertex.getReferencePiVertex();
@@ -825,8 +825,8 @@ public class CodegenHierarchicalModelGenerator {
 
   private void papifyStoppingFunctions(DAGVertex dagVertex, FiniteLoopBlock forLoop, SDFVertex repVertex) {
 
-    PapifyAction papifyActionS = CodegenFactory.eINSTANCE.createPapifyAction();
-    Constant papifyPEId = CodegenFactory.eINSTANCE.createConstant();
+    PapifyAction papifyActionS = CodegenModelUserFactory.eINSTANCE.createPapifyAction();
+    Constant papifyPEId = CodegenModelUserFactory.eINSTANCE.createConstant();
     // Check if this actor has a monitoring configuration
     PapifyConfig papifyConfig = this.scenario.getPapifyConfig();
     AbstractActor referencePiVertex = repVertex.getReferencePiVertex();
@@ -873,14 +873,14 @@ public class CodegenHierarchicalModelGenerator {
   protected PapifyFunctionCall generatePapifyConfigurePEFunctionCall(final CoreBlock operatorBlock,
       PapifyConfig papifyConfig, Constant papifyPEId) {
     // Create the corresponding FunctionCall
-    final PapifyFunctionCall configurePapifyPE = CodegenFactory.eINSTANCE.createPapifyFunctionCall();
+    final PapifyFunctionCall configurePapifyPE = CodegenModelUserFactory.eINSTANCE.createPapifyFunctionCall();
     configurePapifyPE.setName("configure_papify_PE");
     // Create the variable associated to the PE name
-    ConstantString papifyPEName = CodegenFactory.eINSTANCE.createConstantString();
+    ConstantString papifyPEName = CodegenModelUserFactory.eINSTANCE.createConstantString();
     papifyPEName.setValue(operatorBlock.getName());
     // Create the variable associated to the PAPI component
     String componentsSupported = "";
-    ConstantString papifyComponentName = CodegenFactory.eINSTANCE.createConstantString();
+    ConstantString papifyComponentName = CodegenModelUserFactory.eINSTANCE.createConstantString();
     final Component component = scenario.getDesign().getComponent(operatorBlock.getCoreType());
     for (PapiComponent papiComponent : papifyConfig.getSupportedPapiComponents(component)) {
       if (componentsSupported.equals("")) {
@@ -892,7 +892,7 @@ public class CodegenHierarchicalModelGenerator {
 
     papifyComponentName.setValue(componentsSupported);
     // Create the variable associated to the PE id
-    Constant papifyPEIdTask = CodegenFactory.eINSTANCE.createConstant();
+    Constant papifyPEIdTask = CodegenModelUserFactory.eINSTANCE.createConstant();
     papifyPEIdTask.setName(PAPIFY_PE_ID_CONSTANT_NAME);
     papifyPEIdTask.setValue(this.papifiedPEs.indexOf(operatorBlock.getName()));
     // Add the function parameters
@@ -925,7 +925,7 @@ public class CodegenHierarchicalModelGenerator {
       final SDFVertex repVertex, PapifyConfig papifyConfig, PapifyAction papifyActionS) {
 
     // Create the corresponding FunctionCall
-    final PapifyFunctionCall func = CodegenFactory.eINSTANCE.createPapifyFunctionCall();
+    final PapifyFunctionCall func = CodegenModelUserFactory.eINSTANCE.createPapifyFunctionCall();
     func.setName("configure_papify_actor");
     AbstractActor referencePiVertex = repVertex.getReferencePiVertex();
     // Add the PAPI component name
@@ -938,19 +938,19 @@ public class CodegenHierarchicalModelGenerator {
         compNames = compNames.concat(",").concat(compName);
       }
     }
-    ConstantString componentName = CodegenFactory.eINSTANCE.createConstantString();
+    ConstantString componentName = CodegenModelUserFactory.eINSTANCE.createConstantString();
     componentName.setName("component_name".concat(repVertex.getName()));
     componentName.setValue(compNames);
     componentName.setComment("PAPI component name");
 
     // Add the size of the configs
-    Constant numConfigs = CodegenFactory.eINSTANCE.createConstant();
+    Constant numConfigs = CodegenModelUserFactory.eINSTANCE.createConstant();
     numConfigs.setName("numConfigs");
     numConfigs.setValue(compsWithConfig.size());
 
     // Add the actor name
     String actorOriginalIdentifier = papifyConfig.getActorOriginalIdentifier(referencePiVertex);
-    ConstantString actorName = CodegenFactory.eINSTANCE.createConstantString();
+    ConstantString actorName = CodegenModelUserFactory.eINSTANCE.createConstantString();
     actorName.setName("actor_name".concat(actorOriginalIdentifier));
     actorName.setValue(actorOriginalIdentifier);
     actorName.setComment("Actor name");
@@ -965,13 +965,13 @@ public class CodegenHierarchicalModelGenerator {
         eventNames = eventNames.concat(",").concat(oneEvent.getName());
       }
     }
-    ConstantString eventSetNames = CodegenFactory.eINSTANCE.createConstantString();
+    ConstantString eventSetNames = CodegenModelUserFactory.eINSTANCE.createConstantString();
     eventSetNames.setName("allEventNames");
     eventSetNames.setValue(eventNames);
     eventSetNames.setComment("Papify events");
 
     // Add the size of the CodeSet
-    Constant codeSetSize = CodegenFactory.eINSTANCE.createConstant();
+    Constant codeSetSize = CodegenModelUserFactory.eINSTANCE.createConstant();
     codeSetSize.setName("CodeSetSize");
     codeSetSize.setValue(actorEvents.size());
 
@@ -998,7 +998,7 @@ public class CodegenHierarchicalModelGenerator {
         configIds = configIds.concat(",").concat(Integer.toString(positionConfig));
       }
     }
-    ConstantString papifyConfigNumber = CodegenFactory.eINSTANCE.createConstantString();
+    ConstantString papifyConfigNumber = CodegenModelUserFactory.eINSTANCE.createConstantString();
     papifyConfigNumber.setName("PAPIFY_configs_".concat(repVertex.getName()));
     papifyConfigNumber.setValue(configIds);
     papifyConfigNumber.setComment("PAPIFY actor configs");
@@ -1034,7 +1034,7 @@ public class CodegenHierarchicalModelGenerator {
   protected PapifyFunctionCall generatePapifyStartFunctionCall(final DAGVertex dagVertex, final SDFVertex repVertex,
       final Constant papifyPEId, final PapifyAction papifyActionS) {
     // Create the corresponding FunctionCall
-    final PapifyFunctionCall func = CodegenFactory.eINSTANCE.createPapifyFunctionCall();
+    final PapifyFunctionCall func = CodegenModelUserFactory.eINSTANCE.createPapifyFunctionCall();
     func.setName("event_start");
     func.addParameter((Variable) papifyActionS, PortDirection.INPUT);
     func.addParameter((Variable) papifyPEId, PortDirection.INPUT);
@@ -1060,7 +1060,7 @@ public class CodegenHierarchicalModelGenerator {
   protected PapifyFunctionCall generatePapifyStartTimingFunctionCall(final DAGVertex dagVertex,
       final SDFVertex repVertex, final Constant papifyPEId, final PapifyAction papifyActionS) {
     // Create the corresponding FunctionCall
-    final PapifyFunctionCall func = CodegenFactory.eINSTANCE.createPapifyFunctionCall();
+    final PapifyFunctionCall func = CodegenModelUserFactory.eINSTANCE.createPapifyFunctionCall();
     func.setName("event_start_papify_timing");
     // Add the function parameters
     func.addParameter((Variable) papifyActionS, PortDirection.INPUT);
@@ -1088,7 +1088,7 @@ public class CodegenHierarchicalModelGenerator {
   protected PapifyFunctionCall generatePapifyStopFunctionCall(final DAGVertex dagVertex, final SDFVertex repVertex,
       final Constant papifyPEId, final PapifyAction papifyActionS) {
     // Create the corresponding FunctionCall
-    final PapifyFunctionCall func = CodegenFactory.eINSTANCE.createPapifyFunctionCall();
+    final PapifyFunctionCall func = CodegenModelUserFactory.eINSTANCE.createPapifyFunctionCall();
     func.setName("event_stop");
     // Add the function parameters
     func.addParameter((Variable) papifyActionS, PortDirection.INPUT);
@@ -1116,7 +1116,7 @@ public class CodegenHierarchicalModelGenerator {
   protected PapifyFunctionCall generatePapifyStopTimingFunctionCall(final DAGVertex dagVertex,
       final SDFVertex repVertex, final Constant papifyPEId, final PapifyAction papifyActionS) {
     // Create the corresponding FunctionCall
-    final PapifyFunctionCall func = CodegenFactory.eINSTANCE.createPapifyFunctionCall();
+    final PapifyFunctionCall func = CodegenModelUserFactory.eINSTANCE.createPapifyFunctionCall();
     func.setName("event_stop_papify_timing");
     // Add the function parameters
     func.addParameter((Variable) papifyActionS, PortDirection.INPUT);
@@ -1144,7 +1144,7 @@ public class CodegenHierarchicalModelGenerator {
   protected PapifyFunctionCall generatePapifyWritingFunctionCall(final DAGVertex dagVertex, final SDFVertex repVertex,
       final Constant papifyPEId, final PapifyAction papifyActionS) {
     // Create the corresponding FunctionCall
-    final PapifyFunctionCall func = CodegenFactory.eINSTANCE.createPapifyFunctionCall();
+    final PapifyFunctionCall func = CodegenModelUserFactory.eINSTANCE.createPapifyFunctionCall();
     func.setName("event_write_file");
     // Add the function parameters
     func.addParameter((Variable) papifyActionS, PortDirection.INPUT);

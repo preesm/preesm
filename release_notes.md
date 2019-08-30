@@ -15,6 +15,7 @@ PREESM Changelog
 
 ### Bug fix
 * Fix #218: add support for non connected actors in SRDAG transform;
+* Fix #222: allow multiplicity in Codegen Call parameters;
 
 ## Release version 3.15.0
 *2019.08.28*

@@ -45,7 +45,6 @@ import org.preesm.codegen.model.Buffer
 import org.preesm.codegen.model.Call
 import org.preesm.codegen.model.CallBlock
 import org.preesm.codegen.model.CodeElt
-import org.preesm.codegen.model.CodegenFactory
 import org.preesm.codegen.model.CoreBlock
 import org.preesm.codegen.model.Delimiter
 import org.preesm.codegen.model.Direction
@@ -58,6 +57,7 @@ import org.preesm.codegen.model.PortDirection
 import org.preesm.codegen.model.SharedMemoryCommunication
 import org.preesm.codegen.model.SpecialCall
 import org.preesm.codegen.model.Variable
+import org.preesm.codegen.model.util.CodegenModelUserFactory
 
 class InstrumentedC6678CPrinter extends InstrumentedCPrinter {
 
@@ -220,7 +220,7 @@ class InstrumentedC6678CPrinter extends InstrumentedCPrinter {
 			busy_barrier();
 			«IF dumpTimedBuffer.creator == block2.eContainer»
 					writeTime(«dumpTimedBuffer.doSwitch»,«{
-						val const = CodegenFactory::eINSTANCE.createConstant
+						val const = CodegenModelUserFactory::eINSTANCE.createConstant
 						const.name = "nbDump"
 						const.type = "int"
 						const.value = dumpTimedBuffer.size

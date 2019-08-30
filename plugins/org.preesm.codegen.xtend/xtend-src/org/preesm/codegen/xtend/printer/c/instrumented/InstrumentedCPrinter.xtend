@@ -57,6 +57,7 @@ import org.preesm.codegen.model.PortDirection
 import org.preesm.codegen.model.SharedMemoryCommunication
 import org.preesm.codegen.model.SpecialCall
 import org.preesm.codegen.model.Variable
+import org.preesm.codegen.model.util.CodegenModelUserFactory
 import org.preesm.codegen.printer.PrinterState
 import org.preesm.codegen.xtend.printer.c.CPrinter
 import org.preesm.commons.exceptions.PreesmRuntimeException
@@ -64,7 +65,7 @@ import org.preesm.commons.exceptions.PreesmRuntimeException
 /**
  * This printer currently prints instrumented C code for X86 cores with all
  * communications made in the shared memory.
- * 
+ *
  * Only actor firings are instrumented now.
  *
  * @author kdesnos
@@ -117,12 +118,12 @@ class InstrumentedCPrinter extends CPrinter {
 		super.preProcessing(printerBlocks, allBlocks)
 
 		// Create the Buffers
-		dumpTimedBuffer = CodegenFactory::eINSTANCE.createBuffer
+		dumpTimedBuffer = CodegenModelUserFactory::eINSTANCE.createBuffer
 		dumpTimedBuffer.name = "dumpedTimes"
 		dumpTimedBuffer.type = "uint64_t"
 		dumpTimedBuffer.typeSize = 8 // size of a long
 
-		nbExec = CodegenFactory::eINSTANCE.createBuffer
+		nbExec = CodegenModelUserFactory::eINSTANCE.createBuffer
 		nbExec.name = "nbExec"
 		nbExec.type = "int"
 
@@ -167,11 +168,11 @@ class InstrumentedCPrinter extends CPrinter {
 					val ovp = elt.originalVertexPath
 
 					// Do the pre insertion
-					val preDumpCall = CodegenFactory.eINSTANCE.createFunctionCall
+					val preDumpCall = CodegenModelUserFactory.eINSTANCE.createFunctionCall
 					preDumpCall.name = "dumpTime"
 					preDumpCall.addParameter(
 					{
-						val const = CodegenFactory::eINSTANCE.createConstant
+						val const = CodegenModelUserFactory::eINSTANCE.createConstant
 						const.name = "globalID"
 						const.type = "int"
 						const.value = globalID
@@ -190,11 +191,11 @@ class InstrumentedCPrinter extends CPrinter {
 					codeEltID.put(elt, globalID+1)
 
 					// Do the pre insertion
-					val postDumpCall = CodegenFactory.eINSTANCE.createFunctionCall
+					val postDumpCall = CodegenModelUserFactory.eINSTANCE.createFunctionCall
 					postDumpCall.name = "dumpTime"
 					postDumpCall.addParameter(
 					{
-						val const = CodegenFactory::eINSTANCE.createConstant
+						val const = CodegenModelUserFactory::eINSTANCE.createConstant
 						const.name = "globalID"
 						const.type = "int"
 						const.value = globalID+1
@@ -210,8 +211,8 @@ class InstrumentedCPrinter extends CPrinter {
 
 				} else {
 					i = i + 1
-	
-				}			
+
+				}
 			}
 		}
 
@@ -220,12 +221,12 @@ class InstrumentedCPrinter extends CPrinter {
 		nbExec.size = globalID/2
 
 		// Create the init method
-		var initCall = CodegenFactory.eINSTANCE.createFunctionCall;
+		var initCall = CodegenModelUserFactory.eINSTANCE.createFunctionCall;
 		initCall.name = "initNbExec"
 		initCall.addParameter(nbExec, PortDirection.NONE)
 		initCall.addParameter(
 			{
-				var const = CodegenFactory::eINSTANCE.createConstant
+				var const = CodegenModelUserFactory::eINSTANCE.createConstant
 				const.name = "nbDump"
 				const.type = "int"
 				const.value = dumpTimedBuffer.size
@@ -243,7 +244,7 @@ class InstrumentedCPrinter extends CPrinter {
 				pthread_barrier_wait(&iter_barrier);
 				«IF dumpTimedBuffer.creator == block2.eContainer»
 						writeTime(«dumpTimedBuffer.doSwitch»,«{
-							val const = CodegenFactory::eINSTANCE.createConstant
+							val const = CodegenModelUserFactory::eINSTANCE.createConstant
 							const.name = "nbDump"
 							const.type = "int"
 							const.value = dumpTimedBuffer.size
