@@ -37,6 +37,7 @@ package org.preesm.algorithm.mapper.schedule;
 
 import com.fasterxml.jackson.annotation.JsonAnyGetter;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
@@ -52,6 +53,7 @@ import java.util.Map;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonPropertyOrder({ "scheduleEntries", "preScheduleEntries", "bufferEntities", "taskEntities", "processingUnits",
     "period", "intervals", "step", "applicationName", "runID", "architecture", "delay" })
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class Schedule {
 
   @JsonProperty("scheduleEntries")

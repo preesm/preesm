@@ -59,12 +59,12 @@ public class ScheduleEntry {
   private Integer singleRateInstanceNumber;
   // start in our units
   @JsonProperty("start")
-  private Long                      start;
+  private Long start;
   // start in AOW units (subintervals of the while execution time)
   @JsonProperty("startN")
   private Integer startN;
   @JsonProperty("end")
-  private Long                      end;
+  private Long    end;
   @JsonProperty("endN")
   private Integer endN;
   @JsonProperty("core")
@@ -81,12 +81,12 @@ public class ScheduleEntry {
   @JsonIgnore
   private final Map<String, Object> additionalProperties = new LinkedHashMap<>();
 
-  @JsonProperty("taskName")
+  @JsonProperty("actorName")
   public String getTaskName() {
     return this.taskName;
   }
 
-  @JsonProperty("taskName")
+  @JsonProperty("actorName")
   public void setTaskName(final String taskName) {
     this.taskName = taskName;
   }

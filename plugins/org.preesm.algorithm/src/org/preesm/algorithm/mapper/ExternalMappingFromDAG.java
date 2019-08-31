@@ -90,7 +90,6 @@ import org.preesm.model.slam.utils.LexicographicComponentInstanceComparator;
         @Parameter(name = "SCHEDULE_FILE", values = { @Value(name = "/schedule.json", effect = "default value") })
 
     })
-@Deprecated
 public class ExternalMappingFromDAG extends AbstractMappingFromDAG {
 
   public static final String SCHEDULE_FILE = "SCHEDULE_FILE";
@@ -112,14 +111,11 @@ public class ExternalMappingFromDAG extends AbstractMappingFromDAG {
     final Schedule schedule = readSchedule(jsonScheduleFilePath);
 
     // 2- check
-    checkScheduleCompatibility(schedule, dag, architecture);
+    final Map<DAGVertex, ScheduleEntry> entries = checkScheduleCompatibility(schedule, dag, architecture);
 
     // 3- sort components to have a relation from ID to component
     final List<ComponentInstance> componentInstances = new ArrayList<>(architecture.getComponentInstances());
     Collections.sort(componentInstances, new LexicographicComponentInstanceComparator());
-
-    // 4- prepare map to have relation from vertex to its schedule entry
-    final Map<DAGVertex, ScheduleEntry> entries = initEntryMap(dag, schedule);
 
     // 5.1 - build unordered lists of vertices per core ID
     final List<List<DAGVertex>> orderedVertices = new ArrayList<>();
@@ -197,30 +193,17 @@ public class ExternalMappingFromDAG extends AbstractMappingFromDAG {
         associateVtx = outEdge.getTarget();
         break;
       default:
-        throw new PreesmRuntimeException("");
+        throw new PreesmRuntimeException("Regular firings are missing. As: " + vtx.getName());
     }
     return associateVtx;
-  }
-
-  private Map<DAGVertex, ScheduleEntry> initEntryMap(final MapperDAG dag, final Schedule schedule) {
-    final Map<DAGVertex, ScheduleEntry> entries = new LinkedHashMap<>();
-    for (final ScheduleEntry e : schedule.getScheduleEntries()) {
-      final String s = e.getTaskName() + "_" + e.getSingleRateInstanceNumber();
-      final DAGVertex vertex = dag.getVertex(s);
-      if (vertex == null) {
-        final String message = "The schedule entry for single rate actor [" + s + "] "
-            + "has no corresponding actor in the single rate graph.";
-        throw new PreesmRuntimeException(message);
-      }
-      entries.put(vertex, e);
-    }
-    return entries;
   }
 
   /**
    * Checks if schedule from the JSON file is compatible with algo and archi from the scenario.
    */
-  private void checkScheduleCompatibility(final Schedule schedule, final MapperDAG dag, final Design architecture) {
+  private Map<DAGVertex, ScheduleEntry> checkScheduleCompatibility(final Schedule schedule, final MapperDAG dag,
+      final Design architecture) {
+    final Map<DAGVertex, ScheduleEntry> entries = new LinkedHashMap<>();
     // basic architecture comparison
     final Architecture scheduleArchi = schedule.getArchitecture();
     final VLNV designVlnv = architecture.getVlnv();
@@ -247,14 +230,15 @@ public class ExternalMappingFromDAG extends AbstractMappingFromDAG {
 
     final Map<String, ScheduleEntry> actorNameToScheduleEntry = new LinkedHashMap<>();
     for (final ScheduleEntry scheduleEntry : scheduleEntries) {
-      final String srActorName = scheduleEntry.getTaskName() + "_" + scheduleEntry.getSingleRateInstanceNumber();
-      final DAGVertex vertex = dag.getVertex(srActorName);
+      final DAGVertex vertex = getMapperDagActorName(scheduleEntry.getTaskName(),
+          scheduleEntry.getSingleRateInstanceNumber(), dag);
       if (vertex == null) {
-        final String message = "The schedule entry for single rate actor [" + srActorName + "] "
+        final String message = "The schedule entry for single rate actor [" + scheduleEntry.getTaskName() + "] "
             + "has no corresponding actor in the single rate graph.";
         throw new PreesmRuntimeException(message);
       } else {
-        actorNameToScheduleEntry.put(srActorName, scheduleEntry);
+        entries.put(vertex, scheduleEntry);
+        actorNameToScheduleEntry.put(vertex.getName(), scheduleEntry);
       }
     }
 
@@ -265,6 +249,24 @@ public class ExternalMappingFromDAG extends AbstractMappingFromDAG {
         PreesmLogger.getLogger().log(Level.WARNING, msg);
       }
     }
+
+    return entries;
+  }
+
+  private DAGVertex getMapperDagActorName(String taskName, int nbInstance, MapperDAG dag) {
+    DAGVertex res = null;
+    for (DAGVertex vertex : dag.vertexSet()) {
+      String vname = vertex.getName();
+      if (vname.startsWith(taskName)) {
+        String vfir = vname.substring(taskName.length() + 1);
+        if (Integer.parseInt(vfir) == nbInstance) {
+          res = vertex;
+          break;
+        }
+      }
+    }
+
+    return res;
   }
 
   private Schedule readSchedule(final String jsonScheduleProjectRelativeFilePath) {
