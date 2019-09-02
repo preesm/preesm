@@ -62,6 +62,8 @@ public class SpiderConfig {
   private String  memAllocType;
   private Long    sharedMemorySize;
   private boolean energyAwareness;
+  private double  performanceObjective;
+  private double  performanceTolerance;
 
   private void setSchedulerType(final String scheduleType) {
     if ("list_on_the_go".equalsIgnoreCase(scheduleType)) {
@@ -178,5 +180,21 @@ public class SpiderConfig {
 
   public boolean getEnergyAwareness() {
     return energyAwareness;
+  }
+
+  public double getPerformanceObjective() {
+    return performanceObjective;
+  }
+
+  public double getPerformanceTolerance() {
+    return performanceTolerance;
+  }
+
+  public void setPerformanceObjective(double performanceObjective) {
+    this.performanceObjective = performanceObjective;
+  }
+
+  public void setPerformanceTolerance(double performanceTolerance) {
+    this.performanceTolerance = performanceTolerance;
   }
 }

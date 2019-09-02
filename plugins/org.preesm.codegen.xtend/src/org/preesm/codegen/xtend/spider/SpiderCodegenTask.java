@@ -168,6 +168,10 @@ public class SpiderCodegenTask extends AbstractTaskImplementation {
     final SpiderConfig spiderConfig = new SpiderConfig(parameters);
 
     final boolean usingPapify = spiderConfig.getUseOfPapify();
+    if (spiderConfig.getEnergyAwareness()) {
+      spiderConfig.setPerformanceObjective(scenario.getEnergyConfig().getPerformanceObjective().getObjectiveEPS());
+      spiderConfig.setPerformanceTolerance(scenario.getEnergyConfig().getPerformanceObjective().getToleranceEPS());
+    }
 
     launcher.initGenerator(pg);
     final String graphCode = launcher.generateGraphCode(pg);
