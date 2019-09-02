@@ -64,6 +64,7 @@ import org.preesm.model.pisdf.Parameter;
 import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.pisdf.brv.BRVMethod;
 import org.preesm.model.pisdf.brv.PiBRV;
+import org.preesm.model.pisdf.util.PiSDFMergeabilty;
 import org.preesm.model.scenario.Scenario;
 import org.preesm.model.slam.Component;
 import org.preesm.model.slam.ComponentInstance;
@@ -305,6 +306,23 @@ public class ClusteringHelper {
     } else {
       return (Parameter) setter;
     }
+  }
+
+  /**
+   * @param graph
+   *          input graph
+   * @param brv
+   *          repetition vector
+   * @param scenario
+   *          scenario
+   * @return list of clusterizable couple
+   */
+  public static List<Pair<AbstractActor, AbstractActor>> getClusterizableCouples(final PiGraph graph,
+      final Map<AbstractVertex, Long> brv, Scenario scenario) {
+    List<Pair<AbstractActor, AbstractActor>> couples = PiSDFMergeabilty.getConnectedCouple(graph, brv);
+    // Remove couples of actors that are not in the same constraints
+    ClusteringHelper.removeConstrainedCouples(couples, scenario);
+    return couples;
   }
 
   /**
