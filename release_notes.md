@@ -14,6 +14,7 @@ PREESM Changelog
   * cluster are now mappable into component by retrieving common possible mapping of included actors
   * make code clearer for ClusteringBuilder
   * refactored the way of getting clusterizable couples
+  * clusters now have timings 
 * Schedule: Readapt the way of exhibiting data parallelism and print expression
 
 ### Bug fix

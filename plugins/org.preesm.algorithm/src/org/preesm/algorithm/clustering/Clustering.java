@@ -101,10 +101,6 @@ public class Clustering extends AbstractTaskImplementation {
       PreesmLogger.getLogger().log(Level.INFO, str);
       str = schedule.shortPrint();
       PreesmLogger.getLogger().log(Level.INFO, str);
-      str = "Estimated memory space needed: " + ClusteringHelper.getMemorySpaceNeededFor(schedule) + " bytes";
-      PreesmLogger.getLogger().log(Level.INFO, str);
-      str = "Estimated execution time: " + ClusteringHelper.getExecutionTimeOf(schedule, scenario);
-      PreesmLogger.getLogger().log(Level.INFO, str);
     }
 
     // Output PiSDF and Schedule Mapping attachment
