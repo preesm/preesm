@@ -105,17 +105,17 @@ interface Schedule {
 	 */
 	op boolean isParallel()
 	/*
-	 * returns a String representing the schedule informally.
-	 */
-	op String shortPrint() {
-		return SchedulePrinterSwitch.print(this)
-	}
-	/*
 	 * Return true if the schedule is linked with an actor. This is the case when applying clustering, where
 	 * the attached actor of a HierarchicalSchedule is the clustered subraph.
 	 */
 	op boolean hasAttachedActor() {
 		return false
+	}
+	/*
+	 * returns a String representing the schedule informally.
+	 */
+	op String shortPrint() {
+		return SchedulePrinterSwitch.print(this)
 	}
 }
 

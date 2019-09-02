@@ -2,6 +2,7 @@ package org.preesm.algorithm.synthesis.schedule;
 
 import java.util.LinkedList;
 import java.util.List;
+import org.eclipse.emf.ecore.EObject;
 import org.preesm.algorithm.schedule.model.ActorSchedule;
 import org.preesm.algorithm.schedule.model.ParallelHiearchicalSchedule;
 import org.preesm.algorithm.schedule.model.Schedule;
@@ -15,7 +16,7 @@ import org.preesm.model.pisdf.AbstractActor;
  */
 public class SchedulePrinterSwitch extends ScheduleSwitch<String> {
 
-  public static final String print(final Schedule s) {
+  public static final String print(final EObject s) {
     return new SchedulePrinterSwitch().doSwitch(s);
   }
 
