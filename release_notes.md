@@ -10,6 +10,12 @@ PREESM Changelog
 * Apollo optimizations are now supported in Preesm and SPiDER
   * To activate it, Apollo flag must be set to true in the CodeGen workflow task
   * CMakeLists.txt of the application must be modified 
+* Scheduling:
+  * Mapping/scheduling task (pisdf-mapper.list) can now perform energy-aware mapping/scheduling (It will increase scheduling/mapping task time, as it tests several mappings)
+  * The information is taken from energy tab in scenario and the optimization will consider the performance objective to search for the best PEs configuration
+  * EnergyAwareness parameter will enable this optimization
+  * EnergyAwarenessFirstConfig selects the starting point: First (as less PEs as possible), Max (all PEs), Middle (half amount of PEs of each type) and Random (random starting point)
+  * EnergyAwarenessSearchType selects the type of searching done: Thorough (changes PEs number one by one) and halves (Divides in halves the remaining available PEs and goes up/down depending if the FPS reached are below/above the objective)
 
 ### Changes
 * PiSDF: PiGraph can be declared as a cluster. Hierarchy of cluster may be ignore by SR and DAG transformation.
