@@ -105,7 +105,10 @@ import org.preesm.workflow.implement.AbstractWorkflowNodeImplementation;
             values = { @Value(name = "static", effect = "Use static stack"),
                 @Value(name = "dynamic", effect = "Use dynamic stack") }),
         @Parameter(name = "graph-optims", description = "Whether to optimize the graph at runtime or not",
-            values = { @Value(name = "true / false", effect = "") }) },
+            values = { @Value(name = "true / false", effect = "") }),
+        @Parameter(name = "energy-awareness",
+            description = "Whether to activate or not energy-aware mapping/scheduling.",
+            values = { @Value(name = "true/false", effect = "Enable/disable energy-aware mapping/scheduling") }) },
 
     seeAlso = { "**Spider**: Heulot, Julien; Pelcat, Maxime; Desnos, Karol; Nezan, Jean-François; Aridhi, Slaheddine "
         + "(2014) “SPIDER: A Synchronous Parameterized and Interfaced Dataflow-Based RTOS for Multicore DSPs”. "
@@ -130,6 +133,8 @@ public class SpiderCodegenTask extends AbstractTaskImplementation {
   public static final String PARAM_SCHEDULER     = "scheduler";
   /** The Constant PARAM_GRAPH_OPTIMS. */
   public static final String PARAM_GRAPH_OPTIMS  = "graph-optims";
+  /** The Constant PARAM_ENERGY. */
+  public static final String PARAM_ENERGY        = "energy-awareness";
 
   /*
    * (non-Javadoc)

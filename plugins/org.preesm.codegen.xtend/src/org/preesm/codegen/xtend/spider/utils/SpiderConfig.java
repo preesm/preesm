@@ -61,6 +61,7 @@ public class SpiderConfig {
   private String  schedulerType;
   private String  memAllocType;
   private Long    sharedMemorySize;
+  private boolean energyAwareness;
 
   private void setSchedulerType(final String scheduleType) {
     if ("list_on_the_go".equalsIgnoreCase(scheduleType)) {
@@ -117,6 +118,7 @@ public class SpiderConfig {
     final String schedulerParameter = workflowParameters.get(SpiderCodegenTask.PARAM_SCHEDULER);
     final String memAllocParameter = workflowParameters.get(SpiderCodegenTask.PARAM_MEMALLOC);
     final String sharedMemoryParameter = workflowParameters.get(SpiderCodegenTask.PARAM_SHMEMORY_SIZE);
+    final String energyAwarenessParameter = workflowParameters.get(SpiderCodegenTask.PARAM_ENERGY);
 
     setPapifyFeedbackType(papifyParameter);
     useApollo = "true".equalsIgnoreCase(apolloParameter);
@@ -127,6 +129,7 @@ public class SpiderConfig {
     setSchedulerType(schedulerParameter);
     setMemAllocType(memAllocParameter);
     sharedMemorySize = sharedMemoryParameter != null ? Long.decode(sharedMemoryParameter) : DEFAULT_SHARED_MEMORY_SIZE;
+    energyAwareness = "true".equalsIgnoreCase(energyAwarenessParameter);
   }
 
   public boolean getUseOfPapify() {
@@ -171,5 +174,9 @@ public class SpiderConfig {
 
   public Long getSharedMemorySize() {
     return sharedMemorySize;
+  }
+
+  public boolean getEnergyAwareness() {
+    return energyAwareness;
   }
 }
