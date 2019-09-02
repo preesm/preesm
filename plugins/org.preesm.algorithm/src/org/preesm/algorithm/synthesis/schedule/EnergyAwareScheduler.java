@@ -39,9 +39,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.logging.Level;
-import java.util.stream.Collectors;
 import org.eclipse.emf.common.util.ECollections;
 import org.eclipse.emf.common.util.EList;
+import org.preesm.algorithm.mapper.energyawareness.EnergyAwarenessProvider;
 import org.preesm.algorithm.mapping.model.Mapping;
 import org.preesm.algorithm.mapping.model.MappingFactory;
 import org.preesm.algorithm.schedule.model.ActorSchedule;
@@ -53,7 +53,6 @@ import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.pisdf.util.topology.PiSDFTopologyHelper;
 import org.preesm.model.scenario.Scenario;
-import org.preesm.model.scenario.util.ScenarioUserFactory;
 import org.preesm.model.slam.ComponentInstance;
 import org.preesm.model.slam.Design;
 import org.preesm.model.slam.utils.LexicographicComponentInstanceComparator;
@@ -79,7 +78,7 @@ public class EnergyAwareScheduler extends AbstractScheduler {
         cmpSchedules.put(targetCmpIntance, createActorSchedule);
         topParallelSchedule.getScheduleTree().add(createActorSchedule);
       }
-      cmpSchedules.get(targetCmpIntance).getActors().add(orderedActor);
+      cmpSchedules.get(targetCmpIntance).getActorList().add(orderedActor);
     }
   }
 
@@ -87,84 +86,41 @@ public class EnergyAwareScheduler extends AbstractScheduler {
   protected SynthesisResult exec(final PiGraph piGraph, final Design slamDesign, final Scenario scenario) {
 
     final HierarchicalSchedule topParallelSchedule = ScheduleFactory.eINSTANCE.createParallelHiearchicalSchedule();
-    final Mapping createMapping = MappingFactory.eINSTANCE.createMapping();
+    Mapping createMapping = MappingFactory.eINSTANCE.createMapping();
 
     final List<AbstractActor> allActors = piGraph.getAllActors();
     final List<AbstractActor> depthFirstSort = PiSDFTopologyHelper.sort(allActors);
-    Scenario scenarioMapping = ScenarioUserFactory.createScenario();
-
-    Map<String, Integer> coresOfEachType = new LinkedHashMap<>();
-    Map<String, Integer> coresUsedOfEachType = new LinkedHashMap<>();
     PreesmLogger.getLogger().log(Level.INFO,
         "Running energy awareness mapping/scheduling. This process will take longer than non-energy awareness one");
 
-    /**
-     * Analyze the constraints and initialize the configs
-     */
-    for (Entry<ComponentInstance, EList<AbstractActor>> constraint : scenario.getConstraints().getGroupConstraints()) {
-      String typeOfPe = constraint.getKey().getComponent().getVlnv().getName();
-      if (!coresOfEachType.containsKey(typeOfPe)) {
-        coresOfEachType.put(typeOfPe, 0);
-        if (coresUsedOfEachType.isEmpty()) {
-          coresUsedOfEachType.put(typeOfPe, 1);
-        } else {
-          coresUsedOfEachType.put(typeOfPe, 0);
-        }
-      }
-      coresOfEachType.put(typeOfPe, coresOfEachType.get(typeOfPe) + 1);
-    }
+    String message = "";
+    String firstConfig = "middle";
+    String searchingMode = "halves";
+    EnergyAwarenessProvider provider = new EnergyAwarenessProvider(scenario, firstConfig, searchingMode);
+    /** iterate **/
     while (true) {
-      /**
-       * Reset
-       */
-
-      scenario.getConstraints().getGroupConstraints().addAll(scenarioMapping.getConstraints().getGroupConstraints());
-
-      /**
-       * Add the constraints that represents the new config
-       */
-      for (Entry<String, Integer> instance : coresUsedOfEachType.entrySet()) {
-        List<Entry<ComponentInstance, EList<AbstractActor>>> constraints = scenario.getConstraints()
-            .getGroupConstraints().stream()
-            .filter(e -> e.getKey().getComponent().getVlnv().getName().equals(instance.getKey()))
-            .collect(Collectors.toList()).subList(0, instance.getValue());
-        scenarioMapping.getConstraints().getGroupConstraints().addAll(constraints);
+      /** Get configuration **/
+      provider.computeNextConfig();
+      /** Update scenario mapping for the current configuration **/
+      provider.updateScenario();
+      /** Check if the configuration is valid **/
+      if (provider.hasFinished()) {
+        break;
       }
-
-      /**
-       * Try the mapping
-       */
-      String message = "Trying with - coreType: quantity --> " + coresUsedOfEachType.toString();
-      PreesmLogger.getLogger().log(Level.INFO, message);
-      mappingAndScheduling(createMapping, topParallelSchedule, piGraph, scenarioMapping, depthFirstSort);
+      /** Try the mapping */
+      mappingAndScheduling(createMapping, topParallelSchedule, piGraph, provider.getScenarioMapping(), depthFirstSort);
       for (Entry<AbstractActor, EList<ComponentInstance>> coreMapping : createMapping.getMappings()) {
         message = "Mapping " + coreMapping.getKey().getVertexPath() + " on " + coreMapping.getValue().toString();
         PreesmLogger.getLogger().log(Level.INFO, message);
       }
-
-      /**
-       * Compute the next configuration
-       */
-      for (Entry<String, Integer> peType : coresUsedOfEachType.entrySet()) {
-        peType.setValue(peType.getValue() + 1);
-        if (peType.getValue() > coresOfEachType.get(peType.getKey())) {
-          peType.setValue(0);
-        } else {
-          break;
-        }
-      }
-      /**
-       * Check whether we have tested everything or not
-       */
-      if (coresUsedOfEachType.entrySet().stream().filter(e -> e.getValue() != 0).collect(Collectors.toList())
-          .isEmpty()) {
-        break;
-      }
+      /** Evaluate mapping **/
+      provider.evaluateMapping(createMapping);
     }
+    createMapping = provider.getFinalMappingSynthesis();
+
     /**
-     * Fill scenario with everything again to avoid further problems
+     * Try the mapping
      */
-    scenario.getConstraints().getGroupConstraints().addAll(scenarioMapping.getConstraints().getGroupConstraints());
 
     final int span = topParallelSchedule.getSpan();
     PreesmLogger.getLogger().log(Level.INFO, "span = " + span);
