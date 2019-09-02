@@ -55,7 +55,7 @@ public class LoopGenerationTest {
 
   static final String[] scenarios = new String[] { "4core.scenario", "4core2.scenario", "MPPA2.scenario",
       "MPPA2WithIO.scenario" };
-  static final String[] workflows = new String[] { "CodegenDistribNoFlat.workflow", "CodegenDistribFlat1.workflow" };
+  static final String[] workflows = new String[] { "CodegenDistribCluster.workflow" };
 
   static final String projectName = "org.ietr.preesm.loopgen-sobel-erosion-dilation";
 

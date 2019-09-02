@@ -508,6 +508,7 @@ public class CodegenHierarchicalModelGenerator {
       long rep = 1;
       rep = sdfVertex.getNbRepeatAsLong();
 
+      // THIS IS WHERE OUTPUT AND INPUT OUTSIDE CLUSTER IS USED
       if (isInputActorTmp || isOutputActorTmp) {
         var = this.srSDFEdgeBuffers.get(subBufferProperties);
         if (var instanceof DistributedBuffer) {
