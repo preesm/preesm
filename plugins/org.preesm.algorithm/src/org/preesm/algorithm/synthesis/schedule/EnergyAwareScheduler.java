@@ -121,9 +121,6 @@ public class EnergyAwareScheduler extends AbstractScheduler {
     /**
      * Try the mapping
      */
-
-    final int span = topParallelSchedule.getSpan();
-    PreesmLogger.getLogger().log(Level.INFO, "span = " + span);
     for (Entry<AbstractActor, EList<ComponentInstance>> coreMapping : createMapping.getMappings()) {
       PreesmLogger.getLogger().log(Level.INFO,
           "actor = " + coreMapping.getKey().getVertexPath() + " mapped on " + coreMapping.getValue().toString());
