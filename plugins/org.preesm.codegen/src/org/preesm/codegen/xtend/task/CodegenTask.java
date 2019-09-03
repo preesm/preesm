@@ -106,7 +106,10 @@ import org.preesm.workflow.implement.AbstractTaskImplementation;
         @Parameter(name = "Papify", description = "Enable the PAPI-based code instrumentation provided by PAPIFY",
             values = { @Value(name = "true/false",
                 effect = "Print C code instrumented with PAPIFY function calls based on the user-defined configuration"
-                    + " of PAPIFY tab in the scenario. Currently compatibe with x86 and MPPA-256") }) })
+                    + " of PAPIFY tab in the scenario. Currently compatibe with x86 and MPPA-256") }),
+        @Parameter(name = "Apollo", description = "Enable the use of Apollo for intra-actor optimization",
+            values = { @Value(name = "true/false",
+                effect = "Print C code with Apollo function calls. " + "Currently compatibe with x86") }) })
 public class CodegenTask extends AbstractTaskImplementation {
 
   /** The Constant PARAM_PRINTER. */
@@ -117,6 +120,9 @@ public class CodegenTask extends AbstractTaskImplementation {
 
   /** The Constant PARAM_PAPIFY. */
   public static final String PARAM_PAPIFY = "Papify";
+
+  /** The Constant PARAM_APOLLO. */
+  public static final String PARAM_APOLLO = "Apollo";
 
   /*
    * (non-Javadoc)
@@ -149,6 +155,9 @@ public class CodegenTask extends AbstractTaskImplementation {
     final String papifyMonitoring = parameters.get(CodegenTask.PARAM_PAPIFY);
     generator.registerPapify(papifyMonitoring);
 
+    // Retrieve the APOLLO flag
+    final String apolloFlag = parameters.get(CodegenTask.PARAM_APOLLO);
+
     final Collection<Block> codeBlocks = generator.generate();
 
     // Retrieve the desired printer and target folder path
@@ -162,6 +171,8 @@ public class CodegenTask extends AbstractTaskImplementation {
     if (CodegenTask.VALUE_PRINTER_IR.equals(selectedPrinter)) {
       engine.initializePrinterIR(codegenPath);
     }
+
+    engine.registerApollo(apolloFlag);
 
     engine.registerPrintersAndBlocks(selectedPrinter);
     engine.preprocessPrinters();

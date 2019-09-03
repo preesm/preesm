@@ -7,6 +7,9 @@ PREESM Changelog
 ### New Feature
 * Codegen:
   * clusters can now be printed by using CodegenClusterTask
+* Apollo optimizations are now supported in Preesm and SPiDER
+  * To activate it, Apollo flag must be set to true in the CodeGen workflow task
+  * CMakeLists.txt of the application must be modified 
 
 ### Changes
 * PiSDF: PiGraph can be declared as a cluster. Hierarchy of cluster may be ignore by SR and DAG transformation.
