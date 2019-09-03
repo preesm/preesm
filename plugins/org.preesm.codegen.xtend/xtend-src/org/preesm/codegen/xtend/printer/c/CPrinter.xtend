@@ -87,6 +87,7 @@ import org.preesm.model.pisdf.util.CHeaderUsedLocator
 import org.preesm.codegen.model.IteratedBuffer
 import org.preesm.codegen.model.ClusterBlock
 import org.preesm.codegen.model.SectionBlock
+import org.preesm.codegen.model.ActorFunctionCall
 
 /**
  * This printer is currently used to print C code only for GPP processors
@@ -646,7 +647,7 @@ class CPrinter extends DefaultPrinter {
 	'''
 
 	override printFunctionCall(FunctionCall functionCall) '''
-	«IF this.apolloEnabled»
+	«IF this.apolloEnabled && (functionCall instanceof ActorFunctionCall)»
 	#ifdef APOLLO_AVAILABLE
 	apolloAddActorConfig(0, pthread_self(), "«functionCall.actorName»");
 	#endif
