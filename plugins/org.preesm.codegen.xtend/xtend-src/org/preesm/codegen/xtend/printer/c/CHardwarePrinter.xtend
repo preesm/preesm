@@ -105,25 +105,25 @@ class CHardwarePrinter extends CPrinter {
 
 	override printCoreBlockHeader(CoreBlock block) '''
 		«super.printCoreBlockHeader(block)»
-		#include "hardwarelib.h"
-		#include "hardware_accelerator_setup.h"
+		#include "artico3lib.h"
+		#include "artico3_accelerator_setup.h"
 		#include "eventLib.h"
 	'''
 
 	override printCoreInitBlockHeader(CallBlock callBlock) '''
 		«super.printCoreInitBlockHeader(callBlock)»
 		// Initialize Hardware infrastructure
-		hardware_init();
+		artico3_init();
 	'''
 
 	override printCoreLoopBlockFooter(LoopBlock block2) '''
 			pthread_barrier_wait(&iter_barrier);
 		}
 		// Release kernel instance of the function
-		hardware_kernel_release(«IF this.listOfHwFunctions.size == 1»"«this.listOfHwFunctions.entrySet.get(0).key»"«ELSE»«PreesmLogger.getLogger().log(Level.SEVERE, "Hardware Codegen ERROR. Multiple hardware functions were detected. This feature is still under developing")»«ENDIF»);
+		artico3_kernel_release(«IF this.listOfHwFunctions.size == 1»"«this.listOfHwFunctions.entrySet.get(0).key»"«ELSE»«PreesmLogger.getLogger().log(Level.SEVERE, "Hardware Codegen ERROR. Multiple hardware functions were detected. This feature is still under developing")»«ENDIF»);
 
-		// Clean Hardware setup
-		hardware_exit();
+		// Clean artico3 setup
+		artico3_exit();
 
 		return NULL;
 		}
@@ -138,23 +138,23 @@ class CHardwarePrinter extends CPrinter {
 
 	override generateStandardLibFiles() {
 		val result = super.generateStandardLibFiles();
-		val String stdFileFolderHardware = "/stdfiles/hardware/"
-		val filesHardware = Arrays.asList(#[
-			"hardware.c",
-			"hardware.h",
-			"hardware_hw.c",
-			"hardware_hw.h",
-			"hardware_rcfg.c",
-			"hardware_rcfg.h",
-			"hardware_dbg.h"
-		]);
-		filesHardware.forEach [ it |
-			try {
-				result.put(it, PreesmResourcesHelper.instance.read(stdFileFolderHardware + it, this.class))
-			} catch (IOException exc) {
-				throw new PreesmRuntimeException("Could not generated content for " + it, exc)
-			}
-		]
+//		val String stdFileFolderHardware = "/stdfiles/hardware/"
+//		val filesHardware = Arrays.asList(#[
+//			"hardware.c",
+//			"hardware.h",
+//			"hardware_hw.c",
+//			"hardware_hw.h",
+//			"hardware_rcfg.c",
+//			"hardware_rcfg.h",
+//			"hardware_dbg.h"
+//		]);
+//		filesHardware.forEach [ it |
+//			try {
+//				result.put(it, PreesmResourcesHelper.instance.read(stdFileFolderHardware + it, this.class))
+//			} catch (IOException exc) {
+//				throw new PreesmRuntimeException("Could not generated content for " + it, exc)
+//			}
+//		]
 		return result
 	}
 
@@ -287,16 +287,16 @@ class CHardwarePrinter extends CPrinter {
 	'''
 
 	override printFunctionCall(FunctionCall functionCall) '''
-		hardware_kernel_execute("«functionCall.name»",gsize_TO_BE_CHANGED«IF (functionCall.factorNumber > 0)» * «functionCall.factorNumber»«ENDIF», lsize_TO_BE_CHANGED); // executing hardware kernel
-		hardware_kernel_wait("«functionCall.name»");
+		artico3_kernel_execute("«functionCall.name»",gsize_TO_BE_CHANGED«IF (functionCall.factorNumber > 0)» * «functionCall.factorNumber»«ENDIF», lsize_TO_BE_CHANGED); // executing artico3 kernel
+		artico3_kernel_wait("«functionCall.name»");
 	'''
 
 	override printDataTansfer(DataTransferAction action) '''
-		// Hardware³ data transfer token into Global Buffer
+		// artico3 data transfer token into Global Buffer
 		«var count = 0»
 		«FOR buffer : action.buffers»
 			«IF (action.parameterDirections.get(count).toString == 'INPUT')»
-				memcpy((void *) global_hardware_«count» + («buffer.size» * «this.dataTransferCallNumber» * sizeof(a3data_t)), (void *)«buffer.name», «buffer.size»*sizeof(a3data_t)); // input «count++»
+				memcpy((void *) global_artico3_«count» + («buffer.size» * «this.dataTransferCallNumber» * sizeof(a3data_t)), (void *)«buffer.name», «buffer.size»*sizeof(a3data_t)); // input «count++»
 			«ELSE»
 				// output «count++»
 			«ENDIF»
@@ -305,13 +305,13 @@ class CHardwarePrinter extends CPrinter {
 	'''
 
 	override printOutputDataTransfer(OutputDataTransfer action) '''
-		// Hardware³ data transfer token output
+		// artico3³ data transfer token output
 		«var count = 0»
 		«FOR buffer : action.buffers»
 			«IF (action.parameterDirections.get(count).toString == 'INPUT')»
 				// input «count++»
 			«ELSE»
-				memcpy((void *)«buffer.name», (void *) global_hardware_«count» + («buffer.size» * «this.dataOutputTransferCallNumber» * sizeof(a3data_t)), «buffer.size»*sizeof(a3data_t)); // output «count++»
+				memcpy((void *)«buffer.name», (void *) global_artico3_«count» + («buffer.size» * «this.dataOutputTransferCallNumber» * sizeof(a3data_t)), «buffer.size»*sizeof(a3data_t)); // output «count++»
 			«ENDIF»
 		«ENDFOR»
 		//«this.dataOutputTransferCallNumber++»
@@ -323,30 +323,36 @@ class CHardwarePrinter extends CPrinter {
 			for (int i = 0; i < MAX_NACCS; i++) {
 				wcfg_temp[i] = «param.doSwitch»;
 			}
-			hardware_kernel_wcfg("«action.name»", A3_ACCELERATOR_REG_«(count++).toString()», wcfg_temp);
+			artico3_kernel_wcfg("«action.name»", A3_ACCELERATOR_REG_«(count++).toString()», wcfg_temp);
 		«ENDFOR»
 	'''
 
 	override printFpgaLoad(FpgaLoadAction action) '''
 
 		// Create kernel instance
-		hardware_kernel_create("«action.name»", SIZE_MEM_HW, N_MEMORY_BANKS, N_REGISTERS);
+		artico3_kernel_create("«action.name»", SIZE_MEM_HW, N_MEMORY_BANKS, N_REGISTERS);
 
 		a3data_t wcfg_temp[MAX_NACCS];
 
 		for (int i = 0; i < MAX_NACCS; i++) {
-			hardware_load("«action.name»", i, 0, 0, 1);
+			artico3_load("«action.name»", i, 0, 0, 1);
 		}
 	'''
 
 	override printFreeDataTransferBuffer(FreeDataTransferBuffer action) ''''''
 
 	override printGlobalBufferDeclaration(GlobalBufferDeclaration action) '''
-		// Hardware³ global data buffer declaration
+		// artico3³ global data buffer declaration
 		«var count = 0»
 		«FOR buffer : action.buffers»
-			a3data_t *global_hardware_«count» = NULL;
-			global_hardware_«count» = hardware_alloc(«buffer.size»«IF (this.factorNumber > 0)» * «this.factorNumber»«ENDIF» * sizeof *«buffer.name», "«action.name»", "«buffer.doSwitch»",  «action.parameterDirections.get(count++)»);
+			«IF buffer.name.contains("localImageSize")»
+			a3data_t *global_artico3_«count» = NULL;
+			global_artico3_«count» = artico3_alloc(«buffer.size»«IF (this.factorNumber > 0)» * «this.factorNumber»«ENDIF» * sizeof *«buffer.name», "«action.name»", "«buffer.doSwitch»",  A3_P_C ); // «count++»
+			«ELSE»
+			a3data_t *global_artico3_«count» = NULL;
+			global_artico3_«count» = artico3_alloc(«buffer.size»«IF (this.factorNumber > 0)» * «this.factorNumber»«ENDIF» * sizeof *«buffer.name», "«action.name»", "«buffer.doSwitch»",  «action.parameterDirections.get(count++)»);
+			«ENDIF»
+			
 		«ENDFOR»
 	'''
 
