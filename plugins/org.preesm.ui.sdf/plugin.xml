@@ -72,7 +72,7 @@
             class="org.ietr.dftools.graphiti.ui.editors.GraphEditor"
             contributorClass="org.ietr.dftools.graphiti.ui.editors.GraphActionBarContributor"
             default="true"
-            extensions="graphml, design, component"
+            extensions="graphml, design, component, pi"
             icon="resources/icons/graphiti.gif"
             id="org.ietr.preesm.ui.editor.graph"
             name="Preesm Network Editor">
@@ -127,7 +127,7 @@
       <!-- GraphML Algo Editor specs -->
       <configuration
             extension="graphml"
-            name="GraphML"
+            name="SDFGraphML"
             type="text/xml"
             validator="org.preesm.ui.sdf.editor.graph.validators.SDFValidator">
          <graphType
@@ -428,15 +428,10 @@
             </shape>
          </vertexType>
       </configuration>
-   </extension>
-
-
-   <extension
-         point="graphiti.definition">
       <!-- GraphML Algo Editor specs -->
       <configuration
             extension="pi"
-            name="GraphML"
+            name="PiGraphML"
             type="text/xml"
             validator="org.preesm.ui.sdf.editor.graph.validators.SDFValidator">
          <graphType
