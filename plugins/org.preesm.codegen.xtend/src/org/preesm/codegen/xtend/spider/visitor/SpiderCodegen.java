@@ -310,7 +310,6 @@ public class SpiderCodegen {
 
     /* Declare Include Files */
     append("#include <spider.h>\n\n");
-    append("#include <apolloAPI.h>\n\n");
 
     append("#define N_PE_TYPE " + Integer.toString(this.coreTypesIds.keySet().size()) + "\n");
     for (final Component coreType : this.coreTypesIds.keySet()) {
