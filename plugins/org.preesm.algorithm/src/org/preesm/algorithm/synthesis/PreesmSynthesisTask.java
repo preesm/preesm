@@ -63,7 +63,6 @@ import org.preesm.workflow.implement.AbstractWorkflowNodeImplementation;
 
     inputs = { @Port(name = "PiMM", type = PiGraph.class), @Port(name = "architecture", type = Design.class),
         @Port(name = "scenario", type = Scenario.class) },
-
     outputs = { @Port(name = "Schedule", type = Schedule.class), @Port(name = "Mapping", type = Mapping.class),
         @Port(name = "Allocation", type = Allocation.class) })
 public class PreesmSynthesisTask extends AbstractTaskImplementation {
@@ -76,7 +75,8 @@ public class PreesmSynthesisTask extends AbstractTaskImplementation {
     final Design architecture = (Design) inputs.get(AbstractWorkflowNodeImplementation.KEY_ARCHITECTURE);
     final Scenario scenario = (Scenario) inputs.get(AbstractWorkflowNodeImplementation.KEY_SCENARIO);
 
-    final IScheduler scheduler = new SimpleScheduler();
+    IScheduler scheduler = null;
+    scheduler = new SimpleScheduler();
     final SynthesisResult scheduleAndMap = scheduler.scheduleAndMap(algorithm, architecture, scenario);
 
     final IMemoryAllocation alloc = new SimpleMemoryAllocation();
