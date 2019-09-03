@@ -278,7 +278,7 @@ class CHardwarePrinter extends CPrinter {
 			}
 			«IF this.usingPapify == 1»
 				#ifdef _PREESM_PAPIFY_MONITOR
-				event_destroy();
+				//event_destroy();
 				#endif
 			«ENDIF»
 			return 0;
