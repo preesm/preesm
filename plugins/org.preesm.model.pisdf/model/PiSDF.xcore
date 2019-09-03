@@ -674,6 +674,9 @@ class Dependency extends Edge {
 	op Vertex getTarget() {
 		return getter.configurable
 	}
+	op PiGraph getContainingPiGraph() {
+		return containingGraph as PiGraph
+	}
 }
 
 interface ISetter {
