@@ -43,6 +43,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.logging.Level;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import org.preesm.algorithm.mapper.abc.impl.latency.LatencyAbc;
 import org.preesm.algorithm.mapper.abc.taskscheduling.AbstractTaskSched;
 import org.preesm.algorithm.mapper.algo.InitialLists;
@@ -256,10 +258,24 @@ public class ExternalMappingFromDAG extends AbstractMappingFromDAG {
   private DAGVertex getMapperDagActorName(String taskName, int nbInstance, MapperDAG dag) {
     DAGVertex res = null;
     for (DAGVertex vertex : dag.vertexSet()) {
+      String kind = vertex.getKind();
+      if (MapperDAGVertex.DAG_INIT_VERTEX.equalsIgnoreCase(kind)
+          || MapperDAGVertex.DAG_END_VERTEX.equalsIgnoreCase(kind)) {
+        continue;
+      }
       String vname = vertex.getName();
-      if (vname.startsWith(taskName)) {
-        String vfir = vname.substring(taskName.length() + 1);
-        if (Integer.parseInt(vfir) == nbInstance) {
+      Pattern p = Pattern.compile("(\\S+)_(\\d+)");
+      Matcher m = p.matcher(vname);
+      String vshortName = null;
+      String vnbInstance = null;
+      while (m.find()) {
+        vshortName = m.group(1);
+        vnbInstance = m.group(2);
+      }
+      if (vshortName == null || vnbInstance == null) {
+        throw new PreesmRuntimeException("One SRDAG actor could not be parsed correctly: " + vname + " [" + kind);
+      } else if (vshortName.equals(taskName)) {
+        if (Integer.parseInt(vnbInstance) == nbInstance) {
           res = vertex;
           break;
         }
