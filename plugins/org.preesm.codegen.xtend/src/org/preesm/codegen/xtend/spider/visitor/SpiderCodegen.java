@@ -952,7 +952,6 @@ public class SpiderCodegen {
         switch (param.getDirection()) {
           case IN:
             if (param.isIsConfigurationParameter()) {
-              aa.isLocallyStatic();
               for (final Port port : a.getConfigInputPorts()) {
                 if (port.getName().equals(param.getName())) {
                   append("\t\t/* " + String.format("%1$-" + maxParamSize + "s", param.getName())

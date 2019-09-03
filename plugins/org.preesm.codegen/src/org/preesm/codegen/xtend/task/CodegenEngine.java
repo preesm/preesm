@@ -393,10 +393,6 @@ public class CodegenEngine {
    *          Enable the use of Apollo for intra-actor optimization
    */
   public void registerApollo(String apolloFlag) {
-    if (apolloFlag != null && apolloFlag.equalsIgnoreCase("true")) {
-      this.apolloEnabled = true;
-    } else {
-      this.apolloEnabled = false;
-    }
+    this.apolloEnabled = "true".equalsIgnoreCase(apolloFlag);
   }
 }
