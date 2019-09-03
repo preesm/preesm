@@ -43,12 +43,16 @@ import java.io.IOException;
 import java.io.Writer;
 import java.util.LinkedHashSet;
 import java.util.Set;
+import java.util.logging.Level;
 import org.eclipse.core.runtime.IPath;
+import org.eclipse.emf.ecore.EObject;
 import org.eclipse.graphiti.features.IFeatureProvider;
 import org.eclipse.graphiti.features.context.ICustomContext;
 import org.eclipse.graphiti.features.custom.AbstractCustomFeature;
 import org.eclipse.graphiti.mm.pictograms.PictogramElement;
+import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.model.pisdf.PiGraph;
+import org.preesm.model.pisdf.util.ContainingPiGraphLookup;
 import org.preesm.ui.pisdf.PiMMUtil;
 import org.preesm.ui.utils.ErrorWithExceptionDialog;
 
@@ -95,7 +99,13 @@ public class ExportSVGFeature extends AbstractCustomFeature {
    */
   @Override
   public boolean canExecute(final ICustomContext context) {
-    return true;
+    final PictogramElement[] pes = context.getPictogramElements();
+    final Object bo = getBusinessObjectForPictogramElement(pes[0]);
+    if (bo instanceof EObject) {
+      return new ContainingPiGraphLookup().doSwitch((EObject) bo) != null;
+    } else {
+      return false;
+    }
   }
 
   /*
@@ -119,25 +129,33 @@ public class ExportSVGFeature extends AbstractCustomFeature {
     /* Get PiGraph */
     final PictogramElement[] pes = context.getPictogramElements();
     final Object bo = getBusinessObjectForPictogramElement(pes[0]);
-    final PiGraph graph = (PiGraph) bo;
+    if (bo instanceof EObject) {
+      final PiGraph graph = new ContainingPiGraphLookup().doSwitch((EObject) bo);
+      if (graph != null) {
 
-    final SVGExporterSwitch visitor = new SVGExporterSwitch(this);
-    final String svgContent = visitor.exportPiGraphToSVG(graph);
+        final SVGExporterSwitch visitor = new SVGExporterSwitch(this);
+        final String svgContent = visitor.exportPiGraphToSVG(graph);
 
-    /* Ask SVG File Location */
-    final Set<String> fileExtensions = new LinkedHashSet<>();
-    fileExtensions.add("*.svg");
-    final IPath path = PiMMUtil.askSaveFile("Choose the exported SVG file", fileExtensions);
+        /* Ask SVG File Location */
+        final Set<String> fileExtensions = new LinkedHashSet<>();
+        fileExtensions.add("*.svg");
+        final IPath path = PiMMUtil.askSaveFile("Choose the exported SVG file", fileExtensions);
 
-    if (path == null) {
-      return;
-    }
+        if (path == null) {
+          return;
+        }
 
-    final File svgFile = new File(path.toOSString());
-    try (Writer out = new FileWriter(svgFile)) {
-      out.append(svgContent);
-    } catch (final IOException e) {
-      ErrorWithExceptionDialog.errorDialogWithStackTrace("Could not write SVG file", e);
+        final File svgFile = new File(path.toOSString());
+        try (Writer out = new FileWriter(svgFile)) {
+          out.append(svgContent);
+        } catch (final IOException e) {
+          ErrorWithExceptionDialog.errorDialogWithStackTrace("Could not write SVG file", e);
+        }
+      } else {
+        PreesmLogger.getLogger().log(Level.SEVERE, "Selected element is not part of the PISDF model.");
+      }
+    } else {
+      PreesmLogger.getLogger().log(Level.SEVERE, "Selected element is not part of the PISDF model.");
     }
   }
 
