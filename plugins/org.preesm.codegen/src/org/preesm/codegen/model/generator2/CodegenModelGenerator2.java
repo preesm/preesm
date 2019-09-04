@@ -41,6 +41,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.logging.Level;
 import java.util.stream.Collectors;
 import org.apache.commons.collections4.BidiMap;
 import org.apache.commons.collections4.bidimap.DualHashBidiMap;
@@ -52,6 +53,7 @@ import org.preesm.algorithm.memalloc.model.DistributedBuffer;
 import org.preesm.algorithm.memalloc.model.LogicalBuffer;
 import org.preesm.algorithm.memalloc.model.PhysicalBuffer;
 import org.preesm.algorithm.memalloc.model.util.MemoryAllocationSwitch;
+import org.preesm.algorithm.schedule.model.CommunicationActor;
 import org.preesm.algorithm.schedule.model.Schedule;
 import org.preesm.codegen.model.ActorFunctionCall;
 import org.preesm.codegen.model.Block;
@@ -64,19 +66,19 @@ import org.preesm.codegen.model.SpecialType;
 import org.preesm.codegen.model.SubBuffer;
 import org.preesm.codegen.model.Variable;
 import org.preesm.codegen.model.util.CodegenModelUserFactory;
+import org.preesm.codegen.model.util.VariableSorter;
 import org.preesm.commons.exceptions.PreesmRuntimeException;
+import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.Actor;
 import org.preesm.model.pisdf.BroadcastActor;
 import org.preesm.model.pisdf.CHeaderRefinement;
 import org.preesm.model.pisdf.ConfigInputPort;
 import org.preesm.model.pisdf.DataPort;
-import org.preesm.model.pisdf.EndActor;
 import org.preesm.model.pisdf.Fifo;
 import org.preesm.model.pisdf.ForkActor;
 import org.preesm.model.pisdf.FunctionPrototype;
 import org.preesm.model.pisdf.ISetter;
-import org.preesm.model.pisdf.InitActor;
 import org.preesm.model.pisdf.JoinActor;
 import org.preesm.model.pisdf.Parameter;
 import org.preesm.model.pisdf.PiGraph;
@@ -84,6 +86,8 @@ import org.preesm.model.pisdf.Port;
 import org.preesm.model.pisdf.Refinement;
 import org.preesm.model.pisdf.RoundBufferActor;
 import org.preesm.model.pisdf.SpecialActor;
+import org.preesm.model.pisdf.SrdagActor;
+import org.preesm.model.pisdf.UserSpecialActor;
 import org.preesm.model.scenario.Scenario;
 import org.preesm.model.slam.ComponentInstance;
 import org.preesm.model.slam.Design;
@@ -107,6 +111,7 @@ public class CodegenModelGenerator2 {
   private final Mapping     mapping;
   private final Allocation  memAlloc;
   private AllocationVisitor allocation;
+  private final boolean     papify;
 
   private CodegenModelGenerator2(final Design archi, final PiGraph algo, final Scenario scenario,
       final Schedule schedule, final Mapping mapping, final Allocation memAlloc, final boolean papify) {
@@ -116,6 +121,7 @@ public class CodegenModelGenerator2 {
     this.schedule = schedule;
     this.mapping = mapping;
     this.memAlloc = memAlloc;
+    this.papify = papify;
   }
 
   /**
@@ -225,6 +231,8 @@ public class CodegenModelGenerator2 {
   }
 
   private List<Block> generate() {
+    final String msg = "Starting codegen2 with papify set to " + papify;
+    PreesmLogger.getLogger().log(Level.FINE, msg);
 
     final Map<ComponentInstance, CoreBlock> coreBlocks = new LinkedHashMap<>();
 
@@ -247,101 +255,77 @@ public class CodegenModelGenerator2 {
         .collect(Collectors.toList());
 
     // generate buffer definitions
-    generateBuffers(portToVariable, coreBlocks);
+    generateBuffers(coreBlocks);
 
     return Collections.unmodifiableList(resultList);
   }
 
-  private void generateBuffers(final Map<Port, Variable> portToVariable,
-      final Map<ComponentInstance, CoreBlock> coreBlocks) {
-
+  private void generateBuffers(final Map<ComponentInstance, CoreBlock> coreBlocks) {
     for (final Entry<?, Buffer> entry : this.allocation.btb.entrySet()) {
       final Buffer mainBuffer = entry.getValue();
-      final org.preesm.algorithm.memalloc.model.Buffer key = this.allocation.btb.getKey(mainBuffer);
-      final PhysicalBuffer memoryBankObj = key.getBank();
-      final String memoryBank = memoryBankObj.getMemory().getInstanceName();
+      generateBuffer(coreBlocks, mainBuffer);
+    }
+  }
 
-      // Identify the corresponding operator block.
-      // (also find out if the Buffer is local (i.e. not shared between
-      // several CoreBlock)
-      CoreBlock correspondingOperatorBlock = null;
-      final boolean isLocal;
-      final String correspondingOperatorID;
+  private void generateBuffer(final Map<ComponentInstance, CoreBlock> coreBlocks, final Buffer mainBuffer) {
+    final org.preesm.algorithm.memalloc.model.Buffer key = this.allocation.btb.getKey(mainBuffer);
+    final PhysicalBuffer memoryBankObj = key.getBank();
+    final String memoryBank = memoryBankObj.getMemory().getInstanceName();
 
-      if (memoryBank.equalsIgnoreCase("shared_mem")) {
-        // If the memory bank is shared, let the main operator
-        // declare the Buffer.
-        correspondingOperatorID = this.scenario.getSimulationInfo().getMainOperator().getInstanceName();
-        isLocal = false;
+    // Identify the corresponding operator block.
+    // (also find out if the Buffer is local (i.e. not shared between
+    // several CoreBlock)
+    CoreBlock correspondingOperatorBlock = null;
+    final boolean isLocal;
+    final String correspondingOperatorID;
 
-        // Check that the main operator block exists.
-        CoreBlock mainOperatorBlock = null;
-        for (final Entry<ComponentInstance, CoreBlock> componentEntry : coreBlocks.entrySet()) {
-          if (componentEntry.getKey().getInstanceName().equals(correspondingOperatorID)) {
-            mainOperatorBlock = componentEntry.getValue();
-          }
-        }
+    if (memoryBank.equalsIgnoreCase("shared_mem")) {
+      // If the memory bank is shared, let the main operator
+      // declare the Buffer.
+      correspondingOperatorID = this.scenario.getSimulationInfo().getMainOperator().getInstanceName();
+      isLocal = false;
 
-        // If the main operator does not exist
-        if (mainOperatorBlock == null) {
-          // Create it
-          mainOperatorBlock = CodegenModelUserFactory.eINSTANCE.createCoreBlock(null);
-          final ComponentInstance componentInstance = this.archi.getComponentInstance(correspondingOperatorID);
-          mainOperatorBlock.setName(componentInstance.getInstanceName());
-          mainOperatorBlock.setCoreType(componentInstance.getComponent().getVlnv().getName());
-          coreBlocks.put(componentInstance, mainOperatorBlock);
-        }
-
-      } else {
-        // else, the operator corresponding to the memory bank will
-        // do the work
-        correspondingOperatorID = memoryBank;
-        isLocal = true;
-      }
-
-      // Find the block
+      // Check that the main operator block exists.
+      CoreBlock mainOperatorBlock = null;
       for (final Entry<ComponentInstance, CoreBlock> componentEntry : coreBlocks.entrySet()) {
         if (componentEntry.getKey().getInstanceName().equals(correspondingOperatorID)) {
-          correspondingOperatorBlock = componentEntry.getValue();
+          mainOperatorBlock = componentEntry.getValue();
         }
       }
-      // Recursively set the creator for the current Buffer and all its
-      // subBuffer
-      recursiveSetBufferCreator(mainBuffer, correspondingOperatorBlock, isLocal);
 
-      if (correspondingOperatorBlock != null) {
-        final EList<Variable> definitions = correspondingOperatorBlock.getDefinitions();
-        ECollections.sort(definitions, (o1, o2) -> {
-          if ((o1 instanceof Buffer) && (o2 instanceof Buffer)) {
-            int sublevelO1 = 0;
-            if (o1 instanceof SubBuffer) {
-              Buffer b1 = (Buffer) o1;
-              while (b1 instanceof SubBuffer) {
-                sublevelO1++;
-                b1 = ((SubBuffer) b1).getContainer();
-              }
-            }
-
-            int sublevelO2 = 0;
-            if (o2 instanceof SubBuffer) {
-              Buffer b2 = (Buffer) o2;
-              while (b2 instanceof SubBuffer) {
-                sublevelO2++;
-                b2 = ((SubBuffer) b2).getContainer();
-              }
-            }
-
-            return sublevelO1 - sublevelO2;
-          }
-          if (o1 instanceof Buffer) {
-            return 1;
-          }
-          if (o2 instanceof Buffer) {
-            return -1;
-          }
-          return 0;
-        });
+      // If the main operator does not exist
+      if (mainOperatorBlock == null) {
+        // Create it
+        mainOperatorBlock = CodegenModelUserFactory.eINSTANCE.createCoreBlock(null);
+        final ComponentInstance componentInstance = this.archi.getComponentInstance(correspondingOperatorID);
+        mainOperatorBlock.setName(componentInstance.getInstanceName());
+        mainOperatorBlock.setCoreType(componentInstance.getComponent().getVlnv().getName());
+        coreBlocks.put(componentInstance, mainOperatorBlock);
       }
+
+    } else {
+      // else, the operator corresponding to the memory bank will
+      // do the work
+      correspondingOperatorID = memoryBank;
+      isLocal = true;
+    }
+
+    // Find the block
+    for (final Entry<ComponentInstance, CoreBlock> componentEntry : coreBlocks.entrySet()) {
+      if (componentEntry.getKey().getInstanceName().equals(correspondingOperatorID)) {
+        correspondingOperatorBlock = componentEntry.getValue();
+      }
+    }
+    // Recursively set the creator for the current Buffer and all its
+    // subBuffer
+    recursiveSetBufferCreator(mainBuffer, correspondingOperatorBlock, isLocal);
+    sortDefinitions(correspondingOperatorBlock);
+  }
+
+  private void sortDefinitions(CoreBlock correspondingOperatorBlock) {
+    if (correspondingOperatorBlock != null) {
+      final EList<Variable> definitions = correspondingOperatorBlock.getDefinitions();
+      ECollections.sort(definitions, new VariableSorter());
     }
   }
 
@@ -368,55 +352,57 @@ public class CodegenModelGenerator2 {
 
       if (actor instanceof Actor) {
         generateActorFiring((Actor) actor, portToVariable, coreBlock);
-      } else if (actor instanceof SpecialActor) {
-        generateSpecialActor((SpecialActor) actor, portToVariable, coreBlock);
+      } else if (actor instanceof UserSpecialActor) {
+        generateSpecialActor((UserSpecialActor) actor, portToVariable, coreBlock);
+      } else if (actor instanceof SrdagActor) {
+        // TODO handle
+      } else if (actor instanceof CommunicationActor) {
+        // TODO handle
+      } else {
+        // TODO throw error / log warning ?
       }
     }
   }
 
   private void generateSpecialActor(final SpecialActor actor, final Map<Port, Variable> portToVariable,
       final CoreBlock operatorBlock) {
-    if (actor instanceof InitActor || actor instanceof EndActor) {
-      // nothing
+    final SpecialCall specialCall = CodegenModelUserFactory.eINSTANCE.createSpecialCall();
+    specialCall.setName(actor.getName());
+
+    final Fifo uniqueFifo;
+    if (actor instanceof JoinActor) {
+      specialCall.setType(SpecialType.JOIN);
+      uniqueFifo = actor.getDataOutputPorts().get(0).getFifo();
+    } else if (actor instanceof ForkActor) {
+      specialCall.setType(SpecialType.FORK);
+      uniqueFifo = actor.getDataInputPorts().get(0).getFifo();
+    } else if (actor instanceof BroadcastActor) {
+      specialCall.setType(SpecialType.BROADCAST);
+      uniqueFifo = actor.getDataInputPorts().get(0).getFifo();
+    } else if (actor instanceof RoundBufferActor) {
+      specialCall.setType(SpecialType.ROUND_BUFFER);
+      uniqueFifo = actor.getDataInputPorts().get(0).getFifo();
     } else {
-      final SpecialCall specialCall = CodegenModelUserFactory.eINSTANCE.createSpecialCall();
-      specialCall.setName(actor.getName());
-
-      final Fifo uniqueFifo;
-      if (actor instanceof JoinActor) {
-        specialCall.setType(SpecialType.JOIN);
-        uniqueFifo = actor.getDataOutputPorts().get(0).getFifo();
-      } else if (actor instanceof ForkActor) {
-        specialCall.setType(SpecialType.FORK);
-        uniqueFifo = actor.getDataInputPorts().get(0).getFifo();
-      } else if (actor instanceof BroadcastActor) {
-        specialCall.setType(SpecialType.BROADCAST);
-        uniqueFifo = actor.getDataInputPorts().get(0).getFifo();
-      } else if (actor instanceof RoundBufferActor) {
-        specialCall.setType(SpecialType.ROUND_BUFFER);
-        uniqueFifo = actor.getDataInputPorts().get(0).getFifo();
-      } else {
-        throw new PreesmRuntimeException("special actor " + actor + " has an unknown special type");
-      }
-
-      final org.preesm.algorithm.memalloc.model.Buffer buffer = memAlloc.getAllocations().get(uniqueFifo);
-      final Buffer lastBuffer = allocation.btb.get(buffer);
-
-      // Add it to the specialCall
-      if (actor instanceof JoinActor) {
-        specialCall.addOutputBuffer(lastBuffer);
-        actor.getDataInputPorts().stream().map(DataPort::getFifo).map(memAlloc.getAllocations()::get)
-            .map(allocation.btb::get).forEach(specialCall::addInputBuffer);
-      } else {
-        specialCall.addInputBuffer(lastBuffer);
-        actor.getDataOutputPorts().stream().map(DataPort::getFifo).map(memAlloc.getAllocations()::get)
-            .map(allocation.btb::get).forEach(specialCall::addOutputBuffer);
-      }
-
-      operatorBlock.getLoopBlock().getCodeElts().add(specialCall);
-
-      registerCallVariableToCoreBlock(operatorBlock, specialCall);
+      throw new PreesmRuntimeException("special actor " + actor + " has an unknown special type");
     }
+
+    final org.preesm.algorithm.memalloc.model.Buffer buffer = memAlloc.getAllocations().get(uniqueFifo);
+    final Buffer lastBuffer = allocation.btb.get(buffer);
+
+    // Add it to the specialCall
+    if (actor instanceof JoinActor) {
+      specialCall.addOutputBuffer(lastBuffer);
+      actor.getDataInputPorts().stream().map(DataPort::getFifo).map(memAlloc.getAllocations()::get)
+          .map(allocation.btb::get).forEach(specialCall::addInputBuffer);
+    } else {
+      specialCall.addInputBuffer(lastBuffer);
+      actor.getDataOutputPorts().stream().map(DataPort::getFifo).map(memAlloc.getAllocations()::get)
+          .map(allocation.btb::get).forEach(specialCall::addOutputBuffer);
+    }
+
+    operatorBlock.getLoopBlock().getCodeElts().add(specialCall);
+
+    registerCallVariableToCoreBlock(operatorBlock, specialCall);
   }
 
   protected void registerCallVariableToCoreBlock(final CoreBlock operatorBlock, final Call call) {
