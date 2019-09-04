@@ -2273,15 +2273,15 @@ public class CodegenModelGenerator extends AbstractCodegenModelGenerator {
    *          the {@link DAGVertex} corresponding to the actor firing.
    */
   protected void generateSpecialCall(final CoreBlock operatorBlock, final DAGVertex dagVertex) {
-    final SpecialCall f = CodegenModelUserFactory.eINSTANCE.createSpecialCall();
-    f.setName(dagVertex.getName());
+    final SpecialCall specialCall = CodegenModelUserFactory.eINSTANCE.createSpecialCall();
+    specialCall.setName(dagVertex.getName());
     final String vertexType = dagVertex.getPropertyStringValue(AbstractVertex.KIND_LITERAL);
     switch (vertexType) {
       case MapperDAGVertex.DAG_FORK_VERTEX:
-        f.setType(SpecialType.FORK);
+        specialCall.setType(SpecialType.FORK);
         break;
       case MapperDAGVertex.DAG_JOIN_VERTEX:
-        f.setType(SpecialType.JOIN);
+        specialCall.setType(SpecialType.JOIN);
         break;
       case MapperDAGVertex.DAG_BROADCAST_VERTEX:
         final String specialKind = dagVertex.getPropertyBean().getValue(MapperDAGVertex.SPECIAL_TYPE);
@@ -2289,9 +2289,9 @@ public class CodegenModelGenerator extends AbstractCodegenModelGenerator {
           throw new PreesmRuntimeException("Broadcast DAGVertex " + dagVertex + " has null special type");
         }
         if (specialKind.equals(MapperDAGVertex.SPECIAL_TYPE_BROADCAST)) {
-          f.setType(SpecialType.BROADCAST);
+          specialCall.setType(SpecialType.BROADCAST);
         } else if (specialKind.equals(MapperDAGVertex.SPECIAL_TYPE_ROUNDBUFFER)) {
-          f.setType(SpecialType.ROUND_BUFFER);
+          specialCall.setType(SpecialType.ROUND_BUFFER);
         } else {
           throw new PreesmRuntimeException(
               "Broadcast DAGVertex " + dagVertex + " has an unknown special type: " + specialKind);
@@ -2301,10 +2301,10 @@ public class CodegenModelGenerator extends AbstractCodegenModelGenerator {
         throw new PreesmRuntimeException("DAGVertex " + dagVertex + " has an unknown type: " + vertexType);
     }
 
-    if (f.getType().equals(SpecialType.FORK) || f.getType().equals(SpecialType.BROADCAST)) {
-      dagVertex.outgoingEdges().forEach(edge -> addBuffer(dagVertex, edge.getTarget(), edge, f));
+    if (specialCall.getType().equals(SpecialType.FORK) || specialCall.getType().equals(SpecialType.BROADCAST)) {
+      dagVertex.outgoingEdges().forEach(edge -> addBuffer(dagVertex, edge.getTarget(), edge, specialCall));
     } else {
-      dagVertex.incomingEdges().forEach(edge -> addBuffer(edge.getSource(), dagVertex, edge, f));
+      dagVertex.incomingEdges().forEach(edge -> addBuffer(edge.getSource(), dagVertex, edge, specialCall));
     }
 
     // Find the last buffer that correspond to the
@@ -2314,7 +2314,7 @@ public class CodegenModelGenerator extends AbstractCodegenModelGenerator {
     // but only one should be linked to the producer/consumer
     // the other must be linked to a send/receive vertex
     Set<DAGEdge> candidates;
-    if (f.getType().equals(SpecialType.FORK) || f.getType().equals(SpecialType.BROADCAST)) {
+    if (specialCall.getType().equals(SpecialType.FORK) || specialCall.getType().equals(SpecialType.BROADCAST)) {
       candidates = this.algo.incomingEdgesOf(dagVertex);
     } else {
       candidates = this.algo.outgoingEdgesOf(dagVertex);
@@ -2322,13 +2322,13 @@ public class CodegenModelGenerator extends AbstractCodegenModelGenerator {
 
     if (candidates.size() > 2) {
       String direction;
-      if (f.getType().equals(SpecialType.FORK) || f.getType().equals(SpecialType.BROADCAST)) {
+      if (specialCall.getType().equals(SpecialType.FORK) || specialCall.getType().equals(SpecialType.BROADCAST)) {
         direction = "incoming";
       } else {
         direction = "outgoing";
       }
-      throw new PreesmRuntimeException(f.getType().getName() + " vertex " + dagVertex + " more than 1 " + direction
-          + "edge. Check the exported DAG.");
+      throw new PreesmRuntimeException(specialCall.getType().getName() + " vertex " + dagVertex + " more than 1 "
+          + direction + "edge. Check the exported DAG.");
     }
     for (final DAGEdge edge : candidates) {
       if (edge.getSource().getPropertyBean().getValue(ImplementationPropertyNames.Vertex_vertexType)
@@ -2342,7 +2342,8 @@ public class CodegenModelGenerator extends AbstractCodegenModelGenerator {
       // This should never happen. It would mean that a
       // "special vertex" does receive data only from send/receive
       // vertices
-      throw new PreesmRuntimeException(f.getType().getName() + " vertex " + dagVertex + "is not properly connected.");
+      throw new PreesmRuntimeException(
+          specialCall.getType().getName() + " vertex " + dagVertex + "is not properly connected.");
     }
 
     final BufferAggregate bufferAggregate = lastEdge.getPropertyBean().getValue(BufferAggregate.propertyBeanName);
@@ -2367,18 +2368,18 @@ public class CodegenModelGenerator extends AbstractCodegenModelGenerator {
     }
 
     // Add it to the specialCall
-    if (f.getType().equals(SpecialType.FORK) || f.getType().equals(SpecialType.BROADCAST)) {
-      f.addInputBuffer(lastBuffer);
+    if (specialCall.getType().equals(SpecialType.FORK) || specialCall.getType().equals(SpecialType.BROADCAST)) {
+      specialCall.addInputBuffer(lastBuffer);
     } else {
-      f.addOutputBuffer(lastBuffer);
+      specialCall.addOutputBuffer(lastBuffer);
     }
 
-    operatorBlock.getLoopBlock().getCodeElts().add(f);
-    this.dagVertexCalls.put(dagVertex, f);
+    operatorBlock.getLoopBlock().getCodeElts().add(specialCall);
+    this.dagVertexCalls.put(dagVertex, specialCall);
 
-    identifyMergedInputRange(new AbstractMap.SimpleEntry<List<Variable>, List<PortDirection>>(f.getParameters(),
-        f.getParameterDirections()));
-    registerCallVariableToCoreBlock(operatorBlock, f);
+    identifyMergedInputRange(new AbstractMap.SimpleEntry<List<Variable>, List<PortDirection>>(
+        specialCall.getParameters(), specialCall.getParameterDirections()));
+    registerCallVariableToCoreBlock(operatorBlock, specialCall);
   }
 
   /**
