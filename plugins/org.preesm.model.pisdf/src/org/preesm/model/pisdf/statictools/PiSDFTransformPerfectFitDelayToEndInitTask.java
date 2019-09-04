@@ -49,8 +49,9 @@ import org.preesm.workflow.implement.AbstractTaskImplementation;
  *
  */
 @PreesmTask(id = "org.ietr.preesm.pisdf.transformperfectfitdelay",
-    name = "PiSDF Transform Perfect Fit Delay To End Init", inputs = { @Port(name = "PiMM", type = PiGraph.class) },
-    outputs = { @Port(name = "PiMM", type = PiGraph.class) })
+    name = "PiSDF Transform Perfect Fit Delay To End Init", category = "Graph Transformation",
+
+    inputs = { @Port(name = "PiMM", type = PiGraph.class) }, outputs = { @Port(name = "PiMM", type = PiGraph.class) })
 public class PiSDFTransformPerfectFitDelayToEndInitTask extends AbstractTaskImplementation {
 
   @Override

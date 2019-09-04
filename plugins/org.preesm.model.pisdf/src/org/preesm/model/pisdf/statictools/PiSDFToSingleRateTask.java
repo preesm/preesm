@@ -59,7 +59,7 @@ import org.preesm.workflow.implement.AbstractWorkflowNodeImplementation;
  * @author farresti
  *
  */
-@PreesmTask(id = "pisdf-srdag", name = "PiSDF Single-Rate Transformation",
+@PreesmTask(id = "pisdf-srdag", name = "PiSDF Single-Rate Transformation", category = "Graph Transformation",
 
     inputs = { @Port(name = "PiMM", type = PiGraph.class) }, outputs = { @Port(name = "PiMM", type = PiGraph.class) },
 
