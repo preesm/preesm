@@ -5,8 +5,11 @@ PREESM Changelog
 *XXXX.XX.XX*
 
 ### New Feature
+* Codegen:
+  * PREESM now support the codegeneration to manage hardware accelerators developed within [ARTICo³](https://des-cei.github.io/tools/artico3), an open-source runtime reconfigurable processing architecture.
 
 ### Changes
+* [Hardware Codegen]: useless function removed;
 
 ### Bug fix
 
