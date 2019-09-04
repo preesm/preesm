@@ -24,7 +24,9 @@ PREESM Changelog
   * make code clearer for ClusteringBuilder
   * refactored the way of getting clusterizable couples
   * clusters now have timings 
-* Schedule: Readapt the way of exhibiting data parallelism and print expression
+* Schedule: 
+  * Readapt the way of exhibiting data parallelism and print expression
+  * Add communication nodes
 
 ### Bug fix
 * Fix #218: add support for non connected actors in SRDAG transform;
