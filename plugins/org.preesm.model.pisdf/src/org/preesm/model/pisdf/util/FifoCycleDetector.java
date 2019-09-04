@@ -87,13 +87,6 @@ public class FifoCycleDetector extends PiMMSwitch<Void> {
   protected Set<Fifo> ignoredFifos;
 
   /**
-   * Default constructor. Assume fast detection is true. (i.e. the detection will stop at the first cycle detected)
-   */
-  public FifoCycleDetector() {
-    this(true);
-  }
-
-  /**
    * Instantiates a new fifo cycle detector.
    *
    * @param fastDetection

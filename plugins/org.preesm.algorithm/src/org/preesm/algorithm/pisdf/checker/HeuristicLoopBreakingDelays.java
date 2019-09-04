@@ -82,10 +82,12 @@ public class HeuristicLoopBreakingDelays {
    */
   protected class FifoAbstraction {
     boolean    fullyDelayed;
+    int        nbNonZeroDelays;
     List<Long> delays;
 
     private FifoAbstraction() {
       this.fullyDelayed = false;
+      this.nbNonZeroDelays = 0;
       this.delays = new ArrayList<>();
     }
   }
@@ -121,8 +123,8 @@ public class HeuristicLoopBreakingDelays {
     for (final FifoAbstraction breakingFifo : breakingFifos) {
       final AbstractActor src = absGraph.getEdgeSource(breakingFifo);
       final AbstractActor tgt = absGraph.getEdgeTarget(breakingFifo);
-      final int newNbVisitsT = this.actorsNbVisitsTopoRankT.get(src) - breakingFifo.delays.size();
-      final int newNbVisits = this.actorsNbVisitsTopoRank.get(tgt) - breakingFifo.delays.size();
+      final int newNbVisitsT = this.actorsNbVisitsTopoRankT.get(src) - breakingFifo.nbNonZeroDelays;
+      final int newNbVisits = this.actorsNbVisitsTopoRank.get(tgt) - breakingFifo.nbNonZeroDelays;
       if ((newNbVisits < 0) || (newNbVisitsT < 0)) {
         throw new PreesmRuntimeException("A loop breaking fifo gave wrong I/O ports number between <" + src.getName()
             + "> and <" + tgt.getName() + ">, leaving.");
@@ -313,6 +315,7 @@ public class HeuristicLoopBreakingDelays {
         if (d == null) {
           fa.delays.add(0L);
         } else {
+          fa.nbNonZeroDelays++;
           fa.delays.add(d.getSizeExpression().evaluate());
         }
         boolean fullyDelayed = true;
