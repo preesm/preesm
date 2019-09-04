@@ -383,21 +383,21 @@ public class CodegenModelGenerator2 {
     if (actor instanceof InitActor || actor instanceof EndActor) {
       // nothing
     } else {
-      final SpecialCall f = CodegenModelUserFactory.eINSTANCE.createSpecialCall();
-      f.setName(actor.getName());
+      final SpecialCall specialCall = CodegenModelUserFactory.eINSTANCE.createSpecialCall();
+      specialCall.setName(actor.getName());
 
       final Fifo uniqueFifo;
       if (actor instanceof JoinActor) {
-        f.setType(SpecialType.JOIN);
+        specialCall.setType(SpecialType.JOIN);
         uniqueFifo = actor.getDataOutputPorts().get(0).getFifo();
       } else if (actor instanceof ForkActor) {
-        f.setType(SpecialType.FORK);
+        specialCall.setType(SpecialType.FORK);
         uniqueFifo = actor.getDataInputPorts().get(0).getFifo();
       } else if (actor instanceof BroadcastActor) {
-        f.setType(SpecialType.BROADCAST);
+        specialCall.setType(SpecialType.BROADCAST);
         uniqueFifo = actor.getDataInputPorts().get(0).getFifo();
       } else if (actor instanceof RoundBufferActor) {
-        f.setType(SpecialType.ROUND_BUFFER);
+        specialCall.setType(SpecialType.ROUND_BUFFER);
         uniqueFifo = actor.getDataInputPorts().get(0).getFifo();
       } else {
         throw new PreesmRuntimeException("special actor " + actor + " has an unknown special type");
@@ -408,14 +408,14 @@ public class CodegenModelGenerator2 {
 
       // Add it to the specialCall
       if (actor instanceof JoinActor) {
-        f.addOutputBuffer(lastBuffer);
+        specialCall.addOutputBuffer(lastBuffer);
       } else {
-        f.addInputBuffer(lastBuffer);
+        specialCall.addInputBuffer(lastBuffer);
       }
 
-      operatorBlock.getLoopBlock().getCodeElts().add(f);
+      operatorBlock.getLoopBlock().getCodeElts().add(specialCall);
 
-      registerCallVariableToCoreBlock(operatorBlock, f);
+      registerCallVariableToCoreBlock(operatorBlock, specialCall);
     }
   }
 
