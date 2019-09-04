@@ -45,8 +45,11 @@
 @Ecore(nsURI="http://org.preesm/algos/schedule")
 package org.preesm.algorithm.schedule.model
 
-import org.preesm.model.pisdf.AbstractActor
 import org.preesm.algorithm.synthesis.schedule.SchedulePrinterSwitch
+import org.preesm.model.pisdf.AbstractActor
+import org.preesm.model.pisdf.Fifo
+import org.preesm.model.pisdf.SpecialActor
+import org.preesm.model.slam.ComponentInstance
 
 // !!! This is needed as of the current versions of xcore/xtext
 // For some reason when using the default String/... (i.e. without the following)
@@ -75,10 +78,8 @@ interface Schedule {
 	 * Used when building schedules for non-srdag PiGraphs.
 	 */
 	long repetition
-
 	contains volatile Schedule[] children opposite parent
 	refers Schedule parent opposite children
-
 	/*
 	 * Return the list of all the actors contained by this schedule and all of its children.
 	 *
@@ -244,24 +245,58 @@ class StagedHiearchicalSchedule extends SequentialHiearchicalSchedule {
 	}
 }
 
-/*
-interface CommunicationActor extends SpecialActor {
+// Special actors to fire communication. They are used to schedule the Fifos
+abstract class CommunicationActor extends SpecialActor {
 	refers Fifo fifo
 }
 
-class SendActor extends CommunicationActor {
-	refers ReceiveActor receive opposite send
+abstract class SendActor extends CommunicationActor {
+	op ComponentInstance getSendEnabler()
+}
+class SendStartActor extends SendActor {
+	// to track when com ends
+	refers SendEndActor sendEnd opposite sendStart
+
+	// to track to who data is sent
+	refers ReceiveEndActor targetReceiveEnd opposite sourceSendStart
+
+	// optional enable to delegate the copy to (DMA, ...)
+	refers ComponentInstance sendEnabler
+}
+class SendEndActor extends SendActor {
+	// to track when com started
+	refers SendStartActor sendStart opposite sendEnd
+
+	// start & end have same enabler
+	op ComponentInstance getSendEnabler() {
+		return sendStart.sendEnabler
+	}
 }
 
-class ReceiveActor extends CommunicationActor {
-	refers SendActor send opposite receive
+abstract class ReceiveActor extends CommunicationActor {
+	op ComponentInstance getReceiveEnabler()
+}
+class ReceiveStartActor extends ReceiveActor {
+	// to track when com ends
+	refers ReceiveEndActor receiveEnd opposite receiveStart
+
+	// optional enable to delegate the copy to (DMA, ...)
+	refers ComponentInstance receiveEnabler
+}
+class ReceiveEndActor extends ReceiveActor {
+	// to track who sent
+	refers SendStartActor sourceSendStart opposite targetReceiveEnd
+
+	// to track when com started
+	refers ReceiveStartActor receiveStart opposite receiveEnd
+
+	// start & end have same enabler
+	op ComponentInstance getReceiveEnabler() {
+		return receiveStart.receiveEnabler
+	}
 }
 
-class InvolvementActor extends CommunicationActor {
-	refers ComponentInstance receiver
+// Receive then Send. Atomic: simplifies allocation.
+class ForwardActor extends SendEndActor, SendStartActor, ReceiveStartActor, ReceiveEndActor {
 }
 
-class OverheadActor extends CommunicationActor {
-	refers ComponentInstance dma
-}
- */
