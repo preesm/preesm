@@ -18,7 +18,9 @@ PREESM Changelog
   * EnergyAwarenessSearchType selects the type of searching done: Thorough (changes PEs number one by one) and halves (Divides in halves the remaining available PEs and goes up/down depending if the FPS reached are below/above the objective)
 
 ### Changes
-* PiSDF: PiGraph can be declared as a cluster. Hierarchy of cluster may be ignore by SR and DAG transformation.
+* PiSDF: 
+  * PiGraph can be declared as a cluster. Hierarchy of cluster may be ignore by SR and DAG transformation;
+  * Add operation to get the unique data port of a SrdagActor (init/end);
 * Change PiSDF task categories in task reference;
 * Clustering: 
   * cluster are now mappable into component by retrieving common possible mapping of included actors

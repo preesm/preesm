@@ -398,6 +398,10 @@ class RoundBufferActor extends UserSpecialActor {
 
 // special abstract class for special actors generated in the SRDAG
 abstract class SrdagActor extends SpecialActor {
+	op DataPort getDataPort() {
+		// Data in/out interfaces have only one data port
+		return allDataPorts.get(0)
+	}
 }
 
 class InitActor extends SrdagActor {
