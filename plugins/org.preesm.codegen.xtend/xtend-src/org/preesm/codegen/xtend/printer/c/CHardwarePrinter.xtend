@@ -254,6 +254,11 @@ class CHardwarePrinter extends CPrinter {
 				pthread_join(coreThreads[i], NULL);
 			}
 			}
+			«IF this.usingPapify == 1»
+				#ifdef _PREESM_PAPIFY_MONITOR
+				event_destroy();
+				#endif
+			«ENDIF»
 			return 0;
 		}
 
