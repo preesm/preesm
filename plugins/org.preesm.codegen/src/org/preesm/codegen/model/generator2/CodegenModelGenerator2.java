@@ -70,6 +70,7 @@ import org.preesm.model.pisdf.Actor;
 import org.preesm.model.pisdf.BroadcastActor;
 import org.preesm.model.pisdf.CHeaderRefinement;
 import org.preesm.model.pisdf.ConfigInputPort;
+import org.preesm.model.pisdf.DataPort;
 import org.preesm.model.pisdf.EndActor;
 import org.preesm.model.pisdf.Fifo;
 import org.preesm.model.pisdf.ForkActor;
@@ -93,11 +94,6 @@ import org.preesm.model.slam.Design;
  *
  */
 public class CodegenModelGenerator2 {
-
-  public static final List<Block> generate(final Design archi, final PiGraph algo, final Scenario scenario,
-      final Schedule schedule, final Mapping mapping, final Allocation memAlloc) {
-    return CodegenModelGenerator2.generate(archi, algo, scenario, schedule, mapping, memAlloc, false);
-  }
 
   public static final List<Block> generate(final Design archi, final PiGraph algo, final Scenario scenario,
       final Schedule schedule, final Mapping mapping, final Allocation memAlloc, final boolean papify) {
@@ -409,8 +405,12 @@ public class CodegenModelGenerator2 {
       // Add it to the specialCall
       if (actor instanceof JoinActor) {
         specialCall.addOutputBuffer(lastBuffer);
+        actor.getDataInputPorts().stream().map(DataPort::getFifo).map(memAlloc.getAllocations()::get)
+            .map(allocation.btb::get).forEach(specialCall::addInputBuffer);
       } else {
         specialCall.addInputBuffer(lastBuffer);
+        actor.getDataOutputPorts().stream().map(DataPort::getFifo).map(memAlloc.getAllocations()::get)
+            .map(allocation.btb::get).forEach(specialCall::addOutputBuffer);
       }
 
       operatorBlock.getLoopBlock().getCodeElts().add(specialCall);
