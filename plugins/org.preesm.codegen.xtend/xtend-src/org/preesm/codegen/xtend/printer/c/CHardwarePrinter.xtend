@@ -136,28 +136,6 @@ class CHardwarePrinter extends CPrinter {
 		«ENDIF»
 	'''
 
-	override generateStandardLibFiles() {
-		val result = super.generateStandardLibFiles();
-//		val String stdFileFolderHardware = "/stdfiles/hardware/"
-//		val filesHardware = Arrays.asList(#[
-//			"hardware.c",
-//			"hardware.h",
-//			"hardware_hw.c",
-//			"hardware_hw.h",
-//			"hardware_rcfg.c",
-//			"hardware_rcfg.h",
-//			"hardware_dbg.h"
-//		]);
-//		filesHardware.forEach [ it |
-//			try {
-//				result.put(it, PreesmResourcesHelper.instance.read(stdFileFolderHardware + it, this.class))
-//			} catch (IOException exc) {
-//				throw new PreesmRuntimeException("Could not generated content for " + it, exc)
-//			}
-//		]
-		return result
-	}
-
 	override String printMain(List<Block> printerBlocks) '''
 		/**
 		 * @file main.c
