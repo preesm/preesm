@@ -68,7 +68,7 @@ import org.preesm.workflow.implement.AbstractWorkflowNodeImplementation;
 /**
  *
  */
-@PreesmTask(id = "pisdf-export", name = "PiSDF Exporter",
+@PreesmTask(id = "pisdf-export", name = "PiSDF Exporter", category = "Graph Exporters",
 
     inputs = { @Port(name = "PiMM", type = PiGraph.class) },
 
@@ -117,7 +117,7 @@ public class PiSDFExporterTask extends AbstractTaskImplementation {
     final String pathParameter = parameters.get("path");
 
     // create a copy of the input graph so that subgraph disconnector does not impact other tasks
-    final PiGraph graphCopy = graph; // PiMMUserFactory.instance.copy(graph);
+    final PiGraph graphCopy = graph;
 
     // Creates the output file now
     final String sXmlPath = WorkspaceUtils.getAbsolutePath(pathParameter, workflow.getProjectName());
@@ -150,10 +150,6 @@ public class PiSDFExporterTask extends AbstractTaskImplementation {
 
     final IPath graphPath;
     graphPath = xmlPath.append(graph.getName() + ".pi");
-    // if (graph.getContainingPiGraph() != null) {
-    // } else {
-    // graphPath = xmlPath;
-    // }
 
     final String string = graphPath.toString();
     final URI uri = URI.createPlatformResourceURI(string, true);
