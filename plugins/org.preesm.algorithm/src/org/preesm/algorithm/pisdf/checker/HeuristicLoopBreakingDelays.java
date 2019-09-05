@@ -188,8 +188,8 @@ public class HeuristicLoopBreakingDelays {
       if (current.getDataOutputPorts().size() > nbCommonPorts) {
         actorsWithExits.add(current);
       }
-      if (current.getDataInputPorts().size() > nbCommonPorts) {
-        actorsWithEntries.add(current);
+      if (next.getDataInputPorts().size() > nbCommonPorts) {
+        actorsWithEntries.add(next);
       }
       current = next;
     }
@@ -198,8 +198,8 @@ public class HeuristicLoopBreakingDelays {
     if (current.getDataOutputPorts().size() > nbCommonPorts) {
       actorsWithExits.add(current);
     }
-    if (current.getDataInputPorts().size() > nbCommonPorts) {
-      actorsWithEntries.add(current);
+    if (root.getDataInputPorts().size() > nbCommonPorts) {
+      actorsWithEntries.add(0, root);
     }
 
     int index = FifoBreakingCycleDetector.retrieveBreakingFifoWhenDifficult(cycle, actorsWithEntries, actorsWithExits);

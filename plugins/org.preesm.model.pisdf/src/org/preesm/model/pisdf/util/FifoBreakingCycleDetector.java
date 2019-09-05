@@ -5,6 +5,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.regex.Pattern;
 import org.preesm.model.pisdf.AbstractActor;
+import org.preesm.model.pisdf.Fifo;
 
 /**
  * This class provides helper functions to compute the breaking fifo in a cycle.
@@ -36,9 +37,9 @@ public class FifoBreakingCycleDetector {
    * @param cycle
    *          Cycle to consider.
    * @param actorsWithEntries
-   *          Actors in the cycle having also inputs from actors not being the cycle.
+   *          Actors in the cycle having also inputs from actors not being the cycle. In the same order as in the cycle.
    * @param actorsWithExits
-   *          Actors in the cycle having also outputs to actors not being the cycle.
+   *          Actors in the cycle having also outputs to actors not being the cycle. In the same order as in the cycle.
    * @return index in the cycle of the actor after whom the cycle can be broken.
    */
   public static int retrieveBreakingFifoWhenDifficult(final List<AbstractActor> cycle,
@@ -96,6 +97,47 @@ public class FifoBreakingCycleDetector {
       return index == 0 ? types.size() - 1 : index - 1;
     }
     return -1;
+  }
+
+  /**
+   * Compute entry and exit actor in a cycle, in the same order as in the cycle (if appearing).
+   * 
+   * @param cycle
+   *          List of nodes forming a cycle.
+   * @param cyclesFifos
+   *          List of Fifos between these nodes (of same size as {@code cycle}).
+   * @param actorsWithEntries
+   *          Modified list with entry actors, in the same order as {@code cycle}.
+   * @param actorsWithExits
+   *          Modified list with exit actors, in the same order as {@code cycle}.
+   */
+  public static void computeExitAndEntries(final List<AbstractActor> cycle, final List<List<Fifo>> cyclesFifos,
+      final List<AbstractActor> actorsWithEntries, final List<AbstractActor> actorsWithExits) {
+
+    Iterator<AbstractActor> it = cycle.iterator();
+    Iterator<List<Fifo>> itL = cyclesFifos.iterator();
+    AbstractActor current = it.next();
+    while (it.hasNext()) {
+      final AbstractActor next = it.next();
+      List<Fifo> fifos = itL.next();
+      final int nbCommonPorts = fifos.size();
+      if (current.getDataOutputPorts().size() > nbCommonPorts) {
+        actorsWithExits.add(current);
+      }
+      if (next.getDataInputPorts().size() > nbCommonPorts) {
+        actorsWithEntries.add(next);
+      }
+      current = next;
+    }
+    List<Fifo> fifos = itL.next();
+    final int nbCommonPorts = fifos.size();
+    if (current.getDataOutputPorts().size() > nbCommonPorts) {
+      actorsWithExits.add(current);
+    }
+    final AbstractActor root = cycle.get(0);
+    if (root.getDataInputPorts().size() > nbCommonPorts) {
+      actorsWithEntries.add(0, root);
+    }
   }
 
 }
