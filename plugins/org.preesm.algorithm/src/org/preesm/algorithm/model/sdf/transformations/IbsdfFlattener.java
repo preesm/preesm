@@ -208,118 +208,126 @@ public class IbsdfFlattener {
    *           if an interface is connected to several FIFOs.
    */
   private static void addInterfaceSubstitutes(final SDFGraph subgraph) {
-
     final List<SDFInterfaceVertex> ifaceList = subgraph.vertexSet().stream()
         .filter(v -> v instanceof SDFInterfaceVertex).map(SDFInterfaceVertex.class::cast).collect(Collectors.toList());
     for (final SDFInterfaceVertex iface : ifaceList) {
       if (iface instanceof SDFSourceInterfaceVertex) {
-        // Get successors
-        final Set<SDFEdge> outEdges = subgraph.outgoingEdgesOf(iface);
-        if (outEdges.size() > 1) {
-          throw new PreesmRuntimeException("Input interface " + iface.getName() + " in subgraph " + subgraph.getName()
-              + " is connected to multiple FIFOs although this is strictly forbidden.");
-        }
-
-        // Check if a broadcast is needed
-        final SDFEdge outEdge = outEdges.iterator().next();
-        final long prodRate = outEdge.getProd().longValue();
-        final long consRate = outEdge.getCons().longValue();
-        final long nbRepeatCons = outEdge.getTarget().getNbRepeatAsLong();
-
-        // If more token are consumed during an iteration of
-        // the subgraph than the number of available tokens
-        // => broadcast needed
-        final long nbConsumedTokens;
-        try {
-          nbConsumedTokens = Math.multiplyExact(consRate, nbRepeatCons);
-        } catch (final ArithmeticException e) {
-          throw new PreesmRuntimeException(
-              "Number of repetitions of actor " + outEdge.getTarget() + " (x " + nbRepeatCons + ") or number"
-                  + "of consumed tokens on edge " + outEdge + " is too big and causes an overflow in the tool.",
-              e);
-        }
-        if (prodRate < nbConsumedTokens) {
-          // Add the broadcast and connect edges
-          final SDFBroadcastVertex broadcast = new SDFBroadcastVertex(null);
-          broadcast.setName("br_" + iface.getName());
-          subgraph.addVertex(broadcast);
-          final SDFEdge edgeIn = subgraph.addEdge(outEdge.getSource(), broadcast);
-          final SDFEdge edgeOut = subgraph.addEdge(broadcast, outEdge.getTarget());
-
-          // Set edges properties
-          edgeIn.copyProperties(outEdge);
-          edgeIn.setTargetInterface(new SDFSourceInterfaceVertex(null));
-          edgeIn.getTargetInterface().setName(iface.getName());
-          edgeIn.setTargetPortModifier(new StringEdgePropertyType(SDFEdge.MODIFIER_READ_ONLY));
-          edgeIn.setDelay(new LongEdgePropertyType(0));
-          edgeIn.setCons(new LongEdgePropertyType(prodRate));
-
-          edgeOut.copyProperties(outEdge);
-          edgeOut.setProd(new LongEdgePropertyType(consRate * nbRepeatCons));
-          edgeOut.getPropertyBean().removeProperty(SDFEdge.SOURCE_PORT_MODIFIER);
-          edgeOut.setSourceInterface(new SDFSinkInterfaceVertex(null));
-          edgeOut.getSourceInterface().setName(iface.getName() + "_0_0");
-
-          broadcast.addSink(edgeOut.getSourceInterface());
-          broadcast.addSource(edgeIn.getTargetInterface());
-
-          // Remove the original edge
-          subgraph.removeEdge(outEdge);
-        }
-      } else { // interface instanceof SDFSinkInterfaceVertex
-        // Get predecessor
-        final Set<SDFEdge> inEdges = subgraph.incomingEdgesOf(iface);
-        if (inEdges.size() > 1) {
-          throw new PreesmRuntimeException("Output interface " + iface.getName() + " in subgraph " + subgraph.getName()
-              + " is connected to multiple FIFOs although this is strictly forbidden.");
-        }
-
-        // Check if a roundbuffer is needed
-        final SDFEdge inEdge = inEdges.iterator().next();
-        final long prodRate = inEdge.getProd().longValue();
-        final long consRate = inEdge.getCons().longValue();
-        final long nbRepeatProd = inEdge.getSource().getNbRepeatAsLong();
-
-        // If more token are produced during an iteration of
-        // the subgraph than the number of consumed tokens
-        // => roundbuffer needed
-        final long nbProducedTokens;
-        try {
-          nbProducedTokens = Math.multiplyExact(prodRate, nbRepeatProd);
-        } catch (final ArithmeticException e) {
-          throw new PreesmRuntimeException("Number of repetitions of actor " + inEdge.getSource() + " (x "
-              + nbRepeatProd + ") or number of consumed tokens on edge " + inEdge
-              + " is too big and causes an overflow in the tool.", e);
-        }
-        if (nbProducedTokens > consRate) {
-          // Add the roundbuffer and connect edges
-          final SDFRoundBufferVertex roundbuffer = new SDFRoundBufferVertex(null);
-          roundbuffer.setName("rb_" + iface.getName());
-          subgraph.addVertex(roundbuffer);
-          final SDFEdge edgeIn = subgraph.addEdge(inEdge.getSource(), roundbuffer);
-          final SDFEdge edgeOut = subgraph.addEdge(roundbuffer, inEdge.getTarget());
-
-          // Set edges properties
-          edgeOut.copyProperties(inEdge);
-          edgeOut.setSourcePortModifier(new StringEdgePropertyType(SDFEdge.MODIFIER_WRITE_ONLY));
-          edgeOut.setProd(new LongEdgePropertyType(consRate));
-          edgeOut.setDelay(new LongEdgePropertyType(0));
-          edgeIn.setSourceInterface(new SDFSinkInterfaceVertex(null));
-          edgeIn.getSourceInterface().setName(iface.getName());
-
-          edgeIn.copyProperties(inEdge);
-          edgeIn.setCons(new LongEdgePropertyType(prodRate * nbRepeatProd));
-          edgeIn.getPropertyBean().removeProperty(SDFEdge.TARGET_PORT_MODIFIER);
-          edgeIn.setTargetInterface(new SDFSourceInterfaceVertex(null));
-          edgeIn.getTargetInterface().setName(iface.getName() + "_0_0");
-
-          roundbuffer.addSource(edgeIn.getTargetInterface());
-          roundbuffer.addSink(edgeOut.getSourceInterface());
-
-          // Remove the original edge
-          subgraph.removeEdge(inEdge);
-        }
+        addSourceInterface(subgraph, iface);
+      } else {
+        addSinkInterface(subgraph, iface);
       }
+    }
+  }
+
+  private static void addSinkInterface(final SDFGraph subgraph, final SDFInterfaceVertex iface) {
+    // interface instanceof SDFSinkInterfaceVertex
+    // Get predecessor
+    final Set<SDFEdge> inEdges = subgraph.incomingEdgesOf(iface);
+    if (inEdges.size() > 1) {
+      throw new PreesmRuntimeException("Output interface " + iface.getName() + " in subgraph " + subgraph.getName()
+          + " is connected to multiple FIFOs although this is strictly forbidden.");
+    }
+
+    // Check if a roundbuffer is needed
+    final SDFEdge inEdge = inEdges.iterator().next();
+    final long prodRate = inEdge.getProd().longValue();
+    final long consRate = inEdge.getCons().longValue();
+    final long nbRepeatProd = inEdge.getSource().getNbRepeatAsLong();
+
+    // If more token are produced during an iteration of
+    // the subgraph than the number of consumed tokens
+    // => roundbuffer needed
+    final long nbProducedTokens;
+    try {
+      nbProducedTokens = Math.multiplyExact(prodRate, nbRepeatProd);
+    } catch (final ArithmeticException e) {
+      throw new PreesmRuntimeException(
+          "Number of repetitions of actor " + inEdge.getSource() + " (x " + nbRepeatProd
+              + ") or number of consumed tokens on edge " + inEdge + " is too big and causes an overflow in the tool.",
+          e);
+    }
+    if (nbProducedTokens > consRate) {
+      // Add the roundbuffer and connect edges
+      final SDFRoundBufferVertex roundbuffer = new SDFRoundBufferVertex(null);
+      roundbuffer.setName("rb_" + iface.getName());
+      subgraph.addVertex(roundbuffer);
+      final SDFEdge edgeIn = subgraph.addEdge(inEdge.getSource(), roundbuffer);
+      final SDFEdge edgeOut = subgraph.addEdge(roundbuffer, inEdge.getTarget());
+
+      // Set edges properties
+      edgeOut.copyProperties(inEdge);
+      edgeOut.setSourcePortModifier(new StringEdgePropertyType(SDFEdge.MODIFIER_WRITE_ONLY));
+      edgeOut.setProd(new LongEdgePropertyType(consRate));
+      edgeOut.setDelay(new LongEdgePropertyType(0));
+      edgeIn.setSourceInterface(new SDFSinkInterfaceVertex(null));
+      edgeIn.getSourceInterface().setName(iface.getName());
+
+      edgeIn.copyProperties(inEdge);
+      edgeIn.setCons(new LongEdgePropertyType(prodRate * nbRepeatProd));
+      edgeIn.getPropertyBean().removeProperty(SDFEdge.TARGET_PORT_MODIFIER);
+      edgeIn.setTargetInterface(new SDFSourceInterfaceVertex(null));
+      edgeIn.getTargetInterface().setName(iface.getName() + "_0_0");
+
+      roundbuffer.addSource(edgeIn.getTargetInterface());
+      roundbuffer.addSink(edgeOut.getSourceInterface());
+
+      // Remove the original edge
+      subgraph.removeEdge(inEdge);
+    }
+  }
+
+  private static void addSourceInterface(final SDFGraph subgraph, final SDFInterfaceVertex iface) {
+    // Get successors
+    final Set<SDFEdge> outEdges = subgraph.outgoingEdgesOf(iface);
+    if (outEdges.size() > 1) {
+      throw new PreesmRuntimeException("Input interface " + iface.getName() + " in subgraph " + subgraph.getName()
+          + " is connected to multiple FIFOs although this is strictly forbidden.");
+    }
+
+    // Check if a broadcast is needed
+    final SDFEdge outEdge = outEdges.iterator().next();
+    final long prodRate = outEdge.getProd().longValue();
+    final long consRate = outEdge.getCons().longValue();
+    final long nbRepeatCons = outEdge.getTarget().getNbRepeatAsLong();
+
+    // If more token are consumed during an iteration of
+    // the subgraph than the number of available tokens
+    // => broadcast needed
+    final long nbConsumedTokens;
+    try {
+      nbConsumedTokens = Math.multiplyExact(consRate, nbRepeatCons);
+    } catch (final ArithmeticException e) {
+      throw new PreesmRuntimeException("Number of repetitions of actor " + outEdge.getTarget() + " (x " + nbRepeatCons
+          + ") or number" + "of consumed tokens on edge " + outEdge + " is too big and causes an overflow in the tool.",
+          e);
+    }
+    if (prodRate < nbConsumedTokens) {
+      // Add the broadcast and connect edges
+      final SDFBroadcastVertex broadcast = new SDFBroadcastVertex(null);
+      broadcast.setName("br_" + iface.getName());
+      subgraph.addVertex(broadcast);
+      final SDFEdge edgeIn = subgraph.addEdge(outEdge.getSource(), broadcast);
+      final SDFEdge edgeOut = subgraph.addEdge(broadcast, outEdge.getTarget());
+
+      // Set edges properties
+      edgeIn.copyProperties(outEdge);
+      edgeIn.setTargetInterface(new SDFSourceInterfaceVertex(null));
+      edgeIn.getTargetInterface().setName(iface.getName());
+      edgeIn.setTargetPortModifier(new StringEdgePropertyType(SDFEdge.MODIFIER_READ_ONLY));
+      edgeIn.setDelay(new LongEdgePropertyType(0));
+      edgeIn.setCons(new LongEdgePropertyType(prodRate));
+
+      edgeOut.copyProperties(outEdge);
+      edgeOut.setProd(new LongEdgePropertyType(consRate * nbRepeatCons));
+      edgeOut.getPropertyBean().removeProperty(SDFEdge.SOURCE_PORT_MODIFIER);
+      edgeOut.setSourceInterface(new SDFSinkInterfaceVertex(null));
+      edgeOut.getSourceInterface().setName(iface.getName() + "_0_0");
+
+      broadcast.addSink(edgeOut.getSourceInterface());
+      broadcast.addSource(edgeIn.getTargetInterface());
+
+      // Remove the original edge
+      subgraph.removeEdge(outEdge);
     }
   }
 
@@ -429,7 +437,7 @@ public class IbsdfFlattener {
 
       // Do the substitution only for parameters whose expression differs
       // from the parameter name (to avoid unnecessary computations)
-      subgraphParameters.entrySet().stream().filter(e -> e.getKey() != e.getValue())
+      subgraphParameters.entrySet().stream().filter(e -> !(e.getKey().equals(e.getValue())))
           .forEach(e -> replaceInExpressions(subgraph, e.getKey(), e.getValue()));
     }
   }
@@ -534,14 +542,75 @@ public class IbsdfFlattener {
     subgraph.getVariables().entrySet().stream().forEach(e -> getFlattenedGraph().addVariable(e.getValue()));
 
     // Clone all subgraph actors in the flattened graph (except interfaces)
-    final Map<SDFAbstractVertex, SDFAbstractVertex> clones = new LinkedHashMap<>();
-    subgraph.vertexSet().stream().filter(it -> !(it instanceof SDFInterfaceVertex)).forEach(it -> {
-      final SDFAbstractVertex clone = it.copy();
-      getFlattenedGraph().addVertex(clone);
-      clones.put(it, clone);
-    });
+    final Map<SDFAbstractVertex, SDFAbstractVertex> clones = cloneSubGraphs(subgraph);
 
     // Now, copy all fifos, except those connected to interfaces
+    cloneFifos(subgraph, clones);
+
+    // Connect FIFO that were connected to ports of the flattened actor
+    // and those connected to interfaces in the subgraph
+    for (final SDFAbstractVertex iface : subgraph.vertexSet().stream().filter(it -> it instanceof SDFInterfaceVertex)
+        .collect(Collectors.toList())) {
+      connectFifos(hierActor, subgraph, clones, iface);
+    }
+  }
+
+  private void connectFifos(final SDFAbstractVertex hierActor, final SDFGraph subgraph,
+      final Map<SDFAbstractVertex, SDFAbstractVertex> clones, final SDFAbstractVertex iface) {
+    // Get the actor port
+    final SDFInterfaceVertex port = hierActor.getInterface(iface.getName());
+    final SDFEdge externalFifo = hierActor.getAssociatedEdge(port);
+
+    // Connect the new FIFO
+    final SDFEdge newFifo;
+    if (iface instanceof SDFSourceInterfaceVertex) {
+      final SDFEdge internalFifo = subgraph.outgoingEdgesOf(iface).iterator().next();
+      newFifo = getFlattenedGraph().addEdge(externalFifo.getSource(), clones.get(internalFifo.getTarget()));
+      newFifo.copyProperties(externalFifo);
+      newFifo.setCons(internalFifo.getCons());
+      if (internalFifo.getDelay() != null) {
+        newFifo.setDelay(internalFifo.getDelay());
+      }
+      newFifo.setTargetInterface(internalFifo.getTargetInterface());
+      newFifo.setTargetPortModifier(internalFifo.getTargetPortModifier());
+    } else {
+      // iface is instance of SDFSinkInterfaceVertex
+      final SDFEdge internalFifo = subgraph.incomingEdgesOf(iface).iterator().next();
+      // if the edge loops on hierActor
+      if (externalFifo.getTarget() == hierActor) {
+        newFifo = getFlattenedGraph().addEdge(clones.get(internalFifo.getSource()),
+            clones.get(subgraph.outgoingEdgesOf(subgraph.getVertex(externalFifo.getTargetInterface().getName()))
+                .iterator().next().getTarget()));
+      } else {
+        newFifo = getFlattenedGraph().addEdge(clones.get(internalFifo.getSource()), externalFifo.getTarget());
+      }
+      newFifo.copyProperties(externalFifo);
+      newFifo.setProd(internalFifo.getProd());
+      if (internalFifo.getDelay() != null) {
+        newFifo.setDelay(internalFifo.getDelay());
+      }
+      newFifo.setSourceInterface(internalFifo.getSourceInterface());
+      newFifo.setSourcePortModifier(internalFifo.getSourcePortModifier());
+    }
+    // Set delay of the new FIFO
+    final long externDelay;
+    if (externalFifo.getDelay() != null) {
+      externDelay = externalFifo.getDelay().longValue();
+    } else {
+      externDelay = 0;
+    }
+    final long internDelay;
+    if (newFifo.getDelay() != null) {
+      internDelay = newFifo.getDelay().longValue();
+    } else {
+      internDelay = 0;
+    }
+    if (externDelay != 0) {
+      newFifo.setDelay(new LongEdgePropertyType(externDelay + internDelay));
+    }
+  }
+
+  private void cloneFifos(final SDFGraph subgraph, final Map<SDFAbstractVertex, SDFAbstractVertex> clones) {
     final Map<SDFEdge, SDFEdge> fifoClones = new LinkedHashMap<>();
     for (final SDFEdge fifo : subgraph.edgeSet().stream()
         .filter(
@@ -554,63 +623,16 @@ public class IbsdfFlattener {
 
       fifoClones.put(fifo, cloneFifo);
     }
+  }
 
-    // Connect FIFO that were connected to ports of the flattened actor
-    // and those connected to interfaces in the subgraph
-    for (final SDFAbstractVertex iface : subgraph.vertexSet().stream().filter(it -> it instanceof SDFInterfaceVertex)
-        .collect(Collectors.toList())) {
-      // Get the actor port
-      final SDFInterfaceVertex port = hierActor.getInterface(iface.getName());
-      final SDFEdge externalFifo = hierActor.getAssociatedEdge(port);
-
-      // Connect the new FIFO
-      final SDFEdge newFifo;
-      if (iface instanceof SDFSourceInterfaceVertex) {
-        final SDFEdge internalFifo = subgraph.outgoingEdgesOf(iface).iterator().next();
-        newFifo = getFlattenedGraph().addEdge(externalFifo.getSource(), clones.get(internalFifo.getTarget()));
-        newFifo.copyProperties(externalFifo);
-        newFifo.setCons(internalFifo.getCons());
-        if (internalFifo.getDelay() != null) {
-          newFifo.setDelay(internalFifo.getDelay());
-        }
-        newFifo.setTargetInterface(internalFifo.getTargetInterface());
-        newFifo.setTargetPortModifier(internalFifo.getTargetPortModifier());
-      } else {
-        // iface is instance of SDFSinkInterfaceVertex
-        final SDFEdge internalFifo = subgraph.incomingEdgesOf(iface).iterator().next();
-        // if the edge loops on hierActor
-        if (externalFifo.getTarget() == hierActor) {
-          newFifo = getFlattenedGraph().addEdge(clones.get(internalFifo.getSource()),
-              clones.get(subgraph.outgoingEdgesOf(subgraph.getVertex(externalFifo.getTargetInterface().getName()))
-                  .iterator().next().getTarget()));
-        } else {
-          newFifo = getFlattenedGraph().addEdge(clones.get(internalFifo.getSource()), externalFifo.getTarget());
-        }
-        newFifo.copyProperties(externalFifo);
-        newFifo.setProd(internalFifo.getProd());
-        if (internalFifo.getDelay() != null) {
-          newFifo.setDelay(internalFifo.getDelay());
-        }
-        newFifo.setSourceInterface(internalFifo.getSourceInterface());
-        newFifo.setSourcePortModifier(internalFifo.getSourcePortModifier());
-      }
-      // Set delay of the new FIFO
-      final long externDelay;
-      if (externalFifo.getDelay() != null) {
-        externDelay = externalFifo.getDelay().longValue();
-      } else {
-        externDelay = 0;
-      }
-      final long internDelay;
-      if (newFifo.getDelay() != null) {
-        internDelay = newFifo.getDelay().longValue();
-      } else {
-        internDelay = 0;
-      }
-      if (externDelay != 0) {
-        newFifo.setDelay(new LongEdgePropertyType(externDelay + internDelay));
-      }
-    }
+  private Map<SDFAbstractVertex, SDFAbstractVertex> cloneSubGraphs(final SDFGraph subgraph) {
+    final Map<SDFAbstractVertex, SDFAbstractVertex> clones = new LinkedHashMap<>();
+    subgraph.vertexSet().stream().filter(it -> !(it instanceof SDFInterfaceVertex)).forEach(it -> {
+      final SDFAbstractVertex clone = it.copy();
+      getFlattenedGraph().addVertex(clone);
+      clones.put(it, clone);
+    });
+    return clones;
   }
 
   /**
