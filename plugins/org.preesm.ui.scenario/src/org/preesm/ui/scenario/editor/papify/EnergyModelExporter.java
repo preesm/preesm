@@ -39,22 +39,20 @@
  */
 package org.preesm.ui.scenario.editor.papify;
 
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.LinkedHashSet;
 import java.util.Map.Entry;
 import java.util.Set;
+import java.util.logging.Level;
 import jxl.write.WritableSheet;
-import jxl.write.biff.RowsExceededException;
-import org.eclipse.core.runtime.CoreException;
 import org.eclipse.emf.common.util.EMap;
 import org.eclipse.jface.wizard.WizardDialog;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PlatformUI;
-import org.preesm.commons.exceptions.PreesmException;
+import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.model.scenario.PapiEvent;
 import org.preesm.model.scenario.Scenario;
 import org.preesm.model.slam.Component;
@@ -107,7 +105,7 @@ public class EnergyModelExporter extends ExcelWriter {
       os.write(addFirstLine().getBytes());
       os.write(addModels().getBytes());
     } catch (IOException e) {
-      e.printStackTrace();
+      PreesmLogger.getLogger().log(Level.WARNING, "Could not write energy model", e);
     }
   }
 
@@ -156,8 +154,7 @@ public class EnergyModelExporter extends ExcelWriter {
   }
 
   @Override
-  protected void addCells(WritableSheet sheet)
-      throws PreesmException, FileNotFoundException, RowsExceededException, CoreException {
+  protected void addCells(WritableSheet sheet) {
 
   }
 }
