@@ -118,7 +118,7 @@ public class ActivityExporter extends AbstractTaskImplementation {
     final Logger logger = PreesmLogger.getLogger();
 
     final String filePath = parameters.get(ActivityExporter.PATH);
-    final boolean human_readable = (parameters.get(ActivityExporter.HUMAN_READABLE) == "Yes");
+    final boolean human_readable = "Yes".equalsIgnoreCase(parameters.get(ActivityExporter.HUMAN_READABLE));
     // The abc contains all information on the implemented system
     final LatencyAbc abc = (LatencyAbc) (inputs.get(AbstractWorkflowNodeImplementation.KEY_SDF_ABC));
 
