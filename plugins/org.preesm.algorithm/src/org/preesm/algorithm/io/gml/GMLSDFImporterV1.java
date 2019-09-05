@@ -59,7 +59,7 @@ import org.w3c.dom.NodeList;
  *
  * @author jpiat
  */
-public class GMLSDFImporterV1 extends GMLImporter<SDFGraph, SDFAbstractVertex, SDFEdge> {
+public class GMLSDFImporterV1 extends GMLImporter<SDFGraph, SDFAbstractVertex> {
 
   /**
    * Parses an Edge in the DOM document.

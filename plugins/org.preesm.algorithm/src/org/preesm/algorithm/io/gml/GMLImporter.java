@@ -43,7 +43,6 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import org.eclipse.core.runtime.Path;
-import org.preesm.algorithm.model.AbstractEdge;
 import org.preesm.algorithm.model.AbstractGraph;
 import org.preesm.algorithm.model.AbstractVertex;
 import org.preesm.algorithm.model.CodeRefinement;
@@ -74,11 +73,8 @@ import org.w3c.dom.ls.LSParser;
  *          the generic type
  * @param <V>
  *          the value type
- * @param <E>
- *          the element type
  */
-public abstract class GMLImporter<G extends AbstractGraph<?, ?>, V extends AbstractVertex<?>,
-    E extends AbstractEdge<?, ?>> {
+public abstract class GMLImporter<G extends AbstractGraph<?, ?>, V extends AbstractVertex<?>> {
 
   private static final String ARGUMENTS_LITERAL = "arguments";
 
@@ -289,7 +285,7 @@ public abstract class GMLImporter<G extends AbstractGraph<?, ?>, V extends Abstr
         final Element childElt = (Element) childNode;
         final String attrName = childElt.getAttribute("attr.name");
         String typeParamType = childElt.getAttribute("attr.type");
-        if (typeParamType == "") {
+        if (typeParamType != null && typeParamType.isEmpty()) {
           typeParamType = null;
         }
         final String isFor = childElt.getAttribute("for");
@@ -425,18 +421,23 @@ public abstract class GMLImporter<G extends AbstractGraph<?, ?>, V extends Abstr
         if (refinementPath.contains(".graphml")) {
           if ((this.path != null) && (refinementPath.length() > 0)) {
             final String directoryPath = this.path.substring(0, this.path.lastIndexOf(File.separator) + 1);
-            final GMLGenericImporter importer = new GMLGenericImporter();
-            try {
-              final AbstractGraph<?, ?> refine = importer.parse(new File(directoryPath + refinementPath));
-              vertex.setGraphDescription(refine);
-            } catch (FileNotFoundException | PreesmException e) {
-              throw new PreesmRuntimeException("Could not parse gaph description", e);
-            }
+            importRefinement(vertex, refinementPath, directoryPath);
           }
         } else if (refinementPath.length() > 0) {
           vertex.setRefinement(new CodeRefinement(new Path(refinementPath)));
         }
       }
+    }
+  }
+
+  private void importRefinement(final AbstractVertex<?> vertex, final String refinementPath,
+      final String directoryPath) {
+    final GMLGenericImporter importer = new GMLGenericImporter();
+    try {
+      final AbstractGraph<?, ?> refine = importer.parse(new File(directoryPath + refinementPath));
+      vertex.setGraphDescription(refine);
+    } catch (FileNotFoundException | PreesmException e) {
+      throw new PreesmRuntimeException("Could not parse gaph description", e);
     }
   }
 
