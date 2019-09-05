@@ -135,11 +135,7 @@ public class PreesmAlgorithmTreeContentProvider implements ITreeContentProvider 
     if (inputElement instanceof Scenario) {
       scenario = (Scenario) inputElement;
       // Opening algorithm from file
-      try {
-        this.currentPISDFGraph = scenario.getAlgorithm();
-      } catch (final Exception e) {
-        e.printStackTrace();
-      }
+      this.currentPISDFGraph = scenario.getAlgorithm();
       table[0] = this.currentPISDFGraph;
     }
     return table;
@@ -164,7 +160,6 @@ public class PreesmAlgorithmTreeContentProvider implements ITreeContentProvider 
   public Set<AbstractActor> filterPISDFChildren(final EList<AbstractActor> vertices) {
     final Set<AbstractActor> result = new LinkedHashSet<>();
     for (final AbstractActor actor : vertices) {
-      // TODO: Filter if needed
       result.add(actor);
     }
     return result;
