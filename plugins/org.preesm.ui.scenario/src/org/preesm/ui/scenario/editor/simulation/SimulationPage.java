@@ -38,6 +38,7 @@ package org.preesm.ui.scenario.editor.simulation;
 
 import java.util.List;
 import java.util.Map.Entry;
+import java.util.logging.Level;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.dialogs.ErrorDialog;
@@ -85,6 +86,7 @@ import org.eclipse.ui.forms.widgets.ExpandableComposite;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.eclipse.ui.forms.widgets.Section;
+import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.model.scenario.Scenario;
 import org.preesm.model.scenario.ScenarioConstants;
 import org.preesm.model.scenario.impl.DataTypeImpl;
@@ -212,7 +214,7 @@ public class SimulationPage extends ScenarioPage {
             SimulationPage.this.scenario.getSimulationInfo().setAverageDataSize(averageSize);
             propertyChanged(this, IEditorPart.PROP_DIRTY);
           } catch (final NumberFormatException ex) {
-            ex.printStackTrace();
+            PreesmLogger.getLogger().log(Level.WARNING, "Could not parse integer " + text.getText(), ex);
           }
         }
       };
