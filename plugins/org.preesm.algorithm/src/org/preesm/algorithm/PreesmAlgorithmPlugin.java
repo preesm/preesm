@@ -41,8 +41,8 @@ import org.eclipse.jface.resource.ImageRegistry;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.osgi.framework.BundleContext;
-import org.preesm.algorithm.mathematicalModels.PeriodicScheduleModelOjAlgo;
-import org.preesm.algorithm.mathematicalModels.SolverMethod;
+import org.preesm.algorithm.mathematicalmodels.PeriodicScheduleModelOjAlgo;
+import org.preesm.algorithm.mathematicalmodels.SolverMethod;
 import org.preesm.algorithm.schedule.PeriodicSchedulerSDF.Method;
 
 /**
