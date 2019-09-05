@@ -101,10 +101,9 @@ public class PapifyTimingParser {
 
     final Path path = new Path(url);
     final IFile file = workspace.getRoot().getFile(path);
-    try {
+    try (final BufferedReader br = new BufferedReader(new InputStreamReader(file.getContents()))) {
       final Map<AbstractActor, Map<ComponentInstance, String>> timingsInstances = new LinkedHashMap<>();
       final Map<AbstractActor, Map<Component, String>> timings = new LinkedHashMap<>();
-      final BufferedReader br = new BufferedReader(new InputStreamReader(file.getContents()));
 
       String line;
 
@@ -119,53 +118,10 @@ public class PapifyTimingParser {
 
         /* Parse the whole file to create the timings Map */
         while ((line = br.readLine()) != null) {
-          final String[] cells = line.split(",");
-          if (cells.length == opNames.length) {
-            final Map<ComponentInstance, String> timing = new LinkedHashMap<>();
-
-            for (int i = 1; i < cells.length; i++) {
-              final String peName = opNames[i];
-              final ComponentInstance com = this.scenario.getDesign().getComponentInstance(peName);
-              timing.put(com, cells[i]);
-            }
-
-            final String string = cells[0];
-            final AbstractActor lookupActor = VertexPath.lookup(this.scenario.getAlgorithm(), string);
-            if (lookupActor != null) {
-              timingsInstances.put(lookupActor, timing);
-            }
-          } else {
-            String errMessage = "Papify auto-generated timing csv file has incorrect data: "
-                + "all rows have not the same number of columns.";
-            PreesmLogger.getLogger().log(Level.SEVERE, errMessage);
-            throw new PreesmRuntimeException(errMessage);
-          }
+          processLine(timingsInstances, line, opNames);
         }
         for (Entry<AbstractActor, Map<ComponentInstance, String>> actorTimings : timingsInstances.entrySet()) {
-          final Map<Component, String> timing = new LinkedHashMap<>();
-          final Map<Component, Integer> timingTimes = new LinkedHashMap<>();
-          for (Entry<ComponentInstance, String> timingEntry : actorTimings.getValue().entrySet()) {
-            if (!timingEntry.getValue().equals(" ")) {
-              String peType = timingEntry.getKey().getComponent().getVlnv().getName();
-              Component comp = this.scenario.getDesign().getComponent(peType);
-              if (!timing.containsKey(comp)) {
-                timing.put(comp, timingEntry.getValue());
-                timingTimes.put(comp, 1);
-              } else {
-                double valueStored = Double.parseDouble(timing.get(comp));
-                double valueNew = Double.parseDouble(timingEntry.getValue());
-                String addedValue = Double.toString(valueStored + valueNew);
-                timing.put(comp, addedValue);
-                timingTimes.put(comp, timingTimes.get(comp) + 1);
-              }
-            }
-          }
-          for (Entry<Component, String> timingToAverage : timing.entrySet()) {
-            double valueStored = Double.parseDouble(timingToAverage.getValue());
-            double valueAveraged = valueStored / timingTimes.get(timingToAverage.getKey());
-            timing.put(timingToAverage.getKey(), Double.toString(valueAveraged));
-          }
-          timings.put(actorTimings.getKey(), timing);
+          applyTimings(timings, actorTimings);
         }
 
         parseTimings(timings, opDefIds);
@@ -173,7 +129,60 @@ public class PapifyTimingParser {
         throw new IllegalArgumentException("Given URL points to an empty file");
       }
     } catch (final IOException | CoreException e) {
-      e.printStackTrace();
+      PreesmLogger.getLogger().log(Level.WARNING, "Could not parse papify timings", e);
+    }
+  }
+
+  private void applyTimings(final Map<AbstractActor, Map<Component, String>> timings,
+      Entry<AbstractActor, Map<ComponentInstance, String>> actorTimings) {
+    final Map<Component, String> timing = new LinkedHashMap<>();
+    final Map<Component, Integer> timingTimes = new LinkedHashMap<>();
+    for (Entry<ComponentInstance, String> timingEntry : actorTimings.getValue().entrySet()) {
+      if (!timingEntry.getValue().equals(" ")) {
+        String peType = timingEntry.getKey().getComponent().getVlnv().getName();
+        Component comp = this.scenario.getDesign().getComponent(peType);
+        if (!timing.containsKey(comp)) {
+          timing.put(comp, timingEntry.getValue());
+          timingTimes.put(comp, 1);
+        } else {
+          double valueStored = Double.parseDouble(timing.get(comp));
+          double valueNew = Double.parseDouble(timingEntry.getValue());
+          String addedValue = Double.toString(valueStored + valueNew);
+          timing.put(comp, addedValue);
+          timingTimes.put(comp, timingTimes.get(comp) + 1);
+        }
+      }
+    }
+    for (Entry<Component, String> timingToAverage : timing.entrySet()) {
+      double valueStored = Double.parseDouble(timingToAverage.getValue());
+      double valueAveraged = valueStored / timingTimes.get(timingToAverage.getKey());
+      timing.put(timingToAverage.getKey(), Double.toString(valueAveraged));
+    }
+    timings.put(actorTimings.getKey(), timing);
+  }
+
+  private void processLine(final Map<AbstractActor, Map<ComponentInstance, String>> timingsInstances, String line,
+      final String[] opNames) {
+    final String[] cells = line.split(",");
+    if (cells.length == opNames.length) {
+      final Map<ComponentInstance, String> timing = new LinkedHashMap<>();
+
+      for (int i = 1; i < cells.length; i++) {
+        final String peName = opNames[i];
+        final ComponentInstance com = this.scenario.getDesign().getComponentInstance(peName);
+        timing.put(com, cells[i]);
+      }
+
+      final String string = cells[0];
+      final AbstractActor lookupActor = VertexPath.lookup(this.scenario.getAlgorithm(), string);
+      if (lookupActor != null) {
+        timingsInstances.put(lookupActor, timing);
+      }
+    } else {
+      String errMessage = "Papify auto-generated timing csv file has incorrect data: "
+          + "all rows have not the same number of columns.";
+      PreesmLogger.getLogger().log(Level.SEVERE, errMessage);
+      throw new PreesmRuntimeException(errMessage);
     }
   }
 
