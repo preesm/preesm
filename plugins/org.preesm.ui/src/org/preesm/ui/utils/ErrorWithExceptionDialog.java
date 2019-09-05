@@ -38,10 +38,12 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.MultiStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.dialogs.ErrorDialog;
+import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.ui.PreesmUIPlugin;
 
 /**
@@ -63,7 +65,7 @@ public class ErrorWithExceptionDialog {
     final StringWriter sw = new StringWriter();
     final PrintWriter pw = new PrintWriter(sw);
     t.printStackTrace(pw);
-    t.printStackTrace();
+    PreesmLogger.getLogger().log(Level.SEVERE, "UI Error", t);
 
     final String trace = sw.toString(); // stack trace as a string
 
