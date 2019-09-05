@@ -38,11 +38,13 @@
 package org.preesm.ui.scenario.editor.utils;
 
 import java.util.List;
+import java.util.logging.Level;
 import java.util.stream.Collectors;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.jface.viewers.IStructuredContentProvider;
 import org.eclipse.jface.viewers.Viewer;
+import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.Actor;
 import org.preesm.model.pisdf.PiGraph;
@@ -55,11 +57,6 @@ import org.preesm.model.scenario.Scenario;
  */
 public class PreesmAlgorithmListContentProvider implements IStructuredContentProvider {
 
-  /*
-   * (non-Javadoc)
-   *
-   * @see org.eclipse.jface.viewers.IStructuredContentProvider#getElements(java.lang.Object)
-   */
   @Override
   public Object[] getElements(final Object inputElement) {
 
@@ -71,7 +68,7 @@ public class PreesmAlgorithmListContentProvider implements IStructuredContentPro
       try {
         elementTable = getSortedPISDFVertices(inputScenario).toArray();
       } catch (final Exception e) {
-        e.printStackTrace();
+        PreesmLogger.getLogger().log(Level.WARNING, "Could not sort PiSDF vertices", e);
       }
     }
     return elementTable;
