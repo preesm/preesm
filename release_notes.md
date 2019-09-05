@@ -30,6 +30,8 @@ PREESM Changelog
 * Schedule: 
   * Readapt the way of exhibiting data parallelism and print expression
   * Add communication nodes
+* Refactor:
+  * Fix major and critical sonar issues;
 
 ### Bug fix
 * Fix #218: add support for non connected actors in SRDAG transform;
