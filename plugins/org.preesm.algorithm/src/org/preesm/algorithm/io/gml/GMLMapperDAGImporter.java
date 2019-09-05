@@ -39,19 +39,17 @@ package org.preesm.algorithm.io.gml;
 
 import org.preesm.algorithm.model.factories.SDFVertexFactory;
 import org.preesm.algorithm.model.sdf.SDFAbstractVertex;
-import org.preesm.algorithm.model.sdf.SDFEdge;
 import org.preesm.algorithm.model.sdf.SDFGraph;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
-// TODO: Auto-generated Javadoc
 /**
  * Importer for DAG graphs produced by the mapper.
  *
  * @author mpelcat
  */
-public class GMLMapperDAGImporter extends GMLImporter<SDFGraph, SDFAbstractVertex, SDFEdge> {
+public class GMLMapperDAGImporter extends GMLImporter<SDFGraph, SDFAbstractVertex> {
 
   /**
    * Parses an Edge in the DOM document.
@@ -63,6 +61,7 @@ public class GMLMapperDAGImporter extends GMLImporter<SDFGraph, SDFAbstractVerte
    */
   @Override
   public void parseEdge(final Element edgeElt, final SDFGraph parentGraph) {
+    // not needed
   }
 
   /**
@@ -107,13 +106,6 @@ public class GMLMapperDAGImporter extends GMLImporter<SDFGraph, SDFAbstractVerte
   public SDFAbstractVertex parseNode(final Element vertexElt, final SDFGraph parentGraph) {
 
     SDFAbstractVertex vertex;
-    /*
-     * LinkedHashMap<String, String> attributes = new LinkedHashMap<String, String>(); for (int i = 0; i <
-     * vertexElt.getAttributes().getLength(); i++) { attributes.put(vertexElt.getAttributes().item(i).getNodeName(),
-     * vertexElt.getAttributes().item(i).getNodeValue()); }
-     *
-     * attributes.put("kind", SDFVertex.VERTEX);
-     */
     vertex = SDFVertexFactory.getInstance().createVertex(vertexElt, null);
 
     vertex.setId(vertexElt.getAttribute("id"));
@@ -131,12 +123,6 @@ public class GMLMapperDAGImporter extends GMLImporter<SDFGraph, SDFAbstractVerte
     return vertex;
   }
 
-  /*
-   * (non-Javadoc)
-   *
-   * @see org.ietr.dftools.algorithm.importer.GMLImporter#parsePort(org.w3c.dom.Element,
-   * org.ietr.dftools.algorithm.model.AbstractGraph)
-   */
   @Override
   public SDFAbstractVertex parsePort(final Element portElt, final SDFGraph parentGraph) {
     return null;

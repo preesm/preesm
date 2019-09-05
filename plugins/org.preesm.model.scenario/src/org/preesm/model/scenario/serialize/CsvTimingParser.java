@@ -98,10 +98,8 @@ public class CsvTimingParser {
 
     final Path path = new Path(url);
     final IFile file = workspace.getRoot().getFile(path);
-    try {
+    try (final BufferedReader br = new BufferedReader(new InputStreamReader(file.getContents()))) {
       final Map<AbstractActor, Map<Component, String>> timings = new LinkedHashMap<>();
-      final BufferedReader br = new BufferedReader(new InputStreamReader(file.getContents()));
-
       String line;
 
       /* Read header */
@@ -116,26 +114,7 @@ public class CsvTimingParser {
 
         /* Parse the whole file to create the timings Map */
         while ((line = br.readLine()) != null) {
-          final String[] cells = line.split(";");
-          if (cells.length == opNames.length) {
-            final Map<Component, String> timing = new LinkedHashMap<>();
-
-            for (int i = 1; i < cells.length; i++) {
-              final String vlnvName = opNames[i];
-              final Component com = this.scenario.getDesign().getComponent(vlnvName);
-              timing.put(com, cells[i]);
-            }
-
-            final String string = cells[0];
-            final AbstractActor lookupActor = VertexPath.lookup(this.scenario.getAlgorithm(), string);
-            if (lookupActor != null) {
-              timings.put(lookupActor, timing);
-            }
-          } else {
-            String errMessage = "Timing csv file has incorrect data: all rows have not the same number of columns.";
-            PreesmLogger.getLogger().log(Level.SEVERE, errMessage);
-            throw new PreesmRuntimeException(errMessage);
-          }
+          processLine(timings, line, opNames);
         }
 
         parseTimings(timings, opDefIds);
@@ -143,7 +122,31 @@ public class CsvTimingParser {
         throw new IllegalArgumentException("Given URL points to an empty file");
       }
     } catch (final IOException | CoreException e) {
-      e.printStackTrace();
+      PreesmLogger.getLogger().log(Level.WARNING, "Could not par CSV timings.", e);
+    }
+  }
+
+  private void processLine(final Map<AbstractActor, Map<Component, String>> timings, String line,
+      final String[] opNames) {
+    final String[] cells = line.split(";");
+    if (cells.length == opNames.length) {
+      final Map<Component, String> timing = new LinkedHashMap<>();
+
+      for (int i = 1; i < cells.length; i++) {
+        final String vlnvName = opNames[i];
+        final Component com = this.scenario.getDesign().getComponent(vlnvName);
+        timing.put(com, cells[i]);
+      }
+
+      final String string = cells[0];
+      final AbstractActor lookupActor = VertexPath.lookup(this.scenario.getAlgorithm(), string);
+      if (lookupActor != null) {
+        timings.put(lookupActor, timing);
+      }
+    } else {
+      String errMessage = "Timing csv file has incorrect data: all rows have not the same number of columns.";
+      PreesmLogger.getLogger().log(Level.SEVERE, errMessage);
+      throw new PreesmRuntimeException(errMessage);
     }
   }
 

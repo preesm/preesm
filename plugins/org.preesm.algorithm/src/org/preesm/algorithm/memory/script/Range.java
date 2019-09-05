@@ -38,6 +38,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 import org.preesm.commons.CloneableProperty;
@@ -350,6 +351,11 @@ public class Range implements CloneableProperty<Range> {
     } else {
       return (getStart() == ((Range) o).getStart()) && (getEnd() == ((Range) o).getEnd());
     }
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(getStart(), getEnd());
   }
 
   @Override

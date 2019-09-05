@@ -48,7 +48,7 @@ import org.w3c.dom.NodeList;
  *
  * @author jpiat
  */
-public class GMLDAGImporter extends GMLImporter<DirectedAcyclicGraph, DAGVertex, DAGEdge> {
+public class GMLDAGImporter extends GMLImporter<DirectedAcyclicGraph, DAGVertex> {
 
   /*
    * (non-Javadoc)

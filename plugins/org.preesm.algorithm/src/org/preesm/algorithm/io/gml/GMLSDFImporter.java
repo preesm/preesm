@@ -51,7 +51,7 @@ import org.preesm.commons.exceptions.PreesmRuntimeException;
 public class GMLSDFImporter implements GMLModelParserWrapper<SDFGraph> {
 
   /** The true importer. */
-  private GMLImporter<?, ?, ?> trueImporter;
+  private GMLImporter<?, ?> trueImporter;
 
   /**
    * COnstructs a new importer for SDF graphs.

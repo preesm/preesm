@@ -101,61 +101,76 @@ public class PapifyOutputTimingParser {
     final File[] fList = folder.listFiles();
 
     for (File file : fList) {
-      final String filePath = url.concat("//").concat(file.getName());
-      final IFile iFile = ResourcesPlugin.getWorkspace().getRoot().getFile(new Path(filePath));
-      Map<String, Integer> timingsParsed = new LinkedHashMap<>();
-      Map<String, Integer> times = new LinkedHashMap<>();
-      try {
-        final BufferedReader br = new BufferedReader(new InputStreamReader(iFile.getContents()));
-        String line = br.readLine();
-        String actorName = "";
-        if (line != null) {
-          while ((line = br.readLine()) != null) {
-            final String[] cells = line.split(",");
-            String coreName = cells[0];
-            actorName = cells[1];
-            int tinit = Integer.parseInt(cells[2]);
-            int tend = Integer.parseInt(cells[3]);
-            if (tinit != 0 && tend != 0) {
-              if (!timingsParsed.containsKey(coreName)) {
-                timingsParsed.put(coreName, tend - tinit);
-                times.put(coreName, 1);
-              } else {
-                timingsParsed.put(coreName, timingsParsed.get(coreName) + (tend - tinit));
-                times.put(coreName, times.get(coreName) + 1);
-              }
-            }
-          }
-          final AbstractActor lookupActor = VertexPath.lookup(this.scenario.getAlgorithm(), actorName);
-          if (lookupActor != null) {
-            final Map<Component, String> timing = new LinkedHashMap<>();
-            for (Component comp : opDefIds) {
-              int averageTiming = 0;
-              int totalTime = 0;
-              int totalTimes = 0;
-              for (ComponentInstance compInstance : comp.getInstances()) {
-                if (timingsParsed.containsKey(compInstance.getInstanceName())) {
-                  totalTime = totalTime + timingsParsed.get(compInstance.getInstanceName());
-                  totalTimes = totalTimes + times.get(compInstance.getInstanceName());
-                }
-              }
-              if (totalTimes != 0) {
-                averageTiming = totalTime / totalTimes;
-                timing.put(comp, Integer.toString(averageTiming));
-              }
-            }
-            if (!timing.isEmpty()) {
-              timings.put(lookupActor, timing);
-            }
-          }
-        }
-      } catch (final IOException | CoreException e) {
-        e.printStackTrace();
-      }
+      parseFile(url, opDefIds, timings, file);
     }
     if (!timings.isEmpty()) {
       parseTimings(timings, opDefIds);
     }
+  }
+
+  private void parseFile(final String url, final List<Component> opDefIds,
+      final Map<AbstractActor, Map<Component, String>> timings, File file) {
+    final String filePath = url.concat("//").concat(file.getName());
+    final IFile iFile = ResourcesPlugin.getWorkspace().getRoot().getFile(new Path(filePath));
+    Map<String, Integer> timingsParsed = new LinkedHashMap<>();
+    Map<String, Integer> times = new LinkedHashMap<>();
+    try (final BufferedReader br = new BufferedReader(new InputStreamReader(iFile.getContents()))) {
+      String line = br.readLine();
+      String actorName = "";
+      if (line != null) {
+        while ((line = br.readLine()) != null) {
+          actorName = processLine(timingsParsed, times, line);
+        }
+        final AbstractActor lookupActor = VertexPath.lookup(this.scenario.getAlgorithm(), actorName);
+        if (lookupActor != null) {
+          applyOnActor(opDefIds, timings, timingsParsed, times, lookupActor);
+        }
+      }
+    } catch (final IOException | CoreException e) {
+      PreesmLogger.getLogger().log(Level.WARNING, "Could not parse Papify output timings " + filePath, e);
+    }
+  }
+
+  private void applyOnActor(final List<Component> opDefIds, final Map<AbstractActor, Map<Component, String>> timings,
+      Map<String, Integer> timingsParsed, Map<String, Integer> times, final AbstractActor lookupActor) {
+    final Map<Component, String> timing = new LinkedHashMap<>();
+    for (Component comp : opDefIds) {
+      int averageTiming = 0;
+      int totalTime = 0;
+      int totalTimes = 0;
+      for (ComponentInstance compInstance : comp.getInstances()) {
+        if (timingsParsed.containsKey(compInstance.getInstanceName())) {
+          totalTime = totalTime + timingsParsed.get(compInstance.getInstanceName());
+          totalTimes = totalTimes + times.get(compInstance.getInstanceName());
+        }
+      }
+      if (totalTimes != 0) {
+        averageTiming = totalTime / totalTimes;
+        timing.put(comp, Integer.toString(averageTiming));
+      }
+    }
+    if (!timing.isEmpty()) {
+      timings.put(lookupActor, timing);
+    }
+  }
+
+  private String processLine(Map<String, Integer> timingsParsed, Map<String, Integer> times, String line) {
+    String actorName;
+    final String[] cells = line.split(",");
+    String coreName = cells[0];
+    actorName = cells[1];
+    int tinit = Integer.parseInt(cells[2]);
+    int tend = Integer.parseInt(cells[3]);
+    if (tinit != 0 && tend != 0) {
+      if (!timingsParsed.containsKey(coreName)) {
+        timingsParsed.put(coreName, tend - tinit);
+        times.put(coreName, 1);
+      } else {
+        timingsParsed.put(coreName, timingsParsed.get(coreName) + (tend - tinit));
+        times.put(coreName, times.get(coreName) + 1);
+      }
+    }
+    return actorName;
   }
 
   /**

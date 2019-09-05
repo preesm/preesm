@@ -141,9 +141,8 @@ public class Distributor {
     // Update the memExexVerticesSet to include hosted mObjects
     // (splitMergedBuffers ensured that all mObjects hosted by another do
     // fall in the same memory bank)
-    @SuppressWarnings("unchecked")
-    final Map<MemoryExclusionVertex, Set<MemoryExclusionVertex>> hosts = (Map<MemoryExclusionVertex,
-        Set<MemoryExclusionVertex>>) memEx.getPropertyBean().getValue(MemoryExclusionGraph.HOST_MEMORY_OBJECT_PROPERTY);
+    final Map<MemoryExclusionVertex, Set<MemoryExclusionVertex>> hosts = memEx.getPropertyBean()
+        .getValue(MemoryExclusionGraph.HOST_MEMORY_OBJECT_PROPERTY);
     if (hosts != null) {
       for (final Entry<String, Set<MemoryExclusionVertex>> entry : memExesVerticesSet.entrySet()) {
         // Filter: Get hosts falling in this bank
@@ -167,7 +166,7 @@ public class Distributor {
       copiedMemEx.deepRemoveAllVertices(verticesToRemove);
       // If the DistributedOnl policy is used, split the merge memory
       // objects.
-      if (valuePolicy == AbstractMemoryAllocatorTask.VALUE_DISTRIBUTION_DISTRIBUTED_ONLY) {
+      if (AbstractMemoryAllocatorTask.VALUE_DISTRIBUTION_DISTRIBUTED_ONLY.equals(valuePolicy)) {
         Distributor.splitMergedBuffersDistributedOnly(copiedMemEx, alignment, memory.getKey());
       }
       // Save the MemEx
@@ -200,9 +199,8 @@ public class Distributor {
       final String memory) {
     // Get the map of host Mobjects
     // (A copy of the map is used because the original map will be modified during iterations)
-    @SuppressWarnings("unchecked")
-    final Map<MemoryExclusionVertex, Set<MemoryExclusionVertex>> hosts = (Map<MemoryExclusionVertex,
-        Set<MemoryExclusionVertex>>) meg.getPropertyBean().getValue(MemoryExclusionGraph.HOST_MEMORY_OBJECT_PROPERTY);
+    final Map<MemoryExclusionVertex, Set<MemoryExclusionVertex>> hosts = meg.getPropertyBean()
+        .getValue(MemoryExclusionGraph.HOST_MEMORY_OBJECT_PROPERTY);
 
     // Exit method if no host Mobjects can be found in this MEG
     if ((hosts == null) || hosts.isEmpty()) {
@@ -216,7 +214,7 @@ public class Distributor {
     // identify mObject to be removed because the belong to another
     // memory.
     final Set<MemoryExclusionVertex> mObjectsToRemove = new LinkedHashSet<>();
-    for (final Entry<MemoryExclusionVertex, Set<MemoryExclusionVertex>> entry : hosts.entrySet()) {
+    for (final Entry<MemoryExclusionVertex, Set<MemoryExclusionVertex>> entry : new ArrayList<>(hosts.entrySet())) {
       // Create a group of MObject for each memory similarly to what is done
       // in distributeMeg method.
       // Map storing the groups of Mobjs
@@ -238,7 +236,7 @@ public class Distributor {
         // Fill the mObjectsToRemove list
         // with all mObjects that are not in the current memory
         final List<MemoryExclusionVertex> mObjInOtherMem = mobjByBank.entrySet().stream()
-            .filter(mapEntry -> mapEntry.getKey() != memory).map(Entry::getValue).flatMap(Collection::stream)
+            .filter(mapEntry -> (!(mapEntry.getKey().equals(memory)))).map(Entry::getValue).flatMap(Collection::stream)
             .collect(Collectors.toList());
         // remove mobj that are duplicated in the current memory from this list
         mObjInOtherMem.removeAll(mobjByBank.get(memory));
@@ -250,7 +248,7 @@ public class Distributor {
         // something went wrong or this and/or this meg is not the
         // result of a call to distributeMegDistributedOnly method
         final String firstObj = mobjByBank.keySet().iterator().next();
-        if (firstObj != memory) {
+        if (!(firstObj.equals(memory))) {
           throw new PreesmRuntimeException("Merged memory objects " + mobjByBank.values()
               + " should not be allocated in memory bank " + firstObj + " but in memory " + memory + " instead.");
         }
@@ -279,9 +277,8 @@ public class Distributor {
   private static void splitMergedBuffersMixed(final MemoryExclusionGraph meg, final long alignment) {
     // Get the map of host Mobjects
     // (A copy of the map is used because the original map will be modified during iterations)
-    @SuppressWarnings("unchecked")
-    final Map<MemoryExclusionVertex, Set<MemoryExclusionVertex>> hosts = (Map<MemoryExclusionVertex,
-        Set<MemoryExclusionVertex>>) meg.getPropertyBean().getValue(MemoryExclusionGraph.HOST_MEMORY_OBJECT_PROPERTY);
+    final Map<MemoryExclusionVertex, Set<MemoryExclusionVertex>> hosts = meg.getPropertyBean()
+        .getValue(MemoryExclusionGraph.HOST_MEMORY_OBJECT_PROPERTY);
 
     // Exit method if no host Mobjects can be found in this MEG
     if ((hosts == null) || hosts.isEmpty()) {
@@ -338,9 +335,8 @@ public class Distributor {
   private static void splitMergedBuffers(final Map<String, Set<MemoryExclusionVertex>> mobjByBank,
       final Set<String> banks, final Entry<MemoryExclusionVertex, Set<MemoryExclusionVertex>> entry,
       final MemoryExclusionGraph meg, final long alignment) {
-    @SuppressWarnings("unchecked")
-    final Map<MemoryExclusionVertex, Set<MemoryExclusionVertex>> hosts = (Map<MemoryExclusionVertex,
-        Set<MemoryExclusionVertex>>) meg.getPropertyBean().getValue(MemoryExclusionGraph.HOST_MEMORY_OBJECT_PROPERTY);
+    final Map<MemoryExclusionVertex, Set<MemoryExclusionVertex>> hosts = meg.getPropertyBean()
+        .getValue(MemoryExclusionGraph.HOST_MEMORY_OBJECT_PROPERTY);
 
     final LinkedHashMap<MemoryExclusionVertex, String> bankByMobj = new LinkedHashMap<>();
 
@@ -354,9 +350,9 @@ public class Distributor {
     // This is safe since a copy of the hosts is used for iteration
     hosts.remove(entry.getKey());
     meg.removeVertex(entry.getKey());
-    @SuppressWarnings("unchecked")
-    final Range realRange = ((List<Pair<MemoryExclusionVertex, Pair<Range, Range>>>) entry.getKey().getPropertyBean()
-        .getValue(MemoryExclusionVertex.REAL_TOKEN_RANGE_PROPERTY)).get(0).getValue().getValue();
+    final List<Pair<MemoryExclusionVertex, Pair<Range, Range>>> rangeProperties = entry.getKey().getPropertyBean()
+        .getValue(MemoryExclusionVertex.REAL_TOKEN_RANGE_PROPERTY);
+    final Range realRange = rangeProperties.get(0).getValue().getValue();
     entry.getKey().setWeight(realRange.getLength());
 
     // Put the real range in the same referential as other ranges (cf REAL_TOKEN_RANGE_PROPERTY comments)
@@ -368,188 +364,7 @@ public class Distributor {
     final LinkedHashSet<MemoryExclusionVertex> newHostsMObjs = new LinkedHashSet<>();
     for (final Entry<String, Set<MemoryExclusionVertex>> bankEntry : mobjByBank.entrySet().stream()
         .filter(mapEntry -> banks.contains(mapEntry.getKey())).collect(Collectors.toList())) {
-      // Iterate over Mobjects to build the range(s) of this memory
-      // bank (all ranges are relative to the host mObj)
-      final List<Range> rangesInBank = new ArrayList<>();
-      for (final MemoryExclusionVertex mobj : bankEntry.getValue()) {
-        @SuppressWarnings("unchecked")
-        final List<Pair<MemoryExclusionVertex,
-            Pair<Range, Range>>> rangesInHost = (List<Pair<MemoryExclusionVertex, Pair<Range, Range>>>) mobj
-                .getPropertyBean().getValue(MemoryExclusionVertex.REAL_TOKEN_RANGE_PROPERTY);
-        // Process non-divided buffers
-        if (rangesInHost.size() == 1) {
-          // add the range covered by this buffer to the
-          // rangesInBank (use a clone because the range will be
-          // modified during call to the union method
-          Range.union(rangesInBank, rangesInHost.get(0).getValue().getValue().copy());
-        } else {
-          // Divided buffers:
-          // Check if all parts of the MObj were allocated in the same memory bank
-          // i.e. check if source and dest memory objects are
-          // all stored in the same memory bank
-          @SuppressWarnings("unchecked")
-          final List<MemoryExclusionVertex> dividedPartsHosts = (List<MemoryExclusionVertex>) mobj.getPropertyBean()
-              .getValue(MemoryExclusionVertex.DIVIDED_PARTS_HOSTS);
-          final List<
-              String> partsHostsSet = dividedPartsHosts.stream().map(bankByMobj::get).collect(Collectors.toList());
-          if ((partsHostsSet.size() == 1) && partsHostsSet.get(0).equals(bankEntry.getKey())) {
-            // All hosts were allocated in the same bank
-            // And this bank is the current bankEntry
-            // The split is maintained, and rangesInHost must be updated
-            // (use a clone because the range will be
-            // modified during call to the union method)
-            rangesInHost.forEach(range -> Range.union(rangesInBank, range.getValue().getValue().copy()));
-          } else {
-            // Not all hosts were allocated in the same bank
-            // The mObj cannot be splitted
-            // => It must be restored to its original size in
-            // the graph
-            mObjsToUndivide.add(mobj);
-          }
-        }
-      }
-
-      // Find the list of mObjs falling in each range
-      // Store the result in the rangesInBankAndMObjs map
-      // mObjsToUndivide are not part of these memory objects
-      final Set<MemoryExclusionVertex> mObjInCurrentBank = mobjByBank.get(bankEntry.getKey());
-      mObjInCurrentBank.removeAll(mObjsToUndivide);
-      final Map<Range, List<MemoryExclusionVertex>> rangesInBankAndMObjs = new LinkedHashMap<>();
-      for (final Range currentRange : rangesInBank) {
-        // 1. Get the list of mObjects falling in this range
-        final List<MemoryExclusionVertex> mObjInCurrentRange = new ArrayList<>();
-        for (final MemoryExclusionVertex mObj : mObjInCurrentBank) {
-          @SuppressWarnings("unchecked")
-          final List<Pair<MemoryExclusionVertex,
-              Pair<Range, Range>>> ranges = (List<Pair<MemoryExclusionVertex, Pair<Range, Range>>>) mObj
-                  .getPropertyBean().getValue(MemoryExclusionVertex.REAL_TOKEN_RANGE_PROPERTY);
-          if (ranges.size() == 1) {
-            // Buffer is undivided, check if it intersect with
-            // the current range in bank
-            if (ranges.get(0).getValue().getValue().intersection(currentRange) != null) {
-              // Add undivided object at the beginning of the list
-              // to make sure that no divided object will ever be selected
-              // as a host in the next step
-              mObjInCurrentRange.add(0, mObj);
-            }
-          } else {
-            // Buffer is divided, check if *any* of its range
-            // intersects with the current range in bank
-            // (i.e. check if *not* none of its range intersect with the range)
-            if (ranges.stream().anyMatch(range -> range.getValue().getValue().intersection(currentRange) != null)) {
-              // Add divided object at the end of the list
-              // to make sure that no divided object will ever be selected
-              // as a host in the next step
-              mObjInCurrentRange.add(mObj);
-            }
-          }
-        }
-        rangesInBankAndMObjs.put(currentRange, mObjInCurrentRange);
-      }
-
-      // Create a memory object for each range in the bank
-      for (final Entry<Range, List<MemoryExclusionVertex>> currentRangeAndMobjs : rangesInBankAndMObjs.entrySet()) {
-        final Range currentRange = currentRangeAndMobjs.getKey();
-        final List<MemoryExclusionVertex> mObjInCurrentRange = currentRangeAndMobjs.getValue();
-
-        // 1. Select the first object as the new host
-        // (cannot be a divided mObject as divided mObjects were
-        // always added at the end of the list)
-        final MemoryExclusionVertex newHostMobj = mObjInCurrentRange.get(0);
-        newHostsMObjs.add(newHostMobj);
-
-        // 2. Give the new host the right size
-        // (pay attention to alignment)
-        // Get aligned min index range
-        @SuppressWarnings("unchecked")
-        final List<Pair<MemoryExclusionVertex,
-            Pair<Range, Range>>> newHostOldRange = (List<Pair<MemoryExclusionVertex, Pair<Range, Range>>>) newHostMobj
-                .getPropertyBean().getValue(MemoryExclusionVertex.REAL_TOKEN_RANGE_PROPERTY);
-        long minIndex = currentRange.getStart();
-        if (alignment > 0) {
-          // Make sure that index aligned in the buffer are in
-          // fact aligned.
-          // This goal is here to make sure that
-          // index 0 of the new host buffer is aligned !
-          final long newHostOldStart = newHostOldRange.get(0).getValue().getValue().getStart(); // .value.value
-          // If the result of te modulo is not null, unaligned
-          // corresponds to the number of "extra" bytes making
-          // index 0 of newHost not aligned with respect to
-          // currentRangeStart
-          final long unaligned = (newHostOldStart - currentRange.getStart()) % alignment;
-          if (unaligned == 0) {
-            // Index 0 of new host is already aligned
-            minIndex = currentRange.getStart();
-          } else {
-            // Index 0 of new host is not aligned
-            // Extra-bytes are added to the new range
-            // to re-align it.
-            minIndex = currentRange.getStart() - (alignment - unaligned);
-          }
-        }
-        newHostMobj.setWeight(currentRange.getEnd() - minIndex);
-
-        if (mObjInCurrentRange.size() <= 1) {
-          // The new host Mobj does not host any other MObj
-          // last code was still applied to make sure that
-          // the mObject has the right size (although it
-          // will never be larger than its original weight
-          // and never by misaligned as it does not not
-          // host anything)
-          newHostMobj.getPropertyBean().removeProperty(MemoryExclusionVertex.REAL_TOKEN_RANGE_PROPERTY);
-        } else {
-          // The remaining processing should only be applied if
-          // the mObject is not alone in its range and does
-          // actually host other mObjects
-          // Update newHostMobj realTokenRange property
-          final Range newHostRealTokenRange = newHostOldRange.get(0).getValue().getKey();
-          final Range newHostActualRealTokenRange = newHostOldRange.get(0).getValue().getValue().translate(-minIndex);
-          final List<Pair<MemoryExclusionVertex, Pair<Range, Range>>> ranges = new ArrayList<>();
-          ranges.add(new Pair<>(newHostMobj, new Pair<>(newHostRealTokenRange, newHostActualRealTokenRange)));
-          newHostMobj.setPropertyValue(MemoryExclusionVertex.REAL_TOKEN_RANGE_PROPERTY, ranges);
-
-          // Add the mobj to the meg hosts list
-          final Set<MemoryExclusionVertex> hostMObjSet = new LinkedHashSet<>();
-          hosts.put(newHostMobj, hostMObjSet);
-
-          // 3. Add all hosted mObjects to the list
-          // and set their properties
-          // (exclude first mObj from iteration, as it is the
-          // new host)
-          for (final MemoryExclusionVertex mObj : mObjInCurrentRange.subList(1, mObjInCurrentRange.size())) {
-            // update the real token range property by translating
-            // ranges to the current range referential
-            @SuppressWarnings("unchecked")
-            final List<Pair<MemoryExclusionVertex,
-                Pair<Range, Range>>> mObjRanges = (List<Pair<MemoryExclusionVertex, Pair<Range, Range>>>) mObj
-                    .getPropertyBean().getValue(MemoryExclusionVertex.REAL_TOKEN_RANGE_PROPERTY);
-            final List<Pair<MemoryExclusionVertex, Pair<Range, Range>>> mObjNewRanges = new ArrayList<>();
-            for (final Pair<MemoryExclusionVertex, Pair<Range, Range>> mObjRangePair : mObjRanges) {
-              // Check if the current mObjRangePair overlaps with
-              // the current range.
-              // Always OK for undivided buffers
-              // If a divided buffer is mapped into several
-              // hosts, this code makes sure that each mapped
-              // ranged is updated only when the corresponding
-              // range is processed.
-              if (Range.hasOverlap(mObjRangePair.getValue().getValue(), currentRange)) {
-                // case for Undivided buffer and divided
-                // range falling into the current range
-                mObjNewRanges.add(new Pair<>(newHostMobj, new Pair<>(mObjRangePair.getValue().getKey(), mObjRangePair
-                    .getValue().getValue().translate(-minIndex - newHostActualRealTokenRange.getStart()))));
-              } else {
-                // Case for divided range not falling into
-                // the current range
-                mObjNewRanges.add(mObjRangePair);
-              }
-            }
-
-            // Save property and update hostMObjSet
-            mObj.getPropertyBean().setValue(MemoryExclusionVertex.REAL_TOKEN_RANGE_PROPERTY, mObjNewRanges);
-            hostMObjSet.add(mObj);
-          }
-        }
-      }
+      createHostRange(mobjByBank, alignment, hosts, bankByMobj, mObjsToUndivide, newHostsMObjs, bankEntry);
     }
 
     // Add the new host MObjects to the MEG
@@ -588,6 +403,211 @@ public class Distributor {
     }
   }
 
+  private static void createHostRange(final Map<String, Set<MemoryExclusionVertex>> mobjByBank, final long alignment,
+      final Map<MemoryExclusionVertex, Set<MemoryExclusionVertex>> hosts,
+      final LinkedHashMap<MemoryExclusionVertex, String> bankByMobj, final Set<MemoryExclusionVertex> mObjsToUndivide,
+      final LinkedHashSet<MemoryExclusionVertex> newHostsMObjs,
+      final Entry<String, Set<MemoryExclusionVertex>> bankEntry) {
+    // Iterate over Mobjects to build the range(s) of this memory
+    // bank (all ranges are relative to the host mObj)
+    final List<Range> rangesInBank = new ArrayList<>();
+    for (final MemoryExclusionVertex mobj : bankEntry.getValue()) {
+      buildMemoryRanges(bankByMobj, mObjsToUndivide, bankEntry, rangesInBank, mobj);
+    }
+
+    // Find the list of mObjs falling in each range
+    // Store the result in the rangesInBankAndMObjs map
+    // mObjsToUndivide are not part of these memory objects
+    final Set<MemoryExclusionVertex> mObjInCurrentBank = mobjByBank.get(bankEntry.getKey());
+    mObjInCurrentBank.removeAll(mObjsToUndivide);
+    final Map<Range,
+        List<MemoryExclusionVertex>> rangesInBankAndMObjs = findRangesInBank(rangesInBank, mObjInCurrentBank);
+
+    // Create a memory object for each range in the bank
+    for (final Entry<Range, List<MemoryExclusionVertex>> currentRangeAndMobjs : rangesInBankAndMObjs.entrySet()) {
+      createMemoryObject(alignment, hosts, newHostsMObjs, currentRangeAndMobjs);
+    }
+  }
+
+  private static void createMemoryObject(final long alignment,
+      final Map<MemoryExclusionVertex, Set<MemoryExclusionVertex>> hosts,
+      final LinkedHashSet<MemoryExclusionVertex> newHostsMObjs,
+      final Entry<Range, List<MemoryExclusionVertex>> currentRangeAndMobjs) {
+    final Range currentRange = currentRangeAndMobjs.getKey();
+    final List<MemoryExclusionVertex> mObjInCurrentRange = currentRangeAndMobjs.getValue();
+
+    // 1. Select the first object as the new host
+    // (cannot be a divided mObject as divided mObjects were
+    // always added at the end of the list)
+    final MemoryExclusionVertex newHostMobj = mObjInCurrentRange.get(0);
+    newHostsMObjs.add(newHostMobj);
+
+    // 2. Give the new host the right size
+    // (pay attention to alignment)
+    // Get aligned min index range
+    final List<Pair<MemoryExclusionVertex, Pair<Range, Range>>> newHostOldRange = newHostMobj.getPropertyBean()
+        .getValue(MemoryExclusionVertex.REAL_TOKEN_RANGE_PROPERTY);
+    long minIndex = currentRange.getStart();
+    if (alignment > 0) {
+      // Make sure that index aligned in the buffer are in
+      // fact aligned.
+      // This goal is here to make sure that
+      // index 0 of the new host buffer is aligned !
+      final long newHostOldStart = newHostOldRange.get(0).getValue().getValue().getStart(); // .value.value
+      // If the result of te modulo is not null, unaligned
+      // corresponds to the number of "extra" bytes making
+      // index 0 of newHost not aligned with respect to
+      // currentRangeStart
+      final long unaligned = (newHostOldStart - currentRange.getStart()) % alignment;
+      if (unaligned == 0) {
+        // Index 0 of new host is already aligned
+        minIndex = currentRange.getStart();
+      } else {
+        // Index 0 of new host is not aligned
+        // Extra-bytes are added to the new range
+        // to re-align it.
+        minIndex = currentRange.getStart() - (alignment - unaligned);
+      }
+    }
+    newHostMobj.setWeight(currentRange.getEnd() - minIndex);
+
+    if (mObjInCurrentRange.size() <= 1) {
+      // The new host Mobj does not host any other MObj
+      // last code was still applied to make sure that
+      // the mObject has the right size (although it
+      // will never be larger than its original weight
+      // and never by misaligned as it does not not
+      // host anything)
+      newHostMobj.getPropertyBean().removeProperty(MemoryExclusionVertex.REAL_TOKEN_RANGE_PROPERTY);
+    } else {
+      // The remaining processing should only be applied if
+      // the mObject is not alone in its range and does
+      // actually host other mObjects
+      // Update newHostMobj realTokenRange property
+      final Range newHostRealTokenRange = newHostOldRange.get(0).getValue().getKey();
+      final Range newHostActualRealTokenRange = newHostOldRange.get(0).getValue().getValue().translate(-minIndex);
+      final List<Pair<MemoryExclusionVertex, Pair<Range, Range>>> ranges = new ArrayList<>();
+      ranges.add(new Pair<>(newHostMobj, new Pair<>(newHostRealTokenRange, newHostActualRealTokenRange)));
+      newHostMobj.setPropertyValue(MemoryExclusionVertex.REAL_TOKEN_RANGE_PROPERTY, ranges);
+
+      // Add the mobj to the meg hosts list
+      final Set<MemoryExclusionVertex> hostMObjSet = new LinkedHashSet<>();
+      hosts.put(newHostMobj, hostMObjSet);
+
+      // 3. Add all hosted mObjects to the list
+      // and set their properties
+      // (exclude first mObj from iteration, as it is the
+      // new host)
+      for (final MemoryExclusionVertex mObj : mObjInCurrentRange.subList(1, mObjInCurrentRange.size())) {
+        updateRanges(currentRange, newHostMobj, minIndex, newHostActualRealTokenRange, hostMObjSet, mObj);
+      }
+    }
+  }
+
+  private static void updateRanges(final Range currentRange, final MemoryExclusionVertex newHostMobj, long minIndex,
+      final Range newHostActualRealTokenRange, final Set<MemoryExclusionVertex> hostMObjSet,
+      final MemoryExclusionVertex mObj) {
+    // update the real token range property by translating
+    // ranges to the current range referential
+    final List<Pair<MemoryExclusionVertex, Pair<Range, Range>>> mObjRanges = mObj.getPropertyBean()
+        .getValue(MemoryExclusionVertex.REAL_TOKEN_RANGE_PROPERTY);
+    final List<Pair<MemoryExclusionVertex, Pair<Range, Range>>> mObjNewRanges = new ArrayList<>();
+    for (final Pair<MemoryExclusionVertex, Pair<Range, Range>> mObjRangePair : mObjRanges) {
+      // Check if the current mObjRangePair overlaps with
+      // the current range.
+      // Always OK for undivided buffers
+      // If a divided buffer is mapped into several
+      // hosts, this code makes sure that each mapped
+      // ranged is updated only when the corresponding
+      // range is processed.
+      if (Range.hasOverlap(mObjRangePair.getValue().getValue(), currentRange)) {
+        // case for Undivided buffer and divided
+        // range falling into the current range
+        mObjNewRanges.add(new Pair<>(newHostMobj, new Pair<>(mObjRangePair.getValue().getKey(),
+            mObjRangePair.getValue().getValue().translate(-minIndex - newHostActualRealTokenRange.getStart()))));
+      } else {
+        // Case for divided range not falling into
+        // the current range
+        mObjNewRanges.add(mObjRangePair);
+      }
+    }
+
+    // Save property and update hostMObjSet
+    mObj.getPropertyBean().setValue(MemoryExclusionVertex.REAL_TOKEN_RANGE_PROPERTY, mObjNewRanges);
+    hostMObjSet.add(mObj);
+  }
+
+  private static Map<Range, List<MemoryExclusionVertex>> findRangesInBank(final List<Range> rangesInBank,
+      final Set<MemoryExclusionVertex> mObjInCurrentBank) {
+    final Map<Range, List<MemoryExclusionVertex>> rangesInBankAndMObjs = new LinkedHashMap<>();
+    for (final Range currentRange : rangesInBank) {
+      // 1. Get the list of mObjects falling in this range
+      final List<MemoryExclusionVertex> mObjInCurrentRange = new ArrayList<>();
+      for (final MemoryExclusionVertex mObj : mObjInCurrentBank) {
+        final List<Pair<MemoryExclusionVertex, Pair<Range, Range>>> ranges = mObj.getPropertyBean()
+            .getValue(MemoryExclusionVertex.REAL_TOKEN_RANGE_PROPERTY);
+        if (ranges.size() == 1) {
+          // Buffer is undivided, check if it intersect with
+          // the current range in bank
+          if (ranges.get(0).getValue().getValue().intersection(currentRange) != null) {
+            // Add undivided object at the beginning of the list
+            // to make sure that no divided object will ever be selected
+            // as a host in the next step
+            mObjInCurrentRange.add(0, mObj);
+          }
+        } else {
+          // Buffer is divided, check if *any* of its range
+          // intersects with the current range in bank
+          // (i.e. check if *not* none of its range intersect with the range)
+          if (ranges.stream().anyMatch(range -> range.getValue().getValue().intersection(currentRange) != null)) {
+            // Add divided object at the end of the list
+            // to make sure that no divided object will ever be selected
+            // as a host in the next step
+            mObjInCurrentRange.add(mObj);
+          }
+        }
+      }
+      rangesInBankAndMObjs.put(currentRange, mObjInCurrentRange);
+    }
+    return rangesInBankAndMObjs;
+  }
+
+  private static void buildMemoryRanges(final LinkedHashMap<MemoryExclusionVertex, String> bankByMobj,
+      final Set<MemoryExclusionVertex> mObjsToUndivide, final Entry<String, Set<MemoryExclusionVertex>> bankEntry,
+      final List<Range> rangesInBank, final MemoryExclusionVertex mobj) {
+    final List<Pair<MemoryExclusionVertex, Pair<Range, Range>>> rangesInHost = mobj.getPropertyBean()
+        .getValue(MemoryExclusionVertex.REAL_TOKEN_RANGE_PROPERTY);
+    // Process non-divided buffers
+    if (rangesInHost.size() == 1) {
+      // add the range covered by this buffer to the
+      // rangesInBank (use a clone because the range will be
+      // modified during call to the union method
+      Range.union(rangesInBank, rangesInHost.get(0).getValue().getValue().copy());
+    } else {
+      // Divided buffers:
+      // Check if all parts of the MObj were allocated in the same memory bank
+      // i.e. check if source and dest memory objects are
+      // all stored in the same memory bank
+      final List<MemoryExclusionVertex> dividedPartsHosts = mobj.getPropertyBean()
+          .getValue(MemoryExclusionVertex.DIVIDED_PARTS_HOSTS);
+      final List<String> partsHostsSet = dividedPartsHosts.stream().map(bankByMobj::get).collect(Collectors.toList());
+      if ((partsHostsSet.size() == 1) && partsHostsSet.get(0).equals(bankEntry.getKey())) {
+        // All hosts were allocated in the same bank
+        // And this bank is the current bankEntry
+        // The split is maintained, and rangesInHost must be updated
+        // (use a clone because the range will be
+        // modified during call to the union method)
+        rangesInHost.forEach(range -> Range.union(rangesInBank, range.getValue().getValue().copy()));
+      } else {
+        // Not all hosts were allocated in the same bank
+        // The mObj cannot be splitted
+        // => It must be restored to its original size in
+        // the graph
+        mObjsToUndivide.add(mobj);
+      }
+    }
+  }
+
   /**
    * Restore exclusions in the {@link MemoryExclusionGraph MEG} for the given {@link MemoryExclusionVertex}, (and its
    * hosted {@link MemoryExclusionVertex}, if any).
@@ -601,9 +621,8 @@ public class Distributor {
    */
   private static void restoreExclusions(final MemoryExclusionGraph meg, final MemoryExclusionVertex mObj) {
     // Get the hosts property of the MEG
-    @SuppressWarnings("unchecked")
-    final Map<MemoryExclusionVertex, Set<MemoryExclusionVertex>> hosts = (Map<MemoryExclusionVertex,
-        Set<MemoryExclusionVertex>>) meg.getPropertyBean().getValue(MemoryExclusionGraph.HOST_MEMORY_OBJECT_PROPERTY);
+    final Map<MemoryExclusionVertex, Set<MemoryExclusionVertex>> hosts = meg.getPropertyBean()
+        .getValue(MemoryExclusionGraph.HOST_MEMORY_OBJECT_PROPERTY);
 
     // iteration over the host and its hosted vertices, if any
     Set<MemoryExclusionVertex> mObjAndHostedMObjs = hosts.get(mObj);
@@ -613,39 +632,43 @@ public class Distributor {
     mObjAndHostedMObjs.add(mObj);
 
     for (final MemoryExclusionVertex curentMObj : mObjAndHostedMObjs) {
-      @SuppressWarnings("unchecked")
-      final List<MemoryExclusionVertex> adjacentMObjs = (List<MemoryExclusionVertex>) curentMObj.getPropertyBean()
+      final List<MemoryExclusionVertex> adjacentMObjs = curentMObj.getPropertyBean()
           .getValue(MemoryExclusionVertex.ADJACENT_VERTICES_BACKUP);
       for (final MemoryExclusionVertex adjacentMObj : adjacentMObjs) {
-        // Check if the adjacent mObj is already in the graph
-        if (!adjacentMObj.equals(mObj) // No self-exclusion
-            && meg.vertexSet().contains(adjacentMObj)) {
-          // the adjacent mObj is already in the graph
-          // Add the exclusion back
-          meg.addEdge(mObj, adjacentMObj);
-        } else {
-          // Happens if adjacentMObj is:
-          // - a hosted MObj
-          // - a mobjToUndivide (not yet added back to the graph)
-          // The adjacent mObj is not in the graph
-          // It must be merged within a host
-          // (or several host in case of a division)
-          for (final Entry<MemoryExclusionVertex, Set<MemoryExclusionVertex>> entry : hosts.entrySet()) {
-            final MemoryExclusionVertex hostMObj = entry.getKey();
-            final Set<MemoryExclusionVertex> hostedMObjs = entry.getValue();
-            final boolean noSelfExec = hostMObj != mObj;
-            final boolean containsAdjacentMemObj = hostedMObjs.contains(adjacentMObj);
-            final boolean alreadyAdded = meg.containsVertex(hostMObj);
-            if (noSelfExec && containsAdjacentMemObj && alreadyAdded) {
-              meg.addEdge(mObj, hostMObj);
-            }
-          }
-          // If the adjacent mObj was not yet added back to the MEG,
-          // this forEach will have no impact, but edges will be
-          // created on processing of this adjacent mObjs in
-          // a following iteration of the current for loop.
+        restoreMemoryExclusionVertex(meg, mObj, hosts, adjacentMObj);
+      }
+    }
+  }
+
+  private static void restoreMemoryExclusionVertex(final MemoryExclusionGraph meg, final MemoryExclusionVertex mObj,
+      final Map<MemoryExclusionVertex, Set<MemoryExclusionVertex>> hosts, final MemoryExclusionVertex adjacentMObj) {
+    // Check if the adjacent mObj is already in the graph
+    if (!adjacentMObj.equals(mObj) // No self-exclusion
+        && meg.vertexSet().contains(adjacentMObj)) {
+      // the adjacent mObj is already in the graph
+      // Add the exclusion back
+      meg.addEdge(mObj, adjacentMObj);
+    } else {
+      // Happens if adjacentMObj is:
+      // - a hosted MObj
+      // - a mobjToUndivide (not yet added back to the graph)
+      // The adjacent mObj is not in the graph
+      // It must be merged within a host
+      // (or several host in case of a division)
+      for (final Entry<MemoryExclusionVertex, Set<MemoryExclusionVertex>> entry : hosts.entrySet()) {
+        final MemoryExclusionVertex hostMObj = entry.getKey();
+        final Set<MemoryExclusionVertex> hostedMObjs = entry.getValue();
+        final boolean noSelfExec = hostMObj != mObj;
+        final boolean containsAdjacentMemObj = hostedMObjs.contains(adjacentMObj);
+        final boolean alreadyAdded = meg.containsVertex(hostMObj);
+        if (noSelfExec && containsAdjacentMemObj && alreadyAdded) {
+          meg.addEdge(mObj, hostMObj);
         }
       }
+      // If the adjacent mObj was not yet added back to the MEG,
+      // this forEach will have no impact, but edges will be
+      // created on processing of this adjacent mObjs in
+      // a following iteration of the current for loop.
     }
   }
 
@@ -683,9 +706,8 @@ public class Distributor {
   private static Map<String, Set<MemoryExclusionVertex>>
       distributeMegDistributedOnly(final MemoryExclusionGraph memEx) {
     final LinkedHashMap<String, Set<MemoryExclusionVertex>> memExesVerticesSet = new LinkedHashMap<>();
-    @SuppressWarnings("unchecked")
-    final Map<MemoryExclusionVertex, Set<MemoryExclusionVertex>> hosts = (Map<MemoryExclusionVertex,
-        Set<MemoryExclusionVertex>>) memEx.getPropertyBean().getValue(MemoryExclusionGraph.HOST_MEMORY_OBJECT_PROPERTY);
+    final Map<MemoryExclusionVertex, Set<MemoryExclusionVertex>> hosts = memEx.getPropertyBean()
+        .getValue(MemoryExclusionGraph.HOST_MEMORY_OBJECT_PROPERTY);
     for (final MemoryExclusionVertex memExVertex : memEx.vertexSet()) {
       Set<MemoryExclusionVertex> hostedMObjs = null;
       if (hosts != null) {
@@ -743,30 +765,9 @@ public class Distributor {
     for (int i = 0; i < 2; i++) {
       // Retrieve the component on which the DAG Vertex is mapped
       final DAGEdge edge = mObj.getEdge();
-      DAGVertex dagVertex;
-      if (edge != null) {
-        if (i == 0) {
-          dagVertex = edge.getSource();
-        } else {
-          dagVertex = edge.getTarget();
-        }
-      } else {
-        // retrieve
-        final DirectedAcyclicGraph dag = (DirectedAcyclicGraph) memEx.getPropertyBean()
-            .getValue(MemoryExclusionGraph.SOURCE_DAG);
-        if (i == 0) {
-          if (mObj.getSource().contains("FIFO_Head_")) {
-            dagVertex = dag.getVertex(mObj.getSource().substring(("FIFO_Head_").length()));
-          } else {
-            dagVertex = dag.getVertex(mObj.getSource());
-          }
-        } else {
-          dagVertex = dag.getVertex(mObj.getSink());
-        }
-      }
+      DAGVertex dagVertex = retriveDagVertex(mObj, memEx, i, edge);
 
-      final ComponentInstance component = (ComponentInstance) dagVertex.getPropertyBean()
-          .getValue(Distributor.OPERATOR);
+      final ComponentInstance component = dagVertex.getPropertyBean().getValue(Distributor.OPERATOR);
 
       Set<MemoryExclusionVertex> verticesSet = mObjByBank.get(component.getInstanceName());
       if (verticesSet == null) {
@@ -779,6 +780,31 @@ public class Distributor {
       // component
       verticesSet.add(mObj);
     }
+  }
+
+  private static DAGVertex retriveDagVertex(final MemoryExclusionVertex mObj, final MemoryExclusionGraph memEx, int i,
+      final DAGEdge edge) {
+    DAGVertex dagVertex;
+    if (edge != null) {
+      if (i == 0) {
+        dagVertex = edge.getSource();
+      } else {
+        dagVertex = edge.getTarget();
+      }
+    } else {
+      // retrieve
+      final DirectedAcyclicGraph dag = memEx.getPropertyBean().getValue(MemoryExclusionGraph.SOURCE_DAG);
+      if (i == 0) {
+        if (mObj.getSource().contains("FIFO_Head_")) {
+          dagVertex = dag.getVertex(mObj.getSource().substring(("FIFO_Head_").length()));
+        } else {
+          dagVertex = dag.getVertex(mObj.getSource());
+        }
+      } else {
+        dagVertex = dag.getVertex(mObj.getSink());
+      }
+    }
+    return dagVertex;
   }
 
   /**
@@ -827,9 +853,8 @@ public class Distributor {
    */
   private static Map<String, Set<MemoryExclusionVertex>> distributeMegMixedMerged(final MemoryExclusionGraph memEx) {
     final LinkedHashMap<String, Set<MemoryExclusionVertex>> memExesVerticesSet = new LinkedHashMap<>();
-    @SuppressWarnings("unchecked")
-    final Map<MemoryExclusionVertex, Set<MemoryExclusionVertex>> hosts = (Map<MemoryExclusionVertex,
-        Set<MemoryExclusionVertex>>) memEx.getPropertyBean().getValue(MemoryExclusionGraph.HOST_MEMORY_OBJECT_PROPERTY);
+    final Map<MemoryExclusionVertex, Set<MemoryExclusionVertex>> hosts = memEx.getPropertyBean()
+        .getValue(MemoryExclusionGraph.HOST_MEMORY_OBJECT_PROPERTY);
     for (final MemoryExclusionVertex memExVertex : memEx.vertexSet()) {
       if (((hosts != null) && !hosts.containsKey(memExVertex)) || (hosts == null)) {
         Distributor.findMObjBankMixed(memExVertex, memExesVerticesSet);
@@ -884,8 +909,7 @@ public class Distributor {
       if (mObj.getEdge().getSource().getPropertyBean().getValue(Distributor.OPERATOR)
           .equals(mObj.getEdge().getTarget().getPropertyBean().getValue(Distributor.OPERATOR))) {
         final DAGVertex dagVertex = mObj.getEdge().getSource();
-        final ComponentInstance component = (ComponentInstance) dagVertex.getPropertyBean()
-            .getValue(Distributor.OPERATOR);
+        final ComponentInstance component = dagVertex.getPropertyBean().getValue(Distributor.OPERATOR);
         memory = component.getInstanceName();
       } // Else => Shared memory
     } else {
@@ -899,8 +923,7 @@ public class Distributor {
       if (mObj.getSource().equals(mObj.getSink())) {
         // This is a wMem mObj
         // The mObj is allocated in the MEG of the core executing the corresponding actor.
-        final ComponentInstance component = (ComponentInstance) mObj.getVertex().getPropertyBean()
-            .getValue(Distributor.OPERATOR);
+        final ComponentInstance component = mObj.getVertex().getPropertyBean().getValue(Distributor.OPERATOR);
         memory = component.getInstanceName();
       } else {
         // For now fifos are allocated in shared memory

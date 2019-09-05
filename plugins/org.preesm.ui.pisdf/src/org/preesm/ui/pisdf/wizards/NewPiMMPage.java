@@ -41,6 +41,7 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.logging.Level;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.emf.common.util.URI;
@@ -53,10 +54,11 @@ import org.eclipse.graphiti.mm.pictograms.PictogramsFactory;
 import org.eclipse.graphiti.services.Graphiti;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.ui.dialogs.WizardNewFileCreationPage;
+import org.preesm.commons.exceptions.PreesmRuntimeException;
+import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.pisdf.factory.PiMMUserFactory;
 
-// TODO: Auto-generated Javadoc
 /**
  * The Class NewPiMMPage.
  */
@@ -83,7 +85,7 @@ public class NewPiMMPage extends WizardNewFileCreationPage {
       final String ext = file.getFileExtension();
       this.graphName = file.getName();
       if (this.graphName == null) {
-        throw new RuntimeException();
+        throw new PreesmRuntimeException();
       }
       final int idx = this.graphName.indexOf(ext);
       if (idx != -1) {
@@ -101,7 +103,7 @@ public class NewPiMMPage extends WizardNewFileCreationPage {
    *          the path
    * @return the pi graph
    */
-  private PiGraph createGraph(final IPath path) {
+  private PiGraph createGraph() {
     this.graphName = getFileName();
     final int idx = this.graphName.indexOf("diagram");
     if (idx != -1) {
@@ -128,28 +130,23 @@ public class NewPiMMPage extends WizardNewFileCreationPage {
     final URI uri = URI.createPlatformResourceURI(path.toString(), true);
 
     // Following lines corresponds to a copy of
-    // EcoreHelper.putEObject(set, uri, graph);
+    // EcoreHelper.putEObject(set, uri, graph)
     // from net.sf.orcc.util.util
     // @author mwipliez
     // date of copy 2012.10.12
-    {
-      Resource resource = set.getResource(uri, false);
-      if (resource == null) {
-        resource = set.createResource(uri);
-      } else {
-        resource.getContents().clear();
-      }
-
-      resource.getContents().add(graph);
-      try {
-        resource.save(null);
-        // return true;
-      } catch (final IOException e) {
-        e.printStackTrace();
-        // return false;
-      }
+    Resource resource = set.getResource(uri, false);
+    if (resource == null) {
+      resource = set.createResource(uri);
+    } else {
+      resource.getContents().clear();
     }
-    final Resource resource = set.getResource(uri, false);
+
+    resource.getContents().add(graph);
+    try {
+      resource.save(null);
+    } catch (final IOException e) {
+      PreesmLogger.getLogger().log(Level.WARNING, "Could not save PiGraph", e);
+    }
     resource.setTrackingModification(true);
   }
 
@@ -164,7 +161,7 @@ public class NewPiMMPage extends WizardNewFileCreationPage {
 
     // create graph
     final IPath piPath = path.append(getFileName()).removeFileExtension().addFileExtension("pi");
-    final PiGraph graph = createGraph(piPath);
+    final PiGraph graph = createGraph();
 
     // save graph
     final ResourceSet set = new ResourceSetImpl();
@@ -189,7 +186,7 @@ public class NewPiMMPage extends WizardNewFileCreationPage {
     try {
       resource.save(outputStream, null);
     } catch (final IOException e) {
-      e.printStackTrace();
+      PreesmLogger.getLogger().log(Level.WARNING, "Could not save PiGraph", e);
     }
 
     return new ByteArrayInputStream(outputStream.toByteArray());

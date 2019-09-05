@@ -58,7 +58,6 @@ import org.preesm.model.pisdf.Port;
 import org.preesm.ui.pisdf.PiMMUtil;
 import org.preesm.ui.pisdf.util.PortNameValidator;
 
-// TODO: Auto-generated Javadoc
 /**
  * Feature called to create and add a port to an actor.
  *

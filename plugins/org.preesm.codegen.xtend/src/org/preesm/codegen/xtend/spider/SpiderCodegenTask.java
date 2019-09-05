@@ -44,9 +44,11 @@ package org.preesm.codegen.xtend.spider;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.nio.file.Files;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.logging.Level;
 import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IWorkspace;
 import org.eclipse.core.resources.ResourcesPlugin;
@@ -60,6 +62,7 @@ import org.preesm.commons.doc.annotations.Port;
 import org.preesm.commons.doc.annotations.PreesmTask;
 import org.preesm.commons.doc.annotations.Value;
 import org.preesm.commons.exceptions.PreesmRuntimeException;
+import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.scenario.Scenario;
 import org.preesm.model.slam.Design;
@@ -164,7 +167,6 @@ public class SpiderCodegenTask extends AbstractTaskImplementation {
     final String graphCode = launcher.generateGraphCode(pg);
     final String fctCode = launcher.generateFunctionCode(pg);
     final String hCode = launcher.generateHeaderCode(pg, spiderConfig);
-    // TODO: add config as parameters from workflow
     final String mCode = launcher.generateMainCode(pg, spiderConfig);
     final String papifyCode = launcher.generatePapifyCode(pg, scenario);
     final String archiCode = launcher.generateArchiCode(pg, scenario);
@@ -191,7 +193,11 @@ public class SpiderCodegenTask extends AbstractTaskImplementation {
     if (folder.isDirectory()) {
       // clean the folder
       for (File file : folder.listFiles()) {
-        file.delete();
+        try {
+          Files.delete(file.toPath());
+        } catch (IOException e) {
+          PreesmLogger.getLogger().log(Level.FINE, "Could not delete file");
+        }
       }
     }
 
@@ -215,31 +221,31 @@ public class SpiderCodegenTask extends AbstractTaskImplementation {
     try (FileWriter piGraphWriter = new FileWriter(piGraphFile)) {
       piGraphWriter.write(graphCode);
     } catch (final IOException e) {
-      e.printStackTrace();
+      PreesmLogger.getLogger().log(Level.WARNING, "Could not write graphCode file", e);
     }
 
     try (FileWriter piFctWriter = new FileWriter(piFctFile)) {
       piFctWriter.write(fctCode);
     } catch (final IOException e) {
-      e.printStackTrace();
+      PreesmLogger.getLogger().log(Level.WARNING, "Could not write fctCode file", e);
     }
 
     try (FileWriter hWriter = new FileWriter(hFile)) {
       hWriter.write(hCode);
     } catch (final IOException e) {
-      e.printStackTrace();
+      PreesmLogger.getLogger().log(Level.WARNING, "Could not write hCode file", e);
     }
 
     try (FileWriter archiWriter = new FileWriter(archiFile)) {
       archiWriter.write(archiCode);
     } catch (final IOException e) {
-      e.printStackTrace();
+      PreesmLogger.getLogger().log(Level.WARNING, "Could not write archiCode file", e);
     }
 
     try (FileWriter cppMainWriter = new FileWriter(cppMainFile)) {
       cppMainWriter.write(mCode);
     } catch (final IOException e) {
-      e.printStackTrace();
+      PreesmLogger.getLogger().log(Level.WARNING, "Could not write mCode file", e);
     }
 
     // Write papify file
@@ -249,7 +255,7 @@ public class SpiderCodegenTask extends AbstractTaskImplementation {
       try (FileWriter cppPapifyWriter = new FileWriter(cppPapifyFile)) {
         cppPapifyWriter.write(papifyCode);
       } catch (final IOException e) {
-        e.printStackTrace();
+        PreesmLogger.getLogger().log(Level.WARNING, "Could not write papifyCode file", e);
       }
     }
 
@@ -265,8 +271,7 @@ public class SpiderCodegenTask extends AbstractTaskImplementation {
   @Override
   public Map<String, String> getDefaultParameters() {
     // Create an empty parameters map
-    final Map<String, String> parameters = new LinkedHashMap<>();
-    return parameters;
+    return new LinkedHashMap<>();
   }
 
   /*

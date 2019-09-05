@@ -43,8 +43,10 @@ package org.preesm.model.scenario.serialize;
 import java.util.List;
 import java.util.Map.Entry;
 import java.util.Set;
+import java.util.logging.Level;
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.common.util.EMap;
+import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.Parameter;
 import org.preesm.model.pisdf.PiGraph;
@@ -72,6 +74,8 @@ import org.w3c.dom.bootstrap.DOMImplementationRegistry;
  */
 public class ScenarioWriter {
 
+  private static final String PE_TYPE_LITERAL = "peType";
+
   /** Current document. */
   private Document dom;
 
@@ -94,7 +98,7 @@ public class ScenarioWriter {
       impl = DOMImplementationRegistry.newInstance().getDOMImplementation("Core 3.0 XML 3.0 LS");
       this.dom = impl.createDocument("", "scenario", null);
     } catch (final Exception e) {
-      e.printStackTrace();
+      PreesmLogger.getLogger().log(Level.WARNING, "Could not write scenario", e);
     }
 
   }
@@ -242,9 +246,9 @@ public class ScenarioWriter {
       final Element papifyConfigElt = this.dom.createElement("papifyConfigPE");
       parent.appendChild(papifyConfigElt);
 
-      final Element peType = this.dom.createElement("peType");
+      final Element peType = this.dom.createElement(PE_TYPE_LITERAL);
       papifyConfigElt.appendChild(peType);
-      peType.setAttribute("peType", slamComponent.getVlnv().getName());
+      peType.setAttribute(PE_TYPE_LITERAL, slamComponent.getVlnv().getName());
 
       for (final PapiComponent component : papiComponents) {
         final Element singleComponent = this.dom.createElement("PAPIComponent");
@@ -270,9 +274,9 @@ public class ScenarioWriter {
       final Element energyModelPETypeElt = this.dom.createElement("energyModelPEType");
       parent.appendChild(energyModelPETypeElt);
 
-      final Element peType = this.dom.createElement("peType");
+      final Element peType = this.dom.createElement(PE_TYPE_LITERAL);
       energyModelPETypeElt.appendChild(peType);
-      peType.setAttribute("peType", slamComponent.getVlnv().getName());
+      peType.setAttribute(PE_TYPE_LITERAL, slamComponent.getVlnv().getName());
       for (ComponentInstance compInstance : slamComponent.getInstances()) {
         final Element peInstance = this.dom.createElement("peInstance");
         peType.appendChild(peInstance);

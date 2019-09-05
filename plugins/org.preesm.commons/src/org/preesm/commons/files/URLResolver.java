@@ -110,27 +110,21 @@ public final class URLResolver {
     if ((location == null) || location.isEmpty()) {
       return null;
     }
-    URL resultURL;
+    URL resultURL = null;
     try {
       resultURL = resolveURLFromWorkspace(location, bundleFilterList);
-    } catch (final MalformedURLException e) {
-      resultURL = null;
-    }
-
-    if (resultURL == null) {
+    } catch (final MalformedURLException workspaceException) {
       try {
         resultURL = resolvePlainURL(location);
-      } catch (final MalformedURLException e) {
-        resultURL = null;
+      } catch (final MalformedURLException plainUrlException) {
+        try {
+          resultURL = resolveFileSystemURL(location);
+        } catch (final MalformedURLException fsException) {
+          resultURL = null;
+        }
       }
     }
-    if (resultURL == null) {
-      try {
-        resultURL = resolveFileSystemURL(location);
-      } catch (final MalformedURLException e) {
-        resultURL = null;
-      }
-    }
+
     return resultURL;
   }
 

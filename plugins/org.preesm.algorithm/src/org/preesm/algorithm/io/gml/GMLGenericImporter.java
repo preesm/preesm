@@ -49,7 +49,7 @@ import org.w3c.dom.NodeList;
  * The Class GMLGenericImporter.
  */
 @SuppressWarnings({ "rawtypes", "unchecked" })
-public class GMLGenericImporter extends GMLImporter<AbstractGraph, AbstractVertex, AbstractEdge> {
+public class GMLGenericImporter extends GMLImporter<AbstractGraph, AbstractVertex> {
 
   /**
    * Parses an Edge in the DOM document.

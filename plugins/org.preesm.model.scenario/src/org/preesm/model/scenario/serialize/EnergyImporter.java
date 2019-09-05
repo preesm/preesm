@@ -35,6 +35,8 @@
  */
 package org.preesm.model.scenario.serialize;
 
+import java.util.logging.Level;
+import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.model.scenario.Scenario;
 import org.preesm.model.slam.Design;
 
@@ -70,7 +72,7 @@ public class EnergyImporter {
           papifyOutputParser.parse(excelFileURL, design.getOperatorComponents());
         }
       } catch (final Exception e) {
-        e.printStackTrace();
+        PreesmLogger.getLogger().log(Level.WARNING, "Could not importe energy values", e);
       }
     }
   }

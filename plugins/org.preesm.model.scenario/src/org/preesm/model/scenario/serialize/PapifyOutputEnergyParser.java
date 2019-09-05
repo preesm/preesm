@@ -106,6 +106,116 @@ public class PapifyOutputEnergyParser {
     final File folder = new File(fullPath);
     final File[] fList = folder.listFiles();
 
+    final Map<String, EMap<PapiEvent, Double>> coreModels = readKPI(opDefIds);
+
+    for (File file : fList) {
+      readFile(url, opDefIds, energies, coreModels, file);
+    }
+    if (!energies.isEmpty()) {
+      parseEnergies(energies, opDefIds);
+    }
+  }
+
+  private void readFile(final String url, final List<Component> opDefIds,
+      final Map<AbstractActor, Map<Component, String>> energies, final Map<String, EMap<PapiEvent, Double>> coreModels,
+      File file) {
+    final String filePath = url.concat("//").concat(file.getName());
+    final IFile iFile = ResourcesPlugin.getWorkspace().getRoot().getFile(new Path(filePath));
+    Map<String, Double> energiesParsed = new LinkedHashMap<>();
+    Map<String, Integer> times = new LinkedHashMap<>();
+    Set<String> coresParseable = new LinkedHashSet<>();
+    try (final BufferedReader br = new BufferedReader(new InputStreamReader(iFile.getContents()))) {
+      processFile(opDefIds, energies, coreModels, energiesParsed, times, coresParseable, br);
+    } catch (final IOException | CoreException e) {
+      PreesmLogger.getLogger().log(Level.WARNING, "Could not read " + filePath, e);
+    }
+  }
+
+  private void processFile(final List<Component> opDefIds, final Map<AbstractActor, Map<Component, String>> energies,
+      final Map<String, EMap<PapiEvent, Double>> coreModels, Map<String, Double> energiesParsed,
+      Map<String, Integer> times, Set<String> coresParseable, final BufferedReader br) throws IOException {
+    String line = br.readLine();
+    final String[] cellsInit = line.split(",");
+    int totalCells = cellsInit.length;
+    if (totalCells > 4) {
+      Map<PapiEvent, Integer> papiEventsFileColumn = new LinkedHashMap<>();
+      for (int i = 4; i < cellsInit.length; i++) {
+        PapiEvent papiEvent = this.scenario.getPapifyConfig().getEventByName(cellsInit[i]);
+        papiEventsFileColumn.put(papiEvent, i);
+      }
+      addParsedCores(coreModels, coresParseable, papiEventsFileColumn);
+      String actorName = "";
+      while ((line = br.readLine()) != null) {
+        final String[] cells = line.split(",");
+        if (totalCells == cells.length) {
+          actorName = processLine(coreModels, energiesParsed, times, coresParseable, papiEventsFileColumn, cells);
+        }
+      }
+      final AbstractActor lookupActor = VertexPath.lookup(this.scenario.getAlgorithm(), actorName);
+      if (lookupActor != null) {
+        applyOnActor(opDefIds, energies, energiesParsed, times, lookupActor);
+      }
+    }
+  }
+
+  private String processLine(final Map<String, EMap<PapiEvent, Double>> coreModels, Map<String, Double> energiesParsed,
+      Map<String, Integer> times, Set<String> coresParseable, Map<PapiEvent, Integer> papiEventsFileColumn,
+      final String[] cells) {
+    String actorName;
+    String coreName = cells[0];
+    actorName = cells[1];
+    if (coresParseable.contains(coreName)) {
+      EMap<PapiEvent, Double> coreModel = coreModels.get(coreName);
+      double energyEstimated = 0.0;
+      for (Entry<PapiEvent, Double> modelParam : coreModel.entrySet()) {
+        int columnInFile = papiEventsFileColumn.get(modelParam.getKey());
+        energyEstimated = energyEstimated + modelParam.getValue() * Double.parseDouble(cells[columnInFile]);
+      }
+      if (!energiesParsed.containsKey(coreName)) {
+        energiesParsed.put(coreName, energyEstimated);
+        times.put(coreName, 1);
+      } else {
+        energiesParsed.put(coreName, energiesParsed.get(coreName) + (energyEstimated));
+        times.put(coreName, times.get(coreName) + 1);
+      }
+    }
+    return actorName;
+  }
+
+  private void applyOnActor(final List<Component> opDefIds, final Map<AbstractActor, Map<Component, String>> energies,
+      Map<String, Double> energiesParsed, Map<String, Integer> times, final AbstractActor lookupActor) {
+    final Map<Component, String> energy = new LinkedHashMap<>();
+    for (Component comp : opDefIds) {
+      double averageEnergy = 0;
+      double totalTime = 0;
+      int totalTimes = 0;
+      for (ComponentInstance compInstance : comp.getInstances()) {
+        if (energiesParsed.containsKey(compInstance.getInstanceName())) {
+          totalTime = totalTime + energiesParsed.get(compInstance.getInstanceName());
+          totalTimes = totalTimes + times.get(compInstance.getInstanceName());
+        }
+      }
+      if (totalTimes != 0) {
+        averageEnergy = totalTime / totalTimes;
+        energy.put(comp, Double.toString(averageEnergy));
+      }
+    }
+    if (!energy.isEmpty()) {
+      energies.put(lookupActor, energy);
+    }
+  }
+
+  private void addParsedCores(final Map<String, EMap<PapiEvent, Double>> coreModels, Set<String> coresParseable,
+      Map<PapiEvent, Integer> papiEventsFileColumn) {
+    for (Entry<String, EMap<PapiEvent, Double>> coreModel : coreModels.entrySet()) {
+      Set<PapiEvent> papiEventsModel = coreModel.getValue().keySet();
+      if (papiEventsFileColumn.keySet().containsAll(papiEventsModel)) {
+        coresParseable.add(coreModel.getKey());
+      }
+    }
+  }
+
+  private Map<String, EMap<PapiEvent, Double>> readKPI(final List<Component> opDefIds) {
     final Map<String, EMap<PapiEvent, Double>> coreModels = new LinkedHashMap<>();
     for (Component comp : opDefIds) {
       for (ComponentInstance compInstance : comp.getInstances()) {
@@ -113,85 +223,7 @@ public class PapifyOutputEnergyParser {
             this.scenario.getPapifyConfig().getPapifyEnergyKPIModels().get(comp));
       }
     }
-
-    for (File file : fList) {
-      final String filePath = url.concat("//").concat(file.getName());
-      final IFile iFile = ResourcesPlugin.getWorkspace().getRoot().getFile(new Path(filePath));
-      Map<String, Double> energiesParsed = new LinkedHashMap<>();
-      Map<String, Integer> times = new LinkedHashMap<>();
-      Set<String> coresParseable = new LinkedHashSet<>();
-      try {
-        final BufferedReader br = new BufferedReader(new InputStreamReader(iFile.getContents()));
-        String line = br.readLine();
-        final String[] cellsInit = line.split(",");
-        int totalCells = cellsInit.length;
-        if (totalCells > 4) {
-          Map<PapiEvent, Integer> papiEventsFileColumn = new LinkedHashMap<>();
-          for (int i = 4; i < cellsInit.length; i++) {
-            PapiEvent papiEvent = this.scenario.getPapifyConfig().getEventByName(cellsInit[i]);
-            papiEventsFileColumn.put(papiEvent, i);
-          }
-          for (Entry<String, EMap<PapiEvent, Double>> coreModel : coreModels.entrySet()) {
-            Set<PapiEvent> papiEventsModel = coreModel.getValue().keySet();
-            if (papiEventsFileColumn.keySet().containsAll(papiEventsModel)) {
-              coresParseable.add(coreModel.getKey());
-            }
-          }
-          String actorName = "";
-          if (line != null) {
-            while ((line = br.readLine()) != null) {
-              final String[] cells = line.split(",");
-              if (totalCells == cells.length) {
-                String coreName = cells[0];
-                actorName = cells[1];
-                if (coresParseable.contains(coreName)) {
-                  EMap<PapiEvent, Double> coreModel = coreModels.get(coreName);
-                  double energyEstimated = 0.0;
-                  for (Entry<PapiEvent, Double> modelParam : coreModel.entrySet()) {
-                    int columnInFile = papiEventsFileColumn.get(modelParam.getKey());
-                    energyEstimated = energyEstimated + modelParam.getValue() * Double.parseDouble(cells[columnInFile]);
-                  }
-                  if (!energiesParsed.containsKey(coreName)) {
-                    energiesParsed.put(coreName, energyEstimated);
-                    times.put(coreName, 1);
-                  } else {
-                    energiesParsed.put(coreName, energiesParsed.get(coreName) + (energyEstimated));
-                    times.put(coreName, times.get(coreName) + 1);
-                  }
-                }
-              }
-            }
-            final AbstractActor lookupActor = VertexPath.lookup(this.scenario.getAlgorithm(), actorName);
-            if (lookupActor != null) {
-              final Map<Component, String> energy = new LinkedHashMap<>();
-              for (Component comp : opDefIds) {
-                double averageEnergy = 0;
-                double totalTime = 0;
-                int totalTimes = 0;
-                for (ComponentInstance compInstance : comp.getInstances()) {
-                  if (energiesParsed.containsKey(compInstance.getInstanceName())) {
-                    totalTime = totalTime + energiesParsed.get(compInstance.getInstanceName());
-                    totalTimes = totalTimes + times.get(compInstance.getInstanceName());
-                  }
-                }
-                if (totalTimes != 0) {
-                  averageEnergy = totalTime / totalTimes;
-                  energy.put(comp, Double.toString(averageEnergy));
-                }
-              }
-              if (!energy.isEmpty()) {
-                energies.put(lookupActor, energy);
-              }
-            }
-          }
-        }
-      } catch (final IOException | CoreException e) {
-        e.printStackTrace();
-      }
-    }
-    if (!energies.isEmpty()) {
-      parseEnergies(energies, opDefIds);
-    }
+    return coreModels;
   }
 
   /**

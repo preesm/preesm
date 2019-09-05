@@ -43,6 +43,7 @@ import java.io.FileNotFoundException;
 import java.io.OutputStream;
 import java.util.List;
 import java.util.Locale;
+import java.util.logging.Level;
 import jxl.Workbook;
 import jxl.WorkbookSettings;
 import jxl.write.Label;
@@ -57,6 +58,7 @@ import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PlatformUI;
 import org.preesm.commons.exceptions.PreesmException;
+import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.scenario.Scenario;
 import org.preesm.model.slam.Component;
@@ -116,7 +118,7 @@ public class ExcelEnergyWriter extends ExcelWriter {
       workbook.close();
 
     } catch (final Exception e) {
-      e.printStackTrace();
+      PreesmLogger.getLogger().log(Level.WARNING, "Could not write energy excel file", e);
     }
   }
 
@@ -139,9 +141,7 @@ public class ExcelEnergyWriter extends ExcelWriter {
       Integer maxOpAbscissa = 1;
       Integer maxVOrdinate = 1;
 
-      final PreesmAlgorithmListContentProvider provider = new PreesmAlgorithmListContentProvider();
-
-      final List<AbstractActor> vSet = provider.getSortedPISDFVertices(this.scenario);
+      final List<AbstractActor> vSet = PreesmAlgorithmListContentProvider.getSortedPISDFVertices(this.scenario);
 
       final Design design = this.scenario.getDesign();
       for (final Component opDefId : design.getOperatorComponents()) {
@@ -170,7 +170,7 @@ public class ExcelEnergyWriter extends ExcelWriter {
 
             sheet.addCell(energyCell);
           } catch (final WriteException e) {
-            e.printStackTrace();
+            PreesmLogger.getLogger().log(Level.WARNING, "Could not add cell", e);
           }
         }
       }

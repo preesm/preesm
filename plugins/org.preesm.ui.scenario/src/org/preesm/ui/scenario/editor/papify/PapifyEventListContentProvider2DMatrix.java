@@ -63,9 +63,6 @@ public class PapifyEventListContentProvider2DMatrix implements ITreeContentProvi
   private Scenario         scenario           = null;
   PapifyCheckStateListener checkStateListener = null;
 
-  /** The current PISDF graph. */
-  private PiGraph currentPISDFGraph = null;
-
   /**
    * This map keeps the VertexWithPath used as a tree content for each vertex.
    */
@@ -160,12 +157,8 @@ public class PapifyEventListContentProvider2DMatrix implements ITreeContentProvi
     if (inputElement instanceof Scenario) {
       this.scenario = (Scenario) inputElement;
       // Opening algorithm from file
-      try {
-        this.currentPISDFGraph = scenario.getAlgorithm();
-      } catch (final Exception e) {
-        e.printStackTrace();
-      }
-      final PapifyEventListTreeElement element = new PapifyEventListTreeElement(this.currentPISDFGraph);
+      final PiGraph currentPISDFGraph = scenario.getAlgorithm();
+      final PapifyEventListTreeElement element = new PapifyEventListTreeElement(currentPISDFGraph);
       this.checkStateListener.addEventListTreeElement(element);
       table[0] = element;
     }
@@ -204,7 +197,6 @@ public class PapifyEventListContentProvider2DMatrix implements ITreeContentProvi
     final Set<AbstractActor> result = new LinkedHashSet<>();
     final Set<PapifyEventListTreeElement> papifyTreeElements = new LinkedHashSet<>();
     for (final AbstractActor actor : vertices) {
-      // TODO: Filter if needed
       if (!(actor instanceof DataInputInterface) && !(actor instanceof DataOutputInterface)
           && !(actor instanceof BroadcastActor) && !(actor instanceof JoinActor) && !(actor instanceof ForkActor)
           && !(actor instanceof RoundBufferActor) && !(actor instanceof DelayActor)) {

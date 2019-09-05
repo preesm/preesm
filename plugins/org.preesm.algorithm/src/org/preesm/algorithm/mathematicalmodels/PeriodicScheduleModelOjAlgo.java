@@ -33,10 +33,11 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL license and that you accept its terms.
  */
-package org.preesm.algorithm.mathematicalModels;
+package org.preesm.algorithm.mathematicalmodels;
 
-import java.util.Hashtable;
+import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.logging.Level;
 import org.apache.commons.lang3.math.Fraction;
 import org.ojalgo.optimisation.Expression;
 import org.ojalgo.optimisation.ExpressionsBasedModel;
@@ -46,6 +47,7 @@ import org.preesm.algorithm.model.sdf.SDFAbstractVertex;
 import org.preesm.algorithm.model.sdf.SDFEdge;
 import org.preesm.algorithm.model.sdf.SDFGraph;
 import org.preesm.algorithm.model.sdf.SDFInterfaceVertex;
+import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.commons.math.MathFunctionsHelper;
 
 /**
@@ -53,57 +55,58 @@ import org.preesm.commons.math.MathFunctionsHelper;
  *
  */
 public class PeriodicScheduleModelOjAlgo implements SolverMethod {
-  private Map<String, Variable> edgeVariables;
+
+  private static final String EDGE_NAME = "edgeName";
 
   /**
-   * @param SDF
+   * @param sdf
    *          graph
    * @return normalized period
    */
   @Override
-  public Fraction computeNormalizedPeriod(final SDFGraph SDF) {
-
+  public Fraction computeNormalizedPeriod(final SDFGraph sdf) {
     // ----- Variables ---------------------------------------------
-    this.edgeVariables = new Hashtable<>(SDF.edgeSet().size());
-    for (final SDFEdge e : SDF.edgeSet()) {
-      this.edgeVariables.put((String) e.getPropertyBean().getValue("edgeName"),
-          Variable.make((String) e.getPropertyBean().getValue("edgeName")).lower(0).upper(1)
+    final Map<String, Variable> edgeVariables = new LinkedHashMap<>(sdf.edgeSet().size());
+    for (final SDFEdge e : sdf.edgeSet()) {
+      edgeVariables.put((String) e.getPropertyBean().getValue(EDGE_NAME),
+          Variable.make((String) e.getPropertyBean().getValue(EDGE_NAME)).lower(0).upper(1)
               .weight((Double) e.getSource().getPropertyBean().getValue("duration")));
 
     }
 
     // ----- ojAlgo model ---------------------------------
     final ExpressionsBasedModel model = new ExpressionsBasedModel();
-    model.addVariables(this.edgeVariables.values());
+    model.addVariables(edgeVariables.values());
 
     // ----- Constraints ------------------------------------------
     // First constraint
-    for (final SDFAbstractVertex a : SDF.vertexSet()) {
+    for (final SDFAbstractVertex a : sdf.vertexSet()) {
       final Expression expr = model.addExpression(a.getName()).lower(0).upper(0);
       // skip the reentrant edges
       for (final SDFInterfaceVertex input : a.getSources()) {
         final SDFEdge e = a.getAssociatedEdge(input);
-        if (e.getSource().getName() != a.getName()) {
-          expr.set(this.edgeVariables.get(e.getPropertyBean().getValue("edgeName")), 1);
+        if (!(e.getSource().getName().equals(a.getName()))) {
+          expr.set(edgeVariables.get(e.getPropertyBean().getValue(EDGE_NAME)), 1);
         }
       }
 
       // skip the reentrant edges
       for (final SDFInterfaceVertex output : a.getSinks()) {
         final SDFEdge e = a.getAssociatedEdge(output);
-        if (e.getTarget().getName() != a.getName()) {
-          expr.set(this.edgeVariables.get(e.getPropertyBean().getValue("edgeName")), -1);
+        if (!(e.getTarget().getName().equals(a.getName()))) {
+          expr.set(edgeVariables.get(e.getPropertyBean().getValue(EDGE_NAME)), -1);
         }
       }
     }
 
     // Second constraint : sum of H.x = 1
     final Expression expr = model.addExpression("sumHX").lower(1).upper(1);
-    for (final SDFEdge e : SDF.edgeSet()) {
-      final double h = ((e.getDelay().longValue() - e.getCons().longValue())
-          + MathFunctionsHelper.gcd(e.getProd().longValue(), e.getCons().longValue()))
-          * (double) e.getPropertyBean().getValue("normalizationFactor");
-      expr.set(this.edgeVariables.get(e.getPropertyBean().getValue("edgeName")), h);
+    for (final SDFEdge e : sdf.edgeSet()) {
+      final long difference = e.getDelay().longValue() - e.getCons().longValue();
+      final long gcd = MathFunctionsHelper.gcd(e.getProd().longValue(), e.getCons().longValue());
+      final double normalizationFactor = e.getPropertyBean().getValue("normalizationFactor");
+      final double h = (difference + gcd) * normalizationFactor;
+      expr.set(edgeVariables.get(e.getPropertyBean().getValue(EDGE_NAME)), h);
     }
 
     // ----- solve the problem -------------------------------------
@@ -111,8 +114,9 @@ public class PeriodicScheduleModelOjAlgo implements SolverMethod {
     final Fraction period = Fraction.getFraction(result.getValue());
 
     // set he normalized period
-    SDF.setPropertyValue("normalizedPeriod", period);
-    System.out.println("Normalized period found K = " + period);
+    sdf.setPropertyValue("normalizedPeriod", period);
+    final String msg = "Normalized period found K = " + period;
+    PreesmLogger.getLogger().log(Level.INFO, msg);
     return period;
   }
 
