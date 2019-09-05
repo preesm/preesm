@@ -78,14 +78,12 @@ public class RefactoringHelper {
 
     // Read file content
     final StringBuilder buffer = new StringBuilder();
-    final BufferedReader reader = new BufferedReader(new InputStreamReader(file.getContents()));
     int nbCharRead;
     final char[] cbuf = new char[1024];
-    try {
+    try (final BufferedReader reader = new BufferedReader(new InputStreamReader(file.getContents()))) {
       while ((nbCharRead = reader.read(cbuf)) != -1) {
         buffer.append(cbuf, 0, nbCharRead);
       }
-      reader.close();
     } catch (final IOException e) {
       throw new PreesmRuntimeException(e);
     }
