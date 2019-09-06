@@ -239,7 +239,7 @@ public class LatencyEvaluationTask extends AbstractTaskImplementation {
       }
 
       // check the liveness of the graph
-      deadlockFree = IBSDFLiveness.evaluate(inputGraph);
+      IBSDFLiveness.evaluate(inputGraph);
 
     }
 

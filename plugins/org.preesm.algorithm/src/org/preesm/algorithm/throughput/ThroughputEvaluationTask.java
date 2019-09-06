@@ -82,6 +82,9 @@ import org.preesm.workflow.implement.AbstractTaskImplementation;
 )
 public class ThroughputEvaluationTask extends AbstractTaskImplementation {
 
+  private static final String DURATION_LITERAL = "duration";
+  private static final String METHOD_LITERAL = "method";
+
   /**
    * @author hderoui
    *
@@ -90,12 +93,12 @@ public class ThroughputEvaluationTask extends AbstractTaskImplementation {
   private enum ThroughputMethod {
     SR, // Schedule-Replace technique
     ESR, // Evaluate-Schedule-Replace method
-    HPeriodic, // Hierarchical Periodic Schedule method
-    Classical, // Based on Flattening the hierarchy
+    H_PERIODIC, // Hierarchical Periodic Schedule method
+    CLASSICAL, // Based on Flattening the hierarchy
   }
 
   // Plug-in parameters
-  public static final String PARAM_METHOD               = "method";
+  public static final String PARAM_METHOD               = METHOD_LITERAL;
   public static final String PARAM_METHOD_DEFAULT_VALUE = "SR";
 
   @Override
@@ -105,7 +108,7 @@ public class ThroughputEvaluationTask extends AbstractTaskImplementation {
     // get the input graph, the scenario for actors duration, and the method to use
     final SDFGraph inputGraph = GraphStructureHelper.cloneIBSDF((SDFGraph) inputs.get("SDF"));
     final Scenario inputScenario = (Scenario) inputs.get("scenario");
-    final ThroughputMethod inputMethod = ThroughputMethod.valueOf(parameters.get("method"));
+    final ThroughputMethod inputMethod = ThroughputMethod.valueOf(parameters.get(METHOD_LITERAL));
 
     // init & test
     final boolean deadlockFree = init(inputGraph, inputScenario);
@@ -126,13 +129,13 @@ public class ThroughputEvaluationTask extends AbstractTaskImplementation {
           throughput = esr.evaluate(inputGraph);
           break;
 
-        case HPeriodic:
+        case H_PERIODIC:
           // Hierarchical Periodic Schedule method
-          final HPeriodicSchedule HPeriodic = new HPeriodicSchedule();
-          throughput = HPeriodic.evaluate(inputGraph);
+          final HPeriodicSchedule hPeriodic = new HPeriodicSchedule();
+          throughput = hPeriodic.evaluate(inputGraph);
           break;
 
-        case Classical:
+        case CLASSICAL:
           // Based on flattening the hierarchy into a Flat srSDF graph
           final ClassicalMethod classicalMethod = new ClassicalMethod();
           throughput = classicalMethod.evaluate(inputGraph, false);
@@ -144,7 +147,8 @@ public class ThroughputEvaluationTask extends AbstractTaskImplementation {
       }
 
       // print the computed throughput
-      PreesmLogger.getLogger().log(Level.INFO, "Throughput value = " + throughput + " nbIter/clockCycle");
+      final String msg = "Throughput value = " + throughput + " nbIter/clockCycle";
+      PreesmLogger.getLogger().log(Level.INFO, msg);
 
     } else {
       // print an error message
@@ -199,22 +203,22 @@ public class ThroughputEvaluationTask extends AbstractTaskImplementation {
             final double duration = scenario.getTimings().evaluateTimingOrDefault(
                 (AbstractActor) actor.getReferencePiVertex(),
                 scenario.getSimulationInfo().getMainOperator().getComponent());
-            actor.setPropertyValue("duration", duration);
+            actor.setPropertyValue(DURATION_LITERAL, duration);
           } else {
             // if hierarchical actor then as default the duration is 1
             // the real duration of the hierarchical actor will be defined later by scheduling its subgraph
-            actor.setPropertyValue("duration", 1.);
+            actor.setPropertyValue(DURATION_LITERAL, 1.);
             // scenario.getTimingManager().setTiming(actor.getId(), "x86", 1); // to remove
           }
         } else {
           // the duration of interfaces in neglected by setting their duration to 0
-          actor.setPropertyValue("duration", 0.);
+          actor.setPropertyValue(DURATION_LITERAL, 0.);
           // scenario.getTimingManager().setTiming(actor.getId(), "x86", 0); // to remove
         }
       }
 
       // check the liveness of the graph
-      deadlockFree = IBSDFLiveness.evaluate(inputGraph);
+      IBSDFLiveness.evaluate(inputGraph);
 
     }
 

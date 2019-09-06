@@ -40,7 +40,6 @@ import java.util.Map;
 import org.preesm.algorithm.model.sdf.SDFAbstractVertex;
 import org.preesm.algorithm.model.sdf.SDFEdge;
 import org.preesm.algorithm.model.sdf.SDFGraph;
-import org.preesm.algorithm.schedule.ASAPSchedulerSDF;
 import org.preesm.algorithm.throughput.tools.Identifier;
 import org.preesm.algorithm.throughput.tools.SDFTransformer;
 import org.preesm.algorithm.throughput.tools.Stopwatch;
@@ -51,29 +50,26 @@ import org.preesm.commons.math.MathFunctionsHelper;
  * @author hderoui
  *
  */
-public interface SDFLiveness {
+public class SDFLiveness {
 
   public static final String EDGE_NAME_PROPERTY = "edgeName";
+
+  private SDFLiveness() {
+    // forbid instantiation
+  }
 
   /**
    * @param sdf
    *          input graph
-   * @return true if live, false if not
    */
-  public static boolean evaluate(final SDFGraph sdf) {
+  public static void evaluate(final SDFGraph sdf) {
     final Stopwatch timer = new Stopwatch();
     timer.start();
 
     // try first the Sufficient Condition of liveness
-    boolean live = SDFLiveness.sufficientCondition(sdf);
-
-    // if SC fails we can not conclude until we try the symbolic execution
-    if (!live) {
-      live = SDFLiveness.symbolicExecution(sdf);
-    }
+    SDFLiveness.sufficientCondition(sdf);
 
     timer.stop();
-    return live;
   }
 
   /**
@@ -81,9 +77,8 @@ public interface SDFLiveness {
    *
    * @param graph
    *          input graph
-   * @return true if SC satisfied, false if not
    */
-  public static boolean sufficientCondition(final SDFGraph graph) {
+  public static void sufficientCondition(final SDFGraph graph) {
     // add the name property for each edge of the graph
     for (final SDFEdge e : graph.edgeSet()) {
       e.setPropertyValue(SDFLiveness.EDGE_NAME_PROPERTY, Identifier.generateEdgeId());
@@ -99,7 +94,7 @@ public interface SDFLiveness {
     final Map<String, Double> edgeValue = new LinkedHashMap<>(graph.edgeSet().size());
     for (final SDFEdge e : graph.edgeSet()) {
       final long gcd = MathFunctionsHelper.gcd(e.getProd().longValue(), e.getCons().longValue());
-      final double alpha = (double) e.getPropertyBean().getValue("normalizationFactor");
+      final double alpha = e.getPropertyBean().getValue("normalizationFactor");
       final double h = ((e.getDelay().longValue() - e.getCons().longValue()) + gcd) * alpha;
       edgeValue.put((String) e.getPropertyBean().getValue(SDFLiveness.EDGE_NAME_PROPERTY), h);
     }
@@ -155,23 +150,6 @@ public interface SDFLiveness {
         }
       }
     }
-
-    return true;
   }
 
-  /**
-   * Execute the graph until it finish an iteration. The graph is live if it succeeds to complete an iteration.
-   *
-   * @param sdf
-   *          input graph
-   * @return true if live, false if not
-   */
-  public static boolean symbolicExecution(final SDFGraph sdf) {
-    // execute the graph until it finishes an iteration
-    final ASAPSchedulerSDF scheduler = new ASAPSchedulerSDF();
-    scheduler.schedule(sdf);
-
-    // the live attribute of the scheduler will indicate if the schedule has succeeded to schedule a complete iteration
-    return scheduler.isLive();
-  }
 }
