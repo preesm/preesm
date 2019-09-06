@@ -47,8 +47,8 @@ import org.preesm.algorithm.model.sdf.SDFGraph;
 import org.preesm.algorithm.model.sdf.esdf.SDFSinkInterfaceVertex;
 import org.preesm.algorithm.model.sdf.esdf.SDFSourceInterfaceVertex;
 import org.preesm.commons.logger.PreesmLogger;
+import org.preesm.commons.math.MathFunctionsHelper;
 
-// TODO: Auto-generated Javadoc
 /**
  * Class used to compute the optimal periodic schedule and the throughput of a non hierarchical graph (SDF or already
  * flattened IBSDF).
@@ -71,11 +71,11 @@ public class SDFThroughputEvaluator extends ThroughputEvaluator {
     final SDFGraph sdf = inputGraph.copy();
 
     // Check condition of existence of a periodic schedule (Bellman Ford)
-    final boolean periodic_schedule = has_periodic_schedule(sdf);
+    final boolean periodic_schedule = hasPeriodicSchedule(sdf);
 
     if (periodic_schedule) {
       // Find the cycle with L/H max (using linear program)
-      period = period_computation(sdf);
+      period = periodComputation(sdf);
       // Deduce throughput of the schedule
     } else {
       PreesmLogger.getLogger().log(Level.SEVERE, "No periodic schedule for this graph ");
@@ -91,7 +91,7 @@ public class SDFThroughputEvaluator extends ThroughputEvaluator {
    *          the sdf
    * @return the optimal normalized period
    */
-  private double period_computation(final SDFGraph sdf) {
+  private double periodComputation(final SDFGraph sdf) {
     // // Map to associate each edge with an index
     final PeriodicScheduleModelOjAlgo method = new PeriodicScheduleModelOjAlgo();
     return method.computeNormalizedPeriod(sdf).doubleValue();
@@ -104,7 +104,7 @@ public class SDFThroughputEvaluator extends ThroughputEvaluator {
    *          the input
    * @return true, if successful
    */
-  private boolean has_periodic_schedule(final SDFGraph input) {
+  private boolean hasPeriodicSchedule(final SDFGraph input) {
     final Map<SDFAbstractVertex, Double> v = new LinkedHashMap<>();
     final Map<SDFEdge, Double> e = new LinkedHashMap<>();
 
@@ -112,7 +112,7 @@ public class SDFThroughputEvaluator extends ThroughputEvaluator {
     for (final SDFEdge edge : input.edgeSet()) {
       e.put(edge,
           ((double) (edge.getDelay().getValue())
-              + SDFMathD.gcd((double) (edge.getProd().getValue()), (double) (edge.getCons().getValue())))
+              + MathFunctionsHelper.gcd((double) (edge.getProd().getValue()), (double) (edge.getCons().getValue())))
               - (double) (edge.getCons().getValue()));
     }
 
@@ -128,7 +128,7 @@ public class SDFThroughputEvaluator extends ThroughputEvaluator {
       final SDFSinkInterfaceVertex out = new SDFSinkInterfaceVertex(null);
       out.setName(vertex.getName() + "Out");
       AbstractEdgePropertyType<?> x;
-      if (vertex.getSources().size() != 0) {
+      if (!vertex.getSources().isEmpty()) {
         x = vertex.getAssociatedEdge(vertex.getSources().get(0)).getCons();
       } else {
         x = vertex.getAssociatedEdge(vertex.getSinks().get(0)).getProd();

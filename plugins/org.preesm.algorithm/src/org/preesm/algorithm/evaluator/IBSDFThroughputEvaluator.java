@@ -51,6 +51,7 @@ import org.preesm.algorithm.model.sdf.SDFVertex;
 import org.preesm.algorithm.model.sdf.esdf.SDFSinkInterfaceVertex;
 import org.preesm.algorithm.model.sdf.esdf.SDFSourceInterfaceVertex;
 import org.preesm.commons.logger.PreesmLogger;
+import org.preesm.commons.math.MathFunctionsHelper;
 import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.AbstractVertex;
 import org.preesm.model.scenario.Scenario;
@@ -374,7 +375,7 @@ public class IBSDFThroughputEvaluator extends ThroughputEvaluator {
       }
 
       h = ((double) (edge.getDelay().getValue())
-          + SDFMathD.gcd((double) (edge.getCons().getValue()), (double) (edge.getProd().getValue())))
+          + MathFunctionsHelper.gcd((double) (edge.getCons().getValue()), (double) (edge.getProd().getValue())))
           - (double) (edge.getCons().getValue());
 
       e.put(edge, -(l - (K * h)));
@@ -428,7 +429,7 @@ public class IBSDFThroughputEvaluator extends ThroughputEvaluator {
     for (final SDFEdge edge : g.edgeSet()) {
       e.put(edge,
           (((double) (edge.getDelay().getValue())
-              + SDFMathD.gcd((double) (edge.getCons().getValue()), (double) (edge.getProd().getValue())))
+              + MathFunctionsHelper.gcd((double) (edge.getCons().getValue()), (double) (edge.getProd().getValue())))
               - (double) (edge.getCons().getValue())));
     }
 

@@ -41,6 +41,7 @@ import org.preesm.algorithm.model.sdf.SDFAbstractVertex;
 import org.preesm.algorithm.model.sdf.SDFEdge;
 import org.preesm.algorithm.model.sdf.SDFGraph;
 import org.preesm.algorithm.model.sdf.SDFInterfaceVertex;
+import org.preesm.commons.math.MathFunctionsHelper;
 
 /**
  * Visitor used to normalize a graph, hierarchical (IBSDF) or not (SDF).
@@ -175,29 +176,29 @@ public class NormalizeVisitor implements IGraphVisitor<SDFGraph, SDFAbstractVert
         for (final IInterface port : vertex.getInterfaces()) {
           if (port.getDirection().toString().equals(INPUT_LITERAL)) {
             out = (double) ((SDFEdge) vertex.getAssociatedEdge(port)).getCons().getValue();
-            z = SDFMathD.lcm(z, out);
-            m = SDFMathD.lcm(m, vertex.getNbRepeatAsLong() * out);
+            z = MathFunctionsHelper.lcm(z, out);
+            m = MathFunctionsHelper.lcm(m, vertex.getNbRepeatAsLong() * out);
           } else {
             in = (double) ((SDFEdge) vertex.getAssociatedEdge(port)).getProd().getValue();
-            z = SDFMathD.lcm(z, in);
+            z = MathFunctionsHelper.lcm(z, in);
             // ppcm (N_t * in_a)
-            m = SDFMathD.lcm(m, vertex.getNbRepeatAsLong() * in);
+            m = MathFunctionsHelper.lcm(m, vertex.getNbRepeatAsLong() * in);
           }
         }
       }
       // M = ppcm(N_t * z_t)
-      m = SDFMathD.lcm(m, vertex.getNbRepeatAsLong() * z);
+      m = MathFunctionsHelper.lcm(m, vertex.getNbRepeatAsLong() * z);
     }
     return m;
   }
 
   private double updateM(double m, final SDFAbstractVertex vertex) {
     for (final SDFInterfaceVertex port : vertex.getSinks()) {
-      m = SDFMathD.lcm(m,
+      m = MathFunctionsHelper.lcm(m,
           vertex.getNbRepeatAsLong() * (double) vertex.getAssociatedEdge(port).getProd().getValue());
     }
     for (final SDFInterfaceVertex port : vertex.getSources()) {
-      m = SDFMathD.lcm(m,
+      m = MathFunctionsHelper.lcm(m,
           vertex.getNbRepeatAsLong() * (double) vertex.getAssociatedEdge(port).getCons().getValue());
     }
     return m;
