@@ -57,13 +57,17 @@ public class PreesmAlgorithmPlugin extends AbstractUIPlugin {
 
   private static PreesmAlgorithmPlugin instance = null;
 
+  private static final void setInstance(final PreesmAlgorithmPlugin newInstance) {
+    PreesmAlgorithmPlugin.instance = newInstance;
+  }
+
   /**
    *
    */
   public static final PreesmAlgorithmPlugin getInstance() {
     if (PreesmAlgorithmPlugin.instance == null) {
       // special case when calling as plain java (outside eclipse framework)
-      PreesmAlgorithmPlugin.instance = new PreesmAlgorithmPlugin();
+      setInstance(new PreesmAlgorithmPlugin());
     }
     return PreesmAlgorithmPlugin.instance;
   }
@@ -75,14 +79,14 @@ public class PreesmAlgorithmPlugin extends AbstractUIPlugin {
   @Override
   public void start(final BundleContext context) throws Exception {
     super.start(context);
-    PreesmAlgorithmPlugin.instance = this;
+    PreesmAlgorithmPlugin.setInstance(this);
     this.solverMethodRegistry.put(Method.LINEAR_PROGRAMMING_OJALGO, new PeriodicScheduleModelOjAlgo());
   }
 
   @Override
   public void stop(final BundleContext context) throws Exception {
     super.stop(context);
-    PreesmAlgorithmPlugin.instance = null;
+    PreesmAlgorithmPlugin.setInstance(null);
     this.solverMethodRegistry.clear();
   }
 
