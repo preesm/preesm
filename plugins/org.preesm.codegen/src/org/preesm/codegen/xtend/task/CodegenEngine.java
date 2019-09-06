@@ -194,6 +194,48 @@ public class CodegenEngine {
     this.registeredPrintersAndBlocks = new LinkedHashMap<>();
 
     // 1. Get the printers of the desired "language"
+    final Set<IConfigurationElement> usablePrinters = getLanguagePrinter(selectedPrinter);
+
+    // 2. Get a printer for each Block
+    for (final Block b : this.codeBlocks) {
+      registerBlockPrinters(selectedPrinter, usablePrinters, b);
+    }
+  }
+
+  private void registerBlockPrinters(final String selectedPrinter, final Set<IConfigurationElement> usablePrinters,
+      final Block b) {
+    IConfigurationElement foundPrinter = null;
+    if (b instanceof CoreBlock) {
+      final String coreType = ((CoreBlock) b).getCoreType();
+      for (final IConfigurationElement printer : usablePrinters) {
+        final IConfigurationElement[] supportedCores = printer.getChildren();
+        for (final IConfigurationElement supportedCore : supportedCores) {
+          if (supportedCore.getAttribute("type").equals(coreType)) {
+            foundPrinter = printer;
+            break;
+          }
+        }
+        if (foundPrinter != null) {
+          break;
+        }
+      }
+      if (foundPrinter != null) {
+
+        if (!this.registeredPrintersAndBlocks.containsKey(foundPrinter)) {
+          this.registeredPrintersAndBlocks.put(foundPrinter, new ArrayList<>());
+        }
+        final List<Block> blocks = this.registeredPrintersAndBlocks.get(foundPrinter);
+        blocks.add(b);
+      } else {
+        throw new PreesmRuntimeException(
+            "Could not find a printer for language \"" + selectedPrinter + "\" and core type \"" + coreType + "\".");
+      }
+    } else {
+      throw new PreesmRuntimeException("Only CoreBlock CodeBlocks can be printed in the current version of Preesm.");
+    }
+  }
+
+  private Set<IConfigurationElement> getLanguagePrinter(final String selectedPrinter) {
     final Set<IConfigurationElement> usablePrinters = new LinkedHashSet<>();
     final IExtensionRegistry registry = Platform.getExtensionRegistry();
     final IConfigurationElement[] elements = registry.getConfigurationElementsFor(CodegenEngine.PRINTERS_EXTENSION_ID);
@@ -206,39 +248,7 @@ public class CodegenEngine {
         }
       }
     }
-
-    // 2. Get a printer for each Block
-    for (final Block b : this.codeBlocks) {
-      IConfigurationElement foundPrinter = null;
-      if (b instanceof CoreBlock) {
-        final String coreType = ((CoreBlock) b).getCoreType();
-        for (final IConfigurationElement printer : usablePrinters) {
-          final IConfigurationElement[] supportedCores = printer.getChildren();
-          for (final IConfigurationElement supportedCore : supportedCores) {
-            if (supportedCore.getAttribute("type").equals(coreType)) {
-              foundPrinter = printer;
-              break;
-            }
-          }
-          if (foundPrinter != null) {
-            break;
-          }
-        }
-        if (foundPrinter != null) {
-          List<Block> blocks = this.registeredPrintersAndBlocks.get(foundPrinter);
-          if (blocks == null) {
-            blocks = new ArrayList<>();
-            this.registeredPrintersAndBlocks.put(foundPrinter, blocks);
-          }
-          blocks.add(b);
-        } else {
-          throw new PreesmRuntimeException(
-              "Could not find a printer for language \"" + selectedPrinter + "\" and core type \"" + coreType + "\".");
-        }
-      } else {
-        throw new PreesmRuntimeException("Only CoreBlock CodeBlocks can be printed in the current version of Preesm.");
-      }
-    }
+    return usablePrinters;
   }
 
   /**
@@ -265,46 +275,7 @@ public class CodegenEngine {
 
       // Erase previous files with extension
       // Lists all files in folder
-      try {
-        final IWorkspace workspace = ResourcesPlugin.getWorkspace();
-        WorkspaceUtils.updateWorkspace();
-        final IFolder f = workspace.getRoot().getFolder(new Path(this.codegenPath));
-        final IPath rawLocation = f.getRawLocation();
-        if (rawLocation == null) {
-          throw new PreesmRuntimeException("Could not find target project for given path [" + this.codegenPath
-              + "]. Please change path in the scenario editor.");
-        }
-        final String osString = rawLocation.toOSString();
-        final File folder = new File(osString);
-        if (!folder.exists()) {
-          folder.mkdirs();
-          PreesmLogger.getLogger().info("Created missing target dir [" + folder.getAbsolutePath() + "] during codegen");
-        } else {
-          FileUtils.deleteDirectory(folder);
-        }
-        WorkspaceUtils.updateWorkspace();
-        if (!f.exists()) {
-          f.create(true, true, null);
-        }
-        WorkspaceUtils.updateWorkspace();
-        if (!folder.exists()) {
-          throw new FileNotFoundException("Target generation folder [" + folder.getAbsolutePath() + "] does not exist");
-        }
-        final File[] fList = folder.listFiles();
-        if (fList != null) {
-          // Searches .extension
-          for (final File element : fList) {
-            final String pes = element.getName();
-            if (pes.endsWith(extension)) {
-              // and deletes
-              Files.delete(element.toPath());
-            }
-          }
-        }
-      } catch (CoreException | IOException e) {
-        throw new PreesmRuntimeException(
-            "Could not access target directory [" + this.codegenPath + "] during code generation", e);
-      }
+      erasePreviousFilesExtensions(extension);
 
       // initialize printer engine
       printer.setEngine(this);
@@ -315,6 +286,49 @@ public class CodegenEngine {
       // Do the pre-processing
       printer.preProcessing(printerAndBlocks.getValue(), this.codeBlocks);
       this.realPrinters.put(printerAndBlocks.getKey(), printer);
+    }
+  }
+
+  private void erasePreviousFilesExtensions(final String extension) {
+    try {
+      final IWorkspace workspace = ResourcesPlugin.getWorkspace();
+      WorkspaceUtils.updateWorkspace();
+      final IFolder f = workspace.getRoot().getFolder(new Path(this.codegenPath));
+      final IPath rawLocation = f.getRawLocation();
+      if (rawLocation == null) {
+        throw new PreesmRuntimeException("Could not find target project for given path [" + this.codegenPath
+            + "]. Please change path in the scenario editor.");
+      }
+      final String osString = rawLocation.toOSString();
+      final File folder = new File(osString);
+      if (!folder.exists()) {
+        folder.mkdirs();
+        PreesmLogger.getLogger().info("Created missing target dir [" + folder.getAbsolutePath() + "] during codegen");
+      } else {
+        FileUtils.deleteDirectory(folder);
+      }
+      WorkspaceUtils.updateWorkspace();
+      if (!f.exists()) {
+        f.create(true, true, null);
+      }
+      WorkspaceUtils.updateWorkspace();
+      if (!folder.exists()) {
+        throw new FileNotFoundException("Target generation folder [" + folder.getAbsolutePath() + "] does not exist");
+      }
+      final File[] fList = folder.listFiles();
+      if (fList != null) {
+        // Searches .extension
+        for (final File element : fList) {
+          final String pes = element.getName();
+          if (pes.endsWith(extension)) {
+            // and deletes
+            Files.delete(element.toPath());
+          }
+        }
+      }
+    } catch (CoreException | IOException e) {
+      throw new PreesmRuntimeException(
+          "Could not access target directory [" + this.codegenPath + "] during code generation", e);
     }
   }
 
@@ -389,7 +403,7 @@ public class CodegenEngine {
   }
 
   /**
-   * 
+   *
    * @param apolloFlag
    *          Enable the use of Apollo for intra-actor optimization
    */

@@ -42,7 +42,6 @@ import org.preesm.model.pisdf.AbstractVertex;
 import org.preesm.model.pisdf.Actor;
 import org.preesm.model.pisdf.InterfaceActor;
 
-// TODO: Auto-generated Javadoc
 /**
  * The Class SpiderTypeConverter.
  */
@@ -53,12 +52,12 @@ public final class SpiderTypeConverter {
    */
   public enum PiSDFType {
 
-  /** The pisdf type body. */
-  PISDF_TYPE_BODY,
-  /** The pisdf type config. */
-  PISDF_TYPE_CONFIG,
-  /** The pisdf type if. */
-  PISDF_TYPE_IF
+    /** The pisdf type body. */
+    PISDF_TYPE_BODY,
+    /** The pisdf type config. */
+    PISDF_TYPE_CONFIG,
+    /** The pisdf type if. */
+    PISDF_TYPE_IF
   }
 
   /**
@@ -118,7 +117,7 @@ public final class SpiderTypeConverter {
       case PISDF_TYPE_CONFIG:
         return PiSDFSubType.PISDF_SUBTYPE_NORMAL;
       case PISDF_TYPE_IF:
-        if (((AbstractActor) aa).getDataInputPorts().size() > 0) {
+        if (!((AbstractActor) aa).getDataInputPorts().isEmpty()) {
           return PiSDFSubType.PISDF_SUBTYPE_OUTPUT_IF;
         } else {
           return PiSDFSubType.PISDF_SUBTYPE_INPUT_IF;

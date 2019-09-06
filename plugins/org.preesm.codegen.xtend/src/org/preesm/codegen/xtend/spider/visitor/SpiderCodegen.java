@@ -51,6 +51,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
+import java.util.logging.Level;
 import org.eclipse.emf.common.util.ECollections;
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.common.util.EMap;
@@ -63,7 +64,6 @@ import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.Actor;
 import org.preesm.model.pisdf.CHeaderRefinement;
-import org.preesm.model.pisdf.ConfigInputPort;
 import org.preesm.model.pisdf.FunctionArgument;
 import org.preesm.model.pisdf.FunctionPrototype;
 import org.preesm.model.pisdf.Parameter;
@@ -138,8 +138,7 @@ public class SpiderCodegen {
   private final List<String> coreTypeName = new LinkedList<>();
 
   /** **/
-  private final List<Parameter>                 dynamicParams = new LinkedList<>();
-  private final Map<ConfigInputPort, Parameter> cipToParam    = new LinkedHashMap<>();
+  private final List<Parameter> dynamicParams = new LinkedList<>();
 
   /**
    * Instantiates a new spider codegen.
@@ -190,8 +189,8 @@ public class SpiderCodegen {
     final List<ComponentInstance> orderedOperators = design.getOrderedOperatorComponentInstances();
     if (mainOperator == null) {
       /* Warning */
-      mainOperator = orderedOperators.get(0);
-      PreesmLogger.getLogger().warning("No Main Operator selected in scenario, " + mainOperator + " used by default");
+      PreesmLogger.getLogger().log(Level.WARNING,
+          () -> "No Main Operator selected in scenario, " + orderedOperators.get(0) + " used by default");
     }
     this.coreIds.put(mainOperator, 0);
     int coreId = 1;
@@ -383,16 +382,19 @@ public class SpiderCodegen {
 
     /* Core Type */
     append("enum class PEType : std::uint32_t {\n");
-    for (final Component coreType : this.coreTypesIds.keySet()) {
-      append("\t" + SpiderNameGenerator.getCoreTypeName(coreType) + " = " + this.coreTypesIds.get(coreType) + ",\n");
+
+    for (final Entry<Component, Integer> entry : this.coreTypesIds.entrySet()) {
+      final Component coreType = entry.getKey();
+      append("\t" + SpiderNameGenerator.getCoreTypeName(coreType) + " = " + entry.getValue() + ",\n");
     }
     append("};\n\n");
 
     /* Fct Ix */
     append("typedef enum{\n");
-    for (final AbstractActor aa : this.functionMap.keySet()) {
-      append("\t" + SpiderNameGenerator.getFunctionName(aa).toUpperCase() + "_FCT" + " = " + this.functionMap.get(aa)
-          + ",\n");
+    for (final Entry<AbstractActor, Integer> entry : this.functionMap.entrySet()) {
+      final AbstractActor aa = entry.getKey();
+      final Integer integer = entry.getValue();
+      append("\t" + SpiderNameGenerator.getFunctionName(aa).toUpperCase() + "_FCT" + " = " + integer + ",\n");
     }
     append("} FctIxs;\n\n");
 
@@ -505,7 +507,7 @@ public class SpiderCodegen {
     append("}\n");
 
     // Adding energy consumption models based on PAPIFY events
-    generatePapifyEnergyModel(pg, scenario);
+    generatePapifyEnergyModel(pg);
 
     // Returns the final C++ code
     return this.cppString.toString();
@@ -514,7 +516,7 @@ public class SpiderCodegen {
   /**
    * Generate the information related to energy consumption estimation based on PAPIFY events
    */
-  private void generatePapifyEnergyModel(final PiGraph pg, final Scenario scenario) {
+  private void generatePapifyEnergyModel(final PiGraph pg) {
     final ArrayList<AbstractActor> actorsWithEnergyModel = new ArrayList<>();
 
     for (final AbstractActor actor : this.functionMap.keySet()) {
@@ -537,16 +539,6 @@ public class SpiderCodegen {
     append("\treturn map;\n");
     append("}\n\n");
 
-    /*
-     * append("void free_" + pg.getName() +
-     * "_energyModels(std::map<lrtFct, std::map<const char *, std::map<int, double>>>& map) {\n");
-     * append("\tstd::map<lrtFct, std::map<const char *, std::map<int, double>>>>::iterator it;\n");
-     * append("\t// Freeing memory of the map \n"); append("\tfor(it = map.begin(); it != map.end(); ++it) { \n");
-     * append("\t\tstd::map<const char *, std::map<int, double>>::iterator itInner;\n");
-     * append("\t\tfor(itInner = it->second.begin(); itInner != it->second.end(); ++itInner) { \n");
-     * append("\t\t\tdelete itInner->second;\n"); append("\t\t}\n"); append("\t\tdelete it->second;\n");
-     * append("\t}\n"); append("}\n");
-     */
   }
 
   private boolean generateActorComponentEnergyModel(AbstractActor actor) {
@@ -647,9 +639,11 @@ public class SpiderCodegen {
     // Check if this set of ID already exists
     Integer realEventSetID = eventSetID;
     boolean found = false;
-    for (String compName : associatedEvents.keySet()) {
+
+    for (final Entry<String, EList<PapiEvent>> entry : associatedEvents.entrySet()) {
+      final String compName = entry.getKey();
       found = false;
-      EList<PapiEvent> eventSetChecking = associatedEvents.get(compName);
+      EList<PapiEvent> eventSetChecking = entry.getValue();
       for (Map.Entry<EList<PapiEvent>, Integer> eventSet : uniqueEventSets.entrySet()) {
         final EList<PapiEvent> eventSetStored = eventSet.getKey();
         final Integer eventSetStoredID = eventSet.getValue();
@@ -705,8 +699,11 @@ public class SpiderCodegen {
 
     boolean configAssociated = false;
     append("\n\t// Mapping actor to LRT PAPIFY configuration: " + actor.getName() + "\n");
-    for (Component coreType : this.coresFromCoreType.keySet()) {
-      for (ComponentInstance compInst : this.coresFromCoreType.get(coreType)) {
+
+    for (final Entry<Component, EList<ComponentInstance>> entry : this.coresFromCoreType.entrySet()) {
+      final Component coreType = entry.getKey();
+      final EList<ComponentInstance> eList = entry.getValue();
+      for (ComponentInstance compInst : eList) {
         configAssociated = false;
         final EList<PapiComponent> corePapifyConfigGroupPE = papifyConfigManager.getSupportedPapiComponents(coreType);
         for (final PapiComponent compType : corePapifyConfigGroupPE) {
@@ -823,10 +820,8 @@ public class SpiderCodegen {
     final Set<String> includeList = new LinkedHashSet<>();
     for (final AbstractActor aa : this.functionMap.keySet()) {
       final Actor a = (Actor) aa;
-      if (a.getRefinement() instanceof CHeaderRefinement) {
-        if (!includeList.contains(a.getRefinement().getFileName())) {
-          includeList.add(a.getRefinement().getFileName());
-        }
+      if (a.getRefinement() instanceof CHeaderRefinement && !includeList.contains(a.getRefinement().getFileName())) {
+        includeList.add(a.getRefinement().getFileName());
       }
     }
 
