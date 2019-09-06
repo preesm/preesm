@@ -60,13 +60,16 @@ import org.eclipse.ui.model.WorkbenchContentProvider;
 import org.eclipse.ui.model.WorkbenchLabelProvider;
 import org.preesm.workflow.Activator;
 
-// TODO: Auto-generated Javadoc
 /**
  * Useful UI methods.
  *
  * @author mpelcat
  */
 public class FileUtils {
+
+  private FileUtils() {
+    // forbid instantiation
+  }
 
   /**
    * File tree Content provider that filters a given extension of files.
@@ -176,9 +179,7 @@ public class FileUtils {
       final Object[] children = super.getChildren(element);
       final List<Object> list = new ArrayList<>();
       for (final Object o : children) {
-        if (o instanceof IProject) {
-          list.add(o);
-        } else if (o instanceof IFolder) {
+        if (o instanceof IProject || o instanceof IFolder) {
           list.add(o);
         }
       }
@@ -288,10 +289,7 @@ public class FileUtils {
               });
             } catch (final CoreException e) {
               final IStatus status = e.getStatus();
-              if ((status.getSeverity() == IStatus.OK) && title.equals(status.getPlugin())) {
-                return true;
-              }
-              return false;
+              return (status.getSeverity() == IStatus.OK) && title.equals(status.getPlugin());
             }
             return false;
           } else {

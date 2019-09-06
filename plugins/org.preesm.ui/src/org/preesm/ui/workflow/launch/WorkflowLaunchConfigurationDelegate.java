@@ -57,7 +57,6 @@ public class WorkflowLaunchConfigurationDelegate implements ILaunchConfiguration
 
   // Beware: Changing this ID without modifying the corresponding ID in
   // org.ietr.dftools.ui/plugin.xml
-  /** The workflow launch configuration type id. */
   // can break the launch shortcut for wokflows (Right Click > Run as)
   public static final String WORKFLOW_LAUNCH_CONFIG_TYPE_ID = "net.sf.dftools.ui.workflow.launchConfigurationType";
 

@@ -49,11 +49,6 @@ import org.ietr.dftools.graphiti.model.Vertex;
  */
 public class WorkflowTaskFilter implements IFilter {
 
-  /*
-   * (non-Javadoc)
-   *
-   * @see org.eclipse.jface.viewers.IFilter#select(java.lang.Object)
-   */
   @Override
   public boolean select(final Object toTest) {
     if (toTest instanceof EditPart) {

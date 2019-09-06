@@ -72,11 +72,6 @@ public abstract class AbstractWorkFlowLaunchTab extends AbstractLaunchConfigurat
   /** The file path. */
   private Text filePath = null;
 
-  /*
-   * (non-Javadoc)
-   *
-   * @see org.eclipse.debug.ui.ILaunchConfigurationTab#createControl(org.eclipse.swt.widgets.Composite)
-   */
   @Override
   public void createControl(final Composite parent) {
 
@@ -142,11 +137,6 @@ public abstract class AbstractWorkFlowLaunchTab extends AbstractLaunchConfigurat
     return this.currentComposite;
   }
 
-  /*
-   * (non-Javadoc)
-   *
-   * @see org.eclipse.debug.ui.ILaunchConfigurationTab#initializeFrom(org.eclipse.debug.core.ILaunchConfiguration)
-   */
   @Override
   public void initializeFrom(final ILaunchConfiguration configuration) {
     try {
@@ -158,22 +148,11 @@ public abstract class AbstractWorkFlowLaunchTab extends AbstractLaunchConfigurat
     setDirty(false);
   }
 
-  /*
-   * (non-Javadoc)
-   *
-   * @see org.eclipse.debug.ui.AbstractLaunchConfigurationTab#isValid(org.eclipse.debug.core.ILaunchConfiguration)
-   */
   @Override
   public boolean isValid(final ILaunchConfiguration launchConfig) {
     return true;
   }
 
-  /*
-   * (non-Javadoc)
-   *
-   * @see
-   * org.eclipse.debug.ui.ILaunchConfigurationTab#performApply(org.eclipse.debug.core.ILaunchConfigurationWorkingCopy)
-   */
   @Override
   public void performApply(final ILaunchConfigurationWorkingCopy configuration) {
     // Saving the file path chosen in a tab attribute
@@ -183,12 +162,6 @@ public abstract class AbstractWorkFlowLaunchTab extends AbstractLaunchConfigurat
     setDirty(false);
   }
 
-  /*
-   * (non-Javadoc)
-   *
-   * @see
-   * org.eclipse.debug.ui.ILaunchConfigurationTab#setDefaults(org.eclipse.debug.core.ILaunchConfigurationWorkingCopy)
-   */
   @Override
   public void setDefaults(final ILaunchConfigurationWorkingCopy configuration) {
 

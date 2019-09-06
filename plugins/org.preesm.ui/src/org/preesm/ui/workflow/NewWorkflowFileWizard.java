@@ -57,7 +57,6 @@ import org.ietr.dftools.graphiti.model.Graph;
 import org.ietr.dftools.graphiti.model.ObjectType;
 import org.ietr.dftools.graphiti.ui.wizards.WizardSaveGraphPage;
 
-// TODO: Auto-generated Javadoc
 /**
  * This class provides a wizard to create a new workflow network.
  *
@@ -81,11 +80,6 @@ public class NewWorkflowFileWizard extends Wizard implements INewWizard {
     setWindowTitle("New Workflow");
   }
 
-  /*
-   * (non-Javadoc)
-   *
-   * @see org.eclipse.jface.wizard.Wizard#addPages()
-   */
   @Override
   public void addPages() {
     final WizardSaveGraphPage page = new WizardSaveGraphPage(this.selection);
@@ -98,23 +92,12 @@ public class NewWorkflowFileWizard extends Wizard implements INewWizard {
     addPage(page);
   }
 
-  /*
-   * (non-Javadoc)
-   *
-   * @see org.eclipse.ui.IWorkbenchWizard#init(org.eclipse.ui.IWorkbench,
-   * org.eclipse.jface.viewers.IStructuredSelection)
-   */
   @Override
   public void init(final IWorkbench workbench, final IStructuredSelection selection) {
     this.selection = selection;
     this.workbench = workbench;
   }
 
-  /*
-   * (non-Javadoc)
-   *
-   * @see org.eclipse.jface.wizard.Wizard#performFinish()
-   */
   @Override
   public boolean performFinish() {
     final WizardSaveGraphPage page = (WizardSaveGraphPage) getPage("saveGraph");
