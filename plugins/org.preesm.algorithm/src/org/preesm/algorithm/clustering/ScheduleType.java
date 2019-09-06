@@ -42,5 +42,5 @@ package org.preesm.algorithm.clustering;
  *
  */
 public enum ScheduleType {
-  Parallel, Sequential;
+  PARALLEL, SEQUENTIAL;
 }

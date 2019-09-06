@@ -66,7 +66,7 @@ public class RandomClusteringAlgorithm implements IClusteringAlgorithm {
     actorsList.add(couples.get(randomInt).getLeft());
     actorsList.add(couples.get(randomInt).getRight());
 
-    return new ImmutablePair<>(ScheduleType.Sequential, actorsList);
+    return new ImmutablePair<>(ScheduleType.SEQUENTIAL, actorsList);
   }
 
   @Override

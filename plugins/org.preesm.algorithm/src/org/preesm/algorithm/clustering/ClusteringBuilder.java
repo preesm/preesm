@@ -342,10 +342,10 @@ public class ClusteringBuilder {
     // Create parallel or sequential schedule
     HierarchicalSchedule schedule = null;
     switch (actorFound.getKey()) {
-      case Sequential:
+      case SEQUENTIAL:
         schedule = ScheduleFactory.eINSTANCE.createSequentialHiearchicalSchedule();
         break;
-      case Parallel:
+      case PARALLEL:
         schedule = ScheduleFactory.eINSTANCE.createParallelHiearchicalSchedule();
         break;
       default:

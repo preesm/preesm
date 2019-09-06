@@ -140,17 +140,17 @@ public class ParallelClusteringAlgorithm implements IClusteringAlgorithm {
     Pair<AbstractActor, AbstractActor> bestCouple = null;
     switch (clusteringState) {
       case PARALLEL_PASS:
-        scheduleType = ScheduleType.Parallel;
+        scheduleType = ScheduleType.PARALLEL;
         actorsList.addAll(listParallel.get(0));
         break;
       case SEQUENCE_FIRST:
-        scheduleType = ScheduleType.Sequential;
+        scheduleType = ScheduleType.SEQUENTIAL;
         bestCouple = APGANAlgorithm.getBestCouple(couples, clusteringBuilder.getRepetitionVector());
         actorsList.add(bestCouple.getLeft());
         actorsList.add(bestCouple.getRight());
         break;
       case SEQUENCE_FINAL:
-        scheduleType = ScheduleType.Sequential;
+        scheduleType = ScheduleType.SEQUENTIAL;
         bestCouple = APGANAlgorithm.getBestCouple(couplesSave, clusteringBuilder.getRepetitionVector());
         actorsList.add(bestCouple.getLeft());
         actorsList.add(bestCouple.getRight());
