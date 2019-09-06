@@ -35,7 +35,6 @@
  */
 package org.preesm.algorithm.codegen.model;
 
-// TODO: Auto-generated Javadoc
 /**
  * Element of a function call that can be a parameter, an argument...
  *
