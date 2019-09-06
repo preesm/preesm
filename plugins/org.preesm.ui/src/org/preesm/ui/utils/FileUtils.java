@@ -58,7 +58,7 @@ import org.eclipse.ui.dialogs.ElementTreeSelectionDialog;
 import org.eclipse.ui.dialogs.ISelectionStatusValidator;
 import org.eclipse.ui.model.WorkbenchContentProvider;
 import org.eclipse.ui.model.WorkbenchLabelProvider;
-import org.preesm.workflow.Activator;
+import org.preesm.workflow.WorkflowPlugin;
 
 /**
  * Useful UI methods.
@@ -150,10 +150,10 @@ public class FileUtils {
         final boolean selectedItemIsWhatsExcepted = (selectedItemIsFile && this.filterFolders)
             || (selectedItemIsFolder && !this.filterFolders);
         if (selectedItemIsWhatsExcepted) {
-          return new Status(IStatus.OK, Activator.PLUGIN_ID, "");
+          return new Status(IStatus.OK, WorkflowPlugin.PLUGIN_ID, "");
         }
       }
-      return new Status(IStatus.ERROR, Activator.PLUGIN_ID, "");
+      return new Status(IStatus.ERROR, WorkflowPlugin.PLUGIN_ID, "");
     }
   }
 

@@ -44,35 +44,23 @@ import org.osgi.framework.BundleContext;
  *
  * @author mpelcat
  */
-public class Activator extends Plugin {
+public class WorkflowPlugin extends Plugin {
 
   /** The Constant PLUGIN_ID. */
-  // The plug-in ID
   public static final String PLUGIN_ID = "org.preesm.workflow"; //$NON-NLS-1$
 
   /** The plugin. */
-  // The shared instance
-  private static Activator plugin;
+  private static WorkflowPlugin plugin;
 
-  /*
-   * (non-Javadoc)
-   *
-   * @see org.eclipse.ui.plugin.AbstractUIPlugin#start(org.osgi.framework. BundleContext )
-   */
   @Override
   public void start(final BundleContext context) throws Exception {
     super.start(context);
-    Activator.plugin = this;
+    WorkflowPlugin.setDefault(this);
   }
 
-  /*
-   * (non-Javadoc)
-   *
-   * @see org.eclipse.ui.plugin.AbstractUIPlugin#stop(org.osgi.framework. BundleContext )
-   */
   @Override
   public void stop(final BundleContext context) throws Exception {
-    Activator.plugin = null;
+    WorkflowPlugin.setDefault(null);
     super.stop(context);
   }
 
@@ -81,7 +69,11 @@ public class Activator extends Plugin {
    *
    * @return the shared instance
    */
-  public static Activator getDefault() {
-    return Activator.plugin;
+  public static WorkflowPlugin getDefault() {
+    return WorkflowPlugin.plugin;
+  }
+
+  private static final void setDefault(final WorkflowPlugin newInstance) {
+    WorkflowPlugin.plugin = newInstance;
   }
 }

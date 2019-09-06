@@ -36,6 +36,7 @@
  */
 package org.preesm.workflow.elements;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.logging.Level;
 import org.preesm.commons.PreesmPlugin;
 import org.preesm.commons.logger.PreesmLogger;
@@ -96,7 +97,7 @@ public abstract class AbstractWorkflowNode<T extends AbstractWorkflowNodeImpleme
       final Class<?> task = PreesmPlugin.getInstance().getTask(this.getID());
       if (task != null) {
         @SuppressWarnings("unchecked")
-        final T obj = (T) task.newInstance();
+        final T obj = (T) task.getConstructor().newInstance();
         this.implementation = obj;
 
         // Initializes the prototype of the scenario
@@ -105,7 +106,8 @@ public abstract class AbstractWorkflowNode<T extends AbstractWorkflowNodeImpleme
       }
 
       return false;
-    } catch (final InstantiationException | IllegalAccessException e) {
+    } catch (final InstantiationException | IllegalAccessException | IllegalArgumentException
+        | InvocationTargetException | NoSuchMethodException | SecurityException e) {
       PreesmLogger.getLogger().log(Level.SEVERE,
           "Failed to load '" + getID() + "' (" + getName() + ") node from workflow", e);
       return false;
