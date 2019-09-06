@@ -105,7 +105,7 @@ public class DmaRouteStep extends MessageRouteStep {
   }
 
   @Override
-  protected Object clone() {
+  public MessageRouteStep copy() {
     return new DmaRouteStep(this);
   }
 }
