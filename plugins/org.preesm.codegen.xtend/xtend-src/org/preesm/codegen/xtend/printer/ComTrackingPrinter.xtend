@@ -41,7 +41,7 @@ import org.preesm.codegen.model.Delimiter
 import org.preesm.codegen.model.Direction
 import org.preesm.codegen.model.SharedMemoryCommunication
 import org.preesm.codegen.printer.CodegenAbstractPrinter
-import org.preesm.codegen.printer.DefaultPrinter
+import org.preesm.codegen.printer.BlankPrinter
 
 /**
  * This {@link ComTrackingPrinter} is a dummy implementation of the
@@ -50,7 +50,7 @@ import org.preesm.codegen.printer.DefaultPrinter
  * calls for debug purpose.
  * @author mpelcat
  */
-class ComTrackingPrinter extends DefaultPrinter {
+class ComTrackingPrinter extends BlankPrinter {
 
 		override printCoreBlockHeader(CoreBlock block) '''
 			/**

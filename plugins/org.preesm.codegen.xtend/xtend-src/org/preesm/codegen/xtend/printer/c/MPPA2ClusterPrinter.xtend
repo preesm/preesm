@@ -78,7 +78,6 @@ import org.preesm.codegen.model.Variable
 import org.preesm.commons.exceptions.PreesmRuntimeException
 import org.preesm.commons.files.PreesmResourcesHelper
 import org.preesm.model.pisdf.util.CHeaderUsedLocator
-import org.preesm.codegen.printer.DefaultPrinter
 import org.preesm.codegen.model.PapifyAction
 import org.preesm.codegen.model.BufferIterator
 import org.preesm.codegen.model.IntVar
@@ -88,8 +87,9 @@ import java.util.Map
 import org.preesm.codegen.model.SectionBlock
 import org.preesm.codegen.model.ClusterBlock
 import org.preesm.codegen.model.IteratedBuffer
+import org.preesm.codegen.printer.BlankPrinter
 
-class MPPA2ClusterPrinter extends DefaultPrinter {
+class MPPA2ClusterPrinter extends BlankPrinter {
 
 	/**
 	 * Set to true if a main file should be generated. Set at object creation in constructor.
