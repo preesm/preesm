@@ -67,7 +67,7 @@ public class ParallelClusteringAlgorithm implements IClusteringAlgorithm {
   List<Pair<AbstractActor, AbstractActor>> couples;
 
   /**
-   * 
+   *
    */
   public ParallelClusteringAlgorithm() {
     this.forkActors = null;
@@ -89,23 +89,21 @@ public class ParallelClusteringAlgorithm implements IClusteringAlgorithm {
     joinActors = getAllJoinActors(clusteringBuilder.getAlgorithm());
 
     // Sequence first
-    {
-      List<Pair<AbstractActor, AbstractActor>> toRemove = new LinkedList<>();
-      // Remove every couple involving fork and join actors
-      for (Pair<AbstractActor, AbstractActor> couple : couples) {
-        List<AbstractActor> actors = new LinkedList<>();
-        actors.add(couple.getLeft());
-        actors.add(couple.getRight());
-        actors.removeAll(joinActors);
-        actors.removeAll(forkActors);
-        if (actors.size() < 2) {
-          toRemove.add(couple);
-        }
+    List<Pair<AbstractActor, AbstractActor>> toRemove = new LinkedList<>();
+    // Remove every couple involving fork and join actors
+    for (Pair<AbstractActor, AbstractActor> couple : couples) {
+      List<AbstractActor> actors = new LinkedList<>();
+      actors.add(couple.getLeft());
+      actors.add(couple.getRight());
+      actors.removeAll(joinActors);
+      actors.removeAll(forkActors);
+      if (actors.size() < 2) {
+        toRemove.add(couple);
       }
-      couples.removeAll(toRemove);
-      if (couples.isEmpty()) {
-        clusteringState = ClusteringState.PARALLEL_PASS;
-      }
+    }
+    couples.removeAll(toRemove);
+    if (couples.isEmpty()) {
+      clusteringState = ClusteringState.PARALLEL_PASS;
     }
 
     // If no sequencable couple, check parallel actors

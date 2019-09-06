@@ -43,7 +43,6 @@ import java.util.logging.Level;
 import org.preesm.algorithm.model.IRefinement;
 import org.preesm.commons.logger.PreesmLogger;
 
-// TODO: Auto-generated Javadoc
 /**
  * Different function prototypes associated to an actor and retrieved from a prototype file.
  *
@@ -117,8 +116,8 @@ public class ActorPrototypes implements IRefinement {
    */
   public void setInitPrototype(final Prototype init, final int i) {
     if (this.initPrototypes.containsKey(i)) {
-      PreesmLogger.getLogger().log(Level.WARNING,
-          "IDL: Init phase number (-)" + i + " was defined several time for file " + this.path);
+      final String msg = "IDL: Init phase number (-)" + i + " was defined several time for file " + this.path;
+      PreesmLogger.getLogger().log(Level.WARNING, msg);
     }
     this.initPrototypes.put(i, init);
   }
