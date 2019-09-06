@@ -63,7 +63,7 @@ import org.preesm.commons.logger.PreesmLogger;
  * @author pmenuet
  * @author mpelcat
  */
-public class InitialLists implements Cloneable {
+public class InitialLists {
 
   // List of the nodes with a link with the critical path
   private List<MapperDAGVertex> blockingNodes;
@@ -122,12 +122,6 @@ public class InitialLists implements Cloneable {
       }
     }
     this.setFinalcriticalpathList(newlist3);
-
-  }
-
-  @Override
-  public InitialLists clone() {
-    return new InitialLists(this);
 
   }
 
