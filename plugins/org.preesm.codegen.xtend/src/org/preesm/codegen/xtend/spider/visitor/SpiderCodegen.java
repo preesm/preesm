@@ -9,7 +9,7 @@
  * Julien Heulot [julien.heulot@insa-rennes.fr] (2015 - 2017)
  * Karol Desnos [karol.desnos@insa-rennes.fr] (2017)
  * Maxime Pelcat [maxime.pelcat@insa-rennes.fr] (2015)
- * rlazcano [raquel.lazcano@upm.es] (2019)
+ * Raquel Lazcano [raquel.lazcano@upm.es] (2019)
  *
  * This software is a computer program whose purpose is to help prototyping
  * parallel applications using dataflow formalism.

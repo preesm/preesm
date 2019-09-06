@@ -6,12 +6,12 @@
  * Clément Guy [clement.guy@insa-rennes.fr] (2015)
  * Daniel Madroñal [daniel.madronal@upm.es] (2018 - 2019)
  * Florian Arrestier [florian.arrestier@insa-rennes.fr] (2018)
- * dylangageot [gageot.dylan@gmail.com] (2019)
+ * Dylan Gageot [gageot.dylan@gmail.com] (2019)
  * Julien Hascoet [jhascoet@kalray.eu] (2016)
  * Karol Desnos [karol.desnos@insa-rennes.fr] (2013 - 2018)
  * Leonardo Suriano [leonardo.suriano@upm.es] (2019)
  * Maxime Pelcat [maxime.pelcat@insa-rennes.fr] (2013 - 2016)
- * rlazcano [raquel.lazcano@upm.es] (2019)
+ * Raquel Lazcano [raquel.lazcano@upm.es] (2019)
  *
  * This software is a computer program whose purpose is to help prototyping
  * parallel applications using dataflow formalism.
