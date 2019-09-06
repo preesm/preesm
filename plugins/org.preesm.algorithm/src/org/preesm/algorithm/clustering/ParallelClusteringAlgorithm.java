@@ -1,6 +1,7 @@
 /**
  * Copyright or © or Copr. IETR/INSA - Rennes (2019) :
  *
+ * Antoine Morvan [antoine.morvan@insa-rennes.fr] (2019)
  * dylangageot [gageot.dylan@gmail.com] (2019)
  *
  * This software is a computer program whose purpose is to help prototyping
@@ -44,7 +45,6 @@ import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.DataInputPort;
 import org.preesm.model.pisdf.DataOutputPort;
 import org.preesm.model.pisdf.PiGraph;
-import org.preesm.model.pisdf.util.PiSDFMergeabilty;
 
 /**
  * @author dgageot
@@ -165,8 +165,8 @@ public class ParallelClusteringAlgorithm implements IClusteringAlgorithm {
   @Override
   public boolean clusteringComplete(ClusteringBuilder clusteringBuilder) {
     // Get mergeable couple
-    couples = PiSDFMergeabilty.getConnectedCouple(clusteringBuilder.getAlgorithm(),
-        clusteringBuilder.getRepetitionVector());
+    couples = ClusteringHelper.getClusterizableCouples(clusteringBuilder.getAlgorithm(),
+        clusteringBuilder.getRepetitionVector(), clusteringBuilder.getScenario());
     return couples.isEmpty();
   }
 

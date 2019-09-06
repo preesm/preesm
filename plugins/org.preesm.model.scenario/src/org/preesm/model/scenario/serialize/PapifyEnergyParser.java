@@ -101,10 +101,9 @@ public class PapifyEnergyParser {
 
     final Path path = new Path(url);
     final IFile file = workspace.getRoot().getFile(path);
-    try {
+    try (final BufferedReader br = new BufferedReader(new InputStreamReader(file.getContents()))) {
       final Map<AbstractActor, Map<ComponentInstance, String>> energyInstances = new LinkedHashMap<>();
       final Map<AbstractActor, Map<Component, String>> energies = new LinkedHashMap<>();
-      final BufferedReader br = new BufferedReader(new InputStreamReader(file.getContents()));
 
       String line;
 
@@ -119,53 +118,10 @@ public class PapifyEnergyParser {
 
         /* Parse the whole file to create the energies Map */
         while ((line = br.readLine()) != null) {
-          final String[] cells = line.split(",");
-          if (cells.length == opNames.length) {
-            final Map<ComponentInstance, String> energy = new LinkedHashMap<>();
-
-            for (int i = 1; i < cells.length; i++) {
-              final String peName = opNames[i];
-              final ComponentInstance com = this.scenario.getDesign().getComponentInstance(peName);
-              energy.put(com, cells[i]);
-            }
-
-            final String string = cells[0];
-            final AbstractActor lookupActor = VertexPath.lookup(this.scenario.getAlgorithm(), string);
-            if (lookupActor != null) {
-              energyInstances.put(lookupActor, energy);
-            }
-          } else {
-            String errMessage = "Papify auto-generated energies csv file has incorrect data: "
-                + "all rows have not the same number of columns.";
-            PreesmLogger.getLogger().log(Level.SEVERE, errMessage);
-            throw new PreesmRuntimeException(errMessage);
-          }
+          processLine(energyInstances, line, opNames);
         }
         for (Entry<AbstractActor, Map<ComponentInstance, String>> actorEnergies : energyInstances.entrySet()) {
-          final Map<Component, String> energy = new LinkedHashMap<>();
-          final Map<Component, Integer> energyTimes = new LinkedHashMap<>();
-          for (Entry<ComponentInstance, String> energyEntry : actorEnergies.getValue().entrySet()) {
-            if (!energyEntry.getValue().equals(" ")) {
-              String peType = energyEntry.getKey().getComponent().getVlnv().getName();
-              Component comp = this.scenario.getDesign().getComponent(peType);
-              if (!energy.containsKey(comp)) {
-                energy.put(comp, energyEntry.getValue());
-                energyTimes.put(comp, 1);
-              } else {
-                double valueStored = Double.parseDouble(energy.get(comp));
-                double valueNew = Double.parseDouble(energyEntry.getValue());
-                String addedValue = Double.toString(valueStored + valueNew);
-                energy.put(comp, addedValue);
-                energyTimes.put(comp, energyTimes.get(comp) + 1);
-              }
-            }
-          }
-          for (Entry<Component, String> energyToAverage : energy.entrySet()) {
-            double valueStored = Double.parseDouble(energyToAverage.getValue());
-            double valueAveraged = valueStored / energyTimes.get(energyToAverage.getKey());
-            energy.put(energyToAverage.getKey(), Double.toString(valueAveraged));
-          }
-          energies.put(actorEnergies.getKey(), energy);
+          storeEnergies(energies, actorEnergies);
         }
 
         parseEnergies(energies, opDefIds);
@@ -173,7 +129,60 @@ public class PapifyEnergyParser {
         throw new IllegalArgumentException("Given URL points to an empty file");
       }
     } catch (final IOException | CoreException e) {
-      e.printStackTrace();
+      PreesmLogger.getLogger().log(Level.WARNING, "Could not parse Papify energy", e);
+    }
+  }
+
+  private void storeEnergies(final Map<AbstractActor, Map<Component, String>> energies,
+      Entry<AbstractActor, Map<ComponentInstance, String>> actorEnergies) {
+    final Map<Component, String> energy = new LinkedHashMap<>();
+    final Map<Component, Integer> energyTimes = new LinkedHashMap<>();
+    for (Entry<ComponentInstance, String> energyEntry : actorEnergies.getValue().entrySet()) {
+      if (!energyEntry.getValue().equals(" ")) {
+        String peType = energyEntry.getKey().getComponent().getVlnv().getName();
+        Component comp = this.scenario.getDesign().getComponent(peType);
+        if (!energy.containsKey(comp)) {
+          energy.put(comp, energyEntry.getValue());
+          energyTimes.put(comp, 1);
+        } else {
+          double valueStored = Double.parseDouble(energy.get(comp));
+          double valueNew = Double.parseDouble(energyEntry.getValue());
+          String addedValue = Double.toString(valueStored + valueNew);
+          energy.put(comp, addedValue);
+          energyTimes.put(comp, energyTimes.get(comp) + 1);
+        }
+      }
+    }
+    for (Entry<Component, String> energyToAverage : energy.entrySet()) {
+      double valueStored = Double.parseDouble(energyToAverage.getValue());
+      double valueAveraged = valueStored / energyTimes.get(energyToAverage.getKey());
+      energy.put(energyToAverage.getKey(), Double.toString(valueAveraged));
+    }
+    energies.put(actorEnergies.getKey(), energy);
+  }
+
+  private void processLine(final Map<AbstractActor, Map<ComponentInstance, String>> energyInstances, String line,
+      final String[] opNames) {
+    final String[] cells = line.split(",");
+    if (cells.length == opNames.length) {
+      final Map<ComponentInstance, String> energy = new LinkedHashMap<>();
+
+      for (int i = 1; i < cells.length; i++) {
+        final String peName = opNames[i];
+        final ComponentInstance com = this.scenario.getDesign().getComponentInstance(peName);
+        energy.put(com, cells[i]);
+      }
+
+      final String string = cells[0];
+      final AbstractActor lookupActor = VertexPath.lookup(this.scenario.getAlgorithm(), string);
+      if (lookupActor != null) {
+        energyInstances.put(lookupActor, energy);
+      }
+    } else {
+      String errMessage = "Papify auto-generated energies csv file has incorrect data: "
+          + "all rows have not the same number of columns.";
+      PreesmLogger.getLogger().log(Level.SEVERE, errMessage);
+      throw new PreesmRuntimeException(errMessage);
     }
   }
 

@@ -39,7 +39,7 @@ package org.preesm.algorithm.evaluator;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.logging.Level;
-import org.preesm.algorithm.mathematicalModels.PeriodicScheduleModelOjAlgo;
+import org.preesm.algorithm.mathematicalmodels.PeriodicScheduleModelOjAlgo;
 import org.preesm.algorithm.model.AbstractEdgePropertyType;
 import org.preesm.algorithm.model.sdf.SDFAbstractVertex;
 import org.preesm.algorithm.model.sdf.SDFEdge;

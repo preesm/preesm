@@ -10,6 +10,7 @@
  * Karol Desnos [karol.desnos@insa-rennes.fr] (2013)
  * Leonardo Suriano [leonardo.suriano@upm.es] (2019)
  * Maxime Pelcat [maxime.pelcat@insa-rennes.fr] (2013)
+ * rlazcano [raquel.lazcano@upm.es] (2019)
  *
  * This software is a computer program whose purpose is to help prototyping
  * parallel applications using dataflow formalism.
@@ -96,6 +97,9 @@ public class CodegenEngine {
 
   /** The codegen path. */
   private final String codegenPath;
+
+  /** The Apollo flag. */
+  private boolean apolloEnabled = false;
 
   /** The code blocks. */
   private final Collection<Block> codeBlocks;
@@ -305,6 +309,9 @@ public class CodegenEngine {
       // initialize printer engine
       printer.setEngine(this);
 
+      // set up apollo intra-actor optimization
+      printer.setApolloEnabled(this.apolloEnabled);
+
       // Do the pre-processing
       printer.preProcessing(printerAndBlocks.getValue(), this.codeBlocks);
       this.realPrinters.put(printerAndBlocks.getKey(), printer);
@@ -379,5 +386,14 @@ public class CodegenEngine {
         PreesmLogger.getLogger().log(Level.FINE, msg);
     }
 
+  }
+
+  /**
+   * 
+   * @param apolloFlag
+   *          Enable the use of Apollo for intra-actor optimization
+   */
+  public void registerApollo(String apolloFlag) {
+    this.apolloEnabled = "true".equalsIgnoreCase(apolloFlag);
   }
 }

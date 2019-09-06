@@ -3,7 +3,7 @@ Bundle-ManifestVersion: 2
 Bundle-Name: %pluginName
 Automatic-Module-Name: org.preesm.codegen
 Bundle-SymbolicName: org.preesm.codegen;singleton:=true
-Bundle-Version: 3.15.0
+Bundle-Version: 3.16.0
 Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.emf.ecore;visibility:=reexport,
  org.eclipse.core.resources,
@@ -31,4 +31,5 @@ Export-Package: org.preesm.codegen.model,
  org.preesm.codegen.model.util,
  org.preesm.codegen.printer,
  org.preesm.codegen.xtend.task
+Import-Package: org.apache.commons.lang3.tuple
 

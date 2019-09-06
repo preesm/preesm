@@ -9,6 +9,7 @@
  * Julien Heulot [julien.heulot@insa-rennes.fr] (2015 - 2017)
  * Karol Desnos [karol.desnos@insa-rennes.fr] (2017)
  * Maxime Pelcat [maxime.pelcat@insa-rennes.fr] (2015)
+ * rlazcano [raquel.lazcano@upm.es] (2019)
  *
  * This software is a computer program whose purpose is to help prototyping
  * parallel applications using dataflow formalism.
@@ -62,6 +63,7 @@ import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.Actor;
 import org.preesm.model.pisdf.CHeaderRefinement;
+import org.preesm.model.pisdf.ConfigInputPort;
 import org.preesm.model.pisdf.FunctionArgument;
 import org.preesm.model.pisdf.FunctionPrototype;
 import org.preesm.model.pisdf.Parameter;
@@ -134,6 +136,10 @@ public class SpiderCodegen {
 
   /** **/
   private final List<String> coreTypeName = new LinkedList<>();
+
+  /** **/
+  private final List<Parameter>                 dynamicParams = new LinkedList<>();
+  private final Map<ConfigInputPort, Parameter> cipToParam    = new LinkedHashMap<>();
 
   /**
    * Instantiates a new spider codegen.
@@ -845,6 +851,11 @@ public class SpiderCodegen {
     }
     append("};\n\n");
 
+    for (Parameter parameter : pg.getAllParameters()) {
+      if (parameter.isConfigurable() || parameter.isDependent()) {
+        this.dynamicParams.add(parameter);
+      }
+    }
     // Generate functions
     for (final AbstractActor aa : this.functionMap.keySet()) {
       generateFunctionBody(aa);

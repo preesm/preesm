@@ -61,8 +61,7 @@ public class ScheduleDataParallelismExhibiter implements IScheduleTransform {
       boolean sequentialPersistenceInside = !graph.getFifosWithDelay().isEmpty();
       if ((schedule.getRepetition() > 1) && !sequentialPersistenceInside) {
         ParallelHiearchicalSchedule parallelSchedule = ScheduleFactory.eINSTANCE.createParallelHiearchicalSchedule();
-        parallelSchedule.setRepetition(schedule.getRepetition());
-        schedule.setRepetition(1);
+        parallelSchedule.setRepetition(1);
         parallelSchedule.getChildren().add(schedule);
         return parallelSchedule;
       }

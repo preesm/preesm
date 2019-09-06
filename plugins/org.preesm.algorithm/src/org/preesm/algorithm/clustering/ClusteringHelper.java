@@ -1,8 +1,8 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2019) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (%%DATE%%) :
  *
  * Antoine Morvan [antoine.morvan@insa-rennes.fr] (2019)
- * dylangageot [gageot.dylan@gmail.com] (2019)
+ * %%AUTHORS%%
  *
  * This software is a computer program whose purpose is to help prototyping
  * parallel applications using dataflow formalism.
@@ -36,9 +36,11 @@
 package org.preesm.algorithm.clustering;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import org.apache.commons.lang3.tuple.Pair;
 import org.eclipse.emf.common.util.ECollections;
 import org.eclipse.emf.common.util.EList;
 import org.preesm.algorithm.schedule.model.HierarchicalSchedule;
@@ -62,8 +64,10 @@ import org.preesm.model.pisdf.Parameter;
 import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.pisdf.brv.BRVMethod;
 import org.preesm.model.pisdf.brv.PiBRV;
+import org.preesm.model.pisdf.util.PiSDFMergeabilty;
 import org.preesm.model.scenario.Scenario;
 import org.preesm.model.slam.Component;
+import org.preesm.model.slam.ComponentInstance;
 
 /**
  *
@@ -185,7 +189,7 @@ public class ClusteringHelper {
    *          schedule to get execution time from
    * @return execution time
    */
-  public static final long getExecutionTimeOf(Schedule schedule, Scenario scenario) {
+  public static final long getExecutionTimeOf(Schedule schedule, Scenario scenario, Component component) {
     long timing = 0;
 
     // If schedule is hierarchical
@@ -195,14 +199,14 @@ public class ClusteringHelper {
       if (schedule instanceof SequentialSchedule) {
         // Sum timings of all childrens together
         for (Schedule child : schedule.getChildren()) {
-          timing += getExecutionTimeOf(child, scenario);
+          timing += getExecutionTimeOf(child, scenario, component);
         }
       } else {
         // If schedule is parallel
         // Search for the maximun time taken by childrens
         long max = 0;
         for (Schedule child : schedule.getChildren()) {
-          long result = getExecutionTimeOf(child, scenario);
+          long result = getExecutionTimeOf(child, scenario, component);
           if (result > max) {
             max = result;
           }
@@ -218,12 +222,7 @@ public class ClusteringHelper {
 
     } else {
       // Retrieve timing from actors
-      /*
-       * TODO: this implementation is not perfect: it takes the first component that it found in the list to get timing
-       * from
-       */
       AbstractActor actor = schedule.getActors().get(0);
-      Component component = scenario.getPossibleMappings(actor).get(0).getComponent();
       long actorTiming = scenario.getTimings().evaluateTimingOrDefault(actor, component);
       if ((schedule instanceof ParallelActorSchedule)) {
         timing = actorTiming;
@@ -302,6 +301,59 @@ public class ClusteringHelper {
     } else {
       return (Parameter) setter;
     }
+  }
+
+  /**
+   * @param graph
+   *          input graph
+   * @param brv
+   *          repetition vector
+   * @param scenario
+   *          scenario
+   * @return list of clusterizable couple
+   */
+  public static List<Pair<AbstractActor, AbstractActor>> getClusterizableCouples(final PiGraph graph,
+      final Map<AbstractVertex, Long> brv, Scenario scenario) {
+    List<Pair<AbstractActor, AbstractActor>> couples = PiSDFMergeabilty.getConnectedCouple(graph, brv);
+    // Remove couples of actors that are not in the same constraints
+    ClusteringHelper.removeConstrainedCouples(couples, scenario);
+    return couples;
+  }
+
+  /**
+   * @param couples
+   *          list of mergeable couple
+   * @param scenario
+   *          scenario
+   */
+  public static void removeConstrainedCouples(List<Pair<AbstractActor, AbstractActor>> couples, Scenario scenario) {
+    List<Pair<AbstractActor, AbstractActor>> tmpCouples = new LinkedList<>();
+    tmpCouples.addAll(couples);
+    couples.clear();
+    for (Pair<AbstractActor, AbstractActor> couple : tmpCouples) {
+      List<ComponentInstance> componentList = getListOfCommonComponent(
+          Arrays.asList(couple.getLeft(), couple.getRight()), scenario);
+      if (!componentList.isEmpty()) {
+        couples.add(couple);
+      }
+    }
+  }
+
+  /**
+   * @param actorList
+   *          list of actor
+   * @param scenario
+   *          scenario
+   * @return
+   */
+  public static List<ComponentInstance> getListOfCommonComponent(List<AbstractActor> actorList, Scenario scenario) {
+    List<ComponentInstance> globalList = new LinkedList<>();
+    globalList.addAll(scenario.getPossibleMappings(actorList.get(0)));
+    for (AbstractActor actor : actorList) {
+      List<ComponentInstance> componentList = scenario.getPossibleMappings(actor);
+      globalList.retainAll(componentList);
+    }
+    return globalList;
   }
 
 }

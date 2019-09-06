@@ -94,12 +94,12 @@ public class VertexNameValidator implements IInputValidator {
 
     // Check if the name is not a C keyword
     if (NameCheckerC.isCkeyword(newVertexName)) {
-      message = "/!\\ Name <" + newVertexName + NameCheckerC.msgCkeywordNameError;
+      message = "/!\\ Name <" + newVertexName + NameCheckerC.MESSAGE_C_KEYWORD_NAME_ERROR;
       return message;
     }
     // Check if the name meets the model regex
     if (!NameCheckerC.matchCvariableRegex(newVertexName)) {
-      message = "/!\\ Name <" + newVertexName + NameCheckerC.msgVariableNameError;
+      message = "/!\\ Name <" + newVertexName + NameCheckerC.MESSAGE_VARIABLE_NAME_ERROR;
       return message;
     }
 

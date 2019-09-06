@@ -79,8 +79,7 @@ interface CodeElt extends Commentable {
 }
 
 abstract class Call extends CodeElt {
-	@GenModel(propertySortChoices="true")
-	refers readonly Variable[] parameters
+	transient EEList<Variable> parameters
 	String name
 	refers Call EReference0
 	PortDirection[] parameterDirections

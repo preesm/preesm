@@ -5,6 +5,7 @@
  * Daniel Madroñal [daniel.madronal@upm.es] (2019)
  * dylangageot [gageot.dylan@gmail.com] (2019)
  * Leonardo Suriano [leonardo.suriano@upm.es] (2019)
+ * rlazcano [raquel.lazcano@upm.es] (2019)
  *
  * This software is a computer program whose purpose is to help prototyping
  * parallel applications using dataflow formalism.
@@ -284,6 +285,20 @@ public abstract class CodegenAbstractPrinter extends CodegenSwitch<CharSequence>
 
   public void setEngine(final CodegenEngine engine) {
     this.engine = engine;
+  }
+
+  /**
+   * apolloEnabled Enable intra-actor optimization with Apollo
+   */
+
+  private boolean apolloEnabled = false;
+
+  public boolean getApolloEnabled() {
+    return this.apolloEnabled;
+  }
+
+  public void setApolloEnabled(final boolean apolloEnabled) {
+    this.apolloEnabled = apolloEnabled;
   }
 
   /**

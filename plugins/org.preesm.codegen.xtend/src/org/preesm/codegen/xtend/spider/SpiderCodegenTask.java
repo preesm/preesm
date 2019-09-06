@@ -9,6 +9,7 @@
  * Julien Heulot [julien.heulot@insa-rennes.fr] (2015 - 2016)
  * Karol Desnos [karol.desnos@insa-rennes.fr] (2017)
  * Maxime Pelcat [maxime.pelcat@insa-rennes.fr] (2015)
+ * rlazcano [raquel.lazcano@upm.es] (2019)
  *
  * This software is a computer program whose purpose is to help prototyping
  * parallel applications using dataflow formalism.
@@ -44,9 +45,11 @@ package org.preesm.codegen.xtend.spider;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.nio.file.Files;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.logging.Level;
 import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IWorkspace;
 import org.eclipse.core.resources.ResourcesPlugin;
@@ -60,6 +63,7 @@ import org.preesm.commons.doc.annotations.Port;
 import org.preesm.commons.doc.annotations.PreesmTask;
 import org.preesm.commons.doc.annotations.Value;
 import org.preesm.commons.exceptions.PreesmRuntimeException;
+import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.scenario.Scenario;
 import org.preesm.model.slam.Design;
@@ -91,14 +95,16 @@ import org.preesm.workflow.implement.AbstractWorkflowNodeImplementation;
                 @Value(name = "dump", effect = "PAPIFY is on. Print csv files"),
                 @Value(name = "feedback", effect = "PAPIFY is on. Give feedback to the GRT"),
                 @Value(name = "both", effect = "PAPIFY is on. Print csv files and give feedback to the GRT") }),
-        @Parameter(name = "verbose", description = "Wether to log.",
+        @Parameter(name = "apollo", description = "Whether to use Apollo.",
             values = { @Value(name = "true / false", effect = "") }),
-        @Parameter(name = "trace", description = "Wether to trace what is happening at runtime.",
+        @Parameter(name = "verbose", description = "Whether to log.",
+            values = { @Value(name = "true / false", effect = "") }),
+        @Parameter(name = "trace", description = "Whether to trace what is happening at runtime.",
             values = { @Value(name = "true / false", effect = "") }),
         @Parameter(name = "stack-type", description = "Type of stack to use",
             values = { @Value(name = "static", effect = "Use static stack"),
                 @Value(name = "dynamic", effect = "Use dynamic stack") }),
-        @Parameter(name = "graph-optims", description = "Wether to optimize the graph at runtime or not",
+        @Parameter(name = "graph-optims", description = "Whether to optimize the graph at runtime or not",
             values = { @Value(name = "true / false", effect = "") }) },
 
     seeAlso = { "**Spider**: Heulot, Julien; Pelcat, Maxime; Desnos, Karol; Nezan, Jean-François; Aridhi, Slaheddine "
@@ -108,6 +114,8 @@ public class SpiderCodegenTask extends AbstractTaskImplementation {
 
   /** The Constant PARAM_PAPIFY. */
   public static final String PARAM_PAPIFY        = "papify";
+  /** The Constant PARAM_APOLLO. */
+  public static final String PARAM_APOLLO        = "apollo";
   /** The Constant PARAM_VERBOSE. */
   public static final String PARAM_VERBOSE       = "verbose";
   /** The Constant PARAM_TRACE. */
@@ -160,7 +168,6 @@ public class SpiderCodegenTask extends AbstractTaskImplementation {
     final String graphCode = launcher.generateGraphCode(pg);
     final String fctCode = launcher.generateFunctionCode(pg);
     final String hCode = launcher.generateHeaderCode(pg, spiderConfig);
-    // TODO: add config as parameters from workflow
     final String mCode = launcher.generateMainCode(pg, spiderConfig);
     final String papifyCode = launcher.generatePapifyCode(pg, scenario);
     final String archiCode = launcher.generateArchiCode(pg, scenario);
@@ -187,7 +194,11 @@ public class SpiderCodegenTask extends AbstractTaskImplementation {
     if (folder.isDirectory()) {
       // clean the folder
       for (File file : folder.listFiles()) {
-        file.delete();
+        try {
+          Files.delete(file.toPath());
+        } catch (IOException e) {
+          PreesmLogger.getLogger().log(Level.FINE, "Could not delete file");
+        }
       }
     }
 
@@ -211,31 +222,31 @@ public class SpiderCodegenTask extends AbstractTaskImplementation {
     try (FileWriter piGraphWriter = new FileWriter(piGraphFile)) {
       piGraphWriter.write(graphCode);
     } catch (final IOException e) {
-      e.printStackTrace();
+      PreesmLogger.getLogger().log(Level.WARNING, "Could not write graphCode file", e);
     }
 
     try (FileWriter piFctWriter = new FileWriter(piFctFile)) {
       piFctWriter.write(fctCode);
     } catch (final IOException e) {
-      e.printStackTrace();
+      PreesmLogger.getLogger().log(Level.WARNING, "Could not write fctCode file", e);
     }
 
     try (FileWriter hWriter = new FileWriter(hFile)) {
       hWriter.write(hCode);
     } catch (final IOException e) {
-      e.printStackTrace();
+      PreesmLogger.getLogger().log(Level.WARNING, "Could not write hCode file", e);
     }
 
     try (FileWriter archiWriter = new FileWriter(archiFile)) {
       archiWriter.write(archiCode);
     } catch (final IOException e) {
-      e.printStackTrace();
+      PreesmLogger.getLogger().log(Level.WARNING, "Could not write archiCode file", e);
     }
 
     try (FileWriter cppMainWriter = new FileWriter(cppMainFile)) {
       cppMainWriter.write(mCode);
     } catch (final IOException e) {
-      e.printStackTrace();
+      PreesmLogger.getLogger().log(Level.WARNING, "Could not write mCode file", e);
     }
 
     // Write papify file
@@ -245,7 +256,7 @@ public class SpiderCodegenTask extends AbstractTaskImplementation {
       try (FileWriter cppPapifyWriter = new FileWriter(cppPapifyFile)) {
         cppPapifyWriter.write(papifyCode);
       } catch (final IOException e) {
-        e.printStackTrace();
+        PreesmLogger.getLogger().log(Level.WARNING, "Could not write papifyCode file", e);
       }
     }
 
@@ -261,8 +272,7 @@ public class SpiderCodegenTask extends AbstractTaskImplementation {
   @Override
   public Map<String, String> getDefaultParameters() {
     // Create an empty parameters map
-    final Map<String, String> parameters = new LinkedHashMap<>();
-    return parameters;
+    return new LinkedHashMap<>();
   }
 
   /*

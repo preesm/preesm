@@ -3,7 +3,7 @@ Bundle-ManifestVersion: 2
 Bundle-Name: %pluginName
 Automatic-Module-Name: org.preesm.algorithm
 Bundle-SymbolicName: org.preesm.algorithm;singleton:=true
-Bundle-Version: 3.15.0
+Bundle-Version: 3.16.0
 Bundle-Vendor: %providerName
 Bundle-Localization: plugin
 Require-Bundle: org.eclipse.core.resources,
@@ -78,7 +78,7 @@ Export-Package: org.preesm.algorithm,
  org.preesm.algorithm.mapping.model,
  org.preesm.algorithm.mapping.model.impl,
  org.preesm.algorithm.mapping.model.util,
- org.preesm.algorithm.mathematicalModels,
+ org.preesm.algorithm.mathematicalmodels,
  org.preesm.algorithm.memalloc.model,
  org.preesm.algorithm.memalloc.model.impl,
  org.preesm.algorithm.memalloc.model.util,

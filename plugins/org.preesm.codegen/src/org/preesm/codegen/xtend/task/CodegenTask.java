@@ -1,13 +1,11 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2013 - 2019) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (%%DATE%%) :
  *
  * Alexandre Honorat [alexandre.honorat@insa-rennes.fr] (2019)
  * Antoine Morvan [antoine.morvan@insa-rennes.fr] (2017 - 2019)
  * Clément Guy [clement.guy@insa-rennes.fr] (2014 - 2015)
  * Daniel Madroñal [daniel.madronal@upm.es] (2019)
- * Julien Hascoet [jhascoet@kalray.eu] (2016)
- * Karol Desnos [karol.desnos@insa-rennes.fr] (2013 - 2015)
- * Maxime Pelcat [maxime.pelcat@insa-rennes.fr] (2013)
+ * %%AUTHORS%%
  *
  * This software is a computer program whose purpose is to help prototyping
  * parallel applications using dataflow formalism.
@@ -106,7 +104,10 @@ import org.preesm.workflow.implement.AbstractTaskImplementation;
         @Parameter(name = "Papify", description = "Enable the PAPI-based code instrumentation provided by PAPIFY",
             values = { @Value(name = "true/false",
                 effect = "Print C code instrumented with PAPIFY function calls based on the user-defined configuration"
-                    + " of PAPIFY tab in the scenario. Currently compatibe with x86 and MPPA-256") }) })
+                    + " of PAPIFY tab in the scenario. Currently compatibe with x86 and MPPA-256") }),
+        @Parameter(name = "Apollo", description = "Enable the use of Apollo for intra-actor optimization",
+            values = { @Value(name = "true/false",
+                effect = "Print C code with Apollo function calls. " + "Currently compatibe with x86") }) })
 public class CodegenTask extends AbstractTaskImplementation {
 
   /** The Constant PARAM_PRINTER. */
@@ -117,6 +118,9 @@ public class CodegenTask extends AbstractTaskImplementation {
 
   /** The Constant PARAM_PAPIFY. */
   public static final String PARAM_PAPIFY = "Papify";
+
+  /** The Constant PARAM_APOLLO. */
+  public static final String PARAM_APOLLO = "Apollo";
 
   /*
    * (non-Javadoc)
@@ -144,10 +148,13 @@ public class CodegenTask extends AbstractTaskImplementation {
     final MapperDAG algo = (MapperDAG) algoDAG;
 
     // Generate intermediate model
-    final CodegenModelGenerator generator = new CodegenModelGenerator(archi, algo, megs, scenario);
+    final CodegenModelGenerator generator = new CodegenModelGenerator(archi, algo, megs, scenario, null);
     // Retrieve the PAPIFY flag
     final String papifyMonitoring = parameters.get(CodegenTask.PARAM_PAPIFY);
     generator.registerPapify(papifyMonitoring);
+
+    // Retrieve the APOLLO flag
+    final String apolloFlag = parameters.get(CodegenTask.PARAM_APOLLO);
 
     final Collection<Block> codeBlocks = generator.generate();
 
@@ -162,6 +169,8 @@ public class CodegenTask extends AbstractTaskImplementation {
     if (CodegenTask.VALUE_PRINTER_IR.equals(selectedPrinter)) {
       engine.initializePrinterIR(codegenPath);
     }
+
+    engine.registerApollo(apolloFlag);
 
     engine.registerPrintersAndBlocks(selectedPrinter);
     engine.preprocessPrinters();

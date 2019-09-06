@@ -45,8 +45,12 @@
 @Ecore(nsURI="http://org.preesm/algos/schedule")
 package org.preesm.algorithm.schedule.model
 
-import org.eclipse.emf.common.util.ECollections
+import org.preesm.algorithm.synthesis.schedule.SchedulePrinterSwitch
 import org.preesm.model.pisdf.AbstractActor
+import org.preesm.model.pisdf.Fifo
+import org.preesm.model.pisdf.SpecialActor
+import org.preesm.model.slam.ComponentInstance
+import org.eclipse.emf.common.util.ECollections
 
 // !!! This is needed as of the current versions of xcore/xtext
 // For some reason when using the default String/... (i.e. without the following)
@@ -75,12 +79,8 @@ interface Schedule {
 	 * Used when building schedules for non-srdag PiGraphs.
 	 */
 	long repetition
-	/*
-	 * Returns the next level of schedule in the hierarchy
-	 */
-	op Schedule[] getChildren() {
-		return ECollections.emptyEList
-	}
+	contains volatile Schedule[] children opposite parent
+	refers Schedule parent opposite children
 	/*
 	 * Return the list of all the actors contained by this schedule and all of its children.
 	 *
@@ -107,22 +107,17 @@ interface Schedule {
 	 */
 	op boolean isParallel()
 	/*
-	 * Returns whether there is data parallelism (i.e. the same processing is done on different chunks
-	 * of data).
-	 */
-	op boolean isDataParallel() {
-		return isParallel && repetition > 1
-	}
-	/*
-	 * returns a String representing the schedule informally.
-	 */
-	op String shortPrint()
-	/*
 	 * Return true if the schedule is linked with an actor. This is the case when applying clustering, where
 	 * the attached actor of a HierarchicalSchedule is the clustered subraph.
 	 */
 	op boolean hasAttachedActor() {
 		return false
+	}
+	/*
+	 * returns a String representing the schedule informally.
+	 */
+	op String shortPrint() {
+		return SchedulePrinterSwitch.print(this)
 	}
 }
 
@@ -184,23 +179,10 @@ interface ActorSchedule extends Schedule {
 	op AbstractActor[] getActors() {
 		return actorList.unmodifiableEList
 	}
-	op String shortPrint() {
-		val StringBuilder toPrint = new StringBuilder()
-		// Print sequential operator
-		if (getRepetition() > 1) {
-			toPrint.append(getRepetition())
-			if (isParallel) {
-				toPrint.append("/")
-			}
-			toPrint.append("(")
-		}
 
-		toPrint.append(actors.map[it.getName()].join(""))
-
-		if (getRepetition() > 1) {
-			toPrint.append(")")
-		}
-		return toPrint.toString()
+	// Actor schedules have no children
+	op Schedule[] getChildren() {
+		return ECollections.emptyEList
 	}
 }
 
@@ -227,18 +209,6 @@ class ParallelActorSchedule extends ActorSchedule, ParallelSchedule {
  * sequential, in the order of apparition in the list.
  */
 class SequentialHiearchicalSchedule extends HierarchicalSchedule, SequentialSchedule {
-	op String shortPrint() {
-		val StringBuilder toPrint = new StringBuilder()
-		// Print sequential operator
-		if (getRepetition() > 1) {
-			toPrint.append(getRepetition() + "(")
-		}
-		toPrint.append(children.map[it.shortPrint()].join("*"))
-		if (getRepetition() > 1) {
-			toPrint.append(")")
-		}
-		return toPrint.toString()
-	}
 }
 
 /*
@@ -246,16 +216,6 @@ class SequentialHiearchicalSchedule extends HierarchicalSchedule, SequentialSche
  * simultaneous (i.e. parallel).
  */
 class ParallelHiearchicalSchedule extends HierarchicalSchedule, ParallelSchedule {
-	op String shortPrint() {
-		val StringBuilder toPrint = new StringBuilder()
-		// Print sequential operator
-		if (getRepetition() > 1) {
-			toPrint.append(getRepetition() + "/")
-		}
-		val String join = children.map[it.shortPrint()].join("|");
-		toPrint.append("(" + join + ")")
-		return toPrint.toString()
-	}
 }
 
 /*
@@ -291,24 +251,58 @@ class StagedHiearchicalSchedule extends SequentialHiearchicalSchedule {
 	}
 }
 
-/*
-interface CommunicationActor extends SpecialActor {
+// Special actors to fire communication. They are used to schedule the Fifos
+abstract class CommunicationActor extends SpecialActor {
 	refers Fifo fifo
 }
 
-class SendActor extends CommunicationActor {
-	refers ReceiveActor receive opposite send
+abstract class SendActor extends CommunicationActor {
+	op ComponentInstance getSendEnabler()
+}
+class SendStartActor extends SendActor {
+	// to track when com ends
+	refers SendEndActor sendEnd opposite sendStart
+
+	// to track to who data is sent
+	refers ReceiveEndActor targetReceiveEnd opposite sourceSendStart
+
+	// optional enable to delegate the copy to (DMA, ...)
+	refers ComponentInstance sendEnabler
+}
+class SendEndActor extends SendActor {
+	// to track when com started
+	refers SendStartActor sendStart opposite sendEnd
+
+	// start & end have same enabler
+	op ComponentInstance getSendEnabler() {
+		return sendStart.sendEnabler
+	}
 }
 
-class ReceiveActor extends CommunicationActor {
-	refers SendActor send opposite receive
+abstract class ReceiveActor extends CommunicationActor {
+	op ComponentInstance getReceiveEnabler()
+}
+class ReceiveStartActor extends ReceiveActor {
+	// to track when com ends
+	refers ReceiveEndActor receiveEnd opposite receiveStart
+
+	// optional enable to delegate the copy to (DMA, ...)
+	refers ComponentInstance receiveEnabler
+}
+class ReceiveEndActor extends ReceiveActor {
+	// to track who sent
+	refers SendStartActor sourceSendStart opposite targetReceiveEnd
+
+	// to track when com started
+	refers ReceiveStartActor receiveStart opposite receiveEnd
+
+	// start & end have same enabler
+	op ComponentInstance getReceiveEnabler() {
+		return receiveStart.receiveEnabler
+	}
 }
 
-class InvolvementActor extends CommunicationActor {
-	refers ComponentInstance receiver
+// Receive then Send. Atomic: simplifies allocation.
+class ForwardActor extends SendEndActor, SendStartActor, ReceiveStartActor, ReceiveEndActor {
 }
 
-class OverheadActor extends CommunicationActor {
-	refers ComponentInstance dma
-}
- */

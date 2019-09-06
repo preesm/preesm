@@ -689,11 +689,13 @@ public class PapifyPage extends ScenarioPage {
     // Create columns
 
     this.modelTableViewer.setInput(this.scenario);
-    final GridData gd = new GridData(GridData.FILL_BOTH);
+    final GridData gd = new GridData(
+        GridData.VERTICAL_ALIGN_BEGINNING | GridData.FILL_HORIZONTAL | GridData.FILL_VERTICAL);
     final Integer peTypes = scenario.getDesign().getOperatorComponents().size();
     gd.heightHint = Math.min(300, peTypes * 20 + 50);
     gd.widthHint = 400;
-    gd.grabExcessVerticalSpace = true;
+    gd.grabExcessVerticalSpace = false;
+    this.modelTableCps.setLayout(new GridLayout());
     this.modelTableCps.setLayoutData(gd);
 
     // Tree is refreshed in case of algorithm modifications

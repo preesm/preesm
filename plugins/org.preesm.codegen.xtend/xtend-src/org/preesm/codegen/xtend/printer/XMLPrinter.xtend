@@ -39,7 +39,6 @@ package org.preesm.codegen.xtend.printer
 import java.util.List
 import org.preesm.codegen.model.Buffer
 import org.preesm.codegen.model.CallBlock
-import org.preesm.codegen.model.CodegenFactory
 import org.preesm.codegen.model.Communication
 import org.preesm.codegen.model.Constant
 import org.preesm.codegen.model.CoreBlock
@@ -51,6 +50,7 @@ import org.preesm.codegen.model.LoopBlock
 import org.preesm.codegen.model.SpecialCall
 import org.preesm.codegen.model.SubBuffer
 import org.preesm.codegen.model.Variable
+import org.preesm.codegen.model.util.CodegenModelUserFactory
 import org.preesm.codegen.printer.DefaultPrinter
 
 class XMLPrinter extends DefaultPrinter {
@@ -189,14 +189,14 @@ class XMLPrinter extends DefaultPrinter {
 			«ENDIF»
 			<constant name="size" type="string" value="sizeof(«fifoCall.headBuffer.type»)"/>
 			«{
-			var const = CodegenFactory::eINSTANCE.createConstant
+			var const = CodegenModelUserFactory::eINSTANCE.createConstant
 			const.name = "head_size"
 			const.type = "int"
 			const.value = fifoCall.headBuffer.size
 			const
 			}.doSwitch»
 			«{
-			var const = CodegenFactory::eINSTANCE.createConstant
+			var const = CodegenModelUserFactory::eINSTANCE.createConstant
 			const.name = "fifo_size"
 			const.type = "int"
 			const.value = fifoCall.headBuffer.size + (if(fifoCall.bodyBuffer === null)0 else fifoCall.bodyBuffer.size)
@@ -237,7 +237,7 @@ class XMLPrinter extends DefaultPrinter {
 					<bufferAtIndex index="«call.inputBuffers.get(index).size * index»" name="«output.name»"/>
 					«call.inputBuffers.get(index).doSwitch»
 					«{
-			var const = CodegenFactory::eINSTANCE.createConstant
+			var const = CodegenModelUserFactory::eINSTANCE.createConstant
 			const.name = "size"
 			const.type = "long"
 			const.value = call.inputBuffers.get(index).size

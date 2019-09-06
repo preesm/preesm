@@ -51,6 +51,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import org.apache.commons.io.FileUtils;
 import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IResource;
@@ -62,6 +63,10 @@ import org.eclipse.core.runtime.CoreException;
  *
  */
 public class URLHelper {
+
+  private URLHelper() {
+    // forbid instantiation
+  }
 
   /**
    * resolve path under baseUrl
@@ -101,12 +106,16 @@ public class URLHelper {
 
     final Path myPath;
     if ("jar".equals(uri.getScheme())) {
-      FileSystem fileSystem = FileSystems.newFileSystem(uri, Collections.<String, Object>emptyMap());
-      myPath = fileSystem.getPath("/");
+      try (FileSystem fileSystem = FileSystems.newFileSystem(uri, Collections.<String, Object>emptyMap())) {
+        myPath = fileSystem.getPath("/");
+      }
     } else {
       myPath = Paths.get(uri);
     }
-    final List<Path> collect = Files.walk(myPath).map(p -> myPath.relativize(p)).collect(Collectors.toList());
+    final List<Path> collect;
+    try (final Stream<Path> walk = Files.walk(myPath)) {
+      collect = walk.map(myPath::relativize).collect(Collectors.toList());
+    }
     final List<String> res = new ArrayList<>();
     for (final Path pathToTest : collect) {
       final String pathString = pathToTest.toString().replace('\\', '/');
@@ -116,6 +125,7 @@ public class URLHelper {
         res.add(pathString);
       }
     }
+
     return res;
   }
 
@@ -140,9 +150,8 @@ public class URLHelper {
     final List<String> list = URLHelper.list(srcUrl);
 
     // init folder structure
-    list.stream().filter(s -> s.endsWith("/")).forEach(pathString -> {
-      destFolder.toPath().resolve(pathString).toFile().mkdir();
-    });
+    list.stream().filter(s -> s.endsWith("/"))
+        .forEach(pathString -> destFolder.toPath().resolve(pathString).toFile().mkdir());
 
     // copy files & content
     list.stream().filter(s -> !s.endsWith("/") && !s.isEmpty()).forEach(pathString -> {

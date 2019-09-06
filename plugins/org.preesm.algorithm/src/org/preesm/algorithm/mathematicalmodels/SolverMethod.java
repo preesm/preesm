@@ -1,9 +1,8 @@
 /**
  * Copyright or © or Copr. IETR/INSA - Rennes (2017 - 2019) :
  *
- * Antoine Morvan [antoine.morvan@insa-rennes.fr] (2017 - 2019)
- * Daniel Madroñal [daniel.madronal@upm.es] (2019)
- * Julien Hascoet [jhascoet@kalray.eu] (2017)
+ * Antoine Morvan [antoine.morvan@insa-rennes.fr] (2018 - 2019)
+ * Hamza Deroui [hamza.deroui@insa-rennes.fr] (2017)
  *
  * This software is a computer program whose purpose is to help prototyping
  * parallel applications using dataflow formalism.
@@ -34,54 +33,17 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL license and that you accept its terms.
  */
-package org.ietr.preesm.test.it.appstest;
+package org.preesm.algorithm.mathematicalmodels;
 
-import java.io.IOException;
-import java.util.Arrays;
-import java.util.Collection;
-import org.eclipse.core.runtime.CoreException;
-import org.ietr.preesm.test.it.api.WorkflowRunner;
-import org.junit.Assert;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.junit.runners.Parameterized;
-import org.junit.runners.Parameterized.Parameters;
+import org.apache.commons.lang3.math.Fraction;
+import org.preesm.algorithm.model.sdf.SDFGraph;
 
 /**
  *
+ * @author hderoui
+ *
  */
-@RunWith(Parameterized.class)
-public class LoopBP1DTest {
+public interface SolverMethod {
 
-  static final String   projectName = "org.ietr.preesm.bp1d";
-  static final String   workflow    = "CodegenDistribNoFlat.workflow";
-  static final String[] scenarios   = new String[] { "1core.scenario", "4core.scenario", "MPPA2.scenario" };
-
-  final String scenario;
-
-  public LoopBP1DTest(final String scenario) {
-    this.scenario = scenario;
-  }
-
-  /**
-  *
-  */
-  @Parameters(name = "{0}")
-  public static Collection<Object[]> data() {
-    final Object[][] params = new Object[scenarios.length][1];
-    int i = 0;
-    for (String scenario : scenarios) {
-      params[i][0] = scenario;
-      i++;
-    }
-    return Arrays.asList(params);
-  }
-
-  @Test
-  public void testLoopBP1DFlow() throws IOException, CoreException {
-    final String workflowFilePathStr = "/Workflows/" + workflow;
-    final String scenarioFilePathStr = "/Scenarios/" + scenario;
-    final boolean success = WorkflowRunner.runWorkFlow(projectName, workflowFilePathStr, scenarioFilePathStr);
-    Assert.assertTrue("[FAILED] Workflow " + workflowFilePathStr + " Scenario " + scenarioFilePathStr, success);
-  }
+  Fraction computeNormalizedPeriod(SDFGraph grapgh);
 }

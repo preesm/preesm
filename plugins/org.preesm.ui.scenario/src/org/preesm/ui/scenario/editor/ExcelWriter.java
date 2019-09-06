@@ -83,6 +83,6 @@ public abstract class ExcelWriter implements SelectionListener {
    *           the core exception
    */
   protected abstract void addCells(WritableSheet sheet)
-      throws PreesmException, FileNotFoundException, RowsExceededException, CoreException;
+      throws FileNotFoundException, RowsExceededException, CoreException;
 
 }

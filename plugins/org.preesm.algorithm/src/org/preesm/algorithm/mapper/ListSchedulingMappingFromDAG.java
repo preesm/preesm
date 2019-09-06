@@ -4,6 +4,7 @@
  * Alexandre Honorat [alexandre.honorat@insa-rennes.fr] (2019)
  * Antoine Morvan [antoine.morvan@insa-rennes.fr] (2017 - 2019)
  * Clément Guy [clement.guy@insa-rennes.fr] (2014)
+ * Daniel Madroñal [daniel.madronal@upm.es] (2019)
  * Florian Arrestier [florian.arrestier@insa-rennes.fr] (2018)
  * Jonathan Piat [jpiat@laas.fr] (2008 - 2011)
  * Karol Desnos [karol.desnos@insa-rennes.fr] (2017)
@@ -74,6 +75,7 @@ import org.preesm.model.slam.Design;
         @Parameter(name = "simulatorType", values = { @Value(name = "LooselyTimed") }),
         @Parameter(name = "Check", values = { @Value(name = "True") }),
         @Parameter(name = "Optimize synchronization", values = { @Value(name = "False") }),
+        @Parameter(name = "EnergyAwareness", values = { @Value(name = "False") }),
         @Parameter(name = "balanceLoads", values = { @Value(name = "false") })
 
     })

@@ -1,8 +1,7 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2017 - 2019) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2019) :
  *
- * Antoine Morvan [antoine.morvan@insa-rennes.fr] (2018 - 2019)
- * Hamza Deroui [hamza.deroui@insa-rennes.fr] (2017)
+ * Antoine Morvan [antoine.morvan@insa-rennes.fr] (2019)
  *
  * This software is a computer program whose purpose is to help prototyping
  * parallel applications using dataflow formalism.
@@ -33,17 +32,60 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL license and that you accept its terms.
  */
-package org.preesm.algorithm.mathematicalModels;
+package org.preesm.model.pisdf.util;
 
-import org.apache.commons.lang3.math.Fraction;
-import org.preesm.algorithm.model.sdf.SDFGraph;
+import org.preesm.model.pisdf.AbstractVertex;
+import org.preesm.model.pisdf.Dependency;
+import org.preesm.model.pisdf.Expression;
+import org.preesm.model.pisdf.Fifo;
+import org.preesm.model.pisdf.Parameter;
+import org.preesm.model.pisdf.PiGraph;
+import org.preesm.model.pisdf.Port;
+import org.preesm.model.pisdf.Refinement;
 
 /**
  *
- * @author hderoui
- *
  */
-public interface SolverMethod {
+public class ContainingPiGraphLookup extends PiMMSwitch<PiGraph> {
 
-  Fraction computeNormalizedPeriod(SDFGraph grapgh);
+  @Override
+  public PiGraph caseAbstractVertex(final AbstractVertex object) {
+    return object.getContainingPiGraph();
+  }
+
+  @Override
+  public PiGraph casePiGraph(final PiGraph graph) {
+    return graph;
+  }
+
+  @Override
+  public PiGraph caseParameter(final Parameter param) {
+    return param.getContainingPiGraph();
+  }
+
+  @Override
+  public PiGraph caseFifo(final Fifo fifo) {
+    return fifo.getContainingPiGraph();
+  }
+
+  @Override
+  public PiGraph caseDependency(final Dependency dependency) {
+    return dependency.getContainingPiGraph();
+  }
+
+  @Override
+  public PiGraph casePort(final Port object) {
+    return doSwitch(object.eContainer());
+  }
+
+  @Override
+  public PiGraph caseRefinement(Refinement object) {
+    return doSwitch(object.getRefinementContainer());
+  }
+
+  @Override
+  public PiGraph caseExpression(Expression object) {
+    return doSwitch(object.getHolder());
+  }
+
 }

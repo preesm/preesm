@@ -40,6 +40,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.logging.Level;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.emf.common.notify.Notification;
 import org.eclipse.emf.common.ui.MarkerHelper;
@@ -59,6 +60,7 @@ import org.eclipse.graphiti.ui.editor.DiagramBehavior;
 import org.eclipse.graphiti.ui.internal.T;
 import org.eclipse.swt.widgets.Display;
 import org.preesm.commons.exceptions.PreesmRuntimeException;
+import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.pisdf.check.PiMMAlgorithmChecker;
 import org.preesm.model.pisdf.serialize.PiResourceImpl;
@@ -185,7 +187,7 @@ public class PiMMMarkerBehavior extends DefaultMarkerBehavior {
           }
         }
       } catch (final Exception e) {
-        e.printStackTrace();
+        PreesmLogger.getLogger().log(Level.WARNING, "Could not check PiGraph problems", e);
       }
       return result;
     }

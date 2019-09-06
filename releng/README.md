@@ -473,3 +473,99 @@ Approximately every 3 months, the Eclipse foundation releases a new Eclipse vers
 *   Build locally and tryout the product, the update site using the Java package of the latest Eclipse version, the dev meta feature + source code;
 *   Fix errors, if any;
 *   Keep consistent Eclipse versions with Graphiti, Preesm and dev features.
+
+
+Troubleshoot
+------------
+
+Issues can happen during various procedures in the build, test or continuous integration. This section details the main reasons why the build fails and solutions/workarounds. 
+
+### Eclipse Fail
+
+#### Dev Feature Setup fail
+
+*   New version of Eclipse with incompatible dependencies -> update dev-feature plugins to have a version working with latest Eclipse;
+*   Down/dead Eclipse P2 repository (Update site) -> update dev-feature to reference live dependencies;
+
+#### Compilation fail
+
+*   JDK version is not compatible -> configure it properly
+*   Missing plugins (Xtend, Xcore, ...) -> make sure Dev Feature is properly setup;
+*   See https://github.com/preesm/preesm/issues/116
+
+#### Test fail
+
+*   Random input -> rewrite the test or remove it (never use random in tests);
+*   Missing resources -> make sure the tests resources are properly committed (check .gitignore), that they do not have file system absolute paths, that the paths use Unix separators;
+*   RCPTT fail at launching AUT -> see https://bugs.eclipse.org/bugs/show_bug.cgi?id=538719
+
+#### Run fail
+
+No reason to fail.
+
+#### Product Export fail
+
+*   Some dependencies might be missing -> edit product to integrate them explicitly and/or remove dependencies.
+
+### Maven Fail
+
+This section details issues encountered when using Maven. Some issues may occur during the Travis CI builds.
+
+#### POM read fail
+
+POM files have a specific XML schema. This schema is formally described (see [XSD](https://maven.apache.org/xsd/maven-4.0.0.xsd)) and Maven errors usually explicit. If the POM files have changed, they need to be fixed:
+```
+[ERROR] [ERROR] Some problems were encountered while processing the POMs:
+[ERROR] Malformed POM /.../preesm/pom.xml: Unrecognised tag: 'nome' (position: START_TAG seen ...<!-- More Project Information -->\n   <nome>... @50:10)  @ /.../preesm/pom.xml, line 50, column 10
+ @ 
+```
+
+If the POM files were not changed and an error still occurs, the main reason might be because of a major update of the Maven tool.
+
+#### Fetch fail
+
+Preesm related project builds depend a lot on upstream projects and repositories. This includes Maven Central repository for all Maven plugins referenced in the POM file, the third party Maven repositories for external dependencies (see [this excerpt](https://github.com/preesm/externaldeps/blob/f2c502f901e6cbc7976430a25cb1fa3e0282228d/pom.xml#L67-L82)), the Eclipse P2 repository (Update Site) for all Eclipse plugin dependencies (see [this excerpt](https://github.com/preesm/preesm/blob/52db26a8c0b317ca012029cdd1d2c3986a1faa64/pom.xml#L140-L144)) along with all the third party P2 repositories (see [this excerpt](https://github.com/preesm/preesm/blob/52db26a8c0b317ca012029cdd1d2c3986a1faa64/pom.xml#L133-L168)). 
+
+All these repositories are subject to downtime or demise. In the former case, builds will fail temporarily if the [Maven Local Repository](https://maven.apache.org/guides/introduction/introduction-to-repositories.html) (sometime refered as local cache) is not already initialized. In the later case, Either an alternative repository has to be identified and setup if it exists, or an alternative dependency is the upstream project completely disappeared.
+
+Some network issues can also occurs, like the firewall blocking downloads on a public WiFi, or the repository blacklisting the host IP. There is no generic solution in this situation.
+
+#### Checkstyle fail
+
+The versions of Checkstyle in Eclipse IDE and during Maven build differ slightly. This can cause errors during Maven build whereas Eclipse shows no issue.
+
+Usual solution is to make sure both version are the same in Eclipse and Maven then fix issues/remove constraints from the new version.
+
+#### Compilation fail
+
+Maven can fail during compilation for several reasons:
+*   JDK version is not compatible -> configure it properly
+*   Generated sources are missing (Xcore, Xtend) -> most likely an error in those files;
+*   New errors from the Java compiler (i.e. warning became errors); Concrete example was the introduction of a linter for the Javadoc in the JDK8 (see [this thread](https://stackoverflow.com/questions/15886209/maven-is-not-working-in-java-8-when-javadoc-tags-are-incomplete) for instance) -> Fix code or add proper compiler options;
+
+#### Test fail
+
+*   Random input -> rewrite the test or remove it (never use random in tests);
+*   Missing resources -> make sure the tests resources are properly committed (check .gitignore), that they do not have file system absolute paths, that the paths use Unix separators;
+*   RCPTT fail at launching AUT -> see https://bugs.eclipse.org/bugs/show_bug.cgi?id=538719
+*   RCPTT to laod context -> As of 08/2019: failures occur with RCPTT not finding a context; happens randomly and is not explained -> re-running the same build usually fixes the issue.
+
+### Travis Build Fail
+
+#### Fetch fail
+
+Every Travis CI build starts with a fresh local Maven repository. This way, it ensures that all dependencies are available for new users to build the project. However this comes with 2 drawbacks:
+*   it takes longer since all dependencies have to be downloaded everytime;
+*   some of the requests to download the dependencies can fail due to repository failure (see https://travis-ci.community/t/continuous-maven-repo-403/3908/31 and https://travis-ci.community/t/checksum-validation-fail-using-maven/4005/21);
+
+Playing with mirrors (Maven and Eclipse) and/or running the build again usually fixes the issue.
+
+#### Build and Test fail
+
+JDK and Maven versions on Travis CI might differ. Thus Behavior can slightly differ.
+
+#### Timeout and Log Limit
+
+Builds are limited to 50 minutes and log size to 4MB. This is a hard constraint. Some solutions exist to wrap the log, but tests should not be too long (workaround: split among several repositories ...).
+
+

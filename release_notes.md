@@ -1,6 +1,44 @@
 PREESM Changelog
 ================
 
+## Release version 3.16.0
+*2019.09.06*
+
+### New Feature
+* Codegen:
+  * clusters can now be printed by using CodegenClusterTask
+* Apollo optimizations are now supported in Preesm and SPiDER
+  * To activate it, Apollo flag must be set to true in the CodeGen workflow task
+  * CMakeLists.txt of the application must be modified 
+* Scheduling:
+  * Mapping/scheduling task (pisdf-mapper.list) can now perform energy-aware mapping/scheduling (It will increase scheduling/mapping task time, as it tests several mappings)
+  * The information is taken from energy tab in scenario and the optimization will consider the performance objective to search for the best PEs configuration
+  * EnergyAwareness parameter will enable this optimization
+  * EnergyAwarenessFirstConfig selects the starting point: First (as less PEs as possible), Max (all PEs), Middle (half amount of PEs of each type) and Random (random starting point)
+  * EnergyAwarenessSearchType selects the type of searching done: Thorough (changes PEs number one by one) and halves (Divides in halves the remaining available PEs and goes up/down depending if the FPS reached are below/above the objective)
+
+### Changes
+* PiSDF: 
+  * PiGraph can be declared as a cluster. Hierarchy of cluster may be ignore by SR and DAG transformation;
+  * Add operation to get the unique data port of a SrdagActor (init/end);
+* Change PiSDF task categories in task reference;
+* Clustering: 
+  * cluster are now mappable into component by retrieving common possible mapping of included actors
+  * make code clearer for ClusteringBuilder
+  * refactored the way of getting clusterizable couples
+  * clusters now have timings 
+* Schedule: 
+  * Readapt the way of exhibiting data parallelism and print expression
+  * Add communication nodes
+* Refactor:
+  * Fix major and critical sonar issues;
+
+### Bug fix
+* Fix #218: add support for non connected actors in SRDAG transform;
+* Fix #222: allow multiplicity in Codegen Call parameters;
+* Fix #226: avoid name conflict in graphml configuration;
+# Fix #227: enable Export SVG Diagram on any selected element;
+
 ## Release version 3.15.0
 *2019.08.28*
 

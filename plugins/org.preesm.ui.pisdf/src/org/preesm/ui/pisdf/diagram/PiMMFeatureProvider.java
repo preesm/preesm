@@ -385,6 +385,9 @@ public class PiMMFeatureProvider extends DefaultFeatureProvider {
     }
     final Object obj = getBusinessObjectForPictogramElement(pes[0]);
 
+    // Export SVG Feature is available for any selection
+    features.add(new ExportSVGFeature(this));
+
     if (obj instanceof DelayActor) {
       return new ICustomFeature[0];
     }
@@ -393,7 +396,6 @@ public class PiMMFeatureProvider extends DefaultFeatureProvider {
       features.add(new SetVisibleAllDependenciesFeature(this, true));
       features.add(new SetVisibleAllDependenciesFeature(this, false));
       features.add(new AutoLayoutFeature(this));
-      features.add(new ExportSVGFeature(this));
     }
 
     if (obj instanceof AbstractVertex) {

@@ -1,16 +1,12 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2013 - 2019) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (%%DATE%%) :
  *
  * Alexandre Honorat [alexandre.honorat@insa-rennes.fr] (2019)
  * Antoine Morvan [antoine.morvan@insa-rennes.fr] (2017 - 2019)
  * Clément Guy [clement.guy@insa-rennes.fr] (2014 - 2015)
  * Daniel Madroñal [daniel.madronal@upm.es] (2018 - 2019)
  * Florian Arrestier [florian.arrestier@insa-rennes.fr] (2018)
- * dylangageot [gageot.dylan@gmail.com] (2019)
- * Julien Hascoet [jhascoet@kalray.eu] (2016 - 2017)
- * Karol Desnos [karol.desnos@insa-rennes.fr] (2013 - 2018)
- * Leonardo Suriano [leonardo.suriano@upm.es] (2019)
- * Maxime Pelcat [maxime.pelcat@insa-rennes.fr] (2013)
+ * %%AUTHORS%%
  *
  * This software is a computer program whose purpose is to help prototyping
  * parallel applications using dataflow formalism.
@@ -48,6 +44,7 @@ import com.google.common.collect.HashBiMap;
 import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -67,6 +64,7 @@ import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.common.util.EMap;
 import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.eclipse.xtext.xbase.lib.Pair;
+import org.preesm.algorithm.clustering.Clustering;
 import org.preesm.algorithm.codegen.idl.ActorPrototypes;
 import org.preesm.algorithm.codegen.idl.IDLPrototypeFactory;
 import org.preesm.algorithm.codegen.idl.Prototype;
@@ -83,7 +81,6 @@ import org.preesm.algorithm.memory.exclusiongraph.MemoryExclusionGraph;
 import org.preesm.algorithm.memory.exclusiongraph.MemoryExclusionVertex;
 import org.preesm.algorithm.memory.script.Range;
 import org.preesm.algorithm.model.AbstractEdge;
-import org.preesm.algorithm.model.AbstractGraph;
 import org.preesm.algorithm.model.AbstractVertex;
 import org.preesm.algorithm.model.CodeRefinement;
 import org.preesm.algorithm.model.CodeRefinement.Language;
@@ -95,13 +92,13 @@ import org.preesm.algorithm.model.sdf.SDFEdge;
 import org.preesm.algorithm.model.sdf.SDFGraph;
 import org.preesm.algorithm.model.sdf.SDFVertex;
 import org.preesm.algorithm.model.sdf.esdf.SDFInitVertex;
+import org.preesm.algorithm.schedule.model.Schedule;
 import org.preesm.codegen.model.ActorBlock;
 import org.preesm.codegen.model.ActorFunctionCall;
 import org.preesm.codegen.model.Block;
 import org.preesm.codegen.model.Buffer;
 import org.preesm.codegen.model.Call;
 import org.preesm.codegen.model.CodeElt;
-import org.preesm.codegen.model.CodegenFactory;
 import org.preesm.codegen.model.CodegenPackage;
 import org.preesm.codegen.model.Communication;
 import org.preesm.codegen.model.CommunicationNode;
@@ -132,8 +129,9 @@ import org.preesm.codegen.model.SpecialCall;
 import org.preesm.codegen.model.SpecialType;
 import org.preesm.codegen.model.SubBuffer;
 import org.preesm.codegen.model.Variable;
+import org.preesm.codegen.model.clustering.CodegenClusterModelGeneratorSwitch;
+import org.preesm.codegen.model.clustering.SrDAGOutsideFetcher;
 import org.preesm.codegen.model.util.CodegenModelUserFactory;
-import org.preesm.commons.exceptions.PreesmException;
 import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.commons.model.PreesmCopyTracker;
@@ -227,6 +225,8 @@ public class CodegenModelGenerator extends AbstractCodegenModelGenerator {
    */
   private final Map<DAGVertex, Buffer> linkHSDFVertexBuffer;
 
+  private final Map<AbstractActor, Schedule> scheduleMapping;
+
   /**
    * This {@link List} stores the PEs that has been already configured for Papify usage.
    */
@@ -257,7 +257,7 @@ public class CodegenModelGenerator extends AbstractCodegenModelGenerator {
    *          See {@link AbstractCodegenPrinter#scenario}
    */
   public CodegenModelGenerator(final Design archi, final MapperDAG algo, final Map<String, MemoryExclusionGraph> megs,
-      final Scenario scenario) {
+      final Scenario scenario, final Map<AbstractActor, Schedule> scheduleMapping) {
     super(archi, algo, megs, scenario);
 
     checkInputs(this.archi, this.algo, this.megs);
@@ -274,6 +274,7 @@ public class CodegenModelGenerator extends AbstractCodegenModelGenerator {
     this.papifiedPEs = new ArrayList<>();
     this.configsAdded = new ArrayList<>();
     this.papifyActive = false;
+    this.scheduleMapping = scheduleMapping;
   }
 
   /**
@@ -415,7 +416,7 @@ public class CodegenModelGenerator extends AbstractCodegenModelGenerator {
     // init coreBlocks
     for (final ComponentInstance cmp : this.archi.getOperatorComponentInstances()) {
       if (!this.coreBlocks.containsKey(cmp)) {
-        CoreBlock operatorBlock = CodegenModelUserFactory.createCoreBlock(cmp);
+        CoreBlock operatorBlock = CodegenModelUserFactory.eINSTANCE.createCoreBlock(cmp);
         this.coreBlocks.put(cmp, operatorBlock);
       }
     }
@@ -443,7 +444,6 @@ public class CodegenModelGenerator extends AbstractCodegenModelGenerator {
           .getValue(ImplementationPropertyNames.SendReceive_correspondingDagEdge);
       final Buffer buffer = this.dagEdgeBuffers.get(dagEdge);
       switch (vertexType) {
-
         case VertexType.TYPE_TASK:
           // May be an actor (Hierarchical or not) call
           // or a Fork Join call
@@ -468,18 +468,11 @@ public class CodegenModelGenerator extends AbstractCodegenModelGenerator {
           break;
 
         case VertexType.TYPE_SEND:
-          if (buffer instanceof DistributedBuffer) {
-            generateDistributedCommunication(operatorBlock, vert, VertexType.TYPE_SEND);
-          } else {
-            generateCommunication(operatorBlock, vert, VertexType.TYPE_SEND);
-          }
-          break;
-
         case VertexType.TYPE_RECEIVE:
           if (buffer instanceof DistributedBuffer) {
-            generateDistributedCommunication(operatorBlock, vert, VertexType.TYPE_RECEIVE);
+            generateDistributedCommunication(operatorBlock, vert, vertexType);
           } else {
-            generateCommunication(operatorBlock, vert, VertexType.TYPE_RECEIVE);
+            generateCommunication(operatorBlock, vert, vertexType);
           }
           break;
         default:
@@ -609,17 +602,27 @@ public class CodegenModelGenerator extends AbstractCodegenModelGenerator {
     final Object refinement = dagVertex.getRefinement();
 
     // If the actor is hierarchical
-    if (refinement instanceof AbstractGraph) {
+    if (dagVertex.getPropertyBean().getValue(Clustering.PISDF_ACTOR_IS_CLUSTER) != null) {
       // try to generate for loop on a hierarchical actor
       PreesmLogger.getLogger().log(Level.FINE, "tryGenerateRepeatActorFiring " + dagVertex.getName());
-      try {
-        final CodegenHierarchicalModelGenerator hiearchicalCodeGen = new CodegenHierarchicalModelGenerator(
-            this.scenario, this.algo, this.linkHSDFVertexBuffer, this.srSDFEdgeBuffers, this.dagVertexCalls,
-            this.papifiedPEs, this.configsAdded, this.papifyActive);
-        hiearchicalCodeGen.execute(operatorBlock, dagVertex);
-      } catch (final PreesmException e) {
-        throw new PreesmRuntimeException("Codegen for " + dagVertex.getName() + "failed.", e);
+
+      // prepare option for SrDAGOutsideFetcher
+      Map<String, Object> outsideFetcherOption = new HashMap<String, Object>();
+      outsideFetcherOption.put("dagVertex", dagVertex);
+      outsideFetcherOption.put("dag", this.algo);
+      outsideFetcherOption.put("coreBlock", operatorBlock);
+      outsideFetcherOption.put("srSDFEdgeBuffers", this.srSDFEdgeBuffers);
+
+      // Retrieve original cluster actor
+      AbstractActor actor = dagVertex.getPropertyBean().getValue(Clustering.PISDF_REFERENCE_ACTOR);
+      AbstractActor originalActor = PreesmCopyTracker.getSource(actor);
+      if (this.scheduleMapping.containsKey(originalActor)) {
+        new CodegenClusterModelGeneratorSwitch(operatorBlock, scenario, new SrDAGOutsideFetcher(), outsideFetcherOption)
+            .generate(this.scheduleMapping.get(originalActor));
+      } else {
+        throw new PreesmRuntimeException("Codegen for " + dagVertex.getName() + " failed.");
       }
+
     } else {
       ActorPrototypes prototypes = null;
       // If the actor has an IDL refinement
@@ -663,8 +666,8 @@ public class CodegenModelGenerator extends AbstractCodegenModelGenerator {
 
         boolean monitoringTiming = false;
         boolean monitoringEvents = false;
-        PapifyAction papifyActionS = CodegenFactory.eINSTANCE.createPapifyAction();
-        Constant papifyPEId = CodegenFactory.eINSTANCE.createConstant();
+        PapifyAction papifyActionS = CodegenModelUserFactory.eINSTANCE.createPapifyAction();
+        Constant papifyPEId = CodegenModelUserFactory.eINSTANCE.createConstant();
         // Check if this actor has a monitoring configuration
         PapifyConfig papifyConfig = this.scenario.getPapifyConfig();
         AbstractActor referencePiVertex = dagVertex.getReferencePiVertex();
@@ -811,7 +814,7 @@ public class CodegenModelGenerator extends AbstractCodegenModelGenerator {
         if (mainOperatorBlock == null) {
           // Create it
           final ComponentInstance componentInstance = this.archi.getComponentInstance(correspondingOperatorID);
-          mainOperatorBlock = CodegenModelUserFactory.createCoreBlock(componentInstance);
+          mainOperatorBlock = CodegenModelUserFactory.eINSTANCE.createCoreBlock(componentInstance);
           this.coreBlocks.put(componentInstance, mainOperatorBlock);
         }
 
@@ -888,7 +891,7 @@ public class CodegenModelGenerator extends AbstractCodegenModelGenerator {
       // Create the Main Shared buffer
       final long size = meg.getPropertyBean().getValue(MemoryExclusionGraph.ALLOCATED_MEMORY_SIZE);
 
-      final Buffer mainBuffer = CodegenFactory.eINSTANCE.createBuffer();
+      final Buffer mainBuffer = CodegenModelUserFactory.eINSTANCE.createBuffer();
       mainBuffer.setSize(size);
       mainBuffer.setName(memoryBank);
       mainBuffer.setType("char");
@@ -905,7 +908,7 @@ public class CodegenModelGenerator extends AbstractCodegenModelGenerator {
         // If the buffer is not a null buffer
         final Long alloc = dagAlloc.getValue();
         if (alloc != -1) {
-          final SubBuffer dagEdgeBuffer = CodegenFactory.eINSTANCE.createSubBuffer();
+          final SubBuffer dagEdgeBuffer = CodegenModelUserFactory.eINSTANCE.createSubBuffer();
 
           // Old Naming (too long)
           final String comment = source.getName() + " > " + target.getName();
@@ -967,7 +970,7 @@ public class CodegenModelGenerator extends AbstractCodegenModelGenerator {
           }
         } else {
           // the buffer is a null buffer
-          final NullBuffer dagEdgeBuffer = CodegenModelUserFactory.createNullBuffer();
+          final NullBuffer dagEdgeBuffer = CodegenModelUserFactory.eINSTANCE.createNullBuffer();
 
           // Old Naming (too long)
           final String comment = source.getName() + " > " + target.getName();
@@ -995,7 +998,7 @@ public class CodegenModelGenerator extends AbstractCodegenModelGenerator {
       final Map<MemoryExclusionVertex,
           Long> fifoAllocation = meg.getPropertyBean().getValue(MemoryExclusionGraph.DAG_FIFO_ALLOCATION);
       for (final Entry<MemoryExclusionVertex, Long> fifoAlloc : fifoAllocation.entrySet()) {
-        final SubBuffer fifoBuffer = CodegenFactory.eINSTANCE.createSubBuffer();
+        final SubBuffer fifoBuffer = CodegenModelUserFactory.eINSTANCE.createSubBuffer();
 
         // Old Naming (too long)
         final String comment = fifoAlloc.getKey().getSource() + " > " + fifoAlloc.getKey().getSink();
@@ -1030,7 +1033,7 @@ public class CodegenModelGenerator extends AbstractCodegenModelGenerator {
       final Map<MemoryExclusionVertex,
           Long> workingMemoryAllocation = (meg.getPropertyBean().getValue(MemoryExclusionGraph.WORKING_MEM_ALLOCATION));
       for (final Entry<MemoryExclusionVertex, Long> e : workingMemoryAllocation.entrySet()) {
-        final SubBuffer workingMemBuffer = CodegenFactory.eINSTANCE.createSubBuffer();
+        final SubBuffer workingMemBuffer = CodegenModelUserFactory.eINSTANCE.createSubBuffer();
         final MemoryExclusionVertex mObj = e.getKey();
         final long weight = mObj.getWeight();
         workingMemBuffer.reaffectContainer(mainBuffer);
@@ -1181,7 +1184,7 @@ public class CodegenModelGenerator extends AbstractCodegenModelGenerator {
             "Actor " + dagVertex + " has no match for parameter " + param.getName() + " declared in the IDL.");
       }
 
-      final Constant constant = CodegenFactory.eINSTANCE.createConstant();
+      final Constant constant = CodegenModelUserFactory.eINSTANCE.createConstant();
       constant.setName(param.getName());
       constant.setValue(actorParam.longValue());
       constant.setType("long");
@@ -1345,7 +1348,7 @@ public class CodegenModelGenerator extends AbstractCodegenModelGenerator {
             "Actor " + dagVertex + " has no match for parameter " + param.getName() + " declared in the IDL.");
       }
 
-      final Constant constant = CodegenFactory.eINSTANCE.createConstant();
+      final Constant constant = CodegenModelUserFactory.eINSTANCE.createConstant();
       constant.setName(param.getName());
       constant.setValue(actorParam.longValue());
       constant.setType("long");
@@ -1382,7 +1385,7 @@ public class CodegenModelGenerator extends AbstractCodegenModelGenerator {
   protected void generateCommunication(final CoreBlock operatorBlock, final DAGVertex dagVertex,
       final String direction) {
     // Create the communication
-    final SharedMemoryCommunication newComm = CodegenFactory.eINSTANCE.createSharedMemoryCommunication();
+    final SharedMemoryCommunication newComm = CodegenModelUserFactory.eINSTANCE.createSharedMemoryCommunication();
     final Direction dir = (direction.equals(VertexType.TYPE_SEND)) ? Direction.SEND : Direction.RECEIVE;
     final Delimiter delimiter = (direction.equals(VertexType.TYPE_SEND)) ? Delimiter.START : Delimiter.END;
     newComm.setDirection(dir);
@@ -1390,7 +1393,7 @@ public class CodegenModelGenerator extends AbstractCodegenModelGenerator {
     final MessageRouteStep routeStep = dagVertex.getPropertyBean()
         .getValue(ImplementationPropertyNames.SendReceive_routeStep);
     for (final ComponentInstance comp : routeStep.getNodes()) {
-      final CommunicationNode comNode = CodegenFactory.eINSTANCE.createCommunicationNode();
+      final CommunicationNode comNode = CodegenModelUserFactory.eINSTANCE.createCommunicationNode();
       comNode.setName(comp.getInstanceName());
       comNode.setType(comp.getComponent().getVlnv().getName());
       newComm.getNodes().add(comNode);
@@ -1426,7 +1429,8 @@ public class CodegenModelGenerator extends AbstractCodegenModelGenerator {
     registerCallVariableToCoreBlock(operatorBlock, newComm);
 
     // Create the corresponding SE or RS
-    final SharedMemoryCommunication newCommZoneComplement = CodegenFactory.eINSTANCE.createSharedMemoryCommunication();
+    final SharedMemoryCommunication newCommZoneComplement = CodegenModelUserFactory.eINSTANCE
+        .createSharedMemoryCommunication();
     newCommZoneComplement.setDirection(dir);
     newCommZoneComplement.setDelimiter((delimiter.equals(Delimiter.START)) ? Delimiter.END : Delimiter.START);
     newCommZoneComplement.setData(buffer);
@@ -1437,7 +1441,7 @@ public class CodegenModelGenerator extends AbstractCodegenModelGenerator {
 
     newCommZoneComplement.setName(((newComm.getDirection().equals(Direction.SEND)) ? "SE" : "RS") + commName);
     for (final ComponentInstance comp : routeStep.getNodes()) {
-      final CommunicationNode comNode = CodegenFactory.eINSTANCE.createCommunicationNode();
+      final CommunicationNode comNode = CodegenModelUserFactory.eINSTANCE.createCommunicationNode();
       comNode.setName(comp.getInstanceName());
       comNode.setType(comp.getComponent().getVlnv().getName());
       newCommZoneComplement.getNodes().add(comNode);
@@ -1479,7 +1483,8 @@ public class CodegenModelGenerator extends AbstractCodegenModelGenerator {
   protected void generateDistributedCommunication(final CoreBlock operatorBlock, final DAGVertex dagVertex,
       final String direction) {
     // Create the communication
-    final DistributedMemoryCommunication newComm = CodegenFactory.eINSTANCE.createDistributedMemoryCommunication();
+    final DistributedMemoryCommunication newComm = CodegenModelUserFactory.eINSTANCE
+        .createDistributedMemoryCommunication();
     final Direction dir = (direction.equals(VertexType.TYPE_SEND)) ? Direction.SEND : Direction.RECEIVE;
     final Delimiter delimiter = (direction.equals(VertexType.TYPE_SEND)) ? Delimiter.START : Delimiter.END;
     newComm.setDirection(dir);
@@ -1487,7 +1492,7 @@ public class CodegenModelGenerator extends AbstractCodegenModelGenerator {
     final MessageRouteStep routeStep = dagVertex.getPropertyBean()
         .getValue(ImplementationPropertyNames.SendReceive_routeStep);
     for (final ComponentInstance comp : routeStep.getNodes()) {
-      final CommunicationNode comNode = CodegenFactory.eINSTANCE.createCommunicationNode();
+      final CommunicationNode comNode = CodegenModelUserFactory.eINSTANCE.createCommunicationNode();
       comNode.setName(comp.getInstanceName());
       comNode.setType(comp.getComponent().getVlnv().getName());
       newComm.getNodes().add(comNode);
@@ -1535,7 +1540,7 @@ public class CodegenModelGenerator extends AbstractCodegenModelGenerator {
     registerCallVariableToCoreBlock(operatorBlock, newComm);
 
     // Create the corresponding SE or RS
-    final DistributedMemoryCommunication newCommZoneComplement = CodegenFactory.eINSTANCE
+    final DistributedMemoryCommunication newCommZoneComplement = CodegenModelUserFactory.eINSTANCE
         .createDistributedMemoryCommunication();
     newCommZoneComplement.setDirection(dir);
     newCommZoneComplement.setDelimiter((delimiter.equals(Delimiter.START)) ? Delimiter.END : Delimiter.START);
@@ -1547,7 +1552,7 @@ public class CodegenModelGenerator extends AbstractCodegenModelGenerator {
 
     newCommZoneComplement.setName(((newComm.getDirection().equals(Direction.SEND)) ? "SE" : "RS") + commName);
     for (final ComponentInstance comp : routeStep.getNodes()) {
-      final CommunicationNode comNode = CodegenFactory.eINSTANCE.createCommunicationNode();
+      final CommunicationNode comNode = CodegenModelUserFactory.eINSTANCE.createCommunicationNode();
       comNode.setName(comp.getInstanceName());
       comNode.setType(comp.getComponent().getVlnv().getName());
       newCommZoneComplement.getNodes().add(comNode);
@@ -1587,7 +1592,7 @@ public class CodegenModelGenerator extends AbstractCodegenModelGenerator {
    */
   protected void generateFifoCall(final CoreBlock operatorBlock, final DAGVertex dagVertex) {
     // Create the Fifo call and set basic property
-    final FifoCall fifoCall = CodegenFactory.eINSTANCE.createFifoCall();
+    final FifoCall fifoCall = CodegenModelUserFactory.eINSTANCE.createFifoCall();
     fifoCall.setName(dagVertex.getName());
 
     // Find the type of FiFo operation
@@ -1678,7 +1683,7 @@ public class CodegenModelGenerator extends AbstractCodegenModelGenerator {
     // delay are discarded.
     // Actually, only the permanent delays really need the pop/push mechanism.
     if (fifoCall.getOperation().equals(FifoOperation.POP)) {
-      final FifoCall fifoInitCall = CodegenFactory.eINSTANCE.createFifoCall();
+      final FifoCall fifoInitCall = CodegenModelUserFactory.eINSTANCE.createFifoCall();
       fifoInitCall.setOperation(FifoOperation.INIT);
       fifoInitCall.setFifoHead(fifoCall);
       fifoInitCall.setName(fifoCall.getName());
@@ -1730,7 +1735,7 @@ public class CodegenModelGenerator extends AbstractCodegenModelGenerator {
   protected ActorFunctionCall generateFunctionCall(final DAGVertex dagVertex, final Prototype prototype,
       final boolean isInit) {
     // Create the corresponding FunctionCall
-    final ActorFunctionCall func = CodegenFactory.eINSTANCE.createActorFunctionCall();
+    final ActorFunctionCall func = CodegenModelUserFactory.eINSTANCE.createActorFunctionCall();
     func.setName(prototype.getFunctionName());
     func.setActorName(dagVertex.getName());
     org.preesm.model.pisdf.AbstractVertex oriPiActor = PreesmCopyTracker.<
@@ -1759,7 +1764,7 @@ public class CodegenModelGenerator extends AbstractCodegenModelGenerator {
   protected OutputDataTransfer generateOutputDataTransferFunctionCall(final DAGVertex dagVertex,
       final Prototype prototype, final boolean isInit) {
     // Creating a new action for DataTransfer
-    final OutputDataTransfer func = CodegenFactory.eINSTANCE.createOutputDataTransfer();
+    final OutputDataTransfer func = CodegenModelUserFactory.eINSTANCE.createOutputDataTransfer();
     func.setName(prototype.getFunctionName());
     func.setActorName(dagVertex.getName());
     // Retrieve the Arguments that must correspond to the incoming data
@@ -1782,7 +1787,7 @@ public class CodegenModelGenerator extends AbstractCodegenModelGenerator {
   protected DataTransferAction generateDataTransferFunctionCall(final DAGVertex dagVertex, final Prototype prototype,
       final boolean isInit) {
     // Creating a new action for DataTransfer
-    final DataTransferAction func = CodegenFactory.eINSTANCE.createDataTransferAction();
+    final DataTransferAction func = CodegenModelUserFactory.eINSTANCE.createDataTransferAction();
     func.setName(prototype.getFunctionName());
     func.setActorName(dagVertex.getName());
     // Retrieve the Arguments that must correspond to the incoming data
@@ -1805,7 +1810,7 @@ public class CodegenModelGenerator extends AbstractCodegenModelGenerator {
   protected RegisterSetUpAction generateRegisterSetUpFunctionCall(final DAGVertex dagVertex, final Prototype prototype,
       final boolean isInit) {
     // Creating a new action for DataTransfer
-    final RegisterSetUpAction func = CodegenFactory.eINSTANCE.createRegisterSetUpAction();
+    final RegisterSetUpAction func = CodegenModelUserFactory.eINSTANCE.createRegisterSetUpAction();
     func.setName(prototype.getFunctionName());
     func.setActorName(dagVertex.getName());
     // Retrieve the Arguments that must correspond to the incoming data
@@ -1834,7 +1839,7 @@ public class CodegenModelGenerator extends AbstractCodegenModelGenerator {
      * performed
      */
 
-    final FpgaLoadAction func = CodegenFactory.eINSTANCE.createFpgaLoadAction();
+    final FpgaLoadAction func = CodegenModelUserFactory.eINSTANCE.createFpgaLoadAction();
     func.setName(prototype.getFunctionName());
     return func;
   }
@@ -1849,7 +1854,7 @@ public class CodegenModelGenerator extends AbstractCodegenModelGenerator {
   protected FreeDataTransferBuffer generateFreeDataTransferBuffer(final DAGVertex dagVertex, final Prototype prototype,
       final boolean isInit) {
     // Creating a new action for FreeDataTransferBuffer
-    final FreeDataTransferBuffer func = CodegenFactory.eINSTANCE.createFreeDataTransferBuffer();
+    final FreeDataTransferBuffer func = CodegenModelUserFactory.eINSTANCE.createFreeDataTransferBuffer();
     func.setName(prototype.getFunctionName());
     func.setActorName(dagVertex.getName());
     // Retrieve the Arguments
@@ -1872,7 +1877,7 @@ public class CodegenModelGenerator extends AbstractCodegenModelGenerator {
   protected GlobalBufferDeclaration generateGlobalBufferDeclaration(final DAGVertex dagVertex,
       final Prototype prototype, final boolean isInit) {
     // Creating a new action for DataTransfer
-    final GlobalBufferDeclaration func = CodegenFactory.eINSTANCE.createGlobalBufferDeclaration();
+    final GlobalBufferDeclaration func = CodegenModelUserFactory.eINSTANCE.createGlobalBufferDeclaration();
     func.setName(prototype.getFunctionName());
     func.setActorName(dagVertex.getName());
     // Retrieve the Arguments that must correspond to the incoming data
@@ -1899,14 +1904,14 @@ public class CodegenModelGenerator extends AbstractCodegenModelGenerator {
   protected PapifyFunctionCall generatePapifyConfigurePEFunctionCall(final CoreBlock operatorBlock,
       final PapifyConfig papifyConfig, final Constant papifyPEId) {
     // Create the corresponding FunctionCall
-    final PapifyFunctionCall configurePapifyPE = CodegenFactory.eINSTANCE.createPapifyFunctionCall();
+    final PapifyFunctionCall configurePapifyPE = CodegenModelUserFactory.eINSTANCE.createPapifyFunctionCall();
     configurePapifyPE.setName("configure_papify_PE");
     // Create the variable associated to the PE name
-    ConstantString papifyPEName = CodegenFactory.eINSTANCE.createConstantString();
+    ConstantString papifyPEName = CodegenModelUserFactory.eINSTANCE.createConstantString();
     papifyPEName.setValue(operatorBlock.getName());
     // Create the variable associated to the PAPI component
     String componentsSupported = "";
-    ConstantString papifyComponentName = CodegenFactory.eINSTANCE.createConstantString();
+    ConstantString papifyComponentName = CodegenModelUserFactory.eINSTANCE.createConstantString();
     final Component component = scenario.getDesign().getComponent(operatorBlock.getCoreType());
     for (PapiComponent papiComponent : papifyConfig.getSupportedPapiComponents(component)) {
       if (componentsSupported.equals("")) {
@@ -1943,7 +1948,7 @@ public class CodegenModelGenerator extends AbstractCodegenModelGenerator {
   protected PapifyFunctionCall generatePapifyConfigureActorFunctionCall(final DAGVertex dagVertex,
       final PapifyConfig papifyConfig, final PapifyAction papifyActionS) {
     // Create the corresponding FunctionCall
-    final PapifyFunctionCall func = CodegenFactory.eINSTANCE.createPapifyFunctionCall();
+    final PapifyFunctionCall func = CodegenModelUserFactory.eINSTANCE.createPapifyFunctionCall();
     func.setName("configure_papify_actor");
 
     // Add the PAPI component name
@@ -1957,19 +1962,19 @@ public class CodegenModelGenerator extends AbstractCodegenModelGenerator {
         compNames = compNames.concat(",").concat(compName);
       }
     }
-    ConstantString componentName = CodegenFactory.eINSTANCE.createConstantString();
+    ConstantString componentName = CodegenModelUserFactory.eINSTANCE.createConstantString();
     componentName.setName("component_name".concat(dagVertex.getName()));
     componentName.setValue(compNames);
     componentName.setComment("PAPI component name");
 
     // Add the size of the configs
-    Constant numConfigs = CodegenFactory.eINSTANCE.createConstant();
+    Constant numConfigs = CodegenModelUserFactory.eINSTANCE.createConstant();
     numConfigs.setName("numConfigs");
     numConfigs.setValue(compsWithConfig.size());
 
     // Add the actor name
     String actorOriginalIdentifier = papifyConfig.getActorOriginalIdentifier(referencePiVertex);
-    ConstantString actorName = CodegenFactory.eINSTANCE.createConstantString();
+    ConstantString actorName = CodegenModelUserFactory.eINSTANCE.createConstantString();
     actorName.setName("actor_name".concat(actorOriginalIdentifier));
     actorName.setValue(actorOriginalIdentifier);
     actorName.setComment("Actor name");
@@ -1984,13 +1989,13 @@ public class CodegenModelGenerator extends AbstractCodegenModelGenerator {
         eventNames = eventNames.concat(",").concat(oneEvent.getName());
       }
     }
-    ConstantString eventSetNames = CodegenFactory.eINSTANCE.createConstantString();
+    ConstantString eventSetNames = CodegenModelUserFactory.eINSTANCE.createConstantString();
     eventSetNames.setName("allEventNames");
     eventSetNames.setValue(eventNames);
     eventSetNames.setComment("Papify events");
 
     // Add the size of the CodeSet
-    Constant codeSetSize = CodegenFactory.eINSTANCE.createConstant();
+    Constant codeSetSize = CodegenModelUserFactory.eINSTANCE.createConstant();
     codeSetSize.setName("CodeSetSize");
     codeSetSize.setValue(actorEvents.size());
 
@@ -2017,7 +2022,7 @@ public class CodegenModelGenerator extends AbstractCodegenModelGenerator {
         configIds = configIds.concat(",").concat(Integer.toString(positionConfig));
       }
     }
-    ConstantString papifyConfigNumber = CodegenFactory.eINSTANCE.createConstantString();
+    ConstantString papifyConfigNumber = CodegenModelUserFactory.eINSTANCE.createConstantString();
     papifyConfigNumber.setName("PAPIFY_configs_".concat(dagVertex.getName()));
     papifyConfigNumber.setValue(configIds);
     papifyConfigNumber.setComment("PAPIFY actor configs");
@@ -2054,7 +2059,7 @@ public class CodegenModelGenerator extends AbstractCodegenModelGenerator {
   protected PapifyFunctionCall generatePapifyStartFunctionCall(final DAGVertex dagVertex, final Constant papifyPEId,
       final PapifyAction papifyActionS) {
     // Create the corresponding FunctionCall
-    final PapifyFunctionCall func = CodegenFactory.eINSTANCE.createPapifyFunctionCall();
+    final PapifyFunctionCall func = CodegenModelUserFactory.eINSTANCE.createPapifyFunctionCall();
     func.setName("event_start");
     // Add the function parameters
     func.addParameter((Variable) papifyActionS, PortDirection.INPUT);
@@ -2082,7 +2087,7 @@ public class CodegenModelGenerator extends AbstractCodegenModelGenerator {
   protected PapifyFunctionCall generatePapifyStartTimingFunctionCall(final DAGVertex dagVertex,
       final Constant papifyPEId, final PapifyAction papifyActionS) {
     // Create the corresponding FunctionCall
-    final PapifyFunctionCall func = CodegenFactory.eINSTANCE.createPapifyFunctionCall();
+    final PapifyFunctionCall func = CodegenModelUserFactory.eINSTANCE.createPapifyFunctionCall();
     func.setName("event_start_papify_timing");
     func.addParameter((Variable) papifyActionS, PortDirection.INPUT);
     func.addParameter(papifyPEId, PortDirection.INPUT);
@@ -2108,7 +2113,7 @@ public class CodegenModelGenerator extends AbstractCodegenModelGenerator {
   protected PapifyFunctionCall generatePapifyStopFunctionCall(final DAGVertex dagVertex, final Constant papifyPEId,
       final PapifyAction papifyActionS) {
     // Create the corresponding FunctionCall
-    final PapifyFunctionCall func = CodegenFactory.eINSTANCE.createPapifyFunctionCall();
+    final PapifyFunctionCall func = CodegenModelUserFactory.eINSTANCE.createPapifyFunctionCall();
     func.setName("event_stop");
     // Add the function parameters
     func.addParameter((Variable) papifyActionS, PortDirection.INPUT);
@@ -2136,7 +2141,7 @@ public class CodegenModelGenerator extends AbstractCodegenModelGenerator {
   protected PapifyFunctionCall generatePapifyStopTimingFunctionCall(final DAGVertex dagVertex,
       final Constant papifyPEId, final PapifyAction papifyActionS) {
     // Create the corresponding FunctionCall
-    final PapifyFunctionCall func = CodegenFactory.eINSTANCE.createPapifyFunctionCall();
+    final PapifyFunctionCall func = CodegenModelUserFactory.eINSTANCE.createPapifyFunctionCall();
     func.setName("event_stop_papify_timing");
     // Add the function parameters
     func.addParameter((Variable) papifyActionS, PortDirection.INPUT);
@@ -2164,7 +2169,7 @@ public class CodegenModelGenerator extends AbstractCodegenModelGenerator {
   protected PapifyFunctionCall generatePapifyWritingFunctionCall(final DAGVertex dagVertex, final Constant papifyPEId,
       final PapifyAction papifyActionS) {
     // Create the corresponding FunctionCall
-    final PapifyFunctionCall func = CodegenFactory.eINSTANCE.createPapifyFunctionCall();
+    final PapifyFunctionCall func = CodegenModelUserFactory.eINSTANCE.createPapifyFunctionCall();
     func.setName("event_write_file");
     // Add the function parameters
     func.addParameter((Variable) papifyActionS, PortDirection.INPUT);
@@ -2264,15 +2269,15 @@ public class CodegenModelGenerator extends AbstractCodegenModelGenerator {
    *          the {@link DAGVertex} corresponding to the actor firing.
    */
   protected void generateSpecialCall(final CoreBlock operatorBlock, final DAGVertex dagVertex) {
-    final SpecialCall f = CodegenFactory.eINSTANCE.createSpecialCall();
-    f.setName(dagVertex.getName());
+    final SpecialCall specialCall = CodegenModelUserFactory.eINSTANCE.createSpecialCall();
+    specialCall.setName(dagVertex.getName());
     final String vertexType = dagVertex.getPropertyStringValue(AbstractVertex.KIND_LITERAL);
     switch (vertexType) {
       case MapperDAGVertex.DAG_FORK_VERTEX:
-        f.setType(SpecialType.FORK);
+        specialCall.setType(SpecialType.FORK);
         break;
       case MapperDAGVertex.DAG_JOIN_VERTEX:
-        f.setType(SpecialType.JOIN);
+        specialCall.setType(SpecialType.JOIN);
         break;
       case MapperDAGVertex.DAG_BROADCAST_VERTEX:
         final String specialKind = dagVertex.getPropertyBean().getValue(MapperDAGVertex.SPECIAL_TYPE);
@@ -2280,9 +2285,9 @@ public class CodegenModelGenerator extends AbstractCodegenModelGenerator {
           throw new PreesmRuntimeException("Broadcast DAGVertex " + dagVertex + " has null special type");
         }
         if (specialKind.equals(MapperDAGVertex.SPECIAL_TYPE_BROADCAST)) {
-          f.setType(SpecialType.BROADCAST);
+          specialCall.setType(SpecialType.BROADCAST);
         } else if (specialKind.equals(MapperDAGVertex.SPECIAL_TYPE_ROUNDBUFFER)) {
-          f.setType(SpecialType.ROUND_BUFFER);
+          specialCall.setType(SpecialType.ROUND_BUFFER);
         } else {
           throw new PreesmRuntimeException(
               "Broadcast DAGVertex " + dagVertex + " has an unknown special type: " + specialKind);
@@ -2292,10 +2297,10 @@ public class CodegenModelGenerator extends AbstractCodegenModelGenerator {
         throw new PreesmRuntimeException("DAGVertex " + dagVertex + " has an unknown type: " + vertexType);
     }
 
-    if (f.getType().equals(SpecialType.FORK) || f.getType().equals(SpecialType.BROADCAST)) {
-      dagVertex.outgoingEdges().forEach(edge -> addBuffer(dagVertex, edge.getTarget(), edge, f));
+    if (specialCall.getType().equals(SpecialType.FORK) || specialCall.getType().equals(SpecialType.BROADCAST)) {
+      dagVertex.outgoingEdges().forEach(edge -> addBuffer(dagVertex, edge.getTarget(), edge, specialCall));
     } else {
-      dagVertex.incomingEdges().forEach(edge -> addBuffer(edge.getSource(), dagVertex, edge, f));
+      dagVertex.incomingEdges().forEach(edge -> addBuffer(edge.getSource(), dagVertex, edge, specialCall));
     }
 
     // Find the last buffer that correspond to the
@@ -2305,7 +2310,7 @@ public class CodegenModelGenerator extends AbstractCodegenModelGenerator {
     // but only one should be linked to the producer/consumer
     // the other must be linked to a send/receive vertex
     Set<DAGEdge> candidates;
-    if (f.getType().equals(SpecialType.FORK) || f.getType().equals(SpecialType.BROADCAST)) {
+    if (specialCall.getType().equals(SpecialType.FORK) || specialCall.getType().equals(SpecialType.BROADCAST)) {
       candidates = this.algo.incomingEdgesOf(dagVertex);
     } else {
       candidates = this.algo.outgoingEdgesOf(dagVertex);
@@ -2313,13 +2318,13 @@ public class CodegenModelGenerator extends AbstractCodegenModelGenerator {
 
     if (candidates.size() > 2) {
       String direction;
-      if (f.getType().equals(SpecialType.FORK) || f.getType().equals(SpecialType.BROADCAST)) {
+      if (specialCall.getType().equals(SpecialType.FORK) || specialCall.getType().equals(SpecialType.BROADCAST)) {
         direction = "incoming";
       } else {
         direction = "outgoing";
       }
-      throw new PreesmRuntimeException(f.getType().getName() + " vertex " + dagVertex + " more than 1 " + direction
-          + "edge. Check the exported DAG.");
+      throw new PreesmRuntimeException(specialCall.getType().getName() + " vertex " + dagVertex + " more than 1 "
+          + direction + "edge. Check the exported DAG.");
     }
     for (final DAGEdge edge : candidates) {
       if (edge.getSource().getPropertyBean().getValue(ImplementationPropertyNames.Vertex_vertexType)
@@ -2333,7 +2338,8 @@ public class CodegenModelGenerator extends AbstractCodegenModelGenerator {
       // This should never happen. It would mean that a
       // "special vertex" does receive data only from send/receive
       // vertices
-      throw new PreesmRuntimeException(f.getType().getName() + " vertex " + dagVertex + "is not properly connected.");
+      throw new PreesmRuntimeException(
+          specialCall.getType().getName() + " vertex " + dagVertex + "is not properly connected.");
     }
 
     final BufferAggregate bufferAggregate = lastEdge.getPropertyBean().getValue(BufferAggregate.propertyBeanName);
@@ -2358,18 +2364,18 @@ public class CodegenModelGenerator extends AbstractCodegenModelGenerator {
     }
 
     // Add it to the specialCall
-    if (f.getType().equals(SpecialType.FORK) || f.getType().equals(SpecialType.BROADCAST)) {
-      f.addInputBuffer(lastBuffer);
+    if (specialCall.getType().equals(SpecialType.FORK) || specialCall.getType().equals(SpecialType.BROADCAST)) {
+      specialCall.addInputBuffer(lastBuffer);
     } else {
-      f.addOutputBuffer(lastBuffer);
+      specialCall.addOutputBuffer(lastBuffer);
     }
 
-    operatorBlock.getLoopBlock().getCodeElts().add(f);
-    this.dagVertexCalls.put(dagVertex, f);
+    operatorBlock.getLoopBlock().getCodeElts().add(specialCall);
+    this.dagVertexCalls.put(dagVertex, specialCall);
 
-    identifyMergedInputRange(new AbstractMap.SimpleEntry<List<Variable>, List<PortDirection>>(f.getParameters(),
-        f.getParameterDirections()));
-    registerCallVariableToCoreBlock(operatorBlock, f);
+    identifyMergedInputRange(new AbstractMap.SimpleEntry<List<Variable>, List<PortDirection>>(
+        specialCall.getParameters(), specialCall.getParameterDirections()));
+    registerCallVariableToCoreBlock(operatorBlock, specialCall);
   }
 
   /**
@@ -2404,7 +2410,7 @@ public class CodegenModelGenerator extends AbstractCodegenModelGenerator {
       // If the parent buffer is not null
       final String dataType = subBufferProperties.getDataType();
       if (!(parentBuffer instanceof NullBuffer)) {
-        final SubBuffer subBuff = CodegenFactory.eINSTANCE.createSubBuffer();
+        final SubBuffer subBuff = CodegenModelUserFactory.eINSTANCE.createSubBuffer();
         buff = subBuff;
         // Old naming techniques with complete path to port. (too long, kept as a comment)
         final StringBuilder comment = new StringBuilder(dagEdge.getSource().getName());
@@ -2428,7 +2434,7 @@ public class CodegenModelGenerator extends AbstractCodegenModelGenerator {
         this.srSDFEdgeBuffers.put(subBufferProperties, subBuff);
       } else {
         // The parent buffer is a null buffer
-        final NullBuffer nullBuff = CodegenModelUserFactory.createNullBuffer();
+        final NullBuffer nullBuff = CodegenModelUserFactory.eINSTANCE.createNullBuffer();
         buff = nullBuff;
         // Old naming techniques with complete path to port. (too long, kept as a comment)
 
@@ -2527,7 +2533,7 @@ public class CodegenModelGenerator extends AbstractCodegenModelGenerator {
    */
   protected DistributedBuffer generateDistributedBuffer(final Buffer originalBuffer, final Buffer repeatedBuffer) {
 
-    DistributedBuffer duplicatedBuffer = CodegenFactory.eINSTANCE.createDistributedBuffer();
+    DistributedBuffer duplicatedBuffer = CodegenModelUserFactory.eINSTANCE.createDistributedBuffer();
     if (originalBuffer instanceof DistributedBuffer) {
       duplicatedBuffer.getDistributedCopies().addAll(((DistributedBuffer) originalBuffer).getDistributedCopies());
     } else {

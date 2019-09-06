@@ -4,6 +4,7 @@
  * Alexandre Honorat [alexandre.honorat@insa-rennes.fr] (2019)
  * Antoine Morvan [antoine.morvan@insa-rennes.fr] (2018 - 2019)
  * Florian Arrestier [florian.arrestier@insa-rennes.fr] (2018)
+ * Dylan Gageot [gageot.dylan@gmail.com] (2019)
  *
  * This software is a computer program whose purpose is to help prototyping
  * parallel applications using dataflow formalism.
@@ -122,6 +123,8 @@ public class PiSDFToSingleRate extends PiMMSwitch<Boolean> {
     staticPiMM2ASrPiMMVisitor.doSwitch(graph);
     final PiGraph acyclicSRPiMM = staticPiMM2ASrPiMMVisitor.getResult();
 
+    srCheck(graph, acyclicSRPiMM);
+
     PreesmLogger.getLogger().log(Level.FINE, " >>   - check");
     PiGraphConsistenceChecker.check(acyclicSRPiMM);
     // 6- do some optimization on the graph
@@ -138,7 +141,7 @@ public class PiSDFToSingleRate extends PiMMSwitch<Boolean> {
     PreesmLogger.getLogger().log(Level.FINE, " >>   - check");
     PiGraphConsistenceChecker.check(acyclicSRPiMM);
 
-    srCheck(acyclicSRPiMM);
+    srCheck(graph, acyclicSRPiMM);
     PreesmLogger.getLogger().log(Level.FINE, " >> End srdag transfo");
     return acyclicSRPiMM;
   }
@@ -146,10 +149,15 @@ public class PiSDFToSingleRate extends PiMMSwitch<Boolean> {
   /**
    *
    */
-  private static final void srCheck(final PiGraph graph) {
+  private static final void srCheck(final PiGraph originalGraph, final PiGraph graph) {
     final List<AbstractActor> actors = graph.getActors();
+
+    if (!originalGraph.getAllActors().isEmpty() && graph.getAllActors().isEmpty()) {
+      throw new PreesmRuntimeException(true, "Flatten graph should not be empty if input graph is not empty", null);
+    }
+
     for (final AbstractActor a : actors) {
-      if (a instanceof PiGraph) {
+      if (a instanceof PiGraph && !a.isCluster()) {
         throw new PreesmRuntimeException("Flatten graph should have no children graph");
       }
       if (a instanceof InterfaceActor) {
@@ -234,28 +242,22 @@ public class PiSDFToSingleRate extends PiMMSwitch<Boolean> {
     }
   }
 
-  /*
-   * (non-Javadoc)
-   *
-   * @see
-   * org.ietr.preesm.experiment.model.pimm.util.PiMMVisitor#caseAbstractActor(org.ietr.preesm.experiment.model.pimm.
-   * AbstractActor)
-   */
   @Override
   public Boolean caseAbstractActor(final AbstractActor actor) {
     if (actor instanceof PiGraph) {
+
       // Here we handle the replacement of the interfaces by what should be
       // Copy the actor
-      final PiGraph copyActor = PiMMUserFactory.instance.copyWithHistory((PiGraph) actor);
+      final PiGraph copyGraph = PiMMUserFactory.instance.copyWithHistory((PiGraph) actor);
       // Set the properties
-      copyActor.setName(this.currentActorName);
+      copyGraph.setName(this.currentActorName);
 
       // Add the actor to the graph
-      this.result.addActor(copyActor);
+      this.result.addActor(copyGraph);
 
       // Add the actor to the FIFO source/sink sets
-      this.actor2SRActors.get(this.graphPrefix + actor.getName()).add(copyActor);
-      instantiateParameters(actor, copyActor);
+      this.actor2SRActors.get(this.graphPrefix + actor.getName()).add(copyGraph);
+      instantiateParameters(actor, copyGraph);
     } else {
       doSwitch(actor);
     }
@@ -368,7 +370,11 @@ public class PiSDFToSingleRate extends PiMMSwitch<Boolean> {
     this.result.addActor(copyActor);
 
     // Add the actor to the FIFO source/sink sets
-    this.actor2SRActors.get(this.graphPrefix + actor.getName()).add(copyActor);
+    final String graphPrefix2 = this.graphPrefix;
+    final String name = actor.getName();
+    final String key = graphPrefix2 + name;
+    final List<AbstractVertex> list = this.actor2SRActors.get(key);
+    list.add(copyActor);
 
     // Set the properties
     instantiateParameters(actor, copyActor);
@@ -451,7 +457,7 @@ public class PiSDFToSingleRate extends PiMMSwitch<Boolean> {
     // Otherwise, we fall in "standard" case
     if (sourceActor instanceof InterfaceActor) {
       return handleDataInputInterface(targetPort, ((DataInputInterface) sourceActor), sinkActor);
-    } else if (sourceActor instanceof PiGraph) {
+    } else if (sourceActor instanceof PiGraph && !sourceActor.isCluster()) {
       // We should retrieve the correct source set
       if (!this.outPort2SRActors.containsKey(sourcePort)) {
         throw new PreesmRuntimeException("No replacement found for DataOutputPort [" + sourcePort.getName()
@@ -582,7 +588,7 @@ public class PiSDFToSingleRate extends PiMMSwitch<Boolean> {
 
     if (sinkActor instanceof InterfaceActor) {
       return handleDataOutputInterface(sourcePort, sourceActor, (DataOutputInterface) sinkActor, sourceSet);
-    } else if (sinkActor instanceof PiGraph) {
+    } else if (sinkActor instanceof PiGraph && !sinkActor.isCluster()) {
       // We should retrieve the correct source set
       if (!this.inPort2SRActors.containsKey(targetPort)) {
         throw new PreesmRuntimeException("No replacement found for DataInputPort [" + targetPort.getName()
@@ -800,11 +806,18 @@ public class PiSDFToSingleRate extends PiMMSwitch<Boolean> {
   @Override
   public Boolean casePiGraph(final PiGraph graph) {
 
+    // If it is a cluster, do nothing
+    if (graph.isCluster()) {
+      return true;
+    }
+
     // If there are no actors in the graph we leave
-    if (graph.getActors().isEmpty()) {
+    final List<AbstractActor> actors = graph.getActors();
+    if (actors.isEmpty()) {
       throw new UnsupportedOperationException(
           "Can not convert an empty graph. Check the refinement for [" + graph.getVertexPath() + "].");
     }
+
     // Set the current graph name
     this.graphName = graph.getContainingPiGraph() == null ? "" : graph.getName();
     this.graphName = this.graphPrefix + this.graphName;
@@ -842,6 +855,9 @@ public class PiSDFToSingleRate extends PiMMSwitch<Boolean> {
         doSwitch(f);
       }
     }
+
+    // handle non connected actors (BRV = 1)
+    actors.stream().filter(a -> a.getAllDataPorts().isEmpty()).forEach(this::populateSingleRatePiMMActor);
 
     return true;
   }

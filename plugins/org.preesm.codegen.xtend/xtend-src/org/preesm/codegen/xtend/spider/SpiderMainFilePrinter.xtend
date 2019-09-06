@@ -5,6 +5,7 @@
  * Daniel Madroñal [daniel.madronal@upm.es] (2019)
  * Florian Arrestier [florian.arrestier@insa-rennes.fr] (2018 - 2019)
  * Karol Desnos [karol.desnos@insa-rennes.fr] (2017)
+ * rlazcano [raquel.lazcano@upm.es] (2019)
  *
  * This software is a computer program whose purpose is to help prototyping
  * parallel applications using dataflow formalism.
@@ -173,6 +174,18 @@ class SpiderMainFilePrinter {
 			cfg.usePapify = false;
 			cfg.dumpPapifyInfo = false;
 			cfg.feedbackPapifyInfo = false;
+		«ENDIF»
+		
+		/* == Apollo optimization == */
+		#ifdef APOLLO_COMPILATION
+			cfg.apolloCompiled = true;
+		#else
+			cfg.apolloCompiled = false;
+		#endif
+		«IF spiderConfig.useOfApollo»
+			cfg.apolloEnabled = true;
+		«ELSE»
+			cfg.apolloEnabled = false;
 		«ENDIF»
 
 		try {

@@ -47,6 +47,10 @@ import org.preesm.commons.exceptions.PreesmRuntimeException;
  */
 public class NameCheckerC {
 
+  private NameCheckerC() {
+    // forbid instantiation
+  }
+
   /**
    * Valid names correspond to this regex, close to the C variables name policy.
    */
@@ -55,12 +59,12 @@ public class NameCheckerC {
   /**
    * End of error message if name does not match {@link REGEX_C}
    */
-  public static final String msgVariableNameError = "> must match the regex " + REGEX_C + ".";
+  public static final String MESSAGE_VARIABLE_NAME_ERROR = "> must match the regex " + REGEX_C + ".";
 
   /**
    * End of error message if name is a keyword of C.
    */
-  public static final String msgCkeywordNameError = "> is a restricted keyword of C.";
+  public static final String MESSAGE_C_KEYWORD_NAME_ERROR = "> is a restricted keyword of C.";
 
   /**
    * Only C for now, but it could be extended to C++ keywords also.
@@ -73,7 +77,7 @@ public class NameCheckerC {
   /**
    * Set of reserved keyworkds for C, that are not allowed.
    */
-  public static final SortedSet<String> restrictedKeywords = new TreeSet<>(Arrays.asList(restrictedKeywordsArr));
+  private static final SortedSet<String> restrictedKeywords = new TreeSet<>(Arrays.asList(restrictedKeywordsArr));
 
   /**
    * Match {@code name} with {@link REGEX_C}.
@@ -112,9 +116,9 @@ public class NameCheckerC {
    */
   public static boolean checkValidName(String componentName, String name) {
     if (!matchCvariableRegex(name)) {
-      throw new PreesmRuntimeException(componentName + " <" + name + msgVariableNameError);
+      throw new PreesmRuntimeException(componentName + " <" + name + MESSAGE_VARIABLE_NAME_ERROR);
     } else if (isCkeyword(name)) {
-      throw new PreesmRuntimeException(componentName + " <" + name + msgCkeywordNameError);
+      throw new PreesmRuntimeException(componentName + " <" + name + MESSAGE_C_KEYWORD_NAME_ERROR);
     }
     return true;
   }

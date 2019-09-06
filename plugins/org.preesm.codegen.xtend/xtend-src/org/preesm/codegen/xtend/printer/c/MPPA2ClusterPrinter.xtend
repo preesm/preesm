@@ -85,6 +85,9 @@ import org.preesm.codegen.model.IntVar
 import org.preesm.codegen.model.DataTransferAction
 import org.preesm.codegen.model.RegisterSetUpAction
 import java.util.Map
+import org.preesm.codegen.model.SectionBlock
+import org.preesm.codegen.model.ClusterBlock
+import org.preesm.codegen.model.IteratedBuffer
 
 class MPPA2ClusterPrinter extends DefaultPrinter {
 
@@ -188,9 +191,11 @@ class MPPA2ClusterPrinter extends DefaultPrinter {
 		var result = '''
 		«IF buffer.name == "Shared"»
 		//#define Shared ((char*)0x10000000ULL) 	/* Shared buffer in DDR */
-		«ELSE»
-		«buffer.type» «buffer.name»[«buffer.size»] __attribute__ ((aligned(64))); // «buffer.comment» size:= «buffer.size»*«buffer.type» aligned on data cache line
-		int local_memory_size = «buffer.size»;
+		«ELSE» 
+			«buffer.type» «buffer.name»[«buffer.size»] __attribute__ ((aligned(64))); // «buffer.comment» size:= «buffer.size»*«buffer.type» aligned on data cache line
+			«IF buffer.name.contains("Cluster")»
+				int local_memory_size = «buffer.size»;			
+			«ENDIF»
 		«ENDIF»
 		'''
 		return result;
@@ -213,102 +218,50 @@ class MPPA2ClusterPrinter extends DefaultPrinter {
 	  }
 	 b}.name»+«offset»);  // «buffer.comment» size:= «buffer.size»*«buffer.type»
 	'''
-
+	
 	override printFiniteLoopBlockHeader(FiniteLoopBlock block2) '''
-	«{
-	 	IS_HIERARCHICAL = true
-	"\t"}»
-	{ // Begin the hierarchical actor
-		«{
-		var gets = ""
-		var local_offset = 0L;
-			/* go through eventual out param first because of foot FiniteLoopBlock */
-			for(param : block2.outBuffers){
-				var b = param.container;
-				var offset = param.offset;
-				while(b instanceof SubBuffer){
-					offset += b.offset;
-					b = b.container;
-				}
-				/* put out buffer here */
-				if(b.name == "Shared"){
-					gets += "void *" + param.name + " = local_buffer+" + local_offset +";\n";
-					local_offset += param.typeSize * param.size;
-				}
-			}
-			for(param : block2.inBuffers){
-				var b = param.container;
-				var offset = param.offset;
-				while(b instanceof SubBuffer){
-					offset += b.offset;
-					b = b.container;
-				}
-				//System.out.print("===> " + b.name + "\n");
-				if(b.name == "Shared"){
-					gets += "void *" + param.name + " = local_buffer+" + local_offset +";\n";
-					gets += "	{\n"
-					gets += "		if(mppa_async_get(local_buffer + " + local_offset + ",";
-					gets += " &shared_segment,";
-					//gets += "	" + b.name + " + " + offset + ",\n";
-					gets += " /* Shared + */ " + offset + ",";
-					gets += " " + param.typeSize * param.size + ",";
-					gets += " NULL) != 0){\n";
-					gets += "			assert(0 && \"mppa_async_get\\n\");\n";
-					gets += "		}\n";
-					gets += "	}\n"
-					local_offset += param.typeSize * param.size;
-					//System.out.print("==> " + b.name + " " + param.name + " size " + param.size + " port_name "+ port.getName + "\n");
-				}
-			}
+		// Begin the for loop
+		{
+			int «block2.iter.name»;
+			«IF block2.parallel.equals(true)»
+			#pragma omp parallel for private(«block2.iter.name»)
+			«ENDIF»
+			for(«block2.iter.name»=0;«block2.iter.name»<«block2.nbIter»;«block2.iter.name»++) {
+				
+				'''
 
-			gets += "int " + block2.iter.name + ";\n"
-			if(block2.nbIter > 1 && this.sharedOnly == 0){
-				gets += "#pragma omp parallel for private(" + block2.iter.name + ")\n"
+	override printFiniteLoopBlockFooter(FiniteLoopBlock block2) '''
 			}
-			gets += "for(" + block2.iter.name + "=0;" + block2.iter.name +"<" + block2.nbIter + ";" + block2.iter.name + "++) {"
-
-			if(local_offset > local_buffer_size)
-				local_buffer_size = local_offset
-	gets}»
+		}
+	'''
+			
+	
+	override printClusterBlockHeader(ClusterBlock block) '''
+		// Cluster: «block.name»
+		// Schedule: «block.schedule»
+		«IF block.parallel.equals(true)»
+		#pragma omp parallel sections
+		«ENDIF»
+		{
 			
 			'''
 
-	override printFiniteLoopBlockFooter(FiniteLoopBlock block2) '''
-			}// End the for loop
-		«{
-				var puts = ""
-				var local_offset = 0L;
-				for(param : block2.outBuffers){
-					var b = param.container
-					var offset = param.offset
-					while(b instanceof SubBuffer){
-						offset += b.offset;
-						b = b.container;
-						//System.out.print("Running through all buffer " + b.name + "\n");
-					}
-					//System.out.print("===> " + b.name + "\n");
-					if(b.name == "Shared"){
-						puts += "	{\n"
-						puts += "		if(mppa_async_put(local_buffer + " + local_offset + ",";
-						puts += " &shared_segment,";
-						puts += " /* Shared + */" + offset + ",";
-						puts += " " + param.typeSize * param.size + ",";
-						puts += " NULL) != 0){\n";
-						puts += "			assert(0 && \"mppa_async_put\\n\");\n";
-						puts += "		}\n";
-						puts += "	}\n"
-						local_offset += param.typeSize * param.size;
-						//System.out.print("==> " + b.name + " " + param.name + " size " + param.size + " port_name "+ port.getName + "\n");
-					}
-				}
-				if(local_offset > local_buffer_size)
-					local_buffer_size = local_offset
-			puts}»
-		«{
-			 	IS_HIERARCHICAL = false
-			""}»
+
+	override printClusterBlockFooter(ClusterBlock block) '''
+		} 
+	'''
+
+	override printSectionBlockHeader(SectionBlock block) '''
+		#pragma omp section
+		{
+			
+			'''
+
+	override printSectionBlockFooter(SectionBlock block) '''
 		}
 	'''
+
+	
 	override printPapifyFunctionCall(PapifyFunctionCall papifyFunctionCall) {
 		if(!(papifyFunctionCall.papifyType.equals(PapifyType.CONFIGACTOR))){
 			papifyFunctionCall.parameters.remove(papifyFunctionCall.parameters.size-1);
@@ -352,41 +305,34 @@ class MPPA2ClusterPrinter extends DefaultPrinter {
 	«{
 		var gets = ""
 		var local_offset = 0L;
-		if(IS_HIERARCHICAL == false){
-			//if(this.sharedOnly == 1){
-				gets += "{\n"
-			//}
-			for(param : functionCall.parameters){
+		for(param : functionCall.parameters){
 
-				if(param instanceof SubBuffer){
-					var port = functionCall.parameterDirections.get(functionCall.parameters.indexOf(param))
-					var b = param.container;
-					var offset = param.offset;
-					while(b instanceof SubBuffer){
-						offset += b.offset;
-						b = b.container;
-						//System.out.print("Running through all buffer " + b.name + "\n");
-					}
-					//System.out.print("===> " + b.name + "\n");
-					if(b.name == "Shared"){
-						gets += "	void *" + param.name + " = local_buffer+" + local_offset +";\n";
-						if(port.getName == "INPUT"){ /* we get data from DDR -> cluster only when INPUT */
-							gets += "	if(mppa_async_get(local_buffer+" + local_offset + ", &shared_segment, /* Shared + */ " + offset + ", " + param.typeSize * param.size + ", NULL) != 0){\n";
-							gets += "		assert(0 && \"mppa_async_get\\n\");\n";
-							gets += "	}\n";
-						}
-						local_offset += param.typeSize * param.size;
-						//System.out.print("==> " + b.name + " " + param.name + " size " + param.size + " port_name "+ port.getName + "\n");
-					}
-					/*else{
-						System.out.print("A==> " + b.name + " " + param.name + " size " + param.size + " port_name "+ port.getName + "\n");
-					}*/
+			if(param instanceof SubBuffer){
+				var port = functionCall.parameterDirections.get(functionCall.parameters.indexOf(param))
+				var b = param.container;
+				var offset = param.offset;
+				while(b instanceof SubBuffer){
+					offset += b.offset;
+					b = b.container;
+					//System.out.print("Running through all buffer " + b.name + "\n");
 				}
+				//System.out.print("===> " + b.name + "\n");
+				if(b.name == "Shared"){
+					gets += "	void *" + param.name + " = local_buffer+" + local_offset +";\n";
+					if(port.getName == "INPUT"){ /* we get data from DDR -> cluster only when INPUT */
+						gets += "	if(mppa_async_get(local_buffer+" + local_offset + ", &shared_segment, /* Shared + */ " + offset + ", " + param.typeSize * param.size + ", NULL) != 0){\n";
+						gets += "		assert(0 && \"mppa_async_get\\n\");\n";
+						gets += "	}\n";
+					}
+					local_offset += param.typeSize * param.size;
+					//System.out.print("==> " + b.name + " " + param.name + " size " + param.size + " port_name "+ port.getName + "\n");
+				}
+				/*else{
+					System.out.print("A==> " + b.name + " " + param.name + " size " + param.size + " port_name "+ port.getName + "\n");
+				}*/
 			}
-			gets += "\t"
-		}else{
-			gets += " /* gets are normaly generated before */ \n"
 		}
+		gets += "\t"
 		if(local_offset > local_buffer_size)
 			local_buffer_size = local_offset
 	gets}»
@@ -394,37 +340,30 @@ class MPPA2ClusterPrinter extends DefaultPrinter {
 	«{
 		var puts = ""
 		var local_offset = 0L;
-		if(IS_HIERARCHICAL == false){
-			for(param : functionCall.parameters){
-				if(param instanceof SubBuffer){
-					var port = functionCall.parameterDirections.get(functionCall.parameters.indexOf(param))
-					var b = param.container
-					var offset = param.offset
-					while(b instanceof SubBuffer){
-						offset += b.offset;
-						b = b.container;
-						//System.out.print("Running through all buffer " + b.name + "\n");
-					}
-					//System.out.print("===> " + b.name + "\n");
-					if(b.name == "Shared"){
-						if(port.getName == "OUTPUT"){ /* we put data from cluster -> DDR only when OUTPUT */
-							puts += "	if(mppa_async_put(local_buffer+" + local_offset + ", &shared_segment, /* Shared + */ " + offset + ", " + param.typeSize * param.size + ", NULL) != 0){\n";
-							puts += "		assert(0 && \"mppa_async_put\\n\");\n";
-							puts += "	}\n";
-						}
-						local_offset += param.typeSize * param.size;
-						//System.out.print("==> " + b.name + " " + param.name + " size " + param.size + " port_name "+ port.getName + "\n");
-					}
-					/*else{
-						System.out.print("B==> " + b.name + " " + param.name + " size " + param.size + " port_name "+ port.getName + "\n");
-					}*/
+		for(param : functionCall.parameters){
+			if(param instanceof SubBuffer){
+				var port = functionCall.parameterDirections.get(functionCall.parameters.indexOf(param))
+				var b = param.container
+				var offset = param.offset
+				while(b instanceof SubBuffer){
+					offset += b.offset;
+					b = b.container;
+					//System.out.print("Running through all buffer " + b.name + "\n");
 				}
+				//System.out.print("===> " + b.name + "\n");
+				if(b.name == "Shared"){
+					if(port.getName == "OUTPUT"){ /* we put data from cluster -> DDR only when OUTPUT */
+						puts += "	if(mppa_async_put(local_buffer+" + local_offset + ", &shared_segment, /* Shared + */ " + offset + ", " + param.typeSize * param.size + ", NULL) != 0){\n";
+						puts += "		assert(0 && \"mppa_async_put\\n\");\n";
+						puts += "	}\n";
+					}
+					local_offset += param.typeSize * param.size;
+					//System.out.print("==> " + b.name + " " + param.name + " size " + param.size + " port_name "+ port.getName + "\n");
+				}
+				/*else{
+					System.out.print("B==> " + b.name + " " + param.name + " size " + param.size + " port_name "+ port.getName + "\n");
+				}*/
 			}
-			//if(this.sharedOnly == 1){
-			 	puts += "}\n"
-			//}
-		}else{
-			puts += " /* puts are normaly generated before */ \n"
 		}
 		if(local_offset > local_buffer_size)
 			local_buffer_size = local_offset
@@ -576,7 +515,7 @@ class MPPA2ClusterPrinter extends DefaultPrinter {
 	 *            the type of objects copied
 	 * @return a {@link CharSequence} containing the memcpy call (if any)
 	 */
-	def printMemcpy(Buffer output, long outOffset, Buffer input, long inOffset, long size, String type) {
+	def CharSequence printMemcpy(Buffer output, long outOffset, Buffer input, long inOffset, long size, String type) {
 
 		// Retrieve the container buffer of the input and output as well
 		// as their offset in this buffer
@@ -690,6 +629,8 @@ class MPPA2ClusterPrinter extends DefaultPrinter {
 	override printBufferIteratorDeclaration(BufferIterator bufferIterator) ''''''
 
 	override printBufferIteratorDefinition(BufferIterator bufferIterator) ''''''
+
+	override printIteratedBuffer(IteratedBuffer iteratedBuffer) '''«doSwitch(iteratedBuffer.buffer)» + «printIntVar(iteratedBuffer.iter)» * «iteratedBuffer.size»'''
 
 	override printIntVar(IntVar intVar) '''«intVar.name»'''
 

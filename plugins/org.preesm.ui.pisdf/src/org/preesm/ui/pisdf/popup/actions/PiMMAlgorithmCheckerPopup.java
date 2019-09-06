@@ -37,6 +37,7 @@
  */
 package org.preesm.ui.pisdf.popup.actions;
 
+import java.util.logging.Level;
 import org.eclipse.core.commands.AbstractHandler;
 import org.eclipse.core.commands.ExecutionEvent;
 import org.eclipse.core.commands.ExecutionException;
@@ -46,6 +47,7 @@ import org.eclipse.jface.viewers.TreeSelection;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.IWorkbenchPage;
 import org.preesm.commons.exceptions.PreesmRuntimeException;
+import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.pisdf.check.PiMMAlgorithmChecker;
 import org.preesm.model.pisdf.serialize.PiParser;
@@ -82,15 +84,9 @@ public class PiMMAlgorithmCheckerPopup extends AbstractHandler {
       final IWorkbenchPage page = PreesmUIPlugin.getDefault().getWorkbench().getActiveWorkbenchWindow().getActivePage();
       final TreeSelection selection = (TreeSelection) page.getSelection();
       final IFile file = (IFile) selection.getFirstElement();
-      PiGraph graph;
-      try {
-        graph = PiParser.getPiGraphWithReconnection(file.getFullPath().toString());
-      } catch (PreesmRuntimeException e) {
-        ErrorWithExceptionDialog.errorDialogWithStackTrace("Error during operation.", e);
-        return null;
-      }
+      final PiGraph graph = getPiGraph(file);
 
-      final StringBuffer message = new StringBuffer();
+      final StringBuilder message = new StringBuilder();
       if (checker.checkGraph(graph)) {
         message.append(checker.getOkMsg());
       } else {
@@ -107,9 +103,20 @@ public class PiMMAlgorithmCheckerPopup extends AbstractHandler {
 
       MessageDialog.openInformation(this.shell, "Checker", message.toString());
     } catch (final Exception e) {
-      e.printStackTrace();
+      PreesmLogger.getLogger().log(Level.WARNING, "Could not check PiGraph", e);
     }
     return null;
+  }
+
+  private PiGraph getPiGraph(final IFile file) {
+    final PiGraph graph;
+    try {
+      graph = PiParser.getPiGraphWithReconnection(file.getFullPath().toString());
+    } catch (PreesmRuntimeException e) {
+      ErrorWithExceptionDialog.errorDialogWithStackTrace("Error during operation.", e);
+      return null;
+    }
+    return graph;
   }
 
 }

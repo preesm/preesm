@@ -51,28 +51,27 @@ import java.util.LinkedHashMap
 import java.util.List
 import java.util.Map
 import java.util.logging.Level
+import org.preesm.codegen.model.ActorFunctionCall
 import org.preesm.codegen.model.Block
 import org.preesm.codegen.model.CallBlock
 import org.preesm.codegen.model.CodeElt
-import org.preesm.codegen.model.CoreBlock
 import org.preesm.codegen.model.Constant
+import org.preesm.codegen.model.CoreBlock
 import org.preesm.codegen.model.DataTransferAction
 import org.preesm.codegen.model.FpgaLoadAction
 import org.preesm.codegen.model.FreeDataTransferBuffer
 import org.preesm.codegen.model.FunctionCall
 import org.preesm.codegen.model.GlobalBufferDeclaration
-import org.preesm.codegen.model.IntVar
 import org.preesm.codegen.model.LoopBlock
 import org.preesm.codegen.model.OutputDataTransfer
+import org.preesm.codegen.model.PapifyAction
 import org.preesm.codegen.model.PapifyFunctionCall
+import org.preesm.codegen.model.PapifyType
 import org.preesm.codegen.model.RegisterSetUpAction
 import org.preesm.codegen.model.util.CodegenModelUserFactory
 import org.preesm.commons.exceptions.PreesmRuntimeException
 import org.preesm.commons.files.PreesmResourcesHelper
 import org.preesm.commons.logger.PreesmLogger
-import org.preesm.codegen.model.ActorFunctionCall
-import org.preesm.codegen.model.PapifyType
-import org.preesm.codegen.model.PapifyAction
 
 /**
  * This printer extends the CPrinter and override some of its methods
@@ -350,7 +349,7 @@ class CHardwarePrinter extends CPrinter {
 			global_hardware_«count» = hardware_alloc(«buffer.size»«IF (this.factorNumber > 0)» * «this.factorNumber»«ENDIF» * sizeof *«buffer.name», "«action.name»", "«buffer.doSwitch»",  «action.parameterDirections.get(count++)»);
 		«ENDFOR»
 	'''
-	
+
 	override printPapifyFunctionCall(PapifyFunctionCall papifyFunctionCall) '''
 	«IF papifyFunctionCall.opening == true»
 		#ifdef _PREESM_PAPIFY_MONITOR
@@ -360,7 +359,7 @@ class CHardwarePrinter extends CPrinter {
 		#endif
 	«ENDIF»
 	'''
-	
+
 	override printPapifyActionDefinition(PapifyAction action) '''
 	«IF action.opening == true»
 		#ifdef _PREESM_PAPIFY_MONITOR
@@ -370,7 +369,7 @@ class CHardwarePrinter extends CPrinter {
 		#endif
 	«ENDIF»
 	'''
-	
+
 	override printPapifyActionParam(PapifyAction action) '''&«action.name»'''
 
 	override preProcessing(List<Block> printerBlocks, Collection<Block> allBlocks) {
@@ -383,7 +382,7 @@ class CHardwarePrinter extends CPrinter {
 		this.numberHardwareAcceleratorSlots = printerBlocks.size();
 
 //		var CoreBlock coreLoopMerged = CodegenModelUserFactory.createCoreBlock(null);
-		var Block coreLoopMerged = CodegenModelUserFactory.createCoreBlock(null);
+		var Block coreLoopMerged = CodegenModelUserFactory.eINSTANCE.createCoreBlock(null);
 
 		/*
 		 * To insert all the elements of loopBlock of every instance of printerBlocks in a Unique Block
@@ -437,14 +436,14 @@ class CHardwarePrinter extends CPrinter {
 //			}
 //		}
 		/* the same operation MUST be done with the global declaration as well. The declaration and definition can be found directly inside the codeBlock */
-		
+
 		// Declarations
 		var bufferCopyDeclarationList = new ArrayList();
 		// Definitions
 		var bufferCopyDefinitionsList = new ArrayList();
 		// init
 		var bufferCopyInitList = new ArrayList();
-		
+
 		var sizePrinterBlock = printerBlocks.size
 		var iteratorPrinterBlock = 0
 		for (Block block : printerBlocks) {
@@ -461,7 +460,7 @@ class CHardwarePrinter extends CPrinter {
 		(firstBlock as CoreBlock).definitions.addAll(bufferCopyDefinitionsList)
 		(firstBlock as CoreBlock).initBlock.codeElts.clear()
 		(firstBlock as CoreBlock).initBlock.codeElts.addAll(bufferCopyInitList)
-		
+
 		// even with more that one hardware SLOT, the file that should be created is just one.
 		// Storing the values that MUST be always used
 		this.CoreIDHardwareFpgaPapify = (firstBlock as CoreBlock).coreID
@@ -634,9 +633,9 @@ class CHardwarePrinter extends CPrinter {
 			PreesmLogger.getLogger().log(Level.SEVERE,
 				"Hardware Codegen ERROR in the preProcessing function. Different number of function calls and data transfers were detected");
 				}
-		
+
 		// ----------- PAPIFY - automatic instrumentation of ARTICo³ using PAPIFY --------------
-		
+
 		//PAPIFY - delete all functions
 		// this loop is to delete all the functions but not the last one (the new one!)
 		// the variable i start from the end and goes back until the first function
@@ -683,7 +682,7 @@ class CHardwarePrinter extends CPrinter {
 							//remove all the other different from the last one
 							flagFirstFunctionPAPIFYFoundEVENTSTART++;
 							coreLoop.codeElts.remove(i);
-						} 
+						}
 					case EVENTSTOP:
 						if(flagFirstFunctionPAPIFYFoundEVENTSTOP == 0){
 							//keep the last one detected
@@ -726,11 +725,11 @@ class CHardwarePrinter extends CPrinter {
 						}
 					default:
 					PreesmLogger.getLogger().log(Level.SEVERE, "Hardware Codegen ERROR in the preProcessing function. papifyType NOT recognized.")
-				}				
+				}
 			}
 			i--;
 		}
-		
+
 		//deleting all the PAPIFY function useless when using hardware. Keeping just the last one.
 		//var coreLoop = (block as CoreBlock).loopBlock
 		var initBlock = (block as CoreBlock).initBlock
@@ -749,9 +748,9 @@ class CHardwarePrinter extends CPrinter {
 			}
 			iteratorPapify--;
 		}
-		
+
 		//deleting all the definitions and keeping just the last one
-		
+
 		var definitionsBlock = (block as CoreBlock).definitions
 		var iteratorDefinitionsPapify = definitionsBlock.size -1
 		while (iteratorDefinitionsPapify >= 0) {
@@ -763,10 +762,10 @@ class CHardwarePrinter extends CPrinter {
 				this.PapifyDefinitionsNumbers++
 				elt.closing = false
 				elt.opening = false
-			} 
+			}
 			iteratorDefinitionsPapify--
 		}
-		
+
 
 		/* Removing unuseful elements in the list of printersBlock. To keep just the fist one */
 		var numberOfSlotDetected = printerBlocks.size
