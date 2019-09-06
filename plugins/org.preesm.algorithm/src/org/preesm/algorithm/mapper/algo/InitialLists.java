@@ -84,46 +84,50 @@ public class InitialLists implements Cloneable {
 
   }
 
-  @Override
-  public InitialLists clone() {
-
-    // variables
-    final InitialLists initialLists = new InitialLists();
+  /**
+   * creates a copy of other
+   */
+  public InitialLists(final InitialLists other) {
+    this();
     final List<MapperDAGVertex> newlist = new ArrayList<>();
 
     // retrieve and clone the cpnDominantList
-    Iterator<MapperDAGVertex> iter = this.cpnDominant.listIterator();
+    Iterator<MapperDAGVertex> iter = other.cpnDominant.listIterator();
     while (iter.hasNext()) {
       final MapperDAGVertex temp = iter.next().copy();
       if (temp != null) {
         newlist.add(temp);
       }
     }
-    initialLists.setCpnDominantList(newlist);
+    this.setCpnDominantList(newlist);
 
     // retrieve and clone the blockingNodesList
     final List<MapperDAGVertex> newlist2 = new ArrayList<>();
-    iter = this.blockingNodes.iterator();
+    iter = other.blockingNodes.iterator();
     while (iter.hasNext()) {
       final MapperDAGVertex temp = iter.next().copy();
       if (temp != null) {
         newlist2.add(temp);
       }
     }
-    initialLists.setBlockingNodesList(newlist2);
+    this.setBlockingNodesList(newlist2);
 
     // retrieve and clone the finalcriticalpathList
     final List<MapperDAGVertex> newlist3 = new ArrayList<>();
-    iter = this.criticalPath.iterator();
+    iter = other.criticalPath.iterator();
     while (iter.hasNext()) {
       final MapperDAGVertex temp = iter.next().copy();
       if (temp != null) {
         newlist3.add(temp);
       }
     }
-    initialLists.setFinalcriticalpathList(newlist3);
+    this.setFinalcriticalpathList(newlist3);
 
-    return initialLists;
+  }
+
+  @Override
+  public InitialLists clone() {
+    return new InitialLists(this);
 
   }
 
