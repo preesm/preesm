@@ -37,7 +37,6 @@
  */
 package org.preesm.ui.pisdf.features;
 
-import java.util.List;
 import org.eclipse.graphiti.features.IFeatureProvider;
 import org.eclipse.graphiti.features.IRemoveFeature;
 import org.eclipse.graphiti.features.context.IDeleteContext;
@@ -46,12 +45,12 @@ import org.eclipse.graphiti.features.context.impl.DeleteContext;
 import org.eclipse.graphiti.features.context.impl.MultiDeleteInfo;
 import org.eclipse.graphiti.features.context.impl.RemoveContext;
 import org.eclipse.graphiti.mm.pictograms.AnchorContainer;
-import org.eclipse.graphiti.mm.pictograms.ChopboxAnchor;
 import org.eclipse.graphiti.mm.pictograms.Connection;
 import org.eclipse.graphiti.ui.features.DefaultDeleteFeature;
 import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.preesm.model.pisdf.Delay;
 import org.preesm.model.pisdf.Fifo;
+import org.preesm.ui.pisdf.features.helper.DelayOppositeFifoRetriever;
 
 // TODO: Auto-generated Javadoc
 /**
@@ -60,7 +59,7 @@ import org.preesm.model.pisdf.Fifo;
  * @author kdesnos
  *
  */
-public class DeleteFifoFeature extends DefaultDeleteFeature {
+public class DeleteFifoFeature extends DefaultDeleteFeature implements DelayOppositeFifoRetriever {
 
   /**
    * If the {@link Fifo} has a {@link Delay}, it is associated to 2 {@link Connection}. One of the two
@@ -113,7 +112,7 @@ public class DeleteFifoFeature extends DefaultDeleteFeature {
       obj = getBusinessObjectForPictogramElement(parent);
       if (obj instanceof Delay && obj == delay) {
         delayFeature = parent;
-        targetConnection = getTargetConnection((Delay) obj, delayFeature, connection);
+        targetConnection = getTargetConnection(this, (Delay) obj, delayFeature, connection);
       }
 
       final DeleteContext delCtxt = new DeleteContext(delayFeature);
@@ -135,33 +134,6 @@ public class DeleteFifoFeature extends DefaultDeleteFeature {
 
     // Super call
     super.preDelete(context);
-  }
-
-  /**
-   * Retrieve the target connection when fifo contains a delay
-   * 
-   * @param delay
-   *          Delay object.
-   * @param delayFeature
-   *          Parent delay of the Fifo.
-   * @param connec
-   *          Half of the Fifo, source part
-   * @return
-   */
-  private Connection getTargetConnection(Delay delay, AnchorContainer delayFeature, Connection connec) {
-    final ChopboxAnchor cba = (ChopboxAnchor) delayFeature.getAnchors().get(0);
-    final List<Connection> outgoingConnections = cba.getOutgoingConnections();
-    Connection targetConnection = null;
-    for (final Connection connection : outgoingConnections) {
-      final Object obj = getBusinessObjectForPictogramElement(connection);
-      // With setter delay, there can be multiple FIFOs
-      // We have to choose the correct one
-      if (obj instanceof Fifo && (((Fifo) obj).getDelay() == delay) && connection != connec) {
-        targetConnection = connection;
-        break;
-      }
-    }
-    return targetConnection;
   }
 
 }

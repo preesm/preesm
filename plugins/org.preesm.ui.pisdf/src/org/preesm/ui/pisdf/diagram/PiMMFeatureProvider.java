@@ -609,11 +609,13 @@ public class PiMMFeatureProvider extends DefaultFeatureProvider {
     if (!isEditable()) {
       return null;
     }
+
     final PictogramElement pe = context.getPictogramElement();
     final Object bo = getBusinessObjectForPictogramElement(pe);
     if (bo instanceof AbstractActor) {
       return new MoveAbstractActorFeature(this);
     }
+
     return super.getMoveShapeFeature(context);
   }
 

@@ -38,11 +38,10 @@
  */
 package org.preesm.ui.pisdf.features;
 
-import org.eclipse.graphiti.datatypes.ILocation;
+import java.util.ArrayList;
 import org.eclipse.graphiti.features.IFeatureProvider;
 import org.eclipse.graphiti.features.context.IAddConnectionContext;
 import org.eclipse.graphiti.features.context.IAddContext;
-import org.eclipse.graphiti.features.context.impl.MoveShapeContext;
 import org.eclipse.graphiti.features.impl.AbstractAddFeature;
 import org.eclipse.graphiti.mm.GraphicsAlgorithmContainer;
 import org.eclipse.graphiti.mm.algorithms.GraphicsAlgorithm;
@@ -61,6 +60,7 @@ import org.eclipse.graphiti.util.ColorConstant;
 import org.eclipse.graphiti.util.IColorConstant;
 import org.preesm.model.pisdf.Fifo;
 import org.preesm.model.pisdf.PiGraph;
+import org.preesm.ui.pisdf.features.helper.LayoutActorBendpoints;
 
 // TODO: Auto-generated Javadoc
 /**
@@ -68,7 +68,7 @@ import org.preesm.model.pisdf.PiGraph;
  *
  * @author kdesnos
  */
-public class AddFifoFeature extends AbstractAddFeature {
+public class AddFifoFeature extends AbstractAddFeature implements LayoutActorBendpoints {
 
   /** The Constant FIFO_FOREGROUND. */
   public static final IColorConstant FIFO_FOREGROUND = new ColorConstant(100, 100, 100);
@@ -162,22 +162,12 @@ public class AddFifoFeature extends AbstractAddFeature {
     connection.setEnd(addContext.getTargetAnchor());
 
     // Layout the edge
-    // Call the move feature of the anchor owner to layout the connection
-    final MoveAbstractActorFeature moveFeature = new MoveAbstractActorFeature(getFeatureProvider());
-    // Move source
     final Anchor start = connection.getStart();
     final GraphicsAlgorithm referencedGraphicsAlgorithm = start.getReferencedGraphicsAlgorithm();
     ContainerShape cs;
-    MoveShapeContext moveCtxt;
-    ILocation csLoc;
     if (referencedGraphicsAlgorithm != null) {
       cs = (ContainerShape) referencedGraphicsAlgorithm.getPictogramElement();
-      moveCtxt = new MoveShapeContext(cs);
-      moveCtxt.setDeltaX(0);
-      moveCtxt.setDeltaY(0);
-      csLoc = Graphiti.getPeLayoutService().getLocationRelativeToDiagram(cs);
-      moveCtxt.setLocation(csLoc.getX(), csLoc.getY());
-      moveFeature.moveShape(moveCtxt);
+      layoutShapeConnectedToBendpoints(cs, this, new ArrayList<FreeFormConnection>());
     }
 
     // Move target
@@ -185,12 +175,7 @@ public class AddFifoFeature extends AbstractAddFeature {
     final GraphicsAlgorithm referencedGraphicsAlgorithm2 = end.getReferencedGraphicsAlgorithm();
     if (referencedGraphicsAlgorithm2 != null) {
       cs = (ContainerShape) referencedGraphicsAlgorithm2.getPictogramElement();
-      moveCtxt = new MoveShapeContext(cs);
-      moveCtxt.setDeltaX(0);
-      moveCtxt.setDeltaY(0);
-      csLoc = Graphiti.getPeLayoutService().getLocationRelativeToDiagram(cs);
-      moveCtxt.setLocation(csLoc.getX(), csLoc.getY());
-      moveFeature.moveShape(moveCtxt);
+      layoutShapeConnectedToBendpoints(cs, this, new ArrayList<FreeFormConnection>());
     }
 
     // Create the associated Polyline
