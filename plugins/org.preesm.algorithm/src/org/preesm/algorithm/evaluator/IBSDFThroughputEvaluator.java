@@ -167,57 +167,14 @@ public class IBSDFThroughputEvaluator extends ThroughputEvaluator {
     final Map<String, Double> v = new LinkedHashMap<>();
     // Contains the results of the shortest paths
     Map<String, Map<String, Double>> dist = new LinkedHashMap<>();
-    double h;
-    double l;
     AbstractEdgePropertyType<?> eIn;
     AbstractEdgePropertyType<?> eOut;
 
     // Add looping edges on actors
-    for (final SDFAbstractVertex vertex : g.vertexSet()) {
-      if (!(vertex.getGraphDescription() instanceof SDFGraph)) {
-        final SDFEdge loop = g.addEdge(vertex, vertex);
-        final SDFSourceInterfaceVertex in = new SDFSourceInterfaceVertex(null);
-        in.setName(vertex.getName() + "In");
-        final SDFSinkInterfaceVertex out = new SDFSinkInterfaceVertex(null);
-        out.setName(vertex.getName() + "Out");
-        AbstractEdgePropertyType<?> x;
-        if (!vertex.getSources().isEmpty()) {
-          x = vertex.getAssociatedEdge(vertex.getSources().get(0)).getCons();
-        } else {
-          x = vertex.getAssociatedEdge(vertex.getSinks().get(0)).getProd();
-        }
-        vertex.addSource(in);
-        vertex.addSink(out);
-        loop.setSourceInterface(out);
-        loop.setTargetInterface(in);
-        loop.setDelay(x);
-        loop.setCons(x);
-        loop.setProd(x);
-      }
-    }
+    addLoopingEdgesOnActors(g);
 
     // Value all arcs of this level with L - K * H
-    for (final SDFEdge edge : g.edgeSet()) {
-      if ((edge.getSource() instanceof SDFSourceInterfaceVertex)
-          || (edge.getSource().getGraphDescription() instanceof SDFGraph)) {
-        l = 0;
-      } else {
-        final AbstractVertex referencePiMMVertex = edge.getSource().getReferencePiVertex();
-        if (referencePiMMVertex instanceof AbstractActor) {
-          final Component component = scenario.getSimulationInfo().getMainOperator().getComponent();
-          final AbstractActor actor = (AbstractActor) referencePiMMVertex;
-          l = this.getScenar().getTimings().evaluateTimingOrDefault(actor, component);
-        } else {
-          l = 0;
-        }
-      }
-
-      h = ((double) (edge.getDelay().getValue())
-          + SDFMathD.gcd((double) (edge.getCons().getValue()), (double) (edge.getProd().getValue())))
-          - (double) (edge.getCons().getValue());
-
-      e.put(edge, -(l - (K * h)));
-    }
+    setEdgeValues(K, g, e);
 
     // We need a copy of the set of vertices, since we will add vertices in the original set
     // while going through its elements
@@ -396,6 +353,57 @@ public class IBSDFThroughputEvaluator extends ThroughputEvaluator {
       }
     }
     return dist;
+  }
+
+  private void setEdgeValues(final double K, final SDFGraph g, final Map<SDFEdge, Double> e) {
+    double h;
+    double l;
+    for (final SDFEdge edge : g.edgeSet()) {
+      if ((edge.getSource() instanceof SDFSourceInterfaceVertex)
+          || (edge.getSource().getGraphDescription() instanceof SDFGraph)) {
+        l = 0;
+      } else {
+        final AbstractVertex referencePiMMVertex = edge.getSource().getReferencePiVertex();
+        if (referencePiMMVertex instanceof AbstractActor) {
+          final Component component = scenario.getSimulationInfo().getMainOperator().getComponent();
+          final AbstractActor actor = (AbstractActor) referencePiMMVertex;
+          l = this.getScenar().getTimings().evaluateTimingOrDefault(actor, component);
+        } else {
+          l = 0;
+        }
+      }
+
+      h = ((double) (edge.getDelay().getValue())
+          + SDFMathD.gcd((double) (edge.getCons().getValue()), (double) (edge.getProd().getValue())))
+          - (double) (edge.getCons().getValue());
+
+      e.put(edge, -(l - (K * h)));
+    }
+  }
+
+  private void addLoopingEdgesOnActors(final SDFGraph g) {
+    for (final SDFAbstractVertex vertex : g.vertexSet()) {
+      if (!(vertex.getGraphDescription() instanceof SDFGraph)) {
+        final SDFEdge loop = g.addEdge(vertex, vertex);
+        final SDFSourceInterfaceVertex in = new SDFSourceInterfaceVertex(null);
+        in.setName(vertex.getName() + "In");
+        final SDFSinkInterfaceVertex out = new SDFSinkInterfaceVertex(null);
+        out.setName(vertex.getName() + "Out");
+        AbstractEdgePropertyType<?> x;
+        if (!vertex.getSources().isEmpty()) {
+          x = vertex.getAssociatedEdge(vertex.getSources().get(0)).getCons();
+        } else {
+          x = vertex.getAssociatedEdge(vertex.getSinks().get(0)).getProd();
+        }
+        vertex.addSource(in);
+        vertex.addSink(out);
+        loop.setSourceInterface(out);
+        loop.setTargetInterface(in);
+        loop.setDelay(x);
+        loop.setCons(x);
+        loop.setProd(x);
+      }
+    }
   }
 
   /**
