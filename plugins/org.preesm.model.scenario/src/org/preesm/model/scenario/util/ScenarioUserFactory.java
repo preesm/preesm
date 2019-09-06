@@ -51,6 +51,10 @@ import org.preesm.model.scenario.ScenarioFactory;
  */
 public class ScenarioUserFactory {
 
+  private ScenarioUserFactory() {
+    // forbid instantiation
+  }
+
   private static final ScenarioFactory factory = ScenarioFactory.eINSTANCE;
 
   /**

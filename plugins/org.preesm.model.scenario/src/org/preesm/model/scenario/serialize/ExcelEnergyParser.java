@@ -113,7 +113,7 @@ public class ExcelEnergyParser {
       parseEnergy(w, opDefIds, missingVertices, missingOperatorTypes);
 
     } catch (final BiffException | IOException | CoreException e) {
-      e.printStackTrace();
+      PreesmLogger.getLogger().log(Level.WARNING, "Could not parse energy file", e);
     }
   }
 
@@ -220,7 +220,7 @@ public class ExcelEnergyParser {
             missingVertices.add(actor);
           } else if ((operatorCell == null) && !missingOperatorTypes.contains(component)) {
             PreesmLogger.getLogger().log(Level.WARNING,
-                "No column found in excel sheet for operator type: " + component);
+                () -> "No column found in excel sheet for operator type: " + component);
             missingOperatorTypes.add(component);
           }
         }
