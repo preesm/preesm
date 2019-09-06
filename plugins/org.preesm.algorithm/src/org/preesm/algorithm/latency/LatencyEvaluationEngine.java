@@ -39,12 +39,14 @@ import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
 import org.preesm.algorithm.model.sdf.SDFAbstractVertex;
 import org.preesm.algorithm.model.sdf.SDFEdge;
 import org.preesm.algorithm.model.sdf.SDFGraph;
 import org.preesm.algorithm.throughput.tools.GraphStructureHelper;
 import org.preesm.algorithm.throughput.tools.SDFTransformer;
 import org.preesm.algorithm.throughput.tools.Stopwatch;
+import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.scenario.Scenario;
 
@@ -54,6 +56,8 @@ import org.preesm.model.scenario.Scenario;
  */
 public class LatencyEvaluationEngine {
 
+  private static final String BASE_ACTOR_LITERAL = "baseActor";
+  private static final String DURATION_LITERAL   = "duration";
   // list of replacement graphs
   private Map<String, SDFGraph> replacementSubgraphlList;
   private Scenario              scenario;
@@ -85,7 +89,7 @@ public class LatencyEvaluationEngine {
           actorLatency = scenario.getTimings().evaluateTimingOrDefault((AbstractActor) actor.getReferencePiVertex(),
               scenario.getSimulationInfo().getMainOperator().getComponent());
         } else {
-          actorLatency = (long) actor.getPropertyBean().getValue("duration");
+          actorLatency = actor.getPropertyBean().getValue(DURATION_LITERAL);
         }
       }
 
@@ -94,8 +98,9 @@ public class LatencyEvaluationEngine {
     }
 
     this.timer.stop();
-    System.out
-        .println("Minimum Latency of the graph = " + minLatencySingleCore + " computed in " + this.timer.toString());
+    final String msg = "Minimum Latency of the graph = " + minLatencySingleCore + " computed in "
+        + this.timer.toString();
+    PreesmLogger.getLogger().log(Level.INFO, msg);
 
     return minLatencySingleCore;
   }
@@ -126,7 +131,7 @@ public class LatencyEvaluationEngine {
           actorLatency = scenario.getTimings().evaluateTimingOrDefault((AbstractActor) actor.getReferencePiVertex(),
               scenario.getSimulationInfo().getMainOperator().getComponent());
         } else {
-          actorLatency = (long) actor.getPropertyBean().getValue("duration");
+          actorLatency = actor.getPropertyBean().getValue(DURATION_LITERAL);
         }
       }
 
@@ -164,17 +169,19 @@ public class LatencyEvaluationEngine {
     // re-time the IBSDF graph
     if (retiming) {
       GraphStructureHelper.retime(graph);
-      System.out.println(
+      PreesmLogger.getLogger().log(Level.INFO,
           "Computing the minimum Latency of the graph using the decomposition technique after a retinming phase ...");
     } else {
-      System.out.println("Computing the minimum Latency of the graph using the decomposition technique ...");
+      PreesmLogger.getLogger().log(Level.INFO,
+          "Computing the minimum Latency of the graph using the decomposition technique ...");
     }
 
     this.timer = new Stopwatch();
     this.timer.start();
 
     // Step 1: Construct the replacement subgraph of the top graph hierarchical actors
-    System.out.println("Step 1: Construct the replacement subgraph of toprgraph hierarchical actors");
+    PreesmLogger.getLogger().log(Level.INFO,
+        "Step 1: Construct the replacement subgraph of toprgraph hierarchical actors");
     this.replacementSubgraphlList = new Hashtable<>();
     for (final SDFAbstractVertex actor : graph.vertexSet()) {
       if (actor.getGraphDescription() != null) {
@@ -183,29 +190,31 @@ public class LatencyEvaluationEngine {
     }
 
     // Step 2: convert the top graph to a DAG
-    System.out.println("Step 2: convert the top graph to a DAG");
-    final SDFGraph topgraph_dag = SDFTransformer.convertToDAG(graph);
+    PreesmLogger.getLogger().log(Level.INFO, "Step 2: convert the top graph to a DAG");
+    final SDFGraph topgraphDag = SDFTransformer.convertToDAG(graph);
 
     // Step 3: replace the hierarchical actors by their replacement subgraph
-    System.out.println("Step 3: replace the hierarchical actors by their replacement subgraph");
+    PreesmLogger.getLogger().log(Level.INFO, "Step 3: replace the hierarchical actors by their replacement subgraph");
     final ArrayList<SDFAbstractVertex> actorToReplace = new ArrayList<>();
-    for (final SDFAbstractVertex actor : topgraph_dag.vertexSet()) {
-      if (((SDFAbstractVertex) actor.getPropertyBean().getValue("baseActor")).getGraphDescription() != null) {
+    for (final SDFAbstractVertex actor : topgraphDag.vertexSet()) {
+      final SDFAbstractVertex value = actor.getPropertyBean().getValue(BASE_ACTOR_LITERAL);
+      if (value.getGraphDescription() != null) {
         actorToReplace.add(actor);
       }
     }
     for (final SDFAbstractVertex actor : actorToReplace) {
-      final SDFAbstractVertex baseActor = (SDFAbstractVertex) actor.getPropertyBean().getValue("baseActor");
-      GraphStructureHelper.replaceHierarchicalActor(topgraph_dag, actor,
+      final SDFAbstractVertex baseActor = actor.getPropertyBean().getValue(BASE_ACTOR_LITERAL);
+      GraphStructureHelper.replaceHierarchicalActor(topgraphDag, actor,
           this.replacementSubgraphlList.get(baseActor.getName()));
     }
 
     // Step 4: compute the longest path of the top graph
-    System.out.println("Step 4: compute the longest path of the top graph");
-    final double minLatency = GraphStructureHelper.getLongestPath(topgraph_dag, scenario, null);
+    PreesmLogger.getLogger().log(Level.INFO, "Step 4: compute the longest path of the top graph");
+    final double minLatency = GraphStructureHelper.getLongestPath(topgraphDag, scenario, null);
 
     this.timer.stop();
-    System.out.println("Minimum Latency of the graph = " + minLatency + " computed in " + this.timer.toString());
+    final String msg = "Minimum Latency of the graph = " + minLatency + " computed in " + this.timer.toString();
+    PreesmLogger.getLogger().log(Level.INFO, msg);
 
     return minLatency;
   }
@@ -219,13 +228,13 @@ public class LatencyEvaluationEngine {
     }
 
     // Step 2: convert the subgraph to a DAG
-    final SDFGraph subgraph_dag = SDFTransformer.convertToDAG(subgraph);
+    final SDFGraph subgraphDag = SDFTransformer.convertToDAG(subgraph);
 
     // Step 3: replace the hierarchical actors by their replacement subgraph
     final ArrayList<SDFAbstractVertex> actorToReplace = new ArrayList<>();
     final ArrayList<String> subgraphExecutionModelToRemove = new ArrayList<>();
-    for (final SDFAbstractVertex actor : subgraph_dag.vertexSet()) {
-      final SDFAbstractVertex baseActor = (SDFAbstractVertex) actor.getPropertyBean().getValue("baseActor");
+    for (final SDFAbstractVertex actor : subgraphDag.vertexSet()) {
+      final SDFAbstractVertex baseActor = actor.getPropertyBean().getValue(BASE_ACTOR_LITERAL);
       if (baseActor.getGraphDescription() != null) {
         actorToReplace.add(actor);
         // add the parent actor to the list of subgraph execution model to remove
@@ -235,8 +244,8 @@ public class LatencyEvaluationEngine {
       }
     }
     for (final SDFAbstractVertex actor : actorToReplace) {
-      final SDFAbstractVertex baseActor = (SDFAbstractVertex) actor.getPropertyBean().getValue("baseActor");
-      GraphStructureHelper.replaceHierarchicalActor(subgraph_dag, actor,
+      final SDFAbstractVertex baseActor = actor.getPropertyBean().getValue(BASE_ACTOR_LITERAL);
+      GraphStructureHelper.replaceHierarchicalActor(subgraphDag, actor,
           this.replacementSubgraphlList.get(baseActor.getName()));
     }
 
@@ -246,7 +255,7 @@ public class LatencyEvaluationEngine {
     }
 
     // Step 4: compute the longest path of the subgraph
-    final SDFGraph replGraph = constructReplacementGraph(h, subgraph_dag);
+    final SDFGraph replGraph = constructReplacementGraph(subgraphDag);
 
     // save the replacement graph
     this.replacementSubgraphlList.put(h.getName(), replGraph);
@@ -257,11 +266,11 @@ public class LatencyEvaluationEngine {
    *
    * @param h
    *          hierarchical actor
-   * @param subgraph_dag
+   * @param subgraphDag
    *          DAG version of the subgraph in which all the sub-hierarchical actor was replaced by its replacement graph
    * @return replacement graph of the hierarchical actor
    */
-  private SDFGraph constructReplacementGraph(final SDFAbstractVertex h, final SDFGraph subgraph_dag) {
+  private SDFGraph constructReplacementGraph(final SDFGraph subgraphDag) {
     // version simple
 
     // construct the replacement graph of the hierarchical actor
@@ -272,14 +281,14 @@ public class LatencyEvaluationEngine {
     final ArrayList<SDFAbstractVertex> outputActors = new ArrayList<>();
 
     // loop actors
-    for (final SDFAbstractVertex actor : subgraph_dag.vertexSet()) {
+    for (final SDFAbstractVertex actor : subgraphDag.vertexSet()) {
       // check if the actor has no inputs
       if (actor.getSources().isEmpty()) {
         inputActors.add(actor);
 
         // create the associated actor in the replacement graph
         GraphStructureHelper.addActor(replGraph, actor.getName(), null, actor.getNbRepeatAsLong(), 0., 0,
-            (SDFAbstractVertex) actor.getPropertyBean().getValue("baseActor"));
+            (SDFAbstractVertex) actor.getPropertyBean().getValue(BASE_ACTOR_LITERAL));
       }
 
       // check if the actor has no outputs
@@ -292,17 +301,17 @@ public class LatencyEvaluationEngine {
           duration = this.scenario.getTimings().evaluateTimingOrDefault((AbstractActor) actor.getReferencePiVertex(),
               scenario.getSimulationInfo().getMainOperator().getComponent());
         } else {
-          duration = (Double) actor.getPropertyBean().getValue("duration");
+          duration = (Double) actor.getPropertyBean().getValue(DURATION_LITERAL);
         }
 
         // create the associated actor in the replacement graph
         GraphStructureHelper.addActor(replGraph, actor.getName(), null, actor.getNbRepeatAsLong(), duration, 0,
-            (SDFAbstractVertex) actor.getPropertyBean().getValue("baseActor"));
+            (SDFAbstractVertex) actor.getPropertyBean().getValue(BASE_ACTOR_LITERAL));
       }
     }
 
     // Step 2: sort actors
-    final List<SDFAbstractVertex> topoSortList = GraphStructureHelper.topologicalSorting(subgraph_dag);
+    final List<SDFAbstractVertex> topoSortList = GraphStructureHelper.topologicalSorting(subgraphDag);
 
     // table of distances
     Map<String, Double> distance;
