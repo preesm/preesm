@@ -219,7 +219,8 @@ public class IPXACTDesignParser extends IPXACTParser {
 
     // set default hardware ID
     final EList<ComponentInstance> componentInstances = design.getComponentInstances();
-    final Set<Integer> usedIDs = componentInstances.stream().map(c -> c.getHardwareId()).collect(Collectors.toSet());
+    final Set<Integer> usedIDs = componentInstances.stream().map(ComponentInstance::getHardwareId)
+        .collect(Collectors.toSet());
 
     final List<ComponentInstance> unsetHardwareIDComponentInstances = componentInstances.stream()
         .filter(c -> c.getHardwareId() == -1).collect(Collectors.toList());
@@ -266,9 +267,9 @@ public class IPXACTDesignParser extends IPXACTParser {
       if (node instanceof Element) {
         final Element elt = (Element) node;
         final String type = elt.getTagName();
-        if (type.equals("spirit:configurableElementValues")) {
+        if ("spirit:configurableElementValues".equals(type)) {
           parseParameters(elt, instance);
-        } else if (type.equals("spirit:componentRef")) {
+        } else if ("spirit:componentRef".equals(type)) {
           vlnv = parseCompactVLNV(elt);
         }
       }

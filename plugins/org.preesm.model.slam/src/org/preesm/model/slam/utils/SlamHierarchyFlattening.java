@@ -45,7 +45,6 @@ import org.preesm.commons.doc.annotations.Parameter;
 import org.preesm.commons.doc.annotations.Port;
 import org.preesm.commons.doc.annotations.PreesmTask;
 import org.preesm.commons.doc.annotations.Value;
-import org.preesm.commons.exceptions.PreesmException;
 import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.model.slam.Design;
 import org.preesm.model.slam.process.SlamFlattener;
@@ -67,15 +66,9 @@ import org.preesm.workflow.implement.AbstractTaskImplementation;
 
 public class SlamHierarchyFlattening extends AbstractTaskImplementation {
 
-  /*
-   * (non-Javadoc)
-   *
-   * @see org.ietr.dftools.workflow.implement.AbstractTaskImplementation#execute(java.util.Map, java.util.Map,
-   * org.eclipse.core.runtime.IProgressMonitor, java.lang.String, org.ietr.dftools.workflow.elements.Workflow)
-   */
   @Override
   public Map<String, Object> execute(final Map<String, Object> inputs, final Map<String, String> parameters,
-      final IProgressMonitor monitor, final String nodeName, final Workflow workflow) throws PreesmException {
+      final IProgressMonitor monitor, final String nodeName, final Workflow workflow) {
     final Map<String, Object> outputs = new LinkedHashMap<>();
     final Design design = (Design) inputs.get("architecture");
     final String depthS = parameters.get("depth");
@@ -88,11 +81,7 @@ public class SlamHierarchyFlattening extends AbstractTaskImplementation {
     }
 
     final Logger logger = PreesmLogger.getLogger();
-    logger.log(Level.INFO, "flattening " + depth + " level(s) of hierarchy");
-
-    // Copier copier = new Copier();
-    // EObject result = copier.copy(design);
-    // copier.copyReferences();
+    logger.log(Level.INFO, () -> "flattening " + depth + " level(s) of hierarchy");
 
     final SlamFlattener flattener = new SlamFlattener();
     flattener.flatten(design, depth);
@@ -105,11 +94,6 @@ public class SlamHierarchyFlattening extends AbstractTaskImplementation {
     return outputs;
   }
 
-  /*
-   * (non-Javadoc)
-   *
-   * @see org.ietr.dftools.workflow.implement.AbstractTaskImplementation#getDefaultParameters()
-   */
   @Override
   public Map<String, String> getDefaultParameters() {
     final Map<String, String> parameters = new LinkedHashMap<>();
@@ -118,11 +102,6 @@ public class SlamHierarchyFlattening extends AbstractTaskImplementation {
     return parameters;
   }
 
-  /*
-   * (non-Javadoc)
-   *
-   * @see org.ietr.dftools.workflow.implement.AbstractWorkflowNodeImplementation#monitorMessage()
-   */
   @Override
   public String monitorMessage() {
     return "Flattening an S-LAM model hierarchy.";

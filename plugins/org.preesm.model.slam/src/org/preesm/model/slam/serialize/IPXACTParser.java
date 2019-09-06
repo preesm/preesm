@@ -42,7 +42,6 @@ import org.preesm.model.slam.VLNV;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 
-// TODO: Auto-generated Javadoc
 /**
  * Parser of a System-Level Architecture model from the IP-XACT format. Utilities common to component and design
  * parsers.
