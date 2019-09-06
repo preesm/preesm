@@ -90,11 +90,11 @@ public class MessageRouteStep extends AbstractRouteStep {
    */
   @Override
   public String getId() {
-    String id = "";
+    final StringBuilder id = new StringBuilder();
     for (final ComponentInstance node : this.nodes) {
-      id += node.getComponent().getVlnv().getName();
+      id.append(node.getComponent().getVlnv().getName());
     }
-    return id;
+    return id.toString();
   }
 
   /**
@@ -104,11 +104,11 @@ public class MessageRouteStep extends AbstractRouteStep {
    */
   @Override
   public String getName() {
-    String name = "";
+    final StringBuilder name = new StringBuilder();
     for (final ComponentInstance node : this.nodes) {
-      name += node.getInstanceName();
+      name.append(node.getInstanceName());
     }
-    return name;
+    return name.toString();
   }
 
   /**
@@ -119,10 +119,8 @@ public class MessageRouteStep extends AbstractRouteStep {
   public List<ComponentInstance> getContentionNodes() {
     final List<ComponentInstance> contentionNodes = new ArrayList<>();
     for (final ComponentInstance node : this.nodes) {
-      if (node.getComponent() instanceof ComNodeImpl) {
-        if (!((ComNode) node.getComponent()).isParallel()) {
-          contentionNodes.add(node);
-        }
+      if (node.getComponent() instanceof ComNodeImpl && !((ComNode) node.getComponent()).isParallel()) {
+        contentionNodes.add(node);
       }
     }
     return contentionNodes;
@@ -175,26 +173,16 @@ public class MessageRouteStep extends AbstractRouteStep {
     return getWorstTransferTime(transfersSize);
   }
 
-  /*
-   * (non-Javadoc)
-   *
-   * @see java.lang.Object#toString()
-   */
   @Override
   public String toString() {
-    String trace = "{" + getSender().toString() + " -> ";
+    final StringBuilder trace = new StringBuilder("{" + getSender().toString() + " -> ");
     for (final ComponentInstance node : this.nodes) {
-      trace += node.getInstanceName() + " ";
+      trace.append(node.getInstanceName() + " ");
     }
-    trace += "-> " + getReceiver().toString() + "}";
-    return trace;
+    trace.append("-> " + getReceiver().toString() + "}");
+    return trace.toString();
   }
 
-  /*
-   * (non-Javadoc)
-   *
-   * @see org.ietr.preesm.core.architecture.route.AbstractRouteStep#clone()
-   */
   @Override
   public MessageRouteStep copy() {
     return new MessageRouteStep(getSender(), this.nodes, getReceiver());
