@@ -142,7 +142,8 @@ public abstract class AbstractMappingFromDAG extends AbstractTaskImplementation 
       final TopologicalTaskSched taskSched = new TopologicalTaskSched(simu.getTotalOrder());
       simu.resetDAG();
 
-      PreesmLogger.getLogger().log(Level.INFO, "Mapping " + dag.vertexSet().size() + " tasks.");
+      final String msg = "Mapping " + dag.vertexSet().size() + " tasks.";
+      PreesmLogger.getLogger().log(Level.INFO, msg);
       final LatencyAbc resSimu = schedule(outputs, parameters, initial, scenario, abcParams, dag, architecture,
           taskSched);
       PreesmLogger.getLogger().log(Level.INFO, "Mapping finished, now add communications tasks.");
@@ -224,23 +225,22 @@ public abstract class AbstractMappingFromDAG extends AbstractTaskImplementation 
 
   private void checkInitEndActorMapping(DirectedAcyclicGraph dag) {
     final Set<DAGVertex> vertexSet = dag.vertexSet();
-    final Optional<
-        DAGVertex> findAny = vertexSet.stream().filter(v -> SpecialVertexManager.isInit(v)).filter(initVertex -> {
+    final Optional<DAGVertex> findAny = vertexSet.stream().filter(SpecialVertexManager::isInit).filter(initVertex -> {
 
-          final String endReferenceName = initVertex.getPropertyBean().getValue(MapperDAGVertex.END_REFERENCE);
-          final MapperDAGVertex dagEndVertex = (MapperDAGVertex) dag.getVertex(endReferenceName);
-          final ComponentInstance endEffectiveOperator = dagEndVertex.getEffectiveOperator();
+      final String endReferenceName = initVertex.getPropertyBean().getValue(MapperDAGVertex.END_REFERENCE);
+      final MapperDAGVertex dagEndVertex = (MapperDAGVertex) dag.getVertex(endReferenceName);
+      final ComponentInstance endEffectiveOperator = dagEndVertex.getEffectiveOperator();
 
-          final String initReferenceName = dagEndVertex.getPropertyBean().getValue(MapperDAGVertex.END_REFERENCE);
-          final MapperDAGVertex dagInitVertex = (MapperDAGVertex) dag.getVertex(initReferenceName);
-          final ComponentInstance initEffectiveOperator = dagInitVertex.getEffectiveOperator();
+      final String initReferenceName = dagEndVertex.getPropertyBean().getValue(MapperDAGVertex.END_REFERENCE);
+      final MapperDAGVertex dagInitVertex = (MapperDAGVertex) dag.getVertex(initReferenceName);
+      final ComponentInstance initEffectiveOperator = dagInitVertex.getEffectiveOperator();
 
-          final boolean properlyReferenced = initVertex == initEffectiveOperator;
-          final boolean sameOperator = initEffectiveOperator.getInstanceName()
-              .equals(endEffectiveOperator.getInstanceName());
+      final boolean properlyReferenced = initVertex == initEffectiveOperator;
+      final boolean sameOperator = initEffectiveOperator.getInstanceName()
+          .equals(endEffectiveOperator.getInstanceName());
 
-          return properlyReferenced && sameOperator;
-        }).findAny();
+      return properlyReferenced && sameOperator;
+    }).findAny();
     if (findAny.isPresent()) {
       throw new PreesmRuntimeException("Scheduler chosed to put init and end actors on different PE.");
     }
