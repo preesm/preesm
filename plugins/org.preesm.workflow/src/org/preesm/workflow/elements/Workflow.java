@@ -38,6 +38,7 @@ package org.preesm.workflow.elements;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.logging.Level;
 import org.eclipse.core.runtime.IPath;
 import org.jgrapht.graph.DirectedMultigraph;
@@ -67,19 +68,32 @@ public class Workflow extends DirectedMultigraph<AbstractWorkflowNode<?>, Workfl
   }
 
   public boolean isErrorOnWarning() {
-    return errorOnWarning;
+    return this.errorOnWarning;
   }
 
-  public void setErrorOnWarning(boolean errorOnWarning) {
+  public void setErrorOnWarning(final boolean errorOnWarning) {
     this.errorOnWarning = errorOnWarning;
   }
 
   public Level getOutputLevel() {
-    return outputLevel;
+    return this.outputLevel;
   }
 
-  public void setOutputLevel(Level outputLevel) {
+  public void setOutputLevel(final Level outputLevel) {
     this.outputLevel = outputLevel;
+  }
+
+  @Override
+  public boolean equals(final Object obj) {
+    if (obj instanceof Workflow) {
+      return this.path.equals(((Workflow) obj).path);
+    }
+    return false;
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(this.path);
   }
 
   /**
