@@ -46,6 +46,10 @@ import java.util.Map;
  */
 public class CollectionUtil {
 
+  private CollectionUtil() {
+    // forbid instantiation
+  }
+
   /**
    * Retrieves all the map values of the selected keys in a list. If selectedKeys is ordered, the resulting list will be
    * ordered accordingly. If a key is absent, the result will omit the value.

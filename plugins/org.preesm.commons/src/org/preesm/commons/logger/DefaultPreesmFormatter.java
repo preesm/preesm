@@ -85,10 +85,8 @@ public class DefaultPreesmFormatter extends Formatter {
     output.append(record.getMessage());
 
     final Throwable thrown = record.getThrown();
-    if (thrown != null) {
-      if (debugMode) {
-        output.append("\n" + ExceptionUtils.getStackTrace(thrown));
-      }
+    if (thrown != null && debugMode) {
+      output.append("\n" + ExceptionUtils.getStackTrace(thrown));
     }
 
     return output.toString();

@@ -56,6 +56,10 @@ import org.osgi.framework.wiring.BundleWiring;
  */
 public class ReflectionUtil {
 
+  private ReflectionUtil() {
+    // forbid instantiation
+  }
+
   private static final List<Bundle> getContributorBundles(final String extensionPointID) {
     final IExtensionRegistry registry = Platform.getExtensionRegistry();
     final IExtensionPoint extensionPoint = registry.getExtensionPoint(extensionPointID);
@@ -101,11 +105,10 @@ public class ReflectionUtil {
       for (final String resource : listResources) {
         try {
           final Class<?> loadClass = classLoader.loadClass(resource);
-          if (!loadClass.isInterface() && !Modifier.isAbstract(loadClass.getModifiers())) {
-            if (parentClassOrInterface.isAssignableFrom(loadClass)) {
-              final Class<? extends T> asSubclass = loadClass.asSubclass(parentClassOrInterface);
-              res.add(asSubclass);
-            }
+          if (!loadClass.isInterface() && !Modifier.isAbstract(loadClass.getModifiers())
+              && parentClassOrInterface.isAssignableFrom(loadClass)) {
+            final Class<? extends T> asSubclass = loadClass.asSubclass(parentClassOrInterface);
+            res.add(asSubclass);
           }
         } catch (final ClassNotFoundException | NoClassDefFoundError e) {
           // skip this class

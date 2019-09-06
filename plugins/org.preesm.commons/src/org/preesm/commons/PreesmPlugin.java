@@ -41,6 +41,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
+import java.util.logging.Level;
 import org.eclipse.emf.common.EMFPlugin.EclipsePlugin;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
@@ -59,6 +60,10 @@ public class PreesmPlugin extends EclipsePlugin implements BundleActivator {
     return instance;
   }
 
+  public static final void setInstance(final PreesmPlugin newInstance) {
+    instance = newInstance;
+  }
+
   public static final String PREESM_PLUGIN_EXTENSION_POINT_ID = "org.preesm.commons.plugin";
 
   private final Map<String, Class<?>> taskRegistry = new LinkedHashMap<>();
@@ -66,14 +71,14 @@ public class PreesmPlugin extends EclipsePlugin implements BundleActivator {
   @Override
   public void start(BundleContext context) throws Exception {
     super.start(context);
-    instance = this;
+    setInstance(this);
     fillRegistry();
   }
 
   @Override
   public void stop(BundleContext context) throws Exception {
     taskRegistry.clear();
-    instance = null;
+    setInstance(null);
     super.stop(context);
   }
 
@@ -84,7 +89,7 @@ public class PreesmPlugin extends EclipsePlugin implements BundleActivator {
     for (final Class<?> task : allTasks) {
       final String id = task.getAnnotation(PreesmTask.class).id();
       if (taskRegistry.containsKey(id)) {
-        PreesmLogger.getLogger().warning("Several tasks have the same id '" + id + "'.");
+        PreesmLogger.getLogger().log(Level.WARNING, () -> "Several tasks have the same id '" + id + "'.");
       }
       taskRegistry.put(id, task);
     }

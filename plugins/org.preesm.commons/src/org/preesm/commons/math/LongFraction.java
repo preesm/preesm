@@ -41,9 +41,7 @@ import org.apache.commons.math3.FieldElement;
 import org.apache.commons.math3.exception.MathArithmeticException;
 import org.apache.commons.math3.exception.NullArgumentException;
 import org.apache.commons.math3.exception.util.LocalizedFormats;
-import org.apache.commons.math3.fraction.FractionConversionException;
 import org.apache.commons.math3.util.ArithmeticUtils;
-import org.apache.commons.math3.util.FastMath;
 
 /**
  * This is a copy of the Apache {@link Fraction} with long numerator and denominator instead of integer.
@@ -110,179 +108,11 @@ public class LongFraction extends Number implements FieldElement<LongFraction>, 
   /** Serializable version identifier */
   private static final long serialVersionUID = 3698073679419233275L;
 
-  /** The default epsilon used for convergence. */
-  private static final double DEFAULT_EPSILON = 1e-5;
-
   /** The denominator. */
   private final long denominator;
 
   /** The numerator. */
   private final long numerator;
-
-  /**
-   * Create a fraction given the double value.
-   *
-   * @param value
-   *          the double value to convert to a fraction.
-   * @throws FractionConversionException
-   *           if the continued fraction failed to converge.
-   * @deprecated Prefer use of exact cosntructor with long denominator
-   */
-  @Deprecated
-  public LongFraction(double value) {
-    this(value, DEFAULT_EPSILON, 100);
-  }
-
-  /**
-   * Create a fraction given the double value and maximum error allowed.
-   * <p>
-   * References:
-   * <ul>
-   * <li><a href="http://mathworld.wolfram.com/ContinuedFraction.html"> Continued Fraction</a> equations (11) and
-   * (22)-(26)</li>
-   * </ul>
-   * </p>
-   *
-   * @param value
-   *          the double value to convert to a fraction.
-   * @param epsilon
-   *          maximum error allowed. The resulting fraction is within {@code epsilon} of {@code value}, in absolute
-   *          terms.
-   * @param maxIterations
-   *          maximum number of convergents
-   * @throws FractionConversionException
-   *           if the continued fraction failed to converge.
-   * @deprecated Prefer use of exact cosntructor with long denominator
-   */
-  @Deprecated
-  public LongFraction(double value, double epsilon, int maxIterations) {
-    this(value, epsilon, Long.MAX_VALUE, maxIterations);
-  }
-
-  /**
-   * Create a fraction given the double value and maximum denominator.
-   * <p>
-   * References:
-   * <ul>
-   * <li><a href="http://mathworld.wolfram.com/ContinuedFraction.html"> Continued Fraction</a> equations (11) and
-   * (22)-(26)</li>
-   * </ul>
-   * </p>
-   *
-   * @param value
-   *          the double value to convert to a fraction.
-   * @param maxDenominator
-   *          The maximum allowed value for denominator
-   * @throws FractionConversionException
-   *           if the continued fraction failed to converge
-   * @deprecated Prefer use of exact cosntructor with long denominator
-   */
-  @Deprecated
-  public LongFraction(double value, long maxDenominator) {
-    this(value, 0, maxDenominator, 100);
-  }
-
-  /**
-   * Create a fraction given the double value and either the maximum error allowed or the maximum number of denominator
-   * digits.
-   * <p>
-   *
-   * NOTE: This constructor is called with EITHER - a valid epsilon value and the maxDenominator set to
-   * Integer.MAX_VALUE (that way the maxDenominator has no effect). OR - a valid maxDenominator value and the epsilon
-   * value set to zero (that way epsilon only has effect if there is an exact match before the maxDenominator value is
-   * reached).
-   * </p>
-   * <p>
-   *
-   * It has been done this way so that the same code can be (re)used for both scenarios. However this could be confusing
-   * to users if it were part of the public API and this constructor should therefore remain PRIVATE.
-   * </p>
-   *
-   * See JIRA issue ticket MATH-181 for more details:
-   *
-   * https://issues.apache.org/jira/browse/MATH-181
-   *
-   * @param value
-   *          the double value to convert to a fraction.
-   * @param epsilon
-   *          maximum error allowed. The resulting fraction is within {@code epsilon} of {@code value}, in absolute
-   *          terms.
-   * @param maxDenominator
-   *          maximum denominator value allowed.
-   * @param maxIterations
-   *          maximum number of convergents
-   * @throws FractionConversionException
-   *           if the continued fraction failed to converge.
-   * @deprecated Prefer use of exact cosntructor with long denominator
-   */
-  @Deprecated
-  private LongFraction(double value, double epsilon, long maxDenominator, int maxIterations) {
-    long overflow = Integer.MAX_VALUE;
-    double r0 = value;
-    long a0 = (long) FastMath.floor(r0);
-    if (FastMath.abs(a0) > overflow) {
-      throw new FractionConversionException(value, a0, 1L);
-    }
-
-    // check for (almost) integer arguments, which should not go to iterations.
-    if (FastMath.abs(a0 - value) < epsilon) {
-      this.numerator = (int) a0;
-      this.denominator = 1;
-      return;
-    }
-
-    long p0 = 1;
-    long q0 = 0;
-    long p1 = a0;
-    long q1 = 1;
-
-    long p2 = 0;
-    long q2 = 1;
-
-    int n = 0;
-    boolean stop = false;
-    do {
-      ++n;
-      double r1 = 1.0 / (r0 - a0);
-      long a1 = (long) FastMath.floor(r1);
-      p2 = (a1 * p1) + p0;
-      q2 = (a1 * q1) + q0;
-
-      if ((FastMath.abs(p2) > overflow) || (FastMath.abs(q2) > overflow)) {
-        // in maxDenominator mode, if the last fraction was very close to the actual value
-        // q2 may overflow in the next iteration; in this case return the last one.
-        if (epsilon == 0.0 && FastMath.abs(q1) < maxDenominator) {
-          break;
-        }
-        throw new FractionConversionException(value, p2, q2);
-      }
-
-      double convergent = (double) p2 / (double) q2;
-      if (n < maxIterations && FastMath.abs(convergent - value) > epsilon && q2 < maxDenominator) {
-        p0 = p1;
-        p1 = p2;
-        q0 = q1;
-        q1 = q2;
-        a0 = a1;
-        r0 = r1;
-      } else {
-        stop = true;
-      }
-    } while (!stop);
-
-    if (n >= maxIterations) {
-      throw new FractionConversionException(value, maxIterations);
-    }
-
-    if (q2 < maxDenominator) {
-      this.numerator = (int) p2;
-      this.denominator = (int) q2;
-    } else {
-      this.numerator = (int) p1;
-      this.denominator = (int) q1;
-    }
-
-  }
 
   /**
    * Create a fraction from an int. The fraction is num / 1.
