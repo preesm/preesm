@@ -156,29 +156,30 @@ public class GraphInterfaceObserver extends AdapterImpl {
 
       final PiGraph graph = (PiGraph) notification.getNotifier();
 
-      final AbstractVertex vertex = (AbstractVertex) notification.getNewValue();
-      final List<?> list = (List<?>) notification.getOldValue();
-
       switch (notification.getEventType()) {
         case Notification.ADD:
           // It is safe to cast because we already checked that the
           // notification
           // was caused by an addition to the graph vertices.
-          add(vertex, graph);
+          final AbstractVertex vertextoAdd = (AbstractVertex) notification.getNewValue();
+          add(vertextoAdd, graph);
           break;
 
         case Notification.ADD_MANY:
-          for (final Object object : list) {
+          final List<?> listToAdd = (List<?>) notification.getOldValue();
+          for (final Object object : listToAdd) {
             add((AbstractVertex) object, graph);
           }
           break;
 
         case Notification.REMOVE:
-          remove(vertex, graph);
+          final AbstractVertex vertexToRemove = (AbstractVertex) notification.getNewValue();
+          remove(vertexToRemove, graph);
           break;
 
         case Notification.REMOVE_MANY:
-          for (final Object object : list) {
+          final List<?> listToRemove = (List<?>) notification.getOldValue();
+          for (final Object object : listToRemove) {
             remove((AbstractVertex) object, graph);
           }
           break;
