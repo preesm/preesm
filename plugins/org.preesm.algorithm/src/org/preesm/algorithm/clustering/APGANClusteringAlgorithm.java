@@ -1,6 +1,7 @@
 /**
  * Copyright or © or Copr. IETR/INSA - Rennes (%%DATE%%) :
  *
+ * Antoine Morvan [antoine.morvan@insa-rennes.fr] (2019)
  * %%AUTHORS%%
  *
  * This software is a computer program whose purpose is to help prototyping
