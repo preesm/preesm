@@ -300,11 +300,6 @@ public class SpiderPreProcessVisitor extends PiMMSwitch<Boolean> {
     return true;
   }
 
-  // @Override
-  // public Boolean caseConfigInputInterface(final ConfigInputInterface cii) {
-  // throw new UnsupportedOperationException();
-  // }
-
   @Override
   public Boolean caseDelay(final Delay d) {
     throw new UnsupportedOperationException();
