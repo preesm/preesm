@@ -47,7 +47,7 @@ PREESM Changelog
 * Fix #218: add support for non connected actors in SRDAG transform;
 * Fix #222: allow multiplicity in Codegen Call parameters;
 * Fix #226: avoid name conflict in graphml configuration;
-# Fix #227: enable Export SVG Diagram on any selected element;
+* Fix #227: enable Export SVG Diagram on any selected element;
 
 ## Release version 3.15.0
 *2019.08.28*
