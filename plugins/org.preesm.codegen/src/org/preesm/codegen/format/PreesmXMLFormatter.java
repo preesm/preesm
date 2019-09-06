@@ -60,6 +60,10 @@ import org.xml.sax.SAXException;
  */
 public class PreesmXMLFormatter {
 
+  private PreesmXMLFormatter() {
+    // forbid instantiation
+  }
+
   /**
    *
    */

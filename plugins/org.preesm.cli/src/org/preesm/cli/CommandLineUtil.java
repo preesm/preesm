@@ -49,6 +49,10 @@ import org.eclipse.core.runtime.CoreException;
  */
 public class CommandLineUtil {
 
+  private CommandLineUtil() {
+    // forbid instantiation
+  }
+
   /**
    * If it is enabled, disable auto-building on the current workspace.
    *

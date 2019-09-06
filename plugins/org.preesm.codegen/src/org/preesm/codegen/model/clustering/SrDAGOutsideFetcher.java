@@ -61,32 +61,7 @@ public class SrDAGOutsideFetcher implements IOutsideFetcher {
   public Buffer getOuterClusterBuffer(DataPort graphPort, Map<String, Object> input) {
 
     // Search corresponding port
-    DirectedAcyclicGraph dag = (DirectedAcyclicGraph) input.get("dag");
-    DAGVertex dagVertex = (DAGVertex) input.get("dagVertex");
-    BufferProperties subBufferProperties = null;
-    if (graphPort instanceof DataInputPort) {
-      Set<DAGEdge> inEdges = dag.incomingEdgesOf(dagVertex);
-      for (final DAGEdge edge : inEdges) {
-        final BufferAggregate bufferAggregate = edge.getPropertyBean().getValue(BufferAggregate.propertyBeanName);
-        for (final BufferProperties buffProperty : bufferAggregate) {
-          final String portHsdfName = graphPort.getName();
-          if (buffProperty.getDestInputPortID().equals(portHsdfName) && edge.getSource().getKind() != null) {
-            subBufferProperties = buffProperty;
-          }
-        }
-      }
-    } else if (graphPort instanceof DataOutputPort) {
-      Set<DAGEdge> outEdges = dag.outgoingEdgesOf(dagVertex);
-      for (final DAGEdge edge : outEdges) {
-        final BufferAggregate bufferAggregate = edge.getPropertyBean().getValue(BufferAggregate.propertyBeanName);
-        for (final BufferProperties buffProperty : bufferAggregate) {
-          final String portHsdfName = graphPort.getName();
-          if (buffProperty.getSourceOutputPortID().equals(portHsdfName) && edge.getTarget().getKind() != null) {
-            subBufferProperties = buffProperty;
-          }
-        }
-      }
-    }
+    BufferProperties subBufferProperties = searchBufferProperties(graphPort, input);
 
     // Is the buffer a DistributedBuffer ?
     @SuppressWarnings("unchecked")
@@ -108,6 +83,48 @@ public class SrDAGOutsideFetcher implements IOutsideFetcher {
     }
 
     return var;
+  }
+
+  private BufferProperties searchBufferProperties(DataPort graphPort, Map<String, Object> input) {
+    DirectedAcyclicGraph dag = (DirectedAcyclicGraph) input.get("dag");
+    DAGVertex dagVertex = (DAGVertex) input.get("dagVertex");
+    BufferProperties subBufferProperties = null;
+    if (graphPort instanceof DataInputPort) {
+      subBufferProperties = searchInputPort(graphPort, dag, dagVertex, subBufferProperties);
+    } else if (graphPort instanceof DataOutputPort) {
+      subBufferProperties = searchOutputPort(graphPort, dag, dagVertex, subBufferProperties);
+    }
+    return subBufferProperties;
+  }
+
+  private BufferProperties searchOutputPort(DataPort graphPort, DirectedAcyclicGraph dag, DAGVertex dagVertex,
+      BufferProperties subBufferProperties) {
+    Set<DAGEdge> outEdges = dag.outgoingEdgesOf(dagVertex);
+    for (final DAGEdge edge : outEdges) {
+      final BufferAggregate bufferAggregate = edge.getPropertyBean().getValue(BufferAggregate.propertyBeanName);
+      for (final BufferProperties buffProperty : bufferAggregate) {
+        final String portHsdfName = graphPort.getName();
+        if (buffProperty.getSourceOutputPortID().equals(portHsdfName) && edge.getTarget().getKind() != null) {
+          subBufferProperties = buffProperty;
+        }
+      }
+    }
+    return subBufferProperties;
+  }
+
+  private BufferProperties searchInputPort(DataPort graphPort, DirectedAcyclicGraph dag, DAGVertex dagVertex,
+      BufferProperties subBufferProperties) {
+    Set<DAGEdge> inEdges = dag.incomingEdgesOf(dagVertex);
+    for (final DAGEdge edge : inEdges) {
+      final BufferAggregate bufferAggregate = edge.getPropertyBean().getValue(BufferAggregate.propertyBeanName);
+      for (final BufferProperties buffProperty : bufferAggregate) {
+        final String portHsdfName = graphPort.getName();
+        if (buffProperty.getDestInputPortID().equals(portHsdfName) && edge.getSource().getKind() != null) {
+          subBufferProperties = buffProperty;
+        }
+      }
+    }
+    return subBufferProperties;
   }
 
 }

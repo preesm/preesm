@@ -61,6 +61,10 @@ import org.preesm.commons.logger.PreesmLogger;
  */
 public class PreesmCFormatter {
 
+  private PreesmCFormatter() {
+    // forbid instantiation
+  }
+
   /**
    *
    */
