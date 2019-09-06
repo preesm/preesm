@@ -59,9 +59,7 @@ public class SDFLivenessTest {
     // generate the SDF graph ABC326
     final SDFGraph ABC = generateSDFGraphABC326();
     // check the liveness of the graph
-    final boolean live = SDFLiveness.evaluate(ABC);
-    // check the RV value
-    Assert.assertTrue(live);
+    SDFLiveness.evaluate(ABC);
   }
 
   @Test

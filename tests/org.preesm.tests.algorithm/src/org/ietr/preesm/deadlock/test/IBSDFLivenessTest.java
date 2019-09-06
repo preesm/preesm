@@ -59,8 +59,7 @@ public class IBSDFLivenessTest {
     // generate the IBSDF graph AB[DEF]C
     final SDFGraph ibsdf = generateIBSDFGraph();
     // check the liveness of the ibsdf graph
-    final boolean live = IBSDFLiveness.evaluate(ibsdf);
-    Assert.assertTrue(live);
+    IBSDFLiveness.evaluate(ibsdf);
   }
 
   @Test
