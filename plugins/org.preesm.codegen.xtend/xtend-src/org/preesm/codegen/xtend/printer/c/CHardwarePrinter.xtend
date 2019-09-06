@@ -42,9 +42,7 @@
  */
 package org.preesm.codegen.xtend.printer.c
 
-import java.io.IOException
 import java.util.ArrayList
-import java.util.Arrays
 import java.util.Collection
 import java.util.Date
 import java.util.LinkedHashMap
@@ -69,8 +67,6 @@ import org.preesm.codegen.model.PapifyFunctionCall
 import org.preesm.codegen.model.PapifyType
 import org.preesm.codegen.model.RegisterSetUpAction
 import org.preesm.codegen.model.util.CodegenModelUserFactory
-import org.preesm.commons.exceptions.PreesmRuntimeException
-import org.preesm.commons.files.PreesmResourcesHelper
 import org.preesm.commons.logger.PreesmLogger
 
 /**
@@ -112,18 +108,11 @@ class CHardwarePrinter extends CPrinter {
 
 	override printCoreInitBlockHeader(CallBlock callBlock) '''
 		«super.printCoreInitBlockHeader(callBlock)»
-		// Initialize Hardware infrastructure
-		artico3_init();
 	'''
 
 	override printCoreLoopBlockFooter(LoopBlock block2) '''
 			pthread_barrier_wait(&iter_barrier);
 		}
-		// Release kernel instance of the function
-		artico3_kernel_release(«IF this.listOfHwFunctions.size == 1»"«this.listOfHwFunctions.entrySet.get(0).key»"«ELSE»«PreesmLogger.getLogger().log(Level.SEVERE, "Hardware Codegen ERROR. Multiple hardware functions were detected. This feature is still under developing")»«ENDIF»);
-
-		// Clean artico3 setup
-		artico3_exit();
 
 		return NULL;
 		}
@@ -150,6 +139,7 @@ class CHardwarePrinter extends CPrinter {
 
 		// application dependent includes
 		#include "preesm_gen.h"
+		#include "artico3lib.h"
 
 		// Declare computation thread functions
 		«FOR coreBlock : engine.codeBlocks»
@@ -212,6 +202,10 @@ class CHardwarePrinter extends CPrinter {
 				event_init_multiplex();
 				#endif
 			«ENDIF»
+			
+			// Initialize Hardware infrastructure
+			artico3_init();
+			
 			// Declaring thread pointers
 			pthread_t coreThreads[_PREESM_NBTHREADS_];
 			void *(*coreThreadComputations[_PREESM_NBTHREADS_])(void *) = {
@@ -259,6 +253,13 @@ class CHardwarePrinter extends CPrinter {
 				event_destroy();
 				#endif
 			«ENDIF»
+			
+			// Release kernel instance of the function
+			artico3_kernel_release(«IF this.listOfHwFunctions.size == 1»"«this.listOfHwFunctions.entrySet.get(0).key»"«ELSE»«PreesmLogger.getLogger().log(Level.SEVERE, "Hardware Codegen ERROR. Multiple hardware functions were detected. This feature is still under developing")»«ENDIF»);
+			
+			// Clean artico3 setup
+			artico3_exit();
+			
 			return 0;
 		}
 
