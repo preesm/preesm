@@ -56,16 +56,13 @@ import org.preesm.model.pisdf.Refinement;
  */
 public class RefinementChecker {
 
-  /** The actors without refinement. */
-  // Actors with no refinement set
+  /** Actors with no refinement set */
   private final Set<Actor> actorsWithoutRefinement;
 
-  /** The actors with non existing refinement. */
-  // Actors with refinement path pointing to non-existing file
+  /** Actors with refinement path pointing to non-existing file */
   private final Set<Actor> actorsWithNonExistingRefinement;
 
-  /** The actors with invalid extension refinement. */
-  // Actors with refinement path pointing to non-authorized format file
+  /** Actors with refinement path pointing to non-authorized format file */
   private final Set<Actor> actorsWithInvalidExtensionRefinement;
 
   /**

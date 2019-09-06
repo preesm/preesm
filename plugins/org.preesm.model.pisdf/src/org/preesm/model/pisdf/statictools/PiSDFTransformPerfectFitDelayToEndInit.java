@@ -73,7 +73,6 @@ public class PiSDFTransformPerfectFitDelayToEndInit {
   public PiGraph replacePerfectFitDelay() {
     // Perform copy of input graph
     final PiGraph copyGraph = PiMMUserFactory.instance.copyPiGraphWithHistory(this.inputGraph);
-    // final PiGraph copyGraph = this.inputGraph;
 
     PiGraphConsistenceChecker.check(copyGraph);
 

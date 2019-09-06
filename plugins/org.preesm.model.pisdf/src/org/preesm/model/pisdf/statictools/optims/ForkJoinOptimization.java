@@ -52,12 +52,6 @@ public class ForkJoinOptimization extends PiMMSwitch<Boolean> implements PiMMOpt
 
   boolean keepGoing = false;
 
-  /*
-   * (non-Javadoc)
-   *
-   * @see
-   * org.ietr.preesm.pimm.algorithm.pimmoptims.PiMMOptimization#optimize(org.ietr.preesm.experiment.model.pimm.PiGraph)
-   */
   @Override
   public boolean optimize(PiGraph graph) {
     do {

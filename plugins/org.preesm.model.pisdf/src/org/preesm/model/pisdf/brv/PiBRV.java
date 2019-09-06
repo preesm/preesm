@@ -172,7 +172,7 @@ public abstract class PiBRV {
   private static void emitMultipleScaleFactorsWarning(PiGraph graph, SortedSet<Long> scaleScaleFactors) {
     if (scaleScaleFactors.size() > 2) {
       PreesmLogger.getLogger().log(Level.INFO,
-          "Several different scaling factors have been derived from the input interfaces of the graph "
+          () -> "Several different scaling factors have been derived from the input interfaces of the graph "
               + graph.getName() + ", the highest one has been selected: " + scaleScaleFactors.last());
     }
   }
@@ -221,7 +221,7 @@ public abstract class PiBRV {
     long res = inscaleFactor * scaleScaleFactors.last();
     if (emitScaleWarning) {
       PreesmLogger.getLogger().log(Level.INFO,
-          "The output interfaces of the graph " + graph.getName()
+          () -> "The output interfaces of the graph " + graph.getName()
               + " are not corresponding to their source total production." + " Roundbuffers and scaling factor (x" + res
               + ") will be applied.");
     }
@@ -272,7 +272,7 @@ public abstract class PiBRV {
     long res = inscaleFactor * scaleScaleFactors.last();
     if (emitScaleWarning) {
       PreesmLogger.getLogger().log(Level.INFO,
-          "The input interfaces of the graph " + graph.getName()
+          () -> "The input interfaces of the graph " + graph.getName()
               + " are not corresponding to their target total consumption." + " Broadcasts and scaling factor (x" + res
               + ") will be applied.");
     }

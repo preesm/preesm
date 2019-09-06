@@ -523,11 +523,10 @@ public class PiSDFFlattener extends PiMMSwitch<Boolean> {
 
   @Override
   public Boolean caseParameter(final Parameter param) {
-    // make sure config input interfaces are made into Parameter (since their expressions have been evaluated);
+    // make sure config input interfaces are made into Parameter (since their expressions have been evaluated)
     final Parameter copy = PiMMUserFactory.instance.createParameter();
     copy.setExpression(param.getValueExpression().evaluate());
     copy.setName(graphPrefix + param.getName());
-    // copy.setName(graphPrefix + param.getName());
     this.result.addParameter(copy);
     this.param2param.put(param, copy);
     return true;

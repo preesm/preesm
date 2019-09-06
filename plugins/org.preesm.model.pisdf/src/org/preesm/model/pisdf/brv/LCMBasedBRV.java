@@ -66,11 +66,6 @@ import org.preesm.model.pisdf.statictools.PiMMHelper;
  */
 class LCMBasedBRV extends PiBRV {
 
-  /*
-   * (non-Javadoc)
-   *
-   * @see org.ietr.preesm.pimm.algorithm.math.PiBRV#execute()
-   */
   @Override
   public Map<AbstractVertex, Long> computeBRV(final PiGraph piGraph) {
     Map<AbstractVertex, Long> graphBRV = new LinkedHashMap<>();

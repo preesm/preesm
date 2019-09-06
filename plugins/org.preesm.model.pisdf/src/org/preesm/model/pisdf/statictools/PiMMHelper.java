@@ -75,8 +75,14 @@ import org.preesm.model.pisdf.factory.PiMMUserFactory;
  *         This structure is wrapper around the PiGraph class that provides multiple useful methods for accessing
  *         special properties of a PiGraph rapidly
  *
+ * @deprecated This class will be removed
  */
+@Deprecated
 public class PiMMHelper {
+
+  private PiMMHelper() {
+    // forbid instantiation
+  }
 
   /**
    * List of connectedComponents contained in a graph
@@ -485,9 +491,7 @@ public class PiMMHelper {
       if (!levelBRV.containsKey(container)) {
         levelBRV.put(container, getHierarchichalRV(container, graphBRV));
       }
-      if (av instanceof PiGraph) {
-        continue;
-      } else if (av instanceof Actor) {
+      if (av instanceof Actor) {
         final Actor actor = (Actor) av;
         final long actorPeriod = actor.getPeriod().evaluate();
         if (actorPeriod > 0) {
@@ -509,14 +513,11 @@ public class PiMMHelper {
         }
       }
       sb.append("\n");
-      PreesmLogger.getLogger().log(Level.SEVERE, sb.toString());
+      PreesmLogger.getLogger().log(Level.SEVERE, sb::toString);
       throw new PreesmRuntimeException("Periods are not consistent, abandon.");
     } else if (mapGraphPeriods.size() == 1) {
-      long period = 0;
-      for (Long p : mapGraphPeriods.keySet()) {
-        period = p;
-      }
-      PreesmLogger.getLogger().log(Level.INFO, "The graph period is set to: " + period);
+      final long period = mapGraphPeriods.keySet().stream().findAny().orElse(0L);
+      PreesmLogger.getLogger().log(Level.INFO, () -> ("The graph period is set to: " + period));
     } else {
       PreesmLogger.getLogger().log(Level.INFO, "No period for the graph.");
     }

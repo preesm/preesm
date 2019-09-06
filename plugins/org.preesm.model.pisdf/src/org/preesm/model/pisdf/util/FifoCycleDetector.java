@@ -42,6 +42,7 @@ import java.util.Collection;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
+import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.DataInputPort;
 import org.preesm.model.pisdf.DataOutputPort;
@@ -49,7 +50,6 @@ import org.preesm.model.pisdf.Dependency;
 import org.preesm.model.pisdf.Fifo;
 import org.preesm.model.pisdf.PiGraph;
 
-// TODO: Auto-generated Javadoc
 /**
  * This class provide an Ecore switch to detect cycle dependencies on FIfos.
  */
@@ -129,7 +129,7 @@ public class FifoCycleDetector extends PiMMSwitch<Void> {
     // This means this branch is not a cycle. (But this should not happen,
     // so throw an error)
     if (i < 0) {
-      throw new RuntimeException("No FIFO cycle was found in this branch.");
+      throw new PreesmRuntimeException("No FIFO cycle was found in this branch.");
     }
 
     // If this code is reached, the cycle was correctly detected.
@@ -137,18 +137,12 @@ public class FifoCycleDetector extends PiMMSwitch<Void> {
     this.cycles.add(cycle);
   }
 
-  /*
-   * (non-Javadoc)
-   *
-   * @see
-   * org.ietr.preesm.experiment.model.pimm.util.PiMMSwitch#casePiGraph(org.ietr.preesm.experiment.model.pimm.PiGraph)
-   */
   @Override
   public Void casePiGraph(final PiGraph graph) {
 
     // Visit AbstractActor until they are all visited
     final ArrayList<AbstractActor> actors = new ArrayList<>(graph.getActors());
-    while (actors.size() != 0) {
+    while (!actors.isEmpty()) {
       doSwitch(actors.get(0));
 
       // If fast detection is activated and a cycle was detected, get
@@ -164,12 +158,6 @@ public class FifoCycleDetector extends PiMMSwitch<Void> {
     return null;
   }
 
-  /*
-   * (non-Javadoc)
-   *
-   * @see org.ietr.preesm.experiment.model.pimm.util.PiMMSwitch#caseAbstractActor(org.ietr.preesm.experiment.model.pimm.
-   * AbstractActor)
-   */
   @Override
   public Void caseAbstractActor(final AbstractActor actor) {
     // Visit the AbstractActor and its successors if it was not already done
@@ -208,12 +196,6 @@ public class FifoCycleDetector extends PiMMSwitch<Void> {
     return null;
   }
 
-  /*
-   * (non-Javadoc)
-   *
-   * @see org.ietr.preesm.experiment.model.pimm.util.PiMMSwitch#caseDataInputPort(org.ietr.preesm.experiment.model.pimm.
-   * DataInputPort)
-   */
   @Override
   public Void caseDataInputPort(final DataInputPort port) {
     // Visit the owner of the data input port only if it is a AbstractActor
@@ -279,7 +261,7 @@ public class FifoCycleDetector extends PiMMSwitch<Void> {
    * @return true if cycles were detected, false else.
    */
   public boolean cyclesDetected() {
-    return this.cycles.size() > 0;
+    return !this.cycles.isEmpty();
   }
 
   /**

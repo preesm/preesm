@@ -39,7 +39,6 @@ import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.logging.Level;
-import java.util.logging.Logger;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.preesm.commons.doc.annotations.Port;
 import org.preesm.commons.doc.annotations.PreesmTask;
@@ -59,16 +58,6 @@ import org.preesm.workflow.implement.AbstractWorkflowNodeImplementation;
     inputs = { @Port(name = "PiMM", type = PiGraph.class) }, outputs = { @Port(name = "PiMM", type = PiGraph.class) })
 public class PiMMAlgorithmCheckerTask extends AbstractTaskImplementation {
 
-  /** The logger. */
-  // Rem: Logger is used to display messages in the console
-  protected Logger logger = PreesmLogger.getLogger();
-
-  /*
-   * (non-Javadoc)
-   *
-   * @see org.ietr.dftools.workflow.implement.AbstractTaskImplementation#execute(java.util.Map, java.util.Map,
-   * org.eclipse.core.runtime.IProgressMonitor, java.lang.String, org.ietr.dftools.workflow.elements.Workflow)
-   */
   @Override
   public Map<String, Object> execute(final Map<String, Object> inputs, final Map<String, String> parameters,
       final IProgressMonitor monitor, final String nodeName, final Workflow workflow) {
@@ -78,13 +67,13 @@ public class PiMMAlgorithmCheckerTask extends AbstractTaskImplementation {
     // Check the graph and display corresponding messages
     final PiMMAlgorithmChecker checker = new PiMMAlgorithmChecker();
     if (checker.checkGraph(graph)) {
-      this.logger.log(Level.FINE, checker.getOkMsg());
+      PreesmLogger.getLogger().log(Level.FINE, checker.getOkMsg());
     } else {
       if (checker.isErrors()) {
-        this.logger.log(Level.SEVERE, checker.getErrorMsg());
+        PreesmLogger.getLogger().log(Level.SEVERE, checker.getErrorMsg());
       }
       if (checker.isWarnings()) {
-        this.logger.log(Level.WARNING, checker.getWarningMsg());
+        PreesmLogger.getLogger().log(Level.WARNING, checker.getWarningMsg());
       }
     }
 
@@ -94,21 +83,11 @@ public class PiMMAlgorithmCheckerTask extends AbstractTaskImplementation {
     return outputs;
   }
 
-  /*
-   * (non-Javadoc)
-   *
-   * @see org.ietr.dftools.workflow.implement.AbstractTaskImplementation#getDefaultParameters()
-   */
   @Override
   public Map<String, String> getDefaultParameters() {
     return Collections.emptyMap();
   }
 
-  /*
-   * (non-Javadoc)
-   *
-   * @see org.ietr.dftools.workflow.implement.AbstractWorkflowNodeImplementation#monitorMessage()
-   */
   @Override
   public String monitorMessage() {
     return "Starting checking of PiGraph";

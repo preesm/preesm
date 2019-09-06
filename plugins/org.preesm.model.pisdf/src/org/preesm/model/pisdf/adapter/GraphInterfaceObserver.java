@@ -145,11 +145,6 @@ public class GraphInterfaceObserver extends AdapterImpl {
     param.setGraphPort(port);
   }
 
-  /*
-   * (non-Javadoc)
-   *
-   * @see org.eclipse.emf.common.notify.impl.AdapterImpl#notifyChanged(org.eclipse.emf.common.notify.Notification)
-   */
   @Override
   public void notifyChanged(final Notification notification) {
     super.notifyChanged(notification);
@@ -161,45 +156,39 @@ public class GraphInterfaceObserver extends AdapterImpl {
 
       final PiGraph graph = (PiGraph) notification.getNotifier();
 
+      final AbstractVertex vertex = (AbstractVertex) notification.getNewValue();
+      final List<?> list = (List<?>) notification.getOldValue();
+
       switch (notification.getEventType()) {
-        case Notification.ADD: {
+        case Notification.ADD:
           // It is safe to cast because we already checked that the
           // notification
           // was caused by an addition to the graph vertices.
-          final AbstractVertex vertex = (AbstractVertex) notification.getNewValue();
           add(vertex, graph);
           break;
-        }
 
-        case Notification.ADD_MANY: {
-          final List<?> list = (List<?>) notification.getNewValue();
+        case Notification.ADD_MANY:
           for (final Object object : list) {
             add((AbstractVertex) object, graph);
           }
           break;
-        }
 
-        case Notification.REMOVE: {
-          final AbstractVertex vertex = (AbstractVertex) notification.getOldValue();
+        case Notification.REMOVE:
           remove(vertex, graph);
           break;
-        }
 
-        case Notification.REMOVE_MANY: {
-          final List<?> list = (List<?>) notification.getOldValue();
+        case Notification.REMOVE_MANY:
           for (final Object object : list) {
             remove((AbstractVertex) object, graph);
           }
           break;
-        }
 
         default:
-          break;
+          // nothing
       }
     }
 
-    // TODO Add support when a Parameter changes from a config interface to
-    // a non config param
+    // TODO Add support when a Parameter changes from a config interface to a non config param
   }
 
   /**
