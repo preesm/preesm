@@ -10,8 +10,6 @@ import org.preesm.model.pisdf.DataInputInterface;
 import org.preesm.model.pisdf.DataInputPort;
 import org.preesm.model.pisdf.DataOutputInterface;
 import org.preesm.model.pisdf.DataOutputPort;
-import org.preesm.model.pisdf.Delay;
-import org.preesm.model.pisdf.DelayActor;
 import org.preesm.model.pisdf.Fifo;
 import org.preesm.model.pisdf.PiGraph;
 
@@ -156,15 +154,6 @@ public class AutoLayoutActors {
   private static void findCandidates(final List<Fifo> feedbackFifos, final Set<AbstractActor> currentStage,
       final List<AbstractActor> previousStage) {
     for (final AbstractActor actor : previousStage) {
-      if (actor instanceof DelayActor) {
-        final Delay delay = ((DelayActor) actor).getLinkedDelay();
-        final Fifo fifo = delay.getContainingFifo();
-        if ((fifo != null) && !feedbackFifos.contains(fifo)) {
-          final DataInputPort targetPort = fifo.getTargetPort();
-          final AbstractActor targetActor = targetPort.getContainingActor();
-          currentStage.add(targetActor);
-        }
-      }
       for (final DataOutputPort port : actor.getDataOutputPorts()) {
         final Fifo outgoingFifo = port.getOutgoingFifo();
         if ((outgoingFifo != null) && !feedbackFifos.contains(outgoingFifo)) {

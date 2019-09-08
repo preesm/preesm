@@ -433,32 +433,10 @@ public class AutoLayoutFeature extends AbstractCustomFeature {
       this.stagesGaps.add(stageGaps);
       int currentY = AutoLayoutFeature.Y_INIT;
       int maxX = 0;
-      // First we need to sort the stage so that the delay actor on feedback loop are
-      // always processed after the concerned actor
-      // for (final AbstractActor actor : stage) {
-      // // Check for delay actor belonging to a feedback loop
-      // if (actor instanceof DelayActor) {
-      // final Delay delay = ((DelayActor) actor).getLinkedDelay();
-      // final Fifo fifo = delay.getContainingFifo();
-      // // Check if the fifo is a feedback fifo
-      // if (this.feedbackFifos.contains(fifo)) {
-      // int indexDelay = stage.indexOf(actor);
-      // // source or target does not matter, it is a feedback loop
-      // int indexLoopedActor = stage.indexOf(fifo.getSourcePort().getContainingActor());
-      // if (indexLoopedActor < 0) {
-      // // try with target, delay actor and feedback actor should be on the same stage
-      // indexLoopedActor = stage.indexOf(fifo.getTargetPort().getContainingActor());
-      // if (indexLoopedActor < 0) {
-      // throw new RuntimeException("Delay Actor and feedback actor should be on same layout stage !");
-      // }
-      // }
-      // if (indexDelay < indexLoopedActor) {
-      // Collections.swap(stage, indexDelay, indexLoopedActor);
-      // }
-      // }
-      // }
-      // }
       for (final AbstractActor actor : stage) {
+        if (actor instanceof DelayActor) {
+          continue;
+        }
         final PictogramElement actorPE = DiagramPiGraphLinkHelper.getActorPE(diagram, actor);
 
         // Get the Graphics algorithm

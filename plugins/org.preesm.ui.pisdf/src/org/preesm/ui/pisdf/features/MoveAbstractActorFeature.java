@@ -63,6 +63,7 @@ import org.eclipse.graphiti.mm.pictograms.Shape;
 import org.eclipse.graphiti.services.Graphiti;
 import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.Delay;
+import org.preesm.model.pisdf.DelayActor;
 import org.preesm.model.pisdf.Fifo;
 import org.preesm.ui.pisdf.features.helper.DelayOppositeFifoRetriever;
 import org.preesm.ui.pisdf.features.helper.LayoutActorBendpoints;
@@ -140,13 +141,28 @@ public class MoveAbstractActorFeature extends DefaultMoveShapeFeature
       final List<PictogramElement> selectedPEs = new ArrayList<>(Arrays.asList(selectedPictogramElements));
       List<Object> listBO = selectedPEs.stream().map(e -> getBusinessObjectForPictogramElement(e))
           .collect(Collectors.toList());
+      List<Object> listBOd = new ArrayList<>();
+      for (Object o : listBO) {
+        if (o instanceof Delay) {
+          listBOd.add(((Delay) o).getActor());
+        } else {
+          listBOd.add(o);
+        }
+      }
 
       // Move implicitlyMovedDelays
       // add fifo to/from getter/setter if also selected
       for (final Delay del : this.implicitlyMovedDelay) {
         moveDelay(context, del);
+
+        // we also move fifo between delays and setter/getter
+        // if these fifo also contains delays, the delays on it are not considered
+        // also, if the actors are moved but the delays are not selected, fifos between moved
+        // delays will not be moved
+        // this code is actually incomplete, but it would be complicated to handle all cases
+        // it would need a recursive function to inspect the new fifos and delays if themselves have setter/getter
         ContainerShape cs = DiagramPiGraphLinkHelper.getDelayPE(getDiagram(), del.getContainingFifo());
-        int indexSetter = listBO.indexOf(del.getSetterActor());
+        int indexSetter = listBOd.indexOf(del.getSetterActor());
         if (indexSetter >= 0) {
           PictogramElement setter = selectedPEs.get(indexSetter);
           for (Anchor ac : cs.getAnchors()) {
@@ -158,8 +174,8 @@ public class MoveAbstractActorFeature extends DefaultMoveShapeFeature
             }
           }
         }
-        int indexGetter = listBO.indexOf(del.getGetterActor());
-        if (indexGetter >= 0) {
+        int indexGetter = listBOd.indexOf(del.getGetterActor());
+        if (indexGetter >= 0 && !(del.getGetterActor() instanceof DelayActor)) {
           PictogramElement getter = selectedPEs.get(indexGetter);
           for (Anchor ac : cs.getAnchors()) {
             for (Connection out : ac.getOutgoingConnections()) {
@@ -356,7 +372,6 @@ public class MoveAbstractActorFeature extends DefaultMoveShapeFeature
                       }
                     }
                   }
-
                   final Anchor startAnchor = inConn.getStart();
                   if (anchors.contains(startAnchor)) {
                     retList.add((FreeFormConnection) inConn);

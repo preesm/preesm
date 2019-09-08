@@ -86,21 +86,26 @@ public class DeleteDelayFeature extends DeleteParameterizableFeature {
     // one. before deleting the delay.
     final PictogramElement pictogramElement = context.getPictogramElement();
     final Delay delay = (Delay) getBusinessObjectForPictogramElement(pictogramElement);
-    final Object[] allBusinessObjectsForPictogramElement = getAllBusinessObjectsForPictogramElement(pictogramElement);
-    if (allBusinessObjectsForPictogramElement.length > 0) {
-      // only disconnect if business delay exists.
-      // this delay could have been already deleted by the delete actor feature when selecting multiple elements
-      disconnectDelayFromFifo((ContainerShape) pictogramElement, delay);
+
+    if (delay != null) {
+      // if multiple selection and a delay is selected, it may have been removed previously by actor removal
+
+      final Object[] allBusinessObjectsForPictogramElement = getAllBusinessObjectsForPictogramElement(pictogramElement);
+      if (allBusinessObjectsForPictogramElement.length > 0) {
+        // only disconnect if business delay exists.
+        // this delay could have been already deleted by the delete actor feature when selecting multiple elements
+        disconnectDelayFromFifo((ContainerShape) pictogramElement, delay);
+      }
+
+      // Super call to delete the dependencies linked to the delay
+      // Do it after deleting the connection (if it exists) to avoid looping infinitely
+      super.preDelete(context);
+
+      // Remove the contained delay actor
+      final DelayActor delayActor = delay.getActor();
+      delayActor.getContainingPiGraph().removeActor(delayActor);
+
     }
-
-    // Super call to delete the dependencies linked to the delay
-    // Do it after deleting the connection (if it exists) to avoid looping infinitely
-    super.preDelete(context);
-
-    // Remove the contained delay actor
-    final DelayActor delayActor = delay.getActor();
-    delayActor.getContainingPiGraph().removeActor(delayActor);
-
   }
 
   /**
