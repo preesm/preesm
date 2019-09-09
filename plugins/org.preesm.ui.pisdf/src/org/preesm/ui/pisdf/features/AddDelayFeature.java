@@ -47,6 +47,7 @@ import org.eclipse.graphiti.features.context.ICustomContext;
 import org.eclipse.graphiti.features.custom.AbstractCustomFeature;
 import org.eclipse.graphiti.mm.algorithms.Ellipse;
 import org.eclipse.graphiti.mm.algorithms.Polyline;
+import org.eclipse.graphiti.mm.algorithms.styles.LineStyle;
 import org.eclipse.graphiti.mm.algorithms.styles.Point;
 import org.eclipse.graphiti.mm.pictograms.ChopboxAnchor;
 import org.eclipse.graphiti.mm.pictograms.ContainerShape;
@@ -274,6 +275,10 @@ public class AddDelayFeature extends AbstractCustomFeature {
     polyline.setLineWidth(2);
     polyline.setForeground(manageColor(AddFifoFeature.FIFO_FOREGROUND));
     link(preConnection, fifo);
+
+    if (connection.getGraphicsAlgorithm().getLineStyle() == LineStyle.DASHDOT) {
+      polyline.setLineStyle(LineStyle.DASHDOT);
+    }
 
     // Reconnect the original connection
     connection.setStart(cba);

@@ -47,6 +47,7 @@ import org.eclipse.graphiti.mm.GraphicsAlgorithmContainer;
 import org.eclipse.graphiti.mm.algorithms.GraphicsAlgorithm;
 import org.eclipse.graphiti.mm.algorithms.Polygon;
 import org.eclipse.graphiti.mm.algorithms.Polyline;
+import org.eclipse.graphiti.mm.algorithms.styles.LineStyle;
 import org.eclipse.graphiti.mm.pictograms.Anchor;
 import org.eclipse.graphiti.mm.pictograms.ConnectionDecorator;
 import org.eclipse.graphiti.mm.pictograms.ContainerShape;
@@ -58,6 +59,7 @@ import org.eclipse.graphiti.services.IGaService;
 import org.eclipse.graphiti.services.IPeCreateService;
 import org.eclipse.graphiti.util.ColorConstant;
 import org.eclipse.graphiti.util.IColorConstant;
+import org.preesm.model.pisdf.Delay;
 import org.preesm.model.pisdf.Fifo;
 import org.preesm.model.pisdf.PiGraph;
 import org.preesm.ui.pisdf.features.helper.LayoutActorBendpoints;
@@ -183,5 +185,13 @@ public class AddFifoFeature extends AbstractAddFeature implements LayoutActorBen
     final Polyline polyline = gaService.createPolyline(connection);
     polyline.setLineWidth(2);
     polyline.setForeground(manageColor(AddFifoFeature.FIFO_FOREGROUND));
+
+    Object src = getBusinessObjectForPictogramElement(addContext.getSourceAnchor().getParent());
+    Object dst = getBusinessObjectForPictogramElement(addContext.getTargetAnchor().getParent());
+
+    if (src instanceof Delay || dst instanceof Delay) {
+      polyline.setLineStyle(LineStyle.DASHDOT);
+    }
+
   }
 }
