@@ -1,8 +1,8 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (%%DATE%%) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2019) :
  *
  * Antoine Morvan [antoine.morvan@insa-rennes.fr] (2019)
- * %%AUTHORS%%
+ * Dylan Gageot [gageot.dylan@gmail.com] (2019)
  *
  * This software is a computer program whose purpose is to help prototyping
  * parallel applications using dataflow formalism.
@@ -75,6 +75,10 @@ import org.preesm.model.slam.ComponentInstance;
  *
  */
 public class ClusteringHelper {
+
+  private ClusteringHelper() {
+    // forbid instantiation
+  }
 
   /**
    *
@@ -194,32 +198,7 @@ public class ClusteringHelper {
 
     // If schedule is hierarchical
     if (schedule instanceof HierarchicalSchedule) {
-
-      // If schedule is sequential
-      if (schedule instanceof SequentialSchedule) {
-        // Sum timings of all childrens together
-        for (Schedule child : schedule.getChildren()) {
-          timing += getExecutionTimeOf(child, scenario, component);
-        }
-      } else {
-        // If schedule is parallel
-        // Search for the maximun time taken by childrens
-        long max = 0;
-        for (Schedule child : schedule.getChildren()) {
-          long result = getExecutionTimeOf(child, scenario, component);
-          if (result > max) {
-            max = result;
-          }
-        }
-        // Add max execution time to timing
-        timing += max;
-      }
-
-      // If it is repeated, multiply timing by the time of
-      if (schedule.getRepetition() > 1) {
-        timing *= schedule.getRepetition();
-      }
-
+      timing = getExecutionTimeOfHierarchical(schedule, scenario, component, timing);
     } else {
       // Retrieve timing from actors
       AbstractActor actor = schedule.getActors().get(0);
@@ -234,9 +213,38 @@ public class ClusteringHelper {
     return timing;
   }
 
+  private static long getExecutionTimeOfHierarchical(Schedule schedule, Scenario scenario, Component component,
+      long timing) {
+    // If schedule is sequential
+    if (schedule instanceof SequentialSchedule) {
+      // Sum timings of all childrens together
+      for (Schedule child : schedule.getChildren()) {
+        timing += getExecutionTimeOf(child, scenario, component);
+      }
+    } else {
+      // If schedule is parallel
+      // Search for the maximun time taken by childrens
+      long max = 0;
+      for (Schedule child : schedule.getChildren()) {
+        long result = getExecutionTimeOf(child, scenario, component);
+        if (result > max) {
+          max = result;
+        }
+      }
+      // Add max execution time to timing
+      timing += max;
+    }
+
+    // If it is repeated, multiply timing by the time of
+    if (schedule.getRepetition() > 1) {
+      timing *= schedule.getRepetition();
+    }
+    return timing;
+  }
+
   /**
    * Used to get list of Fifo that interconnect actor included in the graph
-   * 
+   *
    * @param graph
    *          graph to get internal cluster Fifo from
    * @return list of Fifo that connect actor inside of graph
@@ -255,7 +263,7 @@ public class ClusteringHelper {
 
   /**
    * Used to get the incoming Fifo from top level graph
-   * 
+   *
    * @param inFifo
    *          inside incoming fifo
    * @return outside incoming fifo
@@ -272,7 +280,7 @@ public class ClusteringHelper {
 
   /**
    * Used to get the outgoing Fifo from top level graph
-   * 
+   *
    * @param inFifo
    *          inside outgoing fifo
    * @return outside outgoing fifo
@@ -289,7 +297,7 @@ public class ClusteringHelper {
 
   /**
    * Used to get setter parameter for a specific ConfigInputPort
-   * 
+   *
    * @param port
    *          port to get parameter from
    * @return parameter

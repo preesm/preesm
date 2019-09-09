@@ -40,7 +40,6 @@ import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.impl.ResourceFactoryImpl;
 
-// TODO: Auto-generated Javadoc
 /**
  * The Class PiResourceFactoryImpl.
  */
@@ -53,11 +52,6 @@ public class PiResourceFactoryImpl extends ResourceFactoryImpl {
     super();
   }
 
-  /*
-   * (non-Javadoc)
-   *
-   * @see org.eclipse.emf.ecore.resource.impl.ResourceFactoryImpl#createResource(org.eclipse.emf.common.util.URI)
-   */
   @Override
   public Resource createResource(final URI uri) {
     final Resource result = new PiResourceImpl();

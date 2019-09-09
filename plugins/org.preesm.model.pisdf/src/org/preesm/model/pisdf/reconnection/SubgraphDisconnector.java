@@ -139,8 +139,7 @@ public class SubgraphDisconnector {
 
   }
 
-  static <T extends Port> void copyPortsOfKind(final Collection<T> existingPorts, final Actor receiving,
-      final Supplier<T> suplier) {
+  static <T extends Port> void copyPortsOfKind(final Collection<T> existingPorts, final Supplier<T> suplier) {
     for (final T port : existingPorts) {
       final T copy = suplier.get();
       copy.setName(port.getName());

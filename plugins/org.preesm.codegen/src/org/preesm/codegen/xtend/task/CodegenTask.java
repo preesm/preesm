@@ -1,11 +1,15 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (%%DATE%%) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2013 - 2019) :
  *
  * Alexandre Honorat [alexandre.honorat@insa-rennes.fr] (2019)
  * Antoine Morvan [antoine.morvan@insa-rennes.fr] (2017 - 2019)
  * Clément Guy [clement.guy@insa-rennes.fr] (2014 - 2015)
  * Daniel Madroñal [daniel.madronal@upm.es] (2019)
- * %%AUTHORS%%
+ * Dylan Gageot [gageot.dylan@gmail.com] (2019)
+ * Julien Hascoet [jhascoet@kalray.eu] (2016)
+ * Karol Desnos [karol.desnos@insa-rennes.fr] (2013 - 2015)
+ * Maxime Pelcat [maxime.pelcat@insa-rennes.fr] (2013)
+ * Raquel Lazcano [raquel.lazcano@upm.es] (2019)
  *
  * This software is a computer program whose purpose is to help prototyping
  * parallel applications using dataflow formalism.
@@ -188,7 +192,7 @@ public class CodegenTask extends AbstractTaskImplementation {
   @Override
   public Map<String, String> getDefaultParameters() {
     final Map<String, String> parameters = new LinkedHashMap<>();
-    String avilableLanguages = "? C {";
+    final StringBuilder avilableLanguages = new StringBuilder("? C {");
 
     // Retrieve the languages registered with the printers
     final Set<String> languages = new LinkedHashSet<>();
@@ -201,11 +205,11 @@ public class CodegenTask extends AbstractTaskImplementation {
     }
 
     for (final String lang : languages) {
-      avilableLanguages += lang + ", ";
+      avilableLanguages.append(lang + ", ");
     }
-    avilableLanguages += CodegenTask.VALUE_PRINTER_IR + "}";
+    avilableLanguages.append(CodegenTask.VALUE_PRINTER_IR + "}");
 
-    parameters.put(CodegenTask.PARAM_PRINTER, avilableLanguages);
+    parameters.put(CodegenTask.PARAM_PRINTER, avilableLanguages.toString());
     // Papify default
     parameters.put(CodegenTask.PARAM_PAPIFY, "false");
     return parameters;

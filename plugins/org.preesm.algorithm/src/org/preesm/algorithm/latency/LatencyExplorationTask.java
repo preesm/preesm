@@ -83,24 +83,15 @@ public class LatencyExplorationTask {
       latencyList.add(n, l);
     }
 
-    // WorkflowLogger.getLogger().log(Level.INFO, "Throughput value");
-    // WorkflowLogger.getLogger().log(Level.WARNING, "ERROR : The graph is deadlock !!");
-
     // set the outputs
-    final Map<String, Object> outputs = new LinkedHashMap<>();
-    // outputs.put("SDF", inputGraph);
-    // outputs.put("scenario", inputScenario);
-
-    return outputs;
+    return new LinkedHashMap<>();
   }
 
   /**
    *
    */
   public Map<String, String> getDefaultParameters() {
-    final Map<String, String> parameters = new LinkedHashMap<>();
-    // parameters.put(,);
-    return parameters;
+    return new LinkedHashMap<>();
   }
 
   public String monitorMessage() {

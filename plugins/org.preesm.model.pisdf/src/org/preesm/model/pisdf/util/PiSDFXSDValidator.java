@@ -38,7 +38,7 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
-import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import javax.xml.XMLConstants;
 import javax.xml.transform.Source;
 import javax.xml.transform.stream.StreamSource;
@@ -85,7 +85,7 @@ public class PiSDFXSDValidator {
    */
   public static final void validate(final URL pisdfURL) throws IOException {
     // get the content of the URL, then parse
-    final String pisdfContent = IOUtils.toString(pisdfURL, Charset.forName("UTF-8"));
+    final String pisdfContent = IOUtils.toString(pisdfURL, StandardCharsets.UTF_8);
     PiSDFXSDValidator.validate(pisdfContent);
   }
 

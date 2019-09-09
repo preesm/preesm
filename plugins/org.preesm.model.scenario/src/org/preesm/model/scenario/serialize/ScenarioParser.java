@@ -251,7 +251,7 @@ public class ScenarioParser {
     currentParameter = graph.lookupParameterGivenGraph(name, parent);
     if (currentParameter == null) {
       PreesmLogger.getLogger().log(Level.WARNING,
-          "Parameter with name '" + name + "' cannot be found in PiGraph '" + parent + "'.");
+          () -> "Parameter with name '" + name + "' cannot be found in PiGraph '" + parent + "'.");
     } else {
       this.scenario.getParameterValues().put(currentParameter, stringValue);
     }
@@ -357,7 +357,7 @@ public class ScenarioParser {
               this.scenario.getSimulationInfo().addSpecialVertexOperator(componentInstance);
             } else {
               PreesmLogger.getLogger().log(Level.WARNING,
-                  "Could not add special vertex operator '" + path + "' as it is not part of the design");
+                  () -> "Could not add special vertex operator '" + path + "' as it is not part of the design");
             }
           }
         }
@@ -483,10 +483,8 @@ public class ScenarioParser {
             if (actorFromPath != null) {
               actors.add(actorFromPath);
             }
-          } else if (type.equals("operator")) {
-            if (this.scenario.getDesign().containsComponentInstance(name)) {
-              opId = this.scenario.getDesign().getComponentInstance(name);
-            }
+          } else if (type.equals("operator") && this.scenario.getDesign().containsComponentInstance(name)) {
+            opId = this.scenario.getDesign().getComponentInstance(name);
           }
         }
         node = node.getNextSibling();

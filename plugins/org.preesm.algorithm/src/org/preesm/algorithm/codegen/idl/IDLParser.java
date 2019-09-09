@@ -48,7 +48,6 @@ import org.jacorb.idl.lexer;
 import org.jacorb.idl.parser;
 import org.preesm.commons.logger.PreesmLogger;
 
-// TODO: Auto-generated Javadoc
 /**
  * Parsing actor function prototypes from IDL files.
  *

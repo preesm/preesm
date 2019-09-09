@@ -100,9 +100,7 @@ public class OrderManager extends Observable {
 
     // Retrieves the schedule corresponding to the component
     final Schedule currentSched = getSchedule(cmp);
-    if (currentSched == null) {
-      throw new PreesmRuntimeException("Schedule should not be null", new NullPointerException());
-    }
+    checkScheduleNull(currentSched);
     // Iterates the schedule to find the latest predecessor
     int maxPrec = -1;
     for (final MapperDAGVertex current : currentSched.getList()) {
@@ -117,6 +115,12 @@ public class OrderManager extends Observable {
     }
 
     return maxPrec;
+  }
+
+  private void checkScheduleNull(final Schedule currentSched) {
+    if (currentSched == null) {
+      throw new PreesmRuntimeException("Schedule should not be null", new NullPointerException());
+    }
   }
 
   /**
@@ -144,9 +148,7 @@ public class OrderManager extends Observable {
 
       // Adds vertex or synchro vertices after its chosen predecessor
       final Schedule schedule = getSchedule(cmp);
-      if (schedule == null) {
-        throw new PreesmRuntimeException("Schedule should not be null", new NullPointerException());
-      }
+      checkScheduleNull(schedule);
       if (maxPrec >= 0) {
         final MapperDAGVertex previous = this.totalOrder.get(maxPrec);
         schedule.insertAfter(previous, elt);
@@ -182,9 +184,7 @@ public class OrderManager extends Observable {
 
         // Gets the schedule of vertex
         final Schedule currentSchedule = getSchedule(effectiveCmp);
-        if (currentSchedule == null) {
-          throw new PreesmRuntimeException("Schedule should not be null", new NullPointerException());
-        }
+        checkScheduleNull(currentSchedule);
 
         currentSchedule.addLast(vertex);
 

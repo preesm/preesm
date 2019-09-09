@@ -39,7 +39,6 @@ import java.util.LinkedHashSet;
 import java.util.Set;
 import org.preesm.model.pisdf.Fifo;
 import org.preesm.model.pisdf.PiGraph;
-import org.preesm.model.pisdf.util.PiMMSwitch;
 
 /**
  *

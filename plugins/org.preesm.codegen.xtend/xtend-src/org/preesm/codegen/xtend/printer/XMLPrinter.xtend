@@ -51,9 +51,9 @@ import org.preesm.codegen.model.SpecialCall
 import org.preesm.codegen.model.SubBuffer
 import org.preesm.codegen.model.Variable
 import org.preesm.codegen.model.util.CodegenModelUserFactory
-import org.preesm.codegen.printer.DefaultPrinter
+import org.preesm.codegen.printer.BlankPrinter
 
-class XMLPrinter extends DefaultPrinter {
+class XMLPrinter extends BlankPrinter {
 
 	override printBroadcast(SpecialCall call) '''
 		<CompoundCode name="«call.name»">«var input = call.inputBuffers.head»«var index = 0L»

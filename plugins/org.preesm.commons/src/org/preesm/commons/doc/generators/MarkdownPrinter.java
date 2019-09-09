@@ -58,6 +58,10 @@ import org.preesm.commons.logger.PreesmLogger;
  */
 public class MarkdownPrinter {
 
+  private MarkdownPrinter() {
+    // forbid instantiation
+  }
+
   /**
    * Append documentation to File associated to given file path
    */

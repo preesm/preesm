@@ -4,7 +4,7 @@
  * Alexandre Honorat [alexandre.honorat@insa-rennes.fr] (2019)
  * Antoine Morvan [antoine.morvan@insa-rennes.fr] (2017 - 2019)
  * Daniel Madroñal [daniel.madronal@upm.es] (2019)
- * dylangageot [gageot.dylan@gmail.com] (2019)
+ * Dylan Gageot [gageot.dylan@gmail.com] (2019)
  * Julien Hascoet [jhascoet@kalray.eu] (2017)
  *
  * This software is a computer program whose purpose is to help prototyping
@@ -528,7 +528,7 @@ public class CodegenHierarchicalModelGenerator {
         bufIterSize = subBufferProperties.getSize() / rep;
         bufSize = subBufferProperties.getSize();
       } else {
-        if (arg.getDirection() == CodeGenArgument.INPUT) {
+        if (CodeGenArgument.INPUT.equals(arg.getDirection())) {
           bufIterSize = currentEdge.getCons().longValue();
           bufSize = currentEdge.getCons().longValue() * rep;
         } else {
@@ -582,9 +582,9 @@ public class CodegenHierarchicalModelGenerator {
       bufIter.setIterSize(bufIterSize);
       bufIter.setSize(bufSize);
 
-      if (arg.getDirection() == CodeGenArgument.INPUT) {
+      if (CodeGenArgument.INPUT.equals(arg.getDirection())) {
         loopBlock.getInBuffers().add(bufIter);
-      } else if (arg.getDirection() == CodeGenArgument.OUTPUT) {
+      } else if (CodeGenArgument.OUTPUT.equals(arg.getDirection())) {
         loopBlock.getOutBuffers().add(bufIter);
       } else {
         throw new PreesmRuntimeException("Args INPUT / OUTPUT failed\n");
@@ -766,51 +766,49 @@ public class CodegenHierarchicalModelGenerator {
     // Check if this actor has a monitoring configuration
     PapifyConfig papifyConfig = this.scenario.getPapifyConfig();
     AbstractActor referencePiVertex = repVertex.getReferencePiVertex();
-    if (this.papifyActive) {
-      if (papifyConfig.hasPapifyConfig(referencePiVertex)) {
+    if (this.papifyActive && papifyConfig.hasPapifyConfig(referencePiVertex)) {
 
-        papifyActionS.setName("papify_actions_".concat(papifyConfig.getActorOriginalIdentifier(referencePiVertex)));
-        papifyActionS.setType("papify_action_s");
-        papifyActionS.setComment("papify configuration variable");
-        operatorBlock.getDefinitions().add(papifyActionS);
+      papifyActionS.setName("papify_actions_".concat(papifyConfig.getActorOriginalIdentifier(referencePiVertex)));
+      papifyActionS.setType("papify_action_s");
+      papifyActionS.setComment("papify configuration variable");
+      operatorBlock.getDefinitions().add(papifyActionS);
 
-        // Add the function to configure the monitoring in this PE (operatorBlock)
-        papifyPEId.setName(PAPIFY_PE_ID_CONSTANT_NAME);
+      // Add the function to configure the monitoring in this PE (operatorBlock)
+      papifyPEId.setName(PAPIFY_PE_ID_CONSTANT_NAME);
 
-        // Add the function to configure the monitoring in this PE (operatorBlock)
-        if (!(this.papifiedPEs.contains(operatorBlock.getName()))) {
-          this.papifiedPEs.add(operatorBlock.getName());
-          papifyPEId.setValue(this.papifiedPEs.indexOf(operatorBlock.getName()));
-          final FunctionCall functionCallPapifyConfigurePE = generatePapifyConfigurePEFunctionCall(operatorBlock,
-              papifyConfig, papifyPEId);
-          operatorBlock.getInitBlock().getCodeElts().add(functionCallPapifyConfigurePE);
-        } else {
-          // Create the variable associated to the PE id
-          papifyPEId.setValue(this.papifiedPEs.indexOf(operatorBlock.getName()));
-        }
-
-        // Add the function to configure the monitoring of this actor (dagVertex)
-        final PapifyFunctionCall functionCallPapifyConfigureActor = generatePapifyConfigureActorFunctionCall(dagVertex,
-            repVertex, papifyConfig, papifyActionS);
-        operatorBlock.getInitBlock().getCodeElts().add(functionCallPapifyConfigureActor);
-
-        // What are we monitoring?
-        if (papifyConfig.isMonitoringEvents(referencePiVertex)) {
-          // Generate Papify start function for events
-          final PapifyFunctionCall functionCallPapifyStart = generatePapifyStartFunctionCall(dagVertex, repVertex,
-              papifyPEId, papifyActionS);
-          // Add the Papify start function for events to the loop
-          forLoop.getCodeElts().add(functionCallPapifyStart);
-        }
-        if (papifyConfig.isMonitoringTiming(referencePiVertex)) {
-          // Generate Papify start timing function
-          final PapifyFunctionCall functionCallPapifyTimingStart = generatePapifyStartTimingFunctionCall(dagVertex,
-              repVertex, papifyPEId, papifyActionS);
-          // Add the Papify start timing function to the loop
-          forLoop.getCodeElts().add(functionCallPapifyTimingStart);
-        }
-
+      // Add the function to configure the monitoring in this PE (operatorBlock)
+      if (!(this.papifiedPEs.contains(operatorBlock.getName()))) {
+        this.papifiedPEs.add(operatorBlock.getName());
+        papifyPEId.setValue(this.papifiedPEs.indexOf(operatorBlock.getName()));
+        final FunctionCall functionCallPapifyConfigurePE = generatePapifyConfigurePEFunctionCall(operatorBlock,
+            papifyConfig, papifyPEId);
+        operatorBlock.getInitBlock().getCodeElts().add(functionCallPapifyConfigurePE);
+      } else {
+        // Create the variable associated to the PE id
+        papifyPEId.setValue(this.papifiedPEs.indexOf(operatorBlock.getName()));
       }
+
+      // Add the function to configure the monitoring of this actor (dagVertex)
+      final PapifyFunctionCall functionCallPapifyConfigureActor = generatePapifyConfigureActorFunctionCall(dagVertex,
+          repVertex, papifyConfig, papifyActionS);
+      operatorBlock.getInitBlock().getCodeElts().add(functionCallPapifyConfigureActor);
+
+      // What are we monitoring?
+      if (papifyConfig.isMonitoringEvents(referencePiVertex)) {
+        // Generate Papify start function for events
+        final PapifyFunctionCall functionCallPapifyStart = generatePapifyStartFunctionCall(dagVertex, papifyPEId,
+            papifyActionS);
+        // Add the Papify start function for events to the loop
+        forLoop.getCodeElts().add(functionCallPapifyStart);
+      }
+      if (papifyConfig.isMonitoringTiming(referencePiVertex)) {
+        // Generate Papify start timing function
+        final PapifyFunctionCall functionCallPapifyTimingStart = generatePapifyStartTimingFunctionCall(dagVertex,
+            papifyPEId, papifyActionS);
+        // Add the Papify start timing function to the loop
+        forLoop.getCodeElts().add(functionCallPapifyTimingStart);
+      }
+
     }
   }
 
@@ -832,32 +830,30 @@ public class CodegenHierarchicalModelGenerator {
     // Check if this actor has a monitoring configuration
     PapifyConfig papifyConfig = this.scenario.getPapifyConfig();
     AbstractActor referencePiVertex = repVertex.getReferencePiVertex();
-    if (this.papifyActive) {
-      if (papifyConfig.hasPapifyConfig(referencePiVertex)) {
-        papifyActionS.setName("papify_actions_".concat(papifyConfig.getActorOriginalIdentifier(referencePiVertex)));
-        papifyActionS.setType("papify_action_s");
-        papifyActionS.setComment("papify configuration variable");
-        // What are we monitoring?
-        if (papifyConfig.isMonitoringTiming(referencePiVertex)) {
-          // Generate Papify stop timing function
-          final PapifyFunctionCall functionCallPapifyTimingStop = generatePapifyStopTimingFunctionCall(dagVertex,
-              repVertex, papifyPEId, papifyActionS);
-          // Add the Papify stop timing function to the loop
-          forLoop.getCodeElts().add(functionCallPapifyTimingStop);
-        }
-        if (papifyConfig.isMonitoringEvents(referencePiVertex)) {
-          // Generate Papify stop function for events
-          final PapifyFunctionCall functionCallPapifyStop = generatePapifyStopFunctionCall(dagVertex, repVertex,
-              papifyPEId, papifyActionS);
-          // Add the Papify stop function for events to the loop
-          forLoop.getCodeElts().add(functionCallPapifyStop);
-        }
-        // Generate Papify writing function
-        final PapifyFunctionCall functionCallPapifyWriting = generatePapifyWritingFunctionCall(dagVertex, repVertex,
+    if (this.papifyActive && papifyConfig.hasPapifyConfig(referencePiVertex)) {
+      papifyActionS.setName("papify_actions_".concat(papifyConfig.getActorOriginalIdentifier(referencePiVertex)));
+      papifyActionS.setType("papify_action_s");
+      papifyActionS.setComment("papify configuration variable");
+      // What are we monitoring?
+      if (papifyConfig.isMonitoringTiming(referencePiVertex)) {
+        // Generate Papify stop timing function
+        final PapifyFunctionCall functionCallPapifyTimingStop = generatePapifyStopTimingFunctionCall(dagVertex,
             papifyPEId, papifyActionS);
-        // Add the Papify writing function to the loop
-        forLoop.getCodeElts().add(functionCallPapifyWriting);
+        // Add the Papify stop timing function to the loop
+        forLoop.getCodeElts().add(functionCallPapifyTimingStop);
       }
+      if (papifyConfig.isMonitoringEvents(referencePiVertex)) {
+        // Generate Papify stop function for events
+        final PapifyFunctionCall functionCallPapifyStop = generatePapifyStopFunctionCall(dagVertex, papifyPEId,
+            papifyActionS);
+        // Add the Papify stop function for events to the loop
+        forLoop.getCodeElts().add(functionCallPapifyStop);
+      }
+      // Generate Papify writing function
+      final PapifyFunctionCall functionCallPapifyWriting = generatePapifyWritingFunctionCall(dagVertex, papifyPEId,
+          papifyActionS);
+      // Add the Papify writing function to the loop
+      forLoop.getCodeElts().add(functionCallPapifyWriting);
     }
   }
 
@@ -1033,8 +1029,8 @@ public class CodegenHierarchicalModelGenerator {
    *          the {@link PapifyAction} identifying the actor that is being configured.
    * @return The {@link PapifyFunctionCall} corresponding to the {@link DAGVertex actor} firing.
    */
-  protected PapifyFunctionCall generatePapifyStartFunctionCall(final DAGVertex dagVertex, final SDFVertex repVertex,
-      final Constant papifyPEId, final PapifyAction papifyActionS) {
+  protected PapifyFunctionCall generatePapifyStartFunctionCall(final DAGVertex dagVertex, final Constant papifyPEId,
+      final PapifyAction papifyActionS) {
     // Create the corresponding FunctionCall
     final PapifyFunctionCall func = CodegenModelUserFactory.eINSTANCE.createPapifyFunctionCall();
     func.setName("event_start");
@@ -1060,7 +1056,7 @@ public class CodegenHierarchicalModelGenerator {
    * @return The {@link PapifyFunctionCall} corresponding to the {@link DAGVertex actor} firing.
    */
   protected PapifyFunctionCall generatePapifyStartTimingFunctionCall(final DAGVertex dagVertex,
-      final SDFVertex repVertex, final Constant papifyPEId, final PapifyAction papifyActionS) {
+      final Constant papifyPEId, final PapifyAction papifyActionS) {
     // Create the corresponding FunctionCall
     final PapifyFunctionCall func = CodegenModelUserFactory.eINSTANCE.createPapifyFunctionCall();
     func.setName("event_start_papify_timing");
@@ -1087,8 +1083,8 @@ public class CodegenHierarchicalModelGenerator {
    *          the {@link PapifyAction} identifying the actor that is being configured.
    * @return The {@link PapifyFunctionCall} corresponding to the {@link DAGVertex actor} firing.
    */
-  protected PapifyFunctionCall generatePapifyStopFunctionCall(final DAGVertex dagVertex, final SDFVertex repVertex,
-      final Constant papifyPEId, final PapifyAction papifyActionS) {
+  protected PapifyFunctionCall generatePapifyStopFunctionCall(final DAGVertex dagVertex, final Constant papifyPEId,
+      final PapifyAction papifyActionS) {
     // Create the corresponding FunctionCall
     final PapifyFunctionCall func = CodegenModelUserFactory.eINSTANCE.createPapifyFunctionCall();
     func.setName("event_stop");
@@ -1116,7 +1112,7 @@ public class CodegenHierarchicalModelGenerator {
    * @return The {@link PapifyFunctionCall} corresponding to the {@link DAGVertex actor} firing.
    */
   protected PapifyFunctionCall generatePapifyStopTimingFunctionCall(final DAGVertex dagVertex,
-      final SDFVertex repVertex, final Constant papifyPEId, final PapifyAction papifyActionS) {
+      final Constant papifyPEId, final PapifyAction papifyActionS) {
     // Create the corresponding FunctionCall
     final PapifyFunctionCall func = CodegenModelUserFactory.eINSTANCE.createPapifyFunctionCall();
     func.setName("event_stop_papify_timing");
@@ -1143,8 +1139,8 @@ public class CodegenHierarchicalModelGenerator {
    *          the {@link PapifyAction} identifying the actor that is being configured.
    * @return The {@link PapifyFunctionCall} corresponding to the {@link DAGVertex actor} firing.
    */
-  protected PapifyFunctionCall generatePapifyWritingFunctionCall(final DAGVertex dagVertex, final SDFVertex repVertex,
-      final Constant papifyPEId, final PapifyAction papifyActionS) {
+  protected PapifyFunctionCall generatePapifyWritingFunctionCall(final DAGVertex dagVertex, final Constant papifyPEId,
+      final PapifyAction papifyActionS) {
     // Create the corresponding FunctionCall
     final PapifyFunctionCall func = CodegenModelUserFactory.eINSTANCE.createPapifyFunctionCall();
     func.setName("event_write_file");

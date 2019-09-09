@@ -53,101 +53,22 @@ import org.preesm.workflow.elements.AbstractWorkflowNode;
  */
 public abstract class AbstractWorkflowNodeImplementation {
 
-  /** Input/Output keys for workflow tasks. */
-  protected static final String KEY_SCENARIO = "scenario"; // Should
-  // give
-  // a
-  // PreesmScenario
-  /** The Constant KEY_PI_GRAPH. */
-  // object
-  protected static final String KEY_PI_GRAPH = "PiMM"; // Should
-  // give
-  // a
-  // PiGraph
-  /** The Constant KEY_ARCHITECTURE. */
-  // object
-  protected static final String KEY_ARCHITECTURE = "architecture"; // Should
-  // give
-  // a
-  // Design
-  /** The Constant KEY_SDF_GRAPHS_SET. */
-  // object
-  protected static final String KEY_SDF_GRAPHS_SET = "SDFs"; // Should
-  // give
-  // a
-  // Set<SDFGraph>
-  /** The Constant KEY_SDF_GRAPH. */
-  // object
-  protected static final String KEY_SDF_GRAPH = "SDF"; // Should
-  // give
-  // an
-  // SDFGraph
-  /** The Constant KEY_SDF_DAG. */
-  // object
-  protected static final String KEY_SDF_DAG = "DAG"; // Should
-  // give
-  // a
-  // MapperDAG
-  /** The Constant KEY_SDF_DAG_SET. */
-  // object
-  protected static final String KEY_SDF_DAG_SET = "DAGs"; // Should
-  // give
-  // a
-  // Set<MapperDAG>
-  /** The Constant KEY_SDF_ABC. */
-  // object
-  protected static final String KEY_SDF_ABC = "ABC"; // Should
-  // give
-  // a
-  // IAbc
-  /** The Constant KEY_SDF_ABC_SET. */
-  // object
-  protected static final String KEY_SDF_ABC_SET = "ABCs"; // Should
-  // give
-  // a
-  // Set<IAbc>
-  /** The Constant KEY_MEM_EX. */
-  // object
-  protected static final String KEY_MEM_EX = "MemEx"; // Should
-  // give
-  // a
-  // MemoryExclusionGraph
-  /** The Constant KEY_MEM_EX_SET. */
-  // object
-  protected static final String KEY_MEM_EX_SET = "MemExs"; // Should
-  // give
-  // a
-  // Set<MemoryExclusionGraph>
-  /** The Constant KEY_DAG_AND_MEM_EX_MAP. */
-  // object
-  protected static final String KEY_DAG_AND_MEM_EX_MAP = "DAGsAndMemExs"; // Should
-  // give
-  // a
-  // Map<DirectedAcyclicGraph,
-  // MemoryExclusionGraph>
-  /** The Constant KEY_BOUND_MIN. */
-  // object
-  protected static final String KEY_BOUND_MIN = "BoundMin"; // Should
-  // give
-  // an
-  /** The Constant KEY_BOUND_MAX. */
-  // int
-  protected static final String KEY_BOUND_MAX = "BoundMax"; // Should
-  // give
-  // an
-  /** The Constant KEY_BOUND_MIN_SET. */
-  // int
-  protected static final String KEY_BOUND_MIN_SET = "minBounds"; // Should
-  // give
-  // a
-  // Set<Integer>
-  /** The Constant KEY_BOUND_MAX_SET. */
-  // object
-  protected static final String KEY_BOUND_MAX_SET = "maxBounds"; // Should
-  // give
-  // a
-  // Set<Integer>
-  // object
+  protected static final String KEY_SCENARIO           = "scenario";
+  protected static final String KEY_PI_GRAPH           = "PiMM";
+  protected static final String KEY_ARCHITECTURE       = "architecture";
+  protected static final String KEY_SDF_GRAPHS_SET     = "SDFs";
+  protected static final String KEY_SDF_GRAPH          = "SDF";
+  protected static final String KEY_SDF_DAG            = "DAG";
+  protected static final String KEY_SDF_DAG_SET        = "DAGs";
+  protected static final String KEY_SDF_ABC            = "ABC";
+  protected static final String KEY_SDF_ABC_SET        = "ABCs";
+  protected static final String KEY_MEM_EX             = "MemEx";
+  protected static final String KEY_MEM_EX_SET         = "MemExs";
+  protected static final String KEY_DAG_AND_MEM_EX_MAP = "DAGsAndMemExs";
+  protected static final String KEY_BOUND_MIN          = "BoundMin";
+  protected static final String KEY_BOUND_MAX          = "BoundMax";
+  protected static final String KEY_BOUND_MIN_SET      = "minBounds";
+  protected static final String KEY_BOUND_MAX_SET      = "maxBounds";
 
   /**
    * Id and fully qualified names of node output retrieved from the extension.

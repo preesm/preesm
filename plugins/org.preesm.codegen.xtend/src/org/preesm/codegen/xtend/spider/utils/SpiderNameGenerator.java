@@ -45,7 +45,6 @@ import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.slam.Component;
 import org.preesm.model.slam.ComponentInstance;
 
-// TODO: Auto-generated Javadoc
 /**
  * The Class SpiderNameGenerator.
  */
@@ -119,13 +118,13 @@ public final class SpiderNameGenerator {
    * @return the method name
    */
   public static String getMethodName(final PiGraph pg) {
-    String finalName = pg.getName();
+    final StringBuilder finalName = new StringBuilder(pg.getName());
     PiGraph containingPiGraph = pg.getContainingPiGraph();
     while (containingPiGraph != null) {
-      finalName = containingPiGraph.getName() + "_" + finalName;
+      finalName.append(containingPiGraph.getName() + "_" + finalName);
       containingPiGraph = containingPiGraph.getContainingPiGraph();
     }
-    return finalName;
+    return finalName.toString();
   }
 
   /**

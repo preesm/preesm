@@ -50,6 +50,10 @@ import org.preesm.model.slam.SlamPackage;
  */
 public class SlamParser {
 
+  private SlamParser() {
+    // forbid instantiation
+  }
+
   /**
    * Parses the slam design.
    *
@@ -59,7 +63,6 @@ public class SlamParser {
    */
   public static Design parseSlamDesign(final String url) {
 
-    // XXX ?
     final Map<String, Object> extToFactoryMap = Resource.Factory.Registry.INSTANCE.getExtensionToFactoryMap();
     Object instance = extToFactoryMap.get("slam");
     if (instance == null) {

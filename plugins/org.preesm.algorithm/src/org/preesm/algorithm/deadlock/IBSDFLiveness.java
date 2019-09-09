@@ -51,27 +51,19 @@ public interface IBSDFLiveness {
    *
    * @param ibsdf
    *          input graph
-   * @return true if live, false if not.
    */
-  public static boolean evaluate(final SDFGraph ibsdf) {
+  public static void evaluate(final SDFGraph ibsdf) {
     // step 1 check the liveness of the top graph
-    boolean live = SDFLiveness.evaluate(ibsdf);
+    SDFLiveness.evaluate(ibsdf);
 
     // step 2 check the liveness of the subgraphs
-    if (live) {
-      // get the list of hierarchical actors
-      final Map<String, SDFAbstractVertex> allHierarchicalActors = GraphStructureHelper.getAllHierarchicalActors(ibsdf);
+    // get the list of hierarchical actors
+    final Map<String, SDFAbstractVertex> allHierarchicalActors = GraphStructureHelper.getAllHierarchicalActors(ibsdf);
 
-      // check the liveness of the subgraph of each hierarchical actor in the list
-      for (final SDFAbstractVertex h : allHierarchicalActors.values()) {
-        live = SDFLiveness.evaluate((SDFGraph) h.getGraphDescription());
-        // if the subgraph is not live return false
-        if (!live) {
-          return false;
-        }
-      }
+    // check the liveness of the subgraph of each hierarchical actor in the list
+    for (final SDFAbstractVertex h : allHierarchicalActors.values()) {
+      SDFLiveness.evaluate((SDFGraph) h.getGraphDescription());
     }
 
-    return live;
   }
 }

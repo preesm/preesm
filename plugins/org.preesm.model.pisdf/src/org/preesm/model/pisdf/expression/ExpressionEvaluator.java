@@ -67,6 +67,10 @@ import org.preesm.model.pisdf.util.PiMMSwitch;
  */
 public class ExpressionEvaluator {
 
+  private ExpressionEvaluator() {
+    // forbid instantiation
+  }
+
   public static final long evaluate(final Parameter param, final Map<Parameter, String> overridenValues) {
     return evaluate(param, param.getValueExpression().getExpressionAsString(), overridenValues);
   }
@@ -138,56 +142,79 @@ public class ExpressionEvaluator {
     if (parameterizable != null) {
       final List<Parameter> inputParameters = parameterizable.getInputParameters();
       for (final Parameter param : inputParameters) {
-        final String paramExpressionValue;
-        if (overridenValues.containsKey(param)) {
-          paramExpressionValue = overridenValues.get(param);
-        } else {
-          paramExpressionValue = param.getExpression().getExpressionAsString();
-        }
-        final double evaluate;
-        if (param instanceof ConfigInputInterface) {
-          final ConfigInputInterface configInputInterface = (ConfigInputInterface) param;
-          final Parameter connectedParam = lookupFirstNonInterfaceParent(configInputInterface);
-          if (connectedParam != null) {
-            final String connectedeParamExpressionValue;
-            if (overridenValues.containsKey(connectedParam)) {
-              connectedeParamExpressionValue = overridenValues.get(connectedParam);
-            } else {
-              connectedeParamExpressionValue = connectedParam.getExpression().getExpressionAsString();
-            }
-            evaluate = evaluate(connectedParam, connectedeParamExpressionValue, overridenValues);
-          } else {
-            evaluate = 0.;
-          }
-        } else {
-          evaluate = evaluate(param, paramExpressionValue, overridenValues);
-        }
+        final String paramExpressionValue = getParamExpression(overridenValues, param);
+        final double evaluate = evaluateExpression(overridenValues, param, paramExpressionValue);
 
         if ((parameterizable instanceof Parameter) || (parameterizable instanceof Delay)
             || (parameterizable instanceof InterfaceActor)) {
           res.put(param.getName(), evaluate);
         } else if (parameterizable instanceof DataPort || parameterizable instanceof AbstractActor) {
-          final AbstractActor actor;
-          if (parameterizable instanceof AbstractActor) {
-            actor = (AbstractActor) parameterizable;
-          } else {
-            actor = ((DataPort) parameterizable).getContainingActor();
-          }
-          if (actor instanceof InterfaceActor || actor instanceof DelayActor) {
-            res.put(param.getName(), evaluate);
-          } else {
-            final List<ConfigInputPort> inputPorts = actor.lookupConfigInputPortsConnectedWithParameter(param);
-            for (ConfigInputPort cip : inputPorts) {
-              final String name = cip.getName();
-              res.put(name, evaluate);
-            }
-          }
+          lookupActorAndDataPort(parameterizable, res, param, evaluate);
         } else {
           throw new ExpressionEvaluationException("Could not compute proper parameter name");
         }
       }
     }
     return res;
+  }
+
+  private static void lookupActorAndDataPort(final Parameterizable parameterizable, final Map<String, Double> res,
+      final Parameter param, final double evaluate) {
+    final AbstractActor actor;
+    if (parameterizable instanceof AbstractActor) {
+      actor = (AbstractActor) parameterizable;
+    } else {
+      actor = ((DataPort) parameterizable).getContainingActor();
+    }
+    if (actor instanceof InterfaceActor || actor instanceof DelayActor) {
+      res.put(param.getName(), evaluate);
+    } else {
+      final List<ConfigInputPort> inputPorts = actor.lookupConfigInputPortsConnectedWithParameter(param);
+      for (ConfigInputPort cip : inputPorts) {
+        final String name = cip.getName();
+        res.put(name, evaluate);
+      }
+    }
+  }
+
+  private static double evaluateExpression(final Map<Parameter, String> overridenValues, final Parameter param,
+      final String paramExpressionValue) {
+    final double evaluate;
+    if (param instanceof ConfigInputInterface) {
+      final ConfigInputInterface configInputInterface = (ConfigInputInterface) param;
+      evaluate = evaluateConfigInputInterface(overridenValues, configInputInterface);
+    } else {
+      evaluate = evaluate(param, paramExpressionValue, overridenValues);
+    }
+    return evaluate;
+  }
+
+  private static String getParamExpression(final Map<Parameter, String> overridenValues, final Parameter param) {
+    final String paramExpressionValue;
+    if (overridenValues.containsKey(param)) {
+      paramExpressionValue = overridenValues.get(param);
+    } else {
+      paramExpressionValue = param.getExpression().getExpressionAsString();
+    }
+    return paramExpressionValue;
+  }
+
+  private static double evaluateConfigInputInterface(final Map<Parameter, String> overridenValues,
+      final ConfigInputInterface configInputInterface) {
+    final double evaluate;
+    final Parameter connectedParam = lookupFirstNonInterfaceParent(configInputInterface);
+    if (connectedParam != null) {
+      final String connectedeParamExpressionValue;
+      if (overridenValues.containsKey(connectedParam)) {
+        connectedeParamExpressionValue = overridenValues.get(connectedParam);
+      } else {
+        connectedeParamExpressionValue = connectedParam.getExpression().getExpressionAsString();
+      }
+      evaluate = evaluate(connectedParam, connectedeParamExpressionValue, overridenValues);
+    } else {
+      evaluate = 0.;
+    }
+    return evaluate;
   }
 
   /**

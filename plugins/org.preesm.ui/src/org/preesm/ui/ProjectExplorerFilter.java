@@ -47,12 +47,6 @@ import org.eclipse.jface.viewers.ViewerFilter;
  */
 public class ProjectExplorerFilter extends ViewerFilter {
 
-  /*
-   * (non-Javadoc)
-   *
-   * @see org.eclipse.jface.viewers.ViewerFilter#select(org.eclipse.jface.viewers .Viewer, java.lang.Object,
-   * java.lang.Object)
-   */
   @Override
   public boolean select(final Viewer viewer, final Object parentElement, final Object element) {
     if (element instanceof IFile) {

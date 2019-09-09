@@ -1,6 +1,20 @@
 PREESM Changelog
 ================
 
+## Release version 3.17.0
+*2019.09.09*
+
+### New Feature
+* Codegen:
+  * PREESM now support the codegeneration to manage hardware accelerators developed within [ARTICo³](https://des-cei.github.io/tools/artico3), an open-source runtime reconfigurable processing architecture;
+
+### Changes
+* Codegen: useless function removed in HW codegen;
+* Refactor;
+
+### Bug fix
+
+
 ## Release version 3.16.0
 *2019.09.06*
 
@@ -37,7 +51,7 @@ PREESM Changelog
 * Fix #218: add support for non connected actors in SRDAG transform;
 * Fix #222: allow multiplicity in Codegen Call parameters;
 * Fix #226: avoid name conflict in graphml configuration;
-# Fix #227: enable Export SVG Diagram on any selected element;
+* Fix #227: enable Export SVG Diagram on any selected element;
 
 ## Release version 3.15.0
 *2019.08.28*

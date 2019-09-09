@@ -3,7 +3,7 @@
  *
  * Antoine Morvan [antoine.morvan@insa-rennes.fr] (2018 - 2019)
  * Daniel Madroñal [daniel.madronal@upm.es] (2019)
- * dylangageot [gageot.dylan@gmail.com] (2019)
+ * Dylan Gageot [gageot.dylan@gmail.com] (2019)
  * Leonardo Suriano [leonardo.suriano@upm.es] (2019)
  *
  * This software is a computer program whose purpose is to help prototyping
@@ -73,13 +73,13 @@ import org.preesm.codegen.model.SubBuffer;
 import org.preesm.codegen.model.Variable;
 
 /**
- * This {@link DefaultPrinter} is a dummy implementation of the {@link CodegenAbstractPrinter} where all print methods
+ * This {@link BlankPrinter} is a dummy implementation of the {@link CodegenAbstractPrinter} where all print methods
  * print nothing. The only purpose of this class is to ease the developer life by making it possible to create a new
  * printer simply by implementing print methods that actually print something.
  *
  * @author kdesnos
  */
-public class DefaultPrinter extends CodegenAbstractPrinter {
+public class BlankPrinter extends CodegenAbstractPrinter {
 
   /**
    * Default implementation: does nothing.

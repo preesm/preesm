@@ -1,8 +1,8 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (%%DATE%%) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2019) :
  *
  * Antoine Morvan [antoine.morvan@insa-rennes.fr] (2019)
- * %%AUTHORS%%
+ * Dylan Gageot [gageot.dylan@gmail.com] (2019)
  *
  * This software is a computer program whose purpose is to help prototyping
  * parallel applications using dataflow formalism.
@@ -61,7 +61,7 @@ public class APGANClusteringAlgorithm implements IClusteringAlgorithm {
     actorsList.add(couple.getLeft());
     actorsList.add(couple.getRight());
 
-    return new ImmutablePair<>(ScheduleType.Sequential, actorsList);
+    return new ImmutablePair<>(ScheduleType.SEQUENTIAL, actorsList);
   }
 
   @Override

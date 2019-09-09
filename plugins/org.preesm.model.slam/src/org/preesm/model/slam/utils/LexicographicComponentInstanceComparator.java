@@ -41,11 +41,6 @@ import org.preesm.model.slam.ComponentInstance;
  */
 public class LexicographicComponentInstanceComparator implements ComponentInstanceComparator {
 
-  /*
-   * (non-Javadoc)
-   *
-   * @see java.util.Comparator#compare(java.lang.Object, java.lang.Object)
-   */
   @Override
   public int compare(ComponentInstance cb1, ComponentInstance cb2) {
     final String o1 = cb1.getInstanceName();

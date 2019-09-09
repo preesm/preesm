@@ -115,12 +115,6 @@ public class WorkflowParser extends DefaultHandler2 {
     return this.workflow;
   }
 
-  /*
-   * (non-Javadoc)
-   *
-   * @see org.xml.sax.helpers.DefaultHandler#startElement(java.lang.String, java.lang.String, java.lang.String,
-   * org.xml.sax.Attributes)
-   */
   @Override
   public void startElement(final String uri, final String localName, final String qName, final Attributes attributes) {
 

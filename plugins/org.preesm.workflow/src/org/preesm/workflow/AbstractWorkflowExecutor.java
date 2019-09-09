@@ -295,7 +295,6 @@ public abstract class AbstractWorkflowExecutor {
         // path and generates the inputs of the rapid prototyping
         // process
         final ScenarioNode scenarioNode = (ScenarioNode) node;
-        nodeId = scenarioNode.getName();
         final AbstractScenarioImplementation scenario = scenarioNode.getScenario();
 
         // Checks that the scenario node output edges fit the task

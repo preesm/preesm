@@ -100,7 +100,7 @@ public class TaskNode extends AbstractWorkflowNode<AbstractTaskImplementation> {
    *         not valid.
    */
   public AbstractTaskImplementation getTask() {
-    return (AbstractTaskImplementation) this.implementation;
+    return this.implementation;
   }
 
   /**
@@ -123,21 +123,11 @@ public class TaskNode extends AbstractWorkflowNode<AbstractTaskImplementation> {
     return this.parameters.get(key);
   }
 
-  /*
-   * (non-Javadoc)
-   *
-   * @see org.ietr.dftools.workflow.elements.AbstractWorkflowNode#isScenarioNode()
-   */
   @Override
   public boolean isScenarioNode() {
     return false;
   }
 
-  /*
-   * (non-Javadoc)
-   *
-   * @see org.ietr.dftools.workflow.elements.AbstractWorkflowNode#isTaskNode()
-   */
   @Override
   public boolean isTaskNode() {
     return true;

@@ -75,10 +75,8 @@ public class WorkflowValidator implements IValidator {
      */
     final Set<Vertex> vertices = graph.vertexSet();
     for (final Vertex vertex : vertices) {
-      if ("Task".equals(vertex.getType().getName())) {
-        if (!validateTaskVertex(file, vertex)) {
-          return false;
-        }
+      if ("Task".equals(vertex.getType().getName()) && !validateTaskVertex(file, vertex)) {
+        return false;
       }
     }
 

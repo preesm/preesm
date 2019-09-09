@@ -41,7 +41,6 @@ import java.net.URI;
 import org.eclipse.ui.dialogs.WizardNewProjectCreationPage;
 import org.eclipse.ui.wizards.newresource.BasicNewProjectResourceWizard;
 
-// TODO: Auto-generated Javadoc
 /**
  * This class provides a wizard to create a new Preesm Project.
  *
@@ -50,8 +49,7 @@ import org.eclipse.ui.wizards.newresource.BasicNewProjectResourceWizard;
  */
 public class NewPreesmProjectWizard extends BasicNewProjectResourceWizard {
 
-  /** The Constant WINDOW_TITLE. */
-  // Strings displayed in the wizard (titles, names, descriptions...)
+  /** Strings displayed in the wizard (titles, names, descriptions...) */
   private static final String WINDOW_TITLE = "New PREESM Project";
 
   /** The Constant PAGE_NAME. */
@@ -63,8 +61,7 @@ public class NewPreesmProjectWizard extends BasicNewProjectResourceWizard {
   /** The Constant PAGE_DESCRIPTION. */
   private static final String PAGE_DESCRIPTION = "Create a new PREESM project.";
 
-  /** The first page. */
-  // Pages of the wizard
+  /** Pages of the wizard */
   private WizardNewProjectCreationPage firstPage;
 
   /**
@@ -74,11 +71,6 @@ public class NewPreesmProjectWizard extends BasicNewProjectResourceWizard {
     setWindowTitle(NewPreesmProjectWizard.WINDOW_TITLE);
   }
 
-  /*
-   * (non-Javadoc)
-   *
-   * @see org.eclipse.ui.wizards.newresource.BasicNewProjectResourceWizard#addPages()
-   */
   @Override
   public void addPages() {
     this.firstPage = new WizardNewProjectCreationPage(NewPreesmProjectWizard.PAGE_NAME);
@@ -88,18 +80,13 @@ public class NewPreesmProjectWizard extends BasicNewProjectResourceWizard {
     addPage(this.firstPage);
   }
 
-  /*
-   * (non-Javadoc)
-   *
-   * @see org.eclipse.ui.wizards.newresource.BasicNewProjectResourceWizard#performFinish()
-   */
   @Override
   public boolean performFinish() {
     final String name = this.firstPage.getProjectName();
     URI location = null;
     if (!this.firstPage.useDefaults()) {
       location = this.firstPage.getLocationURI();
-    } // else location == null
+    }
 
     NewPreesmProjectCreator.createProject(name, location);
 

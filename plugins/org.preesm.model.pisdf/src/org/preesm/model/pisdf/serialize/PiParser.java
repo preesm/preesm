@@ -294,45 +294,10 @@ public class PiParser {
       final String refinementExtension = path.getFileExtension();
       switch (refinementExtension) {
         case "h":
-          final CHeaderRefinement hrefinement;
-          // Delays already have a default C header refinement by default at creation time
-          if (actor instanceof DelayActor) {
-            hrefinement = (CHeaderRefinement) actor.getRefinement();
-          } else {
-            hrefinement = PiMMUserFactory.instance.createCHeaderRefinement();
-          }
-          // The nodeElt should have a loop element, and may have an init
-          // element
-          final NodeList childList = nodeElt.getChildNodes();
-          for (int i = 0; i < childList.getLength(); i++) {
-            final Node elt = childList.item(i);
-            final String eltName = elt.getNodeName();
-            Element elmt;
-            switch (eltName) {
-              case PiIdentifiers.REFINEMENT_LOOP:
-                elmt = (Element) elt;
-                hrefinement.setLoopPrototype(
-                    parseFunctionPrototype(elmt, elmt.getAttribute(PiIdentifiers.REFINEMENT_FUNCTION_PROTOTYPE_NAME)));
-                break;
-              case PiIdentifiers.REFINEMENT_INIT:
-                elmt = (Element) elt;
-                hrefinement.setInitPrototype(
-                    parseFunctionPrototype(elmt, elmt.getAttribute(PiIdentifiers.REFINEMENT_FUNCTION_PROTOTYPE_NAME)));
-                break;
-              default:
-                // ignore #text and other children
-            }
-          }
-          hrefinement.setFilePath(path.toString());
-          actor.setRefinement(hrefinement);
+          parseHeaderRefinement(nodeElt, actor, path);
           break;
         case "pi":
-          if ((actor instanceof DelayActor)) {
-            throw new UnsupportedOperationException("Cannot specfiy pi refinement as delay initilization");
-          }
-          final PiSDFRefinement hr = PiMMUserFactory.instance.createPiSDFRefinement();
-          hr.setFilePath(path.toString());
-          actor.setRefinement(hr);
+          parsePiRefinement(actor, path);
           break;
         default:
           throw new UnsupportedOperationException("Unsupported refinement extension " + refinementExtension);
@@ -347,6 +312,49 @@ public class PiParser {
         actor.setRefinement(hr);
       }
     }
+  }
+
+  private void parsePiRefinement(final RefinementContainer actor, final IPath path) {
+    if ((actor instanceof DelayActor)) {
+      throw new UnsupportedOperationException("Cannot specfiy pi refinement as delay initilization");
+    }
+    final PiSDFRefinement hr = PiMMUserFactory.instance.createPiSDFRefinement();
+    hr.setFilePath(path.toString());
+    actor.setRefinement(hr);
+  }
+
+  private void parseHeaderRefinement(final Element nodeElt, final RefinementContainer actor, final IPath path) {
+    final CHeaderRefinement hrefinement;
+    // Delays already have a default C header refinement by default at creation time
+    if (actor instanceof DelayActor) {
+      hrefinement = (CHeaderRefinement) actor.getRefinement();
+    } else {
+      hrefinement = PiMMUserFactory.instance.createCHeaderRefinement();
+    }
+    // The nodeElt should have a loop element, and may have an init
+    // element
+    final NodeList childList = nodeElt.getChildNodes();
+    for (int i = 0; i < childList.getLength(); i++) {
+      final Node elt = childList.item(i);
+      final String eltName = elt.getNodeName();
+      Element elmt;
+      switch (eltName) {
+        case PiIdentifiers.REFINEMENT_LOOP:
+          elmt = (Element) elt;
+          hrefinement.setLoopPrototype(
+              parseFunctionPrototype(elmt, elmt.getAttribute(PiIdentifiers.REFINEMENT_FUNCTION_PROTOTYPE_NAME)));
+          break;
+        case PiIdentifiers.REFINEMENT_INIT:
+          elmt = (Element) elt;
+          hrefinement.setInitPrototype(
+              parseFunctionPrototype(elmt, elmt.getAttribute(PiIdentifiers.REFINEMENT_FUNCTION_PROTOTYPE_NAME)));
+          break;
+        default:
+          // ignore #text and other children
+      }
+    }
+    hrefinement.setFilePath(path.toString());
+    actor.setRefinement(hrefinement);
   }
 
   /**
@@ -458,7 +466,7 @@ public class PiParser {
       final ConfigOutputPort oPort = (ConfigOutputPort) ((ExecutableActor) source).lookupPort(sourcePortName);
       if (oPort == null) {
         throw new PreesmRuntimeException(
-            "Edge source port " + sourcePortName + " does not exist for vertex " + setterName);
+            "Edge source port " + sourcePortName + " does not exist for actor" + setterName);
       }
       dependency.setSetter(oPort);
     }
@@ -472,7 +480,7 @@ public class PiParser {
       final ConfigInputPort iPort = (ConfigInputPort) target.lookupPort(targetPortName);
       if (iPort == null) {
         throw new PreesmRuntimeException(
-            "Dependency target port " + targetPortName + " does not exist for vertex " + getterName);
+            "Dependency target port " + targetPortName + " does not exist for actor " + getterName);
       }
       dependency.setGetter(iPort);
     }

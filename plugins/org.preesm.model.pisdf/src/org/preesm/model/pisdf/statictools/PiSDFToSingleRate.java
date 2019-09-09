@@ -125,14 +125,10 @@ public class PiSDFToSingleRate extends PiMMSwitch<Boolean> {
 
     srCheck(graph, acyclicSRPiMM);
 
-    PreesmLogger.getLogger().log(Level.FINE, " >>   - check");
-    PiGraphConsistenceChecker.check(acyclicSRPiMM);
     // 6- do some optimization on the graph
     PreesmLogger.getLogger().log(Level.FINE, " >>   - fork join optim");
     final ForkJoinOptimization forkJoinOptimization = new ForkJoinOptimization();
     forkJoinOptimization.optimize(acyclicSRPiMM);
-    PreesmLogger.getLogger().log(Level.FINE, " >>   - check");
-    PiGraphConsistenceChecker.check(acyclicSRPiMM);
 
     PreesmLogger.getLogger().log(Level.FINE, " >>   - broadcast/rbuffers optim");
     final BroadcastRoundBufferOptimization brRbOptimization = new BroadcastRoundBufferOptimization();
@@ -795,7 +791,7 @@ public class PiSDFToSingleRate extends PiMMSwitch<Boolean> {
 
   @Override
   public Boolean caseParameter(final Parameter param) {
-    // make sure config input interfaces are made into Parameter (since their expressions have been evaluated);
+    // make sure config input interfaces are made into Parameter (since their expressions have been evaluated)
     final long paramValue = param.getValueExpression().evaluate();
     final String paramName = this.graphPrefix + param.getName();
     final Parameter copy = PiMMUserFactory.instance.createParameter(paramName, paramValue);

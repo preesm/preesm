@@ -50,6 +50,7 @@ import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 import java.util.logging.Level;
 import org.eclipse.emf.common.util.EList;
@@ -96,7 +97,6 @@ import org.preesm.model.pisdf.util.PiMMSwitch;
 import org.preesm.model.slam.Component;
 import org.preesm.model.slam.ComponentInstance;
 
-// TODO: Find a cleaner way to setParentEdge in Interfaces
 /*
  * Ugly workaround for setParentEdge in Interfaces. Must suppose that fifos are always obtained in the same
  * order => Modify the C++ headers?
@@ -127,11 +127,6 @@ public class SpiderCodegenVisitor extends PiMMSwitch<Boolean> {
 
   private PiGraph       currentGraph;
   private List<PiGraph> currentSubGraphs;
-
-  // Variables containing the type of the currently visited AbstractActor for
-  // AbstractActor generation
-  // private String currentAbstractActorType;
-  // private String currentAbstractActorClass;
 
   // Map linking data ports to their corresponding description
   private final Map<Port, Integer> portMap;
@@ -503,11 +498,14 @@ public class SpiderCodegenVisitor extends PiMMSwitch<Boolean> {
     final Map<Component, String> aaTimings = this.timings.get(aa);
     if (aaTimings != null) {
       append("\t/* == Setting timing on corresponding PEs == */\n");
-      for (final Component coreType : aaTimings.keySet()) {
+
+      for (final Entry<Component, String> entry : aaTimings.entrySet()) {
+        final Component coreType = entry.getKey();
+        final String a = entry.getValue();
         append("\tSpider::setTimingOnType(");
         append(vertexName + ", static_cast<std::uint32_t>(PEType::");
         append(SpiderNameGenerator.getCoreTypeName(coreType) + "), \"");
-        append(aaTimings.get(coreType));
+        append(a);
         append("\");\n");
       }
     } else {
@@ -517,11 +515,14 @@ public class SpiderCodegenVisitor extends PiMMSwitch<Boolean> {
     final Map<Component, Double> aaEnergies = this.energies.get(aa);
     if (aaEnergies != null) {
       append("\t/* == Setting energies on corresponding PEs == */\n");
-      for (final Component coreType : aaEnergies.keySet()) {
+
+      for (final Entry<Component, Double> entry : aaEnergies.entrySet()) {
+        final Component coreType = entry.getKey();
+        final Double a = entry.getValue();
         append("\tSpider::setEnergyOnType(");
         append(vertexName + ", static_cast<std::uint32_t>(PEType::");
         append(SpiderNameGenerator.getCoreTypeName(coreType) + "), ");
-        append(aaEnergies.get(coreType));
+        append(a);
         append(");\n");
       }
     } else {
@@ -605,8 +606,7 @@ public class SpiderCodegenVisitor extends PiMMSwitch<Boolean> {
     String srcProd = srcPort.getPortRateExpression().getExpressionAsString();
     String snkProd = snkPort.getPortRateExpression().getExpressionAsString();
 
-    final String edgeName = "edge"; // + srcActor.getName() + srcPort.getName() + "_" + snkActor.getName()
-    // + snkPort.getName();
+    final String edgeName = "edge";
 
     // Call the addEdge method on the current graph
     append("\n\t{\n");
@@ -927,18 +927,4 @@ public class SpiderCodegenVisitor extends PiMMSwitch<Boolean> {
   public Boolean caseExecutableActor(final ExecutableActor ea) {
     throw new UnsupportedOperationException();
   }
-
-  /**
-   * Class allowing to stock necessary information about graphs when moving through the graph hierarchy
-   */
-  // private class GraphDescription {
-  // List<PiGraph> subGraphs;
-  // StringBuilder method;
-  //
-  // public GraphDescription(List<PiGraph> subGraphs, StringBuilder method) {
-  // this.subGraphs = subGraphs;
-  // this.method = method;
-  // }
-  //
-  // }w
 }

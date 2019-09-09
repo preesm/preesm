@@ -6,12 +6,12 @@
  * Clément Guy [clement.guy@insa-rennes.fr] (2015)
  * Daniel Madroñal [daniel.madronal@upm.es] (2018 - 2019)
  * Florian Arrestier [florian.arrestier@insa-rennes.fr] (2018)
- * dylangageot [gageot.dylan@gmail.com] (2019)
+ * Dylan Gageot [gageot.dylan@gmail.com] (2019)
  * Julien Hascoet [jhascoet@kalray.eu] (2016)
  * Karol Desnos [karol.desnos@insa-rennes.fr] (2013 - 2018)
  * Leonardo Suriano [leonardo.suriano@upm.es] (2019)
  * Maxime Pelcat [maxime.pelcat@insa-rennes.fr] (2013 - 2016)
- * rlazcano [raquel.lazcano@upm.es] (2019)
+ * Raquel Lazcano [raquel.lazcano@upm.es] (2019)
  *
  * This software is a computer program whose purpose is to help prototyping
  * parallel applications using dataflow formalism.
@@ -81,7 +81,6 @@ import org.preesm.codegen.model.SharedMemoryCommunication
 import org.preesm.codegen.model.SpecialCall
 import org.preesm.codegen.model.SubBuffer
 import org.preesm.codegen.model.Variable
-import org.preesm.codegen.printer.DefaultPrinter
 import org.preesm.commons.exceptions.PreesmRuntimeException
 import org.preesm.commons.files.PreesmResourcesHelper
 import org.preesm.model.pisdf.util.CHeaderUsedLocator
@@ -89,6 +88,7 @@ import org.preesm.codegen.model.IteratedBuffer
 import org.preesm.codegen.model.ClusterBlock
 import org.preesm.codegen.model.SectionBlock
 import org.preesm.codegen.model.ActorFunctionCall
+import org.preesm.codegen.printer.BlankPrinter
 
 /**
  * This printer is currently used to print C code only for GPP processors
@@ -97,7 +97,7 @@ import org.preesm.codegen.model.ActorFunctionCall
  * @author kdesnos
  * @author mpelcat
  */
-class CPrinter extends DefaultPrinter {
+class CPrinter extends BlankPrinter {
 
 	/*
 	 * Variable to check if we are using PAPIFY or not --> Will be updated during preprocessing

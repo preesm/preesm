@@ -1,7 +1,8 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (%%DATE%%) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2019) :
  *
- * %%AUTHORS%%
+ * Antoine Morvan [antoine.morvan@insa-rennes.fr] (2019)
+ * Dylan Gageot [gageot.dylan@gmail.com] (2019)
  *
  * This software is a computer program whose purpose is to help prototyping
  * parallel applications using dataflow formalism.
@@ -197,10 +198,8 @@ public class CodegenClusterModelGeneratorSwitch extends ScheduleSwitch<CodeElt> 
 
     // If parent node a parallel node with one child? If yes, repetition can be parallelize
     boolean parallelRepetition = false;
-    if (this.parentNode != null) {
-      if (this.parentNode.isParallel() && this.parentNode.getChildren().size() == 1) {
-        parallelRepetition = true;
-      }
+    if (this.parentNode != null && this.parentNode.isParallel() && this.parentNode.getChildren().size() == 1) {
+      parallelRepetition = true;
     }
 
     // Retrieve cluster actor
@@ -453,10 +452,8 @@ public class CodegenClusterModelGeneratorSwitch extends ScheduleSwitch<CodeElt> 
       }
 
       // If cluster is repeated few times, create an iterated buffer
-      if (inside) {
-        if (this.repVector.get(cluster) > 1) {
-          buffer = generateIteratedBuffer(buffer, cluster, outsidePort);
-        }
+      if (inside && this.repVector.get(cluster) > 1) {
+        buffer = generateIteratedBuffer(buffer, cluster, outsidePort);
       }
 
       // Register external buffer with corresponding fifo

@@ -61,41 +61,21 @@ public class PreesmProjectNature implements IProjectNature {
     // nothing specific to do
   }
 
-  /*
-   * (non-Javadoc)
-   *
-   * @see org.eclipse.core.resources.IProjectNature#configure()
-   */
   @Override
   public void configure() throws CoreException {
     // nothing specific to do
   }
 
-  /*
-   * (non-Javadoc)
-   *
-   * @see org.eclipse.core.resources.IProjectNature#deconfigure()
-   */
   @Override
   public void deconfigure() throws CoreException {
     // nothing specific to do
   }
 
-  /*
-   * (non-Javadoc)
-   *
-   * @see org.eclipse.core.resources.IProjectNature#getProject()
-   */
   @Override
   public IProject getProject() {
     return this.project;
   }
 
-  /*
-   * (non-Javadoc)
-   *
-   * @see org.eclipse.core.resources.IProjectNature#setProject(org.eclipse.core.resources.IProject)
-   */
   @Override
   public void setProject(final IProject project) {
     this.project = project;

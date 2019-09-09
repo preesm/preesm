@@ -68,6 +68,10 @@ public class DmaRouteStep extends MessageRouteStep {
     this.dma = dma;
   }
 
+  public DmaRouteStep(final DmaRouteStep other) {
+    this(other.getSender(), other.getNodes(), other.getReceiver(), other.dma);
+  }
+
   /**
    * The route step type determines how the communication will be simulated.
    *
@@ -100,13 +104,8 @@ public class DmaRouteStep extends MessageRouteStep {
     return trace;
   }
 
-  /*
-   * (non-Javadoc)
-   *
-   * @see org.ietr.preesm.core.architecture.route.MessageRouteStep#clone()
-   */
   @Override
-  protected Object clone() throws CloneNotSupportedException {
-    return new DmaRouteStep(getSender(), getNodes(), getReceiver(), this.dma);
+  public MessageRouteStep copy() {
+    return new DmaRouteStep(this);
   }
 }

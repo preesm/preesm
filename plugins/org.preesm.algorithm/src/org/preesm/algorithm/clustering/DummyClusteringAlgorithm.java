@@ -2,7 +2,7 @@
  * Copyright or © or Copr. IETR/INSA - Rennes (2019) :
  *
  * Antoine Morvan [antoine.morvan@insa-rennes.fr] (2019)
- * dylangageot [gageot.dylan@gmail.com] (2019)
+ * Dylan Gageot [gageot.dylan@gmail.com] (2019)
  *
  * This software is a computer program whose purpose is to help prototyping
  * parallel applications using dataflow formalism.
@@ -57,7 +57,7 @@ public class DummyClusteringAlgorithm implements IClusteringAlgorithm {
     actorsList.add(couples.get(0).getLeft());
     actorsList.add(couples.get(0).getRight());
 
-    return new ImmutablePair<>(ScheduleType.Sequential, actorsList);
+    return new ImmutablePair<>(ScheduleType.SEQUENTIAL, actorsList);
   }
 
   @Override

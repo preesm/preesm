@@ -39,7 +39,6 @@ package org.preesm.algorithm.codegen.model;
 
 import org.preesm.algorithm.codegen.idl.ActorPrototypes;
 
-// TODO: Auto-generated Javadoc
 /**
  * A factory for creating IFunction objects.
  *

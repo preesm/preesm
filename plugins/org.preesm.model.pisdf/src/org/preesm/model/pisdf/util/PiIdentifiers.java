@@ -37,11 +37,14 @@
  */
 package org.preesm.model.pisdf.util;
 
-// TODO: Auto-generated Javadoc
 /**
  * This class provide identifiers shared by all PiMM entities.
  */
 public class PiIdentifiers {
+
+  private PiIdentifiers() {
+    // forbid instantiation
+  }
 
   /** The Constant TYPE. */
   // SHARED IDENTIFIERS BETWEEN SEVERAL PIMM ELEMENTS
