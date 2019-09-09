@@ -977,9 +977,7 @@ public class PiSDFToSingleRate extends PiMMSwitch<Boolean> {
     final String endName = sourcePort.getContainingActor().getName() + "_end_" + sourcePort.getName();
     end.setName(endName);
     // Set the persistence level of the delay
-    end.setLevel(fifo.getDelay().getLevel());
     // Set the INIT_REFERENCE
-    // TODO: handle asymetric configuration
     final AbstractActor setterActor = fifo.getDelay().getSetterActor();
     if (setterActor != null) {
       final AbstractVertex lookupVertex = graph.lookupVertex(setterActor.getName());
