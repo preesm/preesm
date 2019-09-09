@@ -69,8 +69,6 @@ public class ObjectiveContentProvider implements IStructuredContentProvider {
       final Map<String, Double> map = new LinkedHashMap<>();
       map.put(Messages.getString("Energy.objectiveLabel"),
           inputScenario.getEnergyConfig().getPerformanceObjective().getObjectiveEPS());
-      map.put(Messages.getString("Energy.toleranceLabel"),
-          inputScenario.getEnergyConfig().getPerformanceObjective().getToleranceEPS());
       final Set<Entry<String, Double>> entrySet = map.entrySet();
       this.elementList = new ArrayList<>(entrySet);
 

@@ -628,7 +628,6 @@ public class ScenarioWriter {
     parent.appendChild(performanceObjectiveElt);
 
     performanceObjectiveElt.setAttribute("objectiveEPS", Double.toString(performanceObjective.getObjectiveEPS()));
-    performanceObjectiveElt.setAttribute("toleranceEPS", Double.toString(performanceObjective.getToleranceEPS()));
   }
 
   /**

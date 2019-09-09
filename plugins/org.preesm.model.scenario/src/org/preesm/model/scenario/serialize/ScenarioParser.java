@@ -946,12 +946,6 @@ public class ScenarioParser {
       final double objectiveEPSValue = Double.parseDouble(objectiveEPS);
       this.scenario.getEnergyConfig().getPerformanceObjective().setObjectiveEPS(objectiveEPSValue);
     }
-    node = performanceObjectiveElt.getAttributeNode("toleranceEPS");
-    if (node != null) {
-      String toleranceEPS = node.getNodeValue();
-      final double toleranceEPSValue = Double.parseDouble(toleranceEPS);
-      this.scenario.getEnergyConfig().getPerformanceObjective().setToleranceEPS(toleranceEPSValue);
-    }
   }
 
   /**
