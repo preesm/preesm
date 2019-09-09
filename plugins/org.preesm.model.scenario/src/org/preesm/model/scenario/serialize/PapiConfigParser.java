@@ -69,6 +69,8 @@ import org.w3c.dom.Text;
  */
 public class PapiConfigParser {
 
+  private static final String VALUE_LITERAL = "value";
+
   public PapiConfigParser() {
     // nothing particular
   }
@@ -136,32 +138,20 @@ public class PapiConfigParser {
   }
 
   private void switchComponentChildren(final Node node) {
-    switch (node.getNodeName()) {
-      case "eventset":
-        visitEventSet(node);
-        break;
-      default:
-        throw new UnsupportedOperationException();
+    if ("eventset".equals(node.getNodeName())) {
+      visitEventSet(node);
     }
   }
 
   private void switchEventSetChildren(final Node node) {
-    switch (node.getNodeName()) {
-      case "event":
-        visitEvent(node);
-        break;
-      default:
-        throw new UnsupportedOperationException();
+    if ("event".equals(node.getNodeName())) {
+      visitEvent(node);
     }
   }
 
   private void switchEventChildren(final Node node) {
-    switch (node.getNodeName()) {
-      case "modifier":
-        visitModifier(node);
-        break;
-      default:
-        throw new UnsupportedOperationException();
+    if ("modifier".equals(node.getNodeName())) {
+      visitModifier(node);
     }
   }
 
@@ -270,67 +260,67 @@ public class PapiConfigParser {
   }
 
   private void visitCpuIDStepping(final Node node) {
-    final String textContent = node.getAttributes().getNamedItem("value").getTextContent();
+    final String textContent = node.getAttributes().getNamedItem(VALUE_LITERAL).getTextContent();
     final Integer value = Integer.valueOf(textContent);
     this.cpuId.setStepping(value);
   }
 
   private void visitCpuIDModel(final Node node) {
-    final String textContent = node.getAttributes().getNamedItem("value").getTextContent();
+    final String textContent = node.getAttributes().getNamedItem(VALUE_LITERAL).getTextContent();
     final Integer value = Integer.valueOf(textContent);
     this.cpuId.setModel(value);
   }
 
   private void visitCpuIDFamily(final Node node) {
-    final String textContent = node.getAttributes().getNamedItem("value").getTextContent();
+    final String textContent = node.getAttributes().getNamedItem(VALUE_LITERAL).getTextContent();
     final Integer value = Integer.valueOf(textContent);
     this.cpuId.setFamily(value);
   }
 
   private void visitTotalCPUs(final Node node) {
-    final String textContent = node.getAttributes().getNamedItem("value").getTextContent();
+    final String textContent = node.getAttributes().getNamedItem(VALUE_LITERAL).getTextContent();
     final Integer value = Integer.valueOf(textContent);
     this.hardware.setTotalCPUs(value);
   }
 
   private void visitCpuPerNode(final Node node) {
-    final String textContent = node.getAttributes().getNamedItem("value").getTextContent();
+    final String textContent = node.getAttributes().getNamedItem(VALUE_LITERAL).getTextContent();
     final Integer value = Integer.valueOf(textContent);
     this.hardware.setCpuPerNode(value);
   }
 
   private void visitNodes(final Node node) {
-    final String textContent = node.getAttributes().getNamedItem("value").getTextContent();
+    final String textContent = node.getAttributes().getNamedItem(VALUE_LITERAL).getTextContent();
     final Integer value = Integer.valueOf(textContent);
     this.hardware.setNodes(value);
   }
 
   private void visitSockets(final Node node) {
-    final String textContent = node.getAttributes().getNamedItem("value").getTextContent();
+    final String textContent = node.getAttributes().getNamedItem(VALUE_LITERAL).getTextContent();
     final Integer value = Integer.valueOf(textContent);
     this.hardware.setSockets(value);
   }
 
   private void visitCores(final Node node) {
-    final String textContent = node.getAttributes().getNamedItem("value").getTextContent();
+    final String textContent = node.getAttributes().getNamedItem(VALUE_LITERAL).getTextContent();
     final Integer value = Integer.valueOf(textContent);
     this.hardware.setCores(value);
   }
 
   private void visitThreads(final Node node) {
-    final String textContent = node.getAttributes().getNamedItem("value").getTextContent();
+    final String textContent = node.getAttributes().getNamedItem(VALUE_LITERAL).getTextContent();
     final Integer value = Integer.valueOf(textContent);
     this.hardware.setThreads(value);
   }
 
   private void visitCpuMinMegahertz(final Node node) {
-    final String textContent = node.getAttributes().getNamedItem("value").getTextContent();
+    final String textContent = node.getAttributes().getNamedItem(VALUE_LITERAL).getTextContent();
     final Integer value = Integer.valueOf(textContent);
     this.hardware.setCpuMinMegahertz(value);
   }
 
   private void visitCpuMaxMegahertz(final Node node) {
-    final String textContent = node.getAttributes().getNamedItem("value").getTextContent();
+    final String textContent = node.getAttributes().getNamedItem(VALUE_LITERAL).getTextContent();
     final Integer value = Integer.valueOf(textContent);
     this.hardware.setCpuMaxMegahertz(value);
   }
@@ -342,13 +332,13 @@ public class PapiConfigParser {
   }
 
   private void visitCpuRevision(final Node cpuRevisionNode) {
-    final String textContent = cpuRevisionNode.getAttributes().getNamedItem("value").getTextContent();
+    final String textContent = cpuRevisionNode.getAttributes().getNamedItem(VALUE_LITERAL).getTextContent();
     final Double value = Double.valueOf(textContent);
     this.hardware.setCpuRevision(value);
   }
 
   private void visitModelCode(final Node modelCodeNode) {
-    final String textContent = modelCodeNode.getAttributes().getNamedItem("value").getTextContent();
+    final String textContent = modelCodeNode.getAttributes().getNamedItem(VALUE_LITERAL).getTextContent();
     final Integer value = Integer.valueOf(textContent);
     this.hardware.setModelCode(value);
   }
@@ -359,7 +349,7 @@ public class PapiConfigParser {
   }
 
   private void visitVendorCode(final Node vendorCodeNode) {
-    final String textContent = vendorCodeNode.getAttributes().getNamedItem("value").getTextContent();
+    final String textContent = vendorCodeNode.getAttributes().getNamedItem(VALUE_LITERAL).getTextContent();
     final Integer value = Integer.valueOf(textContent);
     this.hardware.setVendorCode(value);
   }

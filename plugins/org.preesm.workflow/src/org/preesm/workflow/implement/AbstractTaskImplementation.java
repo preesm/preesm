@@ -36,6 +36,7 @@ package org.preesm.workflow.implement;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.logging.Level;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.preesm.commons.exceptions.PreesmException;
@@ -83,13 +84,14 @@ public abstract class AbstractTaskImplementation extends AbstractWorkflowNodeImp
    */
   public final boolean acceptInputs(final Map<String, String> graphInputPorts) {
 
-    for (final String protoInputPortName : this.inputPrototype.keySet()) {
-      if (!graphInputPorts.keySet().contains(protoInputPortName)) {
+    for (final Entry<String, String> entry : this.inputPrototype.entrySet()) {
+      final String protoInputPortName = entry.getKey();
+      final String protoType = entry.getValue();
+      if (!graphInputPorts.containsKey(protoInputPortName)) {
         PreesmLogger.logFromProperty(Level.SEVERE, "Workflow.FalseInputEdge", protoInputPortName,
             this.getWorkflowNode().getName(), this.getWorkflowNode().getID());
         return false;
       } else {
-        final String protoType = this.inputPrototype.get(protoInputPortName);
         final String graphType = graphInputPorts.get(protoInputPortName);
         if (!protoType.equals(graphType)) {
           PreesmLogger.logFromProperty(Level.SEVERE, "Workflow.FalseInputType", protoInputPortName,
@@ -99,7 +101,7 @@ public abstract class AbstractTaskImplementation extends AbstractWorkflowNodeImp
       }
     }
 
-    if (graphInputPorts.keySet().size() > this.inputPrototype.keySet().size()) {
+    if (graphInputPorts.size() > this.inputPrototype.size()) {
       PreesmLogger.logFromProperty(Level.SEVERE, "Workflow.TooManyInputEdges", this.getWorkflowNode().getName(),
           this.getWorkflowNode().getID(), String.valueOf(graphInputPorts.keySet().size()),
           String.valueOf(this.inputPrototype.keySet().size()));

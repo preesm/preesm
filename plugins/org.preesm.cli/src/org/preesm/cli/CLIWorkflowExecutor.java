@@ -73,6 +73,10 @@ import org.preesm.workflow.AbstractWorkflowExecutor;
  */
 public class CLIWorkflowExecutor extends AbstractWorkflowExecutor implements IApplication {
 
+  private static final String SCENARIO_LITERAL = "scenario";
+
+  private static final String WORKFLOW_LITERAL = "workflow";
+
   private static final int EXIT_ERROR = 1;
 
   /** Project containing the. */
@@ -82,13 +86,13 @@ public class CLIWorkflowExecutor extends AbstractWorkflowExecutor implements IAp
   private static final String WORKFLOW_DIR = "/Workflows";
 
   /** The Constant workflowExt. */
-  private static final String WORKFLOW_EXT = "workflow";
+  private static final String WORKFLOW_EXT = WORKFLOW_LITERAL;
 
   /** The Constant scenarioDir. */
   private static final String SCENARIO_DIR = "/Scenarios";
 
   /** The Constant scenarioExt. */
-  private static final String SCENARIO_EXT = "scenario";
+  private static final String SCENARIO_EXT = SCENARIO_LITERAL;
 
   /*
    * (non-Javadoc)
@@ -127,7 +131,7 @@ public class CLIWorkflowExecutor extends AbstractWorkflowExecutor implements IAp
 
   private Object executeWorkflow(final String cliOpts, final CommandLine line) throws ParseException, CoreException {
     getLogger().log(Level.FINE, "Starting workflows execution");
-    getLogger().log(Level.FINE, "Command line arguments: " + cliOpts);
+    getLogger().log(Level.FINE, () -> "Command line arguments: " + cliOpts);
 
     if (line.getArgs().length != 1) {
       throw new ParseException("Expected project name as first argument", 0);
@@ -152,6 +156,44 @@ public class CLIWorkflowExecutor extends AbstractWorkflowExecutor implements IAp
     String scenarioPath = line.getOptionValue('s');
     // If paths to workflow and scenario are not specified using
     // options, find them in the project given as arguments
+    workflowPaths = extractWorkflowPaths(projectName, workflowPaths, workflowPath);
+    scenarioPaths = extractScenarioPaths(scenarioPaths, scenarioPath);
+
+    getLogger().log(Level.FINE, "Launching workflows execution");
+    // Launch the execution of the workflos with the scenarios
+    for (final String wPath : workflowPaths) {
+      for (final String sPath : scenarioPaths) {
+        if (!execute(wPath, sPath, null)) {
+          final String message = "Workflow " + wPath + " did not complete its execution normally with scenario " + sPath
+              + ".";
+          getLogger().log(Level.SEVERE, message);
+          return EXIT_ERROR;
+        }
+      }
+    }
+    return IApplication.EXIT_OK;
+  }
+
+  private Set<String> extractScenarioPaths(Set<String> scenarioPaths, String scenarioPath) throws CoreException {
+    if (scenarioPath == null) {
+      // If there is no scenario path specified, execute all the
+      // scenarios (files with scenarioExt) found in scenarioDir of
+      // the project
+      scenarioPaths = getAllFilePathsIn(CLIWorkflowExecutor.SCENARIO_EXT, this.project,
+          CLIWorkflowExecutor.SCENARIO_DIR);
+    } else {
+      // Otherwise, format the scenarioPath and execute it
+      scenarioPath = this.project.getName() + CLIWorkflowExecutor.SCENARIO_DIR + "/" + scenarioPath;
+      if (!scenarioPath.endsWith(CLIWorkflowExecutor.SCENARIO_EXT)) {
+        scenarioPath = scenarioPath + "." + CLIWorkflowExecutor.SCENARIO_EXT;
+      }
+      scenarioPaths.add(scenarioPath);
+    }
+    return scenarioPaths;
+  }
+
+  private Set<String> extractWorkflowPaths(final String projectName, Set<String> workflowPaths, String workflowPath)
+      throws CoreException {
     if (workflowPath == null) {
       // If there is no workflow path specified, execute all the
       // workflows (files with workflowExt) found in workflowDir of
@@ -168,35 +210,7 @@ public class CLIWorkflowExecutor extends AbstractWorkflowExecutor implements IAp
       }
       workflowPaths.add(workflowPath);
     }
-
-    if (scenarioPath == null) {
-      // If there is no scenario path specified, execute all the
-      // scenarios (files with scenarioExt) found in scenarioDir of
-      // the project
-      scenarioPaths = getAllFilePathsIn(CLIWorkflowExecutor.SCENARIO_EXT, this.project,
-          CLIWorkflowExecutor.SCENARIO_DIR);
-    } else {
-      // Otherwise, format the scenarioPath and execute it
-      scenarioPath = this.project.getName() + CLIWorkflowExecutor.SCENARIO_DIR + "/" + scenarioPath;
-      if (!scenarioPath.endsWith(CLIWorkflowExecutor.SCENARIO_EXT)) {
-        scenarioPath = scenarioPath + "." + CLIWorkflowExecutor.SCENARIO_EXT;
-      }
-      scenarioPaths.add(scenarioPath);
-    }
-
-    getLogger().log(Level.FINE, "Launching workflows execution");
-    // Launch the execution of the workflos with the scenarios
-    for (final String wPath : workflowPaths) {
-      for (final String sPath : scenarioPaths) {
-        if (!execute(wPath, sPath, null)) {
-          final String message = "Workflow " + wPath + " did not complete its execution normally with scenario " + sPath
-              + ".";
-          getLogger().log(Level.SEVERE, message);
-          return EXIT_ERROR;
-        }
-      }
-    }
-    return IApplication.EXIT_OK;
+    return workflowPaths;
   }
 
   /**
@@ -231,13 +245,9 @@ public class CLIWorkflowExecutor extends AbstractWorkflowExecutor implements IAp
     return filePaths;
   }
 
-  /*
-   * (non-Javadoc)
-   *
-   * @see org.eclipse.equinox.app.IApplication#stop()
-   */
   @Override
   public void stop() {
+    // nothing
   }
 
   /**
@@ -249,10 +259,10 @@ public class CLIWorkflowExecutor extends AbstractWorkflowExecutor implements IAp
     final Options options = new Options();
     Option opt;
 
-    opt = new Option("w", "workflow", true, "Workflow path");
+    opt = new Option("w", WORKFLOW_LITERAL, true, "Workflow path");
     options.addOption(opt);
 
-    opt = new Option("s", "scenario", true, "Scenario path");
+    opt = new Option("s", SCENARIO_LITERAL, true, "Scenario path");
     options.addOption(opt);
 
     opt = new Option("d", "debug", false, "Debug mode: print stack traces when failing");

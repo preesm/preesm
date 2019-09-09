@@ -342,10 +342,10 @@ public class ClusteringBuilder {
     // Create parallel or sequential schedule
     HierarchicalSchedule schedule = null;
     switch (actorFound.getKey()) {
-      case Sequential:
+      case SEQUENTIAL:
         schedule = ScheduleFactory.eINSTANCE.createSequentialHiearchicalSchedule();
         break;
-      case Parallel:
+      case PARALLEL:
         schedule = ScheduleFactory.eINSTANCE.createParallelHiearchicalSchedule();
         break;
       default:
@@ -441,39 +441,13 @@ public class ClusteringBuilder {
       long actorRepetition = repetitionVector.get(actor);
 
       // Attach DataInputPort on the cluster actor
-      List<DataInputPort> dipTmp = new ArrayList<>();
-      dipTmp.addAll(actor.getDataInputPorts());
-      for (DataInputPort dip : dipTmp) {
-        // We only deport the input if FIFO is not internal
-        if (!actors.contains(dip.getIncomingFifo().getSource())) {
-          setDataInputPortAsInterface(cluster, dip, "in_" + nbDataInput++,
-              dip.getExpression().evaluate() * actorRepetition / clusterRepetition);
-        } else {
-          cluster.addFifo(dip.getIncomingFifo());
-          Delay delay = dip.getIncomingFifo().getDelay();
-          // If there is a delay, add it into the cluster
-          if (delay != null) {
-            cluster.addDelay(delay);
-          }
-        }
+      for (DataInputPort dip : actor.getDataInputPorts()) {
+        nbDataInput = attachInputPort(actors, cluster, nbDataInput, clusterRepetition, actorRepetition, dip);
       }
 
       // Attach DataOutputPort on the cluster actor
-      List<DataOutputPort> dopTmp = new ArrayList<>();
-      dopTmp.addAll(actor.getDataOutputPorts());
-      for (DataOutputPort dop : dopTmp) {
-        // We only deport the output if FIFO is not internal
-        if (!actors.contains(dop.getOutgoingFifo().getTarget())) {
-          setDataOutputPortAsInterface(cluster, dop, "out_" + nbDataOutput++,
-              dop.getExpression().evaluate() * actorRepetition / clusterRepetition);
-        } else {
-          cluster.addFifo(dop.getOutgoingFifo());
-          Delay delay = dop.getOutgoingFifo().getDelay();
-          // If there is a delay, add it into the cluster
-          if (delay != null) {
-            cluster.addDelay(delay);
-          }
-        }
+      for (DataOutputPort dop : actor.getDataOutputPorts()) {
+        nbDataOutput = attachOutputPort(actors, cluster, nbDataOutput, clusterRepetition, actorRepetition, dop);
       }
     }
 
@@ -490,6 +464,40 @@ public class ClusteringBuilder {
       setConfigInputPortAsInterface(cluster, cfgip, "config_" + nbConfigInput++);
     }
 
+  }
+
+  private int attachOutputPort(List<AbstractActor> actors, PiGraph cluster, int nbDataOutput, long clusterRepetition,
+      long actorRepetition, DataOutputPort dop) {
+    // We only deport the output if FIFO is not internal
+    if (!actors.contains(dop.getOutgoingFifo().getTarget())) {
+      setDataOutputPortAsInterface(cluster, dop, "out_" + nbDataOutput++,
+          dop.getExpression().evaluate() * actorRepetition / clusterRepetition);
+    } else {
+      cluster.addFifo(dop.getOutgoingFifo());
+      Delay delay = dop.getOutgoingFifo().getDelay();
+      // If there is a delay, add it into the cluster
+      if (delay != null) {
+        cluster.addDelay(delay);
+      }
+    }
+    return nbDataOutput;
+  }
+
+  private int attachInputPort(List<AbstractActor> actors, PiGraph cluster, int nbDataInput, long clusterRepetition,
+      long actorRepetition, DataInputPort dip) {
+    // We only deport the input if FIFO is not internal
+    if (!actors.contains(dip.getIncomingFifo().getSource())) {
+      setDataInputPortAsInterface(cluster, dip, "in_" + nbDataInput++,
+          dip.getExpression().evaluate() * actorRepetition / clusterRepetition);
+    } else {
+      cluster.addFifo(dip.getIncomingFifo());
+      Delay delay = dip.getIncomingFifo().getDelay();
+      // If there is a delay, add it into the cluster
+      if (delay != null) {
+        cluster.addDelay(delay);
+      }
+    }
+    return nbDataInput;
   }
 
   /**

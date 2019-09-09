@@ -48,32 +48,20 @@ import org.osgi.framework.BundleContext;
 public class PreesmUIPlugin extends AbstractUIPlugin {
 
   /** The Constant PLUGIN_ID. */
-  // The plug-in ID
   public static final String PLUGIN_ID = "org.preesm.ui"; //$NON-NLS-1$
 
-  /** The plugin. */
-  // The shared instance
+  /** The shared instance */
   private static PreesmUIPlugin plugin;
 
-  /*
-   * (non-Javadoc)
-   *
-   * @see org.eclipse.ui.plugin.AbstractUIPlugin#start(org.osgi.framework. BundleContext )
-   */
   @Override
   public void start(final BundleContext context) throws Exception {
     super.start(context);
-    PreesmUIPlugin.plugin = this;
+    PreesmUIPlugin.setInstance(this);
   }
 
-  /*
-   * (non-Javadoc)
-   *
-   * @see org.eclipse.ui.plugin.AbstractUIPlugin#stop(org.osgi.framework. BundleContext )
-   */
   @Override
   public void stop(final BundleContext context) throws Exception {
-    PreesmUIPlugin.plugin = null;
+    PreesmUIPlugin.setInstance(null);
     super.stop(context);
   }
 
@@ -84,6 +72,10 @@ public class PreesmUIPlugin extends AbstractUIPlugin {
    */
   public static PreesmUIPlugin getDefault() {
     return PreesmUIPlugin.plugin;
+  }
+
+  private static final void setInstance(final PreesmUIPlugin newInstance) {
+    PreesmUIPlugin.plugin = newInstance;
   }
 
   /**

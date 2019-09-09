@@ -57,7 +57,7 @@ public class DummyClusteringAlgorithm implements IClusteringAlgorithm {
     actorsList.add(couples.get(0).getLeft());
     actorsList.add(couples.get(0).getRight());
 
-    return new ImmutablePair<>(ScheduleType.Sequential, actorsList);
+    return new ImmutablePair<>(ScheduleType.SEQUENTIAL, actorsList);
   }
 
   @Override

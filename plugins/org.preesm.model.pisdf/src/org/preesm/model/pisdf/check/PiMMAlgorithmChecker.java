@@ -106,7 +106,7 @@ public class PiMMAlgorithmChecker {
             + f.getSourcePort().getName();
         final String tgtVertexPath = ((AbstractVertex) f.getTargetPort().eContainer()).getName() + "."
             + f.getTargetPort().getName();
-        this.errorMsgs.put("Fifo between actors " + srcVertexPath + " and " + tgtVertexPath
+        this.errorMsgs.put("The Fifo between actors " + srcVertexPath + " and " + tgtVertexPath
             + " has invalid rates (one equals 0 but not the other)", f);
       }
       for (final Fifo f : fifoChecker.getFifoWithVoidType()) {
@@ -158,11 +158,12 @@ public class PiMMAlgorithmChecker {
    * @return the error msg
    */
   public String getErrorMsg() {
-    String result = "Validation of graph " + this.graph.getName() + " raised the following errors:\n";
+    final StringBuilder result = new StringBuilder(
+        "The validation of graph " + this.graph.getName() + " raised the following errors:\n");
     for (final String msg : this.errorMsgs.keySet()) {
-      result += "- " + msg + "\n";
+      result.append("- " + msg + "\n");
     }
-    return result;
+    return result.toString();
   }
 
   /**
@@ -180,9 +181,7 @@ public class PiMMAlgorithmChecker {
    * @return the ok msg
    */
   public String getOkMsg() {
-    final String result = "Validation of graph " + this.graph.getName() + " raised no error or warning:";
-
-    return result;
+    return "Validation of graph " + this.graph.getName() + " raised no error or warning:";
   }
 
   /**
@@ -191,11 +190,12 @@ public class PiMMAlgorithmChecker {
    * @return the warning msg
    */
   public String getWarningMsg() {
-    String result = "Validation of graph " + this.graph.getName() + " raised the following warnings:\n";
+    final StringBuilder result = new StringBuilder(
+        "Validation of graph " + this.graph.getName() + " raised the following warnings:\n");
     for (final String msg : this.warningMsgs.keySet()) {
-      result += "- " + msg + "\n";
+      result.append("- " + msg + "\n");
     }
-    return result;
+    return result.toString();
   }
 
   /**

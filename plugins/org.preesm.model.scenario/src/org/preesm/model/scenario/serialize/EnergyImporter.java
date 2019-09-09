@@ -45,6 +45,10 @@ import org.preesm.model.slam.Design;
  */
 public class EnergyImporter {
 
+  private EnergyImporter() {
+    // forbid instantiation
+  }
+
   /**
    *
    */

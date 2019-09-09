@@ -61,7 +61,7 @@ public class APGANClusteringAlgorithm implements IClusteringAlgorithm {
     actorsList.add(couple.getLeft());
     actorsList.add(couple.getRight());
 
-    return new ImmutablePair<>(ScheduleType.Sequential, actorsList);
+    return new ImmutablePair<>(ScheduleType.SEQUENTIAL, actorsList);
   }
 
   @Override

@@ -421,18 +421,7 @@ public class HSDFBuildLoops {
     this.graph = inGraph.copy();
 
     // copy vertexes
-    final List<SDFAbstractVertex> vertexesCpy = new ArrayList<>();
-    for (final SDFAbstractVertex v : this.graph.vertexSet()) {
-      if (v instanceof SDFVertex) {
-        vertexesCpy.add(v);
-      }
-      if (v instanceof SDFBroadcastVertex) {
-        vertexesCpy.add(v);
-      }
-      if (v instanceof SDFRoundBufferVertex) {
-        vertexesCpy.add(v);
-      }
-    }
+    final List<SDFAbstractVertex> vertexesCpy = copyVertices();
 
     final Map<SDFAbstractVertex, AbstractClust> clustMap = new LinkedHashMap<>();
     long pgcm = 0;
@@ -474,7 +463,7 @@ public class HSDFBuildLoops {
         clustMap.remove(current.get(0));
         clustMap.remove(current.get(1));
 
-      } else if ((seqLeft != null) && (seqRight == null)) {
+      } else if (seqLeft != null) {
         // add clust vertex sequence with existing sequence on the right
         final ClustVertex vRight = new ClustVertex();
         vRight.setRepeat(repRight);
@@ -491,7 +480,7 @@ public class HSDFBuildLoops {
         clustMap.put(clusteredVertex, seq); // add hash map
         clustMap.remove(current.get(0));
 
-      } else if ((seqLeft == null) && (seqRight != null)) {
+      } else if (seqRight != null) {
         // add clust vertex sequence with existing sequence on the left
         final ClustVertex vLeft = new ClustVertex();
         vLeft.setRepeat(repLeft);
@@ -533,6 +522,22 @@ public class HSDFBuildLoops {
     return clustMap.get(lastClusteredVertex);
   }
 
+  private List<SDFAbstractVertex> copyVertices() {
+    final List<SDFAbstractVertex> vertexesCpy = new ArrayList<>();
+    for (final SDFAbstractVertex v : this.graph.vertexSet()) {
+      if (v instanceof SDFVertex) {
+        vertexesCpy.add(v);
+      }
+      if (v instanceof SDFBroadcastVertex) {
+        vertexesCpy.add(v);
+      }
+      if (v instanceof SDFRoundBufferVertex) {
+        vertexesCpy.add(v);
+      }
+    }
+    return vertexesCpy;
+  }
+
   private List<SDFAbstractVertex> getHierarchicalActor(final SDFGraph graph) {
     final List<SDFAbstractVertex> l = new ArrayList<>();
     for (final SDFAbstractVertex v : graph.vertexSet()) {
@@ -558,33 +563,40 @@ public class HSDFBuildLoops {
 
     long bufSize = 0;
     for (final SDFAbstractVertex v : resultGraph.vertexSet()) {
-      final List<SDFEdge> edge = new ArrayList<>();
-      edge.addAll(getInEdges(v));
-      edge.addAll(getOutEdges(v));
-      for (final SDFEdge e : edge) {
-        if ((!allocEdge.contains(e)/* already visited */) && (!edgeUpperGraph.contains(e) /* allocation by Karol */)) {
-          long mem = 0;
-          if (v instanceof SDFVertex) {
-            long nbRep = 0;
+      bufSize += getBufSize(allocEdge, edgeUpperGraph, v);
+    }
+    return bufSize;
+  }
 
-            try {
-              nbRep = e.getTarget().getNbRepeat();
-            } catch (final NumberFormatException ex) {
-              throw new PreesmRuntimeException("Internal Memory allocation failed for actor " + v.getName(), ex);
-            }
-            mem = nbRep * e.getCons().longValue();
-          } else if ((v instanceof SDFBroadcastVertex) || (v instanceof SDFRoundBufferVertex)) {
-            mem += e.getCons().longValue() * v.getNbRepeatAsLong();
-          } else {
-            throw new PreesmRuntimeException(
-                "Internal Memory allocation failed for actor " + v.getName() + " unsupported special actor");
+  private long getBufSize(final List<SDFEdge> allocEdge, final List<SDFEdge> edgeUpperGraph,
+      final SDFAbstractVertex v) {
+    final List<SDFEdge> edge = new ArrayList<>();
+    edge.addAll(getInEdges(v));
+    edge.addAll(getOutEdges(v));
+    long bufSize = 0;
+    for (final SDFEdge e : edge) {
+      if ((!allocEdge.contains(e)/* already visited */) && (!edgeUpperGraph.contains(e) /* allocation by Karol */)) {
+        long mem = 0;
+        if (v instanceof SDFVertex) {
+          long nbRep = 0;
+
+          try {
+            nbRep = e.getTarget().getNbRepeat();
+          } catch (final NumberFormatException ex) {
+            throw new PreesmRuntimeException("Internal Memory allocation failed for actor " + v.getName(), ex);
           }
-
-          final long sizeType = this.dataTypes.get(e.getDataType().toString());
-
-          bufSize += mem * sizeType;
-          allocEdge.add(e);
+          mem = nbRep * e.getCons().longValue();
+        } else if ((v instanceof SDFBroadcastVertex) || (v instanceof SDFRoundBufferVertex)) {
+          mem += e.getCons().longValue() * v.getNbRepeatAsLong();
+        } else {
+          throw new PreesmRuntimeException(
+              "Internal Memory allocation failed for actor " + v.getName() + " unsupported special actor");
         }
+
+        final long sizeType = this.dataTypes.get(e.getDataType().toString());
+
+        bufSize += mem * sizeType;
+        allocEdge.add(e);
       }
     }
     return bufSize;

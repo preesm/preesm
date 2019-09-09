@@ -275,31 +275,39 @@ public class IDLPrototypeFactory implements IFunctionFactory, IDLTreeVisitor {
   @Override
   public void visitParamDecl(final ParamDecl arg0) {
     if (arg0.paramAttribute == ParamDecl.MODE_IN) {
-      if (arg0.paramTypeSpec.name().equals("parameter")) {
-        final CodeGenParameter parameter = new CodeGenParameter(arg0.simple_declarator.name(), 0);
-        this.currentPrototype.addParameter(parameter);
-      } else {
-        final CodeGenArgument argument = new CodeGenArgument(arg0.simple_declarator.name(), CodeGenArgument.INPUT);
-        if ((arg0.paramTypeSpec.name() == null) || (arg0.paramTypeSpec.name().length() == 0)) {
-          argument.setType(arg0.paramTypeSpec.getIDLTypeName());
-        } else {
-          argument.setType(arg0.paramTypeSpec.name());
-        }
-        this.currentPrototype.addArgument(argument);
-      }
+      visitInMode(arg0);
     } else if (arg0.paramAttribute == ParamDecl.MODE_OUT) {
-      if (arg0.paramTypeSpec.name().equals("parameter")) {
-        final CodeGenParameter parameter = new CodeGenParameter(arg0.simple_declarator.name(), 1);
-        this.currentPrototype.addParameter(parameter);
+      visitOutMode(arg0);
+    }
+  }
+
+  private void visitOutMode(final ParamDecl arg0) {
+    if (arg0.paramTypeSpec.name().equals("parameter")) {
+      final CodeGenParameter parameter = new CodeGenParameter(arg0.simple_declarator.name(), 1);
+      this.currentPrototype.addParameter(parameter);
+    } else {
+      final CodeGenArgument argument = new CodeGenArgument(arg0.simple_declarator.name(), CodeGenArgument.OUTPUT);
+      if ((arg0.paramTypeSpec.name() == null) || (arg0.paramTypeSpec.name().length() == 0)) {
+        argument.setType(arg0.paramTypeSpec.getIDLTypeName());
       } else {
-        final CodeGenArgument argument = new CodeGenArgument(arg0.simple_declarator.name(), CodeGenArgument.OUTPUT);
-        if ((arg0.paramTypeSpec.name() == null) || (arg0.paramTypeSpec.name().length() == 0)) {
-          argument.setType(arg0.paramTypeSpec.getIDLTypeName());
-        } else {
-          argument.setType(arg0.paramTypeSpec.name());
-        }
-        this.currentPrototype.addArgument(argument);
+        argument.setType(arg0.paramTypeSpec.name());
       }
+      this.currentPrototype.addArgument(argument);
+    }
+  }
+
+  private void visitInMode(final ParamDecl arg0) {
+    if (arg0.paramTypeSpec.name().equals("parameter")) {
+      final CodeGenParameter parameter = new CodeGenParameter(arg0.simple_declarator.name(), 0);
+      this.currentPrototype.addParameter(parameter);
+    } else {
+      final CodeGenArgument argument = new CodeGenArgument(arg0.simple_declarator.name(), CodeGenArgument.INPUT);
+      if ((arg0.paramTypeSpec.name() == null) || (arg0.paramTypeSpec.name().length() == 0)) {
+        argument.setType(arg0.paramTypeSpec.getIDLTypeName());
+      } else {
+        argument.setType(arg0.paramTypeSpec.name());
+      }
+      this.currentPrototype.addArgument(argument);
     }
   }
 

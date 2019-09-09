@@ -65,11 +65,6 @@ public class IPXACTResourceImpl extends ResourceImpl {
     super(uri);
   }
 
-  /*
-   * (non-Javadoc)
-   *
-   * @see org.eclipse.emf.ecore.resource.impl.ResourceImpl#doSave(java.io.OutputStream, java.util.Map)
-   */
   @Override
   public void doSave(final OutputStream outputStream, final Map<?, ?> options) throws IOException {
 
@@ -80,11 +75,6 @@ public class IPXACTResourceImpl extends ResourceImpl {
     designWriter.write(design, outputStream);
   }
 
-  /*
-   * (non-Javadoc)
-   *
-   * @see org.eclipse.emf.ecore.resource.impl.ResourceImpl#doLoad(java.io.InputStream, java.util.Map)
-   */
   @Override
   protected void doLoad(final InputStream inputStream, final Map<?, ?> options) throws IOException {
     final IPXACTDesignParser designParser = new IPXACTDesignParser();

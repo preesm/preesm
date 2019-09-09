@@ -71,6 +71,8 @@ import org.w3c.dom.ls.LSSerializer;
  */
 public abstract class GMLExporter<V extends AbstractVertex<?>, E extends AbstractEdge<?, ?>> {
 
+  private static final String GRAPH_LITERAL = "graph";
+
   /** The dom document. */
   protected Document domDocument;
 
@@ -91,8 +93,8 @@ public abstract class GMLExporter<V extends AbstractVertex<?>, E extends Abstrac
    */
   public GMLExporter() {
     this.classKeySet = new LinkedHashMap<>();
-    addKey(AbstractGraph.PARAMETERS, AbstractGraph.PARAMETERS, "graph", null, null);
-    addKey(AbstractGraph.VARIABLES, AbstractGraph.VARIABLES, "graph", null, null);
+    addKey(AbstractGraph.PARAMETERS, AbstractGraph.PARAMETERS, GRAPH_LITERAL, null, null);
+    addKey(AbstractGraph.VARIABLES, AbstractGraph.VARIABLES, GRAPH_LITERAL, null, null);
     addKey(AbstractVertex.ARGUMENTS_LITERAL, AbstractVertex.ARGUMENTS_LITERAL, "node", null, null);
     DOMImplementationRegistry registry;
     DOMImplementation impl;
@@ -249,7 +251,7 @@ public abstract class GMLExporter<V extends AbstractVertex<?>, E extends Abstrac
    * @return The created element
    */
   public Element createGraph(final Element parentElement, final boolean directed) {
-    final Element newElt = appendChild(parentElement, "graph");
+    final Element newElt = appendChild(parentElement, GRAPH_LITERAL);
     this.graphElt = newElt;
     if (directed) {
       newElt.setAttribute("edgedefault", "directed");

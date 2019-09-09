@@ -125,6 +125,7 @@ public class CodegenWithClusterTask extends CodegenTask {
 
     final Design archi = (Design) inputs.get("architecture");
     final DirectedAcyclicGraph algoDAG = (DirectedAcyclicGraph) inputs.get("DAG");
+    @SuppressWarnings("unchecked")
     final Map<AbstractActor, Schedule> scheduleMapping = (Map<AbstractActor, Schedule>) inputs.get("schedules");
     @SuppressWarnings("unchecked")
     final Map<String, MemoryExclusionGraph> megs = (Map<String, MemoryExclusionGraph>) inputs.get("MEGs");

@@ -50,6 +50,10 @@ import org.preesm.model.pisdf.AbstractVertex;
  */
 public class APGANAlgorithm {
 
+  private APGANAlgorithm() {
+    // forbid instantiation
+  }
+
   /**
    * @param couples
    *          list of candidates

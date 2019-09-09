@@ -57,6 +57,10 @@ import org.preesm.commons.logger.PreesmLogger;
  */
 public class WorkspaceUtils {
 
+  private WorkspaceUtils() {
+    // forbid instantiation
+  }
+
   /**
    * Returns the same path if it started with /projectName or prefixes it with /projectName/.
    *
@@ -67,7 +71,7 @@ public class WorkspaceUtils {
    * @return Project absolute path.
    */
   public static String getAbsolutePath(final String relative, final String projectName) {
-    String absolute = new String();
+    final String absolute;
 
     if (relative.startsWith("/" + projectName)) {
       return relative;

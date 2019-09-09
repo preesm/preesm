@@ -52,6 +52,10 @@ import org.preesm.model.pisdf.util.topology.PiSDFSuccessorSwitch.SuccessorFoundE
  */
 public class PiSDFTopologyHelper {
 
+  private PiSDFTopologyHelper() {
+    // forbid instantiation
+  }
+
   public static final Comparator<AbstractActor> getComparator() {
     return new PiSDFTopologicalComparator();
   }

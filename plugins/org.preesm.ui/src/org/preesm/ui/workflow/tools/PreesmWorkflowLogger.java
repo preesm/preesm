@@ -74,11 +74,6 @@ public class PreesmWorkflowLogger extends Logger {
     initConsole();
   }
 
-  /*
-   * (non-Javadoc)
-   *
-   * @see java.util.logging.Logger#log(java.util.logging.LogRecord)
-   */
   @Override
   public void log(final LogRecord record) {
     for (Handler h : this.getHandlers()) {
@@ -93,28 +88,32 @@ public class PreesmWorkflowLogger extends Logger {
         // Writes a log in standard output
         Logger.getAnonymousLogger().log(record);
       } else {
-        // Writes a log in console
-        this.console.activate();
-        try (final MessageConsoleStream stream = new MessageConsoleStream(this.console, this.console.getCharset())) {
-          PreesmUIPlugin.getDefault().getWorkbench().getDisplay().asyncExec(() -> {
-            if (levelVal < Level.WARNING.intValue()) {
-              stream.setColor(new Color(null, 0, 0, 0));
-            } else if (levelVal == Level.WARNING.intValue()) {
-              stream.setColor(new Color(null, 255, 150, 0));
-            } else if (levelVal > Level.WARNING.intValue()) {
-              stream.setColor(new Color(null, 255, 0, 0));
-            }
-          });
-          final boolean printStack = this.getLevel().intValue() < Level.INFO.intValue();
-          stream.println(new DefaultPreesmFormatter(printStack).format(record));
-          if (record.getThrown() != null) {
-            // always log stack trace in the anonymous logger
-            Logger.getAnonymousLogger().log(Level.SEVERE, record.getThrown().getMessage(), record.getThrown());
-          }
-        } catch (IOException e) {
-          throw new PreesmFrameworkException("Could not open console stream", e);
-        }
+        writeToConsole(record, levelVal);
       }
+    }
+  }
+
+  private void writeToConsole(final LogRecord record, final int levelVal) {
+    // Writes a log in console
+    this.console.activate();
+    try (final MessageConsoleStream stream = new MessageConsoleStream(this.console, this.console.getCharset())) {
+      PreesmUIPlugin.getDefault().getWorkbench().getDisplay().asyncExec(() -> {
+        if (levelVal < Level.WARNING.intValue()) {
+          stream.setColor(new Color(null, 0, 0, 0));
+        } else if (levelVal == Level.WARNING.intValue()) {
+          stream.setColor(new Color(null, 255, 150, 0));
+        } else if (levelVal > Level.WARNING.intValue()) {
+          stream.setColor(new Color(null, 255, 0, 0));
+        }
+      });
+      final boolean printStack = this.getLevel().intValue() < Level.INFO.intValue();
+      stream.println(new DefaultPreesmFormatter(printStack).format(record));
+      if (record.getThrown() != null) {
+        // always log stack trace in the anonymous logger
+        Logger.getAnonymousLogger().log(Level.SEVERE, record.getThrown().getMessage(), record.getThrown());
+      }
+    } catch (IOException e) {
+      throw new PreesmFrameworkException("Could not open console stream", e);
     }
   }
 

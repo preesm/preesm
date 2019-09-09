@@ -52,12 +52,6 @@ public class BroadcastRoundBufferOptimization extends PiMMSwitch<Boolean> implem
 
   boolean keepGoing = false;
 
-  /*
-   * (non-Javadoc)
-   *
-   * @see
-   * org.ietr.preesm.pimm.algorithm.pimmoptims.PiMMOptimization#optimize(org.ietr.preesm.experiment.model.pimm.PiGraph)
-   */
   @Override
   public boolean optimize(PiGraph graph) {
     do {

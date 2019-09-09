@@ -82,24 +82,14 @@ public class ScenarioNode extends AbstractWorkflowNode<AbstractScenarioImplement
    * @return the scenario
    */
   public AbstractScenarioImplementation getScenario() {
-    return (AbstractScenarioImplementation) this.implementation;
+    return this.implementation;
   }
 
-  /*
-   * (non-Javadoc)
-   *
-   * @see org.ietr.dftools.workflow.elements.AbstractWorkflowNode#isScenarioNode()
-   */
   @Override
   public boolean isScenarioNode() {
     return true;
   }
 
-  /*
-   * (non-Javadoc)
-   *
-   * @see org.ietr.dftools.workflow.elements.AbstractWorkflowNode#isTaskNode()
-   */
   @Override
   public boolean isTaskNode() {
     return false;

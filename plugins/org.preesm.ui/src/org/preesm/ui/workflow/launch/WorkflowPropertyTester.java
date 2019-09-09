@@ -47,12 +47,6 @@ import org.eclipse.core.resources.IFile;
  */
 public class WorkflowPropertyTester extends PropertyTester {
 
-  /*
-   * (non-Javadoc)
-   *
-   * @see org.eclipse.core.expressions.IPropertyTester#test(java.lang.Object, java.lang.String, java.lang.Object[],
-   * java.lang.Object)
-   */
   @Override
   public boolean test(final Object receiver, final String property, final Object[] args, final Object expectedValue) {
     if (property.equals("isWorkflow") && receiver instanceof IFile) {

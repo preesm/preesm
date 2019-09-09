@@ -122,11 +122,6 @@ public abstract class LatencyAbc {
   }
 
   /**
-   * Activating traces. Put to true only for debug!
-   */
-  private static final boolean DEBUG_TRACES = false;
-
-  /**
    * Gets a new architecture simulator from a simulator type.
    *
    * @param params
@@ -331,10 +326,7 @@ public abstract class LatencyAbc {
       }
     }
 
-    if (LatencyAbc.DEBUG_TRACES) {
-      final String msg = "unmap and remap " + orderedVList + " on " + operator;
-      PreesmLogger.getLogger().log(Level.INFO, msg);
-    }
+    PreesmLogger.getLogger().log(Level.FINE, () -> "unmap and remap " + orderedVList + " on " + operator);
 
     for (final MapperDAGVertex dv : orderedVList) {
 
@@ -351,45 +343,29 @@ public abstract class LatencyAbc {
 
       if (isToUnmap) {
         // Unmapping if necessary before mapping
-        if (LatencyAbc.DEBUG_TRACES) {
-          final String msg = "unmap " + dvi;
-          PreesmLogger.getLogger().log(Level.INFO, msg);
-        }
+        PreesmLogger.getLogger().log(Level.FINE, () -> "unmap " + dvi);
         unmap(dvi);
 
-        if (LatencyAbc.DEBUG_TRACES) {
-          final String msg = "unmapped " + dvi;
-          PreesmLogger.getLogger().log(Level.INFO, msg);
-        }
+        PreesmLogger.getLogger().log(Level.FINE, () -> "unmapped " + dvi);
       }
 
       if (isToMap) {
-        if (LatencyAbc.DEBUG_TRACES) {
-          final String msg = "map " + dvi + " to " + operator;
-          PreesmLogger.getLogger().log(Level.INFO, msg);
-        }
+        PreesmLogger.getLogger().log(Level.FINE, () -> "map " + dvi + " to " + operator);
 
         dv.setEffectiveComponent(operator);
         dvi.setEffectiveComponent(operator);
 
         fireNewMappedVertex(dvi, updateRank);
 
-        if (LatencyAbc.DEBUG_TRACES) {
-          final String msg = "mapped " + dvi;
-          PreesmLogger.getLogger().log(Level.INFO, msg);
-        }
+        PreesmLogger.getLogger().log(Level.FINE, () -> "mapped " + dvi);
 
       } else if (dv.equals(dagvertex) || remapGroup) {
-        final String msg = dagvertex + " can not be mapped (group) on " + operator;
-        PreesmLogger.getLogger().log(Level.SEVERE, msg);
+        PreesmLogger.getLogger().log(Level.SEVERE, () -> dagvertex + " can not be mapped (group) on " + operator);
         dv.setEffectiveComponent(null);
       }
     }
 
-    if (LatencyAbc.DEBUG_TRACES) {
-      final String msg = "unmapped and remapped " + orderedVList + " on " + operator;
-      PreesmLogger.getLogger().log(Level.INFO, msg);
-    }
+    PreesmLogger.getLogger().log(Level.FINE, () -> "unmapped and remapped " + orderedVList + " on " + operator);
   }
 
   /**

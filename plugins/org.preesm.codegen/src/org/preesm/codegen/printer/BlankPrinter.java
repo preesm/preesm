@@ -73,13 +73,13 @@ import org.preesm.codegen.model.SubBuffer;
 import org.preesm.codegen.model.Variable;
 
 /**
- * This {@link DefaultPrinter} is a dummy implementation of the {@link CodegenAbstractPrinter} where all print methods
+ * This {@link BlankPrinter} is a dummy implementation of the {@link CodegenAbstractPrinter} where all print methods
  * print nothing. The only purpose of this class is to ease the developer life by making it possible to create a new
  * printer simply by implementing print methods that actually print something.
  *
  * @author kdesnos
  */
-public class DefaultPrinter extends CodegenAbstractPrinter {
+public class BlankPrinter extends CodegenAbstractPrinter {
 
   /**
    * Default implementation: does nothing.

@@ -81,7 +81,6 @@ import org.preesm.codegen.model.SharedMemoryCommunication
 import org.preesm.codegen.model.SpecialCall
 import org.preesm.codegen.model.SubBuffer
 import org.preesm.codegen.model.Variable
-import org.preesm.codegen.printer.DefaultPrinter
 import org.preesm.commons.exceptions.PreesmRuntimeException
 import org.preesm.commons.files.PreesmResourcesHelper
 import org.preesm.model.pisdf.util.CHeaderUsedLocator
@@ -89,6 +88,7 @@ import org.preesm.codegen.model.IteratedBuffer
 import org.preesm.codegen.model.ClusterBlock
 import org.preesm.codegen.model.SectionBlock
 import org.preesm.codegen.model.ActorFunctionCall
+import org.preesm.codegen.printer.BlankPrinter
 
 /**
  * This printer is currently used to print C code only for GPP processors
@@ -97,7 +97,7 @@ import org.preesm.codegen.model.ActorFunctionCall
  * @author kdesnos
  * @author mpelcat
  */
-class CPrinter extends DefaultPrinter {
+class CPrinter extends BlankPrinter {
 
 	/*
 	 * Variable to check if we are using PAPIFY or not --> Will be updated during preprocessing

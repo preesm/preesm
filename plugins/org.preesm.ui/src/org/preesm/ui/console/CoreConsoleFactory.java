@@ -43,7 +43,6 @@ import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.console.IConsoleFactory;
 import org.preesm.commons.logger.PreesmLogger;
 
-// TODO: Auto-generated Javadoc
 /**
  * A factory for creating CoreConsole objects.
  *
@@ -51,11 +50,6 @@ import org.preesm.commons.logger.PreesmLogger;
  */
 public class CoreConsoleFactory implements IConsoleFactory {
 
-  /*
-   * (non-Javadoc)
-   *
-   * @see org.eclipse.ui.console.IConsoleFactory#openConsole()
-   */
   @Override
   public void openConsole() {
     final IWorkbenchWindow window = PlatformUI.getWorkbench().getActiveWorkbenchWindow();

@@ -40,7 +40,6 @@ package org.preesm.algorithm.evaluator;
 
 import org.preesm.algorithm.model.AbstractEdgePropertyType;
 
-// TODO: Auto-generated Javadoc
 /**
  * The Class SDFDoubleEdgePropertyType.
  */
@@ -56,11 +55,6 @@ public class SDFDoubleEdgePropertyType extends AbstractEdgePropertyType<Double> 
     super(val);
   }
 
-  /*
-   * (non-Javadoc)
-   *
-   * @see org.ietr.dftools.algorithm.model.AbstractEdgePropertyType#clone()
-   */
   @Override
   public SDFDoubleEdgePropertyType copy() {
     return new SDFDoubleEdgePropertyType(this.value);
@@ -71,21 +65,11 @@ public class SDFDoubleEdgePropertyType extends AbstractEdgePropertyType<Double> 
     return this.value.longValue();
   }
 
-  /*
-   * (non-Javadoc)
-   *
-   * @see org.ietr.dftools.algorithm.model.AbstractEdgePropertyType#toString()
-   */
   @Override
   public String toString() {
     return this.value.toString();
   }
 
-  /*
-   * (non-Javadoc)
-   *
-   * @see org.ietr.dftools.algorithm.model.AbstractEdgePropertyType#getValue()
-   */
   @Override
   public Double getValue() {
     return this.value;

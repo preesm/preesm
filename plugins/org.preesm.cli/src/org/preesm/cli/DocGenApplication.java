@@ -82,8 +82,7 @@ public class DocGenApplication implements IApplication {
 
   @Override
   public void stop() {
-    // TODO Auto-generated method stub
-
+    // nothing
   }
 
 }

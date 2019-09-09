@@ -37,7 +37,11 @@ package org.preesm.codegen.xtend;
 /**
  *
  */
-public interface CodegenPlugin {
+public class CodegenPlugin {
+
+  private CodegenPlugin() {
+    // forbid instantation
+  }
 
   public static final String BUNDLE_ID = "org.preesm.codegen.xtend";
 

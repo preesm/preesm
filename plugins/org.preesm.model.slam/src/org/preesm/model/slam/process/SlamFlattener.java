@@ -222,9 +222,9 @@ public class SlamFlattener {
     final Set<Link> links = new LinkedHashSet<>(design.getLinks());
     for (final Link link : links) {
       if (link.getSourceComponentInstance().equals(instance)) {
-        manageSourceHierarchicalLink(link, design, subDesign, refMap);
+        manageSourceHierarchicalLink(link, subDesign, refMap);
       } else if (link.getDestinationComponentInstance().equals(instance)) {
-        manageDestinationHierarchicalLink(link, design, subDesign, refMap);
+        manageDestinationHierarchicalLink(link, subDesign, refMap);
       }
     }
   }
@@ -241,7 +241,7 @@ public class SlamFlattener {
    * @param refMap
    *          the ref map
    */
-  private void manageSourceHierarchicalLink(final Link link, final Design design, final Design subDesign,
+  private void manageSourceHierarchicalLink(final Link link, final Design subDesign,
       final Map<ComponentInstance, ComponentInstance> refMap) {
     HierarchyPort foundPort = null;
 
@@ -277,7 +277,7 @@ public class SlamFlattener {
    * @param refMap
    *          the ref map
    */
-  private void manageDestinationHierarchicalLink(final Link link, final Design design, final Design subDesign,
+  private void manageDestinationHierarchicalLink(final Link link, final Design subDesign,
       final Map<ComponentInstance, ComponentInstance> refMap) {
     HierarchyPort foundPort = null;
 

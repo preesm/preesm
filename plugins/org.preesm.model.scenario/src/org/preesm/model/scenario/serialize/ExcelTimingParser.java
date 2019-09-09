@@ -111,7 +111,7 @@ public class ExcelTimingParser {
       parseTimings(w, opDefIds, missingVertices, missingOperatorTypes);
 
     } catch (final BiffException | IOException | CoreException e) {
-      e.printStackTrace();
+      PreesmLogger.getLogger().log(Level.WARNING, "Could not parse timings", e);
     }
   }
 
@@ -193,9 +193,6 @@ public class ExcelTimingParser {
           if (timingCell.getType().equals(CellType.NUMBER) || timingCell.getType().equals(CellType.NUMBER_FORMULA)) {
 
             final String expression = timingCell.getContents();
-            String stringTiming = expression;
-            // Removing useless characters (spaces...)
-            stringTiming = stringTiming.replaceAll(" ", "");
 
             try {
               this.scenario.getTimings().setTiming(actor, component, expression);
@@ -216,7 +213,7 @@ public class ExcelTimingParser {
             missingVertices.add(actor);
           } else if ((operatorCell == null) && !missingOperatorTypes.contains(component)) {
             PreesmLogger.getLogger().log(Level.WARNING,
-                "No column found in excel sheet for operator type: " + component);
+                () -> "No column found in excel sheet for operator type: " + component);
             missingOperatorTypes.add(component);
           }
         }

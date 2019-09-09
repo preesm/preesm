@@ -161,7 +161,7 @@ public class CodegenTask2 extends AbstractTaskImplementation {
   @Override
   public Map<String, String> getDefaultParameters() {
     final Map<String, String> parameters = new LinkedHashMap<>();
-    String avilableLanguages = "? C {";
+    final StringBuilder avilableLanguages = new StringBuilder("? C {");
 
     // Retrieve the languages registered with the printers
     final Set<String> languages = new LinkedHashSet<>();
@@ -174,11 +174,11 @@ public class CodegenTask2 extends AbstractTaskImplementation {
     }
 
     for (final String lang : languages) {
-      avilableLanguages += lang + ", ";
+      avilableLanguages.append(lang + ", ");
     }
-    avilableLanguages += CodegenTask2.VALUE_PRINTER_IR + "}";
+    avilableLanguages.append(CodegenTask2.VALUE_PRINTER_IR + "}");
 
-    parameters.put(CodegenTask2.PARAM_PRINTER, avilableLanguages);
+    parameters.put(CodegenTask2.PARAM_PRINTER, avilableLanguages.toString());
     // Papify default
     parameters.put(CodegenTask2.PARAM_PAPIFY, "false");
     return parameters;

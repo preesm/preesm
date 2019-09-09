@@ -62,8 +62,9 @@ public abstract class IBSDFConsistency {
     // step 1: compute the RV of the top graph
     if (!SDFConsistency.computeRV(graph)) {
       timer.stop();
-      PreesmLogger.getLogger().log(Level.SEVERE,
-          "IBSDF RV computation : " + graph.getName() + " is not consistent !! evaluated in " + timer.toString());
+      final String m = "IBSDF RV computation : " + graph.getName() + " is not consistent !! evaluated in "
+          + timer.toString();
+      PreesmLogger.getLogger().log(Level.SEVERE, m);
       return false;
     } else {
       // step 2: compute the RV of each subgraph
@@ -76,8 +77,9 @@ public abstract class IBSDFConsistency {
         }
       }
       timer.stop();
-      PreesmLogger.getLogger().log(Level.INFO,
-          "IBSDF RV computation : " + graph.getName() + " is consistent !! evaluated in " + timer.toString());
+      final String msg = "IBSDF RV computation : " + graph.getName() + " is consistent !! evaluated in "
+          + timer.toString();
+      PreesmLogger.getLogger().log(Level.INFO, msg);
       return true;
     }
   }

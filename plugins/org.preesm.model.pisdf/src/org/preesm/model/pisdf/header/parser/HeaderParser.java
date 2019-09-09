@@ -65,6 +65,10 @@ import org.preesm.model.pisdf.factory.PiMMUserFactory;
  */
 public class HeaderParser {
 
+  private HeaderParser() {
+    // forbid instantiation
+  }
+
   /**
    * This Regular expression is used to identify and separate the different elements composing a function prototype
    * parameter. It should be noted that before being processed by this regular expression, all consecutive whitespace
@@ -160,36 +164,42 @@ public class HeaderParser {
       final Pattern paramPattern = Pattern.compile(HeaderParser.PARAM_BREAK_DOWN_REGEX);
       // Procces parameters one by one
       for (final String param : parameters) {
-        final FunctionArgument fp = PiMMUserFactory.instance.createFunctionArgument();
-        matcher = paramPattern.matcher(param);
-        final boolean matched = matcher.matches();
-        if (matched) { // Apply the matcher (if possible)
-          // Get the parameter name
-          fp.setName(matcher.group(4));
-          // Get the parameter type
-          fp.setType(matcher.group(2));
-          // Check the direction (if any)
-          if (matcher.group(1) != null) {
-            if (matcher.group(1).equals("IN")) {
-              fp.setDirection(Direction.IN);
-
-            }
-            if (matcher.group(1).equals("OUT")) {
-              fp.setDirection(Direction.OUT);
-            }
-          }
-
-          // if not pointer (group 3) nor array (group 5), then it's a parameter
-          if ((matcher.group(3) == null) && (matcher.group(5) == null)) {
-            fp.setIsConfigurationParameter(true);
-          }
-          final EList<FunctionArgument> protoParameters = funcProto.getArguments();
-          protoParameters.add(fp);
-        }
+        processParameter(funcProto, paramPattern, param);
       }
       result.add(funcProto);
     }
     return result;
+  }
+
+  private static void processParameter(final FunctionPrototype funcProto, final Pattern paramPattern,
+      final String param) {
+    Matcher matcher;
+    final FunctionArgument fp = PiMMUserFactory.instance.createFunctionArgument();
+    matcher = paramPattern.matcher(param);
+    final boolean matched = matcher.matches();
+    if (matched) { // Apply the matcher (if possible)
+      // Get the parameter name
+      fp.setName(matcher.group(4));
+      // Get the parameter type
+      fp.setType(matcher.group(2));
+      // Check the direction (if any)
+      if (matcher.group(1) != null) {
+        if (matcher.group(1).equals("IN")) {
+          fp.setDirection(Direction.IN);
+
+        }
+        if (matcher.group(1).equals("OUT")) {
+          fp.setDirection(Direction.OUT);
+        }
+      }
+
+      // if not pointer (group 3) nor array (group 5), then it's a parameter
+      if ((matcher.group(3) == null) && (matcher.group(5) == null)) {
+        fp.setIsConfigurationParameter(true);
+      }
+      final EList<FunctionArgument> protoParameters = funcProto.getArguments();
+      protoParameters.add(fp);
+    }
   }
 
   /**
@@ -348,55 +358,20 @@ public class HeaderParser {
       // -each of the data input and output ports of the actor matches one
       // of the parameters of proto
       if (matches) {
-        for (final Port p : actor.getDataInputPorts()) {
-          final FunctionArgument param = HeaderParser.getCorrespondingFunctionParameter(p, params);
-          if (param != null) {
-            param.setDirection(Direction.IN);
-            param.setIsConfigurationParameter(false);
-            params.remove(param);
-          } else {
-            matches = false;
-            break;
-          }
-        }
+        matches = searchForDataInputPort(actor, params, matches);
       }
       if (matches) {
-        for (final Port p : actor.getDataOutputPorts()) {
-          final FunctionArgument param = HeaderParser.getCorrespondingFunctionParameter(p, params);
-          if (param != null) {
-            param.setDirection(Direction.OUT);
-            param.setIsConfigurationParameter(false);
-            params.remove(param);
-          } else {
-            matches = false;
-            break;
-          }
-        }
+        matches = searchForDataOutputPort(actor, params, matches);
       }
       // -each of the configuration output ports of the actor matches one
       // of the parameters of proto
       if (matches) {
-        for (final Port p : actor.getConfigOutputPorts()) {
-          final FunctionArgument param = HeaderParser.getCorrespondingFunctionParameter(p, params);
-          if (param != null) {
-            param.setDirection(Direction.OUT);
-            param.setIsConfigurationParameter(true);
-            params.remove(param);
-          } else {
-            matches = false;
-            break;
-          }
-        }
+        matches = searchForConfigOutputPort(actor, params, matches);
       }
       // -all other function parameters of proto match a configuration
       // input port of the actor
       if (matches) {
-        for (final FunctionArgument param : params) {
-          if (HeaderParser.hasCorrespondingPort(param, actor.getConfigInputPorts())) {
-            param.setDirection(Direction.IN);
-            param.setIsConfigurationParameter(true);
-          }
-        }
+        searchForConfigInputPort(actor, params);
       }
       if (matches) {
         result.add(proto);
@@ -404,6 +379,63 @@ public class HeaderParser {
     }
 
     return result;
+  }
+
+  private static void searchForConfigInputPort(final AbstractActor actor, final ArrayList<FunctionArgument> params) {
+    for (final FunctionArgument param : params) {
+      if (HeaderParser.hasCorrespondingPort(param, actor.getConfigInputPorts())) {
+        param.setDirection(Direction.IN);
+        param.setIsConfigurationParameter(true);
+      }
+    }
+  }
+
+  private static boolean searchForConfigOutputPort(final AbstractActor actor, final ArrayList<FunctionArgument> params,
+      boolean matches) {
+    for (final Port p : actor.getConfigOutputPorts()) {
+      final FunctionArgument param = HeaderParser.getCorrespondingFunctionParameter(p, params);
+      if (param != null) {
+        param.setDirection(Direction.OUT);
+        param.setIsConfigurationParameter(true);
+        params.remove(param);
+      } else {
+        matches = false;
+        break;
+      }
+    }
+    return matches;
+  }
+
+  private static boolean searchForDataOutputPort(final AbstractActor actor, final ArrayList<FunctionArgument> params,
+      boolean matches) {
+    for (final Port p : actor.getDataOutputPorts()) {
+      final FunctionArgument param = HeaderParser.getCorrespondingFunctionParameter(p, params);
+      if (param != null) {
+        param.setDirection(Direction.OUT);
+        param.setIsConfigurationParameter(false);
+        params.remove(param);
+      } else {
+        matches = false;
+        break;
+      }
+    }
+    return matches;
+  }
+
+  private static boolean searchForDataInputPort(final AbstractActor actor, final ArrayList<FunctionArgument> params,
+      boolean matches) {
+    for (final Port p : actor.getDataInputPorts()) {
+      final FunctionArgument param = HeaderParser.getCorrespondingFunctionParameter(p, params);
+      if (param != null) {
+        param.setDirection(Direction.IN);
+        param.setIsConfigurationParameter(false);
+        params.remove(param);
+      } else {
+        matches = false;
+        break;
+      }
+    }
+    return matches;
   }
 
   /**

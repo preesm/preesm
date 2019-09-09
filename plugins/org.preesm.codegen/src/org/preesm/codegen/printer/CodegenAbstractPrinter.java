@@ -233,10 +233,8 @@ public abstract class CodegenAbstractPrinter extends CodegenSwitch<CharSequence>
     final ComponentInstance mainOperatorName = getEngine().getScenario().getSimulationInfo().getMainOperator();
     final Collection<Block> codeBlocks = getEngine().getCodeBlocks();
     for (final Block block : codeBlocks) {
-      if (block.getName().equals(mainOperatorName.getInstanceName())) {
-        if (block instanceof CoreBlock) {
-          return ((CoreBlock) block).getCoreID();
-        }
+      if (block.getName().equals(mainOperatorName.getInstanceName()) && block instanceof CoreBlock) {
+        return ((CoreBlock) block).getCoreID();
       }
     }
     // If nothing is mapped on the main operator, there is no code block that has been generated for
@@ -436,118 +434,139 @@ public abstract class CodegenAbstractPrinter extends CodegenSwitch<CharSequence>
     } else {
       coreBlockHasNewLine = false;
     }
-    String indentation;
-    boolean hasNewLine;
-
     final EList<Variable> definitions = coreBlock.getDefinitions();
     // Visit Declarations
-    {
-      setState(PrinterState.PRINTING_DECLARATIONS);
-
-      final List<Variable> declsNotDefs = new ArrayList<>();
-      final EList<Variable> declarations = coreBlock.getDeclarations();
-      for (final Variable v : declarations) {
-        if (!definitions.contains(v)) {
-          declsNotDefs.add(v);
-        }
-      }
-      final CharSequence declarationsHeader = printDeclarationsHeader(declsNotDefs);
-
-      result.append(declarationsHeader, indentationCoreBlock);
-      if (declarationsHeader.length() > 0) {
-        indentation = CodegenAbstractPrinter.getLastLineIndentation(result);
-        result = CodegenAbstractPrinter.trimLastEOL(result);
-        hasNewLine = CodegenAbstractPrinter.endWithEOL(result);
-      } else {
-        indentation = indentationCoreBlock;
-        hasNewLine = false;
-      }
-
-      for (final Variable v : declsNotDefs) {
-        final CharSequence code = doSwitch(v);
-        result.append(code, indentation);
-      }
-
-      if (hasNewLine) {
-        result.newLineIfNotEmpty();
-        result.append(indentationCoreBlock);
-      }
-      result.append(printDeclarationsFooter(declarations), indentationCoreBlock);
-    }
+    result = printDeclarations(coreBlock, result, indentationCoreBlock, definitions);
 
     // Visit Definitions
-    {
-      setState(PrinterState.PRINTING_DEFINITIONS);
-      final CharSequence definitionsHeader = printDefinitionsHeader(definitions);
-      result.append(definitionsHeader, indentationCoreBlock);
-      if (definitionsHeader.length() > 0) {
-        indentation = CodegenAbstractPrinter.getLastLineIndentation(result);
-        result = CodegenAbstractPrinter.trimLastEOL(result);
-        hasNewLine = CodegenAbstractPrinter.endWithEOL(result);
-      } else {
-        indentation = indentationCoreBlock;
-        hasNewLine = false;
-      }
-
-      // result.append(coreBlock.definitions.map[doSwitch].join(''), indentation)
-      for (final Variable v : definitions) {
-        final CharSequence code = doSwitch(v);
-        result.append(code, indentation);
-      }
-
-      if (hasNewLine) {
-        result.newLineIfNotEmpty();
-        result.append(indentationCoreBlock);
-      }
-      result.append(printDefinitionsFooter(definitions), indentationCoreBlock);
-    }
+    result = printDefinitions(result, indentationCoreBlock, definitions);
 
     // Visit init block
-    {
-      setState(PrinterState.PRINTING_INIT_BLOCK);
-      final CharSequence coreInitHeader = printCoreInitBlockHeader(coreBlock.getInitBlock());
-      result.append(coreInitHeader, indentationCoreBlock);
-      if (coreInitHeader.length() > 0) {
-        indentation = CodegenAbstractPrinter.getLastLineIndentation(result);
-        result = CodegenAbstractPrinter.trimLastEOL(result);
-        hasNewLine = CodegenAbstractPrinter.endWithEOL(result);
-      } else {
-        indentation = indentationCoreBlock;
-        hasNewLine = false;
-      }
-      result.append(doSwitch(coreBlock.getInitBlock()), indentation);
-      if (hasNewLine) {
-        result.newLineIfNotEmpty();
-        result.append(indentationCoreBlock);
-      }
-      result.append(printCoreInitBlockFooter(coreBlock.getInitBlock()), indentationCoreBlock);
-    }
+    result = printInitBlock(coreBlock, result, indentationCoreBlock);
 
     // Visit loop block
-    {
-      setState(PrinterState.PRINTING_LOOP_BLOCK);
-      final CharSequence coreLoopHeader = printCoreLoopBlockHeader(coreBlock.getLoopBlock());
-      result.append(coreLoopHeader, indentationCoreBlock);
-      if (coreLoopHeader.length() > 0) {
-        indentation = CodegenAbstractPrinter.getLastLineIndentation(result);
-        result = CodegenAbstractPrinter.trimLastEOL(result);
-        hasNewLine = CodegenAbstractPrinter.endWithEOL(result);
-      } else {
-        indentation = indentationCoreBlock;
-        hasNewLine = false;
-      }
-      result.append(doSwitch(coreBlock.getLoopBlock()), indentation);
-      if (hasNewLine) {
-        result.newLineIfNotEmpty();
-        result.append(indentationCoreBlock);
-      }
-      result.append(printCoreLoopBlockFooter(coreBlock.getLoopBlock()), indentationCoreBlock);
-    }
+    result = printLoopBlock(coreBlock, result, indentationCoreBlock);
 
     if (coreBlockHasNewLine) {
       result.newLineIfNotEmpty();
     }
     result.append(printCoreBlockFooter(coreBlock));
+    return result;
+  }
+
+  private StringConcatenation printDeclarations(final CoreBlock coreBlock, StringConcatenation result,
+      final String indentationCoreBlock, final EList<Variable> definitions) {
+    String indentation;
+    boolean hasNewLine;
+    setState(PrinterState.PRINTING_DECLARATIONS);
+
+    final List<Variable> declsNotDefs = new ArrayList<>();
+    final EList<Variable> declarations = coreBlock.getDeclarations();
+    for (final Variable v : declarations) {
+      if (!definitions.contains(v)) {
+        declsNotDefs.add(v);
+      }
+    }
+    final CharSequence declarationsHeader = printDeclarationsHeader(declsNotDefs);
+
+    result.append(declarationsHeader, indentationCoreBlock);
+    if (declarationsHeader.length() > 0) {
+      indentation = CodegenAbstractPrinter.getLastLineIndentation(result);
+      result = CodegenAbstractPrinter.trimLastEOL(result);
+      hasNewLine = CodegenAbstractPrinter.endWithEOL(result);
+    } else {
+      indentation = indentationCoreBlock;
+      hasNewLine = false;
+    }
+
+    for (final Variable v : declsNotDefs) {
+      final CharSequence code = doSwitch(v);
+      result.append(code, indentation);
+    }
+
+    if (hasNewLine) {
+      result.newLineIfNotEmpty();
+      result.append(indentationCoreBlock);
+    }
+    result.append(printDeclarationsFooter(declarations), indentationCoreBlock);
+    return result;
+  }
+
+  private StringConcatenation printLoopBlock(final CoreBlock coreBlock, StringConcatenation result,
+      final String indentationCoreBlock) {
+    String indentation;
+    boolean hasNewLine;
+    setState(PrinterState.PRINTING_LOOP_BLOCK);
+    final CharSequence coreLoopHeader = printCoreLoopBlockHeader(coreBlock.getLoopBlock());
+    result.append(coreLoopHeader, indentationCoreBlock);
+    if (coreLoopHeader.length() > 0) {
+      indentation = CodegenAbstractPrinter.getLastLineIndentation(result);
+      result = CodegenAbstractPrinter.trimLastEOL(result);
+      hasNewLine = CodegenAbstractPrinter.endWithEOL(result);
+    } else {
+      indentation = indentationCoreBlock;
+      hasNewLine = false;
+    }
+    result.append(doSwitch(coreBlock.getLoopBlock()), indentation);
+    if (hasNewLine) {
+      result.newLineIfNotEmpty();
+      result.append(indentationCoreBlock);
+    }
+    result.append(printCoreLoopBlockFooter(coreBlock.getLoopBlock()), indentationCoreBlock);
+    return result;
+  }
+
+  private StringConcatenation printInitBlock(final CoreBlock coreBlock, StringConcatenation result,
+      final String indentationCoreBlock) {
+    String indentation;
+    boolean hasNewLine;
+    setState(PrinterState.PRINTING_INIT_BLOCK);
+    final CharSequence coreInitHeader = printCoreInitBlockHeader(coreBlock.getInitBlock());
+    result.append(coreInitHeader, indentationCoreBlock);
+    if (coreInitHeader.length() > 0) {
+      indentation = CodegenAbstractPrinter.getLastLineIndentation(result);
+      result = CodegenAbstractPrinter.trimLastEOL(result);
+      hasNewLine = CodegenAbstractPrinter.endWithEOL(result);
+    } else {
+      indentation = indentationCoreBlock;
+      hasNewLine = false;
+    }
+    result.append(doSwitch(coreBlock.getInitBlock()), indentation);
+    if (hasNewLine) {
+      result.newLineIfNotEmpty();
+      result.append(indentationCoreBlock);
+    }
+    result.append(printCoreInitBlockFooter(coreBlock.getInitBlock()), indentationCoreBlock);
+    return result;
+  }
+
+  private StringConcatenation printDefinitions(StringConcatenation result, final String indentationCoreBlock,
+      final EList<Variable> definitions) {
+    String indentation;
+    boolean hasNewLine;
+    setState(PrinterState.PRINTING_DEFINITIONS);
+    final CharSequence definitionsHeader = printDefinitionsHeader(definitions);
+    result.append(definitionsHeader, indentationCoreBlock);
+    if (definitionsHeader.length() > 0) {
+      indentation = CodegenAbstractPrinter.getLastLineIndentation(result);
+      result = CodegenAbstractPrinter.trimLastEOL(result);
+      hasNewLine = CodegenAbstractPrinter.endWithEOL(result);
+    } else {
+      indentation = indentationCoreBlock;
+      hasNewLine = false;
+    }
+
+    // result.append(coreBlock.definitions.map[doSwitch].join(''), indentation)
+    for (final Variable v : definitions) {
+      final CharSequence code = doSwitch(v);
+      result.append(code, indentation);
+    }
+
+    if (hasNewLine) {
+      result.newLineIfNotEmpty();
+      result.append(indentationCoreBlock);
+    }
+    result.append(printDefinitionsFooter(definitions), indentationCoreBlock);
     return result;
   }
 

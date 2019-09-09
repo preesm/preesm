@@ -48,12 +48,6 @@ import org.ietr.dftools.graphiti.ui.properties.MapSection;
  */
 public class WorkflowTaskVariablesMapSection extends MapSection {
 
-  /*
-   * (non-Javadoc)
-   *
-   * @see org.ietr.dftools.graphiti.ui.properties.MapSection#createControls(org.eclipse.swt.widgets.Composite,
-   * org.eclipse.ui.views.properties.tabbed.TabbedPropertySheetPage)
-   */
   @Override
   public void createControls(final Composite parent, final TabbedPropertySheetPage aTabbedPropertySheetPage) {
     super.createControls(parent, aTabbedPropertySheetPage);

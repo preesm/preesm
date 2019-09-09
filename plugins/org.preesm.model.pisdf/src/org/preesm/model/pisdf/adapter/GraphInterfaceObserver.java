@@ -145,11 +145,6 @@ public class GraphInterfaceObserver extends AdapterImpl {
     param.setGraphPort(port);
   }
 
-  /*
-   * (non-Javadoc)
-   *
-   * @see org.eclipse.emf.common.notify.impl.AdapterImpl#notifyChanged(org.eclipse.emf.common.notify.Notification)
-   */
   @Override
   public void notifyChanged(final Notification notification) {
     super.notifyChanged(notification);
@@ -162,44 +157,39 @@ public class GraphInterfaceObserver extends AdapterImpl {
       final PiGraph graph = (PiGraph) notification.getNotifier();
 
       switch (notification.getEventType()) {
-        case Notification.ADD: {
+        case Notification.ADD:
           // It is safe to cast because we already checked that the
           // notification
           // was caused by an addition to the graph vertices.
-          final AbstractVertex vertex = (AbstractVertex) notification.getNewValue();
-          add(vertex, graph);
+          final AbstractVertex vertextoAdd = (AbstractVertex) notification.getNewValue();
+          add(vertextoAdd, graph);
           break;
-        }
 
-        case Notification.ADD_MANY: {
-          final List<?> list = (List<?>) notification.getNewValue();
-          for (final Object object : list) {
+        case Notification.ADD_MANY:
+          final List<?> listToAdd = (List<?>) notification.getOldValue();
+          for (final Object object : listToAdd) {
             add((AbstractVertex) object, graph);
           }
           break;
-        }
 
-        case Notification.REMOVE: {
-          final AbstractVertex vertex = (AbstractVertex) notification.getOldValue();
-          remove(vertex, graph);
+        case Notification.REMOVE:
+          final AbstractVertex vertexToRemove = (AbstractVertex) notification.getNewValue();
+          remove(vertexToRemove, graph);
           break;
-        }
 
-        case Notification.REMOVE_MANY: {
-          final List<?> list = (List<?>) notification.getOldValue();
-          for (final Object object : list) {
+        case Notification.REMOVE_MANY:
+          final List<?> listToRemove = (List<?>) notification.getOldValue();
+          for (final Object object : listToRemove) {
             remove((AbstractVertex) object, graph);
           }
           break;
-        }
 
         default:
-          break;
+          // nothing
       }
     }
 
-    // TODO Add support when a Parameter changes from a config interface to
-    // a non config param
+    // TODO Add support when a Parameter changes from a config interface to a non config param
   }
 
   /**

@@ -58,15 +58,18 @@ import org.eclipse.ui.dialogs.ElementTreeSelectionDialog;
 import org.eclipse.ui.dialogs.ISelectionStatusValidator;
 import org.eclipse.ui.model.WorkbenchContentProvider;
 import org.eclipse.ui.model.WorkbenchLabelProvider;
-import org.preesm.workflow.Activator;
+import org.preesm.workflow.WorkflowPlugin;
 
-// TODO: Auto-generated Javadoc
 /**
  * Useful UI methods.
  *
  * @author mpelcat
  */
 public class FileUtils {
+
+  private FileUtils() {
+    // forbid instantiation
+  }
 
   /**
    * File tree Content provider that filters a given extension of files.
@@ -147,10 +150,10 @@ public class FileUtils {
         final boolean selectedItemIsWhatsExcepted = (selectedItemIsFile && this.filterFolders)
             || (selectedItemIsFolder && !this.filterFolders);
         if (selectedItemIsWhatsExcepted) {
-          return new Status(IStatus.OK, Activator.PLUGIN_ID, "");
+          return new Status(IStatus.OK, WorkflowPlugin.PLUGIN_ID, "");
         }
       }
-      return new Status(IStatus.ERROR, Activator.PLUGIN_ID, "");
+      return new Status(IStatus.ERROR, WorkflowPlugin.PLUGIN_ID, "");
     }
   }
 
@@ -176,9 +179,7 @@ public class FileUtils {
       final Object[] children = super.getChildren(element);
       final List<Object> list = new ArrayList<>();
       for (final Object o : children) {
-        if (o instanceof IProject) {
-          list.add(o);
-        } else if (o instanceof IFolder) {
+        if (o instanceof IProject || o instanceof IFolder) {
           list.add(o);
         }
       }
@@ -288,10 +289,7 @@ public class FileUtils {
               });
             } catch (final CoreException e) {
               final IStatus status = e.getStatus();
-              if ((status.getSeverity() == IStatus.OK) && title.equals(status.getPlugin())) {
-                return true;
-              }
-              return false;
+              return (status.getSeverity() == IStatus.OK) && title.equals(status.getPlugin());
             }
             return false;
           } else {

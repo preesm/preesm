@@ -44,7 +44,6 @@ import org.preesm.algorithm.codegen.model.CodeGenArgument;
 import org.preesm.algorithm.codegen.model.CodeGenParameter;
 import org.preesm.algorithm.model.IRefinement;
 
-// TODO: Auto-generated Javadoc
 /**
  * Function prototype.
  *

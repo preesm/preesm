@@ -1,9 +1,9 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2011 - 2019) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2009 - 2019) :
  *
  * Antoine Morvan [antoine.morvan@insa-rennes.fr] (2017 - 2019)
- * Clément Guy [clement.guy@insa-rennes.fr] (2014)
- * Maxime Pelcat [maxime.pelcat@insa-rennes.fr] (2011)
+ * Clément Guy [clement.guy@insa-rennes.fr] (2015)
+ * Maxime Pelcat [maxime.pelcat@insa-rennes.fr] (2009 - 2011)
  *
  * This software is a computer program whose purpose is to help prototyping
  * parallel applications using dataflow formalism.
@@ -34,27 +34,46 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL license and that you accept its terms.
  */
-package org.preesm.ui.editor.graph.validators;
+package org.preesm.workflow;
 
-import org.eclipse.core.resources.IFile;
-import org.ietr.dftools.graphiti.model.Graph;
-import org.ietr.dftools.graphiti.model.IValidator;
+import org.eclipse.core.runtime.Plugin;
+import org.osgi.framework.BundleContext;
 
-// TODO: Auto-generated Javadoc
 /**
- * The Class IDLValidator.
+ * The activator class controls the plug-in life cycle.
+ *
+ * @author mpelcat
  */
-public class IDLValidator implements IValidator {
+public class WorkflowPlugin extends Plugin {
 
-  /*
-   * (non-Javadoc)
-   *
-   * @see org.ietr.dftools.graphiti.model.IValidator#validate(org.ietr.dftools.graphiti.model.Graph,
-   * org.eclipse.core.resources.IFile)
-   */
+  /** The Constant PLUGIN_ID. */
+  public static final String PLUGIN_ID = "org.preesm.workflow"; //$NON-NLS-1$
+
+  /** The plugin. */
+  private static WorkflowPlugin plugin;
+
   @Override
-  public boolean validate(final Graph graph, final IFile file) {
-    return true;
+  public void start(final BundleContext context) throws Exception {
+    super.start(context);
+    WorkflowPlugin.setDefault(this);
   }
 
+  @Override
+  public void stop(final BundleContext context) throws Exception {
+    WorkflowPlugin.setDefault(null);
+    super.stop(context);
+  }
+
+  /**
+   * Returns the shared instance.
+   *
+   * @return the shared instance
+   */
+  public static WorkflowPlugin getDefault() {
+    return WorkflowPlugin.plugin;
+  }
+
+  private static final void setDefault(final WorkflowPlugin newInstance) {
+    WorkflowPlugin.plugin = newInstance;
+  }
 }

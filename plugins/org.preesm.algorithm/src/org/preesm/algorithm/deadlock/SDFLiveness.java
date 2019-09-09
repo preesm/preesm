@@ -40,7 +40,6 @@ import java.util.Map;
 import org.preesm.algorithm.model.sdf.SDFAbstractVertex;
 import org.preesm.algorithm.model.sdf.SDFEdge;
 import org.preesm.algorithm.model.sdf.SDFGraph;
-import org.preesm.algorithm.schedule.ASAPSchedulerSDF;
 import org.preesm.algorithm.throughput.tools.Identifier;
 import org.preesm.algorithm.throughput.tools.SDFTransformer;
 import org.preesm.algorithm.throughput.tools.Stopwatch;
@@ -51,29 +50,26 @@ import org.preesm.commons.math.MathFunctionsHelper;
  * @author hderoui
  *
  */
-public interface SDFLiveness {
+public class SDFLiveness {
 
   public static final String EDGE_NAME_PROPERTY = "edgeName";
+
+  private SDFLiveness() {
+    // forbid instantiation
+  }
 
   /**
    * @param sdf
    *          input graph
-   * @return true if live, false if not
    */
-  public static boolean evaluate(final SDFGraph sdf) {
+  public static void evaluate(final SDFGraph sdf) {
     final Stopwatch timer = new Stopwatch();
     timer.start();
 
     // try first the Sufficient Condition of liveness
-    boolean live = SDFLiveness.sufficientCondition(sdf);
-
-    // if SC fails we can not conclude until we try the symbolic execution
-    if (!live) {
-      live = SDFLiveness.symbolicExecution(sdf);
-    }
+    SDFLiveness.sufficientCondition(sdf);
 
     timer.stop();
-    return live;
   }
 
   /**
@@ -81,9 +77,8 @@ public interface SDFLiveness {
    *
    * @param graph
    *          input graph
-   * @return true if SC satisfied, false if not
    */
-  public static boolean sufficientCondition(final SDFGraph graph) {
+  public static void sufficientCondition(final SDFGraph graph) {
     // add the name property for each edge of the graph
     for (final SDFEdge e : graph.edgeSet()) {
       e.setPropertyValue(SDFLiveness.EDGE_NAME_PROPERTY, Identifier.generateEdgeId());
@@ -99,7 +94,7 @@ public interface SDFLiveness {
     final Map<String, Double> edgeValue = new LinkedHashMap<>(graph.edgeSet().size());
     for (final SDFEdge e : graph.edgeSet()) {
       final long gcd = MathFunctionsHelper.gcd(e.getProd().longValue(), e.getCons().longValue());
-      final double alpha = (double) e.getPropertyBean().getValue("normalizationFactor");
+      final double alpha = e.getPropertyBean().getValue("normalizationFactor");
       final double h = ((e.getDelay().longValue() - e.getCons().longValue()) + gcd) * alpha;
       edgeValue.put((String) e.getPropertyBean().getValue(SDFLiveness.EDGE_NAME_PROPERTY), h);
     }
@@ -113,65 +108,53 @@ public interface SDFLiveness {
     // in case of a non strongly connected graph we need to choose many source vertex to evaluate all parts of the graph
     for (final SDFAbstractVertex vertexSource : graph.vertexSet()) {
       if (vertexDistance.get(vertexSource.getName()) == Double.POSITIVE_INFINITY) {
-        // initialize the source vertex
-        vertexDistance.put(vertexSource.getName(), 0.);
+        SDFLiveness.checkVertex(graph, edgeValue, vertexDistance, vertexSource);
+      }
+    }
+  }
 
-        // counter for the V-1 iterations
-        int count = 0;
+  private static void checkVertex(final SDFGraph graph, final Map<String, Double> edgeValue,
+      final Map<String, Double> vertexDistance, final SDFAbstractVertex vertexSource) {
+    // initialize the source vertex
+    vertexDistance.put(vertexSource.getName(), 0.);
 
-        // a condition for the while loop
-        // no need to complete the V-1 iterations if the distance of any actor does not change
-        boolean repete = true;
+    // counter for the V-1 iterations
+    int count = 0;
 
-        // relax edges
-        while (repete && (count < (graph.vertexSet().size() - 1))) {
-          repete = false;
-          for (final SDFEdge e : graph.edgeSet()) {
-            // test the distance
-            final double newDistance = vertexDistance.get(e.getSource().getName())
-                + edgeValue.get(e.getPropertyBean().getValue(SDFLiveness.EDGE_NAME_PROPERTY));
-            if (vertexDistance.get(e.getTarget().getName()) > newDistance) {
-              // update the distance
-              vertexDistance.put(e.getTarget().getName(), newDistance);
-              // we need to perform another iteration
-              repete = true;
-            }
-          }
-          // Increments the iteration counter
-          count++;
+    // a condition for the while loop
+    // no need to complete the V-1 iterations if the distance of any actor does not change
+    boolean repete = true;
+
+    // relax edges
+    while (repete && (count < (graph.vertexSet().size() - 1))) {
+      repete = false;
+      for (final SDFEdge e : graph.edgeSet()) {
+        // test the distance
+        final double newDistance = vertexDistance.get(e.getSource().getName())
+            + edgeValue.get(e.getPropertyBean().getValue(SDFLiveness.EDGE_NAME_PROPERTY));
+        if (vertexDistance.get(e.getTarget().getName()) > newDistance) {
+          // update the distance
+          vertexDistance.put(e.getTarget().getName(), newDistance);
+          // we need to perform another iteration
+          repete = true;
         }
+      }
+      // Increments the iteration counter
+      count++;
+    }
 
-        // check for negative circuit if we complete the v-1 iterations
-        if (count == (graph.vertexSet().size() - 1)) {
-          // relax all the edges
-          for (final SDFEdge e : graph.edgeSet()) {
-            if (vertexDistance.get(e.getTarget().getName()) > (vertexDistance.get(e.getSource().getName())
-                + edgeValue.get(e.getPropertyBean().getValue(SDFLiveness.EDGE_NAME_PROPERTY)))) {
-              // negative circuit detected if a part of the graph is not live the global graph is not too
-              final String message = "Negative cycle detected !!";
-              throw new PreesmRuntimeException(message);
-            }
-          }
+    // check for negative circuit if we complete the v-1 iterations
+    if (count == (graph.vertexSet().size() - 1)) {
+      // relax all the edges
+      for (final SDFEdge e : graph.edgeSet()) {
+        if (vertexDistance.get(e.getTarget().getName()) > (vertexDistance.get(e.getSource().getName())
+            + edgeValue.get(e.getPropertyBean().getValue(SDFLiveness.EDGE_NAME_PROPERTY)))) {
+          // negative circuit detected if a part of the graph is not live the global graph is not too
+          final String message = "Negative cycle detected !!";
+          throw new PreesmRuntimeException(message);
         }
       }
     }
-
-    return true;
   }
 
-  /**
-   * Execute the graph until it finish an iteration. The graph is live if it succeeds to complete an iteration.
-   *
-   * @param sdf
-   *          input graph
-   * @return true if live, false if not
-   */
-  public static boolean symbolicExecution(final SDFGraph sdf) {
-    // execute the graph until it finishes an iteration
-    final ASAPSchedulerSDF scheduler = new ASAPSchedulerSDF();
-    scheduler.schedule(sdf);
-
-    // the live attribute of the scheduler will indicate if the schedule has succeeded to schedule a complete iteration
-    return scheduler.isLive();
-  }
 }

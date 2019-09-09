@@ -47,11 +47,6 @@ public class PreesmWorkbenchWindowAdvisor extends WorkbenchWindowAdvisor {
     super(configurer);
   }
 
-  // @Override
-  // public ActionBarAdvisor createActionBarAdvisor(final IActionBarConfigurer configurer) {
-  // return new WorkbenchActionBuilder(configurer);
-  // }
-
   @Override
   public void preWindowOpen() {
     final IWorkbenchWindowConfigurer configurer = getWindowConfigurer();

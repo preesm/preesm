@@ -41,13 +41,13 @@ import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
+import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.preesm.model.pisdf.ConfigInputPort;
 import org.preesm.model.pisdf.Dependency;
 import org.preesm.model.pisdf.ISetter;
 import org.preesm.model.pisdf.Parameter;
 import org.preesm.model.pisdf.PiGraph;
 
-// TODO: Auto-generated Javadoc
 /**
  * This class provide an Ecore switch to detect cycle dependencies.
  */
@@ -119,7 +119,7 @@ public class DependencyCycleDetector extends PiMMSwitch<Void> {
     // This means this branch is not a cycle. (But this should not happen,
     // so throw an error)
     if (i < 0) {
-      throw new RuntimeException("No dependency cycle was found in this branch.");
+      throw new PreesmRuntimeException("No dependency cycle was found in this branch.");
     }
 
     // If this code is reached, the cycle was correctly detected.
@@ -138,7 +138,7 @@ public class DependencyCycleDetector extends PiMMSwitch<Void> {
 
     // Visit parameters until they are all visited
     final ArrayList<Parameter> parameters = new ArrayList<>(graph.getParameters());
-    while (parameters.size() != 0) {
+    while (!parameters.isEmpty()) {
       doSwitch(parameters.get(0));
 
       // If fast detection is activated and a cycle was detected, get
@@ -244,6 +244,6 @@ public class DependencyCycleDetector extends PiMMSwitch<Void> {
    * @return true if cycles were detected, false else.
    */
   public boolean cyclesDetected() {
-    return this.cycles.size() > 0;
+    return !this.cycles.isEmpty();
   }
 }

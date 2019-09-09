@@ -45,11 +45,6 @@ import org.preesm.ui.PreesmUIPlugin;
  */
 public class WorkFlowLaunchWorkflowTab extends AbstractWorkFlowLaunchTab {
 
-  /*
-   * (non-Javadoc)
-   *
-   * @see org.ietr.dftools.ui.workflow.launch.AbstractWorkFlowLaunchTab#createControl(org.eclipse.swt.widgets.Composite)
-   */
   @Override
   public void createControl(final Composite parent) {
 
@@ -57,21 +52,11 @@ public class WorkFlowLaunchWorkflowTab extends AbstractWorkFlowLaunchTab {
     drawFileChooser("Workflow file:", WorkflowLaunchConfigurationDelegate.ATTR_WORKFLOW_FILE_NAME, "workflow");
   }
 
-  /*
-   * (non-Javadoc)
-   *
-   * @see org.eclipse.debug.ui.ILaunchConfigurationTab#getName()
-   */
   @Override
   public String getName() {
     return "Workflow";
   }
 
-  /*
-   * (non-Javadoc)
-   *
-   * @see org.eclipse.debug.ui.AbstractLaunchConfigurationTab#getImage()
-   */
   @Override
   public Image getImage() {
     final Image image = PreesmUIPlugin.getImage("icons/workflow.png");

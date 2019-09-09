@@ -15,6 +15,6 @@ Export-Package: org.preesm.workflow,
  org.preesm.workflow.elements,
  org.preesm.workflow.eow,
  org.preesm.workflow.implement
-Bundle-Activator: org.preesm.workflow.Activator
+Bundle-Activator: org.preesm.workflow.WorkflowPlugin
 Bundle-ActivationPolicy: lazy
 Bundle-Vendor: IETR / INSA Rennes - VAADER

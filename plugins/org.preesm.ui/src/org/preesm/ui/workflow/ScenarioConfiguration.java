@@ -45,6 +45,10 @@ package org.preesm.ui.workflow;
  */
 public class ScenarioConfiguration {
 
+  private ScenarioConfiguration() {
+    // forbid instantiation
+  }
+
   /** ID used to save scenario file name in tab attributes. */
   public static final String ATTR_SCENARIO_FILE_NAME = "org.ietr.dftools.ui.workflow.scenarioFileName";
 
