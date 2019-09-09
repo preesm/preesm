@@ -138,7 +138,7 @@ public class CodegenModelGenerator2 {
     @Override
     public Boolean caseAllocation(final Allocation alloc) {
       alloc.getPhysicalBuffers().forEach(this::doSwitch);
-      for (final Entry<Fifo, org.preesm.algorithm.memalloc.model.Buffer> allocations : alloc.getAllocations()) {
+      for (final Entry<Fifo, org.preesm.algorithm.memalloc.model.Buffer> allocations : alloc.getFifoAllocations()) {
         final Fifo fifo = allocations.getKey();
         final org.preesm.algorithm.memalloc.model.Buffer buffer = allocations.getValue();
         final Buffer codegenBuffer = this.btb.get(buffer);
@@ -386,17 +386,17 @@ public class CodegenModelGenerator2 {
       throw new PreesmRuntimeException("special actor " + actor + " has an unknown special type");
     }
 
-    final org.preesm.algorithm.memalloc.model.Buffer buffer = memAlloc.getAllocations().get(uniqueFifo);
+    final org.preesm.algorithm.memalloc.model.Buffer buffer = memAlloc.getFifoAllocations().get(uniqueFifo);
     final Buffer lastBuffer = allocation.btb.get(buffer);
 
     // Add it to the specialCall
     if (actor instanceof JoinActor) {
       specialCall.addOutputBuffer(lastBuffer);
-      actor.getDataInputPorts().stream().map(DataPort::getFifo).map(memAlloc.getAllocations()::get)
+      actor.getDataInputPorts().stream().map(DataPort::getFifo).map(memAlloc.getFifoAllocations()::get)
           .map(allocation.btb::get).forEach(specialCall::addInputBuffer);
     } else {
       specialCall.addInputBuffer(lastBuffer);
-      actor.getDataOutputPorts().stream().map(DataPort::getFifo).map(memAlloc.getAllocations()::get)
+      actor.getDataOutputPorts().stream().map(DataPort::getFifo).map(memAlloc.getFifoAllocations()::get)
           .map(allocation.btb::get).forEach(specialCall::addOutputBuffer);
     }
 

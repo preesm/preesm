@@ -34,6 +34,8 @@
  */
 package org.preesm.algorithm.synthesis.memalloc;
 
+import java.util.List;
+import java.util.stream.Collectors;
 import org.eclipse.emf.common.util.EList;
 import org.preesm.algorithm.mapping.model.Mapping;
 import org.preesm.algorithm.memalloc.model.Allocation;
@@ -41,14 +43,17 @@ import org.preesm.algorithm.memalloc.model.LogicalBuffer;
 import org.preesm.algorithm.memalloc.model.MemoryAllocationFactory;
 import org.preesm.algorithm.memalloc.model.PhysicalBuffer;
 import org.preesm.algorithm.schedule.model.Schedule;
+import org.preesm.model.pisdf.EndActor;
 import org.preesm.model.pisdf.Fifo;
+import org.preesm.model.pisdf.InitActor;
 import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.scenario.Scenario;
 import org.preesm.model.slam.ComponentInstance;
 import org.preesm.model.slam.Design;
 
 /**
- * Allocate 1 physical buffer on the main com node and 1 logical buffer per Fifo in the graph.
+ * Allocate 1 physical buffer on the main com node and 1 logical buffer per Fifo in the graph, and 1 buffer per delay
+ * (init/end couple).
  *
  * @author anmorvan
  *
@@ -73,16 +78,34 @@ public class SimpleMemoryAllocation implements IMemoryAllocation {
       final String fifoType = fifo.getType();
       final long dataTypeSize = scenario.getSimulationInfo().getDataTypeSizeOrDefault(fifoType);
       final long fifoTokenSize = fifo.getTargetPort().getPortRateExpression().evaluate();
-      final long fifoSize = dataTypeSize * fifoTokenSize;
+      final long fifoBufferSize = dataTypeSize * fifoTokenSize;
 
       final LogicalBuffer logicBuff = MemoryAllocationFactory.eINSTANCE.createLogicalBuffer();
       logicBuff.setMemory(physBuff);
-      logicBuff.setSize(fifoSize);
+      logicBuff.setSize(fifoBufferSize);
       logicBuff.setOffset(totalSize);
 
-      memAlloc.getAllocations().put(fifo, logicBuff);
+      memAlloc.getFifoAllocations().put(fifo, logicBuff);
 
-      totalSize += fifoSize;
+      totalSize += fifoBufferSize;
+    }
+
+    final List<InitActor> initActors = piGraph.getActors().stream().filter(InitActor.class::isInstance)
+        .map(InitActor.class::cast).filter(a -> a.getEndReference() instanceof EndActor).collect(Collectors.toList());
+    for (final InitActor initActor : initActors) {
+      final String fifoType = initActor.getDataPort().getFifo().getType();
+      final long dataTypeSize = scenario.getSimulationInfo().getDataTypeSizeOrDefault(fifoType);
+      final long delayTokenSize = initActor.getDelaySize();
+      final long delayBufferSize = dataTypeSize * delayTokenSize;
+
+      final LogicalBuffer logicBuff = MemoryAllocationFactory.eINSTANCE.createLogicalBuffer();
+      logicBuff.setMemory(physBuff);
+      logicBuff.setSize(delayBufferSize);
+      logicBuff.setOffset(totalSize);
+
+      memAlloc.getDelayAllocations().put(initActor, logicBuff);
+
+      totalSize += delayBufferSize;
     }
 
     physBuff.setSize(totalSize);

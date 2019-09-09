@@ -45,6 +45,7 @@
 package org.preesm.algorithm.memalloc.model
 
 import org.preesm.model.pisdf.Fifo
+import org.preesm.model.pisdf.InitActor
 import org.preesm.model.slam.ComponentInstance
 
 // !!! This is needed as of the current versions of xcore/xtext
@@ -88,11 +89,20 @@ class LogicalBuffer extends Buffer {
 
 class Allocation {
 	contains PhysicalBuffer[] physicalBuffers
-	contains AllocationEntry[] allocations
+	contains FifoAllocationEntry[] fifoAllocations
+	contains DelayAllocationEntry[] delayAllocations
 }
 
-class AllocationEntry wraps java.util.Map$Entry {
+class FifoAllocationEntry wraps java.util.Map$Entry {
 	refers Fifo key
+	refers Buffer value
+}
+
+/*
+ *
+ */
+class DelayAllocationEntry wraps java.util.Map$Entry {
+	refers InitActor key
 	refers Buffer value
 }
 
