@@ -7,6 +7,7 @@ PREESM Changelog
 ### New Feature
 
 ### Changes
+* EnergyAwareness: performance objective now is considered a minimum. The tolerance has been removed;
 
 ### Bug fix
 
