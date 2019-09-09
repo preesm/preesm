@@ -196,7 +196,8 @@ public class EnergyAwarenessProvider {
         this.bestConfig.putAll(this.configToAdd);
         this.mappingBest.putAll(mapping);
       }
-    } else if (Math.abs(this.objective - fps) < Math.abs(this.objective - this.closestFPS)) {
+    } else if ((Math.abs(this.objective - fps) < Math.abs(this.objective - this.closestFPS))
+        && this.minEnergy == Double.MAX_VALUE) {
       this.closestFPS = fps;
       this.energyNoObjective = energyThisOne;
       this.bestConfig.putAll(this.configToAdd);
