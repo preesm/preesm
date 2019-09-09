@@ -79,10 +79,7 @@ public class EnergyAwarenessProvider {
   Map<String, Integer> bestConfig = new LinkedHashMap<>();
 
   /** Objective data **/
-  double objective    = Double.MAX_VALUE;
-  double tolerance    = Double.MAX_VALUE;
-  double maxObjective = Double.MAX_VALUE;
-  double minObjective = Double.MAX_VALUE;
+  double objective = Double.MAX_VALUE;
 
   /** Searching info **/
   Set<Map<String, Integer>> configsAlreadyUsed  = new LinkedHashSet<>();
@@ -112,9 +109,6 @@ public class EnergyAwarenessProvider {
 
     /** Update everything related to the objective **/
     this.objective = this.scenarioOriginal.getEnergyConfig().getPerformanceObjective().getObjectiveEPS();
-    this.tolerance = this.scenarioOriginal.getEnergyConfig().getPerformanceObjective().getToleranceEPS();
-    this.maxObjective = this.objective + (this.objective * this.tolerance / 100);
-    this.minObjective = this.objective - (this.objective * this.tolerance / 100);
 
     /** Create the mapping scenario **/
     this.scenarioMapping = ScenarioUserFactory.createScenario();
@@ -195,7 +189,7 @@ public class EnergyAwarenessProvider {
     /**
      * Check if it is the best one
      */
-    if (fps <= this.maxObjective && fps >= this.minObjective) {
+    if (fps >= this.objective) {
       if (this.minEnergy > energyThisOne) {
         this.minEnergy = energyThisOne;
         this.closestFPS = fps;

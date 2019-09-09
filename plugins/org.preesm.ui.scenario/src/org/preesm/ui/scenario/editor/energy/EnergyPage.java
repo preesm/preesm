@@ -915,8 +915,6 @@ public class EnergyPage extends ScenarioPage {
           if (dirty) {
             if (objective.getKey().equals(Messages.getString("Energy.objectiveLabel"))) {
               EnergyPage.this.scenario.getEnergyConfig().getPerformanceObjective().setObjectiveEPS(parseDouble);
-            } else {
-              EnergyPage.this.scenario.getEnergyConfig().getPerformanceObjective().setToleranceEPS(parseDouble);
             }
             firePropertyChange(IEditorPart.PROP_DIRTY);
             newTableViewer.refresh();
