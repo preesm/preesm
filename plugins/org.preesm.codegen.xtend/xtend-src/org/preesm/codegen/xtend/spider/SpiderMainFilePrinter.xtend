@@ -180,7 +180,6 @@ class SpiderMainFilePrinter {
 		cfg.energyAwareness = «spiderConfig.energyAwareness»;
 		«IF spiderConfig.energyAwareness»
 			cfg.performanceObjective = «spiderConfig.performanceObjective»;
-			cfg.performanceTolerance = «spiderConfig.performanceTolerance»;
 		«ENDIF»
 
 		/* == Apollo optimization == */
