@@ -89,7 +89,7 @@ public class EnergyAwarenessProvider {
   Map<String, Integer>      configToAdd         = new LinkedHashMap<>();
   double                    minEnergy           = Double.MAX_VALUE;
   double                    energyNoObjective   = Double.MAX_VALUE;
-  double                    closestFPS          = Double.MAX_VALUE;
+  double                    closestFPS          = 0.0;
   boolean                   finished            = false;
 
   /** Configuration variables **/
