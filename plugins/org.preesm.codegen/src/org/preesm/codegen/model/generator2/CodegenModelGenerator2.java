@@ -78,6 +78,7 @@ import org.preesm.model.pisdf.Fifo;
 import org.preesm.model.pisdf.ForkActor;
 import org.preesm.model.pisdf.FunctionPrototype;
 import org.preesm.model.pisdf.ISetter;
+import org.preesm.model.pisdf.InitActor;
 import org.preesm.model.pisdf.JoinActor;
 import org.preesm.model.pisdf.Parameter;
 import org.preesm.model.pisdf.PiGraph;
@@ -136,10 +137,13 @@ public class CodegenModelGenerator2 {
 
     @Override
     public Boolean caseAllocation(final Allocation alloc) {
+      // init internal variables with physical buffer children
       alloc.getPhysicalBuffers().forEach(this::doSwitch);
-      for (final Entry<Fifo, org.preesm.algorithm.memalloc.model.Buffer> allocations : alloc.getFifoAllocations()) {
-        final Fifo fifo = allocations.getKey();
-        final org.preesm.algorithm.memalloc.model.Buffer buffer = allocations.getValue();
+
+      // create variables for Fifos
+      for (final Entry<Fifo, org.preesm.algorithm.memalloc.model.Buffer> fifoAllocation : alloc.getFifoAllocations()) {
+        final Fifo fifo = fifoAllocation.getKey();
+        final org.preesm.algorithm.memalloc.model.Buffer buffer = fifoAllocation.getValue();
         final Buffer codegenBuffer = this.btb.get(buffer);
 
         codegenBuffer.setName(generateUniqueBufferName(fifo));
@@ -154,6 +158,24 @@ public class CodegenModelGenerator2 {
         this.portToVariable.put(fifo.getTargetPort(), codegenBuffer);
         this.portToVariable.put(fifo.getSourcePort(), codegenBuffer);
       }
+
+      // create variables for Delays
+      for (final Entry<InitActor, org.preesm.algorithm.memalloc.model.Buffer> delayAllocation : alloc
+          .getDelayAllocations()) {
+        final InitActor initActor = delayAllocation.getKey();
+        final Fifo fifo = initActor.getDataPort().getFifo();
+        final org.preesm.algorithm.memalloc.model.Buffer buffer = delayAllocation.getValue();
+        final Buffer codegenBuffer = this.btb.get(buffer);
+
+        codegenBuffer.setName("delay_" + generateUniqueBufferName(fifo));
+        codegenBuffer.setType(fifo.getType());
+        codegenBuffer.setTypeSize(
+            CodegenModelGenerator2.this.scenario.getSimulationInfo().getDataTypeSizeOrDefault(fifo.getType()));
+
+        final String comment = "Delay : " + initActor.getEndReference().getName() + " -> " + initActor.getName();
+        codegenBuffer.setComment(comment);
+      }
+
       return true;
     }
 
