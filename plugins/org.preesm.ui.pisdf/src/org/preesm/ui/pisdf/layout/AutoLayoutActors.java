@@ -1,6 +1,7 @@
 package org.preesm.ui.pisdf.layout;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -35,16 +36,40 @@ public class AutoLayoutActors {
     // 1. Sort actor in alphabetical order
     final List<AbstractActor> actors = new ArrayList<>(graph.getActors());
 
-    // 2. Remove Delay Actors that are not connected to avoid weird delay placement
-    // actors.removeIf(a -> (a instanceof DelayActor));
-
+    // 2. Sort by names to ensure reproductibility
     actors.sort((a1, a2) -> a1.getName().compareTo(a2.getName()));
 
     // 3. Find source actors (actor without input non feedback FIFOs)
     final List<AbstractActor> srcActors = findSrcActors(feedbackFifos, actors);
 
     // 4. BFS-style stage by stage construction
-    return createActorStages(feedbackFifos, actors, srcActors);
+    List<List<AbstractActor>> res = createActorStages(feedbackFifos, actors, srcActors);
+    for (List<AbstractActor> l : res) {
+      l.sort(new ComparatorInOutsAndName());
+    }
+
+    return res;
+  }
+
+  /**
+   * Compare actors per number of input/outputs and per name
+   * 
+   * @author ahonorat
+   *
+   */
+  public static class ComparatorInOutsAndName implements Comparator<AbstractActor> {
+
+    @Override
+    public int compare(AbstractActor arg0, AbstractActor arg1) {
+      int nb0 = arg0.getAllDataPorts().size();
+      int nb1 = arg1.getAllDataPorts().size();
+      if (nb0 != nb1) {
+        // actors with more connections first.
+        return Integer.compare(nb1, nb0);
+      }
+      return arg0.getName().compareTo(arg1.getName());
+    }
+
   }
 
   /**

@@ -150,48 +150,114 @@ public class MoveAbstractActorFeature extends DefaultMoveShapeFeature
         }
       }
 
-      // Move implicitlyMovedDelays
       // add fifo to/from getter/setter if also selected
-      for (final Delay del : this.implicitlyMovedDelay) {
-        moveDelay(context, del);
+      findExtraConnectedDelaysAndConnections(implicitlyMovedDelay, listBOd, selectedPEs, connectionSet,
+          implicitlyMovedDelay);
 
-        // we also move fifo between delays and setter/getter
-        // if these fifo also contains delays, the delays on it are not considered
-        // also, if the actors are moved but the delays are not selected, fifos between moved
-        // delays will not be moved
-        // this code is actually incomplete, but it would be complicated to handle all cases
-        // it would need a recursive function to inspect the new fifos and delays if themselves have setter/getter
-        ContainerShape cs = DiagramPiGraphLinkHelper.getDelayPE(getDiagram(), del.getContainingFifo());
-        int indexSetter = listBOd.indexOf(del.getSetterActor());
-        if (indexSetter >= 0) {
-          PictogramElement setter = selectedPEs.get(indexSetter);
-          for (Anchor ac : cs.getAnchors()) {
-            for (Connection in : ac.getIncomingConnections()) {
-              if (in.getStart().getParent() == setter) {
-                connectionSet.add((FreeFormConnection) in);
-                movedConnections.add((FreeFormConnection) in);
-              }
-            }
-          }
-        }
-        int indexGetter = listBOd.indexOf(del.getGetterActor());
-        if (indexGetter >= 0 && !(del.getGetterActor() instanceof DelayActor)) {
-          PictogramElement getter = selectedPEs.get(indexGetter);
-          for (Anchor ac : cs.getAnchors()) {
-            for (Connection out : ac.getOutgoingConnections()) {
-              if (out.getEnd().getParent() == getter) {
-                connectionSet.add((FreeFormConnection) out);
-                movedConnections.add((FreeFormConnection) out);
-              }
-            }
-          }
-        }
+      // Move implicitlyMovedDelays
+      for (final Delay del : implicitlyMovedDelay) {
+        moveDelay(context, del);
       }
 
       for (final FreeFormConnection conn : connectionSet) {
         moveAllBendpointsOnFFConnectionLocal(conn, deltaX, deltaY);
       }
 
+    }
+  }
+
+  /**
+   * We also move fifo between delays and setter/getter, and delays that they may contain.
+   * <p>
+   * This function may not be complete.
+   * 
+   * @param delaysToTest
+   *          The current list of delays to test.
+   * @param listBOd
+   *          The current list of selected business objects with delay actors instead of delay.
+   * @param selectedPEs
+   *          The current list of selected elements.
+   * @return
+   */
+  protected void findExtraConnectedDelaysAndConnections(final Set<Delay> delaysToTest, final List<Object> listBOd,
+      final List<PictogramElement> selectedPEs, Set<FreeFormConnection> allConnections, Set<Delay> allDelays) {
+
+    Set<FreeFormConnection> newConnections = new HashSet<>();
+    Set<Delay> newDelays = new HashSet<>();
+
+    for (Delay del : delaysToTest) {
+      ContainerShape cs = DiagramPiGraphLinkHelper.getDelayPE(getDiagram(), del.getContainingFifo());
+
+      int indexSetter = listBOd.indexOf(del.getSetterActor());
+      if (indexSetter >= 0) {
+        PictogramElement setter = selectedPEs.get(indexSetter);
+        for (Anchor ac : cs.getAnchors()) {
+          for (Connection in : ac.getIncomingConnections()) {
+
+            Object o = getBusinessObjectForPictogramElement(in);
+            if (o instanceof Fifo) {
+              Fifo f = (Fifo) o;
+              Delay d = f.getDelay();
+              Connection opposite = null;
+              if (d != null && !allDelays.contains(d)) {
+                newDelays.add(d);
+                opposite = getSourceConnection(this, d, in.getStart().getParent(), in);
+              }
+              Connection testSetterCo = opposite == null ? in : opposite;
+
+              if (testSetterCo.getStart().getParent() == setter) {
+                if (!allConnections.contains((FreeFormConnection) in)) {
+                  newConnections.add((FreeFormConnection) in);
+                }
+                if (opposite != null) {
+                  newConnections.add((FreeFormConnection) opposite);
+                }
+              }
+
+            }
+
+          }
+        }
+      }
+      int indexGetter = listBOd.indexOf(del.getGetterActor());
+      if (indexGetter >= 0 && !(del.getGetterActor() instanceof DelayActor)) {
+        PictogramElement getter = selectedPEs.get(indexGetter);
+        for (Anchor ac : cs.getAnchors()) {
+          for (Connection out : ac.getOutgoingConnections()) {
+
+            Object o = getBusinessObjectForPictogramElement(out);
+            if (o instanceof Fifo) {
+              Fifo f = (Fifo) o;
+              Delay d = f.getDelay();
+              Connection opposite = null;
+              if (d != null && !allDelays.contains(d)) {
+                newDelays.add(d);
+                opposite = getTargetConnection(this, d, out.getEnd().getParent(), out);
+              }
+              Connection testSetterCo = opposite == null ? out : opposite;
+
+              if (testSetterCo.getEnd().getParent() == getter) {
+                if (!allConnections.contains((FreeFormConnection) out)) {
+                  newConnections.add((FreeFormConnection) out);
+                }
+                if (opposite != null) {
+                  newConnections.add((FreeFormConnection) opposite);
+                }
+              }
+
+            }
+          }
+        }
+      }
+    }
+
+    movedConnections.addAll(newConnections);
+    allConnections.addAll(newConnections);
+
+    allDelays.addAll(newDelays);
+
+    if (!newDelays.isEmpty()) {
+      findExtraConnectedDelaysAndConnections(newDelays, listBOd, selectedPEs, allConnections, allDelays);
     }
   }
 

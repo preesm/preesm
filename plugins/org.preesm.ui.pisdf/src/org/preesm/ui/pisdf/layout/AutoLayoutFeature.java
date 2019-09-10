@@ -170,7 +170,7 @@ public class AutoLayoutFeature extends AbstractCustomFeature {
   private static final int DEPENDENCY_SPACE = 8;
 
   /** The Constant FIFO_SPACE. */
-  private static final int FIFO_SPACE = 7;
+  private static final int FIFO_SPACE = 10;
 
   /** The Constant X_INIT. */
   protected static final int X_INIT = 50;
@@ -185,7 +185,7 @@ public class AutoLayoutFeature extends AbstractCustomFeature {
   protected static final int Y_INIT = 250;
 
   /** The Constant Y_SPACE. */
-  private static final int Y_SPACE = 50;
+  private static final int Y_SPACE = 60;
 
   /** The Constant Y_SPACE_PARAM. */
   private static final int Y_SPACE_PARAM = 60;

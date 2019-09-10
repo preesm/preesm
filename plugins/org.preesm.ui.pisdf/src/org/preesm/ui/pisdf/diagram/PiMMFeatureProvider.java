@@ -154,7 +154,7 @@ import org.preesm.ui.pisdf.features.LayoutPortFeature;
 import org.preesm.ui.pisdf.features.MoveAbstractActorFeature;
 import org.preesm.ui.pisdf.features.MoveDownActorPortFeature;
 import org.preesm.ui.pisdf.features.MoveUpActorPortFeature;
-import org.preesm.ui.pisdf.features.MovesNothingFeature;
+import org.preesm.ui.pisdf.features.MovesIfOnlyOneFeature;
 import org.preesm.ui.pisdf.features.OpenMemoryScriptFeature;
 import org.preesm.ui.pisdf.features.OpenRefinementFeature;
 import org.preesm.ui.pisdf.features.PasteFeature;
@@ -615,7 +615,7 @@ public class PiMMFeatureProvider extends DefaultFeatureProvider {
     final Object bo = getBusinessObjectForPictogramElement(pe);
     if (bo instanceof Delay || bo instanceof Fifo) {
       // we do nothing since they will be moved by actors move
-      return new MovesNothingFeature(this);
+      return new MovesIfOnlyOneFeature(this);
     } else if (bo instanceof AbstractActor) {
       return new MoveAbstractActorFeature(this);
     }

@@ -9,9 +9,9 @@ import org.eclipse.graphiti.features.impl.DefaultMoveShapeFeature;
  * 
  * @author ahonorat
  */
-public class MovesNothingFeature extends DefaultMoveShapeFeature {
+public class MovesIfOnlyOneFeature extends DefaultMoveShapeFeature {
 
-  public MovesNothingFeature(IFeatureProvider fp) {
+  public MovesIfOnlyOneFeature(IFeatureProvider fp) {
     super(fp);
     // TODO Auto-generated constructor stub
   }
