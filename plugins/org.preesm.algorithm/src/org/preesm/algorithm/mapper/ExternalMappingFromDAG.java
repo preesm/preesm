@@ -44,6 +44,7 @@ import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.regex.Matcher;
@@ -119,6 +120,7 @@ public class ExternalMappingFromDAG extends AbstractMappingFromDAG {
 
     // 2- check
     final Map<DAGVertex, ScheduleEntry> entries = checkScheduleCompatibility(schedule, dag, architecture);
+    checkStartTimePrecedences(entries);
 
     // 3- sort components to have a relation from ID to component
     final List<ComponentInstance> componentInstances = new ArrayList<>(architecture.getComponentInstances());
@@ -243,6 +245,44 @@ public class ExternalMappingFromDAG extends AbstractMappingFromDAG {
     }
 
     return abc;
+  }
+
+  private static void checkStartTimePrecedences(Map<DAGVertex, ScheduleEntry> entries) {
+    for (Entry<DAGVertex, ScheduleEntry> e : entries.entrySet()) {
+      // get all previous direct edges
+      DAGVertex vtx = e.getKey();
+      Set<DAGVertex> predecessorsWS = new HashSet<>();
+      Set<DAGVertex> predecessorsWOS = new HashSet<>();
+      Set<DAGVertex> visited = new HashSet<>();
+      predecessorsWOS.add(vtx);
+      visited.addAll(predecessorsWOS);
+      while (!predecessorsWOS.isEmpty()) {
+        Set<DAGVertex> newNodes = new HashSet<>();
+        for (DAGVertex currentV : predecessorsWOS) {
+          visited.add(currentV);
+          for (DAGEdge edge : currentV.incomingEdges()) {
+            DAGVertex src = edge.getSource();
+            if (entries.containsKey(src)) {
+              predecessorsWS.add(src);
+            } else if (!visited.contains(src)) {
+              newNodes.add(src);
+            }
+          }
+        }
+        predecessorsWOS = newNodes;
+
+      }
+
+      Long start = e.getValue().getStart();
+      for (DAGVertex vertex : predecessorsWS) {
+        Long predStart = entries.get(vertex).getStart();
+        if (start < predStart) {
+          throw new PreesmRuntimeException("Start times of firings " + vtx.getName() + " and " + vertex.getName()
+              + " do not resepct their precedence order.");
+        }
+      }
+
+    }
   }
 
   private void mapVertex(final LatencyAbc abc, final ComponentInstance componentInstance, final DAGVertex v) {
@@ -442,7 +482,7 @@ public class ExternalMappingFromDAG extends AbstractMappingFromDAG {
       if (bothKnown) {
         final ScheduleEntry schedE1 = this.entries.get(o1);
         final ScheduleEntry schedE2 = this.entries.get(o2);
-        long res = (schedE1.getTopologicalStart() - schedE2.getTopologicalStart());
+        long res = (schedE1.getStart() - schedE2.getStart());
         if (res > 0 /* && realOrder > 0 */) {
           return 1;
         } else if (res < 0 /* && realOrder < 0 */) {
