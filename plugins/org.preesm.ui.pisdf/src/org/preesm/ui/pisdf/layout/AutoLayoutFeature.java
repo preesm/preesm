@@ -455,8 +455,10 @@ public class AutoLayoutFeature extends AbstractCustomFeature {
         maxX = (maxX > actorGA.getWidth()) ? maxX : actorGA.getWidth();
 
       }
-      // last range of gap has no end
-      stageGaps.get(stageGaps.size() - 1).end = -1;
+      if (!stageGaps.isEmpty()) {
+        // last range of gap has no end
+        stageGaps.get(stageGaps.size() - 1).end = -1;
+      }
       this.stageWidth.add(new Range(currentX, currentX + maxX));
       currentX += maxX + AutoLayoutFeature.X_SPACE;
 
@@ -648,6 +650,10 @@ public class AutoLayoutFeature extends AbstractCustomFeature {
       AbstractActor containingActor = fifo.getTargetPort().getContainingActor();
 
       final EList<Point> bendpoints = ffc.getBendpoints();
+      if (bendpoints.isEmpty()) {
+        continue;
+      }
+
       if (containingActor instanceof DelayActor) {
         final int currentX = bendpoints.get(0).getX();
         final int currentY = bendpoints.get(0).getY();
@@ -684,6 +690,10 @@ public class AutoLayoutFeature extends AbstractCustomFeature {
       // Get last 2 bendpoints (Since all FIFOs where layouted when actors
       // were moved, all FIFO have at least 2 bendpoints.)
       final EList<Point> bendpoints = ffc.getBendpoints();
+      if (bendpoints.isEmpty()) {
+        continue;
+      }
+
       final Point last = bendpoints.get(bendpoints.size() - 1);
       final int index = bendpoints.size() < 2 ? 0 : bendpoints.size() - 2;
 
@@ -961,12 +971,14 @@ public class AutoLayoutFeature extends AbstractCustomFeature {
     // Retrieve the last bendpoint of the ffc (added when
     // the
     // actor was moved.)
-    final Point lastBp = ffc.getBendpoints().get(ffc.getBendpoints().size() - 1);
-    // Move it
-    lastBp.setX(lastBp.getX() - currentX);
-    // Add a new bendpoint on top of it
-    ffc.getBendpoints().add(ffc.getBendpoints().size() - 1,
-        Graphiti.getGaCreateService().createPoint(lastBp.getX(), currentY));
+    int fccBpSize = ffc.getBendpoints().size();
+    if (fccBpSize > 0) {
+      final Point lastBp = ffc.getBendpoints().get(fccBpSize - 1);
+      // Move it
+      lastBp.setX(lastBp.getX() - currentX);
+      // Add a new bendpoint on top of it
+      ffc.getBendpoints().add(fccBpSize - 1, Graphiti.getGaCreateService().createPoint(lastBp.getX(), currentY));
+    }
   }
 
   private void layoutDependencyToInterface(final Diagram diagram, final int currentY, final int currentX,
@@ -1195,6 +1207,9 @@ public class AutoLayoutFeature extends AbstractCustomFeature {
 
       // get the FFC
       final FreeFormConnection ffc = DiagramPiGraphLinkHelper.getFreeFormConnectionOfEdge(diagram, dependency);
+      if (ffc.getBendpoints().isEmpty()) {
+        continue;
+      }
 
       // Get the first bendpoint and move it
       final Point firstBPoint = ffc.getBendpoints().get(0);

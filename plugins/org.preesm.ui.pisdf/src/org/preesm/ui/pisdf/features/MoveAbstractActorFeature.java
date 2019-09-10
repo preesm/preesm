@@ -141,6 +141,15 @@ public class MoveAbstractActorFeature extends DefaultMoveShapeFeature
       final List<PictogramElement> selectedPEs = new ArrayList<>(Arrays.asList(selectedPictogramElements));
       List<Object> listBO = selectedPEs.stream().map(e -> getBusinessObjectForPictogramElement(e))
           .collect(Collectors.toList());
+
+      for (Delay d : implicitlyMovedDelay) {
+        if (!listBO.contains(d)) {
+          listBO.add(d);
+          ContainerShape cs = DiagramPiGraphLinkHelper.getDelayPE(getDiagram(), d.getContainingFifo());
+          selectedPEs.add(cs);
+        }
+      }
+
       List<Object> listBOd = new ArrayList<>();
       for (Object o : listBO) {
         if (o instanceof Delay) {
@@ -234,9 +243,9 @@ public class MoveAbstractActorFeature extends DefaultMoveShapeFeature
                 newDelays.add(d);
                 opposite = getTargetConnection(this, d, out.getEnd().getParent(), out);
               }
-              Connection testSetterCo = opposite == null ? out : opposite;
+              Connection testGetterCo = opposite == null ? out : opposite;
 
-              if (testSetterCo.getEnd().getParent() == getter) {
+              if (testGetterCo.getEnd().getParent() == getter) {
                 if (!allConnections.contains((FreeFormConnection) out)) {
                   newConnections.add((FreeFormConnection) out);
                 }

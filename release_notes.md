@@ -8,8 +8,15 @@ PREESM Changelog
 
 ### Changes
 * EnergyAwareness: performance objective now is considered a minimum. The tolerance has been removed;
+* Fix PiSDF editor autoLayout, especially if having setters and getters on delays;
+* Change the line style of setters and getters to dash dot;
+* AutoLayout of Feedback Fifos is smarter (works also when no delays);
 
 ### Bug fix
+* Fix #74
+* Fix #83
+* Fix #128
+* Fix #190
 
 
 ## Release version 3.17.0
