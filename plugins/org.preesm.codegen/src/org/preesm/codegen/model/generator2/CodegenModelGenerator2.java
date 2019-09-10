@@ -74,7 +74,6 @@ import org.preesm.model.pisdf.Actor;
 import org.preesm.model.pisdf.BroadcastActor;
 import org.preesm.model.pisdf.CHeaderRefinement;
 import org.preesm.model.pisdf.ConfigInputPort;
-import org.preesm.model.pisdf.DataPort;
 import org.preesm.model.pisdf.Fifo;
 import org.preesm.model.pisdf.ForkActor;
 import org.preesm.model.pisdf.FunctionPrototype;
@@ -355,11 +354,13 @@ public class CodegenModelGenerator2 {
       } else if (actor instanceof UserSpecialActor) {
         generateSpecialActor((UserSpecialActor) actor, portToVariable, coreBlock);
       } else if (actor instanceof SrdagActor) {
-        // TODO handle
+        // TODO handle init/end
+        // generateFifoCall((SrdagActor) actor, coreBlock);
       } else if (actor instanceof CommunicationActor) {
-        // TODO handle
+        // TODO handle send/receive + enabler triggers
+        throw new PreesmRuntimeException("Unsupported actor [" + actor + "]");
       } else {
-        // TODO throw error / log warning ?
+        throw new PreesmRuntimeException("Unsupported actor [" + actor + "]");
       }
     }
   }
@@ -392,12 +393,16 @@ public class CodegenModelGenerator2 {
     // Add it to the specialCall
     if (actor instanceof JoinActor) {
       specialCall.addOutputBuffer(lastBuffer);
-      actor.getDataInputPorts().stream().map(DataPort::getFifo).map(memAlloc.getFifoAllocations()::get)
-          .map(allocation.btb::get).forEach(specialCall::addInputBuffer);
+      // actor.getDataInputPorts().stream().map(DataPort::getFifo).map(memAlloc.getFifoAllocations()::get)
+      // .map(allocation.btb::get).forEach(specialCall::addInputBuffer);
+      actor.getDataInputPorts().stream().map(port -> ((Buffer) portToVariable.get(port)))
+          .forEach(specialCall::addInputBuffer);
     } else {
       specialCall.addInputBuffer(lastBuffer);
-      actor.getDataOutputPorts().stream().map(DataPort::getFifo).map(memAlloc.getFifoAllocations()::get)
-          .map(allocation.btb::get).forEach(specialCall::addOutputBuffer);
+      // actor.getDataOutputPorts().stream().map(DataPort::getFifo).map(memAlloc.getFifoAllocations()::get)
+      // .map(allocation.btb::get).forEach(specialCall::addOutputBuffer);
+      actor.getDataOutputPorts().stream().map(port -> ((Buffer) portToVariable.get(port)))
+          .forEach(specialCall::addInputBuffer);
     }
 
     operatorBlock.getLoopBlock().getCodeElts().add(specialCall);
