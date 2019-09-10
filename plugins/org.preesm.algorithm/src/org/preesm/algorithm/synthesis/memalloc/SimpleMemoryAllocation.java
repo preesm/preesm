@@ -52,7 +52,7 @@ import org.preesm.model.slam.ComponentInstance;
 import org.preesm.model.slam.Design;
 
 /**
- * Allocate 1 physical buffer on the main com node and 1 logical buffer per Fifo in the graph, and 1 buffer per delay
+ * Allocate 1 physical buffer on the main com node then 1 logical buffer per Fifo in the graph and 1 buffer per delay
  * (init/end couple).
  *
  * @author anmorvan
