@@ -252,3 +252,28 @@ class ComInterface {
 	contains VLNV busType
 	id String name = ""
 }
+
+/**
+ * ROUTES
+ */
+
+class SlamRoute {
+	op ComponentInstance getSource() {
+		return routeSteps.get(0).source
+	}
+	op ComponentInstance getTarget() {
+		return routeSteps.get(routeSteps.size - 1).target
+	}
+	// Ordered list of steps. Must not be empty
+	contains SlamRouteStep[1..*] routeSteps
+}
+
+class SlamRouteStep {
+	// Processing Element responsible for forwarding
+	refers ComponentInstance source
+	refers ComponentInstance target
+	// Communication node common to source and target operators used to share the data
+	refers ComponentInstance communicationNode
+	// Optional enabler to trigger (to send). Null if no enabler are used in this step
+	refers ComponentInstance enabler
+}
