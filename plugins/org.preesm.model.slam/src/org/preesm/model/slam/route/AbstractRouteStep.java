@@ -48,19 +48,9 @@ import org.w3c.dom.Element;
  * @author mpelcat
  */
 public abstract class AbstractRouteStep implements CloneableProperty<AbstractRouteStep> {
-  /**
-   * The route step type determines how the communication will be simulated.
-   */
-  public static final String MEM_TYPE = "RamRouteStep";
 
-  /**
-   * The route step type determines how the communication will be simulated.
-   */
-  public static final String DMA_TYPE = "DmaRouteStep";
-
-  /**
-   * The route step type determines how the communication will be simulated.
-   */
+  public static final String MEM_TYPE  = "RamRouteStep";
+  public static final String DMA_TYPE  = "DmaRouteStep";
   public static final String NODE_TYPE = "NodeRouteStep";
 
   /**

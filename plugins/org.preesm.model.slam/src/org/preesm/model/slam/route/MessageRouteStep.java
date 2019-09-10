@@ -148,8 +148,9 @@ public class MessageRouteStep extends AbstractRouteStep {
 
     for (final ComponentInstance node : this.nodes) {
       final Component def = node.getComponent();
-      if (def instanceof ComNodeImpl) {
-        time = Math.max(time, (long) (transfersSize / ((ComNode) def).getSpeed()));
+      if (def instanceof ComNode) {
+        final ComNode comNode = (ComNode) def;
+        time = Math.max(time, (long) (transfersSize / comNode.getSpeed()));
       }
     }
 
