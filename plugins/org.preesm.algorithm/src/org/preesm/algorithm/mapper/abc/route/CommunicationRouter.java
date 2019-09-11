@@ -246,7 +246,7 @@ public class CommunicationRouter {
           Transaction lastTransaction = null;
 
           // Adds send and receive vertices and links them
-          for (final AbstractRouteStep step : route) {
+          for (final AbstractRouteStep step : route.getRouteSteps()) {
             final CommunicationRouterImplementer impl = getImplementer(step.getType());
             lastTransaction = impl.addVertices(step, currentEdge, localTransactionManager, type, routeStepIndex,
                 lastTransaction, null);
@@ -331,7 +331,7 @@ public class CommunicationRouter {
       final MapperDAGEdge edge = route.getKey();
       int routeStepIndex = 0;
       Transaction lastTransaction = null;
-      for (final AbstractRouteStep step : transferEdges.get(edge)) {
+      for (final AbstractRouteStep step : transferEdges.get(edge).getRouteSteps()) {
         final CommunicationRouterImplementer impl = getImplementer(step.getType());
         lastTransaction = impl.addVertices(step, edge, localTransactionManager, type, routeStepIndex, lastTransaction,
             createdVertices);

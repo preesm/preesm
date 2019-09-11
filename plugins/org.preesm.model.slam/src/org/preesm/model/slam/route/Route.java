@@ -39,6 +39,7 @@ package org.preesm.model.slam.route;
 
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Set;
 import org.preesm.model.slam.ComponentInstance;
 
@@ -48,7 +49,7 @@ import org.preesm.model.slam.ComponentInstance;
  *
  * @author mpelcat
  */
-public class Route extends ArrayList<AbstractRouteStep> {
+public class Route {
 
   /** ID used to reference the element in a property bean. */
   public static final String PROPERTY_BEAN_NAME = "route";
@@ -56,8 +57,7 @@ public class Route extends ArrayList<AbstractRouteStep> {
   /** The Constant averageTransfer. */
   public static final int AVG_TRANSFER = 1000;
 
-  /** The Constant serialVersionUID. */
-  private static final long serialVersionUID = 1L;
+  private final List<AbstractRouteStep> routeSteps = new ArrayList<>();
 
   /**
    * Instantiates a new route.
@@ -67,7 +67,7 @@ public class Route extends ArrayList<AbstractRouteStep> {
    */
   public Route(final AbstractRouteStep step) {
     super();
-    this.add(step);
+    routeSteps.add(step);
   }
 
   /**
@@ -80,11 +80,11 @@ public class Route extends ArrayList<AbstractRouteStep> {
    */
   public Route(final Route r1, final Route r2) {
     super();
-    for (final AbstractRouteStep step : r1) {
-      this.add(step);
+    for (final AbstractRouteStep step : r1.routeSteps) {
+      routeSteps.add(step);
     }
-    for (final AbstractRouteStep step : r2) {
-      this.add(step);
+    for (final AbstractRouteStep step : r2.routeSteps) {
+      routeSteps.add(step);
     }
   }
 
@@ -104,7 +104,7 @@ public class Route extends ArrayList<AbstractRouteStep> {
     boolean isIt = true;
     final Set<ComponentInstance> opSet = new LinkedHashSet<>();
     // Iterating the route and testing number of occurences in sender
-    for (final AbstractRouteStep step : this) {
+    for (final AbstractRouteStep step : routeSteps) {
       if (opSet.contains(step.getSender())) {
         isIt = false;
       }
@@ -112,7 +112,7 @@ public class Route extends ArrayList<AbstractRouteStep> {
     }
 
     // Testing last step receiver
-    if (opSet.contains(get(size() - 1).getReceiver())) {
+    if (opSet.contains(routeSteps.get(routeSteps.size() - 1).getReceiver())) {
       isIt = false;
     }
     return isIt;
@@ -121,9 +121,13 @@ public class Route extends ArrayList<AbstractRouteStep> {
   @Override
   public String toString() {
     final StringBuilder sb = new StringBuilder();
-    for (final AbstractRouteStep step : this) {
+    for (final AbstractRouteStep step : routeSteps) {
       sb.append(step + " ");
     }
     return sb.toString();
+  }
+
+  public List<AbstractRouteStep> getRouteSteps() {
+    return routeSteps;
   }
 }

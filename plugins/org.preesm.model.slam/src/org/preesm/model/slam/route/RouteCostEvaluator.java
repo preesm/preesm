@@ -21,7 +21,7 @@ public class RouteCostEvaluator {
   public static final long evaluateTransferCost(final Route route, final long transferSize) {
     long cost = 0;
     // Iterating the route and incrementing transfer cost
-    for (final AbstractRouteStep step : route) {
+    for (final AbstractRouteStep step : route.getRouteSteps()) {
       cost += getTransferCost(step, transferSize);
     }
     return cost;

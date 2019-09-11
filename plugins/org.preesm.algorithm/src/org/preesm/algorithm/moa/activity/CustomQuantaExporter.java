@@ -285,7 +285,7 @@ public class CustomQuantaExporter extends AbstractTaskImplementation {
       final Route route = abc.getComRouter().getRoute(edge);
 
       // Counting tokens and quanta for each elements in the route between 2 processors for an edge
-      for (final AbstractRouteStep step : route) {
+      for (final AbstractRouteStep step : route.getRouteSteps()) {
         if (step instanceof MessageRouteStep) {
           // a step is internally composed of several communication nodes
           final MessageRouteStep mstep = (MessageRouteStep) step;
