@@ -38,8 +38,6 @@
 package org.preesm.model.slam.route;
 
 import org.preesm.model.slam.ComponentInstance;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
 
 /**
  * Represents a single step in a route between two operators.
@@ -133,54 +131,4 @@ public abstract class AbstractRouteStep {
    */
   public abstract String getName();
 
-  /**
-   * Appends the route step informations to a dom3 xml file.
-   *
-   * @param dom
-   *          the dom
-   * @param comFct
-   *          the com fct
-   */
-  public void appendRouteStep(final Document dom, final Element comFct) {
-
-    final Element routeStep = dom.createElement("routeStep");
-    comFct.appendChild(routeStep);
-
-    final Element newSender = dom.createElement("sender");
-    newSender.setAttribute("name", getSender().getInstanceName());
-    newSender.setAttribute("def", getSender().getComponent().getVlnv().getName());
-    routeStep.appendChild(newSender);
-
-    final Element newReceiver = dom.createElement("receiver");
-    newReceiver.setAttribute("name", getReceiver().getInstanceName());
-    newReceiver.setAttribute("def", getReceiver().getComponent().getVlnv().getName());
-    routeStep.appendChild(newReceiver);
-
-    if (DMA_TYPE.equals(getType())) {
-      routeStep.setAttribute("type", "dma");
-      final DmaRouteStep dStep = (DmaRouteStep) this;
-      routeStep.setAttribute("dmaDef", dStep.getDma().getVlnv().getName());
-
-      for (final ComponentInstance node : dStep.getNodes()) {
-        final Element eNode = dom.createElement("node");
-        eNode.setAttribute("name", node.getInstanceName());
-        eNode.setAttribute("def", node.getComponent().getVlnv().getName());
-        routeStep.appendChild(eNode);
-      }
-    } else if (NODE_TYPE.equals(getType())) {
-      routeStep.setAttribute("type", "msg");
-      final MessageRouteStep nStep = (MessageRouteStep) this;
-
-      for (final ComponentInstance node : nStep.getNodes()) {
-        final Element eNode = dom.createElement("node");
-        eNode.setAttribute("name", node.getInstanceName());
-        eNode.setAttribute("def", node.getComponent().getVlnv().getName());
-        routeStep.appendChild(eNode);
-      }
-    } else if (MEM_TYPE.equals(getType())) {
-      routeStep.setAttribute("type", "ram");
-      final MemRouteStep rStep = (MemRouteStep) this;
-      routeStep.setAttribute("ramDef", rStep.getMem().getVlnv().getName());
-    }
-  }
 }

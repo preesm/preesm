@@ -53,8 +53,13 @@ import org.preesm.algorithm.model.dag.DAGEdge;
 import org.preesm.algorithm.model.dag.DAGVertex;
 import org.preesm.commons.GMLKey;
 import org.preesm.commons.exceptions.PreesmRuntimeException;
+import org.preesm.model.slam.ComponentInstance;
 import org.preesm.model.slam.impl.ComponentInstanceImpl;
 import org.preesm.model.slam.route.AbstractRouteStep;
+import org.preesm.model.slam.route.DmaRouteStep;
+import org.preesm.model.slam.route.MemRouteStep;
+import org.preesm.model.slam.route.MessageRouteStep;
+import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
 /**
@@ -169,8 +174,48 @@ public class ImplementationExporter extends GMLExporter<DAGVertex, DAGEdge> {
    * @param vertexElt
    *          the vertex elt
    */
-  private void exportRouteStep(final AbstractRouteStep step, final Element vertexElt) {
-    step.appendRouteStep(this.domDocument, vertexElt);
+  private void exportRouteStep(final AbstractRouteStep step, final Element comFct) {
+    final Document dom = this.domDocument;
+
+    final Element routeStep = dom.createElement("routeStep");
+    comFct.appendChild(routeStep);
+
+    final Element newSender = dom.createElement("sender");
+    newSender.setAttribute("name", step.getSender().getInstanceName());
+    newSender.setAttribute("def", step.getSender().getComponent().getVlnv().getName());
+    routeStep.appendChild(newSender);
+
+    final Element newReceiver = dom.createElement("receiver");
+    newReceiver.setAttribute("name", step.getReceiver().getInstanceName());
+    newReceiver.setAttribute("def", step.getReceiver().getComponent().getVlnv().getName());
+    routeStep.appendChild(newReceiver);
+
+    if (AbstractRouteStep.DMA_TYPE.equals(step.getType())) {
+      routeStep.setAttribute("type", "dma");
+      final DmaRouteStep dStep = (DmaRouteStep) step;
+      routeStep.setAttribute("dmaDef", dStep.getDma().getVlnv().getName());
+
+      for (final ComponentInstance node : dStep.getNodes()) {
+        final Element eNode = dom.createElement("node");
+        eNode.setAttribute("name", node.getInstanceName());
+        eNode.setAttribute("def", node.getComponent().getVlnv().getName());
+        routeStep.appendChild(eNode);
+      }
+    } else if (AbstractRouteStep.NODE_TYPE.equals(step.getType())) {
+      routeStep.setAttribute("type", "msg");
+      final MessageRouteStep nStep = (MessageRouteStep) step;
+
+      for (final ComponentInstance node : nStep.getNodes()) {
+        final Element eNode = dom.createElement("node");
+        eNode.setAttribute("name", node.getInstanceName());
+        eNode.setAttribute("def", node.getComponent().getVlnv().getName());
+        routeStep.appendChild(eNode);
+      }
+    } else if (AbstractRouteStep.MEM_TYPE.equals(step.getType())) {
+      routeStep.setAttribute("type", "ram");
+      final MemRouteStep rStep = (MemRouteStep) step;
+      routeStep.setAttribute("ramDef", rStep.getMem().getVlnv().getName());
+    }
   }
 
   /*
