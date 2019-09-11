@@ -59,6 +59,7 @@ import org.preesm.model.slam.route.AbstractRouteStep;
 import org.preesm.model.slam.route.DmaRouteStep;
 import org.preesm.model.slam.route.MemRouteStep;
 import org.preesm.model.slam.route.MessageRouteStep;
+import org.preesm.model.slam.route.RouteStepType;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
@@ -190,7 +191,7 @@ public class ImplementationExporter extends GMLExporter<DAGVertex, DAGEdge> {
     newReceiver.setAttribute("def", step.getReceiver().getComponent().getVlnv().getName());
     routeStep.appendChild(newReceiver);
 
-    if (AbstractRouteStep.DMA_TYPE.equals(step.getType())) {
+    if (RouteStepType.DMA_TYPE.equals(step.getType())) {
       routeStep.setAttribute("type", "dma");
       final DmaRouteStep dStep = (DmaRouteStep) step;
       routeStep.setAttribute("dmaDef", dStep.getDma().getVlnv().getName());
@@ -201,7 +202,7 @@ public class ImplementationExporter extends GMLExporter<DAGVertex, DAGEdge> {
         eNode.setAttribute("def", node.getComponent().getVlnv().getName());
         routeStep.appendChild(eNode);
       }
-    } else if (AbstractRouteStep.NODE_TYPE.equals(step.getType())) {
+    } else if (RouteStepType.NODE_TYPE.equals(step.getType())) {
       routeStep.setAttribute("type", "msg");
       final MessageRouteStep nStep = (MessageRouteStep) step;
 
@@ -211,7 +212,7 @@ public class ImplementationExporter extends GMLExporter<DAGVertex, DAGEdge> {
         eNode.setAttribute("def", node.getComponent().getVlnv().getName());
         routeStep.appendChild(eNode);
       }
-    } else if (AbstractRouteStep.MEM_TYPE.equals(step.getType())) {
+    } else if (RouteStepType.MEM_TYPE.equals(step.getType())) {
       routeStep.setAttribute("type", "ram");
       final MemRouteStep rStep = (MemRouteStep) step;
       routeStep.setAttribute("ramDef", rStep.getMem().getVlnv().getName());

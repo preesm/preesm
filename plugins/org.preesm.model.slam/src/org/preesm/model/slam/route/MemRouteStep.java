@@ -79,8 +79,8 @@ public class MemRouteStep extends MessageRouteStep {
   }
 
   @Override
-  public String getType() {
-    return MEM_TYPE;
+  public RouteStepType getType() {
+    return RouteStepType.MEM_TYPE;
   }
 
   public Mem getMem() {

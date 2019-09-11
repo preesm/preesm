@@ -72,8 +72,8 @@ public class DmaRouteStep extends MessageRouteStep {
   }
 
   @Override
-  public String getType() {
-    return DMA_TYPE;
+  public RouteStepType getType() {
+    return RouteStepType.DMA_TYPE;
   }
 
   public Dma getDma() {

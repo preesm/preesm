@@ -46,10 +46,6 @@ import org.preesm.model.slam.ComponentInstance;
  */
 public abstract class AbstractRouteStep {
 
-  public static final String MEM_TYPE  = "RamRouteStep";
-  public static final String DMA_TYPE  = "DmaRouteStep";
-  public static final String NODE_TYPE = "NodeRouteStep";
-
   /**
    * The sender of the route step. A route step is always directed.
    */
@@ -115,6 +111,6 @@ public abstract class AbstractRouteStep {
    *
    * @return the type
    */
-  public abstract String getType();
+  public abstract RouteStepType getType();
 
 }

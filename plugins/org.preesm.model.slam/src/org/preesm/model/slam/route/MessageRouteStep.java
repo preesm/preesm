@@ -78,8 +78,8 @@ public class MessageRouteStep extends AbstractRouteStep {
    * @return the type
    */
   @Override
-  public String getType() {
-    return NODE_TYPE;
+  public RouteStepType getType() {
+    return RouteStepType.NODE_TYPE;
   }
 
   public List<ComponentInstance> getContentionNodes() {

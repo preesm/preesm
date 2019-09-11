@@ -256,6 +256,9 @@ class ComInterface {
 /**
  * ROUTES
  */
+enum SlamRouteStepType {
+  MEM_TYPE, DMA_TYPE, NODE_TYPE
+}
 
 class SlamRoute {
 	op ComponentInstance getSource() {

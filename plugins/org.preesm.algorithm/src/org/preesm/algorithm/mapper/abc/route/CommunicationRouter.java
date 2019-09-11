@@ -66,6 +66,7 @@ import org.preesm.model.slam.route.AbstractRouteStep;
 import org.preesm.model.slam.route.Route;
 import org.preesm.model.slam.route.RouteCalculator;
 import org.preesm.model.slam.route.RouteCostEvaluator;
+import org.preesm.model.slam.route.RouteStepType;
 
 /**
  * Routes the communications. Based on bridge design pattern. The processing is delegated to implementers
@@ -114,15 +115,15 @@ public class CommunicationRouter {
     this.calculator = RouteCalculator.getInstance(archi, scenario.getSimulationInfo().getAverageDataSize());
 
     // Initializing the available router implementers
-    addImplementer(AbstractRouteStep.DMA_TYPE, new DmaComRouterImplementer(this));
-    addImplementer(AbstractRouteStep.NODE_TYPE, new MessageComRouterImplementer(this));
-    addImplementer(AbstractRouteStep.MEM_TYPE, new SharedRamRouterImplementer(this));
+    addImplementer(RouteStepType.DMA_TYPE, new DmaComRouterImplementer(this));
+    addImplementer(RouteStepType.NODE_TYPE, new MessageComRouterImplementer(this));
+    addImplementer(RouteStepType.MEM_TYPE, new SharedRamRouterImplementer(this));
   }
 
   /**
    * Several ways to simulate a communication depending on which Route is taken into account.
    */
-  private final Map<String, CommunicationRouterImplementer> implementers;
+  private final Map<RouteStepType, CommunicationRouterImplementer> implementers;
 
   /** DAG with communication vertices. */
   private MapperDAG implementation = null;
@@ -141,7 +142,7 @@ public class CommunicationRouter {
    * @param implementer
    *          the implementer
    */
-  private void addImplementer(final String name, final CommunicationRouterImplementer implementer) {
+  private void addImplementer(final RouteStepType name, final CommunicationRouterImplementer implementer) {
     this.implementers.put(name, implementer);
   }
 
@@ -152,7 +153,7 @@ public class CommunicationRouter {
    *          the name
    * @return the implementer
    */
-  private CommunicationRouterImplementer getImplementer(final String name) {
+  private CommunicationRouterImplementer getImplementer(final RouteStepType name) {
     return this.implementers.get(name);
   }
 
