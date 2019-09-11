@@ -16,6 +16,10 @@ import org.preesm.model.slam.util.SlamSwitch;
  */
 public class RouteCostEvaluator {
 
+  private RouteCostEvaluator() {
+    // forbid instantiation
+  }
+
   /**
    * Evaluates the cost of a data transfer with size transferSize along the route.
    *
@@ -67,7 +71,23 @@ public class RouteCostEvaluator {
    *          the transfers size
    * @return the sender side worst transfer time
    */
-  public long getSenderSideWorstTransferTime(final SlamMemoryRouteStep memRouteStep, final long transfersSize) {
+  public static long getSenderSideWorstTransferTime(final SlamMemoryRouteStep memRouteStep, final long transfersSize) {
+    long time = 0;
+
+    for (final ComponentInstance node : memRouteStep.getSenderSideContentionNodes()) {
+      time = Math.max(time, (long) (transfersSize / ((ComNode) node.getComponent()).getSpeed()));
+    }
+    return time;
+  }
+
+  /**
+   * Returns the longest time a contention node needs to transfer the data before the RAM in the route steps.
+   *
+   * @param transfersSize
+   *          the transfers size
+   * @return the sender side worst transfer time
+   */
+  public static long getSenderSideWorstTransferTime(final MemRouteStep memRouteStep, final long transfersSize) {
     long time = 0;
 
     for (final ComponentInstance node : memRouteStep.getSenderSideContentionNodes()) {
@@ -83,7 +103,8 @@ public class RouteCostEvaluator {
    *          the transfers size
    * @return the receiver side worst transfer time
    */
-  public long getReceiverSideWorstTransferTime(final SlamMemoryRouteStep memRouteStep, final long transfersSize) {
+  public static long getReceiverSideWorstTransferTime(final SlamMemoryRouteStep memRouteStep,
+      final long transfersSize) {
     long time = 0;
 
     for (final ComponentInstance node : memRouteStep.getReceiverSideContentionNodes()) {
@@ -93,8 +114,22 @@ public class RouteCostEvaluator {
   }
 
   /**
+   * Returns the longest time a contention node needs to transfer the data after the RAM in the route steps.
    *
-   * TODO : make a Ecore switch
+   * @param transfersSize
+   *          the transfers size
+   * @return the receiver side worst transfer time
+   */
+  public static long getReceiverSideWorstTransferTime(final MemRouteStep memRouteStep, final long transfersSize) {
+    long time = 0;
+
+    for (final ComponentInstance node : memRouteStep.getReceiverSideContentionNodes()) {
+      time = Math.max(time, (long) (transfersSize / ((ComNode) node.getComponent()).getSpeed()));
+    }
+    return time;
+  }
+
+  /**
    *
    * @author anmorvan
    *

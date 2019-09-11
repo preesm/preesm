@@ -96,38 +96,6 @@ public class MemRouteStep extends MessageRouteStep {
   }
 
   /**
-   * Returns the longest time a contention node needs to transfer the data before the RAM in the route steps.
-   *
-   * @param transfersSize
-   *          the transfers size
-   * @return the sender side worst transfer time
-   */
-  public long getSenderSideWorstTransferTime(final long transfersSize) {
-    long time = 0;
-
-    for (final ComponentInstance node : getSenderSideContentionNodes()) {
-      time = Math.max(time, (long) (transfersSize / ((ComNode) node.getComponent()).getSpeed()));
-    }
-    return time;
-  }
-
-  /**
-   * Returns the longest time a contention node needs to transfer the data after the RAM in the route steps.
-   *
-   * @param transfersSize
-   *          the transfers size
-   * @return the receiver side worst transfer time
-   */
-  public long getReceiverSideWorstTransferTime(final long transfersSize) {
-    long time = 0;
-
-    for (final ComponentInstance node : getReceiverSideContentionNodes()) {
-      time = Math.max(time, (long) (transfersSize / ((ComNode) node.getComponent()).getSpeed()));
-    }
-    return time;
-  }
-
-  /**
    * Gets the sender side contention nodes.
    *
    * @return the sender side contention nodes
