@@ -37,6 +37,7 @@
  */
 package org.preesm.model.slam.route;
 
+import com.google.common.primitives.Ints;
 import java.util.Comparator;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -109,15 +110,11 @@ public class RoutingTable {
       this.transferSize = transferSize;
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see java.util.Comparator#compare(java.lang.Object, java.lang.Object)
-     */
     @Override
     public int compare(final Route o1, final Route o2) {
-      final long difference = o1.evaluateTransferCost(this.transferSize) - o2.evaluateTransferCost(this.transferSize);
-      return (int) difference;
+      final long difference = RouteCostEvaluator.evaluateTransferCost(o1, transferSize)
+          - RouteCostEvaluator.evaluateTransferCost(o2, transferSize);
+      return Ints.saturatedCast(difference);
     }
 
   }

@@ -96,23 +96,6 @@ public class Route extends ArrayList<AbstractRouteStep> {
   }
 
   /**
-   * Evaluates the cost of a data transfer with size transferSize along the route.
-   *
-   * @param transferSize
-   *          the transfer size
-   * @return the long
-   */
-  public long evaluateTransferCost(final long transferSize) {
-    long cost = 0;
-    // Iterating the route and incrementing transfer cost
-    for (final AbstractRouteStep step : this) {
-      cost += step.getTransferCost(transferSize);
-    }
-
-    return cost;
-  }
-
-  /**
    * Returns true if each operator in the route appears only once.
    *
    * @return true, if is single appearance

@@ -65,6 +65,7 @@ import org.preesm.model.slam.Design;
 import org.preesm.model.slam.route.AbstractRouteStep;
 import org.preesm.model.slam.route.Route;
 import org.preesm.model.slam.route.RouteCalculator;
+import org.preesm.model.slam.route.RouteCostEvaluator;
 
 /**
  * Routes the communications. Based on bridge design pattern. The processing is delegated to implementers
@@ -364,7 +365,7 @@ public class CommunicationRouter {
     // Retrieving the route
     if ((sourceOp != null) && (destOp != null)) {
       final Route route = this.calculator.getRoute(sourceOp, destOp);
-      cost = route.evaluateTransferCost(dataSize);
+      cost = RouteCostEvaluator.evaluateTransferCost(route, dataSize);
     } else {
       final String msg = "trying to evaluate a transfer between non mapped operators.";
       throw new PreesmRuntimeException(msg);

@@ -233,12 +233,17 @@ public class RouteCalculator {
               if (compoundRoute.isSingleAppearance()) {
                 // If this if statement is removed, several
                 // routes become available
-                if (table.getBestRoute(src, tgt) == null) {
+                final Route bestRoute = table.getBestRoute(src, tgt);
+                if (bestRoute == null) {
                   table.addRoute(src, tgt, compoundRoute, averageDataSize);
-                } else if (table.getBestRoute(src, tgt).evaluateTransferCost(averageDataSize) > compoundRoute
-                    .evaluateTransferCost(averageDataSize)) {
-                  table.removeRoutes(src, tgt);
-                  table.addRoute(src, tgt, compoundRoute, averageDataSize);
+                } else {
+                  final long bestRouteCost = RouteCostEvaluator.evaluateTransferCost(bestRoute, averageDataSize);
+                  final long newRouteCost = RouteCostEvaluator.evaluateTransferCost(compoundRoute,
+                      averageDataSize);
+                  if (bestRouteCost > newRouteCost) {
+                    table.removeRoutes(src, tgt);
+                    table.addRoute(src, tgt, compoundRoute, averageDataSize);
+                  }
                 }
               }
             }
