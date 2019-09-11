@@ -143,7 +143,7 @@ public class MessageRouteStep extends AbstractRouteStep {
    * @return the worst transfer time
    */
   @Override
-  public final long getWorstTransferTime(final long transfersSize) {
+  public final long getTransferCost(final long transfersSize) {
     long time = 0;
 
     for (final ComponentInstance node : this.nodes) {
@@ -160,18 +160,6 @@ public class MessageRouteStep extends AbstractRouteStep {
     }
 
     return time;
-  }
-
-  /**
-   * Evaluates the cost of a data transfer with size transferSize. Can include overheads, additional cost...
-   *
-   * @param transfersSize
-   *          the transfers size
-   * @return the transfer cost
-   */
-  @Override
-  public long getTransferCost(final long transfersSize) {
-    return getWorstTransferTime(transfersSize);
   }
 
   @Override

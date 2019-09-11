@@ -115,7 +115,7 @@ public class MessageComRouterImplementer extends CommunicationRouterImplementer 
       final MessageRouteStep messageStep = ((MessageRouteStep) routeStep);
       // All the transfers along the path have the same time: the time
       // to transfer the data on the slowest contention node
-      final long transferTime = messageStep.getWorstTransferTime(edge.getInit().getDataSize());
+      final long transferTime = messageStep.getTransferCost(edge.getInit().getDataSize());
 
       // Adding the transfers of a message route step
       if (type == CommunicationRouter.TRANSFER_TYPE) {

@@ -143,20 +143,6 @@ public abstract class AbstractRouteStep implements CloneableProperty<AbstractRou
    */
   public abstract long getTransferCost(long transfersSize);
 
-  /**
-   * Returns the longest time a contention node needs to transfer the data.
-   *
-   * @param transfersSize
-   *          the transfers size
-   * @return the worst transfer time
-   */
-  public abstract long getWorstTransferTime(long transfersSize);
-
-  /*
-   * (non-Javadoc)
-   *
-   * @see java.lang.Object#clone()
-   */
   @Override
   public abstract AbstractRouteStep copy();
 
