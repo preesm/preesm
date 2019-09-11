@@ -1,5 +1,9 @@
 package org.preesm.model.slam.route;
 
+import org.preesm.model.slam.ComNode;
+import org.preesm.model.slam.Component;
+import org.preesm.model.slam.ComponentInstance;
+
 /**
  *
  * @author anmorvan
@@ -18,7 +22,7 @@ public class RouteCostEvaluator {
     long cost = 0;
     // Iterating the route and incrementing transfer cost
     for (final AbstractRouteStep step : route) {
-      cost += step.getTransferCost(transferSize);
+      cost += getTransferCost(step, transferSize);
     }
     return cost;
   }
@@ -31,20 +35,47 @@ public class RouteCostEvaluator {
    * @return the transfer cost
    */
   public static final long getTransferCost(final AbstractRouteStep routeStep, final long transfersSize) {
-    // TODO
-    return 0;
+    return new RouteStepCostEvaluator(transfersSize).doSwitch(routeStep);
   }
 
   /**
-   * Returns the longest time a contention node needs to transfer the data.
    *
-   * @param transfersSize
-   *          the transfers size
-   * @return the worst transfer time
+   * TODO : make a Ecore switch
+   *
+   * @author anmorvan
+   *
    */
-  public long getWorstTransferTime(long transfersSize) {
-    // TODO
-    return 0;
+  private static class RouteStepCostEvaluator {
+
+    private long transferSize;
+
+    RouteStepCostEvaluator(final long transferSize) {
+      this.transferSize = transferSize;
+    }
+
+    public long doSwitch(Object o) {
+      if (o instanceof MessageRouteStep) {
+        return caseMessageRouteStep((MessageRouteStep) o);
+      }
+      return -1L;
+    }
+
+    public long caseMessageRouteStep(final MessageRouteStep msg) {
+      long time = 0;
+      for (final ComponentInstance node : msg.getNodes()) {
+        final Component def = node.getComponent();
+        if (def instanceof ComNode) {
+          final ComNode comNode = (ComNode) def;
+          time = Math.max(time, (long) (transferSize / comNode.getSpeed()));
+        }
+      }
+
+      // No zero transfer time is alloweds
+      if (time <= 0) {
+        time = 1;
+      }
+      return time;
+    }
   }
 
 }

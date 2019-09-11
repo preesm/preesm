@@ -54,6 +54,7 @@ import org.preesm.model.slam.ComponentInstance;
 import org.preesm.model.slam.Dma;
 import org.preesm.model.slam.route.AbstractRouteStep;
 import org.preesm.model.slam.route.DmaRouteStep;
+import org.preesm.model.slam.route.RouteCostEvaluator;
 
 /**
  * Class responsible to generate the suited vertices while simulating a dma communication.
@@ -119,7 +120,7 @@ public class DmaComRouterImplementer extends CommunicationRouterImplementer {
       if (type == CommunicationRouter.TRANSFER_TYPE) {
         // All the transfers along the path have the same time: the time
         // to transfer the data on the slowest contention node
-        final long transferTime = dmaStep.getTransferCost(edge.getInit().getDataSize());
+        final long transferTime = RouteCostEvaluator.getTransferCost(dmaStep, edge.getInit().getDataSize());
         final List<ComponentInstance> nodes = dmaStep.getContentionNodes();
         AddTransferVertexTransaction transaction = null;
 

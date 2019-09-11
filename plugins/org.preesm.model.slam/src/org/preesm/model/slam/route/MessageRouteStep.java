@@ -39,7 +39,6 @@ package org.preesm.model.slam.route;
 import java.util.ArrayList;
 import java.util.List;
 import org.preesm.model.slam.ComNode;
-import org.preesm.model.slam.Component;
 import org.preesm.model.slam.ComponentInstance;
 import org.preesm.model.slam.impl.ComNodeImpl;
 
@@ -133,33 +132,6 @@ public class MessageRouteStep extends AbstractRouteStep {
    */
   public List<ComponentInstance> getNodes() {
     return this.nodes;
-  }
-
-  /**
-   * Returns the longest time a node needs to transfer the data.
-   *
-   * @param transfersSize
-   *          the transfers size
-   * @return the worst transfer time
-   */
-  @Override
-  public final long getTransferCost(final long transfersSize) {
-    long time = 0;
-
-    for (final ComponentInstance node : this.nodes) {
-      final Component def = node.getComponent();
-      if (def instanceof ComNode) {
-        final ComNode comNode = (ComNode) def;
-        time = Math.max(time, (long) (transfersSize / comNode.getSpeed()));
-      }
-    }
-
-    // No zero transfer time is alloweds
-    if (time <= 0) {
-      time = 1;
-    }
-
-    return time;
   }
 
   @Override

@@ -53,6 +53,7 @@ import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.model.slam.ComponentInstance;
 import org.preesm.model.slam.route.AbstractRouteStep;
 import org.preesm.model.slam.route.MessageRouteStep;
+import org.preesm.model.slam.route.RouteCostEvaluator;
 
 /**
  * Class responsible to generate the suited vertices while simulating a message communication.
@@ -115,7 +116,7 @@ public class MessageComRouterImplementer extends CommunicationRouterImplementer 
       final MessageRouteStep messageStep = ((MessageRouteStep) routeStep);
       // All the transfers along the path have the same time: the time
       // to transfer the data on the slowest contention node
-      final long transferTime = messageStep.getTransferCost(edge.getInit().getDataSize());
+      final long transferTime = RouteCostEvaluator.getTransferCost(messageStep, edge.getInit().getDataSize());
 
       // Adding the transfers of a message route step
       if (type == CommunicationRouter.TRANSFER_TYPE) {

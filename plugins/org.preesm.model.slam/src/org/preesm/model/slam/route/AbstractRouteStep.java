@@ -134,15 +134,6 @@ public abstract class AbstractRouteStep implements CloneableProperty<AbstractRou
    */
   public abstract String getName();
 
-  /**
-   * Evaluates the cost of a data transfer with size transferSize. This cost can include overheads, involvements...
-   *
-   * @param transfersSize
-   *          the transfers size
-   * @return the transfer cost
-   */
-  public abstract long getTransferCost(long transfersSize);
-
   @Override
   public abstract AbstractRouteStep copy();
 
