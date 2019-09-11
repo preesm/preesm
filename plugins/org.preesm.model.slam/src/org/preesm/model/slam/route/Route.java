@@ -51,12 +51,6 @@ import org.preesm.model.slam.ComponentInstance;
  */
 public class Route {
 
-  /** ID used to reference the element in a property bean. */
-  public static final String PROPERTY_BEAN_NAME = "route";
-
-  /** The Constant averageTransfer. */
-  public static final int AVG_TRANSFER = 1000;
-
   private final List<AbstractRouteStep> routeSteps = new ArrayList<>();
 
   /**
