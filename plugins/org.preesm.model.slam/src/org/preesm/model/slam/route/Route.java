@@ -89,13 +89,6 @@ public class Route {
   }
 
   /**
-   * Instantiates a new route.
-   */
-  public Route() {
-    super();
-  }
-
-  /**
    * Returns true if each operator in the route appears only once.
    *
    * @return true, if is single appearance
