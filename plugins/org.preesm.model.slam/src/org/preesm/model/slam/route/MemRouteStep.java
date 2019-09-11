@@ -108,11 +108,6 @@ public class MemRouteStep extends MessageRouteStep {
     return trace;
   }
 
-  @Override
-  public MemRouteStep copy() {
-    return new MemRouteStep(getSender(), getNodes(), getReceiver(), this.mem, this.ramNodeIndex);
-  }
-
   /**
    * Returns the longest time a contention node needs to transfer the data before the RAM in the route steps.
    *

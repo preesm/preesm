@@ -103,9 +103,4 @@ public class DmaRouteStep extends MessageRouteStep {
     trace += "[" + this.dma + "]}";
     return trace;
   }
-
-  @Override
-  public MessageRouteStep copy() {
-    return new DmaRouteStep(this);
-  }
 }

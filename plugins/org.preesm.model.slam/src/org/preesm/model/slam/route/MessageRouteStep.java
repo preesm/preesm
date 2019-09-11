@@ -139,10 +139,4 @@ public class MessageRouteStep extends AbstractRouteStep {
     trace.append("-> " + getReceiver().toString() + "}");
     return trace.toString();
   }
-
-  @Override
-  public MessageRouteStep copy() {
-    return new MessageRouteStep(getSender(), this.nodes, getReceiver());
-  }
-
 }

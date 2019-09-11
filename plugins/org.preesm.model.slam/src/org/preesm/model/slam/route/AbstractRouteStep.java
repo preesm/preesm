@@ -37,7 +37,6 @@
  */
 package org.preesm.model.slam.route;
 
-import org.preesm.commons.CloneableProperty;
 import org.preesm.model.slam.ComponentInstance;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -47,7 +46,7 @@ import org.w3c.dom.Element;
  *
  * @author mpelcat
  */
-public abstract class AbstractRouteStep implements CloneableProperty<AbstractRouteStep> {
+public abstract class AbstractRouteStep {
 
   public static final String MEM_TYPE  = "RamRouteStep";
   public static final String DMA_TYPE  = "DmaRouteStep";
@@ -133,9 +132,6 @@ public abstract class AbstractRouteStep implements CloneableProperty<AbstractRou
    * @return the name
    */
   public abstract String getName();
-
-  @Override
-  public abstract AbstractRouteStep copy();
 
   /**
    * Appends the route step informations to a dom3 xml file.
