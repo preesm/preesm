@@ -51,6 +51,10 @@ package org.preesm.model.slam
 import org.eclipse.emf.common.util.ECollections
 import org.preesm.model.slam.utils.LexicographicComponentInstanceComparator
 import org.preesm.commons.exceptions.PreesmRuntimeException
+import java.util.Set
+import java.util.LinkedHashSet
+import org.preesm.model.slam.route.RoutePrinter
+import java.util.ArrayList
 
 // !!! This is needed as of the current versions of xcore/xtext
 // For some reason when using the default String/... (i.e. without the following)
@@ -262,21 +266,116 @@ enum SlamRouteStepType {
 
 class SlamRoute {
 	op ComponentInstance getSource() {
-		return routeSteps.get(0).source
+		return routeSteps.get(0).sender
 	}
 	op ComponentInstance getTarget() {
-		return routeSteps.get(routeSteps.size - 1).target
+		return routeSteps.get(routeSteps.size - 1).receiver
 	}
 	// Ordered list of steps. Must not be empty
-	contains SlamRouteStep[1..*] routeSteps
+  contains SlamRouteStep[1..*] routeSteps
+
+
+  // Returns true if each operator in the route appears only once.
+  op boolean isSingleAppearance() {
+    var boolean isIt = true
+    val Set<ComponentInstance> opSet = new LinkedHashSet()
+    // Iterating the route and testing number of occurences in sender
+    for (SlamRouteStep step : routeSteps) {
+      if (opSet.contains(step.sender)) {
+        isIt = false;
+      }
+      opSet.add(step.sender);
+    }
+    // Testing last step receiver
+    if (opSet.contains(routeSteps.get(routeSteps.size() - 1).receiver)) {
+      isIt = false;
+    }
+    return isIt;
+  }
+	op String toString() {
+		return RoutePrinter.print(this);
+	}
+
 }
 
-class SlamRouteStep {
+interface SlamRouteStep {
 	// Processing Element responsible for forwarding
-	refers ComponentInstance source
-	refers ComponentInstance target
-	// Communication node common to source and target operators used to share the data
-	refers ComponentInstance communicationNode
-	// Optional enabler to trigger (to send). Null if no enabler are used in this step
-	refers ComponentInstance enabler
+	refers ComponentInstance sender
+	refers ComponentInstance receiver
+
+	op SlamRouteStepType getType()
+
+	op String toString() {
+		return RoutePrinter.print(this);
+	}
+
 }
+
+class SlamMessageRouteStep extends SlamRouteStep {
+	// Communication nodes separating the sender and the receiver
+	refers ComponentInstance[] nodes
+
+	op SlamRouteStepType getType() {
+		return SlamRouteStepType.NODE_TYPE;
+	}
+
+  op ComponentInstance[] getContentionNodes() {
+    return nodes.filter[it.component instanceof ComNode && !((it.component as ComNode)).isParallel()].toEList.unmodifiableEList
+  }
+}
+
+class SlamDMARouteStep extends SlamMessageRouteStep {
+	// Communication nodes separating the sender and the receiver
+	refers ComponentInstance dma
+
+	op SlamRouteStepType getType() {
+		return SlamRouteStepType.DMA_TYPE;
+	}
+}
+
+class SlamMemoryRouteStep extends SlamMessageRouteStep {
+	refers ComponentInstance memory
+  	int ramNodeIndex = "-1"
+
+	op SlamRouteStepType getType() {
+		return SlamRouteStepType.MEM_TYPE;
+	}
+
+  /**
+   * Gets the sender side contention nodes.
+   *
+   * @return the sender side contention nodes
+   */
+  op ComponentInstance[] getSenderSideContentionNodes() {
+    val ComponentInstance[] contentionNodes = new ArrayList()
+    for (var i = 0; i <= this.ramNodeIndex; i++) {
+      val ComponentInstance node = this.nodes.get(i)
+      if (!(node.getComponent() as ComNode).isParallel()) {
+        contentionNodes.add(node)
+      }
+    }
+    return contentionNodes.toEList.unmodifiableEList
+  }
+
+  /**
+   * Gets the receiver side contention nodes.
+   *
+   * @return the receiver side contention nodes
+   */
+  op ComponentInstance[] getReceiverSideContentionNodes() {
+    val ComponentInstance[] contentionNodes = new ArrayList()
+    for (var i = this.ramNodeIndex; i < this.nodes.size(); i++) {
+      val ComponentInstance node = this.nodes.get(i)
+      if (!(node.getComponent() as ComNode).isParallel()) {
+        contentionNodes.add(node)
+      }
+    }
+    return contentionNodes.toEList.unmodifiableEList
+  }
+
+
+}
+
+
+
+
