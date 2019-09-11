@@ -108,11 +108,6 @@ public class MemRouteStep extends MessageRouteStep {
     return trace;
   }
 
-  /*
-   * (non-Javadoc)
-   *
-   * @see org.ietr.preesm.core.architecture.route.MessageRouteStep#clone()
-   */
   @Override
   public MemRouteStep copy() {
     return new MemRouteStep(getSender(), getNodes(), getReceiver(), this.mem, this.ramNodeIndex);

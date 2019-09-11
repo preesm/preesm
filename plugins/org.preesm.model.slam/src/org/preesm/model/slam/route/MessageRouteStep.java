@@ -38,6 +38,7 @@ package org.preesm.model.slam.route;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 import org.preesm.model.slam.ComNode;
 import org.preesm.model.slam.ComponentInstance;
 import org.preesm.model.slam.impl.ComNodeImpl;
@@ -66,7 +67,6 @@ public class MessageRouteStep extends AbstractRouteStep {
       final ComponentInstance receiver) {
     super(sender, receiver);
     this.nodes = new ArrayList<>();
-
     for (final ComponentInstance node : inNodes) {
       this.nodes.add(node);
     }
@@ -116,13 +116,9 @@ public class MessageRouteStep extends AbstractRouteStep {
    * @return the contention nodes
    */
   public List<ComponentInstance> getContentionNodes() {
-    final List<ComponentInstance> contentionNodes = new ArrayList<>();
-    for (final ComponentInstance node : this.nodes) {
-      if (node.getComponent() instanceof ComNodeImpl && !((ComNode) node.getComponent()).isParallel()) {
-        contentionNodes.add(node);
-      }
-    }
-    return contentionNodes;
+    return this.nodes.stream()
+        .filter(node -> node.getComponent() instanceof ComNodeImpl && !((ComNode) node.getComponent()).isParallel())
+        .collect(Collectors.toList());
   }
 
   /**
