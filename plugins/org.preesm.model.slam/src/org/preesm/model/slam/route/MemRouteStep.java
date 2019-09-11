@@ -49,10 +49,12 @@ import org.preesm.model.slam.Mem;
  */
 public class MemRouteStep extends MessageRouteStep {
 
-  /** The mem. */
   private final Mem mem;
 
-  /** Index of the communication node connected to the shared ram. */
+  /**
+   * Index of the communication node connected to the shared ram. This is the index of the ComponentInstance in
+   * {@link MessageRouteStep.nodes}
+   */
   private int ramNodeIndex = -1;
 
   /**
@@ -76,30 +78,15 @@ public class MemRouteStep extends MessageRouteStep {
     this.ramNodeIndex = ramNodeIndex;
   }
 
-  /**
-   * The route step type determines how the communication will be simulated.
-   *
-   * @return the type
-   */
   @Override
   public String getType() {
     return MEM_TYPE;
   }
 
-  /**
-   * Gets the mem.
-   *
-   * @return the mem
-   */
   public Mem getMem() {
     return this.mem;
   }
 
-  /*
-   * (non-Javadoc)
-   *
-   * @see org.ietr.preesm.core.architecture.route.MessageRouteStep#toString()
-   */
   @Override
   public String toString() {
     String trace = super.toString();

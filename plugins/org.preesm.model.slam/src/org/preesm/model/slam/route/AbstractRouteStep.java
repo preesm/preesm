@@ -117,18 +117,4 @@ public abstract class AbstractRouteStep {
    */
   public abstract String getType();
 
-  /**
-   * The id is given to code generation. It selects the communication functions to use
-   *
-   * @return the id
-   */
-  public abstract String getId();
-
-  /**
-   * The name of the step node is retrieved.
-   *
-   * @return the name
-   */
-  public abstract String getName();
-
 }

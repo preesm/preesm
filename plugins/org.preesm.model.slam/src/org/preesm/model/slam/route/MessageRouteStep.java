@@ -82,50 +82,12 @@ public class MessageRouteStep extends AbstractRouteStep {
     return NODE_TYPE;
   }
 
-  /**
-   * The id is given to code generation. It selects the communication functions to use
-   *
-   * @return the id
-   */
-  @Override
-  public String getId() {
-    final StringBuilder id = new StringBuilder();
-    for (final ComponentInstance node : this.nodes) {
-      id.append(node.getComponent().getVlnv().getName());
-    }
-    return id.toString();
-  }
-
-  /**
-   * The name of the step node is retrieved.
-   *
-   * @return the name
-   */
-  @Override
-  public String getName() {
-    final StringBuilder name = new StringBuilder();
-    for (final ComponentInstance node : this.nodes) {
-      name.append(node.getInstanceName());
-    }
-    return name.toString();
-  }
-
-  /**
-   * Gets the contention nodes.
-   *
-   * @return the contention nodes
-   */
   public List<ComponentInstance> getContentionNodes() {
     return this.nodes.stream()
         .filter(node -> node.getComponent() instanceof ComNodeImpl && !((ComNode) node.getComponent()).isParallel())
         .collect(Collectors.toList());
   }
 
-  /**
-   * Gets the nodes.
-   *
-   * @return the nodes
-   */
   public List<ComponentInstance> getNodes() {
     return this.nodes;
   }

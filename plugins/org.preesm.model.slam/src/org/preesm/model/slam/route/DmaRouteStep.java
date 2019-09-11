@@ -47,7 +47,6 @@ import org.preesm.model.slam.Dma;
  */
 public class DmaRouteStep extends MessageRouteStep {
 
-  /** The dma. */
   private final Dma dma;
 
   /**
@@ -72,30 +71,15 @@ public class DmaRouteStep extends MessageRouteStep {
     this(other.getSender(), other.getNodes(), other.getReceiver(), other.dma);
   }
 
-  /**
-   * The route step type determines how the communication will be simulated.
-   *
-   * @return the type
-   */
   @Override
   public String getType() {
     return DMA_TYPE;
   }
 
-  /**
-   * Gets the dma.
-   *
-   * @return the dma
-   */
   public Dma getDma() {
     return this.dma;
   }
 
-  /*
-   * (non-Javadoc)
-   *
-   * @see org.ietr.preesm.core.architecture.route.MessageRouteStep#toString()
-   */
   @Override
   public String toString() {
     String trace = super.toString();
