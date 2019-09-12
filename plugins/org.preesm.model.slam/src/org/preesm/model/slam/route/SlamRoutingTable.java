@@ -38,7 +38,6 @@
 package org.preesm.model.slam.route;
 
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -66,7 +65,7 @@ import org.preesm.model.slam.utils.SlamUserFactory;
 public class SlamRoutingTable {
 
   /**
-   * A couple of operators to which the routes are linked.
+   * A couple of operators to which the routes are linked. Used a the key in Maps
    */
   private class OperatorCouple extends MutablePair<ComponentInstance, ComponentInstance> {
     private static final long serialVersionUID = -451571160460519876L;
@@ -77,34 +76,8 @@ public class SlamRoutingTable {
 
     @Override
     public String toString() {
-      return "(" + getOp1() + "," + getOp2() + ")";
+      return "(" + getLeft() + "," + getRight() + ")";
     }
-
-    ComponentInstance getOp1() {
-      return getLeft();
-    }
-
-    ComponentInstance getOp2() {
-      return getRight();
-    }
-  }
-
-  /**
-   * A route transfer comparator that never returns 0.
-   */
-  private class RouteComparator implements Comparator<SlamRoute> {
-
-    @Override
-    public int compare(final SlamRoute o1, final SlamRoute o2) {
-      final double difference = RouteCostEvaluator.evaluateTransferCost(o1, 1)
-          - RouteCostEvaluator.evaluateTransferCost(o2, 1);
-      if (difference >= 0) {
-        return 1;
-      } else {
-        return -1;
-      }
-    }
-
   }
 
   /**
@@ -115,7 +88,15 @@ public class SlamRoutingTable {
     private static final long serialVersionUID = -851695207011182681L;
 
     RouteList() {
-      super(new RouteComparator());
+      super((o1, o2) -> {
+        final double difference = RouteCostEvaluator.evaluateTransferCost(o1, 1)
+            - RouteCostEvaluator.evaluateTransferCost(o2, 1);
+        if (difference >= 0) {
+          return 1;
+        } else {
+          return -1;
+        }
+      });
     }
 
     @Override
