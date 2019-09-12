@@ -43,6 +43,7 @@ import org.preesm.model.slam.SlamDMARouteStep;
 import org.preesm.model.slam.SlamMemoryRouteStep;
 import org.preesm.model.slam.SlamMessageRouteStep;
 import org.preesm.model.slam.SlamPackage;
+import org.preesm.model.slam.SlamRoute;
 import org.preesm.model.slam.SlamRouteStep;
 import org.preesm.model.slam.VLNV;
 import org.preesm.model.slam.impl.SlamFactoryImpl;
@@ -69,6 +70,29 @@ public class SlamUserFactory extends SlamFactoryImpl {
     final Component component = (Component) super.create(eClass);
     component.setVlnv(name);
     return component;
+  }
+
+  /**
+   */
+  public SlamRoute createSlamRoute(final SlamRouteStep step) {
+    final SlamRoute res = super.createSlamRoute();
+    res.getRouteSteps().add(step);
+    return res;
+  }
+
+  /**
+   * Instantiates a new route.
+   *
+   * @param r1
+   *          the r 1
+   * @param r2
+   *          the r 2
+   */
+  public SlamRoute createSlamRoute(final SlamRoute r1, final SlamRoute r2) {
+    final SlamRoute res = super.createSlamRoute();
+    res.getRouteSteps().addAll(r1.getRouteSteps());
+    res.getRouteSteps().addAll(r2.getRouteSteps());
+    return res;
   }
 
   /**
