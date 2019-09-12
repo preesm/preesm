@@ -73,19 +73,15 @@ public class DeleteParameterizableFeature extends DefaultDeleteFeature {
   }
 
   /**
-   * Method to delete the {@link Dependency} connected to the deleted {@link Parameterizable} element.
-   *
-   * @param cba
-   *          the {@link ChopboxAnchor} of the deleted element
+   * Fill the map with connections to delete.
+   * 
+   * @param delFeatures
+   *          Map.
+   * @param connecs
+   *          Connections to delete.
    */
-  protected void deleteConnectedConnection(final Anchor cba) {
-    // First, the list of connections is scanned in order to fill a map with
-    // the deleteFeatures and their context.
-    Map<IDeleteFeature, IDeleteContext> delFeatures;
-    delFeatures = new LinkedHashMap<>();
-    final EList<Connection> connections = cba.getIncomingConnections();
-    connections.addAll(cba.getOutgoingConnections());
-    for (final Connection connect : connections) {
+  protected void fillDeleteMap(Map<IDeleteFeature, IDeleteContext> delFeatures, EList<Connection> connecs) {
+    for (final Connection connect : connecs) {
       final DeleteContext delCtxt = new DeleteContext(connect);
       delCtxt.setMultiDeleteInfo(null);
       final IDeleteFeature delFeature = getFeatureProvider().getDeleteFeature(delCtxt);
@@ -96,6 +92,21 @@ public class DeleteParameterizableFeature extends DefaultDeleteFeature {
         delFeatures.put(delFeature, delCtxt);
       }
     }
+  }
+
+  /**
+   * Method to delete the {@link Dependency} connected to the deleted {@link Parameterizable} element.
+   *
+   * @param cba
+   *          the {@link ChopboxAnchor} of the deleted element
+   */
+  protected void deleteConnectedConnection(final Anchor cba) {
+    // First, the list of connections is scanned in order to fill a map with
+    // the deleteFeatures and their context.
+    Map<IDeleteFeature, IDeleteContext> delFeatures;
+    delFeatures = new LinkedHashMap<>();
+    fillDeleteMap(delFeatures, cba.getOutgoingConnections());
+    fillDeleteMap(delFeatures, cba.getIncomingConnections());
 
     // Actually delete
     for (final Entry<IDeleteFeature, IDeleteContext> deleteEntry : delFeatures.entrySet()) {

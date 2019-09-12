@@ -105,6 +105,22 @@ public class CreateFifoFeature extends AbstractCreateConnectionFeature {
     // True if the connection is created between an input and an output port
     final Port target = getTargetPort(context, context.getTargetAnchor());
 
+    // False if the target is an outputPort
+    if ((target != null) && (target instanceof DataOutputPort)) {
+      // Create tooltip message
+      PiMMUtil.setToolTip(getFeatureProvider(), context.getTargetAnchor().getGraphicsAlgorithm(), getDiagramBehavior(),
+          "A FIFO cannot end at an output port");
+      return false;
+    }
+
+    // False if the target is a config input port
+    if ((target != null) && (target instanceof ConfigInputPort)) {
+      // Create tooltip message
+      PiMMUtil.setToolTip(getFeatureProvider(), context.getTargetAnchor().getGraphicsAlgorithm(), getDiagramBehavior(),
+          "A FIFO cannot end at an config. input port");
+      return false;
+    }
+
     final boolean targetOK = ((target != null) && (target instanceof DataInputPort));
     if (targetOK) {
       // Check that no Fifo is connected to the ports
@@ -120,15 +136,17 @@ public class CreateFifoFeature extends AbstractCreateConnectionFeature {
       final AbstractActor targetActor = targetPort.getContainingActor();
       if (targetActor instanceof DelayActor) {
         final DataOutputPort source = (DataOutputPort) getSourcePort(context, context.getSourceAnchor());
-        final AbstractActor sourceActor = source.getContainingActor();
-        if (sourceActor instanceof DelayActor && sourceActor.getName() == targetActor.getName()) {
-          PiMMUtil.setToolTip(getFeatureProvider(), context.getTargetAnchor().getGraphicsAlgorithm(),
-              getDiagramBehavior(), "A delay cannot be connected to itself.");
-          return false;
+        if (source != null) {
+          final AbstractActor sourceActor = source.getContainingActor();
+          if (sourceActor instanceof DelayActor && sourceActor == targetActor) {
+            PiMMUtil.setToolTip(getFeatureProvider(), context.getSourcePictogramElement().getGraphicsAlgorithm(),
+                getDiagramBehavior(), "A delay cannot be connected to itself.");
+            return false;
+          }
         }
         final Delay delay = ((DelayActor) targetActor).getLinkedDelay();
         if (delay.getLevel().equals(PersistenceLevel.LOCAL) || delay.getLevel().equals(PersistenceLevel.PERMANENT)) {
-          PiMMUtil.setToolTip(getFeatureProvider(), context.getTargetAnchor().getGraphicsAlgorithm(),
+          PiMMUtil.setToolTip(getFeatureProvider(), context.getTargetPictogramElement().getGraphicsAlgorithm(),
               getDiagramBehavior(),
               "A delay with local or permanent data tokens persistence can not have a setter actor.");
           return false;
@@ -136,22 +154,6 @@ public class CreateFifoFeature extends AbstractCreateConnectionFeature {
       }
 
       return true;
-    }
-
-    // False if the target is an outputPort
-    if ((target != null) && (target instanceof DataOutputPort)) {
-      // Create tooltip message
-      PiMMUtil.setToolTip(getFeatureProvider(), context.getTargetAnchor().getGraphicsAlgorithm(), getDiagramBehavior(),
-          "A FIFO cannot end at an output port");
-      return false;
-    }
-
-    // False if the target is a config input port
-    if ((target != null) && (target instanceof ConfigInputPort)) {
-      // Create tooltip message
-      PiMMUtil.setToolTip(getFeatureProvider(), context.getTargetAnchor().getGraphicsAlgorithm(), getDiagramBehavior(),
-          "A FIFO cannot end at an config. input port");
-      return false;
     }
 
     // Check if the target can create a port
@@ -322,6 +324,20 @@ public class CreateFifoFeature extends AbstractCreateConnectionFeature {
     // not)
     Anchor sourceAnchor = context.getSourceAnchor();
     final Port source = getSourcePort(context, sourceAnchor);
+
+    if ((source != null) && ((source instanceof DataInputPort) || (source instanceof ConfigInputPort))) {
+      // Create tooltip message
+      PiMMUtil.setToolTip(getFeatureProvider(), context.getSourceAnchor().getGraphicsAlgorithm(), getDiagramBehavior(),
+          "A FIFO cannot start at an input port");
+      return false;
+    }
+
+    // Also true if the source is a vertex that can create ports
+    if (CreateFifoFeature.canCreatePort(context.getSourcePictogramElement(), getFeatureProvider(),
+        PortKind.DATA_OUTPUT) != null) {
+      return true;
+    }
+
     if ((source != null) && (source instanceof DataOutputPort)) {
       // Check that no Fifo is connected to the ports
       if (((DataOutputPort) source).getOutgoingFifo() == null) {
@@ -335,13 +351,14 @@ public class CreateFifoFeature extends AbstractCreateConnectionFeature {
           // fifo and one or several dependencies is not a problem
           // since each connection has a very precise semantics.
         }
+
         // we need to check if we start from a delay that it is allowed
         final DataOutputPort sourcePort = (DataOutputPort) source;
         final AbstractActor sourceActor = sourcePort.getContainingActor();
         if (sourceActor instanceof DelayActor) {
           final Delay delay = ((DelayActor) sourceActor).getLinkedDelay();
           if (delay.getLevel().equals(PersistenceLevel.LOCAL) || delay.getLevel().equals(PersistenceLevel.PERMANENT)) {
-            PiMMUtil.setToolTip(getFeatureProvider(), context.getSourceAnchor().getGraphicsAlgorithm(),
+            PiMMUtil.setToolTip(getFeatureProvider(), context.getSourcePictogramElement().getGraphicsAlgorithm(),
                 getDiagramBehavior(),
                 "A delay with local or permanent data tokens persistence can not have a getter actor.");
             return false;
@@ -356,18 +373,6 @@ public class CreateFifoFeature extends AbstractCreateConnectionFeature {
       }
     }
 
-    if ((source != null) && ((source instanceof DataInputPort) || (source instanceof ConfigInputPort))) {
-      // Create tooltip message
-      PiMMUtil.setToolTip(getFeatureProvider(), context.getSourceAnchor().getGraphicsAlgorithm(), getDiagramBehavior(),
-          "A FIFO cannot start at an input port");
-      return false;
-    }
-
-    // Also true if the source is a vertex that can create ports
-    if (CreateFifoFeature.canCreatePort(context.getSourcePictogramElement(), getFeatureProvider(),
-        PortKind.DATA_OUTPUT) != null) {
-      return true;
-    }
     return false;
   }
 

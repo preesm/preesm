@@ -87,13 +87,6 @@ public class FifoCycleDetector extends PiMMSwitch<Void> {
   protected Set<Fifo> ignoredFifos;
 
   /**
-   * Default constructor. Assume fast detection is true. (i.e. the detection will stop at the first cycle detected)
-   */
-  public FifoCycleDetector() {
-    this(true);
-  }
-
-  /**
    * Instantiates a new fifo cycle detector.
    *
    * @param fastDetection
@@ -306,7 +299,10 @@ public class FifoCycleDetector extends PiMMSwitch<Void> {
 
     // Find a list of FIFO between a pair of actor with delays on all FIFOs
     List<Fifo> feedbackFifos = null;
+    List<Integer> feedbackFifosIndex = new ArrayList<>();
+    int indexFF = -1;
     for (final List<Fifo> cycleFifos : cyclesFifos) {
+      indexFF += 1;
       boolean hasDelays = true;
       for (final Fifo fifo : cycleFifos) {
         hasDelays &= (fifo.getDelay() != null);
@@ -316,15 +312,28 @@ public class FifoCycleDetector extends PiMMSwitch<Void> {
         // Keep the shortest list of feedback delay
         feedbackFifos = ((feedbackFifos == null) || (feedbackFifos.size() > cycleFifos.size())) ? cycleFifos
             : feedbackFifos;
+        feedbackFifosIndex.add(indexFF);
       }
     }
-    if (feedbackFifos != null) {
+    final List<AbstractActor> actorsWithEntries = new ArrayList<>();
+    final List<AbstractActor> actorsWithExits = new ArrayList<>();
+
+    FifoBreakingCycleDetector.computeExitAndEntries(cycle, cyclesFifos, actorsWithEntries, actorsWithExits);
+    int breakingFifoIndex = FifoBreakingCycleDetector.retrieveBreakingFifoWhenDifficult(cycle, actorsWithEntries,
+        actorsWithExits);
+
+    if (feedbackFifosIndex.contains(breakingFifoIndex)) {
+      return cyclesFifos.get(breakingFifoIndex);
+    } else if (feedbackFifos != null) {
       return feedbackFifos;
-    } else {
-      // If no feedback fifo with delays were found. Select a list with a
-      // small number of fifos
-      cyclesFifos.sort((l1, l2) -> l1.size() - l2.size());
-      return cyclesFifos.get(0);
+    } else if (breakingFifoIndex >= 0) {
+      return cyclesFifos.get(breakingFifoIndex);
     }
+
+    // If no feedback fifo with delays were found. Select a list with a
+    // small number of fifos
+    cyclesFifos.sort((l1, l2) -> l1.size() - l2.size());
+    return cyclesFifos.get(0);
   }
+
 }

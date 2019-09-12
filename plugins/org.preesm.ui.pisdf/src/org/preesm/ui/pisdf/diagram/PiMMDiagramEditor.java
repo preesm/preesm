@@ -89,4 +89,5 @@ public class PiMMDiagramEditor extends DiagramEditor implements IGotoMarker {
       getWorkbenchPart().getSite().getPage().bringToTop(propSheet);
     }
   }
+
 }

@@ -47,6 +47,7 @@ import org.eclipse.graphiti.mm.pictograms.ContainerShape;
 import org.eclipse.graphiti.mm.pictograms.PictogramElement;
 import org.eclipse.graphiti.mm.pictograms.Shape;
 import org.preesm.model.pisdf.AbstractVertex;
+import org.preesm.model.pisdf.Delay;
 
 // TODO: Auto-generated Javadoc
 /**
@@ -126,13 +127,17 @@ public class UpdateAbstractVertexFeature extends AbstractUpdateFeature {
     if (bo instanceof AbstractVertex) {
       final AbstractVertex vertex = (AbstractVertex) bo;
       businessName = vertex.getName();
+      // if it is a delay actor, no need to do that since name is not printed.
+      if (bo instanceof Delay) {
+        return Reason.createFalseReason();
+      }
     }
 
     // update needed, if names are different
     final boolean updateNameNeeded = (((pictogramName == null) && (businessName != null))
         || ((pictogramName != null) && !pictogramName.equals(businessName)));
     if (updateNameNeeded) {
-      return Reason.createTrueReason("Name is out of date\nNew name: " + businessName);
+      return Reason.createTrueReason("Name <" + pictogramName + "> is out of date\nNew name: " + businessName);
     }
 
     return Reason.createFalseReason();
