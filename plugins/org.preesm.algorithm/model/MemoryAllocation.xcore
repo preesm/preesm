@@ -68,10 +68,6 @@ interface Buffer {
 	op PhysicalBuffer getBank()
 }
 
-class DistributedBuffer extends Buffer {
-	refers Buffer[] distributedCopies
-}
-
 class PhysicalBuffer extends Buffer {
 	refers ComponentInstance memory
 	op PhysicalBuffer getBank() {
@@ -88,19 +84,37 @@ class LogicalBuffer extends Buffer {
 }
 
 class Allocation {
+	// memory banks used by this allocation
 	contains PhysicalBuffer[] physicalBuffers
+	// buffers allocated for the fifos
 	contains FifoAllocationEntry[] fifoAllocations
+	// Buffers allocated for the permanent and local delays. The values are pushed by the
+	// EndActor and poped by the InitActor. To get the buffer for an EndActor, get its
+	// init reference allocated buffer.
 	contains DelayAllocationEntry[] delayAllocations
 }
 
 class FifoAllocationEntry wraps java.util.Map$Entry {
 	refers Fifo key
+	refers FifoAllocation value
+}
+
+class FifoAllocation {
+	refers Buffer sourceBuffer
+	refers Buffer targetBuffer
+	// List of component instances (operators) used as proxy in the route
+	// and their allocated buffer to store the intermediate data to forward.
+	// Can be empty if the route does not use any proxy operator.
+	contains RouteBuffer[] routeBuffers
+}
+
+class RouteBuffer wraps java.util.Map$Entry {
+	// the proxy operator
+	refers ComponentInstance key
+	// the allocated buffer
 	refers Buffer value
 }
 
-/*
- *
- */
 class DelayAllocationEntry wraps java.util.Map$Entry {
 	refers InitActor key
 	refers Buffer value
