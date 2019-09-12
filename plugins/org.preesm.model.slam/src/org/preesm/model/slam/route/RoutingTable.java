@@ -125,24 +125,12 @@ public class RoutingTable {
    */
   private class RouteList extends ConcurrentSkipListSet<SlamRoute> {
 
-    /** The Constant serialVersionUID. */
     private static final long serialVersionUID = -851695207011182681L;
 
-    /**
-     * Instantiates a new route list.
-     *
-     * @param transferSize
-     *          the transfer size
-     */
     public RouteList(final long transferSize) {
       super(new RouteComparator(transferSize));
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see java.util.AbstractCollection#toString()
-     */
     @Override
     public String toString() {
       final StringBuilder sb = new StringBuilder("|");
