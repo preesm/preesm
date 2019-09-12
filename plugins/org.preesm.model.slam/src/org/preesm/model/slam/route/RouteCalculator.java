@@ -78,8 +78,8 @@ public class RouteCalculator {
    *
    */
   public static RouteCalculator getInstance(final Design archi, final long averageDataSize) {
-    if (RouteCalculator.instances.get(archi) == null) {
-      RouteCalculator.instances.put(archi, new RouteCalculator(archi, averageDataSize));
+    if (!RouteCalculator.instances.containsKey(archi)) {
+      recalculate(archi, averageDataSize);
     }
     return RouteCalculator.instances.get(archi);
   }
