@@ -94,8 +94,7 @@ public class RouteStepFactory {
     ComponentInstance dmaInst = null;
     for (final ComponentInstance node : nodes) {
       for (final Link i : archi.getLinks()) {
-        if (i.getSourceComponentInstance().getInstanceName().equals(node.getInstanceName())
-            || i.getDestinationComponentInstance().getInstanceName().equals(node.getInstanceName())) {
+        if (i.getSourceComponentInstance() == node || i.getDestinationComponentInstance() == node) {
           if (i.getSourceComponentInstance().getComponent() instanceof DmaImpl) {
             dmaInst = i.getSourceComponentInstance();
           }
@@ -103,10 +102,8 @@ public class RouteStepFactory {
             dmaInst = i.getDestinationComponentInstance();
           }
 
-          if (dmaInst != null) {
-            if (existSetup(archi, dmaInst, dmaSetup)) {
-              return dmaInst;
-            }
+          if (dmaInst != null && existSetup(archi, dmaInst, dmaSetup)) {
+            return dmaInst;
           }
         }
       }
@@ -128,8 +125,7 @@ public class RouteStepFactory {
     ComponentInstance ramInst = null;
     for (final ComponentInstance node : nodes) {
       for (final Link i : archi.getLinks()) {
-        if (i.getSourceComponentInstance().getInstanceName().equals(node.getInstanceName())
-            || i.getDestinationComponentInstance().getInstanceName().equals(node.getInstanceName())) {
+        if (i.getSourceComponentInstance() == node || i.getDestinationComponentInstance() == node) {
           if (i.getSourceComponentInstance().getComponent() instanceof MemImpl) {
             ramInst = i.getSourceComponentInstance();
           }
@@ -137,15 +133,14 @@ public class RouteStepFactory {
             ramInst = i.getDestinationComponentInstance();
           }
 
-          if (ramInst != null) {
-            if (existSetup(archi, ramInst, ramSetup)) {
-              return ramInst;
-            }
+          if (ramInst != null && existSetup(archi, ramInst, ramSetup)) {
+            return ramInst;
           }
         }
       }
     }
     return null;
+
   }
 
   /**
@@ -159,8 +154,7 @@ public class RouteStepFactory {
     ComponentInstance ramInst = null;
     for (final ComponentInstance node : nodes) {
       for (final Link i : archi.getLinks()) {
-        if (i.getSourceComponentInstance().getInstanceName().equals(node.getInstanceName())
-            || i.getDestinationComponentInstance().getInstanceName().equals(node.getInstanceName())) {
+        if (i.getSourceComponentInstance() == node || i.getDestinationComponentInstance() == node) {
           if (i.getSourceComponentInstance().getComponent() instanceof MemImpl) {
             ramInst = i.getSourceComponentInstance();
           }
@@ -189,8 +183,7 @@ public class RouteStepFactory {
   private static final boolean existSetup(final Design archi, final ComponentInstance cmp, final ComponentInstance op) {
 
     for (final Link i : archi.getLinks()) {
-      if (i.getSourceComponentInstance().getInstanceName().equals(op.getInstanceName())
-          && i.getDestinationComponentInstance().getInstanceName().equals(cmp.getInstanceName())
+      if (i.getSourceComponentInstance() == op && i.getDestinationComponentInstance() == cmp
           && (i instanceof ControlLink)) {
         return true;
       }
