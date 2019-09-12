@@ -40,9 +40,7 @@ import java.util.List;
 import org.preesm.model.slam.ComponentInstance;
 import org.preesm.model.slam.ControlLink;
 import org.preesm.model.slam.Design;
-import org.preesm.model.slam.Dma;
 import org.preesm.model.slam.Link;
-import org.preesm.model.slam.Mem;
 import org.preesm.model.slam.impl.DmaImpl;
 import org.preesm.model.slam.impl.MemImpl;
 
@@ -54,48 +52,6 @@ import org.preesm.model.slam.impl.MemImpl;
  */
 public class RouteStepFactory {
 
-  /** The archi. */
-  private Design archi = null;
-
-  /**
-   * Instantiates a new route step factory.
-   *
-   * @param archi
-   *          the archi
-   */
-  public RouteStepFactory(final Design archi) {
-    super();
-    this.archi = archi;
-  }
-
-  /**
-   * Generates the suited route steps from intermediate nodes.
-   *
-   * @param source
-   *          the source
-   * @param nodes
-   *          the nodes
-   * @param target
-   *          the target
-   * @return the route step
-   */
-  public AbstractRouteStep getRouteStep(final ComponentInstance source, final List<ComponentInstance> nodes,
-      final ComponentInstance target) {
-    AbstractRouteStep step = null;
-
-    final Dma dma = getDma(nodes, source);
-    final Mem mem = getRam(nodes, source);
-    if (dma != null) {
-      step = new DmaRouteStep(source, nodes, target, dma);
-    } else if (mem != null) {
-      step = new MemRouteStep(source, nodes, target, mem, getRamNodeIndex(nodes));
-    } else {
-      step = new MessageRouteStep(source, nodes, target);
-    }
-
-    return step;
-  }
-
   /**
    * Gets the dma corresponding to the step if any exists. The Dma must have a setup link with the source.
    *
@@ -105,12 +61,12 @@ public class RouteStepFactory {
    *          the dma setup
    * @return the dma
    */
-  private Dma getDma(final List<ComponentInstance> nodes, final ComponentInstance dmaSetup) {
+  public static final ComponentInstance getDma(final Design archi, final List<ComponentInstance> nodes,
+      final ComponentInstance dmaSetup) {
     ComponentInstance dmaInst = null;
     for (final ComponentInstance node : nodes) {
-      for (final Link i : this.archi.getLinks()) {
-        if (i.getSourceComponentInstance().getInstanceName().equals(node.getInstanceName())
-            || i.getDestinationComponentInstance().getInstanceName().equals(node.getInstanceName())) {
+      for (final Link i : archi.getLinks()) {
+        if (i.getSourceComponentInstance() == node || i.getDestinationComponentInstance() == node) {
           if (i.getSourceComponentInstance().getComponent() instanceof DmaImpl) {
             dmaInst = i.getSourceComponentInstance();
           }
@@ -118,10 +74,8 @@ public class RouteStepFactory {
             dmaInst = i.getDestinationComponentInstance();
           }
 
-          if (dmaInst != null) {
-            if (existSetup(dmaInst, dmaSetup)) {
-              return (Dma) dmaInst.getComponent();
-            }
+          if (dmaInst != null && existSetup(archi, dmaInst, dmaSetup)) {
+            return dmaInst;
           }
         }
       }
@@ -138,12 +92,12 @@ public class RouteStepFactory {
    *          the ram setup
    * @return the ram
    */
-  private Mem getRam(final List<ComponentInstance> nodes, final ComponentInstance ramSetup) {
+  public static final ComponentInstance getRam(final Design archi, final List<ComponentInstance> nodes,
+      final ComponentInstance ramSetup) {
     ComponentInstance ramInst = null;
     for (final ComponentInstance node : nodes) {
-      for (final Link i : this.archi.getLinks()) {
-        if (i.getSourceComponentInstance().getInstanceName().equals(node.getInstanceName())
-            || i.getDestinationComponentInstance().getInstanceName().equals(node.getInstanceName())) {
+      for (final Link i : archi.getLinks()) {
+        if (i.getSourceComponentInstance() == node || i.getDestinationComponentInstance() == node) {
           if (i.getSourceComponentInstance().getComponent() instanceof MemImpl) {
             ramInst = i.getSourceComponentInstance();
           }
@@ -151,15 +105,14 @@ public class RouteStepFactory {
             ramInst = i.getDestinationComponentInstance();
           }
 
-          if (ramInst != null) {
-            if (existSetup(ramInst, ramSetup)) {
-              return (Mem) ramInst.getComponent();
-            }
+          if (ramInst != null && existSetup(archi, ramInst, ramSetup)) {
+            return ramInst;
           }
         }
       }
     }
     return null;
+
   }
 
   /**
@@ -169,12 +122,11 @@ public class RouteStepFactory {
    *          the nodes
    * @return the ram node index
    */
-  private int getRamNodeIndex(final List<ComponentInstance> nodes) {
+  public static final int getRamNodeIndex(final Design archi, final List<ComponentInstance> nodes) {
     ComponentInstance ramInst = null;
     for (final ComponentInstance node : nodes) {
-      for (final Link i : this.archi.getLinks()) {
-        if (i.getSourceComponentInstance().getInstanceName().equals(node.getInstanceName())
-            || i.getDestinationComponentInstance().getInstanceName().equals(node.getInstanceName())) {
+      for (final Link i : archi.getLinks()) {
+        if (i.getSourceComponentInstance() == node || i.getDestinationComponentInstance() == node) {
           if (i.getSourceComponentInstance().getComponent() instanceof MemImpl) {
             ramInst = i.getSourceComponentInstance();
           }
@@ -200,11 +152,10 @@ public class RouteStepFactory {
    *          the op
    * @return true, if successful
    */
-  private boolean existSetup(final ComponentInstance cmp, final ComponentInstance op) {
+  private static final boolean existSetup(final Design archi, final ComponentInstance cmp, final ComponentInstance op) {
 
-    for (final Link i : this.archi.getLinks()) {
-      if (i.getSourceComponentInstance().getInstanceName().equals(op.getInstanceName())
-          && i.getDestinationComponentInstance().getInstanceName().equals(cmp.getInstanceName())
+    for (final Link i : archi.getLinks()) {
+      if (i.getSourceComponentInstance() == op && i.getDestinationComponentInstance() == cmp
           && (i instanceof ControlLink)) {
         return true;
       }

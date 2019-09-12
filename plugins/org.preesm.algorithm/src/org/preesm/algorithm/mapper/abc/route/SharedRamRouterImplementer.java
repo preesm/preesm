@@ -49,8 +49,9 @@ import org.preesm.algorithm.mapper.model.MapperDAGEdge;
 import org.preesm.algorithm.mapper.model.MapperDAGVertex;
 import org.preesm.algorithm.mapper.model.special.TransferVertex;
 import org.preesm.model.slam.ComponentInstance;
-import org.preesm.model.slam.route.AbstractRouteStep;
-import org.preesm.model.slam.route.MemRouteStep;
+import org.preesm.model.slam.SlamMemoryRouteStep;
+import org.preesm.model.slam.SlamRouteStep;
+import org.preesm.model.slam.route.RouteCostEvaluator;
 
 /**
  * Class responsible to generate the suited vertices while simulating a shared ram communication.
@@ -104,17 +105,18 @@ public class SharedRamRouterImplementer extends CommunicationRouterImplementer {
    * @return the transaction
    */
   @Override
-  public Transaction addVertices(final AbstractRouteStep routeStep, final MapperDAGEdge edge,
+  public Transaction addVertices(final SlamRouteStep routeStep, final MapperDAGEdge edge,
       final TransactionManager transactions, final int type, final int routeStepIndex, Transaction lastTransaction,
       final List<Object> alreadyCreatedVertices) {
 
-    if (routeStep instanceof MemRouteStep) {
+    if (routeStep instanceof SlamMemoryRouteStep) {
       // Adding the transfers
-      final MemRouteStep ramStep = ((MemRouteStep) routeStep);
+      final SlamMemoryRouteStep ramStep = ((SlamMemoryRouteStep) routeStep);
       // All the transfers along the path have the same time: the time
       // to transfer the data on the slowest contention node
-      final long senderTransferTime = ramStep.getSenderSideWorstTransferTime(edge.getInit().getDataSize());
-      final long receiverTransferTime = ramStep.getReceiverSideWorstTransferTime(edge.getInit().getDataSize());
+      final long dataSize = edge.getInit().getDataSize();
+      final long senderTransferTime = RouteCostEvaluator.getSenderSideWorstTransferTime(ramStep, dataSize);
+      final long receiverTransferTime = RouteCostEvaluator.getReceiverSideWorstTransferTime(ramStep, dataSize);
 
       // Adding the transfers of a ram route step
       if (type == CommunicationRouter.TRANSFER_TYPE) {

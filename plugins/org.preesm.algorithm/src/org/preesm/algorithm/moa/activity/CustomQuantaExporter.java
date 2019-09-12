@@ -79,9 +79,9 @@ import org.preesm.model.scenario.Scenario;
 import org.preesm.model.slam.Component;
 import org.preesm.model.slam.ComponentInstance;
 import org.preesm.model.slam.Design;
-import org.preesm.model.slam.route.AbstractRouteStep;
-import org.preesm.model.slam.route.MessageRouteStep;
-import org.preesm.model.slam.route.Route;
+import org.preesm.model.slam.SlamMessageRouteStep;
+import org.preesm.model.slam.SlamRoute;
+import org.preesm.model.slam.SlamRouteStep;
 import org.preesm.workflow.elements.Workflow;
 import org.preesm.workflow.implement.AbstractTaskImplementation;
 import org.preesm.workflow.implement.AbstractWorkflowNodeImplementation;
@@ -282,13 +282,13 @@ public class CustomQuantaExporter extends AbstractTaskImplementation {
     final MapperDAGVertex target = (MapperDAGVertex) edge.getTarget();
     if (!(source.getEffectiveComponent()).equals(target.getEffectiveComponent())) {
       final long size = edge.getInit().getDataSize();
-      final Route route = abc.getComRouter().getRoute(edge);
+      final SlamRoute route = abc.getComRouter().getRoute(edge);
 
       // Counting tokens and quanta for each elements in the route between 2 processors for an edge
-      for (final AbstractRouteStep step : route) {
-        if (step instanceof MessageRouteStep) {
+      for (final SlamRouteStep step : route.getRouteSteps()) {
+        if (step instanceof SlamMessageRouteStep) {
           // a step is internally composed of several communication nodes
-          final MessageRouteStep mstep = (MessageRouteStep) step;
+          final SlamMessageRouteStep mstep = (SlamMessageRouteStep) step;
           for (final ComponentInstance node : mstep.getNodes()) {
             this.activity.addQuantaNumber(node.getInstanceName(), size);
           }

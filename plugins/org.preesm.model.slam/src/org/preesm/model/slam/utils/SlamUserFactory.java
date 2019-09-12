@@ -34,33 +34,126 @@
  */
 package org.preesm.model.slam.utils;
 
+import java.util.List;
 import org.eclipse.emf.ecore.EClass;
 import org.preesm.model.slam.Component;
-import org.preesm.model.slam.SlamFactory;
+import org.preesm.model.slam.ComponentInstance;
+import org.preesm.model.slam.Design;
+import org.preesm.model.slam.SlamDMARouteStep;
+import org.preesm.model.slam.SlamMemoryRouteStep;
+import org.preesm.model.slam.SlamMessageRouteStep;
 import org.preesm.model.slam.SlamPackage;
+import org.preesm.model.slam.SlamRoute;
+import org.preesm.model.slam.SlamRouteStep;
 import org.preesm.model.slam.VLNV;
+import org.preesm.model.slam.impl.SlamFactoryImpl;
+import org.preesm.model.slam.route.RouteStepFactory;
 
 /**
  *
  * @author anmorvan
  *
  */
-public class SlamUserFactory {
+public class SlamUserFactory extends SlamFactoryImpl {
+
+  public static final SlamUserFactory eINSTANCE = new SlamUserFactory();
 
   private SlamUserFactory() {
     // Not meant to be instantiated: use static methods.
   }
 
-  private static final SlamFactory factory = SlamFactory.eINSTANCE;
-
   /**
    *
    */
-  public static final Component createComponent(final VLNV name, final String componentType) {
+  public Component createComponent(final VLNV name, final String componentType) {
     final EClass eClass = (EClass) SlamPackage.eINSTANCE.getEClassifier(componentType);
-    final Component component = (Component) SlamUserFactory.factory.create(eClass);
+    final Component component = (Component) super.create(eClass);
     component.setVlnv(name);
     return component;
   }
 
+  /**
+   */
+  public SlamRoute createSlamRoute(final SlamRouteStep step) {
+    final SlamRoute res = super.createSlamRoute();
+    res.getRouteSteps().add(step);
+    return res;
+  }
+
+  /**
+   * Instantiates a new route.
+   *
+   * @param r1
+   *          the r 1
+   * @param r2
+   *          the r 2
+   */
+  public SlamRoute createSlamRoute(final SlamRoute r1, final SlamRoute r2) {
+    final SlamRoute res = super.createSlamRoute();
+    res.getRouteSteps().addAll(r1.getRouteSteps());
+    res.getRouteSteps().addAll(r2.getRouteSteps());
+    return res;
+  }
+
+  /**
+   *
+   */
+  public final SlamRouteStep createRouteStep(final Design archi, final ComponentInstance source,
+      final List<ComponentInstance> nodes, final ComponentInstance target) {
+    SlamRouteStep step = null;
+
+    final ComponentInstance dma = RouteStepFactory.getDma(archi, nodes, source);
+    final ComponentInstance mem = RouteStepFactory.getRam(archi, nodes, source);
+    if (dma != null) {
+      step = createSlamDMARouteStep(source, nodes, target, dma);
+    } else if (mem != null) {
+      step = createSlamMemoryRouteStep(source, nodes, target, mem, RouteStepFactory.getRamNodeIndex(archi, nodes));
+    } else {
+      step = createSlamMessageRouteStep(source, nodes, target);
+    }
+
+    return step;
+  }
+
+  /**
+   *
+   */
+  public SlamDMARouteStep createSlamDMARouteStep(final ComponentInstance sender, final List<ComponentInstance> nodes,
+      final ComponentInstance receiver, final ComponentInstance dma) {
+    final SlamDMARouteStep res = super.createSlamDMARouteStep();
+    res.setReceiver(receiver);
+    res.setSender(sender);
+    res.getNodes().addAll(nodes);
+
+    res.setDma(dma);
+    return res;
+  }
+
+  /**
+   *
+   */
+  public SlamMemoryRouteStep createSlamMemoryRouteStep(final ComponentInstance sender,
+      final List<ComponentInstance> nodes, final ComponentInstance receiver, final ComponentInstance mem,
+      final int ramNodeIndex) {
+    final SlamMemoryRouteStep res = super.createSlamMemoryRouteStep();
+    res.setReceiver(receiver);
+    res.setSender(sender);
+    res.getNodes().addAll(nodes);
+
+    res.setMemory(mem);
+    res.setRamNodeIndex(ramNodeIndex);
+    return res;
+  }
+
+  /**
+   *
+   */
+  public SlamMessageRouteStep createSlamMessageRouteStep(final ComponentInstance sender,
+      final List<ComponentInstance> nodes, final ComponentInstance receiver) {
+    final SlamMessageRouteStep res = super.createSlamMessageRouteStep();
+    res.setReceiver(receiver);
+    res.setSender(sender);
+    res.getNodes().addAll(nodes);
+    return res;
+  }
 }

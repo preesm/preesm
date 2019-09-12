@@ -61,7 +61,7 @@ import org.preesm.algorithm.model.sdf.SDFEdge;
 import org.preesm.model.scenario.Scenario;
 import org.preesm.model.slam.ComponentInstance;
 import org.preesm.model.slam.Design;
-import org.preesm.model.slam.route.AbstractRouteStep;
+import org.preesm.model.slam.SlamRouteStep;
 
 /**
  * Tags an SDF with the implementation information necessary for code generation, and DAG exporting.
@@ -163,7 +163,7 @@ public class TagDAG {
         bean.setValue(ImplementationPropertyNames.Vertex_Operator, sender);
 
         // Setting the medium transmitting the current data
-        final AbstractRouteStep sendRs = ((SendVertex) currentVertex).getRouteStep();
+        final SlamRouteStep sendRs = ((SendVertex) currentVertex).getRouteStep();
         bean.setValue(ImplementationPropertyNames.SendReceive_routeStep, sendRs);
 
         // Setting the size of the transmitted data
@@ -192,7 +192,7 @@ public class TagDAG {
         bean.setValue(ImplementationPropertyNames.Vertex_Operator, receiver);
 
         // Setting the medium transmitting the current data
-        final AbstractRouteStep rcvRs = ((ReceiveVertex) currentVertex).getRouteStep();
+        final SlamRouteStep rcvRs = ((ReceiveVertex) currentVertex).getRouteStep();
         bean.setValue(ImplementationPropertyNames.SendReceive_routeStep, rcvRs);
 
         // Setting the size of the transmitted data

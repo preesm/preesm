@@ -48,7 +48,7 @@ import org.preesm.algorithm.mapper.model.special.PrecedenceEdge;
 import org.preesm.algorithm.mapper.model.special.PrecedenceEdgeAdder;
 import org.preesm.algorithm.mapper.model.special.TransferVertex;
 import org.preesm.commons.logger.PreesmLogger;
-import org.preesm.model.slam.route.AbstractRouteStep;
+import org.preesm.model.slam.SlamRouteStep;
 
 /**
  * Transaction executing the addition of an overhead (or set-up) vertex.
@@ -64,7 +64,7 @@ public class AddOverheadVertexTransaction implements Transaction {
   private MapperDAG implementation = null;
 
   /** Route step corresponding to this overhead. */
-  private AbstractRouteStep step = null;
+  private SlamRouteStep step = null;
 
   /** time of this overhead. */
   private long overheadTime = 0;
@@ -94,7 +94,7 @@ public class AddOverheadVertexTransaction implements Transaction {
    *          the order manager
    */
   public AddOverheadVertexTransaction(final MapperDAGEdge edge, final MapperDAG implementation,
-      final AbstractRouteStep step, final long overheadTime, final OrderManager orderManager) {
+      final SlamRouteStep step, final long overheadTime, final OrderManager orderManager) {
     super();
     this.edge = edge;
     this.implementation = implementation;

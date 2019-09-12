@@ -52,7 +52,7 @@ import org.preesm.algorithm.mapper.model.special.TransferVertex;
 import org.preesm.algorithm.mapper.tools.CommunicationOrderChecker;
 import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.model.slam.ComponentInstance;
-import org.preesm.model.slam.route.AbstractRouteStep;
+import org.preesm.model.slam.SlamRouteStep;
 
 /**
  * A transaction that adds a send and a receive vertex in an implementation.
@@ -68,7 +68,7 @@ public class AddSendReceiveTransaction implements Transaction {
   private final MapperDAG implementation;
 
   /** Route step corresponding to this overhead. */
-  private final AbstractRouteStep step;
+  private final SlamRouteStep step;
 
   /** Original edge corresponding to this overhead. */
   private final MapperDAGEdge edge;
@@ -107,8 +107,8 @@ public class AddSendReceiveTransaction implements Transaction {
    *          the transfer cost
    */
   public AddSendReceiveTransaction(final Transaction precedingTransaction, final MapperDAGEdge edge,
-      final MapperDAG implementation, final OrderManager orderManager, final int routeIndex,
-      final AbstractRouteStep step, final long transferCost) {
+      final MapperDAG implementation, final OrderManager orderManager, final int routeIndex, final SlamRouteStep step,
+      final long transferCost) {
     super();
     this.precedingTransaction = precedingTransaction;
     this.edge = edge;

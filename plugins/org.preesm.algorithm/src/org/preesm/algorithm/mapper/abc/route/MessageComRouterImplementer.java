@@ -51,8 +51,9 @@ import org.preesm.algorithm.mapper.model.MapperDAGVertex;
 import org.preesm.algorithm.mapper.model.special.TransferVertex;
 import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.model.slam.ComponentInstance;
-import org.preesm.model.slam.route.AbstractRouteStep;
-import org.preesm.model.slam.route.MessageRouteStep;
+import org.preesm.model.slam.SlamMessageRouteStep;
+import org.preesm.model.slam.SlamRouteStep;
+import org.preesm.model.slam.route.RouteCostEvaluator;
 
 /**
  * Class responsible to generate the suited vertices while simulating a message communication.
@@ -106,16 +107,16 @@ public class MessageComRouterImplementer extends CommunicationRouterImplementer 
    * @return the transaction
    */
   @Override
-  public Transaction addVertices(final AbstractRouteStep routeStep, final MapperDAGEdge edge,
+  public Transaction addVertices(final SlamRouteStep routeStep, final MapperDAGEdge edge,
       final TransactionManager transactions, final int type, final int routeStepIndex,
       final Transaction lastTransaction, final List<Object> alreadyCreatedVertices) {
 
-    if (routeStep instanceof MessageRouteStep) {
+    if (routeStep instanceof SlamMessageRouteStep) {
       // Adding the transfers
-      final MessageRouteStep messageStep = ((MessageRouteStep) routeStep);
+      final SlamMessageRouteStep messageStep = ((SlamMessageRouteStep) routeStep);
       // All the transfers along the path have the same time: the time
       // to transfer the data on the slowest contention node
-      final long transferTime = messageStep.getWorstTransferTime(edge.getInit().getDataSize());
+      final long transferTime = RouteCostEvaluator.getTransferCost(messageStep, edge.getInit().getDataSize());
 
       // Adding the transfers of a message route step
       if (type == CommunicationRouter.TRANSFER_TYPE) {

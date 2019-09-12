@@ -37,6 +37,7 @@
  */
 package org.preesm.model.slam.route;
 
+import com.google.common.primitives.Ints;
 import java.util.Comparator;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -44,6 +45,7 @@ import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentSkipListSet;
 import org.apache.commons.lang3.tuple.MutablePair;
 import org.preesm.model.slam.ComponentInstance;
+import org.preesm.model.slam.SlamRoute;
 
 /**
  * Table representing the different routes available to go from one operator to another.
@@ -94,7 +96,7 @@ public class RoutingTable {
   /**
    * A route transfer comparator that never returns 0.
    */
-  private class RouteComparator implements Comparator<Route> {
+  private class RouteComparator implements Comparator<SlamRoute> {
 
     /** The transfer size. */
     private final long transferSize;
@@ -109,15 +111,11 @@ public class RoutingTable {
       this.transferSize = transferSize;
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see java.util.Comparator#compare(java.lang.Object, java.lang.Object)
-     */
     @Override
-    public int compare(final Route o1, final Route o2) {
-      final long difference = o1.evaluateTransferCost(this.transferSize) - o2.evaluateTransferCost(this.transferSize);
-      return (int) difference;
+    public int compare(final SlamRoute o1, final SlamRoute o2) {
+      final long difference = RouteCostEvaluator.evaluateTransferCost(o1, transferSize)
+          - RouteCostEvaluator.evaluateTransferCost(o2, transferSize);
+      return Ints.saturatedCast(difference);
     }
 
   }
@@ -125,7 +123,7 @@ public class RoutingTable {
   /**
    * A list of routes ordered in inverse order of transfer cost.
    */
-  private class RouteList extends ConcurrentSkipListSet<Route> {
+  private class RouteList extends ConcurrentSkipListSet<SlamRoute> {
 
     /** The Constant serialVersionUID. */
     private static final long serialVersionUID = -851695207011182681L;
@@ -148,7 +146,7 @@ public class RoutingTable {
     @Override
     public String toString() {
       final StringBuilder sb = new StringBuilder("|");
-      for (final Route r : this) {
+      for (final SlamRoute r : this) {
         sb.append(r.toString() + "|");
       }
       return sb.toString();
@@ -176,12 +174,10 @@ public class RoutingTable {
    *          the op 2
    * @return the best route
    */
-  public Route getBestRoute(final ComponentInstance op1, final ComponentInstance op2) {
-    for (final Entry<OperatorCouple, RouteList> e : this.table.entrySet()) {
-      final OperatorCouple c = e.getKey();
-      if (c.equals(new OperatorCouple(op1, op2))) {
-        return this.table.get(c).first();
-      }
+  public SlamRoute getBestRoute(final ComponentInstance op1, final ComponentInstance op2) {
+    final OperatorCouple obj = new OperatorCouple(op1, op2);
+    if (this.table.containsKey(obj)) {
+      return this.table.get(obj).first();
     }
     return null;
   }
@@ -195,16 +191,9 @@ public class RoutingTable {
    *          the op 2
    */
   public void removeRoutes(final ComponentInstance op1, final ComponentInstance op2) {
-    OperatorCouple key = null;
     final OperatorCouple route = new OperatorCouple(op1, op2);
-    for (final OperatorCouple c : this.table.keySet()) {
-      if (c.equals(route)) {
-        key = c;
-      }
-    }
-
-    if (key != null) {
-      this.table.get(key).clear();
+    if (this.table.containsKey(route)) {
+      this.table.get(route).clear();
     }
   }
 
@@ -218,23 +207,13 @@ public class RoutingTable {
    * @param route
    *          the route
    */
-  public void addRoute(final ComponentInstance op1, final ComponentInstance op2, final Route route,
+  public void addRoute(final ComponentInstance op1, final ComponentInstance op2, final SlamRoute route,
       final long avgSize) {
-    OperatorCouple key = null;
     final OperatorCouple opCouple = new OperatorCouple(op1, op2);
-    for (final OperatorCouple c : this.table.keySet()) {
-      if (c.equals(opCouple)) {
-        key = c;
-      }
+    if (!this.table.containsKey(opCouple)) {
+      this.table.put(opCouple, new RouteList(avgSize));
     }
-    RouteList list = null;
-    if (key != null) {
-      list = this.table.get(key);
-    } else {
-      list = new RouteList(avgSize);
-      this.table.put(opCouple, list);
-    }
-    list.add(route);
+    this.table.get(opCouple).add(route);
   }
 
   /**
@@ -247,7 +226,7 @@ public class RoutingTable {
     final StringBuilder sb = new StringBuilder();
     for (final Entry<OperatorCouple, RouteList> e : this.table.entrySet()) {
       final OperatorCouple couple = e.getKey();
-      sb.append(couple + " -> " + this.table.get(couple) + "\n");
+      sb.append(couple + " -> " + e.getValue() + "\n");
     }
     return sb.toString();
   }
