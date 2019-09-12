@@ -45,7 +45,7 @@ import org.preesm.algorithm.mapper.model.MapperDAGVertex;
 import org.preesm.algorithm.model.AbstractVertex;
 import org.preesm.algorithm.model.dag.DAGEdge;
 import org.preesm.algorithm.model.dag.DirectedAcyclicGraph;
-import org.preesm.model.slam.route.AbstractRouteStep;
+import org.preesm.model.slam.SlamRouteStep;
 
 /**
  * A transfer vertex represents a route step.
@@ -56,7 +56,7 @@ public class TransferVertex extends MapperDAGVertex {
 
   public static final long SEND_RECEIVE_COST = 100;
 
-  private AbstractRouteStep step;
+  private SlamRouteStep step;
 
   /** Source and target of the vertex that originated this transfer. */
   private final MapperDAGVertex source;
@@ -111,7 +111,7 @@ public class TransferVertex extends MapperDAGVertex {
    *
    * @return the route step
    */
-  public AbstractRouteStep getRouteStep() {
+  public SlamRouteStep getRouteStep() {
     return this.step;
   }
 
@@ -121,7 +121,7 @@ public class TransferVertex extends MapperDAGVertex {
    * @param step
    *          the new route step
    */
-  public void setRouteStep(final AbstractRouteStep step) {
+  public void setRouteStep(final SlamRouteStep step) {
     this.step = step;
   }
 

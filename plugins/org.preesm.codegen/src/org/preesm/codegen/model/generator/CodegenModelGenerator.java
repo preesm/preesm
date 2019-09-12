@@ -147,7 +147,7 @@ import org.preesm.model.scenario.Scenario;
 import org.preesm.model.slam.Component;
 import org.preesm.model.slam.ComponentInstance;
 import org.preesm.model.slam.Design;
-import org.preesm.model.slam.route.MessageRouteStep;
+import org.preesm.model.slam.SlamMessageRouteStep;
 
 /**
  * The objective of this class is to generate an intermediate model that will be used to print the generated code. <br>
@@ -1376,7 +1376,7 @@ public class CodegenModelGenerator extends AbstractCodegenModelGenerator {
     final Delimiter delimiter = (direction.equals(VertexType.TYPE_SEND)) ? Delimiter.START : Delimiter.END;
     newComm.setDirection(dir);
     newComm.setDelimiter(delimiter);
-    final MessageRouteStep routeStep = dagVertex.getPropertyBean()
+    final SlamMessageRouteStep routeStep = dagVertex.getPropertyBean()
         .getValue(ImplementationPropertyNames.SendReceive_routeStep);
     for (final ComponentInstance comp : routeStep.getNodes()) {
       final CommunicationNode comNode = CodegenModelUserFactory.eINSTANCE.createCommunicationNode();
@@ -1475,7 +1475,7 @@ public class CodegenModelGenerator extends AbstractCodegenModelGenerator {
     final Delimiter delimiter = (direction.equals(VertexType.TYPE_SEND)) ? Delimiter.START : Delimiter.END;
     newComm.setDirection(dir);
     newComm.setDelimiter(delimiter);
-    final MessageRouteStep routeStep = dagVertex.getPropertyBean()
+    final SlamMessageRouteStep routeStep = dagVertex.getPropertyBean()
         .getValue(ImplementationPropertyNames.SendReceive_routeStep);
     for (final ComponentInstance comp : routeStep.getNodes()) {
       final CommunicationNode comNode = CodegenModelUserFactory.eINSTANCE.createCommunicationNode();
@@ -2829,7 +2829,7 @@ public class CodegenModelGenerator extends AbstractCodegenModelGenerator {
     // In case of multi-step communication, this is the easiest
     // way to retrieve the target and source of the communication
     // corresponding to the current Send/ReceiveVertex
-    final MessageRouteStep routeStep = dagVertex.getPropertyBean()
+    final SlamMessageRouteStep routeStep = dagVertex.getPropertyBean()
         .getValue(ImplementationPropertyNames.SendReceive_routeStep);
 
     String commID = routeStep.getSender().getInstanceName();

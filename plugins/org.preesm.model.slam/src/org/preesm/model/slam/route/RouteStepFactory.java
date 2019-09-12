@@ -53,34 +53,6 @@ import org.preesm.model.slam.impl.MemImpl;
 public class RouteStepFactory {
 
   /**
-   * Generates the suited route steps from intermediate nodes.
-   *
-   * @param source
-   *          the source
-   * @param nodes
-   *          the nodes
-   * @param target
-   *          the target
-   * @return the route step
-   */
-  public static final AbstractRouteStep getRouteStep(final Design archi, final ComponentInstance source,
-      final List<ComponentInstance> nodes, final ComponentInstance target) {
-    AbstractRouteStep step = null;
-
-    final ComponentInstance dma = getDma(archi, nodes, source);
-    final ComponentInstance mem = getRam(archi, nodes, source);
-    if (dma != null) {
-      step = new DmaRouteStep(source, nodes, target, dma);
-    } else if (mem != null) {
-      step = new MemRouteStep(source, nodes, target, mem, getRamNodeIndex(archi, nodes));
-    } else {
-      step = new MessageRouteStep(source, nodes, target);
-    }
-
-    return step;
-  }
-
-  /**
    * Gets the dma corresponding to the step if any exists. The Dma must have a setup link with the source.
    *
    * @param nodes

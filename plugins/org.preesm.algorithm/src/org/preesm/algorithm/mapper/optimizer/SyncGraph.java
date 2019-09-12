@@ -44,7 +44,7 @@ import org.preesm.algorithm.mapper.model.special.SendVertex;
 import org.preesm.algorithm.mapper.model.special.TransferVertex;
 import org.preesm.algorithm.model.dag.DAGVertex;
 import org.preesm.model.slam.ComponentInstance;
-import org.preesm.model.slam.route.MessageRouteStep;
+import org.preesm.model.slam.SlamMessageRouteStep;
 
 /**
  *
@@ -60,7 +60,7 @@ public class SyncGraph extends org.jgrapht.graph.SimpleDirectedWeightedGraph<Con
   private static boolean isSynchronizationTransfer(final TransferVertex currentVertex) {
     boolean isSyncWait = true;
     // Check if all comm steps are zero copy.
-    final List<ComponentInstance> communicationSteps = ((MessageRouteStep) currentVertex.getRouteStep()).getNodes();
+    final List<ComponentInstance> communicationSteps = ((SlamMessageRouteStep) currentVertex.getRouteStep()).getNodes();
     for (final ComponentInstance component : communicationSteps) {
       boolean isZeroCopy = false;
       for (final Entry<String, String> p : component.getParameters()) {

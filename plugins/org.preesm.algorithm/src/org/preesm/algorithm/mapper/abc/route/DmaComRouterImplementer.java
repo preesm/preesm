@@ -52,8 +52,8 @@ import org.preesm.algorithm.mapper.model.special.TransferVertex;
 import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.model.slam.ComponentInstance;
 import org.preesm.model.slam.Dma;
-import org.preesm.model.slam.route.AbstractRouteStep;
-import org.preesm.model.slam.route.DmaRouteStep;
+import org.preesm.model.slam.SlamDMARouteStep;
+import org.preesm.model.slam.SlamRouteStep;
 import org.preesm.model.slam.route.RouteCostEvaluator;
 
 /**
@@ -108,13 +108,13 @@ public class DmaComRouterImplementer extends CommunicationRouterImplementer {
    * @return the transaction
    */
   @Override
-  public Transaction addVertices(final AbstractRouteStep routeStep, final MapperDAGEdge edge,
+  public Transaction addVertices(final SlamRouteStep routeStep, final MapperDAGEdge edge,
       final TransactionManager transactions, final int type, final int routeStepIndex,
       final Transaction lastTransaction, final List<Object> alreadyCreatedVertices) {
 
-    if (routeStep instanceof DmaRouteStep) {
+    if (routeStep instanceof SlamDMARouteStep) {
       // Adding the transfers
-      final DmaRouteStep dmaStep = ((DmaRouteStep) routeStep);
+      final SlamDMARouteStep dmaStep = ((SlamDMARouteStep) routeStep);
 
       // Adding the transfers of a dma route step
       if (type == CommunicationRouter.TRANSFER_TYPE) {

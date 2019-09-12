@@ -50,7 +50,10 @@ import org.preesm.model.slam.ComponentInstance;
 import org.preesm.model.slam.Design;
 import org.preesm.model.slam.Link;
 import org.preesm.model.slam.Operator;
+import org.preesm.model.slam.SlamRoute;
+import org.preesm.model.slam.SlamRouteStep;
 import org.preesm.model.slam.impl.ComNodeImpl;
+import org.preesm.model.slam.utils.SlamUserFactory;
 
 /**
  * This class can evaluate a given transfer and choose the best route between two operators.
@@ -188,8 +191,9 @@ public class RouteCalculator {
       } else if ((otherEnd.getComponent() instanceof Operator)
           && !otherEnd.getInstanceName().equals(source.getInstanceName())) {
         final ComponentInstance target = otherEnd;
-        final AbstractRouteStep step = RouteStepFactory.getRouteStep(this.archi, source, alreadyVisitedNodes, target);
-        this.table.addRoute(source, target, new Route(step), avgSize);
+        final SlamRouteStep step = SlamUserFactory.eINSTANCE.createRouteStep(this.archi, source, alreadyVisitedNodes,
+            target);
+        this.table.addRoute(source, target, SlamUserFactory.eINSTANCE.createSlamRoute(step), avgSize);
       }
     }
   }
@@ -221,15 +225,15 @@ public class RouteCalculator {
         for (final ComponentInstance tgt : operators) {
 
           if (!k.equals(src) && !k.equals(tgt) && !src.equals(tgt)) {
-            final Route routeSrcK = table.getBestRoute(src, k);
-            final Route routeKTgt = table.getBestRoute(k, tgt);
+            final SlamRoute routeSrcK = table.getBestRoute(src, k);
+            final SlamRoute routeKTgt = table.getBestRoute(k, tgt);
 
             if ((routeSrcK != null) && (routeKTgt != null)) {
-              final Route compoundRoute = new Route(routeSrcK, routeKTgt);
+              final SlamRoute compoundRoute = SlamUserFactory.eINSTANCE.createSlamRoute(routeSrcK, routeKTgt);
               if (compoundRoute.isSingleAppearance()) {
                 // If this if statement is removed, several
                 // routes become available
-                final Route bestRoute = table.getBestRoute(src, tgt);
+                final SlamRoute bestRoute = table.getBestRoute(src, tgt);
                 if (bestRoute == null) {
                   table.addRoute(src, tgt, compoundRoute, averageDataSize);
                 } else {
@@ -257,8 +261,8 @@ public class RouteCalculator {
    *          the op 2
    * @return the route
    */
-  public Route getRoute(final ComponentInstance op1, final ComponentInstance op2) {
-    final Route r = this.table.getBestRoute(op1, op2);
+  public SlamRoute getRoute(final ComponentInstance op1, final ComponentInstance op2) {
+    final SlamRoute r = this.table.getBestRoute(op1, op2);
 
     if (r == null) {
       final String msg = "Did not find a route between " + op1 + " and " + op2 + ".";
