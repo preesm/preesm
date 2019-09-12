@@ -47,7 +47,6 @@ import org.preesm.model.slam.SlamRoute;
 import org.preesm.model.slam.SlamRouteStep;
 import org.preesm.model.slam.VLNV;
 import org.preesm.model.slam.impl.SlamFactoryImpl;
-import org.preesm.model.slam.route.RouteStepFactory;
 
 /**
  *
@@ -102,12 +101,13 @@ public class SlamUserFactory extends SlamFactoryImpl {
       final List<ComponentInstance> nodes, final ComponentInstance target) {
     SlamRouteStep step = null;
 
-    final ComponentInstance dma = RouteStepFactory.getDma(archi, nodes, source);
-    final ComponentInstance mem = RouteStepFactory.getRam(archi, nodes, source);
+    final ComponentInstance dma = SlamCommunicationFinder.getDma(archi, nodes, source);
+    final ComponentInstance mem = SlamCommunicationFinder.getRam(archi, nodes, source);
     if (dma != null) {
       step = createSlamDMARouteStep(source, nodes, target, dma);
     } else if (mem != null) {
-      step = createSlamMemoryRouteStep(source, nodes, target, mem, RouteStepFactory.getRamNodeIndex(archi, nodes));
+      step = createSlamMemoryRouteStep(source, nodes, target, mem,
+          SlamCommunicationFinder.getRamNodeIndex(archi, nodes));
     } else {
       step = createSlamMessageRouteStep(source, nodes, target);
     }
