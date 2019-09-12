@@ -66,10 +66,6 @@ public class DmaRouteStep extends MessageRouteStep {
     this.dma = dma;
   }
 
-  public DmaRouteStep(final DmaRouteStep other) {
-    this(other.getSender(), other.getNodes(), other.getReceiver(), other.dma);
-  }
-
   @Override
   public RouteStepType getType() {
     return RouteStepType.DMA_TYPE;
