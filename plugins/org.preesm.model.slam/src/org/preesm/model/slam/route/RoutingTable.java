@@ -175,11 +175,9 @@ public class RoutingTable {
    * @return the best route
    */
   public SlamRoute getBestRoute(final ComponentInstance op1, final ComponentInstance op2) {
-    for (final Entry<OperatorCouple, RouteList> e : this.table.entrySet()) {
-      final OperatorCouple c = e.getKey();
-      if (c.equals(new OperatorCouple(op1, op2))) {
-        return this.table.get(c).first();
-      }
+    final OperatorCouple obj = new OperatorCouple(op1, op2);
+    if (this.table.containsKey(obj)) {
+      return this.table.get(obj).first();
     }
     return null;
   }
@@ -193,16 +191,9 @@ public class RoutingTable {
    *          the op 2
    */
   public void removeRoutes(final ComponentInstance op1, final ComponentInstance op2) {
-    OperatorCouple key = null;
     final OperatorCouple route = new OperatorCouple(op1, op2);
-    for (final OperatorCouple c : this.table.keySet()) {
-      if (c.equals(route)) {
-        key = c;
-      }
-    }
-
-    if (key != null) {
-      this.table.get(key).clear();
+    if (this.table.containsKey(route)) {
+      this.table.get(route).clear();
     }
   }
 
@@ -218,21 +209,11 @@ public class RoutingTable {
    */
   public void addRoute(final ComponentInstance op1, final ComponentInstance op2, final SlamRoute route,
       final long avgSize) {
-    OperatorCouple key = null;
     final OperatorCouple opCouple = new OperatorCouple(op1, op2);
-    for (final OperatorCouple c : this.table.keySet()) {
-      if (c.equals(opCouple)) {
-        key = c;
-      }
+    if (!this.table.containsKey(opCouple)) {
+      this.table.put(opCouple, new RouteList(avgSize));
     }
-    RouteList list = null;
-    if (key != null) {
-      list = this.table.get(key);
-    } else {
-      list = new RouteList(avgSize);
-      this.table.put(opCouple, list);
-    }
-    list.add(route);
+    this.table.get(opCouple).add(route);
   }
 
   /**
@@ -245,7 +226,7 @@ public class RoutingTable {
     final StringBuilder sb = new StringBuilder();
     for (final Entry<OperatorCouple, RouteList> e : this.table.entrySet()) {
       final OperatorCouple couple = e.getKey();
-      sb.append(couple + " -> " + this.table.get(couple) + "\n");
+      sb.append(couple + " -> " + e.getValue() + "\n");
     }
     return sb.toString();
   }
