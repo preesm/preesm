@@ -272,7 +272,7 @@ class SlamRoute {
 		return routeSteps.get(routeSteps.size - 1).receiver
 	}
 	// Ordered list of steps. Must not be empty
-  contains SlamRouteStep[1..*] routeSteps
+  refers SlamRouteStep[1..*] routeSteps
 
 
   // Returns true if each operator in the route appears only once.
