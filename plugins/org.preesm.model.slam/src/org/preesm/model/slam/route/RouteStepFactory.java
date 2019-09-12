@@ -89,7 +89,7 @@ public class RouteStepFactory {
    *          the dma setup
    * @return the dma
    */
-  private static final ComponentInstance getDma(final Design archi, final List<ComponentInstance> nodes,
+  public static final ComponentInstance getDma(final Design archi, final List<ComponentInstance> nodes,
       final ComponentInstance dmaSetup) {
     ComponentInstance dmaInst = null;
     for (final ComponentInstance node : nodes) {
@@ -120,7 +120,7 @@ public class RouteStepFactory {
    *          the ram setup
    * @return the ram
    */
-  private static final ComponentInstance getRam(final Design archi, final List<ComponentInstance> nodes,
+  public static final ComponentInstance getRam(final Design archi, final List<ComponentInstance> nodes,
       final ComponentInstance ramSetup) {
     ComponentInstance ramInst = null;
     for (final ComponentInstance node : nodes) {
@@ -150,7 +150,7 @@ public class RouteStepFactory {
    *          the nodes
    * @return the ram node index
    */
-  private static final int getRamNodeIndex(final Design archi, final List<ComponentInstance> nodes) {
+  public static final int getRamNodeIndex(final Design archi, final List<ComponentInstance> nodes) {
     ComponentInstance ramInst = null;
     for (final ComponentInstance node : nodes) {
       for (final Link i : archi.getLinks()) {
