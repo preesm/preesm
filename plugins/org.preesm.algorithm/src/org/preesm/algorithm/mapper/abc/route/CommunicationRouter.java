@@ -112,7 +112,7 @@ public class CommunicationRouter {
     this.implementers = new LinkedHashMap<>();
     setManagers(implementation, edgeScheduler, orderManager);
 
-    this.calculator = RouteCalculator.getInstance(archi);
+    this.calculator = new RouteCalculator(archi);
 
     // Initializing the available router implementers
     addImplementer(SlamRouteStepType.DMA_TYPE, new DmaComRouterImplementer(this));

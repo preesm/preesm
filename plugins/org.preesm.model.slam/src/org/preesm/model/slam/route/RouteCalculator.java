@@ -38,10 +38,8 @@
 package org.preesm.model.slam.route;
 
 import java.util.ArrayList;
-import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import java.util.logging.Level;
 import org.preesm.commons.exceptions.PreesmRuntimeException;
@@ -62,47 +60,19 @@ import org.preesm.model.slam.utils.SlamUserFactory;
  */
 public class RouteCalculator {
 
-  /** The instances. */
-  private static Map<Design, RouteCalculator> instances = new LinkedHashMap<>();
-
   /** The archi. */
   private final Design archi;
 
   /** The table. */
   private RoutingTable table = null;
 
-  /** The scenario. */
-
-  /**
-   * Gets the single instance of RouteCalculator.
-   *
-   */
-  public static RouteCalculator getInstance(final Design archi) {
-    if (!RouteCalculator.instances.containsKey(archi)) {
-      RouteCalculator.instances.put(archi, new RouteCalculator(archi));
-    }
-    return RouteCalculator.instances.get(archi);
-  }
-
-  /**
-   * Delete routes.
-   *
-   * @param archi
-   *          the archi
-   */
-  public static void deleteRoutes(final Design archi) {
-    RouteCalculator.instances.remove(archi);
-  }
-
   /**
    * Constructor from a given architecture.
    *
    * @param archi
    *          the archi
-   * @param scenario
-   *          the scenario
    */
-  private RouteCalculator(final Design archi) {
+  public RouteCalculator(final Design archi) {
 
     this.archi = archi;
     this.table = new RoutingTable();

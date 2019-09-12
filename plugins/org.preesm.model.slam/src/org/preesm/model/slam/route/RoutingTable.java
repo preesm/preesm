@@ -51,7 +51,7 @@ import org.preesm.model.slam.SlamRoute;
  *
  * @author mpelcat
  */
-public class RoutingTable {
+class RoutingTable {
 
   /**
    * A couple of operators to which the routes are linked.
@@ -59,35 +59,20 @@ public class RoutingTable {
   private class OperatorCouple extends MutablePair<ComponentInstance, ComponentInstance> {
     private static final long serialVersionUID = -451571160460519876L;
 
-    public OperatorCouple(final ComponentInstance op1, final ComponentInstance op2) {
+    OperatorCouple(final ComponentInstance op1, final ComponentInstance op2) {
       super(op1, op2);
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see java.lang.Object#toString()
-     */
     @Override
     public String toString() {
       return "(" + getOp1() + "," + getOp2() + ")";
     }
 
-    /**
-     * Gets the op 1.
-     *
-     * @return the op 1
-     */
-    public ComponentInstance getOp1() {
+    ComponentInstance getOp1() {
       return getLeft();
     }
 
-    /**
-     * Gets the op 2.
-     *
-     * @return the op 2
-     */
-    public ComponentInstance getOp2() {
+    ComponentInstance getOp2() {
       return getRight();
     }
   }
@@ -117,7 +102,7 @@ public class RoutingTable {
 
     private static final long serialVersionUID = -851695207011182681L;
 
-    public RouteList() {
+    RouteList() {
       super(new RouteComparator());
     }
 
@@ -138,7 +123,7 @@ public class RoutingTable {
    * Instantiates a new routing table.
    *
    */
-  public RoutingTable() {
+  RoutingTable() {
     super();
     this.table = new LinkedHashMap<>();
   }
@@ -152,7 +137,7 @@ public class RoutingTable {
    *          the op 2
    * @return the best route
    */
-  public SlamRoute getBestRoute(final ComponentInstance op1, final ComponentInstance op2) {
+  SlamRoute getBestRoute(final ComponentInstance op1, final ComponentInstance op2) {
     final OperatorCouple obj = new OperatorCouple(op1, op2);
     if (this.table.containsKey(obj)) {
       return this.table.get(obj).first();
@@ -168,7 +153,7 @@ public class RoutingTable {
    * @param op2
    *          the op 2
    */
-  public void removeRoutes(final ComponentInstance op1, final ComponentInstance op2) {
+  void removeRoutes(final ComponentInstance op1, final ComponentInstance op2) {
     final OperatorCouple route = new OperatorCouple(op1, op2);
     if (this.table.containsKey(route)) {
       this.table.get(route).clear();
@@ -185,7 +170,7 @@ public class RoutingTable {
    * @param route
    *          the route
    */
-  public void addRoute(final ComponentInstance op1, final ComponentInstance op2, final SlamRoute route) {
+  void addRoute(final ComponentInstance op1, final ComponentInstance op2, final SlamRoute route) {
     final OperatorCouple opCouple = new OperatorCouple(op1, op2);
     if (!this.table.containsKey(opCouple)) {
       this.table.put(opCouple, new RouteList());
