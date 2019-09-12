@@ -146,16 +146,17 @@ public class RouteStepFactory {
   /**
    * Checks if a setup link exists between cmp and operator.
    *
-   * @param cmp
+   * @param target
    *          the cmp
-   * @param op
+   * @param source
    *          the op
    * @return true, if successful
    */
-  private static final boolean existSetup(final Design archi, final ComponentInstance cmp, final ComponentInstance op) {
+  private static final boolean existSetup(final Design archi, final ComponentInstance target,
+      final ComponentInstance source) {
 
     for (final Link i : archi.getLinks()) {
-      if (i.getSourceComponentInstance() == op && i.getDestinationComponentInstance() == cmp
+      if (i.getSourceComponentInstance() == source && i.getDestinationComponentInstance() == target
           && (i instanceof ControlLink)) {
         return true;
       }
