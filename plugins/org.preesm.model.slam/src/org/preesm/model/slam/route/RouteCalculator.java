@@ -49,7 +49,6 @@ import org.preesm.model.slam.Design;
 import org.preesm.model.slam.Link;
 import org.preesm.model.slam.Operator;
 import org.preesm.model.slam.SlamRoute;
-import org.preesm.model.slam.SlamRouteStep;
 import org.preesm.model.slam.impl.ComNodeImpl;
 import org.preesm.model.slam.utils.SlamUserFactory;
 
@@ -152,10 +151,9 @@ public class RouteCalculator {
         }
       } else if ((otherEnd.getComponent() instanceof Operator)
           && !otherEnd.getInstanceName().equals(source.getInstanceName())) {
-        final ComponentInstance target = otherEnd;
-        final SlamRouteStep step = SlamUserFactory.eINSTANCE.createRouteStep(this.archi, source, alreadyVisitedNodes,
-            target);
-        this.table.addRoute(source, target, SlamUserFactory.eINSTANCE.createSlamRoute(step));
+        final SlamRoute newRoute = SlamUserFactory.eINSTANCE.createSlamRoute(this.archi, source, alreadyVisitedNodes,
+            otherEnd);
+        this.table.addRoute(source, otherEnd, newRoute);
       }
     }
   }

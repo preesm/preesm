@@ -94,10 +94,15 @@ public class SlamUserFactory extends SlamFactoryImpl {
     return res;
   }
 
+  public SlamRoute createSlamRoute(final Design archi, final ComponentInstance source,
+      final List<ComponentInstance> alreadyVisitedNodes, final ComponentInstance target) {
+    return createSlamRoute(createSlamRouteStep(archi, source, alreadyVisitedNodes, target));
+  }
+
   /**
    *
    */
-  public final SlamRouteStep createRouteStep(final Design archi, final ComponentInstance source,
+  public final SlamRouteStep createSlamRouteStep(final Design archi, final ComponentInstance source,
       final List<ComponentInstance> nodes, final ComponentInstance target) {
     SlamRouteStep step = null;
 
@@ -156,4 +161,5 @@ public class SlamUserFactory extends SlamFactoryImpl {
     res.getNodes().addAll(nodes);
     return res;
   }
+
 }
