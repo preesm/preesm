@@ -68,9 +68,6 @@ public class RouteCalculator {
   /** The table. */
   private RoutingTable table = null;
 
-  /** The step factory. */
-  private RouteStepFactory stepFactory = null;
-
   /** The scenario. */
 
   /**
@@ -114,7 +111,6 @@ public class RouteCalculator {
 
     this.archi = archi;
     this.table = new RoutingTable();
-    this.stepFactory = new RouteStepFactory(archi);
 
     // Creating the route steps between directly connected operators
     createRouteSteps(averageDataSize);
@@ -192,7 +188,7 @@ public class RouteCalculator {
       } else if ((otherEnd.getComponent() instanceof Operator)
           && !otherEnd.getInstanceName().equals(source.getInstanceName())) {
         final ComponentInstance target = otherEnd;
-        final AbstractRouteStep step = this.stepFactory.getRouteStep(source, alreadyVisitedNodes, target);
+        final AbstractRouteStep step = RouteStepFactory.getRouteStep(this.archi, source, alreadyVisitedNodes, target);
         this.table.addRoute(source, target, new Route(step), avgSize);
       }
     }
@@ -238,8 +234,7 @@ public class RouteCalculator {
                   table.addRoute(src, tgt, compoundRoute, averageDataSize);
                 } else {
                   final long bestRouteCost = RouteCostEvaluator.evaluateTransferCost(bestRoute, averageDataSize);
-                  final long newRouteCost = RouteCostEvaluator.evaluateTransferCost(compoundRoute,
-                      averageDataSize);
+                  final long newRouteCost = RouteCostEvaluator.evaluateTransferCost(compoundRoute, averageDataSize);
                   if (bestRouteCost > newRouteCost) {
                     table.removeRoutes(src, tgt);
                     table.addRoute(src, tgt, compoundRoute, averageDataSize);

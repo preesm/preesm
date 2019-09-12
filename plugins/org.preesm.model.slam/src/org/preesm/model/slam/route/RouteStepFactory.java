@@ -52,20 +52,6 @@ import org.preesm.model.slam.impl.MemImpl;
  */
 public class RouteStepFactory {
 
-  /** The archi. */
-  private Design archi = null;
-
-  /**
-   * Instantiates a new route step factory.
-   *
-   * @param archi
-   *          the archi
-   */
-  public RouteStepFactory(final Design archi) {
-    super();
-    this.archi = archi;
-  }
-
   /**
    * Generates the suited route steps from intermediate nodes.
    *
@@ -77,16 +63,16 @@ public class RouteStepFactory {
    *          the target
    * @return the route step
    */
-  public AbstractRouteStep getRouteStep(final ComponentInstance source, final List<ComponentInstance> nodes,
-      final ComponentInstance target) {
+  public static final AbstractRouteStep getRouteStep(final Design archi, final ComponentInstance source,
+      final List<ComponentInstance> nodes, final ComponentInstance target) {
     AbstractRouteStep step = null;
 
-    final ComponentInstance dma = getDma(nodes, source);
-    final ComponentInstance mem = getRam(nodes, source);
+    final ComponentInstance dma = getDma(archi, nodes, source);
+    final ComponentInstance mem = getRam(archi, nodes, source);
     if (dma != null) {
       step = new DmaRouteStep(source, nodes, target, dma);
     } else if (mem != null) {
-      step = new MemRouteStep(source, nodes, target, mem, getRamNodeIndex(nodes));
+      step = new MemRouteStep(source, nodes, target, mem, getRamNodeIndex(archi, nodes));
     } else {
       step = new MessageRouteStep(source, nodes, target);
     }
@@ -103,10 +89,11 @@ public class RouteStepFactory {
    *          the dma setup
    * @return the dma
    */
-  private ComponentInstance getDma(final List<ComponentInstance> nodes, final ComponentInstance dmaSetup) {
+  private static final ComponentInstance getDma(final Design archi, final List<ComponentInstance> nodes,
+      final ComponentInstance dmaSetup) {
     ComponentInstance dmaInst = null;
     for (final ComponentInstance node : nodes) {
-      for (final Link i : this.archi.getLinks()) {
+      for (final Link i : archi.getLinks()) {
         if (i.getSourceComponentInstance().getInstanceName().equals(node.getInstanceName())
             || i.getDestinationComponentInstance().getInstanceName().equals(node.getInstanceName())) {
           if (i.getSourceComponentInstance().getComponent() instanceof DmaImpl) {
@@ -117,7 +104,7 @@ public class RouteStepFactory {
           }
 
           if (dmaInst != null) {
-            if (existSetup(dmaInst, dmaSetup)) {
+            if (existSetup(archi, dmaInst, dmaSetup)) {
               return dmaInst;
             }
           }
@@ -136,10 +123,11 @@ public class RouteStepFactory {
    *          the ram setup
    * @return the ram
    */
-  private ComponentInstance getRam(final List<ComponentInstance> nodes, final ComponentInstance ramSetup) {
+  private static final ComponentInstance getRam(final Design archi, final List<ComponentInstance> nodes,
+      final ComponentInstance ramSetup) {
     ComponentInstance ramInst = null;
     for (final ComponentInstance node : nodes) {
-      for (final Link i : this.archi.getLinks()) {
+      for (final Link i : archi.getLinks()) {
         if (i.getSourceComponentInstance().getInstanceName().equals(node.getInstanceName())
             || i.getDestinationComponentInstance().getInstanceName().equals(node.getInstanceName())) {
           if (i.getSourceComponentInstance().getComponent() instanceof MemImpl) {
@@ -150,7 +138,7 @@ public class RouteStepFactory {
           }
 
           if (ramInst != null) {
-            if (existSetup(ramInst, ramSetup)) {
+            if (existSetup(archi, ramInst, ramSetup)) {
               return ramInst;
             }
           }
@@ -167,10 +155,10 @@ public class RouteStepFactory {
    *          the nodes
    * @return the ram node index
    */
-  private int getRamNodeIndex(final List<ComponentInstance> nodes) {
+  private static final int getRamNodeIndex(final Design archi, final List<ComponentInstance> nodes) {
     ComponentInstance ramInst = null;
     for (final ComponentInstance node : nodes) {
-      for (final Link i : this.archi.getLinks()) {
+      for (final Link i : archi.getLinks()) {
         if (i.getSourceComponentInstance().getInstanceName().equals(node.getInstanceName())
             || i.getDestinationComponentInstance().getInstanceName().equals(node.getInstanceName())) {
           if (i.getSourceComponentInstance().getComponent() instanceof MemImpl) {
@@ -198,9 +186,9 @@ public class RouteStepFactory {
    *          the op
    * @return true, if successful
    */
-  private boolean existSetup(final ComponentInstance cmp, final ComponentInstance op) {
+  private static final boolean existSetup(final Design archi, final ComponentInstance cmp, final ComponentInstance op) {
 
-    for (final Link i : this.archi.getLinks()) {
+    for (final Link i : archi.getLinks()) {
       if (i.getSourceComponentInstance().getInstanceName().equals(op.getInstanceName())
           && i.getDestinationComponentInstance().getInstanceName().equals(cmp.getInstanceName())
           && (i instanceof ControlLink)) {
