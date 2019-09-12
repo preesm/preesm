@@ -40,9 +40,7 @@ import java.util.List;
 import org.preesm.model.slam.ComponentInstance;
 import org.preesm.model.slam.ControlLink;
 import org.preesm.model.slam.Design;
-import org.preesm.model.slam.Dma;
 import org.preesm.model.slam.Link;
-import org.preesm.model.slam.Mem;
 import org.preesm.model.slam.impl.DmaImpl;
 import org.preesm.model.slam.impl.MemImpl;
 
@@ -83,8 +81,8 @@ public class RouteStepFactory {
       final ComponentInstance target) {
     AbstractRouteStep step = null;
 
-    final Dma dma = getDma(nodes, source);
-    final Mem mem = getRam(nodes, source);
+    final ComponentInstance dma = getDma(nodes, source);
+    final ComponentInstance mem = getRam(nodes, source);
     if (dma != null) {
       step = new DmaRouteStep(source, nodes, target, dma);
     } else if (mem != null) {
@@ -105,7 +103,7 @@ public class RouteStepFactory {
    *          the dma setup
    * @return the dma
    */
-  private Dma getDma(final List<ComponentInstance> nodes, final ComponentInstance dmaSetup) {
+  private ComponentInstance getDma(final List<ComponentInstance> nodes, final ComponentInstance dmaSetup) {
     ComponentInstance dmaInst = null;
     for (final ComponentInstance node : nodes) {
       for (final Link i : this.archi.getLinks()) {
@@ -120,7 +118,7 @@ public class RouteStepFactory {
 
           if (dmaInst != null) {
             if (existSetup(dmaInst, dmaSetup)) {
-              return (Dma) dmaInst.getComponent();
+              return dmaInst;
             }
           }
         }
@@ -138,7 +136,7 @@ public class RouteStepFactory {
    *          the ram setup
    * @return the ram
    */
-  private Mem getRam(final List<ComponentInstance> nodes, final ComponentInstance ramSetup) {
+  private ComponentInstance getRam(final List<ComponentInstance> nodes, final ComponentInstance ramSetup) {
     ComponentInstance ramInst = null;
     for (final ComponentInstance node : nodes) {
       for (final Link i : this.archi.getLinks()) {
@@ -153,7 +151,7 @@ public class RouteStepFactory {
 
           if (ramInst != null) {
             if (existSetup(ramInst, ramSetup)) {
-              return (Mem) ramInst.getComponent();
+              return ramInst;
             }
           }
         }

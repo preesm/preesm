@@ -194,7 +194,8 @@ public class ImplementationExporter extends GMLExporter<DAGVertex, DAGEdge> {
     if (RouteStepType.DMA_TYPE.equals(step.getType())) {
       routeStep.setAttribute("type", "dma");
       final DmaRouteStep dStep = (DmaRouteStep) step;
-      routeStep.setAttribute("dmaDef", dStep.getDma().getVlnv().getName());
+      routeStep.setAttribute("name", dStep.getDma().getInstanceName());
+      routeStep.setAttribute("dmaDef", dStep.getDma().getComponent().getVlnv().getName());
 
       for (final ComponentInstance node : dStep.getNodes()) {
         final Element eNode = dom.createElement("node");
@@ -215,7 +216,8 @@ public class ImplementationExporter extends GMLExporter<DAGVertex, DAGEdge> {
     } else if (RouteStepType.MEM_TYPE.equals(step.getType())) {
       routeStep.setAttribute("type", "ram");
       final MemRouteStep rStep = (MemRouteStep) step;
-      routeStep.setAttribute("ramDef", rStep.getMem().getVlnv().getName());
+      routeStep.setAttribute("name", rStep.getMem().getInstanceName());
+      routeStep.setAttribute("ramDef", rStep.getMem().getComponent().getVlnv().getName());
     }
   }
 

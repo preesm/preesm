@@ -148,8 +148,8 @@ public class DmaComRouterImplementer extends CommunicationRouterImplementer {
           }
         }
 
-        final Dma dmaDef = dmaStep.getDma();
-        final long overheadTime = dmaDef.getSetupTime();
+        final ComponentInstance dmaDef = dmaStep.getDma();
+        final long overheadTime = ((Dma) dmaDef.getComponent()).getSetupTime();
         if (incomingEdge != null) {
           transactions.add(new AddOverheadVertexTransaction(incomingEdge, getImplementation(), routeStep, overheadTime,
               getOrderManager()));
