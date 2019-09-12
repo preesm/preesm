@@ -77,19 +77,11 @@ public class RouteCalculator {
    * Gets the single instance of RouteCalculator.
    *
    */
-  public static RouteCalculator getInstance(final Design archi, final long averageDataSize) {
+  public static RouteCalculator getInstance(final Design archi) {
     if (!RouteCalculator.instances.containsKey(archi)) {
-      recalculate(archi, averageDataSize);
+      RouteCalculator.instances.put(archi, new RouteCalculator(archi));
     }
     return RouteCalculator.instances.get(archi);
-  }
-
-  /**
-   * Recalculate.
-   *
-   */
-  public static void recalculate(final Design archi, final long averageDataSize) {
-    RouteCalculator.instances.put(archi, new RouteCalculator(archi, averageDataSize));
   }
 
   /**
@@ -110,28 +102,28 @@ public class RouteCalculator {
    * @param scenario
    *          the scenario
    */
-  private RouteCalculator(final Design archi, final long averageDataSize) {
+  private RouteCalculator(final Design archi) {
 
     this.archi = archi;
     this.table = new RoutingTable();
 
     // Creating the route steps between directly connected operators
-    createRouteSteps(averageDataSize);
+    createRouteSteps();
     // Concatenation of route steps to generate optimal routes using
     // the Floyd Warshall algorithm
-    createRoutes(averageDataSize);
+    createRoutes();
   }
 
   /**
    * Creating recursively the route steps from the architecture.
    */
-  private void createRouteSteps(final long averageDataSize) {
+  private void createRouteSteps() {
     PreesmLogger.getLogger().log(Level.INFO, "creating route steps.");
 
     for (final ComponentInstance c : this.archi.getOperatorComponentInstances()) {
       final ComponentInstance o = c;
 
-      createRouteSteps(o, averageDataSize);
+      createRouteSteps(o);
     }
   }
 
@@ -141,7 +133,7 @@ public class RouteCalculator {
    * @param source
    *          the source
    */
-  private void createRouteSteps(final ComponentInstance source, final long averageDataSize) {
+  private void createRouteSteps(final ComponentInstance source) {
 
     // Iterating on outgoing and undirected edges
     final Set<Link> outgoingAndUndirected = new LinkedHashSet<>();
@@ -156,7 +148,7 @@ public class RouteCalculator {
 
         final List<ComponentInstance> alreadyVisitedNodes = new ArrayList<>();
         alreadyVisitedNodes.add(node);
-        exploreRoute(source, node, alreadyVisitedNodes, averageDataSize);
+        exploreRoute(source, node, alreadyVisitedNodes);
       }
     }
   }
@@ -172,7 +164,7 @@ public class RouteCalculator {
    *          the already visited nodes
    */
   private void exploreRoute(final ComponentInstance source, final ComponentInstance node,
-      final List<ComponentInstance> alreadyVisitedNodes, final long avgSize) {
+      final List<ComponentInstance> alreadyVisitedNodes) {
 
     // Iterating on outgoing and undirected edges
     final Set<Link> outgoingAndUndirected = new LinkedHashSet<>();
@@ -186,14 +178,14 @@ public class RouteCalculator {
         if (!alreadyVisitedNodes.contains(newNode)) {
           final List<ComponentInstance> newAlreadyVisitedNodes = new ArrayList<>(alreadyVisitedNodes);
           newAlreadyVisitedNodes.add(newNode);
-          exploreRoute(source, newNode, newAlreadyVisitedNodes, avgSize);
+          exploreRoute(source, newNode, newAlreadyVisitedNodes);
         }
       } else if ((otherEnd.getComponent() instanceof Operator)
           && !otherEnd.getInstanceName().equals(source.getInstanceName())) {
         final ComponentInstance target = otherEnd;
         final SlamRouteStep step = SlamUserFactory.eINSTANCE.createRouteStep(this.archi, source, alreadyVisitedNodes,
             target);
-        this.table.addRoute(source, target, SlamUserFactory.eINSTANCE.createSlamRoute(step), avgSize);
+        this.table.addRoute(source, target, SlamUserFactory.eINSTANCE.createSlamRoute(step));
       }
     }
   }
@@ -201,10 +193,10 @@ public class RouteCalculator {
   /**
    * Building recursively the routes between the cores.
    */
-  private void createRoutes(final long avgSize) {
+  private void createRoutes() {
     PreesmLogger.getLogger().log(Level.INFO, "Initializing routing table.");
 
-    floydWarshall(this.table, this.archi.getOperatorComponentInstances(), avgSize);
+    floydWarshall(this.table, this.archi.getOperatorComponentInstances());
   }
 
   /**
@@ -215,8 +207,7 @@ public class RouteCalculator {
    * @param operators
    *          the operators
    */
-  private void floydWarshall(final RoutingTable table, final List<ComponentInstance> operators,
-      final long averageDataSize) {
+  private void floydWarshall(final RoutingTable table, final List<ComponentInstance> operators) {
 
     for (final ComponentInstance k : operators) {
 
@@ -235,13 +226,13 @@ public class RouteCalculator {
                 // routes become available
                 final SlamRoute bestRoute = table.getBestRoute(src, tgt);
                 if (bestRoute == null) {
-                  table.addRoute(src, tgt, compoundRoute, averageDataSize);
+                  table.addRoute(src, tgt, compoundRoute);
                 } else {
-                  final long bestRouteCost = RouteCostEvaluator.evaluateTransferCost(bestRoute, averageDataSize);
-                  final long newRouteCost = RouteCostEvaluator.evaluateTransferCost(compoundRoute, averageDataSize);
+                  final double bestRouteCost = RouteCostEvaluator.evaluateTransferCost(bestRoute, 1);
+                  final double newRouteCost = RouteCostEvaluator.evaluateTransferCost(compoundRoute, 1);
                   if (bestRouteCost > newRouteCost) {
                     table.removeRoutes(src, tgt);
-                    table.addRoute(src, tgt, compoundRoute, averageDataSize);
+                    table.addRoute(src, tgt, compoundRoute);
                   }
                 }
               }

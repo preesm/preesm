@@ -115,8 +115,8 @@ public class SharedRamRouterImplementer extends CommunicationRouterImplementer {
       // All the transfers along the path have the same time: the time
       // to transfer the data on the slowest contention node
       final long dataSize = edge.getInit().getDataSize();
-      final long senderTransferTime = RouteCostEvaluator.getSenderSideWorstTransferTime(ramStep, dataSize);
-      final long receiverTransferTime = RouteCostEvaluator.getReceiverSideWorstTransferTime(ramStep, dataSize);
+      final long senderTransferTime = (long) RouteCostEvaluator.getSenderSideWorstTransferTime(ramStep, dataSize);
+      final long receiverTransferTime = (long) RouteCostEvaluator.getReceiverSideWorstTransferTime(ramStep, dataSize);
 
       // Adding the transfers of a ram route step
       if (type == CommunicationRouter.TRANSFER_TYPE) {

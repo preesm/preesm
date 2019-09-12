@@ -37,7 +37,6 @@
  */
 package org.preesm.model.slam.route;
 
-import com.google.common.primitives.Ints;
 import java.util.Comparator;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -98,24 +97,15 @@ public class RoutingTable {
    */
   private class RouteComparator implements Comparator<SlamRoute> {
 
-    /** The transfer size. */
-    private final long transferSize;
-
-    /**
-     * Instantiates a new route comparator.
-     *
-     * @param transferSize
-     *          the transfer size
-     */
-    public RouteComparator(final long transferSize) {
-      this.transferSize = transferSize;
-    }
-
     @Override
     public int compare(final SlamRoute o1, final SlamRoute o2) {
-      final long difference = RouteCostEvaluator.evaluateTransferCost(o1, transferSize)
-          - RouteCostEvaluator.evaluateTransferCost(o2, transferSize);
-      return Ints.saturatedCast(difference);
+      final double difference = RouteCostEvaluator.evaluateTransferCost(o1, 1)
+          - RouteCostEvaluator.evaluateTransferCost(o2, 1);
+      if (difference >= 0) {
+        return 1;
+      } else {
+        return -1;
+      }
     }
 
   }
@@ -127,8 +117,8 @@ public class RoutingTable {
 
     private static final long serialVersionUID = -851695207011182681L;
 
-    public RouteList(final long transferSize) {
-      super(new RouteComparator(transferSize));
+    public RouteList() {
+      super(new RouteComparator());
     }
 
     @Override
@@ -195,11 +185,10 @@ public class RoutingTable {
    * @param route
    *          the route
    */
-  public void addRoute(final ComponentInstance op1, final ComponentInstance op2, final SlamRoute route,
-      final long avgSize) {
+  public void addRoute(final ComponentInstance op1, final ComponentInstance op2, final SlamRoute route) {
     final OperatorCouple opCouple = new OperatorCouple(op1, op2);
     if (!this.table.containsKey(opCouple)) {
-      this.table.put(opCouple, new RouteList(avgSize));
+      this.table.put(opCouple, new RouteList());
     }
     this.table.get(opCouple).add(route);
   }

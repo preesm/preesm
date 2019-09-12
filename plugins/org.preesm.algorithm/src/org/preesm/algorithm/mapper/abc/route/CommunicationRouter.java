@@ -112,7 +112,7 @@ public class CommunicationRouter {
     this.implementers = new LinkedHashMap<>();
     setManagers(implementation, edgeScheduler, orderManager);
 
-    this.calculator = RouteCalculator.getInstance(archi, scenario.getSimulationInfo().getAverageDataSize());
+    this.calculator = RouteCalculator.getInstance(archi);
 
     // Initializing the available router implementers
     addImplementer(SlamRouteStepType.DMA_TYPE, new DmaComRouterImplementer(this));
@@ -351,7 +351,7 @@ public class CommunicationRouter {
    *          the edge
    * @return the long
    */
-  public long evaluateTransferCost(final MapperDAGEdge edge) {
+  public double evaluateTransferCost(final MapperDAGEdge edge) {
 
     final MapperDAGVertex source = ((MapperDAGVertex) edge.getSource());
     final MapperDAGVertex dest = ((MapperDAGVertex) edge.getTarget());
@@ -361,7 +361,7 @@ public class CommunicationRouter {
 
     final long dataSize = edge.getInit().getDataSize();
 
-    long cost = 0;
+    double cost = 0;
 
     // Retrieving the route
     if ((sourceOp != null) && (destOp != null)) {
