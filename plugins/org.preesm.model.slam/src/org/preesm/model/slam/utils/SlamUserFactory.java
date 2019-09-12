@@ -36,29 +36,29 @@ package org.preesm.model.slam.utils;
 
 import org.eclipse.emf.ecore.EClass;
 import org.preesm.model.slam.Component;
-import org.preesm.model.slam.SlamFactory;
 import org.preesm.model.slam.SlamPackage;
 import org.preesm.model.slam.VLNV;
+import org.preesm.model.slam.impl.SlamFactoryImpl;
 
 /**
  *
  * @author anmorvan
  *
  */
-public class SlamUserFactory {
+public class SlamUserFactory extends SlamFactoryImpl {
+
+  public static final SlamUserFactory eINSTANCE = new SlamUserFactory();
 
   private SlamUserFactory() {
     // Not meant to be instantiated: use static methods.
   }
 
-  private static final SlamFactory factory = SlamFactory.eINSTANCE;
-
   /**
    *
    */
-  public static final Component createComponent(final VLNV name, final String componentType) {
+  public Component createComponent(final VLNV name, final String componentType) {
     final EClass eClass = (EClass) SlamPackage.eINSTANCE.getEClassifier(componentType);
-    final Component component = (Component) SlamUserFactory.factory.create(eClass);
+    final Component component = (Component) super.create(eClass);
     component.setVlnv(name);
     return component;
   }
