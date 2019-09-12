@@ -11,7 +11,9 @@ PREESM Changelog
 * Fix PiSDF editor autoLayout, especially if having setters and getters on delays;
 * Change the line style of setters and getters to dash dot;
 * AutoLayout of Feedback Fifos is smarter (works also when no delays);
-* Slam: move route model to xcore;
+* Slam: 
+  * move route model to xcore;
+  * Refactor routing table;
 
 ### Bug fix
 * Fix #74

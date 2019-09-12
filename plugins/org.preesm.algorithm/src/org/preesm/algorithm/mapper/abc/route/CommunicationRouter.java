@@ -65,8 +65,8 @@ import org.preesm.model.slam.Design;
 import org.preesm.model.slam.SlamRoute;
 import org.preesm.model.slam.SlamRouteStep;
 import org.preesm.model.slam.SlamRouteStepType;
-import org.preesm.model.slam.route.RouteCalculator;
 import org.preesm.model.slam.route.RouteCostEvaluator;
+import org.preesm.model.slam.route.SlamRoutingTable;
 
 /**
  * Routes the communications. Based on bridge design pattern. The processing is delegated to implementers
@@ -91,7 +91,7 @@ public class CommunicationRouter {
   public static final int INVOLVEMENT_TYPE = 4;
 
   /** The calculator. */
-  private RouteCalculator calculator = null;
+  private final SlamRoutingTable routingTable;
 
   /**
    * Instantiates a new communication router.
@@ -112,7 +112,7 @@ public class CommunicationRouter {
     this.implementers = new LinkedHashMap<>();
     setManagers(implementation, edgeScheduler, orderManager);
 
-    this.calculator = RouteCalculator.getInstance(archi, scenario.getSimulationInfo().getAverageDataSize());
+    this.routingTable = new SlamRoutingTable(archi);
 
     // Initializing the available router implementers
     addImplementer(SlamRouteStepType.DMA_TYPE, new DmaComRouterImplementer(this));
@@ -351,7 +351,7 @@ public class CommunicationRouter {
    *          the edge
    * @return the long
    */
-  public long evaluateTransferCost(final MapperDAGEdge edge) {
+  public double evaluateTransferCost(final MapperDAGEdge edge) {
 
     final MapperDAGVertex source = ((MapperDAGVertex) edge.getSource());
     final MapperDAGVertex dest = ((MapperDAGVertex) edge.getTarget());
@@ -361,11 +361,11 @@ public class CommunicationRouter {
 
     final long dataSize = edge.getInit().getDataSize();
 
-    long cost = 0;
+    double cost = 0;
 
     // Retrieving the route
     if ((sourceOp != null) && (destOp != null)) {
-      final SlamRoute route = this.calculator.getRoute(sourceOp, destOp);
+      final SlamRoute route = this.routingTable.getRoute(sourceOp, destOp);
       cost = RouteCostEvaluator.evaluateTransferCost(route, dataSize);
     } else {
       final String msg = "trying to evaluate a transfer between non mapped operators.";
@@ -383,7 +383,7 @@ public class CommunicationRouter {
     final MapperDAGVertex target = (MapperDAGVertex) edge.getTarget();
     final ComponentInstance sourceOp = source.getEffectiveOperator();
     final ComponentInstance targetOp = target.getEffectiveOperator();
-    return calculator.getRoute(sourceOp, targetOp);
+    return routingTable.getRoute(sourceOp, targetOp);
   }
 
 }

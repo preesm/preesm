@@ -27,19 +27,19 @@ public class RouteCostEvaluator {
    *          the transfer size
    * @return the long
    */
-  public static final long evaluateTransferCost(final SlamRoute route, final long transferSize) {
-    return new SlamRouteStepCostEvaluator(transferSize).doSwitch(route);
+  public static final double evaluateTransferCost(final SlamRoute route, final long transferSize) {
+    return new SlamRouteStepCostFactorEvaluator().doSwitch(route) * (double) transferSize;
   }
 
   /**
    * Evaluates the cost of a data transfer with size transferSize. This cost can include overheads, involvements...
    *
-   * @param transfersSize
+   * @param transferSize
    *          the transfers size
    * @return the transfer cost
    */
-  public static final long getTransferCost(final SlamRouteStep routeStep, final long transfersSize) {
-    return new SlamRouteStepCostEvaluator(transfersSize).doSwitch(routeStep);
+  public static final double getTransferCost(final SlamRouteStep routeStep, final long transferSize) {
+    return new SlamRouteStepCostFactorEvaluator().doSwitch(routeStep) * (double) transferSize;
   }
 
   /**
@@ -49,11 +49,12 @@ public class RouteCostEvaluator {
    *          the transfers size
    * @return the sender side worst transfer time
    */
-  public static long getSenderSideWorstTransferTime(final SlamMemoryRouteStep memRouteStep, final long transfersSize) {
-    long time = 0;
+  public static double getSenderSideWorstTransferTime(final SlamMemoryRouteStep memRouteStep,
+      final long transfersSize) {
+    double time = 0;
 
     for (final ComponentInstance node : memRouteStep.getSenderSideContentionNodes()) {
-      time = Math.max(time, (long) (transfersSize / ((ComNode) node.getComponent()).getSpeed()));
+      time = Math.max(time, ((double) transfersSize / ((ComNode) node.getComponent()).getSpeed()));
     }
     return time;
   }
@@ -65,12 +66,12 @@ public class RouteCostEvaluator {
    *          the transfers size
    * @return the receiver side worst transfer time
    */
-  public static long getReceiverSideWorstTransferTime(final SlamMemoryRouteStep memRouteStep,
+  public static double getReceiverSideWorstTransferTime(final SlamMemoryRouteStep memRouteStep,
       final long transfersSize) {
-    long time = 0;
+    double time = 0;
 
     for (final ComponentInstance node : memRouteStep.getReceiverSideContentionNodes()) {
-      time = Math.max(time, (long) (transfersSize / ((ComNode) node.getComponent()).getSpeed()));
+      time = Math.max(time, ((double) transfersSize / ((ComNode) node.getComponent()).getSpeed()));
     }
     return time;
   }
@@ -80,17 +81,11 @@ public class RouteCostEvaluator {
    * @author anmorvan
    *
    */
-  private static class SlamRouteStepCostEvaluator extends SlamSwitch<Long> {
-
-    private long transferSize;
-
-    SlamRouteStepCostEvaluator(final long transferSize) {
-      this.transferSize = transferSize;
-    }
+  private static class SlamRouteStepCostFactorEvaluator extends SlamSwitch<Double> {
 
     @Override
-    public Long caseSlamRoute(SlamRoute route) {
-      long cost = 0;
+    public Double caseSlamRoute(SlamRoute route) {
+      double cost = 0;
       // Iterating the route and incrementing transfer cost
       for (final SlamRouteStep step : route.getRouteSteps()) {
         cost += doSwitch(step);
@@ -99,13 +94,13 @@ public class RouteCostEvaluator {
     }
 
     @Override
-    public Long caseSlamMessageRouteStep(SlamMessageRouteStep msg) {
-      long time = 0;
+    public Double caseSlamMessageRouteStep(SlamMessageRouteStep msg) {
+      double time = 0;
       for (final ComponentInstance node : msg.getNodes()) {
         final Component def = node.getComponent();
         if (def instanceof ComNode) {
           final ComNode comNode = (ComNode) def;
-          time = Math.max(time, (long) (transferSize / comNode.getSpeed()));
+          time = Math.max(time, (1d / comNode.getSpeed()));
         }
       }
 

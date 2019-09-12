@@ -34,7 +34,7 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL license and that you accept its terms.
  */
-package org.preesm.model.slam.route;
+package org.preesm.model.slam.utils;
 
 import java.util.List;
 import org.preesm.model.slam.ComponentInstance;
@@ -50,7 +50,7 @@ import org.preesm.model.slam.impl.MemImpl;
  *
  * @author mpelcat
  */
-public class RouteStepFactory {
+public class SlamCommunicationFinder {
 
   /**
    * Gets the dma corresponding to the step if any exists. The Dma must have a setup link with the source.
@@ -146,16 +146,17 @@ public class RouteStepFactory {
   /**
    * Checks if a setup link exists between cmp and operator.
    *
-   * @param cmp
+   * @param target
    *          the cmp
-   * @param op
+   * @param source
    *          the op
    * @return true, if successful
    */
-  private static final boolean existSetup(final Design archi, final ComponentInstance cmp, final ComponentInstance op) {
+  private static final boolean existSetup(final Design archi, final ComponentInstance target,
+      final ComponentInstance source) {
 
     for (final Link i : archi.getLinks()) {
-      if (i.getSourceComponentInstance() == op && i.getDestinationComponentInstance() == cmp
+      if (i.getSourceComponentInstance() == source && i.getDestinationComponentInstance() == target
           && (i instanceof ControlLink)) {
         return true;
       }

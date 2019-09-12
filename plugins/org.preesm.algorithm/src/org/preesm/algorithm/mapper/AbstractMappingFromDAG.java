@@ -69,7 +69,6 @@ import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.model.scenario.Scenario;
 import org.preesm.model.slam.ComponentInstance;
 import org.preesm.model.slam.Design;
-import org.preesm.model.slam.route.RouteCalculator;
 import org.preesm.workflow.elements.Workflow;
 import org.preesm.workflow.implement.AbstractTaskImplementation;
 import org.preesm.workflow.implement.AbstractWorkflowNodeImplementation;
@@ -111,9 +110,6 @@ public abstract class AbstractMappingFromDAG extends AbstractTaskImplementation 
     final MapperDAG dag = (MapperDAG) inputs.get(AbstractWorkflowNodeImplementation.KEY_SDF_DAG);
     final Scenario scenario = (Scenario) inputs.get(AbstractWorkflowNodeImplementation.KEY_SCENARIO);
 
-    // Asking to recalculate routes
-    RouteCalculator.recalculate(architecture, scenario.getSimulationInfo().getAverageDataSize());
-
     if (dag == null) {
       throw new PreesmRuntimeException(" graph can't be scheduled, check console messages");
     }
@@ -154,7 +150,6 @@ public abstract class AbstractMappingFromDAG extends AbstractTaskImplementation 
       outputs.put(AbstractWorkflowNodeImplementation.KEY_SDF_ABC, resSimu);
       outputs.put(AbstractWorkflowNodeImplementation.KEY_SDF_DAG, dag);
 
-      clean(architecture);
       PreesmLogger.getLogger().log(Level.INFO, "DAG fully mapped, now removes useless sync and check schedules.");
       removeRedundantSynchronization(parameters, dag);
       checkSchedulingResult(parameters, resDag);
@@ -191,19 +186,6 @@ public abstract class AbstractMappingFromDAG extends AbstractTaskImplementation 
     parameters.put(AbstractMappingFromDAG.PARAM_CHECK, AbstractMappingFromDAG.VALUE_TRUE);
     parameters.put(AbstractMappingFromDAG.PARAM_OPTIMIZE, AbstractMappingFromDAG.VALUE_FALSE);
     return parameters;
-  }
-
-  /**
-   * Clean.
-   *
-   * @param architecture
-   *          the architecture
-   * @param scenario
-   *          the scenario
-   */
-  private void clean(final Design architecture) {
-    // Asking to delete route
-    RouteCalculator.deleteRoutes(architecture);
   }
 
   /**

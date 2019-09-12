@@ -120,7 +120,7 @@ public class DmaComRouterImplementer extends CommunicationRouterImplementer {
       if (type == CommunicationRouter.TRANSFER_TYPE) {
         // All the transfers along the path have the same time: the time
         // to transfer the data on the slowest contention node
-        final long transferTime = RouteCostEvaluator.getTransferCost(dmaStep, edge.getInit().getDataSize());
+        final long transferTime = (long) RouteCostEvaluator.getTransferCost(dmaStep, edge.getInit().getDataSize());
         final List<ComponentInstance> nodes = dmaStep.getContentionNodes();
         AddTransferVertexTransaction transaction = null;
 
