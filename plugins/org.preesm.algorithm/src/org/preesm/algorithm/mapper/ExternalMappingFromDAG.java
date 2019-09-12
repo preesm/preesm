@@ -273,12 +273,17 @@ public class ExternalMappingFromDAG extends AbstractMappingFromDAG {
 
       }
 
-      Long start = e.getValue().getStart();
+      ScheduleEntry se = e.getValue();
+
+      Integer core = se.getCore();
+      Long start = se.getStart();
       for (DAGVertex vertex : predecessorsWS) {
-        Long predStart = entries.get(vertex).getStart();
-        if (start < predStart) {
-          throw new PreesmRuntimeException("Start times of firings " + vtx.getName() + " and " + vertex.getName()
-              + " do not resepct their precedence order.");
+        ScheduleEntry predSE = entries.get(vertex);
+        Long predEnd = predSE.getEnd();
+        Integer predCore = predSE.getCore();
+        if (start < predEnd && predCore.equals(core)) {
+          throw new PreesmRuntimeException("Start time of firing " + vtx.getName() + " and end time of "
+              + vertex.getName() + " do not resepct their precedence order.");
         }
       }
 
@@ -435,7 +440,8 @@ public class ExternalMappingFromDAG extends AbstractMappingFromDAG {
         vnbInstance = m.group(2);
       }
       if (vshortName == null || vnbInstance == null) {
-        throw new PreesmRuntimeException("One SRDAG actor could not be parsed correctly: " + vname + " [" + kind);
+        PreesmLogger.getLogger().log(Level.WARNING,
+            "One SRDAG actor could not be parsed correctly: " + vname + " [" + kind);
       } else if (vshortName.equals(taskName)) {
         if (Integer.parseInt(vnbInstance) == nbInstance) {
           res = vertex;
