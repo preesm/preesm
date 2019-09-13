@@ -91,7 +91,6 @@ public class PiSDFMergeabilty {
     final long clusterRepetition = MathFunctionsHelper.gcd(CollectionUtil.mapGetAll(brv, Arrays.asList(x, y)));
 
     boolean result = true;
-    boolean delayInside = false;
 
     for (final Fifo incomingFifo : incomingFifos) {
       final long prodRate = incomingFifo.getSourcePort().getPortRateExpression().evaluate();
@@ -104,14 +103,13 @@ public class PiSDFMergeabilty {
         delayValue = 0;
       } else {
         delayValue = delay.getExpression().evaluate();
-        delayInside = true;
       }
 
       // Precedence shift condition verification
-      final boolean fifoTransferNotNull = (consRate / (individualRepetition * prodRate)) > 0;
-      final boolean fifoValueIsConsistent = (consRate % (individualRepetition * prodRate)) == 0;
-      final boolean delayIsPresent = (delayValue / (individualRepetition * prodRate)) >= 0;
-      final boolean delayValueIsConsistent = (delayValue % (individualRepetition * prodRate)) == 0;
+      final boolean fifoTransferNotNull = (prodRate / (individualRepetition * consRate)) > 0;
+      final boolean fifoValueIsConsistent = (prodRate % (individualRepetition * consRate)) == 0;
+      final boolean delayIsPresent = (delayValue / (individualRepetition * consRate)) >= 0;
+      final boolean delayValueIsConsistent = (delayValue % (individualRepetition * consRate)) == 0;
 
       if (!(fifoValueIsConsistent && delayValueIsConsistent && fifoTransferNotNull && delayIsPresent)) {
         result = false;
@@ -128,7 +126,6 @@ public class PiSDFMergeabilty {
         delayValue = 0;
       } else {
         delayValue = delay.getExpression().evaluate();
-        delayInside = true;
       }
 
       // Precedence shift condition verification
@@ -143,7 +140,7 @@ public class PiSDFMergeabilty {
     }
 
     // If no delay was present on all fifos, the result can be true without compromising clustering
-    return result || !delayInside;
+    return result;
   }
 
   private static List<Fifo> findInFifos(final AbstractActor x, final AbstractActor y) {
@@ -202,8 +199,8 @@ public class PiSDFMergeabilty {
       }
     }
 
-    final boolean yDividesX = brv.get(x) % brv.get(y) == 0;
-    final boolean xDividesY = brv.get(y) % brv.get(x) == 0;
+    final boolean yDividesX = (brv.get(x) % brv.get(y)) == 0;
+    final boolean xDividesY = (brv.get(y) % brv.get(x)) == 0;
     return !outgoingFifos.isEmpty() && (yDividesX || xDividesY);
   }
 

@@ -229,6 +229,10 @@ public class PiSDFParameterResolverVisitor extends PiMMSwitch<Boolean> {
           + " has configuration actors. It is thus impossible to use the" + " Static PiMM to SRDAG transformation.");
     }
 
+    if (graph.isCluster()) {
+      return caseOtherActors(graph);
+    }
+
     // Resolve input interfaces
     for (final ConfigInputInterface p : graph.getConfigInputInterfaces()) {
       doSwitch(p);

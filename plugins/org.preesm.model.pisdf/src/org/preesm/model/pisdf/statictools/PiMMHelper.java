@@ -343,7 +343,9 @@ public class PiMMHelper {
     }
     // 2. We deal with hierarchical stuff
     for (final PiGraph g : piGraph.getChildrenGraphs()) {
-      recursiveRemovePersistence(g);
+      if (!g.isCluster()) {
+        recursiveRemovePersistence(g);
+      }
     }
   }
 
