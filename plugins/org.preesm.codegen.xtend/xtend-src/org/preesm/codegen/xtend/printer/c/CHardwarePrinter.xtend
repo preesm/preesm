@@ -627,9 +627,17 @@ class CHardwarePrinter extends CPrinter {
 		var flagFirstFunctionPAPIFYFoundTIMINGSTOP = 0;
 		var flagFirstFunctionPAPIFYFoundWRITE = 0;
 		var firstPapifyFunctionFound = 0;
+		var onlyActorFunctionCallPosition = -1;
+		var PapifyFunctionCall eventStartHardware = CodegenModelUserFactory.eINSTANCE.createPapifyFunctionCall();
 		while (i > 0) {
 			// Retrieve the function ID
 			val elt = coreLoop.codeElts.get(i)
+			// locating where the only actor firing is
+			if (elt instanceof ActorFunctionCall) {
+				//PreesmLogger.getLogger().info("[HARDWARE DEBUG] the only function call is at line " + i);
+				onlyActorFunctionCallPosition = i;
+			}
+			
 			if ((elt instanceof PapifyFunctionCall)) {
 				var papifyTypeVariable =elt.papifyType
 				// even with more that one hardware SLOT, the file that should be created is just one.
@@ -753,6 +761,8 @@ class CHardwarePrinter extends CPrinter {
 		for (var j = numberOfSlotDetected - 1; j >= 1; j--) {
 			printerBlocks.remove(j)
 		}
+		
+		
 
 		PreesmLogger.getLogger().info("[HARDWARE] End of the Hardware preProcessing.");
 		/*
