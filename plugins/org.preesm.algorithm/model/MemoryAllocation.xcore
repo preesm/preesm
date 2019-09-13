@@ -121,13 +121,20 @@ class FifoAllocationEntry wraps java.util.Map$Entry {
 
 class FifoAllocation {
 	refers Fifo fifo
+
+	// must verify that the fifo source actor is mapped to an operator
+	// with a link to memory bank storing the sourceBuffer
 	refers Buffer sourceBuffer
+
+	// must verify that the fifo target actor is mapped to an operator
+	// with a link to memory bank storing the targetBuffer
 	refers Buffer targetBuffer
+
 	// List of component instances (operators) used as proxy in the route
 	// and their allocated buffer to store the intermediate data to forward.
 	// Components appear in the order of transfers.
 	// Can be empty if the route does not use any proxy operator, i.e. when
-	// source and target buffers are the same;
+	// source and target buffers are on the same memory bank;
 	contains RouteBuffer[] routeBuffers
 
 	op Buffer[] getAllBuffers() {
@@ -135,6 +142,8 @@ class FifoAllocation {
 	}
 }
 
+// must verify that the proxy operator 'key' has a link to the
+// memory bank storing the temporary buffer 'value'
 class RouteBuffer wraps java.util.Map$Entry {
 	// the proxy operator
 	refers ComponentInstance key
