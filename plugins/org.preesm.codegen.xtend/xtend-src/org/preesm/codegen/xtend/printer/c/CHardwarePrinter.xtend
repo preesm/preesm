@@ -629,6 +629,10 @@ class CHardwarePrinter extends CPrinter {
 		var firstPapifyFunctionFound = 0;
 		var onlyActorFunctionCallPosition = -1;
 		var PapifyFunctionCall eventStartHardware = CodegenModelUserFactory.eINSTANCE.createPapifyFunctionCall();
+		var PapifyFunctionCall eventStopHardware = CodegenModelUserFactory.eINSTANCE.createPapifyFunctionCall();
+		var PapifyFunctionCall timingStartHardware = CodegenModelUserFactory.eINSTANCE.createPapifyFunctionCall();
+		var PapifyFunctionCall timingStopHardware = CodegenModelUserFactory.eINSTANCE.createPapifyFunctionCall();
+		var PapifyFunctionCall writeHardware = CodegenModelUserFactory.eINSTANCE.createPapifyFunctionCall();
 		while (i > 0) {
 			// Retrieve the function ID
 			val elt = coreLoop.codeElts.get(i)
@@ -666,6 +670,8 @@ class CHardwarePrinter extends CPrinter {
 						if(flagFirstFunctionPAPIFYFoundEVENTSTART == 0){
 							//keep the last one detected
 							flagFirstFunctionPAPIFYFoundEVENTSTART++;
+							eventStartHardware = elt;
+							coreLoop.codeElts.remove(i);
 						}
 						else if(flagFirstFunctionPAPIFYFoundEVENTSTART > 0 ){
 							//remove all the other different from the last one
@@ -676,6 +682,8 @@ class CHardwarePrinter extends CPrinter {
 						if(flagFirstFunctionPAPIFYFoundEVENTSTOP == 0){
 							//keep the last one detected
 							flagFirstFunctionPAPIFYFoundEVENTSTOP++;
+							eventStopHardware = elt;
+							coreLoop.codeElts.remove(i);
 						}
 						else if(flagFirstFunctionPAPIFYFoundEVENTSTOP > 0 ){
 							//remove all the other different from the last one
@@ -686,6 +694,8 @@ class CHardwarePrinter extends CPrinter {
 						if(flagFirstFunctionPAPIFYFoundTIMINGSTART == 0){
 							//keep the last one detected
 							flagFirstFunctionPAPIFYFoundTIMINGSTART++;
+							timingStartHardware = elt;
+							coreLoop.codeElts.remove(i);
 						}
 						else if(flagFirstFunctionPAPIFYFoundTIMINGSTART > 0 ){
 							//remove all the other different from the last one
@@ -696,6 +706,8 @@ class CHardwarePrinter extends CPrinter {
 						if(flagFirstFunctionPAPIFYFoundTIMINGSTOP == 0){
 							//keep the last one detected
 							flagFirstFunctionPAPIFYFoundTIMINGSTOP++;
+							timingStopHardware = elt;
+							coreLoop.codeElts.remove(i);
 						}
 						else if(flagFirstFunctionPAPIFYFoundTIMINGSTOP > 0 ){
 							//remove all the other different from the last one
