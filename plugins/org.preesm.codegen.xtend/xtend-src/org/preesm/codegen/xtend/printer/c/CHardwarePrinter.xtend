@@ -730,7 +730,22 @@ class CHardwarePrinter extends CPrinter {
 			}
 			i--;
 		}
-
+		
+		//inserting the PAPIFY functions in the right place
+		i = coreLoop.codeElts.size-1;
+		while (i > 0) {
+			// Retrieve the function ID
+			val elt = coreLoop.codeElts.get(i)
+			if (elt instanceof ActorFunctionCall) {
+				//PreesmLogger.getLogger().info("[HARDWARE DEBUG] the only function call is at line " + i);
+				onlyActorFunctionCallPosition = i;
+			}
+			i--;
+		}
+		coreLoop.codeElts.add(onlyActorFunctionCallPosition+1,eventStopHardware)
+		coreLoop.codeElts.add(onlyActorFunctionCallPosition+1,timingStopHardware)
+		coreLoop.codeElts.add(onlyActorFunctionCallPosition,timingStartHardware)
+		coreLoop.codeElts.add(onlyActorFunctionCallPosition,eventStartHardware)
 		//deleting all the PAPIFY function useless when using hardware. Keeping just the last one.
 		//var coreLoop = (block as CoreBlock).loopBlock
 		var initBlock = (block as CoreBlock).initBlock
