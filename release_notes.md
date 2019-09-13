@@ -20,7 +20,7 @@ PREESM Changelog
 * Fix #83
 * Fix #128
 * Fix #190
-
+* Fix problem with precedence shift condition (clustering purposes)
 
 ## Release version 3.17.0
 *2019.09.09*
