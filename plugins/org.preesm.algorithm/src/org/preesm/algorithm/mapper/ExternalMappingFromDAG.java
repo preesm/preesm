@@ -131,7 +131,7 @@ public class ExternalMappingFromDAG extends AbstractMappingFromDAG {
     // 4- retrieve topological order of firings
     long nbActors = 0;
     final Map<DAGVertex, Long> actorsRank = new HashMap<>();
-    final TopologicalDAGIterator topologicalDAGIterator = new TopologicalDAGIterator(dag);
+    TopologicalDAGIterator topologicalDAGIterator = new TopologicalDAGIterator(dag);
     while (topologicalDAGIterator.hasNext()) {
       DAGVertex vertex = topologicalDAGIterator.next();
       actorsRank.put(vertex, nbActors);
@@ -139,11 +139,15 @@ public class ExternalMappingFromDAG extends AbstractMappingFromDAG {
     }
 
     // 5.1 - build unordered lists of vertices per core ID
-    final List<List<DAGVertex>> orderedVertices = new ArrayList<>();
+    final Map<Integer, List<DAGVertex>> orderedVertices = new HashMap<>();
+    Map<Integer, ComponentInstance> ciI = new HashMap<>();
     for (int i = 0; i < componentInstances.size(); i++) {
       final ComponentInstance componentInstance = componentInstances.get(i);
       if (componentInstance.getComponent() instanceof Operator) {
-        orderedVertices.add(new ArrayList<>());
+        int coreId = componentInstance.getHardwareId();
+        PreesmLogger.getLogger().log(Level.INFO, "Adding core operator with id: " + coreId);
+        orderedVertices.put(coreId, new ArrayList<>());
+        ciI.put(coreId, componentInstance);
       }
     }
     final Map<DAGVertex, Integer> vertexToCore = new HashMap<>();
@@ -183,7 +187,7 @@ public class ExternalMappingFromDAG extends AbstractMappingFromDAG {
         do {
           associateVtx = ExternalMappingFromDAG.getAssociateVertex(associateVtx, Direction.FORWARD);
           visitedNodes.add(associateVtx);
-        } while (unmappedVertices.contains(associateVtx) && associateVtx != null);
+        } while (associateVtx != null && unmappedVertices.contains(associateVtx));
       }
 
       int coreId = vertexToCore.get(associateVtx).intValue();
@@ -198,7 +202,7 @@ public class ExternalMappingFromDAG extends AbstractMappingFromDAG {
     removeEndOrInit(unmappedVertices, endVertices, true);
 
     // fork and joins
-    while (unmappedVertices.isEmpty()) {
+    while (!unmappedVertices.isEmpty()) {
       Iterator<DAGVertex> itv = unmappedVertices.iterator();
       DAGVertex vtx = itv.next();
 
@@ -207,7 +211,7 @@ public class ExternalMappingFromDAG extends AbstractMappingFromDAG {
       DAGVertex associateVtx = ExternalMappingFromDAG.getAssociateVertex(vtx, Direction.NONE);
       if (unmappedVertices.contains(associateVtx)) {
         associateVtx = vtx;
-        while (unmappedVertices.contains(associateVtx) && associateVtx != null) {
+        while (associateVtx != null && unmappedVertices.contains(associateVtx)) {
           associateVtx = ExternalMappingFromDAG.getAssociateVertex(associateVtx, Direction.BACKWARD);
           visitedNodes.add(associateVtx);
         }
@@ -227,7 +231,10 @@ public class ExternalMappingFromDAG extends AbstractMappingFromDAG {
       if (!entries.containsKey(vtx) && MapperDAGVertex.DAG_END_VERTEX.equals(nodeKind)) {
         final String oppositeINIT = vtx.getPropertyStringValue(MapperDAGVertex.END_REFERENCE);
         DAGVertex associateVtx = dag.getVertex(oppositeINIT);
-        orderedVertices.get(vertexToCore.get(associateVtx)).add(vtx);
+        int coreId = vertexToCore.get(associateVtx);
+        orderedVertices.get(coreId).add(vtx);
+        vertexToCore.put(vtx, coreId);
+        unmappedVertices.remove(vtx);
       }
     }
 
@@ -235,16 +242,28 @@ public class ExternalMappingFromDAG extends AbstractMappingFromDAG {
 
     final LatencyAbc abc = LatencyAbc.getInstance(abcParams, dag, architecture, scenario);
     // 6- sort vertex lists following start dates from the schedule entries and apply schedule
-    for (int i = 0; i < orderedVertices.size(); i++) {
-      final ComponentInstance componentInstance = componentInstances.get(i);
+
+    // topologicalDAGIterator = new TopologicalDAGIterator(dag);
+    // while (topologicalDAGIterator.hasNext()) {
+    // DAGVertex vertex = topologicalDAGIterator.next();
+    // int coreId = vertexToCore.get(vertex);
+    // System.err.println("Mapping vertex " + vertex.getName() + " on core " + coreId);
+    // mapVertex(abc, ciI.get(coreId), vertex);
+    // }
+    for (Entry<Integer, ComponentInstance> e : ciI.entrySet()) {
+      int i = e.getKey();
+      System.err.println("Mapping CORE " + i);
       final List<DAGVertex> list = orderedVertices.get(i);
+      final ComponentInstance componentInstance = e.getValue();
       list.sort(new ScheduleComparator(entries, actorsRank));
       for (final DAGVertex v : list) {
+        System.err.println("Mapping: " + v.getName());
         mapVertex(abc, componentInstance, v);
       }
     }
 
     return abc;
+
   }
 
   private static void checkStartTimePrecedences(Map<DAGVertex, ScheduleEntry> entries) {
@@ -355,13 +374,27 @@ public class ExternalMappingFromDAG extends AbstractMappingFromDAG {
           throw new PreesmRuntimeException("Regular firings are missing. As: " + vtx.getName());
       }
     } else if (dir == Direction.FORWARD) {
-      edges = vtx.outgoingEdges();
-      final DAGEdge outEdge = edges.iterator().next();
-      associateVtx = outEdge.getTarget();
+      for (DAGEdge outEdge : vtx.outgoingEdges()) {
+        DAGVertex tgt = outEdge.getTarget();
+        if (tgt != vtx) {
+          associateVtx = tgt;
+          break;
+        }
+      }
+      if (associateVtx == null) {
+        throw new PreesmRuntimeException("Found a loop while looking for associate vertex.");
+      }
     } else if (dir == Direction.BACKWARD) {
-      edges = vtx.incomingEdges();
-      final DAGEdge inEdge = edges.iterator().next();
-      associateVtx = inEdge.getSource();
+      for (DAGEdge inEdge : vtx.incomingEdges()) {
+        DAGVertex src = inEdge.getSource();
+        if (src != vtx) {
+          associateVtx = src;
+          break;
+        }
+      }
+      if (associateVtx == null) {
+        throw new PreesmRuntimeException("Found a loop while looking for associate vertex.");
+      }
     }
     return associateVtx;
   }
