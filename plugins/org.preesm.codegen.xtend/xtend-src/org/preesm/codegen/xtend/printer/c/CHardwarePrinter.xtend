@@ -106,10 +106,6 @@ class CHardwarePrinter extends CPrinter {
 		#include "eventLib.h"
 	'''
 
-	override printCoreInitBlockHeader(CallBlock callBlock) '''
-		«super.printCoreInitBlockHeader(callBlock)»
-	'''
-
 	override printCoreLoopBlockFooter(LoopBlock block2) '''
 			pthread_barrier_wait(&iter_barrier);
 		}
