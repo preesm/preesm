@@ -126,7 +126,8 @@ class FifoAllocation {
 	// List of component instances (operators) used as proxy in the route
 	// and their allocated buffer to store the intermediate data to forward.
 	// Components appear in the order of transfers.
-	// Can be empty if the route does not use any proxy operator.
+	// Can be empty if the route does not use any proxy operator, i.e. when
+	// source and target buffers are the same;
 	contains RouteBuffer[] routeBuffers
 
 	op Buffer[] getAllBuffers() {

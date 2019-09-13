@@ -39,6 +39,7 @@ import java.util.stream.Collectors;
 import org.eclipse.emf.common.util.EList;
 import org.preesm.algorithm.mapping.model.Mapping;
 import org.preesm.algorithm.memalloc.model.Allocation;
+import org.preesm.algorithm.memalloc.model.FifoAllocation;
 import org.preesm.algorithm.memalloc.model.LogicalBuffer;
 import org.preesm.algorithm.memalloc.model.MemoryAllocationFactory;
 import org.preesm.algorithm.memalloc.model.PhysicalBuffer;
@@ -70,7 +71,7 @@ public class SimpleMemoryAllocation implements IMemoryAllocation {
 
     final PhysicalBuffer physBuff = MemoryAllocationFactory.eINSTANCE.createPhysicalBuffer();
     memAlloc.getPhysicalBuffers().add(physBuff);
-    physBuff.setMemory(mainComNode);
+    physBuff.setMemoryBank(mainComNode);
 
     long totalSize = 0L;
     final EList<Fifo> fifos = piGraph.getFifos();
@@ -81,11 +82,15 @@ public class SimpleMemoryAllocation implements IMemoryAllocation {
       final long fifoBufferSize = dataTypeSize * fifoTokenSize;
 
       final LogicalBuffer logicBuff = MemoryAllocationFactory.eINSTANCE.createLogicalBuffer();
-      logicBuff.setMemory(physBuff);
+      logicBuff.setContainingBuffer(physBuff);
       logicBuff.setSize(fifoBufferSize);
       logicBuff.setOffset(totalSize);
+      final FifoAllocation fifoAllocation = MemoryAllocationFactory.eINSTANCE.createFifoAllocation();
+      fifoAllocation.setFifo(fifo);
+      fifoAllocation.setSourceBuffer(logicBuff);
+      fifoAllocation.setTargetBuffer(logicBuff);
 
-      memAlloc.getFifoAllocations().put(fifo, logicBuff);
+      memAlloc.getFifoAllocations().put(fifo, fifoAllocation);
 
       totalSize += fifoBufferSize;
     }
@@ -99,7 +104,7 @@ public class SimpleMemoryAllocation implements IMemoryAllocation {
       final long delayBufferSize = dataTypeSize * delayTokenSize;
 
       final LogicalBuffer logicBuff = MemoryAllocationFactory.eINSTANCE.createLogicalBuffer();
-      logicBuff.setMemory(physBuff);
+      logicBuff.setContainingBuffer(physBuff);
       logicBuff.setSize(delayBufferSize);
       logicBuff.setOffset(totalSize);
 
