@@ -47,9 +47,10 @@ import org.apache.commons.collections4.BidiMap;
 import org.apache.commons.collections4.bidimap.DualHashBidiMap;
 import org.eclipse.emf.common.util.ECollections;
 import org.eclipse.emf.common.util.EList;
+import org.eclipse.emf.common.util.EMap;
 import org.preesm.algorithm.mapping.model.Mapping;
 import org.preesm.algorithm.memalloc.model.Allocation;
-import org.preesm.algorithm.memalloc.model.DistributedBuffer;
+import org.preesm.algorithm.memalloc.model.FifoAllocation;
 import org.preesm.algorithm.memalloc.model.LogicalBuffer;
 import org.preesm.algorithm.memalloc.model.PhysicalBuffer;
 import org.preesm.algorithm.memalloc.model.util.MemoryAllocationSwitch;
@@ -125,9 +126,9 @@ public class CodegenModelGenerator2 {
   }
 
   /**
-   *
+   * Allocation switch that create codegen buffers from the allocation buffers;
    */
-  class AllocationVisitor extends MemoryAllocationSwitch<Boolean> {
+  private class AllocationVisitor extends MemoryAllocationSwitch<Boolean> {
 
     private final Deque<Buffer>                                     codegenBufferStack = new LinkedList<>();
     private final Deque<org.preesm.algorithm.memalloc.model.Buffer> allocBufferStack   = new LinkedList<>();
@@ -141,22 +142,50 @@ public class CodegenModelGenerator2 {
       alloc.getPhysicalBuffers().forEach(this::doSwitch);
 
       // create variables for Fifos
-      for (final Entry<Fifo, org.preesm.algorithm.memalloc.model.Buffer> fifoAllocation : alloc.getFifoAllocations()) {
-        final Fifo fifo = fifoAllocation.getKey();
-        final org.preesm.algorithm.memalloc.model.Buffer buffer = fifoAllocation.getValue();
-        final Buffer codegenBuffer = this.btb.get(buffer);
+      for (final Entry<Fifo, FifoAllocation> fifoAllocationEntry : alloc.getFifoAllocations()) {
+        final Fifo fifo = fifoAllocationEntry.getKey();
+        final FifoAllocation fifoAllocation = fifoAllocationEntry.getValue();
 
-        codegenBuffer.setName(generateUniqueBufferName(fifo));
-        codegenBuffer.setType(fifo.getType());
-        codegenBuffer.setTypeSize(
+        final org.preesm.algorithm.memalloc.model.Buffer srcBuffer = fifoAllocation.getSourceBuffer();
+        final org.preesm.algorithm.memalloc.model.Buffer tgtBuffer = fifoAllocation.getTargetBuffer();
+        final Buffer srcCodegenBuffer = this.btb.get(srcBuffer);
+        final Buffer tgtCodegenBuffer = this.btb.get(tgtBuffer);
+
+        final String tgtPrefix;
+        if (tgtCodegenBuffer != srcCodegenBuffer) {
+          // generate 2 codegen buffers and route
+          tgtPrefix = "tgt_";
+          srcCodegenBuffer.setName(generateUniqueBufferName("src_" + fifo.getSourcePort().getId()));
+          srcCodegenBuffer.setType(fifo.getType());
+          srcCodegenBuffer.setTypeSize(
+              CodegenModelGenerator2.this.scenario.getSimulationInfo().getDataTypeSizeOrDefault(fifo.getType()));
+
+          final String scomment = fifo.getSourcePort().getId();
+          srcCodegenBuffer.setComment(scomment);
+
+          this.portToVariable.put(fifo.getSourcePort(), srcCodegenBuffer);
+
+          final EMap<ComponentInstance,
+              org.preesm.algorithm.memalloc.model.Buffer> routeBuffers = fifoAllocation.getRouteBuffers();
+          for (final Entry<ComponentInstance,
+              org.preesm.algorithm.memalloc.model.Buffer> routeBufferEntry : routeBuffers) {
+            // TODO
+
+          }
+        } else {
+          this.portToVariable.put(fifo.getSourcePort(), tgtCodegenBuffer);
+          tgtPrefix = "";
+        }
+
+        tgtCodegenBuffer.setName(generateUniqueBufferName(tgtPrefix + fifo.getTargetPort().getId()));
+        tgtCodegenBuffer.setType(fifo.getType());
+        tgtCodegenBuffer.setTypeSize(
             CodegenModelGenerator2.this.scenario.getSimulationInfo().getDataTypeSizeOrDefault(fifo.getType()));
 
-        final String comment = fifo.getSourcePort().getContainingActor().getName() + " > "
-            + fifo.getTargetPort().getContainingActor().getName();
-        codegenBuffer.setComment(comment);
+        final String tcomment = fifo.getTargetPort().getId();
+        srcCodegenBuffer.setComment(tcomment);
 
-        this.portToVariable.put(fifo.getTargetPort(), codegenBuffer);
-        this.portToVariable.put(fifo.getSourcePort(), codegenBuffer);
+        this.portToVariable.put(fifo.getTargetPort(), tgtCodegenBuffer);
       }
 
       // create variables for Delays
@@ -167,7 +196,7 @@ public class CodegenModelGenerator2 {
         final org.preesm.algorithm.memalloc.model.Buffer buffer = delayAllocation.getValue();
         final Buffer codegenBuffer = this.btb.get(buffer);
 
-        codegenBuffer.setName("delay_" + generateUniqueBufferName(fifo));
+        codegenBuffer.setName("delay_" + generateUniqueBufferName(fifo.getId()));
         codegenBuffer.setType(fifo.getType());
         codegenBuffer.setTypeSize(
             CodegenModelGenerator2.this.scenario.getSimulationInfo().getDataTypeSizeOrDefault(fifo.getType()));
@@ -179,14 +208,15 @@ public class CodegenModelGenerator2 {
       return true;
     }
 
+    // for generating unique names
     private final Map<String, Long> bufferNames = new LinkedHashMap<>();
 
-    private String generateUniqueBufferName(final Fifo fifo) {
-      final String candidate = fifo.getId().replace(".", "_").replace("-", "_");
+    private String generateUniqueBufferName(final String name) {
+      final String candidate = name.replace(".", "_").replace("-", "_");
       long idx;
       String key = candidate;
-      if (key.length() > 28) {
-        key = key.substring(0, 28);
+      if (key.length() > 35) {
+        key = key.substring(0, 35);
       }
       if (this.bufferNames.containsKey(key)) {
         idx = this.bufferNames.get(key);
@@ -211,7 +241,7 @@ public class CodegenModelGenerator2 {
       this.codegenBufferStack.push(subBuffer);
       this.allocBufferStack.push(logicalBuffer);
 
-      final org.preesm.algorithm.memalloc.model.Buffer memory = logicalBuffer.getMemory();
+      final org.preesm.algorithm.memalloc.model.Buffer memory = logicalBuffer.getContainingBuffer();
       final Buffer buffer = this.btb.get(memory);
       subBuffer.reaffectContainer(buffer);
 
@@ -228,7 +258,7 @@ public class CodegenModelGenerator2 {
     public Boolean casePhysicalBuffer(final PhysicalBuffer phys) {
       final Buffer mainBuffer = CodegenModelUserFactory.eINSTANCE.createBuffer();
       mainBuffer.setSize(phys.getSize());
-      mainBuffer.setName("Shared_" + phys.getMemory().getHardwareId());
+      mainBuffer.setName("Shared_" + phys.getMemoryBank().getHardwareId());
       mainBuffer.setType("char");
       mainBuffer.setTypeSize(1); // char is 1 byte
       this.btb.put(phys, mainBuffer);
@@ -243,12 +273,6 @@ public class CodegenModelGenerator2 {
       this.allocBufferStack.pop();
       return true;
     }
-
-    @Override
-    public Boolean caseDistributedBuffer(final DistributedBuffer object) {
-      throw new UnsupportedOperationException();
-    }
-
   }
 
   private List<Block> generate() {
@@ -291,7 +315,7 @@ public class CodegenModelGenerator2 {
   private void generateBuffer(final Map<ComponentInstance, CoreBlock> coreBlocks, final Buffer mainBuffer) {
     final org.preesm.algorithm.memalloc.model.Buffer key = this.allocation.btb.getKey(mainBuffer);
     final PhysicalBuffer memoryBankObj = key.getBank();
-    final String memoryBank = memoryBankObj.getMemory().getInstanceName();
+    final String memoryBank = memoryBankObj.getMemoryBank().getInstanceName();
 
     // Identify the corresponding operator block.
     // (also find out if the Buffer is local (i.e. not shared between
@@ -378,6 +402,7 @@ public class CodegenModelGenerator2 {
       } else if (actor instanceof SrdagActor) {
         // TODO handle init/end
         // generateFifoCall((SrdagActor) actor, coreBlock);
+        throw new PreesmRuntimeException("Unsupported actor [" + actor + "]");
       } else if (actor instanceof CommunicationActor) {
         // TODO handle send/receive + enabler triggers
         throw new PreesmRuntimeException("Unsupported actor [" + actor + "]");
@@ -393,24 +418,26 @@ public class CodegenModelGenerator2 {
     specialCall.setName(actor.getName());
 
     final Fifo uniqueFifo;
+    final Buffer lastBuffer;
     if (actor instanceof JoinActor) {
       specialCall.setType(SpecialType.JOIN);
       uniqueFifo = actor.getDataOutputPorts().get(0).getFifo();
+      lastBuffer = allocation.btb.get(memAlloc.getFifoAllocations().get(uniqueFifo).getSourceBuffer());
     } else if (actor instanceof ForkActor) {
       specialCall.setType(SpecialType.FORK);
       uniqueFifo = actor.getDataInputPorts().get(0).getFifo();
+      lastBuffer = allocation.btb.get(memAlloc.getFifoAllocations().get(uniqueFifo).getTargetBuffer());
     } else if (actor instanceof BroadcastActor) {
       specialCall.setType(SpecialType.BROADCAST);
       uniqueFifo = actor.getDataInputPorts().get(0).getFifo();
+      lastBuffer = allocation.btb.get(memAlloc.getFifoAllocations().get(uniqueFifo).getTargetBuffer());
     } else if (actor instanceof RoundBufferActor) {
       specialCall.setType(SpecialType.ROUND_BUFFER);
       uniqueFifo = actor.getDataInputPorts().get(0).getFifo();
+      lastBuffer = allocation.btb.get(memAlloc.getFifoAllocations().get(uniqueFifo).getTargetBuffer());
     } else {
       throw new PreesmRuntimeException("special actor " + actor + " has an unknown special type");
     }
-
-    final org.preesm.algorithm.memalloc.model.Buffer buffer = memAlloc.getFifoAllocations().get(uniqueFifo);
-    final Buffer lastBuffer = allocation.btb.get(buffer);
 
     // Add it to the specialCall
     if (actor instanceof JoinActor) {
@@ -424,7 +451,7 @@ public class CodegenModelGenerator2 {
       // actor.getDataOutputPorts().stream().map(DataPort::getFifo).map(memAlloc.getFifoAllocations()::get)
       // .map(allocation.btb::get).forEach(specialCall::addOutputBuffer);
       actor.getDataOutputPorts().stream().map(port -> ((Buffer) portToVariable.get(port)))
-          .forEach(specialCall::addInputBuffer);
+          .forEach(specialCall::addOutputBuffer);
     }
 
     operatorBlock.getLoopBlock().getCodeElts().add(specialCall);
