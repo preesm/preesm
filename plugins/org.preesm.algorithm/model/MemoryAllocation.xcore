@@ -62,14 +62,44 @@ type long wraps long
 
 type double wraps double
 
+class Allocation {
+	// memory banks used by this allocation
+	contains PhysicalBuffer[] physicalBuffers opposite allocation
+	// buffers allocated for the fifos
+	contains FifoAllocationEntry[] fifoAllocations
+	// Buffers allocated for the permanent and local delays. The values are pushed by the
+	// EndActor and poped by the InitActor. To get the buffer for an EndActor, get its
+	// init reference allocated buffer.
+	contains DelayAllocationEntry[] delayAllocations
+
+	// Query method that returns the Fifos mapped to this buffer
+	// and this buffer children (recursively)
+	op Fifo[] getFifoAllocationEntry(Buffer b) {
+		return fifoAllocations.filter[it.value.allBuffers.exists[b.isEqualsOrRecursivelyContains(it)]].map[it.key].toEList.unmodifiableEList
+	}
+
+	// Query method that return the Delays (in form of their InitActors) mapped to this buffer
+	// and this buffer children (recursively)
+	op InitActor[] getDelayAllocationEntry(Buffer b) {
+		return delayAllocations.filter[b.isEqualsOrRecursivelyContains(it.value)].map[it.key].toEList.unmodifiableEList
+	}
+}
+
 interface Buffer {
 	long size
-	contains LogicalBuffer[] children opposite memory
+	contains LogicalBuffer[] children opposite containingBuffer
 	op PhysicalBuffer getBank()
+	op Allocation getAllocation() {
+		return bank.allocation
+	}
+	op boolean isEqualsOrRecursivelyContains(Buffer other) {
+		return this == other || children.exists[it.isEqualsOrRecursivelyContains(other)]
+	}
 }
 
 class PhysicalBuffer extends Buffer {
-	refers ComponentInstance memory
+	refers Allocation allocation opposite physicalBuffers
+	refers ComponentInstance memoryBank
 	op PhysicalBuffer getBank() {
 		return this
 	}
@@ -77,22 +107,12 @@ class PhysicalBuffer extends Buffer {
 
 class LogicalBuffer extends Buffer {
 	long offset
-	refers Buffer memory opposite children
+	refers Buffer containingBuffer opposite children
 	op PhysicalBuffer getBank() {
-		return memory.getBank()
+		return containingBuffer.getBank()
 	}
 }
 
-class Allocation {
-	// memory banks used by this allocation
-	contains PhysicalBuffer[] physicalBuffers
-	// buffers allocated for the fifos
-	contains FifoAllocationEntry[] fifoAllocations
-	// Buffers allocated for the permanent and local delays. The values are pushed by the
-	// EndActor and poped by the InitActor. To get the buffer for an EndActor, get its
-	// init reference allocated buffer.
-	contains DelayAllocationEntry[] delayAllocations
-}
 
 class FifoAllocationEntry wraps java.util.Map$Entry {
 	refers Fifo key
@@ -100,12 +120,18 @@ class FifoAllocationEntry wraps java.util.Map$Entry {
 }
 
 class FifoAllocation {
+	refers Fifo fifo
 	refers Buffer sourceBuffer
 	refers Buffer targetBuffer
 	// List of component instances (operators) used as proxy in the route
 	// and their allocated buffer to store the intermediate data to forward.
+	// Components appear in the order of transfers.
 	// Can be empty if the route does not use any proxy operator.
 	contains RouteBuffer[] routeBuffers
+
+	op Buffer[] getAllBuffers() {
+		return (#[sourceBuffer, targetBuffer] + routeBuffers.map[value]).toEList
+	}
 }
 
 class RouteBuffer wraps java.util.Map$Entry {
