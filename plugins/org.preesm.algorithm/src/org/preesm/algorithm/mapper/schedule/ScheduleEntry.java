@@ -57,7 +57,7 @@ public class ScheduleEntry {
   private String  actorName;
   @JsonProperty("singleRateInstanceNumber")
   private Integer singleRateInstanceNumber;
-  // start in our units
+  // start in our units, if float in json file, will be converted automatically to long
   @JsonProperty("start")
   private Long start;
   // start in AOW units (subintervals of the while execution time)
