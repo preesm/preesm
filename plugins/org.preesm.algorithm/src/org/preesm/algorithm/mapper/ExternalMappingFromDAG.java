@@ -42,6 +42,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -128,12 +129,16 @@ public class ExternalMappingFromDAG extends AbstractMappingFromDAG {
 
     PreesmLogger.getLogger().log(Level.INFO, "Order external schedule entries.");
 
-    // 4- retrieve topological order of firings
+    // 4- retrieve topological order of firings and source actors
     long nbActors = 0;
     final Map<DAGVertex, Long> actorsRank = new HashMap<>();
+    final Set<DAGVertex> sourceActors = new HashSet<>();
     TopologicalDAGIterator topologicalDAGIterator = new TopologicalDAGIterator(dag);
     while (topologicalDAGIterator.hasNext()) {
       DAGVertex vertex = topologicalDAGIterator.next();
+      if (vertex.incomingEdges().isEmpty()) {
+        sourceActors.add(vertex);
+      }
       actorsRank.put(vertex, nbActors);
       nbActors++;
     }
@@ -141,6 +146,7 @@ public class ExternalMappingFromDAG extends AbstractMappingFromDAG {
     // 5.1 - build unordered lists of vertices per core ID
     final Map<Integer, List<DAGVertex>> orderedVertices = new HashMap<>();
     Map<Integer, ComponentInstance> ciI = new HashMap<>();
+    // assumes hardwareId goes from 0 to ...
     for (int i = 0; i < componentInstances.size(); i++) {
       final ComponentInstance componentInstance = componentInstances.get(i);
       if (componentInstance.getComponent() instanceof Operator) {
@@ -243,23 +249,50 @@ public class ExternalMappingFromDAG extends AbstractMappingFromDAG {
     final LatencyAbc abc = LatencyAbc.getInstance(abcParams, dag, architecture, scenario);
     // 6- sort vertex lists following start dates from the schedule entries and apply schedule
 
-    // topologicalDAGIterator = new TopologicalDAGIterator(dag);
-    // while (topologicalDAGIterator.hasNext()) {
-    // DAGVertex vertex = topologicalDAGIterator.next();
-    // int coreId = vertexToCore.get(vertex);
-    // System.err.println("Mapping vertex " + vertex.getName() + " on core " + coreId);
-    // mapVertex(abc, ciI.get(coreId), vertex);
-    // }
     for (Entry<Integer, ComponentInstance> e : ciI.entrySet()) {
       int i = e.getKey();
-      System.err.println("Mapping CORE " + i);
       final List<DAGVertex> list = orderedVertices.get(i);
-      final ComponentInstance componentInstance = e.getValue();
       list.sort(new ScheduleComparator(entries, actorsRank));
-      for (final DAGVertex v : list) {
-        System.err.println("Mapping: " + v.getName());
-        mapVertex(abc, componentInstance, v);
+    }
+
+    final Map<DAGVertex, Integer> visitedInputsActors = new HashMap<>();
+    List<DAGVertex> readyToSchedule = new LinkedList<>(sourceActors);
+    while (!readyToSchedule.isEmpty()) {
+      DAGVertex firingToMap = null;
+      ComponentInstance ci = null;
+      for (Entry<Integer, ComponentInstance> e : ciI.entrySet()) {
+        int i = e.getKey();
+        final ComponentInstance componentInstance = e.getValue();
+        final List<DAGVertex> list = orderedVertices.get(i);
+        if (list.isEmpty()) {
+          continue;
+        }
+        final DAGVertex firstOnList = list.get(0);
+        if (readyToSchedule.contains(firstOnList)) {
+          firingToMap = firstOnList;
+          ci = componentInstance;
+          list.remove(firstOnList);
+          break;
+        }
       }
+
+      if (firingToMap == null) {
+        throw new PreesmRuntimeException("Topological traversal counld not find anymore firing.");
+      }
+
+      mapVertex(abc, ci, firingToMap);
+
+      readyToSchedule.remove(firingToMap);
+      for (DAGEdge outEdge : firingToMap.outgoingEdges()) {
+        DAGVertex dst = outEdge.getTarget();
+        int visitedEdges = visitedInputsActors.getOrDefault(dst, 0) + 1;
+        visitedInputsActors.put(dst, visitedEdges);
+        if (visitedEdges == dst.incomingEdges().size()) {
+          readyToSchedule.add(dst);
+          visitedInputsActors.remove(dst);
+        }
+      }
+
     }
 
     return abc;
