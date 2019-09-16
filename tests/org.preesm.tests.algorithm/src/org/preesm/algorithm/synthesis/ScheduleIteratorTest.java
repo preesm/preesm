@@ -6,6 +6,7 @@ import org.junit.Test;
 import org.preesm.algorithm.schedule.model.ParallelHiearchicalSchedule;
 import org.preesm.algorithm.schedule.model.ScheduleFactory;
 import org.preesm.algorithm.schedule.model.SequentialActorSchedule;
+import org.preesm.algorithm.synthesis.schedule.iterator.ScheduleAndTopologyIterator;
 import org.preesm.algorithm.synthesis.schedule.iterator.ScheduleIterator;
 import org.preesm.algorithm.synthesis.schedule.iterator.SimpleScheduleIterator;
 import org.preesm.model.pisdf.Actor;
@@ -29,6 +30,15 @@ public class ScheduleIteratorTest {
     StringBuilder sb = new StringBuilder();
     simpleScheduleIterator.forEachRemaining(a -> sb.append(a.getName()));
     assertEquals("ADCB", sb.toString());
+  }
+
+  @Test
+  public void test2() {
+    final ParallelHiearchicalSchedule sched = createSchedule();
+    final ScheduleIterator simpleScheduleIterator = new ScheduleAndTopologyIterator(sched);
+    StringBuilder sb = new StringBuilder();
+    simpleScheduleIterator.forEachRemaining(a -> sb.append(a.getName()));
+    assertEquals("ACBD", sb.toString());
   }
 
   private ParallelHiearchicalSchedule createSchedule() {
