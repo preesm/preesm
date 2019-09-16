@@ -106,10 +106,6 @@ class CHardwarePrinter extends CPrinter {
 		#include "eventLib.h"
 	'''
 
-	override printCoreInitBlockHeader(CallBlock callBlock) '''
-		«super.printCoreInitBlockHeader(callBlock)»
-	'''
-
 	override printCoreLoopBlockFooter(LoopBlock block2) '''
 			pthread_barrier_wait(&iter_barrier);
 		}
@@ -631,9 +627,20 @@ class CHardwarePrinter extends CPrinter {
 		var flagFirstFunctionPAPIFYFoundTIMINGSTOP = 0;
 		var flagFirstFunctionPAPIFYFoundWRITE = 0;
 		var firstPapifyFunctionFound = 0;
+		var onlyActorFunctionCallPosition = -1;
+		var PapifyFunctionCall eventStartHardware = CodegenModelUserFactory.eINSTANCE.createPapifyFunctionCall();
+		var PapifyFunctionCall eventStopHardware = CodegenModelUserFactory.eINSTANCE.createPapifyFunctionCall();
+		var PapifyFunctionCall timingStartHardware = CodegenModelUserFactory.eINSTANCE.createPapifyFunctionCall();
+		var PapifyFunctionCall timingStopHardware = CodegenModelUserFactory.eINSTANCE.createPapifyFunctionCall();
+		var PapifyFunctionCall writeHardware = CodegenModelUserFactory.eINSTANCE.createPapifyFunctionCall();
 		while (i > 0) {
 			// Retrieve the function ID
 			val elt = coreLoop.codeElts.get(i)
+			// locating where the only actor firing is
+			if (elt instanceof ActorFunctionCall) {
+				onlyActorFunctionCallPosition = i;
+			}
+			
 			if ((elt instanceof PapifyFunctionCall)) {
 				var papifyTypeVariable =elt.papifyType
 				// even with more that one hardware SLOT, the file that should be created is just one.
@@ -662,6 +669,8 @@ class CHardwarePrinter extends CPrinter {
 						if(flagFirstFunctionPAPIFYFoundEVENTSTART == 0){
 							//keep the last one detected
 							flagFirstFunctionPAPIFYFoundEVENTSTART++;
+							eventStartHardware = elt;
+							coreLoop.codeElts.remove(i);
 						}
 						else if(flagFirstFunctionPAPIFYFoundEVENTSTART > 0 ){
 							//remove all the other different from the last one
@@ -672,6 +681,8 @@ class CHardwarePrinter extends CPrinter {
 						if(flagFirstFunctionPAPIFYFoundEVENTSTOP == 0){
 							//keep the last one detected
 							flagFirstFunctionPAPIFYFoundEVENTSTOP++;
+							eventStopHardware = elt;
+							coreLoop.codeElts.remove(i);
 						}
 						else if(flagFirstFunctionPAPIFYFoundEVENTSTOP > 0 ){
 							//remove all the other different from the last one
@@ -682,6 +693,8 @@ class CHardwarePrinter extends CPrinter {
 						if(flagFirstFunctionPAPIFYFoundTIMINGSTART == 0){
 							//keep the last one detected
 							flagFirstFunctionPAPIFYFoundTIMINGSTART++;
+							timingStartHardware = elt;
+							coreLoop.codeElts.remove(i);
 						}
 						else if(flagFirstFunctionPAPIFYFoundTIMINGSTART > 0 ){
 							//remove all the other different from the last one
@@ -692,6 +705,8 @@ class CHardwarePrinter extends CPrinter {
 						if(flagFirstFunctionPAPIFYFoundTIMINGSTOP == 0){
 							//keep the last one detected
 							flagFirstFunctionPAPIFYFoundTIMINGSTOP++;
+							timingStopHardware = elt;
+							coreLoop.codeElts.remove(i);
 						}
 						else if(flagFirstFunctionPAPIFYFoundTIMINGSTOP > 0 ){
 							//remove all the other different from the last one
@@ -714,9 +729,24 @@ class CHardwarePrinter extends CPrinter {
 			}
 			i--;
 		}
-
+		
+		//inserting the PAPIFY functions in the right place
+		i = coreLoop.codeElts.size-1;
+		while (i > 0) {
+			// Retrieve the function ID
+			val elt = coreLoop.codeElts.get(i)
+			if (elt instanceof ActorFunctionCall) {
+				onlyActorFunctionCallPosition = i;
+			}
+			i--;
+		}
+		coreLoop.codeElts.add(onlyActorFunctionCallPosition+1,eventStopHardware)
+		coreLoop.codeElts.add(onlyActorFunctionCallPosition+1,timingStopHardware)
+		coreLoop.codeElts.add(onlyActorFunctionCallPosition,timingStartHardware)
+		coreLoop.codeElts.add(onlyActorFunctionCallPosition,eventStartHardware)
+		
 		//deleting all the PAPIFY function useless when using hardware. Keeping just the last one.
-		//var coreLoop = (block as CoreBlock).loopBlock
+		
 		var initBlock = (block as CoreBlock).initBlock
 		var iteratorPapify = initBlock.codeElts.size-1;
 		// This Loop just locate where the function are and how many they are.
@@ -757,6 +787,8 @@ class CHardwarePrinter extends CPrinter {
 		for (var j = numberOfSlotDetected - 1; j >= 1; j--) {
 			printerBlocks.remove(j)
 		}
+		
+		
 
 		PreesmLogger.getLogger().info("[HARDWARE] End of the Hardware preProcessing.");
 		/*

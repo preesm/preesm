@@ -7,6 +7,7 @@ PREESM Changelog
 ### New Feature
 
 ### Changes
+* Hardware Codegen: improved monitoring using PAPIFY
 * EnergyAwareness: performance objective now is considered a minimum. The tolerance has been removed;
 * Fix PiSDF editor autoLayout, especially if having setters and getters on delays;
 * Change the line style of setters and getters to dash dot;
