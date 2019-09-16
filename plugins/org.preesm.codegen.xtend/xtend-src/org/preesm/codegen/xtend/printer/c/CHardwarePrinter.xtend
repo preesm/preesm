@@ -638,7 +638,6 @@ class CHardwarePrinter extends CPrinter {
 			val elt = coreLoop.codeElts.get(i)
 			// locating where the only actor firing is
 			if (elt instanceof ActorFunctionCall) {
-				//PreesmLogger.getLogger().info("[HARDWARE DEBUG] the only function call is at line " + i);
 				onlyActorFunctionCallPosition = i;
 			}
 			
@@ -737,7 +736,6 @@ class CHardwarePrinter extends CPrinter {
 			// Retrieve the function ID
 			val elt = coreLoop.codeElts.get(i)
 			if (elt instanceof ActorFunctionCall) {
-				//PreesmLogger.getLogger().info("[HARDWARE DEBUG] the only function call is at line " + i);
 				onlyActorFunctionCallPosition = i;
 			}
 			i--;
@@ -746,8 +744,9 @@ class CHardwarePrinter extends CPrinter {
 		coreLoop.codeElts.add(onlyActorFunctionCallPosition+1,timingStopHardware)
 		coreLoop.codeElts.add(onlyActorFunctionCallPosition,timingStartHardware)
 		coreLoop.codeElts.add(onlyActorFunctionCallPosition,eventStartHardware)
+		
 		//deleting all the PAPIFY function useless when using hardware. Keeping just the last one.
-		//var coreLoop = (block as CoreBlock).loopBlock
+		
 		var initBlock = (block as CoreBlock).initBlock
 		var iteratorPapify = initBlock.codeElts.size-1;
 		// This Loop just locate where the function are and how many they are.
