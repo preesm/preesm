@@ -21,15 +21,19 @@ public abstract class ScheduleIterator implements Iterator<AbstractActor> {
     this.orderedList = createOrder(schedule);
   }
 
-  public abstract List<AbstractActor> createOrder(final Schedule schedule);
+  protected abstract List<AbstractActor> createOrder(final Schedule schedule);
+
+  public final List<AbstractActor> getOrderedList() {
+    return this.orderedList;
+  }
 
   @Override
-  public boolean hasNext() {
+  public final boolean hasNext() {
     return currentIndex < orderedList.size();
   }
 
   @Override
-  public AbstractActor next() {
+  public final AbstractActor next() {
     if (hasNext()) {
       return orderedList.get(currentIndex++);
     } else {
