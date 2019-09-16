@@ -155,10 +155,10 @@ public final class PiMMUserFactory extends PiMMFactoryImpl implements PreesmUser
   /**
    *
    */
-  public Fifo createFifo(final DataOutputPort sourcePortCopy, final DataInputPort targetPortCopy, final String type) {
+  public Fifo createFifo(final DataOutputPort sourcePort, final DataInputPort targetPort, final String type) {
     final Fifo res = createFifo();
-    res.setSourcePort(sourcePortCopy);
-    res.setTargetPort(targetPortCopy);
+    res.setSourcePort(sourcePort);
+    res.setTargetPort(targetPort);
     res.setType(type);
     return res;
   }
@@ -195,6 +195,15 @@ public final class PiMMUserFactory extends PiMMFactoryImpl implements PreesmUser
   }
 
   /**
+   *
+   */
+  public DataInputPort createDataInputPort(final String name) {
+    final DataInputPort res = this.createDataInputPort();
+    res.setName(name);
+    return res;
+  }
+
+  /**
    * Method to create a data input port with its expression linked to a delay
    *
    * @param delay
@@ -213,6 +222,15 @@ public final class PiMMUserFactory extends PiMMFactoryImpl implements PreesmUser
   public DataOutputPort createDataOutputPort() {
     final DataOutputPort res = super.createDataOutputPort();
     res.setExpression(createExpression());
+    return res;
+  }
+
+  /**
+   *
+   */
+  public DataOutputPort createDataOutputPort(final String name) {
+    final DataOutputPort res = this.createDataOutputPort();
+    res.setName(name);
     return res;
   }
 
@@ -283,6 +301,15 @@ public final class PiMMUserFactory extends PiMMFactoryImpl implements PreesmUser
     final Actor res = super.createActor();
     final Expression exp = createExpression();
     res.setExpression(exp);
+    return res;
+  }
+
+  /**
+   *
+   */
+  public Actor createActor(final String name) {
+    final Actor res = this.createActor();
+    res.setName(name);
     return res;
   }
 
