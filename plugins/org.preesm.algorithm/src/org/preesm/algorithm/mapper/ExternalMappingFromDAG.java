@@ -164,9 +164,15 @@ public class ExternalMappingFromDAG extends AbstractMappingFromDAG {
         final String message = "Schedule does not specifycorrect core ID for firing " + srActorName;
         throw new PreesmRuntimeException(message);
       }
+      int offset = 0;
+      final String processorName = e.getProcessingUnitName();
+      // ugly hack to handle case of ARM bib.LITTLE with A7 cores numbered from 0 to 3 and A15 cores from 4 to 7
+      if (processorName.startsWith("A15")) {
+        offset += 4;
+      }
       final DAGVertex vertex = dag.getVertex(srActorName);
-      vertexToCore.put(vertex, coreID);
-      final List<DAGVertex> list = orderedVertices.get(coreID);
+      vertexToCore.put(vertex, coreID + offset);
+      final List<DAGVertex> list = orderedVertices.get(coreID + offset);
       list.add(vertex);
     }
 
