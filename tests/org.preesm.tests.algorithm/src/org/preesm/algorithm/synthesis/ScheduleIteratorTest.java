@@ -1,9 +1,12 @@
 package org.preesm.algorithm.synthesis;
 
+import static org.junit.Assert.assertEquals;
+
 import org.junit.Test;
 import org.preesm.algorithm.schedule.model.ParallelHiearchicalSchedule;
 import org.preesm.algorithm.schedule.model.ScheduleFactory;
 import org.preesm.algorithm.schedule.model.SequentialActorSchedule;
+import org.preesm.algorithm.synthesis.schedule.iterator.ScheduleIterator;
 import org.preesm.algorithm.synthesis.schedule.iterator.SimpleScheduleIterator;
 import org.preesm.model.pisdf.Actor;
 import org.preesm.model.pisdf.DataInputPort;
@@ -21,24 +24,11 @@ public class ScheduleIteratorTest {
 
   @Test
   public void test1() {
-
     final ParallelHiearchicalSchedule sched = createSchedule();
-
-    System.out.println(sched.shortPrint());
-
-    final SimpleScheduleIterator simpleScheduleIterator = new SimpleScheduleIterator(sched);
-    simpleScheduleIterator.forEachRemaining(a -> System.out.println(a));
-  }
-
-  @Test
-  public void test2() {
-
-    final ParallelHiearchicalSchedule sched = createSchedule();
-
-    System.out.println(sched.shortPrint());
-
-    final SimpleScheduleIterator simpleScheduleIterator = new SimpleScheduleIterator(sched);
-    simpleScheduleIterator.forEachRemaining(a -> System.out.println(a));
+    final ScheduleIterator simpleScheduleIterator = new SimpleScheduleIterator(sched);
+    StringBuilder sb = new StringBuilder();
+    simpleScheduleIterator.forEachRemaining(a -> sb.append(a.getName()));
+    assertEquals("ADCB", sb.toString());
   }
 
   private ParallelHiearchicalSchedule createSchedule() {
