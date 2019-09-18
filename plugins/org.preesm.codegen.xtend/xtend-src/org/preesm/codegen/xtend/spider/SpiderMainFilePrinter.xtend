@@ -176,6 +176,12 @@ class SpiderMainFilePrinter {
 			cfg.feedbackPapifyInfo = false;
 		«ENDIF»
 		
+		/* == Energy awareness == */
+		cfg.energyAwareness = «spiderConfig.energyAwareness»;
+		«IF spiderConfig.energyAwareness»
+			cfg.performanceObjective = «spiderConfig.performanceObjective»;
+		«ENDIF»
+
 		/* == Apollo optimization == */
 		#ifdef APOLLO_COMPILATION
 			cfg.apolloCompiled = true;
