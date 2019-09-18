@@ -5,6 +5,10 @@ PREESM Changelog
 *XXXX.XX.XX*
 
 ### New Feature
+* Spider: 
+  * Energy awareness (energy-awareness parameter) now can be activated in SPiDER
+    * It will test a different number of PEs in each iteration
+    * It will keep the PE config reaching the objective with the lowest (estimated) energy consumption
 
 ### Changes
 * Hardware Codegen: improved monitoring using PAPIFY
