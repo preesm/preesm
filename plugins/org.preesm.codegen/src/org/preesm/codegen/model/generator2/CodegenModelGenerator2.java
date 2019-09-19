@@ -55,6 +55,9 @@ import org.preesm.codegen.model.Buffer;
 import org.preesm.codegen.model.Call;
 import org.preesm.codegen.model.Constant;
 import org.preesm.codegen.model.CoreBlock;
+import org.preesm.codegen.model.FifoCall;
+import org.preesm.codegen.model.FifoOperation;
+import org.preesm.codegen.model.PortDirection;
 import org.preesm.codegen.model.SpecialCall;
 import org.preesm.codegen.model.SpecialType;
 import org.preesm.codegen.model.SubBuffer;
@@ -67,10 +70,13 @@ import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.Actor;
 import org.preesm.model.pisdf.BroadcastActor;
 import org.preesm.model.pisdf.CHeaderRefinement;
+import org.preesm.model.pisdf.EndActor;
 import org.preesm.model.pisdf.Fifo;
 import org.preesm.model.pisdf.ForkActor;
 import org.preesm.model.pisdf.FunctionPrototype;
+import org.preesm.model.pisdf.InitActor;
 import org.preesm.model.pisdf.JoinActor;
+import org.preesm.model.pisdf.PersistenceLevel;
 import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.pisdf.Port;
 import org.preesm.model.pisdf.Refinement;
@@ -243,9 +249,7 @@ public class CodegenModelGenerator2 {
       } else if (actor instanceof UserSpecialActor) {
         generateSpecialActor((UserSpecialActor) actor, this.memoryLinker.getPortToVariableMap(), coreBlock);
       } else if (actor instanceof SrdagActor) {
-        // TODO handle init/end
-        // generateFifoCall((SrdagActor) actor, coreBlock);
-        throw new PreesmRuntimeException("Unsupported actor [" + actor + "]");
+        generateFifoCall((SrdagActor) actor, coreBlock);
       } else if (actor instanceof CommunicationActor) {
         // TODO handle send/receive + enabler triggers
         throw new PreesmRuntimeException("Unsupported actor [" + actor + "]");
@@ -253,6 +257,63 @@ public class CodegenModelGenerator2 {
         throw new PreesmRuntimeException("Unsupported actor [" + actor + "]");
       }
     }
+  }
+
+  private void generateFifoCall(SrdagActor actor, CoreBlock coreBlock) {
+    // Create the Fifo call and set basic property
+    final FifoCall fifoCall = CodegenModelUserFactory.eINSTANCE.createFifoCall();
+    fifoCall.setName(actor.getName());
+
+    final PortDirection dir;
+    final InitActor initActor;
+    if (actor instanceof InitActor) {
+      initActor = (InitActor) actor;
+      fifoCall.setOperation(FifoOperation.POP);
+      dir = PortDirection.OUTPUT;
+
+    } else if (actor instanceof EndActor) {
+      final EndActor endActor = (EndActor) actor;
+      initActor = (InitActor) endActor.getInitReference();
+      fifoCall.setOperation(FifoOperation.PUSH);
+      dir = PortDirection.INPUT;
+
+    } else {
+      throw new PreesmRuntimeException();
+    }
+
+    final Buffer buffer = (Buffer) memoryLinker.getPortToVariableMap().get(actor.getDataPort());
+    fifoCall.addParameter(buffer, dir);
+
+    final org.preesm.algorithm.memalloc.model.Buffer buffer2 = memAlloc.getDelayAllocations().get(initActor);
+    final Buffer delayBuffer = memoryLinker.getCodegenBuffer(buffer2);
+
+    fifoCall.setHeadBuffer(delayBuffer);
+    fifoCall.setBodyBuffer(null);
+
+    // Create the INIT call (only the first time the fifo is encountered)
+    // @farresti:
+    // the management of local/none and permanent delays is a bit dirty here.
+    // Ideally, this should be called only for permanent delay.
+    // local/none delays should only have a call to the init function, no need for pop/push.
+    // The case where the end vertex is alone should not be considered as it means that the tokens convoyed by the
+    // delay are discarded.
+    // Actually, only the permanent delays really need the pop/push mechanism.
+    if (fifoCall.getOperation().equals(FifoOperation.POP)) {
+      final FifoCall fifoInitCall = CodegenModelUserFactory.eINSTANCE.createFifoCall();
+      fifoInitCall.setOperation(FifoOperation.INIT);
+      fifoInitCall.setFifoHead(fifoCall);
+      fifoInitCall.setName(fifoCall.getName());
+      fifoInitCall.setHeadBuffer(fifoCall.getHeadBuffer());
+      fifoInitCall.setBodyBuffer(fifoCall.getBodyBuffer());
+      final PersistenceLevel level = initActor.getPersistenceLevel();
+      if (level == null || PersistenceLevel.PERMANENT.equals(level)) {
+        coreBlock.getInitBlock().getCodeElts().add(fifoInitCall);
+      } else {
+        coreBlock.getLoopBlock().getCodeElts().add(fifoInitCall);
+      }
+    }
+    // Add the Fifo call to the loop of its coreBlock
+    coreBlock.getLoopBlock().getCodeElts().add(fifoCall);
   }
 
   private void generateSpecialActor(final SpecialActor actor, final Map<Port, Variable> portToVariable,
