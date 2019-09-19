@@ -26,6 +26,7 @@ PREESM Changelog
 * Fix #128
 * Fix #190
 * Fix problem with precedence shift condition (clustering purposes)
+* Fix various bugs in the experimental external mapping importer.
 
 ## Release version 3.17.0
 *2019.09.09*

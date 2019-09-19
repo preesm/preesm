@@ -82,6 +82,8 @@ import org.preesm.model.slam.VLNV;
 import org.preesm.model.slam.utils.LexicographicComponentInstanceComparator;
 
 /**
+ * This class imports schedule expressed in dedicated json format. It is experimental and limited to flat PiMM and a few
+ * architectures (regular x86 and Odroid). See package org.preesm.algorithm.mapper.schedule for the json format.
  *
  * @author ahonorat
  * @author anmorvan
@@ -89,6 +91,10 @@ import org.preesm.model.slam.utils.LexicographicComponentInstanceComparator;
  */
 @PreesmTask(id = "org.ietr.preesm.plugin.mapper.external", name = "External Scheduling from DAG",
     category = "Schedulers",
+
+    description = "This class imports schedule expressed in dedicated json format. "
+        + "It is experimental and limited to flat PiMM and a few architectures (regular x86 and Odroid)."
+        + " See package org.preesm.algorithm.mapper.schedule for the json format.",
 
     inputs = { @Port(name = "DAG", type = DirectedAcyclicGraph.class),
         @Port(name = "architecture", type = Design.class), @Port(name = "scenario", type = Scenario.class) },
@@ -151,7 +157,7 @@ public class ExternalMappingFromDAG extends AbstractMappingFromDAG {
       final ComponentInstance componentInstance = componentInstances.get(i);
       if (componentInstance.getComponent() instanceof Operator) {
         int coreId = componentInstance.getHardwareId();
-        PreesmLogger.getLogger().log(Level.INFO, "Adding core operator with id: " + coreId);
+        PreesmLogger.getLogger().log(Level.INFO, "Adding available core operator with id: " + coreId);
         orderedVertices.put(coreId, new ArrayList<>());
         ciI.put(coreId, componentInstance);
       }
@@ -167,6 +173,7 @@ public class ExternalMappingFromDAG extends AbstractMappingFromDAG {
       int offset = 0;
       final String processorName = e.getProcessingUnitName();
       // ugly hack to handle case of ARM bib.LITTLE with A7 cores numbered from 0 to 3 and A15 cores from 4 to 7
+      // it should be addressed by analyzing all processor names first
       if (processorName.startsWith("A15")) {
         offset += 4;
       }
@@ -204,7 +211,6 @@ public class ExternalMappingFromDAG extends AbstractMappingFromDAG {
 
       int coreId = vertexToCore.get(associateVtx).intValue();
       for (DAGVertex vertex : visitedNodes) {
-        // orderedVertices.get(coreId).add(vertex);
         vertexToCore.put(vertex, coreId);
         unmappedVertices.remove(vertex);
       }
@@ -220,7 +226,6 @@ public class ExternalMappingFromDAG extends AbstractMappingFromDAG {
         final String oppositeINIT = vtx.getPropertyStringValue(MapperDAGVertex.END_REFERENCE);
         DAGVertex associateVtx = dag.getVertex(oppositeINIT);
         int coreId = vertexToCore.get(associateVtx);
-        // orderedVertices.get(coreId).add(vtx);
         vertexToCore.put(vtx, coreId);
       }
     }
@@ -243,7 +248,6 @@ public class ExternalMappingFromDAG extends AbstractMappingFromDAG {
 
       int coreId = vertexToCore.get(associateVtx).intValue();
       for (DAGVertex vertex : visitedNodes) {
-        // orderedVertices.get(coreId).add(vertex);
         vertexToCore.put(vertex, coreId);
         unmappedVertices.remove(vertex);
       }
@@ -287,22 +291,13 @@ public class ExternalMappingFromDAG extends AbstractMappingFromDAG {
         firingToMap = readyToSchedule.get(0);
         int coreId = vertexToCore.get(firingToMap);
         ci = ciI.get(coreId);
-
-        // final StringBuilder sb = new StringBuilder("Ready on topo:\n");
-        // readyToSchedule.forEach(v -> sb.append(v.getName() + ";\n"));
-        // sb.append("Ready on IBM:\n");
-        // for (Entry<Integer, List<DAGVertex>> e : orderedVertices.entrySet()) {
-        // sb.append("Core " + e.getKey() + ": \n");
-        // e.getValue().forEach(v -> sb.append(v.getName() + ";\n"));
-        // }
-        // throw new PreesmRuntimeException("Topological traversal counld not find anymore firing.\n" + sb.toString());
       }
 
       mapVertex(abc, ci, firingToMap);
 
       readyToSchedule.remove(firingToMap);
-      addReadyFirings(firingToMap, entries, readyToSchedule, visitedInputsActors, abc, orderedVertices, vertexToCore,
-          ciI);
+      // we add firings that are now ready to execute, and map them directly if not managed by external schedule
+      addReadyFirings(firingToMap, entries, readyToSchedule, visitedInputsActors, abc, vertexToCore, ciI);
 
     }
 
@@ -366,8 +361,7 @@ public class ExternalMappingFromDAG extends AbstractMappingFromDAG {
 
   private static void addReadyFirings(DAGVertex firingToMap, Map<DAGVertex, ScheduleEntry> entries,
       List<DAGVertex> readyToSchedule, Map<DAGVertex, Integer> visitedInputsActors, LatencyAbc abc,
-      Map<Integer, List<DAGVertex>> orderedVertices, Map<DAGVertex, Integer> vertexToCore,
-      Map<Integer, ComponentInstance> ciI) {
+      Map<DAGVertex, Integer> vertexToCore, Map<Integer, ComponentInstance> ciI) {
 
     for (DAGEdge outEdge : firingToMap.outgoingEdges()) {
       DAGVertex dst = outEdge.getTarget();
@@ -382,8 +376,7 @@ public class ExternalMappingFromDAG extends AbstractMappingFromDAG {
           int coreId = vertexToCore.get(dst);
           ComponentInstance ci = ciI.get(coreId);
           mapVertex(abc, ci, dst);
-          // orderedVertices.get(coreId).remove(dst);
-          addReadyFirings(dst, entries, readyToSchedule, visitedInputsActors, abc, orderedVertices, vertexToCore, ciI);
+          addReadyFirings(dst, entries, readyToSchedule, visitedInputsActors, abc, vertexToCore, ciI);
         }
       }
     }
