@@ -56,7 +56,7 @@ import org.preesm.algorithm.memalloc.model.PhysicalBuffer;
 import org.preesm.algorithm.memalloc.model.util.MemoryAllocationSwitch;
 import org.preesm.algorithm.schedule.model.CommunicationActor;
 import org.preesm.algorithm.schedule.model.Schedule;
-import org.preesm.algorithm.synthesis.schedule.iterator.SimpleScheduleIterator;
+import org.preesm.algorithm.synthesis.schedule.iterator.ScheduleAndTopologyIterator;
 import org.preesm.codegen.model.ActorFunctionCall;
 import org.preesm.codegen.model.Block;
 import org.preesm.codegen.model.Buffer;
@@ -392,7 +392,7 @@ public class CodegenModelGenerator2 {
       final Map<Port, Variable> portToVariable) {
     // iterate in order
 
-    final List<AbstractActor> actors = new SimpleScheduleIterator(this.schedule).getOrderedList();
+    final List<AbstractActor> actors = new ScheduleAndTopologyIterator(this.schedule).getOrderedList();
     for (final AbstractActor actor : actors) {
       final EList<ComponentInstance> actorMapping = this.mapping.getMapping(actor);
       final ComponentInstance componentInstance = actorMapping.get(0);
