@@ -83,8 +83,10 @@ public class SimpleMemoryAllocation implements IMemoryAllocation {
 
       final LogicalBuffer logicBuff = MemoryAllocationFactory.eINSTANCE.createLogicalBuffer();
       logicBuff.setContainingBuffer(physBuff);
-      logicBuff.setSize(fifoBufferSize);
+      logicBuff.setSize(fifoTokenSize);
+      logicBuff.setTypeSize(dataTypeSize);
       logicBuff.setOffset(totalSize);
+
       final FifoAllocation fifoAllocation = MemoryAllocationFactory.eINSTANCE.createFifoAllocation();
       fifoAllocation.setFifo(fifo);
       fifoAllocation.setSourceBuffer(logicBuff);
@@ -105,7 +107,8 @@ public class SimpleMemoryAllocation implements IMemoryAllocation {
 
       final LogicalBuffer logicBuff = MemoryAllocationFactory.eINSTANCE.createLogicalBuffer();
       logicBuff.setContainingBuffer(physBuff);
-      logicBuff.setSize(delayBufferSize);
+      logicBuff.setSize(delayTokenSize);
+      logicBuff.setTypeSize(dataTypeSize);
       logicBuff.setOffset(totalSize);
 
       memAlloc.getDelayAllocations().put(initActor, logicBuff);

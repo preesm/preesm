@@ -87,6 +87,7 @@ class Allocation {
 
 interface Buffer {
 	long size
+	long typeSize
 	contains LogicalBuffer[] children opposite containingBuffer
 	op PhysicalBuffer getBank()
 	op Allocation getAllocation() {
