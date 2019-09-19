@@ -1,14 +1,14 @@
 package org.preesm.algorithm.synthesis.schedule.iterator;
 
 import java.util.ArrayList;
-import java.util.Deque;
-import java.util.LinkedList;
 import java.util.List;
-import java.util.stream.Collectors;
+import java.util.SortedSet;
+import java.util.TreeSet;
 import org.preesm.algorithm.schedule.model.ActorSchedule;
 import org.preesm.algorithm.schedule.model.HierarchicalSchedule;
 import org.preesm.algorithm.schedule.model.Schedule;
 import org.preesm.algorithm.schedule.model.util.ScheduleSwitch;
+import org.preesm.algorithm.synthesis.schedule.ScheduleUtil;
 import org.preesm.model.pisdf.AbstractActor;
 
 /**
@@ -26,9 +26,9 @@ public class ScheduleAndTopologyIterator extends ScheduleIterator {
 
   @Override
   public List<AbstractActor> createOrder(final Schedule schedule) {
-    final TopologyScheduleSwitch tss = new TopologyScheduleSwitch();
-    tss.doSwitch(schedule);
-    return tss.visitedActors;
+    final SortedSet<AbstractActor> res = new TreeSet<>(ScheduleUtil.getScheduleComparator(schedule));
+    new ActorScheduleSwitch(res).doSwitch(schedule);
+    return new ArrayList<>(res);
   }
 
   /**
@@ -36,56 +36,25 @@ public class ScheduleAndTopologyIterator extends ScheduleIterator {
    * @author anmorvan
    *
    */
-  private static class TopologyScheduleSwitch extends ScheduleSwitch<Boolean> {
+  private class ActorScheduleSwitch extends ScheduleSwitch<Boolean> {
 
-    List<AbstractActor> visitedActors = new ArrayList<>();
-    List<AbstractActor> toVisitActors = new ArrayList<>();
+    final SortedSet<AbstractActor> orderedSet;
 
-    private Deque<Schedule> scheduleStack = new LinkedList<>();
+    public ActorScheduleSwitch(SortedSet<AbstractActor> treeSet) {
+      this.orderedSet = treeSet;
+    }
+
+    @Override
+    public Boolean caseHierarchicalSchedule(final HierarchicalSchedule object) {
+      object.getChildren().forEach(this::doSwitch);
+      return true;
+    }
 
     @Override
     public Boolean caseActorSchedule(final ActorSchedule object) {
-      scheduleStack.push(object);
-      for (final AbstractActor a : object.getActorList()) {
-        caseAbstractActor(a);
-      }
-      scheduleStack.pop();
-      return true;
-    }
-
-    @Override
-    public Boolean caseHierarchicalSchedule(HierarchicalSchedule object) {
-      scheduleStack.push(object);
-      for (final Schedule a : object.getScheduleTree()) {
-        doSwitch(a);
-      }
-      scheduleStack.pop();
-
-      if (scheduleStack.isEmpty()) {
-        // if visit is ending
-        while (!toVisitActors.isEmpty()) {
-          for (AbstractActor a : toVisitActors) {
-            caseAbstractActor(a);
-          }
-          toVisitActors.removeAll(visitedActors);
-        }
-      }
-      return true;
-    }
-
-    @Override
-    public Boolean caseAbstractActor(final AbstractActor object) {
-      final List<AbstractActor> dependenciesSource = object.getDataInputPorts().stream()
-          .map(p -> p.getFifo().getSourcePort().getContainingActor()).collect(Collectors.toList());
-      if (visitedActors.containsAll(dependenciesSource)) {
-        visitedActors.add(object);
-      } else {
-        if (!toVisitActors.contains(object)) {
-          toVisitActors.add(object);
-        }
-      }
+      final List<AbstractActor> actorList = object.getActorList();
+      this.orderedSet.addAll(actorList);
       return true;
     }
   }
-
 }
