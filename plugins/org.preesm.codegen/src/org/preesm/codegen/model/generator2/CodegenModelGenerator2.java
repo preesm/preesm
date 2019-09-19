@@ -285,14 +285,10 @@ public class CodegenModelGenerator2 {
     // Add it to the specialCall
     if (actor instanceof JoinActor) {
       specialCall.addOutputBuffer(lastBuffer);
-      // actor.getDataInputPorts().stream().map(DataPort::getFifo).map(memAlloc.getFifoAllocations()::get)
-      // .map(allocation.btb::get).forEach(specialCall::addInputBuffer);
       actor.getDataInputPorts().stream().map(port -> ((Buffer) portToVariable.get(port)))
           .forEach(specialCall::addInputBuffer);
     } else {
       specialCall.addInputBuffer(lastBuffer);
-      // actor.getDataOutputPorts().stream().map(DataPort::getFifo).map(memAlloc.getFifoAllocations()::get)
-      // .map(allocation.btb::get).forEach(specialCall::addOutputBuffer);
       actor.getDataOutputPorts().stream().map(port -> ((Buffer) portToVariable.get(port)))
           .forEach(specialCall::addOutputBuffer);
     }
