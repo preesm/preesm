@@ -33,15 +33,13 @@ public class SimpleScheduleIterator extends ScheduleIterator {
    */
   private static class SimpleScheduleSwitch extends ScheduleSwitch<List<AbstractActor>> {
     @Override
-    public List<AbstractActor> caseHierarchicalSchedule(HierarchicalSchedule object) {
+    public List<AbstractActor> caseHierarchicalSchedule(final HierarchicalSchedule object) {
       return object.getChildren().stream().map(this::doSwitch).flatMap(List::stream).collect(Collectors.toList());
     }
 
     @Override
-    public List<AbstractActor> caseActorSchedule(ActorSchedule object) {
+    public List<AbstractActor> caseActorSchedule(final ActorSchedule object) {
       return object.getActorList();
     }
-
   }
-
 }

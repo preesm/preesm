@@ -29,13 +29,13 @@ public abstract class ScheduleIterator implements Iterator<AbstractActor> {
 
   @Override
   public final boolean hasNext() {
-    return currentIndex < orderedList.size();
+    return this.currentIndex < this.orderedList.size();
   }
 
   @Override
   public final AbstractActor next() {
     if (hasNext()) {
-      return orderedList.get(currentIndex++);
+      return this.orderedList.get(this.currentIndex++);
     } else {
       throw new NoSuchElementException();
     }
