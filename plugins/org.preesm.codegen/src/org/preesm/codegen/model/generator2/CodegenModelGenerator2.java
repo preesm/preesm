@@ -131,10 +131,9 @@ public class CodegenModelGenerator2 {
 
     // 1- generate variables (and keep track of them with a linker)
     this.memoryLinker = AllocationToCodegenBuffer.link(memAlloc, scenario, algo);
-    final Map<Port, Variable> portToVariable = memoryLinker.portToVariable;
 
     // 2- generate code
-    generateCode(coreBlocks, portToVariable);
+    generateCode(coreBlocks);
 
     // sort blocks
     final List<Block> resultList = coreBlocks.entrySet().stream()
@@ -148,14 +147,14 @@ public class CodegenModelGenerator2 {
   }
 
   private void generateBuffers(final Map<ComponentInstance, CoreBlock> coreBlocks) {
-    for (final Entry<?, Buffer> entry : this.memoryLinker.btb.entrySet()) {
-      final Buffer mainBuffer = entry.getValue();
-      generateBuffer(coreBlocks, mainBuffer);
+    final List<Buffer> buffers = this.memoryLinker.getCodegenBuffers();
+    for (Buffer buffer : buffers) {
+      generateBuffer(coreBlocks, buffer);
     }
   }
 
   private void generateBuffer(final Map<ComponentInstance, CoreBlock> coreBlocks, final Buffer mainBuffer) {
-    final org.preesm.algorithm.memalloc.model.Buffer key = this.memoryLinker.btb.getKey(mainBuffer);
+    final org.preesm.algorithm.memalloc.model.Buffer key = this.memoryLinker.getAllocationBuffer(mainBuffer);
     final PhysicalBuffer memoryBankObj = key.getBank();
     final String memoryBank = memoryBankObj.getMemoryBank().getInstanceName();
 
@@ -216,21 +215,21 @@ public class CodegenModelGenerator2 {
     }
   }
 
-  private void recursiveSetBufferCreator(final Variable buffer, final CoreBlock correspondingOperatorBlock,
+  private void recursiveSetBufferCreator(final Variable variable, final CoreBlock correspondingOperatorBlock,
       final boolean isLocal) {
     // Set the creator for the current buffer
-    buffer.reaffectCreator(correspondingOperatorBlock);
-    if (buffer instanceof Buffer) {
-      ((Buffer) buffer).setLocal(isLocal);
+    variable.reaffectCreator(correspondingOperatorBlock);
+    if (variable instanceof Buffer) {
+      final Buffer buffer = (Buffer) variable;
+      buffer.setLocal(isLocal);
       // Do the same recursively for all its children subbuffers
-      for (final SubBuffer subBuffer : ((Buffer) buffer).getChildrens()) {
+      for (final SubBuffer subBuffer : buffer.getChildrens()) {
         recursiveSetBufferCreator(subBuffer, correspondingOperatorBlock, isLocal);
       }
     }
   }
 
-  private void generateCode(final Map<ComponentInstance, CoreBlock> coreBlocks,
-      final Map<Port, Variable> portToVariable) {
+  private void generateCode(final Map<ComponentInstance, CoreBlock> coreBlocks) {
     // iterate in order
 
     final List<AbstractActor> actors = new ScheduleAndTopologyIterator(this.schedule).getOrderedList();
@@ -240,9 +239,9 @@ public class CodegenModelGenerator2 {
       final CoreBlock coreBlock = coreBlocks.get(componentInstance);
 
       if (actor instanceof Actor) {
-        generateActorFiring((Actor) actor, portToVariable, coreBlock);
+        generateActorFiring((Actor) actor, this.memoryLinker.getPortToVariableMap(), coreBlock);
       } else if (actor instanceof UserSpecialActor) {
-        generateSpecialActor((UserSpecialActor) actor, portToVariable, coreBlock);
+        generateSpecialActor((UserSpecialActor) actor, this.memoryLinker.getPortToVariableMap(), coreBlock);
       } else if (actor instanceof SrdagActor) {
         // TODO handle init/end
         // generateFifoCall((SrdagActor) actor, coreBlock);
@@ -266,19 +265,19 @@ public class CodegenModelGenerator2 {
     if (actor instanceof JoinActor) {
       specialCall.setType(SpecialType.JOIN);
       uniqueFifo = actor.getDataOutputPorts().get(0).getFifo();
-      lastBuffer = memoryLinker.btb.get(memAlloc.getFifoAllocations().get(uniqueFifo).getSourceBuffer());
+      lastBuffer = this.memoryLinker.getCodegenBuffer(memAlloc.getFifoAllocations().get(uniqueFifo).getSourceBuffer());
     } else if (actor instanceof ForkActor) {
       specialCall.setType(SpecialType.FORK);
       uniqueFifo = actor.getDataInputPorts().get(0).getFifo();
-      lastBuffer = memoryLinker.btb.get(memAlloc.getFifoAllocations().get(uniqueFifo).getTargetBuffer());
+      lastBuffer = this.memoryLinker.getCodegenBuffer(memAlloc.getFifoAllocations().get(uniqueFifo).getTargetBuffer());
     } else if (actor instanceof BroadcastActor) {
       specialCall.setType(SpecialType.BROADCAST);
       uniqueFifo = actor.getDataInputPorts().get(0).getFifo();
-      lastBuffer = memoryLinker.btb.get(memAlloc.getFifoAllocations().get(uniqueFifo).getTargetBuffer());
+      lastBuffer = this.memoryLinker.getCodegenBuffer(memAlloc.getFifoAllocations().get(uniqueFifo).getTargetBuffer());
     } else if (actor instanceof RoundBufferActor) {
       specialCall.setType(SpecialType.ROUND_BUFFER);
       uniqueFifo = actor.getDataInputPorts().get(0).getFifo();
-      lastBuffer = memoryLinker.btb.get(memAlloc.getFifoAllocations().get(uniqueFifo).getTargetBuffer());
+      lastBuffer = this.memoryLinker.getCodegenBuffer(memAlloc.getFifoAllocations().get(uniqueFifo).getTargetBuffer());
     } else {
       throw new PreesmRuntimeException("special actor " + actor + " has an unknown special type");
     }

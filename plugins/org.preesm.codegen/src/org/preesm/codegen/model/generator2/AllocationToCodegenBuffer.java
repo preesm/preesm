@@ -1,8 +1,10 @@
 package org.preesm.codegen.model.generator2;
 
+import java.util.ArrayList;
 import java.util.Deque;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import org.apache.commons.collections4.BidiMap;
@@ -63,36 +65,10 @@ public class AllocationToCodegenBuffer extends MemoryAllocationSwitch<Boolean> {
    *
    */
   private void link() {
-    doSwitch(this.memAlloc);
-    final Map<Port, Variable> portToVariable = this.portToVariable;
+    this.doSwitch(this.memAlloc);
 
-    final EList<AbstractActor> allActors = this.algo.getAllActors();
-    for (final AbstractActor actor : allActors) {
-      for (final ConfigInputPort cip : actor.getConfigInputPorts()) {
-        final ISetter setter = cip.getIncomingDependency().getSetter();
-        if (setter instanceof Parameter) {
-          final long evaluate = ((Parameter) setter).getValueExpression().evaluate();
-          portToVariable.put(cip, CodegenModelUserFactory.eINSTANCE.createConstant(cip.getName(), evaluate));
-        } else {
-          throw new PreesmRuntimeException();
-        }
-      }
-    }
-  }
-
-  private final Deque<Buffer>                                     codegenBufferStack = new LinkedList<>();
-  private final Deque<org.preesm.algorithm.memalloc.model.Buffer> allocBufferStack   = new LinkedList<>();
-
-  final BidiMap<org.preesm.algorithm.memalloc.model.Buffer, Buffer> btb            = new DualHashBidiMap<>();
-  final Map<Port, Variable>                                         portToVariable = new LinkedHashMap<>();
-
-  @Override
-  public Boolean caseAllocation(final Allocation alloc) {
-    // init internal variables with physical buffer children
-    alloc.getPhysicalBuffers().forEach(this::doSwitch);
-
-    // create variables for Fifos
-    for (final Entry<Fifo, FifoAllocation> fifoAllocationEntry : alloc.getFifoAllocations()) {
+    // link variables for Fifos and set names
+    for (final Entry<Fifo, FifoAllocation> fifoAllocationEntry : this.memAlloc.getFifoAllocations()) {
       final Fifo fifo = fifoAllocationEntry.getKey();
       final FifoAllocation fifoAllocation = fifoAllocationEntry.getValue();
 
@@ -137,8 +113,8 @@ public class AllocationToCodegenBuffer extends MemoryAllocationSwitch<Boolean> {
       this.portToVariable.put(fifo.getTargetPort(), tgtCodegenBuffer);
     }
 
-    // create variables for Delays
-    for (final Entry<InitActor, org.preesm.algorithm.memalloc.model.Buffer> delayAllocation : alloc
+    // link variables for Delays and set names
+    for (final Entry<InitActor, org.preesm.algorithm.memalloc.model.Buffer> delayAllocation : this.memAlloc
         .getDelayAllocations()) {
       final InitActor initActor = delayAllocation.getKey();
       final Fifo fifo = initActor.getDataPort().getFifo();
@@ -153,8 +129,27 @@ public class AllocationToCodegenBuffer extends MemoryAllocationSwitch<Boolean> {
       codegenBuffer.setComment(comment);
     }
 
-    return true;
+    final Map<Port, Variable> portToVariable = this.portToVariable;
+
+    final EList<AbstractActor> allActors = this.algo.getAllActors();
+    for (final AbstractActor actor : allActors) {
+      for (final ConfigInputPort cip : actor.getConfigInputPorts()) {
+        final ISetter setter = cip.getIncomingDependency().getSetter();
+        if (setter instanceof Parameter) {
+          final long evaluate = ((Parameter) setter).getValueExpression().evaluate();
+          portToVariable.put(cip, CodegenModelUserFactory.eINSTANCE.createConstant(cip.getName(), evaluate));
+        } else {
+          throw new PreesmRuntimeException();
+        }
+      }
+    }
   }
+
+  private final Deque<Buffer>                                     codegenBufferStack = new LinkedList<>();
+  private final Deque<org.preesm.algorithm.memalloc.model.Buffer> allocBufferStack   = new LinkedList<>();
+
+  private final BidiMap<org.preesm.algorithm.memalloc.model.Buffer, Buffer> btb            = new DualHashBidiMap<>();
+  private final Map<Port, Variable>                                         portToVariable = new LinkedHashMap<>();
 
   // for generating unique names
   private final Map<String, Long> bufferNames = new LinkedHashMap<>();
@@ -180,10 +175,18 @@ public class AllocationToCodegenBuffer extends MemoryAllocationSwitch<Boolean> {
   }
 
   @Override
+  public Boolean caseAllocation(final Allocation alloc) {
+    // init internal variables with physical buffer children
+    alloc.getPhysicalBuffers().forEach(this::doSwitch);
+    return true;
+  }
+
+  @Override
   public Boolean caseLogicalBuffer(final LogicalBuffer logicalBuffer) {
     final SubBuffer subBuffer = CodegenModelUserFactory.eINSTANCE.createSubBuffer();
     subBuffer.setSize(logicalBuffer.getSize());
     subBuffer.setOffset(logicalBuffer.getOffset());
+    subBuffer.setTypeSize(logicalBuffer.getTypeSize());
 
     this.btb.put(logicalBuffer, subBuffer);
     this.codegenBufferStack.push(subBuffer);
@@ -220,5 +223,21 @@ public class AllocationToCodegenBuffer extends MemoryAllocationSwitch<Boolean> {
     this.codegenBufferStack.pop();
     this.allocBufferStack.pop();
     return true;
+  }
+
+  public List<Buffer> getCodegenBuffers() {
+    return new ArrayList<>(this.btb.values());
+  }
+
+  public org.preesm.algorithm.memalloc.model.Buffer getAllocationBuffer(Buffer codegenBuffer) {
+    return this.btb.getKey(codegenBuffer);
+  }
+
+  public Buffer getCodegenBuffer(org.preesm.algorithm.memalloc.model.Buffer allocationBuffer) {
+    return this.btb.get(allocationBuffer);
+  }
+
+  public Map<Port, Variable> getPortToVariableMap() {
+    return this.portToVariable;
   }
 }
