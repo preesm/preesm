@@ -355,7 +355,6 @@ public class CodegenModelGenerator2 {
     }
 
     operatorBlock.getLoopBlock().getCodeElts().add(specialCall);
-
     registerCallVariableToCoreBlock(operatorBlock, specialCall);
   }
 
@@ -386,6 +385,7 @@ public class CodegenModelGenerator2 {
       final ActorFunctionCall loop = CodegenModelUserFactory.eINSTANCE.createActorFunctionCall(actor, loopPrototype,
           portToVariable);
       coreBlock.getLoopBlock().getCodeElts().add(loop);
+      registerCallVariableToCoreBlock(coreBlock, loop);
     }
   }
 }
