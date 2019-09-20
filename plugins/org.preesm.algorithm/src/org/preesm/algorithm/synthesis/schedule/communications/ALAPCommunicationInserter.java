@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Level;
 import org.eclipse.emf.common.util.ECollections;
 import org.eclipse.emf.common.util.EList;
 import org.preesm.algorithm.mapping.model.Mapping;
@@ -20,7 +19,6 @@ import org.preesm.algorithm.synthesis.schedule.ScheduleUtil;
 import org.preesm.algorithm.synthesis.schedule.iterator.ScheduleAndTopologyIterator;
 import org.preesm.algorithm.synthesis.schedule.iterator.ScheduleIterator;
 import org.preesm.commons.CollectionUtil;
-import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.DataInputPort;
 import org.preesm.model.pisdf.DataOutputPort;
@@ -30,6 +28,7 @@ import org.preesm.model.scenario.Scenario;
 import org.preesm.model.slam.ComponentInstance;
 import org.preesm.model.slam.Design;
 import org.preesm.model.slam.SlamRoute;
+import org.preesm.model.slam.SlamRouteStep;
 import org.preesm.model.slam.route.SlamRoutingTable;
 
 /**
@@ -52,59 +51,53 @@ public class ALAPCommunicationInserter implements CommunicationInserter {
   private void insertCommunication(final Fifo fifo, final SlamRoute route,
       Map<AbstractActor, ActorSchedule> actorToScheduleMap, final Mapping mapping) {
 
-    final AbstractActor srcActor = fifo.getSourcePort().getContainingActor();
-    final AbstractActor tgtActor = fifo.getTargetPort().getContainingActor();
+    for (final SlamRouteStep rstep : route.getRouteSteps()) {
+      final ComponentInstance srcCmp = rstep.getSender();
+      final ComponentInstance tgtCmp = rstep.getReceiver();
 
-    PreesmLogger.getLogger().log(Level.FINER,
-        () -> String.format("insert communication from [%s] to [%s] via route [%s]", srcActor.getName(),
-            tgtActor.getName(), route.toString()));
+      // 1- create initial send
+      final SendStartActor sendStart = ScheduleFactory.eINSTANCE.createSendStartActor();
+      sendStart.setFifo(fifo);
+      sendStart.setRouteStep(rstep);
+      sendStart.setName("sendStart" + fifo.getId());
 
-    final ComponentInstance srcCmp = route.getSource();
-    final ComponentInstance tgtCmp = route.getTarget();
+      final SendEndActor sendEnd = ScheduleFactory.eINSTANCE.createSendEndActor();
+      sendEnd.setFifo(fifo);
+      sendEnd.setName("sendEnd" + fifo.getId());
+      sendEnd.setRouteStep(rstep);
 
-    // 1- create initial send
-    final SendStartActor sendStart = ScheduleFactory.eINSTANCE.createSendStartActor();
-    sendStart.setFifo(fifo);
-    sendStart.setName("sendStart" + fifo.getId());
+      // insert send start/end in the schedule and map it on proper component
+      final AbstractActor srcCmpLastActor = lastVisitedActor.get(srcCmp);
+      final ActorSchedule srcActorSchedule = actorToScheduleMap.get(srcCmpLastActor);
+      final EList<AbstractActor> srcActorList = srcActorSchedule.getActorList();
+      CollectionUtil.insertAfter(srcActorList, srcCmpLastActor, sendStart, sendEnd);
+      mapping.getMappings().put(sendStart, ECollections.newBasicEList(srcCmp));
+      mapping.getMappings().put(sendEnd, ECollections.newBasicEList(srcCmp));
 
-    final SendEndActor sendEnd = ScheduleFactory.eINSTANCE.createSendEndActor();
-    sendEnd.setFifo(fifo);
-    sendEnd.setName("sendEnd" + fifo.getId());
-    sendEnd.setSendStart(sendStart);
+      // X- create final receive
+      final ReceiveStartActor receiveStart = ScheduleFactory.eINSTANCE.createReceiveStartActor();
+      receiveStart.setFifo(fifo);
+      receiveStart.setName("receiveStart" + fifo.getId());
+      receiveStart.setRouteStep(rstep);
 
-    // insert send start/end in the schedule and map it on proper component
-    final AbstractActor srcCmpLastActor = lastVisitedActor.get(srcCmp);
-    final ActorSchedule srcActorSchedule = actorToScheduleMap.get(srcCmpLastActor);
-    final EList<AbstractActor> srcActorList = srcActorSchedule.getActorList();
-    CollectionUtil.insertAfter(srcActorList, srcCmpLastActor, sendStart, sendEnd);
-    mapping.getMappings().put(sendStart, ECollections.newBasicEList(srcCmp));
-    mapping.getMappings().put(sendEnd, ECollections.newBasicEList(srcCmp));
+      final ReceiveEndActor receiveEnd = ScheduleFactory.eINSTANCE.createReceiveEndActor();
+      receiveEnd.setFifo(fifo);
+      receiveEnd.setName("receiveEnd" + fifo.getId());
+      receiveEnd.setReceiveStart(receiveStart);
+      receiveEnd.setRouteStep(rstep);
 
-    // 2..X-1 - create route forwards (TODO)
-    if (!route.getRouteSteps().isEmpty()) {
-      // implementer findFirstActor(componentInstance, schedule, mapping) au cas où lastVisitedActor ne contient rien
-      // pour les proxy ...
-      // throw new UnsupportedOperationException();
+      final AbstractActor tgtCmpLastActor = lastVisitedActor.get(srcCmp);
+      final ActorSchedule tgtActorSchedule = actorToScheduleMap.get(tgtCmpLastActor);
+      final EList<AbstractActor> tgtActorList = tgtActorSchedule.getActorList();
+      CollectionUtil.insertBefore(tgtActorList, tgtCmpLastActor, receiveStart, receiveEnd);
+      mapping.getMappings().put(receiveStart, ECollections.newBasicEList(tgtCmp));
+      mapping.getMappings().put(receiveEnd, ECollections.newBasicEList(tgtCmp));
+
+      // associate com nodes
+      sendEnd.setSendStart(sendStart);
+      sendStart.setTargetReceiveEnd(receiveEnd);
+      receiveEnd.setSourceSendStart(sendStart);
     }
-
-    // X- create final receive
-    final ReceiveStartActor receiveStart = ScheduleFactory.eINSTANCE.createReceiveStartActor();
-    receiveStart.setFifo(fifo);
-    receiveStart.setName("receiveStart" + fifo.getId());
-
-    final ReceiveEndActor receiveEnd = ScheduleFactory.eINSTANCE.createReceiveEndActor();
-    receiveEnd.setFifo(fifo);
-    receiveEnd.setName("receiveEnd" + fifo.getId());
-    receiveEnd.setReceiveStart(receiveStart);
-
-    final ActorSchedule tgtActorSchedule = actorToScheduleMap.get(tgtActor);
-    final EList<AbstractActor> tgtActorList = tgtActorSchedule.getActorList();
-    CollectionUtil.insertBefore(tgtActorList, tgtActor, receiveStart, receiveEnd);
-    mapping.getMappings().put(receiveStart, ECollections.newBasicEList(tgtCmp));
-    mapping.getMappings().put(receiveEnd, ECollections.newBasicEList(tgtCmp));
-
-    sendStart.setTargetReceiveEnd(receiveEnd);
-    receiveEnd.setSourceSendStart(sendStart);
 
   }
 

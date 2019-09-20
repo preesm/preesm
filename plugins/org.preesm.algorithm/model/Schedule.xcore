@@ -51,6 +51,7 @@ import org.preesm.model.pisdf.Fifo
 import org.preesm.model.pisdf.SpecialActor
 import org.preesm.model.slam.ComponentInstance
 import org.eclipse.emf.common.util.ECollections
+import org.preesm.model.slam.SlamRouteStep
 
 // !!! This is needed as of the current versions of xcore/xtext
 // For some reason when using the default String/... (i.e. without the following)
@@ -243,6 +244,7 @@ class StagedHiearchicalSchedule extends SequentialHiearchicalSchedule {
 // Special actors to fire communication. They are used to schedule the Fifos
 abstract class CommunicationActor extends SpecialActor {
 	refers Fifo fifo
+	refers SlamRouteStep routeStep
 }
 
 abstract class SendActor extends CommunicationActor {
