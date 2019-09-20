@@ -432,17 +432,16 @@ public class CodegenModelGenerator extends AbstractCodegenModelGenerator {
     scheduledDAGIterator.forEachRemaining(vert -> {
 
       // 1.0 - Identify the core used.
-      ComponentInstance operator = null;
-      CoreBlock operatorBlock = null;
       // This call can not fail as checks were already performed in
       // the constructor
-      operator = vert.getPropertyBean().getValue(ImplementationPropertyNames.Vertex_Operator);
+      ComponentInstance operator = vert.getPropertyBean().getValue(ImplementationPropertyNames.Vertex_Operator);
+      System.out.println(operator.getInstanceName());
       // If this is the first time this operator is encountered,
       // Create a Block and store it.
       if (!this.coreBlocks.containsKey(operator)) {
         throw new PreesmRuntimeException();
       }
-      operatorBlock = this.coreBlocks.get(operator);
+      CoreBlock operatorBlock = this.coreBlocks.get(operator);
       // 1.1 - Construct the "loop" of each core.
       final String vertexType = vert.getPropertyBean().getValue(ImplementationPropertyNames.Vertex_vertexType)
           .toString();
@@ -2699,9 +2698,7 @@ public class CodegenModelGenerator extends AbstractCodegenModelGenerator {
       // Do the insertion
       operatorBlock.getLoopBlock().getCodeElts().add(newComm);
 
-      // Save the communication in the dagVertexCalls map only if it
-      // is a
-      // SS or a ER
+      // Save the communication in the dagVertexCalls map only if it is a SS or a ER
       if ((newComm.getDelimiter().equals(Delimiter.START) && newComm.getDirection().equals(Direction.SEND))
           || (newComm.getDelimiter().equals(Delimiter.END) && newComm.getDirection().equals(Direction.RECEIVE))) {
         this.dagVertexCalls.put(dagVertex, newComm);
