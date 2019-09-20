@@ -66,7 +66,7 @@ public class CollectionUtil {
   }
 
   /**
-   * Insert newElements after listElement; takes care of end of list
+   * Insert newElements after listElement, in order; takes care of end of list
    */
   @SafeVarargs
   public static final <T> void insertAfter(final List<T> list, final T listElement, final T... newElements) {
@@ -82,7 +82,7 @@ public class CollectionUtil {
   }
 
   /**
-   *
+   * Insert newElements before listElement, in order; takes care of end of list
    */
   @SafeVarargs
   public static final <T> void insertBefore(final List<T> list, final T listElement, final T... newElements) {
