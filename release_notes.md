@@ -19,6 +19,9 @@ PREESM Changelog
 * Slam: 
   * move route model to xcore;
   * Refactor routing table;
+* Synhtesis API: 
+  * remodel schedule/memory allocation;
+  * implement delay support;
 
 ### Bug fix
 * Fix #74

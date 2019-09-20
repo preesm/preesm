@@ -403,6 +403,11 @@ abstract class SrdagActor extends SpecialActor {
 		// Data in/out interfaces have only one data port
 		return allDataPorts.get(0)
 	}
+
+	// In case of init/end pair, returns the size of the Delay. Returns 0 otherwise
+	op long getDelaySize()
+	// In case of init/end pair, returns the persistence level of the Delay. Returns PersistanceLevel.NONE otherwise
+	op PersistenceLevel getPersistenceLevel()
 }
 
 class InitActor extends SrdagActor {
@@ -412,14 +417,33 @@ class InitActor extends SrdagActor {
 		// Init actors only have one output port
 		return dataOutputPorts.get(0)
 	}
+	op long getDelaySize() {
+		return dataPort.portRateExpression.evaluate
+	}
+	op PersistenceLevel getPersistenceLevel() {
+		return level
+	}
 }
 
 class EndActor extends SrdagActor {
-	PersistenceLevel level
 	refers AbstractActor initReference
 	op DataInputPort getDataInputPort() {
 		// End actors only have one input port
 		return dataInputPorts.get(0)
+	}
+	op long getDelaySize() {
+		if (initReference instanceof InitActor) {
+			return (initReference as InitActor).getDelaySize()
+		} else {
+			return 0
+		}
+	}
+	op PersistenceLevel getPersistenceLevel() {
+		if (initReference instanceof InitActor) {
+			return (initReference as InitActor).persistenceLevel
+		} else {
+			return PersistenceLevel.NONE
+		}
 	}
 }
 

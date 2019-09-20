@@ -44,6 +44,8 @@ import org.preesm.algorithm.schedule.model.Schedule;
 import org.preesm.algorithm.schedule.model.ScheduleFactory;
 import org.preesm.algorithm.schedule.model.SequentialActorSchedule;
 import org.preesm.algorithm.schedule.model.SequentialHiearchicalSchedule;
+import org.preesm.algorithm.synthesis.schedule.iterator.SimpleScheduleIterator;
+import org.preesm.model.pisdf.AbstractActor;
 
 /**
  * @author dgageot
@@ -101,7 +103,9 @@ public class ScheduleParallelismDepthLimiter implements IScheduleTransform {
       } else if (schedule instanceof ActorSchedule) {
         SequentialActorSchedule actorSchedule = ScheduleFactory.eINSTANCE.createSequentialActorSchedule();
         actorSchedule.setRepetition(schedule.getRepetition());
-        actorSchedule.getActorList().addAll(((ActorSchedule) schedule).getActors());
+
+        final List<AbstractActor> actors = new SimpleScheduleIterator(schedule).getOrderedList();
+        actorSchedule.getActorList().addAll(actors);
         return actorSchedule;
       }
     }

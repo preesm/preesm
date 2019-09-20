@@ -79,16 +79,8 @@ interface Schedule {
 	 * Used when building schedules for non-srdag PiGraphs.
 	 */
 	long repetition
-	contains volatile Schedule[] children opposite parent
-	refers Schedule parent opposite children
-	/*
-	 * Return the list of all the actors contained by this schedule and all of its children.
-	 *
-	 * This list is unmodifiable.
-	 */
-	op AbstractActor[] getActors() {
-		return children.map[it.actors].flatten.asEList.unmodifiableEList
-	}
+	contains volatile Schedule[] children
+	refers HierarchicalSchedule parent opposite scheduleTree
 	/*
 	 * Returns the number of extra top iterations this schedule can cross. It is used to
 	 * represent software pipelined schedules (see {@link StagedSchedule}) or to pipeline
@@ -161,7 +153,7 @@ interface HierarchicalSchedule extends Schedule {
 	op boolean hasAttachedActor() {
 		return attachedActor !== null
 	}
-	contains Schedule[] scheduleTree
+	contains Schedule[] scheduleTree opposite parent
 	op Schedule[] getChildren() {
 		return scheduleTree
 	}
@@ -176,9 +168,6 @@ interface ActorSchedule extends Schedule {
 	 * The list may be ordered if {@link #isParallel} returns true.
 	 */
 	refers AbstractActor[] actorList
-	op AbstractActor[] getActors() {
-		return actorList.unmodifiableEList
-	}
 
 	// Actor schedules have no children
 	op Schedule[] getChildren() {

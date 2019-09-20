@@ -135,6 +135,7 @@ import org.preesm.codegen.model.Variable;
 import org.preesm.codegen.model.clustering.CodegenClusterModelGeneratorSwitch;
 import org.preesm.codegen.model.clustering.SrDAGOutsideFetcher;
 import org.preesm.codegen.model.util.CodegenModelUserFactory;
+import org.preesm.codegen.model.util.VariableSorter;
 import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.commons.model.PreesmCopyTracker;
@@ -828,36 +829,7 @@ public class CodegenModelGenerator extends AbstractCodegenModelGenerator {
 
       if (correspondingOperatorBlock != null) {
         final EList<Variable> definitions = correspondingOperatorBlock.getDefinitions();
-        ECollections.sort(definitions, (o1, o2) -> {
-          if ((o1 instanceof Buffer) && (o2 instanceof Buffer)) {
-            int sublevelO1 = 0;
-            if (o1 instanceof SubBuffer) {
-              Buffer b1 = (Buffer) o1;
-              while (b1 instanceof SubBuffer) {
-                sublevelO1++;
-                b1 = ((SubBuffer) b1).getContainer();
-              }
-            }
-
-            int sublevelO2 = 0;
-            if (o2 instanceof SubBuffer) {
-              Buffer b2 = (Buffer) o2;
-              while (b2 instanceof SubBuffer) {
-                sublevelO2++;
-                b2 = ((SubBuffer) b2).getContainer();
-              }
-            }
-
-            return sublevelO1 - sublevelO2;
-          }
-          if (o1 instanceof Buffer) {
-            return 1;
-          }
-          if (o2 instanceof Buffer) {
-            return -1;
-          }
-          return 0;
-        });
+        ECollections.sort(definitions, new VariableSorter());
       }
     }
   }
