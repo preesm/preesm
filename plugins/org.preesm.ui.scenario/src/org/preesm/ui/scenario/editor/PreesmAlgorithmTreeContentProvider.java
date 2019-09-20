@@ -160,7 +160,9 @@ public class PreesmAlgorithmTreeContentProvider implements ITreeContentProvider 
   public Set<AbstractActor> filterPISDFChildren(final EList<AbstractActor> vertices) {
     final Set<AbstractActor> result = new LinkedHashSet<>();
     for (final AbstractActor actor : vertices) {
-      result.add(actor);
+      if (actor instanceof Actor || actor instanceof PiGraph) {
+        result.add(actor);
+      }
     }
     return result;
   }
