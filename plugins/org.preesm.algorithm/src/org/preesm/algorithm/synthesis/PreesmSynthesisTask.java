@@ -46,6 +46,8 @@ import org.preesm.algorithm.synthesis.memalloc.IMemoryAllocation;
 import org.preesm.algorithm.synthesis.memalloc.SimpleMemoryAllocation;
 import org.preesm.algorithm.synthesis.schedule.IScheduler;
 import org.preesm.algorithm.synthesis.schedule.SimpleScheduler;
+import org.preesm.algorithm.synthesis.schedule.communications.ALAPCommunicationInserter;
+import org.preesm.algorithm.synthesis.schedule.communications.CommunicationInserter;
 import org.preesm.commons.doc.annotations.Port;
 import org.preesm.commons.doc.annotations.PreesmTask;
 import org.preesm.model.pisdf.PiGraph;
@@ -76,9 +78,11 @@ public class PreesmSynthesisTask extends AbstractTaskImplementation {
     final Design architecture = (Design) inputs.get(AbstractWorkflowNodeImplementation.KEY_ARCHITECTURE);
     final Scenario scenario = (Scenario) inputs.get(AbstractWorkflowNodeImplementation.KEY_SCENARIO);
 
-    IScheduler scheduler = null;
-    scheduler = new SimpleScheduler();
+    IScheduler scheduler = new SimpleScheduler();
     final SynthesisResult scheduleAndMap = scheduler.scheduleAndMap(algorithm, architecture, scenario);
+
+    final CommunicationInserter comIns = new ALAPCommunicationInserter();
+    comIns.insertCommunications(algorithm, architecture, scenario, scheduleAndMap.schedule, scheduleAndMap.mapping);
 
     final IMemoryAllocation alloc = new SimpleMemoryAllocation();
     final Allocation memalloc = alloc.allocateMemory(algorithm, architecture, scenario, scheduleAndMap.schedule,
