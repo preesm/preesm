@@ -57,6 +57,7 @@ public class ScheduleUtil {
                 Schedule> lca = ScheduleUtil.findLowestCommonAncestorChildren(leftActorSchedule, rightActorSchedule);
             final Schedule left = lca.getLeft();
             final Schedule right = lca.getRight();
+
             final HierarchicalSchedule parent = left.getParent();
             if (parent instanceof SequentialSchedule) {
               res = parent.getScheduleTree().indexOf(left) - parent.getScheduleTree().indexOf(right);
@@ -124,10 +125,19 @@ public class ScheduleUtil {
   }
 
   /**
+   * Given 2 different schedules of the same schedule tree, returns the lowest common ancestor. Ensures that
+   * result.getLeft() == result.getRight().
    *
+   * Throws exception if sched1 == sched2 or both schedules do not belong to the same schedule tree.
    */
   public static final Pair<Schedule, Schedule> findLowestCommonAncestorChildren(final Schedule sched1,
       final Schedule sched2) {
+    if (sched1 == sched2) {
+      throw new IllegalArgumentException("schedules should be different");
+    }
+    if (sched1.getRoot() != sched2.getRoot()) {
+      throw new IllegalArgumentException("schedules do not belong to the same tree");
+    }
     final List<Schedule> parentsOfSched1 = new LinkedList<>();
     parentsOfSched1.add(sched1);
     Schedule parent = sched1.getParent();
@@ -149,7 +159,7 @@ public class ScheduleUtil {
       return Pair.of(parentsOfSched1.get(Math.max(indexOfSched1Parent - 1, 0)),
           parentsOfSched2.get(Math.max(indexOfSched2Parent - 1, 0)));
     } else {
-      return null;
+      throw new PreesmRuntimeException("guru meditation");
     }
   }
 }

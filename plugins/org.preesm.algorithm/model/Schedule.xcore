@@ -82,6 +82,13 @@ interface Schedule {
 	long repetition
 	contains volatile Schedule[] children
 	refers HierarchicalSchedule parent opposite scheduleTree
+
+	op Schedule getRoot() {
+		if (parent === null)
+			return this
+		else
+			return parent.root
+	}
 	/*
 	 * Returns the number of extra top iterations this schedule can cross. It is used to
 	 * represent software pipelined schedules (see {@link StagedSchedule}) or to pipeline
