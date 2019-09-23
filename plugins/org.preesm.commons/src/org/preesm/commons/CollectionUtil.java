@@ -38,7 +38,6 @@ import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import org.eclipse.emf.common.util.ECollections;
 
 /**
  *
@@ -73,11 +72,9 @@ public class CollectionUtil {
     final int length = newElements.length;
     if (length > 0) {
       final int indexOf = list.indexOf(listElement);
-      list.add(indexOf, newElements[length - 1]);
-      for (int i = 0; i < length - 1; i++) {
+      for (int i = 0; i < length; i++) {
         list.add(indexOf + i + 1, newElements[i]);
       }
-      ECollections.move(list, indexOf, indexOf + length);
     }
   }
 
