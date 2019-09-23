@@ -35,6 +35,7 @@
  */
 package org.preesm.model.pisdf.util.topology;
 
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import org.preesm.model.pisdf.AbstractActor;
@@ -98,6 +99,32 @@ public class PiSDFTopologyHelper {
     } catch (final ThereIsALongPathException e) {
       return true;
     }
+  }
+
+  /**
+   * Used to get actors connected in input of a specified PiSDF actor
+   *
+   * @param a
+   *          actor
+   * @return actors that are directly connected in input of a
+   */
+  public static final List<AbstractActor> getDirectPredecessorsOf(final AbstractActor a) {
+    List<AbstractActor> result = new ArrayList<>();
+    a.getDataInputPorts().stream().forEach(x -> result.add(x.getIncomingFifo().getSourcePort().getContainingActor()));
+    return result;
+  }
+
+  /**
+   * Used to get actors connected in output of a specified PiSDF actor
+   *
+   * @param a
+   *          actor
+   * @return actors that are directly connected in output of a
+   */
+  public static final List<AbstractActor> getDirectSuccessorsOf(final AbstractActor a) {
+    List<AbstractActor> result = new ArrayList<>();
+    a.getDataOutputPorts().stream().forEach(x -> result.add(x.getOutgoingFifo().getTargetPort().getContainingActor()));
+    return result;
   }
 
 }
