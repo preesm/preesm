@@ -62,7 +62,6 @@ public class LegacyListScheduler extends AbstractScheduler {
 
         final ComponentInstance targetCmpIntance = vert.getPropertyBean()
             .getValue(ImplementationPropertyNames.Vertex_Operator);
-        System.out.println(targetCmpIntance.getInstanceName());
 
         createMapping.getMappings().put(orderedActor, ECollections.singletonEList(targetCmpIntance));
         if (!cmpSchedules.containsKey(targetCmpIntance)) {
