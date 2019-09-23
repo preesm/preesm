@@ -75,10 +75,17 @@ public class ExpressionEvaluator {
     return evaluate(param, param.getValueExpression().getExpressionAsString(), overridenValues);
   }
 
+  /**
+   *
+   */
   public static final long evaluate(final Parameterizable p, final String value,
       final Map<Parameter, String> overridenValues) {
     final Map<String, Double> lookupParameterValues = lookupParameterValues(p, overridenValues);
-    return JEPWrapper.evaluate(value, lookupParameterValues);
+    try {
+      return JEPWrapper.evaluate(value, lookupParameterValues);
+    } catch (final Exception e) {
+      throw new ExpressionEvaluationException("Could not evaluate " + value, e);
+    }
   }
 
   public static final long evaluate(final Expression expression) {
