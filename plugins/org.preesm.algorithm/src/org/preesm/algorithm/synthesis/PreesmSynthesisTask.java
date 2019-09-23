@@ -45,7 +45,7 @@ import org.preesm.algorithm.schedule.model.Schedule;
 import org.preesm.algorithm.synthesis.memalloc.IMemoryAllocation;
 import org.preesm.algorithm.synthesis.memalloc.SimpleMemoryAllocation;
 import org.preesm.algorithm.synthesis.schedule.IScheduler;
-import org.preesm.algorithm.synthesis.schedule.LegacyListScheduler;
+import org.preesm.algorithm.synthesis.schedule.algos.LegacyListScheduler;
 import org.preesm.algorithm.synthesis.schedule.communications.ALAPCommunicationInserter;
 import org.preesm.algorithm.synthesis.schedule.communications.CommunicationInserter;
 import org.preesm.commons.doc.annotations.Port;

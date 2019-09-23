@@ -1,4 +1,4 @@
-package org.preesm.algorithm.synthesis.schedule;
+package org.preesm.algorithm.synthesis.schedule.algos;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -14,6 +14,7 @@ import org.preesm.algorithm.schedule.model.ActorSchedule;
 import org.preesm.algorithm.schedule.model.HierarchicalSchedule;
 import org.preesm.algorithm.schedule.model.ScheduleFactory;
 import org.preesm.algorithm.synthesis.SynthesisResult;
+import org.preesm.algorithm.synthesis.schedule.AbstractScheduler;
 import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.PiGraph;
