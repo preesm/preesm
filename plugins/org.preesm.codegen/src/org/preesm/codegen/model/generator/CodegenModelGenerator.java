@@ -432,17 +432,16 @@ public class CodegenModelGenerator extends AbstractCodegenModelGenerator {
     scheduledDAGIterator.forEachRemaining(vert -> {
 
       // 1.0 - Identify the core used.
-      ComponentInstance operator = null;
-      CoreBlock operatorBlock = null;
       // This call can not fail as checks were already performed in
       // the constructor
-      operator = vert.getPropertyBean().getValue(ImplementationPropertyNames.Vertex_Operator);
+      ComponentInstance operator = vert.getPropertyBean().getValue(ImplementationPropertyNames.Vertex_Operator);
+      System.out.println(operator.getInstanceName());
       // If this is the first time this operator is encountered,
       // Create a Block and store it.
       if (!this.coreBlocks.containsKey(operator)) {
         throw new PreesmRuntimeException();
       }
-      operatorBlock = this.coreBlocks.get(operator);
+      CoreBlock operatorBlock = this.coreBlocks.get(operator);
       // 1.1 - Construct the "loop" of each core.
       final String vertexType = vert.getPropertyBean().getValue(ImplementationPropertyNames.Vertex_vertexType)
           .toString();
@@ -781,56 +780,60 @@ public class CodegenModelGenerator extends AbstractCodegenModelGenerator {
       final String memoryBank = entry.getKey();
       final Buffer mainBuffer = entry.getValue();
 
-      // Identify the corresponding operator block.
-      // (also find out if the Buffer is local (i.e. not shared between
-      // several CoreBlock)
-      CoreBlock correspondingOperatorBlock = null;
-      final boolean isLocal;
-      final String correspondingOperatorID;
+      generateBufferDefinition(memoryBank, mainBuffer);
+    }
+  }
 
-      if (memoryBank.equals("Shared")) {
-        // If the memory bank is shared, let the main operator
-        // declare the Buffer.
-        correspondingOperatorID = this.scenario.getSimulationInfo().getMainOperator().getInstanceName();
-        isLocal = false;
+  private void generateBufferDefinition(final String memoryBank, final Buffer mainBuffer) {
+    // Identify the corresponding operator block.
+    // (also find out if the Buffer is local (i.e. not shared between
+    // several CoreBlock)
+    CoreBlock correspondingOperatorBlock = null;
+    final boolean isLocal;
+    final String correspondingOperatorID;
 
-        // Check that the main operator block exists.
-        CoreBlock mainOperatorBlock = null;
-        for (final Entry<ComponentInstance, CoreBlock> componentEntry : this.coreBlocks.entrySet()) {
-          if (componentEntry.getKey().getInstanceName().equals(correspondingOperatorID)) {
-            mainOperatorBlock = componentEntry.getValue();
-          }
-        }
+    if (memoryBank.equals("Shared")) {
+      // If the memory bank is shared, let the main operator
+      // declare the Buffer.
+      correspondingOperatorID = this.scenario.getSimulationInfo().getMainOperator().getInstanceName();
+      isLocal = false;
 
-        // If the main operator does not exist
-        if (mainOperatorBlock == null) {
-          // Create it
-          final ComponentInstance componentInstance = this.archi.getComponentInstance(correspondingOperatorID);
-          mainOperatorBlock = CodegenModelUserFactory.eINSTANCE.createCoreBlock(componentInstance);
-          this.coreBlocks.put(componentInstance, mainOperatorBlock);
-        }
-
-      } else {
-        // else, the operator corresponding to the memory bank will
-        // do the work
-        correspondingOperatorID = memoryBank;
-        isLocal = true;
-      }
-
-      // Find the block
+      // Check that the main operator block exists.
+      CoreBlock mainOperatorBlock = null;
       for (final Entry<ComponentInstance, CoreBlock> componentEntry : this.coreBlocks.entrySet()) {
         if (componentEntry.getKey().getInstanceName().equals(correspondingOperatorID)) {
-          correspondingOperatorBlock = componentEntry.getValue();
+          mainOperatorBlock = componentEntry.getValue();
         }
       }
-      // Recursively set the creator for the current Buffer and all its
-      // subBuffer
-      recursiveSetBufferCreator(mainBuffer, correspondingOperatorBlock, isLocal);
 
-      if (correspondingOperatorBlock != null) {
-        final EList<Variable> definitions = correspondingOperatorBlock.getDefinitions();
-        ECollections.sort(definitions, new VariableSorter());
+      // If the main operator does not exist
+      if (mainOperatorBlock == null) {
+        // Create it
+        final ComponentInstance componentInstance = this.archi.getComponentInstance(correspondingOperatorID);
+        mainOperatorBlock = CodegenModelUserFactory.eINSTANCE.createCoreBlock(componentInstance);
+        this.coreBlocks.put(componentInstance, mainOperatorBlock);
       }
+
+    } else {
+      // else, the operator corresponding to the memory bank will
+      // do the work
+      correspondingOperatorID = memoryBank;
+      isLocal = true;
+    }
+
+    // Find the block
+    for (final Entry<ComponentInstance, CoreBlock> componentEntry : this.coreBlocks.entrySet()) {
+      if (componentEntry.getKey().getInstanceName().equals(correspondingOperatorID)) {
+        correspondingOperatorBlock = componentEntry.getValue();
+      }
+    }
+    // Recursively set the creator for the current Buffer and all its
+    // subBuffer
+    recursiveSetBufferCreator(mainBuffer, correspondingOperatorBlock, isLocal);
+
+    if (correspondingOperatorBlock != null) {
+      final EList<Variable> definitions = correspondingOperatorBlock.getDefinitions();
+      ECollections.sort(definitions, new VariableSorter());
     }
   }
 
@@ -2695,9 +2698,7 @@ public class CodegenModelGenerator extends AbstractCodegenModelGenerator {
       // Do the insertion
       operatorBlock.getLoopBlock().getCodeElts().add(newComm);
 
-      // Save the communication in the dagVertexCalls map only if it
-      // is a
-      // SS or a ER
+      // Save the communication in the dagVertexCalls map only if it is a SS or a ER
       if ((newComm.getDelimiter().equals(Delimiter.START) && newComm.getDirection().equals(Direction.SEND))
           || (newComm.getDelimiter().equals(Delimiter.END) && newComm.getDirection().equals(Direction.RECEIVE))) {
         this.dagVertexCalls.put(dagVertex, newComm);
