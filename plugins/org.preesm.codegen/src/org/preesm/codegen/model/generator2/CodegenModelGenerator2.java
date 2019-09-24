@@ -433,6 +433,8 @@ public class CodegenModelGenerator2 {
     final org.preesm.algorithm.memalloc.model.Buffer buffer2 = memAlloc.getDelayAllocations().get(initActor);
     final Buffer delayBuffer = memoryLinker.getCodegenBuffer(buffer2);
 
+    buffer.getUsers().add(coreBlock);
+    delayBuffer.getUsers().add(coreBlock);
     fifoCall.setHeadBuffer(delayBuffer);
     fifoCall.setBodyBuffer(null);
 
