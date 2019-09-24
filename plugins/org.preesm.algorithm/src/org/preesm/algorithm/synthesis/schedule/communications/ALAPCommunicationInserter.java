@@ -74,6 +74,8 @@ public class ALAPCommunicationInserter implements CommunicationInserter {
 
       final EList<AbstractActor> srcActorList = srcActorSchedule.getActorList();
       CollectionUtil.insertAfter(srcActorList, srcCmpLastActor, sendStart, sendEnd);
+      actorToScheduleMap.put(sendStart, srcActorSchedule);
+      actorToScheduleMap.put(sendEnd, srcActorSchedule);
       mapping.getMappings().put(sendStart, ECollections.newBasicEList(srcCmp));
       mapping.getMappings().put(sendEnd, ECollections.newBasicEList(srcCmp));
 
@@ -91,6 +93,8 @@ public class ALAPCommunicationInserter implements CommunicationInserter {
 
       final EList<AbstractActor> tgtActorList = tgtActorSchedule.getActorList();
       CollectionUtil.insertBefore(tgtActorList, tgtCmpLastActor, receiveStart, receiveEnd);
+      actorToScheduleMap.put(receiveStart, tgtActorSchedule);
+      actorToScheduleMap.put(receiveEnd, tgtActorSchedule);
       mapping.getMappings().put(receiveStart, ECollections.newBasicEList(tgtCmp));
       mapping.getMappings().put(receiveEnd, ECollections.newBasicEList(tgtCmp));
 
