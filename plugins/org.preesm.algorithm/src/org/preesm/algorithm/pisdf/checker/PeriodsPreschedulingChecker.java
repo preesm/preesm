@@ -158,7 +158,7 @@ public class PeriodsPreschedulingChecker extends AbstractTaskImplementation {
 
     // 0. find all cycles and retrieve actors placed after delays.
     HeuristicLoopBreakingDelays heurFifoBreaks = new HeuristicLoopBreakingDelays();
-    heurFifoBreaks.performAnalysis(graph);
+    heurFifoBreaks.performAnalysis(graph, brv);
 
     // 1. find all actor w/o incoming edges and all others w/o outgoing edge
     final Set<AbstractActor> sourceActors = new LinkedHashSet<>(heurFifoBreaks.additionalSourceActors);

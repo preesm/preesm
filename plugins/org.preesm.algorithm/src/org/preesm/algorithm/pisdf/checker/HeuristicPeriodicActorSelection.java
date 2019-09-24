@@ -73,9 +73,9 @@ class HeuristicPeriodicActorSelection {
 
     Map<AbstractActor, ActorVisit> topoRanks = null;
     if (reverse) {
-      topoRanks = HeuristicPeriodicActorSelection.topologicalASAPrankingT(originActors, actorsNbVisits, graph);
+      topoRanks = HeuristicPeriodicActorSelection.topologicalASAPrankingT(originActors, actorsNbVisits);
     } else {
-      topoRanks = HeuristicPeriodicActorSelection.topologicalASAPranking(originActors, actorsNbVisits, graph);
+      topoRanks = HeuristicPeriodicActorSelection.topologicalASAPranking(originActors, actorsNbVisits);
     }
     final Map<Actor, Double> topoRanksPeriodic = new LinkedHashMap<>();
     for (final Entry<Actor, Long> e : periodicActors.entrySet()) {
@@ -141,7 +141,7 @@ class HeuristicPeriodicActorSelection {
   }
 
   private static Map<AbstractActor, ActorVisit> topologicalASAPranking(final Set<AbstractActor> sourceActors,
-      final Map<AbstractActor, Integer> actorsNbVisits, final PiGraph graph) {
+      final Map<AbstractActor, Integer> actorsNbVisits) {
     final Map<AbstractActor, ActorVisit> topoRanks = new LinkedHashMap<>();
     for (final AbstractActor actor : sourceActors) {
       topoRanks.put(actor, new ActorVisit(0, 1));
@@ -181,7 +181,7 @@ class HeuristicPeriodicActorSelection {
   }
 
   private static Map<AbstractActor, ActorVisit> topologicalASAPrankingT(final Set<AbstractActor> sinkActors,
-      final Map<AbstractActor, Integer> actorsNbVisits, final PiGraph graph) {
+      final Map<AbstractActor, Integer> actorsNbVisits) {
     final Map<AbstractActor, ActorVisit> topoRanks = new LinkedHashMap<>();
     for (final AbstractActor actor : sinkActors) {
       topoRanks.put(actor, new ActorVisit(0, 1));

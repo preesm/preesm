@@ -36,6 +36,8 @@
 package org.preesm.algorithm.pisdf.checker;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
@@ -43,11 +45,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.logging.Level;
+import java.util.stream.Collectors;
 import org.jgrapht.alg.cycle.JohnsonSimpleCycles;
 import org.jgrapht.graph.DefaultDirectedGraph;
 import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.preesm.commons.logger.PreesmLogger;
+import org.preesm.commons.math.MathFunctionsHelper;
 import org.preesm.model.pisdf.AbstractActor;
+import org.preesm.model.pisdf.AbstractVertex;
 import org.preesm.model.pisdf.Delay;
 import org.preesm.model.pisdf.ExecutableActor;
 import org.preesm.model.pisdf.Fifo;
@@ -61,11 +66,14 @@ import org.preesm.model.pisdf.util.FifoBreakingCycleDetector;
  */
 public class HeuristicLoopBreakingDelays {
 
-  protected Map<AbstractActor, Integer> actorsNbVisitsTopoRank  = null;
-  protected Map<AbstractActor, Integer> actorsNbVisitsTopoRankT = null;
+  protected final Map<AbstractActor, Integer> actorsNbVisitsTopoRank;
+  protected final Map<AbstractActor, Integer> actorsNbVisitsTopoRankT;
 
-  protected Set<AbstractActor> additionalSourceActors = null;
-  protected Set<AbstractActor> additionalSinkActors   = null;
+  protected final Set<AbstractActor> additionalSourceActors;
+  protected final Set<AbstractActor> additionalSinkActors;
+
+  protected final Map<AbstractVertex, Long> minCycleBrv;
+  protected final Set<FifoAbstraction>      breakingFifosAbs;
 
   protected HeuristicLoopBreakingDelays() {
     this.actorsNbVisitsTopoRank = new LinkedHashMap<>();
@@ -73,6 +81,9 @@ public class HeuristicLoopBreakingDelays {
 
     this.additionalSourceActors = new LinkedHashSet<>();
     this.additionalSinkActors = new LinkedHashSet<>();
+
+    this.minCycleBrv = new HashMap<>();
+    this.breakingFifosAbs = new HashSet<>();
   }
 
   /**
@@ -81,18 +92,20 @@ public class HeuristicLoopBreakingDelays {
    * @author ahonorat
    */
   protected class FifoAbstraction {
-    boolean    fullyDelayed;
-    int        nbNonZeroDelays;
-    List<Long> delays;
+    boolean          fullyDelayed;
+    int              nbNonZeroDelays;
+    final List<Long> delays;
+    final List<Fifo> fifos;
 
     private FifoAbstraction() {
       this.fullyDelayed = false;
       this.nbNonZeroDelays = 0;
       this.delays = new ArrayList<>();
+      this.fifos = new ArrayList<>();
     }
   }
 
-  protected void performAnalysis(final PiGraph graph) {
+  protected void performAnalysis(final PiGraph graph, final Map<AbstractVertex, Long> brv) {
     // 1. perform flat PiMM to simple JGraphT structure transition.
     final DefaultDirectedGraph<AbstractActor, FifoAbstraction> absGraph = createAbsGraph(graph);
     // 2. look for cycles
@@ -101,12 +114,17 @@ public class HeuristicLoopBreakingDelays {
 
     // 3 categorize actors in cycle and retrieve fifo with delays breaking loop
     // it is a set since the same fifo can break several cycles if they have some paths in common
-    final Set<FifoAbstraction> breakingFifos = new LinkedHashSet<>();
     for (final List<AbstractActor> cycle : cycles) {
-      final FifoAbstraction breakingFifo = retrieveBreakingFifo(graph, absGraph, cycle);
-      breakingFifos.add(breakingFifo);
-      final AbstractActor src = absGraph.getEdgeSource(breakingFifo);
-      final AbstractActor tgt = absGraph.getEdgeTarget(breakingFifo);
+      final FifoAbstraction breakingFifoAbs = retrieveBreakingFifo(absGraph, cycle);
+      breakingFifosAbs.add(breakingFifoAbs);
+      final AbstractActor src = absGraph.getEdgeSource(breakingFifoAbs);
+      final AbstractActor tgt = absGraph.getEdgeTarget(breakingFifoAbs);
+      long gcdCycle = MathFunctionsHelper.gcd(cycle.stream().map(a -> brv.get(a)).collect(Collectors.toList()));
+      cycle.forEach(a -> {
+        long localBrv = brv.get(a) / gcdCycle;
+        long cycleBrv = minCycleBrv.get(a);
+        minCycleBrv.put(a, Math.min(localBrv, cycleBrv));
+      });
 
       final StringBuilder sb = new StringBuilder(src.getName() + " => " + tgt.getName() + " breaks cycle: ");
       cycle.stream().forEach(a -> sb.append(" -> " + a.getName()));
@@ -120,11 +138,11 @@ public class HeuristicLoopBreakingDelays {
         this.actorsNbVisitsTopoRankT.put(aa, aa.getDataOutputPorts().size());
       }
     }
-    for (final FifoAbstraction breakingFifo : breakingFifos) {
-      final AbstractActor src = absGraph.getEdgeSource(breakingFifo);
-      final AbstractActor tgt = absGraph.getEdgeTarget(breakingFifo);
-      final int newNbVisitsT = this.actorsNbVisitsTopoRankT.get(src) - breakingFifo.nbNonZeroDelays;
-      final int newNbVisits = this.actorsNbVisitsTopoRank.get(tgt) - breakingFifo.nbNonZeroDelays;
+    for (final FifoAbstraction breakingFifoAbs : breakingFifosAbs) {
+      final AbstractActor src = absGraph.getEdgeSource(breakingFifoAbs);
+      final AbstractActor tgt = absGraph.getEdgeTarget(breakingFifoAbs);
+      final int newNbVisitsT = this.actorsNbVisitsTopoRankT.get(src) - breakingFifoAbs.nbNonZeroDelays;
+      final int newNbVisits = this.actorsNbVisitsTopoRank.get(tgt) - breakingFifoAbs.nbNonZeroDelays;
       if ((newNbVisits < 0) || (newNbVisitsT < 0)) {
         throw new PreesmRuntimeException("A loop breaking fifo gave wrong I/O ports number between <" + src.getName()
             + "> and <" + tgt.getName() + ">, leaving.");
@@ -141,8 +159,8 @@ public class HeuristicLoopBreakingDelays {
 
   }
 
-  protected FifoAbstraction retrieveBreakingFifo(final PiGraph graph,
-      final DefaultDirectedGraph<AbstractActor, FifoAbstraction> absGraph, final List<AbstractActor> cycle) {
+  protected FifoAbstraction retrieveBreakingFifo(final DefaultDirectedGraph<AbstractActor, FifoAbstraction> absGraph,
+      final List<AbstractActor> cycle) {
     if (cycle.isEmpty()) {
       throw new PreesmRuntimeException("Bad argument: empty cycle.");
     }
@@ -231,6 +249,7 @@ public class HeuristicLoopBreakingDelays {
             throw new PreesmRuntimeException("Problem while creating graph copy.");
           }
         }
+        fa.fifos.add(f);
         final Delay d = f.getDelay();
         if (d == null) {
           fa.delays.add(0L);
