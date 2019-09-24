@@ -64,4 +64,31 @@ public class CollectionUtil {
     return result;
   }
 
+  /**
+   * Insert newElements after listElement, in order; takes care of end of list
+   */
+  @SafeVarargs
+  public static final <T> void insertAfter(final List<T> list, final T listElement, final T... newElements) {
+    final int length = newElements.length;
+    if (length > 0) {
+      final int indexOf = list.indexOf(listElement);
+      for (int i = 0; i < length; i++) {
+        list.add(indexOf + i + 1, newElements[i]);
+      }
+    }
+  }
+
+  /**
+   * Insert newElements before listElement, in order; takes care of end of list
+   */
+  @SafeVarargs
+  public static final <T> void insertBefore(final List<T> list, final T listElement, final T... newElements) {
+    final int length = newElements.length;
+    if (length > 0) {
+      final int indexOf = list.indexOf(listElement);
+      for (int i = newElements.length - 1; i >= 0; i--) {
+        list.add(indexOf, newElements[i]);
+      }
+    }
+  }
 }

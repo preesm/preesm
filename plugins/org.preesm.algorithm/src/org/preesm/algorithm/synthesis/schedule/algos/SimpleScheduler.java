@@ -32,7 +32,7 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL license and that you accept its terms.
  */
-package org.preesm.algorithm.synthesis.schedule;
+package org.preesm.algorithm.synthesis.schedule.algos;
 
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -45,6 +45,7 @@ import org.preesm.algorithm.schedule.model.ActorSchedule;
 import org.preesm.algorithm.schedule.model.HierarchicalSchedule;
 import org.preesm.algorithm.schedule.model.ScheduleFactory;
 import org.preesm.algorithm.synthesis.SynthesisResult;
+import org.preesm.algorithm.synthesis.schedule.AbstractScheduler;
 import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.PiGraph;

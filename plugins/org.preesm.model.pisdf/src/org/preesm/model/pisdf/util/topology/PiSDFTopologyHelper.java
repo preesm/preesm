@@ -89,6 +89,19 @@ public class PiSDFTopologyHelper {
   }
 
   /**
+   * Returns true if there is a long path from potentialSucc to target. A long path is defined as a path that encounters
+   * more than one Fifo.
+   */
+  public static final boolean isThereIsALongPath(final AbstractActor potentialSucc, final AbstractActor target) {
+    try {
+      new IsThereALongPathSwitch(target).doSwitch(potentialSucc);
+      return false;
+    } catch (final ThereIsALongPathException e) {
+      return true;
+    }
+  }
+
+  /**
    * Used to get actors connected in input of a specified PiSDF actor
    *
    * @param a
@@ -112,19 +125,6 @@ public class PiSDFTopologyHelper {
     List<AbstractActor> result = new ArrayList<>();
     a.getDataOutputPorts().stream().forEach(x -> result.add(x.getOutgoingFifo().getTargetPort().getContainingActor()));
     return result;
-  }
-
-  /**
-   * Returns true if there is a long path from potentialSucc to target. A long path is defined as a path that encounters
-   * more than one Fifo.
-   */
-  public static final boolean isThereIsALongPath(final AbstractActor potentialSucc, final AbstractActor target) {
-    try {
-      new IsThereALongPathSwitch(target).doSwitch(potentialSucc);
-      return false;
-    } catch (final ThereIsALongPathException e) {
-      return true;
-    }
   }
 
 }

@@ -34,6 +34,7 @@
  */
 package org.preesm.codegen.model.generator2;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -45,19 +46,28 @@ import org.eclipse.emf.common.util.ECollections;
 import org.eclipse.emf.common.util.EList;
 import org.preesm.algorithm.mapping.model.Mapping;
 import org.preesm.algorithm.memalloc.model.Allocation;
+import org.preesm.algorithm.memalloc.model.FifoAllocation;
 import org.preesm.algorithm.memalloc.model.PhysicalBuffer;
 import org.preesm.algorithm.schedule.model.CommunicationActor;
+import org.preesm.algorithm.schedule.model.ReceiveStartActor;
 import org.preesm.algorithm.schedule.model.Schedule;
+import org.preesm.algorithm.schedule.model.SendActor;
+import org.preesm.algorithm.schedule.model.SendStartActor;
 import org.preesm.algorithm.synthesis.schedule.iterator.ScheduleAndTopologyIterator;
 import org.preesm.codegen.model.ActorFunctionCall;
 import org.preesm.codegen.model.Block;
 import org.preesm.codegen.model.Buffer;
 import org.preesm.codegen.model.Call;
+import org.preesm.codegen.model.Communication;
+import org.preesm.codegen.model.CommunicationNode;
 import org.preesm.codegen.model.Constant;
 import org.preesm.codegen.model.CoreBlock;
+import org.preesm.codegen.model.Delimiter;
+import org.preesm.codegen.model.Direction;
 import org.preesm.codegen.model.FifoCall;
 import org.preesm.codegen.model.FifoOperation;
 import org.preesm.codegen.model.PortDirection;
+import org.preesm.codegen.model.SharedMemoryCommunication;
 import org.preesm.codegen.model.SpecialCall;
 import org.preesm.codegen.model.SpecialType;
 import org.preesm.codegen.model.SubBuffer;
@@ -87,6 +97,8 @@ import org.preesm.model.pisdf.UserSpecialActor;
 import org.preesm.model.scenario.Scenario;
 import org.preesm.model.slam.ComponentInstance;
 import org.preesm.model.slam.Design;
+import org.preesm.model.slam.SlamMessageRouteStep;
+import org.preesm.model.slam.SlamRouteStep;
 
 /**
  *
@@ -251,10 +263,144 @@ public class CodegenModelGenerator2 {
       } else if (actor instanceof SrdagActor) {
         generateFifoCall((SrdagActor) actor, coreBlock);
       } else if (actor instanceof CommunicationActor) {
-        // TODO handle send/receive + enabler triggers
-        throw new PreesmRuntimeException("Unsupported actor [" + actor + "]");
+        generateCommunication((CommunicationActor) actor, coreBlock);
       } else {
         throw new PreesmRuntimeException("Unsupported actor [" + actor + "]");
+      }
+    }
+  }
+
+  private void generateCommunication(final CommunicationActor actor, final CoreBlock coreBlock) {
+    // Create the communication
+    final SharedMemoryCommunication newComm = CodegenModelUserFactory.eINSTANCE.createSharedMemoryCommunication();
+
+    final Direction dir;
+    final Delimiter delimiter;
+    final PortDirection direction;
+    if (actor instanceof SendActor) {
+      dir = Direction.SEND;
+      direction = PortDirection.NONE;
+      if (actor instanceof SendStartActor) {
+        delimiter = Delimiter.START;
+      } else {
+        delimiter = Delimiter.END;
+      }
+    } else {
+      dir = Direction.RECEIVE;
+      direction = PortDirection.NONE;
+      if (actor instanceof ReceiveStartActor) {
+        delimiter = Delimiter.START;
+      } else {
+        delimiter = Delimiter.END;
+      }
+    }
+
+    newComm.setDirection(dir);
+    newComm.setDelimiter(delimiter);
+    final SlamRouteStep routeStep = actor.getRouteStep();
+    if (routeStep instanceof SlamMessageRouteStep) {
+      final SlamMessageRouteStep msgRouteStep = (SlamMessageRouteStep) routeStep;
+      for (final ComponentInstance comp : msgRouteStep.getNodes()) {
+        final CommunicationNode comNode = CodegenModelUserFactory.eINSTANCE.createCommunicationNode();
+        comNode.setName(comp.getInstanceName());
+        comNode.setType(comp.getComponent().getVlnv().getName());
+        newComm.getNodes().add(comNode);
+      }
+
+      final Buffer buffer;
+
+      // Find the corresponding DAGEdge buffer(s)
+      final Fifo fifo = actor.getFifo();
+      final FifoAllocation fifoAllocation = memAlloc.getFifoAllocations().get(fifo);
+
+      if (actor instanceof SendActor) {
+        final org.preesm.algorithm.memalloc.model.Buffer allocBuffer = fifoAllocation.getSourceBuffer();
+        buffer = memoryLinker.getCodegenBuffer(allocBuffer);
+      } else {
+        final org.preesm.algorithm.memalloc.model.Buffer allocBuffer = fifoAllocation.getTargetBuffer();
+        buffer = memoryLinker.getCodegenBuffer(allocBuffer);
+      }
+      newComm.setData(buffer);
+      newComm.getParameters().clear();
+
+      newComm.addParameter(buffer, direction);
+
+      // Set the name of the communication
+      // SS <=> Start Send
+      // RE <=> Receive End
+      String commName = "__" + buffer.getName();
+      commName += "__" + coreBlock.getName();
+      newComm.setName(((newComm.getDirection().equals(Direction.SEND)) ? "S" : "R")
+          + ((newComm.getDelimiter().equals(Delimiter.START)) ? "S" : "E") + commName);
+
+      registerCommunication(newComm, fifo, actor, routeStep);
+      coreBlock.getLoopBlock().getCodeElts().add(newComm);
+    } else {
+      throw new UnsupportedOperationException();
+    }
+  }
+
+  private final Map<String, List<Communication>> communications = new LinkedHashMap<>();
+
+  protected void registerCommunication(final Communication newCommmunication, final Fifo dagEdge,
+      final CommunicationActor dagVertex, final SlamRouteStep routeStep) {
+    // Retrieve the routeStep corresponding to the vertex.
+    // In case of multi-step communication, this is the easiest
+    // way to retrieve the target and source of the communication
+    // corresponding to the current Send/ReceiveVertex
+
+    String commID = routeStep.getSender().getInstanceName();
+    commID += "__" + dagEdge.getSourcePort().getContainingActor().getName();
+    commID += "___" + routeStep.getReceiver().getInstanceName();
+    commID += "__" + dagEdge.getTargetPort().getContainingActor().getName();
+    List<Communication> associatedCommunications = this.communications.get(commID);
+
+    // Get associated Communications and set ID
+    if (associatedCommunications == null) {
+      associatedCommunications = new ArrayList<>();
+      newCommmunication.setId(this.communications.size());
+      this.communications.put(commID, associatedCommunications);
+    } else {
+      newCommmunication.setId(associatedCommunications.get(0).getId());
+    }
+
+    // Register other comm to the new
+    for (final Communication com : associatedCommunications) {
+      if (com.getDirection().equals(Direction.SEND)) {
+        if (com.getDelimiter().equals(Delimiter.START)) {
+          newCommmunication.setSendStart(com);
+        }
+        if (com.getDelimiter().equals(Delimiter.END)) {
+          newCommmunication.setSendEnd(com);
+        }
+      }
+      if (com.getDirection().equals(Direction.RECEIVE)) {
+        if (com.getDelimiter().equals(Delimiter.START)) {
+          newCommmunication.setReceiveStart(com);
+        }
+        if (com.getDelimiter().equals(Delimiter.END)) {
+          newCommmunication.setReceiveEnd(com);
+        }
+      }
+    }
+
+    // Register new comm to its co-workers
+    associatedCommunications.add(newCommmunication);
+    for (final Communication com : associatedCommunications) {
+      if (newCommmunication.getDirection().equals(Direction.SEND)) {
+        if (newCommmunication.getDelimiter().equals(Delimiter.START)) {
+          com.setSendStart(newCommmunication);
+        }
+        if (newCommmunication.getDelimiter().equals(Delimiter.END)) {
+          com.setSendEnd(newCommmunication);
+        }
+      } else {
+        if (newCommmunication.getDelimiter().equals(Delimiter.START)) {
+          com.setReceiveStart(newCommmunication);
+        }
+        if (newCommmunication.getDelimiter().equals(Delimiter.END)) {
+          com.setReceiveEnd(newCommmunication);
+        }
       }
     }
   }
@@ -287,6 +433,8 @@ public class CodegenModelGenerator2 {
     final org.preesm.algorithm.memalloc.model.Buffer buffer2 = memAlloc.getDelayAllocations().get(initActor);
     final Buffer delayBuffer = memoryLinker.getCodegenBuffer(buffer2);
 
+    buffer.getUsers().add(coreBlock);
+    delayBuffer.getUsers().add(coreBlock);
     fifoCall.setHeadBuffer(delayBuffer);
     fifoCall.setBodyBuffer(null);
 
@@ -355,7 +503,6 @@ public class CodegenModelGenerator2 {
     }
 
     operatorBlock.getLoopBlock().getCodeElts().add(specialCall);
-
     registerCallVariableToCoreBlock(operatorBlock, specialCall);
   }
 
@@ -386,6 +533,7 @@ public class CodegenModelGenerator2 {
       final ActorFunctionCall loop = CodegenModelUserFactory.eINSTANCE.createActorFunctionCall(actor, loopPrototype,
           portToVariable);
       coreBlock.getLoopBlock().getCodeElts().add(loop);
+      registerCallVariableToCoreBlock(coreBlock, loop);
     }
   }
 }
