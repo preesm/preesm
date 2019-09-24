@@ -435,7 +435,6 @@ public class CodegenModelGenerator extends AbstractCodegenModelGenerator {
       // This call can not fail as checks were already performed in
       // the constructor
       ComponentInstance operator = vert.getPropertyBean().getValue(ImplementationPropertyNames.Vertex_Operator);
-      System.out.println(operator.getInstanceName());
       // If this is the first time this operator is encountered,
       // Create a Block and store it.
       if (!this.coreBlocks.containsKey(operator)) {
