@@ -38,6 +38,7 @@ package org.preesm.algorithm.synthesis;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.logging.Level;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.preesm.algorithm.mapping.model.Mapping;
 import org.preesm.algorithm.memalloc.model.Allocation;
@@ -50,6 +51,7 @@ import org.preesm.algorithm.synthesis.schedule.communications.ALAPCommunicationI
 import org.preesm.algorithm.synthesis.schedule.communications.CommunicationInserter;
 import org.preesm.commons.doc.annotations.Port;
 import org.preesm.commons.doc.annotations.PreesmTask;
+import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.scenario.Scenario;
 import org.preesm.model.slam.Design;
@@ -78,12 +80,15 @@ public class PreesmSynthesisTask extends AbstractTaskImplementation {
     final Design architecture = (Design) inputs.get(AbstractWorkflowNodeImplementation.KEY_ARCHITECTURE);
     final Scenario scenario = (Scenario) inputs.get(AbstractWorkflowNodeImplementation.KEY_SCENARIO);
 
+    PreesmLogger.getLogger().log(Level.INFO, " -- Scheduling");
     IScheduler scheduler = new LegacyListScheduler();
     final SynthesisResult scheduleAndMap = scheduler.scheduleAndMap(algorithm, architecture, scenario);
 
+    PreesmLogger.getLogger().log(Level.INFO, " -- Insert communication");
     final CommunicationInserter comIns = new ALAPCommunicationInserter();
     comIns.insertCommunications(algorithm, architecture, scenario, scheduleAndMap.schedule, scheduleAndMap.mapping);
 
+    PreesmLogger.getLogger().log(Level.INFO, " -- Allocating Memory");
     final IMemoryAllocation alloc = new SimpleMemoryAllocation();
     final Allocation memalloc = alloc.allocateMemory(algorithm, architecture, scenario, scheduleAndMap.schedule,
         scheduleAndMap.mapping);
