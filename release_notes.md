@@ -22,6 +22,7 @@ PREESM Changelog
 * Synhtesis API: 
   * remodel schedule/memory allocation;
   * implement delay support;
+  * implement communication insertion;
 * Refactor:
   * Minor codegen refactor;
   * Rethrow all exceptions thrown by JEP with expression causing issue;
