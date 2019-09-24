@@ -27,7 +27,9 @@ PREESM Changelog
 
 ### Bug fix
 * Fix #74
+* Fix #80
 * Fix #83
+* Fix #85
 * Fix #128
 * Fix #190
 * Fix problem with precedence shift condition (clustering purposes)
