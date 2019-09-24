@@ -23,6 +23,7 @@ PREESM Changelog
   * remodel schedule/memory allocation;
   * implement delay support;
 * Refactor:
+  * Minor codegen refactor;
   * Rethrow all exceptions thrown by JEP with expression causing issue;
 
 ### Bug fix
