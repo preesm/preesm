@@ -1,7 +1,6 @@
 package org.preesm.algorithm.pisdf.checker;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
@@ -117,8 +116,7 @@ public class AbstractGraph {
       DefaultDirectedGraph<AbstractActor, FifoAbstraction> subGraph, Set<FifoAbstraction> fifosToIgnore,
       boolean reverse, List<AbstractActor> visitPathStack) {
 
-    Iterator<AbstractActor> it = visitPathStack.iterator();
-    AbstractActor currentNode = it.next();
+    AbstractActor currentNode = visitPathStack.get(0);
     Set<FifoAbstraction> edges = null;
     if (reverse) {
       edges = absGraph.incomingEdgesOf(currentNode);
@@ -142,14 +140,14 @@ public class AbstractGraph {
           subGraph.addVertex(opposite);
           visitPathStack.add(0, opposite);
         }
-        subGraph.addEdge(currentNode, opposite);
+        subGraph.addEdge(currentNode, opposite, fa);
         if (mustGoDeeper) {
           subGraphDFS(absGraph, subGraph, fifosToIgnore, reverse, visitPathStack);
         }
 
       }
     }
-    it.remove();
+    visitPathStack.remove(currentNode);
   }
 
 }
