@@ -43,6 +43,8 @@ import java.util.Map.Entry;
 import java.util.Set;
 import java.util.logging.Level;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.jgrapht.graph.DefaultDirectedGraph;
+import org.preesm.algorithm.pisdf.checker.AbstractGraph.FifoAbstraction;
 import org.preesm.commons.doc.annotations.Parameter;
 import org.preesm.commons.doc.annotations.Port;
 import org.preesm.commons.doc.annotations.PreesmTask;
@@ -53,6 +55,7 @@ import org.preesm.commons.model.PreesmCopyTracker;
 import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.AbstractVertex;
 import org.preesm.model.pisdf.Actor;
+import org.preesm.model.pisdf.DelayActor;
 import org.preesm.model.pisdf.ExecutableActor;
 import org.preesm.model.pisdf.PeriodicElement;
 import org.preesm.model.pisdf.PiGraph;
@@ -140,6 +143,12 @@ public class PeriodsPreschedulingChecker extends AbstractTaskImplementation {
           }
         }
       }
+      if (absActor instanceof DelayActor) {
+        DelayActor da = (DelayActor) absActor;
+        if (da.getSetterActor() != null || da.getGetterActor() != null) {
+          throw new PreesmRuntimeException("DelayActor with getter or setter are not supported in this task, abandon.");
+        }
+      }
     }
 
     Map<AbstractVertex, Long> brv = PiBRV.compute(graph, BRVMethod.LCM);
@@ -166,7 +175,7 @@ public class PeriodsPreschedulingChecker extends AbstractTaskImplementation {
 
     // 0. find all cycles and retrieve actors placed after delays.
     HeuristicLoopBreakingDelays heurFifoBreaks = new HeuristicLoopBreakingDelays();
-    heurFifoBreaks.performAnalysis(graph, brv);
+    DefaultDirectedGraph<AbstractActor, FifoAbstraction> absGraph = heurFifoBreaks.performAnalysis(graph, brv);
 
     // 1. find all actor w/o incoming edges and all others w/o outgoing edge
     final Set<AbstractActor> sourceActors = new LinkedHashSet<>(heurFifoBreaks.additionalSourceActors);
@@ -192,22 +201,29 @@ public class PeriodsPreschedulingChecker extends AbstractTaskImplementation {
     // 2. perform heuristic to select periodic nodes
     final StringBuilder sbNBFF = new StringBuilder();
     final Map<Actor, Long> actorsNBFF = HeuristicPeriodicActorSelection.selectActors(periodicActors, sourceActors,
-        heurFifoBreaks.actorsNbVisitsTopoRank, rate, graph, scenario, false);
+        heurFifoBreaks.actorsNbVisitsTopoRank, rate, wcets, false);
     actorsNBFF.keySet().forEach(a -> sbNBFF.append(a.getName() + " / "));
     PreesmLogger.getLogger().log(Level.INFO, "Periodic actor for NBFF: " + sbNBFF.toString());
 
     final StringBuilder sbNBLF = new StringBuilder();
     final Map<Actor, Long> actorsNBLF = HeuristicPeriodicActorSelection.selectActors(periodicActors, sinkActors,
-        heurFifoBreaks.actorsNbVisitsTopoRankT, rate, graph, scenario, true);
+        heurFifoBreaks.actorsNbVisitsTopoRankT, rate, wcets, true);
     actorsNBLF.keySet().forEach(a -> sbNBLF.append(a.getName() + " / "));
     PreesmLogger.getLogger().log(Level.INFO, "Periodic actor for NBLF: " + sbNBLF.toString());
 
     // 3. for each selected periodic node for nblf:
     // _a compute subgraph
     // _b compute nblf
+    for (AbstractActor a : actorsNBLF.keySet()) {
+      AbstractGraph.subDAGFrom(absGraph, a, heurFifoBreaks.breakingFifosAbs, false);
+    }
+
     // 4. for each selected periodic node for nbff:
     // _a compute subgraph
     // _b compute nbff
+    for (AbstractActor a : actorsNBFF.keySet()) {
+      AbstractGraph.subDAGFrom(absGraph, a, heurFifoBreaks.breakingFifosAbs, true);
+    }
 
     final Map<String, Object> output = new LinkedHashMap<>();
     output.put(AbstractWorkflowNodeImplementation.KEY_PI_GRAPH, graph);

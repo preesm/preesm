@@ -45,14 +45,11 @@ import java.util.logging.Level;
 import java.util.stream.Collectors;
 import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.model.pisdf.AbstractActor;
+import org.preesm.model.pisdf.AbstractVertex;
 import org.preesm.model.pisdf.Actor;
 import org.preesm.model.pisdf.DataInputPort;
 import org.preesm.model.pisdf.DataOutputPort;
 import org.preesm.model.pisdf.Fifo;
-import org.preesm.model.pisdf.PiGraph;
-import org.preesm.model.scenario.Scenario;
-import org.preesm.model.slam.Component;
-import org.preesm.model.slam.Design;
 
 /**
  * This class aims to select periodic actors on which execute the period checkers (nbff and nblf).
@@ -61,9 +58,9 @@ import org.preesm.model.slam.Design;
  */
 class HeuristicPeriodicActorSelection {
 
-  static Map<Actor, Long> selectActors(final Map<Actor, Long> periodicActors, final Set<AbstractActor> originActors,
-      final Map<AbstractActor, Integer> actorsNbVisits, final int rate, final PiGraph graph, final Scenario scenario,
-      final boolean reverse) {
+  protected static Map<Actor, Long> selectActors(final Map<Actor, Long> periodicActors,
+      final Set<AbstractActor> originActors, final Map<AbstractActor, Integer> actorsNbVisits, final int rate,
+      final Map<AbstractVertex, Long> wcets, final boolean reverse) {
     if ((rate == 100) || periodicActors.isEmpty()) {
       return periodicActors;
     }
@@ -85,14 +82,7 @@ class HeuristicPeriodicActorSelection {
       }
       final long rank = topoRanks.get(actor).rank;
       final long period = e.getValue();
-      long wcetMin = Long.MAX_VALUE;
-      final Design design = scenario.getDesign();
-      for (final Component operatorDefinitionID : design.getOperatorComponents()) {
-        final long timing = scenario.getTimings().evaluateTimingOrDefault(actor, operatorDefinitionID);
-        if (timing < wcetMin) {
-          wcetMin = timing;
-        }
-      }
+      long wcetMin = wcets.get(actor);
       topoRanksPeriodic.put(actor, (period - wcetMin) / (double) rank);
     }
     final StringBuilder sb = new StringBuilder();
