@@ -122,7 +122,7 @@ public class HeuristicLoopBreakingDelays {
       long gcdCycle = MathFunctionsHelper.gcd(cycle.stream().map(a -> brv.get(a)).collect(Collectors.toList()));
       cycle.forEach(a -> {
         long localBrv = brv.get(a) / gcdCycle;
-        long cycleBrv = minCycleBrv.get(a);
+        long cycleBrv = minCycleBrv.getOrDefault(a, localBrv);
         minCycleBrv.put(a, Math.min(localBrv, cycleBrv));
       });
 

@@ -35,6 +35,7 @@
  */
 package org.preesm.algorithm.pisdf.checker;
 
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.Map;
@@ -102,13 +103,20 @@ public class PeriodsPreschedulingChecker extends AbstractTaskImplementation {
   public Map<String, Object> execute(final Map<String, Object> inputs, final Map<String, String> parameters,
       final IProgressMonitor monitor, final String nodeName, final Workflow workflow) {
 
-    inputs.get(AbstractWorkflowNodeImplementation.KEY_ARCHITECTURE);
     final Scenario scenario = (Scenario) inputs.get(AbstractWorkflowNodeImplementation.KEY_SCENARIO);
     final PiGraph graph = (PiGraph) inputs.get(AbstractWorkflowNodeImplementation.KEY_PI_GRAPH);
+    final Design architecture = (Design) inputs.get(AbstractWorkflowNodeImplementation.KEY_ARCHITECTURE);
 
     if (!graph.getChildrenGraphs().isEmpty()) {
       throw new PreesmRuntimeException("This task must be called with a flatten PiMM graph, abandon.");
     }
+
+    if (architecture.getOperatorComponents().size() != 1) {
+      throw new PreesmRuntimeException("This task must be called with a homogeneous architecture, abandon.");
+    }
+
+    int nbCore = architecture.getOperatorComponents().get(0).getInstances().size();
+    PreesmLogger.getLogger().log(Level.INFO, "Found " + nbCore + " cores.");
 
     final String rateStr = parameters.get(PeriodsPreschedulingChecker.SELECTION_RATE);
     int rate = 100;
@@ -135,14 +143,13 @@ public class PeriodsPreschedulingChecker extends AbstractTaskImplementation {
     }
 
     Map<AbstractVertex, Long> brv = PiBRV.compute(graph, BRVMethod.LCM);
-
+    Map<AbstractVertex, Long> wcets = new HashMap<>();
     for (final Entry<AbstractVertex, Long> en : brv.entrySet()) {
       final AbstractVertex a = en.getKey();
       AbstractVertex actor = PreesmCopyTracker.getOriginalSource(a);
       long wcetMin = Long.MAX_VALUE;
       if (actor instanceof AbstractActor) {
-        final Design design = scenario.getDesign();
-        for (final Component operatorDefinitionID : design.getOperatorComponents()) {
+        for (final Component operatorDefinitionID : architecture.getOperatorComponents()) {
           final long timing = scenario.getTimings().evaluateTimingOrDefault((AbstractActor) actor,
               operatorDefinitionID);
           if (timing < wcetMin) {
@@ -152,6 +159,7 @@ public class PeriodsPreschedulingChecker extends AbstractTaskImplementation {
       } else {
         wcetMin = ScenarioConstants.DEFAULT_TIMING_TASK.getValue();
       }
+      wcets.put(a, wcetMin);
       System.err.println(
           "Actor : " + actor.getName() + " has wcet (min) : " + wcetMin + " [full path: " + actor.getVertexPath());
     }
