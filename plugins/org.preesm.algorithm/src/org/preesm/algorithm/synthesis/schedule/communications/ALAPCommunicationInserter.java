@@ -120,8 +120,7 @@ public class ALAPCommunicationInserter implements CommunicationInserter {
     }
   }
 
-  private void initLastVisitedActor(final Design slamDesign, final Schedule schedule, final Mapping mapping,
-      final Map<AbstractActor, ActorSchedule> actorToScheduleMap) {
+  private void initLastVisitedActor(final Design slamDesign, final Schedule schedule, final Mapping mapping) {
     /**
      */
     class DoneException extends RuntimeException {
@@ -131,7 +130,7 @@ public class ALAPCommunicationInserter implements CommunicationInserter {
     final List<ComponentInstance> cmps = new ArrayList<>(slamDesign.getOperatorComponentInstances());
 
     try {
-      new ScheduleOrderedVisitor(actorToScheduleMap) {
+      new ScheduleOrderedVisitor() {
         @Override
         public void visit(final AbstractActor actor) {
           final EList<ComponentInstance> actorMappings = mapping.getMapping(actor);
@@ -163,7 +162,7 @@ public class ALAPCommunicationInserter implements CommunicationInserter {
 
     // used to insert communications in the proper actor schedule, before/after the receiver/sender actor
     final Map<AbstractActor, ActorSchedule> actorToScheduleMap = ScheduleUtil.actorToScheduleMap(schedule);
-    initLastVisitedActor(slamDesign, schedule, mapping, actorToScheduleMap);
+    initLastVisitedActor(slamDesign, schedule, mapping);
     final SlamRoutingTable routeTable = new SlamRoutingTable(slamDesign);
 
     final ScheduleIterator t = new ScheduleAndTopologyIterator(schedule);

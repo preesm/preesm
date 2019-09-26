@@ -9,11 +9,9 @@ import org.preesm.algorithm.schedule.model.util.ScheduleSwitch;
 import org.preesm.model.pisdf.AbstractActor;
 
 /**
- *
- *
+ * Visits all actors in their order of appearance in the schedule tree lists, without checking graph precedence.
  *
  * @author anmorvan
- *
  */
 public class SimpleScheduleIterator extends ScheduleIterator {
 

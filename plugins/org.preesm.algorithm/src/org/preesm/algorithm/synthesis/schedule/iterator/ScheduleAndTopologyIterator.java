@@ -2,19 +2,15 @@ package org.preesm.algorithm.synthesis.schedule.iterator;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
-import org.preesm.algorithm.schedule.model.ActorSchedule;
 import org.preesm.algorithm.schedule.model.Schedule;
 import org.preesm.algorithm.synthesis.schedule.ScheduleOrderedVisitor;
-import org.preesm.algorithm.synthesis.schedule.ScheduleUtil;
 import org.preesm.model.pisdf.AbstractActor;
 
 /**
- *
- *
+ * Iterator based on the {@link ScheduleOrderedVisitor} visit order, that is, following schedule order while enforcing
+ * graph precedence.
  *
  * @author anmorvan
- *
  */
 public class ScheduleAndTopologyIterator extends ScheduleIterator {
 
@@ -24,12 +20,8 @@ public class ScheduleAndTopologyIterator extends ScheduleIterator {
 
   @Override
   public List<AbstractActor> createOrder(final Schedule schedule) {
-
-    final Map<AbstractActor, ActorSchedule> actorToScheduleMap = ScheduleUtil.actorToScheduleMap(schedule);
-
     final List<AbstractActor> res = new ArrayList<>();
-
-    new ScheduleOrderedVisitor(actorToScheduleMap) {
+    new ScheduleOrderedVisitor() {
       @Override
       public void visit(AbstractActor actor) {
         res.add(actor);

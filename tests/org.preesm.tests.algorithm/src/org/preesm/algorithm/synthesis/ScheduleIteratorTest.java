@@ -50,8 +50,6 @@ public class ScheduleIteratorTest {
     final ActorSchedule schedule = (ActorSchedule) sched.getScheduleTree().get(1);
     schedule.getActorList().add(actorE);
 
-    System.out.println(sched.shortPrint());
-
     StringBuilder sb = new StringBuilder();
     final ScheduleIterator simpleScheduleIterator = new ScheduleAndTopologyIterator(sched);
     simpleScheduleIterator.forEachRemaining(a -> sb.append(a.getName()));
@@ -66,8 +64,6 @@ public class ScheduleIteratorTest {
     final Actor actorE = PiMMUserFactory.instance.createActor("E");
     final ActorSchedule schedule = (ActorSchedule) sched.getScheduleTree().get(1);
     schedule.getActorList().add(0, actorE);
-
-    System.out.println(sched.shortPrint());
 
     StringBuilder sb = new StringBuilder();
     final ScheduleIterator simpleScheduleIterator = new ScheduleAndTopologyIterator(sched);

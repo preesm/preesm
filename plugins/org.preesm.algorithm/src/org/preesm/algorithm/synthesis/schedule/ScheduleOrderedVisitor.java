@@ -6,7 +6,6 @@ import java.util.Deque;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import org.apache.commons.collections4.ListUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.eclipse.emf.common.util.EList;
 import org.preesm.algorithm.schedule.model.ActorSchedule;
@@ -24,25 +23,30 @@ import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.util.topology.PiSDFTopologyHelper;
 
 /**
+ * Mixed ScheduleSwitch (iterating over schedules in the order of appearance in the ordered list), and Topology visitor
+ * (iterating over actors in the topological order of the PiSDF SRDAG graph). Override {@link #visit(AbstractActor)} to
+ * specify behavior.
  *
  * @author anmorvan
- *
  */
 public abstract class ScheduleOrderedVisitor extends ScheduleSwitch<Boolean> {
 
-  private final List<Object>                      visited;
-  private final Map<AbstractActor, ActorSchedule> actorToScheduleMap;
-
-  public ScheduleOrderedVisitor(final Map<AbstractActor, ActorSchedule> actorToScheduleMap) {
-    this.actorToScheduleMap = actorToScheduleMap;
-    this.visited = new ArrayList<>();
-  }
-
-  private final Deque<Schedule> scheduleStack = new LinkedList<>();
+  /** Keeps track of visited actors (for the algorithm) and schedules (for speeding up) */
+  private final List<Object>                visited            = new ArrayList<>();
+  /** List of schedule under visit. Used to find out */
+  private final Deque<Schedule>             scheduleStack      = new LinkedList<>();
+  /** List of actors encountered during schedule visit for which topological dependency has not been visited. */
+  private final Deque<AbstractActor>        stuckStack         = new LinkedList<>();
+  /**
+   * Associate for each actor the schedule that sets its order. Used to speedup query (instead of iterating over all
+   * schedule tree every time we need to find the schedule). Initialized lazily upon need (see
+   * {@link #innerVisitScheduleOf(AbstractActor)}.
+   */
+  private Map<AbstractActor, ActorSchedule> actorToScheduleMap = null;
 
   @Override
-  public Boolean caseHierarchicalSchedule(final HierarchicalSchedule object) {
-    if (visited.contains(object)) {
+  public final Boolean caseHierarchicalSchedule(final HierarchicalSchedule object) {
+    if (this.visited.contains(object)) {
       // skip
     } else {
       this.scheduleStack.push(object);
@@ -51,7 +55,7 @@ public abstract class ScheduleOrderedVisitor extends ScheduleSwitch<Boolean> {
         for (final Schedule child : children) {
           this.doSwitch(child);
         }
-        visited.add(object);
+        this.visited.add(object);
       } finally {
         this.scheduleStack.pop();
       }
@@ -60,8 +64,8 @@ public abstract class ScheduleOrderedVisitor extends ScheduleSwitch<Boolean> {
   }
 
   @Override
-  public Boolean caseActorSchedule(final ActorSchedule object) {
-    if (visited.contains(object)) {
+  public final Boolean caseActorSchedule(final ActorSchedule object) {
+    if (this.visited.contains(object)) {
       // skip
     } else {
       this.scheduleStack.push(object);
@@ -70,7 +74,7 @@ public abstract class ScheduleOrderedVisitor extends ScheduleSwitch<Boolean> {
         for (final AbstractActor actor : actorList) {
           this.innerVisit(actor);
         }
-        visited.add(object);
+        this.visited.add(object);
       } finally {
         this.scheduleStack.pop();
       }
@@ -78,10 +82,21 @@ public abstract class ScheduleOrderedVisitor extends ScheduleSwitch<Boolean> {
     return true;
   }
 
+  @Override
+  public final Boolean caseAbstractActor(final AbstractActor actor) {
+
+    innerVisit(actor);
+    return true;
+  }
+
   private final void innerVisit(final Schedule schedule) {
-    if (schedule == this.scheduleStack.peek() || this.scheduleStack.peek() == null || schedule == null) {
-      // error mon
-      throw new PreesmRuntimeException("guru meditation");
+    if ((this.scheduleStack.peek() == null) || (schedule == null)) {
+      throw new NullPointerException();
+    }
+    if (schedule == this.scheduleStack.peek()) {
+      // this method has been triggered because an actor depends on another one in the same schedule, but later in the
+      // visit => schedule is not topology compliant
+      throw new PreesmRuntimeException("Schedule is not topology compliant.");
     }
     final Pair<Schedule,
         Schedule> lca = ScheduleUtil.findLowestCommonAncestorChildren(schedule, this.scheduleStack.peek());
@@ -94,78 +109,111 @@ public abstract class ScheduleOrderedVisitor extends ScheduleSwitch<Boolean> {
     }
   }
 
-  private final Deque<AbstractActor> stuckStack = new LinkedList<>();
-
   /**
-   *
+   * Exception thrown when a topological dependency actor has been visited.
    */
-  private class VisitException extends RuntimeException {
-    private static final long serialVersionUID = 1L;
-    final AbstractActor       actor;
+  private static final class PredecessorFoundException extends RuntimeException {
+    private static final long     serialVersionUID = 1L;
+    final transient AbstractActor actor;
 
-    public VisitException(final AbstractActor actor) {
+    public PredecessorFoundException(final AbstractActor actor) {
       this.actor = actor;
     }
-
   }
 
-  /**
-   */
-  private void innerVisit(final AbstractActor actor) {
+  private final void innerVisit(final AbstractActor actor) {
     if (this.visited.contains(actor)) {
       // skip
     } else {
       // make sure predecessors have been visited
-      final List<AbstractActor> directPredecessorsOf = PiSDFTopologyHelper.getDirectPredecessorsOf(actor);
-      if (actor instanceof CommunicationActor) {
-        directPredecessorsOf.addAll(new CommunicationPrecedence().doSwitch(actor));
-      }
-      for (final AbstractActor v : directPredecessorsOf) {
-        if (!this.visited.contains(v)) {
-          final ActorSchedule actorSchedule = this.actorToScheduleMap.get(v);
-          try {
-            stuckStack.push(v);
-            innerVisit(actorSchedule);
-          } catch (VisitException e) {
-            if (v == e.actor) {
-              stuckStack.pop();
-            } else {
-              throw e;
-            }
-          }
-        }
-      }
+      visitPredecessors(actor);
       visit(actor);
       this.visited.add(actor);
-      if (stuckStack.peek() == actor) {
-        throw new VisitException(actor);
+      if (this.stuckStack.peek() == actor) {
+        // if we were visiting predecessors, resume the visit of the predecessors
+        // this trick is to avoid having too deep call stacks and avoid StackOverflowError with complex graphs
+        throw new PredecessorFoundException(actor);
       }
     }
   }
 
+  private final void visitPredecessors(final AbstractActor actor) {
+    final List<AbstractActor> directPredecessorsOf = PiSDFTopologyHelper.getDirectPredecessorsOf(actor);
+    if (actor instanceof CommunicationActor) {
+      directPredecessorsOf.addAll(new CommunicationPrecedence().doSwitch(actor));
+    }
+    for (final AbstractActor v : directPredecessorsOf) {
+      if (!this.visited.contains(v)) {
+        try {
+          this.stuckStack.push(v);
+          innerVisitScheduleOf(v);
+        } catch (final PredecessorFoundException e) {
+          if (v == e.actor) {
+            // if exception was thrown when encountering the predecessor, pop it and resume visit of predecessors
+            this.stuckStack.pop();
+          } else {
+            // else it means the schedule is not topology compliant
+            throw new PreesmRuntimeException("Schedule is not topology compliant.");
+          }
+        }
+      }
+    }
+  }
+
+  private final void innerVisitScheduleOf(final AbstractActor v) {
+    if (this.actorToScheduleMap == null) {
+      if (this.scheduleStack.isEmpty()) {
+        throw new PreesmRuntimeException();
+      }
+      final Schedule peekFirst = this.scheduleStack.peekFirst();
+      this.actorToScheduleMap = ScheduleUtil.actorToScheduleMap(peekFirst.getRoot());
+    }
+    final ActorSchedule actorSchedule = this.actorToScheduleMap.get(v);
+    innerVisit(actorSchedule);
+  }
+
   /**
+   * Inner visitor to build a list of predecessors for communication actors.
    */
-  private static class CommunicationPrecedence extends ScheduleSwitch<List<AbstractActor>> {
+  private static final class CommunicationPrecedence extends ScheduleSwitch<List<AbstractActor>> {
     @Override
-    public List<AbstractActor> caseReceiveEndActor(ReceiveEndActor rea) {
+    public final List<AbstractActor> caseReceiveEndActor(final ReceiveEndActor rea) {
       final ReceiveStartActor receiveStart = rea.getReceiveStart();
-      return ListUtils.union(doSwitch(receiveStart), Arrays.asList(receiveStart));
+      final SendEndActor sourceSendEnd = rea.getSourceSendStart().getSendEnd();
+
+      final List<AbstractActor> res = new ArrayList<>();
+      res.add(receiveStart);
+      res.add(sourceSendEnd);
+      res.addAll(doSwitch(receiveStart));
+      res.addAll(doSwitch(sourceSendEnd));
+
+      return res;
     }
 
     @Override
-    public List<AbstractActor> caseReceiveStartActor(ReceiveStartActor rsa) {
-      final SendEndActor sourceSendEnd = rsa.getReceiveEnd().getSourceSendStart().getSendEnd();
-      return ListUtils.union(doSwitch(sourceSendEnd), Arrays.asList(sourceSendEnd));
+    public final List<AbstractActor> caseReceiveStartActor(final ReceiveStartActor rsa) {
+      final SendStartActor sourceSendStart = rsa.getReceiveEnd().getSourceSendStart();
+
+      final List<AbstractActor> res = new ArrayList<>();
+      res.add(sourceSendStart);
+      res.addAll(doSwitch(sourceSendStart));
+
+      return res;
     }
 
     @Override
-    public List<AbstractActor> caseSendEndActor(SendEndActor sea) {
+    public final List<AbstractActor> caseSendEndActor(final SendEndActor sea) {
       final SendStartActor sendStart = sea.getSendStart();
-      return ListUtils.union(doSwitch(sendStart), Arrays.asList(sendStart));
+
+      final List<AbstractActor> res = new ArrayList<>();
+      res.add(sendStart);
+      res.addAll(doSwitch(sendStart));
+
+      return res;
     }
 
     @Override
-    public List<AbstractActor> caseSendStartActor(SendStartActor ssa) {
+    public final List<AbstractActor> caseSendStartActor(final SendStartActor ssa) {
       return Arrays.asList();
     }
   }

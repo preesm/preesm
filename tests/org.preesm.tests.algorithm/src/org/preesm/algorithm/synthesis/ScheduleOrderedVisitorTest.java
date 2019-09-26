@@ -1,13 +1,11 @@
 package org.preesm.algorithm.synthesis;
 
-import java.util.Map;
 import org.junit.Test;
 import org.preesm.algorithm.schedule.model.ActorSchedule;
 import org.preesm.algorithm.schedule.model.ParallelHiearchicalSchedule;
 import org.preesm.algorithm.schedule.model.ScheduleFactory;
 import org.preesm.algorithm.schedule.model.SequentialActorSchedule;
 import org.preesm.algorithm.synthesis.schedule.ScheduleOrderedVisitor;
-import org.preesm.algorithm.synthesis.schedule.ScheduleUtil;
 import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.Actor;
 import org.preesm.model.pisdf.DataInputPort;
@@ -34,13 +32,10 @@ public class ScheduleOrderedVisitorTest {
     final ActorSchedule schedule = (ActorSchedule) createSchedule.getScheduleTree().get(1);
     schedule.getActorList().add(0, actorE);
 
-    final Map<AbstractActor, ActorSchedule> actorToScheduleMap = ScheduleUtil.actorToScheduleMap(createSchedule);
-
-    new ScheduleOrderedVisitor(actorToScheduleMap) {
-
+    new ScheduleOrderedVisitor() {
       @Override
       public void visit(AbstractActor actor) {
-        System.out.println(actor.getName());
+        // just visit
       }
     }.doSwitch(createSchedule);
   }

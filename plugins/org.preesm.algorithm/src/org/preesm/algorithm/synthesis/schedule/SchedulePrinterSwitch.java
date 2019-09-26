@@ -94,10 +94,8 @@ public class SchedulePrinterSwitch extends ScheduleSwitch<String> {
 
     if (object.getRepetition() > 1) {
       toPrint.append(object.getRepetition());
-      if (this.parentNode != null) {
-        if (this.parentNode.isParallel()) {
-          toPrint.append("/");
-        }
+      if (this.parentNode != null && this.parentNode.isParallel()) {
+        toPrint.append("/");
       }
       toPrint.append("(");
     }
