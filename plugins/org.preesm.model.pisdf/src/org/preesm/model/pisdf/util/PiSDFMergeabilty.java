@@ -194,7 +194,7 @@ public class PiSDFMergeabilty {
 
     for (final DataOutputPort dop : x.getDataOutputPorts()) {
       // Add all outgoing fifo that are not contained in the future cluster
-      if (dop.getOutgoingFifo().getDelay() == null) {
+      if (dop.getOutgoingFifo().getDelay() == null && dop.getOutgoingFifo().getTarget() == y) {
         outgoingFifos.add(dop.getOutgoingFifo());
       }
     }
@@ -220,7 +220,7 @@ public class PiSDFMergeabilty {
     }
     // Verify theses fourth conditions
     final boolean precedenceShiftA = PiSDFMergeabilty.isPrecedenceShiftConditionValid(x, y, x, brv);
-    final boolean precedenceShiftB = PiSDFMergeabilty.isPrecedenceShiftConditionValid(y, x, x, brv);
+    final boolean precedenceShiftB = PiSDFMergeabilty.isPrecedenceShiftConditionValid(y, x, y, brv);
     final boolean cycleIntroduction = PiSDFMergeabilty.isCycleIntroductionConditionValid(x, y);
     final boolean hiddenDelay = PiSDFMergeabilty.isHiddenDelayConditionValid(x, y, brv);
     return cycleIntroduction && hiddenDelay && precedenceShiftA && precedenceShiftB;
