@@ -247,11 +247,6 @@ public class MemoryExclusionVertex extends AbstractVertex<MemoryExclusionGraph>
     this.explodeImplode = "";
   }
 
-  /*
-   * (non-Javadoc)
-   *
-   * @see org.ietr.dftools.algorithm.model.AbstractVertex#clone()
-   */
   @Override
   public MemoryExclusionVertex copy() {
     return null;
@@ -301,11 +296,6 @@ public class MemoryExclusionVertex extends AbstractVertex<MemoryExclusionGraph>
     }
   }
 
-  /*
-   * (non-Javadoc)
-   *
-   * @see org.ietr.preesm.memory.exclusiongraph.IWeightedVertex#getClone()
-   */
   @Override
   public MemoryExclusionVertex getClone() {
     MemoryExclusionVertex copy;
@@ -317,126 +307,60 @@ public class MemoryExclusionVertex extends AbstractVertex<MemoryExclusionGraph>
     return copy;
   }
 
-  /**
-   * Gets the edge.
-   *
-   * @return the edge of the DAG that correspond to this vertex in the exclusion Graph
-   */
   public DAGEdge getEdge() {
     return this.edge;
   }
 
-  /**
-   * Gets the vertex.
-   *
-   * @return the vertex of the DAG in the exclusion Graph
-   */
   public DAGVertex getVertex() {
     return this.vertex;
   }
 
-  /**
-   * Sets the vertex.
-   */
   public void setVertex(final DAGVertex vertex) {
     this.vertex = vertex;
   }
 
-  /**
-   * Gets the explode implode.
-   *
-   * @return the explodeImplode
-   */
   public String getExplodeImplode() {
     return this.explodeImplode;
   }
 
-  /*
-   * (non-Javadoc)
-   *
-   * @see org.ietr.dftools.algorithm.model.PropertySource#getFactoryForProperty(java.lang.String)
-   */
   @Override
   public PropertyFactory getFactoryForProperty(final String propertyName) {
     return null;
   }
 
-  /**
-   * Gets the identifier.
-   *
-   * @return the unique identifier of the vertex
-   */
   @Override
   public long getIdentifier() {
     return this.identifier;
   }
 
-  /**
-   * Gets the sink.
-   *
-   * @return the sink
-   */
   public String getSink() {
     return this.sink;
   }
 
-  /**
-   * Gets the source.
-   *
-   * @return the source
-   */
   public String getSource() {
     return this.source;
   }
 
-  /**
-   * Gets the weight.
-   *
-   * @return the weight
-   */
   @Override
   public Long getWeight() {
     return this.size;
   }
 
-  /**
-   * <p>
-   * Method added to enable the use of contains() method in Set &lt;MemoryExclusionVertex&gt;.
-   * </p>
-   *
-   * @return the int
-   */
   @Override
   public int hashCode() {
     return (this.sink + "=>" + this.source).hashCode();
   }
 
-  /**
-   * Sets the identifier.
-   *
-   * @param identifier
-   *          the identifier to set
-   */
   @Override
   public void setIdentifier(final long identifier) {
     this.identifier = identifier;
   }
 
-  /*
-   * (non-Javadoc)
-   *
-   * @see org.ietr.preesm.memory.exclusiongraph.IWeightedVertex#setWeight(java.lang.Object)
-   */
   @Override
   public void setWeight(final Long w) {
     this.size = w;
   }
 
-  /*
-   * (non-Javadoc)
-   *
-   * @see java.lang.Object#toString()
-   */
   @Override
   public String toString() {
     return this.source + "=>" + this.sink + ":" + this.size;
