@@ -58,12 +58,6 @@ import org.preesm.commons.math.MathFunctionsHelper;
  */
 public class FirstFitAllocator extends OrderedAllocator {
 
-  /**
-   * Constructor of the Allocator.
-   *
-   * @param memEx
-   *          The exclusion graph to analyze
-   */
   public FirstFitAllocator(final MemoryExclusionGraph memEx) {
     super(memEx);
   }
