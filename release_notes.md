@@ -10,6 +10,10 @@ PREESM Changelog
 ### Changes
 * Fix compile error in generated TCP code (but execution hangs...);
 * Refactor;
+* Clustering:
+	* Workflow task PiSDF Clustering is now documented
+	* Implemented a new schedule transform that optimize parallelism inside of sequantial schedule hierarchy
+	* New parameter: Optimization criteria (memory or performance)
 
 ### Bug fix
 
