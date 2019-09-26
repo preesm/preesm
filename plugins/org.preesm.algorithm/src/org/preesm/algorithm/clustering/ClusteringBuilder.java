@@ -126,10 +126,10 @@ public class ClusteringBuilder {
    */
   public ClusteringBuilder(final PiGraph graph, final Scenario scenario, final String algorithm, final long seed) {
     this.scheduleMapping = new LinkedHashMap<>();
+    this.seed = seed;
     this.clusteringAlgorithm = clusteringAlgorithmFactory(algorithm);
     this.pigraph = graph;
     this.scenario = scenario;
-    this.seed = seed;
     this.repetitionVector = null;
   }
 
