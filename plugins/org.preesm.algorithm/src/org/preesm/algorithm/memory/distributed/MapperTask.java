@@ -41,7 +41,7 @@ import java.util.Map.Entry;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.eclipse.core.runtime.IProgressMonitor;
-import org.preesm.algorithm.memory.allocation.AbstractMemoryAllocatorTask;
+import org.preesm.algorithm.memory.allocation.MemoryAllocatorTask;
 import org.preesm.algorithm.memory.exclusiongraph.MemoryExclusionGraph;
 import org.preesm.commons.doc.annotations.Parameter;
 import org.preesm.commons.doc.annotations.Port;
@@ -120,7 +120,7 @@ public class MapperTask extends AbstractTaskImplementation {
     boolean verbose;
     verbose = valueVerbose.equals(MapperTask.VALUE_VERBOSE_TRUE);
 
-    final String valuePolicy = parameters.get(AbstractMemoryAllocatorTask.PARAM_DISTRIBUTION_POLICY);
+    final String valuePolicy = parameters.get(MemoryAllocatorTask.PARAM_DISTRIBUTION_POLICY);
 
     // Retrieve inputs
     final MemoryExclusionGraph memEx = (MemoryExclusionGraph) inputs.get("MemEx");
@@ -160,8 +160,7 @@ public class MapperTask extends AbstractTaskImplementation {
   public Map<String, String> getDefaultParameters() {
     final Map<String, String> parameters = new LinkedHashMap<>();
     parameters.put(MapperTask.PARAM_VERBOSE, MapperTask.VALUE_VERBOSE_DEFAULT);
-    parameters.put(AbstractMemoryAllocatorTask.PARAM_DISTRIBUTION_POLICY,
-        AbstractMemoryAllocatorTask.VALUE_DISTRIBUTION_DEFAULT);
+    parameters.put(MemoryAllocatorTask.PARAM_DISTRIBUTION_POLICY, MemoryAllocatorTask.VALUE_DISTRIBUTION_DEFAULT);
     return parameters;
   }
 

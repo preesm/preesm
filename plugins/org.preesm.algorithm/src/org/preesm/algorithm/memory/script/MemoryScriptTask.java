@@ -41,7 +41,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.emf.common.util.EMap;
-import org.preesm.algorithm.memory.allocation.AbstractMemoryAllocatorTask;
+import org.preesm.algorithm.memory.allocation.MemoryAllocatorTask;
 import org.preesm.algorithm.memory.exclusiongraph.MemoryExclusionGraph;
 import org.preesm.algorithm.model.dag.DirectedAcyclicGraph;
 import org.preesm.commons.doc.annotations.Parameter;
@@ -129,7 +129,7 @@ public class MemoryScriptTask extends AbstractMemoryScriptTask {
     final String log = parameters.get(AbstractMemoryScriptTask.PARAM_LOG);
 
     // Retrieve the alignment param
-    final String valueAlignment = parameters.get(AbstractMemoryAllocatorTask.PARAM_ALIGNMENT);
+    final String valueAlignment = parameters.get(MemoryAllocatorTask.PARAM_ALIGNMENT);
 
     // Retrieve the input graph
     final DirectedAcyclicGraph dag = (DirectedAcyclicGraph) inputs.get("DAG");

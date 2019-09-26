@@ -50,7 +50,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import org.eclipse.xtext.xbase.lib.Pair;
-import org.preesm.algorithm.memory.allocation.AbstractMemoryAllocatorTask;
+import org.preesm.algorithm.memory.allocation.MemoryAllocatorTask;
 import org.preesm.algorithm.memory.exclusiongraph.MemoryExclusionGraph;
 import org.preesm.algorithm.memory.exclusiongraph.MemoryExclusionVertex;
 import org.preesm.algorithm.memory.script.Range;
@@ -85,13 +85,13 @@ public class Distributor {
    * <br>
    * Decisions of this methods are based on the {@link DAGEdge} associated to each {@link MemoryExclusionVertex} of the
    * processed {@link MemoryExclusionGraph}. Number of created {@link MemoryExclusionGraph} also depends on the selected
-   * distribution policy (see {@link AbstractMemoryAllocatorTask} parameters.). It should be noted that each
+   * distribution policy (see {@link MemoryAllocatorTask} parameters.). It should be noted that each
    * {@link MemoryExclusionVertex} of the processed {@link MemoryExclusionGraph} will be put in one or more output
    * {@link MemoryExclusionGraph}.
    *
    * @param valuePolicy
    *          {@link String} containing the selected policy for the distribution of {@link MemoryExclusionVertex} in
-   *          separate memory banks. (see {@link AbstractMemoryAllocatorTask} parameters.)
+   *          separate memory banks. (see {@link MemoryAllocatorTask} parameters.)
    * @param memEx
    *          The processed {@link MemoryExclusionGraph}
    *
@@ -118,24 +118,24 @@ public class Distributor {
     // depending on the policy chosen.
     Map<String, Set<MemoryExclusionVertex>> memExesVerticesSet;
     switch (valuePolicy) {
-      case AbstractMemoryAllocatorTask.VALUE_DISTRIBUTION_MIXED:
+      case MemoryAllocatorTask.VALUE_DISTRIBUTION_MIXED:
         // Split merged buffers (! modifies the memEx !)
         Distributor.splitMergedBuffersMixed(memEx, alignment);
         memExesVerticesSet = Distributor.distributeMegMixed(memEx);
         break;
-      case AbstractMemoryAllocatorTask.VALUE_DISTRIBUTION_MIXED_MERGED:
+      case MemoryAllocatorTask.VALUE_DISTRIBUTION_MIXED_MERGED:
         memExesVerticesSet = Distributor.distributeMegMixedMerged(memEx);
         break;
-      case AbstractMemoryAllocatorTask.VALUE_DISTRIBUTION_DISTRIBUTED_ONLY:
+      case MemoryAllocatorTask.VALUE_DISTRIBUTION_DISTRIBUTED_ONLY:
         memExesVerticesSet = Distributor.distributeMegDistributedOnly(memEx);
         break;
-      case AbstractMemoryAllocatorTask.VALUE_DISTRIBUTION_SHARED_ONLY:
-      case AbstractMemoryAllocatorTask.VALUE_DISTRIBUTION_DEFAULT:
+      case MemoryAllocatorTask.VALUE_DISTRIBUTION_SHARED_ONLY:
+      case MemoryAllocatorTask.VALUE_DISTRIBUTION_DEFAULT:
         memExesVerticesSet = Distributor.distributeMegSharedOnly(memEx);
         break;
       default:
         throw new PreesmRuntimeException("Unexpected distribution policy: " + valuePolicy + ".\n Allowed values are "
-            + AbstractMemoryAllocatorTask.VALUE_DISTRIBUTION_DEFAULT);
+            + MemoryAllocatorTask.VALUE_DISTRIBUTION_DEFAULT);
     }
 
     // Update the memExexVerticesSet to include hosted mObjects
@@ -166,7 +166,7 @@ public class Distributor {
       copiedMemEx.deepRemoveAllVertices(verticesToRemove);
       // If the DistributedOnl policy is used, split the merge memory
       // objects.
-      if (AbstractMemoryAllocatorTask.VALUE_DISTRIBUTION_DISTRIBUTED_ONLY.equals(valuePolicy)) {
+      if (MemoryAllocatorTask.VALUE_DISTRIBUTION_DISTRIBUTED_ONLY.equals(valuePolicy)) {
         Distributor.splitMergedBuffersDistributedOnly(copiedMemEx, alignment, memory.getKey());
       }
       // Save the MemEx
@@ -178,7 +178,7 @@ public class Distributor {
   /**
    * Finds the {@link MemoryExclusionVertex} in the given {@link MemoryExclusionGraph} that result from a merge
    * operation of the memory scripts, and split them into several memory objects according to the DistributedOnly
-   * distribution policy (see {@link AbstractMemoryAllocatorTask} parameters).<br>
+   * distribution policy (see {@link MemoryAllocatorTask} parameters).<br>
    * <b>This method modifies the {@link MemoryExclusionGraph} passed as a parameter.</b>
    *
    * @param meg
@@ -262,7 +262,7 @@ public class Distributor {
   /**
    * Finds the {@link MemoryExclusionVertex} in the given {@link MemoryExclusionGraph} that result from a merge
    * operation of the memory scripts, and split them into several memory objects according to the Mixed distribution
-   * policy (see {@link AbstractMemoryAllocatorTask} parameters).<br>
+   * policy (see {@link MemoryAllocatorTask} parameters).<br>
    * <b>This method modifies the {@link MemoryExclusionGraph} passed as a parameter.</b>
    *
    * @param meg
@@ -674,8 +674,8 @@ public class Distributor {
 
   /**
    * Method used to separate the {@link MemoryExclusionVertex} of a {@link MemoryExclusionGraph} into
-   * {@link LinkedHashSet subsets} according to the SHARED_ONLY policy (see {@link AbstractMemoryAllocatorTask}
-   * parameters). <br>
+   * {@link LinkedHashSet subsets} according to the SHARED_ONLY policy (see {@link MemoryAllocatorTask} parameters).
+   * <br>
    * <br>
    * With this policy, all {@link MemoryExclusionVertex} are put in a single Shared memory.
    *
@@ -692,7 +692,7 @@ public class Distributor {
 
   /**
    * Method used to separate the {@link MemoryExclusionVertex} of a {@link MemoryExclusionGraph} into
-   * {@link LinkedHashSet subsets} according to the DISTRIBUTED_ONLY policy (see {@link AbstractMemoryAllocatorTask}
+   * {@link LinkedHashSet subsets} according to the DISTRIBUTED_ONLY policy (see {@link MemoryAllocatorTask}
    * parameters). <br>
    * <br>
    * With this policy, each {@link MemoryExclusionVertex} is put in as many memory banks as the number of processing
@@ -809,8 +809,7 @@ public class Distributor {
 
   /**
    * Method used to separate the {@link MemoryExclusionVertex} of a {@link MemoryExclusionGraph} into
-   * {@link LinkedHashSet subsets} according to the MIXED policy (see {@link AbstractMemoryAllocatorTask} parameters).
-   * <br>
+   * {@link LinkedHashSet subsets} according to the MIXED policy (see {@link MemoryAllocatorTask} parameters). <br>
    * <br>
    * With this policy, each {@link MemoryExclusionVertex} is put
    * <ul>
@@ -834,8 +833,8 @@ public class Distributor {
 
   /**
    * Method used to separate the {@link MemoryExclusionVertex} of a {@link MemoryExclusionGraph} into
-   * {@link LinkedHashSet subsets} according to the MIXED_MERGED policy (see {@link AbstractMemoryAllocatorTask}
-   * parameters). <br>
+   * {@link LinkedHashSet subsets} according to the MIXED_MERGED policy (see {@link MemoryAllocatorTask} parameters).
+   * <br>
    * <br>
    * With this policy, each {@link MemoryExclusionVertex} is put
    * <ul>

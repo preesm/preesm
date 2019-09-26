@@ -37,10 +37,9 @@ package org.preesm.algorithm.memory.script;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
-import org.preesm.algorithm.memory.allocation.AbstractMemoryAllocatorTask;
+import org.preesm.algorithm.memory.allocation.MemoryAllocatorTask;
 import org.preesm.workflow.implement.AbstractTaskImplementation;
 
-// TODO: Auto-generated Javadoc
 /**
  * The Class AbstractMemoryScriptTask.
  */
@@ -85,7 +84,7 @@ public abstract class AbstractMemoryScriptTask extends AbstractTaskImplementatio
         "? C {" + AbstractMemoryScriptTask.VALUE_TRUE + ", " + AbstractMemoryScriptTask.VALUE_FALSE + "}");
     param.put(AbstractMemoryScriptTask.PARAM_CHECK, "? C {" + AbstractMemoryScriptTask.VALUE_CHECK_NONE + ", "
         + AbstractMemoryScriptTask.VALUE_CHECK_FAST + ", " + AbstractMemoryScriptTask.VALUE_CHECK_THOROUGH + "}");
-    param.put(AbstractMemoryAllocatorTask.PARAM_ALIGNMENT, AbstractMemoryAllocatorTask.VALUE_ALIGNEMENT_DEFAULT);
+    param.put(MemoryAllocatorTask.PARAM_ALIGNMENT, MemoryAllocatorTask.VALUE_ALIGNEMENT_DEFAULT);
     param.put(AbstractMemoryScriptTask.PARAM_LOG, AbstractMemoryScriptTask.VALUE_LOG);
 
     return param;

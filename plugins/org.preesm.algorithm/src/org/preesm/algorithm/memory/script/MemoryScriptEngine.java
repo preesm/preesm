@@ -52,7 +52,7 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.emf.common.util.EMap;
-import org.preesm.algorithm.memory.allocation.AbstractMemoryAllocatorTask;
+import org.preesm.algorithm.memory.allocation.MemoryAllocatorTask;
 import org.preesm.algorithm.memory.exclusiongraph.MemoryExclusionGraph;
 import org.preesm.algorithm.model.dag.DirectedAcyclicGraph;
 import org.preesm.commons.exceptions.PreesmRuntimeException;
@@ -98,13 +98,13 @@ public class MemoryScriptEngine {
     this.logger = PreesmLogger.getLogger();
     long alignment;
     switch (valueAlignment.substring(0, Math.min(valueAlignment.length(), 7))) {
-      case AbstractMemoryAllocatorTask.VALUE_ALIGNEMENT_NONE:
+      case MemoryAllocatorTask.VALUE_ALIGNEMENT_NONE:
         alignment = -1;
         break;
-      case AbstractMemoryAllocatorTask.VALUE_ALIGNEMENT_DATA:
+      case MemoryAllocatorTask.VALUE_ALIGNEMENT_DATA:
         alignment = 0;
         break;
-      case AbstractMemoryAllocatorTask.VALUE_ALIGNEMENT_FIXED:
+      case MemoryAllocatorTask.VALUE_ALIGNEMENT_FIXED:
         final String fixedValue = valueAlignment.substring(7);
         alignment = Long.parseLong(fixedValue);
         break;
