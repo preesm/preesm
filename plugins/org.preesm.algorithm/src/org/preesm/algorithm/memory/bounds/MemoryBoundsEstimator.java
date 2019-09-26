@@ -49,6 +49,7 @@ import org.preesm.commons.doc.annotations.PreesmTask;
 import org.preesm.commons.doc.annotations.Value;
 import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.workflow.elements.Workflow;
+import org.preesm.workflow.implement.AbstractTaskImplementation;
 import org.preesm.workflow.implement.AbstractWorkflowNodeImplementation;
 
 /**
@@ -108,7 +109,12 @@ import org.preesm.workflow.implement.AbstractWorkflowNodeImplementation;
             + " 2008.",
         "**Memory Bounds**: K. Desnos, M. Pelcat, J.-F. Nezan, and S. Aridhi. Pre-and post-scheduling memory"
             + " allocation strategies on MPSoCs. In Electronic System Level Synthesis Conference (ESLsyn), 2013." })
-public class MemoryBoundsEstimator extends AbstractMemoryBoundsEstimator {
+public class MemoryBoundsEstimator extends AbstractTaskImplementation {
+
+  static final String PARAM_SOLVER          = "Solver";
+  static final String VALUE_SOLVER_DEFAULT  = "? C {Heuristic, Ostergard, Yamaguchi}";
+  static final String PARAM_VERBOSE         = "Verbose";
+  static final String VALUE_VERBOSE_DEFAULT = "? C {True, False}";
 
   @Override
   public Map<String, Object> execute(final Map<String, Object> inputs, final Map<String, String> parameters,
@@ -118,8 +124,8 @@ public class MemoryBoundsEstimator extends AbstractMemoryBoundsEstimator {
     final Logger logger = PreesmLogger.getLogger();
 
     // Check Workflow element parameters
-    final String valueVerbose = parameters.get(AbstractMemoryBoundsEstimator.PARAM_VERBOSE);
-    final String valueSolver = parameters.get(AbstractMemoryBoundsEstimator.PARAM_SOLVER);
+    final String valueVerbose = parameters.get(MemoryBoundsEstimator.PARAM_VERBOSE);
+    final String valueSolver = parameters.get(MemoryBoundsEstimator.PARAM_SOLVER);
 
     final MemoryExclusionGraph memEx = (MemoryExclusionGraph) inputs.get("MemEx");
 
@@ -145,8 +151,8 @@ public class MemoryBoundsEstimator extends AbstractMemoryBoundsEstimator {
   @Override
   public Map<String, String> getDefaultParameters() {
     final Map<String, String> parameters = new LinkedHashMap<>();
-    parameters.put(AbstractMemoryBoundsEstimator.PARAM_SOLVER, AbstractMemoryBoundsEstimator.VALUE_SOLVER_DEFAULT);
-    parameters.put(AbstractMemoryBoundsEstimator.PARAM_VERBOSE, AbstractMemoryBoundsEstimator.VALUE_VERBOSE_DEFAULT);
+    parameters.put(MemoryBoundsEstimator.PARAM_SOLVER, MemoryBoundsEstimator.VALUE_SOLVER_DEFAULT);
+    parameters.put(MemoryBoundsEstimator.PARAM_VERBOSE, MemoryBoundsEstimator.VALUE_VERBOSE_DEFAULT);
     return parameters;
   }
 
