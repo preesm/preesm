@@ -67,8 +67,8 @@ public class Buffer {
    * @return a {@link Map} containing the start end end of ranges matched multiple times.
    */
   List<Range> getMultipleMatchRange() {
-    return Buffer.getOverlappingRanges(
-        this.matchTable.values().stream().flatMap(it -> it.stream()).collect(Collectors.toList()));
+    return Buffer
+        .getOverlappingRanges(this.matchTable.values().stream().flatMap(List::stream).collect(Collectors.toList()));
   }
 
   /**
@@ -701,7 +701,7 @@ public class Buffer {
       Buffer.updateMatches(match);
 
       // Update conflicting matches
-      List<Match> matchToUpdate = match.getRemoteBuffer().matchTable.values().stream().flatMap(it -> it.stream())
+      List<Match> matchToUpdate = match.getRemoteBuffer().matchTable.values().stream().flatMap(List::stream)
           .filter(it -> !it.equals(match.getReciprocate())).collect(Collectors.toList());
       while (!matchToUpdate.isEmpty()) {
         matchToUpdate = Buffer.updateConflictingMatches(matchToUpdate);
@@ -734,8 +734,8 @@ public class Buffer {
       final List<Range> forbiddenRanges, final List<Match> matches) {
     for (final Match conflictMatch : matches) {
       final List<
-          Range> newMergeableRanges = remoteMergeableRange.stream().map(it -> it.copy()).collect(Collectors.toList());
-      final List<Range> newForbiddenRanges = forbiddenRanges.stream().map(it -> it.copy()).collect(Collectors.toList());
+          Range> newMergeableRanges = remoteMergeableRange.stream().map(Range::copy).collect(Collectors.toList());
+      final List<Range> newForbiddenRanges = forbiddenRanges.stream().map(Range::copy).collect(Collectors.toList());
       // translate it to localBuffer of conflictMatches indexes
       Range.translate(newMergeableRanges, conflictMatch.getLocalIndex() - conflictMatch.getRemoteIndex());
       Range.translate(newForbiddenRanges, conflictMatch.getLocalIndex() - conflictMatch.getRemoteIndex());
@@ -1256,7 +1256,7 @@ public class Buffer {
     }
 
     // Check if the proposed matches completes the remaining lists
-    return this.divisibilityRequiredMatches.stream().allMatch(list -> matches.containsAll(list));
+    return this.divisibilityRequiredMatches.stream().allMatch(matches::containsAll);
   }
 
   @Override
