@@ -42,43 +42,20 @@ import org.preesm.algorithm.model.dag.DirectedAcyclicGraph;
 import org.preesm.algorithm.transforms.ForkJoinRemover;
 import org.preesm.commons.logger.PreesmLogger;
 
-// TODO: Auto-generated Javadoc
 /**
  * The Class MemExUpdaterEngine.
  */
 public class MemExUpdaterEngine {
 
-  /** The verbose. */
-  private final boolean verbose;
-
-  /** The dag. */
+  private final boolean              verbose;
   private final DirectedAcyclicGraph dag;
-
-  /** The mem ex. */
   private final MemoryExclusionGraph memEx;
-
-  /** The local DAG. */
-  private DirectedAcyclicGraph localDAG;
-
-  /** The before. */
-  private int before;
-
-  /** The density. */
-  private double density;
-
-  /** The logger. */
-  // Rem: Logger is used to display messages in the console
-  private final Logger logger = PreesmLogger.getLogger();
+  private DirectedAcyclicGraph       localDAG;
+  private int                        before;
+  private double                     density;
+  private final Logger               logger = PreesmLogger.getLogger();
 
   /**
-   * Instantiates a new mem ex updater engine.
-   *
-   * @param dag
-   *          the dag
-   * @param memEx
-   *          the mem ex
-   * @param verbose
-   *          the verbose
    */
   public MemExUpdaterEngine(final DirectedAcyclicGraph dag, final MemoryExclusionGraph memEx, final boolean verbose) {
     this.verbose = verbose;
@@ -89,9 +66,6 @@ public class MemExUpdaterEngine {
 
   /**
    * Creates the local dag.
-   *
-   * @param forkJoin
-   *          the fork join
    */
   public void createLocalDag(final boolean forkJoin) {
     // Make a copy of the Input DAG for treatment
@@ -107,10 +81,6 @@ public class MemExUpdaterEngine {
   }
 
   /**
-   * Update.
-   *
-   * @param lifetime
-   *          the lifetime
    */
   public void update(final boolean lifetime) {
     updateWithSchedule();
@@ -134,9 +104,9 @@ public class MemExUpdaterEngine {
         / ((this.memEx.vertexSet().size() * (this.memEx.vertexSet().size() - 1)) / 2.0);
 
     if (this.verbose) {
-      this.logger.log(Level.INFO, "Memory exclusion graph updated with " + this.memEx.vertexSet().size()
+      this.logger.log(Level.INFO, () -> "Memory exclusion graph updated with " + this.memEx.vertexSet().size()
           + " vertices and density = " + this.density);
-      this.logger.log(Level.INFO, "Exclusions removed: " + (this.before - this.memEx.edgeSet().size()) + " ("
+      this.logger.log(Level.INFO, () -> "Exclusions removed: " + (this.before - this.memEx.edgeSet().size()) + " ("
           + Math.round((100.00 * (this.before - this.memEx.edgeSet().size())) / this.before) + "%)");
     }
   }
@@ -156,9 +126,9 @@ public class MemExUpdaterEngine {
         / ((this.memEx.vertexSet().size() * (this.memEx.vertexSet().size() - 1)) / 2.0);
 
     if (this.verbose) {
-      this.logger.log(Level.INFO, "Memory exclusion graph updated with " + this.memEx.vertexSet().size()
+      this.logger.log(Level.INFO, () -> "Memory exclusion graph updated with " + this.memEx.vertexSet().size()
           + " vertices and density = " + this.density);
-      this.logger.log(Level.INFO, "Exclusions removed: " + (this.before - this.memEx.edgeSet().size()) + " ("
+      this.logger.log(Level.INFO, () -> "Exclusions removed: " + (this.before - this.memEx.edgeSet().size()) + " ("
           + Math.round((100.00 * (this.before - this.memEx.edgeSet().size())) / this.before) + "%)");
     }
 

@@ -42,15 +42,8 @@ import org.preesm.workflow.implement.AbstractTaskImplementation;
  */
 public abstract class AbstractMemExUpdater extends AbstractTaskImplementation {
 
-  /** The Constant PARAM_VERBOSE. */
-  public static final String PARAM_VERBOSE = "Verbose";
-
-  /** The Constant PARAM_LIFETIME. */
-  public static final String PARAM_LIFETIME = "Update with MemObject lifetime";
-
-  /** The Constant PARAM_SUPPR_FORK_JOIN. */
-  public static final String PARAM_SUPPR_FORK_JOIN = "Suppr Fork/Join";
-
-  /** The Constant VALUE_TRUE_FALSE_DEFAULT. */
+  public static final String PARAM_VERBOSE            = "Verbose";
+  public static final String PARAM_LIFETIME           = "Update with MemObject lifetime";
+  public static final String PARAM_SUPPR_FORK_JOIN    = "Suppr Fork/Join";
   public static final String VALUE_TRUE_FALSE_DEFAULT = "? C {True, False}";
 }

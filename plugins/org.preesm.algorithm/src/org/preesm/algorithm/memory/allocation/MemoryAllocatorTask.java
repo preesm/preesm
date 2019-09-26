@@ -240,6 +240,7 @@ public class MemoryAllocatorTask extends AbstractTaskImplementation {
     final String valueVerbose = parameters.get(MemoryAllocatorTask.PARAM_VERBOSE);
     final String valueXFitOrder = parameters.get(MemoryAllocatorTask.PARAM_XFIT_ORDER);
     final String valueNbShuffle = parameters.get(MemoryAllocatorTask.PARAM_NB_SHUFFLE);
+    this.valueAllocators = parameters.get(MemoryAllocatorTask.PARAM_ALLOCATORS);
     this.valueDistribution = parameters.get(MemoryAllocatorTask.PARAM_DISTRIBUTION_POLICY);
 
     this.verbose = valueVerbose.equals(MemoryAllocatorTask.VALUE_TRUE);

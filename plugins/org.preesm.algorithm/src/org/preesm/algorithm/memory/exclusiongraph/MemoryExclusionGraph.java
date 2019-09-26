@@ -73,7 +73,6 @@ import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.model.slam.ComponentInstance;
 
-// TODO: Auto-generated Javadoc
 /**
  * This class is used to handle the Memory Exclusion Graph
  *
@@ -126,16 +125,7 @@ public class MemoryExclusionGraph extends SimpleGraph<MemoryExclusionVertex, Def
    */
   public static final String ALLOCATED_MEMORY_SIZE = "allocated_memory_size";
 
-  /** The public properties. */
-  private static List<String> public_properties = new ArrayList<String>() {
-    /**
-     *
-     */
-    private static final long serialVersionUID = -6039606828805117914L;
-
-    {
-    }
-  };
+  private static List<String> PUBLIC_PROPERTIES = new ArrayList<>();
 
   /**
    * Backup the vertex adjacent to a given vertex for speed-up purposes.
@@ -1196,7 +1186,7 @@ public class MemoryExclusionGraph extends SimpleGraph<MemoryExclusionVertex, Def
    */
   @Override
   public List<String> getPublicProperties() {
-    return MemoryExclusionGraph.public_properties;
+    return MemoryExclusionGraph.PUBLIC_PROPERTIES;
   }
 
   /**

@@ -45,38 +45,16 @@ import org.preesm.workflow.implement.AbstractTaskImplementation;
  */
 public abstract class AbstractMemoryScriptTask extends AbstractTaskImplementation {
 
-  /** The Constant PARAM_VERBOSE. */
-  public static final String PARAM_VERBOSE = "Verbose";
-
-  /** The Constant VALUE_TRUE. */
-  public static final String VALUE_TRUE = "True";
-
-  /** The Constant VALUE_FALSE. */
-  private static final String VALUE_FALSE = "False";
-
-  /** The Constant PARAM_LOG. */
-  public static final String PARAM_LOG = "Log Path";
-
-  /** The Constant VALUE_LOG. */
-  private static final String VALUE_LOG = "log_memoryScripts";
-
-  /** The Constant PARAM_CHECK. */
-  public static final String PARAM_CHECK = "Check";
-
-  /** The Constant VALUE_CHECK_NONE. */
-  private static final String VALUE_CHECK_NONE = "None";
-
-  /** The Constant VALUE_CHECK_FAST. */
-  private static final String VALUE_CHECK_FAST = "Fast";
-
-  /** The Constant VALUE_CHECK_THOROUGH. */
+  public static final String  PARAM_VERBOSE        = "Verbose";
+  public static final String  VALUE_TRUE           = "True";
+  private static final String VALUE_FALSE          = "False";
+  public static final String  PARAM_LOG            = "Log Path";
+  private static final String VALUE_LOG            = "log_memoryScripts";
+  public static final String  PARAM_CHECK          = "Check";
+  private static final String VALUE_CHECK_NONE     = "None";
+  private static final String VALUE_CHECK_FAST     = "Fast";
   private static final String VALUE_CHECK_THOROUGH = "Thorough";
 
-  /*
-   * (non-Javadoc)
-   *
-   * @see org.ietr.dftools.workflow.implement.AbstractTaskImplementation#getDefaultParameters()
-   */
   @Override
   public Map<String, String> getDefaultParameters() {
     final Map<String, String> param = new LinkedHashMap<>();
@@ -90,11 +68,6 @@ public abstract class AbstractMemoryScriptTask extends AbstractTaskImplementatio
     return param;
   }
 
-  /*
-   * (non-Javadoc)
-   *
-   * @see org.ietr.dftools.workflow.implement.AbstractWorkflowNodeImplementation#monitorMessage()
-   */
   @Override
   public String monitorMessage() {
     return "Running Memory Optimization Scripts.";
