@@ -217,8 +217,6 @@ public class ClusteringBuilder {
       // Clusterize given actors
       HierarchicalSchedule clusterSchedule = (HierarchicalSchedule) clusterize(actorsFound);
       scheduleMapping.put(clusterSchedule.getAttachedActor(), clusterSchedule);
-      // Compute BRV with the corresponding graph
-      repetitionVector = PiBRV.compute(this.pigraph, BRVMethod.LCM);
     }
 
     // Perform flattening transformation on schedule graph
@@ -393,6 +391,9 @@ public class ClusteringBuilder {
     for (AbstractActor a : actorList) {
       addActorToHierarchicalSchedule(schedule, a, repetitionVector.get(a) / clusterRepetition);
     }
+
+    // Compute BRV with the corresponding graph
+    repetitionVector = PiBRV.compute(this.pigraph, BRVMethod.LCM);
 
     return schedule;
   }
