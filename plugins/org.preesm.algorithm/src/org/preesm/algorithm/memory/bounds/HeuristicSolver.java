@@ -46,7 +46,6 @@ import org.jgrapht.graph.DefaultEdge;
 import org.jgrapht.graph.SimpleGraph;
 import org.preesm.algorithm.memory.exclusiongraph.IWeightedVertex;
 
-// TODO: Auto-generated Javadoc
 /**
  * This Solver is an heuristic non-exact solver for the Maximum-Weight-Clique problem. It is design to provide a clique
  * which is not always the maximum-weight clique but whose weight is high. The main advantage of this algorithm over
@@ -81,73 +80,35 @@ public class HeuristicSolver<V extends IWeightedVertex<Long> & Comparable<V>, E 
     private long neighborsWeight;
 
     /**
-     * Constructor.
-     *
-     * @param weight
-     *          the weight of its neighbors
-     * @param nbEdges
-     *          the number of edges
      */
     private VertexCost(final long weight, final long nbEdges) {
       this.neighborsWeight = weight;
       this.nbEdges = nbEdges;
     }
 
-    /**
-     * Gets the nb edges.
-     *
-     * @return the nbEdges
-     */
     private long getNbEdges() {
       return this.nbEdges;
     }
 
-    /**
-     * Gets the neighbors weight.
-     *
-     * @return the neighborsWeight
-     */
     public long getNeighborsWeight() {
       return this.neighborsWeight;
     }
 
-    /**
-     * Sets the nb edges.
-     *
-     * @param nbEdges
-     *          the nbEdges to set
-     */
     public void setNbEdges(final long nbEdges) {
       this.nbEdges = nbEdges;
     }
 
-    /**
-     * Sets the neighbors weight.
-     *
-     * @param neighborsWeight
-     *          the neighborsWeight to set
-     */
     public void setNeighborsWeight(final long neighborsWeight) {
       this.neighborsWeight = neighborsWeight;
     }
   }
 
   /**
-   * Instantiates a new heuristic solver.
-   *
-   * @param graph
-   *          the graph
    */
   public HeuristicSolver(final SimpleGraph<V, E> graph) {
     super(graph);
   }
 
-  /*
-   * (non-Javadoc)
-   *
-   * @see org.ietr.preesm.memory.bounds.AbstractMaximumWeightCliqueSolver#adjacentVerticesOf(org.ietr.preesm.memory.
-   * exclusiongraph.IWeightedVertex)
-   */
   @Override
   public Set<V> adjacentVerticesOf(final V vertex) {
     // If this node was already treated
@@ -167,7 +128,6 @@ public class HeuristicSolver<V extends IWeightedVertex<Long> & Comparable<V>, E 
     for (final V vert : result) {
       for (final V vertin : this.graph.vertexSet()) {
         if (vert.equals(vertin)) {
-          // toRemove.add(vert);
           toAdd.add(vertin);
           break;
         }
@@ -180,11 +140,6 @@ public class HeuristicSolver<V extends IWeightedVertex<Long> & Comparable<V>, E 
     return result;
   }
 
-  /*
-   * (non-Javadoc)
-   *
-   * @see org.ietr.preesm.memory.bounds.AbstractMaximumWeightCliqueSolver#solve()
-   */
   @Override
   public void solve() {
 
@@ -278,23 +233,6 @@ public class HeuristicSolver<V extends IWeightedVertex<Long> & Comparable<V>, E 
     // Retrieve the vertices of the found clique.
     this.heaviestClique = new LinkedHashSet<>(costsList.keySet());
     clearAdjacentVerticesBackup();
-
-    // // Check check if the found clique is maximal
-    // // Because of the slow implementation of both : adjacentVercicesOf()
-    // and
-    // // containsAll(), this code considerably slow down the algorithm
-    // (x1.5)
-    // // and is not used.
-    // // However, it is left here in case it could be used one day !
-    // //
-    // LinkedHashSet<V> cliqueCandidates = new LinkedHashSet<V>(
-    // adjacentVerticesOf(heaviestClique.iterator().next()));
-    // cliqueCandidates.removeAll(heaviestClique);
-    // for (V vertex : cliqueCandidates) {
-    // if (adjacentVerticesOf(vertex).containsAll(heaviestClique)) {
-    // heaviestClique.add(vertex);
-    // }
-    // }
 
     this.max = sumWeight(costsList.keySet());
   }

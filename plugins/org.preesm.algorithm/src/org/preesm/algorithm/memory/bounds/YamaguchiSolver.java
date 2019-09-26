@@ -64,26 +64,15 @@ import org.preesm.algorithm.memory.exclusiongraph.IWeightedVertex;
 public class YamaguchiSolver<V extends IWeightedVertex<Long> & Comparable<V>, E extends DefaultEdge>
     extends AbstractMaximumWeightCliqueSolver<V, E> {
 
-  /** The graph vertices. */
   private Map<Long, V> graphVertices;
 
   /**
-   * Solver constructor.
-   *
-   * @param graph
-   *          The graph to analyze
    */
   public YamaguchiSolver(final SimpleGraph<V, E> graph) {
     super(graph);
     this.min = -1;
   }
 
-  /*
-   * (non-Javadoc)
-   *
-   * @see org.ietr.preesm.memory.bounds.AbstractMaximumWeightCliqueSolver#adjacentVerticesOf(org.ietr.preesm.memory.
-   * exclusiongraph.IWeightedVertex)
-   */
   @Override
   public Set<V> adjacentVerticesOf(final V vertex) {
     // If this node was already treated
@@ -237,21 +226,10 @@ public class YamaguchiSolver<V extends IWeightedVertex<Long> & Comparable<V>, E 
     return orderedVertexSet;
   }
 
-  /**
-   * Sets the graph vertices.
-   *
-   * @param graphVertices
-   *          the graphVertices to set
-   */
   public void setGraphVertices(final Map<Long, V> graphVertices) {
     this.graphVertices = graphVertices;
   }
 
-  /*
-   * (non-Javadoc)
-   *
-   * @see org.ietr.preesm.memory.bounds.AbstractMaximumWeightCliqueSolver#solve()
-   */
   @Override
   public void solve() {
     this.graphVertices = new LinkedHashMap<>();

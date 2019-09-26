@@ -44,6 +44,7 @@ import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 import org.eclipse.xtext.xbase.lib.Functions.Function1;
 import org.eclipse.xtext.xbase.lib.IterableExtensions;
@@ -813,20 +814,23 @@ public abstract class MemoryAllocator {
 
     // Use the memExNodeAllocation if available
     if (this.memExNodeAllocation != null) {
-      for (final MemoryExclusionVertex vertex : this.memExNodeAllocation.keySet()) {
-        if ((this.memExNodeAllocation.get(vertex) + vertex.getWeight()) > memorySize) {
-          memorySize = this.memExNodeAllocation.get(vertex) + vertex.getWeight();
+      for (final Entry<MemoryExclusionVertex, Long> entry : this.memExNodeAllocation.entrySet()) {
+        final MemoryExclusionVertex vertex = entry.getKey();
+        final Long value = entry.getValue();
+        if ((value + vertex.getWeight()) > memorySize) {
+          memorySize = value + vertex.getWeight();
         }
       }
       return memorySize;
     }
 
     if (!this.edgeAllocation.isEmpty()) {
-      // Look for the maximum value of (offset + edge.size) in
-      // allocation map
-      for (final DAGEdge edge : this.edgeAllocation.keySet()) {
-        if ((this.edgeAllocation.get(edge) + edge.getWeight().longValue()) > memorySize) {
-          memorySize = this.edgeAllocation.get(edge) + edge.getWeight().longValue();
+      // Look for the maximum value of (offset + edge.size) in allocation map
+      for (final Entry<DAGEdge, Long> entry : this.edgeAllocation.entrySet()) {
+        final DAGEdge edge = entry.getKey();
+        final Long value = entry.getValue();
+        if ((value + edge.getWeight().longValue()) > memorySize) {
+          memorySize = value + edge.getWeight().longValue();
         }
       }
       return memorySize;

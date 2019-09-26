@@ -81,10 +81,6 @@ public abstract class AbstractMaximumWeightCliqueSolver<V extends IWeightedVerte
   protected int numberVertices;
 
   /**
-   * Constructor of the solver.
-   *
-   * @param graph
-   *          the graph to analyze.
    */
   public AbstractMaximumWeightCliqueSolver(final SimpleGraph<V, E> graph) {
     // Keep a reference to the graph
@@ -143,11 +139,6 @@ public abstract class AbstractMaximumWeightCliqueSolver<V extends IWeightedVerte
     return result;
   }
 
-  /**
-   * Return the heaviest clique found.
-   *
-   * @return the heaviest clique found.
-   */
   public Set<V> getHeaviestClique() {
     return new LinkedHashSet<>(this.heaviestClique);
   }

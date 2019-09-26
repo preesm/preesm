@@ -112,12 +112,6 @@ import org.preesm.workflow.elements.Workflow;
         + "Systems, 15(30):25, January 2016." })
 public class MemoryScriptTask extends AbstractMemoryScriptTask {
 
-  /*
-   * (non-Javadoc)
-   *
-   * @see org.ietr.dftools.workflow.implement.AbstractTaskImplementation#execute(java.util.Map, java.util.Map,
-   * org.eclipse.core.runtime.IProgressMonitor, java.lang.String, org.ietr.dftools.workflow.elements.Workflow)
-   */
   @Override
   public Map<String, Object> execute(final Map<String, Object> inputs, final Map<String, String> parameters,
       final IProgressMonitor monitor, final String nodeName, final Workflow workflow) {
@@ -162,15 +156,5 @@ public class MemoryScriptTask extends AbstractMemoryScriptTask {
     final Map<String, Object> outputs = new LinkedHashMap<>();
     outputs.put("MemEx", meg);
     return outputs;
-  }
-
-  /**
-   * This method must be overridden, otherwise, the workflow validator does not find it.
-   *
-   * @return the default parameters
-   */
-  @Override
-  public Map<String, String> getDefaultParameters() {
-    return super.getDefaultParameters();
   }
 }

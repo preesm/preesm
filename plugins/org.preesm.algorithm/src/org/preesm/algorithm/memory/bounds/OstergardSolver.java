@@ -235,11 +235,6 @@ public class OstergardSolver<V extends IWeightedVertex<Long> & Comparable<V>, E 
     }
   }
 
-  /*
-   * (non-Javadoc)
-   *
-   * @see org.ietr.preesm.memory.bounds.AbstractMaximumWeightCliqueSolver#solve()
-   */
   @Override
   public void solve() {
     orderVertexSet();
@@ -324,7 +319,6 @@ public class OstergardSolver<V extends IWeightedVertex<Long> & Comparable<V>, E 
         return;
       }
     }
-    return;
   }
 
   /**

@@ -42,16 +42,9 @@ import org.preesm.workflow.implement.AbstractTaskImplementation;
  */
 public abstract class AbstractMemoryBoundsEstimator extends AbstractTaskImplementation {
 
-  /** The Constant PARAM_SOLVER. */
-  static final String PARAM_SOLVER = "Solver";
-
-  /** The Constant VALUE_SOLVER_DEFAULT. */
-  static final String VALUE_SOLVER_DEFAULT = "? C {Heuristic, Ostergard, Yamaguchi}";
-
-  /** The Constant PARAM_VERBOSE. */
-  static final String PARAM_VERBOSE = "Verbose";
-
-  /** The Constant VALUE_VERBOSE_DEFAULT. */
+  static final String PARAM_SOLVER          = "Solver";
+  static final String VALUE_SOLVER_DEFAULT  = "? C {Heuristic, Ostergard, Yamaguchi}";
+  static final String PARAM_VERBOSE         = "Verbose";
   static final String VALUE_VERBOSE_DEFAULT = "? C {True, False}";
 
 }

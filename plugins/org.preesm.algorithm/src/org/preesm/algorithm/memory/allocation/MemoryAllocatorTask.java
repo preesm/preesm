@@ -179,134 +179,52 @@ import org.preesm.workflow.implement.AbstractTaskImplementation;
             + "MPSoCs. Journal of Signal Processing Systems, Springer, 2014." })
 public class MemoryAllocatorTask extends AbstractTaskImplementation {
 
-  /** The Constant PARAM_VERBOSE. */
-  private static final String PARAM_VERBOSE = "Verbose";
-
-  /** The Constant VALUE_TRUE_FALSE_DEFAULT. */
-  private static final String VALUE_TRUE_FALSE_DEFAULT = "? C {True, False}";
-
-  /** The Constant VALUE_TRUE. */
-  private static final String VALUE_TRUE = "True";
-
-  /** The Constant PARAM_ALLOCATORS. */
-  private static final String PARAM_ALLOCATORS = "Allocator(s)";
-
-  /** The Constant VALUE_ALLOCATORS_DEFAULT. */
-  private static final String VALUE_ALLOCATORS_DEFAULT = "{?,?,...} C {Basic, BestFit, FirstFit, DeGreef}";
-
-  /** The Constant VALUE_ALLOCATORS_BASIC. */
-  private static final String VALUE_ALLOCATORS_BASIC = "Basic";
-
-  /** The Constant VALUE_ALLOCATORS_BEST_FIT. */
-  private static final String VALUE_ALLOCATORS_BEST_FIT = "BestFit";
-
-  /** The Constant VALUE_ALLOCATORS_FIRST_FIT. */
-  private static final String VALUE_ALLOCATORS_FIRST_FIT = "FirstFit";
-
-  /** The Constant VALUE_ALLOCATORS_DE_GREEF. */
-  private static final String VALUE_ALLOCATORS_DE_GREEF = "DeGreef";
-
-  /** The Constant PARAM_XFIT_ORDER. */
-  private static final String PARAM_XFIT_ORDER = "Best/First Fit order";
-
-  /** The Constant VALUE_XFIT_ORDER_DEFAULT. */
-  private static final String VALUE_XFIT_ORDER_DEFAULT = "{?,?,...} C "
+  private static final String PARAM_VERBOSE                       = "Verbose";
+  private static final String VALUE_TRUE_FALSE_DEFAULT            = "? C {True, False}";
+  private static final String VALUE_TRUE                          = "True";
+  private static final String PARAM_ALLOCATORS                    = "Allocator(s)";
+  private static final String VALUE_ALLOCATORS_DEFAULT            = "{?,?,...} C {Basic, BestFit, FirstFit, DeGreef}";
+  private static final String VALUE_ALLOCATORS_BASIC              = "Basic";
+  private static final String VALUE_ALLOCATORS_BEST_FIT           = "BestFit";
+  private static final String VALUE_ALLOCATORS_FIRST_FIT          = "FirstFit";
+  private static final String VALUE_ALLOCATORS_DE_GREEF           = "DeGreef";
+  private static final String PARAM_XFIT_ORDER                    = "Best/First Fit order";
+  private static final String VALUE_XFIT_ORDER_DEFAULT            = "{?,?,...} C "
       + "{ApproxStableSet, ExactStableSet, LargestFirst, Shuffle, Scheduling}";
+  private static final String VALUE_XFIT_ORDER_APPROX_STABLE_SET  = "ApproxStableSet";
+  private static final String VALUE_XFIT_ORDER_LARGEST_FIRST      = "LargestFirst";
+  private static final String VALUE_XFIT_ORDER_SHUFFLE            = "Shuffle";
+  private static final String VALUE_XFIT_ORDER_EXACT_STABLE_SET   = "ExactStableSet";
+  private static final String VALUE_XFIT_ORDER_SCHEDULING         = "Scheduling";
+  private static final String PARAM_NB_SHUFFLE                    = "Nb of Shuffling Tested";
+  private static final String VALUE_NB_SHUFFLE_DEFAULT            = "10";
+  public static final String  PARAM_ALIGNMENT                     = "Data alignment";
+  public static final String  VALUE_ALIGNEMENT_NONE               = "None";
+  public static final String  VALUE_ALIGNEMENT_DATA               = "Data";
+  public static final String  VALUE_ALIGNEMENT_FIXED              = "Fixed:=";
+  public static final String  VALUE_ALIGNEMENT_DEFAULT            = "? C {None, Data, Fixed:=<nbBytes>}";
+  public static final String  PARAM_DISTRIBUTION_POLICY           = "Distribution";
+  public static final String  VALUE_DISTRIBUTION_SHARED_ONLY      = "SharedOnly";
+  public static final String  VALUE_DISTRIBUTION_DISTRIBUTED_ONLY = "DistributedOnly";
+  public static final String  VALUE_DISTRIBUTION_MIXED            = "Mixed";
 
-  /** The Constant VALUE_XFIT_ORDER_APPROX_STABLE_SET. */
-  private static final String VALUE_XFIT_ORDER_APPROX_STABLE_SET = "ApproxStableSet";
-
-  /** The Constant VALUE_XFIT_ORDER_LARGEST_FIRST. */
-  private static final String VALUE_XFIT_ORDER_LARGEST_FIRST = "LargestFirst";
-
-  /** The Constant VALUE_XFIT_ORDER_SHUFFLE. */
-  private static final String VALUE_XFIT_ORDER_SHUFFLE = "Shuffle";
-
-  /** The Constant VALUE_XFIT_ORDER_EXACT_STABLE_SET. */
-  private static final String VALUE_XFIT_ORDER_EXACT_STABLE_SET = "ExactStableSet";
-
-  /** The Constant VALUE_XFIT_ORDER_SCHEDULING. */
-  private static final String VALUE_XFIT_ORDER_SCHEDULING = "Scheduling";
-
-  /** The Constant PARAM_NB_SHUFFLE. */
-  private static final String PARAM_NB_SHUFFLE = "Nb of Shuffling Tested";
-
-  /** The Constant VALUE_NB_SHUFFLE_DEFAULT. */
-  private static final String VALUE_NB_SHUFFLE_DEFAULT = "10";
-
-  /** The Constant PARAM_ALIGNMENT. */
-  public static final String PARAM_ALIGNMENT = "Data alignment";
-
-  /** The Constant VALUE_ALIGNEMENT_NONE. */
-  public static final String VALUE_ALIGNEMENT_NONE = "None";
-
-  /** The Constant VALUE_ALIGNEMENT_DATA. */
-  public static final String VALUE_ALIGNEMENT_DATA = "Data";
-
-  /** The Constant VALUE_ALIGNEMENT_FIXED. */
-  public static final String VALUE_ALIGNEMENT_FIXED = "Fixed:=";
-
-  /** The Constant VALUE_ALIGNEMENT_DEFAULT. */
-  public static final String VALUE_ALIGNEMENT_DEFAULT = "? C {None, Data, Fixed:=<nbBytes>}";
-
-  /** The Constant PARAM_DISTRIBUTION_POLICY. */
-  public static final String PARAM_DISTRIBUTION_POLICY = "Distribution";
-
-  /** The Constant VALUE_DISTRIBUTION_SHARED_ONLY. */
-  public static final String VALUE_DISTRIBUTION_SHARED_ONLY = "SharedOnly";
-
-  /** The Constant VALUE_DISTRIBUTION_DISTRIBUTED_ONLY. */
-  public static final String VALUE_DISTRIBUTION_DISTRIBUTED_ONLY = "DistributedOnly";
-
-  /** The Constant VALUE_DISTRIBUTION_MIXED. */
-  public static final String VALUE_DISTRIBUTION_MIXED        = "Mixed";
   /**
    * Mixed Policy, but preserving all merged operations.
    */
   public static final String VALUE_DISTRIBUTION_MIXED_MERGED = "MixedMerged";
 
-  /** The Constant VALUE_DISTRIBUTION_DEFAULT. */
   public static final String VALUE_DISTRIBUTION_DEFAULT = "? C {" + MemoryAllocatorTask.VALUE_DISTRIBUTION_SHARED_ONLY
       + ", " + MemoryAllocatorTask.VALUE_DISTRIBUTION_MIXED + ", "
       + MemoryAllocatorTask.VALUE_DISTRIBUTION_DISTRIBUTED_ONLY + ", "
       + MemoryAllocatorTask.VALUE_DISTRIBUTION_MIXED_MERGED + "}";
 
-  /** The logger. */
-  // Rem: Logger is used to display messages in the console
-  protected Logger logger = PreesmLogger.getLogger();
-
-  /** The value verbose. */
-  // Shared attributes
-  private String valueVerbose;
-
-  /** The value allocators. */
-  private String valueAllocators;
-
-  /** The value X fit order. */
-  private String valueXFitOrder;
-
-  /** The value nb shuffle. */
-  private String valueNbShuffle;
-
-  /** The value distribution. */
-  protected String valueDistribution;
-
-  /** The verbose. */
-  protected boolean verbose;
-
-  /** The value alignment. */
-  private String valueAlignment;
-
-  /** The alignment. */
-  protected long alignment;
-
-  /** The nb shuffle. */
-  private int nbShuffle;
-
-  /** The ordering. */
-  private List<Order> ordering;
-
-  /** The allocators. */
+  protected Logger                logger = PreesmLogger.getLogger();
+  private String                  valueAllocators;
+  protected String                valueDistribution;
+  protected boolean               verbose;
+  protected long                  alignment;
+  private int                     nbShuffle;
+  private List<Order>             ordering;
   protected List<MemoryAllocator> allocators;
 
   /**
@@ -319,13 +237,12 @@ public class MemoryAllocatorTask extends AbstractTaskImplementation {
    */
   protected void init(final Map<String, String> parameters) {
     // Retrieve parameters from workflow
-    this.valueVerbose = parameters.get(MemoryAllocatorTask.PARAM_VERBOSE);
-    this.valueAllocators = parameters.get(MemoryAllocatorTask.PARAM_ALLOCATORS);
-    this.valueXFitOrder = parameters.get(MemoryAllocatorTask.PARAM_XFIT_ORDER);
-    this.valueNbShuffle = parameters.get(MemoryAllocatorTask.PARAM_NB_SHUFFLE);
+    final String valueVerbose = parameters.get(MemoryAllocatorTask.PARAM_VERBOSE);
+    final String valueXFitOrder = parameters.get(MemoryAllocatorTask.PARAM_XFIT_ORDER);
+    final String valueNbShuffle = parameters.get(MemoryAllocatorTask.PARAM_NB_SHUFFLE);
     this.valueDistribution = parameters.get(MemoryAllocatorTask.PARAM_DISTRIBUTION_POLICY);
 
-    this.verbose = this.valueVerbose.equals(MemoryAllocatorTask.VALUE_TRUE);
+    this.verbose = valueVerbose.equals(MemoryAllocatorTask.VALUE_TRUE);
 
     // Correct default distribution policy
     if (this.valueDistribution.equals(MemoryAllocatorTask.VALUE_DISTRIBUTION_DEFAULT)) {
@@ -333,9 +250,9 @@ public class MemoryAllocatorTask extends AbstractTaskImplementation {
     }
 
     // Retrieve the alignment param
-    this.valueAlignment = parameters.get(MemoryAllocatorTask.PARAM_ALIGNMENT);
+    final String valueAlignment = parameters.get(MemoryAllocatorTask.PARAM_ALIGNMENT);
 
-    switch (this.valueAlignment.substring(0, Math.min(this.valueAlignment.length(), 7))) {
+    switch (valueAlignment.substring(0, Math.min(valueAlignment.length(), 7))) {
       case VALUE_ALIGNEMENT_NONE:
         this.alignment = -1;
         break;
@@ -343,7 +260,7 @@ public class MemoryAllocatorTask extends AbstractTaskImplementation {
         this.alignment = 0;
         break;
       case VALUE_ALIGNEMENT_FIXED:
-        final String fixedValue = this.valueAlignment.substring(7);
+        final String fixedValue = valueAlignment.substring(7);
         this.alignment = Long.parseLong(fixedValue);
         break;
       default:
@@ -356,20 +273,20 @@ public class MemoryAllocatorTask extends AbstractTaskImplementation {
     // Retrieve the ordering policies to test
     this.nbShuffle = 0;
     this.ordering = new ArrayList<>();
-    if (this.valueXFitOrder.contains(MemoryAllocatorTask.VALUE_XFIT_ORDER_SHUFFLE)) {
-      this.nbShuffle = Integer.decode(this.valueNbShuffle);
+    if (valueXFitOrder.contains(MemoryAllocatorTask.VALUE_XFIT_ORDER_SHUFFLE)) {
+      this.nbShuffle = Integer.decode(valueNbShuffle);
       this.ordering.add(Order.SHUFFLE);
     }
-    if (this.valueXFitOrder.contains(MemoryAllocatorTask.VALUE_XFIT_ORDER_LARGEST_FIRST)) {
+    if (valueXFitOrder.contains(MemoryAllocatorTask.VALUE_XFIT_ORDER_LARGEST_FIRST)) {
       this.ordering.add(Order.LARGEST_FIRST);
     }
-    if (this.valueXFitOrder.contains(MemoryAllocatorTask.VALUE_XFIT_ORDER_APPROX_STABLE_SET)) {
+    if (valueXFitOrder.contains(MemoryAllocatorTask.VALUE_XFIT_ORDER_APPROX_STABLE_SET)) {
       this.ordering.add(Order.STABLE_SET);
     }
-    if (this.valueXFitOrder.contains(MemoryAllocatorTask.VALUE_XFIT_ORDER_EXACT_STABLE_SET)) {
+    if (valueXFitOrder.contains(MemoryAllocatorTask.VALUE_XFIT_ORDER_EXACT_STABLE_SET)) {
       this.ordering.add(Order.EXACT_STABLE_SET);
     }
-    if (this.valueXFitOrder.contains(MemoryAllocatorTask.VALUE_XFIT_ORDER_SCHEDULING)) {
+    if (valueXFitOrder.contains(MemoryAllocatorTask.VALUE_XFIT_ORDER_SCHEDULING)) {
       this.ordering.add(Order.SCHEDULING);
     }
 
@@ -462,16 +379,16 @@ public class MemoryAllocatorTask extends AbstractTaskImplementation {
     String log = computeLog(allocator, tStart, sAllocator, tFinish);
 
     if ((allocator instanceof OrderedAllocator) && (((OrderedAllocator) allocator).getOrder() == Order.SHUFFLE)) {
-      ((OrderedAllocator) allocator).setPolicy(Policy.worst);
+      ((OrderedAllocator) allocator).setPolicy(Policy.WORST);
       log += " worst: " + allocator.getMemorySize();
 
-      ((OrderedAllocator) allocator).setPolicy(Policy.mediane);
+      ((OrderedAllocator) allocator).setPolicy(Policy.MEDIANE);
       log += "(med: " + allocator.getMemorySize();
 
-      ((OrderedAllocator) allocator).setPolicy(Policy.average);
+      ((OrderedAllocator) allocator).setPolicy(Policy.AVERAGE);
       log += " avg: " + allocator.getMemorySize() + ")";
 
-      ((OrderedAllocator) allocator).setPolicy(Policy.best);
+      ((OrderedAllocator) allocator).setPolicy(Policy.BEST);
     }
 
     this.logger.log(Level.INFO, log);
