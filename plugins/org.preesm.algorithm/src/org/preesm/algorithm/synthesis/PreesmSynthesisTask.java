@@ -73,15 +73,15 @@ import org.preesm.workflow.implement.AbstractWorkflowNodeImplementation;
 public class PreesmSynthesisTask extends AbstractTaskImplementation {
 
   @Override
-  public Map<String, Object> execute(Map<String, Object> inputs, Map<String, String> parameters,
-      IProgressMonitor monitor, String nodeName, Workflow workflow) {
+  public Map<String, Object> execute(final Map<String, Object> inputs, final Map<String, String> parameters,
+      final IProgressMonitor monitor, final String nodeName, final Workflow workflow) {
 
     final PiGraph algorithm = (PiGraph) inputs.get(AbstractWorkflowNodeImplementation.KEY_PI_GRAPH);
     final Design architecture = (Design) inputs.get(AbstractWorkflowNodeImplementation.KEY_ARCHITECTURE);
     final Scenario scenario = (Scenario) inputs.get(AbstractWorkflowNodeImplementation.KEY_SCENARIO);
 
     PreesmLogger.getLogger().log(Level.INFO, " -- Scheduling");
-    IScheduler scheduler = new LegacyListScheduler();
+    final IScheduler scheduler = new LegacyListScheduler();
     final SynthesisResult scheduleAndMap = scheduler.scheduleAndMap(algorithm, architecture, scenario);
 
     PreesmLogger.getLogger().log(Level.INFO, " -- Insert communication");

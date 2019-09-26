@@ -28,16 +28,16 @@ public class AroundCommunicationInserter extends ALAPCommunicationInserter {
   @Override
 
   protected void insertCommunication(final Fifo fifo, final SlamRoute route,
-      Map<AbstractActor, ActorSchedule> actorToScheduleMap, final Mapping mapping) {
+      final Map<AbstractActor, ActorSchedule> actorToScheduleMap, final Mapping mapping) {
 
     for (final SlamRouteStep rstep : route.getRouteSteps()) {
       final ComponentInstance srcCmp = rstep.getSender();
       final ComponentInstance tgtCmp = rstep.getReceiver();
 
-      final AbstractActor srcCmpLastActor = lastVisitedActor.get(srcCmp);
-      final AbstractActor tgtCmpLastActor = lastVisitedActor.get(tgtCmp);
+      final AbstractActor srcCmpLastActor = this.lastVisitedActor.get(srcCmp);
+      final AbstractActor tgtCmpLastActor = this.lastVisitedActor.get(tgtCmp);
 
-      if (srcCmpLastActor == null || tgtCmpLastActor == null) {
+      if ((srcCmpLastActor == null) || (tgtCmpLastActor == null)) {
         throw new UnsupportedOperationException("Cannot use a proxy operator on which no actor has benn mapped");
       }
 

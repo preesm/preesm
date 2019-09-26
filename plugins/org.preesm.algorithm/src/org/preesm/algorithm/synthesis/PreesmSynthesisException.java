@@ -49,15 +49,15 @@ public class PreesmSynthesisException extends PreesmRuntimeException {
     this((String) null);
   }
 
-  public PreesmSynthesisException(String message) {
+  public PreesmSynthesisException(final String message) {
     this(message, null);
   }
 
-  public PreesmSynthesisException(String message, Throwable cause) {
+  public PreesmSynthesisException(final String message, final Throwable cause) {
     super(true, message, cause);
   }
 
-  public PreesmSynthesisException(Throwable cause) {
+  public PreesmSynthesisException(final Throwable cause) {
     this(null, cause);
 
   }

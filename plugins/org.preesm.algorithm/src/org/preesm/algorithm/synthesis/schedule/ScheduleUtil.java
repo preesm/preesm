@@ -27,10 +27,10 @@ public class ScheduleUtil {
   }
 
   /**
-   *
+   * Builds a map that associate for every actor in the schedule its refering ActorSchedule.
    */
   public static final Map<AbstractActor, ActorSchedule> actorToScheduleMap(final Schedule schedule) {
-    final Set<ActorSchedule> actorSchedules = getActorSchedules(schedule);
+    final Set<ActorSchedule> actorSchedules = ScheduleUtil.getActorSchedules(schedule);
     final Map<AbstractActor, ActorSchedule> res = new LinkedHashMap<>();
     actorSchedules.forEach(aSched -> aSched.getActorList().forEach(a -> res.put(a, aSched)));
     return res;
@@ -60,13 +60,13 @@ public class ScheduleUtil {
    * Get all actors scheduled the given Schedule. Order is not preserved.
    */
   public static final Set<AbstractActor> getActors(final Schedule schedule) {
-    return getActorSchedules(schedule).stream().map(ActorSchedule::getActorList).flatMap(List::stream)
+    return ScheduleUtil.getActorSchedules(schedule).stream().map(ActorSchedule::getActorList).flatMap(List::stream)
         .collect(Collectors.toCollection(LinkedHashSet::new));
   }
 
   /**
    * Given 2 different schedules of the same schedule tree, returns the lowest common ancestor. Ensures that
-   * result.getLeft() == result.getRight().
+   * result.getLeft().getParent() == result.getRight().getParent().
    *
    * Throws exception if sched1 == sched2 or both schedules do not belong to the same schedule tree.
    */

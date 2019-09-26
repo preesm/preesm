@@ -23,7 +23,7 @@ public class ScheduleAndTopologyIterator extends ScheduleIterator {
     final List<AbstractActor> res = new ArrayList<>();
     new ScheduleOrderedVisitor() {
       @Override
-      public void visit(AbstractActor actor) {
+      public void visit(final AbstractActor actor) {
         res.add(actor);
       }
 

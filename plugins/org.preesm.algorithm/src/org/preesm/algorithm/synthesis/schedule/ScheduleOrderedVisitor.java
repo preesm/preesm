@@ -27,6 +27,8 @@ import org.preesm.model.pisdf.util.topology.PiSDFTopologyHelper;
  * (iterating over actors in the topological order of the PiSDF SRDAG graph). Override {@link #visit(AbstractActor)} to
  * specify behavior.
  *
+ * Exception will be thrown if the schedule and topology orders are not compatible.
+ *
  * @author anmorvan
  */
 public abstract class ScheduleOrderedVisitor extends ScheduleSwitch<Boolean> {

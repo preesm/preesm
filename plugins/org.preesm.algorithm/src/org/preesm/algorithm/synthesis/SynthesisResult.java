@@ -62,7 +62,7 @@ public class SynthesisResult {
 
   @Override
   public String toString() {
-    return "\n\n" + buildString(schedule, mapping, "").toString();
+    return "\n\n" + SynthesisResult.buildString(this.schedule, this.mapping, "").toString();
   }
 
   private static StringBuilder buildString(final Schedule sched, final Mapping mapp, final String indent) {
@@ -70,7 +70,7 @@ public class SynthesisResult {
     res.append(indent + sched.getClass().getSimpleName() + " {\n");
     if (sched instanceof HierarchicalSchedule) {
       for (final Schedule child : sched.getChildren()) {
-        res.append(buildString(child, mapp, indent + "  ").toString());
+        res.append(SynthesisResult.buildString(child, mapp, indent + "  ").toString());
       }
     } else {
       final List<AbstractActor> actors = new SimpleScheduleIterator(sched).getOrderedList();

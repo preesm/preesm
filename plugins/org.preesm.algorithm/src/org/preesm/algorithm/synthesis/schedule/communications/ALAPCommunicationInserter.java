@@ -60,16 +60,16 @@ public class ALAPCommunicationInserter implements CommunicationInserter {
   protected final Map<ComponentInstance, AbstractActor> lastVisitedActor = new LinkedHashMap<>();
 
   protected void insertCommunication(final Fifo fifo, final SlamRoute route,
-      Map<AbstractActor, ActorSchedule> actorToScheduleMap, final Mapping mapping) {
+      final Map<AbstractActor, ActorSchedule> actorToScheduleMap, final Mapping mapping) {
 
     for (final SlamRouteStep rstep : route.getRouteSteps()) {
       final ComponentInstance srcCmp = rstep.getSender();
       final ComponentInstance tgtCmp = rstep.getReceiver();
 
-      final AbstractActor srcCmpLastActor = lastVisitedActor.get(srcCmp);
-      final AbstractActor tgtCmpLastActor = lastVisitedActor.get(tgtCmp);
+      final AbstractActor srcCmpLastActor = this.lastVisitedActor.get(srcCmp);
+      final AbstractActor tgtCmpLastActor = this.lastVisitedActor.get(tgtCmp);
 
-      if (srcCmpLastActor == null || tgtCmpLastActor == null) {
+      if ((srcCmpLastActor == null) || (tgtCmpLastActor == null)) {
         throw new UnsupportedOperationException("Cannot use a proxy operator on which no actor has benn mapped");
       }
 
@@ -140,7 +140,7 @@ public class ALAPCommunicationInserter implements CommunicationInserter {
             final ComponentInstance componentInstance = actorMappings.get(0);
             if (cmps.contains(componentInstance)) {
               cmps.remove(componentInstance);
-              lastVisitedActor.put(componentInstance, actor);
+              ALAPCommunicationInserter.this.lastVisitedActor.put(componentInstance, actor);
               if (cmps.isEmpty()) {
                 throw new DoneException();
               }
@@ -149,7 +149,7 @@ public class ALAPCommunicationInserter implements CommunicationInserter {
 
         }
       }.doSwitch(schedule);
-    } catch (DoneException e) {
+    } catch (final DoneException e) {
       // nothing
     }
   }
@@ -178,7 +178,7 @@ public class ALAPCommunicationInserter implements CommunicationInserter {
         final AbstractActor sourceActor = sourcePort.getContainingActor();
 
         final List<ComponentInstance> sourceMappings = mapping.getMapping(sourceActor);
-        if (targetMappings.size() == 1 && sourceMappings.size() == 1) {
+        if ((targetMappings.size() == 1) && (sourceMappings.size() == 1)) {
           final ComponentInstance tgtComponent = targetMappings.get(0);
           final ComponentInstance srcComponent = sourceMappings.get(0);
           this.lastVisitedActor.put(tgtComponent, targetActor);
