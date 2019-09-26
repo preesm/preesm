@@ -51,6 +51,7 @@ import org.preesm.commons.doc.annotations.Value;
 import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.preesm.model.scenario.Scenario;
 import org.preesm.workflow.elements.Workflow;
+import org.preesm.workflow.implement.AbstractTaskImplementation;
 
 /**
  * The Class MemoryScriptTask.
@@ -110,17 +111,45 @@ import org.preesm.workflow.elements.Workflow;
     seeAlso = { "**Buffer merging**: Karol Desnos, Maxime Pelcat, Jean-François Nezan, and Slaheddine Aridhi. "
         + "On memory reuse between inputs and outputs of dataflow actors. ACM Transactions on Embedded Computing "
         + "Systems, 15(30):25, January 2016." })
-public class MemoryScriptTask extends AbstractMemoryScriptTask {
+public class MemoryScriptTask extends AbstractTaskImplementation {
+
+  public static final String  PARAM_VERBOSE        = "Verbose";
+  public static final String  VALUE_TRUE           = "True";
+  private static final String VALUE_FALSE          = "False";
+  public static final String  PARAM_LOG            = "Log Path";
+  private static final String VALUE_LOG            = "log_memoryScripts";
+  public static final String  PARAM_CHECK          = "Check";
+  private static final String VALUE_CHECK_NONE     = "None";
+  private static final String VALUE_CHECK_FAST     = "Fast";
+  private static final String VALUE_CHECK_THOROUGH = "Thorough";
+
+  @Override
+  public Map<String, String> getDefaultParameters() {
+    final Map<String, String> param = new LinkedHashMap<>();
+    param.put(MemoryScriptTask.PARAM_VERBOSE,
+        "? C {" + MemoryScriptTask.VALUE_TRUE + ", " + MemoryScriptTask.VALUE_FALSE + "}");
+    param.put(MemoryScriptTask.PARAM_CHECK, "? C {" + MemoryScriptTask.VALUE_CHECK_NONE + ", "
+        + MemoryScriptTask.VALUE_CHECK_FAST + ", " + MemoryScriptTask.VALUE_CHECK_THOROUGH + "}");
+    param.put(MemoryAllocatorTask.PARAM_ALIGNMENT, MemoryAllocatorTask.VALUE_ALIGNEMENT_DEFAULT);
+    param.put(MemoryScriptTask.PARAM_LOG, MemoryScriptTask.VALUE_LOG);
+
+    return param;
+  }
+
+  @Override
+  public String monitorMessage() {
+    return "Running Memory Optimization Scripts.";
+  }
 
   @Override
   public Map<String, Object> execute(final Map<String, Object> inputs, final Map<String, String> parameters,
       final IProgressMonitor monitor, final String nodeName, final Workflow workflow) {
     // Get verbose parameter
     boolean verbose = false;
-    verbose = parameters.get(AbstractMemoryScriptTask.PARAM_VERBOSE).equals(AbstractMemoryScriptTask.VALUE_TRUE);
+    verbose = parameters.get(MemoryScriptTask.PARAM_VERBOSE).equals(MemoryScriptTask.VALUE_TRUE);
 
     // Get the log parameter
-    final String log = parameters.get(AbstractMemoryScriptTask.PARAM_LOG);
+    final String log = parameters.get(MemoryScriptTask.PARAM_LOG);
 
     // Retrieve the alignment param
     final String valueAlignment = parameters.get(MemoryAllocatorTask.PARAM_ALIGNMENT);
@@ -133,7 +162,7 @@ public class MemoryScriptTask extends AbstractMemoryScriptTask {
     final EMap<String, Long> dataTypes = scenario.getSimulationInfo().getDataTypes();
 
     // Get check policy
-    final String checkString = parameters.get(AbstractMemoryScriptTask.PARAM_CHECK);
+    final String checkString = parameters.get(MemoryScriptTask.PARAM_CHECK);
 
     final MemoryExclusionGraph meg = (MemoryExclusionGraph) inputs.get("MemEx");
 
