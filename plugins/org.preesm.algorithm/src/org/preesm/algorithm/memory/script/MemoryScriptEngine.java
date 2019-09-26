@@ -64,23 +64,12 @@ import org.preesm.model.scenario.Scenario;
  */
 public class MemoryScriptEngine {
 
-  /** The Constant VALUE_CHECK_NONE. */
-  private static final String VALUE_CHECK_NONE = "None";
-
-  /** The Constant VALUE_CHECK_FAST. */
-  private static final String VALUE_CHECK_FAST = "Fast";
-
-  /** The Constant VALUE_CHECK_THOROUGH. */
+  private static final String VALUE_CHECK_NONE     = "None";
+  private static final String VALUE_CHECK_FAST     = "Fast";
   private static final String VALUE_CHECK_THOROUGH = "Thorough";
-
-  /** The sr. */
-  private final ScriptRunner sr;
-
-  /** The verbose. */
-  private final boolean verbose;
-
-  /** The logger. */
-  private final Logger logger;
+  private final ScriptRunner  sr;
+  private final boolean       verbose;
+  private final Logger        logger               = PreesmLogger.getLogger();
 
   /**
    * Instantiates a new memory script engine.
@@ -95,8 +84,7 @@ public class MemoryScriptEngine {
   public MemoryScriptEngine(final String valueAlignment, final String log, final boolean verbose) {
     this.verbose = verbose;
     // Get the logger
-    this.logger = PreesmLogger.getLogger();
-    long alignment;
+    final long alignment;
     switch (valueAlignment.substring(0, Math.min(valueAlignment.length(), 7))) {
       case MemoryAllocatorTask.VALUE_ALIGNEMENT_NONE:
         alignment = -1;
@@ -154,10 +142,6 @@ public class MemoryScriptEngine {
   }
 
   /**
-   * Check.
-   *
-   * @param checkString
-   *          the check string
    */
   private void check(String checkString) {
     // Check the result
@@ -184,10 +168,6 @@ public class MemoryScriptEngine {
   }
 
   /**
-   * Update mem ex.
-   *
-   * @param meg
-   *          the meg
    */
   public void updateMemEx(final MemoryExclusionGraph meg) {
     // Update memex
@@ -209,7 +189,6 @@ public class MemoryScriptEngine {
   }
 
   /**
-   *
    */
   public void generateCode(final Scenario scenario, final String log) {
     if (scenario.getCodegenDirectory() == null) {

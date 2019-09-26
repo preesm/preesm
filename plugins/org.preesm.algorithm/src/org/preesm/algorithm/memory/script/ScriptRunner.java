@@ -1548,9 +1548,9 @@ public class ScriptRunner {
               // Get the sdfEdges
               @SuppressWarnings("unchecked")
               final AbstractGraph<DAGVertex, DAGEdge> base = dagVertex.getBase();
-              DAGEdge dagEdge = (DAGEdge) base.getEdge(dagVertex, candidate);
+              DAGEdge dagEdge = base.getEdge(dagVertex, candidate);
               if (dagEdge == null) {
-                dagEdge = (DAGEdge) base.getEdge(candidate, dagVertex);
+                dagEdge = base.getEdge(candidate, dagVertex);
               }
 
               // For edges between newVertices, only process if the dagVertex
