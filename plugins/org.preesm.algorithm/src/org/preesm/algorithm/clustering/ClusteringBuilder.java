@@ -51,6 +51,7 @@ import org.preesm.algorithm.synthesis.schedule.transform.IScheduleTransform;
 import org.preesm.algorithm.synthesis.schedule.transform.ScheduleDataParallelismExhibiter;
 import org.preesm.algorithm.synthesis.schedule.transform.ScheduleFlattener;
 import org.preesm.algorithm.synthesis.schedule.transform.ScheduleParallelismDepthLimiter;
+import org.preesm.algorithm.synthesis.schedule.transform.ScheduleParallelismOptimizer;
 import org.preesm.commons.CollectionUtil;
 import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.preesm.commons.math.MathFunctionsHelper;
@@ -117,6 +118,11 @@ public class ClusteringBuilder {
   private int nbCluster;
 
   /**
+   * Is clustering criteria is memory space or performance?
+   */
+  private boolean performanceOptimization;
+
+  /**
    * @param graph
    *          PiGraph to clusterize
    * @param algorithm
@@ -124,13 +130,16 @@ public class ClusteringBuilder {
    * @param seed
    *          seed for random clustering algorithm
    */
-  public ClusteringBuilder(final PiGraph graph, final Scenario scenario, final String algorithm, final long seed) {
+  public ClusteringBuilder(final PiGraph graph, final Scenario scenario, final String algorithm, final long seed,
+      final String optimization) {
     this.scheduleMapping = new LinkedHashMap<>();
     this.seed = seed;
-    this.clusteringAlgorithm = clusteringAlgorithmFactory(algorithm);
     this.pigraph = graph;
     this.scenario = scenario;
     this.repetitionVector = null;
+    setClusteringAlgorithm(algorithm);
+    setClusteringCriteria(optimization);
+
   }
 
   public PiGraph getAlgorithm() {
@@ -147,6 +156,40 @@ public class ClusteringBuilder {
 
   public Scenario getScenario() {
     return scenario;
+  }
+
+  private void setClusteringCriteria(String optimization) {
+    switch (optimization) {
+      case Clustering.OPTIMIZATION_MEMORY:
+        this.performanceOptimization = false;
+        break;
+      case Clustering.OPTIMIZATION_PERFORMANCE:
+        this.performanceOptimization = true;
+        break;
+      default:
+        throw new PreesmRuntimeException(
+            "Parameter " + optimization + " is not part of available optimization criteria");
+    }
+  }
+
+  private final void setClusteringAlgorithm(String clusteringAlgorithm) {
+    switch (clusteringAlgorithm) {
+      case Clustering.ALGORITHM_APGAN:
+        this.clusteringAlgorithm = new APGANClusteringAlgorithm();
+        break;
+      case Clustering.ALGORITHM_DUMMY:
+        this.clusteringAlgorithm = new DummyClusteringAlgorithm();
+        break;
+      case Clustering.ALGORITHM_RANDOM:
+        this.clusteringAlgorithm = new RandomClusteringAlgorithm(this.seed);
+        break;
+      case Clustering.ALGORITHM_PARALLEL:
+        this.clusteringAlgorithm = new ParallelClusteringAlgorithm();
+        break;
+      default:
+        throw new PreesmRuntimeException(
+            "Parameter " + clusteringAlgorithm + " is not part of available clustering algorithm");
+    }
   }
 
   /**
@@ -180,6 +223,11 @@ public class ClusteringBuilder {
 
     // Perform flattening transformation on schedule graph
     scheduleTransform(new ScheduleFlattener());
+
+    // If performance criteria is choosen, optimize parallelism
+    if (this.performanceOptimization) {
+      scheduleTransform(new ScheduleParallelismOptimizer());
+    }
 
     // Set input graph for second stage of clustering from transformed schedule graph
     this.pigraph = origAlgorithm;
@@ -247,25 +295,6 @@ public class ClusteringBuilder {
       schedule = transformer.performTransform(schedule);
       scheduleMapping.replace(entry.getKey(), schedule);
     }
-  }
-
-  private final IClusteringAlgorithm clusteringAlgorithmFactory(String clusteringAlgorithm) {
-    if (clusteringAlgorithm != null) {
-      if (clusteringAlgorithm.equals("APGAN")) {
-        return new APGANClusteringAlgorithm();
-      }
-      if (clusteringAlgorithm.equals("Dummy")) {
-        return new DummyClusteringAlgorithm();
-      }
-      if (clusteringAlgorithm.equals("Random")) {
-        return new RandomClusteringAlgorithm(this.seed);
-      }
-      if (clusteringAlgorithm.equals("Parallel")) {
-        return new ParallelClusteringAlgorithm();
-      }
-    }
-    throw new PreesmRuntimeException(
-        "Parameter " + clusteringAlgorithm + " is not part of available clustering algorithm");
   }
 
   /**
