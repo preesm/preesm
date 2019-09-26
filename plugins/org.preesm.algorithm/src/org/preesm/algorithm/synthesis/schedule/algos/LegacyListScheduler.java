@@ -25,6 +25,9 @@ import org.preesm.workflow.implement.AbstractWorkflowNodeImplementation;
 
 /**
  *
+ * Calls the legacy schedule algorithm with the input design, algo and scenario. The Schedule and Mapping are built
+ * using the resulting MapperDAG.
+ *
  * @author anmorvan
  *
  */
@@ -34,15 +37,20 @@ public class LegacyListScheduler extends AbstractScheduler {
   protected SynthesisResult exec(final PiGraph algorithm /* SRDAG */, final Design architecture,
       final Scenario scenario) {
 
+    // build task input
     final Map<String, Object> inputs = new LinkedHashMap<>();
     inputs.put(AbstractWorkflowNodeImplementation.KEY_PI_GRAPH, algorithm);
     inputs.put(AbstractWorkflowNodeImplementation.KEY_ARCHITECTURE, architecture);
     inputs.put(AbstractWorkflowNodeImplementation.KEY_SCENARIO, scenario);
+
+    // call legacy scheduler
     final ListSchedulingMappingFromPiMM legacySched = new ListSchedulingMappingFromPiMM();
     final Map<String, Object> outputs = legacySched.execute(inputs, legacySched.getDefaultParameters(), null, "", null);
 
+    // get scheduled MapperDAG
     final MapperDAG dag = (MapperDAG) outputs.get(AbstractWorkflowNodeImplementation.KEY_SDF_DAG);
 
+    // build Schedule and Mapping objects from the result MapperDAG
     final Map<ComponentInstance, ActorSchedule> cmpSchedules = new LinkedHashMap<>();
     final HierarchicalSchedule topParallelSchedule = ScheduleFactory.eINSTANCE.createParallelHiearchicalSchedule();
     final Mapping createMapping = MappingFactory.eINSTANCE.createMapping();
