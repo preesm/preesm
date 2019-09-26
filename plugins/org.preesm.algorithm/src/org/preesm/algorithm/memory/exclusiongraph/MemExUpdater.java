@@ -47,6 +47,7 @@ import org.preesm.commons.doc.annotations.Port;
 import org.preesm.commons.doc.annotations.PreesmTask;
 import org.preesm.commons.doc.annotations.Value;
 import org.preesm.workflow.elements.Workflow;
+import org.preesm.workflow.implement.AbstractTaskImplementation;
 import org.preesm.workflow.implement.AbstractWorkflowNodeImplementation;
 
 /**
@@ -75,20 +76,25 @@ import org.preesm.workflow.implement.AbstractWorkflowNodeImplementation;
 
     seeAlso = { "**MEG update**: K. Desnos, M. Pelcat, J.-F. Nezan, and S. Aridhi. Pre-and post-scheduling memory"
         + " allocation strategies on MPSoCs. In Electronic System Level Synthesis Conference (ESLsyn), 2013." })
-public class MemExUpdater extends AbstractMemExUpdater {
+public class MemExUpdater extends AbstractTaskImplementation {
+
+  public static final String PARAM_VERBOSE            = "Verbose";
+  public static final String PARAM_LIFETIME           = "Update with MemObject lifetime";
+  public static final String PARAM_SUPPR_FORK_JOIN    = "Suppr Fork/Join";
+  public static final String VALUE_TRUE_FALSE_DEFAULT = "? C {True, False}";
 
   @Override
   public Map<String, Object> execute(final Map<String, Object> inputs, final Map<String, String> parameters,
       final IProgressMonitor monitor, final String nodeName, final Workflow workflow) {
 
     // Check Workflow element parameters
-    final String valueVerbose = parameters.get(AbstractMemExUpdater.PARAM_VERBOSE);
+    final String valueVerbose = parameters.get(MemExUpdater.PARAM_VERBOSE);
     final boolean verbose = valueVerbose.equalsIgnoreCase("true");
 
-    final String valueLifetime = parameters.get(AbstractMemExUpdater.PARAM_LIFETIME);
+    final String valueLifetime = parameters.get(MemExUpdater.PARAM_LIFETIME);
     final boolean lifetime = valueLifetime.equalsIgnoreCase("true");
 
-    final String valueSupprForkJoin = parameters.get(AbstractMemExUpdater.PARAM_SUPPR_FORK_JOIN);
+    final String valueSupprForkJoin = parameters.get(MemExUpdater.PARAM_SUPPR_FORK_JOIN);
     final boolean forkJoin = valueSupprForkJoin.equalsIgnoreCase("true");
 
     // Retrieve inputs
@@ -108,9 +114,9 @@ public class MemExUpdater extends AbstractMemExUpdater {
   @Override
   public Map<String, String> getDefaultParameters() {
     final Map<String, String> parameters = new LinkedHashMap<>();
-    parameters.put(AbstractMemExUpdater.PARAM_VERBOSE, AbstractMemExUpdater.VALUE_TRUE_FALSE_DEFAULT);
-    parameters.put(AbstractMemExUpdater.PARAM_LIFETIME, AbstractMemExUpdater.VALUE_TRUE_FALSE_DEFAULT);
-    parameters.put(AbstractMemExUpdater.PARAM_SUPPR_FORK_JOIN, AbstractMemExUpdater.VALUE_TRUE_FALSE_DEFAULT);
+    parameters.put(MemExUpdater.PARAM_VERBOSE, MemExUpdater.VALUE_TRUE_FALSE_DEFAULT);
+    parameters.put(MemExUpdater.PARAM_LIFETIME, MemExUpdater.VALUE_TRUE_FALSE_DEFAULT);
+    parameters.put(MemExUpdater.PARAM_SUPPR_FORK_JOIN, MemExUpdater.VALUE_TRUE_FALSE_DEFAULT);
     return parameters;
   }
 
