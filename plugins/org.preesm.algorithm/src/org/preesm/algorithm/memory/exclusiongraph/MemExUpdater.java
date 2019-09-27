@@ -80,7 +80,6 @@ public class MemExUpdater extends AbstractTaskImplementation {
 
   public static final String PARAM_VERBOSE            = "Verbose";
   public static final String PARAM_LIFETIME           = "Update with MemObject lifetime";
-  public static final String PARAM_SUPPR_FORK_JOIN    = "Suppr Fork/Join";
   public static final String VALUE_TRUE_FALSE_DEFAULT = "? C {True, False}";
 
   @Override
@@ -88,21 +87,15 @@ public class MemExUpdater extends AbstractTaskImplementation {
       final IProgressMonitor monitor, final String nodeName, final Workflow workflow) {
 
     // Check Workflow element parameters
-    final String valueVerbose = parameters.get(MemExUpdater.PARAM_VERBOSE);
-    final boolean verbose = valueVerbose.equalsIgnoreCase("true");
-
-    final String valueLifetime = parameters.get(MemExUpdater.PARAM_LIFETIME);
-    final boolean lifetime = valueLifetime.equalsIgnoreCase("true");
-
-    final String valueSupprForkJoin = parameters.get(MemExUpdater.PARAM_SUPPR_FORK_JOIN);
-    final boolean forkJoin = valueSupprForkJoin.equalsIgnoreCase("true");
+    final boolean verbose = "true".equalsIgnoreCase(parameters.get(MemExUpdater.PARAM_VERBOSE));
+    final boolean lifetime = "true".equalsIgnoreCase(parameters.get(MemExUpdater.PARAM_LIFETIME));
 
     // Retrieve inputs
     final DirectedAcyclicGraph dag = (DirectedAcyclicGraph) inputs.get("DAG");
     final MemoryExclusionGraph memEx = (MemoryExclusionGraph) inputs.get("MemEx");
 
     final MemExUpdaterEngine engine = new MemExUpdaterEngine(dag, memEx, verbose);
-    engine.createLocalDag(forkJoin);
+    engine.createLocalDag();
     engine.update(lifetime);
 
     // Generate output
@@ -116,7 +109,6 @@ public class MemExUpdater extends AbstractTaskImplementation {
     final Map<String, String> parameters = new LinkedHashMap<>();
     parameters.put(MemExUpdater.PARAM_VERBOSE, MemExUpdater.VALUE_TRUE_FALSE_DEFAULT);
     parameters.put(MemExUpdater.PARAM_LIFETIME, MemExUpdater.VALUE_TRUE_FALSE_DEFAULT);
-    parameters.put(MemExUpdater.PARAM_SUPPR_FORK_JOIN, MemExUpdater.VALUE_TRUE_FALSE_DEFAULT);
     return parameters;
   }
 

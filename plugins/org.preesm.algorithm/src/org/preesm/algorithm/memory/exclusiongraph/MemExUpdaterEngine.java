@@ -39,7 +39,6 @@ package org.preesm.algorithm.memory.exclusiongraph;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.preesm.algorithm.model.dag.DirectedAcyclicGraph;
-import org.preesm.algorithm.transforms.ForkJoinRemover;
 import org.preesm.commons.logger.PreesmLogger;
 
 /**
@@ -67,16 +66,12 @@ public class MemExUpdaterEngine {
   /**
    * Creates the local dag.
    */
-  public void createLocalDag(final boolean forkJoin) {
+  public void createLocalDag() {
     // Make a copy of the Input DAG for treatment
     // Clone is deep copy i.e. vertices are thus copied too.
     this.localDAG = this.dag.copy();
     if (this.localDAG == null) {
       this.localDAG = this.dag;
-    }
-
-    if (forkJoin) {
-      ForkJoinRemover.supprImplodeExplode(this.localDAG);
     }
   }
 

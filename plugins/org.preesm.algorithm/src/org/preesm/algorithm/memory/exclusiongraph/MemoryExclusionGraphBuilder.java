@@ -45,7 +45,6 @@ import java.util.logging.Logger;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.emf.common.util.EMap;
 import org.preesm.algorithm.model.dag.DirectedAcyclicGraph;
-import org.preesm.algorithm.transforms.ForkJoinRemover;
 import org.preesm.commons.doc.annotations.Parameter;
 import org.preesm.commons.doc.annotations.Port;
 import org.preesm.commons.doc.annotations.PreesmTask;
@@ -95,7 +94,6 @@ public class MemoryExclusionGraphBuilder extends AbstractTaskImplementation {
   public static final String VALUE_TRUE_FALSE_DEFAULT = "? C {True, False}";
   public static final String VALUE_TRUE               = "True";
   public static final String VALUE_FALSE              = "False";
-  public static final String PARAM_SUPPR_FORK_JOIN    = "Suppr Fork/Join";
 
   @Override
   public Map<String, Object> execute(final Map<String, Object> inputs, final Map<String, String> parameters,
@@ -107,9 +105,6 @@ public class MemoryExclusionGraphBuilder extends AbstractTaskImplementation {
     // Check Workflow element parameters
     final boolean verbose = MemoryExclusionGraphBuilder.VALUE_TRUE
         .equalsIgnoreCase(parameters.get(MemoryExclusionGraphBuilder.PARAM_VERBOSE));
-
-    final boolean supprForkJoin = MemoryExclusionGraphBuilder.VALUE_TRUE
-        .equalsIgnoreCase(parameters.get(MemoryExclusionGraphBuilder.PARAM_SUPPR_FORK_JOIN));
 
     // Retrieve list of types and associated sizes in the scenario
     final Scenario scenario = (Scenario) inputs.get("scenario");
@@ -123,11 +118,6 @@ public class MemoryExclusionGraphBuilder extends AbstractTaskImplementation {
     DirectedAcyclicGraph localDAG = dag.copy();
     if (localDAG == null) {
       localDAG = dag;
-    }
-
-    // Remove Fork/Join vertices
-    if (supprForkJoin) {
-      ForkJoinRemover.supprImplodeExplode(localDAG);
     }
 
     // Build the exclusion graph
@@ -152,8 +142,6 @@ public class MemoryExclusionGraphBuilder extends AbstractTaskImplementation {
   public Map<String, String> getDefaultParameters() {
     final Map<String, String> parameters = new LinkedHashMap<>();
     parameters.put(MemoryExclusionGraphBuilder.PARAM_VERBOSE, MemoryExclusionGraphBuilder.VALUE_TRUE_FALSE_DEFAULT);
-    parameters.put(MemoryExclusionGraphBuilder.PARAM_SUPPR_FORK_JOIN,
-        MemoryExclusionGraphBuilder.VALUE_TRUE_FALSE_DEFAULT);
     return parameters;
   }
 

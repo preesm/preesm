@@ -41,6 +41,7 @@
  */
 package org.preesm.algorithm.transforms;
 
+import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.logging.Level;
@@ -49,10 +50,8 @@ import org.apache.commons.lang3.time.StopWatch;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.preesm.algorithm.model.sdf.SDFGraph;
 import org.preesm.algorithm.model.sdf.visitors.ToHSDFVisitor;
-import org.preesm.commons.doc.annotations.Parameter;
 import org.preesm.commons.doc.annotations.Port;
 import org.preesm.commons.doc.annotations.PreesmTask;
-import org.preesm.commons.doc.annotations.Value;
 import org.preesm.commons.exceptions.PreesmException;
 import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.preesm.commons.logger.PreesmLogger;
@@ -68,11 +67,11 @@ import org.preesm.workflow.implement.AbstractTaskImplementation;
  */
 @PreesmTask(id = "org.ietr.preesm.plugin.transforms.sdf2hsdf", name = "SDF2HSDF",
 
+    description = "transform a SDF graph into a HSDF graph, that is into a single rate graph",
+
     inputs = { @Port(name = "SDF", type = SDFGraph.class) },
 
-    outputs = { @Port(name = "SDF", type = SDFGraph.class) },
-
-    parameters = { @Parameter(name = "ExplodeImplodeSuppr", values = { @Value(name = "false", effect = "") }) })
+    outputs = { @Port(name = "SDF", type = SDFGraph.class) })
 public class HSDFTransformation extends AbstractTaskImplementation {
 
   @Override
@@ -108,12 +107,6 @@ public class HSDFTransformation extends AbstractTaskImplementation {
         logger.log(Level.INFO,
             () -> "HSDF with " + hsdf.vertexSet().size() + " vertices and " + hsdf.edgeSet().size() + " edges.");
 
-        final String explImplSuppr = parameters.get("ExplodeImplodeSuppr");
-        if ((explImplSuppr != null) && explImplSuppr.equals("true")) {
-          logger.log(Level.INFO, "Removing implode/explode ");
-          ForkJoinRemover.supprImplodeExplode(hsdf);
-        }
-
         outputs.put("SDF", hsdf);
       } else {
         throw new PreesmRuntimeException("Graph not valid, not schedulable");
@@ -130,9 +123,7 @@ public class HSDFTransformation extends AbstractTaskImplementation {
 
   @Override
   public Map<String, String> getDefaultParameters() {
-    final Map<String, String> param = new LinkedHashMap<>();
-    param.put("ExplodeImplodeSuppr", "false");
-    return param;
+    return Collections.emptyMap();
   }
 
   @Override
