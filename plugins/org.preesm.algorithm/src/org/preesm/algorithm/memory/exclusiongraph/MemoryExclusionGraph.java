@@ -124,7 +124,8 @@ public class MemoryExclusionGraph extends SimpleGraph<MemoryExclusionVertex, Def
   /**
    * Backup the vertex adjacent to a given vertex for speed-up purposes.
    */
-  private transient Map<MemoryExclusionVertex, Set<MemoryExclusionVertex>> adjacentVerticesBackup;
+  private final transient Map<MemoryExclusionVertex,
+      Set<MemoryExclusionVertex>> adjacentVerticesBackup = new LinkedHashMap<>();
 
   /**
    * Each DAGVertex is associated to a list of MemoryExclusionVertex that have a precedence relationship with this
@@ -134,7 +135,7 @@ public class MemoryExclusionGraph extends SimpleGraph<MemoryExclusionVertex, Def
    * If there are {@link MemoryExclusionVertex} corresponding to the working memory of {@link DAGVertex}, they will be
    * added to the predecessor list of this vertex.
    */
-  private transient Map<String, Set<MemoryExclusionVertex>> verticesPredecessors;
+  private final transient Map<String, Set<MemoryExclusionVertex>> verticesPredecessors = new LinkedHashMap<>();
 
   /**
    * {@link MemoryExclusionVertex} of the {@link MemoryExclusionGraph} in the scheduling order retrieved in the
@@ -145,15 +146,13 @@ public class MemoryExclusionGraph extends SimpleGraph<MemoryExclusionVertex, Def
   /**
    * The {@link PropertyBean} that stores the properties of the {@link MemoryExclusionGraph}.
    */
-  private final PropertyBean properties;
+  private final transient PropertyBean properties = new PropertyBean();
 
   /**
    * Default constructor.
    */
   public MemoryExclusionGraph() {
     super(DefaultEdge.class);
-    this.properties = new PropertyBean();
-    this.adjacentVerticesBackup = new LinkedHashMap<>();
   }
 
   @Override
@@ -362,8 +361,6 @@ public class MemoryExclusionGraph extends SimpleGraph<MemoryExclusionVertex, Def
       dagVertices.add(vert);
     }
 
-    this.verticesPredecessors = new LinkedHashMap<>();
-
     // Remove dag vertex of type other than "task"
     // And identify source vertices (vertices without predecessors)
 
@@ -548,10 +545,7 @@ public class MemoryExclusionGraph extends SimpleGraph<MemoryExclusionVertex, Def
    */
   @Override
   public MemoryExclusionGraph copy() {
-    final MemoryExclusionGraph o = (MemoryExclusionGraph) super.clone();
-    o.adjacentVerticesBackup = new LinkedHashMap<>();
-    return o;
-
+    return (MemoryExclusionGraph) super.clone();
   }
 
   /**
@@ -663,7 +657,7 @@ public class MemoryExclusionGraph extends SimpleGraph<MemoryExclusionVertex, Def
     // Deep copy of memExVerticesInSchedulingOrder
     if (this.memExVerticesInSchedulingOrder != null) {
       result.memExVerticesInSchedulingOrder = new ArrayList<>(this.memExVerticesInSchedulingOrder);
-      result.memExVerticesInSchedulingOrder.replaceAll(mObj -> mObjMap.get(mObj));
+      result.memExVerticesInSchedulingOrder.replaceAll(mObjMap::get);
     }
 
     return result;
