@@ -113,7 +113,7 @@ public abstract class OrderedAllocator extends MemoryAllocator {
         allocateStableSetOrder(false);
         break;
       case EXACT_STABLE_SET:
-        allocateStableSetOrder();
+        allocateStableSetOrder(true);
         break;
       case SCHEDULING:
         allocateSchedulingOrder();
@@ -129,14 +129,13 @@ public abstract class OrderedAllocator extends MemoryAllocator {
    *          the ordered vertex list.
    * @return the resulting allocation size.
    */
-  protected abstract long allocateInOrder(List<MemoryExclusionVertex> vertexList);
+  protected abstract long allocateInOrder(final List<MemoryExclusionVertex> vertexList);
 
   /**
    * Perform the allocation with the vertex ordered according to largest first order. If the policy of the allocator is
    * changed, the resulting allocation will be lost.
    */
   private void allocateLargestFirst() {
-
     final ArrayList<MemoryExclusionVertex> list = new ArrayList<>(this.inputExclusionGraph.vertexSet());
     Collections.sort(list, Collections.reverseOrder());
     allocateInOrder(list);
@@ -204,15 +203,6 @@ public abstract class OrderedAllocator extends MemoryAllocator {
   }
 
   /**
-   * Perform the BestFit allocation with the vertex ordered according to the exact Stable Set order. If the policy of
-   * the allocator is changed, the resulting allocation will be lost.
-   *
-   */
-  private void allocateStableSetOrder() {
-    allocateStableSetOrder(true);
-  }
-
-  /**
    * Perform the BestFit allocation with the vertex ordered according to the Stable Set order. If the policy of the
    * allocator is changed, the resulting allocation will be lost.
    *
@@ -220,7 +210,7 @@ public abstract class OrderedAllocator extends MemoryAllocator {
    *          the exact stable set
    */
   private void allocateStableSetOrder(final boolean exactStableSet) {
-    final ArrayList<MemoryExclusionVertex> list = getStableSetOrderedList(exactStableSet);
+    final List<MemoryExclusionVertex> list = getStableSetOrderedList(exactStableSet);
     allocateInOrder(list);
   }
 
