@@ -753,7 +753,7 @@ public class StaticPiMM2SDFVisitor extends PiMMSwitch<Boolean> {
       // by memory scripts)
       final Resource eResource = pg.eResource();
       if (eResource != null) {
-        this.result.setPropertyValue(AbstractGraph.PATH, eResource.getURI().toPlatformString(false));
+        this.result.setPropertyValue(AbstractGraph.PATH_PROPERTY_LITERAL, eResource.getURI().toPlatformString(false));
       }
 
       // Set the values into the parameters of pg when possible

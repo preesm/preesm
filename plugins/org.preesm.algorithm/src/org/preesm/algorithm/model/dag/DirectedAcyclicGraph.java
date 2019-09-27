@@ -71,7 +71,7 @@ public class DirectedAcyclicGraph extends AbstractGraph<DAGVertex, DAGEdge> {
    */
   protected DirectedAcyclicGraph(final Supplier<DAGEdge> edgeSupplier) {
     super(edgeSupplier);
-    getPropertyBean().setValue(AbstractGraph.MODEL, "dag");
+    getPropertyBean().setValue(AbstractGraph.KIND_PROPERTY_LITERAL, "dag");
   }
 
   @Override
