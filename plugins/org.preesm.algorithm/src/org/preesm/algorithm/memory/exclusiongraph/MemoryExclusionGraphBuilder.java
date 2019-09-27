@@ -48,6 +48,7 @@ import org.preesm.commons.doc.annotations.Parameter;
 import org.preesm.commons.doc.annotations.Port;
 import org.preesm.commons.doc.annotations.PreesmTask;
 import org.preesm.commons.doc.annotations.Value;
+import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.model.scenario.Scenario;
 import org.preesm.workflow.elements.Workflow;
@@ -113,7 +114,7 @@ public class MemoryExclusionGraphBuilder extends AbstractTaskImplementation {
     // Clone is deep copy i.e. vertices are thus copied too.
     DirectedAcyclicGraph localDAG = dag.copy();
     if (localDAG == null) {
-      localDAG = dag;
+      throw new PreesmRuntimeException("Could not copy the dag");
     }
 
     // Build the exclusion graph
