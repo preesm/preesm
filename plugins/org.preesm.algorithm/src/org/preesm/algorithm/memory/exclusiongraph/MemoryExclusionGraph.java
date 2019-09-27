@@ -39,7 +39,6 @@
  */
 package org.preesm.algorithm.memory.exclusiongraph;
 
-import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -993,86 +992,6 @@ public class MemoryExclusionGraph extends SimpleGraph<MemoryExclusionVertex, Def
     return null;
   }
 
-  /**
-   * Return the lifetime of the {@link MemoryExclusionVertex memory object} passed as a parameter. If the memory object
-   * corresponds to a fifo, the first {@link Integer} will have a greater value than the second. If the memory object
-   * always exists, its lifetime will be <code>(0L,0L)</code>
-   *
-   * @param memExVertex
-   *          the vertex whose lifetime is searched
-   * @param dag
-   *          the scheduled {@link DirectedAcyclicGraph DAG} from which the {@link MemoryExclusionVertex MemEx Vertex}
-   *          is derived
-   * @return the lifetime of the memory object in the form of 2 integers corresponding to its life beginning and end.
-   * @throws RuntimeException
-   *           if the {@link MemoryExclusionVertex} is not derived from the given {@link DirectedAcyclicGraph DAG} or if
-   *           the {@link DirectedAcyclicGraph DAG} was not scheduled.
-   */
-  private Entry<Long, Long> getLifeTime(final MemoryExclusionVertex memExVertex, final DirectedAcyclicGraph dag) {
-
-    // If the MemObject corresponds to an edge, its lifetime spans from the
-    // execution start of its source until the execution end of its target
-    final DAGEdge dagEdge = memExVertex.getEdge();
-    if (dagEdge != null) {
-      final DAGVertex dagSourceVertex = dagEdge.getSource();
-      final DAGVertex dagTargetVertex = dagEdge.getTarget();
-
-      if ((dagSourceVertex == null) || (dagTargetVertex == null)) {
-        throw new PreesmRuntimeException("Cannot get lifetime of a memory object " + memExVertex.toString()
-            + " because its corresponding DAGEdge has no valid source and/or target");
-      }
-
-      final long birth = dagSourceVertex.getPropertyBean().getValue(ImplementationPropertyNames.Start_time);
-      final long death = dagTargetVertex.getPropertyBean().getValue(ImplementationPropertyNames.Start_time);
-      final long duration = dagTargetVertex.getPropertyBean().getValue(ImplementationPropertyNames.Task_duration);
-
-      return new AbstractMap.SimpleEntry<>(birth, death + duration);
-    }
-
-    // Else the memEx vertex corresponds to a working memory
-    if (memExVertex.getSink().equals(memExVertex.getSource())) {
-      final DAGVertex dagVertex = dag.getVertex(memExVertex.getSink());
-      if (dagVertex == null) {
-        throw new PreesmRuntimeException("Cannot get lifetime of working memory object " + memExVertex
-            + " because its corresponding DAGVertex does not exist in the given DAG.");
-      }
-
-      final long birth = dagVertex.getPropertyBean().getValue(ImplementationPropertyNames.Start_time);
-      final long duration = dagVertex.getPropertyBean().getValue(ImplementationPropertyNames.Task_duration);
-
-      return new AbstractMap.SimpleEntry<>(birth, birth + duration);
-
-    }
-
-    if (memExVertex.getSource().startsWith("FIFO_")) {
-      if (memExVertex.getSource().startsWith("FIFO_Body")) {
-        return new AbstractMap.SimpleEntry<>(0L, 0L);
-      }
-      // Working memory exists from the beginning of the End until the end of the init. Since there is no exclusion with
-      // edges connected to the init/end vertices they will not be added (since updating only consists in removing
-      // existing exclusions)
-      if (memExVertex.getSource().startsWith("FIFO_Head_")) {
-        final DAGVertex dagEndVertex = dag.getVertex(memExVertex.getSource().substring(("FIFO_Head_").length()));
-        final DAGVertex dagInitVertex = dag.getVertex(memExVertex.getSink());
-
-        if ((dagEndVertex == null) || (dagInitVertex == null)) {
-          throw new PreesmRuntimeException("Cannot get lifetime of a memory object " + memExVertex.toString()
-              + " because its corresponding DAGVertex could not be found in the DAG");
-        }
-        final long birth = dagEndVertex.getPropertyBean().getValue(ImplementationPropertyNames.Start_time);
-        final long death = dagInitVertex.getPropertyBean().getValue(ImplementationPropertyNames.Start_time);
-        final long duration = dagInitVertex.getPropertyBean().getValue(ImplementationPropertyNames.Task_duration);
-
-        return new AbstractMap.SimpleEntry<>(death + duration, birth);
-      }
-    }
-
-    // the vertex does not come from an edge nor from working memory. nor from a fifo Error
-    throw new PreesmRuntimeException("Cannot get lifetime of a memory object "
-        + "that is not derived from a scheduled DAG." + " (MemObject: " + memExVertex.toString() + ")");
-
-  }
-
   @Override
   public PropertyBean getPropertyBean() {
     return this.properties;
@@ -1314,60 +1233,6 @@ public class MemoryExclusionGraph extends SimpleGraph<MemoryExclusionVertex, Def
       }
 
     }
-  }
-
-  /**
-   * This function update a {@link MemoryExclusionGraph MemEx} by taking timing information contained in a
-   * {@link DirectedAcyclicGraph DAG} into account.
-   *
-   *
-   * @param dag
-   *          the {@link DirectedAcyclicGraph DAG} used which must be the one from which the {@link MemoryExclusionGraph
-   *          MemEx} graph is {@link #buildGraph(DirectedAcyclicGraph) built} (will not be modified)
-   */
-  public void updateWithMemObjectLifetimes(final DirectedAcyclicGraph dag) {
-
-    final Set<DefaultEdge> removedExclusions = new LinkedHashSet<>();
-
-    // Scan the exclusions
-    for (final DefaultEdge exclusion : edgeSet()) {
-      final MemoryExclusionVertex memObject1 = getEdgeSource(exclusion);
-      final Entry<Long, Long> obj1Lifetime = getLifeTime(memObject1, dag);
-
-      final MemoryExclusionVertex memObject2 = getEdgeTarget(exclusion);
-      final Entry<Long, Long> obj2Lifetime = getLifeTime(memObject2, dag);
-
-      // If one of the lifetime is a fifo_body (no need to update,
-      // exclusions will remain)
-      if (((obj1Lifetime.getKey() == 0L) && (obj1Lifetime.getValue() == 0L))
-          || ((obj2Lifetime.getKey() == 0L) && (obj2Lifetime.getValue() == 0L))) {
-        continue;
-      }
-
-      // If the two objects are fifo heads: exclusion hold
-      if ((obj1Lifetime.getKey() > obj1Lifetime.getValue()) && (obj2Lifetime.getKey() > obj2Lifetime.getValue())) {
-        continue;
-      }
-
-      // If one objects is fifo heads
-      if ((obj1Lifetime.getKey() > obj1Lifetime.getValue()) || (obj2Lifetime.getKey() > obj2Lifetime.getValue())) {
-        if ((obj1Lifetime.getKey() > obj2Lifetime.getValue()) && (obj1Lifetime.getValue() < obj2Lifetime.getKey())) {
-          // Remove the exclution
-          removedExclusions.add(exclusion);
-        }
-        continue;
-      }
-
-      // If this code is reached, the two objects are buffers or working
-      // memory
-      // If the lifetimes do not overlap
-      if (!((obj1Lifetime.getKey() < obj2Lifetime.getValue()) && (obj2Lifetime.getKey() < obj1Lifetime.getValue()))) {
-        // Remove the exclution
-        removedExclusions.add(exclusion);
-      }
-    }
-
-    this.removeAllEdges(removedExclusions);
   }
 
   /**

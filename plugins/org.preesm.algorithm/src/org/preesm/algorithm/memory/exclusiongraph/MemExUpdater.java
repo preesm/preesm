@@ -79,7 +79,6 @@ import org.preesm.workflow.implement.AbstractWorkflowNodeImplementation;
 public class MemExUpdater extends AbstractTaskImplementation {
 
   public static final String PARAM_VERBOSE            = "Verbose";
-  public static final String PARAM_LIFETIME           = "Update with MemObject lifetime";
   public static final String VALUE_TRUE_FALSE_DEFAULT = "? C {True, False}";
 
   @Override
@@ -88,7 +87,6 @@ public class MemExUpdater extends AbstractTaskImplementation {
 
     // Check Workflow element parameters
     final boolean verbose = "true".equalsIgnoreCase(parameters.get(MemExUpdater.PARAM_VERBOSE));
-    final boolean lifetime = "true".equalsIgnoreCase(parameters.get(MemExUpdater.PARAM_LIFETIME));
 
     // Retrieve inputs
     final DirectedAcyclicGraph dag = (DirectedAcyclicGraph) inputs.get("DAG");
@@ -96,7 +94,7 @@ public class MemExUpdater extends AbstractTaskImplementation {
 
     final MemExUpdaterEngine engine = new MemExUpdaterEngine(dag, memEx, verbose);
     engine.createLocalDag();
-    engine.update(lifetime);
+    engine.update();
 
     // Generate output
     final Map<String, Object> output = new LinkedHashMap<>();
@@ -108,7 +106,6 @@ public class MemExUpdater extends AbstractTaskImplementation {
   public Map<String, String> getDefaultParameters() {
     final Map<String, String> parameters = new LinkedHashMap<>();
     parameters.put(MemExUpdater.PARAM_VERBOSE, MemExUpdater.VALUE_TRUE_FALSE_DEFAULT);
-    parameters.put(MemExUpdater.PARAM_LIFETIME, MemExUpdater.VALUE_TRUE_FALSE_DEFAULT);
     return parameters;
   }
 
