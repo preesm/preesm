@@ -998,7 +998,7 @@ public class MemoryExclusionGraph extends SimpleGraph<MemoryExclusionVertex, Def
    * corresponds to a fifo, the first {@link Integer} will have a greater value than the second. If the memory object
    * always exists, its lifetime will be <code>(0L,0L)</code>
    *
-   * @param vertex
+   * @param memExVertex
    *          the vertex whose lifetime is searched
    * @param dag
    *          the scheduled {@link DirectedAcyclicGraph DAG} from which the {@link MemoryExclusionVertex MemEx Vertex}
@@ -1008,64 +1008,59 @@ public class MemoryExclusionGraph extends SimpleGraph<MemoryExclusionVertex, Def
    *           if the {@link MemoryExclusionVertex} is not derived from the given {@link DirectedAcyclicGraph DAG} or if
    *           the {@link DirectedAcyclicGraph DAG} was not scheduled.
    */
-  private Entry<Long, Long> getLifeTime(final MemoryExclusionVertex vertex, final DirectedAcyclicGraph dag) {
+  private Entry<Long, Long> getLifeTime(final MemoryExclusionVertex memExVertex, final DirectedAcyclicGraph dag) {
 
     // If the MemObject corresponds to an edge, its lifetime spans from the
     // execution start of its source until the execution end of its target
-    final DAGEdge edge = vertex.getEdge();
-    if (edge != null) {
-      final DAGVertex source = edge.getSource();
-      final DAGVertex target = edge.getTarget();
+    final DAGEdge dagEdge = memExVertex.getEdge();
+    if (dagEdge != null) {
+      final DAGVertex dagSourceVertex = dagEdge.getSource();
+      final DAGVertex dagTargetVertex = dagEdge.getTarget();
 
-      if ((source == null) || (target == null)) {
-        throw new PreesmRuntimeException("Cannot get lifetime of a memory object " + vertex.toString()
+      if ((dagSourceVertex == null) || (dagTargetVertex == null)) {
+        throw new PreesmRuntimeException("Cannot get lifetime of a memory object " + memExVertex.toString()
             + " because its corresponding DAGEdge has no valid source and/or target");
       }
 
-      final long birth = (long) source.getPropertyBean().getValue("TaskStartTime");
-
-      final long death = (long) target.getPropertyBean().getValue("TaskStartTime");
-
-      final long duration = (long) target.getPropertyBean().getValue(ImplementationPropertyNames.Task_duration);
+      final long birth = dagSourceVertex.getPropertyBean().getValue(ImplementationPropertyNames.Start_time);
+      final long death = dagTargetVertex.getPropertyBean().getValue(ImplementationPropertyNames.Start_time);
+      final long duration = dagTargetVertex.getPropertyBean().getValue(ImplementationPropertyNames.Task_duration);
 
       return new AbstractMap.SimpleEntry<>(birth, death + duration);
     }
 
     // Else the memEx vertex corresponds to a working memory
-    if (vertex.getSink().equals(vertex.getSource())) {
-      final DAGVertex dagVertex = dag.getVertex(vertex.getSink());
+    if (memExVertex.getSink().equals(memExVertex.getSource())) {
+      final DAGVertex dagVertex = dag.getVertex(memExVertex.getSink());
       if (dagVertex == null) {
-        throw new PreesmRuntimeException("Cannot get lifetime of working memory object " + vertex
+        throw new PreesmRuntimeException("Cannot get lifetime of working memory object " + memExVertex
             + " because its corresponding DAGVertex does not exist in the given DAG.");
       }
 
-      final long birth = dagVertex.getPropertyBean().getValue("TaskStartTime");
+      final long birth = dagVertex.getPropertyBean().getValue(ImplementationPropertyNames.Start_time);
       final long duration = dagVertex.getPropertyBean().getValue(ImplementationPropertyNames.Task_duration);
 
       return new AbstractMap.SimpleEntry<>(birth, birth + duration);
 
     }
 
-    if (vertex.getSource().startsWith("FIFO_")) {
-      if (vertex.getSource().startsWith("FIFO_Body")) {
+    if (memExVertex.getSource().startsWith("FIFO_")) {
+      if (memExVertex.getSource().startsWith("FIFO_Body")) {
         return new AbstractMap.SimpleEntry<>(0L, 0L);
       }
-
       // Working memory exists from the beginning of the End until the end of the init. Since there is no exclusion with
       // edges connected to the init/end vertices they will not be added (since updating only consists in removing
       // existing exclusions)
-      if (vertex.getSource().startsWith("FIFO_Head_")) {
-        final DAGVertex dagEndVertex = dag.getVertex(vertex.getSource().substring(("FIFO_Head_").length()));
-        final DAGVertex dagInitVertex = dag.getVertex(vertex.getSink());
+      if (memExVertex.getSource().startsWith("FIFO_Head_")) {
+        final DAGVertex dagEndVertex = dag.getVertex(memExVertex.getSource().substring(("FIFO_Head_").length()));
+        final DAGVertex dagInitVertex = dag.getVertex(memExVertex.getSink());
 
         if ((dagEndVertex == null) || (dagInitVertex == null)) {
-          throw new PreesmRuntimeException("Cannot get lifetime of a memory object " + vertex.toString()
+          throw new PreesmRuntimeException("Cannot get lifetime of a memory object " + memExVertex.toString()
               + " because its corresponding DAGVertex could not be found in the DAG");
         }
-        final long birth = dagEndVertex.getPropertyBean().getValue("TaskStartTime");
-
-        final long death = dagInitVertex.getPropertyBean().getValue("TaskStartTime");
-
+        final long birth = dagEndVertex.getPropertyBean().getValue(ImplementationPropertyNames.Start_time);
+        final long death = dagInitVertex.getPropertyBean().getValue(ImplementationPropertyNames.Start_time);
         final long duration = dagInitVertex.getPropertyBean().getValue(ImplementationPropertyNames.Task_duration);
 
         return new AbstractMap.SimpleEntry<>(death + duration, birth);
@@ -1074,7 +1069,7 @@ public class MemoryExclusionGraph extends SimpleGraph<MemoryExclusionVertex, Def
 
     // the vertex does not come from an edge nor from working memory. nor from a fifo Error
     throw new PreesmRuntimeException("Cannot get lifetime of a memory object "
-        + "that is not derived from a scheduled DAG." + " (MemObject: " + vertex.toString() + ")");
+        + "that is not derived from a scheduled DAG." + " (MemObject: " + memExVertex.toString() + ")");
 
   }
 
