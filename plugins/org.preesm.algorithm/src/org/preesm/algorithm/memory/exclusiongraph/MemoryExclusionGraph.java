@@ -475,13 +475,9 @@ public class MemoryExclusionGraph extends SimpleGraph<MemoryExclusionVertex, Def
       // For each outgoing edge
       for (final DAGEdge edge : vertexDAG.outgoingEdges()) {
         // Add the node to the Exclusion Graph
-        MemoryExclusionVertex newNode;
-        if ((newNode = addNode(edge)) != null) {
-
-          // If a node was added.(It should always be the case)
-
-          // Add Exclusions with all non-predecessors of the current
-          // vertex
+        final MemoryExclusionVertex newNode = addNode(edge);
+        if (newNode != null) {
+          // Add Exclusions with all non-predecessors of the current vertex
           final Set<MemoryExclusionVertex> inclusions = predecessors.get(vertexID);
           final Set<MemoryExclusionVertex> exclusions = new LinkedHashSet<>(vertexSet());
           exclusions.remove(newNode);
@@ -490,8 +486,7 @@ public class MemoryExclusionGraph extends SimpleGraph<MemoryExclusionVertex, Def
             this.addEdge(newNode, exclusion);
           }
 
-          // Add newNode to the incoming list of the consumer of this
-          // edge
+          // Add newNode to the incoming list of the consumer of this edge
           incoming.get((Integer) edge.getTarget().getPropertyBean().getValue(localOrdering)).add(newNode);
 
           // Update the predecessor list of the consumer of this edge
@@ -500,8 +495,7 @@ public class MemoryExclusionGraph extends SimpleGraph<MemoryExclusionVertex, Def
           predecessor.addAll(inclusions);
           predecessor.addAll(incoming.get(vertexID));
         } else {
-          // If the node was not added.
-          // Should never happen
+          // If the node was not added. Should never happen
           throw new PreesmRuntimeException(
               "The exclusion graph vertex corresponding to edge " + edge.toString() + " was not added to the graph.");
         }
@@ -544,10 +538,12 @@ public class MemoryExclusionGraph extends SimpleGraph<MemoryExclusionVertex, Def
   }
 
   /**
-   * This method puts the {@link MemoryExclusionGraph} back to its state before any memory allocation was performed.<br>
-   * Tasks performed are:<br>
-   * - Put back the host memory objects that were replaced by their content during memory allocation. - Restore the MEG
-   * to its original state before allocation
+   * This method puts the {@link MemoryExclusionGraph} back to its state before any memory allocation was performed.
+   * Tasks performed are:
+   * <ul>
+   * <li>Put back the host memory objects that were replaced by their content during memory allocation.</li>
+   * <li>Restore the MEG to its original state before allocation</li>
+   * </ul>
    */
   public void deallocate() {
     final Map<MemoryExclusionVertex, Set<MemoryExclusionVertex>> hostVertices = getPropertyBean()
@@ -965,6 +961,7 @@ public class MemoryExclusionGraph extends SimpleGraph<MemoryExclusionVertex, Def
         }
       }
     }
+
     return result;
   }
 
