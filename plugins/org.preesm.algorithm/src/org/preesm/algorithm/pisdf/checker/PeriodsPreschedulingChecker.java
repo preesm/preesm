@@ -175,11 +175,14 @@ public class PeriodsPreschedulingChecker extends AbstractTaskImplementation {
         wcetMin = ScenarioConstants.DEFAULT_TIMING_TASK.getValue();
       }
       wcets.put(a, wcetMin);
+      if (periodicActors.getOrDefault(a, wcetMin) < wcetMin) {
+        throw new PreesmRuntimeException("Actor <" + a.getName() + "> has an execution time greater than its period.");
+      }
     }
 
     // 0. find all cycles and retrieve actors placed after delays.
     HeuristicLoopBreakingDelays heurFifoBreaks = new HeuristicLoopBreakingDelays();
-    DefaultDirectedGraph<AbstractActor, FifoAbstraction> absGraph = heurFifoBreaks.performAnalysis(graph, brv);
+    heurFifoBreaks.performAnalysis(graph, brv);
 
     // 1. find all actor w/o incoming edges and all others w/o outgoing edge
     final Set<AbstractActor> sourceActors = new LinkedHashSet<>(heurFifoBreaks.additionalSourceActors);
@@ -218,13 +221,13 @@ public class PeriodsPreschedulingChecker extends AbstractTaskImplementation {
     // 3. for each selected periodic node for nblf:
     // _a compute subgraph
     // _b compute nblf
-    performNBF(actorsNBLF, periodicActors, false, absGraph, heurFifoBreaks.breakingFifosAbs, wcets,
+    performNBF(actorsNBLF, periodicActors, false, heurFifoBreaks.absGraph, heurFifoBreaks.breakingFifosAbs, wcets,
         heurFifoBreaks.minCycleBrv, nbCore);
 
     // 4. for each selected periodic node for nbff:
     // _a compute subgraph
     // _b compute nbff
-    performNBF(actorsNBFF, periodicActors, true, absGraph, heurFifoBreaks.breakingFifosAbs, wcets,
+    performNBF(actorsNBFF, periodicActors, true, heurFifoBreaks.absGraph, heurFifoBreaks.breakingFifosAbs, wcets,
         heurFifoBreaks.minCycleBrv, nbCore);
 
     final Map<String, Object> output = new LinkedHashMap<>();
@@ -253,11 +256,11 @@ public class PeriodsPreschedulingChecker extends AbstractTaskImplementation {
   private static void performNBF(Map<Actor, Long> actorsNBF, Map<Actor, Long> allPeriodicActors, boolean reverse,
       DefaultDirectedGraph<AbstractActor, FifoAbstraction> absGraph, Set<FifoAbstraction> breakingFifosAbs,
       Map<AbstractVertex, Long> wcets, Map<AbstractVertex, Long> minCycleBrv, int nbCore) {
-    SortedSet<Actor> askedToTest = new TreeSet(new ActorPeriodComparator());
+    SortedSet<Actor> askedToTest = new TreeSet<>(new ActorPeriodComparator());
     askedToTest.addAll(actorsNBF.keySet());
     final long greatestPeriod = askedToTest.last().getPeriod().evaluate();
 
-    SortedSet<Actor> toTest = new TreeSet(new ActorPeriodComparator());
+    SortedSet<Actor> toTest = new TreeSet<>(new ActorPeriodComparator());
     allPeriodicActors.keySet().forEach(a -> {
       if (a.getPeriod().evaluate() <= greatestPeriod) {
         toTest.add(a);
@@ -330,13 +333,13 @@ public class PeriodsPreschedulingChecker extends AbstractTaskImplementation {
 
     }
 
-    long Ctot = 0;
+    long totC = -wcets.get(start);
     for (AbstractActor a : subgraph.vertexSet()) {
-      Ctot += wcets.get(a) * nbf.get(a);
+      totC += wcets.get(a) * nbf.get(a);
     }
-    if (Ctot > nbCore * slack) {
+    if (totC > nbCore * slack) {
       throw new PreesmRuntimeException("Utilization factor from/to" + start.getName()
-          + "> is too heavy compared to its period and the number of cores (" + (Ctot / (double) nbCore) + ").");
+          + "> is too heavy compared to its period and the number of cores (" + (totC / (double) nbCore) + ").");
     }
 
   }

@@ -71,8 +71,9 @@ public class HeuristicLoopBreakingDelays {
   protected final Set<AbstractActor> additionalSourceActors;
   protected final Set<AbstractActor> additionalSinkActors;
 
-  protected final Map<AbstractVertex, Long> minCycleBrv;
-  protected final Set<FifoAbstraction>      breakingFifosAbs;
+  protected final Map<AbstractVertex, Long>            minCycleBrv;
+  protected final Set<FifoAbstraction>                 breakingFifosAbs;
+  DefaultDirectedGraph<AbstractActor, FifoAbstraction> absGraph;
 
   protected HeuristicLoopBreakingDelays() {
     this.actorsNbVisitsTopoRank = new LinkedHashMap<>();
@@ -83,14 +84,14 @@ public class HeuristicLoopBreakingDelays {
 
     this.minCycleBrv = new HashMap<>();
     this.breakingFifosAbs = new HashSet<>();
+    this.absGraph = null;
   }
 
-  protected DefaultDirectedGraph<AbstractActor, FifoAbstraction> performAnalysis(final PiGraph graph,
-      final Map<AbstractVertex, Long> brv) {
+  protected void performAnalysis(final PiGraph graph, final Map<AbstractVertex, Long> brv) {
 
     minCycleBrv.putAll(brv);
     // 1. perform flat PiMM to simple JGraphT structure transition.
-    final DefaultDirectedGraph<AbstractActor, FifoAbstraction> absGraph = AbstractGraph.createAbsGraph(graph);
+    absGraph = AbstractGraph.createAbsGraph(graph);
     // 2. look for cycles
     final JohnsonSimpleCycles<AbstractActor, FifoAbstraction> cycleFinder = new JohnsonSimpleCycles<>(absGraph);
     final List<List<AbstractActor>> cycles = cycleFinder.findSimpleCycles();
@@ -139,7 +140,7 @@ public class HeuristicLoopBreakingDelays {
       this.actorsNbVisitsTopoRankT.put(src, newNbVisitsT);
       this.actorsNbVisitsTopoRank.put(tgt, newNbVisits);
     }
-    return absGraph;
+
   }
 
   protected FifoAbstraction retrieveBreakingFifo(final DefaultDirectedGraph<AbstractActor, FifoAbstraction> absGraph,
