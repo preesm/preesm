@@ -105,13 +105,11 @@ public class MemoryExclusionGraphBuilder extends AbstractTaskImplementation {
     final Logger logger = PreesmLogger.getLogger();
 
     // Check Workflow element parameters
-    final String valueVerbose = parameters.get(MemoryExclusionGraphBuilder.PARAM_VERBOSE);
-    boolean verbose;
-    verbose = valueVerbose.equals(MemoryExclusionGraphBuilder.VALUE_TRUE);
+    final boolean verbose = MemoryExclusionGraphBuilder.VALUE_TRUE
+        .equals(parameters.get(MemoryExclusionGraphBuilder.PARAM_VERBOSE));
 
-    final String valueSupprForkJoin = parameters.get(MemoryExclusionGraphBuilder.PARAM_SUPPR_FORK_JOIN);
-    boolean supprForkJoin;
-    supprForkJoin = valueSupprForkJoin.equals(MemoryExclusionGraphBuilder.VALUE_TRUE);
+    final boolean supprForkJoin = MemoryExclusionGraphBuilder.VALUE_TRUE
+        .equals(parameters.get(MemoryExclusionGraphBuilder.PARAM_SUPPR_FORK_JOIN));
 
     // Retrieve list of types and associated sizes in the scenario
     final Scenario scenario = (Scenario) inputs.get("scenario");
