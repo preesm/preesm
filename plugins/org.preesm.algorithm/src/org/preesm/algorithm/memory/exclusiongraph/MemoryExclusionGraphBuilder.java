@@ -41,7 +41,6 @@ package org.preesm.algorithm.memory.exclusiongraph;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.logging.Level;
-import java.util.logging.Logger;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.emf.common.util.EMap;
 import org.preesm.algorithm.model.dag.DirectedAcyclicGraph;
@@ -98,13 +97,10 @@ public class MemoryExclusionGraphBuilder extends AbstractTaskImplementation {
   @Override
   public Map<String, Object> execute(final Map<String, Object> inputs, final Map<String, String> parameters,
       final IProgressMonitor monitor, final String nodeName, final Workflow workflow) {
-
-    // Rem: Logger is used to display messages in the console
-    final Logger logger = PreesmLogger.getLogger();
-
     // Check Workflow element parameters
     final boolean verbose = MemoryExclusionGraphBuilder.VALUE_TRUE
         .equalsIgnoreCase(parameters.get(MemoryExclusionGraphBuilder.PARAM_VERBOSE));
+    final Level logLevel = verbose ? Level.INFO : Level.FINEST;
 
     // Retrieve list of types and associated sizes in the scenario
     final Scenario scenario = (Scenario) inputs.get("scenario");
@@ -121,16 +117,14 @@ public class MemoryExclusionGraphBuilder extends AbstractTaskImplementation {
     }
 
     // Build the exclusion graph
-    if (verbose) {
-      logger.log(Level.INFO, "Memory exclusion graph : start building");
-    }
+    PreesmLogger.getLogger().log(logLevel, "Memory exclusion graph : start building");
     final MemoryExclusionGraph memEx = new MemoryExclusionGraph();
     memEx.buildGraph(localDAG);
-    final double density = memEx.edgeSet().size() / ((memEx.vertexSet().size() * (memEx.vertexSet().size() - 1)) / 2.0);
-    if (verbose) {
-      logger.log(Level.INFO,
-          () -> "Memory exclusion graph built with " + memEx.vertexSet().size() + " vertices and density = " + density);
-    }
+    final int edgeCount = memEx.edgeSet().size();
+    final int vertexCount = memEx.vertexSet().size();
+    final double density = edgeCount / ((vertexCount * (vertexCount - 1)) / 2.0);
+    PreesmLogger.getLogger().log(logLevel,
+        () -> "Memory exclusion graph built with " + vertexCount + " vertices and density = " + density);
 
     // Generate output
     final Map<String, Object> output = new LinkedHashMap<>();
