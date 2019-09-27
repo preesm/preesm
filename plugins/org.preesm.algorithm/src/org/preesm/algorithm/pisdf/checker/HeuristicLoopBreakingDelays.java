@@ -87,6 +87,8 @@ public class HeuristicLoopBreakingDelays {
 
   protected DefaultDirectedGraph<AbstractActor, FifoAbstraction> performAnalysis(final PiGraph graph,
       final Map<AbstractVertex, Long> brv) {
+
+    minCycleBrv.putAll(brv);
     // 1. perform flat PiMM to simple JGraphT structure transition.
     final DefaultDirectedGraph<AbstractActor, FifoAbstraction> absGraph = AbstractGraph.createAbsGraph(graph);
     // 2. look for cycles
@@ -103,7 +105,7 @@ public class HeuristicLoopBreakingDelays {
       long gcdCycle = MathFunctionsHelper.gcd(cycle.stream().map(a -> brv.get(a)).collect(Collectors.toList()));
       cycle.forEach(a -> {
         long localBrv = brv.get(a) / gcdCycle;
-        long cycleBrv = minCycleBrv.getOrDefault(a, localBrv);
+        long cycleBrv = minCycleBrv.get(a);
         minCycleBrv.put(a, Math.min(localBrv, cycleBrv));
       });
 

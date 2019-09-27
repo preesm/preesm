@@ -35,12 +35,18 @@
  */
 package org.preesm.algorithm.pisdf.checker;
 
+import java.util.Comparator;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
+import java.util.SortedSet;
+import java.util.TreeSet;
 import java.util.logging.Level;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.jgrapht.graph.DefaultDirectedGraph;
@@ -169,8 +175,6 @@ public class PeriodsPreschedulingChecker extends AbstractTaskImplementation {
         wcetMin = ScenarioConstants.DEFAULT_TIMING_TASK.getValue();
       }
       wcets.put(a, wcetMin);
-      System.err.println(
-          "Actor : " + actor.getName() + " has wcet (min) : " + wcetMin + " [full path: " + actor.getVertexPath());
     }
 
     // 0. find all cycles and retrieve actors placed after delays.
@@ -214,20 +218,127 @@ public class PeriodsPreschedulingChecker extends AbstractTaskImplementation {
     // 3. for each selected periodic node for nblf:
     // _a compute subgraph
     // _b compute nblf
-    for (AbstractActor a : actorsNBLF.keySet()) {
-      AbstractGraph.subDAGFrom(absGraph, a, heurFifoBreaks.breakingFifosAbs, false);
-    }
+    performNBF(actorsNBLF, periodicActors, false, absGraph, heurFifoBreaks.breakingFifosAbs, wcets,
+        heurFifoBreaks.minCycleBrv, nbCore);
 
     // 4. for each selected periodic node for nbff:
     // _a compute subgraph
     // _b compute nbff
-    for (AbstractActor a : actorsNBFF.keySet()) {
-      AbstractGraph.subDAGFrom(absGraph, a, heurFifoBreaks.breakingFifosAbs, true);
-    }
+    performNBF(actorsNBFF, periodicActors, true, absGraph, heurFifoBreaks.breakingFifosAbs, wcets,
+        heurFifoBreaks.minCycleBrv, nbCore);
 
     final Map<String, Object> output = new LinkedHashMap<>();
     output.put(AbstractWorkflowNodeImplementation.KEY_PI_GRAPH, graph);
     return output;
+  }
+
+  /**
+   * Compare actors per increasing period.
+   * 
+   * @author ahonorat
+   */
+  private static class ActorPeriodComparator implements Comparator<Actor> {
+
+    @Override
+    public int compare(Actor arg0, Actor arg1) {
+      return Long.compare(arg0.getPeriod().evaluate(), arg1.getPeriod().evaluate());
+    }
+
+  }
+
+  /**
+   * Call NBF on given actors plus extra smaller periods.
+   * 
+   */
+  private static void performNBF(Map<Actor, Long> actorsNBF, Map<Actor, Long> allPeriodicActors, boolean reverse,
+      DefaultDirectedGraph<AbstractActor, FifoAbstraction> absGraph, Set<FifoAbstraction> breakingFifosAbs,
+      Map<AbstractVertex, Long> wcets, Map<AbstractVertex, Long> minCycleBrv, int nbCore) {
+    SortedSet<Actor> askedToTest = new TreeSet(new ActorPeriodComparator());
+    askedToTest.addAll(actorsNBF.keySet());
+    final long greatestPeriod = askedToTest.last().getPeriod().evaluate();
+
+    SortedSet<Actor> toTest = new TreeSet(new ActorPeriodComparator());
+    allPeriodicActors.keySet().forEach(a -> {
+      if (a.getPeriod().evaluate() <= greatestPeriod) {
+        toTest.add(a);
+      }
+    });
+
+    for (Actor a : toTest) {
+      DefaultDirectedGraph<AbstractActor,
+          FifoAbstraction> subgraph = AbstractGraph.subDAGFrom(absGraph, a, breakingFifosAbs, reverse);
+      System.err.println("Subgraph from " + a.getName() + " has " + subgraph.vertexSet().size() + "actors.");
+      performNBFinternal(a, subgraph, allPeriodicActors, wcets, minCycleBrv, nbCore, reverse);
+    }
+
+  }
+
+  private static void performNBFinternal(Actor start, DefaultDirectedGraph<AbstractActor, FifoAbstraction> subgraph,
+      Map<Actor, Long> allPeriodicActors, Map<AbstractVertex, Long> wcets, Map<AbstractVertex, Long> minCycleBrv,
+      int nbCore, boolean reverse) {
+    HashMap<AbstractActor, Long> timeTo = new HashMap<>();
+    HashMap<AbstractActor, Integer> nbVisits = new HashMap<>();
+    HashMap<AbstractActor, Long> nbf = new HashMap<>();
+    for (AbstractActor a : subgraph.vertexSet()) {
+      timeTo.put(a, 0L);
+      nbVisits.put(a, 0);
+      nbf.put(a, 0L);
+    }
+    nbf.put(start, 1L);
+
+    long slack = allPeriodicActors.get(start) - wcets.get(start);
+    List<AbstractActor> toVisit = new LinkedList<>();
+    toVisit.add(start);
+
+    while (!toVisit.isEmpty()) {
+      Iterator<AbstractActor> it = toVisit.iterator();
+      AbstractActor current = it.next();
+      it.remove();
+
+      for (FifoAbstraction fa : subgraph.outgoingEdgesOf(current)) {
+        AbstractActor dest = subgraph.getEdgeTarget(fa);
+        int nbVisitsDest = nbVisits.get(dest) + 1;
+        nbVisits.put(dest, nbVisitsDest);
+        long destTimeTo = Math.max(timeTo.get(dest), timeTo.get(current));
+        timeTo.put(dest, destTimeTo);
+        long nbfDest = 0;
+        long delay = fa.delays.stream().min(Long::compare).get();
+        if (reverse) {
+          nbfDest = (nbf.get(current) * fa.consRate - delay + fa.prodRate - 1) / fa.prodRate;
+        } else {
+          nbfDest = (nbf.get(current) * fa.prodRate - delay + fa.consRate - 1) / fa.consRate;
+        }
+        nbf.put(dest, Math.max(nbfDest, nbf.get(dest)));
+        if (nbVisitsDest == subgraph.inDegreeOf(dest)) {
+          toVisit.add(dest);
+          long wcet = wcets.get(dest);
+          long minBrv = minCycleBrv.get(dest);
+          long factorBrv = nbfDest / minBrv;
+          long remainingBrv = nbfDest % minBrv;
+          long timeRegular = wcet * factorBrv * Math.max(1L, minBrv / nbCore);
+          long timeRemaining = wcet * (remainingBrv / nbCore);
+          long time = destTimeTo + Math.max(wcet, timeRegular + timeRemaining);
+          timeTo.put(dest, time);
+          if (subgraph.outDegreeOf(dest) == 0) {
+            if (time > slack) {
+              throw new PreesmRuntimeException("Critical path from/to <" + start.getName()
+                  + "> is too long compared to its period ( " + time + ").");
+            }
+          }
+        }
+      }
+
+    }
+
+    long Ctot = 0;
+    for (AbstractActor a : subgraph.vertexSet()) {
+      Ctot += wcets.get(a) * nbf.get(a);
+    }
+    if (Ctot > nbCore * slack) {
+      throw new PreesmRuntimeException("Utilization factor from/to" + start.getName()
+          + "> is too heavy compared to its period and the number of cores (" + (Ctot / (double) nbCore) + ").");
+    }
+
   }
 
   @Override
