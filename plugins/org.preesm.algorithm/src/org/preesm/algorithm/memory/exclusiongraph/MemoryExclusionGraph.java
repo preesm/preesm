@@ -51,6 +51,7 @@ import java.util.Map.Entry;
 import java.util.Set;
 import java.util.logging.Level;
 import org.eclipse.xtext.xbase.lib.Pair;
+import org.jgrapht.generate.ComplementGraphGenerator;
 import org.jgrapht.graph.DefaultEdge;
 import org.jgrapht.graph.SimpleGraph;
 import org.preesm.algorithm.mapper.ScheduledDAGIterator;
@@ -944,25 +945,11 @@ public class MemoryExclusionGraph extends SimpleGraph<MemoryExclusionVertex, Def
    * @return the complementary
    */
   public MemoryExclusionGraph getComplementary() {
-    // Create a new Memory Exclusion Graph
-    final MemoryExclusionGraph result = new MemoryExclusionGraph();
-    // Copy the vertices of the current graph
-    for (final MemoryExclusionVertex vertex : vertexSet()) {
-      result.addVertex(vertex);
-    }
-    // Retrieve the vertices list
-    final MemoryExclusionVertex[] vertices = vertexSet().toArray(new MemoryExclusionVertex[0]);
-    // For each pair of vertex, check if the corresponding edge exists in the current graph. If not, add an edge in the
-    // complementary graph
-    for (int i = 0; i < vertexSet().size(); i++) {
-      for (int j = i + 1; j < vertexSet().size(); j++) {
-        if (!this.containsEdge(vertices[i], vertices[j])) {
-          result.addEdge(vertices[i], vertices[j]);
-        }
-      }
-    }
-
-    return result;
+    final MemoryExclusionGraph target = new MemoryExclusionGraph();
+    final ComplementGraphGenerator<MemoryExclusionVertex,
+        DefaultEdge> complementGraphGenerator = new ComplementGraphGenerator<>(this);
+    complementGraphGenerator.generateGraph(target);
+    return target;
   }
 
   /**
