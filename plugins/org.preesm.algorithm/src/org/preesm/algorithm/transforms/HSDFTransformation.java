@@ -75,12 +75,6 @@ import org.preesm.workflow.implement.AbstractTaskImplementation;
     parameters = { @Parameter(name = "ExplodeImplodeSuppr", values = { @Value(name = "false", effect = "") }) })
 public class HSDFTransformation extends AbstractTaskImplementation {
 
-  /*
-   * (non-Javadoc)
-   *
-   * @see org.ietr.dftools.workflow.implement.AbstractTaskImplementation#execute(java.util.Map, java.util.Map,
-   * org.eclipse.core.runtime.IProgressMonitor, java.lang.String, org.ietr.dftools.workflow.elements.Workflow)
-   */
   @Override
   public Map<String, Object> execute(final Map<String, Object> inputs, final Map<String, String> parameters,
       final IProgressMonitor monitor, final String nodeName, final Workflow workflow) {
@@ -100,7 +94,7 @@ public class HSDFTransformation extends AbstractTaskImplementation {
 
         final ToHSDFVisitor toHsdf = new ToHSDFVisitor();
 
-        SDFGraph hsdf = null;
+        final SDFGraph hsdf;
         try {
           algorithm.accept(toHsdf);
           hsdf = toHsdf.getOutput();
@@ -112,7 +106,7 @@ public class HSDFTransformation extends AbstractTaskImplementation {
         logger.log(Level.INFO, "HSDF transformation complete");
 
         logger.log(Level.INFO,
-            "HSDF with " + hsdf.vertexSet().size() + " vertices and " + hsdf.edgeSet().size() + " edges.");
+            () -> "HSDF with " + hsdf.vertexSet().size() + " vertices and " + hsdf.edgeSet().size() + " edges.");
 
         final String explImplSuppr = parameters.get("ExplodeImplodeSuppr");
         if ((explImplSuppr != null) && explImplSuppr.equals("true")) {
@@ -129,16 +123,11 @@ public class HSDFTransformation extends AbstractTaskImplementation {
     }
 
     timer.stop();
-    PreesmLogger.getLogger().log(Level.INFO, "HSDF transformation: " + timer.toString() + "s.");
+    PreesmLogger.getLogger().log(Level.INFO, () -> "HSDF transformation: " + timer.toString() + "s.");
 
     return outputs;
   }
 
-  /*
-   * (non-Javadoc)
-   *
-   * @see org.ietr.dftools.workflow.implement.AbstractTaskImplementation#getDefaultParameters()
-   */
   @Override
   public Map<String, String> getDefaultParameters() {
     final Map<String, String> param = new LinkedHashMap<>();
@@ -146,11 +135,6 @@ public class HSDFTransformation extends AbstractTaskImplementation {
     return param;
   }
 
-  /*
-   * (non-Javadoc)
-   *
-   * @see org.ietr.dftools.workflow.implement.AbstractWorkflowNodeImplementation#monitorMessage()
-   */
   @Override
   public String monitorMessage() {
     return "HSDF Transformation.";
