@@ -96,7 +96,7 @@ public abstract class AbstractGraph<V extends AbstractVertex, E extends Abstract
   private final PropertyBean properties;
 
   /** The observers. */
-  private final ArrayList<IModelObserver> observers;
+  private final transient ArrayList<IModelObserver> observers;
 
   /** The has changed. */
   private boolean hasChanged;

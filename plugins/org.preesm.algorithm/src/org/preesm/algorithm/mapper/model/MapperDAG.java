@@ -71,7 +71,7 @@ public class MapperDAG extends DirectedAcyclicGraph {
   private static final long serialVersionUID = -6757893466692519433L;
 
   /** Corresponding SDF graph. */
-  private final PiGraph piSDFGraph;
+  private final transient PiGraph piSDFGraph;
 
   /** The cost of the implementation. */
   private static final String SCHEDULE_COST = "SCHEDULE_COST";
