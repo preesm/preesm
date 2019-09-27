@@ -38,6 +38,7 @@
  */
 package org.preesm.algorithm.memory.allocation;
 
+import com.google.common.primitives.Ints;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
@@ -252,8 +253,9 @@ public class DeGreefAllocator extends MemoryAllocator {
       }
 
       // Else, compare the vertices
-      if (this.second.compareTo(o.second) != 0) {
-        return this.second.compareTo(o.second);
+      final long compareTo = this.second.getWeight() - o.second.getWeight();
+      if (compareTo != 0) {
+        return Ints.saturatedCast(compareTo);
       }
 
       // If the vertices weight and the offsets are equal, compare the

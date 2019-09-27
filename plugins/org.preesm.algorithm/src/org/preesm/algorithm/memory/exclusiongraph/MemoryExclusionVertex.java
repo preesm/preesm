@@ -62,8 +62,7 @@ import org.preesm.commons.logger.PreesmLogger;
  * @author kdesnos
  *
  */
-public class MemoryExclusionVertex extends AbstractVertex<MemoryExclusionGraph>
-    implements IWeightedVertex<Long>, Comparable<MemoryExclusionVertex> {
+public class MemoryExclusionVertex extends AbstractVertex<MemoryExclusionGraph> implements IWeightedVertex<Long> {
 
   /**
    * String used in the {@link PropertyBean} of a {@link MemoryExclusionVertex} to store the offset at which the memory
@@ -250,23 +249,6 @@ public class MemoryExclusionVertex extends AbstractVertex<MemoryExclusionGraph>
   @Override
   public MemoryExclusionVertex copy() {
     return null;
-  }
-
-  /**
-   * The comparison of two MemoryExclusionVertex is made according to their weight.
-   *
-   * @param o
-   *          the o
-   * @return the int
-   */
-  @Override
-  public int compareTo(final MemoryExclusionVertex o) {
-    if (this.size > o.size) {
-      return 1;
-    } else if (this.size < o.size) {
-      return -1;
-    }
-    return 0;
   }
 
   /**

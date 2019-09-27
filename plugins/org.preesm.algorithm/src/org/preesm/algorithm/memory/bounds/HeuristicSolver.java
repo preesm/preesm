@@ -59,7 +59,7 @@ import org.preesm.algorithm.memory.exclusiongraph.IWeightedVertex;
  * @param <E>
  *          The edges class
  */
-public class HeuristicSolver<V extends IWeightedVertex<Long> & Comparable<V>, E extends DefaultEdge>
+public class HeuristicSolver<V extends IWeightedVertex<Long>, E extends DefaultEdge>
     extends AbstractMaximumWeightCliqueSolver<V, E> {
 
   /**

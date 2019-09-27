@@ -55,8 +55,7 @@ import org.preesm.algorithm.memory.exclusiongraph.MemoryExclusionGraph;
  * @param <E>
  *          The edges class
  */
-public abstract class AbstractMaximumWeightCliqueSolver<V extends IWeightedVertex<Long> & Comparable<V>,
-    E extends DefaultEdge> {
+public abstract class AbstractMaximumWeightCliqueSolver<V extends IWeightedVertex<Long>, E extends DefaultEdge> {
   /**
    * This attribute is used by the getN function to store its results. No other method should neither access nor modify
    * it.

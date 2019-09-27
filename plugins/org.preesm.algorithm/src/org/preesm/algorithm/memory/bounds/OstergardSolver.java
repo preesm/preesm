@@ -36,6 +36,7 @@
  */
 package org.preesm.algorithm.memory.bounds;
 
+import com.google.common.primitives.Ints;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
@@ -61,7 +62,7 @@ import org.preesm.algorithm.memory.exclusiongraph.IWeightedVertex;
  * @param <E>
  *          The edges class
  */
-public class OstergardSolver<V extends IWeightedVertex<Long> & Comparable<V>, E extends DefaultEdge>
+public class OstergardSolver<V extends IWeightedVertex<Long>, E extends DefaultEdge>
     extends AbstractMaximumWeightCliqueSolver<V, E> {
   /**
    * cost corresponds to the c(i) function in
@@ -181,7 +182,7 @@ public class OstergardSolver<V extends IWeightedVertex<Long> & Comparable<V>, E 
     final SimpleGraph<V, E> graphCopy = (SimpleGraph<V, E>) this.graph.clone();
 
     // First, the list is ordered in the ascending order of weights
-    Collections.sort(unorderedSet);
+    Collections.sort(unorderedSet, (v1, v2) -> Ints.saturatedCast(v1.getWeight() - v2.getWeight()));
 
     // Vertices are added one by one to the ordered vertex set
     while (!unorderedSet.isEmpty()) {
