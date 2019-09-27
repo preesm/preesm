@@ -161,9 +161,6 @@ public class MemoryExclusionVertex extends AbstractVertex<MemoryExclusionGraph> 
    */
   private final String source;
 
-  /** ID of the explode/Implode dag vertex the memory belongs to. */
-  private String explodeImplode;
-
   /**
    * The edge in the DAG that corresponds to this vertex in the exclusion graph. (This attribute is used only if the
    * vertices corresponds to an edge in the dag, i.e. a transfer between actors)
@@ -196,12 +193,6 @@ public class MemoryExclusionVertex extends AbstractVertex<MemoryExclusionGraph> 
   public MemoryExclusionVertex(final DAGEdge inputEdge) {
     this.source = inputEdge.getSource().getName();
     this.sink = inputEdge.getTarget().getName();
-
-    if (inputEdge.getPropertyBean().getValue("explodeName") != null) {
-      this.explodeImplode = inputEdge.getPropertyBean().getValue("explodeName").toString();
-    } else {
-      this.explodeImplode = "";
-    }
 
     // if datatype is defined, correct the vertex weight
     final BufferAggregate buffers = inputEdge.getPropertyBean().getValue(BufferAggregate.propertyBeanName);
@@ -243,7 +234,6 @@ public class MemoryExclusionVertex extends AbstractVertex<MemoryExclusionGraph> 
     this.source = sourceTask;
     this.sink = sinkTask;
     this.size = sizeMem;
-    this.explodeImplode = "";
   }
 
   @Override
@@ -284,7 +274,6 @@ public class MemoryExclusionVertex extends AbstractVertex<MemoryExclusionGraph> 
     copy = new MemoryExclusionVertex(this.source, this.sink, this.size);
     copy.setIdentifier(getIdentifier());
     copy.edge = this.edge;
-    copy.explodeImplode = this.explodeImplode;
     copy.vertex = this.vertex;
     return copy;
   }
@@ -299,10 +288,6 @@ public class MemoryExclusionVertex extends AbstractVertex<MemoryExclusionGraph> 
 
   public void setVertex(final DAGVertex vertex) {
     this.vertex = vertex;
-  }
-
-  public String getExplodeImplode() {
-    return this.explodeImplode;
   }
 
   @Override
