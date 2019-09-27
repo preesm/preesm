@@ -106,10 +106,10 @@ public class MemoryExclusionGraphBuilder extends AbstractTaskImplementation {
 
     // Check Workflow element parameters
     final boolean verbose = MemoryExclusionGraphBuilder.VALUE_TRUE
-        .equals(parameters.get(MemoryExclusionGraphBuilder.PARAM_VERBOSE));
+        .equalsIgnoreCase(parameters.get(MemoryExclusionGraphBuilder.PARAM_VERBOSE));
 
     final boolean supprForkJoin = MemoryExclusionGraphBuilder.VALUE_TRUE
-        .equals(parameters.get(MemoryExclusionGraphBuilder.PARAM_SUPPR_FORK_JOIN));
+        .equalsIgnoreCase(parameters.get(MemoryExclusionGraphBuilder.PARAM_SUPPR_FORK_JOIN));
 
     // Retrieve list of types and associated sizes in the scenario
     final Scenario scenario = (Scenario) inputs.get("scenario");
