@@ -232,7 +232,7 @@ public abstract class GMLImporter<G extends AbstractGraph<?, ?>, V extends Abstr
       if (childList.item(i).getNodeName().equals("data")) {
         final String key = ((Element) childList.item(i)).getAttribute("key");
         if ((!(key.equals(GMLImporter.ARGUMENTS_LITERAL) || key.equals(GMLImporter.PARAMETERS_LITERAL)
-            || key.equals(GMLImporter.VARIABLES_LITERAL))) && src.getPublicProperties().contains(key)) {
+            || key.equals(GMLImporter.VARIABLES_LITERAL))) && src.getPropertyBean().keys().contains(key)) {
           final String propertyName = ((Element) childList.item(i)).getAttribute("key");
           final PropertyFactory factory = src.getFactoryForProperty(propertyName);
           if (factory != null) {

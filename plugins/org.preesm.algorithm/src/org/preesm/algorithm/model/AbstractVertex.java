@@ -96,16 +96,6 @@ public abstract class AbstractVertex<G> extends Observable
     this.interfaces = new ArrayList<>();
   }
 
-  /*
-   * (non-Javadoc)
-   *
-   * @see org.ietr.dftools.algorithm.model.PropertySource#getPublicProperties()
-   */
-  @Override
-  public List<String> getPublicProperties() {
-    return AbstractVertex.public_properties;
-  }
-
   /**
    * Accept.
    *

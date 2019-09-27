@@ -36,7 +36,6 @@ package org.preesm.algorithm.model;
 
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
-import java.util.List;
 import java.util.Set;
 import java.util.function.Supplier;
 import org.jgrapht.graph.DirectedPseudograph;
@@ -92,16 +91,6 @@ public abstract class AbstractGraph<V extends AbstractVertex, E extends Abstract
 
   /** This graph parent vertex if it exist. */
   private static final String PARENT_VERTEX = "parent_vertex";
-
-  /** The public properties. */
-  protected static final List<String> PUBLIC_PROPERTIES = new ArrayList<>();
-
-  static {
-    AbstractGraph.PUBLIC_PROPERTIES.add(AbstractGraph.NAME);
-    AbstractGraph.PUBLIC_PROPERTIES.add(AbstractGraph.PARAMETERS);
-    AbstractGraph.PUBLIC_PROPERTIES.add(AbstractGraph.VARIABLES);
-    AbstractGraph.PUBLIC_PROPERTIES.add(AbstractGraph.MODEL);
-  }
 
   /** The properties. */
   private final PropertyBean properties;
@@ -316,16 +305,6 @@ public abstract class AbstractGraph<V extends AbstractVertex, E extends Abstract
       return this.getPropertyBean().getValue(propertyName).toString();
     }
     return null;
-  }
-
-  /*
-   * (non-Javadoc)
-   *
-   * @see org.ietr.dftools.algorithm.model.PropertySource#getPublicProperties()
-   */
-  @Override
-  public List<String> getPublicProperties() {
-    return AbstractGraph.PUBLIC_PROPERTIES;
   }
 
   /**

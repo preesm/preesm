@@ -72,13 +72,6 @@ public interface PropertySource {
   }
 
   /**
-   * Gets the public properties.
-   *
-   * @return the public properties
-   */
-  public List<String> getPublicProperties();
-
-  /**
    * Gets the factory for property.
    *
    * @param propertyName

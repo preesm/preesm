@@ -337,7 +337,7 @@ public abstract class GMLExporter<V extends AbstractVertex<?>, E extends Abstrac
    *          the parent elt
    */
   protected void exportKeys(final PropertySource source, final String forElt, final Element parentElt) {
-    for (final String key : source.getPublicProperties()) {
+    for (final String key : source.getPropertyBean().keys()) {
       if (!(key.equals("parameters") || key.equals("variables") || key.equals("arguments"))
           && (source.getPropertyStringValue(key) != null)) {
         final Element dataElt = appendChild(parentElt, "data");

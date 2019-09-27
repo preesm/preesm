@@ -118,8 +118,6 @@ public class MemoryExclusionGraph extends SimpleGraph<MemoryExclusionVertex, Def
    */
   public static final String ALLOCATED_MEMORY_SIZE = "allocated_memory_size";
 
-  private static final List<String> PUBLIC_PROPERTIES = new ArrayList<>();
-
   /**
    * Backup the vertex adjacent to a given vertex for speed-up purposes.
    */
@@ -995,11 +993,6 @@ public class MemoryExclusionGraph extends SimpleGraph<MemoryExclusionVertex, Def
   @Override
   public PropertyBean getPropertyBean() {
     return this.properties;
-  }
-
-  @Override
-  public List<String> getPublicProperties() {
-    return MemoryExclusionGraph.PUBLIC_PROPERTIES;
   }
 
   /**
