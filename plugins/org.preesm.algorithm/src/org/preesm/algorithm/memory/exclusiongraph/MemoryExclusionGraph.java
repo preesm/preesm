@@ -982,7 +982,7 @@ public class MemoryExclusionGraph extends SimpleGraph<MemoryExclusionVertex, Def
    */
   public List<MemoryExclusionVertex> getMemExVerticesInSchedulingOrder() {
     if (this.memExVerticesInSchedulingOrder == null) {
-      return null;
+      return Collections.emptyList();
     } else {
       return new ArrayList<>(this.memExVerticesInSchedulingOrder);
     }
