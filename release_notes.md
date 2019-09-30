@@ -37,6 +37,7 @@ PREESM Changelog
 * Fix problem with precedence shift condition (clustering purposes)
 * Fix random seed parameter transfer to clustering algorithm
 * Fix various bugs in the experimental external mapping importer.
+* Fix #234
 
 ## Release version 3.17.0
 *2019.09.09*
