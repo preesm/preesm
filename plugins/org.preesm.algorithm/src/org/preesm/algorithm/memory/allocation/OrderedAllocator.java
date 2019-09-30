@@ -37,6 +37,7 @@
  */
 package org.preesm.algorithm.memory.allocation;
 
+import com.google.common.primitives.Ints;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -137,7 +138,7 @@ public abstract class OrderedAllocator extends MemoryAllocator {
    */
   private void allocateLargestFirst() {
     final ArrayList<MemoryExclusionVertex> list = new ArrayList<>(this.inputExclusionGraph.vertexSet());
-    Collections.sort(list, Collections.reverseOrder());
+    Collections.sort(list, (v1, v2) -> Ints.saturatedCast(v2.getWeight() - v1.getWeight()));
     allocateInOrder(list);
   }
 
@@ -254,7 +255,7 @@ public abstract class OrderedAllocator extends MemoryAllocator {
       solver.solve();
 
       final ArrayList<MemoryExclusionVertex> stableSet = new ArrayList<>(solver.getHeaviestClique());
-      Collections.sort(stableSet, Collections.reverseOrder());
+      Collections.sort(stableSet, (v1, v2) -> Ints.saturatedCast(v2.getWeight() - v1.getWeight()));
       orderedList.addAll(stableSet);
 
       inclusionGraph.removeAllVertices(stableSet);
