@@ -219,14 +219,10 @@ public class PeriodsPreschedulingChecker extends AbstractTaskImplementation {
     PreesmLogger.getLogger().log(Level.INFO, "Periodic actor for NBLF: " + sbNBLF.toString());
 
     // 3. for each selected periodic node for nblf:
-    // _a compute subgraph
-    // _b compute nblf
     performNBF(actorsNBLF, periodicActors, false, heurFifoBreaks.absGraph, heurFifoBreaks.breakingFifosAbs, wcets,
         heurFifoBreaks.minCycleBrv, nbCore);
 
     // 4. for each selected periodic node for nbff:
-    // _a compute subgraph
-    // _b compute nbff
     performNBF(actorsNBFF, periodicActors, true, heurFifoBreaks.absGraph, heurFifoBreaks.breakingFifosAbs, wcets,
         heurFifoBreaks.minCycleBrv, nbCore);
 
@@ -270,7 +266,6 @@ public class PeriodsPreschedulingChecker extends AbstractTaskImplementation {
     for (Actor a : toTest) {
       DefaultDirectedGraph<AbstractActor,
           FifoAbstraction> subgraph = AbstractGraph.subDAGFrom(absGraph, a, breakingFifosAbs, reverse);
-      System.err.println("Subgraph from " + a.getName() + " has " + subgraph.vertexSet().size() + "actors.");
       performNBFinternal(a, subgraph, allPeriodicActors, wcets, minCycleBrv, nbCore, reverse);
     }
 
@@ -312,7 +307,7 @@ public class PeriodsPreschedulingChecker extends AbstractTaskImplementation {
           nbfDest = (nbf.get(current) * fa.prodRate - delay + fa.consRate - 1) / fa.consRate;
         }
         nbf.put(dest, Math.max(nbfDest, nbf.get(dest)));
-        if (nbVisitsDest == subgraph.inDegreeOf(dest)) {
+        if (nbVisitsDest == subgraph.inDegreeOf(dest) && nbfDest > 0) {
           toVisit.add(dest);
           long wcet = wcets.get(dest);
           long minBrv = minCycleBrv.get(dest);
