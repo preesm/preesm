@@ -812,7 +812,6 @@ public class CodegenModelGenerator extends AbstractCodegenModelGenerator {
         mainOperatorBlock = CodegenModelUserFactory.eINSTANCE.createCoreBlock(componentInstance);
         this.coreBlocks.put(componentInstance, mainOperatorBlock);
       }
-
     } else {
       // else, the operator corresponding to the memory bank will
       // do the work
@@ -961,21 +960,23 @@ public class CodegenModelGenerator extends AbstractCodegenModelGenerator {
         final SubBuffer fifoBuffer = CodegenModelUserFactory.eINSTANCE.createSubBuffer();
 
         // Old Naming (too long)
-        final String comment = fifoAlloc.getKey().getSource() + " > " + fifoAlloc.getKey().getSink();
+        final MemoryExclusionVertex fifoAllocKey = fifoAlloc.getKey();
+        final String source = fifoAllocKey.getSource();
+        final String sink = fifoAllocKey.getSink();
+        final String comment = source + " > " + sink;
         fifoBuffer.setComment(comment);
 
-        String name = fifoAlloc.getKey().getSource() + "__" + fifoAlloc.getKey().getSink();
+        String name = source + "__" + sink;
         name = generateUniqueBufferName(name);
         fifoBuffer.setName(name);
         fifoBuffer.reaffectContainer(mainBuffer);
         fifoBuffer.setOffset(fifoAlloc.getValue());
         fifoBuffer.setType("char");
-        fifoBuffer.setSize(fifoAlloc.getKey().getWeight());
+        fifoBuffer.setSize(fifoAllocKey.getWeight());
 
         // Get Init vertex
-        final DAGVertex dagEndVertex = this.algo
-            .getVertex(fifoAlloc.getKey().getSource().substring(("FIFO_Head_").length()));
-        final DAGVertex dagInitVertex = this.algo.getVertex(fifoAlloc.getKey().getSink());
+        final DAGVertex dagEndVertex = this.algo.getVertex(source.substring(("FIFO_Head_").length()));
+        final DAGVertex dagInitVertex = this.algo.getVertex(sink);
 
         final Pair<DAGVertex, DAGVertex> key = new Pair<>(dagEndVertex, dagInitVertex);
         Pair<Buffer, Buffer> value = this.dagFifoBuffers.get(key);
@@ -983,7 +984,7 @@ public class CodegenModelGenerator extends AbstractCodegenModelGenerator {
           value = new Pair<>(null, null);
           this.dagFifoBuffers.put(key, value);
         }
-        if (fifoAlloc.getKey().getSource().startsWith("FIFO_Head_")) {
+        if (source.startsWith("FIFO_Head_")) {
           this.dagFifoBuffers.put(key, new Pair<Buffer, Buffer>(fifoBuffer, value.getValue()));
         } else {
           this.dagFifoBuffers.put(key, new Pair<Buffer, Buffer>(value.getKey(), fifoBuffer));
@@ -1415,10 +1416,6 @@ public class CodegenModelGenerator extends AbstractCodegenModelGenerator {
 
     // No semaphore here, semaphore are only for SS->RE and RE->SR
 
-    final Integer gid = dagVertex.getPropertyBean().getValue("SYNC_GROUP");
-    if (gid != null) {
-      newComm.setComment("SyncComGroup = " + gid);
-    }
     // Check if this is a redundant communication
     final Boolean b = dagVertex.getPropertyBean().getValue("Redundant");
     if (b != null && b.equals(Boolean.valueOf(true))) {
@@ -1526,10 +1523,6 @@ public class CodegenModelGenerator extends AbstractCodegenModelGenerator {
 
     // No semaphore here, semaphore are only for SS->RE and RE->SR
 
-    final Integer gid = dagVertex.getPropertyBean().getValue("SYNC_GROUP");
-    if (gid != null) {
-      newComm.setComment("SyncComGroup = " + gid);
-    }
     // Check if this is a redundant communication
     final Boolean b = dagVertex.getPropertyBean().getValue("Redundant");
     if (b != null && b.equals(Boolean.valueOf(true))) {
