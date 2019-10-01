@@ -244,6 +244,10 @@ public class Buffer {
    */
   long minIndex;
 
+  public long getBufferSize() {
+    return maxIndex - minIndex;
+  }
+
   /**
    * This table is protected to ensure that matches are set only by using {@link #matchWith(long,Buffer,long)} methods
    * in the scripts.
