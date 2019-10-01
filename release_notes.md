@@ -25,6 +25,7 @@ PREESM Changelog
   * implement communication insertion;
 * Refactor:
   * Minor codegen refactor;
+  * Refactor memory allocation;
   * Rethrow all exceptions thrown by JEP with expression causing issue;
 
 ### Bug fix
