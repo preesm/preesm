@@ -60,10 +60,10 @@ public abstract class AbstractMaximumWeightCliqueSolver<V extends IWeightedVerte
    * This attribute is used by the getN function to store its results. No other method should neither access nor modify
    * it.
    */
-  protected Map<V, Set<V>> adjacentVerticesBackup;
+  protected final Map<V, Set<V>> adjacentVerticesBackup = new LinkedHashMap<>();
 
   /** The Graph to analyze. */
-  protected SimpleGraph<V, E> graph;
+  protected final SimpleGraph<V, E> graph;
 
   /** The heaviest clique encountered running the algorithm. */
   protected Set<V> heaviestClique;
@@ -76,17 +76,12 @@ public abstract class AbstractMaximumWeightCliqueSolver<V extends IWeightedVerte
    */
   protected long min;
 
-  /** Store the number of vertices of the graph. */
-  protected int numberVertices;
-
   /**
    */
   public AbstractMaximumWeightCliqueSolver(final SimpleGraph<V, E> graph) {
     // Keep a reference to the graph
     this.graph = graph;
-    this.numberVertices = graph.vertexSet().size();
     this.heaviestClique = new LinkedHashSet<>();
-    this.adjacentVerticesBackup = new LinkedHashMap<>();
     this.min = 0;
   }
 
@@ -177,7 +172,7 @@ public abstract class AbstractMaximumWeightCliqueSolver<V extends IWeightedVerte
    * more info.)
    */
   public void clearAdjacentVerticesBackup() {
-    this.adjacentVerticesBackup = new LinkedHashMap<>();
+    this.adjacentVerticesBackup.clear();
 
     if (this.graph instanceof MemoryExclusionGraph) {
       ((MemoryExclusionGraph) this.graph).clearAdjacentVerticesBackup();

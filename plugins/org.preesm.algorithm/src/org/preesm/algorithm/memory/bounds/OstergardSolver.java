@@ -127,15 +127,15 @@ public class OstergardSolver<V extends IWeightedVertex<Long>, E extends DefaultE
    */
   private OstergardSolver(final SimpleGraph<V, E> graph, final boolean speedUp) {
     super(graph);
-    this.orderedVertexSet = new ArrayList<>(this.numberVertices);
+    this.orderedVertexSet = new ArrayList<>(graph.vertexSet().size());
     this.workingSet = new ArrayList<>();
 
     // Initialize cost Array with 0 values. An extra 0 is added to enable
     // c(i+1) for all i=0..n-1
-    this.cost = new ArrayList<>(Collections.nCopies(this.numberVertices + 1, 0L));
+    this.cost = new ArrayList<>(Collections.nCopies(graph.vertexSet().size() + 1, 0L));
 
     // Initialize dcost Array with 0 values
-    this.dcost = new ArrayList<>(Collections.nCopies(this.numberVertices, 0L));
+    this.dcost = new ArrayList<>(Collections.nCopies(graph.vertexSet().size(), 0L));
     this.speedup = speedUp;
 
     // The constructor might be filled with graph checks in the future.
@@ -174,7 +174,7 @@ public class OstergardSolver<V extends IWeightedVertex<Long>, E extends DefaultE
    */
   private void orderVertexSet() {
     // Retrieve the vertices of the graph
-    final List<V> unorderedSet = new ArrayList<>(this.numberVertices);
+    final List<V> unorderedSet = new ArrayList<>(graph.vertexSet().size());
     unorderedSet.addAll(this.graph.vertexSet());
 
     // Make a local shallow copy of the graph to work on
@@ -266,7 +266,7 @@ public class OstergardSolver<V extends IWeightedVertex<Long>, E extends DefaultE
         // C(i+1) + w(vi), with i the current iteration from
         // wnew, then quit this iteration
         final int iplusone = 1 + this.orderedVertexSet.indexOf(this.workingSet.get(0));
-        if (iplusone < this.numberVertices) {
+        if (iplusone < graph.vertexSet().size()) {
           this.found = (this.max == (this.workingSet.get(0).getWeight() + this.cost.get(iplusone)));
         }
       }
@@ -338,7 +338,7 @@ public class OstergardSolver<V extends IWeightedVertex<Long>, E extends DefaultE
       // Compute D(i) with j = n-1 .. ceil((n)/2).
       // As the order of the list was reversed, this corresponds to the
       // calculation of D(i) for i=0..floor((n-1)/2)
-      for (int j = this.numberVertices - 1; j >= Math.ceil(this.numberVertices / 2.0); j--) {
+      for (int j = graph.vertexSet().size() - 1; j >= Math.ceil(graph.vertexSet().size() / 2.0); j--) {
 
         // wclique(S'i inter N(vi), w(i))
         final List<V> vertexSet = getSi(j); // Get S'i
@@ -361,10 +361,10 @@ public class OstergardSolver<V extends IWeightedVertex<Long>, E extends DefaultE
         this.cost.set(j, this.max);
 
         // D[i] := max
-        this.dcost.set(this.numberVertices - j - 1, this.max);
+        this.dcost.set(graph.vertexSet().size() - j - 1, this.max);
       }
       // Clean-up cost
-      this.cost = new ArrayList<>(Collections.nCopies(this.numberVertices + 1, 0L));
+      this.cost = new ArrayList<>(Collections.nCopies(graph.vertexSet().size() + 1, 0L));
 
       // Re-reverse the list order for the algo
       Collections.reverse(this.orderedVertexSet);
@@ -376,7 +376,7 @@ public class OstergardSolver<V extends IWeightedVertex<Long>, E extends DefaultE
     this.max = this.min;
 
     // for i:=n downto 1 do
-    for (int i = this.numberVertices - 1; i >= 0; i--) {
+    for (int i = graph.vertexSet().size() - 1; i >= 0; i--) {
 
       // if D(i) was not calculated for this i or
       // D(i) + C(i+1) > max, compute the wclique
