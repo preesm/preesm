@@ -49,12 +49,14 @@ import org.preesm.commons.logger.PreesmLogger;
  */
 public class MemoryBoundsEstimatorEngine {
 
-  private static final String        VALUE_SOLVER_DEFAULT   = "? C {Heuristic, Ostergard, Yamaguchi}";
-  private static final String        VALUE_SOLVER_OSTERGARD = "Ostergard";
-  private static final String        VALUE_SOLVER_YAMAGUCHI = "Yamaguchi";
-  private static final String        VALUE_SOLVER_HEURISTIC = "Heuristic";
-  private static final String        VALUE_VERBOSE_TRUE     = "True";
-  private final Logger               logger                 = PreesmLogger.getLogger();
+  private static final String VALUE_SOLVER_HEURISTIC = "Heuristic";
+  private static final String VALUE_SOLVER_OSTERGARD = "Ostergard";
+  private static final String VALUE_SOLVER_YAMAGUCHI = "Yamaguchi";
+  public static final String  VALUE_SOLVER_DEFAULT   = "? C {" + VALUE_SOLVER_HEURISTIC + ", " + VALUE_SOLVER_OSTERGARD
+      + ", " + VALUE_SOLVER_YAMAGUCHI + "}";
+  private static final String VALUE_VERBOSE_TRUE     = "True";
+
+  private final Logger               logger = PreesmLogger.getLogger();
   private final MemoryExclusionGraph memEx;
   private final boolean              verbose;
 
@@ -115,4 +117,9 @@ public class MemoryBoundsEstimatorEngine {
   public long getMaxBound() {
     return this.solver.sumWeight(this.memEx.vertexSet());
   }
+
+  public double getDensity() {
+    return memEx.edgeSet().size() / ((memEx.vertexSet().size() * (memEx.vertexSet().size() - 1)) / 2.0);
+  }
+
 }

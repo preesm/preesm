@@ -40,7 +40,6 @@ package org.preesm.algorithm.memory.bounds;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.logging.Level;
-import java.util.logging.Logger;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.preesm.algorithm.memory.exclusiongraph.MemoryExclusionGraph;
 import org.preesm.commons.doc.annotations.Parameter;
@@ -112,16 +111,12 @@ import org.preesm.workflow.implement.AbstractWorkflowNodeImplementation;
 public class MemoryBoundsEstimator extends AbstractTaskImplementation {
 
   static final String PARAM_SOLVER          = "Solver";
-  static final String VALUE_SOLVER_DEFAULT  = "? C {Heuristic, Ostergard, Yamaguchi}";
   static final String PARAM_VERBOSE         = "Verbose";
   static final String VALUE_VERBOSE_DEFAULT = "? C {True, False}";
 
   @Override
   public Map<String, Object> execute(final Map<String, Object> inputs, final Map<String, String> parameters,
       final IProgressMonitor monitor, final String nodeName, final Workflow workflow) {
-
-    // Rem: Logger is used to display messages in the console
-    final Logger logger = PreesmLogger.getLogger();
 
     // Check Workflow element parameters
     final String valueVerbose = parameters.get(MemoryBoundsEstimator.PARAM_VERBOSE);
@@ -138,7 +133,7 @@ public class MemoryBoundsEstimator extends AbstractTaskImplementation {
     final long maxBound = engine.getMaxBound();
 
     final String message = "Bound_Max = " + maxBound + " Bound_Min = " + minBound;
-    logger.log(Level.INFO, message);
+    PreesmLogger.getLogger().log(Level.INFO, message);
 
     // Generate output
     final Map<String, Object> output = new LinkedHashMap<>();
@@ -151,7 +146,7 @@ public class MemoryBoundsEstimator extends AbstractTaskImplementation {
   @Override
   public Map<String, String> getDefaultParameters() {
     final Map<String, String> parameters = new LinkedHashMap<>();
-    parameters.put(MemoryBoundsEstimator.PARAM_SOLVER, MemoryBoundsEstimator.VALUE_SOLVER_DEFAULT);
+    parameters.put(MemoryBoundsEstimator.PARAM_SOLVER, MemoryBoundsEstimatorEngine.VALUE_SOLVER_DEFAULT);
     parameters.put(MemoryBoundsEstimator.PARAM_VERBOSE, MemoryBoundsEstimator.VALUE_VERBOSE_DEFAULT);
     return parameters;
   }

@@ -43,9 +43,7 @@ import java.util.Map.Entry;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.eclipse.core.runtime.IProgressMonitor;
-import org.jgrapht.graph.DefaultEdge;
 import org.preesm.algorithm.memory.exclusiongraph.MemoryExclusionGraph;
-import org.preesm.algorithm.memory.exclusiongraph.MemoryExclusionVertex;
 import org.preesm.commons.doc.annotations.Parameter;
 import org.preesm.commons.doc.annotations.Port;
 import org.preesm.commons.doc.annotations.PreesmTask;
@@ -163,27 +161,17 @@ public class SerialMemoryBoundsEstimator extends AbstractTaskImplementation {
     for (final Entry<String, MemoryExclusionGraph> entry : memExes.entrySet()) {
       final String memory = entry.getKey();
       final MemoryExclusionGraph memEx = entry.getValue();
-      final int nbVertices = memEx.vertexSet().size();
-      final double density = memEx.edgeSet().size()
-          / ((memEx.vertexSet().size() * (memEx.vertexSet().size() - 1)) / 2.0);
-      // Derive bounds
-      AbstractMaximumWeightCliqueSolver<MemoryExclusionVertex, DefaultEdge> solver = null;
-      if (valueSolver.equals(SerialMemoryBoundsEstimator.VALUE_SOLVER_HEURISTIC)) {
-        solver = new HeuristicSolver<>(memEx);
-      }
-      if (valueSolver.equals(SerialMemoryBoundsEstimator.VALUE_SOLVER_OSTERGARD)) {
-        solver = new OstergardSolver<>(memEx);
-      }
-      if (valueSolver.equals(SerialMemoryBoundsEstimator.VALUE_SOLVER_YAMAGUCHI)) {
-        solver = new YamaguchiSolver<>(memEx);
-      }
-      if (solver == null) {
-        solver = new HeuristicSolver<>(memEx);
-      }
 
-      solver.solve();
-      final long minBound = solver.sumWeight(solver.getHeaviestClique());
-      final long maxBound = solver.sumWeight(memEx.vertexSet());
+      final MemoryBoundsEstimatorEngine engine = new MemoryBoundsEstimatorEngine(memEx, valueVerbose);
+      engine.selectSolver(valueSolver);
+      engine.solve();
+
+      final int nbVertices = memEx.vertexSet().size();
+      final double density = engine.getDensity();
+
+      final long minBound = engine.getMinBound();
+
+      final long maxBound = engine.getMaxBound();
 
       logger.log(Level.INFO, () -> "Memory(" + memory + ") Vertices = " + nbVertices + " Bound_Max = " + maxBound
           + " Bound_Min = " + minBound + " Density = " + density);
