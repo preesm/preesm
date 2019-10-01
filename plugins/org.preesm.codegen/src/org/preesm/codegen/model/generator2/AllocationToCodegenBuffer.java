@@ -77,10 +77,9 @@ public class AllocationToCodegenBuffer extends MemoryAllocationSwitch<Boolean> {
       final Buffer srcCodegenBuffer = this.btb.get(srcBuffer);
       final Buffer tgtCodegenBuffer = this.btb.get(tgtBuffer);
 
-      final String tgtPrefix;
       if (tgtCodegenBuffer != srcCodegenBuffer) {
         // generate 2 codegen buffers and route
-        tgtPrefix = "tgt_";
+        tgtCodegenBuffer.setName(generateUniqueBufferName("tgt_" + fifo.getTargetPort().getId()));
         srcCodegenBuffer.setName(generateUniqueBufferName("src_" + fifo.getSourcePort().getId()));
         srcCodegenBuffer.setType(fifo.getType());
         srcCodegenBuffer.setTypeSize(scenario.getSimulationInfo().getDataTypeSizeOrDefault(fifo.getType()));
@@ -100,15 +99,17 @@ public class AllocationToCodegenBuffer extends MemoryAllocationSwitch<Boolean> {
         }
       } else {
         this.portToVariable.put(fifo.getSourcePort(), tgtCodegenBuffer);
-        tgtPrefix = "";
+
+        // XXX old style naming
+        tgtCodegenBuffer
+            .setName(generateUniqueBufferName(fifo.getSourcePort().getName() + "__" + fifo.getTargetPort().getName()));
       }
 
-      tgtCodegenBuffer.setName(generateUniqueBufferName(tgtPrefix + fifo.getTargetPort().getId()));
       tgtCodegenBuffer.setType(fifo.getType());
       tgtCodegenBuffer.setTypeSize(scenario.getSimulationInfo().getDataTypeSizeOrDefault(fifo.getType()));
 
       final String tcomment = fifo.getTargetPort().getId();
-      srcCodegenBuffer.setComment(tcomment);
+      tgtCodegenBuffer.setComment(tcomment);
 
       this.portToVariable.put(fifo.getTargetPort(), tgtCodegenBuffer);
     }
@@ -121,12 +122,18 @@ public class AllocationToCodegenBuffer extends MemoryAllocationSwitch<Boolean> {
       final org.preesm.algorithm.memalloc.model.Buffer buffer = delayAllocation.getValue();
       final Buffer codegenBuffer = this.btb.get(buffer);
 
-      codegenBuffer.setName("delay_" + generateUniqueBufferName(fifo.getId()));
+      // XXX old naming
+      final String sink = initActor.getName();
+      final String source = initActor.getEndReference().getName();
+      final String comment = source + " > " + sink;
+      codegenBuffer.setComment(comment);
+
+      final String name = source + "__" + sink;
+      final String uniqueName = generateUniqueBufferName("FIFO_Head_" + name);
+      codegenBuffer.setName(uniqueName);
       codegenBuffer.setType(fifo.getType());
       codegenBuffer.setTypeSize(scenario.getSimulationInfo().getDataTypeSizeOrDefault(fifo.getType()));
 
-      final String comment = "Delay : " + initActor.getEndReference().getName() + " -> " + initActor.getName();
-      codegenBuffer.setComment(comment);
     }
 
     final Map<Port, Variable> portToVariable = this.portToVariable;
@@ -158,8 +165,8 @@ public class AllocationToCodegenBuffer extends MemoryAllocationSwitch<Boolean> {
     final String candidate = name.replace(".", "_").replace("-", "_");
     long idx;
     String key = candidate;
-    if (key.length() > 35) {
-      key = key.substring(0, 35);
+    if (key.length() > 28) {
+      key = key.substring(0, 28);
     }
     if (this.bufferNames.containsKey(key)) {
       idx = this.bufferNames.get(key);
