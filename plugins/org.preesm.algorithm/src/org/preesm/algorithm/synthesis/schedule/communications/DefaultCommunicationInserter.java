@@ -1,9 +1,11 @@
 package org.preesm.algorithm.synthesis.schedule.communications;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 import org.eclipse.emf.common.util.ECollections;
 import org.eclipse.emf.common.util.EList;
 import org.preesm.algorithm.mapping.model.Mapping;
@@ -12,7 +14,6 @@ import org.preesm.algorithm.schedule.model.CommunicationActor;
 import org.preesm.algorithm.schedule.model.ReceiveEndActor;
 import org.preesm.algorithm.schedule.model.ReceiveStartActor;
 import org.preesm.algorithm.schedule.model.Schedule;
-import org.preesm.algorithm.schedule.model.ScheduleFactory;
 import org.preesm.algorithm.schedule.model.SendEndActor;
 import org.preesm.algorithm.schedule.model.SendStartActor;
 import org.preesm.algorithm.synthesis.schedule.ScheduleOrderedVisitor;
@@ -24,6 +25,7 @@ import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.DataInputPort;
 import org.preesm.model.pisdf.DataOutputPort;
+import org.preesm.model.pisdf.DataPort;
 import org.preesm.model.pisdf.Fifo;
 import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.scenario.Scenario;
@@ -47,7 +49,7 @@ import org.preesm.model.slam.route.SlamRoutingTable;
  * @author anmorvan
  *
  */
-public class ALAPCommunicationInserter implements CommunicationInserter {
+public class DefaultCommunicationInserter implements CommunicationInserter {
 
   /**
    * Tracks what is the last visited actor for each component instance. This is used to know where to insert the forward
@@ -63,6 +65,21 @@ public class ALAPCommunicationInserter implements CommunicationInserter {
       final Map<AbstractActor, ActorSchedule> actorToScheduleMap, final Mapping mapping) {
 
     for (final SlamRouteStep rstep : route.getRouteSteps()) {
+      // -- create sends
+      final SendStartActor sendStart = CommunicationInserter.createSendStart(fifo, rstep);
+      final SendEndActor sendEnd = CommunicationInserter.createSendEnd(fifo, rstep);
+
+      // -- create receives
+      final ReceiveStartActor receiveStart = CommunicationInserter.createReceiveStart(fifo, rstep);
+      final ReceiveEndActor receiveEnd = CommunicationInserter.createReceiveEnd(fifo, rstep);
+
+      // -- Associate com nodes
+      receiveEnd.setReceiveStart(receiveStart);
+      sendEnd.setSendStart(sendStart);
+      sendStart.setTargetReceiveEnd(receiveEnd);
+      receiveEnd.setSourceSendStart(sendStart);
+
+      // -- insert
       final ComponentInstance srcCmp = rstep.getSender();
       final ComponentInstance tgtCmp = rstep.getReceiver();
 
@@ -76,17 +93,6 @@ public class ALAPCommunicationInserter implements CommunicationInserter {
       final ActorSchedule srcActorSchedule = actorToScheduleMap.get(srcCmpLastActor);
       final ActorSchedule tgtActorSchedule = actorToScheduleMap.get(tgtCmpLastActor);
 
-      // -- Insert sends
-      final SendStartActor sendStart = ScheduleFactory.eINSTANCE.createSendStartActor();
-      sendStart.setFifo(fifo);
-      sendStart.setRouteStep(rstep);
-      sendStart.setName("sendStart_" + srcCmpLastActor.getName() + "_" + fifo.getSourcePort().getName());
-
-      final SendEndActor sendEnd = ScheduleFactory.eINSTANCE.createSendEndActor();
-      sendEnd.setFifo(fifo);
-      sendEnd.setName("sendEnd_" + srcCmpLastActor.getName() + "_" + fifo.getSourcePort().getName());
-      sendEnd.setRouteStep(rstep);
-
       final EList<AbstractActor> srcActorList = srcActorSchedule.getActorList();
       CollectionUtil.insertAfter(srcActorList, srcCmpLastActor, sendStart, sendEnd);
       actorToScheduleMap.put(sendStart, srcActorSchedule);
@@ -94,29 +100,12 @@ public class ALAPCommunicationInserter implements CommunicationInserter {
       mapping.getMappings().put(sendStart, ECollections.newBasicEList(srcCmp));
       mapping.getMappings().put(sendEnd, ECollections.newBasicEList(srcCmp));
 
-      // -- Insert receives
-      final ReceiveStartActor receiveStart = ScheduleFactory.eINSTANCE.createReceiveStartActor();
-      receiveStart.setFifo(fifo);
-      receiveStart.setName("receiveStart_" + tgtCmpLastActor.getName() + "_" + fifo.getTargetPort().getName());
-      receiveStart.setRouteStep(rstep);
-
-      final ReceiveEndActor receiveEnd = ScheduleFactory.eINSTANCE.createReceiveEndActor();
-      receiveEnd.setFifo(fifo);
-      receiveEnd.setName("receiveEnd_" + tgtCmpLastActor.getName() + "_" + fifo.getTargetPort().getName());
-      receiveEnd.setReceiveStart(receiveStart);
-      receiveEnd.setRouteStep(rstep);
-
       final EList<AbstractActor> tgtActorList = tgtActorSchedule.getActorList();
       CollectionUtil.insertBefore(tgtActorList, tgtCmpLastActor, receiveStart, receiveEnd);
       actorToScheduleMap.put(receiveStart, tgtActorSchedule);
       actorToScheduleMap.put(receiveEnd, tgtActorSchedule);
       mapping.getMappings().put(receiveStart, ECollections.newBasicEList(tgtCmp));
       mapping.getMappings().put(receiveEnd, ECollections.newBasicEList(tgtCmp));
-
-      // -- Associate com nodes
-      sendEnd.setSendStart(sendStart);
-      sendStart.setTargetReceiveEnd(receiveEnd);
-      receiveEnd.setSourceSendStart(sendStart);
     }
   }
 
@@ -140,7 +129,7 @@ public class ALAPCommunicationInserter implements CommunicationInserter {
             final ComponentInstance componentInstance = actorMappings.get(0);
             if (cmps.contains(componentInstance)) {
               cmps.remove(componentInstance);
-              ALAPCommunicationInserter.this.lastVisitedActor.put(componentInstance, actor);
+              DefaultCommunicationInserter.this.lastVisitedActor.put(componentInstance, actor);
               if (cmps.isEmpty()) {
                 throw new DoneException();
               }
@@ -158,42 +147,59 @@ public class ALAPCommunicationInserter implements CommunicationInserter {
   public List<CommunicationActor> insertCommunications(final PiGraph piGraph, final Design slamDesign,
       final Scenario scenario, final Schedule schedule, final Mapping mapping) {
 
+    initLastVisitedActor(slamDesign, schedule, mapping);
+
+    // Get edges in scheduling order of their producers
+    final ScheduleIterator t = new ScheduleAndTopologyIterator(schedule);
+    final List<Fifo> edgesInPrecedenceOrder = new ArrayList<>();
+
+    while (t.hasNext()) {
+      final AbstractActor vertex = t.next();
+      edgesInPrecedenceOrder
+          .addAll(vertex.getDataOutputPorts().stream().map(DataPort::getFifo).collect(Collectors.toList()));
+    }
+
+    final int dagEdgeCount = piGraph.getAllFifos().size();
+    final int outEdgesCount = edgesInPrecedenceOrder.size();
+    if (outEdgesCount != dagEdgeCount) {
+      // If this happens, this means that not all edges are covered by the previous while loop.
+      throw new PreesmRuntimeException("Some DAG edges are not covered. Input DAG has " + dagEdgeCount
+          + " edges whereas there are " + outEdgesCount + " edges connected to vertices.");
+    }
+
     final List<CommunicationActor> res = new ArrayList<>();
 
     // used to insert communications in the proper actor schedule, before/after the receiver/sender actor
     final Map<AbstractActor, ActorSchedule> actorToScheduleMap = ScheduleUtil.actorToScheduleMap(schedule);
-    initLastVisitedActor(slamDesign, schedule, mapping);
     final SlamRoutingTable routeTable = new SlamRoutingTable(slamDesign);
 
-    final ScheduleIterator t = new ScheduleAndTopologyIterator(schedule);
-    final List<AbstractActor> orderedList = t.getOrderedList();
+    final Iterator<Fifo> iterator = edgesInPrecedenceOrder.iterator();
+    while (iterator.hasNext()) {
+      final Fifo fifo = iterator.next();
 
-    for (final AbstractActor targetActor : orderedList) {
+      final DataInputPort targetPort = fifo.getTargetPort();
+      final AbstractActor targetActor = targetPort.getContainingActor();
+
+      final DataOutputPort sourcePort = fifo.getSourcePort();
+      final AbstractActor sourceActor = sourcePort.getContainingActor();
+
       final List<ComponentInstance> targetMappings = mapping.getMapping(targetActor);
+      final List<ComponentInstance> sourceMappings = mapping.getMapping(sourceActor);
+      if ((targetMappings.size() == 1) && (sourceMappings.size() == 1)) {
+        final ComponentInstance tgtComponent = targetMappings.get(0);
+        final ComponentInstance srcComponent = sourceMappings.get(0);
 
-      final List<DataInputPort> dataInputPorts = targetActor.getDataInputPorts();
-      for (final DataInputPort dip : dataInputPorts) {
-        final Fifo fifo = dip.getFifo();
-        final DataOutputPort sourcePort = fifo.getSourcePort();
-        final AbstractActor sourceActor = sourcePort.getContainingActor();
-
-        final List<ComponentInstance> sourceMappings = mapping.getMapping(sourceActor);
-        if ((targetMappings.size() == 1) && (sourceMappings.size() == 1)) {
-          final ComponentInstance tgtComponent = targetMappings.get(0);
-          final ComponentInstance srcComponent = sourceMappings.get(0);
-          this.lastVisitedActor.put(tgtComponent, targetActor);
-
-          if (srcComponent != tgtComponent) {
-            // insert communication if operator is different only
-            final SlamRoute route = routeTable.getRoute(srcComponent, tgtComponent);
-            insertCommunication(fifo, route, actorToScheduleMap, mapping);
-          }
-        } else {
-          // no supported
-          throw new PreesmRuntimeException("Cannot insert communications for actors mapped on several operators");
+        if (srcComponent != tgtComponent) {
+          // insert communication if operator is different only
+          final SlamRoute route = routeTable.getRoute(srcComponent, tgtComponent);
+          insertCommunication(fifo, route, actorToScheduleMap, mapping);
         }
+      } else {
+        // no supported
+        throw new PreesmRuntimeException("Cannot insert communications for actors mapped on several operators");
       }
     }
     return res;
   }
+
 }

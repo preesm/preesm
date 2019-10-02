@@ -47,8 +47,8 @@ import org.preesm.algorithm.synthesis.memalloc.IMemoryAllocation;
 import org.preesm.algorithm.synthesis.memalloc.SimpleMemoryAllocation;
 import org.preesm.algorithm.synthesis.schedule.IScheduler;
 import org.preesm.algorithm.synthesis.schedule.algos.LegacyListScheduler;
-import org.preesm.algorithm.synthesis.schedule.communications.AroundCommunicationInserter;
 import org.preesm.algorithm.synthesis.schedule.communications.CommunicationInserter;
+import org.preesm.algorithm.synthesis.schedule.communications.DefaultCommunicationInserter;
 import org.preesm.commons.doc.annotations.Port;
 import org.preesm.commons.doc.annotations.PreesmTask;
 import org.preesm.commons.logger.PreesmLogger;
@@ -85,7 +85,7 @@ public class PreesmSynthesisTask extends AbstractTaskImplementation {
     final SynthesisResult scheduleAndMap = scheduler.scheduleAndMap(algorithm, architecture, scenario);
 
     PreesmLogger.getLogger().log(Level.INFO, " -- Insert communication");
-    final CommunicationInserter comIns = new AroundCommunicationInserter();
+    final CommunicationInserter comIns = new DefaultCommunicationInserter();
     comIns.insertCommunications(algorithm, architecture, scenario, scheduleAndMap.schedule, scheduleAndMap.mapping);
 
     PreesmLogger.getLogger().log(Level.INFO, " -- Allocating Memory");
