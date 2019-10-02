@@ -109,7 +109,7 @@ public class AddOverheadVertexTransaction implements Transaction {
    * @see org.ietr.preesm.mapper.abc.transaction.Transaction#execute(java.util.List)
    */
   @Override
-  public void execute(final List<Object> resultList) {
+  public void execute(final List<MapperDAGVertex> resultList) {
 
     final MapperDAGVertex currentSource = (MapperDAGVertex) this.edge.getSource();
     final MapperDAGVertex currentTarget = (MapperDAGVertex) this.edge.getTarget();

@@ -37,6 +37,7 @@
 package org.preesm.algorithm.mapper.abc.transaction;
 
 import java.util.List;
+import org.preesm.algorithm.mapper.model.MapperDAGVertex;
 
 /**
  * Transactions are used because these actions can be created and stored while going through a graph and then executed
@@ -46,6 +47,6 @@ import java.util.List;
  */
 public interface Transaction {
 
-  public void execute(final List<Object> resultList);
+  public void execute(final List<MapperDAGVertex> resultList);
 
 }

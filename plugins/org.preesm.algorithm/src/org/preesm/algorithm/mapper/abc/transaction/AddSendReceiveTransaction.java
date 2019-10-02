@@ -125,7 +125,7 @@ public class AddSendReceiveTransaction implements Transaction {
    * @see org.ietr.preesm.mapper.abc.transaction.Transaction#execute(java.util.List)
    */
   @Override
-  public void execute(final List<Object> resultList) {
+  public void execute(final List<MapperDAGVertex> resultList) {
 
     MapperDAGVertex currentSource = null;
     final MapperDAGVertex currentTarget = (MapperDAGVertex) this.edge.getTarget();

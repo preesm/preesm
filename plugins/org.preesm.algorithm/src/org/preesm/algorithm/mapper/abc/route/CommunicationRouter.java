@@ -271,7 +271,7 @@ public class CommunicationRouter {
   public void routeNewVertex(final MapperDAGVertex newVertex, final List<Integer> types) {
 
     final Map<MapperDAGEdge, SlamRoute> transferEdges = getRouteMap(newVertex);
-    final List<Object> createdVertices = new ArrayList<>();
+    final List<MapperDAGVertex> createdVertices = new ArrayList<>();
 
     if (!transferEdges.isEmpty()) {
       for (final Integer type : types) {
@@ -325,7 +325,7 @@ public class CommunicationRouter {
    *          the created vertices
    */
   private void addVertices(final Map<MapperDAGEdge, SlamRoute> transferEdges, final int type,
-      final List<Object> createdVertices) {
+      final List<MapperDAGVertex> createdVertices) {
     final TransactionManager localTransactionManager = new TransactionManager(createdVertices);
 
     for (final Entry<MapperDAGEdge, SlamRoute> route : transferEdges.entrySet()) {

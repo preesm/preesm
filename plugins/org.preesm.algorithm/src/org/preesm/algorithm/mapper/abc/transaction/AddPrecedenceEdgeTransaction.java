@@ -86,7 +86,7 @@ public class AddPrecedenceEdgeTransaction implements Transaction {
    * @see org.ietr.preesm.mapper.abc.transaction.Transaction#execute(java.util.List)
    */
   @Override
-  public void execute(final List<Object> resultList) {
+  public void execute(final List<MapperDAGVertex> resultList) {
     this.precedenceEdge = new PrecedenceEdge(this.source);
     this.precedenceEdge.getTiming().setCost(0);
     this.implementation.addEdge(this.source, this.destination, this.precedenceEdge);
