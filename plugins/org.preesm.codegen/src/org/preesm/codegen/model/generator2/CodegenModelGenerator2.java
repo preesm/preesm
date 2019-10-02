@@ -148,7 +148,7 @@ public class CodegenModelGenerator2 {
     }
 
     // 1- generate variables (and keep track of them with a linker)
-    this.memoryLinker = AllocationToCodegenBuffer.link(memAlloc, scenario, algo);
+    this.memoryLinker = AllocationToCodegenBuffer.link(memAlloc, schedule, scenario, algo);
 
     // 2- generate code
     generateCode(coreBlocks);
