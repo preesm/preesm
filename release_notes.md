@@ -39,6 +39,7 @@ PREESM Changelog
 * Fix random seed parameter transfer to clustering algorithm
 * Fix various bugs in the experimental external mapping importer.
 * Fix #234
+* Fix #166: force init/end on same operator in kwok scheduler;
 
 ## Release version 3.17.0
 *2019.09.09*
