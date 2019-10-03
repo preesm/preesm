@@ -81,6 +81,18 @@ public class ScheduleOrderManager {
   }
 
   /**
+   * Remove the given actor from the ActorSchedule that schedules it.
+   */
+  public final boolean remove(final AbstractActor actor) {
+    if (actorToScheduleMap.containsKey(actor)) {
+      final ActorSchedule actorSchedule = actorToScheduleMap.get(actor);
+      actorToScheduleMap.remove(actor);
+      return actorSchedule.getActorList().remove(actor);
+    }
+    return false;
+  }
+
+  /**
    * Find the Schedule in which referenceActor appears, insert newActors after referenceActor in the found Schedule,
    * update internal structure.
    */
@@ -166,4 +178,5 @@ public class ScheduleOrderManager {
       }
     }
   }
+
 }
