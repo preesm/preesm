@@ -43,7 +43,7 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.preesm.algorithm.mapping.model.Mapping;
 import org.preesm.algorithm.memalloc.model.Allocation;
 import org.preesm.algorithm.schedule.model.Schedule;
-import org.preesm.algorithm.synthesis.communications.CommunicationInserter;
+import org.preesm.algorithm.synthesis.communications.DefaultCommunicationInserter;
 import org.preesm.algorithm.synthesis.memalloc.IMemoryAllocation;
 import org.preesm.algorithm.synthesis.memalloc.SimpleMemoryAllocation;
 import org.preesm.algorithm.synthesis.schedule.algos.IScheduler;
@@ -84,7 +84,7 @@ public class PreesmSynthesisTask extends AbstractTaskImplementation {
     final SynthesisResult scheduleAndMap = scheduler.scheduleAndMap(algorithm, architecture, scenario);
 
     PreesmLogger.getLogger().log(Level.INFO, " -- Insert communication");
-    final CommunicationInserter comIns = new CommunicationInserter();
+    final DefaultCommunicationInserter comIns = new DefaultCommunicationInserter();
     comIns.insertCommunications(algorithm, architecture, scenario, scheduleAndMap.schedule, scheduleAndMap.mapping);
 
     PreesmLogger.getLogger().log(Level.INFO, " -- Allocating Memory");
