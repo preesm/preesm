@@ -14,7 +14,6 @@ import org.preesm.algorithm.schedule.model.ActorSchedule;
 import org.preesm.algorithm.schedule.model.HierarchicalSchedule;
 import org.preesm.algorithm.schedule.model.ScheduleFactory;
 import org.preesm.algorithm.synthesis.SynthesisResult;
-import org.preesm.algorithm.synthesis.schedule.AbstractScheduler;
 import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.PiGraph;
@@ -24,12 +23,10 @@ import org.preesm.model.slam.Design;
 import org.preesm.workflow.implement.AbstractWorkflowNodeImplementation;
 
 /**
- *
  * Calls the legacy schedule algorithm with the input design, algo and scenario. The Schedule and Mapping are built
  * using the resulting MapperDAG.
  *
  * @author anmorvan
- *
  */
 public class LegacyListScheduler extends AbstractScheduler {
 

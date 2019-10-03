@@ -37,7 +37,6 @@ package org.preesm.algorithm.synthesis.schedule.algos;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Level;
 import org.eclipse.emf.common.util.ECollections;
 import org.preesm.algorithm.mapping.model.Mapping;
 import org.preesm.algorithm.mapping.model.MappingFactory;
@@ -45,8 +44,6 @@ import org.preesm.algorithm.schedule.model.ActorSchedule;
 import org.preesm.algorithm.schedule.model.HierarchicalSchedule;
 import org.preesm.algorithm.schedule.model.ScheduleFactory;
 import org.preesm.algorithm.synthesis.SynthesisResult;
-import org.preesm.algorithm.synthesis.schedule.AbstractScheduler;
-import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.pisdf.util.topology.PiSDFTopologyHelper;
@@ -56,9 +53,12 @@ import org.preesm.model.slam.Design;
 import org.preesm.model.slam.utils.LexicographicComponentInstanceComparator;
 
 /**
+ * Scheduler that inserts actors in the topological order of their appearance in the graph.
+ *
+ * Maps everything on the first possible operator, as specified in the scenario constraints; or on the main operator by
+ * default.
  *
  * @author anmorvan
- *
  */
 public class SimpleScheduler extends AbstractScheduler {
 
@@ -66,30 +66,29 @@ public class SimpleScheduler extends AbstractScheduler {
   protected SynthesisResult exec(final PiGraph piGraph /* SRDAG */, final Design slamDesign, final Scenario scenario) {
 
     final HierarchicalSchedule topParallelSchedule = ScheduleFactory.eINSTANCE.createParallelHiearchicalSchedule();
-    final Mapping createMapping = MappingFactory.eINSTANCE.createMapping();
+    final Mapping resultMapping = MappingFactory.eINSTANCE.createMapping();
 
     final Map<ComponentInstance, ActorSchedule> cmpSchedules = new LinkedHashMap<>();
 
-    final List<AbstractActor> allActors = piGraph.getAllActors();
-    final List<AbstractActor> depthFirstSort = PiSDFTopologyHelper.sort(allActors);
+    final List<AbstractActor> depthFirstTopologicalSort = PiSDFTopologyHelper.sort(piGraph.getAllActors());
 
-    for (final AbstractActor orderedActor : depthFirstSort) {
+    for (final AbstractActor orderedActor : depthFirstTopologicalSort) {
+      // map actor on first possible operator, or main operator by default
       final ComponentInstance targetCmpIntance = scenario.getPossibleMappings(orderedActor).stream()
           .sorted(new LexicographicComponentInstanceComparator()).findFirst()
           .orElse(scenario.getSimulationInfo().getMainOperator());
-      createMapping.getMappings().put(orderedActor, ECollections.singletonEList(targetCmpIntance));
+      resultMapping.getMappings().put(orderedActor, ECollections.singletonEList(targetCmpIntance));
+      // create a schedule for this component if not already present
       if (!cmpSchedules.containsKey(targetCmpIntance)) {
         final ActorSchedule createActorSchedule = ScheduleFactory.eINSTANCE.createSequentialActorSchedule();
         cmpSchedules.put(targetCmpIntance, createActorSchedule);
         topParallelSchedule.getScheduleTree().add(createActorSchedule);
       }
+      // append the actor in the schedule of the component
       cmpSchedules.get(targetCmpIntance).getActorList().add(orderedActor);
     }
 
-    final int span = topParallelSchedule.getSpan();
-    PreesmLogger.getLogger().log(Level.INFO, "span = " + span);
-
-    return new SynthesisResult(createMapping, topParallelSchedule, null);
+    return new SynthesisResult(resultMapping, topParallelSchedule, null);
   }
 
 }

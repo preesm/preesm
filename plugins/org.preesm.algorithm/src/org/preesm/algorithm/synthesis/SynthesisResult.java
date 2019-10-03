@@ -40,7 +40,7 @@ import org.preesm.algorithm.mapping.model.Mapping;
 import org.preesm.algorithm.memalloc.model.Allocation;
 import org.preesm.algorithm.schedule.model.HierarchicalSchedule;
 import org.preesm.algorithm.schedule.model.Schedule;
-import org.preesm.algorithm.synthesis.schedule.iterator.SimpleScheduleIterator;
+import org.preesm.algorithm.synthesis.schedule.ScheduleOrderBuilder;
 import org.preesm.model.pisdf.AbstractActor;
 
 /**
@@ -73,7 +73,7 @@ public class SynthesisResult {
         res.append(SynthesisResult.buildString(child, mapp, indent + "  ").toString());
       }
     } else {
-      final List<AbstractActor> actors = new SimpleScheduleIterator(sched).getOrderedList();
+      final List<AbstractActor> actors = ScheduleOrderBuilder.getSimpleOrderedList(sched);
       for (final AbstractActor actor : actors) {
         final List<String> collect = mapp.getMapping(actor).stream().map(m -> m.getInstanceName())
             .collect(Collectors.toList());

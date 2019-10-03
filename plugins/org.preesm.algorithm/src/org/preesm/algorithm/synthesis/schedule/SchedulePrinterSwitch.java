@@ -43,7 +43,6 @@ import org.preesm.algorithm.schedule.model.ParallelHiearchicalSchedule;
 import org.preesm.algorithm.schedule.model.Schedule;
 import org.preesm.algorithm.schedule.model.SequentialHiearchicalSchedule;
 import org.preesm.algorithm.schedule.model.util.ScheduleSwitch;
-import org.preesm.algorithm.synthesis.schedule.iterator.SimpleScheduleIterator;
 import org.preesm.model.pisdf.AbstractActor;
 
 /**
@@ -76,7 +75,7 @@ public class SchedulePrinterSwitch extends ScheduleSwitch<String> {
 
     // Print actors names
     final List<String> actorsNames = new LinkedList<>();
-    final List<AbstractActor> actors = new SimpleScheduleIterator(object).getOrderedList();
+    final List<AbstractActor> actors = ScheduleOrderBuilder.getSimpleOrderedList(object);
     for (final AbstractActor actor : actors) {
       actorsNames.add(actor.getName());
     }

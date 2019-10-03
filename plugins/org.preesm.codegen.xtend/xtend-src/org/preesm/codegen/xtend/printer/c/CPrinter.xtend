@@ -651,7 +651,7 @@ class CPrinter extends BlankPrinter {
 	«ENDIF»«ENDIF»«IF communication.isRedundant»//«ENDIF»«communication.direction.toString.toLowerCase»«communication.delimiter.toString.toLowerCase.toFirstUpper»(«IF (communication.
 		direction == Direction::SEND && communication.delimiter == Delimiter::START) ||
 		(communication.direction == Direction::RECEIVE && communication.delimiter == Delimiter::END)»«communication.sendStart.coreContainer.coreID», «communication.receiveStart.coreContainer.coreID»«ENDIF
-		»); // «communication.sendStart.coreContainer.name» > «communication.receiveStart.coreContainer.name»: «communication.data.doSwitch»
+		»); // «communication.sendStart.coreContainer.name» > «communication.receiveStart.coreContainer.name»
 	'''
 
 	override printFunctionCall(FunctionCall functionCall) '''

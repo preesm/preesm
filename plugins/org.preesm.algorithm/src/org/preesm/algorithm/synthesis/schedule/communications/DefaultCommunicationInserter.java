@@ -19,10 +19,9 @@ import org.preesm.algorithm.schedule.model.ReceiveStartActor;
 import org.preesm.algorithm.schedule.model.Schedule;
 import org.preesm.algorithm.schedule.model.SendEndActor;
 import org.preesm.algorithm.schedule.model.SendStartActor;
+import org.preesm.algorithm.synthesis.schedule.ScheduleOrderBuilder;
 import org.preesm.algorithm.synthesis.schedule.ScheduleOrderedVisitor;
 import org.preesm.algorithm.synthesis.schedule.ScheduleUtil;
-import org.preesm.algorithm.synthesis.schedule.iterator.ScheduleAndTopologyIterator;
-import org.preesm.algorithm.synthesis.schedule.iterator.ScheduleIterator;
 import org.preesm.commons.CollectionUtil;
 import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.preesm.model.pisdf.AbstractActor;
@@ -121,8 +120,8 @@ public class DefaultCommunicationInserter implements CommunicationInserter {
   }
 
   /**
-   * The purpose of this method is to reschedule receive vertices of the receiverOperator to comply with
-   * constraints on communication primitive order enforced by the {@link CommunicationOrderChecker}. <br>
+   * The purpose of this method is to reschedule receive vertices of the receiverOperator to comply with constraints on
+   * communication primitive order enforced by the {@link CommunicationOrderChecker}. <br>
    * <br>
    * Briefly, if there exists {@link ReceiveVertex}es scheduled after the current {@link #receiveVertex} on the
    * receiverOperator, (but associated to a {@link SendVertex}es scheduled before the current {@link #sendVertex} on the
@@ -178,7 +177,7 @@ public class DefaultCommunicationInserter implements CommunicationInserter {
     initLastVisitedActor(slamDesign, schedule, mapping);
 
     // Get edges in scheduling order of their producers
-    final ScheduleIterator t = new ScheduleAndTopologyIterator(schedule);
+    final Iterator<AbstractActor> t = ScheduleOrderBuilder.getScheduleAndTopologicalOrderedList(schedule).iterator();
     final List<Fifo> edgesInPrecedenceOrder = new ArrayList<>();
 
     while (t.hasNext()) {

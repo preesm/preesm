@@ -32,7 +32,7 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL license and that you accept its terms.
  */
-package org.preesm.algorithm.synthesis.schedule;
+package org.preesm.algorithm.synthesis.schedule.algos;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -40,7 +40,7 @@ import org.preesm.algorithm.mapping.model.Mapping;
 import org.preesm.algorithm.schedule.model.Schedule;
 import org.preesm.algorithm.synthesis.PreesmSynthesisException;
 import org.preesm.algorithm.synthesis.SynthesisResult;
-import org.preesm.algorithm.synthesis.schedule.iterator.SimpleScheduleIterator;
+import org.preesm.algorithm.synthesis.schedule.ScheduleOrderBuilder;
 import org.preesm.commons.model.PreesmCopyTracker;
 import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.EndActor;
@@ -103,7 +103,7 @@ public abstract class AbstractScheduler implements IScheduler {
     // make sure all actors have been scheduled and schedule contains only actors from the input graph
     final List<AbstractActor> piGraphAllActors = new ArrayList<>(piGraph.getAllActors());
 
-    final List<AbstractActor> actors = new SimpleScheduleIterator(schedule).getOrderedList();
+    final List<AbstractActor> actors = ScheduleOrderBuilder.getSimpleOrderedList(schedule);
     final List<AbstractActor> scheduledActors = new ArrayList<>(actors);
     if (!piGraphAllActors.containsAll(scheduledActors)) {
       throw new PreesmSynthesisException("Schedule refers actors not present in the input PiSDF.");

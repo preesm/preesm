@@ -46,7 +46,7 @@ import org.preesm.algorithm.schedule.model.ActorSchedule;
 import org.preesm.algorithm.schedule.model.HierarchicalSchedule;
 import org.preesm.algorithm.schedule.model.Schedule;
 import org.preesm.algorithm.schedule.model.ScheduleFactory;
-import org.preesm.algorithm.synthesis.schedule.iterator.SimpleScheduleIterator;
+import org.preesm.algorithm.synthesis.schedule.ScheduleOrderBuilder;
 import org.preesm.algorithm.synthesis.schedule.transform.IScheduleTransform;
 import org.preesm.algorithm.synthesis.schedule.transform.ScheduleDataParallelismExhibiter;
 import org.preesm.algorithm.synthesis.schedule.transform.ScheduleFlattener;
@@ -314,7 +314,7 @@ public class ClusteringBuilder {
         if (child instanceof HierarchicalSchedule) {
           childActors.add(((HierarchicalSchedule) processedChild).getAttachedActor());
         } else {
-          final List<AbstractActor> actors = new SimpleScheduleIterator(processedChild).getOrderedList();
+          final List<AbstractActor> actors = ScheduleOrderBuilder.getSimpleOrderedList(processedChild);
           childActors.addAll(actors);
         }
       }
