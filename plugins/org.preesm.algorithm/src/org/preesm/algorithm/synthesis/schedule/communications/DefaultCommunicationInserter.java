@@ -8,6 +8,9 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import org.eclipse.emf.common.util.ECollections;
 import org.eclipse.emf.common.util.EList;
+import org.preesm.algorithm.mapper.model.special.ReceiveVertex;
+import org.preesm.algorithm.mapper.model.special.SendVertex;
+import org.preesm.algorithm.mapper.tools.CommunicationOrderChecker;
 import org.preesm.algorithm.mapping.model.Mapping;
 import org.preesm.algorithm.schedule.model.ActorSchedule;
 import org.preesm.algorithm.schedule.model.CommunicationActor;
@@ -43,8 +46,6 @@ import org.preesm.model.slam.route.SlamRoutingTable;
  *
  * The route step forwards (send then receive) are inserted at the peek of the schedule containing the last visited
  * actor mapped on the proxy operator.
- *
- * Start/End communication actors are scheduled next to each other.
  *
  * @author anmorvan
  *
@@ -93,6 +94,9 @@ public class DefaultCommunicationInserter implements CommunicationInserter {
       final ActorSchedule srcActorSchedule = actorToScheduleMap.get(srcCmpLastActor);
       final ActorSchedule tgtActorSchedule = actorToScheduleMap.get(tgtCmpLastActor);
 
+      // Find insertion position. Insert sendVertices after the current source, and after sendVertex(es) immediately
+      // following it. This is done to ensure that communications are inserted in increasing scheduling order.
+      // TODO
       final EList<AbstractActor> srcActorList = srcActorSchedule.getActorList();
       CollectionUtil.insertAfter(srcActorList, srcCmpLastActor, sendStart, sendEnd);
       actorToScheduleMap.put(sendStart, srcActorSchedule);
@@ -100,13 +104,37 @@ public class DefaultCommunicationInserter implements CommunicationInserter {
       mapping.getMappings().put(sendStart, ECollections.newBasicEList(srcCmp));
       mapping.getMappings().put(sendEnd, ECollections.newBasicEList(srcCmp));
 
+      // Place the receive just before the vertex consuming the corresponding data. (position is not definitive, cf.
+      // reorderReceive method)
+      // TODO
       final EList<AbstractActor> tgtActorList = tgtActorSchedule.getActorList();
       CollectionUtil.insertBefore(tgtActorList, tgtCmpLastActor, receiveStart, receiveEnd);
       actorToScheduleMap.put(receiveStart, tgtActorSchedule);
       actorToScheduleMap.put(receiveEnd, tgtActorSchedule);
       mapping.getMappings().put(receiveStart, ECollections.newBasicEList(tgtCmp));
       mapping.getMappings().put(receiveEnd, ECollections.newBasicEList(tgtCmp));
+
+      // Reorder receiveVertex if needed. This is done to ensure that send and receive operation between a pair of cores
+      // are always in the same order.
+      // TODO
     }
+  }
+
+  /**
+   * The purpose of this method is to reschedule receive vertices of the receiverOperator to comply with
+   * constraints on communication primitive order enforced by the {@link CommunicationOrderChecker}. <br>
+   * <br>
+   * Briefly, if there exists {@link ReceiveVertex}es scheduled after the current {@link #receiveVertex} on the
+   * receiverOperator, (but associated to a {@link SendVertex}es scheduled before the current {@link #sendVertex} on the
+   * senderOperator), then, these {@link ReceiveVertex}es must be rescheduled before the current {@link #receiveVertex}.
+   *
+   * @param senderOperator
+   *          {@link ComponentInstance} instance on which the current {@link #sendVertex} was scheduled.
+   * @param receiverOperator
+   *          {@link ComponentInstance} instance on which the current {@link #receiveVertex} was scheduled.
+   */
+  private void reorderReceiveVertex(final ComponentInstance senderOperator, final ComponentInstance receiverOperator) {
+    // TODO
   }
 
   private void initLastVisitedActor(final Design slamDesign, final Schedule schedule, final Mapping mapping) {
@@ -188,6 +216,8 @@ public class DefaultCommunicationInserter implements CommunicationInserter {
       if ((targetMappings.size() == 1) && (sourceMappings.size() == 1)) {
         final ComponentInstance tgtComponent = targetMappings.get(0);
         final ComponentInstance srcComponent = sourceMappings.get(0);
+        this.lastVisitedActor.put(tgtComponent, targetActor);
+        this.lastVisitedActor.put(srcComponent, sourceActor);
 
         if (srcComponent != tgtComponent) {
           // insert communication if operator is different only
