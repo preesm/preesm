@@ -53,7 +53,7 @@ import org.preesm.algorithm.schedule.model.ReceiveStartActor;
 import org.preesm.algorithm.schedule.model.Schedule;
 import org.preesm.algorithm.schedule.model.SendActor;
 import org.preesm.algorithm.schedule.model.SendStartActor;
-import org.preesm.algorithm.synthesis.schedule.iterator.ScheduleAndTopologyIterator;
+import org.preesm.algorithm.synthesis.schedule.ScheduleOrderManager;
 import org.preesm.codegen.model.ActorFunctionCall;
 import org.preesm.codegen.model.Block;
 import org.preesm.codegen.model.Buffer;
@@ -148,7 +148,7 @@ public class CodegenModelGenerator2 {
     }
 
     // 1- generate variables (and keep track of them with a linker)
-    this.memoryLinker = AllocationToCodegenBuffer.link(memAlloc, scenario, algo);
+    this.memoryLinker = AllocationToCodegenBuffer.link(memAlloc, schedule, scenario, algo);
 
     // 2- generate code
     generateCode(coreBlocks);
@@ -250,7 +250,7 @@ public class CodegenModelGenerator2 {
   private void generateCode(final Map<ComponentInstance, CoreBlock> coreBlocks) {
     // iterate in order
 
-    final List<AbstractActor> actors = new ScheduleAndTopologyIterator(this.schedule).getOrderedList();
+    final List<AbstractActor> actors = new ScheduleOrderManager(this.schedule).getScheduleAndTopologicalOrderedList();
     for (final AbstractActor actor : actors) {
       final EList<ComponentInstance> actorMapping = this.mapping.getMapping(actor);
       final ComponentInstance componentInstance = actorMapping.get(0);

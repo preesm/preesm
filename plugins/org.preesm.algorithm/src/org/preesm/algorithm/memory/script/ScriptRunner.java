@@ -662,7 +662,7 @@ public class ScriptRunner {
     getBufferGroups().add(bufferList);
     this.nbBuffersBefore = this.nbBuffersBefore + buffers.size();
 
-    final long before = buffers.stream().map(buf -> buf.maxIndex - buf.minIndex).reduce((l1, l2) -> l1 + l2).orElse(0L);
+    final long before = buffers.stream().map(buf -> buf.getBufferSize()).reduce((l1, l2) -> l1 + l2).orElse(0L);
 
     this.sizeBefore = this.sizeBefore + before;
     if (isGenerateLog()) {
@@ -731,7 +731,7 @@ public class ScriptRunner {
 
     } while ((step < 8) && !stop);
 
-    final long after = buffers.stream().map(buf -> buf.maxIndex - buf.minIndex).reduce((l1, l2) -> l1 + l2).orElse(0L);
+    final long after = buffers.stream().map(buf -> buf.getBufferSize()).reduce((l1, l2) -> l1 + l2).orElse(0L);
 
     if (isGenerateLog()) {
       this.log = this.log + "\n" + "### Tree summary:" + '\n';
@@ -1269,12 +1269,10 @@ public class ScriptRunner {
     // Largest buffers first for this step.
     Collections.sort(buffers, (a, b) -> {
       // Largest buffer first
-      final long size = (a.minIndex - a.maxIndex) - (b.minIndex - b.maxIndex);
+      final int cmp = Long.compare(a.getBufferSize(), b.getBufferSize());
       // Alphabetical order for buffers of equal size
-      if (size > 0) {
-        return 1;
-      } else if (size < 0) {
-        return -1;
+      if (cmp != 0) {
+        return cmp;
       } else {
         final int nameRes = a.dagVertex.getName().compareTo(b.dagVertex.getName());
         return (nameRes != 0) ? nameRes : a.name.compareTo(b.name);
@@ -1548,9 +1546,9 @@ public class ScriptRunner {
               // Get the sdfEdges
               @SuppressWarnings("unchecked")
               final AbstractGraph<DAGVertex, DAGEdge> base = dagVertex.getBase();
-              DAGEdge dagEdge = (DAGEdge) base.getEdge(dagVertex, candidate);
+              DAGEdge dagEdge = base.getEdge(dagVertex, candidate);
               if (dagEdge == null) {
-                dagEdge = (DAGEdge) base.getEdge(candidate, dagVertex);
+                dagEdge = base.getEdge(candidate, dagVertex);
               }
 
               // For edges between newVertices, only process if the dagVertex

@@ -125,7 +125,7 @@ public class Match {
    */
   private boolean applied;
 
-  private Match _reciprocate;
+  private Match reciprocate;
 
   public Buffer getLocalBuffer() {
     return this.localBuffer;
@@ -235,12 +235,12 @@ public class Match {
   }
 
   public void setReciprocate(final Match remoteMatch) {
-    this._reciprocate = remoteMatch;
-    remoteMatch._reciprocate = this;
+    this.reciprocate = remoteMatch;
+    remoteMatch.reciprocate = this;
   }
 
   public Match getReciprocate() {
-    return this._reciprocate;
+    return this.reciprocate;
   }
 
   /**
@@ -267,7 +267,7 @@ public class Match {
     final List<Range> indivisibleRanges = getLocalBuffer().indivisibleRanges;
     // toList to make sure the map function is applied only once
     final List<Range> overlappingIndivisibleRanges = indivisibleRanges.stream()
-        .filter(r -> Range.hasOverlap(r, localIndivisiblerange)).map(r -> r.copy()).collect(Collectors.toList());
+        .filter(r -> Range.hasOverlap(r, localIndivisiblerange)).map(Range::copy).collect(Collectors.toList());
 
     // Do the lazy union of the match and its overlapping indivisible
     // ranges

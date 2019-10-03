@@ -36,7 +36,6 @@ package org.preesm.algorithm.synthesis.memalloc;
 
 import java.util.List;
 import java.util.stream.Collectors;
-import org.eclipse.emf.common.util.EList;
 import org.preesm.algorithm.mapping.model.Mapping;
 import org.preesm.algorithm.memalloc.model.Allocation;
 import org.preesm.algorithm.memalloc.model.FifoAllocation;
@@ -44,6 +43,9 @@ import org.preesm.algorithm.memalloc.model.LogicalBuffer;
 import org.preesm.algorithm.memalloc.model.MemoryAllocationFactory;
 import org.preesm.algorithm.memalloc.model.PhysicalBuffer;
 import org.preesm.algorithm.schedule.model.Schedule;
+import org.preesm.algorithm.synthesis.schedule.ScheduleOrderManager;
+import org.preesm.model.pisdf.AbstractActor;
+import org.preesm.model.pisdf.DataPort;
 import org.preesm.model.pisdf.EndActor;
 import org.preesm.model.pisdf.Fifo;
 import org.preesm.model.pisdf.InitActor;
@@ -74,27 +76,31 @@ public class SimpleMemoryAllocation implements IMemoryAllocation {
     physBuff.setMemoryBank(mainComNode);
 
     long totalSize = 0L;
-    final EList<Fifo> fifos = piGraph.getFifos();
-    for (final Fifo fifo : fifos) {
-      final String fifoType = fifo.getType();
-      final long dataTypeSize = scenario.getSimulationInfo().getDataTypeSizeOrDefault(fifoType);
-      final long fifoTokenSize = fifo.getTargetPort().getPortRateExpression().evaluate();
-      final long fifoBufferSize = dataTypeSize * fifoTokenSize;
 
-      final LogicalBuffer logicBuff = MemoryAllocationFactory.eINSTANCE.createLogicalBuffer();
-      logicBuff.setContainingBuffer(physBuff);
-      logicBuff.setSize(fifoTokenSize);
-      logicBuff.setTypeSize(dataTypeSize);
-      logicBuff.setOffset(totalSize);
+    final List<AbstractActor> orderedList = new ScheduleOrderManager(schedule).getScheduleAndTopologicalOrderedList();
+    for (final AbstractActor actor : orderedList) {
+      final List<Fifo> fifos = actor.getDataOutputPorts().stream().map(DataPort::getFifo).collect(Collectors.toList());
+      for (final Fifo fifo : fifos) {
+        final String fifoType = fifo.getType();
+        final long dataTypeSize = scenario.getSimulationInfo().getDataTypeSizeOrDefault(fifoType);
+        final long fifoTokenSize = fifo.getTargetPort().getPortRateExpression().evaluate();
+        final long fifoBufferSize = dataTypeSize * fifoTokenSize;
 
-      final FifoAllocation fifoAllocation = MemoryAllocationFactory.eINSTANCE.createFifoAllocation();
-      fifoAllocation.setFifo(fifo);
-      fifoAllocation.setSourceBuffer(logicBuff);
-      fifoAllocation.setTargetBuffer(logicBuff);
+        final LogicalBuffer logicBuff = MemoryAllocationFactory.eINSTANCE.createLogicalBuffer();
+        logicBuff.setContainingBuffer(physBuff);
+        logicBuff.setSize(fifoTokenSize);
+        logicBuff.setTypeSize(dataTypeSize);
+        logicBuff.setOffset(totalSize);
 
-      memAlloc.getFifoAllocations().put(fifo, fifoAllocation);
+        final FifoAllocation fifoAllocation = MemoryAllocationFactory.eINSTANCE.createFifoAllocation();
+        fifoAllocation.setFifo(fifo);
+        fifoAllocation.setSourceBuffer(logicBuff);
+        fifoAllocation.setTargetBuffer(logicBuff);
 
-      totalSize += fifoBufferSize;
+        memAlloc.getFifoAllocations().put(fifo, fifoAllocation);
+
+        totalSize += fifoBufferSize;
+      }
     }
 
     final List<InitActor> initActors = piGraph.getActors().stream().filter(InitActor.class::isInstance)

@@ -114,7 +114,7 @@ public class AddInvolvementVertexTransaction implements Transaction {
   }
 
   @Override
-  public void execute(final List<Object> resultList) {
+  public void execute(final List<MapperDAGVertex> resultList) {
 
     final MapperDAGVertex currentSource = (MapperDAGVertex) this.edge.getSource();
     final MapperDAGVertex currentTarget = (MapperDAGVertex) this.edge.getTarget();

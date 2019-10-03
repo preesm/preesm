@@ -43,7 +43,6 @@ import org.preesm.algorithm.schedule.model.ParallelHiearchicalSchedule;
 import org.preesm.algorithm.schedule.model.Schedule;
 import org.preesm.algorithm.schedule.model.SequentialHiearchicalSchedule;
 import org.preesm.algorithm.schedule.model.util.ScheduleSwitch;
-import org.preesm.algorithm.synthesis.schedule.iterator.SimpleScheduleIterator;
 import org.preesm.model.pisdf.AbstractActor;
 
 /**
@@ -64,8 +63,8 @@ public class SchedulePrinterSwitch extends ScheduleSwitch<String> {
   }
 
   @Override
-  public String caseActorSchedule(ActorSchedule object) {
-    StringBuilder toPrint = new StringBuilder();
+  public String caseActorSchedule(final ActorSchedule object) {
+    final StringBuilder toPrint = new StringBuilder();
     if (object.getRepetition() > 1) {
       toPrint.append(object.getRepetition());
       if (object.isParallel()) {
@@ -75,9 +74,9 @@ public class SchedulePrinterSwitch extends ScheduleSwitch<String> {
     }
 
     // Print actors names
-    List<String> actorsNames = new LinkedList<>();
-    final List<AbstractActor> actors = new SimpleScheduleIterator(object).getOrderedList();
-    for (AbstractActor actor : actors) {
+    final List<String> actorsNames = new LinkedList<>();
+    final List<AbstractActor> actors = new ScheduleOrderManager(object).getSimpleOrderedList();
+    for (final AbstractActor actor : actors) {
       actorsNames.add(actor.getName());
     }
     toPrint.append(String.join("", actorsNames));
@@ -89,22 +88,20 @@ public class SchedulePrinterSwitch extends ScheduleSwitch<String> {
   }
 
   @Override
-  public String caseSequentialHiearchicalSchedule(SequentialHiearchicalSchedule object) {
-    StringBuilder toPrint = new StringBuilder();
+  public String caseSequentialHiearchicalSchedule(final SequentialHiearchicalSchedule object) {
+    final StringBuilder toPrint = new StringBuilder();
 
     if (object.getRepetition() > 1) {
       toPrint.append(object.getRepetition());
-      if (this.parentNode != null) {
-        if (this.parentNode.isParallel()) {
-          toPrint.append("/");
-        }
+      if ((this.parentNode != null) && this.parentNode.isParallel()) {
+        toPrint.append("/");
       }
       toPrint.append("(");
     }
 
     // Print sequential operator
-    List<String> schedulesExpressions = new LinkedList<>();
-    for (Schedule children : object.getChildren()) {
+    final List<String> schedulesExpressions = new LinkedList<>();
+    for (final Schedule children : object.getChildren()) {
       this.parentNode = object;
       schedulesExpressions.add(doSwitch(children));
     }
@@ -118,16 +115,16 @@ public class SchedulePrinterSwitch extends ScheduleSwitch<String> {
   }
 
   @Override
-  public String caseParallelHiearchicalSchedule(ParallelHiearchicalSchedule object) {
-    StringBuilder toPrint = new StringBuilder();
+  public String caseParallelHiearchicalSchedule(final ParallelHiearchicalSchedule object) {
+    final StringBuilder toPrint = new StringBuilder();
 
     if (object.getRepetition() > 1) {
       toPrint.append(object.getRepetition() + "/(");
     }
 
     // Print parallel operator
-    List<String> schedulesExpressions = new LinkedList<>();
-    for (Schedule children : object.getChildren()) {
+    final List<String> schedulesExpressions = new LinkedList<>();
+    for (final Schedule children : object.getChildren()) {
       this.parentNode = object;
       schedulesExpressions.add(doSwitch(children));
     }

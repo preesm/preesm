@@ -107,7 +107,7 @@ public class SharedRamRouterImplementer extends CommunicationRouterImplementer {
   @Override
   public Transaction addVertices(final SlamRouteStep routeStep, final MapperDAGEdge edge,
       final TransactionManager transactions, final int type, final int routeStepIndex, Transaction lastTransaction,
-      final List<Object> alreadyCreatedVertices) {
+      final List<MapperDAGVertex> alreadyCreatedVertices) {
 
     if (routeStep instanceof SlamMemoryRouteStep) {
       // Adding the transfers

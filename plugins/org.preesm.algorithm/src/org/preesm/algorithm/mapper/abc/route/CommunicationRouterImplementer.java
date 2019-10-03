@@ -42,6 +42,7 @@ import org.preesm.algorithm.mapper.abc.transaction.Transaction;
 import org.preesm.algorithm.mapper.abc.transaction.TransactionManager;
 import org.preesm.algorithm.mapper.model.MapperDAG;
 import org.preesm.algorithm.mapper.model.MapperDAGEdge;
+import org.preesm.algorithm.mapper.model.MapperDAGVertex;
 import org.preesm.model.slam.SlamRouteStep;
 
 /**
@@ -96,7 +97,7 @@ public abstract class CommunicationRouterImplementer {
    * @return the transaction
    */
   public abstract Transaction addVertices(SlamRouteStep routeStep, MapperDAGEdge edge, TransactionManager transactions,
-      int type, int routeStepIndex, Transaction lastTransaction, List<Object> alreadyCreatedVertices);
+      int type, int routeStepIndex, Transaction lastTransaction, List<MapperDAGVertex> alreadyCreatedVertices);
 
   /**
    * Removes the vertices.

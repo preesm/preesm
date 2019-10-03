@@ -188,7 +188,7 @@ public abstract class GMLImporter<G extends AbstractGraph<?, ?>, V extends Abstr
         final Element graphElt = (Element) childList.item(i);
         final G graph = parseGraph(graphElt);
         // Record the path of the graph
-        graph.setPropertyValue(AbstractGraph.PATH, this.path);
+        graph.setPropertyValue(AbstractGraph.PATH_PROPERTY_LITERAL, this.path);
         return graph;
       }
     }
@@ -232,7 +232,7 @@ public abstract class GMLImporter<G extends AbstractGraph<?, ?>, V extends Abstr
       if (childList.item(i).getNodeName().equals("data")) {
         final String key = ((Element) childList.item(i)).getAttribute("key");
         if ((!(key.equals(GMLImporter.ARGUMENTS_LITERAL) || key.equals(GMLImporter.PARAMETERS_LITERAL)
-            || key.equals(GMLImporter.VARIABLES_LITERAL))) && src.getPublicProperties().contains(key)) {
+            || key.equals(GMLImporter.VARIABLES_LITERAL))) && src.getPropertyBean().keys().contains(key)) {
           final String propertyName = ((Element) childList.item(i)).getAttribute("key");
           final PropertyFactory factory = src.getFactoryForProperty(propertyName);
           if (factory != null) {
@@ -370,7 +370,7 @@ public abstract class GMLImporter<G extends AbstractGraph<?, ?>, V extends Abstr
     final NodeList childList = parentElt.getChildNodes();
     for (int i = 0; i < childList.getLength(); i++) {
       if (childList.item(i).getNodeName().equals("data")
-          && ((Element) childList.item(i)).getAttribute("key").equals(AbstractGraph.MODEL)) {
+          && ((Element) childList.item(i)).getAttribute("key").equals(AbstractGraph.KIND_PROPERTY_LITERAL)) {
         return childList.item(i).getTextContent();
       }
     }

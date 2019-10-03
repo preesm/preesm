@@ -32,25 +32,30 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL license and that you accept its terms.
  */
-package org.preesm.algorithm.synthesis.schedule;
+package org.preesm.algorithm.synthesis.memalloc;
 
-import org.preesm.algorithm.synthesis.SynthesisResult;
+import org.preesm.algorithm.mapping.model.Mapping;
+import org.preesm.algorithm.memalloc.model.Allocation;
+import org.preesm.algorithm.memalloc.model.MemoryAllocationFactory;
+import org.preesm.algorithm.schedule.model.Schedule;
 import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.scenario.Scenario;
 import org.preesm.model.slam.Design;
 
 /**
  *
- * @author anmorvan
  *
+ * @author anmorvan
  */
-public interface IScheduler {
+public class LegacyMemoryAllocation implements IMemoryAllocation {
 
-  /**
-   *
-   * Builds a {@link SynthesisResult} for the given PiGraph, SlamDesign and scenario.
-   *
-   * The memory allocation in the result is null;
-   */
-  public SynthesisResult scheduleAndMap(final PiGraph piGraph, final Design slamDesign, final Scenario scenario);
+  @Override
+  public Allocation allocateMemory(final PiGraph piGraph, final Design slamDesign, final Scenario scenario,
+      final Schedule schedule, final Mapping mapping) {
+
+    final Allocation memAlloc = MemoryAllocationFactory.eINSTANCE.createAllocation();
+
+    return memAlloc;
+  }
+
 }

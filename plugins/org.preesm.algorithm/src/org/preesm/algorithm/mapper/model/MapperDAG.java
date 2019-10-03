@@ -46,7 +46,6 @@ import java.util.Set;
 import org.preesm.algorithm.mapper.model.property.DAGMappings;
 import org.preesm.algorithm.mapper.model.property.DAGTimings;
 import org.preesm.algorithm.model.AbstractEdge;
-import org.preesm.algorithm.model.AbstractGraph;
 import org.preesm.algorithm.model.dag.DAGEdge;
 import org.preesm.algorithm.model.dag.DAGVertex;
 import org.preesm.algorithm.model.dag.DirectedAcyclicGraph;
@@ -72,18 +71,13 @@ public class MapperDAG extends DirectedAcyclicGraph {
   private static final long serialVersionUID = -6757893466692519433L;
 
   /** Corresponding SDF graph. */
-  private final PiGraph piSDFGraph;
+  private final transient PiGraph piSDFGraph;
 
   /** The cost of the implementation. */
   private static final String SCHEDULE_COST = "SCHEDULE_COST";
 
   /** Property clustered hierarchical vertex. */
   public static final String CLUSTERED_VERTEX = "clustered_vertex";
-
-  static {
-    AbstractGraph.PUBLIC_PROPERTIES.add(MapperDAG.SCHEDULE_COST);
-    AbstractGraph.PUBLIC_PROPERTIES.add(MapperDAG.CLUSTERED_VERTEX);
-  }
 
   /**
    *

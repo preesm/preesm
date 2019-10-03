@@ -1,19 +1,10 @@
 package org.preesm.algorithm.synthesis.schedule;
 
-import java.util.LinkedHashMap;
-import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.stream.Collectors;
 import org.apache.commons.lang3.tuple.Pair;
-import org.preesm.algorithm.schedule.model.ActorSchedule;
-import org.preesm.algorithm.schedule.model.HierarchicalSchedule;
 import org.preesm.algorithm.schedule.model.Schedule;
-import org.preesm.algorithm.schedule.model.util.ScheduleSwitch;
 import org.preesm.commons.exceptions.PreesmRuntimeException;
-import org.preesm.model.pisdf.AbstractActor;
 
 /**
  *
@@ -27,46 +18,8 @@ public class ScheduleUtil {
   }
 
   /**
-   *
-   */
-  public static final Map<AbstractActor, ActorSchedule> actorToScheduleMap(final Schedule schedule) {
-    final Set<ActorSchedule> actorSchedules = getActorSchedules(schedule);
-    final Map<AbstractActor, ActorSchedule> res = new LinkedHashMap<>();
-    actorSchedules.forEach(aSched -> aSched.getActorList().forEach(a -> res.put(a, aSched)));
-    return res;
-  }
-
-  /**
-   * Get all ActorSchedule children of the given Schedule. Order is not preserved.
-   */
-  public static final Set<ActorSchedule> getActorSchedules(final Schedule schedule) {
-    return new ScheduleSwitch<Set<ActorSchedule>>() {
-      @Override
-      public Set<ActorSchedule> caseHierarchicalSchedule(final HierarchicalSchedule hSched) {
-        return hSched.getScheduleTree().stream().map(this::doSwitch).flatMap(Set::stream)
-            .collect(Collectors.toCollection(LinkedHashSet::new));
-      }
-
-      @Override
-      public Set<ActorSchedule> caseActorSchedule(final ActorSchedule aSched) {
-        final Set<ActorSchedule> res = new LinkedHashSet<>();
-        res.add(aSched);
-        return res;
-      }
-    }.doSwitch(schedule);
-  }
-
-  /**
-   * Get all actors scheduled the given Schedule. Order is not preserved.
-   */
-  public static final Set<AbstractActor> getActors(final Schedule schedule) {
-    return getActorSchedules(schedule).stream().map(ActorSchedule::getActorList).flatMap(List::stream)
-        .collect(Collectors.toCollection(LinkedHashSet::new));
-  }
-
-  /**
    * Given 2 different schedules of the same schedule tree, returns the lowest common ancestor. Ensures that
-   * result.getLeft() == result.getRight().
+   * result.getLeft().getParent() == result.getRight().getParent().
    *
    * Throws exception if sched1 == sched2 or both schedules do not belong to the same schedule tree.
    */

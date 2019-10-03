@@ -110,7 +110,7 @@ public class DmaComRouterImplementer extends CommunicationRouterImplementer {
   @Override
   public Transaction addVertices(final SlamRouteStep routeStep, final MapperDAGEdge edge,
       final TransactionManager transactions, final int type, final int routeStepIndex,
-      final Transaction lastTransaction, final List<Object> alreadyCreatedVertices) {
+      final Transaction lastTransaction, final List<MapperDAGVertex> alreadyCreatedVertices) {
 
     if (routeStep instanceof SlamDMARouteStep) {
       // Adding the transfers

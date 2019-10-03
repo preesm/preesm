@@ -125,7 +125,14 @@ class CPrinter extends BlankPrinter {
 	 * Temporary global var to ignore the automatic suppression of memcpy
 	 * whose target and destination are identical.
 	 */
-	protected var boolean IGNORE_USELESS_MEMCPY = true
+	protected static boolean IGNORE_USELESS_MEMCPY = true
+
+	/**
+	 * To control the way sizes are printed in memcopy/send/init/...
+	 * If false, the code will embed the operation "tokenCount * sizeof(token type)"
+	 * If true, the code will embed the result of the operation (type size is taken from scenario)
+	 */
+	protected static boolean SIMPLE_BUFFER_SIZES = true
 
 	override printCoreBlockHeader(CoreBlock block) '''
 			/**
@@ -234,7 +241,7 @@ class CPrinter extends BlankPrinter {
 			#pragma omp parallel for private(«block2.iter.name»)
 			«ENDIF»
 			for(«block2.iter.name»=0;«block2.iter.name»<«block2.nbIter»;«block2.iter.name»++) {
-				
+
 				'''
 
 	override printFiniteLoopBlockFooter(FiniteLoopBlock block2) '''
@@ -249,7 +256,7 @@ class CPrinter extends BlankPrinter {
 		#pragma omp parallel sections
 		«ENDIF»
 		{
-			
+
 			'''
 
 	override printClusterBlockFooter(ClusterBlock block) '''
@@ -259,7 +266,7 @@ class CPrinter extends BlankPrinter {
 	override printSectionBlockHeader(SectionBlock block) '''
 		#pragma omp section
 		{
-			
+
 			'''
 
 	override printSectionBlockFooter(SectionBlock block) '''
@@ -275,9 +282,9 @@ class CPrinter extends BlankPrinter {
 		}
 
 		result = result +
-			'''«fifoCall.headBuffer.name», «fifoCall.headBuffer.size»*sizeof(«fifoCall.headBuffer.type»), '''
-		return result = result + '''«IF fifoCall.bodyBuffer !== null»«fifoCall.bodyBuffer.name», «fifoCall.bodyBuffer.size»*sizeof(«fifoCall.
-			bodyBuffer.type»)«ELSE»NULL, 0«ENDIF»);
+			'''«fifoCall.headBuffer.name», «if (SIMPLE_BUFFER_SIZES) fifoCall.headBuffer.size * engine.scenario.simulationInfo.getDataTypeSizeOrDefault(fifoCall.headBuffer.type) else fifoCall.headBuffer.size+"*sizeof("+fifoCall.headBuffer.type+")"», '''
+		return result = result + '''«IF fifoCall.bodyBuffer !== null»«fifoCall.bodyBuffer.name», «
+		if (SIMPLE_BUFFER_SIZES) fifoCall.bodyBuffer.size  * engine.scenario.simulationInfo.getDataTypeSizeOrDefault(fifoCall.bodyBuffer.type) else fifoCall.bodyBuffer.size+"*sizeof("+fifoCall.bodyBuffer.type+")"»«ELSE»NULL, 0«ENDIF»);
 			'''
 	}
 
@@ -395,7 +402,7 @@ class CPrinter extends BlankPrinter {
 			output instanceof NullBuffer || input instanceof NullBuffer){
 			return ''''''
 		} else {
-			return '''memcpy(«output.doSwitch»+«outOffset», «input.doSwitch»+«inOffset», «size»*sizeof(«type»));'''
+			return '''memcpy(«output.doSwitch»+«outOffset», «input.doSwitch»+«inOffset», «if (SIMPLE_BUFFER_SIZES) size * engine.scenario.simulationInfo.getDataTypeSizeOrDefault(type) else size+"*sizeof("+type+")"»);'''
 		}
 	}
 
@@ -572,7 +579,7 @@ class CPrinter extends BlankPrinter {
 			«IF this.apolloEnabled»
 			#endif
 			«ENDIF»
-			
+
 		#endif
 		#endif
 
@@ -597,7 +604,7 @@ class CPrinter extends BlankPrinter {
 			pthread_barrier_init(&iter_barrier, NULL, _PREESM_NBTHREADS_);
 
 			communicationInit();
-			
+
 			«IF this.apolloEnabled»
 			#ifdef APOLLO_AVAILABLE
 				initApolloForDataflow();
@@ -643,8 +650,8 @@ class CPrinter extends BlankPrinter {
 	«IF (communication.comment.contains("\n"))» */
 	«ENDIF»«ENDIF»«IF communication.isRedundant»//«ENDIF»«communication.direction.toString.toLowerCase»«communication.delimiter.toString.toLowerCase.toFirstUpper»(«IF (communication.
 		direction == Direction::SEND && communication.delimiter == Delimiter::START) ||
-		(communication.direction == Direction::RECEIVE && communication.delimiter == Delimiter::END)»«communication.sendStart.coreContainer.coreID», «communication.receiveStart.coreContainer.coreID»«ENDIF»); // «communication.sendStart.coreContainer.name» > «communication.receiveStart.coreContainer.name»: «communication.
-		data.doSwitch»
+		(communication.direction == Direction::RECEIVE && communication.delimiter == Delimiter::END)»«communication.sendStart.coreContainer.coreID», «communication.receiveStart.coreContainer.coreID»«ENDIF
+		»); // «communication.sendStart.coreContainer.name» > «communication.receiveStart.coreContainer.name»
 	'''
 
 	override printFunctionCall(FunctionCall functionCall) '''

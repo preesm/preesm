@@ -37,6 +37,7 @@
  */
 package org.preesm.algorithm.memory.allocation;
 
+import com.google.common.primitives.Ints;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -47,6 +48,7 @@ import org.preesm.algorithm.memory.bounds.HeuristicSolver;
 import org.preesm.algorithm.memory.bounds.OstergardSolver;
 import org.preesm.algorithm.memory.exclusiongraph.MemoryExclusionGraph;
 import org.preesm.algorithm.memory.exclusiongraph.MemoryExclusionVertex;
+import org.preesm.commons.exceptions.PreesmRuntimeException;
 
 /**
  * The Class OrderedAllocator.
@@ -54,35 +56,15 @@ import org.preesm.algorithm.memory.exclusiongraph.MemoryExclusionVertex;
 public abstract class OrderedAllocator extends MemoryAllocator {
 
   /**
-   * The Enum Order.
    */
   enum Order {
-
-    /** The shuffle. */
-    SHUFFLE,
-    /** The largest first. */
-    LARGEST_FIRST,
-    /** The stable set. */
-    STABLE_SET,
-    /** The exact stable set. */
-    EXACT_STABLE_SET,
-    /** The scheduling. */
-    SCHEDULING
+    SHUFFLE, LARGEST_FIRST, STABLE_SET, EXACT_STABLE_SET, SCHEDULING
   }
 
   /**
-   * The Enum Policy.
    */
   enum Policy {
-
-    /** The average. */
-    average,
-    /** The best. */
-    best,
-    /** The mediane. */
-    mediane,
-    /** The worst. */
-    worst
+    AVERAGE, BEST, MEDIANE, WORST
   }
 
   /**
@@ -103,32 +85,22 @@ public abstract class OrderedAllocator extends MemoryAllocator {
    * The current policy when asking for an allocation with getAllocation.
    */
   private Policy                            policy;
-
   /**
    * The current {@link Order} used to {@link #allocate()} vertices of the {@link MemoryExclusionGraph}.
    */
-  private Order order;
+  private Order                             order;
 
   /**
-   * Constructor of the allocator.
-   *
-   * @param memEx
-   *          The exclusion graph whose vertices are to allocate
    */
   protected OrderedAllocator(final MemoryExclusionGraph memEx) {
     super(memEx);
     this.nbShuffle = 10;
-    this.policy = Policy.best;
+    this.policy = Policy.BEST;
     this.lists = new ArrayList<>(this.nbShuffle);
     this.listsSize = new ArrayList<>(this.nbShuffle);
     this.order = Order.SHUFFLE;
   }
 
-  /*
-   * (non-Javadoc)
-   *
-   * @see org.ietr.preesm.memory.allocation.MemoryAllocator#allocate()
-   */
   @Override
   public void allocate() {
     switch (this.order) {
@@ -142,7 +114,7 @@ public abstract class OrderedAllocator extends MemoryAllocator {
         allocateStableSetOrder(false);
         break;
       case EXACT_STABLE_SET:
-        allocateStableSetOrder();
+        allocateStableSetOrder(true);
         break;
       case SCHEDULING:
         allocateSchedulingOrder();
@@ -158,16 +130,15 @@ public abstract class OrderedAllocator extends MemoryAllocator {
    *          the ordered vertex list.
    * @return the resulting allocation size.
    */
-  protected abstract long allocateInOrder(List<MemoryExclusionVertex> vertexList);
+  protected abstract long allocateInOrder(final List<MemoryExclusionVertex> vertexList);
 
   /**
    * Perform the allocation with the vertex ordered according to largest first order. If the policy of the allocator is
    * changed, the resulting allocation will be lost.
    */
   private void allocateLargestFirst() {
-
     final ArrayList<MemoryExclusionVertex> list = new ArrayList<>(this.inputExclusionGraph.vertexSet());
-    Collections.sort(list, Collections.reverseOrder());
+    Collections.sort(list, (v1, v2) -> Ints.saturatedCast(v2.getWeight() - v1.getWeight()));
     allocateInOrder(list);
   }
 
@@ -186,7 +157,7 @@ public abstract class OrderedAllocator extends MemoryAllocator {
     final List<MemoryExclusionVertex> memExVerticesInSchedulingOrder = this.inputExclusionGraph
         .getMemExVerticesInSchedulingOrder();
     if (memExVerticesInSchedulingOrder == null) {
-      throw new RuntimeException(
+      throw new PreesmRuntimeException(
           "Cannot allocate MemEx in scheduling order" + " because the MemEx was not updated with a schedule.");
     }
 
@@ -233,15 +204,6 @@ public abstract class OrderedAllocator extends MemoryAllocator {
   }
 
   /**
-   * Perform the BestFit allocation with the vertex ordered according to the exact Stable Set order. If the policy of
-   * the allocator is changed, the resulting allocation will be lost.
-   *
-   */
-  private void allocateStableSetOrder() {
-    allocateStableSetOrder(true);
-  }
-
-  /**
    * Perform the BestFit allocation with the vertex ordered according to the Stable Set order. If the policy of the
    * allocator is changed, the resulting allocation will be lost.
    *
@@ -249,33 +211,18 @@ public abstract class OrderedAllocator extends MemoryAllocator {
    *          the exact stable set
    */
   private void allocateStableSetOrder(final boolean exactStableSet) {
-    final ArrayList<MemoryExclusionVertex> list = getStableSetOrderedList(exactStableSet);
+    final List<MemoryExclusionVertex> list = getStableSetOrderedList(exactStableSet);
     allocateInOrder(list);
   }
 
-  /**
-   * Gets the nb shuffle.
-   *
-   * @return the nbShuffle
-   */
   public int getNbShuffle() {
     return this.nbShuffle;
   }
 
-  /**
-   * Gets the order.
-   *
-   * @return the order
-   */
   public Order getOrder() {
     return this.order;
   }
 
-  /**
-   * Gets the policy.
-   *
-   * @return the policy
-   */
   public Policy getPolicy() {
     return this.policy;
   }
@@ -308,7 +255,7 @@ public abstract class OrderedAllocator extends MemoryAllocator {
       solver.solve();
 
       final ArrayList<MemoryExclusionVertex> stableSet = new ArrayList<>(solver.getHeaviestClique());
-      Collections.sort(stableSet, Collections.reverseOrder());
+      Collections.sort(stableSet, (v1, v2) -> Ints.saturatedCast(v2.getWeight() - v1.getWeight()));
       orderedList.addAll(stableSet);
 
       inclusionGraph.removeAllVertices(stableSet);
@@ -316,22 +263,10 @@ public abstract class OrderedAllocator extends MemoryAllocator {
     return (orderedList);
   }
 
-  /**
-   * Sets the nb shuffle.
-   *
-   * @param nbShuffle
-   *          the nbShuffle to set
-   */
   public void setNbShuffle(final int nbShuffle) {
     this.nbShuffle = nbShuffle;
   }
 
-  /**
-   * Sets the order.
-   *
-   * @param order
-   *          the order to set
-   */
   public void setOrder(final Order order) {
     this.order = order;
   }
@@ -351,7 +286,7 @@ public abstract class OrderedAllocator extends MemoryAllocator {
       // policy
 
       switch (this.policy) {
-        case best:
+        case BEST:
           long min = this.listsSize.get(0);
           for (int iter = 1; iter < this.listsSize.size(); iter++) {
             min = (min < this.listsSize.get(iter)) ? min : this.listsSize.get(iter);
@@ -359,7 +294,7 @@ public abstract class OrderedAllocator extends MemoryAllocator {
           }
           break;
 
-        case worst:
+        case WORST:
           long max = this.listsSize.get(0);
           for (int iter = 1; iter < this.listsSize.size(); iter++) {
             max = (max > this.listsSize.get(iter)) ? max : this.listsSize.get(iter);
@@ -367,14 +302,14 @@ public abstract class OrderedAllocator extends MemoryAllocator {
           }
           break;
 
-        case mediane:
+        case MEDIANE:
           final List<Long> listCopy = new ArrayList<>(this.listsSize);
           Collections.sort(listCopy);
           final long mediane = listCopy.get(this.listsSize.size() / 2);
           index = this.listsSize.indexOf(mediane);
           break;
 
-        case average:
+        case AVERAGE:
           double average = 0;
           for (int iter = 0; iter < this.listsSize.size(); iter++) {
             average += (double) this.listsSize.get(iter);

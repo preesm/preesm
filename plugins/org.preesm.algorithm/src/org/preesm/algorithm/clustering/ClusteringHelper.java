@@ -44,11 +44,10 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.eclipse.emf.common.util.ECollections;
 import org.eclipse.emf.common.util.EList;
 import org.preesm.algorithm.schedule.model.HierarchicalSchedule;
-import org.preesm.algorithm.schedule.model.ParallelActorSchedule;
 import org.preesm.algorithm.schedule.model.ParallelSchedule;
 import org.preesm.algorithm.schedule.model.Schedule;
 import org.preesm.algorithm.schedule.model.SequentialSchedule;
-import org.preesm.algorithm.synthesis.schedule.iterator.SimpleScheduleIterator;
+import org.preesm.algorithm.synthesis.schedule.ScheduleOrderManager;
 import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.AbstractVertex;
@@ -86,7 +85,7 @@ public class ClusteringHelper {
    */
   public static final List<DataInputPort> getExternalyConnectedPorts(final Schedule cluster) {
     List<DataInputPort> res = new ArrayList<>();
-    final List<AbstractActor> actors = new SimpleScheduleIterator(cluster).getOrderedList();
+    final List<AbstractActor> actors = new ScheduleOrderManager(cluster).getSimpleOrderedList();
     for (final AbstractActor actor : actors) {
       final EList<DataInputPort> dataInputPorts = actor.getDataInputPorts();
       for (final DataInputPort port : dataInputPorts) {
@@ -202,14 +201,10 @@ public class ClusteringHelper {
       timing = getExecutionTimeOfHierarchical(schedule, scenario, component, timing);
     } else {
       // Retrieve timing from actors
-      final List<AbstractActor> actors = new SimpleScheduleIterator(schedule).getOrderedList();
+      final List<AbstractActor> actors = new ScheduleOrderManager(schedule).getSimpleOrderedList();
       AbstractActor actor = actors.get(0);
       long actorTiming = scenario.getTimings().evaluateTimingOrDefault(actor, component);
-      if ((schedule instanceof ParallelActorSchedule)) {
-        timing = actorTiming;
-      } else {
-        timing = schedule.getRepetition() * actorTiming;
-      }
+      timing = schedule.getRepetition() * actorTiming;
     }
 
     return timing;

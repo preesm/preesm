@@ -1,8 +1,7 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2014 - 2019) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2019) :
  *
- * Antoine Morvan [antoine.morvan@insa-rennes.fr] (2017 - 2019)
- * Clément Guy [clement.guy@insa-rennes.fr] (2014 - 2015)
+ * Antoine Morvan [antoine.morvan@insa-rennes.fr] (2019)
  *
  * This software is a computer program whose purpose is to help prototyping
  * parallel applications using dataflow formalism.
@@ -33,25 +32,25 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL license and that you accept its terms.
  */
-package org.preesm.algorithm.memory.bounds;
+package org.preesm.algorithm.synthesis.schedule.algos;
 
-import org.preesm.workflow.implement.AbstractTaskImplementation;
+import org.preesm.algorithm.synthesis.SynthesisResult;
+import org.preesm.model.pisdf.PiGraph;
+import org.preesm.model.scenario.Scenario;
+import org.preesm.model.slam.Design;
 
 /**
- * The Class AbstractMemoryBoundsEstimator.
+ *
+ * @author anmorvan
+ *
  */
-public abstract class AbstractMemoryBoundsEstimator extends AbstractTaskImplementation {
+public interface IScheduler {
 
-  /** The Constant PARAM_SOLVER. */
-  static final String PARAM_SOLVER = "Solver";
-
-  /** The Constant VALUE_SOLVER_DEFAULT. */
-  static final String VALUE_SOLVER_DEFAULT = "? C {Heuristic, Ostergard, Yamaguchi}";
-
-  /** The Constant PARAM_VERBOSE. */
-  static final String PARAM_VERBOSE = "Verbose";
-
-  /** The Constant VALUE_VERBOSE_DEFAULT. */
-  static final String VALUE_VERBOSE_DEFAULT = "? C {True, False}";
-
+  /**
+   *
+   * Builds a {@link SynthesisResult} for the given PiGraph, SlamDesign and scenario.
+   *
+   * The memory allocation in the result is null;
+   */
+  public SynthesisResult scheduleAndMap(final PiGraph piGraph, final Design slamDesign, final Scenario scenario);
 }

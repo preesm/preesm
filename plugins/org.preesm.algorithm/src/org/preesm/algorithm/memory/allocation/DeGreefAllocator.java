@@ -38,6 +38,7 @@
  */
 package org.preesm.algorithm.memory.allocation;
 
+import com.google.common.primitives.Ints;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
@@ -67,11 +68,6 @@ public class DeGreefAllocator extends MemoryAllocator {
     super(memEx);
   }
 
-  /*
-   * (non-Javadoc)
-   *
-   * @see org.ietr.preesm.memory.allocation.MemoryAllocator#allocate()
-   */
   @Override
   public void allocate() {
     // clear all previous allocation
@@ -114,7 +110,7 @@ public class DeGreefAllocator extends MemoryAllocator {
 
       // Alignment constraint
       long align = -1;
-      final Long typeSize = (Long) vertex.getPropertyBean().getValue(MemoryExclusionVertex.TYPE_SIZE);
+      final Long typeSize = vertex.getPropertyBean().getValue(MemoryExclusionVertex.TYPE_SIZE);
       if (this.alignment == 0) {
         align = typeSize;
       } else if (this.alignment > 0) {
@@ -202,35 +198,18 @@ public class DeGreefAllocator extends MemoryAllocator {
   }
 
   /**
-   * The Class IntegerAndVertex.
    */
   private class IntegerAndVertex implements Comparable<IntegerAndVertex> {
 
-    /** The first. */
-    private final long first;
-
-    /** The second. */
+    private final long                  first;
     private final MemoryExclusionVertex second;
 
-    /**
-     * Instantiates a new integer and vertex.
-     *
-     * @param first
-     *          the first
-     * @param second
-     *          the second
-     */
     private IntegerAndVertex(final long first, final MemoryExclusionVertex second) {
       super();
       this.first = first;
       this.second = second;
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see java.lang.Object#hashCode()
-     */
     @Override
     public int hashCode() {
       final int hashFirst = Long.hashCode(this.first);
@@ -239,11 +218,6 @@ public class DeGreefAllocator extends MemoryAllocator {
       return ((hashFirst + hashSecond) * hashSecond) + hashFirst;
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see java.lang.Object#equals(java.lang.Object)
-     */
     @Override
     public boolean equals(final Object other) {
       if (other instanceof IntegerAndVertex) {
@@ -255,39 +229,19 @@ public class DeGreefAllocator extends MemoryAllocator {
       return false;
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see java.lang.Object#toString()
-     */
     @Override
     public String toString() {
       return "(" + this.first + ", " + this.second + ")";
     }
 
-    /**
-     * Gets the first.
-     *
-     * @return the first
-     */
     public long getFirst() {
       return this.first;
     }
 
-    /**
-     * Gets the second.
-     *
-     * @return the second
-     */
     public MemoryExclusionVertex getSecond() {
       return this.second;
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see java.lang.Comparable#compareTo(java.lang.Object)
-     */
     @Override
     public int compareTo(final IntegerAndVertex o) {
       // If the offsets are different, use them as a comparison
@@ -299,8 +253,9 @@ public class DeGreefAllocator extends MemoryAllocator {
       }
 
       // Else, compare the vertices
-      if (this.second.compareTo(o.second) != 0) {
-        return this.second.compareTo(o.second);
+      final long compareTo = this.second.getWeight() - o.second.getWeight();
+      if (compareTo != 0) {
+        return Ints.saturatedCast(compareTo);
       }
 
       // If the vertices weight and the offsets are equal, compare the

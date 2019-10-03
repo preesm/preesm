@@ -173,7 +173,7 @@ public class AddTransferVertexTransaction implements Transaction {
    * @see org.ietr.preesm.mapper.abc.transaction.Transaction#execute(java.util.List)
    */
   @Override
-  public void execute(final List<Object> resultList) {
+  public void execute(final List<MapperDAGVertex> resultList) {
     final MapperDAGVertex currentTarget = (MapperDAGVertex) this.edge.getTarget();
 
     // Linking with previous transaction consists in chaining the new

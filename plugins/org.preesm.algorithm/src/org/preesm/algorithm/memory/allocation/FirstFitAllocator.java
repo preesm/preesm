@@ -58,12 +58,6 @@ import org.preesm.commons.math.MathFunctionsHelper;
  */
 public class FirstFitAllocator extends OrderedAllocator {
 
-  /**
-   * Constructor of the Allocator.
-   *
-   * @param memEx
-   *          The exclusion graph to analyze
-   */
   public FirstFitAllocator(final MemoryExclusionGraph memEx) {
     super(memEx);
   }
@@ -102,7 +96,7 @@ public class FirstFitAllocator extends OrderedAllocator {
       long freeFrom = 0; // Where the last exclusion ended
 
       long align = -1;
-      final Long typeSize = (Long) vertex.getPropertyBean().getValue(MemoryExclusionVertex.TYPE_SIZE);
+      final Long typeSize = vertex.getPropertyBean().getValue(MemoryExclusionVertex.TYPE_SIZE);
       // Alignment constraint
       if (this.alignment == 0) {
         align = typeSize;

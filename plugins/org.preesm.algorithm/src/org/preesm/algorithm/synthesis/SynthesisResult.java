@@ -40,7 +40,7 @@ import org.preesm.algorithm.mapping.model.Mapping;
 import org.preesm.algorithm.memalloc.model.Allocation;
 import org.preesm.algorithm.schedule.model.HierarchicalSchedule;
 import org.preesm.algorithm.schedule.model.Schedule;
-import org.preesm.algorithm.synthesis.schedule.iterator.SimpleScheduleIterator;
+import org.preesm.algorithm.synthesis.schedule.ScheduleOrderManager;
 import org.preesm.model.pisdf.AbstractActor;
 
 /**
@@ -62,7 +62,7 @@ public class SynthesisResult {
 
   @Override
   public String toString() {
-    return "\n\n" + buildString(schedule, mapping, "").toString();
+    return "\n\n" + SynthesisResult.buildString(this.schedule, this.mapping, "").toString();
   }
 
   private static StringBuilder buildString(final Schedule sched, final Mapping mapp, final String indent) {
@@ -70,10 +70,10 @@ public class SynthesisResult {
     res.append(indent + sched.getClass().getSimpleName() + " {\n");
     if (sched instanceof HierarchicalSchedule) {
       for (final Schedule child : sched.getChildren()) {
-        res.append(buildString(child, mapp, indent + "  ").toString());
+        res.append(SynthesisResult.buildString(child, mapp, indent + "  ").toString());
       }
     } else {
-      final List<AbstractActor> actors = new SimpleScheduleIterator(sched).getOrderedList();
+      final List<AbstractActor> actors = new ScheduleOrderManager(sched).getSimpleOrderedList();
       for (final AbstractActor actor : actors) {
         final List<String> collect = mapp.getMapping(actor).stream().map(m -> m.getInstanceName())
             .collect(Collectors.toList());

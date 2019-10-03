@@ -41,15 +41,14 @@ package org.preesm.algorithm.memory.exclusiongraph;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.logging.Level;
-import java.util.logging.Logger;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.emf.common.util.EMap;
 import org.preesm.algorithm.model.dag.DirectedAcyclicGraph;
-import org.preesm.algorithm.transforms.ForkJoinRemover;
 import org.preesm.commons.doc.annotations.Parameter;
 import org.preesm.commons.doc.annotations.Port;
 import org.preesm.commons.doc.annotations.PreesmTask;
 import org.preesm.commons.doc.annotations.Value;
+import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.model.scenario.Scenario;
 import org.preesm.workflow.elements.Workflow;
@@ -91,42 +90,18 @@ import org.preesm.workflow.implement.AbstractWorkflowNodeImplementation;
         + "Architectures, Modeling, and Simulation (SAMOS XII), 2012 International Conference on, 2012." })
 public class MemoryExclusionGraphBuilder extends AbstractTaskImplementation {
 
-  /** The Constant PARAM_VERBOSE. */
-  public static final String PARAM_VERBOSE = "Verbose";
-
-  /** The Constant VALUE_TRUE_FALSE_DEFAULT. */
+  public static final String PARAM_VERBOSE            = "Verbose";
   public static final String VALUE_TRUE_FALSE_DEFAULT = "? C {True, False}";
+  public static final String VALUE_TRUE               = "True";
+  public static final String VALUE_FALSE              = "False";
 
-  /** The Constant VALUE_TRUE. */
-  public static final String VALUE_TRUE = "True";
-
-  /** The Constant VALUE_FALSE. */
-  public static final String VALUE_FALSE = "False";
-
-  /** The Constant PARAM_SUPPR_FORK_JOIN. */
-  public static final String PARAM_SUPPR_FORK_JOIN = "Suppr Fork/Join";
-
-  /*
-   * (non-Javadoc)
-   *
-   * @see org.ietr.dftools.workflow.implement.AbstractTaskImplementation#execute(java.util.Map, java.util.Map,
-   * org.eclipse.core.runtime.IProgressMonitor, java.lang.String, org.ietr.dftools.workflow.elements.Workflow)
-   */
   @Override
   public Map<String, Object> execute(final Map<String, Object> inputs, final Map<String, String> parameters,
       final IProgressMonitor monitor, final String nodeName, final Workflow workflow) {
-
-    // Rem: Logger is used to display messages in the console
-    final Logger logger = PreesmLogger.getLogger();
-
     // Check Workflow element parameters
-    final String valueVerbose = parameters.get(MemoryExclusionGraphBuilder.PARAM_VERBOSE);
-    boolean verbose;
-    verbose = valueVerbose.equals(MemoryExclusionGraphBuilder.VALUE_TRUE);
-
-    final String valueSupprForkJoin = parameters.get(MemoryExclusionGraphBuilder.PARAM_SUPPR_FORK_JOIN);
-    boolean supprForkJoin;
-    supprForkJoin = valueSupprForkJoin.equals(MemoryExclusionGraphBuilder.VALUE_TRUE);
+    final boolean verbose = MemoryExclusionGraphBuilder.VALUE_TRUE
+        .equalsIgnoreCase(parameters.get(MemoryExclusionGraphBuilder.PARAM_VERBOSE));
+    final Level logLevel = verbose ? Level.INFO : Level.FINEST;
 
     // Retrieve list of types and associated sizes in the scenario
     final Scenario scenario = (Scenario) inputs.get("scenario");
@@ -139,25 +114,18 @@ public class MemoryExclusionGraphBuilder extends AbstractTaskImplementation {
     // Clone is deep copy i.e. vertices are thus copied too.
     DirectedAcyclicGraph localDAG = dag.copy();
     if (localDAG == null) {
-      localDAG = dag;
-    }
-
-    // Remove Fork/Join vertices
-    if (supprForkJoin) {
-      ForkJoinRemover.supprImplodeExplode(localDAG);
+      throw new PreesmRuntimeException("Could not copy the dag");
     }
 
     // Build the exclusion graph
-    if (verbose) {
-      logger.log(Level.INFO, "Memory exclusion graph : start building");
-    }
+    PreesmLogger.getLogger().log(logLevel, "Memory exclusion graph : start building");
     final MemoryExclusionGraph memEx = new MemoryExclusionGraph();
     memEx.buildGraph(localDAG);
-    final double density = memEx.edgeSet().size() / ((memEx.vertexSet().size() * (memEx.vertexSet().size() - 1)) / 2.0);
-    if (verbose) {
-      logger.log(Level.INFO,
-          "Memory exclusion graph built with " + memEx.vertexSet().size() + " vertices and density = " + density);
-    }
+    final int edgeCount = memEx.edgeSet().size();
+    final int vertexCount = memEx.vertexSet().size();
+    final double density = edgeCount / ((vertexCount * (vertexCount - 1)) / 2.0);
+    PreesmLogger.getLogger().log(logLevel,
+        () -> "Memory exclusion graph built with " + vertexCount + " vertices and density = " + density);
 
     // Generate output
     final Map<String, Object> output = new LinkedHashMap<>();
@@ -165,25 +133,13 @@ public class MemoryExclusionGraphBuilder extends AbstractTaskImplementation {
     return output;
   }
 
-  /*
-   * (non-Javadoc)
-   *
-   * @see org.ietr.dftools.workflow.implement.AbstractTaskImplementation#getDefaultParameters()
-   */
   @Override
   public Map<String, String> getDefaultParameters() {
     final Map<String, String> parameters = new LinkedHashMap<>();
     parameters.put(MemoryExclusionGraphBuilder.PARAM_VERBOSE, MemoryExclusionGraphBuilder.VALUE_TRUE_FALSE_DEFAULT);
-    parameters.put(MemoryExclusionGraphBuilder.PARAM_SUPPR_FORK_JOIN,
-        MemoryExclusionGraphBuilder.VALUE_TRUE_FALSE_DEFAULT);
     return parameters;
   }
 
-  /*
-   * (non-Javadoc)
-   *
-   * @see org.ietr.dftools.workflow.implement.AbstractWorkflowNodeImplementation#monitorMessage()
-   */
   @Override
   public String monitorMessage() {
     return "Building MemEx Graph";

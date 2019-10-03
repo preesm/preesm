@@ -36,7 +36,6 @@ package org.preesm.algorithm.model;
 
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
-import java.util.List;
 import java.util.Set;
 import java.util.function.Supplier;
 import org.jgrapht.graph.DirectedPseudograph;
@@ -70,47 +69,17 @@ import org.preesm.commons.math.ExpressionEvaluationException;
 public abstract class AbstractGraph<V extends AbstractVertex, E extends AbstractEdge> extends DirectedPseudograph<V, E>
     implements PropertySource, IRefinement, IExpressionSolver, IModelObserver, CloneableProperty {
 
-  /** The Constant serialVersionUID. */
-  private static final long serialVersionUID = 1381565218127310945L;
+  private static final long   serialVersionUID               = 1381565218127310945L;
+  private static final String NAME_PROPERTY_LITERAL          = "name";
+  public static final String  PARAMETERS_PROPERTY_LITERAL    = "parameters";
+  public static final String  VARIABLES_PROPERTY_LITERAL     = "variables";
+  public static final String  KIND_PROPERTY_LITERAL          = "kind";
+  public static final String  PATH_PROPERTY_LITERAL          = "path";
+  private static final String PARENT_VERTEX_PROPERTY_LITERAL = "parent_vertex";
 
-  /** Property name for property name. */
-  private static final String NAME = "name";
-
-  /** Property name for property parameters. */
-  public static final String PARAMETERS = "parameters";
-
-  /** Property name for property variables. */
-  public static final String VARIABLES = "variables";
-
-  /** Property name for property variables. */
-  public static final String MODEL = "kind";
-
-  /**
-   * Property name to store the path of the file of the graph.
-   */
-  public static final String PATH = "path";
-
-  /** This graph parent vertex if it exist. */
-  private static final String PARENT_VERTEX = "parent_vertex";
-
-  /** The public properties. */
-  protected static final List<String> PUBLIC_PROPERTIES = new ArrayList<>();
-
-  static {
-    AbstractGraph.PUBLIC_PROPERTIES.add(AbstractGraph.NAME);
-    AbstractGraph.PUBLIC_PROPERTIES.add(AbstractGraph.PARAMETERS);
-    AbstractGraph.PUBLIC_PROPERTIES.add(AbstractGraph.VARIABLES);
-    AbstractGraph.PUBLIC_PROPERTIES.add(AbstractGraph.MODEL);
-  }
-
-  /** The properties. */
-  private final PropertyBean properties;
-
-  /** The observers. */
-  private final ArrayList<IModelObserver> observers;
-
-  /** The has changed. */
-  private boolean hasChanged;
+  private final PropertyBean                        properties;
+  private final transient ArrayList<IModelObserver> observers;
+  private boolean                                   hasChanged;
 
   /**
    * Creates a new Instance of Abstract graph with the given factory.
@@ -158,11 +127,6 @@ public abstract class AbstractGraph<V extends AbstractVertex, E extends Abstract
     return edge;
   }
 
-  /*
-   * (non-Javadoc)
-   *
-   * @see org.jgrapht.graph.AbstractBaseGraph#addEdge(java.lang.Object, java.lang.Object)
-   */
   @Override
   public E addEdge(final V source, final V target) {
     final E edge = super.addEdge(source, target);
@@ -179,10 +143,10 @@ public abstract class AbstractGraph<V extends AbstractVertex, E extends Abstract
    *          The parameter to add
    */
   public void addParameter(final Parameter param) {
-    if (this.properties.getValue(AbstractGraph.PARAMETERS) == null) {
+    if (this.properties.getValue(AbstractGraph.PARAMETERS_PROPERTY_LITERAL) == null) {
       setParameterSet(new ParameterSet());
     }
-    this.properties.<ParameterSet>getValue(AbstractGraph.PARAMETERS).addParameter(param);
+    this.properties.<ParameterSet>getValue(AbstractGraph.PARAMETERS_PROPERTY_LITERAL).addParameter(param);
   }
 
   /**
@@ -192,18 +156,13 @@ public abstract class AbstractGraph<V extends AbstractVertex, E extends Abstract
    *          The variable to add
    */
   public void addVariable(final Variable var) {
-    if (this.properties.getValue(AbstractGraph.VARIABLES) == null) {
+    if (this.properties.getValue(AbstractGraph.VARIABLES_PROPERTY_LITERAL) == null) {
       setVariableSet(new VariableSet());
     }
-    this.properties.<VariableSet>getValue(AbstractGraph.VARIABLES).addVariable(var);
+    this.properties.<VariableSet>getValue(AbstractGraph.VARIABLES_PROPERTY_LITERAL).addVariable(var);
     var.setExpressionSolver(this);
   }
 
-  /*
-   * (non-Javadoc)
-   *
-   * @see org.jgrapht.graph.AbstractBaseGraph#addVertex(java.lang.Object)
-   */
   @Override
   public boolean addVertex(final V vertex) {
     int number = 0;
@@ -228,13 +187,6 @@ public abstract class AbstractGraph<V extends AbstractVertex, E extends Abstract
     this.hasChanged = true;
   }
 
-  /**
-   * Gets the argument factory.
-   *
-   * @param v
-   *          the v
-   * @return the argument factory
-   */
   public ArgumentFactory getArgumentFactory(final V v) {
     return new ArgumentFactory();
   }
@@ -256,76 +208,38 @@ public abstract class AbstractGraph<V extends AbstractVertex, E extends Abstract
     return vset;
   }
 
-  /**
-   * Gives this graph name.
-   *
-   * @return The name of this graph
-   */
   public String getName() {
-    return this.properties.getValue(AbstractGraph.NAME);
+    return this.properties.getValue(AbstractGraph.NAME_PROPERTY_LITERAL);
   }
 
-  /**
-   * Gets the parameter factory.
-   *
-   * @return the parameter factory
-   */
   public ParameterFactory getParameterFactory() {
     return new ParameterFactory();
   }
 
   /**
-   * Gives the parameter set of this graph.
-   *
-   * @return The set of parameter of this graph
    */
   public ParameterSet getParameters() {
-    if (this.properties.getValue(AbstractGraph.PARAMETERS) != null) {
-      return this.properties.getValue(AbstractGraph.PARAMETERS);
+    if (this.properties.getValue(AbstractGraph.PARAMETERS_PROPERTY_LITERAL) != null) {
+      return this.properties.getValue(AbstractGraph.PARAMETERS_PROPERTY_LITERAL);
     }
     return null;
   }
 
-  /**
-   * Gets the parent vertex.
-   *
-   * @return the parent vertex
-   */
   public V getParentVertex() {
-    return this.properties.getValue(AbstractGraph.PARENT_VERTEX);
+    return this.properties.getValue(AbstractGraph.PARENT_VERTEX_PROPERTY_LITERAL);
   }
 
-  /**
-   * Gives this graph PropertyBean.
-   *
-   * @return This Graph PropertyBean
-   */
   @Override
   public PropertyBean getPropertyBean() {
     return this.properties;
   }
 
-  /*
-   * (non-Javadoc)
-   *
-   * @see org.ietr.dftools.algorithm.model.PropertySource#getPropertyStringValue(java.lang.String)
-   */
   @Override
   public String getPropertyStringValue(final String propertyName) {
     if (this.getPropertyBean().getValue(propertyName) != null) {
       return this.getPropertyBean().getValue(propertyName).toString();
     }
     return null;
-  }
-
-  /*
-   * (non-Javadoc)
-   *
-   * @see org.ietr.dftools.algorithm.model.PropertySource#getPublicProperties()
-   */
-  @Override
-  public List<String> getPublicProperties() {
-    return AbstractGraph.PUBLIC_PROPERTIES;
   }
 
   /**
@@ -336,8 +250,8 @@ public abstract class AbstractGraph<V extends AbstractVertex, E extends Abstract
    * @return The variable with the given name
    */
   public Variable getVariable(final String name) {
-    if (this.properties.getValue(AbstractGraph.VARIABLES) != null) {
-      return this.properties.<VariableSet>getValue(AbstractGraph.VARIABLES).getVariable(name);
+    if (this.properties.getValue(AbstractGraph.VARIABLES_PROPERTY_LITERAL) != null) {
+      return this.properties.<VariableSet>getValue(AbstractGraph.VARIABLES_PROPERTY_LITERAL).getVariable(name);
     }
     return null;
   }
@@ -348,11 +262,11 @@ public abstract class AbstractGraph<V extends AbstractVertex, E extends Abstract
    * @return The set of variables of this graph
    */
   public VariableSet getVariables() {
-    if (this.properties.getValue(AbstractGraph.VARIABLES) == null) {
+    if (this.properties.getValue(AbstractGraph.VARIABLES_PROPERTY_LITERAL) == null) {
       final VariableSet variables = new VariableSet();
       this.setVariableSet(variables);
     }
-    return this.properties.getValue(AbstractGraph.VARIABLES);
+    return this.properties.getValue(AbstractGraph.VARIABLES_PROPERTY_LITERAL);
   }
 
   /**
@@ -371,11 +285,6 @@ public abstract class AbstractGraph<V extends AbstractVertex, E extends Abstract
     return null;
   }
 
-  /**
-   * Gets the vertex factory.
-   *
-   * @return the vertex factory
-   */
   public abstract IModelVertexFactory<V> getVertexFactory();
 
   /**
@@ -394,11 +303,6 @@ public abstract class AbstractGraph<V extends AbstractVertex, E extends Abstract
     }
   }
 
-  /*
-   * (non-Javadoc)
-   *
-   * @see org.jgrapht.graph.AbstractBaseGraph#removeEdge(java.lang.Object)
-   */
   @Override
   public boolean removeEdge(final E edge) {
     final boolean res = super.removeEdge(edge);
@@ -407,11 +311,6 @@ public abstract class AbstractGraph<V extends AbstractVertex, E extends Abstract
     return res;
   }
 
-  /*
-   * (non-Javadoc)
-   *
-   * @see org.jgrapht.graph.AbstractBaseGraph#removeVertex(java.lang.Object)
-   */
   @Override
   public boolean removeVertex(final V vertex) {
     final boolean result = super.removeVertex(vertex);
@@ -427,62 +326,30 @@ public abstract class AbstractGraph<V extends AbstractVertex, E extends Abstract
     this.hasChanged = true;
   }
 
-  /**
-   * Set this graph name.
-   *
-   * @param name
-   *          The name to set for this graph
-   */
   public void setName(final String name) {
-    this.properties.setValue(AbstractGraph.NAME, this.properties.getValue(AbstractGraph.NAME), name);
+    this.properties.setValue(AbstractGraph.NAME_PROPERTY_LITERAL,
+        this.properties.getValue(AbstractGraph.NAME_PROPERTY_LITERAL), name);
   }
 
-  /**
-   * Set the parameter set for this graph.
-   *
-   * @param parameters
-   *          The set of parameters for this graph
-   */
   public void setParameterSet(final ParameterSet parameters) {
-    this.properties.setValue(AbstractGraph.PARAMETERS, this.properties.getValue(AbstractGraph.PARAMETERS), parameters);
+    this.properties.setValue(AbstractGraph.PARAMETERS_PROPERTY_LITERAL,
+        this.properties.getValue(AbstractGraph.PARAMETERS_PROPERTY_LITERAL), parameters);
   }
 
-  /**
-   * Sets the parent vertex.
-   *
-   * @param parentVertex
-   *          the new parent vertex
-   */
   protected void setParentVertex(final V parentVertex) {
-    this.properties.setValue(AbstractGraph.PARENT_VERTEX, parentVertex);
+    this.properties.setValue(AbstractGraph.PARENT_VERTEX_PROPERTY_LITERAL, parentVertex);
   }
 
-  /*
-   * (non-Javadoc)
-   *
-   * @see org.ietr.dftools.algorithm.model.PropertySource#setPropertyValue(java.lang.String, java.lang.Object)
-   */
   @Override
   public void setPropertyValue(final String propertyName, final Object value) {
     this.getPropertyBean().setValue(propertyName, value);
   }
 
-  /**
-   * Set the variables set for this graph.
-   *
-   * @param variables
-   *          The set of variables for this graph
-   */
   public void setVariableSet(final VariableSet variables) {
-    this.properties.setValue(AbstractGraph.VARIABLES, this.properties.getValue(AbstractGraph.VARIABLES), variables);
+    this.properties.setValue(AbstractGraph.VARIABLES_PROPERTY_LITERAL,
+        this.properties.getValue(AbstractGraph.VARIABLES_PROPERTY_LITERAL), variables);
   }
 
-  /*
-   * (non-Javadoc)
-   *
-   * @see org.ietr.dftools.algorithm.model.parameters.IExpressionSolver#solveExpression(java.lang.String,
-   * org.ietr.dftools.algorithm.model.parameters.Value)
-   */
   @Override
   public long solveExpression(final String expression, final Value caller) {
     long resultValue;

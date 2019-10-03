@@ -61,10 +61,6 @@ public class DAGEdge extends AbstractEdge<DirectedAcyclicGraph, DAGVertex> {
   /** Property name for property source_port_modifier. */
   private static final String SOURCE_PORT_MODIFIER = "source_port_modifier";
 
-  static {
-    AbstractEdge.PUBLIC_PROPERTIES.add(DAGEdge.WEIGHT);
-  }
-
   /**
    * Creates a new empty DAGEdge.
    */

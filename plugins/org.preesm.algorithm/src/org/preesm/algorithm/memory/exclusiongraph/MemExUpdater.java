@@ -47,6 +47,7 @@ import org.preesm.commons.doc.annotations.Port;
 import org.preesm.commons.doc.annotations.PreesmTask;
 import org.preesm.commons.doc.annotations.Value;
 import org.preesm.workflow.elements.Workflow;
+import org.preesm.workflow.implement.AbstractTaskImplementation;
 import org.preesm.workflow.implement.AbstractWorkflowNodeImplementation;
 
 /**
@@ -75,35 +76,25 @@ import org.preesm.workflow.implement.AbstractWorkflowNodeImplementation;
 
     seeAlso = { "**MEG update**: K. Desnos, M. Pelcat, J.-F. Nezan, and S. Aridhi. Pre-and post-scheduling memory"
         + " allocation strategies on MPSoCs. In Electronic System Level Synthesis Conference (ESLsyn), 2013." })
-public class MemExUpdater extends AbstractMemExUpdater {
+public class MemExUpdater extends AbstractTaskImplementation {
 
-  /*
-   * (non-Javadoc)
-   *
-   * @see org.ietr.dftools.workflow.implement.AbstractTaskImplementation#execute(java.util.Map, java.util.Map,
-   * org.eclipse.core.runtime.IProgressMonitor, java.lang.String, org.ietr.dftools.workflow.elements.Workflow)
-   */
+  public static final String PARAM_VERBOSE            = "Verbose";
+  public static final String VALUE_TRUE_FALSE_DEFAULT = "? C {True, False}";
+
   @Override
   public Map<String, Object> execute(final Map<String, Object> inputs, final Map<String, String> parameters,
       final IProgressMonitor monitor, final String nodeName, final Workflow workflow) {
 
     // Check Workflow element parameters
-    final String valueVerbose = parameters.get(AbstractMemExUpdater.PARAM_VERBOSE);
-    final boolean verbose = valueVerbose.equalsIgnoreCase("true");
-
-    final String valueLifetime = parameters.get(AbstractMemExUpdater.PARAM_LIFETIME);
-    final boolean lifetime = valueLifetime.equalsIgnoreCase("true");
-
-    final String valueSupprForkJoin = parameters.get(AbstractMemExUpdater.PARAM_SUPPR_FORK_JOIN);
-    final boolean forkJoin = valueSupprForkJoin.equalsIgnoreCase("true");
+    final boolean verbose = "true".equalsIgnoreCase(parameters.get(MemExUpdater.PARAM_VERBOSE));
 
     // Retrieve inputs
     final DirectedAcyclicGraph dag = (DirectedAcyclicGraph) inputs.get("DAG");
     final MemoryExclusionGraph memEx = (MemoryExclusionGraph) inputs.get("MemEx");
 
     final MemExUpdaterEngine engine = new MemExUpdaterEngine(dag, memEx, verbose);
-    engine.createLocalDag(forkJoin);
-    engine.update(lifetime);
+    engine.createLocalDag();
+    engine.update();
 
     // Generate output
     final Map<String, Object> output = new LinkedHashMap<>();
@@ -111,25 +102,13 @@ public class MemExUpdater extends AbstractMemExUpdater {
     return output;
   }
 
-  /*
-   * (non-Javadoc)
-   *
-   * @see org.ietr.dftools.workflow.implement.AbstractTaskImplementation#getDefaultParameters()
-   */
   @Override
   public Map<String, String> getDefaultParameters() {
     final Map<String, String> parameters = new LinkedHashMap<>();
-    parameters.put(AbstractMemExUpdater.PARAM_VERBOSE, AbstractMemExUpdater.VALUE_TRUE_FALSE_DEFAULT);
-    parameters.put(AbstractMemExUpdater.PARAM_LIFETIME, AbstractMemExUpdater.VALUE_TRUE_FALSE_DEFAULT);
-    parameters.put(AbstractMemExUpdater.PARAM_SUPPR_FORK_JOIN, AbstractMemExUpdater.VALUE_TRUE_FALSE_DEFAULT);
+    parameters.put(MemExUpdater.PARAM_VERBOSE, MemExUpdater.VALUE_TRUE_FALSE_DEFAULT);
     return parameters;
   }
 
-  /*
-   * (non-Javadoc)
-   *
-   * @see org.ietr.dftools.workflow.implement.AbstractWorkflowNodeImplementation#monitorMessage()
-   */
   @Override
   public String monitorMessage() {
     return "Updating MemEx";

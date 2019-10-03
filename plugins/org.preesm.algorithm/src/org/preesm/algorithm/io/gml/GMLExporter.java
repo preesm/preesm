@@ -93,8 +93,10 @@ public abstract class GMLExporter<V extends AbstractVertex<?>, E extends Abstrac
    */
   public GMLExporter() {
     this.classKeySet = new LinkedHashMap<>();
-    addKey(AbstractGraph.PARAMETERS, AbstractGraph.PARAMETERS, GRAPH_LITERAL, null, null);
-    addKey(AbstractGraph.VARIABLES, AbstractGraph.VARIABLES, GRAPH_LITERAL, null, null);
+    addKey(AbstractGraph.PARAMETERS_PROPERTY_LITERAL, AbstractGraph.PARAMETERS_PROPERTY_LITERAL, GRAPH_LITERAL, null,
+        null);
+    addKey(AbstractGraph.VARIABLES_PROPERTY_LITERAL, AbstractGraph.VARIABLES_PROPERTY_LITERAL, GRAPH_LITERAL, null,
+        null);
     addKey(AbstractVertex.ARGUMENTS_LITERAL, AbstractVertex.ARGUMENTS_LITERAL, "node", null, null);
     DOMImplementationRegistry registry;
     DOMImplementation impl;
@@ -337,7 +339,7 @@ public abstract class GMLExporter<V extends AbstractVertex<?>, E extends Abstrac
    *          the parent elt
    */
   protected void exportKeys(final PropertySource source, final String forElt, final Element parentElt) {
-    for (final String key : source.getPublicProperties()) {
+    for (final String key : source.getPropertyBean().keys()) {
       if (!(key.equals("parameters") || key.equals("variables") || key.equals("arguments"))
           && (source.getPropertyStringValue(key) != null)) {
         final Element dataElt = appendChild(parentElt, "data");

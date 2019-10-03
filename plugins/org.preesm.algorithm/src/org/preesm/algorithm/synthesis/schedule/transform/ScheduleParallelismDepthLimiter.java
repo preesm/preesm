@@ -44,7 +44,7 @@ import org.preesm.algorithm.schedule.model.Schedule;
 import org.preesm.algorithm.schedule.model.ScheduleFactory;
 import org.preesm.algorithm.schedule.model.SequentialActorSchedule;
 import org.preesm.algorithm.schedule.model.SequentialHiearchicalSchedule;
-import org.preesm.algorithm.synthesis.schedule.iterator.SimpleScheduleIterator;
+import org.preesm.algorithm.synthesis.schedule.ScheduleOrderManager;
 import org.preesm.model.pisdf.AbstractActor;
 
 /**
@@ -57,16 +57,16 @@ public class ScheduleParallelismDepthLimiter implements IScheduleTransform {
 
   long depthTarget;
 
-  public ScheduleParallelismDepthLimiter(long depthTarget) {
+  public ScheduleParallelismDepthLimiter(final long depthTarget) {
     this.depthTarget = depthTarget;
   }
 
   @Override
-  public Schedule performTransform(Schedule schedule) {
+  public Schedule performTransform(final Schedule schedule) {
     return setParallelismDepth(schedule, 0);
   }
 
-  private final Schedule setParallelismDepth(Schedule schedule, long iterator) {
+  private final Schedule setParallelismDepth(final Schedule schedule, long iterator) {
 
     // Parallel schedule? Increment iterator because of new parallel layer
     if (schedule instanceof ParallelSchedule) {
@@ -75,25 +75,25 @@ public class ScheduleParallelismDepthLimiter implements IScheduleTransform {
 
     // Explore and replace children
     if (schedule instanceof HierarchicalSchedule) {
-      HierarchicalSchedule hierSchedule = (HierarchicalSchedule) schedule;
-      List<Schedule> childSchedules = new LinkedList<>();
+      final HierarchicalSchedule hierSchedule = (HierarchicalSchedule) schedule;
+      final List<Schedule> childSchedules = new LinkedList<>();
       childSchedules.addAll(hierSchedule.getChildren());
       // Clear list of children schedule
       hierSchedule.getChildren().clear();
-      for (Schedule child : childSchedules) {
+      for (final Schedule child : childSchedules) {
         hierSchedule.getChildren().add(setParallelismDepth(child, iterator));
       }
     }
 
     // Rework if parallel is below the depth target
-    if ((schedule instanceof ParallelSchedule) && (iterator > depthTarget)) {
+    if ((schedule instanceof ParallelSchedule) && (iterator > this.depthTarget)) {
       if (schedule instanceof HierarchicalSchedule) {
         if (!schedule.hasAttachedActor()) {
-          Schedule childrenSchedule = schedule.getChildren().get(0);
+          final Schedule childrenSchedule = schedule.getChildren().get(0);
           childrenSchedule.setRepetition(schedule.getRepetition());
           return childrenSchedule;
         } else {
-          SequentialHiearchicalSchedule sequenceSchedule = ScheduleFactory.eINSTANCE
+          final SequentialHiearchicalSchedule sequenceSchedule = ScheduleFactory.eINSTANCE
               .createSequentialHiearchicalSchedule();
           sequenceSchedule.setAttachedActor(((HierarchicalSchedule) schedule).getAttachedActor());
           sequenceSchedule.setRepetition(schedule.getRepetition());
@@ -101,10 +101,10 @@ public class ScheduleParallelismDepthLimiter implements IScheduleTransform {
           return sequenceSchedule;
         }
       } else if (schedule instanceof ActorSchedule) {
-        SequentialActorSchedule actorSchedule = ScheduleFactory.eINSTANCE.createSequentialActorSchedule();
+        final SequentialActorSchedule actorSchedule = ScheduleFactory.eINSTANCE.createSequentialActorSchedule();
         actorSchedule.setRepetition(schedule.getRepetition());
 
-        final List<AbstractActor> actors = new SimpleScheduleIterator(schedule).getOrderedList();
+        final List<AbstractActor> actors = new ScheduleOrderManager(schedule).getSimpleOrderedList();
         actorSchedule.getActorList().addAll(actors);
         return actorSchedule;
       }

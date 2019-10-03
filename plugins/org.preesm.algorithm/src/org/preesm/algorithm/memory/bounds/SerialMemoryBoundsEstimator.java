@@ -36,14 +36,14 @@
  */
 package org.preesm.algorithm.memory.bounds;
 
+import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.eclipse.core.runtime.IProgressMonitor;
-import org.jgrapht.graph.DefaultEdge;
 import org.preesm.algorithm.memory.exclusiongraph.MemoryExclusionGraph;
-import org.preesm.algorithm.memory.exclusiongraph.MemoryExclusionVertex;
 import org.preesm.commons.doc.annotations.Parameter;
 import org.preesm.commons.doc.annotations.Port;
 import org.preesm.commons.doc.annotations.PreesmTask;
@@ -128,12 +128,6 @@ public class SerialMemoryBoundsEstimator extends AbstractTaskImplementation {
   /** The Constant VALUE_VERBOSE_FALSE. */
   public static final String VALUE_VERBOSE_FALSE = "False";
 
-  /*
-   * (non-Javadoc)
-   *
-   * @see org.ietr.dftools.workflow.implement.AbstractTaskImplementation#execute(java.util.Map, java.util.Map,
-   * org.eclipse.core.runtime.IProgressMonitor, java.lang.String, org.ietr.dftools.workflow.elements.Workflow)
-   */
   @Override
   public Map<String, Object> execute(final Map<String, Object> inputs, final Map<String, String> parameters,
       final IProgressMonitor monitor, final String nodeName, final Workflow workflow) {
@@ -154,56 +148,38 @@ public class SerialMemoryBoundsEstimator extends AbstractTaskImplementation {
         if (valueSolver.equals(SerialMemoryBoundsEstimator.VALUE_SOLVER_HEURISTIC)
             || valueSolver.equals(SerialMemoryBoundsEstimator.VALUE_SOLVER_OSTERGARD)
             || valueSolver.equals(SerialMemoryBoundsEstimator.VALUE_SOLVER_YAMAGUCHI)) {
-          logger.log(Level.INFO, valueSolver + " solver used.");
+          logger.log(Level.INFO, () -> valueSolver + " solver used.");
         } else {
-          logger.log(Level.INFO, "Incorrect solver :" + valueSolver + ". Heuristic solver used by default.");
+          logger.log(Level.INFO, () -> "Incorrect solver :" + valueSolver + ". Heuristic solver used by default.");
         }
       }
     }
 
-    // MemoryExclusionGraph memEx = (MemoryExclusionGraph)
-    // inputs.get("MemEx");
     @SuppressWarnings("unchecked")
     final Map<String, MemoryExclusionGraph> memExes = (Map<String, MemoryExclusionGraph>) inputs.get("MEGs");
 
-    for (final String memory : memExes.keySet()) {
-      final MemoryExclusionGraph memEx = memExes.get(memory);
+    for (final Entry<String, MemoryExclusionGraph> entry : memExes.entrySet()) {
+      final String memory = entry.getKey();
+      final MemoryExclusionGraph memEx = entry.getValue();
+
+      final MemoryBoundsEstimatorEngine engine = new MemoryBoundsEstimatorEngine(memEx, valueVerbose);
+      engine.selectSolver(valueSolver);
+      engine.solve();
+
       final int nbVertices = memEx.vertexSet().size();
-      final double density = memEx.edgeSet().size()
-          / ((memEx.vertexSet().size() * (memEx.vertexSet().size() - 1)) / 2.0);
-      // Derive bounds
-      AbstractMaximumWeightCliqueSolver<MemoryExclusionVertex, DefaultEdge> solver = null;
-      if (valueSolver.equals(SerialMemoryBoundsEstimator.VALUE_SOLVER_HEURISTIC)) {
-        solver = new HeuristicSolver<>(memEx);
-      }
-      if (valueSolver.equals(SerialMemoryBoundsEstimator.VALUE_SOLVER_OSTERGARD)) {
-        solver = new OstergardSolver<>(memEx);
-      }
-      if (valueSolver.equals(SerialMemoryBoundsEstimator.VALUE_SOLVER_YAMAGUCHI)) {
-        solver = new YamaguchiSolver<>(memEx);
-      }
-      if (solver == null) {
-        solver = new HeuristicSolver<>(memEx);
-      }
+      final double density = engine.getDensity();
 
-      solver.solve();
-      final long minBound = solver.sumWeight(solver.getHeaviestClique());
-      final long maxBound = solver.sumWeight(memEx.vertexSet());
+      final long minBound = engine.getMinBound();
 
-      logger.log(Level.INFO, "Memory(" + memory + ") Vertices = " + nbVertices + " Bound_Max = " + maxBound
+      final long maxBound = engine.getMaxBound();
+
+      logger.log(Level.INFO, () -> "Memory(" + memory + ") Vertices = " + nbVertices + " Bound_Max = " + maxBound
           + " Bound_Min = " + minBound + " Density = " + density);
     }
 
-    // Generate output
-    final Map<String, Object> output = new LinkedHashMap<>();
-    return output;
+    return Collections.emptyMap();
   }
 
-  /*
-   * (non-Javadoc)
-   *
-   * @see org.ietr.dftools.workflow.implement.AbstractTaskImplementation#getDefaultParameters()
-   */
   @Override
   public Map<String, String> getDefaultParameters() {
     final Map<String, String> parameters = new LinkedHashMap<>();
@@ -212,11 +188,6 @@ public class SerialMemoryBoundsEstimator extends AbstractTaskImplementation {
     return parameters;
   }
 
-  /*
-   * (non-Javadoc)
-   *
-   * @see org.ietr.dftools.workflow.implement.AbstractWorkflowNodeImplementation#monitorMessage()
-   */
   @Override
   public String monitorMessage() {
     return "Estimating Memory Bounds for all Memex in input map";

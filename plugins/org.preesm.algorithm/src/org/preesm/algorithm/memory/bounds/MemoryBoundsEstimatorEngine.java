@@ -49,41 +49,20 @@ import org.preesm.commons.logger.PreesmLogger;
  */
 public class MemoryBoundsEstimatorEngine {
 
-  /** The Constant VALUE_SOLVER_DEFAULT. */
-  private static final String VALUE_SOLVER_DEFAULT = "? C {Heuristic, Ostergard, Yamaguchi}";
-
-  /** The Constant VALUE_SOLVER_OSTERGARD. */
-  private static final String VALUE_SOLVER_OSTERGARD = "Ostergard";
-
-  /** The Constant VALUE_SOLVER_YAMAGUCHI. */
-  private static final String VALUE_SOLVER_YAMAGUCHI = "Yamaguchi";
-
-  /** The Constant VALUE_SOLVER_HEURISTIC. */
   private static final String VALUE_SOLVER_HEURISTIC = "Heuristic";
+  private static final String VALUE_SOLVER_OSTERGARD = "Ostergard";
+  private static final String VALUE_SOLVER_YAMAGUCHI = "Yamaguchi";
+  public static final String  VALUE_SOLVER_DEFAULT   = "? C {" + VALUE_SOLVER_HEURISTIC + ", " + VALUE_SOLVER_OSTERGARD
+      + ", " + VALUE_SOLVER_YAMAGUCHI + "}";
+  private static final String VALUE_VERBOSE_TRUE     = "True";
 
-  /** The Constant VALUE_VERBOSE_TRUE. */
-  private static final String VALUE_VERBOSE_TRUE = "True";
-
-  /** The logger. */
-  // Rem: Logger is used to display messages in the console
-  private final Logger logger = PreesmLogger.getLogger();
-
-  /** The mem ex. */
+  private final Logger               logger = PreesmLogger.getLogger();
   private final MemoryExclusionGraph memEx;
+  private final boolean              verbose;
 
-  /** The verbose. */
-  private final boolean verbose;
-
-  /** The solver. */
   private AbstractMaximumWeightCliqueSolver<MemoryExclusionVertex, DefaultEdge> solver;
 
   /**
-   * Instantiates a new memory bounds estimator engine.
-   *
-   * @param memEx
-   *          the mem ex
-   * @param valueVerbose
-   *          the value verbose
    */
   public MemoryBoundsEstimatorEngine(final MemoryExclusionGraph memEx, final String valueVerbose) {
     this.memEx = memEx;
@@ -91,10 +70,6 @@ public class MemoryBoundsEstimatorEngine {
   }
 
   /**
-   * Select solver.
-   *
-   * @param valueSolver
-   *          the value solver
    */
   public void selectSolver(final String valueSolver) {
     if (this.verbose) {
@@ -104,9 +79,9 @@ public class MemoryBoundsEstimatorEngine {
         if (valueSolver.equals(MemoryBoundsEstimatorEngine.VALUE_SOLVER_HEURISTIC)
             || valueSolver.equals(MemoryBoundsEstimatorEngine.VALUE_SOLVER_OSTERGARD)
             || valueSolver.equals(MemoryBoundsEstimatorEngine.VALUE_SOLVER_YAMAGUCHI)) {
-          this.logger.log(Level.INFO, valueSolver + " solver used.");
+          this.logger.log(Level.INFO, () -> valueSolver + " solver used.");
         } else {
-          this.logger.log(Level.INFO, "Incorrect solver :" + valueSolver + ". Heuristic solver used by default.");
+          this.logger.log(Level.INFO, () -> "Incorrect solver :" + valueSolver + ". Heuristic solver used by default.");
         }
       }
     }
@@ -126,7 +101,6 @@ public class MemoryBoundsEstimatorEngine {
   }
 
   /**
-   * Solve.
    */
   public void solve() {
     if (this.verbose) {
@@ -136,21 +110,16 @@ public class MemoryBoundsEstimatorEngine {
     this.solver.solve();
   }
 
-  /**
-   * Gets the min bound.
-   *
-   * @return the min bound
-   */
   public long getMinBound() {
     return this.solver.sumWeight(this.solver.getHeaviestClique());
   }
 
-  /**
-   * Gets the max bound.
-   *
-   * @return the max bound
-   */
   public long getMaxBound() {
     return this.solver.sumWeight(this.memEx.vertexSet());
   }
+
+  public double getDensity() {
+    return memEx.edgeSet().size() / ((memEx.vertexSet().size() * (memEx.vertexSet().size() - 1)) / 2.0);
+  }
+
 }
