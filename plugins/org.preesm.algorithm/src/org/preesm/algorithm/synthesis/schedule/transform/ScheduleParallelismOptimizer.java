@@ -11,6 +11,9 @@ import org.preesm.algorithm.schedule.model.SequentialSchedule;
 
 /**
  * @author dgageot
+ * 
+ *         Identifies and moves actors inside a sequential and repeated schedule that can be parallelized outside to
+ *         gain in performance. The input schedule should have been flattened for a better result.
  *
  */
 public class ScheduleParallelismOptimizer implements IScheduleTransform {
