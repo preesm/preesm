@@ -33,11 +33,10 @@ import org.preesm.model.slam.route.SlamRoutingTable;
  * respectively the source/target of the Fifo.
  *
  * This communication inserter keeps track of the visited actors per ComponentInstance, and therefore can insert the
- * communication nodes Receive is inserted right before the receive actor, and send is inserted at the peek (current
- * state of the visit) of the schedule containing the source.
- *
- * The route step forwards (send then receive) are inserted at the peek of the schedule containing the last visited
- * actor mapped on the proxy operator.
+ * communication nodes
+ * 
+ * Receive is inserted right before the receive actor, and send is inserted at the peek (current state of the visit) of
+ * the schedule containing the source.
  *
  * @author anmorvan
  *
@@ -113,6 +112,9 @@ public class DefaultCommunicationInserter implements ICommunicationInserter {
     }
   }
 
+  /**
+   * Insert communication nodes for the fifo following the route.
+   */
   private void insertFifoCommunication(final Fifo fifo, final SlamRoute route,
       final ScheduleOrderManager scheduleOrderManager, final Mapping mapping) {
     for (final SlamRouteStep rstep : route.getRouteSteps()) {
@@ -150,15 +152,26 @@ public class DefaultCommunicationInserter implements ICommunicationInserter {
     }
   }
 
+  /**
+   * Insert receiveStart and receiveEnd actors in the peek of the target operator's current schedule. If no actor mapped
+   * on this operator has been visited, finds the first operator mapped on it and insert receive actors before.
+   * 
+   * TODO: If no actor is mapped on this operator, throws an exception. A new schedule could be created (see todo in the
+   * method)
+   */
   private void insertReceive(final ScheduleOrderManager scheduleOrderManager, final Mapping mapping,
-      final ComponentInstance tgtCmp, final ReceiveStartActor receiveStart, final ReceiveEndActor receiveEnd,
+      final ComponentInstance targetOperator, final ReceiveStartActor receiveStart, final ReceiveEndActor receiveEnd,
       final boolean isLastRouteStep) {
-    final AbstractActor tgtCmpLastActor = this.lastVisitedActor.get(tgtCmp);
+    final AbstractActor targetOperatorPeekActor = this.lastVisitedActor.get(targetOperator);
     if (isLastRouteStep) {
-      if (tgtCmpLastActor == null) {
+      if (targetOperatorPeekActor == null) {
         // find appropriate schedule
-        final List<AbstractActor> list = scheduleOrderManager.buildScheduleAndTopologicalOrderedList(mapping, tgtCmp);
+        final List<
+            AbstractActor> list = scheduleOrderManager.buildScheduleAndTopologicalOrderedList(mapping, targetOperator);
         if (list.isEmpty()) {
+          // no actor is actually mapped on the target operator. Only happens when using proxy operator
+          // TODO: Schedule trees usually have a parallel root schedule. Insert a new schedule child there and add the
+          // receive nodes in it.
           throw new UnsupportedOperationException(
               "Proxy send/receive using operator on which no actor is mapped is not supported");
         } else {
@@ -168,9 +181,9 @@ public class DefaultCommunicationInserter implements ICommunicationInserter {
               "[COMINSERT]  * receive inserted before '" + abstractActor.getName() + "'");
         }
       } else {
-        scheduleOrderManager.insertAfter(tgtCmpLastActor, receiveStart, receiveEnd);
+        scheduleOrderManager.insertAfter(targetOperatorPeekActor, receiveStart, receiveEnd);
         PreesmLogger.getLogger().log(Level.FINER,
-            "[COMINSERT]  * receive inserted after '" + tgtCmpLastActor.getName() + "'");
+            "[COMINSERT]  * receive inserted after '" + targetOperatorPeekActor.getName() + "'");
       }
     } else {
       // TODO add proxy receive
@@ -178,6 +191,9 @@ public class DefaultCommunicationInserter implements ICommunicationInserter {
     }
   }
 
+  /**
+   * Insert sendStart en sendEnd actors in the peek of the source operator's current schedule.
+   */
   private void insertSend(final ScheduleOrderManager scheduleOrderManager, final ComponentInstance srcOperator,
       final SendStartActor sendStart, final SendEndActor sendEnd, final boolean isFirstRouteStep) {
     final AbstractActor srcOperatorPeekActor = this.lastVisitedActor.get(srcOperator);
