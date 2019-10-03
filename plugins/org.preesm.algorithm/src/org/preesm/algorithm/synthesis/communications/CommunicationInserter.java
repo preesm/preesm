@@ -141,7 +141,7 @@ public class CommunicationInserter {
 
     try {
       final List<AbstractActor> scheduleAndTopologicalOrderedList = new ScheduleOrderManager(schedule)
-          .getScheduleAndTopologicalOrderedList();
+          .buildScheduleAndTopologicalOrderedList();
       for (final AbstractActor actor : scheduleAndTopologicalOrderedList) {
         final EList<ComponentInstance> actorMappings = mapping.getMapping(actor);
         if (actorMappings.size() != 1) {
@@ -172,7 +172,7 @@ public class CommunicationInserter {
 
     final ScheduleOrderManager scheduleOrderManager = new ScheduleOrderManager(schedule);
     // Get edges in scheduling order of their producers
-    final Iterator<AbstractActor> t = scheduleOrderManager.getScheduleAndTopologicalOrderedList().iterator();
+    final Iterator<AbstractActor> t = scheduleOrderManager.buildScheduleAndTopologicalOrderedList().iterator();
     final List<Fifo> edgesInPrecedenceOrder = new ArrayList<>();
 
     while (t.hasNext()) {
