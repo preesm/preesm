@@ -193,15 +193,6 @@ class SequentialActorSchedule extends ActorSchedule, SequentialSchedule {
 }
 
 /*
- * This schedule contains a list of actors whose execution can be
- * simultaneous (i.e. parallel).
- *
- * This schedule as no children.
- */
-class ParallelActorSchedule extends ActorSchedule, ParallelSchedule {
-}
-
-/*
  * This schedule contains an ordered list of schedule children whose execution is
  * sequential, in the order of apparition in the list.
  */

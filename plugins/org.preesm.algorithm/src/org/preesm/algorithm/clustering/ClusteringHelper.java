@@ -44,7 +44,6 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.eclipse.emf.common.util.ECollections;
 import org.eclipse.emf.common.util.EList;
 import org.preesm.algorithm.schedule.model.HierarchicalSchedule;
-import org.preesm.algorithm.schedule.model.ParallelActorSchedule;
 import org.preesm.algorithm.schedule.model.ParallelSchedule;
 import org.preesm.algorithm.schedule.model.Schedule;
 import org.preesm.algorithm.schedule.model.SequentialSchedule;
@@ -205,11 +204,7 @@ public class ClusteringHelper {
       final List<AbstractActor> actors = new ScheduleOrderManager(schedule).getSimpleOrderedList();
       AbstractActor actor = actors.get(0);
       long actorTiming = scenario.getTimings().evaluateTimingOrDefault(actor, component);
-      if ((schedule instanceof ParallelActorSchedule)) {
-        timing = actorTiming;
-      } else {
-        timing = schedule.getRepetition() * actorTiming;
-      }
+      timing = schedule.getRepetition() * actorTiming;
     }
 
     return timing;

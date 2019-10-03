@@ -387,12 +387,7 @@ public class ClusteringBuilder {
       schedule.getScheduleTree().add(subSched);
     } else {
       ActorSchedule actorSchedule = null;
-      // If actor is delayed, build a sequential actor schedule, otherwise build a parallel actor schedule
-      if (ClusteringHelper.isActorDelayed(actor)) {
-        actorSchedule = ScheduleFactory.eINSTANCE.createSequentialActorSchedule();
-      } else {
-        actorSchedule = ScheduleFactory.eINSTANCE.createParallelActorSchedule();
-      }
+      actorSchedule = ScheduleFactory.eINSTANCE.createSequentialActorSchedule();
       actorSchedule.setRepetition(repetition);
       // Register in the schedule with original actor to be able to clusterize the non-copy graph
       actorSchedule.getActorList().add(PreesmCopyTracker.getSource(actor));
