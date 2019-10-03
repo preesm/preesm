@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.stream.Collectors;
 import org.preesm.algorithm.schedule.model.ActorSchedule;
 import org.preesm.algorithm.schedule.model.HierarchicalSchedule;
@@ -75,9 +74,20 @@ public class ScheduleOrderManager {
    * Builds a map that associate for every actor in the schedule its refering ActorSchedule.
    */
   private static final Map<AbstractActor, ActorSchedule> actorToScheduleMap(final Schedule schedule) {
-    final Set<ActorSchedule> actorSchedules = ScheduleUtil.getActorSchedules(schedule);
     final Map<AbstractActor, ActorSchedule> res = new LinkedHashMap<>();
-    actorSchedules.forEach(aSched -> aSched.getActorList().forEach(a -> res.put(a, aSched)));
+    new ScheduleSwitch<Boolean>() {
+      @Override
+      public Boolean caseHierarchicalSchedule(final HierarchicalSchedule hSched) {
+        hSched.getScheduleTree().forEach(this::doSwitch);
+        return true;
+      }
+
+      @Override
+      public Boolean caseActorSchedule(final ActorSchedule aSched) {
+        aSched.getActorList().forEach(a -> res.put(a, aSched));
+        return true;
+      }
+    }.doSwitch(schedule);
     return res;
   }
 
