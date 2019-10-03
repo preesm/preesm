@@ -31,7 +31,7 @@ import org.preesm.model.pisdf.util.topology.PiSDFTopologyHelper;
  *
  * @author anmorvan
  */
-public abstract class ScheduleOrderedVisitor extends ScheduleSwitch<Boolean> {
+abstract class ScheduleOrderedVisitor extends ScheduleSwitch<Boolean> {
 
   /** Keeps track of visited actors (for the algorithm) and schedules (for speeding up) */
   private final List<Object>                visited            = new ArrayList<>();
@@ -221,6 +221,6 @@ public abstract class ScheduleOrderedVisitor extends ScheduleSwitch<Boolean> {
   /**
    *
    */
-  public abstract void visit(final AbstractActor actor);
+  abstract void visit(final AbstractActor actor);
 
 }

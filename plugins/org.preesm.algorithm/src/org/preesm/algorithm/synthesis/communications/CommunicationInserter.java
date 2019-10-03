@@ -20,7 +20,7 @@ import org.preesm.algorithm.schedule.model.Schedule;
 import org.preesm.algorithm.schedule.model.ScheduleFactory;
 import org.preesm.algorithm.schedule.model.SendEndActor;
 import org.preesm.algorithm.schedule.model.SendStartActor;
-import org.preesm.algorithm.synthesis.schedule.ScheduleOrderBuilder;
+import org.preesm.algorithm.synthesis.schedule.ScheduleOrderManager;
 import org.preesm.algorithm.synthesis.schedule.ScheduleUtil;
 import org.preesm.commons.CollectionUtil;
 import org.preesm.commons.exceptions.PreesmRuntimeException;
@@ -146,7 +146,7 @@ public class CommunicationInserter {
     final List<ComponentInstance> cmps = new ArrayList<>(slamDesign.getOperatorComponentInstances());
 
     try {
-      final List<AbstractActor> scheduleAndTopologicalOrderedList = ScheduleOrderBuilder
+      final List<AbstractActor> scheduleAndTopologicalOrderedList = ScheduleOrderManager
           .getScheduleAndTopologicalOrderedList(schedule);
       for (final AbstractActor actor : scheduleAndTopologicalOrderedList) {
         final EList<ComponentInstance> actorMappings = mapping.getMapping(actor);
@@ -177,7 +177,7 @@ public class CommunicationInserter {
     initLastVisitedActor(slamDesign, schedule, mapping);
 
     // Get edges in scheduling order of their producers
-    final Iterator<AbstractActor> t = ScheduleOrderBuilder.getScheduleAndTopologicalOrderedList(schedule).iterator();
+    final Iterator<AbstractActor> t = ScheduleOrderManager.getScheduleAndTopologicalOrderedList(schedule).iterator();
     final List<Fifo> edgesInPrecedenceOrder = new ArrayList<>();
 
     while (t.hasNext()) {

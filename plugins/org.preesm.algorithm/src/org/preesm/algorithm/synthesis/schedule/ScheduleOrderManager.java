@@ -14,7 +14,7 @@ import org.preesm.model.pisdf.AbstractActor;
  *
  * @author anmorvan
  */
-public abstract class ScheduleOrderBuilder {
+public class ScheduleOrderManager {
 
   /**
    * Build the order following the appearance in the lists of the schedule tree. This order may not respect topological
@@ -36,13 +36,16 @@ public abstract class ScheduleOrderBuilder {
     return new InternalScheduleAndTopologyOrderBuilder().createOrder(schedule);
   }
 
-  protected abstract List<AbstractActor> createOrder(final Schedule schedule);
+  /**
+   */
+  private interface IOrderBuilder {
+    public List<AbstractActor> createOrder(final Schedule schedule);
+  }
 
   /**
    */
-  private static class InternalScheduleAndTopologyOrderBuilder extends ScheduleOrderBuilder {
+  private static class InternalScheduleAndTopologyOrderBuilder implements IOrderBuilder {
 
-    @Override
     public List<AbstractActor> createOrder(final Schedule schedule) {
       final List<AbstractActor> res = new ArrayList<>();
       new ScheduleOrderedVisitor() {
@@ -58,9 +61,8 @@ public abstract class ScheduleOrderBuilder {
 
   /**
    */
-  private static class InternalSimpleScheduleOrderBuilder extends ScheduleOrderBuilder {
+  private static class InternalSimpleScheduleOrderBuilder implements IOrderBuilder {
 
-    @Override
     public List<AbstractActor> createOrder(final Schedule schedule) {
       return new InternalSimpleScheduleSwitch().doSwitch(schedule);
     }

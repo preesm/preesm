@@ -43,7 +43,7 @@ import org.preesm.algorithm.memalloc.model.LogicalBuffer;
 import org.preesm.algorithm.memalloc.model.MemoryAllocationFactory;
 import org.preesm.algorithm.memalloc.model.PhysicalBuffer;
 import org.preesm.algorithm.schedule.model.Schedule;
-import org.preesm.algorithm.synthesis.schedule.ScheduleOrderBuilder;
+import org.preesm.algorithm.synthesis.schedule.ScheduleOrderManager;
 import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.DataPort;
 import org.preesm.model.pisdf.EndActor;
@@ -77,7 +77,7 @@ public class SimpleMemoryAllocation implements IMemoryAllocation {
 
     long totalSize = 0L;
 
-    final List<AbstractActor> orderedList = ScheduleOrderBuilder.getScheduleAndTopologicalOrderedList(schedule);
+    final List<AbstractActor> orderedList = ScheduleOrderManager.getScheduleAndTopologicalOrderedList(schedule);
     for (final AbstractActor actor : orderedList) {
       final List<Fifo> fifos = actor.getDataOutputPorts().stream().map(DataPort::getFifo).collect(Collectors.toList());
       for (final Fifo fifo : fifos) {

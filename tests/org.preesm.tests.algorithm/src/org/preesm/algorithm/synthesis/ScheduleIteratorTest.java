@@ -8,7 +8,7 @@ import org.preesm.algorithm.schedule.model.ActorSchedule;
 import org.preesm.algorithm.schedule.model.ParallelHiearchicalSchedule;
 import org.preesm.algorithm.schedule.model.ScheduleFactory;
 import org.preesm.algorithm.schedule.model.SequentialActorSchedule;
-import org.preesm.algorithm.synthesis.schedule.ScheduleOrderBuilder;
+import org.preesm.algorithm.synthesis.schedule.ScheduleOrderManager;
 import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.Actor;
 import org.preesm.model.pisdf.DataInputPort;
@@ -27,7 +27,7 @@ public class ScheduleIteratorTest {
   @Test
   public void test1() {
     final ParallelHiearchicalSchedule sched = createSchedule();
-    final List<AbstractActor> simpleOrderedList = ScheduleOrderBuilder.getSimpleOrderedList(sched);
+    final List<AbstractActor> simpleOrderedList = ScheduleOrderManager.getSimpleOrderedList(sched);
     StringBuilder sb = new StringBuilder();
     simpleOrderedList.forEach(a -> sb.append(a.getName()));
     assertEquals("ADCB", sb.toString());
@@ -36,7 +36,7 @@ public class ScheduleIteratorTest {
   @Test
   public void test2() {
     final ParallelHiearchicalSchedule sched = createSchedule();
-    final List<AbstractActor> orderedList = ScheduleOrderBuilder.getScheduleAndTopologicalOrderedList(sched);
+    final List<AbstractActor> orderedList = ScheduleOrderManager.getScheduleAndTopologicalOrderedList(sched);
     StringBuilder sb = new StringBuilder();
     orderedList.forEach(a -> sb.append(a.getName()));
     assertEquals("ACBD", sb.toString());
@@ -51,7 +51,7 @@ public class ScheduleIteratorTest {
     schedule.getActorList().add(actorE);
 
     StringBuilder sb = new StringBuilder();
-    final List<AbstractActor> orderedList = ScheduleOrderBuilder.getScheduleAndTopologicalOrderedList(sched);
+    final List<AbstractActor> orderedList = ScheduleOrderManager.getScheduleAndTopologicalOrderedList(sched);
     orderedList.forEach(a -> sb.append(a.getName()));
     assertEquals("ACBDE", sb.toString());
 
@@ -66,7 +66,7 @@ public class ScheduleIteratorTest {
     schedule.getActorList().add(0, actorE);
 
     StringBuilder sb = new StringBuilder();
-    final List<AbstractActor> orderedList = ScheduleOrderBuilder.getScheduleAndTopologicalOrderedList(sched);
+    final List<AbstractActor> orderedList = ScheduleOrderManager.getScheduleAndTopologicalOrderedList(sched);
     orderedList.forEach(a -> sb.append(a.getName()));
     assertEquals("AECBD", sb.toString());
 

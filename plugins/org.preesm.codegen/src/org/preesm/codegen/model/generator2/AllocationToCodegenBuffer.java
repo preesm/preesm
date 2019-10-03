@@ -18,7 +18,7 @@ import org.preesm.algorithm.memalloc.model.LogicalBuffer;
 import org.preesm.algorithm.memalloc.model.PhysicalBuffer;
 import org.preesm.algorithm.memalloc.model.util.MemoryAllocationSwitch;
 import org.preesm.algorithm.schedule.model.Schedule;
-import org.preesm.algorithm.synthesis.schedule.ScheduleOrderBuilder;
+import org.preesm.algorithm.synthesis.schedule.ScheduleOrderManager;
 import org.preesm.codegen.model.Buffer;
 import org.preesm.codegen.model.SubBuffer;
 import org.preesm.codegen.model.Variable;
@@ -76,7 +76,7 @@ public class AllocationToCodegenBuffer extends MemoryAllocationSwitch<Boolean> {
     this.doSwitch(this.memAlloc);
 
     // link variables for Fifos and set names
-    final List<AbstractActor> orderedList = ScheduleOrderBuilder.getScheduleAndTopologicalOrderedList(schedule);
+    final List<AbstractActor> orderedList = ScheduleOrderManager.getScheduleAndTopologicalOrderedList(schedule);
     for (final AbstractActor actor : orderedList) {
       final List<Fifo> fifos = actor.getDataInputPorts().stream().map(DataPort::getFifo).collect(Collectors.toList());
       for (final Fifo fifo : fifos) {
