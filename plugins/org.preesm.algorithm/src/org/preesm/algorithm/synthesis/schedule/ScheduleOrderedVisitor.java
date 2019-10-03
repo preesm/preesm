@@ -86,9 +86,7 @@ public abstract class ScheduleOrderedVisitor extends ScheduleSwitch<Boolean> {
 
   @Override
   public final Boolean caseAbstractActor(final AbstractActor actor) {
-
-    innerVisit(actor);
-    return true;
+    throw new PreesmRuntimeException("Visit should start with a schedule object");
   }
 
   private final void innerVisit(final Schedule schedule) {
@@ -128,7 +126,7 @@ public abstract class ScheduleOrderedVisitor extends ScheduleSwitch<Boolean> {
       // skip
     } else {
       // make sure predecessors have been visited
-      visitPredecessors(actor);
+      innerVisitPredecessors(actor);
       visit(actor);
       this.visited.add(actor);
       if (this.stuckStack.peek() == actor) {
@@ -139,7 +137,7 @@ public abstract class ScheduleOrderedVisitor extends ScheduleSwitch<Boolean> {
     }
   }
 
-  private final void visitPredecessors(final AbstractActor actor) {
+  private final void innerVisitPredecessors(final AbstractActor actor) {
     final List<AbstractActor> directPredecessorsOf = PiSDFTopologyHelper.getDirectPredecessorsOf(actor);
     if (actor instanceof CommunicationActor) {
       directPredecessorsOf.addAll(new CommunicationPrecedence().doSwitch(actor));
@@ -165,7 +163,7 @@ public abstract class ScheduleOrderedVisitor extends ScheduleSwitch<Boolean> {
   private final void innerVisitScheduleOf(final AbstractActor v) {
     if (this.actorToScheduleMap == null) {
       if (this.scheduleStack.isEmpty()) {
-        throw new PreesmRuntimeException();
+        throw new PreesmRuntimeException("Visit should start with a schedule object");
       }
       final Schedule peekFirst = this.scheduleStack.peekFirst();
       this.actorToScheduleMap = ScheduleUtil.actorToScheduleMap(peekFirst.getRoot());
