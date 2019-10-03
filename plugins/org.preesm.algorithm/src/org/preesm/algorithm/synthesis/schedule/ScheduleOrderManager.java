@@ -16,14 +16,20 @@ import org.preesm.model.pisdf.AbstractActor;
  */
 public class ScheduleOrderManager {
 
+  private final Schedule schedule;
+
+  public ScheduleOrderManager(final Schedule schedule) {
+    this.schedule = schedule;
+  }
+
   /**
    * Build the order following the appearance in the lists of the schedule tree. This order may not respect topological
    * order of the actors, thus this order should not be used as valid execution scheme.
    *
    * Uses a simple {@link ScheduleSwitch} to build the internal list;
    */
-  public static final List<AbstractActor> getSimpleOrderedList(final Schedule schedule) {
-    return new InternalSimpleScheduleOrderBuilder().createOrder(schedule);
+  public final List<AbstractActor> getSimpleOrderedList() {
+    return new InternalSimpleScheduleOrderBuilder().createOrder(this.schedule);
   }
 
   /**
@@ -32,8 +38,8 @@ public class ScheduleOrderManager {
    *
    * Uses {@link ScheduleOrderedVisitor} to build the internal list;
    */
-  public static final List<AbstractActor> getScheduleAndTopologicalOrderedList(final Schedule schedule) {
-    return new InternalScheduleAndTopologyOrderBuilder().createOrder(schedule);
+  public final List<AbstractActor> getScheduleAndTopologicalOrderedList() {
+    return new InternalScheduleAndTopologyOrderBuilder().createOrder(this.schedule);
   }
 
   /**

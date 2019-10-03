@@ -314,7 +314,7 @@ public class ClusteringBuilder {
         if (child instanceof HierarchicalSchedule) {
           childActors.add(((HierarchicalSchedule) processedChild).getAttachedActor());
         } else {
-          final List<AbstractActor> actors = ScheduleOrderManager.getSimpleOrderedList(processedChild);
+          final List<AbstractActor> actors = new ScheduleOrderManager(processedChild).getSimpleOrderedList();
           childActors.addAll(actors);
         }
       }

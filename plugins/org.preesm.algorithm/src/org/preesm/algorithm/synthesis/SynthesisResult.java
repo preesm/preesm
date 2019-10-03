@@ -73,7 +73,7 @@ public class SynthesisResult {
         res.append(SynthesisResult.buildString(child, mapp, indent + "  ").toString());
       }
     } else {
-      final List<AbstractActor> actors = ScheduleOrderManager.getSimpleOrderedList(sched);
+      final List<AbstractActor> actors = new ScheduleOrderManager(sched).getSimpleOrderedList();
       for (final AbstractActor actor : actors) {
         final List<String> collect = mapp.getMapping(actor).stream().map(m -> m.getInstanceName())
             .collect(Collectors.toList());

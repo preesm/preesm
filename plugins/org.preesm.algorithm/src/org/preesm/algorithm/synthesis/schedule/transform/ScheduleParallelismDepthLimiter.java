@@ -104,7 +104,7 @@ public class ScheduleParallelismDepthLimiter implements IScheduleTransform {
         final SequentialActorSchedule actorSchedule = ScheduleFactory.eINSTANCE.createSequentialActorSchedule();
         actorSchedule.setRepetition(schedule.getRepetition());
 
-        final List<AbstractActor> actors = ScheduleOrderManager.getSimpleOrderedList(schedule);
+        final List<AbstractActor> actors = new ScheduleOrderManager(schedule).getSimpleOrderedList();
         actorSchedule.getActorList().addAll(actors);
         return actorSchedule;
       }

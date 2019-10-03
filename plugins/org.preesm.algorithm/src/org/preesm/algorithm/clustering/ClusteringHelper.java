@@ -86,7 +86,7 @@ public class ClusteringHelper {
    */
   public static final List<DataInputPort> getExternalyConnectedPorts(final Schedule cluster) {
     List<DataInputPort> res = new ArrayList<>();
-    final List<AbstractActor> actors = ScheduleOrderManager.getSimpleOrderedList(cluster);
+    final List<AbstractActor> actors = new ScheduleOrderManager(cluster).getSimpleOrderedList();
     for (final AbstractActor actor : actors) {
       final EList<DataInputPort> dataInputPorts = actor.getDataInputPorts();
       for (final DataInputPort port : dataInputPorts) {
@@ -202,7 +202,7 @@ public class ClusteringHelper {
       timing = getExecutionTimeOfHierarchical(schedule, scenario, component, timing);
     } else {
       // Retrieve timing from actors
-      final List<AbstractActor> actors = ScheduleOrderManager.getSimpleOrderedList(schedule);
+      final List<AbstractActor> actors = new ScheduleOrderManager(schedule).getSimpleOrderedList();
       AbstractActor actor = actors.get(0);
       long actorTiming = scenario.getTimings().evaluateTimingOrDefault(actor, component);
       if ((schedule instanceof ParallelActorSchedule)) {

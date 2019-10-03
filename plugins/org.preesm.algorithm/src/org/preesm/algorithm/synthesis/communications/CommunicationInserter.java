@@ -146,8 +146,8 @@ public class CommunicationInserter {
     final List<ComponentInstance> cmps = new ArrayList<>(slamDesign.getOperatorComponentInstances());
 
     try {
-      final List<AbstractActor> scheduleAndTopologicalOrderedList = ScheduleOrderManager
-          .getScheduleAndTopologicalOrderedList(schedule);
+      final List<AbstractActor> scheduleAndTopologicalOrderedList = new ScheduleOrderManager(schedule)
+          .getScheduleAndTopologicalOrderedList();
       for (final AbstractActor actor : scheduleAndTopologicalOrderedList) {
         final EList<ComponentInstance> actorMappings = mapping.getMapping(actor);
         if (actorMappings.size() != 1) {
@@ -177,7 +177,8 @@ public class CommunicationInserter {
     initLastVisitedActor(slamDesign, schedule, mapping);
 
     // Get edges in scheduling order of their producers
-    final Iterator<AbstractActor> t = ScheduleOrderManager.getScheduleAndTopologicalOrderedList(schedule).iterator();
+    final Iterator<
+        AbstractActor> t = new ScheduleOrderManager(schedule).getScheduleAndTopologicalOrderedList().iterator();
     final List<Fifo> edgesInPrecedenceOrder = new ArrayList<>();
 
     while (t.hasNext()) {

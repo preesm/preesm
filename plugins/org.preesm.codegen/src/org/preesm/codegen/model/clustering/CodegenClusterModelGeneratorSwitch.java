@@ -243,7 +243,7 @@ public class CodegenClusterModelGeneratorSwitch extends ScheduleSwitch<CodeElt> 
 
     // Retrieve actor to fire
     // clustering process does list actors in actor schedule, we only care about the first one here
-    final List<AbstractActor> actors = ScheduleOrderManager.getSimpleOrderedList(schedule);
+    final List<AbstractActor> actors = new ScheduleOrderManager(schedule).getSimpleOrderedList();
     final AbstractActor actor = actors.get(0);
 
     // Generate a LoopBlock to put function call element into
