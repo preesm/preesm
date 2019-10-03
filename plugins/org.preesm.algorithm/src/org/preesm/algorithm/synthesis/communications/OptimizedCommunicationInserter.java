@@ -35,11 +35,13 @@ public class OptimizedCommunicationInserter extends DefaultCommunicationInserter
     if (isLastRouteStep) {
       final AbstractActor containingActor = fifo.getTargetPort().getContainingActor();
       scheduleOrderManager.insertBefore(containingActor, receiveStart, receiveEnd);
+      reorderReceiveVertices(scheduleOrderManager, mapping, routeStep.getSender(), routeStep.getReceiver(), receiveEnd);
+      // do not add call super.lastVisitedActor.put(targetOperator, sendEnd) since sendEnd is not added at the peek of
+      // the current visit
     } else {
       super.insertReceive(scheduleOrderManager, mapping, routeStep, route, fifo, receiveStart, receiveEnd);
     }
 
-    reorderReceiveVertices(scheduleOrderManager, mapping, routeStep.getSender(), routeStep.getReceiver(), receiveEnd);
   }
 
   /**
@@ -70,8 +72,7 @@ public class OptimizedCommunicationInserter extends DefaultCommunicationInserter
         // Keep only receiveVertex scheduled after the inserted one.
         .filter(v -> operatorActors.indexOf(v) > indexOfCurrentReceive)
         // Keep only those with the same sender operator
-        .filter(v -> mapping.getMapping(v.getSourceSendStart()).size() == 1
-            && mapping.getMapping(v.getSourceSendStart()).get(0) == senderOperator)
+        .filter(v -> mapping.getMapping(v.getSourceSendStart()).contains(senderOperator))
         // Keep only those whose sender is scheduled before the current one
         .filter(v -> {
           final SendStartActor vSend = v.getSourceSendStart();
@@ -79,9 +80,9 @@ public class OptimizedCommunicationInserter extends DefaultCommunicationInserter
           return indexOfv < indexOfCurrentSend;
         });
 
-    stream.forEach(r -> {
-      final ReceiveEndActor receiveEnd = r;
-      final ReceiveStartActor receiveStart = r.getReceiveStart();
+    stream.forEach(v -> {
+      final ReceiveEndActor receiveEnd = v;
+      final ReceiveStartActor receiveStart = v.getReceiveStart();
 
       scheduleOrderManager.remove(receiveEnd);
       scheduleOrderManager.remove(receiveStart);

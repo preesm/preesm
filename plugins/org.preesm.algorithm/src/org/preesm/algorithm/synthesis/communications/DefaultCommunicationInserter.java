@@ -157,8 +157,6 @@ public class DefaultCommunicationInserter implements ICommunicationInserter {
       insertSend(scheduleOrderManager, mapping, rstep, route, fifo, sendStart, sendEnd);
       insertReceive(scheduleOrderManager, mapping, rstep, route, fifo, receiveStart, receiveEnd);
 
-      this.lastVisitedActor.put(sourceOperator, sendEnd);
-      this.lastVisitedActor.put(targetOperator, receiveEnd);
     }
     return res;
   }
@@ -188,6 +186,7 @@ public class DefaultCommunicationInserter implements ICommunicationInserter {
       // TODO add proxy send
       throw new UnsupportedOperationException("Proxy send not supported yet");
     }
+    this.lastVisitedActor.put(sourceOperator, sendEnd);
   }
 
   /**
@@ -230,6 +229,7 @@ public class DefaultCommunicationInserter implements ICommunicationInserter {
       // TODO add proxy receive
       throw new UnsupportedOperationException("Proxy receive not supported yet");
     }
+    this.lastVisitedActor.put(targetOperator, receiveEnd);
   }
 
 }
