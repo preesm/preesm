@@ -34,7 +34,7 @@ import org.preesm.model.slam.route.SlamRoutingTable;
  *
  * This communication inserter keeps track of the visited actors per ComponentInstance, and therefore can insert the
  * communication nodes
- * 
+ *
  * Receive is inserted right before the receive actor, and send is inserted at the peek (current state of the visit) of
  * the schedule containing the source.
  *
@@ -118,8 +118,8 @@ public class DefaultCommunicationInserter implements ICommunicationInserter {
   private void insertFifoCommunication(final Fifo fifo, final SlamRoute route,
       final ScheduleOrderManager scheduleOrderManager, final Mapping mapping) {
     for (final SlamRouteStep rstep : route.getRouteSteps()) {
-      final ComponentInstance srcCmp = rstep.getSender();
-      final ComponentInstance tgtCmp = rstep.getReceiver();
+      final ComponentInstance sourceOperator = rstep.getSender();
+      final ComponentInstance targetOperator = rstep.getReceiver();
 
       // -- create sends
       final SendStartActor sendStart = ICommunicationInserter.createSendStart(fifo, rstep);
@@ -136,32 +136,58 @@ public class DefaultCommunicationInserter implements ICommunicationInserter {
       receiveEnd.setSourceSendStart(sendStart);
 
       // -- Map communication nodes
-      mapping.getMappings().put(sendStart, ECollections.newBasicEList(srcCmp));
-      mapping.getMappings().put(sendEnd, ECollections.newBasicEList(srcCmp));
-      mapping.getMappings().put(receiveStart, ECollections.newBasicEList(tgtCmp));
-      mapping.getMappings().put(receiveEnd, ECollections.newBasicEList(tgtCmp));
+      mapping.getMappings().put(sendStart, ECollections.newBasicEList(sourceOperator));
+      mapping.getMappings().put(sendEnd, ECollections.newBasicEList(sourceOperator));
+      mapping.getMappings().put(receiveStart, ECollections.newBasicEList(targetOperator));
+      mapping.getMappings().put(receiveEnd, ECollections.newBasicEList(targetOperator));
 
       // -- insert
-      final boolean isFirstRouteStep = srcCmp == route.getSource();
-      insertSend(scheduleOrderManager, srcCmp, sendStart, sendEnd, isFirstRouteStep);
-      this.lastVisitedActor.put(srcCmp, sendEnd);
+      insertSend(scheduleOrderManager, mapping, rstep, sendStart, sendEnd);
+      insertReceive(scheduleOrderManager, mapping, rstep, receiveStart, receiveEnd);
 
-      final boolean isLastRouteStep = tgtCmp == route.getTarget();
-      insertReceive(scheduleOrderManager, mapping, tgtCmp, receiveStart, receiveEnd, isLastRouteStep);
-      this.lastVisitedActor.put(tgtCmp, receiveEnd);
+      this.lastVisitedActor.put(sourceOperator, sendEnd);
+      this.lastVisitedActor.put(targetOperator, receiveEnd);
+    }
+  }
+
+  /**
+   * Insert sendStart en sendEnd actors in the peek of the source operator's current schedule.
+   */
+  private void insertSend(final ScheduleOrderManager scheduleOrderManager, final Mapping mapping,
+      final SlamRouteStep routeStep, final SendStartActor sendStart, final SendEndActor sendEnd) {
+    final ComponentInstance sourceOperator = routeStep.getSender();
+    final boolean isFirstRouteStep = sourceOperator == routeStep.getRoute().getSource();
+
+    final AbstractActor sourceOperatorPeekActor = this.lastVisitedActor.get(sourceOperator);
+    if (isFirstRouteStep) {
+      if (sourceOperatorPeekActor == null) {
+        // should never happen since the source actor of the Fifo has been inserted in the map before reaching this
+        // method. But well ...
+        throw new PreesmRuntimeException("guru meditation");
+      } else {
+        // insert after srcCmpLastActor (the "peek" ui.e. last visited) actor for source operator
+        scheduleOrderManager.insertAfter(sourceOperatorPeekActor, sendStart, sendEnd);
+        PreesmLogger.getLogger().log(Level.FINER,
+            "[COMINSERT]  * send inserted after '" + sourceOperatorPeekActor.getName() + "'");
+      }
+    } else {
+      // TODO add proxy send
+      throw new UnsupportedOperationException("Proxy send not supported yet");
     }
   }
 
   /**
    * Insert receiveStart and receiveEnd actors in the peek of the target operator's current schedule. If no actor mapped
    * on this operator has been visited, finds the first operator mapped on it and insert receive actors before.
-   * 
+   *
    * TODO: If no actor is mapped on this operator, throws an exception. A new schedule could be created (see todo in the
    * method)
    */
   private void insertReceive(final ScheduleOrderManager scheduleOrderManager, final Mapping mapping,
-      final ComponentInstance targetOperator, final ReceiveStartActor receiveStart, final ReceiveEndActor receiveEnd,
-      final boolean isLastRouteStep) {
+      final SlamRouteStep routeStep, final ReceiveStartActor receiveStart, final ReceiveEndActor receiveEnd) {
+    final ComponentInstance targetOperator = routeStep.getReceiver();
+    final boolean isLastRouteStep = targetOperator == routeStep.getRoute().getTarget();
+
     final AbstractActor targetOperatorPeekActor = this.lastVisitedActor.get(targetOperator);
     if (isLastRouteStep) {
       if (targetOperatorPeekActor == null) {
@@ -191,27 +217,4 @@ public class DefaultCommunicationInserter implements ICommunicationInserter {
     }
   }
 
-  /**
-   * Insert sendStart en sendEnd actors in the peek of the source operator's current schedule.
-   */
-  private void insertSend(final ScheduleOrderManager scheduleOrderManager, final ComponentInstance srcOperator,
-      final SendStartActor sendStart, final SendEndActor sendEnd, final boolean isFirstRouteStep) {
-    final AbstractActor srcOperatorPeekActor = this.lastVisitedActor.get(srcOperator);
-    if (isFirstRouteStep) {
-      if (srcOperatorPeekActor == null) {
-        // should never happen since the source actor of the Fifo has been inserted in the map before reaching this
-        // method. But well ...
-        throw new PreesmRuntimeException("guru meditation");
-      } else {
-        // insert after srcCmpLastActor (the "peek" ui.e. last visited) actor for source oeprator
-        scheduleOrderManager.insertAfter(srcOperatorPeekActor, sendStart, sendEnd);
-        PreesmLogger.getLogger().log(Level.FINER,
-            "[COMINSERT]  * send inserted after '" + srcOperatorPeekActor.getName() + "'");
-        // update last visited list
-      }
-    } else {
-      // TODO add proxy send
-      throw new UnsupportedOperationException("Proxy send not supported yet");
-    }
-  }
 }

@@ -272,7 +272,7 @@ class SlamRoute {
 		return routeSteps.get(routeSteps.size - 1).receiver
 	}
 	// Ordered list of steps. Must not be empty
-  refers SlamRouteStep[1..*] routeSteps
+  refers SlamRouteStep[1..*] routeSteps opposite route
 
 
   // Returns true if each operator in the route appears only once.
@@ -299,6 +299,8 @@ class SlamRoute {
 }
 
 interface SlamRouteStep {
+	refers SlamRoute route opposite routeSteps
+
 	// Processing Element responsible for forwarding
 	refers ComponentInstance sender
 	refers ComponentInstance receiver
