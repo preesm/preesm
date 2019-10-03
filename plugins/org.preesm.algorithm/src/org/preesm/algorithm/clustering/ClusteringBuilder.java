@@ -118,7 +118,7 @@ public class ClusteringBuilder {
   private int nbCluster;
 
   /**
-   * Is clustering criteria is memory space or performance?
+   * Boolean that stored user's choice about performance optimization.
    */
   private boolean performanceOptimization;
 
