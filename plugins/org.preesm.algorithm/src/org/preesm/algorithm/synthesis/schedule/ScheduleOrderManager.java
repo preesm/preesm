@@ -6,22 +6,29 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+import org.eclipse.emf.common.util.EList;
 import org.preesm.algorithm.mapping.model.Mapping;
 import org.preesm.algorithm.schedule.model.ActorSchedule;
 import org.preesm.algorithm.schedule.model.HierarchicalSchedule;
 import org.preesm.algorithm.schedule.model.Schedule;
 import org.preesm.algorithm.schedule.model.util.ScheduleSwitch;
+import org.preesm.commons.CollectionUtil;
 import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.slam.ComponentInstance;
 
 /**
- * Builds ordered list for the AbstractActors of a schedule.
+ * Schedule manager class. Helps build ordered list for the AbstractActors of a schedule, inserting actors, querying,
+ * etc.
+ *
+ *
  *
  * @author anmorvan
  */
 public class ScheduleOrderManager {
 
+  /** Schedule managed by this class */
   private final Schedule                          schedule;
+  /**  */
   private final Map<AbstractActor, ActorSchedule> actorToScheduleMap;
 
   /**
@@ -74,26 +81,28 @@ public class ScheduleOrderManager {
   }
 
   /**
+   * Find the Schedule in which referenceActor appears, insert newActors after referenceActor in the found Schedule,
+   * update internal structure.
    */
-  private interface IOrderBuilder {
-    public List<AbstractActor> createOrder(final Schedule schedule);
+  public final void insertAfter(final AbstractActor referenceActor, final AbstractActor... newActors) {
+    final ActorSchedule actorSchedule = actorToScheduleMap.get(referenceActor);
+    final EList<AbstractActor> srcActorList = actorSchedule.getActorList();
+    CollectionUtil.insertAfter(srcActorList, referenceActor, newActors);
+    for (final AbstractActor newActor : newActors) {
+      actorToScheduleMap.put(newActor, actorSchedule);
+    }
   }
 
   /**
+   * Find the Schedule in which referenceActor appears, insert newActors after referenceActor in the found Schedule,
+   * update internal structure.
    */
-  private class InternalScheduleAndTopologyOrderBuilder implements IOrderBuilder {
-
-    @Override
-    public List<AbstractActor> createOrder(final Schedule schedule) {
-      final List<AbstractActor> res = new ArrayList<>();
-      new ScheduleOrderedVisitor(ScheduleOrderManager.this.actorToScheduleMap) {
-        @Override
-        public void visit(final AbstractActor actor) {
-          res.add(actor);
-        }
-
-      }.doSwitch(schedule);
-      return res;
+  public final void insertBefore(final AbstractActor referenceActor, final AbstractActor... newActors) {
+    final ActorSchedule actorSchedule = actorToScheduleMap.get(referenceActor);
+    final EList<AbstractActor> srcActorList = actorSchedule.getActorList();
+    CollectionUtil.insertBefore(srcActorList, referenceActor, newActors);
+    for (final AbstractActor newActor : newActors) {
+      actorToScheduleMap.put(newActor, actorSchedule);
     }
   }
 
@@ -120,9 +129,25 @@ public class ScheduleOrderManager {
 
   /**
    */
-  private static class InternalSimpleScheduleOrderBuilder implements IOrderBuilder {
+  private class InternalScheduleAndTopologyOrderBuilder {
 
-    @Override
+    public List<AbstractActor> createOrder(final Schedule schedule) {
+      final List<AbstractActor> res = new ArrayList<>();
+      new ScheduleOrderedVisitor(ScheduleOrderManager.this.actorToScheduleMap) {
+        @Override
+        public void visit(final AbstractActor actor) {
+          res.add(actor);
+        }
+
+      }.doSwitch(schedule);
+      return res;
+    }
+  }
+
+  /**
+   */
+  private static class InternalSimpleScheduleOrderBuilder {
+
     public List<AbstractActor> createOrder(final Schedule schedule) {
       return new InternalSimpleScheduleSwitch().doSwitch(schedule);
     }
