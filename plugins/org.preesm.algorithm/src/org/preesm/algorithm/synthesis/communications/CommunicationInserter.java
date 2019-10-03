@@ -1,28 +1,22 @@
 package org.preesm.algorithm.synthesis.communications;
 
-import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
 import java.util.stream.Collectors;
-import org.eclipse.emf.common.util.EList;
-import org.preesm.algorithm.mapper.model.special.ReceiveVertex;
-import org.preesm.algorithm.mapper.model.special.SendVertex;
-import org.preesm.algorithm.mapper.tools.CommunicationOrderChecker;
+import org.eclipse.emf.common.util.ECollections;
 import org.preesm.algorithm.mapping.model.Mapping;
-import org.preesm.algorithm.schedule.model.CommunicationActor;
 import org.preesm.algorithm.schedule.model.ReceiveEndActor;
 import org.preesm.algorithm.schedule.model.ReceiveStartActor;
 import org.preesm.algorithm.schedule.model.Schedule;
-import org.preesm.algorithm.schedule.model.ScheduleFactory;
 import org.preesm.algorithm.schedule.model.SendEndActor;
 import org.preesm.algorithm.schedule.model.SendStartActor;
 import org.preesm.algorithm.synthesis.schedule.ScheduleOrderManager;
 import org.preesm.commons.exceptions.PreesmRuntimeException;
+import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.DataInputPort;
-import org.preesm.model.pisdf.DataOutputPort;
 import org.preesm.model.pisdf.DataPort;
 import org.preesm.model.pisdf.Fifo;
 import org.preesm.model.pisdf.PiGraph;
@@ -45,7 +39,7 @@ import org.preesm.model.slam.route.SlamRoutingTable;
  * @author anmorvan
  *
  */
-public class CommunicationInserter {
+public class CommunicationInserter implements ICommunicationInserter {
 
   /**
    * Tracks what is the last visited actor for each component instance. This is used to know where to insert the forward
@@ -57,156 +51,42 @@ public class CommunicationInserter {
    */
   protected final Map<ComponentInstance, AbstractActor> lastVisitedActor = new LinkedHashMap<>();
 
-  protected void insertCommunication(final Fifo fifo, final SlamRoute route,
-      final ScheduleOrderManager scheduleOrderManager, final Mapping mapping) {
-
-    for (final SlamRouteStep rstep : route.getRouteSteps()) {
-      // -- create sends
-      final SendStartActor sendStart = CommunicationInserter.createSendStart(fifo, rstep);
-      final SendEndActor sendEnd = CommunicationInserter.createSendEnd(fifo, rstep);
-
-      // -- create receives
-      final ReceiveStartActor receiveStart = CommunicationInserter.createReceiveStart(fifo, rstep);
-      final ReceiveEndActor receiveEnd = CommunicationInserter.createReceiveEnd(fifo, rstep);
-
-      // -- Associate com nodes
-      receiveEnd.setReceiveStart(receiveStart);
-      sendEnd.setSendStart(sendStart);
-      sendStart.setTargetReceiveEnd(receiveEnd);
-      receiveEnd.setSourceSendStart(sendStart);
-
-      // -- insert
-      final ComponentInstance srcCmp = rstep.getSender();
-      final ComponentInstance tgtCmp = rstep.getReceiver();
-
-      final AbstractActor srcCmpLastActor = this.lastVisitedActor.get(srcCmp);
-      final AbstractActor tgtCmpLastActor = this.lastVisitedActor.get(tgtCmp);
-
-      if ((srcCmpLastActor == null) || (tgtCmpLastActor == null)) {
-        throw new UnsupportedOperationException("Cannot use a proxy operator on which no actor has benn mapped");
-      }
-
-      // Find insertion position. Insert sendVertices after the current source, and after sendVertex(es) immediately
-      // following it. This is done to ensure that communications are inserted in increasing scheduling order.
-      // TODO
-
-      // final EList<AbstractActor> srcActorList = srcActorSchedule.getActorList();
-      // CollectionUtil.insertAfter(srcActorList, srcCmpLastActor, sendStart, sendEnd);
-      // scheduleOrderManager.put(sendStart, srcActorSchedule);
-      // scheduleOrderManager.put(sendEnd, srcActorSchedule);
-      // mapping.getMappings().put(sendStart, ECollections.newBasicEList(srcCmp));
-      // mapping.getMappings().put(sendEnd, ECollections.newBasicEList(srcCmp));
-
-      // Place the receive just before the vertex consuming the corresponding data. (position is not definitive, cf.
-      // reorderReceive method)
-      // TODO
-      // final EList<AbstractActor> tgtActorList = tgtActorSchedule.getActorList();
-      // CollectionUtil.insertBefore(tgtActorList, tgtCmpLastActor, receiveStart, receiveEnd);
-      // scheduleOrderManager.put(receiveStart, tgtActorSchedule);
-      // scheduleOrderManager.put(receiveEnd, tgtActorSchedule);
-      // mapping.getMappings().put(receiveStart, ECollections.newBasicEList(tgtCmp));
-      // mapping.getMappings().put(receiveEnd, ECollections.newBasicEList(tgtCmp));
-
-      // Reorder receiveVertex if needed. This is done to ensure that send and receive operation between a pair of cores
-      // are always in the same order.
-      // TODO
-    }
-  }
-
-  /**
-   * The purpose of this method is to reschedule receive vertices of the receiverOperator to comply with constraints on
-   * communication primitive order enforced by the {@link CommunicationOrderChecker}. <br>
-   * <br>
-   * Briefly, if there exists {@link ReceiveVertex}es scheduled after the current {@link #receiveVertex} on the
-   * receiverOperator, (but associated to a {@link SendVertex}es scheduled before the current {@link #sendVertex} on the
-   * senderOperator), then, these {@link ReceiveVertex}es must be rescheduled before the current {@link #receiveVertex}.
-   *
-   * @param senderOperator
-   *          {@link ComponentInstance} instance on which the current {@link #sendVertex} was scheduled.
-   * @param receiverOperator
-   *          {@link ComponentInstance} instance on which the current {@link #receiveVertex} was scheduled.
-   */
-  private void reorderReceiveVertex(final ComponentInstance senderOperator, final ComponentInstance receiverOperator) {
-    // TODO
-  }
-
-  private void initLastVisitedActor(final Design slamDesign, final Schedule schedule, final Mapping mapping) {
-    /**
-     */
-    class DoneException extends RuntimeException {
-      private static final long serialVersionUID = 1L;
-    }
-
-    final List<ComponentInstance> cmps = new ArrayList<>(slamDesign.getOperatorComponentInstances());
-
-    try {
-      final List<AbstractActor> scheduleAndTopologicalOrderedList = new ScheduleOrderManager(schedule)
-          .buildScheduleAndTopologicalOrderedList();
-      for (final AbstractActor actor : scheduleAndTopologicalOrderedList) {
-        final EList<ComponentInstance> actorMappings = mapping.getMapping(actor);
-        if (actorMappings.size() != 1) {
-          throw new UnsupportedOperationException();
-        } else {
-          final ComponentInstance componentInstance = actorMappings.get(0);
-          if (cmps.contains(componentInstance)) {
-            cmps.remove(componentInstance);
-            CommunicationInserter.this.lastVisitedActor.put(componentInstance, actor);
-            if (cmps.isEmpty()) {
-              throw new DoneException();
-            }
-          }
-        }
-      }
-    } catch (final DoneException e) {
-      // nothing
-    }
-  }
-
-  /**
-   *
-   */
-  public List<CommunicationActor> insertCommunications(final PiGraph piGraph, final Design slamDesign,
-      final Scenario scenario, final Schedule schedule, final Mapping mapping) {
-
-    initLastVisitedActor(slamDesign, schedule, mapping);
+  @Override
+  public void insertCommunications(final PiGraph piGraph, final Design slamDesign, final Scenario scenario,
+      final Schedule schedule, final Mapping mapping) {
+    PreesmLogger.getLogger().log(Level.FINER, "[COMINSERT] Communication insertion starting");
 
     final ScheduleOrderManager scheduleOrderManager = new ScheduleOrderManager(schedule);
-    // Get edges in scheduling order of their producers
-    final Iterator<AbstractActor> t = scheduleOrderManager.buildScheduleAndTopologicalOrderedList().iterator();
-    final List<Fifo> edgesInPrecedenceOrder = new ArrayList<>();
+    final List<AbstractActor> scheduleOrderedList = scheduleOrderManager.buildScheduleAndTopologicalOrderedList();
 
-    while (t.hasNext()) {
-      final AbstractActor vertex = t.next();
-      edgesInPrecedenceOrder
-          .addAll(vertex.getDataOutputPorts().stream().map(DataPort::getFifo).collect(Collectors.toList()));
-    }
-
-    final int dagEdgeCount = piGraph.getAllFifos().size();
-    final int outEdgesCount = edgesInPrecedenceOrder.size();
-    if (outEdgesCount != dagEdgeCount) {
-      // If this happens, this means that not all edges are covered by the previous while loop.
-      throw new PreesmRuntimeException("Some DAG edges are not covered. Input DAG has " + dagEdgeCount
-          + " edges whereas there are " + outEdgesCount + " edges connected to vertices.");
-    }
-
-    final List<CommunicationActor> res = new ArrayList<>();
-
-    // used to insert communications in the proper actor schedule, before/after the receiver/sender actor
     final SlamRoutingTable routeTable = new SlamRoutingTable(slamDesign);
 
-    final Iterator<Fifo> iterator = edgesInPrecedenceOrder.iterator();
-    while (iterator.hasNext()) {
-      final Fifo fifo = iterator.next();
+    for (final AbstractActor sourceActor : scheduleOrderedList) {
+      final List<ComponentInstance> sourceMappings = mapping.getMapping(sourceActor);
+      if (sourceMappings.size() == 1) {
+        this.lastVisitedActor.put(sourceMappings.get(0), sourceActor);
+        insertActorOutputCommunications(mapping, scheduleOrderManager, routeTable, sourceActor, sourceMappings);
+      } else {
+        // no supported
+        throw new UnsupportedOperationException("Cannot insert communications for actors mapped on several operators");
+      }
+    }
+    PreesmLogger.getLogger().log(Level.FINER, "[COMINSERT] Communication insertion done");
+  }
+
+  private void insertActorOutputCommunications(final Mapping mapping, final ScheduleOrderManager scheduleOrderManager,
+      final SlamRoutingTable routeTable, final AbstractActor sourceActor,
+      final List<ComponentInstance> sourceMappings) {
+    final List<
+        Fifo> fifos = sourceActor.getDataOutputPorts().stream().map(DataPort::getFifo).collect(Collectors.toList());
+    for (final Fifo fifo : fifos) {
+      PreesmLogger.getLogger().log(Level.FINER, "[COMINSERT] Handling fifo [" + fifo.getId() + "]");
 
       final DataInputPort targetPort = fifo.getTargetPort();
       final AbstractActor targetActor = targetPort.getContainingActor();
 
-      final DataOutputPort sourcePort = fifo.getSourcePort();
-      final AbstractActor sourceActor = sourcePort.getContainingActor();
-
       final List<ComponentInstance> targetMappings = mapping.getMapping(targetActor);
-      final List<ComponentInstance> sourceMappings = mapping.getMapping(sourceActor);
-      if ((targetMappings.size() == 1) && (sourceMappings.size() == 1)) {
+      if (targetMappings.size() == 1) {
         final ComponentInstance tgtComponent = targetMappings.get(0);
         final ComponentInstance srcComponent = sourceMappings.get(0);
 
@@ -214,56 +94,99 @@ public class CommunicationInserter {
           // insert communication if operator is different only
           final SlamRoute route = routeTable.getRoute(srcComponent, tgtComponent);
           insertCommunication(fifo, route, scheduleOrderManager, mapping);
+        } else {
+          PreesmLogger.getLogger().log(Level.FINER, "[COMINSERT]   >> mapped on same component - skipping");
         }
       } else {
         // no supported
         throw new PreesmRuntimeException("Cannot insert communications for actors mapped on several operators");
       }
     }
-    return res;
   }
 
-  /**
-   */
-  public static ReceiveEndActor createReceiveEnd(final Fifo fifo, final SlamRouteStep rstep) {
-    final ReceiveEndActor receiveEnd = ScheduleFactory.eINSTANCE.createReceiveEndActor();
-    receiveEnd.setFifo(fifo);
-    receiveEnd.setName("receiveEnd_" + fifo.getSourcePort().getContainingActor() + "_"
-        + fifo.getTargetPort().getContainingActor() + "_" + rstep.getReceiver().getInstanceName());
-    receiveEnd.setRouteStep(rstep);
-    return receiveEnd;
+  private void insertCommunication(final Fifo fifo, final SlamRoute route,
+      final ScheduleOrderManager scheduleOrderManager, final Mapping mapping) {
+    for (final SlamRouteStep rstep : route.getRouteSteps()) {
+      final ComponentInstance srcCmp = rstep.getSender();
+      final ComponentInstance tgtCmp = rstep.getReceiver();
+
+      // -- create sends
+      final SendStartActor sendStart = ICommunicationInserter.createSendStart(fifo, rstep);
+      final SendEndActor sendEnd = ICommunicationInserter.createSendEnd(fifo, rstep);
+
+      // -- create receives
+      final ReceiveStartActor receiveStart = ICommunicationInserter.createReceiveStart(fifo, rstep);
+      final ReceiveEndActor receiveEnd = ICommunicationInserter.createReceiveEnd(fifo, rstep);
+
+      // -- Associate com nodes
+      receiveEnd.setReceiveStart(receiveStart);
+      sendEnd.setSendStart(sendStart);
+      sendStart.setTargetReceiveEnd(receiveEnd);
+      receiveEnd.setSourceSendStart(sendStart);
+
+      // -- Map communication nodes
+      mapping.getMappings().put(sendStart, ECollections.newBasicEList(srcCmp));
+      mapping.getMappings().put(sendEnd, ECollections.newBasicEList(srcCmp));
+      mapping.getMappings().put(receiveStart, ECollections.newBasicEList(tgtCmp));
+      mapping.getMappings().put(receiveEnd, ECollections.newBasicEList(tgtCmp));
+
+      // -- insert
+      final boolean isFirstRouteStep = srcCmp == route.getSource();
+      insertSend(scheduleOrderManager, srcCmp, sendStart, sendEnd, isFirstRouteStep);
+      this.lastVisitedActor.put(srcCmp, sendEnd);
+
+      final boolean isLastRouteStep = tgtCmp == route.getTarget();
+      insertReceive(scheduleOrderManager, mapping, tgtCmp, receiveStart, receiveEnd, isLastRouteStep);
+      this.lastVisitedActor.put(tgtCmp, receiveEnd);
+    }
   }
 
-  /**
-   */
-  public static ReceiveStartActor createReceiveStart(final Fifo fifo, final SlamRouteStep rstep) {
-    final ReceiveStartActor receiveStart = ScheduleFactory.eINSTANCE.createReceiveStartActor();
-    receiveStart.setFifo(fifo);
-    receiveStart.setName("receiveStart_" + fifo.getSourcePort().getContainingActor() + "_"
-        + fifo.getTargetPort().getContainingActor() + "_" + rstep.getReceiver().getInstanceName());
-    receiveStart.setRouteStep(rstep);
-    return receiveStart;
+  private void insertReceive(final ScheduleOrderManager scheduleOrderManager, final Mapping mapping,
+      final ComponentInstance tgtCmp, final ReceiveStartActor receiveStart, final ReceiveEndActor receiveEnd,
+      final boolean isLastRouteStep) {
+    final AbstractActor tgtCmpLastActor = this.lastVisitedActor.get(tgtCmp);
+    if (isLastRouteStep) {
+      if (tgtCmpLastActor == null) {
+        // find appropriate schedule
+        final List<AbstractActor> list = scheduleOrderManager.buildScheduleAndTopologicalOrderedList(mapping, tgtCmp);
+        if (list.isEmpty()) {
+          throw new UnsupportedOperationException(
+              "Proxy send/receive using operator on which no actor is mapped is not supported");
+        } else {
+          final AbstractActor abstractActor = list.get(0);
+          scheduleOrderManager.insertBefore(abstractActor, receiveStart, receiveEnd);
+          PreesmLogger.getLogger().log(Level.FINER,
+              "[COMINSERT]  receive inserted before '" + abstractActor.getName() + "'");
+        }
+      } else {
+        scheduleOrderManager.insertAfter(tgtCmpLastActor, receiveStart, receiveEnd);
+        PreesmLogger.getLogger().log(Level.FINER,
+            "[COMINSERT]  receive inserted after '" + tgtCmpLastActor.getName() + "'");
+      }
+    } else {
+      // TODO add proxy receive
+      throw new UnsupportedOperationException("Proxy receive not supported yet");
+    }
   }
 
-  /**
-   */
-  public static SendEndActor createSendEnd(final Fifo fifo, final SlamRouteStep rstep) {
-    final SendEndActor sendEnd = ScheduleFactory.eINSTANCE.createSendEndActor();
-    sendEnd.setFifo(fifo);
-    sendEnd.setName("sendEnd_" + fifo.getSourcePort().getContainingActor() + "_"
-        + fifo.getTargetPort().getContainingActor() + "_" + rstep.getSender().getInstanceName());
-    sendEnd.setRouteStep(rstep);
-    return sendEnd;
-  }
-
-  /**
-   */
-  public static SendStartActor createSendStart(final Fifo fifo, final SlamRouteStep rstep) {
-    final SendStartActor sendStart = ScheduleFactory.eINSTANCE.createSendStartActor();
-    sendStart.setFifo(fifo);
-    sendStart.setRouteStep(rstep);
-    sendStart.setName("sendStart_" + fifo.getSourcePort().getContainingActor() + "_"
-        + fifo.getTargetPort().getContainingActor() + "_" + rstep.getSender().getInstanceName());
-    return sendStart;
+  private void insertSend(final ScheduleOrderManager scheduleOrderManager, final ComponentInstance srcCmp,
+      final SendStartActor sendStart, final SendEndActor sendEnd, final boolean isFirstRouteStep) {
+    final AbstractActor srcCmpLastActor = this.lastVisitedActor.get(srcCmp);
+    if (isFirstRouteStep) {
+      if (srcCmpLastActor == null) {
+        // should never happen since the source actor of the Fifo has been inserted in the map before reaching this
+        // method. But well ...
+        throw new PreesmRuntimeException("guru meditation");
+      } else {
+        // insert after srcCmpLastActor
+        scheduleOrderManager.insertAfter(srcCmpLastActor, sendStart, sendEnd);
+        PreesmLogger.getLogger().log(Level.FINER,
+            "[COMINSERT]  send inserted after '" + srcCmpLastActor.getName() + "'");
+        // update last visited list
+      }
+    } else {
+      // TODO add proxy send
+      throw new UnsupportedOperationException("Proxy send not supported yet");
+    }
   }
 }
