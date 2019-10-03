@@ -142,8 +142,8 @@ public class DefaultCommunicationInserter implements ICommunicationInserter {
       mapping.getMappings().put(receiveEnd, ECollections.newBasicEList(targetOperator));
 
       // -- insert
-      insertSend(scheduleOrderManager, mapping, rstep, sendStart, sendEnd);
-      insertReceive(scheduleOrderManager, mapping, rstep, receiveStart, receiveEnd);
+      insertSend(scheduleOrderManager, mapping, rstep, route, sendStart, sendEnd);
+      insertReceive(scheduleOrderManager, mapping, rstep, route, receiveStart, receiveEnd);
 
       this.lastVisitedActor.put(sourceOperator, sendEnd);
       this.lastVisitedActor.put(targetOperator, receiveEnd);
@@ -154,9 +154,10 @@ public class DefaultCommunicationInserter implements ICommunicationInserter {
    * Insert sendStart en sendEnd actors in the peek of the source operator's current schedule.
    */
   private void insertSend(final ScheduleOrderManager scheduleOrderManager, final Mapping mapping,
-      final SlamRouteStep routeStep, final SendStartActor sendStart, final SendEndActor sendEnd) {
+      final SlamRouteStep routeStep, final SlamRoute route, final SendStartActor sendStart,
+      final SendEndActor sendEnd) {
     final ComponentInstance sourceOperator = routeStep.getSender();
-    final boolean isFirstRouteStep = sourceOperator == routeStep.getRoute().getSource();
+    final boolean isFirstRouteStep = sourceOperator == route.getSource();
 
     final AbstractActor sourceOperatorPeekActor = this.lastVisitedActor.get(sourceOperator);
     if (isFirstRouteStep) {
@@ -184,9 +185,10 @@ public class DefaultCommunicationInserter implements ICommunicationInserter {
    * method)
    */
   private void insertReceive(final ScheduleOrderManager scheduleOrderManager, final Mapping mapping,
-      final SlamRouteStep routeStep, final ReceiveStartActor receiveStart, final ReceiveEndActor receiveEnd) {
+      final SlamRouteStep routeStep, final SlamRoute route, final ReceiveStartActor receiveStart,
+      final ReceiveEndActor receiveEnd) {
     final ComponentInstance targetOperator = routeStep.getReceiver();
-    final boolean isLastRouteStep = targetOperator == routeStep.getRoute().getTarget();
+    final boolean isLastRouteStep = targetOperator == route.getTarget();
 
     final AbstractActor targetOperatorPeekActor = this.lastVisitedActor.get(targetOperator);
     if (isLastRouteStep) {
