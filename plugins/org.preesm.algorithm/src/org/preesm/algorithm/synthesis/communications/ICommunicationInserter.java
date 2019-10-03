@@ -1,6 +1,8 @@
 package org.preesm.algorithm.synthesis.communications;
 
+import java.util.List;
 import org.preesm.algorithm.mapping.model.Mapping;
+import org.preesm.algorithm.schedule.model.CommunicationActor;
 import org.preesm.algorithm.schedule.model.ReceiveEndActor;
 import org.preesm.algorithm.schedule.model.ReceiveStartActor;
 import org.preesm.algorithm.schedule.model.Schedule;
@@ -20,8 +22,8 @@ import org.preesm.model.slam.SlamRouteStep;
  */
 public interface ICommunicationInserter {
 
-  public void insertCommunications(final PiGraph piGraph, final Design slamDesign, final Scenario scenario,
-      final Schedule schedule, final Mapping mapping);
+  public List<CommunicationActor> insertCommunications(final PiGraph piGraph, final Design slamDesign,
+      final Scenario scenario, final Schedule schedule, final Mapping mapping);
 
   /**
    */

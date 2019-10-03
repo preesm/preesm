@@ -1,12 +1,14 @@
 package org.preesm.algorithm.synthesis.communications;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import org.eclipse.emf.common.util.ECollections;
 import org.preesm.algorithm.mapping.model.Mapping;
+import org.preesm.algorithm.schedule.model.CommunicationActor;
 import org.preesm.algorithm.schedule.model.ReceiveEndActor;
 import org.preesm.algorithm.schedule.model.ReceiveStartActor;
 import org.preesm.algorithm.schedule.model.Schedule;
@@ -54,9 +56,11 @@ public class DefaultCommunicationInserter implements ICommunicationInserter {
   protected final Map<ComponentInstance, AbstractActor> lastVisitedActor = new LinkedHashMap<>();
 
   @Override
-  public void insertCommunications(final PiGraph piGraph, final Design slamDesign, final Scenario scenario,
-      final Schedule schedule, final Mapping mapping) {
+  public List<CommunicationActor> insertCommunications(final PiGraph piGraph, final Design slamDesign,
+      final Scenario scenario, final Schedule schedule, final Mapping mapping) {
     PreesmLogger.getLogger().log(Level.FINER, "[COMINSERT] Communication insertion starting");
+
+    final List<CommunicationActor> res = new ArrayList<>();
 
     // schedule manager used to query schedule and insert new com nodes.
     final ScheduleOrderManager scheduleOrderManager = new ScheduleOrderManager(schedule);
@@ -71,16 +75,20 @@ public class DefaultCommunicationInserter implements ICommunicationInserter {
         // no supported
         throw new UnsupportedOperationException("Cannot insert communications for actors mapped on several operators");
       } else {
-        insertActorOutputCommunications(mapping, scheduleOrderManager, routeTable, sourceActor, sourceMappings);
+        res.addAll(
+            insertActorOutputCommunications(mapping, scheduleOrderManager, routeTable, sourceActor, sourceMappings));
       }
     }
 
     PreesmLogger.getLogger().log(Level.FINER, "[COMINSERT] Communication insertion done");
+    return res;
   }
 
-  private void insertActorOutputCommunications(final Mapping mapping, final ScheduleOrderManager scheduleOrderManager,
-      final SlamRoutingTable routeTable, final AbstractActor sourceActor,
-      final List<ComponentInstance> sourceMappings) {
+  protected List<CommunicationActor> insertActorOutputCommunications(final Mapping mapping,
+      final ScheduleOrderManager scheduleOrderManager, final SlamRoutingTable routeTable,
+      final AbstractActor sourceActor, final List<ComponentInstance> sourceMappings) {
+
+    final List<CommunicationActor> res = new ArrayList<>();
 
     this.lastVisitedActor.put(sourceMappings.get(0), sourceActor);
     final List<Fifo> fifos = new ArrayList<>(sourceActor.getDataOutputPorts().size());
@@ -104,19 +112,21 @@ public class DefaultCommunicationInserter implements ICommunicationInserter {
         if (srcComponent != tgtComponent) {
           // insert communication if operator is different only
           final SlamRoute route = routeTable.getRoute(srcComponent, tgtComponent);
-          insertFifoCommunication(fifo, route, scheduleOrderManager, mapping);
+          res.addAll(insertFifoCommunication(fifo, route, scheduleOrderManager, mapping));
         } else {
           PreesmLogger.getLogger().log(Level.FINER, "[COMINSERT]   >> mapped on same component - skipping");
         }
       }
     }
+    return res;
   }
 
   /**
    * Insert communication nodes for the fifo following the route.
    */
-  private void insertFifoCommunication(final Fifo fifo, final SlamRoute route,
+  protected List<CommunicationActor> insertFifoCommunication(final Fifo fifo, final SlamRoute route,
       final ScheduleOrderManager scheduleOrderManager, final Mapping mapping) {
+    final List<CommunicationActor> res = new ArrayList<>();
     for (final SlamRouteStep rstep : route.getRouteSteps()) {
       final ComponentInstance sourceOperator = rstep.getSender();
       final ComponentInstance targetOperator = rstep.getReceiver();
@@ -128,6 +138,8 @@ public class DefaultCommunicationInserter implements ICommunicationInserter {
       // -- create receives
       final ReceiveStartActor receiveStart = ICommunicationInserter.createReceiveStart(fifo, rstep);
       final ReceiveEndActor receiveEnd = ICommunicationInserter.createReceiveEnd(fifo, rstep);
+
+      res.addAll(Arrays.asList(receiveStart, receiveEnd, sendStart, sendEnd));
 
       // -- Associate com nodes
       receiveEnd.setReceiveStart(receiveStart);
@@ -142,19 +154,20 @@ public class DefaultCommunicationInserter implements ICommunicationInserter {
       mapping.getMappings().put(receiveEnd, ECollections.newBasicEList(targetOperator));
 
       // -- insert
-      insertSend(scheduleOrderManager, mapping, rstep, route, sendStart, sendEnd);
-      insertReceive(scheduleOrderManager, mapping, rstep, route, receiveStart, receiveEnd);
+      insertSend(scheduleOrderManager, mapping, rstep, route, fifo, sendStart, sendEnd);
+      insertReceive(scheduleOrderManager, mapping, rstep, route, fifo, receiveStart, receiveEnd);
 
       this.lastVisitedActor.put(sourceOperator, sendEnd);
       this.lastVisitedActor.put(targetOperator, receiveEnd);
     }
+    return res;
   }
 
   /**
    * Insert sendStart en sendEnd actors in the peek of the source operator's current schedule.
    */
-  private void insertSend(final ScheduleOrderManager scheduleOrderManager, final Mapping mapping,
-      final SlamRouteStep routeStep, final SlamRoute route, final SendStartActor sendStart,
+  protected void insertSend(final ScheduleOrderManager scheduleOrderManager, final Mapping mapping,
+      final SlamRouteStep routeStep, final SlamRoute route, final Fifo fifo, final SendStartActor sendStart,
       final SendEndActor sendEnd) {
     final ComponentInstance sourceOperator = routeStep.getSender();
     final boolean isFirstRouteStep = sourceOperator == route.getSource();
@@ -184,8 +197,8 @@ public class DefaultCommunicationInserter implements ICommunicationInserter {
    * TODO: If no actor is mapped on this operator, throws an exception. A new schedule could be created (see todo in the
    * method)
    */
-  private void insertReceive(final ScheduleOrderManager scheduleOrderManager, final Mapping mapping,
-      final SlamRouteStep routeStep, final SlamRoute route, final ReceiveStartActor receiveStart,
+  protected void insertReceive(final ScheduleOrderManager scheduleOrderManager, final Mapping mapping,
+      final SlamRouteStep routeStep, final SlamRoute route, final Fifo fifo, final ReceiveStartActor receiveStart,
       final ReceiveEndActor receiveEnd) {
     final ComponentInstance targetOperator = routeStep.getReceiver();
     final boolean isLastRouteStep = targetOperator == route.getTarget();
