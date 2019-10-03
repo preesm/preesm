@@ -1,4 +1,4 @@
-package org.preesm.algorithm.synthesis.schedule.communications;
+package org.preesm.algorithm.synthesis.communications;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -21,7 +21,6 @@ import org.preesm.algorithm.schedule.model.ScheduleFactory;
 import org.preesm.algorithm.schedule.model.SendEndActor;
 import org.preesm.algorithm.schedule.model.SendStartActor;
 import org.preesm.algorithm.synthesis.schedule.ScheduleOrderBuilder;
-import org.preesm.algorithm.synthesis.schedule.ScheduleOrderedVisitor;
 import org.preesm.algorithm.synthesis.schedule.ScheduleUtil;
 import org.preesm.commons.CollectionUtil;
 import org.preesm.commons.exceptions.PreesmRuntimeException;
@@ -147,25 +146,23 @@ public class CommunicationInserter {
     final List<ComponentInstance> cmps = new ArrayList<>(slamDesign.getOperatorComponentInstances());
 
     try {
-      new ScheduleOrderedVisitor() {
-        @Override
-        public void visit(final AbstractActor actor) {
-          final EList<ComponentInstance> actorMappings = mapping.getMapping(actor);
-          if (actorMappings.size() != 1) {
-            throw new UnsupportedOperationException();
-          } else {
-            final ComponentInstance componentInstance = actorMappings.get(0);
-            if (cmps.contains(componentInstance)) {
-              cmps.remove(componentInstance);
-              CommunicationInserter.this.lastVisitedActor.put(componentInstance, actor);
-              if (cmps.isEmpty()) {
-                throw new DoneException();
-              }
+      final List<AbstractActor> scheduleAndTopologicalOrderedList = ScheduleOrderBuilder
+          .getScheduleAndTopologicalOrderedList(schedule);
+      for (final AbstractActor actor : scheduleAndTopologicalOrderedList) {
+        final EList<ComponentInstance> actorMappings = mapping.getMapping(actor);
+        if (actorMappings.size() != 1) {
+          throw new UnsupportedOperationException();
+        } else {
+          final ComponentInstance componentInstance = actorMappings.get(0);
+          if (cmps.contains(componentInstance)) {
+            cmps.remove(componentInstance);
+            CommunicationInserter.this.lastVisitedActor.put(componentInstance, actor);
+            if (cmps.isEmpty()) {
+              throw new DoneException();
             }
           }
-
         }
-      }.doSwitch(schedule);
+      }
     } catch (final DoneException e) {
       // nothing
     }
