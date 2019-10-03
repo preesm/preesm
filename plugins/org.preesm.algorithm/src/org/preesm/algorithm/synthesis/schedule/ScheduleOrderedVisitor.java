@@ -34,17 +34,21 @@ import org.preesm.model.pisdf.util.topology.PiSDFTopologyHelper;
 abstract class ScheduleOrderedVisitor extends ScheduleSwitch<Boolean> {
 
   /** Keeps track of visited actors (for the algorithm) and schedules (for speeding up) */
-  private final List<Object>                visited            = new ArrayList<>();
+  private final List<Object>                      visited       = new ArrayList<>();
   /** List of schedule under visit. Used to find out */
-  private final Deque<Schedule>             scheduleStack      = new LinkedList<>();
+  private final Deque<Schedule>                   scheduleStack = new LinkedList<>();
   /** List of actors encountered during schedule visit for which topological dependency has not been visited. */
-  private final Deque<AbstractActor>        stuckStack         = new LinkedList<>();
+  private final Deque<AbstractActor>              stuckStack    = new LinkedList<>();
   /**
    * Associate for each actor the schedule that sets its order. Used to speedup query (instead of iterating over all
    * schedule tree every time we need to find the schedule). Initialized lazily upon need (see
    * {@link #innerVisitScheduleOf(AbstractActor)}.
    */
-  private Map<AbstractActor, ActorSchedule> actorToScheduleMap = null;
+  private final Map<AbstractActor, ActorSchedule> actorToScheduleMap;
+
+  public ScheduleOrderedVisitor(final Map<AbstractActor, ActorSchedule> actorToScheduleMap) {
+    this.actorToScheduleMap = actorToScheduleMap;
+  }
 
   @Override
   public final Boolean caseHierarchicalSchedule(final HierarchicalSchedule object) {
@@ -161,13 +165,6 @@ abstract class ScheduleOrderedVisitor extends ScheduleSwitch<Boolean> {
   }
 
   private final void innerVisitScheduleOf(final AbstractActor v) {
-    if (this.actorToScheduleMap == null) {
-      if (this.scheduleStack.isEmpty()) {
-        throw new PreesmRuntimeException("Visit should start with a schedule object");
-      }
-      final Schedule peekFirst = this.scheduleStack.peekFirst();
-      this.actorToScheduleMap = ScheduleUtil.actorToScheduleMap(peekFirst.getRoot());
-    }
     final ActorSchedule actorSchedule = this.actorToScheduleMap.get(v);
     innerVisit(actorSchedule);
   }

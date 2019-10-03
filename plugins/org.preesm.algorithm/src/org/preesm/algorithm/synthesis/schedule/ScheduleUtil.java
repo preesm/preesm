@@ -1,10 +1,8 @@
 package org.preesm.algorithm.synthesis.schedule;
 
-import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 import org.apache.commons.lang3.tuple.Pair;
@@ -24,16 +22,6 @@ public class ScheduleUtil {
 
   private ScheduleUtil() {
     // forbid instantiation
-  }
-
-  /**
-   * Builds a map that associate for every actor in the schedule its refering ActorSchedule.
-   */
-  public static final Map<AbstractActor, ActorSchedule> actorToScheduleMap(final Schedule schedule) {
-    final Set<ActorSchedule> actorSchedules = ScheduleUtil.getActorSchedules(schedule);
-    final Map<AbstractActor, ActorSchedule> res = new LinkedHashMap<>();
-    actorSchedules.forEach(aSched -> aSched.getActorList().forEach(a -> res.put(a, aSched)));
-    return res;
   }
 
   /**

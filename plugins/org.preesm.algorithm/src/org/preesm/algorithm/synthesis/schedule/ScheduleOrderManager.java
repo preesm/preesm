@@ -1,7 +1,10 @@
 package org.preesm.algorithm.synthesis.schedule;
 
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 import org.preesm.algorithm.schedule.model.ActorSchedule;
 import org.preesm.algorithm.schedule.model.HierarchicalSchedule;
@@ -16,10 +19,12 @@ import org.preesm.model.pisdf.AbstractActor;
  */
 public class ScheduleOrderManager {
 
-  private final Schedule schedule;
+  private final Schedule                          schedule;
+  private final Map<AbstractActor, ActorSchedule> actorToScheduleMap;
 
   public ScheduleOrderManager(final Schedule schedule) {
     this.schedule = schedule;
+    this.actorToScheduleMap = ScheduleOrderManager.actorToScheduleMap(schedule);
   }
 
   /**
@@ -50,11 +55,12 @@ public class ScheduleOrderManager {
 
   /**
    */
-  private static class InternalScheduleAndTopologyOrderBuilder implements IOrderBuilder {
+  private class InternalScheduleAndTopologyOrderBuilder implements IOrderBuilder {
 
+    @Override
     public List<AbstractActor> createOrder(final Schedule schedule) {
       final List<AbstractActor> res = new ArrayList<>();
-      new ScheduleOrderedVisitor() {
+      new ScheduleOrderedVisitor(ScheduleOrderManager.this.actorToScheduleMap) {
         @Override
         public void visit(final AbstractActor actor) {
           res.add(actor);
@@ -66,9 +72,20 @@ public class ScheduleOrderManager {
   }
 
   /**
+   * Builds a map that associate for every actor in the schedule its refering ActorSchedule.
+   */
+  private static final Map<AbstractActor, ActorSchedule> actorToScheduleMap(final Schedule schedule) {
+    final Set<ActorSchedule> actorSchedules = ScheduleUtil.getActorSchedules(schedule);
+    final Map<AbstractActor, ActorSchedule> res = new LinkedHashMap<>();
+    actorSchedules.forEach(aSched -> aSched.getActorList().forEach(a -> res.put(a, aSched)));
+    return res;
+  }
+
+  /**
    */
   private static class InternalSimpleScheduleOrderBuilder implements IOrderBuilder {
 
+    @Override
     public List<AbstractActor> createOrder(final Schedule schedule) {
       return new InternalSimpleScheduleSwitch().doSwitch(schedule);
     }
