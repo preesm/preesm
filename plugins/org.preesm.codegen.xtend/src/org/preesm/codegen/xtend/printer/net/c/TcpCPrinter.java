@@ -221,6 +221,12 @@ public class TcpCPrinter extends CPrinter {
   }
 
   @Override
+  public CharSequence printCoreLoopBlockFooter(LoopBlock block2) {
+    return super.printCoreLoopBlockFooter(block2).toString().replace("pthread_barrier_wait(&iter_barrier);",
+        "// barrier at beginning");
+  }
+
+  @Override
   public CharSequence printSharedMemoryCommunication(SharedMemoryCommunication communication) {
     final StringBuilder functionCallBuilder = new StringBuilder("preesm_");
 
