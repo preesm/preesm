@@ -210,7 +210,7 @@ class CPrinter extends BlankPrinter {
 	pthread_barrier_wait(&iter_barrier);
 #ifdef PREESM_LOOP_SIZE // Case of a finite loop
 	int index;
-	for(index=0;index<PREESM_LOOP_SIZE || preesmStopThreads;index++){
+	for(index=0;index<PREESM_LOOP_SIZE && !preesmStopThreads;index++){
 #else // Default case of an infinite loop
 	while(!preesmStopThreads){
 #endif

@@ -274,7 +274,6 @@ class SlamRoute {
 	// Ordered list of steps. Must not be empty
   refers SlamRouteStep[1..*] routeSteps
 
-
   // Returns true if each operator in the route appears only once.
   op boolean isSingleAppearance() {
     var boolean isIt = true
