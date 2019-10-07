@@ -139,7 +139,7 @@ public class PiSDFTopologyHelper {
     final Set<AbstractActor> result = new LinkedHashSet<>();
     final List<AbstractActor> directPredecessorsOf = getDirectPredecessorsOf(actor);
     result.addAll(directPredecessorsOf);
-    directPredecessorsOf.stream().map(PiSDFTopologyHelper::getDirectPredecessorsOf).flatMap(List::stream).distinct()
+    directPredecessorsOf.stream().map(PiSDFTopologyHelper::getAllPredecessorsOf).flatMap(List::stream).distinct()
         .forEach(result::add);
     return Collections.unmodifiableList(new ArrayList<>(result));
   }
@@ -151,7 +151,7 @@ public class PiSDFTopologyHelper {
     final Set<AbstractActor> result = new LinkedHashSet<>();
     final List<AbstractActor> directSuccessorsOf = getDirectSuccessorsOf(actor);
     result.addAll(directSuccessorsOf);
-    directSuccessorsOf.stream().map(PiSDFTopologyHelper::getDirectSuccessorsOf).flatMap(List::stream).distinct()
+    directSuccessorsOf.stream().map(PiSDFTopologyHelper::getAllSuccessorsOf).flatMap(List::stream).distinct()
         .forEach(result::add);
     return Collections.unmodifiableList(new ArrayList<>(result));
   }
