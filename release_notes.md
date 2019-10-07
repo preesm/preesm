@@ -27,6 +27,7 @@ PREESM Changelog
   * Minor codegen refactor;
   * Refactor memory allocation;
   * Rethrow all exceptions thrown by JEP with expression causing issue;
+* Add methods in PiSDFTopologyHelper, and corresponding tests;
 
 ### Bug fix
 * Fix #74

@@ -36,9 +36,14 @@
 package org.preesm.model.pisdf.util.topology;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Comparator;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Set;
 import org.preesm.model.pisdf.AbstractActor;
+import org.preesm.model.pisdf.DataPort;
+import org.preesm.model.pisdf.Fifo;
 import org.preesm.model.pisdf.util.topology.IsThereALongPathSwitch.ThereIsALongPathException;
 import org.preesm.model.pisdf.util.topology.PiSDFPredecessorSwitch.IsPredecessorSwitch;
 import org.preesm.model.pisdf.util.topology.PiSDFPredecessorSwitch.PredecessorFoundException;
@@ -109,9 +114,9 @@ public class PiSDFTopologyHelper {
    * @return actors that are directly connected in input of a
    */
   public static final List<AbstractActor> getDirectPredecessorsOf(final AbstractActor a) {
-    List<AbstractActor> result = new ArrayList<>();
+    final List<AbstractActor> result = new ArrayList<>();
     a.getDataInputPorts().stream().forEach(x -> result.add(x.getIncomingFifo().getSourcePort().getContainingActor()));
-    return result;
+    return Collections.unmodifiableList(result);
   }
 
   /**
@@ -122,9 +127,56 @@ public class PiSDFTopologyHelper {
    * @return actors that are directly connected in output of a
    */
   public static final List<AbstractActor> getDirectSuccessorsOf(final AbstractActor a) {
-    List<AbstractActor> result = new ArrayList<>();
+    final List<AbstractActor> result = new ArrayList<>();
     a.getDataOutputPorts().stream().forEach(x -> result.add(x.getOutgoingFifo().getTargetPort().getContainingActor()));
-    return result;
+    return Collections.unmodifiableList(result);
   }
 
+  /**
+   * Get all predecessors of actor. Will loop infinitely if actor is not part of a DAG.
+   */
+  public static final List<AbstractActor> getAllPredecessorsOf(final AbstractActor actor) {
+    final Set<AbstractActor> result = new LinkedHashSet<>();
+    final List<AbstractActor> directPredecessorsOf = getDirectPredecessorsOf(actor);
+    result.addAll(directPredecessorsOf);
+    directPredecessorsOf.stream().map(PiSDFTopologyHelper::getAllPredecessorsOf).flatMap(List::stream).distinct()
+        .forEach(result::add);
+    return Collections.unmodifiableList(new ArrayList<>(result));
+  }
+
+  /**
+   * Get all successors of actor. Will loop infinitely if actor is not part of a DAG.
+   */
+  public static final List<AbstractActor> getAllSuccessorsOf(final AbstractActor actor) {
+    final Set<AbstractActor> result = new LinkedHashSet<>();
+    final List<AbstractActor> directSuccessorsOf = getDirectSuccessorsOf(actor);
+    result.addAll(directSuccessorsOf);
+    directSuccessorsOf.stream().map(PiSDFTopologyHelper::getAllSuccessorsOf).flatMap(List::stream).distinct()
+        .forEach(result::add);
+    return Collections.unmodifiableList(new ArrayList<>(result));
+  }
+
+  /**
+   * Get all edges on the paths to all predecessors of actor. Will loop infinitely if actor is not part of a DAG.
+   */
+  public static final List<Fifo> getPredecessorEdgesOf(final AbstractActor actor) {
+    final Set<Fifo> result = new LinkedHashSet<>();
+    actor.getDataInputPorts().stream().map(DataPort::getFifo).forEach(result::add);
+    final List<AbstractActor> allPredecessorsOf = getAllPredecessorsOf(actor);
+    allPredecessorsOf.stream().map(AbstractActor::getDataInputPorts).flatMap(List::stream).map(DataPort::getFifo)
+        .forEach(result::add);
+    return Collections.unmodifiableList(new ArrayList<>(result));
+  }
+
+  /**
+   * Get all edges on the paths to all successors of actor. Will loop infinitely if actor is not part of a DAG.
+   */
+  public static final List<Fifo> getSuccessorEdgesOf(final AbstractActor actor) {
+    final Set<Fifo> result = new LinkedHashSet<>();
+    actor.getDataOutputPorts().stream().map(DataPort::getFifo).forEach(result::add);
+    final List<AbstractActor> allSuccessorsOf = getAllSuccessorsOf(actor);
+    allSuccessorsOf.stream().map(AbstractActor::getDataOutputPorts).flatMap(List::stream).map(DataPort::getFifo)
+        .forEach(result::add);
+    return Collections.unmodifiableList(new ArrayList<>(result));
+  }
 }
