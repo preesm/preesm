@@ -34,7 +34,7 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL license and that you accept its terms.
  */
-package org.preesm.algorithm.memory.distributed;
+package org.preesm.algorithm.memory.allocation;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -50,7 +50,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import org.eclipse.xtext.xbase.lib.Pair;
-import org.preesm.algorithm.memory.allocation.MemoryAllocatorTask;
 import org.preesm.algorithm.memory.exclusiongraph.MemoryExclusionGraph;
 import org.preesm.algorithm.memory.exclusiongraph.MemoryExclusionVertex;
 import org.preesm.algorithm.memory.script.Range;
