@@ -45,8 +45,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
-import java.util.SortedSet;
-import java.util.TreeSet;
+import java.util.TreeMap;
 import java.util.logging.Level;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.jgrapht.graph.DefaultDirectedGraph;
@@ -207,23 +206,23 @@ public class PeriodsPreschedulingChecker extends AbstractTaskImplementation {
 
     // 2. perform heuristic to select periodic nodes
     final StringBuilder sbNBFF = new StringBuilder();
-    final Map<Actor, Long> actorsNBFF = HeuristicPeriodicActorSelection.selectActors(periodicActors, sourceActors,
+    final Map<Actor, Double> actorsNBFF = HeuristicPeriodicActorSelection.selectActors(periodicActors, sourceActors,
         heurFifoBreaks.actorsNbVisitsTopoRank, rate, wcets, false);
     actorsNBFF.keySet().forEach(a -> sbNBFF.append(a.getName() + " / "));
     PreesmLogger.getLogger().log(Level.INFO, "Periodic actor for NBFF: " + sbNBFF.toString());
 
     final StringBuilder sbNBLF = new StringBuilder();
-    final Map<Actor, Long> actorsNBLF = HeuristicPeriodicActorSelection.selectActors(periodicActors, sinkActors,
+    final Map<Actor, Double> actorsNBLF = HeuristicPeriodicActorSelection.selectActors(periodicActors, sinkActors,
         heurFifoBreaks.actorsNbVisitsTopoRankT, rate, wcets, true);
     actorsNBLF.keySet().forEach(a -> sbNBLF.append(a.getName() + " / "));
     PreesmLogger.getLogger().log(Level.INFO, "Periodic actor for NBLF: " + sbNBLF.toString());
 
     // 3. for each selected periodic node for nblf:
-    performNBF(actorsNBLF, periodicActors, false, heurFifoBreaks.absGraph, heurFifoBreaks.breakingFifosAbs, wcets,
+    performAllNBF(actorsNBLF, periodicActors, false, heurFifoBreaks.absGraph, heurFifoBreaks.breakingFifosAbs, wcets,
         heurFifoBreaks.minCycleBrv, nbCore);
 
     // 4. for each selected periodic node for nbff:
-    performNBF(actorsNBFF, periodicActors, true, heurFifoBreaks.absGraph, heurFifoBreaks.breakingFifosAbs, wcets,
+    performAllNBF(actorsNBFF, periodicActors, true, heurFifoBreaks.absGraph, heurFifoBreaks.breakingFifosAbs, wcets,
         heurFifoBreaks.minCycleBrv, nbCore);
 
     final Map<String, Object> output = new LinkedHashMap<>();
@@ -238,8 +237,21 @@ public class PeriodsPreschedulingChecker extends AbstractTaskImplementation {
    */
   private static class ActorPeriodComparator implements Comparator<Actor> {
 
+    private final boolean reverse;
+
+    private ActorPeriodComparator() {
+      this(false);
+    }
+
+    private ActorPeriodComparator(boolean reverse) {
+      this.reverse = reverse;
+    }
+
     @Override
     public int compare(Actor arg0, Actor arg1) {
+      if (reverse) {
+        return Long.compare(arg1.getPeriod().evaluate(), arg0.getPeriod().evaluate());
+      }
       return Long.compare(arg0.getPeriod().evaluate(), arg1.getPeriod().evaluate());
     }
 
@@ -249,42 +261,65 @@ public class PeriodsPreschedulingChecker extends AbstractTaskImplementation {
    * Call NBF on given actors plus extra smaller periods.
    * 
    */
-  private static void performNBF(Map<Actor, Long> actorsNBF, Map<Actor, Long> allPeriodicActors, boolean reverse,
+  private static void performAllNBF(Map<Actor, Double> actorsNBF, Map<Actor, Long> allPeriodicActors, boolean reverse,
       DefaultDirectedGraph<AbstractActor, FifoAbstraction> absGraph, Set<FifoAbstraction> breakingFifosAbs,
       Map<AbstractVertex, Long> wcets, Map<AbstractVertex, Long> minCycleBrv, int nbCore) {
-    SortedSet<Actor> askedToTest = new TreeSet<>(new ActorPeriodComparator());
-    askedToTest.addAll(actorsNBF.keySet());
-    final long greatestPeriod = askedToTest.last().getPeriod().evaluate();
 
-    SortedSet<Actor> toTest = new TreeSet<>(new ActorPeriodComparator());
-    allPeriodicActors.keySet().forEach(a -> {
-      if (a.getPeriod().evaluate() <= greatestPeriod) {
-        toTest.add(a);
-      }
-    });
+    for (Actor a : actorsNBF.keySet()) {
+      long slack = allPeriodicActors.get(a) - wcets.get(a);
+      long totC = 0;
+      HashMap<AbstractActor, Long> nbf = new HashMap<>();
+      nbf.put(a, 1L);
 
-    for (Actor a : toTest) {
       DefaultDirectedGraph<AbstractActor,
           FifoAbstraction> subgraph = AbstractGraph.subDAGFrom(absGraph, a, breakingFifosAbs, reverse);
-      performNBFinternal(a, subgraph, allPeriodicActors, wcets, minCycleBrv, nbCore, reverse);
+      totC += performNBFinternal(a, subgraph, allPeriodicActors, wcets, minCycleBrv, nbf, nbCore, reverse, slack);
+
+      TreeMap<Actor, Long> nbTimesDuringAperiod = new TreeMap<>(new ActorPeriodComparator(true));
+      allPeriodicActors.keySet().forEach(e -> {
+        long ePeriod = e.getPeriod().evaluate();
+        if (ePeriod <= slack && !nbf.containsKey(e)) {
+          nbTimesDuringAperiod.put(e, slack / ePeriod);
+        }
+      });
+
+      // we perform nbf on actors not connected to the initial subgraph, updating each time the nbf values
+      // iterating in the descendant order
+      for (Entry<Actor, Long> entry : nbTimesDuringAperiod.entrySet()) {
+        if (nbf.containsKey(entry.getKey())) {
+          continue;
+        }
+        nbf.put(entry.getKey(), entry.getValue());
+        DefaultDirectedGraph<AbstractActor, FifoAbstraction> unconnectedsubgraph = AbstractGraph.subDAGFrom(absGraph,
+            entry.getKey(), breakingFifosAbs, reverse);
+        totC += performNBFinternal(entry.getKey(), unconnectedsubgraph, allPeriodicActors, wcets, minCycleBrv, nbf,
+            nbCore, reverse, slack);
+        totC += wcets.get(entry.getKey()) * entry.getValue();
+      }
+
+      if (totC > nbCore * slack) {
+        throw new PreesmRuntimeException("Utilization factor from/to <" + a.getName()
+            + "> is too heavy compared to its period and the number of cores (" + (totC / (double) nbCore) + ").");
+      }
+
     }
 
   }
 
-  private static void performNBFinternal(Actor start, DefaultDirectedGraph<AbstractActor, FifoAbstraction> subgraph,
+  private static long performNBFinternal(Actor start, DefaultDirectedGraph<AbstractActor, FifoAbstraction> subgraph,
       Map<Actor, Long> allPeriodicActors, Map<AbstractVertex, Long> wcets, Map<AbstractVertex, Long> minCycleBrv,
-      int nbCore, boolean reverse) {
+      Map<AbstractActor, Long> previousNbf, int nbCore, boolean reverse, long slack) {
     HashMap<AbstractActor, Long> timeTo = new HashMap<>();
     HashMap<AbstractActor, Integer> nbVisits = new HashMap<>();
     HashMap<AbstractActor, Long> nbf = new HashMap<>();
+
     for (AbstractActor a : subgraph.vertexSet()) {
       timeTo.put(a, 0L);
       nbVisits.put(a, 0);
       nbf.put(a, 0L);
     }
-    nbf.put(start, 1L);
+    nbf.put(start, previousNbf.get(start));
 
-    long slack = allPeriodicActors.get(start) - wcets.get(start);
     List<AbstractActor> toVisit = new LinkedList<>();
     toVisit.add(start);
 
@@ -308,6 +343,14 @@ public class PeriodsPreschedulingChecker extends AbstractTaskImplementation {
         }
         nbf.put(dest, Math.max(nbfDest, nbf.get(dest)));
         if (nbVisitsDest == subgraph.inDegreeOf(dest) && nbfDest > 0) {
+          long prevNBF = previousNbf.getOrDefault(dest, 0L);
+          if (prevNBF >= nbfDest) {
+            continue;
+          }
+          previousNbf.put(dest, nbfDest);
+          nbfDest -= prevNBF;
+          nbf.put(dest, nbfDest);
+
           toVisit.add(dest);
           long wcet = wcets.get(dest);
           long minBrv = minCycleBrv.get(dest);
@@ -328,14 +371,15 @@ public class PeriodsPreschedulingChecker extends AbstractTaskImplementation {
 
     }
 
-    long totC = -wcets.get(start);
+    long totC = -wcets.get(start) * previousNbf.get(start);
     for (AbstractActor a : subgraph.vertexSet()) {
       totC += wcets.get(a) * nbf.get(a);
     }
     if (totC > nbCore * slack) {
-      throw new PreesmRuntimeException("Utilization factor from/to" + start.getName()
+      throw new PreesmRuntimeException("Utilization factor from/to <" + start.getName()
           + "> is too heavy compared to its period and the number of cores (" + (totC / (double) nbCore) + ").");
     }
+    return totC;
 
   }
 

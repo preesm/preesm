@@ -58,13 +58,10 @@ import org.preesm.model.pisdf.Fifo;
  */
 class HeuristicPeriodicActorSelection {
 
-  protected static Map<Actor, Long> selectActors(final Map<Actor, Long> periodicActors,
+  protected static Map<Actor, Double> selectActors(final Map<Actor, Long> periodicActors,
       final Set<AbstractActor> originActors, final Map<AbstractActor, Integer> actorsNbVisits, final int rate,
       final Map<AbstractVertex, Long> wcets, final boolean reverse) {
-    if ((rate == 100) || periodicActors.isEmpty()) {
-      return periodicActors;
-    }
-    if (rate == 0) {
+    if (rate == 0 || periodicActors.isEmpty()) {
       return new LinkedHashMap<>();
     }
 
@@ -87,29 +84,22 @@ class HeuristicPeriodicActorSelection {
     }
     final StringBuilder sb = new StringBuilder();
     topoRanksPeriodic.entrySet().forEach(a -> sb.append(a.getKey().getName() + "(" + a.getValue() + ") / "));
-    PreesmLogger.getLogger().log(Level.WARNING, "Periodic actor ranks: " + sb.toString());
+    PreesmLogger.getLogger().log(Level.INFO, "Periodic actor ranks: " + sb.toString());
 
     return HeuristicPeriodicActorSelection.selectFromRate(periodicActors, topoRanksPeriodic, rate);
   }
 
-  private static Map<Actor, Long> selectFromRate(final Map<Actor, Long> periodicActors,
+  private static Map<Actor, Double> selectFromRate(final Map<Actor, Long> periodicActors,
       final Map<Actor, Double> topoRanksPeriodic, final int rate) {
     final int nbPeriodicActors = periodicActors.size();
     final double nActorsToSelect = nbPeriodicActors * (rate / 100.0);
     final int nbActorsToSelect = Math.max((int) Math.ceil(nActorsToSelect), 1);
 
     final Map<Actor,
-        Long> selectedActors = periodicActors.entrySet().stream().sorted(Map.Entry.comparingByValue())
-            .limit(nbActorsToSelect).collect(Collectors.toMap(Map.Entry::getKey, e -> periodicActors.get(e.getKey()),
-                (e1, e2) -> e1, LinkedHashMap::new));
+        Double> selectedActors = topoRanksPeriodic.entrySet().stream().sorted(Map.Entry.comparingByValue())
+            .limit(nbActorsToSelect)
+            .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (e1, e2) -> e1, LinkedHashMap::new));
 
-    // final Map<Actor, Long> selectedActors = new HashMap<>();
-    // for (int i = 0; i < nbActorsToSelect; ++i) {
-    // Actor actor = topoRanksPeriodic.firstKey();
-    // topoRanksPeriodic.remove(actor);
-    // WorkflowLogger.getLogger().log(Level.INFO, "Periodic actor: " + actor.getName());
-    // selectedActors.put(actor, periodicActors.get(actor));
-    // }
     return selectedActors;
   }
 
