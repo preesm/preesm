@@ -142,7 +142,8 @@ abstract class ScheduleOrderedVisitor extends ScheduleSwitch<Boolean> {
   }
 
   private final void innerVisitPredecessors(final AbstractActor actor) {
-    final List<AbstractActor> directPredecessorsOf = PiSDFTopologyHelper.getDirectPredecessorsOf(actor);
+    final List<
+        AbstractActor> directPredecessorsOf = new ArrayList<>(PiSDFTopologyHelper.getDirectPredecessorsOf(actor));
     if (actor instanceof CommunicationActor) {
       directPredecessorsOf.addAll(new CommunicationPrecedence().doSwitch(actor));
     }
