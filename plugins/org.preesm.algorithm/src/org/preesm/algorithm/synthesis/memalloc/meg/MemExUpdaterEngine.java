@@ -1,7 +1,9 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2019) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2014 - 2019) :
  *
- * Antoine Morvan [antoine.morvan@insa-rennes.fr] (2019)
+ * Antoine Morvan [antoine.morvan@insa-rennes.fr] (2017 - 2019)
+ * Clément Guy [clement.guy@insa-rennes.fr] (2014 - 2015)
+ * Karol Desnos [karol.desnos@insa-rennes.fr] (2015)
  *
  * This software is a computer program whose purpose is to help prototyping
  * parallel applications using dataflow formalism.
@@ -32,39 +34,58 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL license and that you accept its terms.
  */
-package org.preesm.algorithm.synthesis.memalloc;
+package org.preesm.algorithm.synthesis.memalloc.meg;
 
 import java.util.logging.Level;
 import org.preesm.algorithm.mapping.model.Mapping;
-import org.preesm.algorithm.memalloc.model.Allocation;
 import org.preesm.algorithm.schedule.model.Schedule;
-import org.preesm.algorithm.synthesis.memalloc.meg.PiMemoryExclusionGraph;
 import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.model.pisdf.PiGraph;
-import org.preesm.model.scenario.Scenario;
-import org.preesm.model.slam.Design;
 
 /**
- *
- *
- * @author anmorvan
+ * The Class MemExUpdaterEngine.
  */
-public class LegacyMemoryAllocation implements IMemoryAllocation {
+public class MemExUpdaterEngine {
 
-  @Override
-  public Allocation allocateMemory(final PiGraph piGraph, final Design slamDesign, final Scenario scenario,
-      final Schedule schedule, final Mapping mapping) {
+  private final boolean                verbose;
+  private final PiGraph                dag;
+  private final PiMemoryExclusionGraph memEx;
+  private final Schedule               schedule;
+  private final Mapping                mapping;
 
-    final PiMemoryExclusionGraph memEx = new PiMemoryExclusionGraph(scenario);
-    PreesmLogger.getLogger().log(Level.INFO, () -> "building memex graph");
-    memEx.buildGraph(piGraph);
-    final int edgeCount = memEx.edgeSet().size();
-    final int vertexCount = memEx.vertexSet().size();
-    final double density = edgeCount / ((vertexCount * (vertexCount - 1)) / 2.0);
-    PreesmLogger.getLogger().log(Level.INFO,
-        () -> "Memory exclusion graph built with " + vertexCount + " vertices and density = " + density);
+  private int    before;
+  private double density;
 
-    // TODO fix
-    return new SimpleMemoryAllocation().allocateMemory(piGraph, slamDesign, scenario, schedule, mapping);
+  /**
+   */
+  public MemExUpdaterEngine(final PiGraph dag, final PiMemoryExclusionGraph memEx, final Schedule schedule,
+      final Mapping mapping, final boolean verbose) {
+    this.schedule = schedule;
+    this.mapping = mapping;
+    this.verbose = verbose;
+    this.dag = dag;
+    this.memEx = memEx;
+    this.before = memEx.edgeSet().size();
+  }
+
+  /**
+   */
+  public void update() {
+    if (this.verbose) {
+      PreesmLogger.getLogger().log(Level.INFO, "Memory exclusion graph : start updating with schedule");
+    }
+
+    this.memEx.updateWithSchedule(this.dag, schedule, mapping);
+
+    this.density = this.memEx.edgeSet().size()
+        / ((this.memEx.vertexSet().size() * (this.memEx.vertexSet().size() - 1)) / 2.0);
+
+    if (this.verbose) {
+      PreesmLogger.getLogger().log(Level.INFO, () -> "Memory exclusion graph updated with "
+          + this.memEx.vertexSet().size() + " vertices and density = " + this.density);
+      PreesmLogger.getLogger().log(Level.INFO,
+          () -> "Exclusions removed: " + (this.before - this.memEx.edgeSet().size()) + " ("
+              + Math.round((100.00 * (this.before - this.memEx.edgeSet().size())) / this.before) + "%)");
+    }
   }
 }
