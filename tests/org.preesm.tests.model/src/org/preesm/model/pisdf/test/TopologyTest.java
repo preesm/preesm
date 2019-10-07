@@ -1,5 +1,7 @@
 package org.preesm.model.pisdf.test;
 
+import static org.junit.Assert.assertEquals;
+
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -160,6 +162,68 @@ public class TopologyTest {
 
     try {
       PiSDFTopologyHelper.getAllSuccessorsOf(VertexPath.lookup(createGraph, "A"));
+      Assert.fail();
+    } catch (final StackOverflowError e) {
+      // success
+    }
+  }
+
+  @Test
+  public void testAllOutFifos() {
+    final PiGraph createGraph = createGraph();
+    List<Fifo> outFifos;
+    final Fifo fifo;
+
+    outFifos = PiSDFTopologyHelper.getPredecessorEdgesOf(VertexPath.lookup(createGraph, "B"));
+    assertEquals(1, outFifos.size());
+    fifo = outFifos.get(0);
+    assertEquals(VertexPath.lookup(createGraph, "B"), fifo.getTarget());
+    assertEquals(VertexPath.lookup(createGraph, "A"), fifo.getSource());
+
+    outFifos = PiSDFTopologyHelper.getPredecessorEdgesOf(VertexPath.lookup(createGraph, "D"));
+    assertEquals(4, outFifos.size());
+
+    outFifos = PiSDFTopologyHelper.getPredecessorEdgesOf(VertexPath.lookup(createGraph, "A"));
+    assertEquals(0, outFifos.size());
+  }
+
+  @Test
+  public void testAllInFifos() {
+    final PiGraph createGraph = createGraph();
+    List<Fifo> outFifos;
+    final Fifo fifo;
+
+    outFifos = PiSDFTopologyHelper.getSuccessorEdgesOf(VertexPath.lookup(createGraph, "B"));
+    assertEquals(1, outFifos.size());
+    fifo = outFifos.get(0);
+    assertEquals(VertexPath.lookup(createGraph, "D"), fifo.getTarget());
+    assertEquals(VertexPath.lookup(createGraph, "B"), fifo.getSource());
+
+    outFifos = PiSDFTopologyHelper.getSuccessorEdgesOf(VertexPath.lookup(createGraph, "A"));
+    assertEquals(4, outFifos.size());
+
+    outFifos = PiSDFTopologyHelper.getSuccessorEdgesOf(VertexPath.lookup(createGraph, "D"));
+    assertEquals(0, outFifos.size());
+  }
+
+  @Test
+  public void testAllOutFifosNoDAG() {
+    final PiGraph createGraph = createGraphNoDAG();
+
+    try {
+      PiSDFTopologyHelper.getSuccessorEdgesOf(VertexPath.lookup(createGraph, "B"));
+      Assert.fail();
+    } catch (final StackOverflowError e) {
+      // success
+    }
+  }
+
+  @Test
+  public void testAllInFifosNoDAG() {
+    final PiGraph createGraph = createGraphNoDAG();
+
+    try {
+      PiSDFTopologyHelper.getPredecessorEdgesOf(VertexPath.lookup(createGraph, "B"));
       Assert.fail();
     } catch (final StackOverflowError e) {
       // success
