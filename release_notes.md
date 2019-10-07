@@ -48,7 +48,6 @@ PREESM Changelog
 * Simulation tab of scenario now has an option to import all data types from
   the graph, with predefined default values for common type names.
 
-
 ### Bug fix
 * Fix #74
 * Fix #80
