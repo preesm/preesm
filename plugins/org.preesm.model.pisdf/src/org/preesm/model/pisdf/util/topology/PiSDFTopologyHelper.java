@@ -42,6 +42,8 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 import org.preesm.model.pisdf.AbstractActor;
+import org.preesm.model.pisdf.DataPort;
+import org.preesm.model.pisdf.Fifo;
 import org.preesm.model.pisdf.util.topology.IsThereALongPathSwitch.ThereIsALongPathException;
 import org.preesm.model.pisdf.util.topology.PiSDFPredecessorSwitch.IsPredecessorSwitch;
 import org.preesm.model.pisdf.util.topology.PiSDFPredecessorSwitch.PredecessorFoundException;
@@ -150,6 +152,30 @@ public class PiSDFTopologyHelper {
     final List<AbstractActor> directSuccessorsOf = getDirectSuccessorsOf(actor);
     result.addAll(directSuccessorsOf);
     directSuccessorsOf.stream().map(PiSDFTopologyHelper::getDirectSuccessorsOf).flatMap(List::stream).distinct()
+        .forEach(result::add);
+    return Collections.unmodifiableList(new ArrayList<>(result));
+  }
+
+  /**
+   * Get all edges on the paths to all predecessors of actor. Will loop infinitely if actor is not part of a DAG.
+   */
+  public static final List<Fifo> getPredecessorEdgesOf(final AbstractActor actor) {
+    final Set<Fifo> result = new LinkedHashSet<>();
+    actor.getDataInputPorts().stream().map(DataPort::getFifo).forEach(result::add);
+    final List<AbstractActor> allPredecessorsOf = getAllPredecessorsOf(actor);
+    allPredecessorsOf.stream().map(AbstractActor::getDataInputPorts).flatMap(List::stream).map(DataPort::getFifo)
+        .forEach(result::add);
+    return Collections.unmodifiableList(new ArrayList<>(result));
+  }
+
+  /**
+   * Get all edges on the paths to all successors of actor. Will loop infinitely if actor is not part of a DAG.
+   */
+  public static final List<Fifo> getSuccessorEdgesOf(final AbstractActor actor) {
+    final Set<Fifo> result = new LinkedHashSet<>();
+    actor.getDataOutputPorts().stream().map(DataPort::getFifo).forEach(result::add);
+    final List<AbstractActor> allSuccessorsOf = getAllSuccessorsOf(actor);
+    allSuccessorsOf.stream().map(AbstractActor::getDataOutputPorts).flatMap(List::stream).map(DataPort::getFifo)
         .forEach(result::add);
     return Collections.unmodifiableList(new ArrayList<>(result));
   }
