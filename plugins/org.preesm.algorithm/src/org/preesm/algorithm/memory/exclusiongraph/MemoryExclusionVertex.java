@@ -191,9 +191,15 @@ public class MemoryExclusionVertex extends AbstractVertex<MemoryExclusionGraph> 
    *          the DAG edge corresponding to the constructed vertex
    */
   public MemoryExclusionVertex(final DAGEdge inputEdge) {
-    this.source = inputEdge.getSource().getName();
-    this.sink = inputEdge.getTarget().getName();
+    this(inputEdge.getSource().getName(), inputEdge.getTarget().getName(), getSize(inputEdge));
+    this.edge = inputEdge;
+    if (this.size == 0) {
+      PreesmLogger.getLogger().log(Level.WARNING, "Probable ERROR: Vertex weight is 0");
+    }
 
+  }
+
+  private static long getSize(final DAGEdge inputEdge) {
     // if datatype is defined, correct the vertex weight
     final BufferAggregate buffers = inputEdge.getPropertyBean().getValue(BufferAggregate.propertyBeanName);
     final Iterator<BufferProperties> iter = buffers.iterator();
@@ -210,14 +216,7 @@ public class MemoryExclusionVertex extends AbstractVertex<MemoryExclusionGraph> 
         vertexWeight += properties.getSize();
       }
     }
-
-    this.size = vertexWeight;
-
-    if (vertexWeight == 0) {
-      PreesmLogger.getLogger().log(Level.WARNING, "Probable ERROR: Vertex weight is 0");
-    }
-
-    this.edge = inputEdge;
+    return vertexWeight;
   }
 
   /**
