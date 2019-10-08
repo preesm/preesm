@@ -3,6 +3,7 @@ package org.preesm.model.scenario.util;
 import java.io.IOException;
 import java.net.URL;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import org.preesm.commons.exceptions.PreesmRuntimeException;
@@ -48,7 +49,7 @@ public final class DefaultTypeSizes {
         final String[] split = typeDef.split(":");
         res.put(split[0], Long.parseLong(split[1]));
       });
-      return Map.copyOf(res);
+      return Collections.unmodifiableMap(res);
     } catch (final IOException e) {
       throw new PreesmRuntimeException("Could not read CSV file storing default data type sizes.", e);
     }
