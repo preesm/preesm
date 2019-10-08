@@ -22,23 +22,23 @@ public final class DefaultTypeSizes {
   private static final String CSV_FILE_UBUNTU_18_04_X64_GCC_7_4_0 = "default_type_sizes_ubuntu_18.04_x64_gcc_7.4.0.csv";
 
   public static final DefaultTypeSizes getInstance() {
-    return instance;
+    return DefaultTypeSizes.instance;
   }
 
-  private final Map<String, Long> defaultTypeSizes;
+  private final Map<String, Long> defaultTypeSizesMap;
 
   private DefaultTypeSizes() {
-    this.defaultTypeSizes = initDefaultTypeSizes();
+    this.defaultTypeSizesMap = DefaultTypeSizes.initDefaultTypeSizes();
   }
 
   private static final Map<String, Long> initDefaultTypeSizes() {
-    final URL csvFileURL = PreesmResourcesHelper.getInstance().resolve(CSV_FILE_UBUNTU_18_04_X64_GCC_7_4_0,
-        DefaultTypeSizes.class);
+    final URL csvFileURL = PreesmResourcesHelper.getInstance()
+        .resolve(DefaultTypeSizes.CSV_FILE_UBUNTU_18_04_X64_GCC_7_4_0, DefaultTypeSizes.class);
 
     if (csvFileURL == null) {
       throw new PreesmRuntimeException(
           "Could not locate CSV file storing default data type sizes (should be under 'resources/"
-              + CSV_FILE_UBUNTU_18_04_X64_GCC_7_4_0 + "' of plugin 'org.preesm.model.scenario'");
+              + DefaultTypeSizes.CSV_FILE_UBUNTU_18_04_X64_GCC_7_4_0 + "' of plugin 'org.preesm.model.scenario'");
     }
 
     try {
@@ -48,7 +48,7 @@ public final class DefaultTypeSizes {
         final String[] split = typeDef.split(":");
         res.put(split[0], Long.parseLong(split[1]));
       });
-      return res;
+      return Map.copyOf(res);
     } catch (final IOException e) {
       throw new PreesmRuntimeException("Could not read CSV file storing default data type sizes.", e);
     }
@@ -57,8 +57,8 @@ public final class DefaultTypeSizes {
   /**
    */
   public final long getDefaultTypeSize(final String typeName) {
-    if (this.defaultTypeSizes.containsKey(typeName)) {
-      return this.defaultTypeSizes.get(typeName);
+    if (this.defaultTypeSizesMap.containsKey(typeName)) {
+      return this.defaultTypeSizesMap.get(typeName);
     } else {
       return 1L;
     }
