@@ -49,7 +49,7 @@ import org.preesm.algorithm.mapper.model.special.PrecedenceEdgeAdder;
 import org.preesm.algorithm.mapper.model.special.TransferVertex;
 import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.model.slam.ComponentInstance;
-import org.preesm.model.slam.route.AbstractRouteStep;
+import org.preesm.model.slam.SlamRouteStep;
 
 /**
  * A transaction that adds one transfer vertex in an implementation and schedules it given the right edge scheduler.
@@ -76,7 +76,7 @@ public class AddTransferVertexTransaction implements Transaction {
   private MapperDAG implementation = null;
 
   /** Route step corresponding to this transfer. */
-  private AbstractRouteStep step = null;
+  private SlamRouteStep step = null;
 
   /** time of this transfer. */
   private long transferTime = 0;
@@ -146,7 +146,7 @@ public class AddTransferVertexTransaction implements Transaction {
    */
   public AddTransferVertexTransaction(final String transferType, final Transaction precedingTransaction,
       final IEdgeSched edgeScheduler, final MapperDAGEdge edge, final MapperDAG implementation,
-      final OrderManager orderManager, final int routeIndex, final int nodeIndex, final AbstractRouteStep step,
+      final OrderManager orderManager, final int routeIndex, final int nodeIndex, final SlamRouteStep step,
       final long transferTime, final ComponentInstance effectiveComponent, final boolean scheduleVertex) {
     super();
     this.transferType = transferType;
@@ -173,7 +173,7 @@ public class AddTransferVertexTransaction implements Transaction {
    * @see org.ietr.preesm.mapper.abc.transaction.Transaction#execute(java.util.List)
    */
   @Override
-  public void execute(final List<Object> resultList) {
+  public void execute(final List<MapperDAGVertex> resultList) {
     final MapperDAGVertex currentTarget = (MapperDAGVertex) this.edge.getTarget();
 
     // Linking with previous transaction consists in chaining the new

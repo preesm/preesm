@@ -75,7 +75,7 @@ public class RemoveVertexTransaction implements Transaction {
   }
 
   @Override
-  public void execute(final List<Object> resultList) {
+  public void execute(final List<MapperDAGVertex> resultList) {
     // Unscheduling first
     final MapperDAGVertex prev = this.orderManager.getPrevious(this.vertex);
     final MapperDAGVertex next = this.orderManager.getNext(this.vertex);

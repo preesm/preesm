@@ -49,22 +49,22 @@ import java.util.Map;
  *
  */
 @JsonInclude(JsonInclude.Include.NON_NULL)
-@JsonPropertyOrder({ "taskName", "singleRateInstanceNumber", "start", "startN", "end", "endN", "core",
+@JsonPropertyOrder({ "actorName", "singleRateInstanceNumber", "start", "startN", "end", "endN", "core",
     "processingUnitName", "graphIteration" })
 public class ScheduleEntry {
 
-  @JsonProperty("taskName")
-  private String  taskName;
+  @JsonProperty("actorName")
+  private String  actorName;
   @JsonProperty("singleRateInstanceNumber")
   private Integer singleRateInstanceNumber;
-  // start in our units
+  // start in our units, if float in json file, will be converted automatically to long
   @JsonProperty("start")
-  private Long                      start;
+  private Long start;
   // start in AOW units (subintervals of the while execution time)
   @JsonProperty("startN")
   private Integer startN;
   @JsonProperty("end")
-  private Long                      end;
+  private Long    end;
   @JsonProperty("endN")
   private Integer endN;
   @JsonProperty("core")
@@ -73,22 +73,33 @@ public class ScheduleEntry {
   private String  processingUnitName;
   @JsonProperty("graphIteration")
   private Integer graphIteration;
-  // start in our units, taking into account delays WE SHOULD USE THIS
+  // start in our units, taking into account delays, but not broadcasts apparently
   @JsonProperty("topologicalStart")
-  private Integer                   topologicalStart;
+  private Long                      topologicalStart;
   @JsonProperty("topologicalEnd")
-  private Integer                   topologicalEnd;
+  private Long                      topologicalEnd;
   @JsonIgnore
   private final Map<String, Object> additionalProperties = new LinkedHashMap<>();
 
-  @JsonProperty("taskName")
-  public String getTaskName() {
-    return this.taskName;
+  // Name in Preesm
+  private String firingName;
+
+  public String getFiringName() {
+    return firingName;
   }
 
-  @JsonProperty("taskName")
-  public void setTaskName(final String taskName) {
-    this.taskName = taskName;
+  public void setFiringName(String firingName) {
+    this.firingName = firingName;
+  }
+
+  @JsonProperty("actorName")
+  public String getActorName() {
+    return this.actorName;
+  }
+
+  @JsonProperty("actorName")
+  public void setActorName(final String taskName) {
+    this.actorName = taskName;
   }
 
   @JsonProperty("singleRateInstanceNumber")
@@ -176,19 +187,23 @@ public class ScheduleEntry {
     return this.additionalProperties;
   }
 
-  public Integer getTopologicalEnd() {
+  @JsonProperty("topologicalEnd")
+  public Long getTopologicalEnd() {
     return this.topologicalEnd;
   }
 
-  public void setTopologicalEnd(final Integer topologicalEnd) {
+  @JsonProperty("topologicalEnd")
+  public void setTopologicalEnd(final Long topologicalEnd) {
     this.topologicalEnd = topologicalEnd;
   }
 
-  public Integer getTopologicalStart() {
+  @JsonProperty("topologicalStart")
+  public Long getTopologicalStart() {
     return this.topologicalStart;
   }
 
-  public void setTopologicalStart(final Integer topologicalStart) {
+  @JsonProperty("topologicalStart")
+  public void setTopologicalStart(final Long topologicalStart) {
     this.topologicalStart = topologicalStart;
   }
 

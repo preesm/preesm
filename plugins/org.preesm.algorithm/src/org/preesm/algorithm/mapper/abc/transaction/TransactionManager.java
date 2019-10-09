@@ -39,6 +39,7 @@ package org.preesm.algorithm.mapper.abc.transaction;
 
 import java.util.ArrayList;
 import java.util.List;
+import org.preesm.algorithm.mapper.model.MapperDAGVertex;
 
 /**
  * This is a transaction container that enables the consecutive execution of several listed transactions.
@@ -48,7 +49,7 @@ import java.util.List;
 public class TransactionManager {
 
   private final ArrayList<Transaction> transactionList;
-  private final List<Object>           resultList;
+  private final List<MapperDAGVertex>  resultList;
 
   public TransactionManager() {
     this(null);
@@ -60,7 +61,7 @@ public class TransactionManager {
    * @param resultList
    *          the result list
    */
-  public TransactionManager(final List<Object> resultList) {
+  public TransactionManager(final List<MapperDAGVertex> resultList) {
     super();
     this.transactionList = new ArrayList<>();
     this.resultList = resultList;

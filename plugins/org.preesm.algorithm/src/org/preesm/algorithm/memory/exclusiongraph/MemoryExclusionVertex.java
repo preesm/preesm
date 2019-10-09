@@ -62,8 +62,7 @@ import org.preesm.commons.logger.PreesmLogger;
  * @author kdesnos
  *
  */
-public class MemoryExclusionVertex extends AbstractVertex<MemoryExclusionGraph>
-    implements IWeightedVertex<Long>, Comparable<MemoryExclusionVertex> {
+public class MemoryExclusionVertex extends AbstractVertex<MemoryExclusionGraph> implements IWeightedVertex<Long> {
 
   /**
    * String used in the {@link PropertyBean} of a {@link MemoryExclusionVertex} to store the offset at which the memory
@@ -162,9 +161,6 @@ public class MemoryExclusionVertex extends AbstractVertex<MemoryExclusionGraph>
    */
   private final String source;
 
-  /** ID of the explode/Implode dag vertex the memory belongs to. */
-  private String explodeImplode;
-
   /**
    * The edge in the DAG that corresponds to this vertex in the exclusion graph. (This attribute is used only if the
    * vertices corresponds to an edge in the dag, i.e. a transfer between actors)
@@ -195,15 +191,15 @@ public class MemoryExclusionVertex extends AbstractVertex<MemoryExclusionGraph>
    *          the DAG edge corresponding to the constructed vertex
    */
   public MemoryExclusionVertex(final DAGEdge inputEdge) {
-    this.source = inputEdge.getSource().getName();
-    this.sink = inputEdge.getTarget().getName();
-
-    if (inputEdge.getPropertyBean().getValue("explodeName") != null) {
-      this.explodeImplode = inputEdge.getPropertyBean().getValue("explodeName").toString();
-    } else {
-      this.explodeImplode = "";
+    this(inputEdge.getSource().getName(), inputEdge.getTarget().getName(), getSize(inputEdge));
+    this.edge = inputEdge;
+    if (this.size == 0) {
+      PreesmLogger.getLogger().log(Level.WARNING, "Probable ERROR: Vertex weight is 0");
     }
 
+  }
+
+  private static long getSize(final DAGEdge inputEdge) {
     // if datatype is defined, correct the vertex weight
     final BufferAggregate buffers = inputEdge.getPropertyBean().getValue(BufferAggregate.propertyBeanName);
     final Iterator<BufferProperties> iter = buffers.iterator();
@@ -220,14 +216,7 @@ public class MemoryExclusionVertex extends AbstractVertex<MemoryExclusionGraph>
         vertexWeight += properties.getSize();
       }
     }
-
-    this.size = vertexWeight;
-
-    if (vertexWeight == 0) {
-      PreesmLogger.getLogger().log(Level.WARNING, "Probable ERROR: Vertex weight is 0");
-    }
-
-    this.edge = inputEdge;
+    return vertexWeight;
   }
 
   /**
@@ -244,34 +233,11 @@ public class MemoryExclusionVertex extends AbstractVertex<MemoryExclusionGraph>
     this.source = sourceTask;
     this.sink = sinkTask;
     this.size = sizeMem;
-    this.explodeImplode = "";
   }
 
-  /*
-   * (non-Javadoc)
-   *
-   * @see org.ietr.dftools.algorithm.model.AbstractVertex#clone()
-   */
   @Override
   public MemoryExclusionVertex copy() {
     return null;
-  }
-
-  /**
-   * The comparison of two MemoryExclusionVertex is made according to their weight.
-   *
-   * @param o
-   *          the o
-   * @return the int
-   */
-  @Override
-  public int compareTo(final MemoryExclusionVertex o) {
-    if (this.size > o.size) {
-      return 1;
-    } else if (this.size < o.size) {
-      return -1;
-    }
-    return 0;
   }
 
   /**
@@ -301,142 +267,66 @@ public class MemoryExclusionVertex extends AbstractVertex<MemoryExclusionGraph>
     }
   }
 
-  /*
-   * (non-Javadoc)
-   *
-   * @see org.ietr.preesm.memory.exclusiongraph.IWeightedVertex#getClone()
-   */
   @Override
   public MemoryExclusionVertex getClone() {
     MemoryExclusionVertex copy;
     copy = new MemoryExclusionVertex(this.source, this.sink, this.size);
     copy.setIdentifier(getIdentifier());
     copy.edge = this.edge;
-    copy.explodeImplode = this.explodeImplode;
     copy.vertex = this.vertex;
     return copy;
   }
 
-  /**
-   * Gets the edge.
-   *
-   * @return the edge of the DAG that correspond to this vertex in the exclusion Graph
-   */
   public DAGEdge getEdge() {
     return this.edge;
   }
 
-  /**
-   * Gets the vertex.
-   *
-   * @return the vertex of the DAG in the exclusion Graph
-   */
   public DAGVertex getVertex() {
     return this.vertex;
   }
 
-  /**
-   * Sets the vertex.
-   */
   public void setVertex(final DAGVertex vertex) {
     this.vertex = vertex;
   }
 
-  /**
-   * Gets the explode implode.
-   *
-   * @return the explodeImplode
-   */
-  public String getExplodeImplode() {
-    return this.explodeImplode;
-  }
-
-  /*
-   * (non-Javadoc)
-   *
-   * @see org.ietr.dftools.algorithm.model.PropertySource#getFactoryForProperty(java.lang.String)
-   */
   @Override
   public PropertyFactory getFactoryForProperty(final String propertyName) {
     return null;
   }
 
-  /**
-   * Gets the identifier.
-   *
-   * @return the unique identifier of the vertex
-   */
   @Override
   public long getIdentifier() {
     return this.identifier;
   }
 
-  /**
-   * Gets the sink.
-   *
-   * @return the sink
-   */
   public String getSink() {
     return this.sink;
   }
 
-  /**
-   * Gets the source.
-   *
-   * @return the source
-   */
   public String getSource() {
     return this.source;
   }
 
-  /**
-   * Gets the weight.
-   *
-   * @return the weight
-   */
   @Override
   public Long getWeight() {
     return this.size;
   }
 
-  /**
-   * <p>
-   * Method added to enable the use of contains() method in Set &lt;MemoryExclusionVertex&gt;.
-   * </p>
-   *
-   * @return the int
-   */
   @Override
   public int hashCode() {
     return (this.sink + "=>" + this.source).hashCode();
   }
 
-  /**
-   * Sets the identifier.
-   *
-   * @param identifier
-   *          the identifier to set
-   */
   @Override
   public void setIdentifier(final long identifier) {
     this.identifier = identifier;
   }
 
-  /*
-   * (non-Javadoc)
-   *
-   * @see org.ietr.preesm.memory.exclusiongraph.IWeightedVertex#setWeight(java.lang.Object)
-   */
   @Override
   public void setWeight(final Long w) {
     this.size = w;
   }
 
-  /*
-   * (non-Javadoc)
-   *
-   * @see java.lang.Object#toString()
-   */
   @Override
   public String toString() {
     return this.source + "=>" + this.sink + ":" + this.size;

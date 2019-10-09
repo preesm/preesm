@@ -52,8 +52,9 @@ import org.preesm.algorithm.mapper.model.special.TransferVertex;
 import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.model.slam.ComponentInstance;
 import org.preesm.model.slam.Dma;
-import org.preesm.model.slam.route.AbstractRouteStep;
-import org.preesm.model.slam.route.DmaRouteStep;
+import org.preesm.model.slam.SlamDMARouteStep;
+import org.preesm.model.slam.SlamRouteStep;
+import org.preesm.model.slam.route.RouteCostEvaluator;
 
 /**
  * Class responsible to generate the suited vertices while simulating a dma communication.
@@ -107,19 +108,19 @@ public class DmaComRouterImplementer extends CommunicationRouterImplementer {
    * @return the transaction
    */
   @Override
-  public Transaction addVertices(final AbstractRouteStep routeStep, final MapperDAGEdge edge,
+  public Transaction addVertices(final SlamRouteStep routeStep, final MapperDAGEdge edge,
       final TransactionManager transactions, final int type, final int routeStepIndex,
-      final Transaction lastTransaction, final List<Object> alreadyCreatedVertices) {
+      final Transaction lastTransaction, final List<MapperDAGVertex> alreadyCreatedVertices) {
 
-    if (routeStep instanceof DmaRouteStep) {
+    if (routeStep instanceof SlamDMARouteStep) {
       // Adding the transfers
-      final DmaRouteStep dmaStep = ((DmaRouteStep) routeStep);
+      final SlamDMARouteStep dmaStep = ((SlamDMARouteStep) routeStep);
 
       // Adding the transfers of a dma route step
       if (type == CommunicationRouter.TRANSFER_TYPE) {
         // All the transfers along the path have the same time: the time
         // to transfer the data on the slowest contention node
-        final long transferTime = dmaStep.getWorstTransferTime(edge.getInit().getDataSize());
+        final long transferTime = (long) RouteCostEvaluator.getTransferCost(dmaStep, edge.getInit().getDataSize());
         final List<ComponentInstance> nodes = dmaStep.getContentionNodes();
         AddTransferVertexTransaction transaction = null;
 
@@ -147,8 +148,8 @@ public class DmaComRouterImplementer extends CommunicationRouterImplementer {
           }
         }
 
-        final Dma dmaDef = dmaStep.getDma();
-        final long overheadTime = dmaDef.getSetupTime();
+        final ComponentInstance dmaDef = dmaStep.getDma();
+        final long overheadTime = ((Dma) dmaDef.getComponent()).getSetupTime();
         if (incomingEdge != null) {
           transactions.add(new AddOverheadVertexTransaction(incomingEdge, getImplementation(), routeStep, overheadTime,
               getOrderManager()));

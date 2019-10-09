@@ -1,6 +1,7 @@
 /**
  * Copyright or © or Copr. IETR/INSA - Rennes (2012 - 2019) :
  *
+ * Alexandre Honorat [alexandre.honorat@insa-rennes.fr] (2019)
  * Antoine Morvan [antoine.morvan@insa-rennes.fr] (2017 - 2019)
  * Clément Guy [clement.guy@insa-rennes.fr] (2014 - 2015)
  * Julien Heulot [julien.heulot@insa-rennes.fr] (2013)
@@ -37,21 +38,21 @@
  */
 package org.preesm.ui.pisdf.features;
 
-import org.eclipse.graphiti.datatypes.ILocation;
+import java.util.ArrayList;
 import org.eclipse.graphiti.features.IFeatureProvider;
 import org.eclipse.graphiti.features.context.IReconnectionContext;
 import org.eclipse.graphiti.features.context.impl.CustomContext;
-import org.eclipse.graphiti.features.context.impl.MoveShapeContext;
 import org.eclipse.graphiti.features.context.impl.ReconnectionContext;
 import org.eclipse.graphiti.features.impl.DefaultReconnectionFeature;
 import org.eclipse.graphiti.mm.pictograms.Anchor;
 import org.eclipse.graphiti.mm.pictograms.ContainerShape;
+import org.eclipse.graphiti.mm.pictograms.FreeFormConnection;
 import org.eclipse.graphiti.mm.pictograms.PictogramElement;
-import org.eclipse.graphiti.services.Graphiti;
 import org.preesm.model.pisdf.DataInputPort;
 import org.preesm.model.pisdf.DataOutputPort;
 import org.preesm.model.pisdf.Fifo;
 import org.preesm.model.pisdf.Port;
+import org.preesm.ui.pisdf.features.helper.LayoutActorBendpoints;
 
 // TODO: Auto-generated Javadoc
 /**
@@ -60,7 +61,7 @@ import org.preesm.model.pisdf.Port;
  * @author kdesnos
  *
  */
-public class ReconnectionFifoFeature extends DefaultReconnectionFeature {
+public class ReconnectionFifoFeature extends DefaultReconnectionFeature implements LayoutActorBendpoints {
 
   /** The has done changes. */
   protected boolean hasDoneChanges = false;
@@ -175,15 +176,9 @@ public class ReconnectionFifoFeature extends DefaultReconnectionFeature {
     }
 
     // Call the move feature of the anchor owner to layout the connection
-    final MoveAbstractActorFeature moveFeature = new MoveAbstractActorFeature(getFeatureProvider());
     final ContainerShape cs = (ContainerShape) context.getNewAnchor().getReferencedGraphicsAlgorithm()
         .getPictogramElement();
-    final MoveShapeContext moveCtxt = new MoveShapeContext(cs);
-    moveCtxt.setDeltaX(0);
-    moveCtxt.setDeltaY(0);
-    final ILocation csLoc = Graphiti.getPeLayoutService().getLocationRelativeToDiagram(cs);
-    moveCtxt.setLocation(csLoc.getX(), csLoc.getY());
-    moveFeature.moveShape(moveCtxt);
+    layoutShapeConnectedToBendpoints(cs, this, new ArrayList<FreeFormConnection>());
 
     this.hasDoneChanges = true;
   }

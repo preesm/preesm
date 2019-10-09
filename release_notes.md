@@ -1,6 +1,50 @@
 PREESM Changelog
 ================
 
+## Release version 3.18.0
+*2019.10.09*
+
+### New Feature
+* Spider: 
+  * Energy awareness (energy-awareness parameter) now can be activated in SPiDER
+    * It will test a different number of PEs in each iteration
+    * It will keep the PE config reaching the objective with the lowest (estimated) energy consumption
+
+### Changes
+* Hardware Codegen: improved monitoring using PAPIFY
+* EnergyAwareness: performance objective now is considered a minimum. The tolerance has been removed;
+* Fix PiSDF editor autoLayout, especially if having setters and getters on delays;
+* Change the line style of setters and getters to dash dot;
+* AutoLayout of Feedback Fifos is smarter (works also when no delays);
+* Slam: 
+  * move route model to xcore;
+  * Refactor routing table;
+* Synhtesis API: 
+  * remodel schedule/memory allocation;
+  * implement delay support;
+  * implement communication insertion;
+* Refactor:
+  * Minor codegen refactor;
+  * Refactor memory allocation;
+  * Rethrow all exceptions thrown by JEP with expression causing issue;
+* Add methods in PiSDFTopologyHelper, and corresponding tests;
+* Simulation tab of scenario now has an option to import all data types from
+  the graph, with predefined default values for common type names.
+
+
+### Bug fix
+* Fix #74
+* Fix #80
+* Fix #83
+* Fix #85
+* Fix #128
+* Fix #190
+* Fix problem with precedence shift condition (clustering purposes)
+* Fix random seed parameter transfer to clustering algorithm
+* Fix various bugs in the experimental external mapping importer.
+* Fix #234
+* Fix #166: force init/end on same operator in kwok scheduler;
+
 ## Release version 3.17.0
 *2019.09.09*
 

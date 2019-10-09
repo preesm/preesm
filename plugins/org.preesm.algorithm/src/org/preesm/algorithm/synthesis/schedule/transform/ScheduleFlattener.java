@@ -44,24 +44,24 @@ import org.preesm.algorithm.schedule.model.SequentialHiearchicalSchedule;
 
 /**
  * @author dgageot
- * 
+ *
  *         Perform a flattening of schedule tree (uniformize repetition on sequential hierarchical schedule)
  *
  */
 public class ScheduleFlattener implements IScheduleTransform {
 
   @Override
-  public Schedule performTransform(Schedule schedule) {
+  public Schedule performTransform(final Schedule schedule) {
     // If it is an hierarchical schedule, explore and cluster actors
     if (schedule instanceof HierarchicalSchedule) {
-      HierarchicalSchedule hierSchedule = (HierarchicalSchedule) schedule;
+      final HierarchicalSchedule hierSchedule = (HierarchicalSchedule) schedule;
       // Retrieve childrens schedule and actors
-      List<Schedule> childSchedules = new LinkedList<>();
+      final List<Schedule> childSchedules = new LinkedList<>();
       childSchedules.addAll(hierSchedule.getChildren());
       // Clear list of children schedule
       hierSchedule.getChildren().clear();
-      for (Schedule child : childSchedules) {
-        Schedule processesChild = performTransform(child);
+      for (final Schedule child : childSchedules) {
+        final Schedule processesChild = performTransform(child);
         // Sequential flattening
         if ((hierSchedule instanceof SequentialHiearchicalSchedule) && (child instanceof SequentialHiearchicalSchedule)
             && (child.getRepetition() == 1)) {

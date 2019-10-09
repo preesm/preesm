@@ -1,6 +1,7 @@
 /**
  * Copyright or © or Copr. IETR/INSA - Rennes (2013 - 2019) :
  *
+ * Alexandre Honorat [alexandre.honorat@insa-rennes.fr] (2019)
  * Antoine Morvan [antoine.morvan@insa-rennes.fr] (2017 - 2019)
  * Clément Guy [clement.guy@insa-rennes.fr] (2015)
  * Florian Arrestier [florian.arrestier@insa-rennes.fr] (2018)
@@ -51,6 +52,7 @@ import org.eclipse.graphiti.mm.pictograms.Connection;
 import org.eclipse.graphiti.mm.pictograms.ContainerShape;
 import org.eclipse.graphiti.mm.pictograms.FreeFormConnection;
 import org.eclipse.graphiti.mm.pictograms.PictogramElement;
+import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.preesm.model.pisdf.Delay;
 import org.preesm.model.pisdf.DelayActor;
 import org.preesm.model.pisdf.Fifo;
@@ -84,34 +86,35 @@ public class DeleteDelayFeature extends DeleteParameterizableFeature {
     // Transform the two connections linked to the delay back into a single
     // one. before deleting the delay.
     final PictogramElement pictogramElement = context.getPictogramElement();
-    final Object[] allBusinessObjectsForPictogramElement = getAllBusinessObjectsForPictogramElement(pictogramElement);
-    if (allBusinessObjectsForPictogramElement.length > 0) {
-      // only disconnect if business delay exists.
-      // this delay could have been already deleted by the delete actor feature when selecting multiple elements
-      disconnectDelayFromFifo(context);
-    }
-
-    // Remove the contained delay actor
     final Delay delay = (Delay) getBusinessObjectForPictogramElement(pictogramElement);
-    final DelayActor delayActor = delay.getActor();
-    delayActor.getContainingPiGraph().removeActor(delayActor);
 
-    // Super call to delete the dependencies linked to the delay
-    // Do it after deleting the connection (if it exists) to avoid looping infinitely
-    super.preDelete(context);
+    if (delay != null) {
+      // if multiple selection and a delay is selected, it may have been removed previously by actor removal
+
+      final Object[] allBusinessObjectsForPictogramElement = getAllBusinessObjectsForPictogramElement(pictogramElement);
+      if (allBusinessObjectsForPictogramElement.length > 0) {
+        // only disconnect if business delay exists.
+        // this delay could have been already deleted by the delete actor feature when selecting multiple elements
+        disconnectDelayFromFifo((ContainerShape) pictogramElement, delay);
+      }
+
+      // Super call to delete the dependencies linked to the delay
+      // Do it after deleting the connection (if it exists) to avoid looping infinitely
+      super.preDelete(context);
+
+      // Remove the contained delay actor
+      final DelayActor delayActor = delay.getActor();
+      delayActor.getContainingPiGraph().removeActor(delayActor);
+
+    }
   }
 
   /**
    * Disconnect delay from fifo.
    *
-   * @param context
-   *          the context
-   * @throws RuntimeException
-   *           the runtime exception
    */
-  public void disconnectDelayFromFifo(final IDeleteContext context) throws RuntimeException {
+  public void disconnectDelayFromFifo(ContainerShape cs, Delay delay) {
     // Retrieve the two connections
-    final ContainerShape cs = (ContainerShape) context.getPictogramElement();
     final ChopboxAnchor cba = (ChopboxAnchor) cs.getAnchors().get(0);
     final List<Connection> incomingConnections = cba.getIncomingConnections();
     // There can be dependency incoming connection. Find the unique fifo
@@ -121,29 +124,27 @@ public class DeleteDelayFeature extends DeleteParameterizableFeature {
       final Object obj = getBusinessObjectForPictogramElement(connection);
       // With setter delay, there can be multiple FIFOs
       // We have to choose the correct one
-      if (obj instanceof Fifo && (((Fifo) obj).getDelay() != null)) {
+      if (obj instanceof Fifo && ((Fifo) obj).getDelay() == delay) {
         preConnection = connection;
         break;
       }
     }
     if (preConnection == null) {
-      throw new IllegalStateException();
+      throw new IllegalStateException(delay.getName());
     }
     // There may be multiple connections if the delay has a getter
     final List<Connection> outgoingConnections = cba.getOutgoingConnections();
     Connection postConnection = null;
-    // We look for the connection with the same object as the pre connection
-    final Object preConnectionObj = getBusinessObjectForPictogramElement(preConnection);
     for (final Connection connection : outgoingConnections) {
       final Object obj = getBusinessObjectForPictogramElement(connection);
-      if (obj == preConnectionObj) {
+      if (obj instanceof Fifo && ((Fifo) obj).getDelay() == delay) {
         postConnection = connection;
         break;
       }
     }
 
     if (postConnection == null) {
-      throw new IllegalStateException();
+      throw new IllegalStateException(delay.getName());
     }
 
     // Copy the bendpoints to the unique remaining connection.
@@ -159,7 +160,7 @@ public class DeleteDelayFeature extends DeleteParameterizableFeature {
     if (rmFeature.canRemove(rmCtxt)) {
       rmFeature.remove(rmCtxt);
     } else {
-      throw new RuntimeException("Could not delete Delay because a Connection could not be removed.");
+      throw new PreesmRuntimeException("Could not delete Delay because a Connection could not be removed.");
     }
   }
 

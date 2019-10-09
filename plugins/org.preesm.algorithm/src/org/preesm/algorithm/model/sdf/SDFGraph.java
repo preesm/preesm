@@ -95,7 +95,7 @@ public class SDFGraph extends AbstractGraph<SDFAbstractVertex, SDFEdge> {
   public SDFGraph() {
     super(SDFEdge::new);
     setName("");
-    getPropertyBean().setValue(AbstractGraph.MODEL, "sdf");
+    getPropertyBean().setValue(AbstractGraph.KIND_PROPERTY_LITERAL, "sdf");
   }
 
   public PiGraph getReferencePiMMGraph() {

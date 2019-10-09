@@ -45,6 +45,7 @@
 package org.preesm.algorithm.memalloc.model
 
 import org.preesm.model.pisdf.Fifo
+import org.preesm.model.pisdf.InitActor
 import org.preesm.model.slam.ComponentInstance
 
 // !!! This is needed as of the current versions of xcore/xtext
@@ -61,18 +62,45 @@ type long wraps long
 
 type double wraps double
 
-interface Buffer {
-	long size
-	contains LogicalBuffer[] children opposite memory
-	op PhysicalBuffer getBank()
+class Allocation {
+	// memory banks used by this allocation
+	contains PhysicalBuffer[] physicalBuffers opposite allocation
+	// buffers allocated for the fifos
+	contains FifoAllocationEntry[] fifoAllocations
+	// Buffers allocated for the permanent and local delays. The values are pushed by the
+	// EndActor and poped by the InitActor. To get the buffer for an EndActor, get its
+	// init reference allocated buffer.
+	contains DelayAllocationEntry[] delayAllocations
+
+	// Query method that returns the Fifos mapped to this buffer
+	// and this buffer children (recursively)
+	op Fifo[] getFifoAllocationEntry(Buffer b) {
+		return fifoAllocations.filter[it.value.allBuffers.exists[b.isEqualsOrRecursivelyContains(it)]].map[it.key].toEList.unmodifiableEList
+	}
+
+	// Query method that return the Delays (in form of their InitActors) mapped to this buffer
+	// and this buffer children (recursively)
+	op InitActor[] getDelayAllocationEntry(Buffer b) {
+		return delayAllocations.filter[b.isEqualsOrRecursivelyContains(it.value)].map[it.key].toEList.unmodifiableEList
+	}
 }
 
-class DistributedBuffer extends Buffer {
-	refers Buffer[] distributedCopies
+interface Buffer {
+	long size
+	long typeSize
+	contains LogicalBuffer[] children opposite containingBuffer
+	op PhysicalBuffer getBank()
+	op Allocation getAllocation() {
+		return bank.allocation
+	}
+	op boolean isEqualsOrRecursivelyContains(Buffer other) {
+		return this == other || children.exists[it.isEqualsOrRecursivelyContains(other)]
+	}
 }
 
 class PhysicalBuffer extends Buffer {
-	refers ComponentInstance memory
+	refers Allocation allocation opposite physicalBuffers
+	refers ComponentInstance memoryBank
 	op PhysicalBuffer getBank() {
 		return this
 	}
@@ -80,19 +108,52 @@ class PhysicalBuffer extends Buffer {
 
 class LogicalBuffer extends Buffer {
 	long offset
-	refers Buffer memory opposite children
+	refers Buffer containingBuffer opposite children
 	op PhysicalBuffer getBank() {
-		return memory.getBank()
+		return containingBuffer.getBank()
 	}
 }
 
-class Allocation {
-	contains PhysicalBuffer[] physicalBuffers
-	contains AllocationEntry[] allocations
+
+class FifoAllocationEntry wraps java.util.Map$Entry {
+	refers Fifo key
+	refers FifoAllocation value
 }
 
-class AllocationEntry wraps java.util.Map$Entry {
-	refers Fifo key
+class FifoAllocation {
+	refers Fifo fifo
+
+	// must verify that the fifo source actor is mapped to an operator
+	// with a link to memory bank storing the sourceBuffer
+	refers Buffer sourceBuffer
+
+	// must verify that the fifo target actor is mapped to an operator
+	// with a link to memory bank storing the targetBuffer
+	refers Buffer targetBuffer
+
+	// List of component instances (operators) used as proxy in the route
+	// and their allocated buffer to store the intermediate data to forward.
+	// Components appear in the order of transfers.
+	// Can be empty if the route does not use any proxy operator, i.e. when
+	// source and target buffers are on the same memory bank;
+	contains RouteBuffer[] routeBuffers
+
+	op Buffer[] getAllBuffers() {
+		return (#[sourceBuffer, targetBuffer] + routeBuffers.map[value]).toEList
+	}
+}
+
+// must verify that the proxy operator 'key' has a link to the
+// memory bank storing the temporary buffer 'value'
+class RouteBuffer wraps java.util.Map$Entry {
+	// the proxy operator
+	refers ComponentInstance key
+	// the allocated buffer
+	refers Buffer value
+}
+
+class DelayAllocationEntry wraps java.util.Map$Entry {
+	refers InitActor key
 	refers Buffer value
 }
 

@@ -1,0 +1,43 @@
+void:1
+char:1
+unsigned char:1
+short:2
+unsigned short:2
+int:4
+unsigned int:4
+long:8
+unsigned long:8
+long long:8
+unsigned long long:8
+float:4
+double:8
+long double:16
+long double:16
+int8_t:1
+int16_t:2
+int32_t:4
+int64_t:8
+int_fast8_t:1
+int_fast16_t:8
+int_fast32_t:8
+int_fast64_t:8
+int_least8_t:1
+int_least16_t:2
+int_least32_t:4
+int_least64_t:8
+intmax_t:8
+intptr_t:8
+uint8_t:1
+uint16_t:2
+uint32_t:4
+uint64_t:8
+uint_fast8_t:1
+uint_fast16_t:8
+uint_fast32_t:8
+uint_fast64_t:8
+uint_least8_t:1
+uint_least16_t:2
+uint_least32_t:4
+uint_least64_t:8
+uintmax_t:8
+uintptr_t:8

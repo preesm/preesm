@@ -1,6 +1,7 @@
 /**
  * Copyright or © or Copr. IETR/INSA - Rennes (2011 - 2019) :
  *
+ * Alexandre Honorat [alexandre.honorat@insa-rennes.fr] (2019)
  * Antoine Morvan [antoine.morvan@insa-rennes.fr] (2017 - 2019)
  * Clément Guy [clement.guy@insa-rennes.fr] (2014 - 2015)
  * Maxime Pelcat [maxime.pelcat@insa-rennes.fr] (2011 - 2012)
@@ -87,9 +88,11 @@ import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.eclipse.ui.forms.widgets.Section;
 import org.preesm.commons.logger.PreesmLogger;
+import org.preesm.model.pisdf.Fifo;
 import org.preesm.model.scenario.Scenario;
 import org.preesm.model.scenario.ScenarioConstants;
 import org.preesm.model.scenario.impl.DataTypeImpl;
+import org.preesm.model.scenario.util.DefaultTypeSizes;
 import org.preesm.model.slam.ComponentInstance;
 import org.preesm.model.slam.Design;
 import org.preesm.ui.scenario.editor.Messages;
@@ -105,7 +108,7 @@ public class SimulationPage extends ScenarioPage {
   private static final String DATA_TYPE_SIZE_TITLE = Messages.getString("Simulation.DataTypes.sizeColumn");
   private static final String DATA_TYPE_NAME_TITLE = Messages.getString("Simulation.DataTypes.typeColumn");
 
-  private static final String[] DATA_TYPE_TABLE_TITLES = { DATA_TYPE_SIZE_TITLE, DATA_TYPE_NAME_TITLE };
+  private static final String[] DATA_TYPE_TABLE_TITLES = { DATA_TYPE_NAME_TITLE, DATA_TYPE_SIZE_TITLE };
 
   /**
    * The listener interface for receiving comboBox events. The class that is interested in processing a comboBox event
@@ -417,10 +420,12 @@ public class SimulationPage extends ScenarioPage {
 
     // Buttons to add and remove data types
     final Composite buttonscps = toolkit.createComposite(parent);
-    buttonscps.setLayout(new GridLayout(2, true));
+    buttonscps.setLayout(new GridLayout(3, true));
     final Button addButton = toolkit.createButton(buttonscps, Messages.getString("Simulation.DataTypes.addType"),
         SWT.PUSH);
     final Button removeButton = toolkit.createButton(buttonscps, Messages.getString("Simulation.DataTypes.removeType"),
+        SWT.PUSH);
+    final Button fetchButton = toolkit.createButton(buttonscps, Messages.getString("Simulation.DataTypes.fetchType"),
         SWT.PUSH);
 
     final Composite tablecps = toolkit.createComposite(parent);
@@ -485,7 +490,7 @@ public class SimulationPage extends ScenarioPage {
 
       @Override
       public boolean canModify(final Object element, final String property) {
-        return property.contentEquals(DATA_TYPE_TABLE_TITLES[1]);
+        return property.contentEquals(DATA_TYPE_SIZE_TITLE);
       }
     });
     final Table tref = table;
@@ -503,8 +508,8 @@ public class SimulationPage extends ScenarioPage {
           final Point vBarSize = vBar.getSize();
           width -= vBarSize.x;
         }
-        columns[0].setWidth((width / 4) - 1);
-        columns[1].setWidth(width - columns[0].getWidth());
+        columns[1].setWidth(width / 4);
+        columns[0].setWidth(width - columns[1].getWidth());
         tref.setSize(area.width, area.height);
       }
     });
@@ -562,6 +567,27 @@ public class SimulationPage extends ScenarioPage {
         }
       }
     });
+
+    // Adding the new data type on click on add button
+    fetchButton.addSelectionListener(new SelectionAdapter() {
+
+      @Override
+      public void widgetSelected(final SelectionEvent e) {
+        for (final Fifo f : scenario.getAlgorithm().getAllFifos()) {
+          final String typeName = f.getType();
+          SimulationPage.this.scenario.getSimulationInfo().getDataTypes().put(typeName,
+              DefaultTypeSizes.getInstance().getDefaultTypeSize(typeName));
+        }
+
+        tableViewer.refresh();
+        propertyChanged(SimulationPage.this, IEditorPart.PROP_DIRTY);
+        gd.heightHint = Math.max(50,
+            Math.min(300, SimulationPage.this.scenario.getSimulationInfo().getDataTypes().size() * 20 + 30));
+        tablecps.requestLayout();
+      }
+
+    });
+
   }
 
   /**

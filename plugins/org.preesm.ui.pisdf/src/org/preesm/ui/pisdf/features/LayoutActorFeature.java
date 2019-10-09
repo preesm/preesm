@@ -1,6 +1,7 @@
 /**
  * Copyright or © or Copr. IETR/INSA - Rennes (2012 - 2019) :
  *
+ * Alexandre Honorat [alexandre.honorat@insa-rennes.fr] (2019)
  * Antoine Morvan [antoine.morvan@insa-rennes.fr] (2017 - 2019)
  * Clément Guy [clement.guy@insa-rennes.fr] (2014 - 2015)
  * Julien Heulot [julien.heulot@insa-rennes.fr] (2013)
@@ -43,10 +44,8 @@ import org.apache.commons.io.FilenameUtils;
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.graphiti.datatypes.IDimension;
-import org.eclipse.graphiti.datatypes.ILocation;
 import org.eclipse.graphiti.features.IFeatureProvider;
 import org.eclipse.graphiti.features.context.ILayoutContext;
-import org.eclipse.graphiti.features.context.impl.MoveShapeContext;
 import org.eclipse.graphiti.features.impl.AbstractLayoutFeature;
 import org.eclipse.graphiti.mm.algorithms.GraphicsAlgorithm;
 import org.eclipse.graphiti.mm.algorithms.RoundedRectangle;
@@ -56,6 +55,7 @@ import org.eclipse.graphiti.mm.algorithms.styles.Orientation;
 import org.eclipse.graphiti.mm.pictograms.Anchor;
 import org.eclipse.graphiti.mm.pictograms.BoxRelativeAnchor;
 import org.eclipse.graphiti.mm.pictograms.ContainerShape;
+import org.eclipse.graphiti.mm.pictograms.FreeFormConnection;
 import org.eclipse.graphiti.mm.pictograms.PictogramElement;
 import org.eclipse.graphiti.mm.pictograms.Shape;
 import org.eclipse.graphiti.services.Graphiti;
@@ -77,13 +77,14 @@ import org.preesm.model.pisdf.JoinActor;
 import org.preesm.model.pisdf.PiMMPackage;
 import org.preesm.model.pisdf.Refinement;
 import org.preesm.model.pisdf.RoundBufferActor;
+import org.preesm.ui.pisdf.features.helper.LayoutActorBendpoints;
 
 /**
  * Layout Feature for Actors.
  *
  * @author kdesnos
  */
-public class LayoutActorFeature extends AbstractLayoutFeature {
+public class LayoutActorFeature extends AbstractLayoutFeature implements LayoutActorBendpoints {
 
   /**
    *
@@ -362,13 +363,7 @@ public class LayoutActorFeature extends AbstractLayoutFeature {
 
     // If Anything changed, call the move feature to layout connections
     if (anythingChanged) {
-      final MoveAbstractActorFeature moveFeature = new MoveAbstractActorFeature(getFeatureProvider());
-      final MoveShapeContext moveCtxt = new MoveShapeContext(containerShape);
-      moveCtxt.setDeltaX(0);
-      moveCtxt.setDeltaY(0);
-      final ILocation csLoc = Graphiti.getPeLayoutService().getLocationRelativeToDiagram(containerShape);
-      moveCtxt.setLocation(csLoc.getX(), csLoc.getY());
-      moveFeature.moveShape(moveCtxt);
+      layoutShapeConnectedToBendpoints(containerShape, this, new ArrayList<FreeFormConnection>());
     }
 
     return anythingChanged;

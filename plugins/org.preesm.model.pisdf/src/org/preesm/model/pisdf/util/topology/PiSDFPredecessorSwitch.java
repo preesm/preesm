@@ -59,8 +59,11 @@ public abstract class PiSDFPredecessorSwitch extends PiMMSwitch<Boolean> {
     if (!this.visitedElements.contains(actor)) {
       this.visitedElements.add(actor);
       actor.getDataInputPorts().forEach(this::doSwitch);
-      final EList<AbstractActor> delayActors = actor.getContainingPiGraph().getDelayActors();
-      delayActors.forEach(this::doSwitch);
+      final PiGraph containingPiGraph = actor.getContainingPiGraph();
+      if (containingPiGraph != null) {
+        final EList<AbstractActor> delayActors = containingPiGraph.getDelayActors();
+        delayActors.forEach(this::doSwitch);
+      }
     }
     return true;
   }

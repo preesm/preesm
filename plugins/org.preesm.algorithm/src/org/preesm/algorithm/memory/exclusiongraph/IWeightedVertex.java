@@ -37,7 +37,6 @@
  */
 package org.preesm.algorithm.memory.exclusiongraph;
 
-// TODO: Auto-generated Javadoc
 /**
  * This interface must be implemented by weighted Vertex classes. A weighted vertex class is mandatory when solving the
  * Maximum-Weight Clique problem

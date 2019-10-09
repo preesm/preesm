@@ -48,6 +48,7 @@ import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.common.util.EMap;
 import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.model.pisdf.AbstractActor;
+import org.preesm.model.pisdf.Actor;
 import org.preesm.model.pisdf.Parameter;
 import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.scenario.EnergyConfig;
@@ -497,7 +498,7 @@ public class ScenarioWriter {
   }
 
   /**
-   * Adds the constraint.
+   * Adds the constraint (only for regular actors).
    *
    * @param parent
    *          the parent
@@ -515,9 +516,11 @@ public class ScenarioWriter {
     opdefelt.setAttribute("name", instanceName);
 
     for (final AbstractActor actor : actors) {
-      final Element vtxelt = this.dom.createElement("task");
-      constraintGroupElt.appendChild(vtxelt);
-      vtxelt.setAttribute("name", actor.getVertexPath());
+      if (actor instanceof Actor || actor instanceof PiGraph) {
+        final Element vtxelt = this.dom.createElement("task");
+        constraintGroupElt.appendChild(vtxelt);
+        vtxelt.setAttribute("name", actor.getVertexPath());
+      }
     }
   }
 
@@ -628,7 +631,6 @@ public class ScenarioWriter {
     parent.appendChild(performanceObjectiveElt);
 
     performanceObjectiveElt.setAttribute("objectiveEPS", Double.toString(performanceObjective.getObjectiveEPS()));
-    performanceObjectiveElt.setAttribute("toleranceEPS", Double.toString(performanceObjective.getToleranceEPS()));
   }
 
   /**

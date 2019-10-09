@@ -62,9 +62,11 @@ import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.preesm.model.scenario.Scenario;
 import org.preesm.model.slam.ComponentInstance;
 import org.preesm.model.slam.Design;
-import org.preesm.model.slam.route.AbstractRouteStep;
-import org.preesm.model.slam.route.Route;
-import org.preesm.model.slam.route.RouteCalculator;
+import org.preesm.model.slam.SlamRoute;
+import org.preesm.model.slam.SlamRouteStep;
+import org.preesm.model.slam.SlamRouteStepType;
+import org.preesm.model.slam.route.RouteCostEvaluator;
+import org.preesm.model.slam.route.SlamRoutingTable;
 
 /**
  * Routes the communications. Based on bridge design pattern. The processing is delegated to implementers
@@ -89,7 +91,7 @@ public class CommunicationRouter {
   public static final int INVOLVEMENT_TYPE = 4;
 
   /** The calculator. */
-  private RouteCalculator calculator = null;
+  private final SlamRoutingTable routingTable;
 
   /**
    * Instantiates a new communication router.
@@ -110,18 +112,18 @@ public class CommunicationRouter {
     this.implementers = new LinkedHashMap<>();
     setManagers(implementation, edgeScheduler, orderManager);
 
-    this.calculator = RouteCalculator.getInstance(archi, scenario.getSimulationInfo().getAverageDataSize());
+    this.routingTable = new SlamRoutingTable(archi);
 
     // Initializing the available router implementers
-    addImplementer(AbstractRouteStep.DMA_TYPE, new DmaComRouterImplementer(this));
-    addImplementer(AbstractRouteStep.NODE_TYPE, new MessageComRouterImplementer(this));
-    addImplementer(AbstractRouteStep.MEM_TYPE, new SharedRamRouterImplementer(this));
+    addImplementer(SlamRouteStepType.DMA_TYPE, new DmaComRouterImplementer(this));
+    addImplementer(SlamRouteStepType.NODE_TYPE, new MessageComRouterImplementer(this));
+    addImplementer(SlamRouteStepType.MEM_TYPE, new SharedRamRouterImplementer(this));
   }
 
   /**
    * Several ways to simulate a communication depending on which Route is taken into account.
    */
-  private final Map<String, CommunicationRouterImplementer> implementers;
+  private final Map<SlamRouteStepType, CommunicationRouterImplementer> implementers;
 
   /** DAG with communication vertices. */
   private MapperDAG implementation = null;
@@ -140,7 +142,7 @@ public class CommunicationRouter {
    * @param implementer
    *          the implementer
    */
-  private void addImplementer(final String name, final CommunicationRouterImplementer implementer) {
+  private void addImplementer(final SlamRouteStepType name, final CommunicationRouterImplementer implementer) {
     this.implementers.put(name, implementer);
   }
 
@@ -151,7 +153,7 @@ public class CommunicationRouter {
    *          the name
    * @return the implementer
    */
-  private CommunicationRouterImplementer getImplementer(final String name) {
+  private CommunicationRouterImplementer getImplementer(final SlamRouteStepType name) {
     return this.implementers.get(name);
   }
 
@@ -240,12 +242,12 @@ public class CommunicationRouter {
             && !currentSource.getEffectiveOperator().equals(currentDest.getEffectiveOperator())) {
           // Adds several transfers for one edge depending on the
           // route steps
-          final Route route = this.getRoute(currentEdge);
+          final SlamRoute route = this.getRoute(currentEdge);
           int routeStepIndex = 0;
           Transaction lastTransaction = null;
 
           // Adds send and receive vertices and links them
-          for (final AbstractRouteStep step : route) {
+          for (final SlamRouteStep step : route.getRouteSteps()) {
             final CommunicationRouterImplementer impl = getImplementer(step.getType());
             lastTransaction = impl.addVertices(step, currentEdge, localTransactionManager, type, routeStepIndex,
                 lastTransaction, null);
@@ -268,8 +270,8 @@ public class CommunicationRouter {
    */
   public void routeNewVertex(final MapperDAGVertex newVertex, final List<Integer> types) {
 
-    final Map<MapperDAGEdge, Route> transferEdges = getRouteMap(newVertex);
-    final List<Object> createdVertices = new ArrayList<>();
+    final Map<MapperDAGEdge, SlamRoute> transferEdges = getRouteMap(newVertex);
+    final List<MapperDAGVertex> createdVertices = new ArrayList<>();
 
     if (!transferEdges.isEmpty()) {
       for (final Integer type : types) {
@@ -285,8 +287,8 @@ public class CommunicationRouter {
    *          the new vertex
    * @return the route map
    */
-  private Map<MapperDAGEdge, Route> getRouteMap(final MapperDAGVertex newVertex) {
-    final Map<MapperDAGEdge, Route> transferEdges = new LinkedHashMap<>();
+  private Map<MapperDAGEdge, SlamRoute> getRouteMap(final MapperDAGVertex newVertex) {
+    final Map<MapperDAGEdge, SlamRoute> transferEdges = new LinkedHashMap<>();
 
     final Set<DAGEdge> edges = new LinkedHashSet<>();
     if (newVertex.incomingEdges() != null) {
@@ -322,15 +324,15 @@ public class CommunicationRouter {
    * @param createdVertices
    *          the created vertices
    */
-  private void addVertices(final Map<MapperDAGEdge, Route> transferEdges, final int type,
-      final List<Object> createdVertices) {
+  private void addVertices(final Map<MapperDAGEdge, SlamRoute> transferEdges, final int type,
+      final List<MapperDAGVertex> createdVertices) {
     final TransactionManager localTransactionManager = new TransactionManager(createdVertices);
 
-    for (final Entry<MapperDAGEdge, Route> route : transferEdges.entrySet()) {
+    for (final Entry<MapperDAGEdge, SlamRoute> route : transferEdges.entrySet()) {
       final MapperDAGEdge edge = route.getKey();
       int routeStepIndex = 0;
       Transaction lastTransaction = null;
-      for (final AbstractRouteStep step : transferEdges.get(edge)) {
+      for (final SlamRouteStep step : transferEdges.get(edge).getRouteSteps()) {
         final CommunicationRouterImplementer impl = getImplementer(step.getType());
         lastTransaction = impl.addVertices(step, edge, localTransactionManager, type, routeStepIndex, lastTransaction,
             createdVertices);
@@ -349,7 +351,7 @@ public class CommunicationRouter {
    *          the edge
    * @return the long
    */
-  public long evaluateTransferCost(final MapperDAGEdge edge) {
+  public double evaluateTransferCost(final MapperDAGEdge edge) {
 
     final MapperDAGVertex source = ((MapperDAGVertex) edge.getSource());
     final MapperDAGVertex dest = ((MapperDAGVertex) edge.getTarget());
@@ -359,12 +361,12 @@ public class CommunicationRouter {
 
     final long dataSize = edge.getInit().getDataSize();
 
-    long cost = 0;
+    double cost = 0;
 
     // Retrieving the route
     if ((sourceOp != null) && (destOp != null)) {
-      final Route route = this.calculator.getRoute(sourceOp, destOp);
-      cost = route.evaluateTransferCost(dataSize);
+      final SlamRoute route = this.routingTable.getRoute(sourceOp, destOp);
+      cost = RouteCostEvaluator.evaluateTransferCost(route, dataSize);
     } else {
       final String msg = "trying to evaluate a transfer between non mapped operators.";
       throw new PreesmRuntimeException(msg);
@@ -376,12 +378,12 @@ public class CommunicationRouter {
   /**
    *
    */
-  public Route getRoute(final MapperDAGEdge edge) {
+  public SlamRoute getRoute(final MapperDAGEdge edge) {
     final MapperDAGVertex source = (MapperDAGVertex) edge.getSource();
     final MapperDAGVertex target = (MapperDAGVertex) edge.getTarget();
     final ComponentInstance sourceOp = source.getEffectiveOperator();
     final ComponentInstance targetOp = target.getEffectiveOperator();
-    return calculator.getRoute(sourceOp, targetOp);
+    return routingTable.getRoute(sourceOp, targetOp);
   }
 
 }

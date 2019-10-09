@@ -1,6 +1,7 @@
 /**
  * Copyright or © or Copr. IETR/INSA - Rennes (2014 - 2019) :
  *
+ * Alexandre Honorat [alexandre.honorat@insa-rennes.fr] (2019)
  * Antoine Morvan [antoine.morvan@insa-rennes.fr] (2017 - 2019)
  * Clément Guy [clement.guy@insa-rennes.fr] (2015)
  * Julien Heulot [julien.heulot@insa-rennes.fr] (2015)
@@ -102,7 +103,6 @@ public class AddActorFromRefinementFeature extends AbstractAddFeature {
 
     // Stop if actor creation was cancelled
     if (actors == null) {
-      System.out.println("issue while creating actor");
       this.hasDoneChanges = false;
       return null;
     } else {
@@ -111,7 +111,6 @@ public class AddActorFromRefinementFeature extends AbstractAddFeature {
       // 2- Set Refinement
       final boolean validFile = setRefinement(context, actor);
       if (!validFile) {
-        System.out.println("invalid file path");
         this.hasDoneChanges = false;
         return null;
       }

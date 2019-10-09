@@ -44,6 +44,7 @@ import java.util.logging.Level;
 import org.preesm.algorithm.mapper.abc.impl.latency.LatencyAbc;
 import org.preesm.algorithm.mapper.model.MapperDAG;
 import org.preesm.algorithm.mapper.model.MapperDAGVertex;
+import org.preesm.algorithm.model.sdf.esdf.SDFInitVertex;
 import org.preesm.commons.exceptions.PreesmException;
 import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.preesm.commons.logger.PreesmLogger;
@@ -134,23 +135,10 @@ public class KwokListScheduler {
         long time = Long.MAX_VALUE;
         // Choose the operator
 
-        ComponentInstance chosenoperator = null;
-        final List<ComponentInstance> opList = archisimu.getCandidateOperators(currentvertex, true);
-        if (opList.size() == 1) {
-          chosenoperator = opList.get(0);
-        } else {
-          for (final ComponentInstance currentoperator : opList) {
-            final long test = listImplementationCost(dag, currentvertex, currentoperator, archisimu);
-            // test the earliest ready operator
-            if (test < time) {
-              chosenoperator = currentoperator;
-              time = test;
-            }
-          }
-        }
+        final ComponentInstance chosenOperator = choseOperator(dag, archisimu, currentvertex, time);
 
         // Map on the chosen operator
-        archisimu.map(currentvertex, chosenoperator, true, false);
+        archisimu.map(currentvertex, chosenOperator, true, false);
 
         final int currentVertexRank = orderlist.indexOf(currentvertex);
         if (((currentVertexRank % 100) == 0) && (fcpvertex == null) && (currentVertexRank != 0)) {
@@ -160,5 +148,65 @@ public class KwokListScheduler {
       }
     }
     return dag;
+  }
+
+  private ComponentInstance choseOperator(final MapperDAG dag, final LatencyAbc archisimu,
+      final MapperDAGVertex currentvertex, long time) {
+    final ComponentInstance endReferenceOperator = getEndReferenceOperator(currentvertex);
+
+    ComponentInstance chosenOperator = null;
+    // if operator is not overriden by init/end group constraint
+    if (endReferenceOperator != null) {
+      chosenOperator = endReferenceOperator;
+    } else {
+      final List<ComponentInstance> opList = archisimu.getCandidateOperators(currentvertex, true);
+      if (opList.size() == 1) {
+        chosenOperator = opList.get(0);
+      } else {
+        for (final ComponentInstance currentoperator : opList) {
+          final long test = listImplementationCost(dag, currentvertex, currentoperator, archisimu);
+          // test the earliest ready operator
+          if (test < time) {
+            chosenOperator = currentoperator;
+            time = test;
+          }
+        }
+      }
+    }
+    return chosenOperator;
+  }
+
+  private ComponentInstance getEndReferenceOperator(final MapperDAGVertex currentvertex) {
+    final ComponentInstance res;
+    final String value = currentvertex.getPropertyBean().getValue("kind");
+    if (value != null
+        && (MapperDAGVertex.DAG_INIT_VERTEX.equals(value) || MapperDAGVertex.DAG_END_VERTEX.equals(value))) {
+      final String endReferenceName = currentvertex.getPropertyBean().getValue(SDFInitVertex.END_REFERENCE);
+      switch (value) {
+        case MapperDAGVertex.DAG_INIT_VERTEX:
+          final MapperDAGVertex dagEndVertex = (MapperDAGVertex) currentvertex.getBase().getVertex(endReferenceName);
+          final ComponentInstance endEffectiveOperator = dagEndVertex.getEffectiveOperator();
+          if (endEffectiveOperator != null) {
+            res = endEffectiveOperator;
+          } else {
+            res = null;
+          }
+          break;
+        case MapperDAGVertex.DAG_END_VERTEX:
+          final MapperDAGVertex dagInitVertex = (MapperDAGVertex) currentvertex.getBase().getVertex(endReferenceName);
+          final ComponentInstance initEffectiveOperator = dagInitVertex.getEffectiveOperator();
+          if (initEffectiveOperator != null) {
+            res = initEffectiveOperator;
+          } else {
+            res = null;
+          }
+          break;
+        default:
+          res = null;
+      }
+    } else {
+      res = null;
+    }
+    return res;
   }
 }

@@ -52,7 +52,7 @@ import org.preesm.algorithm.mapper.model.special.TransferVertex;
 import org.preesm.algorithm.mapper.tools.CommunicationOrderChecker;
 import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.model.slam.ComponentInstance;
-import org.preesm.model.slam.route.AbstractRouteStep;
+import org.preesm.model.slam.SlamRouteStep;
 
 /**
  * A transaction that adds a send and a receive vertex in an implementation.
@@ -68,7 +68,7 @@ public class AddSendReceiveTransaction implements Transaction {
   private final MapperDAG implementation;
 
   /** Route step corresponding to this overhead. */
-  private final AbstractRouteStep step;
+  private final SlamRouteStep step;
 
   /** Original edge corresponding to this overhead. */
   private final MapperDAGEdge edge;
@@ -107,8 +107,8 @@ public class AddSendReceiveTransaction implements Transaction {
    *          the transfer cost
    */
   public AddSendReceiveTransaction(final Transaction precedingTransaction, final MapperDAGEdge edge,
-      final MapperDAG implementation, final OrderManager orderManager, final int routeIndex,
-      final AbstractRouteStep step, final long transferCost) {
+      final MapperDAG implementation, final OrderManager orderManager, final int routeIndex, final SlamRouteStep step,
+      final long transferCost) {
     super();
     this.precedingTransaction = precedingTransaction;
     this.edge = edge;
@@ -125,7 +125,7 @@ public class AddSendReceiveTransaction implements Transaction {
    * @see org.ietr.preesm.mapper.abc.transaction.Transaction#execute(java.util.List)
    */
   @Override
-  public void execute(final List<Object> resultList) {
+  public void execute(final List<MapperDAGVertex> resultList) {
 
     MapperDAGVertex currentSource = null;
     final MapperDAGVertex currentTarget = (MapperDAGVertex) this.edge.getTarget();
@@ -162,10 +162,8 @@ public class AddSendReceiveTransaction implements Transaction {
     this.sendVertex.getTiming().setCost(this.transferCost);
     this.sendVertex.setEffectiveComponent(senderOperator);
 
-    // Find insertion position
-    // Insert sendVertices after the current source, and after sendVertex(es) immediately following it. This is done to
-    // ensure that communications are inserted
-    // in increasing scheduling order.
+    // Find insertion position. Insert sendVertices after the current source, and after sendVertex(es) immediately
+    // following it. This is done to ensure that communications are inserted in increasing scheduling order.
     MapperDAGVertex insertionPosition = currentSource;
     while (this.orderManager.getNext(insertionPosition) instanceof SendVertex) {
       insertionPosition = this.orderManager.getNext(insertionPosition);
@@ -182,28 +180,30 @@ public class AddSendReceiveTransaction implements Transaction {
     this.receiveVertex.getTiming().setCost(this.transferCost);
     this.receiveVertex.setEffectiveComponent(receiverOperator);
 
-    // Place the receive just before the vertex consuming the corresponding data.
-    // (position is not definitive, cf. reorderReceive method)
+    // Place the receive just before the vertex consuming the corresponding data. (position is not definitive, cf.
+    // reorderReceive method)
     this.orderManager.insertBefore(currentTarget, this.receiveVertex);
 
-    final MapperDAGEdge newEdge1 = (MapperDAGEdge) this.implementation.addEdge(currentSource, this.sendVertex);
-    final MapperDAGEdge newEdge2 = (MapperDAGEdge) this.implementation.addEdge(this.sendVertex, this.receiveVertex);
-    final MapperDAGEdge newEdge3 = (MapperDAGEdge) this.implementation.addEdge(this.receiveVertex, currentTarget);
+    final MapperDAGEdge sourceToSendEdge = (MapperDAGEdge) this.implementation.addEdge(currentSource, this.sendVertex);
+    final MapperDAGEdge sendToReceiveEdge = (MapperDAGEdge) this.implementation.addEdge(this.sendVertex,
+        this.receiveVertex);
+    final MapperDAGEdge receiveToTargetEdge = (MapperDAGEdge) this.implementation.addEdge(this.receiveVertex,
+        currentTarget);
 
-    newEdge1.setInit(this.edge.getInit().copy());
-    newEdge2.setInit(this.edge.getInit().copy());
-    newEdge3.setInit(this.edge.getInit().copy());
+    sourceToSendEdge.setInit(this.edge.getInit().copy());
+    sendToReceiveEdge.setInit(this.edge.getInit().copy());
+    receiveToTargetEdge.setInit(this.edge.getInit().copy());
 
-    newEdge1.getTiming().setCost(0);
-    newEdge2.getTiming().setCost(0);
-    newEdge3.getTiming().setCost(0);
+    sourceToSendEdge.getTiming().setCost(0);
+    sendToReceiveEdge.getTiming().setCost(0);
+    receiveToTargetEdge.getTiming().setCost(0);
 
-    newEdge1.setAggregate(this.edge.getAggregate());
-    newEdge2.setAggregate(this.edge.getAggregate());
-    newEdge3.setAggregate(this.edge.getAggregate());
+    sourceToSendEdge.setAggregate(this.edge.getAggregate());
+    sendToReceiveEdge.setAggregate(this.edge.getAggregate());
+    receiveToTargetEdge.setAggregate(this.edge.getAggregate());
 
-    // Reorder receiveVertex if needed.
-    // This is done to ensure that send and receive operation between a pair of cores are always in the same order.
+    // Reorder receiveVertex if needed. This is done to ensure that send and receive operation between a pair of cores
+    // are always in the same order.
     reorderReceiveVertex(senderOperator, receiverOperator);
 
     if (resultList != null) {
@@ -216,9 +216,9 @@ public class AddSendReceiveTransaction implements Transaction {
    * The purpose of this method is to reschedule {@link ReceiveVertex} of the receiverOperator to comply with
    * constraints on communication primitive order enforced by the {@link CommunicationOrderChecker}. <br>
    * <br>
-   * Briefly, if their exists {@link ReceiveVertex}es scheduled after the current {@link #receiveVertex} on the
+   * Briefly, if there exists {@link ReceiveVertex}es scheduled after the current {@link #receiveVertex} on the
    * receiverOperator, (but associated to a {@link SendVertex}es scheduled before the current {@link #sendVertex} on the
-   * senderOperator), then, these {@link SendVertex} must be rescheduled before the current {@link #sendVertex}.
+   * senderOperator), then, these {@link ReceiveVertex}es must be rescheduled before the current {@link #receiveVertex}.
    *
    * @param senderOperator
    *          {@link ComponentInstance} instance on which the current {@link #sendVertex} was scheduled.

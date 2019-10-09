@@ -53,22 +53,22 @@ import org.preesm.workflow.elements.AbstractWorkflowNode;
  */
 public abstract class AbstractWorkflowNodeImplementation {
 
-  protected static final String KEY_SCENARIO           = "scenario";
-  protected static final String KEY_PI_GRAPH           = "PiMM";
-  protected static final String KEY_ARCHITECTURE       = "architecture";
-  protected static final String KEY_SDF_GRAPHS_SET     = "SDFs";
-  protected static final String KEY_SDF_GRAPH          = "SDF";
-  protected static final String KEY_SDF_DAG            = "DAG";
-  protected static final String KEY_SDF_DAG_SET        = "DAGs";
-  protected static final String KEY_SDF_ABC            = "ABC";
-  protected static final String KEY_SDF_ABC_SET        = "ABCs";
-  protected static final String KEY_MEM_EX             = "MemEx";
-  protected static final String KEY_MEM_EX_SET         = "MemExs";
-  protected static final String KEY_DAG_AND_MEM_EX_MAP = "DAGsAndMemExs";
-  protected static final String KEY_BOUND_MIN          = "BoundMin";
-  protected static final String KEY_BOUND_MAX          = "BoundMax";
-  protected static final String KEY_BOUND_MIN_SET      = "minBounds";
-  protected static final String KEY_BOUND_MAX_SET      = "maxBounds";
+  public static final String KEY_SCENARIO           = "scenario";
+  public static final String KEY_PI_GRAPH           = "PiMM";
+  public static final String KEY_ARCHITECTURE       = "architecture";
+  public static final String KEY_SDF_GRAPHS_SET     = "SDFs";
+  public static final String KEY_SDF_GRAPH          = "SDF";
+  public static final String KEY_SDF_DAG            = "DAG";
+  public static final String KEY_SDF_DAG_SET        = "DAGs";
+  public static final String KEY_SDF_ABC            = "ABC";
+  public static final String KEY_SDF_ABC_SET        = "ABCs";
+  public static final String KEY_MEM_EX             = "MemEx";
+  public static final String KEY_MEM_EX_SET         = "MemExs";
+  public static final String KEY_DAG_AND_MEM_EX_MAP = "DAGsAndMemExs";
+  public static final String KEY_BOUND_MIN          = "BoundMin";
+  public static final String KEY_BOUND_MAX          = "BoundMax";
+  public static final String KEY_BOUND_MIN_SET      = "minBounds";
+  public static final String KEY_BOUND_MAX_SET      = "maxBounds";
 
   /**
    * Id and fully qualified names of node output retrieved from the extension.

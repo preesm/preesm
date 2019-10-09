@@ -660,7 +660,6 @@ class PapiCpuID {
  }
  class PerformanceObjective{
  	double objectiveEPS
- 	double toleranceEPS
  }
 class PEPower wraps java.util.Map$Entry {
 	String key 		// The component type and the "base" power

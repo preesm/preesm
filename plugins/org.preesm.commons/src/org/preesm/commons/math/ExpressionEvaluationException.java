@@ -34,7 +34,6 @@
  */
 package org.preesm.commons.math;
 
-import org.nfunk.jep.ParseException;
 import org.preesm.commons.exceptions.PreesmRuntimeException;
 
 /**
@@ -48,7 +47,7 @@ public class ExpressionEvaluationException extends PreesmRuntimeException {
     super(msg);
   }
 
-  public ExpressionEvaluationException(final String msg, final ParseException cause) {
+  public ExpressionEvaluationException(final String msg, final Exception cause) {
     super(msg, cause);
   }
 

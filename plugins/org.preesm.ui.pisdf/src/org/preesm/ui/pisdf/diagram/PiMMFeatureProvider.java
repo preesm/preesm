@@ -1,6 +1,7 @@
 /**
  * Copyright or © or Copr. IETR/INSA - Rennes (2012 - 2019) :
  *
+ * Alexandre Honorat [alexandre.honorat@insa-rennes.fr] (2019)
  * Antoine Morvan [antoine.morvan@insa-rennes.fr] (2017 - 2019)
  * Clément Guy [clement.guy@insa-rennes.fr] (2014 - 2015)
  * Florian Arrestier [florian.arrestier@insa-rennes.fr] (2018)
@@ -154,6 +155,7 @@ import org.preesm.ui.pisdf.features.LayoutPortFeature;
 import org.preesm.ui.pisdf.features.MoveAbstractActorFeature;
 import org.preesm.ui.pisdf.features.MoveDownActorPortFeature;
 import org.preesm.ui.pisdf.features.MoveUpActorPortFeature;
+import org.preesm.ui.pisdf.features.MovesIfOnlyOneFeature;
 import org.preesm.ui.pisdf.features.OpenMemoryScriptFeature;
 import org.preesm.ui.pisdf.features.OpenRefinementFeature;
 import org.preesm.ui.pisdf.features.PasteFeature;
@@ -609,11 +611,16 @@ public class PiMMFeatureProvider extends DefaultFeatureProvider {
     if (!isEditable()) {
       return null;
     }
+
     final PictogramElement pe = context.getPictogramElement();
     final Object bo = getBusinessObjectForPictogramElement(pe);
-    if (bo instanceof AbstractActor) {
+    if (bo instanceof Delay || bo instanceof Fifo) {
+      // we do nothing since they will be moved by actors move
+      return new MovesIfOnlyOneFeature(this);
+    } else if (bo instanceof AbstractActor) {
       return new MoveAbstractActorFeature(this);
     }
+
     return super.getMoveShapeFeature(context);
   }
 

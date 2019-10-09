@@ -57,6 +57,7 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.emf.common.util.ECollections;
 import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.model.pisdf.AbstractActor;
+import org.preesm.model.pisdf.Actor;
 import org.preesm.model.pisdf.Parameter;
 import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.pisdf.serialize.PiParser;
@@ -460,7 +461,7 @@ public class ScenarioParser {
   }
 
   /**
-   * Retrieves a constraint group.
+   * Retrieves a constraint group (only for regular actors).
    *
    * @param cstGroupElt
    *          the cst group elt
@@ -480,7 +481,7 @@ public class ScenarioParser {
           final String name = elt.getAttribute("name");
           if (type.equals("task")) {
             final AbstractActor actorFromPath = getActorFromPath(name);
-            if (actorFromPath != null) {
+            if (actorFromPath instanceof Actor || actorFromPath instanceof PiGraph) {
               actors.add(actorFromPath);
             }
           } else if (type.equals("operator") && this.scenario.getDesign().containsComponentInstance(name)) {
@@ -945,12 +946,6 @@ public class ScenarioParser {
       String objectiveEPS = node.getNodeValue();
       final double objectiveEPSValue = Double.parseDouble(objectiveEPS);
       this.scenario.getEnergyConfig().getPerformanceObjective().setObjectiveEPS(objectiveEPSValue);
-    }
-    node = performanceObjectiveElt.getAttributeNode("toleranceEPS");
-    if (node != null) {
-      String toleranceEPS = node.getNodeValue();
-      final double toleranceEPSValue = Double.parseDouble(toleranceEPS);
-      this.scenario.getEnergyConfig().getPerformanceObjective().setToleranceEPS(toleranceEPSValue);
     }
   }
 

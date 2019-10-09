@@ -714,7 +714,6 @@ public class PiMMSRVerticesLinker {
         end.getDataInputPorts().add(PiMMUserFactory.instance.createDataInputPort());
         end.getDataInputPort().setName(this.sourcePort.getName());
         end.getDataInputPort().setExpression(getterRate);
-        end.setLevel(((EndActor) getterActor).getLevel());
         final AbstractActor initReference = ((EndActor) getterActor).getInitReference();
         final AbstractVertex lookupVertex = resultGraph.lookupVertex(this.graphPrefixe + initReference.getName());
         if (lookupVertex instanceof AbstractActor) {

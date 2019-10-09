@@ -3,7 +3,7 @@ Bundle-ManifestVersion: 2
 Bundle-Name: %pluginName
 Automatic-Module-Name: org.preesm.algorithm
 Bundle-SymbolicName: org.preesm.algorithm;singleton:=true
-Bundle-Version: 3.17.0
+Bundle-Version: 3.18.0
 Bundle-Vendor: %providerName
 Bundle-Localization: plugin
 Require-Bundle: org.eclipse.core.resources,
@@ -37,7 +37,8 @@ Require-Bundle: org.eclipse.core.resources,
  org.preesm.workflow;visibility:=reexport,
  org.preesm.model.scenario;visibility:=reexport,
  org.preesm.commons;visibility:=reexport,
- org.eclipse.emf.ecore.xcore;bundle-version="1.9.0"
+ org.eclipse.emf.ecore.xcore;bundle-version="1.9.0",
+ org.apache.commons.collections4;bundle-version="4.1.0"
 Bundle-ClassPath: .
 Export-Package: org.preesm.algorithm,
  org.preesm.algorithm.clustering,
@@ -58,6 +59,7 @@ Export-Package: org.preesm.algorithm,
  org.preesm.algorithm.mapper.abc.taskscheduling,
  org.preesm.algorithm.mapper.abc.transaction,
  org.preesm.algorithm.mapper.algo,
+ org.preesm.algorithm.mapper.energyawareness,
  org.preesm.algorithm.mapper.exporter,
  org.preesm.algorithm.mapper.gantt,
  org.preesm.algorithm.mapper.graphtransfo,
@@ -84,7 +86,6 @@ Export-Package: org.preesm.algorithm,
  org.preesm.algorithm.memalloc.model.util,
  org.preesm.algorithm.memory.allocation,
  org.preesm.algorithm.memory.bounds,
- org.preesm.algorithm.memory.distributed,
  org.preesm.algorithm.memory.exclusiongraph,
  org.preesm.algorithm.memory.script,
  org.preesm.algorithm.moa.activity,
@@ -111,6 +112,7 @@ Export-Package: org.preesm.algorithm,
  org.preesm.algorithm.synthesis.evaluation.latency,
  org.preesm.algorithm.synthesis.memalloc,
  org.preesm.algorithm.synthesis.schedule,
+ org.preesm.algorithm.synthesis.schedule.transform,
  org.preesm.algorithm.throughput,
  org.preesm.algorithm.throughput.tools,
  org.preesm.algorithm.transforms

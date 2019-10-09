@@ -1,6 +1,7 @@
 /**
  * Copyright or © or Copr. IETR/INSA - Rennes (2014 - 2019) :
  *
+ * Alexandre Honorat [alexandre.honorat@insa-rennes.fr] (2019)
  * Antoine Morvan [antoine.morvan@insa-rennes.fr] (2017 - 2019)
  * Clément Guy [clement.guy@insa-rennes.fr] (2014 - 2015)
  * Karol Desnos [karol.desnos@insa-rennes.fr] (2014)
@@ -36,6 +37,7 @@
  */
 package org.preesm.ui.pisdf.properties;
 
+import java.util.List;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.transaction.RecordingCommand;
 import org.eclipse.emf.transaction.TransactionalEditingDomain;
@@ -217,9 +219,12 @@ public class FifoPropertiesSection extends DataPortPropertiesUpdater implements 
         if (bo instanceof Fifo) {
           final DataPort port = ((Fifo) bo).getSourcePort();
           updateDataPortProperties(port, FifoPropertiesSection.this.txtSourcePortExpression);
-          final PictogramElement pict = Graphiti.getLinkService().getPictogramElements(getDiagram(), port).get(0);
-          getDiagramTypeProvider().getDiagramBehavior()
-              .refreshRenderingDecorators((PictogramElement) pict.eContainer());
+          final List<PictogramElement> picts = Graphiti.getLinkService().getPictogramElements(getDiagram(), port);
+          // at most one port, none if delay actor
+          if (!picts.isEmpty()) {
+            getDiagramTypeProvider().getDiagramBehavior()
+                .refreshRenderingDecorators((PictogramElement) picts.get(0).eContainer());
+          }
         }
       }
       refresh();
@@ -236,9 +241,12 @@ public class FifoPropertiesSection extends DataPortPropertiesUpdater implements 
         if (bo instanceof Fifo) {
           final DataPort port = ((Fifo) bo).getTargetPort();
           updateDataPortProperties(port, FifoPropertiesSection.this.txtTargetPortExpression);
-          final PictogramElement pict = Graphiti.getLinkService().getPictogramElements(getDiagram(), port).get(0);
-          getDiagramTypeProvider().getDiagramBehavior()
-              .refreshRenderingDecorators((PictogramElement) pict.eContainer());
+          final List<PictogramElement> picts = Graphiti.getLinkService().getPictogramElements(getDiagram(), port);
+          // at most one port, none if delay actor
+          if (!picts.isEmpty()) {
+            getDiagramTypeProvider().getDiagramBehavior()
+                .refreshRenderingDecorators((PictogramElement) picts.get(0).eContainer());
+          }
         }
       }
 

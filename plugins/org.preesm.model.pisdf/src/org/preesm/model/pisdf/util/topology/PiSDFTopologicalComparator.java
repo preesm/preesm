@@ -35,8 +35,6 @@
 package org.preesm.model.pisdf.util.topology;
 
 import java.util.Comparator;
-import java.util.LinkedHashSet;
-import java.util.Set;
 import org.preesm.model.pisdf.AbstractActor;
 
 /**
@@ -49,22 +47,17 @@ import org.preesm.model.pisdf.AbstractActor;
  */
 class PiSDFTopologicalComparator implements Comparator<AbstractActor> {
 
-  private final Set<AbstractActor> visitedElements = new LinkedHashSet<>();
-
   @Override
   public int compare(final AbstractActor o1, final AbstractActor o2) {
     int res = 0;
-    visitedElements.clear();
     if (o1.equals(o2)) {
       res = 0;
     } else {
       final boolean predecessor = PiSDFTopologyHelper.isPredecessor(o1, o2);
-      visitedElements.clear();
       if (predecessor) {
         res = 1;
       } else {
         final boolean predecessor2 = PiSDFTopologyHelper.isPredecessor(o2, o1);
-        visitedElements.clear();
         if (predecessor2) {
           res = -1;
         } else {

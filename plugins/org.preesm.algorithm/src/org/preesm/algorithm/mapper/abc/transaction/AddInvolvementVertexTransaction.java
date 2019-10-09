@@ -49,7 +49,7 @@ import org.preesm.algorithm.mapper.model.special.PrecedenceEdge;
 import org.preesm.algorithm.mapper.model.special.PrecedenceEdgeAdder;
 import org.preesm.algorithm.mapper.model.special.TransferVertex;
 import org.preesm.commons.logger.PreesmLogger;
-import org.preesm.model.slam.route.AbstractRouteStep;
+import org.preesm.model.slam.SlamRouteStep;
 
 /**
  * Transaction executing the addition of an involvement vertex.
@@ -70,7 +70,7 @@ public class AddInvolvementVertexTransaction implements Transaction {
   private MapperDAG implementation = null;
 
   /** Route step corresponding to this involvement. */
-  private AbstractRouteStep step = null;
+  private SlamRouteStep step = null;
 
   /** time of this involvement. */
   private long involvementTime = 0;
@@ -102,7 +102,7 @@ public class AddInvolvementVertexTransaction implements Transaction {
    *          the order manager
    */
   public AddInvolvementVertexTransaction(final boolean isSender, final MapperDAGEdge edge,
-      final MapperDAG implementation, final AbstractRouteStep step, final long involvementTime,
+      final MapperDAG implementation, final SlamRouteStep step, final long involvementTime,
       final OrderManager orderManager) {
     super();
     this.isSender = isSender;
@@ -114,7 +114,7 @@ public class AddInvolvementVertexTransaction implements Transaction {
   }
 
   @Override
-  public void execute(final List<Object> resultList) {
+  public void execute(final List<MapperDAGVertex> resultList) {
 
     final MapperDAGVertex currentSource = (MapperDAGVertex) this.edge.getSource();
     final MapperDAGVertex currentTarget = (MapperDAGVertex) this.edge.getTarget();

@@ -46,6 +46,7 @@ import org.preesm.algorithm.schedule.model.ActorSchedule;
 import org.preesm.algorithm.schedule.model.HierarchicalSchedule;
 import org.preesm.algorithm.schedule.model.Schedule;
 import org.preesm.algorithm.schedule.model.ScheduleFactory;
+import org.preesm.algorithm.synthesis.schedule.ScheduleOrderManager;
 import org.preesm.algorithm.synthesis.schedule.transform.IScheduleTransform;
 import org.preesm.algorithm.synthesis.schedule.transform.ScheduleDataParallelismExhibiter;
 import org.preesm.algorithm.synthesis.schedule.transform.ScheduleFlattener;
@@ -125,10 +126,10 @@ public class ClusteringBuilder {
    */
   public ClusteringBuilder(final PiGraph graph, final Scenario scenario, final String algorithm, final long seed) {
     this.scheduleMapping = new LinkedHashMap<>();
+    this.seed = seed;
     this.clusteringAlgorithm = clusteringAlgorithmFactory(algorithm);
     this.pigraph = graph;
     this.scenario = scenario;
-    this.seed = seed;
     this.repetitionVector = null;
   }
 
@@ -313,7 +314,8 @@ public class ClusteringBuilder {
         if (child instanceof HierarchicalSchedule) {
           childActors.add(((HierarchicalSchedule) processedChild).getAttachedActor());
         } else {
-          childActors.addAll(processedChild.getActors());
+          final List<AbstractActor> actors = new ScheduleOrderManager(processedChild).buildNonTopologicalOrderedList();
+          childActors.addAll(actors);
         }
       }
 
@@ -385,12 +387,7 @@ public class ClusteringBuilder {
       schedule.getScheduleTree().add(subSched);
     } else {
       ActorSchedule actorSchedule = null;
-      // If actor is delayed, build a sequential actor schedule, otherwise build a parallel actor schedule
-      if (ClusteringHelper.isActorDelayed(actor)) {
-        actorSchedule = ScheduleFactory.eINSTANCE.createSequentialActorSchedule();
-      } else {
-        actorSchedule = ScheduleFactory.eINSTANCE.createParallelActorSchedule();
-      }
+      actorSchedule = ScheduleFactory.eINSTANCE.createSequentialActorSchedule();
       actorSchedule.setRepetition(repetition);
       // Register in the schedule with original actor to be able to clusterize the non-copy graph
       actorSchedule.getActorList().add(PreesmCopyTracker.getSource(actor));

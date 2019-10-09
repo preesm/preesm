@@ -34,8 +34,6 @@
  */
 package org.preesm.algorithm.model;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Observable;
 import java.util.Observer;
 
@@ -63,30 +61,11 @@ public abstract class AbstractEdge<G, V extends AbstractVertex> extends Observab
   /** Property name for property target_port. */
   private static final String TARGET_PORT = "target_port";
 
-  /** The public properties. */
-  protected static final List<String> PUBLIC_PROPERTIES = new ArrayList<String>() {
-    /**
-     *
-     */
-    private static final long serialVersionUID = -192484208835323176L;
-
-  };
-
   /**
    * Creates a new AbstractEdge.
    */
   public AbstractEdge() {
     this.property = new PropertyBean();
-  }
-
-  /*
-   * (non-Javadoc)
-   *
-   * @see org.ietr.dftools.algorithm.model.PropertySource#getPublicProperties()
-   */
-  @Override
-  public List<String> getPublicProperties() {
-    return AbstractEdge.PUBLIC_PROPERTIES;
   }
 
   /**

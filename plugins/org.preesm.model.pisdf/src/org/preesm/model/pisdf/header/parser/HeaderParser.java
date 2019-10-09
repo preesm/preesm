@@ -38,6 +38,8 @@
 package org.preesm.model.pisdf.header.parser;
 
 import java.io.IOException;
+import java.net.URI;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -110,7 +112,10 @@ public class HeaderParser {
       try {
 
         // Read the file content
-        String fileContent = URLResolver.readURL(file.getLocationURI().toURL().toString());
+        final URI locationURI = file.getLocationURI();
+        final URL url = locationURI.toURL();
+        final String string = url.toString();
+        String fileContent = URLResolver.readURL(string);
 
         // Filter unwanted content
         fileContent = HeaderParser.filterHeaderFileContent(fileContent);
@@ -121,7 +126,7 @@ public class HeaderParser {
         // Create the FunctionPrototypes
         result = HeaderParser.createFunctionPrototypes(prototypes);
       } catch (IOException e) {
-        PreesmLogger.getLogger().log(Level.INFO, "Could not parse header '" + file + "'.");
+        PreesmLogger.getLogger().log(Level.INFO, "Could not parse header '" + file + "'.", e);
       }
     }
     return result;

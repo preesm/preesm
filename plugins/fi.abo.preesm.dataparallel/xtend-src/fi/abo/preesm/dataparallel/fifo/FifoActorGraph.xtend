@@ -60,7 +60,7 @@ class FifoActorGraph extends SDFGraph {
 
 	new (){
 		super()
-		this.propertyBean.setValue(AbstractGraph.MODEL, MODEL)
+		this.propertyBean.setValue(AbstractGraph.KIND_PROPERTY_LITERAL, MODEL)
 	}
 
 	/**

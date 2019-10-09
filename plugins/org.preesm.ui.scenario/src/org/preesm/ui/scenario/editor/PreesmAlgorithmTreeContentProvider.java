@@ -1,6 +1,7 @@
 /**
  * Copyright or © or Copr. IETR/INSA - Rennes (2011 - 2019) :
  *
+ * Alexandre Honorat [alexandre.honorat@insa-rennes.fr] (2019)
  * Antoine Morvan [antoine.morvan@insa-rennes.fr] (2017 - 2019)
  * Clément Guy [clement.guy@insa-rennes.fr] (2014)
  * Maxime Pelcat [maxime.pelcat@insa-rennes.fr] (2011 - 2012)
@@ -160,7 +161,9 @@ public class PreesmAlgorithmTreeContentProvider implements ITreeContentProvider 
   public Set<AbstractActor> filterPISDFChildren(final EList<AbstractActor> vertices) {
     final Set<AbstractActor> result = new LinkedHashSet<>();
     for (final AbstractActor actor : vertices) {
-      result.add(actor);
+      if (actor instanceof Actor || actor instanceof PiGraph) {
+        result.add(actor);
+      }
     }
     return result;
   }

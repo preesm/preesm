@@ -36,6 +36,7 @@
  */
 package org.preesm.algorithm.memory.bounds;
 
+import com.google.common.primitives.Ints;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
@@ -61,7 +62,7 @@ import org.preesm.algorithm.memory.exclusiongraph.IWeightedVertex;
  * @param <E>
  *          The edges class
  */
-public class OstergardSolver<V extends IWeightedVertex<Long> & Comparable<V>, E extends DefaultEdge>
+public class OstergardSolver<V extends IWeightedVertex<Long>, E extends DefaultEdge>
     extends AbstractMaximumWeightCliqueSolver<V, E> {
   /**
    * cost corresponds to the c(i) function in
@@ -126,15 +127,15 @@ public class OstergardSolver<V extends IWeightedVertex<Long> & Comparable<V>, E 
    */
   private OstergardSolver(final SimpleGraph<V, E> graph, final boolean speedUp) {
     super(graph);
-    this.orderedVertexSet = new ArrayList<>(this.numberVertices);
+    this.orderedVertexSet = new ArrayList<>(graph.vertexSet().size());
     this.workingSet = new ArrayList<>();
 
     // Initialize cost Array with 0 values. An extra 0 is added to enable
     // c(i+1) for all i=0..n-1
-    this.cost = new ArrayList<>(Collections.nCopies(this.numberVertices + 1, 0L));
+    this.cost = new ArrayList<>(Collections.nCopies(graph.vertexSet().size() + 1, 0L));
 
     // Initialize dcost Array with 0 values
-    this.dcost = new ArrayList<>(Collections.nCopies(this.numberVertices, 0L));
+    this.dcost = new ArrayList<>(Collections.nCopies(graph.vertexSet().size(), 0L));
     this.speedup = speedUp;
 
     // The constructor might be filled with graph checks in the future.
@@ -173,7 +174,7 @@ public class OstergardSolver<V extends IWeightedVertex<Long> & Comparable<V>, E 
    */
   private void orderVertexSet() {
     // Retrieve the vertices of the graph
-    final List<V> unorderedSet = new ArrayList<>(this.numberVertices);
+    final List<V> unorderedSet = new ArrayList<>(graph.vertexSet().size());
     unorderedSet.addAll(this.graph.vertexSet());
 
     // Make a local shallow copy of the graph to work on
@@ -181,7 +182,7 @@ public class OstergardSolver<V extends IWeightedVertex<Long> & Comparable<V>, E 
     final SimpleGraph<V, E> graphCopy = (SimpleGraph<V, E>) this.graph.clone();
 
     // First, the list is ordered in the ascending order of weights
-    Collections.sort(unorderedSet);
+    Collections.sort(unorderedSet, (v1, v2) -> Ints.saturatedCast(v1.getWeight() - v2.getWeight()));
 
     // Vertices are added one by one to the ordered vertex set
     while (!unorderedSet.isEmpty()) {
@@ -235,11 +236,6 @@ public class OstergardSolver<V extends IWeightedVertex<Long> & Comparable<V>, E 
     }
   }
 
-  /*
-   * (non-Javadoc)
-   *
-   * @see org.ietr.preesm.memory.bounds.AbstractMaximumWeightCliqueSolver#solve()
-   */
   @Override
   public void solve() {
     orderVertexSet();
@@ -270,7 +266,7 @@ public class OstergardSolver<V extends IWeightedVertex<Long> & Comparable<V>, E 
         // C(i+1) + w(vi), with i the current iteration from
         // wnew, then quit this iteration
         final int iplusone = 1 + this.orderedVertexSet.indexOf(this.workingSet.get(0));
-        if (iplusone < this.numberVertices) {
+        if (iplusone < graph.vertexSet().size()) {
           this.found = (this.max == (this.workingSet.get(0).getWeight() + this.cost.get(iplusone)));
         }
       }
@@ -324,7 +320,6 @@ public class OstergardSolver<V extends IWeightedVertex<Long> & Comparable<V>, E 
         return;
       }
     }
-    return;
   }
 
   /**
@@ -343,7 +338,7 @@ public class OstergardSolver<V extends IWeightedVertex<Long> & Comparable<V>, E 
       // Compute D(i) with j = n-1 .. ceil((n)/2).
       // As the order of the list was reversed, this corresponds to the
       // calculation of D(i) for i=0..floor((n-1)/2)
-      for (int j = this.numberVertices - 1; j >= Math.ceil(this.numberVertices / 2.0); j--) {
+      for (int j = graph.vertexSet().size() - 1; j >= Math.ceil(graph.vertexSet().size() / 2.0); j--) {
 
         // wclique(S'i inter N(vi), w(i))
         final List<V> vertexSet = getSi(j); // Get S'i
@@ -366,10 +361,10 @@ public class OstergardSolver<V extends IWeightedVertex<Long> & Comparable<V>, E 
         this.cost.set(j, this.max);
 
         // D[i] := max
-        this.dcost.set(this.numberVertices - j - 1, this.max);
+        this.dcost.set(graph.vertexSet().size() - j - 1, this.max);
       }
       // Clean-up cost
-      this.cost = new ArrayList<>(Collections.nCopies(this.numberVertices + 1, 0L));
+      this.cost = new ArrayList<>(Collections.nCopies(graph.vertexSet().size() + 1, 0L));
 
       // Re-reverse the list order for the algo
       Collections.reverse(this.orderedVertexSet);
@@ -381,7 +376,7 @@ public class OstergardSolver<V extends IWeightedVertex<Long> & Comparable<V>, E 
     this.max = this.min;
 
     // for i:=n downto 1 do
-    for (int i = this.numberVertices - 1; i >= 0; i--) {
+    for (int i = graph.vertexSet().size() - 1; i >= 0; i--) {
 
       // if D(i) was not calculated for this i or
       // D(i) + C(i+1) > max, compute the wclique

@@ -47,31 +47,32 @@ import org.preesm.model.pisdf.PiGraph;
  * @author dgageot
  *
  *         Exhibit data parallelism in given schedule tree
- * 
+ *
  */
 public class ScheduleDataParallelismExhibiter implements IScheduleTransform {
 
   @Override
-  public Schedule performTransform(Schedule schedule) {
+  public Schedule performTransform(final Schedule schedule) {
 
     if (schedule instanceof SequentialHiearchicalSchedule) {
 
       // if data parallelism can be exhibited
-      PiGraph graph = (PiGraph) ((SequentialHiearchicalSchedule) schedule).getAttachedActor();
-      boolean sequentialPersistenceInside = !graph.getFifosWithDelay().isEmpty();
+      final PiGraph graph = (PiGraph) ((SequentialHiearchicalSchedule) schedule).getAttachedActor();
+      final boolean sequentialPersistenceInside = !graph.getFifosWithDelay().isEmpty();
       if ((schedule.getRepetition() > 1) && !sequentialPersistenceInside) {
-        ParallelHiearchicalSchedule parallelSchedule = ScheduleFactory.eINSTANCE.createParallelHiearchicalSchedule();
+        final ParallelHiearchicalSchedule parallelSchedule = ScheduleFactory.eINSTANCE
+            .createParallelHiearchicalSchedule();
         parallelSchedule.setRepetition(1);
         parallelSchedule.getChildren().add(schedule);
         return parallelSchedule;
       }
 
       // Explore childrens
-      List<Schedule> childSchedules = new LinkedList<>();
+      final List<Schedule> childSchedules = new LinkedList<>();
       childSchedules.addAll(schedule.getChildren());
       // Clear list of children schedule
       schedule.getChildren().clear();
-      for (Schedule child : childSchedules) {
+      for (final Schedule child : childSchedules) {
         schedule.getChildren().add(performTransform(child));
       }
     }

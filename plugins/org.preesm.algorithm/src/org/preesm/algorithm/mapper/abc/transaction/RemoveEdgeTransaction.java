@@ -38,6 +38,7 @@ package org.preesm.algorithm.mapper.abc.transaction;
 import java.util.List;
 import org.preesm.algorithm.mapper.model.MapperDAG;
 import org.preesm.algorithm.mapper.model.MapperDAGEdge;
+import org.preesm.algorithm.mapper.model.MapperDAGVertex;
 
 /**
  * A transaction that removes one edge in an implementation.
@@ -64,7 +65,7 @@ public class RemoveEdgeTransaction implements Transaction {
   }
 
   @Override
-  public void execute(final List<Object> resultList) {
+  public void execute(final List<MapperDAGVertex> resultList) {
     this.implementation.removeEdge(this.edge);
   }
 

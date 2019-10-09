@@ -135,6 +135,7 @@ import org.preesm.codegen.model.Variable;
 import org.preesm.codegen.model.clustering.CodegenClusterModelGeneratorSwitch;
 import org.preesm.codegen.model.clustering.SrDAGOutsideFetcher;
 import org.preesm.codegen.model.util.CodegenModelUserFactory;
+import org.preesm.codegen.model.util.VariableSorter;
 import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.commons.model.PreesmCopyTracker;
@@ -147,7 +148,7 @@ import org.preesm.model.scenario.Scenario;
 import org.preesm.model.slam.Component;
 import org.preesm.model.slam.ComponentInstance;
 import org.preesm.model.slam.Design;
-import org.preesm.model.slam.route.MessageRouteStep;
+import org.preesm.model.slam.SlamMessageRouteStep;
 
 /**
  * The objective of this class is to generate an intermediate model that will be used to print the generated code. <br>
@@ -431,17 +432,15 @@ public class CodegenModelGenerator extends AbstractCodegenModelGenerator {
     scheduledDAGIterator.forEachRemaining(vert -> {
 
       // 1.0 - Identify the core used.
-      ComponentInstance operator = null;
-      CoreBlock operatorBlock = null;
       // This call can not fail as checks were already performed in
       // the constructor
-      operator = vert.getPropertyBean().getValue(ImplementationPropertyNames.Vertex_Operator);
+      ComponentInstance operator = vert.getPropertyBean().getValue(ImplementationPropertyNames.Vertex_Operator);
       // If this is the first time this operator is encountered,
       // Create a Block and store it.
       if (!this.coreBlocks.containsKey(operator)) {
         throw new PreesmRuntimeException();
       }
-      operatorBlock = this.coreBlocks.get(operator);
+      CoreBlock operatorBlock = this.coreBlocks.get(operator);
       // 1.1 - Construct the "loop" of each core.
       final String vertexType = vert.getPropertyBean().getValue(ImplementationPropertyNames.Vertex_vertexType)
           .toString();
@@ -780,85 +779,59 @@ public class CodegenModelGenerator extends AbstractCodegenModelGenerator {
       final String memoryBank = entry.getKey();
       final Buffer mainBuffer = entry.getValue();
 
-      // Identify the corresponding operator block.
-      // (also find out if the Buffer is local (i.e. not shared between
-      // several CoreBlock)
-      CoreBlock correspondingOperatorBlock = null;
-      final boolean isLocal;
-      final String correspondingOperatorID;
+      generateBufferDefinition(memoryBank, mainBuffer);
+    }
+  }
 
-      if (memoryBank.equals("Shared")) {
-        // If the memory bank is shared, let the main operator
-        // declare the Buffer.
-        correspondingOperatorID = this.scenario.getSimulationInfo().getMainOperator().getInstanceName();
-        isLocal = false;
+  private void generateBufferDefinition(final String memoryBank, final Buffer mainBuffer) {
+    // Identify the corresponding operator block.
+    // (also find out if the Buffer is local (i.e. not shared between
+    // several CoreBlock)
+    CoreBlock correspondingOperatorBlock = null;
+    final boolean isLocal;
+    final String correspondingOperatorID;
 
-        // Check that the main operator block exists.
-        CoreBlock mainOperatorBlock = null;
-        for (final Entry<ComponentInstance, CoreBlock> componentEntry : this.coreBlocks.entrySet()) {
-          if (componentEntry.getKey().getInstanceName().equals(correspondingOperatorID)) {
-            mainOperatorBlock = componentEntry.getValue();
-          }
-        }
+    if (memoryBank.equals("Shared")) {
+      // If the memory bank is shared, let the main operator
+      // declare the Buffer.
+      correspondingOperatorID = this.scenario.getSimulationInfo().getMainOperator().getInstanceName();
+      isLocal = false;
 
-        // If the main operator does not exist
-        if (mainOperatorBlock == null) {
-          // Create it
-          final ComponentInstance componentInstance = this.archi.getComponentInstance(correspondingOperatorID);
-          mainOperatorBlock = CodegenModelUserFactory.eINSTANCE.createCoreBlock(componentInstance);
-          this.coreBlocks.put(componentInstance, mainOperatorBlock);
-        }
-
-      } else {
-        // else, the operator corresponding to the memory bank will
-        // do the work
-        correspondingOperatorID = memoryBank;
-        isLocal = true;
-      }
-
-      // Find the block
+      // Check that the main operator block exists.
+      CoreBlock mainOperatorBlock = null;
       for (final Entry<ComponentInstance, CoreBlock> componentEntry : this.coreBlocks.entrySet()) {
         if (componentEntry.getKey().getInstanceName().equals(correspondingOperatorID)) {
-          correspondingOperatorBlock = componentEntry.getValue();
+          mainOperatorBlock = componentEntry.getValue();
         }
       }
-      // Recursively set the creator for the current Buffer and all its
-      // subBuffer
-      recursiveSetBufferCreator(mainBuffer, correspondingOperatorBlock, isLocal);
 
-      if (correspondingOperatorBlock != null) {
-        final EList<Variable> definitions = correspondingOperatorBlock.getDefinitions();
-        ECollections.sort(definitions, (o1, o2) -> {
-          if ((o1 instanceof Buffer) && (o2 instanceof Buffer)) {
-            int sublevelO1 = 0;
-            if (o1 instanceof SubBuffer) {
-              Buffer b1 = (Buffer) o1;
-              while (b1 instanceof SubBuffer) {
-                sublevelO1++;
-                b1 = ((SubBuffer) b1).getContainer();
-              }
-            }
-
-            int sublevelO2 = 0;
-            if (o2 instanceof SubBuffer) {
-              Buffer b2 = (Buffer) o2;
-              while (b2 instanceof SubBuffer) {
-                sublevelO2++;
-                b2 = ((SubBuffer) b2).getContainer();
-              }
-            }
-
-            return sublevelO1 - sublevelO2;
-          }
-          if (o1 instanceof Buffer) {
-            return 1;
-          }
-          if (o2 instanceof Buffer) {
-            return -1;
-          }
-          return 0;
-        });
+      // If the main operator does not exist
+      if (mainOperatorBlock == null) {
+        // Create it
+        final ComponentInstance componentInstance = this.archi.getComponentInstance(correspondingOperatorID);
+        mainOperatorBlock = CodegenModelUserFactory.eINSTANCE.createCoreBlock(componentInstance);
+        this.coreBlocks.put(componentInstance, mainOperatorBlock);
       }
+    } else {
+      // else, the operator corresponding to the memory bank will
+      // do the work
+      correspondingOperatorID = memoryBank;
+      isLocal = true;
+    }
+
+    // Find the block
+    for (final Entry<ComponentInstance, CoreBlock> componentEntry : this.coreBlocks.entrySet()) {
+      if (componentEntry.getKey().getInstanceName().equals(correspondingOperatorID)) {
+        correspondingOperatorBlock = componentEntry.getValue();
+      }
+    }
+    // Recursively set the creator for the current Buffer and all its
+    // subBuffer
+    recursiveSetBufferCreator(mainBuffer, correspondingOperatorBlock, isLocal);
+
+    if (correspondingOperatorBlock != null) {
+      final EList<Variable> definitions = correspondingOperatorBlock.getDefinitions();
+      ECollections.sort(definitions, new VariableSorter());
     }
   }
 
@@ -987,21 +960,23 @@ public class CodegenModelGenerator extends AbstractCodegenModelGenerator {
         final SubBuffer fifoBuffer = CodegenModelUserFactory.eINSTANCE.createSubBuffer();
 
         // Old Naming (too long)
-        final String comment = fifoAlloc.getKey().getSource() + " > " + fifoAlloc.getKey().getSink();
+        final MemoryExclusionVertex fifoAllocKey = fifoAlloc.getKey();
+        final String source = fifoAllocKey.getSource();
+        final String sink = fifoAllocKey.getSink();
+        final String comment = source + " > " + sink;
         fifoBuffer.setComment(comment);
 
-        String name = fifoAlloc.getKey().getSource() + "__" + fifoAlloc.getKey().getSink();
+        String name = source + "__" + sink;
         name = generateUniqueBufferName(name);
         fifoBuffer.setName(name);
         fifoBuffer.reaffectContainer(mainBuffer);
         fifoBuffer.setOffset(fifoAlloc.getValue());
         fifoBuffer.setType("char");
-        fifoBuffer.setSize(fifoAlloc.getKey().getWeight());
+        fifoBuffer.setSize(fifoAllocKey.getWeight());
 
         // Get Init vertex
-        final DAGVertex dagEndVertex = this.algo
-            .getVertex(fifoAlloc.getKey().getSource().substring(("FIFO_Head_").length()));
-        final DAGVertex dagInitVertex = this.algo.getVertex(fifoAlloc.getKey().getSink());
+        final DAGVertex dagEndVertex = this.algo.getVertex(source.substring(("FIFO_Head_").length()));
+        final DAGVertex dagInitVertex = this.algo.getVertex(sink);
 
         final Pair<DAGVertex, DAGVertex> key = new Pair<>(dagEndVertex, dagInitVertex);
         Pair<Buffer, Buffer> value = this.dagFifoBuffers.get(key);
@@ -1009,7 +984,7 @@ public class CodegenModelGenerator extends AbstractCodegenModelGenerator {
           value = new Pair<>(null, null);
           this.dagFifoBuffers.put(key, value);
         }
-        if (fifoAlloc.getKey().getSource().startsWith("FIFO_Head_")) {
+        if (source.startsWith("FIFO_Head_")) {
           this.dagFifoBuffers.put(key, new Pair<Buffer, Buffer>(fifoBuffer, value.getValue()));
         } else {
           this.dagFifoBuffers.put(key, new Pair<Buffer, Buffer>(value.getKey(), fifoBuffer));
@@ -1376,7 +1351,7 @@ public class CodegenModelGenerator extends AbstractCodegenModelGenerator {
     final Delimiter delimiter = (direction.equals(VertexType.TYPE_SEND)) ? Delimiter.START : Delimiter.END;
     newComm.setDirection(dir);
     newComm.setDelimiter(delimiter);
-    final MessageRouteStep routeStep = dagVertex.getPropertyBean()
+    final SlamMessageRouteStep routeStep = dagVertex.getPropertyBean()
         .getValue(ImplementationPropertyNames.SendReceive_routeStep);
     for (final ComponentInstance comp : routeStep.getNodes()) {
       final CommunicationNode comNode = CodegenModelUserFactory.eINSTANCE.createCommunicationNode();
@@ -1441,10 +1416,6 @@ public class CodegenModelGenerator extends AbstractCodegenModelGenerator {
 
     // No semaphore here, semaphore are only for SS->RE and RE->SR
 
-    final Integer gid = dagVertex.getPropertyBean().getValue("SYNC_GROUP");
-    if (gid != null) {
-      newComm.setComment("SyncComGroup = " + gid);
-    }
     // Check if this is a redundant communication
     final Boolean b = dagVertex.getPropertyBean().getValue("Redundant");
     if (b != null && b.equals(Boolean.valueOf(true))) {
@@ -1475,7 +1446,7 @@ public class CodegenModelGenerator extends AbstractCodegenModelGenerator {
     final Delimiter delimiter = (direction.equals(VertexType.TYPE_SEND)) ? Delimiter.START : Delimiter.END;
     newComm.setDirection(dir);
     newComm.setDelimiter(delimiter);
-    final MessageRouteStep routeStep = dagVertex.getPropertyBean()
+    final SlamMessageRouteStep routeStep = dagVertex.getPropertyBean()
         .getValue(ImplementationPropertyNames.SendReceive_routeStep);
     for (final ComponentInstance comp : routeStep.getNodes()) {
       final CommunicationNode comNode = CodegenModelUserFactory.eINSTANCE.createCommunicationNode();
@@ -1552,10 +1523,6 @@ public class CodegenModelGenerator extends AbstractCodegenModelGenerator {
 
     // No semaphore here, semaphore are only for SS->RE and RE->SR
 
-    final Integer gid = dagVertex.getPropertyBean().getValue("SYNC_GROUP");
-    if (gid != null) {
-      newComm.setComment("SyncComGroup = " + gid);
-    }
     // Check if this is a redundant communication
     final Boolean b = dagVertex.getPropertyBean().getValue("Redundant");
     if (b != null && b.equals(Boolean.valueOf(true))) {
@@ -2723,9 +2690,7 @@ public class CodegenModelGenerator extends AbstractCodegenModelGenerator {
       // Do the insertion
       operatorBlock.getLoopBlock().getCodeElts().add(newComm);
 
-      // Save the communication in the dagVertexCalls map only if it
-      // is a
-      // SS or a ER
+      // Save the communication in the dagVertexCalls map only if it is a SS or a ER
       if ((newComm.getDelimiter().equals(Delimiter.START) && newComm.getDirection().equals(Direction.SEND))
           || (newComm.getDelimiter().equals(Delimiter.END) && newComm.getDirection().equals(Direction.RECEIVE))) {
         this.dagVertexCalls.put(dagVertex, newComm);
@@ -2829,7 +2794,7 @@ public class CodegenModelGenerator extends AbstractCodegenModelGenerator {
     // In case of multi-step communication, this is the easiest
     // way to retrieve the target and source of the communication
     // corresponding to the current Send/ReceiveVertex
-    final MessageRouteStep routeStep = dagVertex.getPropertyBean()
+    final SlamMessageRouteStep routeStep = dagVertex.getPropertyBean()
         .getValue(ImplementationPropertyNames.SendReceive_routeStep);
 
     String commID = routeStep.getSender().getInstanceName();
