@@ -9,6 +9,7 @@ import java.util.Map;
 import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.preesm.commons.files.PreesmResourcesHelper;
 import org.preesm.commons.files.URLHelper;
+import org.preesm.model.scenario.ScenarioConstants;
 
 /**
  *
@@ -61,7 +62,7 @@ public final class DefaultTypeSizes {
     if (this.defaultTypeSizesMap.containsKey(typeName)) {
       return this.defaultTypeSizesMap.get(typeName);
     } else {
-      return 1L;
+      return (long) ScenarioConstants.DEFAULT_DATA_TYPE_SIZE.getValue();
     }
   }
 

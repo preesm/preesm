@@ -36,12 +36,9 @@
  */
 package org.preesm.ui.scenario.editor.simulation;
 
-import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
 import java.util.Map.Entry;
 import java.util.logging.Level;
-import java.util.stream.Collectors;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.dialogs.ErrorDialog;
@@ -94,6 +91,7 @@ import org.preesm.model.pisdf.Fifo;
 import org.preesm.model.scenario.Scenario;
 import org.preesm.model.scenario.ScenarioConstants;
 import org.preesm.model.scenario.impl.DataTypeImpl;
+import org.preesm.model.scenario.util.DefaultTypeSizes;
 import org.preesm.model.slam.ComponentInstance;
 import org.preesm.model.slam.Design;
 import org.preesm.ui.scenario.editor.Messages;
@@ -110,12 +108,6 @@ public class SimulationPage extends ScenarioPage {
   private static final String DATA_TYPE_NAME_TITLE = Messages.getString("Simulation.DataTypes.typeColumn");
 
   private static final String[] DATA_TYPE_TABLE_TITLES = { DATA_TYPE_NAME_TITLE, DATA_TYPE_SIZE_TITLE };
-
-  static final Map<String,
-      Long> TYPE_MAP = Arrays
-          .stream(new Object[][] { { "char", 1L }, { "uchar", 1L }, { "void", 4L }, { "int", 4L }, { "float", 4L },
-              { "long", 8L }, { "double", 8L }, { "unsigned int", 4L }, { "unsigned long", 8L }, })
-          .collect(Collectors.toMap(kv -> (String) kv[0], kv -> (Long) kv[1]));
 
   /**
    * The listener interface for receiving comboBox events. The class that is interested in processing a comboBox event
@@ -580,11 +572,10 @@ public class SimulationPage extends ScenarioPage {
 
       @Override
       public void widgetSelected(final SelectionEvent e) {
-
-        for (Fifo f : scenario.getAlgorithm().getAllFifos()) {
-          String typeName = f.getType();
+        for (final Fifo f : scenario.getAlgorithm().getAllFifos()) {
+          final String typeName = f.getType();
           SimulationPage.this.scenario.getSimulationInfo().getDataTypes().put(typeName,
-              TYPE_MAP.getOrDefault(typeName, (long) ScenarioConstants.DEFAULT_DATA_TYPE_SIZE.getValue()));
+              DefaultTypeSizes.getInstance().getDefaultTypeSize(typeName));
         }
 
         tableViewer.refresh();
