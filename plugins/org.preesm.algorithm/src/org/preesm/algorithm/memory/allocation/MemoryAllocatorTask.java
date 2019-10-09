@@ -51,7 +51,6 @@ import java.util.logging.Logger;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.preesm.algorithm.memory.allocation.OrderedAllocator.Order;
 import org.preesm.algorithm.memory.allocation.OrderedAllocator.Policy;
-import org.preesm.algorithm.memory.distributed.Distributor;
 import org.preesm.algorithm.memory.exclusiongraph.MemoryExclusionGraph;
 import org.preesm.algorithm.memory.exclusiongraph.MemoryExclusionVertex;
 import org.preesm.commons.doc.annotations.DocumentedError;

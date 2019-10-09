@@ -352,7 +352,8 @@ public class MemoryExclusionGraph extends SimpleGraph<MemoryExclusionVertex, Def
   }
 
   private void buildFifosMemoryObjects(final DirectedAcyclicGraph dag) {
-    final String localOrdering = "memExBuildingLocalOrdering";
+    final Map<DAGVertex,
+        Pair<Set<MemoryExclusionVertex>, Set<MemoryExclusionVertex>>> associatedMemExVertices = new LinkedHashMap<>();
 
     /*
      * Declarations & initializations
@@ -373,7 +374,6 @@ public class MemoryExclusionGraph extends SimpleGraph<MemoryExclusionVertex, Def
 
     // Set of non-task vertices
     final Set<DAGVertex> nonTaskVertices = new LinkedHashSet<>();
-    int newOrder = 0;
 
     for (final DAGVertex vert : dagVertices) {
       final boolean isTask = vert.getPropertyBean().getValue(ImplementationPropertyNames.Vertex_vertexType)
@@ -392,8 +392,6 @@ public class MemoryExclusionGraph extends SimpleGraph<MemoryExclusionVertex, Def
         // If the dagVertex is a task (except implode/explode task), set
         // the scheduling Order which will be used as a unique ID for
         // each vertex
-        vert.getPropertyBean().setValue(localOrdering, newOrder);
-        newOrder++;
 
       } else {
         // Send/Receive
@@ -403,27 +401,9 @@ public class MemoryExclusionGraph extends SimpleGraph<MemoryExclusionVertex, Def
     dag.removeAllVertices(nonTaskVertices);
     dagVertices.removeAll(nonTaskVertices);
 
-    // iterDAGVertices = new DAGIterator(dag); // Iterator on DAG vertices
-
-    // Each element of the "predecessors" list corresponds to a DagVertex
-    // and
-    // stores all its preceding ExclusionGraphNode except those
-    // corresponding to incoming edges
-    // The unique ID of the DAG vertices (their scheduling order) are used
-    // as indexes in this list
-    final ArrayList<Set<MemoryExclusionVertex>> predecessors = new ArrayList<>(dag.vertexSet().size());
-
-    // Each element of the "incoming" list corresponds to a DAGVertex and
-    // store only the ExclusionGraphNode that corresponds to its incoming
-    // edges
-    // The unique ID of the DAG vertices (their scheduling order) are used
-    // as indexes in this list
-    final ArrayList<Set<MemoryExclusionVertex>> incoming = new ArrayList<>(dag.vertexSet().size());
-
-    // Initialize predecessors with empty LinkedHashSets
-    for (int i = 0; i < dag.vertexSet().size(); i++) {
-      predecessors.add(new LinkedHashSet<MemoryExclusionVertex>());
-      incoming.add(new LinkedHashSet<MemoryExclusionVertex>());
+    for (DAGVertex v : dag.vertexSet()) {
+      associatedMemExVertices.put(v, Pair.of(new LinkedHashSet<MemoryExclusionVertex>() /* predecessor */,
+          new LinkedHashSet<MemoryExclusionVertex>()) /* incoming */);
     }
 
     // Scan of the DAG in order to:
@@ -437,9 +417,6 @@ public class MemoryExclusionGraph extends SimpleGraph<MemoryExclusionVertex, Def
       // 2. Working Memory specific Processing
       // 3. Outgoing Edges processing
 
-      // Retrieve the vertex unique ID
-      final int vertexID = (Integer) vertexDAG.getPropertyBean().getValue(localOrdering);
-
       // 1. Fork/Join/Broadcast/Roundbuffer specific processing
       // Not usable yet ! Does not work because output edges are not
       // allocated
@@ -448,35 +425,7 @@ public class MemoryExclusionGraph extends SimpleGraph<MemoryExclusionVertex, Def
 
       // Implicit Else if: broadcast/fork/join/roundBuffer have no working
       // mem
-      // 2. Working Memory specific Processing
-      // If the current vertex has some working memory, create the
-      // associated MemoryExclusionGraphVertex
-      final Long wMem = vertexDAG.getPropertyBean().getValue("working_memory");
-      if (wMem != null) {
-        final MemoryExclusionVertex workingMemoryNode = new MemoryExclusionVertex(vertexDAG.getName(),
-            vertexDAG.getName(), wMem);
-        workingMemoryNode.setVertex(vertexDAG);
-        addVertex(workingMemoryNode);
-        // Currently, there is no special alignment for working memory.
-        // So we always assume a unitary typesize.
-        workingMemoryNode.setPropertyValue(MemoryExclusionVertex.TYPE_SIZE, 1L);
-
-        // Add Exclusions with all non-predecessors of the current
-        // vertex
-        final Set<MemoryExclusionVertex> inclusions = predecessors.get(vertexID);
-        final Set<MemoryExclusionVertex> exclusions = new LinkedHashSet<>(vertexSet());
-        exclusions.remove(workingMemoryNode);
-        exclusions.removeAll(inclusions);
-        for (final MemoryExclusionVertex exclusion : exclusions) {
-          this.addEdge(workingMemoryNode, exclusion);
-        }
-
-        // Add the node to the "incoming" list of the DAGVertex.
-        // Like incoming edges, the working memory must have
-        // exclusions
-        // with all outgoing edges but not with successors
-        incoming.get(vertexID).add(workingMemoryNode);
-      }
+      // 2. Working Memory specific Processing -> REMOVED
 
       // For each outgoing edge
       for (final DAGEdge edge : vertexDAG.outgoingEdges()) {
@@ -484,7 +433,7 @@ public class MemoryExclusionGraph extends SimpleGraph<MemoryExclusionVertex, Def
         final MemoryExclusionVertex newNode = addNode(edge);
         if (newNode != null) {
           // Add Exclusions with all non-predecessors of the current vertex
-          final Set<MemoryExclusionVertex> inclusions = predecessors.get(vertexID);
+          final Set<MemoryExclusionVertex> inclusions = associatedMemExVertices.get(vertexDAG).getKey();
           final Set<MemoryExclusionVertex> exclusions = new LinkedHashSet<>(vertexSet());
           exclusions.remove(newNode);
           exclusions.removeAll(inclusions);
@@ -492,14 +441,15 @@ public class MemoryExclusionGraph extends SimpleGraph<MemoryExclusionVertex, Def
             this.addEdge(newNode, exclusion);
           }
 
+          final DAGVertex target = edge.getTarget();
           // Add newNode to the incoming list of the consumer of this edge
-          incoming.get((Integer) edge.getTarget().getPropertyBean().getValue(localOrdering)).add(newNode);
+          associatedMemExVertices.get(target).getValue().add(newNode);
 
           // Update the predecessor list of the consumer of this edge
           Set<MemoryExclusionVertex> predecessor;
-          predecessor = predecessors.get((Integer) edge.getTarget().getPropertyBean().getValue(localOrdering));
+          predecessor = associatedMemExVertices.get(target).getKey();
           predecessor.addAll(inclusions);
-          predecessor.addAll(incoming.get(vertexID));
+          predecessor.addAll(associatedMemExVertices.get(vertexDAG).getValue());
         } else {
           // If the node was not added. Should never happen
           throw new PreesmRuntimeException(
@@ -507,8 +457,8 @@ public class MemoryExclusionGraph extends SimpleGraph<MemoryExclusionVertex, Def
         }
       }
       // Save predecessor list, and include incoming to it.
-      predecessors.get(vertexID).addAll(incoming.get(vertexID));
-      this.verticesPredecessors.put(vertexDAG.getName(), predecessors.get(vertexID));
+      associatedMemExVertices.get(vertexDAG).getKey().addAll(associatedMemExVertices.get(vertexDAG).getValue());
+      this.verticesPredecessors.put(vertexDAG.getName(), associatedMemExVertices.get(vertexDAG).getKey());
     }
   }
 
