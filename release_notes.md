@@ -28,6 +28,9 @@ PREESM Changelog
   * Refactor memory allocation;
   * Rethrow all exceptions thrown by JEP with expression causing issue;
 * Add methods in PiSDFTopologyHelper, and corresponding tests;
+* Simulation tab of scenario now has an option to import all data types from
+  the graph, with predefined default values for common type names.
+
 
 ### Bug fix
 * Fix #74
