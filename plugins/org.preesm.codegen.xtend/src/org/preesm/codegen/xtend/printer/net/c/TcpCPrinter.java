@@ -204,7 +204,13 @@ public class TcpCPrinter extends CPrinter {
     final int coreID = eContainer.getCoreID();
     StringBuilder res = new StringBuilder();
     res.append("  int iterationCount = 0;\n");
+
+    res.append("#ifdef PREESM_LOOP_SIZE\n");
+    res.append("  for(int index=0;index<PREESM_LOOP_SIZE;index++){\n");
+    res.append("#else\n");
     res.append("  while(1){\n");
+    res.append("#endif\n");
+
     res.append("    /* START OF LOOP HEADER */\n");
     res.append("    iterationCount++;\n");
     res.append("#ifdef _PREESM_TCP_DEBUG_\n" + "    printf(\"[TCP-DEBUG] Core" + coreID
