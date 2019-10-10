@@ -7,6 +7,7 @@ PREESM Changelog
 ### New Feature
 
 ### Changes
+* Fix compile error in generated TCP code (but execution hangs...);
 
 ### Bug fix
 
