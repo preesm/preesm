@@ -67,7 +67,6 @@ import org.preesm.algorithm.model.dag.DAGEdge;
 import org.preesm.algorithm.model.dag.DAGVertex;
 import org.preesm.algorithm.model.dag.DirectedAcyclicGraph;
 import org.preesm.algorithm.model.iterators.TopologicalDAGIterator;
-import org.preesm.algorithm.model.sdf.esdf.SDFInitVertex;
 import org.preesm.commons.CloneableProperty;
 import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.preesm.commons.logger.PreesmLogger;
@@ -92,7 +91,7 @@ import org.preesm.model.slam.ComponentInstance;
 public class MemoryExclusionGraph extends SimpleGraph<MemoryExclusionVertex, DefaultEdge>
     implements PropertySource, CloneableProperty<MemoryExclusionGraph> {
 
-  private static final String FIFO_HEAD_PREFIX = "FIFO_Head_";
+  public static final String FIFO_HEAD_PREFIX = "FIFO_Head_";
 
   private static final long serialVersionUID = 6491894138235944107L;
 
@@ -101,9 +100,8 @@ public class MemoryExclusionGraph extends SimpleGraph<MemoryExclusionVertex, Def
    */
   public static final String DAG_EDGE_ALLOCATION = "dag_edges_allocation";
 
-  public static final String DAG_FIFO_ALLOCATION    = "fifo_allocation";
-  public static final String WORKING_MEM_ALLOCATION = "working_mem_allocation";
-  public static final String SOURCE_DAG             = "source_dag";
+  public static final String DAG_FIFO_ALLOCATION = "fifo_allocation";
+  public static final String SOURCE_DAG          = "source_dag";
 
   /**
    * Property to store the merged memory objects resulting from the script processing. The stored object is a:<br>
@@ -273,19 +271,6 @@ public class MemoryExclusionGraph extends SimpleGraph<MemoryExclusionVertex, Def
         final Set<DAGEdge> between = (new LinkedHashSet<>(initSuccessors));
         between.retainAll(endPredecessors);
 
-        final Set<MemoryExclusionVertex> endPredecessorsVert = new LinkedHashSet<>();
-        for (final DAGEdge edge : endPredecessors) {
-          final String sourceName = edge.getSource().getName();
-          endPredecessorsVert.add(new MemoryExclusionVertex(sourceName, sourceName, 0, this.scenario));
-        }
-        final Set<MemoryExclusionVertex> initSuccessorsVert = new LinkedHashSet<>();
-        for (final DAGEdge edge : initSuccessors) {
-          final String targetName = edge.getTarget().getName();
-          initSuccessorsVert.add(new MemoryExclusionVertex(targetName, targetName, 0, this.scenario));
-        }
-        final Set<MemoryExclusionVertex> betweenVert = (new LinkedHashSet<>(initSuccessorsVert));
-        betweenVert.retainAll(endPredecessorsVert);
-
         // Add exclusions between the head node and ALL MemoryObjects
         // that do not correspond to edges in the between list or to
         // the working memory of an actor in the betweenVert list.
@@ -294,11 +279,6 @@ public class MemoryExclusionGraph extends SimpleGraph<MemoryExclusionVertex, Def
           // For Edges
           if (correspondingEdge != null) {
             if (!between.contains(correspondingEdge)) {
-              this.addEdge(headMemoryNode, memObject);
-            }
-          } else if (memObject.getSource().equals(memObject.getSink())) {
-            // For Working memory
-            if (!betweenVert.contains(memObject)) {
               this.addEdge(headMemoryNode, memObject);
             }
           } else if (memObject != headMemoryNode) {
@@ -311,23 +291,6 @@ public class MemoryExclusionGraph extends SimpleGraph<MemoryExclusionVertex, Def
         // (unless of course the init and the end have an empty
         // "between" list, but this will be handled by the previous
         // loop.)
-
-        // Create the Memory Object for the remaining of the FIFO (if
-        // any)
-        final long fifoDepth = dagInitVertex.getPropertyBean().getValue(SDFInitVertex.INIT_SIZE);
-        if (fifoDepth > (headMemoryNode.getWeight() / typeSize)) {
-          final MemoryExclusionVertex fifoMemoryNode = new MemoryExclusionVertex("FIFO_Body_" + dagEndVertex.getName(),
-              dagInitVertex.getName(), (fifoDepth * typeSize) - headMemoryNode.getWeight(), this.scenario);
-          fifoMemoryNode.setPropertyValue(MemoryExclusionVertex.TYPE_SIZE, typeSize);
-
-          // Add to the graph and exclude with everyone
-          addVertex(fifoMemoryNode);
-          for (final MemoryExclusionVertex mObj : vertexSet()) {
-            if (mObj != fifoMemoryNode) {
-              this.addEdge(fifoMemoryNode, mObj);
-            }
-          }
-        }
       }
     }
   }
@@ -634,17 +597,6 @@ public class MemoryExclusionGraph extends SimpleGraph<MemoryExclusionVertex, Def
         dagFifoAllocCopy.put(mObjMap.get(fifoAlloc.getKey()), fifoAlloc.getValue());
       }
       result.setPropertyValue(MemoryExclusionGraph.DAG_FIFO_ALLOCATION, dagFifoAllocCopy);
-    }
-
-    // WORKING_MEM_ALLOCATION
-    final Map<MemoryExclusionVertex,
-        Long> wMemAlloc = getPropertyBean().getValue(MemoryExclusionGraph.WORKING_MEM_ALLOCATION);
-    if (wMemAlloc != null) {
-      final Map<MemoryExclusionVertex, Long> wMemAllocCopy = new LinkedHashMap<>();
-      for (final Entry<MemoryExclusionVertex, Long> wMem : wMemAlloc.entrySet()) {
-        wMemAllocCopy.put(mObjMap.get(wMem.getKey()), wMem.getValue());
-      }
-      result.setPropertyValue(MemoryExclusionGraph.WORKING_MEM_ALLOCATION, wMemAllocCopy);
     }
 
     // SOURCE_DAG
@@ -1125,7 +1077,6 @@ public class MemoryExclusionGraph extends SimpleGraph<MemoryExclusionVertex, Def
 
       // Remove exclusions with all buffer in the list (if any)
       if (!edgesBetween.isEmpty()) {
-
         // retrieve the head MObj for current fifo
         // size does not matter ("that's what she said") to retrieve the
         // Memory object from the exclusion graph
@@ -1134,26 +1085,6 @@ public class MemoryExclusionGraph extends SimpleGraph<MemoryExclusionVertex, Def
         for (final DAGEdge edge : edgesBetween) {
           final MemoryExclusionVertex mObj = new MemoryExclusionVertex(edge, this.scenario);
           this.removeEdge(headMemoryNode, mObj);
-        }
-      }
-
-      // Compute the list of all actors between init and end
-      Set<DAGVertex> verticesBetween = null;
-      final Set<DAGVertex> dagEndPredecessors = scheduledDAG.getPredecessorVerticesOf(dagEndVertex);
-      final Set<DAGVertex> dagInitSuccessors = scheduledDAG.getSuccessorVerticesOf(dagInitVertex);
-      verticesBetween = (new LinkedHashSet<>(dagInitSuccessors));
-      verticesBetween.retainAll(dagEndPredecessors);
-
-      // retrieve the head MObj for current fifo
-      // size does not matter ("that's what she said") to retrieve the
-      // Memory object from the exclusion graph
-      final MemoryExclusionVertex headMemoryNode = new MemoryExclusionVertex(
-          MemoryExclusionGraph.FIFO_HEAD_PREFIX + dagEndVertex.getName(), dagInitVertex.getName(), 0, this.scenario);
-      for (final DAGVertex dagVertex : verticesBetween) {
-        final MemoryExclusionVertex wMemoryObj = new MemoryExclusionVertex(dagVertex.getName(), dagVertex.getName(), 0,
-            this.scenario);
-        if (containsVertex(wMemoryObj)) {
-          this.removeEdge(headMemoryNode, wMemoryObj);
         }
       }
 
@@ -1273,17 +1204,6 @@ public class MemoryExclusionGraph extends SimpleGraph<MemoryExclusionVertex, Def
         // to the working memory (if any) of the currentVertex and the
         // exclusion vertices in the newPredecessors list
 
-        // Re-create the working memory exclusion vertex (weight does
-        // not matter to find the vertex in the Memex)
-        final MemoryExclusionVertex wMemVertex = new MemoryExclusionVertex(vertexName, vertexName, 0, this.scenario);
-        if (containsVertex(wMemVertex)) {
-          for (final MemoryExclusionVertex newPredecessor : newPredecessors) {
-            if (this.removeEdge(wMemVertex, newPredecessor) == null) {
-              throw new PreesmRuntimeException("Missing edge");
-            }
-          }
-        }
-
         // Remove exclusion between ExclusionVertices corresponding
         // to outgoing edges of the currentVertex, and ExclusionVertices
         // in newPredecessors list
@@ -1317,11 +1237,6 @@ public class MemoryExclusionGraph extends SimpleGraph<MemoryExclusionVertex, Def
               newVerticesPredecessors.put(targetName, successorPredecessor);
             }
             successorPredecessor.addAll(newPredecessors);
-            // Add the working memory object to the
-            // successorPredecessor list
-            if (containsVertex(wMemVertex)) {
-              successorPredecessor.add(wMemVertex);
-            }
           }
         }
       }
@@ -1334,40 +1249,10 @@ public class MemoryExclusionGraph extends SimpleGraph<MemoryExclusionVertex, Def
     this.memExVerticesInSchedulingOrder = new ArrayList<>();
     // Copy the set of graph vertices (as a list to speedup search in
     // remaining code)
-    final List<MemoryExclusionVertex> memExVertices = new ArrayList<>(vertexSet());
     /** Begin by putting all FIFO related Memory objects (if any) */
     for (final MemoryExclusionVertex vertex : vertexSet()) {
-      if (vertex.getSource().startsWith(MemoryExclusionGraph.FIFO_HEAD_PREFIX)
-          || vertex.getSource().startsWith("FIFO_Body_")) {
+      if (vertex.getSource().startsWith(MemoryExclusionGraph.FIFO_HEAD_PREFIX)) {
         this.memExVerticesInSchedulingOrder.add(vertex);
-      }
-    }
-
-    for (final DAGVertex vertex : dagVerticesInSchedulingOrder) {
-      /** 1- Retrieve the Working Memory MemEx Vertex (if any) */
-      // Re-create the working memory exclusion vertex (weight does
-      // not matter to find the vertex in the Memex)
-      final String vertexName = vertex.getName();
-      final MemoryExclusionVertex wMemVertex = new MemoryExclusionVertex(vertexName, vertexName, 0, this.scenario);
-      int index;
-      if ((index = memExVertices.indexOf(wMemVertex)) != -1) {
-        // The working memory exists
-        this.memExVerticesInSchedulingOrder.add(memExVertices.get(index));
-      }
-
-      /** 2- Retrieve the MemEx Vertices of outgoing edges (if any) */
-      for (final DAGEdge outgoingEdge : vertex.outgoingEdges()) {
-        if (outgoingEdge.getTarget().getPropertyBean().getValue(ImplementationPropertyNames.Vertex_vertexType)
-            .equals(VertexType.TASK)) {
-          final MemoryExclusionVertex edgeVertex = new MemoryExclusionVertex(outgoingEdge, this.scenario);
-          int index2;
-          if ((index2 = memExVertices.indexOf(edgeVertex)) != -1) {
-            // The working memory exists
-            this.memExVerticesInSchedulingOrder.add(memExVertices.get(index2));
-          } else {
-            throw new PreesmRuntimeException("Missing MemEx Vertex: " + edgeVertex);
-          }
-        }
       }
     }
   }

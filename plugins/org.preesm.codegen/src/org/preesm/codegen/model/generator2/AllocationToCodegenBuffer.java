@@ -51,6 +51,7 @@ import org.preesm.algorithm.memalloc.model.FifoAllocation;
 import org.preesm.algorithm.memalloc.model.LogicalBuffer;
 import org.preesm.algorithm.memalloc.model.PhysicalBuffer;
 import org.preesm.algorithm.memalloc.model.util.MemoryAllocationSwitch;
+import org.preesm.algorithm.memory.exclusiongraph.MemoryExclusionGraph;
 import org.preesm.algorithm.schedule.model.Schedule;
 import org.preesm.algorithm.synthesis.schedule.ScheduleOrderManager;
 import org.preesm.codegen.model.Buffer;
@@ -177,7 +178,7 @@ public class AllocationToCodegenBuffer extends MemoryAllocationSwitch<Boolean> {
       codegenBuffer.setComment(comment);
 
       final String name = source + "__" + sink;
-      final String uniqueName = generateUniqueBufferName("FIFO_Head_" + name);
+      final String uniqueName = generateUniqueBufferName(MemoryExclusionGraph.FIFO_HEAD_PREFIX + name);
       codegenBuffer.setName(uniqueName);
       codegenBuffer.setType(fifo.getType());
       codegenBuffer.setTypeSize(scenario.getSimulationInfo().getDataTypeSizeOrDefault(fifo.getType()));
