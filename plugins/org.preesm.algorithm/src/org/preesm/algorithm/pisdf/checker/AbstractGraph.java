@@ -63,11 +63,11 @@ public class AbstractGraph {
       final AbstractActor absTgt = dip.getContainingActor();
       if ((absSrc instanceof ExecutableActor) && (absTgt instanceof ExecutableActor)) {
         FifoAbstraction fa = absGraph.getEdge(absSrc, absTgt);
+        long srcRate = dop.getPortRateExpression().evaluate();
+        long tgtRate = dip.getPortRateExpression().evaluate();
+        long gcd = MathFunctionsHelper.gcd(srcRate, tgtRate);
         if (fa == null) {
           fa = new FifoAbstraction();
-          long srcRate = dop.getPortRateExpression().evaluate();
-          long tgtRate = dip.getPortRateExpression().evaluate();
-          long gcd = MathFunctionsHelper.gcd(srcRate, tgtRate);
           fa.prodRate = gcd != 0 ? srcRate / gcd : srcRate;
           fa.consRate = gcd != 0 ? tgtRate / gcd : tgtRate;
 
@@ -82,7 +82,7 @@ public class AbstractGraph {
           fa.delays.add(0L);
         } else {
           fa.nbNonZeroDelays++;
-          fa.delays.add(d.getSizeExpression().evaluate());
+          fa.delays.add(d.getSizeExpression().evaluate() / gcd);
         }
         boolean fullyDelayed = true;
         for (final long l : fa.delays) {
