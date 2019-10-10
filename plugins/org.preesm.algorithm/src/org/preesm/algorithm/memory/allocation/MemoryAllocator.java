@@ -127,17 +127,7 @@ public abstract class MemoryAllocator {
           while (iter.hasNext()) {
             final BufferProperties properties = iter.next();
             final String dataType = properties.getDataType();
-            long typeSize;
-            // A proper type was not set for the considered edge
-            if (!MemoryExclusionVertex.NAME_TO_DATATYPES.containsKey(dataType)) {
-              final String msg = "No valid data type was found on an edge between actors " + edge.getSource().getName()
-                  + " and " + edge.getTarget().getName()
-                  + ".\nCheck the edge in the graph editor and the declared types in the scenario.";
-              throw new PreesmRuntimeException(msg);
-            } else {
-              final long type = MemoryExclusionVertex.NAME_TO_DATATYPES.get(dataType);
-              typeSize = type;
-            }
+            final long typeSize = meg.getScenario().getSimulationInfo().getDataTypeSizeOrDefault(dataType);
             largestTypeSize = Math.max(typeSize, largestTypeSize);
             long interSpace = 0;
 
@@ -485,7 +475,8 @@ public abstract class MemoryAllocator {
 
             // Create new fake Mobj
             final MemoryExclusionVertex fakeMObj = new MemoryExclusionVertex(
-                "part" + indexPart + "_" + vertex.getSource(), vertex.getSink(), hostRange.getLength());
+                "part" + indexPart + "_" + vertex.getSource(), vertex.getSink(), hostRange.getLength(),
+                hostVertex.getScenario());
 
             // Compute the space that must be left empty before
             // the
@@ -658,7 +649,7 @@ public abstract class MemoryAllocator {
           while (iter.hasNext()) {
             final BufferProperties properties = iter.next();
             final String dataType = properties.getDataType();
-            final long typeSize = MemoryExclusionVertex.NAME_TO_DATATYPES.get(dataType);
+            final long typeSize = memObj.getScenario().getSimulationInfo().getDataTypeSizeOrDefault(dataType);
 
             if (interBufferSpaces != null) {
               internalOffset += interBufferSpaces.get(i);

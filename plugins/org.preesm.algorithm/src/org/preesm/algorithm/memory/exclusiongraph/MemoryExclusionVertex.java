@@ -40,11 +40,8 @@
 package org.preesm.algorithm.memory.exclusiongraph;
 
 import java.util.Iterator;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.logging.Level;
-import org.eclipse.emf.common.util.ECollections;
-import org.eclipse.emf.common.util.EMap;
 import org.eclipse.xtext.util.Pair;
 import org.preesm.algorithm.mapper.graphtransfo.BufferAggregate;
 import org.preesm.algorithm.mapper.graphtransfo.BufferProperties;
@@ -55,6 +52,7 @@ import org.preesm.algorithm.model.PropertyFactory;
 import org.preesm.algorithm.model.dag.DAGEdge;
 import org.preesm.algorithm.model.dag.DAGVertex;
 import org.preesm.commons.logger.PreesmLogger;
+import org.preesm.model.scenario.Scenario;
 
 /**
  * MemoryExclusionVertex is used to represent vertices in the Exclusion graph.
@@ -129,22 +127,6 @@ public class MemoryExclusionVertex extends AbstractVertex<MemoryExclusionGraph> 
    */
   public static final String DIVIDED_PARTS_HOSTS = "divided_parts_hosts";
 
-  /** This Map is used as a reference of dataTypes size when creating an vertex from a DAGEdge. */
-  public static EMap<String, Long> NAME_TO_DATATYPES = ECollections.asEMap(new LinkedHashMap<>());
-
-  /**
-   * This method is used to associate a map of data types to the MemoryExclusionVertex class. This map will be used when
-   * creating a MemEx Vertex from a DAGEdge to give their real weight to the MemEx graph vertices.
-   *
-   * @param dataTypes
-   *          the map of DataType
-   */
-  public static void setDataTypes(final EMap<String, Long> dataTypes) {
-    if (dataTypes != null) {
-      MemoryExclusionVertex.NAME_TO_DATATYPES = dataTypes;
-    }
-  }
-
   /**
    * ID of the task consuming the memory.
    */
@@ -170,6 +152,8 @@ public class MemoryExclusionVertex extends AbstractVertex<MemoryExclusionGraph> 
    */
   private DAGVertex vertex;
 
+  private final Scenario scenario;
+
   /**
    * {@link MemoryExclusionVertex} property associated to a {@link List} of {@link Integer} that represent the space
    * <b>in bytes</b> between successive "subbuffers" of a {@link MemoryExclusionVertex}.
@@ -187,8 +171,8 @@ public class MemoryExclusionVertex extends AbstractVertex<MemoryExclusionGraph> 
    * @param inputEdge
    *          the DAG edge corresponding to the constructed vertex
    */
-  public MemoryExclusionVertex(final DAGEdge inputEdge) {
-    this(inputEdge.getSource().getName(), inputEdge.getTarget().getName(), getSize(inputEdge));
+  public MemoryExclusionVertex(final DAGEdge inputEdge, final Scenario scenario) {
+    this(inputEdge.getSource().getName(), inputEdge.getTarget().getName(), getSize(inputEdge, scenario), scenario);
     this.edge = inputEdge;
     if (this.size == 0) {
       PreesmLogger.getLogger().log(Level.WARNING, "Probable ERROR: Vertex weight is 0");
@@ -196,7 +180,7 @@ public class MemoryExclusionVertex extends AbstractVertex<MemoryExclusionGraph> 
 
   }
 
-  private static long getSize(final DAGEdge inputEdge) {
+  private static long getSize(final DAGEdge inputEdge, final Scenario scenario) {
     // if datatype is defined, correct the vertex weight
     final BufferAggregate buffers = inputEdge.getPropertyBean().getValue(BufferAggregate.propertyBeanName);
     final Iterator<BufferProperties> iter = buffers.iterator();
@@ -205,13 +189,9 @@ public class MemoryExclusionVertex extends AbstractVertex<MemoryExclusionGraph> 
       final BufferProperties properties = iter.next();
 
       final String dataType = properties.getDataType();
+      final long typeSize = scenario.getSimulationInfo().getDataTypeSizeOrDefault(dataType);
 
-      if (MemoryExclusionVertex.NAME_TO_DATATYPES.containsKey(dataType)) {
-        final long type = MemoryExclusionVertex.NAME_TO_DATATYPES.get(dataType);
-        vertexWeight += type * properties.getSize();
-      } else {
-        vertexWeight += properties.getSize();
-      }
+      vertexWeight += properties.getSize() * typeSize;
     }
     return vertexWeight;
   }
@@ -226,7 +206,9 @@ public class MemoryExclusionVertex extends AbstractVertex<MemoryExclusionGraph> 
    * @param sizeMem
    *          the size mem
    */
-  public MemoryExclusionVertex(final String sourceTask, final String sinkTask, final long sizeMem) {
+  public MemoryExclusionVertex(final String sourceTask, final String sinkTask, final long sizeMem,
+      final Scenario scenario) {
+    this.scenario = scenario;
     this.source = sourceTask;
     this.sink = sinkTask;
     this.size = sizeMem;
@@ -267,7 +249,7 @@ public class MemoryExclusionVertex extends AbstractVertex<MemoryExclusionGraph> 
   @Override
   public MemoryExclusionVertex getClone() {
     MemoryExclusionVertex copy;
-    copy = new MemoryExclusionVertex(this.source, this.sink, this.size);
+    copy = new MemoryExclusionVertex(this.source, this.sink, this.size, this.scenario);
     copy.edge = this.edge;
     copy.vertex = this.vertex;
     return copy;
@@ -316,5 +298,9 @@ public class MemoryExclusionVertex extends AbstractVertex<MemoryExclusionGraph> 
   @Override
   public String toString() {
     return this.source + "=>" + this.sink + ":" + this.size;
+  }
+
+  public final Scenario getScenario() {
+    return this.scenario;
   }
 }

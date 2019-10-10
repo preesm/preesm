@@ -379,7 +379,7 @@ public class CodegenModelGenerator extends AbstractCodegenModelGenerator {
     MemoryExclusionVertex mObject = null;
     // Find the associated memory object
     for (final MemoryExclusionGraph meg : this.megs.values()) {
-      mObject = meg.getVertex(new MemoryExclusionVertex(dagEdge));
+      mObject = meg.getVertex(new MemoryExclusionVertex(dagEdge, this.scenario));
       if (mObject != null) {
         break;
       }
