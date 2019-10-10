@@ -145,9 +145,6 @@ public class MemoryExclusionVertex extends AbstractVertex<MemoryExclusionGraph> 
     }
   }
 
-  /** unique identifier of vertex for user convenience. */
-  private long identifier;
-
   /**
    * ID of the task consuming the memory.
    */
@@ -271,7 +268,6 @@ public class MemoryExclusionVertex extends AbstractVertex<MemoryExclusionGraph> 
   public MemoryExclusionVertex getClone() {
     MemoryExclusionVertex copy;
     copy = new MemoryExclusionVertex(this.source, this.sink, this.size);
-    copy.setIdentifier(getIdentifier());
     copy.edge = this.edge;
     copy.vertex = this.vertex;
     return copy;
@@ -294,11 +290,6 @@ public class MemoryExclusionVertex extends AbstractVertex<MemoryExclusionGraph> 
     return null;
   }
 
-  @Override
-  public long getIdentifier() {
-    return this.identifier;
-  }
-
   public String getSink() {
     return this.sink;
   }
@@ -315,11 +306,6 @@ public class MemoryExclusionVertex extends AbstractVertex<MemoryExclusionGraph> 
   @Override
   public int hashCode() {
     return (this.sink + "=>" + this.source).hashCode();
-  }
-
-  @Override
-  public void setIdentifier(final long identifier) {
-    this.identifier = identifier;
   }
 
   @Override
