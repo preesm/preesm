@@ -64,23 +64,6 @@ public interface IWeightedVertex<W> {
   public abstract void setWeight(W weight);
 
   /**
-   * Get the unique identifier of the vertex. Each vertex must have a unique identifier. If two vertices have the same
-   * identifier, they might be confused in some function, list, ...
-   *
-   * @return the unique identifier of the vertex
-   */
-  public abstract long getIdentifier();
-
-  /**
-   * Set the unique identifier of the vertex. Each vertex must have a unique identifier. If two vertices have the same
-   * identifier, they might be confused in some function, list, ...
-   *
-   * @param id
-   *          the new identifier of the vertex
-   */
-  public abstract void setIdentifier(long id);
-
-  /**
    * Get a deep copy of the vertex.
    *
    * @return the deep copy of the vertex

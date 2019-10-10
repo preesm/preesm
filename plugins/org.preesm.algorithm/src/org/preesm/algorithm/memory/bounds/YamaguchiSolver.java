@@ -64,7 +64,7 @@ import org.preesm.algorithm.memory.exclusiongraph.IWeightedVertex;
 public class YamaguchiSolver<V extends IWeightedVertex<Long>, E extends DefaultEdge>
     extends AbstractMaximumWeightCliqueSolver<V, E> {
 
-  private Map<Long, V> graphVertices;
+  private Set<V> graphVertices;
 
   /**
    */
@@ -84,9 +84,8 @@ public class YamaguchiSolver<V extends IWeightedVertex<Long>, E extends DefaultE
     super.adjacentVerticesOf(vertex);
 
     for (final V vert : this.adjacentVerticesBackup.get(vertex)) {
-      for (final V vertin : this.graphVertices.values()) {
+      for (final V vertin : this.graphVertices) {
         if (vert.equals(vertin)) {
-          vert.setIdentifier(vertin.getIdentifier());
           vert.setWeight(vertin.getWeight());
           break;
         }
@@ -108,7 +107,7 @@ public class YamaguchiSolver<V extends IWeightedVertex<Long>, E extends DefaultE
    *          The minimum weight of the clique to find
    * @return The Maximum-Weight Clique of the subgraph (if any)
    */
-  private Set<V> maxWeightClique(final Map<Long, V> subgraphVertices, long thresold) {
+  private Set<V> maxWeightClique(final Set<V> subgraphVertices, long thresold) {
     // (1) let C <- 0
     Set<V> clique = new LinkedHashSet<>();
 
@@ -127,16 +126,16 @@ public class YamaguchiSolver<V extends IWeightedVertex<Long>, E extends DefaultE
 
       // (5) Get the maximum Weight clique C' of Pi(G,PI)
       final V currentVertex = orderedVertexSet.get(i);
-      subgraphVertices.remove(currentVertex.getIdentifier());
+      subgraphVertices.remove(currentVertex);
 
       // Si(v)
-      final Map<Long, V> subGraph = new LinkedHashMap<>(subgraphVertices.size());
+      final Set<V> subGraph = new LinkedHashSet<>(subgraphVertices.size());
 
       // N(v) inter Si
       final Set<V> adjacentSet = this.adjacentVerticesOf(currentVertex);
       for (final V vertex : adjacentSet) {
-        if (subgraphVertices.containsKey(vertex.getIdentifier())) {
-          subGraph.put(vertex.getIdentifier(), vertex);
+        if (subgraphVertices.contains(vertex)) {
+          subGraph.add(vertex);
         }
       }
 
@@ -170,17 +169,17 @@ public class YamaguchiSolver<V extends IWeightedVertex<Long>, E extends DefaultE
    *          the list in which the resulting costs will be stored (in the order of the returned list)
    * @return the ordered list of vertices.
    */
-  private List<V> orderVertexSet(final Map<Long, V> subgraphVertices, final List<Long> cost) {
+  private List<V> orderVertexSet(final Set<V> subgraphVertices, final List<Long> cost) {
     // (1) let PI be the empty sequence
     final List<V> orderedVertexSet = new ArrayList<>();
 
     // (2) For each v � V, les a(v) <- w(v)
     // (3) let S <- V
-    final Map<Long, Long> tempCost = new LinkedHashMap<>();
-    final Map<Long, V> unorderedVertexSet = new LinkedHashMap<>();
-    for (final V vertex : subgraphVertices.values()) {
-      tempCost.put(vertex.getIdentifier(), vertex.getWeight());
-      unorderedVertexSet.put(vertex.getIdentifier(), vertex);
+    final Map<V, Long> tempCost = new LinkedHashMap<>();
+    final Set<V> unorderedVertexSet = new LinkedHashSet<>();
+    for (final V vertex : subgraphVertices) {
+      tempCost.put(vertex, vertex.getWeight());
+      unorderedVertexSet.add(vertex);
     }
 
     // (8) Halt if set(PI) = V
@@ -188,30 +187,30 @@ public class YamaguchiSolver<V extends IWeightedVertex<Long>, E extends DefaultE
     while (!unorderedVertexSet.isEmpty()) {
 
       // (4) Choose a vertex v' from S that minimize a(v')
-      V selectedVertex = unorderedVertexSet.values().iterator().next();
-      long minCost = tempCost.get(selectedVertex.getIdentifier());
-      for (final V vertex : unorderedVertexSet.values()) {
-        if (tempCost.get(vertex.getIdentifier()) < minCost) {
+      V selectedVertex = unorderedVertexSet.iterator().next();
+      long minCost = tempCost.get(selectedVertex);
+      for (final V vertex : unorderedVertexSet) {
+        if (tempCost.get(vertex) < minCost) {
           selectedVertex = vertex;
-          minCost = tempCost.get(vertex.getIdentifier());
+          minCost = tempCost.get(vertex);
         }
       }
 
       // (5) let S <- S - {v'}
-      unorderedVertexSet.remove(selectedVertex.getIdentifier());
+      unorderedVertexSet.remove(selectedVertex);
 
       // (6) for each u�N(v) inter S, let a(u) <- a(v') + w(u)
       final Set<V> adjacentSet = adjacentVerticesOf(selectedVertex);
       final Set<V> vertexSet = new LinkedHashSet<>(adjacentSet.size());
 
       for (final V vertex : adjacentSet) {
-        if (unorderedVertexSet.containsKey(vertex.getIdentifier())) {
+        if (unorderedVertexSet.contains(vertex)) {
           vertexSet.add(vertex);
         }
       }
 
       for (final V vertex : vertexSet) {
-        tempCost.put(vertex.getIdentifier(), tempCost.get(selectedVertex.getIdentifier()) + vertex.getWeight());
+        tempCost.put(vertex, tempCost.get(selectedVertex) + vertex.getWeight());
       }
 
       // (7) Insert v' into PI such that PI becomes increasing order
@@ -219,24 +218,22 @@ public class YamaguchiSolver<V extends IWeightedVertex<Long>, E extends DefaultE
       orderedVertexSet.add(selectedVertex);
 
       // save tempCost(v') in cost in the order of ordered vertex
-      cost.add(tempCost.get(selectedVertex.getIdentifier()));
-      tempCost.remove(selectedVertex.getIdentifier());
+      cost.add(tempCost.get(selectedVertex));
+      tempCost.remove(selectedVertex);
 
     }
     return orderedVertexSet;
   }
 
-  public void setGraphVertices(final Map<Long, V> graphVertices) {
+  public void setGraphVertices(final Set<V> graphVertices) {
     this.graphVertices = graphVertices;
   }
 
   @Override
   public void solve() {
-    this.graphVertices = new LinkedHashMap<>();
-    int index = 0;
+    this.graphVertices = new LinkedHashSet<>();
     for (final V vertex : this.graph.vertexSet()) {
-      vertex.setIdentifier(index++);
-      this.graphVertices.put(vertex.getIdentifier(), vertex);
+      this.graphVertices.add(vertex);
     }
 
     this.heaviestClique = maxWeightClique(this.graphVertices, this.min);
