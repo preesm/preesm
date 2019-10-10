@@ -112,11 +112,6 @@ public class AddTransferVertexTransaction implements Transaction {
   private MapperDAGVertex currentSource = null;
 
   /**
-   * Vertex following the transfer. At the time we add the transfer, can be only the transfer receiver.
-   */
-  private final MapperDAGVertex currentTarget = null;
-
-  /**
    * Instantiates a new adds the transfer vertex transaction.
    *
    * @param transferType
@@ -167,11 +162,6 @@ public class AddTransferVertexTransaction implements Transaction {
     }
   }
 
-  /*
-   * (non-Javadoc)
-   *
-   * @see org.ietr.preesm.mapper.abc.transaction.Transaction#execute(java.util.List)
-   */
   @Override
   public void execute(final List<MapperDAGVertex> resultList) {
     final MapperDAGVertex currentTarget = (MapperDAGVertex) this.edge.getTarget();
@@ -259,14 +249,5 @@ public class AddTransferVertexTransaction implements Transaction {
    */
   public MapperDAGVertex getSource() {
     return this.currentSource;
-  }
-
-  /**
-   * Gets the target.
-   *
-   * @return the target
-   */
-  public MapperDAGVertex getTarget() {
-    return this.currentTarget;
   }
 }
