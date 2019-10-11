@@ -67,6 +67,7 @@
 package org.preesm.codegen.model
 
 import org.eclipse.emf.ecore.EEList
+import org.preesm.model.pisdf.AbstractActor
 
 class Block extends CodeElt {
 	contains readonly CodeElt[] codeElts
@@ -81,7 +82,6 @@ interface CodeElt extends Commentable {
 abstract class Call extends CodeElt {
 	transient EEList<Variable> parameters
 	String name
-	refers Call EReference0
 	PortDirection[] parameterDirections
 	op void addParameter(Variable variable , PortDirection direction) {
 	    parameters.add(variable);
@@ -139,7 +139,7 @@ class FunctionCall extends Call {
 }
 
 class ActorFunctionCall extends FunctionCall {
-	String originalVertexPath
+	refers AbstractActor actor
 }
 
 class PapifyFunctionCall extends FunctionCall {

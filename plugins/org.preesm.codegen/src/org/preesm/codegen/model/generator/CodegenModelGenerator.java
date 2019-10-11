@@ -1709,9 +1709,8 @@ public class CodegenModelGenerator extends AbstractCodegenModelGenerator {
     final ActorFunctionCall func = CodegenModelUserFactory.eINSTANCE.createActorFunctionCall();
     func.setName(prototype.getFunctionName());
     func.setActorName(dagVertex.getName());
-    org.preesm.model.pisdf.AbstractVertex oriPiActor = PreesmCopyTracker.<
-        org.preesm.model.pisdf.AbstractVertex>getOriginalSource(dagVertex.getReferencePiVertex());
-    func.setOriginalVertexPath(oriPiActor.getVertexPath());
+    AbstractActor oriPiActor = PreesmCopyTracker.getOriginalSource(dagVertex.getReferencePiVertex());
+    func.setActor(oriPiActor);
     // Retrieve the Arguments that must correspond to the incoming data
     // fifos
     final Entry<List<Variable>, List<PortDirection>> callVars = generateCallVariables(dagVertex, prototype, isInit);
