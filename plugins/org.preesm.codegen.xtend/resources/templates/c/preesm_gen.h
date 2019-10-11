@@ -88,14 +88,8 @@ extern "C" {
 #[[#]]#include <unistd.h>
 #[[#]]#endif
 
-#[[#]]#ifdef __APPLE__
-#[[#]]#include "TargetConditionals.h"
 #[[#]]#include "mac_barrier.h"
-#[[#]]#endif
-
-#[[#]]#ifndef __k1__
 #[[#]]#include "communication.h"
-#[[#]]#endif
 #[[#]]#include "dump.h"
 #[[#]]#include "fifo.h"
 
