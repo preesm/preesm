@@ -202,6 +202,14 @@ class CPrinter extends BlankPrinter {
 			printf("Warning: expecting NULL arguments\n");
 		}
 
+	«IF !printedCoreBlock.sinkFifoBuffers.isEmpty»
+#if defined PREESM_LOOP_SIZE && defined PREESM_VERBOSE
+	«FOR buffer : printedCoreBlock.sinkFifoBuffers»
+			PREESM_MD5_CTX preesm_md5_ctx_«buffer.name»;
+			PREESM_MD5_Init(&preesm_md5_ctx_«buffer.name»);
+	«ENDFOR»
+#endif
+	«ENDIF»
 
 		«IF !callBlock.codeElts.empty»// Initialisation(s)«"\n\n"»«ENDIF»
 	'''
@@ -222,8 +230,29 @@ class CPrinter extends BlankPrinter {
 	override printCoreLoopBlockFooter(LoopBlock block2) '''
 			// loop footer
 			pthread_barrier_wait(&iter_barrier);
+		«IF !printedCoreBlock.sinkFifoBuffers.isEmpty»
+#if defined PREESM_LOOP_SIZE && defined PREESM_VERBOSE
+			«FOR buffer : printedCoreBlock.sinkFifoBuffers»
+			PREESM_MD5_Update(&preesm_md5_ctx_«buffer.name»,(char *)«buffer.name», «buffer.size * buffer.typeSize»);
+			«ENDFOR»
+#endif
+		«ENDIF»
 		}
 
+	«IF !printedCoreBlock.sinkFifoBuffers.isEmpty»
+#if defined PREESM_LOOP_SIZE && defined PREESM_VERBOSE
+		unsigned char preesm_md5_chars[16];
+	«FOR buffer : printedCoreBlock.sinkFifoBuffers»
+		PREESM_MD5_Final(preesm_md5_chars, &preesm_md5_ctx_«buffer.name»);
+		// Print MD5
+		printf("preesm_md5_«buffer.name» : ");
+		for (int i = 16; i > 0; i -= 1){
+			printf("%02x", *(preesm_md5_chars + i - 1));
+		}
+		printf("\n");
+	«ENDFOR»
+#endif
+	«ENDIF»
 
 		return NULL;
 	}
