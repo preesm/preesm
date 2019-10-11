@@ -88,10 +88,7 @@ extern "C" {
 #[[#]]#include <unistd.h>
 #[[#]]#endif
 
-#[[#]]#include "mac_barrier.h"
-#[[#]]#include "communication.h"
-#[[#]]#include "dump.h"
-#[[#]]#include "fifo.h"
+$PREESM_INCLUDES
 
 #[[#]]#include "preesm.h"
 

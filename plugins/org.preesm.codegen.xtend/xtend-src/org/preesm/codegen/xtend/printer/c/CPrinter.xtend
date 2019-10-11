@@ -201,6 +201,7 @@ class CPrinter extends BlankPrinter {
 		if (arg != NULL) {
 			printf("Warning: expecting NULL arguments\n");
 		}
+
 		«IF !callBlock.codeElts.empty»// Initialisation(s)«"\n\n"»«ENDIF»
 	'''
 
@@ -221,6 +222,7 @@ class CPrinter extends BlankPrinter {
 			// loop footer
 			pthread_barrier_wait(&iter_barrier);
 		}
+
 		return NULL;
 	}
 
@@ -421,7 +423,7 @@ class CPrinter extends BlankPrinter {
 		}
 	}
 
-	def CharSequence generatePreesmHeader() {
+	def CharSequence generatePreesmHeader(List<String> stdLibFiles) {
 	    // 0- without the following class loader initialization, I get the following exception when running as Eclipse
 	    // plugin:
 	    // org.apache.velocity.exception.VelocityException: The specified class for ResourceManager
@@ -437,6 +439,9 @@ class CPrinter extends BlankPrinter {
 	    // 2- init context
 	    val VelocityContext context = new VelocityContext();
 	    val findAllCHeaderFileNamesUsed = CHeaderUsedLocator.findAllCHeaderFileNamesUsed(getEngine.algo)
+
+	    context.put("PREESM_INCLUDES", stdLibFiles.filter[it.endsWith(".h")].map["#include \""+ it +"\""].join("\n"));
+
 	    context.put("USER_INCLUDES", findAllCHeaderFileNamesUsed.map["#include \""+ it +"\""].join("\n"));
 
 		var String constants = "#define NB_DESIGN_ELTS "+getEngine.archi.componentInstances.size+"\n#define NB_CORES "+getEngine.codeBlocks.size;
@@ -479,6 +484,8 @@ class CPrinter extends BlankPrinter {
 						"dump.h",
 						"fifo.c",
 						"fifo.h",
+						"md5.c",
+						"md5.h",
 						"mac_barrier.c",
 						"mac_barrier.h"
 					]);
@@ -487,7 +494,7 @@ class CPrinter extends BlankPrinter {
 		} catch (IOException exc) {
 			throw new PreesmRuntimeException("Could not generated content for " + it, exc)
 		}]
-		result.put("preesm_gen.h",generatePreesmHeader())
+		result.put("preesm_gen.h",generatePreesmHeader(files))
 		return result
 	}
 
