@@ -600,7 +600,12 @@ public class CodegenModelGenerator extends AbstractCodegenModelGenerator {
         final BufferAggregate bufferAggregate = inEdge.getPropertyBean().getValue(BufferAggregate.propertyBeanName);
         for (final BufferProperties buffProperty : bufferAggregate) {
           final Buffer buffer = srSDFEdgeBuffers.get(buffProperty);
-          operatorBlock.getSinkFifoBuffers().add(buffer);
+          if (buffer != null) {
+            operatorBlock.getSinkFifoBuffers().add(buffer);
+          } else {
+            // final Buffer dagEdgeBuffer = dagEdgeBuffers.get(inEdge);
+            // operatorBlock.getSinkFifoBuffers().add(dagEdgeBuffer);
+          }
         }
       }
     }
