@@ -35,11 +35,7 @@
  * compile-time configuration.
  */
 
-#ifndef HAVE_OPENSSL
-
-#include <string.h>
-
-#include "md5.h"
+#include "preesm_md5.h"
 
 /*
  * The basic MD5 functions.
@@ -72,23 +68,23 @@
  *
  * Unfortunately, this optimization may be a C strict aliasing rules violation
  * if the caller's data buffer has effective type that cannot be aliased by
- * MD5_u32plus.  In practice, this problem may occur if these MD5 routines are
+ * PREESM_MD5_u32plus.  In practice, this problem may occur if these MD5 routines are
  * inlined into a calling function, or with future and dangerously advanced
  * link-time optimizations.  For the time being, keeping these MD5 routines in
  * their own translation unit avoids the problem.
  */
 #if defined(__i386__) || defined(__x86_64__) || defined(__vax__)
 #define SET(n) \
-	(*(MD5_u32plus *)&ptr[(n) * 4])
+	(*(PREESM_MD5_u32plus *)&ptr[(n) * 4])
 #define GET(n) \
 	SET(n)
 #else
 #define SET(n) \
 	(ctx->block[(n)] = \
-	(MD5_u32plus)ptr[(n) * 4] | \
-	((MD5_u32plus)ptr[(n) * 4 + 1] << 8) | \
-	((MD5_u32plus)ptr[(n) * 4 + 2] << 16) | \
-	((MD5_u32plus)ptr[(n) * 4 + 3] << 24))
+	(PREESM_MD5_u32plus)ptr[(n) * 4] | \
+	((PREESM_MD5_u32plus)ptr[(n) * 4 + 1] << 8) | \
+	((PREESM_MD5_u32plus)ptr[(n) * 4 + 2] << 16) | \
+	((PREESM_MD5_u32plus)ptr[(n) * 4 + 3] << 24))
 #define GET(n) \
 	(ctx->block[(n)])
 #endif
@@ -97,11 +93,11 @@
  * This processes one or more 64-byte data blocks, but does NOT update the bit
  * counters.  There are no alignment requirements.
  */
-static const void *body(MD5_CTX *ctx, const void *data, unsigned long size)
+static const void *PREESM_MD5_body(PREESM_MD5_CTX *ctx, const void *data, unsigned long size)
 {
 	const unsigned char *ptr;
-	MD5_u32plus a, b, c, d;
-	MD5_u32plus saved_a, saved_b, saved_c, saved_d;
+	PREESM_MD5_u32plus a, b, c, d;
+	PREESM_MD5_u32plus saved_a, saved_b, saved_c, saved_d;
 
 	ptr = (const unsigned char *)data;
 
@@ -204,7 +200,7 @@ static const void *body(MD5_CTX *ctx, const void *data, unsigned long size)
 	return ptr;
 }
 
-void MD5_Init(MD5_CTX *ctx)
+void PREESM_MD5_Init(PREESM_MD5_CTX *ctx)
 {
 	ctx->a = 0x67452301;
 	ctx->b = 0xefcdab89;
@@ -215,9 +211,9 @@ void MD5_Init(MD5_CTX *ctx)
 	ctx->hi = 0;
 }
 
-void MD5_Update(MD5_CTX *ctx, const void *data, unsigned long size)
+void PREESM_MD5_Update(PREESM_MD5_CTX *ctx, const void *data, unsigned long size)
 {
-	MD5_u32plus saved_lo;
+	PREESM_MD5_u32plus saved_lo;
 	unsigned long used, available;
 
 	saved_lo = ctx->lo;
@@ -238,11 +234,11 @@ void MD5_Update(MD5_CTX *ctx, const void *data, unsigned long size)
 		memcpy(&ctx->buffer[used], data, available);
 		data = (const unsigned char *)data + available;
 		size -= available;
-		body(ctx, ctx->buffer, 64);
+		PREESM_MD5_body(ctx, ctx->buffer, 64);
 	}
 
 	if (size >= 64) {
-		data = body(ctx, data, size & ~(unsigned long)0x3f);
+		data = PREESM_MD5_body(ctx, data, size & ~(unsigned long)0x3f);
 		size &= 0x3f;
 	}
 
@@ -255,7 +251,7 @@ void MD5_Update(MD5_CTX *ctx, const void *data, unsigned long size)
 	(dst)[2] = (unsigned char)((src) >> 16); \
 	(dst)[3] = (unsigned char)((src) >> 24);
 
-void MD5_Final(unsigned char *result, MD5_CTX *ctx)
+void PREESM_MD5_Final(unsigned char *result, PREESM_MD5_CTX *ctx)
 {
 	unsigned long used, available;
 
@@ -267,7 +263,7 @@ void MD5_Final(unsigned char *result, MD5_CTX *ctx)
 
 	if (available < 8) {
 		memset(&ctx->buffer[used], 0, available);
-		body(ctx, ctx->buffer, 64);
+		PREESM_MD5_body(ctx, ctx->buffer, 64);
 		used = 0;
 		available = 64;
 	}
@@ -278,7 +274,7 @@ void MD5_Final(unsigned char *result, MD5_CTX *ctx)
 	OUT(&ctx->buffer[56], ctx->lo)
 	OUT(&ctx->buffer[60], ctx->hi)
 
-	body(ctx, ctx->buffer, 64);
+	PREESM_MD5_body(ctx, ctx->buffer, 64);
 
 	OUT(&result[0], ctx->a)
 	OUT(&result[4], ctx->b)
@@ -288,4 +284,3 @@ void MD5_Final(unsigned char *result, MD5_CTX *ctx)
 	memset(ctx, 0, sizeof(*ctx));
 }
 
-#endif

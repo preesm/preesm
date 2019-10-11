@@ -202,6 +202,7 @@ class CPrinter extends BlankPrinter {
 			printf("Warning: expecting NULL arguments\n");
 		}
 
+
 		«IF !callBlock.codeElts.empty»// Initialisation(s)«"\n\n"»«ENDIF»
 	'''
 
@@ -222,6 +223,7 @@ class CPrinter extends BlankPrinter {
 			// loop footer
 			pthread_barrier_wait(&iter_barrier);
 		}
+
 
 		return NULL;
 	}
@@ -484,8 +486,8 @@ class CPrinter extends BlankPrinter {
 						"dump.h",
 						"fifo.c",
 						"fifo.h",
-						"md5.c",
-						"md5.h",
+						"preesm_md5.c",
+						"preesm_md5.h",
 						"mac_barrier.c",
 						"mac_barrier.h"
 					]);
