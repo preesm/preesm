@@ -197,6 +197,7 @@ enum Delimiter {
 class CoreBlock extends Block {
 	refers LoopBlock loopBlock
 	refers CallBlock initBlock
+	refers Buffer[] sinkFifoBuffers
 	String coreType
 	unordered id int coreID
 }

@@ -592,6 +592,19 @@ public class CodegenModelGenerator extends AbstractCodegenModelGenerator {
    *
    */
   protected void generateActorFiring(final CoreBlock operatorBlock, final DAGVertex dagVertex) {
+
+    // store buffers on which MD5 can be computed to check validity of transformations
+    if (dagVertex.outgoingEdges().isEmpty()) {
+      final Set<DAGEdge> incomingEdges = dagVertex.incomingEdges();
+      for (final DAGEdge inEdge : incomingEdges) {
+        final BufferAggregate bufferAggregate = inEdge.getPropertyBean().getValue(BufferAggregate.propertyBeanName);
+        for (final BufferProperties buffProperty : bufferAggregate) {
+          final Buffer buffer = srSDFEdgeBuffers.get(buffProperty);
+          operatorBlock.getSinkFifoBuffers().add(buffer);
+        }
+      }
+    }
+
     // Check whether the ActorCall is a call to a hierarchical actor or not.
     final Object refinement = dagVertex.getRefinement();
 
