@@ -230,13 +230,6 @@ class CPrinter extends BlankPrinter {
 	override printCoreLoopBlockFooter(LoopBlock block2) '''
 			// loop footer
 			pthread_barrier_wait(&iter_barrier);
-		«IF !printedCoreBlock.sinkFifoBuffers.isEmpty»
-#if defined PREESM_LOOP_SIZE && defined PREESM_VERBOSE
-			«FOR buffer : printedCoreBlock.sinkFifoBuffers»
-			PREESM_MD5_Update(&preesm_md5_ctx_«buffer.name»,(char *)«buffer.name», «buffer.size * buffer.typeSize»);
-			«ENDFOR»
-#endif
-		«ENDIF»
 		}
 
 	«IF !printedCoreBlock.sinkFifoBuffers.isEmpty»
@@ -698,6 +691,17 @@ class CPrinter extends BlankPrinter {
 	apolloAddActorConfig(0, pthread_self(), "«functionCall.actorName»");
 	#endif
 	«ENDIF»
+
+	«IF !printedCoreBlock.sinkFifoBuffers.isEmpty»
+#if defined PREESM_LOOP_SIZE && defined PREESM_VERBOSE
+	«FOR buffer : printedCoreBlock.sinkFifoBuffers»
+	«IF functionCall.parameters.contains(buffer)»
+	PREESM_MD5_Update(&preesm_md5_ctx_«buffer.name»,(char *)«buffer.name», «buffer.size * buffer.typeSize»);
+	«ENDIF»
+	«ENDFOR»
+#endif
+	«ENDIF»
+
 	«functionCall.name»(«FOR param : functionCall.parameters SEPARATOR ','»«param.doSwitch»«ENDFOR»); // «functionCall.actorName»
 	'''
 
