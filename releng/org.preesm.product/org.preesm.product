@@ -38,7 +38,6 @@
       </win>
    </launcher>
 
-
    <vm>
    </vm>
 
@@ -570,9 +569,7 @@ Version 1.0 dated 2006-09-05.
    <features>
       <feature id="org.eclipse.platform"/>
       <feature id="org.eclipse.equinox.p2.user.ui"/>
-      <feature id="org.eclipse.ecf.filetransfer.httpclient4.feature"/>
       <feature id="org.eclipse.help"/>
-      <feature id="org.eclipse.ecf.filetransfer.httpclient4.ssl.feature"/>
       <feature id="org.eclipse.equinox.p2.extras.feature"/>
       <feature id="org.eclipse.rcp"/>
       <feature id="org.eclipse.equinox.p2.core.feature"/>
@@ -601,6 +598,8 @@ Version 1.0 dated 2006-09-05.
       <feature id="org.eclipse.graphiti.feature"/>
       <feature id="org.ietr.graphiti.feature"/>
       <feature id="org.preesm.feature"/>
+      <feature id="org.eclipse.ecf.filetransfer.httpclient45.feature"/>
+      <feature id="org.eclipse.ecf.filetransfer.ssl.feature"/>
    </features>
 
    <configurations>
