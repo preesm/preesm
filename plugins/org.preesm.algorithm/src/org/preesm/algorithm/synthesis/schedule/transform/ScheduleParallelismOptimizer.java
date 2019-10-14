@@ -3,7 +3,7 @@ package org.preesm.algorithm.synthesis.schedule.transform;
 import java.util.LinkedList;
 import java.util.List;
 import org.preesm.algorithm.schedule.model.HierarchicalSchedule;
-import org.preesm.algorithm.schedule.model.ParallelActorSchedule;
+import org.preesm.algorithm.schedule.model.ParallelHiearchicalSchedule;
 import org.preesm.algorithm.schedule.model.Schedule;
 import org.preesm.algorithm.schedule.model.ScheduleFactory;
 import org.preesm.algorithm.schedule.model.SequentialHiearchicalSchedule;
@@ -44,7 +44,8 @@ public class ScheduleParallelismOptimizer implements IScheduleTransform {
           if (processedChild instanceof SequentialSchedule) {
             isComposedOfSequentialSchedule = true;
             // Is child a parallel actor schedule that can be parallelized out of it cluster?
-          } else if ((processedChild instanceof ParallelActorSchedule) && (processedChild.getRepetition() == 1)) {
+          } else if ((processedChild instanceof ParallelHiearchicalSchedule) && (processedChild.getRepetition() == 1)
+              && (processedChild.getChildren().size() == 1)) {
             // Register it as a parallel schedule in SCHEDULE list of children
             parallelSchedules.add(processedChild);
           }
