@@ -44,6 +44,7 @@ import java.util.Map.Entry;
 import org.apache.commons.lang3.tuple.Pair;
 import org.preesm.algorithm.schedule.model.ActorSchedule;
 import org.preesm.algorithm.schedule.model.HierarchicalSchedule;
+import org.preesm.algorithm.schedule.model.ParallelHiearchicalSchedule;
 import org.preesm.algorithm.schedule.model.Schedule;
 import org.preesm.algorithm.schedule.model.ScheduleFactory;
 import org.preesm.algorithm.synthesis.schedule.ScheduleOrderManager;
@@ -325,7 +326,7 @@ public class ClusteringBuilder {
    */
   private final Schedule clusterize(Schedule schedule) {
     // If it is an hierarchical schedule, explore
-    if (schedule instanceof HierarchicalSchedule) {
+    if (schedule instanceof HierarchicalSchedule && schedule.hasAttachedActor()) {
       HierarchicalSchedule hierSchedule = (HierarchicalSchedule) schedule;
       // Retrieve childrens schedule and actors
       List<Schedule> childSchedules = new LinkedList<>();
@@ -338,8 +339,12 @@ public class ClusteringBuilder {
         Schedule processedChild = clusterize(child);
         hierSchedule.getChildren().add(processedChild);
         // Retrieve list of children AbstractActor (needed for clusterization)
-        if (child instanceof HierarchicalSchedule) {
+        if (child instanceof HierarchicalSchedule && child.hasAttachedActor()) {
           childActors.add(((HierarchicalSchedule) processedChild).getAttachedActor());
+        } else if (child instanceof HierarchicalSchedule && !child.hasAttachedActor()) {
+          final List<AbstractActor> actors = new ScheduleOrderManager(child.getChildren().get(0))
+              .buildNonTopologicalOrderedList();
+          childActors.addAll(actors);
         } else {
           final List<AbstractActor> actors = new ScheduleOrderManager(processedChild).buildNonTopologicalOrderedList();
           childActors.addAll(actors);
@@ -416,12 +421,24 @@ public class ClusteringBuilder {
       subSched.setRepetition(repetition);
       schedule.getScheduleTree().add(subSched);
     } else {
-      ActorSchedule actorSchedule = null;
-      actorSchedule = ScheduleFactory.eINSTANCE.createSequentialActorSchedule();
-      actorSchedule.setRepetition(repetition);
-      // Register in the schedule with original actor to be able to clusterize the non-copy graph
+      // Create an sequential actor schedule
+      ActorSchedule actorSchedule = ScheduleFactory.eINSTANCE.createSequentialActorSchedule();
       actorSchedule.getActorList().add(PreesmCopyTracker.getSource(actor));
-      schedule.getScheduleTree().add(actorSchedule);
+      actorSchedule.setRepetition(repetition);
+
+      Schedule outputSchedule = null;
+      if (!ClusteringHelper.isActorDelayed(actor)) {
+        ParallelHiearchicalSchedule parallelNode = ScheduleFactory.eINSTANCE.createParallelHiearchicalSchedule();
+        parallelNode.getChildren().add(actorSchedule);
+        parallelNode.setRepetition(1);
+        parallelNode.setAttachedActor(null);
+        outputSchedule = (Schedule) parallelNode;
+      } else {
+        outputSchedule = actorSchedule;
+      }
+
+      // Register in the schedule with original actor to be able to clusterize the non-copy graph
+      schedule.getScheduleTree().add(outputSchedule);
     }
   }
 
