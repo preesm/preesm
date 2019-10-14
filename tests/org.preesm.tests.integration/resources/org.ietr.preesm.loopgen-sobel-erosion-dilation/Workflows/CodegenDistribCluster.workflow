@@ -4,6 +4,7 @@
     <dftools:task pluginId="org.ietr.preesm.pisdfclustering" taskId="Clustering">
         <dftools:data key="variables">
             <dftools:variable name="Algorithm" value="APGAN"/>
+            <dftools:variable name="Optimization criteria" value="Performance"/>
             <dftools:variable name="Seed" value="3"/>
         </dftools:data>
     </dftools:task>

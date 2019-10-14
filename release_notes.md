@@ -10,6 +10,10 @@ PREESM Changelog
 ### Changes
 * Fix compile error in generated TCP code (but execution hangs...);
 * Refactor;
+* Clustering:
+	* Workflow task PiSDF Clustering is now documented
+	* Implemented a new schedule transform that optimize parallelism inside of sequantial schedule hierarchy
+	* New parameter: Optimization criteria (memory or performance)
 
 ### Bug fix
 
@@ -43,7 +47,6 @@ PREESM Changelog
 * Add methods in PiSDFTopologyHelper, and corresponding tests;
 * Simulation tab of scenario now has an option to import all data types from
   the graph, with predefined default values for common type names.
-
 
 ### Bug fix
 * Fix #74

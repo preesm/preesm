@@ -58,24 +58,55 @@ import org.preesm.workflow.implement.AbstractTaskImplementation;
  *
  *
  */
-@PreesmTask(id = "org.ietr.preesm.pisdfclustering", name = "Clustering",
+@PreesmTask(id = "org.ietr.preesm.pisdfclustering", name = "PiSDF Clustering",
 
     inputs = { @Port(name = "PiMM", type = PiGraph.class), @Port(name = "scenario", type = Scenario.class) },
     outputs = { @Port(name = "PiMM", type = PiGraph.class), @Port(name = "schedules", type = Map.class) },
-    description = "Workflow task responsible for clustering hierarchical actors.",
+    description = "Workflow task responsible for clustering actors by following a specified algorithm.",
     parameters = {
         @Parameter(name = "Algorithm",
-            values = { @Value(name = "APGAN", effect = ""), @Value(name = "Dummy", effect = ""),
-                @Value(name = "Random", effect = ""), @Value(name = "Parallel", effect = "") }),
+            description = "Specify which clustering algorithm to use. A clustering algorithm will decide which "
+                + "actors to clusterize in order to get a specific configuration "
+                + "(in terms of memory space and parallelism).",
+            values = {
+                @Value(name = "APGAN",
+                    effect = "Acyclic Pairwise Grouping of Adjacent Nodes, an algorithm use to minimize memory space "
+                        + "needed to implement the resulting cluster. It stops when no more actors can be clustered."),
+                @Value(name = "Dummy",
+                    effect = "Choose, without intelligence, the actors to be clustered. "
+                        + "It stops when no more actors can be clustered."),
+                @Value(name = "Random",
+                    effect = "Choose randomly the actors to be clustered. It used the parameter \"Seed\". "
+                        + "It stops when no more actors can be clustered."),
+                @Value(name = "Parallel",
+                    effect = "(Not stable) Identify branches in input graph. "
+                        + "It stops when no more actors can be clustered.") }),
         @Parameter(name = "Seed",
-            values = { @Value(name = "$$n\\in \\mathbb{N}^*$$", effect = "Seed for random generator") }) })
+            description = "Specify the seed that will feed the random number generator "
+                + "for the random clustering algortihm",
+            values = { @Value(name = "$$n\\in \\mathbb{N}^*$$", effect = "Seed for Random algorithm") }),
+        @Parameter(name = "Optimization criteria",
+            description = "Specify the criteria to optimize. If memory is choosen, some parallelizable "
+                + "actors will be sequentialized to minimize memory space. On the other hand, if performance "
+                + "is choosen, the algorithm will exploit every parallelism possibility.",
+            values = { @Value(name = "Memory", effect = "Minimize memory space of resulting clusters"),
+                @Value(name = "Performance", effect = "Maximize performance of resulting clusters") }) })
 public class Clustering extends AbstractTaskImplementation {
 
-  public static final String ALGORITHM_CHOICE  = "Algorithm";
-  public static final String DEFAULT_ALGORITHM = "APGAN";
+  public static final String ALGORITHM_CHOICE   = "Algorithm";
+  public static final String ALGORITHM_APGAN    = "APGAN";
+  public static final String ALGORITHM_DUMMY    = "Dummy";
+  public static final String ALGORITHM_RANDOM   = "Random";
+  public static final String ALGORITHM_PARALLEL = "Parallel";
+  public static final String DEFAULT_ALGORITHM  = ALGORITHM_APGAN;
 
   public static final String SEED_CHOICE  = "Seed";
   public static final String DEFAULT_SEED = "0";
+
+  public static final String OPTIMIZATION_CHOICE      = "Optimization criteria";
+  public static final String OPTIMIZATION_MEMORY      = "Memory";
+  public static final String OPTIMIZATION_PERFORMANCE = "Performance";
+  public static final String DEFAULT_OPTIMIZATION     = OPTIMIZATION_PERFORMANCE;
 
   public static final String PISDF_REFERENCE_ACTOR = "PiSDFActor";
 
@@ -89,9 +120,11 @@ public class Clustering extends AbstractTaskImplementation {
     final Scenario scenario = (Scenario) inputs.get("scenario");
     String algorithm = parameters.get(ALGORITHM_CHOICE);
     String seed = parameters.get(SEED_CHOICE);
+    String optimization = parameters.get(OPTIMIZATION_CHOICE);
 
     // Instantiate a ClusteringBuilder and process clustering
-    ClusteringBuilder clusteringBuilder = new ClusteringBuilder(graph, scenario, algorithm, Long.parseLong(seed));
+    ClusteringBuilder clusteringBuilder = new ClusteringBuilder(graph, scenario, algorithm, Long.parseLong(seed),
+        optimization);
     Map<AbstractActor, Schedule> scheduleMapping = clusteringBuilder.processClustering();
 
     // Print information in console
@@ -117,12 +150,13 @@ public class Clustering extends AbstractTaskImplementation {
     Map<String, String> defaultParams = new LinkedHashMap<>();
     defaultParams.put(ALGORITHM_CHOICE, DEFAULT_ALGORITHM);
     defaultParams.put(SEED_CHOICE, DEFAULT_SEED);
+    defaultParams.put(OPTIMIZATION_CHOICE, DEFAULT_OPTIMIZATION);
     return defaultParams;
   }
 
   @Override
   public String monitorMessage() {
-    return "Clustering";
+    return "PiSDF Clustering";
   }
 
 }

@@ -67,7 +67,7 @@ public class SchedulePrinterSwitch extends ScheduleSwitch<String> {
     final StringBuilder toPrint = new StringBuilder();
     if (object.getRepetition() > 1) {
       toPrint.append(object.getRepetition());
-      if (object.isParallel()) {
+      if (object.getParent().isParallel()) {
         toPrint.append("/");
       }
       toPrint.append("(");

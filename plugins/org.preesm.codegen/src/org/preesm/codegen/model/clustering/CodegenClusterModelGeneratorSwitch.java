@@ -151,8 +151,6 @@ public class CodegenClusterModelGeneratorSwitch extends ScheduleSwitch<CodeElt> 
    */
   Map<String, Object> fetcherMap;
 
-  HierarchicalSchedule parentNode;
-
   /**
    * @param operatorBlock
    *          core block to print in
@@ -176,7 +174,6 @@ public class CodegenClusterModelGeneratorSwitch extends ScheduleSwitch<CodeElt> 
     this.delayBufferMap = new HashMap<>();
     this.iterMap = new HashMap<>();
     this.repVector = null;
-    this.parentNode = null;
   }
 
   /**
@@ -199,7 +196,8 @@ public class CodegenClusterModelGeneratorSwitch extends ScheduleSwitch<CodeElt> 
 
     // If parent node a parallel node with one child? If yes, repetition can be parallelize
     boolean parallelRepetition = false;
-    if (this.parentNode != null && this.parentNode.isParallel() && this.parentNode.getChildren().size() == 1) {
+    Schedule parentNode = schedule.getParent();
+    if (parentNode != null && parentNode.isParallel() && parentNode.getChildren().size() == 1) {
       parallelRepetition = true;
     }
 
@@ -208,7 +206,6 @@ public class CodegenClusterModelGeneratorSwitch extends ScheduleSwitch<CodeElt> 
 
     // Explore and generate child schedule
     for (final Schedule e : schedule.getChildren()) {
-      this.parentNode = schedule;
       outputPair.getValue().getCodeElts().add(doSwitch(e));
     }
 
@@ -220,7 +217,6 @@ public class CodegenClusterModelGeneratorSwitch extends ScheduleSwitch<CodeElt> 
 
     // Is it a data parallelism node?
     if (schedule.getChildren().size() == 1) {
-      this.parentNode = schedule;
       return doSwitch(schedule.getChildren().get(0));
     }
 
@@ -229,7 +225,6 @@ public class CodegenClusterModelGeneratorSwitch extends ScheduleSwitch<CodeElt> 
 
     // Explore and generate child schedule
     for (final Schedule e : schedule.getChildren()) {
-      this.parentNode = schedule;
       final SectionBlock sectionBlock = CodegenModelUserFactory.eINSTANCE.createSectionBlock();
       sectionBlock.getCodeElts().add(doSwitch(e));
       outputPair.getValue().getCodeElts().add(sectionBlock);
@@ -240,6 +235,13 @@ public class CodegenClusterModelGeneratorSwitch extends ScheduleSwitch<CodeElt> 
 
   @Override
   public CodeElt caseActorSchedule(ActorSchedule schedule) {
+
+    // If parent node a parallel node with one child? If yes, repetition can be parallelize
+    boolean parallelRepetition = false;
+    Schedule parentNode = schedule.getParent();
+    if (parentNode != null && parentNode.isParallel() && parentNode.getChildren().size() == 1) {
+      parallelRepetition = true;
+    }
 
     // Retrieve actor to fire
     // clustering process does list actors in actor schedule, we only care about the first one here
@@ -252,7 +254,7 @@ public class CodegenClusterModelGeneratorSwitch extends ScheduleSwitch<CodeElt> 
     // If actors has to be repeated few times, build a FiniteLoopBlock
     CodeElt outputBlock = null;
     if (schedule.getRepetition() > 1) {
-      outputBlock = generateFiniteLoopBlock(loopBlock, (int) schedule.getRepetition(), actor, schedule.isParallel());
+      outputBlock = generateFiniteLoopBlock(loopBlock, (int) schedule.getRepetition(), actor, parallelRepetition);
     } else {
       // Output the LoopBlock
       outputBlock = loopBlock;

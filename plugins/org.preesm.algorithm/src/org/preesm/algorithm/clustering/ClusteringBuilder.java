@@ -44,6 +44,7 @@ import java.util.Map.Entry;
 import org.apache.commons.lang3.tuple.Pair;
 import org.preesm.algorithm.schedule.model.ActorSchedule;
 import org.preesm.algorithm.schedule.model.HierarchicalSchedule;
+import org.preesm.algorithm.schedule.model.ParallelHiearchicalSchedule;
 import org.preesm.algorithm.schedule.model.Schedule;
 import org.preesm.algorithm.schedule.model.ScheduleFactory;
 import org.preesm.algorithm.synthesis.schedule.ScheduleOrderManager;
@@ -51,6 +52,7 @@ import org.preesm.algorithm.synthesis.schedule.transform.IScheduleTransform;
 import org.preesm.algorithm.synthesis.schedule.transform.ScheduleDataParallelismExhibiter;
 import org.preesm.algorithm.synthesis.schedule.transform.ScheduleFlattener;
 import org.preesm.algorithm.synthesis.schedule.transform.ScheduleParallelismDepthLimiter;
+import org.preesm.algorithm.synthesis.schedule.transform.ScheduleParallelismOptimizer;
 import org.preesm.commons.CollectionUtil;
 import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.preesm.commons.math.MathFunctionsHelper;
@@ -117,6 +119,11 @@ public class ClusteringBuilder {
   private int nbCluster;
 
   /**
+   * Boolean that stored user's choice about performance optimization.
+   */
+  private boolean performanceOptimization;
+
+  /**
    * @param graph
    *          PiGraph to clusterize
    * @param algorithm
@@ -124,13 +131,16 @@ public class ClusteringBuilder {
    * @param seed
    *          seed for random clustering algorithm
    */
-  public ClusteringBuilder(final PiGraph graph, final Scenario scenario, final String algorithm, final long seed) {
+  public ClusteringBuilder(final PiGraph graph, final Scenario scenario, final String algorithm, final long seed,
+      final String optimization) {
     this.scheduleMapping = new LinkedHashMap<>();
     this.seed = seed;
-    this.clusteringAlgorithm = clusteringAlgorithmFactory(algorithm);
     this.pigraph = graph;
     this.scenario = scenario;
     this.repetitionVector = null;
+    setClusteringAlgorithm(algorithm);
+    setClusteringCriteria(optimization);
+
   }
 
   public PiGraph getAlgorithm() {
@@ -147,6 +157,40 @@ public class ClusteringBuilder {
 
   public Scenario getScenario() {
     return scenario;
+  }
+
+  private void setClusteringCriteria(String optimization) {
+    switch (optimization) {
+      case Clustering.OPTIMIZATION_MEMORY:
+        this.performanceOptimization = false;
+        break;
+      case Clustering.OPTIMIZATION_PERFORMANCE:
+        this.performanceOptimization = true;
+        break;
+      default:
+        throw new PreesmRuntimeException(
+            "Parameter " + optimization + " is not part of available optimization criteria");
+    }
+  }
+
+  private final void setClusteringAlgorithm(String clusteringAlgorithm) {
+    switch (clusteringAlgorithm) {
+      case Clustering.ALGORITHM_APGAN:
+        this.clusteringAlgorithm = new APGANClusteringAlgorithm();
+        break;
+      case Clustering.ALGORITHM_DUMMY:
+        this.clusteringAlgorithm = new DummyClusteringAlgorithm();
+        break;
+      case Clustering.ALGORITHM_RANDOM:
+        this.clusteringAlgorithm = new RandomClusteringAlgorithm(this.seed);
+        break;
+      case Clustering.ALGORITHM_PARALLEL:
+        this.clusteringAlgorithm = new ParallelClusteringAlgorithm();
+        break;
+      default:
+        throw new PreesmRuntimeException(
+            "Parameter " + clusteringAlgorithm + " is not part of available clustering algorithm");
+    }
   }
 
   /**
@@ -174,12 +218,15 @@ public class ClusteringBuilder {
       // Clusterize given actors
       HierarchicalSchedule clusterSchedule = (HierarchicalSchedule) clusterize(actorsFound);
       scheduleMapping.put(clusterSchedule.getAttachedActor(), clusterSchedule);
-      // Compute BRV with the corresponding graph
-      repetitionVector = PiBRV.compute(this.pigraph, BRVMethod.LCM);
     }
 
     // Perform flattening transformation on schedule graph
     scheduleTransform(new ScheduleFlattener());
+
+    // If performance criteria is choosen, optimize parallelism
+    if (this.performanceOptimization) {
+      scheduleTransform(new ScheduleParallelismOptimizer());
+    }
 
     // Set input graph for second stage of clustering from transformed schedule graph
     this.pigraph = origAlgorithm;
@@ -249,25 +296,6 @@ public class ClusteringBuilder {
     }
   }
 
-  private final IClusteringAlgorithm clusteringAlgorithmFactory(String clusteringAlgorithm) {
-    if (clusteringAlgorithm != null) {
-      if (clusteringAlgorithm.equals("APGAN")) {
-        return new APGANClusteringAlgorithm();
-      }
-      if (clusteringAlgorithm.equals("Dummy")) {
-        return new DummyClusteringAlgorithm();
-      }
-      if (clusteringAlgorithm.equals("Random")) {
-        return new RandomClusteringAlgorithm(this.seed);
-      }
-      if (clusteringAlgorithm.equals("Parallel")) {
-        return new ParallelClusteringAlgorithm();
-      }
-    }
-    throw new PreesmRuntimeException(
-        "Parameter " + clusteringAlgorithm + " is not part of available clustering algorithm");
-  }
-
   /**
    * clusterize actors together
    *
@@ -298,7 +326,7 @@ public class ClusteringBuilder {
    */
   private final Schedule clusterize(Schedule schedule) {
     // If it is an hierarchical schedule, explore
-    if (schedule instanceof HierarchicalSchedule) {
+    if (schedule instanceof HierarchicalSchedule && schedule.hasAttachedActor()) {
       HierarchicalSchedule hierSchedule = (HierarchicalSchedule) schedule;
       // Retrieve childrens schedule and actors
       List<Schedule> childSchedules = new LinkedList<>();
@@ -311,8 +339,12 @@ public class ClusteringBuilder {
         Schedule processedChild = clusterize(child);
         hierSchedule.getChildren().add(processedChild);
         // Retrieve list of children AbstractActor (needed for clusterization)
-        if (child instanceof HierarchicalSchedule) {
+        if (child instanceof HierarchicalSchedule && child.hasAttachedActor()) {
           childActors.add(((HierarchicalSchedule) processedChild).getAttachedActor());
+        } else if (child instanceof HierarchicalSchedule && !child.hasAttachedActor()) {
+          final List<AbstractActor> actors = new ScheduleOrderManager(child.getChildren().get(0))
+              .buildNonTopologicalOrderedList();
+          childActors.addAll(actors);
         } else {
           final List<AbstractActor> actors = new ScheduleOrderManager(processedChild).buildNonTopologicalOrderedList();
           childActors.addAll(actors);
@@ -365,6 +397,9 @@ public class ClusteringBuilder {
       addActorToHierarchicalSchedule(schedule, a, repetitionVector.get(a) / clusterRepetition);
     }
 
+    // Compute BRV with the corresponding graph
+    repetitionVector = PiBRV.compute(this.pigraph, BRVMethod.LCM);
+
     return schedule;
   }
 
@@ -386,12 +421,24 @@ public class ClusteringBuilder {
       subSched.setRepetition(repetition);
       schedule.getScheduleTree().add(subSched);
     } else {
-      ActorSchedule actorSchedule = null;
-      actorSchedule = ScheduleFactory.eINSTANCE.createSequentialActorSchedule();
-      actorSchedule.setRepetition(repetition);
-      // Register in the schedule with original actor to be able to clusterize the non-copy graph
+      // Create an sequential actor schedule
+      ActorSchedule actorSchedule = ScheduleFactory.eINSTANCE.createSequentialActorSchedule();
       actorSchedule.getActorList().add(PreesmCopyTracker.getSource(actor));
-      schedule.getScheduleTree().add(actorSchedule);
+      actorSchedule.setRepetition(repetition);
+
+      Schedule outputSchedule = null;
+      if (!ClusteringHelper.isActorDelayed(actor)) {
+        ParallelHiearchicalSchedule parallelNode = ScheduleFactory.eINSTANCE.createParallelHiearchicalSchedule();
+        parallelNode.getChildren().add(actorSchedule);
+        parallelNode.setRepetition(1);
+        parallelNode.setAttachedActor(null);
+        outputSchedule = (Schedule) parallelNode;
+      } else {
+        outputSchedule = actorSchedule;
+      }
+
+      // Register in the schedule with original actor to be able to clusterize the non-copy graph
+      schedule.getScheduleTree().add(outputSchedule);
     }
   }
 
