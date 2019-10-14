@@ -100,8 +100,8 @@ public class ScheduleParallelismOptimizer implements IScheduleTransform {
 
       // Set repetition value for moved schedules
       final long repetitionSchedule = schedule.getRepetition();
-      leftSchedules.stream().forEach(x -> x.setRepetition(repetitionSchedule));
-      rightSchedules.stream().forEach(x -> x.setRepetition(repetitionSchedule));
+      leftSchedules.stream().forEach(x -> x.getChildren().get(0).setRepetition(repetitionSchedule));
+      rightSchedules.stream().forEach(x -> x.getChildren().get(0).setRepetition(repetitionSchedule));
 
       return temporaryHierarchy;
     }
