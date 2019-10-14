@@ -180,6 +180,9 @@ class CPrinter extends BlankPrinter {
 	extern pthread_barrier_t iter_barrier;
 	extern int preesmStopThreads;
 
+#if defined PREESM_LOOP_SIZE && defined PREESM_VERBOSE
+	extern struct rk_sema preesmPrintSema;
+#endif
 	'''
 
 	override printBufferDeclaration(Buffer buffer) '''
@@ -204,6 +207,7 @@ class CPrinter extends BlankPrinter {
 
 	«IF !printedCoreBlock.sinkFifoBuffers.isEmpty»
 #if defined PREESM_LOOP_SIZE && defined PREESM_VERBOSE
+
 	«FOR buffer : printedCoreBlock.sinkFifoBuffers»
 			PREESM_MD5_CTX preesm_md5_ctx_«buffer.name»;
 			PREESM_MD5_Init(&preesm_md5_ctx_«buffer.name»);
@@ -234,6 +238,8 @@ class CPrinter extends BlankPrinter {
 
 	«IF !printedCoreBlock.sinkFifoBuffers.isEmpty»
 #if defined PREESM_LOOP_SIZE && defined PREESM_VERBOSE
+
+		rk_sema_wait(&preesmPrintSema);
 		unsigned char preesm_md5_chars[16];
 	«FOR buffer : printedCoreBlock.sinkFifoBuffers»
 		PREESM_MD5_Final(preesm_md5_chars, &preesm_md5_ctx_«buffer.name»);
@@ -243,7 +249,9 @@ class CPrinter extends BlankPrinter {
 			printf("%02x", *(preesm_md5_chars + i - 1));
 		}
 		printf("\n");
+		fflush(stdout);
 	«ENDFOR»
+		rk_sema_post(&preesmPrintSema);
 #endif
 	«ENDIF»
 
@@ -553,6 +561,9 @@ class CPrinter extends BlankPrinter {
 		pthread_barrier_t iter_barrier;
 		int preesmStopThreads;
 
+#if defined PREESM_LOOP_SIZE && defined PREESM_VERBOSE
+		struct rk_sema preesmPrintSema;
+#endif
 
 		unsigned int launch(unsigned int core_id, pthread_t * thread, void *(*start_routine) (void *)) {
 
@@ -634,6 +645,9 @@ class CPrinter extends BlankPrinter {
 			preesmStopThreads = 0;
 			pthread_barrier_init(&iter_barrier, NULL, _PREESM_NBTHREADS_);
 
+#if defined PREESM_LOOP_SIZE && defined PREESM_VERBOSE
+			rk_sema_init(&preesmPrintSema, 1);
+#endif
 			communicationInit();
 
 			«IF this.apolloEnabled»
