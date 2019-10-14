@@ -80,6 +80,7 @@ import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.Actor;
 import org.preesm.model.pisdf.BroadcastActor;
 import org.preesm.model.pisdf.CHeaderRefinement;
+import org.preesm.model.pisdf.DataInputPort;
 import org.preesm.model.pisdf.EndActor;
 import org.preesm.model.pisdf.Fifo;
 import org.preesm.model.pisdf.ForkActor;
@@ -521,6 +522,16 @@ public class CodegenModelGenerator2 {
 
   private void generateActorFiring(final Actor actor, final Map<Port, Variable> portToVariable,
       final CoreBlock coreBlock) {
+
+    // store buffers on which MD5 can be computed to check validity of transformations
+    if (actor.getDataOutputPorts().isEmpty()) {
+      final EList<DataInputPort> dataInputPorts = actor.getDataInputPorts();
+      for (final DataInputPort dip : dataInputPorts) {
+        final Variable variable = memoryLinker.getPortToVariableMap().get(dip);
+        coreBlock.getSinkFifoBuffers().add((Buffer) variable);
+      }
+    }
+
     final Refinement refinement = actor.getRefinement();
     if (refinement instanceof CHeaderRefinement) {
       final FunctionPrototype initPrototype = ((CHeaderRefinement) refinement).getInitPrototype();

@@ -40,7 +40,6 @@ package org.preesm.codegen.xtend.printer.c.instrumented
 
 import java.util.ArrayList
 import java.util.Collection
-import java.util.HashMap
 import java.util.LinkedHashMap
 import java.util.List
 import java.util.Map
@@ -48,7 +47,6 @@ import org.preesm.codegen.model.ActorFunctionCall
 import org.preesm.codegen.model.Block
 import org.preesm.codegen.model.Buffer
 import org.preesm.codegen.model.CodeElt
-import org.preesm.codegen.model.CodegenFactory
 import org.preesm.codegen.model.CoreBlock
 import org.preesm.codegen.model.FifoCall
 import org.preesm.codegen.model.FunctionCall
@@ -61,6 +59,7 @@ import org.preesm.codegen.model.util.CodegenModelUserFactory
 import org.preesm.codegen.printer.PrinterState
 import org.preesm.codegen.xtend.printer.c.CPrinter
 import org.preesm.commons.exceptions.PreesmRuntimeException
+import org.preesm.model.pisdf.AbstractActor
 
 /**
  * This printer currently prints instrumented C code for X86 cores with all
@@ -102,7 +101,7 @@ class InstrumentedCPrinter extends CPrinter {
 	/**
 	 * Map associating actor names to their different IDs
 	 */
-	var actorIDs = new LinkedHashMap<String, List<Integer>>()
+	var actorIDs = new LinkedHashMap<AbstractActor, List<Integer>>()
 
 	/**
 	 * Add instrumentation code to the {@link Block blocks}.<br>
@@ -132,8 +131,8 @@ class InstrumentedCPrinter extends CPrinter {
 		var globalID = 0;
 
 		// Map associating each ID with the name of what is measures
-		var globalFunctionID = new LinkedHashMap<Integer, String>()
 
+		var globalFunctionID = new LinkedHashMap<Integer, AbstractActor>()
 		for (Block block : printerBlocks) {
 			if (dumpTimedBuffer.creator === null) {
 				dumpTimedBuffer.reaffectCreator(block);
@@ -150,22 +149,9 @@ class InstrumentedCPrinter extends CPrinter {
 
 				// Retrieve the function ID
 				val elt = coreLoop.codeElts.get(i)
-				val functionID = switch elt {
-					FunctionCall:
-						elt.name
-					SpecialCall:
-						elt.name
-					SharedMemoryCommunication:
-						elt.direction.toString.toLowerCase + elt.delimiter.toString.toLowerCase.toFirstUpper +
-							elt.data.name
-					FifoCall:
-						elt.name
-					default:
-						"undefined"
-				}
 
 				if (elt instanceof ActorFunctionCall) {
-					val ovp = elt.originalVertexPath
+					val ovp = elt.actor
 
 					// Do the pre insertion
 					val preDumpCall = CodegenModelUserFactory.eINSTANCE.createFunctionCall
@@ -296,8 +282,8 @@ class InstrumentedCPrinter extends CPrinter {
 	 */
 	override createSecondaryFiles(List<Block> printerBlocks, Collection<Block> allBlocks) {
 		val result = super.createSecondaryFiles(printerBlocks,allBlocks);
-		val mapActorNbRow = new HashMap<String, Integer>()
-		val mapActorNbFiring = new HashMap<String, Integer>()
+		val mapActorNbRow = new LinkedHashMap<AbstractActor, Integer>()
+		val mapActorNbFiring = new LinkedHashMap<AbstractActor, Integer>()
 		var i = 1
 		for (entry: actorIDs.entrySet) {
 			val name = entry.key
@@ -314,7 +300,7 @@ class InstrumentedCPrinter extends CPrinter {
 	/**
 	 * Generate the average formula for each actor, and the sum of everything.
 	 */
-	def String printAnalysisCsvFile(Map<String,Integer> mapActorNbRow, Map<String,Integer> mapActorNbFiring)'''
+	def String printAnalysisCsvFile(Map<AbstractActor,Integer> mapActorNbRow, Map<AbstractActor,Integer> mapActorNbFiring)'''
 	«FOR entry : actorIDs.entrySet»
 	«entry.key»;"=MROUND(AVERAGE(«FOR id : entry.value SEPARATOR ';'»«(id+1).intToColumn»«actorIDs.size + 4»:«(id+1).intToColumn»65536«ENDFOR»);1)"
 	«ENDFOR»

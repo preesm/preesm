@@ -592,6 +592,24 @@ public class CodegenModelGenerator extends AbstractCodegenModelGenerator {
    *
    */
   protected void generateActorFiring(final CoreBlock operatorBlock, final DAGVertex dagVertex) {
+
+    // store buffers on which MD5 can be computed to check validity of transformations
+    if (dagVertex.outgoingEdges().isEmpty()) {
+      final Set<DAGEdge> incomingEdges = dagVertex.incomingEdges();
+      for (final DAGEdge inEdge : incomingEdges) {
+        final BufferAggregate bufferAggregate = inEdge.getPropertyBean().getValue(BufferAggregate.propertyBeanName);
+        for (final BufferProperties buffProperty : bufferAggregate) {
+          final Buffer buffer = srSDFEdgeBuffers.get(buffProperty);
+          if (buffer != null) {
+            operatorBlock.getSinkFifoBuffers().add(buffer);
+          } else {
+            // final Buffer dagEdgeBuffer = dagEdgeBuffers.get(inEdge);
+            // operatorBlock.getSinkFifoBuffers().add(dagEdgeBuffer);
+          }
+        }
+      }
+    }
+
     // Check whether the ActorCall is a call to a hierarchical actor or not.
     final Object refinement = dagVertex.getRefinement();
 
@@ -1691,9 +1709,8 @@ public class CodegenModelGenerator extends AbstractCodegenModelGenerator {
     final ActorFunctionCall func = CodegenModelUserFactory.eINSTANCE.createActorFunctionCall();
     func.setName(prototype.getFunctionName());
     func.setActorName(dagVertex.getName());
-    org.preesm.model.pisdf.AbstractVertex oriPiActor = PreesmCopyTracker.<
-        org.preesm.model.pisdf.AbstractVertex>getOriginalSource(dagVertex.getReferencePiVertex());
-    func.setOriginalVertexPath(oriPiActor.getVertexPath());
+    AbstractActor oriPiActor = PreesmCopyTracker.getOriginalSource(dagVertex.getReferencePiVertex());
+    func.setActor(oriPiActor);
     // Retrieve the Arguments that must correspond to the incoming data
     // fifos
     final Entry<List<Variable>, List<PortDirection>> callVars = generateCallVariables(dagVertex, prototype, isInit);

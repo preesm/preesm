@@ -201,6 +201,16 @@ class CPrinter extends BlankPrinter {
 		if (arg != NULL) {
 			printf("Warning: expecting NULL arguments\n");
 		}
+
+	«IF !printedCoreBlock.sinkFifoBuffers.isEmpty»
+#if defined PREESM_LOOP_SIZE && defined PREESM_VERBOSE
+	«FOR buffer : printedCoreBlock.sinkFifoBuffers»
+			PREESM_MD5_CTX preesm_md5_ctx_«buffer.name»;
+			PREESM_MD5_Init(&preesm_md5_ctx_«buffer.name»);
+	«ENDFOR»
+#endif
+	«ENDIF»
+
 		«IF !callBlock.codeElts.empty»// Initialisation(s)«"\n\n"»«ENDIF»
 	'''
 
@@ -221,6 +231,22 @@ class CPrinter extends BlankPrinter {
 			// loop footer
 			pthread_barrier_wait(&iter_barrier);
 		}
+
+	«IF !printedCoreBlock.sinkFifoBuffers.isEmpty»
+#if defined PREESM_LOOP_SIZE && defined PREESM_VERBOSE
+		unsigned char preesm_md5_chars[16];
+	«FOR buffer : printedCoreBlock.sinkFifoBuffers»
+		PREESM_MD5_Final(preesm_md5_chars, &preesm_md5_ctx_«buffer.name»);
+		// Print MD5
+		printf("preesm_md5_«buffer.name» : ");
+		for (int i = 16; i > 0; i -= 1){
+			printf("%02x", *(preesm_md5_chars + i - 1));
+		}
+		printf("\n");
+	«ENDFOR»
+#endif
+	«ENDIF»
+
 		return NULL;
 	}
 
@@ -421,7 +447,7 @@ class CPrinter extends BlankPrinter {
 		}
 	}
 
-	def CharSequence generatePreesmHeader() {
+	def CharSequence generatePreesmHeader(List<String> stdLibFiles) {
 	    // 0- without the following class loader initialization, I get the following exception when running as Eclipse
 	    // plugin:
 	    // org.apache.velocity.exception.VelocityException: The specified class for ResourceManager
@@ -437,6 +463,9 @@ class CPrinter extends BlankPrinter {
 	    // 2- init context
 	    val VelocityContext context = new VelocityContext();
 	    val findAllCHeaderFileNamesUsed = CHeaderUsedLocator.findAllCHeaderFileNamesUsed(getEngine.algo)
+
+	    context.put("PREESM_INCLUDES", stdLibFiles.filter[it.endsWith(".h")].map["#include \""+ it +"\""].join("\n"));
+
 	    context.put("USER_INCLUDES", findAllCHeaderFileNamesUsed.map["#include \""+ it +"\""].join("\n"));
 
 		var String constants = "#define NB_DESIGN_ELTS "+getEngine.archi.componentInstances.size+"\n#define NB_CORES "+getEngine.codeBlocks.size;
@@ -479,6 +508,8 @@ class CPrinter extends BlankPrinter {
 						"dump.h",
 						"fifo.c",
 						"fifo.h",
+						"preesm_md5.c",
+						"preesm_md5.h",
 						"mac_barrier.c",
 						"mac_barrier.h"
 					]);
@@ -487,7 +518,7 @@ class CPrinter extends BlankPrinter {
 		} catch (IOException exc) {
 			throw new PreesmRuntimeException("Could not generated content for " + it, exc)
 		}]
-		result.put("preesm_gen.h",generatePreesmHeader())
+		result.put("preesm_gen.h",generatePreesmHeader(files))
 		return result
 	}
 
@@ -660,6 +691,17 @@ class CPrinter extends BlankPrinter {
 	apolloAddActorConfig(0, pthread_self(), "«functionCall.actorName»");
 	#endif
 	«ENDIF»
+
+	«IF !printedCoreBlock.sinkFifoBuffers.isEmpty»
+#if defined PREESM_LOOP_SIZE && defined PREESM_VERBOSE
+	«FOR buffer : printedCoreBlock.sinkFifoBuffers»
+	«IF functionCall.parameters.contains(buffer)»
+	PREESM_MD5_Update(&preesm_md5_ctx_«buffer.name»,(char *)«buffer.name», «buffer.size * buffer.typeSize»);
+	«ENDIF»
+	«ENDFOR»
+#endif
+	«ENDIF»
+
 	«functionCall.name»(«FOR param : functionCall.parameters SEPARATOR ','»«param.doSwitch»«ENDFOR»); // «functionCall.actorName»
 	'''
 

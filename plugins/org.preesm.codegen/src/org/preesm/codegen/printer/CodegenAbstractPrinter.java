@@ -421,6 +421,8 @@ public abstract class CodegenAbstractPrinter extends CodegenSwitch<CharSequence>
     //
     // String concatenation is done manually because of complex
     // tabulation handling
+    setPrintedCoreBlock(coreBlock);
+
     StringConcatenation result = new StringConcatenation();
     final CharSequence coreBlockHeader = printCoreBlockHeader(coreBlock);
     result.append(coreBlockHeader);
@@ -451,6 +453,9 @@ public abstract class CodegenAbstractPrinter extends CodegenSwitch<CharSequence>
       result.newLineIfNotEmpty();
     }
     result.append(printCoreBlockFooter(coreBlock));
+
+    setPrintedCoreBlock(null);
+
     return result;
   }
 

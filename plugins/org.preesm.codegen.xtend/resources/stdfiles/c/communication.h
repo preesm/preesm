@@ -51,6 +51,9 @@ communications.
 #ifndef _PREESM_COMMUNICATION_H
 #define _PREESM_COMMUNICATION_H
 
+// irrelevent for MPPA
+#ifndef __k1__
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -133,4 +136,5 @@ void receiveEnd(int senderID, int receveirID);
 }
 #endif
 
-#endif
+#endif /* __k1__ */
+#endif /* _PREESM_COMMUNICATION_H */

@@ -5,6 +5,7 @@ PREESM Changelog
 *XXXX.XX.XX*
 
 ### New Feature
+* Codegen now updates MD5 using sing buffers (enabled and printed when loop size and verbose are defined);
 
 ### Changes
 * Fix compile error in generated TCP code (but execution hangs...);
