@@ -601,7 +601,13 @@ public class CodegenClusterModelGeneratorSwitch extends ScheduleSwitch<CodeElt> 
   private final void fillFunctionCallArguments(final FunctionCall functionCall, final Actor actor) {
     // Retrieve Refinement from actor
     if (actor.getRefinement() instanceof CHeaderRefinement) {
+      // Retrieve C header refinement
       final CHeaderRefinement cheader = (CHeaderRefinement) actor.getRefinement();
+      if (cheader.getLoopPrototype() == null) {
+        throw new PreesmRuntimeException(
+            "CodegenClusterModelGenerator: cannot find C loop function prototype for actor " + actor.getName());
+      }
+
       // Retrieve function argument
       final List<FunctionArgument> arguments = cheader.getLoopPrototype().getArguments();
       // Retrieve function name
