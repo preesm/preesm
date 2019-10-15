@@ -55,10 +55,12 @@ import java.util.Date
 import java.util.List
 import org.apache.velocity.VelocityContext
 import org.apache.velocity.app.VelocityEngine
+import org.preesm.codegen.model.ActorFunctionCall
 import org.preesm.codegen.model.Block
 import org.preesm.codegen.model.Buffer
 import org.preesm.codegen.model.BufferIterator
 import org.preesm.codegen.model.CallBlock
+import org.preesm.codegen.model.ClusterBlock
 import org.preesm.codegen.model.CodeElt
 import org.preesm.codegen.model.Communication
 import org.preesm.codegen.model.Constant
@@ -72,23 +74,22 @@ import org.preesm.codegen.model.FifoOperation
 import org.preesm.codegen.model.FiniteLoopBlock
 import org.preesm.codegen.model.FunctionCall
 import org.preesm.codegen.model.IntVar
+import org.preesm.codegen.model.IteratedBuffer
 import org.preesm.codegen.model.LoopBlock
 import org.preesm.codegen.model.NullBuffer
 import org.preesm.codegen.model.PapifyAction
 import org.preesm.codegen.model.PapifyFunctionCall
 import org.preesm.codegen.model.RegisterSetUpAction
+import org.preesm.codegen.model.SectionBlock
 import org.preesm.codegen.model.SharedMemoryCommunication
 import org.preesm.codegen.model.SpecialCall
 import org.preesm.codegen.model.SubBuffer
 import org.preesm.codegen.model.Variable
+import org.preesm.codegen.printer.BlankPrinter
+import org.preesm.codegen.printer.PrinterState
 import org.preesm.commons.exceptions.PreesmRuntimeException
 import org.preesm.commons.files.PreesmResourcesHelper
 import org.preesm.model.pisdf.util.CHeaderUsedLocator
-import org.preesm.codegen.model.IteratedBuffer
-import org.preesm.codegen.model.ClusterBlock
-import org.preesm.codegen.model.SectionBlock
-import org.preesm.codegen.model.ActorFunctionCall
-import org.preesm.codegen.printer.BlankPrinter
 
 /**
  * This printer is currently used to print C code only for GPP processors
@@ -698,19 +699,20 @@ class CPrinter extends BlankPrinter {
 		»); // «communication.sendStart.coreContainer.name» > «communication.receiveStart.coreContainer.name»
 	'''
 
+	override printPostFunctionCall(FunctionCall functionCall) '''
+	«IF state == PrinterState.PRINTING_LOOP_BLOCK && !printedCoreBlock.sinkFifoBuffers.isEmpty && functionCall instanceof ActorFunctionCall && (functionCall as ActorFunctionCall).actor.dataOutputPorts.isEmpty»#ifdef PREESM_MD5_UPDATE
+	«FOR buffer : printedCoreBlock.sinkFifoBuffers»«IF functionCall.parameters.contains(buffer)»
+	PREESM_MD5_Update(&preesm_md5_ctx_«buffer.name»,(char *)«buffer.name», «buffer.size * buffer.typeSize»);
+	«ENDIF»«ENDFOR»#endif
+	«ENDIF»
+	'''
+
 	override printFunctionCall(FunctionCall functionCall) '''
 	«IF this.apolloEnabled && (functionCall instanceof ActorFunctionCall)»
 	#ifdef APOLLO_AVAILABLE
 	apolloAddActorConfig(0, pthread_self(), "«functionCall.actorName»");
 	#endif
 	«ENDIF»
-
-	«IF !printedCoreBlock.sinkFifoBuffers.isEmpty && functionCall instanceof ActorFunctionCall && (functionCall as ActorFunctionCall).actor.dataOutputPorts.isEmpty»#ifdef PREESM_MD5_UPDATE
-	«FOR buffer : printedCoreBlock.sinkFifoBuffers»«IF functionCall.parameters.contains(buffer)»
-	PREESM_MD5_Update(&preesm_md5_ctx_«buffer.name»,(char *)«buffer.name», «buffer.size * buffer.typeSize»);
-	«ENDIF»«ENDFOR»#endif
-	«ENDIF»
-
 	«functionCall.name»(«FOR param : functionCall.parameters SEPARATOR ','»«param.doSwitch»«ENDFOR»); // «functionCall.actorName»
 	'''
 
