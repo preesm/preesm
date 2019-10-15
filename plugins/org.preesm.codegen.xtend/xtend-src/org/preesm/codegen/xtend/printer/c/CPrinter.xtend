@@ -241,6 +241,14 @@ class CPrinter extends BlankPrinter {
 			printf("Warning: expecting NULL arguments\n");
 		}
 
+	«IF monitorAllFifoMD5»
+	// +All FIFO MD5 contexts
+	«FOR buffer : getAllBuffers(printedCoreBlock)»
+	PREESM_MD5_Init(&preesm_md5_ctx_«buffer.name»);
+	«ENDFOR»
+	// -All FIFO MD5 contexts
+	«ENDIF»
+
 	«IF !monitorAllFifoMD5 && !printedCoreBlock.sinkFifoBuffers.isEmpty»
 #ifdef PREESM_MD5_UPDATE
 	«FOR buffer : printedCoreBlock.sinkFifoBuffers»
@@ -288,6 +296,11 @@ class CPrinter extends BlankPrinter {
 	}
 
 	override printCoreLoopBlockHeader(LoopBlock block2) '''
+
+	«IF state == PrinterState.PRINTING_LOOP_BLOCK && monitorAllFifoMD5 && printedCoreBlock.coreID == engine.scenario.simulationInfo.mainOperator.hardwareId»
+	printf("iteration %09d - pos %09d - preesm_md5_0000 PREESM_BUFFERINIT\n", 0, 0);
+	preesmUpdateAndPrintAllMD5_«printedCoreBlock.coreID»(0, 0);
+	«ENDIF»
 
 	// Begin the execution loop«"\n\t"»
 	pthread_barrier_wait(&iter_barrier);
