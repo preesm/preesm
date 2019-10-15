@@ -183,6 +183,7 @@ class CPrinter extends BlankPrinter {
 #if defined PREESM_LOOP_SIZE && defined PREESM_VERBOSE
 	extern struct rk_sema preesmPrintSema;
 #endif
+
 	'''
 
 	override printBufferDeclaration(Buffer buffer) '''
