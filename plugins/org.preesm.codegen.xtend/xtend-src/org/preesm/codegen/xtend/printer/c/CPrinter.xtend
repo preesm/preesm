@@ -708,13 +708,13 @@ class CPrinter extends BlankPrinter {
 	«ENDIF»
 
 	«IF !printedCoreBlock.sinkFifoBuffers.isEmpty»
-#if defined PREESM_LOOP_SIZE && defined PREESM_VERBOSE
 	«FOR buffer : printedCoreBlock.sinkFifoBuffers»
-	«IF functionCall.parameters.contains(buffer)»
+	«IF functionCall.parameters.contains(buffer) && functionCall instanceof ActorFunctionCall && (functionCall as ActorFunctionCall).actor.dataOutputPorts.isEmpty»
+#if defined PREESM_LOOP_SIZE && defined PREESM_VERBOSE
 	PREESM_MD5_Update(&preesm_md5_ctx_«buffer.name»,(char *)«buffer.name», «buffer.size * buffer.typeSize»);
+#endif
 	«ENDIF»
 	«ENDFOR»
-#endif
 	«ENDIF»
 
 	«functionCall.name»(«FOR param : functionCall.parameters SEPARATOR ','»«param.doSwitch»«ENDFOR»); // «functionCall.actorName»
