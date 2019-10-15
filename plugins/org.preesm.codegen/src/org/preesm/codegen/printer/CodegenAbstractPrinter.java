@@ -213,7 +213,7 @@ public abstract class CodegenAbstractPrinter extends CodegenSwitch<CharSequence>
     return input.subSequence(lastLineBeginning, lastLineIndentationEnd).toString();
   }
 
-  PrinterState state = PrinterState.IDLE;
+  protected PrinterState state = PrinterState.IDLE;
 
   /**
    * Method used to change the current state of the printer.
@@ -241,26 +241,6 @@ public abstract class CodegenAbstractPrinter extends CodegenSwitch<CharSequence>
     // it. By default, use the first code block in the list.
     return 0;
   }
-
-  /**
-   * True if the visitor is currently printing {@link Variable} {@link CoreBlock#getDefinitions() definitions}
-   */
-  protected boolean printingDefinitions = false;
-
-  /**
-   * True if the visitor is currently printing {@link Variable} {@link CoreBlock#getDeclarations() declarations}
-   */
-  protected boolean printingDeclarations = false;
-
-  /**
-   * True if the visitor is currently printing the {@link CallBlock} {@link CoreBlock#getInitBlock() initBlock}
-   */
-  protected boolean printingInitBlock = false;
-
-  /**
-   * True if the visitor is currently printing the {@link LoopBlock} {@link CoreBlock#getInitBlock() initBlock}
-   */
-  protected boolean printingLoopBlock = false;
 
   /**
    * Reference to the {@link CoreBlock} currently printed
@@ -494,6 +474,7 @@ public abstract class CodegenAbstractPrinter extends CodegenSwitch<CharSequence>
       result.append(indentationCoreBlock);
     }
     result.append(printDeclarationsFooter(declarations), indentationCoreBlock);
+    setState(PrinterState.IDLE);
     return result;
   }
 
@@ -518,6 +499,7 @@ public abstract class CodegenAbstractPrinter extends CodegenSwitch<CharSequence>
       result.append(indentationCoreBlock);
     }
     result.append(printCoreLoopBlockFooter(coreBlock.getLoopBlock()), indentationCoreBlock);
+    setState(PrinterState.IDLE);
     return result;
   }
 
@@ -542,6 +524,7 @@ public abstract class CodegenAbstractPrinter extends CodegenSwitch<CharSequence>
       result.append(indentationCoreBlock);
     }
     result.append(printCoreInitBlockFooter(coreBlock.getInitBlock()), indentationCoreBlock);
+    setState(PrinterState.IDLE);
     return result;
   }
 
@@ -572,6 +555,7 @@ public abstract class CodegenAbstractPrinter extends CodegenSwitch<CharSequence>
       result.append(indentationCoreBlock);
     }
     result.append(printDefinitionsFooter(definitions), indentationCoreBlock);
+    setState(PrinterState.IDLE);
     return result;
   }
 
