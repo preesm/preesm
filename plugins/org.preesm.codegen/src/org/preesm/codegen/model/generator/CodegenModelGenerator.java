@@ -2524,8 +2524,8 @@ public class CodegenModelGenerator extends AbstractCodegenModelGenerator {
   protected String generateUniqueBufferName(final String name) {
     int idx;
     String key = name;
-    if (key.length() > 28) {
-      key = key.substring(0, 28);
+    if (key.length() > 58) {
+      key = key.substring(0, 58);
     }
     if (this.bufferNames.containsKey(key)) {
       idx = this.bufferNames.get(key);
