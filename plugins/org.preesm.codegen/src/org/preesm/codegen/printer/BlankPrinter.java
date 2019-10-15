@@ -341,4 +341,14 @@ public class BlankPrinter extends CodegenAbstractPrinter {
   public CharSequence printPapifyActionParam(PapifyAction action) {
     return "";
   }
+
+  @Override
+  public CharSequence printPreFunctionCall(FunctionCall functionCall) {
+    return "";
+  }
+
+  @Override
+  public CharSequence printPostFunctionCall(FunctionCall functionCall) {
+    return "";
+  }
 }

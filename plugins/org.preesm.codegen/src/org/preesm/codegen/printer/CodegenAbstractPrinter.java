@@ -662,7 +662,11 @@ public abstract class CodegenAbstractPrinter extends CodegenSwitch<CharSequence>
 
   @Override
   public CharSequence caseFunctionCall(final FunctionCall functionCall) {
-    return printFunctionCall(functionCall);
+    final StringBuilder res = new StringBuilder();
+    res.append(printPreFunctionCall(functionCall));
+    res.append(printFunctionCall(functionCall));
+    res.append(printPostFunctionCall(functionCall));
+    return res.toString();
   }
 
   @Override
@@ -1195,6 +1199,16 @@ public abstract class CodegenAbstractPrinter extends CodegenSwitch<CharSequence>
    * @return the printed {@link CharSequence}
    */
   public abstract CharSequence printFunctionCall(FunctionCall functionCall);
+
+  /**
+   * Method called right before {@link #printFunctionCall}
+   */
+  public abstract CharSequence printPreFunctionCall(FunctionCall functionCall);
+
+  /**
+   * Method called right after {@link #printFunctionCall}
+   */
+  public abstract CharSequence printPostFunctionCall(FunctionCall functionCall);
 
   /**
    * Method called to print a {@link PapifyFunctionCall}.
