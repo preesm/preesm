@@ -312,6 +312,10 @@ class CPrinter extends BlankPrinter {
 		val Set<Buffer> allBuffers = new LinkedHashSet()
 		val List<ActorFunctionCall> allActorCalls = printedCoreBlock.loopBlock.codeElts.filter[it instanceof ActorFunctionCall].map[it as ActorFunctionCall].toList
 		allActorCalls.forEach[allBuffers.addAll(getInBuffers(it)); allBuffers.addAll(getOutBuffers(it))]
+
+		val List<FifoCall> allFifoCalls = printedCoreBlock.loopBlock.codeElts.filter[it instanceof FifoCall].map[it as FifoCall].filter[it.operation == FifoOperation::PUSH].toList
+		allFifoCalls.forEach[allBuffers.addAll(it.parameters.head as Buffer)]
+
 		return new ArrayList(allBuffers);
 	}
 
