@@ -189,12 +189,12 @@ class CPrinter extends BlankPrinter {
 	PREESM_MD5_CTX bufferMd5[«counter»];
 	PREESM_MD5_CTX preStateBufferMd5[«counter»];
 
-	char * idToBufferName[«counter»] = {
+	char * idToBufferName_«printedCoreBlock.coreID»[«counter»] = {
 		"«getAllBuffers(printedCoreBlock).map[it.name].join("\",\"")»"
 	};
 	// -All FIFO MD5 contexts
 
-	void preesmBackupPreStateMD5() {
+	void preesmBackupPreStateMD5_«printedCoreBlock.coreID»() {
 		int i;
 		for (i = 0; i < «counter»; i++) {
 			PREESM_MD5_Copy(&preStateBufferMd5[i], &bufferMd5[i]);
@@ -241,7 +241,7 @@ class CPrinter extends BlankPrinter {
 					}
 				}
 				if (!isAuthorized) {
-					printf("Actor %s accessed unauthorized buffer id %d ('%s') \n", actorname, md5counter, idToBufferName[md5counter]);
+					printf("Actor %s accessed unauthorized buffer id %d ('%s') \n", actorname, md5counter, idToBufferName_«printedCoreBlock.coreID»[md5counter]);
 				}
 			} else {
 				// same md5 => actor did not write on this buffer.
@@ -849,7 +849,7 @@ class CPrinter extends BlankPrinter {
 	«IF state == PrinterState.PRINTING_LOOP_BLOCK && monitorAllFifoMD5 && functionCall instanceof ActorFunctionCall»
 
 	#ifdef PREESM_MD5_UPDATE
-		preesmBackupPreStateMD5();
+		preesmBackupPreStateMD5_«printedCoreBlock.coreID»();
 		preesmUpdateMD5Array_«printedCoreBlock.coreID»(preStateBufferMd5);
 	#endif
 
