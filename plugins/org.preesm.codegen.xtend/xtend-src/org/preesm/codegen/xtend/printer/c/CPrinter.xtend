@@ -52,8 +52,11 @@ import java.util.ArrayList
 import java.util.Arrays
 import java.util.Collection
 import java.util.Date
+import java.util.HashMap
+import java.util.HashSet
 import java.util.LinkedHashSet
 import java.util.List
+import java.util.Map
 import java.util.Set
 import org.apache.velocity.VelocityContext
 import org.apache.velocity.app.VelocityEngine
@@ -105,6 +108,8 @@ import org.preesm.model.pisdf.util.CHeaderUsedLocator
 class CPrinter extends BlankPrinter {
 
 	boolean monitorAllFifoMD5 = true;
+
+	Map<CoreBlock, Set<FifoCall>> fifoPops = new HashMap();
 
 	/*
 	 * Variable to check if we are using PAPIFY or not --> Will be updated during preprocessing
@@ -484,6 +489,18 @@ class CPrinter extends BlankPrinter {
 			«ENDIF»'''
 		var result = "fifo" + fifoCall.operation.toString.toLowerCase.toFirstUpper + "("
 
+		if (!fifoPops.containsKey(printedCoreBlock)) {
+			fifoPops.put(printedCoreBlock, new HashSet());
+		}
+		if (fifoCall.operation == FifoOperation::POP) {
+			fifoPops.get(printedCoreBlock).add(fifoCall)
+		}
+		if (fifoCall.operation == FifoOperation::PUSH) {
+			val FifoCall correspondingPop = fifoCall.fifoHead;
+			if (fifoPops.get(printedCoreBlock).contains(correspondingPop)) {
+				throw new PreesmRuntimeException("Fifo pop/push issue");
+			}
+		}
 		if (fifoCall.operation != FifoOperation::INIT) {
 			var buffer = fifoCall.parameters.head as Buffer
 			result = result + '''«buffer.name», '''
