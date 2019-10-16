@@ -57,6 +57,7 @@ import org.preesm.model.pisdf.InterfaceActor;
 import org.preesm.model.pisdf.LongExpression;
 import org.preesm.model.pisdf.Parameter;
 import org.preesm.model.pisdf.Parameterizable;
+import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.pisdf.StringExpression;
 import org.preesm.model.pisdf.util.PiMMSwitch;
 
@@ -153,7 +154,7 @@ public class ExpressionEvaluator {
         final double evaluate = evaluateExpression(overridenValues, param, paramExpressionValue);
 
         if ((parameterizable instanceof Parameter) || (parameterizable instanceof Delay)
-            || (parameterizable instanceof InterfaceActor)) {
+            || (parameterizable instanceof InterfaceActor) || (parameterizable instanceof PiGraph)) {
           res.put(param.getName(), evaluate);
         } else if (parameterizable instanceof DataPort || parameterizable instanceof AbstractActor) {
           lookupActorAndDataPort(parameterizable, res, param, evaluate);

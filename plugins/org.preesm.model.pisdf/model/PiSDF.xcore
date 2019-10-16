@@ -50,13 +50,14 @@ package org.preesm.model.pisdf
 import java.io.File
 import java.util.Collections
 import java.util.Optional
+import java.util.ArrayList
 import org.preesm.commons.exceptions.PreesmRuntimeException
+import org.preesm.commons.graph.Edge
+import org.preesm.commons.graph.Graph
+import org.preesm.commons.graph.Vertex
 import org.preesm.model.pisdf.expression.ExpressionEvaluator
 import org.preesm.model.pisdf.factory.PiMMUserFactory
 import org.preesm.model.pisdf.util.RefinementResolver
-import org.preesm.commons.graph.Vertex
-import org.preesm.commons.graph.Graph
-import org.preesm.commons.graph.Edge
 
 // !!! This is needed as of the current versions of xcore/xtext
 // For some reason when using the default String/... (i.e. without the following)
@@ -207,7 +208,7 @@ abstract class AbstractActor extends Configurable {
 	}
 }
 
-class PiGraph extends AbstractActor, Graph {
+class PiGraph extends AbstractActor, Graph, PeriodicElement {
 	// URL to the file where this graph is saved
 	String url
 	boolean clusterValue = "false"
@@ -271,6 +272,13 @@ class PiGraph extends AbstractActor, Graph {
 		return parameters.filter(it|!((it instanceof ConfigInputInterface) || (it instanceof ConfigOutputInterface) )).
 			toEList.unmodifiableView
 	}
+	
+	op unique Parameter[] getInputParameters() {
+		val ownParams = new ArrayList<Parameter>(getOnlyParameters())
+		ownParams.addAll(super.inputParameters)
+		return ownParams.toEList.unmodifiableView
+	}
+	
 	op unique String[] getActorsNames() {
 		return actors.map[name].unmodifiableView
 	}

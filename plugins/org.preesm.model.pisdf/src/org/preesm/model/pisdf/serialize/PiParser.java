@@ -712,6 +712,14 @@ public class PiParser {
     // document
     final Element graphElt = (Element) graphElts.item(0);
 
+    final String attribute = graphElt.getAttribute(PiIdentifiers.ACTOR_PERIOD);
+    if (attribute != null && !attribute.isEmpty()) {
+      graph.setExpression(attribute);
+    } else {
+      // 0 means the actor is aperiodic, negative generates an error during evaluation
+      graph.setExpression(0);
+    }
+
     // Parse the elements of the graph
     final NodeList childList = graphElt.getChildNodes();
     for (int i = 0; i < childList.getLength(); i++) {

@@ -542,6 +542,7 @@ public class PiWriter {
     // Create and add the graphElt to the Document
     final Element graphElt = addGraphElt(rootElt);
     writeDataElt(graphElt, PiIdentifiers.GRAPH_NAME, graph.getName());
+    graphElt.setAttribute(PiIdentifiers.ACTOR_PERIOD, graph.getPeriod().getExpressionAsString());
 
     for (final Parameter param : graph.getParameters()) {
       writeParameter(graphElt, param);

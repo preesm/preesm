@@ -120,7 +120,7 @@ public class ActorPeriodPropertiesSection extends GFPropertySection implements I
       if (bo instanceof PeriodicElement) {
         final PeriodicElement periodEl = (PeriodicElement) bo;
         final Expression periodicExp = periodEl.getExpression();
-        final String strPeriod = ActorPeriodPropertiesSection.this.txtPeriod.getText();
+        final String strPeriod = this.txtPeriod.getText();
         if (strPeriod.compareTo(periodicExp.getExpressionAsString()) != 0) {
           setNewPeriod(periodEl, strPeriod);
           refresh();
