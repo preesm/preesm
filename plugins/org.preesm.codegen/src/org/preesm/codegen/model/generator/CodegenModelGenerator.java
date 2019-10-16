@@ -1709,8 +1709,7 @@ public class CodegenModelGenerator extends AbstractCodegenModelGenerator {
     final ActorFunctionCall func = CodegenModelUserFactory.eINSTANCE.createActorFunctionCall();
     func.setName(prototype.getFunctionName());
     func.setActorName(dagVertex.getName());
-    AbstractActor oriPiActor = PreesmCopyTracker.getOriginalSource(dagVertex.getReferencePiVertex());
-    func.setActor(oriPiActor);
+    func.setActor(dagVertex.getReferencePiVertex());
     // Retrieve the Arguments that must correspond to the incoming data
     // fifos
     final Entry<List<Variable>, List<PortDirection>> callVars = generateCallVariables(dagVertex, prototype, isInit);
