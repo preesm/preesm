@@ -107,7 +107,7 @@ import org.preesm.model.pisdf.util.CHeaderUsedLocator
  */
 class CPrinter extends BlankPrinter {
 
-	boolean monitorAllFifoMD5 = true;
+	boolean monitorAllFifoMD5 = false;
 
 	Map<CoreBlock, Set<FifoCall>> fifoPops = new HashMap();
 
