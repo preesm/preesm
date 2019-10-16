@@ -103,7 +103,7 @@ import org.preesm.model.pisdf.util.CHeaderUsedLocator
  */
 class CPrinter extends BlankPrinter {
 
-	boolean monitorAllFifoMD5 = false;
+	boolean monitorAllFifoMD5 = true;
 
 	/*
 	 * Variable to check if we are using PAPIFY or not --> Will be updated during preprocessing
@@ -182,32 +182,73 @@ class CPrinter extends BlankPrinter {
 
 	«IF monitorAllFifoMD5»
 	#ifdef PREESM_MD5_UPDATE
-	// +All FIFO MD5 contexts
+	// +All FIFO MD5 contexts«var long counter = 0L»
 	«FOR buffer : getAllBuffers(printedCoreBlock)»
-	PREESM_MD5_CTX preesm_md5_ctx_«buffer.name»;
+	const unsigned long preesm_md5_ctx_«buffer.name»_id = «counter++»;
 	«ENDFOR»
+	PREESM_MD5_CTX bufferMd5[«counter»];
+	PREESM_MD5_CTX preStateBufferMd5[«counter»];
+
+	char * idToBufferName[«counter»] = {
+		"«getAllBuffers(printedCoreBlock).map[it.name].join("\",\"")»"
+	};
 	// -All FIFO MD5 contexts
 
-	void preesmUpdateAndPrintAllMD5_«printedCoreBlock.coreID»(int loopIndex, const int actorId) {
-		«FOR buffer : getAllBuffers(printedCoreBlock)»
-		PREESM_MD5_Update(&preesm_md5_ctx_«buffer.name»,(char *)«buffer.name», «buffer.size * buffer.typeSize»);
-		«ENDFOR»
+	void preesmBackupPreStateMD5() {
+		int i;
+		for (i = 0; i < «counter»; i++) {
+			PREESM_MD5_Copy(&preStateBufferMd5[i], &bufferMd5[i]);
+		}
+	}
 
+	void preesmUpdateMD5Array_«printedCoreBlock.coreID»(PREESM_MD5_CTX md5Array[«counter»]) {
+		«FOR buffer : getAllBuffers(printedCoreBlock)»
+		PREESM_MD5_Update(&md5Array[preesm_md5_ctx_«buffer.name»_id],(char *)«buffer.name», «buffer.size * buffer.typeSize»);
+		«ENDFOR»
+	}
+
+	void preesmPrintMD5Array_«printedCoreBlock.coreID»(PREESM_MD5_CTX md5Array[«counter»], int loopIndex, const int actorId) {
 		// +All FIFO MD5 contexts
 		rk_sema_wait(&preesmPrintSema);
+	 	char md5String[32];
 		«FOR buffer : getAllBuffers(printedCoreBlock)»
-		PREESM_MD5_Final(preesm_md5_chars, &preesm_md5_ctx_«buffer.name»);
-		printf("iteration %09d - pos %09d - preesm_md5_«buffer.name» : ", loopIndex, actorId);
-		for (int i = 16; i > 0; i -= 1){
-			printf("%02x", *(preesm_md5_chars + i - 1));
-		}
-		printf("\n");
-		fflush(stdout);
+		PREESM_MD5_tostring_no_final(md5String, &md5Array[preesm_md5_ctx_«buffer.name»_id]);
+		printf("iteration %09d - pos %09d - preesm_md5_«buffer.name» : %s\n", loopIndex, actorId, md5String); fflush(stdout);
 		«ENDFOR»
 		rk_sema_post(&preesmPrintSema);
 		// -All FIFO MD5 contexts
 	}
 
+
+
+	void preesmCheckMD5Array_«printedCoreBlock.coreID»(PREESM_MD5_CTX backupMd5Array[«counter»], PREESM_MD5_CTX currentMd5Array[«counter»],
+		unsigned int authorizedBufferCount, unsigned long authorizedBufferIDs[authorizedBufferCount], const char* actorname) {
+
+		unsigned int md5counter = 0;
+		for (md5counter = 0; md5counter < «counter»; md5counter++) {
+			char backupMd5[33] = { '\0' };
+			char currentMd5[33] = { '\0' };
+			PREESM_MD5_tostring_no_final(backupMd5, &backupMd5Array[md5counter]);
+			PREESM_MD5_tostring_no_final(currentMd5, &currentMd5Array[md5counter]);
+			int cmp = strcmp(backupMd5, currentMd5);
+			if (cmp != 0) {
+				int authBuffsCounter = 0;
+				unsigned char isAuthorized = 0;
+				for (authBuffsCounter = 0; authBuffsCounter < authorizedBufferCount; authBuffsCounter++) {
+					if (authorizedBufferIDs[authBuffsCounter] == md5counter) {
+						isAuthorized = 1;
+						break;
+					}
+				}
+				if (!isAuthorized) {
+					printf("Actor %s accessed unauthorized buffer id %d ('%s') \n", actorname, md5counter, idToBufferName[md5counter]);
+				}
+			} else {
+				// same md5 => actor did not write on this buffer.
+			}
+
+		}
+	}
 	#endif
 	«ENDIF»
 	'''
@@ -250,7 +291,7 @@ class CPrinter extends BlankPrinter {
 	#ifdef PREESM_MD5_UPDATE
 	// +All FIFO MD5 contexts
 	«FOR buffer : getAllBuffers(printedCoreBlock)»
-	PREESM_MD5_Init(&preesm_md5_ctx_«buffer.name»);
+	PREESM_MD5_Init(&bufferMd5[preesm_md5_ctx_«buffer.name»_id]);
 	«ENDFOR»
 	// -All FIFO MD5 contexts
 	#endif
@@ -303,13 +344,6 @@ class CPrinter extends BlankPrinter {
 	}
 
 	override printCoreLoopBlockHeader(LoopBlock block2) '''
-
-	«IF state == PrinterState.PRINTING_LOOP_BLOCK && monitorAllFifoMD5 && printedCoreBlock.coreID == engine.scenario.simulationInfo.mainOperator.hardwareId»
-	#ifdef PREESM_MD5_UPDATE
-	printf("iteration %09d - pos %09d - preesm_md5_0000 PREESM_BUFFERINIT\n", 0, 0);
-	preesmUpdateAndPrintAllMD5_«printedCoreBlock.coreID»(0, 0);
-	#endif
-	«ENDIF»
 
 	// Begin the execution loop«"\n\t"»
 	pthread_barrier_wait(&iter_barrier);
@@ -800,18 +834,25 @@ class CPrinter extends BlankPrinter {
 
 	«IF state == PrinterState.PRINTING_LOOP_BLOCK && monitorAllFifoMD5 && functionCall instanceof ActorFunctionCall»
 	#ifdef PREESM_MD5_UPDATE
-	preesmUpdateAndPrintAllMD5_«printedCoreBlock.coreID»(index, «printedCoreBlock.loopBlock.codeElts.indexOf(functionCall)»);
+		preesmUpdateMD5Array_«printedCoreBlock.coreID»(bufferMd5);
+		«val outBuffers = getOutBuffers((functionCall as ActorFunctionCall))»
+		unsigned long authorizedBufferIds_«(functionCall as ActorFunctionCall).hashCode»[«outBuffers.size»] = {
+			«outBuffers.map["preesm_md5_ctx_"+it.name+"_id"].join(", ")»
+		};
+		preesmCheckMD5Array_«printedCoreBlock.coreID»(preStateBufferMd5, bufferMd5,
+				«outBuffers.size»,authorizedBufferIds_«(functionCall as ActorFunctionCall).hashCode», "«(functionCall as ActorFunctionCall).actor.name»");
 	#endif
 	«ENDIF»
 	'''
 
 	override printPreFunctionCall(FunctionCall functionCall) '''
 	«IF state == PrinterState.PRINTING_LOOP_BLOCK && monitorAllFifoMD5 && functionCall instanceof ActorFunctionCall»
+
 	#ifdef PREESM_MD5_UPDATE
-	printf("iteration %09d - pos %09d - preesm_md5_0000 «(functionCall as ActorFunctionCall).actor.name» - IN(«FOR buffer : getInBuffers(functionCall as ActorFunctionCall)»«buffer.name», «
-	ENDFOR») OUT(«FOR buffer : getOutBuffers(functionCall as ActorFunctionCall)»«buffer.name», «ENDFOR»)\n", index, «printedCoreBlock.loopBlock.codeElts.indexOf(functionCall)»);
-	printf("iteration %09d - pos %09d - preesm_md5_ZZZZ --\n", index, «printedCoreBlock.loopBlock.codeElts.indexOf(functionCall)»);
+		preesmBackupPreStateMD5();
+		preesmUpdateMD5Array_«printedCoreBlock.coreID»(preStateBufferMd5);
 	#endif
+
 	«ENDIF»
 	'''
 
