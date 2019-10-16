@@ -103,7 +103,7 @@ import org.preesm.model.pisdf.util.CHeaderUsedLocator
  */
 class CPrinter extends BlankPrinter {
 
-	boolean monitorAllFifoMD5 = true;
+	boolean monitorAllFifoMD5 = false;
 
 	/*
 	 * Variable to check if we are using PAPIFY or not --> Will be updated during preprocessing
@@ -181,6 +181,7 @@ class CPrinter extends BlankPrinter {
 	«ENDIF»
 
 	«IF monitorAllFifoMD5»
+	#ifdef PREESM_MD5_UPDATE
 	// +All FIFO MD5 contexts
 	«FOR buffer : getAllBuffers(printedCoreBlock)»
 	PREESM_MD5_CTX preesm_md5_ctx_«buffer.name»;
@@ -206,6 +207,8 @@ class CPrinter extends BlankPrinter {
 		rk_sema_post(&preesmPrintSema);
 		// -All FIFO MD5 contexts
 	}
+
+	#endif
 	«ENDIF»
 	'''
 
@@ -214,10 +217,12 @@ class CPrinter extends BlankPrinter {
 	extern pthread_barrier_t iter_barrier;
 	extern int preesmStopThreads;
 
+	«IF monitorAllFifoMD5 || !monitorAllFifoMD5 && !printedCoreBlock.sinkFifoBuffers.isEmpty»
 	#ifdef PREESM_MD5_UPDATE
-	unsigned char preesm_md5_chars[16];
 	extern struct rk_sema preesmPrintSema;
+	unsigned char preesm_md5_chars[16];
 	#endif
+	«ENDIF»
 
 	'''
 
@@ -242,11 +247,13 @@ class CPrinter extends BlankPrinter {
 		}
 
 	«IF monitorAllFifoMD5»
+	#ifdef PREESM_MD5_UPDATE
 	// +All FIFO MD5 contexts
 	«FOR buffer : getAllBuffers(printedCoreBlock)»
 	PREESM_MD5_Init(&preesm_md5_ctx_«buffer.name»);
 	«ENDFOR»
 	// -All FIFO MD5 contexts
+	#endif
 	«ENDIF»
 
 	«IF !monitorAllFifoMD5 && !printedCoreBlock.sinkFifoBuffers.isEmpty»
@@ -298,8 +305,10 @@ class CPrinter extends BlankPrinter {
 	override printCoreLoopBlockHeader(LoopBlock block2) '''
 
 	«IF state == PrinterState.PRINTING_LOOP_BLOCK && monitorAllFifoMD5 && printedCoreBlock.coreID == engine.scenario.simulationInfo.mainOperator.hardwareId»
+	#ifdef PREESM_MD5_UPDATE
 	printf("iteration %09d - pos %09d - preesm_md5_0000 PREESM_BUFFERINIT\n", 0, 0);
 	preesmUpdateAndPrintAllMD5_«printedCoreBlock.coreID»(0, 0);
+	#endif
 	«ENDIF»
 
 	// Begin the execution loop«"\n\t"»
@@ -790,15 +799,19 @@ class CPrinter extends BlankPrinter {
 	«ENDIF»
 
 	«IF state == PrinterState.PRINTING_LOOP_BLOCK && monitorAllFifoMD5 && functionCall instanceof ActorFunctionCall»
+	#ifdef PREESM_MD5_UPDATE
 	preesmUpdateAndPrintAllMD5_«printedCoreBlock.coreID»(index, «printedCoreBlock.loopBlock.codeElts.indexOf(functionCall)»);
+	#endif
 	«ENDIF»
 	'''
 
 	override printPreFunctionCall(FunctionCall functionCall) '''
 	«IF state == PrinterState.PRINTING_LOOP_BLOCK && monitorAllFifoMD5 && functionCall instanceof ActorFunctionCall»
+	#ifdef PREESM_MD5_UPDATE
 	printf("iteration %09d - pos %09d - preesm_md5_0000 «(functionCall as ActorFunctionCall).actor.name» - IN(«FOR buffer : getInBuffers(functionCall as ActorFunctionCall)»«buffer.name», «
 	ENDFOR») OUT(«FOR buffer : getOutBuffers(functionCall as ActorFunctionCall)»«buffer.name», «ENDFOR»)\n", index, «printedCoreBlock.loopBlock.codeElts.indexOf(functionCall)»);
 	printf("iteration %09d - pos %09d - preesm_md5_ZZZZ --\n", index, «printedCoreBlock.loopBlock.codeElts.indexOf(functionCall)»);
+	#endif
 	«ENDIF»
 	'''
 
