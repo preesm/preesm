@@ -107,7 +107,7 @@ import org.preesm.model.pisdf.util.CHeaderUsedLocator
  */
 class CPrinter extends BlankPrinter {
 
-	boolean monitorAllFifoMD5 = false;
+	boolean monitorAllFifoMD5 = true;
 
 	Map<CoreBlock, Set<FifoCall>> fifoPops = new HashMap();
 
@@ -221,7 +221,7 @@ class CPrinter extends BlankPrinter {
 		// +All FIFO MD5 contexts
 		«IF !allBuffers.empty»
 		rk_sema_wait(&preesmPrintSema);
-		char md5String[32];
+		char md5String[40] = { 0 };
 		«FOR buffer : allBuffers»
 		PREESM_MD5_tostring_no_final(md5String, &md5Array[preesm_md5_ctx_«buffer.name»_id]);
 		printf("iteration %09d - pos %09d - preesm_md5_«buffer.name» : %s\n", loopIndex, actorId, md5String); fflush(stdout);
@@ -272,7 +272,6 @@ class CPrinter extends BlankPrinter {
 	«IF monitorAllFifoMD5 || !monitorAllFifoMD5 && !printedCoreBlock.sinkFifoBuffers.isEmpty»
 	#ifdef PREESM_MD5_UPDATE
 	extern struct rk_sema preesmPrintSema;
-	unsigned char preesm_md5_chars[16];
 	#endif
 	«ENDIF»
 
@@ -400,12 +399,12 @@ class CPrinter extends BlankPrinter {
 #ifdef PREESM_MD5_UPDATE
 	// Print MD5
 	rk_sema_wait(&preesmPrintSema);
-	unsigned char preesm_md5_chars[16];
+	unsigned char preesm_md5_chars_final[20] = { 0 };
 	«FOR buffer : printedCoreBlock.sinkFifoBuffers»
-	PREESM_MD5_Final(preesm_md5_chars, &preesm_md5_ctx_«buffer.name»);
+	PREESM_MD5_Final(preesm_md5_chars_final, &preesm_md5_ctx_«buffer.name»);
 	printf("preesm_md5_«buffer.name» : ");
 	for (int i = 16; i > 0; i -= 1){
-		printf("%02x", *(preesm_md5_chars + i - 1));
+		printf("%02x", *(preesm_md5_chars_final + i - 1));
 	}
 	printf("\n");
 	fflush(stdout);
