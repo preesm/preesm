@@ -35,7 +35,6 @@
  */
 package org.preesm.algorithm.synthesis;
 
-import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.logging.Level;
@@ -46,11 +45,14 @@ import org.preesm.algorithm.schedule.model.Schedule;
 import org.preesm.algorithm.synthesis.communications.ICommunicationInserter;
 import org.preesm.algorithm.synthesis.communications.OptimizedCommunicationInserter;
 import org.preesm.algorithm.synthesis.memalloc.IMemoryAllocation;
+import org.preesm.algorithm.synthesis.memalloc.LegacyMemoryAllocation;
 import org.preesm.algorithm.synthesis.memalloc.SimpleMemoryAllocation;
 import org.preesm.algorithm.synthesis.schedule.algos.IScheduler;
 import org.preesm.algorithm.synthesis.schedule.algos.LegacyListScheduler;
+import org.preesm.algorithm.synthesis.schedule.algos.SimpleScheduler;
 import org.preesm.commons.doc.annotations.Port;
 import org.preesm.commons.doc.annotations.PreesmTask;
+import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.scenario.Scenario;
@@ -80,16 +82,20 @@ public class PreesmSynthesisTask extends AbstractTaskImplementation {
     final Design architecture = (Design) inputs.get(AbstractWorkflowNodeImplementation.KEY_ARCHITECTURE);
     final Scenario scenario = (Scenario) inputs.get(AbstractWorkflowNodeImplementation.KEY_SCENARIO);
 
-    PreesmLogger.getLogger().log(Level.INFO, " -- Scheduling");
-    final IScheduler scheduler = new LegacyListScheduler();
+    final String schedulerName = parameters.get("scheduler").toLowerCase();
+    final String allocationName = parameters.get("allocation").toLowerCase();
+
+    final IScheduler scheduler = selectScheduler(schedulerName);
+    final IMemoryAllocation alloc = selectAllocation(allocationName);
+
+    PreesmLogger.getLogger().log(Level.INFO, () -> " -- Scheduling - " + schedulerName);
     final SynthesisResult scheduleAndMap = scheduler.scheduleAndMap(algorithm, architecture, scenario);
 
     PreesmLogger.getLogger().log(Level.INFO, " -- Insert communication");
     final ICommunicationInserter comIns = new OptimizedCommunicationInserter();
     comIns.insertCommunications(algorithm, architecture, scenario, scheduleAndMap.schedule, scheduleAndMap.mapping);
 
-    PreesmLogger.getLogger().log(Level.INFO, " -- Allocating Memory");
-    final IMemoryAllocation alloc = new SimpleMemoryAllocation();
+    PreesmLogger.getLogger().log(Level.INFO, () -> " -- Allocating Memory - " + allocationName);
     final Allocation memalloc = alloc.allocateMemory(algorithm, architecture, scenario, scheduleAndMap.schedule,
         scheduleAndMap.mapping);
 
@@ -100,14 +106,48 @@ public class PreesmSynthesisTask extends AbstractTaskImplementation {
     return outputs;
   }
 
+  private IScheduler selectScheduler(final String schedulerName) {
+    final IScheduler scheduler;
+    switch (schedulerName) {
+      case "simple":
+        scheduler = new SimpleScheduler();
+        break;
+      case "legacy":
+        scheduler = new LegacyListScheduler();
+        break;
+      default:
+        throw new PreesmRuntimeException("unknown scheduler: " + schedulerName);
+    }
+    return scheduler;
+  }
+
+  private IMemoryAllocation selectAllocation(final String allocationName) {
+    final IMemoryAllocation alloc;
+    switch (allocationName) {
+      case "simple":
+        alloc = new SimpleMemoryAllocation();
+        break;
+      case "legacy":
+        alloc = new LegacyMemoryAllocation();
+        break;
+
+      default:
+        throw new PreesmRuntimeException("unknown allocation: " + allocationName);
+    }
+    return alloc;
+  }
+
   @Override
   public Map<String, String> getDefaultParameters() {
-    return Collections.emptyMap();
+    final Map<String, String> res = new LinkedHashMap<>();
+    res.put("scheduler", "simple");
+    res.put("allocation", "simple");
+    return res;
   }
 
   @Override
   public String monitorMessage() {
-    return "Simple scheduler";
+    return "Synthesis";
   }
 
 }
