@@ -27,19 +27,24 @@
 #define _PREESM_MD5_H
 
 #include <string.h>
+#include <stdio.h>
 
 /* Any 32-bit or wider unsigned integer data type will do */
 typedef unsigned int PREESM_MD5_u32plus;
 
 typedef struct {
-	PREESM_MD5_u32plus lo, hi;
-	PREESM_MD5_u32plus a, b, c, d;
-	unsigned char buffer[64];
-	PREESM_MD5_u32plus block[16];
+  PREESM_MD5_u32plus lo, hi;
+  PREESM_MD5_u32plus a, b, c, d;
+  unsigned char buffer[64];
+  PREESM_MD5_u32plus block[16];
 } PREESM_MD5_CTX;
 
 extern void PREESM_MD5_Init(PREESM_MD5_CTX *ctx);
 extern void PREESM_MD5_Update(PREESM_MD5_CTX *ctx, const void *data, unsigned long size);
 extern void PREESM_MD5_Final(unsigned char *result, PREESM_MD5_CTX *ctx);
+
+extern void PREESM_MD5_Copy(PREESM_MD5_CTX *dst, PREESM_MD5_CTX *src);
+extern void PREESM_MD5_tostring_no_final(char dst[40], PREESM_MD5_CTX *src);
+
 
 #endif

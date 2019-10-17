@@ -96,6 +96,13 @@ $USER_INCLUDES
 
 $CONSTANTS
 
+
+#[[#]]#ifdef PREESM_LOOP_SIZE
+#[[#]]#ifdef PREESM_VERBOSE
+#[[#]]#define PREESM_MD5_UPDATE
+#[[#]]#endif
+#[[#]]#endif
+
 #[[#]]#ifdef __cplusplus
 }
 #[[#]]#endif
