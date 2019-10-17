@@ -116,6 +116,10 @@ public class AllocationToCodegenBuffer extends MemoryAllocationSwitch<Boolean> {
       for (final Fifo fifo : fifos) {
         final FifoAllocation fifoAllocation = this.memAlloc.getFifoAllocations().get(fifo);
 
+        if (fifoAllocation == null) {
+          throw new PreesmRuntimeException("Fifo [" + fifo.getId() + "] has no allocation.");
+        }
+
         final org.preesm.algorithm.memalloc.model.Buffer srcBuffer = fifoAllocation.getSourceBuffer();
         final org.preesm.algorithm.memalloc.model.Buffer tgtBuffer = fifoAllocation.getTargetBuffer();
         final Buffer srcCodegenBuffer = this.btb.get(srcBuffer);
