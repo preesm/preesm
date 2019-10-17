@@ -281,17 +281,17 @@ void PREESM_MD5_Final(unsigned char *result, PREESM_MD5_CTX *ctx) {
 }
 
 void PREESM_MD5_Copy(PREESM_MD5_CTX *dst, PREESM_MD5_CTX *src) {
-	memcpy(dst, src, sizeof(PREESM_MD5_CTX));
+  memcpy(dst, src, sizeof(PREESM_MD5_CTX));
 }
 
 void PREESM_MD5_tostring_no_final(char dst[32], PREESM_MD5_CTX *src) {
-	unsigned char final[16] = {0};
+  unsigned char final[16] = { 0 };
   PREESM_MD5_CTX copy;
   PREESM_MD5_Copy(&copy, src);
 
-	PREESM_MD5_Final(final, &copy);
-	for (int i = 15; i >= 0; i -= 1){
-		sprintf(&(dst[30-2*i]), "%02x", *(final + i));
-	}
+  PREESM_MD5_Final(final, &copy);
+  for (int i = 15; i >= 0; i -= 1) {
+    sprintf(&(dst[30 - 2 * i]), "%02x", *(final + i));
+  }
 }
 
