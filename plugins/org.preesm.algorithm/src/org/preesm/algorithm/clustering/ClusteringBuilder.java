@@ -275,15 +275,6 @@ public class ClusteringBuilder {
         throw new PreesmRuntimeException(
             "ClusteringBuilder: Actually, on [" + delay.getActor().getName() + "], getter/setter are not handled");
       }
-
-      // If delay is not a self-loop
-      long prod = fifo.getSourcePort().getExpression().evaluate();
-      long cons = fifo.getTargetPort().getExpression().evaluate();
-      long delayCapacity = delay.getExpression().evaluate();
-      if ((delayCapacity != prod) || (delayCapacity != cons)) {
-        throw new PreesmRuntimeException(
-            "ClusteringBuilder: Actually, delay that are not self-loop aren't clusterizable");
-      }
     }
   }
 
@@ -432,7 +423,7 @@ public class ClusteringBuilder {
         parallelNode.getChildren().add(actorSchedule);
         parallelNode.setRepetition(1);
         parallelNode.setAttachedActor(null);
-        outputSchedule = (Schedule) parallelNode;
+        outputSchedule = parallelNode;
       } else {
         outputSchedule = actorSchedule;
       }
