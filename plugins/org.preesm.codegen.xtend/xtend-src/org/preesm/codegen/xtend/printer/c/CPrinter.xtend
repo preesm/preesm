@@ -107,7 +107,7 @@ import org.preesm.model.pisdf.util.CHeaderUsedLocator
  */
 class CPrinter extends BlankPrinter {
 
-	boolean monitorAllFifoMD5 = true;
+	boolean monitorAllFifoMD5 = false;
 
 	Map<CoreBlock, Set<FifoCall>> fifoPops = new HashMap();
 
@@ -186,11 +186,11 @@ class CPrinter extends BlankPrinter {
 
 	«ENDIF»
 
-	«IF monitorAllFifoMD5»
+	«val allBuffers = getAllBuffers(printedCoreBlock)»
+	«IF monitorAllFifoMD5 && !allBuffers.empty»
 	#ifdef PREESM_MD5_UPDATE
 	char md5String[40];
 	// +All FIFO MD5 contexts«var long counter = 0L»
-	«val allBuffers = getAllBuffers(printedCoreBlock)»
 	«FOR buffer : allBuffers»
 	const unsigned long preesm_md5_ctx_«buffer.name»_id = «counter++»;
 	«ENDFOR»
@@ -485,9 +485,13 @@ class CPrinter extends BlankPrinter {
 			#ifdef PREESM_MD5_UPDATE
 				preesmUpdateMD5Array_«printedCoreBlock.coreID»(bufferMd5);
 				«val outBuffers = getOutBuffers(fifoCall)»
+				«IF outBuffers.empty»
+				unsigned long * authorizedBufferIds_«(fifoCall).hashCode» = NULL;
+				«ELSE»
 				unsigned long authorizedBufferIds_«(fifoCall).hashCode»[] = {
 					«outBuffers.map["preesm_md5_ctx_"+it.name+"_id"].join(", \n")»
 				};
+				«ENDIF»
 
 				printf("iteration %09d - pos %09d - preesm_md5_0000 «fifoCall.name»\n", index, «printedCoreBlock.loopBlock.codeElts.indexOf(fifoCall)»);
 				«FOR buffer : fifoCall.parameters»«IF buffer instanceof Buffer»
@@ -547,9 +551,13 @@ class CPrinter extends BlankPrinter {
 	#ifdef PREESM_MD5_UPDATE
 		preesmUpdateMD5Array_«printedCoreBlock.coreID»(bufferMd5);
 		«val outBuffers = call.outputBuffers»
+		«IF outBuffers.empty»
+		unsigned long * authorizedBufferIds_«(call).hashCode» = NULL;
+		«ELSE»
 		unsigned long authorizedBufferIds_«(call).hashCode»[] = {
 			«outBuffers.map["preesm_md5_ctx_"+it.name+"_id"].join(", \n")»
 		};
+		«ENDIF»
 
 		printf("iteration %09d - pos %09d - preesm_md5_ZZZZ POST «call.name»\n", index, «printedCoreBlock.loopBlock.codeElts.indexOf(call)»);
 		«FOR buffer : call.parameters»«IF buffer instanceof Buffer»
@@ -593,9 +601,13 @@ class CPrinter extends BlankPrinter {
 	#ifdef PREESM_MD5_UPDATE
 		preesmUpdateMD5Array_«printedCoreBlock.coreID»(bufferMd5);
 		«val outBuffers = call.outputBuffers»
+		«IF outBuffers.empty»
+		unsigned long * authorizedBufferIds_«(call).hashCode» = NULL;
+		«ELSE»
 		unsigned long authorizedBufferIds_«(call).hashCode»[] = {
 			«outBuffers.map["preesm_md5_ctx_"+it.name+"_id"].join(", \n")»
 		};
+		«ENDIF»
 
 		printf("iteration %09d - pos %09d - preesm_md5_ZZZZ POST «call.name»\n", index, «printedCoreBlock.loopBlock.codeElts.indexOf(call)»);
 		«FOR buffer : call.parameters»«IF buffer instanceof Buffer»
@@ -660,10 +672,13 @@ class CPrinter extends BlankPrinter {
 	#ifdef PREESM_MD5_UPDATE
 		preesmUpdateMD5Array_«printedCoreBlock.coreID»(bufferMd5);
 		«val outBuffers = getOutBuffers(call)»
+		«IF outBuffers.empty»
+		unsigned long * authorizedBufferIds_«(call).hashCode» = NULL;
+		«ELSE»
 		unsigned long authorizedBufferIds_«(call).hashCode»[] = {
 			«outBuffers.map["preesm_md5_ctx_"+it.name+"_id"].join(", \n")»
 		};
-
+		«ENDIF»
 		printf("iteration %09d - pos %09d - preesm_md5_ZZZZ POST «call.name»\n", index, «printedCoreBlock.loopBlock.codeElts.indexOf(call)»);
 		«FOR buffer : call.parameters»«IF buffer instanceof Buffer»
 		PREESM_MD5_tostring_no_final(md5String, &bufferMd5[preesm_md5_ctx_«buffer.name»_id]);
@@ -1035,9 +1050,13 @@ class CPrinter extends BlankPrinter {
 	#ifdef PREESM_MD5_UPDATE
 		preesmUpdateMD5Array_«printedCoreBlock.coreID»(bufferMd5);
 		«val outBuffers = getOutBuffers((functionCall as ActorFunctionCall))»
-		unsigned long authorizedBufferIds_«(functionCall as ActorFunctionCall).hashCode»[] = {
+		«IF outBuffers.empty»
+		unsigned long * authorizedBufferIds_«(functionCall).hashCode» = NULL;
+		«ELSE»
+		unsigned long authorizedBufferIds_«(functionCall).hashCode»[] = {
 			«outBuffers.map["preesm_md5_ctx_"+it.name+"_id"].join(", \n")»
 		};
+		«ENDIF»
 
 		printf("iteration %09d - pos %09d - preesm_md5_ZZZZ POST «functionCall.name»\n", index, «printedCoreBlock.loopBlock.codeElts.indexOf(functionCall)»);
 		«FOR buffer : functionCall.parameters»«IF buffer instanceof Buffer»
