@@ -107,7 +107,7 @@ import org.preesm.model.pisdf.util.CHeaderUsedLocator
  */
 class CPrinter extends BlankPrinter {
 
-	boolean monitorAllFifoMD5 = false;
+	boolean monitorAllFifoMD5 = true;
 
 	Map<CoreBlock, Set<FifoCall>> fifoPops = new HashMap();
 
@@ -188,15 +188,19 @@ class CPrinter extends BlankPrinter {
 
 	«IF monitorAllFifoMD5»
 	#ifdef PREESM_MD5_UPDATE
+	char md5String[32];
 	// +All FIFO MD5 contexts«var long counter = 0L»
-	«FOR buffer : getAllBuffers(printedCoreBlock)»
+	«val allBuffers = getAllBuffers(printedCoreBlock)»
+	«FOR buffer : allBuffers»
 	const unsigned long preesm_md5_ctx_«buffer.name»_id = «counter++»;
 	«ENDFOR»
 	PREESM_MD5_CTX bufferMd5[«counter»];
 	PREESM_MD5_CTX preStateBufferMd5[«counter»];
 
 	char * idToBufferName_«printedCoreBlock.coreID»[«counter»] = {
+		«IF !allBuffers.isEmpty»
 		"«getAllBuffers(printedCoreBlock).map[it.name].join("\",\"")»"
+		«ENDIF»
 	};
 	// -All FIFO MD5 contexts
 
@@ -215,13 +219,15 @@ class CPrinter extends BlankPrinter {
 
 	void preesmPrintMD5Array_«printedCoreBlock.coreID»(PREESM_MD5_CTX md5Array[«counter»], int loopIndex, const int actorId) {
 		// +All FIFO MD5 contexts
+		«IF !allBuffers.empty»
 		rk_sema_wait(&preesmPrintSema);
-	 	char md5String[32];
-		«FOR buffer : getAllBuffers(printedCoreBlock)»
+		char md5String[32];
+		«FOR buffer : allBuffers»
 		PREESM_MD5_tostring_no_final(md5String, &md5Array[preesm_md5_ctx_«buffer.name»_id]);
 		printf("iteration %09d - pos %09d - preesm_md5_«buffer.name» : %s\n", loopIndex, actorId, md5String); fflush(stdout);
 		«ENDFOR»
 		rk_sema_post(&preesmPrintSema);
+		«ENDIF»
 		// -All FIFO MD5 contexts
 	}
 
@@ -316,17 +322,8 @@ class CPrinter extends BlankPrinter {
 
 	def List<Buffer> getAllBuffers(CoreBlock cb) {
 		val Set<Buffer> allBuffers = new LinkedHashSet()
-		val List<ActorFunctionCall> allActorCalls = printedCoreBlock.loopBlock.codeElts.filter[it instanceof ActorFunctionCall].map[it as ActorFunctionCall].toList
+		val List<Call> allActorCalls = printedCoreBlock.loopBlock.codeElts.filter[it instanceof Call].map[it as Call].toList
 		allActorCalls.forEach[allBuffers.addAll(getInBuffers(it)); allBuffers.addAll(getOutBuffers(it))]
-
-		val List<FifoCall> allFifoCalls = printedCoreBlock.loopBlock.codeElts.filter[it instanceof FifoCall].map[it as FifoCall].filter[it.operation != FifoOperation::INIT].toList
-		allFifoCalls.forEach[{
-			val FifoCall fifoCall = it;
-			val inBuffers2 = getInBuffers(fifoCall)
-			val outBuffers2 = getOutBuffers(fifoCall)
-			allBuffers.addAll(inBuffers2);
-			allBuffers.addAll(outBuffers2)
-		}]
 
 		return new ArrayList(allBuffers);
 	}
@@ -335,21 +332,23 @@ class CPrinter extends BlankPrinter {
 		val dirs = afc.parameterDirections
 		val params = afc.parameters
 		val Set<Buffer> inBuffers = new LinkedHashSet()
-		for( var i = 0; i < dirs.size; i++) {
-			val PortDirection dir = dirs.get(i)
-			val Variable param = params.get(i)
-			if (param instanceof Buffer && dir == PortDirection.INPUT) {
-				inBuffers.add(param as Buffer)
+		if (dirs.size == params.size) {
+			for( var i = 0; i < dirs.size; i++) {
+				val PortDirection dir = dirs.get(i)
+				val Variable param = params.get(i)
+				if (param instanceof Buffer && dir == PortDirection.INPUT) {
+					inBuffers.add(param as Buffer)
+				}
 			}
-		}
-		if (afc instanceof FifoCall && (afc as FifoCall).operation == FifoOperation.POP) {
-			val headBuffer = (afc as FifoCall).headBuffer
-			if (headBuffer !== null) {
-				inBuffers.add(headBuffer)
+			if (afc instanceof FifoCall && (afc as FifoCall).operation == FifoOperation.POP) {
+				val headBuffer = (afc as FifoCall).headBuffer
+				if (headBuffer !== null) {
+					inBuffers.add(headBuffer)
+				}
 			}
-		}
-		if (afc instanceof FifoCall && (afc as FifoCall).operation == FifoOperation.PUSH) {
-			inBuffers.add((afc as FifoCall).parameters.head as Buffer)
+			if (afc instanceof FifoCall && (afc as FifoCall).operation == FifoOperation.PUSH) {
+				inBuffers.add((afc as FifoCall).parameters.head as Buffer)
+			}
 		}
 		return new ArrayList(inBuffers)
 	}
@@ -358,21 +357,23 @@ class CPrinter extends BlankPrinter {
 		val dirs = afc.parameterDirections
 		val params = afc.parameters
 		val Set<Buffer> outBuffers = new LinkedHashSet()
-		for( var i = 0; i < dirs.size; i++) {
-			val PortDirection dir = dirs.get(i)
-			val Variable param = params.get(i)
-			if (param instanceof Buffer && dir == PortDirection.OUTPUT) {
-				outBuffers.add(param as Buffer)
+		if (dirs.size == params.size) {
+			for( var i = 0; i < dirs.size; i++) {
+				val PortDirection dir = dirs.get(i)
+				val Variable param = params.get(i)
+				if (param instanceof Buffer && dir == PortDirection.OUTPUT) {
+					outBuffers.add(param as Buffer)
+				}
 			}
-		}
-		if (afc instanceof FifoCall && (afc as FifoCall).operation == FifoOperation.PUSH) {
-			val headBuffer = (afc as FifoCall).headBuffer
-			if (headBuffer !== null) {
-				outBuffers.add(headBuffer)
+			if (afc instanceof FifoCall && (afc as FifoCall).operation == FifoOperation.PUSH) {
+				val headBuffer = (afc as FifoCall).headBuffer
+				if (headBuffer !== null) {
+					outBuffers.add(headBuffer)
+				}
 			}
-		}
-		if (afc instanceof FifoCall && (afc as FifoCall).operation == FifoOperation.POP) {
-			outBuffers.add((afc as FifoCall).parameters.head as Buffer)
+			if (afc instanceof FifoCall && (afc as FifoCall).operation == FifoOperation.POP) {
+				outBuffers.add((afc as FifoCall).parameters.head as Buffer)
+			}
 		}
 		return new ArrayList(outBuffers)
 	}
@@ -468,7 +469,7 @@ class CPrinter extends BlankPrinter {
 
 	override String printFifoCall(FifoCall fifoCall) {
 		var preCheck = '''
-			«IF state == PrinterState.PRINTING_LOOP_BLOCK && monitorAllFifoMD5»
+			«IF state == PrinterState.PRINTING_LOOP_BLOCK && monitorAllFifoMD5 && fifoCall.operation != FifoOperation::INIT»
 			#ifdef PREESM_MD5_UPDATE
 				preesmBackupPreStateMD5_«printedCoreBlock.coreID»();
 				preesmUpdateMD5Array_«printedCoreBlock.coreID»(preStateBufferMd5);
@@ -476,7 +477,7 @@ class CPrinter extends BlankPrinter {
 			«ENDIF»'''
 
 		var postCheck = '''
-			«IF state == PrinterState.PRINTING_LOOP_BLOCK && monitorAllFifoMD5»
+			«IF state == PrinterState.PRINTING_LOOP_BLOCK && monitorAllFifoMD5 && fifoCall.operation != FifoOperation::INIT»
 			#ifdef PREESM_MD5_UPDATE
 				preesmUpdateMD5Array_«printedCoreBlock.coreID»(bufferMd5);
 				«val outBuffers = getOutBuffers(fifoCall)»
@@ -485,6 +486,14 @@ class CPrinter extends BlankPrinter {
 				};
 				preesmCheckMD5Array_«printedCoreBlock.coreID»(preStateBufferMd5, bufferMd5,
 						«outBuffers.size»,authorizedBufferIds_«(fifoCall).hashCode», "FIFO «(fifoCall).name»");
+
+				printf("iteration %09d - pos %09d - preesm_md5_0000 «fifoCall.name»\n", index, «printedCoreBlock.loopBlock.codeElts.indexOf(fifoCall)»);
+				«FOR buffer : fifoCall.parameters»«IF buffer instanceof Buffer»
+				PREESM_MD5_tostring_no_final(md5String, &bufferMd5[preesm_md5_ctx_«buffer.name»_id]);
+				printf("iteration %09d - pos %09d - preesm_md5_«buffer.name» : %s\n", index, «printedCoreBlock.loopBlock.codeElts.indexOf(fifoCall)», md5String);
+				«ENDIF»«ENDFOR»
+
+				// preesmPrintMD5Array_«printedCoreBlock.coreID»(bufferMd5, index, «printedCoreBlock.loopBlock.codeElts.indexOf(fifoCall)»);
 			#endif
 			«ENDIF»'''
 		var result = "fifo" + fifoCall.operation.toString.toLowerCase.toFirstUpper + "("
@@ -520,6 +529,18 @@ class CPrinter extends BlankPrinter {
 			«printMemcpy(output,0,input,index,output.size,output.type)»«{index=(output.size+index); ""}»
 		«ENDFOR»
 	}
+	«IF state == PrinterState.PRINTING_LOOP_BLOCK && monitorAllFifoMD5»
+	#ifdef PREESM_MD5_UPDATE
+		preesmUpdateMD5Array_«printedCoreBlock.coreID»(bufferMd5);
+
+		printf("iteration %09d - pos %09d - preesm_md5_0000 «call.name»\n", index, «printedCoreBlock.loopBlock.codeElts.indexOf(call)»);
+		«FOR buffer : call.parameters»«IF buffer instanceof Buffer»
+		PREESM_MD5_tostring_no_final(md5String, &bufferMd5[preesm_md5_ctx_«buffer.name»_id]);
+		printf("iteration %09d - pos %09d - preesm_md5_«buffer.name» : %s\n", index, «printedCoreBlock.loopBlock.codeElts.indexOf(call)», md5String);
+		«ENDIF»«ENDFOR»
+		// preesmPrintMD5Array_«printedCoreBlock.coreID»(bufferMd5, index, «printedCoreBlock.loopBlock.codeElts.indexOf(call)»);
+	#endif
+	«ENDIF»
 	'''
 
 	override printBroadcast(SpecialCall call) '''
@@ -536,6 +557,18 @@ class CPrinter extends BlankPrinter {
 		«ENDFOR»
 	«ENDFOR»
 	}
+	«IF state == PrinterState.PRINTING_LOOP_BLOCK && monitorAllFifoMD5»
+	#ifdef PREESM_MD5_UPDATE
+		preesmUpdateMD5Array_«printedCoreBlock.coreID»(bufferMd5);
+
+		printf("iteration %09d - pos %09d - preesm_md5_0000 «call.name»\n", index, «printedCoreBlock.loopBlock.codeElts.indexOf(call)»);
+		«FOR buffer : call.parameters»«IF buffer instanceof Buffer»
+		PREESM_MD5_tostring_no_final(md5String, &bufferMd5[preesm_md5_ctx_«buffer.name»_id]);
+		printf("iteration %09d - pos %09d - preesm_md5_«buffer.name» : %s\n", index, «printedCoreBlock.loopBlock.codeElts.indexOf(call)», md5String);
+		«ENDIF»«ENDFOR»
+		// preesmPrintMD5Array_«printedCoreBlock.coreID»(bufferMd5, index, «printedCoreBlock.loopBlock.codeElts.indexOf(call)»);
+	#endif
+	«ENDIF»
 	'''
 
 
@@ -572,6 +605,18 @@ class CPrinter extends BlankPrinter {
 			«ENDFOR»
 		«ENDFOR»
 	}
+	«IF state == PrinterState.PRINTING_LOOP_BLOCK && monitorAllFifoMD5»
+	#ifdef PREESM_MD5_UPDATE
+		preesmUpdateMD5Array_«printedCoreBlock.coreID»(bufferMd5);
+
+		printf("iteration %09d - pos %09d - preesm_md5_0000 «call.name»\n", index, «printedCoreBlock.loopBlock.codeElts.indexOf(call)»);
+		«FOR buffer : call.parameters»«IF buffer instanceof Buffer»
+		PREESM_MD5_tostring_no_final(md5String, &bufferMd5[preesm_md5_ctx_«buffer.name»_id]);
+		printf("iteration %09d - pos %09d - preesm_md5_«buffer.name» : %s\n", index, «printedCoreBlock.loopBlock.codeElts.indexOf(call)», md5String);
+		«ENDIF»«ENDFOR»
+		// preesmPrintMD5Array_«printedCoreBlock.coreID»(bufferMd5, index, «printedCoreBlock.loopBlock.codeElts.indexOf(call)»);
+	#endif
+	«ENDIF»
 	'''
 
 	override printJoin(SpecialCall call) '''
@@ -581,6 +626,18 @@ class CPrinter extends BlankPrinter {
 			«printMemcpy(output,index,input,0,input.size,input.type)»«{index=(input.size+index); ""}»
 		«ENDFOR»
 	}
+	«IF state == PrinterState.PRINTING_LOOP_BLOCK && monitorAllFifoMD5»
+	#ifdef PREESM_MD5_UPDATE
+		preesmUpdateMD5Array_«printedCoreBlock.coreID»(bufferMd5);
+
+		printf("iteration %09d - pos %09d - preesm_md5_0000 «call.name»\n", index, «printedCoreBlock.loopBlock.codeElts.indexOf(call)»);
+		«FOR buffer : call.parameters»«IF buffer instanceof Buffer»
+		PREESM_MD5_tostring_no_final(md5String, &bufferMd5[preesm_md5_ctx_«buffer.name»_id]);
+		printf("iteration %09d - pos %09d - preesm_md5_«buffer.name» : %s\n", index, «printedCoreBlock.loopBlock.codeElts.indexOf(call)», md5String);
+		«ENDIF»«ENDFOR»
+		// preesmPrintMD5Array_«printedCoreBlock.coreID»(bufferMd5, index, «printedCoreBlock.loopBlock.codeElts.indexOf(call)»);
+	#endif
+	«ENDIF»
 	'''
 
 	/**
@@ -907,6 +964,14 @@ class CPrinter extends BlankPrinter {
 		};
 		preesmCheckMD5Array_«printedCoreBlock.coreID»(preStateBufferMd5, bufferMd5,
 				«outBuffers.size»,authorizedBufferIds_«(functionCall as ActorFunctionCall).hashCode», "«(functionCall as ActorFunctionCall).actor.name»");
+
+		printf("iteration %09d - pos %09d - preesm_md5_0000 «functionCall.name»\n", index, «printedCoreBlock.loopBlock.codeElts.indexOf(functionCall)»);
+		«FOR buffer : functionCall.parameters»«IF buffer instanceof Buffer»
+		PREESM_MD5_tostring_no_final(md5String, &bufferMd5[preesm_md5_ctx_«buffer.name»_id]);
+		printf("iteration %09d - pos %09d - preesm_md5_«buffer.name» : %s\n", index, «printedCoreBlock.loopBlock.codeElts.indexOf(functionCall)», md5String);
+		«ENDIF»«ENDFOR»
+
+		// preesmPrintMD5Array_«printedCoreBlock.coreID»(bufferMd5, index, «printedCoreBlock.loopBlock.codeElts.indexOf(functionCall)»);
 	#endif
 	«ENDIF»
 	'''
