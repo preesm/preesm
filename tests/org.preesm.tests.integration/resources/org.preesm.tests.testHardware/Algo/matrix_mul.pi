@@ -12,7 +12,7 @@
         <node expr="128" id="n_cols" kind="param"/>
         <node expr="n_cols" id="n_rows" kind="param"/>
         <node expr="n_cols/dim_div_factor" id="tile_dim_size" kind="param"/>
-        <node id="matmul" kind="actor" period="0">
+        <node id="matmul" kind="actor">
             <data key="graph_desc">Code/include/Matrix_Mul.h</data>
             <loop name="matmul">
                 <param direction="IN" isConfig="true"
@@ -33,7 +33,7 @@
                 expr="tile_dim_size * tile_dim_size"
                 kind="output" name="matrix_out"/>
         </node>
-        <node id="matrix_tiling_right" kind="actor" period="0">
+        <node id="matrix_tiling_right" kind="actor">
             <data key="graph_desc">Code/include/Matrix_Tiling.h</data>
             <loop name="matrix_tiling_right">
                 <param direction="IN" isConfig="true"
@@ -56,7 +56,7 @@
                 expr="(n_cols) * (n_cols)  * (n_cols) /tile_dim_size"
                 kind="output" name="matrix_out"/>
         </node>
-        <node id="accumulator" kind="actor" period="0">
+        <node id="accumulator" kind="actor">
             <data key="graph_desc">Code/include/Matrix_Accumulator.h</data>
             <loop name="matrix_acculmulator">
                 <param direction="IN" isConfig="true"
@@ -79,7 +79,7 @@
             <port annotation="NONE" expr="n_cols*n_rows"
                 kind="output" name="matrix_out"/>
         </node>
-        <node id="Verification" kind="actor" period="0">
+        <node id="Verification" kind="actor">
             <data key="graph_desc">Code/include/Matrix_Verification.h</data>
             <loop name="matrix_verification">
                 <param direction="IN" isConfig="true"
@@ -94,7 +94,7 @@
             <port annotation="NONE" expr="n_cols*n_rows"
                 kind="input" name="matrix_hw"/>
         </node>
-        <node id="matrix_tiling_left" kind="actor" period="0">
+        <node id="matrix_tiling_left" kind="actor">
             <data key="graph_desc">Code/include/Matrix_Tiling.h</data>
             <loop name="matrix_tiling_left">
                 <param direction="IN" isConfig="true"
@@ -117,7 +117,7 @@
                 expr="(n_cols) * (n_cols)  * (n_cols) /tile_dim_size"
                 kind="output" name="matrix_out"/>
         </node>
-        <node id="matrix_generator_0" kind="actor" period="0">
+        <node id="matrix_generator_0" kind="actor">
             <data key="graph_desc">Code/include/Matrix_Creator.h</data>
             <loop name="Matrix_Creator">
                 <param direction="IN" isConfig="true"
@@ -135,7 +135,7 @@
             <port annotation="NONE" expr="matrix_size"
                 kind="output" name="matrix"/>
         </node>
-        <node id="matrix_generator_1" kind="actor" period="0">
+        <node id="matrix_generator_1" kind="actor">
             <data key="graph_desc">Code/include/Matrix_Creator.h</data>
             <loop name="Matrix_Creator">
                 <param direction="IN" isConfig="true"

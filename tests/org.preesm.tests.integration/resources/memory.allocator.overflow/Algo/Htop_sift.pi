@@ -40,7 +40,7 @@
         <node expr="pow_div_max(2, image_height)" id="maxOctaveH" kind="param"/>
         <node expr="pow_div_max(2, image_width)" id="maxOctaveW" kind="param"/>
         <node expr="min(maxOctaveW, maxOctaveH)" id="maxOctaveWH" kind="param"/>
-        <node id="compute_gaussian_coefs" kind="actor" period="0">
+        <node id="compute_gaussian_coefs" kind="actor">
             <data key="graph_desc">Code/include/ezsift-preesm.h</data>
             <loop name="compute_gaussian_coefs">
                 <param direction="IN" isConfig="true"
@@ -65,7 +65,7 @@
             <port annotation="WRITE_ONLY"
                 expr="nGpyrLayers*gWmax" kind="output" name="gaussian_coefs"/>
         </node>
-        <node id="extract_descriptor" kind="actor" period="0">
+        <node id="extract_descriptor" kind="actor">
             <data key="graph_desc">Code/include/ezsift-preesm.h</data>
             <loop name="extract_descriptor">
                 <param direction="IN" isConfig="true"
@@ -120,7 +120,7 @@
             <port annotation="WRITE_ONLY" expr="nLocalKptMax+1"
                 kind="output" name="keypoints_out"/>
         </node>
-        <node id="detect_keypoints" kind="actor" period="0">
+        <node id="detect_keypoints" kind="actor">
             <data key="graph_desc">Code/include/ezsift-preesm.h</data>
             <loop name="detect_keypoints">
                 <param direction="IN" isConfig="true"
@@ -193,7 +193,7 @@
             <port annotation="WRITE_ONLY" expr="nLocalKptMax+1"
                 kind="output" name="keypoints"/>
         </node>
-        <node id="ITERATOR_detect_keypoints" kind="actor" period="0">
+        <node id="ITERATOR_detect_keypoints" kind="actor">
             <data key="graph_desc">Code/include/ezsift-preesm.h</data>
             <loop name="ITERATOR_detect_keypoints">
                 <param direction="IN" isConfig="true"
@@ -274,7 +274,7 @@
                 expr="totSizeWithoutLayers*nLayers*parallelismLevel"
                 kind="output" name="forExtraction"/>
         </node>
-        <node id="build_dog_pyr" kind="actor" period="0">
+        <node id="build_dog_pyr" kind="actor">
             <data key="graph_desc">Code/include/ezsift-preesm.h</data>
             <loop name="build_dog_pyr">
                 <param direction="IN" isConfig="true"
@@ -334,7 +334,7 @@
                 expr="(totSizeWithoutLayers*nDogLayers)/parallelismLevel"
                 kind="output" name="dogPyr"/>
         </node>
-        <node id="ITERATOR_build_dog_pyr" kind="actor" period="0">
+        <node id="ITERATOR_build_dog_pyr" kind="actor">
             <data key="graph_desc">Code/include/ezsift-preesm.h</data>
             <loop name="ITERATOR_build_dog_pyr">
                 <param direction="IN" isConfig="true"
@@ -389,7 +389,7 @@
             <port annotation="WRITE_ONLY" expr="parallelismLevel"
                 kind="output" name="stop_col"/>
         </node>
-        <node id="build_grd_rot_pyr" kind="actor" period="0">
+        <node id="build_grd_rot_pyr" kind="actor">
             <data key="graph_desc">Code/include/ezsift-preesm.h</data>
             <loop name="build_grd_rot_pyr">
                 <param direction="IN" isConfig="true"
@@ -454,7 +454,7 @@
                 expr="(totSizeWithoutLayers*nLayers)/parallelismLevel"
                 kind="output" name="rotPyr"/>
         </node>
-        <node id="ITERATOR_build_grd_rot_pyr" kind="actor" period="0">
+        <node id="ITERATOR_build_grd_rot_pyr" kind="actor">
             <data key="graph_desc">Code/include/ezsift-preesm.h</data>
             <loop name="ITERATOR_build_grd_rot_pyr">
                 <param direction="IN" isConfig="true"
@@ -509,7 +509,7 @@
             <port annotation="WRITE_ONLY" expr="parallelismLevel"
                 kind="output" name="stop_col"/>
         </node>
-        <node id="to_float" kind="actor" period="0">
+        <node id="to_float" kind="actor">
             <data key="graph_desc">Code/include/ezsift-preesm.h</data>
             <loop name="to_float">
                 <param direction="IN" isConfig="true"
@@ -548,7 +548,7 @@
                 expr="totSizeWithoutLayers*nGpyrLayers*parallelismLevel"
                 kind="output" name="forGrdRotPyr"/>
         </node>
-        <node id="MERGE_gpyr" kind="actor" period="0">
+        <node id="MERGE_gpyr" kind="actor">
             <data key="graph_desc">Code/include/ezsift-preesm.h</data>
             <loop name="MERGE_gpyr">
                 <param direction="IN" isConfig="true"
@@ -611,7 +611,7 @@
             <port annotation="NONE" expr="tot_image_size"
                 kind="output" name="forDownSample"/>
         </node>
-        <node id="upsample2x" kind="actor" period="0">
+        <node id="upsample2x" kind="actor">
             <data key="graph_desc">Code/include/ezsift-preesm.h</data>
             <loop name="upsample2x">
                 <param direction="IN" isConfig="true"
@@ -641,7 +641,7 @@
                 expr="if(imgDouble,(4*tot_image_size)/parallelismLevel,1)"
                 kind="output" name="img2x"/>
         </node>
-        <node id="downsample2xN" kind="actor" period="0">
+        <node id="downsample2xN" kind="actor">
             <data key="graph_desc">Code/include/ezsift-preesm.h</data>
             <loop name="downsample2xN">
                 <param direction="IN" isConfig="true"
@@ -743,7 +743,7 @@
                 expr="(nGpyrLayers*tot_image_size)/4"
                 kind="output" name="forBlur1"/>
         </node>
-        <node id="seq_blur1" kind="actor" period="0">
+        <node id="seq_blur1" kind="actor">
             <data key="graph_desc">Code/include/ezsift-preesm.h</data>
             <loop name="seq_blur1">
                 <param direction="IN" isConfig="true"
@@ -789,7 +789,7 @@
             <port annotation="WRITE_ONLY" expr="tot_image_size/4"
                 kind="output" name="imgBlurred"/>
         </node>
-        <node id="downsample2x1" kind="actor" period="0">
+        <node id="downsample2x1" kind="actor">
             <data key="graph_desc">Code/include/ezsift-preesm.h</data>
             <loop name="downsample2x1">
                 <param direction="IN" isConfig="true"
@@ -814,7 +814,7 @@
                 expr="tot_image_size/(parallelismLevel*4)"
                 kind="output" name="img"/>
         </node>
-        <node id="seq_blurN" kind="actor" period="0">
+        <node id="seq_blurN" kind="actor">
             <data key="graph_desc">Code/include/ezsift-preesm.h</data>
             <loop name="seq_blurN">
                 <param direction="IN" isConfig="true"
@@ -874,7 +874,7 @@
             <port annotation="NONE" expr="tot_image_size/16"
                 kind="output" name="forRec"/>
         </node>
-        <node id="counterGpyrLayer" kind="actor" period="0">
+        <node id="counterGpyrLayer" kind="actor">
             <data key="graph_desc">Code/include/ezsift-preesm.h</data>
             <loop name="counterGpyrLayer">
                 <param direction="IN" isConfig="true"
@@ -901,7 +901,7 @@
                 kind="output" name="forDirectGaussian_2"/>
             <port annotation="NONE" expr="1" kind="output" name="forBdOctave"/>
         </node>
-        <node id="counterOctaveDownN" kind="actor" period="0">
+        <node id="counterOctaveDownN" kind="actor">
             <data key="graph_desc">Code/include/ezsift-preesm.h</data>
             <loop name="counterOctaveDownN">
                 <param direction="IN" isConfig="true"
@@ -972,7 +972,7 @@
         <node id="nbKeypoints" kind="snk">
             <port annotation="NONE" expr="1" kind="input" name="nbKeypoints"/>
         </node>
-        <node id="MERGE_keypoints" kind="actor" period="0">
+        <node id="MERGE_keypoints" kind="actor">
             <data key="graph_desc">Code/include/ezsift-preesm.h</data>
             <loop name="MERGE_keypoints">
                 <param direction="IN" isConfig="true"
@@ -1018,7 +1018,7 @@
                 expr="totSizeWithoutLayers*nDogLayers*parallelismLevel"
                 kind="output" name="forDetection"/>
         </node>
-        <node id="BarrierCounterGpyr" kind="actor" period="0">
+        <node id="BarrierCounterGpyr" kind="actor">
             <data key="graph_desc">Code/include/ezsift-preesm.h</data>
             <loop name="BarrierCounterGpyr">
                 <param direction="IN" isConfig="true"
@@ -1034,7 +1034,7 @@
             <port annotation="WRITE_ONLY" expr="nGpyrLayers"
                 kind="output" name="iters_out"/>
         </node>
-        <node id="SPLIT_upsample2x" kind="actor" period="0">
+        <node id="SPLIT_upsample2x" kind="actor">
             <data key="graph_desc">Code/include/ezsift-preesm.h</data>
             <loop name="SPLIT_upsample2x">
                 <param direction="IN" isConfig="true"
@@ -1063,7 +1063,7 @@
                 expr="if(imgDouble,image_width*(image_height + parallelismLevel),parallelismLevel)"
                 kind="output" name="out"/>
         </node>
-        <node id="counterPLevels" kind="actor" period="0">
+        <node id="counterPLevels" kind="actor">
             <data key="graph_desc">Code/include/ezsift-preesm.h</data>
             <loop name="counterPLevels">
                 <param direction="IN" isConfig="true"
@@ -1075,7 +1075,7 @@
             <port annotation="WRITE_ONLY" expr="parallelismLevel"
                 kind="output" name="iter"/>
         </node>
-        <node id="Blur2x" kind="actor" period="0">
+        <node id="Blur2x" kind="actor">
             <data key="graph_desc">Algo/Hblur2x.pi</data>
             <port kind="cfg_input" name="imgDouble"/>
             <port kind="cfg_input" name="image_width"/>
@@ -1108,7 +1108,7 @@
                 expr="if(imgDouble, (4*tot_image_size), parallelismLevel)"
                 kind="output" name="imgBlurred"/>
         </node>
-        <node id="Blur" kind="actor" period="0">
+        <node id="Blur" kind="actor">
             <data key="graph_desc">Algo/Hblur.pi</data>
             <port kind="cfg_input" name="image_width"/>
             <port kind="cfg_input" name="image_height"/>

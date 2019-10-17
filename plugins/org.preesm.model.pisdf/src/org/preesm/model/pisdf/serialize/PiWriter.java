@@ -329,7 +329,11 @@ public class PiWriter {
 
     // Set the kind of the Actor
     vertexElt.setAttribute(PiIdentifiers.NODE_KIND, PiIdentifiers.ACTOR);
-    vertexElt.setAttribute(PiIdentifiers.ACTOR_PERIOD, originalActor.getPeriod().getExpressionAsString());
+
+    final String periodExpr = originalActor.getPeriod().getExpressionAsString();
+    if (!periodExpr.equals("0")) {
+      vertexElt.setAttribute(PiIdentifiers.ACTOR_PERIOD, periodExpr);
+    }
 
     final Refinement refinement = originalActor.getRefinement();
     if (refinement != null) {
@@ -358,7 +362,11 @@ public class PiWriter {
   protected void writeActor(final Element vertexElt, final Actor actor) {
     // Set the kind of the Actor
     vertexElt.setAttribute(PiIdentifiers.NODE_KIND, PiIdentifiers.ACTOR);
-    vertexElt.setAttribute(PiIdentifiers.ACTOR_PERIOD, actor.getPeriod().getExpressionAsString());
+    final String periodExpr = actor.getPeriod().getExpressionAsString();
+    if (!periodExpr.equals("0")) {
+      vertexElt.setAttribute(PiIdentifiers.ACTOR_PERIOD, periodExpr);
+    }
+
     final Refinement refinement = actor.getRefinement();
     if (refinement != null) {
       writeRefinement(vertexElt, refinement);
@@ -540,7 +548,10 @@ public class PiWriter {
     // Create and add the graphElt to the Document
     final Element graphElt = addGraphElt(rootElt);
     writeDataElt(graphElt, PiIdentifiers.GRAPH_NAME, graph.getName());
-    graphElt.setAttribute(PiIdentifiers.ACTOR_PERIOD, graph.getPeriod().getExpressionAsString());
+    final String periodExpr = graph.getPeriod().getExpressionAsString();
+    if (!periodExpr.equals("0")) {
+      graphElt.setAttribute(PiIdentifiers.ACTOR_PERIOD, periodExpr);
+    }
 
     for (final Parameter param : graph.getParameters()) {
       writeParameter(graphElt, param);

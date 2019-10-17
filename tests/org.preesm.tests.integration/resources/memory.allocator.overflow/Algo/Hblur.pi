@@ -13,7 +13,7 @@
         <node id="parallelismLevel" kind="cfg_in_iface"/>
         <node id="nGpyrLayers" kind="cfg_in_iface"/>
         <node id="tot_image_size" kind="cfg_in_iface"/>
-        <node id="row_filter_transpose_1" kind="actor" period="0">
+        <node id="row_filter_transpose_1" kind="actor">
             <data key="graph_desc">Code/include/ezsift-preesm.h</data>
             <loop name="row_filter_transpose_1">
                 <param direction="IN" isConfig="true"
@@ -59,7 +59,7 @@
                 expr="tot_image_size/parallelismLevel"
                 kind="output" name="imgGT"/>
         </node>
-        <node id="row_filter_transpose_2" kind="actor" period="0">
+        <node id="row_filter_transpose_2" kind="actor">
             <data key="graph_desc">Code/include/ezsift-preesm.h</data>
             <loop name="row_filter_transpose_2">
                 <param direction="IN" isConfig="true"
@@ -100,7 +100,7 @@
                 expr="tot_image_size/parallelismLevel"
                 kind="output" name="imgGT"/>
         </node>
-        <node id="BarrierTranspose_1" kind="actor" period="0">
+        <node id="BarrierTranspose_1" kind="actor">
             <data key="graph_desc">Code/include/ezsift-preesm.h</data>
             <loop name="BarrierTranspose_1">
                 <param direction="IN" isConfig="true"
@@ -125,7 +125,7 @@
             <port annotation="WRITE_ONLY" expr="tot_image_size"
                 kind="output" name="img_out"/>
         </node>
-        <node id="BarrierTranspose_2" kind="actor" period="0">
+        <node id="BarrierTranspose_2" kind="actor">
             <data key="graph_desc">Code/include/ezsift-preesm.h</data>
             <loop name="BarrierTranspose_2">
                 <param direction="IN" isConfig="true"
