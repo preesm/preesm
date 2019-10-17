@@ -168,8 +168,11 @@ public class PiParametersPage extends ScenarioPage {
         if (element instanceof TableItem) {
           @SuppressWarnings("unchecked")
           Entry<Parameter, String> param = (Entry<Parameter, String>) ((TableItem) element).getData();
-          final String newValue = (String) value;
+          String newValue = (String) value;
           if (!newValue.equals(param.getValue())) {
+            if (newValue.isEmpty()) {
+              newValue = param.getKey().getExpression().getExpressionAsString();
+            }
             param.setValue(newValue);
             propertyChanged(this, IEditorPart.PROP_DIRTY);
             PiParametersPage.this.tableViewer.refresh();

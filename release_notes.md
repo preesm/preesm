@@ -25,8 +25,10 @@ PREESM Changelog
 	* Implemented a new schedule transform that optimize parallelism inside of sequantial schedule hierarchy
 	* New parameter: Optimization criteria (memory or performance)
 	* Codegen can now generate appropriate behavior for clustered-delay
+* Graph period has been added to the PiGraph model and appears in the UI.
 
 ### Bug fix
+* Fix workflow task "org.ietr.preesm.pimm.algorithm.checker.periods.PeriodsPreschedulingChecker".
 
 
 ## Release version 3.18.0

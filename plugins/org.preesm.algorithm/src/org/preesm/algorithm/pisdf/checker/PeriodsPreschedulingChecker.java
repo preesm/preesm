@@ -82,13 +82,18 @@ import org.preesm.workflow.implement.AbstractWorkflowNodeImplementation;
  */
 @PreesmTask(id = "org.ietr.preesm.pimm.algorithm.checker.periods.PeriodsPreschedulingChecker",
     name = "Periods Prescheduling Checker",
+    shortDescription = "Check necessary condition to schedule graphs with periods (at top level or in actors).",
+
+    description = "Check necessary condition to schedule graphs with periods (at top level or in actors). "
+        + "Works only on flat graphs.",
 
     inputs = { @Port(name = "PiMM", type = PiGraph.class), @Port(name = "scenario", type = Scenario.class),
         @Port(name = "architecture", type = Design.class) },
 
     outputs = { @Port(name = "PiMM", type = PiGraph.class) },
 
-    parameters = { @Parameter(name = "Selection rate (%)", values = { @Value(name = "100", effect = "") }) }
+    parameters = { @Parameter(name = "Selection rate (%)",
+        values = { @Value(name = "100", effect = "Periodic actors to consider.") }) }
 
 )
 
@@ -122,6 +127,9 @@ public class PeriodsPreschedulingChecker extends AbstractTaskImplementation {
     if (architecture.getOperatorComponents().size() != 1) {
       throw new PreesmRuntimeException("This task must be called with a homogeneous architecture, abandon.");
     }
+
+    final Map<String, Object> output = new LinkedHashMap<>();
+    output.put(AbstractWorkflowNodeImplementation.KEY_PI_GRAPH, graph);
 
     int nbCore = architecture.getOperatorComponents().get(0).getInstances().size();
     PreesmLogger.getLogger().log(Level.INFO, "Found " + nbCore + " cores.");
@@ -179,6 +187,19 @@ public class PeriodsPreschedulingChecker extends AbstractTaskImplementation {
       }
     }
 
+    final long graphPeriod = graph.getPeriod().evaluate();
+    if (graphPeriod > 0 && periodicActors.isEmpty()) {
+      // simply check sum of wcets and return.
+      long totC = 0L;
+      for (Entry<AbstractVertex, Long> en : wcets.entrySet()) {
+        totC += en.getValue() * brv.get(en.getKey());
+      }
+      if (totC > nbCore * graphPeriod) {
+        throw new PreesmRuntimeException("Utilization factor is greater than period, not schedulable.");
+      }
+      return output;
+    }
+
     // 0. find all cycles and retrieve actors placed after delays.
     HeuristicLoopBreakingDelays heurFifoBreaks = new HeuristicLoopBreakingDelays();
     heurFifoBreaks.performAnalysis(graph, brv);
@@ -225,8 +246,6 @@ public class PeriodsPreschedulingChecker extends AbstractTaskImplementation {
     performAllNBF(actorsNBFF, periodicActors, true, heurFifoBreaks.absGraph, heurFifoBreaks.breakingFifosAbs, wcets,
         heurFifoBreaks.minCycleBrv, nbCore);
 
-    final Map<String, Object> output = new LinkedHashMap<>();
-    output.put(AbstractWorkflowNodeImplementation.KEY_PI_GRAPH, graph);
     return output;
   }
 
