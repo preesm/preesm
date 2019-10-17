@@ -44,7 +44,7 @@ extern void PREESM_MD5_Update(PREESM_MD5_CTX *ctx, const void *data, unsigned lo
 extern void PREESM_MD5_Final(unsigned char *result, PREESM_MD5_CTX *ctx);
 
 extern void PREESM_MD5_Copy(PREESM_MD5_CTX *dst, PREESM_MD5_CTX *src);
-extern void PREESM_MD5_tostring_no_final(char dst[32], PREESM_MD5_CTX *src);
+extern void PREESM_MD5_tostring_no_final(char dst[40], PREESM_MD5_CTX *src);
 
 
 #endif

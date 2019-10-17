@@ -107,7 +107,7 @@ import org.preesm.model.pisdf.util.CHeaderUsedLocator
  */
 class CPrinter extends BlankPrinter {
 
-	boolean monitorAllFifoMD5 = false;
+	boolean monitorAllFifoMD5 = true;
 
 	Map<CoreBlock, Set<FifoCall>> fifoPops = new HashMap();
 
@@ -188,7 +188,7 @@ class CPrinter extends BlankPrinter {
 
 	«IF monitorAllFifoMD5»
 	#ifdef PREESM_MD5_UPDATE
-	char md5String[32];
+	char md5String[40];
 	// +All FIFO MD5 contexts«var long counter = 0L»
 	«val allBuffers = getAllBuffers(printedCoreBlock)»
 	«FOR buffer : allBuffers»
@@ -238,8 +238,8 @@ class CPrinter extends BlankPrinter {
 
 		unsigned int md5counter = 0;
 		for (md5counter = 0; md5counter < «counter»; md5counter++) {
-			char backupMd5[33] = { '\0' };
-			char currentMd5[33] = { '\0' };
+			char backupMd5[40] = { '\0' };
+			char currentMd5[40] = { '\0' };
 			PREESM_MD5_tostring_no_final(backupMd5, &backupMd5Array[md5counter]);
 			PREESM_MD5_tostring_no_final(currentMd5, &currentMd5Array[md5counter]);
 			int cmp = strcmp(backupMd5, currentMd5);
@@ -254,12 +254,10 @@ class CPrinter extends BlankPrinter {
 				}
 				if (!isAuthorized) {
 					printf("Actor %s accessed unauthorized buffer id %d ('%s') \n", actorname, md5counter, idToBufferName_«printedCoreBlock.coreID»[md5counter]);
-					exit(1);
 				}
 			} else {
 				// same md5 => actor did not write on this buffer.
 			}
-
 		}
 	}
 	#endif
