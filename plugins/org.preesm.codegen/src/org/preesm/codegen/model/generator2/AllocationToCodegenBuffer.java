@@ -211,8 +211,8 @@ public class AllocationToCodegenBuffer extends MemoryAllocationSwitch<Boolean> {
     final String candidate = name.replace(".", "_").replace("-", "_");
     long idx;
     String key = candidate;
-    if (key.length() > 28) {
-      key = key.substring(0, 28);
+    if (key.length() > 58) {
+      key = key.substring(0, 58);
     }
     if (this.bufferNames.containsKey(key)) {
       idx = this.bufferNames.get(key);
