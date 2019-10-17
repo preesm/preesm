@@ -232,6 +232,12 @@ class CPrinter extends BlankPrinter {
 	}
 
 
+	void preesmInitMD5Array_«printedCoreBlock.coreID»(PREESM_MD5_CTX md5Array[«counter»]) {
+		unsigned int md5counter = 0;
+		for (md5counter = 0; md5counter < «counter»; md5counter++) {
+			PREESM_MD5_Init(&md5Array[md5counter]);
+		}
+	}
 
 	void preesmCheckMD5Array_«printedCoreBlock.coreID»(PREESM_MD5_CTX backupMd5Array[«counter»], PREESM_MD5_CTX currentMd5Array[«counter»],
 		unsigned int authorizedBufferCount, unsigned long * authorizedBufferIDs, const char* actorname) {
@@ -296,16 +302,6 @@ class CPrinter extends BlankPrinter {
 		if (arg != NULL) {
 			printf("Warning: expecting NULL arguments\n");
 		}
-
-	«IF monitorAllFifoMD5»
-	#ifdef PREESM_MD5_UPDATE
-	// +All FIFO MD5 contexts
-	«FOR buffer : getAllBuffers(printedCoreBlock)»
-	PREESM_MD5_Init(&bufferMd5[preesm_md5_ctx_«buffer.name»_id]);
-	«ENDFOR»
-	// -All FIFO MD5 contexts
-	#endif
-	«ENDIF»
 
 	«IF !monitorAllFifoMD5 && !printedCoreBlock.sinkFifoBuffers.isEmpty»
 #ifdef PREESM_MD5_UPDATE
@@ -469,14 +465,15 @@ class CPrinter extends BlankPrinter {
 		var preCheck = '''
 			«IF state == PrinterState.PRINTING_LOOP_BLOCK && monitorAllFifoMD5 && fifoCall.operation != FifoOperation::INIT»
 			#ifdef PREESM_MD5_UPDATE
+				preesmInitMD5Array_«printedCoreBlock.coreID»(bufferMd5);
 				preesmBackupPreStateMD5_«printedCoreBlock.coreID»();
 				preesmUpdateMD5Array_«printedCoreBlock.coreID»(preStateBufferMd5);
 
-				printf("iteration %09d - pos %09d - preesm_md5_ZZZZ PRE «fifoCall.name»\n", index, «printedCoreBlock.loopBlock.codeElts.indexOf(fifoCall)»);
-				«FOR buffer : fifoCall.parameters»«IF buffer instanceof Buffer»
+				printf("iteration %09d - pos %09d - preesm_md5_0000 PRE FIFO «fifoCall.name»\n", index, «printedCoreBlock.loopBlock.codeElts.indexOf(fifoCall)»);
+				«FOR buffer : getInBuffers(fifoCall)»
 				PREESM_MD5_tostring_no_final(md5String, &preStateBufferMd5[preesm_md5_ctx_«buffer.name»_id]);
 				printf("iteration %09d - pos %09d - preesm_md5_«buffer.name» : %s\n", index, «printedCoreBlock.loopBlock.codeElts.indexOf(fifoCall)», md5String);
-				«ENDIF»«ENDFOR»
+				«ENDFOR»
 			#endif
 			«ENDIF»'''
 
@@ -493,7 +490,7 @@ class CPrinter extends BlankPrinter {
 				};
 				«ENDIF»
 
-				printf("iteration %09d - pos %09d - preesm_md5_0000 «fifoCall.name»\n", index, «printedCoreBlock.loopBlock.codeElts.indexOf(fifoCall)»);
+				printf("iteration %09d - pos %09d - preesm_md5_ZZZZ POST FIFO «fifoCall.name»\n", index, «printedCoreBlock.loopBlock.codeElts.indexOf(fifoCall)»);
 				«FOR buffer : fifoCall.parameters»«IF buffer instanceof Buffer»
 				PREESM_MD5_tostring_no_final(md5String, &bufferMd5[preesm_md5_ctx_«buffer.name»_id]);
 				printf("iteration %09d - pos %09d - preesm_md5_«buffer.name» : %s\n", index, «printedCoreBlock.loopBlock.codeElts.indexOf(fifoCall)», md5String);
@@ -533,14 +530,15 @@ class CPrinter extends BlankPrinter {
 	// Fork «call.name»«var input = call.inputBuffers.head»«var index = 0L»
 
 	«IF state == PrinterState.PRINTING_LOOP_BLOCK && monitorAllFifoMD5»
+	preesmInitMD5Array_«printedCoreBlock.coreID»(bufferMd5);
 	preesmBackupPreStateMD5_«printedCoreBlock.coreID»();
 	preesmUpdateMD5Array_«printedCoreBlock.coreID»(preStateBufferMd5);
 
-	printf("iteration %09d - pos %09d - preesm_md5_0000 PRE «call.name»\n", index, «printedCoreBlock.loopBlock.codeElts.indexOf(call)»);
-	«FOR buffer : call.parameters»«IF buffer instanceof Buffer»
+	printf("iteration %09d - pos %09d - preesm_md5_0000 PRE FORK «call.name»\n", index, «printedCoreBlock.loopBlock.codeElts.indexOf(call)»);
+	«FOR buffer : getInBuffers(call)»
 	PREESM_MD5_tostring_no_final(md5String, &preStateBufferMd5[preesm_md5_ctx_«buffer.name»_id]);
 	printf("iteration %09d - pos %09d - preesm_md5_«buffer.name» : %s\n", index, «printedCoreBlock.loopBlock.codeElts.indexOf(call)», md5String);
-	«ENDIF»«ENDFOR»
+	«ENDFOR»
 	«ENDIF»
 	{
 		«FOR output : call.outputBuffers»
@@ -559,7 +557,7 @@ class CPrinter extends BlankPrinter {
 		};
 		«ENDIF»
 
-		printf("iteration %09d - pos %09d - preesm_md5_ZZZZ POST «call.name»\n", index, «printedCoreBlock.loopBlock.codeElts.indexOf(call)»);
+		printf("iteration %09d - pos %09d - preesm_md5_ZZZZ POST FORK «call.name»\n", index, «printedCoreBlock.loopBlock.codeElts.indexOf(call)»);
 		«FOR buffer : call.parameters»«IF buffer instanceof Buffer»
 		PREESM_MD5_tostring_no_final(md5String, &bufferMd5[preesm_md5_ctx_«buffer.name»_id]);
 		printf("iteration %09d - pos %09d - preesm_md5_«buffer.name» : %s\n", index, «printedCoreBlock.loopBlock.codeElts.indexOf(call)», md5String);
@@ -575,14 +573,15 @@ class CPrinter extends BlankPrinter {
 	// Broadcast «call.name»«var input = call.inputBuffers.head»«var index = 0L»
 
 	«IF state == PrinterState.PRINTING_LOOP_BLOCK && monitorAllFifoMD5»
+	preesmInitMD5Array_«printedCoreBlock.coreID»(bufferMd5);
 	preesmBackupPreStateMD5_«printedCoreBlock.coreID»();
 	preesmUpdateMD5Array_«printedCoreBlock.coreID»(preStateBufferMd5);
 
-	printf("iteration %09d - pos %09d - preesm_md5_0000 PRE «call.name»\n", index, «printedCoreBlock.loopBlock.codeElts.indexOf(call)»);
-	«FOR buffer : call.parameters»«IF buffer instanceof Buffer»
+	printf("iteration %09d - pos %09d - preesm_md5_0000 PRE BROADCAST «call.name»\n", index, «printedCoreBlock.loopBlock.codeElts.indexOf(call)»);
+	«FOR buffer : getInBuffers(call)»
 	PREESM_MD5_tostring_no_final(md5String, &preStateBufferMd5[preesm_md5_ctx_«buffer.name»_id]);
 	printf("iteration %09d - pos %09d - preesm_md5_«buffer.name» : %s\n", index, «printedCoreBlock.loopBlock.codeElts.indexOf(call)», md5String);
-	«ENDIF»«ENDFOR»
+	«ENDFOR»
 	«ENDIF»
 
 	{
@@ -609,7 +608,7 @@ class CPrinter extends BlankPrinter {
 		};
 		«ENDIF»
 
-		printf("iteration %09d - pos %09d - preesm_md5_ZZZZ POST «call.name»\n", index, «printedCoreBlock.loopBlock.codeElts.indexOf(call)»);
+		printf("iteration %09d - pos %09d - preesm_md5_ZZZZ POST BROADCAST «call.name»\n", index, «printedCoreBlock.loopBlock.codeElts.indexOf(call)»);
 		«FOR buffer : call.parameters»«IF buffer instanceof Buffer»
 		PREESM_MD5_tostring_no_final(md5String, &bufferMd5[preesm_md5_ctx_«buffer.name»_id]);
 		printf("iteration %09d - pos %09d - preesm_md5_«buffer.name» : %s\n", index, «printedCoreBlock.loopBlock.codeElts.indexOf(call)», md5String);
@@ -628,14 +627,15 @@ class CPrinter extends BlankPrinter {
 	// RoundBuffer «call.name»«var output = call.outputBuffers.head»«var index = 0L»«var inputIdx = 0L»
 
 	«IF state == PrinterState.PRINTING_LOOP_BLOCK && monitorAllFifoMD5»
+	preesmInitMD5Array_«printedCoreBlock.coreID»(bufferMd5);
 	preesmBackupPreStateMD5_«printedCoreBlock.coreID»();
 	preesmUpdateMD5Array_«printedCoreBlock.coreID»(preStateBufferMd5);
 
-	printf("iteration %09d - pos %09d - preesm_md5_0000 PRE «call.name»\n", index, «printedCoreBlock.loopBlock.codeElts.indexOf(call)»);
-	«FOR buffer : call.parameters»«IF buffer instanceof Buffer»
+	printf("iteration %09d - pos %09d - preesm_md5_0000 PRE ROUNDBUFFER «call.name»\n", index, «printedCoreBlock.loopBlock.codeElts.indexOf(call)»);
+	«FOR buffer : getInBuffers(call)»
 	PREESM_MD5_tostring_no_final(md5String, &preStateBufferMd5[preesm_md5_ctx_«buffer.name»_id]);
 	printf("iteration %09d - pos %09d - preesm_md5_«buffer.name» : %s\n", index, «printedCoreBlock.loopBlock.codeElts.indexOf(call)», md5String);
-	«ENDIF»«ENDFOR»
+	«ENDFOR»
 	«ENDIF»
 
 	«/*Compute a list of useful memcpy (the one writing the outputed value) */
@@ -679,7 +679,7 @@ class CPrinter extends BlankPrinter {
 			«outBuffers.map["preesm_md5_ctx_"+it.name+"_id"].join(", \n")»
 		};
 		«ENDIF»
-		printf("iteration %09d - pos %09d - preesm_md5_ZZZZ POST «call.name»\n", index, «printedCoreBlock.loopBlock.codeElts.indexOf(call)»);
+		printf("iteration %09d - pos %09d - preesm_md5_ZZZZ POST ROUNDBUFFER «call.name»\n", index, «printedCoreBlock.loopBlock.codeElts.indexOf(call)»);
 		«FOR buffer : call.parameters»«IF buffer instanceof Buffer»
 		PREESM_MD5_tostring_no_final(md5String, &bufferMd5[preesm_md5_ctx_«buffer.name»_id]);
 		printf("iteration %09d - pos %09d - preesm_md5_«buffer.name» : %s\n", index, «printedCoreBlock.loopBlock.codeElts.indexOf(call)», md5String);
@@ -696,14 +696,15 @@ class CPrinter extends BlankPrinter {
 	// Join «call.name»«var output = call.outputBuffers.head»«var index = 0L»
 
 	«IF state == PrinterState.PRINTING_LOOP_BLOCK && monitorAllFifoMD5»
+	preesmInitMD5Array_«printedCoreBlock.coreID»(bufferMd5);
 	preesmBackupPreStateMD5_«printedCoreBlock.coreID»();
 	preesmUpdateMD5Array_«printedCoreBlock.coreID»(preStateBufferMd5);
 
-	printf("iteration %09d - pos %09d - preesm_md5_0000 PRE «call.name»\n", index, «printedCoreBlock.loopBlock.codeElts.indexOf(call)»);
-	«FOR buffer : call.parameters»«IF buffer instanceof Buffer»
+	printf("iteration %09d - pos %09d - preesm_md5_0000 PRE JOIN «call.name»\n", index, «printedCoreBlock.loopBlock.codeElts.indexOf(call)»);
+	«FOR buffer : getInBuffers(call)»
 	PREESM_MD5_tostring_no_final(md5String, &preStateBufferMd5[preesm_md5_ctx_«buffer.name»_id]);
 	printf("iteration %09d - pos %09d - preesm_md5_«buffer.name» : %s\n", index, «printedCoreBlock.loopBlock.codeElts.indexOf(call)», md5String);
-	«ENDIF»«ENDFOR»
+	«ENDFOR»
 	«ENDIF»
 
 	{
@@ -718,7 +719,7 @@ class CPrinter extends BlankPrinter {
 			preesm_md5_ctx_«output.name»_id
 		};
 
-		printf("iteration %09d - pos %09d - preesm_md5_ZZZZ POST «call.name»\n", index, «printedCoreBlock.loopBlock.codeElts.indexOf(call)»);
+		printf("iteration %09d - pos %09d - preesm_md5_ZZZZ JOIN POST «call.name»\n", index, «printedCoreBlock.loopBlock.codeElts.indexOf(call)»);
 		«FOR buffer : call.parameters»«IF buffer instanceof Buffer»
 		PREESM_MD5_tostring_no_final(md5String, &bufferMd5[preesm_md5_ctx_«buffer.name»_id]);
 		printf("iteration %09d - pos %09d - preesm_md5_«buffer.name» : %s\n", index, «printedCoreBlock.loopBlock.codeElts.indexOf(call)», md5String);
@@ -1074,14 +1075,15 @@ class CPrinter extends BlankPrinter {
 	override printPreFunctionCall(FunctionCall functionCall) '''
 	«IF state == PrinterState.PRINTING_LOOP_BLOCK && monitorAllFifoMD5 && functionCall instanceof ActorFunctionCall»
 	#ifdef PREESM_MD5_UPDATE
+		preesmInitMD5Array_«printedCoreBlock.coreID»(bufferMd5);
 		preesmBackupPreStateMD5_«printedCoreBlock.coreID»();
 		preesmUpdateMD5Array_«printedCoreBlock.coreID»(preStateBufferMd5);
 
-		printf("iteration %09d - pos %09d - preesm_md5_ZZZZ PRE «functionCall.name»\n", index, «printedCoreBlock.loopBlock.codeElts.indexOf(functionCall)»);
-		«FOR buffer : functionCall.parameters»«IF buffer instanceof Buffer»
+		printf("iteration %09d - pos %09d - preesm_md5_0000 PRE ACTOR «functionCall.name»\n", index, «printedCoreBlock.loopBlock.codeElts.indexOf(functionCall)»);
+		«FOR buffer : getInBuffers(functionCall)»
 		PREESM_MD5_tostring_no_final(md5String, &preStateBufferMd5[preesm_md5_ctx_«buffer.name»_id]);
 		printf("iteration %09d - pos %09d - preesm_md5_«buffer.name» : %s\n", index, «printedCoreBlock.loopBlock.codeElts.indexOf(functionCall)», md5String);
-		«ENDIF»«ENDFOR»
+		«ENDFOR»
 	#endif
 	«ENDIF»
 	'''
