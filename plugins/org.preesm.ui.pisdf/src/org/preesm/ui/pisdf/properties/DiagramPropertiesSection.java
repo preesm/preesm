@@ -67,7 +67,8 @@ public class DiagramPropertiesSection extends GFPropertySection implements ITabb
     FormData data;
 
     Label explanations = factory.createLabel(this.composite,
-        "Graph period here, works only if set on top graph, and with the correct code generation.");
+        "Graph period here, works only if set on top graph, and with the correct code generation."
+            + "\nPut \"0\" if not periodic.");
 
     /**** Period ****/
     this.txtPeriod = factory.createText(this.composite, "0");
