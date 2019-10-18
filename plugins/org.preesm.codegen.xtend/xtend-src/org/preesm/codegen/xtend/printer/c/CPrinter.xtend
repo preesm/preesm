@@ -898,6 +898,21 @@ class CPrinter extends BlankPrinter {
 		void *computationThread_Core«(coreBlock as CoreBlock).coreID»(void *arg);
 		«ENDFOR»
 
+
+		#include <execinfo.h>
+		#include <signal.h>
+		#include <stdio.h>
+		#include <stdlib.h>
+
+		void handler(int sig) {
+		  void *array[30];
+		  size_t size;
+		  size = backtrace(array, 30);
+		  fprintf(stderr, "Error: signal %d:\n", sig);
+		  backtrace_symbols_fd(array, size, STDERR_FILENO);
+		  exit(1);
+		}
+
 		pthread_barrier_t iter_barrier;
 		int preesmStopThreads;
 
@@ -946,6 +961,8 @@ class CPrinter extends BlankPrinter {
 
 
 		int main(void) {
+			 signal(SIGSEGV, handler);
+			 signal(SIGPIPE, handler);
 			// Set affinity of main thread to proper core ID
 		#ifndef PREESM_NO_AFFINITY
 		#if defined __APPLE__ || defined _WIN32

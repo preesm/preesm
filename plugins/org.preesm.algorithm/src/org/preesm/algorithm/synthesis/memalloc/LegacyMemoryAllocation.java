@@ -36,7 +36,6 @@ package org.preesm.algorithm.synthesis.memalloc;
 
 import org.preesm.algorithm.mapping.model.Mapping;
 import org.preesm.algorithm.memalloc.model.Allocation;
-import org.preesm.algorithm.memalloc.model.MemoryAllocationFactory;
 import org.preesm.algorithm.schedule.model.Schedule;
 import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.scenario.Scenario;
@@ -53,9 +52,8 @@ public class LegacyMemoryAllocation implements IMemoryAllocation {
   public Allocation allocateMemory(final PiGraph piGraph, final Design slamDesign, final Scenario scenario,
       final Schedule schedule, final Mapping mapping) {
 
-    final Allocation memAlloc = MemoryAllocationFactory.eINSTANCE.createAllocation();
-
-    return memAlloc;
+    // TODO update
+    return new SimpleMemoryAllocation().allocateMemory(piGraph, slamDesign, scenario, schedule, mapping);
   }
 
 }
