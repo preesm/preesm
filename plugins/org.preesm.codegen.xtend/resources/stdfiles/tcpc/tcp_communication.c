@@ -98,7 +98,7 @@ void preesm_receive_ack(int socket) {
 /**
  * Send a packet. Non-blocking.
  */
-void preesm_send_start(int from, int to, int * socketRegistry, char* buffer, int size, const char* bufferName) {
+void preesm_send_start(int from, int to, int * socketRegistry, void * buffer, int size, const char* bufferName) {
 #ifdef _PREESM_TCP_DEBUG_
   printf("[TCP-DEBUG] sending %d bytes from %d to %d -- (%s)\n", size, from, to, bufferName); fflush(stdout);
 #endif
@@ -114,7 +114,7 @@ void preesm_send_start(int from, int to, int * socketRegistry, char* buffer, int
 	  send(socket, newAddress, newSize, 0);
   }
 }
-void preesm_send_end(int from, int to, int * socketRegistry, char* buffer, int size, const char* bufferName) {
+void preesm_send_end(int from, int to, int * socketRegistry, void * buffer, int size, const char* bufferName) {
 #ifdef _PREESM_TCP_DEBUG_
   printf("[TCP-DEBUG] DONE - Send of %d bytes from %d to %d -- (%s)\n", size, from, to, bufferName); fflush(stdout);
 #endif
@@ -123,7 +123,7 @@ void preesm_send_end(int from, int to, int * socketRegistry, char* buffer, int s
 /**
  * Receive a packet. Blocking.
  */
-void preesm_receive_start(int from, int to, int * socketRegistry, char* buffer, int size, const char* bufferName) {
+void preesm_receive_start(int from, int to, int * socketRegistry, void * buffer, int size, const char* bufferName) {
 #ifdef _PREESM_TCP_DEBUG_
   printf("[TCP-DEBUG]                       receiving %d bytes from %d to %d -- (%s)\n", size, from, to, bufferName); fflush(stdout);
 #endif
@@ -154,7 +154,7 @@ void preesm_receive_start(int from, int to, int * socketRegistry, char* buffer, 
 	  recv(socket, newAddress, newSize, 0);
   }
 }
-void preesm_receive_end(int from, int to, int * socketRegistry, char* buffer, int size, const char* bufferName) {
+void preesm_receive_end(int from, int to, int * socketRegistry, void * buffer, int size, const char* bufferName) {
 }
 
 /**

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?pde version="3.5"?>
 
-<product name="Preesm" uid="org.preesm.product" id="org.preesm.ui.product" application="org.eclipse.ui.ide.workbench" version="3.18.0" useFeatures="true" includeLaunchers="true">
+<product name="Preesm" uid="org.preesm.product" id="org.preesm.ui.product" application="org.eclipse.ui.ide.workbench" version="3.18.1" useFeatures="true" includeLaunchers="true">
 
    <aboutInfo>
       <image path="/org.preesm.ui/resources/icons/preesmLogo_48x48.png"/>
@@ -37,7 +37,6 @@
          <bmp/>
       </win>
    </launcher>
-
 
    <vm>
    </vm>
@@ -570,9 +569,7 @@ Version 1.0 dated 2006-09-05.
    <features>
       <feature id="org.eclipse.platform"/>
       <feature id="org.eclipse.equinox.p2.user.ui"/>
-      <feature id="org.eclipse.ecf.filetransfer.httpclient4.feature"/>
       <feature id="org.eclipse.help"/>
-      <feature id="org.eclipse.ecf.filetransfer.httpclient4.ssl.feature"/>
       <feature id="org.eclipse.equinox.p2.extras.feature"/>
       <feature id="org.eclipse.rcp"/>
       <feature id="org.eclipse.equinox.p2.core.feature"/>
@@ -601,6 +598,8 @@ Version 1.0 dated 2006-09-05.
       <feature id="org.eclipse.graphiti.feature"/>
       <feature id="org.ietr.graphiti.feature"/>
       <feature id="org.preesm.feature"/>
+      <feature id="org.eclipse.ecf.filetransfer.httpclient45.feature"/>
+      <feature id="org.eclipse.ecf.filetransfer.ssl.feature"/>
    </features>
 
    <configurations>

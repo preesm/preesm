@@ -42,9 +42,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.logging.Level;
 import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.emf.common.util.EMap;
 import org.preesm.algorithm.memory.exclusiongraph.MemoryExclusionGraph;
-import org.preesm.algorithm.memory.exclusiongraph.MemoryExclusionVertex;
 import org.preesm.algorithm.model.dag.DirectedAcyclicGraph;
 import org.preesm.commons.doc.annotations.Parameter;
 import org.preesm.commons.doc.annotations.Port;
@@ -108,10 +106,6 @@ public class MemoryExclusionGraphBuilder extends AbstractTaskImplementation {
     final Scenario scenario = (Scenario) inputs.get("scenario");
     final DirectedAcyclicGraph dag = (DirectedAcyclicGraph) inputs.get("DAG");
 
-    // Retrieve list of types and associated sizes in the scenario
-    final EMap<String, Long> dataTypes = scenario.getSimulationInfo().getDataTypes();
-    MemoryExclusionVertex.setDataTypes(dataTypes);
-
     // Make a copy of the Input DAG for treatment
     // The DAG is altered when building the exclusion graph.
     // Clone is deep copy i.e. vertices are thus copied too.
@@ -122,7 +116,7 @@ public class MemoryExclusionGraphBuilder extends AbstractTaskImplementation {
 
     // Build the exclusion graph
     PreesmLogger.getLogger().log(logLevel, "Memory exclusion graph : start building");
-    final MemoryExclusionGraph memEx = new MemoryExclusionGraph();
+    final MemoryExclusionGraph memEx = new MemoryExclusionGraph(scenario);
     memEx.buildGraph(localDAG);
     logStats(logLevel, memEx);
 

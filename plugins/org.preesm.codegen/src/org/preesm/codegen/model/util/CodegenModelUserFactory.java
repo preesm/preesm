@@ -181,7 +181,7 @@ public class CodegenModelUserFactory extends CodegenFactoryImpl {
     final ActorFunctionCall afc = createActorFunctionCall();
     afc.setActorName(actor.getName());
     afc.setName(prototype.getName());
-    afc.setOriginalVertexPath(PreesmCopyTracker.getOriginalSource(actor).getVertexPath());
+    afc.setActor(PreesmCopyTracker.getOriginalSource(actor));
     final EList<FunctionArgument> arguments = prototype.getArguments();
     for (FunctionArgument a : arguments) {
       final String name = a.getName();

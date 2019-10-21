@@ -40,8 +40,9 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import org.apache.commons.lang3.tuple.ImmutablePair;
+import org.apache.commons.lang3.tuple.ImmutableTriple;
 import org.apache.commons.lang3.tuple.Pair;
-import org.eclipse.emf.ecore.util.EcoreUtil;
+import org.apache.commons.lang3.tuple.Triple;
 import org.preesm.algorithm.clustering.ClusteringHelper;
 import org.preesm.algorithm.schedule.model.ActorSchedule;
 import org.preesm.algorithm.schedule.model.HierarchicalSchedule;
@@ -67,6 +68,7 @@ import org.preesm.codegen.model.PortDirection;
 import org.preesm.codegen.model.SectionBlock;
 import org.preesm.codegen.model.SpecialCall;
 import org.preesm.codegen.model.SpecialType;
+import org.preesm.codegen.model.SubBuffer;
 import org.preesm.codegen.model.util.CodegenModelUserFactory;
 import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.preesm.model.pisdf.AbstractActor;
@@ -89,10 +91,12 @@ import org.preesm.model.pisdf.JoinActor;
 import org.preesm.model.pisdf.Parameter;
 import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.pisdf.Port;
+import org.preesm.model.pisdf.PortKind;
 import org.preesm.model.pisdf.RoundBufferActor;
 import org.preesm.model.pisdf.SpecialActor;
 import org.preesm.model.pisdf.brv.BRVMethod;
 import org.preesm.model.pisdf.brv.PiBRV;
+import org.preesm.model.pisdf.util.topology.PiSDFTopologyHelper;
 import org.preesm.model.scenario.Scenario;
 
 /**
@@ -124,7 +128,7 @@ public class CodegenClusterModelGeneratorSwitch extends ScheduleSwitch<CodeElt> 
   /**
    * @{link Map} that registers every delay @{link Buffer} with it's @{link Fifo}.
    */
-  final Map<Fifo, Buffer> delayBufferMap;
+  final Map<Fifo, Triple<Buffer, Buffer, Buffer>> delayBufferMap;
 
   /**
    * @{link Map} that registers every perfect fit delay @{link Buffer} with it's @{link InitActor}.
@@ -151,8 +155,6 @@ public class CodegenClusterModelGeneratorSwitch extends ScheduleSwitch<CodeElt> 
    */
   Map<String, Object> fetcherMap;
 
-  HierarchicalSchedule parentNode;
-
   /**
    * @param operatorBlock
    *          core block to print in
@@ -176,39 +178,43 @@ public class CodegenClusterModelGeneratorSwitch extends ScheduleSwitch<CodeElt> 
     this.delayBufferMap = new HashMap<>();
     this.iterMap = new HashMap<>();
     this.repVector = null;
-    this.parentNode = null;
   }
 
   /**
    * generate and set code element for the corresponding cluster inside of CoreBlock.
    */
-  public void generate(Schedule schedule) {
+  public void generate(final Schedule schedule) {
     // Get PiGraph
     final PiGraph graph = (PiGraph) ((HierarchicalSchedule) schedule).getAttachedActor();
     // Compute repetition vector for the whole process
     this.repVector = PiBRV.compute(graph, BRVMethod.LCM);
     // Print block from input schedule into operatorBlock
     this.operatorBlock.getLoopBlock().getCodeElts().add(doSwitch(schedule));
-    // Set end-init and delay buffer in global
-    this.operatorBlock.getDefinitions().addAll(endInitBufferMap.values());
-    this.operatorBlock.getDefinitions().addAll(delayBufferMap.values());
+    // Add end-init buffer in global
+    this.operatorBlock.getDefinitions().addAll(this.endInitBufferMap.values());
+    // Add delay buffer and sub-buffer in global
+    for (final Triple<Buffer, Buffer, Buffer> triple : this.delayBufferMap.values()) {
+      this.operatorBlock.getDefinitions().add(triple.getLeft());
+      this.operatorBlock.getDefinitions().add(triple.getMiddle());
+      this.operatorBlock.getDefinitions().add(triple.getRight());
+    }
   }
 
   @Override
-  public CodeElt caseSequentialHiearchicalSchedule(SequentialHiearchicalSchedule schedule) {
+  public CodeElt caseSequentialHiearchicalSchedule(final SequentialHiearchicalSchedule schedule) {
 
     // If parent node a parallel node with one child? If yes, repetition can be parallelize
     boolean parallelRepetition = false;
-    if (this.parentNode != null && this.parentNode.isParallel() && this.parentNode.getChildren().size() == 1) {
+    final Schedule parentNode = schedule.getParent();
+    if ((parentNode != null) && parentNode.isParallel() && (parentNode.getChildren().size() == 1)) {
       parallelRepetition = true;
     }
 
     // Retrieve cluster actor
-    Pair<CodeElt, ClusterBlock> outputPair = generateClusterBlock(schedule, parallelRepetition);
+    final Pair<CodeElt, ClusterBlock> outputPair = generateClusterBlock(schedule, parallelRepetition);
 
     // Explore and generate child schedule
     for (final Schedule e : schedule.getChildren()) {
-      this.parentNode = schedule;
       outputPair.getValue().getCodeElts().add(doSwitch(e));
     }
 
@@ -216,20 +222,18 @@ public class CodegenClusterModelGeneratorSwitch extends ScheduleSwitch<CodeElt> 
   }
 
   @Override
-  public CodeElt caseParallelHiearchicalSchedule(ParallelHiearchicalSchedule schedule) {
+  public CodeElt caseParallelHiearchicalSchedule(final ParallelHiearchicalSchedule schedule) {
 
     // Is it a data parallelism node?
     if (schedule.getChildren().size() == 1) {
-      this.parentNode = schedule;
       return doSwitch(schedule.getChildren().get(0));
     }
 
     // Retrieve cluster actor
-    Pair<CodeElt, ClusterBlock> outputPair = generateClusterBlock(schedule, false);
+    final Pair<CodeElt, ClusterBlock> outputPair = generateClusterBlock(schedule, false);
 
     // Explore and generate child schedule
     for (final Schedule e : schedule.getChildren()) {
-      this.parentNode = schedule;
       final SectionBlock sectionBlock = CodegenModelUserFactory.eINSTANCE.createSectionBlock();
       sectionBlock.getCodeElts().add(doSwitch(e));
       outputPair.getValue().getCodeElts().add(sectionBlock);
@@ -239,7 +243,14 @@ public class CodegenClusterModelGeneratorSwitch extends ScheduleSwitch<CodeElt> 
   }
 
   @Override
-  public CodeElt caseActorSchedule(ActorSchedule schedule) {
+  public CodeElt caseActorSchedule(final ActorSchedule schedule) {
+
+    // If parent node a parallel node with one child? If yes, repetition can be parallelize
+    boolean parallelRepetition = false;
+    final Schedule parentNode = schedule.getParent();
+    if ((parentNode != null) && parentNode.isParallel() && (parentNode.getChildren().size() == 1)) {
+      parallelRepetition = true;
+    }
 
     // Retrieve actor to fire
     // clustering process does list actors in actor schedule, we only care about the first one here
@@ -252,14 +263,14 @@ public class CodegenClusterModelGeneratorSwitch extends ScheduleSwitch<CodeElt> 
     // If actors has to be repeated few times, build a FiniteLoopBlock
     CodeElt outputBlock = null;
     if (schedule.getRepetition() > 1) {
-      outputBlock = generateFiniteLoopBlock(loopBlock, (int) schedule.getRepetition(), actor, schedule.isParallel());
+      outputBlock = generateFiniteLoopBlock(loopBlock, (int) schedule.getRepetition(), actor, parallelRepetition);
     } else {
       // Output the LoopBlock
       outputBlock = loopBlock;
     }
 
     // Build corresponding actor function/special call
-    if (actor instanceof EndActor || actor instanceof InitActor) {
+    if ((actor instanceof EndActor) || (actor instanceof InitActor)) {
       loopBlock.getCodeElts().add(generateEndInitActorFiring((SpecialActor) actor));
     } else if (actor instanceof SpecialActor) {
       loopBlock.getCodeElts().add(generateSpecialActorFiring((SpecialActor) actor));
@@ -267,15 +278,49 @@ public class CodegenClusterModelGeneratorSwitch extends ScheduleSwitch<CodeElt> 
       loopBlock.getCodeElts().add(generateExecutableActorFiring((ExecutableActor) actor));
     }
 
+    // Add delay pop if necessary
+    generateDelayPop(actor, loopBlock);
+
     return outputBlock;
+  }
+
+  private void generateDelayPop(final AbstractActor actor, final LoopBlock loopBlock) {
+    // Explore data port for delay
+    for (final DataPort dp : actor.getAllDataPorts()) {
+      final Fifo associatedFifo = dp.getFifo();
+      // If fifo is delayed
+      if (this.delayBufferMap.containsKey(associatedFifo)) {
+        // If the fifo goes to an actor that already has been executed, it means that we should generate a pop after
+        // a write, otherwise we print a pop only if it's in input
+        final boolean precedence = PiSDFTopologyHelper.isPredecessor((AbstractActor) associatedFifo.getSource(),
+            (AbstractActor) associatedFifo.getTarget());
+
+        if (((dp.getKind() == PortKind.DATA_INPUT) && !precedence)
+            || ((dp.getKind() == PortKind.DATA_OUTPUT) && precedence)) {
+          // Retrieve buffer and sub-buffer for corresponding delay
+          final Triple<Buffer, Buffer, Buffer> delayBufferTriple = this.delayBufferMap.get(associatedFifo);
+          // Generate a memcpy function call
+          final FunctionCall memcpyCall = CodegenModelUserFactory.eINSTANCE.createFunctionCall();
+          memcpyCall.setName("memcpy");
+          // remaining_tokens transfered at the top of delay buffer
+          memcpyCall.addParameter(delayBufferTriple.getLeft(), PortDirection.INPUT); // delay buffer
+          memcpyCall.addParameter(delayBufferTriple.getRight(), PortDirection.INPUT); // remaining subbuffer
+          // Compute size of transfer
+          final Constant constant = CodegenModelUserFactory.eINSTANCE.createConstant();
+          constant.setValue(delayBufferTriple.getRight().getSize() * delayBufferTriple.getRight().getTypeSize());
+          memcpyCall.addParameter(constant, PortDirection.INPUT);
+          // Add pop to the loop block
+          loopBlock.getCodeElts().add(memcpyCall);
+        }
+      }
+    }
   }
 
   private final Pair<CodeElt, ClusterBlock> generateClusterBlock(final HierarchicalSchedule schedule,
       final boolean parallelRepetition) {
     // Retrieve cluster actor
     final PiGraph clusterGraph = (PiGraph) schedule.getAttachedActor();
-
-    // Build and fill ClusterBlock attributes
+    // Build and fill CloopBlock.getDefinitions()lusterBlock attributes
     final ClusterBlock clusterBlock = CodegenModelUserFactory.eINSTANCE.createClusterBlock();
     clusterBlock.setName(clusterGraph.getName());
     clusterBlock.setSchedule(schedule.shortPrint());
@@ -338,7 +383,7 @@ public class CodegenClusterModelGeneratorSwitch extends ScheduleSwitch<CodeElt> 
     // Retrieve associated fifo/buffer
     for (final DataPort dp : actor.getAllDataPorts()) {
       Buffer associatedBuffer = null;
-      associatedBuffer = retrieveAssociatedBuffer(dp.getFifo());
+      associatedBuffer = retrieveAssociatedBuffer(dp.getFifo(), dp.getKind());
       associatedBuffer = generateIteratedBuffer(associatedBuffer, actor, dp);
       if (dp instanceof DataInputPort) {
         specialCall.addInputBuffer(associatedBuffer);
@@ -352,7 +397,7 @@ public class CodegenClusterModelGeneratorSwitch extends ScheduleSwitch<CodeElt> 
 
   private final FifoCall generateEndInitActorFiring(final SpecialActor actor) {
     // Build a FifoCall
-    FifoCall fifoCall = CodegenModelUserFactory.eINSTANCE.createFifoCall();
+    final FifoCall fifoCall = CodegenModelUserFactory.eINSTANCE.createFifoCall();
 
     DataPort dp = null;
     InitActor initReference = null;
@@ -360,14 +405,14 @@ public class CodegenClusterModelGeneratorSwitch extends ScheduleSwitch<CodeElt> 
     // Build Buffer corresponding to the End-Init couple
     if (actor instanceof InitActor) {
       initReference = (InitActor) actor;
-      if (!endInitBufferMap.containsKey(initReference)) {
+      if (!this.endInitBufferMap.containsKey(initReference)) {
         generateEndInitBuffer(initReference);
       }
       fifoCall.setOperation(FifoOperation.POP);
       dp = initReference.getDataOutputPort();
     } else if (actor instanceof EndActor) {
       initReference = (InitActor) ((EndActor) actor).getInitReference();
-      if (!endInitBufferMap.containsKey(initReference)) {
+      if (!this.endInitBufferMap.containsKey(initReference)) {
         generateEndInitBuffer(initReference);
       }
       fifoCall.setOperation(FifoOperation.PUSH);
@@ -376,41 +421,61 @@ public class CodegenClusterModelGeneratorSwitch extends ScheduleSwitch<CodeElt> 
       throw new PreesmRuntimeException("CodegenClusterModelGenerator: can't generate model for " + actor);
     }
 
-    Buffer associatedBuffer = retrieveAssociatedBuffer(dp.getFifo());
-    Buffer newBuffer = generateIteratedBuffer(associatedBuffer, actor, dp);
-    fifoCall.setHeadBuffer(endInitBufferMap.get(initReference));
+    final Buffer associatedBuffer = retrieveAssociatedBuffer(dp.getFifo(), dp.getKind());
+    final Buffer newBuffer = generateIteratedBuffer(associatedBuffer, actor, dp);
+    fifoCall.setHeadBuffer(this.endInitBufferMap.get(initReference));
     fifoCall.addParameter(newBuffer, PortDirection.NONE);
 
     return fifoCall;
   }
 
-  private final Buffer generateDelayedBuffer(Fifo fifo, int iterator) {
-    final Buffer buffer = CodegenModelUserFactory.eINSTANCE.createBuffer();
+  private final Buffer generateDelayBuffer(final Fifo fifo, final Buffer delayBuffer, final int iterator) {
 
-    // Fill buffer information by looking at the Fifo
-    buffer.setName("delay_" + ((AbstractActor) fifo.getSource()).getName() + "_to_"
+    // Fill delay buffer information
+    final long workingBufferSize = delayBuffer.getSize();
+    final long delayCapacity = fifo.getDelay().getExpression().evaluate();
+    delayBuffer.setName("delay_" + ((AbstractActor) fifo.getSource()).getName() + "_to_"
         + ((AbstractActor) fifo.getTarget()).getName() + "_" + iterator);
-    buffer.setType(fifo.getType());
-    buffer.setTypeSize(this.scenario.getSimulationInfo().getDataTypeSizeOrDefault(fifo.getType()));
-    buffer.setSize(fifo.getSourcePort().getExpression().evaluate());
-    this.delayBufferMap.put(fifo, buffer);
+    delayBuffer.setSize(delayCapacity + workingBufferSize);
+
+    // Initialize SubBuffer for writting into delay's fifo
+    final SubBuffer writeBuffer = CodegenModelUserFactory.eINSTANCE.createSubBuffer();
+    writeBuffer.setContainer(delayBuffer);
+    writeBuffer.setOffset(delayCapacity);
+    writeBuffer.setName("write_to_" + delayBuffer.getName());
+    writeBuffer.setType(delayBuffer.getType());
+    writeBuffer.setTypeSize(delayBuffer.getTypeSize());
+    writeBuffer.setSize(workingBufferSize);
+
+    // Initialize SubBuffer for shifting remaining value in delay's fifo
+    final SubBuffer remainingTokensBuffer = CodegenModelUserFactory.eINSTANCE.createSubBuffer();
+    remainingTokensBuffer.setContainer(delayBuffer);
+    remainingTokensBuffer.setOffset(workingBufferSize);
+    remainingTokensBuffer.setName("remaining_tokens_of_" + delayBuffer.getName());
+    remainingTokensBuffer.setType(delayBuffer.getType());
+    remainingTokensBuffer.setTypeSize(delayBuffer.getTypeSize());
+    remainingTokensBuffer.setSize(delayCapacity);
+
+    // Add buffers to delay buffer map
+    this.delayBufferMap.put(fifo, new ImmutableTriple<>(delayBuffer, writeBuffer, remainingTokensBuffer));
+
     // Build call for fifo initialization
-    FifoCall fifoInit = CodegenModelUserFactory.eINSTANCE.createFifoCall();
-    fifoInit.setHeadBuffer(buffer);
+    final FifoCall fifoInit = CodegenModelUserFactory.eINSTANCE.createFifoCall();
+    fifoInit.setHeadBuffer(delayBuffer);
     fifoInit.setOperation(FifoOperation.INIT);
     this.operatorBlock.getInitBlock().getCodeElts().add(fifoInit);
 
-    return buffer;
+    return delayBuffer;
   }
 
   private final Buffer generateEndInitBuffer(final InitActor actor) {
-    Buffer pipelineBuffer = CodegenModelUserFactory.eINSTANCE.createBuffer();
-    Fifo outgoingFifo = actor.getDataOutputPort().getOutgoingFifo();
+    final Buffer pipelineBuffer = CodegenModelUserFactory.eINSTANCE.createBuffer();
+    final Fifo outgoingFifo = actor.getDataOutputPort().getOutgoingFifo();
     pipelineBuffer.setType(outgoingFifo.getType());
     pipelineBuffer.setTypeSize(this.scenario.getSimulationInfo().getDataTypeSizeOrDefault(outgoingFifo.getType()));
     pipelineBuffer.setSize(actor.getDataOutputPort().getExpression().evaluate());
     pipelineBuffer.setName("pipeline_" + actor.getName().substring(5));
-    endInitBufferMap.put(actor, pipelineBuffer);
+    this.endInitBufferMap.put(actor, pipelineBuffer);
     return pipelineBuffer;
   }
 
@@ -424,13 +489,16 @@ public class CodegenClusterModelGeneratorSwitch extends ScheduleSwitch<CodeElt> 
     for (final Fifo fifo : externalFifo) {
       Fifo outsideFifo = null;
       DataPort outsidePort = null;
+      DataPort insidePort = null;
       // Determine Fifo direction
       if (fifo.getSource() instanceof DataInputInterface) {
         outsideFifo = ClusteringHelper.getOutsideIncomingFifo(fifo);
         outsidePort = outsideFifo.getTargetPort();
+        insidePort = fifo.getTargetPort();
       } else {
         outsideFifo = ClusteringHelper.getOutsideOutgoingFifo(fifo);
         outsidePort = outsideFifo.getSourcePort();
+        insidePort = fifo.getSourcePort();
       }
 
       if ((outsideFifo == null) || (outsidePort == null)) {
@@ -441,20 +509,16 @@ public class CodegenClusterModelGeneratorSwitch extends ScheduleSwitch<CodeElt> 
       // Retrieve from map the corresponding parent buffer
       Buffer buffer = null;
       boolean inside = true;
-      if (this.internalBufferMap.containsKey(outsideFifo)) {
-        buffer = this.internalBufferMap.get(outsideFifo);
-      } else if (this.externalBufferMap.containsKey(outsideFifo)) {
-        buffer = this.externalBufferMap.get(outsideFifo);
-      } else if (this.delayBufferMap.containsKey(outsideFifo)) {
-        buffer = this.delayBufferMap.get(outsideFifo);
-      } else {
+      try {
+        buffer = retrieveAssociatedBuffer(outsideFifo, insidePort.getKind());
+      } catch (final PreesmRuntimeException e) {
         // This is actually an outside cluster fifo, so we need to get from outside
         buffer = getOuterClusterBuffer(outsidePort);
         inside = false;
       }
 
       // If cluster is repeated few times, create an iterated buffer
-      if (inside && this.repVector.get(cluster) > 1) {
+      if (inside && (this.repVector.get(cluster) > 1)) {
         buffer = generateIteratedBuffer(buffer, cluster, outsidePort);
       }
 
@@ -488,12 +552,8 @@ public class CodegenClusterModelGeneratorSwitch extends ScheduleSwitch<CodeElt> 
     int i = 0;
     for (final Fifo fifo : ClusteringHelper.getInternalClusterFifo(cluster)) {
       // Build different buffer regarding of delay on the fifo
-      if (fifo.getDelay() != null) {
-        generateDelayedBuffer(fifo, i);
-      } else {
-        Buffer buffer = generateBuffer(fifo, i);
-        localInternalBuffer.add(buffer);
-      }
+      final Buffer buffer = generateBuffer(fifo, i);
+      localInternalBuffer.add(buffer);
       i++;
     }
 
@@ -502,8 +562,7 @@ public class CodegenClusterModelGeneratorSwitch extends ScheduleSwitch<CodeElt> 
 
   private final Buffer generateIteratedBuffer(final Buffer buffer, final AbstractActor actor, final DataPort dataPort) {
     // If iteration map contain actor, it means that buffer has to be iterated
-    // The last condition about delay prevent to iterate into a delay that is permanent or none-persistant
-    if (this.iterMap.containsKey(actor) && !this.delayBufferMap.values().contains(buffer)) {
+    if (this.iterMap.containsKey(actor)) {
       IteratedBuffer iteratedBuffer = null;
       iteratedBuffer = CodegenModelUserFactory.eINSTANCE.createIteratedBuffer();
       iteratedBuffer.setBuffer(buffer);
@@ -517,7 +576,7 @@ public class CodegenClusterModelGeneratorSwitch extends ScheduleSwitch<CodeElt> 
     }
   }
 
-  private final Buffer generateBuffer(Fifo fifo, int iterator) {
+  private final Buffer generateBuffer(final Fifo fifo, final int iterator) {
     // Allocate a buffer for each internalFifo
     final Buffer buffer = CodegenModelUserFactory.eINSTANCE.createBuffer();
 
@@ -528,8 +587,13 @@ public class CodegenClusterModelGeneratorSwitch extends ScheduleSwitch<CodeElt> 
     buffer.setTypeSize(this.scenario.getSimulationInfo().getDataTypeSizeOrDefault(fifo.getType()));
     buffer.setSize(fifo.getSourcePort().getExpression().evaluate() * this.repVector.get(fifo.getSource()));
 
-    // Register the buffer to the corresponding Fifo
-    this.internalBufferMap.put(fifo, buffer);
+    if (fifo.getDelay() != null) {
+      // Is the fifo delayed?
+      generateDelayBuffer(fifo, buffer, iterator);
+    } else {
+      // Register the buffer to the corresponding Fifo
+      this.internalBufferMap.put(fifo, buffer);
+    }
 
     return buffer;
   }
@@ -537,7 +601,13 @@ public class CodegenClusterModelGeneratorSwitch extends ScheduleSwitch<CodeElt> 
   private final void fillFunctionCallArguments(final FunctionCall functionCall, final Actor actor) {
     // Retrieve Refinement from actor
     if (actor.getRefinement() instanceof CHeaderRefinement) {
+      // Retrieve C header refinement
       final CHeaderRefinement cheader = (CHeaderRefinement) actor.getRefinement();
+      if (cheader.getLoopPrototype() == null) {
+        throw new PreesmRuntimeException(
+            "CodegenClusterModelGenerator: cannot find C loop function prototype for actor " + actor.getName());
+      }
+
       // Retrieve function argument
       final List<FunctionArgument> arguments = cheader.getLoopPrototype().getArguments();
       // Retrieve function name
@@ -576,23 +646,18 @@ public class CodegenClusterModelGeneratorSwitch extends ScheduleSwitch<CodeElt> 
   private final void addDataPortArgument(final FunctionCall functionCall, final Actor actor, final DataPort port,
       final FunctionArgument arg) {
     // Retrieve associated Fifo
-    Fifo associatedFifo = port.getFifo();
+    final Fifo associatedFifo = port.getFifo();
 
     // Retrieve associated Buffer
-    Buffer associatedBuffer = retrieveAssociatedBuffer(associatedFifo);
+    Buffer associatedBuffer = retrieveAssociatedBuffer(associatedFifo, port.getKind());
 
     // If there is an repetion over actor, iterate the buffer
     associatedBuffer = generateIteratedBuffer(associatedBuffer, actor, port);
 
-    // If function call already has this parameter, we need to copy it because parameter list of FunctionCall accept
-    // only unique reference
-    if (functionCall.getParameters().contains(associatedBuffer)) {
-      associatedBuffer = EcoreUtil.copy(associatedBuffer);
-    }
-
     // Add parameter to functionCall
     functionCall.addParameter(associatedBuffer,
         (arg.getDirection().equals(Direction.IN) ? PortDirection.INPUT : PortDirection.OUTPUT));
+
   }
 
   private final void addInitFunctionCall(final Actor actor) {
@@ -629,17 +694,23 @@ public class CodegenClusterModelGeneratorSwitch extends ScheduleSwitch<CodeElt> 
     }
   }
 
-  private final Buffer retrieveAssociatedBuffer(final Fifo fifo) {
+  private final Buffer retrieveAssociatedBuffer(final Fifo fifo, final PortKind dir) {
     if (this.internalBufferMap.containsKey(fifo)) {
       return this.internalBufferMap.get(fifo);
     } else if (this.externalBufferMap.containsKey(fifo)) {
       return this.externalBufferMap.get(fifo);
     } else if (this.delayBufferMap.containsKey(fifo)) {
-      return this.delayBufferMap.get(fifo);
-    } else {
-      throw new PreesmRuntimeException(
-          "CodegenClusterModelGenerator: cannot associate actors FIFO [" + fifo + "] with buffer");
+      final Triple<Buffer, Buffer, Buffer> delayBufferTriple = this.delayBufferMap.get(fifo);
+      switch (dir) {
+        case DATA_INPUT:
+          return delayBufferTriple.getLeft();
+        case DATA_OUTPUT:
+          return delayBufferTriple.getMiddle();
+        default:
+      }
     }
+    throw new PreesmRuntimeException(
+        "CodegenClusterModelGenerator: cannot associate actors FIFO [" + fifo + "] with buffer");
   }
 
   private Buffer getOuterClusterBuffer(final DataPort graphPort) {

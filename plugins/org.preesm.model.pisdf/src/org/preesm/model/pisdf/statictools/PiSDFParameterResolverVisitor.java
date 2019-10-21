@@ -43,6 +43,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import org.eclipse.emf.common.util.EList;
 import org.preesm.commons.exceptions.PreesmRuntimeException;
+import org.preesm.commons.math.ExpressionEvaluationException;
 import org.preesm.commons.math.JEPWrapper;
 import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.ConfigInputInterface;
@@ -110,7 +111,12 @@ public class PiSDFParameterResolverVisitor extends PiMMSwitch<Boolean> {
     // Init the JEP parser associated with the actor
     // Iterate over all data ports of the actor and resolve their rates
     for (final DataPort dp : actor.getAllDataPorts()) {
-      resolveExpression(dp, paramValues);
+      try {
+        resolveExpression(dp, paramValues);
+      } catch (final ExpressionEvaluationException e) {
+        throw new PreesmRuntimeException(
+            "Could not evaluate port [" + dp.getName() + "] of actor [" + actor.getName() + "]", e);
+      }
     }
 
     // Parse delays as well

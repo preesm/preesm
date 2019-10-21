@@ -379,7 +379,7 @@ public class CodegenModelGenerator extends AbstractCodegenModelGenerator {
     MemoryExclusionVertex mObject = null;
     // Find the associated memory object
     for (final MemoryExclusionGraph meg : this.megs.values()) {
-      mObject = meg.getVertex(new MemoryExclusionVertex(dagEdge));
+      mObject = meg.getVertex(new MemoryExclusionVertex(dagEdge, this.scenario));
       if (mObject != null) {
         break;
       }
@@ -592,6 +592,24 @@ public class CodegenModelGenerator extends AbstractCodegenModelGenerator {
    *
    */
   protected void generateActorFiring(final CoreBlock operatorBlock, final DAGVertex dagVertex) {
+
+    // store buffers on which MD5 can be computed to check validity of transformations
+    if (dagVertex.outgoingEdges().isEmpty()) {
+      final Set<DAGEdge> incomingEdges = dagVertex.incomingEdges();
+      for (final DAGEdge inEdge : incomingEdges) {
+        final BufferAggregate bufferAggregate = inEdge.getPropertyBean().getValue(BufferAggregate.propertyBeanName);
+        for (final BufferProperties buffProperty : bufferAggregate) {
+          final Buffer buffer = srSDFEdgeBuffers.get(buffProperty);
+          if (buffer != null) {
+            operatorBlock.getSinkFifoBuffers().add(buffer);
+          } else {
+            // final Buffer dagEdgeBuffer = dagEdgeBuffers.get(inEdge);
+            // operatorBlock.getSinkFifoBuffers().add(dagEdgeBuffer);
+          }
+        }
+      }
+    }
+
     // Check whether the ActorCall is a call to a hierarchical actor or not.
     final Object refinement = dagVertex.getRefinement();
 
@@ -1691,9 +1709,7 @@ public class CodegenModelGenerator extends AbstractCodegenModelGenerator {
     final ActorFunctionCall func = CodegenModelUserFactory.eINSTANCE.createActorFunctionCall();
     func.setName(prototype.getFunctionName());
     func.setActorName(dagVertex.getName());
-    org.preesm.model.pisdf.AbstractVertex oriPiActor = PreesmCopyTracker.<
-        org.preesm.model.pisdf.AbstractVertex>getOriginalSource(dagVertex.getReferencePiVertex());
-    func.setOriginalVertexPath(oriPiActor.getVertexPath());
+    func.setActor(dagVertex.getReferencePiVertex());
     // Retrieve the Arguments that must correspond to the incoming data
     // fifos
     final Entry<List<Variable>, List<PortDirection>> callVars = generateCallVariables(dagVertex, prototype, isInit);
@@ -2507,8 +2523,8 @@ public class CodegenModelGenerator extends AbstractCodegenModelGenerator {
   protected String generateUniqueBufferName(final String name) {
     int idx;
     String key = name;
-    if (key.length() > 28) {
-      key = key.substring(0, 28);
+    if (key.length() > 58) {
+      key = key.substring(0, 58);
     }
     if (this.bufferNames.containsKey(key)) {
       idx = this.bufferNames.get(key);

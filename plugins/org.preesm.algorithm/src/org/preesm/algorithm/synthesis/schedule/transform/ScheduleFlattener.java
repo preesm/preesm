@@ -53,7 +53,7 @@ public class ScheduleFlattener implements IScheduleTransform {
   @Override
   public Schedule performTransform(final Schedule schedule) {
     // If it is an hierarchical schedule, explore and cluster actors
-    if (schedule instanceof HierarchicalSchedule) {
+    if (schedule instanceof HierarchicalSchedule && schedule.hasAttachedActor()) {
       final HierarchicalSchedule hierSchedule = (HierarchicalSchedule) schedule;
       // Retrieve childrens schedule and actors
       final List<Schedule> childSchedules = new LinkedList<>();

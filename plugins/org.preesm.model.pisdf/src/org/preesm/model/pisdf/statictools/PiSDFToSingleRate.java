@@ -139,6 +139,9 @@ public class PiSDFToSingleRate extends PiMMSwitch<Boolean> {
 
     srCheck(graph, acyclicSRPiMM);
     PreesmLogger.getLogger().log(Level.FINE, " >> End srdag transfo");
+
+    PreesmLogger.getLogger().log(Level.INFO, () -> " SRDAG with " + acyclicSRPiMM.getAllActors().size()
+        + " vertices and " + acyclicSRPiMM.getAllFifos().size() + " edges ");
     return acyclicSRPiMM;
   }
 

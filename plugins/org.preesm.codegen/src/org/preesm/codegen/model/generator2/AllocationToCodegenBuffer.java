@@ -116,6 +116,10 @@ public class AllocationToCodegenBuffer extends MemoryAllocationSwitch<Boolean> {
       for (final Fifo fifo : fifos) {
         final FifoAllocation fifoAllocation = this.memAlloc.getFifoAllocations().get(fifo);
 
+        if (fifoAllocation == null) {
+          throw new PreesmRuntimeException("Fifo [" + fifo.getId() + "] has no allocation.");
+        }
+
         final org.preesm.algorithm.memalloc.model.Buffer srcBuffer = fifoAllocation.getSourceBuffer();
         final org.preesm.algorithm.memalloc.model.Buffer tgtBuffer = fifoAllocation.getTargetBuffer();
         final Buffer srcCodegenBuffer = this.btb.get(srcBuffer);
@@ -207,8 +211,8 @@ public class AllocationToCodegenBuffer extends MemoryAllocationSwitch<Boolean> {
     final String candidate = name.replace(".", "_").replace("-", "_");
     long idx;
     String key = candidate;
-    if (key.length() > 28) {
-      key = key.substring(0, 28);
+    if (key.length() > 58) {
+      key = key.substring(0, 58);
     }
     if (this.bufferNames.containsKey(key)) {
       idx = this.bufferNames.get(key);

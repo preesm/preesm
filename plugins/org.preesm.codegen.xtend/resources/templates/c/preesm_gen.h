@@ -88,22 +88,20 @@ extern "C" {
 #[[#]]#include <unistd.h>
 #[[#]]#endif
 
-#[[#]]#ifdef __APPLE__
-#[[#]]#include "TargetConditionals.h"
-#[[#]]#include "mac_barrier.h"
-#[[#]]#endif
-
-#[[#]]#ifndef __k1__
-#[[#]]#include "communication.h"
-#[[#]]#endif
-#[[#]]#include "dump.h"
-#[[#]]#include "fifo.h"
+$PREESM_INCLUDES
 
 #[[#]]#include "preesm.h"
 
 $USER_INCLUDES
 
 $CONSTANTS
+
+
+#[[#]]#ifdef PREESM_LOOP_SIZE
+#[[#]]#ifdef PREESM_VERBOSE
+#[[#]]#define PREESM_MD5_UPDATE
+#[[#]]#endif
+#[[#]]#endif
 
 #[[#]]#ifdef __cplusplus
 }

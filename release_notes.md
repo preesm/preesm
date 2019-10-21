@@ -1,6 +1,24 @@
 PREESM Changelog
 ================
 
+## Release version 3.18.1
+*2019.10.21*
+
+### New Feature
+* Codegen now updates MD5 using sink buffers (enabled and printed when loop size and verbose are defined);
+
+### Changes
+* Fix compile error in generated TCP code (but execution hangs...);
+* Refactor;
+* Clustering:
+	* Workflow task PiSDF Clustering is now documented
+	* Implemented a new schedule transform that optimize parallelism inside of sequantial schedule hierarchy
+	* New parameter: Optimization criteria (memory or performance)
+	* Codegen can now generate appropriate behavior for clustered-delay
+
+### Bug fix
+
+
 ## Release version 3.18.0
 *2019.10.09*
 
@@ -30,7 +48,6 @@ PREESM Changelog
 * Add methods in PiSDFTopologyHelper, and corresponding tests;
 * Simulation tab of scenario now has an option to import all data types from
   the graph, with predefined default values for common type names.
-
 
 ### Bug fix
 * Fix #74

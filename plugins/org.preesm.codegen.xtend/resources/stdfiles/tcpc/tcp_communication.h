@@ -39,7 +39,7 @@
 extern "C" {
 #endif
 
-#ifndef
+#ifndef _GNU_SOURCE
 #define _GNU_SOURCE
 #endif
 
@@ -87,11 +87,11 @@ typedef struct processingElement_t {
   int port;
 } ProcessingElement;
 
-void preesm_send_start(int from, int to, int * socketRegistry, char* buffer, int size, const char* bufferName);
-void preesm_send_end(int from, int to, int * socketRegistry, char* buffer, int size, const char* bufferName);
+void preesm_send_start(int from, int to, int * socketRegistry, void * buffer, int size, const char* bufferName);
+void preesm_send_end(int from, int to, int * socketRegistry, void * buffer, int size, const char* bufferName);
 
-void preesm_receive_start(int from, int to, int * socketRegistry, char* buffer, int size, const char* bufferName);
-void preesm_receive_end(int from, int to, int * socketRegistry, char* buffer, int size, const char* bufferName);
+void preesm_receive_start(int from, int to, int * socketRegistry, void * buffer, int size, const char* bufferName);
+void preesm_receive_end(int from, int to, int * socketRegistry, void * buffer, int size, const char* bufferName);
 
 void preesm_open(int* socketFileDescriptors, int processingElementID, int numberOfProcessingElements, ProcessingElement registry[numberOfProcessingElements]);
 void preesm_close(int * socketRegistry, int processingElementID, int numberOfProcessingElements);

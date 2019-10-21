@@ -177,7 +177,7 @@ class DevelopperPrinter extends CodegenAbstractPrinter {
 	override printClusterBlockFooter(ClusterBlock block) '''<Cluster_Block_Foot>'''
 
 	override printClusterBlockHeader(ClusterBlock block) '''<Cluster_Block_Head>'''
-	
+
 	override printSectionBlockFooter(SectionBlock block) '''<Section_Block_Foot>'''
 
 	override printSectionBlockHeader(SectionBlock block) '''<Section_Block_Head>'''
@@ -213,23 +213,28 @@ class DevelopperPrinter extends CodegenAbstractPrinter {
 	override printBufferIteratorDeclaration(BufferIterator bufferIterator) '''<BufferIterator_Declaration>'''
 
 	override printBufferIteratorDefinition(BufferIterator bufferIterator) '''<BufferIterator_Definition>'''
-	
+
 	override printIteratedBuffer(IteratedBuffer iteratedBuffer) '''<IteratedBuffer>'''
-	
+
 	override printDataTansfer(DataTransferAction action) '''<Data_Transfer>'''
-	
+
 	override printRegisterSetUp(RegisterSetUpAction action) '''<Register_SetUp>'''
-	
+
 	override printFpgaLoad(FpgaLoadAction action) '''<Fpga_Load>'''
-	
+
 	override printFreeDataTransferBuffer(FreeDataTransferBuffer action) '''<Free_Buffer_Data_transfer>'''
 
 	override printGlobalBufferDeclaration(GlobalBufferDeclaration action) '''<Global_Buffer_Declaration>'''
-	
+
 	override printOutputDataTransfer(OutputDataTransfer action) '''<Output_Data_Transfer>'''
-	
+
 	override printPapifyActionDefinition(PapifyAction action) '''<Papify_Action_Definition>'''
-	
+
 	override printPapifyActionParam(PapifyAction action) '''<Papify_Action_Param>'''
-	
+
+	// nothing on pre by default
+	override printPreFunctionCall(FunctionCall functionCall) ''''''
+	// nothing on post by default
+	override printPostFunctionCall(FunctionCall functionCall) ''''''
+
 }
