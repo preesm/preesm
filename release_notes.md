@@ -1,8 +1,8 @@
 PREESM Changelog
 ================
 
-## Release version X.Y.Z
-*XXXX.XX.XX*
+## Release version 3.18.1
+*2019.10.21*
 
 ### New Feature
 * Codegen now updates MD5 using sink buffers (enabled and printed when loop size and verbose are defined);
