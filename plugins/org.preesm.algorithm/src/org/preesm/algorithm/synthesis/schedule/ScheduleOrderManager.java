@@ -54,6 +54,11 @@ import org.preesm.model.slam.ComponentInstance;
  * Schedule manager class. Helps build ordered list for the AbstractActors of a schedule, inserting actors, querying,
  * etc.
  *
+ * TODO: add
+ * <ul>
+ * <li>isPredecessor(actor, actor) / isSuccessor(actor, actor)</li>
+ * <li>getPredecessors/getSuccessors(actor);</li>
+ * </ul>
  *
  *
  * @author anmorvan

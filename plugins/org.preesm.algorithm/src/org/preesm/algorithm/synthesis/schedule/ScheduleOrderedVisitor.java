@@ -63,6 +63,9 @@ import org.preesm.model.pisdf.util.topology.PiSDFTopologyHelper;
  *
  * Exception will be thrown if the schedule and topology orders are not compatible.
  *
+ * TODO: use jgrapht to build a direceted graph from the PiGraph + add precedence edges from schedule data, then iterate
+ * in topological order ?
+ *
  * @author anmorvan
  */
 abstract class ScheduleOrderedVisitor extends ScheduleSwitch<Boolean> {
