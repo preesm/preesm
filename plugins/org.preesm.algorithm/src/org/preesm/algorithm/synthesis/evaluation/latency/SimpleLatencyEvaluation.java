@@ -34,9 +34,7 @@
  */
 package org.preesm.algorithm.synthesis.evaluation.latency;
 
-import org.preesm.algorithm.mapping.model.Mapping;
-import org.preesm.algorithm.memalloc.model.Allocation;
-import org.preesm.algorithm.schedule.model.Schedule;
+import org.preesm.algorithm.synthesis.SynthesisResult;
 import org.preesm.algorithm.synthesis.evaluation.ISynthesisEvaluator;
 
 /**
@@ -47,7 +45,7 @@ import org.preesm.algorithm.synthesis.evaluation.ISynthesisEvaluator;
 public class SimpleLatencyEvaluation implements ISynthesisEvaluator<LatencyCost> {
 
   @Override
-  public LatencyCost evaluate(final Mapping mapping, final Schedule schedule, final Allocation alloc) {
+  public LatencyCost evaluate(final SynthesisResult synthesisChoice) {
     // TODO
     return new LatencyCost(0);
   }
