@@ -41,6 +41,7 @@ import java.util.List;
 import java.util.Map;
 import org.eclipse.emf.common.notify.Notification;
 import org.eclipse.emf.common.util.EList;
+import org.jgrapht.alg.TransitiveClosure;
 import org.jgrapht.graph.DefaultEdge;
 import org.jgrapht.graph.DirectedAcyclicGraph;
 import org.jgrapht.traverse.TopologicalOrderIterator;
@@ -130,6 +131,7 @@ public class ScheduleOrderManager extends PreesmContentAdapter {
           });
 
       new SchedulePrecedenceUpdate(dag).doSwitch(schedule);
+      TransitiveClosure.INSTANCE.closeDirectedAcyclicGraph(dag);
       graphCache = dag;
       return dag;
     }
