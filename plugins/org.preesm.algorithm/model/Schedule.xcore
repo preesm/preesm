@@ -239,6 +239,8 @@ class StagedHiearchicalSchedule extends SequentialHiearchicalSchedule {
 	}
 }
 
+
+
 // Special actors to fire communication. They are used to schedule the Fifos
 abstract class CommunicationActor extends SpecialActor {
 	refers Fifo fifo
@@ -292,6 +294,6 @@ class ReceiveEndActor extends ReceiveActor {
 }
 
 // Receive then Send. Atomic: simplifies allocation.
-class ForwardActor extends SendEndActor, SendStartActor, ReceiveStartActor, ReceiveEndActor {
-}
+//class ForwardActor extends SendEndActor, SendStartActor, ReceiveStartActor, ReceiveEndActor {
+//}
 
