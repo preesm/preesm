@@ -236,7 +236,7 @@ public class MemoryExclusionVertex extends AbstractVertex<MemoryExclusionGraph> 
   @Override
   public MemoryExclusionVertex getClone() {
     MemoryExclusionVertex copy;
-    copy = new MemoryExclusionVertex(this.source, this.sink, this.size, this.scenario);
+    copy = new MemoryExclusionVertex(this.getSource(), this.getSink(), this.getWeight(), this.getScenario());
     copy.edge = this.edge;
     return copy;
   }
@@ -265,8 +265,8 @@ public class MemoryExclusionVertex extends AbstractVertex<MemoryExclusionGraph> 
   public boolean equals(final Object o) {
     if (o instanceof MemoryExclusionVertex) {
       // final boolean sameEdge = this.edge == ((MemoryExclusionVertex) o).edge
-      final boolean sameSource = this.source.equals(((MemoryExclusionVertex) o).source);
-      final boolean sameSink = this.sink.equals(((MemoryExclusionVertex) o).sink);
+      final boolean sameSource = this.getSource().equals(((MemoryExclusionVertex) o).getSource());
+      final boolean sameSink = this.getSink().equals(((MemoryExclusionVertex) o).getSink());
       return sameSink && sameSource;// && sameEdge
     } else {
       return false;
@@ -275,12 +275,12 @@ public class MemoryExclusionVertex extends AbstractVertex<MemoryExclusionGraph> 
 
   @Override
   public int hashCode() {
-    return (this.sink + "=>" + this.source).hashCode();
+    return (this.getSource() + "=>" + this.getSink()).hashCode();
   }
 
   @Override
   public String toString() {
-    return this.source + "=>" + this.sink + ":" + this.size;
+    return this.getSource() + "=>" + this.getSink() + ":" + this.getWeight();
   }
 
 }

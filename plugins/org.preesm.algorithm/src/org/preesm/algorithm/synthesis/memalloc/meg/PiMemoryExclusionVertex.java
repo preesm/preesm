@@ -42,14 +42,13 @@ package org.preesm.algorithm.synthesis.memalloc.meg;
 import java.util.List;
 import java.util.logging.Level;
 import org.eclipse.xtext.util.Pair;
+import org.preesm.algorithm.memory.exclusiongraph.MemoryExclusionVertex;
 import org.preesm.algorithm.memory.script.Range;
 import org.preesm.algorithm.model.AbstractVertex;
 import org.preesm.algorithm.model.PropertyBean;
 import org.preesm.algorithm.model.PropertyFactory;
-import org.preesm.algorithm.model.dag.DAGVertex;
 import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.preesm.commons.logger.PreesmLogger;
-import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.Fifo;
 import org.preesm.model.scenario.Scenario;
 
@@ -126,8 +125,16 @@ public class PiMemoryExclusionVertex extends AbstractVertex<PiMemoryExclusionGra
    */
   public static final String DIVIDED_PARTS_HOSTS = "divided_parts_hosts";
 
-  /** unique identifier of vertex for user convenience. */
-  private long identifier;
+  /**
+   * {@link PiMemoryExclusionVertex} property associated to a {@link List} of {@link Integer} that represent the space
+   * <b>in bytes</b> between successive "subbuffers" of a {@link PiMemoryExclusionVertex}.
+   */
+  public static final String INTER_BUFFER_SPACES = "inter_buffer_spaces";
+
+  /**
+   * Property used with fifo {@link PiMemoryExclusionVertex memory objects} to relate the size of one token in the fifo.
+   */
+  public static final String TYPE_SIZE = "type_size";
 
   /**
    * ID of the task consuming the memory.
@@ -136,8 +143,6 @@ public class PiMemoryExclusionVertex extends AbstractVertex<PiMemoryExclusionGra
 
   /** Size of the memory used. */
   private long size;
-
-  private final String memVertexId;
 
   /**
    * ID of the task producing the memory.
@@ -150,23 +155,6 @@ public class PiMemoryExclusionVertex extends AbstractVertex<PiMemoryExclusionGra
    */
   private Fifo edge;
 
-  /**
-   * The {@link DAGVertex} that corresponds to the actor in the DAG associated to this working memory
-   * {@link PiMemoryExclusionVertex}.
-   */
-  private AbstractActor vertex;
-
-  /**
-   * {@link PiMemoryExclusionVertex} property associated to a {@link List} of {@link Integer} that represent the space
-   * <b>in bytes</b> between successive "subbuffers" of a {@link PiMemoryExclusionVertex}.
-   */
-  public static final String INTER_BUFFER_SPACES = "inter_buffer_spaces";
-
-  /**
-   * Property used with fifo {@link PiMemoryExclusionVertex memory objects} to relate the size of one token in the fifo.
-   */
-  public static final String TYPE_SIZE = "type_size";
-
   private final Scenario scenario;
 
   /**
@@ -176,7 +164,7 @@ public class PiMemoryExclusionVertex extends AbstractVertex<PiMemoryExclusionGra
    *          the DAG edge corresponding to the constructed vertex
    */
   public PiMemoryExclusionVertex(final Fifo inputEdge, final Scenario scenario) {
-    this(inputEdge.getId(), inputEdge.getSourcePort().getContainingActor().getName(),
+    this(inputEdge.getSourcePort().getContainingActor().getName(),
         inputEdge.getTargetPort().getContainingActor().getName(), getSize(inputEdge, scenario), scenario);
     this.edge = inputEdge;
     if (this.size == 0) {
@@ -207,74 +195,25 @@ public class PiMemoryExclusionVertex extends AbstractVertex<PiMemoryExclusionGra
    * @param sizeMem
    *          the size mem
    */
-  public PiMemoryExclusionVertex(final String memVertexId, final String sourceTask, final String sinkTask,
-      final long sizeMem, final Scenario scenario) {
-    this.memVertexId = memVertexId;
+  public PiMemoryExclusionVertex(final String sourceTask, final String sinkTask, final long sizeMem,
+      final Scenario scenario) {
     this.scenario = scenario;
     this.source = sourceTask;
     this.sink = sinkTask;
     this.size = sizeMem;
   }
 
-  @Override
-  public PiMemoryExclusionVertex copy() {
-    return null;
-  }
-
-  /**
-   * Test equality of two {@link PiMemoryExclusionVertex vertices}.<br>
-   * Two {@link PiMemoryExclusionVertex vertices} are considered equals if their {@link #getSource() source} and
-   * {@link #getSink() sink} are equals. Neither the weight nor the explodeImplode attributes of the vertices are taken
-   * into account to test the equality.
-   *
-   * <p>
-   * Do not change the way the comparison is done since several other classes relate on it, like ScriptRunner#updateMEG
-   * method.
-   * </p>
-   *
-   * @param o
-   *          the object to compare.
-   * @return true if the object is a similar vertex, false else.
-   */
-  @Override
-  public boolean equals(final Object o) {
-    if (o instanceof PiMemoryExclusionVertex) {
-      return this.memVertexId.equals(((PiMemoryExclusionVertex) o).memVertexId);
-    } else {
-      return false;
-    }
-  }
-
-  @Override
-  public PiMemoryExclusionVertex getClone() {
-    PiMemoryExclusionVertex copy;
-    copy = new PiMemoryExclusionVertex(this.memVertexId, this.source, this.sink, this.size, this.scenario);
-    copy.setIdentifier(getIdentifier());
-    copy.edge = this.edge;
-    copy.vertex = this.vertex;
-    return copy;
+  public final Scenario getScenario() {
+    return this.scenario;
   }
 
   public Fifo getEdge() {
     return this.edge;
   }
 
-  public AbstractActor getVertex() {
-    return this.vertex;
-  }
-
-  public void setVertex(final AbstractActor vertex) {
-    this.vertex = vertex;
-  }
-
   @Override
   public PropertyFactory getFactoryForProperty(final String propertyName) {
     return null;
-  }
-
-  @Override
-  public long getIdentifier() {
-    return this.identifier;
   }
 
   public String getSink() {
@@ -291,22 +230,57 @@ public class PiMemoryExclusionVertex extends AbstractVertex<PiMemoryExclusionGra
   }
 
   @Override
-  public int hashCode() {
-    return (this.sink + "=>" + this.source).hashCode();
-  }
-
-  @Override
-  public void setIdentifier(final long identifier) {
-    this.identifier = identifier;
-  }
-
-  @Override
   public void setWeight(final Long w) {
     this.size = w;
   }
 
   @Override
+  public PiMemoryExclusionVertex getClone() {
+    PiMemoryExclusionVertex copy;
+    copy = new PiMemoryExclusionVertex(this.getSource(), this.getSink(), this.getWeight(), this.getScenario());
+    copy.edge = this.edge;
+    return copy;
+  }
+
+  @Override
+  public PiMemoryExclusionVertex copy() {
+    return null;
+  }
+
+  /**
+   * Test equality of two {@link MemoryExclusionVertex vertices}.<br>
+   * Two {@link MemoryExclusionVertex vertices} are considered equals if their {@link #getSource() source} and
+   * {@link #getSink() sink} are equals. Neither the weight nor the explodeImplode attributes of the vertices are taken
+   * into account to test the equality.
+   *
+   * <p>
+   * Do not change the way the comparison is done since several other classes relate on it, like ScriptRunner#updateMEG
+   * method.
+   * </p>
+   *
+   * @param o
+   *          the object to compare.
+   * @return true if the object is a similar vertex, false else.
+   */
+  @Override
+  public boolean equals(final Object o) {
+    if (o instanceof MemoryExclusionVertex) {
+      // final boolean sameEdge = this.edge == ((MemoryExclusionVertex) o).edge
+      final boolean sameSource = this.getSource().equals(((MemoryExclusionVertex) o).getSource());
+      final boolean sameSink = this.getSink().equals(((MemoryExclusionVertex) o).getSink());
+      return sameSink && sameSource;// && sameEdge
+    } else {
+      return false;
+    }
+  }
+
+  @Override
+  public int hashCode() {
+    return (this.getSource() + "=>" + this.getSink()).hashCode();
+  }
+
+  @Override
   public String toString() {
-    return this.source + "=>" + this.sink + ":" + this.size;
+    return this.getSource() + "=>" + this.getSink() + ":" + this.getWeight();
   }
 }
