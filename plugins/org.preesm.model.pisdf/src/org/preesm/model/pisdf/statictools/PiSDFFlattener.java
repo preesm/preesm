@@ -106,7 +106,7 @@ public class PiSDFFlattener extends PiMMSwitch<Boolean> {
     // 4. Print the RV values
     PiBRV.printRV(brv);
     // 4.5 Check periods with BRV
-    PiMMHelper.checkPeriodicity(brv);
+    PiMMHelper.checkPeriodicity(graph, brv);
     // 5. Now, flatten the graph
     PiSDFFlattener staticPiMM2FlatPiMMVisitor = new PiSDFFlattener(brv);
     staticPiMM2FlatPiMMVisitor.doSwitch(graph);
@@ -634,6 +634,7 @@ public class PiSDFFlattener extends PiMMSwitch<Boolean> {
     if (graph.getContainingPiGraph() == null) {
       result.setName(graph.getName() + "_flat");
       result.setUrl(graph.getUrl());
+      result.setExpression(graph.getPeriod());
       PreesmCopyTracker.trackCopy(graph, this.result);
     }
     // If there are no actors in the graph we leave

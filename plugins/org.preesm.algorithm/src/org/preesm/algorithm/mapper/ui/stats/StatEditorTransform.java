@@ -63,12 +63,6 @@ import org.preesm.workflow.implement.AbstractTaskImplementation;
 
     shortDescription = "Displays the result of a mapping/scheduling algorithm as a Gantt diagram.",
 
-    description = "This task generates SDF3 code modeling the given SDF graph. SDF modeling in SDF3 follow the "
-        + "specification introduced by Stuijk et al. in [1].\n\n"
-        + "Known Limitations: Here is a list of known limitations of the SDF3 importation process: Only SDF"
-        + " graphs can be imported, Actors of the SDF cannot be implemented on more than one processor type,"
-        + " Timings cannot depend on parameters since SDF3 does not support parameterized SDF.",
-
     seeAlso = { "**Speedup assessment chart**: Maxime Pelcat. Prototypage Rapide et Génération de Code pour DSP Multi-"
         + "Coeurs Appliqués à la Couche Physique des Stations de Base 3GPP LTE. PhD thesis, INSA de Rennes, 2010." })
 public class StatEditorTransform extends AbstractTaskImplementation {

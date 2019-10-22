@@ -51,7 +51,6 @@ import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.AbstractVertex;
-import org.preesm.model.pisdf.Actor;
 import org.preesm.model.pisdf.ConfigInputPort;
 import org.preesm.model.pisdf.DataInputInterface;
 import org.preesm.model.pisdf.DataInputPort;
@@ -65,6 +64,7 @@ import org.preesm.model.pisdf.Fifo;
 import org.preesm.model.pisdf.ISetter;
 import org.preesm.model.pisdf.InterfaceActor;
 import org.preesm.model.pisdf.Parameter;
+import org.preesm.model.pisdf.PeriodicElement;
 import org.preesm.model.pisdf.PersistenceLevel;
 import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.pisdf.PortMemoryAnnotation;
@@ -482,10 +482,12 @@ public class PiMMHelper {
    * @param graphBRV
    *          Repetition Vector as a map.
    */
-  public static void checkPeriodicity(final Map<AbstractVertex, Long> graphBRV) {
+  public static void checkPeriodicity(final PiGraph piGraph, final Map<AbstractVertex, Long> graphBRV) {
+
+    final long graphPeriod = piGraph.getPeriod().evaluate();
 
     final Map<PiGraph, Long> levelBRV = new LinkedHashMap<>();
-    final Map<Long, List<Actor>> mapGraphPeriods = new LinkedHashMap<>();
+    final Map<Long, List<AbstractVertex>> mapGraphPeriods = new LinkedHashMap<>();
 
     for (final Entry<AbstractVertex, Long> en : graphBRV.entrySet()) {
 
@@ -494,8 +496,8 @@ public class PiMMHelper {
       if (!levelBRV.containsKey(container)) {
         levelBRV.put(container, getHierarchichalRV(container, graphBRV));
       }
-      if (av instanceof Actor) {
-        final Actor actor = (Actor) av;
+      if (av instanceof PeriodicElement) {
+        final PeriodicElement actor = (PeriodicElement) av;
         final long actorPeriod = actor.getPeriod().evaluate();
         if (actorPeriod > 0) {
           final Long actorRV = en.getValue() * levelBRV.get(container);
@@ -503,15 +505,16 @@ public class PiMMHelper {
           if (!mapGraphPeriods.containsKey(period)) {
             mapGraphPeriods.put(period, new ArrayList<>());
           }
-          mapGraphPeriods.get(period).add(actor);
+          mapGraphPeriods.get(period).add((AbstractVertex) av);
         }
       }
     }
+
     if (mapGraphPeriods.size() > 1) {
-      StringBuilder sb = new StringBuilder("Different graph periods have been found:");
-      for (final Entry<Long, List<Actor>> en : mapGraphPeriods.entrySet()) {
+      StringBuilder sb = new StringBuilder("Different graph periods have been found in actors:");
+      for (final Entry<Long, List<AbstractVertex>> en : mapGraphPeriods.entrySet()) {
         sb.append("\n" + en.getKey() + " from: ");
-        for (Actor a : en.getValue()) {
+        for (AbstractVertex a : en.getValue()) {
           sb.append(a.getName() + " / ");
         }
       }
@@ -520,8 +523,16 @@ public class PiMMHelper {
       throw new PreesmRuntimeException("Periods are not consistent, abandon.");
     } else if (mapGraphPeriods.size() == 1) {
       final long period = mapGraphPeriods.keySet().stream().findAny().orElse(0L);
-      PreesmLogger.getLogger().log(Level.INFO, () -> ("The graph period is set to: " + period));
-    } else {
+      if (graphPeriod != 0 && period != 0 && graphPeriod != period) {
+        PreesmLogger.getLogger().log(Level.SEVERE,
+            "Graph period " + graphPeriod + " is different from the one derived from actors: " + period);
+        throw new PreesmRuntimeException(
+            "Periods are not consistent (graph period different from actors periods), abandon.");
+      } else if (graphPeriod == 0 && period != 0) {
+        piGraph.setExpression(period);
+        PreesmLogger.getLogger().log(Level.INFO, () -> ("The graph period is set to: " + period));
+      }
+    } else if (graphPeriod == 0) {
       PreesmLogger.getLogger().log(Level.INFO, "No period for the graph.");
     }
   }

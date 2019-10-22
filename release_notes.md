@@ -7,8 +7,10 @@ PREESM Changelog
 ### New Feature
 
 ### Changes
+* Graph period has been added to the PiGraph model and appears in the UI.
 
 ### Bug fix
+* Fix workflow task "org.ietr.preesm.pimm.algorithm.checker.periods.PeriodsPreschedulingChecker".
 
 
 ## Release version 3.18.1

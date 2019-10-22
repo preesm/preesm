@@ -292,6 +292,8 @@ public final class PiMMUserFactory extends PiMMFactoryImpl implements PreesmUser
   @Override
   public PiGraph createPiGraph() {
     final PiGraph res = super.createPiGraph();
+    final Expression exp = createExpression();
+    res.setExpression(exp);
     res.eAdapters().add(new GraphInterfaceObserver());
     return res;
   }

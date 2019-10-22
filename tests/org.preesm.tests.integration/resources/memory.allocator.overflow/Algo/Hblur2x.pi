@@ -13,7 +13,7 @@
         <node id="parallelismLevel" kind="cfg_in_iface"/>
         <node id="nGpyrLayers" kind="cfg_in_iface"/>
         <node id="tot_image_size" kind="cfg_in_iface"/>
-        <node id="row_filter_transpose2x_1" kind="actor" period="0">
+        <node id="row_filter_transpose2x_1" kind="actor">
             <data key="graph_desc">Code/include/ezsift-preesm.h</data>
             <loop name="row_filter_transpose2x_1">
                 <param direction="IN" isConfig="true" name="image_height" type="int"/>
@@ -43,7 +43,7 @@
             <port annotation="READ_ONLY" expr="1" kind="input" name="iter"/>
             <port annotation="WRITE_ONLY" expr="if(imgDouble, (4*tot_image_size)/parallelismLevel, 1)" kind="output" name="imgGT"/>
         </node>
-        <node id="row_filter_transpose2x_2" kind="actor" period="0">
+        <node id="row_filter_transpose2x_2" kind="actor">
             <data key="graph_desc">Code/include/ezsift-preesm.h</data>
             <loop name="row_filter_transpose2x_2">
                 <param direction="IN" isConfig="true" name="image_height" type="int"/>
@@ -71,7 +71,7 @@
             <port annotation="READ_ONLY" expr="1" kind="input" name="iter"/>
             <port annotation="WRITE_ONLY" expr="if(imgDouble, (4*tot_image_size)/parallelismLevel, 1)" kind="output" name="imgGT"/>
         </node>
-        <node id="BarrierTranspose2x_1" kind="actor" period="0">
+        <node id="BarrierTranspose2x_1" kind="actor">
             <data key="graph_desc">Code/include/ezsift-preesm.h</data>
             <loop name="BarrierTranspose2x_1">
                 <param direction="IN" isConfig="true" name="image_width" type="int"/>
@@ -90,7 +90,7 @@
             <port annotation="READ_ONLY" expr="if(imgDouble, 4*tot_image_size, parallelismLevel)" kind="input" name="img_in"/>
             <port annotation="WRITE_ONLY" expr="if(imgDouble, 4*tot_image_size, parallelismLevel)" kind="output" name="img_out"/>
         </node>
-        <node id="BarrierTranspose2x_2" kind="actor" period="0">
+        <node id="BarrierTranspose2x_2" kind="actor">
             <data key="graph_desc">Code/include/ezsift-preesm.h</data>
             <loop name="BarrierTranspose2x_2">
                 <param direction="IN" isConfig="true" name="image_width" type="int"/>

@@ -37,7 +37,7 @@
             <port annotation="NONE" expr="FilePathLength"
                 kind="output" name="forExport"/>
         </node>
-        <node id="read_pgm" kind="actor" period="0">
+        <node id="read_pgm" kind="actor">
             <data key="graph_desc">Code/include/ezsift-preesm.h</data>
             <loop name="read_pgm">
                 <param direction="IN" isConfig="true"
@@ -69,7 +69,7 @@
             <port annotation="WRITE_ONLY" expr="tot_image_size"
                 kind="output" name="forDump"/>
         </node>
-        <node id="draw_keypoints_to_ppm_file" kind="actor" period="0">
+        <node id="draw_keypoints_to_ppm_file" kind="actor">
             <data key="graph_desc">Code/include/ezsift-preesm.h</data>
             <loop name="draw_keypoints_to_ppm_file">
                 <param direction="IN" isConfig="true"
@@ -104,7 +104,7 @@
             <port annotation="READ_ONLY" expr="FilePathLength"
                 kind="input" name="filename"/>
         </node>
-        <node id="SIFT" kind="actor" period="0">
+        <node id="SIFT" kind="actor">
             <data key="graph_desc">Algo/Htop_sift.pi</data>
             <port kind="cfg_input" name="nKeypointsMax"/>
             <port kind="cfg_input" name="nLocalKptMax"/>
@@ -122,7 +122,7 @@
                 kind="output" name="keypoints"/>
             <port annotation="WRITE_ONLY" expr="1" kind="output" name="nbKeypoints"/>
         </node>
-        <node id="filename1" kind="actor" period="0">
+        <node id="filename1" kind="actor">
             <data key="graph_desc">Code/include/ezsift-preesm.h</data>
             <loop name="filename1">
                 <param direction="IN" isConfig="true"
@@ -148,7 +148,7 @@
             <port annotation="NONE" expr="1" kind="output" name="forDraw"/>
             <port annotation="NONE" expr="1" kind="output" name="forDump"/>
         </node>
-        <node id="export_keypoints_to_key_file" kind="actor" period="0">
+        <node id="export_keypoints_to_key_file" kind="actor">
             <data key="graph_desc">Code/include/ezsift-preesm.h</data>
             <loop name="export_keypoints_to_key_file">
                 <param direction="IN" isConfig="true"
