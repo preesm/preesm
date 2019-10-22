@@ -43,6 +43,7 @@ import org.preesm.algorithm.schedule.model.ParallelHiearchicalSchedule;
 import org.preesm.algorithm.schedule.model.ScheduleFactory;
 import org.preesm.algorithm.schedule.model.SequentialActorSchedule;
 import org.preesm.algorithm.synthesis.schedule.ScheduleOrderManager;
+import org.preesm.algorithm.synthesis.schedule.ScheduleUtil;
 import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.Actor;
 import org.preesm.model.pisdf.DataInputPort;
@@ -61,7 +62,7 @@ public class ScheduleIteratorTest {
   @Test
   public void test1() {
     final ParallelHiearchicalSchedule sched = createSchedule();
-    final List<AbstractActor> simpleOrderedList = new ScheduleOrderManager(sched).buildNonTopologicalOrderedList();
+    final List<AbstractActor> simpleOrderedList = ScheduleUtil.getAllReferencedActors(sched);
     StringBuilder sb = new StringBuilder();
     simpleOrderedList.forEach(a -> sb.append(a.getName()));
     assertEquals("ADCB", sb.toString());

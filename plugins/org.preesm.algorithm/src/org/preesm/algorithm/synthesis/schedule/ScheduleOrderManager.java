@@ -39,7 +39,6 @@ import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 import org.eclipse.emf.common.util.EList;
 import org.preesm.algorithm.mapping.model.Mapping;
 import org.preesm.algorithm.schedule.model.ActorSchedule;
@@ -75,18 +74,6 @@ public class ScheduleOrderManager {
   public ScheduleOrderManager(final Schedule schedule) {
     this.schedule = schedule;
     this.actorToScheduleMap = ScheduleOrderManager.actorToScheduleMap(schedule);
-  }
-
-  /**
-   * Build the order following the appearance in the lists of the schedule tree. This order may not respect topological
-   * order of the actors, thus this order should not be used as valid execution scheme.
-   *
-   * Uses a simple {@link ScheduleSwitch} to build the internal list.
-   *
-   * The result list is unmodifiable.
-   */
-  public final List<AbstractActor> buildNonTopologicalOrderedList() {
-    return Collections.unmodifiableList(new InternalSimpleScheduleOrderBuilder().createOrder(this.schedule));
   }
 
   /**
@@ -194,28 +181,4 @@ public class ScheduleOrderManager {
       return res;
     }
   }
-
-  /**
-   */
-  private static class InternalSimpleScheduleOrderBuilder {
-
-    public List<AbstractActor> createOrder(final Schedule schedule) {
-      return new InternalSimpleScheduleSwitch().doSwitch(schedule);
-    }
-
-    /**
-     */
-    private static class InternalSimpleScheduleSwitch extends ScheduleSwitch<List<AbstractActor>> {
-      @Override
-      public List<AbstractActor> caseHierarchicalSchedule(final HierarchicalSchedule object) {
-        return object.getChildren().stream().map(this::doSwitch).flatMap(List::stream).collect(Collectors.toList());
-      }
-
-      @Override
-      public List<AbstractActor> caseActorSchedule(final ActorSchedule object) {
-        return object.getActorList();
-      }
-    }
-  }
-
 }

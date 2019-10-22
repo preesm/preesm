@@ -96,7 +96,7 @@ public class ScheduleUtil {
   }
 
   /**
-   *
+   * No order on the actors is enforced.
    */
   public static final List<AbstractActor> getAllReferencedActors(final Schedule schedule) {
     final List<AbstractActor> res = new ArrayList<>();
