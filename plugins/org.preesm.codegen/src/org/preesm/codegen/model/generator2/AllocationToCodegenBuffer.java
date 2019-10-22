@@ -45,7 +45,6 @@ import java.util.stream.Collectors;
 import org.apache.commons.collections4.BidiMap;
 import org.apache.commons.collections4.bidimap.DualHashBidiMap;
 import org.eclipse.emf.common.util.EList;
-import org.eclipse.emf.common.util.EMap;
 import org.preesm.algorithm.memalloc.model.Allocation;
 import org.preesm.algorithm.memalloc.model.FifoAllocation;
 import org.preesm.algorithm.memalloc.model.LogicalBuffer;
@@ -69,7 +68,6 @@ import org.preesm.model.pisdf.Parameter;
 import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.pisdf.Port;
 import org.preesm.model.scenario.Scenario;
-import org.preesm.model.slam.ComponentInstance;
 
 /**
  *
@@ -138,14 +136,7 @@ public class AllocationToCodegenBuffer extends MemoryAllocationSwitch<Boolean> {
 
           this.portToVariable.put(fifo.getSourcePort(), srcCodegenBuffer);
 
-          final EMap<ComponentInstance,
-              org.preesm.algorithm.memalloc.model.Buffer> routeBuffers = fifoAllocation.getRouteBuffers();
-          for (final Entry<ComponentInstance,
-              org.preesm.algorithm.memalloc.model.Buffer> routeBufferEntry : routeBuffers) {
-            // TODO
-            throw new UnsupportedOperationException(routeBufferEntry.toString());
-
-          }
+          // TODO handle all route buffers
         } else {
           this.portToVariable.put(fifo.getSourcePort(), tgtCodegenBuffer);
 
