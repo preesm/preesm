@@ -1,3 +1,4 @@
+
 /**
  * Copyright or © or Copr. IETR/INSA - Rennes (2012 - 2019) :
  *
@@ -127,27 +128,6 @@ public class MemoryExclusionVertex extends AbstractVertex<MemoryExclusionGraph> 
   public static final String DIVIDED_PARTS_HOSTS = "divided_parts_hosts";
 
   /**
-   * ID of the task consuming the memory.
-   */
-  private final String sink;
-
-  /** Size of the memory used. */
-  private long size;
-
-  /**
-   * ID of the task producing the memory.
-   */
-  private final String source;
-
-  /**
-   * The edge in the DAG that corresponds to this vertex in the exclusion graph. (This attribute is used only if the
-   * vertices corresponds to an edge in the dag, i.e. a transfer between actors)
-   */
-  private DAGEdge edge;
-
-  private final Scenario scenario;
-
-  /**
    * {@link MemoryExclusionVertex} property associated to a {@link List} of {@link Integer} that represent the space
    * <b>in bytes</b> between successive "subbuffers" of a {@link MemoryExclusionVertex}.
    */
@@ -157,6 +137,23 @@ public class MemoryExclusionVertex extends AbstractVertex<MemoryExclusionGraph> 
    * Property used with fifo {@link MemoryExclusionVertex memory objects} to relate the size of one token in the fifo.
    */
   public static final String TYPE_SIZE = "type_size";
+
+  /** ID of the task consuming the memory. */
+  private final String sink;
+
+  /** Size of the memory used. */
+  private long size;
+
+  /** ID of the task producing the memory. */
+  private final String source;
+
+  /**
+   * The edge in the DAG that corresponds to this vertex in the exclusion graph. (This attribute is used only if the
+   * vertices corresponds to an edge in the dag, i.e. a transfer between actors)
+   */
+  private DAGEdge edge;
+
+  private final Scenario scenario;
 
   /**
    * Constructor of the class.
@@ -180,10 +177,8 @@ public class MemoryExclusionVertex extends AbstractVertex<MemoryExclusionGraph> 
     long vertexWeight = 0;
     while (iter.hasNext()) {
       final BufferProperties properties = iter.next();
-
       final String dataType = properties.getDataType();
       final long typeSize = scenario.getSimulationInfo().getDataTypeSizeOrDefault(dataType);
-
       vertexWeight += properties.getSize() * typeSize;
     }
     return vertexWeight;
@@ -205,6 +200,45 @@ public class MemoryExclusionVertex extends AbstractVertex<MemoryExclusionGraph> 
     this.source = sourceTask;
     this.sink = sinkTask;
     this.size = sizeMem;
+  }
+
+  public final Scenario getScenario() {
+    return this.scenario;
+  }
+
+  public DAGEdge getEdge() {
+    return this.edge;
+  }
+
+  @Override
+  public PropertyFactory getFactoryForProperty(final String propertyName) {
+    return null;
+  }
+
+  public String getSink() {
+    return this.sink;
+  }
+
+  public String getSource() {
+    return this.source;
+  }
+
+  @Override
+  public Long getWeight() {
+    return this.size;
+  }
+
+  @Override
+  public void setWeight(final Long w) {
+    this.size = w;
+  }
+
+  @Override
+  public MemoryExclusionVertex getClone() {
+    MemoryExclusionVertex copy;
+    copy = new MemoryExclusionVertex(this.source, this.sink, this.size, this.scenario);
+    copy.edge = this.edge;
+    return copy;
   }
 
   @Override
@@ -240,43 +274,8 @@ public class MemoryExclusionVertex extends AbstractVertex<MemoryExclusionGraph> 
   }
 
   @Override
-  public MemoryExclusionVertex getClone() {
-    MemoryExclusionVertex copy;
-    copy = new MemoryExclusionVertex(this.source, this.sink, this.size, this.scenario);
-    copy.edge = this.edge;
-    return copy;
-  }
-
-  public DAGEdge getEdge() {
-    return this.edge;
-  }
-
-  @Override
-  public PropertyFactory getFactoryForProperty(final String propertyName) {
-    return null;
-  }
-
-  public String getSink() {
-    return this.sink;
-  }
-
-  public String getSource() {
-    return this.source;
-  }
-
-  @Override
-  public Long getWeight() {
-    return this.size;
-  }
-
-  @Override
   public int hashCode() {
     return (this.sink + "=>" + this.source).hashCode();
-  }
-
-  @Override
-  public void setWeight(final Long w) {
-    this.size = w;
   }
 
   @Override
@@ -284,7 +283,4 @@ public class MemoryExclusionVertex extends AbstractVertex<MemoryExclusionGraph> 
     return this.source + "=>" + this.sink + ":" + this.size;
   }
 
-  public final Scenario getScenario() {
-    return this.scenario;
-  }
 }
