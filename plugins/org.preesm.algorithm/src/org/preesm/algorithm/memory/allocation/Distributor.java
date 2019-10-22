@@ -794,8 +794,8 @@ public class Distributor {
       // retrieve
       final DirectedAcyclicGraph dag = memEx.getPropertyBean().getValue(MemoryExclusionGraph.SOURCE_DAG);
       if (i == 0) {
-        if (mObj.getSource().contains("FIFO_Head_")) {
-          dagVertex = dag.getVertex(mObj.getSource().substring(("FIFO_Head_").length()));
+        if (mObj.getSource().contains(MemoryExclusionGraph.FIFO_HEAD_PREFIX)) {
+          dagVertex = dag.getVertex(mObj.getSource().substring((MemoryExclusionGraph.FIFO_HEAD_PREFIX).length()));
         } else {
           dagVertex = dag.getVertex(mObj.getSource());
         }
@@ -912,20 +912,8 @@ public class Distributor {
       } // Else => Shared memory
     } else {
       // The MObject is not associated to a DAGEdge
-      // It is either a FIFO_head/body or working memory
+      // It is either a FIFO_head/body
       // For now these mobjects are put in shared memory
-      // The MObject is not associated to a DAGEdge
-      // It is either a FIFO_head/body or working memory
-      // If this is a working memory object
-      // logger.log(Level.INFO, "findMObjBankMixed sink " + mObj.sink + " source " + mObj.source)
-      if (mObj.getSource().equals(mObj.getSink())) {
-        // This is a wMem mObj
-        // The mObj is allocated in the MEG of the core executing the corresponding actor.
-        final ComponentInstance component = mObj.getVertex().getPropertyBean().getValue(Distributor.OPERATOR);
-        memory = component.getInstanceName();
-      } else {
-        // For now fifos are allocated in shared memory
-      }
     }
 
     // Add the memEx Vertex to the set of vertex of the component

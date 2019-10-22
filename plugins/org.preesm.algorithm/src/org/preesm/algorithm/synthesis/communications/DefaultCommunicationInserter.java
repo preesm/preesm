@@ -97,7 +97,7 @@ public class DefaultCommunicationInserter implements ICommunicationInserter {
     final List<CommunicationActor> res = new ArrayList<>();
 
     // schedule manager used to query schedule and insert new com nodes.
-    final ScheduleOrderManager scheduleOrderManager = new ScheduleOrderManager(schedule);
+    final ScheduleOrderManager scheduleOrderManager = new ScheduleOrderManager(piGraph, schedule);
 
     final SlamRoutingTable routeTable = new SlamRoutingTable(slamDesign);
 

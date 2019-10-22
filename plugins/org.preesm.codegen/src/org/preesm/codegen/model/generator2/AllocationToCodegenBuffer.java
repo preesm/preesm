@@ -45,12 +45,12 @@ import java.util.stream.Collectors;
 import org.apache.commons.collections4.BidiMap;
 import org.apache.commons.collections4.bidimap.DualHashBidiMap;
 import org.eclipse.emf.common.util.EList;
-import org.eclipse.emf.common.util.EMap;
 import org.preesm.algorithm.memalloc.model.Allocation;
 import org.preesm.algorithm.memalloc.model.FifoAllocation;
 import org.preesm.algorithm.memalloc.model.LogicalBuffer;
 import org.preesm.algorithm.memalloc.model.PhysicalBuffer;
 import org.preesm.algorithm.memalloc.model.util.MemoryAllocationSwitch;
+import org.preesm.algorithm.memory.exclusiongraph.MemoryExclusionGraph;
 import org.preesm.algorithm.schedule.model.Schedule;
 import org.preesm.algorithm.synthesis.schedule.ScheduleOrderManager;
 import org.preesm.codegen.model.Buffer;
@@ -68,7 +68,6 @@ import org.preesm.model.pisdf.Parameter;
 import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.pisdf.Port;
 import org.preesm.model.scenario.Scenario;
-import org.preesm.model.slam.ComponentInstance;
 
 /**
  *
@@ -110,7 +109,8 @@ public class AllocationToCodegenBuffer extends MemoryAllocationSwitch<Boolean> {
     this.doSwitch(this.memAlloc);
 
     // link variables for Fifos and set names
-    final List<AbstractActor> orderedList = new ScheduleOrderManager(schedule).buildScheduleAndTopologicalOrderedList();
+    final List<
+        AbstractActor> orderedList = new ScheduleOrderManager(algo, schedule).buildScheduleAndTopologicalOrderedList();
     for (final AbstractActor actor : orderedList) {
       final List<Fifo> fifos = actor.getDataInputPorts().stream().map(DataPort::getFifo).collect(Collectors.toList());
       for (final Fifo fifo : fifos) {
@@ -137,14 +137,7 @@ public class AllocationToCodegenBuffer extends MemoryAllocationSwitch<Boolean> {
 
           this.portToVariable.put(fifo.getSourcePort(), srcCodegenBuffer);
 
-          final EMap<ComponentInstance,
-              org.preesm.algorithm.memalloc.model.Buffer> routeBuffers = fifoAllocation.getRouteBuffers();
-          for (final Entry<ComponentInstance,
-              org.preesm.algorithm.memalloc.model.Buffer> routeBufferEntry : routeBuffers) {
-            // TODO
-            throw new UnsupportedOperationException(routeBufferEntry.toString());
-
-          }
+          // TODO handle all route buffers
         } else {
           this.portToVariable.put(fifo.getSourcePort(), tgtCodegenBuffer);
 
@@ -177,7 +170,7 @@ public class AllocationToCodegenBuffer extends MemoryAllocationSwitch<Boolean> {
       codegenBuffer.setComment(comment);
 
       final String name = source + "__" + sink;
-      final String uniqueName = generateUniqueBufferName("FIFO_Head_" + name);
+      final String uniqueName = generateUniqueBufferName(MemoryExclusionGraph.FIFO_HEAD_PREFIX + name);
       codegenBuffer.setName(uniqueName);
       codegenBuffer.setType(fifo.getType());
       codegenBuffer.setTypeSize(scenario.getSimulationInfo().getDataTypeSizeOrDefault(fifo.getType()));

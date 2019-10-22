@@ -993,7 +993,8 @@ public class CodegenModelGenerator extends AbstractCodegenModelGenerator {
         fifoBuffer.setSize(fifoAllocKey.getWeight());
 
         // Get Init vertex
-        final DAGVertex dagEndVertex = this.algo.getVertex(source.substring(("FIFO_Head_").length()));
+        final DAGVertex dagEndVertex = this.algo
+            .getVertex(source.substring((MemoryExclusionGraph.FIFO_HEAD_PREFIX).length()));
         final DAGVertex dagInitVertex = this.algo.getVertex(sink);
 
         final Pair<DAGVertex, DAGVertex> key = new Pair<>(dagEndVertex, dagInitVertex);
@@ -1002,26 +1003,11 @@ public class CodegenModelGenerator extends AbstractCodegenModelGenerator {
           value = new Pair<>(null, null);
           this.dagFifoBuffers.put(key, value);
         }
-        if (source.startsWith("FIFO_Head_")) {
+        if (source.startsWith(MemoryExclusionGraph.FIFO_HEAD_PREFIX)) {
           this.dagFifoBuffers.put(key, new Pair<Buffer, Buffer>(fifoBuffer, value.getValue()));
         } else {
           this.dagFifoBuffers.put(key, new Pair<Buffer, Buffer>(value.getKey(), fifoBuffer));
         }
-      }
-      // Generate subbuffers for each working mem.
-      final Map<MemoryExclusionVertex,
-          Long> workingMemoryAllocation = (meg.getPropertyBean().getValue(MemoryExclusionGraph.WORKING_MEM_ALLOCATION));
-      for (final Entry<MemoryExclusionVertex, Long> e : workingMemoryAllocation.entrySet()) {
-        final SubBuffer workingMemBuffer = CodegenModelUserFactory.eINSTANCE.createSubBuffer();
-        final MemoryExclusionVertex mObj = e.getKey();
-        final long weight = mObj.getWeight();
-        workingMemBuffer.reaffectContainer(mainBuffer);
-        workingMemBuffer.setOffset(e.getValue());
-        workingMemBuffer.setSize(weight);
-        workingMemBuffer.setName("wMem_" + mObj.getVertex().getName());
-        workingMemBuffer.setType("char");
-        workingMemBuffer.setTypeSize(1); // char is 1 byte
-        this.linkHSDFVertexBuffer.put(this.algo.getVertex(mObj.getVertex().getName()), workingMemBuffer);
       }
     }
   }

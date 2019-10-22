@@ -34,6 +34,8 @@
  */
 package org.preesm.algorithm.synthesis.evaluation;
 
+import org.preesm.algorithm.synthesis.SynthesisResult;
+
 /**
  *
  * @author anmorvan
@@ -43,6 +45,8 @@ package org.preesm.algorithm.synthesis.evaluation;
  *          value (i.e. latency + energy). Or any
  */
 public interface ISynthesisCost<T> extends Comparable<ISynthesisCost<T>> {
+
+  public SynthesisResult getSynthesisChoice();
 
   public T getValue();
 

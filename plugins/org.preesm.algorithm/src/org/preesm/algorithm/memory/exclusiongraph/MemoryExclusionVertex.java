@@ -50,7 +50,6 @@ import org.preesm.algorithm.model.AbstractVertex;
 import org.preesm.algorithm.model.PropertyBean;
 import org.preesm.algorithm.model.PropertyFactory;
 import org.preesm.algorithm.model.dag.DAGEdge;
-import org.preesm.algorithm.model.dag.DAGVertex;
 import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.model.scenario.Scenario;
 
@@ -145,12 +144,6 @@ public class MemoryExclusionVertex extends AbstractVertex<MemoryExclusionGraph> 
    * vertices corresponds to an edge in the dag, i.e. a transfer between actors)
    */
   private DAGEdge edge;
-
-  /**
-   * The {@link DAGVertex} that corresponds to the actor in the DAG associated to this working memory
-   * {@link MemoryExclusionVertex}.
-   */
-  private DAGVertex vertex;
 
   private final Scenario scenario;
 
@@ -251,20 +244,11 @@ public class MemoryExclusionVertex extends AbstractVertex<MemoryExclusionGraph> 
     MemoryExclusionVertex copy;
     copy = new MemoryExclusionVertex(this.source, this.sink, this.size, this.scenario);
     copy.edge = this.edge;
-    copy.vertex = this.vertex;
     return copy;
   }
 
   public DAGEdge getEdge() {
     return this.edge;
-  }
-
-  public DAGVertex getVertex() {
-    return this.vertex;
-  }
-
-  public void setVertex(final DAGVertex vertex) {
-    this.vertex = vertex;
   }
 
   @Override

@@ -50,7 +50,7 @@ import org.preesm.algorithm.schedule.model.ParallelHiearchicalSchedule;
 import org.preesm.algorithm.schedule.model.Schedule;
 import org.preesm.algorithm.schedule.model.SequentialHiearchicalSchedule;
 import org.preesm.algorithm.schedule.model.util.ScheduleSwitch;
-import org.preesm.algorithm.synthesis.schedule.ScheduleOrderManager;
+import org.preesm.algorithm.synthesis.schedule.ScheduleUtil;
 import org.preesm.codegen.model.Block;
 import org.preesm.codegen.model.Buffer;
 import org.preesm.codegen.model.ClusterBlock;
@@ -254,7 +254,7 @@ public class CodegenClusterModelGeneratorSwitch extends ScheduleSwitch<CodeElt> 
 
     // Retrieve actor to fire
     // clustering process does list actors in actor schedule, we only care about the first one here
-    final List<AbstractActor> actors = new ScheduleOrderManager(schedule).buildNonTopologicalOrderedList();
+    final List<AbstractActor> actors = ScheduleUtil.getAllReferencedActors(schedule);
     final AbstractActor actor = actors.get(0);
 
     // Generate a LoopBlock to put function call element into

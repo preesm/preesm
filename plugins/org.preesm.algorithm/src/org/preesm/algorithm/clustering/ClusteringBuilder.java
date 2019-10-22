@@ -47,7 +47,7 @@ import org.preesm.algorithm.schedule.model.HierarchicalSchedule;
 import org.preesm.algorithm.schedule.model.ParallelHiearchicalSchedule;
 import org.preesm.algorithm.schedule.model.Schedule;
 import org.preesm.algorithm.schedule.model.ScheduleFactory;
-import org.preesm.algorithm.synthesis.schedule.ScheduleOrderManager;
+import org.preesm.algorithm.synthesis.schedule.ScheduleUtil;
 import org.preesm.algorithm.synthesis.schedule.transform.IScheduleTransform;
 import org.preesm.algorithm.synthesis.schedule.transform.ScheduleDataParallelismExhibiter;
 import org.preesm.algorithm.synthesis.schedule.transform.ScheduleFlattener;
@@ -333,11 +333,10 @@ public class ClusteringBuilder {
         if (child instanceof HierarchicalSchedule && child.hasAttachedActor()) {
           childActors.add(((HierarchicalSchedule) processedChild).getAttachedActor());
         } else if (child instanceof HierarchicalSchedule && !child.hasAttachedActor()) {
-          final List<AbstractActor> actors = new ScheduleOrderManager(child.getChildren().get(0))
-              .buildNonTopologicalOrderedList();
+          final List<AbstractActor> actors = ScheduleUtil.getAllReferencedActors(child.getChildren().get(0));
           childActors.addAll(actors);
         } else {
-          final List<AbstractActor> actors = new ScheduleOrderManager(processedChild).buildNonTopologicalOrderedList();
+          final List<AbstractActor> actors = ScheduleUtil.getAllReferencedActors(processedChild);
           childActors.addAll(actors);
         }
       }

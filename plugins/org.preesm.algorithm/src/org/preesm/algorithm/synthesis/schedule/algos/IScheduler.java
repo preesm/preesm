@@ -50,7 +50,7 @@ public interface IScheduler {
    *
    * Builds a {@link SynthesisResult} for the given PiGraph, SlamDesign and scenario.
    *
-   * The memory allocation in the result is null;
+   * The memory allocation in the result canbe null;
    */
   public SynthesisResult scheduleAndMap(final PiGraph piGraph, final Design slamDesign, final Scenario scenario);
 }
