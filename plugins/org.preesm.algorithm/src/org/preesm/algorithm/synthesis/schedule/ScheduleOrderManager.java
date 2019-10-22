@@ -39,6 +39,7 @@ import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import org.eclipse.emf.common.notify.Notification;
 import org.eclipse.emf.common.util.EList;
 import org.jgrapht.graph.DefaultEdge;
 import org.jgrapht.graph.DirectedAcyclicGraph;
@@ -55,6 +56,7 @@ import org.preesm.algorithm.schedule.model.SequentialActorSchedule;
 import org.preesm.algorithm.schedule.model.SequentialHiearchicalSchedule;
 import org.preesm.algorithm.schedule.model.util.ScheduleSwitch;
 import org.preesm.commons.CollectionUtil;
+import org.preesm.commons.model.PreesmContentAdapter;
 import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.slam.ComponentInstance;
@@ -72,7 +74,7 @@ import org.preesm.model.slam.ComponentInstance;
  *
  * @author anmorvan
  */
-public class ScheduleOrderManager {
+public class ScheduleOrderManager extends PreesmContentAdapter {
 
   /** PiSDF Graph scheduled */
   private final PiGraph                           pigraph;
@@ -81,41 +83,56 @@ public class ScheduleOrderManager {
   /**  */
   private final Map<AbstractActor, ActorSchedule> actorToScheduleMap;
 
+  private DirectedAcyclicGraph<AbstractActor, DefaultEdge> graphCache = null;
+
   /**
    */
   public ScheduleOrderManager(final PiGraph pigraph, final Schedule schedule) {
     this.pigraph = pigraph;
     this.schedule = schedule;
+
     this.actorToScheduleMap = ScheduleOrderManager.actorToScheduleMap(schedule);
+
+    this.pigraph.eAdapters().add(this);
+    this.schedule.eAdapters().add(this);
+  }
+
+  @Override
+  public void notifyChanged(Notification notification) {
+    this.graphCache = null;
   }
 
   /**
-   * build a DAG from a PiGraph and a schedule. Edges represent precedence (thus hold no data).
+   * Build a DAG from a PiGraph and a schedule that represents precedence (thus hold no data). The graph transitive
+   * closure is computed.
    */
-  private static final DirectedAcyclicGraph<AbstractActor, DefaultEdge> getGraph(final PiGraph pigraph,
-      final Schedule schedule) {
+  private final DirectedAcyclicGraph<AbstractActor, DefaultEdge> getGraph() {
+    if (graphCache != null) {
+      return graphCache;
+    } else {
+      final DirectedAcyclicGraph<AbstractActor,
+          DefaultEdge> dag = new DirectedAcyclicGraph<>(null, DefaultEdge::new, false);
 
-    final DirectedAcyclicGraph<AbstractActor,
-        DefaultEdge> dag = new DirectedAcyclicGraph<>(null, DefaultEdge::new, false);
+      ScheduleUtil.getAllReferencedActors(schedule).forEach(dag::addVertex);
+      pigraph.getFifos().forEach(
+          fifo -> dag.addEdge(fifo.getSourcePort().getContainingActor(), fifo.getTargetPort().getContainingActor()));
 
-    ScheduleUtil.getAllReferencedActors(schedule).forEach(dag::addVertex);
-    pigraph.getFifos().forEach(
-        fifo -> dag.addEdge(fifo.getSourcePort().getContainingActor(), fifo.getTargetPort().getContainingActor()));
+      ScheduleUtil.getAllReferencedActors(schedule).stream().filter(SendStartActor.class::isInstance)
+          .forEach(matchingActor -> {
+            final SendStartActor sendStart = SendStartActor.class.cast(matchingActor);
+            final SendEndActor sendEnd = sendStart.getSendEnd();
+            final ReceiveEndActor receiveEnd = sendStart.getTargetReceiveEnd();
+            final ReceiveStartActor receiveStart = receiveEnd.getReceiveStart();
 
-    ScheduleUtil.getAllReferencedActors(schedule).stream().filter(SendStartActor.class::isInstance)
-        .forEach(matchingActor -> {
-          final SendStartActor sendStart = SendStartActor.class.cast(matchingActor);
-          final SendEndActor sendEnd = sendStart.getSendEnd();
-          final ReceiveEndActor receiveEnd = sendStart.getTargetReceiveEnd();
-          final ReceiveStartActor receiveStart = receiveEnd.getReceiveStart();
+            dag.addEdge(sendStart, sendEnd);
+            dag.addEdge(receiveStart, receiveEnd);
+            dag.addEdge(sendEnd, receiveEnd);
+          });
 
-          dag.addEdge(sendStart, sendEnd);
-          dag.addEdge(receiveStart, receiveEnd);
-          dag.addEdge(sendEnd, receiveEnd);
-        });
-
-    new SchedulePrecedenceUpdate(dag).doSwitch(schedule);
-    return dag;
+      new SchedulePrecedenceUpdate(dag).doSwitch(schedule);
+      graphCache = dag;
+      return dag;
+    }
   }
 
   /**
@@ -181,10 +198,10 @@ public class ScheduleOrderManager {
    * The result list is unmodifiable.
    */
   public final List<AbstractActor> buildScheduleAndTopologicalOrderedList() {
-    final DirectedAcyclicGraph<AbstractActor, DefaultEdge> graph = getGraph(pigraph, schedule);
-    final List<AbstractActor> list2 = new ArrayList<>(graph.vertexSet().size());
-    new TopologicalOrderIterator<>(graph).forEachRemaining(list2::add);
-    return Collections.unmodifiableList(list2);
+    final DirectedAcyclicGraph<AbstractActor, DefaultEdge> graph = getGraph();
+    final List<AbstractActor> res = new ArrayList<>(graph.vertexSet().size());
+    new TopologicalOrderIterator<>(graph).forEachRemaining(res::add);
+    return Collections.unmodifiableList(res);
   }
 
   /**
