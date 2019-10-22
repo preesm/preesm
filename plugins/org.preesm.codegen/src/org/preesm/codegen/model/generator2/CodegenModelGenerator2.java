@@ -251,7 +251,8 @@ public class CodegenModelGenerator2 {
   private void generateCode(final Map<ComponentInstance, CoreBlock> coreBlocks) {
     // iterate in order
 
-    final List<AbstractActor> actors = new ScheduleOrderManager(this.schedule).buildScheduleAndTopologicalOrderedList();
+    final List<AbstractActor> actors = new ScheduleOrderManager(this.algo, this.schedule)
+        .buildScheduleAndTopologicalOrderedList();
     for (final AbstractActor actor : actors) {
       final EList<ComponentInstance> actorMapping = this.mapping.getMapping(actor);
       final ComponentInstance componentInstance = actorMapping.get(0);

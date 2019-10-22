@@ -78,7 +78,8 @@ public class SimpleMemoryAllocation implements IMemoryAllocation {
     long totalSize = 0L;
 
     // allocate fifos
-    final List<AbstractActor> orderedList = new ScheduleOrderManager(schedule).buildScheduleAndTopologicalOrderedList();
+    final List<AbstractActor> orderedList = new ScheduleOrderManager(piGraph, schedule)
+        .buildScheduleAndTopologicalOrderedList();
     for (final AbstractActor actor : orderedList) {
       final List<Fifo> fifos = actor.getDataOutputPorts().stream().map(DataPort::getFifo).collect(Collectors.toList());
       for (final Fifo fifo : fifos) {

@@ -109,7 +109,8 @@ public class AllocationToCodegenBuffer extends MemoryAllocationSwitch<Boolean> {
     this.doSwitch(this.memAlloc);
 
     // link variables for Fifos and set names
-    final List<AbstractActor> orderedList = new ScheduleOrderManager(schedule).buildScheduleAndTopologicalOrderedList();
+    final List<
+        AbstractActor> orderedList = new ScheduleOrderManager(algo, schedule).buildScheduleAndTopologicalOrderedList();
     for (final AbstractActor actor : orderedList) {
       final List<Fifo> fifos = actor.getDataInputPorts().stream().map(DataPort::getFifo).collect(Collectors.toList());
       for (final Fifo fifo : fifos) {

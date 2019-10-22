@@ -37,6 +37,7 @@ package org.preesm.algorithm.synthesis;
 import static org.junit.Assert.assertEquals;
 
 import java.util.List;
+import org.apache.commons.lang3.tuple.Pair;
 import org.junit.Test;
 import org.preesm.algorithm.schedule.model.ActorSchedule;
 import org.preesm.algorithm.schedule.model.ParallelHiearchicalSchedule;
@@ -61,7 +62,8 @@ public class ScheduleIteratorTest {
 
   @Test
   public void test1() {
-    final ParallelHiearchicalSchedule sched = createSchedule();
+    final Pair<PiGraph, ParallelHiearchicalSchedule> createSchedule = createSchedule();
+    final ParallelHiearchicalSchedule sched = createSchedule.getRight();
     final List<AbstractActor> simpleOrderedList = ScheduleUtil.getAllReferencedActors(sched);
     StringBuilder sb = new StringBuilder();
     simpleOrderedList.forEach(a -> sb.append(a.getName()));
@@ -70,8 +72,11 @@ public class ScheduleIteratorTest {
 
   @Test
   public void test2() {
-    final ParallelHiearchicalSchedule sched = createSchedule();
-    final List<AbstractActor> orderedList = new ScheduleOrderManager(sched).buildScheduleAndTopologicalOrderedList();
+    final Pair<PiGraph, ParallelHiearchicalSchedule> createSchedule = createSchedule();
+    final PiGraph graph = createSchedule.getLeft();
+    final ParallelHiearchicalSchedule sched = createSchedule.getRight();
+    final List<
+        AbstractActor> orderedList = new ScheduleOrderManager(graph, sched).buildScheduleAndTopologicalOrderedList();
     StringBuilder sb = new StringBuilder();
     orderedList.forEach(a -> sb.append(a.getName()));
     assertEquals("ACBD", sb.toString());
@@ -79,14 +84,17 @@ public class ScheduleIteratorTest {
 
   @Test
   public void test3() {
-    final ParallelHiearchicalSchedule sched = createSchedule();
+    final Pair<PiGraph, ParallelHiearchicalSchedule> createSchedule = createSchedule();
+    final PiGraph graph = createSchedule.getLeft();
+    final ParallelHiearchicalSchedule sched = createSchedule.getRight();
 
     final Actor actorE = PiMMUserFactory.instance.createActor("E");
     final ActorSchedule schedule = (ActorSchedule) sched.getScheduleTree().get(1);
     schedule.getActorList().add(actorE);
 
     StringBuilder sb = new StringBuilder();
-    final List<AbstractActor> orderedList = new ScheduleOrderManager(sched).buildScheduleAndTopologicalOrderedList();
+    final List<
+        AbstractActor> orderedList = new ScheduleOrderManager(graph, sched).buildScheduleAndTopologicalOrderedList();
     orderedList.forEach(a -> sb.append(a.getName()));
     assertEquals("ACBDE", sb.toString());
 
@@ -94,20 +102,23 @@ public class ScheduleIteratorTest {
 
   @Test
   public void test4() {
-    final ParallelHiearchicalSchedule sched = createSchedule();
+    final Pair<PiGraph, ParallelHiearchicalSchedule> createSchedule = createSchedule();
+    final PiGraph graph = createSchedule.getLeft();
+    final ParallelHiearchicalSchedule sched = createSchedule.getRight();
 
     final Actor actorE = PiMMUserFactory.instance.createActor("E");
     final ActorSchedule schedule = (ActorSchedule) sched.getScheduleTree().get(1);
     schedule.getActorList().add(0, actorE);
 
     StringBuilder sb = new StringBuilder();
-    final List<AbstractActor> orderedList = new ScheduleOrderManager(sched).buildScheduleAndTopologicalOrderedList();
+    final List<
+        AbstractActor> orderedList = new ScheduleOrderManager(graph, sched).buildScheduleAndTopologicalOrderedList();
     orderedList.forEach(a -> sb.append(a.getName()));
     assertEquals("AECBD", sb.toString());
 
   }
 
-  private ParallelHiearchicalSchedule createSchedule() {
+  private Pair<PiGraph, ParallelHiearchicalSchedule> createSchedule() {
     final Actor actorA = PiMMUserFactory.instance.createActor("A");
     final DataOutputPort aOut1 = PiMMUserFactory.instance.createDataOutputPort("A.out1");
     final DataOutputPort aOut2 = PiMMUserFactory.instance.createDataOutputPort("A.out2");
@@ -158,7 +169,7 @@ public class ScheduleIteratorTest {
     final ParallelHiearchicalSchedule sched = ScheduleFactory.eINSTANCE.createParallelHiearchicalSchedule();
     sched.getChildren().add(core0);
     sched.getChildren().add(core1);
-    return sched;
+    return Pair.of(graph, sched);
   }
 
 }

@@ -47,6 +47,7 @@ import org.preesm.algorithm.schedule.model.Schedule;
 import org.preesm.algorithm.schedule.model.util.ScheduleSwitch;
 import org.preesm.commons.CollectionUtil;
 import org.preesm.model.pisdf.AbstractActor;
+import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.slam.ComponentInstance;
 
 /**
@@ -64,6 +65,8 @@ import org.preesm.model.slam.ComponentInstance;
  */
 public class ScheduleOrderManager {
 
+  /** PiSDF Graph scheduled */
+  private final PiGraph                           pigraph;
   /** Schedule managed by this class */
   private final Schedule                          schedule;
   /**  */
@@ -71,7 +74,8 @@ public class ScheduleOrderManager {
 
   /**
    */
-  public ScheduleOrderManager(final Schedule schedule) {
+  public ScheduleOrderManager(final PiGraph pigraph, final Schedule schedule) {
+    this.pigraph = pigraph;
     this.schedule = schedule;
     this.actorToScheduleMap = ScheduleOrderManager.actorToScheduleMap(schedule);
   }
