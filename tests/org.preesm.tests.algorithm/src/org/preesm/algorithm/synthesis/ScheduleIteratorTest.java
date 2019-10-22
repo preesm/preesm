@@ -52,6 +52,7 @@ import org.preesm.model.pisdf.DataOutputPort;
 import org.preesm.model.pisdf.Fifo;
 import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.pisdf.factory.PiMMUserFactory;
+import org.preesm.model.pisdf.util.VertexPath;
 
 /**
  *
@@ -92,9 +93,9 @@ public class ScheduleIteratorTest {
     final ActorSchedule schedule = (ActorSchedule) sched.getScheduleTree().get(1);
     schedule.getActorList().add(actorE);
 
-    StringBuilder sb = new StringBuilder();
     final List<
         AbstractActor> orderedList = new ScheduleOrderManager(graph, sched).buildScheduleAndTopologicalOrderedList();
+    StringBuilder sb = new StringBuilder();
     orderedList.forEach(a -> sb.append(a.getName()));
     assertEquals("ACBDE", sb.toString());
 
@@ -115,6 +116,52 @@ public class ScheduleIteratorTest {
         AbstractActor> orderedList = new ScheduleOrderManager(graph, sched).buildScheduleAndTopologicalOrderedList();
     orderedList.forEach(a -> sb.append(a.getName()));
     assertEquals("AECBD", sb.toString());
+
+  }
+
+  @Test
+  public void testPredecessors() {
+    final Pair<PiGraph, ParallelHiearchicalSchedule> createSchedule = createSchedule();
+    final PiGraph graph = createSchedule.getLeft();
+    final ParallelHiearchicalSchedule sched = createSchedule.getRight();
+    final ScheduleOrderManager scheduleOrderManager = new ScheduleOrderManager(graph, sched);
+
+    List<AbstractActor> predecessors;
+    predecessors = scheduleOrderManager.getPredecessors(VertexPath.lookup(graph, "A"));
+    assertEquals(true, predecessors.isEmpty());
+
+    predecessors = scheduleOrderManager.getPredecessors(VertexPath.lookup(graph, "B"));
+    final StringBuilder sb = new StringBuilder();
+    predecessors.forEach(a -> sb.append(a.getName()));
+    assertEquals("AC", sb.toString());
+
+    predecessors = scheduleOrderManager.getPredecessors(VertexPath.lookup(graph, "D"));
+    final StringBuilder sb2 = new StringBuilder();
+    predecessors.forEach(a -> sb2.append(a.getName()));
+    assertEquals("BCA", sb2.toString());
+
+  }
+
+  @Test
+  public void testSuccessors() {
+    final Pair<PiGraph, ParallelHiearchicalSchedule> createSchedule = createSchedule();
+    final PiGraph graph = createSchedule.getLeft();
+    final ParallelHiearchicalSchedule sched = createSchedule.getRight();
+    final ScheduleOrderManager scheduleOrderManager = new ScheduleOrderManager(graph, sched);
+
+    List<AbstractActor> predecessors;
+    predecessors = scheduleOrderManager.getSuccessors(VertexPath.lookup(graph, "D"));
+    assertEquals(true, predecessors.isEmpty());
+
+    predecessors = scheduleOrderManager.getSuccessors(VertexPath.lookup(graph, "B"));
+    final StringBuilder sb = new StringBuilder();
+    predecessors.forEach(a -> sb.append(a.getName()));
+    assertEquals("D", sb.toString());
+
+    predecessors = scheduleOrderManager.getSuccessors(VertexPath.lookup(graph, "A"));
+    final StringBuilder sb2 = new StringBuilder();
+    predecessors.forEach(a -> sb2.append(a.getName()));
+    assertEquals("BCD", sb2.toString());
 
   }
 

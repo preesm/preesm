@@ -41,6 +41,7 @@ import java.util.List;
 import java.util.Map;
 import org.eclipse.emf.common.notify.Notification;
 import org.eclipse.emf.common.util.EList;
+import org.jgrapht.Graphs;
 import org.jgrapht.alg.TransitiveClosure;
 import org.jgrapht.graph.DefaultEdge;
 import org.jgrapht.graph.DirectedAcyclicGraph;
@@ -135,6 +136,26 @@ public class ScheduleOrderManager extends PreesmContentAdapter {
       graphCache = dag;
       return dag;
     }
+  }
+
+  /**
+   * Return all the predecessors of actor; according to PiSDF topology AND Schedule precedence;
+   *
+   * No order is enforced on the resulting list.
+   */
+  public List<AbstractActor> getPredecessors(final AbstractActor actor) {
+    final DirectedAcyclicGraph<AbstractActor, DefaultEdge> graph = getGraph();
+    return Graphs.predecessorListOf(graph, actor);
+  }
+
+  /**
+   * Return all the successors of actor; according to PiSDF topology AND Schedule precedence;
+   *
+   * No order is enforced on the resulting list.
+   */
+  public List<AbstractActor> getSuccessors(final AbstractActor actor) {
+    final DirectedAcyclicGraph<AbstractActor, DefaultEdge> graph = getGraph();
+    return Graphs.successorListOf(graph, actor);
   }
 
   /**
