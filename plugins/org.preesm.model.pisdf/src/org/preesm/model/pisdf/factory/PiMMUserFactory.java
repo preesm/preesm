@@ -303,6 +303,7 @@ public final class PiMMUserFactory extends PiMMFactoryImpl implements PreesmUser
     final Actor res = super.createActor();
     final Expression exp = createExpression();
     res.setExpression(exp);
+    res.setFiringInstance(0L);
     return res;
   }
 
