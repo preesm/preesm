@@ -75,8 +75,7 @@ public class MemExUpdaterEngine {
       PreesmLogger.getLogger().log(Level.INFO, "Memory exclusion graph : start updating with schedule");
     }
 
-    // TODO
-    // this.memEx.updateWithSchedule(this.dag, schedule, mapping);
+    this.memEx.updateWithSchedule(this.dag, schedule, mapping);
 
     this.density = this.memEx.edgeSet().size()
         / ((this.memEx.vertexSet().size() * (this.memEx.vertexSet().size() - 1)) / 2.0);
