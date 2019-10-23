@@ -2266,13 +2266,13 @@ public class CodegenModelGenerator extends AbstractCodegenModelGenerator {
               if (correspondingEdge == null) {
                 correspondingEdge = edge;
               } else {
-                throw new PreesmRuntimeException("guru meditation");
+                throw new PreesmRuntimeException("Multiple edges with same output port -> not authorized");
               }
             }
           }
         }
         if (correspondingEdge == null) {
-          throw new PreesmRuntimeException("No corresponding buffer");
+          throw new PreesmRuntimeException("No corresponding edge found for sink port " + sink);
         } else {
           addBuffer(dagVertex, correspondingEdge.getTarget(), correspondingEdge, specialCall);
         }
@@ -2291,13 +2291,13 @@ public class CodegenModelGenerator extends AbstractCodegenModelGenerator {
               if (correspondingEdge == null) {
                 correspondingEdge = edge;
               } else {
-                throw new PreesmRuntimeException("guru meditation");
+                throw new PreesmRuntimeException("Multiple edges with same output port -> not authorized");
               }
             }
           }
         }
         if (correspondingEdge == null) {
-          throw new PreesmRuntimeException("No corresponding buffer");
+          throw new PreesmRuntimeException("No corresponding edge found for source port " + source);
         } else {
           addBuffer(correspondingEdge.getSource(), dagVertex, correspondingEdge, specialCall);
         }
