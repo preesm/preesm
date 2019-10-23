@@ -62,10 +62,10 @@ public class DAGVertex extends AbstractVertex<DirectedAcyclicGraph> {
   public static final String DAG_VERTEX = "dag_vertex";
 
   /** Key to access to property vertex_sinks. */
-  private static final String SINKS = "vertex_sinks";
+  public static final String SINKS = "vertex_sinks";
 
   /** Key to access to property vertex_sources. */
-  private static final String SOURCES = "vertex_sources";
+  public static final String SOURCES = "vertex_sources";
 
   static {
     AbstractVertex.public_properties.add(DAGVertex.TIME);
