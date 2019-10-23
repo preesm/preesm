@@ -79,6 +79,7 @@ import org.preesm.algorithm.mapper.graphtransfo.BufferProperties;
 import org.preesm.algorithm.mapper.graphtransfo.ImplementationPropertyNames;
 import org.preesm.algorithm.mapper.graphtransfo.VertexType;
 import org.preesm.algorithm.mapper.model.MapperDAG;
+import org.preesm.algorithm.mapper.model.MapperDAGEdge;
 import org.preesm.algorithm.mapper.model.MapperDAGVertex;
 import org.preesm.algorithm.memory.exclusiongraph.MemoryExclusionGraph;
 import org.preesm.algorithm.memory.exclusiongraph.MemoryExclusionVertex;
@@ -2255,52 +2256,16 @@ public class CodegenModelGenerator extends AbstractCodegenModelGenerator {
     if (specialCall.getType().equals(SpecialType.FORK) || specialCall.getType().equals(SpecialType.BROADCAST)) {
       final Set<DAGEdge> outgoingEdges = dagVertex.outgoingEdges();
       final List<String> sinkOrder = dagVertex.getSinkNameList();
-      for (final String sink : sinkOrder) {
-        DAGEdge correspondingEdge = null;
-        for (final DAGEdge edge : outgoingEdges) {
-          final BufferAggregate bufferAggregate = edge.getPropertyBean().getValue(BufferAggregate.propertyBeanName);
-          if (bufferAggregate != null && !bufferAggregate.isEmpty()) {
-            final BufferProperties bufferProperties = bufferAggregate.get(0);
-            final String sourceOutputPortID = bufferProperties.getSourceOutputPortID();
-            if (sink.equals(sourceOutputPortID)) {
-              if (correspondingEdge == null) {
-                correspondingEdge = edge;
-              } else {
-                throw new PreesmRuntimeException("Multiple edges with same output port -> not authorized");
-              }
-            }
-          }
-        }
-        if (correspondingEdge == null) {
-          throw new PreesmRuntimeException("No corresponding edge found for sink port " + sink);
-        } else {
-          addBuffer(dagVertex, correspondingEdge.getTarget(), correspondingEdge, specialCall);
-        }
+      final List<DAGEdge> orderedList = orderOutEdges(outgoingEdges, sinkOrder);
+      for (final DAGEdge edge : orderedList) {
+        addBuffer(dagVertex, edge.getTarget(), edge, specialCall);
       }
     } else {
       final Set<DAGEdge> incomingEdges = dagVertex.incomingEdges();
       final List<String> sourceOrder = dagVertex.getSourceNameList();
-      for (final String source : sourceOrder) {
-        DAGEdge correspondingEdge = null;
-        for (final DAGEdge edge : incomingEdges) {
-          final BufferAggregate buffAggr = edge.getPropertyBean().getValue(BufferAggregate.propertyBeanName);
-          if (buffAggr != null && !buffAggr.isEmpty()) {
-            final BufferProperties bufferProperties = buffAggr.get(0);
-            final String destInputPortID = bufferProperties.getDestInputPortID();
-            if (source.equals(destInputPortID)) {
-              if (correspondingEdge == null) {
-                correspondingEdge = edge;
-              } else {
-                throw new PreesmRuntimeException("Multiple edges with same output port -> not authorized");
-              }
-            }
-          }
-        }
-        if (correspondingEdge == null) {
-          throw new PreesmRuntimeException("No corresponding edge found for source port " + source);
-        } else {
-          addBuffer(correspondingEdge.getSource(), dagVertex, correspondingEdge, specialCall);
-        }
+      final List<DAGEdge> orderedList = orderInEdges(incomingEdges, sourceOrder);
+      for (final DAGEdge edge : orderedList) {
+        addBuffer(edge.getSource(), dagVertex, edge, specialCall);
       }
     }
 
@@ -2377,6 +2342,82 @@ public class CodegenModelGenerator extends AbstractCodegenModelGenerator {
     identifyMergedInputRange(new AbstractMap.SimpleEntry<List<Variable>, List<PortDirection>>(
         specialCall.getParameters(), specialCall.getParameterDirections()));
     registerCallVariableToCoreBlock(operatorBlock, specialCall);
+  }
+
+  private List<DAGEdge> orderInEdges(final Set<DAGEdge> incomingEdges, final List<String> sourceOrder) {
+    if (incomingEdges.size() < 2) {
+      return new ArrayList<>(incomingEdges);
+    }
+    final List<DAGEdge> orderedList = new ArrayList<>();
+    for (final String source : sourceOrder) {
+      DAGEdge correspondingEdge = null;
+      edgeIterate: for (final DAGEdge edge : incomingEdges) {
+
+        if (edge instanceof MapperDAGEdge) {
+          final String targetLabel = edge.getTargetLabel();
+          if (source.equals(targetLabel)) {
+            correspondingEdge = edge;
+            break edgeIterate;
+          }
+        }
+
+        if (correspondingEdge == null) {
+          final BufferAggregate buffAggr = edge.getPropertyBean().getValue(BufferAggregate.propertyBeanName);
+          if (buffAggr != null && !buffAggr.isEmpty()) {
+            final BufferProperties bufferProperties = buffAggr.get(0);
+            final String destInputPortID = bufferProperties.getDestInputPortID();
+            if (source.equals(destInputPortID)) {
+              correspondingEdge = edge;
+              break edgeIterate;
+            }
+          }
+        }
+      }
+      if (correspondingEdge == null) {
+        throw new PreesmRuntimeException("No corresponding edge found for source port " + source);
+      } else {
+        orderedList.add(correspondingEdge);
+      }
+    }
+    return orderedList;
+  }
+
+  private List<DAGEdge> orderOutEdges(final Set<DAGEdge> outgoingEdges, final List<String> sinkOrder) {
+    if (outgoingEdges.size() < 2) {
+      return new ArrayList<>(outgoingEdges);
+    }
+    final List<DAGEdge> orderedList = new ArrayList<>();
+    for (final String sink : sinkOrder) {
+      DAGEdge correspondingEdge = null;
+
+      edgeIterate: for (final DAGEdge edge : outgoingEdges) {
+        if (edge instanceof MapperDAGEdge) {
+          final String targetLabel = edge.getTargetLabel();
+          final boolean equals = sink.equals(targetLabel);
+          if (equals) {
+            correspondingEdge = edge;
+            break edgeIterate;
+          }
+        }
+        if (correspondingEdge == null) {
+          final BufferAggregate bufferAggregate = edge.getPropertyBean().getValue(BufferAggregate.propertyBeanName);
+          if (bufferAggregate != null && !bufferAggregate.isEmpty()) {
+            final BufferProperties bufferProperties = bufferAggregate.get(0);
+            final String sourceOutputPortID = bufferProperties.getSourceOutputPortID();
+            if (sink.equals(sourceOutputPortID)) {
+              correspondingEdge = edge;
+              break edgeIterate;
+            }
+          }
+        }
+      }
+      if (correspondingEdge == null) {
+        throw new PreesmRuntimeException("No corresponding edge found for sink port " + sink);
+      } else {
+        orderedList.add(correspondingEdge);
+      }
+    }
+    return orderedList;
   }
 
   /**
