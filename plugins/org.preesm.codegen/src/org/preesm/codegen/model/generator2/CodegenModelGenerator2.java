@@ -477,6 +477,10 @@ public class CodegenModelGenerator2 {
       specialCall.setType(SpecialType.JOIN);
       uniqueFifo = actor.getDataOutputPorts().get(0).getFifo();
       lastBuffer = this.memoryLinker.getCodegenBuffer(memAlloc.getFifoAllocations().get(uniqueFifo).getSourceBuffer());
+    } else if (actor instanceof RoundBufferActor) {
+      specialCall.setType(SpecialType.ROUND_BUFFER);
+      uniqueFifo = actor.getDataOutputPorts().get(0).getFifo();
+      lastBuffer = this.memoryLinker.getCodegenBuffer(memAlloc.getFifoAllocations().get(uniqueFifo).getSourceBuffer());
     } else if (actor instanceof ForkActor) {
       specialCall.setType(SpecialType.FORK);
       uniqueFifo = actor.getDataInputPorts().get(0).getFifo();
@@ -485,16 +489,12 @@ public class CodegenModelGenerator2 {
       specialCall.setType(SpecialType.BROADCAST);
       uniqueFifo = actor.getDataInputPorts().get(0).getFifo();
       lastBuffer = this.memoryLinker.getCodegenBuffer(memAlloc.getFifoAllocations().get(uniqueFifo).getTargetBuffer());
-    } else if (actor instanceof RoundBufferActor) {
-      specialCall.setType(SpecialType.ROUND_BUFFER);
-      uniqueFifo = actor.getDataInputPorts().get(0).getFifo();
-      lastBuffer = this.memoryLinker.getCodegenBuffer(memAlloc.getFifoAllocations().get(uniqueFifo).getTargetBuffer());
     } else {
       throw new PreesmRuntimeException("special actor " + actor + " has an unknown special type");
     }
 
     // Add it to the specialCall
-    if (actor instanceof JoinActor) {
+    if (actor instanceof JoinActor || actor instanceof RoundBufferActor) {
       specialCall.addOutputBuffer(lastBuffer);
       actor.getDataInputPorts().stream().map(port -> ((Buffer) portToVariable.get(port)))
           .forEach(specialCall::addInputBuffer);
