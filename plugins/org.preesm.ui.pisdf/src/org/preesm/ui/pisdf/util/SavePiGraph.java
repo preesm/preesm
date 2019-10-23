@@ -75,6 +75,10 @@ public class SavePiGraph {
   public static void save(final IProject iProject, final PiGraph graph, final String suffix) {
     final IPath targetFolder = FileUtils.browseFiles(PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell(),
         "Select result location", "Select the folder where to write the computed PiGraph.", (Collection<String>) null);
+    if (targetFolder == null) {
+      // the user canceled the save operation.
+      return;
+    }
     // The commented code is kept in case we would like to restrict the writing process to the given iProject.
 
     // final IPath inProjectPath = targetFolder.removeFirstSegments(1);
