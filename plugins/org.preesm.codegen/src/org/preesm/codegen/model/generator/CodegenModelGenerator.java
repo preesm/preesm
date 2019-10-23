@@ -2253,9 +2253,55 @@ public class CodegenModelGenerator extends AbstractCodegenModelGenerator {
     }
 
     if (specialCall.getType().equals(SpecialType.FORK) || specialCall.getType().equals(SpecialType.BROADCAST)) {
-      dagVertex.outgoingEdges().forEach(edge -> addBuffer(dagVertex, edge.getTarget(), edge, specialCall));
+      final Set<DAGEdge> outgoingEdges = dagVertex.outgoingEdges();
+      final List<String> sinkOrder = dagVertex.getSinkNameList();
+      for (final String sink : sinkOrder) {
+        DAGEdge correspondingEdge = null;
+        for (final DAGEdge edge : outgoingEdges) {
+          final BufferAggregate bufferAggregate = edge.getPropertyBean().getValue(BufferAggregate.propertyBeanName);
+          if (bufferAggregate != null && !bufferAggregate.isEmpty()) {
+            final BufferProperties bufferProperties = bufferAggregate.get(0);
+            final String sourceOutputPortID = bufferProperties.getSourceOutputPortID();
+            if (sink.equals(sourceOutputPortID)) {
+              if (correspondingEdge == null) {
+                correspondingEdge = edge;
+              } else {
+                throw new PreesmRuntimeException("guru meditation");
+              }
+            }
+          }
+        }
+        if (correspondingEdge == null) {
+          throw new PreesmRuntimeException("No corresponding buffer");
+        } else {
+          addBuffer(dagVertex, correspondingEdge.getTarget(), correspondingEdge, specialCall);
+        }
+      }
     } else {
-      dagVertex.incomingEdges().forEach(edge -> addBuffer(edge.getSource(), dagVertex, edge, specialCall));
+      final Set<DAGEdge> incomingEdges = dagVertex.incomingEdges();
+      final List<String> sourceOrder = dagVertex.getSourceNameList();
+      for (final String source : sourceOrder) {
+        DAGEdge correspondingEdge = null;
+        for (final DAGEdge edge : incomingEdges) {
+          final BufferAggregate buffAggr = edge.getPropertyBean().getValue(BufferAggregate.propertyBeanName);
+          if (buffAggr != null && !buffAggr.isEmpty()) {
+            final BufferProperties bufferProperties = buffAggr.get(0);
+            final String destInputPortID = bufferProperties.getDestInputPortID();
+            if (source.equals(destInputPortID)) {
+              if (correspondingEdge == null) {
+                correspondingEdge = edge;
+              } else {
+                throw new PreesmRuntimeException("guru meditation");
+              }
+            }
+          }
+        }
+        if (correspondingEdge == null) {
+          throw new PreesmRuntimeException("No corresponding buffer");
+        } else {
+          addBuffer(correspondingEdge.getSource(), dagVertex, correspondingEdge, specialCall);
+        }
+      }
     }
 
     // Find the last buffer that correspond to the
