@@ -35,6 +35,9 @@
 package org.preesm.algorithm.synthesis.evaluation;
 
 import org.preesm.algorithm.synthesis.SynthesisResult;
+import org.preesm.model.pisdf.PiGraph;
+import org.preesm.model.scenario.Scenario;
+import org.preesm.model.slam.Design;
 
 /**
  *
@@ -45,6 +48,7 @@ import org.preesm.algorithm.synthesis.SynthesisResult;
  */
 public interface ISynthesisEvaluator<T extends ISynthesisCost<?>> {
 
-  public T evaluate(final SynthesisResult synthesisChoice);
+  public T evaluate(final PiGraph algo, final Design slamDesign, final Scenario scenario,
+      final SynthesisResult synthesisChoice);
 
 }
