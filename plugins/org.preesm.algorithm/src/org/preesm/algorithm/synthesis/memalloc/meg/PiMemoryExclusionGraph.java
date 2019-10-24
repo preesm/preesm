@@ -53,20 +53,20 @@ import java.util.logging.Level;
 import java.util.stream.Collectors;
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.xtext.xbase.lib.Pair;
+import org.jgrapht.Graphs;
 import org.jgrapht.generate.ComplementGraphGenerator;
 import org.jgrapht.graph.DefaultEdge;
 import org.jgrapht.graph.SimpleGraph;
 import org.preesm.algorithm.mapping.model.Mapping;
 import org.preesm.algorithm.memory.exclusiongraph.MemoryExclusionGraph;
 import org.preesm.algorithm.memory.exclusiongraph.MemoryExclusionVertex;
-import org.preesm.algorithm.memory.script.Range;
 import org.preesm.algorithm.model.PropertyBean;
 import org.preesm.algorithm.model.PropertyFactory;
 import org.preesm.algorithm.model.PropertySource;
 import org.preesm.algorithm.model.dag.DAGEdge;
 import org.preesm.algorithm.model.dag.DAGVertex;
-import org.preesm.algorithm.model.dag.DirectedAcyclicGraph;
 import org.preesm.algorithm.schedule.model.Schedule;
+import org.preesm.algorithm.synthesis.memalloc.script.PiRange;
 import org.preesm.algorithm.synthesis.schedule.ScheduleOrderManager;
 import org.preesm.commons.CloneableProperty;
 import org.preesm.commons.exceptions.PreesmRuntimeException;
@@ -129,12 +129,6 @@ public class PiMemoryExclusionGraph extends SimpleGraph<PiMemoryExclusionVertex,
   public static final String ALLOCATED_MEMORY_SIZE = "allocated_memory_size";
 
   /**
-   * Backup the vertex adjacent to a given vertex for speed-up purposes.
-   */
-  private final transient Map<PiMemoryExclusionVertex,
-      Set<PiMemoryExclusionVertex>> adjacentVerticesBackup = new LinkedHashMap<>();
-
-  /**
    * Each DAGVertex is associated to a list of PiMemoryExclusionVertex that have a precedence relationship with this
    * DAGVertex. All successors of this DAGVertex will NOT have exclusion with PiMemoryExclusionVertex in this list. This
    * list is built along the build of the MemEx, and used for subsequent updates. We use the name of the DAGVertex as a
@@ -155,7 +149,7 @@ public class PiMemoryExclusionGraph extends SimpleGraph<PiMemoryExclusionVertex,
    */
   private final transient PropertyBean properties = new PropertyBean();
 
-  private final Scenario scenario;
+  private final transient Scenario scenario;
 
   /**
    * Default constructor.
@@ -167,19 +161,6 @@ public class PiMemoryExclusionGraph extends SimpleGraph<PiMemoryExclusionVertex,
 
   public Scenario getScenario() {
     return scenario;
-  }
-
-  @Override
-  public DefaultEdge addEdge(final PiMemoryExclusionVertex arg0, final PiMemoryExclusionVertex arg1) {
-    final Set<PiMemoryExclusionVertex> set0 = this.adjacentVerticesBackup.get(arg0);
-    if (set0 != null) {
-      set0.add(arg1);
-    }
-    final Set<PiMemoryExclusionVertex> set1 = this.adjacentVerticesBackup.get(arg1);
-    if (set1 != null) {
-      set1.add(arg0);
-    }
-    return super.addEdge(arg0, arg1);
   }
 
   /**
@@ -246,9 +227,9 @@ public class PiMemoryExclusionGraph extends SimpleGraph<PiMemoryExclusionVertex,
         final long typeSize = this.getScenario().getSimulationInfo().getDataTypeSizeOrDefault(typeName);
         final long fifoSize = dataPort.getPortRateExpression().evaluate();
         final PiMemoryExclusionVertex headMemoryNode = new PiMemoryExclusionVertex(
-            MemoryExclusionGraph.FIFO_HEAD_PREFIX + dagEndVertex.getName(), dagInitVertex.getName(),
+            PiMemoryExclusionGraph.FIFO_HEAD_PREFIX + dagEndVertex.getName(), dagInitVertex.getName(),
             fifoSize * typeSize, this.scenario);
-        headMemoryNode.setPropertyValue(MemoryExclusionVertex.TYPE_SIZE, typeSize);
+        headMemoryNode.setPropertyValue(PiMemoryExclusionVertex.TYPE_SIZE, typeSize);
         // Add the head node to the MEG
         addVertex(headMemoryNode);
 
@@ -301,7 +282,7 @@ public class PiMemoryExclusionGraph extends SimpleGraph<PiMemoryExclusionVertex,
     buildDelaysMemoryObjects(dag, helper);
 
     // Save the dag in the properties
-    this.setPropertyValue(MemoryExclusionGraph.SOURCE_DAG, dag);
+    this.setPropertyValue(PiMemoryExclusionGraph.SOURCE_DAG, dag);
   }
 
   private void buildFifosMemoryObjects(final PiGraph dag, PiSDFTopologyHelper helper) {
@@ -375,19 +356,6 @@ public class PiMemoryExclusionGraph extends SimpleGraph<PiMemoryExclusionVertex,
   }
 
   /**
-   * Method to clear the adjacent vertices list. As the adjacent vertices lists are passed as references, their content
-   * might be corrupted if they are modified by the user of the class. Moreover, if a vertex is removed from the class
-   * without using the removeAllVertices overrode method, the list will still contain the vertice. Clearing the lists is
-   * left to the user's care. Indeed, a systematic clear to maintain the integrity of the lists would considerably
-   * reduce the performances of some algorithms. A solution to that problem would be to use a faster implementation of
-   * simpleGraphs that would provide fast methods to retrieve adjacent neighbors of a vertex !
-   *
-   */
-  public void clearAdjacentVerticesBackup() {
-    this.adjacentVerticesBackup.clear();
-  }
-
-  /**
    * Does a shallow copy (copy of the attribute reference) except for the list of vertices and edges where a deep copy
    * of the List is duplicated, but not its content.
    *
@@ -409,18 +377,18 @@ public class PiMemoryExclusionGraph extends SimpleGraph<PiMemoryExclusionVertex,
    */
   public void deallocate() {
     final Map<PiMemoryExclusionVertex, Set<PiMemoryExclusionVertex>> hostVertices = getPropertyBean()
-        .getValue(MemoryExclusionGraph.HOST_MEMORY_OBJECT_PROPERTY);
+        .getValue(PiMemoryExclusionGraph.HOST_MEMORY_OBJECT_PROPERTY);
     // Scan host vertices
     if (hostVertices != null) {
       for (final Entry<PiMemoryExclusionVertex, Set<PiMemoryExclusionVertex>> entry : hostVertices.entrySet()) {
         final PiMemoryExclusionVertex hostVertex = entry.getKey();
         final Set<PiMemoryExclusionVertex> value = entry.getValue();
         // Put the host back to its original size (if it was changed, i.e. if it was allocated)
-        final Object hostSizeObj = hostVertex.getPropertyBean().getValue(MemoryExclusionVertex.HOST_SIZE);
+        final Object hostSizeObj = hostVertex.getPropertyBean().getValue(PiMemoryExclusionVertex.HOST_SIZE);
         if (hostSizeObj != null) {
           final long hostSize = (long) hostSizeObj;
           hostVertex.setWeight(hostSize);
-          hostVertex.getPropertyBean().removeProperty(MemoryExclusionVertex.HOST_SIZE);
+          hostVertex.getPropertyBean().removeProperty(PiMemoryExclusionVertex.HOST_SIZE);
 
           // Scan merged vertices
           for (final PiMemoryExclusionVertex mergedVertex : value) {
@@ -437,12 +405,12 @@ public class PiMemoryExclusionGraph extends SimpleGraph<PiMemoryExclusionVertex,
               if (mergedVertex.getWeight() != 0) {
                 // Put it back to its real weight
                 final long emptySpace = mergedVertex.getPropertyBean()
-                    .getValue(MemoryExclusionVertex.EMPTY_SPACE_BEFORE);
+                    .getValue(PiMemoryExclusionVertex.EMPTY_SPACE_BEFORE);
                 mergedVertex.setWeight(mergedVertex.getWeight() - emptySpace);
               } else {
                 // The vertex was divided. Remove all fake mobjects
                 final List<PiMemoryExclusionVertex> fakeMobjects = mergedVertex.getPropertyBean()
-                    .getValue(MemoryExclusionVertex.FAKE_MOBJECT);
+                    .getValue(PiMemoryExclusionVertex.FAKE_MOBJECT);
                 for (final PiMemoryExclusionVertex fakeMobj : fakeMobjects) {
                   removeVertex(fakeMobj);
                 }
@@ -530,39 +498,33 @@ public class PiMemoryExclusionGraph extends SimpleGraph<PiMemoryExclusionVertex,
    */
   private void deepCloneMegProperties(final PiMemoryExclusionGraph result,
       final Map<PiMemoryExclusionVertex, PiMemoryExclusionVertex> mObjMap) {
-    // DAG_EDGE_ALLOCATION
-    final Map<DAGEdge, Long> dagEdgeAlloc = getPropertyBean().getValue(MemoryExclusionGraph.DAG_EDGE_ALLOCATION);
-    if (dagEdgeAlloc != null) {
-      final Map<DAGEdge, Long> dagEdgeAllocCopy = new LinkedHashMap<>(dagEdgeAlloc);
-      result.setPropertyValue(MemoryExclusionGraph.DAG_EDGE_ALLOCATION, dagEdgeAllocCopy);
-    }
 
     // DAG_FIFO_ALLOCATION
     final Map<PiMemoryExclusionVertex,
-        Long> dagFifoAlloc = getPropertyBean().getValue(MemoryExclusionGraph.DAG_FIFO_ALLOCATION);
+        Long> dagFifoAlloc = getPropertyBean().getValue(PiMemoryExclusionGraph.DAG_FIFO_ALLOCATION);
     if (dagFifoAlloc != null) {
       final Map<PiMemoryExclusionVertex, Long> dagFifoAllocCopy = new LinkedHashMap<>();
       for (final Entry<PiMemoryExclusionVertex, Long> fifoAlloc : dagFifoAlloc.entrySet()) {
         dagFifoAllocCopy.put(mObjMap.get(fifoAlloc.getKey()), fifoAlloc.getValue());
       }
-      result.setPropertyValue(MemoryExclusionGraph.DAG_FIFO_ALLOCATION, dagFifoAllocCopy);
+      result.setPropertyValue(PiMemoryExclusionGraph.DAG_FIFO_ALLOCATION, dagFifoAllocCopy);
     }
 
     // SOURCE_DAG
-    if (getPropertyBean().getValue(MemoryExclusionGraph.SOURCE_DAG) != null) {
-      result.setPropertyValue(MemoryExclusionGraph.SOURCE_DAG,
-          getPropertyBean().getValue(MemoryExclusionGraph.SOURCE_DAG));
+    if (getPropertyBean().getValue(PiMemoryExclusionGraph.SOURCE_DAG) != null) {
+      result.setPropertyValue(PiMemoryExclusionGraph.SOURCE_DAG,
+          getPropertyBean().getValue(PiMemoryExclusionGraph.SOURCE_DAG));
     }
 
     // ALLOCATED_MEMORY_SIZE
-    if (getPropertyBean().getValue(MemoryExclusionGraph.ALLOCATED_MEMORY_SIZE) != null) {
-      result.setPropertyValue(MemoryExclusionGraph.ALLOCATED_MEMORY_SIZE,
-          getPropertyBean().getValue(MemoryExclusionGraph.ALLOCATED_MEMORY_SIZE));
+    if (getPropertyBean().getValue(PiMemoryExclusionGraph.ALLOCATED_MEMORY_SIZE) != null) {
+      result.setPropertyValue(PiMemoryExclusionGraph.ALLOCATED_MEMORY_SIZE,
+          getPropertyBean().getValue(PiMemoryExclusionGraph.ALLOCATED_MEMORY_SIZE));
     }
 
     // HOST_MEMORY_OBJECT_PROPERTY property
     final Map<PiMemoryExclusionVertex, Set<PiMemoryExclusionVertex>> hostMemoryObject = getPropertyBean()
-        .getValue(MemoryExclusionGraph.HOST_MEMORY_OBJECT_PROPERTY);
+        .getValue(PiMemoryExclusionGraph.HOST_MEMORY_OBJECT_PROPERTY);
     if (hostMemoryObject != null) {
       final Map<PiMemoryExclusionVertex, Set<PiMemoryExclusionVertex>> hostMemoryObjectCopy = new LinkedHashMap<>();
       for (final Entry<PiMemoryExclusionVertex, Set<PiMemoryExclusionVertex>> host : hostMemoryObject.entrySet()) {
@@ -572,7 +534,7 @@ public class PiMemoryExclusionGraph extends SimpleGraph<PiMemoryExclusionVertex,
         }
         hostMemoryObjectCopy.put(mObjMap.get(host.getKey()), hostedCopy);
       }
-      result.setPropertyValue(MemoryExclusionGraph.HOST_MEMORY_OBJECT_PROPERTY, hostMemoryObjectCopy);
+      result.setPropertyValue(PiMemoryExclusionGraph.HOST_MEMORY_OBJECT_PROPERTY, hostMemoryObjectCopy);
     }
   }
 
@@ -605,80 +567,80 @@ public class PiMemoryExclusionGraph extends SimpleGraph<PiMemoryExclusionVertex,
       final PiMemoryExclusionVertex vertexClone = entry.getValue();
 
       // MEMORY_OFFSET_PROPERTY
-      final Long memOffset = vertex.getPropertyBean().getValue(MemoryExclusionVertex.MEMORY_OFFSET_PROPERTY);
+      final Long memOffset = vertex.getPropertyBean().getValue(PiMemoryExclusionVertex.MEMORY_OFFSET_PROPERTY);
       if (memOffset != null) {
-        vertexClone.setPropertyValue(MemoryExclusionVertex.MEMORY_OFFSET_PROPERTY, memOffset);
+        vertexClone.setPropertyValue(PiMemoryExclusionVertex.MEMORY_OFFSET_PROPERTY, memOffset);
       }
 
       // REAL_TOKEN_RANGE_PROPERTY
-      final List<Pair<PiMemoryExclusionVertex, Pair<Range, Range>>> realTokenRange = vertex.getPropertyBean()
-          .getValue(MemoryExclusionVertex.REAL_TOKEN_RANGE_PROPERTY);
+      final List<Pair<PiMemoryExclusionVertex, Pair<PiRange, PiRange>>> realTokenRange = vertex.getPropertyBean()
+          .getValue(PiMemoryExclusionVertex.REAL_TOKEN_RANGE_PROPERTY);
       if (realTokenRange != null) {
-        final List<Pair<PiMemoryExclusionVertex, Pair<Range, Range>>> realTokenRangeCopy = new ArrayList<>();
-        for (final Pair<PiMemoryExclusionVertex, Pair<Range, Range>> pair : realTokenRange) {
+        final List<Pair<PiMemoryExclusionVertex, Pair<PiRange, PiRange>>> realTokenRangeCopy = new ArrayList<>();
+        for (final Pair<PiMemoryExclusionVertex, Pair<PiRange, PiRange>> pair : realTokenRange) {
           realTokenRangeCopy.add(Pair.of(mObjMap.get(pair.getKey()),
               Pair.of(pair.getValue().getKey().copy(), pair.getValue().getValue().copy())));
         }
-        vertexClone.setPropertyValue(MemoryExclusionVertex.REAL_TOKEN_RANGE_PROPERTY, realTokenRangeCopy);
+        vertexClone.setPropertyValue(PiMemoryExclusionVertex.REAL_TOKEN_RANGE_PROPERTY, realTokenRangeCopy);
       }
 
       // FAKE_MOBJECT
-      final List<
-          PiMemoryExclusionVertex> fakeMobject = vertex.getPropertyBean().getValue(MemoryExclusionVertex.FAKE_MOBJECT);
+      final List<PiMemoryExclusionVertex> fakeMobject = vertex.getPropertyBean()
+          .getValue(PiMemoryExclusionVertex.FAKE_MOBJECT);
       if (fakeMobject != null) {
         final List<PiMemoryExclusionVertex> fakeMobjectCopy = new ArrayList<>();
         for (final PiMemoryExclusionVertex fakeMobj : fakeMobject) {
           fakeMobjectCopy.add(mObjMap.get(fakeMobj));
         }
-        vertexClone.setPropertyValue(MemoryExclusionVertex.FAKE_MOBJECT, fakeMobjectCopy);
+        vertexClone.setPropertyValue(PiMemoryExclusionVertex.FAKE_MOBJECT, fakeMobjectCopy);
       }
 
       // ADJACENT_VERTICES_BACKUP
       final List<PiMemoryExclusionVertex> localAdjacentVerticesBackup = vertex.getPropertyBean()
-          .getValue(MemoryExclusionVertex.ADJACENT_VERTICES_BACKUP);
+          .getValue(PiMemoryExclusionVertex.ADJACENT_VERTICES_BACKUP);
       if (localAdjacentVerticesBackup != null) {
         final List<PiMemoryExclusionVertex> adjacentVerticesBackupCopy = new ArrayList<>();
         for (final PiMemoryExclusionVertex adjacentVertex : localAdjacentVerticesBackup) {
           adjacentVerticesBackupCopy.add(mObjMap.get(adjacentVertex));
         }
-        vertexClone.setPropertyValue(MemoryExclusionVertex.ADJACENT_VERTICES_BACKUP, adjacentVerticesBackupCopy);
+        vertexClone.setPropertyValue(PiMemoryExclusionVertex.ADJACENT_VERTICES_BACKUP, adjacentVerticesBackupCopy);
       }
 
       // EMPTY_SPACE_BEFORE
-      final Integer emptySpaceBefore = vertex.getPropertyBean().getValue(MemoryExclusionVertex.EMPTY_SPACE_BEFORE);
+      final Integer emptySpaceBefore = vertex.getPropertyBean().getValue(PiMemoryExclusionVertex.EMPTY_SPACE_BEFORE);
       if (emptySpaceBefore != null) {
-        vertexClone.setPropertyValue(MemoryExclusionVertex.EMPTY_SPACE_BEFORE, emptySpaceBefore);
+        vertexClone.setPropertyValue(PiMemoryExclusionVertex.EMPTY_SPACE_BEFORE, emptySpaceBefore);
       }
 
       // HOST_SIZE
-      final Integer hostSize = vertex.getPropertyBean().getValue(MemoryExclusionVertex.HOST_SIZE);
+      final Integer hostSize = vertex.getPropertyBean().getValue(PiMemoryExclusionVertex.HOST_SIZE);
       if (hostSize != null) {
-        vertexClone.setPropertyValue(MemoryExclusionVertex.HOST_SIZE, hostSize);
+        vertexClone.setPropertyValue(PiMemoryExclusionVertex.HOST_SIZE, hostSize);
       }
 
       // DIVIDED_PARTS_HOSTS
       final List<PiMemoryExclusionVertex> dividedPartHosts = vertex.getPropertyBean()
-          .getValue(MemoryExclusionVertex.DIVIDED_PARTS_HOSTS);
+          .getValue(PiMemoryExclusionVertex.DIVIDED_PARTS_HOSTS);
       if (dividedPartHosts != null) {
         final List<PiMemoryExclusionVertex> dividedPartHostCopy = new ArrayList<>();
         for (final PiMemoryExclusionVertex host : dividedPartHosts) {
           dividedPartHostCopy.add(mObjMap.get(host));
         }
-        vertexClone.setPropertyValue(MemoryExclusionVertex.DIVIDED_PARTS_HOSTS, dividedPartHostCopy);
+        vertexClone.setPropertyValue(PiMemoryExclusionVertex.DIVIDED_PARTS_HOSTS, dividedPartHostCopy);
       }
 
-      final Object typeSizeValue = vertex.getPropertyBean().getValue(MemoryExclusionVertex.TYPE_SIZE);
+      final Object typeSizeValue = vertex.getPropertyBean().getValue(PiMemoryExclusionVertex.TYPE_SIZE);
       // TYPE_SIZE
       if (typeSizeValue != null) {
         final long typeSize = (long) typeSizeValue;
-        vertexClone.setPropertyValue(MemoryExclusionVertex.TYPE_SIZE, typeSize);
+        vertexClone.setPropertyValue(PiMemoryExclusionVertex.TYPE_SIZE, typeSize);
       }
 
       // INTER_BUFFER_SPACES
       final List<
-          Integer> interBufferSpaces = vertex.getPropertyBean().getValue(MemoryExclusionVertex.INTER_BUFFER_SPACES);
+          Integer> interBufferSpaces = vertex.getPropertyBean().getValue(PiMemoryExclusionVertex.INTER_BUFFER_SPACES);
       if (interBufferSpaces != null) {
-        vertexClone.setPropertyValue(MemoryExclusionVertex.INTER_BUFFER_SPACES, new ArrayList<>(interBufferSpaces));
+        vertexClone.setPropertyValue(PiMemoryExclusionVertex.INTER_BUFFER_SPACES, new ArrayList<>(interBufferSpaces));
       }
     }
   }
@@ -703,7 +665,7 @@ public class PiMemoryExclusionGraph extends SimpleGraph<PiMemoryExclusionVertex,
 
     // HOST_MEMORY_OBJECT_PROPERTY property
     final Map<PiMemoryExclusionVertex, Set<PiMemoryExclusionVertex>> hosts = getPropertyBean()
-        .getValue(MemoryExclusionGraph.HOST_MEMORY_OBJECT_PROPERTY);
+        .getValue(PiMemoryExclusionGraph.HOST_MEMORY_OBJECT_PROPERTY);
 
     if (hosts != null) {
       // Changes to the KeySet are applied to the map
@@ -726,7 +688,7 @@ public class PiMemoryExclusionGraph extends SimpleGraph<PiMemoryExclusionVertex,
       }
       for (final PiMemoryExclusionVertex vertex : verticesWithAdjacentVerticesBackup) {
         final List<PiMemoryExclusionVertex> vertexAdjacentVerticesBackup = vertex.getPropertyBean()
-            .getValue(MemoryExclusionVertex.ADJACENT_VERTICES_BACKUP);
+            .getValue(PiMemoryExclusionVertex.ADJACENT_VERTICES_BACKUP);
         vertexAdjacentVerticesBackup.removeAll(vertices);
       }
     }
@@ -740,51 +702,7 @@ public class PiMemoryExclusionGraph extends SimpleGraph<PiMemoryExclusionVertex,
    * @return a set containing the neighbor vertices
    */
   public Set<PiMemoryExclusionVertex> getAdjacentVertexOf(final PiMemoryExclusionVertex vertex) {
-    Set<PiMemoryExclusionVertex> result;
-
-    // If this vertex was previously treated, simply access the backed-up neighbors set.
-    if ((result = this.adjacentVerticesBackup.get(vertex)) != null) {
-      return result;
-    }
-
-    // Else create the list of neighbors of the vertex
-    result = new LinkedHashSet<>();
-
-    // Add to result all vertices that have an edge with vertex
-    final Set<DefaultEdge> edges = edgesOf(vertex);
-    for (final DefaultEdge edge : edges) {
-      result.add(getEdgeSource(edge));
-      result.add(getEdgeTarget(edge));
-    }
-
-    // Remove vertex from result
-    result.remove(vertex);
-
-    // Back-up the resulting set
-    this.adjacentVerticesBackup.put(vertex, result);
-
-    // The following lines ensure that the vertices stored in the neighbors list belong to the graph.vertexSet. Indeed,
-    // it may happen that several "equal" instances of MemoryExclusionGaphNodes are referenced in the same
-    // MemoryExclusionGraph : one in the vertex set and one in the source/target of an edge. If someone retrieves this
-    // vertex using the getEdgeSource(edge), then modifies the vertex, the changes might not be applied to the same
-    // vertex retrieved in the vertexSet() of the graph. The following lines ensures that the vertices returned in the
-    // neighbors lists always belong to the vertexSet().
-    final Set<PiMemoryExclusionVertex> toAdd = new LinkedHashSet<>();
-
-    for (final PiMemoryExclusionVertex vert : result) {
-      for (final PiMemoryExclusionVertex vertin : vertexSet()) {
-        if (vert.equals(vertin)) {
-          // Correct the reference
-          toAdd.add(vertin);
-          break;
-        }
-      }
-    }
-
-    result.clear();
-    result.addAll(toAdd);
-
-    return result;
+    return Graphs.neighborSetOf(this, vertex);
   }
 
   /**
@@ -846,7 +764,7 @@ public class PiMemoryExclusionGraph extends SimpleGraph<PiMemoryExclusionVertex,
   public Set<PiMemoryExclusionVertex> getTotalSetOfVertices() {
     final Set<PiMemoryExclusionVertex> allVertices = new LinkedHashSet<>(vertexSet());
     final Map<PiMemoryExclusionVertex, Set<PiMemoryExclusionVertex>> hosts = getPropertyBean()
-        .getValue(MemoryExclusionGraph.HOST_MEMORY_OBJECT_PROPERTY);
+        .getValue(PiMemoryExclusionGraph.HOST_MEMORY_OBJECT_PROPERTY);
     if (hosts != null) {
       hosts.forEach((host, hosted) -> allVertices.addAll(hosted));
     }
@@ -872,60 +790,6 @@ public class PiMemoryExclusionGraph extends SimpleGraph<PiMemoryExclusionVertex,
       }
     }
     return null;
-  }
-
-  /**
-   * Removes the all vertices.
-   *
-   * @param arg0
-   *          the arg 0
-   * @return true, if successful
-   * @override
-   */
-  @Override
-  public boolean removeAllVertices(final Collection<? extends PiMemoryExclusionVertex> arg0) {
-    boolean result = super.removeAllVertices(arg0);
-
-    for (final Set<PiMemoryExclusionVertex> backup : this.adjacentVerticesBackup.values()) {
-      result |= backup.removeAll(arg0);
-    }
-    return result;
-  }
-
-  @Override
-  public boolean removeEdge(final DefaultEdge arg0) {
-    final PiMemoryExclusionVertex source = getEdgeSource(arg0);
-    final PiMemoryExclusionVertex target = getEdgeTarget(arg0);
-
-    final boolean result = super.removeEdge(arg0);
-    if (result) {
-      final Set<PiMemoryExclusionVertex> targetNeighbors = this.adjacentVerticesBackup.get(target);
-      if (targetNeighbors != null) {
-        targetNeighbors.remove(source);
-      }
-      final Set<PiMemoryExclusionVertex> sourceNeighbors = this.adjacentVerticesBackup.get(source);
-      if (sourceNeighbors != null) {
-        sourceNeighbors.remove(target);
-      }
-    }
-    return result;
-  }
-
-  @Override
-  public DefaultEdge removeEdge(final PiMemoryExclusionVertex arg0, final PiMemoryExclusionVertex arg1) {
-    final DefaultEdge result = super.removeEdge(arg0, arg1);
-    if (result != null) {
-      final Set<PiMemoryExclusionVertex> arg0Neighbors = this.adjacentVerticesBackup.get(arg0);
-      if (arg0Neighbors != null) {
-        arg0Neighbors.remove(arg1);
-      }
-      final Set<PiMemoryExclusionVertex> arg1Neighbors = this.adjacentVerticesBackup.get(arg1);
-      if (arg1Neighbors != null) {
-        arg1Neighbors.remove(arg0);
-      }
-    }
-
-    return result;
   }
 
   /**
@@ -992,7 +856,8 @@ public class PiMemoryExclusionGraph extends SimpleGraph<PiMemoryExclusionVertex,
         // retrieve the head MObj for current fifo. Size does not matter to retrieve the Memory object from the
         // exclusion graph
         final PiMemoryExclusionVertex headMemoryNode = new PiMemoryExclusionVertex(
-            MemoryExclusionGraph.FIFO_HEAD_PREFIX + dagEndVertex.getName(), dagInitVertex.getName(), 0, this.scenario);
+            PiMemoryExclusionGraph.FIFO_HEAD_PREFIX + dagEndVertex.getName(), dagInitVertex.getName(), 0,
+            this.scenario);
         for (final Fifo edge : edgesInBetween) {
           final PiMemoryExclusionVertex mObj = new PiMemoryExclusionVertex(edge, this.scenario);
           final DefaultEdge removeEdge = this.removeEdge(headMemoryNode, mObj);
@@ -1023,10 +888,6 @@ public class PiMemoryExclusionGraph extends SimpleGraph<PiMemoryExclusionVertex,
    *          the {@link DirectedAcyclicGraph DAG} used (will not be modified)
    */
   public void updateWithSchedule(final PiGraph dag, final Schedule schedule, final Mapping mapping) {
-
-    // Since the MemEx is modified, the AdjacentVerticesBackup will be
-    // deprecated. Clear it !
-    clearAdjacentVerticesBackup();
 
     // This map is used along the scan of the vertex of the dag.
     // Its purpose is to store the last vertex scheduled on each
@@ -1137,7 +998,7 @@ public class PiMemoryExclusionGraph extends SimpleGraph<PiMemoryExclusionVertex,
     // remaining code)
     /** Begin by putting all FIFO related Memory objects (if any) */
     for (final PiMemoryExclusionVertex vertex : vertexSet()) {
-      if (vertex.getSource().startsWith(MemoryExclusionGraph.FIFO_HEAD_PREFIX)) {
+      if (vertex.getSource().startsWith(PiMemoryExclusionGraph.FIFO_HEAD_PREFIX)) {
         this.memExVerticesInSchedulingOrder.add(vertex);
       }
     }
