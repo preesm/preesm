@@ -82,7 +82,10 @@ public class ScheduleOrderManager extends PreesmContentAdapter {
   /**  */
   private final Map<AbstractActor, ActorSchedule> actorToScheduleMap;
 
-  private DirectedAcyclicGraph<AbstractActor, DefaultEdge> graphCache = null;
+  private DirectedAcyclicGraph<AbstractActor, DefaultEdge>  graphCache              = null;
+  private DirectedAcyclicGraph<AbstractActor, DefaultEdge>  transitiveClosureCache  = null;
+  private List<AbstractActor>                               totalOrderCache         = null;
+  private final Map<ComponentInstance, List<AbstractActor>> operatorTotalOrderCache = new LinkedHashMap<>();
 
   /**
    */
@@ -99,6 +102,9 @@ public class ScheduleOrderManager extends PreesmContentAdapter {
   @Override
   public void notifyChanged(Notification notification) {
     this.graphCache = null;
+    this.transitiveClosureCache = null;
+    this.totalOrderCache = null;
+    this.operatorTotalOrderCache.clear();
   }
 
   /**
@@ -129,9 +135,22 @@ public class ScheduleOrderManager extends PreesmContentAdapter {
           });
 
       new SchedulePrecedenceUpdate(dag).doSwitch(schedule);
-      TransitiveClosure.INSTANCE.closeDirectedAcyclicGraph(dag);
       graphCache = dag;
       return dag;
+    }
+  }
+
+  private final DirectedAcyclicGraph<AbstractActor, DefaultEdge> getTransitiveClosure() {
+    if (transitiveClosureCache != null) {
+      return transitiveClosureCache;
+    } else {
+      final DirectedAcyclicGraph<AbstractActor, DefaultEdge> graph = getGraph();
+      @SuppressWarnings("unchecked")
+      final DirectedAcyclicGraph<AbstractActor,
+          DefaultEdge> transitiveClosure = (DirectedAcyclicGraph<AbstractActor, DefaultEdge>) graph.clone();
+      TransitiveClosure.INSTANCE.closeDirectedAcyclicGraph(transitiveClosure);
+      transitiveClosureCache = transitiveClosure;
+      return transitiveClosure;
     }
   }
 
@@ -153,7 +172,7 @@ public class ScheduleOrderManager extends PreesmContentAdapter {
    * No order is enforced on the resulting list.
    */
   public List<AbstractActor> getPredecessors(final AbstractActor actor) {
-    final DirectedAcyclicGraph<AbstractActor, DefaultEdge> graph = getGraph();
+    final DirectedAcyclicGraph<AbstractActor, DefaultEdge> graph = getTransitiveClosure();
     return Graphs.predecessorListOf(graph, actor);
   }
 
@@ -163,7 +182,7 @@ public class ScheduleOrderManager extends PreesmContentAdapter {
    * No order is enforced on the resulting list.
    */
   public List<AbstractActor> getSuccessors(final AbstractActor actor) {
-    final DirectedAcyclicGraph<AbstractActor, DefaultEdge> graph = getGraph();
+    final DirectedAcyclicGraph<AbstractActor, DefaultEdge> graph = getTransitiveClosure();
     return Graphs.successorListOf(graph, actor);
   }
 
@@ -230,10 +249,16 @@ public class ScheduleOrderManager extends PreesmContentAdapter {
    * The result list is unmodifiable.
    */
   public final List<AbstractActor> buildScheduleAndTopologicalOrderedList() {
-    final DirectedAcyclicGraph<AbstractActor, DefaultEdge> graph = getGraph();
-    final List<AbstractActor> res = new ArrayList<>(graph.vertexSet().size());
-    new TopologicalOrderIterator<>(graph).forEachRemaining(res::add);
-    return Collections.unmodifiableList(res);
+    if (totalOrderCache != null) {
+      return totalOrderCache;
+    } else {
+      final DirectedAcyclicGraph<AbstractActor, DefaultEdge> graph = getTransitiveClosure();
+      final List<AbstractActor> totalorder = new ArrayList<>(graph.vertexSet().size());
+      new TopologicalOrderIterator<>(graph).forEachRemaining(totalorder::add);
+      final List<AbstractActor> res = Collections.unmodifiableList(totalorder);
+      totalOrderCache = res;
+      return res;
+    }
   }
 
   /**
@@ -244,14 +269,20 @@ public class ScheduleOrderManager extends PreesmContentAdapter {
    */
   public final List<AbstractActor> buildScheduleAndTopologicalOrderedList(final Mapping mapping,
       final ComponentInstance operator) {
-    final List<AbstractActor> res = new ArrayList<>();
-    final List<AbstractActor> scheduleAndTopologicalOrderedList = buildScheduleAndTopologicalOrderedList();
-    for (final AbstractActor actor : scheduleAndTopologicalOrderedList) {
-      if (mapping.getMapping(actor).contains(operator)) {
-        res.add(actor);
+    if (operatorTotalOrderCache.containsKey(operator)) {
+      return operatorTotalOrderCache.get(operator);
+    } else {
+      final List<AbstractActor> order = new ArrayList<>();
+      final List<AbstractActor> scheduleAndTopologicalOrderedList = buildScheduleAndTopologicalOrderedList();
+      for (final AbstractActor actor : scheduleAndTopologicalOrderedList) {
+        if (mapping.getMapping(actor).contains(operator)) {
+          order.add(actor);
+        }
       }
+      final List<AbstractActor> res = Collections.unmodifiableList(order);
+      operatorTotalOrderCache.put(operator, res);
+      return res;
     }
-    return Collections.unmodifiableList(res);
   }
 
   /**
