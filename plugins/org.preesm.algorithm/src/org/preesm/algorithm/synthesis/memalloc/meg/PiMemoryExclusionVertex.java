@@ -43,6 +43,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.logging.Level;
 import org.eclipse.xtext.util.Pair;
+import org.preesm.algorithm.memory.exclusiongraph.IWeightedVertex;
 import org.preesm.algorithm.memory.exclusiongraph.MemoryExclusionVertex;
 import org.preesm.algorithm.model.AbstractVertex;
 import org.preesm.algorithm.model.PropertyBean;
