@@ -444,8 +444,9 @@ public class ScriptRunner {
             // If the edge producer is not part of the group
             if (!group.contains(edge.getSource())) {
               // Retrieve the corresponding buffer.
-              this.scriptResults.get(dagVertex).getKey().stream().filter(
-                  buffer -> buffer.dagEdge.getContainingEdge().getSource().getName().equals(edge.getSource().getName()))
+              this.scriptResults.get(dagVertex).getKey().stream()
+                  .filter(buffer -> buffer.loggingEdgeName.getContainingEdge().getSource().getName()
+                      .equals(edge.getSource().getName()))
                   .forEach(it -> ScriptRunner.enlargeForAlignment(it, this.alignment, this.printTodo));
             }
           })));
@@ -678,7 +679,7 @@ public class ScriptRunner {
       // Sort the buffers in alphabetical order to enforce similarities
       // between successive run
       Collections.sort(buffers, (a, b) -> {
-        final int nameRes = a.dagVertex.getName().compareTo(b.dagVertex.getName());
+        final int nameRes = a.loggingVertexName.getName().compareTo(b.loggingVertexName.getName());
         return (nameRes != 0) ? nameRes : a.name.compareTo(b.name);
       });
 
@@ -1274,7 +1275,7 @@ public class ScriptRunner {
       if (cmp != 0) {
         return cmp;
       } else {
-        final int nameRes = a.dagVertex.getName().compareTo(b.dagVertex.getName());
+        final int nameRes = a.loggingVertexName.getName().compareTo(b.loggingVertexName.getName());
         return (nameRes != 0) ? nameRes : a.name.compareTo(b.name);
       }
     });
@@ -1570,7 +1571,7 @@ public class ScriptRunner {
                 for (final AbstractEdge<?, ?> aggEdge : dagEdge.getAggregate()) {
 
                   // Find the 2 buffers corresponding to this sdfEdge
-                  final List<Buffer> buffers = bufferCandidates.stream().filter(it -> it.dagEdge == aggEdge)
+                  final List<Buffer> buffers = bufferCandidates.stream().filter(it -> it.loggingEdgeName == aggEdge)
                       .collect(Collectors.toList());
                   if (buffers.size() == 2) {
                     validBuffers = true;
@@ -1578,7 +1579,7 @@ public class ScriptRunner {
                     // Match them together
                     final Match match = buffers.get(0).matchWith(0, buffers.get(1), 0, buffers.get(0).nbTokens);
                     final Match forwardMatch;
-                    if (buffers.get(0).dagVertex == dagEdge.getSource()) {
+                    if (buffers.get(0).loggingVertexName == dagEdge.getSource()) {
                       match.setType(MatchType.FORWARD);
                       match.getReciprocate().setType(MatchType.BACKWARD);
                       forwardMatch = match;
@@ -1799,8 +1800,8 @@ public class ScriptRunner {
 
         // Get the Mobj
         final MemoryExclusionVertex mObjCopy = new MemoryExclusionVertex(
-            buffer.dagEdge.getContainingEdge().getSource().getName(),
-            buffer.dagEdge.getContainingEdge().getTarget().getName(), 0, meg.getScenario());
+            buffer.loggingEdgeName.getContainingEdge().getSource().getName(),
+            buffer.loggingEdgeName.getContainingEdge().getTarget().getName(), 0, meg.getScenario());
         // val mObjCopy = new MemoryExclusionVertex(buffer.dagEdge.source.name, buffer.dagEdge.target.name, 0)
 
         final MemoryExclusionVertex mObj = meg.getVertex(mObjCopy);
@@ -1995,7 +1996,7 @@ public class ScriptRunner {
 
       // keep only those that are not host. (matched ones have already been removed from the MEG)
       final Buffer correspondingBuffer = flatten.stream()
-          .filter(buf -> (mObj.getEdge().getAggregate()).contains(buf.dagEdge)).findFirst().orElse(null);
+          .filter(buf -> (mObj.getEdge().getAggregate()).contains(buf.loggingEdgeName)).findFirst().orElse(null);
       if (correspondingBuffer != null) {
         return !correspondingBuffer.host;
       } else {
