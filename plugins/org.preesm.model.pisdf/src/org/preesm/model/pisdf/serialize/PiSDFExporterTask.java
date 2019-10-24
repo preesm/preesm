@@ -60,6 +60,7 @@ import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.preesm.commons.files.WorkspaceUtils;
 import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.pisdf.reconnection.SubgraphDisconnector;
+import org.preesm.model.pisdf.reconnection.SubgraphReconnector;
 import org.preesm.model.pisdf.util.PiMMSwitch;
 import org.preesm.workflow.elements.Workflow;
 import org.preesm.workflow.implement.AbstractTaskImplementation;
@@ -161,6 +162,10 @@ public class PiSDFExporterTask extends AbstractTaskImplementation {
       // Write the Graph to the OutputStream using the Pi format
       SubgraphDisconnector.disconnectSubGraphs(graph, xmlPath.toString());
       new PiWriter(uri).write(graph, outStream);
+      // the reconnection has side-effects on graphs clustered with the task
+      // org.ietr.preesm.pisdfclustering: the information about clustering,
+      // clusterValue, seem to be reset to false after it
+      SubgraphReconnector.reconnectChildren(graph);
     } catch (IOException e) {
       throw new PreesmRuntimeException("Could not open outputstream file " + string);
     }

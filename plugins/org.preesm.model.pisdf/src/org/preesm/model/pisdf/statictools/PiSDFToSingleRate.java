@@ -880,10 +880,11 @@ public class PiSDFToSingleRate extends PiMMSwitch<Boolean> {
     this.instance = backupInstance;
 
     // handle non connected actors (BRV = 1)
-    // PiGraph are already handled by the code above, even without data ports
+    // PiGraph are already handled by the code above, except if clustered
     // Special Actors and Delay Actors cannot have empty data ports
     // So only (regular) Actor are considered
-    actors.stream().filter(a -> a.getAllDataPorts().isEmpty()).filter(a -> a instanceof Actor)
+    actors.stream().filter(a -> a.getAllDataPorts().isEmpty())
+        .filter(a -> (a instanceof Actor) || (a instanceof PiGraph && a.isCluster()))
         .forEach(this::populateSingleRatePiMMActor);
 
     return true;
