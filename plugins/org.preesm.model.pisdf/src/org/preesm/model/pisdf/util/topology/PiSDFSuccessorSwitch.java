@@ -123,15 +123,15 @@ public abstract class PiSDFSuccessorSwitch extends PiMMSwitch<Boolean> {
    *
    */
   static class IsSuccessorSwitch extends PiSDFSuccessorSwitch {
-    private final AbstractActor potentialPred;
+    private final AbstractActor potentialSucc;
 
-    public IsSuccessorSwitch(final AbstractActor potentialPred) {
-      this.potentialPred = potentialPred;
+    public IsSuccessorSwitch(final AbstractActor potentialSucc) {
+      this.potentialSucc = potentialSucc;
     }
 
     @Override
     public Boolean caseAbstractActor(final AbstractActor actor) {
-      if (actor.equals(this.potentialPred)) {
+      if (actor.equals(this.potentialSucc)) {
         throw new SuccessorFoundException();
       }
       return super.caseAbstractActor(actor);
