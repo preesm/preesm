@@ -70,7 +70,7 @@ public class SimpleScheduler extends AbstractScheduler {
 
     final Map<ComponentInstance, ActorSchedule> cmpSchedules = new LinkedHashMap<>();
 
-    final PiSDFTopologyHelper helper = new PiSDFTopologyHelper();
+    final PiSDFTopologyHelper helper = new PiSDFTopologyHelper(piGraph);
     final List<AbstractActor> depthFirstTopologicalSort = helper.sort(piGraph.getAllActors());
 
     for (final AbstractActor orderedActor : depthFirstTopologicalSort) {

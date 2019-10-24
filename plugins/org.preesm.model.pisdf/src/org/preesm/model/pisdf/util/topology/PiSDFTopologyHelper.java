@@ -41,9 +41,13 @@ import java.util.Comparator;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
+import org.eclipse.emf.common.notify.Notification;
+import org.jgrapht.graph.DirectedPseudograph;
+import org.preesm.commons.model.PreesmContentAdapter;
 import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.DataPort;
 import org.preesm.model.pisdf.Fifo;
+import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.pisdf.util.topology.IsThereALongPathSwitch.ThereIsALongPathException;
 import org.preesm.model.pisdf.util.topology.PiSDFPredecessorSwitch.IsPredecessorSwitch;
 import org.preesm.model.pisdf.util.topology.PiSDFPredecessorSwitch.PredecessorFoundException;
@@ -55,10 +59,40 @@ import org.preesm.model.pisdf.util.topology.PiSDFSuccessorSwitch.SuccessorFoundE
  * @author anmorvan
  *
  */
-public class PiSDFTopologyHelper {
+public class PiSDFTopologyHelper extends PreesmContentAdapter {
+
+  private final PiGraph                            pigraph;
+  private DirectedPseudograph<AbstractActor, Fifo> internalGraphCache = null;
+
+  public PiSDFTopologyHelper(final PiGraph pigraph) {
+    this.pigraph = pigraph;
+    this.pigraph.eAdapters().add(this);
+  }
+
+  @Override
+  public void notifyChanged(Notification notification) {
+    this.internalGraphCache = null;
+  }
+
+  /**
+   * Build a DAG from a PiGraph and a schedule that represents precedence (thus hold no data). The graph transitive
+   * closure is computed.
+   */
+  private final DirectedPseudograph<AbstractActor, Fifo> getGraph() {
+    if (internalGraphCache != null) {
+      return internalGraphCache;
+    } else {
+      final DirectedPseudograph<AbstractActor, Fifo> internalGraph = new DirectedPseudograph<>(null, null, false);
+      pigraph.getActors().forEach(internalGraph::addVertex);
+      pigraph.getFifos().forEach(fifo -> internalGraph.addEdge(fifo.getSourcePort().getContainingActor(),
+          fifo.getTargetPort().getContainingActor()));
+      internalGraphCache = internalGraph;
+      return internalGraph;
+    }
+  }
 
   public final Comparator<AbstractActor> getComparator() {
-    return new PiSDFTopologicalComparator();
+    return new PiSDFTopologicalComparator(pigraph);
   }
 
   public final List<AbstractActor> sort(final List<AbstractActor> actors) {

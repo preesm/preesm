@@ -630,8 +630,9 @@ public class CodegenModelGenerator extends AbstractCodegenModelGenerator {
       AbstractActor actor = dagVertex.getPropertyBean().getValue(Clustering.PISDF_REFERENCE_ACTOR);
       AbstractActor originalActor = PreesmCopyTracker.getSource(actor);
       if (this.scheduleMapping.containsKey(originalActor)) {
-        new CodegenClusterModelGeneratorSwitch(operatorBlock, scenario, new SrDAGOutsideFetcher(), outsideFetcherOption)
-            .generate(this.scheduleMapping.get(originalActor));
+
+        new CodegenClusterModelGeneratorSwitch(this.algo.getReferencePiMMGraph(), operatorBlock, scenario,
+            new SrDAGOutsideFetcher(), outsideFetcherOption).generate(this.scheduleMapping.get(originalActor));
       } else {
         throw new PreesmRuntimeException("Codegen for " + dagVertex.getName() + " failed.");
       }

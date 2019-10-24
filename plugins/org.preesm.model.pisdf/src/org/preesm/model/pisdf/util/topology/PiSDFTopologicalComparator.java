@@ -36,6 +36,7 @@ package org.preesm.model.pisdf.util.topology;
 
 import java.util.Comparator;
 import org.preesm.model.pisdf.AbstractActor;
+import org.preesm.model.pisdf.PiGraph;
 
 /**
  * Compares 2 actors wrt their topological order.
@@ -49,8 +50,8 @@ class PiSDFTopologicalComparator implements Comparator<AbstractActor> {
 
   private PiSDFTopologyHelper helper;
 
-  public PiSDFTopologicalComparator() {
-    this.helper = new PiSDFTopologyHelper();
+  public PiSDFTopologicalComparator(final PiGraph graph) {
+    this.helper = new PiSDFTopologyHelper(graph);
   }
 
   @Override

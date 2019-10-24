@@ -175,8 +175,9 @@ public class PiSDFMergeabilty {
    *          second actor
    * @return true if the couple does not introduce cycle
    */
-  public static boolean isCycleIntroductionConditionValid(final AbstractActor x, final AbstractActor y) {
-    return !(new PiSDFTopologyHelper().isThereIsALongPath(x, y));
+  public static boolean isCycleIntroductionConditionValid(final PiGraph graph, final AbstractActor x,
+      final AbstractActor y) {
+    return !(new PiSDFTopologyHelper(graph).isThereIsALongPath(x, y));
   }
 
   /**
@@ -213,7 +214,8 @@ public class PiSDFMergeabilty {
    *          repetition vector
    * @return true if mergeability is verified
    */
-  public static boolean isMergeable(final AbstractActor x, final AbstractActor y, final Map<AbstractVertex, Long> brv) {
+  public static boolean isMergeable(final PiGraph graph, final AbstractActor x, final AbstractActor y,
+      final Map<AbstractVertex, Long> brv) {
     // Verify that actors are contained into BRV
     if (!brv.containsKey(x) || !brv.containsKey(y)) {
       throw new PreesmRuntimeException("PiSDFMergeability: Actors not contained into repetition vector");
@@ -221,7 +223,7 @@ public class PiSDFMergeabilty {
     // Verify theses fourth conditions
     final boolean precedenceShiftA = PiSDFMergeabilty.isPrecedenceShiftConditionValid(x, y, x, brv);
     final boolean precedenceShiftB = PiSDFMergeabilty.isPrecedenceShiftConditionValid(y, x, y, brv);
-    final boolean cycleIntroduction = PiSDFMergeabilty.isCycleIntroductionConditionValid(x, y);
+    final boolean cycleIntroduction = PiSDFMergeabilty.isCycleIntroductionConditionValid(graph, x, y);
     final boolean hiddenDelay = PiSDFMergeabilty.isHiddenDelayConditionValid(x, y, brv);
     return cycleIntroduction && hiddenDelay && precedenceShiftA && precedenceShiftB;
   }
@@ -251,7 +253,7 @@ public class PiSDFMergeabilty {
       for (final DataOutputPort dop : a.getDataOutputPorts()) {
         final AbstractActor b = dop.getOutgoingFifo().getTargetPort().getContainingActor();
         // Verify that actor are connected together and mergeable
-        if (!(b instanceof InterfaceActor) && (b != a) && PiSDFMergeabilty.isMergeable(a, b, brv)) {
+        if (!(b instanceof InterfaceActor) && (b != a) && PiSDFMergeabilty.isMergeable(graph, a, b, brv)) {
           final Pair<AbstractActor, AbstractActor> couple = new ImmutablePair<>(a, b);
           listCouple.add(couple);
         }
