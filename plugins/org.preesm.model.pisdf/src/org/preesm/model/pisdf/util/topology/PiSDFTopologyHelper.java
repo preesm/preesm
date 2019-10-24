@@ -85,7 +85,7 @@ public class PiSDFTopologyHelper extends PreesmContentAdapter {
       final DirectedPseudograph<AbstractActor, Fifo> internalGraph = new DirectedPseudograph<>(null, null, false);
       pigraph.getActors().forEach(internalGraph::addVertex);
       pigraph.getFifos().forEach(fifo -> internalGraph.addEdge(fifo.getSourcePort().getContainingActor(),
-          fifo.getTargetPort().getContainingActor()));
+          fifo.getTargetPort().getContainingActor(), fifo));
       internalGraphCache = internalGraph;
       return internalGraph;
     }
