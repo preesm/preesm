@@ -272,13 +272,13 @@ class PiGraph extends AbstractActor, Graph, PeriodicElement {
 		return parameters.filter(it|!((it instanceof ConfigInputInterface) || (it instanceof ConfigOutputInterface) )).
 			toEList.unmodifiableView
 	}
-	
+
 	op unique Parameter[] getInputParameters() {
 		val ownParams = new ArrayList<Parameter>(getOnlyParameters())
 		ownParams.addAll(super.inputParameters)
 		return ownParams.toEList.unmodifiableView
 	}
-	
+
 	op unique String[] getActorsNames() {
 		return actors.map[name].unmodifiableView
 	}
@@ -335,6 +335,11 @@ class PiGraph extends AbstractActor, Graph, PeriodicElement {
 	op Fifo lookupFifo(String fifoId) {
 		return fifos.findFirst[it.id == fifoId]
 	}
+
+	op Fifo[] lookupFifos(AbstractActor source, AbstractActor target) {
+		return fifos.filter[it.source == source && it.target == target].toEList
+	}
+
 	op Delay lookupDelay(String delayId) {
 		return delays.findFirst[it.name == delayId]
 	}
