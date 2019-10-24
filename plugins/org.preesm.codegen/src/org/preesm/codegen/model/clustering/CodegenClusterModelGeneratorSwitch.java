@@ -285,6 +285,8 @@ public class CodegenClusterModelGeneratorSwitch extends ScheduleSwitch<CodeElt> 
   }
 
   private void generateDelayPop(final AbstractActor actor, final LoopBlock loopBlock) {
+
+    final PiSDFTopologyHelper helper = new PiSDFTopologyHelper();
     // Explore data port for delay
     for (final DataPort dp : actor.getAllDataPorts()) {
       final Fifo associatedFifo = dp.getFifo();
@@ -292,7 +294,7 @@ public class CodegenClusterModelGeneratorSwitch extends ScheduleSwitch<CodeElt> 
       if (this.delayBufferMap.containsKey(associatedFifo)) {
         // If the fifo goes to an actor that already has been executed, it means that we should generate a pop after
         // a write, otherwise we print a pop only if it's in input
-        final boolean precedence = PiSDFTopologyHelper.isPredecessor((AbstractActor) associatedFifo.getSource(),
+        final boolean precedence = helper.isPredecessor((AbstractActor) associatedFifo.getSource(),
             (AbstractActor) associatedFifo.getTarget());
 
         if (((dp.getKind() == PortKind.DATA_INPUT) && !precedence)

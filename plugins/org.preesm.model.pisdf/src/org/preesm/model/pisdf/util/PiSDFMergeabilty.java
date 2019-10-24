@@ -176,7 +176,7 @@ public class PiSDFMergeabilty {
    * @return true if the couple does not introduce cycle
    */
   public static boolean isCycleIntroductionConditionValid(final AbstractActor x, final AbstractActor y) {
-    return !PiSDFTopologyHelper.isThereIsALongPath(x, y);
+    return !(new PiSDFTopologyHelper().isThereIsALongPath(x, y));
   }
 
   /**

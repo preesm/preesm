@@ -47,17 +47,23 @@ import org.preesm.model.pisdf.AbstractActor;
  */
 class PiSDFTopologicalComparator implements Comparator<AbstractActor> {
 
+  private PiSDFTopologyHelper helper;
+
+  public PiSDFTopologicalComparator() {
+    this.helper = new PiSDFTopologyHelper();
+  }
+
   @Override
   public int compare(final AbstractActor o1, final AbstractActor o2) {
     int res = 0;
     if (o1.equals(o2)) {
       res = 0;
     } else {
-      final boolean predecessor = PiSDFTopologyHelper.isPredecessor(o1, o2);
+      final boolean predecessor = this.helper.isPredecessor(o1, o2);
       if (predecessor) {
         res = 1;
       } else {
-        final boolean predecessor2 = PiSDFTopologyHelper.isPredecessor(o2, o1);
+        final boolean predecessor2 = this.helper.isPredecessor(o2, o1);
         if (predecessor2) {
           res = -1;
         } else {

@@ -57,22 +57,18 @@ import org.preesm.model.pisdf.util.topology.PiSDFSuccessorSwitch.SuccessorFoundE
  */
 public class PiSDFTopologyHelper {
 
-  private PiSDFTopologyHelper() {
-    // forbid instantiation
-  }
-
-  public static final Comparator<AbstractActor> getComparator() {
+  public final Comparator<AbstractActor> getComparator() {
     return new PiSDFTopologicalComparator();
   }
 
-  public static final List<AbstractActor> sort(final List<AbstractActor> actors) {
+  public final List<AbstractActor> sort(final List<AbstractActor> actors) {
     return PiSDFTopologicalSorter.depthFirstTopologicalSort(actors);
   }
 
   /**
    * returns true if potentialPred is actually a predecessor of target
    */
-  public static final boolean isPredecessor(final AbstractActor potentialPred, final AbstractActor target) {
+  public final boolean isPredecessor(final AbstractActor potentialPred, final AbstractActor target) {
     try {
       new IsPredecessorSwitch(target).doSwitch(potentialPred);
       return false;
@@ -84,7 +80,7 @@ public class PiSDFTopologyHelper {
   /**
    * returns true if potentialSucc is actually a successor of target
    */
-  public static final boolean isSuccessor(final AbstractActor potentialSucc, final AbstractActor target) {
+  public final boolean isSuccessor(final AbstractActor potentialSucc, final AbstractActor target) {
     try {
       new IsSuccessorSwitch(target).doSwitch(potentialSucc);
       return false;
@@ -97,7 +93,7 @@ public class PiSDFTopologyHelper {
    * Returns true if there is a long path from potentialSucc to target. A long path is defined as a path that encounters
    * more than one Fifo.
    */
-  public static final boolean isThereIsALongPath(final AbstractActor potentialSucc, final AbstractActor target) {
+  public final boolean isThereIsALongPath(final AbstractActor potentialSucc, final AbstractActor target) {
     try {
       new IsThereALongPathSwitch(target).doSwitch(potentialSucc);
       return false;
@@ -113,7 +109,7 @@ public class PiSDFTopologyHelper {
    *          actor
    * @return actors that are directly connected in input of a
    */
-  public static final List<AbstractActor> getDirectPredecessorsOf(final AbstractActor a) {
+  public final List<AbstractActor> getDirectPredecessorsOf(final AbstractActor a) {
     final List<AbstractActor> result = new ArrayList<>();
     a.getDataInputPorts().stream().forEach(x -> result.add(x.getIncomingFifo().getSourcePort().getContainingActor()));
     return Collections.unmodifiableList(result);
@@ -126,7 +122,7 @@ public class PiSDFTopologyHelper {
    *          actor
    * @return actors that are directly connected in output of a
    */
-  public static final List<AbstractActor> getDirectSuccessorsOf(final AbstractActor a) {
+  public final List<AbstractActor> getDirectSuccessorsOf(final AbstractActor a) {
     final List<AbstractActor> result = new ArrayList<>();
     a.getDataOutputPorts().stream().forEach(x -> result.add(x.getOutgoingFifo().getTargetPort().getContainingActor()));
     return Collections.unmodifiableList(result);
@@ -135,31 +131,29 @@ public class PiSDFTopologyHelper {
   /**
    * Get all predecessors of actor. Will loop infinitely if actor is not part of a DAG.
    */
-  public static final List<AbstractActor> getAllPredecessorsOf(final AbstractActor actor) {
+  public final List<AbstractActor> getAllPredecessorsOf(final AbstractActor actor) {
     final Set<AbstractActor> result = new LinkedHashSet<>();
     final List<AbstractActor> directPredecessorsOf = getDirectPredecessorsOf(actor);
     result.addAll(directPredecessorsOf);
-    directPredecessorsOf.stream().map(PiSDFTopologyHelper::getAllPredecessorsOf).flatMap(List::stream).distinct()
-        .forEach(result::add);
+    directPredecessorsOf.stream().map(this::getAllPredecessorsOf).flatMap(List::stream).distinct().forEach(result::add);
     return Collections.unmodifiableList(new ArrayList<>(result));
   }
 
   /**
    * Get all successors of actor. Will loop infinitely if actor is not part of a DAG.
    */
-  public static final List<AbstractActor> getAllSuccessorsOf(final AbstractActor actor) {
+  public final List<AbstractActor> getAllSuccessorsOf(final AbstractActor actor) {
     final Set<AbstractActor> result = new LinkedHashSet<>();
     final List<AbstractActor> directSuccessorsOf = getDirectSuccessorsOf(actor);
     result.addAll(directSuccessorsOf);
-    directSuccessorsOf.stream().map(PiSDFTopologyHelper::getAllSuccessorsOf).flatMap(List::stream).distinct()
-        .forEach(result::add);
+    directSuccessorsOf.stream().map(this::getAllSuccessorsOf).flatMap(List::stream).distinct().forEach(result::add);
     return Collections.unmodifiableList(new ArrayList<>(result));
   }
 
   /**
    * Get all edges on the paths to all predecessors of actor. Will loop infinitely if actor is not part of a DAG.
    */
-  public static final List<Fifo> getPredecessorEdgesOf(final AbstractActor actor) {
+  public final List<Fifo> getPredecessorEdgesOf(final AbstractActor actor) {
     final Set<Fifo> result = new LinkedHashSet<>();
     actor.getDataInputPorts().stream().map(DataPort::getFifo).forEach(result::add);
     final List<AbstractActor> allPredecessorsOf = getAllPredecessorsOf(actor);
@@ -171,7 +165,7 @@ public class PiSDFTopologyHelper {
   /**
    * Get all edges on the paths to all successors of actor. Will loop infinitely if actor is not part of a DAG.
    */
-  public static final List<Fifo> getSuccessorEdgesOf(final AbstractActor actor) {
+  public final List<Fifo> getSuccessorEdgesOf(final AbstractActor actor) {
     final Set<Fifo> result = new LinkedHashSet<>();
     actor.getDataOutputPorts().stream().map(DataPort::getFifo).forEach(result::add);
     final List<AbstractActor> allSuccessorsOf = getAllSuccessorsOf(actor);
