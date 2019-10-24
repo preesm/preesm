@@ -92,6 +92,9 @@ class LogicalBuffer extends Buffer {
 	}
 }
 
+class NullBuffer extends LogicalBuffer {
+}
+
 
 class FifoAllocationEntry wraps java.util.Map$Entry {
 	refers Fifo key
