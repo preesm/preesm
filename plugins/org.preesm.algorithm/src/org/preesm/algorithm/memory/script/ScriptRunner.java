@@ -1699,7 +1699,7 @@ public class ScriptRunner {
       // Weight is already dataSize * (Cons || prod)
       final long nbTokens = it.getWeight().longValue(); // / dataSize
       try {
-        return new Buffer(it, dagVertex, it.getTargetLabel(), nbTokens, dataSize, isMergeable);
+        return new Buffer(it, dagVertex.getName(), it.getTargetLabel(), nbTokens, dataSize, isMergeable);
       } catch (final NullPointerException exc) {
         throw new PreesmRuntimeException("SDFEdge " + it.getSource().getName() + "_" + it.getSourceLabel() + "->"
             + it.getTarget().getName() + "_" + it.getTargetLabel() + " has unknows type " + dataType.toString()
@@ -1727,7 +1727,7 @@ public class ScriptRunner {
       // Weight is already dataSize * (Cons || prod)
       final long nbTokens = it.getWeight().longValue(); // / dataSize
       try {
-        return new Buffer(it, dagVertex, it.getSourceLabel(), nbTokens, dataSize, isMergeable);
+        return new Buffer(it, dagVertex.getName(), it.getSourceLabel(), nbTokens, dataSize, isMergeable);
       } catch (final NullPointerException exc) {
         throw new PreesmRuntimeException("SDFEdge " + it.getSource().getName() + "_" + it.getSourceLabel() + "->"
             + it.getTarget().getName() + "_" + it.getTargetLabel() + " has unknows type " + dataType.toString()

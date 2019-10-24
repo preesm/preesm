@@ -48,7 +48,6 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import org.eclipse.xtext.xbase.lib.Pair;
 import org.preesm.algorithm.model.dag.DAGEdge;
-import org.preesm.algorithm.model.dag.DAGVertex;
 import org.preesm.commons.exceptions.PreesmRuntimeException;
 
 /**
@@ -318,10 +317,10 @@ public class Buffer {
    * @param tokenSize
    *          The size of one token of the buffer.
    */
-  public Buffer(final DAGEdge edge, final DAGVertex dagVertex, final String name, final long nbTokens,
+  public Buffer(final DAGEdge edge, final String dagVertexName, final String name, final long nbTokens,
       final long tokenSize, final boolean mergeable) {
     this.loggingEdgeName = edge;
-    this.vertexName = dagVertex.getName();
+    this.vertexName = dagVertexName;
     this.name = name;
     this.nbTokens = nbTokens;
     this.tokenSize = tokenSize;
