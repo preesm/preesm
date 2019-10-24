@@ -42,8 +42,6 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.preesm.algorithm.mapping.model.Mapping;
 import org.preesm.algorithm.memalloc.model.Allocation;
 import org.preesm.algorithm.schedule.model.Schedule;
-import org.preesm.algorithm.synthesis.communications.ICommunicationInserter;
-import org.preesm.algorithm.synthesis.communications.OptimizedCommunicationInserter;
 import org.preesm.algorithm.synthesis.evaluation.latency.LatencyCost;
 import org.preesm.algorithm.synthesis.evaluation.latency.SimpleLatencyEvaluation;
 import org.preesm.algorithm.synthesis.memalloc.IMemoryAllocation;
@@ -93,9 +91,9 @@ public class PreesmSynthesisTask extends AbstractTaskImplementation {
     PreesmLogger.getLogger().log(Level.INFO, () -> " -- Scheduling - " + schedulerName);
     final SynthesisResult scheduleAndMap = scheduler.scheduleAndMap(algorithm, architecture, scenario);
 
-    PreesmLogger.getLogger().log(Level.INFO, " -- Insert communication");
-    final ICommunicationInserter comIns = new OptimizedCommunicationInserter();
-    comIns.insertCommunications(algorithm, architecture, scenario, scheduleAndMap.schedule, scheduleAndMap.mapping);
+    // PreesmLogger.getLogger().log(Level.INFO, " -- Insert communication");
+    // final ICommunicationInserter comIns = new OptimizedCommunicationInserter();
+    // comIns.insertCommunications(algorithm, architecture, scenario, scheduleAndMap.schedule, scheduleAndMap.mapping);
 
     final LatencyCost evaluate = new SimpleLatencyEvaluation().evaluate(algorithm, architecture, scenario,
         scheduleAndMap);
