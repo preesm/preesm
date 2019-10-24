@@ -221,7 +221,7 @@ public class PiMemoryExclusionGraph extends SimpleGraph<PiMemoryExclusionVertex,
    * @param dag
    *          the dag containing the fifos.
    */
-  private void buildDelaysMemoryObjects(final PiGraph dag) {
+  private void buildDelaysMemoryObjects(final PiGraph dag, PiSDFTopologyHelper helper) {
     // Scan the dag vertices
     for (final AbstractActor vertex : dag.getAllActors()) {
 
@@ -254,8 +254,8 @@ public class PiMemoryExclusionGraph extends SimpleGraph<PiMemoryExclusionVertex,
 
         // Compute the list of all edges between init and end
         // Also compute the list of actors
-        final List<Fifo> endPredecessors = PiSDFTopologyHelper.getPredecessorEdgesOf(dagEndVertex);
-        final List<Fifo> initSuccessors = PiSDFTopologyHelper.getSuccessorEdgesOf(vertex);
+        final List<Fifo> endPredecessors = helper.getPredecessorEdgesOf(dagEndVertex);
+        final List<Fifo> initSuccessors = helper.getSuccessorEdgesOf(vertex);
         final Set<Fifo> between = (new LinkedHashSet<>(initSuccessors));
         between.retainAll(endPredecessors);
 
@@ -293,20 +293,22 @@ public class PiMemoryExclusionGraph extends SimpleGraph<PiMemoryExclusionVertex,
    */
   public void buildGraph(final PiGraph dag) {
 
-    buildFifosMemoryObjects(dag);
+    final PiSDFTopologyHelper helper = new PiSDFTopologyHelper(dag);
+
+    buildFifosMemoryObjects(dag, helper);
 
     // Add the memory objects corresponding to the delays.
-    buildDelaysMemoryObjects(dag);
+    buildDelaysMemoryObjects(dag, helper);
 
     // Save the dag in the properties
     this.setPropertyValue(MemoryExclusionGraph.SOURCE_DAG, dag);
   }
 
-  private void buildFifosMemoryObjects(final PiGraph dag) {
+  private void buildFifosMemoryObjects(final PiGraph dag, PiSDFTopologyHelper helper) {
     final Map<AbstractActor, Pair<Set<PiMemoryExclusionVertex>,
         Set<PiMemoryExclusionVertex>>> associatedMemExVertices = new LinkedHashMap<>();
 
-    final List<AbstractActor> sort = PiSDFTopologyHelper.sort(dag.getAllActors());
+    final List<AbstractActor> sort = helper.getTopologicallySortedActors();
 
     for (final AbstractActor v : sort) {
       associatedMemExVertices.put(v, Pair.of(new LinkedHashSet<PiMemoryExclusionVertex>() /* predecessor */,
@@ -980,8 +982,8 @@ public class PiMemoryExclusionGraph extends SimpleGraph<PiMemoryExclusionVertex,
       final EndActor dagEndVertex = (EndActor) endReference;
 
       // Compute the list of all edges between init and end
-      final List<Fifo> predecessorEdgesOf = PiSDFTopologyHelper.getPredecessorEdgesOf(dagEndVertex);
-      final List<Fifo> successorEdgesOf = PiSDFTopologyHelper.getSuccessorEdgesOf(dagInitVertex);
+      final List<Fifo> predecessorEdgesOf = orderMngr.getPredecessorEdgesOf(dagEndVertex);
+      final List<Fifo> successorEdgesOf = orderMngr.getSuccessorEdgesOf(dagInitVertex);
       final Set<Fifo> edgesInBetween = new LinkedHashSet<>(successorEdgesOf);
       edgesInBetween.retainAll(predecessorEdgesOf);
 
