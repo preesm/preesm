@@ -43,6 +43,7 @@ import java.util.List;
 import java.util.Set;
 import org.eclipse.emf.common.notify.Notification;
 import org.jgrapht.graph.DirectedPseudograph;
+import org.jgrapht.traverse.TopologicalOrderIterator;
 import org.preesm.commons.model.PreesmContentAdapter;
 import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.DataPort;
@@ -95,8 +96,15 @@ public class PiSDFTopologyHelper extends PreesmContentAdapter {
     return new PiSDFTopologicalComparator(pigraph);
   }
 
-  public final List<AbstractActor> sort(final List<AbstractActor> actors) {
-    return PiSDFTopologicalSorter.depthFirstTopologicalSort(actors);
+  /**
+   *
+   */
+  public final List<AbstractActor> sort() {
+    final TopologicalOrderIterator<AbstractActor,
+        Fifo> topologicalOrderIterator = new TopologicalOrderIterator<>(getGraph());
+    final List<AbstractActor> arrayList = new ArrayList<>(this.pigraph.getActors().size());
+    topologicalOrderIterator.forEachRemaining(arrayList::add);
+    return Collections.unmodifiableList(arrayList);
   }
 
   /**
