@@ -1033,8 +1033,7 @@ public class PiMemoryExclusionGraph extends SimpleGraph<PiMemoryExclusionVertex,
     // component. This way, when a new vertex is executed on this
     // instance is encountered, an edge can be added between it and
     // the previous one.
-    Map<ComponentInstance, AbstractActor> lastVerticesScheduled;
-    lastVerticesScheduled = new LinkedHashMap<>();
+    final Map<ComponentInstance, AbstractActor> lastVerticesScheduled = new LinkedHashMap<>();
 
     // Same a verticesPredecessors but only store predecessors that results
     // from scheduling info
@@ -1096,26 +1095,40 @@ public class PiMemoryExclusionGraph extends SimpleGraph<PiMemoryExclusionVertex,
         for (final Fifo outgoingEdge : outFifos) {
           final PiMemoryExclusionVertex edgeVertex = new PiMemoryExclusionVertex(outgoingEdge, this.scenario);
           for (final PiMemoryExclusionVertex newPredecessor : newPredecessors) {
-            this.removeEdge(edgeVertex, newPredecessor);
 
-            // Update newPredecessor list of successors
-            // DAGVertices (the target of the current edge)
-            Set<PiMemoryExclusionVertex> successorPredecessor;
-            final String targetName = outgoingEdge.getTargetPort().getContainingActor().getName();
-            successorPredecessor = newVerticesPredecessors.get(targetName);
-            if (successorPredecessor == null) {
-              // if successor did not have a new predecessor
-              // list, create one
-              successorPredecessor = new LinkedHashSet<>();
-              newVerticesPredecessors.put(targetName, successorPredecessor);
+            final DefaultEdge edge = this.getEdge(edgeVertex, newPredecessor);
+            if (edge == null) {
+              System.out.println("meh");
             }
-            successorPredecessor.addAll(newPredecessors);
+            if (this.removeEdge(edgeVertex, newPredecessor) == null) {
+              /**
+               * Possible causes are: <br>
+               * -edgeVertex or newPredecessor no longer are in the graph <br>
+               * -this.verticesPredecessors was corrupted before calling updateWithSchedule() <br>
+               * -The exclusion or one of the vertex could not be found because the MemoryExclusionVertex.equals()
+               * method is corrupted -Explode Implode were removed when creating the MemEx but not when updating it.
+               */
+              throw new PreesmRuntimeException(
+                  "Failed removing exclusion between " + edgeVertex + " and " + newPredecessor);
+            }
           }
+          // Update newPredecessor list of successors
+          // DAGVertices (the target of the current edge)
+          Set<PiMemoryExclusionVertex> successorPredecessor;
+          final String targetName = outgoingEdge.getTargetPort().getContainingActor().getName();
+          successorPredecessor = newVerticesPredecessors.get(targetName);
+          if (successorPredecessor == null) {
+            // if successor did not have a new predecessor
+            // list, create one
+            successorPredecessor = new LinkedHashSet<>();
+            newVerticesPredecessors.put(targetName, successorPredecessor);
+          }
+          successorPredecessor.addAll(newPredecessors);
         }
       }
     }
 
-    // Update the fifo exclusions
+    // Update the delays exclusions
     updateDelayMemObjectWithSchedule(dag, schedule, mapping, scheduleOrderManager);
 
     // Save memory object "scheduling" order
