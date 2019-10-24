@@ -189,14 +189,13 @@ public class MemoryAllocatorTask extends AbstractTaskImplementation {
   public static final String VALUE_TRUE_FALSE_DEFAULT            = "? C {True, False}";
   public static final String VALUE_TRUE                          = "True";
   public static final String PARAM_ALLOCATORS                    = "Allocator(s)";
-  public static final String VALUE_ALLOCATORS_DEFAULT            = "{?,?,...} C {Basic, BestFit, FirstFit, DeGreef}";
+  public static final String VALUE_ALLOCATORS_DEFAULT            = "BestFit";
   public static final String VALUE_ALLOCATORS_BASIC              = "Basic";
   public static final String VALUE_ALLOCATORS_BEST_FIT           = "BestFit";
   public static final String VALUE_ALLOCATORS_FIRST_FIT          = "FirstFit";
   public static final String VALUE_ALLOCATORS_DE_GREEF           = "DeGreef";
   public static final String PARAM_XFIT_ORDER                    = "Best/First Fit order";
-  public static final String VALUE_XFIT_ORDER_DEFAULT            = "{?,?,...} C "
-      + "{ApproxStableSet, ExactStableSet, LargestFirst, Shuffle, Scheduling}";
+  public static final String VALUE_XFIT_ORDER_DEFAULT            = "LargestFirst";
   public static final String VALUE_XFIT_ORDER_APPROX_STABLE_SET  = "ApproxStableSet";
   public static final String VALUE_XFIT_ORDER_LARGEST_FIRST      = "LargestFirst";
   public static final String VALUE_XFIT_ORDER_SHUFFLE            = "Shuffle";
@@ -208,7 +207,7 @@ public class MemoryAllocatorTask extends AbstractTaskImplementation {
   public static final String VALUE_ALIGNEMENT_NONE               = "None";
   public static final String VALUE_ALIGNEMENT_DATA               = "Data";
   public static final String VALUE_ALIGNEMENT_FIXED              = "Fixed:=";
-  public static final String VALUE_ALIGNEMENT_DEFAULT            = "? C {None, Data, Fixed:=<nbBytes>}";
+  public static final String VALUE_ALIGNEMENT_DEFAULT            = "None";
   public static final String PARAM_DISTRIBUTION_POLICY           = "Distribution";
   public static final String VALUE_DISTRIBUTION_SHARED_ONLY      = "SharedOnly";
   public static final String VALUE_DISTRIBUTION_DISTRIBUTED_ONLY = "DistributedOnly";
