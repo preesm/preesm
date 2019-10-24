@@ -185,34 +185,34 @@ import org.preesm.workflow.implement.AbstractTaskImplementation;
             + "MPSoCs. Journal of Signal Processing Systems, Springer, 2014." })
 public class MemoryAllocatorTask extends AbstractTaskImplementation {
 
-  private static final String PARAM_VERBOSE                       = "Verbose";
-  private static final String VALUE_TRUE_FALSE_DEFAULT            = "? C {True, False}";
-  private static final String VALUE_TRUE                          = "True";
-  private static final String PARAM_ALLOCATORS                    = "Allocator(s)";
-  private static final String VALUE_ALLOCATORS_DEFAULT            = "{?,?,...} C {Basic, BestFit, FirstFit, DeGreef}";
-  private static final String VALUE_ALLOCATORS_BASIC              = "Basic";
-  private static final String VALUE_ALLOCATORS_BEST_FIT           = "BestFit";
-  private static final String VALUE_ALLOCATORS_FIRST_FIT          = "FirstFit";
-  private static final String VALUE_ALLOCATORS_DE_GREEF           = "DeGreef";
-  private static final String PARAM_XFIT_ORDER                    = "Best/First Fit order";
-  private static final String VALUE_XFIT_ORDER_DEFAULT            = "{?,?,...} C "
+  public static final String PARAM_VERBOSE                       = "Verbose";
+  public static final String VALUE_TRUE_FALSE_DEFAULT            = "? C {True, False}";
+  public static final String VALUE_TRUE                          = "True";
+  public static final String PARAM_ALLOCATORS                    = "Allocator(s)";
+  public static final String VALUE_ALLOCATORS_DEFAULT            = "{?,?,...} C {Basic, BestFit, FirstFit, DeGreef}";
+  public static final String VALUE_ALLOCATORS_BASIC              = "Basic";
+  public static final String VALUE_ALLOCATORS_BEST_FIT           = "BestFit";
+  public static final String VALUE_ALLOCATORS_FIRST_FIT          = "FirstFit";
+  public static final String VALUE_ALLOCATORS_DE_GREEF           = "DeGreef";
+  public static final String PARAM_XFIT_ORDER                    = "Best/First Fit order";
+  public static final String VALUE_XFIT_ORDER_DEFAULT            = "{?,?,...} C "
       + "{ApproxStableSet, ExactStableSet, LargestFirst, Shuffle, Scheduling}";
-  private static final String VALUE_XFIT_ORDER_APPROX_STABLE_SET  = "ApproxStableSet";
-  private static final String VALUE_XFIT_ORDER_LARGEST_FIRST      = "LargestFirst";
-  private static final String VALUE_XFIT_ORDER_SHUFFLE            = "Shuffle";
-  private static final String VALUE_XFIT_ORDER_EXACT_STABLE_SET   = "ExactStableSet";
-  private static final String VALUE_XFIT_ORDER_SCHEDULING         = "Scheduling";
-  private static final String PARAM_NB_SHUFFLE                    = "Nb of Shuffling Tested";
-  private static final String VALUE_NB_SHUFFLE_DEFAULT            = "10";
-  public static final String  PARAM_ALIGNMENT                     = "Data alignment";
-  public static final String  VALUE_ALIGNEMENT_NONE               = "None";
-  public static final String  VALUE_ALIGNEMENT_DATA               = "Data";
-  public static final String  VALUE_ALIGNEMENT_FIXED              = "Fixed:=";
-  public static final String  VALUE_ALIGNEMENT_DEFAULT            = "? C {None, Data, Fixed:=<nbBytes>}";
-  public static final String  PARAM_DISTRIBUTION_POLICY           = "Distribution";
-  public static final String  VALUE_DISTRIBUTION_SHARED_ONLY      = "SharedOnly";
-  public static final String  VALUE_DISTRIBUTION_DISTRIBUTED_ONLY = "DistributedOnly";
-  public static final String  VALUE_DISTRIBUTION_MIXED            = "Mixed";
+  public static final String VALUE_XFIT_ORDER_APPROX_STABLE_SET  = "ApproxStableSet";
+  public static final String VALUE_XFIT_ORDER_LARGEST_FIRST      = "LargestFirst";
+  public static final String VALUE_XFIT_ORDER_SHUFFLE            = "Shuffle";
+  public static final String VALUE_XFIT_ORDER_EXACT_STABLE_SET   = "ExactStableSet";
+  public static final String VALUE_XFIT_ORDER_SCHEDULING         = "Scheduling";
+  public static final String PARAM_NB_SHUFFLE                    = "Nb of Shuffling Tested";
+  public static final String VALUE_NB_SHUFFLE_DEFAULT            = "10";
+  public static final String PARAM_ALIGNMENT                     = "Data alignment";
+  public static final String VALUE_ALIGNEMENT_NONE               = "None";
+  public static final String VALUE_ALIGNEMENT_DATA               = "Data";
+  public static final String VALUE_ALIGNEMENT_FIXED              = "Fixed:=";
+  public static final String VALUE_ALIGNEMENT_DEFAULT            = "? C {None, Data, Fixed:=<nbBytes>}";
+  public static final String PARAM_DISTRIBUTION_POLICY           = "Distribution";
+  public static final String VALUE_DISTRIBUTION_SHARED_ONLY      = "SharedOnly";
+  public static final String VALUE_DISTRIBUTION_DISTRIBUTED_ONLY = "DistributedOnly";
+  public static final String VALUE_DISTRIBUTION_MIXED            = "Mixed";
 
   /**
    * Mixed Policy, but preserving all merged operations.
