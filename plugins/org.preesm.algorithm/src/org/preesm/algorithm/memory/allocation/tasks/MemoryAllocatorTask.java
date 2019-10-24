@@ -37,7 +37,7 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL license and that you accept its terms.
  */
-package org.preesm.algorithm.memory.allocation;
+package org.preesm.algorithm.memory.allocation.tasks;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -49,6 +49,13 @@ import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.preesm.algorithm.memory.allocation.BasicAllocator;
+import org.preesm.algorithm.memory.allocation.BestFitAllocator;
+import org.preesm.algorithm.memory.allocation.DeGreefAllocator;
+import org.preesm.algorithm.memory.allocation.Distributor;
+import org.preesm.algorithm.memory.allocation.FirstFitAllocator;
+import org.preesm.algorithm.memory.allocation.MemoryAllocator;
+import org.preesm.algorithm.memory.allocation.OrderedAllocator;
 import org.preesm.algorithm.memory.allocation.OrderedAllocator.Order;
 import org.preesm.algorithm.memory.allocation.OrderedAllocator.Policy;
 import org.preesm.algorithm.memory.exclusiongraph.MemoryExclusionGraph;

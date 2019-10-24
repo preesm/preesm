@@ -42,7 +42,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.preesm.algorithm.memory.allocation.Distributor;
-import org.preesm.algorithm.memory.allocation.MemoryAllocatorTask;
 import org.preesm.algorithm.memory.exclusiongraph.MemoryExclusionGraph;
 import org.preesm.commons.doc.annotations.Parameter;
 import org.preesm.commons.doc.annotations.Port;

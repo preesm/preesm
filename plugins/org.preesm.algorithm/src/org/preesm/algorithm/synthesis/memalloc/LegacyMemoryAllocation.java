@@ -40,7 +40,7 @@ import java.util.Map;
 import java.util.logging.Level;
 import org.preesm.algorithm.mapping.model.Mapping;
 import org.preesm.algorithm.memalloc.model.Allocation;
-import org.preesm.algorithm.memory.allocation.MemoryAllocatorTask;
+import org.preesm.algorithm.memory.allocation.tasks.MemoryAllocatorTask;
 import org.preesm.algorithm.memory.allocation.tasks.MemoryScriptTask;
 import org.preesm.algorithm.schedule.model.Schedule;
 import org.preesm.algorithm.synthesis.memalloc.meg.MemExUpdaterEngine;

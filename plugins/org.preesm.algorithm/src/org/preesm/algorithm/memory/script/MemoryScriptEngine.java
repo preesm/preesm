@@ -52,7 +52,7 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.emf.common.util.EMap;
-import org.preesm.algorithm.memory.allocation.MemoryAllocatorTask;
+import org.preesm.algorithm.memory.allocation.tasks.MemoryAllocatorTask;
 import org.preesm.algorithm.memory.exclusiongraph.MemoryExclusionGraph;
 import org.preesm.algorithm.model.dag.DirectedAcyclicGraph;
 import org.preesm.commons.exceptions.PreesmRuntimeException;

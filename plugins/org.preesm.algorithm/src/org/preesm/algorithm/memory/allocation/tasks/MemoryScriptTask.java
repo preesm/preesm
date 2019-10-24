@@ -41,7 +41,6 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.emf.common.util.EMap;
-import org.preesm.algorithm.memory.allocation.MemoryAllocatorTask;
 import org.preesm.algorithm.memory.exclusiongraph.MemoryExclusionGraph;
 import org.preesm.algorithm.memory.script.MemoryScriptEngine;
 import org.preesm.algorithm.model.dag.DirectedAcyclicGraph;
