@@ -333,9 +333,9 @@ public class Match {
 
   @Override
   public String toString() {
-    return "" + getLocalBuffer().loggingVertexName.getName() + "." + getLocalBuffer().name + "[" + getLocalIndex()
-        + ".." + (getLocalIndex() + getLength()) + "[=>" + getRemoteBuffer().loggingVertexName.getName() + "."
-        + getRemoteBuffer().name + "[" + getRemoteIndex() + ".." + (getRemoteIndex() + getLength()) + "[";
+    return "" + getLocalBuffer().loggingVertexName + "." + getLocalBuffer().name + "[" + getLocalIndex() + ".."
+        + (getLocalIndex() + getLength()) + "[=>" + getRemoteBuffer().loggingVertexName + "." + getRemoteBuffer().name
+        + "[" + getRemoteIndex() + ".." + (getRemoteIndex() + getLength()) + "[";
   }
 
   /**
