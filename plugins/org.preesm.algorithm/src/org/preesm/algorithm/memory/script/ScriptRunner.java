@@ -679,7 +679,7 @@ public class ScriptRunner {
       // Sort the buffers in alphabetical order to enforce similarities
       // between successive run
       Collections.sort(buffers, (a, b) -> {
-        final int nameRes = a.loggingVertexName.compareTo(b.loggingVertexName);
+        final int nameRes = a.getVertexName().compareTo(b.getVertexName());
         return (nameRes != 0) ? nameRes : a.name.compareTo(b.name);
       });
 
@@ -1275,7 +1275,7 @@ public class ScriptRunner {
       if (cmp != 0) {
         return cmp;
       } else {
-        final int nameRes = a.loggingVertexName.compareTo(b.loggingVertexName);
+        final int nameRes = a.getVertexName().compareTo(b.getVertexName());
         return (nameRes != 0) ? nameRes : a.name.compareTo(b.name);
       }
     });
@@ -1579,7 +1579,7 @@ public class ScriptRunner {
                     // Match them together
                     final Match match = buffers.get(0).matchWith(0, buffers.get(1), 0, buffers.get(0).nbTokens);
                     final Match forwardMatch;
-                    if (buffers.get(0).loggingVertexName == dagEdge.getSource().getName()) {
+                    if (buffers.get(0).getVertexName() == dagEdge.getSource().getName()) {
                       match.setType(MatchType.FORWARD);
                       match.getReciprocate().setType(MatchType.BACKWARD);
                       forwardMatch = match;
