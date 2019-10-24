@@ -58,14 +58,12 @@ public class LegacyMemoryAllocation implements IMemoryAllocation {
 
     final PiMemoryExclusionGraph memEx = new PiMemoryExclusionGraph(scenario);
     PreesmLogger.getLogger().log(Level.INFO, () -> "building memex graph");
-    final long startTime = System.currentTimeMillis();
     memEx.buildGraph(piGraph);
-    final long stopTime = System.currentTimeMillis();
     final int edgeCount = memEx.edgeSet().size();
     final int vertexCount = memEx.vertexSet().size();
     final double density = edgeCount / ((vertexCount * (vertexCount - 1)) / 2.0);
     PreesmLogger.getLogger().log(Level.INFO, () -> "Memory exclusion graph built with " + vertexCount
-        + " vertices and density = " + density + ". Duration : " + ((stopTime - startTime) / 1000) + "s");
+        + " vertices and density = " + density + " (" + edgeCount + " edges)");
 
     final MemExUpdaterEngine memExUpdaterEngine = new MemExUpdaterEngine(piGraph, memEx, schedule, mapping, true);
     memExUpdaterEngine.update();

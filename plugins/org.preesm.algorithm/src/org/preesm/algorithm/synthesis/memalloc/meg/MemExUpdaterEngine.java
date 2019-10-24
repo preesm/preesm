@@ -53,7 +53,7 @@ public class MemExUpdaterEngine {
   private final Schedule               schedule;
   private final Mapping                mapping;
 
-  private int    before;
+  private int    beforeEdges;
   private double density;
 
   /**
@@ -65,7 +65,7 @@ public class MemExUpdaterEngine {
     this.verbose = verbose;
     this.dag = dag;
     this.memEx = memEx;
-    this.before = memEx.edgeSet().size();
+    this.beforeEdges = memEx.edgeSet().size();
   }
 
   /**
@@ -77,15 +77,14 @@ public class MemExUpdaterEngine {
 
     this.memEx.updateWithSchedule(this.dag, schedule, mapping);
 
-    this.density = this.memEx.edgeSet().size()
-        / ((this.memEx.vertexSet().size() * (this.memEx.vertexSet().size() - 1)) / 2.0);
+    final int size = this.memEx.edgeSet().size();
+    this.density = size / ((this.memEx.vertexSet().size() * (this.memEx.vertexSet().size() - 1)) / 2.0);
 
     if (this.verbose) {
       PreesmLogger.getLogger().log(Level.INFO, () -> "Memory exclusion graph updated with "
-          + this.memEx.vertexSet().size() + " vertices and density = " + this.density);
-      PreesmLogger.getLogger().log(Level.INFO,
-          () -> "Exclusions removed: " + (this.before - this.memEx.edgeSet().size()) + " ("
-              + Math.round((100.00 * (this.before - this.memEx.edgeSet().size())) / this.before) + "%)");
+          + this.memEx.vertexSet().size() + " vertices and density = " + this.density + " (" + size + " edges)");
+      PreesmLogger.getLogger().log(Level.INFO, () -> "Exclusions removed: " + (this.beforeEdges - size) + " ("
+          + Math.round((100.00 * (this.beforeEdges - size)) / this.beforeEdges) + "%)");
     }
   }
 }

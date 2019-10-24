@@ -40,6 +40,7 @@
 package org.preesm.algorithm.synthesis.memalloc.meg;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.logging.Level;
 import org.eclipse.xtext.util.Pair;
 import org.preesm.algorithm.memory.exclusiongraph.MemoryExclusionVertex;
@@ -264,11 +265,12 @@ public class PiMemoryExclusionVertex extends AbstractVertex<PiMemoryExclusionGra
    */
   @Override
   public boolean equals(final Object o) {
-    if (o instanceof MemoryExclusionVertex) {
-      // final boolean sameEdge = this.edge == ((MemoryExclusionVertex) o).edge
-      final boolean sameSource = this.getSource().equals(((MemoryExclusionVertex) o).getSource());
-      final boolean sameSink = this.getSink().equals(((MemoryExclusionVertex) o).getSink());
-      return sameSink && sameSource;// && sameEdge
+    if (o instanceof PiMemoryExclusionVertex) {
+      final Fifo otherEdge = ((PiMemoryExclusionVertex) o).edge;
+      final boolean sameEdge = this.edge == otherEdge;
+      final boolean sameSource = this.getSource().equals(((PiMemoryExclusionVertex) o).getSource());
+      final boolean sameSink = this.getSink().equals(((PiMemoryExclusionVertex) o).getSink());
+      return sameSink && sameSource && sameEdge;
     } else {
       return false;
     }
@@ -276,7 +278,7 @@ public class PiMemoryExclusionVertex extends AbstractVertex<PiMemoryExclusionGra
 
   @Override
   public int hashCode() {
-    return (this.getSource() + "=>" + this.getSink()).hashCode();
+    return Objects.hash(this.getSource(), this.getSink());
   }
 
   @Override
