@@ -150,13 +150,15 @@ public class PiMemoryExclusionGraph extends SimpleGraph<PiMemoryExclusionVertex,
   private final transient PropertyBean properties = new PropertyBean();
 
   private final transient Scenario scenario;
+  private final transient PiGraph  pigraph;
 
   /**
    * Default constructor.
    */
-  public PiMemoryExclusionGraph(final Scenario scenario) {
+  public PiMemoryExclusionGraph(final Scenario scenario, final PiGraph pigraph) {
     super(DefaultEdge.class);
     this.scenario = scenario;
+    this.pigraph = pigraph;
   }
 
   public Scenario getScenario() {
@@ -450,7 +452,7 @@ public class PiMemoryExclusionGraph extends SimpleGraph<PiMemoryExclusionVertex,
    */
   public PiMemoryExclusionGraph deepClone() {
     // Shallow copy with clone. Handle shallow copy of attributes and deep copy of lists of vertices and exclusion
-    final PiMemoryExclusionGraph result = new PiMemoryExclusionGraph(this.getScenario());
+    final PiMemoryExclusionGraph result = new PiMemoryExclusionGraph(this.getScenario(), this.getPigraph());
 
     // Deep copy of all MObj (including merged ones). Keep a record of the old and new mObj
     final Map<PiMemoryExclusionVertex, PiMemoryExclusionVertex> mObjMap = new LinkedHashMap<>();
@@ -713,7 +715,7 @@ public class PiMemoryExclusionGraph extends SimpleGraph<PiMemoryExclusionVertex,
    * @return the complementary
    */
   public PiMemoryExclusionGraph getComplementary() {
-    final PiMemoryExclusionGraph target = new PiMemoryExclusionGraph(this.getScenario());
+    final PiMemoryExclusionGraph target = new PiMemoryExclusionGraph(this.getScenario(), this.getPigraph());
     final ComplementGraphGenerator<PiMemoryExclusionVertex,
         DefaultEdge> complementGraphGenerator = new ComplementGraphGenerator<>(this);
     complementGraphGenerator.generateGraph(target);
@@ -994,5 +996,9 @@ public class PiMemoryExclusionGraph extends SimpleGraph<PiMemoryExclusionVertex,
         this.memExVerticesInSchedulingOrder.add(vertex);
       }
     }
+  }
+
+  public PiGraph getPigraph() {
+    return pigraph;
   }
 }
