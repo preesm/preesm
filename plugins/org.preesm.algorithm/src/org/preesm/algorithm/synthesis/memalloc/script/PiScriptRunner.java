@@ -57,6 +57,7 @@ import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.eclipse.core.runtime.IPath;
+import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.common.util.EMap;
 import org.eclipse.xtext.xbase.lib.Pair;
 import org.preesm.algorithm.memory.script.Buffer;
@@ -1542,75 +1543,71 @@ public class PiScriptRunner {
             if (addedVertices.contains(candidate) || newVertices.contains(candidate)
                 || dagVertices.contains(candidate)) {
 
-              // TODO
-              //
-              // // Match the buffers corresponding to the edge
-              // // between vertices "dagVertex" and "candidate"
-              // // Get the sdfEdges
-              // @SuppressWarnings("unchecked")
-              // final AbstractGraph<DAGVertex, DAGEdge> base = dagVertex.getBase();
-              // DAGEdge dagEdge = base.getEdge(dagVertex, candidate);
-              // if (dagEdge == null) {
-              // dagEdge = base.getEdge(candidate, dagVertex);
-              // }
-              //
-              // // For edges between newVertices, only process if the dagVertex
-              // // is the source (to avoid matching the pair of buffer twice)
-              // boolean validBuffers = false;
-              // final boolean isBetweenNewVertices = newVertices.contains(candidate);
-              // if (!isBetweenNewVertices || (dagEdge.getSource() == dagVertex)) {
-              //
-              // // Add match between the two buffers that
-              // // correspond to the sdf edge(s) between vertex
-              // // and it
-              // final List<PiBuffer> bufferCandidates = new ArrayList<>();
-              //
-              // for (final AbstractActor v : Arrays.asList(dagVertex, candidate)) {
-              // final Pair<List<PiBuffer>, List<PiBuffer>> pair = this.scriptResults.get(v);
-              // bufferCandidates.addAll(pair.getKey());
-              // bufferCandidates.addAll(pair.getValue());
-              // }
-              // for (final AbstractEdge<?, ?> aggEdge : dagEdge.getAggregate()) {
-              //
-              // // Find the 2 buffers corresponding to this sdfEdge
-              // final List<PiBuffer> buffers = bufferCandidates.stream()
-              // .filter(it -> it.getLoggingEdgeName() == aggEdge).collect(Collectors.toList());
-              // if (buffers.size() == 2) {
-              // validBuffers = true;
-              //
-              // // Match them together
-              // final PiMatch match = buffers.get(0).matchWith(0, buffers.get(1), 0, buffers.get(0).nbTokens);
-              // final PiMatch forwardMatch;
-              // if (buffers.get(0).getVertexName().equals(dagEdge.getSource().getName())) {
-              // match.setType(MatchType.FORWARD);
-              // match.getReciprocate().setType(MatchType.BACKWARD);
-              // forwardMatch = match;
-              // } else {
-              // match.setType(MatchType.BACKWARD);
-              // match.getReciprocate().setType(MatchType.FORWARD);
-              // forwardMatch = match.getReciprocate();
-              // }
-              //
-              // // Apply the forward match immediately
-              // // (we always apply the forward match to enforce
-              // // reproducibility of the processing)
-              // forwardMatch.getLocalBuffer().applyMatches(Arrays.asList(forwardMatch));
-              //
-              // // Save matched buffer
-              // intraGroupBuffer.add(match.getLocalBuffer());
-              // intraGroupBuffer.add(match.getRemoteBuffer());
-              //
-              // }
-              // }
-              // }
-              //
-              // // Add the vertex to the group (if not already in
-              // // it) and if there was valid buffers)
-              // if (!group.contains(candidate) && validBuffers) {
-              // group.add(candidate);
-              // dagVertices.remove(candidate);
-              // addedVertices = group.subList(groupSize, group.size());
-              // }
+              // Match the buffers corresponding to the edge
+              // between vertices "dagVertex" and "candidate"
+              // Get the sdfEdges
+              EList<Fifo> lookupFifos = dagVertex.getContainingPiGraph().lookupFifos(dagVertex, candidate);
+              if (lookupFifos.isEmpty()) {
+                lookupFifos = dagVertex.getContainingPiGraph().lookupFifos(candidate, dagVertex);
+              }
+
+              // For edges between newVertices, only process if the dagVertex
+              // is the source (to avoid matching the pair of buffer twice)
+              boolean validBuffers = false;
+              final boolean isBetweenNewVertices = newVertices.contains(candidate);
+              if (!isBetweenNewVertices || (lookupFifos.stream().anyMatch(fifo -> fifo.getSource() == dagVertex))) {
+
+                // Add match between the two buffers that
+                // correspond to the sdf edge(s) between vertex
+                // and it
+                final List<PiBuffer> bufferCandidates = new ArrayList<>();
+
+                for (final AbstractActor v : Arrays.asList(dagVertex, candidate)) {
+                  final Pair<List<PiBuffer>, List<PiBuffer>> pair = this.scriptResults.get(v);
+                  bufferCandidates.addAll(pair.getKey());
+                  bufferCandidates.addAll(pair.getValue());
+                }
+                for (final Fifo fifo : lookupFifos) {
+
+                  // Find the 2 buffers corresponding to this sdfEdge
+                  final List<PiBuffer> buffers = bufferCandidates.stream().filter(it -> it.getLoggingEdgeName() == fifo)
+                      .collect(Collectors.toList());
+                  if (buffers.size() == 2) {
+                    validBuffers = true;
+
+                    // Match them together
+                    final PiMatch match = buffers.get(0).matchWith(0, buffers.get(1), 0, buffers.get(0).nbTokens);
+                    final PiMatch forwardMatch;
+                    if (buffers.get(0).getVertexName().equals(fifo.getSourcePort().getContainingActor().getName())) {
+                      match.setType(MatchType.FORWARD);
+                      match.getReciprocate().setType(MatchType.BACKWARD);
+                      forwardMatch = match;
+                    } else {
+                      match.setType(MatchType.BACKWARD);
+                      match.getReciprocate().setType(MatchType.FORWARD);
+                      forwardMatch = match.getReciprocate();
+                    }
+
+                    // Apply the forward match immediately
+                    // (we always apply the forward match to enforce
+                    // reproducibility of the processing)
+                    forwardMatch.getLocalBuffer().applyMatches(Arrays.asList(forwardMatch));
+
+                    // Save matched buffer
+                    intraGroupBuffer.add(match.getLocalBuffer());
+                    intraGroupBuffer.add(match.getRemoteBuffer());
+
+                  }
+                }
+              }
+
+              // Add the vertex to the group (if not already in
+              // it) and if there was valid buffers)
+              if (!group.contains(candidate) && validBuffers) {
+                group.add(candidate);
+                dagVertices.remove(candidate);
+                addedVertices = group.subList(groupSize, group.size());
+              }
             }
           }
         }
