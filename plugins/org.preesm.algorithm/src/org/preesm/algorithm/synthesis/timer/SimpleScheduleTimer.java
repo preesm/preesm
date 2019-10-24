@@ -19,6 +19,7 @@ import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.pisdf.SrdagActor;
 import org.preesm.model.pisdf.UserSpecialActor;
 import org.preesm.model.pisdf.util.PiMMSwitch;
+import org.preesm.model.scenario.MemoryCopySpeedValue;
 import org.preesm.model.scenario.Scenario;
 import org.preesm.model.slam.ComponentInstance;
 
@@ -100,7 +101,19 @@ public class SimpleScheduleTimer {
      */
     @Override
     public Long caseUserSpecialActor(UserSpecialActor object) {
-      return 0L;
+
+      final long totalInRate = object.getDataInputPorts().stream()
+          .mapToLong(port -> port.getPortRateExpression().evaluate()).sum();
+      final long totalOutRate = object.getDataOutputPorts().stream()
+          .mapToLong(port -> port.getPortRateExpression().evaluate()).sum();
+
+      final long maxRate = Math.max(totalInRate, totalOutRate);
+
+      final ComponentInstance operator = mapping.getSimpleMapping(object);
+      final MemoryCopySpeedValue memTimings = scenario.getTimings().getMemTimings().get(operator.getComponent());
+
+      final double timePerUnit = memTimings.getTimePerUnit();
+      return (long) (((double) maxRate) * timePerUnit) + memTimings.getSetupTime();
     }
 
   }
