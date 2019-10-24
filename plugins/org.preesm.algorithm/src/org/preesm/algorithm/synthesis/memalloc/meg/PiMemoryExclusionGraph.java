@@ -860,10 +860,7 @@ public class PiMemoryExclusionGraph extends SimpleGraph<PiMemoryExclusionVertex,
             this.scenario);
         for (final Fifo edge : edgesInBetween) {
           final PiMemoryExclusionVertex mObj = new PiMemoryExclusionVertex(edge, this.scenario);
-          final DefaultEdge removeEdge = this.removeEdge(headMemoryNode, mObj);
-          if (removeEdge != null) {
-            System.out.println("f");
-          }
+          this.removeEdge(headMemoryNode, mObj);
         }
       }
 
@@ -956,11 +953,6 @@ public class PiMemoryExclusionGraph extends SimpleGraph<PiMemoryExclusionVertex,
         for (final Fifo outgoingEdge : outFifos) {
           final PiMemoryExclusionVertex edgeVertex = new PiMemoryExclusionVertex(outgoingEdge, this.scenario);
           for (final PiMemoryExclusionVertex newPredecessor : newPredecessors) {
-
-            final DefaultEdge edge = this.getEdge(edgeVertex, newPredecessor);
-            if (edge == null) {
-              System.out.println("meh");
-            }
             if (this.removeEdge(edgeVertex, newPredecessor) == null) {
               /**
                * Possible causes are: <br>
