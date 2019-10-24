@@ -1800,9 +1800,7 @@ public class ScriptRunner {
 
         // Get the Mobj
         final MemoryExclusionVertex mObjCopy = new MemoryExclusionVertex(
-            buffer.getLoggingEdgeName().getContainingEdge().getSource().getName(),
-            buffer.getLoggingEdgeName().getContainingEdge().getTarget().getName(), 0, meg.getScenario());
-        // val mObjCopy = new MemoryExclusionVertex(buffer.dagEdge.source.name, buffer.dagEdge.target.name, 0)
+            buffer.getLoggingEdgeName().getContainingEdge(), meg.getScenario());
 
         final MemoryExclusionVertex mObj = meg.getVertex(mObjCopy);
         if (mObj == null) {
