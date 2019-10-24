@@ -445,7 +445,7 @@ public class ScriptRunner {
             if (!group.contains(edge.getSource())) {
               // Retrieve the corresponding buffer.
               this.scriptResults.get(dagVertex).getKey().stream()
-                  .filter(buffer -> buffer.loggingEdgeName.getContainingEdge().getSource().getName()
+                  .filter(buffer -> buffer.getLoggingEdgeName().getContainingEdge().getSource().getName()
                       .equals(edge.getSource().getName()))
                   .forEach(it -> ScriptRunner.enlargeForAlignment(it, this.alignment, this.printTodo));
             }
@@ -1571,8 +1571,8 @@ public class ScriptRunner {
                 for (final AbstractEdge<?, ?> aggEdge : dagEdge.getAggregate()) {
 
                   // Find the 2 buffers corresponding to this sdfEdge
-                  final List<Buffer> buffers = bufferCandidates.stream().filter(it -> it.loggingEdgeName == aggEdge)
-                      .collect(Collectors.toList());
+                  final List<Buffer> buffers = bufferCandidates.stream()
+                      .filter(it -> it.getLoggingEdgeName() == aggEdge).collect(Collectors.toList());
                   if (buffers.size() == 2) {
                     validBuffers = true;
 
@@ -1800,8 +1800,8 @@ public class ScriptRunner {
 
         // Get the Mobj
         final MemoryExclusionVertex mObjCopy = new MemoryExclusionVertex(
-            buffer.loggingEdgeName.getContainingEdge().getSource().getName(),
-            buffer.loggingEdgeName.getContainingEdge().getTarget().getName(), 0, meg.getScenario());
+            buffer.getLoggingEdgeName().getContainingEdge().getSource().getName(),
+            buffer.getLoggingEdgeName().getContainingEdge().getTarget().getName(), 0, meg.getScenario());
         // val mObjCopy = new MemoryExclusionVertex(buffer.dagEdge.source.name, buffer.dagEdge.target.name, 0)
 
         final MemoryExclusionVertex mObj = meg.getVertex(mObjCopy);
@@ -1996,7 +1996,7 @@ public class ScriptRunner {
 
       // keep only those that are not host. (matched ones have already been removed from the MEG)
       final Buffer correspondingBuffer = flatten.stream()
-          .filter(buf -> (mObj.getEdge().getAggregate()).contains(buf.loggingEdgeName)).findFirst().orElse(null);
+          .filter(buf -> (mObj.getEdge().getAggregate()).contains(buf.getLoggingEdgeName())).findFirst().orElse(null);
       if (correspondingBuffer != null) {
         return !correspondingBuffer.host;
       } else {
