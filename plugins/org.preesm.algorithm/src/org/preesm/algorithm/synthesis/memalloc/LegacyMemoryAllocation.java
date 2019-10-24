@@ -43,10 +43,18 @@ import java.util.Set;
 import java.util.logging.Level;
 import org.preesm.algorithm.mapping.model.Mapping;
 import org.preesm.algorithm.memalloc.model.Allocation;
+import org.preesm.algorithm.memalloc.model.FifoAllocation;
+import org.preesm.algorithm.memalloc.model.LogicalBuffer;
+import org.preesm.algorithm.memalloc.model.MemoryAllocationFactory;
+import org.preesm.algorithm.memalloc.model.PhysicalBuffer;
 import org.preesm.algorithm.memory.allocation.MemoryAllocator;
 import org.preesm.algorithm.memory.allocation.tasks.MemoryAllocatorTask;
 import org.preesm.algorithm.memory.allocation.tasks.MemoryScriptTask;
 import org.preesm.algorithm.memory.exclusiongraph.MemoryExclusionGraph;
+import org.preesm.algorithm.memory.exclusiongraph.MemoryExclusionVertex;
+import org.preesm.algorithm.model.dag.DAGEdge;
+import org.preesm.algorithm.model.sdf.SDFEdge;
+import org.preesm.algorithm.model.sdf.SDFGraph;
 import org.preesm.algorithm.schedule.model.Schedule;
 import org.preesm.algorithm.synthesis.memalloc.allocation.PiBasicAllocator;
 import org.preesm.algorithm.synthesis.memalloc.allocation.PiBestFitAllocator;
@@ -63,8 +71,11 @@ import org.preesm.algorithm.synthesis.memalloc.script.PiMemoryScriptEngine;
 import org.preesm.commons.exceptions.PreesmException;
 import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.preesm.commons.logger.PreesmLogger;
+import org.preesm.model.pisdf.Fifo;
+import org.preesm.model.pisdf.InitActor;
 import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.scenario.Scenario;
+import org.preesm.model.slam.ComponentInstance;
 import org.preesm.model.slam.Design;
 
 /**
@@ -214,8 +225,9 @@ public class LegacyMemoryAllocation implements IMemoryAllocation {
       allocateWith(allocator);
     }
 
-    // TODO fix
-    return new SimpleMemoryAllocation().allocateMemory(piGraph, slamDesign, scenario, schedule, mapping);
+    restoreHostedVertices(megs);
+
+    return generateBuffers(megs, scenario, slamDesign, piGraph);
   }
 
   /**
@@ -326,5 +338,138 @@ public class LegacyMemoryAllocation implements IMemoryAllocation {
       }
     }
     return sAllocator + " allocates " + size + " " + unit + " in " + (tFinish - tStart) + " ms.";
+  }
+
+  /**
+   * The purpose of this function is to restore to their original size the {@link MemoryExclusionVertex} that were
+   * merged when applying memory scripts.
+   */
+  protected void restoreHostedVertices(final Map<String, PiMemoryExclusionGraph> megs) {
+    for (final PiMemoryExclusionGraph meg : megs.values()) {
+      final Map<PiMemoryExclusionVertex, Set<PiMemoryExclusionVertex>> hostBuffers = meg.getPropertyBean()
+          .getValue(PiMemoryExclusionGraph.HOST_MEMORY_OBJECT_PROPERTY);
+      if (hostBuffers != null) {
+        for (final Entry<PiMemoryExclusionVertex, Set<PiMemoryExclusionVertex>> entry : hostBuffers.entrySet()) {
+          // Since host vertices are naturally aligned, no need to
+          // restore
+          // them
+
+          // Restore the real size of hosted vertices
+          final Set<PiMemoryExclusionVertex> vertices = entry.getValue();
+
+          for (final PiMemoryExclusionVertex vertex : vertices) {
+            // For non-divided vertices
+            if (vertex.getWeight() != 0) {
+              final long emptySpace = vertex.getPropertyBean().getValue(PiMemoryExclusionVertex.EMPTY_SPACE_BEFORE);
+
+              // Put the vertex back to its real size
+              vertex.setWeight(vertex.getWeight() - emptySpace);
+
+              // And set the allocated offset
+              final long allocatedOffset = vertex.getPropertyBean()
+                  .getValue(PiMemoryExclusionVertex.MEMORY_OFFSET_PROPERTY);
+
+              vertex.setPropertyValue(PiMemoryExclusionVertex.MEMORY_OFFSET_PROPERTY, allocatedOffset + emptySpace);
+              final Map<Fifo,
+                  Long> dagEdgeAllocation = meg.getPropertyBean().getValue(PiMemoryExclusionGraph.DAG_EDGE_ALLOCATION);
+              dagEdgeAllocation.put(vertex.getEdge(), allocatedOffset + emptySpace);
+            }
+          }
+        }
+      }
+    }
+  }
+
+  /**
+   * This method creates a {@link Buffer} for each {@link DAGEdge} of the {@link #dag}. It also calls
+   * {@link #generateSubBuffers(Buffer, DAGEdge, Integer)} to create distinct {@link SubBuffer} corresponding to all the
+   * {@link SDFEdge} of the single-rate {@link SDFGraph} from which the {@link #dag} is derived.<br>
+   * <br>
+   * In this method, the {@link #sharedBuffer}, and the {@link #dagEdgeBuffers} attributes are filled.
+   *
+   *
+   */
+  protected Allocation generateBuffers(final Map<String, PiMemoryExclusionGraph> megs, final Scenario scenario,
+      final Design slamDesign, final PiGraph pigraph) {
+
+    final Allocation memAlloc = MemoryAllocationFactory.eINSTANCE.createAllocation();
+
+    // Create a main Buffer for each MEG
+    for (final Entry<String, PiMemoryExclusionGraph> entry : megs.entrySet()) {
+
+      final String memoryBank = entry.getKey();
+      final PiMemoryExclusionGraph meg = entry.getValue();
+
+      // Create the Main Shared buffer
+      final long size = meg.getPropertyBean().getValue(PiMemoryExclusionGraph.ALLOCATED_MEMORY_SIZE);
+
+      final PhysicalBuffer mainBuffer = MemoryAllocationFactory.eINSTANCE.createPhysicalBuffer();
+
+      ComponentInstance componentInstance = slamDesign.getComponentInstance(memoryBank);
+      if (componentInstance == null) {
+        componentInstance = scenario.getSimulationInfo().getMainComNode();
+      }
+      memAlloc.getPhysicalBuffers().add(mainBuffer);
+      mainBuffer.setMemoryBank(componentInstance);
+      mainBuffer.setSize(size);
+      mainBuffer.setTypeSize(1); // char is 1 byte
+
+      final Map<Fifo,
+          Long> fifoAllocationOffset = meg.getPropertyBean().getValue(PiMemoryExclusionGraph.DAG_EDGE_ALLOCATION);
+
+      // generate the subbuffer for each dagedge
+      for (final Entry<Fifo, Long> dagAlloc : fifoAllocationOffset.entrySet()) {
+        final Fifo edge = dagAlloc.getKey();
+        final Long allocOffset = dagAlloc.getValue();
+
+        final FifoAllocation fifoAllocation = MemoryAllocationFactory.eINSTANCE.createFifoAllocation();
+        memAlloc.getFifoAllocations().put(edge, fifoAllocation);
+        fifoAllocation.setFifo(edge);
+        // If the buffer is not a null buffer
+        if (allocOffset != -1) {
+
+          final LogicalBuffer dagEdgeBuffer = MemoryAllocationFactory.eINSTANCE.createLogicalBuffer();
+
+          fifoAllocation.setSourceBuffer(dagEdgeBuffer);
+          fifoAllocation.setTargetBuffer(dagEdgeBuffer);
+          mainBuffer.getChildren().add(dagEdgeBuffer);
+
+          dagEdgeBuffer.setOffset(allocOffset);
+          dagEdgeBuffer.setTypeSize(scenario.getSimulationInfo().getDataTypeSizeOrDefault(edge.getType()));
+          dagEdgeBuffer.setSize(edge.getSourcePort().getPortRateExpression().evaluate());
+
+        } else {
+          // the buffer is a null buffer
+          final LogicalBuffer dagEdgeBuffer = MemoryAllocationFactory.eINSTANCE.createNullBuffer();
+
+          fifoAllocation.setSourceBuffer(dagEdgeBuffer);
+          fifoAllocation.setTargetBuffer(dagEdgeBuffer);
+          mainBuffer.getChildren().add(dagEdgeBuffer);
+
+          dagEdgeBuffer.setTypeSize(0);
+          dagEdgeBuffer.setSize(0);
+
+        }
+      }
+
+      // Generate buffers for each delay
+      final Map<PiMemoryExclusionVertex,
+          Long> fifoAllocation = meg.getPropertyBean().getValue(MemoryExclusionGraph.DAG_FIFO_ALLOCATION);
+      for (final Entry<PiMemoryExclusionVertex, Long> fifoAlloc : fifoAllocation.entrySet()) {
+
+        final LogicalBuffer delayBuffer = MemoryAllocationFactory.eINSTANCE.createLogicalBuffer();
+        mainBuffer.getChildren().add(delayBuffer);
+
+        // Old Naming (too long)
+        final PiMemoryExclusionVertex fifoAllocKey = fifoAlloc.getKey();
+        final String sink = fifoAllocKey.getSink();
+
+        delayBuffer.setOffset(fifoAlloc.getValue());
+        delayBuffer.setSize(fifoAllocKey.getWeight());
+        final InitActor initActor = (InitActor) pigraph.lookupVertex(sink);
+        memAlloc.getDelayAllocations().put(initActor, delayBuffer);
+      }
+    }
+    return memAlloc;
   }
 }
