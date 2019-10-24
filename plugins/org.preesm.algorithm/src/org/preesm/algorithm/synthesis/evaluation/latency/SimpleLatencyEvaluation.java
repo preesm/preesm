@@ -37,8 +37,8 @@ package org.preesm.algorithm.synthesis.evaluation.latency;
 import java.util.Map;
 import org.preesm.algorithm.synthesis.SynthesisResult;
 import org.preesm.algorithm.synthesis.evaluation.ISynthesisEvaluator;
-import org.preesm.algorithm.synthesis.timer.ExecutionTiming;
-import org.preesm.algorithm.synthesis.timer.SimpleScheduleTimer;
+import org.preesm.algorithm.synthesis.timer.ActorExecutionTiming;
+import org.preesm.algorithm.synthesis.timer.SimpleTimer;
 import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.scenario.Scenario;
@@ -55,8 +55,8 @@ public class SimpleLatencyEvaluation implements ISynthesisEvaluator<LatencyCost>
   public LatencyCost evaluate(final PiGraph algo, final Design slamDesign, final Scenario scenario,
       final SynthesisResult synthesisChoice) {
 
-    final Map<AbstractActor, ExecutionTiming> computeTimings = SimpleScheduleTimer.computeTimings(algo,
-        synthesisChoice.schedule, synthesisChoice.mapping, scenario);
+    final Map<AbstractActor, ActorExecutionTiming> computeTimings = new SimpleTimer(algo,
+        synthesisChoice.schedule, synthesisChoice.mapping, scenario).computeTimings();
 
     final long latency = computeTimings.entrySet().stream().mapToLong(entry -> entry.getValue().getEndTime()).max()
         .orElse(0L);
