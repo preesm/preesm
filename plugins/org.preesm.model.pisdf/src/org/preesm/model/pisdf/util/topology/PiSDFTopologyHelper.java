@@ -37,7 +37,6 @@ package org.preesm.model.pisdf.util.topology;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
@@ -90,10 +89,6 @@ public class PiSDFTopologyHelper extends PreesmContentAdapter {
       internalGraphCache = internalGraph;
       return internalGraph;
     }
-  }
-
-  public final Comparator<AbstractActor> getComparator() {
-    return new PiSDFTopologicalComparator(pigraph);
   }
 
   /**
