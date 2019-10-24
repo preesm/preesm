@@ -9,6 +9,7 @@ PREESM Changelog
 ### Changes
 * Graph period has been added to the PiGraph model and appears in the UI;
 * Refactor schedule order manager to use a graph internal representation for predecence;
+* Add schedule timer to compute timings (start/duration) for an actor;
 
 ### Bug fix
 * Fix workflow task "org.ietr.preesm.pimm.algorithm.checker.periods.PeriodsPreschedulingChecker";

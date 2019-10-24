@@ -44,6 +44,8 @@ import org.preesm.algorithm.memalloc.model.Allocation;
 import org.preesm.algorithm.schedule.model.Schedule;
 import org.preesm.algorithm.synthesis.communications.ICommunicationInserter;
 import org.preesm.algorithm.synthesis.communications.OptimizedCommunicationInserter;
+import org.preesm.algorithm.synthesis.evaluation.latency.LatencyCost;
+import org.preesm.algorithm.synthesis.evaluation.latency.SimpleLatencyEvaluation;
 import org.preesm.algorithm.synthesis.memalloc.IMemoryAllocation;
 import org.preesm.algorithm.synthesis.memalloc.LegacyMemoryAllocation;
 import org.preesm.algorithm.synthesis.memalloc.SimpleMemoryAllocation;
@@ -94,6 +96,10 @@ public class PreesmSynthesisTask extends AbstractTaskImplementation {
     PreesmLogger.getLogger().log(Level.INFO, " -- Insert communication");
     final ICommunicationInserter comIns = new OptimizedCommunicationInserter();
     comIns.insertCommunications(algorithm, architecture, scenario, scheduleAndMap.schedule, scheduleAndMap.mapping);
+
+    final LatencyCost evaluate = new SimpleLatencyEvaluation().evaluate(algorithm, architecture, scenario,
+        scheduleAndMap);
+    PreesmLogger.getLogger().log(Level.INFO, "Simple latency evaluation : " + evaluate.getValue());
 
     PreesmLogger.getLogger().log(Level.INFO, () -> " -- Allocating Memory - " + allocationName);
     final Allocation memalloc = alloc.allocateMemory(algorithm, architecture, scenario, scheduleAndMap.schedule,

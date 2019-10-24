@@ -34,7 +34,6 @@
  */
 package org.preesm.algorithm.synthesis.evaluation.latency;
 
-import org.preesm.algorithm.synthesis.SynthesisResult;
 import org.preesm.algorithm.synthesis.evaluation.ISynthesisCost;
 
 /**
@@ -56,13 +55,8 @@ public class LatencyCost implements ISynthesisCost<Long> {
   }
 
   @Override
-  public int compareTo(final ISynthesisCost<Long> o) {
-    final long diff = this.latency - o.getValue();
-    return (diff > 0) ? 1 : ((diff < 0) ? -1 : 0);
-  }
-
-  public SynthesisResult getSynthesisChoice() {
-    return null; // TODO
+  public int compareTo(final ISynthesisCost<Long> other) {
+    return Long.compare(this.getValue(), other.getValue());
   }
 
 }
