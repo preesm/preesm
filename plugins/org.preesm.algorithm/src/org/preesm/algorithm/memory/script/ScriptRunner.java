@@ -1579,7 +1579,7 @@ public class ScriptRunner {
                     // Match them together
                     final Match match = buffers.get(0).matchWith(0, buffers.get(1), 0, buffers.get(0).nbTokens);
                     final Match forwardMatch;
-                    if (buffers.get(0).getVertexName() == dagEdge.getSource().getName()) {
+                    if (buffers.get(0).getVertexName().equals(dagEdge.getSource().getName())) {
                       match.setType(MatchType.FORWARD);
                       match.getReciprocate().setType(MatchType.BACKWARD);
                       forwardMatch = match;
