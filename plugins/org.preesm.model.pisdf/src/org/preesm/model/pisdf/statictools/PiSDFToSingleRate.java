@@ -158,7 +158,7 @@ public class PiSDFToSingleRate extends PiMMSwitch<Boolean> {
 
     for (final AbstractActor a : actors) {
       if (a instanceof PiGraph && !a.isCluster()) {
-        throw new PreesmRuntimeException("Flatten graph should have no children graph");
+        throw new PreesmRuntimeException("Flatten graph should have no children graph: " + a.getName());
       }
       if (a instanceof InterfaceActor) {
         throw new PreesmRuntimeException("Flatten graph should have no interface");
@@ -219,6 +219,9 @@ public class PiSDFToSingleRate extends PiMMSwitch<Boolean> {
     this.graphName = "";
     this.graphPrefix = "";
     this.instance = 0;
+
+    // copy input graph period
+    this.result.setExpression(inputGraph.getPeriod().evaluate());
   }
 
   private final Map<Parameter, Parameter> param2param = new LinkedHashMap<>();
@@ -372,8 +375,8 @@ public class PiSDFToSingleRate extends PiMMSwitch<Boolean> {
     final ExecutableActor copyActor = PiMMUserFactory.instance.copyWithHistory(actor);
     // Set the properties
     copyActor.setName(this.currentActorName);
-    if (actor instanceof Actor) {
-      Actor act = (Actor) actor;
+    if (copyActor instanceof Actor) {
+      Actor act = (Actor) copyActor;
       act.setFiringInstance(instance);
     }
 
@@ -877,7 +880,11 @@ public class PiSDFToSingleRate extends PiMMSwitch<Boolean> {
     this.instance = backupInstance;
 
     // handle non connected actors (BRV = 1)
-    actors.stream().filter(a -> a.getAllDataPorts().isEmpty()).forEach(this::populateSingleRatePiMMActor);
+    // PiGraph are already handled by the code above, even without data ports
+    // Special Actors and Delay Actors cannot have empty data ports
+    // So only (regular) Actor are considered
+    actors.stream().filter(a -> a.getAllDataPorts().isEmpty()).filter(a -> a instanceof Actor)
+        .forEach(this::populateSingleRatePiMMActor);
 
     return true;
   }

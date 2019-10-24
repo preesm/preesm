@@ -58,6 +58,7 @@ import org.preesm.model.pisdf.ExpressionHolder;
 import org.preesm.model.pisdf.ISetter;
 import org.preesm.model.pisdf.InterfaceActor;
 import org.preesm.model.pisdf.Parameter;
+import org.preesm.model.pisdf.PeriodicElement;
 import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.pisdf.util.PiMMSwitch;
 
@@ -205,6 +206,11 @@ public class PiSDFParameterResolverVisitor extends PiMMSwitch<Boolean> {
       }
     }
     resolveActorPorts(actor, portValues);
+    // Resolve actor period
+    if (actor instanceof PeriodicElement) {
+      PeriodicElement pe = (PeriodicElement) actor;
+      resolveExpression(pe, portValues);
+    }
     return true;
   }
 
@@ -251,6 +257,9 @@ public class PiSDFParameterResolverVisitor extends PiMMSwitch<Boolean> {
 
     // Finally, we derive parameter values that have not already been processed
     computeDerivedParameterValues(graph, this.parameterValues);
+
+    // Resolve graph period
+    graph.setExpression(graph.getPeriod().evaluate());
 
     // We can now resolve data port rates for this graph
     for (final AbstractActor actor : graph.getOnlyActors()) {
