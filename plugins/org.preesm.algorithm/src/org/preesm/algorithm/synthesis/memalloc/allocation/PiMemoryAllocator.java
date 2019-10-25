@@ -625,12 +625,8 @@ public abstract class PiMemoryAllocator {
           }
 
         } else {
-          // Check alignment of memory objects not associated with an
-          // edge.
-          // In the current version, working memory of actor is not
-          // aligned since it has
-          // no declared type.
-          // Process fifo memobjects here
+          // Check alignment of memory objects not associated with an edge.
+          // Process delay memobjects here
           if (memObj.getSource().startsWith(PiMemoryExclusionGraph.FIFO_HEAD_PREFIX)) {
             final Long typeSize = memObj.getPropertyBean().getValue(PiMemoryExclusionVertex.TYPE_SIZE);
             if ((this.alignment == 0) && ((offset % typeSize) != 0)) {
