@@ -157,8 +157,8 @@ public class LegacyMemoryAllocation implements IMemoryAllocation {
     }
 
     // Do the distribution
-    final Map<String,
-        PiMemoryExclusionGraph> megs = PiDistributor.distributeMeg(valueDistribution, memEx, alignment, mapping);
+    final Map<String, PiMemoryExclusionGraph> megs = PiDistributor
+        .distributeMeg(MemoryAllocatorTask.VALUE_DISTRIBUTION_MIXED_MERGED, memEx, alignment, mapping);
 
     // Log results
     if (!valueDistribution.equals(MemoryAllocatorTask.VALUE_DISTRIBUTION_SHARED_ONLY)) {
