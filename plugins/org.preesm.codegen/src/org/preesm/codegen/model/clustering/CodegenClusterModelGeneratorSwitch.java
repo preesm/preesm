@@ -43,6 +43,7 @@ import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.ImmutableTriple;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.commons.lang3.tuple.Triple;
+import org.eclipse.emf.common.util.EList;
 import org.preesm.algorithm.clustering.ClusteringHelper;
 import org.preesm.algorithm.schedule.model.ActorSchedule;
 import org.preesm.algorithm.schedule.model.HierarchicalSchedule;
@@ -51,7 +52,6 @@ import org.preesm.algorithm.schedule.model.Schedule;
 import org.preesm.algorithm.schedule.model.SequentialHiearchicalSchedule;
 import org.preesm.algorithm.schedule.model.util.ScheduleSwitch;
 import org.preesm.algorithm.synthesis.schedule.ScheduleUtil;
-import org.preesm.codegen.model.Block;
 import org.preesm.codegen.model.Buffer;
 import org.preesm.codegen.model.ClusterBlock;
 import org.preesm.codegen.model.CodeElt;
@@ -69,6 +69,7 @@ import org.preesm.codegen.model.SectionBlock;
 import org.preesm.codegen.model.SpecialCall;
 import org.preesm.codegen.model.SpecialType;
 import org.preesm.codegen.model.SubBuffer;
+import org.preesm.codegen.model.Variable;
 import org.preesm.codegen.model.util.CodegenModelUserFactory;
 import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.preesm.model.pisdf.AbstractActor;
@@ -260,31 +261,41 @@ public class CodegenClusterModelGeneratorSwitch extends ScheduleSwitch<CodeElt> 
     final List<AbstractActor> actors = ScheduleUtil.getAllReferencedActors(schedule);
     final AbstractActor actor = actors.get(0);
 
+    // store buffers on which MD5 can be computed to check validity of transformations
+    if (actor.getDataOutputPorts().isEmpty()) {
+      final EList<DataInputPort> dataInputPorts = actor.getDataInputPorts();
+      for (final DataInputPort dip : dataInputPorts) {
+        final Variable variable = retrieveAssociatedBuffer(dip.getFifo(), PortKind.DATA_INPUT);
+        operatorBlock.getSinkFifoBuffers().add((Buffer) variable);
+      }
+    }
+
     // Generate a LoopBlock to put function call element into
     final LoopBlock loopBlock = CodegenModelUserFactory.eINSTANCE.createLoopBlock();
+    final LoopBlock actorBlock = CodegenModelUserFactory.eINSTANCE.createLoopBlock();
 
     // If actors has to be repeated few times, build a FiniteLoopBlock
-    CodeElt outputBlock = null;
     if (schedule.getRepetition() > 1) {
-      outputBlock = generateFiniteLoopBlock(loopBlock, (int) schedule.getRepetition(), actor, parallelRepetition);
+      FiniteLoopBlock finiteLoopBlock = generateFiniteLoopBlock(actorBlock, (int) schedule.getRepetition(), actor,
+          parallelRepetition);
+      loopBlock.getCodeElts().add(finiteLoopBlock);
     } else {
-      // Output the LoopBlock
-      outputBlock = loopBlock;
+      loopBlock.getCodeElts().add(actorBlock);
     }
 
     // Build corresponding actor function/special call
     if ((actor instanceof EndActor) || (actor instanceof InitActor)) {
-      loopBlock.getCodeElts().add(generateEndInitActorFiring((SpecialActor) actor));
+      actorBlock.getCodeElts().add(generateEndInitActorFiring((SpecialActor) actor));
     } else if (actor instanceof SpecialActor) {
-      loopBlock.getCodeElts().add(generateSpecialActorFiring((SpecialActor) actor));
+      actorBlock.getCodeElts().add(generateSpecialActorFiring((SpecialActor) actor));
     } else if (actor instanceof ExecutableActor) {
-      loopBlock.getCodeElts().add(generateExecutableActorFiring((ExecutableActor) actor));
+      actorBlock.getCodeElts().add(generateExecutableActorFiring((ExecutableActor) actor));
     }
 
     // Add delay pop if necessary
     generateDelayPop(actor, loopBlock);
 
-    return outputBlock;
+    return loopBlock;
   }
 
   private void generateDelayPop(final AbstractActor actor, final LoopBlock loopBlock) {
@@ -297,8 +308,8 @@ public class CodegenClusterModelGeneratorSwitch extends ScheduleSwitch<CodeElt> 
       if (this.delayBufferMap.containsKey(associatedFifo)) {
         // If the fifo goes to an actor that already has been executed, it means that we should generate a pop after
         // a write, otherwise we print a pop only if it's in input
-        final boolean precedence = helper.isPredecessor((AbstractActor) associatedFifo.getSource(),
-            (AbstractActor) associatedFifo.getTarget());
+        final boolean precedence = helper.isPredecessor((AbstractActor) associatedFifo.getTarget(),
+            (AbstractActor) associatedFifo.getSource());
 
         if (((dp.getKind() == PortKind.DATA_INPUT) && !precedence)
             || ((dp.getKind() == PortKind.DATA_OUTPUT) && precedence)) {
@@ -532,7 +543,7 @@ public class CodegenClusterModelGeneratorSwitch extends ScheduleSwitch<CodeElt> 
     }
   }
 
-  private final FiniteLoopBlock generateFiniteLoopBlock(final Block toInclude, final int repetition,
+  private final FiniteLoopBlock generateFiniteLoopBlock(final CodeElt toInclude, final int repetition,
       final AbstractActor actor, final boolean parallel) {
     final FiniteLoopBlock flb = CodegenModelUserFactory.eINSTANCE.createFiniteLoopBlock();
     final IntVar iterator = CodegenModelUserFactory.eINSTANCE.createIntVar();
