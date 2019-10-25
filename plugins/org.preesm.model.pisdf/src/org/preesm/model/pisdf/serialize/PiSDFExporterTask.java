@@ -59,8 +59,8 @@ import org.preesm.commons.doc.annotations.Value;
 import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.preesm.commons.files.WorkspaceUtils;
 import org.preesm.model.pisdf.PiGraph;
+import org.preesm.model.pisdf.factory.PiMMUserFactory;
 import org.preesm.model.pisdf.reconnection.SubgraphDisconnector;
-import org.preesm.model.pisdf.reconnection.SubgraphReconnector;
 import org.preesm.model.pisdf.util.PiMMSwitch;
 import org.preesm.workflow.elements.Workflow;
 import org.preesm.workflow.implement.AbstractTaskImplementation;
@@ -118,7 +118,7 @@ public class PiSDFExporterTask extends AbstractTaskImplementation {
     final String pathParameter = parameters.get("path");
 
     // create a copy of the input graph so that subgraph disconnector does not impact other tasks
-    final PiGraph graphCopy = graph;
+    final PiGraph graphCopy = PiMMUserFactory.instance.copyWithHistory(graph);
 
     // Creates the output file now
     final String sXmlPath = WorkspaceUtils.getAbsolutePath(pathParameter, workflow.getProjectName());
@@ -162,10 +162,7 @@ public class PiSDFExporterTask extends AbstractTaskImplementation {
       // Write the Graph to the OutputStream using the Pi format
       SubgraphDisconnector.disconnectSubGraphs(graph, xmlPath.toString());
       new PiWriter(uri).write(graph, outStream);
-      // the reconnection has side-effects on graphs clustered with the task
-      // org.ietr.preesm.pisdfclustering: the information about clustering,
-      // clusterValue, seem to be reset to false after it
-      SubgraphReconnector.reconnectChildren(graph);
+      // the reconnection is useless since we copied the graph first
     } catch (IOException e) {
       throw new PreesmRuntimeException("Could not open outputstream file " + string);
     }
