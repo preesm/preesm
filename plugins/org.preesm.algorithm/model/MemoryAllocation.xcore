@@ -64,7 +64,7 @@ type double wraps double
 
 
 interface Buffer {
-	long size
+	long size // size in byte
 	contains LogicalBuffer[] children opposite containingBuffer
 	op PhysicalBuffer getBank()
 	op Allocation getAllocation() {
@@ -84,7 +84,7 @@ class PhysicalBuffer extends Buffer {
 }
 
 class LogicalBuffer extends Buffer {
-	long offset // absolute offset wrt parent address 0
+	long offset // absolute offset in bytes wrt parent address 0
 	refers Buffer containingBuffer opposite children
 	op PhysicalBuffer getBank() {
 		return containingBuffer.getBank()
