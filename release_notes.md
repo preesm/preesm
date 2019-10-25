@@ -11,6 +11,8 @@ PREESM Changelog
 * Refactor schedule order manager to use a graph internal representation for predecence;
 * Add schedule timer to compute timings (start/duration) for an actor;
 * PiSDF: use internal graph representation for topological operations;
+* Now firing instance number of any Actor can be stored in PiGraph model (set in SRDAG, not stored in .pi);
+
 
 ### Bug fix
 * Fix workflow task "org.ietr.preesm.pimm.algorithm.checker.periods.PeriodsPreschedulingChecker";
