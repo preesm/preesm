@@ -144,7 +144,7 @@ class CPrinter extends BlankPrinter {
 	 * If false, the code will embed the operation "tokenCount * sizeof(token type)"
 	 * If true, the code will embed the result of the operation (type size is taken from scenario)
 	 */
-	protected static boolean SIMPLE_BUFFER_SIZES = true
+	protected static boolean SIMPLE_BUFFER_SIZES = false
 
 	override printCoreBlockHeader(CoreBlock block) '''
 			/**
@@ -520,7 +520,9 @@ class CPrinter extends BlankPrinter {
 		}
 
 		result = preCheck + result +
-			'''«fifoCall.headBuffer.name», «if (SIMPLE_BUFFER_SIZES) fifoCall.headBuffer.size * engine.scenario.simulationInfo.getDataTypeSizeOrDefault(fifoCall.headBuffer.type) else fifoCall.headBuffer.size+"*sizeof("+fifoCall.headBuffer.type+")"», '''
+			'''«fifoCall.headBuffer.name», «if (SIMPLE_BUFFER_SIZES)
+			fifoCall.headBuffer.size * engine.scenario.simulationInfo.getDataTypeSizeOrDefault(fifoCall.headBuffer.type) else
+			fifoCall.headBuffer.size+"*sizeof("+fifoCall.headBuffer.type+")"», '''
 		return result = result + '''«IF fifoCall.bodyBuffer !== null»«fifoCall.bodyBuffer.name», «
 		if (SIMPLE_BUFFER_SIZES) fifoCall.bodyBuffer.size  * engine.scenario.simulationInfo.getDataTypeSizeOrDefault(fifoCall.bodyBuffer.type) else fifoCall.bodyBuffer.size+"*sizeof("+fifoCall.bodyBuffer.type+")"»«ELSE»NULL, 0«ENDIF»);
 			«postCheck»'''

@@ -412,7 +412,6 @@ public class LegacyMemoryAllocation implements IMemoryAllocation {
       memAlloc.getPhysicalBuffers().add(mainBuffer);
       mainBuffer.setMemoryBank(componentInstance);
       mainBuffer.setSize(size);
-      mainBuffer.setTypeSize(1); // char is 1 byte
 
       final Map<Fifo,
           Long> fifoAllocationOffset = meg.getPropertyBean().getValue(PiMemoryExclusionGraph.DAG_EDGE_ALLOCATION);
@@ -434,9 +433,10 @@ public class LegacyMemoryAllocation implements IMemoryAllocation {
           fifoAllocation.setTargetBuffer(dagEdgeBuffer);
           mainBuffer.getChildren().add(dagEdgeBuffer);
 
+          final long bufferTypeSize = scenario.getSimulationInfo().getDataTypeSizeOrDefault(edge.getType());
+          final long edgeRate = edge.getSourcePort().getPortRateExpression().evaluate();
           dagEdgeBuffer.setOffset(allocOffset);
-          dagEdgeBuffer.setTypeSize(scenario.getSimulationInfo().getDataTypeSizeOrDefault(edge.getType()));
-          dagEdgeBuffer.setSize(edge.getSourcePort().getPortRateExpression().evaluate());
+          dagEdgeBuffer.setSize(edgeRate * bufferTypeSize);
 
         } else {
           // the buffer is a null buffer
@@ -446,7 +446,6 @@ public class LegacyMemoryAllocation implements IMemoryAllocation {
           fifoAllocation.setTargetBuffer(dagEdgeBuffer);
           mainBuffer.getChildren().add(dagEdgeBuffer);
 
-          dagEdgeBuffer.setTypeSize(0);
           dagEdgeBuffer.setSize(0);
 
         }
@@ -466,6 +465,7 @@ public class LegacyMemoryAllocation implements IMemoryAllocation {
 
         delayBuffer.setOffset(fifoAlloc.getValue());
         delayBuffer.setSize(fifoAllocKey.getWeight());
+
         final InitActor initActor = (InitActor) pigraph.lookupVertex(sink);
         memAlloc.getDelayAllocations().put(initActor, delayBuffer);
       }
