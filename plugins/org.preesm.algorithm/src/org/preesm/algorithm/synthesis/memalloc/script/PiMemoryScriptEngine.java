@@ -36,7 +36,7 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL license and that you accept its terms.
  */
-package org.preesm.algorithm.memory.script;
+package org.preesm.algorithm.synthesis.memalloc.script;
 
 import bsh.EvalError;
 import java.io.ByteArrayInputStream;
@@ -52,24 +52,24 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.emf.common.util.EMap;
-import org.preesm.algorithm.memory.allocation.tasks.MemoryAllocatorTask;
-import org.preesm.algorithm.memory.exclusiongraph.MemoryExclusionGraph;
-import org.preesm.algorithm.model.dag.DirectedAcyclicGraph;
+import org.preesm.algorithm.memory.script.CheckPolicy;
+import org.preesm.algorithm.synthesis.memalloc.meg.PiMemoryExclusionGraph;
 import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.preesm.commons.logger.PreesmLogger;
+import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.scenario.Scenario;
 
 /**
  * The Class MemoryScriptEngine.
  */
-public class MemoryScriptEngine {
+public class PiMemoryScriptEngine {
 
-  private static final String VALUE_CHECK_NONE     = "None";
-  private static final String VALUE_CHECK_FAST     = "Fast";
-  private static final String VALUE_CHECK_THOROUGH = "Thorough";
-  private final ScriptRunner  sr;
-  private final boolean       verbose;
-  private final Logger        logger               = PreesmLogger.getLogger();
+  private static final String  VALUE_CHECK_NONE     = "None";
+  private static final String  VALUE_CHECK_FAST     = "Fast";
+  private static final String  VALUE_CHECK_THOROUGH = "Thorough";
+  private final PiScriptRunner sr;
+  private final boolean        verbose;
+  private final Logger         logger               = PreesmLogger.getLogger();
 
   /**
    * Instantiates a new memory script engine.
@@ -81,30 +81,16 @@ public class MemoryScriptEngine {
    * @param verbose
    *          the verbose
    */
-  public MemoryScriptEngine(final String valueAlignment, final String log, final boolean verbose) {
+  public PiMemoryScriptEngine(final long valueAlignment, final String log, final boolean verbose) {
     this.verbose = verbose;
     // Get the logger
-    final long alignment;
-    switch (valueAlignment.substring(0, Math.min(valueAlignment.length(), 7))) {
-      case MemoryAllocatorTask.VALUE_ALIGNEMENT_NONE:
-        alignment = -1;
-        break;
-      case MemoryAllocatorTask.VALUE_ALIGNEMENT_DATA:
-        alignment = 0;
-        break;
-      case MemoryAllocatorTask.VALUE_ALIGNEMENT_FIXED:
-        final String fixedValue = valueAlignment.substring(7);
-        alignment = Long.parseLong(fixedValue);
-        break;
-      default:
-        alignment = -1;
-    }
+    final long alignment = valueAlignment;
     if (verbose) {
       final String message = "Scripts with alignment:=" + alignment + ".";
       this.logger.log(Level.INFO, message);
     }
 
-    this.sr = new ScriptRunner(alignment);
+    this.sr = new PiScriptRunner(alignment);
     this.sr.setGenerateLog(!(log.equals("")));
   }
 
@@ -118,7 +104,7 @@ public class MemoryScriptEngine {
    * @param checkString
    *          the check string
    */
-  public void runScripts(final DirectedAcyclicGraph dag, final EMap<String, Long> dataTypes, final String checkString)
+  public void runScripts(final PiGraph dag, final EMap<String, Long> dataTypes, final String checkString)
       throws EvalError {
     // Retrieve all the scripts
     final int nbScripts = this.sr.findScripts(dag);
@@ -156,7 +142,7 @@ public class MemoryScriptEngine {
         this.sr.setCheckPolicy(CheckPolicy.THOROUGH);
         break;
       default:
-        checkString = MemoryScriptEngine.VALUE_CHECK_FAST;
+        checkString = PiMemoryScriptEngine.VALUE_CHECK_FAST;
         this.sr.setCheckPolicy(CheckPolicy.FAST);
         break;
     }
@@ -169,13 +155,13 @@ public class MemoryScriptEngine {
 
   /**
    */
-  public void updateMemEx(final MemoryExclusionGraph meg) {
+  public void updateMemEx(final PiMemoryExclusionGraph meg) {
     // Update memex
     if (this.verbose) {
       this.logger.log(Level.INFO, "Updating memory exclusion graph.");
       // Display a message for each divided buffers
-      for (final List<Buffer> group : this.sr.getBufferGroups()) {
-        for (final Buffer buffer : group) {
+      for (final List<PiBuffer> group : this.sr.getBufferGroups()) {
+        for (final PiBuffer buffer : group) {
           if ((buffer.matched != null) && (buffer.matched.size() > 1)) {
             final String message = "Buffer " + buffer
                 + " was divided and will be replaced by a NULL pointer in the generated code.";

@@ -61,12 +61,11 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.preesm.algorithm.memory.script.Buffer;
 import org.preesm.algorithm.memory.script.Match;
-import org.preesm.algorithm.model.dag.DAGVertex;
 import org.preesm.commons.exceptions.PreesmRuntimeException;
 
 /**
  * Non regression tests for the BeanShell2 third party dependency.
- * 
+ *
  * The evaluation of import statement before calling the scripts seem to be useless (ahonorat).
  */
 public class BeanShellInterpreterTest {
@@ -170,8 +169,8 @@ public class BeanShellInterpreterTest {
         throw new PreesmRuntimeException(e);
       }
     });
-    final Buffer i = new Buffer(null, new DAGVertex("v1", null, null, null), "i", 1024, 4, true);
-    final Buffer o = new Buffer(null, new DAGVertex("v1", null, null, null), "o", 1024, 4, true);
+    final Buffer i = new Buffer(null, "v1", "i", 1024, 4, true);
+    final Buffer o = new Buffer(null, "v1", "o", 1024, 4, true);
     interpreter.set("i_i", i);
     interpreter.set("o_o", o);
     final Object eval = interpreter.source(bshFileUnderTest);
@@ -208,8 +207,8 @@ public class BeanShellInterpreterTest {
         throw new PreesmRuntimeException(e);
       }
     });
-    final Buffer i = new Buffer(null, new DAGVertex("v1", null, null, null), "i", 1024 * 1024 * 1024, 1, true);
-    final Buffer o = new Buffer(null, new DAGVertex("v1", null, null, null), "o", 1024 * 1024 * 1024, 1, true);
+    final Buffer i = new Buffer(null, "v1", "i", 1024 * 1024 * 1024, 1, true);
+    final Buffer o = new Buffer(null, "v1", "o", 1024 * 1024 * 1024, 1, true);
     interpreter.set("i_input", i);
     interpreter.set("o_output", o);
     final Object eval = interpreter.source(bshFileUnderTest);
@@ -246,8 +245,8 @@ public class BeanShellInterpreterTest {
         throw new PreesmRuntimeException(e);
       }
     });
-    final Buffer i = new Buffer(null, new DAGVertex("v1", null, null, null), "i", 1024 * 1024 * 1024, 1, true);
-    final Buffer o = new Buffer(null, new DAGVertex("v1", null, null, null), "o", 1024 * 1024 * 1024, 1, true);
+    final Buffer i = new Buffer(null, "v1", "i", 1024 * 1024 * 1024, 1, true);
+    final Buffer o = new Buffer(null, "v1", "o", 1024 * 1024 * 1024, 1, true);
     interpreter.set("i_input", i);
     interpreter.set("o_output", o);
     final Object eval = interpreter.source(bshFileUnderTest);
@@ -279,8 +278,8 @@ public class BeanShellInterpreterTest {
         throw new PreesmRuntimeException(e);
       }
     });
-    final Buffer i = new Buffer(null, new DAGVertex("v1", null, null, null), "i", 10, 1, true);
-    final Buffer o = new Buffer(null, new DAGVertex("v1", null, null, null), "o", 10, 1, true);
+    final Buffer i = new Buffer(null, "v1", "i", 10, 1, true);
+    final Buffer o = new Buffer(null, "v1", "o", 10, 1, true);
     interpreter.set("i_input", i);
     interpreter.set("o_output", o);
 
@@ -332,11 +331,10 @@ public class BeanShellInterpreterTest {
     final int numberOfForks = 8;
 
     final List<Buffer> inputs = new ArrayList<>(1);
-    inputs.add(new Buffer(null, new DAGVertex("v1", null, null, null), "inputBuffer", bufferToSplitSize, 1, true));
+    inputs.add(new Buffer(null, "v1", "inputBuffer", bufferToSplitSize, 1, true));
     final List<Buffer> outputs = new ArrayList<>(numberOfForks);
     for (int i = 0; i < numberOfForks; i++) {
-      outputs.add(new Buffer(null, new DAGVertex("v1", null, null, null), "outputBuffer" + i,
-          bufferToSplitSize / numberOfForks, 1, true));
+      outputs.add(new Buffer(null, "v1", "outputBuffer" + i, bufferToSplitSize / numberOfForks, 1, true));
     }
     final List<Match> resList = new ArrayList<>();
 
@@ -402,11 +400,10 @@ public class BeanShellInterpreterTest {
 
     final List<Buffer> inputs = new ArrayList<>(1);
     for (int i = 0; i < numberOfForks; i++) {
-      inputs.add(new Buffer(null, new DAGVertex("v1", null, null, null), "inputBuffer" + i,
-          bufferToSplitSize / numberOfForks, 1, true));
+      inputs.add(new Buffer(null, "v1", "inputBuffer" + i, bufferToSplitSize / numberOfForks, 1, true));
     }
     final List<Buffer> outputs = new ArrayList<>(1);
-    outputs.add(new Buffer(null, new DAGVertex("v1", null, null, null), "outputBuffer", bufferToSplitSize, 1, true));
+    outputs.add(new Buffer(null, "v1", "outputBuffer", bufferToSplitSize, 1, true));
     final List<Match> resList = new ArrayList<>();
 
     final Interpreter interpreter = new Interpreter();
@@ -458,10 +455,9 @@ public class BeanShellInterpreterTest {
     final int bufferToBroadcastSize = 1024 * 1024 * 8; // 8MB
 
     final List<Buffer> inputs = new ArrayList<>(1);
-    inputs.add(new Buffer(null, new DAGVertex("v1", null, null, null), "inputBuffer", bufferToBroadcastSize, 1, true));
+    inputs.add(new Buffer(null, "v1", "inputBuffer", bufferToBroadcastSize, 1, true));
     final List<Buffer> outputs = new ArrayList<>(1);
-    outputs
-        .add(new Buffer(null, new DAGVertex("v1", null, null, null), "outputBuffer", bufferToBroadcastSize, 1, true));
+    outputs.add(new Buffer(null, "v1", "outputBuffer", bufferToBroadcastSize, 1, true));
 
     final List<Match> resList = new ArrayList<>();
 
@@ -532,11 +528,10 @@ public class BeanShellInterpreterTest {
     final long inputBuffersSize = bufferToBroadcastSize / ratio;
 
     final List<Buffer> inputs = new ArrayList<>(1);
-    inputs.add(new Buffer(null, new DAGVertex("v1", null, null, null), "inputBuffer", inputBuffersSize, 1, true));
+    inputs.add(new Buffer(null, "v1", "inputBuffer", inputBuffersSize, 1, true));
     final List<Buffer> outputs = new ArrayList<>((int) nbOutputBuffers);
     for (int i = 0; i < nbOutputBuffers; i++) {
-      outputs.add(
-          new Buffer(null, new DAGVertex("v1", null, null, null), "outputBuffer" + i, bufferToBroadcastSize, 1, true));
+      outputs.add(new Buffer(null, "v1", "outputBuffer" + i, bufferToBroadcastSize, 1, true));
     }
     final List<Match> resList = new ArrayList<>();
 

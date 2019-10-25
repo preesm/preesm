@@ -37,8 +37,10 @@ package org.preesm.algorithm.synthesis.schedule;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import org.eclipse.emf.common.notify.Notification;
 import org.eclipse.emf.common.util.EList;
 import org.jgrapht.Graphs;
@@ -60,6 +62,8 @@ import org.preesm.algorithm.schedule.model.util.ScheduleSwitch;
 import org.preesm.commons.CollectionUtil;
 import org.preesm.commons.model.PreesmContentAdapter;
 import org.preesm.model.pisdf.AbstractActor;
+import org.preesm.model.pisdf.DataPort;
+import org.preesm.model.pisdf.Fifo;
 import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.slam.ComponentInstance;
 
@@ -78,7 +82,10 @@ public class ScheduleOrderManager extends PreesmContentAdapter {
   /**  */
   private final Map<AbstractActor, ActorSchedule> actorToScheduleMap;
 
-  private DirectedAcyclicGraph<AbstractActor, DefaultEdge> graphCache = null;
+  private DirectedAcyclicGraph<AbstractActor, DefaultEdge>  graphCache              = null;
+  private DirectedAcyclicGraph<AbstractActor, DefaultEdge>  transitiveClosureCache  = null;
+  private List<AbstractActor>                               totalOrderCache         = null;
+  private final Map<ComponentInstance, List<AbstractActor>> operatorTotalOrderCache = new LinkedHashMap<>();
 
   /**
    */
@@ -95,6 +102,9 @@ public class ScheduleOrderManager extends PreesmContentAdapter {
   @Override
   public void notifyChanged(Notification notification) {
     this.graphCache = null;
+    this.transitiveClosureCache = null;
+    this.totalOrderCache = null;
+    this.operatorTotalOrderCache.clear();
   }
 
   /**
@@ -125,9 +135,22 @@ public class ScheduleOrderManager extends PreesmContentAdapter {
           });
 
       new SchedulePrecedenceUpdate(dag).doSwitch(schedule);
-      TransitiveClosure.INSTANCE.closeDirectedAcyclicGraph(dag);
       graphCache = dag;
       return dag;
+    }
+  }
+
+  private final DirectedAcyclicGraph<AbstractActor, DefaultEdge> getTransitiveClosure() {
+    if (transitiveClosureCache != null) {
+      return transitiveClosureCache;
+    } else {
+      final DirectedAcyclicGraph<AbstractActor, DefaultEdge> graph = getGraph();
+      @SuppressWarnings("unchecked")
+      final DirectedAcyclicGraph<AbstractActor,
+          DefaultEdge> transitiveClosure = (DirectedAcyclicGraph<AbstractActor, DefaultEdge>) graph.clone();
+      TransitiveClosure.INSTANCE.closeDirectedAcyclicGraph(transitiveClosure);
+      transitiveClosureCache = transitiveClosure;
+      return transitiveClosure;
     }
   }
 
@@ -149,7 +172,7 @@ public class ScheduleOrderManager extends PreesmContentAdapter {
    * No order is enforced on the resulting list.
    */
   public List<AbstractActor> getPredecessors(final AbstractActor actor) {
-    final DirectedAcyclicGraph<AbstractActor, DefaultEdge> graph = getGraph();
+    final DirectedAcyclicGraph<AbstractActor, DefaultEdge> graph = getTransitiveClosure();
     return Graphs.predecessorListOf(graph, actor);
   }
 
@@ -159,7 +182,7 @@ public class ScheduleOrderManager extends PreesmContentAdapter {
    * No order is enforced on the resulting list.
    */
   public List<AbstractActor> getSuccessors(final AbstractActor actor) {
-    final DirectedAcyclicGraph<AbstractActor, DefaultEdge> graph = getGraph();
+    final DirectedAcyclicGraph<AbstractActor, DefaultEdge> graph = getTransitiveClosure();
     return Graphs.successorListOf(graph, actor);
   }
 
@@ -226,10 +249,16 @@ public class ScheduleOrderManager extends PreesmContentAdapter {
    * The result list is unmodifiable.
    */
   public final List<AbstractActor> buildScheduleAndTopologicalOrderedList() {
-    final DirectedAcyclicGraph<AbstractActor, DefaultEdge> graph = getGraph();
-    final List<AbstractActor> res = new ArrayList<>(graph.vertexSet().size());
-    new TopologicalOrderIterator<>(graph).forEachRemaining(res::add);
-    return Collections.unmodifiableList(res);
+    if (totalOrderCache != null) {
+      return totalOrderCache;
+    } else {
+      final DirectedAcyclicGraph<AbstractActor, DefaultEdge> graph = getTransitiveClosure();
+      final List<AbstractActor> totalorder = new ArrayList<>(graph.vertexSet().size());
+      new TopologicalOrderIterator<>(graph).forEachRemaining(totalorder::add);
+      final List<AbstractActor> res = Collections.unmodifiableList(totalorder);
+      totalOrderCache = res;
+      return res;
+    }
   }
 
   /**
@@ -240,14 +269,20 @@ public class ScheduleOrderManager extends PreesmContentAdapter {
    */
   public final List<AbstractActor> buildScheduleAndTopologicalOrderedList(final Mapping mapping,
       final ComponentInstance operator) {
-    final List<AbstractActor> res = new ArrayList<>();
-    final List<AbstractActor> scheduleAndTopologicalOrderedList = buildScheduleAndTopologicalOrderedList();
-    for (final AbstractActor actor : scheduleAndTopologicalOrderedList) {
-      if (mapping.getMapping(actor).contains(operator)) {
-        res.add(actor);
+    if (operatorTotalOrderCache.containsKey(operator)) {
+      return operatorTotalOrderCache.get(operator);
+    } else {
+      final List<AbstractActor> order = new ArrayList<>();
+      final List<AbstractActor> scheduleAndTopologicalOrderedList = buildScheduleAndTopologicalOrderedList();
+      for (final AbstractActor actor : scheduleAndTopologicalOrderedList) {
+        if (mapping.getMapping(actor).contains(operator)) {
+          order.add(actor);
+        }
       }
+      final List<AbstractActor> res = Collections.unmodifiableList(order);
+      operatorTotalOrderCache.put(operator, res);
+      return res;
     }
-    return Collections.unmodifiableList(res);
   }
 
   /**
@@ -307,5 +342,29 @@ public class ScheduleOrderManager extends PreesmContentAdapter {
       }
     }.doSwitch(schedule);
     return res;
+  }
+
+  /**
+   * Get all edges on the paths to all predecessors of actor. Will loop infinitely if actor is not part of a DAG.
+   */
+  public final List<Fifo> getPredecessorEdgesOf(final AbstractActor actor) {
+    final Set<Fifo> result = new LinkedHashSet<>();
+    actor.getDataInputPorts().stream().map(DataPort::getFifo).forEach(result::add);
+    final List<AbstractActor> allPredecessorsOf = getPredecessors(actor);
+    allPredecessorsOf.stream().map(AbstractActor::getDataInputPorts).flatMap(List::stream).map(DataPort::getFifo)
+        .forEach(result::add);
+    return Collections.unmodifiableList(new ArrayList<>(result));
+  }
+
+  /**
+   * Get all edges on the paths to all successors of actor. Will loop infinitely if actor is not part of a DAG.
+   */
+  public final List<Fifo> getSuccessorEdgesOf(final AbstractActor actor) {
+    final Set<Fifo> result = new LinkedHashSet<>();
+    actor.getDataOutputPorts().stream().map(DataPort::getFifo).forEach(result::add);
+    final List<AbstractActor> allSuccessorsOf = getSuccessors(actor);
+    allSuccessorsOf.stream().map(AbstractActor::getDataOutputPorts).flatMap(List::stream).map(DataPort::getFifo)
+        .forEach(result::add);
+    return Collections.unmodifiableList(new ArrayList<>(result));
   }
 }

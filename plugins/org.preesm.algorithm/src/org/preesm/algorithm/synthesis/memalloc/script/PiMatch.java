@@ -32,7 +32,7 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL license and that you accept its terms.
  */
-package org.preesm.algorithm.memory.script;
+package org.preesm.algorithm.synthesis.memalloc.script;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -41,15 +41,16 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.stream.Collectors;
 import org.eclipse.xtext.xbase.lib.Pair;
+import org.preesm.algorithm.memory.script.MatchType;
 
 /**
  *
  */
-public class Match {
+public class PiMatch {
   /**
    * Does not save the match in the buffer matchTable
    */
-  public Match(final Buffer localBuffer, final long localIndex, final Buffer remoteBuffer, final long remoteIndex,
+  public PiMatch(final PiBuffer localBuffer, final long localIndex, final PiBuffer remoteBuffer, final long remoteIndex,
       final long size) {
     this.localBuffer = localBuffer;
     this.localIndex = localIndex;
@@ -60,11 +61,11 @@ public class Match {
     this.conflictCandidates = new ArrayList<>();
     this.applied = false;
     this.forbiddenLocalRanges = new ArrayList<>();
-    this.originalMatch = new Match(this);
+    this.originalMatch = new PiMatch(this);
   }
 
   /**
-   * Copy the {@link Match} following attributes:
+   * Copy the {@link PiMatch} following attributes:
    * <ul>
    * <li>{@link #getLocalBuffer() localBuffer}</li>
    * <li>{@link #getRemoteBuffer() remoteBuffer}</li>
@@ -74,7 +75,7 @@ public class Match {
    * <li>{@link #getType() type}</li>
    * </ul>
    */
-  private Match(final Match m) {
+  private PiMatch(final PiMatch m) {
     this.localBuffer = m.localBuffer;
     this.localIndex = m.localIndex;
     this.remoteBuffer = m.remoteBuffer;
@@ -83,34 +84,34 @@ public class Match {
     this.type = m.type;
   }
 
-  private Buffer      localBuffer;
-  private long        localIndex;
-  private Buffer      remoteBuffer;
-  private long        remoteIndex;
-  private long        length;
-  private List<Match> conflictingMatches;
-  private List<Match> conflictCandidates;
+  private PiBuffer      localBuffer;
+  private long          localIndex;
+  private PiBuffer      remoteBuffer;
+  private long          remoteIndex;
+  private long          length;
+  private List<PiMatch> conflictingMatches;
+  private List<PiMatch> conflictCandidates;
   /**
    * For logging purpose
    */
-  private Match       originalMatch;
+  private PiMatch       originalMatch;
 
   /**
-   * The {@link MatchType} of the current {@link Match}.
+   * The {@link MatchType} of the current {@link PiMatch}.
    */
   private MatchType type;
 
   /**
-   * This {@link List} contains {@link Range} of the {@link #getLocalBuffer()} that can be matched only if:
+   * This {@link List} contains {@link PiRange} of the {@link #getLocalBuffer()} that can be matched only if:
    * <ul>
    * <li>The remote buffer has no token for this range (i.e. it is out of the minIndex .. maxIndex range).</li>
    * </ul>
-   * The list of a {@link Match} and the one of its {@link #getReciprocate() reciprocate} are not equals.
+   * The list of a {@link PiMatch} and the one of its {@link #getReciprocate() reciprocate} are not equals.
    */
-  private List<Range> forbiddenLocalRanges;
+  private List<PiRange> forbiddenLocalRanges;
 
   /**
-   * This {@link List} contains {@link Range} of the {@link #getLocalBuffer()} that can be matched only if:
+   * This {@link List} contains {@link PiRange} of the {@link #getLocalBuffer()} that can be matched only if:
    * <ul>
    * <li>If the match is backward AND both the remote buffers are mergeable for this ranges.<br>
    * or</li>
@@ -118,20 +119,20 @@ public class Match {
    * </ul>
    * Only {@link #getType() backward} matches can have mergeableLocalRanges.
    */
-  private List<Range> mergeableLocalRanges;
+  private List<PiRange> mergeableLocalRanges;
 
   /**
-   * This {@link boolean} is set to <code>true</code> if the current {@link Match} was applied.
+   * This {@link boolean} is set to <code>true</code> if the current {@link PiMatch} was applied.
    */
   private boolean applied;
 
-  private Match reciprocate;
+  private PiMatch reciprocate;
 
-  public Buffer getLocalBuffer() {
+  public PiBuffer getLocalBuffer() {
     return this.localBuffer;
   }
 
-  public void setLocalBuffer(final Buffer localBuffer) {
+  public void setLocalBuffer(final PiBuffer localBuffer) {
     this.localBuffer = localBuffer;
   }
 
@@ -143,11 +144,11 @@ public class Match {
     this.localIndex = localIndex;
   }
 
-  public Buffer getRemoteBuffer() {
+  public PiBuffer getRemoteBuffer() {
     return this.remoteBuffer;
   }
 
-  public void setRemoteBuffer(final Buffer remoteBuffer) {
+  public void setRemoteBuffer(final PiBuffer remoteBuffer) {
     this.remoteBuffer = remoteBuffer;
   }
 
@@ -167,43 +168,43 @@ public class Match {
     this.length = length;
   }
 
-  public List<Match> getConflictingMatches() {
+  public List<PiMatch> getConflictingMatches() {
     return this.conflictingMatches;
   }
 
-  public void setConflictingMatches(final List<Match> conflictingMatches) {
+  public void setConflictingMatches(final List<PiMatch> conflictingMatches) {
     this.conflictingMatches = conflictingMatches;
   }
 
-  public List<Match> getConflictCandidates() {
+  public List<PiMatch> getConflictCandidates() {
     return this.conflictCandidates;
   }
 
-  public void setConflictCandidates(final List<Match> conflictCandidates) {
+  public void setConflictCandidates(final List<PiMatch> conflictCandidates) {
     this.conflictCandidates = conflictCandidates;
   }
 
-  public Match getOriginalMatch() {
+  public PiMatch getOriginalMatch() {
     return this.originalMatch;
   }
 
-  public void setOriginalMatch(final Match originalMatch) {
+  public void setOriginalMatch(final PiMatch originalMatch) {
     this.originalMatch = originalMatch;
   }
 
-  public List<Range> getForbiddenLocalRanges() {
+  public List<PiRange> getForbiddenLocalRanges() {
     return this.forbiddenLocalRanges;
   }
 
-  public void setForbiddenLocalRanges(final List<Range> forbiddenLocalRanges) {
+  public void setForbiddenLocalRanges(final List<PiRange> forbiddenLocalRanges) {
     this.forbiddenLocalRanges = forbiddenLocalRanges;
   }
 
-  public List<Range> getMergeableLocalRanges() {
+  public List<PiRange> getMergeableLocalRanges() {
     return this.mergeableLocalRanges;
   }
 
-  public void setMergeableLocalRanges(final List<Range> mergeableLocalRanges) {
+  public void setMergeableLocalRanges(final List<PiRange> mergeableLocalRanges) {
     this.mergeableLocalRanges = mergeableLocalRanges;
   }
 
@@ -220,11 +221,11 @@ public class Match {
   }
 
   /**
-   * Set the {@link #_type type} of the current {@link Match}. If the type is <code>BACKWARD</code> a new list is
+   * Set the {@link #_type type} of the current {@link PiMatch}. If the type is <code>BACKWARD</code> a new list is
    * created for the {@link #getMergeableLocalRanges() mergeableLocalRanges}. Otherwise mergeableLocalRanges is set to
    * <code>null</code>.
    */
-  public List<Range> setType(final MatchType newType) {
+  public List<PiRange> setType(final MatchType newType) {
     this.type = newType;
     if (getType() == MatchType.BACKWARD) {
       this.mergeableLocalRanges = new ArrayList<>();
@@ -234,61 +235,62 @@ public class Match {
     return this.mergeableLocalRanges;
   }
 
-  public void setReciprocate(final Match remoteMatch) {
+  public void setReciprocate(final PiMatch remoteMatch) {
     this.reciprocate = remoteMatch;
     remoteMatch.reciprocate = this;
   }
 
-  public Match getReciprocate() {
+  public PiMatch getReciprocate() {
     return this.reciprocate;
   }
 
   /**
-   * Returns a {@link Range} going from {@link Match#getLocalIndex() localIndex} to the end of the matched tokens.
+   * Returns a {@link PiRange} going from {@link PiMatch#getLocalIndex() localIndex} to the end of the matched tokens.
    *
    */
-  public Range getLocalRange() {
-    return new Range(getLocalIndex(), getLocalIndex() + getLength());
+  public PiRange getLocalRange() {
+    return new PiRange(getLocalIndex(), getLocalIndex() + getLength());
   }
 
   /**
-   * Get the indivisible {@link Range} in which the current {@link Match} falls. This method has no side-effects.
+   * Get the indivisible {@link PiRange} in which the current {@link PiMatch} falls. This method has no side-effects.
    *
-   * @return the {@link Range} resulting from the {@link Range#lazyUnion(List,Range) lazyUnion} of the
-   *         {@link Match#getLocalRange() localRange} and the {@link Buffer#getIndivisibleRanges() indivisibleRanges} of
-   *         the {@link Match#getLocalBuffer() localBuffer}.
+   * @return the {@link PiRange} resulting from the {@link PiRange#lazyUnion(List,PiRange) lazyUnion} of the
+   *         {@link PiMatch#getLocalRange() localRange} and the {@link PiBuffer#getIndivisibleRanges()
+   *         indivisibleRanges} of the {@link PiMatch#getLocalBuffer() localBuffer}.
    *
    */
-  public Range getLocalIndivisibleRange() {
+  public PiRange getLocalIndivisibleRange() {
 
-    final Range localIndivisiblerange = getLocalRange();
+    final PiRange localIndivisiblerange = getLocalRange();
 
     // Copy the overlapping indivisible range(s)
-    final List<Range> indivisibleRanges = getLocalBuffer().indivisibleRanges;
+    final List<PiRange> indivisibleRanges = getLocalBuffer().indivisibleRanges;
     // toList to make sure the map function is applied only once
-    final List<Range> overlappingIndivisibleRanges = indivisibleRanges.stream()
-        .filter(r -> Range.hasOverlap(r, localIndivisiblerange)).map(Range::copy).collect(Collectors.toList());
+    final List<PiRange> overlappingIndivisibleRanges = indivisibleRanges.stream()
+        .filter(r -> PiRange.hasOverlap(r, localIndivisiblerange)).map(PiRange::copy).collect(Collectors.toList());
 
     // Do the lazy union of the match and its overlapping indivisible
     // ranges
-    return Range.lazyUnion(overlappingIndivisibleRanges, localIndivisiblerange);
+    return PiRange.lazyUnion(overlappingIndivisibleRanges, localIndivisiblerange);
   }
 
   /**
-   * Returns the {@link Range} of the {@link Match#getLocalBuffer() localBuffer} that will be impacted if
-   * <code>this</code> {@link Match} is applied. This {@link Range} corresponds to the largest {@link Range} between the
-   * {@link #getLocalRange()} of the current {@link Match} and the {@link Match#getLocalIndivisibleRange()
-   * localIndivisibleRange} of the {@link #getReciprocate() reciprocate} {@link Match}.
+   * Returns the {@link PiRange} of the {@link PiMatch#getLocalBuffer() localBuffer} that will be impacted if
+   * <code>this</code> {@link PiMatch} is applied. This {@link PiRange} corresponds to the largest {@link PiRange}
+   * between the {@link #getLocalRange()} of the current {@link PiMatch} and the
+   * {@link PiMatch#getLocalIndivisibleRange() localIndivisibleRange} of the {@link #getReciprocate() reciprocate}
+   * {@link PiMatch}.
    *
-   * @return a {@link Range} of impacted tokens aligned with the {@link Match#getLocalBuffer() localBuffer} indexes.
+   * @return a {@link PiRange} of impacted tokens aligned with the {@link PiMatch#getLocalBuffer() localBuffer} indexes.
    */
-  public Range getLocalImpactedRange() {
+  public PiRange getLocalImpactedRange() {
 
     // Get the aligned smallest indivisible range (local or remote)
-    final Range localRange = getLocalRange();
-    final Range remoteIndivisibleRange = getReciprocate().getLocalIndivisibleRange();
+    final PiRange localRange = getLocalRange();
+    final PiRange remoteIndivisibleRange = getReciprocate().getLocalIndivisibleRange();
     remoteIndivisibleRange.translate(getLocalIndex() - getRemoteIndex());
-    final Range smallestRange;
+    final PiRange smallestRange;
     if (localRange.getLength() > remoteIndivisibleRange.getLength()) {
       smallestRange = localRange;
     } else {
@@ -325,7 +327,7 @@ public class Match {
     if (this.getClass() != obj.getClass()) {
       return false;
     }
-    final Match other = (Match) obj;
+    final PiMatch other = (PiMatch) obj;
     return (getLocalBuffer() == other.getLocalBuffer()) && (getLocalIndex() == other.getLocalIndex())
         && (getRemoteBuffer() == other.getRemoteBuffer()) && (getRemoteIndex() == other.getRemoteIndex())
         && (getLength() == other.getLength());
@@ -334,8 +336,8 @@ public class Match {
   @Override
   public String toString() {
     return "" + getLocalBuffer().getVertexName() + "." + getLocalBuffer().name + "[" + getLocalIndex() + ".."
-        + (getLocalIndex() + getLength()) + "[=>" + getRemoteBuffer().getVertexName() + "."
-        + getRemoteBuffer().name + "[" + getRemoteIndex() + ".." + (getRemoteIndex() + getLength()) + "[";
+        + (getLocalIndex() + getLength()) + "[=>" + getRemoteBuffer().getVertexName() + "." + getRemoteBuffer().name
+        + "[" + getRemoteIndex() + ".." + (getRemoteIndex() + getLength()) + "[";
   }
 
   /**
@@ -345,9 +347,9 @@ public class Match {
   public boolean isApplicable() {
 
     // Does not match forbidden tokens
-    final Range impactedTokens = getLocalImpactedRange()
-        .intersection(new Range(getLocalBuffer().minIndex, getLocalBuffer().maxIndex));
-    final boolean rangeEmpty = Range.intersection(getForbiddenLocalRanges(), impactedTokens).isEmpty();
+    final PiRange impactedTokens = getLocalImpactedRange()
+        .intersection(new PiRange(getLocalBuffer().minIndex, getLocalBuffer().maxIndex));
+    final boolean rangeEmpty = PiRange.intersection(getForbiddenLocalRanges(), impactedTokens).isEmpty();
     if (!rangeEmpty) {
       return false;
     } else {
@@ -355,9 +357,9 @@ public class Match {
       if (getType() == MatchType.FORWARD) {
         return true;
       } else {
-        final List<Range> mustBeMergeableRanges = Range.intersection(getMergeableLocalRanges(), impactedTokens);
-        final List<Range> mergeableRanges = Range.intersection(getLocalBuffer().mergeableRanges, impactedTokens);
-        return Range.difference(mustBeMergeableRanges, mergeableRanges).isEmpty();
+        final List<PiRange> mustBeMergeableRanges = PiRange.intersection(getMergeableLocalRanges(), impactedTokens);
+        final List<PiRange> mergeableRanges = PiRange.intersection(getLocalBuffer().mergeableRanges, impactedTokens);
+        return PiRange.difference(mustBeMergeableRanges, mergeableRanges).isEmpty();
       }
     }
   }
@@ -366,29 +368,29 @@ public class Match {
    * Recursive method to find where the {@link #getLocalRange()} of the current {@link #getLocalBuffer() localBuffer} is
    * matched.
    *
-   * @return a {@link Map} that associates: a {@link Range subranges} of the {@link #getLocalRange() localRange} of the
-   *         {@link #getLocalBuffer() localBuffer} to a {@link Pair} composed of a {@link Buffer} and a {@link Range}
-   *         where the associated {@link Range subrange} is matched.
+   * @return a {@link Map} that associates: a {@link PiRange subranges} of the {@link #getLocalRange() localRange} of
+   *         the {@link #getLocalBuffer() localBuffer} to a {@link Pair} composed of a {@link PiBuffer} and a
+   *         {@link PiRange} where the associated {@link PiRange subrange} is matched.
    *
    */
-  public Map<Range, Pair<Buffer, Range>> getRoot() {
-    final Map<Range, Pair<Buffer, Range>> result = new LinkedHashMap<>();
-    final Range remoteRange = getLocalIndivisibleRange().translate(getRemoteIndex() - getLocalIndex());
+  public Map<PiRange, Pair<PiBuffer, PiRange>> getRoot() {
+    final Map<PiRange, Pair<PiBuffer, PiRange>> result = new LinkedHashMap<>();
+    final PiRange remoteRange = getLocalIndivisibleRange().translate(getRemoteIndex() - getLocalIndex());
 
     // Termination case if the remote Buffer is not matched
-    final List<Match> matched = getRemoteBuffer().matched;
+    final List<PiMatch> matched = getRemoteBuffer().matched;
     if (matched == null) {
       result.put(getLocalIndivisibleRange(), new Pair<>(getRemoteBuffer(), remoteRange));
     } else {
       // Else, recursive call
 
-      final List<Match> c = matched.stream().filter(m -> Range.hasOverlap(m.getLocalIndivisibleRange(), remoteRange))
-          .collect(Collectors.toList());
+      final List<PiMatch> c = matched.stream()
+          .filter(m -> PiRange.hasOverlap(m.getLocalIndivisibleRange(), remoteRange)).collect(Collectors.toList());
 
-      for (final Match match : c) {
-        final Map<Range, Pair<Buffer, Range>> recursiveResult = match.getRoot();
-        for (final Entry<Range, Pair<Buffer, Range>> entry : recursiveResult.entrySet()) {
-          final Range range = entry.getKey();
+      for (final PiMatch match : c) {
+        final Map<PiRange, Pair<PiBuffer, PiRange>> recursiveResult = match.getRoot();
+        for (final Entry<PiRange, Pair<PiBuffer, PiRange>> entry : recursiveResult.entrySet()) {
+          final PiRange range = entry.getKey();
 
           // translate back to local range
           range.translate(getLocalIndex() - getRemoteIndex());

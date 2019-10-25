@@ -1,4 +1,3 @@
-
 /**
  * Copyright or © or Copr. IETR/INSA - Rennes (2012 - 2019) :
  *
@@ -38,20 +37,20 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL license and that you accept its terms.
  */
-package org.preesm.algorithm.memory.exclusiongraph;
+package org.preesm.algorithm.synthesis.memalloc.meg;
 
-import java.util.Iterator;
 import java.util.List;
+import java.util.Objects;
 import java.util.logging.Level;
 import org.eclipse.xtext.util.Pair;
-import org.preesm.algorithm.mapper.graphtransfo.BufferAggregate;
-import org.preesm.algorithm.mapper.graphtransfo.BufferProperties;
-import org.preesm.algorithm.memory.script.Range;
+import org.preesm.algorithm.memory.exclusiongraph.IWeightedVertex;
+import org.preesm.algorithm.memory.exclusiongraph.MemoryExclusionVertex;
 import org.preesm.algorithm.model.AbstractVertex;
 import org.preesm.algorithm.model.PropertyBean;
 import org.preesm.algorithm.model.PropertyFactory;
-import org.preesm.algorithm.model.dag.DAGEdge;
+import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.preesm.commons.logger.PreesmLogger;
+import org.preesm.model.pisdf.Fifo;
 import org.preesm.model.scenario.Scenario;
 
 /**
@@ -60,21 +59,21 @@ import org.preesm.model.scenario.Scenario;
  * @author kdesnos
  *
  */
-public class MemoryExclusionVertex extends AbstractVertex<MemoryExclusionGraph> implements IWeightedVertex<Long> {
+public class PiMemoryExclusionVertex extends AbstractVertex<PiMemoryExclusionGraph> implements IWeightedVertex<Long> {
 
   /**
-   * String used in the {@link PropertyBean} of a {@link MemoryExclusionVertex} to store the offset at which the memory
-   * object is stored in memory.
+   * String used in the {@link PropertyBean} of a {@link PiMemoryExclusionVertex} to store the offset at which the
+   * memory object is stored in memory.
    */
   public static final String MEMORY_OFFSET_PROPERTY = "memory_offset";
 
   /**
-   * Property of the {@link MemoryExclusionVertex}. The object associated to this property is:<br>
+   * Property of the {@link PiMemoryExclusionVertex}. The object associated to this property is:<br>
    * <code>
    * List&lt;Pair&lt;MemoryExclusionVertex,Pair&lt;Range,Range&gt;&gt;</code> <br>
-   * This {@link List} stores {@link Pair} of {@link MemoryExclusionVertex} and {@link Pair}. Each {@link Pair}
+   * This {@link List} stores {@link Pair} of {@link PiMemoryExclusionVertex} and {@link Pair}. Each {@link Pair}
    * corresponds to a {@link Range} of real tokens of the memory object and their position in the actual
-   * {@link MemoryExclusionVertex} (i.e. the key of the first {@link Pair}). <br>
+   * {@link PiMemoryExclusionVertex} (i.e. the key of the first {@link Pair}). <br>
    * For the host memory object, this property gives the position of the range of bytes of the host within the memory
    * allocated for it.<br>
    * For hosted memory object, this property gives the position of the range(s) of bytes of the hosted memory object
@@ -83,75 +82,79 @@ public class MemoryExclusionVertex extends AbstractVertex<MemoryExclusionGraph> 
   public static final String REAL_TOKEN_RANGE_PROPERTY = "real_token_range";
 
   /**
-   * Property of the {@link MemoryExclusionVertex}. The object associated to this property is:<br>
+   * Property of the {@link PiMemoryExclusionVertex}. The object associated to this property is:<br>
    * <code>
    * List&lt;MemoryExclusionVertex&gt;</code><br>
-   * This list contains the fake {@link MemoryExclusionVertex} that are added to the {@link MemoryExclusionGraph} during
-   * memory allocation when the current {@link MemoryExclusionVertex} is divided because of scripts. These fake
-   * {@link MemoryExclusionVertex} should be removed from the {@link MemoryExclusionGraph} if it is
-   * {@link MemoryExclusionGraph#deallocate() deallocated}.
+   * This list contains the fake {@link PiMemoryExclusionVertex} that are added to the {@link PiMemoryExclusionGraph}
+   * during memory allocation when the current {@link PiMemoryExclusionVertex} is divided because of scripts. These fake
+   * {@link PiMemoryExclusionVertex} should be removed from the {@link PiMemoryExclusionGraph} if it is
+   * {@link PiMemoryExclusionGraph#deallocate() deallocated}.
    */
   public static final String FAKE_MOBJECT = "fake_mobject";
 
   /**
-   * Property of the {@link MemoryExclusionVertex}. The object associated to this property is:<br>
+   * Property of the {@link PiMemoryExclusionVertex}. The object associated to this property is:<br>
    * <code>
    * List&lt;MemoryExclusionVertex&gt;</code><br>
-   * This {@link List} stores {@link MemoryExclusionVertex} corresponding to the
-   * {@link MemoryExclusionGraph#getAdjacentVertexOf(MemoryExclusionVertex) adjacent vertices} of the current
-   * {@link MemoryExclusionVertex} before it was merged as a result of memory scripts execution.
+   * This {@link List} stores {@link PiMemoryExclusionVertex} corresponding to the
+   * {@link PiMemoryExclusionGraph#getAdjacentVertexOf(PiMemoryExclusionVertex) adjacent vertices} of the current
+   * {@link PiMemoryExclusionVertex} before it was merged as a result of memory scripts execution.
    */
   public static final String ADJACENT_VERTICES_BACKUP = "adjacent_vertices_backup";
 
   /**
-   * Property of the {@link MemoryExclusionVertex}. The object associated to this property is an {@link Integer} that
-   * corresponds to the space in bytes between the offset at which the {@link MemoryExclusionVertex} is allocated and
+   * Property of the {@link PiMemoryExclusionVertex}. The object associated to this property is an {@link Integer} that
+   * corresponds to the space in bytes between the offset at which the {@link PiMemoryExclusionVertex} is allocated and
    * the actual beginning of the real token ranges. This property is set after the memory script execution.
    */
   public static final String EMPTY_SPACE_BEFORE = "empty_space_before";
 
   /**
-   * Property of the {@link MemoryExclusionVertex}. The object associated to this property is an {@link Integer} that
-   * corresponds to the size in bytes of the {@link MemoryExclusionVertex} when it hosts merged
-   * {@link MemoryExclusionVertex} as a result of scripts execution. This value is stored in case the host
-   * {@link MemoryExclusionVertex} needs to be deallocated, and restored to the size it has when all hosted
-   * {@link MemoryExclusionVertex} are merged.
+   * Property of the {@link PiMemoryExclusionVertex}. The object associated to this property is an {@link Integer} that
+   * corresponds to the size in bytes of the {@link PiMemoryExclusionVertex} when it hosts merged
+   * {@link PiMemoryExclusionVertex} as a result of scripts execution. This value is stored in case the host
+   * {@link PiMemoryExclusionVertex} needs to be deallocated, and restored to the size it has when all hosted
+   * {@link PiMemoryExclusionVertex} are merged.
    */
   public static final String HOST_SIZE = "host_size";
 
   /**
-   * Property associated to {@link MemoryExclusionVertex} that are divided as a result of the application of memory
-   * scripts. The object associated to this property is a {@link List} of {@link MemoryExclusionVertex} that corresponds
-   * to the {@link MemoryExclusionVertex} in which the parts of the divided {@link MemoryExclusionVertex} will be
-   * merged.
+   * Property associated to {@link PiMemoryExclusionVertex} that are divided as a result of the application of memory
+   * scripts. The object associated to this property is a {@link List} of {@link PiMemoryExclusionVertex} that
+   * corresponds to the {@link PiMemoryExclusionVertex} in which the parts of the divided
+   * {@link PiMemoryExclusionVertex} will be merged.
    */
   public static final String DIVIDED_PARTS_HOSTS = "divided_parts_hosts";
 
   /**
-   * {@link MemoryExclusionVertex} property associated to a {@link List} of {@link Integer} that represent the space
-   * <b>in bytes</b> between successive "subbuffers" of a {@link MemoryExclusionVertex}.
+   * {@link PiMemoryExclusionVertex} property associated to a {@link List} of {@link Integer} that represent the space
+   * <b>in bytes</b> between successive "subbuffers" of a {@link PiMemoryExclusionVertex}.
    */
   public static final String INTER_BUFFER_SPACES = "inter_buffer_spaces";
 
   /**
-   * Property used with fifo {@link MemoryExclusionVertex memory objects} to relate the size of one token in the fifo.
+   * Property used with fifo {@link PiMemoryExclusionVertex memory objects} to relate the size of one token in the fifo.
    */
   public static final String TYPE_SIZE = "type_size";
 
-  /** ID of the task consuming the memory. */
+  /**
+   * ID of the task consuming the memory.
+   */
   private final String sink;
 
   /** Size of the memory used. */
   private long size;
 
-  /** ID of the task producing the memory. */
+  /**
+   * ID of the task producing the memory.
+   */
   private final String source;
 
   /**
    * The edge in the DAG that corresponds to this vertex in the exclusion graph. (This attribute is used only if the
    * vertices corresponds to an edge in the dag, i.e. a transfer between actors)
    */
-  private DAGEdge edge;
+  private Fifo edge;
 
   private final Scenario scenario;
 
@@ -161,8 +164,9 @@ public class MemoryExclusionVertex extends AbstractVertex<MemoryExclusionGraph> 
    * @param inputEdge
    *          the DAG edge corresponding to the constructed vertex
    */
-  public MemoryExclusionVertex(final DAGEdge inputEdge, final Scenario scenario) {
-    this(inputEdge.getSource().getName(), inputEdge.getTarget().getName(), getSize(inputEdge, scenario), scenario);
+  public PiMemoryExclusionVertex(final Fifo inputEdge, final Scenario scenario) {
+    this(inputEdge.getSourcePort().getContainingActor().getName(),
+        inputEdge.getTargetPort().getContainingActor().getName(), getSize(inputEdge, scenario), scenario);
     this.edge = inputEdge;
     if (this.size == 0) {
       PreesmLogger.getLogger().log(Level.WARNING, "Probable ERROR: Vertex weight is 0");
@@ -170,18 +174,16 @@ public class MemoryExclusionVertex extends AbstractVertex<MemoryExclusionGraph> 
 
   }
 
-  private static long getSize(final DAGEdge inputEdge, final Scenario scenario) {
-    // if datatype is defined, correct the vertex weight
-    final BufferAggregate buffers = inputEdge.getPropertyBean().getValue(BufferAggregate.propertyBeanName);
-    final Iterator<BufferProperties> iter = buffers.iterator();
-    long vertexWeight = 0;
-    while (iter.hasNext()) {
-      final BufferProperties properties = iter.next();
-      final String dataType = properties.getDataType();
-      final long typeSize = scenario.getSimulationInfo().getDataTypeSizeOrDefault(dataType);
-      vertexWeight += properties.getSize() * typeSize;
+  private static long getSize(final Fifo inputEdge, final Scenario scenario) {
+    final long sourceRate = inputEdge.getSourcePort().getPortRateExpression().evaluate();
+    final long targetRate = inputEdge.getTargetPort().getPortRateExpression().evaluate();
+    if (sourceRate != targetRate) {
+      throw new PreesmRuntimeException(
+          "Source and Target rate are not equal. PiGraph should be in SRDAG to run allocation.");
     }
-    return vertexWeight;
+    final String typeStr = inputEdge.getType();
+    final long type = scenario.getSimulationInfo().getDataTypeSizeOrDefault(typeStr);
+    return type * sourceRate;
   }
 
   /**
@@ -194,7 +196,7 @@ public class MemoryExclusionVertex extends AbstractVertex<MemoryExclusionGraph> 
    * @param sizeMem
    *          the size mem
    */
-  public MemoryExclusionVertex(final String sourceTask, final String sinkTask, final long sizeMem,
+  public PiMemoryExclusionVertex(final String sourceTask, final String sinkTask, final long sizeMem,
       final Scenario scenario) {
     this.scenario = scenario;
     this.source = sourceTask;
@@ -206,7 +208,7 @@ public class MemoryExclusionVertex extends AbstractVertex<MemoryExclusionGraph> 
     return this.scenario;
   }
 
-  public DAGEdge getEdge() {
+  public Fifo getEdge() {
     return this.edge;
   }
 
@@ -234,15 +236,15 @@ public class MemoryExclusionVertex extends AbstractVertex<MemoryExclusionGraph> 
   }
 
   @Override
-  public MemoryExclusionVertex getClone() {
-    MemoryExclusionVertex copy;
-    copy = new MemoryExclusionVertex(this.getSource(), this.getSink(), this.getWeight(), this.getScenario());
+  public PiMemoryExclusionVertex getClone() {
+    PiMemoryExclusionVertex copy;
+    copy = new PiMemoryExclusionVertex(this.getSource(), this.getSink(), this.getWeight(), this.getScenario());
     copy.edge = this.edge;
     return copy;
   }
 
   @Override
-  public MemoryExclusionVertex copy() {
+  public PiMemoryExclusionVertex copy() {
     return null;
   }
 
@@ -263,11 +265,12 @@ public class MemoryExclusionVertex extends AbstractVertex<MemoryExclusionGraph> 
    */
   @Override
   public boolean equals(final Object o) {
-    if (o instanceof MemoryExclusionVertex) {
-      // final boolean sameEdge = this.edge == ((MemoryExclusionVertex) o).edge
-      final boolean sameSource = this.getSource().equals(((MemoryExclusionVertex) o).getSource());
-      final boolean sameSink = this.getSink().equals(((MemoryExclusionVertex) o).getSink());
-      return sameSink && sameSource;// && sameEdge
+    if (o instanceof PiMemoryExclusionVertex) {
+      final Fifo otherEdge = ((PiMemoryExclusionVertex) o).edge;
+      final boolean sameEdge = this.edge == otherEdge;
+      final boolean sameSource = this.getSource().equals(((PiMemoryExclusionVertex) o).getSource());
+      final boolean sameSink = this.getSink().equals(((PiMemoryExclusionVertex) o).getSink());
+      return sameSink && sameSource && sameEdge;
     } else {
       return false;
     }
@@ -275,12 +278,11 @@ public class MemoryExclusionVertex extends AbstractVertex<MemoryExclusionGraph> 
 
   @Override
   public int hashCode() {
-    return (this.getSource() + "=>" + this.getSink()).hashCode();
+    return Objects.hash(this.getSource(), this.getSink());
   }
 
   @Override
   public String toString() {
     return this.getSource() + "=>" + this.getSink() + ":" + this.getWeight();
   }
-
 }

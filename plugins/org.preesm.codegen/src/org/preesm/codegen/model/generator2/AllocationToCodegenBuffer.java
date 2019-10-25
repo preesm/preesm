@@ -125,12 +125,20 @@ public class AllocationToCodegenBuffer extends MemoryAllocationSwitch<Boolean> {
         final Buffer srcCodegenBuffer = this.btb.get(srcBuffer);
         final Buffer tgtCodegenBuffer = this.btb.get(tgtBuffer);
 
+        final long allocSize = srcCodegenBuffer.getSize();
+        final long typeSize = scenario.getSimulationInfo().getDataTypeSizeOrDefault(fifo.getType());
+
         if (tgtCodegenBuffer != srcCodegenBuffer) {
           // generate 2 codegen buffers and route
           tgtCodegenBuffer.setName(generateUniqueBufferName("tgt_" + fifo.getTargetPort().getId()));
           srcCodegenBuffer.setName(generateUniqueBufferName("src_" + fifo.getSourcePort().getId()));
           srcCodegenBuffer.setType(fifo.getType());
-          srcCodegenBuffer.setTypeSize(scenario.getSimulationInfo().getDataTypeSizeOrDefault(fifo.getType()));
+
+          if (allocSize % typeSize != 0) {
+            throw new PreesmRuntimeException("Buffer size in bytes is not a multiple of its type sizes.");
+          }
+          srcCodegenBuffer.setSize(allocSize / typeSize);
+          srcCodegenBuffer.setTypeSize(typeSize);
 
           final String scomment = fifo.getSourcePort().getId();
           srcCodegenBuffer.setComment(scomment);
@@ -147,7 +155,9 @@ public class AllocationToCodegenBuffer extends MemoryAllocationSwitch<Boolean> {
         }
 
         tgtCodegenBuffer.setType(fifo.getType());
-        tgtCodegenBuffer.setTypeSize(scenario.getSimulationInfo().getDataTypeSizeOrDefault(fifo.getType()));
+
+        tgtCodegenBuffer.setSize(allocSize / typeSize);
+        tgtCodegenBuffer.setTypeSize(typeSize);
 
         final String tcomment = fifo.getTargetPort().getId();
         tgtCodegenBuffer.setComment(tcomment);
@@ -173,8 +183,10 @@ public class AllocationToCodegenBuffer extends MemoryAllocationSwitch<Boolean> {
       final String uniqueName = generateUniqueBufferName(MemoryExclusionGraph.FIFO_HEAD_PREFIX + name);
       codegenBuffer.setName(uniqueName);
       codegenBuffer.setType(fifo.getType());
-      codegenBuffer.setTypeSize(scenario.getSimulationInfo().getDataTypeSizeOrDefault(fifo.getType()));
-
+      final long allocSize = codegenBuffer.getSize();
+      final long typeSize = scenario.getSimulationInfo().getDataTypeSizeOrDefault(fifo.getType());
+      codegenBuffer.setSize(allocSize / typeSize);
+      codegenBuffer.setTypeSize(typeSize);
     }
 
     final EList<AbstractActor> allActors = this.algo.getAllActors();
@@ -231,8 +243,8 @@ public class AllocationToCodegenBuffer extends MemoryAllocationSwitch<Boolean> {
   public Boolean caseLogicalBuffer(final LogicalBuffer logicalBuffer) {
     final SubBuffer subBuffer = CodegenModelUserFactory.eINSTANCE.createSubBuffer();
     subBuffer.setSize(logicalBuffer.getSize());
-    subBuffer.setOffset(logicalBuffer.getOffset());
-    subBuffer.setTypeSize(logicalBuffer.getTypeSize());
+    final long offset = logicalBuffer.getOffset();
+    subBuffer.setOffset(offset);
 
     this.btb.put(logicalBuffer, subBuffer);
     this.codegenBufferStack.push(subBuffer);
@@ -255,7 +267,7 @@ public class AllocationToCodegenBuffer extends MemoryAllocationSwitch<Boolean> {
   public Boolean casePhysicalBuffer(final PhysicalBuffer phys) {
     final Buffer mainBuffer = CodegenModelUserFactory.eINSTANCE.createBuffer();
     mainBuffer.setSize(phys.getSize());
-    mainBuffer.setName("Shared_" + phys.getMemoryBank().getHardwareId());
+    mainBuffer.setName(phys.getMemoryBank().getInstanceName());
     mainBuffer.setType("char");
     mainBuffer.setTypeSize(1); // char is 1 byte
     this.btb.put(phys, mainBuffer);

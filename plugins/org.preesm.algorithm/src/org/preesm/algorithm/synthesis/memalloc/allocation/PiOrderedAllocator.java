@@ -35,7 +35,7 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL license and that you accept its terms.
  */
-package org.preesm.algorithm.memory.allocation;
+package org.preesm.algorithm.synthesis.memalloc.allocation;
 
 import com.google.common.primitives.Ints;
 import java.util.ArrayList;
@@ -46,14 +46,14 @@ import org.jgrapht.graph.SimpleGraph;
 import org.preesm.algorithm.memory.bounds.AbstractMaximumWeightCliqueSolver;
 import org.preesm.algorithm.memory.bounds.HeuristicSolver;
 import org.preesm.algorithm.memory.bounds.OstergardSolver;
-import org.preesm.algorithm.memory.exclusiongraph.MemoryExclusionGraph;
-import org.preesm.algorithm.memory.exclusiongraph.MemoryExclusionVertex;
+import org.preesm.algorithm.synthesis.memalloc.meg.PiMemoryExclusionGraph;
+import org.preesm.algorithm.synthesis.memalloc.meg.PiMemoryExclusionVertex;
 import org.preesm.commons.exceptions.PreesmRuntimeException;
 
 /**
  * The Class OrderedAllocator.
  */
-public abstract class OrderedAllocator extends MemoryAllocator {
+public abstract class PiOrderedAllocator extends PiMemoryAllocator {
 
   /**
    */
@@ -68,31 +68,31 @@ public abstract class OrderedAllocator extends MemoryAllocator {
   }
 
   /**
-   * Ordered list of {@link MemoryExclusionVertex} used to perform the shuffled allocations. These lists are memorized
+   * Ordered list of {@link PiMemoryExclusionVertex} used to perform the shuffled allocations. These lists are memorized
    * in order to retrieve the one that corresponds best to the Policy after all "shuffled" allocations were performed
    */
-  private List<List<MemoryExclusionVertex>> lists;
+  private List<List<PiMemoryExclusionVertex>> lists;
   /**
    * For each {@link #allocateInOrder(ArrayList)} resulting from an ordered list in {@link #lists}, this list store the
    * size of the allocated memory.
    */
-  private List<Long>                        listsSize;
+  private List<Long>                          listsSize;
   /**
    * The number of allocation do perform with randomly ordered vertices list.
    */
-  private int                               nbShuffle;
+  private int                                 nbShuffle;
   /**
    * The current policy when asking for an allocation with getAllocation.
    */
-  private Policy                            policy;
+  private Policy                              policy;
   /**
-   * The current {@link Order} used to {@link #allocate()} vertices of the {@link MemoryExclusionGraph}.
+   * The current {@link Order} used to {@link #allocate()} vertices of the {@link PiMemoryExclusionGraph}.
    */
-  private Order                             order;
+  private Order                               order;
 
   /**
    */
-  protected OrderedAllocator(final MemoryExclusionGraph memEx) {
+  protected PiOrderedAllocator(final PiMemoryExclusionGraph memEx) {
     super(memEx);
     this.nbShuffle = 10;
     this.policy = Policy.BEST;
@@ -130,14 +130,14 @@ public abstract class OrderedAllocator extends MemoryAllocator {
    *          the ordered vertex list.
    * @return the resulting allocation size.
    */
-  protected abstract long allocateInOrder(final List<MemoryExclusionVertex> vertexList);
+  protected abstract long allocateInOrder(final List<PiMemoryExclusionVertex> vertexList);
 
   /**
    * Perform the allocation with the vertex ordered according to largest first order. If the policy of the allocator is
    * changed, the resulting allocation will be lost.
    */
   private void allocateLargestFirst() {
-    final ArrayList<MemoryExclusionVertex> list = new ArrayList<>(this.inputExclusionGraph.vertexSet());
+    final ArrayList<PiMemoryExclusionVertex> list = new ArrayList<>(this.inputExclusionGraph.vertexSet());
     Collections.sort(list, (v1, v2) -> Ints.saturatedCast(v2.getWeight() - v1.getWeight()));
     allocateInOrder(list);
   }
@@ -154,7 +154,7 @@ public abstract class OrderedAllocator extends MemoryAllocator {
     }
 
     // Retrieve the memEx vertices in scheduling order
-    final List<MemoryExclusionVertex> memExVerticesInSchedulingOrder = this.inputExclusionGraph
+    final List<PiMemoryExclusionVertex> memExVerticesInSchedulingOrder = this.inputExclusionGraph
         .getMemExVerticesInSchedulingOrder();
     if (memExVerticesInSchedulingOrder == null) {
       throw new PreesmRuntimeException(
@@ -187,7 +187,7 @@ public abstract class OrderedAllocator extends MemoryAllocator {
       clear();
 
       // Create a list containing the nodes of the exclusion Graph
-      final ArrayList<MemoryExclusionVertex> list = new ArrayList<>(this.inputExclusionGraph.vertexSet());
+      final ArrayList<PiMemoryExclusionVertex> list = new ArrayList<>(this.inputExclusionGraph.vertexSet());
 
       Collections.shuffle(list);
 
@@ -211,7 +211,7 @@ public abstract class OrderedAllocator extends MemoryAllocator {
    *          the exact stable set
    */
   private void allocateStableSetOrder(final boolean exactStableSet) {
-    final List<MemoryExclusionVertex> list = getStableSetOrderedList(exactStableSet);
+    final List<PiMemoryExclusionVertex> list = getStableSetOrderedList(exactStableSet);
     allocateInOrder(list);
   }
 
@@ -237,14 +237,15 @@ public abstract class OrderedAllocator extends MemoryAllocator {
    *          the exact stable set
    * @return The ordered vertices list
    */
-  private ArrayList<MemoryExclusionVertex> getStableSetOrderedList(final boolean exactStableSet) {
-    ArrayList<MemoryExclusionVertex> orderedList;
+  private ArrayList<PiMemoryExclusionVertex> getStableSetOrderedList(final boolean exactStableSet) {
+    ArrayList<PiMemoryExclusionVertex> orderedList;
     orderedList = new ArrayList<>();
 
-    final SimpleGraph<MemoryExclusionVertex, DefaultEdge> inclusionGraph = this.inputExclusionGraph.getComplementary();
+    final SimpleGraph<PiMemoryExclusionVertex,
+        DefaultEdge> inclusionGraph = this.inputExclusionGraph.getComplementary();
 
     while (!inclusionGraph.vertexSet().isEmpty()) {
-      AbstractMaximumWeightCliqueSolver<MemoryExclusionVertex, DefaultEdge> solver;
+      AbstractMaximumWeightCliqueSolver<PiMemoryExclusionVertex, DefaultEdge> solver;
 
       if (exactStableSet) {
         solver = new OstergardSolver<>(inclusionGraph);
@@ -254,7 +255,7 @@ public abstract class OrderedAllocator extends MemoryAllocator {
 
       solver.solve();
 
-      final ArrayList<MemoryExclusionVertex> stableSet = new ArrayList<>(solver.getHeaviestClique());
+      final ArrayList<PiMemoryExclusionVertex> stableSet = new ArrayList<>(solver.getHeaviestClique());
       Collections.sort(stableSet, (v1, v2) -> Ints.saturatedCast(v2.getWeight() - v1.getWeight()));
       orderedList.addAll(stableSet);
 

@@ -36,6 +36,7 @@ package org.preesm.algorithm.synthesis.memalloc;
 
 import org.preesm.algorithm.mapping.model.Mapping;
 import org.preesm.algorithm.memalloc.model.Allocation;
+import org.preesm.algorithm.memory.allocation.tasks.MemoryAllocatorTask;
 import org.preesm.algorithm.schedule.model.Schedule;
 import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.scenario.Scenario;
@@ -49,4 +50,24 @@ public interface IMemoryAllocation {
   public Allocation allocateMemory(final PiGraph piGraph, final Design slamDesign, final Scenario scenario,
       final Schedule schedule, final Mapping mapping);
 
+  /**
+   */
+  public static long extractAlignment(final String valueAlignment) {
+    final long alignment;
+    switch (valueAlignment.substring(0, Math.min(valueAlignment.length(), 7))) {
+      case MemoryAllocatorTask.VALUE_ALIGNEMENT_NONE:
+        alignment = -1;
+        break;
+      case MemoryAllocatorTask.VALUE_ALIGNEMENT_DATA:
+        alignment = 0;
+        break;
+      case MemoryAllocatorTask.VALUE_ALIGNEMENT_FIXED:
+        final String fixedValue = valueAlignment.substring(7);
+        alignment = Long.parseLong(fixedValue);
+        break;
+      default:
+        alignment = -1;
+    }
+    return alignment;
+  }
 }
