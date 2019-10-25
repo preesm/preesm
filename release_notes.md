@@ -12,7 +12,8 @@ PREESM Changelog
 * Add schedule timer to compute timings (start/duration) for an actor;
 * PiSDF: use internal graph representation for topological operations;
 * Now firing instance number of any Actor can be stored in PiGraph model (set in SRDAG, not stored in .pi);
-* Enable MEG Update un new Synthesis API (still buggy);
+* Enable MEG Update un new Synthesis API
+  * Data alignment not fully foncitonnal yet;
 
 ### Bug fix
 * Fix workflow task "org.ietr.preesm.pimm.algorithm.checker.periods.PeriodsPreschedulingChecker";
