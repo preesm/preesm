@@ -134,6 +134,9 @@ public class AllocationToCodegenBuffer extends MemoryAllocationSwitch<Boolean> {
           srcCodegenBuffer.setName(generateUniqueBufferName("src_" + fifo.getSourcePort().getId()));
           srcCodegenBuffer.setType(fifo.getType());
 
+          if (allocSize % typeSize != 0) {
+            throw new PreesmRuntimeException("Buffer size in bytes is not a multiple of its type sizes.");
+          }
           srcCodegenBuffer.setSize(allocSize / typeSize);
           srcCodegenBuffer.setTypeSize(typeSize);
 
@@ -240,7 +243,8 @@ public class AllocationToCodegenBuffer extends MemoryAllocationSwitch<Boolean> {
   public Boolean caseLogicalBuffer(final LogicalBuffer logicalBuffer) {
     final SubBuffer subBuffer = CodegenModelUserFactory.eINSTANCE.createSubBuffer();
     subBuffer.setSize(logicalBuffer.getSize());
-    subBuffer.setOffset(logicalBuffer.getOffset());
+    final long offset = logicalBuffer.getOffset();
+    subBuffer.setOffset(offset);
 
     this.btb.put(logicalBuffer, subBuffer);
     this.codegenBufferStack.push(subBuffer);
