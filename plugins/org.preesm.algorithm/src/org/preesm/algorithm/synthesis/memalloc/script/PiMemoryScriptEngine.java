@@ -53,7 +53,6 @@ import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.emf.common.util.EMap;
 import org.preesm.algorithm.memory.script.CheckPolicy;
-import org.preesm.algorithm.synthesis.memalloc.IMemoryAllocation;
 import org.preesm.algorithm.synthesis.memalloc.meg.PiMemoryExclusionGraph;
 import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.preesm.commons.logger.PreesmLogger;
@@ -82,10 +81,10 @@ public class PiMemoryScriptEngine {
    * @param verbose
    *          the verbose
    */
-  public PiMemoryScriptEngine(final String valueAlignment, final String log, final boolean verbose) {
+  public PiMemoryScriptEngine(final long valueAlignment, final String log, final boolean verbose) {
     this.verbose = verbose;
     // Get the logger
-    final long alignment = IMemoryAllocation.extractAlignment(valueAlignment);
+    final long alignment = valueAlignment;
     if (verbose) {
       final String message = "Scripts with alignment:=" + alignment + ".";
       this.logger.log(Level.INFO, message);

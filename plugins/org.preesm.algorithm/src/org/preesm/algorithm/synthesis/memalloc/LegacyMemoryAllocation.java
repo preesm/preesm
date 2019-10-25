@@ -120,7 +120,7 @@ public class LegacyMemoryAllocation implements IMemoryAllocation {
     parameters.put(MemoryAllocatorTask.PARAM_XFIT_ORDER, MemoryAllocatorTask.VALUE_XFIT_ORDER_DEFAULT);
     parameters.put(MemoryAllocatorTask.PARAM_NB_SHUFFLE, MemoryAllocatorTask.VALUE_NB_SHUFFLE_DEFAULT);
     parameters.put(MemoryAllocatorTask.PARAM_ALIGNMENT, MemoryAllocatorTask.VALUE_ALIGNEMENT_DEFAULT);
-    parameters.put(MemoryAllocatorTask.PARAM_DISTRIBUTION_POLICY, MemoryAllocatorTask.VALUE_DISTRIBUTION_DEFAULT);
+    parameters.put(MemoryAllocatorTask.PARAM_DISTRIBUTION_POLICY, MemoryAllocatorTask.VALUE_DISTRIBUTION_MIXED_MERGED);
 
     final String log = parameters.get(MemoryScriptTask.PARAM_LOG);
     final String checkString = parameters.get(MemoryScriptTask.PARAM_CHECK);
@@ -128,7 +128,7 @@ public class LegacyMemoryAllocation implements IMemoryAllocation {
     final String valueAllocators = parameters.get(MemoryAllocatorTask.PARAM_ALLOCATORS);
     final long alignment = IMemoryAllocation.extractAlignment(valueAlignment);
 
-    final PiMemoryScriptEngine engine = new PiMemoryScriptEngine(valueAlignment, log, true);
+    final PiMemoryScriptEngine engine = new PiMemoryScriptEngine(alignment, log, true);
     try {
       engine.runScripts(piGraph, scenario.getSimulationInfo().getDataTypes(), checkString);
     } catch (final EvalError e) {
@@ -136,6 +136,10 @@ public class LegacyMemoryAllocation implements IMemoryAllocation {
       throw new PreesmRuntimeException(message, e);
     }
     engine.updateMemEx(memEx);
+    if (!log.equals("")) {
+      // generate
+      engine.generateCode(scenario, log);
+    }
 
     // *************
     // ALLOCATION
@@ -157,8 +161,8 @@ public class LegacyMemoryAllocation implements IMemoryAllocation {
     }
 
     // Do the distribution
-    final Map<String, PiMemoryExclusionGraph> megs = PiDistributor
-        .distributeMeg(MemoryAllocatorTask.VALUE_DISTRIBUTION_MIXED_MERGED, memEx, alignment, mapping);
+    final Map<String,
+        PiMemoryExclusionGraph> megs = PiDistributor.distributeMeg(valueDistribution, memEx, alignment, mapping);
 
     // Log results
     if (!valueDistribution.equals(MemoryAllocatorTask.VALUE_DISTRIBUTION_SHARED_ONLY)) {
@@ -227,7 +231,7 @@ public class LegacyMemoryAllocation implements IMemoryAllocation {
 
     restoreHostedVertices(megs);
 
-    return generateBuffers(megs, scenario, slamDesign, piGraph);
+    return generateBuffers(megs, scenario, slamDesign, piGraph, alignment);
   }
 
   /**
@@ -289,18 +293,20 @@ public class LegacyMemoryAllocation implements IMemoryAllocation {
 
     // Check the correct allocation
     try {
-      if (!allocator.checkAllocation().isEmpty()) {
+      final Map<PiMemoryExclusionVertex, Long> checkAllocation = allocator.checkAllocation();
+      if (!checkAllocation.isEmpty()) {
         throw new PreesmRuntimeException("The obtained allocation was not valid because mutually"
             + " exclusive memory objects have overlapping address ranges." + " The allocator is not working.\n"
-            + allocator.checkAllocation());
+            + checkAllocation);
       }
     } catch (final RuntimeException e) {
       throw new PreesmRuntimeException(e.getMessage());
     }
 
-    if (!allocator.checkAlignment().isEmpty()) {
+    final Map<PiMemoryExclusionVertex, Long> checkAlignment = allocator.checkAlignment();
+    if (!checkAlignment.isEmpty()) {
       throw new PreesmRuntimeException("The obtained allocation was not valid because there were"
-          + " unaligned memory objects. The allocator is not working.\n" + allocator.checkAlignment());
+          + " unaligned memory objects. The allocator is not working.\n" + checkAlignment);
     }
 
     String log = computeLog(allocator, tStart, sAllocator, tFinish);
@@ -390,7 +396,7 @@ public class LegacyMemoryAllocation implements IMemoryAllocation {
    *
    */
   protected Allocation generateBuffers(final Map<String, PiMemoryExclusionGraph> megs, final Scenario scenario,
-      final Design slamDesign, final PiGraph pigraph) {
+      final Design slamDesign, final PiGraph pigraph, final long align) {
 
     final Allocation memAlloc = MemoryAllocationFactory.eINSTANCE.createAllocation();
 
@@ -429,6 +435,7 @@ public class LegacyMemoryAllocation implements IMemoryAllocation {
 
           final LogicalBuffer dagEdgeBuffer = MemoryAllocationFactory.eINSTANCE.createLogicalBuffer();
 
+          // TODO handle distributed buffers
           fifoAllocation.setSourceBuffer(dagEdgeBuffer);
           fifoAllocation.setTargetBuffer(dagEdgeBuffer);
           mainBuffer.getChildren().add(dagEdgeBuffer);
