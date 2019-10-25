@@ -255,7 +255,7 @@ public class AllocationToCodegenBuffer extends MemoryAllocationSwitch<Boolean> {
   public Boolean casePhysicalBuffer(final PhysicalBuffer phys) {
     final Buffer mainBuffer = CodegenModelUserFactory.eINSTANCE.createBuffer();
     mainBuffer.setSize(phys.getSize());
-    mainBuffer.setName("Shared_" + phys.getMemoryBank().getHardwareId());
+    mainBuffer.setName(phys.getMemoryBank().getInstanceName());
     mainBuffer.setType("char");
     mainBuffer.setTypeSize(1); // char is 1 byte
     this.btb.put(phys, mainBuffer);
