@@ -1950,15 +1950,8 @@ public class PiScriptRunner {
         }
 
         // Sort mObjRoots in order of contiguous ranges
-        Collections.sort(mObjRoots, (m1, m2) -> {
-          long dif = m1.getValue().getKey().getStart() - m2.getValue().getKey().getStart();
-          if (dif > 0) {
-            return 1;
-          } else if (dif < 0) {
-            return -1;
-          }
-          return 0;
-        });
+        Collections.sort(mObjRoots,
+            (m1, m2) -> Long.compare(m1.getValue().getKey().getStart(), m2.getValue().getKey().getStart()));
       }
     }
     //

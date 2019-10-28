@@ -37,7 +37,6 @@
  */
 package org.preesm.algorithm.synthesis.memalloc.allocation;
 
-import com.google.common.primitives.Ints;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -138,7 +137,7 @@ public abstract class PiOrderedAllocator extends PiMemoryAllocator {
    */
   private void allocateLargestFirst() {
     final ArrayList<PiMemoryExclusionVertex> list = new ArrayList<>(this.inputExclusionGraph.vertexSet());
-    Collections.sort(list, (v1, v2) -> Ints.saturatedCast(v2.getWeight() - v1.getWeight()));
+    Collections.sort(list, (v1, v2) -> Long.compare(v2.getWeight(), v1.getWeight()));
     allocateInOrder(list);
   }
 
@@ -256,7 +255,7 @@ public abstract class PiOrderedAllocator extends PiMemoryAllocator {
       solver.solve();
 
       final ArrayList<PiMemoryExclusionVertex> stableSet = new ArrayList<>(solver.getHeaviestClique());
-      Collections.sort(stableSet, (v1, v2) -> Ints.saturatedCast(v2.getWeight() - v1.getWeight()));
+      Collections.sort(stableSet, (v1, v2) -> Long.compare(v2.getWeight(), v1.getWeight()));
       orderedList.addAll(stableSet);
 
       inclusionGraph.removeAllVertices(stableSet);

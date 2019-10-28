@@ -36,7 +36,6 @@
  */
 package org.preesm.algorithm.memory.bounds;
 
-import com.google.common.primitives.Ints;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
@@ -182,7 +181,7 @@ public class OstergardSolver<V extends IWeightedVertex<Long>, E extends DefaultE
     final SimpleGraph<V, E> graphCopy = (SimpleGraph<V, E>) this.graph.clone();
 
     // First, the list is ordered in the ascending order of weights
-    Collections.sort(unorderedSet, (v1, v2) -> Ints.saturatedCast(v1.getWeight() - v2.getWeight()));
+    Collections.sort(unorderedSet, (v1, v2) -> Long.compare(v1.getWeight(), v2.getWeight()));
 
     // Vertices are added one by one to the ordered vertex set
     while (!unorderedSet.isEmpty()) {
