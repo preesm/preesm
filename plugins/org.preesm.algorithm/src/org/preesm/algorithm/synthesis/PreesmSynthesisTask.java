@@ -51,9 +51,12 @@ import org.preesm.algorithm.synthesis.memalloc.LegacyMemoryAllocation;
 import org.preesm.algorithm.synthesis.memalloc.SimpleMemoryAllocation;
 import org.preesm.algorithm.synthesis.schedule.algos.IScheduler;
 import org.preesm.algorithm.synthesis.schedule.algos.LegacyListScheduler;
+import org.preesm.algorithm.synthesis.schedule.algos.PeriodicScheduler;
 import org.preesm.algorithm.synthesis.schedule.algos.SimpleScheduler;
+import org.preesm.commons.doc.annotations.Parameter;
 import org.preesm.commons.doc.annotations.Port;
 import org.preesm.commons.doc.annotations.PreesmTask;
+import org.preesm.commons.doc.annotations.Value;
 import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.model.pisdf.PiGraph;
@@ -69,6 +72,11 @@ import org.preesm.workflow.implement.AbstractWorkflowNodeImplementation;
  *
  */
 @PreesmTask(id = "pisdf-synthesis.simple", name = "Simple Synhtesis", category = "Synhtesis",
+
+    parameters = {
+        @Parameter(name = "scheduler",
+            values = { @Value(name = "simple"), @Value(name = "legacy"), @Value(name = "periodic") }),
+        @Parameter(name = "allocation", values = { @Value(name = "simple"), @Value(name = "legacy") }) },
 
     inputs = { @Port(name = "PiMM", type = PiGraph.class), @Port(name = "architecture", type = Design.class),
         @Port(name = "scenario", type = Scenario.class) },
@@ -120,6 +128,9 @@ public class PreesmSynthesisTask extends AbstractTaskImplementation {
         break;
       case "legacy":
         scheduler = new LegacyListScheduler();
+        break;
+      case "periodic":
+        scheduler = new PeriodicScheduler();
         break;
       default:
         throw new PreesmRuntimeException("unknown scheduler: " + schedulerName);
