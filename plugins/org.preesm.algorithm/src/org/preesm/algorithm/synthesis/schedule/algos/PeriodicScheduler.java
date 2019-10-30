@@ -153,12 +153,20 @@ public class PeriodicScheduler extends AbstractScheduler {
         EdgeAbstraction> absGraph = new DefaultDirectedGraph<>(EdgeAbstraction.class);
 
     Map<AbstractActor, VertexAbstraction> aaTOva = new TreeMap<>(new ActorNameComparator());
+    Map<AbstractActor, Long> loadMemoization = new TreeMap<>(new ActorNameComparator());
     for (final AbstractActor aa : graph.getActors()) {
       VertexAbstraction va = new VertexAbstraction(aa);
       absGraph.addVertex(va);
       aaTOva.put(aa, va);
 
-      va.load = getLoad(aa, slamDesign, scenario);
+      AbstractActor originalActor = PreesmCopyTracker.getOriginalSource(aa);
+      if (!loadMemoization.containsKey(originalActor)) {
+        long load = getLoad(originalActor, slamDesign, scenario);
+        loadMemoization.put(originalActor, load);
+        va.load = load;
+      } else {
+        va.load = loadMemoization.get(originalActor);
+      }
 
       if (aa instanceof PeriodicElement) {
         PeriodicElement pe = (PeriodicElement) aa;
@@ -194,11 +202,13 @@ public class PeriodicScheduler extends AbstractScheduler {
         }
       }
     }
+
+    // TODO check if DAG?
+
     return absGraph;
   }
 
-  protected static long getLoad(AbstractActor aa, Design slamDesign, Scenario scenario) {
-    AbstractActor actor = PreesmCopyTracker.getOriginalSource(aa);
+  protected static long getLoad(AbstractActor actor, Design slamDesign, Scenario scenario) {
     long wcet = ScenarioConstants.DEFAULT_TIMING_TASK.getValue();
     for (final Component operatorDefinitionID : slamDesign.getOperatorComponents()) {
       wcet = scenario.getTimings().evaluateTimingOrDefault((AbstractActor) actor, operatorDefinitionID);
