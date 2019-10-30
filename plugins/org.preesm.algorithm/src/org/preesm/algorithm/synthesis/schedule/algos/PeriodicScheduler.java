@@ -2,13 +2,21 @@ package org.preesm.algorithm.synthesis.schedule.algos;
 
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.ListIterator;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.logging.Level;
+import org.eclipse.emf.common.util.ECollections;
 import org.jgrapht.graph.DefaultDirectedGraph;
+import org.preesm.algorithm.mapping.model.Mapping;
+import org.preesm.algorithm.mapping.model.MappingFactory;
+import org.preesm.algorithm.schedule.model.ActorSchedule;
+import org.preesm.algorithm.schedule.model.HierarchicalSchedule;
+import org.preesm.algorithm.schedule.model.ScheduleFactory;
 import org.preesm.algorithm.synthesis.SynthesisResult;
 import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.preesm.commons.logger.PreesmLogger;
@@ -17,12 +25,15 @@ import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.Actor;
 import org.preesm.model.pisdf.DataInputPort;
 import org.preesm.model.pisdf.DataOutputPort;
+import org.preesm.model.pisdf.EndActor;
 import org.preesm.model.pisdf.Fifo;
+import org.preesm.model.pisdf.InitActor;
 import org.preesm.model.pisdf.PeriodicElement;
 import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.scenario.Scenario;
 import org.preesm.model.scenario.ScenarioConstants;
 import org.preesm.model.slam.Component;
+import org.preesm.model.slam.ComponentInstance;
 import org.preesm.model.slam.Design;
 
 /**
@@ -50,9 +61,12 @@ public class PeriodicScheduler extends AbstractScheduler {
     boolean isPeriodic;
 
     AbstractActor aa;
+    AbstractActor ori;
 
     private VertexAbstraction(AbstractActor aa) {
       this.aa = aa;
+      this.ori = PreesmCopyTracker.getOriginalSource(aa);
+
       this.load = 0;
       this.nbVisits = 0;
       this.isPeriodic = false;
@@ -78,6 +92,25 @@ public class PeriodicScheduler extends AbstractScheduler {
     }
   }
 
+  /**
+   * 
+   * @author ahonorat
+   *
+   */
+  protected static class CoreAbstraction {
+
+    long              implTime;
+    ComponentInstance ci;
+    ActorSchedule     coreSched;
+
+    private CoreAbstraction(ComponentInstance ci, ActorSchedule coreSched) {
+      this.implTime = 0;
+      this.ci = ci;
+      this.coreSched = coreSched;
+    }
+
+  }
+
   protected PiGraph  piGraph;
   protected Design   slamDesign;
   protected Scenario scenario;
@@ -85,6 +118,16 @@ public class PeriodicScheduler extends AbstractScheduler {
   protected DefaultDirectedGraph<VertexAbstraction, EdgeAbstraction> absGraph;
   protected List<VertexAbstraction>                                  firstNodes;
   protected List<VertexAbstraction>                                  lastNodes;
+
+  protected HierarchicalSchedule            topParallelSchedule;
+  protected Mapping                         resultMapping;
+  Map<ComponentInstance, CoreAbstraction>   ciTOca;
+  Map<AbstractActor, List<CoreAbstraction>> possibleMappings;
+  protected List<CoreAbstraction>           cores;
+  protected CoreAbstraction                 defaultCore;
+
+  protected long horizon;
+  protected long Ctot;
 
   @Override
   protected SynthesisResult exec(PiGraph piGraph, Design slamDesign, Scenario scenario) {
@@ -102,12 +145,29 @@ public class PeriodicScheduler extends AbstractScheduler {
     this.piGraph = piGraph;
     this.slamDesign = slamDesign;
     this.scenario = scenario;
-    absGraph = createAbsGraph(piGraph, slamDesign, scenario);
+
+    cores = new ArrayList<>();
+    ciTOca = new HashMap<>();
+    possibleMappings = new TreeMap<>(new ActorNameComparator());
+    topParallelSchedule = ScheduleFactory.eINSTANCE.createParallelHiearchicalSchedule();
+    resultMapping = MappingFactory.eINSTANCE.createMapping();
+    for (ComponentInstance ci : slamDesign.getOperatorComponents().get(0).getInstances()) {
+      final ActorSchedule createActorSchedule = ScheduleFactory.eINSTANCE.createSequentialActorSchedule();
+      topParallelSchedule.getScheduleTree().add(createActorSchedule);
+      CoreAbstraction ca = new CoreAbstraction(ci, createActorSchedule);
+      cores.add(ca);
+      ciTOca.put(ci, ca);
+      if (ci.equals(scenario.getSimulationInfo().getMainOperator())) {
+        defaultCore = ca;
+      }
+    }
+
+    createAbsGraph();
 
     PreesmLogger.getLogger().log(Level.INFO,
         "Starting to schedule and map " + absGraph.vertexSet().size() + " actors.");
 
-    long Ctot = 0;
+    Ctot = 0;
     firstNodes = new ArrayList<>();
     lastNodes = new ArrayList<>();
     for (VertexAbstraction va : absGraph.vertexSet()) {
@@ -120,7 +180,7 @@ public class PeriodicScheduler extends AbstractScheduler {
       }
     }
 
-    long horizon = piGraph.getPeriod().evaluate();
+    horizon = piGraph.getPeriod().evaluate();
     if (horizon <= 0) {
       horizon = Ctot;
       PreesmLogger.getLogger().log(Level.INFO,
@@ -132,7 +192,17 @@ public class PeriodicScheduler extends AbstractScheduler {
     }
     setAbsGraph(absGraph, horizon, firstNodes, lastNodes);
 
-    throw new PreesmRuntimeException("It stops here for now!");
+    schedule();
+
+    long maxImpl = 0;
+    for (CoreAbstraction ca : cores) {
+      if (ca.implTime > maxImpl) {
+        maxImpl = ca.implTime;
+      }
+    }
+    PreesmLogger.getLogger().log(Level.INFO, "Periodic scheduler found an implementation time of: " + maxImpl);
+
+    return new SynthesisResult(resultMapping, topParallelSchedule, null);
   }
 
   /**
@@ -147,25 +217,35 @@ public class PeriodicScheduler extends AbstractScheduler {
     }
   }
 
-  protected static DefaultDirectedGraph<VertexAbstraction, EdgeAbstraction> createAbsGraph(final PiGraph graph,
-      Design slamDesign, Scenario scenario) {
-    final DefaultDirectedGraph<VertexAbstraction,
-        EdgeAbstraction> absGraph = new DefaultDirectedGraph<>(EdgeAbstraction.class);
+  protected DefaultDirectedGraph<VertexAbstraction, EdgeAbstraction> createAbsGraph() {
+    absGraph = new DefaultDirectedGraph<>(EdgeAbstraction.class);
 
     Map<AbstractActor, VertexAbstraction> aaTOva = new TreeMap<>(new ActorNameComparator());
     Map<AbstractActor, Long> loadMemoization = new TreeMap<>(new ActorNameComparator());
-    for (final AbstractActor aa : graph.getActors()) {
+    for (final AbstractActor aa : piGraph.getActors()) {
       VertexAbstraction va = new VertexAbstraction(aa);
       absGraph.addVertex(va);
       aaTOva.put(aa, va);
 
-      AbstractActor originalActor = PreesmCopyTracker.getOriginalSource(aa);
+      AbstractActor originalActor = va.ori;
       if (!loadMemoization.containsKey(originalActor)) {
         long load = getLoad(originalActor, slamDesign, scenario);
         loadMemoization.put(originalActor, load);
         va.load = load;
       } else {
         va.load = loadMemoization.get(originalActor);
+      }
+      // memoization on allowed mappings
+      if (!possibleMappings.containsKey(originalActor)) {
+        List<ComponentInstance> cis = scenario.getPossibleMappings(originalActor);
+        List<CoreAbstraction> cas = new ArrayList<>();
+        for (ComponentInstance ci : cis) {
+          cas.add(ciTOca.get(ci));
+        }
+        if (cas.isEmpty()) {
+          cas.add(defaultCore);
+        }
+        possibleMappings.put(originalActor, cas);
       }
 
       if (aa instanceof PeriodicElement) {
@@ -183,7 +263,7 @@ public class PeriodicScheduler extends AbstractScheduler {
 
     }
 
-    for (final Fifo f : graph.getFifos()) {
+    for (final Fifo f : piGraph.getFifos()) {
       final DataOutputPort dop = f.getSourcePort();
       final DataInputPort dip = f.getTargetPort();
 
@@ -240,7 +320,8 @@ public class PeriodicScheduler extends AbstractScheduler {
       VertexAbstraction va = toVisit.remove(0);
       va.maxStartTime -= va.load;
       if (va.minStartTime > va.maxStartTime) {
-        throw new PreesmRuntimeException("Cannot schedule firing: " + va.aa.getName());
+        throw new PreesmRuntimeException(
+            "Cannot schedule following firing, min start time > max start time: " + va.aa.getName());
       }
       va.averageStartTime = (va.minStartTime + va.maxStartTime) / 2;
       long predxs = va.maxStartTime;
@@ -266,7 +347,109 @@ public class PeriodicScheduler extends AbstractScheduler {
       queue.add(va);
       va.nbVisits = 0;
     }
+  }
 
+  protected void schedule() {
+    long dualCtot = horizon * cores.size() - Ctot;
+    long emptyTime = 0;
+
+    List<VertexAbstraction> queue = new LinkedList<>();
+    for (VertexAbstraction va : firstNodes) {
+      insertTaskInScheduleQueue(va, queue);
+    }
+
+    while (!queue.isEmpty()) {
+      VertexAbstraction va = queue.remove(0);
+      // TODO manage empty space
+      emptyTime = allocate(va, queue, emptyTime, dualCtot);
+    }
+
+  }
+
+  protected long allocate(VertexAbstraction va, List<VertexAbstraction> queue, long emptyTime, long loadDual) {
+    CoreAbstraction ca = popFirstPossibleCore(va, cores, possibleMappings);
+    if (ca == null || ca.implTime > va.maxStartTime) {
+      throw new PreesmRuntimeException(
+          "Could not allocate the following task, no component or start time is overdue:  " + va.aa.getName());
+    }
+    ca.coreSched.getActorList().add(va.aa);
+    if (va.aa instanceof InitActor) {
+      final AbstractActor endReference = ((InitActor) va.aa).getEndReference();
+      resultMapping.getMappings().put(endReference, ECollections.singletonEList(ca.ci));
+    }
+    if (!(va.aa instanceof EndActor)) {
+      resultMapping.getMappings().put(va.aa, ECollections.singletonEList(ca.ci));
+    }
+    updateAllocationNbVisits(absGraph, va, queue);
+    va.startTime = Math.max(va.minStartTime, ca.implTime);
+    long extraIdleTime = va.startTime - ca.implTime;
+    ca.implTime = va.startTime + va.load;
+    insertCoreInImplOrder(ca, cores);
+    return casRemainingLoad(extraIdleTime, loadDual, emptyTime);
+  }
+
+  protected static CoreAbstraction popFirstPossibleCore(VertexAbstraction va, List<CoreAbstraction> cores,
+      Map<AbstractActor, List<CoreAbstraction>> possibleMappings) {
+    List<CoreAbstraction> posmaps = possibleMappings.get(va.ori);
+    ListIterator<CoreAbstraction> it = cores.listIterator();
+    while (it.hasNext()) {
+      CoreAbstraction ca = it.next();
+      if (posmaps.contains(ca)) {
+        it.remove();
+        return ca;
+      }
+    }
+    return null;
+  }
+
+  protected static void updateAllocationNbVisits(DefaultDirectedGraph<VertexAbstraction, EdgeAbstraction> absGraph,
+      VertexAbstraction va, List<VertexAbstraction> queue) {
+    for (EdgeAbstraction ea : absGraph.outgoingEdgesOf(va)) {
+      VertexAbstraction tgt = absGraph.getEdgeTarget(ea);
+      tgt.nbVisits += 1;
+      Set<EdgeAbstraction> seteas = absGraph.incomingEdgesOf(tgt);
+      if (tgt.nbVisits == seteas.size()) {
+        insertTaskInScheduleQueue(tgt, queue);
+        tgt.nbVisits = 0;
+      }
+    }
+  }
+
+  // ascending as, and ascending ns if equality of as
+  protected static void insertTaskInScheduleQueue(VertexAbstraction va, List<VertexAbstraction> queue) {
+    ListIterator<VertexAbstraction> it = queue.listIterator();
+    while (it.hasNext()) {
+      VertexAbstraction next = it.next();
+      if (next.averageStartTime < va.averageStartTime) {
+        // performance trick
+        continue;
+      } else if (next.averageStartTime > va.averageStartTime
+          || (next.averageStartTime == va.averageStartTime && next.minStartTime > va.minStartTime)) {
+        it.previous();
+        break;
+      }
+    }
+    it.add(va);
+  }
+
+  protected static void insertCoreInImplOrder(CoreAbstraction ca, List<CoreAbstraction> order) {
+    ListIterator<CoreAbstraction> it = order.listIterator();
+    while (it.hasNext()) {
+      CoreAbstraction next = it.next();
+      if (next.implTime > ca.implTime) {
+        it.previous();
+        break;
+      }
+    }
+    it.add(ca);
+  }
+
+  protected static long casRemainingLoad(long extraIdleTime, long loadDual, long previousEmptyTime) {
+    long res = previousEmptyTime + extraIdleTime;
+    if (res > loadDual) {
+      throw new PreesmRuntimeException("Impossible schedule: there are too much unccupied space.");
+    }
+    return res;
   }
 
 }
