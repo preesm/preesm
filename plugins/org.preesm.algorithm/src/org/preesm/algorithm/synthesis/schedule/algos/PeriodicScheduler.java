@@ -129,6 +129,7 @@ public class PeriodicScheduler extends AbstractScheduler {
 
   protected long horizon;
   protected long Ctot;
+  protected int  nbFiringsAllocated;
 
   @Override
   protected SynthesisResult exec(PiGraph piGraph, Design slamDesign, Scenario scenario) {
@@ -147,6 +148,7 @@ public class PeriodicScheduler extends AbstractScheduler {
     this.slamDesign = slamDesign;
     this.scenario = scenario;
 
+    nbFiringsAllocated = 0;
     cores = new ArrayList<>();
     ciTOca = new HashMap<>();
     possibleMappings = new TreeMap<>(new ActorNameComparator());
@@ -319,6 +321,7 @@ public class PeriodicScheduler extends AbstractScheduler {
     toVisit = new LinkedList<>(lastNodes);
     while (!toVisit.isEmpty()) {
       VertexAbstraction va = toVisit.remove(0);
+      va.predFinishTime = va.minStartTime;
       va.maxStartTime -= va.load;
       if (va.minStartTime > va.maxStartTime) {
         throw new PreesmRuntimeException(
@@ -360,19 +363,67 @@ public class PeriodicScheduler extends AbstractScheduler {
     }
 
     while (!queue.isEmpty()) {
-      VertexAbstraction va = queue.remove(0);
-      // TODO manage empty space
-      emptyTime = allocate(va, queue, emptyTime, dualCtot);
+      VertexAbstraction va = queue.get(0);
+      int previousAllocations = nbFiringsAllocated;
+      if (isThereACoreIdlingBefore(cores, va.predFinishTime)) {
+        // manage empty space
+        for (VertexAbstraction vab : possibleAllocationBefore(queue, cores, va.predFinishTime)) {
+          emptyTime = allocateAndRemoveIfBefore(vab, queue, emptyTime, dualCtot, va.predFinishTime);
+        }
+        if (nbFiringsAllocated > previousAllocations) {
+          continue;
+        }
+      }
+      emptyTime = allocateAndRemove(va, queue, emptyTime, dualCtot);
     }
 
   }
 
-  protected long allocate(VertexAbstraction va, List<VertexAbstraction> queue, long emptyTime, long loadDual) {
+  protected static boolean isThereACoreIdlingBefore(List<CoreAbstraction> cores, long deadline) {
+    return cores.get(0).implTime < deadline;
+  }
+
+  protected static List<VertexAbstraction> possibleAllocationBefore(List<VertexAbstraction> queue,
+      List<CoreAbstraction> cores, long deadline) {
+    List<VertexAbstraction> res = new LinkedList<>();
+
+    long emptyLoad = 0;
+    for (CoreAbstraction ca : cores) {
+      if (ca.implTime < deadline) {
+        emptyLoad += deadline - ca.implTime;
+      }
+    }
+    long currentLoad = 0;
+    for (VertexAbstraction va : queue) {
+      if (va.predFinishTime + va.load < deadline) {
+        insertTaskInScheduleQueue(va, res);
+        currentLoad += va.load;
+      }
+      if (currentLoad > emptyLoad) {
+        break;
+      }
+    }
+
+    return res;
+  }
+
+  protected long allocateAndRemove(VertexAbstraction va, List<VertexAbstraction> queue, long emptyTime, long loadDual) {
+    return allocateAndRemoveIfBefore(va, queue, emptyTime, loadDual, 0);
+  }
+
+  protected long allocateAndRemoveIfBefore(VertexAbstraction va, List<VertexAbstraction> queue, long emptyTime,
+      long loadDual, long deadline) {
     CoreAbstraction ca = popFirstPossibleCore(va, cores, possibleMappings);
     if (ca == null || ca.implTime > va.maxStartTime) {
       throw new PreesmRuntimeException(
           "Could not allocate the following task, no component or start time is overdue:  " + va.aa.getName());
     }
+    long startTime = Math.max(va.predFinishTime, ca.implTime);
+    if (deadline > 0 && startTime + va.load > deadline) {
+      insertCoreInImplOrder(ca, cores);
+      return emptyTime;
+    }
+    nbFiringsAllocated++;
     ca.coreSched.getActorList().add(va.aa);
     if (va.aa instanceof InitActor) {
       final AbstractActor endReference = ((InitActor) va.aa).getEndReference();
@@ -381,10 +432,11 @@ public class PeriodicScheduler extends AbstractScheduler {
     if (!(va.aa instanceof EndActor)) {
       resultMapping.getMappings().put(va.aa, ECollections.singletonEList(ca.ci));
     }
-    va.startTime = Math.max(va.predFinishTime, Math.max(va.minStartTime, ca.implTime));
+    va.startTime = startTime;
     final long extraIdleTime = va.startTime - ca.implTime;
     ca.implTime = va.startTime + va.load;
     insertCoreInImplOrder(ca, cores);
+    queue.remove(va);
     updateAllocationNbVisits(absGraph, va, queue, ca.implTime);
     return casRemainingLoad(extraIdleTime, loadDual, emptyTime);
   }
