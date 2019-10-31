@@ -52,6 +52,7 @@ public class PeriodicScheduler extends AbstractScheduler {
   protected static class VertexAbstraction {
 
     long startTime;
+    long predFinishTime;
     long maxStartTime;
     long minStartTime;
     long averageStartTime;
@@ -72,6 +73,7 @@ public class PeriodicScheduler extends AbstractScheduler {
       this.isPeriodic = false;
 
       this.startTime = 0;
+      this.predFinishTime = 0;
       this.maxStartTime = 0;
       this.minStartTime = 0;
       this.averageStartTime = 0;
@@ -84,8 +86,7 @@ public class PeriodicScheduler extends AbstractScheduler {
    *
    */
   protected static class EdgeAbstraction {
-
-    long weight;
+    long weight;// not used
 
     private EdgeAbstraction() {
       this.weight = 0;
@@ -380,11 +381,11 @@ public class PeriodicScheduler extends AbstractScheduler {
     if (!(va.aa instanceof EndActor)) {
       resultMapping.getMappings().put(va.aa, ECollections.singletonEList(ca.ci));
     }
-    updateAllocationNbVisits(absGraph, va, queue);
-    va.startTime = Math.max(va.minStartTime, ca.implTime);
-    long extraIdleTime = va.startTime - ca.implTime;
+    va.startTime = Math.max(va.predFinishTime, Math.max(va.minStartTime, ca.implTime));
+    final long extraIdleTime = va.startTime - ca.implTime;
     ca.implTime = va.startTime + va.load;
     insertCoreInImplOrder(ca, cores);
+    updateAllocationNbVisits(absGraph, va, queue, ca.implTime);
     return casRemainingLoad(extraIdleTime, loadDual, emptyTime);
   }
 
@@ -403,10 +404,11 @@ public class PeriodicScheduler extends AbstractScheduler {
   }
 
   protected static void updateAllocationNbVisits(DefaultDirectedGraph<VertexAbstraction, EdgeAbstraction> absGraph,
-      VertexAbstraction va, List<VertexAbstraction> queue) {
+      VertexAbstraction va, List<VertexAbstraction> queue, long finishTime) {
     for (EdgeAbstraction ea : absGraph.outgoingEdgesOf(va)) {
       VertexAbstraction tgt = absGraph.getEdgeTarget(ea);
       tgt.nbVisits += 1;
+      tgt.predFinishTime = Math.max(finishTime, tgt.predFinishTime);
       Set<EdgeAbstraction> seteas = absGraph.incomingEdgesOf(tgt);
       if (tgt.nbVisits == seteas.size()) {
         insertTaskInScheduleQueue(tgt, queue);
