@@ -68,11 +68,14 @@ public class OptimizedCommunicationInserter extends DefaultCommunicationInserter
     final boolean isLastRouteStep = targetOperator == route.getTarget();
     if (isLastRouteStep) {
       final AbstractActor containingActor = fifo.getTargetPort().getContainingActor();
-      scheduleOrderManager.insertBefore(containingActor, receiveStart, receiveEnd);
+      scheduleOrderManager.insertBeforeInSchedule(mapping, containingActor, receiveStart, receiveEnd);
       reorderReceiveVertices(scheduleOrderManager, mapping, routeStep.getSender(), routeStep.getReceiver(), receiveEnd);
       // do not add call super.lastVisitedActor.put(targetOperator, sendEnd) since sendEnd is not added at the peek of
       // the current visit
     } else {
+      // does not work if only relying on super
+      System.err.println("Following insertion is done by DefaultCommunicationInserter: " + receiveStart.getName()
+          + " to " + receiveEnd.getName());
       super.insertReceive(scheduleOrderManager, mapping, routeStep, route, fifo, receiveStart, receiveEnd);
     }
 
@@ -92,36 +95,36 @@ public class OptimizedCommunicationInserter extends DefaultCommunicationInserter
 
     final SendStartActor currentSSA = currentREA.getSourceSendStart();
 
-    final List<AbstractActor> operatorActors = scheduleOrderManager.buildScheduleAndTopologicalOrderedList(mapping,
-        receiverOperator);
-    final List<AbstractActor> targetOperatorActors = scheduleOrderManager
+    long startTime = System.nanoTime();
+    final List<AbstractActor> receiverOperatorActors = scheduleOrderManager
+        .buildScheduleAndTopologicalOrderedList(mapping, receiverOperator);
+    final List<AbstractActor> senderOperatorActors = scheduleOrderManager
         .buildScheduleAndTopologicalOrderedList(mapping, senderOperator);
+    long stopTime = System.nanoTime();
+    long duration = (stopTime - startTime);
+    // System.err.println("reorder receiver vertices topological part time (ns): " + duration);
 
-    final int indexOfCurrentSend = targetOperatorActors.indexOf(currentSSA);
-    final int indexOfCurrentReceive = operatorActors.indexOf(currentREA);
+    final int indexOfCurrentSend = senderOperatorActors.indexOf(currentSSA);
+    final int indexOfCurrentReceive = receiverOperatorActors.indexOf(currentREA);
 
-    final Stream<ReceiveEndActor> stream = operatorActors.stream()
+    final Stream<ReceiveEndActor> stream = receiverOperatorActors.stream()
         // keep receive vertices
         .filter(v -> v instanceof ReceiveEndActor).map(ReceiveEndActor.class::cast)
         // Keep only receiveVertex scheduled after the inserted one.
-        .filter(v -> operatorActors.indexOf(v) > indexOfCurrentReceive)
         // Keep only those with the same sender operator
-        .filter(v -> mapping.getMapping(v.getSourceSendStart()).contains(senderOperator))
         // Keep only those whose sender is scheduled before the current one
-        .filter(v -> {
-          final SendStartActor vSend = v.getSourceSendStart();
-          final int indexOfv = targetOperatorActors.indexOf(vSend);
-          return indexOfv < indexOfCurrentSend;
-        });
+        .filter(v -> receiverOperatorActors.indexOf(v) > indexOfCurrentReceive
+            && mapping.getMapping(v.getSourceSendStart()).contains(senderOperator)
+            && senderOperatorActors.indexOf(v.getSourceSendStart()) < indexOfCurrentSend);
 
     stream.forEach(v -> {
       final ReceiveEndActor receiveEnd = v;
       final ReceiveStartActor receiveStart = v.getReceiveStart();
 
-      scheduleOrderManager.remove(receiveEnd);
-      scheduleOrderManager.remove(receiveStart);
+      scheduleOrderManager.remove(mapping, receiveEnd);
+      scheduleOrderManager.remove(mapping, receiveStart);
 
-      scheduleOrderManager.insertBefore(currentREA.getReceiveStart(), receiveStart, receiveEnd);
+      scheduleOrderManager.insertBeforeInSchedule(mapping, currentREA.getReceiveStart(), receiveStart, receiveEnd);
     });
   }
 }

@@ -35,13 +35,15 @@
 package org.preesm.algorithm.synthesis.schedule;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import org.eclipse.emf.common.notify.Notification;
+import java.util.TreeMap;
 import org.eclipse.emf.common.util.EList;
 import org.jgrapht.Graphs;
 import org.jgrapht.alg.TransitiveClosure;
@@ -60,11 +62,11 @@ import org.preesm.algorithm.schedule.model.SequentialActorSchedule;
 import org.preesm.algorithm.schedule.model.SequentialHiearchicalSchedule;
 import org.preesm.algorithm.schedule.model.util.ScheduleSwitch;
 import org.preesm.commons.CollectionUtil;
-import org.preesm.commons.model.PreesmContentAdapter;
 import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.DataPort;
 import org.preesm.model.pisdf.Fifo;
 import org.preesm.model.pisdf.PiGraph;
+import org.preesm.model.pisdf.util.AbstractActorNameComparator;
 import org.preesm.model.slam.ComponentInstance;
 
 /**
@@ -73,38 +75,41 @@ import org.preesm.model.slam.ComponentInstance;
  *
  * @author anmorvan
  */
-public class ScheduleOrderManager extends PreesmContentAdapter {
+public class ScheduleOrderManager {
 
   /** PiSDF Graph scheduled */
-  private final PiGraph                           pigraph;
+  private final PiGraph                     pigraph;
   /** Schedule managed by this class */
-  private final Schedule                          schedule;
+  private final Schedule                    schedule;
   /**  */
-  private final Map<AbstractActor, ActorSchedule> actorToScheduleMap;
+  private Map<AbstractActor, ActorSchedule> actorToScheduleMap;
 
-  private DirectedAcyclicGraph<AbstractActor, DefaultEdge>  graphCache              = null;
-  private DirectedAcyclicGraph<AbstractActor, DefaultEdge>  transitiveClosureCache  = null;
-  private List<AbstractActor>                               totalOrderCache         = null;
-  private final Map<ComponentInstance, List<AbstractActor>> operatorTotalOrderCache = new LinkedHashMap<>();
+  private DirectedAcyclicGraph<AbstractActor, DefaultEdge> graphCache              = null;
+  private DirectedAcyclicGraph<AbstractActor, DefaultEdge> transitiveClosureCache  = null;
+  private List<AbstractActor>                              totalOrderCache         = null;
+  private Map<ComponentInstance, List<AbstractActor>>      operatorTotalOrderCache = new LinkedHashMap<>();
 
   /**
+   * A new object should be created if the pigraph or the schedule has been modified externally.
    */
   public ScheduleOrderManager(final PiGraph pigraph, final Schedule schedule) {
     this.pigraph = pigraph;
     this.schedule = schedule;
 
     this.actorToScheduleMap = ScheduleOrderManager.actorToScheduleMap(schedule);
-
-    this.pigraph.eAdapters().add(this);
-    this.schedule.eAdapters().add(this);
   }
 
-  @Override
-  public void notifyChanged(Notification notification) {
-    this.graphCache = null;
-    this.transitiveClosureCache = null;
-    this.totalOrderCache = null;
-    this.operatorTotalOrderCache.clear();
+  /**
+   * Reset the data if the schedule or the pigraph have changed. The current schedule is used during the call for
+   * memoization.
+   */
+  public void reset() {
+    graphCache = null;
+    transitiveClosureCache = null;
+    totalOrderCache = null;
+    operatorTotalOrderCache = new LinkedHashMap<>();
+
+    actorToScheduleMap = ScheduleOrderManager.actorToScheduleMap(schedule);
   }
 
   /**
@@ -119,8 +124,13 @@ public class ScheduleOrderManager extends PreesmContentAdapter {
           DefaultEdge> dag = new DirectedAcyclicGraph<>(null, DefaultEdge::new, false);
 
       ScheduleUtil.getAllReferencedActors(schedule).forEach(dag::addVertex);
-      pigraph.getFifos().forEach(
-          fifo -> dag.addEdge(fifo.getSourcePort().getContainingActor(), fifo.getTargetPort().getContainingActor()));
+      for (Fifo fifo : pigraph.getFifos()) {
+        AbstractActor src = fifo.getSourcePort().getContainingActor();
+        AbstractActor tgt = fifo.getTargetPort().getContainingActor();
+        if (dag.getAllEdges(src, tgt).isEmpty()) {
+          dag.addEdge(src, tgt);
+        }
+      }
 
       ScheduleUtil.getAllReferencedActors(schedule).stream().filter(SendStartActor.class::isInstance)
           .forEach(matchingActor -> {
@@ -129,9 +139,15 @@ public class ScheduleOrderManager extends PreesmContentAdapter {
             final ReceiveEndActor receiveEnd = sendStart.getTargetReceiveEnd();
             final ReceiveStartActor receiveStart = receiveEnd.getReceiveStart();
 
-            dag.addEdge(sendStart, sendEnd);
-            dag.addEdge(receiveStart, receiveEnd);
-            dag.addEdge(sendEnd, receiveEnd);
+            if (dag.getAllEdges(sendStart, sendEnd).isEmpty()) {
+              dag.addEdge(sendStart, sendEnd);
+            }
+            if (dag.getAllEdges(receiveStart, receiveEnd).isEmpty()) {
+              dag.addEdge(receiveStart, receiveEnd);
+            }
+            if (dag.getAllEdges(sendEnd, receiveEnd).isEmpty()) {
+              dag.addEdge(sendEnd, receiveEnd);
+            }
           });
 
       new SchedulePrecedenceUpdate(dag).doSwitch(schedule);
@@ -202,7 +218,7 @@ public class ScheduleOrderManager extends PreesmContentAdapter {
       final EList<AbstractActor> actorList = object.getActorList();
       AbstractActor prev = null;
       for (final AbstractActor current : actorList) {
-        if (prev != null) {
+        if (prev != null && dag.getAllEdges(prev, current).isEmpty()) {
           dag.addEdge(prev, current);
         }
         prev = current;
@@ -223,7 +239,9 @@ public class ScheduleOrderManager extends PreesmContentAdapter {
           // add edge from all actors contained by current to all actors contained in succ
           for (final AbstractActor currentActor : currentActors) {
             for (final AbstractActor succActor : succActors) {
-              dag.addEdge(currentActor, succActor);
+              if (dag.getAllEdges(currentActor, succActor).isEmpty()) {
+                dag.addEdge(currentActor, succActor);
+              }
             }
           }
         }
@@ -250,15 +268,16 @@ public class ScheduleOrderManager extends PreesmContentAdapter {
    */
   public final List<AbstractActor> buildScheduleAndTopologicalOrderedList() {
     if (totalOrderCache != null) {
-      return totalOrderCache;
+      System.err.println("Going/Finishing in buildScheduleAndTopologicalOrderedList");
     } else {
+      System.err.println("Going in buildScheduleAndTopologicalOrderedList");
       final DirectedAcyclicGraph<AbstractActor, DefaultEdge> graph = getTransitiveClosure();
       final List<AbstractActor> totalorder = new ArrayList<>(graph.vertexSet().size());
       new TopologicalOrderIterator<>(graph).forEachRemaining(totalorder::add);
-      final List<AbstractActor> res = Collections.unmodifiableList(totalorder);
-      totalOrderCache = res;
-      return res;
+      totalOrderCache = totalorder;
+      System.err.println("Finishing buildScheduleAndTopologicalOrderedList");
     }
+    return Collections.unmodifiableList(totalOrderCache);
   }
 
   /**
@@ -270,8 +289,10 @@ public class ScheduleOrderManager extends PreesmContentAdapter {
   public final List<AbstractActor> buildScheduleAndTopologicalOrderedList(final Mapping mapping,
       final ComponentInstance operator) {
     if (operatorTotalOrderCache.containsKey(operator)) {
+      // System.err.println("Cache HIT for schedule and topo list");
       return operatorTotalOrderCache.get(operator);
     } else {
+      // System.err.println("Cache MISS for schedule and topo list");
       final List<AbstractActor> order = new ArrayList<>();
       final List<AbstractActor> scheduleAndTopologicalOrderedList = buildScheduleAndTopologicalOrderedList();
       for (final AbstractActor actor : scheduleAndTopologicalOrderedList) {
@@ -286,48 +307,182 @@ public class ScheduleOrderManager extends PreesmContentAdapter {
   }
 
   /**
+   * Remove an actor from a dag and reconnect its direct incoming neighbors with its direct outgoing neighbors.
+   * 
+   * @param dag
+   *          Graph to consider.
+   * @param actor
+   *          Actor to remove from the graph, but keeping its incoming/outgoing dependencies.
+   */
+  private final void removeAndReconnect(final DirectedAcyclicGraph<AbstractActor, DefaultEdge> dag,
+      final AbstractActor actor) {
+    if (dag != null) {
+      for (AbstractActor src : Graphs.predecessorListOf(dag, actor)) {
+        for (AbstractActor tgt : Graphs.successorListOf(dag, actor)) {
+          if (dag.getAllEdges(src, tgt).isEmpty()) {
+            dag.addEdge(src, tgt);
+          }
+        }
+      }
+      dag.removeVertex(actor);
+    }
+  }
+
+  /**
    * Remove the given actor from the ActorSchedule that schedules it.
    */
-  public final boolean remove(final AbstractActor actor) {
-    if (actorToScheduleMap.containsKey(actor)) {
-      final ActorSchedule actorSchedule = actorToScheduleMap.get(actor);
+  public final boolean remove(final Mapping mapping, final AbstractActor actor) {
+    final ActorSchedule actorSchedule = actorToScheduleMap.get(actor);
+    if (actorSchedule != null) {
       actorToScheduleMap.remove(actor);
+      if (totalOrderCache != null) {
+        totalOrderCache.remove(actor);
+      }
+      for (ComponentInstance ci : mapping.getMapping(actor)) {
+        List<AbstractActor> ciSched = operatorTotalOrderCache.get(ci);
+        if (ciSched != null) {
+          ciSched.remove(actor);
+        }
+      }
+      removeAndReconnect(graphCache, actor);
+      removeAndReconnect(transitiveClosureCache, actor);
       return actorSchedule.getActorList().remove(actor);
     }
     return false;
   }
 
-  /**
-   * Find the Schedule in which referenceActor appears, insert newActors after referenceActor in the found Schedule,
-   * update internal structure.
-   */
-  public final void insertAfter(final AbstractActor referenceActor, final AbstractActor... newActors) {
-    final ActorSchedule actorSchedule = actorToScheduleMap.get(referenceActor);
-    final EList<AbstractActor> srcActorList = actorSchedule.getActorList();
-    CollectionUtil.insertAfter(srcActorList, referenceActor, newActors);
-    for (final AbstractActor newActor : newActors) {
-      actorToScheduleMap.put(newActor, actorSchedule);
+  private void updateGraphCache(AbstractActor referenceActor, List<AbstractActor> input, boolean after) {
+    if (graphCache != null) {
+      for (AbstractActor aa : input) {
+        graphCache.addVertex(aa);
+      }
+      if (!input.isEmpty()) {
+        for (int i = 1; i < input.size(); i++) {
+          graphCache.addEdge(input.get(i - 1), input.get(i));
+        }
+        AbstractActor last = input.get(input.size() - 1);
+        AbstractActor first = input.get(0);
+        if (after) {
+          for (AbstractActor suc : Graphs.successorListOf(graphCache, referenceActor)) {
+            graphCache.addEdge(last, suc);
+          }
+          graphCache.addEdge(referenceActor, first);
+        } else {
+          for (AbstractActor pred : Graphs.predecessorListOf(graphCache, referenceActor)) {
+            graphCache.addEdge(pred, first);
+          }
+          graphCache.addEdge(last, referenceActor);
+        }
+      }
     }
+
+  }
+
+  private void updateTransitiveClosureCache(AbstractActor referenceActor, List<AbstractActor> input, boolean after) {
+    if (transitiveClosureCache != null) {
+      for (AbstractActor aa : input) {
+        transitiveClosureCache.addVertex(aa);
+      }
+      if (!input.isEmpty()) {
+        int sizeI = input.size();
+        for (AbstractActor aa : input) {
+          for (AbstractActor succ : Graphs.successorListOf(transitiveClosureCache, referenceActor)) {
+            transitiveClosureCache.addEdge(aa, succ);
+          }
+          for (AbstractActor pred : Graphs.predecessorListOf(transitiveClosureCache, referenceActor)) {
+            transitiveClosureCache.addEdge(pred, aa);
+          }
+        }
+        for (int i = 1; i < sizeI; i++) {
+          AbstractActor aa = input.get(i);
+          for (int j = 0; j < i; j++) {
+            transitiveClosureCache.addEdge(input.get(j), aa);
+          }
+          for (int j = i + 1; j < sizeI; j++) {
+            transitiveClosureCache.addEdge(aa, input.get(j));
+          }
+          if (after) {
+            transitiveClosureCache.addEdge(referenceActor, aa);
+          } else {
+            transitiveClosureCache.addEdge(aa, referenceActor);
+          }
+        }
+      }
+    }
+
   }
 
   /**
    * Find the Schedule in which referenceActor appears, insert newActors after referenceActor in the found Schedule,
    * update internal structure.
    */
-  public final void insertBefore(final AbstractActor referenceActor, final AbstractActor... newActors) {
+  public final void insertAfterInSchedule(final Mapping mapping, final AbstractActor referenceActor,
+      final AbstractActor... newActors) {
     final ActorSchedule actorSchedule = actorToScheduleMap.get(referenceActor);
     final EList<AbstractActor> srcActorList = actorSchedule.getActorList();
-    CollectionUtil.insertBefore(srcActorList, referenceActor, newActors);
     for (final AbstractActor newActor : newActors) {
       actorToScheduleMap.put(newActor, actorSchedule);
     }
+    CollectionUtil.insertAfter(srcActorList, referenceActor, newActors);
+    if (totalOrderCache != null) {
+      CollectionUtil.insertAfter(totalOrderCache, referenceActor, newActors);
+    }
+
+    final Set<ComponentInstance> affectedCIs = new HashSet<>();
+    List<AbstractActor> input = Arrays.asList(newActors);
+    input.forEach(aa -> affectedCIs.addAll(mapping.getMapping(aa)));
+    for (ComponentInstance ci : affectedCIs) {
+      List<AbstractActor> ciSched = operatorTotalOrderCache.get(ci);
+      if (ciSched != null) {
+        AbstractActor[] affectedAAonCI = input.stream().filter(aa -> mapping.getMapping(aa).contains(ci))
+            .toArray(AbstractActor[]::new);
+        CollectionUtil.insertAfter(ciSched, referenceActor, affectedAAonCI);
+      }
+    }
+
+    updateGraphCache(referenceActor, input, true);
+    updateTransitiveClosureCache(referenceActor, input, true);
+
+  }
+
+  /**
+   * Find the Schedule in which referenceActor appears, insert newActors after referenceActor in the found Schedule,
+   * update internal structure.
+   */
+  public final void insertBeforeInSchedule(final Mapping mapping, final AbstractActor referenceActor,
+      final AbstractActor... newActors) {
+    final ActorSchedule actorSchedule = actorToScheduleMap.get(referenceActor);
+    for (final AbstractActor newActor : newActors) {
+      actorToScheduleMap.put(newActor, actorSchedule);
+    }
+    final EList<AbstractActor> srcActorList = actorSchedule.getActorList();
+    CollectionUtil.insertBefore(srcActorList, referenceActor, newActors);
+    if (totalOrderCache != null) {
+      CollectionUtil.insertBefore(totalOrderCache, referenceActor, newActors);
+    }
+
+    final Set<ComponentInstance> affectedCIs = new HashSet<>();
+    List<AbstractActor> input = Arrays.asList(newActors);
+    input.forEach(aa -> affectedCIs.addAll(mapping.getMapping(aa)));
+    for (ComponentInstance ci : affectedCIs) {
+      List<AbstractActor> ciSched = operatorTotalOrderCache.get(ci);
+      if (ciSched != null) {
+        AbstractActor[] affectedAAonCI = input.stream().filter(aa -> mapping.getMapping(aa).contains(ci))
+            .toArray(AbstractActor[]::new);
+        CollectionUtil.insertBefore(ciSched, referenceActor, affectedAAonCI);
+      }
+    }
+
+    updateGraphCache(referenceActor, input, false);
+    updateTransitiveClosureCache(referenceActor, input, false);
+
   }
 
   /**
    * Builds a map that associate for every actor in the schedule its refering ActorSchedule.
    */
   private static final Map<AbstractActor, ActorSchedule> actorToScheduleMap(final Schedule schedule) {
-    final Map<AbstractActor, ActorSchedule> res = new LinkedHashMap<>();
+    final Map<AbstractActor, ActorSchedule> res = new TreeMap<>(new AbstractActorNameComparator());
     new ScheduleSwitch<Boolean>() {
       @Override
       public Boolean caseHierarchicalSchedule(final HierarchicalSchedule hSched) {

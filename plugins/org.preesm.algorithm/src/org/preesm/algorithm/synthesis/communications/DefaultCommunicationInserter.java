@@ -97,12 +97,26 @@ public class DefaultCommunicationInserter implements ICommunicationInserter {
     final List<CommunicationActor> res = new ArrayList<>();
 
     // schedule manager used to query schedule and insert new com nodes.
+    long startTime = System.nanoTime();
     final ScheduleOrderManager scheduleOrderManager = new ScheduleOrderManager(piGraph, schedule);
+    long stopTime = System.nanoTime();
+    long duration = (stopTime - startTime);
+    System.err.println("SOM creation time (ns): " + duration);
 
+    startTime = System.nanoTime();
     final SlamRoutingTable routeTable = new SlamRoutingTable(slamDesign);
+    stopTime = System.nanoTime();
+    duration = (stopTime - startTime);
+    System.err.println("SRT creation time (ns): " + duration);
 
     // iterate over actors in scheduling (and topological) order
+    startTime = System.nanoTime();
     final List<AbstractActor> scheduleOrderedList = scheduleOrderManager.buildScheduleAndTopologicalOrderedList();
+    stopTime = System.nanoTime();
+    duration = (stopTime - startTime);
+    System.err.println("SOM topological build time (ns): " + duration);
+
+    startTime = System.nanoTime();
     for (final AbstractActor sourceActor : scheduleOrderedList) {
       final List<ComponentInstance> sourceMappings = mapping.getMapping(sourceActor);
       if (sourceMappings.size() != 1) {
@@ -113,6 +127,9 @@ public class DefaultCommunicationInserter implements ICommunicationInserter {
             insertActorOutputCommunications(mapping, scheduleOrderManager, routeTable, sourceActor, sourceMappings));
       }
     }
+    stopTime = System.nanoTime();
+    duration = (stopTime - startTime);
+    System.err.println("Communication insertion time (ns): " + duration);
 
     PreesmLogger.getLogger().log(Level.FINER, "[COMINSERT] Communication insertion done");
     return res;
@@ -189,7 +206,11 @@ public class DefaultCommunicationInserter implements ICommunicationInserter {
 
       // -- insert
       insertSend(scheduleOrderManager, mapping, rstep, route, fifo, sendStart, sendEnd);
+      long startTime = System.nanoTime();
       insertReceive(scheduleOrderManager, mapping, rstep, route, fifo, receiveStart, receiveEnd);
+      long stopTime = System.nanoTime();
+      long duration = (stopTime - startTime);
+      System.err.println("insert receive time (ns): " + duration);
 
     }
     return res;
@@ -212,7 +233,7 @@ public class DefaultCommunicationInserter implements ICommunicationInserter {
         throw new PreesmRuntimeException("guru meditation");
       } else {
         // insert after srcCmpLastActor (the "peek" ui.e. last visited) actor for source operator
-        scheduleOrderManager.insertAfter(sourceOperatorPeekActor, sendStart, sendEnd);
+        scheduleOrderManager.insertAfterInSchedule(mapping, sourceOperatorPeekActor, sendStart, sendEnd);
         PreesmLogger.getLogger().log(Level.FINER,
             "[COMINSERT]  * send inserted after '" + sourceOperatorPeekActor.getName() + "'");
       }
@@ -250,12 +271,12 @@ public class DefaultCommunicationInserter implements ICommunicationInserter {
               "Proxy send/receive using operator on which no actor is mapped is not supported");
         } else {
           final AbstractActor abstractActor = list.get(0);
-          scheduleOrderManager.insertBefore(abstractActor, receiveStart, receiveEnd);
+          scheduleOrderManager.insertBeforeInSchedule(mapping, abstractActor, receiveStart, receiveEnd);
           PreesmLogger.getLogger().log(Level.FINER,
               "[COMINSERT]  * receive inserted before '" + abstractActor.getName() + "'");
         }
       } else {
-        scheduleOrderManager.insertAfter(targetOperatorPeekActor, receiveStart, receiveEnd);
+        scheduleOrderManager.insertAfterInSchedule(mapping, targetOperatorPeekActor, receiveStart, receiveEnd);
         PreesmLogger.getLogger().log(Level.FINER,
             "[COMINSERT]  * receive inserted after '" + targetOperatorPeekActor.getName() + "'");
       }

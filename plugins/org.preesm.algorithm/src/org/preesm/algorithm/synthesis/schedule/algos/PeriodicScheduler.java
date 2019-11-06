@@ -1,7 +1,6 @@
 package org.preesm.algorithm.synthesis.schedule.algos;
 
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -30,6 +29,7 @@ import org.preesm.model.pisdf.Fifo;
 import org.preesm.model.pisdf.InitActor;
 import org.preesm.model.pisdf.PeriodicElement;
 import org.preesm.model.pisdf.PiGraph;
+import org.preesm.model.pisdf.util.AbstractActorNameComparator;
 import org.preesm.model.scenario.Scenario;
 import org.preesm.model.scenario.ScenarioConstants;
 import org.preesm.model.slam.Component;
@@ -151,7 +151,7 @@ public class PeriodicScheduler extends AbstractScheduler {
     nbFiringsAllocated = 0;
     cores = new ArrayList<>();
     ciTOca = new HashMap<>();
-    possibleMappings = new TreeMap<>(new ActorNameComparator());
+    possibleMappings = new TreeMap<>(new AbstractActorNameComparator());
     topParallelSchedule = ScheduleFactory.eINSTANCE.createParallelHiearchicalSchedule();
     resultMapping = MappingFactory.eINSTANCE.createMapping();
     for (ComponentInstance ci : slamDesign.getOperatorComponents().get(0).getInstances()) {
@@ -208,23 +208,11 @@ public class PeriodicScheduler extends AbstractScheduler {
     return new SynthesisResult(resultMapping, topParallelSchedule, null);
   }
 
-  /**
-   * Compare actors per name.
-   * 
-   * @author ahonorat
-   */
-  private static class ActorNameComparator implements Comparator<AbstractActor> {
-    @Override
-    public int compare(AbstractActor arg0, AbstractActor arg1) {
-      return arg0.getName().compareTo(arg1.getName());
-    }
-  }
-
   protected DefaultDirectedGraph<VertexAbstraction, EdgeAbstraction> createAbsGraph() {
     absGraph = new DefaultDirectedGraph<>(EdgeAbstraction.class);
 
-    Map<AbstractActor, VertexAbstraction> aaTOva = new TreeMap<>(new ActorNameComparator());
-    Map<AbstractActor, Long> loadMemoization = new TreeMap<>(new ActorNameComparator());
+    Map<AbstractActor, VertexAbstraction> aaTOva = new TreeMap<>(new AbstractActorNameComparator());
+    Map<AbstractActor, Long> loadMemoization = new TreeMap<>(new AbstractActorNameComparator());
     for (final AbstractActor aa : piGraph.getActors()) {
       VertexAbstraction va = new VertexAbstraction(aa);
       absGraph.addVertex(va);
