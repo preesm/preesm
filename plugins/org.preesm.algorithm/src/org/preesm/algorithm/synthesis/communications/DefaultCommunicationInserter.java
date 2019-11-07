@@ -111,7 +111,9 @@ public class DefaultCommunicationInserter implements ICommunicationInserter {
 
     // iterate over actors in scheduling (and topological) order
     startTime = System.nanoTime();
-    final List<AbstractActor> scheduleOrderedList = scheduleOrderManager.buildScheduleAndTopologicalOrderedList();
+    // we copy the whole list since it will be modified by the insertion of the communication.
+    final List<AbstractActor> scheduleOrderedList = new ArrayList<>(
+        scheduleOrderManager.buildScheduleAndTopologicalOrderedList());
     stopTime = System.nanoTime();
     duration = (stopTime - startTime);
     System.err.println("SOM topological build time (ns): " + duration);
