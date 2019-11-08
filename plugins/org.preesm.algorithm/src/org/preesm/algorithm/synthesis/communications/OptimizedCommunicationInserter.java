@@ -35,7 +35,7 @@
 package org.preesm.algorithm.synthesis.communications;
 
 import java.util.List;
-import java.util.stream.Stream;
+import java.util.stream.Collectors;
 import org.preesm.algorithm.mapper.abc.transaction.AddSendReceiveTransaction;
 import org.preesm.algorithm.mapper.model.special.ReceiveVertex;
 import org.preesm.algorithm.mapper.model.special.SendVertex;
@@ -66,18 +66,17 @@ public class OptimizedCommunicationInserter extends DefaultCommunicationInserter
       final ReceiveEndActor receiveEnd) {
     final ComponentInstance targetOperator = routeStep.getReceiver();
     final boolean isLastRouteStep = targetOperator == route.getTarget();
-    if (isLastRouteStep) {
-      final AbstractActor containingActor = fifo.getTargetPort().getContainingActor();
-      scheduleOrderManager.insertBeforeInSchedule(mapping, containingActor, receiveStart, receiveEnd);
-      reorderReceiveVertices(scheduleOrderManager, mapping, routeStep.getSender(), routeStep.getReceiver(), receiveEnd);
-      // do not add call super.lastVisitedActor.put(targetOperator, sendEnd) since sendEnd is not added at the peek of
-      // the current visit
-    } else {
-      // does not work if only relying on super
-      System.err.println("Following insertion is done by DefaultCommunicationInserter: " + receiveStart.getName()
-          + " to " + receiveEnd.getName());
-      super.insertReceive(scheduleOrderManager, mapping, routeStep, route, fifo, receiveStart, receiveEnd);
-    }
+    // if (isLastRouteStep) {
+    // final AbstractActor containingActor = fifo.getTargetPort().getContainingActor();
+    // scheduleOrderManager.insertBeforeInSchedule(mapping, containingActor, receiveStart, receiveEnd);
+    // reorderReceiveVertices(scheduleOrderManager, mapping, routeStep.getSender(), routeStep.getReceiver(),
+    // receiveEnd);
+    // // do not add call super.lastVisitedActor.put(targetOperator, sendEnd) since sendEnd is not added at the peek of
+    // // the current visit
+    // } else {
+    // // does not work if only relying on super
+    super.insertReceive(scheduleOrderManager, mapping, routeStep, route, fifo, receiveStart, receiveEnd);
+    // }
 
   }
 
@@ -102,12 +101,12 @@ public class OptimizedCommunicationInserter extends DefaultCommunicationInserter
         .buildScheduleAndTopologicalOrderedList(mapping, senderOperator);
     long stopTime = System.nanoTime();
     long duration = (stopTime - startTime);
-    // System.err.println("reorder receiver vertices topological part time (ns): " + duration);
+    System.err.println("reorder receiver vertices topological part time (ns): " + duration);
 
     final int indexOfCurrentSend = senderOperatorActors.indexOf(currentSSA);
     final int indexOfCurrentReceive = receiverOperatorActors.indexOf(currentREA);
 
-    final Stream<ReceiveEndActor> stream = receiverOperatorActors.stream()
+    final List<ReceiveEndActor> reActorsToReorder = receiverOperatorActors.stream()
         // keep receive vertices
         .filter(v -> v instanceof ReceiveEndActor).map(ReceiveEndActor.class::cast)
         // Keep only receiveVertex scheduled after the inserted one.
@@ -115,9 +114,10 @@ public class OptimizedCommunicationInserter extends DefaultCommunicationInserter
         // Keep only those whose sender is scheduled before the current one
         .filter(v -> receiverOperatorActors.indexOf(v) > indexOfCurrentReceive
             && mapping.getMapping(v.getSourceSendStart()).contains(senderOperator)
-            && senderOperatorActors.indexOf(v.getSourceSendStart()) < indexOfCurrentSend);
+            && senderOperatorActors.indexOf(v.getSourceSendStart()) < indexOfCurrentSend)
+        .collect(Collectors.toList());
 
-    stream.forEach(v -> {
+    reActorsToReorder.forEach(v -> {
       final ReceiveEndActor receiveEnd = v;
       final ReceiveStartActor receiveStart = v.getReceiveStart();
 

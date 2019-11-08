@@ -42,14 +42,15 @@ import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.function.Supplier;
 import org.eclipse.emf.common.util.EList;
 import org.jgrapht.Graphs;
 import org.jgrapht.alg.TransitiveClosure;
+import org.jgrapht.alg.cycle.JohnsonSimpleCycles;
 import org.jgrapht.graph.DirectedAcyclicGraph;
+import org.jgrapht.graph.SimpleDirectedGraph;
 import org.jgrapht.traverse.TopologicalOrderIterator;
 import org.preesm.algorithm.mapping.model.Mapping;
 import org.preesm.algorithm.schedule.model.ActorSchedule;
@@ -85,10 +86,11 @@ public class ScheduleOrderManager {
   /**  */
   private Map<AbstractActor, ActorSchedule> actorToScheduleMap;
 
-  private DirectedAcyclicGraph<AbstractActor, DAGedge> graphCache              = null;
-  private DirectedAcyclicGraph<AbstractActor, DAGedge> transitiveClosureCache  = null;
-  private List<AbstractActor>                          totalOrderCache         = null;
-  private Map<ComponentInstance, List<AbstractActor>>  operatorTotalOrderCache = new LinkedHashMap<>();
+  private DirectedAcyclicGraph<AbstractActor, DAGedge> graphCache                = null;
+  private DirectedAcyclicGraph<AbstractActor, DAGedge> transitiveClosureCache    = null;
+  boolean                                              isTransitiveCacheComputed = false;
+  private List<AbstractActor>                          totalOrderCache           = null;
+  private Map<ComponentInstance, List<AbstractActor>>  operatorTotalOrderCache   = new LinkedHashMap<>();
 
   /**
    * A new object should be created if the pigraph or the schedule has been modified externally.
@@ -107,6 +109,7 @@ public class ScheduleOrderManager {
   public void reset() {
     graphCache = null;
     transitiveClosureCache = null;
+    isTransitiveCacheComputed = false;
     totalOrderCache = null;
     operatorTotalOrderCache = new LinkedHashMap<>();
 
@@ -149,13 +152,16 @@ public class ScheduleOrderManager {
 
       DAGedge.count = 0;
       final DirectedAcyclicGraph<AbstractActor, DAGedge> dag = new DirectedAcyclicGraph<>(null, eSupplier, false);
+      final DirectedAcyclicGraph<AbstractActor, DAGedge> tdag = new DirectedAcyclicGraph<>(null, eSupplier, false);
 
       ScheduleUtil.getAllReferencedActors(schedule).forEach(dag::addVertex);
+      ScheduleUtil.getAllReferencedActors(schedule).forEach(tdag::addVertex);
       for (Fifo fifo : pigraph.getFifos()) {
         AbstractActor src = fifo.getSourcePort().getContainingActor();
         AbstractActor tgt = fifo.getTargetPort().getContainingActor();
         if (dag.getAllEdges(src, tgt).isEmpty()) {
           dag.addEdge(src, tgt, new DAGedge());
+          tdag.addEdge(src, tgt, new DAGedge());
         }
       }
 
@@ -168,32 +174,35 @@ public class ScheduleOrderManager {
 
             if (dag.getAllEdges(sendStart, sendEnd).isEmpty()) {
               dag.addEdge(sendStart, sendEnd, new DAGedge());
+              tdag.addEdge(sendStart, sendEnd, new DAGedge());
             }
             if (dag.getAllEdges(receiveStart, receiveEnd).isEmpty()) {
               dag.addEdge(receiveStart, receiveEnd, new DAGedge());
+              tdag.addEdge(receiveStart, receiveEnd, new DAGedge());
             }
             if (dag.getAllEdges(sendEnd, receiveEnd).isEmpty()) {
               dag.addEdge(sendEnd, receiveEnd, new DAGedge());
+              tdag.addEdge(sendEnd, receiveEnd, new DAGedge());
             }
           });
 
-      new SchedulePrecedenceUpdate(dag).doSwitch(schedule);
+      new SchedulePrecedenceUpdate(dag, tdag).doSwitch(schedule);
       graphCache = dag;
+      // transitive closure is not yet computed, at this point it is just a copy of dag.
+      transitiveClosureCache = tdag;
       return dag;
     }
   }
 
   private final DirectedAcyclicGraph<AbstractActor, DAGedge> getTransitiveClosure() {
-    if (transitiveClosureCache != null) {
+    if (isTransitiveCacheComputed) {
       return transitiveClosureCache;
     } else {
-      final DirectedAcyclicGraph<AbstractActor, DAGedge> graph = getGraph();
-      @SuppressWarnings("unchecked")
-      final DirectedAcyclicGraph<AbstractActor,
-          DAGedge> transitiveClosure = (DirectedAcyclicGraph<AbstractActor, DAGedge>) graph.clone();
-      TransitiveClosure.INSTANCE.closeDirectedAcyclicGraph(transitiveClosure);
-      transitiveClosureCache = transitiveClosure;
-      return transitiveClosure;
+      // getGraph will initialize tdag
+      getGraph();
+      TransitiveClosure.INSTANCE.closeDirectedAcyclicGraph(transitiveClosureCache);
+      isTransitiveCacheComputed = true;
+      return transitiveClosureCache;
     }
   }
 
@@ -235,9 +244,12 @@ public class ScheduleOrderManager {
   private static class SchedulePrecedenceUpdate extends ScheduleSwitch<Boolean> {
 
     private final DirectedAcyclicGraph<AbstractActor, DAGedge> dag;
+    private final DirectedAcyclicGraph<AbstractActor, DAGedge> tdag;
 
-    private SchedulePrecedenceUpdate(final DirectedAcyclicGraph<AbstractActor, DAGedge> dag) {
+    private SchedulePrecedenceUpdate(final DirectedAcyclicGraph<AbstractActor, DAGedge> dag,
+        final DirectedAcyclicGraph<AbstractActor, DAGedge> tdag) {
       this.dag = dag;
+      this.tdag = tdag;
     }
 
     @Override
@@ -246,7 +258,30 @@ public class ScheduleOrderManager {
       AbstractActor prev = null;
       for (final AbstractActor current : actorList) {
         if (prev != null && dag.getAllEdges(prev, current).isEmpty()) {
-          dag.addEdge(prev, current, new DAGedge());
+          try {
+            dag.addEdge(prev, current, new DAGedge());
+          } catch (IllegalArgumentException e) {
+            System.err.println("ERRRROOOOOOR");
+            SimpleDirectedGraph<AbstractActor, DAGedge> copy = new SimpleDirectedGraph<>(DAGedge.class);
+            dag.vertexSet().forEach(copy::addVertex);
+            dag.edgeSet().forEach(edge -> {
+              AbstractActor src = dag.getEdgeSource(edge);
+              AbstractActor tgt = dag.getEdgeTarget(edge);
+              copy.addEdge(src, tgt, edge);
+            });
+            copy.addEdge(prev, current, new DAGedge());
+            final JohnsonSimpleCycles<AbstractActor, DAGedge> cycleFinder = new JohnsonSimpleCycles<>(copy);
+            final List<List<AbstractActor>> cycles = cycleFinder.findSimpleCycles();
+            System.err.println("Cycle detector found: " + cycles.size() + " cycles.");
+            for (List<AbstractActor> cycle : cycles) {
+              final StringBuilder sb = new StringBuilder(
+                  prev.getName() + " => " + current.getName() + " adds cycle:\n");
+              cycle.stream().forEach(a -> sb.append(" -> " + a.getName()));
+              System.err.println(sb.toString());
+            }
+            throw e;
+          }
+          tdag.addEdge(prev, current, new DAGedge());
         }
         prev = current;
       }
@@ -268,6 +303,7 @@ public class ScheduleOrderManager {
             for (final AbstractActor succActor : succActors) {
               if (dag.getAllEdges(currentActor, succActor).isEmpty()) {
                 dag.addEdge(currentActor, succActor, new DAGedge());
+                tdag.addEdge(currentActor, succActor, new DAGedge());
               }
             }
           }
@@ -304,23 +340,23 @@ public class ScheduleOrderManager {
       new TopologicalOrderIterator<>(graph).forEachRemaining(totalorder::add);
       totalOrderCache = totalorder;
 
-      for (Entry<ComponentInstance, List<AbstractActor>> entry : operatorTotalOrderCache.entrySet()) {
-        System.err.println("Operator " + entry.getKey().getInstanceName() + ": ");
-        StringBuilder sb = new StringBuilder();
-        entry.getValue().forEach(x -> sb.append(x.getName() + "; "));
-        System.err.println(sb.toString());
-      }
-
-      System.err.println("\n-------\n Graph with " + graphCache.edgeSet().size() + " edges");
-      for (DAGedge de : graphCache.edgeSet()) {
-        AbstractActor src = graphCache.getEdgeSource(de);
-        AbstractActor tgt = graphCache.getEdgeTarget(de);
-        System.err.println(src.getName() + " --> " + tgt.getName());
-      }
-
-      StringBuilder sb = new StringBuilder("Global order:\n");
-      totalOrderCache.forEach(x -> sb.append(x.getName() + ";\n"));
-      System.err.println(sb.toString());
+      // for (Entry<ComponentInstance, List<AbstractActor>> entry : operatorTotalOrderCache.entrySet()) {
+      // System.err.println("Operator " + entry.getKey().getInstanceName() + ": ");
+      // StringBuilder sb = new StringBuilder();
+      // entry.getValue().forEach(x -> sb.append(x.getName() + "; "));
+      // System.err.println(sb.toString());
+      // }
+      //
+      // System.err.println("\n-------\n Graph with " + graphCache.edgeSet().size() + " edges");
+      // for (DAGedge de : graphCache.edgeSet()) {
+      // AbstractActor src = graphCache.getEdgeSource(de);
+      // AbstractActor tgt = graphCache.getEdgeTarget(de);
+      // System.err.println(src.getName() + " --> " + tgt.getName());
+      // }
+      //
+      // StringBuilder sb = new StringBuilder("Global order:\n");
+      // totalOrderCache.forEach(x -> sb.append(x.getName() + ";\n"));
+      // System.err.println(sb.toString());
 
       System.err.println("Finishing buildScheduleAndTopologicalOrderedList");
     }
@@ -408,38 +444,20 @@ public class ScheduleOrderManager {
       if (!input.isEmpty()) {
         for (int i = 1; i < input.size(); i++) {
           graphCache.addEdge(input.get(i - 1), input.get(i), new DAGedge());
-          System.err.println("Adding edge from " + input.get(i - 1).getName() + " to " + input.get(i).getName());
         }
         AbstractActor last = input.get(input.size() - 1);
         AbstractActor first = input.get(0);
 
-        System.err.println("Trying to add " + first.getName() + " and " + last.getName());
-        System.err.println("refActor: " + referenceActor.getName() + ", after? " + after);
-
         if (after) {
           for (AbstractActor suc : Graphs.successorListOf(graphCache, referenceActor)) {
             graphCache.addEdge(last, suc, new DAGedge());
-            System.err.println("Adding edge from " + last.getName() + " to " + suc.getName());
           }
-          try {
-            graphCache.addEdge(referenceActor, first, new DAGedge());
-            System.err.println("Adding edge from " + referenceActor.getName() + " to " + first.getName());
-          } catch (IllegalArgumentException e) {
-            System.err.println("Cycle with: " + referenceActor.getName() + " to " + first.getName());
-            throw e;
-          }
+          graphCache.addEdge(referenceActor, first, new DAGedge());
         } else {
           for (AbstractActor pred : Graphs.predecessorListOf(graphCache, referenceActor)) {
-            try {
-              graphCache.addEdge(pred, first, new DAGedge());
-              System.err.println("Adding edge from " + pred.getName() + " to " + first.getName());
-            } catch (IllegalArgumentException e) {
-              System.err.println("Cycle with: " + pred.getName() + " to " + first.getName());
-              throw e;
-            }
+            graphCache.addEdge(pred, first, new DAGedge());
           }
           graphCache.addEdge(last, referenceActor, new DAGedge());
-          System.err.println("Adding edge from " + last.getName() + " to " + referenceActor.getName());
         }
       }
     }
@@ -487,7 +505,7 @@ public class ScheduleOrderManager {
   public final void insertAfterInSchedule(final Mapping mapping, final AbstractActor referenceActor,
       final AbstractActor... newActors) {
 
-    System.err.println("INSERT AFTER");
+    System.err.println("INSERT AFTER " + referenceActor.getName());
 
     final ActorSchedule actorSchedule = actorToScheduleMap.get(referenceActor);
     final EList<AbstractActor> srcActorList = actorSchedule.getActorList();
@@ -509,7 +527,10 @@ public class ScheduleOrderManager {
             .toArray(AbstractActor[]::new);
         CollectionUtil.insertAfter(ciSched, referenceActor, affectedAAonCI);
       }
+      System.err.println("Affected operator: " + ci.getInstanceName());
     }
+
+    System.err.println(input.get(0).getName() + " and " + input.get(1).getName());
 
     updateGraphCache(referenceActor, input, true);
     updateTransitiveClosureCache(referenceActor, input, true);
@@ -523,33 +544,36 @@ public class ScheduleOrderManager {
   public final void insertBeforeInSchedule(final Mapping mapping, final AbstractActor referenceActor,
       final AbstractActor... newActors) {
 
-    // System.err.println("INSERT BEFORE");
-    //
-    // final ActorSchedule actorSchedule = actorToScheduleMap.get(referenceActor);
-    // for (final AbstractActor newActor : newActors) {
-    // actorToScheduleMap.put(newActor, actorSchedule);
-    // }
-    // final EList<AbstractActor> srcActorList = actorSchedule.getActorList();
-    // CollectionUtil.insertBefore(srcActorList, referenceActor, newActors);
-    // if (totalOrderCache != null) {
-    // CollectionUtil.insertBefore(totalOrderCache, referenceActor, newActors);
-    // }
-    //
-    // final Set<ComponentInstance> affectedCIs = new HashSet<>();
-    // List<AbstractActor> input = Arrays.asList(newActors);
-    // input.forEach(aa -> affectedCIs.addAll(mapping.getMapping(aa)));
-    // for (ComponentInstance ci : affectedCIs) {
-    // List<AbstractActor> ciSched = operatorTotalOrderCache.get(ci);
-    // if (ciSched != null) {
-    // AbstractActor[] affectedAAonCI = input.stream().filter(aa -> mapping.getMapping(aa).contains(ci))
-    // .toArray(AbstractActor[]::new);
-    // CollectionUtil.insertBefore(ciSched, referenceActor, affectedAAonCI);
-    // }
-    // }
-    //
-    // updateGraphCache(referenceActor, input, false);
-    // updateTransitiveClosureCache(referenceActor, input, false);
-    //
+    System.err.println("INSERT BEFORE " + referenceActor.getName());
+
+    final ActorSchedule actorSchedule = actorToScheduleMap.get(referenceActor);
+    for (final AbstractActor newActor : newActors) {
+      actorToScheduleMap.put(newActor, actorSchedule);
+    }
+    final EList<AbstractActor> srcActorList = actorSchedule.getActorList();
+    CollectionUtil.insertBefore(srcActorList, referenceActor, newActors);
+    if (totalOrderCache != null) {
+      CollectionUtil.insertBefore(totalOrderCache, referenceActor, newActors);
+    }
+
+    final Set<ComponentInstance> affectedCIs = new HashSet<>();
+    List<AbstractActor> input = Arrays.asList(newActors);
+    input.forEach(aa -> affectedCIs.addAll(mapping.getMapping(aa)));
+    for (ComponentInstance ci : affectedCIs) {
+      List<AbstractActor> ciSched = operatorTotalOrderCache.get(ci);
+      if (ciSched != null) {
+        AbstractActor[] affectedAAonCI = input.stream().filter(aa -> mapping.getMapping(aa).contains(ci))
+            .toArray(AbstractActor[]::new);
+        CollectionUtil.insertBefore(ciSched, referenceActor, affectedAAonCI);
+      }
+      System.err.println("Affected operator: " + ci.getInstanceName());
+    }
+
+    System.err.println(input.get(0).getName() + " and " + input.get(1).getName());
+
+    updateGraphCache(referenceActor, input, false);
+    updateTransitiveClosureCache(referenceActor, input, false);
+
   }
 
   /**
