@@ -66,17 +66,16 @@ public class OptimizedCommunicationInserter extends DefaultCommunicationInserter
       final ReceiveEndActor receiveEnd) {
     final ComponentInstance targetOperator = routeStep.getReceiver();
     final boolean isLastRouteStep = targetOperator == route.getTarget();
-    // if (isLastRouteStep) {
-    // final AbstractActor containingActor = fifo.getTargetPort().getContainingActor();
-    // scheduleOrderManager.insertBeforeInSchedule(mapping, containingActor, receiveStart, receiveEnd);
-    // reorderReceiveVertices(scheduleOrderManager, mapping, routeStep.getSender(), routeStep.getReceiver(),
-    // receiveEnd);
-    // // do not add call super.lastVisitedActor.put(targetOperator, sendEnd) since sendEnd is not added at the peek of
-    // // the current visit
-    // } else {
-    // // does not work if only relying on super
-    super.insertReceive(scheduleOrderManager, mapping, routeStep, route, fifo, receiveStart, receiveEnd);
-    // }
+    if (isLastRouteStep) {
+      final AbstractActor containingActor = fifo.getTargetPort().getContainingActor();
+      scheduleOrderManager.insertBeforeInSchedule(mapping, containingActor, receiveStart, receiveEnd);
+      reorderReceiveVertices(scheduleOrderManager, mapping, routeStep.getSender(), routeStep.getReceiver(), receiveEnd);
+      // do not add call super.lastVisitedActor.put(targetOperator, sendEnd) since sendEnd is not added at the peek of
+      // the current visit
+    } else {
+      // does not work if only relying on super
+      super.insertReceive(scheduleOrderManager, mapping, routeStep, route, fifo, receiveStart, receiveEnd);
+    }
 
   }
 

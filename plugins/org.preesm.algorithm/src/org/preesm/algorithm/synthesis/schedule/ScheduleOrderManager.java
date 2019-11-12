@@ -48,9 +48,7 @@ import java.util.function.Supplier;
 import org.eclipse.emf.common.util.EList;
 import org.jgrapht.Graphs;
 import org.jgrapht.alg.TransitiveClosure;
-import org.jgrapht.alg.cycle.JohnsonSimpleCycles;
 import org.jgrapht.graph.DirectedAcyclicGraph;
-import org.jgrapht.graph.SimpleDirectedGraph;
 import org.jgrapht.traverse.TopologicalOrderIterator;
 import org.preesm.algorithm.mapping.model.Mapping;
 import org.preesm.algorithm.schedule.model.ActorSchedule;
@@ -64,6 +62,7 @@ import org.preesm.algorithm.schedule.model.SequentialActorSchedule;
 import org.preesm.algorithm.schedule.model.SequentialHiearchicalSchedule;
 import org.preesm.algorithm.schedule.model.util.ScheduleSwitch;
 import org.preesm.commons.CollectionUtil;
+import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.DataPort;
 import org.preesm.model.pisdf.Fifo;
@@ -117,20 +116,31 @@ public class ScheduleOrderManager {
   }
 
   /**
+   * Type of dependency.
+   * 
+   * @author ahonorat
+   */
+  private enum DAGedgeType {
+    DATA, SCHEDS, SCHEDH, COM, NONE, RECO;
+  }
+
+  /**
    * Dummy class for edge in graph.
    * 
    * @author ahonorat
    */
   private static class DAGedge {
-    static int count = 0;
-    int        id;
+    static int  count = 0;
+    int         id;
+    DAGedgeType type;
 
-    public DAGedge() {
+    public DAGedge(DAGedgeType type) {
       id = count++;
+      this.type = type;
     }
 
     public String toString() {
-      return "edge n°" + id;
+      return "edge n°" + id + " of type " + type;
     }
   }
 
@@ -146,7 +156,7 @@ public class ScheduleOrderManager {
       Supplier<DAGedge> eSupplier = new Supplier<DAGedge>() {
         @Override
         public DAGedge get() {
-          return new DAGedge();
+          return new DAGedge(DAGedgeType.NONE);
         }
       };
 
@@ -160,8 +170,8 @@ public class ScheduleOrderManager {
         AbstractActor src = fifo.getSourcePort().getContainingActor();
         AbstractActor tgt = fifo.getTargetPort().getContainingActor();
         if (dag.getAllEdges(src, tgt).isEmpty()) {
-          dag.addEdge(src, tgt, new DAGedge());
-          tdag.addEdge(src, tgt, new DAGedge());
+          dag.addEdge(src, tgt, new DAGedge(DAGedgeType.DATA));
+          tdag.addEdge(src, tgt, new DAGedge(DAGedgeType.DATA));
         }
       }
 
@@ -173,16 +183,16 @@ public class ScheduleOrderManager {
             final ReceiveStartActor receiveStart = receiveEnd.getReceiveStart();
 
             if (dag.getAllEdges(sendStart, sendEnd).isEmpty()) {
-              dag.addEdge(sendStart, sendEnd, new DAGedge());
-              tdag.addEdge(sendStart, sendEnd, new DAGedge());
+              dag.addEdge(sendStart, sendEnd, new DAGedge(DAGedgeType.COM));
+              tdag.addEdge(sendStart, sendEnd, new DAGedge(DAGedgeType.COM));
             }
             if (dag.getAllEdges(receiveStart, receiveEnd).isEmpty()) {
-              dag.addEdge(receiveStart, receiveEnd, new DAGedge());
-              tdag.addEdge(receiveStart, receiveEnd, new DAGedge());
+              dag.addEdge(receiveStart, receiveEnd, new DAGedge(DAGedgeType.COM));
+              tdag.addEdge(receiveStart, receiveEnd, new DAGedge(DAGedgeType.COM));
             }
             if (dag.getAllEdges(sendEnd, receiveEnd).isEmpty()) {
-              dag.addEdge(sendEnd, receiveEnd, new DAGedge());
-              tdag.addEdge(sendEnd, receiveEnd, new DAGedge());
+              dag.addEdge(sendEnd, receiveEnd, new DAGedge(DAGedgeType.COM));
+              tdag.addEdge(sendEnd, receiveEnd, new DAGedge(DAGedgeType.COM));
             }
           });
 
@@ -258,30 +268,8 @@ public class ScheduleOrderManager {
       AbstractActor prev = null;
       for (final AbstractActor current : actorList) {
         if (prev != null && dag.getAllEdges(prev, current).isEmpty()) {
-          try {
-            dag.addEdge(prev, current, new DAGedge());
-          } catch (IllegalArgumentException e) {
-            System.err.println("ERRRROOOOOOR");
-            SimpleDirectedGraph<AbstractActor, DAGedge> copy = new SimpleDirectedGraph<>(DAGedge.class);
-            dag.vertexSet().forEach(copy::addVertex);
-            dag.edgeSet().forEach(edge -> {
-              AbstractActor src = dag.getEdgeSource(edge);
-              AbstractActor tgt = dag.getEdgeTarget(edge);
-              copy.addEdge(src, tgt, edge);
-            });
-            copy.addEdge(prev, current, new DAGedge());
-            final JohnsonSimpleCycles<AbstractActor, DAGedge> cycleFinder = new JohnsonSimpleCycles<>(copy);
-            final List<List<AbstractActor>> cycles = cycleFinder.findSimpleCycles();
-            System.err.println("Cycle detector found: " + cycles.size() + " cycles.");
-            for (List<AbstractActor> cycle : cycles) {
-              final StringBuilder sb = new StringBuilder(
-                  prev.getName() + " => " + current.getName() + " adds cycle:\n");
-              cycle.stream().forEach(a -> sb.append(" -> " + a.getName()));
-              System.err.println(sb.toString());
-            }
-            throw e;
-          }
-          tdag.addEdge(prev, current, new DAGedge());
+          dag.addEdge(prev, current, new DAGedge(DAGedgeType.SCHEDS));
+          tdag.addEdge(prev, current, new DAGedge(DAGedgeType.SCHEDS));
         }
         prev = current;
       }
@@ -302,8 +290,8 @@ public class ScheduleOrderManager {
           for (final AbstractActor currentActor : currentActors) {
             for (final AbstractActor succActor : succActors) {
               if (dag.getAllEdges(currentActor, succActor).isEmpty()) {
-                dag.addEdge(currentActor, succActor, new DAGedge());
-                tdag.addEdge(currentActor, succActor, new DAGedge());
+                dag.addEdge(currentActor, succActor, new DAGedge(DAGedgeType.SCHEDH));
+                tdag.addEdge(currentActor, succActor, new DAGedge(DAGedgeType.SCHEDH));
               }
             }
           }
@@ -403,7 +391,7 @@ public class ScheduleOrderManager {
       for (AbstractActor src : Graphs.predecessorListOf(dag, actor)) {
         for (AbstractActor tgt : Graphs.successorListOf(dag, actor)) {
           if (dag.getAllEdges(src, tgt).isEmpty()) {
-            dag.addEdge(src, tgt, new DAGedge());
+            dag.addEdge(src, tgt, new DAGedge(DAGedgeType.RECO));
           }
         }
       }
@@ -443,21 +431,21 @@ public class ScheduleOrderManager {
       }
       if (!input.isEmpty()) {
         for (int i = 1; i < input.size(); i++) {
-          graphCache.addEdge(input.get(i - 1), input.get(i), new DAGedge());
+          graphCache.addEdge(input.get(i - 1), input.get(i), new DAGedge(DAGedgeType.RECO));
         }
         AbstractActor last = input.get(input.size() - 1);
         AbstractActor first = input.get(0);
 
         if (after) {
           for (AbstractActor suc : Graphs.successorListOf(graphCache, referenceActor)) {
-            graphCache.addEdge(last, suc, new DAGedge());
+            graphCache.addEdge(last, suc, new DAGedge(DAGedgeType.RECO));
           }
-          graphCache.addEdge(referenceActor, first, new DAGedge());
+          graphCache.addEdge(referenceActor, first, new DAGedge(DAGedgeType.RECO));
         } else {
           for (AbstractActor pred : Graphs.predecessorListOf(graphCache, referenceActor)) {
-            graphCache.addEdge(pred, first, new DAGedge());
+            graphCache.addEdge(pred, first, new DAGedge(DAGedgeType.RECO));
           }
-          graphCache.addEdge(last, referenceActor, new DAGedge());
+          graphCache.addEdge(last, referenceActor, new DAGedge(DAGedgeType.RECO));
         }
       }
     }
@@ -473,24 +461,24 @@ public class ScheduleOrderManager {
         int sizeI = input.size();
         for (AbstractActor aa : input) {
           for (AbstractActor succ : Graphs.successorListOf(transitiveClosureCache, referenceActor)) {
-            transitiveClosureCache.addEdge(aa, succ, new DAGedge());
+            transitiveClosureCache.addEdge(aa, succ, new DAGedge(DAGedgeType.RECO));
           }
           for (AbstractActor pred : Graphs.predecessorListOf(transitiveClosureCache, referenceActor)) {
-            transitiveClosureCache.addEdge(pred, aa, new DAGedge());
+            transitiveClosureCache.addEdge(pred, aa, new DAGedge(DAGedgeType.RECO));
           }
         }
         for (int i = 1; i < sizeI; i++) {
           AbstractActor aa = input.get(i);
           for (int j = 0; j < i; j++) {
-            transitiveClosureCache.addEdge(input.get(j), aa, new DAGedge());
+            transitiveClosureCache.addEdge(input.get(j), aa, new DAGedge(DAGedgeType.RECO));
           }
           for (int j = i + 1; j < sizeI; j++) {
-            transitiveClosureCache.addEdge(aa, input.get(j), new DAGedge());
+            transitiveClosureCache.addEdge(aa, input.get(j), new DAGedge(DAGedgeType.RECO));
           }
           if (after) {
-            transitiveClosureCache.addEdge(referenceActor, aa, new DAGedge());
+            transitiveClosureCache.addEdge(referenceActor, aa, new DAGedge(DAGedgeType.RECO));
           } else {
-            transitiveClosureCache.addEdge(aa, referenceActor, new DAGedge());
+            transitiveClosureCache.addEdge(aa, referenceActor, new DAGedge(DAGedgeType.RECO));
           }
         }
       }
@@ -519,7 +507,13 @@ public class ScheduleOrderManager {
 
     final Set<ComponentInstance> affectedCIs = new HashSet<>();
     List<AbstractActor> input = Arrays.asList(newActors);
+    System.err.println(input.get(0).getName() + " and " + input.get(1).getName());
+
     input.forEach(aa -> affectedCIs.addAll(mapping.getMapping(aa)));
+    affectedCIs.addAll(mapping.getMapping(referenceActor));
+    if (affectedCIs.size() != 1) {
+      throw new PreesmRuntimeException("Cannot insert communications for actors mapped on several operators");
+    }
     for (ComponentInstance ci : affectedCIs) {
       List<AbstractActor> ciSched = operatorTotalOrderCache.get(ci);
       if (ciSched != null) {
@@ -529,8 +523,6 @@ public class ScheduleOrderManager {
       }
       System.err.println("Affected operator: " + ci.getInstanceName());
     }
-
-    System.err.println(input.get(0).getName() + " and " + input.get(1).getName());
 
     updateGraphCache(referenceActor, input, true);
     updateTransitiveClosureCache(referenceActor, input, true);

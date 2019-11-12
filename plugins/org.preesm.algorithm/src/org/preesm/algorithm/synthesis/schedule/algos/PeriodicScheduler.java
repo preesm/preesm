@@ -24,7 +24,6 @@ import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.Actor;
 import org.preesm.model.pisdf.DataInputPort;
 import org.preesm.model.pisdf.DataOutputPort;
-import org.preesm.model.pisdf.EndActor;
 import org.preesm.model.pisdf.Fifo;
 import org.preesm.model.pisdf.InitActor;
 import org.preesm.model.pisdf.PeriodicElement;
@@ -415,11 +414,11 @@ public class PeriodicScheduler extends AbstractScheduler {
     ca.coreSched.getActorList().add(va.aa);
     if (va.aa instanceof InitActor) {
       final AbstractActor endReference = ((InitActor) va.aa).getEndReference();
-      resultMapping.getMappings().put(endReference, ECollections.singletonEList(ca.ci));
+      List<CoreAbstraction> uniqueEndMapping = new ArrayList<>();
+      uniqueEndMapping.add(ca);
+      possibleMappings.put(endReference, uniqueEndMapping);
     }
-    if (!(va.aa instanceof EndActor)) {
-      resultMapping.getMappings().put(va.aa, ECollections.singletonEList(ca.ci));
-    }
+    resultMapping.getMappings().put(va.aa, ECollections.singletonEList(ca.ci));
     va.startTime = startTime;
     final long extraIdleTime = va.startTime - ca.implTime;
     ca.implTime = va.startTime + va.load;

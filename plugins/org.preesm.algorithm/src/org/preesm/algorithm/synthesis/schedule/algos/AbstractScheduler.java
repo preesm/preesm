@@ -112,6 +112,10 @@ public abstract class AbstractScheduler implements IScheduler {
       throw new PreesmSynthesisException("Schedule is missing order for some actors of the input PiSDF.");
     }
 
+    if (!mapping.getMappings().keySet().containsAll(scheduledActors)) {
+      throw new PreesmSynthesisException("Mapping is missing actors of the input PiSDF.");
+    }
+
     final List<ComponentInstance> slamCmpInstances = new ArrayList<>(slamDesign.getComponentInstances());
     final List<ComponentInstance> usedCmpInstances = new ArrayList<>(mapping.getAllInvolvedComponentInstances());
     if (!slamCmpInstances.containsAll(usedCmpInstances)) {
