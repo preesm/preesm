@@ -246,6 +246,9 @@ public class PeriodsPreschedulingChecker extends AbstractTaskImplementation {
     performAllNBF(actorsNBFF, periodicActors, true, heurFifoBreaks.absGraph, heurFifoBreaks.breakingFifosAbs, wcets,
         heurFifoBreaks.minCycleBrv, nbCore);
 
+    // 5. greetings to the user
+    PreesmLogger.getLogger().log(Level.INFO, "Periodic prescheduling check succeeded: valid schedule *might* exist!");
+
     return output;
   }
 
