@@ -208,12 +208,7 @@ public class DefaultCommunicationInserter implements ICommunicationInserter {
 
       // -- insert
       insertSend(scheduleOrderManager, mapping, rstep, route, fifo, sendStart, sendEnd);
-      long startTime = System.nanoTime();
       insertReceive(scheduleOrderManager, mapping, rstep, route, fifo, receiveStart, receiveEnd);
-      long stopTime = System.nanoTime();
-      long duration = (stopTime - startTime);
-      System.err.println("insert receive time (ns): " + duration);
-
     }
     return res;
   }
@@ -235,7 +230,7 @@ public class DefaultCommunicationInserter implements ICommunicationInserter {
         throw new PreesmRuntimeException("guru meditation");
       } else {
         // insert after srcCmpLastActor (the "peek" ui.e. last visited) actor for source operator
-        scheduleOrderManager.insertAfterInSchedule(mapping, sourceOperatorPeekActor, sendStart, sendEnd);
+        scheduleOrderManager.insertComStEdAfterInSchedule(mapping, sourceOperatorPeekActor, sendStart, sendEnd);
         PreesmLogger.getLogger().log(Level.FINER,
             "[COMINSERT]  * send inserted after '" + sourceOperatorPeekActor.getName() + "'");
       }
@@ -273,12 +268,12 @@ public class DefaultCommunicationInserter implements ICommunicationInserter {
               "Proxy send/receive using operator on which no actor is mapped is not supported");
         } else {
           final AbstractActor abstractActor = list.get(0);
-          scheduleOrderManager.insertBeforeInSchedule(mapping, abstractActor, receiveStart, receiveEnd);
+          scheduleOrderManager.insertComStEdBeforeInSchedule(mapping, abstractActor, receiveStart, receiveEnd);
           PreesmLogger.getLogger().log(Level.FINER,
               "[COMINSERT]  * receive inserted before '" + abstractActor.getName() + "'");
         }
       } else {
-        scheduleOrderManager.insertAfterInSchedule(mapping, targetOperatorPeekActor, receiveStart, receiveEnd);
+        scheduleOrderManager.insertComStEdAfterInSchedule(mapping, targetOperatorPeekActor, receiveStart, receiveEnd);
         PreesmLogger.getLogger().log(Level.FINER,
             "[COMINSERT]  * receive inserted after '" + targetOperatorPeekActor.getName() + "'");
       }

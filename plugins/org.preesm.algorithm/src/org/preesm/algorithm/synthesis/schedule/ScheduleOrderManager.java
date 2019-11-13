@@ -35,7 +35,6 @@
 package org.preesm.algorithm.synthesis.schedule;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
@@ -52,6 +51,7 @@ import org.jgrapht.graph.DirectedAcyclicGraph;
 import org.jgrapht.traverse.TopologicalOrderIterator;
 import org.preesm.algorithm.mapping.model.Mapping;
 import org.preesm.algorithm.schedule.model.ActorSchedule;
+import org.preesm.algorithm.schedule.model.CommunicationActor;
 import org.preesm.algorithm.schedule.model.HierarchicalSchedule;
 import org.preesm.algorithm.schedule.model.ReceiveEndActor;
 import org.preesm.algorithm.schedule.model.ReceiveStartActor;
@@ -85,11 +85,12 @@ public class ScheduleOrderManager {
   /**  */
   private Map<AbstractActor, ActorSchedule> actorToScheduleMap;
 
-  private DirectedAcyclicGraph<AbstractActor, DAGedge> graphCache                = null;
-  private DirectedAcyclicGraph<AbstractActor, DAGedge> transitiveClosureCache    = null;
-  boolean                                              isTransitiveCacheComputed = false;
-  private List<AbstractActor>                          totalOrderCache           = null;
-  private Map<ComponentInstance, List<AbstractActor>>  operatorTotalOrderCache   = new LinkedHashMap<>();
+  private DirectedAcyclicGraph<AbstractActor, DAGedge>     graphCache                = null;
+  private DirectedAcyclicGraph<AbstractActor, DAGedge>     transitiveClosureCache    = null;
+  boolean                                                  isTransitiveCacheComputed = false;
+  private List<AbstractActor>                              totalOrderCache           = null;
+  private Map<ComponentInstance, List<CommunicationActor>> operatorComOrderCache     = new LinkedHashMap<>();
+  private Map<ComponentInstance, List<AbstractActor>>      operatorTotalOrderCache   = new LinkedHashMap<>();
 
   /**
    * A new object should be created if the pigraph or the schedule has been modified externally.
@@ -110,6 +111,7 @@ public class ScheduleOrderManager {
     transitiveClosureCache = null;
     isTransitiveCacheComputed = false;
     totalOrderCache = null;
+    operatorComOrderCache = new LinkedHashMap<>();
     operatorTotalOrderCache = new LinkedHashMap<>();
 
     actorToScheduleMap = ScheduleOrderManager.actorToScheduleMap(schedule);
@@ -318,10 +320,8 @@ public class ScheduleOrderManager {
    * The result list is unmodifiable.
    */
   public final List<AbstractActor> buildScheduleAndTopologicalOrderedList() {
-    if (totalOrderCache != null) {
-      System.err.println("Going/Finishing in buildScheduleAndTopologicalOrderedList");
-    } else {
-      System.err.println("Going in buildScheduleAndTopologicalOrderedList");
+    System.err.println("Going in buildScheduleAndTopologicalOrderedList");
+    if (totalOrderCache == null) {
 
       final DirectedAcyclicGraph<AbstractActor, DAGedge> graph = getTransitiveClosure();
       final List<AbstractActor> totalorder = new ArrayList<>(graph.vertexSet().size());
@@ -345,9 +345,8 @@ public class ScheduleOrderManager {
       // StringBuilder sb = new StringBuilder("Global order:\n");
       // totalOrderCache.forEach(x -> sb.append(x.getName() + ";\n"));
       // System.err.println(sb.toString());
-
-      System.err.println("Finishing buildScheduleAndTopologicalOrderedList");
     }
+    System.err.println("Finishing buildScheduleAndTopologicalOrderedList");
     return Collections.unmodifiableList(totalOrderCache);
   }
 
@@ -359,12 +358,9 @@ public class ScheduleOrderManager {
    */
   public final List<AbstractActor> buildScheduleAndTopologicalOrderedList(final Mapping mapping,
       final ComponentInstance operator) {
-    if (operatorTotalOrderCache.containsKey(operator)) {
-      // System.err.println("Cache HIT for schedule and topo list");
-      return operatorTotalOrderCache.get(operator);
-    } else {
-      // System.err.println("Cache MISS for schedule and topo list");
-      final List<AbstractActor> order = new ArrayList<>();
+    List<AbstractActor> order = operatorTotalOrderCache.get(operator);
+    if (order == null) {
+      order = new ArrayList<>();
       final List<AbstractActor> scheduleAndTopologicalOrderedList = buildScheduleAndTopologicalOrderedList();
       for (final AbstractActor actor : scheduleAndTopologicalOrderedList) {
         if (mapping.getMapping(actor).contains(operator)) {
@@ -372,9 +368,31 @@ public class ScheduleOrderManager {
         }
       }
       operatorTotalOrderCache.put(operator, order);
-      final List<AbstractActor> res = Collections.unmodifiableList(order);
-      return res;
     }
+    return Collections.unmodifiableList(order);
+  }
+
+  /**
+   * Builds the list of communication actors that will execute on operator according to the given mapping, in schedule
+   * and topological order.
+   *
+   * The result list is unmodifiable.
+   */
+  public final List<CommunicationActor> buildScheduleAndTopologicalOrderedComm(final Mapping mapping,
+      final ComponentInstance operator) {
+    List<CommunicationActor> order = operatorComOrderCache.get(operator);
+    if (order == null) {
+      order = new ArrayList<>();
+      final List<
+          AbstractActor> scheduleAndTopologicalOrderedList = buildScheduleAndTopologicalOrderedList(mapping, operator);
+      for (final AbstractActor actor : scheduleAndTopologicalOrderedList) {
+        if (actor instanceof CommunicationActor && mapping.getMapping(actor).contains(operator)) {
+          order.add((CommunicationActor) actor);
+        }
+      }
+      operatorComOrderCache.put(operator, order);
+    }
+    return Collections.unmodifiableList(order);
   }
 
   /**
@@ -400,20 +418,23 @@ public class ScheduleOrderManager {
   }
 
   /**
-   * Remove the given actor from the ActorSchedule that schedules it.
+   * Remove the given communication actor from the ActorSchedule that schedules it.
    */
-  public final boolean remove(final Mapping mapping, final AbstractActor actor) {
+  public final boolean removeCom(final Mapping mapping, final CommunicationActor actor) {
     final ActorSchedule actorSchedule = actorToScheduleMap.get(actor);
-    System.err.println("REMOVE: " + actor.getName());
     if (actorSchedule != null) {
       actorToScheduleMap.remove(actor);
       if (totalOrderCache != null) {
         totalOrderCache.remove(actor);
       }
       for (ComponentInstance ci : mapping.getMapping(actor)) {
-        List<AbstractActor> ciSched = operatorTotalOrderCache.get(ci);
-        if (ciSched != null) {
-          ciSched.remove(actor);
+        List<AbstractActor> ciSchedTot = operatorTotalOrderCache.get(ci);
+        if (ciSchedTot != null) {
+          ciSchedTot.remove(actor);
+          List<CommunicationActor> ciSchedCom = operatorComOrderCache.get(ci);
+          if (ciSchedCom != null) {
+            ciSchedCom.remove(actor);
+          }
         }
       }
       removeAndReconnect(graphCache, actor);
@@ -490,40 +511,59 @@ public class ScheduleOrderManager {
    * Find the Schedule in which referenceActor appears, insert newActors after referenceActor in the found Schedule,
    * update internal structure.
    */
-  public final void insertAfterInSchedule(final Mapping mapping, final AbstractActor referenceActor,
-      final AbstractActor... newActors) {
-
-    System.err.println("INSERT AFTER " + referenceActor.getName());
+  public final void insertComStEdAfterInSchedule(final Mapping mapping, final AbstractActor referenceActor,
+      final CommunicationActor comStart, final CommunicationActor comEnd) {
 
     final ActorSchedule actorSchedule = actorToScheduleMap.get(referenceActor);
     final EList<AbstractActor> srcActorList = actorSchedule.getActorList();
-    for (final AbstractActor newActor : newActors) {
-      actorToScheduleMap.put(newActor, actorSchedule);
-    }
-    CollectionUtil.insertAfter(srcActorList, referenceActor, newActors);
+    actorToScheduleMap.put(comStart, actorSchedule);
+    actorToScheduleMap.put(comEnd, actorSchedule);
+
+    CollectionUtil.insertAfter2(srcActorList, referenceActor, comStart, comEnd);
     if (totalOrderCache != null) {
-      CollectionUtil.insertAfter(totalOrderCache, referenceActor, newActors);
+      CollectionUtil.insertAfter2(totalOrderCache, referenceActor, comStart, comEnd);
     }
 
     final Set<ComponentInstance> affectedCIs = new HashSet<>();
-    List<AbstractActor> input = Arrays.asList(newActors);
-    System.err.println(input.get(0).getName() + " and " + input.get(1).getName());
-
-    input.forEach(aa -> affectedCIs.addAll(mapping.getMapping(aa)));
-    affectedCIs.addAll(mapping.getMapping(referenceActor));
+    affectedCIs.addAll(mapping.getMapping(comStart));
+    affectedCIs.addAll(mapping.getMapping(comEnd));
     if (affectedCIs.size() != 1) {
       throw new PreesmRuntimeException("Cannot insert communications for actors mapped on several operators");
     }
+
     for (ComponentInstance ci : affectedCIs) {
-      List<AbstractActor> ciSched = operatorTotalOrderCache.get(ci);
-      if (ciSched != null) {
-        AbstractActor[] affectedAAonCI = input.stream().filter(aa -> mapping.getMapping(aa).contains(ci))
-            .toArray(AbstractActor[]::new);
-        CollectionUtil.insertAfter(ciSched, referenceActor, affectedAAonCI);
+      List<AbstractActor> ciSchedTot = operatorTotalOrderCache.get(ci);
+      int lindexOfEl2 = -1;
+      if (ciSchedTot != null) {
+        lindexOfEl2 = CollectionUtil.insertAfter2(ciSchedTot, referenceActor, comStart, comEnd);
+        List<CommunicationActor> ciSchedCom = operatorComOrderCache.get(ci);
+        if (ciSchedCom != null) {
+          if (referenceActor instanceof CommunicationActor) {
+            CollectionUtil.insertAfter2(ciSchedCom, (CommunicationActor) referenceActor, comStart, comEnd);
+          } else {
+            operatorComOrderCache.remove(ci);
+            // CommunicationActor before = null;
+            // for (int i = lindexOfEl2 - 1; i >= 0; i--) {
+            // AbstractActor aa = ciSchedTot.get(i);
+            // if (aa instanceof CommunicationActor) {
+            // before = (CommunicationActor) aa;
+            // break;
+            // }
+            // }
+            // if (before == null) {
+            // ciSchedCom.add(comStart);
+            // ciSchedCom.add(comEnd);
+            // } else {
+            // CollectionUtil.insertAfter2(ciSchedCom, before, comStart, comEnd);
+            // }
+          }
+        }
       }
-      System.err.println("Affected operator: " + ci.getInstanceName());
     }
 
+    List<AbstractActor> input = new ArrayList<>(2);
+    input.add(comStart);
+    input.add(comEnd);
     updateGraphCache(referenceActor, input, true);
     updateTransitiveClosureCache(referenceActor, input, true);
 
@@ -533,36 +573,59 @@ public class ScheduleOrderManager {
    * Find the Schedule in which referenceActor appears, insert newActors after referenceActor in the found Schedule,
    * update internal structure.
    */
-  public final void insertBeforeInSchedule(final Mapping mapping, final AbstractActor referenceActor,
-      final AbstractActor... newActors) {
-
-    System.err.println("INSERT BEFORE " + referenceActor.getName());
+  public final void insertComStEdBeforeInSchedule(final Mapping mapping, final AbstractActor referenceActor,
+      final CommunicationActor comStart, final CommunicationActor comEnd) {
 
     final ActorSchedule actorSchedule = actorToScheduleMap.get(referenceActor);
-    for (final AbstractActor newActor : newActors) {
-      actorToScheduleMap.put(newActor, actorSchedule);
-    }
+    actorToScheduleMap.put(comStart, actorSchedule);
+    actorToScheduleMap.put(comEnd, actorSchedule);
+
     final EList<AbstractActor> srcActorList = actorSchedule.getActorList();
-    CollectionUtil.insertBefore(srcActorList, referenceActor, newActors);
+    CollectionUtil.insertBefore2(srcActorList, referenceActor, comStart, comEnd);
     if (totalOrderCache != null) {
-      CollectionUtil.insertBefore(totalOrderCache, referenceActor, newActors);
+      CollectionUtil.insertBefore2(totalOrderCache, referenceActor, comStart, comEnd);
     }
 
     final Set<ComponentInstance> affectedCIs = new HashSet<>();
-    List<AbstractActor> input = Arrays.asList(newActors);
-    input.forEach(aa -> affectedCIs.addAll(mapping.getMapping(aa)));
-    for (ComponentInstance ci : affectedCIs) {
-      List<AbstractActor> ciSched = operatorTotalOrderCache.get(ci);
-      if (ciSched != null) {
-        AbstractActor[] affectedAAonCI = input.stream().filter(aa -> mapping.getMapping(aa).contains(ci))
-            .toArray(AbstractActor[]::new);
-        CollectionUtil.insertBefore(ciSched, referenceActor, affectedAAonCI);
-      }
-      System.err.println("Affected operator: " + ci.getInstanceName());
+    affectedCIs.addAll(mapping.getMapping(comStart));
+    affectedCIs.addAll(mapping.getMapping(comEnd));
+    if (affectedCIs.size() != 1) {
+      throw new PreesmRuntimeException("Cannot insert communications for actors mapped on several operators");
     }
 
-    System.err.println(input.get(0).getName() + " and " + input.get(1).getName());
+    for (ComponentInstance ci : affectedCIs) {
+      List<AbstractActor> ciSchedTot = operatorTotalOrderCache.get(ci);
+      int lindexOfEl2 = -1;
+      if (ciSchedTot != null) {
+        lindexOfEl2 = CollectionUtil.insertBefore2(ciSchedTot, referenceActor, comStart, comEnd);
+        List<CommunicationActor> ciSchedCom = operatorComOrderCache.get(ci);
+        if (ciSchedCom != null) {
+          if (referenceActor instanceof CommunicationActor) {
+            CollectionUtil.insertBefore2(ciSchedCom, (CommunicationActor) referenceActor, comStart, comEnd);
+          } else {
+            operatorComOrderCache.remove(ci);
+            // CommunicationActor next = null;
+            // for (int i = lindexOfEl2 + 1; i < ciSchedTot.size(); i++) {
+            // AbstractActor aa = ciSchedTot.get(i);
+            // if (aa instanceof CommunicationActor) {
+            // next = (CommunicationActor) aa;
+            // break;
+            // }
+            // }
+            // if (next == null) {
+            // ciSchedCom.add(comStart);
+            // ciSchedCom.add(comEnd);
+            // } else {
+            // CollectionUtil.insertBefore2(ciSchedCom, next, comStart, comEnd);
+            // }
+          }
+        }
+      }
+    }
 
+    List<AbstractActor> input = new ArrayList<>(2);
+    input.add(comStart);
+    input.add(comEnd);
     updateGraphCache(referenceActor, input, false);
     updateTransitiveClosureCache(referenceActor, input, false);
 

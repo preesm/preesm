@@ -91,4 +91,34 @@ public class CollectionUtil {
       }
     }
   }
+
+  /**
+   * Insert 2 newElements after listElement, in order; takes care of end of list
+   * 
+   * @return Index of newElement2
+   */
+  public static final <T> int insertAfter2(final List<T> list, final T listElement, final T newElement1,
+      final T newElement2) {
+    int indexOf = list.indexOf(listElement);
+    list.add(++indexOf, newElement1);
+    list.add(++indexOf, newElement2);
+    return indexOf;
+  }
+
+  /**
+   * Insert newElements before listElement, in order; takes care of end of list
+   * 
+   * @return Index of newElement1
+   */
+  public static final <T> int insertBefore2(final List<T> list, final T listElement, final T newElement1,
+      final T newElement2) {
+    int indexOf = list.indexOf(listElement);
+    if (indexOf < 0) {
+      indexOf = 0;
+    }
+    list.add(indexOf, newElement2);
+    list.add(indexOf, newElement1);
+    return indexOf;
+  }
+
 }
