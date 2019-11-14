@@ -198,7 +198,7 @@ public class SlamRoutingTable {
    * Creating recursively the route steps from the architecture.
    */
   private void createRouteSteps() {
-    PreesmLogger.getLogger().log(Level.INFO, "creating route steps.");
+    PreesmLogger.getLogger().log(Level.INFO, "Creating route steps.");
 
     for (final ComponentInstance c : this.archi.getOperatorComponentInstances()) {
       final ComponentInstance o = c;

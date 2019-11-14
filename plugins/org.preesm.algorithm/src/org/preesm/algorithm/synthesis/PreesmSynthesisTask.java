@@ -49,6 +49,7 @@ import org.preesm.algorithm.synthesis.evaluation.latency.SimpleLatencyEvaluation
 import org.preesm.algorithm.synthesis.memalloc.IMemoryAllocation;
 import org.preesm.algorithm.synthesis.memalloc.LegacyMemoryAllocation;
 import org.preesm.algorithm.synthesis.memalloc.SimpleMemoryAllocation;
+import org.preesm.algorithm.synthesis.schedule.ScheduleOrderManager;
 import org.preesm.algorithm.synthesis.schedule.algos.IScheduler;
 import org.preesm.algorithm.synthesis.schedule.algos.LegacyListScheduler;
 import org.preesm.algorithm.synthesis.schedule.algos.PeriodicScheduler;
@@ -101,12 +102,14 @@ public class PreesmSynthesisTask extends AbstractTaskImplementation {
     PreesmLogger.getLogger().log(Level.INFO, () -> " -- Scheduling - " + schedulerName);
     final SynthesisResult scheduleAndMap = scheduler.scheduleAndMap(algorithm, architecture, scenario);
 
+    final ScheduleOrderManager scheduleOM = new ScheduleOrderManager(algorithm, scheduleAndMap.schedule);
+
     PreesmLogger.getLogger().log(Level.INFO, " -- Insert communication");
-    final ICommunicationInserter comIns = new OptimizedCommunicationInserter();
+    final ICommunicationInserter comIns = new OptimizedCommunicationInserter(scheduleOM);
     comIns.insertCommunications(algorithm, architecture, scenario, scheduleAndMap.schedule, scheduleAndMap.mapping);
 
     final LatencyCost evaluate = new SimpleLatencyEvaluation().evaluate(algorithm, architecture, scenario,
-        scheduleAndMap);
+        scheduleAndMap.mapping, scheduleOM);
     PreesmLogger.getLogger().log(Level.INFO, "Simple latency evaluation : " + evaluate.getValue());
 
     PreesmLogger.getLogger().log(Level.INFO, () -> " -- Allocating Memory - " + allocationName);

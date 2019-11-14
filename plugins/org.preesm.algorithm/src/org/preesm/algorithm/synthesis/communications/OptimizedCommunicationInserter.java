@@ -57,6 +57,10 @@ import org.preesm.model.slam.SlamRouteStep;
  */
 public class OptimizedCommunicationInserter extends DefaultCommunicationInserter {
 
+  public OptimizedCommunicationInserter(ScheduleOrderManager scheduleOM) {
+    super(scheduleOM);
+  }
+
   /**
    * On the last step, insert receive right before the fifo target, reorder if needed (see
    * {@link #reorderReceiveVertices}}
@@ -69,7 +73,7 @@ public class OptimizedCommunicationInserter extends DefaultCommunicationInserter
     final boolean isLastRouteStep = targetOperator == route.getTarget();
     if (isLastRouteStep) {
       final AbstractActor containingActor = fifo.getTargetPort().getContainingActor();
-      scheduleOrderManager.insertComStEdBeforeInSchedule(mapping, containingActor, receiveStart, receiveEnd);
+      scheduleOrderManager.insertComStEdBeforeInSchedule(mapping, containingActor, receiveStart, receiveEnd, false);
       reorderReceiveVertices(scheduleOrderManager, mapping, routeStep.getSender(), routeStep.getReceiver(), receiveEnd);
       // do not add call super.lastVisitedActor.put(targetOperator, sendEnd) since sendEnd is not added at the peek of
       // the current visit
@@ -118,11 +122,11 @@ public class OptimizedCommunicationInserter extends DefaultCommunicationInserter
       final ReceiveEndActor receiveEnd = v;
       final ReceiveStartActor receiveStart = v.getReceiveStart();
 
-      scheduleOrderManager.removeCom(mapping, receiveEnd);
-      scheduleOrderManager.removeCom(mapping, receiveStart);
+      scheduleOrderManager.removeCom(mapping, receiveEnd, false);
+      scheduleOrderManager.removeCom(mapping, receiveStart, false);
 
       scheduleOrderManager.insertComStEdBeforeInSchedule(mapping, currentREA.getReceiveStart(), receiveStart,
-          receiveEnd);
+          receiveEnd, false);
     });
   }
 }

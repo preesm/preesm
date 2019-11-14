@@ -37,9 +37,9 @@ package org.preesm.algorithm.synthesis.timer;
 import org.preesm.algorithm.mapping.model.Mapping;
 import org.preesm.algorithm.schedule.model.ReceiveEndActor;
 import org.preesm.algorithm.schedule.model.ReceiveStartActor;
-import org.preesm.algorithm.schedule.model.Schedule;
 import org.preesm.algorithm.schedule.model.SendEndActor;
 import org.preesm.algorithm.schedule.model.SendStartActor;
+import org.preesm.algorithm.synthesis.schedule.ScheduleOrderManager;
 import org.preesm.model.pisdf.Actor;
 import org.preesm.model.pisdf.BroadcastActor;
 import org.preesm.model.pisdf.EndActor;
@@ -66,8 +66,9 @@ public class SimpleTimer extends AbstractTimer {
 
   /**
    */
-  public SimpleTimer(final PiGraph pigraph, final Schedule schedule, final Mapping mapping, final Scenario scenario) {
-    super(pigraph, schedule);
+  public SimpleTimer(final PiGraph pigraph, final ScheduleOrderManager scheduleOrderManager, final Mapping mapping,
+      final Scenario scenario) {
+    super(pigraph, scheduleOrderManager);
     this.mapping = mapping;
     this.scenario = scenario;
   }
