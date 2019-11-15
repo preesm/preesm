@@ -225,13 +225,13 @@ public class ScheduleOrderManager {
   /**
    */
   public boolean isPredecessors(final AbstractActor subject, final AbstractActor target) {
-    return getPredecessors(subject).contains(target);
+    return getAllPredecessors(subject).contains(target);
   }
 
   /**
    */
   public boolean isSuccessors(final AbstractActor subject, final AbstractActor target) {
-    return getSuccessors(subject).contains(target);
+    return getAllSuccessors(subject).contains(target);
   }
 
   /**
@@ -239,7 +239,7 @@ public class ScheduleOrderManager {
    *
    * No order is enforced on the resulting list.
    */
-  public List<AbstractActor> getPredecessors(final AbstractActor actor) {
+  public List<AbstractActor> getAllPredecessors(final AbstractActor actor) {
     final DirectedAcyclicGraph<AbstractActor, DAGedge> graph = getTransitiveClosure();
     return Graphs.predecessorListOf(graph, actor);
   }
@@ -249,8 +249,28 @@ public class ScheduleOrderManager {
    *
    * No order is enforced on the resulting list.
    */
-  public List<AbstractActor> getSuccessors(final AbstractActor actor) {
+  public List<AbstractActor> getAllSuccessors(final AbstractActor actor) {
     final DirectedAcyclicGraph<AbstractActor, DAGedge> graph = getTransitiveClosure();
+    return Graphs.successorListOf(graph, actor);
+  }
+
+  /**
+   * Return all the predecessors of actor; according to PiSDF topology AND Schedule precedence;
+   *
+   * No order is enforced on the resulting list.
+   */
+  public List<AbstractActor> getDirectPredecessors(final AbstractActor actor) {
+    final DirectedAcyclicGraph<AbstractActor, DAGedge> graph = getGraph();
+    return Graphs.predecessorListOf(graph, actor);
+  }
+
+  /**
+   * Return all the successors of actor; according to PiSDF topology AND Schedule precedence;
+   *
+   * No order is enforced on the resulting list.
+   */
+  public List<AbstractActor> getDirectSuccessors(final AbstractActor actor) {
+    final DirectedAcyclicGraph<AbstractActor, DAGedge> graph = getGraph();
     return Graphs.successorListOf(graph, actor);
   }
 
@@ -326,7 +346,7 @@ public class ScheduleOrderManager {
   public final List<AbstractActor> buildScheduleAndTopologicalOrderedList() {
     if (totalOrderCache == null) {
 
-      final DirectedAcyclicGraph<AbstractActor, DAGedge> graph = getTransitiveClosure();
+      final DirectedAcyclicGraph<AbstractActor, DAGedge> graph = getGraph(); // getTransitiveClosure();
       final List<AbstractActor> totalorder = new ArrayList<>(graph.vertexSet().size());
       new TopologicalOrderIterator<>(graph).forEachRemaining(totalorder::add);
       totalOrderCache = totalorder;
@@ -637,10 +657,10 @@ public class ScheduleOrderManager {
   /**
    * Get all edges on the paths to all predecessors of actor. Will loop infinitely if actor is not part of a DAG.
    */
-  public final List<Fifo> getPredecessorEdgesOf(final AbstractActor actor) {
+  public final List<Fifo> getAllPredecessorEdgesOf(final AbstractActor actor) {
     final Set<Fifo> result = new LinkedHashSet<>();
     actor.getDataInputPorts().stream().map(DataPort::getFifo).forEach(result::add);
-    final List<AbstractActor> allPredecessorsOf = getPredecessors(actor);
+    final List<AbstractActor> allPredecessorsOf = getAllPredecessors(actor);
     allPredecessorsOf.stream().map(AbstractActor::getDataInputPorts).flatMap(List::stream).map(DataPort::getFifo)
         .forEach(result::add);
     return Collections.unmodifiableList(new ArrayList<>(result));
@@ -649,10 +669,10 @@ public class ScheduleOrderManager {
   /**
    * Get all edges on the paths to all successors of actor. Will loop infinitely if actor is not part of a DAG.
    */
-  public final List<Fifo> getSuccessorEdgesOf(final AbstractActor actor) {
+  public final List<Fifo> getAllSuccessorEdgesOf(final AbstractActor actor) {
     final Set<Fifo> result = new LinkedHashSet<>();
     actor.getDataOutputPorts().stream().map(DataPort::getFifo).forEach(result::add);
-    final List<AbstractActor> allSuccessorsOf = getSuccessors(actor);
+    final List<AbstractActor> allSuccessorsOf = getAllSuccessors(actor);
     allSuccessorsOf.stream().map(AbstractActor::getDataOutputPorts).flatMap(List::stream).map(DataPort::getFifo)
         .forEach(result::add);
     return Collections.unmodifiableList(new ArrayList<>(result));

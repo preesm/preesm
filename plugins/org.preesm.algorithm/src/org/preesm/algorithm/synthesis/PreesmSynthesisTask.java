@@ -108,6 +108,7 @@ public class PreesmSynthesisTask extends AbstractTaskImplementation {
     final ICommunicationInserter comIns = new OptimizedCommunicationInserter(scheduleOM);
     comIns.insertCommunications(algorithm, architecture, scenario, scheduleAndMap.schedule, scheduleAndMap.mapping);
 
+    PreesmLogger.getLogger().log(Level.INFO, " -- Latency evaluation");
     final LatencyCost evaluate = new SimpleLatencyEvaluation().evaluate(algorithm, architecture, scenario,
         scheduleAndMap.mapping, scheduleOM);
     PreesmLogger.getLogger().log(Level.INFO, "Simple latency evaluation : " + evaluate.getValue());

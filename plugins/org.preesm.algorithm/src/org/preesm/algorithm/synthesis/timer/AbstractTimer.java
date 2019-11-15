@@ -83,7 +83,7 @@ public abstract class AbstractTimer extends PiMMSwitch<Long> {
     for (final AbstractActor actor : orderedActors) {
       final long duration = this.doSwitch(actor);
 
-      final long startTime = scheduleOrderManager.getPredecessors(actor).stream()
+      final long startTime = scheduleOrderManager.getDirectPredecessors(actor).stream()
           .mapToLong(a -> res.get(a).getEndTime()).max().orElse(0L);
 
       final ActorExecutionTiming executionTiming = new ActorExecutionTiming(actor, startTime, duration);

@@ -127,15 +127,15 @@ public class ScheduleIteratorTest {
     final ScheduleOrderManager scheduleOrderManager = new ScheduleOrderManager(graph, sched);
 
     List<AbstractActor> predecessors;
-    predecessors = scheduleOrderManager.getPredecessors(VertexPath.lookup(graph, "A"));
+    predecessors = scheduleOrderManager.getAllPredecessors(VertexPath.lookup(graph, "A"));
     assertEquals(true, predecessors.isEmpty());
 
-    predecessors = scheduleOrderManager.getPredecessors(VertexPath.lookup(graph, "B"));
+    predecessors = scheduleOrderManager.getAllPredecessors(VertexPath.lookup(graph, "B"));
     final StringBuilder sb = new StringBuilder();
     predecessors.forEach(a -> sb.append(a.getName()));
     assertEquals("AC", sb.toString());
 
-    predecessors = scheduleOrderManager.getPredecessors(VertexPath.lookup(graph, "D"));
+    predecessors = scheduleOrderManager.getAllPredecessors(VertexPath.lookup(graph, "D"));
     final StringBuilder sb2 = new StringBuilder();
     predecessors.forEach(a -> sb2.append(a.getName()));
     assertEquals("BCA", sb2.toString());
@@ -150,15 +150,15 @@ public class ScheduleIteratorTest {
     final ScheduleOrderManager scheduleOrderManager = new ScheduleOrderManager(graph, sched);
 
     List<AbstractActor> predecessors;
-    predecessors = scheduleOrderManager.getSuccessors(VertexPath.lookup(graph, "D"));
+    predecessors = scheduleOrderManager.getAllSuccessors(VertexPath.lookup(graph, "D"));
     assertEquals(true, predecessors.isEmpty());
 
-    predecessors = scheduleOrderManager.getSuccessors(VertexPath.lookup(graph, "B"));
+    predecessors = scheduleOrderManager.getAllSuccessors(VertexPath.lookup(graph, "B"));
     final StringBuilder sb = new StringBuilder();
     predecessors.forEach(a -> sb.append(a.getName()));
     assertEquals("D", sb.toString());
 
-    predecessors = scheduleOrderManager.getSuccessors(VertexPath.lookup(graph, "A"));
+    predecessors = scheduleOrderManager.getAllSuccessors(VertexPath.lookup(graph, "A"));
     final StringBuilder sb2 = new StringBuilder();
     predecessors.forEach(a -> sb2.append(a.getName()));
     assertEquals("BCD", sb2.toString());
