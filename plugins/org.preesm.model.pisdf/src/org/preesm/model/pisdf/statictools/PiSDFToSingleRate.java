@@ -54,6 +54,7 @@ import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.AbstractVertex;
 import org.preesm.model.pisdf.Actor;
 import org.preesm.model.pisdf.BroadcastActor;
+import org.preesm.model.pisdf.CHeaderRefinement;
 import org.preesm.model.pisdf.ConfigInputPort;
 import org.preesm.model.pisdf.ConfigOutputPort;
 import org.preesm.model.pisdf.DataInputInterface;
@@ -68,6 +69,7 @@ import org.preesm.model.pisdf.EndActor;
 import org.preesm.model.pisdf.ExecutableActor;
 import org.preesm.model.pisdf.Expression;
 import org.preesm.model.pisdf.Fifo;
+import org.preesm.model.pisdf.FunctionPrototype;
 import org.preesm.model.pisdf.ISetter;
 import org.preesm.model.pisdf.InitActor;
 import org.preesm.model.pisdf.InterfaceActor;
@@ -75,6 +77,7 @@ import org.preesm.model.pisdf.NonExecutableActor;
 import org.preesm.model.pisdf.Parameter;
 import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.pisdf.Port;
+import org.preesm.model.pisdf.Refinement;
 import org.preesm.model.pisdf.RoundBufferActor;
 import org.preesm.model.pisdf.brv.BRVMethod;
 import org.preesm.model.pisdf.brv.PiBRV;
@@ -195,7 +198,7 @@ public class PiSDFToSingleRate extends PiMMSwitch<Boolean> {
    * Current instance: stores the firing number of the current element. This is a global firing id: from 0 to full
    * repetition vector - 1 (not local default repetition vector).
    */
-  private long instance;
+  private long firingInstance;
 
   /** Current actor name */
   private String currentActorName;
@@ -218,7 +221,7 @@ public class PiSDFToSingleRate extends PiMMSwitch<Boolean> {
     this.brv = brv;
     this.graphName = "";
     this.graphPrefix = "";
-    this.instance = 0;
+    this.firingInstance = 0;
 
     // copy input graph period
     this.result.setExpression(inputGraph.getPeriod().evaluate());
@@ -377,7 +380,18 @@ public class PiSDFToSingleRate extends PiMMSwitch<Boolean> {
     copyActor.setName(this.currentActorName);
     if (copyActor instanceof Actor) {
       Actor act = (Actor) copyActor;
-      act.setFiringInstance(instance);
+      act.setFiringInstance(firingInstance);
+      if (firingInstance != 0) {
+        // we remove the init prototype of the actor if it is not the first firing
+        final Refinement rf = act.getRefinement();
+        if (rf instanceof CHeaderRefinement) {
+          CHeaderRefinement header = (CHeaderRefinement) rf;
+          final FunctionPrototype initPrototype = header.getInitPrototype();
+          if (initPrototype != null) {
+            header.setInitPrototype(null);
+          }
+        }
+      }
     }
 
     // Add the actor to the graph
@@ -793,7 +807,7 @@ public class PiSDFToSingleRate extends PiMMSwitch<Boolean> {
 
     // Populate the DAG with the appropriate number of instances of the actor
     final long actorRV = this.brv.get(actor);
-    final long backupInstance = this.instance;
+    final long backupInstance = this.firingInstance;
 
     // Populate the graph with the number of instance of the current actor
     IntegerName iN = new IntegerName(actorRV - 1);
@@ -803,11 +817,11 @@ public class PiSDFToSingleRate extends PiMMSwitch<Boolean> {
       // actor_#i, whose name is actor and we're at instance #i and a secondary actor named actor_x_#i with x an integer
       // In some cases it could happen that actor_x has a BRV of 1 resulting in a name of "actor_x" and
       // actor has a BRV value >= to x resulting of two actors named the same
-      this.instance = backupInstance * actorRV + i;
+      this.firingInstance = backupInstance * actorRV + i;
       this.currentActorName = this.graphPrefix + actor.getName() + "_" + iN.toString(i);
       caseAbstractActor((AbstractActor) actor);
     }
-    this.instance = backupInstance;
+    this.firingInstance = backupInstance;
   }
 
   @Override
@@ -853,7 +867,7 @@ public class PiSDFToSingleRate extends PiMMSwitch<Boolean> {
     final long graphRV = this.brv.get(graph) == null ? 1 : this.brv.get(graph);
     final String currentPrefix = this.graphPrefix;
     IntegerName iN = new IntegerName(graphRV - 1);
-    final long backupInstance = this.instance;
+    final long backupInstance = this.firingInstance;
     for (long i = 0; i < graphRV; ++i) {
       if (!currentPrefix.isEmpty()) {
         this.graphPrefix = currentPrefix + iN.toString(i) + "_";
@@ -862,22 +876,22 @@ public class PiSDFToSingleRate extends PiMMSwitch<Boolean> {
       final String backupPrefix = this.graphPrefix;
       final String backupName = this.graphName;
       for (final PiGraph g : graph.getChildrenGraphs()) {
-        this.instance = lInstance;
+        this.firingInstance = lInstance;
         doSwitch(g);
         this.graphPrefix = backupPrefix;
         this.graphName = backupName;
         this.actor2SRActors.clear();
       }
       for (final Fifo f : graph.getFifosWithDelay()) {
-        this.instance = lInstance;
+        this.firingInstance = lInstance;
         doSwitch(f);
       }
       for (final Fifo f : graph.getFifosWithoutDelay()) {
-        this.instance = lInstance;
+        this.firingInstance = lInstance;
         doSwitch(f);
       }
     }
-    this.instance = backupInstance;
+    this.firingInstance = backupInstance;
 
     // handle non connected actors (BRV = 1)
     // PiGraph are already handled by the code above, except if clustered
