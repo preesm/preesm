@@ -14,6 +14,7 @@ PREESM Changelog
 * Now firing instance number of any Actor can be stored in PiGraph model (set in SRDAG, not stored in .pi);
 * Enable MEG Update un new Synthesis API
   * Data alignment not fully foncitonnal yet;
+* Change Vaader notification channel
 
 ### Bug fix
 * Fix workflow task "org.ietr.preesm.pimm.algorithm.checker.periods.PeriodsPreschedulingChecker";
