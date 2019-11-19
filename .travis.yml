@@ -20,7 +20,8 @@ notifications:
     on_success: change
     on_failure: change
     rooms:
-      - vaader-ietr:EEtUq0RrGRpHSXWZiEApSDwS#preesm
+      - secure: "kczd6vh0cNalQwvM/yXx2ADvZqQCT/Y5zlBVhk7YEkQmbXYv9+SoK8hjwYj7mWUyD6BTohoCQxv7pXIc8UAEquYM7zQGrsFFsFcVtzrw8Rn09dU1WJibgoAH7CRAwrip5iSGmDDch8vvOfay6ZLruhNI0Tqe5Xji7NrXqepp4zKF9H1CUKUF7Y3y19AbVVOpT7I1N4Tq00OIMTAqd5+KsvsIhJLf2+kgxQAV0qeNXjix4Cl2vIirb7ozhx3vQRpS+/ZqyVt7Bgk6D3Dgvai53Zxpjb9sFFHlTiaoUA1CMqBqvMWD3YxIMvfBgQMf8chw/lOpnKI0FW7O/M5jR09y7YZA+2SRdrPt+jioh44gwy7yMgxPDkuF9Qfb2794JlGfXS4aJij1Rmh8ZuTg3dHBbqEMMVjazpMerI17Ll0mq1q8b7OELajmFr40CMcjl3oc8Yg1TmOkm28NKaWh6aFfYDrdbA3V2oE9sovrZr5YWfjJkUj9ypUMYzH/VVlhXIG3vJv9XNAqyV4lFvCcbNX5t5tbbTzqTKuVGAZKu/hja5wk3TPM1hQWmHBBKOWdb5jJy2/pf4hY5dtoKeA56iaS0CFzIcfpPzehgMuQlU2XmHQhZwfSDdEzOAvROghC/6JQonAgiOZSH/l7xd/9mUL87/nJWUkq2IDO+F4CpNun3Pk="
+
 
 addons:
   sonarcloud:
