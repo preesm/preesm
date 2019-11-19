@@ -19,7 +19,7 @@ PREESM Changelog
 * Fix workflow task "org.ietr.preesm.pimm.algorithm.checker.periods.PeriodsPreschedulingChecker";
 * Fix workflow task "pisdf-export" (adds graph copy to avoid side-effects);
 * Fix codegen: special actor ports order is now preserved during codegen;
-
+* Fix sonarcloud links
 
 ## Release version 3.18.1
 *2019.10.21*
