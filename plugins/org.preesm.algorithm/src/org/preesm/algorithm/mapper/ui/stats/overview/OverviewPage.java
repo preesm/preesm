@@ -61,7 +61,7 @@ import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.eclipse.ui.forms.widgets.Section;
 import org.preesm.algorithm.mapper.ui.Messages;
-import org.preesm.algorithm.mapper.ui.stats.StatGenerator;
+import org.preesm.algorithm.mapper.ui.stats.IStatGenerator;
 
 /**
  * This page contains general informations of the scenario including current algorithm and current architecture.
@@ -71,7 +71,7 @@ import org.preesm.algorithm.mapper.ui.stats.StatGenerator;
 public class OverviewPage extends FormPage {
 
   /** The stat gen. */
-  private StatGenerator statGen = null;
+  private IStatGenerator statGen = null;
 
   /**
    * Instantiates a new overview page.
@@ -85,7 +85,7 @@ public class OverviewPage extends FormPage {
    * @param title
    *          the title
    */
-  public OverviewPage(final StatGenerator statGen, final FormEditor editor, final String id, final String title) {
+  public OverviewPage(final IStatGenerator statGen, final FormEditor editor, final String id, final String title) {
     super(editor, id, title);
 
     this.statGen = statGen;
@@ -204,7 +204,7 @@ public class OverviewPage extends FormPage {
    *
    * @return the stat gen
    */
-  public StatGenerator getStatGen() {
+  public IStatGenerator getStatGen() {
     return this.statGen;
   }
 

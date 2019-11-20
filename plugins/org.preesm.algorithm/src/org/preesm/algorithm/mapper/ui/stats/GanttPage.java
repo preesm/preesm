@@ -40,7 +40,7 @@ import org.eclipse.ui.forms.editor.FormEditor;
 import org.eclipse.ui.forms.editor.FormPage;
 import org.eclipse.ui.forms.widgets.ColumnLayout;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
-import org.preesm.algorithm.mapper.abc.impl.latency.LatencyAbc;
+import org.preesm.algorithm.mapper.gantt.GanttData;
 import org.preesm.algorithm.mapper.ui.GanttPlotter;
 
 /**
@@ -50,13 +50,13 @@ import org.preesm.algorithm.mapper.ui.GanttPlotter;
  */
 public class GanttPage extends FormPage {
 
-  private StatGenerator statGen = null;
+  private GanttData gd = null;
 
   /**
    * Instantiates a new gantt page.
    *
-   * @param statGen
-   *          the stat gen
+   * @param ganttData
+   *          the data to be plot
    * @param editor
    *          the editor
    * @param id
@@ -64,10 +64,10 @@ public class GanttPage extends FormPage {
    * @param title
    *          the title
    */
-  public GanttPage(final StatGenerator statGen, final FormEditor editor, final String id, final String title) {
+  public GanttPage(final GanttData ganttData, final FormEditor editor, final String id, final String title) {
     super(editor, id, title);
 
-    this.statGen = statGen;
+    this.gd = ganttData;
   }
 
   /**
@@ -91,13 +91,8 @@ public class GanttPage extends FormPage {
     layout.minNumColumns = 1;
     form.getBody().setLayout(layout);
 
-    final LatencyAbc abc = this.statGen.getAbc();
-
-    GanttPlotter.plotDeployment(abc.getGanttData(), form.getBody());
+    GanttPlotter.plotDeployment(gd, form.getBody());
 
   }
 
-  public StatGenerator getStatGen() {
-    return this.statGen;
-  }
 }

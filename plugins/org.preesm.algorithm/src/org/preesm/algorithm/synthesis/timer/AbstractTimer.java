@@ -64,20 +64,18 @@ import org.preesm.model.pisdf.util.PiMMSwitch;
  */
 public abstract class AbstractTimer extends PiMMSwitch<Long> {
 
-  protected final ScheduleOrderManager scheduleOrderManager;
-  protected final PiGraph              pigraph;
+  protected final PiGraph pigraph;
 
   /**
    */
-  public AbstractTimer(final PiGraph pigraph, final ScheduleOrderManager scheduleOrderManager) {
+  public AbstractTimer(final PiGraph pigraph) {
     this.pigraph = pigraph;
-    this.scheduleOrderManager = scheduleOrderManager;
   }
 
   /**
    * Build a map that associate a timing (i.e. start/end/duration) for every actor in the schedule.
    */
-  public Map<AbstractActor, ActorExecutionTiming> computeTimings() {
+  public Map<AbstractActor, ActorExecutionTiming> computeTimings(final ScheduleOrderManager scheduleOrderManager) {
     final Map<AbstractActor, ActorExecutionTiming> res = new LinkedHashMap<>();
     final List<AbstractActor> orderedActors = scheduleOrderManager.buildScheduleAndTopologicalOrderedList();
     for (final AbstractActor actor : orderedActors) {

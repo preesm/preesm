@@ -45,6 +45,7 @@ import org.eclipse.core.resources.IWorkspaceRoot;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.preesm.algorithm.mapper.abc.impl.latency.LatencyAbc;
+import org.preesm.algorithm.mapper.ui.stats.StatGeneratorAbc;
 import org.preesm.commons.doc.annotations.Parameter;
 import org.preesm.commons.doc.annotations.Port;
 import org.preesm.commons.doc.annotations.PreesmTask;
@@ -57,6 +58,8 @@ import org.preesm.workflow.implement.AbstractWorkflowNodeImplementation;
 
 /**
  * Generate an xml file containing the stats from the mapping/scheduling steps.
+ *
+ * TODO: remove scenario from inputs (already contained in ABC)
  *
  * @author cguy
  */
@@ -100,7 +103,6 @@ public class StatsExporterTask extends AbstractTaskImplementation {
       final IProgressMonitor monitor, final String nodeName, final Workflow workflow) {
 
     final LatencyAbc abc = (LatencyAbc) inputs.get(AbstractWorkflowNodeImplementation.KEY_SDF_ABC);
-    final Scenario scenario = (Scenario) inputs.get(AbstractWorkflowNodeImplementation.KEY_SCENARIO);
     String folderPath = parameters.get(PARAM_PATH);
 
     // Get the root of the workspace
@@ -115,10 +117,12 @@ public class StatsExporterTask extends AbstractTaskImplementation {
     final File parent = new File(folderPath);
     parent.mkdirs();
 
-    final String filePath = scenario.getScenarioName() + "_stats_pgantt.xml";
+    final String filePath = abc.getScenario().getScenarioName() + "_stats_pgantt.xml";
     final File file = new File(parent, filePath);
     // Generate the stats from the abc and write them in a file at xmlPath
-    XMLStatsExporter.exportXMLStats(abc, file);
+    final StatGeneratorAbc statGen = new StatGeneratorAbc(abc);
+
+    XMLStatsExporter.exportXMLStats(file, statGen);
 
     return new LinkedHashMap<>();
   }

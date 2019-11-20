@@ -49,7 +49,7 @@ import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.swt.graphics.Image;
 import org.preesm.algorithm.mapper.ui.Messages;
-import org.preesm.algorithm.mapper.ui.stats.StatGenerator;
+import org.preesm.algorithm.mapper.ui.stats.IStatGenerator;
 import org.preesm.model.slam.ComponentInstance;
 import org.preesm.model.slam.Design;
 import org.preesm.model.slam.utils.LexicographicComponentInstanceComparator;
@@ -62,7 +62,7 @@ import org.preesm.model.slam.utils.LexicographicComponentInstanceComparator;
 public class DeploymentProperties implements IStructuredContentProvider, ITableLabelProvider {
 
   private String                             columnOrder;
-  private final StatGenerator                statGen;
+  private final IStatGenerator               statGen;
   private final Map<ComponentInstance, Long> loads;
   private final Map<ComponentInstance, Long> memoryNeeds;
   private long                               repetitionPeriod;
@@ -73,7 +73,7 @@ public class DeploymentProperties implements IStructuredContentProvider, ITableL
 
   /**
    */
-  public DeploymentProperties(final StatGenerator statGen) {
+  public DeploymentProperties(final IStatGenerator statGen) {
     super();
     this.statGen = statGen;
 
@@ -90,7 +90,7 @@ public class DeploymentProperties implements IStructuredContentProvider, ITableL
    * Inits the data.
    */
   private void initData() {
-    final Design architecture = this.statGen.getAbc().getArchitecture();
+    final Design architecture = this.statGen.getDesign();
     final List<ComponentInstance> opSet = architecture.getOperatorComponentInstances();
 
     for (final ComponentInstance cmp : opSet) {
