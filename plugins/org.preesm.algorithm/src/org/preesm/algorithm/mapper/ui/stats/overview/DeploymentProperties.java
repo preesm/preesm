@@ -109,28 +109,9 @@ public class DeploymentProperties implements IStructuredContentProvider, ITableL
     if (this.columnOrder.equals(Messages.getString("Overview.properties.opColumn"))) {
       comparator = new LexicographicComponentInstanceComparator();
     } else if (this.columnOrder.equals(Messages.getString("Overview.properties.loadColumn"))) {
-      comparator = (o1, o2) -> {
-        long l1 = loads.get(o1);
-        long l2 = loads.get(o2);
-        if (l1 > l2) {
-          return 1;
-        } else if (l1 < l2) {
-          return -1;
-        }
-        return 0;
-      };
-
+      comparator = (o1, o2) -> Long.compare(loads.get(o1), loads.get(o2));
     } else if (this.columnOrder.equals(Messages.getString("Overview.properties.memColumn"))) {
-      comparator = (o1, o2) -> {
-        long l1 = memoryNeeds.get(o1);
-        long l2 = memoryNeeds.get(o2);
-        if (l1 > l2) {
-          return 1;
-        } else if (l1 < l2) {
-          return -1;
-        }
-        return 0;
-      };
+      comparator = (o1, o2) -> Long.compare(memoryNeeds.get(o1), memoryNeeds.get(o2));
     }
 
     Collections.sort(elements, comparator);
@@ -163,12 +144,10 @@ public class DeploymentProperties implements IStructuredContentProvider, ITableL
         text = op.getInstanceName();
       } else if (columnIndex == 1) {
         double d = this.loads.get(op);
-        d = d * 10000;
+        d = d * 100;
         d = d / this.repetitionPeriod;
-        d = Math.ceil(d);
-        d = d / 100;
 
-        text = String.valueOf(d);
+        text = String.valueOf(Math.ceil(d));
       } else if (columnIndex == 2) {
         text = this.memoryNeeds.get(op).toString();
       }
@@ -190,22 +169,6 @@ public class DeploymentProperties implements IStructuredContentProvider, ITableL
   @Override
   public void removeListener(final ILabelProviderListener listener) {
     // nothing
-  }
-
-  /**
-   * Sets the repetition period.
-   *
-   * @param repetitionPeriod
-   *          the new repetition period
-   */
-  public void setRepetitionPeriod(final Integer repetitionPeriod) {
-    if (repetitionPeriod != 0) {
-      this.repetitionPeriod = repetitionPeriod;
-    }
-  }
-
-  public long getRepetitionPeriod() {
-    return this.repetitionPeriod;
   }
 
 }
