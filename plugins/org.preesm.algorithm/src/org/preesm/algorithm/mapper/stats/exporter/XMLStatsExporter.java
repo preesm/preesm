@@ -190,7 +190,7 @@ public class XMLStatsExporter {
     // Print the scheduling stats for each core
     for (final GanttComponent component : data.getComponents()) {
       for (final GanttTask task : component.getTasks()) {
-        generateTaskStats(doc, root, task);
+        generateTaskStats(doc, root, task, component.getId());
       }
     }
   }
@@ -201,7 +201,8 @@ public class XMLStatsExporter {
    * @param task
    *          the task
    */
-  private static void generateTaskStats(final Document doc, final Element root, final GanttTask task) {
+  private static void generateTaskStats(final Document doc, final Element root, final GanttTask task,
+      final String componentID) {
     // Starting task
     Element event = doc.createElement("event");
     root.appendChild(event);
@@ -212,7 +213,7 @@ public class XMLStatsExporter {
     // Task name
     event.setAttribute("title", task.getId());
     // Core
-    event.setAttribute("mapping", task.getComponent().getId());
+    event.setAttribute("mapping", componentID);
     // Color
     event.setAttribute("color", XMLStatsExporter.TASKCOLOR);
     // Gantt ID for the task

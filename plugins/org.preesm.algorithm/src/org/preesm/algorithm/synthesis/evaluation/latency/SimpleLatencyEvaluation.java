@@ -62,7 +62,7 @@ public class SimpleLatencyEvaluation implements ISynthesisEvaluator<LatencyCost>
     final long latency = computeTimings.entrySet().stream().mapToLong(entry -> entry.getValue().getEndTime()).max()
         .orElse(0L);
 
-    return new LatencyCost(latency);
+    return new LatencyCost(latency, computeTimings);
   }
 
 }

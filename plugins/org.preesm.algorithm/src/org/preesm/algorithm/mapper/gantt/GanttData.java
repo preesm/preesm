@@ -41,11 +41,15 @@ import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.logging.Level;
 import org.preesm.algorithm.mapper.model.MapperDAG;
 import org.preesm.algorithm.mapper.model.MapperDAGVertex;
+import org.preesm.algorithm.mapping.model.Mapping;
 import org.preesm.algorithm.model.iterators.TopologicalDAGIterator;
+import org.preesm.algorithm.synthesis.timer.ActorExecutionTiming;
 import org.preesm.commons.logger.PreesmLogger;
+import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.slam.ComponentInstance;
 import org.preesm.model.slam.utils.LexicographicComponentInstanceComparator;
 
@@ -98,7 +102,7 @@ public class GanttData {
   private boolean insertTask(final String taskId, final ComponentInstance componentId, final long startTime,
       final long duration) {
     final GanttComponent cmp = getComponent(componentId);
-    final GanttTask task = new GanttTask(startTime, duration, taskId, cmp);
+    final GanttTask task = new GanttTask(startTime, duration, taskId);
     return cmp.insertTask(task);
   }
 
@@ -129,6 +133,30 @@ public class GanttData {
         PreesmLogger.getLogger().log(Level.SEVERE, message);
       }
     }
+    return true;
+  }
+
+  /**
+   * Fills GanntData with new synthesis results.
+   * 
+   * @param mapping
+   *          Mapping of actors.
+   * @param execTimings
+   *          Execution times of actors.
+   * @return False at first task that could not be inserted.
+   */
+  public boolean insertSchedulerMapping(final Mapping mapping,
+      final Map<AbstractActor, ActorExecutionTiming> execTimings) {
+    for (Entry<AbstractActor, ActorExecutionTiming> e : execTimings.entrySet()) {
+      AbstractActor aa = e.getKey();
+      ActorExecutionTiming aet = e.getValue();
+      for (ComponentInstance ci : mapping.getMapping(aa)) {
+        if (!insertTask(aa.getName(), ci, aet.getStartTime(), aet.getDuration())) {
+          return false;
+        }
+      }
+    }
+
     return true;
   }
 

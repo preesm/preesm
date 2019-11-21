@@ -54,9 +54,6 @@ public class GanttTask implements Comparable<GanttTask> {
   /** ID displayed in the Gantt. */
   private final String id;
 
-  /** Component in which the task is displayed. */
-  private final GanttComponent component;
-
   /**
    * Instantiates a new gantt task.
    *
@@ -66,15 +63,12 @@ public class GanttTask implements Comparable<GanttTask> {
    *          the duration
    * @param id
    *          the id
-   * @param component
-   *          the component
    */
-  public GanttTask(final long startTime, final long duration, final String id, final GanttComponent component) {
+  public GanttTask(final long startTime, final long duration, final String id) {
     super();
     this.startTime = startTime;
     this.duration = duration;
     this.id = id;
-    this.component = component;
   }
 
   public long getStartTime() {
@@ -89,10 +83,6 @@ public class GanttTask implements Comparable<GanttTask> {
     return this.id;
   }
 
-  public GanttComponent getComponent() {
-    return this.component;
-  }
-
   @Override
   public boolean equals(final Object obj) {
     return ((obj instanceof GanttTask) && (((GanttTask) obj).getId().equals(this.getId())));
@@ -105,18 +95,16 @@ public class GanttTask implements Comparable<GanttTask> {
 
   @Override
   public String toString() {
-    return "(" + this.id + "," + this.component + "," + this.startTime + "," + this.duration + ")";
+    return "(" + this.id + "," + this.startTime + "," + this.duration + ")";
   }
 
   @Override
   public int compareTo(GanttTask o) {
-    if (startTime < o.startTime) {
-      return -1;
+    int res = Long.compare(startTime, o.startTime);
+    if (res != 0) {
+      return res;
     }
-    if (o.startTime < startTime) {
-      return 1;
-    }
-    return 0;
+    return id.compareTo(o.id);
   }
 
 }

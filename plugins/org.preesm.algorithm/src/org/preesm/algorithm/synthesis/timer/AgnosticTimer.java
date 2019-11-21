@@ -1,16 +1,6 @@
 package org.preesm.algorithm.synthesis.timer;
 
-import org.preesm.algorithm.schedule.model.ReceiveEndActor;
-import org.preesm.algorithm.schedule.model.ReceiveStartActor;
-import org.preesm.algorithm.schedule.model.SendEndActor;
-import org.preesm.algorithm.schedule.model.SendStartActor;
 import org.preesm.model.pisdf.Actor;
-import org.preesm.model.pisdf.BroadcastActor;
-import org.preesm.model.pisdf.EndActor;
-import org.preesm.model.pisdf.ForkActor;
-import org.preesm.model.pisdf.InitActor;
-import org.preesm.model.pisdf.JoinActor;
-import org.preesm.model.pisdf.RoundBufferActor;
 import org.preesm.model.scenario.Scenario;
 import org.preesm.model.slam.ComponentInstance;
 
@@ -48,52 +38,7 @@ public class AgnosticTimer extends AbstractTimer {
   }
 
   @Override
-  protected long computeForkActorTiming(final ForkActor forkActor) {
-    return 0L;
-  }
-
-  @Override
-  protected long computeJoinActorTiming(final JoinActor joinActor) {
-    return 0L;
-  }
-
-  @Override
-  protected long computeBroadcastActorTiming(final BroadcastActor broadcastActor) {
-    return 0L;
-  }
-
-  @Override
-  protected long computeRoundBufferActorTiming(final RoundBufferActor roundbufferActor) {
-    return 0L;
-  }
-
-  @Override
-  protected long computeInitActorTiming(final InitActor initActor) {
-    return 0L;
-  }
-
-  @Override
-  protected long computeEndActorTiming(final EndActor endActor) {
-    return 0L;
-  }
-
-  @Override
-  protected long computeSendStartActorTiming(final SendStartActor sendStartActor) {
-    return 0L;
-  }
-
-  @Override
-  protected long computeSendEndActorTiming(final SendEndActor sendEndActor) {
-    return 0L;
-  }
-
-  @Override
-  protected long computeReceiveStartActorTiming(final ReceiveStartActor receiveStartActor) {
-    return 0L;
-  }
-
-  @Override
-  protected long computeReceiveEndActorTiming(final ReceiveEndActor receiveEndActor) {
+  protected long defaultTime() {
     return 0L;
   }
 

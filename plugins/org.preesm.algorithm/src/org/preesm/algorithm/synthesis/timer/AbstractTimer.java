@@ -160,26 +160,50 @@ public abstract class AbstractTimer extends PiMMSwitch<Long> {
     return computeRoundBufferActorTiming(roundbufferActor);
   }
 
-  protected abstract long computeActorTiming(final Actor actor);
+  protected long computeActorTiming(final Actor actor) {
+    return defaultTime();
+  }
 
-  protected abstract long computeForkActorTiming(final ForkActor forkActor);
+  protected long computeForkActorTiming(final ForkActor forkActor) {
+    return defaultTime();
+  }
 
-  protected abstract long computeJoinActorTiming(final JoinActor joinActor);
+  protected long computeJoinActorTiming(final JoinActor joinActor) {
+    return defaultTime();
+  }
 
-  protected abstract long computeBroadcastActorTiming(final BroadcastActor broadcastActor);
+  protected long computeBroadcastActorTiming(final BroadcastActor broadcastActor) {
+    return defaultTime();
+  }
 
-  protected abstract long computeRoundBufferActorTiming(final RoundBufferActor roundbufferActor);
+  protected long computeRoundBufferActorTiming(final RoundBufferActor roundbufferActor) {
+    return defaultTime();
+  }
 
-  protected abstract long computeInitActorTiming(final InitActor initActor);
+  protected long computeInitActorTiming(final InitActor initActor) {
+    return defaultTime();
+  }
 
-  protected abstract long computeEndActorTiming(final EndActor endActor);
+  protected long computeEndActorTiming(final EndActor endActor) {
+    return defaultTime();
+  }
 
-  protected abstract long computeSendStartActorTiming(final SendStartActor sendStartActor);
+  protected long computeSendStartActorTiming(final SendStartActor sendStartActor) {
+    return defaultTime();
+  }
 
-  protected abstract long computeSendEndActorTiming(final SendEndActor sendEndActor);
+  protected long computeSendEndActorTiming(final SendEndActor sendEndActor) {
+    return defaultTime();
+  }
 
-  protected abstract long computeReceiveStartActorTiming(final ReceiveStartActor receiveStartActor);
+  protected long computeReceiveStartActorTiming(final ReceiveStartActor receiveStartActor) {
+    return defaultTime();
+  }
 
-  protected abstract long computeReceiveEndActorTiming(final ReceiveEndActor receiveEndActor);
+  protected long computeReceiveEndActorTiming(final ReceiveEndActor receiveEndActor) {
+    return defaultTime();
+  }
+
+  protected abstract long defaultTime();
 
 }

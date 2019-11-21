@@ -54,7 +54,7 @@ import org.preesm.workflow.elements.Workflow;
 import org.preesm.workflow.implement.AbstractTaskImplementation;
 
 /**
- * Transform class that can be called in workflow. The transform method displays the gantt chart of the given mapped dag
+ * Displays the gantt chart of the given mapped dag
  *
  * TODO: remove scenario from inputs (already contained in ABC)
  * 

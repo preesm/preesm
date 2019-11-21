@@ -34,6 +34,10 @@
  */
 package org.preesm.algorithm.synthesis.evaluation;
 
+import java.util.Map;
+import org.preesm.algorithm.synthesis.timer.ActorExecutionTiming;
+import org.preesm.model.pisdf.AbstractActor;
+
 /**
  *
  * @author anmorvan
@@ -45,5 +49,7 @@ package org.preesm.algorithm.synthesis.evaluation;
 public interface ISynthesisCost<T> extends Comparable<ISynthesisCost<T>> {
 
   public T getValue();
+
+  public Map<AbstractActor, ActorExecutionTiming> getExecTimings();
 
 }

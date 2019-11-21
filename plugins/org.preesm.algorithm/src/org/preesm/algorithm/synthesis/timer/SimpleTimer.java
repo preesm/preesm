@@ -45,7 +45,8 @@ import org.preesm.model.scenario.Scenario;
 import org.preesm.model.slam.ComponentInstance;
 
 /**
- * Gives same results as the old loosely timed LatencyABC
+ * Gives same results as the old loosely timed LatencyABC except a small difference: actor inserted during scheduling
+ * have the default timing of 1 time unit.
  *
  * @author anmorvan
  *
@@ -116,6 +117,11 @@ public class SimpleTimer extends AgnosticTimer {
   @Override
   protected long computeRoundBufferActorTiming(final RoundBufferActor roundbufferActor) {
     return computeSpecialActorTiming(roundbufferActor);
+  }
+
+  @Override
+  protected long defaultTime() {
+    return 1L;
   }
 
 }
