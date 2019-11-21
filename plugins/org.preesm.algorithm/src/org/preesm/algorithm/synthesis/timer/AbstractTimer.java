@@ -52,7 +52,6 @@ import org.preesm.model.pisdf.EndActor;
 import org.preesm.model.pisdf.ForkActor;
 import org.preesm.model.pisdf.InitActor;
 import org.preesm.model.pisdf.JoinActor;
-import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.pisdf.RoundBufferActor;
 import org.preesm.model.pisdf.util.PiMMSwitch;
 
@@ -64,12 +63,9 @@ import org.preesm.model.pisdf.util.PiMMSwitch;
  */
 public abstract class AbstractTimer extends PiMMSwitch<Long> {
 
-  protected final PiGraph pigraph;
-
   /**
    */
-  public AbstractTimer(final PiGraph pigraph) {
-    this.pigraph = pigraph;
+  public AbstractTimer() {
   }
 
   /**

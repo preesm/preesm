@@ -17,6 +17,7 @@ import org.preesm.algorithm.schedule.model.ActorSchedule;
 import org.preesm.algorithm.schedule.model.HierarchicalSchedule;
 import org.preesm.algorithm.schedule.model.ScheduleFactory;
 import org.preesm.algorithm.synthesis.SynthesisResult;
+import org.preesm.algorithm.synthesis.timer.AgnosticTimer;
 import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.commons.model.PreesmCopyTracker;
@@ -142,6 +143,8 @@ public class PeriodicScheduler extends AbstractScheduler {
   protected long Ctot;               // total load
   protected int  nbFiringsAllocated; // index for allocation check
 
+  protected AgnosticTimer st;
+
   @Override
   protected SynthesisResult exec(PiGraph piGraph, Design slamDesign, Scenario scenario) {
 
@@ -158,6 +161,8 @@ public class PeriodicScheduler extends AbstractScheduler {
     this.piGraph = piGraph;
     this.slamDesign = slamDesign;
     this.scenario = scenario;
+    // TODO test if AgnosticTimer or SimplerTimer (with special actors time) is better
+    this.st = new AgnosticTimer(scenario);
 
     nbFiringsAllocated = 0;
     // initializes component operators and related attributes
@@ -221,7 +226,8 @@ public class PeriodicScheduler extends AbstractScheduler {
         maxImpl = ca.implTime;
       }
     }
-    PreesmLogger.getLogger().log(Level.INFO, "Periodic scheduler found an implementation time of: " + maxImpl);
+    PreesmLogger.getLogger().log(Level.INFO,
+        "Periodic scheduler found an implementation time of: " + maxImpl + " (not considering communications)");
 
     return new SynthesisResult(resultMapping, topParallelSchedule, null);
   }
@@ -246,7 +252,8 @@ public class PeriodicScheduler extends AbstractScheduler {
       // store load, with memoization over original actors
       AbstractActor originalActor = va.ori;
       if (!loadMemoization.containsKey(originalActor)) {
-        long load = getLoad(originalActor, slamDesign, scenario);
+        long load = st.doSwitch(originalActor);
+        // long load = getLoad(originalActor, slamDesign, scenario);
         loadMemoization.put(originalActor, load);
         va.load = load;
       } else {
@@ -317,7 +324,7 @@ public class PeriodicScheduler extends AbstractScheduler {
    *          Scenario.
    * @return Actor execution time.
    */
-  protected static long getLoad(AbstractActor actor, Design slamDesign, Scenario scenario) {
+  protected long getLoad(AbstractActor actor, Design slamDesign, Scenario scenario) {
     long wcet = ScenarioConstants.DEFAULT_TIMING_TASK.getValue();
     for (final Component operatorDefinitionID : slamDesign.getOperatorComponents()) {
       wcet = scenario.getTimings().evaluateTimingOrDefault((AbstractActor) actor, operatorDefinitionID);

@@ -57,7 +57,7 @@ public class SimpleLatencyEvaluation implements ISynthesisEvaluator<LatencyCost>
       final Mapping mapping, final ScheduleOrderManager scheduleOM) {
 
     final Map<AbstractActor,
-        ActorExecutionTiming> computeTimings = new SimpleTimer(algo, mapping, scenario).computeTimings(scheduleOM);
+        ActorExecutionTiming> computeTimings = new SimpleTimer(scenario, mapping).computeTimings(scheduleOM);
 
     final long latency = computeTimings.entrySet().stream().mapToLong(entry -> entry.getValue().getEndTime()).max()
         .orElse(0L);

@@ -35,17 +35,9 @@
 package org.preesm.algorithm.synthesis.timer;
 
 import org.preesm.algorithm.mapping.model.Mapping;
-import org.preesm.algorithm.schedule.model.ReceiveEndActor;
-import org.preesm.algorithm.schedule.model.ReceiveStartActor;
-import org.preesm.algorithm.schedule.model.SendEndActor;
-import org.preesm.algorithm.schedule.model.SendStartActor;
-import org.preesm.model.pisdf.Actor;
 import org.preesm.model.pisdf.BroadcastActor;
-import org.preesm.model.pisdf.EndActor;
 import org.preesm.model.pisdf.ForkActor;
-import org.preesm.model.pisdf.InitActor;
 import org.preesm.model.pisdf.JoinActor;
-import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.pisdf.RoundBufferActor;
 import org.preesm.model.pisdf.UserSpecialActor;
 import org.preesm.model.scenario.MemoryCopySpeedValue;
@@ -58,17 +50,21 @@ import org.preesm.model.slam.ComponentInstance;
  * @author anmorvan
  *
  */
-public class SimpleTimer extends AbstractTimer {
+public class SimpleTimer extends AgnosticTimer {
 
-  protected final Scenario scenario;
-  protected final Mapping  mapping;
+  protected final Mapping mapping;
 
   /**
+   * Compute WCET of actors, based on the scenario information.
+   * 
+   * @param scenario
+   *          Scenario of the application.
+   * @param mapping
+   *          May be null, if so returned time is wcet.
    */
-  public SimpleTimer(final PiGraph pigraph, final Mapping mapping, final Scenario scenario) {
-    super(pigraph);
+  public SimpleTimer(final Scenario scenario, final Mapping mapping) {
+    super(scenario);
     this.mapping = mapping;
-    this.scenario = scenario;
   }
 
   /**
@@ -83,17 +79,23 @@ public class SimpleTimer extends AbstractTimer {
 
     final long maxRate = Math.max(totalInRate, totalOutRate);
 
-    final ComponentInstance operator = this.mapping.getSimpleMapping(userSpecialActor);
-    final MemoryCopySpeedValue memTimings = this.scenario.getTimings().getMemTimings().get(operator.getComponent());
+    long wcet = 0L;
+    if (mapping != null) {
+      final ComponentInstance operator = this.mapping.getSimpleMapping(userSpecialActor);
+      final MemoryCopySpeedValue memTimings = this.scenario.getTimings().getMemTimings().get(operator.getComponent());
+      wcet = (long) ((maxRate) * memTimings.getTimePerUnit()) + memTimings.getSetupTime();
+    } else {
+      for (final ComponentInstance operatorDefinitionID : scenario.getPossibleMappings(userSpecialActor)) {
+        final MemoryCopySpeedValue memTimings = this.scenario.getTimings().getMemTimings()
+            .get(operatorDefinitionID.getComponent());
+        long et = (long) ((maxRate) * memTimings.getTimePerUnit()) + memTimings.getSetupTime();
+        if (et > wcet) {
+          wcet = et;
+        }
+      }
+    }
 
-    final double timePerUnit = memTimings.getTimePerUnit();
-    return (long) ((maxRate) * timePerUnit) + memTimings.getSetupTime();
-  }
-
-  @Override
-  protected long computeActorTiming(final Actor actor) {
-    final ComponentInstance operator = this.mapping.getSimpleMapping(actor);
-    return this.scenario.getTimings().evaluateTimingOrDefault(actor, operator.getComponent());
+    return wcet;
   }
 
   @Override
@@ -114,36 +116,6 @@ public class SimpleTimer extends AbstractTimer {
   @Override
   protected long computeRoundBufferActorTiming(final RoundBufferActor roundbufferActor) {
     return computeSpecialActorTiming(roundbufferActor);
-  }
-
-  @Override
-  protected long computeInitActorTiming(final InitActor initActor) {
-    return 0L;
-  }
-
-  @Override
-  protected long computeEndActorTiming(final EndActor endActor) {
-    return 0L;
-  }
-
-  @Override
-  protected long computeSendStartActorTiming(final SendStartActor sendStartActor) {
-    return 0L;
-  }
-
-  @Override
-  protected long computeSendEndActorTiming(final SendEndActor sendEndActor) {
-    return 0L;
-  }
-
-  @Override
-  protected long computeReceiveStartActorTiming(final ReceiveStartActor receiveStartActor) {
-    return 0L;
-  }
-
-  @Override
-  protected long computeReceiveEndActorTiming(final ReceiveEndActor receiveEndActor) {
-    return 0L;
   }
 
 }
