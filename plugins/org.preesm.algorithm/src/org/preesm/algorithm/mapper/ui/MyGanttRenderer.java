@@ -41,8 +41,8 @@ import java.awt.Font;
 import java.awt.Graphics2D;
 import java.awt.geom.Rectangle2D;
 import java.awt.geom.RoundRectangle2D;
-import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.TreeMap;
 import org.jfree.chart.axis.CategoryAxis;
 import org.jfree.chart.axis.ValueAxis;
 import org.jfree.chart.entity.CategoryItemEntity;
@@ -65,7 +65,21 @@ public class MyGanttRenderer extends GanttRenderer {
   private static final long serialVersionUID = 1L;
 
   /** Map of the task colors. */
-  private final Map<String, Color> colorMap = new LinkedHashMap<>();
+  private final Map<String, Color> colorMap;
+
+  /**
+   * Initializes colors.
+   * 
+   * @param idTOcolor
+   *          Color map (by task id).
+   */
+  public MyGanttRenderer(Map<String, Color> idTOcolor) {
+    if (idTOcolor != null) {
+      colorMap = idTOcolor;
+    } else {
+      colorMap = new TreeMap<>();
+    }
+  }
 
   /**
    * Draws the tasks/subtasks for one item.
@@ -128,9 +142,6 @@ public class MyGanttRenderer extends GanttRenderer {
       final double rectBreadth = state.getBarWidth();
 
       // DRAW THE BARS...
-      RoundRectangle2D bar = null;
-
-      bar = new RoundRectangle2D.Double(translatedValue0, rectStart, rectLength, rectBreadth, 10.0, 10.0);
 
       /* Paint seriesPaint = */getItemPaint(row, column);
 
@@ -141,6 +152,9 @@ public class MyGanttRenderer extends GanttRenderer {
             ((TaskSeriesCollection) dataset).getSeries(0).get(column).getSubtask(subinterval).getDescription()));
 
       }
+
+      RoundRectangle2D bar = new RoundRectangle2D.Double(translatedValue0, rectStart, rectLength, rectBreadth, 10.0,
+          10.0);
       g2.fill(bar);
 
       if (isDrawBarOutline() && (state.getBarWidth() > BarRenderer.BAR_OUTLINE_WIDTH_THRESHOLD)) {
@@ -158,11 +172,11 @@ public class MyGanttRenderer extends GanttRenderer {
         // Truncting the string if it is too long
         String subtip = "";
         if (rectLength > 0) {
-          final double percent = (g2.getFontMetrics().getStringBounds(tip, g2).getWidth() + 10) / rectLength;
+          final double percentage = (g2.getFontMetrics().getStringBounds(tip, g2).getWidth() + 10) / rectLength;
 
-          if (percent > 1.0) {
-            subtip = tip.substring(0, (int) (tip.length() / percent));
-          } else if (percent > 0) {
+          if (percentage > 1.0) {
+            subtip = tip.substring(0, (int) (tip.length() / percentage));
+          } else if (percentage > 0) {
             subtip = tip;
           }
 
@@ -208,34 +222,10 @@ public class MyGanttRenderer extends GanttRenderer {
    */
   private Color getRandomBrightColor(final String name) {
 
-    Color c = null;
+    Color c = colorMap.get(name);
 
-    if (this.colorMap.containsKey(name)) {
-      c = this.colorMap.get(name);
-    } else {
-      if (name.indexOf("__transfer") == 0) {
-        c = getRandomColor(190.0, 100.0, 130.0, 20);
-      } else if (name.indexOf("__write") == 0) {
-        c = getRandomColor(240.0, 100.0, 100.0, 20);
-      } else if (name.indexOf("__read") == 0) {
-        c = getRandomColor(250.0, 180.0, 180.0, 20);
-      } else if (name.indexOf("__overhead") == 0) {
-        c = getRandomColor(130.0, 160.0, 100.0, 20);
-      } else if (name.indexOf("__involvement") == 0) {
-        c = getRandomColor(210.0, 150.0, 50.0, 20);
-      } else if ((name.indexOf("__send") == 0) || (name.indexOf("__receive") == 0)) {
-        c = getRandomColor(160.0, 130.0, 100.0, 20);
-      } else if (name.indexOf("__@") != -1) {
-        final int atNumber = name.indexOf("__@");
-
-        final int index = Integer.valueOf(name.substring(atNumber + 3, atNumber + 4)) - 1;
-        // iteration task color
-        c = getRandomColor(27.0 + ((50 * index) % 200), 182.0 - ((50 * index) % 160), 233.0, 20);
-      } else {
-        c = getRandomColor(130.0, 100.0, 160.0, 20);
-      }
-
-      this.colorMap.put(name, c);
+    if (c == null) {
+      c = getRandomColor(130.0, 100.0, 160.0, 30);
     }
 
     return c;

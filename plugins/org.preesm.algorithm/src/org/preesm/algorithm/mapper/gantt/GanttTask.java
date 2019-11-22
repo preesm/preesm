@@ -36,6 +36,7 @@
  */
 package org.preesm.algorithm.mapper.gantt;
 
+import java.awt.Color;
 import java.util.Objects;
 
 /**
@@ -54,6 +55,9 @@ public class GanttTask implements Comparable<GanttTask> {
   /** ID displayed in the Gantt. */
   private final String id;
 
+  /** Color **/
+  private final Color color;
+
   /**
    * Instantiates a new gantt task.
    *
@@ -64,11 +68,12 @@ public class GanttTask implements Comparable<GanttTask> {
    * @param id
    *          the id
    */
-  public GanttTask(final long startTime, final long duration, final String id) {
+  public GanttTask(final long startTime, final long duration, final String id, final Color color) {
     super();
     this.startTime = startTime;
     this.duration = duration;
     this.id = id;
+    this.color = color;
   }
 
   public long getStartTime() {
@@ -81,6 +86,10 @@ public class GanttTask implements Comparable<GanttTask> {
 
   public String getId() {
     return this.id;
+  }
+
+  public Color getColor() {
+    return this.color;
   }
 
   @Override

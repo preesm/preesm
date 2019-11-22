@@ -38,8 +38,6 @@ package org.preesm.algorithm.mapper.ui.stats;
 import org.eclipse.ui.forms.IManagedForm;
 import org.eclipse.ui.forms.editor.FormEditor;
 import org.eclipse.ui.forms.editor.FormPage;
-import org.eclipse.ui.forms.widgets.ColumnLayout;
-import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.preesm.algorithm.mapper.gantt.GanttData;
 import org.preesm.algorithm.mapper.ui.GanttPlotter;
 
@@ -78,21 +76,7 @@ public class GanttPage extends FormPage {
    */
   @Override
   protected void createFormContent(final IManagedForm managedForm) {
-
-    final ScrolledForm form = managedForm.getForm();
-    final ColumnLayout layout = new ColumnLayout();
-    layout.topMargin = 0;
-    layout.bottomMargin = 5;
-    layout.leftMargin = 10;
-    layout.rightMargin = 10;
-    layout.horizontalSpacing = 10;
-    layout.verticalSpacing = 10;
-    layout.maxNumColumns = 4;
-    layout.minNumColumns = 1;
-    form.getBody().setLayout(layout);
-
-    GanttPlotter.plotDeployment(gd, form.getBody());
-
+    GanttPlotter.plotDeployment(gd, managedForm);
   }
 
 }

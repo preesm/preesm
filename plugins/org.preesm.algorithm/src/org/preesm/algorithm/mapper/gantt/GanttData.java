@@ -36,6 +36,7 @@
  */
 package org.preesm.algorithm.mapper.gantt;
 
+import java.awt.Color;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedHashMap;
@@ -100,9 +101,9 @@ public class GanttData {
    * @return true, if successful
    */
   private boolean insertTask(final String taskId, final ComponentInstance componentId, final long startTime,
-      final long duration) {
+      final long duration, final Color color) {
     final GanttComponent cmp = getComponent(componentId);
-    final GanttTask task = new GanttTask(startTime, duration, taskId);
+    final GanttTask task = new GanttTask(startTime, duration, taskId, color);
     return cmp.insertTask(task);
   }
 
@@ -115,6 +116,7 @@ public class GanttData {
    */
   public boolean insertDag(final MapperDAG dag) {
     final TopologicalDAGIterator viterator = new TopologicalDAGIterator(dag);
+    TaskColorSelector tcs = new TaskColorSelector();
 
     while (viterator.hasNext()) {
       final MapperDAGVertex currentVertex = (MapperDAGVertex) viterator.next();
@@ -124,7 +126,7 @@ public class GanttData {
         final long startTime = currentVertex.getTiming().getTLevel();
         final long duration = currentVertex.getTiming().getCost();
         final String id = currentVertex.getName() + " (x" + currentVertex.getInit().getNbRepeat() + ")";
-        if (!insertTask(id, cmp, startTime, duration)) {
+        if (!insertTask(id, cmp, startTime, duration, tcs.mapperDAGcompability(currentVertex))) {
           return false;
         }
       } else {
@@ -147,11 +149,12 @@ public class GanttData {
    */
   public boolean insertSchedulerMapping(final Mapping mapping,
       final Map<AbstractActor, ActorExecutionTiming> execTimings) {
+    TaskColorSelector tcs = new TaskColorSelector();
     for (Entry<AbstractActor, ActorExecutionTiming> e : execTimings.entrySet()) {
       AbstractActor aa = e.getKey();
       ActorExecutionTiming aet = e.getValue();
       for (ComponentInstance ci : mapping.getMapping(aa)) {
-        if (!insertTask(aa.getName(), ci, aet.getStartTime(), aet.getDuration())) {
+        if (!insertTask(aa.getName(), ci, aet.getStartTime(), aet.getDuration(), tcs.doSwitch(aa))) {
           return false;
         }
       }
