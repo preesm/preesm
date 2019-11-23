@@ -133,27 +133,29 @@ public class TaskColorSelector extends PiMMSwitch<Color> {
   public Color mapperDAGcompability(MapperDAGVertex vertex) {
     String kind = vertex.getKind();
     Color res = null;
-    switch (kind) {
-      case MapperDAGVertex.DAG_BROADCAST_VERTEX:
-      case MapperDAGVertex.SPECIAL_TYPE_BROADCAST:
-        res = bcActorC;
-        break;
-      case MapperDAGVertex.SPECIAL_TYPE_ROUNDBUFFER:
-        res = rbActorC;
-        break;
-      case MapperDAGVertex.DAG_FORK_VERTEX:
-        res = forkActorC;
-        break;
-      case MapperDAGVertex.DAG_JOIN_VERTEX:
-        res = joinActorC;
-        break;
-      case MapperDAGVertex.DAG_END_VERTEX:
-        res = endActorC;
-        break;
-      case MapperDAGVertex.DAG_INIT_VERTEX:
-        res = initActorC;
-        break;
-      default:
+    if (kind != null) {
+      switch (kind) {
+        case MapperDAGVertex.DAG_BROADCAST_VERTEX:
+        case MapperDAGVertex.SPECIAL_TYPE_BROADCAST:
+          res = bcActorC;
+          break;
+        case MapperDAGVertex.SPECIAL_TYPE_ROUNDBUFFER:
+          res = rbActorC;
+          break;
+        case MapperDAGVertex.DAG_FORK_VERTEX:
+          res = forkActorC;
+          break;
+        case MapperDAGVertex.DAG_JOIN_VERTEX:
+          res = joinActorC;
+          break;
+        case MapperDAGVertex.DAG_END_VERTEX:
+          res = endActorC;
+          break;
+        case MapperDAGVertex.DAG_INIT_VERTEX:
+          res = initActorC;
+          break;
+        default:
+      }
     }
     return res;
   }
