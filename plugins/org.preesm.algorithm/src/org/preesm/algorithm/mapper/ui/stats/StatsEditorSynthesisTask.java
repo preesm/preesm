@@ -45,7 +45,9 @@ import org.preesm.workflow.implement.AbstractTaskImplementation;
             description = "Specify if statistics, including Gantt diagram, must be displayed or not.",
             values = { @Value(name = "true/false") }),
         @Parameter(name = StatsEditorSynthesisTask.EXPORT_PARAM,
-            description = "File location relative to project, may be empty.", values = { @Value(name = "/path/to") }) })
+            description = "Folder to store Gantt diagram as xml file. Path is relative to the project, "
+                + "put \"/\" if at root, may be empty.",
+            values = { @Value(name = "/path/to") }) })
 public class StatsEditorSynthesisTask extends AbstractTaskImplementation {
 
   public static final String DISPLAY_PARAM   = "display";
@@ -67,8 +69,8 @@ public class StatsEditorSynthesisTask extends AbstractTaskImplementation {
     final Allocation memAlloc = (Allocation) inputs.get("Allocation");
 
     final boolean isDisplay = "true".equalsIgnoreCase(parameters.get(DISPLAY_PARAM));
-    final String exportPath = parameters.get(EXPORT_PARAM);
-    final boolean isExport = !exportPath.isBlank();
+    final String exportPath = parameters.get(EXPORT_PARAM).trim();
+    final boolean isExport = !exportPath.isEmpty();
 
     if (isDisplay || isExport) {
 
