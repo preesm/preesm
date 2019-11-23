@@ -63,7 +63,8 @@ import org.preesm.workflow.implement.AbstractWorkflowNodeImplementation;
  *
  * @author cguy
  */
-@PreesmTask(id = "org.ietr.preesm.stats.exporter.StatsExporterTask", name = "Gantt Exporter", category = "Analysis",
+@PreesmTask(id = "org.ietr.preesm.stats.exporter.StatsExporterTask", name = "ABC Gantt exporter",
+    category = "Gantt exporters",
 
     inputs = { @Port(name = "ABC", type = LatencyAbc.class), @Port(name = "scenario", type = Scenario.class) },
 

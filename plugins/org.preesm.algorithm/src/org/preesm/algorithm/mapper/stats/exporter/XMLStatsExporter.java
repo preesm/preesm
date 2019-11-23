@@ -36,6 +36,7 @@
  */
 package org.preesm.algorithm.mapper.stats.exporter;
 
+import java.awt.Color;
 import java.io.File;
 import java.util.logging.Level;
 import javax.xml.parsers.DocumentBuilder;
@@ -215,7 +216,17 @@ public class XMLStatsExporter {
     // Core
     event.setAttribute("mapping", componentID);
     // Color
-    event.setAttribute("color", XMLStatsExporter.TASKCOLOR);
+    Color c = task.getColor();
+    if (c == null) {
+      event.setAttribute("color", XMLStatsExporter.TASKCOLOR);
+    } else {
+      int r = c.getRed();
+      int g = c.getGreen();
+      int b = c.getBlue();
+      // a bit ugly an unsafe, but it seems to work
+      String colHexa = "#" + Integer.toHexString(r) + Integer.toHexString(g) + Integer.toHexString(b);
+      event.setAttribute("color", colHexa);
+    }
     // Gantt ID for the task
     event.setTextContent("Step_" + task.getId().replace(" ", "_") + ".");
     // Ending task

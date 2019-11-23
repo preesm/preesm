@@ -39,18 +39,11 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.logging.Level;
 import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.ui.IEditorInput;
-import org.eclipse.ui.PlatformUI;
-import org.preesm.algorithm.mapper.ui.stats.EditorRunnable;
-import org.preesm.algorithm.mapper.ui.stats.StatEditorInput;
-import org.preesm.algorithm.mapper.ui.stats.StatGeneratorSynthesis;
 import org.preesm.algorithm.mapping.model.Mapping;
 import org.preesm.algorithm.memalloc.model.Allocation;
 import org.preesm.algorithm.schedule.model.Schedule;
 import org.preesm.algorithm.synthesis.communications.ICommunicationInserter;
 import org.preesm.algorithm.synthesis.communications.OptimizedCommunicationInserter;
-import org.preesm.algorithm.synthesis.evaluation.latency.LatencyCost;
-import org.preesm.algorithm.synthesis.evaluation.latency.SimpleLatencyEvaluation;
 import org.preesm.algorithm.synthesis.memalloc.IMemoryAllocation;
 import org.preesm.algorithm.synthesis.memalloc.LegacyMemoryAllocation;
 import org.preesm.algorithm.synthesis.memalloc.SimpleMemoryAllocation;
@@ -113,26 +106,9 @@ public class PreesmSynthesisTask extends AbstractTaskImplementation {
     final ICommunicationInserter comIns = new OptimizedCommunicationInserter(scheduleOM);
     comIns.insertCommunications(algorithm, architecture, scenario, scheduleAndMap.schedule, scheduleAndMap.mapping);
 
-    PreesmLogger.getLogger().log(Level.INFO, " -- Latency evaluation");
-    final LatencyCost evaluate = new SimpleLatencyEvaluation().evaluate(algorithm, architecture, scenario,
-        scheduleAndMap.mapping, scheduleOM);
-    PreesmLogger.getLogger().log(Level.INFO, "Simple latency evaluation : " + evaluate.getValue());
-
     PreesmLogger.getLogger().log(Level.INFO, () -> " -- Allocating Memory - " + allocationName);
     final Allocation memalloc = alloc.allocateMemory(algorithm, architecture, scenario, scheduleAndMap.schedule,
         scheduleAndMap.mapping);
-
-    final IEditorInput input = new StatEditorInput(
-        new StatGeneratorSynthesis(architecture, scenario, scheduleAndMap.mapping, memalloc, evaluate));
-
-    // Check if the workflow is running in command line mode
-    try {
-      // Run statistic editor
-      PlatformUI.getWorkbench().getDisplay().asyncExec(new EditorRunnable(input));
-    } catch (final IllegalStateException e) {
-      PreesmLogger.getLogger().log(Level.INFO, "Gantt display is impossible in this context."
-          + " Ignore this log entry if you are running the command line version of Preesm.");
-    }
 
     final Map<String, Object> outputs = new LinkedHashMap<>();
     outputs.put("Schedule", scheduleAndMap.schedule);

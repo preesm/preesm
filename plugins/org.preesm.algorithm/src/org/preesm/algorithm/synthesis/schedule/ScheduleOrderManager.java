@@ -350,24 +350,6 @@ public class ScheduleOrderManager {
       final List<AbstractActor> totalorder = new ArrayList<>(graph.vertexSet().size());
       new TopologicalOrderIterator<>(graph).forEachRemaining(totalorder::add);
       totalOrderCache = totalorder;
-
-      // for (Entry<ComponentInstance, List<AbstractActor>> entry : operatorTotalOrderCache.entrySet()) {
-      // System.err.println("Operator " + entry.getKey().getInstanceName() + ": ");
-      // StringBuilder sb = new StringBuilder();
-      // entry.getValue().forEach(x -> sb.append(x.getName() + "; "));
-      // System.err.println(sb.toString());
-      // }
-      //
-      // System.err.println("\n-------\n Graph with " + graphCache.edgeSet().size() + " edges");
-      // for (DAGedge de : graphCache.edgeSet()) {
-      // AbstractActor src = graphCache.getEdgeSource(de);
-      // AbstractActor tgt = graphCache.getEdgeTarget(de);
-      // System.err.println(src.getName() + " --> " + tgt.getName());
-      // }
-      //
-      // StringBuilder sb = new StringBuilder("Global order:\n");
-      // totalOrderCache.forEach(x -> sb.append(x.getName() + ";\n"));
-      // System.err.println(sb.toString());
     }
     return Collections.unmodifiableList(totalOrderCache);
   }

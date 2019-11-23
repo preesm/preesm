@@ -60,7 +60,7 @@ import org.preesm.workflow.implement.AbstractTaskImplementation;
  * 
  * @author mpelcat
  */
-@PreesmTask(id = "org.ietr.preesm.plugin.mapper.plot", name = "Gantt Display", category = "Analysis",
+@PreesmTask(id = "org.ietr.preesm.plugin.mapper.plot", name = "ABC Gantt displayer", category = "Gantt exporters",
 
     inputs = { @Port(name = "ABC", type = LatencyAbc.class), @Port(name = "scenario", type = Scenario.class) },
 
@@ -68,7 +68,7 @@ import org.preesm.workflow.implement.AbstractTaskImplementation;
 
     seeAlso = { "**Speedup assessment chart**: Maxime Pelcat. Prototypage Rapide et Génération de Code pour DSP Multi-"
         + "Coeurs Appliqués à la Couche Physique des Stations de Base 3GPP LTE. PhD thesis, INSA de Rennes, 2010." })
-public class StatEditorTask extends AbstractTaskImplementation {
+public class StatEditorAbcTask extends AbstractTaskImplementation {
 
   @Override
   public Map<String, Object> execute(final Map<String, Object> inputs, final Map<String, String> parameters,

@@ -64,7 +64,6 @@ public class LatencyCost implements ISynthesisCost<Long> {
     return Long.compare(this.getValue(), other.getValue());
   }
 
-  @Override
   public Map<AbstractActor, ActorExecutionTiming> getExecTimings() {
     return execTimings;
   }
