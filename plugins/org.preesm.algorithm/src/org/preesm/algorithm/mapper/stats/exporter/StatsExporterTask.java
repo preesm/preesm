@@ -71,10 +71,10 @@ import org.preesm.workflow.implement.AbstractWorkflowNodeImplementation;
     shortDescription = "This task exports scheduling results as a *.pgantt file that can be "
         + "viewed using the ganttDisplay viewer [1].",
 
-    parameters = { @Parameter(name = "path",
+    parameters = { @Parameter(name = StatsExporterTask.PARAM_PATH,
         description = "Path of the exported *.pgantt file. If the specified directory does not exist, it will "
             + "not be created.",
-        values = { @Value(name = "/path/in/proj",
+        values = { @Value(name = StatsExporterTask.DEFAULT_PATH,
             effect = "Path within the Preesm project containing the workflow where the ”Gantt Exporter” task is "
                 + "instantiated. Exported Gantt will be named as follows: "
                 + "**/path/in/proj/<scenario name> stats.pgantt**. If a graph with this name already exists in "
