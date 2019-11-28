@@ -37,13 +37,20 @@ package org.preesm.model.pisdf.util.topology;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
+import org.eclipse.emf.common.notify.Notification;
+import org.jgrapht.Graphs;
+import org.jgrapht.alg.TransitiveClosure;
+import org.jgrapht.graph.DefaultEdge;
+import org.jgrapht.graph.DirectedAcyclicGraph;
+import org.jgrapht.traverse.TopologicalOrderIterator;
+import org.preesm.commons.model.PreesmContentAdapter;
 import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.DataPort;
 import org.preesm.model.pisdf.Fifo;
+import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.pisdf.util.topology.IsThereALongPathSwitch.ThereIsALongPathException;
 import org.preesm.model.pisdf.util.topology.PiSDFPredecessorSwitch.IsPredecessorSwitch;
 import org.preesm.model.pisdf.util.topology.PiSDFPredecessorSwitch.PredecessorFoundException;
@@ -55,41 +62,103 @@ import org.preesm.model.pisdf.util.topology.PiSDFSuccessorSwitch.SuccessorFoundE
  * @author anmorvan
  *
  */
-public class PiSDFTopologyHelper {
+public class PiSDFTopologyHelper extends PreesmContentAdapter {
 
-  private PiSDFTopologyHelper() {
-    // forbid instantiation
+  private final PiGraph                                    pigraph;
+  private DirectedAcyclicGraph<AbstractActor, DefaultEdge> internalGraphCache             = null;
+  private DirectedAcyclicGraph<AbstractActor, DefaultEdge> internalTransitiveClosureCache = null;
+
+  public PiSDFTopologyHelper(final PiGraph pigraph) {
+    this.pigraph = pigraph;
+    this.pigraph.eAdapters().add(this);
   }
 
-  public static final Comparator<AbstractActor> getComparator() {
-    return new PiSDFTopologicalComparator();
+  @Override
+  public void notifyChanged(Notification notification) {
+    this.internalGraphCache = null;
+    this.internalTransitiveClosureCache = null;
   }
 
-  public static final List<AbstractActor> sort(final List<AbstractActor> actors) {
-    return PiSDFTopologicalSorter.depthFirstTopologicalSort(actors);
+  /**
+   * Build a DAG from a PiGraph and a schedule that represents precedence (thus hold no data). The graph transitive
+   * closure is computed.
+   */
+  private final DirectedAcyclicGraph<AbstractActor, DefaultEdge> getGraph() {
+    if (internalGraphCache != null) {
+      return internalGraphCache;
+    } else {
+      final DirectedAcyclicGraph<AbstractActor,
+          DefaultEdge> internalGraph = new DirectedAcyclicGraph<>(null, DefaultEdge::new, false);
+      pigraph.getActors().forEach(internalGraph::addVertex);
+      pigraph.getFifos().forEach(fifo -> internalGraph.addEdge(fifo.getSourcePort().getContainingActor(),
+          fifo.getTargetPort().getContainingActor()));
+      internalGraphCache = internalGraph;
+      return internalGraph;
+    }
+  }
+
+  private final DirectedAcyclicGraph<AbstractActor, DefaultEdge> getTransitiveClosure() {
+    if (internalTransitiveClosureCache != null) {
+      return internalTransitiveClosureCache;
+    } else {
+      final DirectedAcyclicGraph<AbstractActor, DefaultEdge> graph = getGraph();
+      @SuppressWarnings("unchecked")
+      final DirectedAcyclicGraph<AbstractActor,
+          DefaultEdge> transitiveClosure = (DirectedAcyclicGraph<AbstractActor, DefaultEdge>) graph.clone();
+      TransitiveClosure.INSTANCE.closeDirectedAcyclicGraph(transitiveClosure);
+      internalTransitiveClosureCache = transitiveClosure;
+      return transitiveClosure;
+    }
+  }
+
+  /**
+   * Will fail if this.pigraph has cycles
+   */
+  public final List<AbstractActor> getTopologicallySortedActors() {
+    final TopologicalOrderIterator<AbstractActor,
+        DefaultEdge> topologicalOrderIterator = new TopologicalOrderIterator<>(getGraph());
+    final List<AbstractActor> arrayList = new ArrayList<>(this.pigraph.getActors().size());
+    topologicalOrderIterator.forEachRemaining(arrayList::add);
+    return Collections.unmodifiableList(arrayList);
   }
 
   /**
    * returns true if potentialPred is actually a predecessor of target
    */
-  public static final boolean isPredecessor(final AbstractActor potentialPred, final AbstractActor target) {
+  public final boolean isPredecessor(final AbstractActor potentialPred, final AbstractActor target) {
     try {
-      new IsPredecessorSwitch(target).doSwitch(potentialPred);
-      return false;
-    } catch (final PredecessorFoundException e) {
-      return true;
+      final DirectedAcyclicGraph<AbstractActor, DefaultEdge> closure = getTransitiveClosure();
+      final List<AbstractActor> allPreds = Graphs.predecessorListOf(closure, target);
+      return allPreds.contains(potentialPred);
+    } catch (final IllegalArgumentException e) {
+      // in case the PiSDF is not in the SRDAG form (i.e. some cycles are present), building the internal graph will
+      // fail
+      try {
+        new IsPredecessorSwitch(potentialPred).doSwitch(target);
+        return false;
+      } catch (final PredecessorFoundException foundEx) {
+        return true;
+      }
     }
   }
 
   /**
    * returns true if potentialSucc is actually a successor of target
    */
-  public static final boolean isSuccessor(final AbstractActor potentialSucc, final AbstractActor target) {
+  public final boolean isSuccessor(final AbstractActor potentialSucc, final AbstractActor target) {
     try {
-      new IsSuccessorSwitch(target).doSwitch(potentialSucc);
-      return false;
-    } catch (final SuccessorFoundException e) {
-      return true;
+      final DirectedAcyclicGraph<AbstractActor, DefaultEdge> closure = getTransitiveClosure();
+      final List<AbstractActor> allSuccs = Graphs.successorListOf(closure, target);
+      return allSuccs.contains(potentialSucc);
+    } catch (final IllegalArgumentException e) {
+      // in case the PiSDF is not in the SRDAG form (i.e. some cycles are present), building the internal graph will
+      // fail
+      try {
+        new IsSuccessorSwitch(potentialSucc).doSwitch(target);
+        return false;
+      } catch (final SuccessorFoundException foundEx) {
+        return true;
+      }
     }
   }
 
@@ -97,7 +166,7 @@ public class PiSDFTopologyHelper {
    * Returns true if there is a long path from potentialSucc to target. A long path is defined as a path that encounters
    * more than one Fifo.
    */
-  public static final boolean isThereIsALongPath(final AbstractActor potentialSucc, final AbstractActor target) {
+  public final boolean isThereIsALongPath(final AbstractActor potentialSucc, final AbstractActor target) {
     try {
       new IsThereALongPathSwitch(target).doSwitch(potentialSucc);
       return false;
@@ -113,7 +182,7 @@ public class PiSDFTopologyHelper {
    *          actor
    * @return actors that are directly connected in input of a
    */
-  public static final List<AbstractActor> getDirectPredecessorsOf(final AbstractActor a) {
+  public final List<AbstractActor> getDirectPredecessorsOf(final AbstractActor a) {
     final List<AbstractActor> result = new ArrayList<>();
     a.getDataInputPorts().stream().forEach(x -> result.add(x.getIncomingFifo().getSourcePort().getContainingActor()));
     return Collections.unmodifiableList(result);
@@ -126,7 +195,7 @@ public class PiSDFTopologyHelper {
    *          actor
    * @return actors that are directly connected in output of a
    */
-  public static final List<AbstractActor> getDirectSuccessorsOf(final AbstractActor a) {
+  public final List<AbstractActor> getDirectSuccessorsOf(final AbstractActor a) {
     final List<AbstractActor> result = new ArrayList<>();
     a.getDataOutputPorts().stream().forEach(x -> result.add(x.getOutgoingFifo().getTargetPort().getContainingActor()));
     return Collections.unmodifiableList(result);
@@ -135,31 +204,46 @@ public class PiSDFTopologyHelper {
   /**
    * Get all predecessors of actor. Will loop infinitely if actor is not part of a DAG.
    */
-  public static final List<AbstractActor> getAllPredecessorsOf(final AbstractActor actor) {
-    final Set<AbstractActor> result = new LinkedHashSet<>();
-    final List<AbstractActor> directPredecessorsOf = getDirectPredecessorsOf(actor);
-    result.addAll(directPredecessorsOf);
-    directPredecessorsOf.stream().map(PiSDFTopologyHelper::getAllPredecessorsOf).flatMap(List::stream).distinct()
-        .forEach(result::add);
-    return Collections.unmodifiableList(new ArrayList<>(result));
+  public final List<AbstractActor> getAllPredecessorsOf(final AbstractActor actor) {
+    try {
+      final DirectedAcyclicGraph<AbstractActor, DefaultEdge> closure = getTransitiveClosure();
+      final List<AbstractActor> allPreds = Graphs.predecessorListOf(closure, actor);
+      return Collections.unmodifiableList(allPreds);
+    } catch (final IllegalArgumentException e) {
+      // in case the PiSDF is not in the SRDAG form (i.e. some cycles are present), building the internal graph will
+      // fail
+      final Set<AbstractActor> result = new LinkedHashSet<>();
+      final List<AbstractActor> directPredecessorsOf = getDirectPredecessorsOf(actor);
+      result.addAll(directPredecessorsOf);
+      directPredecessorsOf.stream().map(this::getAllPredecessorsOf).flatMap(List::stream).distinct()
+          .forEach(result::add);
+      return Collections.unmodifiableList(new ArrayList<>(result));
+    }
   }
 
   /**
    * Get all successors of actor. Will loop infinitely if actor is not part of a DAG.
    */
-  public static final List<AbstractActor> getAllSuccessorsOf(final AbstractActor actor) {
-    final Set<AbstractActor> result = new LinkedHashSet<>();
-    final List<AbstractActor> directSuccessorsOf = getDirectSuccessorsOf(actor);
-    result.addAll(directSuccessorsOf);
-    directSuccessorsOf.stream().map(PiSDFTopologyHelper::getAllSuccessorsOf).flatMap(List::stream).distinct()
-        .forEach(result::add);
-    return Collections.unmodifiableList(new ArrayList<>(result));
+  public final List<AbstractActor> getAllSuccessorsOf(final AbstractActor actor) {
+    try {
+      final DirectedAcyclicGraph<AbstractActor, DefaultEdge> closure = getTransitiveClosure();
+      final List<AbstractActor> allSuccs = Graphs.successorListOf(closure, actor);
+      return Collections.unmodifiableList(allSuccs);
+    } catch (final IllegalArgumentException e) {
+      // in case the PiSDF is not in the SRDAG form (i.e. some cycles are present), building the internal graph will
+      // fail
+      final Set<AbstractActor> result = new LinkedHashSet<>();
+      final List<AbstractActor> directSuccessorsOf = getDirectSuccessorsOf(actor);
+      result.addAll(directSuccessorsOf);
+      directSuccessorsOf.stream().map(this::getAllSuccessorsOf).flatMap(List::stream).distinct().forEach(result::add);
+      return Collections.unmodifiableList(new ArrayList<>(result));
+    }
   }
 
   /**
    * Get all edges on the paths to all predecessors of actor. Will loop infinitely if actor is not part of a DAG.
    */
-  public static final List<Fifo> getPredecessorEdgesOf(final AbstractActor actor) {
+  public final List<Fifo> getPredecessorEdgesOf(final AbstractActor actor) {
     final Set<Fifo> result = new LinkedHashSet<>();
     actor.getDataInputPorts().stream().map(DataPort::getFifo).forEach(result::add);
     final List<AbstractActor> allPredecessorsOf = getAllPredecessorsOf(actor);
@@ -171,7 +255,7 @@ public class PiSDFTopologyHelper {
   /**
    * Get all edges on the paths to all successors of actor. Will loop infinitely if actor is not part of a DAG.
    */
-  public static final List<Fifo> getSuccessorEdgesOf(final AbstractActor actor) {
+  public final List<Fifo> getSuccessorEdgesOf(final AbstractActor actor) {
     final Set<Fifo> result = new LinkedHashSet<>();
     actor.getDataOutputPorts().stream().map(DataPort::getFifo).forEach(result::add);
     final List<AbstractActor> allSuccessorsOf = getAllSuccessorsOf(actor);

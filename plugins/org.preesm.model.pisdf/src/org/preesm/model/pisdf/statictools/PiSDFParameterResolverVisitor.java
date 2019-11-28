@@ -1,6 +1,7 @@
 /**
  * Copyright or © or Copr. IETR/INSA - Rennes (2018 - 2019) :
  *
+ * Alexandre Honorat [alexandre.honorat@insa-rennes.fr] (2019)
  * Antoine Morvan [antoine.morvan@insa-rennes.fr] (2018 - 2019)
  * Florian Arrestier [florian.arrestier@insa-rennes.fr] (2018)
  * Dylan Gageot [gageot.dylan@gmail.com] (2019)
@@ -58,6 +59,7 @@ import org.preesm.model.pisdf.ExpressionHolder;
 import org.preesm.model.pisdf.ISetter;
 import org.preesm.model.pisdf.InterfaceActor;
 import org.preesm.model.pisdf.Parameter;
+import org.preesm.model.pisdf.PeriodicElement;
 import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.pisdf.util.PiMMSwitch;
 
@@ -174,7 +176,8 @@ public class PiSDFParameterResolverVisitor extends PiMMSwitch<Boolean> {
     final ConfigInputPort graphPort = cii.getGraphPort();
     final Dependency incomingDependency = graphPort.getIncomingDependency();
     if (incomingDependency == null) {
-      throw new PreesmRuntimeException(cii.eContainer() + " has a config input port without incoming dependency");
+      throw new PreesmRuntimeException(
+          cii.eContainer() + " has a config input port without incoming dependency: " + graphPort.getName());
     }
     final ISetter setter = incomingDependency.getSetter();
     // Setter of an incoming dependency into a ConfigInputInterface must be
@@ -205,6 +208,11 @@ public class PiSDFParameterResolverVisitor extends PiMMSwitch<Boolean> {
       }
     }
     resolveActorPorts(actor, portValues);
+    // Resolve actor period
+    if (actor instanceof PeriodicElement) {
+      PeriodicElement pe = (PeriodicElement) actor;
+      resolveExpression(pe, portValues);
+    }
     return true;
   }
 
@@ -251,6 +259,9 @@ public class PiSDFParameterResolverVisitor extends PiMMSwitch<Boolean> {
 
     // Finally, we derive parameter values that have not already been processed
     computeDerivedParameterValues(graph, this.parameterValues);
+
+    // Resolve graph period
+    graph.setExpression(graph.getPeriod().evaluate());
 
     // We can now resolve data port rates for this graph
     for (final AbstractActor actor : graph.getOnlyActors()) {

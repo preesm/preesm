@@ -333,9 +333,9 @@ public class Match {
 
   @Override
   public String toString() {
-    return "" + getLocalBuffer().dagVertex.getName() + "." + getLocalBuffer().name + "[" + getLocalIndex() + ".."
-        + (getLocalIndex() + getLength()) + "[=>" + getRemoteBuffer().dagVertex.getName() + "." + getRemoteBuffer().name
-        + "[" + getRemoteIndex() + ".." + (getRemoteIndex() + getLength()) + "[";
+    return "" + getLocalBuffer().getVertexName() + "." + getLocalBuffer().name + "[" + getLocalIndex() + ".."
+        + (getLocalIndex() + getLength()) + "[=>" + getRemoteBuffer().getVertexName() + "."
+        + getRemoteBuffer().name + "[" + getRemoteIndex() + ".." + (getRemoteIndex() + getLength()) + "[";
   }
 
   /**

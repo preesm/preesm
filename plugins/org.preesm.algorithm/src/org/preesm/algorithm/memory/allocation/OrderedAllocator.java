@@ -57,13 +57,13 @@ public abstract class OrderedAllocator extends MemoryAllocator {
 
   /**
    */
-  enum Order {
+  public enum Order {
     SHUFFLE, LARGEST_FIRST, STABLE_SET, EXACT_STABLE_SET, SCHEDULING
   }
 
   /**
    */
-  enum Policy {
+  public enum Policy {
     AVERAGE, BEST, MEDIANE, WORST
   }
 

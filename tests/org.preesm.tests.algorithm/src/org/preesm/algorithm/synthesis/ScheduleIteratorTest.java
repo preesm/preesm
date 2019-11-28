@@ -37,12 +37,14 @@ package org.preesm.algorithm.synthesis;
 import static org.junit.Assert.assertEquals;
 
 import java.util.List;
+import org.apache.commons.lang3.tuple.Pair;
 import org.junit.Test;
 import org.preesm.algorithm.schedule.model.ActorSchedule;
 import org.preesm.algorithm.schedule.model.ParallelHiearchicalSchedule;
 import org.preesm.algorithm.schedule.model.ScheduleFactory;
 import org.preesm.algorithm.schedule.model.SequentialActorSchedule;
 import org.preesm.algorithm.synthesis.schedule.ScheduleOrderManager;
+import org.preesm.algorithm.synthesis.schedule.ScheduleUtil;
 import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.Actor;
 import org.preesm.model.pisdf.DataInputPort;
@@ -50,6 +52,7 @@ import org.preesm.model.pisdf.DataOutputPort;
 import org.preesm.model.pisdf.Fifo;
 import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.pisdf.factory.PiMMUserFactory;
+import org.preesm.model.pisdf.util.VertexPath;
 
 /**
  *
@@ -60,8 +63,9 @@ public class ScheduleIteratorTest {
 
   @Test
   public void test1() {
-    final ParallelHiearchicalSchedule sched = createSchedule();
-    final List<AbstractActor> simpleOrderedList = new ScheduleOrderManager(sched).buildNonTopologicalOrderedList();
+    final Pair<PiGraph, ParallelHiearchicalSchedule> createSchedule = createSchedule();
+    final ParallelHiearchicalSchedule sched = createSchedule.getRight();
+    final List<AbstractActor> simpleOrderedList = ScheduleUtil.getAllReferencedActors(sched);
     StringBuilder sb = new StringBuilder();
     simpleOrderedList.forEach(a -> sb.append(a.getName()));
     assertEquals("ADCB", sb.toString());
@@ -69,8 +73,11 @@ public class ScheduleIteratorTest {
 
   @Test
   public void test2() {
-    final ParallelHiearchicalSchedule sched = createSchedule();
-    final List<AbstractActor> orderedList = new ScheduleOrderManager(sched).buildScheduleAndTopologicalOrderedList();
+    final Pair<PiGraph, ParallelHiearchicalSchedule> createSchedule = createSchedule();
+    final PiGraph graph = createSchedule.getLeft();
+    final ParallelHiearchicalSchedule sched = createSchedule.getRight();
+    final List<
+        AbstractActor> orderedList = new ScheduleOrderManager(graph, sched).buildScheduleAndTopologicalOrderedList();
     StringBuilder sb = new StringBuilder();
     orderedList.forEach(a -> sb.append(a.getName()));
     assertEquals("ACBD", sb.toString());
@@ -78,14 +85,17 @@ public class ScheduleIteratorTest {
 
   @Test
   public void test3() {
-    final ParallelHiearchicalSchedule sched = createSchedule();
+    final Pair<PiGraph, ParallelHiearchicalSchedule> createSchedule = createSchedule();
+    final PiGraph graph = createSchedule.getLeft();
+    final ParallelHiearchicalSchedule sched = createSchedule.getRight();
 
     final Actor actorE = PiMMUserFactory.instance.createActor("E");
     final ActorSchedule schedule = (ActorSchedule) sched.getScheduleTree().get(1);
     schedule.getActorList().add(actorE);
 
+    final List<
+        AbstractActor> orderedList = new ScheduleOrderManager(graph, sched).buildScheduleAndTopologicalOrderedList();
     StringBuilder sb = new StringBuilder();
-    final List<AbstractActor> orderedList = new ScheduleOrderManager(sched).buildScheduleAndTopologicalOrderedList();
     orderedList.forEach(a -> sb.append(a.getName()));
     assertEquals("ACBDE", sb.toString());
 
@@ -93,20 +103,69 @@ public class ScheduleIteratorTest {
 
   @Test
   public void test4() {
-    final ParallelHiearchicalSchedule sched = createSchedule();
+    final Pair<PiGraph, ParallelHiearchicalSchedule> createSchedule = createSchedule();
+    final PiGraph graph = createSchedule.getLeft();
+    final ParallelHiearchicalSchedule sched = createSchedule.getRight();
 
     final Actor actorE = PiMMUserFactory.instance.createActor("E");
     final ActorSchedule schedule = (ActorSchedule) sched.getScheduleTree().get(1);
     schedule.getActorList().add(0, actorE);
 
     StringBuilder sb = new StringBuilder();
-    final List<AbstractActor> orderedList = new ScheduleOrderManager(sched).buildScheduleAndTopologicalOrderedList();
+    final List<
+        AbstractActor> orderedList = new ScheduleOrderManager(graph, sched).buildScheduleAndTopologicalOrderedList();
     orderedList.forEach(a -> sb.append(a.getName()));
     assertEquals("AECBD", sb.toString());
 
   }
 
-  private ParallelHiearchicalSchedule createSchedule() {
+  @Test
+  public void testPredecessors() {
+    final Pair<PiGraph, ParallelHiearchicalSchedule> createSchedule = createSchedule();
+    final PiGraph graph = createSchedule.getLeft();
+    final ParallelHiearchicalSchedule sched = createSchedule.getRight();
+    final ScheduleOrderManager scheduleOrderManager = new ScheduleOrderManager(graph, sched);
+
+    List<AbstractActor> predecessors;
+    predecessors = scheduleOrderManager.getPredecessors(VertexPath.lookup(graph, "A"));
+    assertEquals(true, predecessors.isEmpty());
+
+    predecessors = scheduleOrderManager.getPredecessors(VertexPath.lookup(graph, "B"));
+    final StringBuilder sb = new StringBuilder();
+    predecessors.forEach(a -> sb.append(a.getName()));
+    assertEquals("AC", sb.toString());
+
+    predecessors = scheduleOrderManager.getPredecessors(VertexPath.lookup(graph, "D"));
+    final StringBuilder sb2 = new StringBuilder();
+    predecessors.forEach(a -> sb2.append(a.getName()));
+    assertEquals("BCA", sb2.toString());
+
+  }
+
+  @Test
+  public void testSuccessors() {
+    final Pair<PiGraph, ParallelHiearchicalSchedule> createSchedule = createSchedule();
+    final PiGraph graph = createSchedule.getLeft();
+    final ParallelHiearchicalSchedule sched = createSchedule.getRight();
+    final ScheduleOrderManager scheduleOrderManager = new ScheduleOrderManager(graph, sched);
+
+    List<AbstractActor> predecessors;
+    predecessors = scheduleOrderManager.getSuccessors(VertexPath.lookup(graph, "D"));
+    assertEquals(true, predecessors.isEmpty());
+
+    predecessors = scheduleOrderManager.getSuccessors(VertexPath.lookup(graph, "B"));
+    final StringBuilder sb = new StringBuilder();
+    predecessors.forEach(a -> sb.append(a.getName()));
+    assertEquals("D", sb.toString());
+
+    predecessors = scheduleOrderManager.getSuccessors(VertexPath.lookup(graph, "A"));
+    final StringBuilder sb2 = new StringBuilder();
+    predecessors.forEach(a -> sb2.append(a.getName()));
+    assertEquals("BCD", sb2.toString());
+
+  }
+
+  private Pair<PiGraph, ParallelHiearchicalSchedule> createSchedule() {
     final Actor actorA = PiMMUserFactory.instance.createActor("A");
     final DataOutputPort aOut1 = PiMMUserFactory.instance.createDataOutputPort("A.out1");
     final DataOutputPort aOut2 = PiMMUserFactory.instance.createDataOutputPort("A.out2");
@@ -157,7 +216,7 @@ public class ScheduleIteratorTest {
     final ParallelHiearchicalSchedule sched = ScheduleFactory.eINSTANCE.createParallelHiearchicalSchedule();
     sched.getChildren().add(core0);
     sched.getChildren().add(core1);
-    return sched;
+    return Pair.of(graph, sched);
   }
 
 }

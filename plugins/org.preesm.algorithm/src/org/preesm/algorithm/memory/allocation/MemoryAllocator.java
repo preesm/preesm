@@ -229,27 +229,6 @@ public abstract class MemoryAllocator {
   private final Map<MemoryExclusionVertex, Long> fifoAllocation;
 
   /**
-   * An allocation is a map of actor working memory associated to an integer which represents their offset in a
-   * monolithic memory.<br>
-   * <br>
-   * <table border="1">
-   * <tr>
-   * <td>MObject<sub>size</sub></td>
-   * <td>Offset</td>
-   * </tr>
-   * <tr>
-   * <td>A<sub>100</sub></td>
-   * <td>0</td>
-   * </tr>
-   * <tr>
-   * <td>B<sub>200</sub></td>
-   * <td>100</td>
-   * </tr>
-   * </table>
-   */
-  private final Map<MemoryExclusionVertex, Long> workingMemAllocation;
-
-  /**
    * An allocation is a map of {@link MemoryExclusionVertex memory objects} associated to an integer which represents
    * their offset in a monolithic memory.<br>
    * <br>
@@ -294,14 +273,12 @@ public abstract class MemoryAllocator {
   protected MemoryAllocator(final MemoryExclusionGraph memEx) {
     this.edgeAllocation = new LinkedHashMap<>();
     this.fifoAllocation = new LinkedHashMap<>();
-    this.workingMemAllocation = new LinkedHashMap<>();
 
     this.memExNodeAllocation = new LinkedHashMap<>();
     this.inputExclusionGraph = memEx;
 
     this.inputExclusionGraph.setPropertyValue(MemoryExclusionGraph.DAG_EDGE_ALLOCATION, this.edgeAllocation);
     this.inputExclusionGraph.setPropertyValue(MemoryExclusionGraph.DAG_FIFO_ALLOCATION, this.fifoAllocation);
-    this.inputExclusionGraph.setPropertyValue(MemoryExclusionGraph.WORKING_MEM_ALLOCATION, this.workingMemAllocation);
     this.alignment = -1;
   }
 
@@ -341,9 +318,7 @@ public abstract class MemoryAllocator {
 
     if (vertex.getEdge() != null) {
       this.edgeAllocation.put(vertex.getEdge(), offset);
-    } else if (vertex.getSink().equals(vertex.getSource())) {
-      this.workingMemAllocation.put(vertex, offset);
-    } else if (vertex.getSource().startsWith("FIFO_")) {
+    } else if (vertex.getSource().startsWith(MemoryExclusionGraph.FIFO_HEAD_PREFIX)) {
       this.fifoAllocation.put(vertex, offset);
     }
 
@@ -446,9 +421,7 @@ public abstract class MemoryAllocator {
         }
 
       } else {
-        // If the Mobject is splitted
-        // Null buffer since the memory of this MObj is no longer
-        // contiguous
+        // If the Mobject is splitted Null buffer since the memory of this MObj is no longer contiguous
         vertex.setWeight(0L);
         // Allocate it at index -1
         this.memExNodeAllocation.put(vertex, -1L);
@@ -464,9 +437,7 @@ public abstract class MemoryAllocator {
         int indexPart = 0;
         // For each contiguous range
         for (final Pair<MemoryExclusionVertex, Pair<Range, Range>> realRange : realRanges) {
-          // If the host of this subrange is the current host
-          // vertex
-          // (else do nothing here for this subrange)
+          // If the host of this subrange is the current host vertex (else do nothing here for this subrange)
           if (hostVertex == realRange.getKey()) {
 
             // Get host range
@@ -478,11 +449,8 @@ public abstract class MemoryAllocator {
                 "part" + indexPart + "_" + vertex.getSource(), vertex.getSink(), hostRange.getLength(),
                 hostVertex.getScenario());
 
-            // Compute the space that must be left empty before
-            // the
-            // allocated space to ensure that the MObject has
-            // its own
-            // cache line.
+            // Compute the space that must be left empty before the allocated space to ensure that the MObject has its
+            // own cache line.
             long emptySpace = 0;
             if ((this.alignment > 0) && (((offset + startOffset + hostZeroIndexOffset) % this.alignment) != 0)) {
               emptySpace = (offset + startOffset + hostZeroIndexOffset) % this.alignment;
@@ -679,7 +647,7 @@ public abstract class MemoryAllocator {
           // aligned since it has
           // no declared type.
           // Process fifo memobjects here
-          if (memObj.getSource().startsWith("FIFO_")) {
+          if (memObj.getSource().startsWith(MemoryExclusionGraph.FIFO_HEAD_PREFIX)) {
             final Long typeSize = memObj.getPropertyBean().getValue(MemoryExclusionVertex.TYPE_SIZE);
             if ((this.alignment == 0) && ((offset % typeSize) != 0)) {
               unalignedObjects.put(memObj, offset);
@@ -743,7 +711,6 @@ public abstract class MemoryAllocator {
   public void clear() {
     this.edgeAllocation.clear();
     this.fifoAllocation.clear();
-    this.workingMemAllocation.clear();
     this.memExNodeAllocation.clear();
     this.inputExclusionGraph.setPropertyValue(MemoryExclusionGraph.ALLOCATED_MEMORY_SIZE, 0L);
     this.inputExclusionGraph.deallocate();

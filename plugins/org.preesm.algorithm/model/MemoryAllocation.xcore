@@ -62,6 +62,69 @@ type long wraps long
 
 type double wraps double
 
+
+interface Buffer {
+	long size // size in byte
+	contains LogicalBuffer[] children opposite containingBuffer
+	op PhysicalBuffer getBank()
+	op Allocation getAllocation() {
+		return bank.allocation
+	}
+	op boolean isEqualsOrRecursivelyContains(Buffer other) {
+		return this == other || children.exists[it.isEqualsOrRecursivelyContains(other)]
+	}
+}
+
+class PhysicalBuffer extends Buffer {
+	refers Allocation allocation opposite physicalBuffers
+	refers ComponentInstance memoryBank
+	op PhysicalBuffer getBank() {
+		return this
+	}
+}
+
+class LogicalBuffer extends Buffer {
+	long offset // absolute offset in bytes wrt parent address 0
+	refers Buffer containingBuffer opposite children
+	op PhysicalBuffer getBank() {
+		return containingBuffer.getBank()
+	}
+}
+
+class NullBuffer extends LogicalBuffer {
+}
+
+
+class FifoAllocationEntry wraps java.util.Map$Entry {
+	refers Fifo key
+	refers FifoAllocation value
+}
+
+class FifoAllocation {
+	refers Fifo fifo
+
+	// must verify that the fifo source actor is mapped to an operator
+	// with a link to memory bank storing the sourceBuffer
+	refers Buffer sourceBuffer
+
+	// must verify that the fifo target actor is mapped to an operator
+	// with a link to memory bank storing the targetBuffer
+	refers Buffer targetBuffer
+
+	// Can be empty if the route does not use any proxy operator, i.e. when
+	// source and target buffers are on the same memory bank;
+	contains Buffer[] routeBuffers
+
+	op Buffer[] getAllBuffers() {
+		return (#[sourceBuffer] + routeBuffers + #[targetBuffer]).toEList
+	}
+}
+
+class DelayAllocationEntry wraps java.util.Map$Entry {
+	refers InitActor key
+	refers Buffer value
+}
+
 class Allocation {
 	// memory banks used by this allocation
 	contains PhysicalBuffer[] physicalBuffers opposite allocation
@@ -83,77 +146,5 @@ class Allocation {
 	op InitActor[] getDelayAllocationEntry(Buffer b) {
 		return delayAllocations.filter[b.isEqualsOrRecursivelyContains(it.value)].map[it.key].toEList.unmodifiableEList
 	}
-}
-
-interface Buffer {
-	long size
-	long typeSize
-	contains LogicalBuffer[] children opposite containingBuffer
-	op PhysicalBuffer getBank()
-	op Allocation getAllocation() {
-		return bank.allocation
-	}
-	op boolean isEqualsOrRecursivelyContains(Buffer other) {
-		return this == other || children.exists[it.isEqualsOrRecursivelyContains(other)]
-	}
-}
-
-class PhysicalBuffer extends Buffer {
-	refers Allocation allocation opposite physicalBuffers
-	refers ComponentInstance memoryBank
-	op PhysicalBuffer getBank() {
-		return this
-	}
-}
-
-class LogicalBuffer extends Buffer {
-	long offset
-	refers Buffer containingBuffer opposite children
-	op PhysicalBuffer getBank() {
-		return containingBuffer.getBank()
-	}
-}
-
-
-class FifoAllocationEntry wraps java.util.Map$Entry {
-	refers Fifo key
-	refers FifoAllocation value
-}
-
-class FifoAllocation {
-	refers Fifo fifo
-
-	// must verify that the fifo source actor is mapped to an operator
-	// with a link to memory bank storing the sourceBuffer
-	refers Buffer sourceBuffer
-
-	// must verify that the fifo target actor is mapped to an operator
-	// with a link to memory bank storing the targetBuffer
-	refers Buffer targetBuffer
-
-	// List of component instances (operators) used as proxy in the route
-	// and their allocated buffer to store the intermediate data to forward.
-	// Components appear in the order of transfers.
-	// Can be empty if the route does not use any proxy operator, i.e. when
-	// source and target buffers are on the same memory bank;
-	contains RouteBuffer[] routeBuffers
-
-	op Buffer[] getAllBuffers() {
-		return (#[sourceBuffer, targetBuffer] + routeBuffers.map[value]).toEList
-	}
-}
-
-// must verify that the proxy operator 'key' has a link to the
-// memory bank storing the temporary buffer 'value'
-class RouteBuffer wraps java.util.Map$Entry {
-	// the proxy operator
-	refers ComponentInstance key
-	// the allocated buffer
-	refers Buffer value
-}
-
-class DelayAllocationEntry wraps java.util.Map$Entry {
-	refers InitActor key
-	refers Buffer value
 }
 

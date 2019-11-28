@@ -34,11 +34,16 @@
  */
 package org.preesm.algorithm.synthesis.schedule;
 
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import org.apache.commons.lang3.tuple.Pair;
+import org.preesm.algorithm.schedule.model.ActorSchedule;
+import org.preesm.algorithm.schedule.model.HierarchicalSchedule;
 import org.preesm.algorithm.schedule.model.Schedule;
+import org.preesm.algorithm.schedule.model.util.ScheduleSwitch;
 import org.preesm.commons.exceptions.PreesmRuntimeException;
+import org.preesm.model.pisdf.AbstractActor;
 
 /**
  *
@@ -88,5 +93,27 @@ public class ScheduleUtil {
     } else {
       throw new PreesmRuntimeException("guru meditation");
     }
+  }
+
+  /**
+   * No order on the actors is enforced.
+   */
+  public static final List<AbstractActor> getAllReferencedActors(final Schedule schedule) {
+    final List<AbstractActor> res = new ArrayList<>();
+    new ScheduleSwitch<Boolean>() {
+      @Override
+      public Boolean caseHierarchicalSchedule(final HierarchicalSchedule object) {
+        object.getScheduleTree().forEach(this::doSwitch);
+        return true;
+      }
+
+      @Override
+      public Boolean caseActorSchedule(final ActorSchedule object) {
+        object.getActorList().forEach(res::add);
+        return true;
+      }
+    }.doSwitch(schedule);
+    return res;
+
   }
 }

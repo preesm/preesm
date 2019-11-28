@@ -1,7 +1,7 @@
 /**
  * Copyright or © or Copr. IETR/INSA - Rennes (2012 - 2019) :
  *
- * Alexandre Honorat [alexandre.honorat@insa-rennes.fr] (2018)
+ * Alexandre Honorat [alexandre.honorat@insa-rennes.fr] (2018 - 2019)
  * Antoine Morvan [antoine.morvan@insa-rennes.fr] (2017 - 2019)
  * Clément Guy [clement.guy@insa-rennes.fr] (2014)
  * Florian Arrestier [florian.arrestier@insa-rennes.fr] (2018)
@@ -329,10 +329,12 @@ public class PiWriter {
 
     // Set the kind of the Actor
     vertexElt.setAttribute(PiIdentifiers.NODE_KIND, PiIdentifiers.ACTOR);
-    final Expression period = originalActor.getPeriod();
-    if (period != null) {
-      vertexElt.setAttribute(PiIdentifiers.ACTOR_PERIOD, period.getExpressionAsString());
+
+    final String periodExpr = originalActor.getPeriod().getExpressionAsString();
+    if (!periodExpr.equals("0")) {
+      vertexElt.setAttribute(PiIdentifiers.ACTOR_PERIOD, periodExpr);
     }
+
     final Refinement refinement = originalActor.getRefinement();
     if (refinement != null) {
       writeRefinement(vertexElt, refinement);
@@ -360,7 +362,11 @@ public class PiWriter {
   protected void writeActor(final Element vertexElt, final Actor actor) {
     // Set the kind of the Actor
     vertexElt.setAttribute(PiIdentifiers.NODE_KIND, PiIdentifiers.ACTOR);
-    vertexElt.setAttribute(PiIdentifiers.ACTOR_PERIOD, actor.getPeriod().getExpressionAsString());
+    final String periodExpr = actor.getPeriod().getExpressionAsString();
+    if (!periodExpr.equals("0")) {
+      vertexElt.setAttribute(PiIdentifiers.ACTOR_PERIOD, periodExpr);
+    }
+
     final Refinement refinement = actor.getRefinement();
     if (refinement != null) {
       writeRefinement(vertexElt, refinement);
@@ -542,6 +548,10 @@ public class PiWriter {
     // Create and add the graphElt to the Document
     final Element graphElt = addGraphElt(rootElt);
     writeDataElt(graphElt, PiIdentifiers.GRAPH_NAME, graph.getName());
+    final String periodExpr = graph.getPeriod().getExpressionAsString();
+    if (!periodExpr.equals("0")) {
+      graphElt.setAttribute(PiIdentifiers.ACTOR_PERIOD, periodExpr);
+    }
 
     for (final Parameter param : graph.getParameters()) {
       writeParameter(graphElt, param);

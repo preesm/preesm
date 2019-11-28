@@ -78,7 +78,8 @@ public class SimpleMemoryAllocation implements IMemoryAllocation {
     long totalSize = 0L;
 
     // allocate fifos
-    final List<AbstractActor> orderedList = new ScheduleOrderManager(schedule).buildScheduleAndTopologicalOrderedList();
+    final List<AbstractActor> orderedList = new ScheduleOrderManager(piGraph, schedule)
+        .buildScheduleAndTopologicalOrderedList();
     for (final AbstractActor actor : orderedList) {
       final List<Fifo> fifos = actor.getDataOutputPorts().stream().map(DataPort::getFifo).collect(Collectors.toList());
       for (final Fifo fifo : fifos) {
@@ -89,8 +90,7 @@ public class SimpleMemoryAllocation implements IMemoryAllocation {
 
         final LogicalBuffer logicBuff = MemoryAllocationFactory.eINSTANCE.createLogicalBuffer();
         logicBuff.setContainingBuffer(physBuff);
-        logicBuff.setSize(fifoTokenSize);
-        logicBuff.setTypeSize(dataTypeSize);
+        logicBuff.setSize(fifoBufferSize);
         logicBuff.setOffset(totalSize);
 
         final FifoAllocation fifoAllocation = MemoryAllocationFactory.eINSTANCE.createFifoAllocation();
@@ -115,8 +115,7 @@ public class SimpleMemoryAllocation implements IMemoryAllocation {
 
       final LogicalBuffer logicBuff = MemoryAllocationFactory.eINSTANCE.createLogicalBuffer();
       logicBuff.setContainingBuffer(physBuff);
-      logicBuff.setSize(delayTokenSize);
-      logicBuff.setTypeSize(dataTypeSize);
+      logicBuff.setSize(delayBufferSize);
       logicBuff.setOffset(totalSize);
 
       memAlloc.getDelayAllocations().put(initActor, logicBuff);

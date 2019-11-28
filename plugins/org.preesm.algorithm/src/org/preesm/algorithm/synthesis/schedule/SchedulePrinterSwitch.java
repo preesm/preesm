@@ -75,7 +75,7 @@ public class SchedulePrinterSwitch extends ScheduleSwitch<String> {
 
     // Print actors names
     final List<String> actorsNames = new LinkedList<>();
-    final List<AbstractActor> actors = new ScheduleOrderManager(object).buildNonTopologicalOrderedList();
+    final List<AbstractActor> actors = ScheduleUtil.getAllReferencedActors(object);
     for (final AbstractActor actor : actors) {
       actorsNames.add(actor.getName());
     }

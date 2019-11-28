@@ -41,7 +41,6 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.emf.common.util.EMap;
-import org.preesm.algorithm.memory.allocation.MemoryAllocatorTask;
 import org.preesm.algorithm.memory.exclusiongraph.MemoryExclusionGraph;
 import org.preesm.algorithm.memory.script.MemoryScriptEngine;
 import org.preesm.algorithm.model.dag.DirectedAcyclicGraph;
@@ -114,15 +113,15 @@ import org.preesm.workflow.implement.AbstractTaskImplementation;
         + "Systems, 15(30):25, January 2016." })
 public class MemoryScriptTask extends AbstractTaskImplementation {
 
-  public static final String  PARAM_VERBOSE        = "Verbose";
-  public static final String  VALUE_TRUE           = "True";
-  private static final String VALUE_FALSE          = "False";
-  public static final String  PARAM_LOG            = "Log Path";
-  private static final String VALUE_LOG            = "log_memoryScripts";
-  public static final String  PARAM_CHECK          = "Check";
-  private static final String VALUE_CHECK_NONE     = "None";
-  private static final String VALUE_CHECK_FAST     = "Fast";
-  private static final String VALUE_CHECK_THOROUGH = "Thorough";
+  public static final String PARAM_VERBOSE        = "Verbose";
+  public static final String VALUE_TRUE           = "True";
+  public static final String VALUE_FALSE          = "False";
+  public static final String PARAM_LOG            = "Log Path";
+  public static final String VALUE_LOG            = "log_memoryScripts";
+  public static final String PARAM_CHECK          = "Check";
+  public static final String VALUE_CHECK_NONE     = "None";
+  public static final String VALUE_CHECK_FAST     = "Fast";
+  public static final String VALUE_CHECK_THOROUGH = "Thorough";
 
   @Override
   public Map<String, String> getDefaultParameters() {

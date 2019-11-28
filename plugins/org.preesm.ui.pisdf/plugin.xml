@@ -128,16 +128,28 @@
       <propertySections
             contributorId="PiMM.PropertyContributor">
          <propertySection
+               class="org.preesm.ui.pisdf.properties.DiagramPropertiesSection"
+               filter="org.preesm.ui.pisdf.properties.PiMMDiagramFilter"
+               id="org.ietr.preesm.experiment.model.transformation.properties.section.graph.basicDiagram"
+               tab="org.ietr.preesm.experiment.model.transformation.properties.tab.graph.basicDiagram">
+         </propertySection>
+         <propertySection
                class="org.preesm.ui.pisdf.properties.PortParameterAndDelayPropertiesSection"
                filter="org.preesm.ui.pisdf.properties.PiMMFilter"
-               id="org.ietr.preesm.experiment.model.transformation.properties.section.graph.basic"
-               tab="org.ietr.preesm.experiment.model.transformation.properties.tab.graph.basic">
+               id="org.ietr.preesm.experiment.model.transformation.properties.section.graph.basicPort"
+               tab="org.ietr.preesm.experiment.model.transformation.properties.tab.graph.basicPort">
          </propertySection>
          <propertySection
                class="org.preesm.ui.pisdf.properties.ActorPropertiesSection"
-               filter="org.preesm.ui.pisdf.properties.PiMMActorFilter"
+               filter="org.preesm.ui.pisdf.properties.PiMMExActorFilter"
                id="org.ietr.preesm.experiment.model.org.ietr.preesm.experiment.model.transformation.properties.tab.graph.basicActor.properties.section.graph.basicActor"
                tab="org.ietr.preesm.experiment.model.transformation.properties.tab.graph.basicActor">
+         </propertySection>
+         <propertySection
+               class="org.preesm.ui.pisdf.properties.ActorPeriodPropertiesSection"
+               filter="org.preesm.ui.pisdf.properties.PiMMPeriodActorFilter"
+               id="org.ietr.preesm.experiment.model.org.ietr.preesm.experiment.model.transformation.properties.tab.graph.basicActor.properties.section.graph.basicActorPeriod"
+               tab="org.ietr.preesm.experiment.model.transformation.properties.tab.graph.basicActorPeriod">
          </propertySection>
          <propertySection
                class="org.preesm.ui.pisdf.properties.FifoPropertiesSection"
@@ -282,8 +294,18 @@
             contributorId="PiMM.PropertyContributor">
          <propertyTab
                category="org.ietr.preesm.experiment.model.transformation.properties.category.graph"
-               id="org.ietr.preesm.experiment.model.transformation.properties.tab.graph.basic"
-               label="Basic">
+               id="org.ietr.preesm.experiment.model.transformation.properties.tab.graph.basicDiagram"
+               label="Period">
+         </propertyTab>
+         <propertyTab
+               category="org.ietr.preesm.experiment.model.transformation.properties.category.graph"
+               id="org.ietr.preesm.experiment.model.transformation.properties.tab.graph.basicPort"
+               label="Port">
+         </propertyTab>
+         <propertyTab
+               category="org.ietr.preesm.experiment.model.transformation.properties.category.graph"
+               id="org.ietr.preesm.experiment.model.transformation.properties.tab.graph.basicActorPeriod"
+               label="Period">
          </propertyTab>
          <propertyTab
                category="org.ietr.preesm.experiment.model.transformation.properties.category.graph"

@@ -37,6 +37,46 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL license and that you accept its terms.
  */
+
+/**
+ * Copyright or © or Copr. IETR/INSA - Rennes (2012 - 2019) :
+ *
+ * Alexandre Honorat [alexandre.honorat@insa-rennes.fr] (2019)
+ * Antoine Morvan [antoine.morvan@insa-rennes.fr] (2017 - 2019)
+ * Clément Guy [clement.guy@insa-rennes.fr] (2014 - 2015)
+ * Florian Arrestier [florian.arrestier@insa-rennes.fr] (2018)
+ * Julien Hascoet [jhascoet@kalray.eu] (2017)
+ * Karol Desnos [karol.desnos@insa-rennes.fr] (2012 - 2015)
+ *
+ * This software is a computer program whose purpose is to help prototyping
+ * parallel applications using dataflow formalism.
+ *
+ * This software is governed by the CeCILL  license under French law and
+ * abiding by the rules of distribution of free software.  You can  use,
+ * modify and/ or redistribute the software under the terms of the CeCILL
+ * license as circulated by CEA, CNRS and INRIA at the following URL
+ * "http://www.cecill.info".
+ *
+ * As a counterpart to the access to the source code and  rights to copy,
+ * modify and redistribute granted by the license, users are provided only
+ * with a limited warranty  and the software's author,  the holder of the
+ * economic rights,  and the successive licensors  have only  limited
+ * liability.
+ *
+ * In this respect, the user's attention is drawn to the risks associated
+ * with loading,  using,  modifying and/or developing or reproducing the
+ * software by the user in light of its specific status of free software,
+ * that may mean  that it is complicated to manipulate,  and  that  also
+ * therefore means  that it is reserved for developers  and  experienced
+ * professionals having in-depth computer knowledge. Users are therefore
+ * encouraged to load and test the software's suitability as regards their
+ * requirements in conditions enabling the security of their systems and/or
+ * data to be ensured and,  more generally, to use and operate it in the
+ * same conditions as regards security.
+ *
+ * The fact that you are presently reading this means that you have had
+ * knowledge of the CeCILL license and that you accept its terms.
+ */
 package org.preesm.algorithm.memory.exclusiongraph;
 
 import java.util.Iterator;
@@ -50,7 +90,6 @@ import org.preesm.algorithm.model.AbstractVertex;
 import org.preesm.algorithm.model.PropertyBean;
 import org.preesm.algorithm.model.PropertyFactory;
 import org.preesm.algorithm.model.dag.DAGEdge;
-import org.preesm.algorithm.model.dag.DAGVertex;
 import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.model.scenario.Scenario;
 
@@ -128,33 +167,6 @@ public class MemoryExclusionVertex extends AbstractVertex<MemoryExclusionGraph> 
   public static final String DIVIDED_PARTS_HOSTS = "divided_parts_hosts";
 
   /**
-   * ID of the task consuming the memory.
-   */
-  private final String sink;
-
-  /** Size of the memory used. */
-  private long size;
-
-  /**
-   * ID of the task producing the memory.
-   */
-  private final String source;
-
-  /**
-   * The edge in the DAG that corresponds to this vertex in the exclusion graph. (This attribute is used only if the
-   * vertices corresponds to an edge in the dag, i.e. a transfer between actors)
-   */
-  private DAGEdge edge;
-
-  /**
-   * The {@link DAGVertex} that corresponds to the actor in the DAG associated to this working memory
-   * {@link MemoryExclusionVertex}.
-   */
-  private DAGVertex vertex;
-
-  private final Scenario scenario;
-
-  /**
    * {@link MemoryExclusionVertex} property associated to a {@link List} of {@link Integer} that represent the space
    * <b>in bytes</b> between successive "subbuffers" of a {@link MemoryExclusionVertex}.
    */
@@ -164,6 +176,23 @@ public class MemoryExclusionVertex extends AbstractVertex<MemoryExclusionGraph> 
    * Property used with fifo {@link MemoryExclusionVertex memory objects} to relate the size of one token in the fifo.
    */
   public static final String TYPE_SIZE = "type_size";
+
+  /** ID of the task consuming the memory. */
+  private final String sink;
+
+  /** Size of the memory used. */
+  private long size;
+
+  /** ID of the task producing the memory. */
+  private final String source;
+
+  /**
+   * The edge in the DAG that corresponds to this vertex in the exclusion graph. (This attribute is used only if the
+   * vertices corresponds to an edge in the dag, i.e. a transfer between actors)
+   */
+  private DAGEdge edge;
+
+  private final Scenario scenario;
 
   /**
    * Constructor of the class.
@@ -187,10 +216,8 @@ public class MemoryExclusionVertex extends AbstractVertex<MemoryExclusionGraph> 
     long vertexWeight = 0;
     while (iter.hasNext()) {
       final BufferProperties properties = iter.next();
-
       final String dataType = properties.getDataType();
       final long typeSize = scenario.getSimulationInfo().getDataTypeSizeOrDefault(dataType);
-
       vertexWeight += properties.getSize() * typeSize;
     }
     return vertexWeight;
@@ -212,6 +239,45 @@ public class MemoryExclusionVertex extends AbstractVertex<MemoryExclusionGraph> 
     this.source = sourceTask;
     this.sink = sinkTask;
     this.size = sizeMem;
+  }
+
+  public final Scenario getScenario() {
+    return this.scenario;
+  }
+
+  public DAGEdge getEdge() {
+    return this.edge;
+  }
+
+  @Override
+  public PropertyFactory getFactoryForProperty(final String propertyName) {
+    return null;
+  }
+
+  public String getSink() {
+    return this.sink;
+  }
+
+  public String getSource() {
+    return this.source;
+  }
+
+  @Override
+  public Long getWeight() {
+    return this.size;
+  }
+
+  @Override
+  public void setWeight(final Long w) {
+    this.size = w;
+  }
+
+  @Override
+  public MemoryExclusionVertex getClone() {
+    MemoryExclusionVertex copy;
+    copy = new MemoryExclusionVertex(this.getSource(), this.getSink(), this.getWeight(), this.getScenario());
+    copy.edge = this.edge;
+    return copy;
   }
 
   @Override
@@ -238,8 +304,8 @@ public class MemoryExclusionVertex extends AbstractVertex<MemoryExclusionGraph> 
   public boolean equals(final Object o) {
     if (o instanceof MemoryExclusionVertex) {
       // final boolean sameEdge = this.edge == ((MemoryExclusionVertex) o).edge
-      final boolean sameSource = this.source.equals(((MemoryExclusionVertex) o).source);
-      final boolean sameSink = this.sink.equals(((MemoryExclusionVertex) o).sink);
+      final boolean sameSource = this.getSource().equals(((MemoryExclusionVertex) o).getSource());
+      final boolean sameSink = this.getSink().equals(((MemoryExclusionVertex) o).getSink());
       return sameSink && sameSource;// && sameEdge
     } else {
       return false;
@@ -247,60 +313,13 @@ public class MemoryExclusionVertex extends AbstractVertex<MemoryExclusionGraph> 
   }
 
   @Override
-  public MemoryExclusionVertex getClone() {
-    MemoryExclusionVertex copy;
-    copy = new MemoryExclusionVertex(this.source, this.sink, this.size, this.scenario);
-    copy.edge = this.edge;
-    copy.vertex = this.vertex;
-    return copy;
-  }
-
-  public DAGEdge getEdge() {
-    return this.edge;
-  }
-
-  public DAGVertex getVertex() {
-    return this.vertex;
-  }
-
-  public void setVertex(final DAGVertex vertex) {
-    this.vertex = vertex;
-  }
-
-  @Override
-  public PropertyFactory getFactoryForProperty(final String propertyName) {
-    return null;
-  }
-
-  public String getSink() {
-    return this.sink;
-  }
-
-  public String getSource() {
-    return this.source;
-  }
-
-  @Override
-  public Long getWeight() {
-    return this.size;
-  }
-
-  @Override
   public int hashCode() {
-    return (this.sink + "=>" + this.source).hashCode();
-  }
-
-  @Override
-  public void setWeight(final Long w) {
-    this.size = w;
+    return (this.getSource() + "=>" + this.getSink()).hashCode();
   }
 
   @Override
   public String toString() {
-    return this.source + "=>" + this.sink + ":" + this.size;
+    return this.getSource() + "=>" + this.getSink() + ":" + this.getWeight();
   }
 
-  public final Scenario getScenario() {
-    return this.scenario;
-  }
 }

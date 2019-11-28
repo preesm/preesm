@@ -32,39 +32,44 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL license and that you accept its terms.
  */
-package org.preesm.model.pisdf.util.topology;
+package org.preesm.algorithm.synthesis.timer;
 
-import java.util.Comparator;
 import org.preesm.model.pisdf.AbstractActor;
 
 /**
- * Compares 2 actors wrt their topological order.
- *
- * Use {@link PiSDFTopologyHelper#getComparator()} to instantiate.
+ * Simple class to structure the representation of an actor timings, i.e. start/end/duration.
  *
  * @author anmorvan
  *
  */
-class PiSDFTopologicalComparator implements Comparator<AbstractActor> {
+public final class ActorExecutionTiming {
 
-  @Override
-  public int compare(final AbstractActor o1, final AbstractActor o2) {
-    int res = 0;
-    if (o1.equals(o2)) {
-      res = 0;
-    } else {
-      final boolean predecessor = PiSDFTopologyHelper.isPredecessor(o1, o2);
-      if (predecessor) {
-        res = 1;
-      } else {
-        final boolean predecessor2 = PiSDFTopologyHelper.isPredecessor(o2, o1);
-        if (predecessor2) {
-          res = -1;
-        } else {
-          res = 0;
-        }
-      }
-    }
-    return res;
+  private final long          startTime;
+  private final long          duration;
+  private final AbstractActor timedActor;
+
+  /**
+   */
+  public ActorExecutionTiming(final AbstractActor timedActor, final long startTime, final long duration) {
+    this.timedActor = timedActor;
+    this.startTime = startTime;
+    this.duration = duration;
   }
+
+  public long getStartTime() {
+    return this.startTime;
+  }
+
+  public long getDuration() {
+    return this.duration;
+  }
+
+  public long getEndTime() {
+    return this.startTime + this.duration;
+  }
+
+  public AbstractActor getTimedActor() {
+    return this.timedActor;
+  }
+
 }

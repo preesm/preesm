@@ -1,6 +1,7 @@
 /**
  * Copyright or © or Copr. IETR/INSA - Rennes (2013 - 2019) :
  *
+ * Alexandre Honorat [alexandre.honorat@insa-rennes.fr] (2019)
  * Antoine Morvan [antoine.morvan@insa-rennes.fr] (2017 - 2019)
  * Clément Guy [clement.guy@insa-rennes.fr] (2014 - 2015)
  * Julien Heulot [julien.heulot@insa-rennes.fr] (2013)
@@ -41,13 +42,12 @@ import org.eclipse.emf.ecore.EObject;
 import org.eclipse.graphiti.mm.pictograms.PictogramElement;
 import org.eclipse.graphiti.services.Graphiti;
 import org.eclipse.graphiti.ui.platform.AbstractPropertySectionFilter;
-import org.preesm.model.pisdf.ExecutableActor;
+import org.preesm.model.pisdf.PiGraph;
 
-// TODO: Auto-generated Javadoc
 /**
- * The Class PiMMActorFilter.
+ * The Class PiMMDiagramFilter.
  */
-public class PiMMActorFilter extends AbstractPropertySectionFilter {
+public class PiMMDiagramFilter extends AbstractPropertySectionFilter {
 
   /**
    * Check the given {@link PictogramElement} for acceptance. Returns true, if {@link PictogramElement} is accepted,
@@ -61,8 +61,7 @@ public class PiMMActorFilter extends AbstractPropertySectionFilter {
   protected boolean accept(final PictogramElement pictogramElement) {
     final EObject eObject = Graphiti.getLinkService().getBusinessObjectForLinkedPictogramElement(pictogramElement);
 
-    // ExecutableActor.
-    if (eObject instanceof ExecutableActor) {
+    if (eObject instanceof PiGraph) {
       return true;
     }
 

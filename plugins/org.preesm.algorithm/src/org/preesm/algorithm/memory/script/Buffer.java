@@ -48,7 +48,6 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import org.eclipse.xtext.xbase.lib.Pair;
 import org.preesm.algorithm.model.dag.DAGEdge;
-import org.preesm.algorithm.model.dag.DAGVertex;
 import org.preesm.commons.exceptions.PreesmRuntimeException;
 
 /**
@@ -280,9 +279,9 @@ public class Buffer {
     return this.tokenSize;
   }
 
-  final DAGVertex dagVertex;
-
-  final DAGEdge dagEdge;
+  /* 2 strings used for proper error reporting and logging */
+  private final String  vertexName;
+  private final DAGEdge loggingEdgeName;
 
   /**
    * This {@link List} of {@link Range} is used to store its indivisible sub-parts. A buffer can effectively be divided
@@ -318,9 +317,10 @@ public class Buffer {
    * @param tokenSize
    *          The size of one token of the buffer.
    */
-  public Buffer(final DAGEdge edge, final DAGVertex dagVertex, final String name, final long nbTokens,
+  public Buffer(final DAGEdge edge, final String dagVertexName, final String name, final long nbTokens,
       final long tokenSize, final boolean mergeable) {
-    this.dagEdge = edge;
+    this.loggingEdgeName = edge;
+    this.vertexName = dagVertexName;
     this.name = name;
     this.nbTokens = nbTokens;
     this.tokenSize = tokenSize;
@@ -328,7 +328,6 @@ public class Buffer {
     this.appliedMatches = new LinkedHashMap<>();
     this.minIndex = 0;
     this.maxIndex = nbTokens * tokenSize;
-    this.dagVertex = dagVertex;
     this.originallyMergeable = mergeable;
     this.mergeableRanges = new ArrayList<>();
     if (mergeable) {
@@ -365,8 +364,8 @@ public class Buffer {
   public Match matchWith(final long localIdx, final Buffer buffer, final long remoteIdx, final long size) {
 
     if (this.tokenSize != buffer.tokenSize) {
-      throw new PreesmRuntimeException("Cannot match " + this.dagVertex.getName() + "." + this.name + "with "
-          + buffer.dagVertex.getName() + "." + buffer.name + " because buffers have different token sizes ("
+      throw new PreesmRuntimeException("Cannot match " + this.getVertexName() + "." + this.name + "with "
+          + buffer.getVertexName() + "." + buffer.name + " because buffers have different token sizes ("
           + this.tokenSize + " != " + buffer.tokenSize + " )");
     }
 
@@ -376,18 +375,18 @@ public class Buffer {
     // Test if a matched range is completely out of real tokens
     if ((localIdx >= this.nbTokens) || (maxLocal < 0)) {
       final long maxLTokens = this.nbTokens - 1;
-      throw new PreesmRuntimeException("Cannot match " + this.dagVertex.getName() + "." + this.name + "[" + localIdx
-          + ".." + maxLocal + "] and " + buffer.dagVertex.getName() + "." + buffer.name + "[" + remoteIdx + ".."
-          + maxRemote + "] because no \"real\" token from " + this.dagVertex.getName() + "." + this.name + "[0.."
-          + maxLTokens + "] is matched.");
+      throw new PreesmRuntimeException("Cannot match " + this.getVertexName() + "." + this.name + "[" + localIdx + ".."
+          + maxLocal + "] and " + buffer.getVertexName() + "." + buffer.name + "[" + remoteIdx + ".." + maxRemote
+          + "] because no \"real\" token from " + this.getVertexName() + "." + this.name + "[0.." + maxLTokens
+          + "] is matched.");
     }
 
     if ((remoteIdx >= buffer.nbTokens) || (maxRemote < 0)) {
       final long maxRTokens = buffer.nbTokens - 1;
-      throw new PreesmRuntimeException("Cannot match " + this.dagVertex.getName() + "." + this.name + "[" + localIdx
-          + ".." + maxLocal + "] and " + buffer.dagVertex.getName() + "." + buffer.name + "[" + remoteIdx + ".."
-          + maxRemote + "] because no \"real\" token from " + buffer.dagVertex.getName() + "." + buffer.name + "[0.."
-          + maxRTokens + "] is matched.");
+      throw new PreesmRuntimeException("Cannot match " + this.getVertexName() + "." + this.name + "[" + localIdx + ".."
+          + maxLocal + "] and " + buffer.getVertexName() + "." + buffer.name + "[" + remoteIdx + ".." + maxRemote
+          + "] because no \"real\" token from " + buffer.getVertexName() + "." + buffer.name + "[0.." + maxRTokens
+          + "] is matched.");
     }
 
     // Are "virtual" tokens matched together
@@ -401,11 +400,11 @@ public class Buffer {
     // or remote range begins with less real tokens than the number of virtual tokens beginning local range
     final boolean bRemoteVirtual = (remoteIdx >= 0) && ((buffer.nbTokens - remoteIdx) <= -Math.min(0, localIdx));
     if (bIndexes || bTokens || bLocalVirtual || bRemoteVirtual) {
-      throw new PreesmRuntimeException("Cannot match " + this.dagVertex.getName() + "." + this.name + "[" + localIdx
-          + ".." + maxLocal + "] and " + buffer.dagVertex.getName() + "." + buffer.name + "[" + remoteIdx + ".."
-          + maxRemote + "] because \"virtual tokens\" cannot be matched together.\n" + "Information: "
-          + this.dagVertex.getName() + "." + this.name + " size = " + this.nbTokens + " and "
-          + buffer.dagVertex.getName() + "." + buffer.name + " size = " + buffer.nbTokens + ".");
+      throw new PreesmRuntimeException("Cannot match " + this.getVertexName() + "." + this.name + "[" + localIdx + ".."
+          + maxLocal + "] and " + buffer.getVertexName() + "." + buffer.name + "[" + remoteIdx + ".." + maxRemote
+          + "] because \"virtual tokens\" cannot be matched together.\n" + "Information: " + this.getVertexName() + "."
+          + this.name + " size = " + this.nbTokens + " and " + buffer.getVertexName() + "." + buffer.name + " size = "
+          + buffer.nbTokens + ".");
     }
 
     return byteMatchWith(localIdx * this.tokenSize, buffer, remoteIdx * this.tokenSize, size * this.tokenSize, false);
@@ -459,16 +458,16 @@ public class Buffer {
     if (check) {
       if ((localByteIdx >= (this.nbTokens * this.tokenSize)) || (byteLMax < 0)) {
         final long tokenLMax = (this.nbTokens * this.tokenSize) - 1;
-        throw new PreesmRuntimeException("Cannot match bytes " + this.dagVertex.getName() + "." + this.name + "["
-            + localByteIdx + ".." + byteLMax + "] and " + buffer.dagVertex.getName() + "." + buffer.name + "["
-            + remoteByteIdx + ".." + byteRMax + "] because no \"real\" byte from " + this.dagVertex.getName() + "."
+        throw new PreesmRuntimeException("Cannot match bytes " + this.getVertexName() + "." + this.name + "["
+            + localByteIdx + ".." + byteLMax + "] and " + buffer.getVertexName() + "." + buffer.name + "["
+            + remoteByteIdx + ".." + byteRMax + "] because no \"real\" byte from " + this.getVertexName() + "."
             + this.name + "[0.." + tokenLMax + "] is matched.");
       }
       if ((remoteByteIdx >= (buffer.nbTokens * buffer.tokenSize)) || (byteRMax < 0)) {
         final long tokenRMax = (buffer.nbTokens * buffer.tokenSize) - 1;
-        throw new PreesmRuntimeException("Cannot match bytes " + this.dagVertex.getName() + "." + this.name + "["
-            + localByteIdx + ".." + byteLMax + "] and " + buffer.dagVertex.getName() + "." + buffer.name + "["
-            + remoteByteIdx + ".." + byteRMax + "] because no \"real\" byte from " + buffer.dagVertex.getName() + "."
+        throw new PreesmRuntimeException("Cannot match bytes " + this.getVertexName() + "." + this.name + "["
+            + localByteIdx + ".." + byteLMax + "] and " + buffer.getVertexName() + "." + buffer.name + "["
+            + remoteByteIdx + ".." + byteRMax + "] because no \"real\" byte from " + buffer.getVertexName() + "."
             + buffer.name + "[0.." + tokenRMax + "] is matched.");
       }
 
@@ -486,11 +485,11 @@ public class Buffer {
       final boolean bRemoteVirtual = (remoteByteIdx >= 0)
           && (((buffer.nbTokens * buffer.tokenSize) - remoteByteIdx) <= -Math.min(0, localByteIdx));
       if (bPositiveIndex || bTooLargeBuffer || bLocalVirtual || bRemoteVirtual) {
-        throw new PreesmRuntimeException("Cannot match bytes " + this.dagVertex.getName() + "." + this.name + "["
-            + localByteIdx + ".." + byteLMax + "] and " + buffer.dagVertex.getName() + "." + buffer.name + "["
+        throw new PreesmRuntimeException("Cannot match bytes " + this.getVertexName() + "." + this.name + "["
+            + localByteIdx + ".." + byteLMax + "] and " + buffer.getVertexName() + "." + buffer.name + "["
             + remoteByteIdx + ".." + byteRMax + "] because \"virtual bytes\" cannot be matched together.\nInformation: "
-            + this.dagVertex.getName() + "." + this.name + " size = " + (this.nbTokens * this.tokenSize) + " and "
-            + buffer.dagVertex.getName() + "." + buffer.name + " size = " + (buffer.nbTokens * buffer.tokenSize) + ".");
+            + this.getVertexName() + "." + this.name + " size = " + (this.nbTokens * this.tokenSize) + " and "
+            + buffer.getVertexName() + "." + buffer.name + " size = " + (buffer.nbTokens * buffer.tokenSize) + ".");
       }
     }
 
@@ -1266,7 +1265,15 @@ public class Buffer {
   @Override
   public String toString() {
     final long size = this.nbTokens * this.tokenSize;
-    return this.dagVertex.getName() + "." + this.name + "[" + size + "]";
+    return this.getVertexName() + "." + this.name + "[" + size + "]";
+  }
+
+  public String getVertexName() {
+    return vertexName;
+  }
+
+  public DAGEdge getLoggingEdgeName() {
+    return loggingEdgeName;
   }
 
 }

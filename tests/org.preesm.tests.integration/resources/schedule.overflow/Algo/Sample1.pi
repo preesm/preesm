@@ -7,7 +7,7 @@
     <key attr.name="graph_desc" attr.type="string" for="node"/>
     <graph edgedefault="directed">
         <data key="name">Sample1</data>
-        <node id="A1" kind="actor" period="0">
+        <node id="A1" kind="actor">
             <data key="graph_desc">Code/sample/sample2.h</data>
             <loop name="Actor1">
                 <param direction="OUT" isConfig="false"
@@ -16,7 +16,7 @@
             <port annotation="NONE" expr="3000000000"
                 kind="output" name="newPort"/>
         </node>
-        <node id="A3" kind="actor" period="0">
+        <node id="A3" kind="actor">
             <data key="graph_desc">Code/sample/sample2.h</data>
             <loop name="Actor1">
                 <param direction="IN" isConfig="false"

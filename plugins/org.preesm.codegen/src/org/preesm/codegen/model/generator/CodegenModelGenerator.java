@@ -79,6 +79,7 @@ import org.preesm.algorithm.mapper.graphtransfo.BufferProperties;
 import org.preesm.algorithm.mapper.graphtransfo.ImplementationPropertyNames;
 import org.preesm.algorithm.mapper.graphtransfo.VertexType;
 import org.preesm.algorithm.mapper.model.MapperDAG;
+import org.preesm.algorithm.mapper.model.MapperDAGEdge;
 import org.preesm.algorithm.mapper.model.MapperDAGVertex;
 import org.preesm.algorithm.memory.exclusiongraph.MemoryExclusionGraph;
 import org.preesm.algorithm.memory.exclusiongraph.MemoryExclusionVertex;
@@ -629,8 +630,9 @@ public class CodegenModelGenerator extends AbstractCodegenModelGenerator {
       AbstractActor actor = dagVertex.getPropertyBean().getValue(Clustering.PISDF_REFERENCE_ACTOR);
       AbstractActor originalActor = PreesmCopyTracker.getSource(actor);
       if (this.scheduleMapping.containsKey(originalActor)) {
-        new CodegenClusterModelGeneratorSwitch(operatorBlock, scenario, new SrDAGOutsideFetcher(), outsideFetcherOption)
-            .generate(this.scheduleMapping.get(originalActor));
+
+        new CodegenClusterModelGeneratorSwitch(this.algo.getReferencePiMMGraph(), operatorBlock, scenario,
+            new SrDAGOutsideFetcher(), outsideFetcherOption).generate(this.scheduleMapping.get(originalActor));
       } else {
         throw new PreesmRuntimeException("Codegen for " + dagVertex.getName() + " failed.");
       }
@@ -993,7 +995,8 @@ public class CodegenModelGenerator extends AbstractCodegenModelGenerator {
         fifoBuffer.setSize(fifoAllocKey.getWeight());
 
         // Get Init vertex
-        final DAGVertex dagEndVertex = this.algo.getVertex(source.substring(("FIFO_Head_").length()));
+        final DAGVertex dagEndVertex = this.algo
+            .getVertex(source.substring((MemoryExclusionGraph.FIFO_HEAD_PREFIX).length()));
         final DAGVertex dagInitVertex = this.algo.getVertex(sink);
 
         final Pair<DAGVertex, DAGVertex> key = new Pair<>(dagEndVertex, dagInitVertex);
@@ -1002,26 +1005,11 @@ public class CodegenModelGenerator extends AbstractCodegenModelGenerator {
           value = new Pair<>(null, null);
           this.dagFifoBuffers.put(key, value);
         }
-        if (source.startsWith("FIFO_Head_")) {
+        if (source.startsWith(MemoryExclusionGraph.FIFO_HEAD_PREFIX)) {
           this.dagFifoBuffers.put(key, new Pair<Buffer, Buffer>(fifoBuffer, value.getValue()));
         } else {
           this.dagFifoBuffers.put(key, new Pair<Buffer, Buffer>(value.getKey(), fifoBuffer));
         }
-      }
-      // Generate subbuffers for each working mem.
-      final Map<MemoryExclusionVertex,
-          Long> workingMemoryAllocation = (meg.getPropertyBean().getValue(MemoryExclusionGraph.WORKING_MEM_ALLOCATION));
-      for (final Entry<MemoryExclusionVertex, Long> e : workingMemoryAllocation.entrySet()) {
-        final SubBuffer workingMemBuffer = CodegenModelUserFactory.eINSTANCE.createSubBuffer();
-        final MemoryExclusionVertex mObj = e.getKey();
-        final long weight = mObj.getWeight();
-        workingMemBuffer.reaffectContainer(mainBuffer);
-        workingMemBuffer.setOffset(e.getValue());
-        workingMemBuffer.setSize(weight);
-        workingMemBuffer.setName("wMem_" + mObj.getVertex().getName());
-        workingMemBuffer.setType("char");
-        workingMemBuffer.setTypeSize(1); // char is 1 byte
-        this.linkHSDFVertexBuffer.put(this.algo.getVertex(mObj.getVertex().getName()), workingMemBuffer);
       }
     }
   }
@@ -2267,9 +2255,19 @@ public class CodegenModelGenerator extends AbstractCodegenModelGenerator {
     }
 
     if (specialCall.getType().equals(SpecialType.FORK) || specialCall.getType().equals(SpecialType.BROADCAST)) {
-      dagVertex.outgoingEdges().forEach(edge -> addBuffer(dagVertex, edge.getTarget(), edge, specialCall));
+      final Set<DAGEdge> outgoingEdges = dagVertex.outgoingEdges();
+      final List<String> sinkOrder = dagVertex.getSinkNameList();
+      final List<DAGEdge> orderedList = orderOutEdges(outgoingEdges, sinkOrder);
+      for (final DAGEdge edge : orderedList) {
+        addBuffer(dagVertex, edge.getTarget(), edge, specialCall);
+      }
     } else {
-      dagVertex.incomingEdges().forEach(edge -> addBuffer(edge.getSource(), dagVertex, edge, specialCall));
+      final Set<DAGEdge> incomingEdges = dagVertex.incomingEdges();
+      final List<String> sourceOrder = dagVertex.getSourceNameList();
+      final List<DAGEdge> orderedList = orderInEdges(incomingEdges, sourceOrder);
+      for (final DAGEdge edge : orderedList) {
+        addBuffer(edge.getSource(), dagVertex, edge, specialCall);
+      }
     }
 
     // Find the last buffer that correspond to the
@@ -2345,6 +2343,82 @@ public class CodegenModelGenerator extends AbstractCodegenModelGenerator {
     identifyMergedInputRange(new AbstractMap.SimpleEntry<List<Variable>, List<PortDirection>>(
         specialCall.getParameters(), specialCall.getParameterDirections()));
     registerCallVariableToCoreBlock(operatorBlock, specialCall);
+  }
+
+  private List<DAGEdge> orderInEdges(final Set<DAGEdge> incomingEdges, final List<String> sourceOrder) {
+    if (incomingEdges.size() < 2) {
+      return new ArrayList<>(incomingEdges);
+    }
+    final List<DAGEdge> orderedList = new ArrayList<>();
+    for (final String source : sourceOrder) {
+      DAGEdge correspondingEdge = null;
+      edgeIterate: for (final DAGEdge edge : incomingEdges) {
+
+        if (edge instanceof MapperDAGEdge) {
+          final String targetLabel = edge.getTargetLabel();
+          if (source.equals(targetLabel)) {
+            correspondingEdge = edge;
+            break edgeIterate;
+          }
+        }
+
+        if (correspondingEdge == null) {
+          final BufferAggregate buffAggr = edge.getPropertyBean().getValue(BufferAggregate.propertyBeanName);
+          if (buffAggr != null && !buffAggr.isEmpty()) {
+            final BufferProperties bufferProperties = buffAggr.get(0);
+            final String destInputPortID = bufferProperties.getDestInputPortID();
+            if (source.equals(destInputPortID)) {
+              correspondingEdge = edge;
+              break edgeIterate;
+            }
+          }
+        }
+      }
+      if (correspondingEdge == null) {
+        throw new PreesmRuntimeException("No corresponding edge found for source port " + source);
+      } else {
+        orderedList.add(correspondingEdge);
+      }
+    }
+    return orderedList;
+  }
+
+  private List<DAGEdge> orderOutEdges(final Set<DAGEdge> outgoingEdges, final List<String> sinkOrder) {
+    if (outgoingEdges.size() < 2) {
+      return new ArrayList<>(outgoingEdges);
+    }
+    final List<DAGEdge> orderedList = new ArrayList<>();
+    for (final String sink : sinkOrder) {
+      DAGEdge correspondingEdge = null;
+
+      edgeIterate: for (final DAGEdge edge : outgoingEdges) {
+        if (edge instanceof MapperDAGEdge) {
+          final String targetLabel = edge.getTargetLabel();
+          final boolean equals = sink.equals(targetLabel);
+          if (equals) {
+            correspondingEdge = edge;
+            break edgeIterate;
+          }
+        }
+        if (correspondingEdge == null) {
+          final BufferAggregate bufferAggregate = edge.getPropertyBean().getValue(BufferAggregate.propertyBeanName);
+          if (bufferAggregate != null && !bufferAggregate.isEmpty()) {
+            final BufferProperties bufferProperties = bufferAggregate.get(0);
+            final String sourceOutputPortID = bufferProperties.getSourceOutputPortID();
+            if (sink.equals(sourceOutputPortID)) {
+              correspondingEdge = edge;
+              break edgeIterate;
+            }
+          }
+        }
+      }
+      if (correspondingEdge == null) {
+        throw new PreesmRuntimeException("No corresponding edge found for sink port " + sink);
+      } else {
+        orderedList.add(correspondingEdge);
+      }
+    }
+    return orderedList;
   }
 
   /**

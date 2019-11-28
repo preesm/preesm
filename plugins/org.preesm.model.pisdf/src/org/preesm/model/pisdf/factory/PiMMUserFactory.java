@@ -1,7 +1,7 @@
 /**
  * Copyright or © or Copr. IETR/INSA - Rennes (2017 - 2019) :
  *
- * Alexandre Honorat [alexandre.honorat@insa-rennes.fr] (2018)
+ * Alexandre Honorat [alexandre.honorat@insa-rennes.fr] (2018 - 2019)
  * Antoine Morvan [antoine.morvan@insa-rennes.fr] (2017 - 2019)
  * Florian Arrestier [florian.arrestier@insa-rennes.fr] (2018)
  *
@@ -292,6 +292,8 @@ public final class PiMMUserFactory extends PiMMFactoryImpl implements PreesmUser
   @Override
   public PiGraph createPiGraph() {
     final PiGraph res = super.createPiGraph();
+    final Expression exp = createExpression();
+    res.setExpression(exp);
     res.eAdapters().add(new GraphInterfaceObserver());
     return res;
   }
@@ -301,6 +303,7 @@ public final class PiMMUserFactory extends PiMMFactoryImpl implements PreesmUser
     final Actor res = super.createActor();
     final Expression exp = createExpression();
     res.setExpression(exp);
+    res.setFiringInstance(0L);
     return res;
   }
 

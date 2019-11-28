@@ -1,6 +1,7 @@
 /**
  * Copyright or © or Copr. IETR/INSA - Rennes (2017 - 2019) :
  *
+ * Alexandre Honorat [alexandre.honorat@insa-rennes.fr] (2019)
  * Antoine Morvan [antoine.morvan@insa-rennes.fr] (2018 - 2019)
  * Florian Arrestier [florian.arrestier@insa-rennes.fr] (2018)
  * Hamza Deroui [hamza.deroui@insa-rennes.fr] (2017)
@@ -48,7 +49,7 @@ import org.preesm.commons.exceptions.PreesmRuntimeException;
  *
  *         Math functions helper class contains math functions that do not exists in the java.lang.Math library
  */
-public interface MathFunctionsHelper {
+public class MathFunctionsHelper {
 
   /**
    * computes the Greatest Common Divisor (GCD) of two doubles
@@ -78,12 +79,7 @@ public interface MathFunctionsHelper {
    * @return the gcd of a and b
    */
   public static long gcd(long a, long b) {
-    while (b > 0) {
-      final long temp = b;
-      b = a % b;
-      a = temp;
-    }
-    return a;
+    return ArithmeticUtils.gcd(a, b);
   }
 
   /**
@@ -94,23 +90,19 @@ public interface MathFunctionsHelper {
    * @return The gcd (greatest common divider) of the list
    */
   public static long gcd(final List<Long> valList) {
-    long gcd = 0;
+    long gcd = valList.isEmpty() ? 0 : valList.get(0);
     for (final Long val : valList) {
-      if (gcd == 0) {
-        gcd = val;
-      } else {
-        gcd = ArithmeticUtils.gcd(gcd, val);
-      }
+      gcd = gcd(gcd, val);
     }
     return gcd;
   }
 
   public static long gcd(final LongFraction a, final LongFraction b) {
-    return ArithmeticUtils.lcm(a.getDenominator(), b.getDenominator());
+    return lcm(a.getDenominator(), b.getDenominator());
   }
 
   public static long gcd(final long a, final LongFraction b) {
-    return ArithmeticUtils.lcm(a, b.getDenominator());
+    return lcm(a, b.getDenominator());
   }
 
   /**
@@ -134,7 +126,7 @@ public interface MathFunctionsHelper {
   public static double gcd(final double[] input) {
     double result = input[0];
     for (int i = 1; i < input.length; i++) {
-      result = MathFunctionsHelper.gcd(result, input[i]);
+      result = gcd(result, input[i]);
     }
     return result;
   }
@@ -254,7 +246,7 @@ public interface MathFunctionsHelper {
    * @return lcm of a and b
    */
   public static double lcm(final double a, final double b) {
-    return a * (b / MathFunctionsHelper.gcd(a, b));
+    return a * (b / gcd(a, b));
   }
 
   /**
@@ -267,7 +259,7 @@ public interface MathFunctionsHelper {
    * @return lcm of a and b
    */
   public static long lcm(final long a, final long b) {
-    return a * (b / MathFunctionsHelper.gcd(a, b));
+    return ArithmeticUtils.lcm(a, b);
   }
 
   /**
@@ -280,7 +272,7 @@ public interface MathFunctionsHelper {
   public static double lcm(final double[] input) {
     double result = input[0];
     for (int i = 1; i < input.length; i++) {
-      result = MathFunctionsHelper.lcm(result, input[i]);
+      result = lcm(result, input[i]);
     }
 
     return result;

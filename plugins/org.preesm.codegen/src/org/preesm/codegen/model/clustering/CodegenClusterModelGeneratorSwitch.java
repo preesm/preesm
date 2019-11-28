@@ -50,7 +50,7 @@ import org.preesm.algorithm.schedule.model.ParallelHiearchicalSchedule;
 import org.preesm.algorithm.schedule.model.Schedule;
 import org.preesm.algorithm.schedule.model.SequentialHiearchicalSchedule;
 import org.preesm.algorithm.schedule.model.util.ScheduleSwitch;
-import org.preesm.algorithm.synthesis.schedule.ScheduleOrderManager;
+import org.preesm.algorithm.synthesis.schedule.ScheduleUtil;
 import org.preesm.codegen.model.Block;
 import org.preesm.codegen.model.Buffer;
 import org.preesm.codegen.model.ClusterBlock;
@@ -155,6 +155,8 @@ public class CodegenClusterModelGeneratorSwitch extends ScheduleSwitch<CodeElt> 
    */
   Map<String, Object> fetcherMap;
 
+  private final PiGraph graph;
+
   /**
    * @param operatorBlock
    *          core block to print in
@@ -165,9 +167,10 @@ public class CodegenClusterModelGeneratorSwitch extends ScheduleSwitch<CodeElt> 
    * @param fetcherMap
    *          argument for fetcher algorithm
    */
-  public CodegenClusterModelGeneratorSwitch(final CoreBlock operatorBlock, final Scenario scenario,
+  public CodegenClusterModelGeneratorSwitch(final PiGraph graph, final CoreBlock operatorBlock, final Scenario scenario,
       final IOutsideFetcher outsideFetcher, final Map<String, Object> fetcherMap) {
     super();
+    this.graph = graph;
     this.scenario = scenario;
     this.operatorBlock = operatorBlock;
     this.outsideFetcher = outsideFetcher;
@@ -254,7 +257,7 @@ public class CodegenClusterModelGeneratorSwitch extends ScheduleSwitch<CodeElt> 
 
     // Retrieve actor to fire
     // clustering process does list actors in actor schedule, we only care about the first one here
-    final List<AbstractActor> actors = new ScheduleOrderManager(schedule).buildNonTopologicalOrderedList();
+    final List<AbstractActor> actors = ScheduleUtil.getAllReferencedActors(schedule);
     final AbstractActor actor = actors.get(0);
 
     // Generate a LoopBlock to put function call element into
@@ -285,6 +288,8 @@ public class CodegenClusterModelGeneratorSwitch extends ScheduleSwitch<CodeElt> 
   }
 
   private void generateDelayPop(final AbstractActor actor, final LoopBlock loopBlock) {
+
+    final PiSDFTopologyHelper helper = new PiSDFTopologyHelper(graph);
     // Explore data port for delay
     for (final DataPort dp : actor.getAllDataPorts()) {
       final Fifo associatedFifo = dp.getFifo();
@@ -292,7 +297,7 @@ public class CodegenClusterModelGeneratorSwitch extends ScheduleSwitch<CodeElt> 
       if (this.delayBufferMap.containsKey(associatedFifo)) {
         // If the fifo goes to an actor that already has been executed, it means that we should generate a pop after
         // a write, otherwise we print a pop only if it's in input
-        final boolean precedence = PiSDFTopologyHelper.isPredecessor((AbstractActor) associatedFifo.getSource(),
+        final boolean precedence = helper.isPredecessor((AbstractActor) associatedFifo.getSource(),
             (AbstractActor) associatedFifo.getTarget());
 
         if (((dp.getKind() == PortKind.DATA_INPUT) && !precedence)

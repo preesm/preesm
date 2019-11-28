@@ -45,14 +45,11 @@ import java.util.logging.Level;
 import java.util.stream.Collectors;
 import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.model.pisdf.AbstractActor;
+import org.preesm.model.pisdf.AbstractVertex;
 import org.preesm.model.pisdf.Actor;
 import org.preesm.model.pisdf.DataInputPort;
 import org.preesm.model.pisdf.DataOutputPort;
 import org.preesm.model.pisdf.Fifo;
-import org.preesm.model.pisdf.PiGraph;
-import org.preesm.model.scenario.Scenario;
-import org.preesm.model.slam.Component;
-import org.preesm.model.slam.Design;
 
 /**
  * This class aims to select periodic actors on which execute the period checkers (nbff and nblf).
@@ -61,21 +58,18 @@ import org.preesm.model.slam.Design;
  */
 class HeuristicPeriodicActorSelection {
 
-  static Map<Actor, Long> selectActors(final Map<Actor, Long> periodicActors, final Set<AbstractActor> originActors,
-      final Map<AbstractActor, Integer> actorsNbVisits, final int rate, final PiGraph graph, final Scenario scenario,
-      final boolean reverse) {
-    if ((rate == 100) || periodicActors.isEmpty()) {
-      return periodicActors;
-    }
-    if (rate == 0) {
+  protected static Map<Actor, Double> selectActors(final Map<Actor, Long> periodicActors,
+      final Set<AbstractActor> originActors, final Map<AbstractActor, Integer> actorsNbVisits, final int rate,
+      final Map<AbstractVertex, Long> wcets, final boolean reverse) {
+    if (rate == 0 || periodicActors.isEmpty()) {
       return new LinkedHashMap<>();
     }
 
     Map<AbstractActor, ActorVisit> topoRanks = null;
     if (reverse) {
-      topoRanks = HeuristicPeriodicActorSelection.topologicalASAPrankingT(originActors, actorsNbVisits, graph);
+      topoRanks = HeuristicPeriodicActorSelection.topologicalASAPrankingT(originActors, actorsNbVisits);
     } else {
-      topoRanks = HeuristicPeriodicActorSelection.topologicalASAPranking(originActors, actorsNbVisits, graph);
+      topoRanks = HeuristicPeriodicActorSelection.topologicalASAPranking(originActors, actorsNbVisits);
     }
     final Map<Actor, Double> topoRanksPeriodic = new LinkedHashMap<>();
     for (final Entry<Actor, Long> e : periodicActors.entrySet()) {
@@ -85,41 +79,27 @@ class HeuristicPeriodicActorSelection {
       }
       final long rank = topoRanks.get(actor).rank;
       final long period = e.getValue();
-      long wcetMin = Long.MAX_VALUE;
-      final Design design = scenario.getDesign();
-      for (final Component operatorDefinitionID : design.getOperatorComponents()) {
-        final long timing = scenario.getTimings().evaluateTimingOrDefault(actor, operatorDefinitionID);
-        if (timing < wcetMin) {
-          wcetMin = timing;
-        }
-      }
+      long wcetMin = wcets.get(actor);
       topoRanksPeriodic.put(actor, (period - wcetMin) / (double) rank);
     }
     final StringBuilder sb = new StringBuilder();
     topoRanksPeriodic.entrySet().forEach(a -> sb.append(a.getKey().getName() + "(" + a.getValue() + ") / "));
-    PreesmLogger.getLogger().log(Level.WARNING, "Periodic actor ranks: " + sb.toString());
+    PreesmLogger.getLogger().log(Level.INFO, "Periodic actor ranks: " + sb.toString());
 
     return HeuristicPeriodicActorSelection.selectFromRate(periodicActors, topoRanksPeriodic, rate);
   }
 
-  private static Map<Actor, Long> selectFromRate(final Map<Actor, Long> periodicActors,
+  private static Map<Actor, Double> selectFromRate(final Map<Actor, Long> periodicActors,
       final Map<Actor, Double> topoRanksPeriodic, final int rate) {
     final int nbPeriodicActors = periodicActors.size();
     final double nActorsToSelect = nbPeriodicActors * (rate / 100.0);
     final int nbActorsToSelect = Math.max((int) Math.ceil(nActorsToSelect), 1);
 
     final Map<Actor,
-        Long> selectedActors = periodicActors.entrySet().stream().sorted(Map.Entry.comparingByValue())
-            .limit(nbActorsToSelect).collect(Collectors.toMap(Map.Entry::getKey, e -> periodicActors.get(e.getKey()),
-                (e1, e2) -> e1, LinkedHashMap::new));
+        Double> selectedActors = topoRanksPeriodic.entrySet().stream().sorted(Map.Entry.comparingByValue())
+            .limit(nbActorsToSelect)
+            .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (e1, e2) -> e1, LinkedHashMap::new));
 
-    // final Map<Actor, Long> selectedActors = new HashMap<>();
-    // for (int i = 0; i < nbActorsToSelect; ++i) {
-    // Actor actor = topoRanksPeriodic.firstKey();
-    // topoRanksPeriodic.remove(actor);
-    // WorkflowLogger.getLogger().log(Level.INFO, "Periodic actor: " + actor.getName());
-    // selectedActors.put(actor, periodicActors.get(actor));
-    // }
     return selectedActors;
   }
 
@@ -141,7 +121,7 @@ class HeuristicPeriodicActorSelection {
   }
 
   private static Map<AbstractActor, ActorVisit> topologicalASAPranking(final Set<AbstractActor> sourceActors,
-      final Map<AbstractActor, Integer> actorsNbVisits, final PiGraph graph) {
+      final Map<AbstractActor, Integer> actorsNbVisits) {
     final Map<AbstractActor, ActorVisit> topoRanks = new LinkedHashMap<>();
     for (final AbstractActor actor : sourceActors) {
       topoRanks.put(actor, new ActorVisit(0, 1));
@@ -181,7 +161,7 @@ class HeuristicPeriodicActorSelection {
   }
 
   private static Map<AbstractActor, ActorVisit> topologicalASAPrankingT(final Set<AbstractActor> sinkActors,
-      final Map<AbstractActor, Integer> actorsNbVisits, final PiGraph graph) {
+      final Map<AbstractActor, Integer> actorsNbVisits) {
     final Map<AbstractActor, ActorVisit> topoRanks = new LinkedHashMap<>();
     for (final AbstractActor actor : sinkActors) {
       topoRanks.put(actor, new ActorVisit(0, 1));

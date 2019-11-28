@@ -1,6 +1,7 @@
 /**
  * Copyright or © or Copr. IETR/INSA - Rennes (2014 - 2019) :
  *
+ * Alexandre Honorat [alexandre.honorat@insa-rennes.fr] (2019)
  * Antoine Morvan [antoine.morvan@insa-rennes.fr] (2017 - 2019)
  * Clément Guy [clement.guy@insa-rennes.fr] (2014 - 2015)
  * Julien Heulot [julien.heulot@insa-rennes.fr] (2014)
@@ -168,8 +169,11 @@ public class PiParametersPage extends ScenarioPage {
         if (element instanceof TableItem) {
           @SuppressWarnings("unchecked")
           Entry<Parameter, String> param = (Entry<Parameter, String>) ((TableItem) element).getData();
-          final String newValue = (String) value;
+          String newValue = (String) value;
           if (!newValue.equals(param.getValue())) {
+            if (newValue.isEmpty()) {
+              newValue = param.getKey().getExpression().getExpressionAsString();
+            }
             param.setValue(newValue);
             propertyChanged(this, IEditorPart.PROP_DIRTY);
             PiParametersPage.this.tableViewer.refresh();

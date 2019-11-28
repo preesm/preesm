@@ -55,9 +55,8 @@ public class LatencyCost implements ISynthesisCost<Long> {
   }
 
   @Override
-  public int compareTo(final ISynthesisCost<Long> o) {
-    final long diff = this.latency - o.getValue();
-    return (diff > 0) ? 1 : ((diff < 0) ? -1 : 0);
+  public int compareTo(final ISynthesisCost<Long> other) {
+    return Long.compare(this.getValue(), other.getValue());
   }
 
 }
