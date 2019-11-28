@@ -8,7 +8,7 @@
  * Florian Arrestier [florian.arrestier@insa-rennes.fr] (2018)
  * Dylan Gageot [gageot.dylan@gmail.com] (2019)
  * Julien Hascoet [jhascoet@kalray.eu] (2016)
- * Karol Desnos [karol.desnos@insa-rennes.fr] (2013 - 2018)
+ * Karol Desnos [karol.desnos@insa-rennes.fr] (2013 - 2019)
  * Leonardo Suriano [leonardo.suriano@upm.es] (2019)
  * Maxime Pelcat [maxime.pelcat@insa-rennes.fr] (2013 - 2016)
  * Raquel Lazcano [raquel.lazcano@upm.es] (2019)

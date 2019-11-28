@@ -3,6 +3,7 @@
  *
  * Alexandre Honorat [alexandre.honorat@insa-rennes.fr] (2019)
  * Antoine Morvan [antoine.morvan@insa-rennes.fr] (2019)
+ * Julien Heulot [julien.heulot@insa-rennes.fr] (2019)
  *
  * This software is a computer program whose purpose is to help prototyping
  * parallel applications using dataflow formalism.
