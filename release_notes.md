@@ -21,6 +21,7 @@ PREESM Changelog
 * Fix workflow task "pisdf-export" (adds graph copy to avoid side-effects);
 * Fix codegen: special actor ports order is now preserved during codegen;
 * Fix sonarcloud links
+* Deactivate signal handling in Windows. (Issue #263)
 
 ## Release version 3.18.1
 *2019.10.21*
