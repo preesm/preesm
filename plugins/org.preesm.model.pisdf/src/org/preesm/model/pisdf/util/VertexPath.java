@@ -59,6 +59,7 @@ public class VertexPath {
     if (actorPath == null) {
       return null;
     }
+    // graph name is removed from path /!\ /!\
     final String safePath = actorPath.replaceAll("/+", "/").replaceAll("^/*" + graph.getName(), "").replaceAll("^/", "")
         .replaceAll("/$", "");
     if (safePath.isEmpty()) {
@@ -67,14 +68,16 @@ public class VertexPath {
       return res;
     }
     final List<String> pathFragments = new ArrayList<>(Arrays.asList(safePath.split("/")));
-    final String firstFragment = pathFragments.remove(0);
+    final String firstFragment = pathFragments.get(0);
     final AbstractVertex current = graph.getActors().stream().filter(a -> firstFragment.equals(a.getName())).findFirst()
         .orElse(null);
-    if (pathFragments.isEmpty()) {
+    if (pathFragments.size() == 1) {
+      // we were at the end of the path, so what we found is what was asked
       @SuppressWarnings("unchecked")
       final T res = (T) current;
       return res;
     } else {
+      // we are NOT at the end of the path, so what we found is the next child to visit
       final String remainingPathFragments = String.join("/", pathFragments);
       if (current instanceof PiGraph) {
         return VertexPath.lookup((PiGraph) current, remainingPathFragments);

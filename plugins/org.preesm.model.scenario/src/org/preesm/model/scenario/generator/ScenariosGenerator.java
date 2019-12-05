@@ -57,11 +57,13 @@ import org.eclipse.emf.ecore.resource.Resource;
 import org.preesm.commons.DomUtil;
 import org.preesm.commons.exceptions.PreesmFrameworkException;
 import org.preesm.model.pisdf.AbstractActor;
+import org.preesm.model.pisdf.Fifo;
 import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.pisdf.serialize.PiParser;
 import org.preesm.model.pisdf.util.PiSDFTypeGatherer;
 import org.preesm.model.scenario.Scenario;
 import org.preesm.model.scenario.serialize.ScenarioWriter;
+import org.preesm.model.scenario.util.DefaultTypeSizes;
 import org.preesm.model.scenario.util.ScenarioUserFactory;
 import org.preesm.model.slam.Component;
 import org.preesm.model.slam.ComponentInstance;
@@ -234,6 +236,12 @@ public class ScenariosGenerator {
     scenario.getSimulationInfo().setMainComNode(comNodeIds.get(0));
     // Add a average transfer size
     scenario.getSimulationInfo().setAverageDataSize(1000);
+    // Set the default data type sizes
+    for (final Fifo f : scenario.getAlgorithm().getAllFifos()) {
+      final String typeName = f.getType();
+      scenario.getSimulationInfo().getDataTypes().put(typeName,
+          DefaultTypeSizes.getInstance().getDefaultTypeSize(typeName));
+    }
 
     scenario.setCodegenDirectory("/" + project.getName() + "/Code/generated/");
     return scenario;
