@@ -96,7 +96,7 @@
             <command
                   commandId="org.ietr.preesm.ui.command.ScenarioGenerator"
                   icon="resources/icons/preesm4mini.PNG"
-                  label="Generate All Poosible Scenarios"
+                  label="Generate All Possible Scenarios"
                   tooltip="Generate all combinations of Algo/*.pi and Archi/*.slam in this project."
                   style="push">
                <visibleWhen

@@ -62,6 +62,7 @@ import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.pisdf.serialize.PiParser;
 import org.preesm.model.pisdf.util.PiSDFTypeGatherer;
 import org.preesm.model.scenario.Scenario;
+import org.preesm.model.scenario.ScenarioConstants;
 import org.preesm.model.scenario.serialize.ScenarioWriter;
 import org.preesm.model.scenario.util.DefaultTypeSizes;
 import org.preesm.model.scenario.util.ScenarioUserFactory;
@@ -264,13 +265,13 @@ public class ScenariosGenerator {
     scenario.setAlgorithm(piGraph);
     final List<ComponentInstance> coreIds = new ArrayList<>(archi.getOperatorComponentInstances());
 
-    // for all different type of cores
+    // for all different type of cores, add default timing
     for (final Component opId : archi.getOperatorComponents()) {
       for (final AbstractActor aa : piGraph.getAllActors()) {
-        // Add timing: aa run on ci in 10000
-        scenario.getTimings().setTiming(aa, opId, 10000);
+        scenario.getTimings().setTiming(aa, opId, ScenarioConstants.DEFAULT_TIMING_TASK.getValue());
       }
     }
+    // for all different type of cores, allow mapping on it
     for (final ComponentInstance coreId : coreIds) {
       for (final AbstractActor actor : piGraph.getAllActors()) {
         // Add constraint: aa can be run on ci
