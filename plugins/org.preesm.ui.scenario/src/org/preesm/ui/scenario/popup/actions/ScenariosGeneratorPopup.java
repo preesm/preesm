@@ -66,7 +66,7 @@ public class ScenariosGeneratorPopup extends AbstractHandler {
       // If it is a Preesm project, generate the PreesmScenarios from the
       // content of the Algo and Archi folders
       if (project.hasNature(PreesmProjectNature.ID)) {
-        generator.generateAndSaveScenarios(project);
+        generator.generateAndSaveScenarios();
       }
 
     } catch (final Exception e) {

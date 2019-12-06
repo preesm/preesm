@@ -106,28 +106,34 @@ public class ScenariosGenerator {
   /** The Constant scenarioDirName. */
   private static final String SCENARIO_DIR_NAME = "Scenarios";
 
-  final IFolder scenarioDir;
+  final IFolder  scenarioDir;
+  final IProject project;
 
+  /**
+   * 
+   * 
+   * @param project
+   *          the IProject containing the architectures and algorithms. project is supposed to have the
+   *          PreesmProjectNature and to follow the standard Preesm folder hierarchy
+   */
   public ScenariosGenerator(final IProject project) {
     scenarioDir = project.getFolder(ScenariosGenerator.SCENARIO_DIR_NAME);
+    this.project = project;
   }
 
   /**
    * Generates a set of PreesmScenario from an IProject.
    *
-   * @param project
-   *          the IProject containing the architectures and algorithms. project is supposed to have the
-   *          PreesmProjectNature and to follow the standard Preesm folder hierarchy
    * @return a set of PreesmScenario, one for each possible pair of architecture and algorithm
    * @throws CoreException
    *           the core exception
    * @throws FileNotFoundException
    *           the file not found exception
    */
-  public Set<Scenario> generateScenarios(final IProject project) throws CoreException, FileNotFoundException {
+  public Set<Scenario> generateScenarios() throws CoreException, FileNotFoundException {
     final IFolder archiDir = project.getFolder(ScenariosGenerator.ARCHI_DIR_NAME);
     final IFolder algoDir = project.getFolder(ScenariosGenerator.ALGO_DIR_NAME);
-    return generateScenarios(project, archiDir, algoDir);
+    return generateScenarios(archiDir, algoDir);
   }
 
   /**
@@ -143,7 +149,7 @@ public class ScenariosGenerator {
    * @throws FileNotFoundException
    *           the file not found exception
    */
-  public Set<Scenario> generateScenarios(final IProject project, final IFolder archiDir, final IFolder algoDir)
+  public Set<Scenario> generateScenarios(final IFolder archiDir, final IFolder algoDir)
       throws CoreException, FileNotFoundException {
     final Set<String> archis = new LinkedHashSet<>();
     final Set<String> algos = new LinkedHashSet<>();
@@ -290,16 +296,13 @@ public class ScenariosGenerator {
   /**
    * Generates a set of PreesmScenario from an IProject and save them in a folder.
    *
-   * @param project
-   *          the IProject containing the architectures and algorithms. project is supposed to have the
-   *          PreesmProjectNature and to follow the standard Preesm folder hierarchy
    * @throws CoreException
    *           the core exception
    * @throws FileNotFoundException
    *           the file not found exception
    */
-  public void generateAndSaveScenarios(final IProject project) throws CoreException, FileNotFoundException {
-    saveScenarios(generateScenarios(project), scenarioDir);
+  public void generateAndSaveScenarios() throws CoreException, FileNotFoundException {
+    saveScenarios(generateScenarios(), scenarioDir);
   }
 
   /**
