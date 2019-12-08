@@ -45,8 +45,8 @@ import org.eclipse.graphiti.mm.pictograms.Diagram;
 import org.preesm.model.pisdf.JoinActor;
 import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.pisdf.factory.PiMMUserFactory;
-import org.preesm.ui.pisdf.PiMMUtil;
 import org.preesm.ui.pisdf.util.VertexNameValidator;
+import org.preesm.ui.utils.DialogUtil;
 
 // TODO: Auto-generated Javadoc
 /**
@@ -99,7 +99,7 @@ public class CreateJoinActorFeature extends AbstractCreateFeature {
     final String question = "Enter new join actor name";
     String newActorName = "JoinActorName";
 
-    newActorName = PiMMUtil.askString("Create Join Actor", question, newActorName,
+    newActorName = DialogUtil.askString("Create Join Actor", question, newActorName,
         new VertexNameValidator(graph, null));
     if ((newActorName == null) || (newActorName.trim().length() == 0)) {
       this.hasDoneChanges = false; // If this is not done, the graph is considered modified.

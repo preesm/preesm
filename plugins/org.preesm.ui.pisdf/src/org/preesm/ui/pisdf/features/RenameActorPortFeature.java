@@ -46,8 +46,8 @@ import org.eclipse.graphiti.mm.pictograms.PictogramElement;
 import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.ExecutableActor;
 import org.preesm.model.pisdf.Port;
-import org.preesm.ui.pisdf.PiMMUtil;
 import org.preesm.ui.pisdf.util.PortNameValidator;
+import org.preesm.ui.utils.DialogUtil;
 
 // TODO: Auto-generated Javadoc
 /**
@@ -139,7 +139,7 @@ public class RenameActorPortFeature extends AbstractCustomFeature {
         final String question = "Enter new port name";
         String newPortName = port.getName();
 
-        newPortName = PiMMUtil.askString(getName(), question, newPortName, new PortNameValidator(vertex, port));
+        newPortName = DialogUtil.askString(getName(), question, newPortName, new PortNameValidator(vertex, port));
 
         if ((newPortName != null) && !newPortName.equals(currentName)) {
           this.hasDoneChanges = true;

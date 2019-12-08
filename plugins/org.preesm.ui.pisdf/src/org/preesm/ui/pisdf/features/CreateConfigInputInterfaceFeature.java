@@ -45,8 +45,8 @@ import org.eclipse.graphiti.mm.pictograms.Diagram;
 import org.preesm.model.pisdf.ConfigInputInterface;
 import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.pisdf.factory.PiMMUserFactory;
-import org.preesm.ui.pisdf.PiMMUtil;
 import org.preesm.ui.pisdf.util.VertexNameValidator;
+import org.preesm.ui.utils.DialogUtil;
 
 // TODO: Auto-generated Javadoc
 /**
@@ -102,7 +102,7 @@ public class CreateConfigInputInterfaceFeature extends AbstractCreateFeature {
     String newCfgInIfName = "iCfgName";
 
     // TODO create a parameter name validator
-    newCfgInIfName = PiMMUtil.askString("Create Config. Input Interface", question, newCfgInIfName,
+    newCfgInIfName = DialogUtil.askString("Create Config. Input Interface", question, newCfgInIfName,
         new VertexNameValidator(graph, null));
     if ((newCfgInIfName == null) || (newCfgInIfName.trim().length() == 0)) {
       this.hasDoneChanges = false; // If this is not done, the graph is

@@ -44,8 +44,8 @@ import org.eclipse.graphiti.mm.pictograms.PictogramElement;
 import org.preesm.model.pisdf.AbstractVertex;
 import org.preesm.model.pisdf.InterfaceActor;
 import org.preesm.model.pisdf.PiGraph;
-import org.preesm.ui.pisdf.PiMMUtil;
 import org.preesm.ui.pisdf.util.VertexNameValidator;
+import org.preesm.ui.utils.DialogUtil;
 
 /**
  * Custom feature to rename an {@link AbstractVertex}.
@@ -135,7 +135,7 @@ public class RenameAbstractVertexFeature extends AbstractCustomFeature {
         final String question = "Enter new " + className + " name";
         String newVertexName = vertex.getName();
 
-        newVertexName = PiMMUtil.askString("Rename " + className, question, newVertexName,
+        newVertexName = DialogUtil.askString("Rename " + className, question, newVertexName,
             new VertexNameValidator(graph, vertex));
 
         if ((newVertexName != null) && !newVertexName.equals(currentName)) {

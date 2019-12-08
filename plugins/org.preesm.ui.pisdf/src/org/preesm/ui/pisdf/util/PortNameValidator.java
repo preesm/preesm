@@ -44,7 +44,6 @@ import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.Port;
 import org.preesm.model.pisdf.check.NameCheckerC;
 
-// TODO: Auto-generated Javadoc
 /**
  * This validator is used to check whether a port in a vertex already has a given name.
  *
@@ -68,7 +67,7 @@ public class PortNameValidator implements IInputValidator {
    * @param vertex
    *          the port to which we add/rename a port
    * @param renamedPort
-   *          the renamed port, or <code>null</code> if not a rename operation
+   *          the renamed port, or {@code null} if not a rename operation
    */
   public PortNameValidator(final AbstractActor vertex, final Port renamedPort) {
     this.vertex = vertex;
