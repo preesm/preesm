@@ -908,7 +908,11 @@ public class SpiderCodegen {
     append("\t\t/*InParam*/  0);\n");
 
     append("\n\t/* Top graph definition */\n");
-    append("\t" + sgName + "(topVertex, " + params.toString() + ");\n");
+    if (params.toString().equals("")) {
+      append("\t" + sgName + "(topVertex);\n");
+    } else {
+      append("\t" + sgName + "(topVertex, " + params.toString() + ");\n");
+    }
 
     append("\n\t/* Setting main application graph */\n");
     append("\tSpider::setGraph(topGraph);\n");

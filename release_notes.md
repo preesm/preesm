@@ -9,6 +9,7 @@ PREESM Changelog
 ### Changes
 
 ### Bug fix
+* Fixed extra coma in spider codegen when no parameters.
 
 
 ## Release version 3.18.2
