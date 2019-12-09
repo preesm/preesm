@@ -42,9 +42,11 @@ package org.preesm.model.pisdf.statictools;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.logging.Level;
 import org.preesm.commons.IntegerName;
 import org.preesm.commons.exceptions.PreesmRuntimeException;
@@ -128,6 +130,7 @@ public class PiSDFToSingleRate extends PiMMSwitch<Boolean> {
     final PiGraph acyclicSRPiMM = staticPiMM2ASrPiMMVisitor.getResult();
 
     srCheck(graph, acyclicSRPiMM);
+    removeUnusedPorts(acyclicSRPiMM);
 
     // 6- do some optimization on the graph
     PreesmLogger.getLogger().log(Level.FINE, " >>   - fork join optim");
@@ -147,6 +150,35 @@ public class PiSDFToSingleRate extends PiMMSwitch<Boolean> {
     PreesmLogger.getLogger().log(Level.INFO, () -> " SRDAG with " + acyclicSRPiMM.getAllActors().size()
         + " vertices and " + acyclicSRPiMM.getAllFifos().size() + " edges ");
     return acyclicSRPiMM;
+  }
+
+  /**
+   * Remove actor ports having no fifo (may happen if source or destination actor has 0 as repetition factor).
+   * 
+   * @param graph
+   *          SRDAG
+   */
+  private static final void removeUnusedPorts(final PiGraph graph) {
+    for (AbstractActor aa : graph.getAllActors()) {
+      final Set<DataInputPort> toRemoveIn = new HashSet<>();
+      final Set<DataOutputPort> toRemoveOut = new HashSet<>();
+      for (DataPort p : aa.getAllDataPorts()) {
+        Fifo f = p.getFifo();
+        if (f == null) {
+          if (p instanceof DataInputPort) {
+            toRemoveIn.add((DataInputPort) p);
+          } else if (p instanceof DataOutputPort) {
+            toRemoveOut.add((DataOutputPort) p);
+          }
+        }
+      }
+      for (DataInputPort p : toRemoveIn) {
+        aa.getDataInputPorts().remove(p);
+      }
+      for (DataOutputPort p : toRemoveOut) {
+        aa.getDataOutputPorts().remove(p);
+      }
+    }
   }
 
   /**

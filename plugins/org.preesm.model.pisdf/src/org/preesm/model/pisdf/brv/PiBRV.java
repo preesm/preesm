@@ -129,7 +129,7 @@ public abstract class PiBRV {
     for (final AbstractActor actor : subgraph) {
       final long newRV = graphBRV.get(actor) * scaleFactor;
       graphBRV.put(actor, newRV);
-      if ((actor instanceof DelayActor) && (newRV != 1)) {
+      if ((actor instanceof DelayActor) && (newRV > 1)) {
         String message = "Inconsistent graph. DelayActor [" + actor.getName() + "] with a repetition vector of "
             + Long.toString(newRV);
         throw new PreesmRuntimeException(message);
