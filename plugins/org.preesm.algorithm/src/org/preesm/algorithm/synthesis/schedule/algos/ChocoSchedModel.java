@@ -17,16 +17,19 @@ public class ChocoSchedModel {
   protected final String                   name;
   protected final SortedMap<Integer, Task> tasks;
   protected final int                      nbCores;
+  protected final int                      horizon;
 
   protected final int         nbTasks;
   protected final Model       model;
   protected final IntVar[]    startTimeVars;
   protected final BoolVar[][] mapping;
 
-  protected ChocoSchedModel(final String name, final SortedMap<Integer, Task> tasks, final int nbCores) {
+  protected ChocoSchedModel(final String name, final SortedMap<Integer, Task> tasks, final int nbCores,
+      final int horizon) {
     this.name = name;
     this.tasks = tasks;
     this.nbCores = nbCores;
+    this.horizon = horizon;
 
     nbTasks = tasks.size();
     model = new Model(name);
@@ -47,6 +50,8 @@ public class ChocoSchedModel {
 
     BoolVar[][] oversameSymVars = model.boolVarMatrix("oi", nbTasks, nbTasks);
 
+    IntVar[] finishTimeVars = new IntVar[nbTasks];
+
     // break symmetries in cores
     model.addClauseTrue(mapping[0][0]);
     for (int ic = 0; ic < nbCores; ic++) {
@@ -61,9 +66,11 @@ public class ChocoSchedModel {
       }
     }
 
-    // start time
+    // start time and finish
     for (Task t : tasks.values()) {
       startTimeVars[t.id] = model.intVar("s" + t.id, t.ns, t.xs, false);
+      finishTimeVars[t.id] = model.intVar("f" + t.id, t.ns + t.load, t.xs + t.load, false);
+      model.arithm(finishTimeVars[t.id], "=", startTimeVars[t.id], "+", t.load).post();
     }
 
     // all other constraints
@@ -72,7 +79,7 @@ public class ChocoSchedModel {
       // start time and preds
       for (Integer pred : t.predId) {
         Task temp = tasks.get(pred);
-        model.arithm(startTimeVars[temp.id], "<=", startTimeVars[t.id], "-", temp.load).post();
+        model.arithm(finishTimeVars[temp.id], "<=", startTimeVars[t.id]).post();
       }
 
       // unique mapping
@@ -81,7 +88,7 @@ public class ChocoSchedModel {
       // no overlapping if on same core
       for (Task tt : tasks.values()) {
         // two tasks half overlapping
-        model.arithm(startTimeVars[t.id], "<", startTimeVars[tt.id], "+", tt.load).reifyWith(overlapVars[t.id][tt.id]);
+        model.arithm(startTimeVars[t.id], "<", finishTimeVars[tt.id]).reifyWith(overlapVars[t.id][tt.id]);
 
         if (t.id == tt.id) {
           for (int i = 0; i < nbCores; i++) {
@@ -118,6 +125,11 @@ public class ChocoSchedModel {
         model.addClauseFalse(oversameSymVars[t.id][tt.id]);
       }
     }
+
+    // minimize latency
+    IntVar varLatency = model.intVar(0, horizon);
+    model.max(varLatency, finishTimeVars).post();
+    model.setObjective(Model.MINIMIZE, varLatency);
 
     return model;
   }
