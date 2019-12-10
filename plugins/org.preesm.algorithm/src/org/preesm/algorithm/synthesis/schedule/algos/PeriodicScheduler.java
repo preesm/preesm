@@ -18,7 +18,6 @@ import org.preesm.algorithm.schedule.model.HierarchicalSchedule;
 import org.preesm.algorithm.schedule.model.ScheduleFactory;
 import org.preesm.algorithm.synthesis.SynthesisResult;
 import org.preesm.algorithm.synthesis.timer.AgnosticTimer;
-import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.commons.model.PreesmCopyTracker;
 import org.preesm.model.pisdf.AbstractActor;
@@ -73,7 +72,7 @@ public class PeriodicScheduler extends AbstractScheduler {
     // actor in original PiGraph
     AbstractActor ori;
 
-    private VertexAbstraction(AbstractActor aa) {
+    protected VertexAbstraction(AbstractActor aa) {
       this.aa = aa;
       this.ori = PreesmCopyTracker.getOriginalSource(aa);
 
@@ -97,7 +96,7 @@ public class PeriodicScheduler extends AbstractScheduler {
   protected static class EdgeAbstraction {
     long weight;// not used
 
-    private EdgeAbstraction() {
+    protected EdgeAbstraction() {
       this.weight = 0;
     }
   }
@@ -106,6 +105,9 @@ public class PeriodicScheduler extends AbstractScheduler {
    * 
    * @author ahonorat
    *
+   * @throws PreesmSchedulingException
+   *           If scheduling fails.
+   * 
    */
   protected static class CoreAbstraction {
 
@@ -116,7 +118,7 @@ public class PeriodicScheduler extends AbstractScheduler {
     // schedule ordering of actors mapped to this core
     ActorSchedule coreSched;
 
-    private CoreAbstraction(ComponentInstance ci, ActorSchedule coreSched) {
+    protected CoreAbstraction(ComponentInstance ci, ActorSchedule coreSched) {
       this.implTime = 0;
       this.ci = ci;
       this.coreSched = coreSched;
@@ -149,7 +151,7 @@ public class PeriodicScheduler extends AbstractScheduler {
   protected SynthesisResult exec(PiGraph piGraph, Design slamDesign, Scenario scenario) {
 
     if (slamDesign.getOperatorComponents().size() != 1) {
-      throw new PreesmRuntimeException("This task must be called with a homogeneous architecture, abandon.");
+      throw new PreesmSchedulingException("This task must be called with a homogeneous architecture, abandon.");
     }
 
     int nbCore = slamDesign.getOperatorComponents().get(0).getInstances().size();
@@ -209,7 +211,7 @@ public class PeriodicScheduler extends AbstractScheduler {
       PreesmLogger.getLogger().log(Level.INFO,
           "No period found: scheduling performed with sequential worst case: " + Ctot + " time unit.");
     } else if (Ctot / (double) nbCore > horizon) {
-      throw new PreesmRuntimeException(
+      throw new PreesmSchedulingException(
           "Your graph is clearly not schedulable: utilization factor is higher than number of cores. Total load: "
               + Ctot);
     }
@@ -237,6 +239,8 @@ public class PeriodicScheduler extends AbstractScheduler {
    * min/maxStartTime of actors.
    * 
    * @return New abstract graph of the SRADG.
+   * @throws PreesmSchedulingException
+   *           If remaining idle time is greater than maximum allowed.
    */
   protected DefaultDirectedGraph<VertexAbstraction, EdgeAbstraction> createAbsGraph() {
     absGraph = new DefaultDirectedGraph<>(EdgeAbstraction.class);
@@ -303,7 +307,7 @@ public class PeriodicScheduler extends AbstractScheduler {
         fa = new EdgeAbstraction();
         final boolean res = absGraph.addEdge(vaSrc, vaTgt, fa);
         if (!res) {
-          throw new PreesmRuntimeException("Problem while creating graph copy.");
+          throw new PreesmSchedulingException("Problem while creating graph copy.");
         }
       }
     }
@@ -343,6 +347,8 @@ public class PeriodicScheduler extends AbstractScheduler {
    *          Source nodes of the graph.
    * @param lastNodes
    *          Sink nodes of the graph.
+   * @throws PreesmSchedulingException
+   *           If remaining idle time is greater than maximum allowed.
    */
   protected static void setAbsGraph(DefaultDirectedGraph<VertexAbstraction, EdgeAbstraction> absGraph, long horizon,
       List<VertexAbstraction> firstNodes, List<VertexAbstraction> lastNodes) {
@@ -369,7 +375,7 @@ public class PeriodicScheduler extends AbstractScheduler {
       va.predFinishTime = va.minStartTime;
       va.maxStartTime -= va.load;
       if (va.minStartTime > va.maxStartTime) {
-        throw new PreesmRuntimeException(
+        throw new PreesmSchedulingException(
             "Cannot schedule following firing, min start time > max start time: " + va.aa.getName());
       }
       va.averageStartTime = (va.minStartTime + va.maxStartTime) / 2;
@@ -526,6 +532,8 @@ public class PeriodicScheduler extends AbstractScheduler {
    *          Maximum finish time, or 0 if no limit.
    * 
    * @return Remaining idle time until horizon.
+   * @throws PreesmSchedulingException
+   *           If remaining idle time is greater than maximum allowed.
    */
   protected long allocateAndRemoveIfBefore(VertexAbstraction va, List<VertexAbstraction> queue, long emptyTime,
       long loadDual, long deadline) {
@@ -533,7 +541,7 @@ public class PeriodicScheduler extends AbstractScheduler {
     CoreAbstraction ca = popFirstPossibleCore(va, cores, possibleMappings);
     // check start time
     if (ca == null || ca.implTime > va.maxStartTime) {
-      throw new PreesmRuntimeException(
+      throw new PreesmSchedulingException(
           "Could not allocate the following task, no component or start time is overdue:  " + va.aa.getName());
     }
     // check deadline
@@ -659,13 +667,13 @@ public class PeriodicScheduler extends AbstractScheduler {
    *          Idle time prior to the last allocation.
    * @return Current idle time until last allocation.
    * 
-   * @throws PreesmRuntimeException
+   * @throws PreesmSchedulingException
    *           If remaining idle time is greater than maximum allowed.
    */
   protected static long casRemainingLoad(long extraIdleTime, long loadDual, long previousEmptyTime) {
     long res = previousEmptyTime + extraIdleTime;
     if (res > loadDual) {
-      throw new PreesmRuntimeException("Impossible schedule: there are too much unccupied space.");
+      throw new PreesmSchedulingException("Impossible schedule: there are too much unccupied space.");
     }
     return res;
   }

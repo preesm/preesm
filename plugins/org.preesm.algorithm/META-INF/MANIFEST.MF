@@ -38,7 +38,8 @@ Require-Bundle: org.eclipse.core.resources,
  org.preesm.model.scenario;visibility:=reexport,
  org.preesm.commons;visibility:=reexport,
  org.eclipse.emf.ecore.xcore;bundle-version="1.9.0",
- org.apache.commons.collections4;bundle-version="4.1.0"
+ org.apache.commons.collections4;bundle-version="4.1.0",
+ org.choco-solver;bundle-version="4.0.9"
 Bundle-ClassPath: .
 Export-Package: org.preesm.algorithm,
  org.preesm.algorithm.clustering,

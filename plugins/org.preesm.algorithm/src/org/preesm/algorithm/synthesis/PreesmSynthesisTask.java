@@ -48,6 +48,7 @@ import org.preesm.algorithm.synthesis.memalloc.IMemoryAllocation;
 import org.preesm.algorithm.synthesis.memalloc.LegacyMemoryAllocation;
 import org.preesm.algorithm.synthesis.memalloc.SimpleMemoryAllocation;
 import org.preesm.algorithm.synthesis.schedule.ScheduleOrderManager;
+import org.preesm.algorithm.synthesis.schedule.algos.ChocoScheduler;
 import org.preesm.algorithm.synthesis.schedule.algos.IScheduler;
 import org.preesm.algorithm.synthesis.schedule.algos.LegacyListScheduler;
 import org.preesm.algorithm.synthesis.schedule.algos.PeriodicScheduler;
@@ -70,11 +71,12 @@ import org.preesm.workflow.implement.AbstractWorkflowNodeImplementation;
  * @author anmorvan
  *
  */
-@PreesmTask(id = "pisdf-synthesis.simple", name = "Simple Synhtesis", category = "Synhtesis",
+@PreesmTask(id = "pisdf-synthesis.simple", name = "Simple Synhtesis", category = "Synthesis",
 
     parameters = {
         @Parameter(name = "scheduler",
-            values = { @Value(name = "simple"), @Value(name = "legacy"), @Value(name = "periodic") }),
+            values = { @Value(name = "simple"), @Value(name = "legacy"), @Value(name = "periodic"),
+                @Value(name = "choco") }),
         @Parameter(name = "allocation", values = { @Value(name = "simple"), @Value(name = "legacy") }) },
 
     inputs = { @Port(name = "PiMM", type = PiGraph.class), @Port(name = "architecture", type = Design.class),
@@ -128,6 +130,9 @@ public class PreesmSynthesisTask extends AbstractTaskImplementation {
         break;
       case "periodic":
         scheduler = new PeriodicScheduler();
+        break;
+      case "choco":
+        scheduler = new ChocoScheduler();
         break;
       default:
         throw new PreesmRuntimeException("unknown scheduler: " + schedulerName);
