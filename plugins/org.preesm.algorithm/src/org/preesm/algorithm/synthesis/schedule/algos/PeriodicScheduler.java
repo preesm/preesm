@@ -205,7 +205,7 @@ public class PeriodicScheduler extends AbstractScheduler {
     }
 
     // initializes and check horizon
-    horizon = piGraph.getPeriod().evaluate();
+    horizon = graphPeriod;
     if (horizon <= 0) {
       horizon = Ctot;
       PreesmLogger.getLogger().log(Level.INFO,

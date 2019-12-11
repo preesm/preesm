@@ -24,6 +24,17 @@ public class ChocoSchedModel {
   protected final IntVar[]    startTimeVars;
   protected final BoolVar[][] mapping;
 
+  /**
+   * 
+   * @param name
+   *          Name of the model.
+   * @param tasks
+   *          Tasks to schedule.
+   * @param nbCores
+   *          Number of available cores for scheduling.
+   * @param horizon
+   *          Maximum makespan if positive, not considered if negative.
+   */
   protected ChocoSchedModel(final String name, final SortedMap<Integer, Task> tasks, final int nbCores,
       final int horizon) {
     this.name = name;
@@ -126,10 +137,12 @@ public class ChocoSchedModel {
       }
     }
 
-    // minimize latency
-    IntVar varLatency = model.intVar(0, horizon);
-    model.max(varLatency, finishTimeVars).post();
-    model.setObjective(Model.MINIMIZE, varLatency);
+    if (horizon > 0) {
+      // minimize latency
+      IntVar varLatency = model.intVar(0, horizon);
+      model.max(varLatency, finishTimeVars).post();
+      model.setObjective(Model.MINIMIZE, varLatency);
+    }
 
     return model;
   }

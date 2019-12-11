@@ -52,6 +52,7 @@ import org.preesm.model.pisdf.EndActor;
 import org.preesm.model.pisdf.ForkActor;
 import org.preesm.model.pisdf.InitActor;
 import org.preesm.model.pisdf.JoinActor;
+import org.preesm.model.pisdf.PeriodicElement;
 import org.preesm.model.pisdf.RoundBufferActor;
 import org.preesm.model.pisdf.util.PiMMSwitch;
 
@@ -77,8 +78,20 @@ public abstract class AbstractTimer extends PiMMSwitch<Long> {
     for (final AbstractActor actor : orderedActors) {
       final long duration = this.doSwitch(actor);
 
-      final long startTime = scheduleOrderManager.getDirectPredecessors(actor).stream()
+      long startTime = scheduleOrderManager.getDirectPredecessors(actor).stream()
           .mapToLong(a -> res.get(a).getEndTime()).max().orElse(0L);
+
+      // refine the startTime of periodic actors from firing instance number
+      if (actor instanceof PeriodicElement) {
+        PeriodicElement pe = (PeriodicElement) actor;
+        long period = pe.getPeriod().evaluate();
+        if (period > 0 && pe instanceof Actor) {
+          Actor a = (Actor) pe;
+          long firingInstance = a.getFiringInstance();
+          long ns = firingInstance * period;
+          startTime = Math.max(startTime, ns);
+        }
+      }
 
       final ActorExecutionTiming executionTiming = new ActorExecutionTiming(actor, startTime, duration);
       res.put(actor, executionTiming);

@@ -60,7 +60,6 @@ import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.Fifo;
 import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.pisdf.serialize.PiParser;
-import org.preesm.model.pisdf.util.PiSDFTypeGatherer;
 import org.preesm.model.scenario.Scenario;
 import org.preesm.model.scenario.ScenarioConstants;
 import org.preesm.model.scenario.serialize.ScenarioWriter;
@@ -242,7 +241,7 @@ public class ScenariosGenerator {
     // Add a main com node (first of the list)
     scenario.getSimulationInfo().setMainComNode(comNodeIds.get(0));
     // Add a average transfer size
-    scenario.getSimulationInfo().setAverageDataSize(1000);
+    scenario.getSimulationInfo().setAverageDataSize(ScenarioConstants.DEFAULT_AVG_DATA_TRANSFER_SIZE.getValue());
     // Set the default data type sizes
     for (final Fifo f : scenario.getAlgorithm().getAllFifos()) {
       final String typeName = f.getType();
@@ -288,9 +287,6 @@ public class ScenariosGenerator {
       scenario.getSimulationInfo().addSpecialVertexOperator(coreId);
     }
 
-    // Fill data-types found in the algo with default value of 1 byte size
-    new PiSDFTypeGatherer().doSwitch(piGraph)
-        .forEach(type -> scenario.getSimulationInfo().getDataTypes().put(type, 1L));
   }
 
   /**

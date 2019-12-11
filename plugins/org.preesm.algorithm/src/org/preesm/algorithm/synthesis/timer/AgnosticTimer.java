@@ -27,7 +27,7 @@ public class AgnosticTimer extends AbstractTimer {
 
   @Override
   protected long computeActorTiming(final Actor actor) {
-    long wcet = 0L;
+    long wcet = 1L;
     for (final ComponentInstance operatorDefinitionID : scenario.getPossibleMappings(actor)) {
       long et = scenario.getTimings().evaluateTimingOrDefault(actor, operatorDefinitionID.getComponent());
       if (et > wcet) {
@@ -39,7 +39,7 @@ public class AgnosticTimer extends AbstractTimer {
 
   @Override
   protected long defaultTime() {
-    return 0L;
+    return 1L;
   }
 
 }

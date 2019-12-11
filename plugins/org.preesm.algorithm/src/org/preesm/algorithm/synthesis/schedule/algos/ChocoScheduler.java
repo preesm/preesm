@@ -39,7 +39,7 @@ import org.preesm.model.slam.Design;
 public class ChocoScheduler extends PeriodicScheduler {
 
   public static final long    maxSolution  = 100L;
-  public static final long    maxSolveTime = 600000L; // 10min
+  public static final long    maxSolveTime = 1800000L; // 30min
   public static final boolean verbose      = false;
 
   @Override
@@ -104,7 +104,7 @@ public class ChocoScheduler extends PeriodicScheduler {
     }
 
     // initializes and check horizon
-    horizon = piGraph.getPeriod().evaluate();
+    horizon = graphPeriod;
     if (horizon <= 0) {
       horizon = Ctot;
       PreesmLogger.getLogger().log(Level.INFO,
@@ -114,12 +114,15 @@ public class ChocoScheduler extends PeriodicScheduler {
           "Your graph is clearly not schedulable: utilization factor is higher than number of cores. Total load: "
               + Ctot);
     }
+
     // initializes min/max/averageStartTime of all actors (and updates the periodic one)
     setAbsGraph(absGraph, horizon, firstNodes, lastNodes);
 
     SortedMap<Integer, Task> tasks = createTasksFromAbsGraph(absGraph);
 
-    ChocoSchedModel csm = new ChocoSchedModel("testExprt", tasks, nbCores, Ints.saturatedCast(horizon));
+    long solverHorizon = (graphPeriod > 0) ? 0 : horizon;
+
+    ChocoSchedModel csm = new ChocoSchedModel("testExprt", tasks, nbCores, Ints.saturatedCast(solverHorizon));
     Model schedModel = csm.generateModel();
     PreesmLogger.getLogger().info("Model built with " + nbCores + " cores.");
 
@@ -132,6 +135,10 @@ public class ChocoScheduler extends PeriodicScheduler {
     Solution s = new Solution(schedModel);
     while (solver.solve()) {
       s.record();
+      // if there was a graph period, then we just look for one solution
+      if (graphPeriod > 0) {
+        break;
+      }
     }
 
     long solutionCount = solver.getSolutionCount();
@@ -140,10 +147,14 @@ public class ChocoScheduler extends PeriodicScheduler {
       // do something, e.g. print out variable values
       time = System.nanoTime() - time;
       PreesmLogger.getLogger().info("Time+ " + Math.round(time / 1e6) + " ms.");
-      PreesmLogger.getLogger().info("Solver iterated " + solutionCount + " times to get a good result.");
       PreesmLogger.getLogger().info("Model solved with " + nbCores + " cores.");
-      int latency = solver.getObjectiveManager().getBestSolutionValue().intValue();
-      PreesmLogger.getLogger().info("Model solved with latency of " + latency + " time units.");
+
+      if (graphPeriod <= 0) {
+        // in this case there is an objective in the model and several iterations, print the values
+        int latency = solver.getObjectiveManager().getBestSolutionValue().intValue();
+        PreesmLogger.getLogger().info("Model solved with latency of " + latency + " time units.");
+        PreesmLogger.getLogger().info("Solver iterated " + solutionCount + " times to get a good result.");
+      }
 
       for (int i = 0; i < csm.nbTasks; i++) {
         int start = s.getIntVal(csm.startTimeVars[i]);

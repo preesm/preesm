@@ -80,7 +80,7 @@ public class SimpleTimer extends AgnosticTimer {
 
     final long maxRate = Math.max(totalInRate, totalOutRate);
 
-    long wcet = 0L;
+    long wcet = 1L;
     if (mapping != null) {
       final ComponentInstance operator = this.mapping.getSimpleMapping(userSpecialActor);
       final MemoryCopySpeedValue memTimings = this.scenario.getTimings().getMemTimings().get(operator.getComponent());
