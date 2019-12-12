@@ -477,10 +477,12 @@ public class PiMMHelper {
   }
 
   /**
-   * Check if periods on actors are consistent.
+   * Check if periods on actors are consistent. Set the graph period if some actors are periodic.
    *
    * @param graphBRV
    *          Repetition Vector as a map.
+   * @throws PreesmRuntimeException
+   *           If several actors define different graph periods.
    */
   public static void checkPeriodicity(final PiGraph piGraph, final Map<AbstractVertex, Long> graphBRV) {
 
