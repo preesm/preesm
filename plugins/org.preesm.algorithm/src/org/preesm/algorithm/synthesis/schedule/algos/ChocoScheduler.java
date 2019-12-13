@@ -39,8 +39,8 @@ import org.preesm.model.slam.Design;
 public class ChocoScheduler extends PeriodicScheduler {
 
   public static final long    maxSolution  = 100L;
-  public static final long    maxSolveTime = 1800000L; // 30min
-  public static final boolean verbose      = false;
+  public static final long    maxSolveTime = 3600000L; // 1 hour (in ms)
+  public static final boolean verbose      = true;
 
   @Override
   protected SynthesisResult exec(PiGraph piGraph, Design slamDesign, Scenario scenario) {
@@ -141,6 +141,11 @@ public class ChocoScheduler extends PeriodicScheduler {
       }
     }
 
+    if (verbose) {
+      solver.setOut(System.err);
+      solver.printStatistics();
+    }
+
     long solutionCount = solver.getSolutionCount();
 
     if (solutionCount > 0) {
@@ -189,10 +194,6 @@ public class ChocoScheduler extends PeriodicScheduler {
       PreesmLogger.getLogger().info("Time- " + Math.round(time / 1e6) + " ms.");
       throw new PreesmSchedulingException("The solver has proved the problem has no solution");
     }
-    if (verbose) {
-      // solver.setOut(System.err);
-      solver.printStatistics();
-    }
 
     // recopy task in schedule
     for (int j = 0; j < nbCores; j++) {
@@ -218,8 +219,9 @@ public class ChocoScheduler extends PeriodicScheduler {
     protected final int          load;
     protected final int          ns;
     protected final int          xs;
-    protected int                st;    // will be set after sched
+    protected int                st;       // will be set after sched
     protected final Set<Integer> predId;
+    protected final Set<Integer> allPredId;
 
     protected final VertexAbstraction va;
 
@@ -229,6 +231,9 @@ public class ChocoScheduler extends PeriodicScheduler {
       this.ns = ns;
       this.xs = xs;
       this.predId = predId;
+
+      // set at the end, by transitive closure
+      this.allPredId = new HashSet<>();
 
       this.va = va;
     }
@@ -265,7 +270,19 @@ public class ChocoScheduler extends PeriodicScheduler {
       for (EdgeAbstraction ea : absGraph.incomingEdgesOf(va)) {
         VertexAbstraction oppositeva = absGraph.getEdgeSource(ea);
         tva.predId.add(vaTOtask.get(oppositeva).id);
+        tva.allPredId.add(vaTOtask.get(oppositeva).id);
         updateNbVisits(absGraph, oppositeva, true, toVisit);
+      }
+    }
+    // set allPredId
+    toVisit = new LinkedList<>(firstNodes);
+    while (!toVisit.isEmpty()) {
+      VertexAbstraction va = toVisit.remove(0);
+      Task tva = vaTOtask.get(va);
+      for (EdgeAbstraction ea : absGraph.outgoingEdgesOf(va)) {
+        VertexAbstraction oppositeva = absGraph.getEdgeTarget(ea);
+        vaTOtask.get(oppositeva).allPredId.addAll(tva.predId);
+        updateNbVisits(absGraph, oppositeva, false, toVisit);
       }
     }
 

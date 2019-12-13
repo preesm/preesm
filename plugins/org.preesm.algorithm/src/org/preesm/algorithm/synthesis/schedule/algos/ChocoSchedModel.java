@@ -2,10 +2,12 @@ package org.preesm.algorithm.synthesis.schedule.algos;
 
 import java.util.Arrays;
 import java.util.SortedMap;
+import java.util.logging.Level;
 import org.chocosolver.solver.Model;
 import org.chocosolver.solver.variables.BoolVar;
 import org.chocosolver.solver.variables.IntVar;
 import org.preesm.algorithm.synthesis.schedule.algos.ChocoScheduler.Task;
+import org.preesm.commons.logger.PreesmLogger;
 
 /**
  * Basic scheduling model for Choco solver.
@@ -84,6 +86,8 @@ public class ChocoSchedModel {
       model.arithm(finishTimeVars[t.id], "=", startTimeVars[t.id], "+", t.load).post();
     }
 
+    long removedComputationMax = 0;
+
     // all other constraints
     for (Task t : tasks.values()) {
 
@@ -98,17 +102,43 @@ public class ChocoSchedModel {
 
       // no overlapping if on same core
       for (Task tt : tasks.values()) {
-        // two tasks half overlapping
-        model.arithm(startTimeVars[t.id], "<", finishTimeVars[tt.id]).reifyWith(overlapVars[t.id][tt.id]);
 
-        if (t.id == tt.id) {
+        model.addClauseFalse(oversameSymVars[t.id][tt.id]);
+
+        // if in the list of all precedences, we already know that there will be no overlap
+        if ((t.id == tt.id) || (t.id < tt.id && tt.allPredId.contains(t.id))
+            || (tt.id < t.id && t.allPredId.contains(tt.id))) {
           for (int i = 0; i < nbCores; i++) {
             samecoreVars[t.id][tt.id][i] = model.boolVar(false);
             // samecoreVars[t.id][tt.id][i].post();
+            removedComputationMax++;
           }
           model.addClauseFalse(samecoreSymVars[t.id][tt.id]);
           model.addClauseFalse(overlapSymVars[t.id][tt.id]);
+
+          model.addClauseFalse(overlapVars[t.id][tt.id]);
+          model.addClauseFalse(oversameSymVars[t.id][tt.id]);
+
+          // we do it for the opposite if different
+          if (t.id != tt.id) {
+            for (int i = 0; i < nbCores; i++) {
+              samecoreVars[tt.id][t.id][i] = model.boolVar(false);
+              // samecoreVars[t.id][tt.id][i].post();
+              removedComputationMax++;
+            }
+
+            model.addClauseFalse(samecoreSymVars[tt.id][t.id]);
+            model.addClauseFalse(overlapSymVars[tt.id][t.id]);
+
+            model.addClauseFalse(overlapVars[tt.id][t.id]);
+            model.addClauseFalse(oversameSymVars[tt.id][t.id]);
+          }
+
+          continue;
         }
+
+        // two tasks half overlapping
+        model.arithm(startTimeVars[t.id], "<", finishTimeVars[tt.id]).reifyWith(overlapVars[t.id][tt.id]);
 
         if (t.id < tt.id) {
           // check the task overlapping
@@ -133,7 +163,6 @@ public class ChocoSchedModel {
 
         model.addClausesBoolAndEqVar(samecoreSymVars[t.id][tt.id], overlapSymVars[t.id][tt.id],
             oversameSymVars[t.id][tt.id]);
-        model.addClauseFalse(oversameSymVars[t.id][tt.id]);
       }
     }
 
@@ -143,6 +172,11 @@ public class ChocoSchedModel {
       model.max(varLatency, finishTimeVars).post();
       model.setObjective(Model.MINIMIZE, varLatency);
     }
+
+    long totalComputationMax = nbTasks * (long) nbTasks * nbCores;
+    long percentageRemoved = (100 * removedComputationMax / totalComputationMax);
+
+    PreesmLogger.getLogger().log(Level.INFO, "Redundant constraints removed from model: " + percentageRemoved + " %");
 
     return model;
   }
