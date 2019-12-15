@@ -54,16 +54,24 @@ public class ChocoSchedModel {
   protected Model generateModel() {
     // other transient variables but we don't care of their values
     BoolVar[][] mappingT = model.boolVarMatrix("c", nbCores, nbTasks);
-
-    BoolVar[][] overlapVars = model.boolVarMatrix("o", nbTasks, nbTasks);
-    BoolVar[][] overlapSymVars = model.boolVarMatrix("oo", nbTasks, nbTasks);
-
-    BoolVar[][][] samecoreVars = new BoolVar[nbTasks][nbTasks][nbCores];
-    BoolVar[][] samecoreSymVars = model.boolVarMatrix("i", nbTasks, nbTasks);
-
-    BoolVar[][] oversameSymVars = model.boolVarMatrix("oi", nbTasks, nbTasks);
-
     IntVar[] finishTimeVars = new IntVar[nbTasks];
+
+    // separate allocation of boolVars is faster
+    BoolVar[][][] samecoreVars = new BoolVar[nbTasks][nbTasks][nbCores];
+    // BoolVar[][][] samecoreVars = new BoolVar[nbTasks][][];
+    // for (int it = 0; it < nbTasks; it++) {
+    // samecoreVars[it] = model.boolVarMatrix("sc", nbTasks, nbCores);
+    // }
+
+    BoolVar[][] overlapVars = new BoolVar[nbTasks][nbTasks];
+    BoolVar[][] overlapSymVars = new BoolVar[nbTasks][nbTasks];
+    BoolVar[][] samecoreSymVars = new BoolVar[nbTasks][nbTasks];
+    BoolVar[][] oversameSymVars = new BoolVar[nbTasks][nbTasks];
+
+    // BoolVar[][] overlapVars = model.boolVarMatrix("o", nbTasks, nbTasks);
+    // BoolVar[][] overlapSymVars = model.boolVarMatrix("os", nbTasks, nbTasks);
+    // BoolVar[][] samecoreSymVars = model.boolVarMatrix("scs", nbTasks, nbTasks);
+    // BoolVar[][] oversameSymVars = model.boolVarMatrix("oss", nbTasks, nbTasks);
 
     // break symmetries in cores
     model.addClauseTrue(mapping[0][0]);
@@ -75,7 +83,14 @@ public class ChocoSchedModel {
 
     for (int ic = 1; ic < nbCores; ic++) {
       for (int it = ic; it < nbTasks; it++) {
-        model.sum(Arrays.copyOfRange(mappingT[ic - 1], 0, it), ">=", mappingT[ic][it]);
+        // model.sum(Arrays.copyOfRange(mappingT[ic - 1], 0, it), ">=", mappingT[ic][it]).post();
+        model.addClausesSumBoolArrayGreaterEqVar(Arrays.copyOfRange(mappingT[ic - 1], 0, it), mappingT[ic][it]);
+      }
+      // all cores must be used at least once if less than tasks
+      // core 0 is always used according to the first constraint
+      if (nbCores <= nbTasks) {
+        // model.sum(mappingT[ic], ">=", 1).post();
+        model.addClausesSumBoolArrayGreaterEqVar(mappingT[ic], model.boolVar(true));
       }
     }
 
@@ -103,66 +118,78 @@ public class ChocoSchedModel {
       // no overlapping if on same core
       for (Task tt : tasks.values()) {
 
-        model.addClauseFalse(oversameSymVars[t.id][tt.id]);
+        // is useful if Choco allocation of boolVar matrices, otherwise no variable
+        // model.addClauseFalse(oversameSymVars[t.id][tt.id]);
 
         // if in the list of all precedences, we already know that there will be no overlap
         if ((t.id == tt.id) || (t.id < tt.id && tt.allPredId.contains(t.id))
             || (tt.id < t.id && t.allPredId.contains(tt.id))) {
           for (int i = 0; i < nbCores; i++) {
-            samecoreVars[t.id][tt.id][i] = model.boolVar(false);
-            // samecoreVars[t.id][tt.id][i].post();
+            // is useful if Choco allocation of boolVar matrices, otherwise no variable
+            // model.addClauseFalse(samecoreVars[t.id][tt.id][i]);
             removedComputationMax++;
           }
-          model.addClauseFalse(samecoreSymVars[t.id][tt.id]);
-          model.addClauseFalse(overlapSymVars[t.id][tt.id]);
-
-          model.addClauseFalse(overlapVars[t.id][tt.id]);
-          model.addClauseFalse(oversameSymVars[t.id][tt.id]);
+          // is useful if Choco allocation of boolVar matrices, otherwise no variable
+          // model.addClauseFalse(samecoreSymVars[t.id][tt.id]);
+          // model.addClauseFalse(overlapSymVars[t.id][tt.id]);
+          // model.addClauseFalse(overlapVars[t.id][tt.id]);
 
           // we do it for the opposite if different
           if (t.id != tt.id) {
             for (int i = 0; i < nbCores; i++) {
-              samecoreVars[tt.id][t.id][i] = model.boolVar(false);
-              // samecoreVars[t.id][tt.id][i].post();
+              // is useful if Choco allocation of boolVar matrices, otherwise no variable
+              // model.addClauseFalse(samecoreVars[tt.id][t.id][i]);
               removedComputationMax++;
             }
 
-            model.addClauseFalse(samecoreSymVars[tt.id][t.id]);
-            model.addClauseFalse(overlapSymVars[tt.id][t.id]);
-
-            model.addClauseFalse(overlapVars[tt.id][t.id]);
-            model.addClauseFalse(oversameSymVars[tt.id][t.id]);
+            // is useful if Choco allocation of boolVar matrices, otherwise no variable
+            // model.addClauseFalse(samecoreSymVars[tt.id][t.id]);
+            // model.addClauseFalse(overlapSymVars[tt.id][t.id]);
+            // model.addClauseFalse(overlapVars[tt.id][t.id]);
           }
 
           continue;
         }
 
+        // is useful if NOT Choco allocation of boolVar matrices
+        overlapVars[tt.id][t.id] = model.boolVar();
+        overlapVars[t.id][tt.id] = model.boolVar();
+
         // two tasks half overlapping
         model.arithm(startTimeVars[t.id], "<", finishTimeVars[tt.id]).reifyWith(overlapVars[t.id][tt.id]);
 
         if (t.id < tt.id) {
+
+          // is useful if NOT Choco allocation of boolVar matrices
+          oversameSymVars[t.id][tt.id] = model.boolVar(false);
+          samecoreSymVars[t.id][tt.id] = model.boolVar();
+          overlapSymVars[t.id][tt.id] = model.boolVar();
+
           // check the task overlapping
           model.addClausesBoolAndEqVar(overlapVars[t.id][tt.id], overlapVars[tt.id][t.id], overlapSymVars[t.id][tt.id]);
           // symmetry of overllaping tasks
-          model.addClausesBoolEq(overlapSymVars[t.id][tt.id], overlapSymVars[tt.id][t.id]);
+          // model.addClausesBoolEq(overlapSymVars[t.id][tt.id], overlapSymVars[tt.id][t.id]);
           // symmetry of two tasks on same cores
-          model.addClausesBoolEq(samecoreSymVars[t.id][tt.id], samecoreSymVars[tt.id][t.id]);
+          // model.addClausesBoolEq(samecoreSymVars[t.id][tt.id], samecoreSymVars[tt.id][t.id]);
           for (int i = 0; i < nbCores; i++) {
+            // is useful if NOT Choco allocation of boolVar matrices
             samecoreVars[t.id][tt.id][i] = model.boolVar();
-            // samecoreVars[t.id][tt.id][i].post();
-            samecoreVars[tt.id][t.id][i] = model.boolVar();
-            // samecoreVars[tt.id][t.id][i].post();
             // are two tasks on the core
             model.addClausesBoolAndEqVar(mapping[t.id][i], mapping[tt.id][i], samecoreVars[t.id][tt.id][i]);
             // symmetry of the line just above
-            model.addClausesBoolEq(samecoreVars[t.id][tt.id][i], samecoreVars[tt.id][t.id][i]);
+            // model.addClausesBoolEq(samecoreVars[t.id][tt.id][i], samecoreVars[tt.id][t.id][i]);
+
           }
           // are two tasks on the same core
           model.addClausesBoolOrArrayEqVar(samecoreVars[t.id][tt.id], samecoreSymVars[t.id][tt.id]);
+
+          model.addClausesBoolAndEqVar(samecoreSymVars[t.id][tt.id], overlapSymVars[t.id][tt.id],
+              oversameSymVars[t.id][tt.id]);
         }
 
-        model.addClausesBoolAndEqVar(samecoreSymVars[t.id][tt.id], overlapSymVars[t.id][tt.id],
-            oversameSymVars[t.id][tt.id]);
+        // is useful if Choco allocation of boolVar matrices
+        // model.addClausesBoolAndEqVar(samecoreSymVars[t.id][tt.id], overlapSymVars[t.id][tt.id],
+        // oversameSymVars[t.id][tt.id]);
       }
     }
 
