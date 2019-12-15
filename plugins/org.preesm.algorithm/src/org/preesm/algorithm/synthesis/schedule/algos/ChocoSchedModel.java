@@ -151,14 +151,15 @@ public class ChocoSchedModel {
           continue;
         }
 
-        // is useful if NOT Choco allocation of boolVar matrices
-        overlapVars[tt.id][t.id] = model.boolVar();
-        overlapVars[t.id][tt.id] = model.boolVar();
-
-        // two tasks half overlapping
-        model.arithm(startTimeVars[t.id], "<", finishTimeVars[tt.id]).reifyWith(overlapVars[t.id][tt.id]);
-
         if (t.id < tt.id) {
+
+          // is useful if NOT Choco allocation of boolVar matrices
+          overlapVars[tt.id][t.id] = model.boolVar();
+          overlapVars[t.id][tt.id] = model.boolVar();
+
+          // two tasks half overlapping
+          model.arithm(startTimeVars[t.id], "<", finishTimeVars[tt.id]).reifyWith(overlapVars[t.id][tt.id]);
+          model.arithm(startTimeVars[tt.id], "<", finishTimeVars[t.id]).reifyWith(overlapVars[tt.id][t.id]);
 
           // is useful if NOT Choco allocation of boolVar matrices
           oversameSymVars[t.id][tt.id] = model.boolVar(false);
