@@ -160,11 +160,13 @@ public class PeriodicScheduler extends AbstractScheduler {
     long graphPeriod = piGraph.getPeriod().evaluate();
     PreesmLogger.getLogger().log(Level.INFO, "Graph period is: " + graphPeriod);
 
+    final long time = System.nanoTime();
+
     this.piGraph = piGraph;
     this.slamDesign = slamDesign;
     this.scenario = scenario;
     // TODO test if AgnosticTimer or SimplerTimer (with special actors time) is better
-    this.st = new AgnosticTimer(scenario);
+    this.st = new AgnosticTimer(scenario, 1L);
 
     nbFiringsAllocated = 0;
     // initializes component operators and related attributes
@@ -221,13 +223,17 @@ public class PeriodicScheduler extends AbstractScheduler {
     // schedule all nodes in absGraph
     schedule();
 
-    // get the end time
+    // get the implementation end time
     long maxImpl = 0;
     for (CoreAbstraction ca : cores) {
       if (ca.implTime > maxImpl) {
         maxImpl = ca.implTime;
       }
     }
+
+    long duration = System.nanoTime() - time;
+    PreesmLogger.getLogger().info("Time+ " + Math.round(duration / 1e6) + " ms.");
+
     PreesmLogger.getLogger().log(Level.INFO,
         "Periodic scheduler found an implementation time of: " + maxImpl + " (not considering communications)");
 

@@ -14,15 +14,20 @@ public class AgnosticTimer extends AbstractTimer {
 
   protected final Scenario scenario;
 
+  protected final long defaultTime;
+
   /**
    * Compute WCET of actors, based on the scenario information.
    * 
    * @param scenario
    *          Scenario of the application.
+   * @param defaultTime
+   *          Default time of an actor if not stored in scenario nor computed.
    */
-  public AgnosticTimer(final Scenario scenario) {
+  public AgnosticTimer(final Scenario scenario, final long defaultTime) {
     super();
     this.scenario = scenario;
+    this.defaultTime = defaultTime;
   }
 
   @Override
@@ -39,7 +44,7 @@ public class AgnosticTimer extends AbstractTimer {
 
   @Override
   protected long defaultTime() {
-    return 1L;
+    return defaultTime;
   }
 
 }

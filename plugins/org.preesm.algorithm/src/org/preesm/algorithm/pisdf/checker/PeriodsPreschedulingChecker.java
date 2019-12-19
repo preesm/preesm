@@ -132,6 +132,8 @@ public class PeriodsPreschedulingChecker extends AbstractTaskImplementation {
     int nbCore = architecture.getOperatorComponents().get(0).getInstances().size();
     PreesmLogger.getLogger().log(Level.INFO, "Found " + nbCore + " cores.");
 
+    final long time = System.nanoTime();
+
     final String rateStr = parameters.get(PeriodsPreschedulingChecker.SELECTION_RATE);
     int rate = 100;
     try {
@@ -256,6 +258,9 @@ public class PeriodsPreschedulingChecker extends AbstractTaskImplementation {
     // 4. for each selected periodic node for nbff:
     performAllNBF(actorsNBFF, periodicActors, true, heurFifoBreaks.absGraph, heurFifoBreaks.breakingFifosAbs, wcets,
         heurFifoBreaks.minCycleBrv, nbCore);
+
+    long duration = System.nanoTime() - time;
+    PreesmLogger.getLogger().info("Time+ " + Math.round(duration / 1e6) + " ms.");
 
     // 5. greetings to the user
     PreesmLogger.getLogger().log(Level.INFO, "Periodic prescheduling check succeeded: valid schedule *might* exist!");

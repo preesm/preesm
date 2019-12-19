@@ -64,7 +64,7 @@ public class SimpleTimer extends AgnosticTimer {
    *          May be null, if so returned time is wcet.
    */
   public SimpleTimer(final Scenario scenario, final Mapping mapping) {
-    super(scenario);
+    super(scenario, 1L);
     this.mapping = mapping;
   }
 
@@ -117,11 +117,6 @@ public class SimpleTimer extends AgnosticTimer {
   @Override
   protected long computeRoundBufferActorTiming(final RoundBufferActor roundbufferActor) {
     return computeSpecialActorTiming(roundbufferActor);
-  }
-
-  @Override
-  protected long defaultTime() {
-    return 1L;
   }
 
 }

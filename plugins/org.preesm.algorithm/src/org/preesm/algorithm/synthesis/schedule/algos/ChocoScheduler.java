@@ -59,7 +59,7 @@ public class ChocoScheduler extends PeriodicScheduler {
     this.slamDesign = slamDesign;
     this.scenario = scenario;
     // TODO test if AgnosticTimer or SimplerTimer (with special actors time) is better
-    this.st = new AgnosticTimer(scenario);
+    this.st = new AgnosticTimer(scenario, 1L);
 
     nbFiringsAllocated = 0;
     // initializes component operators and related attributes
@@ -128,7 +128,7 @@ public class ChocoScheduler extends PeriodicScheduler {
 
     // use ParallelPortfolio?
     Solver solver = schedModel.getSolver();
-    solver.limitTime(maxSolveTime);
+    // solver.limitTime(maxSolveTime);
     solver.limitSolution(maxSolution);
     long time = System.nanoTime();
 
@@ -178,6 +178,8 @@ public class ChocoScheduler extends PeriodicScheduler {
             CoreAbstraction ca = cores.get(j);
             // update mapping directly
             resultMapping.getMappings().put(va.aa, ECollections.singletonEList(ca.ci));
+
+            System.err.println("Task " + va.aa.getName() + " mapped on core " + j + " at time " + start);
             // update schedule
             insertTaskInSchedule(t, coreSchedules.get(j));
           }
