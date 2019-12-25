@@ -540,7 +540,7 @@ public class ScheduleOrderManager {
     affectedCIs.addAll(mapping.getMapping(comStart));
     affectedCIs.addAll(mapping.getMapping(comEnd));
     if (affectedCIs.size() != 1) {
-      throw new PreesmRuntimeException("Cannot insert communications for actors mapped on several operators");
+      throw new PreesmRuntimeException("Cannot insert communications for actors mapped on several or zero operators");
     }
 
     for (ComponentInstance ci : affectedCIs) {

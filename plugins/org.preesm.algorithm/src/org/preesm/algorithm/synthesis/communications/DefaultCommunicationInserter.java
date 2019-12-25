@@ -189,10 +189,10 @@ public class DefaultCommunicationInserter implements ICommunicationInserter {
       receiveEnd.setSourceSendStart(sendStart);
 
       // -- Map communication nodes
-      mapping.getMappings().put(sendStart, ECollections.newBasicEList(sourceOperator));
-      mapping.getMappings().put(sendEnd, ECollections.newBasicEList(sourceOperator));
-      mapping.getMappings().put(receiveStart, ECollections.newBasicEList(targetOperator));
-      mapping.getMappings().put(receiveEnd, ECollections.newBasicEList(targetOperator));
+      mapping.getMappings().put(sendStart, ECollections.singletonEList(sourceOperator));
+      mapping.getMappings().put(sendEnd, ECollections.singletonEList(sourceOperator));
+      mapping.getMappings().put(receiveStart, ECollections.singletonEList(targetOperator));
+      mapping.getMappings().put(receiveEnd, ECollections.singletonEList(targetOperator));
 
       // -- insert
       insertSend(scheduleOrderManager, mapping, rstep, route, fifo, sendStart, sendEnd);
