@@ -40,6 +40,7 @@ package org.preesm.algorithm.mapper.ui;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Container;
 import java.awt.Frame;
 import java.awt.LinearGradientPaint;
 import java.awt.Paint;
@@ -49,15 +50,19 @@ import java.net.URL;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
+import java.util.logging.Level;
 import javax.swing.JEditorPane;
 import javax.swing.JFrame;
 import javax.swing.JMenuItem;
+import javax.swing.JRootPane;
 import javax.swing.WindowConstants;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.awt.SWT_AWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Button;
+import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.forms.IManagedForm;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
@@ -81,6 +86,7 @@ import org.preesm.algorithm.mapper.gantt.GanttData;
 import org.preesm.algorithm.mapper.gantt.GanttTask;
 import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.preesm.commons.files.PreesmResourcesHelper;
+import org.preesm.commons.logger.PreesmLogger;
 
 /**
  * Gantt plotter of a mapperdagvertex using JFreeChart.
@@ -203,7 +209,7 @@ public class GanttPlotter {
    * @param managedForm
    *          the parent control, may be null (then opens a new window)
    */
-  public static void plotDeployment(final GanttData ganttData, final IManagedForm managedForm) {
+  public static synchronized void plotDeployment(final GanttData ganttData, final IManagedForm managedForm) {
 
     // JChart init
     final Map<String, Color> idTOcolor = new TreeMap<>();
@@ -246,20 +252,41 @@ public class GanttPlotter {
       final FillLayout layout = new FillLayout();
       form.getBody().setLayout(layout);
 
-      // DOES not work because of a GUI/thread bug which is not our responsability
-      // final Composite composite = new Composite(delegateDisplay, SWT.EMBEDDED | SWT.FILL);
-      // frame = SWT_AWT.new_Frame(composite);
+      final Composite composite = new Composite(form.getBody(), SWT.EMBEDDED | SWT.FILL);
+      Frame frame = null;
+      try {
+        // may not work because of a libswt-awt-gtk4928+.so bug which is not our responsability
+        // another bug prevents to generate the exception correctly so this test is actually useless
+        // until the second bug is not fixed (see bug reports XXX)
+        // TODO this bug could appear in other parts of Preesm using JChart, to check
+        frame = SWT_AWT.new_Frame(composite);
+      } catch (UnsatisfiedLinkError e) {
+        // we catch this error since we can recover from it
+        PreesmLogger.getLogger().log(Level.WARNING,
+            "An error occured while loading org.eclipse.swt.awt.SWT_AWT class "
+                + "or its associated shared object libswt-awt-gtk-4928+.so, "
+                + "thus the Gantt diagram is not embedded in Eclipse. See error:\n" + e.getMessage());
+      }
 
-      // TODO this bug could appear in other parts of Preesm using JChart, to check
+      if (frame != null) {
+        // plot inside the window
+        JRootPane root = new JRootPane();
+        Container awtContainer = root.getContentPane();
+        awtContainer.add(cp);
+        frame.add(root);
+        plotFrameCP(frame, cp);
 
-      final FormToolkit toolkit = managedForm.getToolkit();
-      final Button externalDisplayButton = toolkit.createButton(form.getBody(),
-          "Click to open the Gantt diagram in a new window", SWT.PUSH | SWT.CENTER);
-      externalDisplayButton
-          .setToolTipText("We must do this because of a bug on Linux due to GTK/Eclipse most probably ...");
+      } else {
+        // plot in a new window if user clicks on the button
+        final FormToolkit toolkit = managedForm.getToolkit();
+        final Button externalDisplayButton = toolkit.createButton(form.getBody(),
+            "Click to open the Gantt diagram in a new window", SWT.PUSH | SWT.CENTER);
+        externalDisplayButton
+            .setToolTipText("We must do this because of a bug on Linux due to GTK/Eclipse most probably ...");
 
-      externalDisplayButton.addSelectionListener(new SelectionAdapterPlottingCP(cp));
+        externalDisplayButton.addSelectionListener(new SelectionAdapterPlottingCP(cp));
 
+      }
     }
 
   }
