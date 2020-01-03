@@ -256,8 +256,10 @@ public class GanttPlotter {
       Frame frame = null;
       try {
         // may not work because of a libswt-awt-gtk4928+.so bug which is not our responsability
+        // see following bug report XXX
         // another bug prevents to generate the exception correctly so this test is actually useless
-        // until the second bug is not fixed (see bug reports XXX)
+        // until the second bug is not fixed, see following bug report
+        // https://bugs.eclipse.org/bugs/show_bug.cgi?id=558681
         // TODO this bug could appear in other parts of Preesm using JChart, to check
         frame = SWT_AWT.new_Frame(composite);
       } catch (UnsatisfiedLinkError e) {

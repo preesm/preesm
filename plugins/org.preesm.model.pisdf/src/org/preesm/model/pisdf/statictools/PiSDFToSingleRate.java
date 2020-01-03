@@ -71,10 +71,12 @@ import org.preesm.model.pisdf.EndActor;
 import org.preesm.model.pisdf.ExecutableActor;
 import org.preesm.model.pisdf.Expression;
 import org.preesm.model.pisdf.Fifo;
+import org.preesm.model.pisdf.ForkActor;
 import org.preesm.model.pisdf.FunctionPrototype;
 import org.preesm.model.pisdf.ISetter;
 import org.preesm.model.pisdf.InitActor;
 import org.preesm.model.pisdf.InterfaceActor;
+import org.preesm.model.pisdf.JoinActor;
 import org.preesm.model.pisdf.NonExecutableActor;
 import org.preesm.model.pisdf.Parameter;
 import org.preesm.model.pisdf.PiGraph;
@@ -172,12 +174,26 @@ public class PiSDFToSingleRate extends PiMMSwitch<Boolean> {
           }
         }
       }
-      for (DataInputPort p : toRemoveIn) {
-        aa.getDataInputPorts().remove(p);
+      if ((aa instanceof JoinActor || aa instanceof RoundBufferActor)
+          && toRemoveIn.size() < aa.getDataInputPorts().size()) {
+        for (DataInputPort p : toRemoveIn) {
+          aa.getDataInputPorts().remove(p);
+        }
+      } else if (!toRemoveIn.isEmpty()) {
+        throw new PreesmRuntimeException("After single rate transformation, actor <" + aa.getVertexPath()
+            + "> has input ports without fifo, this is not allowed except for special actors if not all ports.");
       }
-      for (DataOutputPort p : toRemoveOut) {
-        aa.getDataOutputPorts().remove(p);
+
+      if ((aa instanceof ForkActor || aa instanceof BroadcastActor)
+          && toRemoveOut.size() < aa.getDataOutputPorts().size()) {
+        for (DataOutputPort p : toRemoveOut) {
+          aa.getDataOutputPorts().remove(p);
+        }
+      } else if (!toRemoveOut.isEmpty()) {
+        throw new PreesmRuntimeException("After single rate transformation, actor <" + aa.getVertexPath()
+            + "> has output ports without fifo, this is not allowed except for special actors if not all ports.");
       }
+
     }
   }
 
