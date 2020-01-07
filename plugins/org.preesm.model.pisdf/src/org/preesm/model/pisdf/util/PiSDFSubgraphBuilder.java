@@ -24,42 +24,71 @@ import org.preesm.model.pisdf.check.PiGraphConsistenceChecker;
 import org.preesm.model.pisdf.factory.PiMMUserFactory;
 
 /**
- * @author dgageot
+ * This class is used to build a subgraph from given list of actors.
  * 
- *         Build a subgraph from given actors.
- *
+ * @author dgageot
  */
 public class PiSDFSubgraphBuilder extends PiMMSwitch<Boolean> {
 
+  /**
+   * Actors that compose the subgraph.
+   */
   private final List<AbstractActor> subGraphActors;
 
+  /**
+   * Parent graph of the subgraph.
+   */
   private final PiGraph parentGraph;
 
+  /**
+   * Subgraph builded with this class.
+   */
   private final PiGraph subGraph;
 
+  /**
+   * List of visited Fifo in order to explore the PiGraph.
+   */
   private List<Fifo> visitedFifo;
 
+  /**
+   * Number of input interface of builded subgraph.
+   */
   private int nbInputInterface;
 
+  /**
+   * Number of output interface of builded subgraph.
+   */
   private int nbOutputInterface;
 
+  /**
+   * Number of input configuration interface of builded subgraph.
+   */
   private int nbInputCfgInterface;
 
+  /**
+   * Repetition vector of input graph.
+   */
   private final Map<AbstractVertex, Long> repetitionVector;
 
+  /**
+   * Repetition count of the subgraph.
+   */
   private final long subGraphRepetition;
 
   /**
+   * Builds a PiSDFSubgraphBuilder object.
+   * 
    * @param parentGraph
-   *          parent graph
+   *          The parent graph.
    * @param subGraphActors
-   *          subgraph actors
+   *          The list of actors that will compose the subgraph.
    * @param subGraphName
-   *          subgraph name
+   *          The name of the subgraph.
    */
   public PiSDFSubgraphBuilder(PiGraph parentGraph, List<AbstractActor> subGraphActors, String subGraphName) {
     this.parentGraph = parentGraph;
     this.subGraphActors = new LinkedList<>(subGraphActors);
+    // Create a PiGraph for the subgraph
     this.subGraph = PiMMUserFactory.instance.createPiGraph();
     this.subGraph.setName(subGraphName);
     this.subGraph.setUrl(this.parentGraph.getUrl() + "/" + subGraphName + ".pi");
@@ -67,12 +96,16 @@ public class PiSDFSubgraphBuilder extends PiMMSwitch<Boolean> {
     this.nbInputInterface = 0;
     this.nbOutputInterface = 0;
     this.nbInputCfgInterface = 0;
-    this.repetitionVector = PiBRV.compute(parentGraph, BRVMethod.TOPOLOGY);
+    // Compute BRV for the parent graph
+    this.repetitionVector = PiBRV.compute(parentGraph, BRVMethod.LCM);
+    // Compute repetition count of the subgraph with great common divisor over all subgraph actors repetition counts
     this.subGraphRepetition = MathFunctionsHelper.gcd(CollectionUtil.mapGetAll(repetitionVector, subGraphActors));
   }
 
   /**
-   * @return resulting subgraph
+   * Performs subgraph actors extraction from parent graph.
+   * 
+   * @return The resulting PiGraph with the desired subgraph.
    */
   public PiGraph build() {
     // Add subgraph to parent graph
