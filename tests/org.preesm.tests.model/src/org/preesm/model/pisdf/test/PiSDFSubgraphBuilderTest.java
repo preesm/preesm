@@ -110,6 +110,22 @@ public class PiSDFSubgraphBuilderTest {
     Assert.assertEquals(fifoAB.getDelay().getActor().getContainingPiGraph(), topGraph);
   }
 
+  @Test
+  public void testDataInputPortsOfSubGraph() {
+    Assert.assertEquals(subGraph.getDataInputPorts().size(), 1);
+    DataInputPort dipSubGraph = subGraph.getDataInputPorts().get(0);
+    Assert.assertTrue(dipSubGraph.getName().contains("in_0"));
+    Assert.assertEquals(dipSubGraph.getExpression().evaluate(), 2);
+  }
+
+  @Test
+  public void testDataOutputPortsOfSubGraph() {
+    Assert.assertEquals(subGraph.getDataOutputPorts().size(), 1);
+    DataOutputPort dopSubGraph = subGraph.getDataOutputPorts().get(0);
+    Assert.assertTrue(dopSubGraph.getName().contains("out_0"));
+    Assert.assertEquals(dopSubGraph.getExpression().evaluate(), 2);
+  }
+
   private PiGraph createChainedActorsPiGraph() {
     // Create the top graph
     PiGraph topGraph = PiMMUserFactory.instance.createPiGraph();
