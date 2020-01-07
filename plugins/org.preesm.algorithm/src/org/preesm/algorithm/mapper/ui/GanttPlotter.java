@@ -209,7 +209,7 @@ public class GanttPlotter {
    * @param managedForm
    *          the parent control, may be null (then opens a new window)
    */
-  public static synchronized void plotDeployment(final GanttData ganttData, final IManagedForm managedForm) {
+  public static void plotDeployment(final GanttData ganttData, final IManagedForm managedForm) {
 
     // JChart init
     final Map<String, Color> idTOcolor = new TreeMap<>();
@@ -256,18 +256,31 @@ public class GanttPlotter {
       Frame frame = null;
       try {
         // may not work because of a libswt-awt-gtk4928+.so bug which is not our responsability
-        // see following bug report XXX
-        // another bug prevents to generate the exception correctly so this test is actually useless
-        // until the second bug is not fixed, see following bug report
+        // see following bug report
+        // https://bugs.eclipse.org/bugs/show_bug.cgi?id=558874
+        // another bug prevents to generate the exception correctly, it has been fixed in latest swt
+        // see following bug report
         // https://bugs.eclipse.org/bugs/show_bug.cgi?id=558681
-        // TODO this bug could appear in other parts of Preesm using JChart, to check
+        // TODO this bug appears in other parts of Preesm using SWT_AWT:
+        // org/preesm/algorithm/mapper/ui/stats/PerformancePlotter.java
+        // (but we do not care since calling code is deprecated: Fast and PFast schedulers)
+        // org/preesm/algorithm/mapper/ui/BestCostPlotter.java
+        // (we care but not too much since it is not used with the new Synthesis)
         frame = SWT_AWT.new_Frame(composite);
       } catch (UnsatisfiedLinkError e) {
         // we catch this error since we can recover from it
-        PreesmLogger.getLogger().log(Level.WARNING,
+        // Level.WARNING may stop the workflow depending on options
+        // and as we are in a separate thread, events are not always well managed ...
+        // so we use Level.INFO instead
+        PreesmLogger.getLogger().log(Level.INFO,
             "An error occured while loading org.eclipse.swt.awt.SWT_AWT class "
                 + "or its associated shared object libswt-awt-gtk-4928+.so, "
                 + "thus the Gantt diagram is not embedded in Eclipse. See error:\n" + e.getMessage());
+        // the created composite cannot be used so we dispose it and force to reset layout
+        if (!composite.isDisposed()) {
+          composite.dispose();
+        }
+        form.getBody().layout(true, true);
       }
 
       if (frame != null) {
@@ -290,7 +303,6 @@ public class GanttPlotter {
 
       }
     }
-
   }
 
   private static void plotFrameCP(Frame frame, ChartPanel cp) {

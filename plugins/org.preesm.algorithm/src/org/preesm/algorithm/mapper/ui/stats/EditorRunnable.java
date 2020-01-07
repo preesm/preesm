@@ -39,6 +39,7 @@ package org.preesm.algorithm.mapper.ui.stats;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.IWorkbenchWindow;
+import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
 import org.preesm.commons.exceptions.PreesmRuntimeException;
 
@@ -72,7 +73,7 @@ public class EditorRunnable implements Runnable {
 
       try {
         page.openEditor(this.input, "org.ietr.preesm.plugin.mapper.plot.stats.StatEditor", false);
-      } catch (final Exception e) {
+      } catch (final PartInitException e) {
         throw new PreesmRuntimeException(e);
       }
     }
