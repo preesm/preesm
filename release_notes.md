@@ -16,6 +16,8 @@ PREESM Changelog
 *2019.11.28*
 
 ### New Feature
+* PiSDF:
+	* Hierarchy construction from a list of actors (PiSDFSubgraphBuilder)
 
 ### Changes
 * Graph period has been added to the PiGraph model and appears in the UI;
