@@ -14,4 +14,3 @@ Require-Bundle: org.junit;bundle-version="4.12.0",
 Export-Package: org.ietr.preesm.architecture.test,
  org.preesm.model.pisdf.test,
  org.preesm.model.slam.test
-Import-Package: org.eclipse.core.resources
