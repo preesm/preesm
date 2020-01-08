@@ -41,6 +41,7 @@ public class PiSDFSubgraphBuilderTest {
   private AbstractActor actorD;
   private Parameter     param;
   private final String  topGraphName = new String("topgraph");
+  private final String  subGraphName = new String("B_C");
 
   /**
    * Set-up the test environnement
@@ -57,11 +58,11 @@ public class PiSDFSubgraphBuilderTest {
     // Regroup the two reference in a list
     List<AbstractActor> subGraphActors = Arrays.asList(actorB, actorC);
     // Build a PiSDFSubgraphBuilder
-    PiSDFSubgraphBuilder subgraphBuilder = new PiSDFSubgraphBuilder(topGraph, subGraphActors, "B_C");
+    PiSDFSubgraphBuilder subgraphBuilder = new PiSDFSubgraphBuilder(topGraph, subGraphActors, subGraphName);
     // Process the transformation
     subgraphBuilder.build();
     // Keep a reference to the builded subgraph
-    this.subGraph = (PiGraph) topGraph.lookupAllVertex("B_C");
+    this.subGraph = (PiGraph) topGraph.lookupAllVertex(subGraphName);
   }
 
   /**
@@ -87,7 +88,7 @@ public class PiSDFSubgraphBuilderTest {
   @Test
   public void testNameOfSubGraph() {
     // Check if the subgraph is called "B_C"
-    Assert.assertEquals(subGraph.getName(), "B_C");
+    Assert.assertEquals(subGraph.getName(), subGraphName);
   }
 
   @Test
