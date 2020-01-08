@@ -16,7 +16,6 @@ import org.preesm.model.pisdf.DataInputPort;
 import org.preesm.model.pisdf.DataOutputInterface;
 import org.preesm.model.pisdf.DataOutputPort;
 import org.preesm.model.pisdf.Delay;
-import org.preesm.model.pisdf.DelayActor;
 import org.preesm.model.pisdf.Dependency;
 import org.preesm.model.pisdf.Fifo;
 import org.preesm.model.pisdf.Parameter;
@@ -34,13 +33,15 @@ import org.preesm.model.pisdf.util.PiSDFSubgraphBuilder;
  */
 public class PiSDFSubgraphBuilderTest {
 
-  public PiGraph       topGraph;
-  public PiGraph       subGraph;
-  public AbstractActor actorA;
-  public AbstractActor actorB;
-  public AbstractActor actorC;
-  public AbstractActor actorD;
-  public Parameter     param;
+  private PiGraph       topGraph;
+  private PiGraph       subGraph;
+  private AbstractActor actorA;
+  private AbstractActor actorB;
+  private AbstractActor actorC;
+  private AbstractActor actorD;
+  private Parameter     param;
+  private final String  topGraphName = new String("topgraph");
+  private final String  subGraphName = new String("B_C");
 
   /**
    * Set-up the test environnement
@@ -53,15 +54,15 @@ public class PiSDFSubgraphBuilderTest {
     this.actorB = (AbstractActor) topGraph.lookupAllVertex("B");
     this.actorC = (AbstractActor) topGraph.lookupAllVertex("C");
     this.actorD = (AbstractActor) topGraph.lookupAllVertex("D");
-    this.param = topGraph.lookupParameterGivenGraph("useless", "topgraph");
+    this.param = topGraph.lookupParameterGivenGraph("useless", topGraphName);
     // Regroup the two reference in a list
     List<AbstractActor> subGraphActors = Arrays.asList(actorB, actorC);
     // Build a PiSDFSubgraphBuilder
-    PiSDFSubgraphBuilder subgraphBuilder = new PiSDFSubgraphBuilder(topGraph, subGraphActors, "B_C");
+    PiSDFSubgraphBuilder subgraphBuilder = new PiSDFSubgraphBuilder(topGraph, subGraphActors, subGraphName);
     // Process the transformation
     subgraphBuilder.build();
     // Keep a reference to the builded subgraph
-    this.subGraph = (PiGraph) topGraph.lookupAllVertex("B_C");
+    this.subGraph = (PiGraph) topGraph.lookupAllVertex(subGraphName);
   }
 
   /**
@@ -87,7 +88,7 @@ public class PiSDFSubgraphBuilderTest {
   @Test
   public void testNameOfSubGraph() {
     // Check if the subgraph is called "B_C"
-    Assert.assertEquals(subGraph.getName(), "B_C");
+    Assert.assertEquals(subGraph.getName(), subGraphName);
   }
 
   @Test
@@ -227,15 +228,15 @@ public class PiSDFSubgraphBuilderTest {
   private PiGraph createChainedActorsPiGraph() {
     // Create the top graph
     PiGraph topGraph = PiMMUserFactory.instance.createPiGraph();
-    topGraph.setName("topgraph");
-    topGraph.setUrl("topgraph");
+    topGraph.setName(topGraphName);
+    topGraph.setUrl(topGraphName);
     // Create 4 actors
-    AbstractActor actorA = PiMMUserFactory.instance.createActor("A");
-    AbstractActor actorB = PiMMUserFactory.instance.createActor("B");
-    AbstractActor actorC = PiMMUserFactory.instance.createActor("C");
-    AbstractActor actorD = PiMMUserFactory.instance.createActor("D");
+    AbstractActor _actorA = PiMMUserFactory.instance.createActor("A");
+    AbstractActor _actorB = PiMMUserFactory.instance.createActor("B");
+    AbstractActor _actorC = PiMMUserFactory.instance.createActor("C");
+    AbstractActor _actorD = PiMMUserFactory.instance.createActor("D");
     // Create a list for the 4 actors to easily add them to the top graph
-    List<AbstractActor> actorsList = Arrays.asList(actorA, actorB, actorC, actorD);
+    List<AbstractActor> actorsList = Arrays.asList(_actorA, _actorB, _actorC, _actorD);
     // Add actors to the top graph
     for (AbstractActor actor : actorsList) {
       topGraph.addActor(actor);
@@ -248,12 +249,12 @@ public class PiSDFSubgraphBuilderTest {
     DataInputPort inputC = PiMMUserFactory.instance.createDataInputPort("in");
     DataInputPort inputD = PiMMUserFactory.instance.createDataInputPort("in");
     // Attach them to actors
-    actorA.getDataOutputPorts().add(outputA);
-    actorB.getDataOutputPorts().add(outputB);
-    actorC.getDataOutputPorts().add(outputC);
-    actorB.getDataInputPorts().add(inputB);
-    actorC.getDataInputPorts().add(inputC);
-    actorD.getDataInputPorts().add(inputD);
+    _actorA.getDataOutputPorts().add(outputA);
+    _actorB.getDataOutputPorts().add(outputB);
+    _actorC.getDataOutputPorts().add(outputC);
+    _actorB.getDataInputPorts().add(inputB);
+    _actorC.getDataInputPorts().add(inputC);
+    _actorD.getDataInputPorts().add(inputD);
     // Create fifos and form a chain such as A -> B -> C -> D
     Fifo fifoAB = PiMMUserFactory.instance.createFifo(outputA, inputB, "void");
     Fifo fifoBC = PiMMUserFactory.instance.createFifo(outputB, inputC, "void");
@@ -274,29 +275,23 @@ public class PiSDFSubgraphBuilderTest {
     inputD.setExpression(8);
     // Set delay to fifo AC
     Delay delayAC = PiMMUserFactory.instance.createDelay();
-    @SuppressWarnings("unused")
-    DelayActor delayActorAB = PiMMUserFactory.instance.createDelayActor(delayAC);
     delayAC.setExpression(16);
     fifoAB.setDelay(delayAC);
     topGraph.addDelay(delayAC);
     // Set delay to fifo BC
     Delay delayBC = PiMMUserFactory.instance.createDelay();
-    @SuppressWarnings("unused")
-    DelayActor delayActorBC = PiMMUserFactory.instance.createDelayActor(delayBC);
     delayBC.setExpression(2);
     fifoBC.setDelay(delayBC);
     topGraph.addDelay(delayBC);
     // Set delay to fifo CD
     Delay delayCD = PiMMUserFactory.instance.createDelay();
-    @SuppressWarnings("unused")
-    DelayActor delayActorCD = PiMMUserFactory.instance.createDelayActor(delayCD);
     delayCD.setExpression(4);
     fifoCD.setDelay(delayCD);
     topGraph.addDelay(delayCD);
     // Add a parameter to actor B
     Parameter parameter = PiMMUserFactory.instance.createParameter("useless", 2);
     ConfigInputPort configInputB = PiMMUserFactory.instance.createConfigInputPort();
-    actorB.getConfigInputPorts().add(configInputB);
+    _actorB.getConfigInputPorts().add(configInputB);
     Dependency dependency = PiMMUserFactory.instance.createDependency(parameter, configInputB);
     topGraph.addParameter(parameter);
     topGraph.addDependency(dependency);
