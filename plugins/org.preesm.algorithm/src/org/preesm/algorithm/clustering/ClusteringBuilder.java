@@ -35,7 +35,6 @@
  */
 package org.preesm.algorithm.clustering;
 
-import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -59,20 +58,14 @@ import org.preesm.commons.math.MathFunctionsHelper;
 import org.preesm.commons.model.PreesmCopyTracker;
 import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.AbstractVertex;
-import org.preesm.model.pisdf.ConfigInputInterface;
-import org.preesm.model.pisdf.ConfigInputPort;
-import org.preesm.model.pisdf.DataInputInterface;
-import org.preesm.model.pisdf.DataInputPort;
-import org.preesm.model.pisdf.DataOutputInterface;
-import org.preesm.model.pisdf.DataOutputPort;
 import org.preesm.model.pisdf.Delay;
-import org.preesm.model.pisdf.Dependency;
 import org.preesm.model.pisdf.Fifo;
 import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.pisdf.brv.BRVMethod;
 import org.preesm.model.pisdf.brv.PiBRV;
 import org.preesm.model.pisdf.check.PiGraphConsistenceChecker;
 import org.preesm.model.pisdf.factory.PiMMUserFactory;
+import org.preesm.model.pisdf.util.PiSDFSubgraphBuilder;
 import org.preesm.model.scenario.Scenario;
 import org.preesm.model.slam.Component;
 import org.preesm.model.slam.ComponentInstance;
@@ -297,7 +290,12 @@ public class ClusteringBuilder {
   private final Schedule clusterize(Pair<ScheduleType, List<AbstractActor>> actors) {
 
     // Build corresponding hierarchical actor
-    AbstractActor cluster = buildCluster(actors.getValue());
+    PiGraph cluster = new PiSDFSubgraphBuilder(pigraph, actors.getValue(), "cluster_" + nbCluster++).build();
+    cluster.setClusterValue(true);
+
+    for (ComponentInstance component : ClusteringHelper.getListOfCommonComponent(actors.getRight(), scenario)) {
+      scenario.getConstraints().addConstraint(component, cluster);
+    }
 
     // Build corresponding hierarchical schedule
     HierarchicalSchedule schedule = buildHierarchicalSchedule(actors);
@@ -345,7 +343,11 @@ public class ClusteringBuilder {
       repetitionVector = PiBRV.compute(pigraph, BRVMethod.LCM);
 
       // Build new cluster
-      PiGraph newCluster = buildCluster(childActors);
+      PiGraph newCluster = new PiSDFSubgraphBuilder(pigraph, childActors, "cluster_" + nbCluster++).build();
+      newCluster.setClusterValue(true);
+      for (ComponentInstance component : ClusteringHelper.getListOfCommonComponent(childActors, scenario)) {
+        scenario.getConstraints().addConstraint(component, newCluster);
+      }
       hierSchedule.setAttachedActor(newCluster);
     }
 
@@ -430,234 +432,6 @@ public class ClusteringBuilder {
       // Register in the schedule with original actor to be able to clusterize the non-copy graph
       schedule.getScheduleTree().add(outputSchedule);
     }
-  }
-
-  /**
-   * @param actors
-   *          list of actor to clusterize
-   * @return generated PiGraph connected with the parent graph
-   */
-  private final PiGraph buildCluster(List<AbstractActor> actors) {
-    // Create the cluster actor and set it name
-    PiGraph cluster = PiMMUserFactory.instance.createPiGraph();
-    cluster.setClusterValue(true);
-    cluster.setName("cluster_" + nbCluster++);
-    cluster.setUrl(pigraph.getUrl() + "/" + cluster.getName() + ".pi");
-
-    for (ComponentInstance component : ClusteringHelper.getListOfCommonComponent(actors, scenario)) {
-      scenario.getConstraints().addConstraint(component, cluster);
-    }
-
-    // Add cluster to the parent graph
-    pigraph.addActor(cluster);
-    for (AbstractActor actor : actors) {
-      cluster.addActor(actor);
-    }
-
-    // Export ports on cluster actor
-    manageClusteredActorsPort(actors, cluster);
-
-    return cluster;
-  }
-
-  private void manageClusteredActorsPort(List<AbstractActor> actors, PiGraph cluster) {
-
-    // Set to zero counters
-    int nbDataOutput = 0;
-    int nbDataInput = 0;
-    int nbConfigInput = 0;
-
-    // Compute clusterRepetition
-    long clusterRepetition = MathFunctionsHelper.gcd(CollectionUtil.mapGetAll(repetitionVector, actors));
-
-    for (AbstractActor actor : actors) {
-      // Retrieve actor repetition number
-      long actorRepetition = repetitionVector.get(actor);
-
-      // Attach DataInputPort on the cluster actor
-      for (DataInputPort dip : actor.getDataInputPorts()) {
-        nbDataInput = attachInputPort(actors, cluster, nbDataInput, clusterRepetition, actorRepetition, dip);
-      }
-
-      // Attach DataOutputPort on the cluster actor
-      for (DataOutputPort dop : actor.getDataOutputPorts()) {
-        nbDataOutput = attachOutputPort(actors, cluster, nbDataOutput, clusterRepetition, actorRepetition, dop);
-      }
-    }
-
-    // Attach ConfigInputPort on the cluster actor
-    List<ConfigInputPort> cfgipTmp = new ArrayList<>();
-    for (AbstractActor a : actors) {
-      cfgipTmp.addAll(a.getConfigInputPorts());
-    }
-    for (Delay delay : cluster.getAllDelays()) {
-      cfgipTmp.addAll(delay.getConfigInputPorts());
-      delay.setExpression(delay.getExpression().evaluate());
-    }
-    for (ConfigInputPort cfgip : cfgipTmp) {
-      setConfigInputPortAsInterface(cluster, cfgip, "config_" + nbConfigInput++);
-    }
-
-  }
-
-  private int attachOutputPort(List<AbstractActor> actors, PiGraph cluster, int nbDataOutput, long clusterRepetition,
-      long actorRepetition, DataOutputPort dop) {
-    // We only deport the output if FIFO is not internal
-    if (!actors.contains(dop.getOutgoingFifo().getTarget())) {
-      setDataOutputPortAsInterface(cluster, dop, "out_" + nbDataOutput++,
-          dop.getExpression().evaluate() * actorRepetition / clusterRepetition);
-    } else {
-      cluster.addFifo(dop.getOutgoingFifo());
-      Delay delay = dop.getOutgoingFifo().getDelay();
-      // If there is a delay, add it into the cluster
-      if (delay != null) {
-        cluster.addDelay(delay);
-      }
-    }
-    return nbDataOutput;
-  }
-
-  private int attachInputPort(List<AbstractActor> actors, PiGraph cluster, int nbDataInput, long clusterRepetition,
-      long actorRepetition, DataInputPort dip) {
-    // We only deport the input if FIFO is not internal
-    if (!actors.contains(dip.getIncomingFifo().getSource())) {
-      setDataInputPortAsInterface(cluster, dip, "in_" + nbDataInput++,
-          dip.getExpression().evaluate() * actorRepetition / clusterRepetition);
-    } else {
-      cluster.addFifo(dip.getIncomingFifo());
-      Delay delay = dip.getIncomingFifo().getDelay();
-      // If there is a delay, add it into the cluster
-      if (delay != null) {
-        cluster.addDelay(delay);
-      }
-    }
-    return nbDataInput;
-  }
-
-  /**
-   * @param cluster
-   *          cluster hierarchy
-   * @param insideInputPort
-   *          DataInputPort to connect outside
-   * @param name
-   *          name of port
-   * @param portExpression
-   *          prod/cons value
-   */
-  private final DataInputInterface setDataInputPortAsInterface(PiGraph cluster, DataInputPort insideInputPort,
-      String name, long portExpression) {
-    // Setup DataInputInterface
-    DataInputInterface inputInterface = PiMMUserFactory.instance.createDataInputInterface();
-    inputInterface.setName(name);
-    inputInterface.getDataPort().setName(name);
-    cluster.addActor(inputInterface);
-
-    // Setup input of hierarchical actor
-    DataInputPort inputPort = (DataInputPort) inputInterface.getGraphPort();
-    inputPort.setName(name); // same name than DataInputInterface
-    inputPort.setExpression(portExpression);
-
-    // Interconnect the outside with hierarchical actor
-    inputPort.setIncomingFifo(PiMMUserFactory.instance.createFifo());
-    cluster.getContainingPiGraph().addFifo(inputPort.getFifo());
-    Fifo oldFifo = insideInputPort.getFifo();
-    if (oldFifo.getDelay() != null) {
-      inputPort.getFifo().setDelay(oldFifo.getDelay());
-    }
-    String dataType = oldFifo.getType();
-    inputPort.getIncomingFifo().setSourcePort(oldFifo.getSourcePort());
-    inputPort.getIncomingFifo().setType(dataType);
-    cluster.getContainingPiGraph().removeFifo(oldFifo); // remove FIFO from containing graph
-
-    // Setup inside communication with DataInputInterface
-    DataOutputPort outputDataPort = (DataOutputPort) inputInterface.getDataPort();
-    outputDataPort.setExpression(portExpression);
-    outputDataPort.setOutgoingFifo(PiMMUserFactory.instance.createFifo());
-    outputDataPort.getOutgoingFifo().setTargetPort(insideInputPort);
-    outputDataPort.getOutgoingFifo().setType(dataType);
-    inputInterface.getDataOutputPorts().add(outputDataPort);
-    cluster.addFifo(outputDataPort.getFifo());
-
-    return inputInterface;
-  }
-
-  /**
-   * @param cluster
-   *          cluster hierarchy
-   * @param insideOutputPort
-   *          DataOutputPort to connect outside
-   * @param name
-   *          name of port
-   * @param portExpression
-   *          prod/cons value
-   */
-  private final DataOutputInterface setDataOutputPortAsInterface(PiGraph cluster, DataOutputPort insideOutputPort,
-      String name, long portExpression) {
-    // Setup DataOutputInterface
-    DataOutputInterface outputInterface = PiMMUserFactory.instance.createDataOutputInterface();
-    outputInterface.setName(name);
-    outputInterface.getDataPort().setName(name);
-    cluster.addActor(outputInterface);
-
-    // Setup output of hierarchical actor
-    DataOutputPort outputPort = (DataOutputPort) outputInterface.getGraphPort();
-    outputPort.setName(name); // same name than DataOutputInterface
-    outputPort.setExpression(portExpression);
-
-    // Interconnect the outside with hierarchical actor
-    outputPort.setOutgoingFifo(PiMMUserFactory.instance.createFifo());
-    cluster.getContainingPiGraph().addFifo(outputPort.getFifo());
-    Fifo oldFifo = insideOutputPort.getFifo();
-    if (oldFifo.getDelay() != null) {
-      outputPort.getFifo().setDelay(oldFifo.getDelay());
-    }
-    String dataType = oldFifo.getType();
-    outputPort.getOutgoingFifo().setTargetPort(oldFifo.getTargetPort());
-    outputPort.getOutgoingFifo().setType(dataType);
-    cluster.getContainingPiGraph().removeFifo(oldFifo); // remove FIFO from containing graph
-
-    // Setup inside communication with DataOutputInterface
-    DataInputPort inputDataPort = (DataInputPort) outputInterface.getDataPort();
-    inputDataPort.setExpression(portExpression);
-    inputDataPort.setIncomingFifo(PiMMUserFactory.instance.createFifo());
-    inputDataPort.getIncomingFifo().setSourcePort(insideOutputPort);
-    inputDataPort.getIncomingFifo().setType(dataType);
-    outputInterface.getDataInputPorts().add(inputDataPort);
-    cluster.addFifo(inputDataPort.getFifo());
-
-    return outputInterface;
-  }
-
-  /**
-   * @param cluster
-   *          new hierarchy
-   * @param insideInputPort
-   *          ConfigInputPort to connect outside
-   * @return generated ConfigInputInterface
-   */
-  private final ConfigInputInterface setConfigInputPortAsInterface(PiGraph cluster, ConfigInputPort insideInputPort,
-      String name) {
-    // Setup ConfigInputInterface
-    ConfigInputInterface inputInterface = PiMMUserFactory.instance.createConfigInputInterface();
-    inputInterface.setName(name);
-    cluster.addParameter(inputInterface);
-
-    // Setup input of hierarchical actor
-    ConfigInputPort inputPort = inputInterface.getGraphPort();
-    inputPort.setName(name); // same name than ConfigInputInterface
-
-    // Interconnect the outside with hierarchical actor
-    inputPort.setIncomingDependency(PiMMUserFactory.instance.createDependency());
-    cluster.getContainingPiGraph().addDependency(inputPort.getIncomingDependency());
-    Dependency oldDependency = insideInputPort.getIncomingDependency();
-    inputPort.getIncomingDependency().setSetter(oldDependency.getSetter());
-
-    // Setup inside communication with ConfigInputInterface
-    Dependency dependency = insideInputPort.getIncomingDependency();
-    dependency.setSetter(inputInterface);
-    cluster.addDependency(dependency);
-
-    return inputInterface;
   }
 
 }
