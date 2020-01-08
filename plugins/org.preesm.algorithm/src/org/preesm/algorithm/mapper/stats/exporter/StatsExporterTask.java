@@ -45,6 +45,7 @@ import org.eclipse.core.resources.IWorkspaceRoot;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.preesm.algorithm.mapper.abc.impl.latency.LatencyAbc;
+import org.preesm.algorithm.mapper.ui.stats.StatGeneratorAbc;
 import org.preesm.commons.doc.annotations.Parameter;
 import org.preesm.commons.doc.annotations.Port;
 import org.preesm.commons.doc.annotations.PreesmTask;
@@ -58,19 +59,22 @@ import org.preesm.workflow.implement.AbstractWorkflowNodeImplementation;
 /**
  * Generate an xml file containing the stats from the mapping/scheduling steps.
  *
+ * TODO: remove scenario from inputs (already contained in ABC)
+ *
  * @author cguy
  */
-@PreesmTask(id = "org.ietr.preesm.stats.exporter.StatsExporterTask", name = "Gantt Exporter", category = "Analysis",
+@PreesmTask(id = "org.ietr.preesm.stats.exporter.StatsExporterTask", name = "ABC Gantt exporter",
+    category = "Gantt exporters",
 
     inputs = { @Port(name = "ABC", type = LatencyAbc.class), @Port(name = "scenario", type = Scenario.class) },
 
     shortDescription = "This task exports scheduling results as a *.pgantt file that can be "
         + "viewed using the ganttDisplay viewer [1].",
 
-    parameters = { @Parameter(name = "path",
+    parameters = { @Parameter(name = StatsExporterTask.PARAM_PATH,
         description = "Path of the exported *.pgantt file. If the specified directory does not exist, it will "
             + "not be created.",
-        values = { @Value(name = "/path/in/proj",
+        values = { @Value(name = StatsExporterTask.DEFAULT_PATH,
             effect = "Path within the Preesm project containing the workflow where the ”Gantt Exporter” task is "
                 + "instantiated. Exported Gantt will be named as follows: "
                 + "**/path/in/proj/<scenario name> stats.pgantt**. If a graph with this name already exists in "
@@ -100,7 +104,6 @@ public class StatsExporterTask extends AbstractTaskImplementation {
       final IProgressMonitor monitor, final String nodeName, final Workflow workflow) {
 
     final LatencyAbc abc = (LatencyAbc) inputs.get(AbstractWorkflowNodeImplementation.KEY_SDF_ABC);
-    final Scenario scenario = (Scenario) inputs.get(AbstractWorkflowNodeImplementation.KEY_SCENARIO);
     String folderPath = parameters.get(PARAM_PATH);
 
     // Get the root of the workspace
@@ -115,10 +118,12 @@ public class StatsExporterTask extends AbstractTaskImplementation {
     final File parent = new File(folderPath);
     parent.mkdirs();
 
-    final String filePath = scenario.getScenarioName() + "_stats_pgantt.xml";
+    final String filePath = abc.getScenario().getScenarioName() + "_stats_pgantt.xml";
     final File file = new File(parent, filePath);
     // Generate the stats from the abc and write them in a file at xmlPath
-    XMLStatsExporter.exportXMLStats(abc, file);
+    final StatGeneratorAbc statGen = new StatGeneratorAbc(abc);
+
+    XMLStatsExporter.exportXMLStats(file, statGen);
 
     return new LinkedHashMap<>();
   }

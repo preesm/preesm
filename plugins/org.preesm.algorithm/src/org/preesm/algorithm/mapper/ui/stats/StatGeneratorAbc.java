@@ -39,9 +39,9 @@
  */
 package org.preesm.algorithm.mapper.ui.stats;
 
-import java.util.Map;
 import org.preesm.algorithm.mapper.abc.impl.latency.LatencyAbc;
 import org.preesm.algorithm.mapper.abc.impl.latency.SpanLengthCalculator;
+import org.preesm.algorithm.mapper.gantt.GanttData;
 import org.preesm.algorithm.mapper.graphtransfo.ImplementationPropertyNames;
 import org.preesm.algorithm.mapper.graphtransfo.VertexType;
 import org.preesm.algorithm.mapper.model.MapperDAG;
@@ -55,7 +55,6 @@ import org.preesm.algorithm.model.PropertyBean;
 import org.preesm.algorithm.model.dag.DAGEdge;
 import org.preesm.algorithm.model.dag.DAGVertex;
 import org.preesm.commons.exceptions.PreesmException;
-import org.preesm.model.scenario.Scenario;
 import org.preesm.model.slam.ComponentInstance;
 
 /**
@@ -63,37 +62,20 @@ import org.preesm.model.slam.ComponentInstance;
  *
  * @author mpelcat
  */
-public class StatGenerator {
+public class StatGeneratorAbc extends AbstractStatGenerator {
 
-  private LatencyAbc          abc       = null;
-  private Scenario            scenario  = null;
-  private Map<String, String> params    = null;
-  private long                finalTime = 0;
+  private LatencyAbc abc = null;
 
   /**
    * Instantiates a new stat generator.
    *
    * @param abc
    *          the abc
-   * @param scenario
-   *          the scenario
-   * @param params
-   *          the params
    */
-  public StatGenerator(final LatencyAbc abc, final Scenario scenario, final Map<String, String> params) {
-    super();
-    this.params = params;
-    this.scenario = scenario;
-    if (abc instanceof LatencyAbc) {
-      this.abc = abc;
-
-      this.abc.updateFinalCosts();
-      this.finalTime = this.abc.getFinalLatency();
-    } else {
-      this.abc = abc;
-      this.abc.updateFinalCosts();
-      this.finalTime = 0;
-    }
+  public StatGeneratorAbc(final LatencyAbc abc) {
+    super(abc.getArchitecture(), abc.getScenario());
+    this.abc = abc;
+    this.abc.updateFinalCosts();
   }
 
   /**
@@ -145,59 +127,18 @@ public class StatGenerator {
   }
 
   /**
-   * Returns the final time of the current ABC.
-   *
-   * @return the result time
-   */
-  public long getResultTime() {
-    if (this.abc instanceof LatencyAbc) {
-      return this.abc.getFinalLatency();
-    } else {
-      return 0L;
-    }
-  }
-
-  /**
    * Returns the number of operators in the current architecture that execute vertices.
    *
    * @return the nb used operators
    */
   public int getNbUsedOperators() {
     int nbUsedOperators = 0;
-    for (final ComponentInstance o : this.abc.getArchitecture().getOperatorComponentInstances()) {
+    for (final ComponentInstance o : architecture.getOperatorComponentInstances()) {
       if (this.abc.getFinalCost(o) > 0) {
         nbUsedOperators++;
       }
     }
     return nbUsedOperators;
-  }
-
-  /**
-   * Returns the number of operators with main type.
-   *
-   * @return the nb main type operators
-   */
-  public int getNbMainTypeOperators() {
-    int nbMainTypeOperators = 0;
-    final ComponentInstance mainOp = this.scenario.getSimulationInfo().getMainOperator();
-    nbMainTypeOperators = this.abc.getArchitecture().getComponentInstancesOfType(mainOp.getComponent()).size();
-    return nbMainTypeOperators;
-  }
-
-  /**
-   * The load is the percentage of a processing resource used for the given algorithm.
-   *
-   * @param operator
-   *          the operator
-   * @return the load
-   */
-  public long getLoad(final ComponentInstance operator) {
-
-    if (this.abc instanceof LatencyAbc) {
-      return this.abc.getLoad(operator);
-    } else {
-      return 0L;
-    }
   }
 
   /**
@@ -247,20 +188,23 @@ public class StatGenerator {
 
   }
 
-  public Scenario getScenario() {
-    return this.scenario;
-  }
-
-  public Map<String, String> getParams() {
-    return this.params;
+  /**
+   * The load is the percentage of a processing resource used for the given algorithm.
+   *
+   * @param operator
+   *          the operator
+   * @return the load
+   */
+  public long getLoad(final ComponentInstance operator) {
+    return this.abc.getLoad(operator);
   }
 
   public long getFinalTime() {
-    return this.finalTime;
+    return this.abc.getFinalLatency();
   }
 
-  public LatencyAbc getAbc() {
-    return this.abc;
+  public GanttData getGanttData() {
+    return this.abc.getGanttData();
   }
 
 }

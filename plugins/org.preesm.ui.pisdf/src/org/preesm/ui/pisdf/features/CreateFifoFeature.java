@@ -61,7 +61,7 @@ import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.pisdf.Port;
 import org.preesm.model.pisdf.PortKind;
 import org.preesm.model.pisdf.factory.PiMMUserFactory;
-import org.preesm.ui.pisdf.PiMMUtil;
+import org.preesm.ui.pisdf.util.PiMMUtil;
 
 // TODO: Auto-generated Javadoc
 /**

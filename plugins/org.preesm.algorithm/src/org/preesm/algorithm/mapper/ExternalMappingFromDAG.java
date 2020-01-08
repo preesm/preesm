@@ -128,13 +128,15 @@ public class ExternalMappingFromDAG extends AbstractMappingFromDAG {
 
     // 2- check
     final Map<DAGVertex, ScheduleEntry> entries = checkScheduleCompatibility(schedule, dag, architecture);
+
     checkStartTimePrecedences(entries);
+    PreesmLogger.getLogger().log(Level.INFO, "Successfully parsed " + entries.size() + " schedule entries.");
 
     // 3- sort components to have a relation from ID to component
     final List<ComponentInstance> componentInstances = new ArrayList<>(architecture.getComponentInstances());
     Collections.sort(componentInstances, new LexicographicComponentInstanceComparator());
 
-    PreesmLogger.getLogger().log(Level.INFO, "Order external schedule entries.");
+    PreesmLogger.getLogger().log(Level.INFO, "Order schedule vertices.");
 
     // 4- retrieve topological order of firings and source actors
     long nbActors = 0;
@@ -201,11 +203,11 @@ public class ExternalMappingFromDAG extends AbstractMappingFromDAG {
 
       visitedNodes.clear();
       visitedNodes.add(vtx);
-      DAGVertex associateVtx = ExternalMappingFromDAG.getAssociateVertex(vtx, Direction.NONE);
+      DAGVertex associateVtx = ExternalMappingFromDAG.getAssociateVertex(vtx, Direction.NONE, unmappedVertices);
       if (unmappedVertices.contains(associateVtx)) {
         associateVtx = vtx;
         do {
-          associateVtx = ExternalMappingFromDAG.getAssociateVertex(associateVtx, Direction.FORWARD);
+          associateVtx = ExternalMappingFromDAG.getAssociateVertex(associateVtx, Direction.FORWARD, unmappedVertices);
           visitedNodes.add(associateVtx);
         } while (associateVtx != null && unmappedVertices.contains(associateVtx));
       }
@@ -238,11 +240,11 @@ public class ExternalMappingFromDAG extends AbstractMappingFromDAG {
 
       visitedNodes.clear();
       visitedNodes.add(vtx);
-      DAGVertex associateVtx = ExternalMappingFromDAG.getAssociateVertex(vtx, Direction.NONE);
+      DAGVertex associateVtx = ExternalMappingFromDAG.getAssociateVertex(vtx, Direction.NONE, unmappedVertices);
       if (unmappedVertices.contains(associateVtx)) {
         associateVtx = vtx;
         while (associateVtx != null && unmappedVertices.contains(associateVtx)) {
-          associateVtx = ExternalMappingFromDAG.getAssociateVertex(associateVtx, Direction.BACKWARD);
+          associateVtx = ExternalMappingFromDAG.getAssociateVertex(associateVtx, Direction.BACKWARD, unmappedVertices);
           visitedNodes.add(associateVtx);
         }
       }
@@ -410,7 +412,8 @@ public class ExternalMappingFromDAG extends AbstractMappingFromDAG {
     FORWARD, BACKWARD, NONE;
   }
 
-  private static final DAGVertex getAssociateVertex(final DAGVertex vtx, Direction dir) {
+  private static final DAGVertex getAssociateVertex(final DAGVertex vtx, Direction dir,
+      final Set<DAGVertex> unmappedVertices) {
     Set<DAGEdge> edges;
     DAGVertex associateVtx = null;
     if (dir == Direction.NONE) {
@@ -442,22 +445,28 @@ public class ExternalMappingFromDAG extends AbstractMappingFromDAG {
         DAGVertex tgt = outEdge.getTarget();
         if (tgt != vtx) {
           associateVtx = tgt;
-          break;
+          if (!unmappedVertices.contains(tgt)) {
+            break;
+          }
         }
       }
       if (associateVtx == null) {
-        throw new PreesmRuntimeException("Found a loop while looking for associate vertex.");
+        throw new PreesmRuntimeException(
+            "Found a loop while looking forward for associate vertex of: " + vtx.getName());
       }
     } else if (dir == Direction.BACKWARD) {
       for (DAGEdge inEdge : vtx.incomingEdges()) {
         DAGVertex src = inEdge.getSource();
         if (src != vtx) {
           associateVtx = src;
-          break;
+          if (!unmappedVertices.contains(src)) {
+            break;
+          }
         }
       }
       if (associateVtx == null) {
-        throw new PreesmRuntimeException("Found a loop while looking for associate vertex.");
+        throw new PreesmRuntimeException(
+            "Found a loop while looking backward for associate vertex of: " + vtx.getName());
       }
     }
     return associateVtx;

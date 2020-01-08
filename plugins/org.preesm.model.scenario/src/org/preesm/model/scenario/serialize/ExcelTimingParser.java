@@ -44,7 +44,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import jxl.Cell;
-import jxl.CellType;
 import jxl.Workbook;
 import jxl.read.biff.BiffException;
 import org.eclipse.core.resources.IFile;
@@ -190,21 +189,18 @@ public class ExcelTimingParser {
           // Get the cell containing the timing
           final Cell timingCell = w.getSheet(0).getCell(operatorCell.getColumn(), vertexCell.getRow());
 
-          if (timingCell.getType().equals(CellType.NUMBER) || timingCell.getType().equals(CellType.NUMBER_FORMULA)) {
+          final String expression = timingCell.getContents();
 
-            final String expression = timingCell.getContents();
+          try {
+            this.scenario.getTimings().setTiming(actor, component, expression);
+            final String msg = "Importing timing: " + actor.getVertexPath() + " on " + component.getVlnv().getName()
+                + " takes " + expression;
+            PreesmLogger.getLogger().log(Level.INFO, msg);
+          } catch (final NumberFormatException e) {
+            final String message = "Problem importing timing of " + actor + " on " + component
+                + ". Integer with no space or special character needed. Be careful on the special number formats.";
+            throw new PreesmRuntimeException(message);
 
-            try {
-              this.scenario.getTimings().setTiming(actor, component, expression);
-              final String msg = "Importing timing: " + actor.getVertexPath() + " on " + component.getVlnv().getName()
-                  + " takes " + expression;
-              PreesmLogger.getLogger().log(Level.INFO, msg);
-            } catch (final NumberFormatException e) {
-              final String message = "Problem importing timing of " + actor + " on " + component
-                  + ". Integer with no space or special character needed. Be careful on the special number formats.";
-              throw new PreesmRuntimeException(message);
-
-            }
           }
         } else {
           if ((vertexCell == null) && !missingVertices.contains(actor)) {

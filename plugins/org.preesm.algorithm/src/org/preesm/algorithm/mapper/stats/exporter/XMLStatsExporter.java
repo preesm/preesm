@@ -36,6 +36,7 @@
  */
 package org.preesm.algorithm.mapper.stats.exporter;
 
+import java.awt.Color;
 import java.io.File;
 import java.util.logging.Level;
 import javax.xml.parsers.DocumentBuilder;
@@ -46,11 +47,10 @@ import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
-import org.preesm.algorithm.mapper.abc.impl.latency.LatencyAbc;
 import org.preesm.algorithm.mapper.gantt.GanttComponent;
 import org.preesm.algorithm.mapper.gantt.GanttData;
 import org.preesm.algorithm.mapper.gantt.GanttTask;
-import org.preesm.algorithm.mapper.ui.stats.StatGenerator;
+import org.preesm.algorithm.mapper.ui.stats.IStatGenerator;
 import org.preesm.commons.exceptions.PreesmException;
 import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.preesm.commons.logger.PreesmLogger;
@@ -71,12 +71,11 @@ public class XMLStatsExporter {
   /**
    * Export generated stats from an IAbc to an xml file.
    *
-   * @param abc
-   *          the IAbc containing the scheduling of each task
    * @param file
    *          the file
    */
-  public static void exportXMLStats(final LatencyAbc abc, final File file) {
+  public static void exportXMLStats(final File file, final IStatGenerator statGen) {
+
     DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
     DocumentBuilder dBuilder;
     try {
@@ -87,7 +86,7 @@ public class XMLStatsExporter {
     Document content = dBuilder.newDocument();
 
     // Generate the stats to write in an xml file
-    generateXMLStats(content, abc);
+    generateXMLStats(content, statGen);
 
     // Write the file
     TransformerFactory transformerFactory = TransformerFactory.newInstance();
@@ -111,17 +110,18 @@ public class XMLStatsExporter {
    *          the IAbc containing the scheduling of each task
    * @return a String containing the stats at an xml format
    */
-  private static void generateXMLStats(Document doc, final LatencyAbc abc) {
+  private static void generateXMLStats(Document doc, final IStatGenerator statGen) {
     Element root = doc.createElement("data");
     doc.appendChild(root);
 
     // Generate scheduling stats (when and on which core a given task is
     // executed)
-    generateSchedulingStats(doc, root, abc.getGanttData());
+    generateSchedulingStats(doc, root, statGen.getGanttData());
     // Generate performance stats (loads of the core; work, span and
     // implementation length; number of cores used over total number of
     // cores)
-    generatePerformanceStats(doc, root, abc);
+    generatePerformanceStats(doc, root, statGen);
+
   }
 
   /**
@@ -130,9 +130,8 @@ public class XMLStatsExporter {
    * @param abc
    *          the abc
    */
-  private static void generatePerformanceStats(final Document doc, final Element root, final LatencyAbc abc) {
+  private static void generatePerformanceStats(final Document doc, final Element root, final IStatGenerator statGen) {
     // Starting the performace stats
-    final StatGenerator statGen = new StatGenerator(abc, abc.getScenario(), null);
 
     Element perfs = doc.createElement("perfs");
     root.appendChild(perfs);
@@ -147,12 +146,12 @@ public class XMLStatsExporter {
     // Span length
     perfs.setAttribute("span", Long.toString(statGen.getDAGSpanLength()));
     // Implementation length
-    perfs.setAttribute("impl_length", Long.toString(statGen.getResultTime()));
+    perfs.setAttribute("impl_length", Long.toString(statGen.getFinalTime()));
     // Implementation number of cores
     perfs.setAttribute("impl_nbCores", Integer.toString(statGen.getNbMainTypeOperators()));
     // Implementation number of used cores
     perfs.setAttribute("impl_nbUsedCores", Integer.toString(statGen.getNbUsedOperators()));
-    for (final ComponentInstance op : abc.getArchitecture().getOperatorComponentInstances()) {
+    for (final ComponentInstance op : statGen.getDesign().getOperatorComponentInstances()) {
       generateCoreLoad(doc, perfs, op, statGen);
     }
     // Ending the performance stats
@@ -167,7 +166,7 @@ public class XMLStatsExporter {
    *          the stat gen
    */
   private static void generateCoreLoad(final Document doc, final Element root, final ComponentInstance op,
-      final StatGenerator statGen) {
+      final IStatGenerator statGen) {
     // Starting core load stat
     Element core = doc.createElement("core");
     root.appendChild(core);
@@ -192,7 +191,7 @@ public class XMLStatsExporter {
     // Print the scheduling stats for each core
     for (final GanttComponent component : data.getComponents()) {
       for (final GanttTask task : component.getTasks()) {
-        generateTaskStats(doc, root, task);
+        generateTaskStats(doc, root, task, component.getId());
       }
     }
   }
@@ -203,7 +202,8 @@ public class XMLStatsExporter {
    * @param task
    *          the task
    */
-  private static void generateTaskStats(final Document doc, final Element root, final GanttTask task) {
+  private static void generateTaskStats(final Document doc, final Element root, final GanttTask task,
+      final String componentID) {
     // Starting task
     Element event = doc.createElement("event");
     root.appendChild(event);
@@ -214,9 +214,19 @@ public class XMLStatsExporter {
     // Task name
     event.setAttribute("title", task.getId());
     // Core
-    event.setAttribute("mapping", task.getComponent().getId());
+    event.setAttribute("mapping", componentID);
     // Color
-    event.setAttribute("color", XMLStatsExporter.TASKCOLOR);
+    Color c = task.getColor();
+    if (c == null) {
+      event.setAttribute("color", XMLStatsExporter.TASKCOLOR);
+    } else {
+      int r = c.getRed();
+      int g = c.getGreen();
+      int b = c.getBlue();
+      // a bit ugly an unsafe, but it seems to work
+      String colHexa = "#" + Integer.toHexString(r) + Integer.toHexString(g) + Integer.toHexString(b);
+      event.setAttribute("color", colHexa);
+    }
     // Gantt ID for the task
     event.setTextContent("Step_" + task.getId().replace(" ", "_") + ".");
     // Ending task

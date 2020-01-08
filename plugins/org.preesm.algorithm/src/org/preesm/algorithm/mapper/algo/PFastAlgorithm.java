@@ -98,11 +98,7 @@ public class PFastAlgorithm extends Observable {
     @Override
     public int compare(final MapperDAG o1, final MapperDAG o2) {
 
-      long difference = 0;
-
-      difference = o1.getScheduleCost();
-
-      difference -= o2.getScheduleCost();
+      long difference = o1.getScheduleCost() - o2.getScheduleCost();
 
       if (difference >= 0) {
         difference = 1;

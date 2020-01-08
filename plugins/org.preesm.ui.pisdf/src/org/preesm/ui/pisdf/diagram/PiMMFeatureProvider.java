@@ -165,7 +165,6 @@ import org.preesm.ui.pisdf.features.RenameAbstractVertexFeature;
 import org.preesm.ui.pisdf.features.RenameActorPortFeature;
 import org.preesm.ui.pisdf.features.SetActorMemoryScriptFeature;
 import org.preesm.ui.pisdf.features.SetActorRefinementFeature;
-import org.preesm.ui.pisdf.features.SetFifoTypeFeature;
 import org.preesm.ui.pisdf.features.SetPersistenceLevelFeature;
 import org.preesm.ui.pisdf.features.SetPortMemoryAnnotationFeature;
 import org.preesm.ui.pisdf.features.SetVisibleAllDependenciesFeature;
@@ -405,9 +404,9 @@ public class PiMMFeatureProvider extends DefaultFeatureProvider {
     }
 
     if (obj instanceof ExecutableActor) {
-      final ICustomFeature[] actorFeatures = new ICustomFeature[] { new AddDataOutputPortFeature(this),
-          new AddDataInputPortFeature(this), new AddConfigInputPortFeature(this),
-          new AddConfigOutputPortFeature(this) };
+      final ICustomFeature[] actorFeatures = new ICustomFeature[] { new AddConfigInputPortFeature(this),
+          new AddConfigOutputPortFeature(this), new AddDataInputPortFeature(this),
+          new AddDataOutputPortFeature(this), };
       for (final ICustomFeature feature : actorFeatures) {
         features.add(feature);
       }
@@ -438,7 +437,6 @@ public class PiMMFeatureProvider extends DefaultFeatureProvider {
 
     if (obj instanceof Fifo) {
       features.add(new AddDelayFeature(this));
-      features.add(new SetFifoTypeFeature(this));
     }
 
     if (obj instanceof Delay) {

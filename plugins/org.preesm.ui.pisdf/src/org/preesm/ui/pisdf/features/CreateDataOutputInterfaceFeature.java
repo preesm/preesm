@@ -45,8 +45,8 @@ import org.eclipse.graphiti.mm.pictograms.Diagram;
 import org.preesm.model.pisdf.DataOutputInterface;
 import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.pisdf.factory.PiMMUserFactory;
-import org.preesm.ui.pisdf.PiMMUtil;
 import org.preesm.ui.pisdf.util.VertexNameValidator;
+import org.preesm.ui.utils.DialogUtil;
 
 // TODO: Auto-generated Javadoc
 /**
@@ -99,7 +99,7 @@ public class CreateDataOutputInterfaceFeature extends AbstractCreateFeature {
     final String question = "Enter new Sink Interface name";
     String newSnkName = "SnkInterfaceName";
 
-    newSnkName = PiMMUtil.askString("Create Sink Interface", question, newSnkName,
+    newSnkName = DialogUtil.askString("Create Sink Interface", question, newSnkName,
         new VertexNameValidator(graph, null));
     if ((newSnkName == null) || (newSnkName.trim().length() == 0)) {
       this.hasDoneChanges = false; // If this is not done, the graph is

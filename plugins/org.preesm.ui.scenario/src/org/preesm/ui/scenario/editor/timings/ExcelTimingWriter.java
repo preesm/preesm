@@ -140,6 +140,13 @@ public class ExcelTimingWriter extends ExcelWriter {
       Integer maxOpAbscissa = 1;
       Integer maxVOrdinate = 1;
 
+      // top left cell to be compliant with csv importer
+      try {
+        sheet.addCell(new Label(0, 0, "Actors"));
+      } catch (final WriteException e) {
+        PreesmLogger.getLogger().log(Level.WARNING, "Could not add cell", e);
+      }
+
       final List<AbstractActor> vSet = PreesmAlgorithmListContentProvider.getSortedPISDFVertices(this.scenario);
 
       final Design design = this.scenario.getDesign();

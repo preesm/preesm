@@ -336,4 +336,63 @@
 	 </commonWizard>
 
    </extension>
+   
+   
+      <!-- Preesm Menus -->
+   <extension
+         point="org.eclipse.ui.menus">
+      <menuContribution
+            allPopups="false"
+            locationURI="popup:org.eclipse.ui.popup.any?before=additions">
+         <menu
+               icon="resources/icons/graphiti.gif"
+               id="org.ietr.preesm.ui.menu1"
+               label="Preesm">
+            <!-- generate a default empty scenario in the selected project -->
+            <command
+                  commandId="org.ietr.preesm.ui.command.ArchitectureGenerator"
+                  icon="resources/icons/graphiti.gif"
+                  label="Generate Default Architecture"
+                  tooltip="Generate a default homogeneous X86 architecture in this project."
+                  style="push">
+               <visibleWhen
+                     checkEnabled="true">
+                  <with
+                        variable="selection">
+                     <iterate
+                           ifEmpty="false"
+                           operator="and">
+                        <adapt
+                              type="org.eclipse.core.resources.IProject">
+                           <test
+                                 property="org.eclipse.core.resources.projectNature"
+                                 value="org.ietr.preesm.core.ui.wizards.nature">
+                           </test>
+                        </adapt>
+                     </iterate>
+                  </with>
+               </visibleWhen>
+            </command>
+         </menu>
+      </menuContribution>
+   </extension>
+
+   <!-- Preesm commands (for menus) -->
+   <extension
+         point="org.eclipse.ui.commands">
+      <command
+            id="org.ietr.preesm.ui.command.ArchitectureGenerator"
+            name="Architecture Generator">
+      </command>
+   </extension>
+
+   <!-- Preesm command handlers (for menus) -->
+   <extension
+         point="org.eclipse.ui.handlers">
+      <handler
+            class="org.preesm.ui.slam.popup.actions.ArchitectureGeneratorPopup"
+            commandId="org.ietr.preesm.ui.command.ArchitectureGenerator">
+      </handler>
+   </extension>
+   
 </plugin>

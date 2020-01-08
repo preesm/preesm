@@ -44,7 +44,7 @@ import org.apache.commons.math3.exception.util.LocalizedFormats;
 import org.apache.commons.math3.util.ArithmeticUtils;
 
 /**
- * This is a copy of the Apache {@link Fraction} with long numerator and denominator instead of integer.
+ * This is a copy of the Apache {@link Fraction} with long numerator and denominator instead of Long.
  *
  * @author anmorvan
  *
@@ -115,7 +115,7 @@ public class LongFraction extends Number implements FieldElement<LongFraction>, 
   private final long numerator;
 
   /**
-   * Create a fraction from an int. The fraction is num / 1.
+   * Create a fraction from a long. The fraction is num / 1.
    *
    * @param num
    *          the numerator.
@@ -146,8 +146,9 @@ public class LongFraction extends Number implements FieldElement<LongFraction>, 
     if (den == 0) {
       throw new MathArithmeticException(LocalizedFormats.ZERO_DENOMINATOR_IN_FRACTION, num, den);
     }
+    // move sign to numerator.
     if (den < 0) {
-      if (num == Integer.MIN_VALUE || den == Integer.MIN_VALUE) {
+      if (num == Long.MIN_VALUE || den == Long.MIN_VALUE) {
         throw new MathArithmeticException(LocalizedFormats.OVERFLOW_IN_FRACTION, num, den);
       }
       num = -num;
@@ -160,11 +161,6 @@ public class LongFraction extends Number implements FieldElement<LongFraction>, 
       den /= d;
     }
 
-    // move sign to numerator.
-    if (den < 0) {
-      num = -num;
-      den = -den;
-    }
     this.numerator = num;
     this.denominator = den;
   }
@@ -295,7 +291,7 @@ public class LongFraction extends Number implements FieldElement<LongFraction>, 
    * @return the negation of this fraction.
    */
   public LongFraction negate() {
-    if (numerator == Integer.MIN_VALUE) {
+    if (numerator == Long.MIN_VALUE) {
       throw new MathArithmeticException(LocalizedFormats.OVERFLOW_IN_FRACTION, numerator, denominator);
     }
     return new LongFraction(-numerator, denominator);
@@ -322,20 +318,20 @@ public class LongFraction extends Number implements FieldElement<LongFraction>, 
    * @throws NullArgumentException
    *           if the fraction is {@code null}
    * @throws MathArithmeticException
-   *           if the resulting numerator or denominator exceeds {@code Integer.MAX_VALUE}
+   *           if the resulting numerator or denominator exceeds {@code Long.MAX_VALUE}
    */
   public LongFraction add(LongFraction fraction) {
     return addSub(fraction, true /* add */);
   }
 
   /**
-   * Add an integer to the fraction.
+   * Add a long to the fraction.
    *
    * @param i
-   *          the {@code integer} to add.
+   *          the {@code long} to add.
    * @return this + i
    */
-  public LongFraction add(final int i) {
+  public LongFraction add(final long i) {
     return new LongFraction(numerator + i * denominator, denominator);
   }
 
@@ -350,20 +346,20 @@ public class LongFraction extends Number implements FieldElement<LongFraction>, 
    * @throws NullArgumentException
    *           if the fraction is {@code null}
    * @throws MathArithmeticException
-   *           if the resulting numerator or denominator cannot be represented in an {@code int}.
+   *           if the resulting numerator or denominator cannot be represented in an {@code long}.
    */
   public LongFraction subtract(LongFraction fraction) {
     return addSub(fraction, false /* subtract */);
   }
 
   /**
-   * Subtract an integer from the fraction.
+   * Subtract a long from the fraction.
    *
    * @param i
-   *          the {@code integer} to subtract.
+   *          the {@code long} to subtract.
    * @return this - i
    */
-  public LongFraction subtract(final int i) {
+  public LongFraction subtract(final long i) {
     return new LongFraction(numerator - i * denominator, denominator);
   }
 
@@ -378,7 +374,7 @@ public class LongFraction extends Number implements FieldElement<LongFraction>, 
    * @throws NullArgumentException
    *           if the fraction is {@code null}
    * @throws MathArithmeticException
-   *           if the resulting numerator or denominator cannot be represented in an {@code int}.
+   *           if the resulting numerator or denominator cannot be represented in an {@code long}.
    */
   private LongFraction addSub(LongFraction fraction, boolean isAdd) {
     if (fraction == null) {
@@ -431,7 +427,7 @@ public class LongFraction extends Number implements FieldElement<LongFraction>, 
    * @throws NullArgumentException
    *           if the fraction is {@code null}
    * @throws MathArithmeticException
-   *           if the resulting numerator or denominator exceeds {@code Integer.MAX_VALUE}
+   *           if the resulting numerator or denominator exceeds {@code Long.MAX_VALUE}
    */
   public LongFraction multiply(LongFraction fraction) {
     if (fraction == null) {
@@ -449,14 +445,19 @@ public class LongFraction extends Number implements FieldElement<LongFraction>, 
   }
 
   /**
-   * Multiply the fraction by an integer.
+   * Multiply the fraction by a long.
    *
    * @param i
-   *          the {@code integer} to multiply by.
+   *          the {@code long} to multiply by.
    * @return this * i
    */
-  public LongFraction multiply(final int i) {
+  public LongFraction multiply(final long i) {
     return multiply(new LongFraction(i));
+  }
+
+  @Override
+  public LongFraction multiply(int n) {
+    return multiply(new LongFraction(n));
   }
 
   /**
@@ -472,7 +473,7 @@ public class LongFraction extends Number implements FieldElement<LongFraction>, 
    * @throws MathArithmeticException
    *           if the fraction to divide by is zero
    * @throws MathArithmeticException
-   *           if the resulting numerator or denominator exceeds {@code Integer.MAX_VALUE}
+   *           if the resulting numerator or denominator exceeds {@code Long.MAX_VALUE}
    */
   public LongFraction divide(LongFraction fraction) {
     if (fraction == null) {
@@ -486,13 +487,13 @@ public class LongFraction extends Number implements FieldElement<LongFraction>, 
   }
 
   /**
-   * Divide the fraction by an integer.
+   * Divide the fraction by a long.
    *
    * @param i
-   *          the {@code integer} to divide by.
+   *          the {@code long} to divide by.
    * @return this * i
    */
-  public LongFraction divide(final int i) {
+  public LongFraction divide(final long i) {
     return divide(new LongFraction(i));
   }
 
@@ -533,12 +534,12 @@ public class LongFraction extends Number implements FieldElement<LongFraction>, 
       return ZERO; // normalize zero.
     }
     // allow 2^k/-2^31 as a valid fraction (where k>0)
-    if (denominator == Integer.MIN_VALUE && (numerator & 1) == 0) {
+    if (denominator == Long.MIN_VALUE && (numerator & 1) == 0) {
       numerator /= 2;
       denominator /= 2;
     }
     if (denominator < 0) {
-      if (numerator == Integer.MIN_VALUE || denominator == Integer.MIN_VALUE) {
+      if (numerator == Long.MIN_VALUE || denominator == Long.MIN_VALUE) {
         throw new MathArithmeticException(LocalizedFormats.OVERFLOW_IN_FRACTION, numerator, denominator);
       }
       numerator = -numerator;
@@ -580,4 +581,5 @@ public class LongFraction extends Number implements FieldElement<LongFraction>, 
   public boolean isZero() {
     return this.equals(ZERO);
   }
+
 }

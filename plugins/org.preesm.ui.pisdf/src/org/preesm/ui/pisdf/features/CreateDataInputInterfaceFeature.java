@@ -45,8 +45,8 @@ import org.eclipse.graphiti.mm.pictograms.Diagram;
 import org.preesm.model.pisdf.DataInputInterface;
 import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.pisdf.factory.PiMMUserFactory;
-import org.preesm.ui.pisdf.PiMMUtil;
 import org.preesm.ui.pisdf.util.VertexNameValidator;
+import org.preesm.ui.utils.DialogUtil;
 
 // TODO: Auto-generated Javadoc
 /**
@@ -99,7 +99,7 @@ public class CreateDataInputInterfaceFeature extends AbstractCreateFeature {
     final String question = "Enter new Source Interface name";
     String newSrcName = "SrcInterfaceName";
 
-    newSrcName = PiMMUtil.askString("Create Source Interface", question, newSrcName,
+    newSrcName = DialogUtil.askString("Create Source Interface", question, newSrcName,
         new VertexNameValidator(graph, null));
     if ((newSrcName == null) || (newSrcName.trim().length() == 0)) {
       this.hasDoneChanges = false; // If this is not done, the graph is

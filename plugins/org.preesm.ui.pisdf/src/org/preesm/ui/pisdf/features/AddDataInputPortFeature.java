@@ -89,7 +89,7 @@ public class AddDataInputPortFeature extends AbstractAddActorPortFeature {
    */
   @Override
   public String getName() {
-    return "Add Input Port";
+    return "Add Data Input Port";
   }
 
   /*
@@ -99,7 +99,7 @@ public class AddDataInputPortFeature extends AbstractAddActorPortFeature {
    */
   @Override
   public String getDescription() {
-    return "Add an input port to the Actor";
+    return "Add a data input port to the Actor";
   }
 
   /*

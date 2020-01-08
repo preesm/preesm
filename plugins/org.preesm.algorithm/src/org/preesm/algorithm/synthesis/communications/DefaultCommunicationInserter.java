@@ -87,7 +87,14 @@ public class DefaultCommunicationInserter implements ICommunicationInserter {
    * topology compliant order, the source actor has been visited when we visit the target. Also, since the source has
    * been visited, this Map entry for the component on which the source mapped is contained and not null.
    */
-  protected final Map<ComponentInstance, AbstractActor> lastVisitedActor = new LinkedHashMap<>();
+  protected final Map<ComponentInstance, AbstractActor> lastVisitedActor;
+
+  protected final ScheduleOrderManager scheduleOM;
+
+  public DefaultCommunicationInserter(ScheduleOrderManager scheduleOM) {
+    this.lastVisitedActor = new LinkedHashMap<>();
+    this.scheduleOM = scheduleOM;
+  }
 
   @Override
   public List<CommunicationActor> insertCommunications(final PiGraph piGraph, final Design slamDesign,
@@ -95,22 +102,22 @@ public class DefaultCommunicationInserter implements ICommunicationInserter {
     PreesmLogger.getLogger().log(Level.FINER, "[COMINSERT] Communication insertion starting");
 
     final List<CommunicationActor> res = new ArrayList<>();
-
-    // schedule manager used to query schedule and insert new com nodes.
-    final ScheduleOrderManager scheduleOrderManager = new ScheduleOrderManager(piGraph, schedule);
-
     final SlamRoutingTable routeTable = new SlamRoutingTable(slamDesign);
 
+    PreesmLogger.getLogger().log(Level.INFO, "Build total ordering of tasks.");
     // iterate over actors in scheduling (and topological) order
-    final List<AbstractActor> scheduleOrderedList = scheduleOrderManager.buildScheduleAndTopologicalOrderedList();
+    // we copy the whole list since it will be modified by the insertion of the communication.
+    final List<
+        AbstractActor> scheduleOrderedList = new ArrayList<>(scheduleOM.buildScheduleAndTopologicalOrderedList());
+
+    PreesmLogger.getLogger().log(Level.INFO, "Insertion of communication tasks in the schedule.");
     for (final AbstractActor sourceActor : scheduleOrderedList) {
       final List<ComponentInstance> sourceMappings = mapping.getMapping(sourceActor);
       if (sourceMappings.size() != 1) {
         // no supported
         throw new UnsupportedOperationException("Cannot insert communications for actors mapped on several operators");
       } else {
-        res.addAll(
-            insertActorOutputCommunications(mapping, scheduleOrderManager, routeTable, sourceActor, sourceMappings));
+        res.addAll(insertActorOutputCommunications(mapping, scheduleOM, routeTable, sourceActor, sourceMappings));
       }
     }
 
@@ -182,15 +189,14 @@ public class DefaultCommunicationInserter implements ICommunicationInserter {
       receiveEnd.setSourceSendStart(sendStart);
 
       // -- Map communication nodes
-      mapping.getMappings().put(sendStart, ECollections.newBasicEList(sourceOperator));
-      mapping.getMappings().put(sendEnd, ECollections.newBasicEList(sourceOperator));
-      mapping.getMappings().put(receiveStart, ECollections.newBasicEList(targetOperator));
-      mapping.getMappings().put(receiveEnd, ECollections.newBasicEList(targetOperator));
+      mapping.getMappings().put(sendStart, ECollections.singletonEList(sourceOperator));
+      mapping.getMappings().put(sendEnd, ECollections.singletonEList(sourceOperator));
+      mapping.getMappings().put(receiveStart, ECollections.singletonEList(targetOperator));
+      mapping.getMappings().put(receiveEnd, ECollections.singletonEList(targetOperator));
 
       // -- insert
       insertSend(scheduleOrderManager, mapping, rstep, route, fifo, sendStart, sendEnd);
       insertReceive(scheduleOrderManager, mapping, rstep, route, fifo, receiveStart, receiveEnd);
-
     }
     return res;
   }
@@ -212,7 +218,7 @@ public class DefaultCommunicationInserter implements ICommunicationInserter {
         throw new PreesmRuntimeException("guru meditation");
       } else {
         // insert after srcCmpLastActor (the "peek" ui.e. last visited) actor for source operator
-        scheduleOrderManager.insertAfter(sourceOperatorPeekActor, sendStart, sendEnd);
+        scheduleOrderManager.insertComStEdAfterInSchedule(mapping, sourceOperatorPeekActor, sendStart, sendEnd, false);
         PreesmLogger.getLogger().log(Level.FINER,
             "[COMINSERT]  * send inserted after '" + sourceOperatorPeekActor.getName() + "'");
       }
@@ -250,12 +256,13 @@ public class DefaultCommunicationInserter implements ICommunicationInserter {
               "Proxy send/receive using operator on which no actor is mapped is not supported");
         } else {
           final AbstractActor abstractActor = list.get(0);
-          scheduleOrderManager.insertBefore(abstractActor, receiveStart, receiveEnd);
+          scheduleOrderManager.insertComStEdBeforeInSchedule(mapping, abstractActor, receiveStart, receiveEnd, false);
           PreesmLogger.getLogger().log(Level.FINER,
               "[COMINSERT]  * receive inserted before '" + abstractActor.getName() + "'");
         }
       } else {
-        scheduleOrderManager.insertAfter(targetOperatorPeekActor, receiveStart, receiveEnd);
+        scheduleOrderManager.insertComStEdAfterInSchedule(mapping, targetOperatorPeekActor, receiveStart, receiveEnd,
+            false);
         PreesmLogger.getLogger().log(Level.FINER,
             "[COMINSERT]  * receive inserted after '" + targetOperatorPeekActor.getName() + "'");
       }

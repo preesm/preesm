@@ -45,8 +45,8 @@ import org.eclipse.graphiti.mm.pictograms.Diagram;
 import org.preesm.model.pisdf.Parameter;
 import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.pisdf.factory.PiMMUserFactory;
-import org.preesm.ui.pisdf.PiMMUtil;
 import org.preesm.ui.pisdf.util.VertexNameValidator;
+import org.preesm.ui.utils.DialogUtil;
 
 // TODO: Auto-generated Javadoc
 /**
@@ -102,7 +102,7 @@ public class CreateParameterFeature extends AbstractCreateFeature {
     String newParameterName = "ParameterName";
 
     // TODO create a parameter name validator
-    newParameterName = PiMMUtil.askString("Create Parameter", question, newParameterName,
+    newParameterName = DialogUtil.askString("Create Parameter", question, newParameterName,
         new VertexNameValidator(graph, null));
     if ((newParameterName == null) || (newParameterName.trim().length() == 0)) {
       this.hasDoneChanges = false; // If this is not done, the graph is

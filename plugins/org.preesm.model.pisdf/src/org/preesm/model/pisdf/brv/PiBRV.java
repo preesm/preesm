@@ -129,7 +129,7 @@ public abstract class PiBRV {
     for (final AbstractActor actor : subgraph) {
       final long newRV = graphBRV.get(actor) * scaleFactor;
       graphBRV.put(actor, newRV);
-      if ((actor instanceof DelayActor) && (newRV != 1)) {
+      if ((actor instanceof DelayActor) && (newRV > 1)) {
         String message = "Inconsistent graph. DelayActor [" + actor.getName() + "] with a repetition vector of "
             + Long.toString(newRV);
         throw new PreesmRuntimeException(message);
@@ -205,15 +205,17 @@ public abstract class PiBRV {
         final long prod = sourcePort.getPortRateExpression().evaluate();
         final long sourceRV = graphBRV.get(sourceActor);
         final long tmp = inscaleFactor * prod * sourceRV;
-        if (tmp > cons || (tmp < cons && cons % tmp != 0)) {
-          emitScaleWarning = true;
-          // we emit a warning only if producing too much, or not enough but with a wrong multiplicity
-          // note that it is not allowed to produce less than the consumed tokens on the output interface
-          // at the opposite, if more are produced, a roundbuffer is added.
-        }
-        if (tmp > 0 && tmp < cons) {
-          final long scaleScaleFactor = (cons + tmp - 1) / tmp;
-          scaleScaleFactors.add(scaleScaleFactor);
+        if (tmp > 0) {
+          if (tmp > cons || (tmp < cons && cons % tmp != 0)) {
+            emitScaleWarning = true;
+            // we emit a warning only if producing too much, or not enough but with a wrong multiplicity
+            // note that it is not allowed to produce less than the consumed tokens on the output interface
+            // at the opposite, if more are produced, a roundbuffer is added.
+          }
+          if (tmp < cons) {
+            final long scaleScaleFactor = (cons + tmp - 1) / tmp;
+            scaleScaleFactors.add(scaleScaleFactor);
+          }
         }
       }
     }
@@ -256,15 +258,17 @@ public abstract class PiBRV {
         final long targetRV = graphBRV.get(targetActor);
         final long cons = targetPort.getPortRateExpression().evaluate();
         final long tmp = inscaleFactor * cons * targetRV;
-        if (tmp > prod || (tmp < prod && prod % tmp != 0)) {
-          emitScaleWarning = true;
-          // we emit a warning only if consuming too much, or not enough but with a wrong multiplicity
-          // note that it is not allowed to leave unconsumed tokens on the input interface
-          // at the opposite, if more are consumed, a broadcast is added.
-        }
-        if (tmp > 0 && tmp < prod) {
-          final long scaleScaleFactor = (prod + tmp - 1) / tmp;
-          scaleScaleFactors.add(scaleScaleFactor);
+        if (tmp > 0) {
+          if (tmp > prod || (tmp < prod && prod % tmp != 0)) {
+            emitScaleWarning = true;
+            // we emit a warning only if consuming too much, or not enough but with a wrong multiplicity
+            // note that it is not allowed to leave unconsumed tokens on the input interface
+            // at the opposite, if more are consumed, a broadcast is added.
+          }
+          if (tmp < prod) {
+            final long scaleScaleFactor = (prod + tmp - 1) / tmp;
+            scaleScaleFactors.add(scaleScaleFactor);
+          }
         }
       }
     }

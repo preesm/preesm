@@ -58,7 +58,7 @@ import org.preesm.algorithm.mapper.ui.Messages;
 public class PerformancePage extends FormPage {
 
   /** The class generating the performance data. */
-  private StatGenerator statGen = null;
+  private IStatGenerator statGen = null;
 
   /** The class plotting the performance data. */
   private PerformancePlotter plotter = null;
@@ -75,7 +75,7 @@ public class PerformancePage extends FormPage {
    * @param title
    *          the title
    */
-  public PerformancePage(final StatGenerator statGen, final FormEditor editor, final String id, final String title) {
+  public PerformancePage(final IStatGenerator statGen, final FormEditor editor, final String id, final String title) {
     super(editor, id, title);
 
     this.statGen = statGen;
@@ -157,14 +157,14 @@ public class PerformancePage extends FormPage {
 
     final long workLength = this.statGen.getDAGWorkLength();
     final long spanLength = this.statGen.getDAGSpanLength();
-    final long resultTime = this.statGen.getResultTime();
+    final long finalTime = this.statGen.getFinalTime();
     final int resultNbCores = this.statGen.getNbUsedOperators();
     final int resultNbMainCores = this.statGen.getNbMainTypeOperators();
 
     final String currentValuesDisplay = String.format(
-        "work length: %d, span length: %d, implementation length: %d, "
+        "\n- work length: %d;\n- span length: %d;\n- implementation length: %d;\n- "
             + "implementation number of main type operators: %d.",
-        workLength, spanLength, resultTime, resultNbMainCores);
+        workLength, spanLength, finalTime, resultNbMainCores);
 
     final GridData gridData = new GridData();
     gridData.widthHint = 800;
@@ -174,15 +174,15 @@ public class PerformancePage extends FormPage {
 
     final FormToolkit toolkit = mform.getToolkit();
 
-    if ((workLength > 0) && (spanLength > 0) && (resultTime > 0) && (resultNbCores > 0)) {
-      this.plotter.setData(workLength, spanLength, resultTime, resultNbCores, resultNbMainCores);
+    if ((workLength > 0) && (spanLength > 0) && (finalTime > 0) && (resultNbCores > 0)) {
+      this.plotter.setData(workLength, spanLength, finalTime, resultNbCores, resultNbMainCores);
       this.plotter.display(client);
     }
 
     toolkit.paintBordersFor(client);
   }
 
-  public StatGenerator getStatGen() {
+  public IStatGenerator getStatGen() {
     return this.statGen;
   }
 

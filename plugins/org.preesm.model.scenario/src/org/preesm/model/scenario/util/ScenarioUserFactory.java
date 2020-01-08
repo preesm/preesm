@@ -103,7 +103,7 @@ public class ScenarioUserFactory {
 
   public static final MemoryCopySpeedValue createMemoryCopySpeedValue() {
     return createMemoryCopySpeedValue(ScenarioConstants.DEFAULT_MEMCOPY_SETUP_TIME.getValue(),
-        ScenarioConstants.DEFAULT_MEMCOPY_TIME_PER_UNIT.getValue());
+        1.0D / ScenarioConstants.DEFAULT_MEMCOPY_UNIT_PER_TIME.getValue());
   }
 
   /**

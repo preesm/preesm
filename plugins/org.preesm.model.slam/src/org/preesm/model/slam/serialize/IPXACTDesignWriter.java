@@ -162,7 +162,7 @@ public class IPXACTDesignWriter {
     nameElt.setTextContent(instance.getInstanceName());
     cmpElt.appendChild(nameElt);
 
-    final Element idElt = document.createElement("spirit:procId");
+    final Element idElt = document.createElement("spirit:hardwareId");
     idElt.setTextContent(Integer.toString(instance.getHardwareId()));
     cmpElt.appendChild(idElt);
 

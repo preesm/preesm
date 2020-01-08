@@ -44,16 +44,19 @@ import org.preesm.algorithm.memalloc.model.Allocation;
 import org.preesm.algorithm.schedule.model.Schedule;
 import org.preesm.algorithm.synthesis.communications.ICommunicationInserter;
 import org.preesm.algorithm.synthesis.communications.OptimizedCommunicationInserter;
-import org.preesm.algorithm.synthesis.evaluation.latency.LatencyCost;
-import org.preesm.algorithm.synthesis.evaluation.latency.SimpleLatencyEvaluation;
 import org.preesm.algorithm.synthesis.memalloc.IMemoryAllocation;
 import org.preesm.algorithm.synthesis.memalloc.LegacyMemoryAllocation;
 import org.preesm.algorithm.synthesis.memalloc.SimpleMemoryAllocation;
+import org.preesm.algorithm.synthesis.schedule.ScheduleOrderManager;
+import org.preesm.algorithm.synthesis.schedule.algos.ChocoScheduler;
 import org.preesm.algorithm.synthesis.schedule.algos.IScheduler;
 import org.preesm.algorithm.synthesis.schedule.algos.LegacyListScheduler;
+import org.preesm.algorithm.synthesis.schedule.algos.PeriodicScheduler;
 import org.preesm.algorithm.synthesis.schedule.algos.SimpleScheduler;
+import org.preesm.commons.doc.annotations.Parameter;
 import org.preesm.commons.doc.annotations.Port;
 import org.preesm.commons.doc.annotations.PreesmTask;
+import org.preesm.commons.doc.annotations.Value;
 import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.model.pisdf.PiGraph;
@@ -68,7 +71,13 @@ import org.preesm.workflow.implement.AbstractWorkflowNodeImplementation;
  * @author anmorvan
  *
  */
-@PreesmTask(id = "pisdf-synthesis.simple", name = "Simple Synhtesis", category = "Synhtesis",
+@PreesmTask(id = "pisdf-synthesis.simple", name = "Simple Synhtesis", category = "Synthesis",
+
+    parameters = {
+        @Parameter(name = "scheduler",
+            values = { @Value(name = "simple"), @Value(name = "legacy"), @Value(name = "periodic"),
+                @Value(name = "choco") }),
+        @Parameter(name = "allocation", values = { @Value(name = "simple"), @Value(name = "legacy") }) },
 
     inputs = { @Port(name = "PiMM", type = PiGraph.class), @Port(name = "architecture", type = Design.class),
         @Port(name = "scenario", type = Scenario.class) },
@@ -93,13 +102,11 @@ public class PreesmSynthesisTask extends AbstractTaskImplementation {
     PreesmLogger.getLogger().log(Level.INFO, () -> " -- Scheduling - " + schedulerName);
     final SynthesisResult scheduleAndMap = scheduler.scheduleAndMap(algorithm, architecture, scenario);
 
-    PreesmLogger.getLogger().log(Level.INFO, " -- Insert communication");
-    final ICommunicationInserter comIns = new OptimizedCommunicationInserter();
-    comIns.insertCommunications(algorithm, architecture, scenario, scheduleAndMap.schedule, scheduleAndMap.mapping);
+    final ScheduleOrderManager scheduleOM = new ScheduleOrderManager(algorithm, scheduleAndMap.schedule);
 
-    final LatencyCost evaluate = new SimpleLatencyEvaluation().evaluate(algorithm, architecture, scenario,
-        scheduleAndMap);
-    PreesmLogger.getLogger().log(Level.INFO, "Simple latency evaluation : " + evaluate.getValue());
+    PreesmLogger.getLogger().log(Level.INFO, " -- Insert communication");
+    final ICommunicationInserter comIns = new OptimizedCommunicationInserter(scheduleOM);
+    comIns.insertCommunications(algorithm, architecture, scenario, scheduleAndMap.schedule, scheduleAndMap.mapping);
 
     PreesmLogger.getLogger().log(Level.INFO, () -> " -- Allocating Memory - " + allocationName);
     final Allocation memalloc = alloc.allocateMemory(algorithm, architecture, scenario, scheduleAndMap.schedule,
@@ -120,6 +127,12 @@ public class PreesmSynthesisTask extends AbstractTaskImplementation {
         break;
       case "legacy":
         scheduler = new LegacyListScheduler();
+        break;
+      case "periodic":
+        scheduler = new PeriodicScheduler();
+        break;
+      case "choco":
+        scheduler = new ChocoScheduler();
         break;
       default:
         throw new PreesmRuntimeException("unknown scheduler: " + schedulerName);

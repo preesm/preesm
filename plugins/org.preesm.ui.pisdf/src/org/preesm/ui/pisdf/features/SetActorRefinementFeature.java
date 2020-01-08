@@ -57,7 +57,7 @@ import org.preesm.model.pisdf.FunctionPrototype;
 import org.preesm.model.pisdf.PiSDFRefinement;
 import org.preesm.model.pisdf.factory.PiMMUserFactory;
 import org.preesm.model.pisdf.header.parser.HeaderParser;
-import org.preesm.ui.pisdf.PiMMUtil;
+import org.preesm.ui.pisdf.util.PiMMUtil;
 import org.preesm.ui.utils.FileUtils;
 
 /**
