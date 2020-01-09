@@ -20,14 +20,14 @@ PREESM Changelog
   closure and improves performanes.
 
 ### Bug fix
-* Fix #271: removes extra coma in spider codegen when no parameters.
-* Fix #262
-* Fix #264
-* Fix #267
-* Fix #268
-* Fix #269
-* Fix #273
-
+* Fix #271 : removes extra coma in spider codegen when no parameters.
+* Fix #262 : (codegen) init functions are now called only once
+* Fix #264 : Excel timings can handle expression, not only numbers
+* Fix #267 : remove useless and bugged 'set fifo type' GUI feature
+* Fix #268 : uniformize GUI features command order and names 
+* Fix #269 : improve the lookup method by vertex path
+* Fix #273 : BRV computation was not adapted to port rates being 0 (see Changes section)
+* Fix evaluation of parameters as numbers.
 
 ## Release version 3.18.2
 *2019.11.28*
