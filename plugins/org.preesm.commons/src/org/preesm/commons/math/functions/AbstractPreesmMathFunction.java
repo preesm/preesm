@@ -68,11 +68,12 @@ public abstract class AbstractPreesmMathFunction extends PostfixMathCommand {
     final double[] args = new double[getArgCount()];
     for (int i = 0; i < getArgCount(); i++) {
       final Object arg = stack.pop();
-      if (!(arg instanceof Double)) {
+      if (!(arg instanceof Number)) {
         throw new ParseException(
             "Argument must be a number, whereas it is " + arg + "(" + arg.getClass().getName() + ")");
       }
-      args[i] = (double) arg;
+      Number nb = (Number) arg;
+      args[i] = nb.doubleValue();
     }
     final double result = compute(args);
     stack.push(result);
