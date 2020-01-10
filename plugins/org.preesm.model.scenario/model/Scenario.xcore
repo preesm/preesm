@@ -1,6 +1,7 @@
 /**
  * Copyright or © or Copr. IETR/INSA - Rennes (2019) :
  *
+ * Alexandre Honorat [alexandre.honorat@insa-rennes.fr] (2019)
  * Antoine Morvan [antoine.morvan@insa-rennes.fr] (2019)
  * Daniel Madroñal [daniel.madronal@upm.es] (2019)
  *
@@ -80,7 +81,8 @@ enum ScenarioConstants {
 	DEFAULT_TIMING_TASK = 100
 	DEFAULT_TIMING_SPECIAL_TASK = 10
 	DEFAULT_MEMCOPY_SETUP_TIME = 1
-	DEFAULT_MEMCOPY_TIME_PER_UNIT = 1
+	DEFAULT_MEMCOPY_UNIT_PER_TIME = 1000
+	DEFAULT_AVG_DATA_TRANSFER_SIZE = 1000
 	DEFAULT_DATA_TYPE_SIZE = 1
 	DEFAULT_POWER_PE = 10
 	DEFAULT_ENERGY_TASK = 1
@@ -166,8 +168,8 @@ class SimulationInfo {
 	refers Scenario scenario opposite simulationInfo
 	refers ComponentInstance mainComNode
 	refers ComponentInstance mainOperator
-	long averageDataSize = "1000"
 	refers ComponentInstance[] specialVertexOperators
+	long averageDataSize = "1000"
 	op void addSpecialVertexOperator(ComponentInstance component) {
 		if (!specialVertexOperators.contains(component)) {
 			this.specialVertexOperators.add(component);

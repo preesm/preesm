@@ -1,6 +1,7 @@
 /**
  * Copyright or © or Copr. IETR/INSA - Rennes (2019) :
  *
+ * Alexandre Honorat [alexandre.honorat@insa-rennes.fr] (2019)
  * Antoine Morvan [antoine.morvan@insa-rennes.fr] (2019)
  *
  * This software is a computer program whose purpose is to help prototyping
@@ -51,8 +52,6 @@ import org.preesm.algorithm.memalloc.model.LogicalBuffer;
 import org.preesm.algorithm.memalloc.model.PhysicalBuffer;
 import org.preesm.algorithm.memalloc.model.util.MemoryAllocationSwitch;
 import org.preesm.algorithm.memory.exclusiongraph.MemoryExclusionGraph;
-import org.preesm.algorithm.schedule.model.Schedule;
-import org.preesm.algorithm.synthesis.schedule.ScheduleOrderManager;
 import org.preesm.codegen.model.Buffer;
 import org.preesm.codegen.model.SubBuffer;
 import org.preesm.codegen.model.Variable;
@@ -79,27 +78,28 @@ public class AllocationToCodegenBuffer extends MemoryAllocationSwitch<Boolean> {
   /**
    *
    */
-  public static final AllocationToCodegenBuffer link(Allocation memAlloc, Schedule schedule, Scenario scenario,
-      PiGraph algo) {
-    final AllocationToCodegenBuffer allocationToCodegenBuffer = new AllocationToCodegenBuffer(memAlloc, schedule,
-        scenario, algo);
+  public static final AllocationToCodegenBuffer link(Allocation memAlloc, Scenario scenario, PiGraph algo,
+      List<AbstractActor> totallyOrderedActors) {
+    final AllocationToCodegenBuffer allocationToCodegenBuffer = new AllocationToCodegenBuffer(memAlloc, scenario, algo,
+        totallyOrderedActors);
     allocationToCodegenBuffer.link();
     return allocationToCodegenBuffer;
   }
 
-  private final Scenario   scenario;
-  private final PiGraph    algo;
-  private final Allocation memAlloc;
-  private final Schedule   schedule;
+  private final Scenario            scenario;
+  private final PiGraph             algo;
+  private final Allocation          memAlloc;
+  private final List<AbstractActor> totallyOrderedActors;
 
   /**
    *
    */
-  private AllocationToCodegenBuffer(Allocation memAlloc, Schedule schedule, Scenario scenario, PiGraph algo) {
+  private AllocationToCodegenBuffer(Allocation memAlloc, Scenario scenario, PiGraph algo,
+      List<AbstractActor> totallyOrderedActors) {
     this.memAlloc = memAlloc;
-    this.schedule = schedule;
     this.scenario = scenario;
     this.algo = algo;
+    this.totallyOrderedActors = totallyOrderedActors;
   }
 
   /**
@@ -109,9 +109,7 @@ public class AllocationToCodegenBuffer extends MemoryAllocationSwitch<Boolean> {
     this.doSwitch(this.memAlloc);
 
     // link variables for Fifos and set names
-    final List<
-        AbstractActor> orderedList = new ScheduleOrderManager(algo, schedule).buildScheduleAndTopologicalOrderedList();
-    for (final AbstractActor actor : orderedList) {
+    for (final AbstractActor actor : totallyOrderedActors) {
       final List<Fifo> fifos = actor.getDataInputPorts().stream().map(DataPort::getFifo).collect(Collectors.toList());
       for (final Fifo fifo : fifos) {
         final FifoAllocation fifoAllocation = this.memAlloc.getFifoAllocations().get(fifo);

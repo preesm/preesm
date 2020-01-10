@@ -848,8 +848,8 @@ public class PiMemoryExclusionGraph extends SimpleGraph<PiMemoryExclusionVertex,
       final EndActor dagEndVertex = (EndActor) endReference;
 
       // Compute the list of all edges between init and end
-      final List<Fifo> predecessorEdgesOf = orderMngr.getPredecessorEdgesOf(dagEndVertex);
-      final List<Fifo> successorEdgesOf = orderMngr.getSuccessorEdgesOf(dagInitVertex);
+      final List<Fifo> predecessorEdgesOf = orderMngr.getAllPredecessorEdgesOf(dagEndVertex);
+      final List<Fifo> successorEdgesOf = orderMngr.getAllSuccessorEdgesOf(dagInitVertex);
       final Set<Fifo> edgesInBetween = new LinkedHashSet<>(successorEdgesOf);
       edgesInBetween.retainAll(predecessorEdgesOf);
 

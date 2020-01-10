@@ -1,6 +1,7 @@
 /**
  * Copyright or © or Copr. IETR/INSA - Rennes (2012 - 2019) :
  *
+ * Alexandre Honorat [alexandre.honorat@insa-rennes.fr] (2019)
  * Antoine Morvan [antoine.morvan@insa-rennes.fr] (2017 - 2019)
  * Clément Guy [clement.guy@insa-rennes.fr] (2014)
  * Maxime Pelcat [maxime.pelcat@insa-rennes.fr] (2012 - 2014)
@@ -36,16 +37,21 @@
  */
 package org.preesm.algorithm.mapper.gantt;
 
+import java.awt.Color;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.logging.Level;
 import org.preesm.algorithm.mapper.model.MapperDAG;
 import org.preesm.algorithm.mapper.model.MapperDAGVertex;
+import org.preesm.algorithm.mapping.model.Mapping;
 import org.preesm.algorithm.model.iterators.TopologicalDAGIterator;
+import org.preesm.algorithm.synthesis.timer.ActorExecutionTiming;
 import org.preesm.commons.logger.PreesmLogger;
+import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.slam.ComponentInstance;
 import org.preesm.model.slam.utils.LexicographicComponentInstanceComparator;
 
@@ -96,9 +102,9 @@ public class GanttData {
    * @return true, if successful
    */
   private boolean insertTask(final String taskId, final ComponentInstance componentId, final long startTime,
-      final long duration) {
+      final long duration, final Color color) {
     final GanttComponent cmp = getComponent(componentId);
-    final GanttTask task = new GanttTask(startTime, duration, taskId, cmp);
+    final GanttTask task = new GanttTask(startTime, duration, taskId, color);
     return cmp.insertTask(task);
   }
 
@@ -111,6 +117,7 @@ public class GanttData {
    */
   public boolean insertDag(final MapperDAG dag) {
     final TopologicalDAGIterator viterator = new TopologicalDAGIterator(dag);
+    TaskColorSelector tcs = new TaskColorSelector();
 
     while (viterator.hasNext()) {
       final MapperDAGVertex currentVertex = (MapperDAGVertex) viterator.next();
@@ -120,7 +127,7 @@ public class GanttData {
         final long startTime = currentVertex.getTiming().getTLevel();
         final long duration = currentVertex.getTiming().getCost();
         final String id = currentVertex.getName() + " (x" + currentVertex.getInit().getNbRepeat() + ")";
-        if (!insertTask(id, cmp, startTime, duration)) {
+        if (!insertTask(id, cmp, startTime, duration, tcs.mapperDAGcompability(currentVertex))) {
           return false;
         }
       } else {
@@ -129,6 +136,31 @@ public class GanttData {
         PreesmLogger.getLogger().log(Level.SEVERE, message);
       }
     }
+    return true;
+  }
+
+  /**
+   * Fills GanntData with new synthesis results.
+   * 
+   * @param mapping
+   *          Mapping of actors.
+   * @param execTimings
+   *          Execution times of actors.
+   * @return False at first task that could not be inserted.
+   */
+  public boolean insertSchedulerMapping(final Mapping mapping,
+      final Map<AbstractActor, ActorExecutionTiming> execTimings) {
+    TaskColorSelector tcs = new TaskColorSelector();
+    for (Entry<AbstractActor, ActorExecutionTiming> e : execTimings.entrySet()) {
+      AbstractActor aa = e.getKey();
+      ActorExecutionTiming aet = e.getValue();
+      for (ComponentInstance ci : mapping.getMapping(aa)) {
+        if (!insertTask(aa.getName(), ci, aet.getStartTime(), aet.getDuration(), tcs.doSwitch(aa))) {
+          return false;
+        }
+      }
+    }
+
     return true;
   }
 

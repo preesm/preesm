@@ -1,11 +1,7 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2012 - 2019) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2019) :
  *
- * Antoine Morvan [antoine.morvan@insa-rennes.fr] (2017 - 2019)
- * Clément Guy [clement.guy@insa-rennes.fr] (2014 - 2015)
- * Julien Hascoet [jhascoet@kalray.eu] (2016)
- * Julien Heulot [julien.heulot@insa-rennes.fr] (2013 - 2015)
- * Karol Desnos [karol.desnos@insa-rennes.fr] (2012 - 2016)
+ * Alexandre Honorat [alexandre.honorat@insa-rennes.fr] (2019)
  *
  * This software is a computer program whose purpose is to help prototyping
  * parallel applications using dataflow formalism.
@@ -36,17 +32,12 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL license and that you accept its terms.
  */
-package org.preesm.ui.pisdf;
+package org.preesm.ui.pisdf.util;
 
-import java.util.Set;
-import org.eclipse.core.runtime.IPath;
-import org.eclipse.core.runtime.Path;
 import org.eclipse.graphiti.features.IFeatureProvider;
 import org.eclipse.graphiti.mm.algorithms.GraphicsAlgorithm;
 import org.eclipse.graphiti.platform.IDiagramBehavior;
 import org.eclipse.graphiti.tb.IToolBehaviorProvider;
-import org.eclipse.jface.dialogs.IInputValidator;
-import org.eclipse.jface.dialogs.InputDialog;
 import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.jface.window.Window;
 import org.eclipse.swt.SWT;
@@ -57,80 +48,18 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
-import org.eclipse.swt.widgets.FileDialog;
-import org.eclipse.swt.widgets.Shell;
-import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.dialogs.ElementListSelectionDialog;
 import org.preesm.model.pisdf.FunctionPrototype;
 import org.preesm.model.pisdf.util.PrototypeFormatter;
 import org.preesm.ui.pisdf.diagram.PiMMToolBehaviorProvider;
+import org.preesm.ui.utils.DialogUtil;
 
 /**
- * The Class PiMMUtil.
+ * A few functions used for GUI: ask user or warn user.
+ * 
+ * @author ahonorat
  */
 public class PiMMUtil {
-
-  private PiMMUtil() {
-    // prevent instantiation
-  }
-
-  /**
-   * Returns the currently active Shell.
-   *
-   * @return The currently active Shell.
-   */
-  private static Shell getShell() {
-    return PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell();
-  }
-
-  /**
-   * Opens an simple input dialog with OK and Cancel buttons.
-   *
-   * @param dialogTitle
-   *          the dialog title, or <code>null</code> if none
-   * @param dialogMessage
-   *          the dialog message, or <code>null</code> if none
-   * @param initialValue
-   *          the initial input value, or <code>null</code> if none (equivalent to the empty string)
-   * @param validator
-   *          an input validator, or <code>null</code> if none
-   * @return the string, or <code>null</code> if user cancels
-   */
-  public static String askString(final String dialogTitle, final String dialogMessage, final String initialValue,
-      final IInputValidator validator) {
-    String ret = null;
-    final Shell shell = PiMMUtil.getShell();
-    final InputDialog inputDialog = new InputDialog(shell, dialogTitle, dialogMessage, initialValue, validator);
-    final int retDialog = inputDialog.open();
-    if (retDialog == Window.OK) {
-      ret = inputDialog.getValue();
-    }
-    return ret;
-  }
-
-  /**
-   * Ask save file.
-   *
-   * @param dialogText
-   *          the dialog text
-   * @param fileExtensions
-   *          the file extensions
-   * @return the i path
-   */
-  public static IPath askSaveFile(final String dialogText, final Set<String> fileExtensions) {
-    final Shell shell = PiMMUtil.getShell();
-
-    final FileDialog inputDialog = new FileDialog(shell, SWT.SAVE);
-    inputDialog.setText(dialogText);
-    inputDialog.setOverwrite(true);
-    inputDialog.setFilterExtensions(fileExtensions.toArray(new String[fileExtensions.size()]));
-
-    final String retDialog = inputDialog.open();
-    if (retDialog != null) {
-      return new Path(retDialog);
-    }
-    return null;
-  }
 
   /**
    * Select function.
@@ -150,17 +79,18 @@ public class PiMMUtil {
   public static FunctionPrototype selectFunction(final FunctionPrototype[] prototypes,
       final FunctionPrototype[] allProtoArray, final String title, final String message,
       final boolean showOnlyValidPrototypes) {
-    final ElementListSelectionDialog dialog = new ElementListSelectionDialog(PiMMUtil.getShell(), new LabelProvider() {
+    final ElementListSelectionDialog dialog = new ElementListSelectionDialog(DialogUtil.getShell(),
+        new LabelProvider() {
 
-      @Override
-      public String getText(final Object element) {
-        if (element instanceof FunctionPrototype) {
-          return PrototypeFormatter.format((FunctionPrototype) element);
-        } else {
-          return "";
-        }
-      }
-    }) {
+          @Override
+          public String getText(final Object element) {
+            if (element instanceof FunctionPrototype) {
+              return PrototypeFormatter.format((FunctionPrototype) element);
+            } else {
+              return "";
+            }
+          }
+        }) {
 
       final FunctionPrototype[] filteredPrototypes = prototypes;
       final FunctionPrototype[] allPrototypes      = allProtoArray;
@@ -237,4 +167,5 @@ public class PiMMUtil {
     iDiagramEditor.refresh();
     ((PiMMToolBehaviorProvider) behaviorProvider).setToolTip(ga, null);
   }
+
 }

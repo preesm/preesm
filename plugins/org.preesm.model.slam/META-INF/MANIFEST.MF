@@ -3,11 +3,12 @@ Bundle-ManifestVersion: 2
 Bundle-Name: %pluginName
 Automatic-Module-Name: org.preesm.model.slam
 Bundle-SymbolicName: org.preesm.model.slam;singleton:=true
-Bundle-Version: 3.18.2
+Bundle-Version: 3.19.0
 Bundle-ClassPath: .
 Bundle-Localization: plugin
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Export-Package: org.preesm.model.slam,
+ org.preesm.model.slam.generator,
  org.preesm.model.slam.impl,
  org.preesm.model.slam.process,
  org.preesm.model.slam.route,
@@ -24,3 +25,4 @@ Require-Bundle: org.eclipse.core.runtime,
  org.preesm.workflow;visibility:=reexport
 Bundle-ActivationPolicy: lazy
 Bundle-Vendor: %providerName
+Import-Package: org.eclipse.core.resources

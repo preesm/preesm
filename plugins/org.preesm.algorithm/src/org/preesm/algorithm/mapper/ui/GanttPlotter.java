@@ -1,6 +1,7 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2008 - 2019) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2008 - 2020) :
  *
+ * Alexandre Honorat [alexandre.honorat@insa-rennes.fr] (2019 - 2020)
  * Antoine Morvan [antoine.morvan@insa-rennes.fr] (2017 - 2019)
  * Clément Guy [clement.guy@insa-rennes.fr] (2015)
  * Jonathan Piat [jpiat@laas.fr] (2008)
@@ -40,22 +41,32 @@ package org.preesm.algorithm.mapper.ui;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Container;
 import java.awt.Frame;
 import java.awt.LinearGradientPaint;
 import java.awt.Paint;
-import java.awt.event.WindowEvent;
 import java.awt.geom.Point2D;
 import java.io.IOException;
 import java.net.URL;
 import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
+import java.util.logging.Level;
 import javax.swing.JEditorPane;
 import javax.swing.JFrame;
 import javax.swing.JMenuItem;
+import javax.swing.JRootPane;
 import javax.swing.WindowConstants;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.awt.SWT_AWT;
+import org.eclipse.swt.events.SelectionAdapter;
+import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.layout.FillLayout;
+import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.ui.forms.IManagedForm;
+import org.eclipse.ui.forms.widgets.FormToolkit;
+import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
@@ -69,7 +80,6 @@ import org.jfree.data.gantt.Task;
 import org.jfree.data.gantt.TaskSeries;
 import org.jfree.data.gantt.TaskSeriesCollection;
 import org.jfree.data.time.SimpleTimePeriod;
-import org.jfree.ui.ApplicationFrame;
 import org.jfree.ui.RectangleInsets;
 import org.jfree.ui.RefineryUtilities;
 import org.preesm.algorithm.mapper.gantt.GanttComponent;
@@ -77,29 +87,32 @@ import org.preesm.algorithm.mapper.gantt.GanttData;
 import org.preesm.algorithm.mapper.gantt.GanttTask;
 import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.preesm.commons.files.PreesmResourcesHelper;
+import org.preesm.commons.logger.PreesmLogger;
 
 /**
  * Gantt plotter of a mapperdagvertex using JFreeChart.
  *
  * @author mpelcat
  */
-public class GanttPlotter extends ApplicationFrame {
+public class GanttPlotter {
 
-  /** The Constant serialVersionUID. */
-  private static final long serialVersionUID = 1L;
-
-  /** The chart panel. */
-  private ChartPanel chartPanel = null;
+  /**
+   * Initial dimensions of the window
+   */
+  public static final int xDimension = 700;
+  public static final int yDimension = 500;
 
   /**
    * Creates a chart.
    *
    * @param dataset
    *          a dataset.
+   * @param idTOcolor
+   *          Map that will be used here with tasks colors.
    *
    * @return A chart.
    */
-  private JFreeChart createChart(final IntervalCategoryDataset dataset) {
+  private static JFreeChart createChart(final IntervalCategoryDataset dataset, final Map<String, Color> idTOcolor) {
 
     final JFreeChart chart = ChartFactory.createGanttChart("Solution Gantt", // title
         "Operators", // x-axis label
@@ -127,7 +140,7 @@ public class GanttPlotter extends ApplicationFrame {
     final DefaultDrawingSupplier d = new DefaultDrawingSupplier();
 
     plot.setDrawingSupplier(d);
-    final MyGanttRenderer ren = new MyGanttRenderer();
+    final MyGanttRenderer ren = new MyGanttRenderer(idTOcolor);
 
     ren.setSeriesItemLabelsVisible(0, false);
     ren.setSeriesVisibleInLegend(0, false);
@@ -149,9 +162,11 @@ public class GanttPlotter extends ApplicationFrame {
    *
    * @param ganttData
    *          the gantt data
+   * @param idTOcolor
+   *          Map that will be filled here with tasks colors.
    * @return The dataset.
    */
-  private static IntervalCategoryDataset createDataset(final GanttData ganttData) {
+  private static IntervalCategoryDataset createDataset(final GanttData ganttData, final Map<String, Color> idTOcolor) {
 
     final TaskSeries series = new TaskSeries("Scheduled");
 
@@ -171,6 +186,10 @@ public class GanttPlotter extends ApplicationFrame {
         final long start = ganttTask.getStartTime();
         final long end = start + ganttTask.getDuration();
         final Task currentJFreeTask = new Task(taskName, new SimpleTimePeriod(start, end));
+        final Color color = ganttTask.getColor();
+        if (color != null) {
+          idTOcolor.put(taskName, color);
+        }
 
         currentJFreeCmp.addSubtask(currentJFreeTask);
       }
@@ -188,94 +207,110 @@ public class GanttPlotter extends ApplicationFrame {
    *
    * @param ganttData
    *          the gantt data
-   * @param delegateDisplay
-   *          the delegate display
+   * @param managedForm
+   *          the parent control, may be null (then opens a new window)
    */
-  public static void plotDeployment(final GanttData ganttData, final Composite delegateDisplay) {
+  public static void plotDeployment(final GanttData ganttData, final IManagedForm managedForm) {
 
-    final GanttPlotter plotter = new GanttPlotter("Solution gantt", ganttData);
-
-    if (delegateDisplay == null) {
-      plotter.plot();
-    } else {
-      plotter.plotInComposite(delegateDisplay);
-    }
-  }
-
-  /**
-   * Plot the Gantt chart in a standalone window.
-   */
-  private void plot() {
-    pack();
-    RefineryUtilities.centerFrameOnScreen(this);
-    setVisible(true);
-  }
-
-  /**
-   * Gantt chart plotting function in a given composite (within Eclipse).
-   *
-   * @param parent
-   *          the parent Composite Eclipse UI element
-   */
-  private void plotInComposite(final Composite parent) {
-
-    final Composite composite = new Composite(parent, SWT.EMBEDDED | SWT.FILL);
-    parent.setLayout(new FillLayout());
-    final Frame frame = SWT_AWT.new_Frame(composite);
-    frame.add(getContentPane());
-
-    final MouseClickedListener listener = new MouseClickedListener(frame);
-    this.chartPanel.addChartMouseListener(listener);
-    this.chartPanel.addMouseMotionListener(listener);
-    this.chartPanel.addMouseListener(listener);
-  }
-
-  /**
-   * Plotting a Gantt chart.
-   *
-   * @param title
-   *          the title
-   * @param ganttData
-   *          the gantt data
-   */
-  private GanttPlotter(final String title, final GanttData ganttData) {
-    super(title);
-
-    final JFreeChart chart = createChart(GanttPlotter.createDataset(ganttData));
-    this.chartPanel = new ChartPanel(chart);
-    this.chartPanel.setPreferredSize(new java.awt.Dimension(500, 270));
-    this.chartPanel.setMouseZoomable(true, true);
-    this.chartPanel.setMouseWheelEnabled(true);
-    final CategoryPlot categoryPlot = this.chartPanel.getChart().getCategoryPlot();
+    // JChart init
+    final Map<String, Color> idTOcolor = new TreeMap<>();
+    final JFreeChart chart = createChart(createDataset(ganttData, idTOcolor), idTOcolor);
+    ChartPanel cp = new ChartPanel(chart);
+    cp.setPreferredSize(new java.awt.Dimension(GanttPlotter.xDimension, GanttPlotter.yDimension));
+    cp.setMouseZoomable(true, true);
+    cp.setMouseWheelEnabled(true);
+    final CategoryPlot categoryPlot = cp.getChart().getCategoryPlot();
     categoryPlot.setRangePannable(true);
-    setContentPane(this.chartPanel);
 
     final JMenuItem menuItem = new JMenuItem("Help ...");
-    this.chartPanel.getPopupMenu().add(menuItem);
+    cp.getPopupMenu().add(menuItem);
 
     final JFrame helpFrame = new JFrame("Gantt Help");
-    helpFrame.setSize(400, 250);
-    helpFrame.setLocationRelativeTo(this.chartPanel);
-    helpFrame.setDefaultCloseOperation(WindowConstants.HIDE_ON_CLOSE);
+    helpFrame.setSize(xDimension / 2, yDimension / 2);
+    helpFrame.setLocationRelativeTo(cp);
+    helpFrame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
 
     try {
-      final URL resource = PreesmResourcesHelper.getInstance().resolve("GanttHelp.html", this.getClass());
+      final URL resource = PreesmResourcesHelper.getInstance().resolve("GanttHelp.html", GanttPlotter.class);
       final JEditorPane comp = new JEditorPane(resource);
       helpFrame.getContentPane().add(comp, BorderLayout.PAGE_START);
     } catch (final IOException ex) {
       throw new PreesmRuntimeException("Could not load Gantt Help file", ex);
     }
     menuItem.addActionListener(e -> helpFrame.setVisible(true));
+
+    // Frame init
+    if (managedForm == null) {
+      Frame frame = new JFrame("Gantt Chart Plotter");
+      ((JFrame) frame).setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+      RefineryUtilities.centerFrameOnScreen(frame);
+
+      plotFrameCP(frame, cp);
+
+    } else {
+
+      final ScrolledForm form = managedForm.getForm();
+      final FillLayout layout = new FillLayout();
+      form.getBody().setLayout(layout);
+
+      final Composite composite = new Composite(form.getBody(), SWT.EMBEDDED | SWT.FILL);
+      Frame frame = null;
+      try {
+        // may not work because of a libswt-awt-gtk4928+.so bug which is not our responsability
+        // see following bug report
+        // https://bugs.eclipse.org/bugs/show_bug.cgi?id=558874
+        // another bug prevents to generate the exception correctly, it has been fixed in latest swt
+        // see following bug report
+        // https://bugs.eclipse.org/bugs/show_bug.cgi?id=558681
+        // TODO this bug appears in other parts of Preesm using SWT_AWT:
+        // org/preesm/algorithm/mapper/ui/stats/PerformancePlotter.java
+        // (but we do not care since calling code is deprecated: Fast and PFast schedulers)
+        // org/preesm/algorithm/mapper/ui/BestCostPlotter.java
+        // (we care but not too much since it is not used with the new Synthesis)
+        frame = SWT_AWT.new_Frame(composite);
+      } catch (UnsatisfiedLinkError e) {
+        // we catch this error since we can recover from it
+        // Level.WARNING may stop the workflow depending on options
+        // and as we are in a separate thread, events are not always well managed ...
+        // so we use Level.INFO instead
+        PreesmLogger.getLogger().log(Level.INFO,
+            "An error occured while loading org.eclipse.swt.awt.SWT_AWT class "
+                + "or its associated shared object libswt-awt-gtk-4928+.so, "
+                + "thus the Gantt diagram is not embedded in Eclipse. See error:\n" + e.getMessage());
+        // the created composite cannot be used so we dispose it and force to reset layout
+        if (!composite.isDisposed()) {
+          composite.dispose();
+        }
+        form.getBody().layout(true, true);
+      }
+
+      if (frame != null) {
+        // plot inside the window
+        JRootPane root = new JRootPane();
+        Container awtContainer = root.getContentPane();
+        awtContainer.add(cp);
+        frame.add(root);
+        plotFrameCP(frame, cp);
+
+      } else {
+        // plot in a new window if user clicks on the button
+        final FormToolkit toolkit = managedForm.getToolkit();
+        final Button externalDisplayButton = toolkit.createButton(form.getBody(),
+            "Click to open the Gantt diagram in a new window", SWT.PUSH | SWT.CENTER);
+        externalDisplayButton
+            .setToolTipText("We must do this because of a bug on Linux due to GTK/Eclipse most probably ...");
+
+        externalDisplayButton.addSelectionListener(new SelectionAdapterPlottingCP(cp));
+
+      }
+    }
   }
 
-  /*
-   * (non-Javadoc)
-   *
-   * @see org.jfree.ui.ApplicationFrame#windowClosing(java.awt.event.WindowEvent)
-   */
-  @Override
-  public void windowClosing(final WindowEvent event) {
-    // skip exiting JVM
+  private static void plotFrameCP(Frame frame, ChartPanel cp) {
+    frame.add(cp);
+    // Set the visibility as true, thereby displaying it
+    frame.setVisible(true);
+    frame.pack();
   }
 
   /**
@@ -285,9 +320,35 @@ public class GanttPlotter extends ApplicationFrame {
    */
   public static LinearGradientPaint getBackgroundColorGradient() {
     final Point2D start = new Point2D.Float(0, 0);
-    final Point2D end = new Point2D.Float(500, 500);
+    final Point2D end = new Point2D.Float(xDimension, yDimension);
     final float[] dist = { 0.0f, 0.8f };
     final Color[] colors = { new Color(170, 160, 190), Color.WHITE };
     return new LinearGradientPaint(start, end, dist, colors);
   }
+
+  /**
+   * 
+   * @author ahonorat
+   *
+   */
+  private static class SelectionAdapterPlottingCP extends SelectionAdapter {
+
+    final ChartPanel cp;
+
+    private SelectionAdapterPlottingCP(ChartPanel cp) {
+      this.cp = cp;
+    }
+
+    @Override
+    public void widgetSelected(final SelectionEvent e) {
+      Frame frame = new JFrame("Gantt Chart Plotter");
+      ((JFrame) frame).setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+      RefineryUtilities.centerFrameOnScreen(frame);
+
+      plotFrameCP(frame, cp);
+
+    }
+
+  }
+
 }

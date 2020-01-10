@@ -1,6 +1,7 @@
 /**
  * Copyright or © or Copr. IETR/INSA - Rennes (2012 - 2019) :
  *
+ * Alexandre Honorat [alexandre.honorat@insa-rennes.fr] (2019)
  * Antoine Morvan [antoine.morvan@insa-rennes.fr] (2017 - 2019)
  * Clément Guy [clement.guy@insa-rennes.fr] (2014 - 2015)
  * Julien Heulot [julien.heulot@insa-rennes.fr] (2013)
@@ -89,7 +90,7 @@ public class AddDataInputPortFeature extends AbstractAddActorPortFeature {
    */
   @Override
   public String getName() {
-    return "Add Input Port";
+    return "Add Data Input Port";
   }
 
   /*
@@ -99,7 +100,7 @@ public class AddDataInputPortFeature extends AbstractAddActorPortFeature {
    */
   @Override
   public String getDescription() {
-    return "Add an input port to the Actor";
+    return "Add a data input port to the Actor";
   }
 
   /*

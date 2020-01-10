@@ -6,6 +6,7 @@
  * Clément Guy [clement.guy@insa-rennes.fr] (2014 - 2015)
  * Florian Arrestier [florian.arrestier@insa-rennes.fr] (2018)
  * Julien Hascoet [jhascoet@kalray.eu] (2017)
+ * Julien Heulot [julien.heulot@insa-rennes.fr] (2019)
  * Karol Desnos [karol.desnos@insa-rennes.fr] (2012 - 2015)
  *
  * This software is a computer program whose purpose is to help prototyping
@@ -37,7 +38,6 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL license and that you accept its terms.
  */
-
 /**
  * Copyright or © or Copr. IETR/INSA - Rennes (2012 - 2019) :
  *

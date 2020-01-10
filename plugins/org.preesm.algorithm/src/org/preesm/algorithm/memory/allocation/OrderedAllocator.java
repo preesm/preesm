@@ -1,6 +1,7 @@
 /**
  * Copyright or © or Copr. IETR/INSA - Rennes (2012 - 2019) :
  *
+ * Alexandre Honorat [alexandre.honorat@insa-rennes.fr] (2019)
  * Antoine Morvan [antoine.morvan@insa-rennes.fr] (2017 - 2019)
  * Clément Guy [clement.guy@insa-rennes.fr] (2014)
  * Karol Desnos [karol.desnos@insa-rennes.fr] (2012 - 2015)
@@ -37,7 +38,6 @@
  */
 package org.preesm.algorithm.memory.allocation;
 
-import com.google.common.primitives.Ints;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -138,7 +138,7 @@ public abstract class OrderedAllocator extends MemoryAllocator {
    */
   private void allocateLargestFirst() {
     final ArrayList<MemoryExclusionVertex> list = new ArrayList<>(this.inputExclusionGraph.vertexSet());
-    Collections.sort(list, (v1, v2) -> Ints.saturatedCast(v2.getWeight() - v1.getWeight()));
+    Collections.sort(list, (v1, v2) -> Long.compare(v2.getWeight(), v1.getWeight()));
     allocateInOrder(list);
   }
 
@@ -255,7 +255,7 @@ public abstract class OrderedAllocator extends MemoryAllocator {
       solver.solve();
 
       final ArrayList<MemoryExclusionVertex> stableSet = new ArrayList<>(solver.getHeaviestClique());
-      Collections.sort(stableSet, (v1, v2) -> Ints.saturatedCast(v2.getWeight() - v1.getWeight()));
+      Collections.sort(stableSet, (v1, v2) -> Long.compare(v2.getWeight(), v1.getWeight()));
       orderedList.addAll(stableSet);
 
       inclusionGraph.removeAllVertices(stableSet);

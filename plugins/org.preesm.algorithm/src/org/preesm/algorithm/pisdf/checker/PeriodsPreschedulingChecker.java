@@ -66,6 +66,7 @@ import org.preesm.model.pisdf.PeriodicElement;
 import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.pisdf.brv.BRVMethod;
 import org.preesm.model.pisdf.brv.PiBRV;
+import org.preesm.model.pisdf.statictools.PiMMHelper;
 import org.preesm.model.scenario.Scenario;
 import org.preesm.model.scenario.ScenarioConstants;
 import org.preesm.model.slam.Component;
@@ -128,11 +129,10 @@ public class PeriodsPreschedulingChecker extends AbstractTaskImplementation {
       throw new PreesmRuntimeException("This task must be called with a homogeneous architecture, abandon.");
     }
 
-    final Map<String, Object> output = new LinkedHashMap<>();
-    output.put(AbstractWorkflowNodeImplementation.KEY_PI_GRAPH, graph);
-
     int nbCore = architecture.getOperatorComponents().get(0).getInstances().size();
     PreesmLogger.getLogger().log(Level.INFO, "Found " + nbCore + " cores.");
+
+    final long time = System.nanoTime();
 
     final String rateStr = parameters.get(PeriodsPreschedulingChecker.SELECTION_RATE);
     int rate = 100;
@@ -164,7 +164,19 @@ public class PeriodsPreschedulingChecker extends AbstractTaskImplementation {
       }
     }
 
+    final Map<String, Object> output = new LinkedHashMap<>();
+    output.put(AbstractWorkflowNodeImplementation.KEY_PI_GRAPH, graph);
+
     Map<AbstractVertex, Long> brv = PiBRV.compute(graph, BRVMethod.LCM);
+    // check that are all actor periods times brv are equal and set the graph period if needed
+    PiMMHelper.checkPeriodicity(graph, brv);
+
+    long graphPeriod = graph.getPeriod().evaluate();
+    if (graphPeriod <= 0 && periodicActors.isEmpty()) {
+      PreesmLogger.getLogger().log(Level.WARNING, "This task is useless when there is no period in the graph.");
+      return output;
+    }
+
     Map<AbstractVertex, Long> wcets = new HashMap<>();
     for (final Entry<AbstractVertex, Long> en : brv.entrySet()) {
       final AbstractVertex a = en.getKey();
@@ -187,16 +199,17 @@ public class PeriodsPreschedulingChecker extends AbstractTaskImplementation {
       }
     }
 
-    final long graphPeriod = graph.getPeriod().evaluate();
-    if (graphPeriod > 0 && periodicActors.isEmpty()) {
-      // simply check sum of wcets and return.
-      long totC = 0L;
-      for (Entry<AbstractVertex, Long> en : wcets.entrySet()) {
-        totC += en.getValue() * brv.get(en.getKey());
-      }
-      if (totC > nbCore * graphPeriod) {
-        throw new PreesmRuntimeException("Utilization factor is greater than period, not schedulable.");
-      }
+    // simply check sum of wcets and return.
+    long totC = 0L;
+    for (Entry<AbstractVertex, Long> en : wcets.entrySet()) {
+      totC += en.getValue() * brv.get(en.getKey());
+    }
+    if (totC > nbCore * graphPeriod) {
+      throw new PreesmRuntimeException("Utilization factor is greater than number of cores, not schedulable.");
+    }
+    if (periodicActors.isEmpty()) {
+      // then there is no need for further analysis
+      PreesmLogger.getLogger().log(Level.INFO, "Periodic prescheduling check : valid schedule *might* exist!");
       return output;
     }
 
@@ -245,6 +258,12 @@ public class PeriodsPreschedulingChecker extends AbstractTaskImplementation {
     // 4. for each selected periodic node for nbff:
     performAllNBF(actorsNBFF, periodicActors, true, heurFifoBreaks.absGraph, heurFifoBreaks.breakingFifosAbs, wcets,
         heurFifoBreaks.minCycleBrv, nbCore);
+
+    long duration = System.nanoTime() - time;
+    PreesmLogger.getLogger().info("Time+ " + Math.round(duration / 1e6) + " ms.");
+
+    // 5. greetings to the user
+    PreesmLogger.getLogger().log(Level.INFO, "Periodic prescheduling check succeeded: valid schedule *might* exist!");
 
     return output;
   }

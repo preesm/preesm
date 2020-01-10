@@ -1,6 +1,7 @@
 /**
  * Copyright or © or Copr. IETR/INSA - Rennes (2019) :
  *
+ * Alexandre Honorat [alexandre.honorat@insa-rennes.fr] (2019)
  * Antoine Morvan [antoine.morvan@insa-rennes.fr] (2019)
  *
  * This software is a computer program whose purpose is to help prototyping
@@ -34,7 +35,8 @@
  */
 package org.preesm.algorithm.synthesis.evaluation;
 
-import org.preesm.algorithm.synthesis.SynthesisResult;
+import org.preesm.algorithm.mapping.model.Mapping;
+import org.preesm.algorithm.synthesis.schedule.ScheduleOrderManager;
 import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.scenario.Scenario;
 import org.preesm.model.slam.Design;
@@ -48,7 +50,7 @@ import org.preesm.model.slam.Design;
  */
 public interface ISynthesisEvaluator<T extends ISynthesisCost<?>> {
 
-  public T evaluate(final PiGraph algo, final Design slamDesign, final Scenario scenario,
-      final SynthesisResult synthesisChoice);
+  public T evaluate(final PiGraph algo, final Design slamDesign, final Scenario scenario, final Mapping mapping,
+      final ScheduleOrderManager scheduleOM);
 
 }

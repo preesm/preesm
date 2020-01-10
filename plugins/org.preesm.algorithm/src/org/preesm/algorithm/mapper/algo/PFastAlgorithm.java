@@ -1,6 +1,7 @@
 /**
  * Copyright or © or Copr. IETR/INSA - Rennes (2008 - 2019) :
  *
+ * Alexandre Honorat [alexandre.honorat@insa-rennes.fr] (2019)
  * Antoine Morvan [antoine.morvan@insa-rennes.fr] (2017 - 2019)
  * Clément Guy [clement.guy@insa-rennes.fr] (2014 - 2015)
  * Matthieu Wipliez [matthieu.wipliez@insa-rennes.fr] (2008)
@@ -98,11 +99,7 @@ public class PFastAlgorithm extends Observable {
     @Override
     public int compare(final MapperDAG o1, final MapperDAG o2) {
 
-      long difference = 0;
-
-      difference = o1.getScheduleCost();
-
-      difference -= o2.getScheduleCost();
+      long difference = o1.getScheduleCost() - o2.getScheduleCost();
 
       if (difference >= 0) {
         difference = 1;

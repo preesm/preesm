@@ -1,6 +1,7 @@
 /**
  * Copyright or © or Copr. IETR/INSA - Rennes (2012 - 2019) :
  *
+ * Alexandre Honorat [alexandre.honorat@insa-rennes.fr] (2019)
  * Antoine Morvan [antoine.morvan@insa-rennes.fr] (2017 - 2019)
  * Clément Guy [clement.guy@insa-rennes.fr] (2015)
  * Julien Heulot [julien.heulot@insa-rennes.fr] (2013)
@@ -45,8 +46,8 @@ import org.eclipse.graphiti.mm.pictograms.Diagram;
 import org.preesm.model.pisdf.Actor;
 import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.pisdf.factory.PiMMUserFactory;
-import org.preesm.ui.pisdf.PiMMUtil;
 import org.preesm.ui.pisdf.util.VertexNameValidator;
+import org.preesm.ui.utils.DialogUtil;
 
 // TODO: Auto-generated Javadoc
 /**
@@ -101,7 +102,7 @@ public class CreateActorFeature extends AbstractCreateFeature {
     final String question = "Enter new actor name";
     String newActorName = "ActorName";
 
-    newActorName = PiMMUtil.askString("Create Actor", question, newActorName, new VertexNameValidator(graph, null));
+    newActorName = DialogUtil.askString("Create Actor", question, newActorName, new VertexNameValidator(graph, null));
     if ((newActorName == null) || (newActorName.trim().length() == 0)) {
       this.hasDoneChanges = false; // If this is not done, the graph is considered modified.
       return ICreate.EMPTY;

@@ -6,6 +6,7 @@
  * Clément Guy [clement.guy@insa-rennes.fr] (2014 - 2015)
  * Florian Arrestier [florian.arrestier@insa-rennes.fr] (2018)
  * Jonathan Piat [jpiat@laas.fr] (2008 - 2011)
+ * Julien Heulot [julien.heulot@insa-rennes.fr] (2019)
  * Karol Desnos [karol.desnos@insa-rennes.fr] (2016)
  * Matthieu Wipliez [matthieu.wipliez@insa-rennes.fr] (2008)
  * Maxime Pelcat [maxime.pelcat@insa-rennes.fr] (2008 - 2012)

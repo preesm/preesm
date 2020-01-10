@@ -1,6 +1,7 @@
 /**
  * Copyright or © or Copr. IETR/INSA - Rennes (2015 - 2019) :
  *
+ * Alexandre Honorat [alexandre.honorat@insa-rennes.fr] (2019)
  * Antoine Morvan [antoine.morvan@insa-rennes.fr] (2017 - 2019)
  * Clément Guy [clement.guy@insa-rennes.fr] (2015)
  *
@@ -57,11 +58,13 @@ import org.eclipse.emf.ecore.resource.Resource;
 import org.preesm.commons.DomUtil;
 import org.preesm.commons.exceptions.PreesmFrameworkException;
 import org.preesm.model.pisdf.AbstractActor;
+import org.preesm.model.pisdf.Fifo;
 import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.pisdf.serialize.PiParser;
-import org.preesm.model.pisdf.util.PiSDFTypeGatherer;
 import org.preesm.model.scenario.Scenario;
+import org.preesm.model.scenario.ScenarioConstants;
 import org.preesm.model.scenario.serialize.ScenarioWriter;
+import org.preesm.model.scenario.util.DefaultTypeSizes;
 import org.preesm.model.scenario.util.ScenarioUserFactory;
 import org.preesm.model.slam.Component;
 import org.preesm.model.slam.ComponentInstance;
@@ -103,28 +106,34 @@ public class ScenariosGenerator {
   /** The Constant scenarioDirName. */
   private static final String SCENARIO_DIR_NAME = "Scenarios";
 
-  final IFolder scenarioDir;
+  final IFolder  scenarioDir;
+  final IProject project;
 
+  /**
+   * 
+   * 
+   * @param project
+   *          the IProject containing the architectures and algorithms. project is supposed to have the
+   *          PreesmProjectNature and to follow the standard Preesm folder hierarchy
+   */
   public ScenariosGenerator(final IProject project) {
     scenarioDir = project.getFolder(ScenariosGenerator.SCENARIO_DIR_NAME);
+    this.project = project;
   }
 
   /**
    * Generates a set of PreesmScenario from an IProject.
    *
-   * @param project
-   *          the IProject containing the architectures and algorithms. project is supposed to have the
-   *          PreesmProjectNature and to follow the standard Preesm folder hierarchy
    * @return a set of PreesmScenario, one for each possible pair of architecture and algorithm
    * @throws CoreException
    *           the core exception
    * @throws FileNotFoundException
    *           the file not found exception
    */
-  public Set<Scenario> generateScenarios(final IProject project) throws CoreException, FileNotFoundException {
+  public Set<Scenario> generateScenarios() throws CoreException, FileNotFoundException {
     final IFolder archiDir = project.getFolder(ScenariosGenerator.ARCHI_DIR_NAME);
     final IFolder algoDir = project.getFolder(ScenariosGenerator.ALGO_DIR_NAME);
-    return generateScenarios(project, archiDir, algoDir);
+    return generateScenarios(archiDir, algoDir);
   }
 
   /**
@@ -140,7 +149,7 @@ public class ScenariosGenerator {
    * @throws FileNotFoundException
    *           the file not found exception
    */
-  public Set<Scenario> generateScenarios(final IProject project, final IFolder archiDir, final IFolder algoDir)
+  public Set<Scenario> generateScenarios(final IFolder archiDir, final IFolder algoDir)
       throws CoreException, FileNotFoundException {
     final Set<String> archis = new LinkedHashSet<>();
     final Set<String> algos = new LinkedHashSet<>();
@@ -233,7 +242,13 @@ public class ScenariosGenerator {
     // Add a main com node (first of the list)
     scenario.getSimulationInfo().setMainComNode(comNodeIds.get(0));
     // Add a average transfer size
-    scenario.getSimulationInfo().setAverageDataSize(1000);
+    scenario.getSimulationInfo().setAverageDataSize(ScenarioConstants.DEFAULT_AVG_DATA_TRANSFER_SIZE.getValue());
+    // Set the default data type sizes
+    for (final Fifo f : scenario.getAlgorithm().getAllFifos()) {
+      final String typeName = f.getType();
+      scenario.getSimulationInfo().getDataTypes().put(typeName,
+          DefaultTypeSizes.getInstance().getDefaultTypeSize(typeName));
+    }
 
     scenario.setCodegenDirectory("/" + project.getName() + "/Code/generated/");
     return scenario;
@@ -256,13 +271,13 @@ public class ScenariosGenerator {
     scenario.setAlgorithm(piGraph);
     final List<ComponentInstance> coreIds = new ArrayList<>(archi.getOperatorComponentInstances());
 
-    // for all different type of cores
+    // for all different type of cores, add default timing
     for (final Component opId : archi.getOperatorComponents()) {
       for (final AbstractActor aa : piGraph.getAllActors()) {
-        // Add timing: aa run on ci in 10000
-        scenario.getTimings().setTiming(aa, opId, 10000);
+        scenario.getTimings().setTiming(aa, opId, ScenarioConstants.DEFAULT_TIMING_TASK.getValue());
       }
     }
+    // for all different type of cores, allow mapping on it
     for (final ComponentInstance coreId : coreIds) {
       for (final AbstractActor actor : piGraph.getAllActors()) {
         // Add constraint: aa can be run on ci
@@ -273,24 +288,18 @@ public class ScenariosGenerator {
       scenario.getSimulationInfo().addSpecialVertexOperator(coreId);
     }
 
-    // Fill data-types found in the algo with default value of 1 byte size
-    new PiSDFTypeGatherer().doSwitch(piGraph)
-        .forEach(type -> scenario.getSimulationInfo().getDataTypes().put(type, 1L));
   }
 
   /**
    * Generates a set of PreesmScenario from an IProject and save them in a folder.
    *
-   * @param project
-   *          the IProject containing the architectures and algorithms. project is supposed to have the
-   *          PreesmProjectNature and to follow the standard Preesm folder hierarchy
    * @throws CoreException
    *           the core exception
    * @throws FileNotFoundException
    *           the file not found exception
    */
-  public void generateAndSaveScenarios(final IProject project) throws CoreException, FileNotFoundException {
-    saveScenarios(generateScenarios(project), scenarioDir);
+  public void generateAndSaveScenarios() throws CoreException, FileNotFoundException {
+    saveScenarios(generateScenarios(), scenarioDir);
   }
 
   /**

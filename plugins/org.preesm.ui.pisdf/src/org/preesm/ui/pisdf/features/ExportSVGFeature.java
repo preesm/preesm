@@ -1,6 +1,7 @@
 /**
  * Copyright or © or Copr. IETR/INSA - Rennes (2015 - 2019) :
  *
+ * Alexandre Honorat [alexandre.honorat@insa-rennes.fr] (2019)
  * Antoine Morvan [antoine.morvan@insa-rennes.fr] (2017 - 2019)
  * Julien Hascoet [jhascoet@kalray.eu] (2016)
  * Julien Heulot [julien.heulot@insa-rennes.fr] (2015 - 2016)
@@ -53,7 +54,7 @@ import org.eclipse.graphiti.mm.pictograms.PictogramElement;
 import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.pisdf.util.ContainingPiGraphLookup;
-import org.preesm.ui.pisdf.PiMMUtil;
+import org.preesm.ui.utils.DialogUtil;
 import org.preesm.ui.utils.ErrorWithExceptionDialog;
 
 /**
@@ -139,7 +140,7 @@ public class ExportSVGFeature extends AbstractCustomFeature {
         /* Ask SVG File Location */
         final Set<String> fileExtensions = new LinkedHashSet<>();
         fileExtensions.add("*.svg");
-        final IPath path = PiMMUtil.askSaveFile("Choose the exported SVG file", fileExtensions);
+        final IPath path = DialogUtil.askSaveFile("Choose the exported SVG file", fileExtensions);
 
         if (path == null) {
           return;

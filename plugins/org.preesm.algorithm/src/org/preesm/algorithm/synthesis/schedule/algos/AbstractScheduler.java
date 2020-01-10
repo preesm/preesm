@@ -1,6 +1,7 @@
 /**
  * Copyright or © or Copr. IETR/INSA - Rennes (2019) :
  *
+ * Alexandre Honorat [alexandre.honorat@insa-rennes.fr] (2019)
  * Antoine Morvan [antoine.morvan@insa-rennes.fr] (2019)
  *
  * This software is a computer program whose purpose is to help prototyping
@@ -110,6 +111,10 @@ public abstract class AbstractScheduler implements IScheduler {
     }
     if (!scheduledActors.containsAll(piGraphAllActors)) {
       throw new PreesmSynthesisException("Schedule is missing order for some actors of the input PiSDF.");
+    }
+
+    if (!mapping.getMappings().keySet().containsAll(scheduledActors)) {
+      throw new PreesmSynthesisException("Mapping is missing actors of the input PiSDF.");
     }
 
     final List<ComponentInstance> slamCmpInstances = new ArrayList<>(slamDesign.getComponentInstances());

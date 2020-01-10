@@ -1,6 +1,7 @@
 /**
  * Copyright or © or Copr. IETR/INSA - Rennes (2019) :
  *
+ * Alexandre Honorat [alexandre.honorat@insa-rennes.fr] (2019)
  * Antoine Morvan [antoine.morvan@insa-rennes.fr] (2019)
  *
  * This software is a computer program whose purpose is to help prototyping
@@ -35,8 +36,9 @@
 package org.preesm.algorithm.synthesis.evaluation.latency;
 
 import java.util.Map;
-import org.preesm.algorithm.synthesis.SynthesisResult;
+import org.preesm.algorithm.mapping.model.Mapping;
 import org.preesm.algorithm.synthesis.evaluation.ISynthesisEvaluator;
+import org.preesm.algorithm.synthesis.schedule.ScheduleOrderManager;
 import org.preesm.algorithm.synthesis.timer.ActorExecutionTiming;
 import org.preesm.algorithm.synthesis.timer.SimpleTimer;
 import org.preesm.model.pisdf.AbstractActor;
@@ -53,15 +55,15 @@ public class SimpleLatencyEvaluation implements ISynthesisEvaluator<LatencyCost>
 
   @Override
   public LatencyCost evaluate(final PiGraph algo, final Design slamDesign, final Scenario scenario,
-      final SynthesisResult synthesisChoice) {
+      final Mapping mapping, final ScheduleOrderManager scheduleOM) {
 
-    final Map<AbstractActor, ActorExecutionTiming> computeTimings = new SimpleTimer(algo,
-        synthesisChoice.schedule, synthesisChoice.mapping, scenario).computeTimings();
+    final Map<AbstractActor,
+        ActorExecutionTiming> computeTimings = new SimpleTimer(scenario, mapping).computeTimings(scheduleOM);
 
     final long latency = computeTimings.entrySet().stream().mapToLong(entry -> entry.getValue().getEndTime()).max()
         .orElse(0L);
 
-    return new LatencyCost(latency);
+    return new LatencyCost(latency, computeTimings);
   }
 
 }

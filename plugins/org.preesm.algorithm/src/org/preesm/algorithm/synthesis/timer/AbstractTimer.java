@@ -1,7 +1,9 @@
 /**
  * Copyright or © or Copr. IETR/INSA - Rennes (2019) :
  *
+ * Alexandre Honorat [alexandre.honorat@insa-rennes.fr] (2019)
  * Antoine Morvan [antoine.morvan@insa-rennes.fr] (2019)
+ * Julien Heulot [julien.heulot@insa-rennes.fr] (2019)
  *
  * This software is a computer program whose purpose is to help prototyping
  * parallel applications using dataflow formalism.
@@ -41,7 +43,6 @@ import org.eclipse.emf.ecore.EObject;
 import org.preesm.algorithm.schedule.model.CommunicationActor;
 import org.preesm.algorithm.schedule.model.ReceiveEndActor;
 import org.preesm.algorithm.schedule.model.ReceiveStartActor;
-import org.preesm.algorithm.schedule.model.Schedule;
 import org.preesm.algorithm.schedule.model.SendEndActor;
 import org.preesm.algorithm.schedule.model.SendStartActor;
 import org.preesm.algorithm.schedule.model.util.ScheduleSwitch;
@@ -53,7 +54,7 @@ import org.preesm.model.pisdf.EndActor;
 import org.preesm.model.pisdf.ForkActor;
 import org.preesm.model.pisdf.InitActor;
 import org.preesm.model.pisdf.JoinActor;
-import org.preesm.model.pisdf.PiGraph;
+import org.preesm.model.pisdf.PeriodicElement;
 import org.preesm.model.pisdf.RoundBufferActor;
 import org.preesm.model.pisdf.util.PiMMSwitch;
 
@@ -65,28 +66,34 @@ import org.preesm.model.pisdf.util.PiMMSwitch;
  */
 public abstract class AbstractTimer extends PiMMSwitch<Long> {
 
-  protected final Schedule schedule;
-  protected final PiGraph  pigraph;
-
   /**
    */
-  public AbstractTimer(final PiGraph pigraph, final Schedule schedule) {
-    this.pigraph = pigraph;
-    this.schedule = schedule;
+  public AbstractTimer() {
   }
 
   /**
    * Build a map that associate a timing (i.e. start/end/duration) for every actor in the schedule.
    */
-  public Map<AbstractActor, ActorExecutionTiming> computeTimings() {
+  public Map<AbstractActor, ActorExecutionTiming> computeTimings(final ScheduleOrderManager scheduleOrderManager) {
     final Map<AbstractActor, ActorExecutionTiming> res = new LinkedHashMap<>();
-    final ScheduleOrderManager scheduleOrderManager = new ScheduleOrderManager(this.pigraph, this.schedule);
     final List<AbstractActor> orderedActors = scheduleOrderManager.buildScheduleAndTopologicalOrderedList();
     for (final AbstractActor actor : orderedActors) {
       final long duration = this.doSwitch(actor);
 
-      final long startTime = scheduleOrderManager.getPredecessors(actor).stream()
+      long startTime = scheduleOrderManager.getDirectPredecessors(actor).stream()
           .mapToLong(a -> res.get(a).getEndTime()).max().orElse(0L);
+
+      // refine the startTime of periodic actors from firing instance number
+      if (actor instanceof PeriodicElement) {
+        PeriodicElement pe = (PeriodicElement) actor;
+        long period = pe.getPeriod().evaluate();
+        if (period > 0 && pe instanceof Actor) {
+          Actor a = (Actor) pe;
+          long firingInstance = a.getFiringInstance();
+          long ns = firingInstance * period;
+          startTime = Math.max(startTime, ns);
+        }
+      }
 
       final ActorExecutionTiming executionTiming = new ActorExecutionTiming(actor, startTime, duration);
       res.put(actor, executionTiming);
@@ -168,26 +175,50 @@ public abstract class AbstractTimer extends PiMMSwitch<Long> {
     return computeRoundBufferActorTiming(roundbufferActor);
   }
 
-  protected abstract long computeActorTiming(final Actor actor);
+  protected long computeActorTiming(final Actor actor) {
+    return defaultTime();
+  }
 
-  protected abstract long computeForkActorTiming(final ForkActor forkActor);
+  protected long computeForkActorTiming(final ForkActor forkActor) {
+    return defaultTime();
+  }
 
-  protected abstract long computeJoinActorTiming(final JoinActor joinActor);
+  protected long computeJoinActorTiming(final JoinActor joinActor) {
+    return defaultTime();
+  }
 
-  protected abstract long computeBroadcastActorTiming(final BroadcastActor broadcastActor);
+  protected long computeBroadcastActorTiming(final BroadcastActor broadcastActor) {
+    return defaultTime();
+  }
 
-  protected abstract long computeRoundBufferActorTiming(final RoundBufferActor roundbufferActor);
+  protected long computeRoundBufferActorTiming(final RoundBufferActor roundbufferActor) {
+    return defaultTime();
+  }
 
-  protected abstract long computeInitActorTiming(final InitActor initActor);
+  protected long computeInitActorTiming(final InitActor initActor) {
+    return defaultTime();
+  }
 
-  protected abstract long computeEndActorTiming(final EndActor endActor);
+  protected long computeEndActorTiming(final EndActor endActor) {
+    return defaultTime();
+  }
 
-  protected abstract long computeSendStartActorTiming(final SendStartActor sendStartActor);
+  protected long computeSendStartActorTiming(final SendStartActor sendStartActor) {
+    return defaultTime();
+  }
 
-  protected abstract long computeSendEndActorTiming(final SendEndActor sendEndActor);
+  protected long computeSendEndActorTiming(final SendEndActor sendEndActor) {
+    return defaultTime();
+  }
 
-  protected abstract long computeReceiveStartActorTiming(final ReceiveStartActor receiveStartActor);
+  protected long computeReceiveStartActorTiming(final ReceiveStartActor receiveStartActor) {
+    return defaultTime();
+  }
 
-  protected abstract long computeReceiveEndActorTiming(final ReceiveEndActor receiveEndActor);
+  protected long computeReceiveEndActorTiming(final ReceiveEndActor receiveEndActor) {
+    return defaultTime();
+  }
+
+  protected abstract long defaultTime();
 
 }

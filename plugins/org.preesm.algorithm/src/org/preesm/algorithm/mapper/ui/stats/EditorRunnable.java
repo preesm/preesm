@@ -1,6 +1,7 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2008 - 2019) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2008 - 2020) :
  *
+ * Alexandre Honorat [alexandre.honorat@insa-rennes.fr] (2020)
  * Antoine Morvan [antoine.morvan@insa-rennes.fr] (2017 - 2019)
  * Clément Guy [clement.guy@insa-rennes.fr] (2015)
  * Maxime Pelcat [maxime.pelcat@insa-rennes.fr] (2008 - 2012)
@@ -39,6 +40,7 @@ package org.preesm.algorithm.mapper.ui.stats;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.IWorkbenchWindow;
+import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
 import org.preesm.commons.exceptions.PreesmRuntimeException;
 
@@ -72,7 +74,7 @@ public class EditorRunnable implements Runnable {
 
       try {
         page.openEditor(this.input, "org.ietr.preesm.plugin.mapper.plot.stats.StatEditor", false);
-      } catch (final Exception e) {
+      } catch (final PartInitException e) {
         throw new PreesmRuntimeException(e);
       }
     }

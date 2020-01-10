@@ -3,7 +3,7 @@ Bundle-ManifestVersion: 2
 Bundle-Name: PREESM :: Plugins :: Salm UI
 Automatic-Module-Name: org.preesm.ui.slam
 Bundle-SymbolicName: org.preesm.ui.slam;singleton:=true
-Bundle-Version: 3.18.2
+Bundle-Version: 3.19.0
 Require-Bundle: org.preesm.ui,
  org.preesm.model.slam
 Bundle-ActivationPolicy: lazy
@@ -12,3 +12,4 @@ Bundle-Vendor: IETR / INSA Rennes - VAADER
 Export-Package: org.preesm.ui.slam,
  org.preesm.ui.slam.filters,
  org.preesm.ui.slam.properties
+Import-Package: org.preesm.ui.utils

@@ -1,6 +1,7 @@
 /**
  * Copyright or © or Copr. IETR/INSA - Rennes (2019) :
  *
+ * Alexandre Honorat [alexandre.honorat@insa-rennes.fr] (2019)
  * Antoine Morvan [antoine.morvan@insa-rennes.fr] (2019)
  *
  * This software is a computer program whose purpose is to help prototyping
@@ -34,7 +35,10 @@
  */
 package org.preesm.algorithm.synthesis.evaluation.latency;
 
+import java.util.Map;
 import org.preesm.algorithm.synthesis.evaluation.ISynthesisCost;
+import org.preesm.algorithm.synthesis.timer.ActorExecutionTiming;
+import org.preesm.model.pisdf.AbstractActor;
 
 /**
  *
@@ -43,10 +47,12 @@ import org.preesm.algorithm.synthesis.evaluation.ISynthesisCost;
  */
 public class LatencyCost implements ISynthesisCost<Long> {
 
-  private final long latency;
+  private final long                                     latency;
+  private final Map<AbstractActor, ActorExecutionTiming> execTimings;
 
-  public LatencyCost(final long latency) {
+  public LatencyCost(final long latency, final Map<AbstractActor, ActorExecutionTiming> execTimings) {
     this.latency = latency;
+    this.execTimings = execTimings;
   }
 
   @Override
@@ -57,6 +63,10 @@ public class LatencyCost implements ISynthesisCost<Long> {
   @Override
   public int compareTo(final ISynthesisCost<Long> other) {
     return Long.compare(this.getValue(), other.getValue());
+  }
+
+  public Map<AbstractActor, ActorExecutionTiming> getExecTimings() {
+    return execTimings;
   }
 
 }

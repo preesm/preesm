@@ -4,6 +4,7 @@
  * Alexandre Honorat [alexandre.honorat@insa-rennes.fr] (2019)
  * Antoine Morvan [antoine.morvan@insa-rennes.fr] (2017 - 2019)
  * Clément Guy [clement.guy@insa-rennes.fr] (2014 - 2015)
+ * Julien Heulot [julien.heulot@insa-rennes.fr] (2019)
  * Karol Desnos [karol.desnos@insa-rennes.fr] (2015)
  * Maxime Pelcat [maxime.pelcat@insa-rennes.fr] (2008 - 2012)
  *
@@ -54,11 +55,13 @@ import org.preesm.workflow.elements.Workflow;
 import org.preesm.workflow.implement.AbstractTaskImplementation;
 
 /**
- * Transform class that can be called in workflow. The transform method displays the gantt chart of the given mapped dag
+ * Displays the gantt chart of the given mapped dag
  *
+ * TODO: remove scenario from inputs (already contained in ABC)
+ * 
  * @author mpelcat
  */
-@PreesmTask(id = "org.ietr.preesm.plugin.mapper.plot", name = "Gantt Display", category = "Analysis",
+@PreesmTask(id = "org.ietr.preesm.plugin.mapper.plot", name = "ABC Gantt displayer", category = "Gantt exporters",
 
     inputs = { @Port(name = "ABC", type = LatencyAbc.class), @Port(name = "scenario", type = Scenario.class) },
 
@@ -66,16 +69,15 @@ import org.preesm.workflow.implement.AbstractTaskImplementation;
 
     seeAlso = { "**Speedup assessment chart**: Maxime Pelcat. Prototypage Rapide et Génération de Code pour DSP Multi-"
         + "Coeurs Appliqués à la Couche Physique des Stations de Base 3GPP LTE. PhD thesis, INSA de Rennes, 2010." })
-public class StatEditorTransform extends AbstractTaskImplementation {
+public class StatEditorAbcTask extends AbstractTaskImplementation {
 
   @Override
   public Map<String, Object> execute(final Map<String, Object> inputs, final Map<String, String> parameters,
       final IProgressMonitor monitor, final String nodeName, final Workflow workflow) {
 
     final LatencyAbc abc = (LatencyAbc) inputs.get("ABC");
-    final Scenario scenario = (Scenario) inputs.get("scenario");
 
-    final IEditorInput input = new StatEditorInput(abc, scenario, parameters);
+    final IEditorInput input = new StatEditorInput(new StatGeneratorAbc(abc));
 
     // Check if the workflow is running in command line mode
     try {

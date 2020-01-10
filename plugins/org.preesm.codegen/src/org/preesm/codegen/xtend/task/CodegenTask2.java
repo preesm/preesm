@@ -46,6 +46,7 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.logging.Level;
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.IExtensionRegistry;
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -60,6 +61,7 @@ import org.preesm.commons.doc.annotations.Port;
 import org.preesm.commons.doc.annotations.PreesmTask;
 import org.preesm.commons.doc.annotations.Value;
 import org.preesm.commons.exceptions.PreesmRuntimeException;
+import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.scenario.Scenario;
 import org.preesm.model.slam.Design;
@@ -131,8 +133,11 @@ public class CodegenTask2 extends AbstractTaskImplementation {
     // Retrieve the PAPIFY flag
     final boolean papify = "true".equalsIgnoreCase(parameters.get(CodegenTask2.PARAM_PAPIFY));
 
+    PreesmLogger.getLogger().log(Level.INFO, "Generating blocks.");
     final List<
         Block> codeBlocks = CodegenModelGenerator2.generate(archi, algo, scenario, schedule, mapping, memAlloc, papify);
+
+    PreesmLogger.getLogger().log(Level.INFO, "Printing blocks.");
 
     // Retrieve the desired printer and target folder path
     final String selectedPrinter = parameters.get(CodegenTask2.PARAM_PRINTER);

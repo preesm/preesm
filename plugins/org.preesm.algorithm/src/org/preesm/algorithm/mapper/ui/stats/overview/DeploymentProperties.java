@@ -49,7 +49,7 @@ import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.swt.graphics.Image;
 import org.preesm.algorithm.mapper.ui.Messages;
-import org.preesm.algorithm.mapper.ui.stats.StatGenerator;
+import org.preesm.algorithm.mapper.ui.stats.IStatGenerator;
 import org.preesm.model.slam.ComponentInstance;
 import org.preesm.model.slam.Design;
 import org.preesm.model.slam.utils.LexicographicComponentInstanceComparator;
@@ -62,7 +62,7 @@ import org.preesm.model.slam.utils.LexicographicComponentInstanceComparator;
 public class DeploymentProperties implements IStructuredContentProvider, ITableLabelProvider {
 
   private String                             columnOrder;
-  private final StatGenerator                statGen;
+  private final IStatGenerator               statGen;
   private final Map<ComponentInstance, Long> loads;
   private final Map<ComponentInstance, Long> memoryNeeds;
   private long                               repetitionPeriod;
@@ -73,7 +73,7 @@ public class DeploymentProperties implements IStructuredContentProvider, ITableL
 
   /**
    */
-  public DeploymentProperties(final StatGenerator statGen) {
+  public DeploymentProperties(final IStatGenerator statGen) {
     super();
     this.statGen = statGen;
 
@@ -90,7 +90,7 @@ public class DeploymentProperties implements IStructuredContentProvider, ITableL
    * Inits the data.
    */
   private void initData() {
-    final Design architecture = this.statGen.getAbc().getArchitecture();
+    final Design architecture = this.statGen.getDesign();
     final List<ComponentInstance> opSet = architecture.getOperatorComponentInstances();
 
     for (final ComponentInstance cmp : opSet) {
@@ -109,28 +109,9 @@ public class DeploymentProperties implements IStructuredContentProvider, ITableL
     if (this.columnOrder.equals(Messages.getString("Overview.properties.opColumn"))) {
       comparator = new LexicographicComponentInstanceComparator();
     } else if (this.columnOrder.equals(Messages.getString("Overview.properties.loadColumn"))) {
-      comparator = (o1, o2) -> {
-        long l1 = loads.get(o1);
-        long l2 = loads.get(o2);
-        if (l1 > l2) {
-          return 1;
-        } else if (l1 < l2) {
-          return -1;
-        }
-        return 0;
-      };
-
+      comparator = (o1, o2) -> Long.compare(loads.get(o1), loads.get(o2));
     } else if (this.columnOrder.equals(Messages.getString("Overview.properties.memColumn"))) {
-      comparator = (o1, o2) -> {
-        long l1 = memoryNeeds.get(o1);
-        long l2 = memoryNeeds.get(o2);
-        if (l1 > l2) {
-          return 1;
-        } else if (l1 < l2) {
-          return -1;
-        }
-        return 0;
-      };
+      comparator = (o1, o2) -> Long.compare(memoryNeeds.get(o1), memoryNeeds.get(o2));
     }
 
     Collections.sort(elements, comparator);
@@ -163,12 +144,10 @@ public class DeploymentProperties implements IStructuredContentProvider, ITableL
         text = op.getInstanceName();
       } else if (columnIndex == 1) {
         double d = this.loads.get(op);
-        d = d * 10000;
+        d = d * 100;
         d = d / this.repetitionPeriod;
-        d = Math.ceil(d);
-        d = d / 100;
 
-        text = String.valueOf(d);
+        text = String.valueOf(Math.ceil(d));
       } else if (columnIndex == 2) {
         text = this.memoryNeeds.get(op).toString();
       }
@@ -190,22 +169,6 @@ public class DeploymentProperties implements IStructuredContentProvider, ITableL
   @Override
   public void removeListener(final ILabelProviderListener listener) {
     // nothing
-  }
-
-  /**
-   * Sets the repetition period.
-   *
-   * @param repetitionPeriod
-   *          the new repetition period
-   */
-  public void setRepetitionPeriod(final Integer repetitionPeriod) {
-    if (repetitionPeriod != 0) {
-      this.repetitionPeriod = repetitionPeriod;
-    }
-  }
-
-  public long getRepetitionPeriod() {
-    return this.repetitionPeriod;
   }
 
 }

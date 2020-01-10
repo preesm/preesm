@@ -1,6 +1,7 @@
 /**
  * Copyright or © or Copr. IETR/INSA - Rennes (2019) :
  *
+ * Alexandre Honorat [alexandre.honorat@insa-rennes.fr] (2019)
  * Antoine Morvan [antoine.morvan@insa-rennes.fr] (2019)
  *
  * This software is a computer program whose purpose is to help prototyping
@@ -91,4 +92,28 @@ public class CollectionUtil {
       }
     }
   }
+
+  /**
+   * Insert 2 newElements after listElement, in order; takes care of end of list
+   */
+  public static final <T> void insertAfter2(final List<T> list, final T listElement, final T newElement1,
+      final T newElement2) {
+    int indexOf = list.indexOf(listElement);
+    list.add(++indexOf, newElement1);
+    list.add(++indexOf, newElement2);
+  }
+
+  /**
+   * Insert newElements before listElement, in order; takes care of end of list
+   */
+  public static final <T> void insertBefore2(final List<T> list, final T listElement, final T newElement1,
+      final T newElement2) {
+    int indexOf = list.indexOf(listElement);
+    if (indexOf < 0) {
+      indexOf = 0;
+    }
+    list.add(indexOf, newElement2);
+    list.add(indexOf, newElement1);
+  }
+
 }

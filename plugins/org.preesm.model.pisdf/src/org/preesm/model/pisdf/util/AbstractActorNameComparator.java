@@ -1,7 +1,7 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2018 - 2019) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2019) :
  *
- * Antoine Morvan [antoine.morvan@insa-rennes.fr] (2018 - 2019)
+ * Alexandre Honorat [alexandre.honorat@insa-rennes.fr] (2019)
  *
  * This software is a computer program whose purpose is to help prototyping
  * parallel applications using dataflow formalism.
@@ -34,29 +34,24 @@
  */
 package org.preesm.model.pisdf.util;
 
-import java.util.Collections;
-import java.util.LinkedHashSet;
-import java.util.Set;
-import org.preesm.model.pisdf.Fifo;
-import org.preesm.model.pisdf.PiGraph;
+import java.util.Comparator;
+import org.preesm.model.pisdf.AbstractActor;
 
 /**
+ * Compare AbstractActor by name.
+ * 
+ * @author ahonorat
  *
  */
-public class PiSDFTypeGatherer extends PiMMSwitch<Set<String>> {
-
-  private final Set<String> dataTypes = new LinkedHashSet<>();
+public class AbstractActorNameComparator implements Comparator<AbstractActor> {
 
   @Override
-  public Set<String> casePiGraph(final PiGraph graph) {
-    graph.getChildrenGraphs().stream().forEach(this::doSwitch);
-    graph.getFifos().stream().forEach(this::doSwitch);
-    return dataTypes;
+  public int compare(AbstractActor arg0, AbstractActor arg1) {
+    int res = arg0.getName().compareTo(arg1.getName());
+    if (res == 0) {
+      return arg0.hashCode() - arg1.hashCode();
+    }
+    return res;
   }
 
-  @Override
-  public Set<String> caseFifo(Fifo fifo) {
-    dataTypes.add(fifo.getType());
-    return Collections.emptySet();
-  }
 }

@@ -1,6 +1,34 @@
 PREESM Changelog
 ================
 
+## Release version 3.19.0
+*2020.01.10*
+
+### New Feature
+* Clustering: hierarchy construction from a list of actors in PiSDFSubgraphBuilder;
+* List periodic scheduling is now implemented in the new Synthesis task;
+* Optimal periodic scheduling is now implemented in the new Synthesis task (using Choco);
+* New Workflow task 'gantt-output' to export Gantt with new Synthesis interface;
+* New menu command (from Preesm project) to generate standard X86 architecture;
+* New Workflow task 'pisdf-export.parameters' to export graph static parameters as C header.
+
+### Changes
+* If Gantt displayer cannot load SWT_AWT, the Gantt can be opened in a new window instead;
+* BRV computation with LCM method now handles fifo having rates equal to 0 on both sides
+  (computation is similar to Spider V2);
+* Refactor Communication insertion in the new Synthesis task: removes non necessary transitive
+  closure and improves performanes.
+
+### Bug fix
+* Fix #271 : removes extra coma in spider codegen when no parameters.
+* Fix #262 : (codegen) init functions are now called only once
+* Fix #264 : Excel timings can handle expression, not only numbers
+* Fix #267 : remove useless and bugged 'set fifo type' GUI feature
+* Fix #268 : uniformize GUI features command order and names 
+* Fix #269 : improve the lookup method by vertex path
+* Fix #273 : BRV computation was not adapted to port rates being 0 (see Changes section)
+* Fix evaluation of parameters as numbers.
+
 ## Release version 3.18.2
 *2019.11.28*
 

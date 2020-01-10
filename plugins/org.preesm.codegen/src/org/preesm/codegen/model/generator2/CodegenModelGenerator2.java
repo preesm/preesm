@@ -1,6 +1,7 @@
 /**
  * Copyright or © or Copr. IETR/INSA - Rennes (2019) :
  *
+ * Alexandre Honorat [alexandre.honorat@insa-rennes.fr] (2019)
  * Antoine Morvan [antoine.morvan@insa-rennes.fr] (2019)
  *
  * This software is a computer program whose purpose is to help prototyping
@@ -141,18 +142,22 @@ public class CodegenModelGenerator2 {
 
     final Map<ComponentInstance, CoreBlock> coreBlocks = new LinkedHashMap<>();
 
-    // 0- init blocks
+    // 0- init blocks and order
     final EList<ComponentInstance> cmps = this.archi.getOperatorComponentInstances();
     for (final ComponentInstance cmp : cmps) {
       final CoreBlock createCoreBlock = CodegenModelUserFactory.eINSTANCE.createCoreBlock(cmp);
       coreBlocks.put(cmp, createCoreBlock);
     }
 
+    // instead of passing the list of ordered actors for link and generateCode, we would pass the SOM
+    final List<AbstractActor> totallyOrderedActors = new ScheduleOrderManager(algo, schedule)
+        .buildScheduleAndTopologicalOrderedList();
+
     // 1- generate variables (and keep track of them with a linker)
-    this.memoryLinker = AllocationToCodegenBuffer.link(memAlloc, schedule, scenario, algo);
+    this.memoryLinker = AllocationToCodegenBuffer.link(memAlloc, scenario, algo, totallyOrderedActors);
 
     // 2- generate code
-    generateCode(coreBlocks);
+    generateCode(coreBlocks, totallyOrderedActors);
 
     // sort blocks
     final List<Block> resultList = coreBlocks.entrySet().stream()
@@ -248,12 +253,11 @@ public class CodegenModelGenerator2 {
     }
   }
 
-  private void generateCode(final Map<ComponentInstance, CoreBlock> coreBlocks) {
+  private void generateCode(final Map<ComponentInstance, CoreBlock> coreBlocks,
+      final List<AbstractActor> totallyOrderedActors) {
     // iterate in order
 
-    final List<AbstractActor> actors = new ScheduleOrderManager(this.algo, this.schedule)
-        .buildScheduleAndTopologicalOrderedList();
-    for (final AbstractActor actor : actors) {
+    for (final AbstractActor actor : totallyOrderedActors) {
       final EList<ComponentInstance> actorMapping = this.mapping.getMapping(actor);
       final ComponentInstance componentInstance = actorMapping.get(0);
       final CoreBlock coreBlock = coreBlocks.get(componentInstance);

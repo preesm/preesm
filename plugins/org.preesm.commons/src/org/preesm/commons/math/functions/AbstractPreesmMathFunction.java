@@ -1,7 +1,7 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2018 - 2019) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2018 - 2020) :
  *
- * Alexandre Honorat [alexandre.honorat@insa-rennes.fr] (2018)
+ * Alexandre Honorat [alexandre.honorat@insa-rennes.fr] (2018 - 2020)
  * Antoine Morvan [antoine.morvan@insa-rennes.fr] (2018 - 2019)
  *
  * This software is a computer program whose purpose is to help prototyping
@@ -68,11 +68,12 @@ public abstract class AbstractPreesmMathFunction extends PostfixMathCommand {
     final double[] args = new double[getArgCount()];
     for (int i = 0; i < getArgCount(); i++) {
       final Object arg = stack.pop();
-      if (!(arg instanceof Double)) {
+      if (!(arg instanceof Number)) {
         throw new ParseException(
             "Argument must be a number, whereas it is " + arg + "(" + arg.getClass().getName() + ")");
       }
-      args[i] = (double) arg;
+      Number nb = (Number) arg;
+      args[i] = nb.doubleValue();
     }
     final double result = compute(args);
     stack.push(result);

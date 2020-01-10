@@ -126,8 +126,12 @@ public class CsvTimingParser {
     }
   }
 
-  private void processLine(final Map<AbstractActor, Map<Component, String>> timings, String line,
+  private void processLine(final Map<AbstractActor, Map<Component, String>> timings, String lineToParse,
       final String[] opNames) {
+    String line = lineToParse.trim();
+    if (line.isEmpty()) {
+      return;
+    }
     final String[] cells = line.split(";");
     if (cells.length == opNames.length) {
       final Map<Component, String> timing = new LinkedHashMap<>();

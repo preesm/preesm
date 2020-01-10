@@ -1,6 +1,7 @@
 /**
  * Copyright or © or Copr. IETR/INSA - Rennes (2008 - 2019) :
  *
+ * Alexandre Honorat [alexandre.honorat@insa-rennes.fr] (2019)
  * Antoine Morvan [antoine.morvan@insa-rennes.fr] (2017 - 2019)
  * Clément Guy [clement.guy@insa-rennes.fr] (2015)
  * Maxime Pelcat [maxime.pelcat@insa-rennes.fr] (2008 - 2012)
@@ -53,7 +54,7 @@ import org.preesm.commons.exceptions.PreesmRuntimeException;
  */
 public class StatEditor extends SharedHeaderFormEditor implements IPropertyListener {
 
-  private StatGenerator statGen = null;
+  private IStatGenerator statGen = null;
 
   /**
    * Instantiates a new stat editor.
@@ -80,8 +81,8 @@ public class StatEditor extends SharedHeaderFormEditor implements IPropertyListe
     setPartName(input.getName());
 
     if (input instanceof StatEditorInput) {
-      final StatEditorInput statinput = (StatEditorInput) input;
-      this.statGen = new StatGenerator(statinput.getAbc(), statinput.getScenario(), statinput.getParams());
+      final StatEditorInput statInput = (StatEditorInput) input;
+      this.statGen = statInput.getStatGenerator();
     }
   }
 
@@ -90,7 +91,7 @@ public class StatEditor extends SharedHeaderFormEditor implements IPropertyListe
    */
   @Override
   protected void addPages() {
-    final IFormPage ganttPage = new GanttPage(this.statGen, this, "Gantt", "Gantt");
+    final IFormPage ganttPage = new GanttPage(this.statGen.getGanttData(), this, "Gantt", "Gantt");
     final IFormPage overviewPage = new OverviewPage(this.statGen, this, "Loads", "Loads");
     overviewPage.addPropertyListener(this);
     final PerformancePage performancePage = new PerformancePage(this.statGen, this, "Performance",

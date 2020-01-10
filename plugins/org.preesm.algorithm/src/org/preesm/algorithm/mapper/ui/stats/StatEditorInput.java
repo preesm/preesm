@@ -1,6 +1,7 @@
 /**
  * Copyright or © or Copr. IETR/INSA - Rennes (2008 - 2019) :
  *
+ * Alexandre Honorat [alexandre.honorat@insa-rennes.fr] (2019)
  * Antoine Morvan [antoine.morvan@insa-rennes.fr] (2017 - 2019)
  * Clément Guy [clement.guy@insa-rennes.fr] (2014)
  * Karol Desnos [karol.desnos@insa-rennes.fr] (2015)
@@ -37,14 +38,11 @@
  */
 package org.preesm.algorithm.mapper.ui.stats;
 
-import java.util.Map;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IPersistableElement;
 import org.preesm.algorithm.PreesmAlgorithmPlugin;
-import org.preesm.algorithm.mapper.abc.impl.latency.LatencyAbc;
 import org.preesm.commons.logger.PreesmLogger;
-import org.preesm.model.scenario.Scenario;
 
 /**
  * Input of the editor of implementation statistics.
@@ -53,41 +51,21 @@ import org.preesm.model.scenario.Scenario;
  */
 public class StatEditorInput implements IEditorInput {
 
-  private LatencyAbc          abc      = null;
-  private Scenario            scenario = null;
-  private Map<String, String> params   = null;
+  private final IStatGenerator statGen;
 
   /**
    * Instantiates a new stat editor input.
    *
-   * @param abc
-   *          the abc
-   * @param scenario
-   *          the scenario
-   * @param params
-   *          the params
+   * @param statGen
+   *          the StatGenerator
    */
-  public StatEditorInput(final LatencyAbc abc, final Scenario scenario, final Map<String, String> params) {
+  public StatEditorInput(final IStatGenerator statGen) {
     super();
-    this.abc = abc;
-    this.params = params;
-    this.scenario = scenario;
+    this.statGen = statGen;
   }
 
-  public Scenario getScenario() {
-    return this.scenario;
-  }
-
-  public Map<String, String> getParams() {
-    return this.params;
-  }
-
-  public LatencyAbc getAbc() {
-    return this.abc;
-  }
-
-  public void setAbc(final LatencyAbc abc) {
-    this.abc = abc;
+  public IStatGenerator getStatGenerator() {
+    return this.statGen;
   }
 
   @Override
@@ -102,13 +80,7 @@ public class StatEditorInput implements IEditorInput {
 
   @Override
   public String getName() {
-    if (this.abc instanceof LatencyAbc) {
-      this.abc.updateFinalCosts();
-      return "Latency:" + this.abc.getFinalLatency() + " Cost:" + this.abc.getFinalCost() + " "
-          + PreesmLogger.getFormattedTime();
-    } else {
-      return "Stats " + PreesmLogger.getFormattedTime();
-    }
+    return "Stats " + PreesmLogger.getFormattedTime();
   }
 
   @Override
