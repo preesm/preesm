@@ -1,8 +1,8 @@
 PREESM Changelog
 ================
 
-## Release version X.Y.Z
-*XXXX.XX.XX*
+## Release version 3.19.0
+*2020.01.10*
 
 ### New Feature
 * Clustering: hierarchy construction from a list of actors in PiSDFSubgraphBuilder;
