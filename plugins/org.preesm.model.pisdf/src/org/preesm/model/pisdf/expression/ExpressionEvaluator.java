@@ -221,7 +221,7 @@ public class ExpressionEvaluator {
       }
       evaluate = evaluate(connectedParam, connectedeParamExpressionValue, overridenValues);
     } else {
-      evaluate = 0.;
+      evaluate = evaluate(configInputInterface.getExpression());
     }
     return evaluate;
   }

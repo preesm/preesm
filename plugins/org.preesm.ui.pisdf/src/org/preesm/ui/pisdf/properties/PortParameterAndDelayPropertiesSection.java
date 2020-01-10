@@ -40,9 +40,7 @@
 package org.preesm.ui.pisdf.properties;
 
 import org.eclipse.emf.ecore.EObject;
-import org.eclipse.graphiti.features.ILayoutFeature;
 import org.eclipse.graphiti.features.context.impl.CustomContext;
-import org.eclipse.graphiti.features.context.impl.LayoutContext;
 import org.eclipse.graphiti.features.custom.ICustomFeature;
 import org.eclipse.graphiti.mm.pictograms.PictogramElement;
 import org.eclipse.graphiti.services.Graphiti;
@@ -60,6 +58,7 @@ import org.eclipse.ui.views.properties.tabbed.ITabbedPropertyConstants;
 import org.eclipse.ui.views.properties.tabbed.TabbedPropertySheetPage;
 import org.eclipse.ui.views.properties.tabbed.TabbedPropertySheetWidgetFactory;
 import org.preesm.commons.math.ExpressionEvaluationException;
+import org.preesm.model.pisdf.ConfigInputInterface;
 import org.preesm.model.pisdf.DataPort;
 import org.preesm.model.pisdf.Delay;
 import org.preesm.model.pisdf.Expression;
@@ -152,6 +151,7 @@ public class PortParameterAndDelayPropertiesSection extends DataPortPropertiesUp
     data.top = new FormAttachment(this.lblNameObj);
     this.txtExpression.setLayoutData(data);
     this.txtExpression.setEnabled(true);
+    this.txtExpression.addModifyListener(e -> updateProperties());
 
     this.lblExpression = factory.createCLabel(composite, "Expression:");
     data = new FormData();
@@ -194,8 +194,6 @@ public class PortParameterAndDelayPropertiesSection extends DataPortPropertiesUp
     data.top = new FormAttachment(this.lblValue);
     this.memoryLabelAnnotation.setLayoutData(data);
 
-    this.txtExpression.addModifyListener(e -> updateProperties());
-
     this.memoryComboAnnotation.addSelectionListener(new SelectionListener() {
 
       @Override
@@ -227,10 +225,10 @@ public class PortParameterAndDelayPropertiesSection extends DataPortPropertiesUp
             ((SetPortMemoryAnnotationFeature) feature).setCurrentPMA(pma);
 
             getDiagramTypeProvider().getDiagramBehavior().executeFeature(feature, context);
-            final LayoutContext contextLayout = new LayoutContext(getSelectedPictogramElement());
-            final ILayoutFeature layoutFeature = getDiagramTypeProvider().getFeatureProvider()
-                .getLayoutFeature(contextLayout);
-            getDiagramTypeProvider().getDiagramBehavior().executeFeature(layoutFeature, contextLayout);
+            // final LayoutContext contextLayout = new LayoutContext(getSelectedPictogramElement());
+            // final ILayoutFeature layoutFeature = getDiagramTypeProvider().getFeatureProvider()
+            // .getLayoutFeature(contextLayout);
+            // getDiagramTypeProvider().getDiagramBehavior().executeFeature(layoutFeature, contextLayout);
           }
         }
 
@@ -241,6 +239,13 @@ public class PortParameterAndDelayPropertiesSection extends DataPortPropertiesUp
       public void widgetDefaultSelected(final SelectionEvent e) {
       }
     });
+
+    this.memoryComboAnnotation.setEnabled(false);
+    this.memoryComboAnnotation.setVisible(false);
+    this.memoryComboAnnotation.setEnabled(false);
+    this.memoryLabelAnnotation.setEnabled(false);
+    this.memoryLabelAnnotation.setVisible(false);
+    this.memoryLabelAnnotation.setEnabled(false);
 
     /**** PERSISTENCE ANNOTATION ****/
     this.persistenceComboLevel = factory.createCCombo(composite);
@@ -260,8 +265,6 @@ public class PortParameterAndDelayPropertiesSection extends DataPortPropertiesUp
     data.right = new FormAttachment(this.persistenceComboLevel, -ITabbedPropertyConstants.HSPACE);
     data.top = new FormAttachment(this.lblValue);
     this.persistenceLabelLevel.setLayoutData(data);
-
-    this.txtExpression.addModifyListener(e -> updateProperties());
 
     this.persistenceComboLevel.addSelectionListener(new SelectionListener() {
 
@@ -309,6 +312,13 @@ public class PortParameterAndDelayPropertiesSection extends DataPortPropertiesUp
       }
     });
 
+    this.persistenceComboLevel.setEnabled(false);
+    this.persistenceComboLevel.setVisible(false);
+    this.persistenceComboLevel.setEnabled(false);
+    this.persistenceLabelLevel.setEnabled(false);
+    this.persistenceLabelLevel.setVisible(false);
+    this.persistenceLabelLevel.setEnabled(false);
+
   }
 
   /**
@@ -317,6 +327,7 @@ public class PortParameterAndDelayPropertiesSection extends DataPortPropertiesUp
    */
   private void updateProperties() {
     final PictogramElement pe = getSelectedPictogramElement();
+
     if (pe != null) {
       EObject bo = Graphiti.getLinkService().getBusinessObjectForLinkedPictogramElement(pe);
       if (bo == null) {
@@ -327,6 +338,10 @@ public class PortParameterAndDelayPropertiesSection extends DataPortPropertiesUp
       }
 
       if (bo instanceof Parameter) {
+        if ((bo instanceof ConfigInputInterface)) {
+          this.lblValueObj.setText(
+              "Default value is an Integer, only used for the computation of subsequent parameters in the GUI.");
+        }
         final Parameter param = (Parameter) bo;
         if (param.getValueExpression().getExpressionAsString().compareTo(this.txtExpression.getText()) != 0) {
           setNewExpression(param, this.txtExpression.getText());
@@ -337,30 +352,8 @@ public class PortParameterAndDelayPropertiesSection extends DataPortPropertiesUp
       if (bo instanceof DataPort) {
         final DataPort port = (DataPort) bo;
         updateDataPortProperties(port, this.txtExpression);
-
         getDiagramTypeProvider().getDiagramBehavior().refreshRenderingDecorators((PictogramElement) (pe.eContainer()));
-
-        this.memoryComboAnnotation.setEnabled(false);
         this.memoryComboAnnotation.select(((DataPort) bo).getAnnotation().getValue());
-        this.memoryComboAnnotation.setVisible(true);
-        this.memoryComboAnnotation.setEnabled(true);
-        this.memoryLabelAnnotation.setEnabled(false);
-        this.memoryLabelAnnotation.setVisible(true);
-        this.memoryLabelAnnotation.setEnabled(true);
-
-        this.persistenceComboLevel.setEnabled(false);
-        this.persistenceComboLevel.setVisible(false);
-        this.persistenceComboLevel.setEnabled(true);
-        this.persistenceLabelLevel.setEnabled(false);
-        this.persistenceLabelLevel.setVisible(false);
-        this.persistenceLabelLevel.setEnabled(true);
-      } else {
-        this.memoryComboAnnotation.setEnabled(false);
-        this.memoryComboAnnotation.setVisible(false);
-        this.memoryComboAnnotation.setEnabled(true);
-        this.memoryLabelAnnotation.setEnabled(false);
-        this.memoryLabelAnnotation.setVisible(false);
-        this.memoryLabelAnnotation.setEnabled(true);
       }
 
       if (bo instanceof Delay) {
@@ -369,22 +362,9 @@ public class PortParameterAndDelayPropertiesSection extends DataPortPropertiesUp
           setNewExpression(delay, this.txtExpression.getText());
           getDiagramTypeProvider().getDiagramBehavior().refreshRenderingDecorators(pe);
         }
-
-        this.persistenceComboLevel.setEnabled(false);
         this.persistenceComboLevel.select(delay.getLevel().getValue());
-        this.persistenceComboLevel.setVisible(true);
-        this.persistenceComboLevel.setEnabled(true);
-        this.persistenceLabelLevel.setEnabled(false);
-        this.persistenceLabelLevel.setVisible(true);
-        this.persistenceLabelLevel.setEnabled(true);
-      } else {
-        this.persistenceComboLevel.setEnabled(false);
-        this.persistenceComboLevel.setVisible(false);
-        this.persistenceComboLevel.setEnabled(false);
-        this.persistenceLabelLevel.setEnabled(false);
-        this.persistenceLabelLevel.setVisible(false);
-        this.persistenceLabelLevel.setEnabled(false);
-      } // end Delay
+      }
+
     }
     refresh();
   }
@@ -416,8 +396,6 @@ public class PortParameterAndDelayPropertiesSection extends DataPortPropertiesUp
       } else if (businessObject instanceof DataPort) {
         final DataPort iPort = ((DataPort) businessObject);
 
-        this.memoryComboAnnotation.select(((DataPort) businessObject).getAnnotation().getValue());
-
         if (iPort.eContainer() instanceof InterfaceActor) {
           elementName = ((InterfaceActor) iPort.eContainer()).getName();
         } else {
@@ -425,6 +403,14 @@ public class PortParameterAndDelayPropertiesSection extends DataPortPropertiesUp
         }
 
         elementValueExpression = iPort.getPortRateExpression();
+
+        this.memoryComboAnnotation.select(((DataPort) businessObject).getAnnotation().getValue());
+        this.memoryComboAnnotation.setEnabled(false);
+        this.memoryComboAnnotation.setVisible(true);
+        this.memoryComboAnnotation.setEnabled(true);
+        this.memoryLabelAnnotation.setEnabled(false);
+        this.memoryLabelAnnotation.setVisible(true);
+        this.memoryLabelAnnotation.setEnabled(true);
 
       } else if (businessObject instanceof InterfaceActor) {
         final InterfaceActor iface = ((InterfaceActor) businessObject);
@@ -436,6 +422,13 @@ public class PortParameterAndDelayPropertiesSection extends DataPortPropertiesUp
         elementValueExpression = fifo.getDelay().getSizeExpression();
 
         this.persistenceComboLevel.select(((Delay) businessObject).getLevel().getValue());
+        this.persistenceComboLevel.setEnabled(false);
+        this.persistenceComboLevel.setVisible(true);
+        this.persistenceComboLevel.setEnabled(true);
+        this.persistenceLabelLevel.setEnabled(false);
+        this.persistenceLabelLevel.setVisible(true);
+        this.persistenceLabelLevel.setEnabled(true);
+
       } else {
         throw new UnsupportedOperationException();
       }
@@ -453,7 +446,9 @@ public class PortParameterAndDelayPropertiesSection extends DataPortPropertiesUp
           // try out evaluating the expression
           final long evaluate = elementValueExpression.evaluate();
           // if evaluation went well, just write the result
-          this.lblValueObj.setText(Long.toString(evaluate));
+          if (!(businessObject instanceof ConfigInputInterface)) {
+            this.lblValueObj.setText(Long.toString(evaluate));
+          }
           this.txtExpression.setBackground(new Color(null, 255, 255, 255));
         } catch (final ExpressionEvaluationException e) {
           // otherwise print error message and put red background
@@ -468,4 +463,5 @@ public class PortParameterAndDelayPropertiesSection extends DataPortPropertiesUp
       }
     }
   }
+
 }

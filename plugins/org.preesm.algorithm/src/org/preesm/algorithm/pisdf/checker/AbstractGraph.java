@@ -100,33 +100,35 @@ public class AbstractGraph {
         FifoAbstraction fa = absGraph.getEdge(absSrc, absTgt);
         long srcRate = dop.getPortRateExpression().evaluate();
         long tgtRate = dip.getPortRateExpression().evaluate();
-        long gcd = MathFunctionsHelper.gcd(srcRate, tgtRate);
-        if (fa == null) {
-          fa = new FifoAbstraction();
-          fa.prodRate = gcd != 0 ? srcRate / gcd : srcRate;
-          fa.consRate = gcd != 0 ? tgtRate / gcd : tgtRate;
+        if (srcRate > 0 && tgtRate > 0) {
+          long gcd = MathFunctionsHelper.gcd(srcRate, tgtRate);
+          if (fa == null) {
+            fa = new FifoAbstraction();
+            fa.prodRate = srcRate / gcd;
+            fa.consRate = tgtRate / gcd;
 
-          final boolean res = absGraph.addEdge(absSrc, absTgt, fa);
-          if (!res) {
-            throw new PreesmRuntimeException("Problem while creating graph copy.");
+            final boolean res = absGraph.addEdge(absSrc, absTgt, fa);
+            if (!res) {
+              throw new PreesmRuntimeException("Problem while creating graph copy.");
+            }
           }
-        }
-        fa.fifos.add(f);
-        final Delay d = f.getDelay();
-        if (d == null) {
-          fa.delays.add(0L);
-        } else {
-          fa.nbNonZeroDelays++;
-          fa.delays.add(d.getSizeExpression().evaluate() / gcd);
-        }
-        boolean fullyDelayed = true;
-        for (final long l : fa.delays) {
-          if (l == 0) {
-            fullyDelayed = false;
-            break;
+          fa.fifos.add(f);
+          final Delay d = f.getDelay();
+          if (d == null) {
+            fa.delays.add(0L);
+          } else {
+            fa.nbNonZeroDelays++;
+            fa.delays.add(d.getSizeExpression().evaluate() / gcd);
           }
+          boolean fullyDelayed = true;
+          for (final long l : fa.delays) {
+            if (l == 0) {
+              fullyDelayed = false;
+              break;
+            }
+          }
+          fa.fullyDelayed = fullyDelayed;
         }
-        fa.fullyDelayed = fullyDelayed;
       }
     }
     return absGraph;

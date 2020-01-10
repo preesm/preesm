@@ -76,9 +76,6 @@ public class PiMMFilter extends AbstractPropertySectionFilter {
 
     // Parameter and ConfigInputInterface.
     if (eObject instanceof Parameter) {
-      if (((Parameter) eObject).isConfigurationInterface()) {
-        return false;
-      }
       return true;
     }
 

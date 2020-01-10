@@ -311,7 +311,7 @@ public class PeriodsPreschedulingChecker extends AbstractTaskImplementation {
 
       DefaultDirectedGraph<AbstractActor,
           FifoAbstraction> subgraph = AbstractGraph.subDAGFrom(absGraph, a, breakingFifosAbs, reverse);
-      totC += performNBFinternal(a, subgraph, allPeriodicActors, wcets, minCycleBrv, nbf, nbCore, reverse, slack);
+      totC += performNBFinternal(a, subgraph, wcets, minCycleBrv, nbf, nbCore, reverse, slack);
 
       TreeMap<Actor, Long> nbTimesDuringAperiod = new TreeMap<>(new ActorPeriodComparator(true));
       allPeriodicActors.keySet().forEach(e -> {
@@ -330,8 +330,8 @@ public class PeriodsPreschedulingChecker extends AbstractTaskImplementation {
         nbf.put(entry.getKey(), entry.getValue());
         DefaultDirectedGraph<AbstractActor, FifoAbstraction> unconnectedsubgraph = AbstractGraph.subDAGFrom(absGraph,
             entry.getKey(), breakingFifosAbs, reverse);
-        totC += performNBFinternal(entry.getKey(), unconnectedsubgraph, allPeriodicActors, wcets, minCycleBrv, nbf,
-            nbCore, reverse, slack);
+        totC += performNBFinternal(entry.getKey(), unconnectedsubgraph, wcets, minCycleBrv, nbf, nbCore, reverse,
+            slack);
         totC += wcets.get(entry.getKey()) * entry.getValue();
       }
 
@@ -345,8 +345,8 @@ public class PeriodsPreschedulingChecker extends AbstractTaskImplementation {
   }
 
   private static long performNBFinternal(Actor start, DefaultDirectedGraph<AbstractActor, FifoAbstraction> subgraph,
-      Map<Actor, Long> allPeriodicActors, Map<AbstractVertex, Long> wcets, Map<AbstractVertex, Long> minCycleBrv,
-      Map<AbstractActor, Long> previousNbf, int nbCore, boolean reverse, long slack) {
+      Map<AbstractVertex, Long> wcets, Map<AbstractVertex, Long> minCycleBrv, Map<AbstractActor, Long> previousNbf,
+      int nbCore, boolean reverse, long slack) {
     HashMap<AbstractActor, Long> timeTo = new HashMap<>();
     HashMap<AbstractActor, Integer> nbVisits = new HashMap<>();
     HashMap<AbstractActor, Long> nbf = new HashMap<>();
@@ -373,7 +373,7 @@ public class PeriodsPreschedulingChecker extends AbstractTaskImplementation {
         long destTimeTo = Math.max(timeTo.get(dest), timeTo.get(current));
         timeTo.put(dest, destTimeTo);
         long nbfDest = 0;
-        long delay = fa.delays.stream().min(Long::compare).get();
+        long delay = fa.delays.stream().min(Long::compare).orElse(0L);
         if (reverse) {
           nbfDest = (nbf.get(current) * fa.consRate - delay + fa.prodRate - 1) / fa.prodRate;
         } else {
