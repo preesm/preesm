@@ -11,7 +11,6 @@ import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.Path;
-import org.preesm.codegen.xtend.spider.visitor.SpiderCodegen;
 import org.preesm.codegen.xtend.spider2.utils.Spider2Config;
 import org.preesm.commons.doc.annotations.Parameter;
 import org.preesm.commons.doc.annotations.Port;
@@ -73,7 +72,7 @@ public class Spider2CodegenTask extends AbstractTaskImplementation {
       throw new PreesmRuntimeException("Codegen path has not been specified in scenario, cannot go further.");
     }
     // Parse the pigraph
-    final SpiderCodegen launcher = new SpiderCodegen(scenario, architecture);
+    final Spider2Codegen codegen = new Spider2Codegen(scenario, architecture, topGraph);
     // Get Spider2 config
     final Spider2Config spiderConfig = new Spider2Config(parameters);
 
