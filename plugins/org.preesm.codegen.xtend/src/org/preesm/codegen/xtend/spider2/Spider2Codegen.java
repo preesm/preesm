@@ -6,7 +6,6 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Writer;
 import java.net.URL;
-import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
@@ -104,13 +103,13 @@ public class Spider2Codegen {
     }
 
     /* Build the actor string */
-    StringBuilder cppActorsString = new StringBuilder();
+    final StringBuilder cppActorsString = new StringBuilder();
 
     /* Build the edge string */
-    StringBuilder cppEdgesString = new StringBuilder();
+    final StringBuilder cppEdgesString = new StringBuilder();
 
     /* Build the edge string */
-    StringBuilder cppDelaysString = new StringBuilder();
+    final StringBuilder cppDelaysString = new StringBuilder();
 
     /* Fill out the context */
     VelocityContext context = new VelocityContext();
@@ -183,23 +182,15 @@ public class Spider2Codegen {
    * @return set of parameter.
    */
   private Set<Parameter> getOrderedDependentParameter(final List<Parameter> initList, List<Parameter> paramPoolList) {
-    Set<Parameter> dependentParametersSet = new LinkedHashSet<>(initList);
+    final Set<Parameter> dependentParametersSet = new LinkedHashSet<>(initList);
     while (!paramPoolList.isEmpty()) {
-      List<Parameter> paramsToRemoveList = new ArrayList<>();
-      for (final Parameter param : paramPoolList) {
-        boolean shouldAddParam = true;
-        for (final Parameter inputParam : param.getInputDependentParameters()) {
-          if (!dependentParametersSet.contains(inputParam)) {
-            shouldAddParam = false;
-            break;
-          }
-        }
-        if (shouldAddParam) {
-          dependentParametersSet.add(param);
-          paramsToRemoveList.add(param);
-        }
-      }
-      paramPoolList.removeAll(paramsToRemoveList);
+      /* Get only the parameter that can be added to the current stage due to their dependencies */
+      final List<Parameter> nextParamsToAddList = paramPoolList
+          .stream().filter(x -> x.getInputDependentParameters().stream()
+              .filter(in -> dependentParametersSet.contains(in)).count() == x.getInputDependentParameters().size())
+          .collect(Collectors.toList());
+      dependentParametersSet.addAll(nextParamsToAddList);
+      paramPoolList.removeAll(nextParamsToAddList);
     }
     /* Remove init list from the set */
     dependentParametersSet.removeAll(initList);
