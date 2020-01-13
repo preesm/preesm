@@ -29,6 +29,7 @@ PREESM Changelog
 * New Workflow task 'gantt-output' to export Gantt with new Synthesis interface;
 * New menu command (from Preesm project) to generate standard X86 architecture;
 * New Workflow task 'pisdf-export.parameters' to export graph static parameters as C header.
+* Adding new API methods to Parameter class to ease the manipulation of the Parameter tree.
 
 ### Changes
 * If Gantt displayer cannot load SWT_AWT, the Gantt can be opened in a new window instead;

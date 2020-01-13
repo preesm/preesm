@@ -713,6 +713,12 @@ class Parameter extends Vertex, Configurable, ISetter, ExpressionHolder {
 	op boolean isConfigurationInterface() {
 		return false
 	}
+	op unique Parameter[] getInputDependentParameters() {
+		return getConfigInputPorts().map[incomingDependency].filterNull.map[setter].filter(Parameter).toEList.unmodifiableView
+	}
+	op unique Parameter[] getOutputDependentParameters() {
+		return outgoingDependencies.filterNull.map[target].filter(Parameter).toEList.unmodifiableView
+	}
 }
 
 class MalleableParameter extends Parameter {
