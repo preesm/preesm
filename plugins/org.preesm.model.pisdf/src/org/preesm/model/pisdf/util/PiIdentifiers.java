@@ -149,6 +149,9 @@ public class PiIdentifiers {
   /** The Constant CONFIGURATION_OUTPUT_INTERFACE_NAME. */
   public static final String CONFIGURATION_OUTPUT_INTERFACE_NAME = PiIdentifiers.ID;
 
+  /** The constant for default value of CII in GUI. */
+  public static final String PARAM_CII_DEFAULT = "defaultValue";
+
   /** The Constant REFINEMENT. */
   // REFINEMENTS
   public static final String REFINEMENT = "graph_desc";
@@ -261,4 +264,5 @@ public class PiIdentifiers {
   public static final String END          = "end";
   public static final String INIT         = "init";
   public static final String INIT_END_REF = "init_end_ref";
+
 }

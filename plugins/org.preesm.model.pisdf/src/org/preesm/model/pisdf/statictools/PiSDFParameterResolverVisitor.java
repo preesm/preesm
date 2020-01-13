@@ -43,8 +43,10 @@ package org.preesm.model.pisdf.statictools;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.logging.Level;
 import org.eclipse.emf.common.util.EList;
 import org.preesm.commons.exceptions.PreesmRuntimeException;
+import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.commons.math.ExpressionEvaluationException;
 import org.preesm.commons.math.JEPWrapper;
 import org.preesm.model.pisdf.AbstractActor;
@@ -177,8 +179,10 @@ public class PiSDFParameterResolverVisitor extends PiMMSwitch<Boolean> {
     final ConfigInputPort graphPort = cii.getGraphPort();
     final Dependency incomingDependency = graphPort.getIncomingDependency();
     if (incomingDependency == null) {
-      throw new PreesmRuntimeException(
-          cii.eContainer() + " has a config input port without incoming dependency: " + graphPort.getName());
+      PreesmLogger.getLogger().log(Level.WARNING,
+          cii.eContainer() + " has a config input port without incoming dependency: " + graphPort.getName()
+              + "\n Default value is used instead.");
+      return true;
     }
     final ISetter setter = incomingDependency.getSetter();
     // Setter of an incoming dependency into a ConfigInputInterface must be

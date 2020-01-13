@@ -645,6 +645,11 @@ public class PiWriter {
       paramElt.setAttribute(PiIdentifiers.PARAMETER_EXPRESSION, param.getValueExpression().getExpressionAsString());
     } else {
       paramElt.setAttribute(PiIdentifiers.NODE_KIND, InterfaceKind.CFG_INPUT.getLiteral());
+      final String value = param.getExpression().getExpressionAsString();
+      if (!value.equals("0")) {
+        paramElt.setAttribute(PiIdentifiers.PARAM_CII_DEFAULT, value);
+      }
+
     }
   }
 

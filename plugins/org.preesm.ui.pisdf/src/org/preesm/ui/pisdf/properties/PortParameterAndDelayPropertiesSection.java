@@ -340,7 +340,7 @@ public class PortParameterAndDelayPropertiesSection extends DataPortPropertiesUp
       if (bo instanceof Parameter) {
         if ((bo instanceof ConfigInputInterface)) {
           this.lblValueObj.setText(
-              "Default value is an Integer, only used for the computation of subsequent parameters in the GUI.");
+              "Default value is a Long Integer, only used for the computation of subsequent parameters in the GUI.");
         }
         final Parameter param = (Parameter) bo;
         if (param.getValueExpression().getExpressionAsString().compareTo(this.txtExpression.getText()) != 0) {

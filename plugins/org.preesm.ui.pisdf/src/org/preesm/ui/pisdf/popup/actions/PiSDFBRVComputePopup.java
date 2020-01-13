@@ -45,7 +45,6 @@ import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
-import org.eclipse.emf.common.util.EList;
 import org.eclipse.graphiti.ui.editor.DiagramEditorInput;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.StructuredSelection;
@@ -55,7 +54,6 @@ import org.eclipse.ui.IWorkbenchPage;
 import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.model.pisdf.AbstractVertex;
-import org.preesm.model.pisdf.ConfigInputPort;
 import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.pisdf.brv.BRVMethod;
 import org.preesm.model.pisdf.brv.PiBRV;
@@ -109,12 +107,6 @@ public class PiSDFBRVComputePopup extends AbstractHandler {
 
   private void processPiSDF(final PiGraph pigraph) {
     PreesmLogger.getLogger().log(Level.INFO, "Computing BRV for " + pigraph.getName());
-
-    final EList<ConfigInputPort> configInputPorts = pigraph.getConfigInputPorts();
-    if (!configInputPorts.isEmpty()) {
-      PreesmLogger.getLogger().log(Level.WARNING, "Cannot compute the BRV of a subgraph");
-      return;
-    }
 
     final boolean locallyStatic = pigraph.isLocallyStatic();
     if (!locallyStatic) {

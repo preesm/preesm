@@ -412,9 +412,18 @@ public class PiParser {
     final ConfigInputInterface param = PiMMUserFactory.instance.createConfigInputInterface();
 
     // Get the actor properties
-    final String attribute = nodeElt.getAttribute(PiIdentifiers.PARAMETER_NAME);
-    NameCheckerC.checkValidName(ConfigInputInterface.class.getName(), attribute);
-    param.setName(attribute);
+    final String attributeName = nodeElt.getAttribute(PiIdentifiers.PARAMETER_NAME);
+    NameCheckerC.checkValidName(ConfigInputInterface.class.getName(), attributeName);
+    param.setName(attributeName);
+
+    // Get the default value for GUI
+    final String attributeValue = nodeElt.getAttribute(PiIdentifiers.PARAM_CII_DEFAULT);
+    if (attributeValue != null && !attributeValue.isEmpty()) {
+      param.setExpression(attributeValue);
+    } else {
+      // 0 is the default value
+      param.setExpression(0L);
+    }
 
     // Add the actor to the parsed graph
     graph.addParameter(param);
