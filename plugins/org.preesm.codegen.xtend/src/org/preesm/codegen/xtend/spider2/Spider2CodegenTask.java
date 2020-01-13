@@ -71,34 +71,11 @@ public class Spider2CodegenTask extends AbstractTaskImplementation {
     if (scenario.getCodegenDirectory() == null) {
       throw new PreesmRuntimeException("Codegen path has not been specified in scenario, cannot go further.");
     }
-    // Parse the pigraph
-    final Spider2Codegen codegen = new Spider2Codegen(scenario, architecture, topGraph);
-    // Get Spider2 config
-    final Spider2Config spiderConfig = new Spider2Config(parameters);
-
-    // Generate code for the different pi graph
-    // Generate code for the application graph
-    // Generate code for the architecture (if needed)
-    if (spiderConfig.getGenerateArchiFile()) {
-      PreesmLogger.getLogger().log(Level.INFO, "Generating architecture description code.");
-    }
-    // Generate code for main application header
-    // Generate code for the main entry point (if top level graph does not have input nor output interfaces)
-    if (topGraph.getDataInputInterfaces().isEmpty() && topGraph.getDataOutputInterfaces().isEmpty()) {
-      PreesmLogger.getLogger().log(Level.INFO, "Generating stand-alone application code.");
-    } else {
-      PreesmLogger.getLogger().log(Level.INFO, "Generating software acceleration code.");
-    }
-    // Generate default CMakeList.txt (if needed)
-    if (spiderConfig.getGenerateCMakeList()) {
-      PreesmLogger.getLogger().log(Level.INFO, "Generating default CMakeList.txt.");
-    }
 
     // Get the name of the folder for code generation
     final String codegenPath = scenario.getCodegenDirectory() + "/";
     if (codegenPath.equals("/")) {
-      final String message = "Error: A Codegen folder must be specified in Scenario";
-      throw new PreesmRuntimeException(message);
+      throw new PreesmRuntimeException("Error: A Codegen folder must be specified in Scenario");
     }
     // If the codegen folder does not exist make it, if it exists clears it
     final IFolder f = workspace.getRoot().getFolder(new Path(codegenPath));
@@ -115,9 +92,33 @@ public class Spider2CodegenTask extends AbstractTaskImplementation {
         try {
           Files.delete(file.toPath());
         } catch (IOException e) {
-          PreesmLogger.getLogger().log(Level.FINE, "Could not delete file");
+          PreesmLogger.getLogger().log(Level.FINE, "Could not delete file [" + file.toPath().toString() + "].");
         }
       }
+    }
+
+    // Parse the pigraph
+    final Spider2Codegen codegen = new Spider2Codegen(scenario, architecture, topGraph, folder);
+    // Get Spider2 config
+    final Spider2Config spiderConfig = new Spider2Config(parameters);
+
+    // Generate code for the different pi graph
+    codegen.generateGraphCodes();
+    // Generate code for the application graph
+    // Generate code for the architecture (if needed)
+    if (spiderConfig.getGenerateArchiFile()) {
+      PreesmLogger.getLogger().log(Level.INFO, "Generating architecture description code.");
+    }
+    // Generate code for main application header
+    // Generate code for the main entry point (if top level graph does not have input nor output interfaces)
+    if (topGraph.getDataInputInterfaces().isEmpty() && topGraph.getDataOutputInterfaces().isEmpty()) {
+      PreesmLogger.getLogger().log(Level.INFO, "Generating stand-alone application code.");
+    } else {
+      PreesmLogger.getLogger().log(Level.INFO, "Generating software acceleration code.");
+    }
+    // Generate default CMakeList.txt (if needed)
+    if (spiderConfig.getGenerateCMakeList()) {
+      PreesmLogger.getLogger().log(Level.INFO, "Generating default CMakeList.txt.");
     }
 
     // TODO Auto-generated method stub
