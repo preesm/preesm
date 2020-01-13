@@ -3,6 +3,7 @@ package org.preesm.codegen.xtend.spider2;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.logging.Level;
 import org.eclipse.core.resources.IFolder;
@@ -121,20 +122,18 @@ public class Spider2CodegenTask extends AbstractTaskImplementation {
       PreesmLogger.getLogger().log(Level.INFO, "Generating default CMakeList.txt.");
     }
 
-    // TODO Auto-generated method stub
-    return null;
+    return new LinkedHashMap<>();
   }
 
   @Override
   public Map<String, String> getDefaultParameters() {
-    // TODO Auto-generated method stub
-    return null;
+    // Create an empty parameters map
+    return new LinkedHashMap<>();
   }
 
   @Override
   public String monitorMessage() {
-    // TODO Auto-generated method stub
-    return null;
+    return "Generating C++ code for Spider2 Library.";
   }
 
 }

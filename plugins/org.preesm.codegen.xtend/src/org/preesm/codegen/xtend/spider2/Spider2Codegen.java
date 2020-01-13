@@ -142,11 +142,12 @@ public class Spider2Codegen {
         throw new PreesmRuntimeException("Could not locate main template [" + graphCodeTemplate.getFile() + "].", e);
       }
 
-      /* 99- set back default class loader */
-      Thread.currentThread().setContextClassLoader(oldContextClassLoader);
     } catch (IOException e) {
       PreesmLogger.getLogger().log(Level.SEVERE, "failed to open output file for graph [" + graph.getName() + "].");
       PreesmLogger.getLogger().log(Level.SEVERE, e.toString());
+    } finally {
+      /* 99- set back default class loader */
+      Thread.currentThread().setContextClassLoader(oldContextClassLoader);
     }
   }
 
