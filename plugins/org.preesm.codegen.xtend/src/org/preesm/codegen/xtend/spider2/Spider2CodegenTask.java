@@ -122,6 +122,8 @@ public class Spider2CodegenTask extends AbstractTaskImplementation {
       PreesmLogger.getLogger().log(Level.INFO, "Generating default CMakeList.txt.");
     }
 
+    codegen.end();
+
     return new LinkedHashMap<>();
   }
 

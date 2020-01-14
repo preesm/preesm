@@ -26,10 +26,10 @@ public class Spider2Codegen {
   private final Scenario scenario;
 
   /** The architecture */
-  final Design architecture;
+  private final Design architecture;
 
   /** The application graph */
-  final PiGraph applicationGraph;
+  private final PiGraph applicationGraph;
 
   /** The Spider2PreProcessor **/
   private final Spider2PreProcessVisitor preprocessor = new Spider2PreProcessVisitor();
@@ -38,7 +38,13 @@ public class Spider2Codegen {
   private final String applicationName;
 
   /** The codegen folder */
-  final File folder;
+  private final File folder;
+
+  /** The original class context loader */
+  private ClassLoader originalContextClassLoader = null;
+
+  /** The VelocityEngine used by the codegen */
+  private VelocityEngine velocityEngine = null;
 
   /**
    * Instantiates a new spider2 codegen.
@@ -62,21 +68,35 @@ public class Spider2Codegen {
   }
 
   /**
-   * Generates CPP code for every unique pisdf graph of the application.
+   * Initializes the context loader of the class.
    */
-  public void generateGraphCodes() {
-    for (final PiGraph graph : this.preprocessor.getUniqueGraphSet()) {
-      generateUniqueGraphCode(graph);
+  public void init() {
+    if (this.originalContextClassLoader != null) {
+      return;
     }
+    this.originalContextClassLoader = Thread.currentThread().getContextClassLoader();
+    Thread.currentThread().setContextClassLoader(Spider2Codegen.class.getClassLoader());
+    this.velocityEngine = new VelocityEngine();
+    this.velocityEngine.init();
+    this.velocityEngine.removeDirective("include");
+  }
+
+  /**
+   * Finalizes properly original class loader attribute.
+   */
+  public void end() {
+    if (this.originalContextClassLoader != null) {
+      return;
+    }
+    Thread.currentThread().setContextClassLoader(this.originalContextClassLoader);
+    this.originalContextClassLoader = null;
+    this.velocityEngine = null;
   }
 
   public void generateApplicationHeader() {
-    final ClassLoader oldContextClassLoader = Thread.currentThread().getContextClassLoader();
-    Thread.currentThread().setContextClassLoader(Spider2Codegen.class.getClassLoader());
-    VelocityEngine velocityEngine = new VelocityEngine();
-    velocityEngine.init();
-
-    velocityEngine.removeDirective("include");
+    if (this.originalContextClassLoader == null) {
+      init();
+    }
 
     /* Fill out the context */
     VelocityContext context = new VelocityContext();
@@ -87,8 +107,20 @@ public class Spider2Codegen {
 
     /* Write the file */
     final String outputFileName = "spider2-application-" + this.applicationName + ".h";
-    writeVelocityContext(velocityEngine, context, "templates/cpp/app_header_template.vm", outputFileName,
-        oldContextClassLoader);
+    writeVelocityContext(context, "templates/cpp/app_header_template.vm", outputFileName);
+  }
+
+  /**
+   * Generates CPP code for every unique pisdf graph of the application.
+   */
+  public void generateGraphCodes() {
+    if (this.originalContextClassLoader == null) {
+      init();
+    }
+
+    for (final PiGraph graph : this.preprocessor.getUniqueGraphSet()) {
+      generateUniqueGraphCode(graph);
+    }
   }
 
   /**
@@ -98,17 +130,6 @@ public class Spider2Codegen {
    *          the graph
    */
   private final void generateUniqueGraphCode(final PiGraph graph) {
-    // 0- without the following class loader initialization, I get the following exception when running as Eclipse
-    // plugin:
-    // org.apache.velocity.exception.VelocityException: The specified class for ResourceManager
-    // (org.apache.velocity.runtime.resource.ResourceManagerImpl) does not implement
-    // org.apache.velocity.runtime.resource.ResourceManager; Velocity is not initialized correctly.
-    final ClassLoader oldContextClassLoader = Thread.currentThread().getContextClassLoader();
-    Thread.currentThread().setContextClassLoader(Spider2Codegen.class.getClassLoader());
-    VelocityEngine velocityEngine = new VelocityEngine();
-    velocityEngine.init();
-
-    velocityEngine.removeDirective("include");
 
     /* Get the clean graph name */
     final String graphName = generateGraphName(graph);
@@ -143,13 +164,12 @@ public class Spider2Codegen {
     context.put("inputInterfaces", graph.getDataInputInterfaces());
     context.put("outputInterfaces", graph.getDataOutputInterfaces());
     context.put("actors", graph.getActors());
-    // context.put("edges", graph.getFifos());
+    context.put("edges", graph.getFifos());
     context.put("delays", cppDelaysString);
 
     /* Write the final file */
     final String outputFileName = "graph_" + graphName + ".cpp";
-    writeVelocityContext(velocityEngine, context, "templates/cpp/graph_template.vm", outputFileName,
-        oldContextClassLoader);
+    writeVelocityContext(context, "templates/cpp/graph_template.vm", outputFileName);
   }
 
   /**
@@ -169,19 +189,15 @@ public class Spider2Codegen {
   /**
    * Writes a VelocityContext to a given file.
    * 
-   * @param velocityEngine
-   *          the VelocityEngine to use.
    * @param context
    *          the VelocityContext to write.
    * @param templateFileName
    *          The name of the template to use.
    * @param outputFileName
    *          The name of the output generated file.
-   * @param oldContextClassLoader
-   *          The old context class loader to restore.
    */
-  private final void writeVelocityContext(final VelocityEngine velocityEngine, final VelocityContext context,
-      final String templateFileName, final String outputFileName, final ClassLoader oldContextClassLoader) {
+  private final void writeVelocityContext(final VelocityContext context, final String templateFileName,
+      final String outputFileName) {
     try (Writer writer = new FileWriter(new File(this.folder, outputFileName))) {
       final URL graphCodeTemplate = PreesmResourcesHelper.getInstance().resolve(templateFileName, this.getClass());
 
@@ -189,15 +205,14 @@ public class Spider2Codegen {
         velocityEngine.evaluate(context, writer, "org.apache.velocity", reader);
         writer.flush();
       } catch (IOException e) {
+        end();
         throw new PreesmRuntimeException("Could not locate main template [" + graphCodeTemplate.getFile() + "].", e);
       }
 
     } catch (IOException e) {
+      end();
       PreesmLogger.getLogger().log(Level.SEVERE, "failed to open output file [" + outputFileName + "].");
       PreesmLogger.getLogger().log(Level.SEVERE, e.toString());
-    } finally {
-      /* 99- set back default class loader */
-      Thread.currentThread().setContextClassLoader(oldContextClassLoader);
     }
   }
 
