@@ -14,6 +14,7 @@ import org.preesm.codegen.xtend.spider2.visitor.Spider2PreProcessVisitor;
 import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.preesm.commons.files.PreesmResourcesHelper;
 import org.preesm.commons.logger.PreesmLogger;
+import org.preesm.model.pisdf.Fifo;
 import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.scenario.Scenario;
 import org.preesm.model.slam.Design;
@@ -137,21 +138,31 @@ public class Spider2Codegen {
     /* Get the clean graph name */
     final String graphName = generateGraphName(graph);
 
-    /* Build the edge string */
-    final StringBuilder cppDelaysString = new StringBuilder();
+    /* Get the exact number of actors and edges there should be in the graph */
+    int actorCount = graph.getActors().size() + graph.getFifosWithDelay().size();
+    int edgeCount = graph.getFifos().size();
+    for (final Fifo fifo : graph.getFifosWithDelay()) {
+      if (!fifo.getDelay().hasGetterActor()) {
+        actorCount += 1;
+        edgeCount += 1;
+      }
+      if (!fifo.getDelay().hasSetterActor()) {
+        actorCount += 1;
+        edgeCount += 1;
+      }
+    }
 
     /* Fill out the context */
     VelocityContext context = new VelocityContext();
     context.put("appName", this.applicationName);
     context.put("graphName", graphName);
-    context.put("actorCount", graph.getActors().size());
-    context.put("edgeCount", graph.getFifos().size());
+    context.put("actorCount", actorCount);
+    context.put("edgeCount", edgeCount);
     context.put("paramCount", graph.getParameters().size());
     context.put("inputInterfaceCount", graph.getDataInputInterfaces().size());
     context.put("outputInterfaceCount", graph.getDataOutputInterfaces().size());
     context.put("cfgActorCount", graph.getActors().stream().filter(x -> !x.getConfigOutputPorts().isEmpty()).count());
 
-    /* Fill the parameters to the context */
     context.put("parameters", graph.getParameters());
     context.put("inheritedParameters", graph.getConfigInputInterfaces());
     context.put("staticParameters", this.preprocessor.getStaticParameters(graph));
@@ -162,7 +173,6 @@ public class Spider2Codegen {
     context.put("outputInterfaces", graph.getDataOutputInterfaces());
     context.put("actors", graph.getActors());
     context.put("edges", this.preprocessor.getEdgeSet(graph));
-    context.put("delays", cppDelaysString);
 
     /* Write the final file */
     if (graph == this.applicationGraph) {

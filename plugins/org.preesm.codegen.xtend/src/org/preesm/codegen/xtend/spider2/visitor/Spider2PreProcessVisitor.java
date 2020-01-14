@@ -237,7 +237,10 @@ public class Spider2PreProcessVisitor extends PiMMSwitch<Boolean> {
       final long sinkIx = sink.getDataInputPorts().indexOf(targetPort);
       final String sinkRateExpression = targetPort.getExpression().getExpressionAsString();
       /* Add the edge to the edge Set */
-      edgeSet.add(new Spider2CodegenEdge(source, sourceIx, sourceRateExpression, sink, sinkIx, sinkRateExpression));
+      final Spider2CodegenEdge edge = new Spider2CodegenEdge(source, sourceIx, sourceRateExpression, sink, sinkIx,
+          sinkRateExpression);
+      edge.setDelay(fifo.getDelay());
+      edgeSet.add(edge);
     }
     edgeMap.put(graph, edgeSet);
   }

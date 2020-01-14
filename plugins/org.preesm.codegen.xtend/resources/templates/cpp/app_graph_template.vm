@@ -146,17 +146,33 @@ void spider::createUserApplicationGraph() {
 #foreach ($edge in $edges)
 
     /* == Edge ${edge.source.name}[$edge.sourcePortName] -> [$edge.sinkPortName]$edge.sink.name == */
+#if( $edge.hasDelay() )
+    auto *edge_${edge.source.name}_${edge.sourcePortName}__${edge.sink.name}_${edge.sinkPortName} = spider::api::createEdge(
+         /* = Source vertex          = */  vertex_$edge.source.name, 
+         /* = Source port ix         = */  $edge.sourceIx, 
+         /* = Source rate expression = */ "$edge.sourceRateExpression", 
+         /* = Sink vertex            = */  vertex_$edge.sink.name, 
+         /* = Sink port ix           = */  $edge.sinkIx, 
+         /* = sink rate expression   = */ "$edge.sinkRateExpression");
+         
+    /* == Set the delay on the edge == */
+    spider::api::createDelay(/* = Edge of the delay       = */  edge_${edge.source.name}_${edge.sourcePortName}__${edge.sink.name}_${edge.sinkPortName},
+                             /* = Expression of the delay = */ "$edge.delay.expression.expressionAsString",
+                             /* = Setter of the delay     = */  $edge.setterDelay,
+                             /* = Setter port ix          = */  $edge.setterPortIx,
+                             /* = Setter rate expression  = */ "$edge.setterRateExpression",
+                             /* = Getter of the delay     = */  $edge.getterDelay,
+                             /* = Getter port ix          = */  $edge.getterPortIx,
+                             /* = Getter rate expression  = */ "$edge.getterRateExpression");
+                             
+#else
     spider::api::createEdge(/* = Source vertex          = */  vertex_$edge.source.name, 
                             /* = Source port ix         = */  $edge.sourceIx, 
                             /* = Source rate expression = */ "$edge.sourceRateExpression", 
                             /* = Sink vertex            = */  vertex_$edge.sink.name, 
                             /* = Sink port ix           = */  $edge.sinkIx, 
-                            /* = sink rate expression   = */ "$edge.sinkRateExpression");
+                            /* = sink rate expression   = */ "$edge.sinkRateExpression");   
 #end
 #end
-#if( ${delays.size()} > 0 )
-
-    /* == Creates the delay(s) == */
-    ${delays}
 #end
 }
