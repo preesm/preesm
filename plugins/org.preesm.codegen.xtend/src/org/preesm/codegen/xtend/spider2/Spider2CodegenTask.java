@@ -105,12 +105,12 @@ public class Spider2CodegenTask extends AbstractTaskImplementation {
 
     // Generate code for the different pi graph
     codegen.generateGraphCodes();
-    // Generate code for the application graph
     // Generate code for the architecture (if needed)
     if (spiderConfig.getGenerateArchiFile()) {
       PreesmLogger.getLogger().log(Level.INFO, "Generating architecture description code.");
     }
     // Generate code for main application header
+    codegen.generateApplicationHeader();
     // Generate code for the main entry point (if top level graph does not have input nor output interfaces)
     if (topGraph.getDataInputInterfaces().isEmpty() && topGraph.getDataOutputInterfaces().isEmpty()) {
       PreesmLogger.getLogger().log(Level.INFO, "Generating stand-alone application code.");

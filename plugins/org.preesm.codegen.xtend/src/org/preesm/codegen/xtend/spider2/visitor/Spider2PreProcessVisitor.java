@@ -7,19 +7,25 @@ import java.util.Set;
 import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.Actor;
+import org.preesm.model.pisdf.BroadcastActor;
 import org.preesm.model.pisdf.CHeaderRefinement;
 import org.preesm.model.pisdf.DataInputPort;
 import org.preesm.model.pisdf.DataPort;
+import org.preesm.model.pisdf.EndActor;
 import org.preesm.model.pisdf.Expression;
 import org.preesm.model.pisdf.Fifo;
+import org.preesm.model.pisdf.ForkActor;
 import org.preesm.model.pisdf.FunctionArgument;
 import org.preesm.model.pisdf.FunctionPrototype;
 import org.preesm.model.pisdf.ISetter;
+import org.preesm.model.pisdf.InitActor;
+import org.preesm.model.pisdf.JoinActor;
 import org.preesm.model.pisdf.Parameter;
 import org.preesm.model.pisdf.Parameterizable;
 import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.pisdf.PiSDFRefinement;
 import org.preesm.model.pisdf.Port;
+import org.preesm.model.pisdf.RoundBufferActor;
 import org.preesm.model.pisdf.util.PiMMSwitch;
 
 /**
@@ -46,6 +52,11 @@ public class Spider2PreProcessVisitor extends PiMMSwitch<Boolean> {
   /**
    * Switch overrides
    */
+
+  @Override
+  public Boolean caseAbstractActor(final AbstractActor aa) {
+    return true;
+  }
 
   @Override
   public Boolean caseActor(final Actor actor) {
@@ -85,6 +96,42 @@ public class Spider2PreProcessVisitor extends PiMMSwitch<Boolean> {
     // caseConfigurable(p);
     // Fill the setterMap
     // this.setterMap.put(p, this.currentAbstractVertexName);
+    return true;
+  }
+
+  @Override
+  public Boolean caseBroadcastActor(final BroadcastActor ba) {
+    caseAbstractActor(ba);
+    return true;
+  }
+
+  @Override
+  public Boolean caseJoinActor(final JoinActor ja) {
+    caseAbstractActor(ja);
+    return true;
+  }
+
+  @Override
+  public Boolean caseForkActor(final ForkActor fa) {
+    caseAbstractActor(fa);
+    return true;
+  }
+
+  @Override
+  public Boolean caseRoundBufferActor(final RoundBufferActor rba) {
+    caseAbstractActor(rba);
+    return true;
+  }
+
+  @Override
+  public Boolean caseInitActor(final InitActor rba) {
+    caseAbstractActor(rba);
+    return true;
+  }
+
+  @Override
+  public Boolean caseEndActor(final EndActor rba) {
+    caseAbstractActor(rba);
     return true;
   }
 

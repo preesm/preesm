@@ -17,7 +17,6 @@ import org.preesm.codegen.xtend.spider2.visitor.Spider2PreProcessVisitor;
 import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.preesm.commons.files.PreesmResourcesHelper;
 import org.preesm.commons.logger.PreesmLogger;
-import org.preesm.model.pisdf.ConfigInputInterface;
 import org.preesm.model.pisdf.Parameter;
 import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.scenario.Scenario;
@@ -75,6 +74,27 @@ public class Spider2Codegen {
     }
   }
 
+  public void generateApplicationHeader() {
+    final ClassLoader oldContextClassLoader = Thread.currentThread().getContextClassLoader();
+    Thread.currentThread().setContextClassLoader(Spider2Codegen.class.getClassLoader());
+    VelocityEngine velocityEngine = new VelocityEngine();
+    velocityEngine.init();
+
+    velocityEngine.removeDirective("include");
+
+    /* Fill out the context */
+    VelocityContext context = new VelocityContext();
+    context.put("appName", this.applicationName);
+    final Set<PiGraph> graphSet = this.preprocessor.getUniqueGraphSet();
+    graphSet.remove(this.applicationGraph);
+    context.put("graphs", graphSet);
+
+    /* Write the file */
+    final String outputFileName = "spider2-application-" + this.applicationName + ".h";
+    writeVelocityContext(velocityEngine, context, "templates/cpp/app_header_template.vm", outputFileName,
+        oldContextClassLoader);
+  }
+
   /**
    * Generates cpp code for unique graph.
    * 
@@ -96,11 +116,6 @@ public class Spider2Codegen {
 
     /* Get the clean graph name */
     final String graphName = generateGraphName(graph);
-
-    /* Build the parameter string */
-    for (final ConfigInputInterface cif : graph.getConfigInputInterfaces()) {
-      cif.getGraphPort().getIncomingDependency().getGetter();
-    }
 
     /* Build the actor string */
     final StringBuilder cppActorsString = new StringBuilder();
@@ -124,30 +139,16 @@ public class Spider2Codegen {
 
     /* Fill the parameters to the context */
     fillGraphContextParameters(context, graph);
-    context.put("actors", cppActorsString);
-    context.put("edges", cppEdgesString);
+    context.put("inputInterfaces", graph.getDataInputInterfaces());
+    context.put("outputInterfaces", graph.getDataOutputInterfaces());
+    context.put("actors", graph.getActors());
+    // context.put("edges", graph.getFifos());
     context.put("delays", cppDelaysString);
 
     /* Write the final file */
-    final String outputFile = "graph_" + graphName + ".cpp";
-    try (Writer writer = new FileWriter(new File(this.folder, outputFile))) {
-      final URL graphCodeTemplate = PreesmResourcesHelper.getInstance().resolve("templates/cpp/graph_template.vm",
-          this.getClass());
-
-      try (final InputStreamReader reader = new InputStreamReader(graphCodeTemplate.openStream())) {
-        velocityEngine.evaluate(context, writer, "org.apache.velocity", reader);
-        writer.flush();
-      } catch (IOException e) {
-        throw new PreesmRuntimeException("Could not locate main template [" + graphCodeTemplate.getFile() + "].", e);
-      }
-
-    } catch (IOException e) {
-      PreesmLogger.getLogger().log(Level.SEVERE, "failed to open output file for graph [" + graph.getName() + "].");
-      PreesmLogger.getLogger().log(Level.SEVERE, e.toString());
-    } finally {
-      /* 99- set back default class loader */
-      Thread.currentThread().setContextClassLoader(oldContextClassLoader);
-    }
+    final String outputFileName = "graph_" + graphName + ".cpp";
+    writeVelocityContext(velocityEngine, context, "templates/cpp/graph_template.vm", outputFileName,
+        oldContextClassLoader);
   }
 
   private void fillGraphContextParameters(VelocityContext context, final PiGraph graph) {
@@ -165,6 +166,7 @@ public class Spider2Codegen {
         .filter(x -> !x.isLocallyStatic() && x.isDependent()).collect(Collectors.toList());
     final Set<Parameter> dependentDynamicParametersSet = getOrderedDependentParameter(dynamicParametersList,
         dynamicParameterPool);
+    context.put("parameters", graph.getParameters());
     context.put("inheritedParameters", graph.getConfigInputInterfaces());
     context.put("staticParameters", staticParametersList);
     context.put("dependendStaticParameters", dependendStaticParametersSet);
@@ -209,6 +211,41 @@ public class Spider2Codegen {
     name = name.replace('-', '_');
     name = name.replace(" ", "");
     return name;
+  }
+
+  /**
+   * Writes a VelocityContext to a given file.
+   * 
+   * @param velocityEngine
+   *          the VelocityEngine to use.
+   * @param context
+   *          the VelocityContext to write.
+   * @param templateFileName
+   *          The name of the template to use.
+   * @param outputFileName
+   *          The name of the output generated file.
+   * @param oldContextClassLoader
+   *          The old context class loader to restore.
+   */
+  private final void writeVelocityContext(final VelocityEngine velocityEngine, final VelocityContext context,
+      final String templateFileName, final String outputFileName, final ClassLoader oldContextClassLoader) {
+    try (Writer writer = new FileWriter(new File(this.folder, outputFileName))) {
+      final URL graphCodeTemplate = PreesmResourcesHelper.getInstance().resolve(templateFileName, this.getClass());
+
+      try (final InputStreamReader reader = new InputStreamReader(graphCodeTemplate.openStream())) {
+        velocityEngine.evaluate(context, writer, "org.apache.velocity", reader);
+        writer.flush();
+      } catch (IOException e) {
+        throw new PreesmRuntimeException("Could not locate main template [" + graphCodeTemplate.getFile() + "].", e);
+      }
+
+    } catch (IOException e) {
+      PreesmLogger.getLogger().log(Level.SEVERE, "failed to open output file [" + outputFileName + "].");
+      PreesmLogger.getLogger().log(Level.SEVERE, e.toString());
+    } finally {
+      /* 99- set back default class loader */
+      Thread.currentThread().setContextClassLoader(oldContextClassLoader);
+    }
   }
 
 }
