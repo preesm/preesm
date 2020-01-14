@@ -56,27 +56,32 @@ spider::pisdf::Graph *spider::create${graphName}Subgraph(std::string name) {
           /* = Number of config actors     = */ ${cfgActorCount});
 #if( ${parameters.size()} > 0 )
 
-    /* == Creates the parameter(s) == */
+    /* === Creates the parameter(s) === */
 #foreach($param in $inheritedParameters)
+
     auto *param_$param.name = spider::api::createInheritedParam(graph, 
           /* = Name of the parameter        = */ "$param.name", 
           /* = Name of the parent parameter = */ "$param.graphPort.incomingDependency.getter.name");
 #end
 #foreach($param in $staticParameters)
+
     auto *param_$param.name = spider::api::createStaticParam(graph, 
           /* = Name of the parameter  = */ "$param.name", 
           /* = Value of the parameter = */  $param.expression.expressionAsString);
 #end
 #foreach($param in $dependendStaticParameters)
+
     auto *param_$param.name = spider::api::createStaticParam(graph, 
           /* = Name of the parameter       = */ "$param.name", 
           /* = Expression of the parameter = */ "$param.expression.expressionAsString");
 #end
 #foreach($param in $dynamicParameters)
+
     auto *param_$param.name = spider::api::createDynamicParam(graph, 
           /* = Name of the parameter = */ "$param.name");
 #end
 #foreach($param in $dependentDynamicParameters)
+
     auto *param_$param.name = spider::api::createDynamicParam(graph, 
           /* = Name of the parameter       = */ "$param.name",  
           /* = Expression of the parameter = */ "$param.expression.expressionAsString");
@@ -84,8 +89,9 @@ spider::pisdf::Graph *spider::create${graphName}Subgraph(std::string name) {
 #end
 #if( ${inputInterfaces.size()} > 0 )
 
-    /* == Set the input interface(s) == */
+    /* === Set the input interface(s) === */
 #foreach($interface in $inputInterfaces)
+
     auto *interface_$interface.name = spider::api::setInputInterfaceName(graph, 
           /* = Index of the interface = */  0, 
           /* = Name of the interface  = */ "$interface.name");
@@ -93,8 +99,9 @@ spider::pisdf::Graph *spider::create${graphName}Subgraph(std::string name) {
 #end
 #if( ${outputInterfaces.size()} > 0 )
 
-    /* == Set the output interface(s) == */
+    /* === Set the output interface(s) === */
 #foreach($interface in $outputInterfaces)
+
     auto *interface_$interface.name = spider::api::setOutputInterfaceName(graph, 
           /* = Index of the interface = */  0, 
           /* = Name of the interface  = */ "$interface.name");
@@ -102,23 +109,41 @@ spider::pisdf::Graph *spider::create${graphName}Subgraph(std::string name) {
 #end
 #if( ${actors.size()} > 0 )
 
-    /* == Creates the actor(s) == */
+    /* === Creates the actor(s) == */
 #foreach($actor in $actors)
+
     auto *vertex_$actor.name = spider::api::createVertex(graph, 
           /* = Name of the actor      = */ "$actor.name", 
           /* = Number of input edges  = */  ${actor.dataInputPorts.size()}, 
           /* = Number of output edges = */  ${actor.dataOutputPorts.size()});
+#end
+#end
+#if( ${actors.size()} > 0 )
+
+    /* === Connect the parameters to the actors == */
+#foreach($actor in $actors)
 #if( ${actor.configInputPorts.size()} > 0 )
+
+    /* == Set the input parameters of the vertex $actor.name == */
 #foreach($param in ${actor.configInputPorts})
     spider::api::addInputParamToVertex(vertex_$actor.name, param_${param.incomingDependency.setter.name});
 #end
+#end
+#if( ${actor.configOutputPorts.size()} > 0 )
 
+    /* == Set the output parameters of the vertex $actor.name == */
+#foreach($outputPort in ${actor.configOutputPorts})
+#foreach($param in ${outputPort.outgoingDependencies})
+    spider::api::addOutputParamToVertex(vertex_$actor.name, param_${param.target.name});
 #end
 #end
 #end
+#end
+#end
+
 #if( ${edges.size()} > 0 )
 
-    /* == Creates the edge(s) == */
+    /* === Creates the edge(s) === */
     ${edges}
 #end
 #if( ${delays.size()} > 0 )
