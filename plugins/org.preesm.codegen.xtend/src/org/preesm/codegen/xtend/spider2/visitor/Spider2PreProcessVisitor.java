@@ -7,6 +7,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
+import org.apache.commons.math3.util.Pair;
+import org.apache.velocity.util.StringUtils;
 import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.Actor;
@@ -46,6 +48,9 @@ public class Spider2PreProcessVisitor extends PiMMSwitch<Boolean> {
   /** The unique graph set **/
   private final Set<PiGraph> uniqueGraphSet = new HashSet<>();
 
+  /** The unique graph name set */
+  private final Set<String> uniqueGraphNameSet = new HashSet<>();
+
   /** The graph to static parameters map */
   private final Map<PiGraph, List<Parameter>> staticParametersMap = new LinkedHashMap<>();
 
@@ -60,6 +65,12 @@ public class Spider2PreProcessVisitor extends PiMMSwitch<Boolean> {
 
   /** The graph to edge map */
   private final Map<PiGraph, Set<Spider2CodegenEdge>> edgeMap = new LinkedHashMap<>();
+
+  /** The graph to subgraph map */
+  private final Map<PiGraph, Set<Pair<String, PiGraph>>> subgraphMap = new LinkedHashMap<>();
+
+  /** The graph to actors map */
+  private final Map<PiGraph, Set<AbstractActor>> actorsMap = new LinkedHashMap<>();
 
   /**
    * Accessors
@@ -92,9 +103,17 @@ public class Spider2PreProcessVisitor extends PiMMSwitch<Boolean> {
     return edgeMap.get(graph);
   }
 
-  /**
-   * Private methods
-   */
+  public Set<Pair<String, PiGraph>> getSubgraphSet(final PiGraph graph) {
+    return subgraphMap.get(graph);
+  }
+
+  public String getPiGraphName(final PiGraph graph) {
+    return getPiGraphNameFromUrl(graph.getUrl());
+  }
+
+  public Set<AbstractActor> getActorSet(final PiGraph graph) {
+    return actorsMap.get(graph);
+  }
 
   /**
    * Switch overrides
@@ -245,6 +264,10 @@ public class Spider2PreProcessVisitor extends PiMMSwitch<Boolean> {
     edgeMap.put(graph, edgeSet);
   }
 
+  private String getPiGraphNameFromUrl(final String url) {
+    return StringUtils.capitalizeFirstLetter(url.substring(url.lastIndexOf('/') + 1, url.length() - 3));
+  }
+
   @Override
   public Boolean casePiGraph(final PiGraph graph) {
     /* Insert the pigraph in the set */
@@ -254,19 +277,27 @@ public class Spider2PreProcessVisitor extends PiMMSwitch<Boolean> {
     insertDynamicParamters(graph);
 
     /* Extract parameters */
-    if (!staticParametersMap.containsKey(graph)) {
+    if (!this.staticParametersMap.containsKey(graph)) {
       extractParameters(graph);
     }
 
     /* Extract edges */
-    if (!edgeMap.containsKey(graph)) {
+    if (!this.edgeMap.containsKey(graph)) {
       extractEdges(graph);
     }
 
-    /* Go through the graph */
-    caseAbstractActor(graph);
-    for (final AbstractActor a : graph.getActors()) {
-      doSwitch(a);
+    /* Extract the actors */
+    this.actorsMap.put(graph, new HashSet<>());
+
+    /* Go through the subgraphs */
+    this.subgraphMap.put(graph, new HashSet<>());
+    for (final PiGraph subgraph : graph.getChildrenGraphs()) {
+      final String originalGraphFileName = getPiGraphNameFromUrl(subgraph.getUrl());
+      this.subgraphMap.get(graph).add(new Pair<>(originalGraphFileName, subgraph));
+      if (!this.uniqueGraphNameSet.contains(originalGraphFileName)) {
+        this.uniqueGraphNameSet.add(originalGraphFileName);
+        casePiGraph(subgraph);
+      }
     }
     return true;
   }

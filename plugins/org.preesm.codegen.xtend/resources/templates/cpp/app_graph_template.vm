@@ -40,54 +40,54 @@
 
 /* === Include(s) === */
 
-#include <spider2-application-${appName}.h>
+#include "spider2-application-${appName}.h"
 
 /* === Function(s) definition === */
 
 void spider::createUserApplicationGraph() {
     /* == Create the graph == */
-    auto *graph = spider::api::createUserApplicationGraph(/* = Name of the application graph = */ std::move(name),
-                                                          /* = Number of actors              = */ ${actorCount},
-                                                          /* = Number of edges               = */ ${edgeCount},
-                                                          /* = Number of parameters          = */ ${paramCount},
-                                                          /* = Number of input interfaces    = */ ${inputInterfaceCount},
-                                                          /* = Number of output interfaces   = */ ${outputInterfaceCount},
-                                                          /* = Number of config actors       = */ ${cfgActorCount});
+    auto *graph = spider::api::createUserApplicationGraph(/* = Name of the application graph = */ "$appName",
+                                                          /* = Number of actors              = */  ${actorCount},
+                                                          /* = Number of edges               = */  ${edgeCount},
+                                                          /* = Number of parameters          = */  ${paramCount},
+                                                          /* = Number of input interfaces    = */  ${inputInterfaceCount},
+                                                          /* = Number of output interfaces   = */  ${outputInterfaceCount},
+                                                          /* = Number of config actors       = */  ${cfgActorCount});
 #if( ${parameters.size()} > 0 )
 
     /* === Creates the parameter(s) === */
 #foreach($param in $inheritedParameters)
 
     auto *param_$param.name = spider::api::createInheritedParam(
-          /* = Graph of the parameter       = */  graph, 
-          /* = Name of the parameter        = */ "$param.name", 
+          /* = Graph of the parameter       = */  graph,
+          /* = Name of the parameter        = */ "$param.name",
           /* = Name of the parent parameter = */ "$param.graphPort.incomingDependency.getter.name");
 #end
 #foreach($param in $staticParameters)
 
     auto *param_$param.name = spider::api::createStaticParam(
-          /* = Graph of the parameter = */  graph, 
-          /* = Name of the parameter  = */ "$param.name", 
+          /* = Graph of the parameter = */  graph,
+          /* = Name of the parameter  = */ "$param.name",
           /* = Value of the parameter = */  $param.expression.expressionAsString);
 #end
 #foreach($param in $dependendStaticParameters)
 
     auto *param_$param.name = spider::api::createStaticParam(
-          /* = Graph of the parameter      = */  graph, 
-          /* = Name of the parameter       = */ "$param.name", 
+          /* = Graph of the parameter      = */  graph,
+          /* = Name of the parameter       = */ "$param.name",
           /* = Expression of the parameter = */ "$param.expression.expressionAsString");
 #end
 #foreach($param in $dynamicParameters)
 
     auto *param_$param.name = spider::api::createDynamicParam(
-          /* = Graph of the parameter = */  graph, 
+          /* = Graph of the parameter = */  graph,
           /* = Name of the parameter  = */ "$param.name");
 #end
 #foreach($param in $dependentDynamicParameters)
 
     auto *param_$param.name = spider::api::createDynamicParam(
-          /* = Graph of the parameter      = */  graph, 
-          /* = Name of the parameter       = */ "$param.name",  
+          /* = Graph of the parameter      = */  graph,
+          /* = Name of the parameter       = */ "$param.name",
           /* = Expression of the parameter = */ "$param.expression.expressionAsString");
 #end
 #end
@@ -97,8 +97,8 @@ void spider::createUserApplicationGraph() {
 #foreach($interface in $inputInterfaces)
 
     auto *interface_$interface.name = spider::api::setInputInterfaceName(
-          /* = Graph of the interface = */  graph, 
-          /* = Index of the interface = */  0, 
+          /* = Graph of the interface = */  graph,
+          /* = Index of the interface = */  0,
           /* = Name of the interface  = */ "$interface.name");
 #end
 #end
@@ -108,8 +108,8 @@ void spider::createUserApplicationGraph() {
 #foreach($interface in $outputInterfaces)
 
     auto *interface_$interface.name = spider::api::setOutputInterfaceName(
-          /* = Graph of the interface = */  graph, 
-          /* = Index of the interface = */  0, 
+          /* = Graph of the interface = */  graph,
+          /* = Index of the interface = */  0,
           /* = Name of the interface  = */ "$interface.name");
 #end
 #end
@@ -118,11 +118,12 @@ void spider::createUserApplicationGraph() {
     /* === Creates the actor(s) == */
 #foreach($actor in $actors)
 
-    auto *vertex_$actor.name = spider::api::createVertex(
+    auto *vertex_$actor.name = spider::api::createVertexFromType(
           /* = Graph of the vertex    = */  graph, 
           /* = Name of the actor      = */ "$actor.name", 
           /* = Number of input edges  = */  ${actor.dataInputPorts.size()}, 
-          /* = Number of output edges = */  ${actor.dataOutputPorts.size()});
+          /* = Number of output edges = */  ${actor.dataOutputPorts.size()},
+          /* = Type of the vertex     = */  pisdf::VertexType::NORMAL);
 #if( ${actor.configInputPorts.size()} > 0 )
 
     /* == Set the input parameters of the vertex $actor.name == */
@@ -140,6 +141,15 @@ void spider::createUserApplicationGraph() {
 #end
 #end
 
+#if (${subgraphs.size()} > 0 )
+
+    /* === Creates the subgraph(s) === */
+#foreach($subgraph in $subgraphs)
+    
+    spider::create${subgraph.first}Subgraph("$subgraph.second.name");
+#end    
+#end
+
 #if( ${edges.size()} > 0 )
 
     /* === Creates the edge(s) === */
@@ -148,11 +158,11 @@ void spider::createUserApplicationGraph() {
     /* == Edge ${edge.source.name}[$edge.sourcePortName] -> [$edge.sinkPortName]$edge.sink.name == */
 #if( $edge.hasDelay() )
     auto *edge_${edge.source.name}_${edge.sourcePortName}__${edge.sink.name}_${edge.sinkPortName} = spider::api::createEdge(
-         /* = Source vertex          = */  vertex_$edge.source.name, 
-         /* = Source port ix         = */  $edge.sourceIx, 
-         /* = Source rate expression = */ "$edge.sourceRateExpression", 
-         /* = Sink vertex            = */  vertex_$edge.sink.name, 
-         /* = Sink port ix           = */  $edge.sinkIx, 
+         /* = Source vertex          = */  vertex_$edge.source.name,
+         /* = Source port ix         = */  $edge.sourceIx,
+         /* = Source rate expression = */ "$edge.sourceRateExpression",
+         /* = Sink vertex            = */  vertex_$edge.sink.name,
+         /* = Sink port ix           = */  $edge.sinkIx,
          /* = sink rate expression   = */ "$edge.sinkRateExpression");
          
     /* == Set the delay on the edge == */
@@ -166,11 +176,11 @@ void spider::createUserApplicationGraph() {
                              /* = Getter rate expression  = */ "$edge.getterRateExpression");
                              
 #else
-    spider::api::createEdge(/* = Source vertex          = */  vertex_$edge.source.name, 
-                            /* = Source port ix         = */  $edge.sourceIx, 
-                            /* = Source rate expression = */ "$edge.sourceRateExpression", 
-                            /* = Sink vertex            = */  vertex_$edge.sink.name, 
-                            /* = Sink port ix           = */  $edge.sinkIx, 
+    spider::api::createEdge(/* = Source vertex          = */  vertex_$edge.source.name,
+                            /* = Source port ix         = */  $edge.sourceIx,
+                            /* = Source rate expression = */ "$edge.sourceRateExpression",
+                            /* = Sink vertex            = */  vertex_$edge.sink.name,
+                            /* = Sink port ix           = */  $edge.sinkIx,
                             /* = sink rate expression   = */ "$edge.sinkRateExpression");   
 #end
 #end

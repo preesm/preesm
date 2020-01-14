@@ -134,10 +134,6 @@ public class Spider2Codegen {
    *          the graph
    */
   private final void generateUniqueGraphCode(final PiGraph graph) {
-
-    /* Get the clean graph name */
-    final String graphName = generateGraphName(graph);
-
     /* Get the exact number of actors and edges there should be in the graph */
     int actorCount = graph.getActors().size() + graph.getFifosWithDelay().size();
     int edgeCount = graph.getFifos().size();
@@ -155,7 +151,7 @@ public class Spider2Codegen {
     /* Fill out the context */
     VelocityContext context = new VelocityContext();
     context.put("appName", this.applicationName);
-    context.put("graphName", graphName);
+    context.put("graphName", this.preprocessor.getPiGraphName(graph));
     context.put("actorCount", actorCount);
     context.put("edgeCount", edgeCount);
     context.put("paramCount", graph.getParameters().size());
@@ -171,14 +167,15 @@ public class Spider2Codegen {
     context.put("dependentDynamicParameters", this.preprocessor.getDynamicDependentParameters(graph));
     context.put("inputInterfaces", graph.getDataInputInterfaces());
     context.put("outputInterfaces", graph.getDataOutputInterfaces());
-    context.put("actors", graph.getActors());
+    context.put("actors", this.preprocessor.getActorSet(graph));
+    context.put("subgraphs", this.preprocessor.getSubgraphSet(graph));
     context.put("edges", this.preprocessor.getEdgeSet(graph));
 
     /* Write the final file */
     if (graph == this.applicationGraph) {
       writeVelocityContext(context, "templates/cpp/app_graph_template.vm", "application_graph.cpp");
     } else {
-      final String outputFileName = graphName + "_subgraph" + ".cpp";
+      final String outputFileName = this.preprocessor.getPiGraphName(graph).toLowerCase() + "_subgraph" + ".cpp";
       writeVelocityContext(context, "templates/cpp/graph_template.vm", outputFileName);
     }
   }
