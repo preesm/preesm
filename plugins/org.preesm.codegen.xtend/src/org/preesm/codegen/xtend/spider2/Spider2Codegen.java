@@ -6,18 +6,14 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Writer;
 import java.net.URL;
-import java.util.LinkedHashSet;
-import java.util.List;
 import java.util.Set;
 import java.util.logging.Level;
-import java.util.stream.Collectors;
 import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.VelocityEngine;
 import org.preesm.codegen.xtend.spider2.visitor.Spider2PreProcessVisitor;
 import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.preesm.commons.files.PreesmResourcesHelper;
 import org.preesm.commons.logger.PreesmLogger;
-import org.preesm.model.pisdf.Parameter;
 import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.scenario.Scenario;
 import org.preesm.model.slam.Design;
@@ -138,7 +134,12 @@ public class Spider2Codegen {
     context.put("cfgActorCount", graph.getActors().stream().filter(x -> !x.getConfigOutputPorts().isEmpty()).count());
 
     /* Fill the parameters to the context */
-    fillGraphContextParameters(context, graph);
+    context.put("parameters", graph.getParameters());
+    context.put("inheritedParameters", graph.getConfigInputInterfaces());
+    context.put("staticParameters", this.preprocessor.getStaticParameters(graph));
+    context.put("dependendStaticParameters", this.preprocessor.getStaticDependentParameters(graph));
+    context.put("dynamicParameters", this.preprocessor.getDynamicParameters(graph));
+    context.put("dependentDynamicParameters", this.preprocessor.getDynamicDependentParameters(graph));
     context.put("inputInterfaces", graph.getDataInputInterfaces());
     context.put("outputInterfaces", graph.getDataOutputInterfaces());
     context.put("actors", graph.getActors());
@@ -149,54 +150,6 @@ public class Spider2Codegen {
     final String outputFileName = "graph_" + graphName + ".cpp";
     writeVelocityContext(velocityEngine, context, "templates/cpp/graph_template.vm", outputFileName,
         oldContextClassLoader);
-  }
-
-  private void fillGraphContextParameters(VelocityContext context, final PiGraph graph) {
-    final List<Parameter> staticParametersList = graph.getParameters().stream()
-        .filter(x -> !x.isDependent() && x.isLocallyStatic()).collect(Collectors.toList());
-    /* We need to sort the dependent parameters in order of their dependencies */
-    final List<Parameter> staticParameterPool = graph.getParameters().stream()
-        .filter(x -> x.isDependent() && x.isLocallyStatic()).collect(Collectors.toList());
-    final Set<Parameter> dependendStaticParametersSet = getOrderedDependentParameter(staticParametersList,
-        staticParameterPool);
-    /* We need to sort the dependent parameters in order of their dependencies */
-    final List<Parameter> dynamicParametersList = graph.getParameters().stream().filter(x -> x.isConfigurable())
-        .collect(Collectors.toList());
-    final List<Parameter> dynamicParameterPool = graph.getParameters().stream()
-        .filter(x -> !x.isLocallyStatic() && x.isDependent()).collect(Collectors.toList());
-    final Set<Parameter> dependentDynamicParametersSet = getOrderedDependentParameter(dynamicParametersList,
-        dynamicParameterPool);
-    context.put("parameters", graph.getParameters());
-    context.put("inheritedParameters", graph.getConfigInputInterfaces());
-    context.put("staticParameters", staticParametersList);
-    context.put("dependendStaticParameters", dependendStaticParametersSet);
-    context.put("dynamicParameters", dynamicParametersList);
-    context.put("dependentDynamicParameters", dependentDynamicParametersSet);
-  }
-
-  /**
-   * Build an ordered Set of Parameter enforcing the dependency tree structure of the PiMM.
-   * 
-   * @param initList
-   *          Seed list corresponding to root parameters.
-   * @param paramPoolList
-   *          Pool of parameter to use to sort (will be empty after the function call).
-   * @return set of parameter.
-   */
-  private Set<Parameter> getOrderedDependentParameter(final List<Parameter> initList, List<Parameter> paramPoolList) {
-    final Set<Parameter> dependentParametersSet = new LinkedHashSet<>(initList);
-    while (!paramPoolList.isEmpty()) {
-      /* Get only the parameter that can be added to the current stage due to their dependencies */
-      final List<Parameter> nextParamsToAddList = paramPoolList
-          .stream().filter(x -> x.getInputDependentParameters().stream()
-              .filter(in -> dependentParametersSet.contains(in)).count() == x.getInputDependentParameters().size())
-          .collect(Collectors.toList());
-      dependentParametersSet.addAll(nextParamsToAddList);
-      paramPoolList.removeAll(nextParamsToAddList);
-    }
-    /* Remove init list from the set */
-    dependentParametersSet.removeAll(initList);
-    return dependentParametersSet;
   }
 
   /**

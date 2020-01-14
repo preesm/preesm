@@ -2,8 +2,11 @@ package org.preesm.codegen.xtend.spider2.visitor;
 
 import java.util.HashSet;
 import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.Actor;
@@ -38,6 +41,18 @@ public class Spider2PreProcessVisitor extends PiMMSwitch<Boolean> {
   /** The unique graph set **/
   private final Set<PiGraph> uniqueGraphSet = new HashSet<>();
 
+  /** The graph to static parameters map */
+  private final Map<PiGraph, List<Parameter>> staticParametersMap = new LinkedHashMap<>();
+
+  /** The graph to static dependent parameters map */
+  private final Map<PiGraph, Set<Parameter>> staticDependentParametersMap = new LinkedHashMap<>();
+
+  /** The graph to dynamic parameters map */
+  private final Map<PiGraph, List<Parameter>> dynamicParametersMap = new LinkedHashMap<>();
+
+  /** The graph to dynamic dependent parameters map */
+  private final Map<PiGraph, Set<Parameter>> dynamicDependentParametersMap = new LinkedHashMap<>();
+
   /**
    * Accessors
    */
@@ -47,6 +62,51 @@ public class Spider2PreProcessVisitor extends PiMMSwitch<Boolean> {
 
   public Set<PiGraph> getUniqueGraphSet() {
     return this.uniqueGraphSet;
+  }
+
+  public List<Parameter> getStaticParameters(final PiGraph graph) {
+    return staticParametersMap.get(graph);
+  }
+
+  public Set<Parameter> getStaticDependentParameters(final PiGraph graph) {
+    return staticDependentParametersMap.get(graph);
+  }
+
+  public List<Parameter> getDynamicParameters(final PiGraph graph) {
+    return dynamicParametersMap.get(graph);
+  }
+
+  public Set<Parameter> getDynamicDependentParameters(final PiGraph graph) {
+    return dynamicDependentParametersMap.get(graph);
+  }
+
+  /**
+   * Private methods
+   */
+
+  /**
+   * Build an ordered Set of Parameter enforcing the dependency tree structure of the PiMM.
+   * 
+   * @param initList
+   *          Seed list corresponding to root parameters.
+   * @param paramPoolList
+   *          Pool of parameter to use to sort (will be empty after the function call).
+   * @return set of parameter.
+   */
+  private Set<Parameter> getOrderedDependentParameter(final List<Parameter> initList, List<Parameter> paramPoolList) {
+    final Set<Parameter> dependentParametersSet = new LinkedHashSet<>(initList);
+    while (!paramPoolList.isEmpty()) {
+      /* Get only the parameter that can be added to the current stage due to their dependencies */
+      final List<Parameter> nextParamsToAddList = paramPoolList
+          .stream().filter(x -> x.getInputDependentParameters().stream()
+              .filter(in -> dependentParametersSet.contains(in)).count() == x.getInputDependentParameters().size())
+          .collect(Collectors.toList());
+      dependentParametersSet.addAll(nextParamsToAddList);
+      paramPoolList.removeAll(nextParamsToAddList);
+    }
+    /* Remove init list from the set */
+    dependentParametersSet.removeAll(initList);
+    return dependentParametersSet;
   }
 
   /**
@@ -76,6 +136,32 @@ public class Spider2PreProcessVisitor extends PiMMSwitch<Boolean> {
   public Boolean casePiGraph(final PiGraph graph) {
     /* Insert the pigraph in the set */
     this.uniqueGraphSet.add(graph);
+
+    if (!staticParametersMap.containsKey(graph)) {
+      /* Extract the static parameters */
+      final List<Parameter> restrictedStaticParametersList = graph.getParameters().stream()
+          .filter(x -> !x.isDependent() && x.isLocallyStatic() && !x.isConfigurationInterface())
+          .collect(Collectors.toList());
+      staticParametersMap.put(graph, restrictedStaticParametersList);
+
+      /* Extract the static dependent parameters */
+      final List<Parameter> staticParametersList = graph.getParameters().stream()
+          .filter(x -> !x.isDependent() && x.isLocallyStatic()).collect(Collectors.toList());
+      final List<Parameter> staticParameterPool = graph.getParameters().stream()
+          .filter(x -> x.isDependent() && x.isLocallyStatic()).collect(Collectors.toList());
+      staticDependentParametersMap.put(graph, getOrderedDependentParameter(staticParametersList, staticParameterPool));
+
+      /* Extract the dynamic parameters */
+      final List<Parameter> dynamicParametersList = graph.getParameters().stream().filter(x -> x.isConfigurable())
+          .collect(Collectors.toList());
+      dynamicParametersMap.put(graph, dynamicParametersList);
+
+      /* Extract the dynamic dependent parameters */
+      final List<Parameter> dynamicParameterPool = graph.getParameters().stream()
+          .filter(x -> x.isDependent() && !x.isLocallyStatic()).collect(Collectors.toList());
+      dynamicDependentParametersMap.put(graph,
+          getOrderedDependentParameter(dynamicParametersList, dynamicParameterPool));
+    }
 
     /* Go through the graph */
     caseAbstractActor(graph);
