@@ -15,6 +15,7 @@ import org.preesm.model.pisdf.CHeaderRefinement;
 import org.preesm.model.pisdf.ConfigInputPort;
 import org.preesm.model.pisdf.ConfigOutputPort;
 import org.preesm.model.pisdf.DataInputPort;
+import org.preesm.model.pisdf.DataOutputPort;
 import org.preesm.model.pisdf.DataPort;
 import org.preesm.model.pisdf.Dependency;
 import org.preesm.model.pisdf.EndActor;
@@ -57,6 +58,9 @@ public class Spider2PreProcessVisitor extends PiMMSwitch<Boolean> {
   /** The graph to dynamic dependent parameters map */
   private final Map<PiGraph, Set<Parameter>> dynamicDependentParametersMap = new LinkedHashMap<>();
 
+  /** The graph to edge map */
+  private final Map<PiGraph, Set<Spider2CodegenEdge>> edgeMap = new LinkedHashMap<>();
+
   /**
    * Accessors
    */
@@ -84,9 +88,36 @@ public class Spider2PreProcessVisitor extends PiMMSwitch<Boolean> {
     return dynamicDependentParametersMap.get(graph);
   }
 
+  public Set<Spider2CodegenEdge> getEdgeSet(final PiGraph graph) {
+    return edgeMap.get(graph);
+  }
+
   /**
    * Private methods
    */
+
+  /**
+   * Switch overrides
+   */
+
+  @Override
+  public Boolean caseAbstractActor(final AbstractActor aa) {
+    return true;
+  }
+
+  @Override
+  public Boolean caseActor(final Actor actor) {
+    if (actor.getRefinement() == null) {
+      throw new PreesmRuntimeException("Actor [" + actor.getName() + "] does not have correct refinement.");
+    } else {
+      this.functionMap.put(actor, this.functionMap.size());
+    }
+
+    for (final DataInputPort dip : actor.getDataInputPorts()) {
+      actor.getDataInputPorts().indexOf(dip);
+    }
+    return true;
+  }
 
   /**
    * Build an ordered Set of Parameter enforcing the dependency tree structure of the PiMM.
@@ -114,35 +145,15 @@ public class Spider2PreProcessVisitor extends PiMMSwitch<Boolean> {
   }
 
   /**
-   * Switch overrides
-   */
-
-  @Override
-  public Boolean caseAbstractActor(final AbstractActor aa) {
-    return true;
-  }
-
-  @Override
-  public Boolean caseActor(final Actor actor) {
-    if (actor.getRefinement() == null) {
-      throw new PreesmRuntimeException("Actor [" + actor.getName() + "] does not have correct refinement.");
-    } else {
-      this.functionMap.put(actor, this.functionMap.size());
-    }
-
-    for (final DataInputPort dip : actor.getDataInputPorts()) {
-      actor.getDataInputPorts().indexOf(dip);
-    }
-    return true;
-  }
-
-  /**
    * Extracts the parameters of the Graph in the different maps.
    * 
    * @param graph
    *          The graph to evaluate
    */
   private void extractParameters(final PiGraph graph) {
+    if (staticParametersMap.containsKey(graph)) {
+      return;
+    }
     /* Extract the static parameters */
     final List<Parameter> restrictedStaticParametersList = graph.getParameters().stream()
         .filter(x -> !x.isDependent() && x.isLocallyStatic() && !x.isConfigurationInterface())
@@ -203,6 +214,34 @@ public class Spider2PreProcessVisitor extends PiMMSwitch<Boolean> {
     }
   }
 
+  /**
+   * Extracts the edges of the Graph in the edgeMap.
+   * 
+   * @param graph
+   *          The graph to evaluate
+   */
+  private void extractEdges(final PiGraph graph) {
+    if (edgeMap.containsKey(graph)) {
+      return;
+    }
+    Set<Spider2CodegenEdge> edgeSet = new LinkedHashSet<>();
+    for (final Fifo fifo : graph.getFifos()) {
+      /* Retrieve source information */
+      final DataOutputPort sourcePort = fifo.getSourcePort();
+      final AbstractActor source = sourcePort.getContainingActor();
+      final long sourceIx = source.getDataOutputPorts().indexOf(sourcePort);
+      final String sourceRateExpression = sourcePort.getExpression().getExpressionAsString();
+      /* Retrieve sink information */
+      final DataInputPort targetPort = fifo.getTargetPort();
+      final AbstractActor sink = targetPort.getContainingActor();
+      final long sinkIx = sink.getDataInputPorts().indexOf(targetPort);
+      final String sinkRateExpression = targetPort.getExpression().getExpressionAsString();
+      /* Add the edge to the edge Set */
+      edgeSet.add(new Spider2CodegenEdge(source, sourceIx, sourceRateExpression, sink, sinkIx, sinkRateExpression));
+    }
+    edgeMap.put(graph, edgeSet);
+  }
+
   @Override
   public Boolean casePiGraph(final PiGraph graph) {
     /* Insert the pigraph in the set */
@@ -211,8 +250,14 @@ public class Spider2PreProcessVisitor extends PiMMSwitch<Boolean> {
     /* Insert one dynamic parameter if a config vertex set multiple parameters with one output port */
     insertDynamicParamters(graph);
 
+    /* Extract parameters */
     if (!staticParametersMap.containsKey(graph)) {
       extractParameters(graph);
+    }
+
+    /* Extract edges */
+    if (!edgeMap.containsKey(graph)) {
+      extractEdges(graph);
     }
 
     /* Go through the graph */

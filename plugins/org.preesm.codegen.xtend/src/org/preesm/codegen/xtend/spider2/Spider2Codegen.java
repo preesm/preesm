@@ -78,6 +78,9 @@ public class Spider2Codegen {
     Thread.currentThread().setContextClassLoader(Spider2Codegen.class.getClassLoader());
     this.velocityEngine = new VelocityEngine();
     this.velocityEngine.init();
+    this.velocityEngine.removeDirective("ifndef");
+    this.velocityEngine.removeDirective("define");
+    this.velocityEngine.removeDirective("endif");
     this.velocityEngine.removeDirective("include");
   }
 
@@ -134,12 +137,6 @@ public class Spider2Codegen {
     /* Get the clean graph name */
     final String graphName = generateGraphName(graph);
 
-    /* Build the actor string */
-    final StringBuilder cppActorsString = new StringBuilder();
-
-    /* Build the edge string */
-    final StringBuilder cppEdgesString = new StringBuilder();
-
     /* Build the edge string */
     final StringBuilder cppDelaysString = new StringBuilder();
 
@@ -164,12 +161,16 @@ public class Spider2Codegen {
     context.put("inputInterfaces", graph.getDataInputInterfaces());
     context.put("outputInterfaces", graph.getDataOutputInterfaces());
     context.put("actors", graph.getActors());
-    context.put("edges", graph.getFifos());
+    context.put("edges", this.preprocessor.getEdgeSet(graph));
     context.put("delays", cppDelaysString);
 
     /* Write the final file */
-    final String outputFileName = "graph_" + graphName + ".cpp";
-    writeVelocityContext(context, "templates/cpp/graph_template.vm", outputFileName);
+    if (graph == this.applicationGraph) {
+      writeVelocityContext(context, "templates/cpp/app_graph_template.vm", "application_graph.cpp");
+    } else {
+      final String outputFileName = graphName + "_subgraph" + ".cpp";
+      writeVelocityContext(context, "templates/cpp/graph_template.vm", outputFileName);
+    }
   }
 
   /**
