@@ -59,6 +59,7 @@ import org.preesm.model.pisdf.Expression;
 import org.preesm.model.pisdf.Fifo;
 import org.preesm.model.pisdf.ISetter;
 import org.preesm.model.pisdf.LongExpression;
+import org.preesm.model.pisdf.MalleableParameter;
 import org.preesm.model.pisdf.Parameter;
 import org.preesm.model.pisdf.PersistenceLevel;
 import org.preesm.model.pisdf.PiGraph;
@@ -365,6 +366,13 @@ public final class PiMMUserFactory extends PiMMFactoryImpl implements PreesmUser
     final ConfigOutputInterface res = super.createConfigOutputInterface();
     final DataInputPort port = PiMMUserFactory.instance.createDataInputPort();
     res.getDataInputPorts().add(port);
+    return res;
+  }
+
+  @Override
+  public MalleableParameter createMalleableParameter() {
+    final MalleableParameter res = super.createMalleableParameter();
+    res.setUserExpression("0");
     return res;
   }
 }

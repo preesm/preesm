@@ -702,6 +702,10 @@ class Parameter extends Vertex, Configurable, ISetter, ExpressionHolder {
 	}
 }
 
+class MalleableParameter extends Parameter {
+	String userExpression
+}
+
 class Dependency extends Edge {
 	refers ISetter setter opposite outgoingDependencies
 	refers ConfigInputPort getter opposite incomingDependency
