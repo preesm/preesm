@@ -134,9 +134,21 @@
                tab="org.ietr.preesm.experiment.model.transformation.properties.tab.graph.basicDiagram">
          </propertySection>
          <propertySection
-               class="org.preesm.ui.pisdf.properties.PortParameterAndDelayPropertiesSection"
-               filter="org.preesm.ui.pisdf.properties.PiMMFilter"
-               id="org.ietr.preesm.experiment.model.transformation.properties.section.graph.basicPort"
+               class="org.preesm.ui.pisdf.properties.ParameterizablePropertiesSection"
+               filter="org.preesm.ui.pisdf.properties.PiMMParameterizableFilter"
+               id="org.ietr.preesm.experiment.model.transformation.properties.section.graph.basicParam"
+               tab="org.ietr.preesm.experiment.model.transformation.properties.tab.graph.basicPort">
+         </propertySection>
+         <propertySection
+               class="org.preesm.ui.pisdf.properties.DelayPropertiesSection"
+               filter="org.preesm.ui.pisdf.properties.PiMMDelayFilter"
+               id="org.ietr.preesm.experiment.model.transformation.properties.section.graph.basicDelay"
+               tab="org.ietr.preesm.experiment.model.transformation.properties.tab.graph.basicDelay">
+         </propertySection>
+         <propertySection
+               class="org.preesm.ui.pisdf.properties.DataPortPropertiesSection"
+               filter="org.preesm.ui.pisdf.properties.PiMMDataPortFilter"
+               id="org.ietr.preesm.experiment.model.transformation.properties.section.graph.basicDataPort"
                tab="org.ietr.preesm.experiment.model.transformation.properties.tab.graph.basicPort">
          </propertySection>
          <propertySection
@@ -301,6 +313,11 @@
                category="org.ietr.preesm.experiment.model.transformation.properties.category.graph"
                id="org.ietr.preesm.experiment.model.transformation.properties.tab.graph.basicPort"
                label="Port">
+         </propertyTab>
+         <propertyTab
+               category="org.ietr.preesm.experiment.model.transformation.properties.category.graph"
+               id="org.ietr.preesm.experiment.model.transformation.properties.tab.graph.basicDelay"
+               label="Delay">
          </propertyTab>
          <propertyTab
                category="org.ietr.preesm.experiment.model.transformation.properties.category.graph"
