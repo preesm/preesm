@@ -12,8 +12,11 @@ import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.Actor;
 import org.preesm.model.pisdf.BroadcastActor;
 import org.preesm.model.pisdf.CHeaderRefinement;
+import org.preesm.model.pisdf.ConfigInputPort;
+import org.preesm.model.pisdf.ConfigOutputPort;
 import org.preesm.model.pisdf.DataInputPort;
 import org.preesm.model.pisdf.DataPort;
+import org.preesm.model.pisdf.Dependency;
 import org.preesm.model.pisdf.EndActor;
 import org.preesm.model.pisdf.Expression;
 import org.preesm.model.pisdf.Fifo;
@@ -29,6 +32,7 @@ import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.pisdf.PiSDFRefinement;
 import org.preesm.model.pisdf.Port;
 import org.preesm.model.pisdf.RoundBufferActor;
+import org.preesm.model.pisdf.factory.PiMMUserFactory;
 import org.preesm.model.pisdf.util.PiMMSwitch;
 
 /**
@@ -132,35 +136,83 @@ public class Spider2PreProcessVisitor extends PiMMSwitch<Boolean> {
     return true;
   }
 
+  /**
+   * Extracts the parameters of the Graph in the different maps.
+   * 
+   * @param graph
+   *          The graph to evaluate
+   */
+  private void extractParameters(final PiGraph graph) {
+    /* Extract the static parameters */
+    final List<Parameter> restrictedStaticParametersList = graph.getParameters().stream()
+        .filter(x -> !x.isDependent() && x.isLocallyStatic() && !x.isConfigurationInterface())
+        .collect(Collectors.toList());
+    staticParametersMap.put(graph, restrictedStaticParametersList);
+
+    /* Extract the static dependent parameters */
+    final List<Parameter> staticParametersList = graph.getParameters().stream()
+        .filter(x -> !x.isDependent() && x.isLocallyStatic()).collect(Collectors.toList());
+    final List<Parameter> staticParameterPool = graph.getParameters().stream()
+        .filter(x -> x.isDependent() && x.isLocallyStatic()).collect(Collectors.toList());
+    staticDependentParametersMap.put(graph, getOrderedDependentParameter(staticParametersList, staticParameterPool));
+
+    /* Extract the dynamic parameters */
+    final List<Parameter> dynamicParametersList = graph.getParameters().stream().filter(x -> x.isConfigurable())
+        .collect(Collectors.toList());
+    dynamicParametersMap.put(graph, dynamicParametersList);
+
+    /* Extract the dynamic dependent parameters */
+    final List<Parameter> dynamicParameterPool = graph.getParameters().stream()
+        .filter(x -> x.isDependent() && !x.isLocallyStatic()).collect(Collectors.toList());
+    dynamicDependentParametersMap.put(graph, getOrderedDependentParameter(dynamicParametersList, dynamicParameterPool));
+  }
+
+  /**
+   * Insert one dynamic parameter if a config vertex set multiple parameters with one output port
+   * 
+   * @param graph
+   *          The graph to evaluate
+   */
+  private void insertDynamicParamters(final PiGraph graph) {
+    for (final AbstractActor actor : graph.getActors().stream().filter(x -> !x.getConfigOutputPorts().isEmpty())
+        .collect(Collectors.toList())) {
+      for (final ConfigOutputPort cop : actor.getConfigOutputPorts()) {
+        if (cop.getOutgoingDependencies().size() > 1) {
+          /* Instantiate the new parameter */
+          final Parameter param = PiMMUserFactory.instance.createParameter();
+          param.setExpression("0");
+          param.setName(cop.getName());
+          graph.addParameter(param);
+          /* Change the old dependencies setter */
+          final List<Dependency> outgoinDependencies = cop.getOutgoingDependencies();
+          while (!outgoinDependencies.isEmpty()) {
+            final Dependency dependency = outgoinDependencies.get(0);
+            final Parameter depParameter = ((Parameter) (dependency.getGetter().eContainer()));
+            depParameter.setExpression(param.getName());
+            dependency.setSetter(param);
+          }
+          /* Instantiate the new dependency */
+          cop.getOutgoingDependencies().clear();
+          final Dependency dependency = PiMMUserFactory.instance.createDependency();
+          final ConfigInputPort iCfgPort = PiMMUserFactory.instance.createConfigInputPort();
+          param.getConfigInputPorts().add(iCfgPort);
+          dependency.setSetter(cop);
+          dependency.setGetter(iCfgPort);
+        }
+      }
+    }
+  }
+
   @Override
   public Boolean casePiGraph(final PiGraph graph) {
     /* Insert the pigraph in the set */
     this.uniqueGraphSet.add(graph);
 
+    /* Insert one dynamic parameter if a config vertex set multiple parameters with one output port */
+    insertDynamicParamters(graph);
+
     if (!staticParametersMap.containsKey(graph)) {
-      /* Extract the static parameters */
-      final List<Parameter> restrictedStaticParametersList = graph.getParameters().stream()
-          .filter(x -> !x.isDependent() && x.isLocallyStatic() && !x.isConfigurationInterface())
-          .collect(Collectors.toList());
-      staticParametersMap.put(graph, restrictedStaticParametersList);
-
-      /* Extract the static dependent parameters */
-      final List<Parameter> staticParametersList = graph.getParameters().stream()
-          .filter(x -> !x.isDependent() && x.isLocallyStatic()).collect(Collectors.toList());
-      final List<Parameter> staticParameterPool = graph.getParameters().stream()
-          .filter(x -> x.isDependent() && x.isLocallyStatic()).collect(Collectors.toList());
-      staticDependentParametersMap.put(graph, getOrderedDependentParameter(staticParametersList, staticParameterPool));
-
-      /* Extract the dynamic parameters */
-      final List<Parameter> dynamicParametersList = graph.getParameters().stream().filter(x -> x.isConfigurable())
-          .collect(Collectors.toList());
-      dynamicParametersMap.put(graph, dynamicParametersList);
-
-      /* Extract the dynamic dependent parameters */
-      final List<Parameter> dynamicParameterPool = graph.getParameters().stream()
-          .filter(x -> x.isDependent() && !x.isLocallyStatic()).collect(Collectors.toList());
-      dynamicDependentParametersMap.put(graph,
-          getOrderedDependentParameter(dynamicParametersList, dynamicParameterPool));
+      extractParameters(graph);
     }
 
     /* Go through the graph */
@@ -168,20 +220,6 @@ public class Spider2PreProcessVisitor extends PiMMSwitch<Boolean> {
     for (final AbstractActor a : graph.getActors()) {
       doSwitch(a);
     }
-    for (final Parameter p : graph.getParameters()) {
-      doSwitch(p);
-    }
-    return true;
-  }
-
-  @Override
-  public Boolean caseParameter(final Parameter p) {
-    // Fix currentAbstractVertexName
-    // this.currentAbstractVertexName = "param_" + p.getName();
-    // Visit configuration input ports to fill cfgInPortMap
-    // caseConfigurable(p);
-    // Fill the setterMap
-    // this.setterMap.put(p, this.currentAbstractVertexName);
     return true;
   }
 
@@ -219,6 +257,11 @@ public class Spider2PreProcessVisitor extends PiMMSwitch<Boolean> {
   public Boolean caseEndActor(final EndActor rba) {
     caseAbstractActor(rba);
     return true;
+  }
+
+  @Override
+  public Boolean caseParameter(final Parameter p) {
+    throw new UnsupportedOperationException();
   }
 
   @Override
