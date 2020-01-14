@@ -54,14 +54,15 @@ namespace spider {
      * @brief Generates the main user application graph.
      */
     void createUserApplicationGraph();
-#foreach ($graph in $graphs)
+#foreach ($name in $graphs)
 
     /**
-     * @brief Generates an instance of the ${graph.name} subgraph.
-     * @param name  Name of the instance of the ${graph.name} subgraph.
-     * @return pointer to the @refitem pisdf::Graph created.
+     * @brief Generates an instance of the ${name} subgraph.
+     * @param name        Name of the instance of the ${name} subgraph.
+     * @param parentGraph Pointer to the parent graph.
+     * @return pointer to the @refitem pisdf::Vertex created.
      */
-    pisdf::Graph *create${graph.name}Subgraph(std::string name);
+    pisdf::Vertex *create${name}Subgraph(std::string name, spider::pisdf::Graph *parentGraph);
 #end
 }
 #endif

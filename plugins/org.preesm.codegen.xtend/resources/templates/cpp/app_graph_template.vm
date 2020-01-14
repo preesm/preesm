@@ -91,39 +91,19 @@ void spider::createUserApplicationGraph() {
           /* = Expression of the parameter = */ "$param.expression.expressionAsString");
 #end
 #end
-#if( ${inputInterfaces.size()} > 0 )
-
-    /* === Set the input interface(s) === */
-#foreach($interface in $inputInterfaces)
-
-    auto *interface_$interface.name = spider::api::setInputInterfaceName(
-          /* = Graph of the interface = */  graph,
-          /* = Index of the interface = */  0,
-          /* = Name of the interface  = */ "$interface.name");
-#end
-#end
-#if( ${outputInterfaces.size()} > 0 )
-
-    /* === Set the output interface(s) === */
-#foreach($interface in $outputInterfaces)
-
-    auto *interface_$interface.name = spider::api::setOutputInterfaceName(
-          /* = Graph of the interface = */  graph,
-          /* = Index of the interface = */  0,
-          /* = Name of the interface  = */ "$interface.name");
-#end
-#end
 #if( ${actors.size()} > 0 )
 
     /* === Creates the actor(s) == */
-#foreach($actor in $actors)
-
+#foreach($pair in $actors)
+    #set($actor = $pair.second)
+    #set($type = $pair.first)
+    
     auto *vertex_$actor.name = spider::api::createVertexFromType(
           /* = Graph of the vertex    = */  graph, 
           /* = Name of the actor      = */ "$actor.name", 
           /* = Number of input edges  = */  ${actor.dataInputPorts.size()}, 
           /* = Number of output edges = */  ${actor.dataOutputPorts.size()},
-          /* = Type of the vertex     = */  pisdf::VertexType::NORMAL);
+          /* = Type of the vertex     = */  pisdf::VertexType::$type);
 #if( ${actor.configInputPorts.size()} > 0 )
 
     /* == Set the input parameters of the vertex $actor.name == */
@@ -146,7 +126,7 @@ void spider::createUserApplicationGraph() {
     /* === Creates the subgraph(s) === */
 #foreach($subgraph in $subgraphs)
     
-    spider::create${subgraph.first}Subgraph("$subgraph.second.name");
+    auto *vertex_$subgraph.second.name = spider::create${subgraph.first}Subgraph("$subgraph.second.name", graph);
 #end    
 #end
 

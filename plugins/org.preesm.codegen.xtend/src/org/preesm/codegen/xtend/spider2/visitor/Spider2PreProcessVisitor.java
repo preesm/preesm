@@ -9,9 +9,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import org.apache.commons.math3.util.Pair;
 import org.apache.velocity.util.StringUtils;
-import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.preesm.model.pisdf.AbstractActor;
-import org.preesm.model.pisdf.Actor;
 import org.preesm.model.pisdf.BroadcastActor;
 import org.preesm.model.pisdf.CHeaderRefinement;
 import org.preesm.model.pisdf.ConfigInputPort;
@@ -19,6 +17,7 @@ import org.preesm.model.pisdf.ConfigOutputPort;
 import org.preesm.model.pisdf.DataInputPort;
 import org.preesm.model.pisdf.DataOutputPort;
 import org.preesm.model.pisdf.DataPort;
+import org.preesm.model.pisdf.DelayActor;
 import org.preesm.model.pisdf.Dependency;
 import org.preesm.model.pisdf.EndActor;
 import org.preesm.model.pisdf.Expression;
@@ -28,6 +27,7 @@ import org.preesm.model.pisdf.FunctionArgument;
 import org.preesm.model.pisdf.FunctionPrototype;
 import org.preesm.model.pisdf.ISetter;
 import org.preesm.model.pisdf.InitActor;
+import org.preesm.model.pisdf.InterfaceActor;
 import org.preesm.model.pisdf.JoinActor;
 import org.preesm.model.pisdf.Parameter;
 import org.preesm.model.pisdf.Parameterizable;
@@ -70,7 +70,7 @@ public class Spider2PreProcessVisitor extends PiMMSwitch<Boolean> {
   private final Map<PiGraph, Set<Pair<String, PiGraph>>> subgraphMap = new LinkedHashMap<>();
 
   /** The graph to actors map */
-  private final Map<PiGraph, Set<AbstractActor>> actorsMap = new LinkedHashMap<>();
+  private final Map<PiGraph, Set<Pair<String, AbstractActor>>> actorsMap = new LinkedHashMap<>();
 
   /**
    * Accessors
@@ -81,6 +81,10 @@ public class Spider2PreProcessVisitor extends PiMMSwitch<Boolean> {
 
   public Set<PiGraph> getUniqueGraphSet() {
     return this.uniqueGraphSet;
+  }
+
+  public Set<String> getUniqueGraphNameSet() {
+    return this.uniqueGraphNameSet;
   }
 
   public List<Parameter> getStaticParameters(final PiGraph graph) {
@@ -108,35 +112,16 @@ public class Spider2PreProcessVisitor extends PiMMSwitch<Boolean> {
   }
 
   public String getPiGraphName(final PiGraph graph) {
-    return getPiGraphNameFromUrl(graph.getUrl());
+    return getPiGraphNameFromUrl(graph);
   }
 
-  public Set<AbstractActor> getActorSet(final PiGraph graph) {
+  public Set<Pair<String, AbstractActor>> getActorSet(final PiGraph graph) {
     return actorsMap.get(graph);
   }
 
   /**
    * Switch overrides
    */
-
-  @Override
-  public Boolean caseAbstractActor(final AbstractActor aa) {
-    return true;
-  }
-
-  @Override
-  public Boolean caseActor(final Actor actor) {
-    if (actor.getRefinement() == null) {
-      throw new PreesmRuntimeException("Actor [" + actor.getName() + "] does not have correct refinement.");
-    } else {
-      this.functionMap.put(actor, this.functionMap.size());
-    }
-
-    for (final DataInputPort dip : actor.getDataInputPorts()) {
-      actor.getDataInputPorts().indexOf(dip);
-    }
-    return true;
-  }
 
   /**
    * Build an ordered Set of Parameter enforcing the dependency tree structure of the PiMM.
@@ -249,12 +234,26 @@ public class Spider2PreProcessVisitor extends PiMMSwitch<Boolean> {
       final DataOutputPort sourcePort = fifo.getSourcePort();
       final AbstractActor source = sourcePort.getContainingActor();
       final long sourceIx = source.getDataOutputPorts().indexOf(sourcePort);
-      final String sourceRateExpression = sourcePort.getExpression().getExpressionAsString();
+      /* We need to substitute the real parameter name in the expression */
+      String sourceRateExpression = sourcePort.getExpression().getExpressionAsString();
+      for (final ConfigInputPort iCfg : source.getConfigInputPorts()) {
+        if (sourceRateExpression.matches(".*?\\b" + iCfg.getName() + "\\b.*?")) {
+          final String realName = ((Parameter) (iCfg.getIncomingDependency().getSetter())).getName();
+          sourceRateExpression = sourceRateExpression.replace(iCfg.getName(), realName);
+        }
+      }
       /* Retrieve sink information */
       final DataInputPort targetPort = fifo.getTargetPort();
       final AbstractActor sink = targetPort.getContainingActor();
       final long sinkIx = sink.getDataInputPorts().indexOf(targetPort);
-      final String sinkRateExpression = targetPort.getExpression().getExpressionAsString();
+      /* We need to substitute the real parameter name in the expression */
+      String sinkRateExpression = targetPort.getExpression().getExpressionAsString();
+      for (final ConfigInputPort iCfg : sink.getConfigInputPorts()) {
+        if (sinkRateExpression.matches(".*?\\b" + iCfg.getName() + "\\b.*?")) {
+          final String realName = ((Parameter) (iCfg.getIncomingDependency().getSetter())).getName();
+          sinkRateExpression = sinkRateExpression.replace(iCfg.getName(), realName);
+        }
+      }
       /* Add the edge to the edge Set */
       final Spider2CodegenEdge edge = new Spider2CodegenEdge(source, sourceIx, sourceRateExpression, sink, sinkIx,
           sinkRateExpression);
@@ -264,8 +263,28 @@ public class Spider2PreProcessVisitor extends PiMMSwitch<Boolean> {
     edgeMap.put(graph, edgeSet);
   }
 
-  private String getPiGraphNameFromUrl(final String url) {
+  /**
+   * Extract the original name of a PiGraph and capitalize it.
+   * 
+   * @param graph
+   *          The graph
+   * @return capitalized name of the PiGraph original url, "null" if graph is null
+   */
+  private String getPiGraphNameFromUrl(final PiGraph graph) {
+    if (graph == null) {
+      return "null";
+    }
+    final String url = graph.getUrl();
     return StringUtils.capitalizeFirstLetter(url.substring(url.lastIndexOf('/') + 1, url.length() - 3));
+  }
+
+  private void extractActors(final PiGraph graph) {
+    this.actorsMap.put(graph, new HashSet<>());
+    for (final AbstractActor actor : graph.getOnlyActors()) {
+      if (!(actor instanceof DelayActor) && !(actor instanceof InterfaceActor)) {
+        this.actorsMap.get(graph).add(new Pair<>("NORMAL", actor));
+      }
+    }
   }
 
   @Override
@@ -287,12 +306,12 @@ public class Spider2PreProcessVisitor extends PiMMSwitch<Boolean> {
     }
 
     /* Extract the actors */
-    this.actorsMap.put(graph, new HashSet<>());
+    extractActors(graph);
 
     /* Go through the subgraphs */
     this.subgraphMap.put(graph, new HashSet<>());
     for (final PiGraph subgraph : graph.getChildrenGraphs()) {
-      final String originalGraphFileName = getPiGraphNameFromUrl(subgraph.getUrl());
+      final String originalGraphFileName = getPiGraphNameFromUrl(subgraph);
       this.subgraphMap.get(graph).add(new Pair<>(originalGraphFileName, subgraph));
       if (!this.uniqueGraphNameSet.contains(originalGraphFileName)) {
         this.uniqueGraphNameSet.add(originalGraphFileName);
@@ -327,14 +346,14 @@ public class Spider2PreProcessVisitor extends PiMMSwitch<Boolean> {
   }
 
   @Override
-  public Boolean caseInitActor(final InitActor rba) {
-    caseAbstractActor(rba);
+  public Boolean caseInitActor(final InitActor init) {
+    caseAbstractActor(init);
     return true;
   }
 
   @Override
-  public Boolean caseEndActor(final EndActor rba) {
-    caseAbstractActor(rba);
+  public Boolean caseEndActor(final EndActor end) {
+    caseAbstractActor(end);
     return true;
   }
 

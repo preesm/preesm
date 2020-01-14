@@ -62,10 +62,10 @@ public class Spider2Codegen {
     this.scenario = scenario;
     this.architecture = architecture;
     this.applicationGraph = applicationGraph;
-    this.applicationName = generateGraphName(applicationGraph);
     this.folder = folder;
     /** Calls the pre-processor */
     this.preprocessor.doSwitch(applicationGraph);
+    this.applicationName = this.preprocessor.getPiGraphName(applicationGraph).toLowerCase();
   }
 
   /**
@@ -107,7 +107,7 @@ public class Spider2Codegen {
     context.put("appName", this.applicationName);
     final Set<PiGraph> graphSet = this.preprocessor.getUniqueGraphSet();
     graphSet.remove(this.applicationGraph);
-    context.put("graphs", graphSet);
+    context.put("graphs", this.preprocessor.getUniqueGraphNameSet());
 
     /* Write the file */
     final String outputFileName = "spider2-application-" + this.applicationName + ".h";

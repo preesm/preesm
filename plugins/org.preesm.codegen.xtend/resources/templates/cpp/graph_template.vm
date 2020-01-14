@@ -44,9 +44,9 @@
 
 /* === Function(s) definition === */
 
-spider::pisdf::Graph *spider::create${graphName}Subgraph(std::string name) {
+spider::pisdf::Vertex *spider::create${graphName}Subgraph(std::string name, spider::pisdf::Graph *parentGraph) {
     /* == Create the subgraph == */
-    auto *graph = spider::api::createSubgraph(spider::pisdf::applicationGraph(),
+    auto *graph = spider::api::createSubgraph(parentGraph,
           /* = Name of the subgraph        = */ std::move(name),
           /* = Number of actors            = */ ${actorCount},
           /* = Number of edges             = */ ${edgeCount},
@@ -97,9 +97,9 @@ spider::pisdf::Graph *spider::create${graphName}Subgraph(std::string name) {
     /* === Set the input interface(s) === */
 #foreach($interface in $inputInterfaces)
 
-    auto *interface_$interface.name = spider::api::setInputInterfaceName(
+    auto *vertex_$interface.name = spider::api::setInputInterfaceName(
           /* = Graph of the interface = */  graph,
-          /* = Index of the interface = */  0,
+          /* = Index of the interface = */  $interface.containingGraph.dataInputPorts.indexOf(${interface.graphPort}),
           /* = Name of the interface  = */ "$interface.name");
 #end
 #end
@@ -108,23 +108,25 @@ spider::pisdf::Graph *spider::create${graphName}Subgraph(std::string name) {
     /* === Set the output interface(s) === */
 #foreach($interface in $outputInterfaces)
 
-    auto *interface_$interface.name = spider::api::setOutputInterfaceName(
+    auto *vertex_$interface.name = spider::api::setOutputInterfaceName(
           /* = Graph of the interface = */  graph,
-          /* = Index of the interface = */  0,
+          /* = Index of the interface = */  $interface.containingGraph.dataOutputPorts.indexOf(${interface.graphPort}),
           /* = Name of the interface  = */ "$interface.name");
 #end
 #end
 #if( ${actors.size()} > 0 )
 
     /* === Creates the actor(s) == */
-#foreach($actor in $actors)
-
+#foreach($pair in $actors)
+    #set($actor = $pair.second)
+    #set($type = $pair.first)
+    
     auto *vertex_$actor.name = spider::api::createVertexFromType(
           /* = Graph of the vertex    = */  graph, 
           /* = Name of the actor      = */ "$actor.name", 
           /* = Number of input edges  = */  ${actor.dataInputPorts.size()}, 
           /* = Number of output edges = */  ${actor.dataOutputPorts.size()},
-          /* = Type of the vertex     = */  pisdf::VertexType::NORMAL);
+          /* = Type of the vertex     = */  pisdf::VertexType::$type);
 #if( ${actor.configInputPorts.size()} > 0 )
 
     /* == Set the input parameters of the vertex $actor.name == */
@@ -147,7 +149,7 @@ spider::pisdf::Graph *spider::create${graphName}Subgraph(std::string name) {
     /* === Creates the subgraph(s) === */
 #foreach($subgraph in $subgraphs)
     
-    spider::create${subgraph.first}Subgraph("$subgraph.second.name");
+    auto *vertex_$subgraph.second.name = spider::create${subgraph.first}Subgraph("$subgraph.second.name", graph);
 #end    
 #end
 
@@ -186,6 +188,6 @@ spider::pisdf::Graph *spider::create${graphName}Subgraph(std::string name) {
 #end
 #end
 #end
-    /* == Return the graph == */
-    return graph;
+    /* == Return the graph as a Vertex == */
+    return spider::api::convertGraphToVertex(graph);
 }
