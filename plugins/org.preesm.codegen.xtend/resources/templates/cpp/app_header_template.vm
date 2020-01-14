@@ -38,8 +38,8 @@
  * knowledge of the CeCILL license and that you accept its terms.
  */
 
-#[[#]]#ifndef SPIDER2_APPLICATION_${appName.toUpperCase()}_H
-#[[#]]#define SPIDER2_APPLICATION_${appName.toUpperCase()}_H
+#ifndef SPIDER2_APPLICATION_${appName.toUpperCase()}_H
+#define SPIDER2_APPLICATION_${appName.toUpperCase()}_H
 
 /* === Include(s) === */
 
@@ -64,4 +64,4 @@ namespace spider {
     pisdf::Graph *create${graph.name}Subgraph(std::string name);
 #end
 }
-#[[#]]#endif
+#endif

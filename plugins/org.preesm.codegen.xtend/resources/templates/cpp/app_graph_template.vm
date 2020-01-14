@@ -44,16 +44,15 @@
 
 /* === Function(s) definition === */
 
-spider::pisdf::Graph *spider::create${graphName}Subgraph(std::string name) {
-    /* == Create the subgraph == */
-    auto *graph = spider::api::createSubgraph(spider::pisdf::applicationGraph(),
-          /* = Name of the subgraph        = */ std::move(name),
-          /* = Number of actors            = */ ${actorCount},
-          /* = Number of edges             = */ ${edgeCount},
-          /* = Number of parameters        = */ ${paramCount},
-          /* = Number of input interfaces  = */ ${inputInterfaceCount},
-          /* = Number of output interfaces = */ ${outputInterfaceCount},
-          /* = Number of config actors     = */ ${cfgActorCount});
+void spider::createUserApplicationGraph() {
+    /* == Create the graph == */
+    auto *graph = spider::api::createUserApplicationGraph(/* = Name of the application graph = */ std::move(name),
+                                                          /* = Number of actors              = */ ${actorCount},
+                                                          /* = Number of edges               = */ ${edgeCount},
+                                                          /* = Number of parameters          = */ ${paramCount},
+                                                          /* = Number of input interfaces    = */ ${inputInterfaceCount},
+                                                          /* = Number of output interfaces   = */ ${outputInterfaceCount},
+                                                          /* = Number of config actors       = */ ${cfgActorCount});
 #if( ${parameters.size()} > 0 )
 
     /* === Creates the parameter(s) === */
@@ -160,7 +159,4 @@ spider::pisdf::Graph *spider::create${graphName}Subgraph(std::string name) {
     /* == Creates the delay(s) == */
     ${delays}
 #end
-
-    /* == Return the graph == */
-    return graph;
 }
