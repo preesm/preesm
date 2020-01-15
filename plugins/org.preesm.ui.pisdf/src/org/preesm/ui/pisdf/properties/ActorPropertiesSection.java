@@ -68,7 +68,9 @@ import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.Actor;
 import org.preesm.model.pisdf.CHeaderRefinement;
 import org.preesm.model.pisdf.ExecutableActor;
+import org.preesm.model.pisdf.InitActor;
 import org.preesm.model.pisdf.Refinement;
+import org.preesm.model.pisdf.RefinementContainer;
 import org.preesm.model.pisdf.util.PrototypeFormatter;
 import org.preesm.ui.pisdf.features.ClearActorMemoryScriptFeature;
 import org.preesm.ui.pisdf.features.ClearActorRefinementFeature;
@@ -187,7 +189,6 @@ public class ActorPropertiesSection extends GFPropertySection implements ITabbed
      * Memory script
      */
     createMemoryScriptControl(factory, this.composite);
-
   }
 
   /**
@@ -539,9 +540,9 @@ public class ActorPropertiesSection extends GFPropertySection implements ITabbed
         }
         this.txtNameObj.setEnabled(true);
 
-        if (bo instanceof Actor) {
-          final Actor actor = (Actor) bo;
-          final Refinement refinement = actor.getRefinement();
+        if (bo instanceof Actor || bo instanceof InitActor) {
+
+          final Refinement refinement = ((RefinementContainer) bo).getRefinement();
           if ((refinement == null) || (refinement.getFilePath() == null)) {
             this.lblRefinementObj.setText("(none)");
             this.lblRefinementView.setText("(none)");
@@ -580,31 +581,41 @@ public class ActorPropertiesSection extends GFPropertySection implements ITabbed
             this.butRefinementOpen.setEnabled(true);
           }
 
-          if (actor.getMemoryScriptPath() == null) {
-            this.lblMemoryScriptObj.setText("(none)");
-            this.butMemoryScriptClear.setEnabled(false);
-            this.butMemoryScriptBrowse.setEnabled(true);
-            this.butMemoryScriptOpen.setEnabled(false);
-          } else {
-            final IPath path = Optional.ofNullable(actor.getMemoryScriptPath()).map(Path::new).orElse(null);
-            final String text = path.lastSegment();
-
-            this.lblMemoryScriptObj.setText(text);
-            this.butMemoryScriptClear.setEnabled(true);
-            this.butMemoryScriptBrowse.setEnabled(true);
-            this.butMemoryScriptOpen.setEnabled(true);
-          }
           this.lblRefinement.setVisible(true);
           this.lblRefinementObj.setVisible(true);
           this.lblRefinementView.setVisible(true);
           this.butRefinementClear.setVisible(true);
           this.butRefinementBrowse.setVisible(true);
           this.butRefinementOpen.setVisible(true);
-          this.lblMemoryScript.setVisible(true);
-          this.lblMemoryScriptObj.setVisible(true);
-          this.butMemoryScriptClear.setVisible(true);
-          this.butMemoryScriptBrowse.setVisible(true);
-          this.butMemoryScriptOpen.setVisible(true);
+
+          if (bo instanceof Actor) {
+            final Actor actor = (Actor) bo;
+            if (actor.getMemoryScriptPath() == null) {
+              this.lblMemoryScriptObj.setText("(none)");
+              this.butMemoryScriptClear.setEnabled(false);
+              this.butMemoryScriptBrowse.setEnabled(true);
+              this.butMemoryScriptOpen.setEnabled(false);
+            } else {
+              final IPath path = Optional.ofNullable(actor.getMemoryScriptPath()).map(Path::new).orElse(null);
+              final String text = path.lastSegment();
+
+              this.lblMemoryScriptObj.setText(text);
+              this.butMemoryScriptClear.setEnabled(true);
+              this.butMemoryScriptBrowse.setEnabled(true);
+              this.butMemoryScriptOpen.setEnabled(true);
+            }
+            this.lblMemoryScript.setVisible(true);
+            this.lblMemoryScriptObj.setVisible(true);
+            this.butMemoryScriptClear.setVisible(true);
+            this.butMemoryScriptBrowse.setVisible(true);
+            this.butMemoryScriptOpen.setVisible(true);
+          } else {
+            this.lblMemoryScript.setVisible(false);
+            this.lblMemoryScriptObj.setVisible(false);
+            this.butMemoryScriptClear.setVisible(false);
+            this.butMemoryScriptBrowse.setVisible(false);
+            this.butMemoryScriptOpen.setVisible(false);
+          }
 
         } else {
           this.lblRefinement.setVisible(false);

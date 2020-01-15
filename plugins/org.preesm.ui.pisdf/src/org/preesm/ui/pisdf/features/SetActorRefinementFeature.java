@@ -51,11 +51,15 @@ import org.eclipse.graphiti.features.custom.AbstractCustomFeature;
 import org.eclipse.graphiti.mm.pictograms.PictogramElement;
 import org.eclipse.ui.PlatformUI;
 import org.preesm.commons.exceptions.PreesmRuntimeException;
+import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.Actor;
 import org.preesm.model.pisdf.CHeaderRefinement;
 import org.preesm.model.pisdf.Delay;
+import org.preesm.model.pisdf.DelayActor;
 import org.preesm.model.pisdf.FunctionPrototype;
+import org.preesm.model.pisdf.InitActor;
 import org.preesm.model.pisdf.PiSDFRefinement;
+import org.preesm.model.pisdf.RefinementContainer;
 import org.preesm.model.pisdf.factory.PiMMUserFactory;
 import org.preesm.model.pisdf.header.parser.HeaderParser;
 import org.preesm.ui.pisdf.util.PiMMUtil;
@@ -82,6 +86,8 @@ public class SetActorRefinementFeature extends AbstractCustomFeature {
     INIT_ACTOR,
     /** The loop actor. */
     LOOP_ACTOR,
+    /** The init delay actor. */
+    INIT_DELAY_ACTOR,
     /** The init. */
     INIT
   }
@@ -133,7 +139,7 @@ public class SetActorRefinementFeature extends AbstractCustomFeature {
     final PictogramElement[] pes = context.getPictogramElements();
     if ((pes != null) && (pes.length == 1)) {
       final Object bo = getBusinessObjectForPictogramElement(pes[0]);
-      if (bo instanceof Actor || bo instanceof Delay) {
+      if (bo instanceof Actor || bo instanceof Delay || bo instanceof InitActor) {
         ret = true;
       }
     }
@@ -153,14 +159,26 @@ public class SetActorRefinementFeature extends AbstractCustomFeature {
     final PictogramElement[] pes = context.getPictogramElements();
     if ((pes != null) && (pes.length == 1)) {
       final Object bo = getBusinessObjectForPictogramElement(pes[0]);
-      if (bo instanceof Actor) {
-        final Actor actor = (Actor) bo;
+      if (bo instanceof Actor || bo instanceof Delay || bo instanceof InitActor) {
+        RefinementContainer rc = null;
+        boolean acceptPiFiles = false;
+        if (bo instanceof Delay) {
+          rc = ((Delay) bo).getActor();
+          if (rc == null) {
+            return;
+          }
+        } else if (bo instanceof Actor) {
+          rc = (Actor) bo;
+          acceptPiFiles = true;
+        } else if (bo instanceof InitActor) {
+          rc = (InitActor) bo;
+        }
 
-        final String question = "Please select a valid refinement file (.h or .pi)";
+        final String question = "Please select a valid refinement file (.h, or .pi if Actor)";
         final String dialogTitle = "Select a refinement file";
-        final IPath path = askRefinement(question, dialogTitle);
+        final IPath path = askRefinement(question, dialogTitle, acceptPiFiles);
         if (path != null) {
-          setActorRefinement(actor, path);
+          setActorRefinement(rc, path);
         }
 
         // Call the layout feature
@@ -172,20 +190,22 @@ public class SetActorRefinementFeature extends AbstractCustomFeature {
   /**
    * Ask refinement.
    *
-   * @param actor
-   *          the actor
    * @param question
    *          the question
    * @param dialogTitle
    *          the dialog title
+   * @param acceptPiFiles
+   *          Whether or not pi files are accepted as refinements.
    * @return the i path
    */
-  private IPath askRefinement(final String question, final String dialogTitle) {
+  private IPath askRefinement(final String question, final String dialogTitle, final boolean acceptPiFiles) {
     // Ask user for Actor name until a valid name is entered.
     // For now, authorized refinements are other PiGraphs (.pi files) and
     // .idl prototypes
     final Set<String> fileExtensions = new LinkedHashSet<>();
-    fileExtensions.add("pi");
+    if (acceptPiFiles) {
+      fileExtensions.add("pi");
+    }
     fileExtensions.add("h");
     return FileUtils.browseFiles(PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell(), dialogTitle, question,
         fileExtensions);
@@ -199,9 +219,14 @@ public class SetActorRefinementFeature extends AbstractCustomFeature {
    * @param newFilePath
    *          The {@link IPath} to the file. (Must not be null)
    */
-  protected void setActorRefinement(final Actor actor, IPath newFilePath) {
+  protected void setActorRefinement(RefinementContainer actor, IPath newFilePath) {
     final String dialogTitle = "Select a refinement file";
 
+    if (!(actor instanceof DelayActor) && !(actor instanceof Actor) && !(actor instanceof InitActor)) {
+      return;
+    }
+
+    boolean acceptPiFiles = actor instanceof Actor;
     boolean validRefinement = false;
     do {
       // If the file is a .h header
@@ -223,7 +248,7 @@ public class SetActorRefinementFeature extends AbstractCustomFeature {
         if (!validRefinement) {
           final String message = "The .h file you selected does not contain any prototype."
               + ".\nPlease select another valid file.";
-          newFilePath = askRefinement(message, dialogTitle);
+          newFilePath = askRefinement(message, dialogTitle, acceptPiFiles);
 
           // If the cancel button of the dialog box was clicked
           // stop the setRefinement process.
@@ -231,20 +256,32 @@ public class SetActorRefinementFeature extends AbstractCustomFeature {
             return;
           }
         } else {
-          // The file is a valid .h file.
-          String title = "Loop Function Selection";
-          String message = "Select a loop function for actor " + actor.getName() + "\n(* = any string, ? = any char):";
-          final FunctionPrototype[] loopProtoArray = loopPrototypes
-              .toArray(new FunctionPrototype[loopPrototypes.size()]);
-          final FunctionPrototype loopProto = PiMMUtil.selectFunction(loopProtoArray, allProtoArray, title, message,
-              this.showOnlyValidPrototypes);
+          String title = "";
+          String message = "";
+          FunctionPrototype loopProto = null;
 
-          final List<FunctionPrototype> initPrototypes = getPrototypes(file, actor, PrototypeFilter.INIT_ACTOR);
+          if (actor instanceof Actor) {
+            // The file is a valid .h file.
+            title = "Loop Function Selection";
+            message = "Select a loop function for actor " + ((AbstractActor) actor).getName()
+                + "\n(* = any string, ? = any char):";
+            final FunctionPrototype[] loopProtoArray = loopPrototypes
+                .toArray(new FunctionPrototype[loopPrototypes.size()]);
+            loopProto = PiMMUtil.selectFunction(loopProtoArray, allProtoArray, title, message,
+                this.showOnlyValidPrototypes);
+          }
+
+          List<FunctionPrototype> initPrototypes = null;
+          if (actor instanceof Actor) {
+            initPrototypes = getPrototypes(file, actor, PrototypeFilter.INIT_ACTOR);
+          } else {
+            initPrototypes = getPrototypes(file, actor, PrototypeFilter.INIT_DELAY_ACTOR);
+          }
           final List<FunctionPrototype> allInitPrototypes = getPrototypes(file, actor, PrototypeFilter.INIT);
 
           FunctionPrototype initProto = null;
           title = "Init Function Selection";
-          message = "Select an optionnal init function for actor " + actor.getName()
+          message = "Select an optionnal init function for actor " + ((AbstractActor) actor).getName()
               + ", or click Cancel to set none.\nNote: prototypes with pointers or arrays as "
               + "arguments are filtered out.\n(* = any string, ? = any char):";
           final FunctionPrototype[] initProtoArray = initPrototypes
@@ -252,6 +289,7 @@ public class SetActorRefinementFeature extends AbstractCustomFeature {
           final FunctionPrototype[] allInitProtoArray = allInitPrototypes
               .toArray(new FunctionPrototype[allInitPrototypes.size()]);
           initProto = PiMMUtil.selectFunction(initProtoArray, allInitProtoArray, title, message, false);
+
           if ((loopProto != null) || (initProto != null)) {
             this.hasDoneChanges = true;
             final CHeaderRefinement newRefinement = PiMMUserFactory.instance.createCHeaderRefinement();
@@ -262,7 +300,7 @@ public class SetActorRefinementFeature extends AbstractCustomFeature {
           }
         }
       } else {
-        // The file is either a .pi or a .IDL file.
+        // The file is either a .pi or a .IDL file, it is not accepted for DelayActor
         validRefinement = true;
         final PiSDFRefinement createPiSDFRefinement = PiMMUserFactory.instance.createPiSDFRefinement();
         createPiSDFRefinement.setFilePath(newFilePath.toString());
@@ -293,7 +331,7 @@ public class SetActorRefinementFeature extends AbstractCustomFeature {
    *          the prototype filter
    * @return the prototypes
    */
-  private List<FunctionPrototype> getPrototypes(final IFile file, final Actor actor,
+  private List<FunctionPrototype> getPrototypes(final IFile file, final RefinementContainer actor,
       final PrototypeFilter prototypeFilter) {
 
     List<FunctionPrototype> result = null;
@@ -303,13 +341,16 @@ public class SetActorRefinementFeature extends AbstractCustomFeature {
 
       switch (prototypeFilter) {
         case INIT_ACTOR:
-          result = HeaderParser.filterInitPrototypesFor(actor, result);
+          result = HeaderParser.filterInitPrototypesFor((AbstractActor) actor, result);
           break;
         case LOOP_ACTOR:
-          result = HeaderParser.filterLoopPrototypesFor(actor, result);
+          result = HeaderParser.filterLoopPrototypesFor((AbstractActor) actor, result);
           break;
         case INIT:
           result = HeaderParser.filterInitPrototypes(result);
+          break;
+        case INIT_DELAY_ACTOR:
+          result = HeaderParser.filterInitBufferPrototypes(result);
           break;
         case NONE:
           break;

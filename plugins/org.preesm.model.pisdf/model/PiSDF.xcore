@@ -424,7 +424,7 @@ abstract class SrdagActor extends SpecialActor {
 	op PersistenceLevel getPersistenceLevel()
 }
 
-class InitActor extends SrdagActor {
+class InitActor extends SrdagActor, RefinementContainer {
 	PersistenceLevel level
 	refers AbstractActor endReference
 	op DataOutputPort getDataOutputPort() {

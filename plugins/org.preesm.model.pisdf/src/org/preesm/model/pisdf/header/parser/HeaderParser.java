@@ -476,6 +476,38 @@ public class HeaderParser {
   }
 
   /**
+   * Filters the prototypes obtained from the parsed file to keep only the ones corresponding to possible
+   * initializations of delays (only one output buffer).
+   *
+   * @param prototypes
+   *          the prototypes
+   * @return the set of FunctionPrototypes corresponding to initialization
+   */
+  public static List<FunctionPrototype> filterInitBufferPrototypes(final List<FunctionPrototype> prototypes) {
+    final List<FunctionPrototype> result = new ArrayList<>();
+
+    // For each function prototype proto check that the prototype has no
+    // input or output buffers (i.e. parameters with a pointer type)
+    for (final FunctionPrototype proto : prototypes) {
+      int nbBuffers = 0;
+      for (final FunctionArgument param : proto.getArguments()) {
+        if (param.isIsConfigurationParameter()) {
+          param.setDirection(Direction.IN);
+        } else {
+          nbBuffers += 1;
+          param.setDirection(Direction.OUT);
+        }
+      }
+
+      if (nbBuffers == 1) {
+        result.add(proto);
+      }
+    }
+
+    return result;
+  }
+
+  /**
    * Gets the corresponding function parameter.
    *
    * @param p

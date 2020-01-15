@@ -411,6 +411,11 @@ public class PiMMFeatureProvider extends DefaultFeatureProvider {
         features.add(feature);
       }
     }
+    if (obj instanceof InitActor) {
+      features.add(new SetActorRefinementFeature(this));
+      features.add(new ClearActorRefinementFeature(this));
+      features.add(new OpenRefinementFeature(this));
+    }
     if (obj instanceof Actor) {
       final ICustomFeature[] actorFeatures = new ICustomFeature[] { new SetActorRefinementFeature(this),
           new ClearActorRefinementFeature(this), new OpenRefinementFeature(this), new SetActorMemoryScriptFeature(this),
@@ -441,6 +446,9 @@ public class PiMMFeatureProvider extends DefaultFeatureProvider {
 
     if (obj instanceof Delay) {
       features.add(new SetPersistenceLevelFeature(this));
+      features.add(new SetActorRefinementFeature(this));
+      features.add(new ClearActorRefinementFeature(this));
+      features.add(new OpenRefinementFeature(this));
     }
 
     return features.toArray(new ICustomFeature[features.size()]);
