@@ -215,6 +215,14 @@ class PiGraph extends AbstractActor, Graph, PeriodicElement {
 	op boolean isCluster() {
 		return clusterValue
 	}
+	
+	op String getPiGraphName() {
+		var graphName = url.substring(url.lastIndexOf('/') + 1, url.length - 3);
+		if (!graphName.isEmpty) {
+			graphName = graphName.substring(0, 1).toUpperCase() + graphName.substring(1);
+		}
+		return graphName;
+	} 
 	op boolean isLocallyStatic() {
 		// a PiGraph is static if all the parameters it contains are static
 		// and if the input setters on its config interfaces are static
