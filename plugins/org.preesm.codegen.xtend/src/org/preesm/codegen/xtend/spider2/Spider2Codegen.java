@@ -38,7 +38,7 @@ public class Spider2Codegen {
   private final PiGraph applicationGraph;
 
   /** The Spider2PreProcessor **/
-  private final Spider2PreProcessVisitor preprocessor = new Spider2PreProcessVisitor();
+  private final Spider2PreProcessVisitor preprocessor;
 
   /** The application name **/
   private final String applicationName;
@@ -69,6 +69,7 @@ public class Spider2Codegen {
     this.applicationGraph = applicationGraph;
     this.folder = folder;
     /** Calls the pre-processor */
+    this.preprocessor = new Spider2PreProcessVisitor(this.scenario);
     this.preprocessor.doSwitch(applicationGraph);
     this.applicationName = applicationGraph.getPiGraphName().toLowerCase();
   }
@@ -173,22 +174,7 @@ public class Spider2Codegen {
     context.put("inputInterfaces", graph.getDataInputPorts());
     context.put("outputInterfaces", graph.getDataOutputPorts());
     context.put("actors", this.preprocessor.getActorSet(graph));
-
-    final List<Pair<PiGraph, List<String>>> subgraphsAndParameters = new ArrayList<>();
-    for (final PiGraph subgraph : this.preprocessor.getSubgraphSet(graph)) {
-      final List<String> parametersString = new ArrayList<>();
-      for (final ConfigInputPort iCfg : subgraph.getConfigInputPorts()) {
-        final boolean isLast = subgraph.getConfigInputPorts().indexOf(iCfg) == subgraph.getConfigInputPorts().size()
-            - 1;
-        String paramName = ((Parameter) (iCfg.getIncomingDependency().getSetter())).getName();
-        if (!isLast) {
-          paramName += ",";
-        }
-        parametersString.add(paramName);
-      }
-      subgraphsAndParameters.add(new Pair<>(subgraph, parametersString));
-    }
-    context.put("subgraphsAndParameters", subgraphsAndParameters);
+    context.put("subgraphsAndParameters", this.generateSubgraphsAndParametersList(graph));
     context.put("edges", this.preprocessor.getEdgeSet(graph));
 
     /* Write the final file */
@@ -205,13 +191,24 @@ public class Spider2Codegen {
    * 
    * @param graph
    *          the graph to evaluate
-   * @return clean name
+   * @return List of Pair of PiGraph and List of String.
    */
-  private static final String generateGraphName(final PiGraph graph) {
-    String name = graph.getName();
-    name = name.replace('-', '_');
-    name = name.replace(" ", "");
-    return name;
+  private final List<Pair<PiGraph, List<String>>> generateSubgraphsAndParametersList(final PiGraph graph) {
+    final List<Pair<PiGraph, List<String>>> subgraphsAndParameters = new ArrayList<>();
+    for (final PiGraph subgraph : this.preprocessor.getSubgraphSet(graph)) {
+      final List<String> parametersString = new ArrayList<>();
+      for (final ConfigInputPort iCfg : subgraph.getConfigInputPorts()) {
+        final boolean isLast = subgraph.getConfigInputPorts().indexOf(iCfg) == subgraph.getConfigInputPorts().size()
+            - 1;
+        String paramName = ((Parameter) (iCfg.getIncomingDependency().getSetter())).getName();
+        if (!isLast) {
+          paramName += ",";
+        }
+        parametersString.add(paramName);
+      }
+      subgraphsAndParameters.add(new Pair<>(subgraph, parametersString));
+    }
+    return subgraphsAndParameters;
   }
 
   /**
