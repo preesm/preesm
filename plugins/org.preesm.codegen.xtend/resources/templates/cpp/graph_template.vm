@@ -44,7 +44,9 @@
 
 /* === Function(s) definition === */
 
-spider::pisdf::Vertex *spider::create${graphName}Subgraph(std::string name, spider::pisdf::Graph *parentGraph) {
+spider::pisdf::Vertex *spider::create${graphName}Subgraph(std::string name, 
+                                                          spider::pisdf::Graph *parentGraph,
+                                                          const std::vector<spider::pisdf::Param *> &parentGraphParams) {
     /* == Create the subgraph == */
     auto *graph = spider::api::createSubgraph(parentGraph,
           /* = Name of the subgraph        = */ std::move(name),
@@ -54,15 +56,14 @@ spider::pisdf::Vertex *spider::create${graphName}Subgraph(std::string name, spid
           /* = Number of input interfaces  = */ ${inputInterfaceCount},
           /* = Number of output interfaces = */ ${outputInterfaceCount},
           /* = Number of config actors     = */ ${cfgActorCount});
-#if( ${parameters.size()} > 0 )
-
+     
     /* === Creates the parameter(s) === */
 #foreach($param in $inheritedParameters)
 
     auto *param_$param.name = spider::api::createInheritedParam(
-          /* = Graph of the parameter       = */  graph,
-          /* = Name of the parameter        = */ "$param.name",
-          /* = Name of the parent parameter = */ "$param.graphPort.incomingDependency.getter.name");
+          /* = Graph of the parameter = */  graph,
+          /* = Name of the parameter  = */ "$param.name",
+          /* = Parent parameter       = */  parentGraphParams[$inheritedParameters.indexOf($param)]);
 #end
 #foreach($param in $staticParameters)
 
@@ -91,30 +92,24 @@ spider::pisdf::Vertex *spider::create${graphName}Subgraph(std::string name, spid
           /* = Name of the parameter       = */ "$param.name",
           /* = Expression of the parameter = */ "$param.expression.expressionAsString");
 #end
-#end
-#if( ${inputInterfaces.size()} > 0 )
 
     /* === Set the input interface(s) === */
 #foreach($interface in $inputInterfaces)
 
     auto *vertex_$interface.name = spider::api::setInputInterfaceName(
           /* = Graph of the interface = */  graph,
-          /* = Index of the interface = */  $interface.containingGraph.dataInputPorts.indexOf(${interface.graphPort}),
+          /* = Index of the interface = */  $inputInterfaces.indexOf(${interface}),
           /* = Name of the interface  = */ "$interface.name");
 #end
-#end
-#if( ${outputInterfaces.size()} > 0 )
 
     /* === Set the output interface(s) === */
 #foreach($interface in $outputInterfaces)
 
     auto *vertex_$interface.name = spider::api::setOutputInterfaceName(
           /* = Graph of the interface = */  graph,
-          /* = Index of the interface = */  $interface.containingGraph.dataOutputPorts.indexOf(${interface.graphPort}),
+          /* = Index of the interface = */  $outputInterfaces.indexOf(${interface}),
           /* = Name of the interface  = */ "$interface.name");
 #end
-#end
-#if( ${actors.size()} > 0 )
 
     /* === Creates the actor(s) == */
 #foreach($pair in $actors)
@@ -142,18 +137,14 @@ spider::pisdf::Vertex *spider::create${graphName}Subgraph(std::string name, spid
 #end
 #end
 #end
-#end
-
-#if (${subgraphs.size()} > 0 )
 
     /* === Creates the subgraph(s) === */
-#foreach($subgraph in $subgraphs)
+#foreach($pair in $subgraphsAndParameters)
+    #set($subgraph = $pair.first)
+    #set($paramNames = $pair.second)
     
-    auto *vertex_$subgraph.second.name = spider::create${subgraph.first}Subgraph("$subgraph.second.name", graph);
+    auto *vertex_$subgraph.name = spider::create${subgraph.piGraphName}Subgraph("$subgraph.name", graph, {#foreach ($name in $paramNames) param_$name #end});
 #end    
-#end
-
-#if( ${edges.size()} > 0 )
 
     /* === Creates the edge(s) === */
 #foreach ($edge in $edges)
@@ -185,7 +176,6 @@ spider::pisdf::Vertex *spider::create${graphName}Subgraph(std::string name, spid
                             /* = Sink vertex            = */  vertex_$edge.sink.name,
                             /* = Sink port ix           = */  $edge.sinkIx,
                             /* = sink rate expression   = */ "$edge.sinkRateExpression");   
-#end
 #end
 #end
     /* == Return the graph as a Vertex == */

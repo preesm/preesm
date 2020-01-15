@@ -53,16 +53,8 @@ void spider::createUserApplicationGraph() {
                                                           /* = Number of input interfaces    = */  ${inputInterfaceCount},
                                                           /* = Number of output interfaces   = */  ${outputInterfaceCount},
                                                           /* = Number of config actors       = */  ${cfgActorCount});
-#if( ${parameters.size()} > 0 )
 
     /* === Creates the parameter(s) === */
-#foreach($param in $inheritedParameters)
-
-    auto *param_$param.name = spider::api::createInheritedParam(
-          /* = Graph of the parameter       = */  graph,
-          /* = Name of the parameter        = */ "$param.name",
-          /* = Name of the parent parameter = */ "$param.graphPort.incomingDependency.getter.name");
-#end
 #foreach($param in $staticParameters)
 
     auto *param_$param.name = spider::api::createStaticParam(
@@ -90,8 +82,6 @@ void spider::createUserApplicationGraph() {
           /* = Name of the parameter       = */ "$param.name",
           /* = Expression of the parameter = */ "$param.expression.expressionAsString");
 #end
-#end
-#if( ${actors.size()} > 0 )
 
     /* === Creates the actor(s) == */
 #foreach($pair in $actors)
@@ -119,18 +109,14 @@ void spider::createUserApplicationGraph() {
 #end
 #end
 #end
-#end
-
-#if (${subgraphs.size()} > 0 )
 
     /* === Creates the subgraph(s) === */
-#foreach($subgraph in $subgraphs)
+#foreach($pair in $subgraphsAndParameters)
+    #set($subgraph = $pair.first)
+    #set($paramNames = $pair.second)
     
-    auto *vertex_$subgraph.second.name = spider::create${subgraph.first}Subgraph("$subgraph.second.name", graph);
-#end    
-#end
-
-#if( ${edges.size()} > 0 )
+    auto *vertex_$subgraph.name = spider::create${subgraph.piGraphName}Subgraph("$subgraph.name", graph, {#foreach ($name in $paramNames) param_$name #end});
+#end     
 
     /* === Creates the edge(s) === */
 #foreach ($edge in $edges)
@@ -162,7 +148,6 @@ void spider::createUserApplicationGraph() {
                             /* = Sink vertex            = */  vertex_$edge.sink.name,
                             /* = Sink port ix           = */  $edge.sinkIx,
                             /* = sink rate expression   = */ "$edge.sinkRateExpression");   
-#end
 #end
 #end
 }

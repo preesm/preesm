@@ -6,15 +6,20 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Writer;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 import java.util.logging.Level;
+import org.apache.commons.math3.util.Pair;
 import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.VelocityEngine;
 import org.preesm.codegen.xtend.spider2.visitor.Spider2PreProcessVisitor;
 import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.preesm.commons.files.PreesmResourcesHelper;
 import org.preesm.commons.logger.PreesmLogger;
+import org.preesm.model.pisdf.ConfigInputPort;
 import org.preesm.model.pisdf.Fifo;
+import org.preesm.model.pisdf.Parameter;
 import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.scenario.Scenario;
 import org.preesm.model.slam.Design;
@@ -65,7 +70,7 @@ public class Spider2Codegen {
     this.folder = folder;
     /** Calls the pre-processor */
     this.preprocessor.doSwitch(applicationGraph);
-    this.applicationName = this.preprocessor.getPiGraphName(applicationGraph).toLowerCase();
+    this.applicationName = applicationGraph.getPiGraphName().toLowerCase();
   }
 
   /**
@@ -107,7 +112,7 @@ public class Spider2Codegen {
     context.put("appName", this.applicationName);
     final Set<PiGraph> graphSet = this.preprocessor.getUniqueGraphSet();
     graphSet.remove(this.applicationGraph);
-    context.put("graphs", this.preprocessor.getUniqueGraphNameSet());
+    context.put("graphs", this.preprocessor.getUniqueGraphSet());
 
     /* Write the file */
     final String outputFileName = "spider2-application-" + this.applicationName + ".h";
@@ -151,7 +156,7 @@ public class Spider2Codegen {
     /* Fill out the context */
     VelocityContext context = new VelocityContext();
     context.put("appName", this.applicationName);
-    context.put("graphName", this.preprocessor.getPiGraphName(graph));
+    context.put("graphName", graph.getPiGraphName());
     context.put("actorCount", actorCount);
     context.put("edgeCount", edgeCount);
     context.put("paramCount", graph.getParameters().size());
@@ -165,17 +170,32 @@ public class Spider2Codegen {
     context.put("dependendStaticParameters", this.preprocessor.getStaticDependentParameters(graph));
     context.put("dynamicParameters", this.preprocessor.getDynamicParameters(graph));
     context.put("dependentDynamicParameters", this.preprocessor.getDynamicDependentParameters(graph));
-    context.put("inputInterfaces", graph.getDataInputInterfaces());
-    context.put("outputInterfaces", graph.getDataOutputInterfaces());
+    context.put("inputInterfaces", graph.getDataInputPorts());
+    context.put("outputInterfaces", graph.getDataOutputPorts());
     context.put("actors", this.preprocessor.getActorSet(graph));
-    context.put("subgraphs", this.preprocessor.getSubgraphSet(graph));
+
+    final List<Pair<PiGraph, List<String>>> subgraphsAndParameters = new ArrayList<>();
+    for (final PiGraph subgraph : this.preprocessor.getSubgraphSet(graph)) {
+      final List<String> parametersString = new ArrayList<>();
+      for (final ConfigInputPort iCfg : subgraph.getConfigInputPorts()) {
+        final boolean isLast = subgraph.getConfigInputPorts().indexOf(iCfg) == subgraph.getConfigInputPorts().size()
+            - 1;
+        String paramName = ((Parameter) (iCfg.getIncomingDependency().getSetter())).getName();
+        if (!isLast) {
+          paramName += ",";
+        }
+        parametersString.add(paramName);
+      }
+      subgraphsAndParameters.add(new Pair<>(subgraph, parametersString));
+    }
+    context.put("subgraphsAndParameters", subgraphsAndParameters);
     context.put("edges", this.preprocessor.getEdgeSet(graph));
 
     /* Write the final file */
     if (graph == this.applicationGraph) {
       writeVelocityContext(context, "templates/cpp/app_graph_template.vm", "application_graph.cpp");
     } else {
-      final String outputFileName = this.preprocessor.getPiGraphName(graph).toLowerCase() + "_subgraph" + ".cpp";
+      final String outputFileName = graph.getPiGraphName().toLowerCase() + "_subgraph" + ".cpp";
       writeVelocityContext(context, "templates/cpp/graph_template.vm", outputFileName);
     }
   }

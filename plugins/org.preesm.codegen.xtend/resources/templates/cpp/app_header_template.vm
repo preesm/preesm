@@ -44,6 +44,7 @@
 /* === Include(s) === */
 
 #include <string>
+#include <vector>
 #include <spider.h>
 
 /* === Function(s) declaration === */
@@ -54,15 +55,17 @@ namespace spider {
      * @brief Generates the main user application graph.
      */
     void createUserApplicationGraph();
-#foreach ($name in $graphs)
+#foreach ($graph in $graphs)
 
     /**
-     * @brief Generates an instance of the ${name} subgraph.
-     * @param name        Name of the instance of the ${name} subgraph.
-     * @param parentGraph Pointer to the parent graph.
+     * @brief Generates an instance of the ${graph.piGraphName} subgraph.
+     * @param name              Name of the instance of the ${graph.piGraphName} subgraph.
+     * @param parentGraph       Pointer to the parent graph.
+     * @param parentGraphParams Vector of parameters of the parent graph.
      * @return pointer to the @refitem pisdf::Vertex created.
      */
-    pisdf::Vertex *create${name}Subgraph(std::string name, spider::pisdf::Graph *parentGraph);
+    pisdf::Vertex *create${graph.piGraphName}Subgraph(
+                         std::string name, spider::pisdf::Graph *parentGraph, const std::vector<spider::pisdf::Param *> &parentGraphParams = {});
 #end
 }
 #endif
