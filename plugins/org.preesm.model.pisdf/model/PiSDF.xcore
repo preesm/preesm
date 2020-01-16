@@ -821,6 +821,18 @@ class Delay extends Configurable, ExpressionHolder {
 class FunctionPrototype {
 	String name
 	contains FunctionArgument[] arguments
+	op unique FunctionArgument[] getInputConfigParameters() {
+		return arguments.filter[it.isConfigurationParameter == true && it.direction == Direction.IN].toEList.unmodifiableView;
+	}
+	op unique FunctionArgument[] getOutputConfigParameters() {
+		return arguments.filter[it.isConfigurationParameter == true && it.direction == Direction.OUT].toEList.unmodifiableView;
+	}
+	op unique FunctionArgument[] getInputArguments() {
+		return arguments.filter[it.isConfigurationParameter == false && it.direction == Direction.IN].toEList.unmodifiableView;
+	}
+	op unique FunctionArgument[] getOutputArguments() {
+		return arguments.filter[it.isConfigurationParameter == false && it.direction == Direction.OUT].toEList.unmodifiableView;
+	}
 }
 
 class FunctionArgument {
@@ -828,6 +840,7 @@ class FunctionArgument {
 	Direction direction
 	String ^type
 	boolean isConfigurationParameter
+	int position
 }
 
 enum Direction {
