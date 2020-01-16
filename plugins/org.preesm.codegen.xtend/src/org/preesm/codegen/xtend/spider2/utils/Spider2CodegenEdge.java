@@ -1,4 +1,4 @@
-package org.preesm.codegen.xtend.spider2.visitor;
+package org.preesm.codegen.xtend.spider2.utils;
 
 import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.Delay;

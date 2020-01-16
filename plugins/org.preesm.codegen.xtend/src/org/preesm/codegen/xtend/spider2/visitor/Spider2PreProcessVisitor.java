@@ -1,5 +1,6 @@
 package org.preesm.codegen.xtend.spider2.visitor;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
@@ -8,7 +9,10 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 import org.apache.commons.math3.util.Pair;
+import org.preesm.codegen.xtend.spider2.utils.Spider2CodegenEdge;
+import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.model.pisdf.AbstractActor;
+import org.preesm.model.pisdf.Actor;
 import org.preesm.model.pisdf.BroadcastActor;
 import org.preesm.model.pisdf.CHeaderRefinement;
 import org.preesm.model.pisdf.ConfigInputPort;
@@ -72,8 +76,14 @@ public class Spider2PreProcessVisitor extends PiMMSwitch<Boolean> {
   /** The graph to actors map */
   private final Map<PiGraph, Set<Pair<String, AbstractActor>>> actorsMap = new LinkedHashMap<>();
 
+  /** The unique function loop List */
+  private final List<CHeaderRefinement> uniqueLoopFctList = new ArrayList<>();
+
+  /** The actor to function loop prototype indices */
+  private final Map<AbstractActor, Integer> actorToLoopFctMap = new LinkedHashMap<>();
+
   /** The scenario */
-  final Scenario scenario;
+  private final Scenario scenario;
 
   public Spider2PreProcessVisitor(final Scenario scenario) {
     this.scenario = scenario;
@@ -95,31 +105,39 @@ public class Spider2PreProcessVisitor extends PiMMSwitch<Boolean> {
   }
 
   public List<Parameter> getStaticParameters(final PiGraph graph) {
-    return staticParametersMap.get(graph);
+    return this.staticParametersMap.get(graph);
   }
 
   public Set<Parameter> getStaticDependentParameters(final PiGraph graph) {
-    return staticDependentParametersMap.get(graph);
+    return this.staticDependentParametersMap.get(graph);
   }
 
   public List<Parameter> getDynamicParameters(final PiGraph graph) {
-    return dynamicParametersMap.get(graph);
+    return this.dynamicParametersMap.get(graph);
   }
 
   public Set<Parameter> getDynamicDependentParameters(final PiGraph graph) {
-    return dynamicDependentParametersMap.get(graph);
+    return this.dynamicDependentParametersMap.get(graph);
   }
 
   public Set<Spider2CodegenEdge> getEdgeSet(final PiGraph graph) {
-    return edgeMap.get(graph);
+    return this.edgeMap.get(graph);
   }
 
   public Set<PiGraph> getSubgraphSet(final PiGraph graph) {
-    return subgraphMap.get(graph);
+    return this.subgraphMap.get(graph);
   }
 
   public Set<Pair<String, AbstractActor>> getActorSet(final PiGraph graph) {
-    return actorsMap.get(graph);
+    return this.actorsMap.get(graph);
+  }
+
+  public Integer getLoopFctIndex(final AbstractActor actor) {
+    return this.actorToLoopFctMap.get(actor);
+  }
+
+  public List<CHeaderRefinement> getUniqueLoopFctList() {
+    return this.uniqueLoopFctList;
   }
 
   /**
@@ -191,7 +209,7 @@ public class Spider2PreProcessVisitor extends PiMMSwitch<Boolean> {
    * @param graph
    *          The graph to evaluate
    */
-  private void insertDynamicParamters(final PiGraph graph) {
+  private void insertDynamicParameters(final PiGraph graph) {
     for (final AbstractActor actor : graph.getActors().stream().filter(x -> !x.getConfigOutputPorts().isEmpty())
         .collect(Collectors.toList())) {
       for (final ConfigOutputPort cop : actor.getConfigOutputPorts()) {
@@ -276,7 +294,7 @@ public class Spider2PreProcessVisitor extends PiMMSwitch<Boolean> {
     this.actorsMap.put(graph, new HashSet<>());
     for (final AbstractActor actor : graph.getOnlyActors()) {
       if (!(actor instanceof DelayActor) && !(actor instanceof InterfaceActor)) {
-        this.actorsMap.get(graph).add(new Pair<>("NORMAL", actor));
+        doSwitch(actor);
       }
     }
   }
@@ -287,7 +305,7 @@ public class Spider2PreProcessVisitor extends PiMMSwitch<Boolean> {
     this.uniqueGraphSet.add(graph);
 
     /* Insert one dynamic parameter if a config vertex set multiple parameters with one output port */
-    insertDynamicParamters(graph);
+    insertDynamicParameters(graph);
 
     /* Extract parameters */
     if (!this.staticParametersMap.containsKey(graph)) {
@@ -316,38 +334,53 @@ public class Spider2PreProcessVisitor extends PiMMSwitch<Boolean> {
   }
 
   @Override
+  public Boolean caseActor(final Actor actor) {
+    this.actorsMap.get(actor.getContainingPiGraph()).add(new Pair<>("NORMAL", actor));
+    if (!(actor.getRefinement() instanceof CHeaderRefinement)) {
+      PreesmLogger.getLogger().warning("Actor [" + actor.getName() + "] doesn't have correct refinement.");
+    } else {
+      CHeaderRefinement refinement = (CHeaderRefinement) (actor.getRefinement());
+      if (!this.uniqueLoopFctList.contains(refinement)) {
+        this.uniqueLoopFctList.add(refinement);
+      }
+      this.actorToLoopFctMap.put(actor, this.uniqueLoopFctList.indexOf(refinement));
+    }
+    return true;
+  }
+
+  @Override
   public Boolean caseBroadcastActor(final BroadcastActor ba) {
-    caseAbstractActor(ba);
+    this.actorsMap.get(ba.getContainingPiGraph()).add(new Pair<>("DUPLICATE", ba));
     return true;
   }
 
   @Override
   public Boolean caseJoinActor(final JoinActor ja) {
-    caseAbstractActor(ja);
+    this.actorsMap.get(ja.getContainingPiGraph()).add(new Pair<>("JOIN", ja));
     return true;
   }
 
   @Override
   public Boolean caseForkActor(final ForkActor fa) {
-    caseAbstractActor(fa);
+    this.actorsMap.get(fa.getContainingPiGraph()).add(new Pair<>("FORK", fa));
     return true;
   }
 
   @Override
   public Boolean caseRoundBufferActor(final RoundBufferActor rba) {
-    caseAbstractActor(rba);
+    this.actorsMap.get(rba.getContainingPiGraph()).add(new Pair<>("TAIL", rba));
     return true;
   }
 
   @Override
   public Boolean caseInitActor(final InitActor init) {
-    caseAbstractActor(init);
+    this.actorsMap.get(init.getContainingPiGraph()).add(new Pair<>("INIT", init));
     return true;
   }
 
   @Override
   public Boolean caseEndActor(final EndActor end) {
-    caseAbstractActor(end);
+    this.actorsMap.get(end.getContainingPiGraph()).add(new Pair<>("END", end));
     return true;
   }
 

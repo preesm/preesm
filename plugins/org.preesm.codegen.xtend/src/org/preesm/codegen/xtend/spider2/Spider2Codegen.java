@@ -7,6 +7,7 @@ import java.io.InputStreamReader;
 import java.io.Writer;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.logging.Level;
@@ -17,8 +18,10 @@ import org.preesm.codegen.xtend.spider2.visitor.Spider2PreProcessVisitor;
 import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.preesm.commons.files.PreesmResourcesHelper;
 import org.preesm.commons.logger.PreesmLogger;
+import org.preesm.model.pisdf.CHeaderRefinement;
 import org.preesm.model.pisdf.ConfigInputPort;
 import org.preesm.model.pisdf.Fifo;
+import org.preesm.model.pisdf.FunctionPrototype;
 import org.preesm.model.pisdf.Parameter;
 import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.scenario.Scenario;
@@ -103,6 +106,27 @@ public class Spider2Codegen {
     this.velocityEngine = null;
   }
 
+  public void generateKernelHeader() {
+    if (this.originalContextClassLoader == null) {
+      init();
+    }
+
+    /* Fill out the context */
+    VelocityContext context = new VelocityContext();
+    context.put("appName", this.applicationName);
+    final List<CHeaderRefinement> refinements = this.preprocessor.getUniqueLoopFctList();
+    final Set<String> fileNames = new HashSet<>();
+    refinements.forEach(x -> fileNames.add(x.getFileName()));
+    context.put("fileNames", fileNames);
+    final Set<FunctionPrototype> functions = new HashSet<>();
+    refinements.forEach(x -> functions.add(x.getLoopPrototype()));
+    context.put("functions", new ArrayList<>(functions));
+
+    /* Write the file */
+    final String outputFileName = "spider2-application-kernels.h";
+    writeVelocityContext(context, "templates/cpp/app_kernels_template.vm", outputFileName);
+  }
+
   public void generateApplicationHeader() {
     if (this.originalContextClassLoader == null) {
       init();
@@ -116,7 +140,7 @@ public class Spider2Codegen {
     context.put("graphs", this.preprocessor.getUniqueGraphSet());
 
     /* Write the file */
-    final String outputFileName = "spider2-application-" + this.applicationName + ".h";
+    final String outputFileName = "spider2-application.h";
     writeVelocityContext(context, "templates/cpp/app_header_template.vm", outputFileName);
   }
 
