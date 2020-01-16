@@ -55,16 +55,31 @@
 namespace spider {
 
     enum kernels : size_t {
-#foreach ($function in $functions)        
-        ${function.name.toUpperCase()} = ${functions.indexOf($function)},
+#foreach ($prototype in $prototypes)        
+        ${prototype.loop.name.toUpperCase()} = ${prototypes.indexOf($prototype)},
 #end
     };
-
-#foreach ($function in $functions)
-
-    inline void ${function.name.toLowerCase()}RTKernel(const int64_t *inputParams, int64_t *outputParams, void *inputs[], void *outputs[]) {
-        // $function.name;
-    }
+#foreach ($prototype in $prototypes)
+    #set($loop = $prototype.loop)
+    #set($incfgSize = ${loop.inputConfigParameters.size()})
+    #set($outcfgSize = ${loop.outputConfigParameters.size()})
+    #set($inSize = ${loop.inputArguments.size()})
+    #set($outSize = ${loop.outputArguments.size()})
+    
+    /**
+     * @brief $prototype.loop.name function.
+     * @param inputParams   Const array of input parameters value.
+     * @param outputParams  Array of output parameters to be set by the function.
+     * @param input         Array of input data buffers.
+     * @param outputs       Array of output data buffers.
+     */
+    inline void ${prototype.loop.name.toLowerCase()}RTKernel(const int64_t #if($incfgSize > 0)inputParams#else#end[], int64_t #if($outcfgSize > 0)outputParams#else#end[], void *#if($inSize > 0)inputs#else#end[], void *#if($outSize > 0)outputs#else#end[]) {
+        ${prototype.loop.name}(
+#foreach($arg in $prototype.formatedLoopArgListButLast) 
+        $arg,
 #end
+        $prototype.lastFormatedLoopArg);
+    }
+#end 
 }
 #endif

@@ -21,7 +21,6 @@ import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.model.pisdf.CHeaderRefinement;
 import org.preesm.model.pisdf.ConfigInputPort;
 import org.preesm.model.pisdf.Fifo;
-import org.preesm.model.pisdf.FunctionPrototype;
 import org.preesm.model.pisdf.Parameter;
 import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.scenario.Scenario;
@@ -114,13 +113,11 @@ public class Spider2Codegen {
     /* Fill out the context */
     VelocityContext context = new VelocityContext();
     context.put("appName", this.applicationName);
-    final List<CHeaderRefinement> refinements = this.preprocessor.getUniqueLoopFctList();
+    final List<CHeaderRefinement> refinements = this.preprocessor.getUniqueLoopHeaderList();
     final Set<String> fileNames = new HashSet<>();
     refinements.forEach(x -> fileNames.add(x.getFileName()));
     context.put("fileNames", fileNames);
-    final Set<FunctionPrototype> functions = new HashSet<>();
-    refinements.forEach(x -> functions.add(x.getLoopPrototype()));
-    context.put("functions", new ArrayList<>(functions));
+    context.put("prototypes", this.preprocessor.getUniqueLoopPrototypeList());
 
     /* Write the file */
     final String outputFileName = "spider2-application-kernels.h";
@@ -197,6 +194,7 @@ public class Spider2Codegen {
     context.put("dependentDynamicParameters", this.preprocessor.getDynamicDependentParameters(graph));
     context.put("inputInterfaces", graph.getDataInputPorts());
     context.put("outputInterfaces", graph.getDataOutputPorts());
+    context.put("refinements", this.preprocessor.getUniqueLoopHeaderList());
     context.put("actors", this.preprocessor.getActorSet(graph));
     context.put("subgraphsAndParameters", this.generateSubgraphsAndParametersList(graph));
     context.put("edges", this.preprocessor.getEdgeSet(graph));

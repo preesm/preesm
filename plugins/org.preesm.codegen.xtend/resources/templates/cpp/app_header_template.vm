@@ -68,5 +68,10 @@ namespace spider {
     pisdf::Vertex *create${graph.piGraphName}Subgraph(
                          std::string name, spider::pisdf::Graph *parentGraph, const std::vector<spider::pisdf::Param *> &parentGraphParams = {});
 #end
+
+    /**
+     * @brief Creates all the runtime kernels an register them into the runtime.
+     */
+    void createUserApplicationKernels();
 }
 #endif

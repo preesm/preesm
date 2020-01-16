@@ -121,7 +121,8 @@ spider::pisdf::Vertex *spider::create${graphName}Subgraph(std::string name,
           /* = Name of the actor      = */ "$actor.name", 
           /* = Number of input edges  = */  ${actor.dataInputPorts.size()}, 
           /* = Number of output edges = */  ${actor.dataOutputPorts.size()},
-          /* = Type of the vertex     = */  pisdf::VertexType::$type);
+          /* = Type of the vertex     = */  pisdf::VertexType::$type,
+          /* = Kernel index (if any)  = */ #if(!$actor.refinement) SIZE_MAX#else kernels::${actor.refinement.loopPrototype.name.toUpperCase()}#end);
 #if( ${actor.configInputPorts.size()} > 0 )
 
     /* == Set the input parameters of the vertex $actor.name == */

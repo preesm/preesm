@@ -10,6 +10,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import org.apache.commons.math3.util.Pair;
 import org.preesm.codegen.xtend.spider2.utils.Spider2CodegenEdge;
+import org.preesm.codegen.xtend.spider2.utils.Spider2CodegenPrototype;
 import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.Actor;
@@ -76,8 +77,11 @@ public class Spider2PreProcessVisitor extends PiMMSwitch<Boolean> {
   /** The graph to actors map */
   private final Map<PiGraph, Set<Pair<String, AbstractActor>>> actorsMap = new LinkedHashMap<>();
 
-  /** The unique function loop List */
-  private final List<CHeaderRefinement> uniqueLoopFctList = new ArrayList<>();
+  /** The unique refinement loop List */
+  private final List<CHeaderRefinement> uniqueLoopHeaderList = new ArrayList<>();
+
+  /** The unique prototype loop List */
+  private final List<Spider2CodegenPrototype> uniqueLoopProtoypeList = new ArrayList<>();
 
   /** The actor to function loop prototype indices */
   private final Map<AbstractActor, Integer> actorToLoopFctMap = new LinkedHashMap<>();
@@ -136,8 +140,12 @@ public class Spider2PreProcessVisitor extends PiMMSwitch<Boolean> {
     return this.actorToLoopFctMap.get(actor);
   }
 
-  public List<CHeaderRefinement> getUniqueLoopFctList() {
-    return this.uniqueLoopFctList;
+  public List<Spider2CodegenPrototype> getUniqueLoopPrototypeList() {
+    return this.uniqueLoopProtoypeList;
+  }
+
+  public List<CHeaderRefinement> getUniqueLoopHeaderList() {
+    return this.uniqueLoopHeaderList;
   }
 
   /**
@@ -340,10 +348,11 @@ public class Spider2PreProcessVisitor extends PiMMSwitch<Boolean> {
       PreesmLogger.getLogger().warning("Actor [" + actor.getName() + "] doesn't have correct refinement.");
     } else {
       CHeaderRefinement refinement = (CHeaderRefinement) (actor.getRefinement());
-      if (!this.uniqueLoopFctList.contains(refinement)) {
-        this.uniqueLoopFctList.add(refinement);
+      if (!this.uniqueLoopHeaderList.contains(refinement)) {
+        this.uniqueLoopHeaderList.add(refinement);
+        this.uniqueLoopProtoypeList.add(new Spider2CodegenPrototype(refinement));
       }
-      this.actorToLoopFctMap.put(actor, this.uniqueLoopFctList.indexOf(refinement));
+      this.actorToLoopFctMap.put(actor, this.uniqueLoopHeaderList.indexOf(refinement));
     }
     return true;
   }
