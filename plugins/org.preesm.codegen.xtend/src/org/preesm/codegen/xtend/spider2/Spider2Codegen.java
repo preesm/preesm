@@ -1,11 +1,14 @@
 package org.preesm.codegen.xtend.spider2;
 
+import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;
+
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Writer;
 import java.net.URL;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -14,6 +17,9 @@ import java.util.logging.Level;
 import org.apache.commons.math3.util.Pair;
 import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.VelocityEngine;
+import org.eclipse.core.resources.IFolder;
+import org.eclipse.core.resources.IWorkspace;
+import org.eclipse.core.runtime.Path;
 import org.preesm.codegen.xtend.spider2.visitor.Spider2PreProcessVisitor;
 import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.preesm.commons.files.PreesmResourcesHelper;
@@ -103,6 +109,53 @@ public class Spider2Codegen {
     Thread.currentThread().setContextClassLoader(this.originalContextClassLoader);
     this.originalContextClassLoader = null;
     this.velocityEngine = null;
+  }
+
+  public void makeAndMoveSourcesFolder(final IWorkspace workspace, final String path) {
+    String newPath = path.substring(0, path.lastIndexOf('/'));
+    newPath = newPath.substring(0, newPath.lastIndexOf('/') + 1);
+    final IFolder fSrc = workspace.getRoot().getFolder(new Path(newPath + "src/"));
+    final File folderSrc = new File(fSrc.getRawLocation().toOSString());
+    folderSrc.mkdirs();
+    if (folderSrc.isDirectory()) {
+      /* Rename the .c to .cpp if needed */
+      renameFilesToCPPInFolder(folderSrc);
+    }
+
+    final IFolder fInclude = workspace.getRoot().getFolder(new Path(newPath + "include/"));
+    final File folderInclude = new File(fInclude.getRawLocation().toOSString());
+    folderInclude.mkdirs();
+    if (folderInclude.isDirectory()) {
+      /* Fetch the refinements and move the header files into the include folder */
+      for (final CHeaderRefinement refinement : this.preprocessor.getUniqueLoopHeaderList()) {
+        final String refFilePath = refinement.getFilePath();
+        final File oldFile = new File(
+            workspace.getRoot().getFolder(new Path(refFilePath)).getRawLocation().toOSString());
+        final File newFile = new File(workspace.getRoot()
+            .getFolder(new Path(newPath + "include/" + refinement.getFileName())).getRawLocation().toOSString());
+        try {
+          Files.copy(oldFile.toPath(), newFile.toPath(), REPLACE_EXISTING);
+        } catch (IOException e) {
+          throw new PreesmRuntimeException(e.toString());
+        }
+      }
+    }
+  }
+
+  private static final void renameFilesToCPPInFolder(final File folder) {
+    for (File file : folder.listFiles()) {
+      if (file.isFile()) {
+        final String fileName = file.toString();
+        final String extension = fileName.substring(fileName.lastIndexOf('.') + 1);
+        if (extension.equals("c")) {
+          try {
+            Files.move(file.toPath(), file.toPath().resolveSibling(fileName.replace(".c", ".cpp")));
+          } catch (IOException e) {
+            throw new PreesmRuntimeException(e.toString());
+          }
+        }
+      }
+    }
   }
 
   public void generateKernelHeader() {

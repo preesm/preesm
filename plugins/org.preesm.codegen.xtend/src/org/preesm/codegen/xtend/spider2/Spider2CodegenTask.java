@@ -74,21 +74,25 @@ public class Spider2CodegenTask extends AbstractTaskImplementation {
     }
 
     // Get the name of the folder for code generation
-    final String codegenPath = scenario.getCodegenDirectory() + "/";
+    final String directoryPath = scenario.getCodegenDirectory();
+    if ((directoryPath.lastIndexOf('/') + 1) == (directoryPath.length() - 1)) {
+      throw new PreesmRuntimeException("Error:Codegen folder should not end with a /");
+    }
+    final String codegenPath = directoryPath + '/';
     if (codegenPath.equals("/")) {
       throw new PreesmRuntimeException("Error: A Codegen folder must be specified in Scenario");
     }
     // If the codegen folder does not exist make it, if it exists clears it
     final File folder = cleanCodegenFolder(workspace, codegenPath);
 
-    // If the codegen path does not contain src or include folder make them.
-    // If the folders are not empty change .c extensions to .cpp
-    makeAndMoveSourcesFolder(workspace, codegenPath);
-
     // Parse the pigraph
     final Spider2Codegen codegen = new Spider2Codegen(scenario, architecture, topGraph, folder);
     // Get Spider2 config
     final Spider2Config spiderConfig = new Spider2Config(parameters);
+
+    // If the codegen path does not contain src or include folder make them.
+    // If the folders are not empty change .c extensions to .cpp
+    codegen.makeAndMoveSourcesFolder(workspace, codegenPath);
 
     // Generate code for the different pi graph
     codegen.generateGraphCodes();
@@ -141,33 +145,6 @@ public class Spider2CodegenTask extends AbstractTaskImplementation {
       }
     }
     return folder;
-  }
-
-  private static final void makeAndMoveSourcesFolder(final IWorkspace workspace, final String path) {
-    String newPath = path.substring(0, path.lastIndexOf('/'));
-    newPath = newPath.substring(0, newPath.lastIndexOf('/') + 1);
-    final IFolder fSrc = workspace.getRoot().getFolder(new Path(newPath + "src/"));
-    final File folderSrc = new File(fSrc.getRawLocation().toOSString());
-    folderSrc.mkdirs();
-    if (folderSrc.isDirectory()) {
-      for (File file : folderSrc.listFiles()) {
-        if (file.isFile()) {
-          final String fileName = file.toString();
-          final String extension = fileName.substring(fileName.lastIndexOf('.') + 1);
-          if (extension.equals("c")) {
-            try {
-              Files.move(file.toPath(), file.toPath().resolveSibling(fileName.replace(".c", ".cpp")));
-            } catch (IOException e) {
-              throw new PreesmRuntimeException(e.toString());
-            }
-          }
-        }
-      }
-    }
-
-    final IFolder fInclude = workspace.getRoot().getFolder(new Path(newPath + "include/"));
-    final File folderInclude = new File(fInclude.getRawLocation().toOSString());
-    folderInclude.mkdirs();
   }
 
   @Override
