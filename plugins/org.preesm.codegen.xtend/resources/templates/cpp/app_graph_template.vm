@@ -40,7 +40,7 @@
 
 /* === Include(s) === */
 
-#include "spider2-application-${appName}.h"
+#include "spider2-application.h"
 
 /* === Function(s) definition === */
 

@@ -46,6 +46,7 @@
 #include <string>
 #include <vector>
 #include <spider.h>
+#include "spider2-application-kernels.h"
 
 /* === Function(s) declaration === */
 
