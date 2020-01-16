@@ -59,6 +59,7 @@ namespace spider {
         ${prototype.loop.name.toUpperCase()} = ${prototypes.indexOf($prototype)},
 #end
     };
+    
 #foreach ($prototype in $prototypes)
     #set($loop = $prototype.loop)
     #set($incfgSize = ${loop.inputConfigParameters.size()})
@@ -81,5 +82,16 @@ namespace spider {
         $prototype.lastFormatedLoopArg);
     }
 #end 
+
+    /**
+     * @brief Creates all the runtime kernels an register them into the runtime.
+     */
+    inline void createUserApplicationKernels() {
+#foreach ($prototype in $prototypes)
+
+        /* == Register ${prototype.loop.name.toUpperCase()} kernel == */
+        spider::api::createRuntimeKernel(${prototype.loop.name.toLowerCase()}RTKernel);
+#end
+    }
 }
 #endif
