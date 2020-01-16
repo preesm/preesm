@@ -79,24 +79,11 @@ public class Spider2CodegenTask extends AbstractTaskImplementation {
       throw new PreesmRuntimeException("Error: A Codegen folder must be specified in Scenario");
     }
     // If the codegen folder does not exist make it, if it exists clears it
-    final IFolder f = workspace.getRoot().getFolder(new Path(codegenPath));
-    final IPath rawLocation = f.getRawLocation();
-    if (rawLocation == null) {
-      throw new PreesmRuntimeException("Could not find target project for given path [" + codegenPath
-          + "]. Please change path in the scenario editor.");
-    }
-    final File folder = new File(rawLocation.toOSString());
-    folder.mkdirs();
-    if (folder.isDirectory()) {
-      // clean the folder
-      for (File file : folder.listFiles()) {
-        try {
-          Files.delete(file.toPath());
-        } catch (IOException e) {
-          PreesmLogger.getLogger().log(Level.FINE, "Could not delete file [" + file.toPath().toString() + "].");
-        }
-      }
-    }
+    final File folder = cleanCodegenFolder(workspace, codegenPath);
+
+    // If the codegen path does not contain src or include folder make them.
+    // If the folders are not empty change .c extensions to .cpp
+    makeAndMoveSourcesFolder(workspace, codegenPath);
 
     // Parse the pigraph
     final Spider2Codegen codegen = new Spider2Codegen(scenario, architecture, topGraph, folder);
@@ -132,6 +119,55 @@ public class Spider2CodegenTask extends AbstractTaskImplementation {
     codegen.end();
 
     return new LinkedHashMap<>();
+  }
+
+  private static final File cleanCodegenFolder(final IWorkspace workspace, final String path) {
+    final IFolder f = workspace.getRoot().getFolder(new Path(path));
+    final IPath rawLocation = f.getRawLocation();
+    if (rawLocation == null) {
+      throw new PreesmRuntimeException(
+          "Could not find target project for given path [" + path + "]. Please change path in the scenario editor.");
+    }
+    final File folder = new File(rawLocation.toOSString());
+    folder.mkdirs();
+    if (folder.isDirectory()) {
+      // clean the folder
+      for (File file : folder.listFiles()) {
+        try {
+          Files.delete(file.toPath());
+        } catch (IOException e) {
+          PreesmLogger.getLogger().log(Level.FINE, "Could not delete file [" + file.toPath().toString() + "].");
+        }
+      }
+    }
+    return folder;
+  }
+
+  private static final void makeAndMoveSourcesFolder(final IWorkspace workspace, final String path) {
+    String newPath = path.substring(0, path.lastIndexOf('/'));
+    newPath = newPath.substring(0, newPath.lastIndexOf('/') + 1);
+    final IFolder fSrc = workspace.getRoot().getFolder(new Path(newPath + "src/"));
+    final File folderSrc = new File(fSrc.getRawLocation().toOSString());
+    folderSrc.mkdirs();
+    if (folderSrc.isDirectory()) {
+      for (File file : folderSrc.listFiles()) {
+        if (file.isFile()) {
+          final String fileName = file.toString();
+          final String extension = fileName.substring(fileName.lastIndexOf('.') + 1);
+          if (extension.equals("c")) {
+            try {
+              Files.move(file.toPath(), file.toPath().resolveSibling(fileName.replace(".c", ".cpp")));
+            } catch (IOException e) {
+              throw new PreesmRuntimeException(e.toString());
+            }
+          }
+        }
+      }
+    }
+
+    final IFolder fInclude = workspace.getRoot().getFolder(new Path(newPath + "include/"));
+    final File folderInclude = new File(fInclude.getRawLocation().toOSString());
+    folderInclude.mkdirs();
   }
 
   @Override

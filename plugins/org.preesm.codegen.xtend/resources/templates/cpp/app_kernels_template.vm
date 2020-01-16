@@ -84,7 +84,7 @@ namespace spider {
 #end 
 
     /**
-     * @brief Creates all the runtime kernels an register them into the runtime.
+     * @brief Creates all the runtime kernels and register them into the runtime.
      */
     inline void createUserApplicationKernels() {
 #foreach ($prototype in $prototypes)
