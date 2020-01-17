@@ -39,6 +39,7 @@
  */
 package org.preesm.ui.pisdf.features;
 
+import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
@@ -58,6 +59,7 @@ import org.preesm.model.pisdf.Delay;
 import org.preesm.model.pisdf.DelayActor;
 import org.preesm.model.pisdf.FunctionPrototype;
 import org.preesm.model.pisdf.InitActor;
+import org.preesm.model.pisdf.PersistenceLevel;
 import org.preesm.model.pisdf.PiSDFRefinement;
 import org.preesm.model.pisdf.RefinementContainer;
 import org.preesm.model.pisdf.factory.PiMMUserFactory;
@@ -139,7 +141,8 @@ public class SetActorRefinementFeature extends AbstractCustomFeature {
     final PictogramElement[] pes = context.getPictogramElements();
     if ((pes != null) && (pes.length == 1)) {
       final Object bo = getBusinessObjectForPictogramElement(pes[0]);
-      if (bo instanceof Actor || bo instanceof Delay || bo instanceof InitActor) {
+      if (bo instanceof Actor || bo instanceof InitActor
+          || (bo instanceof Delay && ((Delay) bo).getLevel() == PersistenceLevel.PERMANENT)) {
         ret = true;
       }
     }
@@ -272,14 +275,16 @@ public class SetActorRefinementFeature extends AbstractCustomFeature {
           }
 
           List<FunctionPrototype> initPrototypes = null;
+          List<FunctionPrototype> allInitPrototypes = null;
+          boolean showOnlyCorresponding = false;
           if (actor instanceof Actor) {
             initPrototypes = getPrototypes(file, actor, PrototypeFilter.INIT_ACTOR);
+            allInitPrototypes = getPrototypes(file, actor, PrototypeFilter.INIT);
           } else {
             initPrototypes = getPrototypes(file, actor, PrototypeFilter.INIT_DELAY_ACTOR);
+            allInitPrototypes = new ArrayList<>();
+            showOnlyCorresponding = true;
           }
-          final List<FunctionPrototype> allInitPrototypes = getPrototypes(file, actor, PrototypeFilter.INIT);
-
-          FunctionPrototype initProto = null;
           title = "Init Function Selection";
           message = "Select an optionnal init function for actor " + ((AbstractActor) actor).getName()
               + ", or click Cancel to set none.\nNote: prototypes with pointers or arrays as "
@@ -288,7 +293,8 @@ public class SetActorRefinementFeature extends AbstractCustomFeature {
               .toArray(new FunctionPrototype[initPrototypes.size()]);
           final FunctionPrototype[] allInitProtoArray = allInitPrototypes
               .toArray(new FunctionPrototype[allInitPrototypes.size()]);
-          initProto = PiMMUtil.selectFunction(initProtoArray, allInitProtoArray, title, message, false);
+          final FunctionPrototype initProto = PiMMUtil.selectFunction(initProtoArray, allInitProtoArray, title, message,
+              showOnlyCorresponding);
 
           if ((loopProto != null) || (initProto != null)) {
             this.hasDoneChanges = true;

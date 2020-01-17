@@ -324,13 +324,7 @@ public class PiParser {
   }
 
   private void parseHeaderRefinement(final Element nodeElt, final RefinementContainer actor, final IPath path) {
-    final CHeaderRefinement hrefinement;
-    // Delays already have a default C header refinement by default at creation time
-    if (actor instanceof DelayActor) {
-      hrefinement = (CHeaderRefinement) actor.getRefinement();
-    } else {
-      hrefinement = PiMMUserFactory.instance.createCHeaderRefinement();
-    }
+    final CHeaderRefinement hrefinement = PiMMUserFactory.instance.createCHeaderRefinement();
     // The nodeElt should have a loop element, and may have an init
     // element
     final NodeList childList = nodeElt.getChildNodes();
@@ -687,9 +681,9 @@ public class PiParser {
         final CHeaderRefinement hrefinement = (CHeaderRefinement) delayActor.getRefinement();
         if (!delayActor.isValidRefinement(hrefinement)) {
           throw new PreesmRuntimeException(
-              "Delay INIT prototype must match following prototype: void init(IN int size, OUT <type>* fifo)");
+              "Delay INIT prototype must match following prototype: void init(IN int params ..., OUT <type>* fifo)");
         }
-        final String delayInitPrototype = "Delay INIT function used: " + hrefinement.getLoopPrototype().getName();
+        final String delayInitPrototype = "Delay INIT function used: " + hrefinement.getInitPrototype().getName();
         PreesmLogger.getLogger().log(Level.INFO, delayInitPrototype);
       }
     }

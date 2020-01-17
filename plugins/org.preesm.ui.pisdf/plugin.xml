@@ -146,6 +146,12 @@
                tab="org.ietr.preesm.experiment.model.transformation.properties.tab.graph.basicDelay">
          </propertySection>
          <propertySection
+               class="org.preesm.ui.pisdf.properties.ActorPropertiesSection"
+               filter="org.preesm.ui.pisdf.properties.PiMMDelayFilter"
+               id="org.ietr.preesm.experiment.model.transformation.properties.section.graph.initDelay"
+               tab="org.ietr.preesm.experiment.model.transformation.properties.tab.graph.initDelay">
+         </propertySection>
+         <propertySection
                class="org.preesm.ui.pisdf.properties.DataPortPropertiesSection"
                filter="org.preesm.ui.pisdf.properties.PiMMDataPortFilter"
                id="org.ietr.preesm.experiment.model.transformation.properties.section.graph.basicDataPort"
@@ -154,19 +160,19 @@
          <propertySection
                class="org.preesm.ui.pisdf.properties.ActorPropertiesSection"
                filter="org.preesm.ui.pisdf.properties.PiMMExActorFilter"
-               id="org.ietr.preesm.experiment.model.org.ietr.preesm.experiment.model.transformation.properties.tab.graph.basicActor.properties.section.graph.basicActor"
+               id="org.ietr.preesm.experiment.model.transformation.properties.section.graph.basicActor"
                tab="org.ietr.preesm.experiment.model.transformation.properties.tab.graph.basicActor">
          </propertySection>
          <propertySection
                class="org.preesm.ui.pisdf.properties.ActorPeriodPropertiesSection"
                filter="org.preesm.ui.pisdf.properties.PiMMPeriodActorFilter"
-               id="org.ietr.preesm.experiment.model.org.ietr.preesm.experiment.model.transformation.properties.tab.graph.basicActor.properties.section.graph.basicActorPeriod"
+               id="org.ietr.preesm.experiment.model.transformation.properties.section.graph.basicActorPeriod"
                tab="org.ietr.preesm.experiment.model.transformation.properties.tab.graph.basicActorPeriod">
          </propertySection>
          <propertySection
                class="org.preesm.ui.pisdf.properties.FifoPropertiesSection"
                filter="org.preesm.ui.pisdf.properties.PiMMFifoFilter"
-               id="org.ietr.preesm.experiment.model.org.ietr.preesm.experiment.model.transformation.properties.tab.graph.basicActor.properties.section.graph.basicFifo"
+               id="org.ietr.preesm.experiment.model.transformation.properties.section.graph.basicFifo"
                tab="org.ietr.preesm.experiment.model.transformation.properties.tab.graph.basicFifo">
          </propertySection>
       </propertySections>
@@ -313,6 +319,11 @@
                category="org.ietr.preesm.experiment.model.transformation.properties.category.graph"
                id="org.ietr.preesm.experiment.model.transformation.properties.tab.graph.basicPort"
                label="Port">
+         </propertyTab>
+         <propertyTab
+               category="org.ietr.preesm.experiment.model.transformation.properties.category.graph"
+               id="org.ietr.preesm.experiment.model.transformation.properties.tab.graph.initDelay"
+               label="Init">
          </propertyTab>
          <propertyTab
                category="org.ietr.preesm.experiment.model.transformation.properties.category.graph"
