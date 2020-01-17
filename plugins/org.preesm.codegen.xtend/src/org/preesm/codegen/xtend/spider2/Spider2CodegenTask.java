@@ -41,6 +41,9 @@ import org.preesm.workflow.implement.AbstractWorkflowNodeImplementation;
             values = { @Value(name = "true / false", effect = "(Default = true)") }),
         @Parameter(name = "generate cmakelist", description = "Whether to generate CMakeList.txt or not",
             values = { @Value(name = "true / false", effect = "(Default = true)") }),
+        @Parameter(name = "move includes",
+            description = "Whether to move the includes of the project into the generated include folder",
+            values = { @Value(name = "true / false", effect = "(Default = false)") }),
         @Parameter(name = "scheduler", description = "Runtime scheduler to use.",
             values = { @Value(name = "bestfit_list_scheduling", effect = "(Default)"),
                 @Value(name = "round_robin_list_scheduling"), @Value(name = "greedy_scheduling") }),
@@ -53,6 +56,8 @@ public class Spider2CodegenTask extends AbstractTaskImplementation {
   public static final String PARAM_GENERATE_ARCHI_FILE = "generate archi";
   /** The Constant PARAM_GENERATE_CMAKELIST. */
   public static final String PARAM_GENERATE_CMAKELIST  = "generate cmakelist";
+  /** The Constant PARAM_GENERATE_CMAKELIST. */
+  public static final String PARAM_MOVE_INCLUDES       = "move includes";
   /** The Constant PARAM_SCHEDULER. */
   public static final String PARAM_SCHEDULER           = "scheduler";
   /** The Constant PARAM_VERBOSE. */
@@ -92,7 +97,10 @@ public class Spider2CodegenTask extends AbstractTaskImplementation {
 
     // If the codegen path does not contain src or include folder make them.
     // If the folders are not empty change .c extensions to .cpp
-    codegen.makeAndMoveSourcesFolder(workspace, codegenPath);
+    codegen.makeIncludeAndSourceFolder(workspace, codegenPath);
+    if (spiderConfig.getMoveIncludes()) {
+      codegen.moveIncludesToFolder(workspace, codegenPath);
+    }
 
     // Generate code for the different pi graph
     codegen.generateGraphCodes();

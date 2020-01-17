@@ -10,11 +10,16 @@ import org.preesm.codegen.xtend.spider2.Spider2CodegenTask;
  *
  */
 public class Spider2Config {
-  private boolean generateArchiFile;
-  private boolean generateCMakeList;
-  private boolean useVerbose;
-  private boolean useGraphOptims;
-  private String  schedulerType;
+  private final boolean generateArchiFile;
+  private final boolean generateCMakeList;
+  private final boolean moveIncludes;
+  private final boolean useVerbose;
+  private final boolean useGraphOptims;
+  private final String  schedulerType;
+
+  private final static String TRUE = "true";
+
+  private final static String FALSE = "false";
 
   private String getSpider2SchedulerType(final String scheduleType) {
     if ("round_robin_list_scheduling".equalsIgnoreCase(scheduleType)) {
@@ -34,14 +39,36 @@ public class Spider2Config {
   public Spider2Config(final Map<String, String> workflowParameters) {
     final String generateArchiFileParameter = workflowParameters.get(Spider2CodegenTask.PARAM_GENERATE_ARCHI_FILE);
     final String generateCMakeListParameter = workflowParameters.get(Spider2CodegenTask.PARAM_GENERATE_CMAKELIST);
+    final String moveIncludesParameter = workflowParameters.get(Spider2CodegenTask.PARAM_MOVE_INCLUDES);
     final String verboseParameter = workflowParameters.get(Spider2CodegenTask.PARAM_VERBOSE);
     final String graphOptimsParameter = workflowParameters.get(Spider2CodegenTask.PARAM_GRAPH_OPTIMS);
     final String schedulerParameter = workflowParameters.get(Spider2CodegenTask.PARAM_SCHEDULER);
 
-    generateArchiFile = "false".equalsIgnoreCase(generateArchiFileParameter);
-    generateCMakeList = "false".equalsIgnoreCase(generateCMakeListParameter);
-    useVerbose = "true".equalsIgnoreCase(verboseParameter);
-    useGraphOptims = !"false".equalsIgnoreCase(graphOptimsParameter);
+    if (generateArchiFileParameter == null) {
+      generateArchiFile = true;
+    } else {
+      generateArchiFile = FALSE.equalsIgnoreCase(generateArchiFileParameter);
+    }
+    if (generateCMakeListParameter == null) {
+      generateCMakeList = true;
+    } else {
+      generateCMakeList = FALSE.equalsIgnoreCase(generateCMakeListParameter);
+    }
+    if (moveIncludesParameter == null) {
+      moveIncludes = false;
+    } else {
+      moveIncludes = TRUE.equalsIgnoreCase(moveIncludesParameter);
+    }
+    if (verboseParameter == null) {
+      useVerbose = false;
+    } else {
+      useVerbose = TRUE.equalsIgnoreCase(verboseParameter);
+    }
+    if (graphOptimsParameter == null) {
+      useGraphOptims = true;
+    } else {
+      useGraphOptims = FALSE.equalsIgnoreCase(graphOptimsParameter);
+    }
     schedulerType = getSpider2SchedulerType(schedulerParameter);
   }
 
@@ -51,6 +78,10 @@ public class Spider2Config {
 
   public boolean getGenerateCMakeList() {
     return generateCMakeList;
+  }
+
+  public boolean getMoveIncludes() {
+    return moveIncludes;
   }
 
   public boolean getUseOfVerbose() {

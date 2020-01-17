@@ -111,18 +111,24 @@ public class Spider2Codegen {
     this.velocityEngine = null;
   }
 
-  public void makeAndMoveSourcesFolder(final IWorkspace workspace, final String path) {
-    String newPath = path.substring(0, path.lastIndexOf('/'));
-    newPath = newPath.substring(0, newPath.lastIndexOf('/') + 1);
-    final IFolder fSrc = workspace.getRoot().getFolder(new Path(newPath + "src/"));
+  public void makeIncludeAndSourceFolder(final IWorkspace workspace, final String path) {
+    final String codegenDirectoryPath = path.substring(0, path.lastIndexOf('/', path.length() - 2) + 1);
+    final IFolder fSrc = workspace.getRoot().getFolder(new Path(codegenDirectoryPath + "src/"));
     final File folderSrc = new File(fSrc.getRawLocation().toOSString());
     folderSrc.mkdirs();
     if (folderSrc.isDirectory()) {
       /* Rename the .c to .cpp if needed */
       renameFilesToCPPInFolder(folderSrc);
     }
+    final IFolder fInclude = workspace.getRoot().getFolder(new Path(codegenDirectoryPath + "include/"));
+    final File folderInclude = new File(fInclude.getRawLocation().toOSString());
+    folderInclude.mkdirs();
+  }
 
-    final IFolder fInclude = workspace.getRoot().getFolder(new Path(newPath + "include/"));
+  public void moveIncludesToFolder(final IWorkspace workspace, final String path) {
+    final String codegenDirectoryPath = path.substring(0, path.lastIndexOf('/', path.length() - 2) + 1);
+    final String includeDirectoryPath = codegenDirectoryPath + "include/";
+    final IFolder fInclude = workspace.getRoot().getFolder(new Path(includeDirectoryPath));
     final File folderInclude = new File(fInclude.getRawLocation().toOSString());
     folderInclude.mkdirs();
     if (folderInclude.isDirectory()) {
@@ -132,7 +138,7 @@ public class Spider2Codegen {
         final File oldFile = new File(
             workspace.getRoot().getFolder(new Path(refFilePath)).getRawLocation().toOSString());
         final File newFile = new File(workspace.getRoot()
-            .getFolder(new Path(newPath + "include/" + refinement.getFileName())).getRawLocation().toOSString());
+            .getFolder(new Path(includeDirectoryPath + refinement.getFileName())).getRawLocation().toOSString());
         try {
           Files.copy(oldFile.toPath(), newFile.toPath(), REPLACE_EXISTING);
         } catch (IOException e) {
