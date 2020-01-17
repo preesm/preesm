@@ -17,9 +17,9 @@ public class Spider2Config {
   private final boolean useGraphOptims;
   private final String  schedulerType;
 
-  private final static String TRUE = "true";
+  private static final String TRUE = "true";
 
-  private final static String FALSE = "false";
+  private static final String FALSE = "false";
 
   private String getSpider2SchedulerType(final String scheduleType) {
     if ("round_robin_list_scheduling".equalsIgnoreCase(scheduleType)) {

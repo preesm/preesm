@@ -119,6 +119,7 @@ public class Spider2CodegenTask extends AbstractTaskImplementation {
     // Generate code for the main entry point (if top level graph does not have input nor output interfaces)
     if (topGraph.getDataInputInterfaces().isEmpty() && topGraph.getDataOutputInterfaces().isEmpty()) {
       PreesmLogger.getLogger().log(Level.INFO, "Generating stand-alone application code.");
+      codegen.generateMainCode();
     } else {
       PreesmLogger.getLogger().log(Level.INFO, "Generating software acceleration code.");
     }
@@ -126,6 +127,7 @@ public class Spider2CodegenTask extends AbstractTaskImplementation {
     // Generate default CMakeList.txt (if needed)
     if (spiderConfig.getGenerateCMakeList()) {
       PreesmLogger.getLogger().log(Level.INFO, "Generating default CMakeList.txt.");
+      codegen.generateCMakeList();
     }
 
     codegen.end();

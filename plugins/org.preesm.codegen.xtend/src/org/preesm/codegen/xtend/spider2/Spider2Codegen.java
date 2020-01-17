@@ -123,6 +123,14 @@ public class Spider2Codegen {
     final IFolder fInclude = workspace.getRoot().getFolder(new Path(codegenDirectoryPath + "include/"));
     final File folderInclude = new File(fInclude.getRawLocation().toOSString());
     folderInclude.mkdirs();
+
+    final IFolder fLib = workspace.getRoot().getFolder(new Path(codegenDirectoryPath + "lib/"));
+    final File folderLib = new File(fLib.getRawLocation().toOSString());
+    folderLib.mkdirs();
+
+    final IFolder fCMake = workspace.getRoot().getFolder(new Path(codegenDirectoryPath + "cmake/modules"));
+    final File folderCMake = new File(fCMake.getRawLocation().toOSString());
+    folderCMake.mkdirs();
   }
 
   public void moveIncludesToFolder(final IWorkspace workspace, final String path) {
@@ -162,6 +170,46 @@ public class Spider2Codegen {
         }
       }
     }
+  }
+
+  public void generateCMakeList() {
+    if (this.originalContextClassLoader == null) {
+      init();
+    }
+    /* Fill out the context */
+    VelocityContext context = new VelocityContext();
+    context.put("appName", this.applicationName);
+
+    /* Write the file */
+    final String outputFileName = "../CMakeLists.txt";
+    writeVelocityContext(context, "templates/cpp/cmakelist_template.vm", outputFileName);
+  }
+
+  public void generateMainCode() {
+    if (this.originalContextClassLoader == null) {
+      init();
+    }
+
+    /* Fill out the context */
+    VelocityContext context = new VelocityContext();
+    context.put("verbose", true);
+    context.put("standalone", false);
+    context.put("papify", false);
+    context.put("apollo", false);
+    context.put("genlog", true);
+    context.put("clusterIx", "SIZE_MAX");
+    context.put("genAllocPolicy", false);
+    context.put("genAllocAlign", "sizeof(int64_t)");
+    context.put("genAllocSize", "SIZE_MAX");
+    context.put("genAllocExtAddr", "nullptr");
+    context.put("runMode", "LOOP");
+    context.put("loopCount", "10000");
+    context.put("runtimeAlgo", "JITMS");
+
+    /* Write the file */
+    final String outputFileName = "main.cpp";
+    writeVelocityContext(context, "templates/cpp/app_main_template.vm", outputFileName);
+
   }
 
   public void generateKernelHeader() {
