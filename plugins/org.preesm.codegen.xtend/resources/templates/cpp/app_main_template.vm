@@ -62,8 +62,8 @@ int main(int argc, char *argv[]) {
         
         /* == Set the allocation policy of the main general stack (used by the STL) == */ 
         /* == To set the policy of a given stack, use the spider::api::setStackAllocatorPolicy function == */
-        config.generalStackAllocatorPolicy_ = ${genAllocPolicy};
-        config.generalStackAlignement_ = ${genAllocAlign};
+        config.generalStackAllocatorPolicy_ = spider::AllocatorPolicy::GENERIC;//${genAllocPolicy};
+        config.generalStackAlignment_ = ${genAllocAlign};
         config.generalStackSize_ = ${genAllocSize};
         config.generalStackExternAddress_ = ${genAllocExtAddr};
     }
@@ -73,7 +73,7 @@ int main(int argc, char *argv[]) {
     
     try {
         /* == Creates the architecture == */
-        spider::createUserArchitecture();
+      //  spider::createUserArchitecture();
         
         /* == Creates the application graph == */
         spider::createUserApplicationGraph();
@@ -85,13 +85,13 @@ int main(int argc, char *argv[]) {
         spider::createUserApplicationKernels();
         
         /* == Call the user init function(s) == */
-        spider::userApplicationInit();
+     //   spider::userApplicationInit();
         
         /* == Run the application == */
         spider::run(spider::RunMode::${runMode}, ${loopCount}, spider::RuntimeType::${runtimeAlgo});    
         
         /* == Call the user finalize function(s) == */
-        spider::userApplicationFinalize();
+     //   spider::userApplicationFinalize();
         
     } catch (std::exception &e) {
         fprintf(stderr, "%s.\n", e.what());

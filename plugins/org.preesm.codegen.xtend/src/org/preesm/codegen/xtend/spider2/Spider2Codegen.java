@@ -2,6 +2,7 @@ package org.preesm.codegen.xtend.spider2;
 
 import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -17,7 +18,6 @@ import java.util.logging.Level;
 import org.apache.commons.math3.util.Pair;
 import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.VelocityEngine;
-import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IWorkspace;
 import org.eclipse.core.runtime.Path;
 import org.preesm.codegen.xtend.spider2.visitor.Spider2PreProcessVisitor;
@@ -111,33 +111,30 @@ public class Spider2Codegen {
     this.velocityEngine = null;
   }
 
-  public void makeIncludeAndSourceFolder(final IWorkspace workspace, final String path) {
+  public void makeIncludeAndSourceFolder(final IWorkspace workspace) {
+    final String path = this.folder.getPath();
     final String codegenDirectoryPath = path.substring(0, path.lastIndexOf('/', path.length() - 2) + 1);
-    final IFolder fSrc = workspace.getRoot().getFolder(new Path(codegenDirectoryPath + "src/"));
-    final File folderSrc = new File(fSrc.getRawLocation().toOSString());
+    final File folderSrc = new File(codegenDirectoryPath + "src/");
     folderSrc.mkdirs();
     if (folderSrc.isDirectory()) {
       /* Rename the .c to .cpp if needed */
       renameFilesToCPPInFolder(folderSrc);
     }
-    final IFolder fInclude = workspace.getRoot().getFolder(new Path(codegenDirectoryPath + "include/"));
-    final File folderInclude = new File(fInclude.getRawLocation().toOSString());
+    final File folderInclude = new File(codegenDirectoryPath + "include/");
     folderInclude.mkdirs();
 
-    final IFolder fLib = workspace.getRoot().getFolder(new Path(codegenDirectoryPath + "lib/"));
-    final File folderLib = new File(fLib.getRawLocation().toOSString());
+    final File folderLib = new File(codegenDirectoryPath + "lib/");
     folderLib.mkdirs();
 
-    final IFolder fCMake = workspace.getRoot().getFolder(new Path(codegenDirectoryPath + "cmake/modules"));
-    final File folderCMake = new File(fCMake.getRawLocation().toOSString());
+    final File folderCMake = new File(codegenDirectoryPath + "cmake/modules");
     folderCMake.mkdirs();
   }
 
-  public void moveIncludesToFolder(final IWorkspace workspace, final String path) {
+  public void moveIncludesToFolder(final IWorkspace workspace) {
+    final String path = this.folder.getPath();
     final String codegenDirectoryPath = path.substring(0, path.lastIndexOf('/', path.length() - 2) + 1);
     final String includeDirectoryPath = codegenDirectoryPath + "include/";
-    final IFolder fInclude = workspace.getRoot().getFolder(new Path(includeDirectoryPath));
-    final File folderInclude = new File(fInclude.getRawLocation().toOSString());
+    final File folderInclude = new File(codegenDirectoryPath + "include/");
     folderInclude.mkdirs();
     if (folderInclude.isDirectory()) {
       /* Fetch the refinements and move the header files into the include folder */
@@ -145,10 +142,9 @@ public class Spider2Codegen {
         final String refFilePath = refinement.getFilePath();
         final File oldFile = new File(
             workspace.getRoot().getFolder(new Path(refFilePath)).getRawLocation().toOSString());
-        final File newFile = new File(workspace.getRoot()
-            .getFolder(new Path(includeDirectoryPath + refinement.getFileName())).getRawLocation().toOSString());
+        final File targetFile = new File(includeDirectoryPath + refinement.getFileName());
         try {
-          Files.copy(oldFile.toPath(), newFile.toPath(), REPLACE_EXISTING);
+          Files.copy(oldFile.toPath(), targetFile.toPath(), REPLACE_EXISTING);
         } catch (IOException e) {
           throw new PreesmRuntimeException(e.toString());
         }
@@ -183,6 +179,12 @@ public class Spider2Codegen {
     /* Write the file */
     final String outputFileName = "../CMakeLists.txt";
     writeVelocityContext(context, "templates/cpp/cmakelist_template.vm", outputFileName);
+
+    /* Move FindThreads and FindSpider2.cmake files */
+    final String findSpiderFilePath = "resources/cmake_modules/FindSpider2.cmake";
+    copyFileFromTo(findSpiderFilePath, "../cmake/modules/FindSpider2.cmake");
+    final String findThreadsFilePath = "resources/cmake_modules/FindThreads.cmake";
+    copyFileFromTo(findThreadsFilePath, "../cmake/modules/FindThreads.cmake");
   }
 
   public void generateMainCode() {
@@ -367,6 +369,23 @@ public class Spider2Codegen {
       end();
       PreesmLogger.getLogger().log(Level.SEVERE, "failed to open output file [" + outputFileName + "].");
       PreesmLogger.getLogger().log(Level.SEVERE, e.toString());
+    }
+  }
+
+  private final void copyFileFromTo(final String originalFile, final String targetFile) {
+    final URL fileuRL = PreesmResourcesHelper.getInstance().resolve(originalFile, this.getClass());
+
+    try (Writer writer = new FileWriter(new File(this.folder, targetFile))) {
+      try (final BufferedReader reader = new BufferedReader(new InputStreamReader(fileuRL.openStream()))) {
+        String line;
+        while ((line = reader.readLine()) != null) {
+          writer.write(line + '\n');
+        }
+      } catch (IOException e) {
+        throw new PreesmRuntimeException(e);
+      }
+    } catch (IOException e) {
+      throw new PreesmRuntimeException(e);
     }
   }
 

@@ -97,9 +97,9 @@ public class Spider2CodegenTask extends AbstractTaskImplementation {
 
     // If the codegen path does not contain src or include folder make them.
     // If the folders are not empty change .c extensions to .cpp
-    codegen.makeIncludeAndSourceFolder(workspace, codegenPath);
+    codegen.makeIncludeAndSourceFolder(workspace);
     if (spiderConfig.getMoveIncludes()) {
-      codegen.moveIncludesToFolder(workspace, codegenPath);
+      codegen.moveIncludesToFolder(workspace);
     }
 
     // Generate code for the different pi graph

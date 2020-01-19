@@ -41,6 +41,9 @@ cmake_minimum_required(VERSION 3.12)
 
 project(${appName.toLowerCase()}
         LANGUAGES CXX)
+
+# Add definition for relative path into project
+add_definitions( -DPROJECT_ROOT_PATH="${CMAKE_CURRENT_SOURCE_DIR}")
         
 # Defines the CMAKE_INSTALL_LIBDIR, CMAKE_INSTALL_BINDIR and many other useful macros.
 # See https://cmake.org/cmake/help/latest/module/GNUInstallDirs.html
@@ -136,6 +139,8 @@ endif ()
 file(
 	GLOB_RECURSE
 	${appName.toUpperCase()}_SRC
+	generated/*.cpp
+	generated/*.h
 	src/*.cpp
 	include/*.h
 	lib/*.h
@@ -145,8 +150,9 @@ file(
 include_directories(
         ${PAPI_INCLUDE_DIRS}
         ${PTHREADDIR}/include
-        ../libspider/
+        ${CMAKE_SOURCE_DIR}/include
+        ${SPIDER2_INCLUDE_DIR}
 )
 
 add_executable(${PROJECT_NAME} ${${appName.toUpperCase()}_SRC})
-target_link_libraries(${PROJECT_NAME} ${PROJECT_NAME}::${PROJECT_NAME})
+target_link_libraries(${PROJECT_NAME} ${SPIDER2_LIBRARY})
