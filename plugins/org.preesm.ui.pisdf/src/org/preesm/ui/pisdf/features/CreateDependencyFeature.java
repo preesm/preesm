@@ -61,6 +61,7 @@ import org.preesm.model.pisdf.Dependency;
 import org.preesm.model.pisdf.ExecutableActor;
 import org.preesm.model.pisdf.ISetter;
 import org.preesm.model.pisdf.InterfaceActor;
+import org.preesm.model.pisdf.MalleableParameter;
 import org.preesm.model.pisdf.Parameter;
 import org.preesm.model.pisdf.Parameterizable;
 import org.preesm.model.pisdf.PiGraph;
@@ -114,6 +115,14 @@ public class CreateDependencyFeature extends AbstractCreateConnectionFeature {
 
     // False if the target is a Graph (i.e. the diagram)
     if (targetObj instanceof PiGraph) {
+      return false;
+    }
+    if (targetObj instanceof MalleableParameter) {
+      if (context.getTargetAnchor() != null) {
+        // Create tooltip message
+        PiMMUtil.setToolTip(getFeatureProvider(), context.getTargetAnchor().getGraphicsAlgorithm(),
+            getDiagramBehavior(), "A malleable parameter cannot be dependant on any other parameter.");
+      }
       return false;
     }
 

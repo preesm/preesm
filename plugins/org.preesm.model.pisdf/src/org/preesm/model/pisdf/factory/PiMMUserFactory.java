@@ -182,6 +182,23 @@ public final class PiMMUserFactory extends PiMMFactoryImpl implements PreesmUser
   }
 
   @Override
+  public MalleableParameter createMalleableParameter() {
+    return createMalleableParameter(null, 0);
+  }
+
+  /**
+   * 
+   */
+  public MalleableParameter createMalleableParameter(final String name, final long evaluate) {
+    final MalleableParameter res = super.createMalleableParameter();
+    final Expression createExpression = createExpression(evaluate);
+    res.setExpression(createExpression);
+    res.setName(name);
+    res.setUserExpression("0");
+    return res;
+  }
+
+  @Override
   public DataInputPort createDataInputPort() {
     final DataInputPort res = super.createDataInputPort();
     res.setExpression(createExpression());
@@ -369,10 +386,4 @@ public final class PiMMUserFactory extends PiMMFactoryImpl implements PreesmUser
     return res;
   }
 
-  @Override
-  public MalleableParameter createMalleableParameter() {
-    final MalleableParameter res = super.createMalleableParameter();
-    res.setUserExpression("0");
-    return res;
-  }
 }

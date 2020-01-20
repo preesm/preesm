@@ -40,6 +40,8 @@
 package org.preesm.ui.pisdf.properties;
 
 import org.eclipse.emf.ecore.EObject;
+import org.eclipse.emf.transaction.RecordingCommand;
+import org.eclipse.emf.transaction.TransactionalEditingDomain;
 import org.eclipse.graphiti.mm.pictograms.PictogramElement;
 import org.eclipse.graphiti.services.Graphiti;
 import org.eclipse.swt.custom.CLabel;
@@ -57,8 +59,10 @@ import org.preesm.model.pisdf.ConfigInputInterface;
 import org.preesm.model.pisdf.Delay;
 import org.preesm.model.pisdf.Expression;
 import org.preesm.model.pisdf.InterfaceActor;
+import org.preesm.model.pisdf.MalleableParameter;
 import org.preesm.model.pisdf.Parameter;
 import org.preesm.model.pisdf.Port;
+import org.preesm.model.pisdf.check.MalleableParameterExprChecker;
 
 // TODO: Auto-generated Javadoc
 /**
@@ -159,6 +163,16 @@ public class ParameterizablePropertiesSection extends DataPortPropertiesUpdater 
 
   }
 
+  protected void setNewMalleableParameterUserExpression(final MalleableParameter mp, final String value) {
+    final TransactionalEditingDomain editingDomain = getDiagramTypeProvider().getDiagramBehavior().getEditingDomain();
+    editingDomain.getCommandStack().execute(new RecordingCommand(editingDomain) {
+      @Override
+      protected void doExecute() {
+        mp.setUserExpression(value);
+      }
+    });
+  }
+
   /**
    * Update the {@link Port}/{@link Delay}/{@link Parameter} {@link Expression} with the value stored in the
    * txtEpression.
@@ -175,7 +189,16 @@ public class ParameterizablePropertiesSection extends DataPortPropertiesUpdater 
         bo = ((InterfaceActor) bo).getDataPort();
       }
 
-      if (bo instanceof Parameter) {
+      if (bo instanceof MalleableParameter) {
+        MalleableParameter mp = (MalleableParameter) bo;
+        if (mp.getUserExpression().compareTo(this.txtExpression.getText()) != 0) {
+          setNewMalleableParameterUserExpression(mp, this.txtExpression.getText());
+          Long firstValue = MalleableParameterExprChecker.getFirstValue(this.txtExpression.getText());
+          if (firstValue != null) {
+            setNewExpression(mp, firstValue.toString());
+          }
+        }
+      } else if (bo instanceof Parameter) {
         if ((bo instanceof ConfigInputInterface)) {
           this.lblValueObj.setText(
               "Default value is a Long Integer, only used for the computation of subsequent parameters in the GUI.");
@@ -227,30 +250,49 @@ public class ParameterizablePropertiesSection extends DataPortPropertiesUpdater 
       if (elementValueExpression != null) {
         this.txtExpression.setEnabled(true);
 
-        final String eltExprString = elementValueExpression.getExpressionAsString();
-        if (this.txtExpression.getText().compareTo(eltExprString) != 0) {
-          this.txtExpression.setText(eltExprString);
-        }
-
-        try {
-          // try out evaluating the expression
-          final long evaluate = elementValueExpression.evaluate();
-
-          // if evaluation went well, just write the result
-          if (!(businessObject instanceof ConfigInputInterface)) {
-            this.lblValueObj.setText(Long.toString(evaluate));
+        if (businessObject instanceof MalleableParameter) {
+          final String eltExprString = ((MalleableParameter) businessObject).getUserExpression();
+          if (this.txtExpression.getText().compareTo(eltExprString) != 0) {
+            this.txtExpression.setText(eltExprString);
           }
-          this.txtExpression.setBackground(new Color(null, 255, 255, 255));
-        } catch (final ExpressionEvaluationException e) {
-          // otherwise print error message and put red background
-          this.lblValueObj.setText("Error : " + e.getMessage());
-          this.txtExpression.setBackground(new Color(null, 240, 150, 150));
+
+          if (MalleableParameterExprChecker.isValid(this.txtExpression.getText())) {
+            Long firstValue = MalleableParameterExprChecker.getFirstValue(this.txtExpression.getText());
+            this.lblValueObj.setText(firstValue.toString());
+            this.txtExpression.setBackground(new Color(null, 255, 255, 255));
+          } else {
+            this.lblValueObj.setText(
+                "Malleable parameter expression must match: " + MalleableParameterExprChecker.SYNTAX_GRP_REGEX);
+            this.txtExpression.setBackground(new Color(null, 240, 150, 150));
+          }
+        } else {
+
+          final String eltExprString = elementValueExpression.getExpressionAsString();
+          if (this.txtExpression.getText().compareTo(eltExprString) != 0) {
+            this.txtExpression.setText(eltExprString);
+          }
+
+          try {
+            // try out evaluating the expression
+            final long evaluate = elementValueExpression.evaluate();
+
+            // if evaluation went well, just write the result
+            if (!(businessObject instanceof ConfigInputInterface)) {
+              this.lblValueObj.setText(Long.toString(evaluate));
+            }
+            this.txtExpression.setBackground(new Color(null, 255, 255, 255));
+          } catch (final ExpressionEvaluationException e) {
+            // otherwise print error message and put red background
+            this.lblValueObj.setText("Error : " + e.getMessage());
+            this.txtExpression.setBackground(new Color(null, 240, 150, 150));
+          }
         }
 
         if (expressionHasFocus) {
           this.txtExpression.setFocus();
           this.txtExpression.setSelection(selelection);
         }
+
       }
     }
   }

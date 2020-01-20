@@ -44,7 +44,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
-import java.util.logging.Level;
 import org.apache.commons.io.IOUtils;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
@@ -60,7 +59,6 @@ import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
 import org.preesm.commons.DomUtil;
 import org.preesm.commons.exceptions.PreesmRuntimeException;
-import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.AbstractVertex;
 import org.preesm.model.pisdf.Actor;
@@ -683,8 +681,6 @@ public class PiParser {
           throw new PreesmRuntimeException(
               "Delay INIT prototype must match following prototype: void init(IN int params ..., OUT <type>* fifo)");
         }
-        final String delayInitPrototype = "Delay INIT function used: " + hrefinement.getInitPrototype().getName();
-        PreesmLogger.getLogger().log(Level.INFO, delayInitPrototype);
       }
     }
 

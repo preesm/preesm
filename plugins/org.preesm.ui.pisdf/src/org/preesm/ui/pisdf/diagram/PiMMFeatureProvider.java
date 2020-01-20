@@ -99,6 +99,7 @@ import org.preesm.model.pisdf.ForkActor;
 import org.preesm.model.pisdf.InitActor;
 import org.preesm.model.pisdf.InterfaceActor;
 import org.preesm.model.pisdf.JoinActor;
+import org.preesm.model.pisdf.MalleableParameter;
 import org.preesm.model.pisdf.Parameter;
 import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.pisdf.Port;
@@ -122,6 +123,7 @@ import org.preesm.ui.pisdf.features.AddFifoFeature;
 import org.preesm.ui.pisdf.features.AddForkActorFeature;
 import org.preesm.ui.pisdf.features.AddInitActorFeature;
 import org.preesm.ui.pisdf.features.AddJoinActorFeature;
+import org.preesm.ui.pisdf.features.AddMalleableParameterFeature;
 import org.preesm.ui.pisdf.features.AddParameterFeature;
 import org.preesm.ui.pisdf.features.AddRefinementFeature;
 import org.preesm.ui.pisdf.features.AddRoundBufferActorFeature;
@@ -138,6 +140,7 @@ import org.preesm.ui.pisdf.features.CreateDependencyFeature;
 import org.preesm.ui.pisdf.features.CreateFifoFeature;
 import org.preesm.ui.pisdf.features.CreateForkActorFeature;
 import org.preesm.ui.pisdf.features.CreateJoinActorFeature;
+import org.preesm.ui.pisdf.features.CreateMalleableParameterFeature;
 import org.preesm.ui.pisdf.features.CreateParameterFeature;
 import org.preesm.ui.pisdf.features.CreateRoundBufferActorFeature;
 import org.preesm.ui.pisdf.features.DeleteAbstractActorFeature;
@@ -257,6 +260,11 @@ public class PiMMFeatureProvider extends DefaultFeatureProvider {
     }
 
     @Override
+    public IAddFeature caseMalleableParameter(final MalleableParameter object) {
+      return new AddMalleableParameterFeature(PiMMFeatureProvider.this);
+    }
+
+    @Override
     public IAddFeature caseConfigInputInterface(final ConfigInputInterface object) {
       return new AddConfigInputInterfaceFeature(PiMMFeatureProvider.this);
     }
@@ -346,10 +354,10 @@ public class PiMMFeatureProvider extends DefaultFeatureProvider {
       return new ICreateFeature[0];
     }
     return new ICreateFeature[] { new CreateActorFeature(this), new CreateParameterFeature(this),
-        new CreateConfigInputInterfaceFeature(this), new CreateConfigOutputInterfaceFeature(this),
-        new CreateDataInputInterfaceFeature(this), new CreateDataOutputInterfaceFeature(this),
-        new CreateBroadcastActorFeature(this), new CreateJoinActorFeature(this), new CreateForkActorFeature(this),
-        new CreateRoundBufferActorFeature(this) };
+        new CreateMalleableParameterFeature(this), new CreateConfigInputInterfaceFeature(this),
+        new CreateConfigOutputInterfaceFeature(this), new CreateDataInputInterfaceFeature(this),
+        new CreateDataOutputInterfaceFeature(this), new CreateBroadcastActorFeature(this),
+        new CreateJoinActorFeature(this), new CreateForkActorFeature(this), new CreateRoundBufferActorFeature(this) };
   }
 
   @Override
