@@ -8,7 +8,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
-import org.apache.commons.math3.util.Pair;
+import org.preesm.codegen.xtend.spider2.utils.Spider2CodegenActor;
 import org.preesm.codegen.xtend.spider2.utils.Spider2CodegenEdge;
 import org.preesm.codegen.xtend.spider2.utils.Spider2CodegenPrototype;
 import org.preesm.commons.logger.PreesmLogger;
@@ -75,7 +75,7 @@ public class Spider2PreProcessVisitor extends PiMMSwitch<Boolean> {
   private final Map<PiGraph, Set<PiGraph>> subgraphMap = new LinkedHashMap<>();
 
   /** The graph to actors map */
-  private final Map<PiGraph, Set<Pair<String, AbstractActor>>> actorsMap = new LinkedHashMap<>();
+  private final Map<PiGraph, Set<Spider2CodegenActor>> actorsMap = new LinkedHashMap<>();
 
   /** The unique refinement loop List */
   private final List<CHeaderRefinement> uniqueLoopHeaderList = new ArrayList<>();
@@ -132,7 +132,7 @@ public class Spider2PreProcessVisitor extends PiMMSwitch<Boolean> {
     return this.subgraphMap.get(graph);
   }
 
-  public Set<Pair<String, AbstractActor>> getActorSet(final PiGraph graph) {
+  public Set<Spider2CodegenActor> getActorSet(final PiGraph graph) {
     return this.actorsMap.get(graph);
   }
 
@@ -343,7 +343,7 @@ public class Spider2PreProcessVisitor extends PiMMSwitch<Boolean> {
 
   @Override
   public Boolean caseActor(final Actor actor) {
-    this.actorsMap.get(actor.getContainingPiGraph()).add(new Pair<>("NORMAL", actor));
+    this.actorsMap.get(actor.getContainingPiGraph()).add(new Spider2CodegenActor("NORMAL", actor));
     if (!(actor.getRefinement() instanceof CHeaderRefinement)) {
       PreesmLogger.getLogger().warning("Actor [" + actor.getName() + "] doesn't have correct refinement.");
     } else {
@@ -359,37 +359,37 @@ public class Spider2PreProcessVisitor extends PiMMSwitch<Boolean> {
 
   @Override
   public Boolean caseBroadcastActor(final BroadcastActor ba) {
-    this.actorsMap.get(ba.getContainingPiGraph()).add(new Pair<>("DUPLICATE", ba));
+    this.actorsMap.get(ba.getContainingPiGraph()).add(new Spider2CodegenActor("DUPLICATE", ba));
     return true;
   }
 
   @Override
   public Boolean caseJoinActor(final JoinActor ja) {
-    this.actorsMap.get(ja.getContainingPiGraph()).add(new Pair<>("JOIN", ja));
+    this.actorsMap.get(ja.getContainingPiGraph()).add(new Spider2CodegenActor("JOIN", ja));
     return true;
   }
 
   @Override
   public Boolean caseForkActor(final ForkActor fa) {
-    this.actorsMap.get(fa.getContainingPiGraph()).add(new Pair<>("FORK", fa));
+    this.actorsMap.get(fa.getContainingPiGraph()).add(new Spider2CodegenActor("FORK", fa));
     return true;
   }
 
   @Override
   public Boolean caseRoundBufferActor(final RoundBufferActor rba) {
-    this.actorsMap.get(rba.getContainingPiGraph()).add(new Pair<>("TAIL", rba));
+    this.actorsMap.get(rba.getContainingPiGraph()).add(new Spider2CodegenActor("TAIL", rba));
     return true;
   }
 
   @Override
   public Boolean caseInitActor(final InitActor init) {
-    this.actorsMap.get(init.getContainingPiGraph()).add(new Pair<>("INIT", init));
+    this.actorsMap.get(init.getContainingPiGraph()).add(new Spider2CodegenActor("INIT", init));
     return true;
   }
 
   @Override
   public Boolean caseEndActor(final EndActor end) {
-    this.actorsMap.get(end.getContainingPiGraph()).add(new Pair<>("END", end));
+    this.actorsMap.get(end.getContainingPiGraph()).add(new Spider2CodegenActor("END", end));
     return true;
   }
 

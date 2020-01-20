@@ -47,12 +47,12 @@ public class Spider2Config {
     if (generateArchiFileParameter == null) {
       generateArchiFile = true;
     } else {
-      generateArchiFile = FALSE.equalsIgnoreCase(generateArchiFileParameter);
+      generateArchiFile = TRUE.equalsIgnoreCase(generateArchiFileParameter);
     }
     if (generateCMakeListParameter == null) {
       generateCMakeList = true;
     } else {
-      generateCMakeList = FALSE.equalsIgnoreCase(generateCMakeListParameter);
+      generateCMakeList = TRUE.equalsIgnoreCase(generateCMakeListParameter);
     }
     if (moveIncludesParameter == null) {
       moveIncludes = false;
@@ -67,7 +67,7 @@ public class Spider2Config {
     if (graphOptimsParameter == null) {
       useGraphOptims = true;
     } else {
-      useGraphOptims = FALSE.equalsIgnoreCase(graphOptimsParameter);
+      useGraphOptims = TRUE.equalsIgnoreCase(graphOptimsParameter);
     }
     schedulerType = getSpider2SchedulerType(schedulerParameter);
   }

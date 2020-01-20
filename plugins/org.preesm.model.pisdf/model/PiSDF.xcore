@@ -699,6 +699,19 @@ class CHeaderRefinement extends Refinement {
 		// C Header Refinement means it is obviously not a subgraph
 		return false
 	}
+	
+	op unique ConfigInputPort[] getLoopConfigInputPorts() {
+		return this.loopPrototype.inputConfigParameters.filterNull.map[arg | Optional.ofNullable(this.eContainer as AbstractActor).map[lookupPort(arg.name) as ConfigInputPort].orElse(null)].toEList.unmodifiableView
+	}
+	
+	op unique ConfigOutputPort[] getLoopConfigOutputPorts() {
+		return this.loopPrototype.outputConfigParameters.filterNull.map[arg | Optional.ofNullable(this.eContainer as AbstractActor).map[lookupPort(arg.name) as ConfigOutputPort].orElse(null)].toEList.unmodifiableView
+	}
+	
+	op unique ConfigInputPort[] getInitConfigInputPorts() {
+		return this.initPrototype.inputConfigParameters.filterNull.map[arg | Optional.ofNullable(this.eContainer as AbstractActor).map[lookupPort(arg.name) as ConfigInputPort].orElse(null)].toEList.unmodifiableView
+	}
+	
 }
 
 class Parameter extends Vertex, Configurable, ISetter, ExpressionHolder {

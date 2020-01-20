@@ -14,22 +14,12 @@ public class Spider2CodegenPrototype {
   /** Formated list of loop arguments */
   private final List<String> formatedLoopArgs = new ArrayList<>();
 
-  /** Formated list of init arguments */
-  private final List<String> formatedInitArgs = new ArrayList<>();
-
   private static final String START_COMMENT = "/* = ";
   private static final String END_COMMENT   = " = */ ";
 
   public Spider2CodegenPrototype(final CHeaderRefinement refinement) {
     this.refinement = refinement;
-    buildInitProperties(this.refinement.getInitPrototype());
     buildLoopProperties(this.refinement.getLoopPrototype());
-  }
-
-  private void buildInitProperties(final FunctionPrototype prototype) {
-    if (prototype == null) {
-      return;
-    }
   }
 
   private void buildLoopProperties(final FunctionPrototype prototype) {
@@ -94,24 +84,6 @@ public class Spider2CodegenPrototype {
 
   public FunctionPrototype getInit() {
     return this.refinement.getInitPrototype();
-  }
-
-  public String getLastFormatedInitArg() {
-    if (this.formatedInitArgs.isEmpty()) {
-      return "";
-    }
-    return this.formatedInitArgs.get(this.formatedInitArgs.size() - 1);
-  }
-
-  public List<String> getFormatedInitArgList() {
-    return this.formatedInitArgs;
-  }
-
-  public List<String> getFormatedInitArgListButLast() {
-    if (this.formatedInitArgs.isEmpty()) {
-      return new ArrayList<>();
-    }
-    return this.formatedInitArgs.subList(0, this.formatedInitArgs.size() - 1);
   }
 
   public FunctionPrototype getLoop() {

@@ -24,9 +24,11 @@ import org.preesm.codegen.xtend.spider2.visitor.Spider2PreProcessVisitor;
 import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.preesm.commons.files.PreesmResourcesHelper;
 import org.preesm.commons.logger.PreesmLogger;
+import org.preesm.model.pisdf.Actor;
 import org.preesm.model.pisdf.CHeaderRefinement;
 import org.preesm.model.pisdf.ConfigInputPort;
 import org.preesm.model.pisdf.Fifo;
+import org.preesm.model.pisdf.FunctionPrototype;
 import org.preesm.model.pisdf.Parameter;
 import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.scenario.Scenario;
@@ -200,13 +202,27 @@ public class Spider2Codegen {
     context.put("apollo", false);
     context.put("genlog", true);
     context.put("clusterIx", "SIZE_MAX");
-    context.put("genAllocPolicy", false);
+    context.put("genAllocPolicy", "GENERIC");
     context.put("genAllocAlign", "sizeof(int64_t)");
     context.put("genAllocSize", "SIZE_MAX");
     context.put("genAllocExtAddr", "nullptr");
     context.put("runMode", "LOOP");
     context.put("loopCount", "10000");
     context.put("runtimeAlgo", "JITMS");
+
+    final List<Pair<String, List<ConfigInputPort>>> initPrototypes = new ArrayList<>();
+    for (final PiGraph graph : this.preprocessor.getUniqueGraphSet()) {
+      for (final Actor actor : graph.getActorsWithRefinement()) {
+        if (actor.getRefinement() instanceof CHeaderRefinement) {
+          final CHeaderRefinement refinement = (CHeaderRefinement) (actor.getRefinement());
+          if (refinement.getInitPrototype() != null) {
+            final FunctionPrototype ip = refinement.getInitPrototype();
+            initPrototypes.add(new Pair<>(ip.getName(), new ArrayList<>(refinement.getInitConfigInputPorts())));
+          }
+        }
+      }
+    }
+    context.put("initPrototypes", initPrototypes);
 
     /* Write the file */
     final String outputFileName = "main.cpp";
@@ -241,9 +257,9 @@ public class Spider2Codegen {
     /* Fill out the context */
     VelocityContext context = new VelocityContext();
     context.put("appName", this.applicationName);
-    final Set<PiGraph> graphSet = this.preprocessor.getUniqueGraphSet();
+    final Set<PiGraph> graphSet = new HashSet<PiGraph>(this.preprocessor.getUniqueGraphSet());
     graphSet.remove(this.applicationGraph);
-    context.put("graphs", this.preprocessor.getUniqueGraphSet());
+    context.put("graphs", graphSet);
 
     /* Write the file */
     final String outputFileName = "spider2-application.h";
