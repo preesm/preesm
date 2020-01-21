@@ -59,7 +59,7 @@ public class URCSeeker extends PiMMSwitch<Boolean> {
     boolean homogeneousRates = actor.getDataOutputPorts().stream().map(DataOutputPort::getFifo)
         .allMatch(x -> doSwitch(x).booleanValue());
     // Return false if rates are not homogeneous
-    if (!homogeneousRates) {
+    if (!homogeneousRates || actor.getDataOutputPorts().isEmpty()) {
       return false;
     }
 
