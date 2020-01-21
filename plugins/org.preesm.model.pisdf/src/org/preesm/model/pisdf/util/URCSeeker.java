@@ -2,6 +2,7 @@ package org.preesm.model.pisdf.util;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Optional;
 import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.DataOutputPort;
 import org.preesm.model.pisdf.Fifo;
@@ -46,9 +47,8 @@ public class URCSeeker extends PiMMSwitch<Boolean> {
     // Clear the list of identified URCs
     this.identifiedURCs.clear();
     // Explore all actors of the graph
-    for (AbstractActor actor : this.graph.getActors()) {
-      doSwitch(actor);
-    }
+    this.graph.getActors().forEach(x -> doSwitch(x));
+    // Return identified URCs
     return identifiedURCs;
   }
 
@@ -56,26 +56,54 @@ public class URCSeeker extends PiMMSwitch<Boolean> {
   public Boolean caseAbstractActor(AbstractActor actor) {
 
     // Check that all fifos are homogeneous
-    for (DataOutputPort dop : actor.getDataOutputPorts()) {
-      // Rates are homogeneous?
-      if (!doSwitch(dop.getFifo()).booleanValue()) {
-        return false;
-      }
+    boolean homogeneousRates = actor.getDataOutputPorts().stream().map(DataOutputPort::getFifo)
+        .allMatch(x -> doSwitch(x).booleanValue());
+    // Return false if rates are not homogeneous
+    if (!homogeneousRates) {
+      return false;
     }
 
     // Get the candidate
     AbstractActor candidate = (AbstractActor) actor.getDataOutputPorts().get(0).getFifo().getTarget();
 
-    // Check that the actually processed actor as only fifo outgoing to the candidate actor
+    // Check that the actually processed actor as only fifos outgoing to the candidate actor
     boolean allOutputGoesToCandidate = actor.getDataOutputPorts().stream()
         .allMatch(x -> x.getFifo().getTarget().equals(candidate));
-    // Check that the candidate actor as only fifo incoming from the actually processed actor
-    boolean allInputGoesFromActor = candidate.getDataInputPorts().stream()
+    // Check that the candidate actor as only fifos incoming from the actually processed actor
+    boolean allInputComeFromActor = candidate.getDataInputPorts().stream()
         .allMatch(x -> x.getFifo().getSource().equals(actor));
 
     // If the candidate agree with the conditions, register this URC
-    if (allOutputGoesToCandidate && allInputGoesFromActor) {
-      // TODO : Register URC in identifiedURCs
+    if (allOutputGoesToCandidate && allInputComeFromActor) {
+
+      List<AbstractActor> actorURC = new LinkedList<>();
+
+      // Base URC found for actor?
+      Optional<
+          List<AbstractActor>> actorListOpt = this.identifiedURCs.stream().filter(x -> x.contains(actor)).findFirst();
+      if (actorListOpt.isPresent()) {
+        actorURC = actorListOpt.get();
+      } else {
+        // If no base has been found, create it
+        // Create a URC list for the new one
+        actorURC.add(actor);
+        // Add it to identified URC
+        this.identifiedURCs.add(actorURC);
+      }
+
+      Optional<List<AbstractActor>> candidateListOpt = this.identifiedURCs.stream().filter(x -> x.contains(candidate))
+          .findFirst();
+      if (candidateListOpt.isPresent()) {
+        List<AbstractActor> candidateURC = candidateListOpt.get();
+        // Remove the list from identified URC
+        this.identifiedURCs.remove(candidateURC);
+        // Add all elements to URC chain of actor
+        actorURC.addAll(candidateURC);
+      } else {
+        // Add the candidate in the URC chain of actor
+        actorURC.add(candidate);
+      }
+
     }
 
     return true;
