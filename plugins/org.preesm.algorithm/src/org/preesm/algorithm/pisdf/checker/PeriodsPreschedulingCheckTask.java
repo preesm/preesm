@@ -98,7 +98,7 @@ import org.preesm.workflow.implement.AbstractWorkflowNodeImplementation;
 
 )
 
-public class PeriodsPreschedulingChecker extends AbstractTaskImplementation {
+public class PeriodsPreschedulingCheckTask extends AbstractTaskImplementation {
 
   /**
    * Identify the parameter to get the rate of periodic actors to analyze.
@@ -134,15 +134,15 @@ public class PeriodsPreschedulingChecker extends AbstractTaskImplementation {
 
     final long time = System.nanoTime();
 
-    final String rateStr = parameters.get(PeriodsPreschedulingChecker.SELECTION_RATE);
+    final String rateStr = parameters.get(PeriodsPreschedulingCheckTask.SELECTION_RATE);
     int rate = 100;
     try {
       rate = Integer.parseInt(rateStr);
       if ((rate < 0) || (rate > 100)) {
-        throw new PreesmRuntimeException(PeriodsPreschedulingChecker.GENERIC_RATE_ERROR + rate + ".");
+        throw new PreesmRuntimeException(PeriodsPreschedulingCheckTask.GENERIC_RATE_ERROR + rate + ".");
       }
     } catch (final NumberFormatException e) {
-      throw new PreesmRuntimeException(PeriodsPreschedulingChecker.GENERIC_RATE_ERROR + rateStr + ".", e);
+      throw new PreesmRuntimeException(PeriodsPreschedulingCheckTask.GENERIC_RATE_ERROR + rateStr + ".", e);
     }
 
     final Map<Actor, Long> periodicActors = new LinkedHashMap<>();
@@ -424,7 +424,7 @@ public class PeriodsPreschedulingChecker extends AbstractTaskImplementation {
   @Override
   public Map<String, String> getDefaultParameters() {
     final Map<String, String> parameters = new LinkedHashMap<>();
-    parameters.put(PeriodsPreschedulingChecker.SELECTION_RATE, PeriodsPreschedulingChecker.DEFAULT_SELECTION_RATE);
+    parameters.put(PeriodsPreschedulingCheckTask.SELECTION_RATE, PeriodsPreschedulingCheckTask.DEFAULT_SELECTION_RATE);
     return parameters;
   }
 
