@@ -3,6 +3,8 @@ package org.preesm.model.pisdf.check;
 import java.util.SortedSet;
 import java.util.TreeSet;
 import org.preesm.commons.exceptions.PreesmRuntimeException;
+import org.preesm.commons.math.ExpressionEvaluationException;
+import org.preesm.model.pisdf.MalleableParameter;
 
 /**
  * Provide syntax checker and utils for malleable parameters.
@@ -12,10 +14,41 @@ import org.preesm.commons.exceptions.PreesmRuntimeException;
 public class MalleableParameterExprChecker {
 
   /** Regular expression to validate the syntax, then split with the regex ";" */
-  public static final String SYNTAX_GRP_REGEX = "([-]?[0-9]+)(;[-]?[0-9]+)*";
+  public static final String REDUCED_SYNTAX_GRP_REGEX = "([-]?[0-9]+)(;[-]?[0-9]+)*";
 
-  public static boolean isValid(String userExpression) {
-    return userExpression.matches(SYNTAX_GRP_REGEX);
+  public static boolean isOnlyNumbers(String userExpression) {
+    return userExpression.matches(REDUCED_SYNTAX_GRP_REGEX);
+  }
+
+  /**
+   * Chcek if the expression of a given MalleableParameter is valid.
+   * 
+   * @param mp
+   *          MalleableParameter to check.
+   * @return {@code null} if no problem, the first exception encountered if there is a problem.
+   */
+  public static ExpressionEvaluationException isValid(MalleableParameter mp) {
+    if (isOnlyNumbers(mp.getUserExpression())) {
+      return null;
+    }
+    return checkEachParameter(mp);
+  }
+
+  private static ExpressionEvaluationException checkEachParameter(MalleableParameter mp) {
+    String[] strValues = mp.getUserExpression().split(";");
+    String backupFirst = mp.getExpression().getExpressionAsString();
+    ExpressionEvaluationException res = null;
+    for (String str : strValues) {
+      mp.setExpression(str);
+      try {
+        mp.getExpression().evaluate();
+      } catch (ExpressionEvaluationException e) {
+        res = e;
+        break;
+      }
+    }
+    mp.setExpression(backupFirst);
+    return res;
   }
 
   /**
@@ -27,7 +60,7 @@ public class MalleableParameterExprChecker {
    */
   public static final SortedSet<Long> getUniqueValues(String userExpression) {
     SortedSet<Long> res = new TreeSet<>();
-    if (!isValid(userExpression)) {
+    if (!isOnlyNumbers(userExpression)) {
       return res;
     }
     String[] strValues = userExpression.split(";");
@@ -44,25 +77,15 @@ public class MalleableParameterExprChecker {
   }
 
   /**
-   * Compute and returns list of long values, being possible values of a malleable parameter.
+   * Returns the default expression of a malleable parameter.
    * 
    * @param userExpression
    *          The malleable parameter userExpression.
-   * @return The values, without repetition.
+   * @return The first expression.
    */
-  public static final Long getFirstValue(String userExpression) {
-    Long res = null;
-    if (!isValid(userExpression)) {
-      return res;
-    }
+  public static final String getFirstExpr(String userExpression) {
     String[] strValues = userExpression.split(";");
-
-    try {
-      res = Long.parseLong(strValues[0]);
-    } catch (NumberFormatException e) {
-      throw new PreesmRuntimeException("A number in a malleable parameter expression cannot be converted to long.", e);
-    }
-    return res;
+    return strValues[0];
   }
 
 }

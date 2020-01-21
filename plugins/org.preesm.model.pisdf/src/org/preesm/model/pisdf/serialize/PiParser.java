@@ -88,6 +88,7 @@ import org.preesm.model.pisdf.ISetter;
 import org.preesm.model.pisdf.InitActor;
 import org.preesm.model.pisdf.InterfaceActor;
 import org.preesm.model.pisdf.InterfaceKind;
+import org.preesm.model.pisdf.MalleableParameter;
 import org.preesm.model.pisdf.Parameter;
 import org.preesm.model.pisdf.PersistenceLevel;
 import org.preesm.model.pisdf.PiGraph;
@@ -799,6 +800,9 @@ public class PiParser {
         case PiIdentifiers.PARAMETER:
           vertex = parseParameter(nodeElt, graph);
           break;
+        case PiIdentifiers.MALLEABLE_PARAMETER:
+          vertex = parseMalleableParameter(nodeElt, graph);
+          break;
         case PiIdentifiers.DELAY:
           parseDelay(nodeElt, graph);
           // Ignore parsing of ports
@@ -847,6 +851,33 @@ public class PiParser {
     String name = nodeElt.getAttribute(PiIdentifiers.PARAMETER_NAME);
     NameCheckerC.checkValidName(Parameter.class.getName(), name);
     param.setName(name);
+
+    // Add the actor to the parsed graph
+    graph.addParameter(param);
+
+    return param;
+  }
+
+  /**
+   * Parse a {@link MalleableParameter} of the Pi File.
+   *
+   * @param nodeElt
+   *          The node {@link Element} holding the {@link MalleableParameter} properties.
+   * @param graph
+   *          the deserialized {@link PiGraph}.
+   * @return the {@link AbstractVertex} of the {@link MalleableParameter}.
+   */
+  private MalleableParameter parseMalleableParameter(final Element nodeElt, final PiGraph graph) {
+    // Instantiate the new Parameter
+    final MalleableParameter param = PiMMUserFactory.instance.createMalleableParameter();
+    param.setExpression(nodeElt.getAttribute(PiIdentifiers.PARAMETER_EXPRESSION));
+
+    // Get the actor properties
+    String name = nodeElt.getAttribute(PiIdentifiers.PARAMETER_NAME);
+    NameCheckerC.checkValidName(MalleableParameter.class.getName(), name);
+    param.setName(name);
+    String userExpression = nodeElt.getAttribute(PiIdentifiers.MALLEABLE_PARAMETER_EXPRESSION);
+    param.setUserExpression(userExpression);
 
     // Add the actor to the parsed graph
     graph.addParameter(param);

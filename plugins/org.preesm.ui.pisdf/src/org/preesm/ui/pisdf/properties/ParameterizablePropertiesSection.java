@@ -173,6 +173,25 @@ public class ParameterizablePropertiesSection extends DataPortPropertiesUpdater 
     });
   }
 
+  protected void validAndRefreshMalleableParameter(final MalleableParameter mp) {
+    final TransactionalEditingDomain editingDomain = getDiagramTypeProvider().getDiagramBehavior().getEditingDomain();
+    editingDomain.getCommandStack().execute(new RecordingCommand(editingDomain) {
+      @Override
+      protected void doExecute() {
+        final ExpressionEvaluationException e = MalleableParameterExprChecker.isValid(mp);
+        if (e == null) {
+          // no need to check, since it has already been done by isValid method
+          final long evaluate = mp.getExpression().evaluate();
+          lblValueObj.setText(Long.toString(evaluate));
+          txtExpression.setBackground(new Color(null, 255, 255, 255));
+        } else {
+          lblValueObj.setText("A malleable is a sequence of expression separated by ';'. Error : " + e.getMessage());
+          txtExpression.setBackground(new Color(null, 240, 150, 150));
+        }
+      }
+    });
+  }
+
   /**
    * Update the {@link Port}/{@link Delay}/{@link Parameter} {@link Expression} with the value stored in the
    * txtEpression.
@@ -193,9 +212,9 @@ public class ParameterizablePropertiesSection extends DataPortPropertiesUpdater 
         MalleableParameter mp = (MalleableParameter) bo;
         if (mp.getUserExpression().compareTo(this.txtExpression.getText()) != 0) {
           setNewMalleableParameterUserExpression(mp, this.txtExpression.getText());
-          Long firstValue = MalleableParameterExprChecker.getFirstValue(this.txtExpression.getText());
-          if (firstValue != null) {
-            setNewExpression(mp, firstValue.toString());
+          String firstExpr = MalleableParameterExprChecker.getFirstExpr(this.txtExpression.getText());
+          if (firstExpr != null) {
+            setNewExpression(mp, firstExpr);
           }
         }
       } else if (bo instanceof Parameter) {
@@ -251,20 +270,13 @@ public class ParameterizablePropertiesSection extends DataPortPropertiesUpdater 
         this.txtExpression.setEnabled(true);
 
         if (businessObject instanceof MalleableParameter) {
-          final String eltExprString = ((MalleableParameter) businessObject).getUserExpression();
+          final MalleableParameter mp = (MalleableParameter) businessObject;
+          final String eltExprString = mp.getUserExpression();
           if (this.txtExpression.getText().compareTo(eltExprString) != 0) {
             this.txtExpression.setText(eltExprString);
           }
-
-          if (MalleableParameterExprChecker.isValid(this.txtExpression.getText())) {
-            Long firstValue = MalleableParameterExprChecker.getFirstValue(this.txtExpression.getText());
-            this.lblValueObj.setText(firstValue.toString());
-            this.txtExpression.setBackground(new Color(null, 255, 255, 255));
-          } else {
-            this.lblValueObj.setText(
-                "Malleable parameter expression must match: " + MalleableParameterExprChecker.SYNTAX_GRP_REGEX);
-            this.txtExpression.setBackground(new Color(null, 240, 150, 150));
-          }
+          // we are forced to record this command since the validation process is modifying the expression
+          validAndRefreshMalleableParameter(mp);
         } else {
 
           final String eltExprString = elementValueExpression.getExpressionAsString();

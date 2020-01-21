@@ -272,6 +272,9 @@ class PiGraph extends AbstractActor, Graph, PeriodicElement {
 		return parameters.filter(it|!((it instanceof ConfigInputInterface) || (it instanceof ConfigOutputInterface) )).
 			toEList.unmodifiableView
 	}
+	op unique MalleableParameter[] getMalleableParameters() {
+		return parameters.filter[it instanceof MalleableParameter].map[it as MalleableParameter].toEList.unmodifiableView
+	}
 
 	op unique Parameter[] getInputParameters() {
 		val ownParams = new ArrayList<Parameter>(getOnlyParameters())
@@ -714,6 +717,9 @@ class Parameter extends Vertex, Configurable, ISetter, ExpressionHolder {
 
 class MalleableParameter extends Parameter {
 	String userExpression
+	op String[] getStrExpressions() {
+		return userExpression.split(";").filter[!it.isEmpty()].toEList.unmodifiableView
+	}
 }
 
 class Dependency extends Edge {
