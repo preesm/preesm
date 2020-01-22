@@ -21,34 +21,33 @@ public class MalleableParameterExprChecker {
   }
 
   /**
-   * Chcek if the expression of a given MalleableParameter is valid.
+   * Chcek if the expression of a given MalleableParameter is valid. If valid, the default expression is set to the
+   * first one, otherwise, it is set to the first invalid expression.
    * 
    * @param mp
    *          MalleableParameter to check.
    * @return {@code null} if no problem, the first exception encountered if there is a problem.
    */
-  public static ExpressionEvaluationException isValid(MalleableParameter mp) {
-    if (isOnlyNumbers(mp.getUserExpression())) {
-      return null;
-    }
+  public static Exception isValid(MalleableParameter mp) {
     return checkEachParameter(mp);
   }
 
-  private static ExpressionEvaluationException checkEachParameter(MalleableParameter mp) {
+  private static Exception checkEachParameter(MalleableParameter mp) {
     String[] strValues = mp.getUserExpression().split(";");
-    String backupFirst = mp.getExpression().getExpressionAsString();
-    ExpressionEvaluationException res = null;
     for (String str : strValues) {
       mp.setExpression(str);
       try {
         mp.getExpression().evaluate();
-      } catch (ExpressionEvaluationException e) {
-        res = e;
-        break;
+      } catch (ExpressionEvaluationException | UnsupportedOperationException e) {
+        return e;
       }
     }
-    mp.setExpression(backupFirst);
-    return res;
+    if (strValues.length > 0) {
+      mp.setExpression(strValues[0]);
+    } else {
+      mp.setExpression("");
+    }
+    return null;
   }
 
   /**

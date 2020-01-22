@@ -1,7 +1,7 @@
 package org.preesm.algorithm.mparameters;
 
+import java.util.ArrayList;
 import java.util.List;
-import java.util.SortedSet;
 import org.preesm.model.pisdf.MalleableParameter;
 import org.preesm.model.pisdf.check.MalleableParameterExprChecker;
 
@@ -14,14 +14,14 @@ class MalleableParameterIR {
 
   final MalleableParameter mp;
   final List<String>       exprs;
-  final SortedSet<Long>    values;
+  final List<Long>         values;
   final int                nbValues;
   int                      currentExprIndex;
 
   MalleableParameterIR(MalleableParameter mp) {
     this.mp = mp;
     exprs = mp.getStrExpressions();
-    values = MalleableParameterExprChecker.getUniqueValues(mp.getUserExpression());
+    values = new ArrayList<>(MalleableParameterExprChecker.getUniqueValues(mp.getUserExpression()));
     if (!values.isEmpty()) {
       nbValues = values.size();
     } else {

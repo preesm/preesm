@@ -211,7 +211,7 @@ public class ActorPeriodPropertiesSection extends GFPropertySection implements I
               this.lblPeriodValueObj.setText(Long.toString(evaluate));
             }
             this.txtPeriod.setBackground(new Color(null, 255, 255, 255));
-          } catch (final ExpressionEvaluationException | IllegalArgumentException e) {
+          } catch (final ExpressionEvaluationException | UnsupportedOperationException e) {
             // otherwise print error message and put red background
             this.lblPeriodValueObj.setText("Error : " + e.getMessage());
             this.txtPeriod.setBackground(new Color(null, 240, 150, 150));

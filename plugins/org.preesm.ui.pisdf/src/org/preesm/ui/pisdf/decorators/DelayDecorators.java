@@ -97,7 +97,7 @@ public class DelayDecorators {
     final Expression expression = delay.getSizeExpression();
     try {
       expression.evaluate();
-    } catch (final ExpressionEvaluationException e) {
+    } catch (final ExpressionEvaluationException | UnsupportedOperationException e) {
       imageRenderingDecorator.setX(-8);
       imageRenderingDecorator.setY(8);
       imageRenderingDecorator.setMessage("Problems in parameter resolution: " + e.getMessage());

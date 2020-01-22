@@ -83,6 +83,11 @@ public class ParameterDecorators {
     if (cycleDecorator != null) {
       decorators.add(cycleDecorator);
     } else {
+      // check if MalleableParameter
+      final IDecorator malleableParamDecorator = ParameterDecorators.getMalleableParamDecorator(parameter, pe);
+      if (malleableParamDecorator != null) {
+        decorators.add(malleableParamDecorator);
+      }
       // Check if the parameter expression is correct
       final IDecorator expressionDecorator = ParameterDecorators.getExpressionDecorator(parameter, pe);
       if (expressionDecorator != null) {
@@ -92,11 +97,6 @@ public class ParameterDecorators {
       final IDecorator staticDecorator = ParameterDecorators.getLocallyStaticDecorator(parameter, pe);
       if (staticDecorator != null) {
         decorators.add(staticDecorator);
-      }
-
-      final IDecorator malleableParamDecorator = ParameterDecorators.getMalleableParamDecorator(parameter, pe);
-      if (malleableParamDecorator != null) {
-        decorators.add(malleableParamDecorator);
       }
     }
 
@@ -213,7 +213,7 @@ public class ParameterDecorators {
     final Expression expression = param.getValueExpression();
     try {
       expression.evaluate();
-    } catch (final ExpressionEvaluationException e) {
+    } catch (final ExpressionEvaluationException | UnsupportedOperationException e) {
       final ImageDecorator imageRenderingDecorator = new ImageDecorator(IPlatformImageConstants.IMG_ECLIPSE_ERROR_TSK);
       imageRenderingDecorator.setMessage("Problems in parameter resolution: " + e.getMessage());
       imageRenderingDecorator.setX((pe.getGraphicsAlgorithm().getWidth() / 2) - 8);

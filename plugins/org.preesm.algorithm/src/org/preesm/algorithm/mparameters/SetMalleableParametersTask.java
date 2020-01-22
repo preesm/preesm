@@ -13,6 +13,7 @@ import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.model.pisdf.MalleableParameter;
 import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.pisdf.check.MalleableParameterExprChecker;
+import org.preesm.model.pisdf.statictools.PiMMHelper;
 import org.preesm.model.scenario.Scenario;
 import org.preesm.model.slam.Design;
 import org.preesm.workflow.elements.Workflow;
@@ -76,6 +77,16 @@ public class SetMalleableParametersTask extends AbstractTaskImplementation {
     PreesmLogger.getLogger().log(Level.INFO, "The number of parameters configuration is: " + nbCombinations);
 
     // build and test all possible configurations
+    ParameterCombinationExplorer pce = new ParameterCombinationExplorer(mparamsIR);
+    int index = 0;
+    while (pce.setNext()) {
+      index++;
+      PiMMHelper.resolveAllParameters(graph);
+      System.err.println("==> Testing combination: " + index);
+      for (MalleableParameterIR mpir : mparamsIR) {
+        System.err.println(mpir.mp.getName() + ": " + mpir.mp.getExpression().getExpressionAsString());
+      }
+    }
 
     return output;
   }

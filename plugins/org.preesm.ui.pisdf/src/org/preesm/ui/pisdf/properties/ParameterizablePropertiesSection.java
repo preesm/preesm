@@ -99,6 +99,8 @@ public class ParameterizablePropertiesSection extends DataPortPropertiesUpdater 
 
   TabbedPropertySheetWidgetFactory factory   = null;
   Composite                        composite = null;
+  /** Used only for malleable parameter due to stupid restriction of the UI with ECore */
+  Exception                        errorMP   = null;
 
   /*
    * (non-Javadoc)
@@ -169,25 +171,7 @@ public class ParameterizablePropertiesSection extends DataPortPropertiesUpdater 
       @Override
       protected void doExecute() {
         mp.setUserExpression(value);
-      }
-    });
-  }
-
-  protected void validAndRefreshMalleableParameter(final MalleableParameter mp) {
-    final TransactionalEditingDomain editingDomain = getDiagramTypeProvider().getDiagramBehavior().getEditingDomain();
-    editingDomain.getCommandStack().execute(new RecordingCommand(editingDomain) {
-      @Override
-      protected void doExecute() {
-        final ExpressionEvaluationException e = MalleableParameterExprChecker.isValid(mp);
-        if (e == null) {
-          // no need to check, since it has already been done by isValid method
-          final long evaluate = mp.getExpression().evaluate();
-          lblValueObj.setText(Long.toString(evaluate));
-          txtExpression.setBackground(new Color(null, 255, 255, 255));
-        } else {
-          lblValueObj.setText("A malleable is a sequence of expression separated by ';'. Error : " + e.getMessage());
-          txtExpression.setBackground(new Color(null, 240, 150, 150));
-        }
+        errorMP = MalleableParameterExprChecker.isValid(mp);
       }
     });
   }
@@ -212,10 +196,7 @@ public class ParameterizablePropertiesSection extends DataPortPropertiesUpdater 
         MalleableParameter mp = (MalleableParameter) bo;
         if (mp.getUserExpression().compareTo(this.txtExpression.getText()) != 0) {
           setNewMalleableParameterUserExpression(mp, this.txtExpression.getText());
-          String firstExpr = MalleableParameterExprChecker.getFirstExpr(this.txtExpression.getText());
-          if (firstExpr != null) {
-            setNewExpression(mp, firstExpr);
-          }
+          getDiagramTypeProvider().getDiagramBehavior().refreshRenderingDecorators(pe);
         }
       } else if (bo instanceof Parameter) {
         if ((bo instanceof ConfigInputInterface)) {
@@ -275,8 +256,22 @@ public class ParameterizablePropertiesSection extends DataPortPropertiesUpdater 
           if (this.txtExpression.getText().compareTo(eltExprString) != 0) {
             this.txtExpression.setText(eltExprString);
           }
-          // we are forced to record this command since the validation process is modifying the expression
-          validAndRefreshMalleableParameter(mp);
+          if (errorMP == null) {
+            // we need to check, since isValid method is called only if an update is done
+            try {
+              final long evaluate = mp.getExpression().evaluate();
+              lblValueObj.setText(Long.toString(evaluate));
+              txtExpression.setBackground(new Color(null, 255, 255, 255));
+            } catch (final ExpressionEvaluationException | UnsupportedOperationException e) {
+              lblValueObj
+                  .setText("A malleable is a sequence of expression separated by ';'. Error : " + e.getMessage());
+              txtExpression.setBackground(new Color(null, 240, 150, 150));
+            }
+          } else {
+            lblValueObj
+                .setText("A malleable is a sequence of expression separated by ';'. Error : " + errorMP.getMessage());
+            txtExpression.setBackground(new Color(null, 240, 150, 150));
+          }
         } else {
 
           final String eltExprString = elementValueExpression.getExpressionAsString();
@@ -293,7 +288,7 @@ public class ParameterizablePropertiesSection extends DataPortPropertiesUpdater 
               this.lblValueObj.setText(Long.toString(evaluate));
             }
             this.txtExpression.setBackground(new Color(null, 255, 255, 255));
-          } catch (final ExpressionEvaluationException e) {
+          } catch (final ExpressionEvaluationException | UnsupportedOperationException e) {
             // otherwise print error message and put red background
             this.lblValueObj.setText("Error : " + e.getMessage());
             this.txtExpression.setBackground(new Color(null, 240, 150, 150));
