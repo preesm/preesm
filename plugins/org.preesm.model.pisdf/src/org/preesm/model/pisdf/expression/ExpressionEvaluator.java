@@ -73,23 +73,31 @@ public class ExpressionEvaluator {
     // forbid instantiation
   }
 
+  /**
+   *
+   * @throws ExpressionEvaluationException
+   *           If the expression cannot be evaluated.
+   */
   public static final long evaluate(final Parameter param, final Map<Parameter, String> overridenValues) {
     return evaluate(param, param.getValueExpression().getExpressionAsString(), overridenValues);
   }
 
   /**
    *
+   * @throws ExpressionEvaluationException
+   *           If the expression cannot be evaluated.
    */
   public static final long evaluate(final Parameterizable p, final String value,
       final Map<Parameter, String> overridenValues) {
     final Map<String, Double> lookupParameterValues = lookupParameterValues(p, overridenValues);
-    try {
-      return JEPWrapper.evaluate(value, lookupParameterValues);
-    } catch (final Exception e) {
-      throw new ExpressionEvaluationException("Could not evaluate " + value, e);
-    }
+    return JEPWrapper.evaluate(value, lookupParameterValues);
   }
 
+  /**
+   *
+   * @throws ExpressionEvaluationException
+   *           If the expression cannot be evaluated.
+   */
   public static final long evaluate(final Expression expression) {
     return evaluate(expression, Collections.emptyMap());
   }
@@ -97,6 +105,9 @@ public class ExpressionEvaluator {
   /**
    * Will lookup parameter values if needed (see
    * {@link InternalExpressionEvaluationVisitor#caseStringExpression(StringExpression)}).
+   * 
+   * @throws ExpressionEvaluationException
+   *           If the expression cannot be evaluated.
    */
   public static final long evaluate(final Expression expression,
       final Map<Parameter, String> overridenParameterValues) {

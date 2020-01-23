@@ -102,7 +102,7 @@ public class AddConfigOutputPortFeature extends AbstractAddActorPortFeature {
   /*
    * (non-Javadoc)
    *
-   * @see org.ietr.preesm.ui.pimm.features.AbstractAddActorPortFeature#getPosition()
+   * @see org.preesm.ui.pisdf.features.AbstractAddActorPortFeature#getPosition()
    */
   @Override
   public PortPosition getPosition() {
@@ -112,7 +112,7 @@ public class AddConfigOutputPortFeature extends AbstractAddActorPortFeature {
   /*
    * (non-Javadoc)
    *
-   * @see org.ietr.preesm.ui.pimm.features.AbstractAddActorPortFeature#addPortGA(org.eclipse.graphiti.mm.algorithms.
+   * @see org.preesm.ui.pisdf.features.AbstractAddActorPortFeature#addPortGA(org.eclipse.graphiti.mm.algorithms.
    * GraphicsAlgorithm)
    */
   @Override
@@ -135,7 +135,7 @@ public class AddConfigOutputPortFeature extends AbstractAddActorPortFeature {
   /*
    * (non-Javadoc)
    *
-   * @see org.ietr.preesm.ui.pimm.features.AbstractAddActorPortFeature#addPortLabel(org.eclipse.graphiti.mm.algorithms.
+   * @see org.preesm.ui.pisdf.features.AbstractAddActorPortFeature#addPortLabel(org.eclipse.graphiti.mm.algorithms.
    * GraphicsAlgorithm, java.lang.String)
    */
   @Override
@@ -160,7 +160,7 @@ public class AddConfigOutputPortFeature extends AbstractAddActorPortFeature {
   /*
    * (non-Javadoc)
    *
-   * @see org.ietr.preesm.ui.pimm.features.AbstractAddActorPortFeature#getNewPort(java.lang.String,
+   * @see org.preesm.ui.pisdf.features.AbstractAddActorPortFeature#getNewPort(java.lang.String,
    * org.ietr.preesm.experiment.model.pimm.ExecutableActor)
    */
   @Override
@@ -174,7 +174,7 @@ public class AddConfigOutputPortFeature extends AbstractAddActorPortFeature {
   /*
    * (non-Javadoc)
    *
-   * @see org.ietr.preesm.ui.pimm.features.AbstractAddActorPortFeature#getPortKind()
+   * @see org.preesm.ui.pisdf.features.AbstractAddActorPortFeature#getPortKind()
    */
   @Override
   public String getPortKind() {

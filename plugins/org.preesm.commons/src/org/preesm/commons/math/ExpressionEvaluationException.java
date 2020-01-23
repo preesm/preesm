@@ -47,7 +47,7 @@ public class ExpressionEvaluationException extends PreesmRuntimeException {
     super(msg);
   }
 
-  public ExpressionEvaluationException(final String msg, final Exception cause) {
+  public ExpressionEvaluationException(final String msg, final Throwable cause) {
     super(msg, cause);
   }
 

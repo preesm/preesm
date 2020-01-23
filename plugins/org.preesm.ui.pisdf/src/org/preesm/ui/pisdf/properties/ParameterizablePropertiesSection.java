@@ -262,7 +262,7 @@ public class ParameterizablePropertiesSection extends DataPortPropertiesUpdater 
               final long evaluate = mp.getExpression().evaluate();
               lblValueObj.setText(Long.toString(evaluate));
               txtExpression.setBackground(new Color(null, 255, 255, 255));
-            } catch (final ExpressionEvaluationException | UnsupportedOperationException e) {
+            } catch (final ExpressionEvaluationException e) {
               lblValueObj
                   .setText("A malleable is a sequence of expression separated by ';'. Error : " + e.getMessage());
               txtExpression.setBackground(new Color(null, 240, 150, 150));
@@ -288,7 +288,7 @@ public class ParameterizablePropertiesSection extends DataPortPropertiesUpdater 
               this.lblValueObj.setText(Long.toString(evaluate));
             }
             this.txtExpression.setBackground(new Color(null, 255, 255, 255));
-          } catch (final ExpressionEvaluationException | UnsupportedOperationException e) {
+          } catch (final ExpressionEvaluationException e) {
             // otherwise print error message and put red background
             this.lblValueObj.setText("Error : " + e.getMessage());
             this.txtExpression.setBackground(new Color(null, 240, 150, 150));

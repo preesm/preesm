@@ -191,7 +191,7 @@ public class DelayPropertiesSection extends ParameterizablePropertiesSection {
             final long evaluate = elementValueExpression.evaluate();
             lblValueObj.setText(Long.toString(evaluate));
             txtExpression.setBackground(new Color(null, 255, 255, 255));
-          } catch (final ExpressionEvaluationException | UnsupportedOperationException e) {
+          } catch (final ExpressionEvaluationException e) {
             // otherwise print error message and put red background
             lblValueObj.setText("Error : " + e.getMessage());
             txtExpression.setBackground(new Color(null, 240, 150, 150));

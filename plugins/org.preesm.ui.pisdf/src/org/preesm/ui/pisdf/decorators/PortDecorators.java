@@ -124,7 +124,7 @@ public class PortDecorators {
 
       try {
         expression.evaluate();
-      } catch (final ExpressionEvaluationException | UnsupportedOperationException e) {
+      } catch (final ExpressionEvaluationException e) {
         imageRenderingDecorator.setX(a.getReferencedGraphicsAlgorithm().getWidth() - 13);
         imageRenderingDecorator
             .setY((int) (a.getRelativeHeight() * a.getReferencedGraphicsAlgorithm().getHeight()) - 1);

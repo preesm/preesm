@@ -38,7 +38,7 @@ public class MalleableParameterExprChecker {
       mp.setExpression(str);
       try {
         mp.getExpression().evaluate();
-      } catch (ExpressionEvaluationException | UnsupportedOperationException e) {
+      } catch (ExpressionEvaluationException e) {
         return e;
       }
     }

@@ -73,7 +73,7 @@ public class MoveDownActorPortFeature extends MoveUpActorPortFeature {
   /*
    * (non-Javadoc)
    *
-   * @see org.ietr.preesm.ui.pimm.features.MoveUpActorPortFeature#getName()
+   * @see org.preesm.ui.pisdf.features.MoveUpActorPortFeature#getName()
    */
   @Override
   public String getName() {
@@ -83,7 +83,7 @@ public class MoveDownActorPortFeature extends MoveUpActorPortFeature {
   /*
    * (non-Javadoc)
    *
-   * @see org.ietr.preesm.ui.pimm.features.MoveUpActorPortFeature#getDescription()
+   * @see org.preesm.ui.pisdf.features.MoveUpActorPortFeature#getDescription()
    */
   @Override
   public String getDescription() {
@@ -93,7 +93,7 @@ public class MoveDownActorPortFeature extends MoveUpActorPortFeature {
   /*
    * (non-Javadoc)
    *
-   * @see org.ietr.preesm.ui.pimm.features.MoveUpActorPortFeature#canExecute(org.eclipse.graphiti.features.context.
+   * @see org.preesm.ui.pisdf.features.MoveUpActorPortFeature#canExecute(org.eclipse.graphiti.features.context.
    * ICustomContext)
    */
   @Override
@@ -138,7 +138,7 @@ public class MoveDownActorPortFeature extends MoveUpActorPortFeature {
   /*
    * (non-Javadoc)
    *
-   * @see org.ietr.preesm.ui.pimm.features.MoveUpActorPortFeature#execute(org.eclipse.graphiti.features.context.
+   * @see org.preesm.ui.pisdf.features.MoveUpActorPortFeature#execute(org.eclipse.graphiti.features.context.
    * ICustomContext)
    */
   @Override
