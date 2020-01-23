@@ -5,6 +5,7 @@ PREESM Changelog
 *XXXX.XX.XX*
 
 ### New Feature
+* Clustering: Uniform Repetition Count chain of actor can be found with the new URCSeeker class.
 
 ### Changes
 
