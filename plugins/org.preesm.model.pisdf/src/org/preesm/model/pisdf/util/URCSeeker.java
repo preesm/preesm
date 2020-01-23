@@ -4,7 +4,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
 import org.preesm.model.pisdf.AbstractActor;
-import org.preesm.model.pisdf.DataOutputPort;
+import org.preesm.model.pisdf.ExecutableActor;
 import org.preesm.model.pisdf.Fifo;
 import org.preesm.model.pisdf.PiGraph;
 
@@ -47,7 +47,7 @@ public class URCSeeker extends PiMMSwitch<Boolean> {
     // Clear the list of identified URCs
     this.identifiedURCs.clear();
     // Explore all actors of the graph
-    this.graph.getActors().forEach(x -> doSwitch(x));
+    this.graph.getActors().stream().filter(x -> x instanceof ExecutableActor).forEach(x -> doSwitch(x));
     // Return identified URCs
     return identifiedURCs;
   }
@@ -56,8 +56,7 @@ public class URCSeeker extends PiMMSwitch<Boolean> {
   public Boolean caseAbstractActor(AbstractActor actor) {
 
     // Check that all fifos are homogeneous and without delay
-    boolean homogeneousRates = actor.getDataOutputPorts().stream().map(DataOutputPort::getFifo)
-        .allMatch(x -> doSwitch(x).booleanValue());
+    boolean homogeneousRates = actor.getDataOutputPorts().stream().allMatch(x -> doSwitch(x.getFifo()).booleanValue());
     // Return false if rates are not homogeneous or that the corresponding actor was a sink (no output)
     if (!homogeneousRates || actor.getDataOutputPorts().isEmpty()) {
       return false;
