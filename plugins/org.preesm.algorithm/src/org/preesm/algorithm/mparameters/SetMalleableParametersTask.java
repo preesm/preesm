@@ -1,19 +1,30 @@
 package org.preesm.algorithm.mparameters;
 
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.logging.Level;
 import java.util.stream.Collectors;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.preesm.algorithm.synthesis.SynthesisResult;
+import org.preesm.algorithm.synthesis.evaluation.latency.LatencyCost;
+import org.preesm.algorithm.synthesis.evaluation.latency.SimpleLatencyEvaluation;
+import org.preesm.algorithm.synthesis.schedule.ScheduleOrderManager;
+import org.preesm.algorithm.synthesis.schedule.algos.IScheduler;
+import org.preesm.algorithm.synthesis.schedule.algos.PeriodicScheduler;
 import org.preesm.commons.doc.annotations.Port;
 import org.preesm.commons.doc.annotations.PreesmTask;
 import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.model.pisdf.MalleableParameter;
+import org.preesm.model.pisdf.Parameter;
 import org.preesm.model.pisdf.PiGraph;
+import org.preesm.model.pisdf.brv.BRVMethod;
 import org.preesm.model.pisdf.check.MalleableParameterExprChecker;
-import org.preesm.model.pisdf.statictools.PiMMHelper;
+import org.preesm.model.pisdf.factory.PiMMUserFactory;
+import org.preesm.model.pisdf.statictools.PiSDFToSingleRate;
 import org.preesm.model.scenario.Scenario;
 import org.preesm.model.slam.Design;
 import org.preesm.workflow.elements.Workflow;
@@ -77,15 +88,47 @@ public class SetMalleableParametersTask extends AbstractTaskImplementation {
     PreesmLogger.getLogger().log(Level.INFO, "The number of parameters configuration is: " + nbCombinations);
 
     // build and test all possible configurations
-    ParameterCombinationExplorer pce = new ParameterCombinationExplorer(mparamsIR);
+    ParameterCombinationExplorer pce = new ParameterCombinationExplorer(mparamsIR, scenario);
+    // set the scenario graph since it is used for timings
+    Map<Parameter, String> backupParamOverride = new HashMap<>();
+    for (Entry<Parameter, String> e : scenario.getParameterValues().entrySet()) {
+      backupParamOverride.put(e.getKey(), e.getValue());
+    }
+    List<Integer> bestConfig = null;
+    long bestLatency = Long.MAX_VALUE;
     int index = 0;
     while (pce.setNext()) {
       index++;
-      PiMMHelper.resolveAllParameters(graph);
+      final PiGraph graphCopy = PiMMUserFactory.instance.copyPiGraphWithHistory(graph);
+      final PiGraph dag = PiSDFToSingleRate.compute(graphCopy, BRVMethod.LCM);
       System.err.println("==> Testing combination: " + index);
-      for (MalleableParameterIR mpir : mparamsIR) {
-        System.err.println(mpir.mp.getName() + ": " + mpir.mp.getExpression().getExpressionAsString());
+      for (Parameter p : graphCopy.getAllParameters()) {
+        System.err.println(p.getName() + ": " + p.getExpression().getExpressionAsString());
       }
+      for (Parameter p : dag.getAllParameters()) {
+        System.err.println(p.getName() + " (in DAG): " + p.getExpression().getExpressionAsString());
+      }
+      final IScheduler scheduler = new PeriodicScheduler();
+      final SynthesisResult scheduleAndMap = scheduler.scheduleAndMap(dag, architecture, scenario);
+      final ScheduleOrderManager scheduleOM = new ScheduleOrderManager(dag, scheduleAndMap.schedule);
+      final LatencyCost evaluate = new SimpleLatencyEvaluation().evaluate(dag, architecture, scenario,
+          scheduleAndMap.mapping, scheduleOM);
+      final long latency = evaluate.getValue();
+      if (bestConfig == null || bestLatency > latency) {
+        bestConfig = pce.recordConfiguration();
+        bestLatency = latency;
+      } else {
+        scenario.getParameterValues().putAll(backupParamOverride);
+      }
+    }
+
+    if (bestConfig != null) {
+      pce.setConfiguration(bestConfig);
+      PreesmLogger.getLogger().log(Level.INFO, "Best configuration ensures latency of: " + bestLatency);
+      PreesmLogger.getLogger().log(Level.WARNING,
+          "The malleable parameters value have been overriden in the scenario!");
+    } else {
+      PreesmLogger.getLogger().log(Level.WARNING, "No configuration found!");
     }
 
     return output;
