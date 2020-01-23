@@ -1,5 +1,6 @@
 package org.preesm.model.pisdf.test;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
@@ -65,19 +66,24 @@ public class URCSeekerTest {
   }
 
   @Test
-  public void testExpectToGetChainBCD() {
+  public void testExpectToFoundTwoURCs() {
+    assertEquals(this.seekerResults.size(), 2);
+  }
+
+  @Test
+  public void testExpectToFoundChainBCD() {
     List<AbstractActor> expectedChain = Arrays.asList(this.actorB, this.actorC, this.actorD);
     assertTrue(this.seekerResults.contains(expectedChain));
   }
 
   @Test
-  public void testExpectToGetChainEFG() {
+  public void testExpectToFoundChainEFG() {
     List<AbstractActor> expectedChain = Arrays.asList(this.actorE, this.actorF, this.actorG);
     assertTrue(this.seekerResults.contains(expectedChain));
   }
 
   @Test
-  public void testDoesntExpectToGetChainDE() {
+  public void testDoesntExpectToFoundChainDE() {
     List<AbstractActor> expectedChain = Arrays.asList(this.actorD, this.actorE);
     assertFalse(this.seekerResults.contains(expectedChain));
   }
@@ -136,7 +142,7 @@ public class URCSeekerTest {
     this.actorF.getDataInputPorts().add(inputF);
     this.actorG.getDataInputPorts().add(inputG);
 
-    // Create fifos and form a chain such as A -> B -> (x2) C -> D -> (delay) E -> F
+    // Create fifos and form a chain such as A -> B -> (x2) C -> D -> (delay) E -> F -> G
     Fifo fifoAB = PiMMUserFactory.instance.createFifo(outputA, inputB, "void");
     Fifo fifoBC1 = PiMMUserFactory.instance.createFifo(outputB1, inputC1, "void");
     Fifo fifoBC2 = PiMMUserFactory.instance.createFifo(outputB2, inputC2, "void");
@@ -173,6 +179,7 @@ public class URCSeekerTest {
     fifoDE.setDelay(delayDE);
     this.topGraph.addDelay(delayDE);
 
+    // Check consistency of the graph
     PiGraphConsistenceChecker.check(this.topGraph);
   }
 
