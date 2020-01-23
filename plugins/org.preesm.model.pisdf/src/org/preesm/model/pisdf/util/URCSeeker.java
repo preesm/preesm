@@ -55,10 +55,10 @@ public class URCSeeker extends PiMMSwitch<Boolean> {
   @Override
   public Boolean caseAbstractActor(AbstractActor actor) {
 
-    // Check that all fifos are homogeneous
+    // Check that all fifos are homogeneous and without delay
     boolean homogeneousRates = actor.getDataOutputPorts().stream().map(DataOutputPort::getFifo)
         .allMatch(x -> doSwitch(x).booleanValue());
-    // Return false if rates are not homogeneous
+    // Return false if rates are not homogeneous or that the corresponding actor was a sink (no output)
     if (!homogeneousRates || actor.getDataOutputPorts().isEmpty()) {
       return false;
     }
@@ -91,6 +91,7 @@ public class URCSeeker extends PiMMSwitch<Boolean> {
         this.identifiedURCs.add(actorURC);
       }
 
+      // Base URC found for candidate?
       Optional<List<AbstractActor>> candidateListOpt = this.identifiedURCs.stream().filter(x -> x.contains(candidate))
           .findFirst();
       if (candidateListOpt.isPresent()) {
@@ -111,8 +112,9 @@ public class URCSeeker extends PiMMSwitch<Boolean> {
 
   @Override
   public Boolean caseFifo(Fifo fifo) {
-    // Returns true if rates are homogeneous
-    return fifo.getSourcePort().getExpression().evaluate() == fifo.getTargetPort().getExpression().evaluate();
+    // Return true if rates are homogeneous and that no delay is involve
+    return (fifo.getSourcePort().getExpression().evaluate() == fifo.getTargetPort().getExpression().evaluate())
+        && (fifo.getDelay() == null);
   }
 
 }
