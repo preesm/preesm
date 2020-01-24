@@ -88,10 +88,16 @@ public class HeuristicLoopBreakingDelays {
   }
 
   protected void performAnalysis(final PiGraph graph, final Map<AbstractVertex, Long> brv) {
+    actorsNbVisitsTopoRank.clear();
+    actorsNbVisitsTopoRankT.clear();
+    additionalSourceActors.clear();
+    additionalSinkActors.clear();
+    breakingFifosAbs.clear();
 
+    minCycleBrv.clear();
     minCycleBrv.putAll(brv);
     // 1. perform flat PiMM to simple JGraphT structure transition.
-    absGraph = AbstractGraph.createAbsGraph(graph);
+    absGraph = AbstractGraph.createAbsGraph(graph, brv);
     // 2. look for cycles
     final JohnsonSimpleCycles<AbstractActor, FifoAbstraction> cycleFinder = new JohnsonSimpleCycles<>(absGraph);
     final List<List<AbstractActor>> cycles = cycleFinder.findSimpleCycles();

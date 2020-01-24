@@ -38,11 +38,13 @@ package org.preesm.algorithm.pisdf.checker;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import org.jgrapht.graph.DefaultDirectedGraph;
 import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.preesm.commons.math.MathFunctionsHelper;
 import org.preesm.model.pisdf.AbstractActor;
+import org.preesm.model.pisdf.AbstractVertex;
 import org.preesm.model.pisdf.DataInputPort;
 import org.preesm.model.pisdf.DataOutputPort;
 import org.preesm.model.pisdf.Delay;
@@ -65,6 +67,7 @@ public class AbstractGraph {
   protected static class FifoAbstraction {
     boolean          fullyDelayed;
     int              nbNonZeroDelays;
+    int              nbIterationDelayed;
     long             prodRate;
     long             consRate;
     final List<Long> delays;
@@ -74,6 +77,7 @@ public class AbstractGraph {
 
       this.fullyDelayed = false;
       this.nbNonZeroDelays = 0;
+      this.nbIterationDelayed = 0;
       this.prodRate = 0;
       this.consRate = 0;
 
@@ -82,7 +86,8 @@ public class AbstractGraph {
     }
   }
 
-  protected static DefaultDirectedGraph<AbstractActor, FifoAbstraction> createAbsGraph(final PiGraph graph) {
+  protected static DefaultDirectedGraph<AbstractActor, FifoAbstraction> createAbsGraph(final PiGraph graph,
+      final Map<AbstractVertex, Long> brv) {
     final DefaultDirectedGraph<AbstractActor,
         FifoAbstraction> absGraph = new DefaultDirectedGraph<>(FifoAbstraction.class);
     for (final AbstractActor a : graph.getActors()) {
@@ -98,15 +103,14 @@ public class AbstractGraph {
       final AbstractActor absTgt = dip.getContainingActor();
       if ((absSrc instanceof ExecutableActor) && (absTgt instanceof ExecutableActor)) {
         FifoAbstraction fa = absGraph.getEdge(absSrc, absTgt);
-        long srcRate = dop.getPortRateExpression().evaluate();
-        long tgtRate = dip.getPortRateExpression().evaluate();
+        final long srcRate = dop.getPortRateExpression().evaluate();
+        final long tgtRate = dip.getPortRateExpression().evaluate();
         if (srcRate > 0 && tgtRate > 0) {
           long gcd = MathFunctionsHelper.gcd(srcRate, tgtRate);
           if (fa == null) {
             fa = new FifoAbstraction();
             fa.prodRate = srcRate / gcd;
             fa.consRate = tgtRate / gcd;
-
             final boolean res = absGraph.addEdge(absSrc, absTgt, fa);
             if (!res) {
               throw new PreesmRuntimeException("Problem while creating graph copy.");
@@ -114,12 +118,17 @@ public class AbstractGraph {
           }
           fa.fifos.add(f);
           final Delay d = f.getDelay();
-          if (d == null) {
-            fa.delays.add(0L);
-          } else {
+          long delayRawSize = 0L;
+          if (d != null) {
             fa.nbNonZeroDelays++;
-            fa.delays.add(d.getSizeExpression().evaluate() / gcd);
+            delayRawSize = d.getSizeExpression().evaluate() / gcd;
           }
+          fa.delays.add(delayRawSize);
+
+          final long brvDest = brv.get(absTgt);
+          final int nbIterDelayed = (int) Math.ceil((double) delayRawSize / (brvDest * tgtRate));
+          fa.nbIterationDelayed = Math.max(fa.nbIterationDelayed, nbIterDelayed);
+
           boolean fullyDelayed = true;
           for (final long l : fa.delays) {
             if (l == 0) {

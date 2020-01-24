@@ -99,6 +99,7 @@ public class SetMalleableParametersTask extends AbstractTaskImplementation {
     int index = 0;
     while (pce.setNext()) {
       index++;
+      // copy graph since SRDAG transfo has side effects (on parameters and delays)
       final PiGraph graphCopy = PiMMUserFactory.instance.copyPiGraphWithHistory(graph);
       final PiGraph dag = PiSDFToSingleRate.compute(graphCopy, BRVMethod.LCM);
       System.err.println("==> Testing combination: " + index);
@@ -110,6 +111,7 @@ public class SetMalleableParametersTask extends AbstractTaskImplementation {
       }
       final IScheduler scheduler = new PeriodicScheduler();
       final SynthesisResult scheduleAndMap = scheduler.scheduleAndMap(dag, architecture, scenario);
+      // use implementation evaluation of PeriodicScheduler instead?
       final ScheduleOrderManager scheduleOM = new ScheduleOrderManager(dag, scheduleAndMap.schedule);
       final LatencyCost evaluate = new SimpleLatencyEvaluation().evaluate(dag, architecture, scenario,
           scheduleAndMap.mapping, scheduleOM);
