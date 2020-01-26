@@ -101,6 +101,7 @@ public class SetMalleableParametersTask extends AbstractTaskImplementation {
       index++;
       // copy graph since SRDAG transfo has side effects (on parameters and delays)
       final PiGraph graphCopy = PiMMUserFactory.instance.copyPiGraphWithHistory(graph);
+
       final PiGraph dag = PiSDFToSingleRate.compute(graphCopy, BRVMethod.LCM);
       System.err.println("==> Testing combination: " + index);
       for (Parameter p : graphCopy.getAllParameters()) {
@@ -109,6 +110,9 @@ public class SetMalleableParametersTask extends AbstractTaskImplementation {
       for (Parameter p : dag.getAllParameters()) {
         System.err.println(p.getName() + " (in DAG): " + p.getExpression().getExpressionAsString());
       }
+      // int iterationDelay = IterationDelayedEvaluator.computeLatency(graphCopy);
+      // PreesmLogger.getLogger().log(Level.INFO, "Latency in number of iteration: " + iterationDelay);
+
       final IScheduler scheduler = new PeriodicScheduler();
       final SynthesisResult scheduleAndMap = scheduler.scheduleAndMap(dag, architecture, scenario);
       // use implementation evaluation of PeriodicScheduler instead?

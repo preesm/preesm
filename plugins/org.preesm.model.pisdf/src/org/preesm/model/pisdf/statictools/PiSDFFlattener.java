@@ -89,6 +89,37 @@ import org.preesm.model.pisdf.util.PiMMSwitch;
  */
 public class PiSDFFlattener extends PiMMSwitch<Boolean> {
 
+  /** The result. */
+  // Flat graph created from the outer graph
+  private final PiGraph result;
+
+  /** Basic repetition vector of the graph */
+  private final Map<AbstractVertex, Long> brv;
+
+  /** Map from original PiMM vertices to generated DAG vertices */
+  private final Map<AbstractActor, AbstractActor> actor2actor = new LinkedHashMap<>();
+
+  /** Current Single-Rate Graph name */
+  private String graphName;
+
+  /** Current graph prefix */
+  private String graphPrefix;
+
+  private final Map<Parameter, Parameter> param2param = new LinkedHashMap<>();
+
+  /**
+   * Instantiates a new abstract StaticPiMM2ASrPiMMVisitor.
+   *
+   *
+   */
+  public PiSDFFlattener(Map<AbstractVertex, Long> brv) {
+    this.result = PiMMUserFactory.instance.createPiGraph();
+    this.brv = brv;
+    this.graphName = "";
+    this.graphPrefix = "";
+
+  }
+
   /**
    * Precondition: All.
    *
@@ -201,36 +232,6 @@ public class PiSDFFlattener extends PiMMSwitch<Boolean> {
         throw new PreesmRuntimeException("Flatten graph should have no interface");
       }
     }
-  }
-
-  /** The result. */
-  // Flat graph created from the outer graph
-  private final PiGraph result;
-
-  /** Basic repetition vector of the graph */
-  private final Map<AbstractVertex, Long> brv;
-
-  /** Map from original PiMM vertices to generated DAG vertices */
-  private final Map<AbstractActor, AbstractActor> actor2actor = new LinkedHashMap<>();
-
-  /** Current Single-Rate Graph name */
-  private String graphName;
-
-  /** Current graph prefix */
-  private String graphPrefix;
-
-  private final Map<Parameter, Parameter> param2param = new LinkedHashMap<>();
-
-  /**
-   * Instantiates a new abstract StaticPiMM2ASrPiMMVisitor.
-   *
-   *
-   */
-  public PiSDFFlattener(Map<AbstractVertex, Long> brv) {
-    this.result = PiMMUserFactory.instance.createPiGraph();
-    this.brv = brv;
-    this.graphName = "";
-    this.graphPrefix = "";
   }
 
   /*
@@ -634,9 +635,10 @@ public class PiSDFFlattener extends PiMMSwitch<Boolean> {
     if (graph.getContainingPiGraph() == null) {
       result.setName(graph.getName() + "_flat");
       result.setUrl(graph.getUrl());
-      result.setExpression(graph.getPeriod());
+      result.setExpression(graph.getPeriod().evaluate());
       PreesmCopyTracker.trackCopy(graph, this.result);
     }
+
     // If there are no actors in the graph we leave
     if (graph.getActors().isEmpty()) {
       throw new UnsupportedOperationException(
@@ -667,6 +669,7 @@ public class PiSDFFlattener extends PiMMSwitch<Boolean> {
         containsNonPersistent = true;
       }
     }
+
     if (containsNonPersistent && containsPersistent) {
       throw new PreesmRuntimeException("We have detected persistent and non-persistent delays in graph ["
           + graph.getName() + "]. This is not supported by the flattening transformation for now.");
