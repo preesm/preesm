@@ -4,11 +4,14 @@ import java.util.ArrayDeque;
 import java.util.Deque;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.logging.Level;
+import org.jgrapht.alg.cycle.JohnsonSimpleCycles;
 import org.jgrapht.graph.DefaultDirectedGraph;
 import org.preesm.algorithm.pisdf.checker.AbstractGraph.FifoAbstraction;
+import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.AbstractVertex;
@@ -46,16 +49,21 @@ public class IterationDelayedEvaluator {
     // 3. get absGraph and remove cycles
     DefaultDirectedGraph<AbstractActor, FifoAbstraction> absGraph = heurFifoBreaks.absGraph;
     absGraph.removeAllEdges(heurFifoBreaks.breakingFifosAbs);
-    // TODO check that the new graph is a DAG
+    // 3.5 check if new graph is a DAG
+    final JohnsonSimpleCycles<AbstractActor, FifoAbstraction> cycleFinder = new JohnsonSimpleCycles<>(absGraph);
+    final List<List<AbstractActor>> cycles = cycleFinder.findSimpleCycles();
+    if (!cycles.isEmpty()) {
+      throw new PreesmRuntimeException("The iteration latency evaluation computed a DAG which is not a DAG, abandon.");
+    }
     // 4. get source and sink actors
     final Set<AbstractActor> sinkActors = new LinkedHashSet<>(heurFifoBreaks.additionalSinkActors);
     final Set<AbstractActor> sourceActors = new LinkedHashSet<>(heurFifoBreaks.additionalSourceActors);
-    for (final AbstractActor absActor : flatGraph.getActors()) {
+    for (final AbstractActor absActor : absGraph.vertexSet()) {
       if (absActor instanceof ExecutableActor) {
-        if (absActor.getDataOutputPorts().isEmpty()) {
+        if (absGraph.outDegreeOf(absActor) == 0) {
           sinkActors.add(absActor);
         }
-        if (absActor.getDataInputPorts().isEmpty()) {
+        if (absGraph.inDegreeOf(absActor) == 0) {
           sourceActors.add(absActor);
         }
       }
@@ -91,9 +99,8 @@ public class IterationDelayedEvaluator {
       final Set<AbstractActor> sourceActors, DefaultDirectedGraph<AbstractActor, FifoAbstraction> absGraph) {
     final Map<AbstractActor, ActorDelayInfo> topoDelays = new LinkedHashMap<>();
     for (final AbstractActor actor : sourceActors) {
-      topoDelays.put(actor, new ActorDelayInfo(0, 0));
+      topoDelays.put(actor, new ActorDelayInfo(0, 1));
     }
-
     final Deque<AbstractActor> toVisit = new ArrayDeque<>(sourceActors);
     while (!toVisit.isEmpty()) {
       final AbstractActor actor = toVisit.removeFirst();

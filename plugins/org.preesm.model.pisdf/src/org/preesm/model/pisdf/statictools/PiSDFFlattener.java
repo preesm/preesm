@@ -112,7 +112,7 @@ public class PiSDFFlattener extends PiMMSwitch<Boolean> {
    *
    *
    */
-  public PiSDFFlattener(Map<AbstractVertex, Long> brv) {
+  private PiSDFFlattener(Map<AbstractVertex, Long> brv) {
     this.result = PiMMUserFactory.instance.createPiGraph();
     this.brv = brv;
     this.graphName = "";

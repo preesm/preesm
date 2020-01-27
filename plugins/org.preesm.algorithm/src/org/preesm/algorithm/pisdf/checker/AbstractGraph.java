@@ -119,11 +119,13 @@ public class AbstractGraph {
           fa.fifos.add(f);
           final Delay d = f.getDelay();
           long delayRawSize = 0L;
+          long delay = 0L;
           if (d != null) {
             fa.nbNonZeroDelays++;
-            delayRawSize = d.getSizeExpression().evaluate() / gcd;
+            delayRawSize = d.getSizeExpression().evaluate();
+            delay = delayRawSize / gcd;
           }
-          fa.delays.add(delayRawSize);
+          fa.delays.add(delay);
 
           final long brvDest = brv.get(absTgt);
           final int nbIterDelayed = (int) Math.ceil((double) delayRawSize / (brvDest * tgtRate));

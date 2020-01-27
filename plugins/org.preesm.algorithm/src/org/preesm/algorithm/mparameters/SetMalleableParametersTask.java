@@ -8,6 +8,7 @@ import java.util.Map.Entry;
 import java.util.logging.Level;
 import java.util.stream.Collectors;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.preesm.algorithm.pisdf.checker.IterationDelayedEvaluator;
 import org.preesm.algorithm.synthesis.SynthesisResult;
 import org.preesm.algorithm.synthesis.evaluation.latency.LatencyCost;
 import org.preesm.algorithm.synthesis.evaluation.latency.SimpleLatencyEvaluation;
@@ -99,19 +100,19 @@ public class SetMalleableParametersTask extends AbstractTaskImplementation {
     int index = 0;
     while (pce.setNext()) {
       index++;
-      // copy graph since SRDAG transfo has side effects (on parameters and delays)
-      final PiGraph graphCopy = PiMMUserFactory.instance.copyPiGraphWithHistory(graph);
 
-      final PiGraph dag = PiSDFToSingleRate.compute(graphCopy, BRVMethod.LCM);
-      System.err.println("==> Testing combination: " + index);
-      for (Parameter p : graphCopy.getAllParameters()) {
-        System.err.println(p.getName() + ": " + p.getExpression().getExpressionAsString());
+      final PiGraph dag = PiSDFToSingleRate.compute(graph, BRVMethod.LCM);
+      PreesmLogger.getLogger().fine("==> Testing combination: " + index);
+      for (Parameter p : graph.getAllParameters()) {
+        PreesmLogger.getLogger().fine(p.getName() + ": " + p.getExpression().getExpressionAsString());
       }
       for (Parameter p : dag.getAllParameters()) {
-        System.err.println(p.getName() + " (in DAG): " + p.getExpression().getExpressionAsString());
+        PreesmLogger.getLogger().fine(p.getName() + " (in DAG): " + p.getExpression().getExpressionAsString());
       }
-      // int iterationDelay = IterationDelayedEvaluator.computeLatency(graphCopy);
-      // PreesmLogger.getLogger().log(Level.INFO, "Latency in number of iteration: " + iterationDelay);
+      // copy graph since flatten transfo has side effects (on parameters)
+      final PiGraph graphCopy = PiMMUserFactory.instance.copyPiGraphWithHistory(graph);
+      int iterationDelay = IterationDelayedEvaluator.computeLatency(graphCopy);
+      PreesmLogger.getLogger().log(Level.INFO, "Latency in number of iteration: " + iterationDelay);
 
       final IScheduler scheduler = new PeriodicScheduler();
       final SynthesisResult scheduleAndMap = scheduler.scheduleAndMap(dag, architecture, scenario);
