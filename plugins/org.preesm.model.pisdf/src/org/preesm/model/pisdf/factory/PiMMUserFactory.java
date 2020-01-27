@@ -37,6 +37,8 @@
  */
 package org.preesm.model.pisdf.factory;
 
+import java.util.ArrayList;
+import java.util.List;
 import org.eclipse.emf.common.util.EList;
 import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.preesm.commons.model.PreesmCopyTracker;
@@ -86,6 +88,14 @@ public final class PiMMUserFactory extends PiMMFactoryImpl implements PreesmUser
   public PiGraph copyPiGraphWithHistory(final PiGraph origGraph) {
     // generic type forced to EObject to call the default copy from PreesmUserFactory
     final PiGraph copyGraph = this.copyWithHistory(origGraph);
+    // we copy all known observer to all relevant objects (here for PiGraph)
+    List<PiGraph> allPiGraph = new ArrayList<>();
+    allPiGraph.add(copyGraph);
+    while (!allPiGraph.isEmpty()) {
+      PiGraph pg = allPiGraph.remove(0);
+      pg.eAdapters().add(new GraphInterfaceObserver());
+      allPiGraph.addAll(pg.getChildrenGraphs());
+    }
 
     // track parameters
     final EList<Parameter> allOrigParams = origGraph.getAllParameters();
