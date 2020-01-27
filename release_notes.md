@@ -6,10 +6,17 @@ PREESM Changelog
 
 ### New Feature
 * Clustering: Uniform Repetition Count chain of actor can be found with the new URCSeeker class.
+* Model: new class of parameter : Malleable Parameter, accepting a set of possible values.
+* Workflow: new task "pisdf-mparams.setter" to compute best value of malleable parameters (naive version).
 
 ### Changes
+* ConfigInputInterface accepts a default value (to compute BRV in subgraph and to avoid false checks in GUI).
+* BRV can be computed on subgraph now.
+* Possibility to set the init function of a delay in the GUI, not yet used in the codegen.
 
 ### Bug fix
+* Fix ids and icons of a few GUI elements.
+* Fix expression evaluation exception management.
 
 
 ## Release version 3.19.0
