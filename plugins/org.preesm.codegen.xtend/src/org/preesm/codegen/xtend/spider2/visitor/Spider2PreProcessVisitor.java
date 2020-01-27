@@ -11,6 +11,7 @@ import java.util.stream.Collectors;
 import org.preesm.codegen.xtend.spider2.utils.Spider2CodegenActor;
 import org.preesm.codegen.xtend.spider2.utils.Spider2CodegenEdge;
 import org.preesm.codegen.xtend.spider2.utils.Spider2CodegenPrototype;
+import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.Actor;
@@ -247,6 +248,40 @@ public class Spider2PreProcessVisitor extends PiMMSwitch<Boolean> {
     }
   }
 
+  private long getRealSourcePortIx(final AbstractActor actor, final DataOutputPort sourcePort) {
+    if (actor instanceof Actor) {
+      final Actor a = (Actor) (actor);
+      final CHeaderRefinement refinement = (CHeaderRefinement) (a.getRefinement());
+      final FunctionPrototype proto = refinement.getLoopPrototype();
+      final List<FunctionArgument> args = proto.getOutputArguments();
+      final List<FunctionArgument> matchArgs = args.stream().filter(x -> x.getName().equals(sourcePort.getName()))
+          .collect(Collectors.toList());
+      if (matchArgs.size() != 1) {
+        throw new PreesmRuntimeException("Did not find match for output port [" + sourcePort.getName()
+            + "] in the function [" + proto.getName() + "].");
+      }
+      return args.indexOf(matchArgs.get(0));
+    }
+    return actor.getDataOutputPorts().indexOf(sourcePort);
+  }
+
+  private long getRealSinkPortIx(final AbstractActor actor, final DataInputPort targetPort) {
+    if (actor instanceof Actor) {
+      final Actor a = (Actor) (actor);
+      final CHeaderRefinement refinement = (CHeaderRefinement) (a.getRefinement());
+      final FunctionPrototype proto = refinement.getLoopPrototype();
+      final List<FunctionArgument> args = proto.getInputArguments();
+      final List<FunctionArgument> matchArgs = args.stream().filter(x -> x.getName().equals(targetPort.getName()))
+          .collect(Collectors.toList());
+      if (matchArgs.size() != 1) {
+        throw new PreesmRuntimeException("Did not find match for input port [" + targetPort.getName()
+            + "] in the function [" + proto.getName() + "].");
+      }
+      return args.indexOf(matchArgs.get(0));
+    }
+    return actor.getDataInputPorts().indexOf(targetPort);
+  }
+
   /**
    * Extracts the edges of the Graph in the edgeMap.
    * 
@@ -262,7 +297,7 @@ public class Spider2PreProcessVisitor extends PiMMSwitch<Boolean> {
       /* Retrieve source information */
       final DataOutputPort sourcePort = fifo.getSourcePort();
       final AbstractActor source = sourcePort.getContainingActor();
-      final long sourceIx = source.getDataOutputPorts().indexOf(sourcePort);
+      final long sourceIx = getRealSourcePortIx(source, sourcePort);
       /* We need to substitute the real parameter name in the expression */
       String sourceRateExpression = "(" + sourcePort.getExpression().getExpressionAsString() + ")";
       for (final ConfigInputPort iCfg : source.getConfigInputPorts()) {
@@ -277,7 +312,7 @@ public class Spider2PreProcessVisitor extends PiMMSwitch<Boolean> {
       /* Retrieve sink information */
       final DataInputPort targetPort = fifo.getTargetPort();
       final AbstractActor sink = targetPort.getContainingActor();
-      final long sinkIx = sink.getDataInputPorts().indexOf(targetPort);
+      final long sinkIx = getRealSinkPortIx(sink, targetPort);
       /* We need to substitute the real parameter name in the expression */
       String sinkRateExpression = "(" + targetPort.getExpression().getExpressionAsString() + ")";
       for (final ConfigInputPort iCfg : sink.getConfigInputPorts()) {

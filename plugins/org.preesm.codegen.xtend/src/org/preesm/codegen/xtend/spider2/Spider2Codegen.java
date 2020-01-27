@@ -196,7 +196,7 @@ public class Spider2Codegen {
 
     /* Fill out the context */
     VelocityContext context = new VelocityContext();
-    context.put("verbose", true);
+    context.put("verbose", false);
     context.put("standalone", false);
     context.put("papify", false);
     context.put("apollo", false);
@@ -209,6 +209,7 @@ public class Spider2Codegen {
     context.put("runMode", "LOOP");
     context.put("loopCount", "10000");
     context.put("runtimeAlgo", "JITMS");
+    context.put("schedAlgorithm", "LIST_BEST_FIT");
 
     final List<Pair<String, List<ConfigInputPort>>> initPrototypes = new ArrayList<>();
     for (final PiGraph graph : this.preprocessor.getUniqueGraphSet()) {

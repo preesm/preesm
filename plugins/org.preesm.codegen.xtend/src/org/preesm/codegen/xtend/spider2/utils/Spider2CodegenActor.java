@@ -2,6 +2,7 @@ package org.preesm.codegen.xtend.spider2.utils;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.Actor;
 import org.preesm.model.pisdf.CHeaderRefinement;
@@ -17,6 +18,9 @@ public class Spider2CodegenActor {
 
   /** The refinement ConfigInputPort list */
   private final List<ConfigInputPort> refinementConfigInputPorts;
+
+  /** The refinement ConfigInputPort list */
+  private final List<ConfigInputPort> rateConfigInputPorts;
 
   /** The refinement ConfigOutputPort list */
   private final List<ConfigOutputPort> refinementConfigOutputPorts;
@@ -38,6 +42,8 @@ public class Spider2CodegenActor {
       this.refinementConfigInputPorts = new ArrayList<>();
       this.refinementConfigOutputPorts = new ArrayList<>();
     }
+    this.rateConfigInputPorts = actor.getConfigInputPorts().stream()
+        .filter(x -> !this.refinementConfigInputPorts.contains(x)).collect(Collectors.toList());
   }
 
   public String getType() {
@@ -46,6 +52,10 @@ public class Spider2CodegenActor {
 
   public AbstractActor getActor() {
     return this.actor;
+  }
+
+  public List<ConfigInputPort> getRateConfigInputPorts() {
+    return this.rateConfigInputPorts;
   }
 
   public List<ConfigInputPort> getRefinementConfigInputPorts() {
