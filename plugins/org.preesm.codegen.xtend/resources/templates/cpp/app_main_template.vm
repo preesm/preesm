@@ -116,7 +116,7 @@ int main(int argc, char *argv[]) {
         spider::userApplicationInit();
         
         /* == Run the application == */
-        spider::run(spider::RunMode::${runMode}, ${loopCount}, spider::RuntimeType::${runtimeAlgo});    
+        spider::run(spider::RunMode::${runMode}, ${loopCount}, spider::RuntimeType::${runtimeAlgo}, spider::SchedulingAlgorithm::${schedAlgorithm});    
         
         /* == Call the user finalize function(s) == */
         spider::userApplicationFinalize();

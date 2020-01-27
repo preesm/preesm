@@ -46,7 +46,7 @@
 
 spider::pisdf::Vertex *spider::create${graphName}Subgraph(std::string name, 
                                                           spider::pisdf::Graph *parentGraph,
-                                                          const std::vector<spider::pisdf::Param *> &parentGraphParams) {
+                                                          const std::vector<std::shared_ptr<spider::pisdf::Param>> &parentGraphParams) {
     /* == Create the subgraph == */
     auto *graph = spider::api::createSubgraph(parentGraph,
           /* = Name of the subgraph        = */ std::move(name),
@@ -60,34 +60,34 @@ spider::pisdf::Vertex *spider::create${graphName}Subgraph(std::string name,
     /* === Creates the parameter(s) === */
 #foreach($param in $inheritedParameters)
 
-    auto *param_$param.name = spider::api::createInheritedParam(
+    auto param_$param.name = spider::api::createInheritedParam(
           /* = Graph of the parameter = */  graph,
           /* = Name of the parameter  = */ "$param.name",
-          /* = Parent parameter       = */  parentGraphParams[$inheritedParameters.indexOf($param)]);
+          /* = Parent parameter       = */  parentGraphParams[$inheritedParameters.indexOf($param)].get());
 #end
 #foreach($param in $staticParameters)
 
-    auto *param_$param.name = spider::api::createStaticParam(
+    auto param_$param.name = spider::api::createStaticParam(
           /* = Graph of the parameter = */  graph,
           /* = Name of the parameter  = */ "$param.name",
           /* = Value of the parameter = */  $param.expression.expressionAsString);
 #end
 #foreach($param in $dependendStaticParameters)
 
-    auto *param_$param.name = spider::api::createStaticParam(
+    auto param_$param.name = spider::api::createStaticParam(
           /* = Graph of the parameter      = */  graph,
           /* = Name of the parameter       = */ "$param.name",
           /* = Expression of the parameter = */ "$param.expression.expressionAsString");
 #end
 #foreach($param in $dynamicParameters)
 
-    auto *param_$param.name = spider::api::createDynamicParam(
+    auto param_$param.name = spider::api::createDynamicParam(
           /* = Graph of the parameter = */  graph,
           /* = Name of the parameter  = */ "$param.name");
 #end
 #foreach($param in $dependentDynamicParameters)
 
-    auto *param_$param.name = spider::api::createDynamicParam(
+    auto param_$param.name = spider::api::createDynamicParam(
           /* = Graph of the parameter      = */  graph,
           /* = Name of the parameter       = */ "$param.name",
           /* = Expression of the parameter = */ "$param.expression.expressionAsString");
@@ -115,7 +115,8 @@ spider::pisdf::Vertex *spider::create${graphName}Subgraph(std::string name,
 #foreach($codegenActor in $actors)
     #set($actor = $codegenActor.actor)
     #set($type = $codegenActor.type)
-    #set($configInputPorts = $codegenActor.refinementConfigInputPorts)
+    #set($rateConfigInputPorts = $codegenActor.rateConfigInputPorts)
+    #set($refinementConfigInputPorts = $codegenActor.refinementConfigInputPorts)
     #set($configOutputPorts = $codegenActor.refinementConfigOutputPorts)
     
     auto *vertex_$actor.name = spider::api::createVertexFromType(
@@ -125,11 +126,19 @@ spider::pisdf::Vertex *spider::create${graphName}Subgraph(std::string name,
           /* = Number of output edges = */  ${actor.dataOutputPorts.size()},
           /* = Type of the vertex     = */  pisdf::VertexType::$type,
           /* = Kernel index (if any)  = */ #if(!$actor.refinement) SIZE_MAX#else kernels::${actor.refinement.loopPrototype.name.toUpperCase()}#end);
-#if( ${configInputPorts.size()} > 0)
 
-    /* == Set the input parameters of the vertex $actor.name == */
-#foreach($inputPort in $configInputPorts)
+#if( ${rateConfigInputPorts.size()} > 0)
+
+    /* == Set the input parameters used by rate expressions of the vertex $actor.name == */
+#foreach($inputPort in $rateConfigInputPorts)
     spider::api::addInputParamToVertex(vertex_$actor.name, param_${inputPort.incomingDependency.setter.name});
+#end
+#end
+#if( ${refinementConfigInputPorts.size()} > 0)
+
+    /* == Set the input parameters needed by the refinement of the vertex $actor.name == */
+#foreach($inputPort in $refinementConfigInputPorts)
+    spider::api::addInputRefinementParamToVertex(vertex_$actor.name, param_${inputPort.incomingDependency.setter.name});
 #end
 #end
 #if( ${configOutputPorts.size()} > 0)

@@ -66,7 +66,8 @@ namespace spider {
      * @return pointer to the @refitem pisdf::Vertex created.
      */
     pisdf::Vertex *create${graph.piGraphName}Subgraph(
-                         std::string name, spider::pisdf::Graph *parentGraph, const std::vector<spider::pisdf::Param *> &parentGraphParams = {});
+                         std::string name, spider::pisdf::Graph *parentGraph, 
+                         const std::vector<std::shared_ptr<spider::pisdf::Param>> &parentGraphParams = {});
 #end
 }
 #endif
