@@ -54,7 +54,10 @@ import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.ide.IDE;
 import org.preesm.model.pisdf.Actor;
+import org.preesm.model.pisdf.Delay;
+import org.preesm.model.pisdf.InitActor;
 import org.preesm.model.pisdf.Refinement;
+import org.preesm.model.pisdf.RefinementContainer;
 
 /**
  * Custom feature in charge of opening an editor for the refinement of an actor.
@@ -91,9 +94,16 @@ public class OpenRefinementFeature extends AbstractCustomFeature {
     // first check, if one Actor is selected
     if ((pes != null) && (pes.length == 1)) {
       final Object bo = getBusinessObjectForPictogramElement(pes[0]);
-      if (bo instanceof Actor) {
+      RefinementContainer rc = null;
+      if (bo instanceof Delay) {
+        rc = ((Delay) bo).getActor();
+      } else if (bo instanceof Actor || bo instanceof InitActor) {
+        rc = (RefinementContainer) bo;
+      }
+
+      if (rc != null) {
         // Check if the actor has a valid refinement
-        final Refinement refinement = ((Actor) bo).getRefinement();
+        final Refinement refinement = rc.getRefinement();
         if (refinement != null && refinement.getFilePath() != null) {
           return true;
         }
@@ -114,10 +124,16 @@ public class OpenRefinementFeature extends AbstractCustomFeature {
     // first check, if one Actor is selected
     if ((pes != null) && (pes.length == 1)) {
       final Object bo = getBusinessObjectForPictogramElement(pes[0]);
-      if (bo instanceof Actor) {
+      RefinementContainer rc = null;
+      if (bo instanceof Delay) {
+        rc = ((Delay) bo).getActor();
+      } else if (bo instanceof Actor || bo instanceof InitActor) {
+        rc = (RefinementContainer) bo;
+      }
+
+      if (rc != null) {
         // Check if the actor has a valid refinement
-        final IPath refinementPath = Optional.ofNullable(((Actor) bo).getRefinement().getFilePath()).map(Path::new)
-            .orElse(null);
+        final IPath refinementPath = Optional.ofNullable(rc.getRefinement().getFilePath()).map(Path::new).orElse(null);
         if (refinementPath != null) {
           final IWorkbenchWindow dw = PlatformUI.getWorkbench().getActiveWorkbenchWindow();
 

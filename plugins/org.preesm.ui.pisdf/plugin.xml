@@ -134,27 +134,45 @@
                tab="org.ietr.preesm.experiment.model.transformation.properties.tab.graph.basicDiagram">
          </propertySection>
          <propertySection
-               class="org.preesm.ui.pisdf.properties.PortParameterAndDelayPropertiesSection"
-               filter="org.preesm.ui.pisdf.properties.PiMMFilter"
-               id="org.ietr.preesm.experiment.model.transformation.properties.section.graph.basicPort"
+               class="org.preesm.ui.pisdf.properties.ParameterizablePropertiesSection"
+               filter="org.preesm.ui.pisdf.properties.PiMMParameterizableFilter"
+               id="org.ietr.preesm.experiment.model.transformation.properties.section.graph.basicParam"
+               tab="org.ietr.preesm.experiment.model.transformation.properties.tab.graph.basicPort">
+         </propertySection>
+         <propertySection
+               class="org.preesm.ui.pisdf.properties.DelayPropertiesSection"
+               filter="org.preesm.ui.pisdf.properties.PiMMDelayFilter"
+               id="org.ietr.preesm.experiment.model.transformation.properties.section.graph.basicDelay"
+               tab="org.ietr.preesm.experiment.model.transformation.properties.tab.graph.basicDelay">
+         </propertySection>
+         <propertySection
+               class="org.preesm.ui.pisdf.properties.ActorPropertiesSection"
+               filter="org.preesm.ui.pisdf.properties.PiMMDelayFilter"
+               id="org.ietr.preesm.experiment.model.transformation.properties.section.graph.initDelay"
+               tab="org.ietr.preesm.experiment.model.transformation.properties.tab.graph.initDelay">
+         </propertySection>
+         <propertySection
+               class="org.preesm.ui.pisdf.properties.DataPortPropertiesSection"
+               filter="org.preesm.ui.pisdf.properties.PiMMDataPortFilter"
+               id="org.ietr.preesm.experiment.model.transformation.properties.section.graph.basicDataPort"
                tab="org.ietr.preesm.experiment.model.transformation.properties.tab.graph.basicPort">
          </propertySection>
          <propertySection
                class="org.preesm.ui.pisdf.properties.ActorPropertiesSection"
                filter="org.preesm.ui.pisdf.properties.PiMMExActorFilter"
-               id="org.ietr.preesm.experiment.model.org.ietr.preesm.experiment.model.transformation.properties.tab.graph.basicActor.properties.section.graph.basicActor"
+               id="org.ietr.preesm.experiment.model.transformation.properties.section.graph.basicActor"
                tab="org.ietr.preesm.experiment.model.transformation.properties.tab.graph.basicActor">
          </propertySection>
          <propertySection
                class="org.preesm.ui.pisdf.properties.ActorPeriodPropertiesSection"
                filter="org.preesm.ui.pisdf.properties.PiMMPeriodActorFilter"
-               id="org.ietr.preesm.experiment.model.org.ietr.preesm.experiment.model.transformation.properties.tab.graph.basicActor.properties.section.graph.basicActorPeriod"
+               id="org.ietr.preesm.experiment.model.transformation.properties.section.graph.basicActorPeriod"
                tab="org.ietr.preesm.experiment.model.transformation.properties.tab.graph.basicActorPeriod">
          </propertySection>
          <propertySection
                class="org.preesm.ui.pisdf.properties.FifoPropertiesSection"
                filter="org.preesm.ui.pisdf.properties.PiMMFifoFilter"
-               id="org.ietr.preesm.experiment.model.org.ietr.preesm.experiment.model.transformation.properties.tab.graph.basicActor.properties.section.graph.basicFifo"
+               id="org.ietr.preesm.experiment.model.transformation.properties.section.graph.basicFifo"
                tab="org.ietr.preesm.experiment.model.transformation.properties.tab.graph.basicFifo">
          </propertySection>
       </propertySections>
@@ -195,7 +213,7 @@
             default="true"
             extensions="diagram"
             icon="resources/icons/pi.gif"
-            id="org.ietr.preesm.ui.pimm.editor.diagram"
+            id="org.preesm.ui.pisdf.editor.diagram"
             matchingStrategy="org.eclipse.graphiti.ui.editor.DiagramEditorMatchingStrategy"
             name="PiMM Diagram Editor">
       </editor>
@@ -231,23 +249,23 @@
    <extension
          point="org.eclipse.ui.commands">
       <command
-            id="org.ietr.preesm.ui.command.PimmChecker"
+            id="org.preesm.ui.pisdf.command.PimmChecker"
             name="PiMM Checker">
       </command>
       <command
-            id="org.ietr.preesm.ui.command.PiMM2Diagram"
+            id="org.preesm.ui.pisdf.command.PiMM2Diagram"
             name="Generate Diagram file from PiMM Graph">
       </command>
       <command
-            id="org.ietr.preesm.ui.command.PiSDFBRVCompute"
+            id="org.preesm.ui.pisdf.command.PiSDFBRVCompute"
             name="Compute the BRV of a PiSDF Graph">
       </command>
       <command
-            id="org.ietr.preesm.ui.command.PiSDFFlat"
+            id="org.preesm.ui.pisdf.command.PiSDFFlat"
             name="Compute the flat version of this PiSDF">
       </command>
       <command
-            id="org.ietr.preesm.ui.command.PiSDFSingleRate"
+            id="org.preesm.ui.pisdf.command.PiSDFSingleRate"
             name="Compute the Single Rate DAG of this PiSDF">
       </command>
    </extension>
@@ -257,23 +275,23 @@
          point="org.eclipse.ui.handlers">
       <handler
             class="org.preesm.ui.pisdf.popup.actions.PiMMAlgorithmCheckerPopup"
-            commandId="org.ietr.preesm.ui.command.PimmChecker">
+            commandId="org.preesm.ui.pisdf.command.PimmChecker">
       </handler>
       <handler
             class="org.preesm.ui.pisdf.popup.actions.PiMM2DiagramGeneratorPopup"
-            commandId="org.ietr.preesm.ui.command.PiMM2Diagram">
+            commandId="org.preesm.ui.pisdf.command.PiMM2Diagram">
       </handler>
       <handler
             class="org.preesm.ui.pisdf.popup.actions.PiSDFBRVComputePopup"
-            commandId="org.ietr.preesm.ui.command.PiSDFBRVCompute">
+            commandId="org.preesm.ui.pisdf.command.PiSDFBRVCompute">
       </handler>
       <handler
             class="org.preesm.ui.pisdf.popup.actions.PiSDFFlatComputePopup"
-            commandId="org.ietr.preesm.ui.command.PiSDFFlat">
+            commandId="org.preesm.ui.pisdf.command.PiSDFFlat">
       </handler>
       <handler
             class="org.preesm.ui.pisdf.popup.actions.PiSDFSRDAGComputePopup"
-            commandId="org.ietr.preesm.ui.command.PiSDFSingleRate">
+            commandId="org.preesm.ui.pisdf.command.PiSDFSingleRate">
       </handler>
    </extension>
 
@@ -301,6 +319,16 @@
                category="org.ietr.preesm.experiment.model.transformation.properties.category.graph"
                id="org.ietr.preesm.experiment.model.transformation.properties.tab.graph.basicPort"
                label="Port">
+         </propertyTab>
+         <propertyTab
+               category="org.ietr.preesm.experiment.model.transformation.properties.category.graph"
+               id="org.ietr.preesm.experiment.model.transformation.properties.tab.graph.initDelay"
+               label="Init">
+         </propertyTab>
+         <propertyTab
+               category="org.ietr.preesm.experiment.model.transformation.properties.category.graph"
+               id="org.ietr.preesm.experiment.model.transformation.properties.tab.graph.basicDelay"
+               label="Delay">
          </propertyTab>
          <propertyTab
                category="org.ietr.preesm.experiment.model.transformation.properties.category.graph"
@@ -440,14 +468,14 @@
 				<visibleWhen checkEnabled="true">
 					<and>
 					<with variable="activePartId">
-						<equals value="org.ietr.preesm.ui.pimm.editor.diagram"/>
+						<equals value="org.preesm.ui.pisdf.editor.diagram"/>
 					</with>
 					</and>
 				</visibleWhen>
         </command>
         <!-- Compute BRV -->
         <command
-              commandId="org.ietr.preesm.ui.command.PiSDFBRVCompute"
+              commandId="org.preesm.ui.pisdf.command.PiSDFBRVCompute"
               icon="resources/icons/pi.gif"
               label="Compute PiSDF BRV (Basic Repetition Vector)"
               mnemonic="B"
@@ -455,14 +483,14 @@
 			<visibleWhen checkEnabled="true">
 				<and>
 				<with variable="activePartId">
-					<equals value="org.ietr.preesm.ui.pimm.editor.diagram"/>
+					<equals value="org.preesm.ui.pisdf.editor.diagram"/>
 				</with>
 				</and>
 			</visibleWhen>
         </command>
         <!-- Compute Flat -->
         <command
-              commandId="org.ietr.preesm.ui.command.PiSDFFlat"
+              commandId="org.preesm.ui.pisdf.command.PiSDFFlat"
               icon="resources/icons/pi.gif"
               label="Compute PiSDF Flat version"
               mnemonic="F"
@@ -470,14 +498,14 @@
 			<visibleWhen checkEnabled="true">
 				<and>
 				<with variable="activePartId">
-					<equals value="org.ietr.preesm.ui.pimm.editor.diagram"/>
+					<equals value="org.preesm.ui.pisdf.editor.diagram"/>
 				</with>
 				</and>
 			</visibleWhen>
         </command>
         <!-- Compute SRDAG -->
         <command
-              commandId="org.ietr.preesm.ui.command.PiSDFSingleRate"
+              commandId="org.preesm.ui.pisdf.command.PiSDFSingleRate"
               icon="resources/icons/pi.gif"
               label="Compute PiSDF SRDAG (Single Rate)"
               mnemonic="S"
@@ -485,7 +513,7 @@
 			<visibleWhen checkEnabled="true">
 				<and>
 				<with variable="activePartId">
-					<equals value="org.ietr.preesm.ui.pimm.editor.diagram"/>
+					<equals value="org.preesm.ui.pisdf.editor.diagram"/>
 				</with>
 				</and>
 			</visibleWhen>
@@ -498,12 +526,12 @@
             allPopups="false"
             locationURI="popup:org.eclipse.ui.popup.any?before=additions">
          <menu
-               icon="resources/icons/preesmProject.png"
-               id="org.ietr.preesm.ui.menu1"
+               icon="resources/icons/preesmLogo_16x16.png"
+               id="org.preesm.ui.menu1"
                label="Preesm">
             <!-- Check the selected pimm file -->
             <command
-                  commandId="org.ietr.preesm.ui.command.PimmChecker"
+                  commandId="org.preesm.ui.pisdf.command.PimmChecker"
                   icon="resources/icons/pi.gif"
                   label="Check PiMM Model"
                   mnemonic="C"
@@ -532,7 +560,7 @@
             </command>
             <!-- generation .diagram from the selected .pi file -->
             <command
-                  commandId="org.ietr.preesm.ui.command.PiMM2Diagram"
+                  commandId="org.preesm.ui.pisdf.command.PiMM2Diagram"
                   icon="resources/icons/pi.gif"
                   label="Generate .diagram"
                   mnemonic="G"
@@ -561,7 +589,7 @@
             </command>
             <!-- Compute BRV of a PiGraph -->
             <command
-                  commandId="org.ietr.preesm.ui.command.PiSDFBRVCompute"
+                  commandId="org.preesm.ui.pisdf.command.PiSDFBRVCompute"
                   icon="resources/icons/pi.gif"
                   label="Compute PiSDF BRV (Basic Repetition Vector)"
                   mnemonic="C"
@@ -590,7 +618,7 @@
             </command>
             <!-- Compute Flat version of a PiGraph -->
             <command
-		commandId="org.ietr.preesm.ui.command.PiSDFFlat"
+		commandId="org.preesm.ui.pisdf.command.PiSDFFlat"
 		icon="resources/icons/pi.gif"
 		label="Compute PiSDF Flat version"
                   mnemonic="F"
@@ -619,7 +647,7 @@
             </command>
             <!-- Compute SRDAG of a PiGraph -->
             <command
-                  commandId="org.ietr.preesm.ui.command.PiSDFSingleRate"
+                  commandId="org.preesm.ui.pisdf.command.PiSDFSingleRate"
                   icon="resources/icons/pi.gif"
                   label="Compute PiSDF SRDAG (Single Rate)"
                   mnemonic="S"

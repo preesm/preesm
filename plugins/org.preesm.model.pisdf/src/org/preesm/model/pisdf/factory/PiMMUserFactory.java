@@ -37,6 +37,8 @@
  */
 package org.preesm.model.pisdf.factory;
 
+import java.util.ArrayList;
+import java.util.List;
 import org.eclipse.emf.common.util.EList;
 import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.preesm.commons.model.PreesmCopyTracker;
@@ -59,6 +61,7 @@ import org.preesm.model.pisdf.Expression;
 import org.preesm.model.pisdf.Fifo;
 import org.preesm.model.pisdf.ISetter;
 import org.preesm.model.pisdf.LongExpression;
+import org.preesm.model.pisdf.MalleableParameter;
 import org.preesm.model.pisdf.Parameter;
 import org.preesm.model.pisdf.PersistenceLevel;
 import org.preesm.model.pisdf.PiGraph;
@@ -85,6 +88,14 @@ public final class PiMMUserFactory extends PiMMFactoryImpl implements PreesmUser
   public PiGraph copyPiGraphWithHistory(final PiGraph origGraph) {
     // generic type forced to EObject to call the default copy from PreesmUserFactory
     final PiGraph copyGraph = this.copyWithHistory(origGraph);
+    // we copy all known observer to all relevant objects (here for PiGraph)
+    List<PiGraph> allPiGraph = new ArrayList<>();
+    allPiGraph.add(copyGraph);
+    while (!allPiGraph.isEmpty()) {
+      PiGraph pg = allPiGraph.remove(0);
+      pg.eAdapters().add(new GraphInterfaceObserver());
+      allPiGraph.addAll(pg.getChildrenGraphs());
+    }
 
     // track parameters
     final EList<Parameter> allOrigParams = origGraph.getAllParameters();
@@ -165,14 +176,6 @@ public final class PiMMUserFactory extends PiMMFactoryImpl implements PreesmUser
   }
 
   @Override
-  public ConfigInputInterface createConfigInputInterface() {
-    final ConfigInputInterface res = super.createConfigInputInterface();
-    final Expression createExpression = createExpression();
-    res.setExpression(createExpression);
-    return res;
-  }
-
-  @Override
   public Parameter createParameter() {
     return createParameter(null, 0);
   }
@@ -186,6 +189,23 @@ public final class PiMMUserFactory extends PiMMFactoryImpl implements PreesmUser
     createParameter.setExpression(createExpression);
     createParameter.setName(name);
     return createParameter;
+  }
+
+  @Override
+  public MalleableParameter createMalleableParameter() {
+    return createMalleableParameter(null, 0);
+  }
+
+  /**
+   * 
+   */
+  public MalleableParameter createMalleableParameter(final String name, final long evaluate) {
+    final MalleableParameter res = super.createMalleableParameter();
+    final Expression createExpression = createExpression(evaluate);
+    res.setExpression(createExpression);
+    res.setName(name);
+    res.setUserExpression("0");
+    return res;
   }
 
   @Override
@@ -361,10 +381,19 @@ public final class PiMMUserFactory extends PiMMFactoryImpl implements PreesmUser
   }
 
   @Override
+  public ConfigInputInterface createConfigInputInterface() {
+    final ConfigInputInterface res = super.createConfigInputInterface();
+    final Expression createExpression = createExpression();
+    res.setExpression(createExpression);
+    return res;
+  }
+
+  @Override
   public ConfigOutputInterface createConfigOutputInterface() {
     final ConfigOutputInterface res = super.createConfigOutputInterface();
     final DataInputPort port = PiMMUserFactory.instance.createDataInputPort();
     res.getDataInputPorts().add(port);
     return res;
   }
+
 }

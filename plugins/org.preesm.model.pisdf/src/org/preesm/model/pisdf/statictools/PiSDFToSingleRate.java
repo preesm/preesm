@@ -97,6 +97,63 @@ import org.preesm.model.pisdf.util.PiMMSwitch;
  */
 public class PiSDFToSingleRate extends PiMMSwitch<Boolean> {
 
+  /** The result. */
+  // SRDAG graph created from the outer graph
+  private final PiGraph result;
+
+  /** Basic repetition vector of the graph */
+  private final Map<AbstractVertex, Long> brv;
+
+  /** Map from original PiMM vertices to generated DAG vertices */
+  private final Map<String, List<AbstractVertex>> actor2SRActors = new LinkedHashMap<>();
+
+  /** Map of all DataInputInterface to corresponding vertices */
+  private final Map<DataInputPort, List<AbstractVertex>> inPort2SRActors = new LinkedHashMap<>();
+
+  /** Map of all DataOutputInterface to corresponding vertices */
+  private final Map<DataOutputPort, List<AbstractVertex>> outPort2SRActors = new LinkedHashMap<>();
+
+  /** Current Single-Rate Graph name */
+  private String graphName;
+
+  /** Current graph prefix */
+  private String graphPrefix;
+
+  /**
+   * Current instance: stores the firing number of the current element. This is a global firing id: from 0 to full
+   * repetition vector - 1 (not local default repetition vector).
+   */
+  private long firingInstance;
+
+  /** Current actor name */
+  private String currentActorName;
+
+  /** Current FIFO */
+  private Fifo currentFifo;
+
+  private final PiGraph inputGraph;
+
+  private final Map<Parameter, Parameter> param2param = new LinkedHashMap<>();
+
+  /**
+   * Instantiates a new abstract StaticPiMM2ASrPiMMVisitor.
+   *
+   */
+  private PiSDFToSingleRate(final PiGraph inputGraph, final Map<AbstractVertex, Long> brv) {
+    this.inputGraph = inputGraph;
+    this.result = PiMMUserFactory.instance.createPiGraph();
+    PreesmCopyTracker.trackCopy(inputGraph, this.result);
+    this.result.setName(this.inputGraph.getName());
+    this.result.setUrl(this.inputGraph.getUrl());
+    this.brv = brv;
+    this.graphName = "";
+    this.graphPrefix = "";
+    this.firingInstance = 0;
+
+    // copy input graph period
+    this.result.setExpression(inputGraph.getPeriod().evaluate());
+  }
+
   /**
    * Precondition: All.
    *
@@ -108,30 +165,32 @@ public class PiSDFToSingleRate extends PiMMSwitch<Boolean> {
 
     PreesmLogger.getLogger().log(Level.FINE, " >>   - check");
     PiGraphConsistenceChecker.check(graph);
+    // 0. we copy the graph since the transformation has side effects (especially on delay actors)
+    final PiGraph graphCopy = PiMMUserFactory.instance.copyPiGraphWithHistory(graph);
     // 1. First we resolve all parameters.
     // It must be done first because, when removing persistence, local parameters have to be known at upper level
     PreesmLogger.getLogger().log(Level.FINE, " >>   - resolve params");
-    PiMMHelper.resolveAllParameters(graph);
+    PiMMHelper.resolveAllParameters(graphCopy);
     // 2. We perform the delay transformation step that deals with persistence
     PreesmLogger.getLogger().log(Level.FINE, " >>   - remove persistence");
-    PiMMHelper.removePersistence(graph);
+    PiMMHelper.removePersistence(graphCopy);
     // 3. Compute BRV following the chosen method
     PreesmLogger.getLogger().log(Level.FINE, " >>   - compute brv");
-    Map<AbstractVertex, Long> brv = PiBRV.compute(graph, method);
+    Map<AbstractVertex, Long> brv = PiBRV.compute(graphCopy, method);
     // 4. Print the RV values
     PreesmLogger.getLogger().log(Level.FINE, " >>   - print brv");
     PiBRV.printRV(brv);
     // 4.5 Check periods with BRV
     PreesmLogger.getLogger().log(Level.FINE, " >>   - check periodicity");
-    PiMMHelper.checkPeriodicity(graph, brv);
+    PiMMHelper.checkPeriodicity(graphCopy, brv);
 
     // 5. Convert to SR-DAG
     PreesmLogger.getLogger().log(Level.FINE, " >>   - apply single rate transfo");
-    PiSDFToSingleRate staticPiMM2ASrPiMMVisitor = new PiSDFToSingleRate(graph, brv);
-    staticPiMM2ASrPiMMVisitor.doSwitch(graph);
+    PiSDFToSingleRate staticPiMM2ASrPiMMVisitor = new PiSDFToSingleRate(graphCopy, brv);
+    staticPiMM2ASrPiMMVisitor.doSwitch(graphCopy);
     final PiGraph acyclicSRPiMM = staticPiMM2ASrPiMMVisitor.getResult();
 
-    srCheck(graph, acyclicSRPiMM);
+    srCheck(graphCopy, acyclicSRPiMM);
     removeUnusedPorts(acyclicSRPiMM);
 
     // 6- do some optimization on the graph
@@ -146,7 +205,7 @@ public class PiSDFToSingleRate extends PiMMSwitch<Boolean> {
     PreesmLogger.getLogger().log(Level.FINE, " >>   - check");
     PiGraphConsistenceChecker.check(acyclicSRPiMM);
 
-    srCheck(graph, acyclicSRPiMM);
+    srCheck(graphCopy, acyclicSRPiMM);
     PreesmLogger.getLogger().log(Level.FINE, " >> End srdag transfo");
 
     PreesmLogger.getLogger().log(Level.INFO, () -> " SRDAG with " + acyclicSRPiMM.getAllActors().size()
@@ -219,63 +278,6 @@ public class PiSDFToSingleRate extends PiMMSwitch<Boolean> {
       }
     }
   }
-
-  /** The result. */
-  // SRDAG graph created from the outer graph
-  private final PiGraph result;
-
-  /** Basic repetition vector of the graph */
-  private final Map<AbstractVertex, Long> brv;
-
-  /** Map from original PiMM vertices to generated DAG vertices */
-  private final Map<String, List<AbstractVertex>> actor2SRActors = new LinkedHashMap<>();
-
-  /** Map of all DataInputInterface to corresponding vertices */
-  private final Map<DataInputPort, List<AbstractVertex>> inPort2SRActors = new LinkedHashMap<>();
-
-  /** Map of all DataOutputInterface to corresponding vertices */
-  private final Map<DataOutputPort, List<AbstractVertex>> outPort2SRActors = new LinkedHashMap<>();
-
-  /** Current Single-Rate Graph name */
-  private String graphName;
-
-  /** Current graph prefix */
-  private String graphPrefix;
-
-  /**
-   * Current instance: stores the firing number of the current element. This is a global firing id: from 0 to full
-   * repetition vector - 1 (not local default repetition vector).
-   */
-  private long firingInstance;
-
-  /** Current actor name */
-  private String currentActorName;
-
-  /** Current FIFO */
-  private Fifo currentFifo;
-
-  private final PiGraph inputGraph;
-
-  /**
-   * Instantiates a new abstract StaticPiMM2ASrPiMMVisitor.
-   *
-   */
-  public PiSDFToSingleRate(final PiGraph inputGraph, final Map<AbstractVertex, Long> brv) {
-    this.inputGraph = inputGraph;
-    this.result = PiMMUserFactory.instance.createPiGraph();
-    PreesmCopyTracker.trackCopy(inputGraph, this.result);
-    this.result.setName(this.inputGraph.getName());
-    this.result.setUrl(this.inputGraph.getUrl());
-    this.brv = brv;
-    this.graphName = "";
-    this.graphPrefix = "";
-    this.firingInstance = 0;
-
-    // copy input graph period
-    this.result.setExpression(inputGraph.getPeriod().evaluate());
-  }
-
-  private final Map<Parameter, Parameter> param2param = new LinkedHashMap<>();
 
   /**
    *

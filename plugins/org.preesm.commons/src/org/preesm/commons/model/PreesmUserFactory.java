@@ -55,8 +55,11 @@ public interface PreesmUserFactory {
   }
 
   /**
+   * 
    * Copy an existing Preesm object. The original version of the object can be accessed using
    * {@link PreesmCopyTracker#getSource(Notifier)} and {@link PreesmCopyTracker#getOriginalSource(Notifier)}.
+   * <p>
+   * The contained object are also copied, but not tracked, see subclasses for specialization.
    */
   public default <T extends EObject> T copyWithHistory(final T eObject) {
     final T copy = copy(eObject);

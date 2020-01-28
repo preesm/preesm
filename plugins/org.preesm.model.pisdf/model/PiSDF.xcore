@@ -272,6 +272,9 @@ class PiGraph extends AbstractActor, Graph, PeriodicElement {
 		return parameters.filter(it|!((it instanceof ConfigInputInterface) || (it instanceof ConfigOutputInterface) )).
 			toEList.unmodifiableView
 	}
+	op unique MalleableParameter[] getMalleableParameters() {
+		return parameters.filter[it instanceof MalleableParameter].map[it as MalleableParameter].toEList.unmodifiableView
+	}
 
 	op unique Parameter[] getInputParameters() {
 		val ownParams = new ArrayList<Parameter>(getOnlyParameters())
@@ -424,7 +427,7 @@ abstract class SrdagActor extends SpecialActor {
 	op PersistenceLevel getPersistenceLevel()
 }
 
-class InitActor extends SrdagActor {
+class InitActor extends SrdagActor, RefinementContainer {
 	PersistenceLevel level
 	refers AbstractActor endReference
 	op DataOutputPort getDataOutputPort() {
@@ -500,16 +503,26 @@ class DelayActor extends NonExecutableActor, RefinementContainer {
 	// Checks that the prototype matches the template
 	// void delayInitRefinement(IN int size, OUT <type> *fifo);
 	op boolean isValidRefinement(CHeaderRefinement hrefinement) {
-		var FunctionPrototype initPrototype = hrefinement.getLoopPrototype()
-		if (initPrototype.arguments.length != 2) {
+		var FunctionPrototype initPrototype = hrefinement.getInitPrototype()
+		if (initPrototype.arguments.isEmpty) {
 			return false
 		}
-		if (initPrototype.arguments.get(0).getDirection !== Direction.IN) {
+
+		if (initPrototype.arguments.filter[it.getDirection() === Direction.OUT && 
+			!it.isIsConfigurationParameter].length != 1) {
 			return false
 		}
-		if (initPrototype.arguments.get(1).getDirection !== Direction.OUT) {
+
+		if (initPrototype.arguments.filter[it.getDirection() === Direction.IN && 
+			!it.isIsConfigurationParameter].length > 0) {
 			return false
 		}
+
+		if (initPrototype.arguments.filter[it.getDirection() === Direction.OUT && 
+			it.isIsConfigurationParameter].length > 0) {
+			return false
+		}
+
 		return true
 	}
 }
@@ -699,6 +712,13 @@ class Parameter extends Vertex, Configurable, ISetter, ExpressionHolder {
 	}
 	op boolean isConfigurationInterface() {
 		return false
+	}
+}
+
+class MalleableParameter extends Parameter {
+	String userExpression
+	op String[] getStrExpressions() {
+		return userExpression.split(";").filter[!it.isEmpty()].toEList.unmodifiableView
 	}
 }
 

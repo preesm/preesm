@@ -46,20 +46,20 @@
          <propertySection
                class="org.preesm.ui.sdf.properties.SDFGraphParametersListSection"
                filter="org.preesm.ui.sdf.properties.filters.SDFGraphFilter"
-               id="org.ietr.preesm.ui.properties.section.sdf.graph.parameters"
-               tab="org.ietr.preesm.ui.properties.tab.sdf.graph.parameters">
+               id="org.preesm.ui.sdf.properties.section.sdf.graph.parameters"
+               tab="org.preesm.ui.sdf.properties.tab.sdf.graph.parameters">
          </propertySection>
          <propertySection
                class="org.preesm.ui.sdf.properties.SDFGraphVariablesMapSection"
                filter="org.preesm.ui.sdf.properties.filters.SDFGraphFilter"
-               id="org.ietr.preesm.ui.properties.section.sdf.graph.variables"
-               tab="org.ietr.preesm.ui.properties.tab.sdf.graph.variables">
+               id="org.preesm.ui.sdf.properties.section.sdf.graph.variables"
+               tab="org.preesm.ui.sdf.properties.tab.sdf.graph.variables">
          </propertySection>
          <propertySection
                class="org.preesm.ui.sdf.properties.SDFVertexInstanceArgumentsMapSection"
                filter="org.preesm.ui.sdf.properties.filters.SDFVertexFilter"
-               id="org.ietr.preesm.ui.properties.section.sdf.vertex.arguments"
-               tab="org.ietr.preesm.ui.properties.tab.sdf.vertex.arguments">
+               id="org.preesm.ui.sdf.properties.section.sdf.vertex.arguments"
+               tab="org.preesm.ui.sdf.properties.tab.sdf.vertex.arguments">
          </propertySection>
       </propertySections>
    </extension>
@@ -74,7 +74,7 @@
             default="true"
             extensions="graphml, design, component, pi"
             icon="resources/icons/graphiti.gif"
-            id="org.ietr.preesm.ui.editor.graph"
+            id="org.preesm.ui.sdf.editor.graph"
             name="Preesm Network Editor">
       </editor>
    </extension>
@@ -86,17 +86,17 @@
             contributorId="org.ietr.dftools.graphiti.ui.properties.contributor">
          <propertyTab
                category="org.ietr.dftools.graphiti.ui.properties.category.graph"
-               id="org.ietr.preesm.ui.properties.tab.sdf.graph.parameters"
+               id="org.preesm.ui.sdf.properties.tab.sdf.graph.parameters"
                label="Graph Parameters">
          </propertyTab>
          <propertyTab
                category="org.ietr.dftools.graphiti.ui.properties.category.graph"
-               id="org.ietr.preesm.ui.properties.tab.sdf.graph.variables"
+               id="org.preesm.ui.sdf.properties.tab.sdf.graph.variables"
                label="Graph Variable Declarations">
          </propertyTab>
          <propertyTab
                category="org.ietr.dftools.graphiti.ui.properties.category.vertex"
-               id="org.ietr.preesm.ui.properties.tab.sdf.vertex.arguments"
+               id="org.preesm.ui.sdf.properties.tab.sdf.vertex.arguments"
                label="Instance Arguments">
          </propertyTab>
       </propertyTabs>
@@ -113,7 +113,7 @@
             class="org.preesm.ui.sdf.wizard.NewGraphMLWizard"
             hasPages="true"
             icon="resources/icons/graphiti.gif"
-            id="org.ietr.preesm.ui.wizards.graphml"
+            id="org.preesm.ui.sdf.wizards.graphml"
             name="Preesm Algorithm (IBSDF - deprecated)"
             project="false">
          <description>

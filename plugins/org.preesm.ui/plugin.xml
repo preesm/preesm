@@ -62,7 +62,7 @@
          category="org.ietr.preesm.category"
          class="org.preesm.ui.workflow.NewWorkflowFileWizard"
          hasPages="true" icon="resources/icons/graphiti.gif"
-         id="org.ietr.preesm.ui.wizards.workflow" name="Preesm Workflow"
+         id="org.preesm.ui.wizards.workflow" name="Preesm Workflow"
          project="false">
          <description>
             Create a new PREESM workflow.
@@ -255,17 +255,13 @@
       </consoleFactory>
    </extension>
    <!-- resource filter to hide .layout files -->
-   <!-- TODO: rename -->
    <extension
-         id="albert"
-         name="albert"
+         id="org.preesm.ui.filter.layoutFiles"
+         name="LayoutFileFilterInResources"
          point="org.eclipse.ui.ide.resourceFilters">
       <filter
             pattern="*.layout"
             selected="true">
-         <description>
-            albert
-         </description>
       </filter>
    </extension>
    <!-- Navigator content -->
@@ -277,14 +273,14 @@
             class="org.preesm.ui.ProjectExplorerFilter"
             description="Filters the *.layout files"
             id="org.ietr.preesm.core.layoutfilefilter"
-            name="LayoutFileFilter"
+            name="LayoutFileFilterInNavigator"
             visibleInUI="true">
      </commonFilter>
 
      <!-- Workflow Wizard ref -->
      <!-- TODO: id comes from dftools.... -->
 	 <commonWizard type="new"
-	   wizardId="org.ietr.preesm.ui.wizards.workflow">
+	   wizardId="org.preesm.ui.wizards.workflow">
 	     <enablement>
 		   <or>
 		    <adapt type="org.eclipse.core.resources.IFolder" />
@@ -798,11 +794,11 @@
             locationURI="popup:org.eclipse.ui.popup.any?before=additions">
          <menu
                icon="resources/icons/preesmLogo_16x16.png"
-               id="org.ietr.preesm.ui.menu1"
+               id="org.preesm.ui.menu1"
                label="Preesm">
             <!-- run the selected workflow -->
             <command
-                  commandId="org.ietr.preesm.ui.command.RunWorkflow"
+                  commandId="org.preesm.ui.command.RunWorkflow"
                   icon="resources/icons/workflow.png"
                   label="Run Workflow"
                   style="push"
@@ -838,7 +834,7 @@
             locationURI="popup:net.sf.graphiti.GraphitiContextMenu?before=additions">
          <!-- Run the workflow from the editor -->
          <command
-               commandId="org.ietr.preesm.ui.command.RunWorkflow"
+               commandId="org.preesm.ui.command.RunWorkflow"
                icon="resources/icons/workflow.png"
                label="Run Workflow"
                style="push"
@@ -856,7 +852,7 @@
    <extension
          point="org.eclipse.ui.commands">
       <command
-            id="org.ietr.preesm.ui.command.RunWorkflow"
+            id="org.preesm.ui.command.RunWorkflow"
             name="Run Workflow">
       </command>
    </extension>
@@ -866,14 +862,14 @@
          point="org.eclipse.ui.handlers">
       <handler
             class="org.preesm.ui.popup.actions.WorkflowRunnerPopup"
-            commandId="org.ietr.preesm.ui.command.RunWorkflow">
+            commandId="org.preesm.ui.command.RunWorkflow">
       </handler>
    </extension>
 
    <!-- ?? -->
    <extension
-         id="org.ietr.preesm.ui.projectexplorerviewer"
-         name="org.ietr.preesm.ui.projectexplorerviewer"
+         id="org.preesm.ui.projectexplorerviewer"
+         name="org.preesm.ui.projectexplorerviewer"
          point="org.eclipse.ui.navigator.viewer">
       <viewerContentBinding
             viewerId="org.eclipse.ui.navigator.ProjectExplorer">

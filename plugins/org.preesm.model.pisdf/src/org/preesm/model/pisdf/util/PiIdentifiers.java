@@ -135,19 +135,24 @@ public class PiIdentifiers {
 
   /** The Constant PARAMETER. */
   // PARAMETERS
-  public static final String PARAMETER = "param";
+  public static final String PARAMETER           = "param";
+  public static final String MALLEABLE_PARAMETER = "malleable_" + PiIdentifiers.PARAMETER;
 
   /** The Constant PARAMETER_NAME. */
   public static final String PARAMETER_NAME = PiIdentifiers.ID;
 
   /** The Constant PARAMETER_EXPRESSION. */
-  public static final String PARAMETER_EXPRESSION = PiIdentifiers.EXPR;
+  public static final String PARAMETER_EXPRESSION           = PiIdentifiers.EXPR;
+  public static final String MALLEABLE_PARAMETER_EXPRESSION = "malleable_" + PiIdentifiers.EXPR;
 
   /** The Constant CONFIGURATION_INPUT_INTERFACE_NAME. */
   public static final String CONFIGURATION_INPUT_INTERFACE_NAME = PiIdentifiers.ID;
 
   /** The Constant CONFIGURATION_OUTPUT_INTERFACE_NAME. */
   public static final String CONFIGURATION_OUTPUT_INTERFACE_NAME = PiIdentifiers.ID;
+
+  /** The constant for default value of CII in GUI. */
+  public static final String PARAM_CII_DEFAULT = "defaultValue";
 
   /** The Constant REFINEMENT. */
   // REFINEMENTS
@@ -261,4 +266,5 @@ public class PiIdentifiers {
   public static final String END          = "end";
   public static final String INIT         = "init";
   public static final String INIT_END_REF = "init_end_ref";
+
 }
