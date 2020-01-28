@@ -45,17 +45,59 @@
 
 #include <string>
 #include <vector>
+#include <cstdint>
+#include <cstddef>
 #include <spider.h>
-#include "spider2-application-kernels.h"
-
-/* === Function(s) declaration === */
 
 namespace spider {
 
+    /* === Enumerations declaration === */
+
+    enum kernels : size_t {
+#foreach ($prototype in $prototypes)        
+        ${prototype.loop.name.toUpperCase()} = ${prototypes.indexOf($prototype)},
+#end
+    };
+
+    /* === Functions declaration === */
+
     /**
-     * @brief Generates the main user application graph.
+     * @brief Creates the physical architecture.
+     */
+    void createUserArchitecture(); 
+    
+    /**
+     * @brief Creates all the runtime kernels and register them into the runtime.
+     */
+    void createUserApplicationKernels();
+
+    /**
+     * @brief Creates the main user application graph.
      */
     void createUserApplicationGraph();
+#if(${prototypes.size()} > 0)
+    
+    /* === Kernel prototype(s) declaration === */
+#foreach ($prototype in $prototypes)
+    #set($loop = $prototype.loop)
+    #set($incfgSize = ${loop.inputConfigParameters.size()})
+    #set($outcfgSize = ${loop.outputConfigParameters.size()})
+    #set($inSize = ${loop.inputArguments.size()})
+    #set($outSize = ${loop.outputArguments.size()})
+    
+    /**
+     * @brief $prototype.loop.name function.
+     * @param inputParams   Const array of input parameters value.
+     * @param outputParams  Array of output parameters to be set by the function.
+     * @param input         Array of input data buffers.
+     * @param outputs       Array of output data buffers.
+     */
+    void ${prototype.loop.name.toLowerCase()}RTKernel(const int64_t #if($incfgSize > 0)inputParams#else#end[], int64_t #if($outcfgSize > 0)outputParams#else#end[], void *#if($inSize > 0)inputs#else#end[], void *#if($outSize > 0)outputs#else#end[]);
+#end
+#end
+#if(${graphs.size()} > 0)
+    
+    /* === Graph prototype(s) declaration === */
 #foreach ($graph in $graphs)
 
     /**
@@ -68,6 +110,7 @@ namespace spider {
     pisdf::Vertex *create${graph.piGraphName}Subgraph(
                          std::string name, spider::pisdf::Graph *parentGraph, 
                          const std::vector<std::shared_ptr<spider::pisdf::Param>> &parentGraphParams = {});
+#end
 #end
 }
 #endif

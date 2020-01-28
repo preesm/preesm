@@ -42,8 +42,7 @@
 
 #include <cstdint>
 #include <cstddef>
-#include <spider.h>
-#include "spider2-application-kernels.h"
+#include "spider2-application.h"
 #foreach ($fileName in $fileNames)
 #include "${fileName}"
 #end

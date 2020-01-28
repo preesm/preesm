@@ -38,45 +38,12 @@
  * knowledge of the CeCILL license and that you accept its terms.
  */
 
-#ifndef SPIDER2_APPLICATION_${appName.toUpperCase()}_KERNELS_H
-#define SPIDER2_APPLICATION_${appName.toUpperCase()}_KERNELS_H
-
 /* === Include(s) === */
 
-#include <cstdint>
-#include <cstddef>
-#include <spider.h>
+#include "spider2-application.h"
 
-/* === Function(s) declaration === */
+/* === Application main entry point === */
 
-namespace spider {
+void spider::createUserArchitecture() {
 
-    enum kernels : size_t {
-#foreach ($prototype in $prototypes)        
-        ${prototype.loop.name.toUpperCase()} = ${prototypes.indexOf($prototype)},
-#end
-    };
-    
-#foreach ($prototype in $prototypes)
-    #set($loop = $prototype.loop)
-    #set($incfgSize = ${loop.inputConfigParameters.size()})
-    #set($outcfgSize = ${loop.outputConfigParameters.size()})
-    #set($inSize = ${loop.inputArguments.size()})
-    #set($outSize = ${loop.outputArguments.size()})
-    
-    /**
-     * @brief $prototype.loop.name function.
-     * @param inputParams   Const array of input parameters value.
-     * @param outputParams  Array of output parameters to be set by the function.
-     * @param input         Array of input data buffers.
-     * @param outputs       Array of output data buffers.
-     */
-    void ${prototype.loop.name.toLowerCase()}RTKernel(const int64_t #if($incfgSize > 0)inputParams#else#end[], int64_t #if($outcfgSize > 0)outputParams#else#end[], void *#if($inSize > 0)inputs#else#end[], void *#if($outSize > 0)outputs#else#end[]);
-#end
-
-    /**
-     * @brief Creates all the runtime kernels and register them into the runtime.
-     */
-    void createUserApplicationKernels();
 }
-#endif

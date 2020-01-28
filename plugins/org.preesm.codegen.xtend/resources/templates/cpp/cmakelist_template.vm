@@ -139,8 +139,8 @@ endif ()
 file(
 	GLOB_RECURSE
 	${appName.toUpperCase()}_SRC
-	generated/*.cpp
-	generated/*.h
+	${folder}/*.cpp
+	${folder}/*.h
 	src/*.cpp
 	include/*.h
 	lib/*.h

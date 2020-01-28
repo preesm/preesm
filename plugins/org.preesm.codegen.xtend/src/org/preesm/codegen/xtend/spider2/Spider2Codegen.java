@@ -177,16 +177,15 @@ public class Spider2Codegen {
     /* Fill out the context */
     VelocityContext context = new VelocityContext();
     context.put("appName", this.applicationName);
+    context.put("folder", this.folder.getName());
 
     /* Write the file */
     final String outputFileName = "../CMakeLists.txt";
     writeVelocityContext(context, "templates/cpp/cmakelist_template.vm", outputFileName);
 
     /* Move FindThreads and FindSpider2.cmake files */
-    final String findSpiderFilePath = "resources/cmake_modules/FindSpider2.cmake";
-    copyFileFromTo(findSpiderFilePath, "../cmake/modules/FindSpider2.cmake");
-    final String findThreadsFilePath = "resources/cmake_modules/FindThreads.cmake";
-    copyFileFromTo(findThreadsFilePath, "../cmake/modules/FindThreads.cmake");
+    copyFileFromTo("resources/cmake_modules/FindSpider2.cmake", "../cmake/modules/FindSpider2.cmake");
+    copyFileFromTo("resources/cmake_modules/FindThreads.cmake", "../cmake/modules/FindThreads.cmake");
   }
 
   public void generateMainCode() {
@@ -226,11 +225,11 @@ public class Spider2Codegen {
     context.put("initPrototypes", initPrototypes);
 
     /* Write the file */
-    writeVelocityContext(context, "templates/cpp/app_main_template.vm", "main.cpp");
+    writeVelocityContext(context, "templates/cpp/app_main_template.vm", "spider2-main.cpp");
 
   }
 
-  public void generateKernelHeader() {
+  public void generateKernelCode() {
     if (this.originalContextClassLoader == null) {
       init();
     }
@@ -245,7 +244,6 @@ public class Spider2Codegen {
     context.put("prototypes", this.preprocessor.getUniqueLoopPrototypeList());
 
     /* Write the file */
-    writeVelocityContext(context, "templates/cpp/app_kernels_header_template.vm", "spider2-application-kernels.h");
     writeVelocityContext(context, "templates/cpp/app_kernels_cpp_template.vm", "spider2-application-kernels.cpp");
   }
 
@@ -260,6 +258,7 @@ public class Spider2Codegen {
     final Set<PiGraph> graphSet = new HashSet<PiGraph>(this.preprocessor.getUniqueGraphSet());
     graphSet.remove(this.applicationGraph);
     context.put("graphs", graphSet);
+    context.put("prototypes", this.preprocessor.getUniqueLoopPrototypeList());
 
     /* Write the file */
     writeVelocityContext(context, "templates/cpp/app_header_template.vm", "spider2-application.h");
@@ -325,7 +324,7 @@ public class Spider2Codegen {
 
     /* Write the final file */
     if (graph == this.applicationGraph) {
-      writeVelocityContext(context, "templates/cpp/app_graph_template.vm", "application_graph.cpp");
+      writeVelocityContext(context, "templates/cpp/app_graph_template.vm", "spider2-application_graph.cpp");
     } else {
       final String outputFileName = graph.getPiGraphName().toLowerCase() + "_subgraph" + ".cpp";
       writeVelocityContext(context, "templates/cpp/graph_template.vm", outputFileName);

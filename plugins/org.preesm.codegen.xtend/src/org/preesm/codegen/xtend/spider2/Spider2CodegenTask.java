@@ -114,7 +114,7 @@ public class Spider2CodegenTask extends AbstractTaskImplementation {
     codegen.generateApplicationHeader();
 
     // Generate code for the runtime kernels
-    codegen.generateKernelHeader();
+    codegen.generateKernelCode();
 
     // Generate code for the main entry point (if top level graph does not have input nor output interfaces)
     if (topGraph.getDataInputInterfaces().isEmpty() && topGraph.getDataOutputInterfaces().isEmpty()) {
