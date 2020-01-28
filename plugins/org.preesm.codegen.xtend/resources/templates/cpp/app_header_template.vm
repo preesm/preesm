@@ -52,6 +52,18 @@
 namespace spider {
 
     /* === Enumerations declaration === */
+    
+    enum HardwareType : uint32_t {
+#foreach ($cluster in $clusters)    
+        TYPE_${cluster.mainType.toUpperCase()},
+#end
+    }
+    
+    enum HardwareID : uint32_t {
+#foreach ($pe in $processingElements)
+        PE_${pe.name.toUpperCase()},
+#end        
+    }
 
     enum kernels : size_t {
 #foreach ($prototype in $prototypes)        
@@ -62,9 +74,9 @@ namespace spider {
     /* === Functions declaration === */
 
     /**
-     * @brief Creates the physical architecture.
+     * @brief Creates the physical platform.
      */
-    void createUserArchitecture(); 
+    void createUserPhysicalPlatform(); 
     
     /**
      * @brief Creates all the runtime kernels and register them into the runtime.

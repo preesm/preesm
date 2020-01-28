@@ -44,6 +44,33 @@
 
 /* === Application main entry point === */
 
-void spider::createUserArchitecture() {
+void spider::createUserPhysicalPlatform() {
+    /* == Creates the main platform == */
+    spider::api::createPlatform(${clusterCount}, ${peCount});
+#foreach ($cluster in $clusters)
 
+    /* == Creates the cluster MemoryUnit == */
+    auto *${cluster.mainType}MemoryUnit = spider::api::createMemoryUnit(${cluster.memoryUnitSize});
+    
+    /* == Creates the intra MemoryInterface of the cluster == */
+    auto *${cluster.mainType}MemoryInterface = spider::api::createMemoryInterface(${cluster.mainType}MemoryUnit);
+    
+    /* == Creates the actual Cluster == */
+    auto *${cluster.mainType}Cluster = spider::api::createCluster(${cluster.peCount}, ${cluster.mainType}MemoryUnit, ${cluster.mainType}MemoryInterface);
+    
+    /* == Creates the processing element(s) of the cluster == */
+#foreach ($pe in ${cluster.processingElements})
+#if(${pe.name.equals(${mainPEName})})
+    auto *${pe.name} = spider::api::createProcessingElement(${pe.type}, ${pe.id}, x86Cluster, "${pe.name}", spider::PEType::LRT);
+#else
+    spider::api::createProcessingElement(TYPE_${cluster.mainType.toUpperCase()}, PE_${pe.name.toUpperCase()}, ${cluster.mainType}Cluster, "${pe.name}", spider::PEType::LRT);
+#end
+#if ( $foreach.hasNext )
+
+#end
+#end
+#end
+    
+    /* == Set the GRT == */
+    spider::api::setSpiderGRTPE(${mainPEName});
 }

@@ -101,7 +101,7 @@ int main(int argc, char *argv[]) {
     
     try {
         /* == Creates the architecture == */
-        spider::createUserArchitecture();
+        spider::createUserPhysicalPlatform();
         
         /* == Creates the application graph == */
         spider::createUserApplicationGraph();
