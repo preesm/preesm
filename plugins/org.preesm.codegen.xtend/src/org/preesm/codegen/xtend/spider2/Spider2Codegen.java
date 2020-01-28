@@ -226,8 +226,7 @@ public class Spider2Codegen {
     context.put("initPrototypes", initPrototypes);
 
     /* Write the file */
-    final String outputFileName = "main.cpp";
-    writeVelocityContext(context, "templates/cpp/app_main_template.vm", outputFileName);
+    writeVelocityContext(context, "templates/cpp/app_main_template.vm", "main.cpp");
 
   }
 
@@ -246,8 +245,8 @@ public class Spider2Codegen {
     context.put("prototypes", this.preprocessor.getUniqueLoopPrototypeList());
 
     /* Write the file */
-    final String outputFileName = "spider2-application-kernels.h";
-    writeVelocityContext(context, "templates/cpp/app_kernels_template.vm", outputFileName);
+    writeVelocityContext(context, "templates/cpp/app_kernels_header_template.vm", "spider2-application-kernels.h");
+    writeVelocityContext(context, "templates/cpp/app_kernels_cpp_template.vm", "spider2-application-kernels.cpp");
   }
 
   public void generateApplicationHeader() {
@@ -263,8 +262,7 @@ public class Spider2Codegen {
     context.put("graphs", graphSet);
 
     /* Write the file */
-    final String outputFileName = "spider2-application.h";
-    writeVelocityContext(context, "templates/cpp/app_header_template.vm", outputFileName);
+    writeVelocityContext(context, "templates/cpp/app_header_template.vm", "spider2-application.h");
   }
 
   /**

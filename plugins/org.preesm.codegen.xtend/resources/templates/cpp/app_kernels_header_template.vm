@@ -46,9 +46,6 @@
 #include <cstdint>
 #include <cstddef>
 #include <spider.h>
-#foreach ($fileName in $fileNames)
-#include "${fileName}"
-#end
 
 /* === Function(s) declaration === */
 
@@ -74,24 +71,12 @@ namespace spider {
      * @param input         Array of input data buffers.
      * @param outputs       Array of output data buffers.
      */
-    inline void ${prototype.loop.name.toLowerCase()}RTKernel(const int64_t #if($incfgSize > 0)inputParams#else#end[], int64_t #if($outcfgSize > 0)outputParams#else#end[], void *#if($inSize > 0)inputs#else#end[], void *#if($outSize > 0)outputs#else#end[]) {
-        ${prototype.loop.name}(
-#foreach($arg in $prototype.formatedLoopArgListButLast) 
-        $arg,
+    void ${prototype.loop.name.toLowerCase()}RTKernel(const int64_t #if($incfgSize > 0)inputParams#else#end[], int64_t #if($outcfgSize > 0)outputParams#else#end[], void *#if($inSize > 0)inputs#else#end[], void *#if($outSize > 0)outputs#else#end[]);
 #end
-        $prototype.lastFormatedLoopArg);
-    }
-#end 
 
     /**
      * @brief Creates all the runtime kernels and register them into the runtime.
      */
-    inline void createUserApplicationKernels() {
-#foreach ($prototype in $prototypes)
-
-        /* == Register ${prototype.loop.name.toUpperCase()} kernel == */
-        spider::api::createRuntimeKernel(${prototype.loop.name.toLowerCase()}RTKernel);
-#end
-    }
+    void createUserApplicationKernels();
 }
 #endif
