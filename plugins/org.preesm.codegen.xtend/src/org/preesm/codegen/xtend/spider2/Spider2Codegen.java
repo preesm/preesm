@@ -64,10 +64,10 @@ public class Spider2Codegen {
    *
    * @param scenario
    *          the scenario
-   * @param architecture
-   *          the architecture
    * @param applicationGraph
    *          the main application graph
+   * @param folder
+   *          the codegen directory
    */
   public Spider2Codegen(final Scenario scenario, final PiGraph applicationGraph, final File folder) {
     this.scenario = scenario;
