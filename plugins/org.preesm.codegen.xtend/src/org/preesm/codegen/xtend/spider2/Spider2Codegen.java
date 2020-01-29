@@ -20,6 +20,7 @@ import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.VelocityEngine;
 import org.eclipse.core.resources.IWorkspace;
 import org.eclipse.core.runtime.Path;
+import org.preesm.codegen.xtend.spider2.utils.Spider2CodegenCluster;
 import org.preesm.codegen.xtend.spider2.visitor.Spider2PreProcessVisitor;
 import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.preesm.commons.files.PreesmResourcesHelper;
@@ -80,8 +81,8 @@ public class Spider2Codegen {
     this.folder = folder;
     /** Calls the pre-processor */
     this.preprocessor = new Spider2PreProcessVisitor(this.scenario);
-    this.preprocessor.doSwitch(applicationGraph);
-    this.applicationName = applicationGraph.getPiGraphName().toLowerCase();
+    this.preprocessor.doSwitch(this.applicationGraph);
+    this.applicationName = this.applicationGraph.getPiGraphName().toLowerCase();
   }
 
   /**
@@ -115,6 +116,7 @@ public class Spider2Codegen {
 
   public void makeIncludeAndSourceFolder(final IWorkspace workspace) {
     final String path = this.folder.getPath();
+    /* We start looking backward -2 to remove the '/' at the end from the search */
     final String codegenDirectoryPath = path.substring(0, path.lastIndexOf('/', path.length() - 2) + 1);
     final File folderSrc = new File(codegenDirectoryPath + "src/");
     folderSrc.mkdirs();
@@ -145,6 +147,8 @@ public class Spider2Codegen {
         final File oldFile = new File(
             workspace.getRoot().getFolder(new Path(refFilePath)).getRawLocation().toOSString());
         final File targetFile = new File(includeDirectoryPath + refinement.getFileName());
+
+        copyFileFromTo("resources/cmake_modules/FindSpider2.cmake", "../cmake/modules/FindSpider2.cmake");
         try {
           Files.copy(oldFile.toPath(), targetFile.toPath(), REPLACE_EXISTING);
         } catch (IOException e) {
@@ -170,6 +174,19 @@ public class Spider2Codegen {
     }
   }
 
+  public void generateArchiCode() {
+    if (this.originalContextClassLoader == null) {
+      init();
+    }
+    /* Fill out the context */
+    VelocityContext context = new VelocityContext();
+    context.put("mainPEName", this.preprocessor.getMainPEName());
+    context.put("clusters", this.preprocessor.getClusterList());
+
+    /* Write the file */
+    writeVelocityContext(context, "templates/cpp/app_archi_template.vm", "spider2-platform.cpp");
+  }
+
   public void generateCMakeList() {
     if (this.originalContextClassLoader == null) {
       init();
@@ -180,8 +197,7 @@ public class Spider2Codegen {
     context.put("folder", this.folder.getName());
 
     /* Write the file */
-    final String outputFileName = "../CMakeLists.txt";
-    writeVelocityContext(context, "templates/cpp/cmakelist_template.vm", outputFileName);
+    writeVelocityContext(context, "templates/cpp/cmakelist_template.vm", "../CMakeLists.txt");
 
     /* Move FindThreads and FindSpider2.cmake files */
     copyFileFromTo("resources/cmake_modules/FindSpider2.cmake", "../cmake/modules/FindSpider2.cmake");
@@ -259,6 +275,13 @@ public class Spider2Codegen {
     graphSet.remove(this.applicationGraph);
     context.put("graphs", graphSet);
     context.put("prototypes", this.preprocessor.getUniqueLoopPrototypeList());
+    context.put("clusterCount", this.preprocessor.getClusterList().size());
+    int peCount = 0;
+    for (final Spider2CodegenCluster cluster : this.preprocessor.getClusterList()) {
+      peCount += cluster.getPeCount();
+    }
+    context.put("peCount", peCount);
+    context.put("clusters", this.preprocessor.getClusterList());
 
     /* Write the file */
     writeVelocityContext(context, "templates/cpp/app_header_template.vm", "spider2-application.h");
@@ -395,6 +418,7 @@ public class Spider2Codegen {
         while ((line = reader.readLine()) != null) {
           writer.write(line + '\n');
         }
+        writer.flush();
       } catch (IOException e) {
         throw new PreesmRuntimeException(e);
       }

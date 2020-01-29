@@ -46,24 +46,25 @@
 
 void spider::createUserPhysicalPlatform() {
     /* == Creates the main platform == */
-    spider::api::createPlatform(${clusterCount}, ${peCount});
+    spider::api::createPlatform(CLUSTER_COUNT, PE_COUNT);
 #foreach ($cluster in $clusters)
 
     /* == Creates the cluster MemoryUnit == */
-    auto *${cluster.mainType}MemoryUnit = spider::api::createMemoryUnit(${cluster.memoryUnitSize});
+    auto *${cluster.name}MemoryUnit = spider::api::createMemoryUnit(${cluster.memoryUnitSize});
     
     /* == Creates the intra MemoryInterface of the cluster == */
-    auto *${cluster.mainType}MemoryInterface = spider::api::createMemoryInterface(${cluster.mainType}MemoryUnit);
+    auto *${cluster.name}MemoryInterface = spider::api::createMemoryInterface(${cluster.name}MemoryUnit);
     
     /* == Creates the actual Cluster == */
-    auto *${cluster.mainType}Cluster = spider::api::createCluster(${cluster.peCount}, ${cluster.mainType}MemoryUnit, ${cluster.mainType}MemoryInterface);
+    auto *${cluster.name}Cluster = spider::api::createCluster(${cluster.peCount}, ${cluster.name}MemoryUnit, ${cluster.name}MemoryInterface);
     
     /* == Creates the processing element(s) of the cluster == */
 #foreach ($pe in ${cluster.processingElements})
-#if(${pe.name.equals(${mainPEName})})
-    auto *${pe.name} = spider::api::createProcessingElement(${pe.type}, ${pe.id}, x86Cluster, "${pe.name}", spider::PEType::LRT);
+    #set($finalName = ${cluster.name}+${pe.name})
+#if(${finalName.equals(${mainPEName})})
+    auto *${cluster.name}${pe.name} = spider::api::createProcessingElement(TYPE_${pe.typeName.toUpperCase()}, PE_${cluster.name}_${pe.name.toUpperCase()}, ${cluster.name}Cluster, "${pe.name}", spider::PEType::LRT);
 #else
-    spider::api::createProcessingElement(TYPE_${cluster.mainType.toUpperCase()}, PE_${pe.name.toUpperCase()}, ${cluster.mainType}Cluster, "${pe.name}", spider::PEType::LRT);
+    spider::api::createProcessingElement(TYPE_${pe.typeName.toUpperCase()}, PE_${cluster.name}_${pe.name.toUpperCase()}, ${cluster.name}Cluster, "${pe.name}", spider::PEType::LRT, ${pe.affinity});
 #end
 #if ( $foreach.hasNext )
 

@@ -51,18 +51,28 @@
 
 namespace spider {
 
+    /* === Constants declaration === */
+    
+    constexpr size_t CLUSTER_COUNT = ${clusterCount};
+    
+    constexpr size_t PE_COUNT = ${peCount};
+
     /* === Enumerations declaration === */
     
     enum HardwareType : uint32_t {
-#foreach ($cluster in $clusters)    
-        TYPE_${cluster.mainType.toUpperCase()},
+#foreach ($cluster in $clusters)  
+#foreach ($pe in $cluster.processingElements)  
+        TYPE_${pe.typeName.toUpperCase()},
+#end
 #end
     }
     
     enum HardwareID : uint32_t {
-#foreach ($pe in $processingElements)
-        PE_${pe.name.toUpperCase()},
+#foreach ($cluster in $clusters)    
+#foreach ($pe in $cluster.processingElements)
+        PE_${cluster.name.toUpperCase()}_${pe.name.toUpperCase()},
 #end        
+#end
     }
 
     enum kernels : size_t {

@@ -21,7 +21,6 @@ import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.scenario.Scenario;
-import org.preesm.model.slam.Design;
 import org.preesm.workflow.elements.Workflow;
 import org.preesm.workflow.implement.AbstractTaskImplementation;
 import org.preesm.workflow.implement.AbstractWorkflowNodeImplementation;
@@ -31,8 +30,7 @@ import org.preesm.workflow.implement.AbstractWorkflowNodeImplementation;
  */
 @PreesmTask(id = "org.preesm.codegen.xtend.Spider2CodegenTask", name = "Spider2 Codegen", category = "Code Generation",
 
-    inputs = { @Port(name = "PiMM", type = PiGraph.class), @Port(name = "scenario", type = Scenario.class),
-        @Port(name = "architecture", type = Design.class) },
+    inputs = { @Port(name = "scenario", type = Scenario.class) },
 
     shortDescription = "Generate code for spider2 library for dynamic PiSDF.",
 
@@ -69,9 +67,7 @@ public class Spider2CodegenTask extends AbstractTaskImplementation {
   public Map<String, Object> execute(Map<String, Object> inputs, Map<String, String> parameters,
       IProgressMonitor monitor, String nodeName, Workflow workflow) {
     // Retrieve inputs
-    final Design architecture = (Design) inputs.get(AbstractWorkflowNodeImplementation.KEY_ARCHITECTURE);
     final Scenario scenario = (Scenario) inputs.get(AbstractWorkflowNodeImplementation.KEY_SCENARIO);
-    final PiGraph topGraph = (PiGraph) inputs.get(AbstractWorkflowNodeImplementation.KEY_PI_GRAPH);
     // Get the workspace
     final IWorkspace workspace = ResourcesPlugin.getWorkspace();
     if (scenario.getCodegenDirectory() == null) {
@@ -90,8 +86,12 @@ public class Spider2CodegenTask extends AbstractTaskImplementation {
     // If the codegen folder does not exist make it, if it exists clears it
     final File folder = cleanCodegenFolder(workspace, codegenPath);
 
+    // Get top graph
+    final PiGraph topGraph = scenario.getAlgorithm();
+
     // Parse the pigraph
-    final Spider2Codegen codegen = new Spider2Codegen(scenario, architecture, topGraph, folder);
+    final Spider2Codegen codegen = new Spider2Codegen(scenario, scenario.getDesign(), topGraph, folder);
+
     // Get Spider2 config
     final Spider2Config spiderConfig = new Spider2Config(parameters);
 
@@ -108,6 +108,7 @@ public class Spider2CodegenTask extends AbstractTaskImplementation {
     // Generate code for the architecture (if needed)
     if (spiderConfig.getGenerateArchiFile()) {
       PreesmLogger.getLogger().log(Level.INFO, "Generating architecture description code.");
+      codegen.generateArchiCode();
     }
 
     // Generate code for main application header

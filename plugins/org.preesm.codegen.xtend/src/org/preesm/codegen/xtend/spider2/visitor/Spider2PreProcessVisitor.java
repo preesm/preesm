@@ -1,15 +1,20 @@
 package org.preesm.codegen.xtend.spider2.visitor;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
+import java.util.logging.Level;
 import java.util.stream.Collectors;
 import org.preesm.codegen.xtend.spider2.utils.Spider2CodegenActor;
+import org.preesm.codegen.xtend.spider2.utils.Spider2CodegenCluster;
 import org.preesm.codegen.xtend.spider2.utils.Spider2CodegenEdge;
+import org.preesm.codegen.xtend.spider2.utils.Spider2CodegenPE;
 import org.preesm.codegen.xtend.spider2.utils.Spider2CodegenPrototype;
 import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.preesm.commons.logger.PreesmLogger;
@@ -43,6 +48,11 @@ import org.preesm.model.pisdf.RoundBufferActor;
 import org.preesm.model.pisdf.factory.PiMMUserFactory;
 import org.preesm.model.pisdf.util.PiMMSwitch;
 import org.preesm.model.scenario.Scenario;
+import org.preesm.model.slam.ComNode;
+import org.preesm.model.slam.Component;
+import org.preesm.model.slam.ComponentInstance;
+import org.preesm.model.slam.Design;
+import org.preesm.model.slam.Link;
 
 /**
  * The Class Spider2PreProcessVisitor.
@@ -90,8 +100,28 @@ public class Spider2PreProcessVisitor extends PiMMSwitch<Boolean> {
   /** The scenario */
   private final Scenario scenario;
 
+  /** Map core types to core type indexes */
+  private final Map<Component, Integer>                 coreTypesIds     = new LinkedHashMap<>();
+  private final Map<Component, Integer>                 coreCountPerType = new LinkedHashMap<>();
+  private final Map<Component, List<ComponentInstance>> peTypeToCores    = new LinkedHashMap<>();
+
+  /** The core ids. */
+  private final Map<ComponentInstance, Integer> coreIds = new LinkedHashMap<>();
+
+  /* Map timing strings to actors */
+  private final Map<AbstractActor, Map<Component, String>> timings = new LinkedHashMap<>();
+
+  /** The constraints. */
+  private final Map<AbstractActor, Set<ComponentInstance>> constraints = new LinkedHashMap<>();
+
+  /** The clusters */
+  private final List<Spider2CodegenCluster> clusterList = new ArrayList<>();
+
   public Spider2PreProcessVisitor(final Scenario scenario) {
     this.scenario = scenario;
+
+    /* Generate the cluster list */
+    generateClusterList();
   }
 
   /**
@@ -147,6 +177,119 @@ public class Spider2PreProcessVisitor extends PiMMSwitch<Boolean> {
 
   public List<CHeaderRefinement> getUniqueLoopHeaderList() {
     return this.uniqueLoopHeaderList;
+  }
+
+  public List<Spider2CodegenCluster> getClusterList() {
+    return this.clusterList;
+  }
+
+  public String getMainPEName() {
+    final Design design = this.scenario.getDesign();
+    ComponentInstance mainOperator = this.scenario.getSimulationInfo().getMainOperator();
+    if (mainOperator == null) {
+      final List<ComponentInstance> orderedOperators = design.getOrderedOperatorComponentInstances();
+      if (orderedOperators.isEmpty()) {
+        throw new PreesmRuntimeException("no operator found in the scenario");
+      }
+      /* Warning */
+      PreesmLogger.getLogger().log(Level.WARNING,
+          () -> "No Main Operator selected in scenario, " + orderedOperators.get(0) + " used by default");
+      mainOperator = orderedOperators.get(0);
+    }
+    final String name = mainOperator.getInstanceName();
+    for (final Spider2CodegenCluster cluster : this.clusterList) {
+      for (final Spider2CodegenPE pe : cluster.getProcessingElements()) {
+        if (pe.getName().equals(name)) {
+          return cluster.getName() + name;
+        }
+      }
+    }
+    return name;
+  }
+
+  void generateClusterList() {
+    final Design design = this.scenario.getDesign();
+    final Map<ComponentInstance, List<ComponentInstance>> clusters = new HashMap<>();
+    for (final Link link : design.getLinks()) {
+      final ComponentInstance source = link.getSourceComponentInstance();
+      final ComponentInstance target = link.getDestinationComponentInstance();
+      if (source.getComponent() instanceof ComNode) {
+        if (!clusters.containsKey(source)) {
+          clusters.put(source, new ArrayList<>());
+        }
+        clusters.get(source).add(target);
+      } else if (target.getComponent() instanceof ComNode) {
+        if (!clusters.containsKey(target)) {
+          clusters.put(target, new ArrayList<>());
+        }
+        clusters.get(target).add(source);
+      }
+    }
+    for (final Entry<ComponentInstance, List<ComponentInstance>> entry : clusters.entrySet()) {
+      this.clusterList.add(new Spider2CodegenCluster(entry.getKey(), entry.getValue()));
+    }
+
+    // int coreTypeId = 0;
+    // for (final Component coreType : design.getOperatorComponents()) {
+    // this.coreTypesIds.put(coreType, coreTypeId++);
+    // // Link the number of cores associated to each core type
+    // final EList<Component> components = design.getComponentHolder().getComponents();
+    // for (final Component c : components) {
+    // if (c.equals(coreType)) {
+    // final List<ComponentInstance> instances = c.getInstances();
+    // this.coreCountPerType.put(coreType, instances.size());
+    // this.peTypeToCores.put(coreType, instances);
+    // }
+    // }
+    // }
+    // final ComponentInstance com = design.getCommunicationComponentInstances().get(0);
+    //
+    // ComponentInstance mainOperator = this.scenario.getSimulationInfo().getMainOperator();
+    // final List<ComponentInstance> orderedOperators = design.getOrderedOperatorComponentInstances();
+    // if (mainOperator == null) {
+    // /* Warning */
+    // PreesmLogger.getLogger().log(Level.WARNING,
+    // () -> "No Main Operator selected in scenario, " + orderedOperators.get(0) + " used by default");
+    // }
+    // this.coreIds.put(mainOperator, 0);
+    // int coreId = 1;
+    // for (final ComponentInstance core : orderedOperators) {
+    // if (!core.equals(mainOperator)) {
+    // this.coreIds.put(core, coreId++);
+    // }
+    // }
+    //
+    // /* Generate timings */
+    // final PiGraph mainGraph = this.scenario.getAlgorithm();
+    // for (final AbstractActor actor : mainGraph.getAllActors()) {
+    // this.timings.put(actor, new LinkedHashMap<Component, String>());
+    // if (this.scenario.getTimings().getActorTimings().containsKey(actor)) {
+    // /* Fetch user defined timings */
+    // final EMap<Component, String> listTimings = this.scenario.getTimings().getActorTimings().get(actor);
+    // for (Entry<Component, String> e : listTimings) {
+    // this.timings.get(actor).put(e.getKey(), e.getValue());
+    // }
+    // } else {
+    // /* Add default timing */
+    // for (final Component coreType : this.coreTypesIds.keySet()) {
+    // if (!this.timings.get(actor).containsKey(coreType)) {
+    // this.timings.get(actor).put(coreType, Integer.toString(ScenarioConstants.DEFAULT_TIMING_TASK.getValue()));
+    // }
+    // }
+    // }
+    //
+    // /* Generate constraints */
+    // for (final Entry<ComponentInstance, EList<AbstractActor>> cg : this.scenario.getConstraints()
+    // .getGroupConstraints()) {
+    // for (final AbstractActor aa : cg.getValue()) {
+    // if (this.constraints.get(aa) == null) {
+    // this.constraints.put(aa, new LinkedHashSet<ComponentInstance>());
+    // }
+    // final ComponentInstance core = cg.getKey();
+    // this.constraints.get(aa).add(core);
+    // }
+    // }
+    // }
   }
 
   /**
