@@ -49,7 +49,6 @@ import org.preesm.model.pisdf.factory.PiMMUserFactory;
 import org.preesm.model.pisdf.util.PiMMSwitch;
 import org.preesm.model.scenario.Scenario;
 import org.preesm.model.slam.ComNode;
-import org.preesm.model.slam.Component;
 import org.preesm.model.slam.ComponentInstance;
 import org.preesm.model.slam.Design;
 import org.preesm.model.slam.Link;
@@ -99,20 +98,6 @@ public class Spider2PreProcessVisitor extends PiMMSwitch<Boolean> {
 
   /** The scenario */
   private final Scenario scenario;
-
-  /** Map core types to core type indexes */
-  private final Map<Component, Integer>                 coreTypesIds     = new LinkedHashMap<>();
-  private final Map<Component, Integer>                 coreCountPerType = new LinkedHashMap<>();
-  private final Map<Component, List<ComponentInstance>> peTypeToCores    = new LinkedHashMap<>();
-
-  /** The core ids. */
-  private final Map<ComponentInstance, Integer> coreIds = new LinkedHashMap<>();
-
-  /* Map timing strings to actors */
-  private final Map<AbstractActor, Map<Component, String>> timings = new LinkedHashMap<>();
-
-  /** The constraints. */
-  private final Map<AbstractActor, Set<ComponentInstance>> constraints = new LinkedHashMap<>();
 
   /** The clusters */
   private final List<Spider2CodegenCluster> clusterList = new ArrayList<>();
@@ -228,68 +213,6 @@ public class Spider2PreProcessVisitor extends PiMMSwitch<Boolean> {
     for (final Entry<ComponentInstance, List<ComponentInstance>> entry : clusters.entrySet()) {
       this.clusterList.add(new Spider2CodegenCluster(entry.getKey(), entry.getValue()));
     }
-
-    // int coreTypeId = 0;
-    // for (final Component coreType : design.getOperatorComponents()) {
-    // this.coreTypesIds.put(coreType, coreTypeId++);
-    // // Link the number of cores associated to each core type
-    // final EList<Component> components = design.getComponentHolder().getComponents();
-    // for (final Component c : components) {
-    // if (c.equals(coreType)) {
-    // final List<ComponentInstance> instances = c.getInstances();
-    // this.coreCountPerType.put(coreType, instances.size());
-    // this.peTypeToCores.put(coreType, instances);
-    // }
-    // }
-    // }
-    // final ComponentInstance com = design.getCommunicationComponentInstances().get(0);
-    //
-    // ComponentInstance mainOperator = this.scenario.getSimulationInfo().getMainOperator();
-    // final List<ComponentInstance> orderedOperators = design.getOrderedOperatorComponentInstances();
-    // if (mainOperator == null) {
-    // /* Warning */
-    // PreesmLogger.getLogger().log(Level.WARNING,
-    // () -> "No Main Operator selected in scenario, " + orderedOperators.get(0) + " used by default");
-    // }
-    // this.coreIds.put(mainOperator, 0);
-    // int coreId = 1;
-    // for (final ComponentInstance core : orderedOperators) {
-    // if (!core.equals(mainOperator)) {
-    // this.coreIds.put(core, coreId++);
-    // }
-    // }
-    //
-    // /* Generate timings */
-    // final PiGraph mainGraph = this.scenario.getAlgorithm();
-    // for (final AbstractActor actor : mainGraph.getAllActors()) {
-    // this.timings.put(actor, new LinkedHashMap<Component, String>());
-    // if (this.scenario.getTimings().getActorTimings().containsKey(actor)) {
-    // /* Fetch user defined timings */
-    // final EMap<Component, String> listTimings = this.scenario.getTimings().getActorTimings().get(actor);
-    // for (Entry<Component, String> e : listTimings) {
-    // this.timings.get(actor).put(e.getKey(), e.getValue());
-    // }
-    // } else {
-    // /* Add default timing */
-    // for (final Component coreType : this.coreTypesIds.keySet()) {
-    // if (!this.timings.get(actor).containsKey(coreType)) {
-    // this.timings.get(actor).put(coreType, Integer.toString(ScenarioConstants.DEFAULT_TIMING_TASK.getValue()));
-    // }
-    // }
-    // }
-    //
-    // /* Generate constraints */
-    // for (final Entry<ComponentInstance, EList<AbstractActor>> cg : this.scenario.getConstraints()
-    // .getGroupConstraints()) {
-    // for (final AbstractActor aa : cg.getValue()) {
-    // if (this.constraints.get(aa) == null) {
-    // this.constraints.put(aa, new LinkedHashSet<ComponentInstance>());
-    // }
-    // final ComponentInstance core = cg.getKey();
-    // this.constraints.get(aa).add(core);
-    // }
-    // }
-    // }
   }
 
   /**
@@ -521,7 +444,8 @@ public class Spider2PreProcessVisitor extends PiMMSwitch<Boolean> {
 
   @Override
   public Boolean caseActor(final Actor actor) {
-    this.actorsMap.get(actor.getContainingPiGraph()).add(new Spider2CodegenActor("NORMAL", actor));
+    this.actorsMap.get(actor.getContainingPiGraph())
+        .add(new Spider2CodegenActor("NORMAL", actor, this.scenario, this.clusterList));
     if (!(actor.getRefinement() instanceof CHeaderRefinement)) {
       PreesmLogger.getLogger().warning("Actor [" + actor.getName() + "] doesn't have correct refinement.");
     } else {
@@ -537,37 +461,43 @@ public class Spider2PreProcessVisitor extends PiMMSwitch<Boolean> {
 
   @Override
   public Boolean caseBroadcastActor(final BroadcastActor ba) {
-    this.actorsMap.get(ba.getContainingPiGraph()).add(new Spider2CodegenActor("DUPLICATE", ba));
+    this.actorsMap.get(ba.getContainingPiGraph())
+        .add(new Spider2CodegenActor("DUPLICATE", ba, this.scenario, this.clusterList));
     return true;
   }
 
   @Override
   public Boolean caseJoinActor(final JoinActor ja) {
-    this.actorsMap.get(ja.getContainingPiGraph()).add(new Spider2CodegenActor("JOIN", ja));
+    this.actorsMap.get(ja.getContainingPiGraph())
+        .add(new Spider2CodegenActor("JOIN", ja, this.scenario, this.clusterList));
     return true;
   }
 
   @Override
   public Boolean caseForkActor(final ForkActor fa) {
-    this.actorsMap.get(fa.getContainingPiGraph()).add(new Spider2CodegenActor("FORK", fa));
+    this.actorsMap.get(fa.getContainingPiGraph())
+        .add(new Spider2CodegenActor("FORK", fa, this.scenario, this.clusterList));
     return true;
   }
 
   @Override
   public Boolean caseRoundBufferActor(final RoundBufferActor rba) {
-    this.actorsMap.get(rba.getContainingPiGraph()).add(new Spider2CodegenActor("TAIL", rba));
+    this.actorsMap.get(rba.getContainingPiGraph())
+        .add(new Spider2CodegenActor("TAIL", rba, this.scenario, this.clusterList));
     return true;
   }
 
   @Override
   public Boolean caseInitActor(final InitActor init) {
-    this.actorsMap.get(init.getContainingPiGraph()).add(new Spider2CodegenActor("INIT", init));
+    this.actorsMap.get(init.getContainingPiGraph())
+        .add(new Spider2CodegenActor("INIT", init, this.scenario, this.clusterList));
     return true;
   }
 
   @Override
   public Boolean caseEndActor(final EndActor end) {
-    this.actorsMap.get(end.getContainingPiGraph()).add(new Spider2CodegenActor("END", end));
+    this.actorsMap.get(end.getContainingPiGraph())
+        .add(new Spider2CodegenActor("END", end, this.scenario, this.clusterList));
     return true;
   }
 

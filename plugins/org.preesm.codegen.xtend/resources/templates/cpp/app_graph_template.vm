@@ -120,6 +120,24 @@ void spider::createUserApplicationGraph() {
     spider::api::addOutputParamToVertex(vertex_$actor.name, param_${outputPort.outgoingDependencies.get(0).target.name});
 #end
 #end 
+    
+    /* == Setting mappable constraints of the vertex $actor.name == */
+#if ( ${codegenActor.isMappableOnAll} )
+    spider::api::setVertexMappableOnAllPE(vertex_$actor.name, true);
+#else
+    #set($constraints = $codegenActor.mappingConstraints)
+#foreach($constraint in $constraints)
+    spider::api::setVertexMappableOnPE(vertex_$actor.name, PE_${constraint.first.toUpperCase()}, ${constraint.second});
+#end
+#end
+    #set($timings = $codegenActor.timings)
+#if ( ${timings.size()} > 0 )
+    
+    /* == Set the timings of the vertex $actor.name == */
+#foreach($timing in $timings)
+    spider::api::setVertexExecutionTimingOnCluster(vertex_$actor.name, TYPE_${timing.first.toUpperCase()}, "$timing.second");
+#end
+#end
 #end
 
     /* === Creates the subgraph(s) === */

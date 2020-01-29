@@ -90,7 +90,7 @@ public class Spider2CodegenTask extends AbstractTaskImplementation {
     final PiGraph topGraph = scenario.getAlgorithm();
 
     // Parse the pigraph
-    final Spider2Codegen codegen = new Spider2Codegen(scenario, scenario.getDesign(), topGraph, folder);
+    final Spider2Codegen codegen = new Spider2Codegen(scenario, topGraph, folder);
 
     // Get Spider2 config
     final Spider2Config spiderConfig = new Spider2Config(parameters);

@@ -40,12 +40,7 @@
 
 /* === Include(s) === */
 
-#include <cstdint>
-#include <cstddef>
 #include "spider2-application.h"
-#foreach ($fileName in $fileNames)
-#include "${fileName}"
-#end
 
 /* === Function(s) declaration === */
 

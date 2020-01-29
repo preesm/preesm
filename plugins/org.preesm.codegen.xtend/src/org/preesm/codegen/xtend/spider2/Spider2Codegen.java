@@ -33,7 +33,6 @@ import org.preesm.model.pisdf.FunctionPrototype;
 import org.preesm.model.pisdf.Parameter;
 import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.scenario.Scenario;
-import org.preesm.model.slam.Design;
 
 /**
  * The Class Spider2Codegen.
@@ -41,9 +40,6 @@ import org.preesm.model.slam.Design;
 public class Spider2Codegen {
   /** The scenario. */
   private final Scenario scenario;
-
-  /** The architecture */
-  private final Design architecture;
 
   /** The application graph */
   private final PiGraph applicationGraph;
@@ -73,10 +69,8 @@ public class Spider2Codegen {
    * @param applicationGraph
    *          the main application graph
    */
-  public Spider2Codegen(final Scenario scenario, final Design architecture, final PiGraph applicationGraph,
-      final File folder) {
+  public Spider2Codegen(final Scenario scenario, final PiGraph applicationGraph, final File folder) {
     this.scenario = scenario;
-    this.architecture = architecture;
     this.applicationGraph = applicationGraph;
     this.folder = folder;
     /** Calls the pre-processor */
@@ -182,6 +176,12 @@ public class Spider2Codegen {
     VelocityContext context = new VelocityContext();
     context.put("mainPEName", this.preprocessor.getMainPEName());
     context.put("clusters", this.preprocessor.getClusterList());
+    context.put("clusterCount", this.preprocessor.getClusterList().size());
+    int peCount = 0;
+    for (final Spider2CodegenCluster cluster : this.preprocessor.getClusterList()) {
+      peCount += cluster.getPeCount();
+    }
+    context.put("peCount", peCount);
 
     /* Write the file */
     writeVelocityContext(context, "templates/cpp/app_archi_template.vm", "spider2-platform.cpp");
@@ -252,11 +252,6 @@ public class Spider2Codegen {
 
     /* Fill out the context */
     VelocityContext context = new VelocityContext();
-    context.put("appName", this.applicationName);
-    final List<CHeaderRefinement> refinements = this.preprocessor.getUniqueLoopHeaderList();
-    final Set<String> fileNames = new HashSet<>();
-    refinements.forEach(x -> fileNames.add(x.getFileName()));
-    context.put("fileNames", fileNames);
     context.put("prototypes", this.preprocessor.getUniqueLoopPrototypeList());
 
     /* Write the file */
@@ -274,13 +269,11 @@ public class Spider2Codegen {
     final Set<PiGraph> graphSet = new HashSet<PiGraph>(this.preprocessor.getUniqueGraphSet());
     graphSet.remove(this.applicationGraph);
     context.put("graphs", graphSet);
+    final List<CHeaderRefinement> refinements = this.preprocessor.getUniqueLoopHeaderList();
+    final Set<String> fileNames = new HashSet<>();
+    refinements.forEach(x -> fileNames.add(x.getFileName()));
+    context.put("fileNames", fileNames);
     context.put("prototypes", this.preprocessor.getUniqueLoopPrototypeList());
-    context.put("clusterCount", this.preprocessor.getClusterList().size());
-    int peCount = 0;
-    for (final Spider2CodegenCluster cluster : this.preprocessor.getClusterList()) {
-      peCount += cluster.getPeCount();
-    }
-    context.put("peCount", peCount);
     context.put("clusters", this.preprocessor.getClusterList());
 
     /* Write the file */

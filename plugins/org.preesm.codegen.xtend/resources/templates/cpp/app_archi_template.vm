@@ -42,7 +42,13 @@
 
 #include "spider2-application.h"
 
-/* === Application main entry point === */
+/* === Constants declaration === */
+
+constexpr size_t CLUSTER_COUNT = ${clusterCount};
+
+constexpr size_t PE_COUNT = ${peCount};
+
+/* === Platform definition === */
 
 void spider::createUserPhysicalPlatform() {
     /* == Creates the main platform == */
@@ -62,9 +68,9 @@ void spider::createUserPhysicalPlatform() {
 #foreach ($pe in ${cluster.processingElements})
     #set($finalName = ${cluster.name}+${pe.name})
 #if(${finalName.equals(${mainPEName})})
-    auto *${cluster.name}${pe.name} = spider::api::createProcessingElement(TYPE_${pe.typeName.toUpperCase()}, PE_${cluster.name}_${pe.name.toUpperCase()}, ${cluster.name}Cluster, "${pe.name}", spider::PEType::LRT);
+    auto *${cluster.name}${pe.name} = spider::api::createProcessingElement(TYPE_${pe.typeName.toUpperCase()}, PE_${cluster.name.toUpperCase()}_${pe.name.toUpperCase()}, ${cluster.name}Cluster, "${pe.name}", spider::PEType::LRT, ${pe.affinity});
 #else
-    spider::api::createProcessingElement(TYPE_${pe.typeName.toUpperCase()}, PE_${cluster.name}_${pe.name.toUpperCase()}, ${cluster.name}Cluster, "${pe.name}", spider::PEType::LRT, ${pe.affinity});
+    spider::api::createProcessingElement(TYPE_${pe.typeName.toUpperCase()}, PE_${cluster.name.toUpperCase()}_${pe.name.toUpperCase()}, ${cluster.name}Cluster, "${pe.name}", spider::PEType::LRT, ${pe.affinity});
 #end
 #if ( $foreach.hasNext )
 
