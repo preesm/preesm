@@ -8,15 +8,19 @@ PREESM Changelog
 * Clustering: Uniform Repetition Count chain of actor can be found with the new URCSeeker class.
 * Model: new class of parameter : Malleable Parameter, accepting a set of possible values.
 * Workflow: new task "pisdf-mparams.setter" to compute best value of malleable parameters (naive version).
+* Workflow: new task "org.preesm.codegen.xtend.Spider2CodegenTask" to generate code for Spider 2 runtime.
 
 ### Changes
 * ConfigInputInterface accepts a default value (to compute BRV in subgraph and to avoid false checks in GUI).
 * BRV can be computed on subgraph now.
 * Possibility to set the init function of a delay in the GUI, not yet used in the codegen.
+* Adding new API methods to Parameter class to ease the manipulation of the Parameter tree.
+* Adding new API methods for direct access of FunctionPrototype parameters.
 
 ### Bug fix
 * Fix ids and icons of a few GUI elements.
 * Fix expression evaluation exception management.
+* Fix false parsing of deleted component in scenario.
 
 
 ## Release version 3.19.0
@@ -29,14 +33,13 @@ PREESM Changelog
 * New Workflow task 'gantt-output' to export Gantt with new Synthesis interface;
 * New menu command (from Preesm project) to generate standard X86 architecture;
 * New Workflow task 'pisdf-export.parameters' to export graph static parameters as C header.
-* Adding new API methods to Parameter class to ease the manipulation of the Parameter tree.
 
 ### Changes
 * If Gantt displayer cannot load SWT_AWT, the Gantt can be opened in a new window instead;
 * BRV computation with LCM method now handles fifo having rates equal to 0 on both sides
   (computation is similar to Spider V2);
 * Refactor Communication insertion in the new Synthesis task: removes non necessary transitive
-  closure and improves performanes.
+  closure and improves performances.
 
 ### Bug fix
 * Fix #271 : removes extra coma in spider codegen when no parameters.
