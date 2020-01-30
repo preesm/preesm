@@ -8,7 +8,7 @@ import java.util.Map.Entry;
 import java.util.logging.Level;
 import java.util.stream.Collectors;
 import org.eclipse.core.runtime.IProgressMonitor;
-import org.preesm.algorithm.pisdf.checker.IterationDelayedEvaluator;
+import org.preesm.algorithm.pisdf.autodelays.IterationDelayedEvaluator;
 import org.preesm.algorithm.synthesis.SynthesisResult;
 import org.preesm.algorithm.synthesis.evaluation.latency.LatencyCost;
 import org.preesm.algorithm.synthesis.evaluation.latency.SimpleLatencyEvaluation;

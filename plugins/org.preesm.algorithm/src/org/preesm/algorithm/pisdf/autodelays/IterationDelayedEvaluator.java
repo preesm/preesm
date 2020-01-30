@@ -1,4 +1,4 @@
-package org.preesm.algorithm.pisdf.checker;
+package org.preesm.algorithm.pisdf.autodelays;
 
 import java.util.ArrayDeque;
 import java.util.Deque;
@@ -10,7 +10,7 @@ import java.util.Set;
 import java.util.logging.Level;
 import org.jgrapht.alg.cycle.JohnsonSimpleCycles;
 import org.jgrapht.graph.DefaultDirectedGraph;
-import org.preesm.algorithm.pisdf.checker.AbstractGraph.FifoAbstraction;
+import org.preesm.algorithm.pisdf.autodelays.AbstractGraph.FifoAbstraction;
 import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.model.pisdf.AbstractActor;

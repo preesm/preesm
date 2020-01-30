@@ -33,7 +33,7 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL license and that you accept its terms.
  */
-package org.preesm.algorithm.pisdf.checker;
+package org.preesm.algorithm.pisdf.autodelays;
 
 import java.util.ArrayList;
 import java.util.LinkedList;
@@ -61,17 +61,17 @@ public class AbstractGraph {
 
   /**
    * Fifo abstraction to get used in the analysis of this package.
-   *
+   * 
    * @author ahonorat
    */
-  protected static class FifoAbstraction {
-    boolean          fullyDelayed;
-    int              nbNonZeroDelays;
-    int              nbIterationDelayed;
-    long             prodRate;
-    long             consRate;
-    final List<Long> delays;
-    final List<Fifo> fifos;
+  public static class FifoAbstraction {
+    protected boolean       fullyDelayed;
+    protected int           nbNonZeroDelays;
+    protected int           nbIterationDelayed;
+    protected long          prodRate;
+    protected long          consRate;
+    public final List<Long> delays;
+    public final List<Fifo> fifos;
 
     private FifoAbstraction() {
 
@@ -84,9 +84,46 @@ public class AbstractGraph {
       this.delays = new ArrayList<>();
       this.fifos = new ArrayList<>();
     }
+
+    public boolean isFullyDelayed() {
+      return fullyDelayed;
+    }
+
+    public int getNbNonZeroDelays() {
+      return nbNonZeroDelays;
+    }
+
+    public int getNbIterationDelayed() {
+      return nbIterationDelayed;
+    }
+
+    public long getProdRate() {
+      return prodRate;
+    }
+
+    public long getConsRate() {
+      return consRate;
+    }
+
+    public List<Long> getDelays() {
+      return delays;
+    }
+
+    public List<Fifo> getFifos() {
+      return fifos;
+    }
   }
 
-  protected static DefaultDirectedGraph<AbstractActor, FifoAbstraction> createAbsGraph(final PiGraph graph,
+  /**
+   * Creates an abstract graph from the given PiGraph.
+   * 
+   * @param graph
+   *          PiGraph to abstract.
+   * @param brv
+   *          Repetition vector of the PiGraph.
+   * @return AbstractGraph of PiGraph.
+   */
+  public static DefaultDirectedGraph<AbstractActor, FifoAbstraction> createAbsGraph(final PiGraph graph,
       final Map<AbstractVertex, Long> brv) {
     final DefaultDirectedGraph<AbstractActor,
         FifoAbstraction> absGraph = new DefaultDirectedGraph<>(FifoAbstraction.class);
@@ -145,7 +182,20 @@ public class AbstractGraph {
     return absGraph;
   }
 
-  protected static DefaultDirectedGraph<AbstractActor, FifoAbstraction> subDAGFrom(
+  /**
+   * Computes a subpart of an abstract graph.
+   * 
+   * @param absGraph
+   *          The given abstract graph.
+   * @param start
+   *          The node where the subgraph starts.
+   * @param fifosToIgnore
+   *          A list of fifos to ignore (typically breaking fifos).
+   * @param reverse
+   *          If traversal is performed on graph transpose.
+   * @return A subgraph containing the given start node and all other nodes accessible from it.
+   */
+  public static DefaultDirectedGraph<AbstractActor, FifoAbstraction> subDAGFrom(
       DefaultDirectedGraph<AbstractActor, FifoAbstraction> absGraph, AbstractActor start,
       Set<FifoAbstraction> fifosToIgnore, boolean reverse) {
 

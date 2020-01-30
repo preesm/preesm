@@ -33,7 +33,7 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL license and that you accept its terms.
  */
-package org.preesm.algorithm.pisdf.checker;
+package org.preesm.algorithm.pisdf.autodelays;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -48,7 +48,7 @@ import java.util.logging.Level;
 import java.util.stream.Collectors;
 import org.jgrapht.alg.cycle.JohnsonSimpleCycles;
 import org.jgrapht.graph.DefaultDirectedGraph;
-import org.preesm.algorithm.pisdf.checker.AbstractGraph.FifoAbstraction;
+import org.preesm.algorithm.pisdf.autodelays.AbstractGraph.FifoAbstraction;
 import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.commons.math.MathFunctionsHelper;
@@ -65,17 +65,20 @@ import org.preesm.model.pisdf.util.FifoBreakingCycleDetector;
  */
 public class HeuristicLoopBreakingDelays {
 
-  protected final Map<AbstractActor, Integer> actorsNbVisitsTopoRank;
-  protected final Map<AbstractActor, Integer> actorsNbVisitsTopoRankT;
+  public final Map<AbstractActor, Integer> actorsNbVisitsTopoRank;
+  public final Map<AbstractActor, Integer> actorsNbVisitsTopoRankT;
 
-  protected final Set<AbstractActor> additionalSourceActors;
-  protected final Set<AbstractActor> additionalSinkActors;
+  public final Set<AbstractActor> additionalSourceActors;
+  public final Set<AbstractActor> additionalSinkActors;
 
-  protected final Map<AbstractVertex, Long>            minCycleBrv;
-  protected final Set<FifoAbstraction>                 breakingFifosAbs;
+  public final Map<AbstractVertex, Long>               minCycleBrv;
+  public final Set<FifoAbstraction>                    breakingFifosAbs;
   DefaultDirectedGraph<AbstractActor, FifoAbstraction> absGraph;
 
-  protected HeuristicLoopBreakingDelays() {
+  /**
+   * This class computes and stores fifo able to break cycles.
+   */
+  public HeuristicLoopBreakingDelays() {
     this.actorsNbVisitsTopoRank = new LinkedHashMap<>();
     this.actorsNbVisitsTopoRankT = new LinkedHashMap<>();
 
@@ -87,7 +90,16 @@ public class HeuristicLoopBreakingDelays {
     this.absGraph = null;
   }
 
-  protected void performAnalysis(final PiGraph graph, final Map<AbstractVertex, Long> brv) {
+  /**
+   * This method computes which fifo are able to break cycles. This necessitates a research of all simple cycles, so it
+   * can be long.
+   * 
+   * @param graph
+   *          The PiGraph to analyze (only top level will be analyzed).
+   * @param brv
+   *          The brv of the PiGraph to analyze.
+   */
+  public void performAnalysis(final PiGraph graph, final Map<AbstractVertex, Long> brv) {
     actorsNbVisitsTopoRank.clear();
     actorsNbVisitsTopoRankT.clear();
     additionalSourceActors.clear();
@@ -149,8 +161,8 @@ public class HeuristicLoopBreakingDelays {
 
   }
 
-  protected FifoAbstraction retrieveBreakingFifo(final DefaultDirectedGraph<AbstractActor, FifoAbstraction> absGraph,
-      final List<AbstractActor> cycle) {
+  protected static FifoAbstraction retrieveBreakingFifo(
+      final DefaultDirectedGraph<AbstractActor, FifoAbstraction> absGraph, final List<AbstractActor> cycle) {
     if (cycle.isEmpty()) {
       throw new PreesmRuntimeException("Bad argument: empty cycle.");
     }
@@ -217,6 +229,13 @@ public class HeuristicLoopBreakingDelays {
     }
 
     return absGraph.getEdge(cycle.get(index), cycle.get((index + 1) % cycle.size()));
+  }
+
+  /**
+   * @return The absGraph used for computation, is computed again at each call of {@link #performAnalysis}
+   */
+  public DefaultDirectedGraph<AbstractActor, FifoAbstraction> getAbsGraph() {
+    return absGraph;
   }
 
 }

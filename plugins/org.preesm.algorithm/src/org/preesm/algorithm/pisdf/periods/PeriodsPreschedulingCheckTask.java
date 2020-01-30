@@ -33,7 +33,7 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL license and that you accept its terms.
  */
-package org.preesm.algorithm.pisdf.checker;
+package org.preesm.algorithm.pisdf.periods;
 
 import java.util.Comparator;
 import java.util.HashMap;
@@ -49,7 +49,9 @@ import java.util.TreeMap;
 import java.util.logging.Level;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.jgrapht.graph.DefaultDirectedGraph;
-import org.preesm.algorithm.pisdf.checker.AbstractGraph.FifoAbstraction;
+import org.preesm.algorithm.pisdf.autodelays.AbstractGraph;
+import org.preesm.algorithm.pisdf.autodelays.AbstractGraph.FifoAbstraction;
+import org.preesm.algorithm.pisdf.autodelays.HeuristicLoopBreakingDelays;
 import org.preesm.commons.doc.annotations.Parameter;
 import org.preesm.commons.doc.annotations.Port;
 import org.preesm.commons.doc.annotations.PreesmTask;
@@ -252,12 +254,12 @@ public class PeriodsPreschedulingCheckTask extends AbstractTaskImplementation {
     PreesmLogger.getLogger().log(Level.INFO, "Periodic actor for NBLF: " + sbNBLF.toString());
 
     // 3. for each selected periodic node for nblf:
-    performAllNBF(actorsNBLF, periodicActors, false, heurFifoBreaks.absGraph, heurFifoBreaks.breakingFifosAbs, wcets,
-        heurFifoBreaks.minCycleBrv, nbCore);
+    performAllNBF(actorsNBLF, periodicActors, false, heurFifoBreaks.getAbsGraph(), heurFifoBreaks.breakingFifosAbs,
+        wcets, heurFifoBreaks.minCycleBrv, nbCore);
 
     // 4. for each selected periodic node for nbff:
-    performAllNBF(actorsNBFF, periodicActors, true, heurFifoBreaks.absGraph, heurFifoBreaks.breakingFifosAbs, wcets,
-        heurFifoBreaks.minCycleBrv, nbCore);
+    performAllNBF(actorsNBFF, periodicActors, true, heurFifoBreaks.getAbsGraph(), heurFifoBreaks.breakingFifosAbs,
+        wcets, heurFifoBreaks.minCycleBrv, nbCore);
 
     long duration = System.nanoTime() - time;
     PreesmLogger.getLogger().info("Time+ " + Math.round(duration / 1e6) + " ms.");
@@ -375,9 +377,9 @@ public class PeriodsPreschedulingCheckTask extends AbstractTaskImplementation {
         long nbfDest = 0;
         long delay = fa.delays.stream().min(Long::compare).orElse(0L);
         if (reverse) {
-          nbfDest = (nbf.get(current) * fa.consRate - delay + fa.prodRate - 1) / fa.prodRate;
+          nbfDest = (nbf.get(current) * fa.getConsRate() - delay + fa.getProdRate() - 1) / fa.getProdRate();
         } else {
-          nbfDest = (nbf.get(current) * fa.prodRate - delay + fa.consRate - 1) / fa.consRate;
+          nbfDest = (nbf.get(current) * fa.getProdRate() - delay + fa.getConsRate() - 1) / fa.getConsRate();
         }
         nbf.put(dest, Math.max(nbfDest, nbf.get(dest)));
         if (nbVisitsDest == subgraph.inDegreeOf(dest) && nbfDest > 0) {
