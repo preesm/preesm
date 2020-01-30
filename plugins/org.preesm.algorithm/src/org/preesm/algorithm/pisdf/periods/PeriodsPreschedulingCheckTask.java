@@ -99,7 +99,6 @@ import org.preesm.workflow.implement.AbstractWorkflowNodeImplementation;
         values = { @Value(name = "100", effect = "Periodic actors to consider.") }) }
 
 )
-
 public class PeriodsPreschedulingCheckTask extends AbstractTaskImplementation {
 
   /**

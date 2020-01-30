@@ -74,6 +74,7 @@ public class HeuristicLoopBreakingDelays {
   public final Map<AbstractVertex, Long>               minCycleBrv;
   public final Set<FifoAbstraction>                    breakingFifosAbs;
   DefaultDirectedGraph<AbstractActor, FifoAbstraction> absGraph;
+  List<List<AbstractActor>>                            cycles;
 
   /**
    * This class computes and stores fifo able to break cycles.
@@ -88,6 +89,7 @@ public class HeuristicLoopBreakingDelays {
     this.minCycleBrv = new HashMap<>();
     this.breakingFifosAbs = new HashSet<>();
     this.absGraph = null;
+    this.cycles = null;
   }
 
   /**
@@ -112,7 +114,7 @@ public class HeuristicLoopBreakingDelays {
     absGraph = AbstractGraph.createAbsGraph(graph, brv);
     // 2. look for cycles
     final JohnsonSimpleCycles<AbstractActor, FifoAbstraction> cycleFinder = new JohnsonSimpleCycles<>(absGraph);
-    final List<List<AbstractActor>> cycles = cycleFinder.findSimpleCycles();
+    cycles = cycleFinder.findSimpleCycles();
 
     // 3 categorize actors in cycle and retrieve fifo with delays breaking loop
     // it is a set since the same fifo can break several cycles if they have some paths in common
