@@ -215,6 +215,14 @@ class PiGraph extends AbstractActor, Graph, PeriodicElement {
 	op boolean isCluster() {
 		return clusterValue
 	}
+	
+	op String getPiGraphName() {
+		var graphName = url.substring(url.lastIndexOf('/') + 1, url.length - 3);
+		if (!graphName.isEmpty) {
+			graphName = graphName.substring(0, 1).toUpperCase() + graphName.substring(1);
+		}
+		return graphName;
+	} 
 	op boolean isLocallyStatic() {
 		// a PiGraph is static if all the parameters it contains are static
 		// and if the input setters on its config interfaces are static
@@ -691,6 +699,19 @@ class CHeaderRefinement extends Refinement {
 		// C Header Refinement means it is obviously not a subgraph
 		return false
 	}
+	
+	op unique ConfigInputPort[] getLoopConfigInputPorts() {
+		return this.loopPrototype.inputConfigParameters.filterNull.map[arg | Optional.ofNullable(this.eContainer as AbstractActor).map[lookupPort(arg.name) as ConfigInputPort].orElse(null)].toEList.unmodifiableView
+	}
+	
+	op unique ConfigOutputPort[] getLoopConfigOutputPorts() {
+		return this.loopPrototype.outputConfigParameters.filterNull.map[arg | Optional.ofNullable(this.eContainer as AbstractActor).map[lookupPort(arg.name) as ConfigOutputPort].orElse(null)].toEList.unmodifiableView
+	}
+	
+	op unique ConfigInputPort[] getInitConfigInputPorts() {
+		return this.initPrototype.inputConfigParameters.filterNull.map[arg | Optional.ofNullable(this.eContainer as AbstractActor).map[lookupPort(arg.name) as ConfigInputPort].orElse(null)].toEList.unmodifiableView
+	}
+	
 }
 
 class Parameter extends Vertex, Configurable, ISetter, ExpressionHolder {
@@ -712,6 +733,12 @@ class Parameter extends Vertex, Configurable, ISetter, ExpressionHolder {
 	}
 	op boolean isConfigurationInterface() {
 		return false
+	}
+	op unique Parameter[] getInputDependentParameters() {
+		return getConfigInputPorts().map[incomingDependency].filterNull.map[setter].filter(Parameter).toEList.unmodifiableView
+	}
+	op unique Parameter[] getOutputDependentParameters() {
+		return outgoingDependencies.filterNull.map[target].filter(Parameter).toEList.unmodifiableView
 	}
 }
 
@@ -807,6 +834,18 @@ class Delay extends Configurable, ExpressionHolder {
 class FunctionPrototype {
 	String name
 	contains FunctionArgument[] arguments
+	op unique FunctionArgument[] getInputConfigParameters() {
+		return arguments.filter[it.isConfigurationParameter == true && it.direction == Direction.IN].toEList.unmodifiableView;
+	}
+	op unique FunctionArgument[] getOutputConfigParameters() {
+		return arguments.filter[it.isConfigurationParameter == true && it.direction == Direction.OUT].toEList.unmodifiableView;
+	}
+	op unique FunctionArgument[] getInputArguments() {
+		return arguments.filter[it.isConfigurationParameter == false && it.direction == Direction.IN].toEList.unmodifiableView;
+	}
+	op unique FunctionArgument[] getOutputArguments() {
+		return arguments.filter[it.isConfigurationParameter == false && it.direction == Direction.OUT].toEList.unmodifiableView;
+	}
 }
 
 class FunctionArgument {
@@ -814,6 +853,7 @@ class FunctionArgument {
 	Direction direction
 	String ^type
 	boolean isConfigurationParameter
+	int position
 }
 
 enum Direction {

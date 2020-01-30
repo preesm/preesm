@@ -1,0 +1,183 @@
+/*
+ * Copyright or © or Copr. IETR/INSA - Rennes (2013 - 2019) :
+ *
+ * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2018)
+ * Clément Guy <clement.guy@insa-rennes.fr> (2014)
+ * Florian Arrestier <florian.arrestier@insa-rennes.fr> (2017-2019)
+ * Hugo Miomandre <hugo.miomandre@insa-rennes.fr> (2017)
+ * Julien Heulot <julien.heulot@insa-rennes.fr> (2013 - 2015)
+ * Yaset Oliva <yaset.oliva@insa-rennes.fr> (2013 - 2014)
+ *
+ * Spider is a dataflow based runtime used to execute dynamic PiSDF
+ * applications. The Preesm tool may be used to design PiSDF applications.
+ *
+ * This software is governed by the CeCILL  license under French law and
+ * abiding by the rules of distribution of free software.  You can  use,
+ * modify and/ or redistribute the software under the terms of the CeCILL
+ * license as circulated by CEA, CNRS and INRIA at the following URL
+ * "http://www.cecill.info".
+ *
+ * As a counterpart to the access to the source code and  rights to copy,
+ * modify and redistribute granted by the license, users are provided only
+ * with a limited warranty  and the software's author,  the holder of the
+ * economic rights,  and the successive licensors  have only  limited
+ * liability.
+ *
+ * In this respect, the user's attention is drawn to the risks associated
+ * with loading,  using,  modifying and/or developing or reproducing the
+ * software by the user in light of its specific status of free software,
+ * that may mean  that it is complicated to manipulate,  and  that  also
+ * therefore means  that it is reserved for developers  and  experienced
+ * professionals having in-depth computer knowledge. Users are therefore
+ * encouraged to load and test the software's suitability as regards their
+ * requirements in conditions enabling the security of their systems and/or
+ * data to be ensured and,  more generally, to use and operate it in the
+ * same conditions as regards security.
+ *
+ * The fact that you are presently reading this means that you have had
+ * knowledge of the CeCILL license and that you accept its terms.
+ */
+
+/* === Include(s) === */
+
+#include "spider2-application.h"
+
+/* === Function(s) definition === */
+
+void spider::createUserApplicationGraph() {
+    /* == Create the graph == */
+    auto *graph = spider::api::createUserApplicationGraph(/* = Name of the application graph = */ "$appName",
+                                                          /* = Number of actors              = */  ${actorCount},
+                                                          /* = Number of edges               = */  ${edgeCount},
+                                                          /* = Number of parameters          = */  ${paramCount},
+                                                          /* = Number of input interfaces    = */  ${inputInterfaceCount},
+                                                          /* = Number of output interfaces   = */  ${outputInterfaceCount},
+                                                          /* = Number of config actors       = */  ${cfgActorCount});
+
+    /* === Creates the parameter(s) === */
+#foreach($param in $staticParameters)
+
+    auto param_$param.name = spider::api::createStaticParam(
+          /* = Graph of the parameter = */  graph,
+          /* = Name of the parameter  = */ "$param.name",
+          /* = Value of the parameter = */  $param.expression.expressionAsString);
+#end
+#foreach($param in $dependendStaticParameters)
+
+    auto param_$param.name = spider::api::createStaticParam(
+          /* = Graph of the parameter      = */  graph,
+          /* = Name of the parameter       = */ "$param.name",
+          /* = Expression of the parameter = */ "$param.expression.expressionAsString");
+#end
+#foreach($param in $dynamicParameters)
+
+    auto param_$param.name = spider::api::createDynamicParam(
+          /* = Graph of the parameter = */  graph,
+          /* = Name of the parameter  = */ "$param.name");
+#end
+#foreach($param in $dependentDynamicParameters)
+
+    auto param_$param.name = spider::api::createDynamicParam(
+          /* = Graph of the parameter      = */  graph,
+          /* = Name of the parameter       = */ "$param.name",
+          /* = Expression of the parameter = */ "$param.expression.expressionAsString");
+#end
+
+    /* === Creates the actor(s) == */
+#foreach($codegenActor in $actors)
+    #set($actor = $codegenActor.actor)
+    #set($type = $codegenActor.type)
+    #set($rateConfigInputPorts = $codegenActor.rateConfigInputPorts)
+    #set($refinementConfigInputPorts = $codegenActor.refinementConfigInputPorts)
+    #set($configOutputPorts = $codegenActor.refinementConfigOutputPorts)
+    
+    auto *vertex_$actor.name = spider::api::createVertexFromType(
+          /* = Graph of the vertex    = */  graph, 
+          /* = Name of the actor      = */ "$actor.name", 
+          /* = Number of input edges  = */  ${actor.dataInputPorts.size()}, 
+          /* = Number of output edges = */  ${actor.dataOutputPorts.size()},
+          /* = Type of the vertex     = */  pisdf::VertexType::$type,
+          /* = Kernel index (if any)  = */ #if(!$actor.refinement) SIZE_MAX#else kernels::${actor.refinement.loopPrototype.name.toUpperCase()}#end);
+
+#if( ${rateConfigInputPorts.size()} > 0)
+
+    /* == Set the input parameters used by rate expressions of the vertex $actor.name == */
+#foreach($inputPort in $rateConfigInputPorts)
+    spider::api::addInputParamToVertex(vertex_$actor.name, param_${inputPort.incomingDependency.setter.name});
+#end
+#end
+#if( ${refinementConfigInputPorts.size()} > 0)
+
+    /* == Set the input parameters needed by the refinement of the vertex $actor.name == */
+#foreach($inputPort in $refinementConfigInputPorts)
+    spider::api::addInputRefinementParamToVertex(vertex_$actor.name, param_${inputPort.incomingDependency.setter.name});
+#end
+#end
+#if( ${configOutputPorts.size()} > 0)
+
+    /* == Set the output parameters of the vertex $actor.name == */
+#foreach($outputPort in $configOutputPorts)
+    spider::api::addOutputParamToVertex(vertex_$actor.name, param_${outputPort.outgoingDependencies.get(0).target.name});
+#end
+#end 
+    
+    /* == Setting mappable constraints of the vertex $actor.name == */
+#if ( ${codegenActor.isMappableOnAll} )
+    spider::api::setVertexMappableOnAllPE(vertex_$actor.name, true);
+#else
+    #set($constraints = $codegenActor.mappingConstraints)
+#foreach($constraint in $constraints)
+    spider::api::setVertexMappableOnPE(vertex_$actor.name, PE_${constraint.first.toUpperCase()}, ${constraint.second});
+#end
+#end
+    #set($timings = $codegenActor.timings)
+#if ( ${timings.size()} > 0 )
+    
+    /* == Set the timings of the vertex $actor.name == */
+#foreach($timing in $timings)
+    spider::api::setVertexExecutionTimingOnCluster(vertex_$actor.name, TYPE_${timing.first.toUpperCase()}, "$timing.second");
+#end
+#end
+#end
+
+    /* === Creates the subgraph(s) === */
+#foreach($pair in $subgraphsAndParameters)
+    #set($subgraph = $pair.first)
+    #set($paramNames = $pair.second)
+    
+    auto *vertex_$subgraph.name = spider::create${subgraph.piGraphName}Subgraph("$subgraph.name", graph, {#foreach ($name in $paramNames) param_$name #end});
+#end     
+
+    /* === Creates the edge(s) === */
+#foreach ($edge in $edges)
+
+    /* == Edge ${edge.source.name}[$edge.sourcePortName] -> [$edge.sinkPortName]$edge.sink.name == */
+#if( $edge.hasDelay() )
+    auto *edge_${edge.source.name}_${edge.sourcePortName}__${edge.sink.name}_${edge.sinkPortName} = spider::api::createEdge(
+         /* = Source vertex          = */  vertex_$edge.source.name,
+         /* = Source port ix         = */  $edge.sourceIx,
+         /* = Source rate expression = */ "$edge.sourceRateExpression",
+         /* = Sink vertex            = */  vertex_$edge.sink.name,
+         /* = Sink port ix           = */  $edge.sinkIx,
+         /* = sink rate expression   = */ "$edge.sinkRateExpression");
+         
+    /* == Set the delay on the edge == */
+    spider::api::createDelay(/* = Edge of the delay       = */  edge_${edge.source.name}_${edge.sourcePortName}__${edge.sink.name}_${edge.sinkPortName},
+                             /* = Expression of the delay = */ "$edge.delay.expression.expressionAsString",
+                             /* = Setter of the delay     = */  $edge.setterDelay,
+                             /* = Setter port ix          = */  $edge.setterPortIx,
+                             /* = Setter rate expression  = */ "$edge.setterRateExpression",
+                             /* = Getter of the delay     = */  $edge.getterDelay,
+                             /* = Getter port ix          = */  $edge.getterPortIx,
+                             /* = Getter rate expression  = */ "$edge.getterRateExpression");
+                             
+#else
+    spider::api::createEdge(/* = Source vertex          = */  vertex_$edge.source.name,
+                            /* = Source port ix         = */  $edge.sourceIx,
+                            /* = Source rate expression = */ "$edge.sourceRateExpression",
+                            /* = Sink vertex            = */  vertex_$edge.sink.name,
+                            /* = Sink port ix           = */  $edge.sinkIx,
+                            /* = sink rate expression   = */ "$edge.sinkRateExpression");   
+#end
+#end
+}
