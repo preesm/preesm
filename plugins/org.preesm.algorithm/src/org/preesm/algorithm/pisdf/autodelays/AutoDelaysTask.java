@@ -3,13 +3,17 @@ package org.preesm.algorithm.pisdf.autodelays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
+import java.util.SortedMap;
+import java.util.TreeMap;
 import java.util.logging.Level;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.preesm.algorithm.pisdf.autodelays.AbstractGraph.FifoAbstraction;
+import org.preesm.algorithm.pisdf.autodelays.TopologicalRanking.TopoVisit;
 import org.preesm.commons.doc.annotations.Parameter;
 import org.preesm.commons.doc.annotations.Port;
 import org.preesm.commons.doc.annotations.PreesmTask;
@@ -19,6 +23,7 @@ import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.commons.model.PreesmCopyTracker;
 import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.AbstractVertex;
+import org.preesm.model.pisdf.ExecutableActor;
 import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.pisdf.brv.BRVMethod;
 import org.preesm.model.pisdf.brv.PiBRV;
@@ -111,7 +116,6 @@ public class AutoDelaysTask extends AbstractTaskImplementation {
     PiGraph graphCopy = PiMMUserFactory.instance.copyPiGraphWithHistory(graph);
     Map<AbstractVertex, Long> brv = PiBRV.compute(graphCopy, BRVMethod.LCM);
 
-    long Ctot = 0L;
     Map<AbstractVertex, Long> wcets = new HashMap<>();
     for (final Entry<AbstractVertex, Long> en : brv.entrySet()) {
       final AbstractVertex a = en.getKey();
@@ -128,19 +132,72 @@ public class AutoDelaysTask extends AbstractTaskImplementation {
       } else {
         wcetMin = ScenarioConstants.DEFAULT_TIMING_TASK.getValue();
       }
-      Ctot += brv.get(a) * wcetMin;
       wcets.put(a, wcetMin);
     }
 
-    HeuristicLoopBreakingDelays hlbd = new HeuristicLoopBreakingDelays();
+    final HeuristicLoopBreakingDelays hlbd = new HeuristicLoopBreakingDelays();
     hlbd.performAnalysis(graphCopy, brv);
 
     // intermediate data : forbidden fifos (in cycles), ranks, wcet(rank)
 
-    Set<FifoAbstraction> forbiddenFifos = getForbiddenFifos(hlbd);
+    final Set<FifoAbstraction> forbiddenFifos = getForbiddenFifos(hlbd);
+
+    final Set<AbstractActor> sourceActors = new LinkedHashSet<>(hlbd.additionalSourceActors);
+    final Set<AbstractActor> sinkActors = new LinkedHashSet<>(hlbd.additionalSinkActors);
+    for (final AbstractActor absActor : graphCopy.getActors()) {
+      if (absActor instanceof ExecutableActor) {
+        if (absActor.getDataOutputPorts().isEmpty()) {
+          sinkActors.add(absActor);
+        }
+        if (absActor.getDataInputPorts().isEmpty()) {
+          sourceActors.add(absActor);
+        }
+      }
+    }
+    final Map<AbstractActor,
+        TopoVisit> topoRanks = TopologicalRanking.topologicalASAPranking(sourceActors, hlbd.actorsNbVisitsTopoRank);
+    final SortedMap<Integer, Long> rankWCETs = new TreeMap<>();
+    for (Entry<AbstractActor, TopoVisit> e : topoRanks.entrySet()) {
+      AbstractActor aa = e.getKey();
+      TopoVisit tv = e.getValue();
+      long tWCET = brv.get(aa) * wcets.get(aa);
+      long prev = rankWCETs.getOrDefault(tv.rank, 0L);
+      rankWCETs.put(tv.rank, tWCET + prev);
+    }
+    // offset of one tp ease next computation
+    final int maxRank = rankWCETs.lastKey() + 1;
+    final Map<AbstractActor,
+        TopoVisit> topoRanksT = TopologicalRanking.topologicalASAPrankingT(sinkActors, hlbd.actorsNbVisitsTopoRankT);
+    // reorder topoRanksT with same order as topoRanks
+    for (Entry<AbstractActor, TopoVisit> e : topoRanksT.entrySet()) {
+      AbstractActor aa = e.getKey();
+      TopoVisit tv = e.getValue();
+      long tWCET = brv.get(aa) * wcets.get(aa);
+      int rank = maxRank - tv.rank;
+      long prev = rankWCETs.getOrDefault(rank, 0L);
+      rankWCETs.put(rank, tWCET + prev);
+    }
+    // as loads are counted 2 times if one same rank, divide by 2
+    long totC = 0L;
+    for (Entry<Integer, Long> e : rankWCETs.entrySet()) {
+      int rank = e.getKey();
+      long load = e.getValue() / 2;
+      totC += load;
+      rankWCETs.put(rank, load);
+    }
+    // we divide by the number of maxii
+    long avgCutLoad = totC / (maxii + 1);
+
+    // compute possible cuts
+    SortedMap<Integer, Set<Set<FifoAbstraction>>> possibleCuts = computePossibleCuts(topoRanks, topoRanksT,
+        forbiddenFifos, maxRank, hlbd);
+
+    System.err.println("nb possible cuts: " + possibleCuts.size());
+
+    // select the relevant cuts
 
     final Map<String, Object> output = new LinkedHashMap<>();
-    output.put(AbstractWorkflowNodeImplementation.KEY_PI_GRAPH, graph);
+    output.put(AbstractWorkflowNodeImplementation.KEY_PI_GRAPH, graphCopy);
     return output;
   }
 
@@ -158,6 +215,93 @@ public class AutoDelaysTask extends AbstractTaskImplementation {
       }
     }
     return forbiddenFifos;
+  }
+
+  private static SortedMap<Integer, Set<Set<FifoAbstraction>>> computePossibleCuts(
+      final Map<AbstractActor, TopoVisit> topoRanks, final Map<AbstractActor, TopoVisit> topoRanksT,
+      final Set<FifoAbstraction> forbiddenFifos, final int maxRank, HeuristicLoopBreakingDelays hlbd) {
+    final SortedMap<Integer, Set<Set<FifoAbstraction>>> result = new TreeMap<>();
+    // build intermediate list of actors per rank
+    final SortedMap<Integer, Set<AbstractActor>> irRankActors = new TreeMap<>();
+    for (Entry<AbstractActor, TopoVisit> e : topoRanksT.entrySet()) {
+      final AbstractActor aa = e.getKey();
+      final TopoVisit tv = e.getValue();
+      final int rank = tv.rank;
+      if (rank > 1) {
+        Set<AbstractActor> aas = irRankActors.get(rank);
+        if (aas == null) {
+          aas = new HashSet<>();
+          irRankActors.put(rank, aas);
+        }
+        aas.add(aa);
+      }
+    }
+    final SortedMap<Integer, Set<AbstractActor>> irRankActorsT = new TreeMap<>();
+    for (Entry<AbstractActor, TopoVisit> e : topoRanksT.entrySet()) {
+      final AbstractActor aa = e.getKey();
+      final TopoVisit tv = e.getValue();
+      final int rank = maxRank - tv.rank;
+      if (rank > 1) {
+        Set<AbstractActor> aas = irRankActorsT.get(rank);
+        if (aas == null) {
+          aas = new HashSet<>();
+          irRankActors.put(rank, aas);
+        }
+        aas.add(aa);
+      }
+    }
+
+    for (Entry<Integer, Set<AbstractActor>> e : irRankActors.entrySet()) {
+      final int rank = e.getKey();
+      final Set<AbstractActor> aas = e.getValue();
+      final Set<FifoAbstraction> fas = computeCut(aas, forbiddenFifos, hlbd);
+      if (!fas.isEmpty()) {
+        Set<Set<FifoAbstraction>> fass = result.get(rank);
+        if (fass == null) {
+          fass = new HashSet<>();
+          result.put(rank, fass);
+        }
+        fass.add(fas);
+      }
+    }
+    for (Entry<Integer, Set<AbstractActor>> e : irRankActorsT.entrySet()) {
+      final int rank = e.getKey();
+      final Set<AbstractActor> aas = e.getValue();
+      final Set<FifoAbstraction> fas = computeCut(aas, forbiddenFifos, hlbd);
+      if (!fas.isEmpty()) {
+        Set<Set<FifoAbstraction>> fass = result.get(rank);
+        if (fass == null) {
+          fass = new HashSet<>();
+          result.put(rank, fass);
+        }
+        fass.add(fas);
+      }
+    }
+
+    return result;
+  }
+
+  private static Set<FifoAbstraction> computeCut(final Set<AbstractActor> aas,
+      final Set<FifoAbstraction> forbiddenFifos, HeuristicLoopBreakingDelays hlbd) {
+    final Set<FifoAbstraction> fas = new HashSet<>();
+    boolean isOK = true;
+    for (AbstractActor aa : aas) {
+      for (FifoAbstraction fa : hlbd.absGraph.incomingEdgesOf(aa)) {
+        boolean forbiddenFifo = forbiddenFifos.contains(fa);
+        if (!forbiddenFifo) {
+          fas.add(fa);
+        } else if (hlbd.breakingFifosAbs.contains(fa)) {
+          // do nothing: we will not add delays on this one
+        } else {
+          isOK = false;
+          break;
+        }
+      }
+    }
+    if (!isOK) {
+      fas.clear();
+    }
+    return fas;
   }
 
   @Override
