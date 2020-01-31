@@ -72,7 +72,7 @@ public class PGANScheduler {
   public PGANScheduler(final PiGraph inputGraph) {
     // Flatten input graph and save references
     this.inputGraph = inputGraph;
-    // Copy input graph into copiedGraph
+    // Copy input graph
     this.copiedGraph = PiMMUserFactory.instance.copyPiGraphWithHistory(this.inputGraph);
     // Build schedules map
     this.schedulesMap = new HashMap<>();
@@ -93,7 +93,8 @@ public class PGANScheduler {
     // Second clustering pass : cluster from schedule
     resultingSchedule = secondClusteringPass(this.inputGraph, resultingSchedule);
 
-    PreesmLogger.getLogger().log(Level.INFO, new SchedulePrinterSwitch().print(resultingSchedule));
+    new SchedulePrinterSwitch();
+    PreesmLogger.getLogger().log(Level.INFO, SchedulePrinterSwitch.print(resultingSchedule));
 
     return resultingSchedule;
   }
