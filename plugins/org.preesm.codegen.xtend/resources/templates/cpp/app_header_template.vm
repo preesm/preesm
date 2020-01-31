@@ -43,13 +43,13 @@
 
 /* === Include(s) === */
 
-#include <string>
-#include <vector>
-#include <cstdint>
-#include <cstddef>
-#include <spider.h>
+#[[#]]#include <string>
+#[[#]]#include <vector>
+#[[#]]#include <cstdint>
+#[[#]]#include <cstddef>
+#[[#]]#include <spider.h>
 #foreach ($fileName in $fileNames)
-#include "${fileName}"
+#[[#]]#include "${fileName}"
 #end
 
 namespace spider {
@@ -58,9 +58,7 @@ namespace spider {
     
     enum HardwareType : uint32_t {
 #foreach ($cluster in $clusters)  
-#foreach ($pe in $cluster.processingElements)  
-        TYPE_${pe.typeName.toUpperCase()},
-#end
+        TYPE_${cluster.name.toUpperCase()},
 #end
     };
     

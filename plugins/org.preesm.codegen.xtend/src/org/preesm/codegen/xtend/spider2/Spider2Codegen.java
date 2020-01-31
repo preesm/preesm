@@ -89,11 +89,13 @@ public class Spider2Codegen {
     this.originalContextClassLoader = Thread.currentThread().getContextClassLoader();
     Thread.currentThread().setContextClassLoader(Spider2Codegen.class.getClassLoader());
     this.velocityEngine = new VelocityEngine();
+    this.velocityEngine.setProperty("resource.loader", "class");
+    this.velocityEngine.setProperty("class.resource.loader.class",
+        "org.apache.velocity.runtime.resource.loader.ClasspathResourceLoader");
     this.velocityEngine.init();
     this.velocityEngine.removeDirective("ifndef");
     this.velocityEngine.removeDirective("define");
     this.velocityEngine.removeDirective("endif");
-    this.velocityEngine.removeDirective("include");
   }
 
   /**
@@ -343,7 +345,7 @@ public class Spider2Codegen {
       writeVelocityContext(context, "templates/cpp/app_graph_template.vm", "spider2-application_graph.cpp");
     } else {
       final String outputFileName = graph.getPiGraphName().toLowerCase() + "_subgraph" + ".cpp";
-      writeVelocityContext(context, "templates/cpp/graph_template.vm", outputFileName);
+      writeVelocityContext(context, "templates/cpp/app_subgraph_template.vm", outputFileName);
     }
   }
 
@@ -385,14 +387,14 @@ public class Spider2Codegen {
   private final void writeVelocityContext(final VelocityContext context, final String templateFileName,
       final String outputFileName) {
     try (Writer writer = new FileWriter(new File(this.folder, outputFileName))) {
-      final URL graphCodeTemplate = PreesmResourcesHelper.getInstance().resolve(templateFileName, this.getClass());
+      final URL template = PreesmResourcesHelper.getInstance().resolve(templateFileName, this.getClass());
 
-      try (final InputStreamReader reader = new InputStreamReader(graphCodeTemplate.openStream())) {
+      try (final InputStreamReader reader = new InputStreamReader(template.openStream())) {
         velocityEngine.evaluate(context, writer, "org.apache.velocity", reader);
         writer.flush();
       } catch (IOException e) {
         end();
-        throw new PreesmRuntimeException("Could not locate main template [" + graphCodeTemplate.getFile() + "].", e);
+        throw new PreesmRuntimeException("Could not locate main template [" + template.getFile() + "].", e);
       }
 
     } catch (IOException e) {

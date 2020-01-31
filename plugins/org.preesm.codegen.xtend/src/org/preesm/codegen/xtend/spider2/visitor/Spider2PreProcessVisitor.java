@@ -24,8 +24,6 @@ import org.preesm.model.pisdf.BroadcastActor;
 import org.preesm.model.pisdf.CHeaderRefinement;
 import org.preesm.model.pisdf.ConfigInputPort;
 import org.preesm.model.pisdf.ConfigOutputPort;
-import org.preesm.model.pisdf.DataInputPort;
-import org.preesm.model.pisdf.DataOutputPort;
 import org.preesm.model.pisdf.DataPort;
 import org.preesm.model.pisdf.DelayActor;
 import org.preesm.model.pisdf.Dependency;
@@ -314,40 +312,6 @@ public class Spider2PreProcessVisitor extends PiMMSwitch<Boolean> {
     }
   }
 
-  private long getRealSourcePortIx(final AbstractActor actor, final DataOutputPort sourcePort) {
-    if (actor instanceof Actor) {
-      final Actor a = (Actor) (actor);
-      final CHeaderRefinement refinement = (CHeaderRefinement) (a.getRefinement());
-      final FunctionPrototype proto = refinement.getLoopPrototype();
-      final List<FunctionArgument> args = proto.getOutputArguments();
-      final List<FunctionArgument> matchArgs = args.stream().filter(x -> x.getName().equals(sourcePort.getName()))
-          .collect(Collectors.toList());
-      if (matchArgs.size() != 1) {
-        throw new PreesmRuntimeException("Did not find match for output port [" + sourcePort.getName()
-            + "] in the function [" + proto.getName() + "].");
-      }
-      return args.indexOf(matchArgs.get(0));
-    }
-    return actor.getDataOutputPorts().indexOf(sourcePort);
-  }
-
-  private long getRealSinkPortIx(final AbstractActor actor, final DataInputPort targetPort) {
-    if (actor instanceof Actor) {
-      final Actor a = (Actor) (actor);
-      final CHeaderRefinement refinement = (CHeaderRefinement) (a.getRefinement());
-      final FunctionPrototype proto = refinement.getLoopPrototype();
-      final List<FunctionArgument> args = proto.getInputArguments();
-      final List<FunctionArgument> matchArgs = args.stream().filter(x -> x.getName().equals(targetPort.getName()))
-          .collect(Collectors.toList());
-      if (matchArgs.size() != 1) {
-        throw new PreesmRuntimeException("Did not find match for input port [" + targetPort.getName()
-            + "] in the function [" + proto.getName() + "].");
-      }
-      return args.indexOf(matchArgs.get(0));
-    }
-    return actor.getDataInputPorts().indexOf(targetPort);
-  }
-
   /**
    * Extracts the edges of the Graph in the edgeMap.
    * 
@@ -360,40 +324,8 @@ public class Spider2PreProcessVisitor extends PiMMSwitch<Boolean> {
     }
     Set<Spider2CodegenEdge> edgeSet = new LinkedHashSet<>();
     for (final Fifo fifo : graph.getFifos()) {
-      /* Retrieve source information */
-      final DataOutputPort sourcePort = fifo.getSourcePort();
-      final AbstractActor source = sourcePort.getContainingActor();
-      final long sourceIx = getRealSourcePortIx(source, sourcePort);
-      /* We need to substitute the real parameter name in the expression */
-      String sourceRateExpression = "(" + sourcePort.getExpression().getExpressionAsString() + ")";
-      for (final ConfigInputPort iCfg : source.getConfigInputPorts()) {
-        if (sourceRateExpression.matches(".*?\\b" + iCfg.getName() + "\\b.*?")) {
-          final String realName = ((Parameter) (iCfg.getIncomingDependency().getSetter())).getName();
-          sourceRateExpression = sourceRateExpression.replace(iCfg.getName(), realName);
-        }
-      }
-      /* We need to add the size of the FIFO */
-      sourceRateExpression += " * " + this.scenario.getSimulationInfo().getDataTypeSizeOrDefault(fifo.getType());
-
-      /* Retrieve sink information */
-      final DataInputPort targetPort = fifo.getTargetPort();
-      final AbstractActor sink = targetPort.getContainingActor();
-      final long sinkIx = getRealSinkPortIx(sink, targetPort);
-      /* We need to substitute the real parameter name in the expression */
-      String sinkRateExpression = "(" + targetPort.getExpression().getExpressionAsString() + ")";
-      for (final ConfigInputPort iCfg : sink.getConfigInputPorts()) {
-        if (sinkRateExpression.matches(".*?\\b" + iCfg.getName() + "\\b.*?")) {
-          final String realName = ((Parameter) (iCfg.getIncomingDependency().getSetter())).getName();
-          sinkRateExpression = sinkRateExpression.replace(iCfg.getName(), realName);
-        }
-      }
-      /* We need to add the size of the FIFO */
-      sinkRateExpression += " * " + this.scenario.getSimulationInfo().getDataTypeSizeOrDefault(fifo.getType());
-
       /* Add the edge to the edge Set */
-      final Spider2CodegenEdge edge = new Spider2CodegenEdge(source, sourceIx, sourceRateExpression, sink, sinkIx,
-          sinkRateExpression);
-      edge.setDelay(fifo.getDelay());
+      final Spider2CodegenEdge edge = new Spider2CodegenEdge(fifo, this.scenario.getSimulationInfo());
       edgeSet.add(edge);
     }
     edgeMap.put(graph, edgeSet);
