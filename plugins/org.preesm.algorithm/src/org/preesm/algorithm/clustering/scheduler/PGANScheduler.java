@@ -32,7 +32,6 @@ import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.pisdf.brv.BRVMethod;
 import org.preesm.model.pisdf.brv.PiBRV;
 import org.preesm.model.pisdf.factory.PiMMUserFactory;
-import org.preesm.model.pisdf.statictools.PiSDFFlattener;
 import org.preesm.model.pisdf.util.PiSDFMergeabilty;
 import org.preesm.model.pisdf.util.PiSDFSubgraphBuilder;
 
@@ -40,6 +39,14 @@ import org.preesm.model.pisdf.util.PiSDFSubgraphBuilder;
  * PGAN scheduler used to schedule actors contained in a cluster.
  *
  * @author dgageot
+ */
+/**
+ * @author dgageot
+ *
+ */
+/**
+ * @author dgageot
+ *
  */
 public class PGANScheduler {
 
@@ -64,7 +71,7 @@ public class PGANScheduler {
    */
   public PGANScheduler(final PiGraph inputGraph) {
     // Flatten input graph and save references
-    this.inputGraph = PiSDFFlattener.flatten(inputGraph, true);
+    this.inputGraph = inputGraph;
     // Copy input graph into copiedGraph
     this.copiedGraph = PiMMUserFactory.instance.copyPiGraphWithHistory(this.inputGraph);
     // Build schedules map
@@ -89,6 +96,15 @@ public class PGANScheduler {
     PreesmLogger.getLogger().log(Level.INFO, new SchedulePrinterSwitch().print(resultingSchedule));
 
     return resultingSchedule;
+  }
+
+  /**
+   * Returns the resulting graph.
+   * 
+   * @return The resulting graph.
+   */
+  public PiGraph getResultingGraph() {
+    return this.inputGraph;
   }
 
   private final Schedule firstClusteringPass(final PiGraph graph) {
@@ -122,7 +138,7 @@ public class PGANScheduler {
     // List all clusterizable couples
     List<Pair<AbstractActor, AbstractActor>> couples = PiSDFMergeabilty.getConnectedCouple(graph, repetitionVector);
 
-    // Cluster until couples list isn't empty
+    // Cluster until couples list is not empty
     while (!couples.isEmpty()) {
       // Search best candidate to be clustered according the highest common repetition count
       Pair<AbstractActor, AbstractActor> couple = APGANAlgorithm.getBestCouple(couples, repetitionVector);
@@ -208,7 +224,7 @@ public class PGANScheduler {
     // Retrieve actor list
     List<AbstractActor> actorList = actors;
 
-    // Compute rvCluster
+    // Compute cluster repetition count
     long clusterRepetition = MathFunctionsHelper.gcd(CollectionUtil.mapGetAll(repetitionVector, actorList));
 
     // Construct a sequential schedule
