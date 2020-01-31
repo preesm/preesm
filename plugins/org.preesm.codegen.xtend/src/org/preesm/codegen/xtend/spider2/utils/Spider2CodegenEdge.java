@@ -75,12 +75,12 @@ public class Spider2CodegenEdge {
     /* Retrieve source information */
     this.source = fifo.getSourcePort().getContainingActor();
     this.sourceIx = getRealSourcePortIx(source, fifo.getSourcePort());
-    this.sourceRateExpression = createRateExpression(fifo, fifo.getSourcePort());
+    this.sourceRateExpression = createRateExpression(fifo, fifo.getSourcePort(), this.source);
 
     /* Retrieve sink information */
     this.sink = fifo.getTargetPort().getContainingActor();
     this.sinkIx = getRealSinkPortIx(sink, fifo.getTargetPort());
-    this.sinkRateExpression = createRateExpression(fifo, fifo.getTargetPort());
+    this.sinkRateExpression = createRateExpression(fifo, fifo.getTargetPort(), this.sink);
 
     /* Retrieve delay information */
     this.delay = fifo.getDelay();
@@ -151,10 +151,10 @@ public class Spider2CodegenEdge {
     return actor.getDataInputPorts().indexOf(targetPort);
   }
 
-  private String createRateExpression(final Fifo fifo, final DataPort port) {
+  private String createRateExpression(final Fifo fifo, final DataPort port, final AbstractActor actor) {
     /* We need to substitute the real parameter name in the expression */
     String expression = port.getExpression().getExpressionAsString();
-    for (final ConfigInputPort iCfg : source.getConfigInputPorts()) {
+    for (final ConfigInputPort iCfg : actor.getConfigInputPorts()) {
       if (expression.matches(".*?\\b" + iCfg.getName() + "\\b.*?")) {
         final String realName = ((Parameter) (iCfg.getIncomingDependency().getSetter())).getName();
         expression = expression.replace(iCfg.getName(), realName);
