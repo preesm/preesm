@@ -5,8 +5,6 @@ import java.util.List;
 import java.util.Map.Entry;
 import java.util.stream.Collectors;
 import org.apache.commons.math3.util.Pair;
-import org.eclipse.emf.common.util.EList;
-import org.eclipse.emf.common.util.EMap;
 import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.Actor;
@@ -102,20 +100,17 @@ public class Spider2CodegenActor {
   }
 
   private void generateMappingConstraints(final List<Spider2CodegenCluster> clusters) {
-    final EMap<ComponentInstance,
-        EList<AbstractActor>> mappingConstraints = this.scenario.getConstraints().getGroupConstraints();
     /* Setting mappable constraints */
-    for (final Entry<ComponentInstance, EList<AbstractActor>> entry : mappingConstraints) {
-      if (entry.getValue().contains(actor)) {
-        final Spider2CodegenCluster cluster = findClusterFromPE(entry.getKey(), clusters);
-        if (cluster == null) {
-          throw new PreesmRuntimeException(
-              "did not find operator " + entry.getKey().getInstanceName() + " in clusters.");
-        }
-        final String fullNameString = getFullNameMapping(cluster, entry.getKey());
-        this.mappingConstraintList.add(new Pair<>(fullNameString, true));
+    final List<ComponentInstance> mappableOperators = this.scenario.getPossibleMappings(this.actor);
+    for (final ComponentInstance instance : mappableOperators) {
+      final Spider2CodegenCluster cluster = findClusterFromPE(instance, clusters);
+      if (cluster == null) {
+        throw new PreesmRuntimeException("did not find operator " + instance.getInstanceName() + " in clusters.");
       }
+      final String fullNameString = getFullNameMapping(cluster, instance);
+      this.mappingConstraintList.add(new Pair<>(fullNameString, true));
     }
+
     final List<ComponentInstance> operators = this.scenario.getDesign().getOrderedOperatorComponentInstances();
     if (this.mappingConstraintList.size() != operators.size()) {
       /* Setting non mappable constraints */
