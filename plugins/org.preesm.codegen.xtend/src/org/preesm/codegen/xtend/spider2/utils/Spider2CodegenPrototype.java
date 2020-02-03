@@ -17,6 +17,12 @@ public class Spider2CodegenPrototype {
   private static final String START_COMMENT = "/* = ";
   private static final String END_COMMENT   = " = */ ";
 
+  /**
+   * Constructor of the class;
+   * 
+   * @param refinement
+   *          the CHeaderRefinement associated with the prototype
+   */
   public Spider2CodegenPrototype(final CHeaderRefinement refinement) {
     this.refinement = refinement;
     buildLoopProperties(this.refinement.getLoopPrototype());
@@ -82,18 +88,34 @@ public class Spider2CodegenPrototype {
     }
   }
 
+  /**
+   * 
+   * @return init function
+   */
   public FunctionPrototype getInit() {
     return this.refinement.getInitPrototype();
   }
 
+  /**
+   * 
+   * @return loop function
+   */
   public FunctionPrototype getLoop() {
     return this.refinement.getLoopPrototype();
   }
 
+  /**
+   * 
+   * @return list of formatted argument of the loop function
+   */
   public List<String> getFormatedLoopArgList() {
     return this.formatedLoopArgs;
   }
 
+  /**
+   * 
+   * @return list of formatted argument of the loop function without last one
+   */
   public List<String> getFormatedLoopArgListButLast() {
     if (this.formatedLoopArgs.isEmpty()) {
       return new ArrayList<>();
@@ -101,6 +123,10 @@ public class Spider2CodegenPrototype {
     return this.formatedLoopArgs.subList(0, this.formatedLoopArgs.size() - 1);
   }
 
+  /**
+   * 
+   * @return last formatted argument of the loop function
+   */
   public String getLastFormatedLoopArg() {
     if (this.formatedLoopArgs.isEmpty()) {
       return "";

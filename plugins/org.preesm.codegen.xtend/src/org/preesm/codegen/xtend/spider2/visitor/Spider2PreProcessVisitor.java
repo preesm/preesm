@@ -55,9 +55,6 @@ import org.preesm.model.slam.Link;
  * The Class Spider2PreProcessVisitor.
  */
 public class Spider2PreProcessVisitor extends PiMMSwitch<Boolean> {
-  /** The function map. */
-  private final Map<AbstractActor, Integer> functionMap = new LinkedHashMap<>();
-
   /** The unique graph set **/
   private final Set<PiGraph> uniqueGraphSet = new HashSet<>();
 
@@ -110,42 +107,89 @@ public class Spider2PreProcessVisitor extends PiMMSwitch<Boolean> {
   /**
    * Accessors
    */
-  public Map<AbstractActor, Integer> getFunctionMap() {
-    return this.functionMap;
-  }
 
+  /**
+   * 
+   * @return set of unique graph refinement
+   */
   public Set<PiGraph> getUniqueGraphSet() {
     return this.uniqueGraphSet;
   }
 
+  /**
+   * 
+   * @return set of unique graph names
+   */
   public Set<String> getUniqueGraphNameSet() {
     return this.uniqueGraphNameSet;
   }
 
+  /**
+   * 
+   * @param graph
+   *          the graph to evaluate
+   * @return list of static parameters of a given graph
+   */
   public List<Parameter> getStaticParameters(final PiGraph graph) {
     return this.staticParametersMap.get(graph);
   }
 
+  /**
+   * 
+   * @param graph
+   *          the graph to evaluate
+   * @return list of static dependent parameters of a given graph
+   */
   public Set<Parameter> getStaticDependentParameters(final PiGraph graph) {
     return this.staticDependentParametersMap.get(graph);
   }
 
+  /**
+   * 
+   * @param graph
+   *          the graph to evaluate
+   * @return list of dynamic parameters of a given graph
+   */
   public List<Parameter> getDynamicParameters(final PiGraph graph) {
     return this.dynamicParametersMap.get(graph);
   }
 
+  /**
+   * 
+   * @param graph
+   *          the graph to evaluate
+   * @return list of dynamic dependent parameters of a given graph
+   */
   public Set<Parameter> getDynamicDependentParameters(final PiGraph graph) {
     return this.dynamicDependentParametersMap.get(graph);
   }
 
+  /**
+   * 
+   * @param graph
+   *          the graph to evaluate
+   * @return set of Spider2CodegenEdge of the graph
+   */
   public Set<Spider2CodegenEdge> getEdgeSet(final PiGraph graph) {
     return this.edgeMap.get(graph);
   }
 
+  /**
+   * 
+   * @param graph
+   *          the graph to evaluate
+   * @return set of unique subgraphs
+   */
   public Set<PiGraph> getSubgraphSet(final PiGraph graph) {
     return this.subgraphMap.get(graph);
   }
 
+  /**
+   * 
+   * @param graph
+   *          the graph to evaluate
+   * @return set of Spider2CodegenActor
+   */
   public Set<Spider2CodegenActor> getActorSet(final PiGraph graph) {
     return this.actorsMap.get(graph);
   }
@@ -154,18 +198,34 @@ public class Spider2PreProcessVisitor extends PiMMSwitch<Boolean> {
     return this.actorToLoopFctMap.get(actor);
   }
 
+  /**
+   * 
+   * @return list of all unique loop Spider2CodegenPrototype
+   */
   public List<Spider2CodegenPrototype> getUniqueLoopPrototypeList() {
     return this.uniqueLoopProtoypeList;
   }
 
+  /**
+   * 
+   * @return list of all unique loop CHeaderRefinement
+   */
   public List<CHeaderRefinement> getUniqueLoopHeaderList() {
     return this.uniqueLoopHeaderList;
   }
 
+  /**
+   * 
+   * @return list of all Spider2CodegenCluster
+   */
   public List<Spider2CodegenCluster> getClusterList() {
     return this.clusterList;
   }
 
+  /**
+   * 
+   * @return name of the main processing element
+   */
   public String getMainPEName() {
     final Design design = this.scenario.getDesign();
     ComponentInstance mainOperator = this.scenario.getSimulationInfo().getMainOperator();
@@ -190,7 +250,7 @@ public class Spider2PreProcessVisitor extends PiMMSwitch<Boolean> {
     return name;
   }
 
-  void generateClusterList() {
+  private void generateClusterList() {
     final Design design = this.scenario.getDesign();
     final Map<ComponentInstance, List<ComponentInstance>> clusters = new HashMap<>();
     for (final Link link : design.getLinks()) {

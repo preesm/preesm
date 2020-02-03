@@ -110,6 +110,12 @@ public class Spider2Codegen {
     this.velocityEngine = null;
   }
 
+  /**
+   * Creates include and src folders.
+   * 
+   * @param workspace
+   *          the workspace
+   */
   public void makeIncludeAndSourceFolder(final IWorkspace workspace) {
     final String path = this.folder.getPath();
     /* We start looking backward -2 to remove the '/' at the end from the search */
@@ -130,6 +136,12 @@ public class Spider2Codegen {
     folderCMake.mkdirs();
   }
 
+  /**
+   * Move include files used by the algorithm.
+   * 
+   * @param workspace
+   *          the workspace
+   */
   public void moveIncludesToFolder(final IWorkspace workspace) {
     final String path = this.folder.getPath();
     final String codegenDirectoryPath = path.substring(0, path.lastIndexOf('/', path.length() - 2) + 1);
@@ -170,6 +182,9 @@ public class Spider2Codegen {
     }
   }
 
+  /**
+   * Generates the code of the physical architecture (s-lam based)
+   */
   public void generateArchiCode() {
     if (this.originalContextClassLoader == null) {
       init();
@@ -189,6 +204,9 @@ public class Spider2Codegen {
     writeVelocityContext(context, "templates/cpp/app_archi_template.vm", "spider2-platform.cpp");
   }
 
+  /**
+   * Generates a default CMakeList for the spider project.
+   */
   public void generateCMakeList() {
     if (this.originalContextClassLoader == null) {
       init();
@@ -206,6 +224,9 @@ public class Spider2Codegen {
     copyFileFromTo("resources/cmake_modules/FindThreads.cmake", "../cmake/modules/FindThreads.cmake");
   }
 
+  /**
+   * Generates the code of the main.cpp
+   */
   public void generateMainCode() {
     if (this.originalContextClassLoader == null) {
       init();
@@ -247,6 +268,9 @@ public class Spider2Codegen {
 
   }
 
+  /**
+   * Generates the code associated with the kernels of the application graph
+   */
   public void generateKernelCode() {
     if (this.originalContextClassLoader == null) {
       init();
@@ -260,6 +284,9 @@ public class Spider2Codegen {
     writeVelocityContext(context, "templates/cpp/app_kernels_cpp_template.vm", "spider2-application-kernels.cpp");
   }
 
+  /**
+   * Generates the application header file.
+   */
   public void generateApplicationHeader() {
     if (this.originalContextClassLoader == null) {
       init();

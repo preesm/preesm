@@ -15,6 +15,14 @@ public class Spider2CodegenCluster {
   /** The name of the cluster */
   private String name;
 
+  /**
+   * Constructor of the class.
+   * 
+   * @param memUnit
+   *          the component of the memory unit of the cluster.
+   * @param peList
+   *          the list of pe
+   */
   public Spider2CodegenCluster(final ComponentInstance memUnit, final List<ComponentInstance> peList) {
     /* Get the size of the MemUnit */
     if (!memUnit.getParameters().isEmpty()) {
@@ -44,18 +52,34 @@ public class Spider2CodegenCluster {
     }
   }
 
+  /**
+   * 
+   * @return memory unit size.
+   */
   public long getMemoryUnitSize() {
     return this.memoryUnitSize;
   }
 
+  /**
+   * 
+   * @return list of Spider2CodegenPE in the cluster
+   */
   public List<Spider2CodegenPE> getProcessingElements() {
     return this.peList;
   }
 
+  /**
+   * 
+   * @return number of Spider2CodegenPE in the cluster
+   */
   public int getPeCount() {
     return this.peList.size();
   }
 
+  /**
+   * 
+   * @return name of the cluster
+   */
   public String getName() {
     return this.name;
   }

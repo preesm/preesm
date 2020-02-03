@@ -65,6 +65,14 @@ public class Spider2CodegenEdge {
   /** The delay getter rate expression */
   private final String delayGetterDataSize;
 
+  /**
+   * Constructor of the class.
+   * 
+   * @param fifo
+   *          the fifo associated with the Edge.
+   * @param simulationInfo
+   *          the simulation information of the scenario
+   */
   public Spider2CodegenEdge(final Fifo fifo, final SimulationInfo simulationInfo) {
     if (fifo == null) {
       throw new PreesmRuntimeException("can not create Spider2CodegenEdge from null fifo.");
@@ -172,6 +180,10 @@ public class Spider2CodegenEdge {
     return this.source;
   }
 
+  /**
+   * 
+   * @return index port in the source
+   */
   public long getSourceIx() {
     return this.sourceIx;
   }
@@ -203,6 +215,10 @@ public class Spider2CodegenEdge {
     return this.sink;
   }
 
+  /**
+   * 
+   * @return index port in the sink
+   */
   public long getSinkIx() {
     return this.sinkIx;
   }
@@ -262,6 +278,10 @@ public class Spider2CodegenEdge {
     return this.delaySetter;
   }
 
+  /**
+   * 
+   * @return index port in the setter of the delay (0 if no setter)
+   */
   public long getSetterPortIx() {
     if (hasDelay() && this.delay.hasSetterActor()) {
       return this.delay.getSetterActor().getDataOutputPorts().indexOf(this.delay.getSetterPort());
@@ -290,6 +310,10 @@ public class Spider2CodegenEdge {
     return this.delayGetter;
   }
 
+  /**
+   * 
+   * @return index port in the getter of the delay (0 if no getter)
+   */
   public long getGetterPortIx() {
     if (hasDelay() && this.delay.hasGetterActor()) {
       return this.delay.getGetterActor().getDataInputPorts().indexOf(this.delay.getGetterPort());

@@ -44,6 +44,18 @@ public class Spider2CodegenActor {
   /** The mapping constraints of the actor */
   private final List<Pair<String, Boolean>> mappingConstraintList = new ArrayList<>();
 
+  /**
+   * Constructor of the class.
+   * 
+   * @param type
+   *          spider 2 type of the actor ("NORMAL", "REPEAT", "FORK", etc.)
+   * @param actor
+   *          the actor
+   * @param scenario
+   *          the scenario of the application
+   * @param clusters
+   *          list of pre-processed clusters
+   */
   public Spider2CodegenActor(final String type, final AbstractActor actor, final Scenario scenario,
       final List<Spider2CodegenCluster> clusters) {
     this.type = type;
@@ -134,38 +146,79 @@ public class Spider2CodegenActor {
     }
   }
 
+  /**
+   * Get the full name of the mapping constraint (cluster + pe)
+   * 
+   * @param cluster
+   *          the cluster on which the actor is constrained
+   * @param component
+   *          the pe on which the actor is constrained
+   * @return the full mapping name cluster.name_pe.name
+   */
   private String getFullNameMapping(final Spider2CodegenCluster cluster, final ComponentInstance component) {
     return cluster.getName() + "_" + component.getInstanceName();
   }
 
+  /**
+   * 
+   * @return spider 2 type of the actor
+   */
   public String getType() {
     return this.type;
   }
 
+  /**
+   * 
+   * @return the actor
+   */
   public AbstractActor getActor() {
     return this.actor;
   }
 
+  /**
+   * 
+   * @return the list of ConfigInputPort used only in rate expressions
+   */
   public List<ConfigInputPort> getRateConfigInputPorts() {
     return this.rateConfigInputPorts;
   }
 
+  /**
+   * 
+   * @return the list of ConfigInputPort used only in the refinement of the actor
+   */
   public List<ConfigInputPort> getRefinementConfigInputPorts() {
     return this.refinementConfigInputPorts;
   }
 
+  /**
+   * 
+   * @return the list of ConfigOutputPort used only in the refinement of the actor
+   */
   public List<ConfigOutputPort> getRefinementConfigOutputPorts() {
     return this.refinementConfigOutputPorts;
   }
 
+  /**
+   * 
+   * @return the list of timing as pair (PE, Timing expression)
+   */
   public List<Pair<String, String>> getTimings() {
     return this.timingList;
   }
 
+  /**
+   * 
+   * @return the list of mapping constraints (PE, mapping flag)
+   */
   public List<Pair<String, Boolean>> getMappingConstraints() {
     return this.mappingConstraintList;
   }
 
+  /**
+   * 
+   * @return true if actor is mappable on all pe, false else
+   */
   public boolean isMappableOnAll() {
     return this.mappingConstraintList.stream().filter(p -> p.getSecond()).count() == this.mappingConstraintList.size();
   }
