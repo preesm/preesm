@@ -66,12 +66,12 @@ public class PGANScheduler {
   /**
    * Builds a PGAN scheduler.
    * 
-   * @param inputGraph
-   *          Input graph to schedule.
+   * @param parentGraph
+   *          Parent graph of the subgraph to schedule.
    */
-  public PGANScheduler(final PiGraph inputGraph) {
+  public PGANScheduler(final PiGraph parentGraph) {
     // Flatten input graph and save references
-    this.inputGraph = inputGraph;
+    this.inputGraph = parentGraph;
     // Copy input graph
     this.copiedGraph = PiMMUserFactory.instance.copyPiGraphWithHistory(this.inputGraph);
     // Build schedules map
@@ -85,13 +85,16 @@ public class PGANScheduler {
    * 
    * @return Created schedule.
    */
-  public Schedule schedule() {
+  public Schedule schedule(final PiGraph subGraph) {
+
+    // Search for the copied subgraph
+    PiGraph copiedSubGraph = (PiGraph) this.copiedGraph.lookupVertex(subGraph.getName());
 
     // First clustering pass : PGAN clustering + schedule flattener
-    Schedule resultingSchedule = firstClusteringPass(this.copiedGraph);
+    Schedule resultingSchedule = firstClusteringPass(copiedSubGraph);
 
     // Second clustering pass : cluster from schedule
-    resultingSchedule = secondClusteringPass(this.inputGraph, resultingSchedule);
+    resultingSchedule = secondClusteringPass(subGraph, resultingSchedule);
 
     new SchedulePrinterSwitch();
     PreesmLogger.getLogger().log(Level.INFO, SchedulePrinterSwitch.print(resultingSchedule));

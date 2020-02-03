@@ -8,7 +8,6 @@ import org.preesm.commons.doc.annotations.Port;
 import org.preesm.commons.doc.annotations.PreesmTask;
 import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.PiGraph;
-import org.preesm.model.pisdf.statictools.PiMMHelper;
 import org.preesm.workflow.elements.Workflow;
 import org.preesm.workflow.implement.AbstractTaskImplementation;
 
@@ -28,15 +27,13 @@ public class PGANSchedulerTask extends AbstractTaskImplementation {
     // Retrieve input graph
     PiGraph inputGraph = (PiGraph) inputs.get("PiMM");
     Map<AbstractActor, Schedule> schedulesMap = new HashMap<>();
-    // Resolve parameters
-    PiMMHelper.resolveAllParameters(inputGraph);
     // Generate schedule for every cluster
     for (AbstractActor actor : inputGraph.getAllActors()) {
       if (actor instanceof PiGraph) {
         PiGraph subgraph = (PiGraph) actor;
         // if (subgraph.isCluster()) {
-        PGANScheduler scheduler = new PGANScheduler(subgraph);
-        schedulesMap.put(subgraph, scheduler.schedule());
+        PGANScheduler scheduler = new PGANScheduler(inputGraph);
+        schedulesMap.put(subgraph, scheduler.schedule(subgraph));
         // }
       }
     }
