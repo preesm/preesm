@@ -111,12 +111,12 @@ public class Spider2Codegen {
   }
 
   /**
-   * Creates include and src folders.
+   * Creates include, src, lib, cmake folders.
    * 
    * @param workspace
    *          the workspace
    */
-  public void makeIncludeAndSourceFolder(final IWorkspace workspace) {
+  public void makeFolders(final IWorkspace workspace) {
     final String path = this.folder.getPath();
     /* We start looking backward -2 to remove the '/' at the end from the search */
     final String codegenDirectoryPath = path.substring(0, path.lastIndexOf('/', path.length() - 2) + 1);
@@ -129,8 +129,8 @@ public class Spider2Codegen {
     final File folderInclude = new File(codegenDirectoryPath + "include/");
     folderInclude.mkdirs();
 
-    final File folderLib = new File(codegenDirectoryPath + "lib/");
-    folderLib.mkdirs();
+    final File folderLibSpider = new File(codegenDirectoryPath + "lib/spider/api");
+    folderLibSpider.mkdirs();
 
     final File folderCMake = new File(codegenDirectoryPath + "cmake/modules");
     folderCMake.mkdirs();
@@ -239,6 +239,8 @@ public class Spider2Codegen {
     context.put("papify", false);
     context.put("apollo", false);
     context.put("genlog", true);
+    context.put("exportTrace", false);
+    context.put("exportSRDAG", false);
     context.put("clusterIx", "SIZE_MAX");
     context.put("genAllocPolicy", "GENERIC");
     context.put("genAllocAlign", "sizeof(int64_t)");

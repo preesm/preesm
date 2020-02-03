@@ -87,6 +87,8 @@ int main(int argc, char *argv[]) {
         config.useApollo_ = ${apollo};
         config.enableGeneralLog_ = ${genlog};
         config.standAloneClusterIx_ = ${clusterIx};
+        config.exportTrace_ = ${exportTrace};
+        config.exportSRDAG_ = ${exportSRDAG};
         
         /* == Set the allocation policy of the main general stack (used by the STL) == */ 
         /* == To set the policy of a given stack, use the spider::api::setStackAllocatorPolicy function == */
