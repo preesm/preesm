@@ -84,12 +84,15 @@ public class TopologicalRanking {
       }
     }
 
-    StringBuilder sb = new StringBuilder();
-    topoRanks.entrySet().stream().forEach(e -> {
-      TopoVisit v = e.getValue();
-      sb.append("\n\t" + e.getKey().getName() + ": " + v.rank + " (" + v.nbVisit + " visits on " + v.nbMaxVisit + ")");
-    });
-    PreesmLogger.getLogger().log(Level.FINE, "Ranks: " + sb.toString());
+    if (PreesmLogger.getLogger().isLoggable(Level.FINE)) {
+      StringBuilder sb = new StringBuilder();
+      topoRanks.entrySet().stream().forEach(e -> {
+        TopoVisit v = e.getValue();
+        sb.append(
+            "\n\t" + e.getKey().getName() + ": " + v.rank + " (" + v.nbVisit + " visits on " + v.nbMaxVisit + ")");
+      });
+      PreesmLogger.getLogger().log(Level.FINE, "Ranks: " + sb.toString());
+    }
 
     return topoRanks;
   }
@@ -133,12 +136,15 @@ public class TopologicalRanking {
       }
     }
 
-    StringBuilder sb = new StringBuilder();
-    topoRanks.entrySet().stream().forEach(e -> {
-      TopoVisit v = e.getValue();
-      sb.append("\n\t" + e.getKey().getName() + ": " + v.rank + " (" + v.nbVisit + " visits on " + v.nbMaxVisit + ")");
-    });
-    PreesmLogger.getLogger().log(Level.FINE, "RanksT: " + sb.toString());
+    if (PreesmLogger.getLogger().isLoggable(Level.FINE)) {
+      StringBuilder sb = new StringBuilder();
+      topoRanks.entrySet().stream().forEach(e -> {
+        TopoVisit v = e.getValue();
+        sb.append(
+            "\n\t" + e.getKey().getName() + ": " + v.rank + " (" + v.nbVisit + " visits on " + v.nbMaxVisit + ")");
+      });
+      PreesmLogger.getLogger().log(Level.FINE, "RanksT: " + sb.toString());
+    }
 
     return topoRanks;
   }
