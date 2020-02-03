@@ -70,6 +70,7 @@ public class AbstractGraph {
     protected int           nbIterationDelayed;
     protected long          prodRate;
     protected long          consRate;
+    public final List<Long> pipelineValues;
     public final List<Long> delays;
     public final List<Fifo> fifos;
 
@@ -81,6 +82,7 @@ public class AbstractGraph {
       this.prodRate = 0;
       this.consRate = 0;
 
+      this.pipelineValues = new ArrayList<>();
       this.delays = new ArrayList<>();
       this.fifos = new ArrayList<>();
     }
@@ -165,7 +167,10 @@ public class AbstractGraph {
           fa.delays.add(delay);
 
           final long brvDest = brv.get(absTgt);
-          final int nbIterDelayed = (int) Math.ceil((double) delayRawSize / (brvDest * tgtRate));
+          final long tgtPipelineCons = brvDest * tgtRate;
+          fa.pipelineValues.add(tgtPipelineCons);
+
+          final int nbIterDelayed = (int) Math.ceil((double) delayRawSize / tgtPipelineCons);
           fa.nbIterationDelayed = Math.max(fa.nbIterationDelayed, nbIterDelayed);
 
           boolean fullyDelayed = true;
