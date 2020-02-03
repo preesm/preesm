@@ -17,8 +17,17 @@ import org.preesm.model.pisdf.FunctionPrototype;
 import org.preesm.model.pisdf.Parameter;
 import org.preesm.model.scenario.SimulationInfo;
 
+/**
+ * 
+ * Class regrouping pre-processed information of an edge between two actors for the spider 2 codegen. The main interest
+ * here is the quick access to useful properties such as source port Ix, delay expression, etc.
+ * 
+ * @author farresti
+ *
+ */
 public class Spider2CodegenEdge {
-  private final static String NULLPTR_CONSTANT = "nullptr";
+  /** The constant */
+  private static final String NULLPTR_CONSTANT = "nullptr";
 
   /** The source actor of the edge */
   private final AbstractActor source;

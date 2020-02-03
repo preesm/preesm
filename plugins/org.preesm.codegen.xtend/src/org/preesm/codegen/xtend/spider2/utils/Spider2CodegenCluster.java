@@ -5,6 +5,13 @@ import java.util.List;
 import java.util.Map.Entry;
 import org.preesm.model.slam.ComponentInstance;
 
+/**
+ * 
+ * Class representing an architecture cluster in the sense of Spider2
+ * 
+ * @author farresti
+ *
+ */
 public class Spider2CodegenCluster {
   /** The MemoryUnit size of the cluster */
   private long memoryUnitSize;

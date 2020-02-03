@@ -16,6 +16,13 @@ import org.preesm.model.scenario.ScenarioConstants;
 import org.preesm.model.slam.Component;
 import org.preesm.model.slam.ComponentInstance;
 
+/**
+ * Class regrouping information related to an AbstractActor for the spider 2 codegen. Information such as timings,
+ * mapping constraints, config input ports, etc.
+ * 
+ * @author farresti
+ *
+ */
 public class Spider2CodegenActor {
   /** The default timing */
   private static final String DEFAULT_TIMING = Integer.toString(ScenarioConstants.DEFAULT_TIMING_TASK.getValue());

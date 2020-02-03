@@ -7,6 +7,12 @@ import org.preesm.model.pisdf.CHeaderRefinement;
 import org.preesm.model.pisdf.FunctionArgument;
 import org.preesm.model.pisdf.FunctionPrototype;
 
+/**
+ * Pre-processed information of actor prototype for the spider 2 codegen.
+ * 
+ * @author farresti
+ *
+ */
 public class Spider2CodegenPrototype {
   /** The CHeaderRefinement */
   private final CHeaderRefinement refinement;
