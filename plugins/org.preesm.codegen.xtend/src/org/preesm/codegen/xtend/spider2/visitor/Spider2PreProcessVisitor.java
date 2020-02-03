@@ -97,6 +97,12 @@ public class Spider2PreProcessVisitor extends PiMMSwitch<Boolean> {
   /** The clusters */
   private final List<Spider2CodegenCluster> clusterList = new ArrayList<>();
 
+  /**
+   * Constructor of the class.
+   * 
+   * @param scenario
+   *          the scenario of the application.
+   */
   public Spider2PreProcessVisitor(final Scenario scenario) {
     this.scenario = scenario;
 
