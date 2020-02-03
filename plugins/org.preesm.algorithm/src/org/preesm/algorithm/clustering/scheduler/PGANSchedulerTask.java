@@ -27,12 +27,13 @@ public class PGANSchedulerTask extends AbstractTaskImplementation {
     // Retrieve input graph
     PiGraph inputGraph = (PiGraph) inputs.get("PiMM");
     Map<AbstractActor, Schedule> schedulesMap = new HashMap<>();
+    // Generate a scheduler
+    PGANScheduler scheduler = new PGANScheduler(inputGraph);
     // Generate schedule for every cluster
     for (AbstractActor actor : inputGraph.getAllActors()) {
       if (actor instanceof PiGraph) {
         PiGraph subgraph = (PiGraph) actor;
         // if (subgraph.isCluster()) {
-        PGANScheduler scheduler = new PGANScheduler(inputGraph);
         schedulesMap.put(subgraph, scheduler.schedule(subgraph));
         // }
       }
