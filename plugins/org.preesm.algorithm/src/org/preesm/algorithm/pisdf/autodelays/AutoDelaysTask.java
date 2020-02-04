@@ -127,17 +127,11 @@ public class AutoDelaysTask extends AbstractTaskImplementation {
     }
 
     final String cyclesStr = parameters.get(CYCLES_PARAM_NAME);
-    boolean cycles = Boolean.parseBoolean(cyclesStr);
-    if (cycles) {
-      PreesmLogger.getLogger().log(Level.WARNING,
-          "Cycles cannot be broken automatically yet, option without any effect.");
-      // TODO modify HeuristicLoopBreakingDelays to precompute
-      // the possible delay values in FifoAbstraction
-    }
+    final boolean cycles = Boolean.parseBoolean(cyclesStr);
 
     final Map<String, Object> output = new LinkedHashMap<>();
-    if (maxii <= 0) {
-      PreesmLogger.getLogger().log(Level.INFO, "0 cuts asked, nothing to do.");
+    if (maxii <= 0 && !cycles) {
+      PreesmLogger.getLogger().log(Level.INFO, "nothing to do.");
       output.put(AbstractWorkflowNodeImplementation.KEY_PI_GRAPH, graph);
       return output;
     }
@@ -168,6 +162,17 @@ public class AutoDelaysTask extends AbstractTaskImplementation {
 
     final HeuristicLoopBreakingDelays hlbd = new HeuristicLoopBreakingDelays();
     hlbd.performAnalysis(graphCopy, brv);
+
+    if (cycles) {
+      fillCycles(hlbd, brv);
+      PreesmLogger.getLogger().log(Level.WARNING, "Experimental breaking of cycles.");
+    }
+
+    if (maxii <= 0) {
+      PreesmLogger.getLogger().log(Level.INFO, "0 cuts asked, nothing to do.");
+      output.put(AbstractWorkflowNodeImplementation.KEY_PI_GRAPH, graph);
+      return output;
+    }
 
     // intermediate data : forbidden fifos (in cycles), ranks, wcet(rank)
 
@@ -264,6 +269,41 @@ public class AutoDelaysTask extends AbstractTaskImplementation {
 
     output.put(AbstractWorkflowNodeImplementation.KEY_PI_GRAPH, graphCopy);
     return output;
+  }
+
+  private static void fillCycles(final HeuristicLoopBreakingDelays hlbd, final Map<AbstractVertex, Long> brv) {
+    for (FifoAbstraction fa : hlbd.breakingFifosAbs) {
+      final List<Long> pipelineValues = fa.pipelineValues;
+      final List<Fifo> fifos = fa.fifos;
+      final int size = fifos.size();
+      for (int i = 0; i < size; i++) {
+        final Fifo f = fifos.get(i);
+        long pipeSize = pipelineValues.get(i);
+        AbstractActor tgt = hlbd.absGraph.getEdgeTarget(fa);
+        long brvTgt = brv.get(tgt);
+        long brvTgtCycle = hlbd.minCycleBrv.get(tgt);
+        if (brvTgt > brvTgtCycle) {
+          pipeSize /= brvTgt;
+          pipeSize *= brvTgtCycle;
+        }
+
+        Delay delay = f.getDelay();
+        if (delay == null) {
+          delay = PiMMUserFactory.instance.createDelay();
+          f.setDelay(delay);
+          delay.setName(delay.getId());
+          delay.getActor().setName(delay.getId());
+          final PiGraph graphFifo = f.getContainingPiGraph();
+          graphFifo.addDelay(delay);
+          PreesmLogger.getLogger().log(Level.INFO, "[in Cycle] Set fifo delay size and type of: " + f.getId());
+        } else {
+          pipeSize = Math.max(pipeSize, delay.getExpression().evaluate());
+          PreesmLogger.getLogger().log(Level.WARNING, "[in Cycle] Reset fifo delay size and type of: " + f.getId());
+        }
+        delay.setLevel(PersistenceLevel.PERMANENT);
+        delay.setExpression(pipeSize);
+      }
+    }
   }
 
   private static Set<FifoAbstraction> getForbiddenFifos(final HeuristicLoopBreakingDelays hlbd) {
@@ -410,10 +450,12 @@ public class AutoDelaysTask extends AbstractTaskImplementation {
     boolean isOK = true;
     for (AbstractActor aa : aas) {
       for (FifoAbstraction fa : hlbd.absGraph.incomingEdgesOf(aa)) {
+        AbstractActor src = hlbd.absGraph.getEdgeSource(fa);
+        boolean selfLoop = src == aa;
         boolean forbiddenFifo = forbiddenFifos.contains(fa);
-        if (!forbiddenFifo) {
+        if (!forbiddenFifo && !selfLoop) {
           fas.add(fa);
-        } else if (hlbd.breakingFifosAbs.contains(fa)) {
+        } else if (hlbd.breakingFifosAbs.contains(fa) || selfLoop) {
           // do nothing: we will not add delays on this one
         } else {
           isOK = false;
