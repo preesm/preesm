@@ -14,6 +14,7 @@ import java.util.Set;
 import java.util.SortedMap;
 import java.util.TreeMap;
 import java.util.logging.Level;
+import java.util.stream.Collectors;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.jgrapht.graph.DefaultDirectedGraph;
 import org.preesm.algorithm.pisdf.autodelays.AbstractGraph.FifoAbstraction;
@@ -164,8 +165,10 @@ public class AutoDelaysTask extends AbstractTaskImplementation {
     hlbd.performAnalysis(graphCopy, brv);
 
     if (cycles) {
-      fillCycles(hlbd, brv);
       PreesmLogger.getLogger().log(Level.WARNING, "Experimental breaking of cycles.");
+      fillCycles(hlbd, brv);
+      // we redo the analysis since adding delays will modify the topo ranks
+      hlbd.performAnalysis(graphCopy, brv);
     }
 
     if (maxii <= 0) {
@@ -527,10 +530,12 @@ public class AutoDelaysTask extends AbstractTaskImplementation {
       }
     }
 
+    String strPreSelected = String.join(", ",
+        preSelectedRanks.stream().map(i -> Integer.toString(i)).collect(Collectors.toList()));
+    PreesmLogger.getLogger().log(Level.FINE, "Preselected cut ranks: " + strPreSelected);
     // select remaining cuts sorted by memory size
     List<Set<FifoAbstraction>> bestCuts = new ArrayList<>();
     for (int i : preSelectedRanks) {
-      System.err.println("Selected: " + i);
       List<Set<FifoAbstraction>> twoPossibilities = new ArrayList<>(cuts.get(i));
       if (twoPossibilities.size() == 1) {
         bestCuts.add(twoPossibilities.get(0));
