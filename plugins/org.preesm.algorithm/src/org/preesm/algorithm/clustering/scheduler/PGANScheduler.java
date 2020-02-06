@@ -102,15 +102,6 @@ public class PGANScheduler {
     return resultingSchedule;
   }
 
-  /**
-   * Returns the resulting graph.
-   * 
-   * @return The resulting graph.
-   */
-  public PiGraph getResultingGraph() {
-    return this.inputGraph;
-  }
-
   private final Schedule firstClusteringPass(final PiGraph graph) {
     // Clusterize from PiGraph
     Schedule resultingSchedule = clusterizeFromPiGraph(graph);
