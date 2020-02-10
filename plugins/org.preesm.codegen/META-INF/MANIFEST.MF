@@ -17,7 +17,6 @@ Require-Bundle: org.eclipse.core.runtime,
  org.preesm.algorithm;visibility:=reexport,
  org.preesm.commons;visibility:=reexport,
  org.preesm.model.pisdf;visibility:=reexport,
- org.apache.commons.io;bundle-version="2.6.0",
  org.eclipse.jface;bundle-version="3.15.100",
  org.eclipse.jface.text;bundle-version="3.15.100",
  org.apache.xerces
