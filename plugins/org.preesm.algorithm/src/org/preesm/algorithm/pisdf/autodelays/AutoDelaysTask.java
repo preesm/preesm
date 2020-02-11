@@ -516,17 +516,19 @@ public class AutoDelaysTask extends AbstractTaskImplementation {
     final Set<Integer> preSelectedRanks = new LinkedHashSet<>();
     // we divide by the number of maxii
     final long avgCutLoad = totC / (nbSelec + 1);
+    final long maxLoad = totC - avgCutLoad;
+    PreesmLogger.getLogger().log(Level.FINE, "Average cut load: " + avgCutLoad);
     int lastLoadIndex = 1;
     long currentLoad = 0;
     for (Entry<Integer, Long> e : rankWCETs.entrySet()) {
-      if (currentLoad >= avgCutLoad * lastLoadIndex) {
+      if (currentLoad >= avgCutLoad * lastLoadIndex && currentLoad <= maxLoad) {
         int rank = e.getKey();
         if (!cuts.getOrDefault(rank, new HashSet<>()).isEmpty()) {
           preSelectedRanks.add(rank);
           lastLoadIndex += 1;
         }
       }
-      // done at kast since cuts start at rank 2
+      // done at last since cuts start at rank 2
       currentLoad += e.getValue();
     }
 
@@ -537,7 +539,7 @@ public class AutoDelaysTask extends AbstractTaskImplementation {
     currentLoad = 0;
     for (Entry<Integer, Long> e : rankWCETsT.entrySet()) {
       currentLoad += e.getValue();
-      if (currentLoad >= avgCutLoad * lastLoadIndex) {
+      if (currentLoad >= avgCutLoad * lastLoadIndex && currentLoad <= maxLoad) {
         int rank = e.getKey();
         if (!cuts.getOrDefault(rank, new HashSet<>()).isEmpty()) {
           preSelectedRanks.add(rank);
@@ -576,9 +578,18 @@ public class AutoDelaysTask extends AbstractTaskImplementation {
     if (!bestCuts.isEmpty()) {
       CutSizeComparator csc = new CutSizeComparator();
       Set<CutInformation> cisToRemove = new HashSet<>();
-      for (int i = 0; i < bestCuts.size(); i++) {
+      final int bcSize = bestCuts.size();
+      for (int i = bcSize - 1; i >= 0; i--) {
         CutInformation ci1 = bestCuts.get(i);
-        for (int j = i + 1; j < bestCuts.size(); j++) {
+        if (bcSize - cisToRemove.size() <= nbSelec) {
+          break;
+        }
+        // traversal in reverse order since we want to get
+        // rid of large cut first
+        for (int j = i - 1; j >= 0; j--) {
+          if (bcSize - cisToRemove.size() <= nbSelec) {
+            break;
+          }
           CutInformation ci2 = bestCuts.get(j);
           long wcetDiff = getIntermediateWeightedWCET(ci1.rank, ci2.rank, rankWCETs);
           if (wcetDiff < avgCutLoad) {
