@@ -722,6 +722,14 @@ public class PiParser {
       graph.setExpression(0);
     }
 
+    final String clusterAttribute = graphElt.getAttribute(PiIdentifiers.CLUSTER);
+    if (clusterAttribute != null && !clusterAttribute.isEmpty()) {
+      graph.setClusterValue(clusterAttribute.contains("true"));
+    } else {
+      // If there is no attribute for cluster value, it means that current PiGraph is not a cluster
+      graph.setClusterValue(false);
+    }
+
     // Parse the elements of the graph
     final NodeList childList = graphElt.getChildNodes();
     for (int i = 0; i < childList.getLength(); i++) {
