@@ -553,6 +553,10 @@ public class PiWriter {
     if (!periodExpr.equals("0")) {
       graphElt.setAttribute(PiIdentifiers.ACTOR_PERIOD, periodExpr);
     }
+    // Write cluster value into graph element
+    if (graph.isCluster()) {
+      graphElt.setAttribute(PiIdentifiers.CLUSTER, "true");
+    }
 
     for (final Parameter param : graph.getParameters()) {
       writeParameter(graphElt, param);

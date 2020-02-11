@@ -16,6 +16,7 @@ PREESM Changelog
 * Possibility to set the init function of a delay in the GUI, not yet used in the codegen.
 * Adding new API methods to Parameter class to ease the manipulation of the Parameter tree.
 * Adding new API methods for direct access of FunctionPrototype parameters.
+* Cluster attribute of PiGraph is now printed in .pi.
 
 ### Bug fix
 * Fix ids and icons of a few GUI elements.
