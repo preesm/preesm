@@ -33,9 +33,9 @@ public class PGANSchedulerTask extends AbstractTaskImplementation {
     for (AbstractActor actor : inputGraph.getAllActors()) {
       if (actor instanceof PiGraph) {
         PiGraph subgraph = (PiGraph) actor;
-        // if (subgraph.isCluster()) {
-        schedulesMap.put(subgraph, scheduler.schedule(subgraph));
-        // }
+        if (subgraph.isCluster()) {
+          schedulesMap.put(subgraph, scheduler.schedule(subgraph));
+        }
       }
     }
 
