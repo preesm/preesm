@@ -5,7 +5,6 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -153,6 +152,8 @@ public class AutoDelaysTask extends AbstractTaskImplementation {
     final String schedStr = parameters.get(SCHED_PARAM_NAME);
     final boolean sched = Boolean.parseBoolean(schedStr);
 
+    final long time = System.nanoTime();
+
     // BRV and timings
 
     PiGraph graphCopy = PiMMUserFactory.instance.copyPiGraphWithHistory(graph);
@@ -253,9 +254,8 @@ public class AutoDelaysTask extends AbstractTaskImplementation {
     for (int index = 0; index < nbCuts; index++) {
 
       CutInformation ci = bestCuts.get(index);
-      String reverseInfo = ci.wasReversed ? "T" : "";
       PreesmLogger.getLogger().log(Level.INFO,
-          "Setting cut from rank " + ci.rank + reverseInfo + " using " + ci.memSize + " Bytes.");
+          "Setting cut from rank " + ci.getRankStr() + " using " + ci.memSize + " Bytes.");
       // set the graph
       for (FifoAbstraction fa : ci.edgeCut) {
         final List<Long> pipelineValues = fa.pipelineValues;
@@ -283,6 +283,8 @@ public class AutoDelaysTask extends AbstractTaskImplementation {
       }
 
     }
+    long duration = System.nanoTime() - time;
+    PreesmLogger.getLogger().info("Time " + Math.round(duration / 1e6) + " ms.");
 
     if (sched) {
       long latency = getLatency(graphCopy, scenario, architecture);
@@ -572,21 +574,41 @@ public class AutoDelaysTask extends AbstractTaskImplementation {
     // remove cuts that are too close from each other
     // may happen between cuts from topo and cuts from topoT
     if (!bestCuts.isEmpty()) {
-      int lastRank = bestCuts.get(0).rank;
-      final Iterator<CutInformation> itCI = bestCuts.iterator();
-      itCI.next();
-      while (itCI.hasNext()) {
-        final CutInformation ci = itCI.next();
-        long wcetDiff = getIntermediateWeightedWCET(lastRank, ci.rank, rankWCETs);
-        if (wcetDiff < avgCutLoad) {
-          itCI.remove();
+      CutSizeComparator csc = new CutSizeComparator();
+      Set<CutInformation> cisToRemove = new HashSet<>();
+      for (int i = 0; i < bestCuts.size(); i++) {
+        CutInformation ci1 = bestCuts.get(i);
+        for (int j = i + 1; j < bestCuts.size(); j++) {
+          CutInformation ci2 = bestCuts.get(j);
+          long wcetDiff = getIntermediateWeightedWCET(ci1.rank, ci2.rank, rankWCETs);
+          if (wcetDiff < avgCutLoad) {
+            int memComparison = csc.compare(ci1, ci2);
+            if (memComparison < 0) {
+              cisToRemove.add(ci2);
+            } else if (memComparison > 0) {
+              cisToRemove.add(ci1);
+            } else {
+              // breaks tie with lower rank
+              // (otherwise it is not fully transitive, and we might remove all ci ...)
+              int rankComparison = Integer.compare(ci1.rank, ci2.rank);
+              if (rankComparison < 0) {
+                cisToRemove.add(ci2);
+              } else {
+                cisToRemove.add(ci1);
+              }
+            }
+          }
         }
-        lastRank = ci.rank;
       }
+      String strRemovedClose = String.join(", ",
+          cisToRemove.stream().map(x -> x.getRankStr()).collect(Collectors.toList()));
+      PreesmLogger.getLogger().log(Level.FINE, "Removed too close cut ranks: " + strRemovedClose);
 
+      bestCuts.removeAll(cisToRemove);
     }
 
     return bestCuts;
+
   }
 
   private static long getIntermediateWeightedWCET(final int rank1, final int rank2,
@@ -632,6 +654,11 @@ public class AutoDelaysTask extends AbstractTaskImplementation {
       this.edgeCut = edgeCut;
       this.rank = rank;
       this.wasReversed = wasReversed;
+    }
+
+    public String getRankStr() {
+      String reverseInfo = wasReversed ? "T" : "";
+      return rank + reverseInfo;
     }
 
     @Override
