@@ -40,14 +40,6 @@ import org.preesm.model.pisdf.util.PiSDFSubgraphBuilder;
  *
  * @author dgageot
  */
-/**
- * @author dgageot
- *
- */
-/**
- * @author dgageot
- *
- */
 public class PGANScheduler {
 
   /**
