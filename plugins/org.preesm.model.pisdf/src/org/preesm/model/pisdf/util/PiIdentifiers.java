@@ -87,6 +87,9 @@ public class PiIdentifiers {
   /** The Constant GRAPH_DIRECTED. */
   public static final String GRAPH_DIRECTED = "directed";
 
+  /** The Constant CLUSTER. */
+  public static final String CLUSTER = "cluster";
+
   /** The Constant DATA. */
   // DATA
   public static final String DATA = "data";
