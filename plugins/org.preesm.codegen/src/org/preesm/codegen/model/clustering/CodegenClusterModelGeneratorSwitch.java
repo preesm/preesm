@@ -229,7 +229,7 @@ public class CodegenClusterModelGeneratorSwitch extends ScheduleSwitch<CodeElt> 
   public CodeElt caseParallelHiearchicalSchedule(final ParallelHiearchicalSchedule schedule) {
 
     // Is it a data parallelism node?
-    if (schedule.getChildren().size() == 1) {
+    if (schedule.getChildren().size() == 1 && !schedule.hasAttachedActor()) {
       return doSwitch(schedule.getChildren().get(0));
     }
 
@@ -238,9 +238,13 @@ public class CodegenClusterModelGeneratorSwitch extends ScheduleSwitch<CodeElt> 
 
     // Explore and generate child schedule
     for (final Schedule e : schedule.getChildren()) {
-      final SectionBlock sectionBlock = CodegenModelUserFactory.eINSTANCE.createSectionBlock();
-      sectionBlock.getCodeElts().add(doSwitch(e));
-      outputPair.getValue().getCodeElts().add(sectionBlock);
+      if (schedule.getChildren().size() == 1) {
+        outputPair.getValue().getCodeElts().add(doSwitch(e));
+      } else {
+        final SectionBlock sectionBlock = CodegenModelUserFactory.eINSTANCE.createSectionBlock();
+        sectionBlock.getCodeElts().add(doSwitch(e));
+        outputPair.getValue().getCodeElts().add(sectionBlock);
+      }
     }
 
     return outputPair.getKey();
