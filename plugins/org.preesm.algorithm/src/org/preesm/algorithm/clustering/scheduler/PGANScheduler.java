@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 import org.apache.commons.lang3.tuple.Pair;
 import org.preesm.algorithm.clustering.APGANAlgorithm;
 import org.preesm.algorithm.clustering.ClusteringHelper;
@@ -13,6 +14,8 @@ import org.preesm.algorithm.schedule.model.HierarchicalSchedule;
 import org.preesm.algorithm.schedule.model.ParallelHiearchicalSchedule;
 import org.preesm.algorithm.schedule.model.Schedule;
 import org.preesm.algorithm.schedule.model.ScheduleFactory;
+import org.preesm.algorithm.schedule.model.SequentialActorSchedule;
+import org.preesm.algorithm.schedule.model.SequentialHiearchicalSchedule;
 import org.preesm.algorithm.synthesis.schedule.ScheduleUtil;
 import org.preesm.algorithm.synthesis.schedule.transform.ScheduleDataParallelismExhibiter;
 import org.preesm.algorithm.synthesis.schedule.transform.ScheduleFlattener;
@@ -26,6 +29,7 @@ import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.AbstractVertex;
 import org.preesm.model.pisdf.Delay;
 import org.preesm.model.pisdf.Fifo;
+import org.preesm.model.pisdf.InterfaceActor;
 import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.pisdf.brv.BRVMethod;
 import org.preesm.model.pisdf.brv.PiBRV;
@@ -86,25 +90,68 @@ public class PGANScheduler {
   }
 
   /**
-   * Create a schedule for the specified subgraph.
+   * Create a schedule for the specified cluster.
    * 
-   * @return Schedule for the corresponding subgraph.
+   * @return Schedule for the corresponding cluster.
    */
-  public Schedule schedule(final PiGraph subGraph) {
+  public Schedule scheduleCluster(final PiGraph cluster) {
 
     // Clear the schedule map
     this.scheduleMap.clear();
 
     // Search for the copied subgraph
-    PiGraph copiedSubGraph = (PiGraph) this.copiedGraph.lookupVertex(subGraph.getName());
+    PiGraph copiedSubGraph = (PiGraph) this.copiedGraph.lookupVertex(cluster.getName());
 
     // First clustering pass : PGAN clustering + schedule flattener
     Schedule resultingSchedule = firstClusteringPass(copiedSubGraph);
 
-    // Second clustering pass : cluster from schedule
-    resultingSchedule = secondClusteringPass(subGraph, resultingSchedule);
+    AbstractActor remainingActor = null;
+    // It might happened that sometimes no schedule is built
+    // Example: Only one actor in the subgraph -> we may build it schedule manually.
+    if (resultingSchedule == null) {
+      // Retrieve all actors that are not interface
+      List<AbstractActor> actors = copiedSubGraph.getActors().stream().filter(x -> !(x instanceof InterfaceActor))
+          .collect(Collectors.toList());
+      // Throw an exception if there are more than one actor or if there is zero actor
+      if (actors.isEmpty() || actors.size() > 1) {
+        throw new PreesmRuntimeException("PGANScheduler: cannot reduce subgraph actor to an atomic one.");
+      } else {
+        remainingActor = actors.get(0);
+      }
+      // If an actor has been found, build it own sequential schedule
+      SequentialActorSchedule newSchedule = ScheduleFactory.eINSTANCE.createSequentialActorSchedule();
+      newSchedule.getActorList().add(remainingActor);
+      newSchedule.setRepetition(1);
+      resultingSchedule = newSchedule;
+    } else {
+      // If there is a schedule result, in means that it is a hierarchical schedule
+      // Retrieve the attached actor from it
+      remainingActor = ((HierarchicalSchedule) resultingSchedule).getAttachedActor();
+    }
 
-    return resultingSchedule;
+    // Build a new schedule hierarchy for the base cluster
+    Schedule clusterSchedule = null;
+    // Parallel or Sequential in function of delay and type of resulting schedule
+    if (ClusteringHelper.isActorDelayed(remainingActor)
+        || (resultingSchedule instanceof SequentialHiearchicalSchedule)) {
+      clusterSchedule = ScheduleFactory.eINSTANCE.createSequentialHiearchicalSchedule();
+    } else {
+      clusterSchedule = ScheduleFactory.eINSTANCE.createParallelHiearchicalSchedule();
+    }
+    // Add resulting schedule to the children and set attached actor
+    clusterSchedule.getChildren().add(resultingSchedule);
+    ((HierarchicalSchedule) clusterSchedule).setAttachedActor(cluster);
+
+    // Compute BRV to set repetition value of child schedule
+    Map<AbstractVertex, Long> repetitionVector = PiBRV.compute(this.copiedGraph, BRVMethod.LCM);
+    resultingSchedule.setRepetition(repetitionVector.get(remainingActor));
+
+    // Second clustering pass : cluster from schedule
+    // Tell to the second clustering pass to not rebuild a subgraph for the base schedule since
+    // it already had been defined by user or partionning algorithm
+    clusterSchedule = secondClusteringPass(cluster, clusterSchedule, true);
+
+    return clusterSchedule;
   }
 
   /**
@@ -120,7 +167,7 @@ public class PGANScheduler {
     Schedule resultingSchedule = firstClusteringPass(this.copiedGraph);
 
     // Second clustering pass : cluster from schedule
-    resultingSchedule = secondClusteringPass(this.inputGraph, resultingSchedule);
+    resultingSchedule = secondClusteringPass(this.inputGraph, resultingSchedule, false);
 
     return resultingSchedule;
   }
@@ -128,19 +175,22 @@ public class PGANScheduler {
   private final Schedule firstClusteringPass(final PiGraph graph) {
     // Clusterize from PiGraph
     Schedule resultingSchedule = clusterizeFromPiGraph(graph);
+
     // Flatten the resulting schedule
     resultingSchedule = new ScheduleFlattener().performTransform(resultingSchedule);
-    // If user want performance optimization, perform them
-    if (this.optimizePerformance) {
-      resultingSchedule = new ScheduleParallelismOptimizer().performTransform(resultingSchedule);
-    }
 
     return resultingSchedule;
   }
 
-  private final Schedule secondClusteringPass(final PiGraph graph, final Schedule schedule) {
+  private final Schedule secondClusteringPass(final PiGraph graph, final Schedule schedule,
+      final boolean baseClusterIsAlreadyASubGraph) {
+    Schedule preprocessSchedule = schedule;
+    // If user want performance optimization, perform them
+    if (this.optimizePerformance) {
+      preprocessSchedule = new ScheduleParallelismOptimizer().performTransform(preprocessSchedule);
+    }
     // Clusterize from copied graph
-    Schedule resultingSchedule = clusterizeFromSchedule(graph, schedule, 0);
+    Schedule resultingSchedule = clusterizeFromSchedule(graph, preprocessSchedule, 0, !baseClusterIsAlreadyASubGraph);
     // Exhibit data parallelism
     resultingSchedule = new ScheduleDataParallelismExhibiter().performTransform(resultingSchedule);
     // Limit parallelism at the first layer
@@ -185,7 +235,8 @@ public class PGANScheduler {
     return result;
   }
 
-  private final Schedule clusterizeFromSchedule(final PiGraph graph, Schedule schedule, int clusterId) {
+  private final Schedule clusterizeFromSchedule(final PiGraph graph, Schedule schedule, int clusterId,
+      boolean recluster) {
     // If it is an hierarchical schedule, explore
     if (schedule instanceof HierarchicalSchedule && schedule.hasAttachedActor()) {
       HierarchicalSchedule hierSchedule = (HierarchicalSchedule) schedule;
@@ -197,7 +248,7 @@ public class PGANScheduler {
       hierSchedule.getChildren().clear();
       for (Schedule child : childSchedules) {
         // Explore children and process clustering into
-        Schedule processedChild = clusterizeFromSchedule(graph, child, clusterId++);
+        Schedule processedChild = clusterizeFromSchedule(graph, child, clusterId++, true);
         hierSchedule.getChildren().add(processedChild);
         // Retrieve list of children AbstractActor (needed for clusterization)
         if (child instanceof HierarchicalSchedule && child.hasAttachedActor()) {
@@ -211,11 +262,14 @@ public class PGANScheduler {
         }
       }
 
-      // Build new cluster
-      PiGraph newCluster = new PiSDFSubgraphBuilder(graph, childActors, "cluster_" + clusterId).build();
-      newCluster.setClusterValue(true);
-      // Attached to the new schedule
-      hierSchedule.setAttachedActor(newCluster);
+      if (recluster) {
+        // Build new cluster
+        PiGraph newCluster = new PiSDFSubgraphBuilder(graph, childActors, "cluster_" + clusterId).build();
+        newCluster.setClusterValue(true);
+        // Attached to the new schedule
+        hierSchedule.setAttachedActor(newCluster);
+      }
+
     }
 
     return schedule;

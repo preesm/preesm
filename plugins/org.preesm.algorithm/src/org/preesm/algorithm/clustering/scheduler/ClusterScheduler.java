@@ -2,15 +2,9 @@ package org.preesm.algorithm.clustering.scheduler;
 
 import java.util.HashMap;
 import java.util.Map;
-import org.preesm.algorithm.clustering.ClusteringHelper;
-import org.preesm.algorithm.schedule.model.HierarchicalSchedule;
 import org.preesm.algorithm.schedule.model.Schedule;
-import org.preesm.algorithm.schedule.model.ScheduleFactory;
 import org.preesm.model.pisdf.AbstractActor;
-import org.preesm.model.pisdf.AbstractVertex;
 import org.preesm.model.pisdf.PiGraph;
-import org.preesm.model.pisdf.brv.BRVMethod;
-import org.preesm.model.pisdf.brv.PiBRV;
 
 /**
  * @author dgageot
@@ -47,22 +41,8 @@ public class ClusterScheduler {
 
   private static void registerClusterSchedule(Map<AbstractActor, Schedule> scheduleMap, PGANScheduler scheduler,
       final PiGraph inputGraph, final PiGraph subgraph) {
-    HierarchicalSchedule childSchedule = (HierarchicalSchedule) scheduler.schedule(subgraph);
-    AbstractActor remainingCluster = childSchedule.getAttachedActor();
-
-    // Build a new hierarchy
-    HierarchicalSchedule clusterSchedule = null;
-    if (ClusteringHelper.isActorDelayed(remainingCluster)) {
-      clusterSchedule = ScheduleFactory.eINSTANCE.createSequentialHiearchicalSchedule();
-    } else {
-      clusterSchedule = ScheduleFactory.eINSTANCE.createParallelHiearchicalSchedule();
-    }
-    clusterSchedule.getChildren().add(childSchedule);
-    clusterSchedule.setAttachedActor(subgraph);
-
-    // Compute BRV
-    Map<AbstractVertex, Long> repetitionVector = PiBRV.compute(inputGraph, BRVMethod.LCM);
-    clusterSchedule.setRepetition(repetitionVector.get(childSchedule.getAttachedActor()));
+    // Schedule subgraph
+    Schedule clusterSchedule = scheduler.scheduleCluster(subgraph);
 
     // Register the schedule in the map
     scheduleMap.put(subgraph, clusterSchedule);
