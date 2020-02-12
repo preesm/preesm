@@ -5,7 +5,6 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Level;
 import org.apache.commons.lang3.tuple.Pair;
 import org.preesm.algorithm.clustering.APGANAlgorithm;
 import org.preesm.algorithm.clustering.ClusteringHelper;
@@ -14,14 +13,12 @@ import org.preesm.algorithm.schedule.model.HierarchicalSchedule;
 import org.preesm.algorithm.schedule.model.ParallelHiearchicalSchedule;
 import org.preesm.algorithm.schedule.model.Schedule;
 import org.preesm.algorithm.schedule.model.ScheduleFactory;
-import org.preesm.algorithm.synthesis.schedule.SchedulePrinterSwitch;
 import org.preesm.algorithm.synthesis.schedule.ScheduleUtil;
 import org.preesm.algorithm.synthesis.schedule.transform.ScheduleDataParallelismExhibiter;
 import org.preesm.algorithm.synthesis.schedule.transform.ScheduleFlattener;
 import org.preesm.algorithm.synthesis.schedule.transform.ScheduleParallelismDepthLimiter;
 import org.preesm.commons.CollectionUtil;
 import org.preesm.commons.exceptions.PreesmRuntimeException;
-import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.commons.math.MathFunctionsHelper;
 import org.preesm.commons.model.PreesmCopyTracker;
 import org.preesm.model.pisdf.AbstractActor;
@@ -53,7 +50,16 @@ public class PGANScheduler {
   /**
    * Schedules map.
    */
-  private final Map<AbstractActor, Schedule> schedulesMap;
+  private final Map<AbstractActor, Schedule> scheduleMap;
+
+  /**
+   * Get schedule map
+   * 
+   * @return Map of schedule
+   */
+  public Map<AbstractActor, Schedule> getScheduleMap() {
+    return scheduleMap;
+  }
 
   /**
    * Builds a PGAN scheduler.
@@ -67,17 +73,20 @@ public class PGANScheduler {
     // Copy input graph
     this.copiedGraph = PiMMUserFactory.instance.copyPiGraphWithHistory(this.inputGraph);
     // Build schedules map
-    this.schedulesMap = new HashMap<>();
+    this.scheduleMap = new HashMap<>();
     // Check that input graph is actually clusterizable
     isClusterizable();
   }
 
   /**
-   * Create a schedule for the specified cluster.
+   * Create a schedule for the specified subgraph.
    * 
-   * @return Created schedule.
+   * @return Schedule for the corresponding subgraph.
    */
   public Schedule schedule(final PiGraph subGraph) {
+
+    // Clear the schedule map
+    this.scheduleMap.clear();
 
     // Search for the copied subgraph
     PiGraph copiedSubGraph = (PiGraph) this.copiedGraph.lookupVertex(subGraph.getName());
@@ -88,8 +97,23 @@ public class PGANScheduler {
     // Second clustering pass : cluster from schedule
     resultingSchedule = secondClusteringPass(subGraph, resultingSchedule);
 
-    new SchedulePrinterSwitch();
-    PreesmLogger.getLogger().log(Level.INFO, SchedulePrinterSwitch.print(resultingSchedule));
+    return resultingSchedule;
+  }
+
+  /**
+   * Schedule the input graph.
+   * 
+   * @return Schedule for input graph.
+   */
+  public Schedule scheduleInputGraph() {
+    // Clear the schedule map
+    this.scheduleMap.clear();
+
+    // First clustering pass : PGAN clustering + schedule flattener
+    Schedule resultingSchedule = firstClusteringPass(this.copiedGraph);
+
+    // Second clustering pass : cluster from schedule
+    resultingSchedule = secondClusteringPass(this.inputGraph, resultingSchedule);
 
     return resultingSchedule;
   }
@@ -135,7 +159,7 @@ public class PGANScheduler {
           Arrays.asList(couple.getLeft(), couple.getRight()), repetitionVector, clusterId++);
 
       // Register the resulting schedule into the schedules map
-      this.schedulesMap.put(clusterSchedule.getAttachedActor(), clusterSchedule);
+      this.scheduleMap.put(clusterSchedule.getAttachedActor(), clusterSchedule);
 
       // Store the resulting schedule
       result = clusterSchedule;
@@ -225,9 +249,9 @@ public class PGANScheduler {
   private final void addActorToHierarchicalSchedule(HierarchicalSchedule schedule, AbstractActor actor,
       long repetition) {
     // If we already had clustered actor, retrieve it schedule
-    if (schedulesMap.containsKey(actor)) {
-      Schedule subSched = schedulesMap.get(actor);
-      schedulesMap.remove(actor);
+    if (scheduleMap.containsKey(actor)) {
+      Schedule subSched = scheduleMap.get(actor);
+      scheduleMap.remove(actor);
       subSched.setRepetition(repetition);
       schedule.getScheduleTree().add(subSched);
     } else {
