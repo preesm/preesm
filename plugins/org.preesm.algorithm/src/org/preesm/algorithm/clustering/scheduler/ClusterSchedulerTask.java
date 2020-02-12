@@ -78,7 +78,7 @@ public class ClusterSchedulerTask extends AbstractTaskImplementation {
   public Map<String, String> getDefaultParameters() {
     Map<String, String> defaultParams = new LinkedHashMap<>();
     defaultParams.put(TARGET_CHOICE, DEFAULT_TARGET);
-    dafaultParams.put(OPTIMIZATION_CHOICE, DEFAULT_OPTIMIZATION);
+    defaultParams.put(OPTIMIZATION_CHOICE, DEFAULT_OPTIMIZATION);
     return defaultParams;
   }
 
