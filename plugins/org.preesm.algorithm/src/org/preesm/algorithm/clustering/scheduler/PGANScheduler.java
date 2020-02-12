@@ -120,7 +120,7 @@ public class PGANScheduler {
       }
       // If an actor has been found, build it own sequential schedule
       SequentialActorSchedule newSchedule = ScheduleFactory.eINSTANCE.createSequentialActorSchedule();
-      newSchedule.getActorList().add(remainingActor);
+      newSchedule.getActorList().add(PreesmCopyTracker.getSource(remainingActor));
       newSchedule.setRepetition(1);
       resultingSchedule = newSchedule;
     } else {
