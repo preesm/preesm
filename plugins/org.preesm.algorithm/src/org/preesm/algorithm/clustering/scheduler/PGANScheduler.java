@@ -17,6 +17,7 @@ import org.preesm.algorithm.synthesis.schedule.ScheduleUtil;
 import org.preesm.algorithm.synthesis.schedule.transform.ScheduleDataParallelismExhibiter;
 import org.preesm.algorithm.synthesis.schedule.transform.ScheduleFlattener;
 import org.preesm.algorithm.synthesis.schedule.transform.ScheduleParallelismDepthLimiter;
+import org.preesm.algorithm.synthesis.schedule.transform.ScheduleParallelismOptimizer;
 import org.preesm.commons.CollectionUtil;
 import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.preesm.commons.math.MathFunctionsHelper;
@@ -51,6 +52,10 @@ public class PGANScheduler {
    * Schedules map.
    */
   private final Map<AbstractActor, Schedule> scheduleMap;
+  /**
+   * Does PGANScheduler has to optimize the performance?
+   */
+  private final boolean                      optimizePerformance;
 
   /**
    * Get schedule map
@@ -67,13 +72,15 @@ public class PGANScheduler {
    * @param parentGraph
    *          Parent graph of the subgraph to schedule.
    */
-  public PGANScheduler(final PiGraph parentGraph) {
+  public PGANScheduler(final PiGraph parentGraph, final boolean optimizePerformance) {
     // Flatten input graph and save references
     this.inputGraph = parentGraph;
     // Copy input graph
     this.copiedGraph = PiMMUserFactory.instance.copyPiGraphWithHistory(this.inputGraph);
     // Build schedules map
     this.scheduleMap = new HashMap<>();
+    // Store the choice of optimization
+    this.optimizePerformance = optimizePerformance;
     // Check that input graph is actually clusterizable
     isClusterizable();
   }
@@ -123,6 +130,10 @@ public class PGANScheduler {
     Schedule resultingSchedule = clusterizeFromPiGraph(graph);
     // Flatten the resulting schedule
     resultingSchedule = new ScheduleFlattener().performTransform(resultingSchedule);
+    // If user want performance optimization, perform them
+    if (this.optimizePerformance) {
+      resultingSchedule = new ScheduleParallelismOptimizer().performTransform(resultingSchedule);
+    }
 
     return resultingSchedule;
   }

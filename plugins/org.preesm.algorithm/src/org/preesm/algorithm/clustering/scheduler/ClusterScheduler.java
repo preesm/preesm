@@ -2,13 +2,10 @@ package org.preesm.algorithm.clustering.scheduler;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.logging.Level;
 import org.preesm.algorithm.clustering.ClusteringHelper;
 import org.preesm.algorithm.schedule.model.HierarchicalSchedule;
 import org.preesm.algorithm.schedule.model.Schedule;
 import org.preesm.algorithm.schedule.model.ScheduleFactory;
-import org.preesm.algorithm.synthesis.schedule.SchedulePrinterSwitch;
-import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.AbstractVertex;
 import org.preesm.model.pisdf.PiGraph;
@@ -28,12 +25,12 @@ public class ClusterScheduler {
    *          Input graph.
    * @return Map of Cluster Schedule.
    */
-  public static Map<AbstractActor, Schedule> schedule(final PiGraph inputGraph) {
+  public static Map<AbstractActor, Schedule> schedule(final PiGraph inputGraph, final boolean optimizePerformance) {
     // Build a map for Cluster Schedule
     Map<AbstractActor, Schedule> schedulesMap = new HashMap<>();
 
     // Build a PGAN scheduler
-    PGANScheduler scheduler = new PGANScheduler(inputGraph);
+    PGANScheduler scheduler = new PGANScheduler(inputGraph, optimizePerformance);
 
     // Compute a schedule for every cluster
     for (AbstractActor actor : inputGraph.getAllActors()) {
@@ -70,8 +67,6 @@ public class ClusterScheduler {
     // Register the schedule in the map
     scheduleMap.put(subgraph, clusterSchedule);
 
-    // Print resulting schedule (DEGUB)
-    PreesmLogger.getLogger().log(Level.INFO, SchedulePrinterSwitch.print(clusterSchedule));
   }
 
 }

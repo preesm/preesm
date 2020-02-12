@@ -3,15 +3,16 @@ package org.preesm.algorithm.clustering.scheduler;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.logging.Level;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.preesm.algorithm.schedule.model.Schedule;
-import org.preesm.algorithm.synthesis.schedule.SchedulePrinterSwitch;
 import org.preesm.commons.doc.annotations.Parameter;
 import org.preesm.commons.doc.annotations.Port;
 import org.preesm.commons.doc.annotations.PreesmTask;
 import org.preesm.commons.doc.annotations.Value;
 import org.preesm.commons.logger.PreesmLogger;
+import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.PiGraph;
 import org.preesm.workflow.elements.Workflow;
 import org.preesm.workflow.implement.AbstractTaskImplementation;
@@ -24,7 +25,8 @@ import org.preesm.workflow.implement.AbstractTaskImplementation;
  */
 @PreesmTask(id = "cluster-scheduler", name = "Cluster Scheduler",
     inputs = { @Port(name = "PiMM", type = PiGraph.class, description = "Input PiSDF graph") },
-    outputs = { @Port(name = "CSs", type = Map.class, description = "Map of Cluster Schedule") },
+    outputs = { @Port(name = "PiMM", type = PiGraph.class, description = "Output PiSDF graph"),
+        @Port(name = "CSs", type = Map.class, description = "Map of Cluster Schedule") },
     parameters = {
         @Parameter(name = "Target",
             description = "Choose if the whole input graph will be scheduled rather than just clusters.",
@@ -51,26 +53,40 @@ public class ClusterSchedulerTask extends AbstractTaskImplementation {
   @Override
   public Map<String, Object> execute(Map<String, Object> inputs, Map<String, String> parameters,
       IProgressMonitor monitor, String nodeName, Workflow workflow) {
-    // Retrieve input graph and parameter
+    // PiMM input
     PiGraph inputGraph = (PiGraph) inputs.get("PiMM");
+    // Parameters
     String targetParameter = parameters.get(TARGET_CHOICE);
+    String optimizationParameter = parameters.get(OPTIMIZATION_CHOICE);
+    boolean optimizePerformance = optimizationParameter.contains(OPTIMIZATION_PERFORMANCE);
 
     // Build output map
     Map<String, Object> output = new HashMap<>();
 
-    // Depending on the type of target, schedule the whole graph or clusters.
+    // Depending on the type of target, schedule the whole graph or just clusters.
+    Map<AbstractActor, Schedule> scheduleMap = null;
     if (targetParameter.contains(TARGET_INPUT_GRAPH)) {
       PreesmLogger.getLogger().log(Level.INFO, "Scheduling the input graph.");
-      PGANScheduler scheduler = new PGANScheduler(inputGraph);
-      Schedule schedule = scheduler.scheduleInputGraph();
-      output.put("CSs", scheduler.getScheduleMap());
-      // Print resulting schedule (DEGUB)
-      PreesmLogger.getLogger().log(Level.INFO, SchedulePrinterSwitch.print(schedule));
+      PGANScheduler scheduler = new PGANScheduler(inputGraph, optimizePerformance);
+      scheduler.scheduleInputGraph();
+      scheduleMap = scheduler.getScheduleMap();
     } else {
       PreesmLogger.getLogger().log(Level.INFO, "Scheduling clusters.");
-      output.put("CSs", ClusterScheduler.schedule(inputGraph));
+      scheduleMap = ClusterScheduler.schedule(inputGraph, optimizePerformance);
     }
 
+    // Print schedule results in console
+    for (Entry<AbstractActor, Schedule> entry : scheduleMap.entrySet()) {
+      Schedule schedule = entry.getValue();
+      // Printing
+      String str = "Schedule for " + entry.getKey().getName() + ":";
+      PreesmLogger.getLogger().log(Level.INFO, str);
+      str = schedule.shortPrint();
+      PreesmLogger.getLogger().log(Level.INFO, str);
+    }
+
+    output.put("CSs", scheduleMap);
+    output.put("PiMM", inputGraph);
     return output;
   }
 
