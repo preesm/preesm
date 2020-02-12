@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<graphml xmlns="http://graphml.graphdrawing.org/xmlns">
+    <key attr.name="parameters" for="graph" id="parameters"/>
+    <key attr.name="variables" for="graph" id="variables"/>
+    <key attr.name="arguments" for="node" id="arguments"/>
+    <key attr.name="name" attr.type="string" for="graph"/>
+    <graph cluster="true" edgedefault="directed">
+        <data key="name">h1</data>
+        <node id="in" kind="src">
+            <port annotation="NONE" expr="64" kind="output" name="in"/>
+        </node>
+        <node id="out" kind="snk">
+            <port annotation="NONE" expr="64" kind="input" name="out"/>
+        </node>
+        <node id="B" kind="actor">
+            <port annotation="NONE" expr="32" kind="input" name="in"/>
+            <port annotation="NONE" expr="32" kind="output" name="out"/>
+        </node>
+        <edge kind="fifo" source="in" sourceport="in" target="B"
+            targetport="in" type="void"/>
+        <edge kind="fifo" source="B" sourceport="out"
+            target="out" targetport="out" type="void"/>
+    </graph>
+</graphml>

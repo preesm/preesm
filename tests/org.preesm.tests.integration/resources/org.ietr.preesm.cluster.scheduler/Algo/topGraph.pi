@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<graphml xmlns="http://graphml.graphdrawing.org/xmlns">
+    <key attr.name="parameters" for="graph" id="parameters"/>
+    <key attr.name="variables" for="graph" id="variables"/>
+    <key attr.name="arguments" for="node" id="arguments"/>
+    <key attr.name="name" attr.type="string" for="graph"/>
+    <key attr.name="graph_desc" attr.type="string" for="node"/>
+    <graph edgedefault="directed">
+        <data key="name">topGraph</data>
+        <node id="A" kind="actor">
+            <port annotation="NONE" expr="128" kind="output" name="out"/>
+        </node>
+        <node id="H1" kind="actor">
+            <data key="graph_desc">Algo/h1.pi</data>
+            <port annotation="NONE" expr="64" kind="input" name="in"/>
+            <port annotation="NONE" expr="64" kind="output" name="out"/>
+        </node>
+        <node id="H2" kind="actor">
+            <data key="graph_desc">Algo/h2.pi</data>
+            <port annotation="NONE" expr="16" kind="input" name="in"/>
+            <port annotation="NONE" expr="16" kind="output" name="out"/>
+        </node>
+        <node id="F" kind="actor">
+            <port annotation="NONE" expr="64" kind="input" name="in"/>
+        </node>
+        <edge kind="fifo" source="A" sourceport="out" target="H1"
+            targetport="in" type="void"/>
+        <edge kind="fifo" source="H1" sourceport="out"
+            target="H2" targetport="in" type="void"/>
+        <edge kind="fifo" source="H2" sourceport="out" target="F"
+            targetport="in" type="void"/>
+    </graph>
+</graphml>

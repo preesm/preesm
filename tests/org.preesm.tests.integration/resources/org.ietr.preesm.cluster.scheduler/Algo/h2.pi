@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<graphml xmlns="http://graphml.graphdrawing.org/xmlns">
+    <key attr.name="parameters" for="graph" id="parameters"/>
+    <key attr.name="variables" for="graph" id="variables"/>
+    <key attr.name="arguments" for="node" id="arguments"/>
+    <key attr.name="name" attr.type="string" for="graph"/>
+    <key attr.name="delay" attr.type="string" for="edge"/>
+    <graph cluster="true" edgedefault="directed">
+        <data key="name">h2</data>
+        <node id="out" kind="snk">
+            <port annotation="NONE" expr="16" kind="input" name="out"/>
+        </node>
+        <node id="in" kind="src">
+            <port annotation="NONE" expr="16" kind="output" name="in"/>
+        </node>
+        <node id="C" kind="actor">
+            <port annotation="NONE" expr="2" kind="input" name="in"/>
+            <port annotation="NONE" expr="1" kind="output" name="out"/>
+        </node>
+        <node id="D" kind="actor">
+            <port annotation="NONE" expr="1" kind="input" name="in"/>
+            <port annotation="NONE" expr="1" kind="input" name="in_d"/>
+            <port annotation="NONE" expr="1" kind="output" name="out"/>
+            <port annotation="NONE" expr="1" kind="output" name="out_d"/>
+        </node>
+        <node id="E" kind="actor">
+            <port annotation="NONE" expr="1" kind="input" name="in"/>
+            <port annotation="NONE" expr="1" kind="output" name="out"/>
+        </node>
+        <node expr="1" getter="" id="D_out_d__D_in_d"
+            kind="delay" level="permanent" setter="">
+            <port annotation="NONE" expr="1" kind="input" name="set"/>
+            <port annotation="NONE" expr="1" kind="output" name="get"/>
+        </node>
+        <edge expr="1" kind="fifo" source="D" sourceport="out_d"
+            target="D" targetport="in_d" type="void">
+            <data key="delay">D_out_d__D_in_d</data>
+        </edge>
+        <edge kind="fifo" source="in" sourceport="in" target="C"
+            targetport="in" type="void"/>
+        <edge kind="fifo" source="C" sourceport="out" target="D"
+            targetport="in" type="void"/>
+        <edge kind="fifo" source="D" sourceport="out" target="E"
+            targetport="in" type="void"/>
+        <edge kind="fifo" source="E" sourceport="out"
+            target="out" targetport="out" type="void"/>
+    </graph>
+</graphml>
