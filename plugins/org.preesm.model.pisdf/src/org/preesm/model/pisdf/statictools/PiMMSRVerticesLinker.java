@@ -615,9 +615,9 @@ public class PiMMSRVerticesLinker {
         init.getDataOutputPorts().add(PiMMUserFactory.instance.createDataOutputPort());
         init.setName(this.graphPrefixe + setterName);
         init.getDataOutputPort().setName(this.sinkPort.getName());
-        init.getDataOutputPort().setExpression(setterRate);
         init.setLevel(((InitActor) setterActor).getLevel());
         init.getDataOutputPort().setExpression(setterRate);
+        init.getDataOutputPort().setAnnotation(PortMemoryAnnotation.WRITE_ONLY);
 
         final AbstractActor endReference = ((InitActor) setterActor).getEndReference();
         final AbstractVertex lookupVertex = resultGraph.lookupVertex(this.graphPrefixe + endReference.getName());
@@ -638,6 +638,7 @@ public class PiMMSRVerticesLinker {
           init.setName(name);
           init.getDataOutputPort().setName(this.sinkPort.getName());
           init.getDataOutputPort().setExpression(setterRate);
+          init.getDataOutputPort().setAnnotation(PortMemoryAnnotation.WRITE_ONLY);
           resultGraph.addActor(init);
           sourceSet.add(new SourceConnection(init, setterRate, this.sinkPort.getName()));
         }
@@ -714,6 +715,7 @@ public class PiMMSRVerticesLinker {
         end.getDataInputPorts().add(PiMMUserFactory.instance.createDataInputPort());
         end.getDataInputPort().setName(this.sourcePort.getName());
         end.getDataInputPort().setExpression(getterRate);
+        end.getDataInputPort().setAnnotation(PortMemoryAnnotation.READ_ONLY);
         final AbstractActor initReference = ((EndActor) getterActor).getInitReference();
         final AbstractVertex lookupVertex = resultGraph.lookupVertex(this.graphPrefixe + initReference.getName());
         if (lookupVertex instanceof AbstractActor) {
@@ -733,6 +735,7 @@ public class PiMMSRVerticesLinker {
           end.setName(name);
           end.getDataInputPort().setName(this.sourcePort.getName());
           end.getDataInputPort().setExpression(getterRate);
+          end.getDataInputPort().setAnnotation(PortMemoryAnnotation.READ_ONLY);
           resultGraph.addActor(end);
           sinkSet.add(new SinkConnection(end, getterRate, this.sourcePort.getName()));
         }
