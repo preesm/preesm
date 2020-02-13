@@ -359,19 +359,24 @@ public class PGANScheduler {
    * 
    * @return Schedule for input graph.
    */
-  public Schedule scheduleInputGraph() {
+  public Map<AbstractActor, Schedule> scheduleInputGraph() {
 
     // Check if the input graph is schedulable
     checkSchedulability(this.inputGraph);
 
     // First clustering pass
-    Schedule resultingSchedule = clusterizeFromPiGraph(this.copiedGraph);
+    clusterizeFromPiGraph(this.copiedGraph);
 
     // Second clustering pass
-    resultingSchedule = scheduleOptimization(this.inputGraph, resultingSchedule,
-        false /* Top schedule cluster has to be rebuilt in input graph */);
+    List<Schedule> schedules = new LinkedList<>();
+    schedules.addAll(this.scheduleMap.values());
+    this.scheduleMap.clear();
+    for (Schedule schedule : schedules) {
+      HierarchicalSchedule processedSchedule = (HierarchicalSchedule) scheduleOptimization(inputGraph, schedule, false);
+      this.scheduleMap.put(processedSchedule.getAttachedActor(), processedSchedule);
+    }
 
-    return resultingSchedule;
+    return this.scheduleMap;
   }
 
   /**

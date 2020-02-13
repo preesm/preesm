@@ -68,8 +68,7 @@ public class ClusterSchedulerTask extends AbstractTaskImplementation {
     if (targetParameter.contains(TARGET_INPUT_GRAPH)) {
       PreesmLogger.getLogger().log(Level.INFO, "Scheduling the input graph.");
       PGANScheduler scheduler = new PGANScheduler(inputGraph, optimizePerformance);
-      scheduler.scheduleInputGraph();
-      scheduleMap = scheduler.getScheduleMap();
+      scheduleMap = scheduler.scheduleInputGraph();
     } else {
       PreesmLogger.getLogger().log(Level.INFO, "Scheduling clusters.");
       scheduleMap = ClusterScheduler.schedule(inputGraph, optimizePerformance);
