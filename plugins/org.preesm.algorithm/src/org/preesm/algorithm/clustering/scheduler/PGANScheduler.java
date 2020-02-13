@@ -62,15 +62,6 @@ public class PGANScheduler {
   private final boolean                      optimizePerformance;
 
   /**
-   * Returns the schedule map.
-   * 
-   * @return Schedule map.
-   */
-  public Map<AbstractActor, Schedule> getScheduleMap() {
-    return scheduleMap;
-  }
-
-  /**
    * Builds a PGAN scheduler.
    * 
    * @param inputGraph
@@ -89,33 +80,37 @@ public class PGANScheduler {
     this.optimizePerformance = optimizePerformance;
   }
 
-  /**
-   * Schedule the specified cluster.
-   * 
-   * @param cluster
-   *          Reference to the cluster contained in the parent graph.
-   * 
-   * @return Schedule for the corresponding cluster.
-   */
-  public Schedule scheduleCluster(final PiGraph cluster) {
+  private final void addActorToHierarchicalSchedule(HierarchicalSchedule schedule, AbstractActor actor,
+      long repetition) {
 
-    // Check if the subgraph is schedulable
-    checkSchedulability(cluster);
+    // If we already had clustered actor, retrieve it schedule
+    if (scheduleMap.containsKey(actor)) {
+      Schedule subSched = scheduleMap.get(actor);
+      scheduleMap.remove(actor);
+      subSched.setRepetition(repetition);
+      schedule.getScheduleTree().add(subSched);
+    } else {
 
-    // Search for the cluster in the copied graph
-    PiGraph copiedCluster = (PiGraph) this.copiedGraph.lookupVertex(cluster.getName());
+      // Create an sequential actor schedule
+      ActorSchedule actorSchedule = ScheduleFactory.eINSTANCE.createSequentialActorSchedule();
+      actorSchedule.getActorList().add(PreesmCopyTracker.getSource(actor));
+      actorSchedule.setRepetition(repetition);
 
-    // First clustering pass: schedule actors inside the cluster
-    Schedule childSchedule = firstClusteringPass(copiedCluster);
+      Schedule outputSchedule = null;
+      // If the actor is parallelizable, create a parallel hierarchical schedule
+      if (!ClusteringHelper.isActorDelayed(actor)) {
+        ParallelHiearchicalSchedule parallelNode = ScheduleFactory.eINSTANCE.createParallelHiearchicalSchedule();
+        parallelNode.getChildren().add(actorSchedule);
+        parallelNode.setRepetition(1);
+        parallelNode.setAttachedActor(null);
+        outputSchedule = parallelNode;
+      } else {
+        outputSchedule = actorSchedule;
+      }
 
-    // Build the schedule of the given cluster
-    Schedule clusterSchedule = buildClusterSchedule(cluster, copiedCluster, childSchedule);
-
-    // Second clustering pass: regroup actor in input graph in respect to the cluster schedule
-    clusterSchedule = secondClusteringPass(cluster, clusterSchedule,
-        true /* it specifies that the top level cluster will not be clustered again */);
-
-    return clusterSchedule;
+      // Register in the schedule with original actor to be able to clusterize the non-copy graph
+      schedule.getScheduleTree().add(outputSchedule);
+    }
   }
 
   /**
@@ -174,75 +169,66 @@ public class PGANScheduler {
     return clusterSchedule;
   }
 
-  /**
-   * Schedule the input graph.
-   * 
-   * @return Schedule for input graph.
-   */
-  public Schedule scheduleInputGraph() {
-    // Check if the input graph is schedulable
-    checkSchedulability(this.inputGraph);
+  private final HierarchicalSchedule buildHierarchicalSchedule(List<AbstractActor> actors,
+      Map<AbstractVertex, Long> repetitionVector) {
 
-    // First clustering pass
-    Schedule resultingSchedule = firstClusteringPass(this.copiedGraph);
+    // Create parallel or sequential schedule
+    HierarchicalSchedule schedule = ScheduleFactory.eINSTANCE.createSequentialHiearchicalSchedule();
 
-    // Second clustering pass
-    resultingSchedule = secondClusteringPass(this.inputGraph, resultingSchedule,
-        false /* Top schedule cluster has to be rebuilt in input graph */);
+    // Retrieve actor list
+    List<AbstractActor> actorList = actors;
 
-    return resultingSchedule;
-  }
+    // Compute cluster repetition count
+    long clusterRepetition = MathFunctionsHelper.gcd(CollectionUtil.mapGetAll(repetitionVector, actorList));
 
-  /**
-   * Schedule the input graph and flatten the output schedule.
-   * 
-   * @param graph
-   *          Graph to schedule.
-   * @return Schedule of the specified graph.
-   */
-  private final Schedule firstClusteringPass(final PiGraph graph) {
-    // Clusterize from PiGraph
-    Schedule resultingSchedule = clusterizeFromPiGraph(graph);
-
-    // Flatten the resulting schedule
-    resultingSchedule = new ScheduleFlattener().performTransform(resultingSchedule);
-
-    return resultingSchedule;
-  }
-
-  /**
-   * Cluster the input graph according to a schedule. Performs operations such as parallelism optimization, parallelism
-   * depth limitation and data parallelism exhibition.
-   * 
-   * @param graph
-   *          Graph to cluster.
-   * @param schedule
-   *          Schedule to follow.
-   * @param baseClusterIsAlreadyASubGraph
-   *          If true, no sub graph will be built at the top level of the schedule. It is needed when you are scheduling
-   *          in a cluster.
-   * @return Schedule optimized.
-   */
-  private final Schedule secondClusteringPass(final PiGraph graph, final Schedule schedule,
-      final boolean baseClusterIsAlreadyASubGraph) {
-    Schedule preprocessSchedule = schedule;
-
-    // If user want performance optimization, perform them
-    if (this.optimizePerformance) {
-      preprocessSchedule = new ScheduleParallelismOptimizer().performTransform(preprocessSchedule);
+    // Construct a sequential schedule
+    for (AbstractActor a : actorList) {
+      addActorToHierarchicalSchedule(schedule, a, repetitionVector.get(a) / clusterRepetition);
     }
 
-    // Regroup following the optimized schedule
-    Schedule resultingSchedule = clusterizeFromSchedule(graph, preprocessSchedule, 0, !baseClusterIsAlreadyASubGraph);
+    return schedule;
+  }
 
-    // Exhibit data parallelism
-    resultingSchedule = new ScheduleDataParallelismExhibiter().performTransform(resultingSchedule);
+  /**
+   * Throws an exception if the scheduler is unable to process the given graph.
+   * 
+   * @param graph
+   *          Graph to be checked.
+   */
+  private final void checkSchedulability(final PiGraph graph) {
 
-    // Limit parallelism at the first layer
-    resultingSchedule = new ScheduleParallelismDepthLimiter(1).performTransform(resultingSchedule);
+    // Check if the graph is flatten
+    if (graph.getActors().stream().anyMatch(x -> x instanceof PiGraph)) {
+      throw new PreesmRuntimeException("PGANScheduler: hierarchy are not handled in [" + graph.getName() + "]");
+    }
 
-    return resultingSchedule;
+    // Check for incompatible delay (with getter/setter)
+    for (Fifo fifo : graph.getFifosWithDelay()) {
+      Delay delay = fifo.getDelay();
+      // If delay has getter/setter, throw an exception
+      if (delay.getActor().getDataInputPort().getIncomingFifo() != null
+          || delay.getActor().getDataOutputPort().getOutgoingFifo() != null) {
+        throw new PreesmRuntimeException(
+            "PGANScheduler: getter/setter are not handled on [" + delay.getActor().getName() + "]");
+      }
+    }
 
+  }
+
+  private final Schedule clusterize(final PiGraph graph, List<AbstractActor> actors,
+      Map<AbstractVertex, Long> repetitionVector, int clusterId) {
+
+    // Build corresponding hierarchical actor
+    PiGraph cluster = new PiSDFSubgraphBuilder(graph, actors, "cluster_" + clusterId).build();
+    cluster.setClusterValue(true);
+
+    // Build corresponding hierarchical schedule
+    HierarchicalSchedule schedule = buildHierarchicalSchedule(actors, repetitionVector);
+
+    // Attach cluster to hierarchical schedule
+    schedule.setAttachedActor(cluster);
+
+    return schedule;
   }
 
   private final Schedule clusterizeFromPiGraph(final PiGraph graph) {
@@ -329,98 +315,98 @@ public class PGANScheduler {
     return schedule;
   }
 
-  private final Schedule clusterize(final PiGraph graph, List<AbstractActor> actors,
-      Map<AbstractVertex, Long> repetitionVector, int clusterId) {
-
-    // Build corresponding hierarchical actor
-    PiGraph cluster = new PiSDFSubgraphBuilder(graph, actors, "cluster_" + clusterId).build();
-    cluster.setClusterValue(true);
-
-    // Build corresponding hierarchical schedule
-    HierarchicalSchedule schedule = buildHierarchicalSchedule(actors, repetitionVector);
-
-    // Attach cluster to hierarchical schedule
-    schedule.setAttachedActor(cluster);
-
-    return schedule;
-  }
-
-  private final HierarchicalSchedule buildHierarchicalSchedule(List<AbstractActor> actors,
-      Map<AbstractVertex, Long> repetitionVector) {
-
-    // Create parallel or sequential schedule
-    HierarchicalSchedule schedule = ScheduleFactory.eINSTANCE.createSequentialHiearchicalSchedule();
-
-    // Retrieve actor list
-    List<AbstractActor> actorList = actors;
-
-    // Compute cluster repetition count
-    long clusterRepetition = MathFunctionsHelper.gcd(CollectionUtil.mapGetAll(repetitionVector, actorList));
-
-    // Construct a sequential schedule
-    for (AbstractActor a : actorList) {
-      addActorToHierarchicalSchedule(schedule, a, repetitionVector.get(a) / clusterRepetition);
-    }
-
-    return schedule;
-  }
-
-  private final void addActorToHierarchicalSchedule(HierarchicalSchedule schedule, AbstractActor actor,
-      long repetition) {
-
-    // If we already had clustered actor, retrieve it schedule
-    if (scheduleMap.containsKey(actor)) {
-      Schedule subSched = scheduleMap.get(actor);
-      scheduleMap.remove(actor);
-      subSched.setRepetition(repetition);
-      schedule.getScheduleTree().add(subSched);
-    } else {
-
-      // Create an sequential actor schedule
-      ActorSchedule actorSchedule = ScheduleFactory.eINSTANCE.createSequentialActorSchedule();
-      actorSchedule.getActorList().add(PreesmCopyTracker.getSource(actor));
-      actorSchedule.setRepetition(repetition);
-
-      Schedule outputSchedule = null;
-      // If the actor is parallelizable, create a parallel hierarchical schedule
-      if (!ClusteringHelper.isActorDelayed(actor)) {
-        ParallelHiearchicalSchedule parallelNode = ScheduleFactory.eINSTANCE.createParallelHiearchicalSchedule();
-        parallelNode.getChildren().add(actorSchedule);
-        parallelNode.setRepetition(1);
-        parallelNode.setAttachedActor(null);
-        outputSchedule = parallelNode;
-      } else {
-        outputSchedule = actorSchedule;
-      }
-
-      // Register in the schedule with original actor to be able to clusterize the non-copy graph
-      schedule.getScheduleTree().add(outputSchedule);
-    }
+  /**
+   * Returns the schedule map.
+   * 
+   * @return Schedule map.
+   */
+  public Map<AbstractActor, Schedule> getScheduleMap() {
+    return scheduleMap;
   }
 
   /**
-   * Throws an exception if the scheduler is unable to process the given graph.
+   * Schedule the specified cluster.
+   * 
+   * @param cluster
+   *          Reference to the cluster contained in the parent graph.
+   * 
+   * @return Schedule for the corresponding cluster.
+   */
+  public Schedule scheduleCluster(final PiGraph cluster) {
+
+    // Check if the subgraph is schedulable
+    checkSchedulability(cluster);
+
+    // Search for the cluster in the copied graph
+    PiGraph copiedCluster = (PiGraph) this.copiedGraph.lookupVertex(cluster.getName());
+
+    // First clustering pass: schedule actors inside the cluster
+    Schedule childSchedule = clusterizeFromPiGraph(copiedCluster);
+
+    // Build the schedule of the given cluster
+    Schedule clusterSchedule = buildClusterSchedule(cluster, copiedCluster, childSchedule);
+
+    // Second clustering pass: regroup actor in input graph in respect to the cluster schedule with various
+    // optimization
+    clusterSchedule = scheduleOptimization(cluster, clusterSchedule,
+        true /* it specifies that the top level cluster will not be clustered again */);
+
+    return clusterSchedule;
+  }
+
+  /**
+   * Schedule the input graph.
+   * 
+   * @return Schedule for input graph.
+   */
+  public Schedule scheduleInputGraph() {
+    // Check if the input graph is schedulable
+    checkSchedulability(this.inputGraph);
+
+    // First clustering pass
+    Schedule resultingSchedule = clusterizeFromPiGraph(this.copiedGraph);
+
+    // Second clustering pass
+    resultingSchedule = scheduleOptimization(this.inputGraph, resultingSchedule,
+        false /* Top schedule cluster has to be rebuilt in input graph */);
+
+    return resultingSchedule;
+  }
+
+  /**
+   * Cluster the input graph according to a schedule. Performs operations such as schedule flattening, parallelism
+   * optimization, data parallelism exhibition and parallelism depth limitation.
    * 
    * @param graph
-   *          Graph to be checked.
+   *          Graph to cluster.
+   * @param schedule
+   *          Schedule to follow.
+   * @param baseClusterIsAlreadyASubGraph
+   *          If true, no sub graph will be built at the top level of the schedule. It is needed when you are scheduling
+   *          in a cluster.
+   * @return Schedule optimized.
    */
-  private final void checkSchedulability(final PiGraph graph) {
+  private final Schedule scheduleOptimization(final PiGraph graph, final Schedule schedule,
+      final boolean baseClusterIsAlreadyASubGraph) {
 
-    // Check if the graph is flatten
-    if (graph.getActors().stream().anyMatch(x -> x instanceof PiGraph)) {
-      throw new PreesmRuntimeException("PGANScheduler: hierarchy are not handled in [" + graph.getName() + "]");
+    // Flatten the input schedule
+    Schedule preprocessSchedule = new ScheduleFlattener().performTransform(schedule);
+
+    // If user want performance optimization, perform them
+    if (this.optimizePerformance) {
+      preprocessSchedule = new ScheduleParallelismOptimizer().performTransform(preprocessSchedule);
     }
 
-    // Check for incompatible delay (with getter/setter)
-    for (Fifo fifo : graph.getFifosWithDelay()) {
-      Delay delay = fifo.getDelay();
-      // If delay has getter/setter, throw an exception
-      if (delay.getActor().getDataInputPort().getIncomingFifo() != null
-          || delay.getActor().getDataOutputPort().getOutgoingFifo() != null) {
-        throw new PreesmRuntimeException(
-            "PGANScheduler: getter/setter are not handled on [" + delay.getActor().getName() + "]");
-      }
-    }
+    // Regroup following the optimized schedule
+    Schedule resultingSchedule = clusterizeFromSchedule(graph, preprocessSchedule, 0, !baseClusterIsAlreadyASubGraph);
+
+    // Exhibit data parallelism
+    resultingSchedule = new ScheduleDataParallelismExhibiter().performTransform(resultingSchedule);
+
+    // Limit parallelism at the first layer
+    resultingSchedule = new ScheduleParallelismDepthLimiter(1).performTransform(resultingSchedule);
+
+    return resultingSchedule;
 
   }
 
