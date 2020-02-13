@@ -26,7 +26,7 @@ import org.preesm.workflow.implement.AbstractTaskImplementation;
 @PreesmTask(id = "cluster-scheduler", name = "Cluster Scheduler",
     inputs = { @Port(name = "PiMM", type = PiGraph.class, description = "Input PiSDF graph") },
     outputs = { @Port(name = "PiMM", type = PiGraph.class, description = "Output PiSDF graph"),
-        @Port(name = "CSs", type = Map.class, description = "Map of Cluster Schedule") },
+        @Port(name = "CS", type = Map.class, description = "Map of Cluster Schedule") },
     parameters = {
         @Parameter(name = "Target",
             description = "Choose if the whole input graph will be scheduled rather than just clusters.",
@@ -77,15 +77,13 @@ public class ClusterSchedulerTask extends AbstractTaskImplementation {
 
     // Print schedule results in console
     for (Entry<AbstractActor, Schedule> entry : scheduleMap.entrySet()) {
-      Schedule schedule = entry.getValue();
-      // Printing
       String str = "Schedule for " + entry.getKey().getName() + ":";
       PreesmLogger.getLogger().log(Level.INFO, str);
-      str = schedule.shortPrint();
+      str = entry.getValue().shortPrint();
       PreesmLogger.getLogger().log(Level.INFO, str);
     }
 
-    output.put("CSs", scheduleMap);
+    output.put("CS", scheduleMap);
     output.put("PiMM", inputGraph);
     return output;
   }
