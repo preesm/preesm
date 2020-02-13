@@ -270,7 +270,7 @@ public class PGANScheduler {
     return result;
   }
 
-  private final Schedule clusterizeFromSchedule(final PiGraph graph, Schedule schedule, int clusterId,
+  private final Schedule clusterizeFromSchedule(final PiGraph graph, Schedule schedule, final int clusterId,
       boolean recluster) {
 
     // If it is an hierarchical schedule, explore
@@ -287,7 +287,7 @@ public class PGANScheduler {
       for (Schedule child : childSchedules) {
 
         // Explore children and process clustering into
-        Schedule processedChild = clusterizeFromSchedule(graph, child, clusterId++, true);
+        Schedule processedChild = clusterizeFromSchedule(graph, child, clusterId + 1, true);
         hierSchedule.getChildren().add(processedChild);
 
         // Retrieve list of children AbstractActor
@@ -360,6 +360,7 @@ public class PGANScheduler {
    * @return Schedule for input graph.
    */
   public Schedule scheduleInputGraph() {
+
     // Check if the input graph is schedulable
     checkSchedulability(this.inputGraph);
 
