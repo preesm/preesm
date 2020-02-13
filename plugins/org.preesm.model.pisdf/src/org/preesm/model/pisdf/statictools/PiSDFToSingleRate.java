@@ -220,7 +220,7 @@ public class PiSDFToSingleRate extends PiMMSwitch<Boolean> {
    *          SRDAG
    */
   private static final void removeUnusedPorts(final PiGraph graph) {
-    for (AbstractActor aa : graph.getAllActors()) {
+    for (AbstractActor aa : graph.getActors()) {
       final Set<DataInputPort> toRemoveIn = new HashSet<>();
       final Set<DataOutputPort> toRemoveOut = new HashSet<>();
       for (DataPort p : aa.getAllDataPorts()) {
