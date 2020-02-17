@@ -193,12 +193,18 @@ public class AutoDelaysTask extends AbstractTaskImplementation {
         ds.addValue(wcet);
       }
     }
+    final long maxWCET = Math.round(ds.getMax());
+    final long percentMax = Math.round((ds.getMax() / ds.getSum()) * 100);
+    PreesmLogger.getLogger().log(Level.FINE,
+        "Max WCET is " + maxWCET + " and represents " + percentMax + "% of the total.");
     final long meanWCET = Math.round(ds.getMean());
-    final long standardDeviation = Math.round(ds.getStandardDeviation());
     final long percentMean = Math.round((ds.getMean() / ds.getSum()) * 100);
     PreesmLogger.getLogger().log(Level.FINE,
         "Mean WCET is " + meanWCET + " and represents " + percentMean + "% of the total.");
-    PreesmLogger.getLogger().log(Level.FINE, "Standard deviation of WCET is: " + standardDeviation);
+    final long standardDeviation = Math.round(ds.getStandardDeviation());
+    final long percentSD = Math.round((ds.getStandardDeviation() / ds.getSum()) * 100);
+    PreesmLogger.getLogger().log(Level.FINE,
+        "Standard deviation of WCET is " + standardDeviation + " and represents " + percentSD + "% of the total.");
 
     final HeuristicLoopBreakingDelays hlbd = new HeuristicLoopBreakingDelays();
     hlbd.performAnalysis(graphCopy, brv);
