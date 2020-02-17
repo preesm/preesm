@@ -151,7 +151,7 @@ class InstrumentedCPrinter extends CPrinter {
 				val elt = coreLoop.codeElts.get(i)
 
 				if (elt instanceof ActorFunctionCall) {
-					val ovp = elt.actor
+					val ovp = elt.getOriActor
 
 					// Do the pre insertion
 					val preDumpCall = CodegenModelUserFactory.eINSTANCE.createFunctionCall
@@ -302,7 +302,7 @@ class InstrumentedCPrinter extends CPrinter {
 	 */
 	def String printAnalysisCsvFile(Map<AbstractActor,Integer> mapActorNbRow, Map<AbstractActor,Integer> mapActorNbFiring)'''
 	«FOR entry : actorIDs.entrySet»
-	«entry.key»;"=MROUND(AVERAGE(«FOR id : entry.value SEPARATOR ';'»«(id+1).intToColumn»«actorIDs.size + 4»:«(id+1).intToColumn»65536«ENDFOR»);1)"
+	«entry.key.vertexPath»;"=MROUND(AVERAGE(«FOR id : entry.value SEPARATOR ';'»«(id+1).intToColumn»«actorIDs.size + 4»:«(id+1).intToColumn»65536«ENDFOR»);1)"
 	«ENDFOR»
 	"TIMINGS WEIGHTED SUM";"=SUM(«FOR entry : actorIDs.entrySet SEPARATOR ','»«mapActorNbFiring.get(entry.key)»*B«mapActorNbRow.get(entry.key)»«ENDFOR»)"
 	'''

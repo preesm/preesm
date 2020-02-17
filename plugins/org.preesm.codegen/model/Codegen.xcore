@@ -139,7 +139,7 @@ class FunctionCall extends Call {
 }
 
 class ActorFunctionCall extends FunctionCall {
-	refers AbstractActor actor
+	refers AbstractActor oriActor
 }
 
 class PapifyFunctionCall extends FunctionCall {

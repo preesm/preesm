@@ -1066,7 +1066,7 @@ class CPrinter extends BlankPrinter {
 
 
 	override printPostFunctionCall(FunctionCall functionCall) '''
-	«IF state == PrinterState.PRINTING_LOOP_BLOCK && !monitorAllFifoMD5 && !printedCoreBlock.sinkFifoBuffers.isEmpty && functionCall instanceof ActorFunctionCall && (functionCall as ActorFunctionCall).actor.dataOutputPorts.isEmpty»#ifdef PREESM_MD5_UPDATE
+	«IF state == PrinterState.PRINTING_LOOP_BLOCK && !monitorAllFifoMD5 && !printedCoreBlock.sinkFifoBuffers.isEmpty && functionCall instanceof ActorFunctionCall && (functionCall as ActorFunctionCall).getOriActor.dataOutputPorts.isEmpty»#ifdef PREESM_MD5_UPDATE
 	«FOR buffer : printedCoreBlock.sinkFifoBuffers»«IF functionCall.parameters.contains(buffer)»
 	PREESM_MD5_Update(&preesm_md5_ctx_«buffer.name»,(char *)«buffer.name», «buffer.size * buffer.typeSize»);
 	«ENDIF»«ENDFOR»#endif
@@ -1091,7 +1091,7 @@ class CPrinter extends BlankPrinter {
 		«ENDIF»«ENDFOR»
 
 		preesmCheckMD5Array_«printedCoreBlock.coreID»(preStateBufferMd5, bufferMd5,
-				«outBuffers.size»,authorizedBufferIds_«(functionCall as ActorFunctionCall).hashCode», "«(functionCall as ActorFunctionCall).actor.name»");
+				«outBuffers.size»,authorizedBufferIds_«(functionCall as ActorFunctionCall).hashCode», "«(functionCall as ActorFunctionCall).getOriActor.name»");
 		// preesmPrintMD5Array_«printedCoreBlock.coreID»(bufferMd5, index, «printedCoreBlock.loopBlock.codeElts.indexOf(functionCall)»);
 	#endif
 	«ENDIF»
