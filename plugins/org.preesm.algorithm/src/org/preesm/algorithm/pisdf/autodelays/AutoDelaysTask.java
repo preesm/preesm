@@ -15,8 +15,15 @@ import java.util.SortedMap;
 import java.util.TreeMap;
 import java.util.logging.Level;
 import java.util.stream.Collectors;
+import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.ui.IEditorInput;
+import org.eclipse.ui.PlatformUI;
 import org.jgrapht.graph.DefaultDirectedGraph;
+import org.preesm.algorithm.mapper.ui.stats.EditorRunnable;
+import org.preesm.algorithm.mapper.ui.stats.IStatGenerator;
+import org.preesm.algorithm.mapper.ui.stats.StatEditorInput;
+import org.preesm.algorithm.mapper.ui.stats.StatGeneratorSynthesis;
 import org.preesm.algorithm.pisdf.autodelays.AbstractGraph.FifoAbstraction;
 import org.preesm.algorithm.pisdf.autodelays.TopologicalRanking.TopoVisit;
 import org.preesm.algorithm.synthesis.SynthesisResult;
@@ -177,6 +184,21 @@ public class AutoDelaysTask extends AbstractTaskImplementation {
       }
       wcets.put(a, wcetMin);
     }
+    DescriptiveStatistics ds = new DescriptiveStatistics();
+    for (final Entry<AbstractVertex, Long> en : wcets.entrySet()) {
+      AbstractVertex av = en.getKey();
+      Long wcet = en.getValue();
+      Long rv = brv.get(av);
+      for (long i = 0; i < rv; i++) {
+        ds.addValue(wcet);
+      }
+    }
+    final long meanWCET = Math.round(ds.getMean());
+    final long standardDeviation = Math.round(ds.getStandardDeviation());
+    final long percentMean = Math.round((ds.getMean() / ds.getSum()) * 100);
+    PreesmLogger.getLogger().log(Level.FINE,
+        "Mean WCET is " + meanWCET + " and represents " + percentMean + "% of the total.");
+    PreesmLogger.getLogger().log(Level.FINE, "Standard deviation of WCET is: " + standardDeviation);
 
     final HeuristicLoopBreakingDelays hlbd = new HeuristicLoopBreakingDelays();
     hlbd.performAnalysis(graphCopy, brv);
@@ -287,15 +309,14 @@ public class AutoDelaysTask extends AbstractTaskImplementation {
     PreesmLogger.getLogger().info("Time " + Math.round(duration / 1e6) + " ms.");
 
     if (sched) {
-      long latency = getLatency(graphCopy, scenario, architecture);
-      PreesmLogger.getLogger().log(Level.INFO, "Latency of graĥ with added delays: " + latency);
+      printLatency(graphCopy, scenario, architecture);
     }
 
     output.put(AbstractWorkflowNodeImplementation.KEY_PI_GRAPH, graphCopy);
     return output;
   }
 
-  private static long getLatency(PiGraph graph, Scenario scenario, Design architecture) {
+  private static void printLatency(PiGraph graph, Scenario scenario, Design architecture) {
     final PiGraph dag = PiSDFToSingleRate.compute(graph, BRVMethod.LCM);
     final IScheduler scheduler = new PeriodicScheduler();
     final SynthesisResult scheduleAndMap = scheduler.scheduleAndMap(dag, architecture, scenario);
@@ -303,7 +324,20 @@ public class AutoDelaysTask extends AbstractTaskImplementation {
     final ScheduleOrderManager scheduleOM = new ScheduleOrderManager(dag, scheduleAndMap.schedule);
     final LatencyCost evaluate = new SimpleLatencyEvaluation().evaluate(dag, architecture, scenario,
         scheduleAndMap.mapping, scheduleOM);
-    return evaluate.getValue();
+    PreesmLogger.getLogger().log(Level.INFO, "Latency of graph with added delays: " + evaluate.getValue());
+
+    final IStatGenerator statGen = new StatGeneratorSynthesis(architecture, scenario, scheduleAndMap.mapping, null,
+        evaluate);
+    final IEditorInput input = new StatEditorInput(statGen);
+
+    // Check if the workflow is running in command line mode
+    try {
+      // Run statistic editor
+      PlatformUI.getWorkbench().getDisplay().asyncExec(new EditorRunnable(input));
+    } catch (final IllegalStateException e) {
+      PreesmLogger.getLogger().log(Level.INFO, "Gantt display is impossible in this context."
+          + " Ignore this log entry if you are running the command line version of Preesm.");
+    }
   }
 
   private static void fillCycles(final HeuristicLoopBreakingDelays hlbd, final Map<AbstractVertex, Long> brv) {
@@ -514,6 +548,17 @@ public class AutoDelaysTask extends AbstractTaskImplementation {
   private static List<CutInformation> selectBestCuts(SortedMap<Integer, Set<CutInformation>> cuts, final int nbSelec,
       final SortedMap<Integer, Long> rankWCETs, final long totC, final Scenario scenar) {
     final Set<Integer> preSelectedRanks = new LinkedHashSet<>();
+    int maxParallelActors = 0;
+    for (Set<CutInformation> cis : cuts.values()) {
+      for (CutInformation ci : cis) {
+        int nbActorsInCut = ci.edgeCut.size();
+        if (nbActorsInCut > maxParallelActors) {
+          maxParallelActors = nbActorsInCut;
+        }
+      }
+    }
+    PreesmLogger.getLogger().log(Level.FINE, "Max Actors in Parallel: " + maxParallelActors);
+
     // we divide by the number of maxii
     final long avgCutLoad = totC / (nbSelec + 1);
     final long maxLoad = totC - avgCutLoad;
