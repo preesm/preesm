@@ -5,6 +5,7 @@ import java.util.Map;
 import org.preesm.algorithm.schedule.model.Schedule;
 import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.PiGraph;
+import org.preesm.model.scenario.Scenario;
 
 /**
  * @author dgageot
@@ -19,12 +20,13 @@ public class ClusterScheduler {
    *          Input graph.
    * @return Map of Cluster Schedule.
    */
-  public static Map<AbstractActor, Schedule> schedule(final PiGraph inputGraph, final boolean optimizePerformance) {
+  public static Map<AbstractActor, Schedule> schedule(final PiGraph inputGraph, final Scenario scenario,
+      final boolean optimizePerformance) {
     // Build a map for Cluster Schedule
     Map<AbstractActor, Schedule> schedulesMap = new HashMap<>();
 
     // Build a PGAN scheduler
-    PGANScheduler scheduler = new PGANScheduler(inputGraph, optimizePerformance);
+    PGANScheduler scheduler = new PGANScheduler(inputGraph, scenario, optimizePerformance);
 
     // Compute a schedule for every cluster
     for (AbstractActor actor : inputGraph.getAllActors()) {

@@ -14,6 +14,7 @@ import org.preesm.commons.doc.annotations.Value;
 import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.PiGraph;
+import org.preesm.model.scenario.Scenario;
 import org.preesm.workflow.elements.Workflow;
 import org.preesm.workflow.implement.AbstractTaskImplementation;
 
@@ -24,7 +25,8 @@ import org.preesm.workflow.implement.AbstractTaskImplementation;
  *
  */
 @PreesmTask(id = "cluster-scheduler", name = "Cluster Scheduler",
-    inputs = { @Port(name = "PiMM", type = PiGraph.class, description = "Input PiSDF graph") },
+    inputs = { @Port(name = "PiMM", type = PiGraph.class, description = "Input PiSDF graph"),
+        @Port(name = "scenario", type = Scenario.class, description = "Scenario") },
     outputs = { @Port(name = "PiMM", type = PiGraph.class, description = "Output PiSDF graph"),
         @Port(name = "CS", type = Map.class, description = "Map of Cluster Schedule") },
     parameters = {
@@ -53,8 +55,9 @@ public class ClusterSchedulerTask extends AbstractTaskImplementation {
   @Override
   public Map<String, Object> execute(Map<String, Object> inputs, Map<String, String> parameters,
       IProgressMonitor monitor, String nodeName, Workflow workflow) {
-    // PiMM input
+    // Task inputs
     PiGraph inputGraph = (PiGraph) inputs.get("PiMM");
+    Scenario scenario = (Scenario) inputs.get("scenario");
     // Parameters
     String targetParameter = parameters.get(TARGET_CHOICE);
     String optimizationParameter = parameters.get(OPTIMIZATION_CHOICE);
@@ -67,11 +70,11 @@ public class ClusterSchedulerTask extends AbstractTaskImplementation {
     Map<AbstractActor, Schedule> scheduleMap = null;
     if (targetParameter.contains(TARGET_INPUT_GRAPH)) {
       PreesmLogger.getLogger().log(Level.INFO, "Scheduling the input graph.");
-      PGANScheduler scheduler = new PGANScheduler(inputGraph, optimizePerformance);
+      PGANScheduler scheduler = new PGANScheduler(inputGraph, scenario, optimizePerformance);
       scheduleMap = scheduler.scheduleInputGraph();
     } else {
       PreesmLogger.getLogger().log(Level.INFO, "Scheduling clusters.");
-      scheduleMap = ClusterScheduler.schedule(inputGraph, optimizePerformance);
+      scheduleMap = ClusterScheduler.schedule(inputGraph, scenario, optimizePerformance);
     }
 
     // Print schedule results in console
@@ -82,6 +85,7 @@ public class ClusterSchedulerTask extends AbstractTaskImplementation {
       PreesmLogger.getLogger().log(Level.INFO, str);
     }
 
+    // Register outputs
     output.put("CS", scheduleMap);
     output.put("PiMM", inputGraph);
     return output;

@@ -36,6 +36,8 @@ import org.preesm.model.pisdf.brv.PiBRV;
 import org.preesm.model.pisdf.factory.PiMMUserFactory;
 import org.preesm.model.pisdf.util.PiSDFMergeabilty;
 import org.preesm.model.pisdf.util.PiSDFSubgraphBuilder;
+import org.preesm.model.scenario.Scenario;
+import org.preesm.model.slam.ComponentInstance;
 
 /**
  * Scheduler that use Pairwise Grouping of Adjacent Nodes (PGAN) to generate schedule with for-loops.
@@ -57,6 +59,10 @@ public class PGANScheduler {
    */
   private final Map<AbstractActor, Schedule> scheduleMap;
   /**
+   * Scenario.
+   */
+  private final Scenario                     scenario;
+  /**
    * Optimize performance by exhibiting parallelism hidden by sequential hierarchy.
    */
   private final boolean                      optimizePerformance;
@@ -69,13 +75,15 @@ public class PGANScheduler {
    * @param optimizePerformance
    *          If true, second pass of clustering will optimize parallelism inside of sequential hierarchy.
    */
-  public PGANScheduler(final PiGraph inputGraph, final boolean optimizePerformance) {
+  public PGANScheduler(final PiGraph inputGraph, final Scenario scenario, final boolean optimizePerformance) {
     // Save reference of input graph
     this.inputGraph = inputGraph;
     // Copy input graph for the first pass of clustering
     this.copiedGraph = PiMMUserFactory.instance.copyPiGraphWithHistory(this.inputGraph);
     // Build an empty schedule map
     this.scheduleMap = new HashMap<>();
+    // Save reference of scenario
+    this.scenario = scenario;
     // Store the choice of optimization
     this.optimizePerformance = optimizePerformance;
   }
@@ -222,6 +230,11 @@ public class PGANScheduler {
     PiGraph cluster = new PiSDFSubgraphBuilder(graph, actors, "cluster_" + clusterId).build();
     cluster.setClusterValue(true);
 
+    // Add constraint to the cluster
+    for (ComponentInstance component : ClusteringHelper.getListOfCommonComponent(actors, scenario)) {
+      scenario.getConstraints().addConstraint(component, cluster);
+    }
+
     // Build corresponding hierarchical schedule
     HierarchicalSchedule schedule = buildHierarchicalSchedule(actors, repetitionVector);
 
@@ -242,11 +255,11 @@ public class PGANScheduler {
     Map<AbstractVertex, Long> repetitionVector = PiBRV.compute(graph, BRVMethod.LCM);
 
     // List all clusterizable couples
-    List<Pair<AbstractActor, AbstractActor>> couples = PiSDFMergeabilty.getConnectedCouple(graph, repetitionVector);
+    List<Pair<AbstractActor, AbstractActor>> couples = ClusteringHelper.getClusterizableCouples(graph, repetitionVector,
+        scenario);
 
     // Cluster until couples list is not empty
     while (!couples.isEmpty()) {
-
       // Search best candidate to be clustered according the highest common repetition count
       Pair<AbstractActor, AbstractActor> couple = APGANAlgorithm.getBestCouple(couples, repetitionVector);
 
