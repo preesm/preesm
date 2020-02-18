@@ -92,10 +92,10 @@ public class PiMMToolBehaviorProvider extends DefaultToolBehaviorProvider {
   /**
    * Store the message to display when a ga is under the mouse.
    */
-  protected Map<GraphicsAlgorithm, String> toolTips;
+  public final Map<GraphicsAlgorithm, String> toolTips;
 
   /** The decorator adapter. */
-  protected PiMMDecoratorAdapter decoratorAdapter;
+  public final PiMMDecoratorAdapter decoratorAdapter;
 
   /**
    * The default constructor of {@link PiMMToolBehaviorProvider}.
@@ -168,7 +168,6 @@ public class PiMMToolBehaviorProvider extends DefaultToolBehaviorProvider {
    */
   @Override
   public IDecorator[] getDecorators(final PictogramElement pe) {
-
     final IFeatureProvider featureProvider = getFeatureProvider();
     final IDecorator[] existingDecorators = this.decoratorAdapter.getPesAndDecorators().get(pe);
     if (existingDecorators != null) {

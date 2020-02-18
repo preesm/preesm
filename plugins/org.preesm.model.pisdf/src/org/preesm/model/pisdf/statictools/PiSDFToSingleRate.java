@@ -310,8 +310,8 @@ public class PiSDFToSingleRate extends PiMMSwitch<Boolean> {
   public Boolean caseAbstractActor(final AbstractActor actor) {
     if (actor instanceof PiGraph) {
       // Here we handle the replacement of the interfaces by what should be
-      // Copy the actor
-      final PiGraph copyGraph = PiMMUserFactory.instance.copyPiGraphWithHistory((PiGraph) actor);
+      // Copy the actor, should we use copyPiGraphWithHistory() instead ?
+      final PiGraph copyGraph = PiMMUserFactory.instance.copyWithHistory((PiGraph) actor);
       // Set the properties
       copyGraph.setName(this.currentActorName);
 

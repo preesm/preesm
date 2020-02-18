@@ -17,6 +17,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.views.properties.tabbed.ITabbedPropertyConstants;
 import org.eclipse.ui.views.properties.tabbed.TabbedPropertySheetPage;
 import org.preesm.commons.math.ExpressionEvaluationException;
+import org.preesm.model.pisdf.Actor;
 import org.preesm.model.pisdf.DataPort;
 import org.preesm.model.pisdf.Expression;
 import org.preesm.model.pisdf.InterfaceActor;
@@ -114,10 +115,8 @@ public class DataPortPropertiesSection extends ParameterizablePropertiesSection 
       }
     });
 
-    this.memoryComboAnnotation.setEnabled(false);
     this.memoryComboAnnotation.setVisible(false);
     this.memoryComboAnnotation.setEnabled(false);
-    this.memoryLabelAnnotation.setEnabled(false);
     this.memoryLabelAnnotation.setVisible(false);
     this.memoryLabelAnnotation.setEnabled(false);
 
@@ -171,17 +170,25 @@ public class DataPortPropertiesSection extends ParameterizablePropertiesSection 
           elementName = ((InterfaceActor) iPort.eContainer()).getName();
         } else {
           elementName = iPort.getName();
+
+          boolean isHierarchicalActor = false;
+          if (iPort.eContainer() instanceof Actor) {
+            final Actor actor = (Actor) iPort.eContainer();
+            if (actor.isHierarchical()) {
+              isHierarchicalActor = true;
+            }
+          }
+          if (!isHierarchicalActor) {
+            this.memoryComboAnnotation.setVisible(true);
+            this.memoryComboAnnotation.setEnabled(true);
+            this.memoryLabelAnnotation.setVisible(true);
+            this.memoryLabelAnnotation.setEnabled(true);
+          }
         }
 
         elementValueExpression = iPort.getPortRateExpression();
 
         this.memoryComboAnnotation.select(((DataPort) businessObject).getAnnotation().getValue());
-        this.memoryComboAnnotation.setEnabled(false);
-        this.memoryComboAnnotation.setVisible(true);
-        this.memoryComboAnnotation.setEnabled(true);
-        this.memoryLabelAnnotation.setEnabled(false);
-        this.memoryLabelAnnotation.setVisible(true);
-        this.memoryLabelAnnotation.setEnabled(true);
 
         lblNameObj.setText(elementName == null ? " " : elementName);
 

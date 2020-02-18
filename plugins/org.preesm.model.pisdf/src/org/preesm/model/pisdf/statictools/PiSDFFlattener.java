@@ -245,8 +245,8 @@ public class PiSDFFlattener extends PiMMSwitch<Boolean> {
   public Boolean caseAbstractActor(final AbstractActor actor) {
     if (actor instanceof PiGraph) {
       // Here we handle the replacement of the interfaces by what should be
-      // Copy the actor
-      final PiGraph copyActor = PiMMUserFactory.instance.copyPiGraphWithHistory((PiGraph) actor);
+      // Copy the actor, should we use copyPiGraphWithHistory() instead ?
+      final PiGraph copyActor = PiMMUserFactory.instance.copyWithHistory((PiGraph) actor);
       copyActor.setName(graphPrefix + actor.getName());
       // Add the actor to the graph
       this.result.addActor(copyActor);
