@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<scenario>
+    <files>
+        <algorithm url="/org.ietr.preesm.cluster.scheduler/Algo/hierarchicalApp/hierarchicalGraph.pi"/>
+        <architecture url="/org.ietr.preesm.cluster.scheduler/Archi/1CoreX86.slam"/>
+        <codegenDirectory url=""/>
+    </files>
+    <constraints excelUrl="">
+        <constraintGroup>
+            <operator name="Core0"/>
+            <task name="topGraph/A"/>
+            <task name="topGraph/F"/>
+            <task name="topGraph/H1/B"/>
+            <task name="topGraph/H1"/>
+            <task name="topGraph/H2/C"/>
+            <task name="topGraph/H2/D"/>
+            <task name="topGraph/H2/E"/>
+            <task name="topGraph/H2"/>
+            <task name="topGraph"/>
+        </constraintGroup>
+    </constraints>
+    <timings excelUrl="">
+        <memcpyspeed opname="x86" setuptime="1" timeperunit="0.001"/>
+    </timings>
+    <simuParams>
+        <mainCore>Core0</mainCore>
+        <mainComNode>shared_mem</mainComNode>
+        <averageDataSize>1000</averageDataSize>
+        <dataTypes>
+            <dataType name="void" size="1"/>
+        </dataTypes>
+        <specialVertexOperators>
+            <specialVertexOperator path="Core0"/>
+        </specialVertexOperators>
+    </simuParams>
+    <parameterValues/>
+    <papifyConfigs xmlUrl=""/>
+    <energyConfigs xmlUrl="">
+        <performanceObjective objectiveEPS="0.0"/>
+    </energyConfigs>
+</scenario>

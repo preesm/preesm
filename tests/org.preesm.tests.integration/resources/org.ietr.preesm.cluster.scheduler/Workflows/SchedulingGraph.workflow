@@ -4,7 +4,7 @@
     <dftools:task pluginId="cluster-scheduler" taskId="Cluster Scheduler">
         <dftools:data key="variables">
             <dftools:variable name="Optimization criteria" value="Performance"/>
-            <dftools:variable name="Target" value="Cluster"/>
+            <dftools:variable name="Target" value="Input graph"/>
         </dftools:data>
     </dftools:task>
     <dftools:task pluginId="pisdf-export" taskId="PiSDF-Exporter">
@@ -15,6 +15,8 @@
     </dftools:task>
     <dftools:dataTransfer from="Cluster Scheduler"
         sourceport="PiMM" targetport="PiMM" to="PiSDF-Exporter"/>
+    <dftools:dataTransfer from="scenario" sourceport="scenario"
+        targetport="scenario" to="Cluster Scheduler"/>
     <dftools:dataTransfer from="scenario" sourceport="PiMM"
         targetport="PiMM" to="Cluster Scheduler"/>
 </dftools:workflow>

@@ -11,12 +11,12 @@
             <port annotation="NONE" expr="128" kind="output" name="out"/>
         </node>
         <node id="H1" kind="actor">
-            <data key="graph_desc">Algo/h1.pi</data>
+            <data key="graph_desc">Algo/hierarchicalApp/h1.pi</data>
             <port annotation="NONE" expr="64" kind="input" name="in"/>
             <port annotation="NONE" expr="64" kind="output" name="out"/>
         </node>
         <node id="H2" kind="actor">
-            <data key="graph_desc">Algo/h2.pi</data>
+            <data key="graph_desc">Algo/hierarchicalApp/h2.pi</data>
             <port annotation="NONE" expr="16" kind="input" name="in"/>
             <port annotation="NONE" expr="16" kind="output" name="out"/>
         </node>

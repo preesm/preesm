@@ -18,8 +18,8 @@ import org.junit.runners.Parameterized.Parameters;
 @RunWith(Parameterized.class)
 public class ClusterScheduler {
 
-  static final String[] scenarios = new String[] { "1core.scenario" };
-  static final String[] workflows = new String[] { "SchedulingClusters.workflow" };
+  static final String[] scenarios = new String[] { "1coreFlat.scenario", "1coreHierarchical.scenario" };
+  static final String[] workflows = new String[] { "SchedulingGraph.workflow", "SchedulingCluster.workflow" };
 
   static final String projectName = "org.ietr.preesm.cluster.scheduler";
 
@@ -36,20 +36,16 @@ public class ClusterScheduler {
   */
   @Parameters(name = "{0} - {1}")
   public static Collection<Object[]> data() {
-    final Object[][] params = new Object[workflows.length * scenarios.length][2];
-    int i = 0;
-    for (String workflow : workflows) {
-      for (String scenario : scenarios) {
-        params[i][0] = workflow;
-        params[i][1] = scenario;
-        i++;
-      }
-    }
+    final Object[][] params = new Object[2][2];
+    params[0][0] = workflows[0];
+    params[0][1] = scenarios[0];
+    params[1][0] = workflows[1];
+    params[1][1] = scenarios[1];
     return Arrays.asList(params);
   }
 
   @Test
-  public void testLargeFFT() throws IOException, CoreException {
+  public void testClusterScheduler() throws IOException, CoreException {
     final String workflowFilePathStr = "/Workflows/" + workflow;
     final String scenarioFilePathStr = "/Scenarios/" + scenario;
     final boolean success = WorkflowRunner.runWorkFlow(projectName, workflowFilePathStr, scenarioFilePathStr);
