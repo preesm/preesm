@@ -55,9 +55,11 @@ public class ClusterSchedulerTask extends AbstractTaskImplementation {
   @Override
   public Map<String, Object> execute(Map<String, Object> inputs, Map<String, String> parameters,
       IProgressMonitor monitor, String nodeName, Workflow workflow) {
+
     // Task inputs
     PiGraph inputGraph = (PiGraph) inputs.get("PiMM");
     Scenario scenario = (Scenario) inputs.get("scenario");
+
     // Parameters
     String targetParameter = parameters.get(TARGET_CHOICE);
     String optimizationParameter = parameters.get(OPTIMIZATION_CHOICE);

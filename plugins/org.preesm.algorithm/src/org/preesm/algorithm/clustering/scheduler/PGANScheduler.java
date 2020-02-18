@@ -34,7 +34,6 @@ import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.pisdf.brv.BRVMethod;
 import org.preesm.model.pisdf.brv.PiBRV;
 import org.preesm.model.pisdf.factory.PiMMUserFactory;
-import org.preesm.model.pisdf.util.PiSDFMergeabilty;
 import org.preesm.model.pisdf.util.PiSDFSubgraphBuilder;
 import org.preesm.model.scenario.Scenario;
 import org.preesm.model.slam.ComponentInstance;
@@ -277,7 +276,7 @@ public class PGANScheduler {
       repetitionVector = PiBRV.compute(graph, BRVMethod.LCM);
 
       // Search again for couple to cluster
-      couples = PiSDFMergeabilty.getConnectedCouple(graph, repetitionVector);
+      couples = ClusteringHelper.getClusterizableCouples(graph, repetitionVector, scenario);
     }
 
     return result;
