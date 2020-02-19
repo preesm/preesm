@@ -318,6 +318,12 @@ public class PGANScheduler {
         // Build new cluster
         PiGraph newCluster = new PiSDFSubgraphBuilder(graph, childActors, "cluster_" + clusterId).build();
         newCluster.setClusterValue(true);
+
+        // Add constraint to the cluster
+        for (ComponentInstance component : ClusteringHelper.getListOfCommonComponent(childActors, scenario)) {
+          scenario.getConstraints().addConstraint(component, newCluster);
+        }
+
         // Attached to the new schedule
         hierSchedule.setAttachedActor(newCluster);
       }
