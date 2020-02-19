@@ -12,6 +12,7 @@ import java.util.Set;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.preesm.algorithm.mapper.abc.impl.latency.LatencyAbc;
 import org.preesm.algorithm.mapper.abc.taskscheduling.AbstractTaskSched;
+import org.preesm.algorithm.mapper.abc.taskscheduling.SimpleTaskSched;
 import org.preesm.algorithm.mapper.algo.InitialLists;
 import org.preesm.algorithm.mapper.model.MapperDAG;
 import org.preesm.algorithm.mapper.params.AbcParameters;
@@ -113,6 +114,8 @@ public class PeriodicMappingFromPiMMTask extends AbstractMappingFromDAG {
     }
 
     final LatencyAbc abc = LatencyAbc.getInstance(abcParams, dag, architecture, scenario);
+    final AbstractTaskSched ats = new SimpleTaskSched();
+    abc.setTaskScheduler(ats);
     final Map<DAGVertex, Integer> visitedInputsActors = new HashMap<>();
     final List<DAGVertex> readyToSchedule = new LinkedList<>(sourceActors);
 
@@ -136,8 +139,6 @@ public class PeriodicMappingFromPiMMTask extends AbstractMappingFromDAG {
 
       if (firingToMap != null && ci != null) {
         ExternalMappingFromDAG.mapVertex(abc, ci, firingToMap);
-        System.err.println("Mapping " + firingToMap.getName() + " on " + ci.getInstanceName());
-        System.err.println("Final latency: " + abc.getFinalLatency());
 
         readyToSchedule.remove(firingToMap);
         addReadyFirings(firingToMap, readyToSchedule, visitedInputsActors);
