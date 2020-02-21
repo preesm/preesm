@@ -334,15 +334,6 @@ public class PGANScheduler {
   }
 
   /**
-   * Returns the schedule map.
-   * 
-   * @return Schedule map.
-   */
-  public Map<AbstractActor, Schedule> getScheduleMap() {
-    return scheduleMap;
-  }
-
-  /**
    * Schedule the specified cluster.
    * 
    * @param cluster
