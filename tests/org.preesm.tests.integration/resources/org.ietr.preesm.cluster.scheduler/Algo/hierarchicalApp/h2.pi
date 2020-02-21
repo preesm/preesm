@@ -4,6 +4,7 @@
     <key attr.name="variables" for="graph" id="variables"/>
     <key attr.name="arguments" for="node" id="arguments"/>
     <key attr.name="name" attr.type="string" for="graph"/>
+    <key attr.name="graph_desc" attr.type="string" for="node"/>
     <key attr.name="delay" attr.type="string" for="edge"/>
     <graph cluster="true" edgedefault="directed">
         <data key="name">h2</data>
@@ -14,16 +15,38 @@
             <port annotation="NONE" expr="16" kind="output" name="in"/>
         </node>
         <node id="C" kind="actor">
+            <data key="graph_desc">Code/include/actors.h</data>
+            <loop name="c">
+                <param direction="IN" isConfig="false" name="in" type="void "/>
+                <param direction="OUT" isConfig="false"
+                    name="out" type="void "/>
+            </loop>
             <port annotation="NONE" expr="2" kind="input" name="in"/>
             <port annotation="NONE" expr="1" kind="output" name="out"/>
         </node>
         <node id="D" kind="actor">
+            <data key="graph_desc">Code/include/actors.h</data>
+            <loop name="d_delayed">
+                <param direction="IN" isConfig="false" name="in" type="void "/>
+                <param direction="IN" isConfig="false"
+                    name="in_d" type="void "/>
+                <param direction="OUT" isConfig="false"
+                    name="out_d" type="void "/>
+                <param direction="OUT" isConfig="false"
+                    name="out" type="void "/>
+            </loop>
             <port annotation="NONE" expr="1" kind="input" name="in"/>
             <port annotation="NONE" expr="1" kind="input" name="in_d"/>
             <port annotation="NONE" expr="1" kind="output" name="out"/>
             <port annotation="NONE" expr="1" kind="output" name="out_d"/>
         </node>
         <node id="E" kind="actor">
+            <data key="graph_desc">Code/include/actors.h</data>
+            <loop name="e">
+                <param direction="IN" isConfig="false" name="in" type="void "/>
+                <param direction="OUT" isConfig="false"
+                    name="out" type="void "/>
+            </loop>
             <port annotation="NONE" expr="1" kind="input" name="in"/>
             <port annotation="NONE" expr="1" kind="output" name="out"/>
         </node>

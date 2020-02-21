@@ -4,38 +4,64 @@
     <key attr.name="variables" for="graph" id="variables"/>
     <key attr.name="arguments" for="node" id="arguments"/>
     <key attr.name="name" attr.type="string" for="graph"/>
-    <key attr.name="delay" attr.type="string" for="edge"/>
+    <key attr.name="graph_desc" attr.type="string" for="node"/>
     <graph edgedefault="directed">
         <data key="name">flatApp</data>
         <node id="A" kind="actor">
-            <port annotation="NONE" expr="1000" kind="output" name="out"/>
+            <data key="graph_desc">Code/include/actors.h</data>
+            <loop name="a">
+                <param direction="OUT" isConfig="false"
+                    name="out" type="void "/>
+            </loop>
+            <port annotation="NONE" expr="16" kind="output" name="out"/>
         </node>
         <node id="B" kind="actor">
+            <data key="graph_desc">Code/include/actors.h</data>
+            <loop name="b">
+                <param direction="IN" isConfig="false" name="in" type="void "/>
+                <param direction="OUT" isConfig="false"
+                    name="out" type="void "/>
+            </loop>
             <port annotation="NONE" expr="1" kind="input" name="in"/>
             <port annotation="NONE" expr="2" kind="output" name="out"/>
         </node>
         <node id="C" kind="actor">
+            <data key="graph_desc">Code/include/actors.h</data>
+            <loop name="c">
+                <param direction="IN" isConfig="false" name="in" type="void "/>
+                <param direction="OUT" isConfig="false"
+                    name="out" type="void "/>
+            </loop>
             <port annotation="NONE" expr="2" kind="input" name="in"/>
-            <port annotation="NONE" expr="1" kind="input" name="in_d"/>
             <port annotation="NONE" expr="3" kind="output" name="out"/>
-            <port annotation="NONE" expr="1" kind="output" name="out_d"/>
         </node>
         <node id="D" kind="actor">
+            <data key="graph_desc">Code/include/actors.h</data>
+            <loop name="d">
+                <param direction="IN" isConfig="false" name="in" type="void "/>
+                <param direction="OUT" isConfig="false"
+                    name="out" type="void "/>
+            </loop>
             <port annotation="NONE" expr="3" kind="input" name="in"/>
             <port annotation="NONE" expr="1" kind="output" name="out"/>
         </node>
         <node id="E" kind="actor">
-            <port annotation="NONE" expr="1000" kind="input" name="in"/>
+            <data key="graph_desc">Code/include/actors.h</data>
+            <loop name="e">
+                <param direction="IN" isConfig="false" name="in" type="void "/>
+                <param direction="OUT" isConfig="false"
+                    name="out" type="void "/>
+            </loop>
+            <port annotation="NONE" expr="16" kind="input" name="in"/>
+            <port annotation="NONE" expr="1" kind="output" name="out"/>
         </node>
-        <node expr="1" getter="" id="C_out_d__C_in_d"
-            kind="delay" level="permanent" setter="">
-            <port annotation="NONE" expr="1" kind="input" name="set"/>
-            <port annotation="NONE" expr="1" kind="output" name="get"/>
+        <node id="F" kind="actor">
+            <data key="graph_desc">Code/include/actors.h</data>
+            <loop name="f">
+                <param direction="IN" isConfig="false" name="in" type="void "/>
+            </loop>
+            <port annotation="NONE" expr="1" kind="input" name="in"/>
         </node>
-        <edge expr="1" kind="fifo" source="C" sourceport="out_d"
-            target="C" targetport="in_d" type="void">
-            <data key="delay">C_out_d__C_in_d</data>
-        </edge>
         <edge kind="fifo" source="A" sourceport="out" target="B"
             targetport="in" type="void"/>
         <edge kind="fifo" source="B" sourceport="out" target="C"
@@ -43,6 +69,8 @@
         <edge kind="fifo" source="C" sourceport="out" target="D"
             targetport="in" type="void"/>
         <edge kind="fifo" source="D" sourceport="out" target="E"
+            targetport="in" type="void"/>
+        <edge kind="fifo" source="E" sourceport="out" target="F"
             targetport="in" type="void"/>
     </graph>
 </graphml>

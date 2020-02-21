@@ -3,7 +3,7 @@
     <files>
         <algorithm url="/org.ietr.preesm.cluster.scheduler/Algo/flatApp/flatApp.pi"/>
         <architecture url="/org.ietr.preesm.cluster.scheduler/Archi/4CoreX86.slam"/>
-        <codegenDirectory url=""/>
+        <codegenDirectory url="/org.ietr.preesm.cluster.scheduler/Code/generated"/>
     </files>
     <constraints excelUrl="">
         <constraintGroup>
@@ -12,6 +12,7 @@
             <task name="flatApp/D"/>
             <task name="flatApp"/>
             <task name="flatApp/B"/>
+            <task name="flatApp/E"/>
         </constraintGroup>
         <constraintGroup>
             <operator name="Core1"/>
@@ -19,18 +20,20 @@
             <task name="flatApp/C"/>
             <task name="flatApp/D"/>
             <task name="flatApp"/>
+            <task name="flatApp/E"/>
         </constraintGroup>
         <constraintGroup>
             <operator name="Core2"/>
             <task name="flatApp/B"/>
             <task name="flatApp/C"/>
-            <task name="flatApp/D"/>
             <task name="flatApp"/>
+            <task name="flatApp/D"/>
+            <task name="flatApp/E"/>
         </constraintGroup>
         <constraintGroup>
             <operator name="Core3"/>
             <task name="flatApp/A"/>
-            <task name="flatApp/E"/>
+            <task name="flatApp/F"/>
         </constraintGroup>
     </constraints>
     <timings excelUrl="">

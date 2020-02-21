@@ -19,7 +19,7 @@ import org.junit.runners.Parameterized.Parameters;
 public class ClusterScheduler {
 
   static final String[] scenarios = new String[] { "1coreFlat.scenario", "1coreHierarchical.scenario" };
-  static final String[] workflows = new String[] { "SchedulingGraph.workflow", "SchedulingCluster.workflow" };
+  static final String[] workflows = new String[] { "CodegenGraph.workflow", "CodegenCluster.workflow" };
 
   static final String projectName = "org.ietr.preesm.cluster.scheduler";
 

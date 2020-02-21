@@ -3,7 +3,7 @@
     <files>
         <algorithm url="/org.ietr.preesm.cluster.scheduler/Algo/hierarchicalApp/hierarchicalGraph.pi"/>
         <architecture url="/org.ietr.preesm.cluster.scheduler/Archi/1CoreX86.slam"/>
-        <codegenDirectory url=""/>
+        <codegenDirectory url="/org.ietr.preesm.cluster.scheduler/Code/generated"/>
     </files>
     <constraints excelUrl="">
         <constraintGroup>

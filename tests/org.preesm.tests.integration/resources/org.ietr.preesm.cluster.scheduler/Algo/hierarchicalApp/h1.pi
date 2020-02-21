@@ -4,6 +4,7 @@
     <key attr.name="variables" for="graph" id="variables"/>
     <key attr.name="arguments" for="node" id="arguments"/>
     <key attr.name="name" attr.type="string" for="graph"/>
+    <key attr.name="graph_desc" attr.type="string" for="node"/>
     <graph cluster="true" edgedefault="directed">
         <data key="name">h1</data>
         <node id="in" kind="src">
@@ -13,6 +14,12 @@
             <port annotation="NONE" expr="64" kind="input" name="out"/>
         </node>
         <node id="B" kind="actor">
+            <data key="graph_desc">Code/include/actors.h</data>
+            <loop name="b">
+                <param direction="IN" isConfig="false" name="in" type="void "/>
+                <param direction="OUT" isConfig="false"
+                    name="out" type="void "/>
+            </loop>
             <port annotation="NONE" expr="32" kind="input" name="in"/>
             <port annotation="NONE" expr="32" kind="output" name="out"/>
         </node>
