@@ -2403,11 +2403,12 @@ public class CodegenModelGenerator extends AbstractCodegenModelGenerator {
         if (correspondingEdge == null) {
           final BufferAggregate bufferAggregate = edge.getPropertyBean().getValue(BufferAggregate.propertyBeanName);
           if (bufferAggregate != null && !bufferAggregate.isEmpty()) {
-            final BufferProperties bufferProperties = bufferAggregate.get(0);
-            final String sourceOutputPortID = bufferProperties.getSourceOutputPortID();
-            if (sink.equals(sourceOutputPortID)) {
-              correspondingEdge = edge;
-              break edgeIterate;
+            for (final BufferProperties bufferProperty : bufferAggregate) {
+              final String sourceOutputPortID = bufferProperty.getSourceOutputPortID();
+              if (sink.equals(sourceOutputPortID)) {
+                correspondingEdge = edge;
+                break edgeIterate;
+              }
             }
           }
         }
