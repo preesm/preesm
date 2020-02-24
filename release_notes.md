@@ -27,6 +27,7 @@ PREESM Changelog
 * Fix #268 : uniformize GUI features command order and names 
 * Fix #269 : improve the lookup method by vertex path
 * Fix #273 : BRV computation was not adapted to port rates being 0 (see Changes section)
+* Fix #295 : Check for edge in aggregate buffer was only checking the first buffer (now check in all buffer).
 * Fix evaluation of parameters as numbers.
 
 ## Release version 3.18.2
