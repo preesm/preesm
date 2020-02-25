@@ -303,7 +303,7 @@ class MPPA2ClusterPrinter extends BlankPrinter {
 
 	override printFunctionCall(FunctionCall functionCall) '''
 	«{
-		var gets = ""
+		var gets = "{"
 		var local_offset = 0L;
 		for(param : functionCall.parameters){
 
@@ -318,11 +318,11 @@ class MPPA2ClusterPrinter extends BlankPrinter {
 				}
 				//System.out.print("===> " + b.name + "\n");
 				if(b.name == "Shared"){
-					gets += "	void *" + param.name + " = local_buffer+" + local_offset +";\n";
+					gets += "	void* " + param.name + " = local_buffer+" + local_offset +";\n";
 					if(port.getName == "INPUT"){ /* we get data from DDR -> cluster only when INPUT */
 						gets += "	if(mppa_async_get(local_buffer+" + local_offset + ", &shared_segment, /* Shared + */ " + offset + ", " + param.typeSize * param.size + ", NULL) != 0){\n";
 						gets += "		assert(0 && \"mppa_async_get\\n\");\n";
-						gets += "	}\n";
+						gets += "	}\n ";
 					}
 					local_offset += param.typeSize * param.size;
 					//System.out.print("==> " + b.name + " " + param.name + " size " + param.size + " port_name "+ port.getName + "\n");
@@ -367,6 +367,7 @@ class MPPA2ClusterPrinter extends BlankPrinter {
 		}
 		if(local_offset > local_buffer_size)
 			local_buffer_size = local_offset
+		puts+="}";
 	puts}»
 	'''
 
