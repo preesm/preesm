@@ -314,8 +314,6 @@ class MPPA2ClusterPrinter extends BlankPrinter {
 				}
 			}
 		}
-		if(local_offset > local_buffer_size)
-			local_buffer_size = local_offset
 		puts+="}"
 		return puts;
 	}
