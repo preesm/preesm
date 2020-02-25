@@ -294,7 +294,7 @@ class MPPA2IOPrinter extends MPPA2ClusterPrinter {
 			return printing;
 	}
 
-	override CharSequence generatePreesmHeader() {
+	override CharSequence generatePreesmHeader(List<String> stdLibFiles) {
 	    // 0- without the following class loader initialization, I get the following exception when running as Eclipse
 	    // plugin:
 	    // org.apache.velocity.exception.VelocityException: The specified class for ResourceManager
@@ -319,6 +319,8 @@ class MPPA2IOPrinter extends MPPA2ClusterPrinter {
 			constants = constants.concat("\n\n#ifdef _PREESM_PAPIFY_MONITOR\n#include \"eventLib.h\"\n#endif");
 		}
 	    context.put("CONSTANTS", constants);
+
+		context.put("PREESM_INCLUDES", stdLibFiles.filter[it.endsWith(".h")].map["#include \""+ it +"\""].join("\n"));
 
 	    // 3- init template reader
 	    val String templateLocalPath = "templates/c/preesm_gen.h";
