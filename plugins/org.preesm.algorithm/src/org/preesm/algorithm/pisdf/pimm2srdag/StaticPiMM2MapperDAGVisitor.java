@@ -703,7 +703,7 @@ public class StaticPiMM2MapperDAGVisitor extends PiMMSwitch<Boolean> {
         // Maybe doing the copy is not optimal
         final ArrayList<DAGEdge> allEdges = new ArrayList<>(dag.getAllEdges(source, vertex));
         // if there is only one connection no need to modify anything
-        if ((allEdges.size() == 1) || toRemove.contains(allEdges.get(1))) {
+        if ((allEdges.size() == 1) || toRemove.contains(edge)) {
           continue;
         }
         // Get the first edge
