@@ -17,6 +17,7 @@ PREESM Changelog
 * Adding new API methods to Parameter class to ease the manipulation of the Parameter tree.
 * Adding new API methods for direct access of FunctionPrototype parameters.
 * Cluster attribute of PiGraph is now printed in .pi.
+* Clustering task is now called Cluster Scheduler and can schedule the input graph or only hierarchies marked as cluster.
 * Cluster codegen :
  * MD5 checking can be printed for sink actors contained in a cluster.
  * Parallel Hierarchy with one children is not considered anymore as a section block.
