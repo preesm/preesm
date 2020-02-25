@@ -134,6 +134,8 @@ class MPPA2ClusterPrinter extends BlankPrinter {
 	protected String scratch_pad_buffer = ""
 
 	protected long local_buffer_size = 0
+	
+	protected long local_puts_buffer_size = 0
 
 	override printCoreBlockHeader(CoreBlock block) {
 
@@ -239,17 +241,84 @@ class MPPA2ClusterPrinter extends BlankPrinter {
 	override printClusterBlockHeader(ClusterBlock block) '''
 		// Cluster: «block.name»
 		// Schedule: «block.schedule»
-		«IF block.parallel.equals(true)»
-		#pragma omp parallel sections
-		«ENDIF»
 		{
+			// Asynchronous gets
+			«printAsynchronousGets(block.inBuffers, block.outBuffers)»
 			
 			'''
 
 
 	override printClusterBlockFooter(ClusterBlock block) '''
+			// Asynchronous puts
+			«printAsynchronousPuts(block.outBuffers)»
 		} 
 	'''
+
+	def CharSequence  printAsynchronousGets(List<Buffer> inBuffers, List<Buffer> outBuffers) {
+		var gets = "{"
+		var local_offset = 0L;
+		for(buffer : inBuffers) {
+			if(buffer instanceof SubBuffer) {
+				var b = buffer.container;
+				var offset = buffer.offset;
+				while(b instanceof SubBuffer) {
+					offset += b.offset;
+					b = b.container;
+				}
+				if(b.name == "Shared") {
+					gets += "	void* " + buffer.name + " = local_buffer+" + local_offset +";\n";
+					gets += "	if(mppa_async_get(local_buffer+" + local_offset + ", &shared_segment, /* Shared + */ " + offset + ", " + buffer.typeSize * buffer.size + ", NULL) != 0){\n";
+					gets += "		assert(0 && \"mppa_async_get\\n\");\n";
+					gets += "	}\n ";
+					local_offset += buffer.typeSize * buffer.size;
+				}
+			}
+		}
+		local_puts_buffer_size = local_offset
+		for(buffer : outBuffers) {
+			if(buffer instanceof SubBuffer) {
+				var b = buffer.container;
+				var offset = buffer.offset;
+				while(b instanceof SubBuffer) {
+					offset += b.offset;
+					b = b.container;
+				}
+				if(b.name == "Shared") {
+					gets += "	void* " + buffer.name + " = local_buffer+" + local_offset +";\n";
+					local_offset += buffer.typeSize * buffer.size;
+				}
+			}
+		}
+		gets += "\t"
+		if(local_offset > local_buffer_size)
+			local_buffer_size = local_offset
+		return gets;
+	}
+
+	def CharSequence  printAsynchronousPuts(List<Buffer> buffers) {
+		var puts = ""
+		var local_offset = local_puts_buffer_size;
+		for (buffer : buffers){
+			if (buffer instanceof SubBuffer){
+				var b = buffer.container
+				var offset = buffer.offset
+				while(b instanceof SubBuffer){
+					offset += b.offset;
+					b = b.container;
+				}
+				if(b.name == "Shared"){
+					puts += "	if(mppa_async_put(local_buffer+" + local_offset + ", &shared_segment, /* Shared + */ " + offset + ", " + buffer.typeSize * buffer.size + ", NULL) != 0){\n";
+					puts += "		assert(0 && \"mppa_async_put\\n\");\n";
+					puts += "	}\n";
+					local_offset += buffer.typeSize * buffer.size;
+				}
+			}
+		}
+		if(local_offset > local_buffer_size)
+			local_buffer_size = local_offset
+		puts+="}"
+		return puts;
+	}
 
 	override printSectionBlockHeader(SectionBlock block) '''
 		#pragma omp section

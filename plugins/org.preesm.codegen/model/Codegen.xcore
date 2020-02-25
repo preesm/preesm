@@ -206,6 +206,8 @@ class ClusterBlock extends Block {
 	String schedule
 	boolean parallel
 	boolean containParallelism
+	refers Buffer[] inBuffers
+	refers Buffer[] outBuffers
 }
 
 class SectionBlock extends Block {
