@@ -84,7 +84,8 @@ import org.preesm.workflow.implement.AbstractWorkflowNodeImplementation;
                 effect = "Maximum number of graph cuts induced by the added delays.") }),
         @Parameter(name = AutoDelaysTask.CHOCO_PARAM_NAME,
             values = { @Value(name = AutoDelaysTask.CHOCO_PARAM_VALUE,
-                effect = "Whether or not the cuts should be compared with the best Choco solutions.") }),
+                effect = "Whether or not the cuts should be selected among the best Choco solutions "
+                    + "(disable the heuristic).") }),
         @Parameter(name = AutoDelaysTask.SCHED_PARAM_NAME,
             values = { @Value(name = AutoDelaysTask.SCHED_PARAM_VALUE,
                 effect = "Whether or not a scheduling is attempted at the end.") }),
@@ -221,6 +222,55 @@ public class AutoDelaysTask extends AbstractTaskImplementation {
       hlbd.performAnalysis(graphCopy, brv);
     }
 
+    long duration = System.nanoTime() - time;
+    PreesmLogger.getLogger().info("Analysis time " + Math.round(duration / 1e6) + " ms.");
+
+    output.put(AbstractWorkflowNodeImplementation.KEY_PI_GRAPH, graphCopy);
+
+    final String chocoStr = parameters.get(CHOCO_PARAM_NAME);
+    final boolean choco = Boolean.parseBoolean(chocoStr);
+    if (choco && maxii > 0) {
+      final long time1 = System.nanoTime();
+      final ChocoCutModel ccm = new ChocoCutModel(hlbd, maxii);
+      final List<Map<FifoAbstraction, Integer>> chocoCuts = ccm.generateAndSolveModel();
+      duration = System.nanoTime() - time1;
+      PreesmLogger.getLogger().info("Time of choco model " + Math.round(duration / 1e6) + " ms.");
+      final long time2 = System.nanoTime();
+      Map<FifoAbstraction, Integer> bestDelays = null;
+      long bestLatency = Long.MAX_VALUE;
+      final Level backupLevel = PreesmLogger.getLogger().getLevel();
+      PreesmLogger.getLogger().setLevel(Level.SEVERE);
+      for (Map<FifoAbstraction, Integer> delays : chocoCuts) {
+        setChocoCut(delays, false);
+        final long latency = getLatency(graphCopy, scenario, architecture);
+        if (latency < bestLatency) {
+          bestLatency = latency;
+          bestDelays = delays;
+        }
+        setChocoCut(delays, true);
+      }
+      duration = System.nanoTime() - time2;
+      PreesmLogger.getLogger().setLevel(backupLevel);
+      PreesmLogger.getLogger().info("Time of choco tests " + Math.round(duration / 1e6) + " ms.");
+      if (bestDelays != null) {
+        setChocoCut(bestDelays, false);
+        final StringBuilder sb = new StringBuilder("\nAdded delays by choco:\n");
+        for (Entry<FifoAbstraction, Integer> e : bestDelays.entrySet()) {
+          final FifoAbstraction fa = e.getKey();
+          final AbstractActor src = hlbd.absGraph.getEdgeSource(fa);
+          final AbstractActor tgt = hlbd.absGraph.getEdgeTarget(fa);
+          final int stages = e.getValue();
+          sb.append(stages + " stages from " + src.getName() + " to " + tgt.getName());
+        }
+
+        PreesmLogger.getLogger().info("Best latency found by choco cut: " + bestLatency + sb.toString());
+        if (sched) {
+          printLatency(graphCopy, scenario, architecture);
+        }
+      }
+      return output;
+    }
+
     // intermediate data : forbidden fifos (in cycles), ranks, wcet(rank)
 
     final Set<FifoAbstraction> forbiddenFifos = hlbd.getForbiddenFifos();
@@ -316,48 +366,17 @@ public class AutoDelaysTask extends AbstractTaskImplementation {
       }
 
     }
-    long duration = System.nanoTime() - time;
+    duration = System.nanoTime() - time;
     PreesmLogger.getLogger().info("Time " + Math.round(duration / 1e6) + " ms.");
 
     if (sched) {
       printLatency(graphCopy, scenario, architecture);
     }
 
-    final String chocoStr = parameters.get(CHOCO_PARAM_NAME);
-    final boolean choco = Boolean.parseBoolean(chocoStr);
-    if (choco) {
-      final long time1 = System.nanoTime();
-      final ChocoCutModel ccm = new ChocoCutModel(hlbd, maxii);
-      final List<Map<FifoAbstraction, Integer>> chocoCuts = ccm.generateAndSolveModel();
-      duration = System.nanoTime() - time1;
-      PreesmLogger.getLogger().info("Time of choco model " + Math.round(duration / 1e6) + " ms.");
-      final long time2 = System.nanoTime();
-      Map<FifoAbstraction, Integer> bestDelays = null;
-      long bestLatency = Long.MAX_VALUE;
-      final Level backupLevel = PreesmLogger.getLogger().getLevel();
-      PreesmLogger.getLogger().setLevel(Level.SEVERE);
-      for (Map<FifoAbstraction, Integer> delays : chocoCuts) {
-        setChocoCut(delays);
-        final long latency = getLatency(graphCopy, scenario, architecture);
-        if (latency < bestLatency) {
-          bestLatency = latency;
-          bestDelays = delays;
-        }
-      }
-      duration = System.nanoTime() - time2;
-      PreesmLogger.getLogger().setLevel(backupLevel);
-      PreesmLogger.getLogger().info("Time of choco tests " + Math.round(duration / 1e6) + " ms.");
-      if (bestDelays != null) {
-        setChocoCut(bestDelays);
-        PreesmLogger.getLogger().info("Best latency found by choco cut: " + bestLatency);
-      }
-    }
-
-    output.put(AbstractWorkflowNodeImplementation.KEY_PI_GRAPH, graphCopy);
     return output;
   }
 
-  private static void setChocoCut(Map<FifoAbstraction, Integer> delays) {
+  private static void setChocoCut(final Map<FifoAbstraction, Integer> delays, final boolean reset) {
 
     for (Entry<FifoAbstraction, Integer> e : delays.entrySet()) {
       final FifoAbstraction fa = e.getKey();
@@ -369,7 +388,7 @@ public class AutoDelaysTask extends AbstractTaskImplementation {
         final Fifo f = fifos.get(i);
         long pipeSize = delayMultiplier * pipelineValues.get(i);
         Delay delay = f.getDelay();
-        if (delay == null) {
+        if (delay == null && !reset) {
           delay = PiMMUserFactory.instance.createDelay();
           f.setDelay(delay);
           delay.setName(delay.getId());
@@ -377,7 +396,11 @@ public class AutoDelaysTask extends AbstractTaskImplementation {
           final PiGraph graphFifo = f.getContainingPiGraph();
           graphFifo.addDelay(delay);
         } else {
-          pipeSize += delay.getExpression().evaluate();
+          if (!reset) {
+            pipeSize += delay.getExpression().evaluate();
+          } else {
+            pipeSize = delay.getExpression().evaluate() - pipeSize;
+          }
         }
         delay.setLevel(PersistenceLevel.PERMANENT);
         delay.setExpression(pipeSize);

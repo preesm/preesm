@@ -213,7 +213,7 @@ public class ChocoScheduler extends PeriodicScheduler {
             // update mapping directly
             resultMapping.getMappings().put(va.aa, ECollections.singletonEList(ca.ci));
 
-            System.err.println("Task " + va.aa.getName() + " mapped on core " + j + " at time " + start);
+            PreesmLogger.getLogger().finer("Task " + va.aa.getName() + " mapped on core " + j + " at time " + start);
             // update schedule
             insertTaskInSchedule(t, coreSchedules.get(j));
           }
