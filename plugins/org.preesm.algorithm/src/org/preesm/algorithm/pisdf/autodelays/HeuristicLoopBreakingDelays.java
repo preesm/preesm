@@ -234,6 +234,27 @@ public class HeuristicLoopBreakingDelays {
   }
 
   /**
+   * Computes and returns the set of FiFoAbstraction present in cycles, excluding self-loops.
+   * 
+   * @return FifoAbstraction contained in cycles, excluding self-lops.
+   */
+  public Set<FifoAbstraction> getForbiddenFifos() {
+    final Set<FifoAbstraction> forbiddenFifos = new HashSet<>();
+    for (List<AbstractActor> cycle : cycles) {
+      if (cycle.size() < 2) {
+        continue;
+      }
+      AbstractActor lastA = cycle.get(cycle.size() - 1);
+      for (AbstractActor aa : cycle) {
+        final FifoAbstraction fa = absGraph.getEdge(lastA, aa);
+        forbiddenFifos.add(fa);
+        lastA = aa;
+      }
+    }
+    return forbiddenFifos;
+  }
+
+  /**
    * @return The absGraph used for computation, is computed again at each call of {@link #performAnalysis}
    */
   public DefaultDirectedGraph<AbstractActor, FifoAbstraction> getAbsGraph() {

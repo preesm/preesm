@@ -82,6 +82,9 @@ import org.preesm.workflow.implement.AbstractWorkflowNodeImplementation;
         @Parameter(name = AutoDelaysTask.MAXII_PARAM_NAME,
             values = { @Value(name = AutoDelaysTask.MAXII_PARAM_VALUE,
                 effect = "Maximum number of graph cuts induced by the added delays.") }),
+        @Parameter(name = AutoDelaysTask.CHOCO_PARAM_NAME,
+            values = { @Value(name = AutoDelaysTask.CHOCO_PARAM_VALUE,
+                effect = "Whether or not the cuts should be compared with the best Choco solutions.") }),
         @Parameter(name = AutoDelaysTask.SCHED_PARAM_NAME,
             values = { @Value(name = AutoDelaysTask.SCHED_PARAM_VALUE,
                 effect = "Whether or not a scheduling is attempted at the end.") }),
@@ -99,6 +102,8 @@ public class AutoDelaysTask extends AbstractTaskImplementation {
   public static final String CYCLES_PARAM_VALUE = "false";
   public static final String SCHED_PARAM_NAME   = "Test scheduling ?";
   public static final String SCHED_PARAM_VALUE  = "false";
+  public static final String CHOCO_PARAM_NAME   = "Test best choco ?";
+  public static final String CHOCO_PARAM_VALUE  = "false";
 
   private static final String GENERIC_MAXII_ERROR = "Maximum number of graph cuts must be a positive number, "
       + "instead of: ";
@@ -218,7 +223,7 @@ public class AutoDelaysTask extends AbstractTaskImplementation {
 
     // intermediate data : forbidden fifos (in cycles), ranks, wcet(rank)
 
-    final Set<FifoAbstraction> forbiddenFifos = getForbiddenFifos(hlbd);
+    final Set<FifoAbstraction> forbiddenFifos = hlbd.getForbiddenFifos();
 
     final Set<AbstractActor> sourceActors = new LinkedHashSet<>(hlbd.additionalSourceActors);
     final Set<AbstractActor> sinkActors = new LinkedHashSet<>(hlbd.additionalSinkActors);
@@ -318,8 +323,78 @@ public class AutoDelaysTask extends AbstractTaskImplementation {
       printLatency(graphCopy, scenario, architecture);
     }
 
+    final String chocoStr = parameters.get(CHOCO_PARAM_NAME);
+    final boolean choco = Boolean.parseBoolean(chocoStr);
+    if (choco) {
+      final long time1 = System.nanoTime();
+      final ChocoCutModel ccm = new ChocoCutModel(hlbd, maxii);
+      final List<Map<FifoAbstraction, Integer>> chocoCuts = ccm.generateAndSolveModel();
+      duration = System.nanoTime() - time1;
+      PreesmLogger.getLogger().info("Time of choco model " + Math.round(duration / 1e6) + " ms.");
+      final long time2 = System.nanoTime();
+      Map<FifoAbstraction, Integer> bestDelays = null;
+      long bestLatency = Long.MAX_VALUE;
+      final Level backupLevel = PreesmLogger.getLogger().getLevel();
+      PreesmLogger.getLogger().setLevel(Level.SEVERE);
+      for (Map<FifoAbstraction, Integer> delays : chocoCuts) {
+        setChocoCut(delays);
+        final long latency = getLatency(graphCopy, scenario, architecture);
+        if (latency < bestLatency) {
+          bestLatency = latency;
+          bestDelays = delays;
+        }
+      }
+      duration = System.nanoTime() - time2;
+      PreesmLogger.getLogger().setLevel(backupLevel);
+      PreesmLogger.getLogger().info("Time of choco tests " + Math.round(duration / 1e6) + " ms.");
+      if (bestDelays != null) {
+        setChocoCut(bestDelays);
+        PreesmLogger.getLogger().info("Best latency found by choco cut: " + bestLatency);
+      }
+    }
+
     output.put(AbstractWorkflowNodeImplementation.KEY_PI_GRAPH, graphCopy);
     return output;
+  }
+
+  private static void setChocoCut(Map<FifoAbstraction, Integer> delays) {
+
+    for (Entry<FifoAbstraction, Integer> e : delays.entrySet()) {
+      final FifoAbstraction fa = e.getKey();
+      final int delayMultiplier = e.getValue();
+      final List<Long> pipelineValues = fa.pipelineValues;
+      final List<Fifo> fifos = fa.fifos;
+      final int size = fifos.size();
+      for (int i = 0; i < size; i++) {
+        final Fifo f = fifos.get(i);
+        long pipeSize = delayMultiplier * pipelineValues.get(i);
+        Delay delay = f.getDelay();
+        if (delay == null) {
+          delay = PiMMUserFactory.instance.createDelay();
+          f.setDelay(delay);
+          delay.setName(delay.getId());
+          delay.getActor().setName(delay.getId());
+          final PiGraph graphFifo = f.getContainingPiGraph();
+          graphFifo.addDelay(delay);
+        } else {
+          pipeSize += delay.getExpression().evaluate();
+        }
+        delay.setLevel(PersistenceLevel.PERMANENT);
+        delay.setExpression(pipeSize);
+      }
+    }
+
+  }
+
+  private static long getLatency(PiGraph graph, Scenario scenario, Design architecture) {
+    final PiGraph dag = PiSDFToSingleRate.compute(graph, BRVMethod.LCM);
+    final IScheduler scheduler = new PeriodicScheduler();
+    final SynthesisResult scheduleAndMap = scheduler.scheduleAndMap(dag, architecture, scenario);
+    // use implementation evaluation of PeriodicScheduler instead?
+    final ScheduleOrderManager scheduleOM = new ScheduleOrderManager(dag, scheduleAndMap.schedule);
+    final LatencyCost evaluate = new SimpleLatencyEvaluation().evaluate(dag, architecture, scenario,
+        scheduleAndMap.mapping, scheduleOM);
+    return evaluate.getValue();
   }
 
   private static void printLatency(PiGraph graph, Scenario scenario, Design architecture) {
@@ -385,22 +460,6 @@ public class AutoDelaysTask extends AbstractTaskImplementation {
         delay.setExpression(pipeSize);
       }
     }
-  }
-
-  private static Set<FifoAbstraction> getForbiddenFifos(final HeuristicLoopBreakingDelays hlbd) {
-    final Set<FifoAbstraction> forbiddenFifos = new HashSet<>();
-    for (List<AbstractActor> cycle : hlbd.cycles) {
-      if (cycle.size() < 2) {
-        continue;
-      }
-      AbstractActor lastA = cycle.get(cycle.size() - 1);
-      for (AbstractActor aa : cycle) {
-        final FifoAbstraction fa = hlbd.absGraph.getEdge(lastA, aa);
-        forbiddenFifos.add(fa);
-        lastA = aa;
-      }
-    }
-    return forbiddenFifos;
   }
 
   private static SortedMap<Integer, Set<AbstractActor>> mapRankActors(final Map<AbstractActor, TopoVisit> topoRanks,
@@ -765,6 +824,7 @@ public class AutoDelaysTask extends AbstractTaskImplementation {
     parameters.put(MAXII_PARAM_NAME, MAXII_PARAM_VALUE);
     parameters.put(CYCLES_PARAM_NAME, CYCLES_PARAM_VALUE);
     parameters.put(SCHED_PARAM_NAME, SCHED_PARAM_VALUE);
+    parameters.put(CHOCO_PARAM_NAME, CHOCO_PARAM_VALUE);
     return parameters;
   }
 

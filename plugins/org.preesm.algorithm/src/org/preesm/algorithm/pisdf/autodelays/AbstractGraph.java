@@ -253,4 +253,26 @@ public class AbstractGraph {
     visitPathStack.remove(currentNode);
   }
 
+  /**
+   * Shallow copy of a graph.
+   * 
+   * @param absGraph
+   *          Graph to be copied.
+   * @return Shallow copy of the input.
+   */
+  public static DefaultDirectedGraph<AbstractActor, FifoAbstraction>
+      copyGraph(DefaultDirectedGraph<AbstractActor, FifoAbstraction> absGraph) {
+    final DefaultDirectedGraph<AbstractActor,
+        FifoAbstraction> copyGraph = new DefaultDirectedGraph<>(FifoAbstraction.class);
+    for (AbstractActor aa : absGraph.vertexSet()) {
+      copyGraph.addVertex(aa);
+    }
+    for (FifoAbstraction fa : absGraph.edgeSet()) {
+      AbstractActor src = absGraph.getEdgeSource(fa);
+      AbstractActor tgt = absGraph.getEdgeTarget(fa);
+      copyGraph.addEdge(src, tgt, fa);
+    }
+    return copyGraph;
+  }
+
 }
