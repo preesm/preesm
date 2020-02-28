@@ -123,15 +123,26 @@
          /* = sink rate expression   = */ "(${edge.sinkRateExpression}) * ${edge.size}");
          
     /* == Set the delay on the edge == */
-    spider::api::createDelay(/* = Edge of the delay       = */  edge_${edge.source.name}_${edge.sourcePortName}__${edge.sink.name}_${edge.sinkPortName},
-                             /* = Expression of the delay = */ "(${edge.delayExpression}) * ${edge.size}",
-                             /* = Setter of the delay     = */  $edge.setterDelay,
-                             /* = Setter port ix          = */  $edge.setterPortIx,
-                             /* = Setter rate expression  = */ "(${edge.setterRateExpression}) * ${edge.setterSize}",
-                             /* = Getter of the delay     = */  $edge.getterDelay,
-                             /* = Getter port ix          = */  $edge.getterPortIx,
-                             /* = Getter rate expression  = */ "(${edge.getterRateExpression}) * ${edge.getterSize}");
-                             
+#if( ${edge.isDelayPersistent()} )
+    spider::api::createPersistentDelay(/* = Edge of the delay       = */  edge_${edge.source.name}_${edge.sourcePortName}__${edge.sink.name}_${edge.sinkPortName},
+                                       /* = Expression of the delay = */ "(${edge.delayExpression}) * ${edge.size}");   
+#elseif( ${edge.isDelayLocallyPersistent()} )
+    spider::api::createLocalPersistentDelay(/* = Edge of the delay            = */  edge_${edge.source.name}_${edge.sourcePortName}__${edge.sink.name}_${edge.sinkPortName},
+                                            /* = Expression of the delay      = */ "(${edge.delayExpression}) * ${edge.size}",
+                                            /* = Number of persistence levels = */  edge.delayLevel);                                          
+#elseif( ${edge.delay.isDynamic} )         
+    spider::api::createLocalDelay(/* = Edge of the delay       = */  edge_${edge.source.name}_${edge.sourcePortName}__${edge.sink.name}_${edge.sinkPortName},
+                                  /* = Expression of the delay = */ "(${edge.delayExpression}) * ${edge.size}",
+                                  /* = Setter of the delay     = */  $edge.setterDelay,
+                                  /* = Setter port ix          = */  $edge.setterPortIx,
+                                  /* = Setter rate expression  = */ "(${edge.setterRateExpression}) * ${edge.setterSize}",
+                                  /* = Getter of the delay     = */  $edge.getterDelay,
+                                  /* = Getter port ix          = */  $edge.getterPortIx,
+                                  /* = Getter rate expression  = */ "(${edge.getterRateExpression}) * ${edge.getterSize}");                                          
+#else         
+    spider::api::createLocalDelay(/* = Edge of the delay       = */  edge_${edge.source.name}_${edge.sourcePortName}__${edge.sink.name}_${edge.sinkPortName},
+                                  /* = Expression of the delay = */ "(${edge.delayExpression}) * ${edge.size}");
+#end                          
 #else
     spider::api::createEdge(/* = Source vertex          = */  vertex_$edge.source.name,
                             /* = Source port ix         = */  $edge.sourceIx,

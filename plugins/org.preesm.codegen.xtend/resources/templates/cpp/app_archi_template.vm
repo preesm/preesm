@@ -3,7 +3,7 @@
  *
  * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2018)
  * Clément Guy <clement.guy@insa-rennes.fr> (2014)
- * Florian Arrestier <florian.arrestier@insa-rennes.fr> (2017-2019)
+ * Florian Arrestier <florian.arrestier@insa-rennes.fr> (2017-2020)
  * Hugo Miomandre <hugo.miomandre@insa-rennes.fr> (2017)
  * Julien Heulot <julien.heulot@insa-rennes.fr> (2013 - 2015)
  * Yaset Oliva <yaset.oliva@insa-rennes.fr> (2013 - 2014)
@@ -54,15 +54,12 @@ void spider::createUserPhysicalPlatform() {
     /* == Creates the main platform == */
     spider::api::createPlatform(CLUSTER_COUNT, PE_COUNT);
 #foreach ($cluster in $clusters)
-
-    /* == Creates the cluster MemoryUnit == */
-    auto *${cluster.name}MemoryUnit = spider::api::createMemoryUnit(${cluster.memoryUnitSize});
     
     /* == Creates the intra MemoryInterface of the cluster == */
-    auto *${cluster.name}MemoryInterface = spider::api::createMemoryInterface(${cluster.name}MemoryUnit);
+    auto *${cluster.name}MemoryInterface = spider::api::createMemoryInterface(${cluster.memoryUnitSize});
     
     /* == Creates the actual Cluster == */
-    auto *${cluster.name}Cluster = spider::api::createCluster(${cluster.peCount}, ${cluster.name}MemoryUnit, ${cluster.name}MemoryInterface);
+    auto *${cluster.name}Cluster = spider::api::createCluster(${cluster.peCount}, ${cluster.name}MemoryInterface);
     
     /* == Creates the processing element(s) of the cluster == */
 #foreach ($pe in ${cluster.processingElements})
