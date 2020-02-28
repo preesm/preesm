@@ -357,6 +357,8 @@ public class AutoDelaysTask extends AbstractTaskImplementation {
     final long time2 = System.nanoTime();
     Map<FifoAbstraction, Integer> bestDelays = null;
     long bestLatency = Long.MAX_VALUE;
+    long bestMemory = Long.MAX_VALUE;
+    long worstLatency = 0;
     final Level backupLevel = PreesmLogger.getLogger().getLevel();
     PreesmLogger.getLogger().setLevel(Level.SEVERE);
     // for (Map<FifoAbstraction, Integer> delays : chocoCuts) {
@@ -369,6 +371,15 @@ public class AutoDelaysTask extends AbstractTaskImplementation {
       if (latency < bestLatency) {
         bestLatency = latency;
         bestDelays = delays;
+      } else if (latency == bestLatency) {
+        long memCost = getCutMemoryCost(delays.keySet(), scenario);
+        if (memCost < bestMemory) {
+          bestLatency = latency;
+          bestDelays = delays;
+        }
+      }
+      if (latency > worstLatency) {
+        worstLatency = latency;
       }
       setChocoCut(delays, true);
       if (nbCutsTested % 1000 == 0) {
@@ -387,10 +398,11 @@ public class AutoDelaysTask extends AbstractTaskImplementation {
         final AbstractActor src = hlbd.absGraph.getEdgeSource(fa);
         final AbstractActor tgt = hlbd.absGraph.getEdgeTarget(fa);
         final int stages = e.getValue();
-        sb.append(stages + " stages from " + src.getName() + " to " + tgt.getName());
+        sb.append(stages + " stages from " + src.getName() + " to " + tgt.getName() + "\n");
       }
 
       PreesmLogger.getLogger().info("Best latency found by choco cut: " + bestLatency + sb.toString());
+      PreesmLogger.getLogger().info("Worst latency found by choco cut: " + worstLatency);
     }
 
   }
