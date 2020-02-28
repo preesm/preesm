@@ -199,18 +199,7 @@ public class AutoDelaysTask extends AbstractTaskImplementation {
         ds.addValue(wcet);
       }
     }
-    final long maxWCET = Math.round(ds.getMax());
-    final long percentMax = Math.round((ds.getMax() / ds.getSum()) * 100);
-    PreesmLogger.getLogger().log(Level.FINE,
-        "Max WCET is " + maxWCET + " and represents " + percentMax + "% of the total.");
-    final long meanWCET = Math.round(ds.getMean());
-    final long percentMean = Math.round((ds.getMean() / ds.getSum()) * 100);
-    PreesmLogger.getLogger().log(Level.FINE,
-        "Mean WCET is " + meanWCET + " and represents " + percentMean + "% of the total.");
-    final long standardDeviation = Math.round(ds.getStandardDeviation());
-    final long percentSD = Math.round((ds.getStandardDeviation() / ds.getSum()) * 100);
-    PreesmLogger.getLogger().log(Level.FINE,
-        "Standard deviation of WCET is " + standardDeviation + " and represents " + percentSD + "% of the total.");
+    printWCETstatistics(ds);
 
     final HeuristicLoopBreakingDelays hlbd = new HeuristicLoopBreakingDelays();
     hlbd.performAnalysis(graphCopy, brv);
@@ -230,43 +219,10 @@ public class AutoDelaysTask extends AbstractTaskImplementation {
     final String chocoStr = parameters.get(CHOCO_PARAM_NAME);
     final boolean choco = Boolean.parseBoolean(chocoStr);
     if (choco && maxii > 0) {
-      final long time1 = System.nanoTime();
-      final ChocoCutModel ccm = new ChocoCutModel(hlbd, maxii);
-      final List<Map<FifoAbstraction, Integer>> chocoCuts = ccm.generateAndSolveModel();
-      duration = System.nanoTime() - time1;
-      PreesmLogger.getLogger().info("Time of choco model " + Math.round(duration / 1e6) + " ms.");
-      final long time2 = System.nanoTime();
-      Map<FifoAbstraction, Integer> bestDelays = null;
-      long bestLatency = Long.MAX_VALUE;
-      final Level backupLevel = PreesmLogger.getLogger().getLevel();
-      PreesmLogger.getLogger().setLevel(Level.SEVERE);
-      for (Map<FifoAbstraction, Integer> delays : chocoCuts) {
-        setChocoCut(delays, false);
-        final long latency = getLatency(graphCopy, scenario, architecture);
-        if (latency < bestLatency) {
-          bestLatency = latency;
-          bestDelays = delays;
-        }
-        setChocoCut(delays, true);
-      }
-      duration = System.nanoTime() - time2;
-      PreesmLogger.getLogger().setLevel(backupLevel);
-      PreesmLogger.getLogger().info("Time of choco tests " + Math.round(duration / 1e6) + " ms.");
-      if (bestDelays != null) {
-        setChocoCut(bestDelays, false);
-        final StringBuilder sb = new StringBuilder("\nAdded delays by choco:\n");
-        for (Entry<FifoAbstraction, Integer> e : bestDelays.entrySet()) {
-          final FifoAbstraction fa = e.getKey();
-          final AbstractActor src = hlbd.absGraph.getEdgeSource(fa);
-          final AbstractActor tgt = hlbd.absGraph.getEdgeTarget(fa);
-          final int stages = e.getValue();
-          sb.append(stages + " stages from " + src.getName() + " to " + tgt.getName());
-        }
 
-        PreesmLogger.getLogger().info("Best latency found by choco cut: " + bestLatency + sb.toString());
-        if (sched) {
-          printLatency(graphCopy, scenario, architecture);
-        }
+      executeChocoModel(graphCopy, architecture, scenario, maxii, hlbd);
+      if (sched) {
+        printLatency(graphCopy, scenario, architecture);
       }
       return output;
     }
@@ -374,6 +330,69 @@ public class AutoDelaysTask extends AbstractTaskImplementation {
     }
 
     return output;
+  }
+
+  private static void printWCETstatistics(DescriptiveStatistics ds) {
+    final long maxWCET = Math.round(ds.getMax());
+    final long percentMax = Math.round((ds.getMax() / ds.getSum()) * 100);
+    PreesmLogger.getLogger().log(Level.FINE,
+        "Max WCET is " + maxWCET + " and represents " + percentMax + "% of the total.");
+    final long meanWCET = Math.round(ds.getMean());
+    final long percentMean = Math.round((ds.getMean() / ds.getSum()) * 100);
+    PreesmLogger.getLogger().log(Level.FINE,
+        "Mean WCET is " + meanWCET + " and represents " + percentMean + "% of the total.");
+    final long standardDeviation = Math.round(ds.getStandardDeviation());
+    final long percentSD = Math.round((ds.getStandardDeviation() / ds.getSum()) * 100);
+    PreesmLogger.getLogger().log(Level.FINE,
+        "Standard deviation of WCET is " + standardDeviation + " and represents " + percentSD + "% of the total.");
+  }
+
+  private static void executeChocoModel(final PiGraph graphCopy, final Design architecture, final Scenario scenario,
+      final int maxii, final HeuristicLoopBreakingDelays hlbd) {
+    // final long time1 = System.nanoTime();
+    final ChocoCutModel ccm = new ChocoCutModel(hlbd, maxii);
+    // final List<Map<FifoAbstraction, Integer>> chocoCuts = ccm.findAllCuts();
+    // long duration = System.nanoTime() - time1;
+    // PreesmLogger.getLogger().info("Time of choco model " + Math.round(duration / 1e6) + " ms.");
+    final long time2 = System.nanoTime();
+    Map<FifoAbstraction, Integer> bestDelays = null;
+    long bestLatency = Long.MAX_VALUE;
+    final Level backupLevel = PreesmLogger.getLogger().getLevel();
+    PreesmLogger.getLogger().setLevel(Level.SEVERE);
+    // for (Map<FifoAbstraction, Integer> delays : chocoCuts) {
+    long nbCutsTested = 0;
+    Map<FifoAbstraction, Integer> delays = null;
+    while ((delays = ccm.findNextCut()) != null) {
+      nbCutsTested++;
+      setChocoCut(delays, false);
+      final long latency = getLatency(graphCopy, scenario, architecture);
+      if (latency < bestLatency) {
+        bestLatency = latency;
+        bestDelays = delays;
+      }
+      setChocoCut(delays, true);
+      if (nbCutsTested % 1000 == 0) {
+        System.err.println("1000 cuts tested.");
+      }
+    }
+    long duration = System.nanoTime() - time2;
+    PreesmLogger.getLogger().setLevel(backupLevel);
+    PreesmLogger.getLogger().info("Number of cuts tested: " + nbCutsTested);
+    PreesmLogger.getLogger().info("Time of choco tests " + Math.round(duration / 1e6) + " ms.");
+    if (bestDelays != null) {
+      setChocoCut(bestDelays, false);
+      final StringBuilder sb = new StringBuilder("\nAdded delays by choco:\n");
+      for (Entry<FifoAbstraction, Integer> e : bestDelays.entrySet()) {
+        final FifoAbstraction fa = e.getKey();
+        final AbstractActor src = hlbd.absGraph.getEdgeSource(fa);
+        final AbstractActor tgt = hlbd.absGraph.getEdgeTarget(fa);
+        final int stages = e.getValue();
+        sb.append(stages + " stages from " + src.getName() + " to " + tgt.getName());
+      }
+
+      PreesmLogger.getLogger().info("Best latency found by choco cut: " + bestLatency + sb.toString());
+    }
+
   }
 
   private static void setChocoCut(final Map<FifoAbstraction, Integer> delays, final boolean reset) {
@@ -654,7 +673,7 @@ public class AutoDelaysTask extends AbstractTaskImplementation {
     int lastLoadIndex = 1;
     long currentLoad = 0;
     for (Entry<Integer, Long> e : rankWCETs.entrySet()) {
-      if (currentLoad >= avgCutLoad * lastLoadIndex && currentLoad <= maxLoad) {
+      if (currentLoad >= avgCutLoad * lastLoadIndex && (currentLoad <= maxLoad || preSelectedRanks.isEmpty())) {
         int rank = e.getKey();
         if (!cuts.getOrDefault(rank, new HashSet<>()).isEmpty()) {
           preSelectedRanks.add(rank);
@@ -672,7 +691,7 @@ public class AutoDelaysTask extends AbstractTaskImplementation {
     currentLoad = 0;
     for (Entry<Integer, Long> e : rankWCETsT.entrySet()) {
       currentLoad += e.getValue();
-      if (currentLoad >= avgCutLoad * lastLoadIndex && currentLoad <= maxLoad) {
+      if (currentLoad >= avgCutLoad * lastLoadIndex && (currentLoad <= maxLoad || preSelectedRanks.size() < 2)) {
         int rank = e.getKey();
         if (!cuts.getOrDefault(rank, new HashSet<>()).isEmpty()) {
           preSelectedRanks.add(rank);
@@ -706,9 +725,24 @@ public class AutoDelaysTask extends AbstractTaskImplementation {
     }
 
     bestCuts.sort(new CutSizeComparator());
-    // remove cuts that are too close from each other
-    // may happen between cuts from topo and cuts from topoT
-    if (!bestCuts.isEmpty()) {
+
+    if (bestCuts.size() > 1 && nbSelec == 1) {
+      // selects cut which is closer to the midle
+      CutInformation bestCut = null;
+      long bestCutValue = 0;
+      for (CutInformation ci : bestCuts) {
+        long wcetDiff = Math.abs(avgCutLoad - getIntermediateWeightedWCET(1, ci.rank, rankWCETs));
+        if (bestCut == null || wcetDiff < bestCutValue) {
+          bestCut = ci;
+          bestCutValue = wcetDiff;
+        }
+      }
+      bestCuts.clear();
+      bestCuts.add(bestCut);
+
+    } else if (!bestCuts.isEmpty()) {
+      // remove cuts that are too close from each other
+      // may happen between cuts from topo and cuts from topoT
       CutSizeComparator csc = new CutSizeComparator();
       Set<CutInformation> cisToRemove = new HashSet<>();
       final int bcSize = bestCuts.size();

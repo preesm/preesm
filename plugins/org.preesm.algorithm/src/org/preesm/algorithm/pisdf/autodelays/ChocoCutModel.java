@@ -27,9 +27,13 @@ public class ChocoCutModel {
   private final Map<AbstractActor, Integer>                          mapVertices;
   private final Map<FifoAbstraction, Integer>                        mapEdges;
 
-  protected final Model  model;
+  private final Model    model;
   private final IntVar[] vertexDelays;
   private final IntVar[] edgeDelays;
+  private final Solver   solver;
+
+  public static final long TIMEOUT      = 3600000L; // 1h in ms
+  public static final long MAXSOLUTIONS = 1000000L;
 
   /**
    * Initializes the Choco model.
@@ -103,26 +107,24 @@ public class ChocoCutModel {
     model.max(maxActorDelay, vertexDelays).post();
     model.arithm(maxActorDelay, "=", nbStages).post();
 
+    // set solver
+    solver = model.getSolver();
+    solver.limitTime(TIMEOUT);
+    solver.limitSolution(MAXSOLUTIONS);
+
   }
 
   /**
    * Computes all solutions
    */
-  public List<Map<FifoAbstraction, Integer>> generateAndSolveModel() {
-    final Solver solver = model.getSolver();
-
-    final int timeout = 3600000; // 1h in ms
-    solver.limitTime(timeout);
-    final int maxSolutions = 100000;
-    solver.limitSolution(maxSolutions);
-
+  public List<Map<FifoAbstraction, Integer>> findAllCuts() {
     final List<Solution> solutions = solver.findAllSolutions();
 
     if (solver.isStopCriterionMet()) {
-      if (solutions.size() == maxSolutions) {
-        PreesmLogger.getLogger().warning("Reached MAX SOLUIONS: " + maxSolutions);
+      if (solutions.size() == MAXSOLUTIONS) {
+        PreesmLogger.getLogger().warning("Reached MAX SOLUIONS: " + MAXSOLUTIONS);
       } else {
-        PreesmLogger.getLogger().warning("Reached TIME OUT: " + timeout + " ms");
+        PreesmLogger.getLogger().warning("Reached TIME OUT: " + TIMEOUT + " ms");
       }
     }
     PreesmLogger.getLogger().info("Number of cuts found by Choco: " + solutions.size());
@@ -140,6 +142,35 @@ public class ChocoCutModel {
       result.add(delays);
     }
     return result;
+  }
+
+  /**
+   * Computes next solution
+   */
+  public Map<FifoAbstraction, Integer> findNextCut() {
+
+    final boolean found = solver.solve();
+
+    if (solver.isStopCriterionMet()) {
+      PreesmLogger.getLogger().warning("Reached TIME OUT or MAX_SOLUTIONS");
+      return null;
+    }
+
+    Solution sol = null;
+    if (found) {
+      sol = new Solution(model).record();
+    } else {
+      return null; // all solutions have been found
+    }
+
+    Map<FifoAbstraction, Integer> cut = new HashMap<>();
+    for (FifoAbstraction fa : dag.edgeSet()) {
+      final int delay = sol.getIntVal(edgeDelays[mapEdges.get(fa)]);
+      if (delay > 0) {
+        cut.put(fa, delay);
+      }
+    }
+    return cut;
   }
 
 }
