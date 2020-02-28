@@ -83,7 +83,13 @@ public class Spider2PreProcessVisitor extends PiMMSwitch<Boolean> {
   private final Map<PiGraph, Set<Spider2CodegenActor>> actorsMap = new LinkedHashMap<>();
 
   /** The unique refinement loop List */
+  private final List<String> uniqueLoopHeaderFileNameList = new ArrayList<>();
+
+  /** The unique refinement loop List */
   private final List<CHeaderRefinement> uniqueLoopHeaderList = new ArrayList<>();
+
+  /** The unique refinement loop List */
+  private final List<String> uniqueLoopProtoypeNameList = new ArrayList<>();
 
   /** The unique prototype loop List */
   private final List<Spider2CodegenPrototype> uniqueLoopProtoypeList = new ArrayList<>();
@@ -216,6 +222,10 @@ public class Spider2PreProcessVisitor extends PiMMSwitch<Boolean> {
    * 
    * @return list of all unique loop CHeaderRefinement
    */
+  public List<String> getUniqueHeaderFileNameList() {
+    return this.uniqueLoopHeaderFileNameList;
+  }
+
   public List<CHeaderRefinement> getUniqueLoopHeaderList() {
     return this.uniqueLoopHeaderList;
   }
@@ -338,8 +348,17 @@ public class Spider2PreProcessVisitor extends PiMMSwitch<Boolean> {
 
     /* Extract the dynamic dependent parameters */
     final List<Parameter> dynamicParameterPool = graph.getParameters().stream()
-        .filter(x -> x.isDependent() && !x.isLocallyStatic()).collect(Collectors.toList());
-    dynamicDependentParametersMap.put(graph, getOrderedDependentParameter(dynamicParametersList, dynamicParameterPool));
+        .filter(x -> x.isDependent() && !x.isConfigurable()).collect(Collectors.toList());
+
+    /*
+     * We need to ad also the static parameters because a dynamic parameters can inherit from both a dynamic and a
+     * static parameter
+     */
+    final List<Parameter> dynamicParameterInitList = new ArrayList<>(dynamicParametersList);
+    dynamicParameterInitList.addAll(staticParametersList);
+    dynamicParameterInitList.addAll(staticDependentParametersMap.get(graph));
+    dynamicDependentParametersMap.put(graph,
+        getOrderedDependentParameter(dynamicParameterInitList, dynamicParameterPool));
   }
 
   /**
@@ -442,17 +461,28 @@ public class Spider2PreProcessVisitor extends PiMMSwitch<Boolean> {
 
   @Override
   public Boolean caseActor(final Actor actor) {
+    /* Set the type */
+    final String type = actor.isConfigurationActor() ? "CONFIG" : "NORMAL";
     this.actorsMap.get(actor.getContainingPiGraph())
-        .add(new Spider2CodegenActor("NORMAL", actor, this.scenario, this.clusterList));
+        .add(new Spider2CodegenActor(type, actor, this.scenario, this.clusterList));
+
+    /* Set the refinement */
     if (!(actor.getRefinement() instanceof CHeaderRefinement)) {
       PreesmLogger.getLogger().warning("Actor [" + actor.getName() + "] doesn't have correct refinement.");
     } else {
       CHeaderRefinement refinement = (CHeaderRefinement) (actor.getRefinement());
       if (!this.uniqueLoopHeaderList.contains(refinement)) {
         this.uniqueLoopHeaderList.add(refinement);
+      }
+      if (!this.uniqueLoopHeaderFileNameList.contains(refinement.getFileName())) {
+        this.uniqueLoopHeaderFileNameList.add(refinement.getFileName());
+      }
+      final String loopName = refinement.getLoopPrototype().getName();
+      if (!this.uniqueLoopProtoypeNameList.contains(loopName)) {
+        this.uniqueLoopProtoypeNameList.add(loopName);
         this.uniqueLoopProtoypeList.add(new Spider2CodegenPrototype(refinement));
       }
-      this.actorToLoopFctMap.put(actor, this.uniqueLoopHeaderList.indexOf(refinement));
+      this.actorToLoopFctMap.put(actor, this.uniqueLoopProtoypeNameList.indexOf(loopName));
     }
     return true;
   }

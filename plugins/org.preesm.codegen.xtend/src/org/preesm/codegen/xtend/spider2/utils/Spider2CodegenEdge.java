@@ -15,6 +15,7 @@ import org.preesm.model.pisdf.Fifo;
 import org.preesm.model.pisdf.FunctionArgument;
 import org.preesm.model.pisdf.FunctionPrototype;
 import org.preesm.model.pisdf.Parameter;
+import org.preesm.model.pisdf.PersistenceLevel;
 import org.preesm.model.scenario.SimulationInfo;
 
 /**
@@ -271,6 +272,27 @@ public class Spider2CodegenEdge {
    */
   public Delay getDelay() {
     return this.delay;
+  }
+
+  /**
+   * @return Number of level of persistence of the delay.
+   */
+  public Integer getDelayLevel() {
+    return 1;
+  }
+
+  /**
+   * @return true if delay is permanent, false else.
+   */
+  public boolean isDelayPersistent() {
+    return this.delay.getLevel().equals(PersistenceLevel.PERMANENT);
+  }
+
+  /**
+   * @return true if delay is locally persisten, false else.
+   */
+  public boolean isDelayLocallyPersistent() {
+    return this.delay.getLevel().equals(PersistenceLevel.LOCAL);
   }
 
   /**

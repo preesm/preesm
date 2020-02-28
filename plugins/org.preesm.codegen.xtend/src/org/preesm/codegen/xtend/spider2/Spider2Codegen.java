@@ -134,6 +134,9 @@ public class Spider2Codegen {
 
     final File folderCMake = new File(codegenDirectoryPath + "cmake/modules");
     folderCMake.mkdirs();
+
+    final File folderBin = new File(codegenDirectoryPath + "bin/");
+    folderBin.mkdirs();
   }
 
   /**
@@ -300,10 +303,7 @@ public class Spider2Codegen {
     final Set<PiGraph> graphSet = new HashSet<PiGraph>(this.preprocessor.getUniqueGraphSet());
     graphSet.remove(this.applicationGraph);
     context.put("graphs", graphSet);
-    final List<CHeaderRefinement> refinements = this.preprocessor.getUniqueLoopHeaderList();
-    final Set<String> fileNames = new HashSet<>();
-    refinements.forEach(x -> fileNames.add(x.getFileName()));
-    context.put("fileNames", fileNames);
+    context.put("fileNames", this.preprocessor.getUniqueHeaderFileNameList());
     context.put("prototypes", this.preprocessor.getUniqueLoopPrototypeList());
     context.put("clusters", this.preprocessor.getClusterList());
 
@@ -364,7 +364,6 @@ public class Spider2Codegen {
     context.put("dependentDynamicParameters", this.preprocessor.getDynamicDependentParameters(graph));
     context.put("inputInterfaces", graph.getDataInputPorts());
     context.put("outputInterfaces", graph.getDataOutputPorts());
-    context.put("refinements", this.preprocessor.getUniqueLoopHeaderList());
     context.put("actors", this.preprocessor.getActorSet(graph));
     context.put("subgraphsAndParameters", this.generateSubgraphsAndParametersList(graph));
     context.put("edges", this.preprocessor.getEdgeSet(graph));
