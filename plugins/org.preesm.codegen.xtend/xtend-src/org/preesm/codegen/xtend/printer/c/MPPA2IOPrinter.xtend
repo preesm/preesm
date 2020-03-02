@@ -152,94 +152,94 @@ class MPPA2IOPrinter extends MPPA2ClusterPrinter {
 	 	IS_HIERARCHICAL = true
 	"\t"}»
 	{ // Begin the hierarchical actor
-		«{
-		var gets = ""
-		var local_offset = 0L;
-			/* go through eventual out param first because of foot FiniteLoopBlock */
-			for(param : block2.outBuffers){
-				var b = param.container;
-				var offset = param.offset;
-				while(b instanceof SubBuffer){
-					offset += b.offset;
-					b = b.container;
-				}
-				/* put out buffer here */
-				if(b.name == "Shared"){
-					gets += "void *" + param.name + " = local_buffer+" + local_offset +";\n";
-					local_offset += param.typeSize * param.size;
-				}
-			}
-			for(param : block2.inBuffers){
-				var b = param.container;
-				var offset = param.offset;
-				while(b instanceof SubBuffer){
-					offset += b.offset;
-					b = b.container;
-				}
-				//System.out.print("===> " + b.name + "\n");
-				if(b.name == "Shared"){
-					gets += "void *" + param.name + " = local_buffer+" + local_offset +";\n";
-					gets += "	{\n"
-					gets += "		if(mppa_async_get(local_buffer + " + local_offset + ",";
-					gets += " &shared_segment,";
-					//gets += "	" + b.name + " + " + offset + ",\n";
-					gets += " /* Shared + */ " + offset + ",";
-					gets += " " + param.typeSize * param.size + ",";
-					gets += " NULL) != 0){\n";
-					gets += "			assert(0 && \"mppa_async_get\\n\");\n";
-					gets += "		}\n";
-					gets += "	}\n"
-					local_offset += param.typeSize * param.size;
-					//System.out.print("==> " + b.name + " " + param.name + " size " + param.size + " port_name "+ port.getName + "\n");
-				}
-			}
-
-			gets += "int " + block2.iter.name + ";\n"
-			if(block2.nbIter > 1 && this.sharedOnly == 0){
-				gets += "#pragma omp parallel for private(" + block2.iter.name + ")\n"
-			}
-			gets += "for(" + block2.iter.name + "=0;" + block2.iter.name +"<" + block2.nbIter + ";" + block2.iter.name + "++) {"
-
-			if(local_offset > local_buffer_size)
-				local_buffer_size = local_offset
-	gets}»
-			
+«««		«{
+«««		var gets = ""
+«««		var local_offset = 0L;
+«««			/* go through eventual out param first because of foot FiniteLoopBlock */
+«««			for(param : block2.outBuffers){
+«««				var b = param.container;
+«««				var offset = param.offset;
+«««				while(b instanceof SubBuffer){
+«««					offset += b.offset;
+«««					b = b.container;
+«««				}
+«««				/* put out buffer here */
+«««				if(b.name == "Shared"){
+«««					gets += "void *" + param.name + " = local_buffer+" + local_offset +";\n";
+«««					local_offset += param.typeSize * param.size;
+«««				}
+«««			}
+«««			for(param : block2.inBuffers){
+«««				var b = param.container;
+«««				var offset = param.offset;
+«««				while(b instanceof SubBuffer){
+«««					offset += b.offset;
+«««					b = b.container;
+«««				}
+«««				//System.out.print("===> " + b.name + "\n");
+«««				if(b.name == "Shared"){
+«««					gets += "void *" + param.name + " = local_buffer+" + local_offset +";\n";
+«««					gets += "	{\n"
+«««					gets += "		if(mppa_async_get(local_buffer + " + local_offset + ",";
+«««					gets += " &shared_segment,";
+«««					//gets += "	" + b.name + " + " + offset + ",\n";
+«««					gets += " /* Shared + */ " + offset + ",";
+«««					gets += " " + param.typeSize * param.size + ",";
+«««					gets += " NULL) != 0){\n";
+«««					gets += "			assert(0 && \"mppa_async_get\\n\");\n";
+«««					gets += "		}\n";
+«««					gets += "	}\n"
+«««					local_offset += param.typeSize * param.size;
+«««					//System.out.print("==> " + b.name + " " + param.name + " size " + param.size + " port_name "+ port.getName + "\n");
+«««				}
+«««			}
+«««
+«««			gets += "int " + block2.iter.name + ";\n"
+«««			if(block2.nbIter > 1 && this.sharedOnly == 0){
+«««				gets += "#pragma omp parallel for private(" + block2.iter.name + ")\n"
+«««			}
+«««			gets += "for(" + block2.iter.name + "=0;" + block2.iter.name +"<" + block2.nbIter + ";" + block2.iter.name + "++) {"
+«««
+«««			if(local_offset > local_buffer_size)
+«««				local_buffer_size = local_offset
+«««	gets}»
+«««			
 			'''
 
 	override printFiniteLoopBlockFooter(FiniteLoopBlock block2) '''
 			}// End the for loop
-		«{
-				var puts = ""
-				var local_offset = 0L;
-				for(param : block2.outBuffers){
-					var b = param.container
-					var offset = param.offset
-					while(b instanceof SubBuffer){
-						offset += b.offset;
-						b = b.container;
-						//System.out.print("Running through all buffer " + b.name + "\n");
-					}
-					//System.out.print("===> " + b.name + "\n");
-					if(b.name == "Shared"){
-						puts += "	{\n"
-						puts += "		if(mppa_async_put(local_buffer + " + local_offset + ",";
-						puts += " &shared_segment,";
-						puts += " /* Shared + */" + offset + ",";
-						puts += " " + param.typeSize * param.size + ",";
-						puts += " NULL) != 0){\n";
-						puts += "			assert(0 && \"mppa_async_put\\n\");\n";
-						puts += "		}\n";
-						puts += "	}\n"
-						local_offset += param.typeSize * param.size;
-						//System.out.print("==> " + b.name + " " + param.name + " size " + param.size + " port_name "+ port.getName + "\n");
-					}
-				}
-				if(local_offset > local_buffer_size)
-					local_buffer_size = local_offset
-			puts}»
-		«{
-			 	IS_HIERARCHICAL = false
-			""}»
+«««		«{
+«««				var puts = ""
+«««				var local_offset = 0L;
+«««				for(param : block2.outBuffers){
+«««					var b = param.container
+«««					var offset = param.offset
+«««					while(b instanceof SubBuffer){
+«««						offset += b.offset;
+«««						b = b.container;
+«««						//System.out.print("Running through all buffer " + b.name + "\n");
+«««					}
+«««					//System.out.print("===> " + b.name + "\n");
+«««					if(b.name == "Shared"){
+«««						puts += "	{\n"
+«««						puts += "		if(mppa_async_put(local_buffer + " + local_offset + ",";
+«««						puts += " &shared_segment,";
+«««						puts += " /* Shared + */" + offset + ",";
+«««						puts += " " + param.typeSize * param.size + ",";
+«««						puts += " NULL) != 0){\n";
+«««						puts += "			assert(0 && \"mppa_async_put\\n\");\n";
+«««						puts += "		}\n";
+«««						puts += "	}\n"
+«««						local_offset += param.typeSize * param.size;
+«««						//System.out.print("==> " + b.name + " " + param.name + " size " + param.size + " port_name "+ port.getName + "\n");
+«««					}
+«««				}
+«««				if(local_offset > local_buffer_size)
+«««					local_buffer_size = local_offset
+«««			puts}»
+«««		«{
+«««			 	IS_HIERARCHICAL = false
+«««			""}»
 		}
 	'''
 	override printBufferDefinition(Buffer buffer) {

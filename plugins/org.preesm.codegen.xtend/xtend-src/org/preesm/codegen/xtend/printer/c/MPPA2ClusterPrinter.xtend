@@ -136,6 +136,8 @@ class MPPA2ClusterPrinter extends BlankPrinter {
 	protected long local_buffer_size = 0
 	
 	protected long local_puts_buffer_size = 0
+	
+	protected long scope_scratchpad_size = 0;
 
 	override printCoreBlockHeader(CoreBlock block) {
 
@@ -193,13 +195,20 @@ class MPPA2ClusterPrinter extends BlankPrinter {
 		var result = '''
 		«IF buffer.name == "Shared"»
 		//#define Shared ((char*)0x10000000ULL) 	/* Shared buffer in DDR */
-		«ELSE» 
+		«ELSEIF buffer.name.contains("mem_")»
+			void* «buffer.name» = local_buffer + «scope_scratchpad_size»;
+		«ELSE»
 			«buffer.type» «buffer.name»[«buffer.size»] __attribute__ ((aligned(64))); // «buffer.comment» size:= «buffer.size»*«buffer.type» aligned on data cache line
 			«IF buffer.name.contains("Cluster")»
 				int local_memory_size = «buffer.size»;			
 			«ENDIF»
 		«ENDIF»
 		'''
+		if (buffer.name.contains("mem_")) {
+			scope_scratchpad_size += buffer.typeSize * buffer.size; 
+		 	if(scope_scratchpad_size > local_buffer_size)
+				local_buffer_size = scope_scratchpad_size;
+		}
 		return result;
 	}
 
@@ -242,17 +251,24 @@ class MPPA2ClusterPrinter extends BlankPrinter {
 		// Cluster: «block.name»
 		// Schedule: «block.schedule»
 		{
-			// Asynchronous gets
-			«printAsynchronousGets(block.inBuffers, block.outBuffers)»
 			
 			'''
 
 
-	override printClusterBlockFooter(ClusterBlock block) '''
-			// Asynchronous puts
-			«printAsynchronousPuts(block.outBuffers)»
-		} 
-	'''
+	override printClusterBlockFooter(ClusterBlock block) {
+		var result = '''
+				
+				// scratchpad size: «scope_scratchpad_size»
+			} 
+		'''
+		for (variable : block.definitions) {
+			if (variable instanceof Buffer) {
+				var Buffer buffer = variable;
+ 				scope_scratchpad_size -= buffer.typeSize * buffer.size;
+			}
+		}
+		return result;
+	} 
 
 	def CharSequence  printAsynchronousGets(List<Buffer> inBuffers, List<Buffer> outBuffers) {
 		var gets = "{"
@@ -371,7 +387,7 @@ class MPPA2ClusterPrinter extends BlankPrinter {
 	override printFunctionCall(FunctionCall functionCall) '''
 	«{
 		var gets = "{"
-		var local_offset = 0L;
+		var local_offset = scope_scratchpad_size;
 		for(param : functionCall.parameters){
 
 			if(param instanceof SubBuffer){
@@ -406,7 +422,7 @@ class MPPA2ClusterPrinter extends BlankPrinter {
 		«functionCall.name»(«FOR param : functionCall.parameters SEPARATOR ', '»«param.doSwitch»«ENDFOR»); // «functionCall.actorName»
 	«{
 		var puts = ""
-		var local_offset = 0L;
+		var local_offset = scope_scratchpad_size;
 		for(param : functionCall.parameters){
 			if(param instanceof SubBuffer){
 				var port = functionCall.parameterDirections.get(functionCall.parameters.indexOf(param))
@@ -1139,6 +1155,7 @@ class MPPA2ClusterPrinter extends BlankPrinter {
 
 	'''
 	override preProcessing(List<Block> printerBlocks, Collection<Block> allBlocks){
+		
 		var Set<String> coresNames = new LinkedHashSet<String>();
 		for (cluster : allBlocks){
 			if (cluster instanceof CoreBlock) {
@@ -1186,6 +1203,7 @@ class MPPA2ClusterPrinter extends BlankPrinter {
 	       		 }
 			}
 		}
+		scope_scratchpad_size = 0;
 		local_buffer_size = 0;
 	}
 	override postProcessing(CharSequence charSequence){

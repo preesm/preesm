@@ -389,7 +389,7 @@ public class CodegenClusterModelGeneratorSwitch extends ScheduleSwitch<CodeElt> 
     clusterBlock.getDefinitions().addAll(internalClusterBuffer);
     // Make memory allocation for external buffer
     // i.e. fifo that goes outside of the hierarchical actor of the cluster
-    generateExternalClusterBuffers(clusterGraph, clusterBlock);
+    generateExternalClusterBuffers(clusterGraph, outputBlock);
 
     return new ImmutablePair<>(outputBlock, clusterBlock);
 
@@ -538,7 +538,7 @@ public class CodegenClusterModelGeneratorSwitch extends ScheduleSwitch<CodeElt> 
     return pipelineBuffer;
   }
 
-  private final void generateExternalClusterBuffers(final PiGraph cluster, final ClusterBlock clusterBlock) {
+  private final void generateExternalClusterBuffers(final PiGraph cluster, final CodeElt block) {
     // Get the list of external Fifo in the current cluster
     final List<Fifo> externalFifo = new LinkedList<>();
     externalFifo.addAll(cluster.getFifos());
@@ -579,12 +579,12 @@ public class CodegenClusterModelGeneratorSwitch extends ScheduleSwitch<CodeElt> 
       // If cluster is repeated few times, create an iterated buffer
       if (inside && (this.repVector.get(cluster) > 1)) {
         buffer = generateIteratedBuffer(buffer, cluster, outsidePort);
-      }
-
-      if (fifo.getSource() instanceof DataInputInterface) {
-        clusterBlock.getInBuffers().add(buffer);
-      } else {
-        clusterBlock.getOutBuffers().add(buffer);
+        FiniteLoopBlock flb = (FiniteLoopBlock) block;
+        if (fifo.getSource() instanceof DataInputInterface) {
+          flb.getInBuffers().add(buffer);
+        } else {
+          flb.getOutBuffers().add(buffer);
+        }
       }
 
       // Register external buffer with corresponding fifo
@@ -607,6 +607,7 @@ public class CodegenClusterModelGeneratorSwitch extends ScheduleSwitch<CodeElt> 
     }
     // Set loop parallelism
     flb.setParallel(parallel);
+
     return flb;
   }
 
