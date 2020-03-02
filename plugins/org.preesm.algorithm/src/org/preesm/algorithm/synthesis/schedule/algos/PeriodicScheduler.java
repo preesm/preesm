@@ -652,6 +652,8 @@ public class PeriodicScheduler extends AbstractScheduler {
    */
   protected static void updateAllocationNbVisits(DefaultDirectedGraph<VertexAbstraction, EdgeAbstraction> absGraph,
       VertexAbstraction va, List<VertexAbstraction> queue, long finishTime) {
+    // TODO: restricts the possible mappings of following fork/broadcast/join/roundbuffer
+    // to be on the same core as their direct predecessor va
     for (EdgeAbstraction ea : absGraph.outgoingEdgesOf(va)) {
       VertexAbstraction tgt = absGraph.getEdgeTarget(ea);
       tgt.nbVisits += 1;

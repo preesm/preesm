@@ -214,19 +214,6 @@ public class AutoDelaysTask extends AbstractTaskImplementation {
     long duration = System.nanoTime() - time;
     PreesmLogger.getLogger().info("Analysis time " + Math.round(duration / 1e6) + " ms.");
 
-    output.put(AbstractWorkflowNodeImplementation.KEY_PI_GRAPH, graphCopy);
-
-    final String chocoStr = parameters.get(CHOCO_PARAM_NAME);
-    final boolean choco = Boolean.parseBoolean(chocoStr);
-    if (choco && maxii > 0) {
-
-      executeChocoModel(graphCopy, architecture, scenario, maxii, hlbd);
-      if (sched) {
-        printLatency(graphCopy, scenario, architecture);
-      }
-      return output;
-    }
-
     // intermediate data : forbidden fifos (in cycles), ranks, wcet(rank)
 
     final Set<FifoAbstraction> forbiddenFifos = hlbd.getForbiddenFifos();
@@ -288,48 +275,68 @@ public class AutoDelaysTask extends AbstractTaskImplementation {
 
     List<CutInformation> bestCuts = selectBestCuts(possibleCuts, selec, rankWCETs, totC, scenario);
 
+    duration = System.nanoTime() - time;
+    PreesmLogger.getLogger().info("Total heuristic time " + Math.round(duration / 1e6) + " ms.");
+
     // set the cuts
     final int nbCuts = Math.min(bestCuts.size(), maxii);
     for (int index = 0; index < nbCuts; index++) {
-
       CutInformation ci = bestCuts.get(index);
       PreesmLogger.getLogger().log(Level.INFO,
           "Setting cut from rank " + ci.getRankStr() + " using " + ci.memSize + " Bytes.");
       // set the graph
+      Map<FifoAbstraction, Integer> cutMap = new HashMap<>();
       for (FifoAbstraction fa : ci.edgeCut) {
-        final List<Long> pipelineValues = fa.pipelineValues;
-        final List<Fifo> fifos = fa.fifos;
-        final int size = fifos.size();
-        for (int i = 0; i < size; i++) {
-          final Fifo f = fifos.get(i);
-          long pipeSize = pipelineValues.get(i);
-          Delay delay = f.getDelay();
-          if (delay == null) {
-            delay = PiMMUserFactory.instance.createDelay();
-            f.setDelay(delay);
-            delay.setName(delay.getId());
-            delay.getActor().setName(delay.getId());
-            final PiGraph graphFifo = f.getContainingPiGraph();
-            graphFifo.addDelay(delay);
-            PreesmLogger.getLogger().log(Level.INFO, "Set fifo delay size and type of: " + f.getId());
-          } else {
-            pipeSize += delay.getExpression().evaluate();
-            PreesmLogger.getLogger().log(Level.WARNING, "Reset fifo delay size and type of: " + f.getId());
-          }
-          delay.setLevel(PersistenceLevel.PERMANENT);
-          delay.setExpression(pipeSize);
-        }
+        cutMap.put(fa, 1);
       }
-
+      setCut(cutMap, false);
     }
-    duration = System.nanoTime() - time;
-    PreesmLogger.getLogger().info("Time " + Math.round(duration / 1e6) + " ms.");
+
+    output.put(AbstractWorkflowNodeImplementation.KEY_PI_GRAPH, graphCopy);
+
+    final String chocoStr = parameters.get(CHOCO_PARAM_NAME);
+    final boolean choco = Boolean.parseBoolean(chocoStr);
+    if (choco && maxii > 0) {
+      // compute latency of heuristic
+      long heuristicLatency = computeLatency(graphCopy, scenario, architecture, false);
+      // reset heuristic delays
+      for (int index = 0; index < nbCuts; index++) {
+        CutInformation ci = bestCuts.get(index);
+        Map<FifoAbstraction, Integer> cutMap = new HashMap<>();
+        for (FifoAbstraction fa : ci.edgeCut) {
+          cutMap.put(fa, 1);
+        }
+        setCut(cutMap, true);
+      }
+      // call choco
+      DescriptiveStatistics dsc = executeChocoModel(graphCopy, architecture, scenario, maxii, hlbd);
+      printChocoStatistics(heuristicLatency, dsc);
+    }
 
     if (sched) {
-      printLatency(graphCopy, scenario, architecture);
+      computeLatency(graphCopy, scenario, architecture, true);
     }
 
     return output;
+  }
+
+  private void printChocoStatistics(final long heuristicLatency, final DescriptiveStatistics dsc) {
+
+    PreesmLogger.getLogger().info("Worst latency found by choco cut: " + dsc.getMax());
+    PreesmLogger.getLogger().info("Best latency found by choco cut: " + dsc.getMin());
+    PreesmLogger.getLogger().info("Mean latency found by choco cut: " + dsc.getMean());
+
+    int counterAboveLat = 0;
+    final double[] chocoLatencies = dsc.getValues();
+    for (final double cl : chocoLatencies) {
+      if (heuristicLatency <= cl) {
+        counterAboveLat++;
+      }
+    }
+    final int percent = (counterAboveLat * 100) / chocoLatencies.length;
+    PreesmLogger.getLogger()
+        .info("Heuristic latency is better (or equal) than " + counterAboveLat + " cuts, i.e. " + percent + "%");
+
   }
 
   private static void printWCETstatistics(DescriptiveStatistics ds) {
@@ -347,10 +354,11 @@ public class AutoDelaysTask extends AbstractTaskImplementation {
         "Standard deviation of WCET is " + standardDeviation + " and represents " + percentSD + "% of the total.");
   }
 
-  private static void executeChocoModel(final PiGraph graphCopy, final Design architecture, final Scenario scenario,
-      final int maxii, final HeuristicLoopBreakingDelays hlbd) {
+  private static DescriptiveStatistics executeChocoModel(final PiGraph graphCopy, final Design architecture,
+      final Scenario scenario, final int maxii, final HeuristicLoopBreakingDelays hlbd) {
     // final long time1 = System.nanoTime();
     final ChocoCutModel ccm = new ChocoCutModel(hlbd, maxii);
+    final DescriptiveStatistics dsc = new DescriptiveStatistics();
     // final List<Map<FifoAbstraction, Integer>> chocoCuts = ccm.findAllCuts();
     // long duration = System.nanoTime() - time1;
     // PreesmLogger.getLogger().info("Time of choco model " + Math.round(duration / 1e6) + " ms.");
@@ -358,7 +366,6 @@ public class AutoDelaysTask extends AbstractTaskImplementation {
     Map<FifoAbstraction, Integer> bestDelays = null;
     long bestLatency = Long.MAX_VALUE;
     long bestMemory = Long.MAX_VALUE;
-    long worstLatency = 0;
     final Level backupLevel = PreesmLogger.getLogger().getLevel();
     PreesmLogger.getLogger().setLevel(Level.SEVERE);
     // for (Map<FifoAbstraction, Integer> delays : chocoCuts) {
@@ -366,8 +373,9 @@ public class AutoDelaysTask extends AbstractTaskImplementation {
     Map<FifoAbstraction, Integer> delays = null;
     while ((delays = ccm.findNextCut()) != null) {
       nbCutsTested++;
-      setChocoCut(delays, false);
-      final long latency = getLatency(graphCopy, scenario, architecture);
+      setCut(delays, false);
+      final long latency = computeLatency(graphCopy, scenario, architecture, false);
+      dsc.addValue(latency);
       if (latency < bestLatency) {
         bestLatency = latency;
         bestDelays = delays;
@@ -378,10 +386,7 @@ public class AutoDelaysTask extends AbstractTaskImplementation {
           bestDelays = delays;
         }
       }
-      if (latency > worstLatency) {
-        worstLatency = latency;
-      }
-      setChocoCut(delays, true);
+      setCut(delays, true);
       if (nbCutsTested % 1000 == 0) {
         System.err.println("1000 cuts tested.");
       }
@@ -391,7 +396,7 @@ public class AutoDelaysTask extends AbstractTaskImplementation {
     PreesmLogger.getLogger().info("Number of cuts tested: " + nbCutsTested);
     PreesmLogger.getLogger().info("Time of choco tests " + Math.round(duration / 1e6) + " ms.");
     if (bestDelays != null) {
-      setChocoCut(bestDelays, false);
+      setCut(bestDelays, false);
       final StringBuilder sb = new StringBuilder("\nAdded delays by choco:\n");
       for (Entry<FifoAbstraction, Integer> e : bestDelays.entrySet()) {
         final FifoAbstraction fa = e.getKey();
@@ -401,13 +406,12 @@ public class AutoDelaysTask extends AbstractTaskImplementation {
         sb.append(stages + " stages from " + src.getName() + " to " + tgt.getName() + "\n");
       }
 
-      PreesmLogger.getLogger().info("Best latency found by choco cut: " + bestLatency + sb.toString());
-      PreesmLogger.getLogger().info("Worst latency found by choco cut: " + worstLatency);
+      PreesmLogger.getLogger().info("Best Choco cut: " + sb.toString());
     }
-
+    return dsc;
   }
 
-  private static void setChocoCut(final Map<FifoAbstraction, Integer> delays, final boolean reset) {
+  private static void setCut(final Map<FifoAbstraction, Integer> delays, final boolean reset) {
 
     for (Entry<FifoAbstraction, Integer> e : delays.entrySet()) {
       final FifoAbstraction fa = e.getKey();
@@ -426,9 +430,11 @@ public class AutoDelaysTask extends AbstractTaskImplementation {
           delay.getActor().setName(delay.getId());
           final PiGraph graphFifo = f.getContainingPiGraph();
           graphFifo.addDelay(delay);
+          PreesmLogger.getLogger().log(Level.INFO, "Set fifo delay size and type of: " + f.getId());
         } else {
           if (!reset) {
             pipeSize += delay.getExpression().evaluate();
+            PreesmLogger.getLogger().log(Level.WARNING, "Reset fifo delay size and type of: " + f.getId());
           } else {
             pipeSize = delay.getExpression().evaluate() - pipeSize;
           }
@@ -440,18 +446,7 @@ public class AutoDelaysTask extends AbstractTaskImplementation {
 
   }
 
-  private static long getLatency(PiGraph graph, Scenario scenario, Design architecture) {
-    final PiGraph dag = PiSDFToSingleRate.compute(graph, BRVMethod.LCM);
-    final IScheduler scheduler = new PeriodicScheduler();
-    final SynthesisResult scheduleAndMap = scheduler.scheduleAndMap(dag, architecture, scenario);
-    // use implementation evaluation of PeriodicScheduler instead?
-    final ScheduleOrderManager scheduleOM = new ScheduleOrderManager(dag, scheduleAndMap.schedule);
-    final LatencyCost evaluate = new SimpleLatencyEvaluation().evaluate(dag, architecture, scenario,
-        scheduleAndMap.mapping, scheduleOM);
-    return evaluate.getValue();
-  }
-
-  private static void printLatency(PiGraph graph, Scenario scenario, Design architecture) {
+  private static long computeLatency(PiGraph graph, Scenario scenario, Design architecture, boolean printGantt) {
     final PiGraph dag = PiSDFToSingleRate.compute(graph, BRVMethod.LCM);
     final IScheduler scheduler = new PeriodicScheduler();
     final SynthesisResult scheduleAndMap = scheduler.scheduleAndMap(dag, architecture, scenario);
@@ -461,18 +456,21 @@ public class AutoDelaysTask extends AbstractTaskImplementation {
         scheduleAndMap.mapping, scheduleOM);
     PreesmLogger.getLogger().log(Level.INFO, "Latency of graph with added delays: " + evaluate.getValue());
 
-    final IStatGenerator statGen = new StatGeneratorSynthesis(architecture, scenario, scheduleAndMap.mapping, null,
-        evaluate);
-    final IEditorInput input = new StatEditorInput(statGen);
+    if (printGantt) {
+      final IStatGenerator statGen = new StatGeneratorSynthesis(architecture, scenario, scheduleAndMap.mapping, null,
+          evaluate);
+      final IEditorInput input = new StatEditorInput(statGen);
 
-    // Check if the workflow is running in command line mode
-    try {
-      // Run statistic editor
-      PlatformUI.getWorkbench().getDisplay().asyncExec(new EditorRunnable(input));
-    } catch (final IllegalStateException e) {
-      PreesmLogger.getLogger().log(Level.INFO, "Gantt display is impossible in this context."
-          + " Ignore this log entry if you are running the command line version of Preesm.");
+      // Check if the workflow is running in command line mode
+      try {
+        // Run statistic editor
+        PlatformUI.getWorkbench().getDisplay().asyncExec(new EditorRunnable(input));
+      } catch (final IllegalStateException e) {
+        PreesmLogger.getLogger().log(Level.INFO, "Gantt display is impossible in this context."
+            + " Ignore this log entry if you are running the command line version of Preesm.");
+      }
     }
+    return evaluate.getValue();
   }
 
   private static void fillCycles(final HeuristicLoopBreakingDelays hlbd, final Map<AbstractVertex, Long> brv) {
