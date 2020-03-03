@@ -244,7 +244,7 @@ public class AutoDelaysTask extends AbstractTaskImplementation {
     for (Entry<AbstractActor, TopoVisit> e : topoRanks.entrySet()) {
       AbstractActor aa = e.getKey();
       TopoVisit tv = e.getValue();
-      long tWCET = (long) Math.ceil((double) brv.get(aa) / nbCore) * wcets.get(aa);
+      long tWCET = (long) Math.ceil((double) hlbd.minCycleBrv.get(aa) / nbCore) * wcets.get(aa);
       long prev = rankWCETs.getOrDefault(tv.rank, 0L);
       rankWCETs.put(tv.rank, tWCET + prev);
     }
@@ -252,7 +252,7 @@ public class AutoDelaysTask extends AbstractTaskImplementation {
     for (Entry<AbstractActor, TopoVisit> e : topoRanksT.entrySet()) {
       AbstractActor aa = e.getKey();
       TopoVisit tv = e.getValue();
-      long tWCET = (long) Math.ceil((double) brv.get(aa) / nbCore) * wcets.get(aa);
+      long tWCET = (long) Math.ceil((double) hlbd.minCycleBrv.get(aa) / nbCore) * wcets.get(aa);
       int rank = maxRank - tv.rank;
       long prev = rankWCETs.getOrDefault(rank, 0L);
       rankWCETs.put(rank, tWCET + prev);
