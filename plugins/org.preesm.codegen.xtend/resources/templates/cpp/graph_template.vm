@@ -96,7 +96,7 @@
     
     /* == Set the timings of the vertex $actor.name == */
 #foreach($timing in $timings)
-    spider::api::setVertexExecutionTimingOnCluster(vertex_$actor.name, TYPE_${timing.first.toUpperCase()}, "$timing.second");
+    spider::api::setVertexExecutionTimingOnHWType(vertex_$actor.name, TYPE_${timing.first.toUpperCase()}, "$timing.second");
 #end
 #end
 #end

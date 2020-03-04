@@ -21,6 +21,7 @@ import org.apache.velocity.app.VelocityEngine;
 import org.eclipse.core.resources.IWorkspace;
 import org.eclipse.core.runtime.Path;
 import org.preesm.codegen.xtend.spider2.utils.Spider2CodegenCluster;
+import org.preesm.codegen.xtend.spider2.utils.Spider2CodegenPE;
 import org.preesm.codegen.xtend.spider2.visitor.Spider2PreProcessVisitor;
 import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.preesm.commons.files.PreesmResourcesHelper;
@@ -300,11 +301,19 @@ public class Spider2Codegen {
     /* Fill out the context */
     VelocityContext context = new VelocityContext();
     context.put("appName", this.applicationName);
-    final Set<PiGraph> graphSet = new HashSet<PiGraph>(this.preprocessor.getUniqueGraphSet());
+    final Set<PiGraph> graphSet = new HashSet<>(this.preprocessor.getUniqueGraphSet());
     graphSet.remove(this.applicationGraph);
     context.put("graphs", graphSet);
     context.put("fileNames", this.preprocessor.getUniqueHeaderFileNameList());
     context.put("prototypes", this.preprocessor.getUniqueLoopPrototypeList());
+    final Set<String> typesSet = new HashSet<>();
+    final List<Spider2CodegenCluster> clusters = this.preprocessor.getClusterList();
+    for (final Spider2CodegenCluster cluster : clusters) {
+      for (final Spider2CodegenPE pe : cluster.getProcessingElements()) {
+        typesSet.add(pe.getTypeName());
+      }
+    }
+    context.put("types", typesSet);
     context.put("clusters", this.preprocessor.getClusterList());
 
     /* Write the file */
