@@ -40,7 +40,6 @@
 package org.preesm.algorithm.mapper.ui.stats;
 
 import org.preesm.algorithm.mapper.abc.impl.latency.LatencyAbc;
-import org.preesm.algorithm.mapper.abc.impl.latency.SpanLengthCalculator;
 import org.preesm.algorithm.mapper.gantt.GanttData;
 import org.preesm.algorithm.mapper.graphtransfo.ImplementationPropertyNames;
 import org.preesm.algorithm.mapper.graphtransfo.VertexType;
@@ -88,11 +87,7 @@ public class StatGeneratorAbc extends AbstractStatGenerator {
    * @return the DAG span length
    */
   public long getDAGSpanLength() {
-    final Object span = this.abc.getDAG().getPropertyBean().getValue(SpanLengthCalculator.DAG_SPAN);
-    if (span instanceof Long) {
-      return (Long) span;
-    }
-    return 0;
+    return this.abc.getBestLatency();
   }
 
   /**
