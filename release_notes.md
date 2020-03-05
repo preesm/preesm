@@ -21,6 +21,7 @@ PREESM Changelog
 * Cluster codegen :
  * MD5 checking can be printed for sink actors contained in a cluster.
  * Parallel Hierarchy with one children is not considered anymore as a section block.
+* Full support of final spider 2 api.
 
 ### Bug fix
 * Fix ids and icons of a few GUI elements.
