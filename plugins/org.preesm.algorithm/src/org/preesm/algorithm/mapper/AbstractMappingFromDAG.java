@@ -50,9 +50,7 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.preesm.algorithm.mapper.abc.SpecialVertexManager;
 import org.preesm.algorithm.mapper.abc.impl.latency.InfiniteHomogeneousAbc;
 import org.preesm.algorithm.mapper.abc.impl.latency.LatencyAbc;
-import org.preesm.algorithm.mapper.abc.impl.latency.SpanLengthCalculator;
 import org.preesm.algorithm.mapper.abc.taskscheduling.AbstractTaskSched;
-import org.preesm.algorithm.mapper.abc.taskscheduling.TaskSchedType;
 import org.preesm.algorithm.mapper.abc.taskscheduling.TopologicalTaskSched;
 import org.preesm.algorithm.mapper.algo.InitialLists;
 import org.preesm.algorithm.mapper.graphtransfo.TagDAG;
@@ -63,7 +61,6 @@ import org.preesm.algorithm.mapper.params.AbcParameters;
 import org.preesm.algorithm.mapper.tools.CommunicationOrderChecker;
 import org.preesm.algorithm.model.dag.DAGVertex;
 import org.preesm.algorithm.model.dag.DirectedAcyclicGraph;
-import org.preesm.commons.exceptions.PreesmException;
 import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.model.scenario.Scenario;
@@ -118,13 +115,10 @@ public abstract class AbstractMappingFromDAG extends AbstractTaskImplementation 
 
     final MapperDAG clonedDag = dag.copy();
 
-    // calculates the DAG span length on the architecture main operator (the
-    // tasks that can not be executed by the main operator are deported
-    // without transfer time to other operator)
-    calculateSpan(clonedDag, architecture, scenario, abcParams);
-
     final LatencyAbc simu = new InfiniteHomogeneousAbc(abcParams, dag, architecture,
         abcParams.getSimulatorType().getTaskSchedType(), scenario);
+    final long bestLatency = simu.getFinalLatency();
+    PreesmLogger.getLogger().log(Level.INFO, "Latency of the graph is: " + Long.toString(simu.getFinalLatency()));
 
     final InitialLists initial = new InitialLists();
     final boolean couldConstructInitialLists = initial.constructInitialLists(dag, simu);
@@ -142,6 +136,7 @@ public abstract class AbstractMappingFromDAG extends AbstractTaskImplementation 
       PreesmLogger.getLogger().log(Level.INFO, msg);
       final LatencyAbc resSimu = schedule(outputs, parameters, initial, scenario, abcParams, dag, architecture,
           taskSched);
+      resSimu.setBestLatency(bestLatency);
       PreesmLogger.getLogger().log(Level.INFO, "Mapping finished, now add communications tasks.");
 
       final MapperDAG resDag = resSimu.getDAG();
@@ -241,27 +236,5 @@ public abstract class AbstractMappingFromDAG extends AbstractTaskImplementation 
     if (paramValue.equals(AbstractMappingFromDAG.VALUE_TRUE)) {
       RedundantSynchronizationCleaner.cleanRedundantSynchronization(dag);
     }
-  }
-
-  /**
-   * Calculates the DAG span length on the architecture main operator (the tasks that cannot be executed by the main
-   * operator are deported without transfer time to other operator).
-   *
-   * @param dag
-   *          the dag
-   * @param archi
-   *          the archi
-   * @param scenario
-   *          the scenario
-   * @param parameters
-   *          the parameters
-   * @throws PreesmException
-   *           the workflow exception
-   */
-  private void calculateSpan(final MapperDAG dag, final Design archi, final Scenario scenario,
-      final AbcParameters parameters) {
-    final TaskSchedType taskSchedType = parameters.getSimulatorType().getTaskSchedType();
-    final SpanLengthCalculator spanCalc = new SpanLengthCalculator(parameters, dag, archi, taskSchedType, scenario);
-    spanCalc.resetDAG();
   }
 }

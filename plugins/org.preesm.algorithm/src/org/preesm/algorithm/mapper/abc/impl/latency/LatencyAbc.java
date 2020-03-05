@@ -99,6 +99,11 @@ public abstract class LatencyAbc {
   private MapperDAG dag;
 
   /**
+   * Current best latency, if not set, this default to getFinalLatency
+   */
+  private Long bestLatency = (long) -1;
+
+  /**
    * Current implementation: the internal model that will be used to add edges/vertices and calculate times.
    */
   protected MapperDAG implementation;
@@ -947,6 +952,31 @@ public abstract class LatencyAbc {
     }
 
     return finalTime;
+  }
+
+  /**
+   * .The best latency possible. In order to set it properly, one should do an InfiniteHomogeneous simulation first and
+   * set the value accordingly.
+   *
+   * @return the best latency if set, getFinalLatency else
+   */
+  public final long getBestLatency() {
+    if (bestLatency < 0) {
+      return getFinalLatency();
+    }
+    return bestLatency;
+  }
+
+  /**
+   * Set the best latency of this LatencyAbc.
+   * 
+   * @param bestLatency
+   *          value to set.
+   */
+  public final void setBestLatency(final long bestLatency) {
+    if (bestLatency <= getFinalLatency()) {
+      this.bestLatency = bestLatency;
+    }
   }
 
   /**
