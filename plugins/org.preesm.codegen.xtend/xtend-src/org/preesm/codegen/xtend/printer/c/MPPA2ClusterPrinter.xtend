@@ -88,6 +88,8 @@ import org.preesm.codegen.model.SectionBlock
 import org.preesm.codegen.model.ClusterBlock
 import org.preesm.codegen.model.IteratedBuffer
 import org.preesm.codegen.printer.BlankPrinter
+import java.util.ArrayDeque
+import java.util.Deque
 
 class MPPA2ClusterPrinter extends BlankPrinter {
 
@@ -138,6 +140,8 @@ class MPPA2ClusterPrinter extends BlankPrinter {
 	protected long local_puts_offset = 0
 	
 	protected long scope_scratchpad_size = 0;
+	
+	protected Deque<Integer> forStack = new ArrayDeque<Integer>();
 
 	override printCoreBlockHeader(CoreBlock block) {
 
@@ -195,7 +199,7 @@ class MPPA2ClusterPrinter extends BlankPrinter {
 		var result = '''
 		«IF buffer.name == "Shared"»
 		//#define Shared ((char*)0x10000000ULL) 	/* Shared buffer in DDR */
-		«ELSEIF buffer.name.contains("mem_")»
+		«ELSEIF buffer.name.contains("mem_") && forStack.isEmpty() »
 			void* «buffer.name» = local_buffer + «scope_scratchpad_size»;
 		«ELSE»
 			«buffer.type» «buffer.name»[«buffer.size»] __attribute__ ((aligned(64))); // «buffer.comment» size:= «buffer.size»*«buffer.type» aligned on data cache line
@@ -205,7 +209,7 @@ class MPPA2ClusterPrinter extends BlankPrinter {
 			«ENDIF»
 		«ENDIF»
 		'''
-		if (buffer.name.contains("mem_")) {
+		if (buffer.name.contains("mem_") && forStack.isEmpty()) {
 			scope_scratchpad_size += buffer.typeSize * buffer.size; 
 		 	if(scope_scratchpad_size > local_buffer_size)
 				local_buffer_size = scope_scratchpad_size;
@@ -237,37 +241,41 @@ class MPPA2ClusterPrinter extends BlankPrinter {
 	«{
 			var gets = ""
 			var long local_offset = scope_scratchpad_size;
+			
+			if (block2.parallel.equals(true))
+				forStack.push(0);
+			
 			for(buffer : block2.inBuffers){
-	
-				if(buffer instanceof SubBuffer){
-					var b = buffer.container;
-					var offset = buffer.offset;
+				var subBuf = buffer.buffer;
+				if(subBuf instanceof SubBuffer){
+					var b = subBuf.container;
+					var offset = subBuf.offset;
 					while(b instanceof SubBuffer){
 						offset += b.offset;
 						b = b.container;
 					}
 					if(b.name == "Shared"){
-						gets += "	void* " + buffer.name + " = local_buffer+" + local_offset +";\n";
+						gets += "	void* " + subBuf.name + " = local_buffer+" + local_offset +";\n";
 							gets += "	if(mppa_async_get(local_buffer+" + local_offset + ", &shared_segment, /* Shared + */ " + offset + ", " + buffer.typeSize * buffer.size + ", NULL) != 0){\n";
 							gets += "		assert(0 && \"mppa_async_get\\n\");\n";
 							gets += "	}\n ";
-						local_offset += buffer.typeSize * buffer.size;
+						local_offset += subBuf.typeSize * subBuf.size;
 					}
 				}
 			}
 			local_puts_offset = local_offset;			
 			for(buffer : block2.outBuffers){
-				
-				if(buffer instanceof SubBuffer){
-					var b = buffer.container;
-					var offset = buffer.offset;
+				var subBuf = buffer.buffer;
+				if(subBuf instanceof SubBuffer){
+					var b = subBuf.container;
+					var offset = subBuf.offset;
 					while(b instanceof SubBuffer){
 						offset += b.offset;
 						b = b.container;
 					}
 					if(b.name == "Shared"){
-						gets += "	void* " + buffer.name + " = local_buffer+" + local_offset +";\n";
-						local_offset += buffer.typeSize * buffer.size;
+						gets += "	void* " + subBuf.name + " = local_buffer+" + local_offset +";\n";
+						local_offset += subBuf.typeSize * subBuf.size;
 					}
 				}
 			}
@@ -287,22 +295,25 @@ class MPPA2ClusterPrinter extends BlankPrinter {
 	override printFiniteLoopBlockFooter(FiniteLoopBlock block2) '''
 			}
 			«{
+				if (block2.parallel.equals(true))
+					forStack.pop();
 				var puts = ""
 				var long local_offset = local_puts_offset;
-				for(buffer : block2.outBuffers){
-					if(buffer instanceof SubBuffer){
-						var b = buffer.container
-						var offset = buffer.offset
+				for(buffer : block2.outBuffers){				
+					var subBuf = buffer.buffer;
+					if(subBuf instanceof SubBuffer){
+						var b = subBuf.container
+						var offset = subBuf.offset
 						while(b instanceof SubBuffer){
 							offset += b.offset;
 							b = b.container;
 						}
 						//System.out.print("===> " + b.name + "\n");
 						if(b.name == "Shared"){
-							puts += "	if(mppa_async_put(local_buffer+" + local_offset + ", &shared_segment, /* Shared + */ " + offset + ", " + buffer.typeSize * buffer.size + ", NULL) != 0){\n";
+							puts += "	if(mppa_async_put(local_buffer+" + local_offset + ", &shared_segment, /* Shared + */ " + offset + ", " + subBuf.typeSize * subBuf.size + ", NULL) != 0){\n";
 							puts += "		assert(0 && \"mppa_async_put\\n\");\n";
 							puts += "	}\n";
-							local_offset += buffer.typeSize * buffer.size;
+							local_offset += subBuf.typeSize * subBuf.size;
 						}
 					}
 				}
@@ -323,10 +334,12 @@ class MPPA2ClusterPrinter extends BlankPrinter {
 
 	override printClusterBlockFooter(ClusterBlock block) {
 
-		for (variable : block.definitions) {
-			if (variable instanceof Buffer) {
-				var Buffer buffer = variable;
- 				scope_scratchpad_size -= buffer.typeSize * buffer.size;
+		if (!forStack.isEmpty) {
+			for (variable : block.definitions) {
+				if (variable instanceof Buffer) {
+					var Buffer buffer = variable;
+	 				scope_scratchpad_size -= buffer.typeSize * buffer.size;
+				}
 			}
 		}
 		var result = '''

@@ -581,9 +581,9 @@ public class CodegenClusterModelGeneratorSwitch extends ScheduleSwitch<CodeElt> 
         buffer = generateIteratedBuffer(buffer, cluster, outsidePort);
         FiniteLoopBlock flb = (FiniteLoopBlock) block;
         if (fifo.getSource() instanceof DataInputInterface) {
-          flb.getInBuffers().add(buffer);
+          flb.getInBuffers().add((IteratedBuffer) buffer);
         } else {
-          flb.getOutBuffers().add(buffer);
+          flb.getOutBuffers().add((IteratedBuffer) buffer);
         }
       }
 
