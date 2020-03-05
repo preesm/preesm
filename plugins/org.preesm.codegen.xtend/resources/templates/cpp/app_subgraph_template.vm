@@ -3,7 +3,7 @@
  *
  * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2018)
  * Clément Guy <clement.guy@insa-rennes.fr> (2014)
- * Florian Arrestier <florian.arrestier@insa-rennes.fr> (2017-2019)
+ * Florian Arrestier <florian.arrestier@insa-rennes.fr> (2017-2020)
  * Hugo Miomandre <hugo.miomandre@insa-rennes.fr> (2017)
  * Julien Heulot <julien.heulot@insa-rennes.fr> (2013 - 2015)
  * Yaset Oliva <yaset.oliva@insa-rennes.fr> (2013 - 2014)
@@ -44,16 +44,29 @@
 
 /* === Function(s) definition === */
 
-void spider::createUserApplicationGraph() {
-    /* == Create the graph == */
-    auto *graph = spider::api::createUserApplicationGraph(/* = Name of the application graph = */ "$appName",
-                                                          /* = Number of actors              = */  ${actorCount},
-                                                          /* = Number of edges               = */  ${edgeCount},
-                                                          /* = Number of parameters          = */  ${paramCount},
-                                                          /* = Number of input interfaces    = */  ${inputInterfaceCount},
-                                                          /* = Number of output interfaces   = */  ${outputInterfaceCount},
-                                                          /* = Number of config actors       = */  ${cfgActorCount});
-
+spider::pisdf::Vertex *spider::create${graphName}Subgraph(std::string name, 
+                                                          spider::pisdf::Graph *parentGraph,
+                                                          const std::vector<std::shared_ptr<spider::pisdf::Param>> &parentGraphParams) {
+    /* == Create the subgraph == */
+    auto *graph = spider::api::createSubgraph(parentGraph,
+          /* = Name of the subgraph        = */ std::move(name),
+          /* = Number of actors            = */ ${actorCount},
+          /* = Number of edges             = */ ${edgeCount},
+          /* = Number of parameters        = */ ${paramCount},
+          /* = Number of input interfaces  = */ ${inputInterfaceCount},
+          /* = Number of output interfaces = */ ${outputInterfaceCount},
+          /* = Number of config actors     = */ ${cfgActorCount});
+     
     /* === Creates the parameter(s) === */
+#foreach($param in $inheritedParameters)
+
+    auto param_$param.name = spider::api::createInheritedParam(
+          /* = Graph of the parameter = */  graph,
+          /* = Name of the parameter  = */ "$param.name",
+          /* = Parent parameter       = */  parentGraphParams[$inheritedParameters.indexOf($param)].get());
+#end
 #parse("./resources/templates/cpp/graph_template.vm")
+
+    /* == Return the graph as a Vertex == */
+    return spider::api::convertGraphToVertex(graph);
 }

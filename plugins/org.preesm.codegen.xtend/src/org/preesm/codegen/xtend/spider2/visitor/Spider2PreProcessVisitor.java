@@ -24,8 +24,6 @@ import org.preesm.model.pisdf.BroadcastActor;
 import org.preesm.model.pisdf.CHeaderRefinement;
 import org.preesm.model.pisdf.ConfigInputPort;
 import org.preesm.model.pisdf.ConfigOutputPort;
-import org.preesm.model.pisdf.DataInputPort;
-import org.preesm.model.pisdf.DataOutputPort;
 import org.preesm.model.pisdf.DataPort;
 import org.preesm.model.pisdf.DelayActor;
 import org.preesm.model.pisdf.Dependency;
@@ -57,9 +55,6 @@ import org.preesm.model.slam.Link;
  * The Class Spider2PreProcessVisitor.
  */
 public class Spider2PreProcessVisitor extends PiMMSwitch<Boolean> {
-  /** The function map. */
-  private final Map<AbstractActor, Integer> functionMap = new LinkedHashMap<>();
-
   /** The unique graph set **/
   private final Set<PiGraph> uniqueGraphSet = new HashSet<>();
 
@@ -88,7 +83,13 @@ public class Spider2PreProcessVisitor extends PiMMSwitch<Boolean> {
   private final Map<PiGraph, Set<Spider2CodegenActor>> actorsMap = new LinkedHashMap<>();
 
   /** The unique refinement loop List */
+  private final List<String> uniqueLoopHeaderFileNameList = new ArrayList<>();
+
+  /** The unique refinement loop List */
   private final List<CHeaderRefinement> uniqueLoopHeaderList = new ArrayList<>();
+
+  /** The unique refinement loop List */
+  private final List<String> uniqueLoopProtoypeNameList = new ArrayList<>();
 
   /** The unique prototype loop List */
   private final List<Spider2CodegenPrototype> uniqueLoopProtoypeList = new ArrayList<>();
@@ -102,6 +103,12 @@ public class Spider2PreProcessVisitor extends PiMMSwitch<Boolean> {
   /** The clusters */
   private final List<Spider2CodegenCluster> clusterList = new ArrayList<>();
 
+  /**
+   * Constructor of the class.
+   * 
+   * @param scenario
+   *          the scenario of the application.
+   */
   public Spider2PreProcessVisitor(final Scenario scenario) {
     this.scenario = scenario;
 
@@ -112,42 +119,89 @@ public class Spider2PreProcessVisitor extends PiMMSwitch<Boolean> {
   /**
    * Accessors
    */
-  public Map<AbstractActor, Integer> getFunctionMap() {
-    return this.functionMap;
-  }
 
+  /**
+   * 
+   * @return set of unique graph refinement
+   */
   public Set<PiGraph> getUniqueGraphSet() {
     return this.uniqueGraphSet;
   }
 
+  /**
+   * 
+   * @return set of unique graph names
+   */
   public Set<String> getUniqueGraphNameSet() {
     return this.uniqueGraphNameSet;
   }
 
+  /**
+   * 
+   * @param graph
+   *          the graph to evaluate
+   * @return list of static parameters of a given graph
+   */
   public List<Parameter> getStaticParameters(final PiGraph graph) {
     return this.staticParametersMap.get(graph);
   }
 
+  /**
+   * 
+   * @param graph
+   *          the graph to evaluate
+   * @return list of static dependent parameters of a given graph
+   */
   public Set<Parameter> getStaticDependentParameters(final PiGraph graph) {
     return this.staticDependentParametersMap.get(graph);
   }
 
+  /**
+   * 
+   * @param graph
+   *          the graph to evaluate
+   * @return list of dynamic parameters of a given graph
+   */
   public List<Parameter> getDynamicParameters(final PiGraph graph) {
     return this.dynamicParametersMap.get(graph);
   }
 
+  /**
+   * 
+   * @param graph
+   *          the graph to evaluate
+   * @return list of dynamic dependent parameters of a given graph
+   */
   public Set<Parameter> getDynamicDependentParameters(final PiGraph graph) {
     return this.dynamicDependentParametersMap.get(graph);
   }
 
+  /**
+   * 
+   * @param graph
+   *          the graph to evaluate
+   * @return set of Spider2CodegenEdge of the graph
+   */
   public Set<Spider2CodegenEdge> getEdgeSet(final PiGraph graph) {
     return this.edgeMap.get(graph);
   }
 
+  /**
+   * 
+   * @param graph
+   *          the graph to evaluate
+   * @return set of unique subgraphs
+   */
   public Set<PiGraph> getSubgraphSet(final PiGraph graph) {
     return this.subgraphMap.get(graph);
   }
 
+  /**
+   * 
+   * @param graph
+   *          the graph to evaluate
+   * @return set of Spider2CodegenActor
+   */
   public Set<Spider2CodegenActor> getActorSet(final PiGraph graph) {
     return this.actorsMap.get(graph);
   }
@@ -156,18 +210,38 @@ public class Spider2PreProcessVisitor extends PiMMSwitch<Boolean> {
     return this.actorToLoopFctMap.get(actor);
   }
 
+  /**
+   * 
+   * @return list of all unique loop Spider2CodegenPrototype
+   */
   public List<Spider2CodegenPrototype> getUniqueLoopPrototypeList() {
     return this.uniqueLoopProtoypeList;
+  }
+
+  /**
+   * 
+   * @return list of all unique loop CHeaderRefinement
+   */
+  public List<String> getUniqueHeaderFileNameList() {
+    return this.uniqueLoopHeaderFileNameList;
   }
 
   public List<CHeaderRefinement> getUniqueLoopHeaderList() {
     return this.uniqueLoopHeaderList;
   }
 
+  /**
+   * 
+   * @return list of all Spider2CodegenCluster
+   */
   public List<Spider2CodegenCluster> getClusterList() {
     return this.clusterList;
   }
 
+  /**
+   * 
+   * @return name of the main processing element
+   */
   public String getMainPEName() {
     final Design design = this.scenario.getDesign();
     ComponentInstance mainOperator = this.scenario.getSimulationInfo().getMainOperator();
@@ -192,7 +266,7 @@ public class Spider2PreProcessVisitor extends PiMMSwitch<Boolean> {
     return name;
   }
 
-  void generateClusterList() {
+  private void generateClusterList() {
     final Design design = this.scenario.getDesign();
     final Map<ComponentInstance, List<ComponentInstance>> clusters = new HashMap<>();
     for (final Link link : design.getLinks()) {
@@ -274,8 +348,17 @@ public class Spider2PreProcessVisitor extends PiMMSwitch<Boolean> {
 
     /* Extract the dynamic dependent parameters */
     final List<Parameter> dynamicParameterPool = graph.getParameters().stream()
-        .filter(x -> x.isDependent() && !x.isLocallyStatic()).collect(Collectors.toList());
-    dynamicDependentParametersMap.put(graph, getOrderedDependentParameter(dynamicParametersList, dynamicParameterPool));
+        .filter(x -> x.isDependent() && !x.isConfigurable()).collect(Collectors.toList());
+
+    /*
+     * We need to ad also the static parameters because a dynamic parameters can inherit from both a dynamic and a
+     * static parameter
+     */
+    final List<Parameter> dynamicParameterInitList = new ArrayList<>(dynamicParametersList);
+    dynamicParameterInitList.addAll(staticParametersList);
+    dynamicParameterInitList.addAll(staticDependentParametersMap.get(graph));
+    dynamicDependentParametersMap.put(graph,
+        getOrderedDependentParameter(dynamicParameterInitList, dynamicParameterPool));
   }
 
   /**
@@ -314,40 +397,6 @@ public class Spider2PreProcessVisitor extends PiMMSwitch<Boolean> {
     }
   }
 
-  private long getRealSourcePortIx(final AbstractActor actor, final DataOutputPort sourcePort) {
-    if (actor instanceof Actor) {
-      final Actor a = (Actor) (actor);
-      final CHeaderRefinement refinement = (CHeaderRefinement) (a.getRefinement());
-      final FunctionPrototype proto = refinement.getLoopPrototype();
-      final List<FunctionArgument> args = proto.getOutputArguments();
-      final List<FunctionArgument> matchArgs = args.stream().filter(x -> x.getName().equals(sourcePort.getName()))
-          .collect(Collectors.toList());
-      if (matchArgs.size() != 1) {
-        throw new PreesmRuntimeException("Did not find match for output port [" + sourcePort.getName()
-            + "] in the function [" + proto.getName() + "].");
-      }
-      return args.indexOf(matchArgs.get(0));
-    }
-    return actor.getDataOutputPorts().indexOf(sourcePort);
-  }
-
-  private long getRealSinkPortIx(final AbstractActor actor, final DataInputPort targetPort) {
-    if (actor instanceof Actor) {
-      final Actor a = (Actor) (actor);
-      final CHeaderRefinement refinement = (CHeaderRefinement) (a.getRefinement());
-      final FunctionPrototype proto = refinement.getLoopPrototype();
-      final List<FunctionArgument> args = proto.getInputArguments();
-      final List<FunctionArgument> matchArgs = args.stream().filter(x -> x.getName().equals(targetPort.getName()))
-          .collect(Collectors.toList());
-      if (matchArgs.size() != 1) {
-        throw new PreesmRuntimeException("Did not find match for input port [" + targetPort.getName()
-            + "] in the function [" + proto.getName() + "].");
-      }
-      return args.indexOf(matchArgs.get(0));
-    }
-    return actor.getDataInputPorts().indexOf(targetPort);
-  }
-
   /**
    * Extracts the edges of the Graph in the edgeMap.
    * 
@@ -360,40 +409,8 @@ public class Spider2PreProcessVisitor extends PiMMSwitch<Boolean> {
     }
     Set<Spider2CodegenEdge> edgeSet = new LinkedHashSet<>();
     for (final Fifo fifo : graph.getFifos()) {
-      /* Retrieve source information */
-      final DataOutputPort sourcePort = fifo.getSourcePort();
-      final AbstractActor source = sourcePort.getContainingActor();
-      final long sourceIx = getRealSourcePortIx(source, sourcePort);
-      /* We need to substitute the real parameter name in the expression */
-      String sourceRateExpression = "(" + sourcePort.getExpression().getExpressionAsString() + ")";
-      for (final ConfigInputPort iCfg : source.getConfigInputPorts()) {
-        if (sourceRateExpression.matches(".*?\\b" + iCfg.getName() + "\\b.*?")) {
-          final String realName = ((Parameter) (iCfg.getIncomingDependency().getSetter())).getName();
-          sourceRateExpression = sourceRateExpression.replace(iCfg.getName(), realName);
-        }
-      }
-      /* We need to add the size of the FIFO */
-      sourceRateExpression += " * " + this.scenario.getSimulationInfo().getDataTypeSizeOrDefault(fifo.getType());
-
-      /* Retrieve sink information */
-      final DataInputPort targetPort = fifo.getTargetPort();
-      final AbstractActor sink = targetPort.getContainingActor();
-      final long sinkIx = getRealSinkPortIx(sink, targetPort);
-      /* We need to substitute the real parameter name in the expression */
-      String sinkRateExpression = "(" + targetPort.getExpression().getExpressionAsString() + ")";
-      for (final ConfigInputPort iCfg : sink.getConfigInputPorts()) {
-        if (sinkRateExpression.matches(".*?\\b" + iCfg.getName() + "\\b.*?")) {
-          final String realName = ((Parameter) (iCfg.getIncomingDependency().getSetter())).getName();
-          sinkRateExpression = sinkRateExpression.replace(iCfg.getName(), realName);
-        }
-      }
-      /* We need to add the size of the FIFO */
-      sinkRateExpression += " * " + this.scenario.getSimulationInfo().getDataTypeSizeOrDefault(fifo.getType());
-
       /* Add the edge to the edge Set */
-      final Spider2CodegenEdge edge = new Spider2CodegenEdge(source, sourceIx, sourceRateExpression, sink, sinkIx,
-          sinkRateExpression);
-      edge.setDelay(fifo.getDelay());
+      final Spider2CodegenEdge edge = new Spider2CodegenEdge(fifo, this.scenario.getSimulationInfo());
       edgeSet.add(edge);
     }
     edgeMap.put(graph, edgeSet);
@@ -444,17 +461,28 @@ public class Spider2PreProcessVisitor extends PiMMSwitch<Boolean> {
 
   @Override
   public Boolean caseActor(final Actor actor) {
+    /* Set the type */
+    final String type = actor.isConfigurationActor() ? "CONFIG" : "NORMAL";
     this.actorsMap.get(actor.getContainingPiGraph())
-        .add(new Spider2CodegenActor("NORMAL", actor, this.scenario, this.clusterList));
+        .add(new Spider2CodegenActor(type, actor, this.scenario, this.clusterList));
+
+    /* Set the refinement */
     if (!(actor.getRefinement() instanceof CHeaderRefinement)) {
       PreesmLogger.getLogger().warning("Actor [" + actor.getName() + "] doesn't have correct refinement.");
     } else {
       CHeaderRefinement refinement = (CHeaderRefinement) (actor.getRefinement());
       if (!this.uniqueLoopHeaderList.contains(refinement)) {
         this.uniqueLoopHeaderList.add(refinement);
+      }
+      if (!this.uniqueLoopHeaderFileNameList.contains(refinement.getFileName())) {
+        this.uniqueLoopHeaderFileNameList.add(refinement.getFileName());
+      }
+      final String loopName = refinement.getLoopPrototype().getName();
+      if (!this.uniqueLoopProtoypeNameList.contains(loopName)) {
+        this.uniqueLoopProtoypeNameList.add(loopName);
         this.uniqueLoopProtoypeList.add(new Spider2CodegenPrototype(refinement));
       }
-      this.actorToLoopFctMap.put(actor, this.uniqueLoopHeaderList.indexOf(refinement));
+      this.actorToLoopFctMap.put(actor, this.uniqueLoopProtoypeNameList.indexOf(loopName));
     }
     return true;
   }

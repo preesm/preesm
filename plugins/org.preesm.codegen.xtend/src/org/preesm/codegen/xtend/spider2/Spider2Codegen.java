@@ -21,6 +21,7 @@ import org.apache.velocity.app.VelocityEngine;
 import org.eclipse.core.resources.IWorkspace;
 import org.eclipse.core.runtime.Path;
 import org.preesm.codegen.xtend.spider2.utils.Spider2CodegenCluster;
+import org.preesm.codegen.xtend.spider2.utils.Spider2CodegenPE;
 import org.preesm.codegen.xtend.spider2.visitor.Spider2PreProcessVisitor;
 import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.preesm.commons.files.PreesmResourcesHelper;
@@ -89,11 +90,13 @@ public class Spider2Codegen {
     this.originalContextClassLoader = Thread.currentThread().getContextClassLoader();
     Thread.currentThread().setContextClassLoader(Spider2Codegen.class.getClassLoader());
     this.velocityEngine = new VelocityEngine();
+    this.velocityEngine.setProperty("resource.loader", "class");
+    this.velocityEngine.setProperty("class.resource.loader.class",
+        "org.apache.velocity.runtime.resource.loader.ClasspathResourceLoader");
     this.velocityEngine.init();
     this.velocityEngine.removeDirective("ifndef");
     this.velocityEngine.removeDirective("define");
     this.velocityEngine.removeDirective("endif");
-    this.velocityEngine.removeDirective("include");
   }
 
   /**
@@ -108,7 +111,13 @@ public class Spider2Codegen {
     this.velocityEngine = null;
   }
 
-  public void makeIncludeAndSourceFolder(final IWorkspace workspace) {
+  /**
+   * Creates include, src, lib, cmake folders.
+   * 
+   * @param workspace
+   *          the workspace
+   */
+  public void makeFolders(final IWorkspace workspace) {
     final String path = this.folder.getPath();
     /* We start looking backward -2 to remove the '/' at the end from the search */
     final String codegenDirectoryPath = path.substring(0, path.lastIndexOf('/', path.length() - 2) + 1);
@@ -121,13 +130,22 @@ public class Spider2Codegen {
     final File folderInclude = new File(codegenDirectoryPath + "include/");
     folderInclude.mkdirs();
 
-    final File folderLib = new File(codegenDirectoryPath + "lib/");
-    folderLib.mkdirs();
+    final File folderLibSpider = new File(codegenDirectoryPath + "lib/spider/api");
+    folderLibSpider.mkdirs();
 
     final File folderCMake = new File(codegenDirectoryPath + "cmake/modules");
     folderCMake.mkdirs();
+
+    final File folderBin = new File(codegenDirectoryPath + "bin/");
+    folderBin.mkdirs();
   }
 
+  /**
+   * Move include files used by the algorithm.
+   * 
+   * @param workspace
+   *          the workspace
+   */
   public void moveIncludesToFolder(final IWorkspace workspace) {
     final String path = this.folder.getPath();
     final String codegenDirectoryPath = path.substring(0, path.lastIndexOf('/', path.length() - 2) + 1);
@@ -168,6 +186,9 @@ public class Spider2Codegen {
     }
   }
 
+  /**
+   * Generates the code of the physical architecture (s-lam based)
+   */
   public void generateArchiCode() {
     if (this.originalContextClassLoader == null) {
       init();
@@ -187,6 +208,9 @@ public class Spider2Codegen {
     writeVelocityContext(context, "templates/cpp/app_archi_template.vm", "spider2-platform.cpp");
   }
 
+  /**
+   * Generates a default CMakeList for the spider project.
+   */
   public void generateCMakeList() {
     if (this.originalContextClassLoader == null) {
       init();
@@ -204,6 +228,9 @@ public class Spider2Codegen {
     copyFileFromTo("resources/cmake_modules/FindThreads.cmake", "../cmake/modules/FindThreads.cmake");
   }
 
+  /**
+   * Generates the code of the main.cpp
+   */
   public void generateMainCode() {
     if (this.originalContextClassLoader == null) {
       init();
@@ -216,6 +243,8 @@ public class Spider2Codegen {
     context.put("papify", false);
     context.put("apollo", false);
     context.put("genlog", true);
+    context.put("exportTrace", false);
+    context.put("exportSRDAG", false);
     context.put("clusterIx", "SIZE_MAX");
     context.put("genAllocPolicy", "GENERIC");
     context.put("genAllocAlign", "sizeof(int64_t)");
@@ -245,6 +274,9 @@ public class Spider2Codegen {
 
   }
 
+  /**
+   * Generates the code associated with the kernels of the application graph
+   */
   public void generateKernelCode() {
     if (this.originalContextClassLoader == null) {
       init();
@@ -258,6 +290,9 @@ public class Spider2Codegen {
     writeVelocityContext(context, "templates/cpp/app_kernels_cpp_template.vm", "spider2-application-kernels.cpp");
   }
 
+  /**
+   * Generates the application header file.
+   */
   public void generateApplicationHeader() {
     if (this.originalContextClassLoader == null) {
       init();
@@ -266,14 +301,19 @@ public class Spider2Codegen {
     /* Fill out the context */
     VelocityContext context = new VelocityContext();
     context.put("appName", this.applicationName);
-    final Set<PiGraph> graphSet = new HashSet<PiGraph>(this.preprocessor.getUniqueGraphSet());
+    final Set<PiGraph> graphSet = new HashSet<>(this.preprocessor.getUniqueGraphSet());
     graphSet.remove(this.applicationGraph);
     context.put("graphs", graphSet);
-    final List<CHeaderRefinement> refinements = this.preprocessor.getUniqueLoopHeaderList();
-    final Set<String> fileNames = new HashSet<>();
-    refinements.forEach(x -> fileNames.add(x.getFileName()));
-    context.put("fileNames", fileNames);
+    context.put("fileNames", this.preprocessor.getUniqueHeaderFileNameList());
     context.put("prototypes", this.preprocessor.getUniqueLoopPrototypeList());
+    final Set<String> typesSet = new HashSet<>();
+    final List<Spider2CodegenCluster> clusters = this.preprocessor.getClusterList();
+    for (final Spider2CodegenCluster cluster : clusters) {
+      for (final Spider2CodegenPE pe : cluster.getProcessingElements()) {
+        typesSet.add(pe.getTypeName());
+      }
+    }
+    context.put("types", typesSet);
     context.put("clusters", this.preprocessor.getClusterList());
 
     /* Write the file */
@@ -333,7 +373,6 @@ public class Spider2Codegen {
     context.put("dependentDynamicParameters", this.preprocessor.getDynamicDependentParameters(graph));
     context.put("inputInterfaces", graph.getDataInputPorts());
     context.put("outputInterfaces", graph.getDataOutputPorts());
-    context.put("refinements", this.preprocessor.getUniqueLoopHeaderList());
     context.put("actors", this.preprocessor.getActorSet(graph));
     context.put("subgraphsAndParameters", this.generateSubgraphsAndParametersList(graph));
     context.put("edges", this.preprocessor.getEdgeSet(graph));
@@ -343,7 +382,7 @@ public class Spider2Codegen {
       writeVelocityContext(context, "templates/cpp/app_graph_template.vm", "spider2-application_graph.cpp");
     } else {
       final String outputFileName = graph.getPiGraphName().toLowerCase() + "_subgraph" + ".cpp";
-      writeVelocityContext(context, "templates/cpp/graph_template.vm", outputFileName);
+      writeVelocityContext(context, "templates/cpp/app_subgraph_template.vm", outputFileName);
     }
   }
 
@@ -385,14 +424,14 @@ public class Spider2Codegen {
   private final void writeVelocityContext(final VelocityContext context, final String templateFileName,
       final String outputFileName) {
     try (Writer writer = new FileWriter(new File(this.folder, outputFileName))) {
-      final URL graphCodeTemplate = PreesmResourcesHelper.getInstance().resolve(templateFileName, this.getClass());
+      final URL template = PreesmResourcesHelper.getInstance().resolve(templateFileName, this.getClass());
 
-      try (final InputStreamReader reader = new InputStreamReader(graphCodeTemplate.openStream())) {
+      try (final InputStreamReader reader = new InputStreamReader(template.openStream())) {
         velocityEngine.evaluate(context, writer, "org.apache.velocity", reader);
         writer.flush();
       } catch (IOException e) {
         end();
-        throw new PreesmRuntimeException("Could not locate main template [" + graphCodeTemplate.getFile() + "].", e);
+        throw new PreesmRuntimeException("Could not locate main template [" + template.getFile() + "].", e);
       }
 
     } catch (IOException e) {

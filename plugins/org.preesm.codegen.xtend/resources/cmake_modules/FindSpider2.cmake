@@ -7,9 +7,9 @@ set(SPIDER2_SEARCH_PATHS
 	/opt/local # DarwinPorts
 	/opt/csw # Blastwave
 	/opt
-    ${CMAKE_SOURCE_DIR}/lib/
+    ${CMAKE_SOURCE_DIR}/lib/spider
 )
-find_path(SPIDER2_INCLUDE_DIR spider.h
+find_path(SPIDER2_INCLUDE_DIR api/spider.h
 	HINTS
 	$ENV{SPIDER2DIR}
 	PATH_SUFFIXES include
