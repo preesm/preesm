@@ -29,6 +29,7 @@ PREESM Changelog
 * Fix SRDAG exploration of cluster special actor.
 * Fix the way how delay are printed in cluster codegen.
 * Fix #295 : Check for edge in aggregate buffer was only checking the first buffer (now check in all buffer).
+* Fix the dag span value in the stat exporter.
 
 ## Release version 3.19.0
 *2020.01.10*

@@ -115,11 +115,6 @@ public abstract class AbstractMappingFromDAG extends AbstractTaskImplementation 
 
     final MapperDAG clonedDag = dag.copy();
 
-    // calculates the DAG span length on the architecture main operator (the
-    // tasks that can not be executed by the main operator are deported
-    // without transfer time to other operator)
-    calculateSpan(clonedDag, architecture, scenario, abcParams);
-
     final LatencyAbc simu = new InfiniteHomogeneousAbc(abcParams, dag, architecture,
         abcParams.getSimulatorType().getTaskSchedType(), scenario);
     final long bestLatency = simu.getFinalLatency();
