@@ -1169,21 +1169,26 @@ class MPPA2ClusterPrinter extends BlankPrinter {
 		}
 
 	'''
+	
 	override preProcessing(List<Block> printerBlocks, Collection<Block> allBlocks){
 		var Set<String> coresNames = new LinkedHashSet<String>();
+		// Retrieve all computation cores (cluster or IO in this context)
 		for (cluster : allBlocks){
 			if (cluster instanceof CoreBlock) {
 				coresNames.add(cluster.name);
 			}
 		}
+		// Pre-process every blocks
 		for (cluster : allBlocks){
+			// Ensure to process a CoreBlock
 			if (cluster instanceof CoreBlock) {
-				if(!cluster.loopBlock.codeElts.empty){
-					if(cluster.coreType.equals("MPPA2Cluster")){
+				
+				if (!cluster.loopBlock.codeElts.empty){
+					// Increment cluster or IO counters
+					if (cluster.coreType.equals("MPPA2Cluster")) {
 						numClusters = numClusters + 1;
 						clusterToSync = cluster.coreID;
-					}
-					else if(cluster.coreType.equals("MPPA2IO")){
+					} else if (cluster.coreType.equals("MPPA2IO")) {
 						io_used = 1;
 					}
 					coreNameToID.put(cluster.name, coreNameToID.size);
@@ -1194,22 +1199,23 @@ class MPPA2ClusterPrinter extends BlankPrinter {
 							this.usingClustering = 1;
 						}
 					}
+					// Determining if shared, distributed or mixed memory is used
 	       		 	var EList<Variable> definitions = cluster.getDefinitions();
 	       		 	var EList<Variable> declarations = cluster.getDeclarations();
-	       		 	for(Variable variable : definitions){
-	       		 		if(variable instanceof Buffer){
-	       		 			if(variable.name.equals("Shared")){
+	       		 	for (Variable variable : definitions){
+	       		 		if (variable instanceof Buffer){
+	       		 			if (variable.name.equals("Shared")) {
 								this.distributedOnly = 0;
-	       		 			}else if(coresNames.contains(variable.name)){
+	       		 			} else if (coresNames.contains(variable.name)) {
 								this.sharedOnly = 0;
 	       		 			}
 	       		 		}
 	       		 	}
-	       		 	for(Variable variable : declarations){
-	       		 		if(variable instanceof Buffer){
-	       		 			if(variable.name.equals("Shared")){
+	       		 	for (Variable variable : declarations){
+	       		 		if (variable instanceof Buffer){
+	       		 			if (variable.name.equals("Shared")) {
 								this.distributedOnly = 0;
-	       		 			}else if(coresNames.contains(variable.name)){
+	       		 			} else if (coresNames.contains(variable.name)) {
 								this.sharedOnly = 0;
 	       		 			}
 	       		 		}
@@ -1217,6 +1223,7 @@ class MPPA2ClusterPrinter extends BlankPrinter {
 	       		 }
 			}
 		}
+		// Initialize local scratchpad size and local buffer to zero
 		scope_scratchpad_size = 0;
 		local_buffer_size = 0;
 	}
