@@ -428,31 +428,25 @@ class MPPA2ClusterPrinter extends BlankPrinter {
 	«{
 		var gets = "{"
 		var long local_offset = scope_scratchpad_size;
-		for(param : functionCall.parameters){
+		for (param : functionCall.parameters) {
 
-			if(param instanceof SubBuffer){
+			if (param instanceof SubBuffer) {
 				var port = functionCall.parameterDirections.get(functionCall.parameters.indexOf(param))
 				var b = param.container;
 				var offset = param.offset;
-				while(b instanceof SubBuffer){
+				while (b instanceof SubBuffer) {
 					offset += b.offset;
 					b = b.container;
-					//System.out.print("Running through all buffer " + b.name + "\n");
 				}
-				//System.out.print("===> " + b.name + "\n");
-				if(b.name == "Shared"){
+				if (b.name == "Shared") {
 					gets += "	void* " + param.name + " = local_buffer+" + local_offset +";\n";
 					if(port.getName == "INPUT"){ /* we get data from DDR -> cluster only when INPUT */
-						gets += "	if(mppa_async_get(local_buffer+" + local_offset + ", &shared_segment, /* Shared + */ " + offset + ", " + param.typeSize * param.size + ", NULL) != 0){\n";
+						gets += "	if(mppa_async_get(" + param.name + ", &shared_segment, /* Shared + */ " + offset + ", " + param.typeSize * param.size + ", NULL) != 0){\n";
 						gets += "		assert(0 && \"mppa_async_get\\n\");\n";
 						gets += "	}\n ";
 					}
 					local_offset += param.typeSize * param.size;
-					//System.out.print("==> " + b.name + " " + param.name + " size " + param.size + " port_name "+ port.getName + "\n");
 				}
-				/*else{
-					System.out.print("A==> " + b.name + " " + param.name + " size " + param.size + " port_name "+ port.getName + "\n");
-				}*/
 			}
 		}
 		gets += "\t"
@@ -463,29 +457,23 @@ class MPPA2ClusterPrinter extends BlankPrinter {
 	«{
 		var puts = ""
 		var long local_offset = scope_scratchpad_size;
-		for(param : functionCall.parameters){
-			if(param instanceof SubBuffer){
+		for (param : functionCall.parameters) {
+			if (param instanceof SubBuffer) {
 				var port = functionCall.parameterDirections.get(functionCall.parameters.indexOf(param))
 				var b = param.container
 				var offset = param.offset
-				while(b instanceof SubBuffer){
+				while (b instanceof SubBuffer) {
 					offset += b.offset;
 					b = b.container;
-					//System.out.print("Running through all buffer " + b.name + "\n");
 				}
-				//System.out.print("===> " + b.name + "\n");
-				if(b.name == "Shared"){
+				if (b.name == "Shared") {
 					if(port.getName == "OUTPUT"){ /* we put data from cluster -> DDR only when OUTPUT */
-						puts += "	if(mppa_async_put(local_buffer+" + local_offset + ", &shared_segment, /* Shared + */ " + offset + ", " + param.typeSize * param.size + ", NULL) != 0){\n";
+						puts += "	if(mppa_async_put(" + param.name + ", &shared_segment, /* Shared + */ " + offset + ", " + param.typeSize * param.size + ", NULL) != 0){\n";
 						puts += "		assert(0 && \"mppa_async_put\\n\");\n";
 						puts += "	}\n";
 					}
 					local_offset += param.typeSize * param.size;
-					//System.out.print("==> " + b.name + " " + param.name + " size " + param.size + " port_name "+ port.getName + "\n");
 				}
-				/*else{
-					System.out.print("B==> " + b.name + " " + param.name + " size " + param.size + " port_name "+ port.getName + "\n");
-				}*/
 			}
 		}
 		if(local_offset > local_buffer_size)
