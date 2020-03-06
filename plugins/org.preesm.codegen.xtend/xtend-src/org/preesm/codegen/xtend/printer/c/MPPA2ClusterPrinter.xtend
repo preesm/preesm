@@ -359,7 +359,7 @@ class MPPA2ClusterPrinter extends BlankPrinter {
 	override printClusterBlockFooter(ClusterBlock block) {
 
 		// Scratchpad is only used outside parallel sections.
-		if (!parallel_for_stack.isEmpty) {
+		if (parallel_for_stack.isEmpty) {
 			for (variable : block.definitions) {
 				if (variable instanceof Buffer) {
 					var Buffer buffer = variable;
