@@ -137,14 +137,13 @@ class MPPA2ClusterPrinter extends BlankPrinter {
 	 * Size of the local scratchpad buffer.
 	 */
 	protected long local_buffer_size = 0
-	protected long local_puts_offset = 0
 	/**
 	 * Size of the scratchpad for correct offset handling in ClusterBlock.
 	 */
 	protected long scope_scratchpad_size = 0
 	/**
 	 * Stack used to identify if FiniteLoopBlock are currently being printed.
-	 * It also register the local offset needer for memory transfer.
+	 * It also register the local offset needed for memory transfer.
 	 */
 	protected Deque<Long> for_stack = new ArrayDeque<Long>();
 	/**
