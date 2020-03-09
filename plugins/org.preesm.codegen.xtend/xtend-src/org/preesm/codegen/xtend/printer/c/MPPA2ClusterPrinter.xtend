@@ -270,7 +270,7 @@ class MPPA2ClusterPrinter extends BlankPrinter {
 					}
 					if (b.name == "Shared") {
 						gets += "	void* " + subBuf.name + " = local_buffer+" + local_offset +";\n";
-						gets += "	if(mppa_async_get(" + subBuf.name + ", &shared_segment, /* Shared + */ " + offset + ", " + buffer.typeSize * buffer.size + ", NULL) != 0){\n";
+						gets += "	if(mppa_async_get(" + subBuf.name + ", &shared_segment, /* Shared + */ " + offset + ", " + subBuf.typeSize * subBuf.size + ", NULL) != 0){\n";
 						gets += "		assert(0 && \"mppa_async_get\\n\");\n";
 						gets += "	}\n ";
 						local_offset += subBuf.typeSize * subBuf.size;
