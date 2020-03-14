@@ -88,8 +88,9 @@ public class ClusterPartionner {
     Map<AbstractVertex, Long> brv = PiBRV.compute(this.graph, BRVMethod.LCM);
     for (final PiGraph subgraph : subGraphs) {
       double repetitionCount = brv.get(subgraph);
-      long factor = 2;
-      while ((Math.floor(repetitionCount / factor) == Math.ceil(repetitionCount / factor)) && (factor < maxPE)) {
+      long factor = 1;
+      while ((Math.floor(repetitionCount / (factor * 2)) == Math.ceil(repetitionCount / (factor * 2)))
+          && ((factor * 2) <= maxPE)) {
         factor = factor * 2;
       }
       new PiGraphFiringBalancer(subgraph, factor).balance();
