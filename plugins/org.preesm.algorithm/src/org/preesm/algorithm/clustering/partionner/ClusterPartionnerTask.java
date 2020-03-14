@@ -33,9 +33,11 @@ public class ClusterPartionnerTask extends AbstractTaskImplementation {
     Scenario scenario = (Scenario) inputs.get("scenario");
     Design architecture = (Design) inputs.get("architecture");
 
+    PiGraph outputGraph = new ClusterPartionner(inputGraph, scenario, architecture).cluster();
+
     // Build output map
     Map<String, Object> output = new HashMap<>();
-    output.put("PiMM", inputGraph);
+    output.put("PiMM", outputGraph);
 
     return output;
   }
