@@ -5,7 +5,9 @@ PREESM Changelog
 *XXXX.XX.XX*
 
 ### New Feature
-* Clustering: Uniform Repetition Count chain of actor can be found with the new URCSeeker class.
+* Clustering: 
+ * Uniform Repetition Count chain of actor can be found with the new URCSeeker class.
+ * Repetition count on a given PiSDF hierarchy can be balanced between coarse-grained and fine-grained levels with the new PiGraphFiringBalancer class.
 * Model: new class of parameter : Malleable Parameter, accepting a set of possible values.
 * Workflow: new task "pisdf-mparams.setter" to compute best value of malleable parameters (naive version).
 * Workflow: new task "org.preesm.codegen.xtend.Spider2CodegenTask" to generate code for Spider 2 runtime.
