@@ -654,6 +654,7 @@ public class PeriodicScheduler extends AbstractScheduler {
       VertexAbstraction va, List<VertexAbstraction> queue, long finishTime) {
     // TODO: restricts the possible mappings of following fork/broadcast/join/roundbuffer
     // to be on the same core as their direct predecessor va
+    // and inserts it first in ready queue
     for (EdgeAbstraction ea : absGraph.outgoingEdgesOf(va)) {
       VertexAbstraction tgt = absGraph.getEdgeTarget(ea);
       tgt.nbVisits += 1;

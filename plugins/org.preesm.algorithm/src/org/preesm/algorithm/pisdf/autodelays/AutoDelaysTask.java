@@ -236,6 +236,9 @@ public class AutoDelaysTask extends AbstractTaskImplementation {
     final SortedMap<Integer, Set<AbstractActor>> irRankActors = mapRankActors(topoRanks, false, 0);
     // offset of one to ease next computation
     final int maxRank = irRankActors.lastKey() + 1;
+    selec = Math.min(selec, maxRank - 2);
+    maxii = Math.min(maxii, maxRank - 2);
+
     final Map<AbstractActor,
         TopoVisit> topoRanksT = TopologicalRanking.topologicalASAPrankingT(sinkActors, hlbd.actorsNbVisitsTopoRankT);
     final SortedMap<Integer, Set<AbstractActor>> irRankActorsT = mapRankActors(topoRanksT, true, maxRank);
