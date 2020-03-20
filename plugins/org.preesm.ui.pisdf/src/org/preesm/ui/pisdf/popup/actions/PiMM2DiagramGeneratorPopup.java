@@ -154,7 +154,6 @@ public class PiMM2DiagramGeneratorPopup extends AbstractHandler {
     final IWorkbench workbench = PiMM2DiagramGeneratorPopup.WORKBENCH;
     IWorkbenchPage page = workbench.getActiveWorkbenchWindow().getActivePage();
     for (IEditorPart activeEditor : page.getEditors()) {
-      // final IEditorPart activeEditor = page.getActiveEditor();
       if (activeEditor instanceof PiMMDiagramEditor) {
         final PiMMDiagramEditor diagEditor = (PiMMDiagramEditor) activeEditor;
         // check if current diagram editor targets the diagram file we want to overwrite
