@@ -88,6 +88,7 @@ public final class PiMMUserFactory extends PiMMFactoryImpl implements PreesmUser
   public PiGraph copyPiGraphWithHistory(final PiGraph origGraph) {
     // generic type forced to EObject to call the default copy from PreesmUserFactory
     final PiGraph copyGraph = this.copyWithHistory(origGraph);
+
     // we copy all known observer to all relevant objects (here for PiGraph)
     List<PiGraph> allPiGraph = new ArrayList<>();
     allPiGraph.add(copyGraph);
@@ -106,7 +107,7 @@ public final class PiMMUserFactory extends PiMMFactoryImpl implements PreesmUser
     for (int i = 0; i < allOrigParams.size(); i++) {
       final Parameter paramOrig = allOrigParams.get(i);
       final Parameter paramCopy = allCopyParams.get(i);
-      if (!paramOrig.getVertexPath().equals(paramCopy.getVertexPath())) {
+      if (!paramOrig.getVertexPath().endsWith(paramCopy.getVertexPath())) {
         throw new PreesmRuntimeException("Copy did not preserve order on parameters");
       }
       PreesmCopyTracker.trackCopy(paramOrig, paramCopy);
@@ -121,7 +122,7 @@ public final class PiMMUserFactory extends PiMMFactoryImpl implements PreesmUser
     for (int i = 0; i < allOrigActors.size(); i++) {
       final AbstractActor actorOrig = allOrigActors.get(i);
       final AbstractActor actorCopy = allCopyActors.get(i);
-      if (!actorOrig.getVertexPath().equals(actorCopy.getVertexPath())) {
+      if (!actorOrig.getVertexPath().endsWith(actorCopy.getVertexPath())) {
         throw new PreesmRuntimeException("Copy did not preserve order on actors");
       }
       PreesmCopyTracker.trackCopy(actorOrig, actorCopy);
