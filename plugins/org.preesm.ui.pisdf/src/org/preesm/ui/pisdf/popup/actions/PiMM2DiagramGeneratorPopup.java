@@ -152,22 +152,22 @@ public class PiMM2DiagramGeneratorPopup extends AbstractHandler {
 
   private void closeEditorIfOpen(final IPath diagramFilePath) {
     final IWorkbench workbench = PiMM2DiagramGeneratorPopup.WORKBENCH;
-    final IWorkbenchPage page = workbench.getActiveWorkbenchWindow().getActivePage();
-    final IEditorPart activeEditor = page.getActiveEditor();
-    if (activeEditor instanceof PiMMDiagramEditor) {
-      final PiMMDiagramEditor diagEditor = (PiMMDiagramEditor) activeEditor;
-      // check if current diagram editor targets the diagram file we want to overwrite
-      final IDiagramEditorInput diagramEditorInput = diagEditor.getDiagramEditorInput();
-      final URI uri = diagramEditorInput.getUri();
-      final URI trimFragment = uri.trimFragment();
-      final URI createPlatformResourceURI = URI.createPlatformResourceURI(diagramFilePath.toString(), false);
-      final boolean equals = trimFragment.equals(createPlatformResourceURI);
-      if (equals) {
-        // close current editor
-        ((PiMMDiagramEditor) activeEditor).close();
+    IWorkbenchPage page = workbench.getActiveWorkbenchWindow().getActivePage();
+    for (IEditorPart activeEditor : page.getEditors()) {
+      if (activeEditor instanceof PiMMDiagramEditor) {
+        final PiMMDiagramEditor diagEditor = (PiMMDiagramEditor) activeEditor;
+        // check if current diagram editor targets the diagram file we want to overwrite
+        final IDiagramEditorInput diagramEditorInput = diagEditor.getDiagramEditorInput();
+        final URI uri = diagramEditorInput.getUri();
+        final URI trimFragment = uri.trimFragment();
+        final URI createPlatformResourceURI = URI.createPlatformResourceURI(diagramFilePath.toString(), false);
+        final boolean equals = trimFragment.equals(createPlatformResourceURI);
+        if (equals) {
+          // close current editor
+          ((PiMMDiagramEditor) activeEditor).close();
+        }
       }
     }
-
   }
 
   private int askUserConfirmation(final Shell shell, final IPath diagramFilePath) {
