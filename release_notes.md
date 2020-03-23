@@ -24,6 +24,7 @@ PREESM Changelog
  * MD5 checking can be printed for sink actors contained in a cluster.
  * Parallel Hierarchy with one children is not considered anymore as a section block.
 * Full support of final spider 2 api.
+* Fix & Update Checkstyle to 8.29.
 
 ### Bug fix
 * Fix ids and icons of a few GUI elements.
