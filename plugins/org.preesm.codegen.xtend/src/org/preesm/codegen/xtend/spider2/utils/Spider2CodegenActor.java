@@ -72,8 +72,10 @@ public class Spider2CodegenActor {
       final Actor a = (Actor) (actor);
       if (a.getRefinement() instanceof CHeaderRefinement) {
         final CHeaderRefinement refinement = (CHeaderRefinement) (a.getRefinement());
-        this.refinementConfigInputPorts.addAll(refinement.getLoopConfigInputPorts());
-        this.refinementConfigOutputPorts.addAll(refinement.getLoopConfigOutputPorts());
+        if (refinement.getLoopPrototype() != null) {
+          this.refinementConfigInputPorts.addAll(refinement.getLoopConfigInputPorts());
+          this.refinementConfigOutputPorts.addAll(refinement.getLoopConfigOutputPorts());
+        }
       }
     }
     this.rateConfigInputPorts.addAll(actor.getConfigInputPorts().stream()

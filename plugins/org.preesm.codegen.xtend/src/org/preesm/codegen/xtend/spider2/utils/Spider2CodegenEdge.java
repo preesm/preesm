@@ -140,6 +140,9 @@ public class Spider2CodegenEdge {
       final Actor a = (Actor) (actor);
       final CHeaderRefinement refinement = (CHeaderRefinement) (a.getRefinement());
       final FunctionPrototype proto = refinement.getLoopPrototype();
+      if (proto == null) {
+        return actor.getDataOutputPorts().indexOf(sourcePort);
+      }
       final List<FunctionArgument> args = proto.getOutputArguments();
       final List<FunctionArgument> matchArgs = args.stream().filter(x -> x.getName().equals(sourcePort.getName()))
           .collect(Collectors.toList());
@@ -157,6 +160,9 @@ public class Spider2CodegenEdge {
       final Actor a = (Actor) (actor);
       final CHeaderRefinement refinement = (CHeaderRefinement) (a.getRefinement());
       final FunctionPrototype proto = refinement.getLoopPrototype();
+      if (proto == null) {
+        return actor.getDataInputPorts().indexOf(targetPort);
+      }
       final List<FunctionArgument> args = proto.getInputArguments();
       final List<FunctionArgument> matchArgs = args.stream().filter(x -> x.getName().equals(targetPort.getName()))
           .collect(Collectors.toList());
