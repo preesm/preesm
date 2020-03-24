@@ -54,7 +54,8 @@ public class SpiderTest {
 
   static final String   projectName = "org.ietr.preesm.spider.sobel";
   static final String[] scenarios   = new String[] { "1core.scenario", "4core.scenario" };
-  static final String[] workflows   = new String[] { "SpiderCodegen.workflow", "Codegen.workflow" };
+  static final String[] workflows   = new String[] { "SpiderCodegen.workflow", "Spider2Codegen.workflow",
+      "Codegen.workflow" };
 
   final String workflow;
   final String scenario;

@@ -25,6 +25,7 @@ PREESM Changelog
  * Parallel Hierarchy with one children is not considered anymore as a section block.
 * Full support of final spider 2 api.
 * Fix & Update Checkstyle to 8.29.
+* Add Spider2 codegen to unit tests.
 
 ### Bug fix
 * Fix ids and icons of a few GUI elements.
