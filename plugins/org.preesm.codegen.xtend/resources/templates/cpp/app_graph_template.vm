@@ -44,16 +44,18 @@
 
 /* === Function(s) definition === */
 
-void spider::createUserApplicationGraph() {
+spider::pisdf::Graph *spider::createUserApplicationGraph() {
     /* == Create the graph == */
-    auto *graph = spider::api::createUserApplicationGraph(/* = Name of the application graph = */ "$appName",
-                                                          /* = Number of actors              = */  ${actorCount},
-                                                          /* = Number of edges               = */  ${edgeCount},
-                                                          /* = Number of parameters          = */  ${paramCount},
-                                                          /* = Number of input interfaces    = */  ${inputInterfaceCount},
-                                                          /* = Number of output interfaces   = */  ${outputInterfaceCount},
-                                                          /* = Number of config actors       = */  ${cfgActorCount});
+    auto *graph = spider::api::createGraph(
+                             /* = Name of the application graph = */ "$appName",
+                             /* = Number of actors              = */  ${actorCount},
+                             /* = Number of edges               = */  ${edgeCount},
+                             /* = Number of parameters          = */  ${paramCount},
+                             /* = Number of input interfaces    = */  ${inputInterfaceCount},
+                             /* = Number of output interfaces   = */  ${outputInterfaceCount},
+                             /* = Number of config actors       = */  ${cfgActorCount});
 
     /* === Creates the parameter(s) === */
 #parse("templates/cpp/graph_template.vm")
+    return graph;
 }

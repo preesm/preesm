@@ -90,8 +90,9 @@ namespace spider {
 
     /**
      * @brief Creates the main user application graph.
+     * @return Created application graph.
      */
-    void createUserApplicationGraph();
+    spider::pisdf::Graph *createUserApplicationGraph();
 #if(${prototypes.size()} > 0)
     
     /* === Kernel prototype(s) declaration === */
