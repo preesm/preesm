@@ -253,12 +253,12 @@ public class PeriodsPreschedulingCheckTask extends AbstractTaskImplementation {
     PreesmLogger.getLogger().log(Level.INFO, "Periodic actor for NBLF: " + sbNBLF.toString());
 
     // 3. for each selected periodic node for nblf:
-    performAllNBF(actorsNBLF, periodicActors, false, heurFifoBreaks.getAbsGraph(), heurFifoBreaks.breakingFifosAbs,
-        wcets, heurFifoBreaks.minCycleBrv, nbCore);
+    performAllNBF(actorsNBLF, periodicActors, false, heurFifoBreaks.getAbsGraph(), heurFifoBreaks, wcets,
+        heurFifoBreaks.minCycleBrv, nbCore);
 
     // 4. for each selected periodic node for nbff:
-    performAllNBF(actorsNBFF, periodicActors, true, heurFifoBreaks.getAbsGraph(), heurFifoBreaks.breakingFifosAbs,
-        wcets, heurFifoBreaks.minCycleBrv, nbCore);
+    performAllNBF(actorsNBFF, periodicActors, true, heurFifoBreaks.getAbsGraph(), heurFifoBreaks, wcets,
+        heurFifoBreaks.minCycleBrv, nbCore);
 
     long duration = System.nanoTime() - time;
     PreesmLogger.getLogger().info("Time+ " + Math.round(duration / 1e6) + " ms.");
@@ -301,7 +301,7 @@ public class PeriodsPreschedulingCheckTask extends AbstractTaskImplementation {
    * 
    */
   private static void performAllNBF(Map<Actor, Double> actorsNBF, Map<Actor, Long> allPeriodicActors, boolean reverse,
-      DefaultDirectedGraph<AbstractActor, FifoAbstraction> absGraph, Set<FifoAbstraction> breakingFifosAbs,
+      DefaultDirectedGraph<AbstractActor, FifoAbstraction> absGraph, HeuristicLoopBreakingDelays hlbd,
       Map<AbstractVertex, Long> wcets, Map<AbstractVertex, Long> minCycleBrv, int nbCore) {
 
     for (Actor a : actorsNBF.keySet()) {
@@ -311,7 +311,7 @@ public class PeriodsPreschedulingCheckTask extends AbstractTaskImplementation {
       nbf.put(a, 1L);
 
       DefaultDirectedGraph<AbstractActor,
-          FifoAbstraction> subgraph = AbstractGraph.subDAGFrom(absGraph, a, breakingFifosAbs, reverse);
+          FifoAbstraction> subgraph = AbstractGraph.subDAGFrom(absGraph, a, hlbd.breakingFifosAbs, reverse);
       totC += performNBFinternal(a, subgraph, wcets, minCycleBrv, nbf, nbCore, reverse, slack);
 
       TreeMap<Actor, Long> nbTimesDuringAperiod = new TreeMap<>(new ActorPeriodComparator(true));
@@ -330,7 +330,7 @@ public class PeriodsPreschedulingCheckTask extends AbstractTaskImplementation {
         }
         nbf.put(entry.getKey(), entry.getValue());
         DefaultDirectedGraph<AbstractActor, FifoAbstraction> unconnectedsubgraph = AbstractGraph.subDAGFrom(absGraph,
-            entry.getKey(), breakingFifosAbs, reverse);
+            entry.getKey(), hlbd.breakingFifosAbs, reverse);
         totC += performNBFinternal(entry.getKey(), unconnectedsubgraph, wcets, minCycleBrv, nbf, nbCore, reverse,
             slack);
         totC += wcets.get(entry.getKey()) * entry.getValue();
@@ -401,8 +401,9 @@ public class PeriodsPreschedulingCheckTask extends AbstractTaskImplementation {
           timeTo.put(dest, time);
           if (subgraph.outDegreeOf(dest) == 0) {
             if (time > slack) {
-              throw new PreesmRuntimeException("Critical path from/to <" + start.getName()
-                  + "> is too long compared to its period ( " + time + ").");
+              throw new PreesmRuntimeException(
+                  "Critical path from/to <" + start.getName() + "> is too long compared to its period (duration is "
+                      + time + " while slack time is " + slack + ").");
             }
           }
         }

@@ -49,10 +49,6 @@ public class ChocoCutModel {
     // prepare graph structure
     dag = AbstractGraph.copyGraph(hlbd.absGraph);
     dag.removeAllEdges(hlbd.breakingFifosAbs);
-    // remove self-loops
-    for (AbstractActor aa : dag.vertexSet()) {
-      dag.removeEdge(aa, aa);
-    }
     fixedFifos = hlbd.getForbiddenFifos();
     // create model
     final int nbActors = dag.vertexSet().size();

@@ -73,6 +73,7 @@ public class HeuristicLoopBreakingDelays {
 
   public final Map<AbstractVertex, Long>               minCycleBrv;
   public final Set<FifoAbstraction>                    breakingFifosAbs;
+  public final Set<FifoAbstraction>                    selfLoopsAbs;
   DefaultDirectedGraph<AbstractActor, FifoAbstraction> absGraph;
   List<List<AbstractActor>>                            cycles;
 
@@ -88,6 +89,7 @@ public class HeuristicLoopBreakingDelays {
 
     this.minCycleBrv = new HashMap<>();
     this.breakingFifosAbs = new HashSet<>();
+    this.selfLoopsAbs = new HashSet<>();
     this.absGraph = null;
     this.cycles = null;
   }
@@ -123,6 +125,9 @@ public class HeuristicLoopBreakingDelays {
       breakingFifosAbs.add(breakingFifoAbs);
       final AbstractActor src = absGraph.getEdgeSource(breakingFifoAbs);
       final AbstractActor tgt = absGraph.getEdgeTarget(breakingFifoAbs);
+      if (cycle.size() == 1) {
+        selfLoopsAbs.add(breakingFifoAbs);
+      }
       long gcdCycle = MathFunctionsHelper.gcd(cycle.stream().map(a -> brv.get(a)).collect(Collectors.toList()));
       cycle.forEach(a -> {
         long localBrv = brv.get(a) / gcdCycle;

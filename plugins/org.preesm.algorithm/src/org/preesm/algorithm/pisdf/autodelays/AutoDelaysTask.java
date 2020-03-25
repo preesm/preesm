@@ -651,7 +651,8 @@ public class AutoDelaysTask extends AbstractTaskImplementation {
         boolean forbiddenFifo = forbiddenFifos.contains(fa);
         if (!forbiddenFifo && !selfLoop) {
           fas.add(fa);
-        } else if (hlbd.breakingFifosAbs.contains(fa) || selfLoop) {
+        } else if (hlbd.breakingFifosAbs.contains(fa)) {
+          // breakingFifosAbs already contains self-loops
           // do nothing: we will not add delays on this one
         } else {
           isOK = false;
