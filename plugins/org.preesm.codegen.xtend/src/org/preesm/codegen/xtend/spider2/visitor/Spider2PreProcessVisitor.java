@@ -477,7 +477,8 @@ public class Spider2PreProcessVisitor extends PiMMSwitch<Boolean> {
       if (!this.uniqueLoopHeaderFileNameList.contains(refinement.getFileName())) {
         this.uniqueLoopHeaderFileNameList.add(refinement.getFileName());
       }
-      final String loopName = refinement.getLoopPrototype().getName();
+      final FunctionPrototype loop = refinement.getLoopPrototype();
+      final String loopName = loop != null ? loop.getName() : actor.getName();
       if (!this.uniqueLoopProtoypeNameList.contains(loopName)) {
         this.uniqueLoopProtoypeNameList.add(loopName);
         this.uniqueLoopProtoypeList.add(new Spider2CodegenPrototype(refinement));

@@ -106,7 +106,7 @@ int main(int argc, char *argv[]) {
         spider::createUserPhysicalPlatform();
         
         /* == Creates the application graph == */
-        spider::createUserApplicationGraph();
+        auto *graph = spider::createUserApplicationGraph();
         
         /* == Creates the runtime platform == */
         spider::api::createThreadRTPlatform();
@@ -116,9 +116,18 @@ int main(int argc, char *argv[]) {
         
         /* == Call the user init function(s) == */
         spider::userApplicationInit();
+
+        /* == Creates the runtime context == */
+        auto context = spider::createRuntimeContext(graph, spider::RunMode::${runMode}, ${loopCount}, spider::RuntimeType::${runtimeAlgo}, spider::SchedulingPolicy::${schedAlgorithm});
         
         /* == Run the application == */
-        spider::run(spider::RunMode::${runMode}, ${loopCount}, spider::RuntimeType::${runtimeAlgo}, spider::SchedulingAlgorithm::${schedAlgorithm});    
+        spider::run(context);
+
+        /* == Destroy the context == */
+        spider::destroyRuntimeContext(context);
+
+        /* == Destroy the graph == */
+        spider::api::destroyGraph(graph);    
         
         /* == Call the user finalize function(s) == */
         spider::userApplicationFinalize();
