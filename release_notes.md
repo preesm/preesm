@@ -26,6 +26,7 @@ PREESM Changelog
 * Full support of final spider 2 api.
 * Fix & Update Checkstyle to 8.29.
 * Add Spider2 codegen to unit tests.
+* Update Cluster Scheduler integration tests.
 
 ### Bug fix
 * Fix ids and icons of a few GUI elements.
