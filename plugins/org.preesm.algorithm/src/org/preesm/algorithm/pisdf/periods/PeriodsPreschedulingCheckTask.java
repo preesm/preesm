@@ -210,7 +210,8 @@ public class PeriodsPreschedulingCheckTask extends AbstractTaskImplementation {
     }
     if (periodicActors.isEmpty()) {
       // then there is no need for further analysis
-      PreesmLogger.getLogger().log(Level.INFO, "Periodic prescheduling check : valid schedule *might* exist!");
+      PreesmLogger.getLogger().log(Level.INFO,
+          "Periodic prescheduling check : valid schedule *might* exist! (total load: " + totC + ")");
       return output;
     }
 
@@ -264,7 +265,8 @@ public class PeriodsPreschedulingCheckTask extends AbstractTaskImplementation {
     PreesmLogger.getLogger().info("Time+ " + Math.round(duration / 1e6) + " ms.");
 
     // 5. greetings to the user
-    PreesmLogger.getLogger().log(Level.INFO, "Periodic prescheduling check succeeded: valid schedule *might* exist!");
+    PreesmLogger.getLogger().log(Level.INFO,
+        "Periodic prescheduling check succeeded: valid schedule *might* exist! (total load: " + totC + ")");
 
     return output;
   }
