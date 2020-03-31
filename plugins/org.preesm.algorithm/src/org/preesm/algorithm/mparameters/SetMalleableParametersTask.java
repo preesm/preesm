@@ -10,6 +10,8 @@ import java.util.stream.Collectors;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.preesm.algorithm.pisdf.autodelays.IterationDelayedEvaluator;
 import org.preesm.algorithm.synthesis.SynthesisResult;
+import org.preesm.algorithm.synthesis.evaluation.energy.SimpleEnergyCost;
+import org.preesm.algorithm.synthesis.evaluation.energy.SimpleEnergyEvaluation;
 import org.preesm.algorithm.synthesis.evaluation.latency.LatencyCost;
 import org.preesm.algorithm.synthesis.evaluation.latency.SimpleLatencyEvaluation;
 import org.preesm.algorithm.synthesis.schedule.ScheduleOrderManager;
@@ -118,9 +120,14 @@ public class SetMalleableParametersTask extends AbstractTaskImplementation {
       final SynthesisResult scheduleAndMap = scheduler.scheduleAndMap(dag, architecture, scenario);
       // use implementation evaluation of PeriodicScheduler instead?
       final ScheduleOrderManager scheduleOM = new ScheduleOrderManager(dag, scheduleAndMap.schedule);
-      final LatencyCost evaluate = new SimpleLatencyEvaluation().evaluate(dag, architecture, scenario,
+      final LatencyCost evaluateLatency = new SimpleLatencyEvaluation().evaluate(dag, architecture, scenario,
           scheduleAndMap.mapping, scheduleOM);
-      final long latency = evaluate.getValue();
+      final long latency = evaluateLatency.getValue();
+      final SimpleEnergyCost evaluateEnergy = new SimpleEnergyEvaluation().evaluate(dag, architecture, scenario,
+          scheduleAndMap.mapping, scheduleOM);
+      final long energy = evaluateEnergy.getValue();
+      System.err.println("Energy was: " + energy);
+
       if (bestConfig == null || bestLatency > latency) {
         bestConfig = pce.recordConfiguration();
         bestLatency = latency;
