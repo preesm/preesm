@@ -147,7 +147,7 @@ public class ExcelEnergyWriter extends ExcelWriter {
       for (final Component opDefId : design.getOperatorComponents()) {
         for (final AbstractActor vertexName : vSet) {
 
-          final String energy = this.scenario.getEnergyConfig().getEnergyActorOrDefault(vertexName, opDefId).toString();
+          final String energy = this.scenario.getEnergyConfig().getEnergyActorOrDefault(vertexName, opDefId);
 
           WritableCell opCell = (WritableCell) sheet.findCell(opDefId.getVlnv().getName());
           WritableCell vCell = (WritableCell) sheet.findCell(vertexName.getVertexPath());

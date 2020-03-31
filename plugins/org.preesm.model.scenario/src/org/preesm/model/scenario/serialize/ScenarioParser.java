@@ -925,7 +925,7 @@ public class ScenarioParser {
           parsePerformanceObjective(elt);
         } else if (type.equals("pePower")) {
           parsePlatformPower(elt);
-        } else if (type.equals("peActorEnergy")) {
+        } else if (type.equals("peActorsEnergy")) {
           parsePeActorEnergy(elt);
         } else if (type.equals("peTypeCommsEnergy")) {
           parsePeCommsEnergy(elt);
@@ -981,16 +981,14 @@ public class ScenarioParser {
    */
   private void parsePeActorEnergy(final Element peActorEnergy) {
 
-    Node nodeOpName = peActorEnergy.getAttributeNode("opName");
-    String opName = nodeOpName.getNodeValue();
     Node nodeChild = peActorEnergy.getFirstChild();
 
     while (nodeChild != null) {
       if (nodeChild instanceof Element) {
         final Element elt = (Element) nodeChild;
         final String type = elt.getTagName();
-        if (type.equals("actorEnergy")) {
-          parseActorEnergy(elt, opName);
+        if (type.equals("peActorEnergy")) {
+          parseActorEnergy(elt);
         }
       }
       nodeChild = nodeChild.getNextSibling();
@@ -1002,21 +1000,22 @@ public class ScenarioParser {
    *
    * @param actorEnergyElt
    *          the actorEnergy group elt
-   * @param opName
-   *          the operator name
    * @return the actorEnergy
    */
-  private void parseActorEnergy(final Element actorEnergyElt, final String opName) {
+  private void parseActorEnergy(final Element actorEnergyElt) {
 
-    Node nodeEnergyValue = actorEnergyElt.getAttributeNode("energyValue");
-    Node nodeVertexPath = actorEnergyElt.getAttributeNode("vertexPath");
-    if (nodeEnergyValue != null && nodeVertexPath != null) {
+    Node nodeEnergyValue = actorEnergyElt.getAttributeNode("energy");
+    Node nodeOpName = actorEnergyElt.getAttributeNode("opname");
+    Node nodeVertexPath = actorEnergyElt.getAttributeNode("vertexname");
+
+    if (nodeEnergyValue != null && nodeOpName != null && nodeVertexPath != null) {
       String energyValue = nodeEnergyValue.getNodeValue();
+      String opName = nodeOpName.getNodeValue();
       String vertexPath = nodeVertexPath.getNodeValue();
-      final double actorEnergyValue = Double.parseDouble(energyValue);
       final AbstractActor actor = getActorFromPath(vertexPath);
       final Component component = this.scenario.getDesign().getComponent(opName);
-      this.scenario.getEnergyConfig().setActorPeEnergy(actor, component, actorEnergyValue);
+      System.err.println("Actor: " + actor.getName() + "  value: " + energyValue);
+      this.scenario.getEnergyConfig().setActorPeEnergy(actor, component, energyValue);
     }
   }
 

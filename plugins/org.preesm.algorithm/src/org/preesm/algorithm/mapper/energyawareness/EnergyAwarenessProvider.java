@@ -452,14 +452,14 @@ public class EnergyAwarenessProvider {
    *          {@link Scenario} used in the mapping
    * @return
    */
-  public static double computeDynamicEnergy(Mapping mapping, Scenario scenarioMapping) {
-    double energyDynamic = 0.0;
+  public static long computeDynamicEnergy(Mapping mapping, Scenario scenarioMapping) {
+    long energyDynamic = 0;
     for (Entry<AbstractActor, EList<ComponentInstance>> coreMapping : mapping.getMappings()) {
       for (ComponentInstance compInstance : coreMapping.getValue()) {
         AbstractActor actor = coreMapping.getKey();
         Component component = compInstance.getComponent();
         if (actor != null && actor.getClass().equals(ActorImpl.class)) {
-          double energyActor = scenarioMapping.getEnergyConfig().getEnergyActorOrDefault(actor, component);
+          long energyActor = scenarioMapping.getEnergyConfig().evaluateEnergyActorOrDefault(actor, component);
           energyDynamic = energyDynamic + energyActor;
         }
       }
@@ -482,7 +482,7 @@ public class EnergyAwarenessProvider {
       Component component = componentInstance.getComponent();
       AbstractActor actor = vertex.getReferencePiVertex();
       if (actor != null && actor.getClass().equals(ActorImpl.class)) {
-        double energyActor = scenarioMapping.getEnergyConfig().getEnergyActorOrDefault(actor, component);
+        double energyActor = (double) scenarioMapping.getEnergyConfig().evaluateEnergyActorOrDefault(actor, component);
         energyDynamic = energyDynamic + energyActor;
       }
     }
@@ -541,7 +541,6 @@ public class EnergyAwarenessProvider {
       Map<String, Integer> coresOfEachType, String typeOfSearch, Set<Map<String, Integer>> configsAlreadyUsed) {
     Map<String, Integer> previousConfig = new LinkedHashMap<>();
     previousConfig.putAll(coresUsedOfEachType);
-    boolean end = false;
     boolean foundSomething = false;
     String messageLogger = "";
     switch (typeOfSearch.toLowerCase()) {

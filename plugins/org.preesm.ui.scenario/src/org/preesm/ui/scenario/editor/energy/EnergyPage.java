@@ -117,7 +117,10 @@ public class EnergyPage extends ScenarioPage {
   TableViewer tableViewer = null;
 
   /** The pisdf column names. */
-  private static final String[] PISDF_COLUMN_NAMES = { "Actors", "Value" };
+  private static final String[] PISDF_COLUMN_NAMES = { "Actors", "Input Parameters", "Expression", "Evaluation",
+      "Value" };
+
+  private static final int[] PISDF_COLUMN_SIZES = { 200, 200, 200, 50, 50 };
 
   /** The objective column names. */
   private static final String[] OBJECTIVE_COLUMN_NAMES = { "Parameter", "Value" };
@@ -579,8 +582,16 @@ public class EnergyPage extends ScenarioPage {
     for (int i = 0; i < columnNames.length; i++) {
       final TableColumn column = new TableColumn(table, SWT.NONE, i);
       column.setText(columnNames[i]);
+      column.setWidth(PISDF_COLUMN_SIZES[i]);
       columns.add(column);
     }
+
+    final CellEditor[] editors = new CellEditor[table.getColumnCount()];
+    for (int i = 0; i < table.getColumnCount(); i++) {
+      editors[i] = new TextCellEditor(table);
+    }
+    this.tableViewer.setColumnProperties(PISDF_COLUMN_NAMES);
+    this.tableViewer.setCellEditors(editors);
 
     this.tableViewer.setCellModifier(new ICellModifier() {
       @Override
@@ -588,26 +599,15 @@ public class EnergyPage extends ScenarioPage {
         if (element instanceof TableItem) {
           final TableItem ti = (TableItem) element;
           final AbstractActor actor = (AbstractActor) ti.getData();
+
           final String componentType = coreCombo.getText();
+          final Component component = EnergyPage.this.scenario.getDesign().getComponent(componentType);
+
+          final String oldValue = EnergyPage.this.scenario.getEnergyConfig().getEnergyActorOrDefault(actor, component);
           final String newValue = (String) value;
-          boolean dirty = false;
-          if (PISDF_COLUMN_NAMES[1].equals(property)) {
-            try {
-              final Component component = EnergyPage.this.scenario.getDesign().getComponent(componentType);
-              final double oldValue = EnergyPage.this.scenario.getEnergyConfig().getEnergyActorOrDefault(actor,
-                  component);
-              final double parsedNewValue = Double.parseDouble(newValue);
-              if (oldValue != parsedNewValue) {
-                dirty = true;
-                EnergyPage.this.scenario.getEnergyConfig().setActorPeEnergy(actor, component, parsedNewValue);
-              }
-            } catch (final NumberFormatException e) {
-              ErrorDialog.openError(EnergyPage.this.getEditorSite().getShell(), "Wrong number format",
-                  "Energy Actor-PE values are Double typed.",
-                  new Status(IStatus.ERROR, "org.preesm.ui.scenario", "Could not parse double. " + e.getMessage()));
-            }
-          }
-          if (dirty) {
+
+          if (!oldValue.equals(newValue)) {
+            EnergyPage.this.scenario.getEnergyConfig().setActorPeEnergy(actor, component, newValue);
             firePropertyChange(IEditorPart.PROP_DIRTY);
             tableViewer.refresh(actor, false, false);
           }
@@ -618,27 +618,18 @@ public class EnergyPage extends ScenarioPage {
       public Object getValue(final Object element, final String property) {
         if (element instanceof AbstractActor) {
           final AbstractActor actor = (AbstractActor) element;
-          if (PISDF_COLUMN_NAMES[1].equals(property)) {
-            final String componentType = coreCombo.getText();
-            final Component component = EnergyPage.this.scenario.getDesign().getComponent(componentType);
-            return EnergyPage.this.scenario.getEnergyConfig().getEnergyActorOrDefault(actor, component).toString();
-          }
+          final String componentType = coreCombo.getText();
+          final Component component = EnergyPage.this.scenario.getDesign().getComponent(componentType);
+          return EnergyPage.this.scenario.getEnergyConfig().getEnergyActorOrDefault(actor, component);
         }
         return "";
       }
 
       @Override
       public boolean canModify(final Object element, final String property) {
-        return property.contentEquals(PISDF_COLUMN_NAMES[1]);
+        return property.contentEquals(PISDF_COLUMN_NAMES[2]);
       }
     });
-
-    final CellEditor[] editors = new CellEditor[table.getColumnCount()];
-    for (int i = 0; i < table.getColumnCount(); i++) {
-      editors[i] = new TextCellEditor(table);
-    }
-    this.tableViewer.setColumnProperties(PISDF_COLUMN_NAMES);
-    this.tableViewer.setCellEditors(editors);
 
     final Table tref = table;
     final Composite comp = tablecps;
