@@ -27,6 +27,7 @@ PREESM Changelog
 * Fix & Update Checkstyle to 8.29.
 * Add Spider2 codegen to unit tests.
 * Update Cluster Scheduler integration tests.
+* Add NewSynthesis Tests
 
 ### Bug fix
 * Fix ids and icons of a few GUI elements.
