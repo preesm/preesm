@@ -76,7 +76,8 @@ public class NewSynthesisTest {
     final String stereoProjectName = "org.ietr.preesm.stereo";
     final String[] stereoScenarios = new String[] { "1core.scenario", "4core.scenario", "8coresC6678.scenario",
         "lowMaxDisparity.scenario", "YUV4core.scenario" };
-    final String[] stereoWorkflows = new String[] { "NEWSynthesisAPI_legacy.workflow", "NEWSynthesisAPI.workflow" };
+    final String[] stereoWorkflows = new String[] { "NEWSynthesisAPI_legacy.workflow",
+        "NEWSynthesisAPI_simple.workflow", "NEWSynthesisAPI_periodic.workflow" };
     for (String workflow : stereoWorkflows) {
       for (String scenario : stereoScenarios) {
         params.add(new Object[] { workflow, scenario, stereoProjectName });
