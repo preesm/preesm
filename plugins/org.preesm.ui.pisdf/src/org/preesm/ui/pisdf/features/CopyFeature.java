@@ -60,13 +60,60 @@ public class CopyFeature extends AbstractCopyFeature {
    * (only stores EObjects).
    */
   public static class VertexCopy extends EObjectImpl {
-    public int              originalX;
-    public int              originalY;
-    public PictogramElement originalPictogramElement;
-    public Diagram          originalDiagram;
-    public Configurable     originalVertex;
-    public PiGraph          originalPiGraph;
+    private int              originalX;
+    private int              originalY;
+    private PictogramElement originalPictogramElement;
+    private Diagram          originalDiagram;
+    private Configurable     originalVertex;
+    private PiGraph          originalPiGraph;
 
+    public int getOriginalX() {
+      return originalX;
+    }
+
+    public void setOriginalX(int originalX) {
+      this.originalX = originalX;
+    }
+
+    public int getOriginalY() {
+      return originalY;
+    }
+
+    public void setOriginalY(int originalY) {
+      this.originalY = originalY;
+    }
+
+    public PictogramElement getOriginalPictogramElement() {
+      return originalPictogramElement;
+    }
+
+    public void setOriginalPictogramElement(PictogramElement originalPictogramElement) {
+      this.originalPictogramElement = originalPictogramElement;
+    }
+
+    public Diagram getOriginalDiagram() {
+      return originalDiagram;
+    }
+
+    public void setOriginalDiagram(Diagram originalDiagram) {
+      this.originalDiagram = originalDiagram;
+    }
+
+    public Configurable getOriginalVertex() {
+      return originalVertex;
+    }
+
+    public void setOriginalVertex(Configurable originalVertex) {
+      this.originalVertex = originalVertex;
+    }
+
+    public PiGraph getOriginalPiGraph() {
+      return originalPiGraph;
+    }
+
+    public void setOriginalPiGraph(PiGraph originalPiGraph) {
+      this.originalPiGraph = originalPiGraph;
+    }
   }
 
   public CopyFeature(final IFeatureProvider fp) {
@@ -83,12 +130,12 @@ public class CopyFeature extends AbstractCopyFeature {
       final Object bo = getBusinessObjectForPictogramElement(pe);
       if (bo instanceof AbstractVertex) {
         final VertexCopy vertexCopy = new VertexCopy();
-        vertexCopy.originalDiagram = getDiagram();
-        vertexCopy.originalPictogramElement = pe;
-        vertexCopy.originalPiGraph = (PiGraph) getDiagram().getLink().getBusinessObjects().get(0);
-        vertexCopy.originalVertex = (Configurable) bo;
-        vertexCopy.originalX = pe.getGraphicsAlgorithm().getX();
-        vertexCopy.originalY = pe.getGraphicsAlgorithm().getY();
+        vertexCopy.setOriginalDiagram(getDiagram());
+        vertexCopy.setOriginalPictogramElement(pe);
+        vertexCopy.setOriginalPiGraph((PiGraph) getDiagram().getLink().getBusinessObjects().get(0));
+        vertexCopy.setOriginalVertex((Configurable) bo);
+        vertexCopy.setOriginalX(pe.getGraphicsAlgorithm().getX());
+        vertexCopy.setOriginalY(pe.getGraphicsAlgorithm().getY());
         copies.add(vertexCopy);
       }
 
