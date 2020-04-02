@@ -1,5 +1,7 @@
 package org.preesm.algorithm.mparameters;
 
+import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -91,14 +93,20 @@ public class SetMalleableParametersTask extends AbstractTaskImplementation {
     PreesmLogger.getLogger().log(Level.INFO, "The number of parameters configuration is: " + nbCombinations);
 
     // build and test all possible configurations
-    ParameterCombinationExplorer pce = new ParameterCombinationExplorer(mparamsIR, scenario);
+    final ParameterCombinationExplorer pce = new ParameterCombinationExplorer(mparamsIR, scenario);
     // set the scenario graph since it is used for timings
     Map<Parameter, String> backupParamOverride = new HashMap<>();
     for (Entry<Parameter, String> e : scenario.getParameterValues().entrySet()) {
       backupParamOverride.put(e.getKey(), e.getValue());
     }
+
+    List<Comparator<DSEpointIR>> comparators = new ArrayList<>();
+    comparators.add(new DSEpointIR.ThroughputMaxComparator());
+    comparators.add(new DSEpointIR.EnergyMinComparator());
+    comparators.add(new DSEpointIR.LatencyMinComparator());
+    Comparator<DSEpointIR> globalComparator = new DSEpointIR.DSEpointGlobalComparator(comparators);
+    DSEpointIR bestPoint = new DSEpointIR();
     List<Integer> bestConfig = null;
-    long bestLatency = Long.MAX_VALUE;
     int index = 0;
     while (pce.setNext()) {
       index++;
@@ -126,11 +134,12 @@ public class SetMalleableParametersTask extends AbstractTaskImplementation {
       final SimpleEnergyCost evaluateEnergy = new SimpleEnergyEvaluation().evaluate(dag, architecture, scenario,
           scheduleAndMap.mapping, scheduleOM);
       final long energy = evaluateEnergy.getValue();
-      System.err.println("Energy was: " + energy);
 
-      if (bestConfig == null || bestLatency > latency) {
+      DSEpointIR dsep = new DSEpointIR(energy, iterationDelay, latency);
+
+      if (bestConfig == null || globalComparator.compare(dsep, bestPoint) < 0) {
         bestConfig = pce.recordConfiguration();
-        bestLatency = latency;
+        bestPoint = dsep;
       } else {
         scenario.getParameterValues().putAll(backupParamOverride);
       }
@@ -138,7 +147,7 @@ public class SetMalleableParametersTask extends AbstractTaskImplementation {
 
     if (bestConfig != null) {
       pce.setConfiguration(bestConfig);
-      PreesmLogger.getLogger().log(Level.INFO, "Best configuration ensures latency of: " + bestLatency);
+      PreesmLogger.getLogger().log(Level.INFO, "Best configuration has metrics: " + bestPoint);
       PreesmLogger.getLogger().log(Level.WARNING,
           "The malleable parameters value have been overriden in the scenario!");
     } else {
