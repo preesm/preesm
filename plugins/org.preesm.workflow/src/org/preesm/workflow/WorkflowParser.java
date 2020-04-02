@@ -38,6 +38,7 @@ import java.io.IOException;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.logging.Level;
+import javax.xml.XMLConstants;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
@@ -107,6 +108,8 @@ public class WorkflowParser extends DefaultHandler2 {
   public Workflow parse(final IFile file) {
     try {
       final XMLReader reader = XMLReaderFactory.createXMLReader();
+      reader.setProperty(XMLConstants.ACCESS_EXTERNAL_DTD, "");
+      reader.setProperty(XMLConstants.ACCESS_EXTERNAL_SCHEMA, "");
       reader.setContentHandler(this);
       reader.parse(new InputSource(file.getContents()));
     } catch (SAXException | IOException | CoreException e) {
