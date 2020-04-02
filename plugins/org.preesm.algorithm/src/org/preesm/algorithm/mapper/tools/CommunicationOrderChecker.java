@@ -42,6 +42,7 @@ import java.util.List;
 import java.util.Set;
 import org.preesm.algorithm.mapper.ScheduledDAGIterator;
 import org.preesm.algorithm.mapper.graphtransfo.ImplementationPropertyNames;
+import org.preesm.algorithm.mapper.model.MapperDAGVertex;
 import org.preesm.algorithm.mapper.model.special.ReceiveVertex;
 import org.preesm.algorithm.mapper.model.special.TransferVertex;
 import org.preesm.algorithm.model.dag.DAGEdge;
@@ -137,12 +138,24 @@ public class CommunicationOrderChecker {
 
         // Collect sender and receivers DAGVertices for this pair (in scheduling order)
         final List<DAGVertex> senders = new ArrayList<>(sendVerticesMap);
-        senders.removeIf(vertex -> !(vertex.getPropertyBean().getValue(ImplementationPropertyNames.Vertex_Operator))
-            .equals(sendComponent));
+        senders.removeIf(vertex -> {
+          Object obj = vertex.getPropertyBean().getValue(ImplementationPropertyNames.Vertex_Operator);
+          if (obj instanceof ComponentInstance) {
+            return !sendComponent.equals(obj);
+          } else {
+            return true;
+          }
+        });
 
         final List<DAGVertex> receivers = new ArrayList<>(recvVerticesMap);
-        receivers.removeIf(vertex -> !(vertex.getPropertyBean().getValue(ImplementationPropertyNames.Vertex_Operator))
-            .equals(recvComponent));
+        receivers.removeIf(vertex -> {
+          Object obj = vertex.getPropertyBean().getValue(ImplementationPropertyNames.Vertex_Operator);
+          if (obj instanceof ComponentInstance) {
+            return !recvComponent.equals(obj);
+          } else {
+            return true;
+          }
+        });
 
         // Get corresponding edges (in scheduling order)
         final List<DAGEdge> senderDagEdges = new ArrayList<>(senders.size());
@@ -216,13 +229,30 @@ public class CommunicationOrderChecker {
 
       // Collect sender and receivers DAGVertices for this component (in scheduling order)
       final List<DAGVertex> sendersReceivers = new ArrayList<>(sendReceiveVertices);
-      sendersReceivers
-          .removeIf(vertex -> !(vertex.getPropertyBean().getValue(ImplementationPropertyNames.Vertex_Operator))
-              .equals(component));
+      sendersReceivers.removeIf(vertex -> {
+        Object obj = vertex.getPropertyBean().getValue(ImplementationPropertyNames.Vertex_Operator);
+        if (obj instanceof ComponentInstance) {
+          return !component.equals(obj);
+        } else {
+          return true;
+        }
+      });
 
       // Keep only senderReceivers that corresponds to intermediate steps
-      sendersReceivers.removeIf(vertex -> ((vertex instanceof ReceiveVertex) ? ((TransferVertex) vertex).getTarget()
-          : ((TransferVertex) vertex).getSource()).getPropertyBean().getValue("Operator").equals(component));
+      sendersReceivers.removeIf(vertex -> {
+        MapperDAGVertex mDagVertex;
+        if (vertex instanceof ReceiveVertex) {
+          mDagVertex = ((TransferVertex) vertex).getTarget();
+        } else {
+          mDagVertex = ((TransferVertex) vertex).getSource();
+        }
+        Object obj = mDagVertex.getPropertyBean().getValue(ImplementationPropertyNames.Vertex_Operator);
+        if (obj instanceof ComponentInstance) {
+          return component.equals(obj);
+        } else {
+          return true;
+        }
+      });
 
       // For each receive, check that the corresponding send if in the rest of the list
       // Create the list of corresponding dagEdge
