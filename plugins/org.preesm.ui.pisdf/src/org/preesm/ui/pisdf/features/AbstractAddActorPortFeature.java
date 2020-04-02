@@ -93,7 +93,7 @@ public abstract class AbstractAddActorPortFeature extends AbstractCustomFeature 
   public static final IColorConstant PORT_BACKGROUND = IColorConstant.BLACK;
 
   /** The port font height. */
-  public static int PORT_FONT_HEIGHT;
+  protected static int PORT_FONT_HEIGHT;
 
   /** Size of the space between the label of a port and the GA. */
   public static final int PORT_LABEL_GA_SPACE = 2;
