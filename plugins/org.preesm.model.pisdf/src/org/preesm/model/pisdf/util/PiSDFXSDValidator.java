@@ -112,6 +112,8 @@ public class PiSDFXSDValidator {
     try {
       final Schema schema = schemaFactory.newSchema(this.schemaURL);
       final Validator validator = schema.newValidator();
+      validator.setProperty(XMLConstants.ACCESS_EXTERNAL_DTD, "");
+      validator.setProperty(XMLConstants.ACCESS_EXTERNAL_SCHEMA, "");
       validator.validate(xmlFile);
     } catch (final SAXException e) {
       throw new PiSDFXSDValidationException("Could not validate PiSDF", e);

@@ -41,6 +41,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.StringReader;
 import java.util.logging.Level;
+import javax.xml.XMLConstants;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -94,6 +95,8 @@ public class PreesmXMLFormatter {
   private static final Document parseXmlFile(final String in) {
     try {
       DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+      dbf.setAttribute(XMLConstants.ACCESS_EXTERNAL_DTD, "");
+      dbf.setAttribute(XMLConstants.ACCESS_EXTERNAL_SCHEMA, "");
       DocumentBuilder db = dbf.newDocumentBuilder();
       InputSource is = new InputSource(new StringReader(in));
       return db.parse(is);

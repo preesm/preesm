@@ -39,6 +39,7 @@ import java.io.ByteArrayOutputStream;
 import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.Set;
+import javax.xml.XMLConstants;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -165,7 +166,9 @@ public class SVGExporterSwitch extends PiMMSwitch<Integer> {
    */
   public String exportPiGraphToSVG(final PiGraph graph) {
     /* Create Document Builder */
-    final DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+    DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+    dbf.setAttribute(XMLConstants.ACCESS_EXTERNAL_DTD, "");
+    dbf.setAttribute(XMLConstants.ACCESS_EXTERNAL_SCHEMA, "");
     DocumentBuilder builder;
     try {
       builder = dbf.newDocumentBuilder();
@@ -229,9 +232,11 @@ public class SVGExporterSwitch extends PiMMSwitch<Integer> {
     svg.setAttribute(HEIGHT_LITTERAL, "" + (getTotalHeight() + 20));
 
     /* Write the SVG to String */
-    Transformer tf;
     try {
-      tf = TransformerFactory.newInstance().newTransformer();
+      TransformerFactory tff = TransformerFactory.newInstance();
+      tff.setAttribute(XMLConstants.ACCESS_EXTERNAL_DTD, "");
+      tff.setAttribute(XMLConstants.ACCESS_EXTERNAL_STYLESHEET, "");
+      Transformer tf = tff.newTransformer();
       tf.setOutputProperty(OutputKeys.ENCODING, "UTF-8");
       tf.setOutputProperty(OutputKeys.INDENT, "yes");
       tf.setOutputProperty("{http://xml.apache.org/xslt}indent-amount", "4");

@@ -116,17 +116,16 @@ public final class URLResolver {
     } catch (final MalformedURLException e) {
       resultURL = null;
     }
-
     if (resultURL == null) {
       try {
-        resultURL = resolvePlainURL(location);
+        resultURL = resolveFileSystemURL(location);
       } catch (final MalformedURLException e) {
         resultURL = null;
       }
     }
     if (resultURL == null) {
       try {
-        resultURL = resolveFileSystemURL(location);
+        resultURL = resolvePlainURL(location);
       } catch (final MalformedURLException e) {
         resultURL = null;
       }

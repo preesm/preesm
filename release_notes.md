@@ -39,6 +39,7 @@ PREESM Changelog
 * Fix the dag span value in the stat exporter.
 * Fix #285 : copyPiGraphWithHistory now handles copy of subgraphs
 * Fix #302 : Verify any opened diagram editor instead of active one. 
+* Fix Vulnerabilities and Bugs signaled by Sonar
 
 ## Release version 3.19.0
 *2020.01.10*
