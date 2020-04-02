@@ -42,7 +42,6 @@ import java.util.List;
 import java.util.Set;
 import org.preesm.algorithm.mapper.ScheduledDAGIterator;
 import org.preesm.algorithm.mapper.graphtransfo.ImplementationPropertyNames;
-import org.preesm.algorithm.mapper.model.MapperDAGVertex;
 import org.preesm.algorithm.mapper.model.special.ReceiveVertex;
 import org.preesm.algorithm.mapper.model.special.TransferVertex;
 import org.preesm.algorithm.model.dag.DAGEdge;
@@ -64,6 +63,24 @@ public class CommunicationOrderChecker {
 
   private CommunicationOrderChecker() {
     // Private empty constructor for a static-member-only class
+  }
+
+  /**
+   * This methods get the related operator which will execute the given DAGVertex. It performs safely by checking the
+   * type of the associated property.
+   * 
+   * @param vertex
+   *          The vertex.
+   * @return The associated operator component instance, or null if it is not a {@link ComponentInstance}
+   * 
+   */
+  private static ComponentInstance getVertexComponent(DAGVertex vertex) {
+    Object obj = vertex.getPropertyBean().getValue(ImplementationPropertyNames.Vertex_Operator);
+    if (obj instanceof ComponentInstance) {
+      return (ComponentInstance) obj;
+    } else {
+      return null;
+    }
   }
 
   /**
@@ -113,7 +130,7 @@ public class CommunicationOrderChecker {
       final boolean isReceive = vertexType.equals("receive");
 
       // get component
-      final ComponentInstance comp = currentVertex.getPropertyBean().getValue("Operator");
+      final ComponentInstance comp = getVertexComponent(currentVertex);
 
       // Get scheduling order
       if (isSend) {
@@ -138,24 +155,10 @@ public class CommunicationOrderChecker {
 
         // Collect sender and receivers DAGVertices for this pair (in scheduling order)
         final List<DAGVertex> senders = new ArrayList<>(sendVerticesMap);
-        senders.removeIf(vertex -> {
-          Object obj = vertex.getPropertyBean().getValue(ImplementationPropertyNames.Vertex_Operator);
-          if (obj instanceof ComponentInstance) {
-            return !sendComponent.equals(obj);
-          } else {
-            return true;
-          }
-        });
+        senders.removeIf(vertex -> !getVertexComponent(vertex).equals(sendComponent));
 
         final List<DAGVertex> receivers = new ArrayList<>(recvVerticesMap);
-        receivers.removeIf(vertex -> {
-          Object obj = vertex.getPropertyBean().getValue(ImplementationPropertyNames.Vertex_Operator);
-          if (obj instanceof ComponentInstance) {
-            return !recvComponent.equals(obj);
-          } else {
-            return true;
-          }
-        });
+        receivers.removeIf(vertex -> !getVertexComponent(vertex).equals(recvComponent));
 
         // Get corresponding edges (in scheduling order)
         final List<DAGEdge> senderDagEdges = new ArrayList<>(senders.size());
@@ -214,7 +217,7 @@ public class CommunicationOrderChecker {
       final boolean isReceive = vertexType.equals("receive");
 
       // get component
-      final ComponentInstance comp = currentVertex.getPropertyBean().getValue("Operator");
+      final ComponentInstance comp = getVertexComponent(currentVertex);
 
       // Get scheduling order
       if (isSend || isReceive) {
@@ -229,30 +232,12 @@ public class CommunicationOrderChecker {
 
       // Collect sender and receivers DAGVertices for this component (in scheduling order)
       final List<DAGVertex> sendersReceivers = new ArrayList<>(sendReceiveVertices);
-      sendersReceivers.removeIf(vertex -> {
-        Object obj = vertex.getPropertyBean().getValue(ImplementationPropertyNames.Vertex_Operator);
-        if (obj instanceof ComponentInstance) {
-          return !component.equals(obj);
-        } else {
-          return true;
-        }
-      });
+      sendersReceivers.removeIf(vertex -> !getVertexComponent(vertex).equals(component));
 
       // Keep only senderReceivers that corresponds to intermediate steps
-      sendersReceivers.removeIf(vertex -> {
-        MapperDAGVertex mDagVertex;
-        if (vertex instanceof ReceiveVertex) {
-          mDagVertex = ((TransferVertex) vertex).getTarget();
-        } else {
-          mDagVertex = ((TransferVertex) vertex).getSource();
-        }
-        Object obj = mDagVertex.getPropertyBean().getValue(ImplementationPropertyNames.Vertex_Operator);
-        if (obj instanceof ComponentInstance) {
-          return component.equals(obj);
-        } else {
-          return true;
-        }
-      });
+      sendersReceivers.removeIf(
+          vertex -> getVertexComponent((vertex instanceof ReceiveVertex ? ((TransferVertex) vertex).getTarget()
+              : ((TransferVertex) vertex).getSource())).equals(component));
 
       // For each receive, check that the corresponding send if in the rest of the list
       // Create the list of corresponding dagEdge
