@@ -28,6 +28,7 @@ PREESM Changelog
 * Add Spider2 codegen to unit tests.
 * Update Cluster Scheduler integration tests.
 * Add NewSynthesis Tests
+* Adding direct translation of 1 edge broadcast to REPEAT vertex in Spider2Codegen.
 
 ### Bug fix
 * Fix ids and icons of a few GUI elements.
@@ -40,6 +41,7 @@ PREESM Changelog
 * Fix #285 : copyPiGraphWithHistory now handles copy of subgraphs
 * Fix #302 : Verify any opened diagram editor instead of active one. 
 * Fix Vulnerabilities and Bugs signaled by Sonar
+* Fix parameter name replacement in rate expressions in Spider2CodegenEdge.
 
 ## Release version 3.19.0
 *2020.01.10*

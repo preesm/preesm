@@ -490,8 +490,13 @@ public class Spider2PreProcessVisitor extends PiMMSwitch<Boolean> {
 
   @Override
   public Boolean caseBroadcastActor(final BroadcastActor ba) {
-    this.actorsMap.get(ba.getContainingPiGraph())
-        .add(new Spider2CodegenActor("DUPLICATE", ba, this.scenario, this.clusterList));
+    if (ba.getOutgoingEdges().size() == 1) {
+      this.actorsMap.get(ba.getContainingPiGraph())
+          .add(new Spider2CodegenActor("REPEAT", ba, this.scenario, this.clusterList));
+    } else {
+      this.actorsMap.get(ba.getContainingPiGraph())
+          .add(new Spider2CodegenActor("DUPLICATE", ba, this.scenario, this.clusterList));
+    }
     return true;
   }
 
