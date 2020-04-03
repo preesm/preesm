@@ -21,6 +21,7 @@ import org.preesm.algorithm.synthesis.schedule.algos.IScheduler;
 import org.preesm.algorithm.synthesis.schedule.algos.PeriodicScheduler;
 import org.preesm.commons.doc.annotations.Port;
 import org.preesm.commons.doc.annotations.PreesmTask;
+import org.preesm.commons.doc.annotations.Value;
 import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.model.pisdf.MalleableParameter;
@@ -51,8 +52,34 @@ import org.preesm.workflow.implement.AbstractWorkflowNodeImplementation;
     inputs = { @Port(name = "PiMM", type = PiGraph.class), @Port(name = "scenario", type = Scenario.class),
         @Port(name = "architecture", type = Design.class) },
 
-    outputs = { @Port(name = "PiMM", type = PiGraph.class) })
+    outputs = { @Port(name = "PiMM", type = PiGraph.class) },
+
+    parameters = {
+        @org.preesm.commons.doc.annotations.Parameter(name = SetMalleableParametersTask.DEFAULT_COMPARISONS_NAME,
+            values = { @Value(name = SetMalleableParametersTask.DEFAULT_COMPARISONS_VALUE,
+                effect = "Order of comparisons (T for throughput or E for energy or L for latency separated by >).") }),
+        @org.preesm.commons.doc.annotations.Parameter(name = SetMalleableParametersTask.DEFAULT_THRESHOLD1_NAME,
+            values = { @Value(name = SetMalleableParametersTask.DEFAULT_THRESHOLD1_VALUE,
+                effect = "Taken into account if it is any integer higher than 0.") }),
+        @org.preesm.commons.doc.annotations.Parameter(name = SetMalleableParametersTask.DEFAULT_THRESHOLD2_NAME,
+            values = { @Value(name = SetMalleableParametersTask.DEFAULT_THRESHOLD2_VALUE,
+                effect = "Taken into account if it is any integer higher than 0.") }),
+        @org.preesm.commons.doc.annotations.Parameter(name = SetMalleableParametersTask.DEFAULT_THRESHOLD3_NAME,
+            values = { @Value(name = SetMalleableParametersTask.DEFAULT_THRESHOLD3_VALUE,
+                effect = "Taken into account if it is any integer higher than 0.") }) })
 public class SetMalleableParametersTask extends AbstractTaskImplementation {
+
+  public static final String DEFAULT_COMPARISONS_VALUE = "T>E>L";
+  public static final String DEFAULT_THRESHOLD1_VALUE  = "0";
+  public static final String DEFAULT_THRESHOLD2_VALUE  = "0";
+  public static final String DEFAULT_THRESHOLD3_VALUE  = "0";
+
+  public static final String DEFAULT_COMPARISONS_NAME = "Comparisons";
+  public static final String DEFAULT_THRESHOLD1_NAME  = "Threshold 1";
+  public static final String DEFAULT_THRESHOLD2_NAME  = "Threshold 2";
+  public static final String DEFAULT_THRESHOLD3_NAME  = "Threshold 3";
+
+  public static final String COMPARISONS_REGEX = "[ELT](>[ELT])*";
 
   @Override
   public Map<String, Object> execute(Map<String, Object> inputs, Map<String, String> parameters,
@@ -100,11 +127,7 @@ public class SetMalleableParametersTask extends AbstractTaskImplementation {
       backupParamOverride.put(e.getKey(), e.getValue());
     }
 
-    List<Comparator<DSEpointIR>> comparators = new ArrayList<>();
-    comparators.add(new DSEpointIR.ThroughputMaxComparator());
-    comparators.add(new DSEpointIR.EnergyMinComparator());
-    comparators.add(new DSEpointIR.LatencyMinComparator());
-    Comparator<DSEpointIR> globalComparator = new DSEpointIR.DSEpointGlobalComparator(comparators);
+    Comparator<DSEpointIR> globalComparator = getGlobalComparater(parameters);
     DSEpointIR bestPoint = new DSEpointIR();
     List<Integer> bestConfig = null;
     int index = 0;
@@ -157,9 +180,75 @@ public class SetMalleableParametersTask extends AbstractTaskImplementation {
     return output;
   }
 
+  public Comparator<DSEpointIR> getGlobalComparater(final Map<String, String> parameters) {
+    final String comparisons = parameters.get(DEFAULT_COMPARISONS_NAME);
+    if (!comparisons.matches(COMPARISONS_REGEX)) {
+      throw new PreesmRuntimeException("Comparisons string is not correct. Accepted regex: " + COMPARISONS_REGEX);
+    }
+    final String[] tabComparisons = comparisons.split(">");
+    final char[] charComparisons = new char[tabComparisons.length];
+    for (int i = 0; i < tabComparisons.length; i++) {
+      charComparisons[i] = tabComparisons[i].charAt(0);
+    }
+
+    long threshold1 = 0;
+    long threshold2 = 0;
+    long threshold3 = 0;
+    try {
+      threshold1 = Long.parseLong(parameters.get(DEFAULT_THRESHOLD1_NAME));
+      threshold2 = Long.parseLong(parameters.get(DEFAULT_THRESHOLD2_NAME));
+      threshold3 = Long.parseLong(parameters.get(DEFAULT_THRESHOLD3_NAME));
+    } catch (NumberFormatException e) {
+      throw new PreesmRuntimeException("Threshold must be a number.");
+    }
+    final long[] tabThreshold = { threshold1, threshold2, threshold3 };
+
+    List<Comparator<DSEpointIR>> listComparators = new ArrayList<>();
+    for (int i = 0; i < charComparisons.length; i++) {
+      final long thresholdI = tabThreshold[i % 3];
+      if (thresholdI == 0) {
+        switch (charComparisons[i]) {
+          case 'E':
+            listComparators.add(new DSEpointIR.EnergyMinComparator());
+            break;
+          case 'L':
+            listComparators.add(new DSEpointIR.LatencyMinComparator());
+            break;
+          case 'T':
+            listComparators.add(new DSEpointIR.ThroughputMaxComparator());
+            break;
+          default:
+            break;
+        }
+      } else if (thresholdI > 0) {
+        switch (charComparisons[i]) {
+          case 'E':
+            listComparators.add(new DSEpointIR.EnergyAtMostComparator(thresholdI));
+            break;
+          case 'L':
+            listComparators.add(new DSEpointIR.LatencyAtMostComparator((int) thresholdI));
+            break;
+          case 'T':
+            listComparators.add(new DSEpointIR.ThroughputAtLeastComparator(thresholdI));
+            break;
+          default:
+            break;
+        }
+      } else {
+        throw new PreesmRuntimeException("Threshold " + (i % 3) + " has an incorrect negative value.");
+      }
+
+    }
+    return new DSEpointIR.DSEpointGlobalComparator(listComparators);
+  }
+
   @Override
   public Map<String, String> getDefaultParameters() {
     final Map<String, String> parameters = new LinkedHashMap<>();
+    parameters.put(DEFAULT_COMPARISONS_NAME, DEFAULT_COMPARISONS_VALUE);
+    parameters.put(DEFAULT_THRESHOLD1_NAME, DEFAULT_THRESHOLD1_VALUE);
+    parameters.put(DEFAULT_THRESHOLD2_NAME, DEFAULT_THRESHOLD2_VALUE);
+    parameters.put(DEFAULT_THRESHOLD3_NAME, DEFAULT_THRESHOLD3_VALUE);
     return parameters;
   }
 
