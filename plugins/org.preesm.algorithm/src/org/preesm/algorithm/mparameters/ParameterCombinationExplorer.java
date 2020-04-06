@@ -25,6 +25,8 @@ public class ParameterCombinationExplorer {
    * 
    * @param mparamsIR
    *          MalleableParameterIR.
+   * @param scenario
+   *          Scenario containing the parameters.
    */
   public ParameterCombinationExplorer(List<MalleableParameterIR> mparamsIR, Scenario scenario) {
     this.scenario = scenario;
@@ -76,6 +78,9 @@ public class ParameterCombinationExplorer {
   }
 
   protected boolean setNext(int index) {
+    if (mparamsIR.isEmpty()) {
+      return false;
+    }
     MalleableParameterIR lmpir = mparamsIR.get(index);
     if (lmpir.nbValues == lmpir.currentExprIndex) {
       if (mparamsIR.size() - 1 == index) {
@@ -101,7 +106,7 @@ public class ParameterCombinationExplorer {
 
   /**
    * 
-   * @return A list of index to later set back this configuration.
+   * @return A list of index (from 0 to nbValues) to later set back this configuration.
    */
   protected List<Integer> recordConfiguration() {
     return mparamsIR.stream().map(x -> x.currentExprIndex - 1).collect(Collectors.toList());
@@ -114,13 +119,13 @@ public class ParameterCombinationExplorer {
    * @return True if the configuration is valid.
    */
   protected boolean setConfiguration(List<Integer> config) {
-    int size = mparamsIR.size();
+    final int size = mparamsIR.size();
     if (config.size() != size) {
       return false;
     }
     for (int i = 0; i < size; i++) {
-      MalleableParameterIR mpir = mparamsIR.get(i);
-      int index = config.get(i);
+      final MalleableParameterIR mpir = mparamsIR.get(i);
+      final int index = config.get(i);
       if (index < 0 || index >= mpir.nbValues) {
         return false;
       }

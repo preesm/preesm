@@ -14,8 +14,8 @@ class MalleableParameterIR {
 
   final MalleableParameter mp;
   final List<String>       exprs;
-  final List<Long>         values;
-  final int                nbValues;
+  List<Long>               values;
+  int                      nbValues;
   int                      currentExprIndex;
 
   MalleableParameterIR(MalleableParameter mp) {
