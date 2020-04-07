@@ -29,12 +29,14 @@ public class ParameterCombinationNumberExplorer extends ParameterCombinationExpl
   }
 
   /**
+   * Sets the parameter values to test for a next round of DSE with reduced number of possible values. It necessitates
+   * to reinstantiate this class with the updated parameters before starting the next round.
    * 
    * @param config
    *          Configuration to set, as returned per {@link ParameterCombinationExplorer#recordConfiguration}.
-   * @return True if the configuration is valid.
+   * @return True if another round is needed, false otherwise (including if config is not valid).
    */
-  public boolean setForNextIteration(List<Integer> config) {
+  public boolean setForNextPartialDSEround(List<Integer> config) {
     final int size = mparamsIR.size();
     if (config.size() != size) {
       return false;
@@ -46,18 +48,20 @@ public class ParameterCombinationNumberExplorer extends ParameterCombinationExpl
       if (index < 0 || index >= mpir.nbValues) {
         return false;
       }
-      // actually following test is always true, see mparamsIR initialization in upper class
+      // actually, following test is always true, see mparamsIR initialization in upper class
       if (mpir.nbValues > 1) {
         if (index == 0) {
+          // we take lower values
           mpir.endIndex = mpir.indexHigh - 1;
           mpir.setValues();
         } else if (index == 1) {
+          // we take higher values
           mpir.startIndex = mpir.indexLow + 1;
           mpir.setValues();
         }
         // set the value directly if only one
         if (mpir.startIndex == mpir.endIndex) {
-          final Long value = mpir.values.get(mpir.startIndex);
+          final Long value = mpir.oriValues.get(mpir.startIndex);
           mpir.mp.setExpression(value);
           scenario.getParameterValues().put(mparamTOscenarParam.get(mpir.mp), value.toString());
         } else {

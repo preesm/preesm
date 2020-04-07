@@ -32,6 +32,7 @@ import org.preesm.algorithm.synthesis.evaluation.latency.SimpleLatencyEvaluation
 import org.preesm.algorithm.synthesis.schedule.ScheduleOrderManager;
 import org.preesm.algorithm.synthesis.schedule.algos.IScheduler;
 import org.preesm.algorithm.synthesis.schedule.algos.PeriodicScheduler;
+import org.preesm.algorithm.synthesis.schedule.algos.PreesmSchedulingException;
 import org.preesm.commons.doc.annotations.Parameter;
 import org.preesm.commons.doc.annotations.Port;
 import org.preesm.commons.doc.annotations.PreesmTask;
@@ -362,6 +363,7 @@ public class AutoDelaysTask extends AbstractTaskImplementation {
     // final long time1 = System.nanoTime();
     final ChocoCutModel ccm = new ChocoCutModel(hlbd, maxii);
     final DescriptiveStatistics dsc = new DescriptiveStatistics();
+    // /!\ commented code in case you want to find all cuts at once before exploring them
     // final List<Map<FifoAbstraction, Integer>> chocoCuts = ccm.findAllCuts();
     // long duration = System.nanoTime() - time1;
     // PreesmLogger.getLogger().info("Time of choco model " + Math.round(duration / 1e6) + " ms.");
@@ -452,7 +454,13 @@ public class AutoDelaysTask extends AbstractTaskImplementation {
   private static long computeLatency(PiGraph graph, Scenario scenario, Design architecture, boolean printGantt) {
     final PiGraph dag = PiSDFToSingleRate.compute(graph, BRVMethod.LCM);
     final IScheduler scheduler = new PeriodicScheduler();
-    final SynthesisResult scheduleAndMap = scheduler.scheduleAndMap(dag, architecture, scenario);
+    SynthesisResult scheduleAndMap = null;
+    try {
+      scheduleAndMap = scheduler.scheduleAndMap(dag, architecture, scenario);
+    } catch (PreesmSchedulingException e) {
+      PreesmLogger.getLogger().log(Level.WARNING, "Scheudling was impossible.", e);
+      return Long.MAX_VALUE;
+    }
     // use implementation evaluation of PeriodicScheduler instead?
     final ScheduleOrderManager scheduleOM = new ScheduleOrderManager(dag, scheduleAndMap.schedule);
     final LatencyCost evaluate = new SimpleLatencyEvaluation().evaluate(dag, architecture, scenario,

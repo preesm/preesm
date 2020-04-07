@@ -12,11 +12,11 @@ import org.preesm.model.pisdf.check.MalleableParameterExprChecker;
  */
 class MalleableParameterIR {
 
-  final MalleableParameter mp;
-  final List<String>       exprs;
-  List<Long>               values;
-  int                      nbValues;
-  int                      currentExprIndex;
+  final MalleableParameter mp;               // original malleable parameter
+  final List<String>       exprs;            // expressions stored in mp
+  List<Long>               values;           // evaluated expressions, if only numbers
+  int                      nbValues;         // size of the number of exprs/values (redundant)
+  int                      currentExprIndex; // index from 0 to nbValues (included)
 
   MalleableParameterIR(MalleableParameter mp) {
     this.mp = mp;

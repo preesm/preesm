@@ -19,6 +19,7 @@ import org.preesm.algorithm.synthesis.evaluation.latency.SimpleLatencyEvaluation
 import org.preesm.algorithm.synthesis.schedule.ScheduleOrderManager;
 import org.preesm.algorithm.synthesis.schedule.algos.IScheduler;
 import org.preesm.algorithm.synthesis.schedule.algos.PeriodicScheduler;
+import org.preesm.algorithm.synthesis.schedule.algos.PreesmSchedulingException;
 import org.preesm.commons.doc.annotations.Port;
 import org.preesm.commons.doc.annotations.PreesmTask;
 import org.preesm.commons.doc.annotations.Value;
@@ -54,7 +55,10 @@ import org.preesm.workflow.implement.AbstractWorkflowNodeImplementation;
 
     outputs = { @Port(name = "PiMM", type = PiGraph.class) },
 
-    parameters = {
+    parameters = { @org.preesm.commons.doc.annotations.Parameter(
+        name = SetMalleableParametersTask.DEFAULT_HEURISTIC_NAME,
+        values = { @Value(name = SetMalleableParametersTask.DEFAULT_HEURISTIC_VALUE,
+            effect = "Enables to use a DSE heuristic when all malleable parameter expressions are integer numbers.") }),
         @org.preesm.commons.doc.annotations.Parameter(name = SetMalleableParametersTask.DEFAULT_COMPARISONS_NAME,
             values = { @Value(name = SetMalleableParametersTask.DEFAULT_COMPARISONS_VALUE,
                 effect = "Order of comparisons (T for throughput or E for energy or L for latency separated by >).") }),
@@ -155,16 +159,17 @@ public class SetMalleableParametersTask extends AbstractTaskImplementation {
     while (pce.setNext()) {
       index++;
 
-      DSEpointIR dsep = runConfiguration(scenario, graph, architecture, index);
+      final DSEpointIR dsep = runConfiguration(scenario, graph, architecture, index);
 
-      if (bestConfig == null || globalComparator.compare(dsep, bestPoint) < 0) {
+      if (dsep != null && (bestConfig == null || globalComparator.compare(dsep, bestPoint) < 0)) {
         bestConfig = pce.recordConfiguration();
         bestPoint = dsep;
-      } else {
-        scenario.getParameterValues().putAll(backupParamOverride);
       }
     }
-
+    if (bestConfig == null) {
+      resetAllMparams(mparamsIR);
+      scenario.getParameterValues().putAll(backupParamOverride);
+    }
     logAndSetBestPoint(pce, bestPoint, bestConfig);
 
   }
@@ -176,25 +181,29 @@ public class SetMalleableParametersTask extends AbstractTaskImplementation {
     ParameterCombinationNumberExplorer pce = null;
     DSEpointIR bestPoint = new DSEpointIR();
     List<Integer> bestConfig = null;
-    int index = 0;
+    int indexTot = 0;
+    int indexRound = 0;
     do {
+      indexRound++;
+      PreesmLogger.getLogger().log(Level.INFO, "New DSE heuristic round: " + indexRound);
+
       pce = new ParameterCombinationNumberExplorer(mparamsIR, scenario);
       while (pce.setNext()) {
-        index++;
+        indexTot++;
 
-        DSEpointIR dsep = runConfiguration(scenario, graph, architecture, index);
+        final DSEpointIR dsep = runConfiguration(scenario, graph, architecture, indexTot);
 
-        if (bestConfig == null || globalComparator.compare(dsep, bestPoint) < 0) {
+        if (dsep != null && (bestConfig == null || globalComparator.compare(dsep, bestPoint) < 0)) {
           bestConfig = pce.recordConfiguration();
           bestPoint = dsep;
-        } else {
-          scenario.getParameterValues().putAll(backupParamOverride);
         }
       }
       if (bestConfig == null) {
+        resetAllMparams(mparamsIR);
+        scenario.getParameterValues().putAll(backupParamOverride);
         break;
       }
-    } while (pce.setForNextIteration(bestConfig));
+    } while (pce.setForNextPartialDSEround(bestConfig));
 
     logAndSetBestPoint(pce, bestPoint, bestConfig);
 
@@ -202,21 +211,31 @@ public class SetMalleableParametersTask extends AbstractTaskImplementation {
 
   protected DSEpointIR runConfiguration(final Scenario scenario, final PiGraph graph, final Design architecture,
       final int index) {
-    final PiGraph dag = PiSDFToSingleRate.compute(graph, BRVMethod.LCM);
     PreesmLogger.getLogger().fine("==> Testing combination: " + index);
     for (Parameter p : graph.getAllParameters()) {
       PreesmLogger.getLogger().fine(p.getName() + ": " + p.getExpression().getExpressionAsString());
     }
-    for (Parameter p : dag.getAllParameters()) {
-      PreesmLogger.getLogger().fine(p.getName() + " (in DAG): " + p.getExpression().getExpressionAsString());
-    }
+    final Level backupLevel = PreesmLogger.getLogger().getLevel();
+    PreesmLogger.getLogger().setLevel(Level.SEVERE);
+    final PiGraph dag = PiSDFToSingleRate.compute(graph, BRVMethod.LCM);
+    // for (Parameter p : dag.getAllParameters()) {
+    // PreesmLogger.getLogger().fine(p.getName() + " (in DAG): " + p.getExpression().getExpressionAsString());
+    // }
+
     // copy graph since flatten transfo has side effects (on parameters)
     final PiGraph graphCopy = PiMMUserFactory.instance.copyPiGraphWithHistory(graph);
     int iterationDelay = IterationDelayedEvaluator.computeLatency(graphCopy);
-    PreesmLogger.getLogger().log(Level.INFO, "Latency in number of iteration: " + iterationDelay);
 
     final IScheduler scheduler = new PeriodicScheduler();
-    final SynthesisResult scheduleAndMap = scheduler.scheduleAndMap(dag, architecture, scenario);
+    SynthesisResult scheduleAndMap = null;
+    try {
+      scheduleAndMap = scheduler.scheduleAndMap(dag, architecture, scenario);
+    } catch (PreesmSchedulingException e) {
+      // put back all messages
+      PreesmLogger.getLogger().setLevel(backupLevel);
+      PreesmLogger.getLogger().log(Level.WARNING, "Scheudling was impossible.", e);
+      return null;
+    }
     // use implementation evaluation of PeriodicScheduler instead?
     final ScheduleOrderManager scheduleOM = new ScheduleOrderManager(dag, scheduleAndMap.schedule);
     final LatencyCost evaluateLatency = new SimpleLatencyEvaluation().evaluate(dag, architecture, scenario,
@@ -226,10 +245,31 @@ public class SetMalleableParametersTask extends AbstractTaskImplementation {
         scheduleAndMap.mapping, scheduleOM);
     final long energy = evaluateEnergy.getValue();
 
+    // put back all messages
+    PreesmLogger.getLogger().setLevel(backupLevel);
     return new DSEpointIR(energy, iterationDelay, latency);
-
   }
 
+  protected static void resetAllMparams(List<MalleableParameterIR> mparamsIR) {
+    // we need to consider exprs only since values may be in a different order (if sorted, or if overriden in
+    // MalleableParameterNumberIR)
+    for (MalleableParameterIR mpir : mparamsIR) {
+      if (!mpir.exprs.isEmpty()) {
+        mpir.mp.setExpression(mpir.exprs.get(0));
+      }
+    }
+  }
+
+  /**
+   * Overrides malleable parameters values, also in scenario. Does nothing if bestConfig is null.
+   * 
+   * @param pce
+   *          used to set the bestConfig.
+   * @param bestPoint
+   *          Information about bestPoints.
+   * @param bestConfig
+   *          according to pce.
+   */
   protected void logAndSetBestPoint(final ParameterCombinationExplorer pce, final DSEpointIR bestPoint,
       final List<Integer> bestConfig) {
     if (bestConfig != null) {

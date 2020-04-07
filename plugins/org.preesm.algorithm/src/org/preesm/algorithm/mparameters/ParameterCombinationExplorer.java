@@ -16,9 +16,9 @@ import org.preesm.model.scenario.Scenario;
  */
 public class ParameterCombinationExplorer {
 
-  protected List<MalleableParameterIR> mparamsIR;
+  protected List<MalleableParameterIR> mparamsIR;           // mparamsIR having more than 1 possible value
   protected Scenario                   scenario;
-  protected Map<Parameter, Parameter>  mparamTOscenarParam;
+  protected Map<Parameter, Parameter>  mparamTOscenarParam; // map from mparam to corresponding scenario parameter
 
   /**
    * Builds a new explorer.
@@ -83,10 +83,10 @@ public class ParameterCombinationExplorer {
     }
     MalleableParameterIR lmpir = mparamsIR.get(index);
     if (lmpir.nbValues == lmpir.currentExprIndex) {
+      resetIndex(index);
       if (mparamsIR.size() - 1 == index) {
         return false;
       } else {
-        resetIndex(index);
         return setNext(index + 1);
       }
     } else {
@@ -105,14 +105,17 @@ public class ParameterCombinationExplorer {
   }
 
   /**
+   * Records the index of the current expression set for each malleable parameter having several possible values. To be
+   * used only with the original {@link ParameterCombinationExplorer} that created this configuration.
    * 
-   * @return A list of index (from 0 to nbValues) to later set back this configuration.
+   * @return A list of index (each from 0 to mparamIR.nbValues - 1 included) to later set back this configuration.
    */
   protected List<Integer> recordConfiguration() {
     return mparamsIR.stream().map(x -> x.currentExprIndex - 1).collect(Collectors.toList());
   }
 
   /**
+   * Set the default expression of each malleable parameters as recorded in the given configuration.
    * 
    * @param config
    *          Configuration to set, as returned per {@link ParameterCombinationExplorer#recordConfiguration}.
