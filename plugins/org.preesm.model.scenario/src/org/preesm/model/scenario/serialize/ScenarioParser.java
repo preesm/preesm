@@ -1014,7 +1014,6 @@ public class ScenarioParser {
       String vertexPath = nodeVertexPath.getNodeValue();
       final AbstractActor actor = getActorFromPath(vertexPath);
       final Component component = this.scenario.getDesign().getComponent(opName);
-      System.err.println("Actor: " + actor.getName() + "  value: " + energyValue);
       this.scenario.getEnergyConfig().setActorPeEnergy(actor, component, energyValue);
     }
   }

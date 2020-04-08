@@ -132,11 +132,7 @@ public class ParameterCombinationExplorer {
       if (index < 0 || index >= mpir.nbValues) {
         return false;
       }
-      if (index == mpir.currentExprIndex) {
-        continue;
-      } else {
-        mpir.currentExprIndex = index;
-      }
+      mpir.currentExprIndex = index;
       if (mpir.values.isEmpty()) {
         final String expr = mpir.exprs.get(mpir.currentExprIndex);
         mpir.mp.setExpression(expr);

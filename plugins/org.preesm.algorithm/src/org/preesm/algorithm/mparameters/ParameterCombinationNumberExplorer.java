@@ -1,7 +1,8 @@
 package org.preesm.algorithm.mparameters;
 
 import java.util.List;
-import org.preesm.commons.exceptions.PreesmRuntimeException;
+import java.util.logging.Level;
+import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.model.scenario.Scenario;
 
 /**
@@ -21,10 +22,10 @@ public class ParameterCombinationNumberExplorer extends ParameterCombinationExpl
    */
   public ParameterCombinationNumberExplorer(List<MalleableParameterIR> mparamsIR, Scenario scenario) {
     super(mparamsIR, scenario);
-    boolean isNonNumber = mparamsIR.stream().anyMatch(x -> !(x instanceof MalleableParameterNumberIR));
-    if (isNonNumber) {
-      throw new PreesmRuntimeException(
-          "It is not possible to explore non number malleable parameters with this class.");
+    boolean isNumber = mparamsIR.stream().anyMatch(x -> (x instanceof MalleableParameterNumberIR));
+    if (!isNumber) {
+      PreesmLogger.getLogger().log(Level.WARNING,
+          "Heuristic has been asked for Malleable Parameters being only numbers, however there are none.");
     }
   }
 
@@ -43,30 +44,34 @@ public class ParameterCombinationNumberExplorer extends ParameterCombinationExpl
     }
     boolean oneNeedsIter = false;
     for (int i = 0; i < size; i++) {
-      final MalleableParameterNumberIR mpir = (MalleableParameterNumberIR) mparamsIR.get(i);
-      final int index = config.get(i);
-      if (index < 0 || index >= mpir.nbValues) {
-        return false;
-      }
-      // actually, following test is always true, see mparamsIR initialization in upper class
-      if (mpir.nbValues > 1) {
-        if (index == 0) {
-          // we take lower values
-          mpir.endIndex = mpir.indexHigh - 1;
-          mpir.setValues();
-        } else if (index == 1) {
-          // we take higher values
-          mpir.startIndex = mpir.indexLow + 1;
-          mpir.setValues();
+      final MalleableParameterIR mpir = mparamsIR.get(i);
+      // if mpir is not a number, we do nothing
+      if (mpir instanceof MalleableParameterNumberIR) {
+        final MalleableParameterNumberIR mpnir = (MalleableParameterNumberIR) mpir;
+        final int index = config.get(i);
+        if (index < 0 || index >= mpnir.nbValues) {
+          return false;
         }
-        // set the value directly if only one
-        if (mpir.startIndex == mpir.endIndex) {
-          final Long value = mpir.oriValues.get(mpir.startIndex);
-          mpir.mp.setExpression(value);
-          scenario.getParameterValues().put(mparamTOscenarParam.get(mpir.mp), value.toString());
-        } else {
-          // otherwise we need another iteration
-          oneNeedsIter = true;
+        // actually, following test is always true, see mparamsIR initialization in upper class
+        if (mpnir.nbValues > 1) {
+          if (index == 0) {
+            // we take lower values
+            mpnir.endIndex = mpnir.indexHigh - 1;
+            mpnir.setValues();
+          } else if (index == 1) {
+            // we take higher values
+            mpnir.startIndex = mpnir.indexLow + 1;
+            mpnir.setValues();
+          }
+          // set the value directly if only one
+          if (mpnir.startIndex == mpnir.endIndex) {
+            final Long value = mpnir.oriValues.get(mpnir.startIndex);
+            mpnir.mp.setExpression(value);
+            scenario.getParameterValues().put(mparamTOscenarParam.get(mpnir.mp), value.toString());
+          } else {
+            // otherwise we need another iteration
+            oneNeedsIter = true;
+          }
         }
       }
     }

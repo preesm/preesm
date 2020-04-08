@@ -113,14 +113,20 @@ public class SetMalleableParametersTask extends AbstractTaskImplementation {
     List<MalleableParameterIR> mparamsIR = null;
     final boolean allNumbers = !mparams.stream()
         .anyMatch(x -> !MalleableParameterExprChecker.isOnlyNumbers(x.getUserExpression()));
-    final String heuristicStr = parameters.get(DEFAULT_HEURISTIC_NAME);
-    boolean heuristicValue = allNumbers && Boolean.parseBoolean(heuristicStr);
     if (allNumbers) {
       PreesmLogger.getLogger().log(Level.INFO,
           "All malleable parameters are numbers, allowing non exhaustive heuristics.");
     }
+    final String heuristicStr = parameters.get(DEFAULT_HEURISTIC_NAME);
+    boolean heuristicValue = Boolean.parseBoolean(heuristicStr);
     if (heuristicValue) {
-      mparamsIR = mparams.stream().map(x -> new MalleableParameterNumberIR(x)).collect(Collectors.toList());
+      mparamsIR = mparams.stream().map(x -> {
+        if (MalleableParameterExprChecker.isOnlyNumbers(x.getUserExpression())) {
+          return new MalleableParameterNumberIR(x);
+        } else {
+          return new MalleableParameterIR(x);
+        }
+      }).collect(Collectors.toList());
     } else {
       mparamsIR = mparams.stream().map(x -> new MalleableParameterIR(x)).collect(Collectors.toList());
     }
@@ -192,7 +198,7 @@ public class SetMalleableParametersTask extends AbstractTaskImplementation {
         indexTot++;
 
         final DSEpointIR dsep = runConfiguration(scenario, graph, architecture, indexTot);
-
+        PreesmLogger.getLogger().log(Level.FINE, dsep.toString());
         if (dsep != null && (bestConfig == null || globalComparator.compare(dsep, bestPoint) < 0)) {
           bestConfig = pce.recordConfiguration();
           bestPoint = dsep;
