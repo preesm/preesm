@@ -25,10 +25,8 @@ import org.preesm.algorithm.schedule.model.Schedule;
 import org.preesm.algorithm.synthesis.SynthesisResult;
 import org.preesm.algorithm.synthesis.schedule.algos.IScheduler;
 import org.preesm.algorithm.synthesis.schedule.algos.PeriodicScheduler;
-import org.preesm.commons.doc.annotations.Parameter;
 import org.preesm.commons.doc.annotations.Port;
 import org.preesm.commons.doc.annotations.PreesmTask;
-import org.preesm.commons.doc.annotations.Value;
 import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.PiGraph;
@@ -49,12 +47,7 @@ import org.preesm.workflow.implement.AbstractWorkflowNodeImplementation;
     inputs = { @Port(name = "PiMM", type = PiGraph.class), @Port(name = "architecture", type = Design.class),
         @Port(name = "scenario", type = Scenario.class) },
 
-    outputs = { @Port(name = "DAG", type = DirectedAcyclicGraph.class), @Port(name = "ABC", type = LatencyAbc.class) },
-
-    parameters = {
-        @Parameter(name = "SCHEDULE_FILE", values = { @Value(name = "/schedule.json", effect = "default value") })
-
-    })
+    outputs = { @Port(name = "DAG", type = DirectedAcyclicGraph.class), @Port(name = "ABC", type = LatencyAbc.class) })
 public class PeriodicMappingFromPiMMTask extends AbstractMappingFromDAG {
 
   private PiGraph inputPiGraphSRDAG = null;
@@ -163,6 +156,17 @@ public class PeriodicMappingFromPiMMTask extends AbstractMappingFromDAG {
       }
     }
 
+  }
+
+  @Override
+  public String monitorMessage() {
+    return "Mapping/Scheduling according to the periodic list scheduler.";
+  }
+
+  @Override
+  public Map<String, String> getDefaultParameters() {
+    final Map<String, String> parameters = new LinkedHashMap<>();
+    return parameters;
   }
 
 }
