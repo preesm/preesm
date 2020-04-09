@@ -181,7 +181,7 @@ public class Spider2CodegenEdge {
     for (final ConfigInputPort iCfg : actor.getConfigInputPorts()) {
       if (expression.matches(".*?\\b" + iCfg.getName() + "\\b.*?")) {
         final String realName = ((Parameter) (iCfg.getIncomingDependency().getSetter())).getName();
-        expression = expression.replace(iCfg.getName(), realName);
+        expression = expression.replaceAll("\\b" + iCfg.getName() + "\\b", realName);
       }
     }
     return expression;

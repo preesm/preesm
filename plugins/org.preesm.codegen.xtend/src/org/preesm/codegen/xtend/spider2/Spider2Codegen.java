@@ -381,7 +381,7 @@ public class Spider2Codegen {
     if (graph == this.applicationGraph) {
       writeVelocityContext(context, "templates/cpp/app_graph_template.vm", "spider2-application_graph.cpp");
     } else {
-      final String outputFileName = graph.getPiGraphName().toLowerCase() + "_subgraph" + ".cpp";
+      final String outputFileName = "spider2-" + graph.getPiGraphName().toLowerCase() + "_subgraph" + ".cpp";
       writeVelocityContext(context, "templates/cpp/app_subgraph_template.vm", outputFileName);
     }
   }
