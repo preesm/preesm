@@ -436,13 +436,16 @@ public class AutoDelaysTask extends AbstractTaskImplementation {
           final PiGraph graphFifo = f.getContainingPiGraph();
           graphFifo.addDelay(delay);
           PreesmLogger.getLogger().log(Level.INFO, "Set fifo delay size and type of: " + f.getId());
-        } else {
+        } else if (delay != null) {
           if (!reset) {
             pipeSize += delay.getExpression().evaluate();
             PreesmLogger.getLogger().log(Level.WARNING, "Reset fifo delay size and type of: " + f.getId());
           } else {
             pipeSize = delay.getExpression().evaluate() - pipeSize;
           }
+        } else {
+          // when (delay == null && reset == true)
+          continue;
         }
         delay.setLevel(PersistenceLevel.PERMANENT);
         delay.setExpression(pipeSize);

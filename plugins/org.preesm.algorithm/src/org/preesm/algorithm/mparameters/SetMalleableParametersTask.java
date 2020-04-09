@@ -166,10 +166,12 @@ public class SetMalleableParametersTask extends AbstractTaskImplementation {
       index++;
 
       final DSEpointIR dsep = runConfiguration(scenario, graph, architecture, index);
-
-      if (dsep != null && (bestConfig == null || globalComparator.compare(dsep, bestPoint) < 0)) {
-        bestConfig = pce.recordConfiguration();
-        bestPoint = dsep;
+      if (dsep != null) {
+        PreesmLogger.getLogger().log(Level.FINE, dsep.toString());
+        if (bestConfig == null || globalComparator.compare(dsep, bestPoint) < 0) {
+          bestConfig = pce.recordConfiguration();
+          bestPoint = dsep;
+        }
       }
     }
     if (bestConfig == null) {
@@ -198,10 +200,12 @@ public class SetMalleableParametersTask extends AbstractTaskImplementation {
         indexTot++;
 
         final DSEpointIR dsep = runConfiguration(scenario, graph, architecture, indexTot);
-        PreesmLogger.getLogger().log(Level.FINE, dsep.toString());
-        if (dsep != null && (bestConfig == null || globalComparator.compare(dsep, bestPoint) < 0)) {
-          bestConfig = pce.recordConfiguration();
-          bestPoint = dsep;
+        if (dsep != null) {
+          PreesmLogger.getLogger().log(Level.FINE, dsep.toString());
+          if (bestConfig == null || globalComparator.compare(dsep, bestPoint) < 0) {
+            bestConfig = pce.recordConfiguration();
+            bestPoint = dsep;
+          }
         }
       }
       if (bestConfig == null) {
