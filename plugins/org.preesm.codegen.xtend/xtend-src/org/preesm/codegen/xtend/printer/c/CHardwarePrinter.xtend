@@ -51,7 +51,6 @@ import java.util.Map
 import java.util.logging.Level
 import org.preesm.codegen.model.ActorFunctionCall
 import org.preesm.codegen.model.Block
-import org.preesm.codegen.model.CallBlock
 import org.preesm.codegen.model.CodeElt
 import org.preesm.codegen.model.Constant
 import org.preesm.codegen.model.CoreBlock

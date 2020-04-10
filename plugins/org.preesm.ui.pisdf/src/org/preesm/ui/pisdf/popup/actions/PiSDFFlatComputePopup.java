@@ -110,15 +110,17 @@ public class PiSDFFlatComputePopup extends AbstractHandler {
 
     // performs optim only if already flat
     boolean optim = pigraph.getChildrenGraphs().isEmpty();
-    String message = optim ? "Computing optimized graph of " : "Computing flat graph of ";
+    String message = optim ? "Computing optimized graph of " : "Computing flat graphs of ";
 
     PreesmLogger.getLogger().log(Level.INFO, message + pigraph.getName());
 
-    final PiGraph flat = PiSDFFlattener.flatten(pigraph, optim);
+    final PiGraph flatOptimized = PiSDFFlattener.flatten(pigraph, true);
+    final IPath folder = SavePiGraph.save(iProject, flatOptimized, "_optimized");
+    if (!optim && folder != null) {
+      final PiGraph flat = PiSDFFlattener.flatten(pigraph, false);
+      SavePiGraph.saveInFolder(iProject, folder, flat, "");
+    }
 
-    String suffix = optim ? "_optimzed" : "";
-
-    SavePiGraph.save(iProject, flat, suffix);
   }
 
 }

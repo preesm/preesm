@@ -38,18 +38,26 @@
  */
 package org.preesm.model.scenario.workflow;
 
+import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
+import org.apache.commons.io.FileUtils;
 import org.eclipse.core.resources.IFile;
+import org.eclipse.core.resources.IFolder;
+import org.eclipse.core.resources.IWorkspace;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
 import org.preesm.commons.doc.annotations.Port;
 import org.preesm.commons.doc.annotations.PreesmTask;
 import org.preesm.commons.exceptions.PreesmException;
 import org.preesm.commons.exceptions.PreesmRuntimeException;
+import org.preesm.commons.files.WorkspaceUtils;
+import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.model.pisdf.Parameter;
 import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.scenario.Scenario;
@@ -101,6 +109,10 @@ public class AlgorithmAndArchitectureScenarioNode extends AbstractScenarioImplem
       scenario = scenarioParser.parseXmlFile(file);
       piAlgorithm = scenario.getAlgorithm();
       applyScenarioParameterValues(scenario);
+      // delete previous generated files
+      final String codegenPath = scenario.getCodegenDirectory() + File.separator;
+      erasePreviousFilesExtensions(codegenPath);
+
     } catch (FileNotFoundException | CoreException e) {
       throw new PreesmRuntimeException(e.getMessage());
     }
@@ -132,6 +144,38 @@ public class AlgorithmAndArchitectureScenarioNode extends AbstractScenarioImplem
       } else {
         // keep value from PiSDF graph
       }
+    }
+  }
+
+  private static void erasePreviousFilesExtensions(final String codegenPath) {
+    try {
+      final IWorkspace workspace = ResourcesPlugin.getWorkspace();
+      WorkspaceUtils.updateWorkspace();
+      final IFolder f = workspace.getRoot().getFolder(new Path(codegenPath));
+      final IPath rawLocation = f.getRawLocation();
+      if (rawLocation == null) {
+        throw new PreesmRuntimeException("Could not find target project for given path [" + codegenPath
+            + "]. Please change path in the scenario editor.");
+      }
+      final String osString = rawLocation.toOSString();
+      final File folder = new File(osString);
+      if (!folder.exists()) {
+        folder.mkdirs();
+        PreesmLogger.getLogger().info("Created missing target dir [" + folder.getAbsolutePath() + "] during codegen");
+      } else {
+        FileUtils.deleteDirectory(folder);
+      }
+      WorkspaceUtils.updateWorkspace();
+      if (!f.exists()) {
+        f.create(true, true, null);
+      }
+      WorkspaceUtils.updateWorkspace();
+      if (!folder.exists()) {
+        throw new FileNotFoundException("Target generation folder [" + folder.getAbsolutePath() + "] does not exist");
+      }
+    } catch (CoreException | IOException e) {
+      throw new PreesmRuntimeException("Could not access target directory [" + codegenPath + "] during code generation",
+          e);
     }
   }
 

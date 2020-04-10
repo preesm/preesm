@@ -243,7 +243,7 @@ public class PapifyEnergyParser {
         try {
           final String expression = energies.get(actor).get(component);
 
-          this.scenario.getEnergyConfig().setActorPeEnergy(actor, component, Double.parseDouble(expression));
+          this.scenario.getEnergyConfig().setActorPeEnergy(actor, component, expression);
 
           final String msg = "Importing energy: " + actor.getVertexPath() + " on " + component.getVlnv().getName()
               + " takes " + expression;

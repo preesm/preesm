@@ -156,7 +156,7 @@ public class MessageComRouterImplementer extends CommunicationRouterImplementer 
           transactions.add(new AddInvolvementVertexTransaction(true, incomingEdge, getImplementation(), routeStep,
               transferTime, getOrderManager()));
         } else {
-          PreesmLogger.getLogger().log(Level.FINE,
+          PreesmLogger.getLogger().log(Level.FINER,
               "The transfer following vertex" + edge.getSource() + "was not found. We could not add overhead.");
         }
 

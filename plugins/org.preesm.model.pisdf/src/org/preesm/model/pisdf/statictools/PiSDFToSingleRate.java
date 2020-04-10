@@ -81,6 +81,7 @@ import org.preesm.model.pisdf.NonExecutableActor;
 import org.preesm.model.pisdf.Parameter;
 import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.pisdf.Port;
+import org.preesm.model.pisdf.PortMemoryAnnotation;
 import org.preesm.model.pisdf.Refinement;
 import org.preesm.model.pisdf.RoundBufferActor;
 import org.preesm.model.pisdf.brv.BRVMethod;
@@ -309,8 +310,8 @@ public class PiSDFToSingleRate extends PiMMSwitch<Boolean> {
   public Boolean caseAbstractActor(final AbstractActor actor) {
     if (actor instanceof PiGraph) {
       // Here we handle the replacement of the interfaces by what should be
-      // Copy the actor
-      final PiGraph copyGraph = PiMMUserFactory.instance.copyPiGraphWithHistory((PiGraph) actor);
+      // Copy the actor, should we use copyPiGraphWithHistory() instead ?
+      final PiGraph copyGraph = PiMMUserFactory.instance.copyWithHistory((PiGraph) actor);
       // Set the properties
       copyGraph.setName(this.currentActorName);
 
@@ -1036,6 +1037,7 @@ public class PiSDFToSingleRate extends PiMMSwitch<Boolean> {
     final DataInputPort targetPort = fifo.getTargetPort();
     init.getDataOutputPort().setName(targetPort.getName());
     init.getDataOutputPort().setExpression(delayExpression);
+    init.getDataOutputPort().setAnnotation(PortMemoryAnnotation.WRITE_ONLY);
     // Set the proper init name
     final String initName = targetPort.getContainingActor().getName() + "_init_" + targetPort.getName();
     init.setName(initName);
@@ -1068,6 +1070,7 @@ public class PiSDFToSingleRate extends PiMMSwitch<Boolean> {
     final DataOutputPort sourcePort = fifo.getSourcePort();
     end.getDataInputPort().setName(sourcePort.getName());
     end.getDataInputPort().setExpression(delayExpression);
+    end.getDataInputPort().setAnnotation(PortMemoryAnnotation.READ_ONLY);
     // Set the proper end name
     final String endName = sourcePort.getContainingActor().getName() + "_end_" + sourcePort.getName();
     end.setName(endName);

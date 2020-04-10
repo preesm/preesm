@@ -137,7 +137,7 @@ public class LegacyMemoryAllocation implements IMemoryAllocation {
     engine.updateMemEx(memEx);
     if (!log.equals("")) {
       // generate
-      engine.generateCode(scenario, log);
+      engine.generateLog(scenario, log);
     }
 
     // *************

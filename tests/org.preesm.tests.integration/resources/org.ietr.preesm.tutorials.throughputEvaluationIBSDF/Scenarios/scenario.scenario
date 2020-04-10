@@ -3,7 +3,7 @@
     <files>
         <algorithm url="/org.ietr.preesm.tutorials.throughputEvaluationIBSDF/Algo/ABC_top.pi"/>
         <architecture url="/org.ietr.preesm.tutorials.throughputEvaluationIBSDF/Archi/8CoreX86.slam"/>
-        <codegenDirectory url=""/>
+        <codegenDirectory url="/org.ietr.preesm.tutorials.throughputEvaluationIBSDF/Code/generated"/>
     </files>
     <constraints excelUrl=""/>
     <relativeconstraints excelUrl=""/>

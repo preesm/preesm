@@ -176,7 +176,7 @@ public class PiMemoryScriptEngine {
 
   /**
    */
-  public void generateCode(final Scenario scenario, final String log) {
+  public void generateLog(final Scenario scenario, final String log) {
     if (scenario.getCodegenDirectory() == null) {
       throw new PreesmRuntimeException("Codegen path has not been specified in scenario, cannot go further.");
     }

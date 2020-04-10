@@ -45,7 +45,7 @@ import org.preesm.codegen.printer.BlankPrinter
 
 /**
  * This {@link ComTrackingPrinter} is a dummy implementation of the
- * {@link DefaultPrinter} where all print methods print nothing
+ * {@link BlankPrinter} where all print methods print nothing
  * except for communications. The goal is to track the order of communication
  * calls for debug purpose.
  * @author mpelcat

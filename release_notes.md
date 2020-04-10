@@ -8,9 +8,15 @@ PREESM Changelog
 * Clustering: 
  * Uniform Repetition Count chain of actor can be found with the new URCSeeker class.
  * Repetition count on a given PiSDF hierarchy can be balanced between coarse-grained and fine-grained levels with the new PiGraphFiringBalancer class.
-* Model: new class of parameter : Malleable Parameter, accepting a set of possible values.
-* Workflow: new task "pisdf-mparams.setter" to compute best value of malleable parameters (naive version).
-* Workflow: new task "org.preesm.codegen.xtend.Spider2CodegenTask" to generate code for Spider 2 runtime.
+* Model:
+ * new class of parameter : Malleable Parameter, accepting a set of possible values.
+ * energy of actors can be expressed with parameters in the scenario.
+* Workflow:
+ * new task "org.preesm.codegen.xtend.Spider2CodegenTask" to generate code for Spider 2 runtime.
+ * new task "pisdf-mapper.periodic.DAG" to compute periodic scheduling/mapping for legacy code generation.
+ * new task "pisdf-synthesis.void-periodic-schedule" to compute scheduling/mapping only (for new synthesis).
+ * new task "pisdf-mparams.setter" to compute best value of malleable parameters (exhaustive and heuristic DSE).
+ * new task "pisdf-delays.setter" to automatically set delays in flat PiSDF graphs (for pipelines and cycles).
 
 ### Changes
 * ConfigInputInterface accepts a default value (to compute BRV in subgraph and to avoid false checks in GUI).
@@ -29,6 +35,8 @@ PREESM Changelog
 * Update Cluster Scheduler integration tests.
 * Add NewSynthesis Tests
 * Adding direct translation of 1 edge broadcast to REPEAT vertex in Spider2Codegen.
+* Codegen directory is now cleaned at the beginning of the workflow.
+* Secure SWT_AWT code calls in all GUI parts (see https://bugs.eclipse.org/bugs/show_bug.cgi?id=558874)
 
 ### Bug fix
 * Fix ids and icons of a few GUI elements.
@@ -42,6 +50,11 @@ PREESM Changelog
 * Fix #302 : Verify any opened diagram editor instead of active one. 
 * Fix Vulnerabilities and Bugs signaled by Sonar
 * Fix parameter name replacement in rate expressions in Spider2CodegenEdge.
+* Fix #294 : improve the popup menu action to generate flat optimized PiGraph.
+* Fix codegen : fix actor name in generated analysis.csv
+* Fix #285 : PiGraph copy with history now works on subgraphs.
+* Fix #274 : fix clear refinement feature in the GUI of actors.
+* Fix #289 : remove memory annotations in the GUI of data interfaces.
 
 ## Release version 3.19.0
 *2020.01.10*

@@ -16,15 +16,17 @@ import org.preesm.model.scenario.Scenario;
  */
 public class ParameterCombinationExplorer {
 
-  protected List<MalleableParameterIR> mparamsIR;
+  protected List<MalleableParameterIR> mparamsIR;           // mparamsIR having more than 1 possible value
   protected Scenario                   scenario;
-  protected Map<Parameter, Parameter>  mparamTOscenarParam;
+  protected Map<Parameter, Parameter>  mparamTOscenarParam; // map from mparam to corresponding scenario parameter
 
   /**
    * Builds a new explorer.
    * 
    * @param mparamsIR
    *          MalleableParameterIR.
+   * @param scenario
+   *          Scenario containing the parameters.
    */
   public ParameterCombinationExplorer(List<MalleableParameterIR> mparamsIR, Scenario scenario) {
     this.scenario = scenario;
@@ -76,12 +78,15 @@ public class ParameterCombinationExplorer {
   }
 
   protected boolean setNext(int index) {
+    if (mparamsIR.isEmpty()) {
+      return false;
+    }
     MalleableParameterIR lmpir = mparamsIR.get(index);
     if (lmpir.nbValues == lmpir.currentExprIndex) {
+      resetIndex(index);
       if (mparamsIR.size() - 1 == index) {
         return false;
       } else {
-        resetIndex(index);
         return setNext(index + 1);
       }
     } else {
@@ -100,35 +105,34 @@ public class ParameterCombinationExplorer {
   }
 
   /**
+   * Records the index of the current expression set for each malleable parameter having several possible values. To be
+   * used only with the original {@link ParameterCombinationExplorer} that created this configuration.
    * 
-   * @return A list of index to later set back this configuration.
+   * @return A list of index (each from 0 to mparamIR.nbValues - 1 included) to later set back this configuration.
    */
   protected List<Integer> recordConfiguration() {
     return mparamsIR.stream().map(x -> x.currentExprIndex - 1).collect(Collectors.toList());
   }
 
   /**
+   * Set the default expression of each malleable parameters as recorded in the given configuration.
    * 
    * @param config
    *          Configuration to set, as returned per {@link ParameterCombinationExplorer#recordConfiguration}.
    * @return True if the configuration is valid.
    */
   protected boolean setConfiguration(List<Integer> config) {
-    int size = mparamsIR.size();
+    final int size = mparamsIR.size();
     if (config.size() != size) {
       return false;
     }
     for (int i = 0; i < size; i++) {
-      MalleableParameterIR mpir = mparamsIR.get(i);
-      int index = config.get(i);
+      final MalleableParameterIR mpir = mparamsIR.get(i);
+      final int index = config.get(i);
       if (index < 0 || index >= mpir.nbValues) {
         return false;
       }
-      if (index == mpir.currentExprIndex) {
-        continue;
-      } else {
-        mpir.currentExprIndex = index;
-      }
+      mpir.currentExprIndex = index;
       if (mpir.values.isEmpty()) {
         final String expr = mpir.exprs.get(mpir.currentExprIndex);
         mpir.mp.setExpression(expr);

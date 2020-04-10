@@ -110,10 +110,8 @@ public class DelayPropertiesSection extends ParameterizablePropertiesSection {
       }
     });
 
-    this.persistenceComboLevel.setEnabled(false);
     this.persistenceComboLevel.setVisible(false);
     this.persistenceComboLevel.setEnabled(false);
-    this.persistenceLabelLevel.setEnabled(false);
     this.persistenceLabelLevel.setVisible(false);
     this.persistenceLabelLevel.setEnabled(false);
 
@@ -169,10 +167,8 @@ public class DelayPropertiesSection extends ParameterizablePropertiesSection {
         elementValueExpression = fifo.getDelay().getSizeExpression();
 
         this.persistenceComboLevel.select(((Delay) businessObject).getLevel().getValue());
-        this.persistenceComboLevel.setEnabled(false);
         this.persistenceComboLevel.setVisible(true);
         this.persistenceComboLevel.setEnabled(true);
-        this.persistenceLabelLevel.setEnabled(false);
         this.persistenceLabelLevel.setVisible(true);
         this.persistenceLabelLevel.setEnabled(true);
 

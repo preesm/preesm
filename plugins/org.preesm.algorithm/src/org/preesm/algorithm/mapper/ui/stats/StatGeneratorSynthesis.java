@@ -66,7 +66,7 @@ public class StatGeneratorSynthesis extends AbstractStatGenerator {
    * @param mapping
    *          Mapping of the PiGraph actors.
    * @param memAlloc
-   *          MemoryAllocation of the PiGraph.
+   *          MemoryAllocation of the PiGraph (may be null)
    * @param latencyCost
    *          Latency of the schedule.
    */
@@ -116,8 +116,10 @@ public class StatGeneratorSynthesis extends AbstractStatGenerator {
   @Override
   public long getMem(ComponentInstance operator) {
     long res = 0L;
-    for (PhysicalBuffer pb : memAlloc.getPhysicalBuffers()) {
-      res += pb.getSize();
+    if (memAlloc != null) {
+      for (PhysicalBuffer pb : memAlloc.getPhysicalBuffers()) {
+        res += pb.getSize();
+      }
     }
     return res;
   }

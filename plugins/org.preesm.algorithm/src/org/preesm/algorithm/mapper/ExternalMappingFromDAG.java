@@ -351,7 +351,7 @@ public class ExternalMappingFromDAG extends AbstractMappingFromDAG {
     }
   }
 
-  private static void mapVertex(final LatencyAbc abc, final ComponentInstance componentInstance, final DAGVertex v) {
+  static void mapVertex(final LatencyAbc abc, final ComponentInstance componentInstance, final DAGVertex v) {
     final MapperDAGVertex vertex = (MapperDAGVertex) v;
     if (abc.isMapable(vertex, componentInstance, false)) {
       abc.map(vertex, componentInstance, true, false);
