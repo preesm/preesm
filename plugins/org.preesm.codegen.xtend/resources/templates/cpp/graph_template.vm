@@ -130,7 +130,7 @@
     spider::api::createLocalPersistentDelay(/* = Edge of the delay            = */  edge_${edge.source.name}_${edge.sourcePortName}__${edge.sink.name}_${edge.sinkPortName},
                                             /* = Expression of the delay      = */ "(${edge.delayExpression}) * ${edge.size}",
                                             /* = Number of persistence levels = */  edge.delayLevel);                                          
-#elseif( ${edge.delay.isDynamic} )         
+#elseif( ${edge.delay.isDynamic()} )
     spider::api::createLocalDelay(/* = Edge of the delay       = */  edge_${edge.source.name}_${edge.sourcePortName}__${edge.sink.name}_${edge.sinkPortName},
                                   /* = Expression of the delay = */ "(${edge.delayExpression}) * ${edge.size}",
                                   /* = Setter of the delay     = */  $edge.setterDelay,
@@ -143,11 +143,11 @@
     spider::api::createLocalDelay(/* = Edge of the delay       = */  edge_${edge.source.name}_${edge.sourcePortName}__${edge.sink.name}_${edge.sinkPortName},
                                   /* = Expression of the delay = */ "(${edge.delayExpression}) * ${edge.size}");
 #end                          
-#else
-    spider::api::createEdge(/* = Source vertex          = */  vertex_$edge.source.name,
+#elseif( !${edge.source.class.simpleName.equals("DelayActorImpl")} && !${edge.sink.class.simpleName.equals("DelayActorImpl")})
+    spider::api::createEdge(/* = Source vertex          = */  vertex_$edge.source.name, $edge.source.class.simpleName
                             /* = Source port ix         = */  $edge.sourceIx,
                             /* = Source rate expression = */ "(${edge.sourceRateExpression}) * ${edge.size}",
-                            /* = Sink vertex            = */  vertex_$edge.sink.name,
+                            /* = Sink vertex            = */  vertex_$edge.sink.name, $edge.sink.class.simpleName
                             /* = Sink port ix           = */  $edge.sinkIx,
                             /* = sink rate expression   = */ "(${edge.sinkRateExpression}) * ${edge.size}");   
 #end
