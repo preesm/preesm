@@ -144,10 +144,10 @@
                                   /* = Expression of the delay = */ "(${edge.delayExpression}) * ${edge.size}");
 #end                          
 #elseif( !${edge.source.class.simpleName.equals("DelayActorImpl")} && !${edge.sink.class.simpleName.equals("DelayActorImpl")})
-    spider::api::createEdge(/* = Source vertex          = */  vertex_$edge.source.name, $edge.source.class.simpleName
+    spider::api::createEdge(/* = Source vertex          = */  vertex_$edge.source.name,
                             /* = Source port ix         = */  $edge.sourceIx,
                             /* = Source rate expression = */ "(${edge.sourceRateExpression}) * ${edge.size}",
-                            /* = Sink vertex            = */  vertex_$edge.sink.name, $edge.sink.class.simpleName
+                            /* = Sink vertex            = */  vertex_$edge.sink.name,
                             /* = Sink port ix           = */  $edge.sinkIx,
                             /* = sink rate expression   = */ "(${edge.sinkRateExpression}) * ${edge.size}");   
 #end
