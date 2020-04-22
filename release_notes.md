@@ -55,6 +55,7 @@ PREESM Changelog
 * Fix #285 : PiGraph copy with history now works on subgraphs.
 * Fix #274 : fix clear refinement feature in the GUI of actors.
 * Fix #289 : remove memory annotations in the GUI of data interfaces.
+* Fix spider2 codegen with delays having setter / getter actors.
 
 ## Release version 3.19.0
 *2020.01.10*
