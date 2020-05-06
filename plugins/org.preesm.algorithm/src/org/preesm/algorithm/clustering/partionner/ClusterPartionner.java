@@ -39,6 +39,11 @@ public class ClusterPartionner {
   private final Design   architecture;
 
   /**
+   * Number of PEs in clusters.
+   */
+  private final int numberOfPEs;
+
+  /**
    * Builds a ClusterPartionner object.
    * 
    * @param graph
@@ -48,10 +53,12 @@ public class ClusterPartionner {
    * @param architecture
    *          Workflow architecture.
    */
-  public ClusterPartionner(final PiGraph graph, final Scenario scenario, final Design architecture) {
+  public ClusterPartionner(final PiGraph graph, final Scenario scenario, final Design architecture,
+      final int numberOfPEs) {
     this.graph = graph;
     this.scenario = scenario;
     this.architecture = architecture;
+    this.numberOfPEs = numberOfPEs;
   }
 
   /**
@@ -82,13 +89,11 @@ public class ClusterPartionner {
     }
 
     // TODO Parse the architecture model to determine the max number of PE in a compute cluster.
-    // 16 is for targeting the Kalray MPPA.
-    final long maxPE = 16;
 
     // Compute BRV and balance firing between coarse-grained and fine-grained parallelism.
     Map<AbstractVertex, Long> brv = PiBRV.compute(this.graph, BRVMethod.LCM);
     for (final PiGraph subgraph : subGraphs) {
-      long factor = MathFunctionsHelper.gcd(brv.get(subgraph), maxPE);
+      long factor = MathFunctionsHelper.gcd(brv.get(subgraph), numberOfPEs);
       new PiGraphFiringBalancer(subgraph, factor).balance();
     }
 
