@@ -4,6 +4,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import org.preesm.algorithm.clustering.ClusteringHelper;
+import org.preesm.commons.math.MathFunctionsHelper;
 import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.AbstractVertex;
 import org.preesm.model.pisdf.PiGraph;
@@ -87,12 +88,7 @@ public class ClusterPartionner {
     // Compute BRV and balance firing between coarse-grained and fine-grained parallelism.
     Map<AbstractVertex, Long> brv = PiBRV.compute(this.graph, BRVMethod.LCM);
     for (final PiGraph subgraph : subGraphs) {
-      double repetitionCount = brv.get(subgraph);
-      long factor = 1;
-      while ((Math.floor(repetitionCount / (factor * 2)) == Math.ceil(repetitionCount / (factor * 2)))
-          && ((factor * 2) <= maxPE)) {
-        factor = factor * 2;
-      }
+      long factor = MathFunctionsHelper.gcd(brv.get(subgraph), maxPE);
       new PiGraphFiringBalancer(subgraph, factor).balance();
     }
 
