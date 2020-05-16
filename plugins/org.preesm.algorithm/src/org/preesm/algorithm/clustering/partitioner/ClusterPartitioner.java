@@ -1,9 +1,11 @@
-package org.preesm.algorithm.clustering.partionner;
+package org.preesm.algorithm.clustering.partitioner;
 
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
 import org.preesm.algorithm.clustering.ClusteringHelper;
+import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.commons.math.MathFunctionsHelper;
 import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.AbstractVertex;
@@ -15,15 +17,16 @@ import org.preesm.model.pisdf.util.PiSDFSubgraphBuilder;
 import org.preesm.model.pisdf.util.URCSeeker;
 import org.preesm.model.scenario.Scenario;
 import org.preesm.model.slam.ComponentInstance;
-import org.preesm.model.slam.Design;
 
 /**
- * This class provide heuristics to cluster input graph in order to balance coarse-grained and fine-grained parallelism.
+ * This class provide an algorithm to cluster a PiSDF graph and balance actor firings of clustered actor between coarse
+ * and fine-grained parallelism. Resulting clusters are marked as PiSDF cluster, they have to be schedule with the
+ * Cluster Scheduler.
  * 
  * @author dgageot
  *
  */
-public class ClusterPartionner {
+public class ClusterPartitioner {
 
   /**
    * Input graph.
@@ -34,39 +37,33 @@ public class ClusterPartionner {
    */
   private final Scenario scenario;
   /**
-   * Workflow architecture.
+   * Number of PEs in compute clusters.
    */
-  private final Design   architecture;
+  private final int      numberOfPEs;
 
   /**
-   * Number of PEs in clusters.
-   */
-  private final int numberOfPEs;
-
-  /**
-   * Builds a ClusterPartionner object.
+   * Builds a ClusterPartitioner object.
    * 
    * @param graph
    *          Input graph.
    * @param scenario
    *          Workflow scenario.
-   * @param architecture
-   *          Workflow architecture.
+   * @param numberOfPEs
+   *          Number of processing elements in compute clusters.
    */
-  public ClusterPartionner(final PiGraph graph, final Scenario scenario, final Design architecture,
-      final int numberOfPEs) {
+  public ClusterPartitioner(final PiGraph graph, final Scenario scenario, final int numberOfPEs) {
     this.graph = graph;
     this.scenario = scenario;
-    this.architecture = architecture;
     this.numberOfPEs = numberOfPEs;
   }
 
   /**
-   * @return Resulting PiGraph.
+   * @return Clustered PiGraph.
    */
   public PiGraph cluster() {
 
-    // Retrieve URC chains in input graph in which actors share the same component constraints.
+    // TODO: Look for actor groups other than URC chains.
+    // Retrieve URC chains in input graph and verify that actors share component constraints.
     List<List<AbstractActor>> graphURCs = new URCSeeker(this.graph).seek();
     List<List<AbstractActor>> constrainedURCs = new LinkedList<>();
     for (List<AbstractActor> URC : graphURCs) {
@@ -75,25 +72,26 @@ public class ClusterPartionner {
       }
     }
 
-    // Cluster constrained URCs.
+    // Cluster constrained URC chains.
     long index = 0;
     List<PiGraph> subGraphs = new LinkedList<>();
     for (List<AbstractActor> URC : graphURCs) {
       PiGraph subGraph = new PiSDFSubgraphBuilder(this.graph, URC, "urc_" + index++).build();
       subGraph.setClusterValue(true);
-      // Add constraint to the cluster
-      for (ComponentInstance component : ClusteringHelper.getListOfCommonComponent(URC, scenario)) {
-        scenario.getConstraints().addConstraint(component, subGraph);
+      // Add constraints of the cluster in the scenario.
+      for (ComponentInstance component : ClusteringHelper.getListOfCommonComponent(URC, this.scenario)) {
+        this.scenario.getConstraints().addConstraint(component, subGraph);
       }
       subGraphs.add(subGraph);
     }
 
-    // TODO Parse the architecture model to determine the max number of PE in a compute cluster.
-
-    // Compute BRV and balance firing between coarse-grained and fine-grained parallelism.
+    // Compute BRV and balance actor firings between coarse and fine-grained parallelism.
     Map<AbstractVertex, Long> brv = PiBRV.compute(this.graph, BRVMethod.LCM);
     for (final PiGraph subgraph : subGraphs) {
-      long factor = MathFunctionsHelper.gcd(brv.get(subgraph), numberOfPEs);
+      long factor = MathFunctionsHelper.gcd(brv.get(subgraph), this.numberOfPEs);
+      String message = String.format("%1$s: firings balanced by %3$d, leaving %2$d firings at coarse-grained.",
+          subgraph.getName(), brv.get(subgraph) / factor, factor);
+      PreesmLogger.getLogger().log(Level.INFO, message);
       new PiGraphFiringBalancer(subgraph, factor).balance();
     }
 
