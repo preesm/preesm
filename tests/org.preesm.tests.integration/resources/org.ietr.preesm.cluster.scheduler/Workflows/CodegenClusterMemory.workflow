@@ -90,6 +90,7 @@
     <dftools:task pluginId="cluster-scheduler" taskId="Cluster Scheduler">
         <dftools:data key="variables">
             <dftools:variable name="Optimization criteria" value="Me"/>
+            <dftools:variable name="Parallelism" value="True" />
             <dftools:variable name="Target" value="Cluster"/>
         </dftools:data>
     </dftools:task>
@@ -140,7 +141,7 @@
     <dftools:dataTransfer from="Cluster Scheduler"
         sourceport="PiMM" targetport="PiMM" to="pisdf-srdag"/>
     <dftools:dataTransfer from="Cluster Scheduler"
-        sourceport="CS" targetport="schedules" to="Code Generation"/>
+        sourceport="CS" targetport="CS" to="Code Generation"/>
     <dftools:dataTransfer from="scenario" sourceport="scenario"
         targetport="scenario" to="Cluster Scheduler"/>
 </dftools:workflow>
