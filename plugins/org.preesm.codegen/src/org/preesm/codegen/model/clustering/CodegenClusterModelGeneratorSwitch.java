@@ -163,8 +163,11 @@ public class CodegenClusterModelGeneratorSwitch extends ScheduleSwitch<CodeElt> 
   Map<String, Object> fetcherMap;
 
   private final PiGraph graph;
-
-  private boolean parallelFirginsInside;
+  /**
+   * If the cluster to generate the model from contains parallelism information, it is specified in the
+   * containParallelism variable.
+   */
+  private boolean       parallelFirginsInside;
 
   /**
    * @param operatorBlock
@@ -205,15 +208,13 @@ public class CodegenClusterModelGeneratorSwitch extends ScheduleSwitch<CodeElt> 
     // Print block from input schedule into operatorBlock
     CodeElt cluster = doSwitch(schedule);
     if (cluster instanceof ClusterBlock) {
-      this.operatorBlock.getDefinitions().addAll(((ClusterBlock) cluster).getDefinitions());
-      ((ClusterBlock) cluster).getDefinitions().clear();
-      ((ClusterBlock) cluster).setContainParallelism(parallelFirginsInside);
+      ((ClusterBlock) cluster).setContainParallelism(this.parallelFirginsInside);
     }
     this.operatorBlock.getLoopBlock().getCodeElts().add(cluster);
-    this.operatorBlock.getDefinitions().addAll(this.delayBufferList);
     // Add end-init buffer in global
     this.operatorBlock.getDefinitions().addAll(this.endInitBufferMap.values());
     // Add delay buffer and sub-buffer in global
+    this.operatorBlock.getDefinitions().addAll(this.delayBufferList);
     for (final Triple<SubBuffer, SubBuffer, SubBuffer> triple : this.delaySubBufferMap.values()) {
       this.operatorBlock.getDefinitions().add(triple.getLeft());
       this.operatorBlock.getDefinitions().add(triple.getMiddle());
@@ -291,6 +292,9 @@ public class CodegenClusterModelGeneratorSwitch extends ScheduleSwitch<CodeElt> 
       FiniteLoopBlock finiteLoopBlock = generateFiniteLoopBlock(actorBlock, (int) schedule.getRepetition(), actor,
           parallelRepetition);
       loopBlock.getCodeElts().add(finiteLoopBlock);
+      if (parallelRepetition) {
+        this.parallelFirginsInside = true;
+      }
     } else {
       loopBlock.getCodeElts().add(actorBlock);
     }
@@ -362,8 +366,7 @@ public class CodegenClusterModelGeneratorSwitch extends ScheduleSwitch<CodeElt> 
     clusterBlock.setName(clusterGraph.getName());
     clusterBlock.setSchedule(schedule.shortPrint());
     clusterBlock.setParallel(schedule.isParallel());
-    // Acknowledge that the cluster contain parallelism information.
-    if (schedule.isParallel() || parallelRepetition) {
+    if (schedule.isParallel()) {
       this.parallelFirginsInside = true;
     }
 
@@ -372,6 +375,9 @@ public class CodegenClusterModelGeneratorSwitch extends ScheduleSwitch<CodeElt> 
     if (schedule.getRepetition() > 1) {
       outputBlock = generateFiniteLoopBlock(clusterBlock, (int) schedule.getRepetition(), clusterGraph,
           parallelRepetition);
+      if (parallelRepetition) {
+        this.parallelFirginsInside = true;
+      }
     } else {
       // Output the ClusterBlock
       outputBlock = clusterBlock;
