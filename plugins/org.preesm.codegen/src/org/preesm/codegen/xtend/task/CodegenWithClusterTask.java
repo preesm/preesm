@@ -70,7 +70,7 @@ import org.preesm.workflow.elements.Workflow;
 
     inputs = { @Port(name = "MEGs", type = Map.class), @Port(name = "DAG", type = DirectedAcyclicGraph.class),
         @Port(name = "scenario", type = Scenario.class), @Port(name = "architecture", type = Design.class),
-        @Port(name = "schedules", type = Map.class) },
+        @Port(name = "CS", type = Map.class) },
 
     shortDescription = "Generate code for the application deployment resulting from the workflow execution.",
 
@@ -126,7 +126,7 @@ public class CodegenWithClusterTask extends CodegenTask {
     final Design archi = (Design) inputs.get("architecture");
     final DirectedAcyclicGraph algoDAG = (DirectedAcyclicGraph) inputs.get("DAG");
     @SuppressWarnings("unchecked")
-    final Map<AbstractActor, Schedule> scheduleMapping = (Map<AbstractActor, Schedule>) inputs.get("schedules");
+    final Map<AbstractActor, Schedule> scheduleMapping = (Map<AbstractActor, Schedule>) inputs.get("CS");
     @SuppressWarnings("unchecked")
     final Map<String, MemoryExclusionGraph> megs = (Map<String, MemoryExclusionGraph>) inputs.get("MEGs");
     if (!(algoDAG instanceof MapperDAG)) {
