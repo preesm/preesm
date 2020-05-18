@@ -164,6 +164,8 @@ public class CodegenClusterModelGeneratorSwitch extends ScheduleSwitch<CodeElt> 
 
   private final PiGraph graph;
 
+  private boolean parallelFirginsInside;
+
   /**
    * @param operatorBlock
    *          core block to print in
@@ -189,6 +191,7 @@ public class CodegenClusterModelGeneratorSwitch extends ScheduleSwitch<CodeElt> 
     this.delayBufferList = new LinkedList<>();
     this.iterMap = new HashMap<>();
     this.repVector = null;
+    this.parallelFirginsInside = false;
   }
 
   /**
@@ -204,6 +207,7 @@ public class CodegenClusterModelGeneratorSwitch extends ScheduleSwitch<CodeElt> 
     if (cluster instanceof ClusterBlock) {
       this.operatorBlock.getDefinitions().addAll(((ClusterBlock) cluster).getDefinitions());
       ((ClusterBlock) cluster).getDefinitions().clear();
+      ((ClusterBlock) cluster).setContainParallelism(parallelFirginsInside);
     }
     this.operatorBlock.getLoopBlock().getCodeElts().add(cluster);
     this.operatorBlock.getDefinitions().addAll(this.delayBufferList);
@@ -358,6 +362,10 @@ public class CodegenClusterModelGeneratorSwitch extends ScheduleSwitch<CodeElt> 
     clusterBlock.setName(clusterGraph.getName());
     clusterBlock.setSchedule(schedule.shortPrint());
     clusterBlock.setParallel(schedule.isParallel());
+    // Acknowledge that the cluster contain parallelism information.
+    if (schedule.isParallel() || parallelRepetition) {
+      this.parallelFirginsInside = true;
+    }
 
     // If the cluster has to be repeated few times, build a FiniteLoopBlock
     CodeElt outputBlock = null;
@@ -385,7 +393,7 @@ public class CodegenClusterModelGeneratorSwitch extends ScheduleSwitch<CodeElt> 
     // Build FunctionCall
     final ActorFunctionCall functionCall = CodegenModelUserFactory.eINSTANCE.createActorFunctionCall();
     functionCall.setActorName(actor.getName());
-    functionCall.setActor(actor);
+    functionCall.setOriActor(actor);
 
     // Retrieve Refinement from actor for loop function
     fillFunctionCallArguments(functionCall, (Actor) actor);

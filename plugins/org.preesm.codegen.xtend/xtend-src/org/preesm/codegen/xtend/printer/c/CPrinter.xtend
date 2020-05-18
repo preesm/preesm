@@ -119,7 +119,7 @@ class CPrinter extends BlankPrinter {
 	/**
 	 * Variable to check if cluster are used.
 	 */
-	int usingCluster = 0;
+	int usingOpenMP = 0;
 	/**
 	 * Set to true if a main file should be generated. Set at object creation in constructor.
 	 */
@@ -971,7 +971,7 @@ class CPrinter extends BlankPrinter {
 
 
 		int main(void) {
-		«IF this.usingCluster == 0»
+		«IF this.usingOpenMP == 0»
 			 #ifndef _WIN32
 			 signal(SIGSEGV, handler);
 			 signal(SIGPIPE, handler);
@@ -1017,7 +1017,7 @@ class CPrinter extends BlankPrinter {
 #ifdef PREESM_MD5_UPDATE
 			rk_sema_init(&preesmPrintSema, 1);
 #endif
-		«IF this.usingCluster == 0»
+		«IF this.usingOpenMP == 0»
 			communicationInit();
 
 			«IF this.apolloEnabled»
@@ -1192,7 +1192,10 @@ class CPrinter extends BlankPrinter {
 					}
 					// Is there is cluster block?
 					if (codeElt instanceof ClusterBlock) {
-						this.usingCluster = 1;
+						// Does it contains parallelism information?
+						if (codeElt.isContainParallelism()) {
+							this.usingOpenMP = 1;
+						}
 					}
 				}
 			}
