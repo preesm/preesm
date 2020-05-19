@@ -39,7 +39,11 @@ import org.preesm.workflow.implement.AbstractTaskImplementation;
                 + "actors will be sequentialized to minimize memory space. On the other hand, if performance "
                 + "is choosen, the algorithm will exploit every parallelism possibility.",
             values = { @Value(name = "Memory", effect = "Minimize memory space of resulting clusters"),
-                @Value(name = "Performance", effect = "Maximize performance of resulting clusters") }) })
+                @Value(name = "Performance", effect = "Maximize performance of resulting clusters") }),
+        @Parameter(name = "Parallelism",
+            description = "Specify if resulting Cluster Schedules have to contain parallelism information.",
+            values = { @Value(name = "True", effect = "Cluster Schedules contain data parallelism information."),
+                @Value(name = "False", effect = "Cluster Schedules are purely sequential.") }) })
 public class ClusterSchedulerTask extends AbstractTaskImplementation {
 
   public static final String TARGET_CHOICE        = "Target";
@@ -51,6 +55,11 @@ public class ClusterSchedulerTask extends AbstractTaskImplementation {
   public static final String OPTIMIZATION_MEMORY      = "Memory";
   public static final String OPTIMIZATION_PERFORMANCE = "Performance";
   public static final String DEFAULT_OPTIMIZATION     = OPTIMIZATION_PERFORMANCE;
+
+  public static final String PARALLELISM_CHOICE  = "Parallelism";
+  public static final String PARALLELISM_FALSE   = "False";
+  public static final String PARALLELISM_TRUE    = "True";
+  public static final String DEFAULT_PARALLELISM = PARALLELISM_TRUE;
 
   @Override
   public Map<String, Object> execute(Map<String, Object> inputs, Map<String, String> parameters,
@@ -64,6 +73,8 @@ public class ClusterSchedulerTask extends AbstractTaskImplementation {
     String targetParameter = parameters.get(TARGET_CHOICE);
     String optimizationParameter = parameters.get(OPTIMIZATION_CHOICE);
     boolean optimizePerformance = optimizationParameter.contains(OPTIMIZATION_PERFORMANCE);
+    String parallelismParameter = parameters.get(PARALLELISM_CHOICE);
+    boolean parallelism = parallelismParameter.contains(PARALLELISM_TRUE);
 
     // Build output map
     Map<String, Object> output = new HashMap<>();
@@ -72,11 +83,11 @@ public class ClusterSchedulerTask extends AbstractTaskImplementation {
     Map<AbstractActor, Schedule> scheduleMap = null;
     if (targetParameter.contains(TARGET_INPUT_GRAPH)) {
       PreesmLogger.getLogger().log(Level.INFO, "Scheduling the input graph.");
-      PGANScheduler scheduler = new PGANScheduler(inputGraph, scenario, optimizePerformance);
+      PGANScheduler scheduler = new PGANScheduler(inputGraph, scenario, optimizePerformance, parallelism);
       scheduleMap = scheduler.scheduleInputGraph();
     } else {
       PreesmLogger.getLogger().log(Level.INFO, "Scheduling clusters.");
-      scheduleMap = ClusterScheduler.schedule(inputGraph, scenario, optimizePerformance);
+      scheduleMap = ClusterScheduler.schedule(inputGraph, scenario, optimizePerformance, parallelism);
     }
 
     // Print schedule results in console
@@ -98,6 +109,7 @@ public class ClusterSchedulerTask extends AbstractTaskImplementation {
     Map<String, String> defaultParams = new LinkedHashMap<>();
     defaultParams.put(TARGET_CHOICE, DEFAULT_TARGET);
     defaultParams.put(OPTIMIZATION_CHOICE, DEFAULT_OPTIMIZATION);
+    defaultParams.put(PARALLELISM_CHOICE, DEFAULT_PARALLELISM);
     return defaultParams;
   }
 

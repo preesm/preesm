@@ -48,7 +48,7 @@ import java.util.Map.Entry;
 import java.util.Optional;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.emf.common.util.EList;
-import org.preesm.algorithm.clustering.Clustering;
+import org.preesm.algorithm.clustering.ClusteringHelper;
 import org.preesm.algorithm.codegen.idl.ActorPrototypes;
 import org.preesm.algorithm.codegen.idl.Prototype;
 import org.preesm.algorithm.codegen.model.CodeGenArgument;
@@ -163,7 +163,7 @@ public class StaticPiMM2MapperDAGVisitor extends PiMMSwitch<Boolean> {
     vertex.setName(actor.getName());
     vertex.setInfo(actor.getVertexPath());
     vertex.setNbRepeat(new LongVertexPropertyType(1));
-    vertex.setPropertyValue(Clustering.PISDF_REFERENCE_ACTOR, actor);
+    vertex.setPropertyValue(ClusteringHelper.PISDF_REFERENCE_ACTOR, actor);
 
     // Set default time property
     vertex.setTime(new LongVertexPropertyType(0));
@@ -191,7 +191,7 @@ public class StaticPiMM2MapperDAGVisitor extends PiMMSwitch<Boolean> {
     setDAGVertexPropertiesFromPiMM(actor, vertex);
     // Set hierarchical refinement if AbstractActor is a cluster
     if (actor.isCluster()) {
-      vertex.setPropertyValue(Clustering.PISDF_ACTOR_IS_CLUSTER, true);
+      vertex.setPropertyValue(ClusteringHelper.PISDF_ACTOR_IS_CLUSTER, true);
     }
     // Add the vertex to the DAG
     this.result.addVertex(vertex);

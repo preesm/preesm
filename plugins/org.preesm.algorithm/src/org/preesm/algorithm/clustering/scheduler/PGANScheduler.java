@@ -65,6 +65,10 @@ public class PGANScheduler {
    * Optimize performance by exhibiting parallelism hidden by sequential hierarchy.
    */
   private final boolean                      optimizePerformance;
+  /**
+   * Do CSs have to contain parallel information?
+   */
+  private final boolean                      parallelism;
 
   /**
    * Builds a PGAN scheduler.
@@ -73,8 +77,11 @@ public class PGANScheduler {
    *          Base graph to schedule or that contained a cluster to schedule.
    * @param optimizePerformance
    *          If true, second pass of clustering will optimize parallelism inside of sequential hierarchy.
+   * @param parallelism
+   *          If true, parallelism information are expressed in resulting cluster schedules.
    */
-  public PGANScheduler(final PiGraph inputGraph, final Scenario scenario, final boolean optimizePerformance) {
+  public PGANScheduler(final PiGraph inputGraph, final Scenario scenario, final boolean optimizePerformance,
+      final boolean parallelism) {
     // Save reference of input graph
     this.inputGraph = inputGraph;
     // Copy input graph for the first pass of clustering
@@ -83,8 +90,9 @@ public class PGANScheduler {
     this.scheduleMap = new HashMap<>();
     // Save reference of scenario
     this.scenario = scenario;
-    // Store the choice of optimization
+    // Store the choice of optimization and parallelism information
     this.optimizePerformance = optimizePerformance;
+    this.parallelism = parallelism;
   }
 
   private final void addActorToHierarchicalSchedule(HierarchicalSchedule schedule, AbstractActor actor,
@@ -408,18 +416,20 @@ public class PGANScheduler {
     Schedule preprocessSchedule = new ScheduleFlattener().performTransform(schedule);
 
     // If user want performance optimization, perform them
-    if (this.optimizePerformance) {
+    if (this.optimizePerformance && this.parallelism) {
       preprocessSchedule = new ScheduleParallelismOptimizer().performTransform(preprocessSchedule);
     }
 
     // Regroup following the optimized schedule
     Schedule resultingSchedule = clusterizeFromSchedule(graph, preprocessSchedule, 0, !baseClusterIsAlreadyASubGraph);
 
-    // Exhibit data parallelism
-    resultingSchedule = new ScheduleDataParallelismExhibiter().performTransform(resultingSchedule);
+    if (this.parallelism) {
+      // Exhibit data parallelism
+      resultingSchedule = new ScheduleDataParallelismExhibiter().performTransform(resultingSchedule);
 
-    // Limit parallelism at the first layer
-    resultingSchedule = new ScheduleParallelismDepthLimiter(1).performTransform(resultingSchedule);
+      // Limit parallelism at the first layer
+      resultingSchedule = new ScheduleParallelismDepthLimiter(1).performTransform(resultingSchedule);
+    }
 
     return resultingSchedule;
 

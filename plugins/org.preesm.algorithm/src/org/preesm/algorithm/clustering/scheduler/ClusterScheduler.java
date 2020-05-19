@@ -21,12 +21,12 @@ public class ClusterScheduler {
    * @return Map of Cluster Schedule.
    */
   public static Map<AbstractActor, Schedule> schedule(final PiGraph inputGraph, final Scenario scenario,
-      final boolean optimizePerformance) {
+      final boolean optimizePerformance, final boolean parallelism) {
     // Build a map for Cluster Schedule
     Map<AbstractActor, Schedule> schedulesMap = new HashMap<>();
 
     // Build a PGAN scheduler
-    PGANScheduler scheduler = new PGANScheduler(inputGraph, scenario, optimizePerformance);
+    PGANScheduler scheduler = new PGANScheduler(inputGraph, scenario, optimizePerformance, parallelism);
 
     // Compute a schedule for every cluster
     for (AbstractActor actor : inputGraph.getAllActors()) {
