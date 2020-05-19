@@ -40,6 +40,7 @@ PREESM Changelog
 * Secure SWT_AWT code calls in all GUI parts (see https://bugs.eclipse.org/bugs/show_bug.cgi?id=558874)
 * Remove old PiSDF clustering classes (replaced with the Cluster Scheduler) and associated tests.
 * Cluster Scheduler allows the user to choose whether cluster schedules contain parallelism information or not.
+* Update Spider2 codegent to follow evolution of the API.
 
 ### Bug fix
 * Fix ids and icons of a few GUI elements.
