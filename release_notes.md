@@ -56,6 +56,7 @@ PREESM Changelog
 * Fix #274 : fix clear refinement feature in the GUI of actors.
 * Fix #289 : remove memory annotations in the GUI of data interfaces.
 * Fix spider2 codegen with delays having setter / getter actors.
+* Fix #313 : fix windows uint64 type definition in lib used by codegen.
 
 ## Release version 3.19.0
 *2020.01.10*

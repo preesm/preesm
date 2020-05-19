@@ -35,7 +35,7 @@
  */
 /*
 	============================================================================
-	Name        : clock_preesm.h
+	Name        : dump.h
 	Author      : farresti, ahonorat, kdesnos, jhascoet
 	Version     :
 	Copyright   : CECILL-C
@@ -57,7 +57,7 @@ extern "C" {
 #ifdef uint64_t
 #undef uint64_t
 #endif
-typedef unsigned _int64 uint64_t;
+typedef unsigned __int64 uint64_t;
 
 #else
 
