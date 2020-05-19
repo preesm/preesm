@@ -8,6 +8,7 @@ PREESM Changelog
 * Clustering: 
  * Uniform Repetition Count chain of actor can be found with the new URCSeeker class.
  * Repetition count on a given PiSDF hierarchy can be balanced between coarse-grained and fine-grained levels with the new PiGraphFiringBalancer class.
+ * When cluster schedules contain parallelism handled with OpenMP, pthread threads are not printed in the generated code.
 * Model:
  * new class of parameter : Malleable Parameter, accepting a set of possible values.
  * energy of actors can be expressed with parameters in the scenario.
@@ -37,6 +38,8 @@ PREESM Changelog
 * Adding direct translation of 1 edge broadcast to REPEAT vertex in Spider2Codegen.
 * Codegen directory is now cleaned at the beginning of the workflow.
 * Secure SWT_AWT code calls in all GUI parts (see https://bugs.eclipse.org/bugs/show_bug.cgi?id=558874)
+* Remove old PiSDF clustering classes (replaced with the Cluster Scheduler) and associated tests.
+* Cluster Scheduler allows the user to choose whether cluster schedules contain parallelism information or not.
 
 ### Bug fix
 * Fix ids and icons of a few GUI elements.
@@ -57,6 +60,7 @@ PREESM Changelog
 * Fix #289 : remove memory annotations in the GUI of data interfaces.
 * Fix spider2 codegen with delays having setter / getter actors.
 * Fix #313 : fix windows uint64 type definition in lib used by codegen.
+* Fix delays in cluster codegen.
 
 ## Release version 3.19.0
 *2020.01.10*
