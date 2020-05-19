@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<scenario>
+    <files>
+        <algorithm url="/org.ietr.preesm.sobel-morpho/Algo/sobel_morpho.pi"/>
+        <architecture url="/org.ietr.preesm.sobel-morpho/Archi/1CoreX86.slam"/>
+        <codegenDirectory url="/org.ietr.preesm.sobel-morpho/Code/generated"/>
+    </files>
+    <constraints excelUrl="">
+        <constraintGroup>
+            <operator name="Core0"/>
+            <task name="sobel_morpho/Split"/>
+            <task name="sobel_morpho/display"/>
+            <task name="sobel_morpho/Erosion"/>
+            <task name="sobel_morpho"/>
+            <task name="sobel_morpho/Read_YUV"/>
+            <task name="sobel_morpho/Sobel"/>
+            <task name="sobel_morpho/Dilation"/>
+        </constraintGroup>
+    </constraints>
+    <timings excelUrl="/org.ietr.preesm.sobel-morpho/timings1core.csv">
+        <timing opname="x86" time="120" vertexname="sobel_morpho/Read_YUV"/>
+        <timing opname="x86" time="120" vertexname="sobel_morpho/Sobel"/>
+        <timing opname="x86" time="120" vertexname="sobel_morpho/Split"/>
+        <timing opname="x86" time="120" vertexname="sobel_morpho/display"/>
+        <timing opname="x86" time="120" vertexname="sobel_morpho/Dilation"/>
+        <timing opname="x86" time="120" vertexname="sobel_morpho/Erosion"/>
+        <memcpyspeed opname="x86" setuptime="1" timeperunit="3.3333334E-5"/>
+    </timings>
+    <simuParams>
+        <mainCore>Core0</mainCore>
+        <mainComNode>shared_mem</mainComNode>
+        <averageDataSize>1000</averageDataSize>
+        <dataTypes>
+            <dataType name="uchar" size="1"/>
+            <dataType name="char" size="1"/>
+        </dataTypes>
+        <specialVertexOperators>
+            <specialVertexOperator path="Core0"/>
+        </specialVertexOperators>
+    </simuParams>
+    <parameterValues/>
+    <papifyConfigs xmlUrl=""/>
+    <energyConfigs xmlUrl="">
+        <performanceObjective objectiveEPS="0.0" toleranceEPS="0.0"/>
+    </energyConfigs>
+</scenario>

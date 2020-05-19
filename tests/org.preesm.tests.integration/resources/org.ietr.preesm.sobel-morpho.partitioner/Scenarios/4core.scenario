@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<scenario>
+    <files>
+        <algorithm url="/org.ietr.preesm.sobel-morpho/Algo/sobel_morpho.pi"/>
+        <architecture url="/org.ietr.preesm.sobel-morpho/Archi/4CoreX86.slam"/>
+        <codegenDirectory url="/org.ietr.preesm.sobel-morpho/Code/generated"/>
+    </files>
+    <constraints excelUrl="">
+        <constraintGroup>
+            <operator name="Core1"/>
+            <task name="sobel_morpho/Split"/>
+            <task name="sobel_morpho/Erosion"/>
+            <task name="sobel_morpho"/>
+            <task name="sobel_morpho/Sobel"/>
+            <task name="sobel_morpho/Dilation"/>
+        </constraintGroup>
+        <constraintGroup>
+            <operator name="Core3"/>
+            <task name="sobel_morpho/Split"/>
+            <task name="sobel_morpho/Erosion"/>
+            <task name="sobel_morpho"/>
+            <task name="sobel_morpho/Sobel"/>
+            <task name="sobel_morpho/Dilation"/>
+        </constraintGroup>
+        <constraintGroup>
+            <operator name="Core0"/>
+            <task name="sobel_morpho/Split"/>
+            <task name="sobel_morpho/display"/>
+            <task name="sobel_morpho/Erosion"/>
+            <task name="sobel_morpho"/>
+            <task name="sobel_morpho/Read_YUV"/>
+            <task name="sobel_morpho/Sobel"/>
+            <task name="sobel_morpho/Dilation"/>
+        </constraintGroup>
+        <constraintGroup>
+            <operator name="Core2"/>
+            <task name="sobel_morpho/Split"/>
+            <task name="sobel_morpho/Erosion"/>
+            <task name="sobel_morpho"/>
+            <task name="sobel_morpho/Sobel"/>
+            <task name="sobel_morpho/Dilation"/>
+        </constraintGroup>
+    </constraints>
+    <timings excelUrl="">
+        <timing opname="x86" time="47" vertexname="sobel_morpho/Read_YUV"/>
+        <timing opname="x86" time="62" vertexname="sobel_morpho/Sobel"/>
+        <timing opname="x86" time="1" vertexname="sobel_morpho/Split"/>
+        <timing opname="x86" time="243" vertexname="sobel_morpho/display"/>
+        <memcpyspeed opname="x86" setuptime="1" timeperunit="3.3333334E-5"/>
+    </timings>
+    <simuParams>
+        <mainCore>Core0</mainCore>
+        <mainComNode>shared_mem</mainComNode>
+        <averageDataSize>1000</averageDataSize>
+        <dataTypes>
+            <dataType name="uchar" size="1"/>
+            <dataType name="char" size="1"/>
+        </dataTypes>
+        <specialVertexOperators>
+            <specialVertexOperator path="Core3"/>
+            <specialVertexOperator path="Core1"/>
+            <specialVertexOperator path="Core2"/>
+            <specialVertexOperator path="Core0"/>
+        </specialVertexOperators>
+    </simuParams>
+    <parameterValues/>
+    <papifyConfigs xmlUrl=""/>
+</scenario>
