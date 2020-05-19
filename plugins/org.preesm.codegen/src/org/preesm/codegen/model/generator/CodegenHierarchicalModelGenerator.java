@@ -583,9 +583,9 @@ public class CodegenHierarchicalModelGenerator {
       bufIter.setSize(bufSize);
 
       if (CodeGenArgument.INPUT.equals(arg.getDirection())) {
-        loopBlock.getInBuffers().add(bufIter);
+        // loopBlock.getInBuffers().add(bufIter);
       } else if (CodeGenArgument.OUTPUT.equals(arg.getDirection())) {
-        loopBlock.getOutBuffers().add(bufIter);
+        // loopBlock.getOutBuffers().add(bufIter);
       } else {
         throw new PreesmRuntimeException("Args INPUT / OUTPUT failed\n");
       }

@@ -88,6 +88,8 @@ import org.preesm.codegen.model.SectionBlock
 import org.preesm.codegen.model.ClusterBlock
 import org.preesm.codegen.model.IteratedBuffer
 import org.preesm.codegen.printer.BlankPrinter
+import java.util.ArrayDeque
+import java.util.Deque
 
 class MPPA2ClusterPrinter extends BlankPrinter {
 
@@ -127,14 +129,29 @@ class MPPA2ClusterPrinter extends BlankPrinter {
 	 */
 	protected boolean IGNORE_USELESS_MEMCPY = true
 
-	protected String local_buffer = "local_buffer"
-
-	protected boolean IS_HIERARCHICAL = false
-
-	protected String scratch_pad_buffer = ""
-
+	/**
+	 * Name of the local scratchpad buffer that will be malloced.
+	 */
+	final protected String local_buffer = "local_buffer"
+	/**
+	 * Size of the local scratchpad buffer.
+	 */
 	protected long local_buffer_size = 0
-
+	/**
+	 * Size of the scratchpad for correct offset handling in ClusterBlock.
+	 */
+	protected long scope_scratchpad_size = 0
+	/**
+	 * Stack used to identify if FiniteLoopBlock are currently being printed.
+	 * It also register the local offset needed for memory transfer.
+	 */
+	protected Deque<Long> for_stack = new ArrayDeque<Long>();
+	/**
+	 * Stack used to register parallel for loops.
+	 * It prevent using malloced buffers inside parallel sections.
+	 */
+	protected Deque<Integer> parallel_for_stack = new ArrayDeque<Integer>();
+	
 	override printCoreBlockHeader(CoreBlock block) {
 
 	this.peName = block.name;
@@ -191,13 +208,21 @@ class MPPA2ClusterPrinter extends BlankPrinter {
 		var result = '''
 		«IF buffer.name == "Shared"»
 		//#define Shared ((char*)0x10000000ULL) 	/* Shared buffer in DDR */
-		«ELSE» 
+		«ELSEIF buffer.name.contains("mem_") && parallel_for_stack.isEmpty() »
+			void* «buffer.name» = local_buffer + «scope_scratchpad_size»;
+		«ELSE»
 			«buffer.type» «buffer.name»[«buffer.size»] __attribute__ ((aligned(64))); // «buffer.comment» size:= «buffer.size»*«buffer.type» aligned on data cache line
 			«IF buffer.name.contains("Cluster")»
 				int local_memory_size = «buffer.size»;			
+				
 			«ENDIF»
 		«ENDIF»
 		'''
+		if (buffer.name.contains("mem_") && parallel_for_stack.isEmpty()) {
+			scope_scratchpad_size += buffer.typeSize * buffer.size; 
+		 	if(scope_scratchpad_size > local_buffer_size)
+				local_buffer_size = scope_scratchpad_size;
+		}
 		return result;
 	}
 
@@ -220,8 +245,66 @@ class MPPA2ClusterPrinter extends BlankPrinter {
 	'''
 	
 	override printFiniteLoopBlockHeader(FiniteLoopBlock block2) '''
-		// Begin the for loop
-		{
+			// Begin the for loop
+			{
+	«{
+			var gets = ""
+			
+			// Initialize the local offset with the scope size.
+			var long local_offset = scope_scratchpad_size;
+			
+			// If parallel for loops, force using static buffer for inside clusters.
+			if (block2.parallel.equals(true))
+				parallel_for_stack.push(0);
+			
+			// Process input buffers
+			for (buffer : block2.inBuffers) {
+				var subBuf = buffer.buffer;
+				// Process if base buffer of the IteratedBuffer is a SubBuffer
+				if (subBuf instanceof SubBuffer) {
+					var b = subBuf.container;
+					var offset = subBuf.offset;
+					while (b instanceof SubBuffer) {
+						offset += b.offset;
+						b = b.container;
+					}
+					if (b.name == "Shared") {
+						gets += "	void* " + subBuf.name + " = local_buffer+" + local_offset +";\n";
+						gets += "	if(mppa_async_get(" + subBuf.name + ", &shared_segment, /* Shared + */ " + offset + ", " + subBuf.typeSize * subBuf.size + ", NULL) != 0){\n";
+						gets += "		assert(0 && \"mppa_async_get\\n\");\n";
+						gets += "	}\n ";
+						local_offset += subBuf.typeSize * subBuf.size;
+					}
+				}
+			}
+			
+			// Store the local offset value where input buffers stopped.
+			for_stack.push(local_offset);
+			
+			// Process output buffers
+			for (buffer : block2.outBuffers) {
+				var subBuf = buffer.buffer;
+				if (subBuf instanceof SubBuffer) {
+					var b = subBuf.container;
+					var offset = subBuf.offset;
+					while (b instanceof SubBuffer) {
+						offset += b.offset;
+						b = b.container;
+					}
+					// If shared, declare the buffer
+					if (b.name == "Shared") {
+						gets += "	void* " + subBuf.name + " = local_buffer+" + local_offset +";\n";
+						local_offset += subBuf.typeSize * subBuf.size;
+					}
+				}
+			}
+			
+			gets += "\t"
+			// If local offset is higher than the local buffer size,
+			// it means that the max size has been achieved.
+			if(local_offset > local_buffer_size)
+				local_buffer_size = local_offset
+		gets}»
 			int «block2.iter.name»;
 			«IF block2.parallel.equals(true)»
 			#pragma omp parallel for private(«block2.iter.name»)
@@ -232,6 +315,34 @@ class MPPA2ClusterPrinter extends BlankPrinter {
 
 	override printFiniteLoopBlockFooter(FiniteLoopBlock block2) '''
 			}
+			«{
+				// If the for loop was parallel, pop from the stack that register them.
+				if (block2.parallel.equals(true))
+					parallel_for_stack.pop();
+					
+				var puts = ""
+				// Start back from the previous local offset where puts ended.
+				var long local_offset = for_stack.pop();
+				for (buffer : block2.outBuffers) {				
+					var subBuf = buffer.buffer;
+					if (subBuf instanceof SubBuffer) {
+						var b = subBuf.container
+						var offset = subBuf.offset
+						while (b instanceof SubBuffer) {
+							offset += b.offset;
+							b = b.container;
+						}
+						if (b.name == "Shared") {
+							puts += "	if(mppa_async_put(" + subBuf.name + ", &shared_segment, /* Shared + */ " + offset + ", " + subBuf.typeSize * subBuf.size + ", NULL) != 0){\n";
+							puts += "		assert(0 && \"mppa_async_put\\n\");\n";
+							puts += "	}\n";
+							local_offset += subBuf.typeSize * subBuf.size;
+						}
+					}
+				}
+				if(local_offset > local_buffer_size)
+					local_buffer_size = local_offset
+			puts}»
 		}
 	'''
 			
@@ -239,17 +350,28 @@ class MPPA2ClusterPrinter extends BlankPrinter {
 	override printClusterBlockHeader(ClusterBlock block) '''
 		// Cluster: «block.name»
 		// Schedule: «block.schedule»
-		«IF block.parallel.equals(true)»
-		#pragma omp parallel sections
-		«ENDIF»
 		{
 			
 			'''
 
 
-	override printClusterBlockFooter(ClusterBlock block) '''
-		} 
-	'''
+	override printClusterBlockFooter(ClusterBlock block) {
+
+		// Scratchpad is only used outside parallel sections.
+		if (parallel_for_stack.isEmpty) {
+			for (variable : block.definitions) {
+				if (variable instanceof Buffer) {
+					var Buffer buffer = variable;
+	 				scope_scratchpad_size -= buffer.typeSize * buffer.size;
+				}
+			}
+		}
+		var result = '''
+				
+			} 
+		'''
+		return result;
+	} 
 
 	override printSectionBlockHeader(SectionBlock block) '''
 		#pragma omp section
@@ -303,33 +425,27 @@ class MPPA2ClusterPrinter extends BlankPrinter {
 
 	override printFunctionCall(FunctionCall functionCall) '''
 	«{
-		var gets = ""
-		var local_offset = 0L;
-		for(param : functionCall.parameters){
+		var gets = "{"
+		var long local_offset = scope_scratchpad_size;
+		for (param : functionCall.parameters) {
 
-			if(param instanceof SubBuffer){
+			if (param instanceof SubBuffer) {
 				var port = functionCall.parameterDirections.get(functionCall.parameters.indexOf(param))
 				var b = param.container;
 				var offset = param.offset;
-				while(b instanceof SubBuffer){
+				while (b instanceof SubBuffer) {
 					offset += b.offset;
 					b = b.container;
-					//System.out.print("Running through all buffer " + b.name + "\n");
 				}
-				//System.out.print("===> " + b.name + "\n");
-				if(b.name == "Shared"){
-					gets += "	void *" + param.name + " = local_buffer+" + local_offset +";\n";
+				if (b.name == "Shared") {
+					gets += "	void* " + param.name + " = local_buffer+" + local_offset +";\n";
 					if(port.getName == "INPUT"){ /* we get data from DDR -> cluster only when INPUT */
-						gets += "	if(mppa_async_get(local_buffer+" + local_offset + ", &shared_segment, /* Shared + */ " + offset + ", " + param.typeSize * param.size + ", NULL) != 0){\n";
+						gets += "	if(mppa_async_get(" + param.name + ", &shared_segment, /* Shared + */ " + offset + ", " + param.typeSize * param.size + ", NULL) != 0){\n";
 						gets += "		assert(0 && \"mppa_async_get\\n\");\n";
-						gets += "	}\n";
+						gets += "	}\n ";
 					}
 					local_offset += param.typeSize * param.size;
-					//System.out.print("==> " + b.name + " " + param.name + " size " + param.size + " port_name "+ port.getName + "\n");
 				}
-				/*else{
-					System.out.print("A==> " + b.name + " " + param.name + " size " + param.size + " port_name "+ port.getName + "\n");
-				}*/
 			}
 		}
 		gets += "\t"
@@ -339,34 +455,29 @@ class MPPA2ClusterPrinter extends BlankPrinter {
 		«functionCall.name»(«FOR param : functionCall.parameters SEPARATOR ', '»«param.doSwitch»«ENDFOR»); // «functionCall.actorName»
 	«{
 		var puts = ""
-		var local_offset = 0L;
-		for(param : functionCall.parameters){
-			if(param instanceof SubBuffer){
+		var long local_offset = scope_scratchpad_size;
+		for (param : functionCall.parameters) {
+			if (param instanceof SubBuffer) {
 				var port = functionCall.parameterDirections.get(functionCall.parameters.indexOf(param))
 				var b = param.container
 				var offset = param.offset
-				while(b instanceof SubBuffer){
+				while (b instanceof SubBuffer) {
 					offset += b.offset;
 					b = b.container;
-					//System.out.print("Running through all buffer " + b.name + "\n");
 				}
-				//System.out.print("===> " + b.name + "\n");
-				if(b.name == "Shared"){
+				if (b.name == "Shared") {
 					if(port.getName == "OUTPUT"){ /* we put data from cluster -> DDR only when OUTPUT */
-						puts += "	if(mppa_async_put(local_buffer+" + local_offset + ", &shared_segment, /* Shared + */ " + offset + ", " + param.typeSize * param.size + ", NULL) != 0){\n";
+						puts += "	if(mppa_async_put(" + param.name + ", &shared_segment, /* Shared + */ " + offset + ", " + param.typeSize * param.size + ", NULL) != 0){\n";
 						puts += "		assert(0 && \"mppa_async_put\\n\");\n";
 						puts += "	}\n";
 					}
 					local_offset += param.typeSize * param.size;
-					//System.out.print("==> " + b.name + " " + param.name + " size " + param.size + " port_name "+ port.getName + "\n");
 				}
-				/*else{
-					System.out.print("B==> " + b.name + " " + param.name + " size " + param.size + " port_name "+ port.getName + "\n");
-				}*/
 			}
 		}
 		if(local_offset > local_buffer_size)
 			local_buffer_size = local_offset
+		puts+="}";
 	puts}»
 	'''
 
@@ -646,7 +757,7 @@ class MPPA2ClusterPrinter extends BlankPrinter {
 
 	override printRegisterSetUp(RegisterSetUpAction action) ''''''
 
-	def CharSequence generatePreesmHeader() {
+	def CharSequence generatePreesmHeader(List<String> stdLibFiles) {
 	    // 0- without the following class loader initialization, I get the following exception when running as Eclipse
 	    // plugin:
 	    // org.apache.velocity.exception.VelocityException: The specified class for ResourceManager
@@ -671,6 +782,9 @@ class MPPA2ClusterPrinter extends BlankPrinter {
 			constants = constants.concat("\n\n#ifdef _PREESM_PAPIFY_MONITOR\n#include \"eventLib.h\"\n#endif");
 		}
 	    context.put("CONSTANTS", constants);
+
+		context.put("PREESM_INCLUDES", stdLibFiles.filter[it.endsWith(".h")].map["#include \""+ it +"\""].join("\n"));
+
 
 	    // 3- init template reader
 	    val String templateLocalPath = "templates/c/preesm_gen.h";
@@ -719,7 +833,7 @@ class MPPA2ClusterPrinter extends BlankPrinter {
 		} catch (IOException exc) {
 			throw new PreesmRuntimeException("Could not generated content for " + it, exc)
 		}]
-		result.put("preesm_gen.h",generatePreesmHeader())
+		result.put("preesm_gen.h",generatePreesmHeader(filesMPPA))
 		return result
 	}
 	override createSecondaryFiles(List<Block> printerBlocks, Collection<Block> allBlocks) {
@@ -1067,21 +1181,26 @@ class MPPA2ClusterPrinter extends BlankPrinter {
 		}
 
 	'''
+	
 	override preProcessing(List<Block> printerBlocks, Collection<Block> allBlocks){
 		var Set<String> coresNames = new LinkedHashSet<String>();
+		// Retrieve all computation cores (cluster or IO in this context)
 		for (cluster : allBlocks){
 			if (cluster instanceof CoreBlock) {
 				coresNames.add(cluster.name);
 			}
 		}
+		// Pre-process every blocks
 		for (cluster : allBlocks){
+			// Ensure to process a CoreBlock
 			if (cluster instanceof CoreBlock) {
-				if(!cluster.loopBlock.codeElts.empty){
-					if(cluster.coreType.equals("MPPA2Cluster")){
+				
+				if (!cluster.loopBlock.codeElts.empty){
+					// Increment cluster or IO counters
+					if (cluster.coreType.equals("MPPA2Cluster")) {
 						numClusters = numClusters + 1;
 						clusterToSync = cluster.coreID;
-					}
-					else if(cluster.coreType.equals("MPPA2IO")){
+					} else if (cluster.coreType.equals("MPPA2IO")) {
 						io_used = 1;
 					}
 					coreNameToID.put(cluster.name, coreNameToID.size);
@@ -1092,22 +1211,23 @@ class MPPA2ClusterPrinter extends BlankPrinter {
 							this.usingClustering = 1;
 						}
 					}
+					// Determining if shared, distributed or mixed memory is used
 	       		 	var EList<Variable> definitions = cluster.getDefinitions();
 	       		 	var EList<Variable> declarations = cluster.getDeclarations();
-	       		 	for(Variable variable : definitions){
-	       		 		if(variable instanceof Buffer){
-	       		 			if(variable.name.equals("Shared")){
+	       		 	for (Variable variable : definitions){
+	       		 		if (variable instanceof Buffer){
+	       		 			if (variable.name.equals("Shared")) {
 								this.distributedOnly = 0;
-	       		 			}else if(coresNames.contains(variable.name)){
+	       		 			} else if (coresNames.contains(variable.name)) {
 								this.sharedOnly = 0;
 	       		 			}
 	       		 		}
 	       		 	}
-	       		 	for(Variable variable : declarations){
-	       		 		if(variable instanceof Buffer){
-	       		 			if(variable.name.equals("Shared")){
+	       		 	for (Variable variable : declarations){
+	       		 		if (variable instanceof Buffer){
+	       		 			if (variable.name.equals("Shared")) {
 								this.distributedOnly = 0;
-	       		 			}else if(coresNames.contains(variable.name)){
+	       		 			} else if (coresNames.contains(variable.name)) {
 								this.sharedOnly = 0;
 	       		 			}
 	       		 		}
@@ -1115,6 +1235,8 @@ class MPPA2ClusterPrinter extends BlankPrinter {
 	       		 }
 			}
 		}
+		// Initialize local scratchpad size and local buffer to zero
+		scope_scratchpad_size = 0;
 		local_buffer_size = 0;
 	}
 	override postProcessing(CharSequence charSequence){

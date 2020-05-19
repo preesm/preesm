@@ -311,8 +311,8 @@ class FiniteLoopBlock extends LoopBlock {
 	int nbIter
 	boolean parallel
 	refers IntVar iter
-	refers BufferIterator[] inBuffers
-	refers BufferIterator[] outBuffers
+	refers IteratedBuffer[] inBuffers
+	refers IteratedBuffer[] outBuffers
 }
 
 class IntVar extends Variable {

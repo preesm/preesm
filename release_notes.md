@@ -41,6 +41,7 @@ PREESM Changelog
 * Remove old PiSDF clustering classes (replaced with the Cluster Scheduler) and associated tests.
 * Cluster Scheduler allows the user to choose whether cluster schedules contain parallelism information or not.
 * Update Spider2 codegent to follow evolution of the API.
+* Adapt MPPA 2 printer to print mppa_async communication with cluster block and finite loop block.
 
 ### Bug fix
 * Fix ids and icons of a few GUI elements.
