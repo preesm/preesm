@@ -37,6 +37,7 @@ PREESM Changelog
 * Adding direct translation of 1 edge broadcast to REPEAT vertex in Spider2Codegen.
 * Codegen directory is now cleaned at the beginning of the workflow.
 * Secure SWT_AWT code calls in all GUI parts (see https://bugs.eclipse.org/bugs/show_bug.cgi?id=558874)
+* Update Spider2 codegent to follow evolution of the API.
 
 ### Bug fix
 * Fix ids and icons of a few GUI elements.

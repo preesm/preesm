@@ -63,7 +63,7 @@ spider::pisdf::Vertex *spider::create${graphName}Subgraph(std::string name,
     auto param_$param.name = spider::api::createInheritedParam(
           /* = Graph of the parameter = */  graph,
           /* = Name of the parameter  = */ "$param.name",
-          /* = Parent parameter       = */  parentGraphParams[$inheritedParameters.indexOf($param)].get());
+          /* = Parent parameter       = */  parentGraphParams[$inheritedParameters.indexOf($param)]);
 #end
 #parse("templates/cpp/graph_template.vm")
 
