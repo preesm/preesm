@@ -8,6 +8,7 @@ PREESM Changelog
 * Clustering: 
  * Uniform Repetition Count chain of actor can be found with the new URCSeeker class.
  * Repetition count on a given PiSDF hierarchy can be balanced between coarse-grained and fine-grained levels with the new PiGraphFiringBalancer class.
+ * The Cluster Partitioner task clusters groups of actors which are URC and balances there firings with the PiGraphFiringBalancer class.
  * When cluster schedules contain parallelism handled with OpenMP, pthread threads are not printed in the generated code.
 * Model:
  * new class of parameter : Malleable Parameter, accepting a set of possible values.

@@ -1,0 +1,260 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<spirit:design xmlns:spirit="http://www.spiritconsortium.org/XMLSchema/SPIRIT/1.4">
+    <spirit:vendor>ietr</spirit:vendor>
+    <spirit:library>preesm</spirit:library>
+    <spirit:name>MPPA2ExplicitOrdered</spirit:name>
+    <spirit:version>1</spirit:version>
+    <spirit:componentInstances>
+        <spirit:componentInstance>
+            <spirit:instanceName>shared_mem</spirit:instanceName>
+            <spirit:hardwareId>0</spirit:hardwareId>
+            <spirit:componentRef spirit:library=""
+                spirit:name="defaultcontentionComNode"
+                spirit:vendor="" spirit:version=""/>
+            <spirit:configurableElementValues/>
+        </spirit:componentInstance>
+        <spirit:componentInstance>
+            <spirit:instanceName>Cluster00</spirit:instanceName>
+            <spirit:hardwareId>0</spirit:hardwareId>
+            <spirit:componentRef spirit:library=""
+                spirit:name="MPPA2Cluster" spirit:vendor="" spirit:version=""/>
+            <spirit:configurableElementValues/>
+        </spirit:componentInstance>
+        <spirit:componentInstance>
+            <spirit:instanceName>Cluster01</spirit:instanceName>
+            <spirit:hardwareId>1</spirit:hardwareId>
+            <spirit:componentRef spirit:library=""
+                spirit:name="MPPA2Cluster" spirit:vendor="" spirit:version=""/>
+            <spirit:configurableElementValues/>
+        </spirit:componentInstance>
+        <spirit:componentInstance>
+            <spirit:instanceName>Cluster02</spirit:instanceName>
+            <spirit:hardwareId>2</spirit:hardwareId>
+            <spirit:componentRef spirit:library=""
+                spirit:name="MPPA2Cluster" spirit:vendor="" spirit:version=""/>
+            <spirit:configurableElementValues/>
+        </spirit:componentInstance>
+        <spirit:componentInstance>
+            <spirit:instanceName>Cluster03</spirit:instanceName>
+            <spirit:hardwareId>3</spirit:hardwareId>
+            <spirit:componentRef spirit:library=""
+                spirit:name="MPPA2Cluster" spirit:vendor="" spirit:version=""/>
+            <spirit:configurableElementValues/>
+        </spirit:componentInstance>
+        <spirit:componentInstance>
+            <spirit:instanceName>Cluster04</spirit:instanceName>
+            <spirit:hardwareId>4</spirit:hardwareId>
+            <spirit:componentRef spirit:library=""
+                spirit:name="MPPA2Cluster" spirit:vendor="" spirit:version=""/>
+            <spirit:configurableElementValues/>
+        </spirit:componentInstance>
+        <spirit:componentInstance>
+            <spirit:instanceName>Cluster05</spirit:instanceName>
+            <spirit:hardwareId>5</spirit:hardwareId>
+            <spirit:componentRef spirit:library=""
+                spirit:name="MPPA2Cluster" spirit:vendor="" spirit:version=""/>
+            <spirit:configurableElementValues/>
+        </spirit:componentInstance>
+        <spirit:componentInstance>
+            <spirit:instanceName>Cluster06</spirit:instanceName>
+            <spirit:hardwareId>6</spirit:hardwareId>
+            <spirit:componentRef spirit:library=""
+                spirit:name="MPPA2Cluster" spirit:vendor="" spirit:version=""/>
+            <spirit:configurableElementValues/>
+        </spirit:componentInstance>
+        <spirit:componentInstance>
+            <spirit:instanceName>Cluster07</spirit:instanceName>
+            <spirit:hardwareId>7</spirit:hardwareId>
+            <spirit:componentRef spirit:library=""
+                spirit:name="MPPA2Cluster" spirit:vendor="" spirit:version=""/>
+            <spirit:configurableElementValues/>
+        </spirit:componentInstance>
+        <spirit:componentInstance>
+            <spirit:instanceName>Cluster08</spirit:instanceName>
+            <spirit:hardwareId>8</spirit:hardwareId>
+            <spirit:componentRef spirit:library=""
+                spirit:name="MPPA2Cluster" spirit:vendor="" spirit:version=""/>
+            <spirit:configurableElementValues/>
+        </spirit:componentInstance>
+        <spirit:componentInstance>
+            <spirit:instanceName>Cluster09</spirit:instanceName>
+            <spirit:hardwareId>9</spirit:hardwareId>
+            <spirit:componentRef spirit:library=""
+                spirit:name="MPPA2Cluster" spirit:vendor="" spirit:version=""/>
+            <spirit:configurableElementValues/>
+        </spirit:componentInstance>
+        <spirit:componentInstance>
+            <spirit:instanceName>Cluster10</spirit:instanceName>
+            <spirit:hardwareId>10</spirit:hardwareId>
+            <spirit:componentRef spirit:library=""
+                spirit:name="MPPA2Cluster" spirit:vendor="" spirit:version=""/>
+            <spirit:configurableElementValues/>
+        </spirit:componentInstance>
+        <spirit:componentInstance>
+            <spirit:instanceName>Cluster11</spirit:instanceName>
+            <spirit:hardwareId>11</spirit:hardwareId>
+            <spirit:componentRef spirit:library=""
+                spirit:name="MPPA2Cluster" spirit:vendor="" spirit:version=""/>
+            <spirit:configurableElementValues/>
+        </spirit:componentInstance>
+        <spirit:componentInstance>
+            <spirit:instanceName>Cluster12</spirit:instanceName>
+            <spirit:hardwareId>12</spirit:hardwareId>
+            <spirit:componentRef spirit:library=""
+                spirit:name="MPPA2Cluster" spirit:vendor="" spirit:version=""/>
+            <spirit:configurableElementValues/>
+        </spirit:componentInstance>
+        <spirit:componentInstance>
+            <spirit:instanceName>Cluster13</spirit:instanceName>
+            <spirit:hardwareId>13</spirit:hardwareId>
+            <spirit:componentRef spirit:library=""
+                spirit:name="MPPA2Cluster" spirit:vendor="" spirit:version=""/>
+            <spirit:configurableElementValues/>
+        </spirit:componentInstance>
+        <spirit:componentInstance>
+            <spirit:instanceName>Cluster14</spirit:instanceName>
+            <spirit:hardwareId>14</spirit:hardwareId>
+            <spirit:componentRef spirit:library=""
+                spirit:name="MPPA2Cluster" spirit:vendor="" spirit:version=""/>
+            <spirit:configurableElementValues/>
+        </spirit:componentInstance>
+        <spirit:componentInstance>
+            <spirit:instanceName>Cluster15</spirit:instanceName>
+            <spirit:hardwareId>15</spirit:hardwareId>
+            <spirit:componentRef spirit:library=""
+                spirit:name="MPPA2Cluster" spirit:vendor="" spirit:version=""/>
+            <spirit:configurableElementValues/>
+        </spirit:componentInstance>
+    </spirit:componentInstances>
+    <spirit:interconnections>
+        <spirit:interconnection>
+            <spirit:name>Core00|shared_mem|shared_mem|shared_mem</spirit:name>
+            <spirit:activeInterface spirit:busRef="shared_mem" spirit:componentRef="Cluster00"/>
+            <spirit:activeInterface spirit:busRef="shared_mem" spirit:componentRef="shared_mem"/>
+        </spirit:interconnection>
+        <spirit:interconnection>
+            <spirit:name>Core01|shared_mem|shared_mem|shared_mem</spirit:name>
+            <spirit:activeInterface spirit:busRef="shared_mem" spirit:componentRef="Cluster01"/>
+            <spirit:activeInterface spirit:busRef="shared_mem" spirit:componentRef="shared_mem"/>
+        </spirit:interconnection>
+        <spirit:interconnection>
+            <spirit:name>Core02|shared_mem|shared_mem|shared_mem</spirit:name>
+            <spirit:activeInterface spirit:busRef="shared_mem" spirit:componentRef="Cluster02"/>
+            <spirit:activeInterface spirit:busRef="shared_mem" spirit:componentRef="shared_mem"/>
+        </spirit:interconnection>
+        <spirit:interconnection>
+            <spirit:name>Core03|shared_mem|shared_mem|shared_mem</spirit:name>
+            <spirit:activeInterface spirit:busRef="shared_mem" spirit:componentRef="Cluster03"/>
+            <spirit:activeInterface spirit:busRef="shared_mem" spirit:componentRef="shared_mem"/>
+        </spirit:interconnection>
+        <spirit:interconnection>
+            <spirit:name>Core04|shared_mem|shared_mem|shared_mem</spirit:name>
+            <spirit:activeInterface spirit:busRef="shared_mem" spirit:componentRef="Cluster04"/>
+            <spirit:activeInterface spirit:busRef="shared_mem" spirit:componentRef="shared_mem"/>
+        </spirit:interconnection>
+        <spirit:interconnection>
+            <spirit:name>Core05|shared_mem|shared_mem|shared_mem</spirit:name>
+            <spirit:activeInterface spirit:busRef="shared_mem" spirit:componentRef="Cluster05"/>
+            <spirit:activeInterface spirit:busRef="shared_mem" spirit:componentRef="shared_mem"/>
+        </spirit:interconnection>
+        <spirit:interconnection>
+            <spirit:name>Core06|shared_mem|shared_mem|shared_mem</spirit:name>
+            <spirit:activeInterface spirit:busRef="shared_mem" spirit:componentRef="Cluster06"/>
+            <spirit:activeInterface spirit:busRef="shared_mem" spirit:componentRef="shared_mem"/>
+        </spirit:interconnection>
+        <spirit:interconnection>
+            <spirit:name>Core07|shared_mem|shared_mem|shared_mem</spirit:name>
+            <spirit:activeInterface spirit:busRef="shared_mem" spirit:componentRef="Cluster07"/>
+            <spirit:activeInterface spirit:busRef="shared_mem" spirit:componentRef="shared_mem"/>
+        </spirit:interconnection>
+        <spirit:interconnection>
+            <spirit:name>Core08|shared_mem|shared_mem|shared_mem</spirit:name>
+            <spirit:activeInterface spirit:busRef="shared_mem" spirit:componentRef="Cluster08"/>
+            <spirit:activeInterface spirit:busRef="shared_mem" spirit:componentRef="shared_mem"/>
+        </spirit:interconnection>
+        <spirit:interconnection>
+            <spirit:name>Core09|shared_mem|shared_mem|shared_mem</spirit:name>
+            <spirit:activeInterface spirit:busRef="shared_mem" spirit:componentRef="Cluster09"/>
+            <spirit:activeInterface spirit:busRef="shared_mem" spirit:componentRef="shared_mem"/>
+        </spirit:interconnection>
+        <spirit:interconnection>
+            <spirit:name>Core10|shared_mem|shared_mem|shared_mem</spirit:name>
+            <spirit:activeInterface spirit:busRef="shared_mem" spirit:componentRef="Cluster10"/>
+            <spirit:activeInterface spirit:busRef="shared_mem" spirit:componentRef="shared_mem"/>
+        </spirit:interconnection>
+        <spirit:interconnection>
+            <spirit:name>Core11|shared_mem|shared_mem|shared_mem</spirit:name>
+            <spirit:activeInterface spirit:busRef="shared_mem" spirit:componentRef="Cluster11"/>
+            <spirit:activeInterface spirit:busRef="shared_mem" spirit:componentRef="shared_mem"/>
+        </spirit:interconnection>
+        <spirit:interconnection>
+            <spirit:name>Core12|shared_mem|shared_mem|shared_mem</spirit:name>
+            <spirit:activeInterface spirit:busRef="shared_mem" spirit:componentRef="Cluster12"/>
+            <spirit:activeInterface spirit:busRef="shared_mem" spirit:componentRef="shared_mem"/>
+        </spirit:interconnection>
+        <spirit:interconnection>
+            <spirit:name>Core13|shared_mem|shared_mem|shared_mem</spirit:name>
+            <spirit:activeInterface spirit:busRef="shared_mem" spirit:componentRef="Cluster13"/>
+            <spirit:activeInterface spirit:busRef="shared_mem" spirit:componentRef="shared_mem"/>
+        </spirit:interconnection>
+        <spirit:interconnection>
+            <spirit:name>Core14|shared_mem|shared_mem|shared_mem</spirit:name>
+            <spirit:activeInterface spirit:busRef="shared_mem" spirit:componentRef="Cluster14"/>
+            <spirit:activeInterface spirit:busRef="shared_mem" spirit:componentRef="shared_mem"/>
+        </spirit:interconnection>
+        <spirit:interconnection>
+            <spirit:name>Core15|shared_mem|shared_mem|shared_mem</spirit:name>
+            <spirit:activeInterface spirit:busRef="shared_mem" spirit:componentRef="Cluster15"/>
+            <spirit:activeInterface spirit:busRef="shared_mem" spirit:componentRef="shared_mem"/>
+        </spirit:interconnection>
+    </spirit:interconnections>
+    <spirit:hierConnections/>
+    <spirit:vendorExtensions>
+        <slam:componentDescriptions xmlns:slam="http://sourceforge.net/projects/dftools/slam">
+            <slam:componentDescription
+                slam:componentRef="defaultcontentionComNode"
+                slam:componentType="contentionComNode"
+                slam:refinement="" slam:speed="100000"/>
+            <slam:componentDescription
+                slam:componentRef="MPPA2Cluster"
+                slam:componentType="Operator" slam:refinement=""/>
+        </slam:componentDescriptions>
+        <slam:linkDescriptions xmlns:slam="http://sourceforge.net/projects/dftools/slam">
+            <slam:linkDescription slam:directedLink="undirected"
+                slam:linkType="DataLink" slam:referenceId="Core00|shared_mem|shared_mem|shared_mem"/>
+            <slam:linkDescription slam:directedLink="undirected"
+                slam:linkType="DataLink" slam:referenceId="Core01|shared_mem|shared_mem|shared_mem"/>
+            <slam:linkDescription slam:directedLink="undirected"
+                slam:linkType="DataLink" slam:referenceId="Core02|shared_mem|shared_mem|shared_mem"/>
+            <slam:linkDescription slam:directedLink="undirected"
+                slam:linkType="DataLink" slam:referenceId="Core03|shared_mem|shared_mem|shared_mem"/>
+            <slam:linkDescription slam:directedLink="undirected"
+                slam:linkType="DataLink" slam:referenceId="Core04|shared_mem|shared_mem|shared_mem"/>
+            <slam:linkDescription slam:directedLink="undirected"
+                slam:linkType="DataLink" slam:referenceId="Core05|shared_mem|shared_mem|shared_mem"/>
+            <slam:linkDescription slam:directedLink="undirected"
+                slam:linkType="DataLink" slam:referenceId="Core06|shared_mem|shared_mem|shared_mem"/>
+            <slam:linkDescription slam:directedLink="undirected"
+                slam:linkType="DataLink" slam:referenceId="Core07|shared_mem|shared_mem|shared_mem"/>
+            <slam:linkDescription slam:directedLink="undirected"
+                slam:linkType="DataLink" slam:referenceId="Core08|shared_mem|shared_mem|shared_mem"/>
+            <slam:linkDescription slam:directedLink="undirected"
+                slam:linkType="DataLink" slam:referenceId="Core09|shared_mem|shared_mem|shared_mem"/>
+            <slam:linkDescription slam:directedLink="undirected"
+                slam:linkType="DataLink" slam:referenceId="Core10|shared_mem|shared_mem|shared_mem"/>
+            <slam:linkDescription slam:directedLink="undirected"
+                slam:linkType="DataLink" slam:referenceId="Core11|shared_mem|shared_mem|shared_mem"/>
+            <slam:linkDescription slam:directedLink="undirected"
+                slam:linkType="DataLink" slam:referenceId="Core12|shared_mem|shared_mem|shared_mem"/>
+            <slam:linkDescription slam:directedLink="undirected"
+                slam:linkType="DataLink" slam:referenceId="Core13|shared_mem|shared_mem|shared_mem"/>
+            <slam:linkDescription slam:directedLink="undirected"
+                slam:linkType="DataLink" slam:referenceId="Core14|shared_mem|shared_mem|shared_mem"/>
+            <slam:linkDescription slam:directedLink="undirected"
+                slam:linkType="DataLink" slam:referenceId="Core15|shared_mem|shared_mem|shared_mem"/>
+        </slam:linkDescriptions>
+        <slam:designDescription xmlns:slam="http://sourceforge.net/projects/dftools/slam">
+            <slam:parameters/>
+        </slam:designDescription>
+    </spirit:vendorExtensions>
+</spirit:design>
