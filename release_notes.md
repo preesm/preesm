@@ -1,8 +1,8 @@
 PREESM Changelog
 ================
 
-## Release version X.Y.Z
-*XXXX.XX.XX*
+## Release version 3.20.0
+*2020.05.27*
 
 ### New Feature
 * Clustering: 
