@@ -1,7 +1,8 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2017 - 2019) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2017 - 2020) :
  *
  * Antoine Morvan [antoine.morvan@insa-rennes.fr] (2017 - 2019)
+ * Julien Heulot [julien.heulot@insa-rennes.fr] (2020)
  *
  * This software is a computer program whose purpose is to help prototyping
  * parallel applications using dataflow formalism.
@@ -54,7 +55,7 @@ public class SpiderTest {
 
   static final String   projectName = "org.ietr.preesm.spider.sobel";
   static final String[] scenarios   = new String[] { "1core.scenario", "4core.scenario" };
-  static final String[] workflows   = new String[] { "SpiderCodegen.workflow", "Codegen.workflow" };
+  static final String[] workflows   = new String[] { "SpiderCodegen.workflow", "Spider2Codegen.workflow" };
 
   final String workflow;
   final String scenario;

@@ -5,6 +5,7 @@
  * Antoine Morvan [antoine.morvan@insa-rennes.fr] (2017 - 2019)
  * Clément Guy [clement.guy@insa-rennes.fr] (2015)
  * Jonathan Piat [jpiat@laas.fr] (2008)
+ * Julien Heulot [julien.heulot@insa-rennes.fr] (2020)
  * Matthieu Wipliez [matthieu.wipliez@insa-rennes.fr] (2008)
  * Maxime Pelcat [maxime.pelcat@insa-rennes.fr] (2008 - 2012)
  *
@@ -263,9 +264,9 @@ public class GanttPlotter {
         // see following bug report
         // https://bugs.eclipse.org/bugs/show_bug.cgi?id=558681
         // TODO this bug appears in other parts of Preesm using SWT_AWT:
-        // org/preesm/algorithm/mapper/ui/stats/PerformancePlotter.java
-        // (but we do not care since calling code is deprecated: Fast and PFast schedulers)
         // org/preesm/algorithm/mapper/ui/BestCostPlotter.java
+        // (but we do not care since calling code is deprecated: Fast and PFast schedulers)
+        // org/preesm/algorithm/mapper/ui/stats/PerformancePlotter.java
         // (we care but not too much since it is not used with the new Synthesis)
         frame = SWT_AWT.new_Frame(composite);
       } catch (UnsatisfiedLinkError e) {

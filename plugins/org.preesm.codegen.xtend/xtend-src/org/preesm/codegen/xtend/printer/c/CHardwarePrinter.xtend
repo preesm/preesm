@@ -1,7 +1,7 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2013 - 2019) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2013 - 2020) :
  *
- * Alexandre Honorat [alexandre.honorat@insa-rennes.fr] (2019)
+ * Alexandre Honorat [alexandre.honorat@insa-rennes.fr] (2019 - 2020)
  * Antoine Morvan [antoine.morvan@insa-rennes.fr] (2017 - 2019)
  * Clément Guy [clement.guy@insa-rennes.fr] (2015)
  * Daniel Madroñal [daniel.madronal@upm.es] (2018 - 2019)
@@ -51,7 +51,6 @@ import java.util.Map
 import java.util.logging.Level
 import org.preesm.codegen.model.ActorFunctionCall
 import org.preesm.codegen.model.Block
-import org.preesm.codegen.model.CallBlock
 import org.preesm.codegen.model.CodeElt
 import org.preesm.codegen.model.Constant
 import org.preesm.codegen.model.CoreBlock

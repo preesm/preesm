@@ -1,6 +1,7 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2018 - 2019) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2018 - 2020) :
  *
+ * Alexandre Honorat [alexandre.honorat@insa-rennes.fr] (2020)
  * Antoine Morvan [antoine.morvan@insa-rennes.fr] (2018 - 2019)
  *
  * This software is a computer program whose purpose is to help prototyping
@@ -181,7 +182,7 @@ public class CodegenModelUserFactory extends CodegenFactoryImpl {
     final ActorFunctionCall afc = createActorFunctionCall();
     afc.setActorName(actor.getName());
     afc.setName(prototype.getName());
-    afc.setActor(PreesmCopyTracker.getOriginalSource(actor));
+    afc.setOriActor(PreesmCopyTracker.getOriginalSource(actor));
     final EList<FunctionArgument> arguments = prototype.getArguments();
     for (FunctionArgument a : arguments) {
       final String name = a.getName();

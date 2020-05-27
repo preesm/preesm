@@ -3,6 +3,7 @@
  *
  * Alexandre Honorat [alexandre.honorat@insa-rennes.fr] (2019 - 2020)
  * Antoine Morvan [antoine.morvan@insa-rennes.fr] (2018 - 2019)
+ * Julien Heulot [julien.heulot@insa-rennes.fr] (2020)
  *
  * This software is a computer program whose purpose is to help prototyping
  * parallel applications using dataflow formalism.
@@ -351,7 +352,7 @@ public class ExternalMappingFromDAG extends AbstractMappingFromDAG {
     }
   }
 
-  private static void mapVertex(final LatencyAbc abc, final ComponentInstance componentInstance, final DAGVertex v) {
+  static void mapVertex(final LatencyAbc abc, final ComponentInstance componentInstance, final DAGVertex v) {
     final MapperDAGVertex vertex = (MapperDAGVertex) v;
     if (abc.isMapable(vertex, componentInstance, false)) {
       abc.map(vertex, componentInstance, true, false);

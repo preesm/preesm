@@ -1,7 +1,8 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2019) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2019 - 2020) :
  *
- * Alexandre Honorat [alexandre.honorat@insa-rennes.fr] (2019)
+ * Alexandre Honorat [alexandre.honorat@insa-rennes.fr] (2019 - 2020)
+ * Julien Heulot [julien.heulot@insa-rennes.fr] (2020)
  *
  * This software is a computer program whose purpose is to help prototyping
  * parallel applications using dataflow formalism.
@@ -652,6 +653,10 @@ public class PeriodicScheduler extends AbstractScheduler {
    */
   protected static void updateAllocationNbVisits(DefaultDirectedGraph<VertexAbstraction, EdgeAbstraction> absGraph,
       VertexAbstraction va, List<VertexAbstraction> queue, long finishTime) {
+    // Here we could restrict the possible mappings of following fork/broadcast/join/roundbuffer
+    // to be on the same core as their direct predecessor va
+    // and inserts it first in ready queue
+    // --> it has been tested, and results are actually worse
     for (EdgeAbstraction ea : absGraph.outgoingEdgesOf(va)) {
       VertexAbstraction tgt = absGraph.getEdgeTarget(ea);
       tgt.nbVisits += 1;

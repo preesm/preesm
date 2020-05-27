@@ -1,7 +1,7 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2018 - 2019) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2018 - 2020) :
  *
- * Alexandre Honorat [alexandre.honorat@insa-rennes.fr] (2018 - 2019)
+ * Alexandre Honorat [alexandre.honorat@insa-rennes.fr] (2018 - 2020)
  * Antoine Morvan [antoine.morvan@insa-rennes.fr] (2018 - 2019)
  * Florian Arrestier [florian.arrestier@insa-rennes.fr] (2018)
  * Dylan Gageot [gageot.dylan@gmail.com] (2019)
@@ -332,6 +332,7 @@ public class PiMMHelper {
    * @ the PiMMHandlerException exception
    */
   public static void removePersistence(final PiGraph piGraph) {
+    List<Delay> toRemove = new ArrayList<>();
     for (final Fifo fifo : piGraph.getFifosWithDelay()) {
       final Delay delay = fifo.getDelay();
       // 0. Rename all the data ports of delay actors
@@ -341,6 +342,19 @@ public class PiMMHelper {
       if (delay.getLevel().equals(PersistenceLevel.LOCAL)) {
         delay.setLevel(PersistenceLevel.PERMANENT);
       }
+      if (delay.getSizeExpression().evaluate() == 0) {
+        toRemove.add(delay);
+      }
+    }
+    StringBuilder sb = new StringBuilder("Following delays are removed since their size is 0: ");
+    for (Delay d : toRemove) {
+      Fifo f = d.getContainingFifo();
+      f.setDelay(null);
+      piGraph.removeDelay(d);
+      sb.append(d.getName() + "; ");
+    }
+    if (!toRemove.isEmpty()) {
+      PreesmLogger.getLogger().log(Level.INFO, sb.toString());
     }
     // 2. We deal with hierarchical stuff
     for (final PiGraph g : piGraph.getChildrenGraphs()) {

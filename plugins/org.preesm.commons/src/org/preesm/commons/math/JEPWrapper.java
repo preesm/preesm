@@ -1,6 +1,7 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2018 - 2019) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2018 - 2020) :
  *
+ * Alexandre Honorat [alexandre.honorat@insa-rennes.fr] (2020)
  * Antoine Morvan [antoine.morvan@insa-rennes.fr] (2018 - 2019)
  *
  * This software is a computer program whose purpose is to help prototyping
@@ -44,6 +45,7 @@ import org.nfunk.jep.JEP;
 import org.nfunk.jep.Node;
 import org.nfunk.jep.ParseException;
 import org.nfunk.jep.SymbolTable;
+import org.nfunk.jep.TokenMgrError;
 import org.nfunk.jep.Variable;
 import org.preesm.commons.math.functions.CeilFunction;
 import org.preesm.commons.math.functions.FloorFunction;
@@ -64,6 +66,9 @@ public class JEPWrapper {
   /**
    * Return the list of symbols used in the expression. The result list does not include standard constants, standard
    * functions and user declared functions (see {@link #initJep(Map)}). Unknown functions are treated as symbols.
+   * 
+   * @throws ExpressionEvaluationException
+   *           If the expression cannot be evaluated.
    */
   public static final List<String> involvement(final String expression) {
     final JEP jep = initJep(Collections.emptyMap());
@@ -82,14 +87,16 @@ public class JEPWrapper {
           res.add(sym.getKey());
         }
       }
-    } catch (ParseException e) {
-      throw new ExpressionEvaluationException("Could not analyse expression '" + expression + "'.", e);
+    } catch (ParseException | TokenMgrError e) {
+      throw new ExpressionEvaluationException("Could not analyse '" + expression + "'.", e);
     }
     return res;
   }
 
   /**
    *
+   * @throws ExpressionEvaluationException
+   *           If the expression cannot be evaluated.
    */
   public static final long evaluate(final String expression,
       final Map<String, ? extends Number> addInputParameterValues) {
@@ -97,8 +104,8 @@ public class JEPWrapper {
     long result;
     try {
       result = parse(expression, jep);
-    } catch (final ParseException e) {
-      final String msg = "Could not evaluate " + expression + ":\n" + e.getMessage();
+    } catch (final ParseException | TokenMgrError e) {
+      final String msg = "Could not evaluate '" + expression + "': " + e.getMessage().trim();
       throw new ExpressionEvaluationException(msg, e);
     }
     return result;
@@ -128,6 +135,11 @@ public class JEPWrapper {
     return jep;
   }
 
+  /**
+   * 
+   * @throws ExpressionEvaluationException
+   *           If the expression cannot be evaluated.
+   */
   private static long parse(final String allExpression, final JEP jep) throws ParseException {
     final Node parse = jep.parse(allExpression);
     final Object result = jep.evaluate(parse);
@@ -142,7 +154,7 @@ public class JEPWrapper {
     } else if (result instanceof Number) {
       return ((Number) result).longValue();
     } else {
-      throw new UnsupportedOperationException("Unsupported result type " + result.getClass().getSimpleName());
+      throw new ExpressionEvaluationException("Unsupported result type " + result.getClass().getSimpleName());
     }
   }
 }

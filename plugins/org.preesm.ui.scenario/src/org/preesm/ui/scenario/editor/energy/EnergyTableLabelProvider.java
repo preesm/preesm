@@ -1,7 +1,7 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2011 - 2019) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2011 - 2020) :
  *
- * Alexandre Honorat [alexandre.honorat@insa-rennes.fr] (2019)
+ * Alexandre Honorat [alexandre.honorat@insa-rennes.fr] (2019 - 2020)
  * Antoine Morvan [antoine.morvan@insa-rennes.fr] (2017 - 2019)
  * Clément Guy [clement.guy@insa-rennes.fr] (2014 - 2015)
  * Daniel Madroñal [daniel.madronal@upm.es] (2019)
@@ -38,19 +38,32 @@
  */
 package org.preesm.ui.scenario.editor.energy;
 
+import java.net.URL;
+import java.util.Collections;
 import java.util.List;
+import org.eclipse.jface.dialogs.IInputValidator;
+import org.eclipse.jface.dialogs.InputDialog;
+import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.viewers.BaseLabelProvider;
+import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.jface.viewers.TableViewer;
+import org.eclipse.jface.window.Window;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Combo;
+import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IPropertyListener;
+import org.eclipse.ui.PlatformUI;
+import org.preesm.commons.files.PreesmResourcesHelper;
 import org.preesm.model.pisdf.AbstractActor;
+import org.preesm.model.pisdf.expression.ExpressionEvaluator;
 import org.preesm.model.scenario.Scenario;
 import org.preesm.model.slam.Component;
 import org.preesm.model.slam.Design;
+import org.preesm.ui.PreesmUIPlugin;
+import org.preesm.ui.scenario.editor.Messages;
 
 /**
  * Displays the labels for tasks energies. These labels are the energy of each task
@@ -68,11 +81,17 @@ public class EnergyTableLabelProvider extends BaseLabelProvider implements ITabl
   /** The table viewer. */
   private TableViewer tableViewer = null;
 
+  /** The image ok. */
+  private final Image imageOk;
+
+  /** The image error. */
+  private final Image imageError;
+
   /** Constraints page used as a property listener to change the dirty state. */
   private IPropertyListener propertyListener = null;
 
   /**
-   * Instantiates a new actor energy label provider.
+   * Instantiates a new energy table label provider.
    *
    * @param scenario
    *          the scenario
@@ -88,6 +107,14 @@ public class EnergyTableLabelProvider extends BaseLabelProvider implements ITabl
     this.tableViewer = tableViewer;
     this.propertyListener = propertyListener;
 
+    final URL errorIconURL = PreesmResourcesHelper.getInstance().resolve("icons/error.png", PreesmUIPlugin.class);
+    ImageDescriptor imageDcr = ImageDescriptor.createFromURL(errorIconURL);
+    this.imageError = imageDcr.createImage();
+
+    final URL okIconURL = PreesmResourcesHelper.getInstance().resolve("icons/ok.png", PreesmUIPlugin.class);
+    imageDcr = ImageDescriptor.createFromURL(okIconURL);
+    this.imageOk = imageDcr.createImage();
+
     final Design design = scenario.getDesign();
     final List<Component> operators = design.getOperatorComponents();
     this.currentOpDefId = operators.get(0);
@@ -95,7 +122,19 @@ public class EnergyTableLabelProvider extends BaseLabelProvider implements ITabl
 
   @Override
   public Image getColumnImage(final Object element, final int columnIndex) {
-    // Not necessary here
+    if ((element instanceof AbstractActor) && (this.currentOpDefId != null)) {
+      final AbstractActor vertex = (AbstractActor) element;
+
+      final String energy = this.scenario.getEnergyConfig().getEnergyActorOrDefault(vertex, this.currentOpDefId);
+      if (columnIndex == 3) {
+        final boolean canEvaluate = ExpressionEvaluator.canEvaluate(vertex, energy);
+        if (canEvaluate) {
+          return this.imageOk;
+        } else {
+          return this.imageError;
+        }
+      }
+    }
     return null;
   }
 
@@ -104,13 +143,31 @@ public class EnergyTableLabelProvider extends BaseLabelProvider implements ITabl
     if ((element instanceof AbstractActor) && (this.currentOpDefId != null)) {
       final AbstractActor vertex = (AbstractActor) element;
 
-      final Double energy = this.scenario.getEnergyConfig().getEnergyActorOrDefault(vertex, this.currentOpDefId);
+      final String energy = this.scenario.getEnergyConfig().getEnergyActorOrDefault(vertex, this.currentOpDefId);
 
       switch (columnIndex) {
         case 0:
           return vertex.getVertexPath();
-        case 1: // Value
-          return Double.toString(energy);
+        case 1: // Input Parameters
+          if (energy == null || vertex.getInputParameters().isEmpty()) {
+            return " - ";
+          } else {
+            return ExpressionEvaluator.lookupParameterValues(vertex, Collections.emptyMap()).keySet().toString();
+          }
+        case 2: // Expression
+          if (energy != null) {
+            return energy;
+          }
+          break;
+        case 3: // Evaluation Status
+          return null;
+        case 4: // Value
+          if (energy != null && ExpressionEvaluator.canEvaluate(vertex, energy)) {
+            return Long
+                .toString(ExpressionEvaluator.evaluate(vertex, energy, this.scenario.getParameterValues().map()));
+          } else {
+            return "";
+          }
         default:
       }
     }
@@ -138,4 +195,34 @@ public class EnergyTableLabelProvider extends BaseLabelProvider implements ITabl
     // nothing
   }
 
+  /**
+   * Handle double click.
+   *
+   * @param selection
+   *          the selection
+   */
+  public void handleDoubleClick(final IStructuredSelection selection) {
+    final IInputValidator validator = newText -> null;
+
+    final Object firstElement = selection.getFirstElement();
+    if (firstElement instanceof AbstractActor) {
+      final AbstractActor abstractActor = (AbstractActor) firstElement;
+
+      if (this.currentOpDefId != null) {
+        final String title = Messages.getString("Energy.dialog.title");
+        final String message = Messages.getString("Energy.dialog.message") + abstractActor.getVertexPath();
+        final String init = this.scenario.getTimings().getTimingOrDefault(abstractActor, this.currentOpDefId);
+
+        final InputDialog dialog = new InputDialog(PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell(),
+            title, message, init, validator);
+        if (dialog.open() == Window.OK) {
+          final String value = dialog.getValue();
+
+          this.scenario.getEnergyConfig().setActorPeEnergy(abstractActor, this.currentOpDefId, value);
+          this.propertyListener.propertyChanged(this, IEditorPart.PROP_DIRTY);
+          this.tableViewer.refresh();
+        }
+      }
+    }
+  }
 }

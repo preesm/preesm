@@ -1,7 +1,7 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2014 - 2019) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2014 - 2020) :
  *
- * Alexandre Honorat [alexandre.honorat@insa-rennes.fr] (2018 - 2019)
+ * Alexandre Honorat [alexandre.honorat@insa-rennes.fr] (2018 - 2020)
  * Antoine Morvan [antoine.morvan@insa-rennes.fr] (2017 - 2019)
  * Clément Guy [clement.guy@insa-rennes.fr] (2014 - 2015)
  * Julien Heulot [julien.heulot@insa-rennes.fr] (2015)
@@ -176,7 +176,7 @@ public class PiMemoryScriptEngine {
 
   /**
    */
-  public void generateCode(final Scenario scenario, final String log) {
+  public void generateLog(final Scenario scenario, final String log) {
     if (scenario.getCodegenDirectory() == null) {
       throw new PreesmRuntimeException("Codegen path has not been specified in scenario, cannot go further.");
     }

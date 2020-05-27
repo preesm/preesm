@@ -1,6 +1,7 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2008 - 2019) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2008 - 2020) :
  *
+ * Alexandre Honorat [alexandre.honorat@insa-rennes.fr] (2020)
  * Antoine Morvan [antoine.morvan@insa-rennes.fr] (2017 - 2019)
  * Clément Guy [clement.guy@insa-rennes.fr] (2015)
  * Jonathan Piat [jpiat@laas.fr] (2008)
@@ -42,6 +43,7 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Frame;
 import java.awt.event.WindowEvent;
+import java.util.logging.Level;
 import javax.swing.BorderFactory;
 import javax.swing.JPanel;
 import org.eclipse.swt.SWT;
@@ -58,6 +60,7 @@ import org.jfree.chart.renderer.xy.XYSplineRenderer;
 import org.jfree.data.xy.DefaultXYDataset;
 import org.jfree.ui.ApplicationFrame;
 import org.preesm.algorithm.mapper.ui.MouseClickedListener;
+import org.preesm.commons.logger.PreesmLogger;
 
 /**
  * Plots the performance of a given implementation and compares it to the maximum possible speed ups.
@@ -214,8 +217,23 @@ public class PerformancePlotter extends ApplicationFrame {
 
     final Composite composite = new Composite(parentComposite, SWT.EMBEDDED | SWT.FILL);
     parentComposite.setLayout(new FillLayout());
-    final Frame frame = SWT_AWT.new_Frame(composite);
-    frame.add(getContentPane());
+
+    // see explanations in org.preesm.algorithm.mapper.ui.Ganttplotter#plotDeploymen
+    Frame frame = null;
+    try {
+      frame = SWT_AWT.new_Frame(composite);
+    } catch (UnsatisfiedLinkError e) {
+      PreesmLogger.getLogger().log(Level.INFO,
+          "An error occured while loading org.eclipse.swt.awt.SWT_AWT class "
+              + "or its associated shared object libswt-awt-gtk-4928+.so, "
+              + "thus the Gantt diagram is not embedded in Eclipse. See error:\n" + e.getMessage());
+      if (!composite.isDisposed()) {
+        composite.dispose();
+      }
+    }
+    if (frame != null) {
+      frame.add(getContentPane());
+    }
 
     final MouseClickedListener listener = new MouseClickedListener(frame);
     this.chartPanel.addChartMouseListener(listener);

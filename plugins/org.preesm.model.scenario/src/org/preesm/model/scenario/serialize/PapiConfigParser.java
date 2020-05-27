@@ -1,7 +1,8 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2018 - 2019) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2018 - 2020) :
  *
  * Antoine Morvan [antoine.morvan@insa-rennes.fr] (2018 - 2019)
+ * Julien Heulot [julien.heulot@insa-rennes.fr] (2020)
  *
  * This software is a computer program whose purpose is to help prototyping
  * parallel applications using dataflow formalism.
@@ -42,6 +43,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.function.Consumer;
+import javax.xml.XMLConstants;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import org.preesm.commons.exceptions.PreesmRuntimeException;
@@ -116,6 +118,8 @@ public class PapiConfigParser {
     final Document doc;
     try {
       final DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
+      dbFactory.setAttribute(XMLConstants.ACCESS_EXTERNAL_DTD, "");
+      dbFactory.setAttribute(XMLConstants.ACCESS_EXTERNAL_SCHEMA, "");
       final DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
       doc = dBuilder.parse(xmlConfigFile);
     } catch (final Exception e) {

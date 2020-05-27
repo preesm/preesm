@@ -1,8 +1,8 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2019) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2019 - 2020) :
  *
- * Alexandre Honorat [alexandre.honorat@insa-rennes.fr] (2019)
- * Julien Heulot [julien.heulot@insa-rennes.fr] (2019)
+ * Alexandre Honorat [alexandre.honorat@insa-rennes.fr] (2019 - 2020)
+ * Julien Heulot [julien.heulot@insa-rennes.fr] (2019 - 2020)
  *
  * This software is a computer program whose purpose is to help prototyping
  * parallel applications using dataflow formalism.
@@ -211,7 +211,7 @@ public class ActorPeriodPropertiesSection extends GFPropertySection implements I
               this.lblPeriodValueObj.setText(Long.toString(evaluate));
             }
             this.txtPeriod.setBackground(new Color(null, 255, 255, 255));
-          } catch (final ExpressionEvaluationException | IllegalArgumentException e) {
+          } catch (final ExpressionEvaluationException e) {
             // otherwise print error message and put red background
             this.lblPeriodValueObj.setText("Error : " + e.getMessage());
             this.txtPeriod.setBackground(new Color(null, 240, 150, 150));

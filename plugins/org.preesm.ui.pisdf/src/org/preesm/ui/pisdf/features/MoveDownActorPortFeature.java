@@ -1,6 +1,7 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2013 - 2019) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2013 - 2020) :
  *
+ * Alexandre Honorat [alexandre.honorat@insa-rennes.fr] (2020)
  * Antoine Morvan [antoine.morvan@insa-rennes.fr] (2017 - 2019)
  * Clément Guy [clement.guy@insa-rennes.fr] (2014 - 2015)
  * Julien Heulot [julien.heulot@insa-rennes.fr] (2013)
@@ -73,7 +74,7 @@ public class MoveDownActorPortFeature extends MoveUpActorPortFeature {
   /*
    * (non-Javadoc)
    *
-   * @see org.ietr.preesm.ui.pimm.features.MoveUpActorPortFeature#getName()
+   * @see org.preesm.ui.pisdf.features.MoveUpActorPortFeature#getName()
    */
   @Override
   public String getName() {
@@ -83,7 +84,7 @@ public class MoveDownActorPortFeature extends MoveUpActorPortFeature {
   /*
    * (non-Javadoc)
    *
-   * @see org.ietr.preesm.ui.pimm.features.MoveUpActorPortFeature#getDescription()
+   * @see org.preesm.ui.pisdf.features.MoveUpActorPortFeature#getDescription()
    */
   @Override
   public String getDescription() {
@@ -93,7 +94,7 @@ public class MoveDownActorPortFeature extends MoveUpActorPortFeature {
   /*
    * (non-Javadoc)
    *
-   * @see org.ietr.preesm.ui.pimm.features.MoveUpActorPortFeature#canExecute(org.eclipse.graphiti.features.context.
+   * @see org.preesm.ui.pisdf.features.MoveUpActorPortFeature#canExecute(org.eclipse.graphiti.features.context.
    * ICustomContext)
    */
   @Override
@@ -138,7 +139,7 @@ public class MoveDownActorPortFeature extends MoveUpActorPortFeature {
   /*
    * (non-Javadoc)
    *
-   * @see org.ietr.preesm.ui.pimm.features.MoveUpActorPortFeature#execute(org.eclipse.graphiti.features.context.
+   * @see org.preesm.ui.pisdf.features.MoveUpActorPortFeature#execute(org.eclipse.graphiti.features.context.
    * ICustomContext)
    */
   @Override

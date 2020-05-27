@@ -1,6 +1,7 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2013 - 2019) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2013 - 2020) :
  *
+ * Alexandre Honorat [alexandre.honorat@insa-rennes.fr] (2020)
  * Antoine Morvan [antoine.morvan@insa-rennes.fr] (2017 - 2019)
  * Clément Guy [clement.guy@insa-rennes.fr] (2015)
  * Julien Heulot [julien.heulot@insa-rennes.fr] (2013)
@@ -46,6 +47,7 @@ import org.eclipse.graphiti.tb.ImageDecorator;
 import org.preesm.commons.math.ExpressionEvaluationException;
 import org.preesm.model.pisdf.Dependency;
 import org.preesm.model.pisdf.Expression;
+import org.preesm.model.pisdf.MalleableParameter;
 import org.preesm.model.pisdf.Parameter;
 import org.preesm.model.pisdf.util.DependencyCycleDetector;
 import org.preesm.ui.pisdf.diagram.PiMMImageProvider;
@@ -82,6 +84,11 @@ public class ParameterDecorators {
     if (cycleDecorator != null) {
       decorators.add(cycleDecorator);
     } else {
+      // check if MalleableParameter
+      final IDecorator malleableParamDecorator = ParameterDecorators.getMalleableParamDecorator(parameter, pe);
+      if (malleableParamDecorator != null) {
+        decorators.add(malleableParamDecorator);
+      }
       // Check if the parameter expression is correct
       final IDecorator expressionDecorator = ParameterDecorators.getExpressionDecorator(parameter, pe);
       if (expressionDecorator != null) {
@@ -116,6 +123,29 @@ public class ParameterDecorators {
       imageRenderingDecorator.setMessage("Dynamically Configurable Parameter");
       imageRenderingDecorator.setX((pe.getGraphicsAlgorithm().getWidth() / 2) - 5);
       imageRenderingDecorator.setY(8);
+
+      return imageRenderingDecorator;
+    }
+
+    return null;
+  }
+
+  /**
+   * Get the {@link IDecorator} indicating if the parameter is {@link MalleableParameter}.
+   *
+   * @param parameter
+   *          the {@link Parameter} to test
+   * @param pe
+   *          the {@link PictogramElement} of the tested {@link Parameter}
+   * @return the {@link IDecorator} if {@link MalleableParameter} , else <code>null</code>.
+   */
+  protected static IDecorator getMalleableParamDecorator(final Parameter parameter, final PictogramElement pe) {
+    if (parameter instanceof MalleableParameter) {
+      final ImageDecorator imageRenderingDecorator = new ImageDecorator(PiMMImageProvider.IMG_CURLY_BRACES);
+
+      imageRenderingDecorator.setMessage("Malleable Parameter");
+      imageRenderingDecorator.setX((pe.getGraphicsAlgorithm().getWidth() / 2) - 12);
+      imageRenderingDecorator.setY(5);
 
       return imageRenderingDecorator;
     }

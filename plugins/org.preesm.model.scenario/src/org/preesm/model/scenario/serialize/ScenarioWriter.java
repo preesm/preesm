@@ -1,7 +1,7 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2008 - 2019) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2008 - 2020) :
  *
- * Alexandre Honorat [alexandre.honorat@insa-rennes.fr] (2019)
+ * Alexandre Honorat [alexandre.honorat@insa-rennes.fr] (2019 - 2020)
  * Antoine Morvan [antoine.morvan@insa-rennes.fr] (2017 - 2019)
  * Clément Guy [clement.guy@insa-rennes.fr] (2014)
  * Daniel Madroñal [daniel.madronal@upm.es] (2018 - 2019)
@@ -609,9 +609,15 @@ public class ScenarioWriter {
     for (final Entry<String, Double> opDef : manager.getPlatformPower()) {
       writePlatformPower(energyConfigs, opDef.getKey(), opDef.getValue());
     }
-    for (final Entry<Component, EMap<AbstractActor, Double>> peActorEnergy : manager.getAlgorithmEnergy()) {
-      writePeActorEnergy(energyConfigs, peActorEnergy.getKey(), peActorEnergy.getValue());
+
+    final Element energyActors = this.dom.createElement("peActorsEnergy");
+    energyConfigs.appendChild(energyActors);
+    for (final Entry<AbstractActor, EMap<Component, String>> peActorEnergy : manager.getAlgorithmEnergy()) {
+      for (final Entry<Component, String> e : peActorEnergy.getValue()) {
+        writePeActorEnergy(energyActors, peActorEnergy.getKey(), e.getKey(), e.getValue());
+      }
     }
+
     for (final Entry<String, EMap<String, Double>> peCommsEnergy : manager.getCommsEnergy()) {
       writePeCommsEnergy(energyConfigs, peCommsEnergy.getKey(), peCommsEnergy.getValue());
     }
@@ -657,40 +663,22 @@ public class ScenarioWriter {
    *
    * @param parent
    *          the parent
+   * @param actor
+   *          the actor
    * @param component
    *          the component executing the actors
    * @param pePower
    *          the energy associated to each of the actors
    */
-  private void writePeActorEnergy(final Element parent, final Component component,
-      final EMap<AbstractActor, Double> pePower) {
+  private void writePeActorEnergy(final Element parent, final AbstractActor actor, final Component component,
+      final String pePower) {
 
     final Element peActorEnergy = this.dom.createElement("peActorEnergy");
     parent.appendChild(peActorEnergy);
 
-    peActorEnergy.setAttribute("opName", component.getVlnv().getName());
-    for (final Entry<AbstractActor, Double> actorEnergies : pePower.entrySet()) {
-      writeActorEnergy(peActorEnergy, actorEnergies.getKey(), actorEnergies.getValue());
-    }
-  }
-
-  /**
-   * Adds the peActorEnergy.
-   *
-   * @param parent
-   *          the parent
-   * @param actor
-   *          the actor
-   * @param energyValue
-   *          the energy value
-   */
-  private void writeActorEnergy(final Element parent, final AbstractActor actor, Double energyValue) {
-
-    final Element actorEnergy = this.dom.createElement("actorEnergy");
-    parent.appendChild(actorEnergy);
-
-    actorEnergy.setAttribute("vertexPath", actor.getVertexPath());
-    actorEnergy.setAttribute("energyValue", energyValue.toString());
+    peActorEnergy.setAttribute("vertexname", actor.getVertexPath());
+    peActorEnergy.setAttribute("opname", component.getVlnv().getName());
+    peActorEnergy.setAttribute("energy", pePower);
   }
 
   /**

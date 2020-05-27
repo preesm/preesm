@@ -1,11 +1,11 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2013 - 2019) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2013 - 2020) :
  *
  * Alexandre Honorat [alexandre.honorat@insa-rennes.fr] (2019)
  * Antoine Morvan [antoine.morvan@insa-rennes.fr] (2017 - 2019)
  * Clément Guy [clement.guy@insa-rennes.fr] (2014 - 2015)
  * Daniel Madroñal [daniel.madronal@upm.es] (2019)
- * Dylan Gageot [gageot.dylan@gmail.com] (2019)
+ * Dylan Gageot [gageot.dylan@gmail.com] (2019 - 2020)
  * Julien Hascoet [jhascoet@kalray.eu] (2016)
  * Karol Desnos [karol.desnos@insa-rennes.fr] (2013 - 2015)
  * Maxime Pelcat [maxime.pelcat@insa-rennes.fr] (2013)
@@ -70,7 +70,7 @@ import org.preesm.workflow.elements.Workflow;
 
     inputs = { @Port(name = "MEGs", type = Map.class), @Port(name = "DAG", type = DirectedAcyclicGraph.class),
         @Port(name = "scenario", type = Scenario.class), @Port(name = "architecture", type = Design.class),
-        @Port(name = "schedules", type = Map.class) },
+        @Port(name = "CS", type = Map.class) },
 
     shortDescription = "Generate code for the application deployment resulting from the workflow execution.",
 
@@ -126,7 +126,7 @@ public class CodegenWithClusterTask extends CodegenTask {
     final Design archi = (Design) inputs.get("architecture");
     final DirectedAcyclicGraph algoDAG = (DirectedAcyclicGraph) inputs.get("DAG");
     @SuppressWarnings("unchecked")
-    final Map<AbstractActor, Schedule> scheduleMapping = (Map<AbstractActor, Schedule>) inputs.get("schedules");
+    final Map<AbstractActor, Schedule> scheduleMapping = (Map<AbstractActor, Schedule>) inputs.get("CS");
     @SuppressWarnings("unchecked")
     final Map<String, MemoryExclusionGraph> megs = (Map<String, MemoryExclusionGraph>) inputs.get("MEGs");
     if (!(algoDAG instanceof MapperDAG)) {

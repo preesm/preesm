@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<graphml xmlns="http://graphml.graphdrawing.org/xmlns">
+    <key attr.name="parameters" for="graph" id="parameters"/>
+    <key attr.name="variables" for="graph" id="variables"/>
+    <key attr.name="arguments" for="node" id="arguments"/>
+    <key attr.name="name" attr.type="string" for="graph"/>
+    <key attr.name="graph_desc" attr.type="string" for="node"/>
+    <graph edgedefault="directed">
+        <data key="name">flatApp</data>
+        <node id="A" kind="actor">
+            <data key="graph_desc">Code/include/actors.h</data>
+            <loop name="a">
+                <param direction="OUT" isConfig="false"
+                    name="out" type="void "/>
+            </loop>
+            <port annotation="NONE" expr="16" kind="output" name="out"/>
+        </node>
+        <node id="B" kind="actor">
+            <data key="graph_desc">Code/include/actors.h</data>
+            <loop name="b">
+                <param direction="IN" isConfig="false" name="in" type="void "/>
+                <param direction="OUT" isConfig="false"
+                    name="out" type="void "/>
+            </loop>
+            <port annotation="NONE" expr="1" kind="input" name="in"/>
+            <port annotation="NONE" expr="2" kind="output" name="out"/>
+        </node>
+        <node id="C" kind="actor">
+            <data key="graph_desc">Code/include/actors.h</data>
+            <loop name="c">
+                <param direction="IN" isConfig="false" name="in" type="void "/>
+                <param direction="OUT" isConfig="false"
+                    name="out" type="void "/>
+            </loop>
+            <port annotation="NONE" expr="2" kind="input" name="in"/>
+            <port annotation="NONE" expr="3" kind="output" name="out"/>
+        </node>
+        <node id="D" kind="actor">
+            <data key="graph_desc">Code/include/actors.h</data>
+            <loop name="d">
+                <param direction="IN" isConfig="false" name="in" type="void "/>
+                <param direction="OUT" isConfig="false"
+                    name="out" type="void "/>
+            </loop>
+            <port annotation="NONE" expr="3" kind="input" name="in"/>
+            <port annotation="NONE" expr="1" kind="output" name="out"/>
+        </node>
+        <node id="E" kind="actor">
+            <data key="graph_desc">Code/include/actors.h</data>
+            <loop name="e">
+                <param direction="IN" isConfig="false" name="in" type="void "/>
+                <param direction="OUT" isConfig="false"
+                    name="out" type="void "/>
+            </loop>
+            <port annotation="NONE" expr="16" kind="input" name="in"/>
+            <port annotation="NONE" expr="1" kind="output" name="out"/>
+        </node>
+        <node id="F" kind="actor">
+            <data key="graph_desc">Code/include/actors.h</data>
+            <loop name="f">
+                <param direction="IN" isConfig="false" name="in" type="void "/>
+            </loop>
+            <port annotation="NONE" expr="1" kind="input" name="in"/>
+        </node>
+        <edge kind="fifo" source="A" sourceport="out" target="B"
+            targetport="in" type="void"/>
+        <edge kind="fifo" source="B" sourceport="out" target="C"
+            targetport="in" type="void"/>
+        <edge kind="fifo" source="C" sourceport="out" target="D"
+            targetport="in" type="void"/>
+        <edge kind="fifo" source="D" sourceport="out" target="E"
+            targetport="in" type="void"/>
+        <edge kind="fifo" source="E" sourceport="out" target="F"
+            targetport="in" type="void"/>
+    </graph>
+</graphml>

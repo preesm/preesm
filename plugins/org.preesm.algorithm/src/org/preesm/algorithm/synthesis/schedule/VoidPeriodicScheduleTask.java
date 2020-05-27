@@ -1,7 +1,8 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2019) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2019 - 2020) :
  *
- * Alexandre Honorat [alexandre.honorat@insa-rennes.fr] (2019)
+ * Alexandre Honorat [alexandre.honorat@insa-rennes.fr] (2019 - 2020)
+ * Julien Heulot [julien.heulot@insa-rennes.fr] (2020)
  *
  * This software is a computer program whose purpose is to help prototyping
  * parallel applications using dataflow formalism.
@@ -55,15 +56,21 @@ import org.preesm.workflow.implement.AbstractTaskImplementation;
 import org.preesm.workflow.implement.AbstractWorkflowNodeImplementation;
 
 /**
+ * Call list periodic scheduler or optimal choco scheduler, without any output.
  *
  * @author ahonorat
- *
  */
 @PreesmTask(id = "pisdf-synthesis.void-periodic-schedule", name = "Periodic scheduling (without output)",
-    parameters = { @Parameter(name = "solver", values = { @Value(name = "list"), @Value(name = "choco") }) },
+    parameters = { @Parameter(name = VoidPeriodicScheduleTask.SOLVER_PARAM_NAME,
+        values = { @Value(name = VoidPeriodicScheduleTask.SOLVER_PARAM_VALUE_LIST),
+            @Value(name = VoidPeriodicScheduleTask.SOLVER_PARAM_VALUE_CHOC) }) },
     inputs = { @Port(name = "PiMM", type = PiGraph.class), @Port(name = "architecture", type = Design.class),
         @Port(name = "scenario", type = Scenario.class) })
 public class VoidPeriodicScheduleTask extends AbstractTaskImplementation {
+
+  public static final String SOLVER_PARAM_NAME       = "solver";
+  public static final String SOLVER_PARAM_VALUE_LIST = "list";
+  public static final String SOLVER_PARAM_VALUE_CHOC = "choco";
 
   @Override
   public Map<String, Object> execute(Map<String, Object> inputs, Map<String, String> parameters,
@@ -73,14 +80,14 @@ public class VoidPeriodicScheduleTask extends AbstractTaskImplementation {
     final Design architecture = (Design) inputs.get(AbstractWorkflowNodeImplementation.KEY_ARCHITECTURE);
     final Scenario scenario = (Scenario) inputs.get(AbstractWorkflowNodeImplementation.KEY_SCENARIO);
 
-    final String solverName = parameters.get("solver").toLowerCase();
+    final String solverName = parameters.get(SOLVER_PARAM_NAME).toLowerCase();
 
     IScheduler scheduler = null;
 
-    if ("list".equalsIgnoreCase(solverName)) {
+    if (SOLVER_PARAM_VALUE_LIST.equalsIgnoreCase(solverName)) {
       scheduler = new PeriodicScheduler();
       PreesmLogger.getLogger().log(Level.INFO, () -> " -- Periodic list scheduling without output ");
-    } else if ("choco".equalsIgnoreCase(solverName)) {
+    } else if (SOLVER_PARAM_VALUE_CHOC.equalsIgnoreCase(solverName)) {
       scheduler = new ChocoScheduler();
       PreesmLogger.getLogger().log(Level.INFO, () -> " -- Periodic constraint programming scheduling without output ");
     } else {
@@ -96,7 +103,7 @@ public class VoidPeriodicScheduleTask extends AbstractTaskImplementation {
   @Override
   public Map<String, String> getDefaultParameters() {
     Map<String, String> map = new HashMap<>();
-    map.put("solver", "list");
+    map.put(SOLVER_PARAM_NAME, SOLVER_PARAM_VALUE_LIST);
     return map;
   }
 

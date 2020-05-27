@@ -1,7 +1,8 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2019) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2019 - 2020) :
  *
- * Alexandre Honorat [alexandre.honorat@insa-rennes.fr] (2019)
+ * Alexandre Honorat [alexandre.honorat@insa-rennes.fr] (2019 - 2020)
+ * Julien Heulot [julien.heulot@insa-rennes.fr] (2020)
  *
  * This software is a computer program whose purpose is to help prototyping
  * parallel applications using dataflow formalism.
@@ -213,7 +214,7 @@ public class ChocoScheduler extends PeriodicScheduler {
             // update mapping directly
             resultMapping.getMappings().put(va.aa, ECollections.singletonEList(ca.ci));
 
-            System.err.println("Task " + va.aa.getName() + " mapped on core " + j + " at time " + start);
+            PreesmLogger.getLogger().finer("Task " + va.aa.getName() + " mapped on core " + j + " at time " + start);
             // update schedule
             insertTaskInSchedule(t, coreSchedules.get(j));
           }

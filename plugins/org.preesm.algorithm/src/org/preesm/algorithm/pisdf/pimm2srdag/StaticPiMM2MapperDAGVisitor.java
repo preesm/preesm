@@ -1,11 +1,11 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2014 - 2019) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2014 - 2020) :
  *
- * Alexandre Honorat [alexandre.honorat@insa-rennes.fr] (2019)
+ * Alexandre Honorat [alexandre.honorat@insa-rennes.fr] (2019 - 2020)
  * Antoine Morvan [antoine.morvan@insa-rennes.fr] (2017 - 2019)
  * Clément Guy [clement.guy@insa-rennes.fr] (2014 - 2015)
  * Florian Arrestier [florian.arrestier@insa-rennes.fr] (2018)
- * Dylan Gageot [gageot.dylan@gmail.com] (2019)
+ * Dylan Gageot [gageot.dylan@gmail.com] (2019 - 2020)
  * Karol Desnos [karol.desnos@insa-rennes.fr] (2015)
  *
  * This software is a computer program whose purpose is to help prototyping
@@ -48,7 +48,7 @@ import java.util.Map.Entry;
 import java.util.Optional;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.emf.common.util.EList;
-import org.preesm.algorithm.clustering.Clustering;
+import org.preesm.algorithm.clustering.ClusteringHelper;
 import org.preesm.algorithm.codegen.idl.ActorPrototypes;
 import org.preesm.algorithm.codegen.idl.Prototype;
 import org.preesm.algorithm.codegen.model.CodeGenArgument;
@@ -163,7 +163,7 @@ public class StaticPiMM2MapperDAGVisitor extends PiMMSwitch<Boolean> {
     vertex.setName(actor.getName());
     vertex.setInfo(actor.getVertexPath());
     vertex.setNbRepeat(new LongVertexPropertyType(1));
-    vertex.setPropertyValue(Clustering.PISDF_REFERENCE_ACTOR, actor);
+    vertex.setPropertyValue(ClusteringHelper.PISDF_REFERENCE_ACTOR, actor);
 
     // Set default time property
     vertex.setTime(new LongVertexPropertyType(0));
@@ -191,7 +191,7 @@ public class StaticPiMM2MapperDAGVisitor extends PiMMSwitch<Boolean> {
     setDAGVertexPropertiesFromPiMM(actor, vertex);
     // Set hierarchical refinement if AbstractActor is a cluster
     if (actor.isCluster()) {
-      vertex.setPropertyValue(Clustering.PISDF_ACTOR_IS_CLUSTER, true);
+      vertex.setPropertyValue(ClusteringHelper.PISDF_ACTOR_IS_CLUSTER, true);
     }
     // Add the vertex to the DAG
     this.result.addVertex(vertex);
@@ -703,7 +703,7 @@ public class StaticPiMM2MapperDAGVisitor extends PiMMSwitch<Boolean> {
         // Maybe doing the copy is not optimal
         final ArrayList<DAGEdge> allEdges = new ArrayList<>(dag.getAllEdges(source, vertex));
         // if there is only one connection no need to modify anything
-        if ((allEdges.size() == 1) || toRemove.contains(allEdges.get(1))) {
+        if ((allEdges.size() == 1) || toRemove.contains(edge)) {
           continue;
         }
         // Get the first edge

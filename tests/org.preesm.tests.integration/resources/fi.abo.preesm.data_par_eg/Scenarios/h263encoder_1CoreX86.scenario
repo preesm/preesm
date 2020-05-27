@@ -3,7 +3,7 @@
     <files>
         <algorithm url="/fi.abo.preesm.data_par_eg/Algo/h263encoder.pi"/>
         <architecture url="/fi.abo.preesm.data_par_eg/Archi/1CoreX86.slam"/>
-        <codegenDirectory url=""/>
+        <codegenDirectory url="/fi.abo.preesm.data_par_eg/Code/generated"/>
     </files>
     <constraints excelUrl="">
         <constraintGroup>

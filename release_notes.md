@@ -1,6 +1,70 @@
 PREESM Changelog
 ================
 
+## Release version 3.20.0
+*2020.05.27*
+
+### New Feature
+* Clustering: 
+ * Uniform Repetition Count chain of actor can be found with the new URCSeeker class.
+ * Repetition count on a given PiSDF hierarchy can be balanced between coarse-grained and fine-grained levels with the new PiGraphFiringBalancer class.
+ * The Cluster Partitioner task clusters groups of actors which are URC and balances there firings with the PiGraphFiringBalancer class.
+ * When cluster schedules contain parallelism handled with OpenMP, pthread threads are not printed in the generated code.
+* Model:
+ * new class of parameter : Malleable Parameter, accepting a set of possible values.
+ * energy of actors can be expressed with parameters in the scenario.
+* Workflow:
+ * new task "org.preesm.codegen.xtend.Spider2CodegenTask" to generate code for Spider 2 runtime.
+ * new task "pisdf-mapper.periodic.DAG" to compute periodic scheduling/mapping for legacy code generation.
+ * new task "pisdf-synthesis.void-periodic-schedule" to compute scheduling/mapping only (for new synthesis).
+ * new task "pisdf-mparams.setter" to compute best value of malleable parameters (exhaustive and heuristic DSE).
+ * new task "pisdf-delays.setter" to automatically set delays in flat PiSDF graphs (for pipelines and cycles).
+
+### Changes
+* ConfigInputInterface accepts a default value (to compute BRV in subgraph and to avoid false checks in GUI).
+* BRV can be computed on subgraph now.
+* Possibility to set the init function of a delay in the GUI, not yet used in the codegen.
+* Adding new API methods to Parameter class to ease the manipulation of the Parameter tree.
+* Adding new API methods for direct access of FunctionPrototype parameters.
+* Cluster attribute of PiGraph is now printed in .pi.
+* Clustering task is now called Cluster Scheduler and can schedule the input graph or only hierarchies marked as cluster.
+* Cluster codegen :
+ * MD5 checking can be printed for sink actors contained in a cluster.
+ * Parallel Hierarchy with one children is not considered anymore as a section block.
+* Full support of final spider 2 api.
+* Fix & Update Checkstyle to 8.29.
+* Add Spider2 codegen to unit tests.
+* Update Cluster Scheduler integration tests.
+* Add NewSynthesis Tests
+* Adding direct translation of 1 edge broadcast to REPEAT vertex in Spider2Codegen.
+* Codegen directory is now cleaned at the beginning of the workflow.
+* Secure SWT_AWT code calls in all GUI parts (see https://bugs.eclipse.org/bugs/show_bug.cgi?id=558874)
+* Remove old PiSDF clustering classes (replaced with the Cluster Scheduler) and associated tests.
+* Cluster Scheduler allows the user to choose whether cluster schedules contain parallelism information or not.
+* Update Spider2 codegent to follow evolution of the API.
+* Adapt MPPA 2 printer to print mppa_async communication with cluster block and finite loop block.
+
+### Bug fix
+* Fix ids and icons of a few GUI elements.
+* Fix expression evaluation exception management.
+* Fix false parsing of deleted component in scenario.
+* Fix SRDAG exploration of cluster special actor.
+* Fix the way how delay are printed in cluster codegen.
+* Fix #295 : Check for edge in aggregate buffer was only checking the first buffer (now check in all buffer).
+* Fix the dag span value in the stat exporter.
+* Fix #285 : copyPiGraphWithHistory now handles copy of subgraphs
+* Fix #302 : Verify any opened diagram editor instead of active one. 
+* Fix Vulnerabilities and Bugs signaled by Sonar
+* Fix parameter name replacement in rate expressions in Spider2CodegenEdge.
+* Fix #294 : improve the popup menu action to generate flat optimized PiGraph.
+* Fix codegen : fix actor name in generated analysis.csv
+* Fix #285 : PiGraph copy with history now works on subgraphs.
+* Fix #274 : fix clear refinement feature in the GUI of actors.
+* Fix #289 : remove memory annotations in the GUI of data interfaces.
+* Fix spider2 codegen with delays having setter / getter actors.
+* Fix #313 : fix windows uint64 type definition in lib used by codegen.
+* Fix delays in cluster codegen.
+
 ## Release version 3.19.0
 *2020.01.10*
 
@@ -17,7 +81,7 @@ PREESM Changelog
 * BRV computation with LCM method now handles fifo having rates equal to 0 on both sides
   (computation is similar to Spider V2);
 * Refactor Communication insertion in the new Synthesis task: removes non necessary transitive
-  closure and improves performanes.
+  closure and improves performances.
 
 ### Bug fix
 * Fix #271 : removes extra coma in spider codegen when no parameters.

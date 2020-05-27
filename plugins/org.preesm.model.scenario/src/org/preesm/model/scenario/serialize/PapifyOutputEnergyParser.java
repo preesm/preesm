@@ -1,7 +1,7 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2015 - 2019) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2015 - 2020) :
  *
- * Alexandre Honorat [alexandre.honorat@insa-rennes.fr] (2019)
+ * Alexandre Honorat [alexandre.honorat@insa-rennes.fr] (2019 - 2020)
  * Antoine Morvan [antoine.morvan@insa-rennes.fr] (2017 - 2019)
  * Clément Guy [clement.guy@insa-rennes.fr] (2015)
  * Daniel Madroñal [daniel.madronal@upm.es] (2019)
@@ -57,7 +57,6 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.emf.common.util.EMap;
 import org.preesm.commons.logger.PreesmLogger;
-import org.preesm.commons.model.PreesmCopyTracker;
 import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.pisdf.util.VertexPath;
@@ -283,8 +282,7 @@ public class PapifyOutputEnergyParser {
         try {
           final String expression = energies.get(actor).get(component);
 
-          this.scenario.getEnergyConfig().setActorPeEnergy(PreesmCopyTracker.getOriginalSource(actor), component,
-              Double.parseDouble(expression));
+          this.scenario.getEnergyConfig().setActorPeEnergy(actor, component, expression);
 
           final String msg = "Importing energy: " + actor.getVertexPath() + " on " + component.getVlnv().getName()
               + " takes " + expression;

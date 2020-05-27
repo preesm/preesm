@@ -1,10 +1,10 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2012 - 2019) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2012 - 2020) :
  *
- * Alexandre Honorat [alexandre.honorat@insa-rennes.fr] (2019)
+ * Alexandre Honorat [alexandre.honorat@insa-rennes.fr] (2019 - 2020)
  * Antoine Morvan [antoine.morvan@insa-rennes.fr] (2017 - 2019)
  * Clément Guy [clement.guy@insa-rennes.fr] (2014 - 2015)
- * Julien Heulot [julien.heulot@insa-rennes.fr] (2013)
+ * Julien Heulot [julien.heulot@insa-rennes.fr] (2013 - 2020)
  * Karol Desnos [karol.desnos@insa-rennes.fr] (2012 - 2013)
  *
  * This software is a computer program whose purpose is to help prototyping
@@ -106,7 +106,7 @@ public class AddDataOutputPortFeature extends AbstractAddActorPortFeature {
   /*
    * (non-Javadoc)
    *
-   * @see org.ietr.preesm.ui.pimm.features.AbstractAddActorPortFeature#getPosition()
+   * @see org.preesm.ui.pisdf.features.AbstractAddActorPortFeature#getPosition()
    */
   @Override
   public PortPosition getPosition() {
@@ -116,7 +116,7 @@ public class AddDataOutputPortFeature extends AbstractAddActorPortFeature {
   /*
    * (non-Javadoc)
    *
-   * @see org.ietr.preesm.ui.pimm.features.AbstractAddActorPortFeature#addPortGA(org.eclipse.graphiti.mm.algorithms.
+   * @see org.preesm.ui.pisdf.features.AbstractAddActorPortFeature#addPortGA(org.eclipse.graphiti.mm.algorithms.
    * GraphicsAlgorithm)
    */
   @Override
@@ -136,7 +136,7 @@ public class AddDataOutputPortFeature extends AbstractAddActorPortFeature {
   /*
    * (non-Javadoc)
    *
-   * @see org.ietr.preesm.ui.pimm.features.AbstractAddActorPortFeature#addPortLabel(org.eclipse.graphiti.mm.algorithms.
+   * @see org.preesm.ui.pisdf.features.AbstractAddActorPortFeature#addPortLabel(org.eclipse.graphiti.mm.algorithms.
    * GraphicsAlgorithm, java.lang.String)
    */
   @Override
@@ -161,7 +161,7 @@ public class AddDataOutputPortFeature extends AbstractAddActorPortFeature {
   /*
    * (non-Javadoc)
    *
-   * @see org.ietr.preesm.ui.pimm.features.AbstractAddActorPortFeature#getNewPort(java.lang.String,
+   * @see org.preesm.ui.pisdf.features.AbstractAddActorPortFeature#getNewPort(java.lang.String,
    * org.ietr.preesm.experiment.model.pimm.ExecutableActor)
    */
   @Override
@@ -175,7 +175,7 @@ public class AddDataOutputPortFeature extends AbstractAddActorPortFeature {
   /*
    * (non-Javadoc)
    *
-   * @see org.ietr.preesm.ui.pimm.features.AbstractAddActorPortFeature#getPortKind()
+   * @see org.preesm.ui.pisdf.features.AbstractAddActorPortFeature#getPortKind()
    */
   @Override
   public String getPortKind() {

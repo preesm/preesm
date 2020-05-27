@@ -1,7 +1,8 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2018 - 2019) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2018 - 2020) :
  *
  * Antoine Morvan [antoine.morvan@insa-rennes.fr] (2018 - 2019)
+ * Julien Heulot [julien.heulot@insa-rennes.fr] (2020)
  *
  * This software is a computer program whose purpose is to help prototyping
  * parallel applications using dataflow formalism.
@@ -38,6 +39,7 @@ import java.io.IOException;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.logging.Level;
+import javax.xml.XMLConstants;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
@@ -107,6 +109,8 @@ public class WorkflowParser extends DefaultHandler2 {
   public Workflow parse(final IFile file) {
     try {
       final XMLReader reader = XMLReaderFactory.createXMLReader();
+      reader.setProperty(XMLConstants.ACCESS_EXTERNAL_DTD, "");
+      reader.setProperty(XMLConstants.ACCESS_EXTERNAL_SCHEMA, "");
       reader.setContentHandler(this);
       reader.parse(new InputSource(file.getContents()));
     } catch (SAXException | IOException | CoreException e) {

@@ -1,7 +1,7 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2019) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2019 - 2020) :
  *
- * Alexandre Honorat [alexandre.honorat@insa-rennes.fr] (2019)
+ * Alexandre Honorat [alexandre.honorat@insa-rennes.fr] (2019 - 2020)
  * Antoine Morvan [antoine.morvan@insa-rennes.fr] (2019)
  *
  * This software is a computer program whose purpose is to help prototyping
@@ -110,15 +110,17 @@ public class PiSDFFlatComputePopup extends AbstractHandler {
 
     // performs optim only if already flat
     boolean optim = pigraph.getChildrenGraphs().isEmpty();
-    String message = optim ? "Computing optimized graph of " : "Computing flat graph of ";
+    String message = optim ? "Computing optimized graph of " : "Computing flat graphs of ";
 
     PreesmLogger.getLogger().log(Level.INFO, message + pigraph.getName());
 
-    final PiGraph flat = PiSDFFlattener.flatten(pigraph, optim);
+    final PiGraph flatOptimized = PiSDFFlattener.flatten(pigraph, true);
+    final IPath folder = SavePiGraph.save(iProject, flatOptimized, "_optimized");
+    if (!optim && folder != null) {
+      final PiGraph flat = PiSDFFlattener.flatten(pigraph, false);
+      SavePiGraph.saveInFolder(iProject, folder, flat, "");
+    }
 
-    String suffix = optim ? "_optimzed" : "";
-
-    SavePiGraph.save(iProject, flat, suffix);
   }
 
 }

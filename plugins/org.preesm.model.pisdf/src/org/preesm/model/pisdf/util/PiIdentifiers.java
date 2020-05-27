@@ -1,10 +1,11 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2014 - 2019) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2014 - 2020) :
  *
- * Alexandre Honorat [alexandre.honorat@insa-rennes.fr] (2018)
+ * Alexandre Honorat [alexandre.honorat@insa-rennes.fr] (2018 - 2020)
  * Antoine Morvan [antoine.morvan@insa-rennes.fr] (2017 - 2019)
  * Clément Guy [clement.guy@insa-rennes.fr] (2014 - 2015)
  * Florian Arrestier [florian.arrestier@insa-rennes.fr] (2018)
+ * Dylan Gageot [gageot.dylan@gmail.com] (2020)
  *
  * This software is a computer program whose purpose is to help prototyping
  * parallel applications using dataflow formalism.
@@ -87,6 +88,9 @@ public class PiIdentifiers {
   /** The Constant GRAPH_DIRECTED. */
   public static final String GRAPH_DIRECTED = "directed";
 
+  /** The Constant CLUSTER. */
+  public static final String CLUSTER = "cluster";
+
   /** The Constant DATA. */
   // DATA
   public static final String DATA = "data";
@@ -135,19 +139,24 @@ public class PiIdentifiers {
 
   /** The Constant PARAMETER. */
   // PARAMETERS
-  public static final String PARAMETER = "param";
+  public static final String PARAMETER           = "param";
+  public static final String MALLEABLE_PARAMETER = "malleable_" + PiIdentifiers.PARAMETER;
 
   /** The Constant PARAMETER_NAME. */
   public static final String PARAMETER_NAME = PiIdentifiers.ID;
 
   /** The Constant PARAMETER_EXPRESSION. */
-  public static final String PARAMETER_EXPRESSION = PiIdentifiers.EXPR;
+  public static final String PARAMETER_EXPRESSION           = PiIdentifiers.EXPR;
+  public static final String MALLEABLE_PARAMETER_EXPRESSION = "malleable_" + PiIdentifiers.EXPR;
 
   /** The Constant CONFIGURATION_INPUT_INTERFACE_NAME. */
   public static final String CONFIGURATION_INPUT_INTERFACE_NAME = PiIdentifiers.ID;
 
   /** The Constant CONFIGURATION_OUTPUT_INTERFACE_NAME. */
   public static final String CONFIGURATION_OUTPUT_INTERFACE_NAME = PiIdentifiers.ID;
+
+  /** The constant for default value of CII in GUI. */
+  public static final String PARAM_CII_DEFAULT = "defaultValue";
 
   /** The Constant REFINEMENT. */
   // REFINEMENTS
@@ -261,4 +270,5 @@ public class PiIdentifiers {
   public static final String END          = "end";
   public static final String INIT         = "init";
   public static final String INIT_END_REF = "init_end_ref";
+
 }

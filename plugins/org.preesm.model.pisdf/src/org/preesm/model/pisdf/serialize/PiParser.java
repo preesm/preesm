@@ -1,10 +1,11 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2012 - 2019) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2012 - 2020) :
  *
- * Alexandre Honorat [alexandre.honorat@insa-rennes.fr] (2018 - 2019)
+ * Alexandre Honorat [alexandre.honorat@insa-rennes.fr] (2018 - 2020)
  * Antoine Morvan [antoine.morvan@insa-rennes.fr] (2017 - 2019)
  * Clément Guy [clement.guy@insa-rennes.fr] (2014 - 2015)
- * Florian Arrestier [florian.arrestier@insa-rennes.fr] (2018)
+ * Florian Arrestier [florian.arrestier@insa-rennes.fr] (2018 - 2020)
+ * Dylan Gageot [gageot.dylan@gmail.com] (2020)
  * Julien Heulot [julien.heulot@insa-rennes.fr] (2013)
  * Karol Desnos [karol.desnos@insa-rennes.fr] (2012 - 2014)
  *
@@ -44,7 +45,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
-import java.util.logging.Level;
 import org.apache.commons.io.IOUtils;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
@@ -60,7 +60,6 @@ import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
 import org.preesm.commons.DomUtil;
 import org.preesm.commons.exceptions.PreesmRuntimeException;
-import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.AbstractVertex;
 import org.preesm.model.pisdf.Actor;
@@ -90,6 +89,7 @@ import org.preesm.model.pisdf.ISetter;
 import org.preesm.model.pisdf.InitActor;
 import org.preesm.model.pisdf.InterfaceActor;
 import org.preesm.model.pisdf.InterfaceKind;
+import org.preesm.model.pisdf.MalleableParameter;
 import org.preesm.model.pisdf.Parameter;
 import org.preesm.model.pisdf.PersistenceLevel;
 import org.preesm.model.pisdf.PiGraph;
@@ -324,13 +324,7 @@ public class PiParser {
   }
 
   private void parseHeaderRefinement(final Element nodeElt, final RefinementContainer actor, final IPath path) {
-    final CHeaderRefinement hrefinement;
-    // Delays already have a default C header refinement by default at creation time
-    if (actor instanceof DelayActor) {
-      hrefinement = (CHeaderRefinement) actor.getRefinement();
-    } else {
-      hrefinement = PiMMUserFactory.instance.createCHeaderRefinement();
-    }
+    final CHeaderRefinement hrefinement = PiMMUserFactory.instance.createCHeaderRefinement();
     // The nodeElt should have a loop element, and may have an init
     // element
     final NodeList childList = nodeElt.getChildNodes();
@@ -375,7 +369,9 @@ public class PiParser {
       final Node elt = childList.item(i);
       final String eltName = elt.getNodeName();
       if (PiIdentifiers.REFINEMENT_PARAMETER.equals(eltName)) {
-        proto.getArguments().add(parseFunctionParameter((Element) elt));
+        final FunctionArgument param = parseFunctionParameter((Element) elt);
+        param.setPosition(proto.getArguments().size());
+        proto.getArguments().add(param);
       }
     }
     return proto;
@@ -412,9 +408,18 @@ public class PiParser {
     final ConfigInputInterface param = PiMMUserFactory.instance.createConfigInputInterface();
 
     // Get the actor properties
-    final String attribute = nodeElt.getAttribute(PiIdentifiers.PARAMETER_NAME);
-    NameCheckerC.checkValidName(ConfigInputInterface.class.getName(), attribute);
-    param.setName(attribute);
+    final String attributeName = nodeElt.getAttribute(PiIdentifiers.PARAMETER_NAME);
+    NameCheckerC.checkValidName(ConfigInputInterface.class.getName(), attributeName);
+    param.setName(attributeName);
+
+    // Get the default value for GUI
+    final String attributeValue = nodeElt.getAttribute(PiIdentifiers.PARAM_CII_DEFAULT);
+    if (attributeValue != null && !attributeValue.isEmpty()) {
+      param.setExpression(attributeValue);
+    } else {
+      // 0 is the default value
+      param.setExpression(0L);
+    }
 
     // Add the actor to the parsed graph
     graph.addParameter(param);
@@ -678,10 +683,8 @@ public class PiParser {
         final CHeaderRefinement hrefinement = (CHeaderRefinement) delayActor.getRefinement();
         if (!delayActor.isValidRefinement(hrefinement)) {
           throw new PreesmRuntimeException(
-              "Delay INIT prototype must match following prototype: void init(IN int size, OUT <type>* fifo)");
+              "Delay INIT prototype must match following prototype: void init(IN int params ..., OUT <type>* fifo)");
         }
-        final String delayInitPrototype = "Delay INIT function used: " + hrefinement.getLoopPrototype().getName();
-        PreesmLogger.getLogger().log(Level.INFO, delayInitPrototype);
       }
     }
 
@@ -718,6 +721,14 @@ public class PiParser {
     } else {
       // 0 means the actor is aperiodic, negative generates an error during evaluation
       graph.setExpression(0);
+    }
+
+    final String clusterAttribute = graphElt.getAttribute(PiIdentifiers.CLUSTER);
+    if (clusterAttribute != null && !clusterAttribute.isEmpty()) {
+      graph.setClusterValue(clusterAttribute.contains("true"));
+    } else {
+      // If there is no attribute for cluster value, it means that current PiGraph is not a cluster
+      graph.setClusterValue(false);
     }
 
     // Parse the elements of the graph
@@ -800,6 +811,9 @@ public class PiParser {
         case PiIdentifiers.PARAMETER:
           vertex = parseParameter(nodeElt, graph);
           break;
+        case PiIdentifiers.MALLEABLE_PARAMETER:
+          vertex = parseMalleableParameter(nodeElt, graph);
+          break;
         case PiIdentifiers.DELAY:
           parseDelay(nodeElt, graph);
           // Ignore parsing of ports
@@ -848,6 +862,33 @@ public class PiParser {
     String name = nodeElt.getAttribute(PiIdentifiers.PARAMETER_NAME);
     NameCheckerC.checkValidName(Parameter.class.getName(), name);
     param.setName(name);
+
+    // Add the actor to the parsed graph
+    graph.addParameter(param);
+
+    return param;
+  }
+
+  /**
+   * Parse a {@link MalleableParameter} of the Pi File.
+   *
+   * @param nodeElt
+   *          The node {@link Element} holding the {@link MalleableParameter} properties.
+   * @param graph
+   *          the deserialized {@link PiGraph}.
+   * @return the {@link AbstractVertex} of the {@link MalleableParameter}.
+   */
+  private MalleableParameter parseMalleableParameter(final Element nodeElt, final PiGraph graph) {
+    // Instantiate the new Parameter
+    final MalleableParameter param = PiMMUserFactory.instance.createMalleableParameter();
+    param.setExpression(nodeElt.getAttribute(PiIdentifiers.PARAMETER_EXPRESSION));
+
+    // Get the actor properties
+    String name = nodeElt.getAttribute(PiIdentifiers.PARAMETER_NAME);
+    NameCheckerC.checkValidName(MalleableParameter.class.getName(), name);
+    param.setName(name);
+    String userExpression = nodeElt.getAttribute(PiIdentifiers.MALLEABLE_PARAMETER_EXPRESSION);
+    param.setUserExpression(userExpression);
 
     // Add the actor to the parsed graph
     graph.addParameter(param);

@@ -1,9 +1,10 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2009 - 2019) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2009 - 2020) :
  *
  * Alexandre Honorat [alexandre.honorat@insa-rennes.fr] (2019)
  * Antoine Morvan [antoine.morvan@insa-rennes.fr] (2017 - 2019)
  * Clément Guy [clement.guy@insa-rennes.fr] (2014 - 2015)
+ * Florian Arrestier [florian.arrestier@insa-rennes.fr] (2020)
  * Jonathan Piat [jpiat@laas.fr] (2011)
  * Maxime Pelcat [maxime.pelcat@insa-rennes.fr] (2009 - 2016)
  *
@@ -97,6 +98,11 @@ public abstract class LatencyAbc {
    * Current directed acyclic graph. It is the external dag graph
    */
   private MapperDAG dag;
+
+  /**
+   * Current best latency, if not set, this default to getFinalLatency
+   */
+  private Long bestLatency = (long) -1;
 
   /**
    * Current implementation: the internal model that will be used to add edges/vertices and calculate times.
@@ -947,6 +953,31 @@ public abstract class LatencyAbc {
     }
 
     return finalTime;
+  }
+
+  /**
+   * .The best latency possible. In order to set it properly, one should do an InfiniteHomogeneous simulation first and
+   * set the value accordingly.
+   *
+   * @return the best latency if set, getFinalLatency else
+   */
+  public final long getBestLatency() {
+    if (bestLatency < 0) {
+      return getFinalLatency();
+    }
+    return bestLatency;
+  }
+
+  /**
+   * Set the best latency of this LatencyAbc.
+   * 
+   * @param bestLatency
+   *          value to set.
+   */
+  public final void setBestLatency(final long bestLatency) {
+    if (bestLatency <= getFinalLatency()) {
+      this.bestLatency = bestLatency;
+    }
   }
 
   /**

@@ -1,6 +1,7 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2012 - 2019) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2012 - 2020) :
  *
+ * Alexandre Honorat [alexandre.honorat@insa-rennes.fr] (2020)
  * Antoine Morvan [antoine.morvan@insa-rennes.fr] (2017 - 2019)
  * Clément Guy [clement.guy@insa-rennes.fr] (2014 - 2015)
  * Julien Heulot [julien.heulot@insa-rennes.fr] (2013)
@@ -61,7 +62,7 @@ public class UpdateActorFeature extends UpdateAbstractVertexFeature {
   /*
    * (non-Javadoc)
    *
-   * @see org.ietr.preesm.ui.pimm.features.UpdateAbstractVertexFeature#canUpdate(org.eclipse.graphiti.features.context.
+   * @see org.preesm.ui.pisdf.features.UpdateAbstractVertexFeature#canUpdate(org.eclipse.graphiti.features.context.
    * IUpdateContext)
    */
   @Override
@@ -74,7 +75,7 @@ public class UpdateActorFeature extends UpdateAbstractVertexFeature {
    * (non-Javadoc)
    *
    * @see
-   * org.ietr.preesm.ui.pimm.features.UpdateAbstractVertexFeature#updateNeeded(org.eclipse.graphiti.features.context.
+   * org.preesm.ui.pisdf.features.UpdateAbstractVertexFeature#updateNeeded(org.eclipse.graphiti.features.context.
    * IUpdateContext)
    */
   @Override
@@ -89,7 +90,7 @@ public class UpdateActorFeature extends UpdateAbstractVertexFeature {
   /*
    * (non-Javadoc)
    *
-   * @see org.ietr.preesm.ui.pimm.features.UpdateAbstractVertexFeature#update(org.eclipse.graphiti.features.context.
+   * @see org.preesm.ui.pisdf.features.UpdateAbstractVertexFeature#update(org.eclipse.graphiti.features.context.
    * IUpdateContext)
    */
   @Override

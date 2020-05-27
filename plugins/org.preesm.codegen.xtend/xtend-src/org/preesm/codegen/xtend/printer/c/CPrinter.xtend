@@ -1,14 +1,14 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2013 - 2019) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2013 - 2020) :
  *
- * Alexandre Honorat [alexandre.honorat@insa-rennes.fr] (2019)
+ * Alexandre Honorat [alexandre.honorat@insa-rennes.fr] (2019 - 2020)
  * Antoine Morvan [antoine.morvan@insa-rennes.fr] (2017 - 2019)
  * Clément Guy [clement.guy@insa-rennes.fr] (2015)
  * Daniel Madroñal [daniel.madronal@upm.es] (2018 - 2019)
  * Florian Arrestier [florian.arrestier@insa-rennes.fr] (2018)
- * Dylan Gageot [gageot.dylan@gmail.com] (2019)
+ * Dylan Gageot [gageot.dylan@gmail.com] (2019 - 2020)
  * Julien Hascoet [jhascoet@kalray.eu] (2016)
- * Julien Heulot [julien.heulot@insa-rennes.fr] (2019)
+ * Julien Heulot [julien.heulot@insa-rennes.fr] (2019 - 2020)
  * Karol Desnos [karol.desnos@insa-rennes.fr] (2013 - 2019)
  * Leonardo Suriano [leonardo.suriano@upm.es] (2019)
  * Maxime Pelcat [maxime.pelcat@insa-rennes.fr] (2013 - 2016)
@@ -112,10 +112,14 @@ class CPrinter extends BlankPrinter {
 
 	Map<CoreBlock, Set<FifoCall>> fifoPops = new HashMap();
 
-	/*
+	/**
 	 * Variable to check if we are using PAPIFY or not --> Will be updated during preprocessing
 	 */
 	int usingPapify = 0;
+	/**
+	 * Variable to check if cluster are used.
+	 */
+	int usingOpenMP = 0;
 	/**
 	 * Set to true if a main file should be generated. Set at object creation in constructor.
 	 */
@@ -779,7 +783,7 @@ class CPrinter extends BlankPrinter {
 			output instanceof NullBuffer || input instanceof NullBuffer){
 			return ''''''
 		} else {
-			return '''memcpy(«output.name»+«outOffset», «input.name»+«inOffset», «if (SIMPLE_BUFFER_SIZES) size * engine.scenario.simulationInfo.getDataTypeSizeOrDefault(type) else size+"*sizeof("+type+")"»);'''
+			return '''memcpy(«doSwitch(output)»+«outOffset», «doSwitch(input)»+«inOffset», «if (SIMPLE_BUFFER_SIZES) size * engine.scenario.simulationInfo.getDataTypeSizeOrDefault(type) else size+"*sizeof("+type+")"»);'''
 		}
 	}
 
@@ -967,6 +971,7 @@ class CPrinter extends BlankPrinter {
 
 
 		int main(void) {
+		«IF this.usingOpenMP == 0»
 			 #ifndef _WIN32
 			 signal(SIGSEGV, handler);
 			 signal(SIGPIPE, handler);
@@ -1005,14 +1010,14 @@ class CPrinter extends BlankPrinter {
 		#ifdef PREESM_VERBOSE
 			printf("Launched main\n");
 		#endif
-
+		«ENDIF»
 			// Creating a synchronization barrier
 			preesmStopThreads = 0;
 			pthread_barrier_init(&iter_barrier, NULL, _PREESM_NBTHREADS_);
-
 #ifdef PREESM_MD5_UPDATE
 			rk_sema_init(&preesmPrintSema, 1);
 #endif
+		«IF this.usingOpenMP == 0»
 			communicationInit();
 
 			«IF this.apolloEnabled»
@@ -1045,6 +1050,9 @@ class CPrinter extends BlankPrinter {
 				event_destroy();
 				#endif
 			«ENDIF»
+			«ELSE»
+			«FOR coreBlock : engine.codeBlocks»computationThread_Core«(coreBlock as CoreBlock).coreID»(NULL);«ENDFOR»
+			«ENDIF»
 
 			return 0;
 		}
@@ -1066,7 +1074,7 @@ class CPrinter extends BlankPrinter {
 
 
 	override printPostFunctionCall(FunctionCall functionCall) '''
-	«IF state == PrinterState.PRINTING_LOOP_BLOCK && !monitorAllFifoMD5 && !printedCoreBlock.sinkFifoBuffers.isEmpty && functionCall instanceof ActorFunctionCall && (functionCall as ActorFunctionCall).actor.dataOutputPorts.isEmpty»#ifdef PREESM_MD5_UPDATE
+	«IF state == PrinterState.PRINTING_LOOP_BLOCK && !monitorAllFifoMD5 && !printedCoreBlock.sinkFifoBuffers.isEmpty && functionCall instanceof ActorFunctionCall && (functionCall as ActorFunctionCall).getOriActor.dataOutputPorts.isEmpty»#ifdef PREESM_MD5_UPDATE
 	«FOR buffer : printedCoreBlock.sinkFifoBuffers»«IF functionCall.parameters.contains(buffer)»
 	PREESM_MD5_Update(&preesm_md5_ctx_«buffer.name»,(char *)«buffer.name», «buffer.size * buffer.typeSize»);
 	«ENDIF»«ENDFOR»#endif
@@ -1091,7 +1099,7 @@ class CPrinter extends BlankPrinter {
 		«ENDIF»«ENDFOR»
 
 		preesmCheckMD5Array_«printedCoreBlock.coreID»(preStateBufferMd5, bufferMd5,
-				«outBuffers.size»,authorizedBufferIds_«(functionCall as ActorFunctionCall).hashCode», "«(functionCall as ActorFunctionCall).actor.name»");
+				«outBuffers.size»,authorizedBufferIds_«(functionCall as ActorFunctionCall).hashCode», "«(functionCall as ActorFunctionCall).getOriActor.name»");
 		// preesmPrintMD5Array_«printedCoreBlock.coreID»(bufferMd5, index, «printedCoreBlock.loopBlock.codeElts.indexOf(functionCall)»);
 	#endif
 	«ENDIF»
@@ -1178,8 +1186,16 @@ class CPrinter extends BlankPrinter {
 		for (cluster : allBlocks){
 			if (cluster instanceof CoreBlock) {
 				for(CodeElt codeElt : cluster.loopBlock.codeElts){
+					// Is there is Papify function call?
 					if(codeElt instanceof PapifyFunctionCall){
 						this.usingPapify = 1;
+					}
+					// Is there is cluster block?
+					if (codeElt instanceof ClusterBlock) {
+						// Does it contains parallelism information?
+						if (codeElt.isContainParallelism()) {
+							this.usingOpenMP = 1;
+						}
 					}
 				}
 			}

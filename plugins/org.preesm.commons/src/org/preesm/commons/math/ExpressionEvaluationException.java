@@ -1,6 +1,7 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2017 - 2019) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2017 - 2020) :
  *
+ * Alexandre Honorat [alexandre.honorat@insa-rennes.fr] (2020)
  * Antoine Morvan [antoine.morvan@insa-rennes.fr] (2017 - 2019)
  *
  * This software is a computer program whose purpose is to help prototyping
@@ -47,7 +48,7 @@ public class ExpressionEvaluationException extends PreesmRuntimeException {
     super(msg);
   }
 
-  public ExpressionEvaluationException(final String msg, final Exception cause) {
+  public ExpressionEvaluationException(final String msg, final Throwable cause) {
     super(msg, cause);
   }
 

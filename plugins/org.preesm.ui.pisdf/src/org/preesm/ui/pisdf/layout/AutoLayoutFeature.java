@@ -1,10 +1,10 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2012 - 2019) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2012 - 2020) :
  *
  * Alexandre Honorat [alexandre.honorat@insa-rennes.fr] (2019)
  * Antoine Morvan [antoine.morvan@insa-rennes.fr] (2017 - 2019)
  * Clément Guy [clement.guy@insa-rennes.fr] (2014 - 2015)
- * Florian Arrestier [florian.arrestier@insa-rennes.fr] (2017 - 2018)
+ * Florian Arrestier [florian.arrestier@insa-rennes.fr] (2017 - 2020)
  * Julien Heulot [julien.heulot@insa-rennes.fr] (2013)
  * Karol Desnos [karol.desnos@insa-rennes.fr] (2012 - 2015)
  *
@@ -48,6 +48,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.emf.common.util.EList;
@@ -74,14 +75,12 @@ import org.eclipse.jface.dialogs.ErrorDialog;
 import org.eclipse.ui.PlatformUI;
 import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.Actor;
-import org.preesm.model.pisdf.ConfigInputPort;
 import org.preesm.model.pisdf.DataInputInterface;
 import org.preesm.model.pisdf.DataOutputInterface;
 import org.preesm.model.pisdf.Delay;
 import org.preesm.model.pisdf.DelayActor;
 import org.preesm.model.pisdf.Dependency;
 import org.preesm.model.pisdf.Fifo;
-import org.preesm.model.pisdf.ISetter;
 import org.preesm.model.pisdf.Parameter;
 import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.pisdf.Port;
@@ -1017,21 +1016,7 @@ public class AutoLayoutFeature extends AbstractCustomFeature {
    * @return the {@link List} of roots.
    */
   private static List<Parameter> findRootParameters(final List<Parameter> params) {
-    final List<Parameter> roots = new ArrayList<>();
-
-    for (final Parameter p : params) {
-      boolean hasDependencies = false;
-      for (final ConfigInputPort port : p.getConfigInputPorts()) {
-        final Dependency incomingDependency = port.getIncomingDependency();
-        final ISetter setter = incomingDependency.getSetter();
-        hasDependencies |= setter instanceof Parameter;
-      }
-
-      if (!hasDependencies) {
-        roots.add(p);
-      }
-    }
-    return roots;
+    return params.stream().filter(x -> !x.isDependent()).collect(Collectors.toList());
   }
 
   /**
@@ -1048,45 +1033,22 @@ public class AutoLayoutFeature extends AbstractCustomFeature {
       final List<Parameter> roots) {
     // Initializations
     final List<List<Parameter>> stages = new ArrayList<>();
-    final List<Parameter> processedParams = new ArrayList<>(roots);
-    Set<Parameter> nextStage = new LinkedHashSet<>();
+    final Set<Parameter> processedParams = new LinkedHashSet<>(roots);
+    final List<Parameter> paramPoolList = new ArrayList<>(params);
+    /* Removes the roots from the complete parameter pool */
+    paramPoolList.removeAll(roots);
+    /* Add the root parameters as first stage */
     stages.add(roots);
-    List<Parameter> currentStage = roots;
 
-    do {
-      // Find candidates for the next stage in successors of current one
-      for (final Parameter param : currentStage) {
-        for (final Dependency dependency : param.getOutgoingDependencies()) {
-          final ConfigInputPort getter = dependency.getGetter();
-          final EObject eContainer = getter.eContainer();
-          if (eContainer instanceof Parameter) {
-            nextStage.add((Parameter) eContainer);
-          }
-        }
-      }
-
-      // Check if all predecessors of the candidates have already been
-      // added in a previous stages
-      for (final Iterator<Parameter> iter = nextStage.iterator(); iter.hasNext();) {
-        final Parameter param = iter.next();
-
-        boolean hasUnstagedPredecessor = false;
-        for (final ConfigInputPort port : param.getConfigInputPorts()) {
-          final Dependency incomingDependency = port.getIncomingDependency();
-          hasUnstagedPredecessor |= (incomingDependency.getSetter() instanceof Parameter)
-              && !processedParams.contains(incomingDependency.getSetter());
-        }
-        if (hasUnstagedPredecessor) {
-          iter.remove();
-        }
-      }
-
-      // Prepare next iteration
-      currentStage = new ArrayList<>(nextStage);
-      stages.add(currentStage);
-      processedParams.addAll(currentStage);
-      nextStage = new LinkedHashSet<>();
-    } while (processedParams.size() < params.size());
+    while (!paramPoolList.isEmpty()) {
+      /* Get only the parameter that can be added to the current stage due to their dependencies */
+      final List<Parameter> nextStageParamList = paramPoolList.stream().filter(x -> x.getInputDependentParameters()
+          .stream().filter(in -> processedParams.contains(in)).count() == x.getInputDependentParameters().size())
+          .collect(Collectors.toList());
+      processedParams.addAll(nextStageParamList);
+      stages.add(nextStageParamList);
+      paramPoolList.removeAll(nextStageParamList);
+    }
 
     return stages;
   }

@@ -1,10 +1,10 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2018 - 2019) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2018 - 2020) :
  *
- * Alexandre Honorat [alexandre.honorat@insa-rennes.fr] (2019)
+ * Alexandre Honorat [alexandre.honorat@insa-rennes.fr] (2019 - 2020)
  * Antoine Morvan [antoine.morvan@insa-rennes.fr] (2018 - 2019)
  * Daniel Madroñal [daniel.madronal@upm.es] (2019)
- * Dylan Gageot [gageot.dylan@gmail.com] (2019)
+ * Dylan Gageot [gageot.dylan@gmail.com] (2019 - 2020)
  * Leonardo Suriano [leonardo.suriano@upm.es] (2019)
  *
  * This software is a computer program whose purpose is to help prototyping
@@ -139,7 +139,7 @@ class FunctionCall extends Call {
 }
 
 class ActorFunctionCall extends FunctionCall {
-	refers AbstractActor actor
+	refers AbstractActor oriActor
 }
 
 class PapifyFunctionCall extends FunctionCall {
@@ -205,6 +205,7 @@ class CoreBlock extends Block {
 class ClusterBlock extends Block {
 	String schedule
 	boolean parallel
+	boolean containParallelism
 }
 
 class SectionBlock extends Block {
@@ -310,8 +311,8 @@ class FiniteLoopBlock extends LoopBlock {
 	int nbIter
 	boolean parallel
 	refers IntVar iter
-	refers BufferIterator[] inBuffers
-	refers BufferIterator[] outBuffers
+	refers IteratedBuffer[] inBuffers
+	refers IteratedBuffer[] outBuffers
 }
 
 class IntVar extends Variable {

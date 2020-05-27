@@ -1,8 +1,8 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2019) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2019 - 2020) :
  *
  * Antoine Morvan [antoine.morvan@insa-rennes.fr] (2019)
- * Dylan Gageot [gageot.dylan@gmail.com] (2019)
+ * Dylan Gageot [gageot.dylan@gmail.com] (2019 - 2020)
  *
  * This software is a computer program whose purpose is to help prototyping
  * parallel applications using dataflow formalism.
@@ -80,6 +80,9 @@ public class ClusteringHelper {
     // forbid instantiation
   }
 
+  public static final String PISDF_REFERENCE_ACTOR  = "PiSDFActor";
+  public static final String PISDF_ACTOR_IS_CLUSTER = "isCluster";
+
   /**
    *
    */
@@ -102,15 +105,6 @@ public class ClusteringHelper {
     }
 
     return res;
-  }
-
-  /**
-   *
-   */
-  public static final long getTotalMachin(final Schedule cluster, final Scenario scenario) {
-    final List<DataInputPort> ports = getExternalyConnectedPorts(cluster);
-    return ports.stream().mapToLong(p -> p.getPortRateExpression().evaluate()
-        * scenario.getSimulationInfo().getDataTypeSizeOrDefault(p.getFifo().getType())).sum();
   }
 
   /**

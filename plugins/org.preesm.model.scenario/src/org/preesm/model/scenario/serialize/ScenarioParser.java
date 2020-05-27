@@ -1,11 +1,13 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2008 - 2019) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2008 - 2020) :
  *
- * Alexandre Honorat [alexandre.honorat@insa-rennes.fr] (2019)
+ * Alexandre Honorat [alexandre.honorat@insa-rennes.fr] (2019 - 2020)
  * Antoine Morvan [antoine.morvan@insa-rennes.fr] (2017 - 2019)
  * Clément Guy [clement.guy@insa-rennes.fr] (2014 - 2015)
  * Daniel Madroñal [daniel.madronal@upm.es] (2018 - 2019)
+ * Florian Arrestier [florian.arrestier@insa-rennes.fr] (2020)
  * Jonathan Piat [jpiat@laas.fr] (2008 - 2011)
+ * Julien Heulot [julien.heulot@insa-rennes.fr] (2020)
  * Karol Desnos [karol.desnos@insa-rennes.fr] (2015)
  * Maxime Pelcat [maxime.pelcat@insa-rennes.fr] (2008 - 2016)
  * Pengcheng Mu [pengcheng.mu@insa-rennes.fr] (2008)
@@ -49,6 +51,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.logging.Level;
+import javax.xml.XMLConstants;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -124,7 +127,9 @@ public class ScenarioParser {
    */
   public Scenario parseXmlFile(final IFile file) throws FileNotFoundException, CoreException {
     // get the factory
-    final DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+    DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+    dbf.setAttribute(XMLConstants.ACCESS_EXTERNAL_DTD, ""); // Compliant
+    dbf.setAttribute(XMLConstants.ACCESS_EXTERNAL_SCHEMA, ""); // compliant
 
     try {
       // Using factory get an instance of document builder
@@ -491,8 +496,9 @@ public class ScenarioParser {
         node = node.getNextSibling();
       }
     }
-    this.scenario.getConstraints().addConstraints(opId, ECollections.asEList(new ArrayList<>(actors)));
-
+    if (opId != null) {
+      this.scenario.getConstraints().addConstraints(opId, ECollections.asEList(new ArrayList<>(actors)));
+    }
   }
 
   /**
@@ -921,7 +927,7 @@ public class ScenarioParser {
           parsePerformanceObjective(elt);
         } else if (type.equals("pePower")) {
           parsePlatformPower(elt);
-        } else if (type.equals("peActorEnergy")) {
+        } else if (type.equals("peActorsEnergy")) {
           parsePeActorEnergy(elt);
         } else if (type.equals("peTypeCommsEnergy")) {
           parsePeCommsEnergy(elt);
@@ -977,16 +983,14 @@ public class ScenarioParser {
    */
   private void parsePeActorEnergy(final Element peActorEnergy) {
 
-    Node nodeOpName = peActorEnergy.getAttributeNode("opName");
-    String opName = nodeOpName.getNodeValue();
     Node nodeChild = peActorEnergy.getFirstChild();
 
     while (nodeChild != null) {
       if (nodeChild instanceof Element) {
         final Element elt = (Element) nodeChild;
         final String type = elt.getTagName();
-        if (type.equals("actorEnergy")) {
-          parseActorEnergy(elt, opName);
+        if (type.equals("peActorEnergy")) {
+          parseActorEnergy(elt);
         }
       }
       nodeChild = nodeChild.getNextSibling();
@@ -998,21 +1002,21 @@ public class ScenarioParser {
    *
    * @param actorEnergyElt
    *          the actorEnergy group elt
-   * @param opName
-   *          the operator name
    * @return the actorEnergy
    */
-  private void parseActorEnergy(final Element actorEnergyElt, final String opName) {
+  private void parseActorEnergy(final Element actorEnergyElt) {
 
-    Node nodeEnergyValue = actorEnergyElt.getAttributeNode("energyValue");
-    Node nodeVertexPath = actorEnergyElt.getAttributeNode("vertexPath");
-    if (nodeEnergyValue != null && nodeVertexPath != null) {
+    Node nodeEnergyValue = actorEnergyElt.getAttributeNode("energy");
+    Node nodeOpName = actorEnergyElt.getAttributeNode("opname");
+    Node nodeVertexPath = actorEnergyElt.getAttributeNode("vertexname");
+
+    if (nodeEnergyValue != null && nodeOpName != null && nodeVertexPath != null) {
       String energyValue = nodeEnergyValue.getNodeValue();
+      String opName = nodeOpName.getNodeValue();
       String vertexPath = nodeVertexPath.getNodeValue();
-      final double actorEnergyValue = Double.parseDouble(energyValue);
       final AbstractActor actor = getActorFromPath(vertexPath);
       final Component component = this.scenario.getDesign().getComponent(opName);
-      this.scenario.getEnergyConfig().setActorPeEnergy(actor, component, actorEnergyValue);
+      this.scenario.getEnergyConfig().setActorPeEnergy(actor, component, energyValue);
     }
   }
 

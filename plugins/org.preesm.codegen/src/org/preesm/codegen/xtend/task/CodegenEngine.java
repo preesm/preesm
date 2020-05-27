@@ -1,6 +1,7 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2013 - 2019) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2013 - 2020) :
  *
+ * Alexandre Honorat [alexandre.honorat@insa-rennes.fr] (2020)
  * Antoine Morvan [antoine.morvan@insa-rennes.fr] (2017 - 2019)
  * Clément Guy [clement.guy@insa-rennes.fr] (2014 - 2015)
  * Daniel Madroñal [daniel.madronal@upm.es] (2019)
@@ -44,10 +45,7 @@
 package org.preesm.codegen.xtend.task;
 
 import java.io.ByteArrayInputStream;
-import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -58,15 +56,12 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.logging.Level;
-import org.apache.commons.io.FileUtils;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
-import org.eclipse.core.resources.IWorkspace;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.IExtensionRegistry;
-import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Platform;
@@ -82,7 +77,6 @@ import org.preesm.codegen.model.CoreBlock;
 import org.preesm.codegen.printer.CodegenAbstractPrinter;
 import org.preesm.commons.exceptions.PreesmException;
 import org.preesm.commons.exceptions.PreesmRuntimeException;
-import org.preesm.commons.files.WorkspaceUtils;
 import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.scenario.Scenario;
@@ -265,17 +259,12 @@ public class CodegenEngine {
     this.realPrinters = new LinkedHashMap<>();
     for (final Entry<IConfigurationElement, List<Block>> printerAndBlocks : this.registeredPrintersAndBlocks
         .entrySet()) {
-      final String extension = printerAndBlocks.getKey().getAttribute("extension");
       CodegenAbstractPrinter printer = null;
       try {
         printer = (CodegenAbstractPrinter) printerAndBlocks.getKey().createExecutableExtension("class");
       } catch (final CoreException e) {
         throw new PreesmRuntimeException(e.getMessage(), e);
       }
-
-      // Erase previous files with extension
-      // Lists all files in folder
-      erasePreviousFilesExtensions(extension);
 
       // initialize printer engine
       printer.setEngine(this);
@@ -286,49 +275,6 @@ public class CodegenEngine {
       // Do the pre-processing
       printer.preProcessing(printerAndBlocks.getValue(), this.codeBlocks);
       this.realPrinters.put(printerAndBlocks.getKey(), printer);
-    }
-  }
-
-  private void erasePreviousFilesExtensions(final String extension) {
-    try {
-      final IWorkspace workspace = ResourcesPlugin.getWorkspace();
-      WorkspaceUtils.updateWorkspace();
-      final IFolder f = workspace.getRoot().getFolder(new Path(this.codegenPath));
-      final IPath rawLocation = f.getRawLocation();
-      if (rawLocation == null) {
-        throw new PreesmRuntimeException("Could not find target project for given path [" + this.codegenPath
-            + "]. Please change path in the scenario editor.");
-      }
-      final String osString = rawLocation.toOSString();
-      final File folder = new File(osString);
-      if (!folder.exists()) {
-        folder.mkdirs();
-        PreesmLogger.getLogger().info("Created missing target dir [" + folder.getAbsolutePath() + "] during codegen");
-      } else {
-        FileUtils.deleteDirectory(folder);
-      }
-      WorkspaceUtils.updateWorkspace();
-      if (!f.exists()) {
-        f.create(true, true, null);
-      }
-      WorkspaceUtils.updateWorkspace();
-      if (!folder.exists()) {
-        throw new FileNotFoundException("Target generation folder [" + folder.getAbsolutePath() + "] does not exist");
-      }
-      final File[] fList = folder.listFiles();
-      if (fList != null) {
-        // Searches .extension
-        for (final File element : fList) {
-          final String pes = element.getName();
-          if (pes.endsWith(extension)) {
-            // and deletes
-            Files.delete(element.toPath());
-          }
-        }
-      }
-    } catch (CoreException | IOException e) {
-      throw new PreesmRuntimeException(
-          "Could not access target directory [" + this.codegenPath + "] during code generation", e);
     }
   }
 

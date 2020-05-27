@@ -1,12 +1,12 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2013 - 2019) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2013 - 2020) :
  *
- * Alexandre Honorat [alexandre.honorat@insa-rennes.fr] (2019)
+ * Alexandre Honorat [alexandre.honorat@insa-rennes.fr] (2019 - 2020)
  * Antoine Morvan [antoine.morvan@insa-rennes.fr] (2017 - 2019)
  * Clément Guy [clement.guy@insa-rennes.fr] (2014 - 2015)
  * Daniel Madroñal [daniel.madronal@upm.es] (2018 - 2019)
  * Florian Arrestier [florian.arrestier@insa-rennes.fr] (2018)
- * Dylan Gageot [gageot.dylan@gmail.com] (2019)
+ * Dylan Gageot [gageot.dylan@gmail.com] (2019 - 2020)
  * Julien Hascoet [jhascoet@kalray.eu] (2016 - 2017)
  * Karol Desnos [karol.desnos@insa-rennes.fr] (2013 - 2018)
  * Leonardo Suriano [leonardo.suriano@upm.es] (2019)
@@ -67,7 +67,7 @@ import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.common.util.EMap;
 import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.eclipse.xtext.xbase.lib.Pair;
-import org.preesm.algorithm.clustering.Clustering;
+import org.preesm.algorithm.clustering.ClusteringHelper;
 import org.preesm.algorithm.codegen.idl.ActorPrototypes;
 import org.preesm.algorithm.codegen.idl.IDLPrototypeFactory;
 import org.preesm.algorithm.codegen.idl.Prototype;
@@ -615,7 +615,7 @@ public class CodegenModelGenerator extends AbstractCodegenModelGenerator {
     final Object refinement = dagVertex.getRefinement();
 
     // If the actor is hierarchical
-    if (dagVertex.getPropertyBean().getValue(Clustering.PISDF_ACTOR_IS_CLUSTER) != null) {
+    if (dagVertex.getPropertyBean().getValue(ClusteringHelper.PISDF_ACTOR_IS_CLUSTER) != null) {
       // try to generate for loop on a hierarchical actor
       PreesmLogger.getLogger().log(Level.FINE, "tryGenerateRepeatActorFiring " + dagVertex.getName());
 
@@ -627,8 +627,8 @@ public class CodegenModelGenerator extends AbstractCodegenModelGenerator {
       outsideFetcherOption.put("srSDFEdgeBuffers", this.srSDFEdgeBuffers);
 
       // Retrieve original cluster actor
-      AbstractActor actor = dagVertex.getPropertyBean().getValue(Clustering.PISDF_REFERENCE_ACTOR);
-      AbstractActor originalActor = PreesmCopyTracker.getSource(actor);
+      AbstractActor actor = dagVertex.getPropertyBean().getValue(ClusteringHelper.PISDF_REFERENCE_ACTOR);
+      AbstractActor originalActor = PreesmCopyTracker.getOriginalSource(actor);
       if (this.scheduleMapping.containsKey(originalActor)) {
 
         new CodegenClusterModelGeneratorSwitch(this.algo.getReferencePiMMGraph(), operatorBlock, scenario,
@@ -1697,7 +1697,7 @@ public class CodegenModelGenerator extends AbstractCodegenModelGenerator {
     final ActorFunctionCall func = CodegenModelUserFactory.eINSTANCE.createActorFunctionCall();
     func.setName(prototype.getFunctionName());
     func.setActorName(dagVertex.getName());
-    func.setActor(dagVertex.getReferencePiVertex());
+    func.setOriActor(PreesmCopyTracker.getOriginalSource(dagVertex.getReferencePiVertex()));
     // Retrieve the Arguments that must correspond to the incoming data
     // fifos
     final Entry<List<Variable>, List<PortDirection>> callVars = generateCallVariables(dagVertex, prototype, isInit);
@@ -2403,11 +2403,12 @@ public class CodegenModelGenerator extends AbstractCodegenModelGenerator {
         if (correspondingEdge == null) {
           final BufferAggregate bufferAggregate = edge.getPropertyBean().getValue(BufferAggregate.propertyBeanName);
           if (bufferAggregate != null && !bufferAggregate.isEmpty()) {
-            final BufferProperties bufferProperties = bufferAggregate.get(0);
-            final String sourceOutputPortID = bufferProperties.getSourceOutputPortID();
-            if (sink.equals(sourceOutputPortID)) {
-              correspondingEdge = edge;
-              break edgeIterate;
+            for (final BufferProperties bufferProperty : bufferAggregate) {
+              final String sourceOutputPortID = bufferProperty.getSourceOutputPortID();
+              if (sink.equals(sourceOutputPortID)) {
+                correspondingEdge = edge;
+                break edgeIterate;
+              }
             }
           }
         }

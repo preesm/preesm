@@ -1,10 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
 
-    Copyright or © or Copr. IETR/INSA - Rennes (2018 - 2019) :
+    Copyright or © or Copr. IETR/INSA - Rennes (2018 - 2020) :
 
-    Alexandre Honorat [alexandre.honorat@insa-rennes.fr] (2019)
+    Alexandre Honorat [alexandre.honorat@insa-rennes.fr] (2019 - 2020)
     Antoine Morvan [antoine.morvan@insa-rennes.fr] (2018 - 2019)
+    Julien Heulot [julien.heulot@insa-rennes.fr] (2020)
 
     This software is a computer program whose purpose is to help prototyping
     parallel applications using dataflow formalism.
@@ -346,12 +347,12 @@
             allPopups="false"
             locationURI="popup:org.eclipse.ui.popup.any?before=additions">
          <menu
-               icon="resources/icons/graphiti.gif"
-               id="org.ietr.preesm.ui.menu1"
+               icon="resources/icons/preesmLogo_16x16.png"
+               id="org.preesm.ui.menu1"
                label="Preesm">
             <!-- generate a default empty scenario in the selected project -->
             <command
-                  commandId="org.ietr.preesm.ui.command.ArchitectureGenerator"
+                  commandId="org.preesm.ui.slam.command.ArchitectureGenerator"
                   icon="resources/icons/graphiti.gif"
                   label="Generate Default Architecture"
                   tooltip="Generate a default homogeneous X86 architecture in this project."
@@ -382,7 +383,7 @@
    <extension
          point="org.eclipse.ui.commands">
       <command
-            id="org.ietr.preesm.ui.command.ArchitectureGenerator"
+            id="org.preesm.ui.slam.command.ArchitectureGenerator"
             name="Architecture Generator">
       </command>
    </extension>
@@ -392,7 +393,7 @@
          point="org.eclipse.ui.handlers">
       <handler
             class="org.preesm.ui.slam.popup.actions.ArchitectureGeneratorPopup"
-            commandId="org.ietr.preesm.ui.command.ArchitectureGenerator">
+            commandId="org.preesm.ui.slam.command.ArchitectureGenerator">
       </handler>
    </extension>
    

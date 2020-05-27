@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<scenario>
+    <files>
+        <algorithm url="/org.ietr.preesm.sobel-morpho.partitioner/Algo/sobel_morpho.pi"/>
+        <architecture url="/org.ietr.preesm.sobel-morpho.partitioner/Archi/MPPA2.slam"/>
+        <codegenDirectory url="/org.ietr.preesm.sobel-morpho.partitioner/CodeMPPA2/generated"/>
+    </files>
+    <constraints excelUrl="">
+        <constraintGroup>
+            <operator name="Cluster00"/>
+            <task name="sobel_morpho/Read_YUV"/>
+            <task name="sobel_morpho/display"/>
+            <task name="sobel_morpho/Sobel"/>
+            <task name="sobel_morpho/Split"/>
+            <task name="sobel_morpho/Dilation"/>
+            <task name="sobel_morpho/Erosion"/>
+            <task name="sobel_morpho"/>
+        </constraintGroup>
+        <constraintGroup>
+            <operator name="Cluster01"/>
+            <task name="sobel_morpho/Dilation"/>
+            <task name="sobel_morpho/Erosion"/>
+            <task name="sobel_morpho/Sobel"/>
+        </constraintGroup>
+        <constraintGroup>
+            <operator name="Cluster02"/>
+            <task name="sobel_morpho/Sobel"/>
+            <task name="sobel_morpho/Dilation"/>
+            <task name="sobel_morpho/Erosion"/>
+        </constraintGroup>
+        <constraintGroup>
+            <operator name="Cluster03"/>
+            <task name="sobel_morpho/Sobel"/>
+            <task name="sobel_morpho/Dilation"/>
+            <task name="sobel_morpho/Erosion"/>
+        </constraintGroup>
+        <constraintGroup>
+            <operator name="Cluster04"/>
+            <task name="sobel_morpho/Sobel"/>
+            <task name="sobel_morpho/Dilation"/>
+            <task name="sobel_morpho/Erosion"/>
+        </constraintGroup>
+        <constraintGroup>
+            <operator name="Cluster05"/>
+            <task name="sobel_morpho/Sobel"/>
+            <task name="sobel_morpho/Dilation"/>
+            <task name="sobel_morpho/Erosion"/>
+        </constraintGroup>
+        <constraintGroup>
+            <operator name="Cluster06"/>
+            <task name="sobel_morpho/Sobel"/>
+            <task name="sobel_morpho/Erosion"/>
+            <task name="sobel_morpho/Dilation"/>
+        </constraintGroup>
+        <constraintGroup>
+            <operator name="Cluster07"/>
+            <task name="sobel_morpho/Sobel"/>
+            <task name="sobel_morpho/Dilation"/>
+            <task name="sobel_morpho/Erosion"/>
+        </constraintGroup>
+        <constraintGroup>
+            <operator name="Cluster08"/>
+            <task name="sobel_morpho/Erosion"/>
+            <task name="sobel_morpho/Dilation"/>
+            <task name="sobel_morpho/Sobel"/>
+        </constraintGroup>
+        <constraintGroup>
+            <operator name="Cluster09"/>
+            <task name="sobel_morpho/Sobel"/>
+            <task name="sobel_morpho/Dilation"/>
+            <task name="sobel_morpho/Erosion"/>
+        </constraintGroup>
+        <constraintGroup>
+            <operator name="Cluster10"/>
+            <task name="sobel_morpho/Sobel"/>
+            <task name="sobel_morpho/Dilation"/>
+            <task name="sobel_morpho/Erosion"/>
+        </constraintGroup>
+        <constraintGroup>
+            <operator name="Cluster11"/>
+            <task name="sobel_morpho/Sobel"/>
+            <task name="sobel_morpho/Dilation"/>
+            <task name="sobel_morpho/Erosion"/>
+        </constraintGroup>
+        <constraintGroup>
+            <operator name="Cluster12"/>
+            <task name="sobel_morpho/Sobel"/>
+            <task name="sobel_morpho/Erosion"/>
+            <task name="sobel_morpho/Dilation"/>
+        </constraintGroup>
+        <constraintGroup>
+            <operator name="Cluster13"/>
+            <task name="sobel_morpho/Sobel"/>
+            <task name="sobel_morpho/Dilation"/>
+            <task name="sobel_morpho/Erosion"/>
+        </constraintGroup>
+        <constraintGroup>
+            <operator name="Cluster14"/>
+            <task name="sobel_morpho/Sobel"/>
+            <task name="sobel_morpho/Dilation"/>
+            <task name="sobel_morpho/Erosion"/>
+        </constraintGroup>
+        <constraintGroup>
+            <operator name="Cluster15"/>
+            <task name="sobel_morpho/Erosion"/>
+            <task name="sobel_morpho/Dilation"/>
+            <task name="sobel_morpho/Sobel"/>
+        </constraintGroup>
+    </constraints>
+    <timings excelUrl=""/>
+    <simuParams>
+        <mainCore>Cluster00</mainCore>
+        <mainComNode>shared_mem</mainComNode>
+        <averageDataSize>1000</averageDataSize>
+        <dataTypes>
+            <dataType name="uchar" size="1"/>
+            <dataType name="char" size="1"/>
+        </dataTypes>
+        <specialVertexOperators/>
+    </simuParams>
+    <parameterValues/>
+    <papifyConfigs xmlUrl=""/>
+    <energyConfigs xmlUrl="">
+        <performanceObjective objectiveEPS="0.0"/>
+        <pePower opName="Base" pePower="10.0"/>
+        <pePower opName="MPPA2Cluster" pePower="10.0"/>
+        <peTypeCommsEnergy sourcePeType="MPPA2Cluster"/>
+    </energyConfigs>
+</scenario>

@@ -1,10 +1,10 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2013 - 2019) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2013 - 2020) :
  *
- * Alexandre Honorat [alexandre.honorat@insa-rennes.fr] (2017 - 2019)
+ * Alexandre Honorat [alexandre.honorat@insa-rennes.fr] (2017 - 2020)
  * Antoine Morvan [antoine.morvan@insa-rennes.fr] (2017 - 2019)
  * Clément Guy [clement.guy@insa-rennes.fr] (2014 - 2015)
- * Julien Heulot [julien.heulot@insa-rennes.fr] (2013 - 2019)
+ * Julien Heulot [julien.heulot@insa-rennes.fr] (2013 - 2020)
  * Karol Desnos [karol.desnos@insa-rennes.fr] (2015)
  *
  * This software is a computer program whose purpose is to help prototyping
@@ -67,8 +67,12 @@ import org.eclipse.ui.views.properties.tabbed.TabbedPropertySheetWidgetFactory;
 import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.Actor;
 import org.preesm.model.pisdf.CHeaderRefinement;
+import org.preesm.model.pisdf.Delay;
 import org.preesm.model.pisdf.ExecutableActor;
+import org.preesm.model.pisdf.InitActor;
+import org.preesm.model.pisdf.PersistenceLevel;
 import org.preesm.model.pisdf.Refinement;
+import org.preesm.model.pisdf.RefinementContainer;
 import org.preesm.model.pisdf.util.PrototypeFormatter;
 import org.preesm.ui.pisdf.features.ClearActorMemoryScriptFeature;
 import org.preesm.ui.pisdf.features.ClearActorRefinementFeature;
@@ -187,7 +191,6 @@ public class ActorPropertiesSection extends GFPropertySection implements ITabbed
      * Memory script
      */
     createMemoryScriptControl(factory, this.composite);
-
   }
 
   /**
@@ -270,7 +273,10 @@ public class ActorPropertiesSection extends GFPropertySection implements ITabbed
             final LayoutContext contextLayout = new LayoutContext(getSelectedPictogramElement());
             final ILayoutFeature layoutFeature = getDiagramTypeProvider().getFeatureProvider()
                 .getLayoutFeature(contextLayout);
-            getDiagramTypeProvider().getDiagramBehavior().executeFeature(layoutFeature, contextLayout);
+            if (layoutFeature != null) {
+              // is null for Delay
+              getDiagramTypeProvider().getDiagramBehavior().executeFeature(layoutFeature, contextLayout);
+            }
           }
         }
 
@@ -301,7 +307,10 @@ public class ActorPropertiesSection extends GFPropertySection implements ITabbed
             final LayoutContext contextLayout = new LayoutContext(getSelectedPictogramElement());
             final ILayoutFeature layoutFeature = getDiagramTypeProvider().getFeatureProvider()
                 .getLayoutFeature(contextLayout);
-            getDiagramTypeProvider().getDiagramBehavior().executeFeature(layoutFeature, contextLayout);
+            if (layoutFeature != null) {
+              // is null for Delay
+              getDiagramTypeProvider().getDiagramBehavior().executeFeature(layoutFeature, contextLayout);
+            }
           }
         }
 
@@ -332,7 +341,10 @@ public class ActorPropertiesSection extends GFPropertySection implements ITabbed
             final LayoutContext contextLayout = new LayoutContext(getSelectedPictogramElement());
             final ILayoutFeature layoutFeature = getDiagramTypeProvider().getFeatureProvider()
                 .getLayoutFeature(contextLayout);
-            getDiagramTypeProvider().getDiagramBehavior().executeFeature(layoutFeature, contextLayout);
+            if (layoutFeature != null) {
+              // is null for Delay
+              getDiagramTypeProvider().getDiagramBehavior().executeFeature(layoutFeature, contextLayout);
+            }
           }
         }
 
@@ -529,24 +541,37 @@ public class ActorPropertiesSection extends GFPropertySection implements ITabbed
         return;
       }
 
-      if (bo instanceof ExecutableActor) {
-        final AbstractActor exexcutableActor = (AbstractActor) bo;
-        this.txtNameObj.setEnabled(false);
-        if ((exexcutableActor.getName() == null) && (!this.txtNameObj.getText().isEmpty())) {
-          this.txtNameObj.setText("");
-        } else if (this.txtNameObj.getText().compareTo(exexcutableActor.getName()) != 0) {
-          this.txtNameObj.setText(exexcutableActor.getName());
-        }
-        this.txtNameObj.setEnabled(true);
+      if (bo instanceof ExecutableActor || bo instanceof Delay) {
 
-        if (bo instanceof Actor) {
-          final Actor actor = (Actor) bo;
-          final Refinement refinement = actor.getRefinement();
+        AbstractActor executableActor = null;
+        if (bo instanceof Delay) {
+          executableActor = ((Delay) bo).getActor();
+        } else {
+          executableActor = (AbstractActor) bo;
+        }
+        this.txtNameObj.setEnabled(false);
+        if ((executableActor.getName() == null) && (!this.txtNameObj.getText().isEmpty())) {
+          this.txtNameObj.setText("");
+        } else if (this.txtNameObj.getText().compareTo(executableActor.getName()) != 0) {
+          this.txtNameObj.setText(executableActor.getName());
+        }
+        this.txtNameObj.setEnabled(!(bo instanceof Delay));
+
+        if (bo instanceof Actor || bo instanceof InitActor || bo instanceof Delay) {
+
+          Refinement refinement = null;
+          boolean enabled = true;
+          if (bo instanceof Delay) {
+            enabled = ((Delay) bo).getLevel() == PersistenceLevel.PERMANENT;
+            refinement = ((Delay) bo).getActor().getRefinement();
+          } else {
+            refinement = ((RefinementContainer) bo).getRefinement();
+          }
           if ((refinement == null) || (refinement.getFilePath() == null)) {
             this.lblRefinementObj.setText("(none)");
             this.lblRefinementView.setText("(none)");
             this.butRefinementClear.setEnabled(false);
-            this.butRefinementBrowse.setEnabled(true);
+            this.butRefinementBrowse.setEnabled(enabled);
             this.butRefinementOpen.setEnabled(false);
           } else {
             final IPath path = Optional.ofNullable(refinement.getFilePath()).map(Path::new).orElse(null);
@@ -576,35 +601,45 @@ public class ActorPropertiesSection extends GFPropertySection implements ITabbed
             }
             this.lblRefinementView.setText(view);
             this.butRefinementClear.setEnabled(true);
-            this.butRefinementBrowse.setEnabled(true);
+            this.butRefinementBrowse.setEnabled(enabled);
             this.butRefinementOpen.setEnabled(true);
           }
 
-          if (actor.getMemoryScriptPath() == null) {
-            this.lblMemoryScriptObj.setText("(none)");
-            this.butMemoryScriptClear.setEnabled(false);
-            this.butMemoryScriptBrowse.setEnabled(true);
-            this.butMemoryScriptOpen.setEnabled(false);
-          } else {
-            final IPath path = Optional.ofNullable(actor.getMemoryScriptPath()).map(Path::new).orElse(null);
-            final String text = path.lastSegment();
-
-            this.lblMemoryScriptObj.setText(text);
-            this.butMemoryScriptClear.setEnabled(true);
-            this.butMemoryScriptBrowse.setEnabled(true);
-            this.butMemoryScriptOpen.setEnabled(true);
-          }
           this.lblRefinement.setVisible(true);
           this.lblRefinementObj.setVisible(true);
           this.lblRefinementView.setVisible(true);
           this.butRefinementClear.setVisible(true);
           this.butRefinementBrowse.setVisible(true);
           this.butRefinementOpen.setVisible(true);
-          this.lblMemoryScript.setVisible(true);
-          this.lblMemoryScriptObj.setVisible(true);
-          this.butMemoryScriptClear.setVisible(true);
-          this.butMemoryScriptBrowse.setVisible(true);
-          this.butMemoryScriptOpen.setVisible(true);
+
+          if (bo instanceof Actor) {
+            final Actor actor = (Actor) bo;
+            if (actor.getMemoryScriptPath() == null) {
+              this.lblMemoryScriptObj.setText("(none)");
+              this.butMemoryScriptClear.setEnabled(false);
+              this.butMemoryScriptBrowse.setEnabled(true);
+              this.butMemoryScriptOpen.setEnabled(false);
+            } else {
+              final IPath path = Optional.ofNullable(actor.getMemoryScriptPath()).map(Path::new).orElse(null);
+              final String text = path.lastSegment();
+
+              this.lblMemoryScriptObj.setText(text);
+              this.butMemoryScriptClear.setEnabled(true);
+              this.butMemoryScriptBrowse.setEnabled(true);
+              this.butMemoryScriptOpen.setEnabled(true);
+            }
+            this.lblMemoryScript.setVisible(true);
+            this.lblMemoryScriptObj.setVisible(true);
+            this.butMemoryScriptClear.setVisible(true);
+            this.butMemoryScriptBrowse.setVisible(true);
+            this.butMemoryScriptOpen.setVisible(true);
+          } else {
+            this.lblMemoryScript.setVisible(false);
+            this.lblMemoryScriptObj.setVisible(false);
+            this.butMemoryScriptClear.setVisible(false);
+            this.butMemoryScriptBrowse.setVisible(false);
+            this.butMemoryScriptOpen.setVisible(false);
+          }
 
         } else {
           this.lblRefinement.setVisible(false);

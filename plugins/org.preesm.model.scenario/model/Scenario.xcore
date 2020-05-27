@@ -1,9 +1,10 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2019) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2019 - 2020) :
  *
- * Alexandre Honorat [alexandre.honorat@insa-rennes.fr] (2019)
+ * Alexandre Honorat [alexandre.honorat@insa-rennes.fr] (2019 - 2020)
  * Antoine Morvan [antoine.morvan@insa-rennes.fr] (2019)
  * Daniel Madroñal [daniel.madronal@upm.es] (2019)
+ * Julien Heulot [julien.heulot@insa-rennes.fr] (2020)
  *
  * This software is a computer program whose purpose is to help prototyping
  * parallel applications using dataflow formalism.
@@ -91,12 +92,12 @@ enum ScenarioConstants {
 
 class Scenario {
 	String scenarioURL
+	String codegenDirectory
 	refers PiGraph algorithm
 	refers Design  design
 	contains Constraints constraints opposite scenario
 	contains Timings timings opposite scenario
 	contains SimulationInfo simulationInfo opposite scenario
-	String codegenDirectory
 	contains ParameterValueOverride[] parameterValues opposite scenario
 	contains PapifyConfig papifyConfig opposite scenario
 	contains EnergyConfig energyConfig opposite scenario
@@ -601,31 +602,49 @@ class PapiCpuID {
  class EnergyConfig{
 	String excelFileURL // excel or csv local file
 	refers Scenario scenario opposite energyConfig
+ 	contains PeActorsEnergy[] algorithmEnergy opposite energyConfig
  	contains PerformanceObjective performanceObjective
  	contains PEPower[] platformPower
- 	contains PeActorsEnergy[] algorithmEnergy
  	contains PeCommsEnergy[] commsEnergy
-	op Double getEnergyActorOrDefault(AbstractActor actor, Component component) {
-		if (this.algorithmEnergy.containsKey(component)) {
-			val EMap<AbstractActor, Double> map = algorithmEnergy.get(component)
-			if (map.containsKey(actor)) {
-				return map.get(actor)
-			}else {
-				val AbstractActor source = PreesmCopyTracker.getSource(actor);
-				if (source !== actor) {
-					return getEnergyActorOrDefault(source, component)
-				}
-			} 
+ 	
+ 	
+ 	
+	op void setActorPeEnergy(AbstractActor actor, Component component, long energy) {
+		setActorPeEnergy(actor, component, Long.toString(energy))
+	}
+	op void setActorPeEnergy(AbstractActor actor, Component component, String value) {
+		if (!algorithmEnergy.containsKey(actor)) {
+			algorithmEnergy.put(actor, ECollections.asEMap(newLinkedHashMap))			
 		}
-		var double value = ScenarioConstants.DEFAULT_ENERGY_TASK.value
-		return value
+		algorithmEnergy.get(actor).put(component, value)
 	}
-	op void setActorPeEnergy(AbstractActor actor, Component component, Double energy) {
-		if (!algorithmEnergy.containsKey(component)) {
-			algorithmEnergy.put(component, ECollections.asEMap(newLinkedHashMap))			
-		}		
-		algorithmEnergy.get(component).put(actor, energy)
+	op String getEnergyActorOrDefault(AbstractActor actor, Component component) {
+		if (this.algorithmEnergy.containsKey(actor)) {
+			val EMap<Component, String> map = algorithmEnergy.get(actor);
+			if (map.containsKey(component)) {
+				return map.get(component);
+			}
+		} else {
+			val AbstractActor source = PreesmCopyTracker.getSource(actor);
+			if (source !== actor) {
+				return getEnergyActorOrDefault(source, component);
+			}
+		}
+		return Long.toString(ScenarioConstants.DEFAULT_ENERGY_TASK.value);
 	}
+
+	op long evaluateEnergyActorOrDefault(AbstractActor actor, Component component) {
+		val String energyExpression = getEnergyActorOrDefault(actor, component);
+		var long t;
+		if (energyExpression !== null) {
+			t = ExpressionEvaluator.evaluate(actor, energyExpression, scenario.parameterValues.map);
+		} else {
+			t = ScenarioConstants.DEFAULT_ENERGY_TASK.value;
+		}
+		return t;
+	}
+
+
 	op void createNewCommNodeIfNeeded(String source) {
 		if (!commsEnergy.containsKey(source)) {
 			commsEnergy.put(source, ECollections.asEMap(newLinkedHashMap))			
@@ -667,13 +686,17 @@ class PEPower wraps java.util.Map$Entry {
 	String key 		// The component type and the "base" power
 	Double value	// The power value
 }
+
+
 class PeActorsEnergy wraps java.util.Map$Entry {
-	refers Component key 			// The component type
-	contains ActorEnergy[] value	// The actor energy values for this type of PE
+	refers EnergyConfig energyConfig opposite algorithmEnergy
+	refers AbstractActor key 			// The actor
+	contains ActorEnergy[] value opposite algorithmEnergy	// The actor energy values
 }
 class ActorEnergy wraps java.util.Map$Entry {
-	refers AbstractActor key 	// The actor
-	Double value				// The expression of the energy
+	refers PeActorsEnergy algorithmEnergy opposite value
+	refers Component key 	// The component
+	String value			// The expression of the energy
 }
 class PeCommsEnergy wraps java.util.Map$Entry{
 	String key		// The source component type

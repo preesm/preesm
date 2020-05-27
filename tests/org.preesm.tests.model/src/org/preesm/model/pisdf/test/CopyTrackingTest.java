@@ -1,6 +1,7 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2018 - 2019) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2018 - 2020) :
  *
+ * Alexandre Honorat [alexandre.honorat@insa-rennes.fr] (2020)
  * Antoine Morvan [antoine.morvan@insa-rennes.fr] (2018 - 2019)
  *
  * This software is a computer program whose purpose is to help prototyping
@@ -37,6 +38,7 @@ package org.preesm.model.pisdf.test;
 import org.junit.Assert;
 import org.junit.Test;
 import org.preesm.commons.model.PreesmCopyTracker;
+import org.preesm.model.pisdf.Actor;
 import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.pisdf.factory.PiMMUserFactory;
 
@@ -56,10 +58,20 @@ public class CopyTrackingTest {
   @Test
   public void testMultiCopy() {
     final PiGraph originalGraph = PiMMUserFactory.instance.createPiGraph();
-    final PiGraph copy = PiMMUserFactory.instance.copyWithHistory(originalGraph);
-    final PiGraph copy2 = PiMMUserFactory.instance.copyWithHistory(copy);
-    final PiGraph copy3 = PiMMUserFactory.instance.copyWithHistory(copy2);
-    final PiGraph copy4 = PiMMUserFactory.instance.copyWithHistory(copy3);
+    final Actor originalActor = PiMMUserFactory.instance.createActor();
+    originalActor.setName("A1");
+    originalGraph.addActor(originalActor);
+
+    final PiGraph copy = PiMMUserFactory.instance.copyPiGraphWithHistory(originalGraph);
+    final Actor actor = (Actor) copy.lookupVertex("A1");
+    Assert.assertEquals(originalActor, PreesmCopyTracker.getOriginalSource(actor));
+
+    final PiGraph copy2 = PiMMUserFactory.instance.copyPiGraphWithHistory(copy);
+    final PiGraph copy3 = PiMMUserFactory.instance.copyPiGraphWithHistory(copy2);
+    final PiGraph copy4 = PiMMUserFactory.instance.copyPiGraphWithHistory(copy3);
+
+    final Actor actor4 = (Actor) copy4.lookupVertex("A1");
+    Assert.assertEquals(originalActor, PreesmCopyTracker.getOriginalSource(actor4));
 
     final PiGraph sourceCopy3 = PreesmCopyTracker.getSource(copy3);
     Assert.assertEquals(sourceCopy3, copy2);

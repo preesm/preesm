@@ -1,10 +1,10 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2017 - 2019) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2017 - 2020) :
  *
- * Alexandre Honorat [alexandre.honorat@insa-rennes.fr] (2018 - 2019)
+ * Alexandre Honorat [alexandre.honorat@insa-rennes.fr] (2018 - 2020)
  * Antoine Morvan [antoine.morvan@insa-rennes.fr] (2017 - 2019)
  * Florian Arrestier [florian.arrestier@insa-rennes.fr] (2018)
- * Julien Heulot [julien.heulot@insa-rennes.fr] (2019)
+ * Julien Heulot [julien.heulot@insa-rennes.fr] (2019 - 2020)
  *
  * This software is a computer program whose purpose is to help prototyping
  * parallel applications using dataflow formalism.
@@ -73,23 +73,31 @@ public class ExpressionEvaluator {
     // forbid instantiation
   }
 
+  /**
+   *
+   * @throws ExpressionEvaluationException
+   *           If the expression cannot be evaluated.
+   */
   public static final long evaluate(final Parameter param, final Map<Parameter, String> overridenValues) {
     return evaluate(param, param.getValueExpression().getExpressionAsString(), overridenValues);
   }
 
   /**
    *
+   * @throws ExpressionEvaluationException
+   *           If the expression cannot be evaluated.
    */
   public static final long evaluate(final Parameterizable p, final String value,
       final Map<Parameter, String> overridenValues) {
     final Map<String, Double> lookupParameterValues = lookupParameterValues(p, overridenValues);
-    try {
-      return JEPWrapper.evaluate(value, lookupParameterValues);
-    } catch (final Exception e) {
-      throw new ExpressionEvaluationException("Could not evaluate " + value, e);
-    }
+    return JEPWrapper.evaluate(value, lookupParameterValues);
   }
 
+  /**
+   *
+   * @throws ExpressionEvaluationException
+   *           If the expression cannot be evaluated.
+   */
   public static final long evaluate(final Expression expression) {
     return evaluate(expression, Collections.emptyMap());
   }
@@ -97,6 +105,9 @@ public class ExpressionEvaluator {
   /**
    * Will lookup parameter values if needed (see
    * {@link InternalExpressionEvaluationVisitor#caseStringExpression(StringExpression)}).
+   * 
+   * @throws ExpressionEvaluationException
+   *           If the expression cannot be evaluated.
    */
   public static final long evaluate(final Expression expression,
       final Map<Parameter, String> overridenParameterValues) {
@@ -221,7 +232,7 @@ public class ExpressionEvaluator {
       }
       evaluate = evaluate(connectedParam, connectedeParamExpressionValue, overridenValues);
     } else {
-      evaluate = 0.;
+      evaluate = evaluate(configInputInterface.getExpression());
     }
     return evaluate;
   }

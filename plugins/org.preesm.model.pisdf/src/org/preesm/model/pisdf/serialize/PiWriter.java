@@ -1,11 +1,12 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2012 - 2019) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2012 - 2020) :
  *
- * Alexandre Honorat [alexandre.honorat@insa-rennes.fr] (2018 - 2019)
+ * Alexandre Honorat [alexandre.honorat@insa-rennes.fr] (2018 - 2020)
  * Antoine Morvan [antoine.morvan@insa-rennes.fr] (2017 - 2019)
  * Clément Guy [clement.guy@insa-rennes.fr] (2014)
  * Florian Arrestier [florian.arrestier@insa-rennes.fr] (2018)
- * Julien Heulot [julien.heulot@insa-rennes.fr] (2013 - 2019)
+ * Dylan Gageot [gageot.dylan@gmail.com] (2020)
+ * Julien Heulot [julien.heulot@insa-rennes.fr] (2013 - 2020)
  * Karol Desnos [karol.desnos@insa-rennes.fr] (2012 - 2014)
  * Maxime Pelcat [maxime.pelcat@insa-rennes.fr] (2013 - 2014)
  *
@@ -80,6 +81,7 @@ import org.preesm.model.pisdf.InitActor;
 import org.preesm.model.pisdf.InterfaceActor;
 import org.preesm.model.pisdf.InterfaceKind;
 import org.preesm.model.pisdf.JoinActor;
+import org.preesm.model.pisdf.MalleableParameter;
 import org.preesm.model.pisdf.Parameter;
 import org.preesm.model.pisdf.Parameterizable;
 import org.preesm.model.pisdf.PiGraph;
@@ -552,6 +554,10 @@ public class PiWriter {
     if (!periodExpr.equals("0")) {
       graphElt.setAttribute(PiIdentifiers.ACTOR_PERIOD, periodExpr);
     }
+    // Write cluster value into graph element
+    if (graph.isCluster()) {
+      graphElt.setAttribute(PiIdentifiers.CLUSTER, "true");
+    }
 
     for (final Parameter param : graph.getParameters()) {
       writeParameter(graphElt, param);
@@ -640,11 +646,21 @@ public class PiWriter {
     paramElt.setAttribute(PiIdentifiers.PARAMETER_NAME, param.getName());
 
     // Set the kind of the node
-    if (!param.isConfigurationInterface()) {
+    if (param instanceof MalleableParameter) {
+      paramElt.setAttribute(PiIdentifiers.NODE_KIND, PiIdentifiers.MALLEABLE_PARAMETER);
+      paramElt.setAttribute(PiIdentifiers.PARAMETER_EXPRESSION, param.getValueExpression().getExpressionAsString());
+      paramElt.setAttribute(PiIdentifiers.MALLEABLE_PARAMETER_EXPRESSION,
+          ((MalleableParameter) param).getUserExpression());
+    } else if (!param.isConfigurationInterface()) {
       paramElt.setAttribute(PiIdentifiers.NODE_KIND, PiIdentifiers.PARAMETER);
       paramElt.setAttribute(PiIdentifiers.PARAMETER_EXPRESSION, param.getValueExpression().getExpressionAsString());
     } else {
       paramElt.setAttribute(PiIdentifiers.NODE_KIND, InterfaceKind.CFG_INPUT.getLiteral());
+      final String value = param.getExpression().getExpressionAsString();
+      if (!value.equals("0")) {
+        paramElt.setAttribute(PiIdentifiers.PARAM_CII_DEFAULT, value);
+      }
+
     }
   }
 

@@ -1,7 +1,7 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2011 - 2019) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2011 - 2020) :
  *
- * Alexandre Honorat [alexandre.honorat@insa-rennes.fr] (2019)
+ * Alexandre Honorat [alexandre.honorat@insa-rennes.fr] (2019 - 2020)
  * Antoine Morvan [antoine.morvan@insa-rennes.fr] (2017 - 2019)
  * Clément Guy [clement.guy@insa-rennes.fr] (2014 - 2015)
  * Daniel Madroñal [daniel.madronal@upm.es] (2019)
@@ -147,7 +147,7 @@ public class ExcelEnergyWriter extends ExcelWriter {
       for (final Component opDefId : design.getOperatorComponents()) {
         for (final AbstractActor vertexName : vSet) {
 
-          final String energy = this.scenario.getEnergyConfig().getEnergyActorOrDefault(vertexName, opDefId).toString();
+          final String energy = this.scenario.getEnergyConfig().getEnergyActorOrDefault(vertexName, opDefId);
 
           WritableCell opCell = (WritableCell) sheet.findCell(opDefId.getVlnv().getName());
           WritableCell vCell = (WritableCell) sheet.findCell(vertexName.getVertexPath());

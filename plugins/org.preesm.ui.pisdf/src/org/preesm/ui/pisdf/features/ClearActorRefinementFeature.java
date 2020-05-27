@@ -1,6 +1,7 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2012 - 2019) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2012 - 2020) :
  *
+ * Alexandre Honorat [alexandre.honorat@insa-rennes.fr] (2020)
  * Antoine Morvan [antoine.morvan@insa-rennes.fr] (2017 - 2019)
  * Clément Guy [clement.guy@insa-rennes.fr] (2014 - 2015)
  * Julien Heulot [julien.heulot@insa-rennes.fr] (2013)
@@ -42,8 +43,11 @@ import org.eclipse.graphiti.features.context.ICustomContext;
 import org.eclipse.graphiti.features.custom.AbstractCustomFeature;
 import org.eclipse.graphiti.mm.pictograms.PictogramElement;
 import org.preesm.model.pisdf.Actor;
+import org.preesm.model.pisdf.Delay;
+import org.preesm.model.pisdf.InitActor;
 import org.preesm.model.pisdf.PiSDFRefinement;
 import org.preesm.model.pisdf.Refinement;
+import org.preesm.model.pisdf.RefinementContainer;
 
 // TODO: Auto-generated Javadoc
 /**
@@ -100,8 +104,20 @@ public class ClearActorRefinementFeature extends AbstractCustomFeature {
     final PictogramElement[] pes = context.getPictogramElements();
     if ((pes != null) && (pes.length == 1)) {
       final Object bo = getBusinessObjectForPictogramElement(pes[0]);
-      if ((bo instanceof Actor) && (((Actor) bo).getRefinement().getFilePath() != null)) {
-        ret = true;
+
+      RefinementContainer rc = null;
+      if (bo instanceof Delay) {
+        rc = ((Delay) bo).getActor();
+      } else if (bo instanceof Actor || bo instanceof InitActor) {
+        rc = (RefinementContainer) bo;
+      }
+
+      if (rc != null) {
+        // Check if the actor has a valid refinement
+        final Refinement refinement = rc.getRefinement();
+        if (refinement != null && refinement.getFilePath() != null) {
+          ret = true;
+        }
       }
     }
     return ret;
@@ -120,11 +136,16 @@ public class ClearActorRefinementFeature extends AbstractCustomFeature {
     final PictogramElement[] pes = context.getPictogramElements();
     if ((pes != null) && (pes.length == 1)) {
       final Object bo = getBusinessObjectForPictogramElement(pes[0]);
-      if (bo instanceof Actor) {
-        final Actor actor = (Actor) bo;
-        final Refinement refinement = actor.getRefinement();
 
-        refinement.setFilePath(null);
+      RefinementContainer rc = null;
+      if (bo instanceof Delay) {
+        rc = ((Delay) bo).getActor();
+      } else if (bo instanceof Actor || bo instanceof InitActor) {
+        rc = (RefinementContainer) bo;
+      }
+
+      if (rc != null) {
+        rc.setRefinement(null);
 
         // Call the layout feature
         layoutPictogramElement(pes[0]);

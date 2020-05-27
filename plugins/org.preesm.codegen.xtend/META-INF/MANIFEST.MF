@@ -12,10 +12,11 @@ Require-Bundle: org.apache.velocity;bundle-version="1.7.0",
  org.eclipse.core.resources,
  org.eclipse.emf.ecore.xmi,
  org.eclipse.xtend.lib;bundle-version="2.11.0",
- org.preesm.codegen;visibility:=reexport
+ org.preesm.codegen;visibility:=reexport,
+ org.apache.commons.math3
 Bundle-ActivationPolicy: lazy
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
-Bundle-Version: 3.19.0
+Bundle-Version: 3.20.0
 Export-Package: org.preesm.codegen.xtend,
  org.preesm.codegen.xtend.printer,
  org.preesm.codegen.xtend.printer.c,
@@ -24,4 +25,5 @@ Export-Package: org.preesm.codegen.xtend,
  org.preesm.codegen.xtend.spider,
  org.preesm.codegen.xtend.spider.utils,
  org.preesm.codegen.xtend.spider.visitor
+Import-Package: org.apache.commons.lang3
 

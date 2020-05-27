@@ -1,7 +1,8 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2018 - 2019) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2018 - 2020) :
  *
  * Antoine Morvan [antoine.morvan@insa-rennes.fr] (2018 - 2019)
+ * Julien Heulot [julien.heulot@insa-rennes.fr] (2020)
  *
  * This software is a computer program whose purpose is to help prototyping
  * parallel applications using dataflow formalism.
@@ -116,17 +117,16 @@ public final class URLResolver {
     } catch (final MalformedURLException e) {
       resultURL = null;
     }
-
     if (resultURL == null) {
       try {
-        resultURL = resolvePlainURL(location);
+        resultURL = resolveFileSystemURL(location);
       } catch (final MalformedURLException e) {
         resultURL = null;
       }
     }
     if (resultURL == null) {
       try {
-        resultURL = resolveFileSystemURL(location);
+        resultURL = resolvePlainURL(location);
       } catch (final MalformedURLException e) {
         resultURL = null;
       }

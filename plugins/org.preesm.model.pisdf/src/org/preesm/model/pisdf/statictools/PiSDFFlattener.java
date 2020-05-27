@@ -1,7 +1,7 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2018 - 2019) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2018 - 2020) :
  *
- * Alexandre Honorat [alexandre.honorat@insa-rennes.fr] (2018 - 2019)
+ * Alexandre Honorat [alexandre.honorat@insa-rennes.fr] (2018 - 2020)
  * Antoine Morvan [antoine.morvan@insa-rennes.fr] (2018 - 2019)
  * Florian Arrestier [florian.arrestier@insa-rennes.fr] (2018)
  *
@@ -89,6 +89,37 @@ import org.preesm.model.pisdf.util.PiMMSwitch;
  */
 public class PiSDFFlattener extends PiMMSwitch<Boolean> {
 
+  /** The result. */
+  // Flat graph created from the outer graph
+  private final PiGraph result;
+
+  /** Basic repetition vector of the graph */
+  private final Map<AbstractVertex, Long> brv;
+
+  /** Map from original PiMM vertices to generated DAG vertices */
+  private final Map<AbstractActor, AbstractActor> actor2actor = new LinkedHashMap<>();
+
+  /** Current Single-Rate Graph name */
+  private String graphName;
+
+  /** Current graph prefix */
+  private String graphPrefix;
+
+  private final Map<Parameter, Parameter> param2param = new LinkedHashMap<>();
+
+  /**
+   * Instantiates a new abstract StaticPiMM2ASrPiMMVisitor.
+   *
+   *
+   */
+  private PiSDFFlattener(Map<AbstractVertex, Long> brv) {
+    this.result = PiMMUserFactory.instance.createPiGraph();
+    this.brv = brv;
+    this.graphName = "";
+    this.graphPrefix = "";
+
+  }
+
   /**
    * Precondition: All.
    *
@@ -96,20 +127,22 @@ public class PiSDFFlattener extends PiMMSwitch<Boolean> {
    */
   public static final PiGraph flatten(final PiGraph graph, boolean performOptim) {
     PiGraphConsistenceChecker.check(graph);
+    // 0. we copy the graph since the transformation has side effects (especially on delay actors)
+    final PiGraph graphCopy = PiMMUserFactory.instance.copyPiGraphWithHistory(graph);
     // 1. First we resolve all parameters.
     // It must be done first because, when removing persistence, local parameters have to be known at upper level
-    PiMMHelper.resolveAllParameters(graph);
+    PiMMHelper.resolveAllParameters(graphCopy);
     // 2. We perform the delay transformation step that deals with persistence
-    PiMMHelper.removePersistence(graph);
+    PiMMHelper.removePersistence(graphCopy);
     // 3. Compute BRV following the chosen method
-    Map<AbstractVertex, Long> brv = PiBRV.compute(graph, BRVMethod.LCM);
+    Map<AbstractVertex, Long> brv = PiBRV.compute(graphCopy, BRVMethod.LCM);
     // 4. Print the RV values
     PiBRV.printRV(brv);
     // 4.5 Check periods with BRV
-    PiMMHelper.checkPeriodicity(graph, brv);
+    PiMMHelper.checkPeriodicity(graphCopy, brv);
     // 5. Now, flatten the graph
     PiSDFFlattener staticPiMM2FlatPiMMVisitor = new PiSDFFlattener(brv);
-    staticPiMM2FlatPiMMVisitor.doSwitch(graph);
+    staticPiMM2FlatPiMMVisitor.doSwitch(graphCopy);
     PiGraph result = staticPiMM2FlatPiMMVisitor.result;
 
     if (performOptim) {
@@ -122,7 +155,7 @@ public class PiSDFFlattener extends PiMMSwitch<Boolean> {
     }
 
     PiGraphConsistenceChecker.check(result);
-    flattenCheck(graph, result);
+    flattenCheck(graphCopy, result);
 
     return result;
   }
@@ -203,36 +236,6 @@ public class PiSDFFlattener extends PiMMSwitch<Boolean> {
     }
   }
 
-  /** The result. */
-  // Flat graph created from the outer graph
-  private final PiGraph result;
-
-  /** Basic repetition vector of the graph */
-  private final Map<AbstractVertex, Long> brv;
-
-  /** Map from original PiMM vertices to generated DAG vertices */
-  private final Map<AbstractActor, AbstractActor> actor2actor = new LinkedHashMap<>();
-
-  /** Current Single-Rate Graph name */
-  private String graphName;
-
-  /** Current graph prefix */
-  private String graphPrefix;
-
-  private final Map<Parameter, Parameter> param2param = new LinkedHashMap<>();
-
-  /**
-   * Instantiates a new abstract StaticPiMM2ASrPiMMVisitor.
-   *
-   *
-   */
-  public PiSDFFlattener(Map<AbstractVertex, Long> brv) {
-    this.result = PiMMUserFactory.instance.createPiGraph();
-    this.brv = brv;
-    this.graphName = "";
-    this.graphPrefix = "";
-  }
-
   /*
    * (non-Javadoc)
    *
@@ -244,7 +247,7 @@ public class PiSDFFlattener extends PiMMSwitch<Boolean> {
   public Boolean caseAbstractActor(final AbstractActor actor) {
     if (actor instanceof PiGraph) {
       // Here we handle the replacement of the interfaces by what should be
-      // Copy the actor
+      // Copy the actor, should we use copyPiGraphWithHistory() instead ?
       final PiGraph copyActor = PiMMUserFactory.instance.copyWithHistory((PiGraph) actor);
       copyActor.setName(graphPrefix + actor.getName());
       // Add the actor to the graph
@@ -634,9 +637,10 @@ public class PiSDFFlattener extends PiMMSwitch<Boolean> {
     if (graph.getContainingPiGraph() == null) {
       result.setName(graph.getName() + "_flat");
       result.setUrl(graph.getUrl());
-      result.setExpression(graph.getPeriod());
+      result.setExpression(graph.getPeriod().evaluate());
       PreesmCopyTracker.trackCopy(graph, this.result);
     }
+
     // If there are no actors in the graph we leave
     if (graph.getActors().isEmpty()) {
       throw new UnsupportedOperationException(
@@ -667,6 +671,7 @@ public class PiSDFFlattener extends PiMMSwitch<Boolean> {
         containsNonPersistent = true;
       }
     }
+
     if (containsNonPersistent && containsPersistent) {
       throw new PreesmRuntimeException("We have detected persistent and non-persistent delays in graph ["
           + graph.getName() + "]. This is not supported by the flattening transformation for now.");

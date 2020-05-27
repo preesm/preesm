@@ -1,7 +1,8 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2019) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2019 - 2020) :
  *
- * Alexandre Honorat [alexandre.honorat@insa-rennes.fr] (2019)
+ * Alexandre Honorat [alexandre.honorat@insa-rennes.fr] (2019 - 2020)
+ * Julien Heulot [julien.heulot@insa-rennes.fr] (2020)
  *
  * This software is a computer program whose purpose is to help prototyping
  * parallel applications using dataflow formalism.
@@ -66,7 +67,7 @@ public class StatGeneratorSynthesis extends AbstractStatGenerator {
    * @param mapping
    *          Mapping of the PiGraph actors.
    * @param memAlloc
-   *          MemoryAllocation of the PiGraph.
+   *          MemoryAllocation of the PiGraph (may be null)
    * @param latencyCost
    *          Latency of the schedule.
    */
@@ -116,8 +117,10 @@ public class StatGeneratorSynthesis extends AbstractStatGenerator {
   @Override
   public long getMem(ComponentInstance operator) {
     long res = 0L;
-    for (PhysicalBuffer pb : memAlloc.getPhysicalBuffers()) {
-      res += pb.getSize();
+    if (memAlloc != null) {
+      for (PhysicalBuffer pb : memAlloc.getPhysicalBuffers()) {
+        res += pb.getSize();
+      }
     }
     return res;
   }

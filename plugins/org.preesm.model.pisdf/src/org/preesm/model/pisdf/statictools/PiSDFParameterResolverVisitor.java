@@ -1,11 +1,11 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2018 - 2019) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2018 - 2020) :
  *
- * Alexandre Honorat [alexandre.honorat@insa-rennes.fr] (2019)
+ * Alexandre Honorat [alexandre.honorat@insa-rennes.fr] (2019 - 2020)
  * Antoine Morvan [antoine.morvan@insa-rennes.fr] (2018 - 2019)
  * Florian Arrestier [florian.arrestier@insa-rennes.fr] (2018)
- * Dylan Gageot [gageot.dylan@gmail.com] (2019)
- * Julien Heulot [julien.heulot@insa-rennes.fr] (2019)
+ * Dylan Gageot [gageot.dylan@gmail.com] (2019 - 2020)
+ * Julien Heulot [julien.heulot@insa-rennes.fr] (2019 - 2020)
  *
  * This software is a computer program whose purpose is to help prototyping
  * parallel applications using dataflow formalism.
@@ -43,8 +43,10 @@ package org.preesm.model.pisdf.statictools;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.logging.Level;
 import org.eclipse.emf.common.util.EList;
 import org.preesm.commons.exceptions.PreesmRuntimeException;
+import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.commons.math.ExpressionEvaluationException;
 import org.preesm.commons.math.JEPWrapper;
 import org.preesm.model.pisdf.AbstractActor;
@@ -177,8 +179,10 @@ public class PiSDFParameterResolverVisitor extends PiMMSwitch<Boolean> {
     final ConfigInputPort graphPort = cii.getGraphPort();
     final Dependency incomingDependency = graphPort.getIncomingDependency();
     if (incomingDependency == null) {
-      throw new PreesmRuntimeException(
-          cii.eContainer() + " has a config input port without incoming dependency: " + graphPort.getName());
+      PreesmLogger.getLogger().log(Level.WARNING,
+          cii.eContainer() + " has a config input port without incoming dependency: " + graphPort.getName()
+              + "\n Default value is used instead.");
+      return true;
     }
     final ISetter setter = incomingDependency.getSetter();
     // Setter of an incoming dependency into a ConfigInputInterface must be
@@ -243,10 +247,6 @@ public class PiSDFParameterResolverVisitor extends PiMMSwitch<Boolean> {
     if (!graph.isLocallyStatic()) {
       throw new PreesmRuntimeException("PiGraph " + graph.getName()
           + " has configuration actors. It is thus impossible to use the" + " Static PiMM to SRDAG transformation.");
-    }
-
-    if (graph.isCluster()) {
-      return caseOtherActors(graph);
     }
 
     // Resolve input interfaces

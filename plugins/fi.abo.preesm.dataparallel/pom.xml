@@ -1,10 +1,10 @@
 <!--
 
-    Copyright or © or Copr. Åbo Akademi University (2017 - 2019),
-    IETR/INSA - Rennes (2017 - 2019) :
+    Copyright or © or Copr. Åbo Akademi University (2017 - 2020),
+    IETR/INSA - Rennes (2017 - 2020) :
 
     Antoine Morvan [antoine.morvan@insa-rennes.fr] (2017 - 2019)
-    Julien Heulot [julien.heulot@insa-rennes.fr] (2019)
+    Julien Heulot [julien.heulot@insa-rennes.fr] (2019 - 2020)
 
     This software is a computer program whose purpose is to help prototyping
     parallel applications using dataflow formalism.
@@ -45,7 +45,7 @@
    <parent>
       <groupId>org.preesm</groupId>
       <artifactId>org.preesm.plugins</artifactId>
-      <version>3.19.0</version>
+      <version>3.20.0</version>
       <relativePath>..</relativePath>
    </parent>
 

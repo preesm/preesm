@@ -1,6 +1,7 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2014 - 2019) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2014 - 2020) :
  *
+ * Alexandre Honorat [alexandre.honorat@insa-rennes.fr] (2020)
  * Antoine Morvan [antoine.morvan@insa-rennes.fr] (2017 - 2019)
  * Clément Guy [clement.guy@insa-rennes.fr] (2014 - 2015)
  * Daniel Madroñal [daniel.madronal@upm.es] (2018 - 2019)
@@ -226,13 +227,11 @@ public class SpiderCodegen {
         if (!this.energies.containsKey(actor)) {
           this.energies.put(actor, new LinkedHashMap<Component, Double>());
         }
-        for (final Component coreType : this.coreTypesIds.keySet()) {
-          if (this.scenario.getEnergyConfig().getAlgorithmEnergy().containsKey(coreType)) {
-            final EMap<AbstractActor,
-                Double> listEnergies = this.scenario.getEnergyConfig().getAlgorithmEnergy().get(coreType);
-            if (listEnergies.containsKey(actor)) {
-              this.energies.get(actor).put(coreType, listEnergies.get(actor));
-            }
+        if (this.scenario.getEnergyConfig().getAlgorithmEnergy().containsKey(actor)) {
+          final EMap<Component, String> listEnergies = this.scenario.getEnergyConfig().getAlgorithmEnergy().get(actor);
+          for (Component cp : listEnergies.keySet()) {
+            this.energies.get(actor).put(cp,
+                (double) this.scenario.getEnergyConfig().evaluateEnergyActorOrDefault(actor, cp));
           }
         }
       } else {

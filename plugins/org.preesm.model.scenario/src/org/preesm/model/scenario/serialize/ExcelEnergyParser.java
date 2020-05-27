@@ -1,7 +1,7 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2008 - 2019) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2008 - 2020) :
  *
- * Alexandre Honorat [alexandre.honorat@insa-rennes.fr] (2019)
+ * Alexandre Honorat [alexandre.honorat@insa-rennes.fr] (2019 - 2020)
  * Antoine Morvan [antoine.morvan@insa-rennes.fr] (2017 - 2019)
  * Clément Guy [clement.guy@insa-rennes.fr] (2014)
  * Daniel Madroñal [daniel.madronal@upm.es] (2019)
@@ -45,7 +45,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import jxl.Cell;
-import jxl.CellType;
 import jxl.Workbook;
 import jxl.read.biff.BiffException;
 import org.eclipse.core.resources.IFile;
@@ -56,7 +55,6 @@ import org.eclipse.core.runtime.Path;
 import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.preesm.commons.files.WorkspaceUtils;
 import org.preesm.commons.logger.PreesmLogger;
-import org.preesm.commons.model.PreesmCopyTracker;
 import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.AbstractVertex;
 import org.preesm.model.pisdf.PiGraph;
@@ -185,33 +183,25 @@ public class ExcelEnergyParser {
     for (final Component component : opDefIds) {
       if (component != null && actor != null) {
         // Get row and column for the energy we are looking for
-        final Cell vertexCell = w.getSheet(0).findCell(PreesmCopyTracker.getOriginalSource(actor).getVertexPath());
+        final Cell vertexCell = w.getSheet(0).findCell(actor.getVertexPath());
         final Cell operatorCell = w.getSheet(0).findCell(component.getVlnv().getName());
 
         if ((vertexCell != null) && (operatorCell != null)) {
           // Get the cell containing the timing
           final Cell energyCell = w.getSheet(0).getCell(operatorCell.getColumn(), vertexCell.getRow());
-          if (energyCell.getType().equals(CellType.LABEL) || energyCell.getType().equals(CellType.NUMBER)) {
 
-            final String expression = energyCell.getContents();
-            String stringEnergy = expression;
-            // Removing useless characters (spaces...)
-            stringEnergy = stringEnergy.replaceAll(" ", "");
-            stringEnergy = stringEnergy.replaceAll("'", "");
+          final String expression = energyCell.getContents();
 
-            try {
-              this.scenario.getEnergyConfig().setActorPeEnergy(PreesmCopyTracker.getOriginalSource(actor), component,
-                  Double.parseDouble(stringEnergy));
-              final String msg = "Importing Energy: " + PreesmCopyTracker.getOriginalSource(actor).getVertexPath()
-                  + " on " + component.getVlnv().getName() + " takes " + expression;
-              PreesmLogger.getLogger().log(Level.INFO, msg);
-            } catch (final NumberFormatException e) {
-              final String message = "Problem importing energy of " + PreesmCopyTracker.getOriginalSource(actor)
-                  + " on " + component
-                  + ". Double with no space or special character needed. Be careful on the special number formats.";
-              throw new PreesmRuntimeException(message);
+          try {
+            this.scenario.getEnergyConfig().setActorPeEnergy(actor, component, expression);
+            final String msg = "Importing Energy: " + actor.getVertexPath() + " on " + component.getVlnv().getName()
+                + " takes " + expression;
+            PreesmLogger.getLogger().log(Level.INFO, msg);
+          } catch (final NumberFormatException e) {
+            final String message = "Problem importing energy of " + actor + " on " + component
+                + ". Double with no space or special character needed. Be careful on the special number formats.";
+            throw new PreesmRuntimeException(message);
 
-            }
           }
         } else {
           if ((vertexCell == null) && !missingVertices.contains(actor)) {

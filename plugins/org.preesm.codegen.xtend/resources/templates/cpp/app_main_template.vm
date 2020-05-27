@@ -1,0 +1,142 @@
+/*
+ * Copyright or © or Copr. IETR/INSA - Rennes (2013 - 2019) :
+ *
+ * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2018)
+ * Clément Guy <clement.guy@insa-rennes.fr> (2014)
+ * Florian Arrestier <florian.arrestier@insa-rennes.fr> (2017-2020)
+ * Hugo Miomandre <hugo.miomandre@insa-rennes.fr> (2017)
+ * Julien Heulot <julien.heulot@insa-rennes.fr> (2013 - 2015)
+ * Yaset Oliva <yaset.oliva@insa-rennes.fr> (2013 - 2014)
+ *
+ * Spider is a dataflow based runtime used to execute dynamic PiSDF
+ * applications. The Preesm tool may be used to design PiSDF applications.
+ *
+ * This software is governed by the CeCILL  license under French law and
+ * abiding by the rules of distribution of free software.  You can  use,
+ * modify and/ or redistribute the software under the terms of the CeCILL
+ * license as circulated by CEA, CNRS and INRIA at the following URL
+ * "http://www.cecill.info".
+ *
+ * As a counterpart to the access to the source code and  rights to copy,
+ * modify and redistribute granted by the license, users are provided only
+ * with a limited warranty  and the software's author,  the holder of the
+ * economic rights,  and the successive licensors  have only  limited
+ * liability.
+ *
+ * In this respect, the user's attention is drawn to the risks associated
+ * with loading,  using,  modifying and/or developing or reproducing the
+ * software by the user in light of its specific status of free software,
+ * that may mean  that it is complicated to manipulate,  and  that  also
+ * therefore means  that it is reserved for developers  and  experienced
+ * professionals having in-depth computer knowledge. Users are therefore
+ * encouraged to load and test the software's suitability as regards their
+ * requirements in conditions enabling the security of their systems and/or
+ * data to be ensured and,  more generally, to use and operate it in the
+ * same conditions as regards security.
+ *
+ * The fact that you are presently reading this means that you have had
+ * knowledge of the CeCILL license and that you accept its terms.
+ */
+
+/* === Include(s) === */
+
+#[[#]]#include "spider2-application.h"
+
+/* === Static function(s) === */
+
+namespace spider {
+
+    /**
+     * @brief Call the init function(s) of the user application graph.
+     * @remark This function will be called BEFORE any iteration of
+     *         the application graph.
+     */
+    static void userApplicationInit() {
+#foreach ($pair in $initPrototypes)
+
+        /* == Initialization function: ${pair.first} == */
+        ${pair.first}(#foreach ($inputPort in $pair.second)/* == Param: ${inputPort.name} == */ ${inputPort.getIncomingDependency().getSetter().getValueExpression().evaluate()}#if( $foreach.hasNext ), #end#end);
+#end
+    }
+
+    /**
+     * @brief Call the finalize function(s) of the user application graph.
+     * @remark This function will be called AFTER any iteration of
+     *         the application graph.
+     */
+    static void userApplicationFinalize() {
+
+    }
+
+}
+
+/* === Application main entry point === */
+
+int main(int argc, char *argv[]) {
+    spider::StartUpConfig config;
+    
+    /* == Check if there are any command line arguments == */
+    if (argc > 1) {
+        /* == Parse the input arguments to set the config == */
+        config = spider::parseInputArguments(argc, argv);
+    } else {
+        /* == Use fixed configuration == */
+        config.verbose_ = ${verbose};
+        config.standAlone_ = ${standalone};
+        config.usePapify_ = ${papify};
+        config.useApollo_ = ${apollo};
+        config.enableGeneralLog_ = ${genlog};
+        config.standAloneClusterIx_ = ${clusterIx};
+        config.exportTrace_ = ${exportTrace};
+        config.exportSRDAG_ = ${exportSRDAG};
+        
+        /* == Set the allocation policy of the main general stack (used by the STL) == */ 
+        /* == To set the policy of a given stack, use the spider::api::setStackAllocatorPolicy function == */
+        config.generalStackAllocatorPolicy_ = spider::AllocatorPolicy::${genAllocPolicy};
+        config.generalStackAlignment_ = ${genAllocAlign};
+        config.generalStackSize_ = ${genAllocSize};
+        config.generalStackExternAddress_ = ${genAllocExtAddr};
+    }
+    
+    /* == Initialize spider library == */
+    spider::start(config);
+    
+    try {
+        /* == Creates the architecture == */
+        spider::createUserPhysicalPlatform();
+        
+        /* == Creates the application graph == */
+        auto *graph = spider::createUserApplicationGraph();
+        
+        /* == Creates the runtime platform == */
+        spider::api::createThreadRTPlatform();
+        
+        /* == Creates the application kernels == */
+        spider::createUserApplicationKernels();
+        
+        /* == Call the user init function(s) == */
+        spider::userApplicationInit();
+
+        /* == Creates the runtime context == */
+        auto context = spider::createRuntimeContext(graph, spider::RunMode::${runMode}, ${loopCount}, spider::RuntimeType::${runtimeAlgo}, spider::SchedulingPolicy::${schedAlgorithm});
+        
+        /* == Run the application == */
+        spider::run(context);
+
+        /* == Destroy the context == */
+        spider::destroyRuntimeContext(context);
+
+        /* == Destroy the graph == */
+        spider::api::destroyGraph(graph);    
+        
+        /* == Call the user finalize function(s) == */
+        spider::userApplicationFinalize();
+        
+    } catch (std::exception &e) {
+        fprintf(stderr, "%s.\n", e.what());
+    }
+
+    /* == Exit spider library == */
+    spider::quit();
+    return 0;
+}

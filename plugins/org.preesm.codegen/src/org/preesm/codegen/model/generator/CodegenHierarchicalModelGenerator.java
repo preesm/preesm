@@ -1,10 +1,10 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2017 - 2019) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2017 - 2020) :
  *
  * Alexandre Honorat [alexandre.honorat@insa-rennes.fr] (2019)
  * Antoine Morvan [antoine.morvan@insa-rennes.fr] (2017 - 2019)
  * Daniel Madroñal [daniel.madronal@upm.es] (2019)
- * Dylan Gageot [gageot.dylan@gmail.com] (2019)
+ * Dylan Gageot [gageot.dylan@gmail.com] (2019 - 2020)
  * Julien Hascoet [jhascoet@kalray.eu] (2017)
  *
  * This software is a computer program whose purpose is to help prototyping
@@ -583,9 +583,9 @@ public class CodegenHierarchicalModelGenerator {
       bufIter.setSize(bufSize);
 
       if (CodeGenArgument.INPUT.equals(arg.getDirection())) {
-        loopBlock.getInBuffers().add(bufIter);
+        // loopBlock.getInBuffers().add(bufIter);
       } else if (CodeGenArgument.OUTPUT.equals(arg.getDirection())) {
-        loopBlock.getOutBuffers().add(bufIter);
+        // loopBlock.getOutBuffers().add(bufIter);
       } else {
         throw new PreesmRuntimeException("Args INPUT / OUTPUT failed\n");
       }

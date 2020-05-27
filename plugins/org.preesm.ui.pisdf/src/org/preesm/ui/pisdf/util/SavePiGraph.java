@@ -1,7 +1,7 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2019) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2019 - 2020) :
  *
- * Alexandre Honorat [alexandre.honorat@insa-rennes.fr] (2019)
+ * Alexandre Honorat [alexandre.honorat@insa-rennes.fr] (2019 - 2020)
  * Antoine Morvan [antoine.morvan@insa-rennes.fr] (2019)
  *
  * This software is a computer program whose purpose is to help prototyping
@@ -71,14 +71,35 @@ public class SavePiGraph {
    *          to be saved.
    * @param suffix
    *          appends the name of the graph to save it.
+   * @return Folder selected by the user (may be null).
    */
-  public static void save(final IProject iProject, final PiGraph graph, final String suffix) {
+  public static IPath save(final IProject iProject, final PiGraph graph, final String suffix) {
     final IPath targetFolder = FileUtils.browseFiles(PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell(),
         "Select result location", "Select the folder where to write the computed PiGraph.", (Collection<String>) null);
     if (targetFolder == null) {
       // the user canceled the save operation.
-      return;
+      return targetFolder;
     }
+    saveInFolder(iProject, targetFolder, graph, suffix);
+
+    return targetFolder;
+
+  }
+
+  /**
+   * Write a PiGraph in the given folder path.
+   * 
+   * @param iProject
+   *          original project of the graph.
+   * @param targetFolder
+   *          folder where to save the graph.
+   * @param graph
+   *          to be saved.
+   * @param suffix
+   *          appends the name of the graph to save it.
+   */
+  public static void saveInFolder(final IProject iProject, final IPath targetFolder, final PiGraph graph,
+      final String suffix) {
     // The commented code is kept in case we would like to restrict the writing process to the given iProject.
 
     // final IPath inProjectPath = targetFolder.removeFirstSegments(1);

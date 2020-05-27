@@ -1,8 +1,9 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2017 - 2019) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2017 - 2020) :
  *
  * Antoine Morvan [antoine.morvan@insa-rennes.fr] (2017 - 2019)
  * Florian Arrestier [florian.arrestier@insa-rennes.fr] (2018)
+ * Julien Heulot [julien.heulot@insa-rennes.fr] (2020)
  *
  * This software is a computer program whose purpose is to help prototyping
  * parallel applications using dataflow formalism.
@@ -108,7 +109,7 @@ public class PasteFeature extends AbstractPasteFeature {
     final Object[] originalObjects = getFromClipboard();
     for (final Object o : originalObjects) {
       if (o instanceof VertexCopy) {
-        final EObject eContainer = ((VertexCopy) o).originalPiGraph;
+        final EObject eContainer = ((VertexCopy) o).getOriginalPiGraph();
         result = (PiGraph) eContainer;
         break;
       }
@@ -140,7 +141,7 @@ public class PasteFeature extends AbstractPasteFeature {
     final Map<VertexCopy, Pair<Integer, Integer>> caluclatePositions = caluclatePositions(context, copies);
 
     for (final VertexCopy vertexCopy : copies) {
-      final Configurable vertex = vertexCopy.originalVertex;
+      final Configurable vertex = vertexCopy.getOriginalVertex();
 
       final Configurable copy = PiMMUserFactory.instance.copy(vertex);
       final String name = computeUniqueNameForCopy(vertex);
@@ -175,8 +176,8 @@ public class PasteFeature extends AbstractPasteFeature {
     int maxY = Integer.MIN_VALUE;
     int minY = Integer.MAX_VALUE;
     for (final VertexCopy copy : copies) {
-      final int originalX = copy.originalX;
-      final int originalY = copy.originalY;
+      final int originalX = copy.getOriginalX();
+      final int originalY = copy.getOriginalY();
       maxX = Math.max(maxX, originalX);
       maxY = Math.max(maxY, originalY);
       minX = Math.min(minX, originalX);
@@ -190,8 +191,8 @@ public class PasteFeature extends AbstractPasteFeature {
     final int pasteY = context.getY();
 
     for (final VertexCopy copy : copies) {
-      final int newX = pasteX + (copy.originalX - avgX);
-      final int newY = pasteY + (copy.originalY - avgY);
+      final int newX = pasteX + (copy.getOriginalX() - avgX);
+      final int newY = pasteY + (copy.getOriginalY() - avgY);
       positions.put(copy, new Pair<>(newX, newY));
     }
     return positions;

@@ -1,9 +1,10 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2015 - 2019) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2015 - 2020) :
  *
  * Alexandre Honorat [alexandre.honorat@insa-rennes.fr] (2019)
  * Antoine Morvan [antoine.morvan@insa-rennes.fr] (2017 - 2019)
  * Clément Guy [clement.guy@insa-rennes.fr] (2015)
+ * Julien Heulot [julien.heulot@insa-rennes.fr] (2020)
  *
  * This software is a computer program whose purpose is to help prototyping
  * parallel applications using dataflow formalism.
@@ -39,6 +40,7 @@ package org.preesm.algorithm.mapper.stats.exporter;
 import java.awt.Color;
 import java.io.File;
 import java.util.logging.Level;
+import javax.xml.XMLConstants;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -77,6 +79,8 @@ public class XMLStatsExporter {
   public static void exportXMLStats(final File file, final IStatGenerator statGen) {
 
     DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
+    dbFactory.setAttribute(XMLConstants.ACCESS_EXTERNAL_DTD, "");
+    dbFactory.setAttribute(XMLConstants.ACCESS_EXTERNAL_SCHEMA, "");
     DocumentBuilder dBuilder;
     try {
       dBuilder = dbFactory.newDocumentBuilder();
@@ -90,6 +94,8 @@ public class XMLStatsExporter {
 
     // Write the file
     TransformerFactory transformerFactory = TransformerFactory.newInstance();
+    transformerFactory.setAttribute(XMLConstants.ACCESS_EXTERNAL_DTD, "");
+    transformerFactory.setAttribute(XMLConstants.ACCESS_EXTERNAL_STYLESHEET, "");
     try {
       Transformer transformer = transformerFactory.newTransformer();
       DOMSource source = new DOMSource(content);

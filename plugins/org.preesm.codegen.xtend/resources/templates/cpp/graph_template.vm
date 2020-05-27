@@ -1,0 +1,154 @@
+#foreach($param in $staticParameters)
+
+    auto param_$param.name = spider::api::createStaticParam(
+          /* = Graph of the parameter = */  graph,
+          /* = Name of the parameter  = */ "$param.name",
+          /* = Value of the parameter = */  $param.expression.expressionAsString);
+#end
+#foreach($param in $dynamicParameters)
+
+    auto param_$param.name = spider::api::createDynamicParam(
+          /* = Graph of the parameter = */  graph,
+          /* = Name of the parameter  = */ "$param.name");
+#end
+#foreach($param in $dependendStaticParameters)
+
+    auto param_$param.name = spider::api::createDerivedParam(
+          /* = Graph of the parameter      = */  graph,
+          /* = Name of the parameter       = */ "$param.name",
+          /* = Expression of the parameter = */ "$param.expression.expressionAsString");
+#end
+#foreach($param in $dependentDynamicParameters)
+
+    auto param_$param.name = spider::api::createDerivedParam(
+          /* = Graph of the parameter      = */  graph,
+          /* = Name of the parameter       = */ "$param.name",
+          /* = Expression of the parameter = */ "$param.expression.expressionAsString");
+#end
+
+    /* === Set the input interface(s) === */
+#foreach($interface in $inputInterfaces)
+
+    auto *vertex_$interface.name = spider::api::setInputInterfaceName(
+          /* = Graph of the interface = */  graph,
+          /* = Index of the interface = */  $inputInterfaces.indexOf(${interface}),
+          /* = Name of the interface  = */ "$interface.name");
+#end
+
+    /* === Set the output interface(s) === */
+#foreach($interface in $outputInterfaces)
+
+    auto *vertex_$interface.name = spider::api::setOutputInterfaceName(
+          /* = Graph of the interface = */  graph,
+          /* = Index of the interface = */  $outputInterfaces.indexOf(${interface}),
+          /* = Name of the interface  = */ "$interface.name");
+#end
+
+    /* === Creates the actor(s) == */
+#foreach($codegenActor in $actors)
+    #set($actor = $codegenActor.actor)
+    #set($type = $codegenActor.type)
+    #set($rateConfigInputPorts = $codegenActor.rateConfigInputPorts)
+    #set($refinementConfigInputPorts = $codegenActor.refinementConfigInputPorts)
+    #set($configOutputPorts = $codegenActor.refinementConfigOutputPorts)
+    
+    auto *vertex_$actor.name = spider::api::createVertexFromType(
+          /* = Graph of the vertex    = */  graph, 
+          /* = Name of the actor      = */ "$actor.name", 
+          /* = Number of input edges  = */  ${actor.dataInputPorts.size()}, 
+          /* = Number of output edges = */  ${actor.dataOutputPorts.size()},
+          /* = Type of the vertex     = */  pisdf::VertexType::$type,
+          /* = Kernel index (if any)  = */ #if(!$actor.refinement) SIZE_MAX#else kernels::${actor.refinement.loopPrototype.name.toUpperCase()}#end);
+
+#if( ${rateConfigInputPorts.size()} > 0)
+
+    /* == Set the input parameters used by rate expressions of the vertex $actor.name == */
+#foreach($inputPort in $rateConfigInputPorts)
+    spider::api::addInputParamToVertex(vertex_$actor.name, param_${inputPort.incomingDependency.setter.name});
+#end
+#end
+#if( ${refinementConfigInputPorts.size()} > 0)
+
+    /* == Set the input parameters needed by the refinement of the vertex $actor.name == */
+#foreach($inputPort in $refinementConfigInputPorts)
+    spider::api::addInputRefinementParamToVertex(vertex_$actor.name, param_${inputPort.incomingDependency.setter.name});
+#end
+#end
+#if( ${configOutputPorts.size()} > 0)
+
+    /* == Set the output parameters of the vertex $actor.name == */
+#foreach($outputPort in $configOutputPorts)
+    spider::api::addOutputParamToVertex(vertex_$actor.name, param_${outputPort.outgoingDependencies.get(0).target.name});
+#end
+#end 
+    
+    /* == Setting mappable constraints of the vertex $actor.name == */
+#if ( ${codegenActor.isMappableOnAll} )
+    spider::api::setVertexMappableOnAllPE(vertex_$actor.name, true);
+#else
+    #set($constraints = $codegenActor.mappingConstraints)
+#foreach($constraint in $constraints)
+    spider::api::setVertexMappableOnPE(vertex_$actor.name, PE_${constraint.first.toUpperCase()}, ${constraint.second});
+#end
+#end
+    #set($timings = $codegenActor.timings)
+#if ( ${timings.size()} > 0 )
+    
+    /* == Set the timings of the vertex $actor.name == */
+#foreach($timing in $timings)
+    spider::api::setVertexExecutionTimingOnHWType(vertex_$actor.name, TYPE_${timing.first.toUpperCase()}, "$timing.second");
+#end
+#end
+#end
+
+    /* === Creates the subgraph(s) === */
+#foreach($pair in $subgraphsAndParameters)
+    #set($subgraph = $pair.first)
+    #set($paramNames = $pair.second)
+    
+    auto *vertex_$subgraph.name = spider::create${subgraph.piGraphName}Subgraph("$subgraph.name", graph, {#foreach ($name in $paramNames) param_$name #end});
+#end    
+
+    /* === Creates the edge(s) === */
+#foreach ($edge in $edges)
+
+    /* == Edge ${edge.source.name}[$edge.sourcePortName] -> [$edge.sinkPortName]$edge.sink.name == */
+#if( $edge.hasDelay() )
+    auto *edge_${edge.source.name}_${edge.sourcePortName}__${edge.sink.name}_${edge.sinkPortName} = spider::api::createEdge(
+         /* = Source vertex          = */  vertex_$edge.source.name,
+         /* = Source port ix         = */  $edge.sourceIx,
+         /* = Source rate expression = */ "(${edge.sourceRateExpression}) * ${edge.size}",
+         /* = Sink vertex            = */  vertex_$edge.sink.name,
+         /* = Sink port ix           = */  $edge.sinkIx,
+         /* = sink rate expression   = */ "(${edge.sinkRateExpression}) * ${edge.size}");
+         
+    /* == Set the delay on the edge == */
+#if( ${edge.isDelayPersistent()} )
+    spider::api::createPersistentDelay(/* = Edge of the delay       = */  edge_${edge.source.name}_${edge.sourcePortName}__${edge.sink.name}_${edge.sinkPortName},
+                                       /* = Expression of the delay = */ "(${edge.delayExpression}) * ${edge.size}");   
+#elseif( ${edge.isDelayLocallyPersistent()} )
+    spider::api::createLocalPersistentDelay(/* = Edge of the delay            = */  edge_${edge.source.name}_${edge.sourcePortName}__${edge.sink.name}_${edge.sinkPortName},
+                                            /* = Expression of the delay      = */ "(${edge.delayExpression}) * ${edge.size}",
+                                            /* = Number of persistence levels = */  edge.delayLevel);                                          
+#elseif( ${edge.delay.isDynamic()} )
+    spider::api::createLocalDelay(/* = Edge of the delay       = */  edge_${edge.source.name}_${edge.sourcePortName}__${edge.sink.name}_${edge.sinkPortName},
+                                  /* = Expression of the delay = */ "(${edge.delayExpression}) * ${edge.size}",
+                                  /* = Setter of the delay     = */  $edge.setterDelay,
+                                  /* = Setter port ix          = */  $edge.setterPortIx,
+                                  /* = Setter rate expression  = */ "(${edge.setterRateExpression}) * ${edge.setterSize}",
+                                  /* = Getter of the delay     = */  $edge.getterDelay,
+                                  /* = Getter port ix          = */  $edge.getterPortIx,
+                                  /* = Getter rate expression  = */ "(${edge.getterRateExpression}) * ${edge.getterSize}");                                          
+#else         
+    spider::api::createLocalDelay(/* = Edge of the delay       = */  edge_${edge.source.name}_${edge.sourcePortName}__${edge.sink.name}_${edge.sinkPortName},
+                                  /* = Expression of the delay = */ "(${edge.delayExpression}) * ${edge.size}");
+#end                          
+#elseif( !${edge.source.class.simpleName.equals("DelayActorImpl")} && !${edge.sink.class.simpleName.equals("DelayActorImpl")})
+    spider::api::createEdge(/* = Source vertex          = */  vertex_$edge.source.name,
+                            /* = Source port ix         = */  $edge.sourceIx,
+                            /* = Source rate expression = */ "(${edge.sourceRateExpression}) * ${edge.size}",
+                            /* = Sink vertex            = */  vertex_$edge.sink.name,
+                            /* = Sink port ix           = */  $edge.sinkIx,
+                            /* = sink rate expression   = */ "(${edge.sinkRateExpression}) * ${edge.size}");   
+#end
+#end

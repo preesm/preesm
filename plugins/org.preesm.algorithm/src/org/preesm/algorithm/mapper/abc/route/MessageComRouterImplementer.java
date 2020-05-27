@@ -1,6 +1,7 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2009 - 2019) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2009 - 2020) :
  *
+ * Alexandre Honorat [alexandre.honorat@insa-rennes.fr] (2020)
  * Antoine Morvan [antoine.morvan@insa-rennes.fr] (2017 - 2019)
  * Clément Guy [clement.guy@insa-rennes.fr] (2014 - 2015)
  * Maxime Pelcat [maxime.pelcat@insa-rennes.fr] (2009 - 2012)
@@ -156,7 +157,7 @@ public class MessageComRouterImplementer extends CommunicationRouterImplementer 
           transactions.add(new AddInvolvementVertexTransaction(true, incomingEdge, getImplementation(), routeStep,
               transferTime, getOrderManager()));
         } else {
-          PreesmLogger.getLogger().log(Level.FINE,
+          PreesmLogger.getLogger().log(Level.FINER,
               "The transfer following vertex" + edge.getSource() + "was not found. We could not add overhead.");
         }
 
