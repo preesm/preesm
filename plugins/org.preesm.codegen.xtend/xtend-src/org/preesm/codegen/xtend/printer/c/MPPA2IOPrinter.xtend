@@ -1,9 +1,9 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2013 - 2019) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2013 - 2020) :
  *
  * Antoine Morvan [antoine.morvan@insa-rennes.fr] (2017 - 2019)
  * Daniel Madroñal [daniel.madronal@upm.es] (2019)
- * Dylan Gageot [gageot.dylan@gmail.com] (2019)
+ * Dylan Gageot [gageot.dylan@gmail.com] (2019 - 2020)
  * Julien Hascoet [jhascoet@kalray.eu] (2016 - 2017)
  * Karol Desnos [karol.desnos@insa-rennes.fr] (2013 - 2017)
  *

@@ -1,8 +1,9 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2017 - 2019) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2017 - 2020) :
  *
  * Antoine Morvan [antoine.morvan@insa-rennes.fr] (2017 - 2019)
  * Julien Hascoet [jhascoet@kalray.eu] (2017)
+ * Julien Heulot [julien.heulot@insa-rennes.fr] (2020)
  * Karol Desnos [karol.desnos@insa-rennes.fr] (2017 - 2019)
  *
  * This software is a computer program whose purpose is to help prototyping

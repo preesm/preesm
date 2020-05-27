@@ -1,12 +1,7 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2013 - 2019) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2020) :
  *
- * Antoine Morvan [antoine.morvan@insa-rennes.fr] (2017 - 2019)
- * Clément Guy [clement.guy@insa-rennes.fr] (2014 - 2015)
- * Florian Arrestier [florian.arrestier@insa-rennes.fr] (2018)
- * Julien Heulot [julien.heulot@insa-rennes.fr] (2013)
- * Maxime Pelcat [maxime.pelcat@insa-rennes.fr] (2013)
- * Romina Racca [romina.racca@gmail.com] (2013)
+ * Alexandre Honorat [alexandre.honorat@insa-rennes.fr] (2020)
  *
  * This software is a computer program whose purpose is to help prototyping
  * parallel applications using dataflow formalism.
