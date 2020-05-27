@@ -163,7 +163,7 @@ public class AlgorithmAndArchitectureScenarioNode extends AbstractScenarioImplem
         folder.mkdirs();
         PreesmLogger.getLogger().info("Created missing target dir [" + folder.getAbsolutePath() + "] during codegen");
       } else {
-        FileUtils.deleteDirectory(folder);
+        FileUtils.forceDelete(folder);
       }
       WorkspaceUtils.updateWorkspace();
       if (!f.exists()) {
