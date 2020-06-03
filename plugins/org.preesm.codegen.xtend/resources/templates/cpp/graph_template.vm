@@ -111,9 +111,9 @@
 
     /* === Creates the edge(s) === */
 #foreach ($edge in $edges)
+#if( $edge.hasDelay() )
 
     /* == Edge ${edge.source.name}[$edge.sourcePortName] -> [$edge.sinkPortName]$edge.sink.name == */
-#if( $edge.hasDelay() )
     auto *edge_${edge.source.name}_${edge.sourcePortName}__${edge.sink.name}_${edge.sinkPortName} = spider::api::createEdge(
          /* = Source vertex          = */  vertex_$edge.source.name,
          /* = Source port ix         = */  $edge.sourceIx,
@@ -144,6 +144,8 @@
                                   /* = Expression of the delay = */ "(${edge.delayExpression}) * ${edge.size}");
 #end                          
 #elseif( !${edge.source.class.simpleName.equals("DelayActorImpl")} && !${edge.sink.class.simpleName.equals("DelayActorImpl")})
+
+    /* == Edge ${edge.source.name}[$edge.sourcePortName] -> [$edge.sinkPortName]$edge.sink.name == */
     spider::api::createEdge(/* = Source vertex          = */  vertex_$edge.source.name,
                             /* = Source port ix         = */  $edge.sourceIx,
                             /* = Source rate expression = */ "(${edge.sourceRateExpression}) * ${edge.size}",
