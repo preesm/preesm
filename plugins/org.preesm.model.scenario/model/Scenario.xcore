@@ -1,10 +1,11 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2019 - 2020) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2019-2020) :
  *
- * Alexandre Honorat [alexandre.honorat@insa-rennes.fr] (2019 - 2020)
+ * Alexandre Honorat [alexandre.honorat@insa-rennes.fr] (2019)
  * Antoine Morvan [antoine.morvan@insa-rennes.fr] (2019)
  * Daniel Madroñal [daniel.madronal@upm.es] (2019)
  * Julien Heulot [julien.heulot@insa-rennes.fr] (2020)
+ * Mickael Dardaillon [mickael.dardaillon@insa-rennes.fr] (2020)
  *
  * This software is a computer program whose purpose is to help prototyping
  * parallel applications using dataflow formalism.
@@ -63,6 +64,7 @@ import org.preesm.model.slam.ComponentInstance
 import org.preesm.model.slam.Design
 import org.preesm.model.slam.serialize.SlamParser
 import org.preesm.model.slam.Component
+import org.preesm.model.slam.TimingType
 
 // !!! This is needed as of the current versions of xcore/xtext
 // For some reason when using the default String/... (i.e. without the following)
@@ -247,34 +249,41 @@ class Timings {
 	String excelFileURL // excel or csv local file
 	refers Scenario scenario opposite timings
 	contains ActorTimings[] actorTimings opposite timings
-	op void addDefaultTiming(AbstractActor actor, Component component) {
-		setTiming(actor, component, 100)
+
+	op void setExecutionTime(AbstractActor actor, Component component, long time) {
+		setExecutionTime(actor, component, Long.toString(time))
 	}
-	op void setTiming(AbstractActor actor, Component component, long time) {
-		setTiming(actor, component, Long.toString(time))
+	op void setExecutionTime(AbstractActor actor, Component component, String value) {
+		setTiming(actor, component, TimingType.EXECUTION_TIME, value)
 	}
-	op void setTiming(AbstractActor actor, Component component, String value) {
+	op void setTiming(AbstractActor actor, Component component, TimingType timingType, String value) {
 		if (!actorTimings.containsKey(actor)) {
 			actorTimings.put(actor, ECollections.asEMap(newLinkedHashMap))
 		}
-		actorTimings.get(actor).put(component, value)
+		if (!actorTimings.get(actor).containsKey(component)) {
+			actorTimings.get(actor).put(component, ECollections.asEMap(newLinkedHashMap))
+		}
+		actorTimings.get(actor).get(component).put(timingType, value)
 	}
-	op String getTimingOrDefault(AbstractActor actor, Component component) {
-		if (this.actorTimings.containsKey(actor)) {
-			val EMap<Component, String> map = actorTimings.get(actor);
-			if (map.containsKey(component)) {
-				return map.get(component);
-			}
-		} else {
-			val AbstractActor source = PreesmCopyTracker.getSource(actor);
-			if (source !== actor) {
-				return getTimingOrDefault(source, component);
-			}
+	op String getExecutionTimeOrDefault(AbstractActor actor, Component component) {
+		return getTimingOrDefault(actor, component, TimingType.EXECUTION_TIME)
+	}
+	op String getTimingOrDefault(AbstractActor actor, Component component, TimingType timingType) {
+		val timing = this.actorTimings.get(actor)?.get(component)?.get(timingType)
+		if (timing !== null) {
+			return timing
+		}
+		val AbstractActor source = PreesmCopyTracker.getSource(actor);
+		if (source !== actor) {
+			return getTimingOrDefault(source, component, timingType);
 		}
 		return Long.toString(ScenarioConstants.DEFAULT_TIMING_TASK.value);
 	}
-	op long evaluateTimingOrDefault(AbstractActor actor, Component component) {
-		val String timingExpression = getTimingOrDefault(actor, component);
+	op long evaluateExecutionTimeOrDefault(AbstractActor actor, Component component) {
+		return evaluateTimingOrDefault(actor, component, TimingType.EXECUTION_TIME)
+	}
+	op long evaluateTimingOrDefault(AbstractActor actor, Component component, TimingType timingType) {
+		val String timingExpression = getTimingOrDefault(actor, component, timingType);
 		var long t;
 		if (timingExpression !== null) {
 			t = ExpressionEvaluator.evaluate(actor, timingExpression, scenario.parameterValues.map);
@@ -291,12 +300,18 @@ class ActorTimings wraps java.util.Map$Entry {
 	refers Timings timings opposite actorTimings
 	// TODO use actor reference ? implement lookup with copy tracker ?
 	refers AbstractActor key // the actor path
-	contains ActorTimingValue[] value opposite actorTimings // the timing values
+	contains ActorComponentTimings[] value opposite actorComponentTimings
+}
+
+class ActorComponentTimings wraps java.util.Map$Entry {
+	refers ActorTimings actorComponentTimings opposite value
+	refers Component key // the operator definition ID from the design
+	contains ActorTimingValue[] value opposite actorTimings
 }
 
 class ActorTimingValue wraps java.util.Map$Entry {
-	refers ActorTimings actorTimings opposite value
-	refers Component key // the operator definition ID from the design
+	refers ActorComponentTimings actorTimings opposite value
+	TimingType key
 	// TODO unit ?
 	// TODO expression
 	String value // litteral value or expression of the timing;

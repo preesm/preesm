@@ -54,7 +54,7 @@ import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.model.slam.ComponentInstance;
 import org.preesm.model.slam.Design;
 import org.preesm.model.slam.Link;
-import org.preesm.model.slam.Operator;
+import org.preesm.model.slam.ProcessingElement;
 import org.preesm.model.slam.SlamRoute;
 import org.preesm.model.slam.impl.ComNodeImpl;
 import org.preesm.model.slam.utils.SlamUserFactory;
@@ -262,7 +262,7 @@ public class SlamRoutingTable {
           newAlreadyVisitedNodes.add(newNode);
           exploreRoute(source, newNode, newAlreadyVisitedNodes);
         }
-      } else if ((otherEnd.getComponent() instanceof Operator)
+      } else if ((otherEnd.getComponent() instanceof ProcessingElement)
           && !otherEnd.getInstanceName().equals(source.getInstanceName())) {
         final SlamRoute newRoute = SlamUserFactory.eINSTANCE.createSlamRoute(this.archi, source, alreadyVisitedNodes,
             otherEnd);

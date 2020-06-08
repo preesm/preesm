@@ -78,6 +78,7 @@ import org.preesm.model.scenario.ScenarioConstants;
 import org.preesm.model.slam.Component;
 import org.preesm.model.slam.ComponentInstance;
 import org.preesm.model.slam.Design;
+import org.preesm.model.slam.TimingType;
 
 /**
  * The Class SpiderCodegen.
@@ -172,7 +173,7 @@ public class SpiderCodegen {
     this.coresFromCoreType = new LinkedHashMap<>();
     int coreTypeId = 0;
     final Design design = this.scenario.getDesign();
-    for (final Component coreType : design.getOperatorComponents()) {
+    for (final Component coreType : design.getProcessingElements()) {
       this.coreTypesIds.put(coreType, coreTypeId++);
       // Link the number of cores associated to each core type
       final EList<Component> components = this.architecture.getComponentHolder().getComponents();
@@ -210,9 +211,10 @@ public class SpiderCodegen {
           this.timings.put(actor, new LinkedHashMap<Component, String>());
         }
         if (this.scenario.getTimings().getActorTimings().containsKey(actor)) {
-          final EMap<Component, String> listTimings = this.scenario.getTimings().getActorTimings().get(actor);
-          for (Entry<Component, String> e : listTimings) {
-            this.timings.get(actor).put(e.getKey(), e.getValue());
+          final EMap<Component,
+              EMap<TimingType, String>> listTimings = this.scenario.getTimings().getActorTimings().get(actor);
+          for (Entry<Component, EMap<TimingType, String>> e : listTimings) {
+            this.timings.get(actor).put(e.getKey(), e.getValue().get(TimingType.EXECUTION_TIME));
           }
         }
       } else {

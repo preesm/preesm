@@ -260,7 +260,7 @@ public class EnergyPage extends ScenarioPage {
 
     // Create columns
     final List<String> operatorTypes = new ArrayList<>();
-    for (final Component opDefId : this.scenario.getDesign().getOperatorComponents()) {
+    for (final Component opDefId : this.scenario.getDesign().getProcessingElements()) {
       if (!operatorTypes.contains(opDefId.getVlnv().getName())) {
         operatorTypes.add(opDefId.getVlnv().getName());
       }
@@ -540,7 +540,7 @@ public class EnergyPage extends ScenarioPage {
   private void comboDataInit(final Combo combo) {
     combo.removeAll();
     final Design design = this.scenario.getDesign();
-    for (final Component defId : design.getOperatorComponents()) {
+    for (final Component defId : design.getProcessingElements()) {
       combo.add(defId.getVlnv().getName());
     }
   }

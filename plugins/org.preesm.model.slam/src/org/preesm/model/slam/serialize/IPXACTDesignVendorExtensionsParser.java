@@ -511,6 +511,11 @@ public class IPXACTDesignVendorExtensionsParser {
       componentType = "ComNode";
     }
 
+    // Mutation to convert Component using a generic Operator to a default CPU type
+    if (componentType.contentEquals("Operator")) {
+      componentType = "CPU";
+    }
+
     final ComponentDescription description = new ComponentDescription(componentRef, componentType, refinement);
 
     if (componentType.contains("ComNode")) {

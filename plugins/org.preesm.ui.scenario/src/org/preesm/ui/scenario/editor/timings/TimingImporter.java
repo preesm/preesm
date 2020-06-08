@@ -69,18 +69,18 @@ public class TimingImporter {
         final Design design = currentScenario.getDesign();
         switch (fileExt[fileExt.length - 1]) {
           case "xls":
-            excelParser.parse(excelFileURL, design.getOperatorComponents());
+            excelParser.parse(excelFileURL, design.getProcessingElements());
             break;
           case "csv":
-            csvParser.parse(excelFileURL, design.getOperatorComponents());
+            csvParser.parse(excelFileURL, design.getProcessingElements());
             break;
           case "papify":
-            papifyParser.parse(excelFileURL, design.getOperatorComponents());
+            papifyParser.parse(excelFileURL, design.getProcessingElements());
             break;
           default:
         }
         if (excelFileURL.endsWith("papify-output")) {
-          papifyOutputParser.parse(excelFileURL, design.getOperatorComponents());
+          papifyOutputParser.parse(excelFileURL, design.getProcessingElements());
         }
       } catch (final Exception e) {
         PreesmLogger.getLogger().log(Level.WARNING, "Could not import timings", e);

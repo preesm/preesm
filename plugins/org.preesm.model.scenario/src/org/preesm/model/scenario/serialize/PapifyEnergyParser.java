@@ -61,6 +61,7 @@ import org.preesm.model.pisdf.util.VertexPath;
 import org.preesm.model.scenario.Scenario;
 import org.preesm.model.slam.Component;
 import org.preesm.model.slam.ComponentInstance;
+import org.preesm.model.slam.ProcessingElement;
 
 /**
  * Importing energy in a scenario from a papify generated csv file. task names are rows while operators are columns
@@ -91,7 +92,7 @@ public class PapifyEnergyParser {
    * @param opDefIds
    *          the op def ids
    */
-  public void parse(final String url, final List<Component> opDefIds) {
+  public void parse(final String url, final List<ProcessingElement> opDefIds) {
     PreesmLogger.getLogger().log(Level.INFO,
         "Importing energy from a papify generated csv sheet. Non precised energies are kept unmodified.");
 
@@ -197,7 +198,7 @@ public class PapifyEnergyParser {
    *           the core exception
    */
   private void parseEnergies(final Map<AbstractActor, Map<Component, String>> energies,
-      final List<Component> opDefIds) {
+      final List<ProcessingElement> opDefIds) {
     // Depending on the type of SDF graph we process (IBSDF or PISDF), call
     // one or the other method
     final PiGraph currentGraph = scenario.getAlgorithm();
@@ -215,7 +216,7 @@ public class PapifyEnergyParser {
    *          the op def ids
    */
   private void parseEnergiesForPISDFGraph(final Map<AbstractActor, Map<Component, String>> energies,
-      final PiGraph currentGraph, final List<Component> opDefIds) {
+      final PiGraph currentGraph, final List<ProcessingElement> opDefIds) {
 
     // parse energies of non hierarchical actors of currentGraph
     currentGraph.getActorsWithRefinement().stream().filter(a -> !a.isHierarchical())
@@ -235,7 +236,7 @@ public class PapifyEnergyParser {
    *          the op def ids
    */
   private void parseEnergyForVertex(final Map<AbstractActor, Map<Component, String>> energies,
-      final AbstractActor actor, final List<Component> componentList) {
+      final AbstractActor actor, final List<ProcessingElement> componentList) {
     // For each kind of processing elements, we look for a energies for given vertex
     for (final Component component : componentList) {
       if (component != null && actor != null) {

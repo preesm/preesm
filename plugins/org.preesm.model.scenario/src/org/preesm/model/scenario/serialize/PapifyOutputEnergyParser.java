@@ -64,6 +64,7 @@ import org.preesm.model.scenario.PapiEvent;
 import org.preesm.model.scenario.Scenario;
 import org.preesm.model.slam.Component;
 import org.preesm.model.slam.ComponentInstance;
+import org.preesm.model.slam.ProcessingElement;
 
 /**
  * Importing energy in a scenario from a papify-output folder.
@@ -94,7 +95,7 @@ public class PapifyOutputEnergyParser {
    * @param opDefIds
    *          the op def ids
    */
-  public void parse(final String url, final List<Component> opDefIds) {
+  public void parse(final String url, final List<ProcessingElement> opDefIds) {
     PreesmLogger.getLogger().log(Level.INFO,
         "Importing energies from a papify-output folder. Non precised energies are kept unmodified.");
 
@@ -115,7 +116,7 @@ public class PapifyOutputEnergyParser {
     }
   }
 
-  private void readFile(final String url, final List<Component> opDefIds,
+  private void readFile(final String url, final List<ProcessingElement> opDefIds,
       final Map<AbstractActor, Map<Component, String>> energies, final Map<String, EMap<PapiEvent, Double>> coreModels,
       File file) {
     final String filePath = url.concat("//").concat(file.getName());
@@ -130,9 +131,10 @@ public class PapifyOutputEnergyParser {
     }
   }
 
-  private void processFile(final List<Component> opDefIds, final Map<AbstractActor, Map<Component, String>> energies,
-      final Map<String, EMap<PapiEvent, Double>> coreModels, Map<String, Double> energiesParsed,
-      Map<String, Integer> times, Set<String> coresParseable, final BufferedReader br) throws IOException {
+  private void processFile(final List<ProcessingElement> opDefIds,
+      final Map<AbstractActor, Map<Component, String>> energies, final Map<String, EMap<PapiEvent, Double>> coreModels,
+      Map<String, Double> energiesParsed, Map<String, Integer> times, Set<String> coresParseable,
+      final BufferedReader br) throws IOException {
     String line = br.readLine();
     final String[] cellsInit = line.split(",");
     int totalCells = cellsInit.length;
@@ -181,8 +183,9 @@ public class PapifyOutputEnergyParser {
     return actorName;
   }
 
-  private void applyOnActor(final List<Component> opDefIds, final Map<AbstractActor, Map<Component, String>> energies,
-      Map<String, Double> energiesParsed, Map<String, Integer> times, final AbstractActor lookupActor) {
+  private void applyOnActor(final List<ProcessingElement> opDefIds,
+      final Map<AbstractActor, Map<Component, String>> energies, Map<String, Double> energiesParsed,
+      Map<String, Integer> times, final AbstractActor lookupActor) {
     final Map<Component, String> energy = new LinkedHashMap<>();
     for (Component comp : opDefIds) {
       double averageEnergy = 0;
@@ -214,7 +217,7 @@ public class PapifyOutputEnergyParser {
     }
   }
 
-  private Map<String, EMap<PapiEvent, Double>> readKPI(final List<Component> opDefIds) {
+  private Map<String, EMap<PapiEvent, Double>> readKPI(final List<ProcessingElement> opDefIds) {
     final Map<String, EMap<PapiEvent, Double>> coreModels = new LinkedHashMap<>();
     for (Component comp : opDefIds) {
       for (ComponentInstance compInstance : comp.getInstances()) {
@@ -236,7 +239,7 @@ public class PapifyOutputEnergyParser {
    *           the core exception
    */
   private void parseEnergies(final Map<AbstractActor, Map<Component, String>> energies,
-      final List<Component> opDefIds) {
+      final List<ProcessingElement> opDefIds) {
     // Depending on the type of SDF graph we process (IBSDF or PISDF), call
     // one or the other method
     final PiGraph currentGraph = scenario.getAlgorithm();
@@ -254,7 +257,7 @@ public class PapifyOutputEnergyParser {
    *          the op def ids
    */
   private void parseEnergiesForPISDFGraph(final Map<AbstractActor, Map<Component, String>> energies,
-      final PiGraph currentGraph, final List<Component> opDefIds) {
+      final PiGraph currentGraph, final List<ProcessingElement> opDefIds) {
 
     // parse energies of non hierarchical actors of currentGraph
     currentGraph.getActorsWithRefinement().stream().filter(a -> !a.isHierarchical())
@@ -274,7 +277,7 @@ public class PapifyOutputEnergyParser {
    *          the op def ids
    */
   private void parseEnergyForVertex(final Map<AbstractActor, Map<Component, String>> energies,
-      final AbstractActor actor, final List<Component> componentList) {
+      final AbstractActor actor, final List<ProcessingElement> componentList) {
     // For each kind of processing elements, we look for a energy for given vertex
     for (final Component component : componentList) {
       if (component != null && actor != null) {

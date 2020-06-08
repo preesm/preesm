@@ -144,7 +144,7 @@ public class ExcelEnergyWriter extends ExcelWriter {
       final List<AbstractActor> vSet = PreesmAlgorithmListContentProvider.getSortedPISDFVertices(this.scenario);
 
       final Design design = this.scenario.getDesign();
-      for (final Component opDefId : design.getOperatorComponents()) {
+      for (final Component opDefId : design.getProcessingElements()) {
         for (final AbstractActor vertexName : vSet) {
 
           final String energy = this.scenario.getEnergyConfig().getEnergyActorOrDefault(vertexName, opDefId);

@@ -80,11 +80,11 @@ public class ChocoScheduler extends PeriodicScheduler {
   @Override
   protected SynthesisResult exec(PiGraph piGraph, Design slamDesign, Scenario scenario) {
 
-    if (slamDesign.getOperatorComponents().size() != 1) {
+    if (slamDesign.getProcessingElements().size() != 1) {
       throw new PreesmSchedulingException("This task must be called with a homogeneous architecture, abandon.");
     }
 
-    int nbCores = slamDesign.getOperatorComponents().get(0).getInstances().size();
+    int nbCores = slamDesign.getProcessingElements().get(0).getInstances().size();
     PreesmLogger.getLogger().log(Level.INFO, "Found " + nbCores + " cores.");
 
     long graphPeriod = piGraph.getPeriod().evaluate();
@@ -106,7 +106,7 @@ public class ChocoScheduler extends PeriodicScheduler {
     possibleMappings = new TreeMap<>(new AbstractActorNameComparator());
     topParallelSchedule = ScheduleFactory.eINSTANCE.createParallelHiearchicalSchedule();
     resultMapping = MappingFactory.eINSTANCE.createMapping();
-    for (ComponentInstance ci : slamDesign.getOperatorComponents().get(0).getInstances()) {
+    for (ComponentInstance ci : slamDesign.getProcessingElements().get(0).getInstances()) {
       final ActorSchedule createActorSchedule = ScheduleFactory.eINSTANCE.createSequentialActorSchedule();
       topParallelSchedule.getScheduleTree().add(createActorSchedule);
       CoreAbstraction ca = new CoreAbstraction(ci, createActorSchedule);

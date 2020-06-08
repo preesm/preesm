@@ -578,7 +578,7 @@ public class PapifyPage extends ScenarioPage {
     this.peContentProvider.addCheckStateListener(this.checkStateListener);
 
     final Design design = this.scenario.getDesign();
-    for (final Component columnLabel : design.getOperatorComponents()) {
+    for (final Component columnLabel : design.getProcessingElements()) {
 
       final TreeViewerColumn viewerColumn = new TreeViewerColumn(peTreeViewer, SWT.CENTER | SWT.CHECK);
       final TreeColumn column = viewerColumn.getColumn();
@@ -691,7 +691,7 @@ public class PapifyPage extends ScenarioPage {
     this.modelTableViewer.setInput(this.scenario);
     final GridData gd = new GridData(
         GridData.VERTICAL_ALIGN_BEGINNING | GridData.FILL_HORIZONTAL | GridData.FILL_VERTICAL);
-    final Integer peTypes = scenario.getDesign().getOperatorComponents().size();
+    final Integer peTypes = scenario.getDesign().getProcessingElements().size();
     gd.heightHint = Math.min(300, peTypes * 20 + 50);
     gd.widthHint = 400;
     gd.grabExcessVerticalSpace = false;
@@ -878,7 +878,7 @@ public class PapifyPage extends ScenarioPage {
     this.modelTableCps.addControlListener(new ControlAdapter() {
       @Override
       public void controlResized(final ControlEvent e) {
-        table.setSize(totalWidthInner, PapifyPage.this.scenario.getDesign().getOperatorComponents().size() * 20 + 50);
+        table.setSize(totalWidthInner, PapifyPage.this.scenario.getDesign().getProcessingElements().size() * 20 + 50);
       }
     });
   }

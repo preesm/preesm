@@ -79,7 +79,7 @@ import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.scenario.Scenario;
 import org.preesm.model.slam.ComponentInstance;
 import org.preesm.model.slam.Design;
-import org.preesm.model.slam.Operator;
+import org.preesm.model.slam.ProcessingElement;
 import org.preesm.model.slam.VLNV;
 import org.preesm.model.slam.utils.LexicographicComponentInstanceComparator;
 
@@ -159,7 +159,7 @@ public class ExternalMappingFromDAG extends AbstractMappingFromDAG {
     // assumes hardwareId goes from 0 to ...
     for (int i = 0; i < componentInstances.size(); i++) {
       final ComponentInstance componentInstance = componentInstances.get(i);
-      if (componentInstance.getComponent() instanceof Operator) {
+      if (componentInstance.getComponent() instanceof ProcessingElement) {
         int coreId = componentInstance.getHardwareId();
         PreesmLogger.getLogger().log(Level.INFO, "Adding available core operator with id: " + coreId);
         orderedVertices.put(coreId, new ArrayList<>());

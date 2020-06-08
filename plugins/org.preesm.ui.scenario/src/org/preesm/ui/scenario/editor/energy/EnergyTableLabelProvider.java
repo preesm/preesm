@@ -62,6 +62,7 @@ import org.preesm.model.pisdf.expression.ExpressionEvaluator;
 import org.preesm.model.scenario.Scenario;
 import org.preesm.model.slam.Component;
 import org.preesm.model.slam.Design;
+import org.preesm.model.slam.ProcessingElement;
 import org.preesm.ui.PreesmUIPlugin;
 import org.preesm.ui.scenario.editor.Messages;
 
@@ -116,7 +117,7 @@ public class EnergyTableLabelProvider extends BaseLabelProvider implements ITabl
     this.imageOk = imageDcr.createImage();
 
     final Design design = scenario.getDesign();
-    final List<Component> operators = design.getOperatorComponents();
+    final List<ProcessingElement> operators = design.getProcessingElements();
     this.currentOpDefId = operators.get(0);
   }
 
@@ -211,7 +212,7 @@ public class EnergyTableLabelProvider extends BaseLabelProvider implements ITabl
       if (this.currentOpDefId != null) {
         final String title = Messages.getString("Energy.dialog.title");
         final String message = Messages.getString("Energy.dialog.message") + abstractActor.getVertexPath();
-        final String init = this.scenario.getTimings().getTimingOrDefault(abstractActor, this.currentOpDefId);
+        final String init = this.scenario.getTimings().getExecutionTimeOrDefault(abstractActor, this.currentOpDefId);
 
         final InputDialog dialog = new InputDialog(PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell(),
             title, message, init, validator);

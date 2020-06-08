@@ -150,10 +150,10 @@ public class ExcelTimingWriter extends ExcelWriter {
       final List<AbstractActor> vSet = PreesmAlgorithmListContentProvider.getSortedPISDFVertices(this.scenario);
 
       final Design design = this.scenario.getDesign();
-      for (final Component opDefId : design.getOperatorComponents()) {
+      for (final Component opDefId : design.getProcessingElements()) {
         for (final AbstractActor vertexName : vSet) {
 
-          final String timing = this.scenario.getTimings().getTimingOrDefault(vertexName, opDefId);
+          final String timing = this.scenario.getTimings().getExecutionTimeOrDefault(vertexName, opDefId);
 
           WritableCell opCell = (WritableCell) sheet.findCell(opDefId.getVlnv().getName());
           WritableCell vCell = (WritableCell) sheet.findCell(vertexName.getVertexPath());

@@ -197,7 +197,7 @@ public class ClusteringHelper {
       // Retrieve timing from actors
       final List<AbstractActor> actors = ScheduleUtil.getAllReferencedActors(schedule);
       AbstractActor actor = actors.get(0);
-      long actorTiming = scenario.getTimings().evaluateTimingOrDefault(actor, component);
+      long actorTiming = scenario.getTimings().evaluateExecutionTimeOrDefault(actor, component);
       timing = schedule.getRepetition() * actorTiming;
     }
 

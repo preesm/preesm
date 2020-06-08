@@ -77,7 +77,7 @@ import org.preesm.model.scenario.Timings;
 import org.preesm.model.slam.Component;
 import org.preesm.model.slam.ComponentInstance;
 import org.preesm.model.slam.Design;
-import org.preesm.model.slam.Operator;
+import org.preesm.model.slam.ProcessingElement;
 
 /**
  * Uses the SDF4J library to convert the input SDF into a DAG before scheduling.
@@ -269,7 +269,7 @@ public class SdfToDagConverter {
           if (referencePiVertex instanceof AbstractActor) {
             final AbstractActor actor = ((AbstractActor) referencePiVertex);
             // info is set to the vertexPath of AbstractVertex
-            final long originalTiming = tm.evaluateTimingOrDefault(actor, op.getComponent());
+            final long originalTiming = tm.evaluateExecutionTimeOrDefault(actor, op.getComponent());
             final Timing copyTiming;
             if (originalTiming == ScenarioConstants.DEFAULT_TIMING_TASK.getValue()) {
               copyTiming = new Timing(op.getComponent(), actor);
@@ -378,7 +378,7 @@ public class SdfToDagConverter {
         if (sdfVertexIds.contains(lookingFor)) {
 
           final ComponentInstance currentIOp = cg.getKey();
-          if (currentIOp.getComponent() instanceof Operator) {
+          if (currentIOp.getComponent() instanceof ProcessingElement) {
 
             if (!mv.getInit().isMapable(currentIOp)) {
 

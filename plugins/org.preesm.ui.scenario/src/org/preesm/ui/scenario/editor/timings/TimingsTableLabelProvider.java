@@ -1,6 +1,7 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2011 - 2019) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2011 - 2020) :
  *
+ * Mickaël Dardaillon [mickael.dardaillon@insa-rennes.fr] (2020)
  * Alexandre Honorat [alexandre.honorat@insa-rennes.fr] (2019)
  * Antoine Morvan [antoine.morvan@insa-rennes.fr] (2017 - 2019)
  * Clément Guy [clement.guy@insa-rennes.fr] (2014 - 2015)
@@ -59,10 +60,12 @@ import org.preesm.commons.files.PreesmResourcesHelper;
 import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.expression.ExpressionEvaluator;
 import org.preesm.model.scenario.Scenario;
-import org.preesm.model.slam.Component;
 import org.preesm.model.slam.Design;
+import org.preesm.model.slam.ProcessingElement;
+import org.preesm.model.slam.TimingType;
 import org.preesm.ui.PreesmUIPlugin;
 import org.preesm.ui.scenario.editor.Messages;
+import org.preesm.ui.scenario.editor.timings.TimingsPage.TimingColumn;
 
 /**
  * Displays the labels for tasks timings. These labels are the time of each task
@@ -74,14 +77,14 @@ public class TimingsTableLabelProvider extends BaseLabelProvider implements ITab
   /** The scenario. */
   private Scenario scenario = null;
 
-  /** The current op def id. */
-  private Component currentOpDefId = null;
+  /** The current processing element */
+  private ProcessingElement currentPE = null;
+
+  /** The current timing type */
+  private TimingType currentTimingType = null;
 
   /** The table viewer. */
   private TableViewer tableViewer = null;
-
-  /** The image ok. */
-  private final Image imageOk;
 
   /** The image error. */
   private final Image imageError;
@@ -110,26 +113,21 @@ public class TimingsTableLabelProvider extends BaseLabelProvider implements ITab
     ImageDescriptor imageDcr = ImageDescriptor.createFromURL(errorIconURL);
     this.imageError = imageDcr.createImage();
 
-    final URL okIconURL = PreesmResourcesHelper.getInstance().resolve("icons/ok.png", PreesmUIPlugin.class);
-    imageDcr = ImageDescriptor.createFromURL(okIconURL);
-    this.imageOk = imageDcr.createImage();
-
     final Design design = scenario.getDesign();
-    final List<Component> operators = design.getOperatorComponents();
-    this.currentOpDefId = operators.get(0);
+    final List<ProcessingElement> operators = design.getProcessingElements();
+    this.currentPE = operators.get(0);
+    this.currentTimingType = operators.get(0).getTimingTypes().get(0);
   }
 
   @Override
   public Image getColumnImage(final Object element, final int columnIndex) {
-    if ((element instanceof AbstractActor) && (this.currentOpDefId != null)) {
+    if ((element instanceof AbstractActor) && (this.currentPE != null) && (this.currentTimingType != null)) {
       final AbstractActor vertex = (AbstractActor) element;
 
-      final String timing = this.scenario.getTimings().getTimingOrDefault(vertex, this.currentOpDefId);
-      if (columnIndex == 3) {
+      final String timing = this.scenario.getTimings().getTimingOrDefault(vertex, currentPE, currentTimingType);
+      if (columnIndex == TimingColumn.VALUE.ordinal()) {
         final boolean canEvaluate = ExpressionEvaluator.canEvaluate(vertex, timing);
-        if (canEvaluate) {
-          return this.imageOk;
-        } else {
+        if (!canEvaluate) {
           return this.imageError;
         }
       }
@@ -139,36 +137,37 @@ public class TimingsTableLabelProvider extends BaseLabelProvider implements ITab
 
   @Override
   public String getColumnText(final Object element, final int columnIndex) {
-    if ((element instanceof AbstractActor) && (this.currentOpDefId != null)) {
-      final AbstractActor vertex = (AbstractActor) element;
+    if (!(element instanceof AbstractActor)) {
+      return "";
+    }
+    if ((this.currentPE == null) || (this.currentTimingType == null)) {
+      return "";
+    }
 
-      final String timing = this.scenario.getTimings().getTimingOrDefault(vertex, this.currentOpDefId);
+    final AbstractActor vertex = (AbstractActor) element;
+    final String timing = this.scenario.getTimings().getTimingOrDefault(vertex, currentPE, currentTimingType);
 
-      switch (columnIndex) {
-        case 0:
-          return vertex.getVertexPath();
-        case 1: // Input Parameters
-          if (timing == null || vertex.getInputParameters().isEmpty()) {
-            return " - ";
-          } else {
-            return ExpressionEvaluator.lookupParameterValues(vertex, Collections.emptyMap()).keySet().toString();
-          }
-        case 2: // Expression
-          if (timing != null) {
-            return timing;
-          }
-          break;
-        case 3: // Evaluation Status
-          return null;
-        case 4: // Value
-          if (timing != null && ExpressionEvaluator.canEvaluate(vertex, timing)) {
-            return Long
-                .toString(ExpressionEvaluator.evaluate(vertex, timing, this.scenario.getParameterValues().map()));
-          } else {
-            return "";
-          }
-        default:
-      }
+    switch (TimingColumn.values()[columnIndex]) {
+      case ACTORS:
+        return vertex.getVertexPath();
+      case PARAMETERS:
+        if (timing == null || vertex.getInputParameters().isEmpty()) {
+          return " - ";
+        } else {
+          return ExpressionEvaluator.lookupParameterValues(vertex, Collections.emptyMap()).keySet().toString();
+        }
+      case EXPRESSION:
+        if (timing != null) {
+          return timing;
+        }
+        break;
+      case VALUE:
+        if (timing != null && ExpressionEvaluator.canEvaluate(vertex, timing)) {
+          return Long.toString(ExpressionEvaluator.evaluate(vertex, timing, this.scenario.getParameterValues().map()));
+        }
+        break;
+      default:
+        break;
     }
     return "";
   }
@@ -184,7 +183,12 @@ public class TimingsTableLabelProvider extends BaseLabelProvider implements ITab
     if (e.getSource() instanceof Combo) {
       final Combo combo = ((Combo) e.getSource());
       final String item = combo.getItem(combo.getSelectionIndex());
-      this.currentOpDefId = this.scenario.getDesign().getComponent(item);
+      ProcessingElement pe = this.scenario.getDesign().getProcessingElement(item);
+      if (pe != null) {
+        this.currentPE = pe;
+      } else {
+        currentTimingType = TimingType.get(item);
+      }
       this.tableViewer.refresh();
     }
   }
@@ -207,17 +211,17 @@ public class TimingsTableLabelProvider extends BaseLabelProvider implements ITab
     if (firstElement instanceof AbstractActor) {
       final AbstractActor abstractActor = (AbstractActor) firstElement;
 
-      if (this.currentOpDefId != null) {
+      if ((this.currentPE != null) && (this.currentTimingType != null)) {
         final String title = Messages.getString("Timings.dialog.title");
         final String message = Messages.getString("Timings.dialog.message") + abstractActor.getVertexPath();
-        final String init = this.scenario.getTimings().getTimingOrDefault(abstractActor, this.currentOpDefId);
+        final String init = this.scenario.getTimings().getTimingOrDefault(abstractActor, currentPE, currentTimingType);
 
         final InputDialog dialog = new InputDialog(PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell(),
             title, message, init, validator);
         if (dialog.open() == Window.OK) {
           final String value = dialog.getValue();
 
-          this.scenario.getTimings().setTiming(abstractActor, this.currentOpDefId, value);
+          this.scenario.getTimings().setTiming(abstractActor, this.currentPE, this.currentTimingType, value);
           this.propertyListener.propertyChanged(this, IEditorPart.PROP_DIRTY);
           this.tableViewer.refresh();
         }
