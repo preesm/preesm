@@ -79,6 +79,7 @@ import org.preesm.model.scenario.Scenario;
 import org.preesm.model.slam.Component;
 import org.preesm.model.slam.ComponentInstance;
 import org.preesm.model.slam.Design;
+import org.preesm.model.slam.ProcessingElement;
 import org.preesm.model.slam.SlamMessageRouteStep;
 import org.preesm.model.slam.SlamRoute;
 import org.preesm.model.slam.SlamRouteStep;
@@ -351,7 +352,7 @@ public class CustomQuantaExporter extends AbstractTaskImplementation {
 
         final PiGraph currentGraph = scenario.getAlgorithm();
         final Design design = scenario.getDesign();
-        parseQuantaForPISDFGraph(w, currentGraph, design.getOperatorComponents());
+        parseQuantaForPISDFGraph(w, currentGraph, design.getProcessingElements());
 
         // Warnings are displayed once for each missing operator or vertex
         // in the excel sheet
@@ -365,7 +366,7 @@ public class CustomQuantaExporter extends AbstractTaskImplementation {
   /**
    * Reading individual quanta information from an excel file. Recursive method.
    */
-  void parseQuantaForPISDFGraph(final Workbook w, final PiGraph appli, final List<Component> operators) {
+  void parseQuantaForPISDFGraph(final Workbook w, final PiGraph appli, final List<ProcessingElement> operators) {
     // Each of the vertices of the graph is either itself a graph
     // (hierarchical vertex), in which case we call recursively this method
     // we parse quanta for standard and special vertices
@@ -399,7 +400,7 @@ public class CustomQuantaExporter extends AbstractTaskImplementation {
   /**
    * Reading individual quanta information from an excel file. Recursive method.
    */
-  void parseQuantaForVertex(final Workbook w, final String vertexName, final List<Component> operators) {
+  void parseQuantaForVertex(final Workbook w, final String vertexName, final List<ProcessingElement> operators) {
 
     // Test excel reader, to be continued
     for (final Component opDefId : operators) {

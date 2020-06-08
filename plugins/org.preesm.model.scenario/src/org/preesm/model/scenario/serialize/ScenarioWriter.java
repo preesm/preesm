@@ -64,6 +64,7 @@ import org.preesm.model.scenario.Scenario;
 import org.preesm.model.slam.Component;
 import org.preesm.model.slam.ComponentInstance;
 import org.preesm.model.slam.Design;
+import org.preesm.model.slam.TimingType;
 import org.w3c.dom.DOMImplementation;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -539,10 +540,14 @@ public class ScenarioWriter {
     String excelFileURL = this.scenario.getTimings().getExcelFileURL();
     timingsElement.setAttribute("excelUrl", excelFileURL);
 
-    final EMap<AbstractActor, EMap<Component, String>> actorsTimings = this.scenario.getTimings().getActorTimings();
-    for (final Entry<AbstractActor, EMap<Component, String>> actorTimings : actorsTimings) {
-      for (final Entry<Component, String> timing : actorTimings.getValue()) {
-        writeTiming(timingsElement, actorTimings.getKey(), timing.getKey(), timing.getValue());
+    final EMap<AbstractActor,
+        EMap<Component, EMap<TimingType, String>>> actorsTimings = this.scenario.getTimings().getActorTimings();
+    for (final Entry<AbstractActor, EMap<Component, EMap<TimingType, String>>> actorTimings : actorsTimings) {
+      for (final Entry<Component, EMap<TimingType, String>> actorComponentTimings : actorTimings.getValue()) {
+        for (final Entry<TimingType, String> timings : actorComponentTimings.getValue()) {
+          writeTiming(timingsElement, actorTimings.getKey(), actorComponentTimings.getKey(), timings.getKey(),
+              timings.getValue());
+        }
       }
     }
 
@@ -562,11 +567,12 @@ public class ScenarioWriter {
    *          the timing
    */
   private void writeTiming(final Element parent, final AbstractActor actor, final Component component,
-      final String timing) {
+      final TimingType timingType, final String timing) {
     final Element timingelt = this.dom.createElement("timing");
     parent.appendChild(timingelt);
     timingelt.setAttribute("vertexname", actor.getVertexPath());
     timingelt.setAttribute("opname", component.getVlnv().getName());
+    timingelt.setAttribute("timingtype", timingType.getName());
     timingelt.setAttribute("time", timing);
   }
 

@@ -59,6 +59,7 @@ import org.preesm.model.pisdf.AbstractVertex;
 import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.scenario.Scenario;
 import org.preesm.model.slam.Component;
+import org.preesm.model.slam.ProcessingElement;
 
 /**
  * Importing timings in a scenario from an excel file. task names are rows while operator types are columns
@@ -89,7 +90,7 @@ public class ExcelTimingParser {
    * @param opDefIds
    *          the op def ids
    */
-  public void parse(final String url, final List<Component> opDefIds) {
+  public void parse(final String url, final List<ProcessingElement> opDefIds) {
     PreesmLogger.getLogger().log(Level.INFO,
         "Importing timings from an excel sheet. Non precised timings are kept unmodified.");
 
@@ -128,7 +129,7 @@ public class ExcelTimingParser {
    * @throws CoreException
    *           the core exception
    */
-  private void parseTimings(final Workbook w, final List<Component> opDefIds,
+  private void parseTimings(final Workbook w, final List<ProcessingElement> opDefIds,
       final List<AbstractVertex> missingVertices, final List<Component> missingOperatorTypes) {
     // Depending on the type of SDF graph we process (IBSDF or PISDF), call
     // one or the other method
@@ -150,8 +151,9 @@ public class ExcelTimingParser {
    * @param missingOperatorTypes
    *          the missing operator types
    */
-  private void parseTimingsForPISDFGraph(final Workbook w, final PiGraph currentGraph, final List<Component> opDefIds,
-      final List<AbstractVertex> missingVertices, final List<Component> missingOperatorTypes) {
+  private void parseTimingsForPISDFGraph(final Workbook w, final PiGraph currentGraph,
+      final List<ProcessingElement> opDefIds, final List<AbstractVertex> missingVertices,
+      final List<Component> missingOperatorTypes) {
 
     currentGraph.getActorsWithRefinement().stream().filter(a -> !a.isHierarchical())
         .forEach(a -> parseTimingForVertex(w, a, opDefIds, missingVertices, missingOperatorTypes));
@@ -175,7 +177,7 @@ public class ExcelTimingParser {
    * @param missingOperatorTypes
    *          the missing operator types
    */
-  private void parseTimingForVertex(final Workbook w, final AbstractActor actor, final List<Component> opDefIds,
+  private void parseTimingForVertex(final Workbook w, final AbstractActor actor, final List<ProcessingElement> opDefIds,
       final List<AbstractVertex> missingVertices, final List<Component> missingOperatorTypes) {
     // For each kind of processing elements, we look for a timing for given
     // vertex
@@ -192,7 +194,7 @@ public class ExcelTimingParser {
           final String expression = timingCell.getContents();
 
           try {
-            this.scenario.getTimings().setTiming(actor, component, expression);
+            this.scenario.getTimings().setExecutionTime(actor, component, expression);
             final String msg = "Importing timing: " + actor.getVertexPath() + " on " + component.getVlnv().getName()
                 + " takes " + expression;
             PreesmLogger.getLogger().log(Level.INFO, msg);

@@ -58,6 +58,7 @@ import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.pisdf.util.VertexPath;
 import org.preesm.model.scenario.Scenario;
 import org.preesm.model.slam.Component;
+import org.preesm.model.slam.ProcessingElement;
 
 /**
  * Importing timings in a scenario from a csv file. task names are rows while operator types are columns
@@ -99,7 +100,7 @@ public class CsvActorParameterizationParser {
    * @param opDefIds
    *          the op def ids
    */
-  public void parse(final String url, final List<Component> opDefIds) {
+  public void parse(final String url, final List<ProcessingElement> opDefIds) {
     PreesmLogger.getLogger().log(Level.INFO,
         "Importing timings from a csv sheet. Non precised timings are kept unmodified.");
 
@@ -128,7 +129,7 @@ public class CsvActorParameterizationParser {
           processLine(expressions, line, opNames);
         }
 
-        parseExpressions(expressions, opDefIds);
+        parseTimings(expressions, opDefIds);
       } else {
         throw new IllegalArgumentException("Given URL points to an empty file");
       }
@@ -168,64 +169,63 @@ public class CsvActorParameterizationParser {
   /**
    * Parses the expressions.
    *
-   * @param expressions
+   * @param timings
    *          the timings
    * @param opDefIds
    *          the op def ids
    * @throws CoreException
    *           the core exception
    */
-  private void parseExpressions(final Map<AbstractActor, Map<Component, String>> expressions,
-      final List<Component> opDefIds) {
+  private void parseTimings(final Map<AbstractActor, Map<Component, String>> timings,
+      final List<ProcessingElement> opDefIds) {
     // Depending on the type of SDF graph we process (IBSDF or PISDF), call
     // one or the other method
     final PiGraph currentGraph = scenario.getAlgorithm();
-    parseExpressionsForPISDFGraph(expressions, currentGraph, opDefIds);
+    parseTimingsForPISDFGraph(timings, currentGraph, opDefIds);
   }
 
   /**
    * Parses the expressions for PISDF graph.
    *
-   * @param expressions
+   * @param timings
    *          the timings
    * @param currentGraph
    *          the current graph
    * @param opDefIds
    *          the op def ids
    */
-  private void parseExpressionsForPISDFGraph(final Map<AbstractActor, Map<Component, String>> expressions,
-      final PiGraph currentGraph, final List<Component> opDefIds) {
-
+  private void parseTimingsForPISDFGraph(final Map<AbstractActor, Map<Component, String>> timings,
+      final PiGraph currentGraph, final List<ProcessingElement> opDefIds) {
     // parse timings of non hierarchical actors of currentGraph
     currentGraph.getActorsWithRefinement().stream().filter(a -> !a.isHierarchical())
-        .forEach(a -> parseExpressionForVertex(expressions, a, opDefIds));
+        .forEach(a -> parseTimingForVertex(timings, a, opDefIds));
     // parse timings of all direct subgraphs
-    currentGraph.getChildrenGraphs().stream().forEach(g -> parseExpressionsForPISDFGraph(expressions, g, opDefIds));
+    currentGraph.getChildrenGraphs().stream().forEach(g -> parseTimingsForPISDFGraph(timings, g, opDefIds));
   }
 
   /**
    * Parses the timing for vertex.
    *
-   * @param expressions
+   * @param timings
    *          the timings
    * @param actor
    *          the vertex name
    * @param componentList
    *          the op def ids
    */
-  private void parseExpressionForVertex(final Map<AbstractActor, Map<Component, String>> expressions,
-      final AbstractActor actor, final List<Component> componentList) {
+  private void parseTimingForVertex(final Map<AbstractActor, Map<Component, String>> timings, final AbstractActor actor,
+      final List<ProcessingElement> componentList) {
     // For each kind of processing elements, we look for a timing for given vertex
     for (final Component component : componentList) {
       if (component != null && actor != null) {
         // Get the timing we are looking for
         try {
-          final String expression = expressions.get(actor).get(component);
+          final String expression = timings.get(actor).get(component);
 
           String msg = "Importing: ";
           if (paramType.equals(ParameterizationType.TIMING)) {
             msg = "Importing timing/: ";
-            this.scenario.getTimings().setTiming(actor, component, expression);
+            this.scenario.getTimings().setExecutionTime(actor, component, expression);
           } else if (paramType.equals(ParameterizationType.ENERGY)) {
             msg = "Importing energy/: ";
             this.scenario.getEnergyConfig().setActorPeEnergy(actor, component, expression);

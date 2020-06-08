@@ -57,7 +57,7 @@ import org.preesm.algorithm.model.dag.DAGEdge;
 import org.preesm.algorithm.model.dag.DAGVertex;
 import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.slam.ComponentInstance;
-import org.preesm.model.slam.Operator;
+import org.preesm.model.slam.ProcessingElement;
 
 /**
  * Represents a vertex in a DAG of type {@link MapperDAG} used in the mapper.
@@ -377,7 +377,7 @@ public class MapperDAGVertex extends DAGVertex {
    * @return the effective operator
    */
   public ComponentInstance getEffectiveOperator() {
-    if ((this.effectiveComponent != null) && (this.effectiveComponent.getComponent() instanceof Operator)) {
+    if ((this.effectiveComponent != null) && (this.effectiveComponent.getComponent() instanceof ProcessingElement)) {
       return this.effectiveComponent;
     } else {
       return null;

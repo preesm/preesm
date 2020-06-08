@@ -70,7 +70,7 @@ public class PapifyEnergyModelContentProvider implements IStructuredContentProvi
       /**
        * PE models are added for all operator types if non present
        */
-      for (final Component opDefId : design.getOperatorComponents()) {
+      for (final Component opDefId : design.getProcessingElements()) {
         if (!energyModels.containsKey(opDefId)) {
           inputScenario.getPapifyConfig().addEnergyModel(opDefId);
         }

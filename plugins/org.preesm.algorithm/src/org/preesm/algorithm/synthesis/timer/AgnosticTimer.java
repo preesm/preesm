@@ -73,7 +73,7 @@ public class AgnosticTimer extends AbstractTimer {
     Set<Component> cmps = scenario.getPossibleMappings(actor).stream().map(x -> x.getComponent())
         .collect(Collectors.toSet());
     for (final Component cmp : cmps) {
-      long et = scenario.getTimings().evaluateTimingOrDefault(actor, cmp);
+      long et = scenario.getTimings().evaluateExecutionTimeOrDefault(actor, cmp);
       if (et > wcet) {
         wcet = et;
       }

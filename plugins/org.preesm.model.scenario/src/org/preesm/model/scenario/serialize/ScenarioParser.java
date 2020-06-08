@@ -79,6 +79,7 @@ import org.preesm.model.scenario.util.ScenarioUserFactory;
 import org.preesm.model.slam.Component;
 import org.preesm.model.slam.ComponentInstance;
 import org.preesm.model.slam.Design;
+import org.preesm.model.slam.TimingType;
 import org.preesm.model.slam.serialize.SlamParser;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -835,14 +836,20 @@ public class ScenarioParser {
       if (type.equals("timing")) {
         final String vertexpath = timingElt.getAttribute("vertexname");
         final String opdefname = timingElt.getAttribute("opname");
+        final String timingTypeName = timingElt.getAttribute("timingtype");
         final String stringValue = timingElt.getAttribute("time");
 
         final Design design = this.scenario.getDesign();
         final boolean contains = design.containsComponent(opdefname);
         final AbstractActor lookup = VertexPath.lookup(this.scenario.getAlgorithm(), vertexpath);
+        TimingType timingType = TimingType.getByName(timingTypeName);
+        // Mutation to load Scenario not specialized per TimingType
+        if (timingType == null) {
+          timingType = TimingType.EXECUTION_TIME;
+        }
         if ((lookup != null) && contains) {
           final Component component = design.getComponent(opdefname);
-          this.scenario.getTimings().setTiming(lookup, component, stringValue);
+          this.scenario.getTimings().setTiming(lookup, component, timingType, stringValue);
         }
       }
     }

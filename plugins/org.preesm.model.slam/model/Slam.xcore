@@ -1,6 +1,7 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2018 - 2019) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2018 - 2020) :
  *
+ * Mickael Dardaillon [mickael.dardaillon@insa-rennes.fr] (2020)
  * Alexandre Honorat [alexandre.honorat@insa-rennes.fr] (2019)
  * Antoine Morvan [antoine.morvan@insa-rennes.fr] (2018 - 2019)
  *
@@ -85,8 +86,8 @@ class Design extends VLNVedElement , ParameterizedElement {
 			ECollections.emptyEList
 		}
 	}
-	op Component[] getOperatorComponents() {
-		return components.filter[(it instanceof Operator)].toEList.unmodifiableView
+	op ProcessingElement[] getProcessingElements() {
+		return components.filter(ProcessingElement).toEList.unmodifiableView
 	}
 	op boolean containsComponent(VLNV name) {
 		return components.exists[vlnv.isSame(name)]
@@ -99,6 +100,9 @@ class Design extends VLNVedElement , ParameterizedElement {
 	}
 	op Component getComponent(String vlnvName) {
 		return components.findFirst[vlnvName.equals(it.vlnv.name)]
+	}
+	op ProcessingElement getProcessingElement(String vlnvName) {
+		return components.findFirst[vlnvName.equals(it.vlnv.name) && it instanceof ProcessingElement] as ProcessingElement
 	}
 
 	// COMPONENT INSTANCES RELATED OPERATIONS
@@ -116,7 +120,7 @@ class Design extends VLNVedElement , ParameterizedElement {
 		return componentInstances.filter[(it.component instanceof ComNode)].toEList.unmodifiableView
 	}
 	op ComponentInstance[] getOperatorComponentInstances() {
-		return componentInstances.filter[(it.component instanceof Operator)].toEList.unmodifiableView
+		return componentInstances.filter[(it.component instanceof ProcessingElement)].toEList.unmodifiableView
 	}
 	op ComponentInstance[] getOrderedOperatorComponentInstances() {
 		return operatorComponentInstances.sortEList(new LexicographicComponentInstanceComparator()).unmodifiableView
@@ -226,7 +230,25 @@ class Component extends VLNVedElement , ParameterizedElement {
 	}
 }
 
-class Operator extends Component {
+enum TimingType{
+	EXECUTION_TIME as "Execution Time"
+	INITIATION_INTERVAL as "Initiation Interval"
+}
+
+abstract class ProcessingElement extends Component {
+	op TimingType[] getTimingTypes()
+}
+
+class CPU extends ProcessingElement {
+	op TimingType[] getTimingTypes() {
+		return #[TimingType.EXECUTION_TIME].toEList.unmodifiableEList
+	}
+}
+
+class FPGA extends ProcessingElement {
+	op TimingType[] getTimingTypes() {
+		return #[TimingType.EXECUTION_TIME, TimingType.INITIATION_INTERVAL].toEList.unmodifiableEList
+	}
 }
 
 class ComNode extends Component {

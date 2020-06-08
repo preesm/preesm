@@ -273,9 +273,9 @@ public class ScenariosGenerator {
     final List<ComponentInstance> coreIds = new ArrayList<>(archi.getOperatorComponentInstances());
 
     // for all different type of cores, add default timing
-    for (final Component opId : archi.getOperatorComponents()) {
+    for (final Component opId : archi.getProcessingElements()) {
       for (final AbstractActor aa : piGraph.getAllActors()) {
-        scenario.getTimings().setTiming(aa, opId, ScenarioConstants.DEFAULT_TIMING_TASK.getValue());
+        scenario.getTimings().setExecutionTime(aa, opId, ScenarioConstants.DEFAULT_TIMING_TASK.getValue());
       }
     }
     // for all different type of cores, allow mapping on it

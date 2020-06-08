@@ -47,6 +47,7 @@ import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Path;
 import org.preesm.commons.exceptions.PreesmFrameworkException;
 import org.preesm.commons.exceptions.PreesmRuntimeException;
+import org.preesm.model.slam.CPU;
 import org.preesm.model.slam.ComInterface;
 import org.preesm.model.slam.ComNode;
 import org.preesm.model.slam.Component;
@@ -111,7 +112,7 @@ public class ArchitecturesGenerator {
     operatorVLNV.setVendor("");
     operatorVLNV.setVersion("");
 
-    final Component opX86 = SlamUserFactory.eINSTANCE.createComponent(operatorVLNV, "Operator");
+    final Component opX86 = SlamUserFactory.eINSTANCE.createComponent(operatorVLNV, CPU.class.getName());
     ch.getComponents().add(opX86);
 
     final ComInterface mi = SlamFactory.eINSTANCE.createComInterface();

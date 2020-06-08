@@ -86,7 +86,8 @@ public class LatencyEvaluationEngine {
       } else {
         // case of regular actor : get its latency from the scenario
         if (scenario != null) {
-          actorLatency = scenario.getTimings().evaluateTimingOrDefault((AbstractActor) actor.getReferencePiVertex(),
+          actorLatency = scenario.getTimings().evaluateExecutionTimeOrDefault(
+              (AbstractActor) actor.getReferencePiVertex(),
               scenario.getSimulationInfo().getMainOperator().getComponent());
         } else {
           actorLatency = actor.getPropertyBean().getValue(DURATION_LITERAL);
@@ -128,7 +129,8 @@ public class LatencyEvaluationEngine {
       } else {
         // case of regular actor : get its latency from the scenario
         if (scenario != null) {
-          actorLatency = scenario.getTimings().evaluateTimingOrDefault((AbstractActor) actor.getReferencePiVertex(),
+          actorLatency = scenario.getTimings().evaluateExecutionTimeOrDefault(
+              (AbstractActor) actor.getReferencePiVertex(),
               scenario.getSimulationInfo().getMainOperator().getComponent());
         } else {
           actorLatency = actor.getPropertyBean().getValue(DURATION_LITERAL);
@@ -298,7 +300,8 @@ public class LatencyEvaluationEngine {
         // get actor duration
         double duration;
         if (this.scenario != null) {
-          duration = this.scenario.getTimings().evaluateTimingOrDefault((AbstractActor) actor.getReferencePiVertex(),
+          duration = this.scenario.getTimings().evaluateExecutionTimeOrDefault(
+              (AbstractActor) actor.getReferencePiVertex(),
               scenario.getSimulationInfo().getMainOperator().getComponent());
         } else {
           duration = (Double) actor.getPropertyBean().getValue(DURATION_LITERAL);

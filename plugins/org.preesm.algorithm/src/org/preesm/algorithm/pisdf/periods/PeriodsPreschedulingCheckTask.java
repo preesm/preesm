@@ -127,11 +127,11 @@ public class PeriodsPreschedulingCheckTask extends AbstractTaskImplementation {
       throw new PreesmRuntimeException("This task must be called with a flatten PiMM graph, abandon.");
     }
 
-    if (architecture.getOperatorComponents().size() != 1) {
+    if (architecture.getProcessingElements().size() != 1) {
       throw new PreesmRuntimeException("This task must be called with a homogeneous architecture, abandon.");
     }
 
-    int nbCore = architecture.getOperatorComponents().get(0).getInstances().size();
+    int nbCore = architecture.getProcessingElements().get(0).getInstances().size();
     PreesmLogger.getLogger().log(Level.INFO, "Found " + nbCore + " cores.");
 
     final long time = System.nanoTime();
@@ -186,8 +186,8 @@ public class PeriodsPreschedulingCheckTask extends AbstractTaskImplementation {
       AbstractVertex actor = PreesmCopyTracker.getOriginalSource(a);
       long wcetMin = Long.MAX_VALUE;
       if (actor instanceof AbstractActor) {
-        for (final Component operatorDefinitionID : architecture.getOperatorComponents()) {
-          final long timing = scenario.getTimings().evaluateTimingOrDefault((AbstractActor) actor,
+        for (final Component operatorDefinitionID : architecture.getProcessingElements()) {
+          final long timing = scenario.getTimings().evaluateExecutionTimeOrDefault((AbstractActor) actor,
               operatorDefinitionID);
           if (timing < wcetMin) {
             wcetMin = timing;

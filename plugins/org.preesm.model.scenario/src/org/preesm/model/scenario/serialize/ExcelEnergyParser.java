@@ -61,6 +61,7 @@ import org.preesm.model.pisdf.AbstractVertex;
 import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.scenario.Scenario;
 import org.preesm.model.slam.Component;
+import org.preesm.model.slam.ProcessingElement;
 
 /**
  * Importing timings in a scenario from an excel file. task names are rows while operator types are columns
@@ -91,7 +92,7 @@ public class ExcelEnergyParser {
    * @param opDefIds
    *          the op def ids
    */
-  public void parse(final String url, final List<Component> opDefIds) {
+  public void parse(final String url, final List<ProcessingElement> opDefIds) {
     PreesmLogger.getLogger().log(Level.INFO,
         "Importing energy from an excel sheet. Non precised energies are kept unmodified.");
 
@@ -130,8 +131,8 @@ public class ExcelEnergyParser {
    * @throws CoreException
    *           the core exception
    */
-  private void parseEnergy(final Workbook w, final List<Component> opDefIds, final List<AbstractVertex> missingVertices,
-      final List<Component> missingOperatorTypes) {
+  private void parseEnergy(final Workbook w, final List<ProcessingElement> opDefIds,
+      final List<AbstractVertex> missingVertices, final List<Component> missingOperatorTypes) {
     // Depending on the type of SDF graph we process (IBSDF or PISDF), call
     // one or the other method
     final PiGraph currentGraph = scenario.getAlgorithm();
@@ -152,8 +153,9 @@ public class ExcelEnergyParser {
    * @param missingOperatorTypes
    *          the missing operator types
    */
-  private void parseEnergyForPISDFGraph(final Workbook w, final PiGraph currentGraph, final List<Component> opDefIds,
-      final List<AbstractVertex> missingVertices, final List<Component> missingOperatorTypes) {
+  private void parseEnergyForPISDFGraph(final Workbook w, final PiGraph currentGraph,
+      final List<ProcessingElement> opDefIds, final List<AbstractVertex> missingVertices,
+      final List<Component> missingOperatorTypes) {
 
     currentGraph.getActorsWithRefinement().stream().filter(a -> !a.isHierarchical())
         .forEach(a -> parseEnergyForVertex(w, a, opDefIds, missingVertices, missingOperatorTypes));
@@ -177,7 +179,7 @@ public class ExcelEnergyParser {
    * @param missingOperatorTypes
    *          the missing operator types
    */
-  private void parseEnergyForVertex(final Workbook w, final AbstractActor actor, final List<Component> opDefIds,
+  private void parseEnergyForVertex(final Workbook w, final AbstractActor actor, final List<ProcessingElement> opDefIds,
       final List<AbstractVertex> missingVertices, final List<Component> missingOperatorTypes) {
     // For each kind of processing elements, we look for an energy for given
     // vertex
