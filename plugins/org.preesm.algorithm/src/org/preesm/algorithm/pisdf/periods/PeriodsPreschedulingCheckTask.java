@@ -254,12 +254,10 @@ public class PeriodsPreschedulingCheckTask extends AbstractTaskImplementation {
     PreesmLogger.getLogger().log(Level.INFO, "Periodic actor for NBLF: " + sbNBLF.toString());
 
     // 3. for each selected periodic node for nblf:
-    performAllNBF(actorsNBLF, periodicActors, false, heurFifoBreaks.getAbsGraph(), heurFifoBreaks, wcets,
-        heurFifoBreaks.minCycleBrv, nbCore);
+    performAllNBF(actorsNBLF, periodicActors, false, heurFifoBreaks.getAbsGraph(), heurFifoBreaks, wcets, nbCore);
 
     // 4. for each selected periodic node for nbff:
-    performAllNBF(actorsNBFF, periodicActors, true, heurFifoBreaks.getAbsGraph(), heurFifoBreaks, wcets,
-        heurFifoBreaks.minCycleBrv, nbCore);
+    performAllNBF(actorsNBFF, periodicActors, true, heurFifoBreaks.getAbsGraph(), heurFifoBreaks, wcets, nbCore);
 
     long duration = System.nanoTime() - time;
     PreesmLogger.getLogger().info("Time+ " + Math.round(duration / 1e6) + " ms.");
@@ -304,7 +302,7 @@ public class PeriodsPreschedulingCheckTask extends AbstractTaskImplementation {
    */
   private static void performAllNBF(Map<Actor, Double> actorsNBF, Map<Actor, Long> allPeriodicActors, boolean reverse,
       DefaultDirectedGraph<AbstractActor, FifoAbstraction> absGraph, HeuristicLoopBreakingDelays hlbd,
-      Map<AbstractVertex, Long> wcets, Map<AbstractVertex, Long> minCycleBrv, int nbCore) {
+      Map<AbstractVertex, Long> wcets, int nbCore) {
 
     for (Actor a : actorsNBF.keySet()) {
       long slack = allPeriodicActors.get(a) - wcets.get(a);
@@ -314,7 +312,7 @@ public class PeriodsPreschedulingCheckTask extends AbstractTaskImplementation {
 
       DefaultDirectedGraph<AbstractActor,
           FifoAbstraction> subgraph = AbstractGraph.subDAGFrom(absGraph, a, hlbd.breakingFifosAbs, reverse);
-      totC += performNBFinternal(a, subgraph, wcets, minCycleBrv, nbf, nbCore, reverse, slack);
+      totC += performNBFinternal(a, subgraph, wcets, nbf, nbCore, reverse, slack);
 
       TreeMap<Actor, Long> nbTimesDuringAperiod = new TreeMap<>(new ActorPeriodComparator(true));
       allPeriodicActors.keySet().forEach(e -> {
@@ -333,8 +331,7 @@ public class PeriodsPreschedulingCheckTask extends AbstractTaskImplementation {
         nbf.put(entry.getKey(), entry.getValue());
         DefaultDirectedGraph<AbstractActor, FifoAbstraction> unconnectedsubgraph = AbstractGraph.subDAGFrom(absGraph,
             entry.getKey(), hlbd.breakingFifosAbs, reverse);
-        totC += performNBFinternal(entry.getKey(), unconnectedsubgraph, wcets, minCycleBrv, nbf, nbCore, reverse,
-            slack);
+        totC += performNBFinternal(entry.getKey(), unconnectedsubgraph, wcets, nbf, nbCore, reverse, slack);
         totC += wcets.get(entry.getKey()) * entry.getValue();
       }
 
@@ -348,8 +345,7 @@ public class PeriodsPreschedulingCheckTask extends AbstractTaskImplementation {
   }
 
   private static long performNBFinternal(Actor start, DefaultDirectedGraph<AbstractActor, FifoAbstraction> subgraph,
-      Map<AbstractVertex, Long> wcets, Map<AbstractVertex, Long> minCycleBrv, Map<AbstractActor, Long> previousNbf,
-      int nbCore, boolean reverse, long slack) {
+      Map<AbstractVertex, Long> wcets, Map<AbstractActor, Long> previousNbf, int nbCore, boolean reverse, long slack) {
     HashMap<AbstractActor, Long> timeTo = new HashMap<>();
     HashMap<AbstractActor, Integer> nbVisits = new HashMap<>();
     HashMap<AbstractActor, Long> nbf = new HashMap<>();
@@ -393,13 +389,7 @@ public class PeriodsPreschedulingCheckTask extends AbstractTaskImplementation {
           nbf.put(dest, nbfDest);
 
           toVisit.add(dest);
-          long wcet = wcets.get(dest);
-          long minBrv = minCycleBrv.get(dest);
-          long factorBrv = nbfDest / minBrv;
-          long remainingBrv = nbfDest % minBrv;
-          long timeRegular = wcet * factorBrv * Math.max(1L, minBrv / nbCore);
-          long timeRemaining = wcet * (remainingBrv / nbCore);
-          long time = destTimeTo + Math.max(wcet, timeRegular + timeRemaining);
+          long time = destTimeTo + wcets.get(dest) * Math.max(1L, nbfDest / nbCore);
           timeTo.put(dest, time);
           if (subgraph.outDegreeOf(dest) == 0) {
             if (time > slack) {
