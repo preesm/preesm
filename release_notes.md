@@ -9,7 +9,7 @@ PREESM Changelog
 ### Changes
 
 ### Bug fix
-
+* Fix wrong computation in workflow task: org.ietr.preesm.pimm.algorithm.checker.periods.PeriodsPreschedulingChecker
 
 ## Release version 3.20.0
 *2020.05.27*
