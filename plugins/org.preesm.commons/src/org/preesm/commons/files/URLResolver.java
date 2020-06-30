@@ -39,6 +39,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.nio.file.InvalidPathException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Arrays;
@@ -121,6 +122,8 @@ public final class URLResolver {
       try {
         resultURL = resolveFileSystemURL(location);
       } catch (final MalformedURLException e) {
+        resultURL = null;
+      } catch (final InvalidPathException e) {
         resultURL = null;
       }
     }
