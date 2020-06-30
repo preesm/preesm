@@ -121,9 +121,7 @@ public final class URLResolver {
     if (resultURL == null) {
       try {
         resultURL = resolveFileSystemURL(location);
-      } catch (final MalformedURLException e) {
-        resultURL = null;
-      } catch (final InvalidPathException e) {
+      } catch (final MalformedURLException | InvalidPathException e) {
         resultURL = null;
       }
     }
