@@ -142,7 +142,7 @@
             <parameter name="id" type="java.lang.String">
             </parameter>
          </vertexType>
-         <vertexType name="Operator">
+         <vertexType name="CPU">
             <color blue="140" green="81" red="19">
             </color>
             <shape type="roundedBox">
@@ -161,6 +161,41 @@
             </parameter>
             <parameter name="custom parameters"
                type="java.util.Map">
+            </parameter>
+         </vertexType>
+         <vertexType
+               name="FPGA">
+            <color
+                  blue="97"
+                  green="190"
+                  red="42">
+            </color>
+            <shape
+                  type="roundedBox">
+            </shape>
+            <parameter
+                  name="hardwareId"
+                  type="java.lang.String">
+            </parameter>
+            <parameter
+                  name="id"
+                  type="java.lang.String">
+            </parameter>
+            <size
+                  height="40"
+                  width="40">
+            </size>
+            <parameter
+                  name="refinement"
+                  type="java.lang.String">
+            </parameter>
+            <parameter
+                  name="definition"
+                  type="java.lang.String">
+            </parameter>
+            <parameter
+                  name="custom parameters"
+                  type="java.util.Map">
             </parameter>
          </vertexType>
          <vertexType name="Mem">
