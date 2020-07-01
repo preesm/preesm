@@ -131,7 +131,16 @@
     <!-- returns the type of a component -->
     <xsl:template name="getComponentType">
         <xsl:param name="componentName"/>
-        <xsl:value-of select="//slam:componentDescription[@slam:componentRef=$componentName]/@slam:componentType"/>
+        <!-- mutation to change legacy operator to CPU -->
+        <xsl:choose>
+            <xsl:when test="//slam:componentDescription[@slam:componentRef=$componentName]/@slam:componentType='Operator'">
+                <xsl:value-of select="'CPU'"/>
+            </xsl:when>
+            <xsl:otherwise>
+                <xsl:value-of select="//slam:componentDescription[@slam:componentRef=$componentName]/@slam:componentType"/>
+            </xsl:otherwise>
+        </xsl:choose>
+
     </xsl:template>
 
     <!-- returns the refinement of a component -->
@@ -189,8 +198,8 @@
                     <xsl:apply-templates select="spirit:configurableElementValues"/>
                 </xsl:element>
 
-                <!-- operator parameters -->
-                <xsl:if test="$componentType='operator'">
+                <!-- ProcessingElement parameters -->
+                <xsl:if test="$componentType='Operator'">
                     <xsl:element name="parameter">
                         <xsl:attribute name="name">dataCopySpeed</xsl:attribute>
                         <xsl:attribute name="value" select="spirit:configurableElementValues/spirit:configurableElementValue[@spirit:referenceId='dataCopySpeed']"/>
