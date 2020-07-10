@@ -10,6 +10,7 @@ PREESM Changelog
 
 ### Bug fix
 * Fix wrong computation in workflow task: org.ietr.preesm.pimm.algorithm.checker.periods.PeriodsPreschedulingChecker
+* Fix #324 : parsing error on Windows when parsing a header from the GUI (org.preesm.commons.files.URLResolver).
 
 ## Release version 3.20.0
 *2020.05.27*
