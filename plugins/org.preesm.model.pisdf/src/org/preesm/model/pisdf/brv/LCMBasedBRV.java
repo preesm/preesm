@@ -114,6 +114,12 @@ class LCMBasedBRV extends PiBRV {
       for (CCinfo ccInfo : ccInfos) {
         if (!ccInfo.fifoProperties.isEmpty()) {
 
+          // First actor has repetition ratio 1/1 by default
+          // it is certain that this actor will be executed at least once since
+          // actors in the CC are all connected by non zero fifo
+          AbstractActor firstActor = ccInfo.reps.keySet().iterator().next();
+          ccInfo.reps.put(firstActor, new LongFraction(1L));
+
           // Set initial properties for the analysis
           setReps(ccInfo.fifoProperties, ccInfo.reps);
 
@@ -186,7 +192,6 @@ class LCMBasedBRV extends PiBRV {
       }
       // else, we have discovered a new connected component
 
-      visited.add(aa);
       // start new connected component exploration
       CCinfo ccInfo = new CCinfo();
       ccs.add(ccInfo);
@@ -195,6 +200,7 @@ class LCMBasedBRV extends PiBRV {
       toVisit.addFirst(aa);
       while (!toVisit.isEmpty()) {
         AbstractActor actor = toVisit.removeFirst();
+        visited.add(actor);
         ccInfo.reps.put(actor, new LongFraction(0L));
         int nbValidFifo = 0;
         int nbZeroRateFifo = 0;
@@ -288,17 +294,17 @@ class LCMBasedBRV extends PiBRV {
         LongFraction ratio = new LongFraction(cons, prod);
         if (tgtRep.getNumerator() > 0) {
           ratio = ratio.multiply(tgtRep);
+          reps.replace(src, ratio);
+          srcRep = ratio;
         }
-        reps.replace(src, ratio);
-        srcRep = ratio;
       }
 
       if (tgtRep.getNumerator() == 0 && cons > 0) {
         LongFraction ratio = new LongFraction(prod, cons);
         if (srcRep.getNumerator() > 0) {
           ratio = ratio.multiply(srcRep);
+          reps.replace(tgt, ratio);
         }
-        reps.replace(tgt, ratio);
       }
 
     }
