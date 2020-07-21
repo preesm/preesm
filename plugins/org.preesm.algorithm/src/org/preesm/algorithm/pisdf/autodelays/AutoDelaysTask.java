@@ -200,6 +200,20 @@ public class AutoDelaysTask extends AbstractTaskImplementation {
     final String schedStr = parameters.get(SCHED_PARAM_NAME);
     final boolean sched = Boolean.parseBoolean(schedStr);
 
+    final String chocoStr = parameters.get(CHOCO_PARAM_NAME);
+    final boolean choco = Boolean.parseBoolean(chocoStr);
+
+    final PiGraph graphCopy = addDelays(graph, architecture, scenario, cycles, choco, sched, nbCore, selec, maxii);
+
+    output.put(AbstractWorkflowNodeImplementation.KEY_PI_GRAPH, graphCopy);
+
+    return output;
+  }
+
+  public PiGraph addDelays(final PiGraph graph, final Design architecture, final Scenario scenario,
+      final boolean fillCycles, final boolean choco, final boolean sched, final int nbCore, final int nbPreCuts,
+      final int nbMaxCuts) {
+
     final long time = System.nanoTime();
 
     // BRV and timings
@@ -239,7 +253,7 @@ public class AutoDelaysTask extends AbstractTaskImplementation {
     final HeuristicLoopBreakingDelays hlbd = new HeuristicLoopBreakingDelays();
     hlbd.performAnalysis(graphCopy, brv);
 
-    if (cycles) {
+    if (fillCycles) {
       PreesmLogger.getLogger().log(Level.WARNING, "Experimental breaking of cycles.");
       fillCycles(hlbd, brv);
       // we redo the analysis since adding delays will modify the topo ranks
@@ -271,8 +285,8 @@ public class AutoDelaysTask extends AbstractTaskImplementation {
     final SortedMap<Integer, Set<AbstractActor>> irRankActors = mapRankActors(topoRanks, false, 0);
     // offset of one to ease next computation
     final int maxRank = irRankActors.lastKey() + 1;
-    selec = Math.min(selec, maxRank - 2);
-    maxii = Math.min(maxii, maxRank - 2);
+    final int selec = Math.min(nbPreCuts, maxRank - 2);
+    final int maxii = Math.min(nbMaxCuts, maxRank - 2);
 
     final Map<AbstractActor,
         TopoVisit> topoRanksT = TopologicalRanking.topologicalASAPrankingT(sinkActors, hlbd.actorsNbVisitsTopoRankT);
@@ -330,10 +344,6 @@ public class AutoDelaysTask extends AbstractTaskImplementation {
       setCut(cutMap, false);
     }
 
-    output.put(AbstractWorkflowNodeImplementation.KEY_PI_GRAPH, graphCopy);
-
-    final String chocoStr = parameters.get(CHOCO_PARAM_NAME);
-    final boolean choco = Boolean.parseBoolean(chocoStr);
     if (choco && maxii > 0) {
       // compute latency of heuristic
       long heuristicLatency = computeLatency(graphCopy, scenario, architecture, false);
@@ -355,7 +365,7 @@ public class AutoDelaysTask extends AbstractTaskImplementation {
       computeLatency(graphCopy, scenario, architecture, true);
     }
 
-    return output;
+    return graphCopy;
   }
 
   private void printChocoStatistics(final long heuristicLatency, final DescriptiveStatistics dsc) {
