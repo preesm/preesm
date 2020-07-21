@@ -49,6 +49,7 @@ public class DSEpointIR {
   public final long energy;
   public final int  latency;    // as factor of durationII
   public final long durationII; // inverse of throughput
+  // makespan = latency * durationII
 
   /**
    * Default constructor, with maximum values everywhere.
@@ -154,7 +155,7 @@ public class DSEpointIR {
   }
 
   /**
-   * Negative if first point has latency energy than second.
+   * Negative if first point has latency lower than second.
    * 
    * @author ahonorat
    */
@@ -183,6 +184,43 @@ public class DSEpointIR {
     @Override
     public int compare(DSEpointIR arg0, DSEpointIR arg1) {
       if (arg0.latency > threshold || arg1.latency > threshold) {
+        return Long.compare(arg0.latency, arg1.latency);
+      }
+      return 0;
+    }
+
+  }
+
+  /**
+   * Negative if first point has makespan lower than second (same as {@link LatencyMinComparator}.
+   * 
+   * @author ahonorat
+   */
+  public static class MakespanMinComparator implements Comparator<DSEpointIR> {
+
+    @Override
+    public int compare(DSEpointIR arg0, DSEpointIR arg1) {
+      return Long.compare(arg0.latency, arg1.latency);
+    }
+
+  }
+
+  /**
+   * Negative if first point has lower makespan than second. 0 if both are below the threshold.
+   * 
+   * @author ahonorat
+   */
+  public static class MakespanAtMostComparator implements Comparator<DSEpointIR> {
+
+    private final long threshold;
+
+    public MakespanAtMostComparator(final long threshold) {
+      this.threshold = threshold;
+    }
+
+    @Override
+    public int compare(DSEpointIR arg0, DSEpointIR arg1) {
+      if (arg0.latency * arg0.durationII > threshold || arg1.latency * arg1.durationII > threshold) {
         return Long.compare(arg0.latency, arg1.latency);
       }
       return 0;

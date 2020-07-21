@@ -108,18 +108,20 @@ import org.preesm.workflow.implement.AbstractWorkflowNodeImplementation;
 public class SetMalleableParametersTask extends AbstractTaskImplementation {
 
   public static final String DEFAULT_HEURISTIC_VALUE   = "false";
+  public static final String DEFAULT_DELAY_RETRY_VALUE = "false";
   public static final String DEFAULT_COMPARISONS_VALUE = "T>E>L";
   public static final String DEFAULT_THRESHOLD1_VALUE  = "0";
   public static final String DEFAULT_THRESHOLD2_VALUE  = "0";
   public static final String DEFAULT_THRESHOLD3_VALUE  = "0";
 
   public static final String DEFAULT_HEURISTIC_NAME   = "Number heuristic";
+  public static final String DEFAULT_DELAY_RETRY_NAME = "Retry with delays";
   public static final String DEFAULT_COMPARISONS_NAME = "Comparisons";
   public static final String DEFAULT_THRESHOLD1_NAME  = "Threshold 1";
   public static final String DEFAULT_THRESHOLD2_NAME  = "Threshold 2";
   public static final String DEFAULT_THRESHOLD3_NAME  = "Threshold 3";
 
-  public static final String COMPARISONS_REGEX = "[ELT](>[ELT])*";
+  public static final String COMPARISONS_REGEX = "([ELT](>[ELT])*)|([EMT](>[EMT])*)";
 
   @Override
   public Map<String, Object> execute(Map<String, Object> inputs, Map<String, String> parameters,
@@ -178,6 +180,8 @@ public class SetMalleableParametersTask extends AbstractTaskImplementation {
     }
 
     final Comparator<DSEpointIR> globalComparator = getGlobalComparater(parameters);
+    final String delayRetryStr = parameters.get(DEFAULT_DELAY_RETRY_NAME);
+    boolean delayRetryValue = Boolean.parseBoolean(delayRetryStr);
 
     if (heuristicValue) {
       numbersDSE(scenario, graph, architecture, mparamsIR, globalComparator, backupParamOverride);
@@ -367,6 +371,9 @@ public class SetMalleableParametersTask extends AbstractTaskImplementation {
           case 'L':
             listComparators.add(new DSEpointIR.LatencyMinComparator());
             break;
+          case 'M':
+            listComparators.add(new DSEpointIR.MakespanMinComparator());
+            break;
           case 'T':
             listComparators.add(new DSEpointIR.ThroughputMaxComparator());
             break;
@@ -380,6 +387,9 @@ public class SetMalleableParametersTask extends AbstractTaskImplementation {
             break;
           case 'L':
             listComparators.add(new DSEpointIR.LatencyAtMostComparator((int) thresholdI));
+            break;
+          case 'M':
+            listComparators.add(new DSEpointIR.MakespanAtMostComparator((int) thresholdI));
             break;
           case 'T':
             listComparators.add(new DSEpointIR.ThroughputAtLeastComparator(thresholdI));
@@ -399,6 +409,7 @@ public class SetMalleableParametersTask extends AbstractTaskImplementation {
   public Map<String, String> getDefaultParameters() {
     final Map<String, String> parameters = new LinkedHashMap<>();
     parameters.put(DEFAULT_HEURISTIC_NAME, DEFAULT_HEURISTIC_VALUE);
+    parameters.put(DEFAULT_DELAY_RETRY_NAME, DEFAULT_DELAY_RETRY_VALUE);
     parameters.put(DEFAULT_COMPARISONS_NAME, DEFAULT_COMPARISONS_VALUE);
     parameters.put(DEFAULT_THRESHOLD1_NAME, DEFAULT_THRESHOLD1_VALUE);
     parameters.put(DEFAULT_THRESHOLD2_NAME, DEFAULT_THRESHOLD2_VALUE);

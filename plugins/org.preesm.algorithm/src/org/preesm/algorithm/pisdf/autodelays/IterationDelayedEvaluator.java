@@ -69,7 +69,7 @@ public class IterationDelayedEvaluator {
    * 
    * @param graph
    *          to be analyzed.
-   * @return Latency as a multiplication factor of a graph iteration duration.
+   * @return Latency as a multiplication factor of a graph iteration duration (should start at 1).
    */
   public static int computeLatency(PiGraph graph) {
 
