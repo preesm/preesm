@@ -36,6 +36,7 @@ package org.preesm.algorithm.mparameters;
 
 import java.util.Comparator;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * This class stores main metrics of a DSE point. (Design Space Exploration)
@@ -50,6 +51,8 @@ public class DSEpointIR {
   public final int  latency;    // as factor of durationII
   public final long durationII; // inverse of throughput
   // makespan = latency * durationII
+  public final int askedCuts;    // if delay heuristic has been called
+  public final int askedPreCuts; // if delay heuristic has been called
 
   /**
    * Default constructor, with maximum values everywhere.
@@ -58,6 +61,8 @@ public class DSEpointIR {
     energy = Long.MAX_VALUE;
     latency = Integer.MAX_VALUE;
     durationII = Long.MAX_VALUE;
+    askedCuts = 0;
+    askedPreCuts = 0;
   }
 
   /**
@@ -71,14 +76,36 @@ public class DSEpointIR {
    *          the durationII (inverse of throughput)
    */
   public DSEpointIR(final long energy, final int latency, final long durationII) {
+    this(energy, latency, durationII, 0, 0);
+  }
+
+  /**
+   * New DSE point with heuristic delay informations.
+   * 
+   * @param energy
+   *          the energy
+   * @param latency
+   *          the latency (as factor of durationII)
+   * @param durationII
+   *          the durationII (inverse of throughput)
+   * @param askedCuts
+   *          the number of cuts asked to the delay placement heuristic
+   * @param askedPreCuts
+   *          the number of preselection cuts asked to the delay placement heuristic
+   */
+  public DSEpointIR(final long energy, final int latency, final long durationII, final int askedCuts,
+      final int askedPreCuts) {
     this.energy = energy;
     this.latency = latency;
     this.durationII = durationII;
+    this.askedCuts = askedCuts;
+    this.askedPreCuts = askedPreCuts;
   }
 
   @Override
   public String toString() {
-    return "Energy:  " + energy + "  Latency:  " + latency + "x  DurationII:  " + durationII;
+    return "Energy:  " + energy + "  Latency:  " + latency + "x  DurationII:  " + durationII + "  Asked cuts: "
+        + askedCuts + " among " + askedPreCuts;
   }
 
   /**
@@ -90,6 +117,7 @@ public class DSEpointIR {
   public static class DSEpointGlobalComparator implements Comparator<DSEpointIR> {
 
     private final List<Comparator<DSEpointIR>> comparators;
+    private boolean                            delayAcceptance;
 
     /**
      * Builds a global comparator calling successively the comparators in the arguments.
@@ -100,6 +128,7 @@ public class DSEpointIR {
      */
     public DSEpointGlobalComparator(final List<Comparator<DSEpointIR>> comparators) {
       this.comparators = comparators;
+      this.delayAcceptance = computesDelayAcceptance(comparators);
     }
 
     @Override
@@ -113,6 +142,46 @@ public class DSEpointIR {
       }
 
       return 0;
+    }
+
+    /**
+     * If minimization of latency or makespan objectives are more important than throughput, then, no delays must be
+     * added. (Except to respect graph period, not taken into account here).
+     * 
+     * @return Whether or not more delays can be added.
+     */
+    public boolean doesAcceptsMoreDelays() {
+      return delayAcceptance;
+    }
+
+    /**
+     * If minimization of latency or makespan objectives are more important than throughput, then, no delays must be
+     * added. (Except to respect graph period, not taken into account here).
+     * 
+     * @return Whether or not more delays can be added.
+     */
+    private static boolean computesDelayAcceptance(final List<Comparator<DSEpointIR>> comparators) {
+      // get index of first occurrence of throughput objective
+      int indexFirstT = comparators.size();
+      Optional<Comparator<DSEpointIR>> firstT = comparators.stream()
+          .filter(x -> x instanceof ThroughputMaxComparator | x instanceof ThroughputAtLeastComparator).findFirst();
+      if (firstT.isPresent()) {
+        indexFirstT = comparators.indexOf(firstT.get());
+      }
+      // same for minimization objectives of latency or makespan
+      int indexFirstLMmin = comparators.size();
+      Optional<Comparator<DSEpointIR>> firstLmin = comparators.stream().filter(x -> x instanceof LatencyMinComparator)
+          .findFirst();
+      if (firstLmin.isPresent()) {
+        indexFirstLMmin = comparators.indexOf(firstLmin.get());
+      }
+      Optional<Comparator<DSEpointIR>> firstMmin = comparators.stream().filter(x -> x instanceof MakespanMinComparator)
+          .findFirst();
+      if (firstMmin.isPresent()) {
+        indexFirstLMmin = Math.min(indexFirstLMmin, comparators.indexOf(firstMmin.get()));
+      }
+      // if throughput is more important than latency or makespan, then we can add more delays
+      return indexFirstT < indexFirstLMmin;
     }
 
   }

@@ -182,6 +182,39 @@ public class PeriodicScheduler extends AbstractScheduler {
 
   protected AgnosticTimer st;
 
+  /**
+   * Init public values (reset by {@link exec} method).
+   */
+  public PeriodicScheduler() {
+    Ctot = 0;
+    cores = null;
+  }
+
+  /**
+   * Total load of the last schedule attempt.
+   * 
+   * @return Sum of all firing execution times (except special actors).
+   */
+  public long getTotalLoad() {
+    return Ctot;
+  }
+
+  /**
+   * Finish time of the last firing.
+   * 
+   * @return Finish time of the last firing, or 0 if not yet computed.
+   */
+  public long getLastEndTime() {
+    if (cores == null) {
+      return 0;
+    }
+    long maxEnd = 0;
+    for (CoreAbstraction ca : cores) {
+      maxEnd = Math.max(maxEnd, ca.implTime);
+    }
+    return maxEnd;
+  }
+
   @Override
   protected SynthesisResult exec(PiGraph piGraph, Design slamDesign, Scenario scenario) {
 
