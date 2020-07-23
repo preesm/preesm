@@ -63,9 +63,7 @@
 #if( ${rateConfigInputPorts.size()} > 0)
 
     /* == Set the input parameters used by rate expressions of the vertex $actor.name == */
-#foreach($inputPort in $rateConfigInputPorts)
-    spider::api::addInputParamToVertex(vertex_$actor.name, param_${inputPort.incomingDependency.setter.name});
-#end
+    spider::api::addInputParamsToVertex(vertex_$actor.name, {#foreach ($inputPort in $rateConfigInputPorts) param_${inputPort.incomingDependency.setter.name}#if( $foreach.hasNext ), #end#end });
 #end
 #if( ${refinementConfigInputPorts.size()} > 0)
 
@@ -77,9 +75,7 @@
 #if( ${configOutputPorts.size()} > 0)
 
     /* == Set the output parameters of the vertex $actor.name == */
-#foreach($outputPort in $configOutputPorts)
-    spider::api::addOutputParamToVertex(vertex_$actor.name, param_${outputPort.outgoingDependencies.get(0).target.name});
-#end
+    spider::api::addOutputParamsToVertex(vertex_$actor.name, {#foreach ($outputPort in $configOutputPorts) param_${outputPort.outgoingDependencies.get(0).target.name}#if( $foreach.hasNext ), #end#end });
 #end 
     
     /* == Setting mappable constraints of the vertex $actor.name == */
