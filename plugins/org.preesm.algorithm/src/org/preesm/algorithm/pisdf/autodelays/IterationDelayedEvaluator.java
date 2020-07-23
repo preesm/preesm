@@ -73,8 +73,8 @@ public class IterationDelayedEvaluator {
    */
   public static int computeLatency(PiGraph graph) {
 
-    // 0. get flatten graph of PiGraph
-    final PiGraph flatGraph = PiSDFFlattener.flatten(graph, true);
+    // 0. get flatten graph of PiGraph if not already flat
+    final PiGraph flatGraph = graph.getChildrenGraphs().isEmpty() ? graph : PiSDFFlattener.flatten(graph, true);
     // 1. compute brv and create AbsGraph
     Map<AbstractVertex, Long> brv = PiBRV.compute(flatGraph, BRVMethod.LCM);
     // 2. compute breaking fifos

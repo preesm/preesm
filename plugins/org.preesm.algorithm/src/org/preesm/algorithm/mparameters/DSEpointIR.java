@@ -37,6 +37,7 @@ package org.preesm.algorithm.mparameters;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 /**
  * This class stores main metrics of a DSE point. (Design Space Exploration)
@@ -47,18 +48,23 @@ import java.util.Optional;
  */
 public class DSEpointIR {
 
-  public final long energy;
-  public final int  latency;    // as factor of durationII
-  public final long durationII; // inverse of throughput
-  // makespan = latency * durationII
-  public final int askedCuts;    // if delay heuristic has been called
-  public final int askedPreCuts; // if delay heuristic has been called
+  // metrics for comparators:
+  public final double power;      // energy divided by durationII
+  public final int    latency;    // as factor of durationII
+  public final long   durationII; // inverse of throughput, makespan = latency * durationII
+
+  // not used by comparators:
+  public final int askedCuts;    // > 0 if delay heuristic has been called
+  public final int askedPreCuts; // > 0 if delay heuristic has been called
+
+  // minimum point since threshold are positive values
+  private static final DSEpointIR ZERO = new DSEpointIR(0, 0, 0);
 
   /**
    * Default constructor, with maximum values everywhere.
    */
   public DSEpointIR() {
-    energy = Long.MAX_VALUE;
+    power = Long.MAX_VALUE;
     latency = Integer.MAX_VALUE;
     durationII = Long.MAX_VALUE;
     askedCuts = 0;
@@ -68,21 +74,21 @@ public class DSEpointIR {
   /**
    * New DSE point.
    * 
-   * @param energy
+   * @param power
    *          the energy
    * @param latency
    *          the latency (as factor of durationII)
    * @param durationII
    *          the durationII (inverse of throughput)
    */
-  public DSEpointIR(final long energy, final int latency, final long durationII) {
-    this(energy, latency, durationII, 0, 0);
+  public DSEpointIR(final double power, final int latency, final long durationII) {
+    this(power, latency, durationII, 0, 0);
   }
 
   /**
    * New DSE point with heuristic delay informations.
    * 
-   * @param energy
+   * @param power
    *          the energy
    * @param latency
    *          the latency (as factor of durationII)
@@ -93,9 +99,9 @@ public class DSEpointIR {
    * @param askedPreCuts
    *          the number of preselection cuts asked to the delay placement heuristic
    */
-  public DSEpointIR(final long energy, final int latency, final long durationII, final int askedCuts,
+  public DSEpointIR(final double power, final int latency, final long durationII, final int askedCuts,
       final int askedPreCuts) {
-    this.energy = energy;
+    this.power = power;
     this.latency = latency;
     this.durationII = durationII;
     this.askedCuts = askedCuts;
@@ -104,7 +110,7 @@ public class DSEpointIR {
 
   @Override
   public String toString() {
-    return "Energy:  " + energy + "  Latency:  " + latency + "x  DurationII:  " + durationII + "  Asked cuts: "
+    return "Energy:  " + power + "  Latency:  " + latency + "x  DurationII:  " + durationII + "  Asked cuts: "
         + askedCuts + " among " + askedPreCuts;
   }
 
@@ -117,7 +123,9 @@ public class DSEpointIR {
   public static class DSEpointGlobalComparator implements Comparator<DSEpointIR> {
 
     private final List<Comparator<DSEpointIR>> comparators;
-    private boolean                            delayAcceptance;
+    private final boolean                      hasThresholds;
+    private final boolean                      delayAcceptance;
+    private final int                          delayMaximumLatency;
 
     /**
      * Builds a global comparator calling successively the comparators in the arguments.
@@ -129,6 +137,12 @@ public class DSEpointIR {
     public DSEpointGlobalComparator(final List<Comparator<DSEpointIR>> comparators) {
       this.comparators = comparators;
       this.delayAcceptance = computesDelayAcceptance(comparators);
+      if (!delayAcceptance) {
+        this.delayMaximumLatency = 1;
+      } else {
+        this.delayMaximumLatency = computesMaxLatency(comparators);
+      }
+      hasThresholds = comparators.stream().anyMatch(x -> x instanceof ThresholdComparator<?>);
     }
 
     @Override
@@ -142,6 +156,78 @@ public class DSEpointIR {
       }
 
       return 0;
+    }
+
+    /**
+     * 
+     * @return Whether or not this comparator has at least one threshold.
+     */
+    public boolean hasThresholds() {
+      return hasThresholds;
+    }
+
+    /**
+     * Checks if all threshold comparators are met by the current point.
+     * 
+     * @param point
+     *          DSE point to check.
+     * @return Whether or not the current point respect all thresholds. If no thresholds, returns true.
+     */
+    public boolean areAllThresholdMet(DSEpointIR point) {
+      List<Comparator<DSEpointIR>> thresholdComparators = comparators.stream()
+          .filter(x -> x instanceof ThresholdComparator).collect(Collectors.toList());
+      for (Comparator<DSEpointIR> comparator : thresholdComparators) {
+        int res = comparator.compare(point, ZERO);
+        if (res != 0) {
+          return false;
+        }
+      }
+
+      return true;
+    }
+
+    /**
+     * Checks if all threshold except throughput are met by the current point.
+     * 
+     * @param point
+     *          DSE point to check.
+     * @return Whether or not the current point does not respect all other threshold than throughput.
+     */
+    public boolean areAllNonThroughputThresholdsMet(DSEpointIR point) {
+      List<Comparator<DSEpointIR>> thresholdComparators = comparators.stream()
+          .filter(x -> x instanceof ThresholdComparator).collect(Collectors.toList());
+      for (Comparator<DSEpointIR> comparator : thresholdComparators) {
+        int res = comparator.compare(point, ZERO);
+        if (res != 0 && !(comparator instanceof ThroughputAtLeastComparator)) {
+          return false;
+        }
+      }
+
+      return true;
+    }
+
+    /**
+     * 
+     * @return Maximum latency if specified (greater than 0).
+     */
+    public int getMaximumLatency() {
+      return delayMaximumLatency;
+    }
+
+    /**
+     * Get the maximal latency if specified.
+     * 
+     * @param comparators
+     *          Comparators to check.
+     * @return Mimimal value of latency threshold, or LONG.MAX_VALUE if no threshold.
+     */
+    private static int computesMaxLatency(final List<Comparator<DSEpointIR>> comparators) {
+      Optional<Integer> min = comparators.stream().filter(x -> x instanceof LatencyAtMostComparator)
+          .map(x -> ((LatencyAtMostComparator) x).threshold).min(Long::compare);
+      if (min.isPresent()) {
+        return min.get();
+      }
+      return Integer.MAX_VALUE;
     }
 
     /**
@@ -186,16 +272,26 @@ public class DSEpointIR {
 
   }
 
+  public abstract static class ThresholdComparator<T> implements Comparator<DSEpointIR> {
+
+    public final T threshold;
+
+    public ThresholdComparator(final T threshold) {
+      this.threshold = threshold;
+    }
+
+  }
+
   /**
    * Negative if first point has lower energy than second.
    * 
    * @author ahonorat
    */
-  public static class EnergyMinComparator implements Comparator<DSEpointIR> {
+  public static class PowerMinComparator implements Comparator<DSEpointIR> {
 
     @Override
     public int compare(DSEpointIR arg0, DSEpointIR arg1) {
-      return Long.compare(arg0.energy, arg1.energy);
+      return Double.compare(arg0.power, arg1.power);
     }
 
   }
@@ -205,18 +301,16 @@ public class DSEpointIR {
    * 
    * @author ahonorat
    */
-  public static class EnergyAtMostComparator implements Comparator<DSEpointIR> {
+  public static class PowerAtMostComparator extends ThresholdComparator<Double> {
 
-    private final long threshold;
-
-    public EnergyAtMostComparator(final long threshold) {
-      this.threshold = threshold;
+    public PowerAtMostComparator(final double threshold) {
+      super(threshold);
     }
 
     @Override
     public int compare(DSEpointIR arg0, DSEpointIR arg1) {
-      if (arg0.energy > threshold || arg1.energy > threshold) {
-        return Long.compare(arg0.energy, arg1.energy);
+      if (arg0.power > threshold || arg1.power > threshold) {
+        return Double.compare(arg0.power, arg1.power);
       }
       return 0;
     }
@@ -232,7 +326,7 @@ public class DSEpointIR {
 
     @Override
     public int compare(DSEpointIR arg0, DSEpointIR arg1) {
-      return Long.compare(arg0.latency, arg1.latency);
+      return Integer.compare(arg0.latency, arg1.latency);
     }
 
   }
@@ -242,18 +336,16 @@ public class DSEpointIR {
    * 
    * @author ahonorat
    */
-  public static class LatencyAtMostComparator implements Comparator<DSEpointIR> {
+  public static class LatencyAtMostComparator extends ThresholdComparator<Integer> {
 
-    private final long threshold;
-
-    public LatencyAtMostComparator(final long threshold) {
-      this.threshold = threshold;
+    public LatencyAtMostComparator(final int threshold) {
+      super(threshold);
     }
 
     @Override
     public int compare(DSEpointIR arg0, DSEpointIR arg1) {
       if (arg0.latency > threshold || arg1.latency > threshold) {
-        return Long.compare(arg0.latency, arg1.latency);
+        return Integer.compare(arg0.latency, arg1.latency);
       }
       return 0;
     }
@@ -279,12 +371,10 @@ public class DSEpointIR {
    * 
    * @author ahonorat
    */
-  public static class MakespanAtMostComparator implements Comparator<DSEpointIR> {
-
-    private final long threshold;
+  public static class MakespanAtMostComparator extends ThresholdComparator<Long> {
 
     public MakespanAtMostComparator(final long threshold) {
-      this.threshold = threshold;
+      super(threshold);
     }
 
     @Override
@@ -316,12 +406,10 @@ public class DSEpointIR {
    * 
    * @author ahonorat
    */
-  public static class ThroughputAtLeastComparator implements Comparator<DSEpointIR> {
-
-    private final long threshold;
+  public static class ThroughputAtLeastComparator extends ThresholdComparator<Long> {
 
     public ThroughputAtLeastComparator(final long threshold) {
-      this.threshold = threshold;
+      super(threshold);
     }
 
     @Override

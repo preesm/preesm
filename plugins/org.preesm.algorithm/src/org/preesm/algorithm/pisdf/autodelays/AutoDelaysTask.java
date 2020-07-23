@@ -152,14 +152,6 @@ public class AutoDelaysTask extends AbstractTaskImplementation {
     final PiGraph graph = (PiGraph) inputs.get(AbstractWorkflowNodeImplementation.KEY_PI_GRAPH);
     final Design architecture = (Design) inputs.get(AbstractWorkflowNodeImplementation.KEY_ARCHITECTURE);
 
-    if (!graph.getChildrenGraphs().isEmpty()) {
-      throw new PreesmRuntimeException("This task must be called with a flatten PiMM graph, abandon.");
-    }
-
-    if (architecture.getOperatorComponents().size() != 1) {
-      throw new PreesmRuntimeException("This task must be called with a homogeneous architecture, abandon.");
-    }
-
     int nbCore = architecture.getOperatorComponents().get(0).getInstances().size();
     PreesmLogger.getLogger().log(Level.INFO, "Found " + nbCore + " cores.");
 
@@ -210,9 +202,40 @@ public class AutoDelaysTask extends AbstractTaskImplementation {
     return output;
   }
 
-  public PiGraph addDelays(final PiGraph graph, final Design architecture, final Scenario scenario,
+  /**
+   * Add delays on a flat graph, only if architecture is homogeneous.
+   * 
+   * @param graph
+   *          Graph to add delays on.
+   * @param architecture
+   *          Architecture to consider.
+   * @param scenario
+   *          Scenario tp consider.
+   * @param fillCycles
+   *          If delays should be added on cycles too.
+   * @param choco
+   *          If testing against optimal solution computed by Choco.
+   * @param sched
+   *          If scheduling must be performed at the end.
+   * @param nbCore
+   *          Number of core in the architecture.
+   * @param nbPreCuts
+   *          Number of balanced cuts locations.
+   * @param nbMaxCuts
+   *          Number of selected cuts.
+   * @return Graph copy with delays added on it.
+   */
+  public static PiGraph addDelays(final PiGraph graph, final Design architecture, final Scenario scenario,
       final boolean fillCycles, final boolean choco, final boolean sched, final int nbCore, final int nbPreCuts,
       final int nbMaxCuts) {
+
+    if (!graph.getChildrenGraphs().isEmpty()) {
+      throw new PreesmRuntimeException("This task must be called with a flatten PiMM graph, abandon.");
+    }
+
+    if (architecture.getOperatorComponents().size() != 1) {
+      throw new PreesmRuntimeException("This task must be called with a homogeneous architecture, abandon.");
+    }
 
     final long time = System.nanoTime();
 
@@ -368,7 +391,7 @@ public class AutoDelaysTask extends AbstractTaskImplementation {
     return graphCopy;
   }
 
-  private void printChocoStatistics(final long heuristicLatency, final DescriptiveStatistics dsc) {
+  private static void printChocoStatistics(final long heuristicLatency, final DescriptiveStatistics dsc) {
 
     PreesmLogger.getLogger().info("Worst latency found by choco cut: " + dsc.getMax());
     PreesmLogger.getLogger().info("Best latency found by choco cut: " + dsc.getMin());
