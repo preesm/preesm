@@ -221,7 +221,7 @@ public class SetMalleableParametersTask extends AbstractTaskImplementation {
       scenario.getParameterValues().putAll(backupParamOverride);
     }
 
-    return logAndSetBestPoint(pce, bestPoint, bestConfig, graph, architecture, scenario);
+    return logAndSetBestPoint(pce, bestPoint, bestConfig, globalComparator, graph, architecture, scenario);
 
   }
 
@@ -259,7 +259,7 @@ public class SetMalleableParametersTask extends AbstractTaskImplementation {
       }
     } while (pce.setForNextPartialDSEround(bestConfig));
 
-    return logAndSetBestPoint(pce, bestPoint, bestConfig, graph, architecture, scenario);
+    return logAndSetBestPoint(pce, bestPoint, bestConfig, globalComparator, graph, architecture, scenario);
 
   }
 
@@ -267,11 +267,16 @@ public class SetMalleableParametersTask extends AbstractTaskImplementation {
       final Design architecture, final int index, final boolean delayRetryValue,
       final DSEpointGlobalComparator globalComparator) {
 
+    PreesmLogger.getLogger().fine("==> Testing combination: " + index);
+    for (Parameter p : graph.getAllParameters()) {
+      PreesmLogger.getLogger().fine(p.getName() + ": " + p.getExpression().getExpressionAsString());
+    }
+
     // copy graph since flatten transfo has side effects (on parameters)
     final PiGraph graphCopy = PiMMUserFactory.instance.copyPiGraphWithHistory(graph);
     int iterationDelay = IterationDelayedEvaluator.computeLatency(graphCopy);
 
-    final IScheduler scheduler = new PeriodicScheduler();
+    final PeriodicScheduler scheduler = new PeriodicScheduler();
     DSEpointIR res = runConfiguration(scenario, graph, architecture, index, scheduler, iterationDelay);
 
     if (delayRetryValue && globalComparator.doesAcceptsMoreDelays()
@@ -289,7 +294,10 @@ public class SetMalleableParametersTask extends AbstractTaskImplementation {
         return res;
       }
 
-      final int nbCuts = computeCutsAmount(maxCuts, nbCore);
+      long period = graph.getPeriod().evaluate();
+      long durationII = period > 0 ? period : scheduler.getLastEndTime();
+      final int nbCuts = globalComparator.computeCutsAmount(maxCuts, nbCore, durationII, scheduler.getTotalLoad(),
+          scheduler.getMaximalLoad());
       final int nbPreCuts = nbCuts + 1;
 
       // add more delays
@@ -312,18 +320,8 @@ public class SetMalleableParametersTask extends AbstractTaskImplementation {
     return res;
   }
 
-  protected static int computeCutsAmount(int maxCuts, int nbCore) {
-    int res = Math.min(maxCuts, nbCore);
-    // TODO finish to code this method
-    return Math.min(res, 1);
-  }
-
   protected static DSEpointIR runConfiguration(final Scenario scenario, final PiGraph graph, final Design architecture,
       final int index, final IScheduler scheduler, final int iterationDelay) {
-    PreesmLogger.getLogger().fine("==> Testing combination: " + index);
-    for (Parameter p : graph.getAllParameters()) {
-      PreesmLogger.getLogger().fine(p.getName() + ": " + p.getExpression().getExpressionAsString());
-    }
     final Level backupLevel = PreesmLogger.getLogger().getLevel();
     PreesmLogger.getLogger().setLevel(Level.SEVERE);
     final PiGraph dag = PiSDFToSingleRate.compute(graph, BRVMethod.LCM);
@@ -373,6 +371,8 @@ public class SetMalleableParametersTask extends AbstractTaskImplementation {
    *          Information about bestPoints.
    * @param bestConfig
    *          according to pce.
+   * @param globalComparator
+   *          comparator used to compute the best point
    * @param scenario
    *          Scenario to consider (only if adding delays).
    * @param architecture
@@ -382,12 +382,16 @@ public class SetMalleableParametersTask extends AbstractTaskImplementation {
    * @return Original graph, or a flat copy if delays have been added.
    */
   protected static PiGraph logAndSetBestPoint(final ParameterCombinationExplorer pce, final DSEpointIR bestPoint,
-      final List<Integer> bestConfig, final PiGraph graph, final Design architecture, final Scenario scenario) {
+      final List<Integer> bestConfig, final DSEpointGlobalComparator globalComparator, final PiGraph graph,
+      final Design architecture, final Scenario scenario) {
     if (bestConfig != null) {
       pce.setConfiguration(bestConfig);
       PreesmLogger.getLogger().log(Level.INFO, "Best configuration has metrics: " + bestPoint);
       PreesmLogger.getLogger().log(Level.WARNING,
           "The malleable parameters value have been overriden in the scenario!");
+      if (!globalComparator.areAllThresholdMet(bestPoint)) {
+        PreesmLogger.getLogger().log(Level.WARNING, "Best configuration does not respect all thresholds.");
+      }
       if (bestPoint.askedCuts != 0) {
         PreesmLogger.getLogger().log(Level.WARNING,
             "Delays have been added to the graph (implies graph flattening and parameter expression resolution "

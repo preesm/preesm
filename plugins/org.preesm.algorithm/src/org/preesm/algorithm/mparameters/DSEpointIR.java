@@ -148,8 +148,8 @@ public class DSEpointIR {
     @Override
     public int compare(DSEpointIR o1, DSEpointIR o2) {
 
-      for (Comparator<DSEpointIR> comparator : comparators) {
-        int res = comparator.compare(o1, o2);
+      for (final Comparator<DSEpointIR> comparator : comparators) {
+        final int res = comparator.compare(o1, o2);
         if (res != 0) {
           return res;
         }
@@ -174,9 +174,9 @@ public class DSEpointIR {
      * @return Whether or not the current point respect all thresholds. If no thresholds, returns true.
      */
     public boolean areAllThresholdMet(DSEpointIR point) {
-      List<Comparator<DSEpointIR>> thresholdComparators = comparators.stream()
+      final List<Comparator<DSEpointIR>> thresholdComparators = comparators.stream()
           .filter(x -> x instanceof ThresholdComparator).collect(Collectors.toList());
-      for (Comparator<DSEpointIR> comparator : thresholdComparators) {
+      for (final Comparator<DSEpointIR> comparator : thresholdComparators) {
         int res = comparator.compare(point, ZERO);
         if (res != 0) {
           return false;
@@ -194,10 +194,10 @@ public class DSEpointIR {
      * @return Whether or not the current point does not respect all other threshold than throughput.
      */
     public boolean areAllNonThroughputThresholdsMet(DSEpointIR point) {
-      List<Comparator<DSEpointIR>> thresholdComparators = comparators.stream()
+      final List<Comparator<DSEpointIR>> thresholdComparators = comparators.stream()
           .filter(x -> x instanceof ThresholdComparator).collect(Collectors.toList());
-      for (Comparator<DSEpointIR> comparator : thresholdComparators) {
-        int res = comparator.compare(point, ZERO);
+      for (final Comparator<DSEpointIR> comparator : thresholdComparators) {
+        final int res = comparator.compare(point, ZERO);
         if (res != 0 && !(comparator instanceof ThroughputAtLeastComparator)) {
           return false;
         }
@@ -222,7 +222,7 @@ public class DSEpointIR {
      * @return Mimimal value of latency threshold, or LONG.MAX_VALUE if no threshold.
      */
     private static int computesMaxLatency(final List<Comparator<DSEpointIR>> comparators) {
-      Optional<Integer> min = comparators.stream().filter(x -> x instanceof LatencyAtMostComparator)
+      final Optional<Integer> min = comparators.stream().filter(x -> x instanceof LatencyAtMostComparator)
           .map(x -> ((LatencyAtMostComparator) x).threshold).min(Long::compare);
       if (min.isPresent()) {
         return min.get();
@@ -249,25 +249,66 @@ public class DSEpointIR {
     private static boolean computesDelayAcceptance(final List<Comparator<DSEpointIR>> comparators) {
       // get index of first occurrence of throughput objective
       int indexFirstT = comparators.size();
-      Optional<Comparator<DSEpointIR>> firstT = comparators.stream()
+      final Optional<Comparator<DSEpointIR>> firstT = comparators.stream()
           .filter(x -> x instanceof ThroughputMaxComparator | x instanceof ThroughputAtLeastComparator).findFirst();
       if (firstT.isPresent()) {
         indexFirstT = comparators.indexOf(firstT.get());
       }
       // same for minimization objectives of latency or makespan
       int indexFirstLMmin = comparators.size();
-      Optional<Comparator<DSEpointIR>> firstLmin = comparators.stream().filter(x -> x instanceof LatencyMinComparator)
-          .findFirst();
+      final Optional<Comparator<DSEpointIR>> firstLmin = comparators.stream()
+          .filter(x -> x instanceof LatencyMinComparator).findFirst();
       if (firstLmin.isPresent()) {
         indexFirstLMmin = comparators.indexOf(firstLmin.get());
       }
-      Optional<Comparator<DSEpointIR>> firstMmin = comparators.stream().filter(x -> x instanceof MakespanMinComparator)
-          .findFirst();
+      final Optional<Comparator<DSEpointIR>> firstMmin = comparators.stream()
+          .filter(x -> x instanceof MakespanMinComparator).findFirst();
       if (firstMmin.isPresent()) {
         indexFirstLMmin = Math.min(indexFirstLMmin, comparators.indexOf(firstMmin.get()));
       }
       // if throughput is more important than latency or makespan, then we can add more delays
       return indexFirstT < indexFirstLMmin;
+    }
+
+    /**
+     * Computes a number of cuts to ask to improve the result.
+     * 
+     * @param maxCuts
+     *          Current maximum possible, see {@link getMaximumLatency}
+     * @param nbCore
+     *          Number of core in the architecture.
+     * @param durationII
+     *          Duration of the Initiation Interval from previous schedule (or graph period).
+     * @param totalLoad
+     *          Tolal load of the firings.
+     * @param maxSingleLoad
+     *          Maximum load of all firings.
+     * @return Number of cuts to ask, between 0 and {@code nbCore} (not included).
+     */
+    public int computeCutsAmount(int maxCuts, int nbCore, long durationII, long totalLoad, long maxSingleLoad) {
+      int res = Math.min(maxCuts, nbCore);
+      // cast to long/int == truncating == Math.floor if positive number
+      final long minAvgDuration = Math.max(maxSingleLoad, (totalLoad / (long) nbCore));
+      final int defaultDelayCut = (int) Math.ceil((double) durationII / minAvgDuration) - 1;
+      res = Math.min(res, defaultDelayCut);
+      // default value, now let's refine it with latency and makespan thresholds
+      final List<Comparator<DSEpointIR>> thresholdComparators = comparators.stream()
+          .filter(x -> x instanceof ThresholdComparator).collect(Collectors.toList());
+      for (final Comparator<DSEpointIR> comparator : thresholdComparators) {
+        if (comparator instanceof MakespanAtMostComparator) {
+          final MakespanAtMostComparator mamc = (MakespanAtMostComparator) comparator;
+          final int maxDelay = (int) (mamc.threshold / minAvgDuration);
+          res = Math.min(res, maxDelay);
+        }
+        if (comparator instanceof ThroughputAtLeastComparator) {
+          final ThroughputAtLeastComparator talc = (ThroughputAtLeastComparator) comparator;
+          final int maxDelay = (int) Math.ceil((double) durationII / talc.threshold) - 1;
+          res = Math.min(res, maxDelay);
+        }
+
+      }
+      // ensures no negative
+      return Math.max(res, 0);
     }
 
   }
