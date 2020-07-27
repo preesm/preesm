@@ -105,7 +105,7 @@ public class ParameterCombinationExplorer {
   /**
    * Set the next combination to visit. If false, all combinations have been visited and a new object must be create.
    * 
-   * @return True is some combinations have not yet been visited.
+   * @return True if some combinations have not yet been visited.
    */
   public boolean setNext() {
     return setNext(0);

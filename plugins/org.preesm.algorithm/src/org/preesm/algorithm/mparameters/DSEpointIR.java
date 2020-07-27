@@ -36,6 +36,7 @@ package org.preesm.algorithm.mparameters;
 
 import java.util.Comparator;
 import java.util.List;
+import java.util.Locale;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -58,7 +59,9 @@ public class DSEpointIR {
   public final int askedPreCuts; // > 0 if delay heuristic has been called
 
   // minimum point since threshold are positive values
-  private static final DSEpointIR ZERO = new DSEpointIR(0, 0, 0);
+  public static final DSEpointIR ZERO = new DSEpointIR(0, 0, 0);
+
+  public static final String CSV_HEADER_STRING = "Power;Latency;DurationII;AskedCuts;AskedPrecuts";
 
   /**
    * Default constructor, with maximum values everywhere.
@@ -110,8 +113,13 @@ public class DSEpointIR {
 
   @Override
   public String toString() {
-    return "Energy:  " + power + "  Latency:  " + latency + "x  DurationII:  " + durationII + "  Asked cuts: "
+    return "Power:  " + power + "  Latency:  " + latency + "x  DurationII:  " + durationII + "  Asked cuts: "
         + askedCuts + " among " + askedPreCuts;
+  }
+
+  public String toCsvContentString() {
+    // US because we want to print floating POINT numbers (not coma as in French)
+    return String.format(Locale.US, "%.2f;%d;%d;%d;%d", power, latency, durationII, askedCuts, askedPreCuts);
   }
 
   /**
@@ -286,7 +294,7 @@ public class DSEpointIR {
      * @return Number of cuts to ask, between 0 and {@code nbCore} (not included).
      */
     public int computeCutsAmount(int maxCuts, int nbCore, long durationII, long totalLoad, long maxSingleLoad) {
-      int res = Math.min(maxCuts, nbCore);
+      int res = Math.min(maxCuts, nbCore - 1);
       // cast to long/int == truncating == Math.floor if positive number
       final long minAvgDuration = Math.max(maxSingleLoad, (totalLoad / (long) nbCore));
       final int defaultDelayCut = (int) Math.ceil((double) durationII / minAvgDuration) - 1;

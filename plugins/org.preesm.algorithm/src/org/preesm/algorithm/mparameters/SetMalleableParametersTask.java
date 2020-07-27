@@ -34,6 +34,9 @@
  */
 package org.preesm.algorithm.mparameters;
 
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -43,6 +46,10 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.logging.Level;
 import java.util.stream.Collectors;
+import org.eclipse.core.resources.IProject;
+import org.eclipse.core.resources.IWorkspace;
+import org.eclipse.core.resources.IWorkspaceRoot;
+import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.preesm.algorithm.mparameters.DSEpointIR.DSEpointGlobalComparator;
 import org.preesm.algorithm.pisdf.autodelays.AutoDelaysTask;
@@ -92,10 +99,14 @@ import org.preesm.workflow.implement.AbstractWorkflowNodeImplementation;
 
     outputs = { @Port(name = "PiMM", type = PiGraph.class) },
 
-    parameters = { @org.preesm.commons.doc.annotations.Parameter(
-        name = SetMalleableParametersTask.DEFAULT_HEURISTIC_NAME,
-        values = { @Value(name = SetMalleableParametersTask.DEFAULT_HEURISTIC_VALUE,
-            effect = "Enables to use a DSE heuristic when all malleable parameter expressions are integer numbers.") }),
+    parameters = {
+        @org.preesm.commons.doc.annotations.Parameter(name = SetMalleableParametersTask.DEFAULT_LOG_NAME,
+            values = { @Value(name = SetMalleableParametersTask.DEFAULT_LOG_VALUE,
+                effect = "Path relative to the project root.") }),
+        @org.preesm.commons.doc.annotations.Parameter(name = SetMalleableParametersTask.DEFAULT_HEURISTIC_NAME,
+            values = { @Value(name = SetMalleableParametersTask.DEFAULT_HEURISTIC_VALUE,
+                effect = "Enables to use a DSE heuristic "
+                    + "when all malleable parameter expressions are integer numbers.") }),
         @org.preesm.commons.doc.annotations.Parameter(name = SetMalleableParametersTask.DEFAULT_DELAY_RETRY_NAME,
             values = { @Value(name = SetMalleableParametersTask.DEFAULT_DELAY_RETRY_VALUE,
                 effect = "Enables to use a DSE heuristic to try to add delays if necessary.") }),
@@ -112,11 +123,13 @@ public class SetMalleableParametersTask extends AbstractTaskImplementation {
   public static final String DEFAULT_DELAY_RETRY_VALUE = "false";
   public static final String DEFAULT_COMPARISONS_VALUE = "T>P>L";
   public static final String DEFAULT_THRESHOLDS_VALUE  = "0>0>0";
+  public static final String DEFAULT_LOG_VALUE         = "/Code/generated/";
 
   public static final String DEFAULT_HEURISTIC_NAME   = "Number heuristic";
   public static final String DEFAULT_DELAY_RETRY_NAME = "Retry with delays";
   public static final String DEFAULT_COMPARISONS_NAME = "Comparisons";
   public static final String DEFAULT_THRESHOLDS_NAME  = "Thresholds";
+  public static final String DEFAULT_LOG_NAME         = "Log path";
 
   public static final String COMPARISONS_REGEX = "[PLTM](>[PLTM])*";
   public static final String THRESHOLDS_REGEX  = "[0-9]+(.[0-9]+)?(>[0-9]+(.[0-9]+))*";
@@ -177,27 +190,65 @@ public class SetMalleableParametersTask extends AbstractTaskImplementation {
       backupParamOverride.put(e.getKey(), e.getValue());
     }
 
-    final DSEpointGlobalComparator globalComparator = getGlobalComparater(parameters);
+    final DSEpointGlobalComparator globalComparator = getGlobalComparator(parameters);
     final String delayRetryStr = parameters.get(DEFAULT_DELAY_RETRY_NAME);
     boolean delayRetryValue = Boolean.parseBoolean(delayRetryStr);
 
     PiGraph outputGraph; // different of input graph only if delays has been added by the heuristic
+    StringBuilder logDSEpoints = new StringBuilder();
+
     if (heuristicValue) {
       outputGraph = numbersDSE(scenario, graph, architecture, mparamsIR, globalComparator, backupParamOverride,
-          delayRetryValue);
+          delayRetryValue, logDSEpoints);
     } else {
       outputGraph = exhaustiveDSE(scenario, graph, architecture, mparamsIR, globalComparator, backupParamOverride,
-          delayRetryValue);
+          delayRetryValue, logDSEpoints);
     }
     // erase previous value
     output.put(AbstractWorkflowNodeImplementation.KEY_PI_GRAPH, outputGraph);
+    // exports log
+    final String logPath = parameters.get(DEFAULT_LOG_NAME);
+    logCsvFile(logDSEpoints, mparamsIR, workflow, scenario, logPath);
 
     return output;
   }
 
+  protected void logCsvFile(final StringBuilder logDSEpoints, final List<MalleableParameterIR> mparamsIR,
+      final Workflow workflow, final Scenario scenario, final String logPath) {
+    final StringBuilder header = new StringBuilder();
+    for (MalleableParameterIR mpir : mparamsIR) {
+      header.append(mpir.mp.getName() + ";");
+    }
+    header.append(DSEpointIR.CSV_HEADER_STRING + "\n");
+
+    // Get the root of the workspace
+    final IWorkspace workspace = ResourcesPlugin.getWorkspace();
+    final IWorkspaceRoot root = workspace.getRoot();
+    // Get the project
+    final String projectName = workflow.getProjectName();
+    final IProject project = root.getProject(projectName);
+
+    // Get a complete valid path with all folders existing
+    String exportAbsolutePath = project.getLocation() + logPath;
+    final File parent = new File(exportAbsolutePath);
+    parent.mkdirs();
+
+    final String fileName = scenario.getScenarioName() + "_DSE_log.csv";
+    final File file = new File(parent, fileName);
+    try (final FileWriter fw = new FileWriter(file, true)) {
+      fw.write(header.toString());
+      fw.write(logDSEpoints.toString());
+    } catch (IOException e) {
+      PreesmLogger.getLogger().log(Level.SEVERE,
+          "Unhable to write the DSE task log in file:" + exportAbsolutePath + fileName);
+    }
+
+  }
+
   protected static PiGraph exhaustiveDSE(final Scenario scenario, final PiGraph graph, final Design architecture,
-      List<MalleableParameterIR> mparamsIR, final DSEpointGlobalComparator globalComparator,
-      final Map<Parameter, String> backupParamOverride, boolean delayRetryValue) {
+      final List<MalleableParameterIR> mparamsIR, final DSEpointGlobalComparator globalComparator,
+      final Map<Parameter, String> backupParamOverride, final boolean delayRetryValue,
+      final StringBuilder logDSEpoints) {
     // build and test all possible configurations
     final ParameterCombinationExplorer pce = new ParameterCombinationExplorer(mparamsIR, scenario);
     DSEpointIR bestPoint = new DSEpointIR();
@@ -207,7 +258,7 @@ public class SetMalleableParametersTask extends AbstractTaskImplementation {
       index++;
 
       final DSEpointIR dsep = runAndRetryConfiguration(scenario, graph, architecture, index, delayRetryValue,
-          globalComparator);
+          globalComparator, logDSEpoints, mparamsIR);
       if (dsep != null) {
         PreesmLogger.getLogger().log(Level.FINE, dsep.toString());
         if (bestConfig == null || globalComparator.compare(dsep, bestPoint) < 0) {
@@ -226,8 +277,9 @@ public class SetMalleableParametersTask extends AbstractTaskImplementation {
   }
 
   protected static PiGraph numbersDSE(final Scenario scenario, final PiGraph graph, final Design architecture,
-      List<MalleableParameterIR> mparamsIR, final DSEpointGlobalComparator globalComparator,
-      final Map<Parameter, String> backupParamOverride, boolean delayRetryValue) {
+      final List<MalleableParameterIR> mparamsIR, final DSEpointGlobalComparator globalComparator,
+      final Map<Parameter, String> backupParamOverride, final boolean delayRetryValue,
+      final StringBuilder logDSEpoints) {
     // build and test all possible configurations
     ParameterCombinationNumberExplorer pce = null;
     DSEpointIR bestPoint = new DSEpointIR();
@@ -243,7 +295,7 @@ public class SetMalleableParametersTask extends AbstractTaskImplementation {
         indexTot++;
 
         final DSEpointIR dsep = runAndRetryConfiguration(scenario, graph, architecture, indexTot, delayRetryValue,
-            globalComparator);
+            globalComparator, logDSEpoints, mparamsIR);
         if (dsep != null) {
           PreesmLogger.getLogger().log(Level.FINE, dsep.toString());
           if (bestConfig == null || globalComparator.compare(dsep, bestPoint) < 0) {
@@ -263,9 +315,18 @@ public class SetMalleableParametersTask extends AbstractTaskImplementation {
 
   }
 
+  protected static void logCsvContentMparams(final StringBuilder logDSEpoints,
+      final List<MalleableParameterIR> mparamsIR, final DSEpointIR point) {
+    for (MalleableParameterIR mpir : mparamsIR) {
+      logDSEpoints.append(mpir.mp.getExpression().evaluate() + ";");
+    }
+    logDSEpoints.append(point.toCsvContentString() + "\n");
+  }
+
   protected static DSEpointIR runAndRetryConfiguration(final Scenario scenario, final PiGraph graph,
       final Design architecture, final int index, final boolean delayRetryValue,
-      final DSEpointGlobalComparator globalComparator) {
+      final DSEpointGlobalComparator globalComparator, final StringBuilder logDSEpoints,
+      final List<MalleableParameterIR> mparamsIR) {
 
     PreesmLogger.getLogger().fine("==> Testing combination: " + index);
     for (Parameter p : graph.getAllParameters()) {
@@ -277,7 +338,12 @@ public class SetMalleableParametersTask extends AbstractTaskImplementation {
     int iterationDelay = IterationDelayedEvaluator.computeLatency(graphCopy);
 
     final PeriodicScheduler scheduler = new PeriodicScheduler();
-    DSEpointIR res = runConfiguration(scenario, graph, architecture, index, scheduler, iterationDelay);
+    DSEpointIR res = runConfiguration(scenario, graph, architecture, scheduler, iterationDelay);
+    if (res != null) {
+      logCsvContentMparams(logDSEpoints, mparamsIR, res);
+    } else {
+      logCsvContentMparams(logDSEpoints, mparamsIR, DSEpointIR.ZERO);
+    }
 
     if (delayRetryValue && globalComparator.doesAcceptsMoreDelays()
         && globalComparator.areAllNonThroughputThresholdsMet(res)) {
@@ -310,18 +376,26 @@ public class SetMalleableParametersTask extends AbstractTaskImplementation {
       iterationDelay = IterationDelayedEvaluator.computeLatency(flatGraphWithDelays);
 
       // retry with more delays
-      DSEpointIR resRetry = runConfiguration(scenario, flatGraphWithDelays, architecture, index, scheduler,
-          iterationDelay);
-      if ((res == null) || (resRetry != null && globalComparator.compare(resRetry, res) < 0)) {
-        return new DSEpointIR(resRetry.power, resRetry.latency, resRetry.durationII, nbCuts, nbPreCuts);
+      DSEpointIR resRetry = runConfiguration(scenario, flatGraphWithDelays, architecture, scheduler, iterationDelay);
+      if (resRetry != null) {
+        // adds cut information to the point
+        resRetry = new DSEpointIR(resRetry.power, resRetry.latency, resRetry.durationII, nbCuts, nbPreCuts);
+        logCsvContentMparams(logDSEpoints, mparamsIR, resRetry);
+      } else {
+        logCsvContentMparams(logDSEpoints, mparamsIR, new DSEpointIR(0, 0, 0, nbCuts, nbPreCuts));
       }
+
+      if ((resRetry != null && globalComparator.compare(resRetry, res) < 0)) {
+        return resRetry;
+      }
+
     }
 
     return res;
   }
 
   protected static DSEpointIR runConfiguration(final Scenario scenario, final PiGraph graph, final Design architecture,
-      final int index, final IScheduler scheduler, final int iterationDelay) {
+      final IScheduler scheduler, final int iterationDelay) {
     final Level backupLevel = PreesmLogger.getLogger().getLevel();
     PreesmLogger.getLogger().setLevel(Level.SEVERE);
     final PiGraph dag = PiSDFToSingleRate.compute(graph, BRVMethod.LCM);
@@ -418,7 +492,7 @@ public class SetMalleableParametersTask extends AbstractTaskImplementation {
    *          User parameters.
    * @return Global comparator to compare all points of DSE.
    */
-  public static DSEpointGlobalComparator getGlobalComparater(final Map<String, String> parameters) {
+  public static DSEpointGlobalComparator getGlobalComparator(final Map<String, String> parameters) {
     final String comparisons = parameters.get(DEFAULT_COMPARISONS_NAME);
     if (!comparisons.matches(COMPARISONS_REGEX)) {
       throw new PreesmRuntimeException("Comparisons string is not correct. Accepted regex: " + COMPARISONS_REGEX);
@@ -506,6 +580,7 @@ public class SetMalleableParametersTask extends AbstractTaskImplementation {
     parameters.put(DEFAULT_DELAY_RETRY_NAME, DEFAULT_DELAY_RETRY_VALUE);
     parameters.put(DEFAULT_COMPARISONS_NAME, DEFAULT_COMPARISONS_VALUE);
     parameters.put(DEFAULT_THRESHOLDS_NAME, DEFAULT_THRESHOLDS_VALUE);
+    parameters.put(DEFAULT_LOG_NAME, DEFAULT_LOG_VALUE);
     return parameters;
   }
 
