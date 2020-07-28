@@ -53,6 +53,7 @@ PREESM Changelog
 * Cluster Scheduler allows the user to choose whether cluster schedules contain parallelism information or not.
 * Update Spider2 codegent to follow evolution of the API.
 * Adapt MPPA 2 printer to print mppa_async communication with cluster block and finite loop block.
+* Adding direct translation of non perfect broadcast to REPEAT + FORK pattern in Spider2Codegen task.
 
 ### Bug fix
 * Fix ids and icons of a few GUI elements.
