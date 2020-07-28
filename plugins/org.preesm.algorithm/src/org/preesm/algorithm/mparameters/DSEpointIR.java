@@ -50,9 +50,9 @@ import java.util.stream.Collectors;
 public class DSEpointIR {
 
   // metrics for comparators:
-  public final double power;      // energy divided by durationII
-  public final int    latency;    // as factor of durationII
-  public final long   durationII; // inverse of throughput, makespan = latency * durationII
+  public final long energy;     // energy, power = energy / durationII
+  public final int  latency;    // as factor of durationII
+  public final long durationII; // inverse of throughput, makespan = latency * durationII
 
   // not used by comparators:
   public final int askedCuts;    // > 0 if delay heuristic has been called
@@ -67,7 +67,7 @@ public class DSEpointIR {
    * Default constructor, with maximum values everywhere.
    */
   public DSEpointIR() {
-    power = Long.MAX_VALUE;
+    energy = Long.MAX_VALUE;
     latency = Integer.MAX_VALUE;
     durationII = Long.MAX_VALUE;
     askedCuts = 0;
@@ -77,21 +77,21 @@ public class DSEpointIR {
   /**
    * New DSE point.
    * 
-   * @param power
+   * @param energy
    *          the energy
    * @param latency
    *          the latency (as factor of durationII)
    * @param durationII
    *          the durationII (inverse of throughput)
    */
-  public DSEpointIR(final double power, final int latency, final long durationII) {
-    this(power, latency, durationII, 0, 0);
+  public DSEpointIR(final long energy, final int latency, final long durationII) {
+    this(energy, latency, durationII, 0, 0);
   }
 
   /**
    * New DSE point with heuristic delay informations.
    * 
-   * @param power
+   * @param energy
    *          the energy
    * @param latency
    *          the latency (as factor of durationII)
@@ -102,9 +102,9 @@ public class DSEpointIR {
    * @param askedPreCuts
    *          the number of preselection cuts asked to the delay placement heuristic
    */
-  public DSEpointIR(final double power, final int latency, final long durationII, final int askedCuts,
+  public DSEpointIR(final long energy, final int latency, final long durationII, final int askedCuts,
       final int askedPreCuts) {
-    this.power = power;
+    this.energy = energy;
     this.latency = latency;
     this.durationII = durationII;
     this.askedCuts = askedCuts;
@@ -113,13 +113,13 @@ public class DSEpointIR {
 
   @Override
   public String toString() {
-    return "Power:  " + power + "  Latency:  " + latency + "x  DurationII:  " + durationII + "  Asked cuts: "
+    return "Energy:  " + energy + "  Latency:  " + latency + "x  DurationII:  " + durationII + "  Asked cuts: "
         + askedCuts + " among " + askedPreCuts;
   }
 
   public String toCsvContentString() {
     // US because we want to print floating POINT numbers (not coma as in French)
-    return String.format(Locale.US, "%.2f;%d;%d;%d;%d", power, latency, durationII, askedCuts, askedPreCuts);
+    return String.format(Locale.US, "%d;%d;%d;%d;%d", energy, latency, durationII, askedCuts, askedPreCuts);
   }
 
   /**
@@ -195,18 +195,20 @@ public class DSEpointIR {
     }
 
     /**
-     * Checks if all threshold except throughput are met by the current point.
+     * Checks if all threshold except throughput and energy are met by the current point. If so it may be interesting to
+     * add delays. If not, adding delays will worsen the current point result.
      * 
      * @param point
      *          DSE point to check.
-     * @return Whether or not the current point does not respect all other threshold than throughput.
+     * @return Whether or not the current point does not respect all other threshold than throughput and energy.
      */
-    public boolean areAllNonThroughputThresholdsMet(DSEpointIR point) {
+    public boolean areAllNonThroughputAndEnergyThresholdsMet(DSEpointIR point) {
       final List<Comparator<DSEpointIR>> thresholdComparators = comparators.stream()
           .filter(x -> x instanceof ThresholdComparator).collect(Collectors.toList());
       for (final Comparator<DSEpointIR> comparator : thresholdComparators) {
         final int res = comparator.compare(point, ZERO);
-        if (res != 0 && !(comparator instanceof ThroughputAtLeastComparator)) {
+        if (res != 0
+            && !(comparator instanceof ThroughputAtLeastComparator || comparator instanceof EnergyAtMostComparator)) {
           return false;
         }
       }
@@ -332,7 +334,7 @@ public class DSEpointIR {
   }
 
   /**
-   * Negative if first point has lower energy than second.
+   * Negative if first point has lower power than second.
    * 
    * @author ahonorat
    */
@@ -340,13 +342,14 @@ public class DSEpointIR {
 
     @Override
     public int compare(DSEpointIR arg0, DSEpointIR arg1) {
-      return Double.compare(arg0.power, arg1.power);
+      return Double.compare((double) arg0.energy / (double) arg0.durationII,
+          (double) arg1.energy / (double) arg1.durationII);
     }
 
   }
 
   /**
-   * Negative if first point has lower energy than second. 0 if both are below the threshold.
+   * Negative if first point has lower power than second. 0 if both are below the threshold.
    * 
    * @author ahonorat
    */
@@ -358,8 +361,45 @@ public class DSEpointIR {
 
     @Override
     public int compare(DSEpointIR arg0, DSEpointIR arg1) {
-      if (arg0.power > threshold || arg1.power > threshold) {
-        return Double.compare(arg0.power, arg1.power);
+      double power0 = (double) arg0.energy / (double) arg0.durationII;
+      double power1 = (double) arg1.energy / (double) arg1.durationII;
+      if (power0 > threshold || power1 > threshold) {
+        return Double.compare(power0, power1);
+      }
+      return 0;
+    }
+
+  }
+
+  /**
+   * Negative if first point has lower energy than second.
+   * 
+   * @author ahonorat
+   */
+  public static class EnergyMinComparator implements Comparator<DSEpointIR> {
+
+    @Override
+    public int compare(DSEpointIR arg0, DSEpointIR arg1) {
+      return Long.compare(arg0.energy, arg1.energy);
+    }
+
+  }
+
+  /**
+   * Negative if first point has lower energy than second. 0 if both are below the threshold.
+   * 
+   * @author ahonorat
+   */
+  public static class EnergyAtMostComparator extends ThresholdComparator<Long> {
+
+    public EnergyAtMostComparator(final long threshold) {
+      super(threshold);
+    }
+
+    @Override
+    public int compare(DSEpointIR arg0, DSEpointIR arg1) {
+      if (arg0.energy > threshold || arg1.energy > threshold) {
+        return Long.compare(arg0.energy, arg1.energy);
       }
       return 0;
     }

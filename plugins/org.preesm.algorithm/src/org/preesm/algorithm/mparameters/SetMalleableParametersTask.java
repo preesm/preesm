@@ -112,8 +112,8 @@ import org.preesm.workflow.implement.AbstractWorkflowNodeImplementation;
                 effect = "Enables to use a DSE heuristic to try to add delays if necessary.") }),
         @org.preesm.commons.doc.annotations.Parameter(name = SetMalleableParametersTask.DEFAULT_COMPARISONS_NAME,
             values = { @Value(name = SetMalleableParametersTask.DEFAULT_COMPARISONS_VALUE,
-                effect = "Order of comparisons (T for throughput or P for power or L for latency or M for makespan, "
-                    + "separated by >).") }),
+                effect = "Order of comparisons (T for throughput or P for power or E for energy "
+                    + "or L for latency or M for makespan, separated by >).") }),
         @org.preesm.commons.doc.annotations.Parameter(name = SetMalleableParametersTask.DEFAULT_THRESHOLDS_NAME,
             values = { @Value(name = SetMalleableParametersTask.DEFAULT_THRESHOLDS_VALUE,
                 effect = "Taken into account if it is any integer higher than 0.") }) })
@@ -131,7 +131,7 @@ public class SetMalleableParametersTask extends AbstractTaskImplementation {
   public static final String DEFAULT_THRESHOLDS_NAME  = "Thresholds";
   public static final String DEFAULT_LOG_NAME         = "Log path";
 
-  public static final String COMPARISONS_REGEX = "[PLTM](>[PLTM])*";
+  public static final String COMPARISONS_REGEX = "[EPLTM](>[EPLTM])*";
   public static final String THRESHOLDS_REGEX  = "[0-9]+(.[0-9]+)?(>[0-9]+(.[0-9]+))*";
 
   @Override
@@ -158,8 +158,8 @@ public class SetMalleableParametersTask extends AbstractTaskImplementation {
     }
 
     List<MalleableParameterIR> mparamsIR = null;
-    final boolean allNumbers = !mparams.stream()
-        .anyMatch(x -> !MalleableParameterExprChecker.isOnlyNumbers(x.getUserExpression()));
+    final boolean allNumbers = mparams.stream()
+        .allMatch(x -> MalleableParameterExprChecker.isOnlyNumbers(x.getUserExpression()));
     if (allNumbers) {
       PreesmLogger.getLogger().log(Level.INFO,
           "All malleable parameters are numbers, allowing non exhaustive heuristics.");
@@ -346,7 +346,7 @@ public class SetMalleableParametersTask extends AbstractTaskImplementation {
     }
 
     if (delayRetryValue && globalComparator.doesAcceptsMoreDelays()
-        && globalComparator.areAllNonThroughputThresholdsMet(res)) {
+        && globalComparator.areAllNonThroughputAndEnergyThresholdsMet(res)) {
       PreesmLogger.getLogger().fine("Retrying combination with delays.");
 
       // compute possible amount of delays
@@ -379,7 +379,7 @@ public class SetMalleableParametersTask extends AbstractTaskImplementation {
       DSEpointIR resRetry = runConfiguration(scenario, flatGraphWithDelays, architecture, scheduler, iterationDelay);
       if (resRetry != null) {
         // adds cut information to the point
-        resRetry = new DSEpointIR(resRetry.power, resRetry.latency, resRetry.durationII, nbCuts, nbPreCuts);
+        resRetry = new DSEpointIR(resRetry.energy, resRetry.latency, resRetry.durationII, nbCuts, nbPreCuts);
         logCsvContentMparams(logDSEpoints, mparamsIR, resRetry);
       } else {
         logCsvContentMparams(logDSEpoints, mparamsIR, new DSEpointIR(0, 0, 0, nbCuts, nbPreCuts));
@@ -423,7 +423,7 @@ public class SetMalleableParametersTask extends AbstractTaskImplementation {
 
     // put back all messages
     PreesmLogger.getLogger().setLevel(backupLevel);
-    return new DSEpointIR((double) energy / (double) latency, iterationDelay, latency);
+    return new DSEpointIR(energy, iterationDelay, latency);
   }
 
   protected static void resetAllMparams(List<MalleableParameterIR> mparamsIR) {
@@ -533,6 +533,9 @@ public class SetMalleableParametersTask extends AbstractTaskImplementation {
       final Number thresholdI = numberThresholds[i];
       if (thresholdI.doubleValue() == 0.0D) {
         switch (charComparisons[i]) {
+          case 'E':
+            listComparators.add(new DSEpointIR.EnergyMinComparator());
+            break;
           case 'P':
             listComparators.add(new DSEpointIR.PowerMinComparator());
             break;
@@ -550,6 +553,9 @@ public class SetMalleableParametersTask extends AbstractTaskImplementation {
         }
       } else if (thresholdI.doubleValue() > 0.0D) {
         switch (charComparisons[i]) {
+          case 'E':
+            listComparators.add(new DSEpointIR.EnergyAtMostComparator(thresholdI.longValue()));
+            break;
           case 'P':
             listComparators.add(new DSEpointIR.PowerAtMostComparator(thresholdI.doubleValue()));
             break;
