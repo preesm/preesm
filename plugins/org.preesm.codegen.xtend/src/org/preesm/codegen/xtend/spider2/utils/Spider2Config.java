@@ -50,20 +50,15 @@ public class Spider2Config {
   private final boolean useVerbose;
   private final boolean useGraphOptims;
   private final String  schedulerType;
+  private final String  mapperType;
+  private final String  allocatorType;
+  private final String  execPolicyType;
+  private final String  runMode;
+  private final String  runtimeAlgo;
 
   private static final String TRUE = "true";
 
   private static final String FALSE = "false";
-
-  private String getSpider2SchedulerType(final String scheduleType) {
-    if ("round_robin_list_scheduling".equalsIgnoreCase(scheduleType)) {
-      return "SCHEDULER_LIST_ROUND_ROBIN";
-    } else if ("greedy_scheduling".equalsIgnoreCase(scheduleType)) {
-      return "SCHEDULER_GREEDY";
-    } else {
-      return "SCHEDULER_LIST_BESTFIT";
-    }
-  }
 
   /**
    * 
@@ -77,6 +72,11 @@ public class Spider2Config {
     final String verboseParameter = workflowParameters.get(Spider2CodegenTask.PARAM_VERBOSE);
     final String graphOptimsParameter = workflowParameters.get(Spider2CodegenTask.PARAM_GRAPH_OPTIMS);
     final String schedulerParameter = workflowParameters.get(Spider2CodegenTask.PARAM_SCHEDULER);
+    final String mapperParameter = workflowParameters.get(Spider2CodegenTask.PARAM_MAPPER);
+    final String allocatorParameter = workflowParameters.get(Spider2CodegenTask.PARAM_ALLOCATOR);
+    final String execPolicyParameter = workflowParameters.get(Spider2CodegenTask.PARAM_EXEC_POLICY);
+    final String modeParameter = workflowParameters.get(Spider2CodegenTask.PARAM_RUN_MODE);
+    final String algoParameter = workflowParameters.get(Spider2CodegenTask.PARAM_ALGO);
 
     if (generateArchiFileParameter == null) {
       generateArchiFile = true;
@@ -103,7 +103,12 @@ public class Spider2Config {
     } else {
       useGraphOptims = TRUE.equalsIgnoreCase(graphOptimsParameter);
     }
-    schedulerType = getSpider2SchedulerType(schedulerParameter);
+    schedulerType = schedulerParameter == null ? "LIST" : schedulerParameter;
+    mapperType = mapperParameter == null ? "BEST_FIT" : mapperParameter;
+    allocatorType = allocatorParameter == null ? "DEFAULT" : allocatorParameter;
+    execPolicyType = execPolicyParameter == null ? "DELAYED" : execPolicyParameter;
+    runMode = modeParameter == null ? "LOOP" : modeParameter;
+    runtimeAlgo = algoParameter == null ? "JITMS" : algoParameter;
   }
 
   public boolean getGenerateArchiFile() {
@@ -128,6 +133,26 @@ public class Spider2Config {
 
   public String getSchedulerType() {
     return schedulerType;
+  }
+
+  public String getMapperType() {
+    return mapperType;
+  }
+
+  public String getAllocatorType() {
+    return allocatorType;
+  }
+
+  public String getExecPolicyType() {
+    return execPolicyType;
+  }
+
+  public String getRunMode() {
+    return runMode;
+  }
+
+  public String getRuntimeAlgo() {
+    return runtimeAlgo;
   }
 
 }

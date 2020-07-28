@@ -58,6 +58,8 @@ import org.preesm.model.pisdf.BroadcastActor;
 import org.preesm.model.pisdf.CHeaderRefinement;
 import org.preesm.model.pisdf.ConfigInputPort;
 import org.preesm.model.pisdf.ConfigOutputPort;
+import org.preesm.model.pisdf.DataInputPort;
+import org.preesm.model.pisdf.DataOutputPort;
 import org.preesm.model.pisdf.DataPort;
 import org.preesm.model.pisdf.DelayActor;
 import org.preesm.model.pisdf.Dependency;
@@ -472,13 +474,13 @@ public class Spider2PreProcessVisitor extends PiMMSwitch<Boolean> {
       extractParameters(graph);
     }
 
+    /* Extract the actors */
+    extractActors(graph);
+
     /* Extract edges */
     if (!this.edgeMap.containsKey(graph)) {
       extractEdges(graph);
     }
-
-    /* Extract the actors */
-    extractActors(graph);
 
     /* Go through the subgraphs */
     this.subgraphMap.put(graph, new HashSet<>());
@@ -522,14 +524,103 @@ public class Spider2PreProcessVisitor extends PiMMSwitch<Boolean> {
     return true;
   }
 
+  /**
+   * Convert broadcast actor that are not perfect broadcast to a repeat + fork pattern for spider2.
+   * 
+   * {@literal text
+   * Example:
+   * in preesm:    IN[10] -> BR -> 5
+   *                            -> 8 
+   *                            -> 10
+   * will be converted in spider to:
+   *      IN[10] -> REPEAT -> [23] -> IN[23] -> FORK -> 5
+   *                                                 -> 8 
+   *                                                 -> 10                           
+   * 
+   *  }
+   * 
+   * @param graph
+   *          The graph
+   * @param ba
+   *          The broadcast actor
+   */
+  private void convertPreesmBroadcastToSpider(final PiGraph graph, final BroadcastActor ba) {
+    /* = Concatenate all the output expression into one = */
+    String repeatExpression = "";
+    for (final DataOutputPort dop : ba.getDataOutputPorts()) {
+      final Expression expr = dop.getExpression();
+      if (repeatExpression.equals("")) {
+        repeatExpression = expr.getExpressionAsString();
+      } else {
+        repeatExpression = repeatExpression + " + " + expr.getExpressionAsString();
+      }
+    }
+
+    /* = Creates a repeat actor = */
+    AbstractActor repeat = PiMMUserFactory.instance.createBroadcastActor();
+    graph.addActor(repeat);
+    final DataInputPort ipBroadcast = ba.getDataInputPorts().get(0);
+    DataInputPort ipRepeat = PiMMUserFactory.instance.createDataInputPort();
+    ipRepeat.setName(ipBroadcast.getName());
+    ipRepeat.setExpression(ipBroadcast.getExpression().getExpressionAsString());
+    repeat.getDataInputPorts().add(ipRepeat);
+    DataOutputPort opRepeat = PiMMUserFactory.instance.createDataOutputPort();
+    opRepeat.setName("out");
+    opRepeat.setExpression(repeatExpression);
+    repeat.getDataOutputPorts().add(opRepeat);
+    repeat.setName("repeat_" + ba.getName());
+
+    /* = Creates a fork actor = */
+    AbstractActor fork = PiMMUserFactory.instance.createForkActor();
+    graph.addActor(fork);
+    fork.setName("fork_" + ba.getName());
+
+    /* = Connect the repeat to the fork = */
+    DataInputPort ipFork = PiMMUserFactory.instance.createDataInputPort();
+    ipFork.setName("in");
+    ipFork.setExpression(repeatExpression);
+    fork.getDataInputPorts().add(ipFork);
+    final Fifo fifoR2F = PiMMUserFactory.instance.createFifo(opRepeat, ipFork, ipBroadcast.getIncomingFifo().getType());
+    graph.addFifo(fifoR2F);
+
+    /* = Disconnect broadcast and connect everything to the repeat / fork = */
+    ipBroadcast.getIncomingFifo().setTargetPort(ipRepeat);
+    for (final DataOutputPort dop : ba.getDataOutputPorts()) {
+      DataOutputPort opFork = PiMMUserFactory.instance.createDataOutputPort();
+      opFork.setName(dop.getName());
+      opFork.setExpression(dop.getExpression().getExpressionAsString());
+      dop.getOutgoingFifo().setSourcePort(opFork);
+      fork.getDataOutputPorts().add(opFork);
+    }
+
+    /* = Removes the broadcast = */
+    graph.removeActor(ba);
+
+    /* = Creates the codegen actors = */
+    this.actorsMap.get(graph).add(new Spider2CodegenActor("REPEAT", repeat, this.scenario, this.clusterList));
+    this.actorsMap.get(graph).add(new Spider2CodegenActor("FORK", fork, this.scenario, this.clusterList));
+  }
+
   @Override
   public Boolean caseBroadcastActor(final BroadcastActor ba) {
+    final PiGraph graph = ba.getContainingPiGraph();
     if (ba.getOutgoingEdges().size() == 1) {
-      this.actorsMap.get(ba.getContainingPiGraph())
-          .add(new Spider2CodegenActor("REPEAT", ba, this.scenario, this.clusterList));
+      this.actorsMap.get(graph).add(new Spider2CodegenActor("REPEAT", ba, this.scenario, this.clusterList));
     } else {
-      this.actorsMap.get(ba.getContainingPiGraph())
-          .add(new Spider2CodegenActor("DUPLICATE", ba, this.scenario, this.clusterList));
+      final Expression inputExpr = ba.getDataInputPorts().get(0).getExpression();
+      Boolean isPerfectBroadcast = true;
+      for (final DataOutputPort dop : ba.getDataOutputPorts()) {
+        final Expression expr = dop.getExpression();
+        if (!expr.getExpressionAsString().equals(inputExpr.getExpressionAsString())) {
+          isPerfectBroadcast = false;
+          break;
+        }
+      }
+      if (isPerfectBroadcast.booleanValue()) {
+        this.actorsMap.get(graph).add(new Spider2CodegenActor("DUPLICATE", ba, this.scenario, this.clusterList));
+      } else {
+        convertPreesmBroadcastToSpider(graph, ba);
+      }
     }
     return true;
   }

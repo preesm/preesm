@@ -118,7 +118,16 @@ int main(int argc, char *argv[]) {
         spider::userApplicationInit();
 
         /* == Creates the runtime context == */
-        auto context = spider::createRuntimeContext(graph, spider::RunMode::${runMode}, ${loopCount}, spider::RuntimeType::${runtimeAlgo}, spider::SchedulingPolicy::${schedAlgorithm});
+        const auto runtimeConfig = spider::RuntimeConfig{
+            spider::RunMode::${runMode},
+            spider::RuntimeType::${runtimeAlgo},
+            spider::ExecutionPolicy::${execPolicy},
+            spider::SchedulingPolicy::${schedAlgorithm},
+            spider::MappingPolicy::${mapAlgorithm},
+            spider::FifoAllocatorType::${allocType},
+            ${loopCount}U,
+        };
+        auto context = spider::createRuntimeContext(graph, runtimeConfig);
         
         /* == Run the application == */
         spider::run(context);
