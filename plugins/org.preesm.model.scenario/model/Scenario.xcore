@@ -277,7 +277,7 @@ class Timings {
 		val String timingExpression = getTimingOrDefault(actor, component);
 		var long t;
 		if (timingExpression !== null) {
-			t = ExpressionEvaluator.evaluate(actor, timingExpression, scenario.parameterValues.map);
+			t = ExpressionEvaluator.evaluate(actor.containingPiGraph, timingExpression, scenario.parameterValues.map);
 		} else {
 			t = ScenarioConstants.DEFAULT_TIMING_TASK.value;
 		}
@@ -637,7 +637,7 @@ class PapiCpuID {
 		val String energyExpression = getEnergyActorOrDefault(actor, component);
 		var long t;
 		if (energyExpression !== null) {
-			t = ExpressionEvaluator.evaluate(actor, energyExpression, scenario.parameterValues.map);
+			t = ExpressionEvaluator.evaluate(actor.containingPiGraph, energyExpression, scenario.parameterValues.map);
 		} else {
 			t = ScenarioConstants.DEFAULT_ENERGY_TASK.value;
 		}
