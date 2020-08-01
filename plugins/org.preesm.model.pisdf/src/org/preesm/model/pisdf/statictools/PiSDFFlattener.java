@@ -168,7 +168,7 @@ public class PiSDFFlattener extends PiMMSwitch<Boolean> {
         removeLoopOnDelayActor(graph, (DelayActor) da);
       }
     }
-    // remove params that are not anymore connected to anything
+    // remove params that are not connected to anything
     for (final Parameter p : graph.getParameters()) {
       if (p.getOutgoingDependencies().isEmpty()) {
         graph.getVertices().remove(p);

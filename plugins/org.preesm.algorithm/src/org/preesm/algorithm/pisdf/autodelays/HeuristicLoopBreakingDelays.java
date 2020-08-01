@@ -96,7 +96,9 @@ public class HeuristicLoopBreakingDelays {
 
   /**
    * This method computes which fifo are able to break cycles. This necessitates a research of all simple cycles, so it
-   * can be long.
+   * can be long. {@link org.preesm.model.pisdf.statictools.PiMMHelper#removeNonExecutedActorsAndFifos} should have
+   * previously called if null fifo rates are present.
+   * 
    * 
    * @param graph
    *          The PiGraph to analyze (only top level will be analyzed).

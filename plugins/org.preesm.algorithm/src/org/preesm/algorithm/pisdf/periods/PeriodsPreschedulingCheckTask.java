@@ -68,6 +68,7 @@ import org.preesm.model.pisdf.PeriodicElement;
 import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.pisdf.brv.BRVMethod;
 import org.preesm.model.pisdf.brv.PiBRV;
+import org.preesm.model.pisdf.factory.PiMMUserFactory;
 import org.preesm.model.pisdf.statictools.PiMMHelper;
 import org.preesm.model.scenario.Scenario;
 import org.preesm.model.scenario.ScenarioConstants;
@@ -135,6 +136,10 @@ public class PeriodsPreschedulingCheckTask extends AbstractTaskImplementation {
 
     final long time = System.nanoTime();
 
+    final Map<String, Object> output = new LinkedHashMap<>();
+    output.put(AbstractWorkflowNodeImplementation.KEY_PI_GRAPH, graph);
+    final PiGraph graphCopy = PiMMUserFactory.instance.copyPiGraphWithHistory(graph);
+
     final String rateStr = parameters.get(PeriodsPreschedulingCheckTask.SELECTION_RATE);
     int rate = 100;
     try {
@@ -147,7 +152,7 @@ public class PeriodsPreschedulingCheckTask extends AbstractTaskImplementation {
     }
 
     final Map<Actor, Long> periodicActors = new LinkedHashMap<>();
-    for (final AbstractActor absActor : graph.getActors()) {
+    for (final AbstractActor absActor : graphCopy.getActors()) {
       if ((absActor instanceof Actor) && (absActor instanceof PeriodicElement)) {
         final Actor actor = (Actor) absActor;
         if (!actor.isHierarchical() && !actor.isConfigurationActor()) {
@@ -165,14 +170,11 @@ public class PeriodsPreschedulingCheckTask extends AbstractTaskImplementation {
       }
     }
 
-    final Map<String, Object> output = new LinkedHashMap<>();
-    output.put(AbstractWorkflowNodeImplementation.KEY_PI_GRAPH, graph);
-
-    Map<AbstractVertex, Long> brv = PiBRV.compute(graph, BRVMethod.LCM);
+    Map<AbstractVertex, Long> brv = PiBRV.compute(graphCopy, BRVMethod.LCM);
     // check that are all actor periods times brv are equal and set the graph period if needed
-    PiMMHelper.checkPeriodicity(graph, brv);
+    PiMMHelper.checkPeriodicity(graphCopy, brv);
 
-    long graphPeriod = graph.getPeriod().evaluate();
+    long graphPeriod = graphCopy.getPeriod().evaluate();
     if (graphPeriod <= 0 && periodicActors.isEmpty()) {
       PreesmLogger.getLogger().log(Level.WARNING, "This task is useless when there is no period in the graph.");
       return output;
@@ -216,13 +218,14 @@ public class PeriodsPreschedulingCheckTask extends AbstractTaskImplementation {
     }
 
     // 0. find all cycles and retrieve actors placed after delays.
+    PiMMHelper.removeNonExecutedActorsAndFifos(graphCopy, brv);
     HeuristicLoopBreakingDelays heurFifoBreaks = new HeuristicLoopBreakingDelays();
-    heurFifoBreaks.performAnalysis(graph, brv);
+    heurFifoBreaks.performAnalysis(graphCopy, brv);
 
     // 1. find all actor w/o incoming edges and all others w/o outgoing edge
     final Set<AbstractActor> sourceActors = new LinkedHashSet<>(heurFifoBreaks.additionalSourceActors);
     final Set<AbstractActor> sinkActors = new LinkedHashSet<>(heurFifoBreaks.additionalSinkActors);
-    for (final AbstractActor absActor : graph.getActors()) {
+    for (final AbstractActor absActor : graphCopy.getActors()) {
       if (absActor instanceof ExecutableActor) {
         if (absActor.getDataOutputPorts().isEmpty()) {
           sinkActors.add(absActor);

@@ -84,6 +84,7 @@ import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.pisdf.brv.BRVMethod;
 import org.preesm.model.pisdf.brv.PiBRV;
 import org.preesm.model.pisdf.factory.PiMMUserFactory;
+import org.preesm.model.pisdf.statictools.PiMMHelper;
 import org.preesm.model.pisdf.statictools.PiSDFToSingleRate;
 import org.preesm.model.scenario.Scenario;
 import org.preesm.model.scenario.ScenarioConstants;
@@ -184,7 +185,7 @@ public class AutoDelaysTask extends AbstractTaskImplementation {
 
     final Map<String, Object> output = new LinkedHashMap<>();
     if (maxii <= 0 && !cycles) {
-      PreesmLogger.getLogger().log(Level.INFO, "nothing to do.");
+      PreesmLogger.getLogger().log(Level.INFO, "Nothing to do.");
       output.put(AbstractWorkflowNodeImplementation.KEY_PI_GRAPH, graph);
       return output;
     }
@@ -243,6 +244,7 @@ public class AutoDelaysTask extends AbstractTaskImplementation {
 
     PiGraph graphCopy = PiMMUserFactory.instance.copyPiGraphWithHistory(graph);
     Map<AbstractVertex, Long> brv = PiBRV.compute(graphCopy, BRVMethod.LCM);
+    PiMMHelper.removeNonExecutedActorsAndFifos(graphCopy, brv);
 
     Map<AbstractVertex, Long> wcets = new HashMap<>();
     for (final Entry<AbstractVertex, Long> en : brv.entrySet()) {
@@ -306,10 +308,15 @@ public class AutoDelaysTask extends AbstractTaskImplementation {
         TopoVisit> topoRanks = TopologicalRanking.topologicalASAPranking(sourceActors, hlbd.actorsNbVisitsTopoRank);
     // build intermediate list of actors per rank
     final SortedMap<Integer, Set<AbstractActor>> irRankActors = mapRankActors(topoRanks, false, 0);
-    // offset of one to ease next computation
+    // offset of one to ease some computations
     final int maxRank = irRankActors.lastKey() + 1;
-    final int selec = Math.min(nbPreCuts, maxRank - 2);
-    final int maxii = Math.min(nbMaxCuts, maxRank - 2);
+    if (maxRank < 2) {
+      // If there is only one rank ... where would you add delays !?
+      PreesmLogger.getLogger().log(Level.INFO, "Nothing to do.");
+      return graphCopy;
+    }
+    final int selec = Math.min(nbPreCuts, maxRank - 1);
+    final int maxii = Math.min(nbMaxCuts, maxRank - 1);
 
     final Map<AbstractActor,
         TopoVisit> topoRanksT = TopologicalRanking.topologicalASAPrankingT(sinkActors, hlbd.actorsNbVisitsTopoRankT);
@@ -331,6 +338,7 @@ public class AutoDelaysTask extends AbstractTaskImplementation {
       int rank = maxRank - tv.rank;
       long prev = rankWCETs.getOrDefault(rank, 0L);
       rankWCETs.put(rank, tWCET + prev);
+
     }
     // as loads are counted 2 times if one same rank, divide by 2
     // scale by the number of actors per rank (in order to expose parallelism)

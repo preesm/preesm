@@ -329,9 +329,9 @@ public class SetMalleableParametersTask extends AbstractTaskImplementation {
       final List<MalleableParameterIR> mparamsIR) {
 
     PreesmLogger.getLogger().fine("==> Testing combination: " + index);
-    for (Parameter p : graph.getAllParameters()) {
-      PreesmLogger.getLogger().fine(p.getName() + ": " + p.getExpression().getExpressionAsString());
-    }
+    // for (Parameter p : graph.getAllParameters()) {
+    // PreesmLogger.getLogger().fine(p.getVertexPath() + ": " + p.getExpression().getExpressionAsString());
+    // }
 
     // copy graph since flatten transfo has side effects (on parameters)
     final PiGraph graphCopy = PiMMUserFactory.instance.copyPiGraphWithHistory(graph);
@@ -369,8 +369,7 @@ public class SetMalleableParametersTask extends AbstractTaskImplementation {
       // add more delays
       // copy graph since flatten transfo has side effects (on parameters)
       final PiGraph graphCopy2 = PiMMUserFactory.instance.copyPiGraphWithHistory(graph);
-      final PiGraph flatGraph = graphCopy2.getChildrenGraphs().isEmpty() ? graphCopy2
-          : PiSDFFlattener.flatten(graphCopy2, true);
+      final PiGraph flatGraph = PiSDFFlattener.flatten(graphCopy2, true);
       final PiGraph flatGraphWithDelays = AutoDelaysTask.addDelays(flatGraph, architecture, scenario, false, false,
           false, nbCore, nbPreCuts, nbCuts);
       iterationDelay = IterationDelayedEvaluator.computeLatency(flatGraphWithDelays);
