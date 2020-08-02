@@ -34,11 +34,17 @@
  */
 package org.preesm.algorithm.mparameters;
 
+import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import org.preesm.model.pisdf.Parameter;
 
 /**
  * This class stores main metrics of a DSE point. (Design Space Exploration)
@@ -53,6 +59,8 @@ public class DSEpointIR {
   public final long energy;     // energy, power = energy / durationII
   public final int  latency;    // as factor of durationII
   public final long durationII; // inverse of throughput, makespan = latency * durationII
+
+  public final Map<Parameter, Long> paramsValues; // values of parameters having objectives
 
   // not used by comparators:
   public final int askedCuts;    // > 0 if delay heuristic has been called
@@ -72,6 +80,7 @@ public class DSEpointIR {
     durationII = Long.MAX_VALUE;
     askedCuts = 0;
     askedPreCuts = 0;
+    paramsValues = new HashMap<>();
   }
 
   /**
@@ -85,7 +94,7 @@ public class DSEpointIR {
    *          the durationII (inverse of throughput)
    */
   public DSEpointIR(final long energy, final int latency, final long durationII) {
-    this(energy, latency, durationII, 0, 0);
+    this(energy, latency, durationII, 0, 0, new HashMap<>());
   }
 
   /**
@@ -101,14 +110,17 @@ public class DSEpointIR {
    *          the number of cuts asked to the delay placement heuristic
    * @param askedPreCuts
    *          the number of preselection cuts asked to the delay placement heuristic
+   * @param paramsValues
+   *          values of parameters having objectives
    */
   public DSEpointIR(final long energy, final int latency, final long durationII, final int askedCuts,
-      final int askedPreCuts) {
+      final int askedPreCuts, final Map<Parameter, Long> paramsValues) {
     this.energy = energy;
     this.latency = latency;
     this.durationII = durationII;
     this.askedCuts = askedCuts;
     this.askedPreCuts = askedPreCuts;
+    this.paramsValues = paramsValues;
   }
 
   @Override
@@ -131,6 +143,7 @@ public class DSEpointIR {
   public static class DSEpointGlobalComparator implements Comparator<DSEpointIR> {
 
     private final List<Comparator<DSEpointIR>> comparators;
+    private final ParameterComparator          paramComparator;
     private final boolean                      hasThresholds;
     private final boolean                      delayAcceptance;
     private final int                          delayMaximumLatency;
@@ -140,10 +153,13 @@ public class DSEpointIR {
      * 
      * @param comparators
      *          List of comparators to call.
+     * @param paramsObjvs
+     *          Maps of parameters and their objectives (min: - or max: +), evaluated on given order.
      * 
      */
-    public DSEpointGlobalComparator(final List<Comparator<DSEpointIR>> comparators) {
-      this.comparators = comparators;
+    public DSEpointGlobalComparator(final List<Comparator<DSEpointIR>> comparators,
+        final LinkedHashMap<Parameter, Character> paramsObjvs) {
+      this.comparators = new ArrayList<>(comparators);
       this.delayAcceptance = computesDelayAcceptance(comparators);
       if (!delayAcceptance) {
         this.delayMaximumLatency = 1;
@@ -151,6 +167,8 @@ public class DSEpointIR {
         this.delayMaximumLatency = computesMaxLatency(comparators);
       }
       hasThresholds = comparators.stream().anyMatch(x -> x instanceof ThresholdComparator<?>);
+      this.paramComparator = new ParameterComparator(paramsObjvs);
+      this.comparators.add(paramComparator);
     }
 
     @Override
@@ -164,6 +182,15 @@ public class DSEpointIR {
       }
 
       return 0;
+    }
+
+    /**
+     * Computes values of parameters in the current state of their graph.
+     * 
+     * @return Map of parameter values of parameter objectives.
+     */
+    public Map<Parameter, Long> getParamsValues() {
+      return paramComparator.getParamsValues();
     }
 
     /**
@@ -319,6 +346,55 @@ public class DSEpointIR {
       }
       // ensures no negative
       return Math.max(res, 0);
+    }
+
+  }
+
+  public static class ParameterComparator implements Comparator<DSEpointIR> {
+
+    public final LinkedHashMap<Parameter, Character> paramsMinOrMax;
+
+    /**
+     * Comparator of given parameters (minimization or maximization).
+     * 
+     * @param paramsMinOrMax
+     *          Parameters to minimize or maximize (order is kept for comparisons).
+     */
+    public ParameterComparator(final LinkedHashMap<Parameter, Character> paramsMinOrMax) {
+      this.paramsMinOrMax = paramsMinOrMax;
+    }
+
+    @Override
+    public int compare(DSEpointIR arg0, DSEpointIR arg1) {
+      for (Entry<Parameter, Character> en : paramsMinOrMax.entrySet()) {
+        final long p0 = arg0.paramsValues.get(en.getKey());
+        final long p1 = arg1.paramsValues.get(en.getKey());
+        final int cmp = Long.compare(p0, p1);
+        if (cmp != 0) {
+          if (en.getValue() == '+') {
+            // maximization
+            return -cmp;
+          } else {
+            // minimization
+            return cmp;
+          }
+        }
+      }
+      return 0;
+    }
+
+    /**
+     * Compute map values of parameters
+     * 
+     * @return Map of parameter values.
+     */
+    public Map<Parameter, Long> getParamsValues() {
+      final Map<Parameter, Long> paramsValues = new HashMap<>();
+      for (Entry<Parameter, Character> en : paramsMinOrMax.entrySet()) {
+        Parameter p = en.getKey();
+        paramsValues.put(p, p.getExpression().evaluate());
+      }
+      return paramsValues;
     }
 
   }

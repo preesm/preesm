@@ -116,23 +116,29 @@ import org.preesm.workflow.implement.AbstractWorkflowNodeImplementation;
                     + "or L for latency or M for makespan, separated by >).") }),
         @org.preesm.commons.doc.annotations.Parameter(name = SetMalleableParametersTask.DEFAULT_THRESHOLDS_NAME,
             values = { @Value(name = SetMalleableParametersTask.DEFAULT_THRESHOLDS_VALUE,
-                effect = "Taken into account if it is any integer higher than 0.") }) })
+                effect = "Threshold if it is any integer higher than 0, minimize it otherwise.") }),
+        @org.preesm.commons.doc.annotations.Parameter(name = SetMalleableParametersTask.DEFAULT_PARAMS_OBJVS_NAME,
+            values = { @Value(name = SetMalleableParametersTask.DEFAULT_PARAMS_OBJVS_VALUE,
+                effect = "Tells to minimize (-) or maximize (+) a parameter (after main objectives).") }) })
 public class SetMalleableParametersTask extends AbstractTaskImplementation {
 
-  public static final String DEFAULT_HEURISTIC_VALUE   = "false";
-  public static final String DEFAULT_DELAY_RETRY_VALUE = "false";
-  public static final String DEFAULT_COMPARISONS_VALUE = "T>P>L";
-  public static final String DEFAULT_THRESHOLDS_VALUE  = "0>0>0";
-  public static final String DEFAULT_LOG_VALUE         = "/Code/generated/";
+  public static final String DEFAULT_HEURISTIC_VALUE    = "false";
+  public static final String DEFAULT_DELAY_RETRY_VALUE  = "false";
+  public static final String DEFAULT_COMPARISONS_VALUE  = "T>P>L";
+  public static final String DEFAULT_THRESHOLDS_VALUE   = "0>0>0";
+  public static final String DEFAULT_LOG_VALUE          = "/Code/generated/";
+  public static final String DEFAULT_PARAMS_OBJVS_VALUE = ">";
 
-  public static final String DEFAULT_HEURISTIC_NAME   = "Number heuristic";
-  public static final String DEFAULT_DELAY_RETRY_NAME = "Retry with delays";
-  public static final String DEFAULT_COMPARISONS_NAME = "Comparisons";
-  public static final String DEFAULT_THRESHOLDS_NAME  = "Thresholds";
-  public static final String DEFAULT_LOG_NAME         = "Log path";
+  public static final String DEFAULT_HEURISTIC_NAME    = "Number heuristic";
+  public static final String DEFAULT_DELAY_RETRY_NAME  = "Retry with delays";
+  public static final String DEFAULT_COMPARISONS_NAME  = "Comparisons";
+  public static final String DEFAULT_THRESHOLDS_NAME   = "Thresholds";
+  public static final String DEFAULT_LOG_NAME          = "Log path";
+  public static final String DEFAULT_PARAMS_OBJVS_NAME = "Params objectives";
 
   public static final String COMPARISONS_REGEX = "[EPLTM](>[EPLTM])*";
   public static final String THRESHOLDS_REGEX  = "[0-9]+(.[0-9]+)?(>[0-9]+(.[0-9]+))*";
+  public static final String PARAMS_REGEX      = ">|(>[+-][a-zA-Z0-9_]+/[a-zA-Z0-9_]+)*";
 
   @Override
   public Map<String, Object> execute(Map<String, Object> inputs, Map<String, String> parameters,
@@ -190,7 +196,7 @@ public class SetMalleableParametersTask extends AbstractTaskImplementation {
       backupParamOverride.put(e.getKey(), e.getValue());
     }
 
-    final DSEpointGlobalComparator globalComparator = getGlobalComparator(parameters);
+    final DSEpointGlobalComparator globalComparator = getGlobalComparator(parameters, graph);
     final String delayRetryStr = parameters.get(DEFAULT_DELAY_RETRY_NAME);
     boolean delayRetryValue = Boolean.parseBoolean(delayRetryStr);
 
@@ -334,12 +340,15 @@ public class SetMalleableParametersTask extends AbstractTaskImplementation {
     // }
 
     // copy graph since flatten transfo has side effects (on parameters)
-    final PiGraph graphCopy = PiMMUserFactory.instance.copyPiGraphWithHistory(graph);
-    int iterationDelay = IterationDelayedEvaluator.computeLatency(graphCopy);
+    int iterationDelay = IterationDelayedEvaluator.computeLatency(graph);
+
+    Map<Parameter, Long> paramsValues = globalComparator.getParamsValues();
 
     final PeriodicScheduler scheduler = new PeriodicScheduler();
     DSEpointIR res = runConfiguration(scenario, graph, architecture, scheduler, iterationDelay);
     if (res != null) {
+      res = new DSEpointIR(res.energy, res.latency, res.durationII, 0, 0, paramsValues);
+
       logCsvContentMparams(logDSEpoints, mparamsIR, res);
     } else {
       logCsvContentMparams(logDSEpoints, mparamsIR, DSEpointIR.ZERO);
@@ -367,10 +376,9 @@ public class SetMalleableParametersTask extends AbstractTaskImplementation {
       final int nbPreCuts = nbCuts + 1;
 
       // add more delays
-      // copy graph since flatten transfo has side effects (on parameters)
-      final PiGraph graphCopy2 = PiMMUserFactory.instance.copyPiGraphWithHistory(graph);
-      final PiGraph flatGraph = PiSDFFlattener.flatten(graphCopy2, true);
-      final PiGraph flatGraphWithDelays = AutoDelaysTask.addDelays(flatGraph, architecture, scenario, false, false,
+      // copy and flatten transfo graph
+      final PiGraph flatGraphCopy = PiSDFFlattener.flatten(graph, true);
+      final PiGraph flatGraphWithDelays = AutoDelaysTask.addDelays(flatGraphCopy, architecture, scenario, false, false,
           false, nbCore, nbPreCuts, nbCuts);
       iterationDelay = IterationDelayedEvaluator.computeLatency(flatGraphWithDelays);
 
@@ -378,10 +386,12 @@ public class SetMalleableParametersTask extends AbstractTaskImplementation {
       DSEpointIR resRetry = runConfiguration(scenario, flatGraphWithDelays, architecture, scheduler, iterationDelay);
       if (resRetry != null) {
         // adds cut information to the point
-        resRetry = new DSEpointIR(resRetry.energy, resRetry.latency, resRetry.durationII, nbCuts, nbPreCuts);
+        resRetry = new DSEpointIR(resRetry.energy, resRetry.latency, resRetry.durationII, nbCuts, nbPreCuts,
+            paramsValues);
         logCsvContentMparams(logDSEpoints, mparamsIR, resRetry);
       } else {
-        logCsvContentMparams(logDSEpoints, mparamsIR, new DSEpointIR(0, 0, 0, nbCuts, nbPreCuts));
+        logCsvContentMparams(logDSEpoints, mparamsIR,
+            new DSEpointIR(0, 0, 0, nbCuts, nbPreCuts, new HashMap<Parameter, Long>()));
       }
 
       if ((resRetry != null && globalComparator.compare(resRetry, res) < 0)) {
@@ -489,9 +499,12 @@ public class SetMalleableParametersTask extends AbstractTaskImplementation {
    * 
    * @param parameters
    *          User parameters.
+   * @param graph
+   *          PiGraph containing parameters.
    * @return Global comparator to compare all points of DSE.
    */
-  public static DSEpointGlobalComparator getGlobalComparator(final Map<String, String> parameters) {
+  public static DSEpointGlobalComparator getGlobalComparator(final Map<String, String> parameters,
+      final PiGraph graph) {
     final String comparisons = parameters.get(DEFAULT_COMPARISONS_NAME);
     if (!comparisons.matches(COMPARISONS_REGEX)) {
       throw new PreesmRuntimeException("Comparisons string is not correct. Accepted regex: " + COMPARISONS_REGEX);
@@ -575,7 +588,33 @@ public class SetMalleableParametersTask extends AbstractTaskImplementation {
       }
 
     }
-    return new DSEpointIR.DSEpointGlobalComparator(listComparators);
+    final String params = parameters.get(DEFAULT_PARAMS_OBJVS_NAME);
+    if (!params.matches(PARAMS_REGEX)) {
+      throw new PreesmRuntimeException("Parameters string is not correct. Accepted regex: " + PARAMS_REGEX);
+    }
+    LinkedHashMap<Parameter, Character> paramsObjvs = new LinkedHashMap<>();
+    final String[] tabParams = params.split(">");
+    for (final String tabParam : tabParams) {
+      if (tabParam.isEmpty()) {
+        // first occurence of ">" in the string
+        continue;
+      }
+      final String[] parentAndParamNames = tabParam.split("/");
+      if (parentAndParamNames.length != 2) {
+        throw new PreesmRuntimeException(
+            "Parameters string is not correct. It should be: [+-]<ParentPiGraphName>/<ParameterName>");
+      }
+      final char minOrMax = parentAndParamNames[0].charAt(0);
+      final String parent = parentAndParamNames[0].substring(1);
+      Parameter param = graph.lookupParameterGivenGraph(parentAndParamNames[1], parent);
+      if (param == null) {
+        PreesmLogger.getLogger().log(Level.WARNING, "Parameter: " + tabParam + " has not been found, ignored.");
+      } else {
+        paramsObjvs.put(param, minOrMax);
+      }
+    }
+
+    return new DSEpointIR.DSEpointGlobalComparator(listComparators, paramsObjvs);
   }
 
   @Override
@@ -586,6 +625,7 @@ public class SetMalleableParametersTask extends AbstractTaskImplementation {
     parameters.put(DEFAULT_COMPARISONS_NAME, DEFAULT_COMPARISONS_VALUE);
     parameters.put(DEFAULT_THRESHOLDS_NAME, DEFAULT_THRESHOLDS_VALUE);
     parameters.put(DEFAULT_LOG_NAME, DEFAULT_LOG_VALUE);
+    parameters.put(DEFAULT_PARAMS_OBJVS_NAME, DEFAULT_PARAMS_OBJVS_VALUE);
     return parameters;
   }
 
