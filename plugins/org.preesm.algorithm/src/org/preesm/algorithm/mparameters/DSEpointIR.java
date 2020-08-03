@@ -44,7 +44,9 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import org.eclipse.xtext.xbase.lib.Pair;
 import org.preesm.model.pisdf.Parameter;
+import org.preesm.model.pisdf.PiGraph;
 
 /**
  * This class stores main metrics of a DSE point. (Design Space Exploration)
@@ -60,41 +62,23 @@ public class DSEpointIR {
   public final int  latency;    // as factor of durationII
   public final long durationII; // inverse of throughput, makespan = latency * durationII
 
-  public final Map<Parameter, Long> paramsValues; // values of parameters having objectives
+  public final Map<Pair<String, String>, Long> paramsValues; // values of parameters having objectives
 
   // not used by comparators:
-  public final int askedCuts;    // > 0 if delay heuristic has been called
-  public final int askedPreCuts; // > 0 if delay heuristic has been called
+  public final int     askedCuts;    // > 0 if delay heuristic has been called
+  public final int     askedPreCuts; // > 0 if delay heuristic has been called
+  public final boolean isSchedulable;
 
   // minimum point since threshold are positive values
-  public static final DSEpointIR ZERO = new DSEpointIR(0, 0, 0);
+  public static final DSEpointIR ZERO = new DSEpointIR(0, 0, 0, 0, 0, new HashMap<>(), true);
 
-  public static final String CSV_HEADER_STRING = "Power;Latency;DurationII;AskedCuts;AskedPrecuts";
+  public static final String CSV_HEADER_STRING = "Schedulability;Power;Latency;DurationII;AskedCuts;AskedPrecuts";
 
   /**
    * Default constructor, with maximum values everywhere.
    */
   public DSEpointIR() {
-    energy = Long.MAX_VALUE;
-    latency = Integer.MAX_VALUE;
-    durationII = Long.MAX_VALUE;
-    askedCuts = 0;
-    askedPreCuts = 0;
-    paramsValues = new HashMap<>();
-  }
-
-  /**
-   * New DSE point.
-   * 
-   * @param energy
-   *          the energy
-   * @param latency
-   *          the latency (as factor of durationII)
-   * @param durationII
-   *          the durationII (inverse of throughput)
-   */
-  public DSEpointIR(final long energy, final int latency, final long durationII) {
-    this(energy, latency, durationII, 0, 0, new HashMap<>());
+    this(Long.MAX_VALUE, Integer.MAX_VALUE, Long.MAX_VALUE, 0, 0, new HashMap<>(), false);
   }
 
   /**
@@ -112,26 +96,30 @@ public class DSEpointIR {
    *          the number of preselection cuts asked to the delay placement heuristic
    * @param paramsValues
    *          values of parameters having objectives
+   * @param isSchedulable
+   *          Whether or not this configuration is schedulable.
    */
   public DSEpointIR(final long energy, final int latency, final long durationII, final int askedCuts,
-      final int askedPreCuts, final Map<Parameter, Long> paramsValues) {
+      final int askedPreCuts, final Map<Pair<String, String>, Long> paramsValues, final boolean isSchedulable) {
     this.energy = energy;
     this.latency = latency;
     this.durationII = durationII;
     this.askedCuts = askedCuts;
     this.askedPreCuts = askedPreCuts;
     this.paramsValues = paramsValues;
+    this.isSchedulable = isSchedulable;
   }
 
   @Override
   public String toString() {
-    return "Energy:  " + energy + "  Latency:  " + latency + "x  DurationII:  " + durationII + "  Asked cuts: "
-        + askedCuts + " among " + askedPreCuts;
+    return "Schedulable:  " + isSchedulable + "  Energy:  " + energy + "  Latency:  " + latency + "x  DurationII:  "
+        + durationII + "  Asked cuts: " + askedCuts + " among " + askedPreCuts;
   }
 
   public String toCsvContentString() {
-    // US because we want to print floating POINT numbers (not coma as in French)
-    return String.format(Locale.US, "%d;%d;%d;%d;%d", energy, latency, durationII, askedCuts, askedPreCuts);
+    // force US because one day we may want to print floating POINT numbers (not coma as in French)
+    return String.format(Locale.US, "%b;%d;%d;%d;%d;%d", isSchedulable, energy, latency, durationII, askedCuts,
+        askedPreCuts);
   }
 
   /**
@@ -154,11 +142,12 @@ public class DSEpointIR {
      * @param comparators
      *          List of comparators to call.
      * @param paramsObjvs
-     *          Maps of parameters and their objectives (min: - or max: +), evaluated on given order.
+     *          Map of parameters, as pair of (parentName, parameterName), and their objectives (min: - or max: +),
+     *          evaluated in given order.
      * 
      */
     public DSEpointGlobalComparator(final List<Comparator<DSEpointIR>> comparators,
-        final LinkedHashMap<Parameter, Character> paramsObjvs) {
+        final LinkedHashMap<Pair<String, String>, Character> paramsObjvs) {
       this.comparators = new ArrayList<>(comparators);
       this.delayAcceptance = computesDelayAcceptance(comparators);
       if (!delayAcceptance) {
@@ -187,10 +176,12 @@ public class DSEpointIR {
     /**
      * Computes values of parameters in the current state of their graph.
      * 
+     * @param graph
+     *          Graph with resolved parameters.
      * @return Map of parameter values of parameter objectives.
      */
-    public Map<Parameter, Long> getParamsValues() {
-      return paramComparator.getParamsValues();
+    public Map<Pair<String, String>, Long> getParamsValues(final PiGraph graph) {
+      return paramComparator.getParamsValues(graph);
     }
 
     /**
@@ -317,7 +308,7 @@ public class DSEpointIR {
      * @param durationII
      *          Duration of the Initiation Interval from previous schedule (or graph period).
      * @param totalLoad
-     *          Tolal load of the firings.
+     *          Total load of the firings.
      * @param maxSingleLoad
      *          Maximum load of all firings.
      * @return Number of cuts to ask, between 0 and {@code nbCore} (not included).
@@ -352,21 +343,22 @@ public class DSEpointIR {
 
   public static class ParameterComparator implements Comparator<DSEpointIR> {
 
-    public final LinkedHashMap<Parameter, Character> paramsMinOrMax;
+    public final LinkedHashMap<Pair<String, String>, Character> paramsMinOrMax;
 
     /**
      * Comparator of given parameters (minimization or maximization).
      * 
      * @param paramsMinOrMax
-     *          Parameters to minimize or maximize (order is kept for comparisons).
+     *          Parameters, as pair of (parentName, parameterName), to minimize or maximize (order is kept for
+     *          comparisons).
      */
-    public ParameterComparator(final LinkedHashMap<Parameter, Character> paramsMinOrMax) {
+    public ParameterComparator(final LinkedHashMap<Pair<String, String>, Character> paramsMinOrMax) {
       this.paramsMinOrMax = paramsMinOrMax;
     }
 
     @Override
     public int compare(DSEpointIR arg0, DSEpointIR arg1) {
-      for (Entry<Parameter, Character> en : paramsMinOrMax.entrySet()) {
+      for (Entry<Pair<String, String>, Character> en : paramsMinOrMax.entrySet()) {
         final long p0 = arg0.paramsValues.get(en.getKey());
         final long p1 = arg1.paramsValues.get(en.getKey());
         final int cmp = Long.compare(p0, p1);
@@ -386,13 +378,16 @@ public class DSEpointIR {
     /**
      * Compute map values of parameters
      * 
+     * @param graph
+     *          Graph with resolved parameters.
      * @return Map of parameter values.
      */
-    public Map<Parameter, Long> getParamsValues() {
-      final Map<Parameter, Long> paramsValues = new HashMap<>();
-      for (Entry<Parameter, Character> en : paramsMinOrMax.entrySet()) {
-        Parameter p = en.getKey();
-        paramsValues.put(p, p.getExpression().evaluate());
+    public Map<Pair<String, String>, Long> getParamsValues(final PiGraph graph) {
+      final Map<Pair<String, String>, Long> paramsValues = new HashMap<>();
+      for (Entry<Pair<String, String>, Character> en : paramsMinOrMax.entrySet()) {
+        Pair<String, String> p = en.getKey();
+        Parameter param = graph.lookupParameterGivenGraph(p.getValue(), p.getKey());
+        paramsValues.put(p, param.getExpression().evaluate());
       }
       return paramsValues;
     }

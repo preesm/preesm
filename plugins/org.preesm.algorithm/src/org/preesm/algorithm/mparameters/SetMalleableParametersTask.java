@@ -51,6 +51,7 @@ import org.eclipse.core.resources.IWorkspace;
 import org.eclipse.core.resources.IWorkspaceRoot;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.xtext.xbase.lib.Pair;
 import org.preesm.algorithm.mparameters.DSEpointIR.DSEpointGlobalComparator;
 import org.preesm.algorithm.pisdf.autodelays.AutoDelaysTask;
 import org.preesm.algorithm.pisdf.autodelays.IterationDelayedEvaluator;
@@ -74,6 +75,7 @@ import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.pisdf.brv.BRVMethod;
 import org.preesm.model.pisdf.check.MalleableParameterExprChecker;
 import org.preesm.model.pisdf.factory.PiMMUserFactory;
+import org.preesm.model.pisdf.statictools.PiMMHelper;
 import org.preesm.model.pisdf.statictools.PiSDFFlattener;
 import org.preesm.model.pisdf.statictools.PiSDFToSingleRate;
 import org.preesm.model.scenario.Scenario;
@@ -265,12 +267,10 @@ public class SetMalleableParametersTask extends AbstractTaskImplementation {
 
       final DSEpointIR dsep = runAndRetryConfiguration(scenario, graph, architecture, index, delayRetryValue,
           globalComparator, logDSEpoints, mparamsIR);
-      if (dsep != null) {
-        PreesmLogger.getLogger().log(Level.FINE, dsep.toString());
-        if (bestConfig == null || globalComparator.compare(dsep, bestPoint) < 0) {
-          bestConfig = pce.recordConfiguration();
-          bestPoint = dsep;
-        }
+      PreesmLogger.getLogger().log(Level.FINE, dsep.toString());
+      if (dsep.isSchedulable && globalComparator.compare(dsep, bestPoint) < 0) {
+        bestConfig = pce.recordConfiguration();
+        bestPoint = dsep;
       }
     }
     if (bestConfig == null) {
@@ -302,12 +302,10 @@ public class SetMalleableParametersTask extends AbstractTaskImplementation {
 
         final DSEpointIR dsep = runAndRetryConfiguration(scenario, graph, architecture, indexTot, delayRetryValue,
             globalComparator, logDSEpoints, mparamsIR);
-        if (dsep != null) {
-          PreesmLogger.getLogger().log(Level.FINE, dsep.toString());
-          if (bestConfig == null || globalComparator.compare(dsep, bestPoint) < 0) {
-            bestConfig = pce.recordConfiguration();
-            bestPoint = dsep;
-          }
+        PreesmLogger.getLogger().log(Level.FINE, dsep.toString());
+        if (dsep.isSchedulable && globalComparator.compare(dsep, bestPoint) < 0) {
+          bestConfig = pce.recordConfiguration();
+          bestPoint = dsep;
         }
       }
       if (bestConfig == null) {
@@ -339,20 +337,9 @@ public class SetMalleableParametersTask extends AbstractTaskImplementation {
     // PreesmLogger.getLogger().fine(p.getVertexPath() + ": " + p.getExpression().getExpressionAsString());
     // }
 
-    // copy graph since flatten transfo has side effects (on parameters)
-    int iterationDelay = IterationDelayedEvaluator.computeLatency(graph);
-
-    Map<Parameter, Long> paramsValues = globalComparator.getParamsValues();
-
     final PeriodicScheduler scheduler = new PeriodicScheduler();
-    DSEpointIR res = runConfiguration(scenario, graph, architecture, scheduler, iterationDelay);
-    if (res != null) {
-      res = new DSEpointIR(res.energy, res.latency, res.durationII, 0, 0, paramsValues);
-
-      logCsvContentMparams(logDSEpoints, mparamsIR, res);
-    } else {
-      logCsvContentMparams(logDSEpoints, mparamsIR, DSEpointIR.ZERO);
-    }
+    DSEpointIR res = runConfiguration(scenario, graph, architecture, scheduler, globalComparator);
+    logCsvContentMparams(logDSEpoints, mparamsIR, res);
 
     if (delayRetryValue && globalComparator.doesAcceptsMoreDelays()
         && globalComparator.areAllNonThroughputAndEnergyThresholdsMet(res)) {
@@ -361,6 +348,7 @@ public class SetMalleableParametersTask extends AbstractTaskImplementation {
       // compute possible amount of delays
       final int nbCore = architecture.getOperatorComponents().get(0).getInstances().size();
       int maxCuts = globalComparator.getMaximumLatency();
+      final int iterationDelay = res.latency;
       if (maxCuts > iterationDelay) {
         // we can add at least one cut
         maxCuts -= iterationDelay;
@@ -375,26 +363,24 @@ public class SetMalleableParametersTask extends AbstractTaskImplementation {
           scheduler.getMaximalLoad());
       final int nbPreCuts = nbCuts + 1;
 
-      // add more delays
+      // deactivate fine logging for automatic pipelining
+      final Level backupLevel = PreesmLogger.getLogger().getLevel();
+      PreesmLogger.getLogger().setLevel(Level.SEVERE);
       // copy and flatten transfo graph
       final PiGraph flatGraphCopy = PiSDFFlattener.flatten(graph, true);
+      // add more delays
       final PiGraph flatGraphWithDelays = AutoDelaysTask.addDelays(flatGraphCopy, architecture, scenario, false, false,
           false, nbCore, nbPreCuts, nbCuts);
-      iterationDelay = IterationDelayedEvaluator.computeLatency(flatGraphWithDelays);
+      PreesmLogger.getLogger().setLevel(backupLevel);
 
       // retry with more delays
-      DSEpointIR resRetry = runConfiguration(scenario, flatGraphWithDelays, architecture, scheduler, iterationDelay);
-      if (resRetry != null) {
-        // adds cut information to the point
-        resRetry = new DSEpointIR(resRetry.energy, resRetry.latency, resRetry.durationII, nbCuts, nbPreCuts,
-            paramsValues);
-        logCsvContentMparams(logDSEpoints, mparamsIR, resRetry);
-      } else {
-        logCsvContentMparams(logDSEpoints, mparamsIR,
-            new DSEpointIR(0, 0, 0, nbCuts, nbPreCuts, new HashMap<Parameter, Long>()));
-      }
+      DSEpointIR resRetry = runConfiguration(scenario, flatGraphWithDelays, architecture, scheduler, null);
+      // adds cut information and params (from the unflat version since flattning change param names) to the point
+      resRetry = new DSEpointIR(resRetry.energy, resRetry.latency, resRetry.durationII, nbCuts, nbPreCuts,
+          res.paramsValues, resRetry.isSchedulable);
+      logCsvContentMparams(logDSEpoints, mparamsIR, resRetry);
 
-      if ((resRetry != null && globalComparator.compare(resRetry, res) < 0)) {
+      if (globalComparator.compare(resRetry, res) < 0) {
         return resRetry;
       }
 
@@ -404,9 +390,22 @@ public class SetMalleableParametersTask extends AbstractTaskImplementation {
   }
 
   protected static DSEpointIR runConfiguration(final Scenario scenario, final PiGraph graph, final Design architecture,
-      final IScheduler scheduler, final int iterationDelay) {
+      final IScheduler scheduler, final DSEpointGlobalComparator globalComparator) {
     final Level backupLevel = PreesmLogger.getLogger().getLevel();
     PreesmLogger.getLogger().setLevel(Level.SEVERE);
+
+    // copy graph since flatten transfo has side effects (on parameters)
+    final int iterationDelay = IterationDelayedEvaluator.computeLatency(graph);
+
+    final PiGraph graphResolvedCopy = PiMMUserFactory.instance.copyPiGraphWithHistory(graph);
+    PiMMHelper.resolveAllParameters(graphResolvedCopy);
+    Map<Pair<String, String>, Long> paramsValues;
+    if (globalComparator != null) {
+      paramsValues = globalComparator.getParamsValues(graphResolvedCopy);
+    } else {
+      paramsValues = new HashMap<>();
+    }
+
     final PiGraph dag = PiSDFToSingleRate.compute(graph, BRVMethod.LCM);
     // for (Parameter p : dag.getAllParameters()) {
     // PreesmLogger.getLogger().fine(p.getName() + " (in DAG): " + p.getExpression().getExpressionAsString());
@@ -419,20 +418,20 @@ public class SetMalleableParametersTask extends AbstractTaskImplementation {
       // put back all messages
       PreesmLogger.getLogger().setLevel(backupLevel);
       PreesmLogger.getLogger().log(Level.WARNING, "Scheduling was impossible.", e);
-      return null;
+      return new DSEpointIR(Long.MAX_VALUE, iterationDelay, Long.MAX_VALUE, 0, 0, paramsValues, false);
     }
     // use implementation evaluation of PeriodicScheduler instead?
     final ScheduleOrderManager scheduleOM = new ScheduleOrderManager(dag, scheduleAndMap.schedule);
     final LatencyCost evaluateLatency = new SimpleLatencyEvaluation().evaluate(dag, architecture, scenario,
         scheduleAndMap.mapping, scheduleOM);
-    final long latency = evaluateLatency.getValue();
+    final long durationII = evaluateLatency.getValue();
     final SimpleEnergyCost evaluateEnergy = new SimpleEnergyEvaluation().evaluate(dag, architecture, scenario,
         scheduleAndMap.mapping, scheduleOM);
     final long energy = evaluateEnergy.getValue();
 
     // put back all messages
     PreesmLogger.getLogger().setLevel(backupLevel);
-    return new DSEpointIR(energy, iterationDelay, latency);
+    return new DSEpointIR(energy, iterationDelay, durationII, 0, 0, paramsValues, true);
   }
 
   protected static void resetAllMparams(List<MalleableParameterIR> mparamsIR) {
@@ -592,7 +591,7 @@ public class SetMalleableParametersTask extends AbstractTaskImplementation {
     if (!params.matches(PARAMS_REGEX)) {
       throw new PreesmRuntimeException("Parameters string is not correct. Accepted regex: " + PARAMS_REGEX);
     }
-    LinkedHashMap<Parameter, Character> paramsObjvs = new LinkedHashMap<>();
+    LinkedHashMap<Pair<String, String>, Character> paramsObjvs = new LinkedHashMap<>();
     final String[] tabParams = params.split(">");
     for (final String tabParam : tabParams) {
       if (tabParam.isEmpty()) {
@@ -610,7 +609,7 @@ public class SetMalleableParametersTask extends AbstractTaskImplementation {
       if (param == null) {
         PreesmLogger.getLogger().log(Level.WARNING, "Parameter: " + tabParam + " has not been found, ignored.");
       } else {
-        paramsObjvs.put(param, minOrMax);
+        paramsObjvs.put(new Pair<>(parent, parentAndParamNames[1]), minOrMax);
       }
     }
 

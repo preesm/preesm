@@ -98,9 +98,10 @@ public class ParametersExporterTask extends AbstractTaskImplementation {
     final File file = new File(parent, filePath);
 
     // print parameters
-    // 0. we copy the graph since the parameter resolution has side effects (especially on delay actors)
+    // 0. we copy the graph since the parameter resolution has side effects (replace symbolic expression by its
+    // valuation)
     final PiGraph graphCopy = PiMMUserFactory.instance.copyPiGraphWithHistory(graph);
-    // 1. we resolve all parameters since subgraph values cannot be evaluated properly otherwise
+    // 1. we resolve all parameters since subgraph parameters cannot be evaluated properly otherwise
     PiMMHelper.resolveAllParameters(graphCopy);
     // 2. we export the resolved parameters
     String params = getParamsHeader(graphCopy);
