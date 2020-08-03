@@ -137,15 +137,10 @@ public class AlgorithmAndArchitectureScenarioNode extends AbstractScenarioImplem
     for (final Entry<Parameter, String> paramValue : scenario.getParameterValues().entrySet()) {
 
       final String newValue = paramValue.getValue();
-      final String expression = paramValue.getKey().getExpression().getExpressionAsString();
-
       if (newValue != null) {
         paramValue.getKey().setExpression(newValue);
-      } else if (expression != null) {
-        paramValue.getKey().setExpression(expression);
-      } else {
-        // keep value from PiSDF graph
       }
+      // else, keep original expression (from PiSDF graph)
     }
   }
 

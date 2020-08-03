@@ -51,6 +51,8 @@ import org.preesm.commons.doc.annotations.PreesmTask;
 import org.preesm.commons.doc.annotations.Value;
 import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.preesm.model.pisdf.PiGraph;
+import org.preesm.model.pisdf.factory.PiMMUserFactory;
+import org.preesm.model.pisdf.statictools.PiMMHelper;
 import org.preesm.workflow.elements.Workflow;
 import org.preesm.workflow.implement.AbstractTaskImplementation;
 import org.preesm.workflow.implement.AbstractWorkflowNodeImplementation;
@@ -96,7 +98,12 @@ public class ParametersExporterTask extends AbstractTaskImplementation {
     final File file = new File(parent, filePath);
 
     // print parameters
-    String params = getParamsHeader(graph);
+    // 0. we copy the graph since the parameter resolution has side effects (especially on delay actors)
+    final PiGraph graphCopy = PiMMUserFactory.instance.copyPiGraphWithHistory(graph);
+    // 1. we resolve all parameters since subgraph values cannot be evaluated properly otherwise
+    PiMMHelper.resolveAllParameters(graphCopy);
+    // 2. we export the resolved parameters
+    String params = getParamsHeader(graphCopy);
 
     try {
       FileUtils.writeStringToFile(file, params, (String) null);
@@ -124,7 +131,7 @@ public class ParametersExporterTask extends AbstractTaskImplementation {
     for (org.preesm.model.pisdf.Parameter p : graph.getAllParameters()) {
       if (p.isLocallyStatic()) {
         long value = p.getValueExpression().evaluate();
-        sb.append("#define " + p.getName().toUpperCase() + " " + value + "\n");
+        sb.append("#define " + p.getVertexPath().toUpperCase().replace('/', '_') + " " + value + "\n");
       }
     }
 

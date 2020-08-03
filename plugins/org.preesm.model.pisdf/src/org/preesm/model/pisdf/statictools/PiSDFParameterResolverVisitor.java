@@ -73,7 +73,7 @@ import org.preesm.model.pisdf.util.PiMMSwitch;
 public class PiSDFParameterResolverVisitor extends PiMMSwitch<Boolean> {
 
   /*
-   * Map used to rapidly check if a parameter value has allready been resolved
+   * Map used to rapidly check if a parameter value has already been resolved
    */
   private final Map<Parameter, Long> parameterValues;
 
@@ -88,31 +88,7 @@ public class PiSDFParameterResolverVisitor extends PiMMSwitch<Boolean> {
     this.parameterValues = parameterValues;
   }
 
-  /**
-   * Set the value of parameters of a PiGraph when possible (i.e., if we have currently only one available value, or if
-   * we can compute the value)
-   *
-   * @param graph
-   *          the PiGraph in which we want to set the values of parameters
-   */
-  private void computeDerivedParameterValues(final PiGraph graph, final Map<Parameter, Long> parameterValues) {
-    // If there is no value or list of values for one Parameter, the value
-    // of the parameter is derived (i.e., computed from other parameters
-    // values), we can evaluate it (after the values of other parameters
-    // have been fixed)
-    for (final Parameter p : graph.getParameters()) {
-      if (!parameterValues.containsKey(p)) {
-        // Evaluate the expression wrt. the current values of the
-        // parameters and set the result as new expression
-        final Expression valueExpression = p.getValueExpression();
-        final long evaluate = valueExpression.evaluate();
-        p.setExpression(evaluate);
-        parameterValues.put(p, evaluate);
-      }
-    }
-  }
-
-  private void resolveActorPorts(final AbstractActor actor, final Map<String, Long> paramValues) {
+  private static void resolveActorPorts(final AbstractActor actor, final Map<String, Long> paramValues) {
     // Init the JEP parser associated with the actor
     // Iterate over all data ports of the actor and resolve their rates
     for (final DataPort dp : actor.getAllDataPorts()) {
@@ -144,7 +120,7 @@ public class PiSDFParameterResolverVisitor extends PiMMSwitch<Boolean> {
    * @throws PiMMHelperException
    *           the PiMMHandlerException exception
    */
-  private void resolveExpression(final ExpressionHolder holder, final Map<String, Long> paramValues) {
+  private static void resolveExpression(final ExpressionHolder holder, final Map<String, Long> paramValues) {
     final Expression expression = holder.getExpression();
     final long value = JEPWrapper.evaluate(expression.getExpressionAsString(), paramValues);
     holder.setExpression(value);
@@ -253,13 +229,12 @@ public class PiSDFParameterResolverVisitor extends PiMMSwitch<Boolean> {
     for (final ConfigInputInterface p : graph.getConfigInputInterfaces()) {
       doSwitch(p);
     }
-    // Resolve locally static parameters
+    // Resolve locally static parameters (neither ConfigInputInterface nor ConfigOutputInterface)
+    // Thus, ConfigOutputInterface are never evaluated, but we already restrict this analysis to
+    // locally static graphs, which must not depend on ConfigOutputInterface/Port by definition.
     for (final Parameter p : graph.getOnlyParameters()) {
       doSwitch(p);
     }
-
-    // Finally, we derive parameter values that have not already been processed
-    computeDerivedParameterValues(graph, this.parameterValues);
 
     // Resolve graph period
     graph.setExpression(graph.getPeriod().evaluate());
@@ -270,7 +245,7 @@ public class PiSDFParameterResolverVisitor extends PiMMSwitch<Boolean> {
     }
 
     // Deals with data ports of the graph
-    // Map that associate to every parameter of an acotr the corresponding value in the graph
+    // Map that associate to every parameter of an actor the corresponding value in the graph
     final Map<String, Long> portValues = new LinkedHashMap<>();
     // We have to fetch the corresponding parameter port for normal actors
     // Port of a parameter may have a dependency to higher level parameter
