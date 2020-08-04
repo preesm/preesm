@@ -102,16 +102,6 @@ import org.preesm.workflow.implement.AbstractWorkflowNodeImplementation;
     outputs = { @Port(name = "PiMM", type = PiGraph.class) },
 
     parameters = {
-        @org.preesm.commons.doc.annotations.Parameter(name = SetMalleableParametersTask.DEFAULT_LOG_NAME,
-            values = { @Value(name = SetMalleableParametersTask.DEFAULT_LOG_VALUE,
-                effect = "Path relative to the project root.") }),
-        @org.preesm.commons.doc.annotations.Parameter(name = SetMalleableParametersTask.DEFAULT_HEURISTIC_NAME,
-            values = { @Value(name = SetMalleableParametersTask.DEFAULT_HEURISTIC_VALUE,
-                effect = "Enables to use a DSE heuristic "
-                    + "when all malleable parameter expressions are integer numbers.") }),
-        @org.preesm.commons.doc.annotations.Parameter(name = SetMalleableParametersTask.DEFAULT_DELAY_RETRY_NAME,
-            values = { @Value(name = SetMalleableParametersTask.DEFAULT_DELAY_RETRY_VALUE,
-                effect = "Enables to use a DSE heuristic to try to add delays if necessary.") }),
         @org.preesm.commons.doc.annotations.Parameter(name = SetMalleableParametersTask.DEFAULT_COMPARISONS_NAME,
             values = { @Value(name = SetMalleableParametersTask.DEFAULT_COMPARISONS_VALUE,
                 effect = "Order of comparisons (T for throughput or P for power or E for energy "
@@ -121,22 +111,32 @@ import org.preesm.workflow.implement.AbstractWorkflowNodeImplementation;
                 effect = "Threshold if it is any integer higher than 0, minimize it otherwise.") }),
         @org.preesm.commons.doc.annotations.Parameter(name = SetMalleableParametersTask.DEFAULT_PARAMS_OBJVS_NAME,
             values = { @Value(name = SetMalleableParametersTask.DEFAULT_PARAMS_OBJVS_VALUE,
-                effect = "Tells to minimize (-) or maximize (+) a parameter (after main objectives).") }) })
+                effect = "Tells to minimize (-) or maximize (+) a parameter (after main objectives).") }),
+        @org.preesm.commons.doc.annotations.Parameter(name = SetMalleableParametersTask.DEFAULT_HEURISTIC_NAME,
+            values = { @Value(name = SetMalleableParametersTask.DEFAULT_HEURISTIC_VALUE,
+                effect = "Enables to use a DSE heuristic "
+                    + "when all malleable parameter expressions are integer numbers.") }),
+        @org.preesm.commons.doc.annotations.Parameter(name = SetMalleableParametersTask.DEFAULT_DELAY_RETRY_NAME,
+            values = { @Value(name = SetMalleableParametersTask.DEFAULT_DELAY_RETRY_VALUE,
+                effect = "Enables to use a DSE heuristic to try to add delays if necessary.") }),
+        @org.preesm.commons.doc.annotations.Parameter(name = SetMalleableParametersTask.DEFAULT_LOG_NAME,
+            values = { @Value(name = SetMalleableParametersTask.DEFAULT_LOG_VALUE,
+                effect = "Path relative to the project root.") }) })
 public class SetMalleableParametersTask extends AbstractTaskImplementation {
 
-  public static final String DEFAULT_HEURISTIC_VALUE    = "false";
-  public static final String DEFAULT_DELAY_RETRY_VALUE  = "false";
   public static final String DEFAULT_COMPARISONS_VALUE  = "T>P>L";
   public static final String DEFAULT_THRESHOLDS_VALUE   = "0>0>0";
-  public static final String DEFAULT_LOG_VALUE          = "/Code/generated/";
   public static final String DEFAULT_PARAMS_OBJVS_VALUE = ">";
+  public static final String DEFAULT_HEURISTIC_VALUE    = "false";
+  public static final String DEFAULT_DELAY_RETRY_VALUE  = "false";
+  public static final String DEFAULT_LOG_VALUE          = "/Code/generated/";
 
-  public static final String DEFAULT_HEURISTIC_NAME    = "Number heuristic";
-  public static final String DEFAULT_DELAY_RETRY_NAME  = "Retry with delays";
-  public static final String DEFAULT_COMPARISONS_NAME  = "Comparisons";
-  public static final String DEFAULT_THRESHOLDS_NAME   = "Thresholds";
-  public static final String DEFAULT_LOG_NAME          = "Log path";
-  public static final String DEFAULT_PARAMS_OBJVS_NAME = "Params objectives";
+  public static final String DEFAULT_COMPARISONS_NAME  = "1. Comparisons";
+  public static final String DEFAULT_THRESHOLDS_NAME   = "2. Thresholds";
+  public static final String DEFAULT_PARAMS_OBJVS_NAME = "3. Params objectives";
+  public static final String DEFAULT_HEURISTIC_NAME    = "4. Number heuristic";
+  public static final String DEFAULT_DELAY_RETRY_NAME  = "5. Retry with delays";
+  public static final String DEFAULT_LOG_NAME          = "6. Log path";
 
   public static final String COMPARISONS_REGEX = "[EPLTM](>[EPLTM])*";
   public static final String THRESHOLDS_REGEX  = "[0-9]+(.[0-9]+)?(>[0-9]+(.[0-9]+))*";
@@ -397,12 +397,14 @@ public class SetMalleableParametersTask extends AbstractTaskImplementation {
     // copy graph since flatten transfo has side effects (on parameters)
     final int iterationDelay = IterationDelayedEvaluator.computeLatency(graph);
 
-    final PiGraph graphResolvedCopy = PiMMUserFactory.instance.copyPiGraphWithHistory(graph);
-    PiMMHelper.resolveAllParameters(graphResolvedCopy);
     Map<Pair<String, String>, Long> paramsValues;
     if (globalComparator != null) {
+      final PiGraph graphResolvedCopy = PiMMUserFactory.instance.copyPiGraphWithHistory(graph);
+      PiMMHelper.resolveAllParameters(graphResolvedCopy);
       paramsValues = globalComparator.getParamsValues(graphResolvedCopy);
     } else {
+      // case of flatten graph with extra delays, so parameter names are not same,
+      // the real values will be updated by the calling method
       paramsValues = new HashMap<>();
     }
 
@@ -619,12 +621,12 @@ public class SetMalleableParametersTask extends AbstractTaskImplementation {
   @Override
   public Map<String, String> getDefaultParameters() {
     final Map<String, String> parameters = new LinkedHashMap<>();
-    parameters.put(DEFAULT_HEURISTIC_NAME, DEFAULT_HEURISTIC_VALUE);
-    parameters.put(DEFAULT_DELAY_RETRY_NAME, DEFAULT_DELAY_RETRY_VALUE);
     parameters.put(DEFAULT_COMPARISONS_NAME, DEFAULT_COMPARISONS_VALUE);
     parameters.put(DEFAULT_THRESHOLDS_NAME, DEFAULT_THRESHOLDS_VALUE);
-    parameters.put(DEFAULT_LOG_NAME, DEFAULT_LOG_VALUE);
     parameters.put(DEFAULT_PARAMS_OBJVS_NAME, DEFAULT_PARAMS_OBJVS_VALUE);
+    parameters.put(DEFAULT_HEURISTIC_NAME, DEFAULT_HEURISTIC_VALUE);
+    parameters.put(DEFAULT_DELAY_RETRY_NAME, DEFAULT_DELAY_RETRY_VALUE);
+    parameters.put(DEFAULT_LOG_NAME, DEFAULT_LOG_VALUE);
     return parameters;
   }
 
