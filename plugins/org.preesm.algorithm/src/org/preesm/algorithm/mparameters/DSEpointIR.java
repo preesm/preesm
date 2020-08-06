@@ -247,7 +247,7 @@ public class DSEpointIR {
      * 
      * @param comparators
      *          Comparators to check.
-     * @return Mimimal value of latency threshold, or LONG.MAX_VALUE if no threshold.
+     * @return Minimal value of latency threshold, or LONG.MAX_VALUE if no threshold.
      */
     private static int computesMaxLatency(final List<Comparator<DSEpointIR>> comparators) {
       final Optional<Integer> min = comparators.stream().filter(x -> x instanceof LatencyAtMostComparator)

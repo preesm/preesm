@@ -422,6 +422,7 @@ public class SetMalleableParametersTask extends AbstractTaskImplementation {
       PreesmLogger.getLogger().log(Level.WARNING, "Scheduling was impossible.", e);
       return new DSEpointIR(Long.MAX_VALUE, iterationDelay, Long.MAX_VALUE, 0, 0, paramsValues, false);
     }
+
     // use implementation evaluation of PeriodicScheduler instead?
     final ScheduleOrderManager scheduleOM = new ScheduleOrderManager(dag, scheduleAndMap.schedule);
     final LatencyCost evaluateLatency = new SimpleLatencyEvaluation().evaluate(dag, architecture, scenario,

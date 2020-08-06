@@ -274,14 +274,22 @@ class Timings {
 		return Long.toString(ScenarioConstants.DEFAULT_TIMING_TASK.value);
 	}
 	op long evaluateTimingOrDefault(AbstractActor actor, Component component) {
-		val String timingExpression = getTimingOrDefault(actor, component);
-		var long t;
-		if (timingExpression !== null) {
-			t = ExpressionEvaluator.evaluate(actor.containingPiGraph, timingExpression, scenario.parameterValues.map);
+		if (this.actorTimings.containsKey(actor)) {
+			val String timingExpression = getTimingOrDefault(actor, component);
+			var long t;
+			if (timingExpression !== null) {
+				t = ExpressionEvaluator.evaluate(actor.containingPiGraph, timingExpression, scenario.parameterValues.map);
+			} else {
+				t = ScenarioConstants.DEFAULT_TIMING_TASK.value;
+			}
+			return t;
 		} else {
-			t = ScenarioConstants.DEFAULT_TIMING_TASK.value;
+			val AbstractActor source = PreesmCopyTracker.getSource(actor);
+			if (source !== actor) {
+				return evaluateTimingOrDefault(source, component);
+			}			
 		}
-		return t;
+		return ScenarioConstants.DEFAULT_TIMING_TASK.value;
 	}
 	// TODO Memory values should be moved to SLAM
 	contains MemoryInfo[] memTimings opposite timings
@@ -634,14 +642,22 @@ class PapiCpuID {
 	}
 
 	op long evaluateEnergyActorOrDefault(AbstractActor actor, Component component) {
-		val String energyExpression = getEnergyActorOrDefault(actor, component);
-		var long t;
-		if (energyExpression !== null) {
-			t = ExpressionEvaluator.evaluate(actor.containingPiGraph, energyExpression, scenario.parameterValues.map);
+		if (this.algorithmEnergy.containsKey(actor)) {
+			val String energyExpression = getEnergyActorOrDefault(actor, component);
+			var long t;
+			if (energyExpression !== null) {
+				t = ExpressionEvaluator.evaluate(actor.containingPiGraph, energyExpression, scenario.parameterValues.map);
+			} else {
+				t = ScenarioConstants.DEFAULT_ENERGY_TASK.value;
+			}
+			return t;	
 		} else {
-			t = ScenarioConstants.DEFAULT_ENERGY_TASK.value;
+			val AbstractActor source = PreesmCopyTracker.getSource(actor);
+			if (source !== actor) {
+				return evaluateEnergyActorOrDefault(source, component);
+			}			
 		}
-		return t;
+		return ScenarioConstants.DEFAULT_ENERGY_TASK.value;		
 	}
 
 

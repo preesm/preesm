@@ -418,7 +418,7 @@ public class PeriodicScheduler extends AbstractScheduler {
   protected long getLoad(AbstractActor actor, Design slamDesign, Scenario scenario) {
     long wcet = ScenarioConstants.DEFAULT_TIMING_TASK.getValue();
     for (final Component operatorDefinitionID : slamDesign.getOperatorComponents()) {
-      wcet = scenario.getTimings().evaluateTimingOrDefault((AbstractActor) actor, operatorDefinitionID);
+      wcet = scenario.getTimings().evaluateTimingOrDefault(actor, operatorDefinitionID);
     }
     return wcet;
   }
