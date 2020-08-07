@@ -7,6 +7,9 @@ PREESM Changelog
 ### New Feature
 
 ### Changes
+* Improves the malleable parameter Design Space Exploration task "pisdf-mparams.setter".
+  Now, it proposes automatic pipelining and objectives for parameters.
+* In scenario, energy and timing of actors can be parameterized with any parameter of the graph containing them.
 
 ### Bug fix
 * Fix wrong computation in workflow task: org.ietr.preesm.pimm.algorithm.checker.periods.PeriodsPreschedulingChecker

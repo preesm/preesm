@@ -278,7 +278,7 @@ public class DSEpointIR {
       // get index of first occurrence of throughput objective
       int indexFirstT = comparators.size();
       final Optional<Comparator<DSEpointIR>> firstT = comparators.stream()
-          .filter(x -> x instanceof ThroughputMaxComparator | x instanceof ThroughputAtLeastComparator).findFirst();
+          .filter(x -> x instanceof ThroughputMaxComparator || x instanceof ThroughputAtLeastComparator).findFirst();
       if (firstT.isPresent()) {
         indexFirstT = comparators.indexOf(firstT.get());
       }
