@@ -320,6 +320,12 @@ public class AutoDelaysTask extends AbstractTaskImplementation {
 
     final Map<AbstractActor,
         TopoVisit> topoRanksT = TopologicalRanking.topologicalASAPrankingT(sinkActors, hlbd.actorsNbVisitsTopoRankT);
+    // what we are interested in is not exactly ALAP = inverse of ASAP_T, it is ALAP with all sources executed at the
+    // beginning
+    sourceActors.stream().forEach(x -> {
+      TopoVisit tv = topoRanksT.get(x);
+      tv.rank = maxRank - 1;
+    });
     final SortedMap<Integer, Set<AbstractActor>> irRankActorsT = mapRankActors(topoRanksT, true, maxRank);
 
     final SortedMap<Integer, Long> rankWCETs = new TreeMap<>();
