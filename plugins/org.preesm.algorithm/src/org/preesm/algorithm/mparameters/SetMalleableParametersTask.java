@@ -190,7 +190,7 @@ public class SetMalleableParametersTask extends AbstractTaskImplementation {
     for (MalleableParameterIR mpir : mparamsIR) {
       nbCombinations *= mpir.nbValues;
     }
-    PreesmLogger.getLogger().log(Level.INFO, "The number of parameters configuration is: " + nbCombinations);
+    PreesmLogger.getLogger().log(Level.INFO, "The number of parameter combinations is: " + nbCombinations);
 
     // set the scenario graph since it is used for timings
     final Map<Parameter, String> backupParamOverride = new HashMap<>();
@@ -347,20 +347,25 @@ public class SetMalleableParametersTask extends AbstractTaskImplementation {
 
       // compute possible amount of delays
       final int nbCore = architecture.getOperatorComponents().get(0).getInstances().size();
-      int maxCuts = globalComparator.getMaximumLatency();
-      final int iterationDelay = res.latency;
+      final int iterationDelay = res.latency; // is greater or equal to 1
+      int maxCuts = globalComparator.getMaximumLatency(); // so -1 is performed in following test
       if (maxCuts > iterationDelay) {
-        // we can add at least one cut
+        // ensure we can add at least one cut
         maxCuts -= iterationDelay;
       } else {
         // we cannot add delays, so no retry
         return res;
       }
 
-      long period = graph.getPeriod().evaluate();
+      long period = scheduler.getGraphPeriod();
+      // original graph period has not been resolved, so we use the flat graph copy instead
       long durationII = period > 0 ? period : scheduler.getLastEndTime();
       final int nbCuts = globalComparator.computeCutsAmount(maxCuts, nbCore, durationII, scheduler.getTotalLoad(),
           scheduler.getMaximalLoad());
+      if (nbCuts == 0) {
+        // may happen with makespan threshold
+        return res;
+      }
       final int nbPreCuts = nbCuts + 1;
 
       // deactivate fine logging for automatic pipelining
@@ -371,6 +376,7 @@ public class SetMalleableParametersTask extends AbstractTaskImplementation {
       // add more delays
       final PiGraph flatGraphWithDelays = AutoDelaysTask.addDelays(flatGraphCopy, architecture, scenario, false, false,
           false, nbCore, nbPreCuts, nbCuts);
+      // reactivate logging
       PreesmLogger.getLogger().setLevel(backupLevel);
 
       // retry with more delays

@@ -179,6 +179,7 @@ public class PeriodicScheduler extends AbstractScheduler {
   protected long horizon;            // deadline of the whole schedule
   protected long Ctot;               // total load
   protected long Cmax;               // maximum load of a single firing
+  protected long graphPeriod;        // period of the graph
   protected int  nbFiringsAllocated; // index for allocation check
 
   protected AgnosticTimer st;
@@ -189,6 +190,7 @@ public class PeriodicScheduler extends AbstractScheduler {
   public PeriodicScheduler() {
     Ctot = 0L;
     Cmax = 0L;
+    graphPeriod = 0L;
     cores = null;
   }
 
@@ -226,6 +228,15 @@ public class PeriodicScheduler extends AbstractScheduler {
     return maxEnd;
   }
 
+  /**
+   * Period of the graph (as in the input graph).
+   * 
+   * @return Graph period or 0 if no graph period.
+   */
+  public long getGraphPeriod() {
+    return graphPeriod;
+  }
+
   @Override
   protected SynthesisResult exec(PiGraph piGraph, Design slamDesign, Scenario scenario) {
 
@@ -236,7 +247,7 @@ public class PeriodicScheduler extends AbstractScheduler {
     int nbCore = slamDesign.getOperatorComponents().get(0).getInstances().size();
     PreesmLogger.getLogger().log(Level.INFO, "Found " + nbCore + " cores.");
 
-    long graphPeriod = piGraph.getPeriod().evaluate();
+    graphPeriod = piGraph.getPeriod().evaluate();
     PreesmLogger.getLogger().log(Level.INFO, "Graph period is: " + graphPeriod);
 
     final long time = System.nanoTime();

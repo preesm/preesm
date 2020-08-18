@@ -323,6 +323,7 @@ public class DSEpointIR {
       final List<Comparator<DSEpointIR>> thresholdComparators = comparators.stream()
           .filter(x -> x instanceof ThresholdComparator).collect(Collectors.toList());
       for (final Comparator<DSEpointIR> comparator : thresholdComparators) {
+        // LatencyAtMostComparator is not tested since it is already given by maxCuts input
         if (comparator instanceof MakespanAtMostComparator) {
           final MakespanAtMostComparator mamc = (MakespanAtMostComparator) comparator;
           final int maxDelay = (int) (mamc.threshold / minAvgDuration);
