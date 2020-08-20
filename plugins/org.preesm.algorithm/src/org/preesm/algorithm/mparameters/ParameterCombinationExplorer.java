@@ -158,7 +158,7 @@ public class ParameterCombinationExplorer {
   protected boolean setConfiguration(List<Integer> config) {
     final int size = mparamsIR.size();
     if (config.size() != size) {
-      return false;
+      throw new PreesmRuntimeException("Wrong number of malleable parameters in configuration record.");
     }
     for (int i = 0; i < size; i++) {
       final MalleableParameterIR mpir = mparamsIR.get(i);

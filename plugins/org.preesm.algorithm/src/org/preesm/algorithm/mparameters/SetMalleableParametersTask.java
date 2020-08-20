@@ -276,6 +276,7 @@ public class SetMalleableParametersTask extends AbstractTaskImplementation {
     if (bestConfig == null) {
       resetAllMparams(mparamsIR);
       scenario.getParameterValues().putAll(backupParamOverride);
+      PreesmLogger.getLogger().warning("No configuration was good, default malleable parameter values are put back.");
     }
 
     return logAndSetBestPoint(pce, bestPoint, bestConfig, globalComparator, graph, architecture, scenario);
@@ -290,12 +291,17 @@ public class SetMalleableParametersTask extends AbstractTaskImplementation {
     ParameterCombinationNumberExplorer pce = null;
     DSEpointIR bestPoint = new DSEpointIR();
     List<Integer> bestConfig = null;
+    ParameterCombinationNumberExplorer bestPceRound = null;
+    DSEpointIR bestLocalPoint;
+    List<Integer> bestLocalConfig;
     int indexTot = 0;
     int indexRound = 0;
     do {
       indexRound++;
       PreesmLogger.getLogger().log(Level.INFO, "New DSE heuristic round: " + indexRound);
 
+      bestLocalPoint = new DSEpointIR();
+      bestLocalConfig = null;
       pce = new ParameterCombinationNumberExplorer(mparamsIR, scenario);
       while (pce.setNext()) {
         indexTot++;
@@ -303,19 +309,27 @@ public class SetMalleableParametersTask extends AbstractTaskImplementation {
         final DSEpointIR dsep = runAndRetryConfiguration(scenario, graph, architecture, indexTot, delayRetryValue,
             globalComparator, logDSEpoints, mparamsIR);
         PreesmLogger.getLogger().log(Level.FINE, dsep.toString());
-        if (dsep.isSchedulable && globalComparator.compare(dsep, bestPoint) < 0) {
-          bestConfig = pce.recordConfiguration();
-          bestPoint = dsep;
+        if (dsep.isSchedulable) {
+          if (globalComparator.compare(dsep, bestPoint) < 0) {
+            bestConfig = pce.recordConfiguration();
+            bestPoint = dsep;
+            bestPceRound = pce;
+          }
+          if (globalComparator.compare(dsep, bestLocalPoint) < 0) {
+            bestLocalConfig = pce.recordConfiguration();
+            bestLocalPoint = dsep;
+          }
         }
       }
       if (bestConfig == null) {
         resetAllMparams(mparamsIR);
         scenario.getParameterValues().putAll(backupParamOverride);
+        PreesmLogger.getLogger().warning("No configuration was good, default malleable parameter values are put back.");
         break;
       }
-    } while (pce.setForNextPartialDSEround(bestConfig));
+    } while (pce.setForNextPartialDSEround(bestLocalConfig));
 
-    return logAndSetBestPoint(pce, bestPoint, bestConfig, globalComparator, graph, architecture, scenario);
+    return logAndSetBestPoint(bestPceRound, bestPoint, bestConfig, globalComparator, graph, architecture, scenario);
 
   }
 

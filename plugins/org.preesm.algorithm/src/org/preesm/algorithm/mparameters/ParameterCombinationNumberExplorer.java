@@ -36,6 +36,7 @@ package org.preesm.algorithm.mparameters;
 
 import java.util.List;
 import java.util.logging.Level;
+import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.model.scenario.Scenario;
 
@@ -74,7 +75,7 @@ public class ParameterCombinationNumberExplorer extends ParameterCombinationExpl
   public boolean setForNextPartialDSEround(List<Integer> config) {
     final int size = mparamsIR.size();
     if (config.size() != size) {
-      return false;
+      throw new PreesmRuntimeException("Wrong number of malleable parameters in configuration record.");
     }
     boolean oneNeedsIter = false;
     for (int i = 0; i < size; i++) {
@@ -84,7 +85,7 @@ public class ParameterCombinationNumberExplorer extends ParameterCombinationExpl
         final MalleableParameterNumberIR mpnir = (MalleableParameterNumberIR) mpir;
         final int index = config.get(i);
         if (index < 0 || index >= mpnir.nbValues) {
-          return false;
+          throw new PreesmRuntimeException("Index out of bounds in malleable parameter configuration record.");
         }
         // actually, following test is always true, see mparamsIR initialization in upper class
         if (mpnir.nbValues > 1) {
@@ -109,6 +110,7 @@ public class ParameterCombinationNumberExplorer extends ParameterCombinationExpl
         }
       }
     }
+
     return oneNeedsIter;
   }
 
