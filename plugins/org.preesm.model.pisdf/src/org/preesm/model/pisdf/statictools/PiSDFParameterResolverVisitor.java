@@ -154,26 +154,29 @@ public class PiSDFParameterResolverVisitor extends PiMMSwitch<Boolean> {
   public Boolean caseConfigInputInterface(final ConfigInputInterface cii) {
     final ConfigInputPort graphPort = cii.getGraphPort();
     final Dependency incomingDependency = graphPort.getIncomingDependency();
+    Parameter paramToEvaluate = cii;
     if (incomingDependency == null) {
       PreesmLogger.getLogger().log(Level.WARNING,
           cii.eContainer() + " has a config input port without incoming dependency: " + graphPort.getName()
               + "\n Default value is used instead.");
-      return true;
-    }
-    final ISetter setter = incomingDependency.getSetter();
-    // Setter of an incoming dependency into a ConfigInputInterface must be
-    // a parameter
-    if (setter instanceof Parameter) {
-      // When we arrive here all upper graphs have been processed.
-      // We can then directly evaluate parameter expression here.
-      final Expression valueExpression = ((Parameter) setter).getValueExpression();
-      final long evaluate = valueExpression.evaluate();
-      cii.setExpression(evaluate);
-      this.parameterValues.put(cii, evaluate);
     } else {
-      throw new UnsupportedOperationException(
-          "In a static PiMM graph, setter of an incomming dependency must be a parameter.");
+      // regular case
+      final ISetter setter = incomingDependency.getSetter();
+      // Setter of an incoming dependency into a ConfigInputInterface must be
+      // a parameter
+      if (setter instanceof Parameter) {
+        paramToEvaluate = ((Parameter) setter);
+      } else {
+        throw new UnsupportedOperationException(
+            "In a static PiMM graph, setter of an incomming dependency must be a parameter.");
+      }
     }
+    // When we arrive here all upper graphs have been processed.
+    // We can then directly evaluate parameter expression here.
+    final Expression valueExpression = paramToEvaluate.getValueExpression();
+    final long evaluate = valueExpression.evaluate();
+    cii.setExpression(evaluate);
+    this.parameterValues.put(cii, evaluate);
     return true;
   }
 
