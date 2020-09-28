@@ -105,7 +105,8 @@ import org.preesm.workflow.implement.AbstractWorkflowNodeImplementation;
     shortDescription = "Puts delays in a flat PiMM, in order to speed up the execution.",
 
     description = "Puts delays in a flat PiMM, in order to speed up the execution. "
-        + "The heuristic will perform a search of all simple cycles, so the task may take time to run.",
+        + "Works only on homogeneous architectures. The heuristic will perform a search of all simple cycles,"
+        + " so the task may take a long time to run if many cycles are present.",
 
     inputs = { @Port(name = "PiMM", type = PiGraph.class), @Port(name = "scenario", type = Scenario.class),
         @Port(name = "architecture", type = Design.class) },
@@ -114,21 +115,24 @@ import org.preesm.workflow.implement.AbstractWorkflowNodeImplementation;
 
     parameters = {
         @Parameter(name = AutoDelaysTask.SELEC_PARAM_NAME,
-            values = { @Value(name = AutoDelaysTask.SELEC_PARAM_VALUE, effect = "Number of graph cuts to consider.") }),
+            description = "Number of graph cuts to consider, " + "higher or equal to the maximum number of cuts.",
+            values = { @Value(name = AutoDelaysTask.SELEC_PARAM_VALUE,
+                effect = "Split the graph in zones of equivalent work load.") }),
         @Parameter(name = AutoDelaysTask.MAXII_PARAM_NAME,
-            values = { @Value(name = AutoDelaysTask.MAXII_PARAM_VALUE,
-                effect = "Maximum number of graph cuts induced by the added delays.") }),
+            description = "Maximum number of graph cuts induced by the added delays. "
+                + "Each graph cut adds one pipeline stage. If delays are already present, the values are summed.",
+            values = { @Value(name = AutoDelaysTask.MAXII_PARAM_VALUE, effect = "") }),
         @Parameter(name = AutoDelaysTask.CHOCO_PARAM_NAME,
-            values = { @Value(name = AutoDelaysTask.CHOCO_PARAM_VALUE,
-                effect = "Whether or not the cuts should be selected among the best Choco solutions "
-                    + "(disable the heuristic).") }),
+            description = "Computes all topological graph cuts with a CP solver. "
+                + "All topological cuts are evaluated with a list scheduler to select the best.",
+            values = { @Value(name = AutoDelaysTask.CHOCO_PARAM_VALUE, effect = "False disables this comparison.") }),
         @Parameter(name = AutoDelaysTask.SCHED_PARAM_NAME,
-            values = { @Value(name = AutoDelaysTask.SCHED_PARAM_VALUE,
-                effect = "Whether or not a scheduling is attempted at the end.") }),
-        @Parameter(name = AutoDelaysTask.CYCLES_PARAM_NAME, values = { @Value(name = AutoDelaysTask.CYCLES_PARAM_VALUE,
-            effect = "Whether or not the task must also break the cycles with delays.") }) }
+            description = "Whether or not a schedule must be generated at the end.",
+            values = { @Value(name = AutoDelaysTask.SCHED_PARAM_VALUE, effect = "False disables this feature.") }),
+        @Parameter(name = AutoDelaysTask.CYCLES_PARAM_NAME,
+            description = "Whether or not the cycles must be broken with extra delays.",
+            values = { @Value(name = AutoDelaysTask.CYCLES_PARAM_VALUE, effect = "False disables this feature.") }) })
 
-)
 public class AutoDelaysTask extends AbstractTaskImplementation {
 
   public static final String SELEC_PARAM_NAME   = "Selection cuts";
@@ -833,7 +837,7 @@ public class AutoDelaysTask extends AbstractTaskImplementation {
     bestCuts.sort(new CutSizeComparator());
 
     if (bestCuts.size() > 1 && nbSelec == 1) {
-      // selects cut which is closer to the midle
+      // selects cut which is closer to the middle
       CutInformation bestCut = null;
       long bestCutValue = 0;
       for (CutInformation ci : bestCuts) {

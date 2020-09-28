@@ -61,9 +61,14 @@ import org.preesm.workflow.implement.AbstractWorkflowNodeImplementation;
  * @author ahonorat
  */
 @PreesmTask(id = "pisdf-synthesis.void-periodic-schedule", name = "Periodic scheduling (without output)",
+    shortDescription = "Schedule and maps actors according to their periods.",
+    description = "Schedule and map actors according to their periods thanks to a list scheduler. "
+        + "Only works for homogeneous architectures, does not take into account communication times. "
+        + "Works also if there are no periods in the graph.",
     parameters = { @Parameter(name = VoidPeriodicScheduleTask.SOLVER_PARAM_NAME,
-        values = { @Value(name = VoidPeriodicScheduleTask.SOLVER_PARAM_VALUE_LIST),
-            @Value(name = VoidPeriodicScheduleTask.SOLVER_PARAM_VALUE_CHOC) }) },
+        description = "Algorithm used to schedule and map.",
+        values = { @Value(name = VoidPeriodicScheduleTask.SOLVER_PARAM_VALUE_LIST, effect = "List scheduler."),
+            @Value(name = VoidPeriodicScheduleTask.SOLVER_PARAM_VALUE_CHOC, effect = "Optimal CP scheduler.") }) },
     inputs = { @Port(name = "PiMM", type = PiGraph.class), @Port(name = "architecture", type = Design.class),
         @Port(name = "scenario", type = Scenario.class) })
 public class VoidPeriodicScheduleTask extends AbstractTaskImplementation {

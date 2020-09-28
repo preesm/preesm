@@ -93,8 +93,8 @@ import org.preesm.workflow.implement.AbstractWorkflowNodeImplementation;
     shortDescription = "Set the malleable parameters default value according to the best schedule found.",
 
     description = "Set the malleable parameters default value in the scenario according to the best schedule found."
-        + " Different strategies are possible "
-        + "(exhaustive search or heuristics, available if parameter values are only of type Long).",
+        + "Works only on homogeneous architectures. "
+        + "Different strategies are possible, exhaustive search or heuristics.",
 
     inputs = { @Port(name = "PiMM", type = PiGraph.class), @Port(name = "scenario", type = Scenario.class),
         @Port(name = "architecture", type = Design.class) },
@@ -103,23 +103,32 @@ import org.preesm.workflow.implement.AbstractWorkflowNodeImplementation;
 
     parameters = {
         @org.preesm.commons.doc.annotations.Parameter(name = SetMalleableParametersTask.DEFAULT_COMPARISONS_NAME,
+            description = "Order of comparisons of the metrics (T for throughput or P for power or E for energy "
+                + "or L for latency or M for makespan, separated by >). Latency is indexed from 1 to "
+                + "the maximum number of pipeline stages allowed.",
             values = { @Value(name = SetMalleableParametersTask.DEFAULT_COMPARISONS_VALUE,
-                effect = "Order of comparisons (T for throughput or P for power or E for energy "
-                    + "or L for latency or M for makespan, separated by >).") }),
+                effect = "Metrics are compare from left to right.") }),
         @org.preesm.commons.doc.annotations.Parameter(name = SetMalleableParametersTask.DEFAULT_THRESHOLDS_NAME,
+            description = "Objectives of the metrics. "
+                + "Threshold if it is any integer higher than 0, minimize it otherwise.",
             values = { @Value(name = SetMalleableParametersTask.DEFAULT_THRESHOLDS_VALUE,
-                effect = "Threshold if it is any integer higher than 0, minimize it otherwise.") }),
+                effect = "In the same order as the metrics.") }),
         @org.preesm.commons.doc.annotations.Parameter(name = SetMalleableParametersTask.DEFAULT_PARAMS_OBJVS_NAME,
+            description = "Tells to minimize (-) or maximize (+) a parameter (after main objectives). May be empty.",
             values = { @Value(name = SetMalleableParametersTask.DEFAULT_PARAMS_OBJVS_VALUE,
-                effect = "Tells to minimize (-) or maximize (+) a parameter (after main objectives).") }),
+                effect = "Syntax: >+parentGraphName/parameterName>-...") }),
         @org.preesm.commons.doc.annotations.Parameter(name = SetMalleableParametersTask.DEFAULT_HEURISTIC_NAME,
+            description = "Use a DSE heuristic on all malleable parameter expressions which are integer numbers. "
+                + "Only a subset of their expressions are explored.",
             values = { @Value(name = SetMalleableParametersTask.DEFAULT_HEURISTIC_VALUE,
-                effect = "Enables to use a DSE heuristic "
-                    + "when all malleable parameter expressions are integer numbers.") }),
+                effect = "False disables the heuristic.") }),
         @org.preesm.commons.doc.annotations.Parameter(name = SetMalleableParametersTask.DEFAULT_DELAY_RETRY_NAME,
+            description = "Use a DSE heuristic to try to add delays if it improves the throughput. "
+                + "See workflow task pisdf-delays.setter. Number of pipelines is inferred automatically.",
             values = { @Value(name = SetMalleableParametersTask.DEFAULT_DELAY_RETRY_VALUE,
-                effect = "Enables to use a DSE heuristic to try to add delays if necessary.") }),
+                effect = "False disables the heuristic.") }),
         @org.preesm.commons.doc.annotations.Parameter(name = SetMalleableParametersTask.DEFAULT_LOG_NAME,
+            description = "Export all explored points with associated metrics in a csv file.",
             values = { @Value(name = SetMalleableParametersTask.DEFAULT_LOG_VALUE,
                 effect = "Path relative to the project root.") }) })
 public class SetMalleableParametersTask extends AbstractTaskImplementation {

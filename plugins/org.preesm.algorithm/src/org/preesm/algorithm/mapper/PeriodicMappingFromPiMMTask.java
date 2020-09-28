@@ -76,8 +76,11 @@ import org.preesm.workflow.implement.AbstractWorkflowNodeImplementation;
  * @author ahonorat
  */
 @PreesmTask(id = "pisdf-mapper.periodic.DAG", name = "Periodic Scheduling from PiSDF to old DAG",
-    category = "Schedulers",
-
+    category = "Schedulers", shortDescription = "Schedule and maps actors according to their periods.",
+    description = "Schedule and map actors according to their periods thanks to a list scheduler. "
+        + "Only works for homogeneous architectures, does not take into account communication times. "
+        + "Works also if there are no periods in the graph. "
+        + "Result is exported in the same format as pisdf-mapper.list standard scheduler.",
     inputs = { @Port(name = "PiMM", type = PiGraph.class), @Port(name = "architecture", type = Design.class),
         @Port(name = "scenario", type = Scenario.class) },
 

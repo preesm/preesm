@@ -87,7 +87,6 @@ import org.preesm.workflow.implement.AbstractWorkflowNodeImplementation;
 @PreesmTask(id = "org.ietr.preesm.pimm.algorithm.checker.periods.PeriodsPreschedulingChecker",
     name = "Periods Prescheduling Checker",
     shortDescription = "Check necessary condition to schedule graphs with periods (at top level or in actors).",
-
     description = "Check necessary condition to schedule graphs with periods (at top level or in actors). "
         + "Works only on flat graphs.",
 
@@ -96,8 +95,8 @@ import org.preesm.workflow.implement.AbstractWorkflowNodeImplementation;
 
     outputs = { @Port(name = "PiMM", type = PiGraph.class) },
 
-    parameters = { @Parameter(name = "Selection rate (%)",
-        values = { @Value(name = "100", effect = "Periodic actors to consider.") }) }
+    parameters = { @Parameter(name = "Selection rate (%)", description = "Percentage of periodic actors to consider.",
+        values = { @Value(name = "100", effect = "All periodic actors are checked.") }) }
 
 )
 public class PeriodsPreschedulingCheckTask extends AbstractTaskImplementation {
