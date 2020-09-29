@@ -86,6 +86,9 @@ public class TimingsTableLabelProvider extends BaseLabelProvider implements ITab
   /** The image error. */
   private final Image imageError;
 
+  /** The image alert. */
+  private final Image imageAlert;
+
   /** Constraints page used as a property listener to change the dirty state. */
   private IPropertyListener propertyListener = null;
 
@@ -114,6 +117,12 @@ public class TimingsTableLabelProvider extends BaseLabelProvider implements ITab
     imageDcr = ImageDescriptor.createFromURL(okIconURL);
     this.imageOk = imageDcr.createImage();
 
+    // Icons made by <a href="https://www.flaticon.com/authors/freepik" title="Freepik">Freepik</a> from <a
+    // href="https://www.flaticon.com/" title="Flaticon"> www.flaticon.com</a>
+    final URL alertIconURL = PreesmResourcesHelper.getInstance().resolve("icons/alert.png", PreesmUIPlugin.class);
+    imageDcr = ImageDescriptor.createFromURL(alertIconURL);
+    this.imageAlert = imageDcr.createImage();
+
     final Design design = scenario.getDesign();
     final List<Component> operators = design.getOperatorComponents();
     this.currentOpDefId = operators.get(0);
@@ -126,9 +135,10 @@ public class TimingsTableLabelProvider extends BaseLabelProvider implements ITab
 
       final String timing = this.scenario.getTimings().getTimingOrDefault(vertex, this.currentOpDefId);
       if (columnIndex == 3) {
-        final boolean canEvaluate = ExpressionEvaluator.canEvaluate(vertex, timing);
-        if (canEvaluate) {
+        if (ExpressionEvaluator.canEvaluate(vertex, timing)) {
           return this.imageOk;
+        } else if (ExpressionEvaluator.canEvaluate(vertex.getContainingPiGraph(), timing)) {
+          return this.imageAlert;
         } else {
           return this.imageError;
         }
@@ -164,6 +174,10 @@ public class TimingsTableLabelProvider extends BaseLabelProvider implements ITab
           if (timing != null && ExpressionEvaluator.canEvaluate(vertex, timing)) {
             return Long
                 .toString(ExpressionEvaluator.evaluate(vertex, timing, this.scenario.getParameterValues().map()));
+          } else if (timing != null && ExpressionEvaluator.canEvaluate(vertex.getContainingPiGraph(), timing)) {
+            return Long.toString(ExpressionEvaluator.evaluate(vertex.getContainingPiGraph(), timing,
+                this.scenario.getParameterValues().map()));
+
           } else {
             return "";
           }

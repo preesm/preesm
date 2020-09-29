@@ -7,10 +7,15 @@ PREESM Changelog
 ### New Feature
 
 ### Changes
+* Improves the malleable parameter Design Space Exploration task "pisdf-mparams.setter".
+  Now, it proposes automatic pipelining and objectives for parameters.
+* In scenario, energy and timing of actors can be parameterized with any parameter of the graph containing them.
 
 ### Bug fix
 * Fix wrong computation in workflow task: org.ietr.preesm.pimm.algorithm.checker.periods.PeriodsPreschedulingChecker
 * Fix #324 : parsing error on Windows when parsing a header from the GUI (org.preesm.commons.files.URLResolver).
+* Fix wrong computation of BRV when both production and consumption rates of a fifo are equal to zero.
+  Such fifos are now ignored when computing BRV (org.preesm.model.pisdf.brv.LCMBasedBRV).
 
 ## Release version 3.20.0
 *2020.05.27*

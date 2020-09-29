@@ -178,9 +178,64 @@ public class PeriodicScheduler extends AbstractScheduler {
 
   protected long horizon;            // deadline of the whole schedule
   protected long Ctot;               // total load
+  protected long Cmax;               // maximum load of a single firing
+  protected long graphPeriod;        // period of the graph
   protected int  nbFiringsAllocated; // index for allocation check
 
   protected AgnosticTimer st;
+
+  /**
+   * Init public values (reset by {@link exec} method).
+   */
+  public PeriodicScheduler() {
+    Ctot = 0L;
+    Cmax = 0L;
+    graphPeriod = 0L;
+    cores = null;
+  }
+
+  /**
+   * Total load of the last schedule attempt.
+   * 
+   * @return Sum of all firing execution times (except special actors).
+   */
+  public long getTotalLoad() {
+    return Ctot;
+  }
+
+  /**
+   * Maximal load of a single firing in the last schedule attempt.
+   * 
+   * @return Maximum firing execution time (except special actors).
+   */
+  public long getMaximalLoad() {
+    return Cmax;
+  }
+
+  /**
+   * Finish time of the last firing.
+   * 
+   * @return Finish time of the last firing, or 0 if not yet computed.
+   */
+  public long getLastEndTime() {
+    if (cores == null) {
+      return 0;
+    }
+    long maxEnd = 0;
+    for (CoreAbstraction ca : cores) {
+      maxEnd = Math.max(maxEnd, ca.implTime);
+    }
+    return maxEnd;
+  }
+
+  /**
+   * Period of the graph (as in the input graph).
+   * 
+   * @return Graph period or 0 if no graph period.
+   */
+  public long getGraphPeriod() {
+    return graphPeriod;
+  }
 
   @Override
   protected SynthesisResult exec(PiGraph piGraph, Design slamDesign, Scenario scenario) {
@@ -192,7 +247,7 @@ public class PeriodicScheduler extends AbstractScheduler {
     int nbCore = slamDesign.getOperatorComponents().get(0).getInstances().size();
     PreesmLogger.getLogger().log(Level.INFO, "Found " + nbCore + " cores.");
 
-    long graphPeriod = piGraph.getPeriod().evaluate();
+    graphPeriod = piGraph.getPeriod().evaluate();
     PreesmLogger.getLogger().log(Level.INFO, "Graph period is: " + graphPeriod);
 
     final long time = System.nanoTime();
@@ -229,10 +284,12 @@ public class PeriodicScheduler extends AbstractScheduler {
 
     // initializes total load, source and sinks nodes
     Ctot = 0;
+    Cmax = 0;
     firstNodes = new ArrayList<>();
     lastNodes = new ArrayList<>();
     for (VertexAbstraction va : absGraph.vertexSet()) {
       Ctot += va.load;
+      Cmax = Math.max(Cmax, va.load);
       if (absGraph.incomingEdgesOf(va).isEmpty()) {
         firstNodes.add(va);
       }
@@ -372,7 +429,7 @@ public class PeriodicScheduler extends AbstractScheduler {
   protected long getLoad(AbstractActor actor, Design slamDesign, Scenario scenario) {
     long wcet = ScenarioConstants.DEFAULT_TIMING_TASK.getValue();
     for (final Component operatorDefinitionID : slamDesign.getOperatorComponents()) {
-      wcet = scenario.getTimings().evaluateTimingOrDefault((AbstractActor) actor, operatorDefinitionID);
+      wcet = scenario.getTimings().evaluateTimingOrDefault(actor, operatorDefinitionID);
     }
     return wcet;
   }

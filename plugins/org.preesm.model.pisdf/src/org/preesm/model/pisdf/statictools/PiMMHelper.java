@@ -42,15 +42,18 @@ package org.preesm.model.pisdf.statictools;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 import java.util.logging.Level;
 import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.AbstractVertex;
+import org.preesm.model.pisdf.BroadcastActor;
 import org.preesm.model.pisdf.ConfigInputPort;
 import org.preesm.model.pisdf.DataInputInterface;
 import org.preesm.model.pisdf.DataInputPort;
@@ -61,13 +64,16 @@ import org.preesm.model.pisdf.Delay;
 import org.preesm.model.pisdf.DelayActor;
 import org.preesm.model.pisdf.Dependency;
 import org.preesm.model.pisdf.Fifo;
+import org.preesm.model.pisdf.ForkActor;
 import org.preesm.model.pisdf.ISetter;
 import org.preesm.model.pisdf.InterfaceActor;
+import org.preesm.model.pisdf.JoinActor;
 import org.preesm.model.pisdf.Parameter;
 import org.preesm.model.pisdf.PeriodicElement;
 import org.preesm.model.pisdf.PersistenceLevel;
 import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.pisdf.PortMemoryAnnotation;
+import org.preesm.model.pisdf.RoundBufferActor;
 import org.preesm.model.pisdf.factory.PiMMUserFactory;
 
 /**
@@ -324,6 +330,99 @@ public class PiMMHelper {
   public static void resolveAllParameters(final PiGraph piGraph) {
     final PiSDFParameterResolverVisitor piMMResolverVisitor = new PiSDFParameterResolverVisitor();
     piMMResolverVisitor.doSwitch(piGraph);
+  }
+
+  /**
+   * Removes all actors from flat PiGraph if they are not executed. Removes also fifo and ports having rates equal to 0.
+   * If not flat, the graph is not modified.
+   * 
+   * @param piGraph
+   *          Flat PiGraph to consider
+   * @param brv
+   *          Repetition vector
+   */
+  public static void removeNonExecutedActorsAndFifos(final PiGraph piGraph, final Map<AbstractVertex, Long> brv) {
+    if (!piGraph.getChildrenGraphs().isEmpty()) {
+      return;
+    }
+
+    // remove unused fifos
+    for (final Fifo f : piGraph.getAllFifos()) {
+      final DataOutputPort dpi = f.getSourcePort();
+      final DataInputPort dpo = f.getTargetPort();
+      final long ri = dpi.getExpression().evaluate();
+      final long ro = dpo.getExpression().evaluate();
+      if (ri == 0 && ro == 0) {
+        final Delay d = f.getDelay();
+        f.setDelay(null);
+        if (d != null) {
+          piGraph.removeDelay(d);
+        }
+        piGraph.removeFifo(f);
+        dpi.setOutgoingFifo(null);
+        dpo.setIncomingFifo(null);
+      }
+    }
+
+    // remove non executed actors
+    for (final Entry<AbstractVertex, Long> av : brv.entrySet()) {
+      if (av.getValue() == 0 && (av.getKey() instanceof AbstractActor)) {
+        AbstractActor aa = (AbstractActor) av.getKey();
+        // removes incoming dependencies from graph
+        for (ConfigInputPort cip : aa.getConfigInputPorts()) {
+          piGraph.removeDependency(cip.getIncomingDependency());
+        }
+        aa.getConfigInputPorts().clear();
+        piGraph.removeActor(aa);
+      }
+    }
+
+    removeUnusedPorts(piGraph);
+
+  }
+
+  /**
+   * Remove actor ports having no fifo (may happen if source or destination actor has 0 as repetition factor). Does not
+   * look at delay actor.
+   * 
+   * @param graph
+   *          PiGraph to update
+   */
+  public static final void removeUnusedPorts(final PiGraph graph) {
+    for (AbstractActor aa : graph.getActors()) {
+      final Set<DataInputPort> toRemoveIn = new HashSet<>();
+      final Set<DataOutputPort> toRemoveOut = new HashSet<>();
+      for (DataPort p : aa.getAllDataPorts()) {
+        Fifo f = p.getFifo();
+        if (f == null) {
+          if (p instanceof DataInputPort) {
+            toRemoveIn.add((DataInputPort) p);
+          } else if (p instanceof DataOutputPort) {
+            toRemoveOut.add((DataOutputPort) p);
+          }
+        }
+      }
+      if ((aa instanceof JoinActor || aa instanceof RoundBufferActor)
+          && toRemoveIn.size() < aa.getDataInputPorts().size()) {
+        for (DataInputPort p : toRemoveIn) {
+          aa.getDataInputPorts().remove(p);
+        }
+      } else if (!toRemoveIn.isEmpty() && !(aa instanceof DelayActor)) {
+        throw new PreesmRuntimeException("After single rate transformation, actor <" + aa.getVertexPath()
+            + "> has input ports without fifo, this is not allowed except for special actors if not all ports.");
+      }
+
+      if ((aa instanceof ForkActor || aa instanceof BroadcastActor)
+          && toRemoveOut.size() < aa.getDataOutputPorts().size()) {
+        for (DataOutputPort p : toRemoveOut) {
+          aa.getDataOutputPorts().remove(p);
+        }
+      } else if (!toRemoveOut.isEmpty() && !(aa instanceof DelayActor)) {
+        throw new PreesmRuntimeException("After single rate transformation, actor <" + aa.getVertexPath()
+            + "> has output ports without fifo, this is not allowed except for special actors if not all ports.");
+      }
+
+    }
   }
 
   /**

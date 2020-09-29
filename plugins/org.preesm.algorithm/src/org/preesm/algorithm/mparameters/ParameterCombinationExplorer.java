@@ -105,7 +105,7 @@ public class ParameterCombinationExplorer {
   /**
    * Set the next combination to visit. If false, all combinations have been visited and a new object must be create.
    * 
-   * @return True is some combinations have not yet been visited.
+   * @return True if some combinations have not yet been visited.
    */
   public boolean setNext() {
     return setNext(0);
@@ -158,7 +158,7 @@ public class ParameterCombinationExplorer {
   protected boolean setConfiguration(List<Integer> config) {
     final int size = mparamsIR.size();
     if (config.size() != size) {
-      return false;
+      throw new PreesmRuntimeException("Wrong number of malleable parameters in configuration record.");
     }
     for (int i = 0; i < size; i++) {
       final MalleableParameterIR mpir = mparamsIR.get(i);

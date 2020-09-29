@@ -38,7 +38,8 @@ package org.preesm.ui.scenario.editor.timings;
 import java.util.logging.Level;
 import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.model.scenario.Scenario;
-import org.preesm.model.scenario.serialize.CsvTimingParser;
+import org.preesm.model.scenario.serialize.CsvActorParameterizationParser;
+import org.preesm.model.scenario.serialize.CsvActorParameterizationParser.ParameterizationType;
 import org.preesm.model.scenario.serialize.ExcelTimingParser;
 import org.preesm.model.scenario.serialize.PapifyOutputTimingParser;
 import org.preesm.model.scenario.serialize.PapifyTimingParser;
@@ -60,7 +61,8 @@ public class TimingImporter {
     final String excelFileURL = currentScenario.getTimings().getExcelFileURL();
     if (!excelFileURL.isEmpty()) {
       final ExcelTimingParser excelParser = new ExcelTimingParser(currentScenario);
-      final CsvTimingParser csvParser = new CsvTimingParser(currentScenario);
+      final CsvActorParameterizationParser csvParser = new CsvActorParameterizationParser(currentScenario,
+          ParameterizationType.TIMING);
       final PapifyTimingParser papifyParser = new PapifyTimingParser(currentScenario);
       final PapifyOutputTimingParser papifyOutputParser = new PapifyOutputTimingParser(currentScenario);
 

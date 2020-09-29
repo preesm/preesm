@@ -38,6 +38,7 @@ package org.preesm.model.scenario.serialize;
 import java.util.logging.Level;
 import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.model.scenario.Scenario;
+import org.preesm.model.scenario.serialize.CsvActorParameterizationParser.ParameterizationType;
 import org.preesm.model.slam.Design;
 
 /**
@@ -56,6 +57,8 @@ public class EnergyImporter {
     final String excelFileURL = currentScenario.getEnergyConfig().getExcelFileURL();
     if (!excelFileURL.isEmpty()) {
       final ExcelEnergyParser excelParser = new ExcelEnergyParser(currentScenario);
+      final CsvActorParameterizationParser csvParser = new CsvActorParameterizationParser(currentScenario,
+          ParameterizationType.ENERGY);
       final PapifyEnergyParser papifyParser = new PapifyEnergyParser(currentScenario);
       final PapifyOutputEnergyParser papifyOutputParser = new PapifyOutputEnergyParser(currentScenario);
 
@@ -68,6 +71,9 @@ public class EnergyImporter {
             break;
           case "papify":
             papifyParser.parse(excelFileURL, design.getOperatorComponents());
+            break;
+          case "csv":
+            csvParser.parse(excelFileURL, design.getOperatorComponents());
             break;
           default:
             break;

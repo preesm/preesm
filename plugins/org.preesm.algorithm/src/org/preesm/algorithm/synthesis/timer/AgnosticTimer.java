@@ -35,9 +35,11 @@
  */
 package org.preesm.algorithm.synthesis.timer;
 
+import java.util.Set;
+import java.util.stream.Collectors;
 import org.preesm.model.pisdf.Actor;
 import org.preesm.model.scenario.Scenario;
-import org.preesm.model.slam.ComponentInstance;
+import org.preesm.model.slam.Component;
 
 /**
  * This timer only returns the timings of regular actors, other actors are 0 by default.
@@ -68,8 +70,10 @@ public class AgnosticTimer extends AbstractTimer {
   @Override
   protected long computeActorTiming(final Actor actor) {
     long wcet = 1L;
-    for (final ComponentInstance operatorDefinitionID : scenario.getPossibleMappings(actor)) {
-      long et = scenario.getTimings().evaluateTimingOrDefault(actor, operatorDefinitionID.getComponent());
+    Set<Component> cmps = scenario.getPossibleMappings(actor).stream().map(x -> x.getComponent())
+        .collect(Collectors.toSet());
+    for (final Component cmp : cmps) {
+      long et = scenario.getTimings().evaluateTimingOrDefault(actor, cmp);
       if (et > wcet) {
         wcet = et;
       }
