@@ -6,6 +6,7 @@
  * Clément Guy [clement.guy@insa-rennes.fr] (2014 - 2015)
  * Florian Arrestier [florian.arrestier@insa-rennes.fr] (2020)
  * Jonathan Piat [jpiat@laas.fr] (2011)
+ * Julien Heulot [julien.heulot@insa-rennes.fr] (2020)
  * Maxime Pelcat [maxime.pelcat@insa-rennes.fr] (2009 - 2016)
  *
  * This software is a computer program whose purpose is to help prototyping

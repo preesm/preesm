@@ -4,6 +4,7 @@
  * Alexandre Honorat [alexandre.honorat@insa-rennes.fr] (2018 - 2020)
  * Antoine Morvan [antoine.morvan@insa-rennes.fr] (2018 - 2019)
  * Florian Arrestier [florian.arrestier@insa-rennes.fr] (2018)
+ * Julien Heulot [julien.heulot@insa-rennes.fr] (2020)
  *
  * This software is a computer program whose purpose is to help prototyping
  * parallel applications using dataflow formalism.
@@ -168,7 +169,7 @@ public class PiSDFFlattener extends PiMMSwitch<Boolean> {
         removeLoopOnDelayActor(graph, (DelayActor) da);
       }
     }
-    // remove params that are not anymore connected to anything
+    // remove params that are not connected to anything
     for (final Parameter p : graph.getParameters()) {
       if (p.getOutgoingDependencies().isEmpty()) {
         graph.getVertices().remove(p);

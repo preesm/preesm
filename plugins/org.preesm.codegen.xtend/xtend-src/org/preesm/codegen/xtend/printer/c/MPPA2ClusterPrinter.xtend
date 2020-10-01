@@ -5,6 +5,7 @@
  * Daniel Madroñal [daniel.madronal@upm.es] (2019)
  * Dylan Gageot [gageot.dylan@gmail.com] (2019 - 2020)
  * Julien Hascoet [jhascoet@kalray.eu] (2016 - 2017)
+ * Julien Heulot [julien.heulot@insa-rennes.fr] (2020)
  * Karol Desnos [karol.desnos@insa-rennes.fr] (2013 - 2017)
  *
  * This software is a computer program whose purpose is to help prototyping

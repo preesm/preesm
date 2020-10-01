@@ -1,7 +1,9 @@
 /**
  * Copyright or © or Copr. IETR/INSA - Rennes (2020) :
  *
+ * Alexandre Honorat [alexandre.honorat@insa-rennes.fr] (2020)
  * Florian Arrestier [florian.arrestier@insa-rennes.fr] (2020)
+ * Julien Heulot [julien.heulot@insa-rennes.fr] (2020)
  *
  * This software is a computer program whose purpose is to help prototyping
  * parallel applications using dataflow formalism.
@@ -49,11 +51,11 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.logging.Level;
-import org.apache.commons.math3.util.Pair;
 import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.VelocityEngine;
 import org.eclipse.core.resources.IWorkspace;
 import org.eclipse.core.runtime.Path;
+import org.eclipse.xtext.xbase.lib.Pair;
 import org.preesm.codegen.xtend.spider2.utils.Spider2CodegenCluster;
 import org.preesm.codegen.xtend.spider2.utils.Spider2CodegenPE;
 import org.preesm.codegen.xtend.spider2.visitor.Spider2PreProcessVisitor;

@@ -3,6 +3,7 @@
  *
  * Alexandre Honorat [alexandre.honorat@insa-rennes.fr] (2018 - 2020)
  * Antoine Morvan [antoine.morvan@insa-rennes.fr] (2018 - 2019)
+ * Julien Heulot [julien.heulot@insa-rennes.fr] (2020)
  *
  * This software is a computer program whose purpose is to help prototyping
  * parallel applications using dataflow formalism.
@@ -68,6 +69,7 @@ import org.preesm.model.pisdf.PeriodicElement;
 import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.pisdf.brv.BRVMethod;
 import org.preesm.model.pisdf.brv.PiBRV;
+import org.preesm.model.pisdf.factory.PiMMUserFactory;
 import org.preesm.model.pisdf.statictools.PiMMHelper;
 import org.preesm.model.scenario.Scenario;
 import org.preesm.model.scenario.ScenarioConstants;
@@ -86,7 +88,6 @@ import org.preesm.workflow.implement.AbstractWorkflowNodeImplementation;
 @PreesmTask(id = "org.ietr.preesm.pimm.algorithm.checker.periods.PeriodsPreschedulingChecker",
     name = "Periods Prescheduling Checker",
     shortDescription = "Check necessary condition to schedule graphs with periods (at top level or in actors).",
-
     description = "Check necessary condition to schedule graphs with periods (at top level or in actors). "
         + "Works only on flat graphs.",
 
@@ -95,8 +96,8 @@ import org.preesm.workflow.implement.AbstractWorkflowNodeImplementation;
 
     outputs = { @Port(name = "PiMM", type = PiGraph.class) },
 
-    parameters = { @Parameter(name = "Selection rate (%)",
-        values = { @Value(name = "100", effect = "Periodic actors to consider.") }) }
+    parameters = { @Parameter(name = "Selection rate (%)", description = "Percentage of periodic actors to consider.",
+        values = { @Value(name = "100", effect = "All periodic actors are checked.") }) }
 
 )
 public class PeriodsPreschedulingCheckTask extends AbstractTaskImplementation {
@@ -135,6 +136,10 @@ public class PeriodsPreschedulingCheckTask extends AbstractTaskImplementation {
 
     final long time = System.nanoTime();
 
+    final Map<String, Object> output = new LinkedHashMap<>();
+    output.put(AbstractWorkflowNodeImplementation.KEY_PI_GRAPH, graph);
+    final PiGraph graphCopy = PiMMUserFactory.instance.copyPiGraphWithHistory(graph);
+
     final String rateStr = parameters.get(PeriodsPreschedulingCheckTask.SELECTION_RATE);
     int rate = 100;
     try {
@@ -147,7 +152,7 @@ public class PeriodsPreschedulingCheckTask extends AbstractTaskImplementation {
     }
 
     final Map<Actor, Long> periodicActors = new LinkedHashMap<>();
-    for (final AbstractActor absActor : graph.getActors()) {
+    for (final AbstractActor absActor : graphCopy.getActors()) {
       if ((absActor instanceof Actor) && (absActor instanceof PeriodicElement)) {
         final Actor actor = (Actor) absActor;
         if (!actor.isHierarchical() && !actor.isConfigurationActor()) {
@@ -165,14 +170,11 @@ public class PeriodsPreschedulingCheckTask extends AbstractTaskImplementation {
       }
     }
 
-    final Map<String, Object> output = new LinkedHashMap<>();
-    output.put(AbstractWorkflowNodeImplementation.KEY_PI_GRAPH, graph);
-
-    Map<AbstractVertex, Long> brv = PiBRV.compute(graph, BRVMethod.LCM);
+    Map<AbstractVertex, Long> brv = PiBRV.compute(graphCopy, BRVMethod.LCM);
     // check that are all actor periods times brv are equal and set the graph period if needed
-    PiMMHelper.checkPeriodicity(graph, brv);
+    PiMMHelper.checkPeriodicity(graphCopy, brv);
 
-    long graphPeriod = graph.getPeriod().evaluate();
+    long graphPeriod = graphCopy.getPeriod().evaluate();
     if (graphPeriod <= 0 && periodicActors.isEmpty()) {
       PreesmLogger.getLogger().log(Level.WARNING, "This task is useless when there is no period in the graph.");
       return output;
@@ -216,13 +218,14 @@ public class PeriodsPreschedulingCheckTask extends AbstractTaskImplementation {
     }
 
     // 0. find all cycles and retrieve actors placed after delays.
+    PiMMHelper.removeNonExecutedActorsAndFifos(graphCopy, brv);
     HeuristicLoopBreakingDelays heurFifoBreaks = new HeuristicLoopBreakingDelays();
-    heurFifoBreaks.performAnalysis(graph, brv);
+    heurFifoBreaks.performAnalysis(graphCopy, brv);
 
     // 1. find all actor w/o incoming edges and all others w/o outgoing edge
     final Set<AbstractActor> sourceActors = new LinkedHashSet<>(heurFifoBreaks.additionalSourceActors);
     final Set<AbstractActor> sinkActors = new LinkedHashSet<>(heurFifoBreaks.additionalSinkActors);
-    for (final AbstractActor absActor : graph.getActors()) {
+    for (final AbstractActor absActor : graphCopy.getActors()) {
       if (absActor instanceof ExecutableActor) {
         if (absActor.getDataOutputPorts().isEmpty()) {
           sinkActors.add(absActor);
@@ -254,12 +257,10 @@ public class PeriodsPreschedulingCheckTask extends AbstractTaskImplementation {
     PreesmLogger.getLogger().log(Level.INFO, "Periodic actor for NBLF: " + sbNBLF.toString());
 
     // 3. for each selected periodic node for nblf:
-    performAllNBF(actorsNBLF, periodicActors, false, heurFifoBreaks.getAbsGraph(), heurFifoBreaks, wcets,
-        heurFifoBreaks.minCycleBrv, nbCore);
+    performAllNBF(actorsNBLF, periodicActors, false, heurFifoBreaks.getAbsGraph(), heurFifoBreaks, wcets, nbCore);
 
     // 4. for each selected periodic node for nbff:
-    performAllNBF(actorsNBFF, periodicActors, true, heurFifoBreaks.getAbsGraph(), heurFifoBreaks, wcets,
-        heurFifoBreaks.minCycleBrv, nbCore);
+    performAllNBF(actorsNBFF, periodicActors, true, heurFifoBreaks.getAbsGraph(), heurFifoBreaks, wcets, nbCore);
 
     long duration = System.nanoTime() - time;
     PreesmLogger.getLogger().info("Time+ " + Math.round(duration / 1e6) + " ms.");
@@ -304,7 +305,7 @@ public class PeriodsPreschedulingCheckTask extends AbstractTaskImplementation {
    */
   private static void performAllNBF(Map<Actor, Double> actorsNBF, Map<Actor, Long> allPeriodicActors, boolean reverse,
       DefaultDirectedGraph<AbstractActor, FifoAbstraction> absGraph, HeuristicLoopBreakingDelays hlbd,
-      Map<AbstractVertex, Long> wcets, Map<AbstractVertex, Long> minCycleBrv, int nbCore) {
+      Map<AbstractVertex, Long> wcets, int nbCore) {
 
     for (Actor a : actorsNBF.keySet()) {
       long slack = allPeriodicActors.get(a) - wcets.get(a);
@@ -314,7 +315,7 @@ public class PeriodsPreschedulingCheckTask extends AbstractTaskImplementation {
 
       DefaultDirectedGraph<AbstractActor,
           FifoAbstraction> subgraph = AbstractGraph.subDAGFrom(absGraph, a, hlbd.breakingFifosAbs, reverse);
-      totC += performNBFinternal(a, subgraph, wcets, minCycleBrv, nbf, nbCore, reverse, slack);
+      totC += performNBFinternal(a, subgraph, wcets, nbf, nbCore, reverse, slack);
 
       TreeMap<Actor, Long> nbTimesDuringAperiod = new TreeMap<>(new ActorPeriodComparator(true));
       allPeriodicActors.keySet().forEach(e -> {
@@ -333,8 +334,7 @@ public class PeriodsPreschedulingCheckTask extends AbstractTaskImplementation {
         nbf.put(entry.getKey(), entry.getValue());
         DefaultDirectedGraph<AbstractActor, FifoAbstraction> unconnectedsubgraph = AbstractGraph.subDAGFrom(absGraph,
             entry.getKey(), hlbd.breakingFifosAbs, reverse);
-        totC += performNBFinternal(entry.getKey(), unconnectedsubgraph, wcets, minCycleBrv, nbf, nbCore, reverse,
-            slack);
+        totC += performNBFinternal(entry.getKey(), unconnectedsubgraph, wcets, nbf, nbCore, reverse, slack);
         totC += wcets.get(entry.getKey()) * entry.getValue();
       }
 
@@ -348,8 +348,7 @@ public class PeriodsPreschedulingCheckTask extends AbstractTaskImplementation {
   }
 
   private static long performNBFinternal(Actor start, DefaultDirectedGraph<AbstractActor, FifoAbstraction> subgraph,
-      Map<AbstractVertex, Long> wcets, Map<AbstractVertex, Long> minCycleBrv, Map<AbstractActor, Long> previousNbf,
-      int nbCore, boolean reverse, long slack) {
+      Map<AbstractVertex, Long> wcets, Map<AbstractActor, Long> previousNbf, int nbCore, boolean reverse, long slack) {
     HashMap<AbstractActor, Long> timeTo = new HashMap<>();
     HashMap<AbstractActor, Integer> nbVisits = new HashMap<>();
     HashMap<AbstractActor, Long> nbf = new HashMap<>();
@@ -393,13 +392,7 @@ public class PeriodsPreschedulingCheckTask extends AbstractTaskImplementation {
           nbf.put(dest, nbfDest);
 
           toVisit.add(dest);
-          long wcet = wcets.get(dest);
-          long minBrv = minCycleBrv.get(dest);
-          long factorBrv = nbfDest / minBrv;
-          long remainingBrv = nbfDest % minBrv;
-          long timeRegular = wcet * factorBrv * Math.max(1L, minBrv / nbCore);
-          long timeRemaining = wcet * (remainingBrv / nbCore);
-          long time = destTimeTo + Math.max(wcet, timeRegular + timeRemaining);
+          long time = destTimeTo + wcets.get(dest) * Math.max(1L, nbfDest / nbCore);
           timeTo.put(dest, time);
           if (subgraph.outDegreeOf(dest) == 0) {
             if (time > slack) {

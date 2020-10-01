@@ -7,7 +7,7 @@
  * Daniel Madroñal [daniel.madronal@upm.es] (2018 - 2019)
  * Florian Arrestier [florian.arrestier@insa-rennes.fr] (2018 - 2019)
  * Hugo Miomandre [hugo.miomandre@insa-rennes.fr] (2017)
- * Julien Heulot [julien.heulot@insa-rennes.fr] (2015 - 2017)
+ * Julien Heulot [julien.heulot@insa-rennes.fr] (2015 - 2020)
  * Karol Desnos [karol.desnos@insa-rennes.fr] (2017)
  * Maxime Pelcat [maxime.pelcat@insa-rennes.fr] (2015)
  * Raquel Lazcano [raquel.lazcano@upm.es] (2019)

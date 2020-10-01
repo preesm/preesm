@@ -120,7 +120,7 @@ public class AbstractGraph {
    * Creates an abstract graph from the given PiGraph.
    * 
    * @param graph
-   *          PiGraph to abstract.
+   *          PiGraph to abstract. Fifo with rates equal to 0 are ignored.
    * @param brv
    *          Repetition vector of the PiGraph.
    * @return AbstractGraph of PiGraph.

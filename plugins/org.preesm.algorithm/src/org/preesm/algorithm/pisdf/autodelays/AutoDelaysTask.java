@@ -2,6 +2,7 @@
  * Copyright or © or Copr. IETR/INSA - Rennes (2020) :
  *
  * Alexandre Honorat [alexandre.honorat@insa-rennes.fr] (2020)
+ * Julien Heulot [julien.heulot@insa-rennes.fr] (2020)
  *
  * This software is a computer program whose purpose is to help prototyping
  * parallel applications using dataflow formalism.
@@ -84,6 +85,7 @@ import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.pisdf.brv.BRVMethod;
 import org.preesm.model.pisdf.brv.PiBRV;
 import org.preesm.model.pisdf.factory.PiMMUserFactory;
+import org.preesm.model.pisdf.statictools.PiMMHelper;
 import org.preesm.model.pisdf.statictools.PiSDFToSingleRate;
 import org.preesm.model.scenario.Scenario;
 import org.preesm.model.scenario.ScenarioConstants;
@@ -104,7 +106,8 @@ import org.preesm.workflow.implement.AbstractWorkflowNodeImplementation;
     shortDescription = "Puts delays in a flat PiMM, in order to speed up the execution.",
 
     description = "Puts delays in a flat PiMM, in order to speed up the execution. "
-        + "The heuristic will perform a search of all simple cycles, so the task may take time to run.",
+        + "Works only on homogeneous architectures. The heuristic will perform a search of all simple cycles,"
+        + " so the task may take a long time to run if many cycles are present.",
 
     inputs = { @Port(name = "PiMM", type = PiGraph.class), @Port(name = "scenario", type = Scenario.class),
         @Port(name = "architecture", type = Design.class) },
@@ -113,21 +116,24 @@ import org.preesm.workflow.implement.AbstractWorkflowNodeImplementation;
 
     parameters = {
         @Parameter(name = AutoDelaysTask.SELEC_PARAM_NAME,
-            values = { @Value(name = AutoDelaysTask.SELEC_PARAM_VALUE, effect = "Number of graph cuts to consider.") }),
+            description = "Number of graph cuts to consider, " + "higher or equal to the maximum number of cuts.",
+            values = { @Value(name = AutoDelaysTask.SELEC_PARAM_VALUE,
+                effect = "Split the graph in zones of equivalent work load.") }),
         @Parameter(name = AutoDelaysTask.MAXII_PARAM_NAME,
-            values = { @Value(name = AutoDelaysTask.MAXII_PARAM_VALUE,
-                effect = "Maximum number of graph cuts induced by the added delays.") }),
+            description = "Maximum number of graph cuts induced by the added delays. "
+                + "Each graph cut adds one pipeline stage. If delays are already present, the values are summed.",
+            values = { @Value(name = AutoDelaysTask.MAXII_PARAM_VALUE, effect = "") }),
         @Parameter(name = AutoDelaysTask.CHOCO_PARAM_NAME,
-            values = { @Value(name = AutoDelaysTask.CHOCO_PARAM_VALUE,
-                effect = "Whether or not the cuts should be selected among the best Choco solutions "
-                    + "(disable the heuristic).") }),
+            description = "Computes all topological graph cuts with a CP solver. "
+                + "All topological cuts are evaluated with a list scheduler to select the best.",
+            values = { @Value(name = AutoDelaysTask.CHOCO_PARAM_VALUE, effect = "False disables this comparison.") }),
         @Parameter(name = AutoDelaysTask.SCHED_PARAM_NAME,
-            values = { @Value(name = AutoDelaysTask.SCHED_PARAM_VALUE,
-                effect = "Whether or not a scheduling is attempted at the end.") }),
-        @Parameter(name = AutoDelaysTask.CYCLES_PARAM_NAME, values = { @Value(name = AutoDelaysTask.CYCLES_PARAM_VALUE,
-            effect = "Whether or not the task must also break the cycles with delays.") }) }
+            description = "Whether or not a schedule must be generated at the end.",
+            values = { @Value(name = AutoDelaysTask.SCHED_PARAM_VALUE, effect = "False disables this feature.") }),
+        @Parameter(name = AutoDelaysTask.CYCLES_PARAM_NAME,
+            description = "Whether or not the cycles must be broken with extra delays.",
+            values = { @Value(name = AutoDelaysTask.CYCLES_PARAM_VALUE, effect = "False disables this feature.") }) })
 
-)
 public class AutoDelaysTask extends AbstractTaskImplementation {
 
   public static final String SELEC_PARAM_NAME   = "Selection cuts";
@@ -151,14 +157,6 @@ public class AutoDelaysTask extends AbstractTaskImplementation {
     final Scenario scenario = (Scenario) inputs.get(AbstractWorkflowNodeImplementation.KEY_SCENARIO);
     final PiGraph graph = (PiGraph) inputs.get(AbstractWorkflowNodeImplementation.KEY_PI_GRAPH);
     final Design architecture = (Design) inputs.get(AbstractWorkflowNodeImplementation.KEY_ARCHITECTURE);
-
-    if (!graph.getChildrenGraphs().isEmpty()) {
-      throw new PreesmRuntimeException("This task must be called with a flatten PiMM graph, abandon.");
-    }
-
-    if (architecture.getOperatorComponents().size() != 1) {
-      throw new PreesmRuntimeException("This task must be called with a homogeneous architecture, abandon.");
-    }
 
     int nbCore = architecture.getOperatorComponents().get(0).getInstances().size();
     PreesmLogger.getLogger().log(Level.INFO, "Found " + nbCore + " cores.");
@@ -192,7 +190,7 @@ public class AutoDelaysTask extends AbstractTaskImplementation {
 
     final Map<String, Object> output = new LinkedHashMap<>();
     if (maxii <= 0 && !cycles) {
-      PreesmLogger.getLogger().log(Level.INFO, "nothing to do.");
+      PreesmLogger.getLogger().log(Level.INFO, "Nothing to do.");
       output.put(AbstractWorkflowNodeImplementation.KEY_PI_GRAPH, graph);
       return output;
     }
@@ -200,12 +198,58 @@ public class AutoDelaysTask extends AbstractTaskImplementation {
     final String schedStr = parameters.get(SCHED_PARAM_NAME);
     final boolean sched = Boolean.parseBoolean(schedStr);
 
+    final String chocoStr = parameters.get(CHOCO_PARAM_NAME);
+    final boolean choco = Boolean.parseBoolean(chocoStr);
+
+    final PiGraph graphCopy = addDelays(graph, architecture, scenario, cycles, choco, sched, nbCore, selec, maxii);
+
+    output.put(AbstractWorkflowNodeImplementation.KEY_PI_GRAPH, graphCopy);
+
+    return output;
+  }
+
+  /**
+   * Add delays on a flat graph, only if architecture is homogeneous.
+   * 
+   * @param graph
+   *          Graph to add delays on.
+   * @param architecture
+   *          Architecture to consider.
+   * @param scenario
+   *          Scenario tp consider.
+   * @param fillCycles
+   *          If delays should be added on cycles too.
+   * @param choco
+   *          If testing against optimal solution computed by Choco.
+   * @param sched
+   *          If scheduling must be performed at the end.
+   * @param nbCore
+   *          Number of core in the architecture.
+   * @param nbPreCuts
+   *          Number of balanced cuts locations.
+   * @param nbMaxCuts
+   *          Number of selected cuts.
+   * @return Graph copy with delays added on it.
+   */
+  public static PiGraph addDelays(final PiGraph graph, final Design architecture, final Scenario scenario,
+      final boolean fillCycles, final boolean choco, final boolean sched, final int nbCore, final int nbPreCuts,
+      final int nbMaxCuts) {
+
+    if (!graph.getChildrenGraphs().isEmpty()) {
+      throw new PreesmRuntimeException("This task must be called with a flatten PiMM graph, abandon.");
+    }
+
+    if (architecture.getOperatorComponents().size() != 1) {
+      throw new PreesmRuntimeException("This task must be called with a homogeneous architecture, abandon.");
+    }
+
     final long time = System.nanoTime();
 
     // BRV and timings
 
     PiGraph graphCopy = PiMMUserFactory.instance.copyPiGraphWithHistory(graph);
     Map<AbstractVertex, Long> brv = PiBRV.compute(graphCopy, BRVMethod.LCM);
+    PiMMHelper.removeNonExecutedActorsAndFifos(graphCopy, brv);
 
     Map<AbstractVertex, Long> wcets = new HashMap<>();
     for (final Entry<AbstractVertex, Long> en : brv.entrySet()) {
@@ -239,7 +283,7 @@ public class AutoDelaysTask extends AbstractTaskImplementation {
     final HeuristicLoopBreakingDelays hlbd = new HeuristicLoopBreakingDelays();
     hlbd.performAnalysis(graphCopy, brv);
 
-    if (cycles) {
+    if (fillCycles) {
       PreesmLogger.getLogger().log(Level.WARNING, "Experimental breaking of cycles.");
       fillCycles(hlbd, brv);
       // we redo the analysis since adding delays will modify the topo ranks
@@ -269,13 +313,24 @@ public class AutoDelaysTask extends AbstractTaskImplementation {
         TopoVisit> topoRanks = TopologicalRanking.topologicalASAPranking(sourceActors, hlbd.actorsNbVisitsTopoRank);
     // build intermediate list of actors per rank
     final SortedMap<Integer, Set<AbstractActor>> irRankActors = mapRankActors(topoRanks, false, 0);
-    // offset of one to ease next computation
+    // offset of one to ease some computations
     final int maxRank = irRankActors.lastKey() + 1;
-    selec = Math.min(selec, maxRank - 2);
-    maxii = Math.min(maxii, maxRank - 2);
+    if (maxRank < 2) {
+      // If there is only one rank ... where would you add delays !?
+      PreesmLogger.getLogger().log(Level.INFO, "Nothing to do.");
+      return graphCopy;
+    }
+    final int selec = Math.min(nbPreCuts, maxRank - 1);
+    final int maxii = Math.min(nbMaxCuts, maxRank - 1);
 
     final Map<AbstractActor,
         TopoVisit> topoRanksT = TopologicalRanking.topologicalASAPrankingT(sinkActors, hlbd.actorsNbVisitsTopoRankT);
+    // what we are interested in is not exactly ALAP = inverse of ASAP_T, it is ALAP with all sources executed at the
+    // beginning
+    sourceActors.stream().forEach(x -> {
+      TopoVisit tv = topoRanksT.get(x);
+      tv.rank = maxRank - 1;
+    });
     final SortedMap<Integer, Set<AbstractActor>> irRankActorsT = mapRankActors(topoRanksT, true, maxRank);
 
     final SortedMap<Integer, Long> rankWCETs = new TreeMap<>();
@@ -294,6 +349,7 @@ public class AutoDelaysTask extends AbstractTaskImplementation {
       int rank = maxRank - tv.rank;
       long prev = rankWCETs.getOrDefault(rank, 0L);
       rankWCETs.put(rank, tWCET + prev);
+
     }
     // as loads are counted 2 times if one same rank, divide by 2
     // scale by the number of actors per rank (in order to expose parallelism)
@@ -330,10 +386,6 @@ public class AutoDelaysTask extends AbstractTaskImplementation {
       setCut(cutMap, false);
     }
 
-    output.put(AbstractWorkflowNodeImplementation.KEY_PI_GRAPH, graphCopy);
-
-    final String chocoStr = parameters.get(CHOCO_PARAM_NAME);
-    final boolean choco = Boolean.parseBoolean(chocoStr);
     if (choco && maxii > 0) {
       // compute latency of heuristic
       long heuristicLatency = computeLatency(graphCopy, scenario, architecture, false);
@@ -355,10 +407,10 @@ public class AutoDelaysTask extends AbstractTaskImplementation {
       computeLatency(graphCopy, scenario, architecture, true);
     }
 
-    return output;
+    return graphCopy;
   }
 
-  private void printChocoStatistics(final long heuristicLatency, final DescriptiveStatistics dsc) {
+  private static void printChocoStatistics(final long heuristicLatency, final DescriptiveStatistics dsc) {
 
     PreesmLogger.getLogger().info("Worst latency found by choco cut: " + dsc.getMax());
     PreesmLogger.getLogger().info("Best latency found by choco cut: " + dsc.getMin());
@@ -786,7 +838,7 @@ public class AutoDelaysTask extends AbstractTaskImplementation {
     bestCuts.sort(new CutSizeComparator());
 
     if (bestCuts.size() > 1 && nbSelec == 1) {
-      // selects cut which is closer to the midle
+      // selects cut which is closer to the middle
       CutInformation bestCut = null;
       long bestCutValue = 0;
       for (CutInformation ci : bestCuts) {

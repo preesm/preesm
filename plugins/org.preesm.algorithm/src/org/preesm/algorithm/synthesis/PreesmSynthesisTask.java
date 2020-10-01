@@ -1,7 +1,7 @@
 /**
  * Copyright or © or Copr. IETR/INSA - Rennes (2019 - 2020) :
  *
- * Alexandre Honorat [alexandre.honorat@insa-rennes.fr] (2019)
+ * Alexandre Honorat [alexandre.honorat@insa-rennes.fr] (2019 - 2020)
  * Antoine Morvan [antoine.morvan@insa-rennes.fr] (2019)
  * Daniel Madroñal [daniel.madronal@upm.es] (2019)
  * Julien Heulot [julien.heulot@insa-rennes.fr] (2020)
@@ -74,12 +74,21 @@ import org.preesm.workflow.implement.AbstractWorkflowNodeImplementation;
  *
  */
 @PreesmTask(id = "pisdf-synthesis.simple", name = "Simple Synhtesis", category = "Synthesis",
+    shortDescription = "Schedule and map actors, and allocate their memory.",
+    description = "Schedule and map actors and their communications, and allocate the buffer memory."
+        + "Multiple available schedulers. Output is working only for the new code generation workflow tasks codegen2.",
 
     parameters = {
-        @Parameter(name = "scheduler",
-            values = { @Value(name = "simple"), @Value(name = "legacy"), @Value(name = "periodic"),
-                @Value(name = "choco") }),
-        @Parameter(name = "allocation", values = { @Value(name = "simple"), @Value(name = "legacy") }) },
+        @Parameter(name = "scheduler", description = "Scheduler used to schedule and map the tasks.",
+            values = { @Value(name = "simple", effect = "Naive greedy list scheduler."),
+                @Value(name = "legacy", effect = "See workflow task pisdf-mapper.list."),
+                @Value(name = "periodic",
+                    effect = "List scheduler (without communication times) respecting actor or graph periods, if any."),
+                @Value(name = "choco",
+                    effect = "Optimal scheduler (without communication times) "
+                        + "respecting actor or graph periods, if any.") }),
+        @Parameter(name = "allocation", description = "Allocate the memory for buffers.",
+            values = { @Value(name = "simple"), @Value(name = "legacy") }) },
 
     inputs = { @Port(name = "PiMM", type = PiGraph.class), @Port(name = "architecture", type = Design.class),
         @Port(name = "scenario", type = Scenario.class) },

@@ -2,6 +2,7 @@
  * Copyright or © or Copr. IETR/INSA - Rennes (2020) :
  *
  * Alexandre Honorat [alexandre.honorat@insa-rennes.fr] (2020)
+ * Julien Heulot [julien.heulot@insa-rennes.fr] (2020)
  *
  * This software is a computer program whose purpose is to help prototyping
  * parallel applications using dataflow formalism.
@@ -53,6 +54,7 @@ import org.preesm.model.pisdf.ExecutableActor;
 import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.pisdf.brv.BRVMethod;
 import org.preesm.model.pisdf.brv.PiBRV;
+import org.preesm.model.pisdf.statictools.PiMMHelper;
 import org.preesm.model.pisdf.statictools.PiSDFFlattener;
 
 /**
@@ -69,15 +71,16 @@ public class IterationDelayedEvaluator {
    * 
    * @param graph
    *          to be analyzed.
-   * @return Latency as a multiplication factor of a graph iteration duration.
+   * @return Latency as a multiplication factor of a graph iteration duration (should start at 1).
    */
   public static int computeLatency(PiGraph graph) {
 
-    // 0. get flatten graph of PiGraph
+    // 0. copy and flatten graph of PiGraph
     final PiGraph flatGraph = PiSDFFlattener.flatten(graph, true);
-    // 1. compute brv and create AbsGraph
+    // 1. compute brv
     Map<AbstractVertex, Long> brv = PiBRV.compute(flatGraph, BRVMethod.LCM);
-    // 2. compute breaking fifos
+    PiMMHelper.removeNonExecutedActorsAndFifos(flatGraph, brv);
+    // 2. create AbsGrap and compute breaking fifos
     HeuristicLoopBreakingDelays heurFifoBreaks = new HeuristicLoopBreakingDelays();
     heurFifoBreaks.performAnalysis(flatGraph, brv);
     // 3. get absGraph and remove cycles
