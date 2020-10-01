@@ -3,7 +3,7 @@ Bundle-ManifestVersion: 2
 Bundle-Name: %pluginName
 Automatic-Module-Name: org.preesm.commons
 Bundle-SymbolicName: org.preesm.commons;singleton:=true
-Bundle-Version: 3.21.0
+Bundle-Version: 3.21.0.qualifier
 Bundle-ClassPath: .
 Bundle-Vendor: %providerName
 Bundle-Localization: plugin
