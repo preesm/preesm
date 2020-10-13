@@ -86,7 +86,7 @@ import org.preesm.workflow.implement.AbstractWorkflowNodeImplementation;
         @Parameter(name = "executionPolicy", description = "Runtime execution policy to use.",
             values = { @Value(name = "DELAYED", effect = "(Default)"), @Value(name = "JIT") }),
         @Parameter(name = "runtime", description = "Runtime algorithm to use.",
-            values = { @Value(name = "JITMS", effect = "(Default)"), @Value(name = "FAST_JITMS") }),
+            values = { @Value(name = "SRDAG_LESS", effect = "(Default)"), @Value(name = "SRDAG_BASED") }),
         @Parameter(name = "runMode", description = "Run mode to use.",
             values = { @Value(name = "LOOP", effect = "(Default)"), @Value(name = "INFINITE"),
                 @Value(name = "EXTERN_LOOP") }),
