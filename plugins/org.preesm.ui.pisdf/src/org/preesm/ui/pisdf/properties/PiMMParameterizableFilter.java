@@ -4,7 +4,7 @@
  * Alexandre Honorat [alexandre.honorat@insa-rennes.fr] (2020)
  * Antoine Morvan [antoine.morvan@insa-rennes.fr] (2017 - 2019)
  * Clément Guy [clement.guy@insa-rennes.fr] (2014 - 2015)
- * Julien Heulot [julien.heulot@insa-rennes.fr] (2013)
+ * Julien Heulot [julien.heulot@insa-rennes.fr] (2013 - 2020)
  * Maxime Pelcat [maxime.pelcat@insa-rennes.fr] (2013)
  * Romina Racca [romina.racca@gmail.com] (2013)
  *

@@ -1,7 +1,9 @@
 /**
  * Copyright or © or Copr. IETR/INSA - Rennes (2020) :
  *
+ * Alexandre Honorat [alexandre.honorat@insa-rennes.fr] (2020)
  * Florian Arrestier [florian.arrestier@insa-rennes.fr] (2020)
+ * Julien Heulot [julien.heulot@insa-rennes.fr] (2020)
  *
  * This software is a computer program whose purpose is to help prototyping
  * parallel applications using dataflow formalism.
@@ -38,7 +40,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map.Entry;
 import java.util.stream.Collectors;
-import org.apache.commons.math3.util.Pair;
+import org.eclipse.xtext.xbase.lib.Pair;
 import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.Actor;
@@ -133,7 +135,7 @@ public class Spider2CodegenActor {
     final List<Component> components = this.scenario.getDesign().getOperatorComponents();
     if (this.timingList.size() != components.size()) {
       final List<Component> defaultTimingComponents = components.stream()
-          .filter(x -> this.timingList.stream().filter(p -> p.getFirst().equals(x.getVlnv().getName())).count() == 0)
+          .filter(x -> this.timingList.stream().filter(p -> p.getKey().equals(x.getVlnv().getName())).count() == 0)
           .collect(Collectors.toList());
       for (final Component comp : defaultTimingComponents) {
         final String operatorName = comp.getVlnv().getName();
@@ -177,7 +179,7 @@ public class Spider2CodegenActor {
         final String fullNameString = getFullNameMapping(cluster, operator);
         boolean found = false;
         for (final Pair<String, Boolean> entry : this.mappingConstraintList) {
-          if (entry.getFirst().equals(fullNameString)) {
+          if (entry.getKey().equals(fullNameString)) {
             found = true;
             break;
           }
@@ -263,6 +265,6 @@ public class Spider2CodegenActor {
    * @return true if actor is mappable on all pe, false else
    */
   public boolean isMappableOnAll() {
-    return this.mappingConstraintList.stream().filter(p -> p.getSecond()).count() == this.mappingConstraintList.size();
+    return this.mappingConstraintList.stream().filter(p -> p.getValue()).count() == this.mappingConstraintList.size();
   }
 }

@@ -5,6 +5,7 @@
  * Antoine Morvan [antoine.morvan@insa-rennes.fr] (2018 - 2019)
  * Florian Arrestier [florian.arrestier@insa-rennes.fr] (2018 - 2020)
  * Dylan Gageot [gageot.dylan@gmail.com] (2019)
+ * Julien Heulot [julien.heulot@insa-rennes.fr] (2020)
  *
  * This software is a computer program whose purpose is to help prototyping
  * parallel applications using dataflow formalism.
@@ -168,8 +169,8 @@ abstract class Configurable extends AbstractVertex, Parameterizable {
 			unmodifiableView
 	}
 	/*
-	 * Lookup within all the ConfigInputPort and return the first one connected to the given
-	 * Parameter, or null if the actor is not connected to it.
+	 * Lookup within all the ConfigInputPort and return the ones depending on the given
+	 * Parameter, or null if this configurable is not connected to it.
 	 */
 	op ConfigInputPort[] lookupConfigInputPortsConnectedWithParameter(Parameter parameter) {
 		return configInputPorts.filterNull.map[incomingDependency].filterNull.filter [
@@ -275,6 +276,9 @@ class PiGraph extends AbstractActor, Graph, PeriodicElement {
 	}
 	op unique boolean removeFifo(Fifo fifo) {
 		edges.remove(fifo)
+	}
+	op unique boolean removeDependency(Dependency dep) {
+		edges.remove(dep)
 	}
 	op unique Parameter[] getOnlyParameters() {
 		return parameters.filter(it|!((it instanceof ConfigInputInterface) || (it instanceof ConfigOutputInterface) )).

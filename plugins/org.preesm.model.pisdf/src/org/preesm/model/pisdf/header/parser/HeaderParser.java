@@ -3,7 +3,7 @@
  *
  * Alexandre Honorat [alexandre.honorat@insa-rennes.fr] (2020)
  * Antoine Morvan [antoine.morvan@insa-rennes.fr] (2017 - 2019)
- * Julien Heulot [julien.heulot@insa-rennes.fr] (2015 - 2017)
+ * Julien Heulot [julien.heulot@insa-rennes.fr] (2015 - 2020)
  * Karol Desnos [karol.desnos@insa-rennes.fr] (2015 - 2016)
  * Maxime Pelcat [maxime.pelcat@insa-rennes.fr] (2016)
  *

@@ -5,6 +5,7 @@
  * Antoine Morvan [antoine.morvan@insa-rennes.fr] (2017 - 2019)
  * Clément Guy [clement.guy@insa-rennes.fr] (2014 - 2015)
  * Daniel Madroñal [daniel.madronal@upm.es] (2019)
+ * Julien Heulot [julien.heulot@insa-rennes.fr] (2020)
  * Maxime Pelcat [maxime.pelcat@insa-rennes.fr] (2011 - 2013)
  *
  * This software is a computer program whose purpose is to help prototyping
@@ -87,6 +88,9 @@ public class EnergyTableLabelProvider extends BaseLabelProvider implements ITabl
   /** The image error. */
   private final Image imageError;
 
+  /** The image alert. */
+  private final Image imageAlert;
+
   /** Constraints page used as a property listener to change the dirty state. */
   private IPropertyListener propertyListener = null;
 
@@ -115,6 +119,12 @@ public class EnergyTableLabelProvider extends BaseLabelProvider implements ITabl
     imageDcr = ImageDescriptor.createFromURL(okIconURL);
     this.imageOk = imageDcr.createImage();
 
+    // Icons made by <a href="https://www.flaticon.com/authors/freepik" title="Freepik">Freepik</a> from <a
+    // href="https://www.flaticon.com/" title="Flaticon"> www.flaticon.com</a>
+    final URL alertIconURL = PreesmResourcesHelper.getInstance().resolve("icons/alert.png", PreesmUIPlugin.class);
+    imageDcr = ImageDescriptor.createFromURL(alertIconURL);
+    this.imageAlert = imageDcr.createImage();
+
     final Design design = scenario.getDesign();
     final List<Component> operators = design.getOperatorComponents();
     this.currentOpDefId = operators.get(0);
@@ -127,9 +137,10 @@ public class EnergyTableLabelProvider extends BaseLabelProvider implements ITabl
 
       final String energy = this.scenario.getEnergyConfig().getEnergyActorOrDefault(vertex, this.currentOpDefId);
       if (columnIndex == 3) {
-        final boolean canEvaluate = ExpressionEvaluator.canEvaluate(vertex, energy);
-        if (canEvaluate) {
+        if (ExpressionEvaluator.canEvaluate(vertex, energy)) {
           return this.imageOk;
+        } else if (ExpressionEvaluator.canEvaluate(vertex.getContainingPiGraph(), energy)) {
+          return this.imageAlert;
         } else {
           return this.imageError;
         }
@@ -165,6 +176,9 @@ public class EnergyTableLabelProvider extends BaseLabelProvider implements ITabl
           if (energy != null && ExpressionEvaluator.canEvaluate(vertex, energy)) {
             return Long
                 .toString(ExpressionEvaluator.evaluate(vertex, energy, this.scenario.getParameterValues().map()));
+          } else if (energy != null && ExpressionEvaluator.canEvaluate(vertex.getContainingPiGraph(), energy)) {
+            return Long.toString(ExpressionEvaluator.evaluate(vertex.getContainingPiGraph(), energy,
+                this.scenario.getParameterValues().map()));
           } else {
             return "";
           }

@@ -7,6 +7,7 @@
  * Florian Arrestier [florian.arrestier@insa-rennes.fr] (2020)
  * Julien Hascoet [jhascoet@kalray.eu] (2017)
  * Jonathan Piat [jpiat@laas.fr] (2009)
+ * Julien Heulot [julien.heulot@insa-rennes.fr] (2020)
  * Karol Desnos [karol.desnos@insa-rennes.fr] (2017 - 2019)
  * Matthieu Wipliez [matthieu.wipliez@insa-rennes.fr] (2008)
  * Maxime Pelcat [maxime.pelcat@insa-rennes.fr] (2008 - 2012)

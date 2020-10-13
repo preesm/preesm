@@ -3,6 +3,7 @@
  *
  * Antoine Morvan [antoine.morvan@insa-rennes.fr] (2018 - 2019)
  * Julien Heulot [julien.heulot@insa-rennes.fr] (2020)
+ * Karol Desnos [karol.desnos@insa-rennes.fr] (2020)
  *
  * This software is a computer program whose purpose is to help prototyping
  * parallel applications using dataflow formalism.
@@ -39,6 +40,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.nio.file.InvalidPathException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Arrays;
@@ -120,7 +122,7 @@ public final class URLResolver {
     if (resultURL == null) {
       try {
         resultURL = resolveFileSystemURL(location);
-      } catch (final MalformedURLException e) {
+      } catch (final MalformedURLException | InvalidPathException e) {
         resultURL = null;
       }
     }

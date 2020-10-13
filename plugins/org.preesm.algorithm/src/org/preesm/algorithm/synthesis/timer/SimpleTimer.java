@@ -1,7 +1,7 @@
 /**
  * Copyright or © or Copr. IETR/INSA - Rennes (2019 - 2020) :
  *
- * Alexandre Honorat [alexandre.honorat@insa-rennes.fr] (2019)
+ * Alexandre Honorat [alexandre.honorat@insa-rennes.fr] (2019 - 2020)
  * Antoine Morvan [antoine.morvan@insa-rennes.fr] (2019)
  * Julien Heulot [julien.heulot@insa-rennes.fr] (2019 - 2020)
  *
@@ -36,6 +36,8 @@
  */
 package org.preesm.algorithm.synthesis.timer;
 
+import java.util.Set;
+import java.util.stream.Collectors;
 import org.preesm.algorithm.mapping.model.Mapping;
 import org.preesm.model.pisdf.BroadcastActor;
 import org.preesm.model.pisdf.ForkActor;
@@ -44,6 +46,7 @@ import org.preesm.model.pisdf.RoundBufferActor;
 import org.preesm.model.pisdf.UserSpecialActor;
 import org.preesm.model.scenario.MemoryCopySpeedValue;
 import org.preesm.model.scenario.Scenario;
+import org.preesm.model.slam.Component;
 import org.preesm.model.slam.ComponentInstance;
 
 /**
@@ -88,9 +91,10 @@ public class SimpleTimer extends AgnosticTimer {
       final MemoryCopySpeedValue memTimings = this.scenario.getTimings().getMemTimings().get(operator.getComponent());
       wcet = (long) ((maxRate) * memTimings.getTimePerUnit()) + memTimings.getSetupTime();
     } else {
-      for (final ComponentInstance operatorDefinitionID : scenario.getPossibleMappings(userSpecialActor)) {
-        final MemoryCopySpeedValue memTimings = this.scenario.getTimings().getMemTimings()
-            .get(operatorDefinitionID.getComponent());
+      Set<Component> cmps = scenario.getPossibleMappings(userSpecialActor).stream().map(x -> x.getComponent())
+          .collect(Collectors.toSet());
+      for (final Component cmp : cmps) {
+        final MemoryCopySpeedValue memTimings = this.scenario.getTimings().getMemTimings().get(cmp);
         long et = (long) ((maxRate) * memTimings.getTimePerUnit()) + memTimings.getSetupTime();
         if (et > wcet) {
           wcet = et;
