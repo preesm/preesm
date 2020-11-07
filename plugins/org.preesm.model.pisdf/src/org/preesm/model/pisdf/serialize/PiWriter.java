@@ -827,10 +827,16 @@ public class PiWriter {
       kind = PiIdentifiers.ROUND_BUFFER;
     } else if (actor instanceof EndActor) {
       kind = PiIdentifiers.END;
-      vertexElt.setAttribute(PiIdentifiers.INIT_END_REF, ((EndActor) actor).getInitReference().getName());
+      final EndActor endActor = (EndActor) actor;
+      if (endActor.getInitReference() != null) {
+        vertexElt.setAttribute(PiIdentifiers.INIT_END_REF, endActor.getInitReference().getName());
+      }
     } else if (actor instanceof InitActor) {
       kind = PiIdentifiers.INIT;
-      vertexElt.setAttribute(PiIdentifiers.INIT_END_REF, ((InitActor) actor).getEndReference().getName());
+      final InitActor initActor = (InitActor) actor;
+      if (initActor.getEndReference() != null) {
+        vertexElt.setAttribute(PiIdentifiers.INIT_END_REF, initActor.getEndReference().getName());
+      }
     }
     vertexElt.setAttribute(PiIdentifiers.NODE_KIND, kind);
 

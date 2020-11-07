@@ -55,7 +55,7 @@ namespace spider {
 #foreach ($pair in $initPrototypes)
 
         /* == Initialization function: ${pair.first} == */
-        ${pair.first}(#foreach ($inputPort in $pair.second)/* == Param: ${inputPort.name} == */ ${inputPort.getIncomingDependency().getSetter().getValueExpression().evaluate()}#if( $foreach.hasNext ), #end#end);
+        ${pair.getKey()}(#foreach ($inputPort in $pair.getValue())/* == Param: ${inputPort.name} == */ ${inputPort.getIncomingDependency().getSetter().getValueExpression().evaluate()}#if( $foreach.hasNext ), #end#end);
 #end
     }
 

@@ -82,25 +82,25 @@
 #if ( ${codegenActor.isMappableOnAll} )
     spider::api::setVertexMappableOnAllPE(vertex_$actor.name, true);
 #else
-    #set($constraints = $codegenActor.mappingConstraints)
+    #set($constraints = $codegenActor.getMappingConstraints())
 #foreach($constraint in $constraints)
-    spider::api::setVertexMappableOnPE(vertex_$actor.name, PE_${constraint.first.toUpperCase()}, ${constraint.second});
+    spider::api::setVertexMappableOnPE(vertex_$actor.name, PE_${constraint.getKey().toUpperCase()}, ${constraint.getValue()});
 #end
 #end
-    #set($timings = $codegenActor.timings)
+    #set($timings = $codegenActor.getTimings())
 #if ( ${timings.size()} > 0 )
     
     /* == Set the timings of the vertex $actor.name == */
 #foreach($timing in $timings)
-    spider::api::setVertexExecutionTimingOnHWType(vertex_$actor.name, TYPE_${timing.first.toUpperCase()}, "$timing.second");
+    spider::api::setVertexExecutionTimingOnHWType(vertex_$actor.name, TYPE_${timing.getKey().toUpperCase()}, "$timing.getValue()");
 #end
 #end
 #end
 
     /* === Creates the subgraph(s) === */
 #foreach($pair in $subgraphsAndParameters)
-    #set($subgraph = $pair.first)
-    #set($paramNames = $pair.second)
+    #set($subgraph = $pair.getKey())
+    #set($paramNames = $pair.getValue())
     
     auto *vertex_$subgraph.name = spider::create${subgraph.piGraphName}Subgraph("$subgraph.name", graph, {#foreach ($name in $paramNames) param_$name #end});
 #end    

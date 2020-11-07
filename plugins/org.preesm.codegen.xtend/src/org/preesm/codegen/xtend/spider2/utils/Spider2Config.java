@@ -109,7 +109,7 @@ public class Spider2Config {
     allocatorType = allocatorParameter == null ? "DEFAULT" : allocatorParameter;
     execPolicyType = execPolicyParameter == null ? "DELAYED" : execPolicyParameter;
     runMode = modeParameter == null ? "LOOP" : modeParameter;
-    runtimeAlgo = algoParameter == null ? "SRDAG_LESS" : algoParameter;
+    runtimeAlgo = algoParameter == null ? "PISDF_BASED" : algoParameter;
   }
 
   public boolean getGenerateArchiFile() {

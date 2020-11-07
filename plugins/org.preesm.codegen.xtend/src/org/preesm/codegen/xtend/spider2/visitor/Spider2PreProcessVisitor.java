@@ -609,10 +609,12 @@ public class Spider2PreProcessVisitor extends PiMMSwitch<Boolean> {
       this.actorsMap.get(graph).add(new Spider2CodegenActor("REPEAT", ba, this.scenario, this.clusterList));
     } else {
       final Expression inputExpr = ba.getDataInputPorts().get(0).getExpression();
+      final String inputExprString = new String(inputExpr.getExpressionAsString()).replace(" ", "");
       Boolean isPerfectBroadcast = true;
       for (final DataOutputPort dop : ba.getDataOutputPorts()) {
         final Expression expr = dop.getExpression();
-        if (!expr.getExpressionAsString().equals(inputExpr.getExpressionAsString())) {
+        final String exprString = new String(expr.getExpressionAsString()).replace(" ", "");
+        if (!exprString.equalsIgnoreCase(inputExprString)) {
           isPerfectBroadcast = false;
           break;
         }
