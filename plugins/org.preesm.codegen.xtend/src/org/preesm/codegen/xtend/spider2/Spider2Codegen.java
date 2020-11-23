@@ -58,6 +58,7 @@ import org.eclipse.core.runtime.Path;
 import org.eclipse.xtext.xbase.lib.Pair;
 import org.preesm.codegen.xtend.spider2.utils.Spider2CodegenCluster;
 import org.preesm.codegen.xtend.spider2.utils.Spider2CodegenPE;
+import org.preesm.codegen.xtend.spider2.utils.Spider2Config;
 import org.preesm.codegen.xtend.spider2.visitor.Spider2PreProcessVisitor;
 import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.preesm.commons.files.PreesmResourcesHelper;
@@ -267,7 +268,7 @@ public class Spider2Codegen {
   /**
    * Generates the code of the main.cpp
    */
-  public void generateMainCode() {
+  public void generateMainCode(final Spider2Config config) {
     if (this.originalContextClassLoader == null) {
       init();
     }
@@ -286,10 +287,13 @@ public class Spider2Codegen {
     context.put("genAllocAlign", "sizeof(int64_t)");
     context.put("genAllocSize", "SIZE_MAX");
     context.put("genAllocExtAddr", "nullptr");
-    context.put("runMode", "LOOP");
+    context.put("runMode", config.getRunMode());
     context.put("loopCount", "10000");
-    context.put("runtimeAlgo", "JITMS");
-    context.put("schedAlgorithm", "LIST_BEST_FIT");
+    context.put("runtimeAlgo", config.getRuntimeAlgo());
+    context.put("schedAlgorithm", config.getSchedulerType());
+    context.put("mapAlgorithm", config.getMapperType());
+    context.put("allocType", config.getAllocatorType());
+    context.put("execPolicy", config.getExecPolicyType());
 
     final List<Pair<String, List<ConfigInputPort>>> initPrototypes = new ArrayList<>();
     for (final PiGraph graph : this.preprocessor.getUniqueGraphSet()) {

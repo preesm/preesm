@@ -63,9 +63,7 @@
 #if( ${rateConfigInputPorts.size()} > 0)
 
     /* == Set the input parameters used by rate expressions of the vertex $actor.name == */
-#foreach($inputPort in $rateConfigInputPorts)
-    spider::api::addInputParamToVertex(vertex_$actor.name, param_${inputPort.incomingDependency.setter.name});
-#end
+    spider::api::addInputParamsToVertex(vertex_$actor.name, {#foreach ($inputPort in $rateConfigInputPorts) param_${inputPort.incomingDependency.setter.name}#if( $foreach.hasNext ), #end#end });
 #end
 #if( ${refinementConfigInputPorts.size()} > 0)
 
@@ -77,43 +75,41 @@
 #if( ${configOutputPorts.size()} > 0)
 
     /* == Set the output parameters of the vertex $actor.name == */
-#foreach($outputPort in $configOutputPorts)
-    spider::api::addOutputParamToVertex(vertex_$actor.name, param_${outputPort.outgoingDependencies.get(0).target.name});
-#end
+    spider::api::addOutputParamsToVertex(vertex_$actor.name, {#foreach ($outputPort in $configOutputPorts) param_${outputPort.outgoingDependencies.get(0).target.name}#if( $foreach.hasNext ), #end#end });
 #end 
     
     /* == Setting mappable constraints of the vertex $actor.name == */
 #if ( ${codegenActor.isMappableOnAll} )
     spider::api::setVertexMappableOnAllPE(vertex_$actor.name, true);
 #else
-    #set($constraints = $codegenActor.mappingConstraints)
+    #set($constraints = $codegenActor.getMappingConstraints())
 #foreach($constraint in $constraints)
-    spider::api::setVertexMappableOnPE(vertex_$actor.name, PE_${constraint.first.toUpperCase()}, ${constraint.second});
+    spider::api::setVertexMappableOnPE(vertex_$actor.name, PE_${constraint.getKey().toUpperCase()}, ${constraint.getValue()});
 #end
 #end
-    #set($timings = $codegenActor.timings)
+    #set($timings = $codegenActor.getTimings())
 #if ( ${timings.size()} > 0 )
     
     /* == Set the timings of the vertex $actor.name == */
 #foreach($timing in $timings)
-    spider::api::setVertexExecutionTimingOnHWType(vertex_$actor.name, TYPE_${timing.first.toUpperCase()}, "$timing.second");
+    spider::api::setVertexExecutionTimingOnHWType(vertex_$actor.name, TYPE_${timing.getKey().toUpperCase()}, "$timing.getValue()");
 #end
 #end
 #end
 
     /* === Creates the subgraph(s) === */
 #foreach($pair in $subgraphsAndParameters)
-    #set($subgraph = $pair.first)
-    #set($paramNames = $pair.second)
+    #set($subgraph = $pair.getKey())
+    #set($paramNames = $pair.getValue())
     
     auto *vertex_$subgraph.name = spider::create${subgraph.piGraphName}Subgraph("$subgraph.name", graph, {#foreach ($name in $paramNames) param_$name #end});
 #end    
 
     /* === Creates the edge(s) === */
 #foreach ($edge in $edges)
+#if( $edge.hasDelay() )
 
     /* == Edge ${edge.source.name}[$edge.sourcePortName] -> [$edge.sinkPortName]$edge.sink.name == */
-#if( $edge.hasDelay() )
     auto *edge_${edge.source.name}_${edge.sourcePortName}__${edge.sink.name}_${edge.sinkPortName} = spider::api::createEdge(
          /* = Source vertex          = */  vertex_$edge.source.name,
          /* = Source port ix         = */  $edge.sourceIx,
@@ -144,6 +140,8 @@
                                   /* = Expression of the delay = */ "(${edge.delayExpression}) * ${edge.size}");
 #end                          
 #elseif( !${edge.source.class.simpleName.equals("DelayActorImpl")} && !${edge.sink.class.simpleName.equals("DelayActorImpl")})
+
+    /* == Edge ${edge.source.name}[$edge.sourcePortName] -> [$edge.sinkPortName]$edge.sink.name == */
     spider::api::createEdge(/* = Source vertex          = */  vertex_$edge.source.name,
                             /* = Source port ix         = */  $edge.sourceIx,
                             /* = Source rate expression = */ "(${edge.sourceRateExpression}) * ${edge.size}",

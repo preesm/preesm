@@ -78,8 +78,18 @@ import org.preesm.workflow.implement.AbstractWorkflowNodeImplementation;
             description = "Whether to move the includes of the project into the generated include folder",
             values = { @Value(name = "true / false", effect = "(Default = false)") }),
         @Parameter(name = "scheduler", description = "Runtime scheduler to use.",
-            values = { @Value(name = "bestfit_list_scheduling", effect = "(Default)"),
-                @Value(name = "round_robin_list_scheduling"), @Value(name = "greedy_scheduling") }),
+            values = { @Value(name = "LIST", effect = "(Default)"), @Value(name = "GREEDY") }),
+        @Parameter(name = "mapper", description = "Runtime mapper to use.",
+            values = { @Value(name = "BEST_FIT", effect = "(Default)"), @Value(name = "ROUND_ROBIN") }),
+        @Parameter(name = "allocator", description = "Runtime fifo allocator to use.",
+            values = { @Value(name = "DEFAULT", effect = "(Default)"), @Value(name = "DEFAULT_NOSYNC") }),
+        @Parameter(name = "executionPolicy", description = "Runtime execution policy to use.",
+            values = { @Value(name = "DELAYED", effect = "(Default)"), @Value(name = "JIT") }),
+        @Parameter(name = "runtime", description = "Runtime algorithm to use.",
+            values = { @Value(name = "PISDF_BASED", effect = "(Default)"), @Value(name = "SRDAG_BASED") }),
+        @Parameter(name = "runMode", description = "Run mode to use.",
+            values = { @Value(name = "LOOP", effect = "(Default)"), @Value(name = "INFINITE"),
+                @Value(name = "EXTERN_LOOP") }),
         @Parameter(name = "use-verbose", description = "Whether to enable verbose log.",
             values = { @Value(name = "true / false", effect = "") }),
         @Parameter(name = "enable-srdag-optims", description = "Whether to optimize the srdag-graphs at runtime or not",
@@ -93,6 +103,16 @@ public class Spider2CodegenTask extends AbstractTaskImplementation {
   public static final String PARAM_MOVE_INCLUDES       = "move includes";
   /** The Constant PARAM_SCHEDULER. */
   public static final String PARAM_SCHEDULER           = "scheduler";
+  /** The Constant PARAM_MAPPER. */
+  public static final String PARAM_MAPPER              = "mapper";
+  /** The Constant PARAM_ALLOCATOR. */
+  public static final String PARAM_ALLOCATOR           = "allocator";
+  /** The Constant PARAM_EXEC_POLICY. */
+  public static final String PARAM_EXEC_POLICY         = "executionPolicy";
+  /** The Constant PARAM_RUN_MODE. */
+  public static final String PARAM_RUN_MODE            = "runMode";
+  /** The Constant PARAM_ALGO. */
+  public static final String PARAM_ALGO                = "runtime";
   /** The Constant PARAM_VERBOSE. */
   public static final String PARAM_VERBOSE             = "use-verbose";
   /** The Constant PARAM_GRAPH_OPTIMS. */
@@ -156,7 +176,7 @@ public class Spider2CodegenTask extends AbstractTaskImplementation {
     // Generate code for the main entry point (if top level graph does not have input nor output interfaces)
     if (topGraph.getDataInputInterfaces().isEmpty() && topGraph.getDataOutputInterfaces().isEmpty()) {
       PreesmLogger.getLogger().log(Level.INFO, "Generating stand-alone application code.");
-      codegen.generateMainCode();
+      codegen.generateMainCode(spiderConfig);
     } else {
       PreesmLogger.getLogger().log(Level.INFO, "Generating software acceleration code.");
     }

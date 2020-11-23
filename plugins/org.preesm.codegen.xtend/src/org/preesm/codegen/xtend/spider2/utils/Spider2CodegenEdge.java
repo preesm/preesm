@@ -139,19 +139,40 @@ public class Spider2CodegenEdge {
     this.delay = fifo.getDelay();
     this.delayRateExpression = getDelayRateExpression();
 
-    /* Set setter information */
-    this.delaySetter = getDelayActorName(this.hasDelay() ? this.delay.getSetterActor() : null);
-    this.delaySetterRateExpression = getDelayDataExpression(
-        this.hasDelay() && this.delay.hasSetterActor() ? this.delay.getSetterPort() : null);
-    this.delaySetterDataSize = getDelayDataSize(
-        this.hasDelay() && this.delay.hasSetterActor() ? this.delay.getSetterPort() : null, simulationInfo);
+    if (this.hasDelay()) {
+      /* Set setter information */
+      if (this.delay.hasSetterActor()) {
+        this.delaySetter = getDelayActorName(this.delay.getSetterActor());
+        final DataOutputPort setterPort = this.delay.getSetterPort();
+        final Fifo setterFifo = setterPort.getOutgoingFifo();
+        this.delaySetterRateExpression = createRateExpression(setterFifo, setterPort, this.delay.getSetterActor());
+        this.delaySetterDataSize = getDelayDataSize(setterPort, simulationInfo);
+      } else {
+        this.delaySetter = NULLPTR_CONSTANT;
+        this.delaySetterRateExpression = "0";
+        this.delaySetterDataSize = "0";
+      }
 
-    /* Set getter information */
-    this.delayGetter = getDelayActorName(this.hasDelay() ? this.delay.getGetterActor() : null);
-    this.delayGetterRateExpression = getDelayDataExpression(
-        this.hasDelay() && this.delay.hasGetterActor() ? this.delay.getGetterPort() : null);
-    this.delayGetterDataSize = getDelayDataSize(
-        this.hasDelay() && this.delay.hasGetterActor() ? this.delay.getGetterPort() : null, simulationInfo);
+      /* Set getter information */
+      if (this.delay.hasGetterActor()) {
+        this.delayGetter = getDelayActorName(this.delay.getGetterActor());
+        final DataInputPort getterPort = this.delay.getGetterPort();
+        final Fifo getterFifo = getterPort.getIncomingFifo();
+        this.delayGetterRateExpression = createRateExpression(getterFifo, getterPort, this.delay.getGetterActor());
+        this.delayGetterDataSize = getDelayDataSize(getterPort, simulationInfo);
+      } else {
+        this.delayGetter = NULLPTR_CONSTANT;
+        this.delayGetterRateExpression = "0";
+        this.delayGetterDataSize = "0";
+      }
+    } else {
+      this.delaySetter = NULLPTR_CONSTANT;
+      this.delaySetterRateExpression = "0";
+      this.delaySetterDataSize = "0";
+      this.delayGetter = NULLPTR_CONSTANT;
+      this.delayGetterRateExpression = "0";
+      this.delayGetterDataSize = "0";
+    }
   }
 
   private String getDelayRateExpression() {
