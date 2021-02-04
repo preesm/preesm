@@ -74,7 +74,7 @@ public class EnergyImporter {
             papifyParser.parse(excelFileURL, design.getProcessingElements());
             break;
           case "csv":
-            csvParser.parse(excelFileURL, design.getOperatorComponents());
+            csvParser.parse(excelFileURL, design.getProcessingElements());
             break;
           default:
             break;

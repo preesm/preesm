@@ -41,7 +41,6 @@
  */
 package org.preesm.ui.scenario.editor.timings;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -120,16 +119,56 @@ public class TimingsPage extends ScenarioPage {
 
   /** The pisdf column names. */
   public enum TimingColumn {
-    ACTORS("Actors", 200), PARAMETERS("Input Parameters", 200), EXPRESSION("Expression", 200), VALUE("Value", 50);
+    ACTORS(0, "Actors", 200),
 
-    private final String name;
-    private final int    size;
+    PARAMETERS(1, "Input Parameters", 200),
 
-    TimingColumn(String name, int size) {
+    EXPRESSION(2, "Expression", 200),
+
+    STATUS(3, "Status", 50),
+
+    VALUE(4, "Value", 50);
+
+    public final int    columnIndex;
+    public final String name;
+    public final int    width;
+
+    TimingColumn(int columnIndex, String name, int width) {
+      this.columnIndex = columnIndex;
       this.name = name;
-      this.size = size;
+      this.width = width;
     }
+
+    private static TimingColumn[] safeValuesByIndex() {
+      int length = TimingColumn.values().length;
+      TimingColumn[] orderedValues = new TimingColumn[length];
+      for (TimingColumn tc : TimingColumn.values()) {
+        orderedValues[tc.columnIndex] = tc;
+      }
+      return orderedValues;
+    }
+
+    private static int getSumColWidth() {
+      int sum = 0;
+      for (TimingColumn tc : TimingColumn.values()) {
+        sum += tc.width;
+      }
+      return sum;
+    }
+
   }
+
+  /* Indexed version of the above enum. */
+  private static final TimingColumn[] columnTypes = TimingColumn.safeValuesByIndex();
+
+  static TimingColumn getTimingColumnTypeFromIndex(int columnIndex) {
+    if (columnTypes.length > columnIndex && columnIndex >= 0) {
+      return columnTypes[columnIndex];
+    }
+    return null;
+  }
+
+  static final int SUM_COL_WIDTH = TimingColumn.getSumColWidth();
 
   /**
    * Instantiates a new timings page.
@@ -364,8 +403,11 @@ public class TimingsPage extends ScenarioPage {
         new GridData(GridData.FILL_HORIZONTAL | GridData.VERTICAL_ALIGN_BEGINNING));
     final FormToolkit toolkit = managedForm.getToolkit();
 
-    final Combo coreCombo = addCoreSelector(container, toolkit);
-    final Combo timingTypeCombo = addTimingTypeSelector(container, toolkit);
+    final Composite combosContainer = toolkit.createComposite(container);
+    combosContainer.setLayout(new GridLayout(2, true));
+    final Combo coreCombo = addCoreSelector(combosContainer, toolkit);
+    final Combo timingTypeCombo = addTimingTypeSelector(combosContainer, toolkit, coreCombo);
+
     addTimingsTable(container, toolkit, coreCombo, timingTypeCombo);
   }
 
@@ -389,7 +431,8 @@ public class TimingsPage extends ScenarioPage {
     combocps.setVisible(true);
     final Combo combo = new Combo(combocps, SWT.DROP_DOWN | SWT.READ_ONLY);
     combo.setToolTipText(Messages.getString("Constraints.coreSelectionTooltip"));
-    comboCoreDataInit(combo);
+    final Design design = this.scenario.getDesign();
+    comboCoreDataInit(combo, design);
     combo.select(0);
     return combo;
   }
@@ -399,25 +442,28 @@ public class TimingsPage extends ScenarioPage {
    *
    * @param combo
    *          the combo
+   * @param design
+   *          the design
    */
-  private void comboCoreDataInit(final Combo combo) {
+  private static void comboCoreDataInit(final Combo combo, final Design design) {
     combo.removeAll();
-    final Design design = this.scenario.getDesign();
     for (final ProcessingElement defId : design.getProcessingElements()) {
       combo.add(defId.getVlnv().getName());
     }
   }
 
   /**
-   * Adds a combo box for the core selection.
+   * Adds a combo box for the timing type selection.
    *
    * @param parent
    *          the parent
    * @param toolkit
    *          the toolkit
+   * @param coreCombo
+   *          the coreCombo
    * @return the combo
    */
-  private Combo addTimingTypeSelector(final Composite parent, final FormToolkit toolkit) {
+  private Combo addTimingTypeSelector(final Composite parent, final FormToolkit toolkit, final Combo coreCombo) {
     final Composite combocps = toolkit.createComposite(parent);
     combocps.setLayout(new FillLayout());
 
@@ -428,7 +474,9 @@ public class TimingsPage extends ScenarioPage {
     combocps.setVisible(true);
     final Combo combo = new Combo(combocps, SWT.DROP_DOWN | SWT.READ_ONLY);
     combo.setToolTipText(Messages.getString("Constraints.timingTypeSelectionTooltip"));
-    comboTimingTypeDataInit(combo);
+    String peName = coreCombo.getItem(coreCombo.getSelectionIndex());
+    ProcessingElement pe = this.scenario.getDesign().getProcessingElement(peName);
+    comboTimingTypeDataInit(combo, pe);
     combo.select(0);
     return combo;
   }
@@ -438,11 +486,13 @@ public class TimingsPage extends ScenarioPage {
    *
    * @param combo
    *          the combo
+   * @param pe
+   *          current pe
    */
-  private void comboTimingTypeDataInit(final Combo combo) {
+  protected static void comboTimingTypeDataInit(final Combo combo, final ProcessingElement pe) {
     // TODO make timing type selection dynamic based on selected processing element
     combo.removeAll();
-    for (final TimingType timingType : TimingType.values()) {
+    for (final TimingType timingType : pe.getTimingTypes()) {
       combo.add(timingType.getLiteral());
     }
   }
@@ -477,20 +527,20 @@ public class TimingsPage extends ScenarioPage {
     this.tableViewer.setContentProvider(new PreesmAlgorithmListContentProvider());
 
     final TimingsTableLabelProvider labelProvider = new TimingsTableLabelProvider(this.scenario, this.tableViewer,
-        this);
+        coreCombo, timingTypeCombo, this);
     this.tableViewer.setLabelProvider(labelProvider);
     coreCombo.addSelectionListener(labelProvider);
     timingTypeCombo.addSelectionListener(labelProvider);
 
     // Create columns
-    final List<TableColumn> columns = new ArrayList<>();
+    final TableColumn[] columns = new TableColumn[TimingColumn.values().length];
     final String[] columnNames = new String[TimingColumn.values().length];
-    for (TimingColumn timingColumn : TimingColumn.values()) {
-      final TableColumn column = new TableColumn(table, SWT.NONE, timingColumn.ordinal());
-      columnNames[timingColumn.ordinal()] = timingColumn.name;
+    for (TimingColumn timingColumn : columnTypes) {
+      final TableColumn column = new TableColumn(table, SWT.NONE, timingColumn.columnIndex);
+      columnNames[timingColumn.columnIndex] = timingColumn.name;
       column.setText(timingColumn.name);
-      column.setWidth(timingColumn.size);
-      columns.add(column);
+      column.setWidth(timingColumn.width);
+      columns[timingColumn.columnIndex] = column;
     }
 
     final CellEditor[] editors = new CellEditor[table.getColumnCount()];
@@ -541,7 +591,6 @@ public class TimingsPage extends ScenarioPage {
 
     final Table tref = table;
     final Composite comp = tablecps;
-    final List<TableColumn> fColumns = columns;
 
     // Setting the column width
     tablecps.addControlListener(new ControlAdapter() {
@@ -555,9 +604,9 @@ public class TimingsPage extends ScenarioPage {
           final Point vBarSize = vBar.getSize();
           width -= vBarSize.x;
         }
-        for (final TableColumn col : fColumns) {
-
-          col.setWidth((width / TimingColumn.values().length) - 1);
+        float ratio = width / (float) SUM_COL_WIDTH;
+        for (final TimingColumn tc : columnTypes) {
+          columns[tc.columnIndex].setWidth((int) Math.floor(ratio * tc.width) - 1);
         }
         tref.setSize(area.width, area.height);
       }

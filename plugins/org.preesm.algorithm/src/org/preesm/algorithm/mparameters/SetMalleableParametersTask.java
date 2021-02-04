@@ -370,7 +370,7 @@ public class SetMalleableParametersTask extends AbstractTaskImplementation {
       PreesmLogger.getLogger().fine("Retrying combination with delays.");
 
       // compute possible amount of delays
-      final int nbCore = architecture.getOperatorComponents().get(0).getInstances().size();
+      final int nbCore = architecture.getProcessingElements().get(0).getInstances().size();
       final int iterationDelay = res.latency; // is greater or equal to 1
       int maxCuts = globalComparator.getMaximumLatency(); // so -1 is performed in following test
       if (maxCuts > iterationDelay) {
@@ -512,7 +512,7 @@ public class SetMalleableParametersTask extends AbstractTaskImplementation {
             "Delays have been added to the graph (implies graph flattening and parameter expression resolution "
                 + "in output graph)!");
 
-        final int nbCore = architecture.getOperatorComponents().get(0).getInstances().size();
+        final int nbCore = architecture.getProcessingElements().get(0).getInstances().size();
         final PiGraph graphCopy = PiMMUserFactory.instance.copyPiGraphWithHistory(graph);
         final PiGraph flatGraph = graphCopy.getChildrenGraphs().isEmpty() ? graphCopy
             : PiSDFFlattener.flatten(graphCopy, true);

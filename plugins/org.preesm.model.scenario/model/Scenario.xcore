@@ -296,7 +296,7 @@ class Timings {
 		} else {
 			val AbstractActor source = PreesmCopyTracker.getSource(actor);
 			if (source !== actor) {
-				return evaluateTimingOrDefault(source, component, timintType);
+				return evaluateTimingOrDefault(source, component, timingType);
 			}			
 		}
 		return ScenarioConstants.DEFAULT_TIMING_TASK.value;

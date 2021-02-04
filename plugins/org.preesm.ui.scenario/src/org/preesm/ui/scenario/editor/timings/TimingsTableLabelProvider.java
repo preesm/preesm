@@ -89,8 +89,16 @@ public class TimingsTableLabelProvider extends BaseLabelProvider implements ITab
   /** The image error. */
   private final Image imageError;
 
+  /** The image ok. */
+  private final Image imageOk;
+
   /** The image alert. */
   private final Image imageAlert;
+
+  /** Operator type selector. */
+  final Combo coreCombo;
+  // ** Timing type selector. */
+  final Combo timingTypeCombo;
 
   /** Constraints page used as a property listener to change the dirty state. */
   private IPropertyListener propertyListener = null;
@@ -102,14 +110,20 @@ public class TimingsTableLabelProvider extends BaseLabelProvider implements ITab
    *          the scenario
    * @param tableViewer
    *          the table viewer
+   * @param coreCombo
+   *          operator type selector
+   * @param timingTypeCombo
+   *          timing type selector
    * @param propertyListener
    *          the property listener
    */
-  public TimingsTableLabelProvider(final Scenario scenario, final TableViewer tableViewer,
-      final IPropertyListener propertyListener) {
+  public TimingsTableLabelProvider(final Scenario scenario, final TableViewer tableViewer, final Combo coreCombo,
+      final Combo timingTypeCombo, final IPropertyListener propertyListener) {
     super();
     this.scenario = scenario;
     this.tableViewer = tableViewer;
+    this.coreCombo = coreCombo;
+    this.timingTypeCombo = timingTypeCombo;
     this.propertyListener = propertyListener;
 
     final URL errorIconURL = PreesmResourcesHelper.getInstance().resolve("icons/error.png", PreesmUIPlugin.class);
@@ -137,8 +151,10 @@ public class TimingsTableLabelProvider extends BaseLabelProvider implements ITab
     if ((element instanceof AbstractActor) && (this.currentPE != null) && (this.currentTimingType != null)) {
       final AbstractActor vertex = (AbstractActor) element;
 
-      final String timing = this.scenario.getTimings().getTimingOrDefault(vertex, this.currentPE, this.currentTimingType);
-      if (columnIndex == TimingColumn.VALUE.ordinal()) {
+      final String timing = this.scenario.getTimings().getTimingOrDefault(vertex, this.currentPE,
+          this.currentTimingType);
+      final TimingColumn indexCol = TimingsPage.getTimingColumnTypeFromIndex(columnIndex);
+      if (indexCol == TimingColumn.STATUS) {
         if (ExpressionEvaluator.canEvaluate(vertex, timing)) {
           return this.imageOk;
         } else if (ExpressionEvaluator.canEvaluate(vertex.getContainingPiGraph(), timing)) {
@@ -162,37 +178,37 @@ public class TimingsTableLabelProvider extends BaseLabelProvider implements ITab
 
     final AbstractActor vertex = (AbstractActor) element;
     final String timing = this.scenario.getTimings().getTimingOrDefault(vertex, this.currentPE, this.currentTimingType);
+    final TimingColumn indexCol = TimingsPage.getTimingColumnTypeFromIndex(columnIndex);
 
-      switch (columnIndex) {
-        case ACTORS:
-          return vertex.getVertexPath();
-        case PARAMETERS: // Input Parameters
-          if (timing == null || vertex.getInputParameters().isEmpty()) {
-            return " - ";
-          } else {
-            return ExpressionEvaluator.lookupParameterValues(vertex, Collections.emptyMap()).keySet().toString();
-          }
-        case EXPRESSION: // Expression
-          if (timing != null) {
-            return timing;
-          }
-          break;
-	  // check this case !!
-        case 3: // Evaluation Status
-          return null;
-        case VALUE: // Value
-          if (timing != null && ExpressionEvaluator.canEvaluate(vertex, timing)) {
-            return Long
-                .toString(ExpressionEvaluator.evaluate(vertex, timing, this.scenario.getParameterValues().map()));
-          } else if (timing != null && ExpressionEvaluator.canEvaluate(vertex.getContainingPiGraph(), timing)) {
-            return Long.toString(ExpressionEvaluator.evaluate(vertex.getContainingPiGraph(), timing,
-                this.scenario.getParameterValues().map()));
+    switch (indexCol) {
+      case ACTORS:
+        return vertex.getVertexPath();
+      case PARAMETERS: // Input Parameters
+        if (timing == null || vertex.getInputParameters().isEmpty()) {
+          return " - ";
+        } else {
+          return ExpressionEvaluator.lookupParameterValues(vertex, Collections.emptyMap()).keySet().toString();
+        }
+      case EXPRESSION: // Expression
+        if (timing != null) {
+          return timing;
+        }
+        break;
+      // check this case !!
+      case STATUS: // Evaluation Status
+        return null;
+      case VALUE: // Value
+        if (timing != null && ExpressionEvaluator.canEvaluate(vertex, timing)) {
+          return Long.toString(ExpressionEvaluator.evaluate(vertex, timing, this.scenario.getParameterValues().map()));
+        } else if (timing != null && ExpressionEvaluator.canEvaluate(vertex.getContainingPiGraph(), timing)) {
+          return Long.toString(ExpressionEvaluator.evaluate(vertex.getContainingPiGraph(), timing,
+              this.scenario.getParameterValues().map()));
 
-          } else {
-            return "";
-          }
-        default:
-      }
+        } else {
+          return "";
+        }
+      default:
+    }
     return "";
   }
 
@@ -207,10 +223,11 @@ public class TimingsTableLabelProvider extends BaseLabelProvider implements ITab
     if (e.getSource() instanceof Combo) {
       final Combo combo = ((Combo) e.getSource());
       final String item = combo.getItem(combo.getSelectionIndex());
-      ProcessingElement pe = this.scenario.getDesign().getProcessingElement(item);
-      if (pe != null) {
+      if (combo == coreCombo) {
+        ProcessingElement pe = this.scenario.getDesign().getProcessingElement(item);
         this.currentPE = pe;
-      } else {
+        TimingsPage.comboTimingTypeDataInit(timingTypeCombo, pe);
+      } else if (combo == timingTypeCombo) {
         currentTimingType = TimingType.get(item);
       }
       this.tableViewer.refresh();

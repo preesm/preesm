@@ -110,7 +110,8 @@ class LCMBasedBRV extends PiBRV {
       final List<CCinfo> ccInfos = initRepsDFS(subgraph, graphBRV);
 
       // there might be several connected components in each subgraph since
-      // fifos having both production and consumption rates are ignored by initRepsDFS method
+      // fifos having both production and consumption rates equal to 0
+      // are ignored by initRepsDFS method
       for (CCinfo ccInfo : ccInfos) {
         if (!ccInfo.fifoProperties.isEmpty()) {
 
