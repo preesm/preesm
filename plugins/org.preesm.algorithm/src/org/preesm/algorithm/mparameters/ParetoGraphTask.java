@@ -39,20 +39,37 @@ package org.preesm.algorithm.mparameters;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
+import java.util.stream.Collectors;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IWorkspace;
 import org.eclipse.core.resources.IWorkspaceRoot;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.preesm.algorithm.pisdf.autodelays.IterationDelayedEvaluator;
+import org.preesm.algorithm.synthesis.SynthesisResult;
+import org.preesm.algorithm.synthesis.evaluation.energy.SimpleEnergyCost;
+import org.preesm.algorithm.synthesis.evaluation.energy.SimpleEnergyEvaluation;
+import org.preesm.algorithm.synthesis.evaluation.latency.LatencyCost;
+import org.preesm.algorithm.synthesis.evaluation.latency.SimpleLatencyEvaluation;
+import org.preesm.algorithm.synthesis.schedule.ScheduleOrderManager;
+import org.preesm.algorithm.synthesis.schedule.algos.IScheduler;
+import org.preesm.algorithm.synthesis.schedule.algos.PeriodicScheduler;
+import org.preesm.algorithm.synthesis.schedule.algos.PreesmSchedulingException;
 import org.preesm.commons.doc.annotations.Port;
 import org.preesm.commons.doc.annotations.PreesmTask;
 import org.preesm.commons.doc.annotations.Value;
 import org.preesm.commons.logger.PreesmLogger;
+import org.preesm.model.pisdf.MalleableParameter;
 import org.preesm.model.pisdf.PiGraph;
+import org.preesm.model.pisdf.brv.BRVMethod;
+import org.preesm.model.pisdf.statictools.PiSDFToSingleRate;
 import org.preesm.model.scenario.Scenario;
 import org.preesm.model.slam.Design;
 import org.preesm.workflow.elements.Workflow;
@@ -89,13 +106,129 @@ public class ParetoGraphTask extends AbstractTaskImplementation {
     final Design architecture = (Design) inputs.get(AbstractWorkflowNodeImplementation.KEY_ARCHITECTURE);
     final PiGraph graph = (PiGraph) inputs.get(AbstractWorkflowNodeImplementation.KEY_PI_GRAPH);
 
-    // final Map<String, Object> output = new LinkedHashMap<>();
-    // output.put(AbstractWorkflowNodeImplementation.KEY_PI_GRAPH, graph);
+    final List<Comparator<DSEpointIR>> listComparators = new ArrayList<>();
+    listComparators.add(new DSEpointIR.ThroughputMaxComparator());
+    listComparators.add(new DSEpointIR.LatencyMinComparator());
+    listComparators.add(new DSEpointIR.PowerMinComparator());
+    List<MalleableParameter> mparams = graph.getAllParameters().stream().filter(x -> x instanceof MalleableParameter)
+        .map(x -> (MalleableParameter) x).collect(Collectors.toList());
+    List<MalleableParameterIR> mparamsIR = mparams.stream().map(x -> new MalleableParameterIR(x))
+        .collect(Collectors.toList());
+
+    final List<DSEpointIR> listParetoOptimum = new ArrayList<DSEpointIR>();
+
+    final Map<DSEpointIR, List<Integer>> listOptimumConfigs = new HashMap<>(); // maybe useless because the config is
+                                                                               // already in DSEpointIR
+
+    StringBuilder logDSEpoints = new StringBuilder();
 
     PreesmLogger.getLogger().log(Level.INFO, "Start of the Pareto graph computation");
 
-    // TODO Auto-generated method stub
+    paretoDSE(scenario, graph, architecture, mparamsIR, listComparators, logDSEpoints, listParetoOptimum,
+        listOptimumConfigs);
+
+    final String logPath = parameters.get(DEFAULT_LOG_NAME);
+    logCsvFile(logDSEpoints, mparamsIR, workflow, scenario, logPath, "_pareto_complet_log.csv");
+
     return new LinkedHashMap<>();
+  }
+
+  protected static void paretoDSE(final Scenario scenario, final PiGraph graph, final Design architecture,
+      final List<MalleableParameterIR> mparamsIR, final List<Comparator<DSEpointIR>> listComparator,
+      final StringBuilder logDSEpoints, List<DSEpointIR> listParetoOptimum,
+      Map<DSEpointIR, List<Integer>> listOptimumConfigs) {
+
+    final ParameterCombinationExplorer pce = new ParameterCombinationExplorer(mparamsIR, scenario);
+    int index = 0;
+
+    while (pce.setNext()) {
+      index++;
+      PreesmLogger.getLogger().fine("==> Testnig combintion: " + index);
+
+      final PeriodicScheduler scheduler = new PeriodicScheduler();
+      final DSEpointIR dsep = runConfiguration(scenario, graph, architecture, scheduler);
+      logCsvContentMparams(logDSEpoints, mparamsIR, dsep); // résultat ensemble des points calculés
+
+      // algo test point DSE
+
+    }
+
+    // return paretoPoint;
+
+  }
+
+  protected void logCsvFile(final StringBuilder logDSEpoints, final List<MalleableParameterIR> mparamsIR,
+      final Workflow workflow, final Scenario scenario, final String logPath, final String filename) {
+    final StringBuilder header = new StringBuilder();
+    for (MalleableParameterIR mpir : mparamsIR) {
+      header.append(mpir.mp.getName() + ";");
+    }
+    header.append(DSEpointIR.CSV_HEADER_STRING + "\n");
+
+    // Get the root of the workspace
+    final IWorkspace workspace = ResourcesPlugin.getWorkspace();
+    final IWorkspaceRoot root = workspace.getRoot();
+    // Get the project
+    final String projectName = workflow.getProjectName();
+    final IProject project = root.getProject(projectName);
+
+    // Get a complete valid path with all folders existing
+    String exportAbsolutePath = project.getLocation() + logPath;
+    final File parent = new File(exportAbsolutePath);
+    parent.mkdirs();
+
+    final String fileName = scenario.getScenarioName() + filename;
+    final File file = new File(parent, fileName);
+    try (final FileWriter fw = new FileWriter(file, true)) {
+      fw.write(header.toString());
+      fw.write(logDSEpoints.toString());
+    } catch (IOException e) {
+      PreesmLogger.getLogger().log(Level.SEVERE,
+          "Unhable to write the DSE task log in file:" + exportAbsolutePath + fileName);
+    }
+
+  }
+
+  protected static void logCsvContentMparams(final StringBuilder logDSEpoints,
+      final List<MalleableParameterIR> mparamsIR, final DSEpointIR point) {
+    for (MalleableParameterIR mpir : mparamsIR) {
+      logDSEpoints.append(mpir.mp.getExpression().evaluate() + ";");
+    }
+    logDSEpoints.append(point.toCsvContentString() + "\n");
+  }
+
+  protected static DSEpointIR runConfiguration(final Scenario scenario, final PiGraph graph, final Design architecture,
+      final IScheduler scheduler) {
+    final Level backupLevel = PreesmLogger.getLogger().getLevel();
+    PreesmLogger.getLogger().setLevel(Level.SEVERE);
+
+    // copy graph since flatten transfo has side effects (on parameters)
+    final int iterationDelay = IterationDelayedEvaluator.computeLatency(graph);
+
+    final PiGraph dag = PiSDFToSingleRate.compute(graph, BRVMethod.LCM);
+
+    SynthesisResult scheduleAndMap = null;
+    try {
+      scheduleAndMap = scheduler.scheduleAndMap(dag, architecture, scenario);
+    } catch (PreesmSchedulingException e) {
+      // put back all messages
+      PreesmLogger.getLogger().setLevel(backupLevel);
+      PreesmLogger.getLogger().log(Level.WARNING, "Scheduling was impossible.", e);
+      return new DSEpointIR(Long.MAX_VALUE, iterationDelay, Long.MAX_VALUE, 0, 0, new HashMap<>(), false);
+    }
+
+    // use implementation evaluation of PeriodicScheduler instead?
+    final ScheduleOrderManager scheduleOM = new ScheduleOrderManager(dag, scheduleAndMap.schedule);
+    final LatencyCost evaluateLatency = new SimpleLatencyEvaluation().evaluate(dag, architecture, scenario,
+        scheduleAndMap.mapping, scheduleOM);
+    final long durationII = evaluateLatency.getValue();
+    final SimpleEnergyCost evaluateEnergy = new SimpleEnergyEvaluation().evaluate(dag, architecture, scenario,
+        scheduleAndMap.mapping, scheduleOM);
+    final long energy = evaluateEnergy.getValue();
+
+    // put back all messages
+    PreesmLogger.getLogger().setLevel(backupLevel);
+    return new DSEpointIR(energy, iterationDelay, durationII, 0, 0, new HashMap<>(), true);
   }
 
   @Override
