@@ -118,8 +118,9 @@ public class ScenarioEditor extends SharedHeaderFormEditor implements IPropertyL
       try {
         this.scenario = parser.parseXmlFile(this.scenarioFile);
       } catch (final Exception e) {
-        ErrorWithExceptionDialog.errorDialogWithStackTrace("Could not open scenario", e);
-        close(false);
+        final String errorTitle = "Could not open scenario";
+        ErrorWithExceptionDialog.errorDialogWithStackTrace(errorTitle, e);
+        throw new PartInitException(errorTitle, e);
       }
     }
   }

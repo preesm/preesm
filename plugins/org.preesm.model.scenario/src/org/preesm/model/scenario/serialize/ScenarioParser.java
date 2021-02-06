@@ -58,6 +58,7 @@ import javax.xml.parsers.ParserConfigurationException;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.emf.common.util.ECollections;
+import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.Actor;
@@ -409,13 +410,13 @@ public class ScenarioParser {
             try {
               this.scenario.setAlgorithm(PiParser.getPiGraphWithReconnection(url));
             } catch (final Exception e) {
-              PreesmLogger.getLogger().log(Level.SEVERE, "Could not parse the algorithm: " + e.getMessage(), e);
+              throw new PreesmRuntimeException("Could not parse the algorithm: " + e.getMessage(), e);
             }
           } else if (type.equals("architecture")) {
             try {
               initializeArchitectureInformation(url);
             } catch (final Exception e) {
-              PreesmLogger.getLogger().log(Level.SEVERE, "Could not parse the architecture: " + e.getMessage(), e);
+              throw new PreesmRuntimeException("Could not parse the architecture: " + e.getMessage(), e);
             }
           } else if (type.equals("codegenDirectory")) {
             this.scenario.setCodegenDirectory(url);
