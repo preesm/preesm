@@ -433,7 +433,6 @@ public class TimingsPage extends ScenarioPage {
     combo.setToolTipText(Messages.getString("Constraints.coreSelectionTooltip"));
     final Design design = this.scenario.getDesign();
     comboCoreDataInit(combo, design);
-    combo.select(0);
     return combo;
   }
 
@@ -450,6 +449,7 @@ public class TimingsPage extends ScenarioPage {
     for (final ProcessingElement defId : design.getProcessingElements()) {
       combo.add(defId.getVlnv().getName());
     }
+    combo.select(0);
   }
 
   /**
@@ -477,7 +477,6 @@ public class TimingsPage extends ScenarioPage {
     String peName = coreCombo.getItem(coreCombo.getSelectionIndex());
     ProcessingElement pe = this.scenario.getDesign().getProcessingElement(peName);
     comboTimingTypeDataInit(combo, pe);
-    combo.select(0);
     return combo;
   }
 
@@ -495,6 +494,7 @@ public class TimingsPage extends ScenarioPage {
     for (final TimingType timingType : pe.getTimingTypes()) {
       combo.add(timingType.getLiteral());
     }
+    combo.select(0);
   }
 
   /**

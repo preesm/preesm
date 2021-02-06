@@ -194,7 +194,6 @@ public class TimingsTableLabelProvider extends BaseLabelProvider implements ITab
           return timing;
         }
         break;
-      // check this case !!
       case STATUS: // Evaluation Status
         return null;
       case VALUE: // Value
