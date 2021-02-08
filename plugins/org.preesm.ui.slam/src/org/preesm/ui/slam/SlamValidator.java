@@ -346,13 +346,13 @@ public final class SlamValidator implements IValidator {
         final String size = (String) v.getValue("memSize");
         final String definition = (String) v.getValue("definition");
 
-        if ((size != null) && !size.equals("") && (Integer.valueOf(size) > 0)) {
+        if ((size != null) && !size.isEmpty() && (Integer.valueOf(size) > 0)) {
           hasSize = true;
         }
 
         // Testing if instances with the same definition have different
         // sizes
-        if ((definition != null) && !definition.equals("") && !definition.equals("default")) {
+        if ((definition != null) && !definition.isEmpty()) {
 
           if (definitionToSize.containsKey(definition)) {
             final boolean emptySize = (size == null) || size.isEmpty();
@@ -486,39 +486,66 @@ public final class SlamValidator implements IValidator {
    */
   private boolean validateComponentInstances(final Graph graph, final IFile file) {
 
-    boolean valid = true;
-    boolean hasRefName = false;
-    boolean conflictedRefinements = false;
     final Map<String, String> definitionToRefinement = new LinkedHashMap<>();
+    final Map<String, Integer> definitionToHighestHardwareIds = new LinkedHashMap<>();
+
+    // init the maps and set default definition and hardwareId
+    boolean valid = initDefinitionMaps(graph, file, definitionToRefinement, definitionToHighestHardwareIds);
 
     for (final Vertex v : graph.vertexSet()) {
-      hasRefName = false;
-      conflictedRefinements = false;
+      boolean conflictedRefinements = false;
 
       final String type = v.getType().getName();
       if (!type.equals("hierConnection")) {
         final String definition = (String) v.getValue("definition");
 
-        // Testing if instances with the same definition have different
-        // refinements
-        if ((definition != null) && !definition.equals("") && !definition.equals("default")) {
-          hasRefName = true;
-
-          final String refinement = (String) v.getValue("refinement");
-          if (definitionToRefinement.containsKey(definition)) {
-            final boolean emptyRef = (refinement == null) || refinement.isEmpty();
-            final String storedRefinement = definitionToRefinement.get(definition);
-            final boolean emptySRef = (storedRefinement == null) || storedRefinement.isEmpty();
-            if ((emptyRef && !emptySRef) || (!emptyRef && emptySRef)
-                || (!emptyRef && !emptySRef && !refinement.equals(storedRefinement))) {
-              conflictedRefinements = true;
-            }
+        // Testing if instances with the same definition have different refinements
+        final String refinement = (String) v.getValue("refinement");
+        if (definitionToRefinement.containsKey(definition)) {
+          final boolean emptyRef = (refinement == null) || refinement.isEmpty();
+          final String storedRefinement = definitionToRefinement.get(definition);
+          if (emptyRef || !refinement.equals(storedRefinement)) {
+            conflictedRefinements = true;
           }
-          definitionToRefinement.put(definition, refinement);
         }
 
-        if (!hasRefName) {
-          v.setValue("definition", "default" + v.getType().getName());
+        if (conflictedRefinements) {
+          createMarker(file, "Two components with the same definition must have the same refinement",
+              (String) v.getValue("id"), IMarker.PROBLEM, IMarker.SEVERITY_ERROR);
+          valid = false;
+        }
+
+        // Setting hardwareId if not done
+        final String hardwareId = (String) v.getValue("hardwareId");
+        if (hardwareId.isEmpty()) {
+          Integer hs = definitionToHighestHardwareIds.get(definition);
+          if (hs == null) {
+            v.setValue("hardwareId", "0");
+          } else {
+            int i = hs + 1;
+            definitionToHighestHardwareIds.put(definition, hs);
+            v.setValue("hardwareId", Integer.toString(i));
+          }
+        }
+      }
+    }
+
+    return valid;
+  }
+
+  private boolean initDefinitionMaps(Graph graph, final IFile file, Map<String, String> definitionToRefinement,
+      Map<String, Integer> definitionToHighestHardwareIds) {
+
+    boolean valid = true;
+    for (final Vertex v : graph.vertexSet()) {
+      final String type = v.getType().getName();
+      if (!type.equals("hierConnection")) {
+
+        // set definition name if not specified
+        String definition = (String) v.getValue("definition");
+        if ((definition == null) || definition.isEmpty()) {
+          definition = "default" + v.getType().getName();
+          v.setValue("definition", definition);
 
           createMarker(file,
               "Each component instance must specify a definition id that identifies the instanciated "
@@ -527,15 +554,39 @@ public final class SlamValidator implements IValidator {
           valid = false;
         }
 
-        if (conflictedRefinements) {
+        // store refinement if not empty
+        final String refinement = (String) v.getValue("refinement");
+        final boolean emptyRef = (refinement == null) || refinement.isEmpty();
+        if (!emptyRef) {
+          definitionToRefinement.put(definition, refinement);
+        }
 
-          createMarker(file, "Two components with the same definition must have the same refinement",
+        // store highest hardwareId if specified
+        final String hardwareId = (String) v.getValue("hardwareId");
+        boolean emptyHId = (hardwareId == null);
+        if (!emptyHId) {
+          try {
+            int i = Integer.parseInt(hardwareId);
+            Integer hs = definitionToHighestHardwareIds.get(definition);
+            if (hs == null || i > hs) {
+              definitionToHighestHardwareIds.put(definition, i);
+            }
+          } catch (NumberFormatException e) {
+            emptyHId = true;
+          }
+        }
+        if (emptyHId) {
+          // setting it to empty string by default
+          v.setValue("hardwareId", "");
+          createMarker(file,
+              "Each component instance must specify an Integer hardwareId that identifies the instanciated "
+                  + "component. By default, it is set to the smallest possible Integer",
               (String) v.getValue("id"), IMarker.PROBLEM, IMarker.SEVERITY_ERROR);
           valid = false;
         }
+
       }
     }
-
     return valid;
   }
 

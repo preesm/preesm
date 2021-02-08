@@ -430,7 +430,7 @@ public class TimingsPage extends ScenarioPage {
 
     combocps.setVisible(true);
     final Combo combo = new Combo(combocps, SWT.DROP_DOWN | SWT.READ_ONLY);
-    combo.setToolTipText(Messages.getString("Constraints.coreSelectionTooltip"));
+    combo.setToolTipText(Messages.getString("Timings.coreSelectionTooltip"));
     final Design design = this.scenario.getDesign();
     comboCoreDataInit(combo, design);
     return combo;
@@ -473,7 +473,7 @@ public class TimingsPage extends ScenarioPage {
 
     combocps.setVisible(true);
     final Combo combo = new Combo(combocps, SWT.DROP_DOWN | SWT.READ_ONLY);
-    combo.setToolTipText(Messages.getString("Constraints.timingTypeSelectionTooltip"));
+    combo.setToolTipText(Messages.getString("Timings.timingTypeSelectionTooltip"));
     String peName = coreCombo.getItem(coreCombo.getSelectionIndex());
     ProcessingElement pe = this.scenario.getDesign().getProcessingElement(peName);
     comboTimingTypeDataInit(combo, pe);

@@ -57,6 +57,8 @@ import org.preesm.model.slam.serialize.RefinementList;
  * A dialog box used to select multiple refinements for a single vertex in a Graphiti graph. It also gives a mean to
  * chose one of the refinements.
  *
+ * @deprecated This class seems to not be used anymore.
+ * @see SlamRefinementPolicy
  * @author mpelcat
  *
  */
