@@ -549,7 +549,7 @@ public final class SlamValidator implements IValidator {
 
           createMarker(file,
               "Each component instance must specify a definition id that identifies the instanciated "
-                  + "component. By default, it is set to \"default\"Type",
+                  + "component. By default, it is set to the String \"default\"Type",
               (String) v.getValue("id"), IMarker.PROBLEM, IMarker.SEVERITY_ERROR);
           valid = false;
         }
@@ -568,7 +568,7 @@ public final class SlamValidator implements IValidator {
           try {
             int i = Integer.parseInt(hardwareId);
             Integer hs = definitionToHighestHardwareIds.get(definition);
-            if (hs == null || i > hs) {
+            if ((hs == null || i > hs) && i >= 0) {
               definitionToHighestHardwareIds.put(definition, i);
             }
           } catch (NumberFormatException e) {
@@ -579,8 +579,8 @@ public final class SlamValidator implements IValidator {
           // setting it to empty string by default
           v.setValue("hardwareId", "");
           createMarker(file,
-              "Each component instance must specify an Integer hardwareId that identifies the instanciated "
-                  + "component. By default, it is set to the smallest possible Integer",
+              "Each component instance must specify a positive Integer hardwareId that identifies the instanciated "
+                  + "component. By default, it is set to the smallest possible positive Integer",
               (String) v.getValue("id"), IMarker.PROBLEM, IMarker.SEVERITY_ERROR);
           valid = false;
         }
