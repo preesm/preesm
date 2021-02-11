@@ -57,6 +57,7 @@ import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JPanel;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.SWTError;
 import org.eclipse.swt.awt.SWT_AWT;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Composite;
@@ -340,11 +341,11 @@ public class BestCostPlotter extends ApplicationFrame implements ActionListener,
     Frame frame = null;
     try {
       frame = SWT_AWT.new_Frame(composite);
-    } catch (UnsatisfiedLinkError e) {
+    } catch (UnsatisfiedLinkError | SWTError e) {
       PreesmLogger.getLogger().log(Level.INFO,
           "An error occured while loading org.eclipse.swt.awt.SWT_AWT class "
               + "or its associated shared object libswt-awt-gtk-4928+.so, "
-              + "thus the Gantt diagram is not embedded in Eclipse. See error:\n" + e.getMessage());
+              + "thus the cost diagram cannot be embedded in Eclipse. See error:\n" + e.getMessage());
       if (!composite.isDisposed()) {
         composite.dispose();
       }
@@ -353,10 +354,6 @@ public class BestCostPlotter extends ApplicationFrame implements ActionListener,
       frame.add(getContentPane());
     }
 
-    final MouseClickedListener listener = new MouseClickedListener(frame);
-    this.chartPanel.addChartMouseListener(listener);
-    this.chartPanel.addMouseMotionListener(listener);
-    this.chartPanel.addMouseListener(listener);
   }
 
 }
