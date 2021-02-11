@@ -117,17 +117,21 @@ public class ParetoGraphTask extends AbstractTaskImplementation {
 
     List<DSEpointIR> listParetoOptimum = null;
 
-    final Map<DSEpointIR, List<Integer>> listOptimumConfigs = new HashMap<>(); // maybe useless because the config is
+    // final Map<DSEpointIR, List<Integer>> listOptimumConfigs = new HashMap<>(); // maybe useless because the config is
                                                                                // already in DSEpointIR
 
     StringBuilder logDSEpoints = new StringBuilder();
+    StringBuilder logParetoOptimum = new StringBuilder();
 
     PreesmLogger.getLogger().log(Level.INFO, "Start of the Pareto graph computation");
 
     listParetoOptimum = paretoDSE(scenario, graph, architecture, mparamsIR, listComparators, logDSEpoints);
 
+    logCsvContentMparams(logParetoOptimum, mparamsIR, listParetoOptimum);
+
     final String logPath = parameters.get(DEFAULT_LOG_NAME);
     logCsvFile(logDSEpoints, mparamsIR, workflow, scenario, logPath, "_pareto_complet_log.csv");
+    logCsvFile(logParetoOptimum, mparamsIR, workflow, scenario, logPath, "_pareto_optimum_log.csv");
 
     return new LinkedHashMap<>();
   }
@@ -197,6 +201,12 @@ public class ParetoGraphTask extends AbstractTaskImplementation {
     logDSEpoints.append(point.toCsvContentString() + "\n");
   }
 
+  protected static void logCsvContentMparams(final StringBuilder logDSEpoints,
+      final List<MalleableParameterIR> mparamsIR, final List<DSEpointIR> listPoint) {
+    for (DSEpointIR p : listPoint) {
+      logCsvContentMparams(logDSEpoints, mparamsIR, p);
+    }
+  }
 
   protected static int ParetoFrontierUpdate(List<DSEpointIR> listPareto, final DSEpointIR dsep,
       List<Comparator<DSEpointIR>> listComparator) {
