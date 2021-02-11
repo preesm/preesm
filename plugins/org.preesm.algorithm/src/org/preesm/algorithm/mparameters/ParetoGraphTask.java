@@ -115,7 +115,7 @@ public class ParetoGraphTask extends AbstractTaskImplementation {
     List<MalleableParameterIR> mparamsIR = mparams.stream().map(x -> new MalleableParameterIR(x))
         .collect(Collectors.toList());
 
-    final List<DSEpointIR> listParetoOptimum = new ArrayList<DSEpointIR>();
+    List<DSEpointIR> listParetoOptimum = null;
 
     final Map<DSEpointIR, List<Integer>> listOptimumConfigs = new HashMap<>(); // maybe useless because the config is
                                                                                // already in DSEpointIR
@@ -124,8 +124,7 @@ public class ParetoGraphTask extends AbstractTaskImplementation {
 
     PreesmLogger.getLogger().log(Level.INFO, "Start of the Pareto graph computation");
 
-    paretoDSE(scenario, graph, architecture, mparamsIR, listComparators, logDSEpoints, listParetoOptimum,
-        listOptimumConfigs);
+    listParetoOptimum = paretoDSE(scenario, graph, architecture, mparamsIR, listComparators, logDSEpoints);
 
     final String logPath = parameters.get(DEFAULT_LOG_NAME);
     logCsvFile(logDSEpoints, mparamsIR, workflow, scenario, logPath, "_pareto_complet_log.csv");
@@ -133,14 +132,14 @@ public class ParetoGraphTask extends AbstractTaskImplementation {
     return new LinkedHashMap<>();
   }
 
-  protected static void paretoDSE(final Scenario scenario, final PiGraph graph, final Design architecture,
+  protected static List<DSEpointIR> paretoDSE(final Scenario scenario, final PiGraph graph, final Design architecture,
       final List<MalleableParameterIR> mparamsIR, final List<Comparator<DSEpointIR>> listComparator,
-      final StringBuilder logDSEpoints, List<DSEpointIR> listParetoOptimum,
-      Map<DSEpointIR, List<Integer>> listOptimumConfigs) {
+      final StringBuilder logDSEpoints) {
 
+    final List<DSEpointIR> paretoPoint = new ArrayList<DSEpointIR>();
     final ParameterCombinationExplorer pce = new ParameterCombinationExplorer(mparamsIR, scenario);
     int index = 0;
-
+    int code;
     while (pce.setNext()) {
       index++;
       PreesmLogger.getLogger().fine("==> Testnig combintion: " + index);
@@ -148,12 +147,13 @@ public class ParetoGraphTask extends AbstractTaskImplementation {
       final PeriodicScheduler scheduler = new PeriodicScheduler();
       final DSEpointIR dsep = runConfiguration(scenario, graph, architecture, scheduler);
       logCsvContentMparams(logDSEpoints, mparamsIR, dsep); // résultat ensemble des points calculés
-
+      code = ParetoFrontierUpdate(paretoPoint, dsep, listComparator); // on update la listes de pareto optimums
+      PreesmLogger.getLogger().log(Level.INFO, "code de retour du DSE point : " + code + " du point : " + dsep);
       // algo test point DSE
 
     }
 
-    // return paretoPoint;
+    return paretoPoint;
 
   }
 
