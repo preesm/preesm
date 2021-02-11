@@ -197,6 +197,46 @@ public class ParetoGraphTask extends AbstractTaskImplementation {
     logDSEpoints.append(point.toCsvContentString() + "\n");
   }
 
+
+  protected static int ParetoFrontierUpdate(List<DSEpointIR> listPareto, final DSEpointIR dsep,
+      List<Comparator<DSEpointIR>> listComparator) {
+    int returnCode = 0;
+    boolean allMetricsGreaterOrEqual;
+    boolean allMetricsLowerOrEqual;
+    if (!listPareto.isEmpty()) {
+      for (DSEpointIR d : listPareto) {
+        allMetricsGreaterOrEqual = true;
+        allMetricsLowerOrEqual = true;
+        for (Comparator<DSEpointIR> c : listComparator) {
+          if (c.compare(dsep, d) < 0) {
+            allMetricsGreaterOrEqual = false;
+          } else if (c.compare(dsep, d) > 0) {
+            allMetricsLowerOrEqual = false;
+          }
+        }
+        if (allMetricsGreaterOrEqual && allMetricsLowerOrEqual) {
+          // dsep and d have all their metrics equals (d<=dsep && d=>dsep)
+          listPareto.add(dsep);
+          return -1;
+        }
+        if (!allMetricsLowerOrEqual && allMetricsGreaterOrEqual) {
+          // all the metrics of dsep are greater or equals than the metrics of d
+          return 1;
+        }
+        if (allMetricsLowerOrEqual && (allMetricsGreaterOrEqual == false)) {
+          // all the metrics of dsep are lower or equals than the metrics of d
+          listPareto.remove(d);
+          returnCode = -1;
+        }
+
+      }
+    } 
+    if (returnCode == -1 || returnCode == 0) {
+      listPareto.add(dsep);
+    }
+    return returnCode;
+  }
+
   protected static DSEpointIR runConfiguration(final Scenario scenario, final PiGraph graph, final Design architecture,
       final IScheduler scheduler) {
     final Level backupLevel = PreesmLogger.getLogger().getLevel();
