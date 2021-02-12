@@ -52,6 +52,7 @@ import org.eclipse.core.resources.IWorkspace;
 import org.eclipse.core.resources.IWorkspaceRoot;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.preesm.algorithm.mparameters.DSEpointIR.ParetoPointState;
 import org.preesm.algorithm.pisdf.autodelays.IterationDelayedEvaluator;
 import org.preesm.algorithm.synthesis.SynthesisResult;
 import org.preesm.algorithm.synthesis.evaluation.energy.SimpleEnergyCost;
@@ -143,16 +144,17 @@ public class ParetoGraphTask extends AbstractTaskImplementation {
     final List<DSEpointIR> paretoPoint = new ArrayList<DSEpointIR>();
     final ParameterCombinationExplorer pce = new ParameterCombinationExplorer(mparamsIR, scenario);
     int index = 0;
-    int code;
+    ParetoPointState code;
     while (pce.setNext()) {
       index++;
-      PreesmLogger.getLogger().fine("==> Testnig combintion: " + index);
+      PreesmLogger.getLogger().log(Level.FINE, "==> Testnig combintion: " + index);
 
       final PeriodicScheduler scheduler = new PeriodicScheduler();
       final DSEpointIR dsep = runConfiguration(scenario, graph, architecture, scheduler);
       logCsvContentMparams(logDSEpoints, mparamsIR, dsep); // résultat ensemble des points calculés
       code = ParetoFrontierUpdate(paretoPoint, dsep, listComparator); // on update la listes de pareto optimums
-      PreesmLogger.getLogger().log(Level.INFO, "code de retour du DSE point : " + code + " du point : " + dsep);
+      PreesmLogger.getLogger().log(Level.FINE,
+          "code de retour du DSE point : " + code.toString() + " du point : " + dsep);
       // algo test point DSE
 
     }
@@ -208,9 +210,9 @@ public class ParetoGraphTask extends AbstractTaskImplementation {
     }
   }
 
-  protected static int ParetoFrontierUpdate(List<DSEpointIR> listPareto, final DSEpointIR dsep,
+  protected static ParetoPointState ParetoFrontierUpdate(List<DSEpointIR> listPareto, final DSEpointIR dsep,
       List<Comparator<DSEpointIR>> listComparator) {
-    int returnCode = 0;
+    ParetoPointState returnCode = ParetoPointState.newTradeoff;
     boolean allMetricsGreaterOrEqual;
     boolean allMetricsLowerOrEqual;
     if (!listPareto.isEmpty()) {
@@ -227,21 +229,21 @@ public class ParetoGraphTask extends AbstractTaskImplementation {
         if (allMetricsGreaterOrEqual && allMetricsLowerOrEqual) {
           // dsep and d have all their metrics equals (d<=dsep && d=>dsep)
           listPareto.add(dsep);
-          return -1;
+          return ParetoPointState.overlapPoint;
         }
         if (!allMetricsLowerOrEqual && allMetricsGreaterOrEqual) {
           // all the metrics of dsep are greater or equals than the metrics of d
-          return 1;
+          return ParetoPointState.notRelevantTradeoff;
         }
         if (allMetricsLowerOrEqual && (allMetricsGreaterOrEqual == false)) {
           // all the metrics of dsep are lower or equals than the metrics of d
           listPareto.remove(d);
-          returnCode = -1;
+          returnCode = ParetoPointState.perfectTradeoff;
         }
 
       }
     } 
-    if (returnCode == -1 || returnCode == 0) {
+    if (returnCode == ParetoPointState.newTradeoff || returnCode == ParetoPointState.perfectTradeoff) {
       listPareto.add(dsep);
     }
     return returnCode;

@@ -123,6 +123,27 @@ public class DSEpointIR {
         askedPreCuts);
   }
 
+  enum ParetoPointState {
+    perfectTradeoff, newTradeoff, notRelevantTradeoff, overlapPoint;
+
+    @Override
+    public String toString() {
+      switch (this) {
+        case perfectTradeoff:
+          return "perfectTradeoff";
+        case newTradeoff:
+          return "newTradeoff";
+        case notRelevantTradeoff:
+          return "notRelevantTradeoff";
+        case overlapPoint:
+          return "overlapPoint";
+        default:
+          break;
+      }
+      return "";
+    }
+  }
+
   /**
    * Compare two DSE points with comparators in the same order as listed in the constructor arguments. If the first
    * comparator results in 0, the second comparator is called, and so on.
