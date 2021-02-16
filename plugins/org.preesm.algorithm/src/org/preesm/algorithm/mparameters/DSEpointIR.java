@@ -62,6 +62,7 @@ public class DSEpointIR {
   public final long energy;     // energy, power = energy / durationII
   public final int  latency;    // as factor of durationII
   public final long durationII; // inverse of throughput, makespan = latency * durationII
+  public final long memory;     // memory required to store the data
 
   public final Map<Pair<String, String>, Long> paramsValues; // values of parameters having objectives
 
@@ -73,7 +74,7 @@ public class DSEpointIR {
   // minimum point since threshold are positive values
   public static final DSEpointIR ZERO = new DSEpointIR(0, 0, 0, 0, 0, new HashMap<>(), true);
 
-  public static final String CSV_HEADER_STRING = "Schedulability;Power;Latency;DurationII;AskedCuts;AskedPrecuts";
+  public static final String CSV_HEADER_STRING = "Schedulability;Power;Latency;DurationII;Memory;AskedCuts;AskedPrecuts";
 
   /**
    * Default constructor, with maximum values everywhere.
@@ -105,26 +106,51 @@ public class DSEpointIR {
     this.energy = energy;
     this.latency = latency;
     this.durationII = durationII;
+    this.memory = Long.MAX_VALUE;
     this.askedCuts = askedCuts;
     this.askedPreCuts = askedPreCuts;
     this.paramsValues = paramsValues;
     this.isSchedulable = isSchedulable;
   }
 
+  /**
+   * New DSE point with heuristic delay informations.
+   * 
+   * @param energy
+   *          the energy
+   * @param latency
+   *          the latency (as factor of durationII)
+   * @param durationII
+   *          the durationII (inverse of throughput)
+   * @param memory
+   *          the memory footprint required to run the application
+   */
+  public DSEpointIR(final long energy, final int latency, final long durationII, final long memory,
+      final boolean isSchedulable) {
+    this.energy = energy;
+    this.latency = latency;
+    this.durationII = durationII;
+    this.memory = memory;
+    this.askedCuts = 0;
+    this.askedPreCuts = 0;
+    this.paramsValues = new HashMap<>();
+    this.isSchedulable = isSchedulable;
+  }
+
   @Override
   public String toString() {
     return "Schedulable:  " + isSchedulable + "  Energy:  " + energy + "  Latency:  " + latency + "x  DurationII:  "
-        + durationII + "  Asked cuts: " + askedCuts + " among " + askedPreCuts;
+        + durationII + "  Memory footprint: " + memory + "  Asked cuts: " + askedCuts + " among " + askedPreCuts;
   }
 
   public String toCsvContentString() {
     // force US because one day we may want to print floating POINT numbers (not coma as in French)
-    return String.format(Locale.US, "%b;%d;%d;%d;%d;%d", isSchedulable, energy, latency, durationII, askedCuts,
-        askedPreCuts);
+    return String.format(Locale.US, "%b;%d;%d;%d;%d;%d;%d", isSchedulable, energy, latency, durationII, memory,
+        askedCuts, askedPreCuts);
   }
 
   enum ParetoPointState {
-    perfectTradeoff, newTradeoff, notRelevantTradeoff, overlapPoint;
+    notRelevantTradeoff, newTradeoff, perfectTradeoff, overlapPoint;
 
     @Override
     public String toString() {
@@ -601,6 +627,21 @@ public class DSEpointIR {
         return Long.compare(arg0.durationII, arg1.durationII);
       }
       return 0;
+    }
+
+  }
+
+  /**
+   * Negative if first point has lower memory than second.
+   * 
+   * @author tbourgoi
+   */
+
+  public static class MemoryMinComparator implements Comparator<DSEpointIR> {
+
+    @Override
+    public int compare(DSEpointIR arg0, DSEpointIR arg1) {
+      return Long.compare(arg0.memory, arg1.memory);
     }
 
   }
