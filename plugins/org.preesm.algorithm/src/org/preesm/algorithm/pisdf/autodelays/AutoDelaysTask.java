@@ -92,6 +92,7 @@ import org.preesm.model.scenario.ScenarioConstants;
 import org.preesm.model.scenario.SimulationInfo;
 import org.preesm.model.slam.Component;
 import org.preesm.model.slam.Design;
+import org.preesm.model.slam.utils.SlamDesignPEtypeChecker;
 import org.preesm.workflow.elements.Workflow;
 import org.preesm.workflow.implement.AbstractTaskImplementation;
 import org.preesm.workflow.implement.AbstractWorkflowNodeImplementation;
@@ -163,8 +164,8 @@ public class AutoDelaysTask extends AbstractTaskImplementation {
       throw new PreesmRuntimeException("This task must be called with a flatten PiMM graph, abandon.");
     }
 
-    if (architecture.getProcessingElements().size() != 1) {
-      throw new PreesmRuntimeException("This task must be called with a homogeneous architecture, abandon.");
+    if (!SlamDesignPEtypeChecker.isHomogeneousCPU(architecture)) {
+      throw new PreesmRuntimeException("This task must be called with a homogeneous CPU architecture, abandon.");
     }
 
     PreesmLogger.getLogger().log(Level.INFO, "Found " + nbCore + " cores.");
@@ -247,8 +248,8 @@ public class AutoDelaysTask extends AbstractTaskImplementation {
       throw new PreesmRuntimeException("This task must be called with a flatten PiMM graph, abandon.");
     }
 
-    if (architecture.getProcessingElements().size() != 1) {
-      throw new PreesmRuntimeException("This task must be called with a homogeneous architecture, abandon.");
+    if (!SlamDesignPEtypeChecker.isHomogeneousCPU(architecture)) {
+      throw new PreesmRuntimeException("This task must be called with a homogeneous CPU architecture, abandon.");
     }
 
     final long time = System.nanoTime();

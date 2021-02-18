@@ -81,6 +81,7 @@ import org.preesm.model.pisdf.statictools.PiSDFFlattener;
 import org.preesm.model.pisdf.statictools.PiSDFToSingleRate;
 import org.preesm.model.scenario.Scenario;
 import org.preesm.model.slam.Design;
+import org.preesm.model.slam.utils.SlamDesignPEtypeChecker;
 import org.preesm.workflow.elements.Workflow;
 import org.preesm.workflow.implement.AbstractTaskImplementation;
 import org.preesm.workflow.implement.AbstractWorkflowNodeImplementation;
@@ -159,6 +160,11 @@ public class SetMalleableParametersTask extends AbstractTaskImplementation {
     final Scenario scenario = (Scenario) inputs.get(AbstractWorkflowNodeImplementation.KEY_SCENARIO);
     final PiGraph graph = (PiGraph) inputs.get(AbstractWorkflowNodeImplementation.KEY_PI_GRAPH);
     final Design architecture = (Design) inputs.get(AbstractWorkflowNodeImplementation.KEY_ARCHITECTURE);
+
+    // because our scheduler does not support anything else
+    if (!SlamDesignPEtypeChecker.isHomogeneousCPU(architecture)) {
+      throw new PreesmRuntimeException("This task must be called with a homogeneous CPU architecture, abandon.");
+    }
 
     final Map<String, Object> output = new LinkedHashMap<>();
     output.put(AbstractWorkflowNodeImplementation.KEY_PI_GRAPH, graph);

@@ -79,6 +79,7 @@ import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.scenario.Scenario;
 import org.preesm.model.slam.ComponentInstance;
 import org.preesm.model.slam.Design;
+import org.preesm.model.slam.utils.SlamDesignPEtypeChecker;
 
 /**
  *
@@ -90,6 +91,10 @@ public class LegacyMemoryAllocation implements IMemoryAllocation {
   @Override
   public Allocation allocateMemory(final PiGraph piGraph, final Design slamDesign, final Scenario scenario,
       final Schedule schedule, final Mapping mapping) {
+
+    if (!SlamDesignPEtypeChecker.isOnlyCPU(slamDesign)) {
+      throw new PreesmRuntimeException("This task must be called with a CPU architecture, abandon.");
+    }
 
     // *************
     // INITIAL MEG BUILD

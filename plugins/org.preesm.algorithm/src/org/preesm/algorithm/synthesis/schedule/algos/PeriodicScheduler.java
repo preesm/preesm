@@ -69,6 +69,7 @@ import org.preesm.model.scenario.ScenarioConstants;
 import org.preesm.model.slam.Component;
 import org.preesm.model.slam.ComponentInstance;
 import org.preesm.model.slam.Design;
+import org.preesm.model.slam.utils.SlamDesignPEtypeChecker;
 
 /**
  * This scheduler handles the periods defined in the PiGraph and in its actors. However, it does not take into account
@@ -240,8 +241,8 @@ public class PeriodicScheduler extends AbstractScheduler {
   @Override
   protected SynthesisResult exec(PiGraph piGraph, Design slamDesign, Scenario scenario) {
 
-    if (slamDesign.getProcessingElements().size() != 1) {
-      throw new PreesmSchedulingException("This task must be called with a homogeneous architecture, abandon.");
+    if (!SlamDesignPEtypeChecker.isHomogeneousCPU(slamDesign)) {
+      throw new PreesmSchedulingException("This task must be called with a homogeneous CPU architecture, abandon.");
     }
 
     int nbCore = slamDesign.getProcessingElements().get(0).getInstances().size();

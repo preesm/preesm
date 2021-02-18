@@ -63,6 +63,7 @@ import org.preesm.model.pisdf.util.AbstractActorNameComparator;
 import org.preesm.model.scenario.Scenario;
 import org.preesm.model.slam.ComponentInstance;
 import org.preesm.model.slam.Design;
+import org.preesm.model.slam.utils.SlamDesignPEtypeChecker;
 
 /**
  * This class performs scheduling thanks to a choco constraint programming formulation.
@@ -80,8 +81,8 @@ public class ChocoScheduler extends PeriodicScheduler {
   @Override
   protected SynthesisResult exec(PiGraph piGraph, Design slamDesign, Scenario scenario) {
 
-    if (slamDesign.getProcessingElements().size() != 1) {
-      throw new PreesmSchedulingException("This task must be called with a homogeneous architecture, abandon.");
+    if (!SlamDesignPEtypeChecker.isHomogeneousCPU(slamDesign)) {
+      throw new PreesmSchedulingException("This task must be called with a homogeneous CPU architecture, abandon.");
     }
 
     int nbCores = slamDesign.getProcessingElements().get(0).getInstances().size();

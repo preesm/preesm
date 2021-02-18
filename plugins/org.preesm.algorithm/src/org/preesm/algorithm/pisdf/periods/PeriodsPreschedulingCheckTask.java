@@ -75,6 +75,7 @@ import org.preesm.model.scenario.Scenario;
 import org.preesm.model.scenario.ScenarioConstants;
 import org.preesm.model.slam.Component;
 import org.preesm.model.slam.Design;
+import org.preesm.model.slam.utils.SlamDesignPEtypeChecker;
 import org.preesm.workflow.elements.Workflow;
 import org.preesm.workflow.implement.AbstractTaskImplementation;
 import org.preesm.workflow.implement.AbstractWorkflowNodeImplementation;
@@ -127,8 +128,8 @@ public class PeriodsPreschedulingCheckTask extends AbstractTaskImplementation {
       throw new PreesmRuntimeException("This task must be called with a flatten PiMM graph, abandon.");
     }
 
-    if (architecture.getProcessingElements().size() != 1) {
-      throw new PreesmRuntimeException("This task must be called with a homogeneous architecture, abandon.");
+    if (!SlamDesignPEtypeChecker.isHomogeneousCPU(architecture)) {
+      throw new PreesmRuntimeException("This task must be called with a homogeneous CPU architecture, abandon.");
     }
 
     int nbCore = architecture.getProcessingElements().get(0).getInstances().size();

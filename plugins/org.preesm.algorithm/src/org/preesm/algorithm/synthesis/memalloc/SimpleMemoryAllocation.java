@@ -44,6 +44,7 @@ import org.preesm.algorithm.memalloc.model.MemoryAllocationFactory;
 import org.preesm.algorithm.memalloc.model.PhysicalBuffer;
 import org.preesm.algorithm.schedule.model.Schedule;
 import org.preesm.algorithm.synthesis.schedule.ScheduleOrderManager;
+import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.DataPort;
 import org.preesm.model.pisdf.EndActor;
@@ -53,6 +54,7 @@ import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.scenario.Scenario;
 import org.preesm.model.slam.ComponentInstance;
 import org.preesm.model.slam.Design;
+import org.preesm.model.slam.utils.SlamDesignPEtypeChecker;
 
 /**
  * Allocate 1 physical buffer on the main com node then 1 logical buffer per Fifo in the graph and 1 buffer per delay
@@ -66,6 +68,10 @@ public class SimpleMemoryAllocation implements IMemoryAllocation {
   @Override
   public Allocation allocateMemory(final PiGraph piGraph, final Design slamDesign, final Scenario scenario,
       final Schedule schedule, final Mapping mapping) {
+
+    if (!SlamDesignPEtypeChecker.isOnlyCPU(slamDesign)) {
+      throw new PreesmRuntimeException("This task must be called with a CPU architecture, abandon.");
+    }
 
     final ComponentInstance mainComNode = scenario.getSimulationInfo().getMainComNode();
 

@@ -51,6 +51,7 @@ import org.preesm.model.scenario.Scenario;
 import org.preesm.model.slam.ComponentInstance;
 import org.preesm.model.slam.Design;
 import org.preesm.model.slam.utils.LexicographicComponentInstanceComparator;
+import org.preesm.model.slam.utils.SlamDesignPEtypeChecker;
 
 /**
  * Scheduler that inserts actors in the topological order of their appearance in the graph.
@@ -64,6 +65,10 @@ public class SimpleScheduler extends AbstractScheduler {
 
   @Override
   protected SynthesisResult exec(final PiGraph piGraph /* SRDAG */, final Design slamDesign, final Scenario scenario) {
+
+    if (!SlamDesignPEtypeChecker.isOnlyCPU(slamDesign)) {
+      throw new PreesmSchedulingException("This task must be called with a CPU architecture, abandon.");
+    }
 
     final HierarchicalSchedule topParallelSchedule = ScheduleFactory.eINSTANCE.createParallelHiearchicalSchedule();
     final Mapping resultMapping = MappingFactory.eINSTANCE.createMapping();
