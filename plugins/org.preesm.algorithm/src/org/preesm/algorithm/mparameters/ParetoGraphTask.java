@@ -41,6 +41,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -52,17 +53,16 @@ import org.eclipse.core.resources.IWorkspaceRoot;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.preesm.algorithm.mapper.model.MapperDAG;
-import org.preesm.algorithm.memory.allocation.BasicAllocator;
-import org.preesm.algorithm.memory.allocation.MemoryAllocator;
-import org.preesm.algorithm.memory.exclusiongraph.MemoryExclusionGraph;
+import org.preesm.algorithm.memalloc.model.Allocation;
 import org.preesm.algorithm.mparameters.DSEpointIR.ParetoPointState;
 import org.preesm.algorithm.pisdf.autodelays.IterationDelayedEvaluator;
-import org.preesm.algorithm.pisdf.pimm2srdag.StaticPiMM2MapperDAGVisitor;
 import org.preesm.algorithm.synthesis.SynthesisResult;
 import org.preesm.algorithm.synthesis.evaluation.energy.SimpleEnergyCost;
 import org.preesm.algorithm.synthesis.evaluation.energy.SimpleEnergyEvaluation;
 import org.preesm.algorithm.synthesis.evaluation.latency.LatencyCost;
 import org.preesm.algorithm.synthesis.evaluation.latency.SimpleLatencyEvaluation;
+import org.preesm.algorithm.synthesis.memalloc.IMemoryAllocation;
+import org.preesm.algorithm.synthesis.memalloc.LegacyMemoryAllocation;
 import org.preesm.algorithm.synthesis.schedule.ScheduleOrderManager;
 import org.preesm.algorithm.synthesis.schedule.algos.IScheduler;
 import org.preesm.algorithm.synthesis.schedule.algos.PeriodicScheduler;
@@ -145,9 +145,6 @@ public class ParetoGraphTask extends AbstractTaskImplementation {
 
     List<DSEpointIR> listParetoOptimum = null;
 
-    // final Map<DSEpointIR, List<Integer>> listOptimumConfigs = new HashMap<>(); // maybe useless because the config is
-                                                                               // already in DSEpointIR
-
     StringBuilder logDSEpoints = new StringBuilder();
     StringBuilder logParetoOptimum = new StringBuilder();
 
@@ -177,12 +174,13 @@ public class ParetoGraphTask extends AbstractTaskImplementation {
       PreesmLogger.getLogger().log(Level.FINE, "==> Testing combination: " + index);
 
       final PeriodicScheduler scheduler = new PeriodicScheduler();
-      final DSEpointIR dsep = runConfiguration(scenario, graph, architecture, scheduler, dag);
-      logCsvContentMparams(logDSEpoints, mparamsIR, dsep); // résultat ensemble des points calculés
-      code = ParetoFrontierUpdate(paretoPoint, dsep, listComparator); // on update la listes de pareto optimums
+      final DSEpointIR dsep = runConfiguration(scenario, graph, architecture, scheduler);
+      SetMalleableParametersTask.logCsvContentMparams(logDSEpoints, mparamsIR, dsep); // string builder with all the
+                                                                                      // configuration tested
+      code = ParetoFrontierUpdate(paretoPoint, dsep, listComparator); // update of the pareto set
       PreesmLogger.getLogger().log(Level.FINE,
-          "code de retour du DSE point : " + code.toString() + " du point : " + dsep);
-      // algo test point DSE
+          "Return code of the new configuration after the update of the pareto set: " + code.toString() + " of point : "
+              + dsep);
 
     }
 
@@ -223,17 +221,9 @@ public class ParetoGraphTask extends AbstractTaskImplementation {
   }
 
   protected static void logCsvContentMparams(final StringBuilder logDSEpoints,
-      final List<MalleableParameterIR> mparamsIR, final DSEpointIR point) {
-    for (MalleableParameterIR mpir : mparamsIR) {
-      logDSEpoints.append(mpir.mp.getExpression().evaluate() + ";");
-    }
-    logDSEpoints.append(point.toCsvContentString() + "\n");
-  }
-
-  protected static void logCsvContentMparams(final StringBuilder logDSEpoints,
       final List<MalleableParameterIR> mparamsIR, final List<DSEpointIR> listPoint) {
     for (DSEpointIR p : listPoint) {
-      logCsvContentMparams(logDSEpoints, mparamsIR, p);
+      SetMalleableParametersTask.logCsvContentMparams(logDSEpoints, mparamsIR, p);
     }
   }
 
@@ -242,23 +232,29 @@ public class ParetoGraphTask extends AbstractTaskImplementation {
     ParetoPointState returnCode = ParetoPointState.newTradeoff;
     boolean allMetricsGreaterOrEqual;
     boolean allMetricsLowerOrEqual;
-    if (!listPareto.isEmpty()) {
-      for (DSEpointIR d : listPareto) {
+
+    Iterator<DSEpointIR> itPareto = listPareto.iterator();
+    DSEpointIR d;
+
+    if (!listPareto.isEmpty()) {// changé avc un iterator
+      while (itPareto.hasNext() && returnCode != ParetoPointState.overlapPoint) {
+        d = itPareto.next();
+
         allMetricsGreaterOrEqual = true;
         allMetricsLowerOrEqual = true;
+
         for (Comparator<DSEpointIR> c : listComparator) {
           if ((allMetricsGreaterOrEqual == true) && (c.compare(dsep, d) < 0)) {
             // if allMetricsGreaterOrEqual already = false don't need to execute the true statement
-            // if returnCode == perfectTradeOff it mean that dsep will
             allMetricsGreaterOrEqual = false;
           } else if ((allMetricsLowerOrEqual == true) && (c.compare(dsep, d) > 0)) {
             allMetricsLowerOrEqual = false;
           }
         }
+
         if (allMetricsGreaterOrEqual && allMetricsLowerOrEqual) {
           // dsep and d have all their metrics equals (d<=dsep && d=>dsep)
-          listPareto.add(dsep);
-          return ParetoPointState.overlapPoint;
+          returnCode = ParetoPointState.overlapPoint;
         }
         if (!allMetricsLowerOrEqual && allMetricsGreaterOrEqual) {
           // all the metrics of dsep are greater or equals than the metrics of d
@@ -266,20 +262,21 @@ public class ParetoGraphTask extends AbstractTaskImplementation {
         }
         if (allMetricsLowerOrEqual && (allMetricsGreaterOrEqual == false)) {
           // all the metrics of dsep are lower or equals than the metrics of d
-          listPareto.remove(d);
+          itPareto.remove();
           returnCode = ParetoPointState.perfectTradeoff;
         }
 
       }
-    } 
-    if (returnCode == ParetoPointState.newTradeoff || returnCode == ParetoPointState.perfectTradeoff) {
+    }
+    if (returnCode == ParetoPointState.newTradeoff || returnCode == ParetoPointState.perfectTradeoff
+        || returnCode == ParetoPointState.overlapPoint) {
       listPareto.add(dsep);
     }
     return returnCode;
   }
 
   protected static DSEpointIR runConfiguration(final Scenario scenario, final PiGraph graph, final Design architecture,
-      final IScheduler scheduler, final MapperDAG mDAG) {
+      final IScheduler scheduler) {
     final Level backupLevel = PreesmLogger.getLogger().getLevel();
     PreesmLogger.getLogger().setLevel(Level.SEVERE);
 
@@ -300,6 +297,7 @@ public class ParetoGraphTask extends AbstractTaskImplementation {
 
     // use implementation evaluation of PeriodicScheduler instead?
     final ScheduleOrderManager scheduleOM = new ScheduleOrderManager(dag, scheduleAndMap.schedule);
+
     final LatencyCost evaluateLatency = new SimpleLatencyEvaluation().evaluate(dag, architecture, scenario,
         scheduleAndMap.mapping, scheduleOM);
     final long durationII = evaluateLatency.getValue();
@@ -308,21 +306,15 @@ public class ParetoGraphTask extends AbstractTaskImplementation {
     final long energy = evaluateEnergy.getValue();
 
     // computation of the memory footprint
-    // final SimpleMemoryAllocation simpleAlloc = new SimpleMemoryAllocation();
-    // final Allocation alloc = simpleAlloc.allocateMemory(graph, architecture, scenario, scheduleAndMap.schedule,
-    // scheduleAndMap.mapping);
-
-    final MemoryExclusionGraph memEx = new MemoryExclusionGraph(scenario);
-    MapperDAG d = StaticPiMM2MapperDAGVisitor.convert(graph, architecture, scenario);
-    memEx.buildGraph(d);
-    final MemoryAllocator alloc = new BasicAllocator(memEx);
-    alloc.setAlignment(0);
-    alloc.allocate();
-
-    final Long memory = alloc.getMemorySize();
+    final IMemoryAllocation simpleAlloc = new LegacyMemoryAllocation();
+    final Allocation alloc = simpleAlloc.allocateMemory(dag, architecture, scenario, scheduleAndMap.schedule,
+        scheduleAndMap.mapping);
+    final Long memory = alloc.getPhysicalBuffers().get(alloc.getPhysicalBuffers().size() - 1).getSize();
 
     // put back all messages
     PreesmLogger.getLogger().setLevel(backupLevel);
+    // PreesmLogger.getLogger().log(Level.FINE, "Size of the list of buffer : " + alloc.getPhysicalBuffers().size());
+    // PreesmLogger.getLogger().log(Level.FINE, "buffer list : " + alloc.getPhysicalBuffers().toString());
     return new DSEpointIR(energy, iterationDelay, durationII, memory, true);
   }
 
