@@ -48,6 +48,7 @@ import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.EndActor;
 import org.preesm.model.pisdf.InitActor;
 import org.preesm.model.pisdf.PiGraph;
+import org.preesm.model.pisdf.check.PiGraphSRDAGChecker;
 import org.preesm.model.scenario.Scenario;
 import org.preesm.model.slam.ComponentInstance;
 import org.preesm.model.slam.Design;
@@ -84,6 +85,12 @@ public abstract class AbstractScheduler implements IScheduler {
     final PiGraph originalPiGraph = PreesmCopyTracker.getOriginalSource(piGraph);
     if (originalPiGraph != scenario.getAlgorithm()) {
       throw new PreesmSynthesisException("Input PiSDF graph is not derived from the scenario algorithm.");
+    }
+    // check that graph is an SRDAG
+    if (!PiGraphSRDAGChecker.isPiGraphSRADG(piGraph)) {
+      throw new PreesmSynthesisException(
+          "Synthesis can be applied only on SRADG graphs (no hierarchy, single-rate, no cycles, no delays). Please "
+          + "consider using the output of the pisdf-srdag workflow task as an output of the synthesis workflow task.");
     }
 
     /*
