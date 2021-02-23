@@ -142,6 +142,7 @@ public class PiSDFFlattener extends PiMMSwitch<Boolean> {
     // 4.5 Check periods with BRV
     PiMMHelper.checkPeriodicity(graphCopy, brv);
     // 5. Now, flatten the graph
+
     PiSDFFlattener staticPiMM2FlatPiMMVisitor = new PiSDFFlattener(brv);
     staticPiMM2FlatPiMMVisitor.doSwitch(graphCopy);
     PiGraph result = staticPiMM2FlatPiMMVisitor.result;
@@ -231,9 +232,6 @@ public class PiSDFFlattener extends PiMMSwitch<Boolean> {
       if (a instanceof PiGraph) {
         throw new PreesmRuntimeException("Flatten graph should have no children graph");
       }
-      if (a instanceof InterfaceActor) {
-        throw new PreesmRuntimeException("Flatten graph should have no interface");
-      }
     }
   }
 
@@ -295,6 +293,13 @@ public class PiSDFFlattener extends PiMMSwitch<Boolean> {
 
   @Override
   public Boolean caseDataInputInterface(final DataInputInterface actor) {
+    // if we are at the top level then we keep the data interfaces
+    if (PiMMHelper.isVertexAtTopLevel(actor)) {
+      // parameters have been resolved we do not need dependencies
+      actor.getConfigInputPorts().clear();
+      return caseNonExecutableActor(actor);
+    }
+    // otherwise, we replace the interface
     final BroadcastActor broadcastIn = PiMMUserFactory.instance.createBroadcastActor();
     broadcastIn.setName(graphPrefix + actor.getName());
     final DataPort dataPort = actor.getDataPort();
@@ -327,6 +332,14 @@ public class PiSDFFlattener extends PiMMSwitch<Boolean> {
 
   @Override
   public Boolean caseDataOutputInterface(final DataOutputInterface actor) {
+    final AbstractVertex parent = actor.getContainingPiGraph();
+    // if we are at the top level then we keep the data interfaces
+    if (PiMMHelper.isVertexAtTopLevel(actor)) {
+      // parameters have been resolved we do not need dependencies
+      actor.getConfigInputPorts().clear();
+      return caseNonExecutableActor(actor);
+    }
+    // otherwise, we replace the interface
     final RoundBufferActor roundbufferOut = PiMMUserFactory.instance.createRoundBufferActor();
     roundbufferOut.setName(graphPrefix + actor.getName());
     final DataPort dataPort = actor.getDataPort();
@@ -382,7 +395,7 @@ public class PiSDFFlattener extends PiMMSwitch<Boolean> {
     // Set the source / target ports of the new FIFO
     final String sourceName;
     // Special case for interfaces
-    if (source instanceof InterfaceActor) {
+    if ((source instanceof InterfaceActor) && !PiMMHelper.isVertexAtTopLevel(source)) {
       sourceName = "if_" + fifo.getSourcePort().getName();
     } else {
       sourceName = fifo.getSourcePort().getName();
@@ -391,7 +404,7 @@ public class PiSDFFlattener extends PiMMSwitch<Boolean> {
     final DataOutputPort sourcePort = findOutputPort(newSource, sourceName);
     final String targetName;
     // Special case for interface
-    if (target instanceof InterfaceActor) {
+    if ((target instanceof InterfaceActor) && !PiMMHelper.isVertexAtTopLevel(target)) {
       targetName = "if_" + fifo.getTargetPort().getName();
     } else {
       targetName = fifo.getTargetPort().getName();

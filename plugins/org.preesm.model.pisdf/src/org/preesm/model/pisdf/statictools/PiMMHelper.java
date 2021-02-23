@@ -714,4 +714,16 @@ public class PiMMHelper {
     graph.removeFifo(fifo);
   }
 
+  /**
+   * Check if a vertex is contained in a top-level graph.
+   * 
+   * @param vertex
+   *          The vertex to check.
+   * @return true if the containing graph is not contained by another graph, false otherwise.
+   */
+  public static boolean isVertexAtTopLevel(final AbstractVertex vertex) {
+    final AbstractVertex parent = vertex.getContainingPiGraph();
+    return (parent != null && parent.getContainingPiGraph() == null);
+  }
+
 }

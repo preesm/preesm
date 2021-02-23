@@ -636,7 +636,7 @@ class Fifo extends Edge {
 	}
 }
 
-interface InterfaceActor extends AbstractActor {
+interface InterfaceActor extends NonExecutableActor {
 	refers Port graphPort
 	op DataPort getDataPort() {
 		// Data in/out interfaces have only one data port
