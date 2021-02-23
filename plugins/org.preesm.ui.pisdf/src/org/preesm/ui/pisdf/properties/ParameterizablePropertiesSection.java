@@ -52,6 +52,7 @@ import org.eclipse.ui.views.properties.tabbed.TabbedPropertySheetPage;
 import org.eclipse.ui.views.properties.tabbed.TabbedPropertySheetWidgetFactory;
 import org.preesm.commons.math.ExpressionEvaluationException;
 import org.preesm.model.pisdf.ConfigInputInterface;
+import org.preesm.model.pisdf.DataPort;
 import org.preesm.model.pisdf.Delay;
 import org.preesm.model.pisdf.Expression;
 import org.preesm.model.pisdf.InterfaceActor;
@@ -185,10 +186,9 @@ public class ParameterizablePropertiesSection extends DataPortPropertiesUpdater 
         return;
       }
       if (bo instanceof InterfaceActor) {
-        bo = ((InterfaceActor) bo).getDataPort();
-      }
-
-      if (bo instanceof MalleableParameter) {
+        DataPort dp = ((InterfaceActor) bo).getDataPort();
+        updateDataPortProperties(dp, txtExpression);
+      } else if (bo instanceof MalleableParameter) {
         MalleableParameter mp = (MalleableParameter) bo;
         if (mp.getUserExpression().compareTo(this.txtExpression.getText()) != 0) {
           setNewMalleableParameterUserExpression(mp, this.txtExpression.getText());
@@ -278,7 +278,6 @@ public class ParameterizablePropertiesSection extends DataPortPropertiesUpdater 
           try {
             // try out evaluating the expression
             final long evaluate = elementValueExpression.evaluate();
-
             // if evaluation went well, just write the result
             if (!(businessObject instanceof ConfigInputInterface)) {
               this.lblValueObj.setText(Long.toString(evaluate));
