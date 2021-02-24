@@ -54,6 +54,7 @@ import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.preesm.algorithm.mapper.model.MapperDAG;
 import org.preesm.algorithm.memalloc.model.Allocation;
+import org.preesm.algorithm.mparameters.DSEpointIR.DSEpointParetoComparator;
 import org.preesm.algorithm.mparameters.DSEpointIR.ParetoPointState;
 import org.preesm.algorithm.pisdf.autodelays.IterationDelayedEvaluator;
 import org.preesm.algorithm.synthesis.SynthesisResult;
@@ -119,6 +120,8 @@ public class ParetoGraphTask extends AbstractTaskImplementation {
     listComparators.add(new DSEpointIR.PowerMinComparator());
     listComparators.add(new DSEpointIR.MemoryMinComparator());
 
+    final DSEpointParetoComparator paretoComparator = new DSEpointParetoComparator(listComparators);
+
     final Map<String, Object> output = new LinkedHashMap<>();
 
     List<MalleableParameter> mparams = graph.getAllParameters().stream().filter(x -> x instanceof MalleableParameter)
@@ -150,7 +153,7 @@ public class ParetoGraphTask extends AbstractTaskImplementation {
 
     PreesmLogger.getLogger().log(Level.FINE, "Start of the Pareto graph computation");
 
-    listParetoOptimum = paretoDSE(scenario, graph, architecture, dag, mparamsIR, listComparators, logDSEpoints);
+    listParetoOptimum = paretoDSE(scenario, graph, architecture, dag, mparamsIR, paretoComparator, logDSEpoints);
 
     logCsvContentMparams(logParetoOptimum, mparamsIR, listParetoOptimum);
 
@@ -162,8 +165,8 @@ public class ParetoGraphTask extends AbstractTaskImplementation {
   }
 
   protected static List<DSEpointIR> paretoDSE(final Scenario scenario, final PiGraph graph, final Design architecture,
-      final MapperDAG dag, final List<MalleableParameterIR> mparamsIR,
-      final List<Comparator<DSEpointIR>> listComparator, final StringBuilder logDSEpoints) {
+      final MapperDAG dag, final List<MalleableParameterIR> mparamsIR, final DSEpointParetoComparator paretoComparator,
+      final StringBuilder logDSEpoints) {
 
     final List<DSEpointIR> paretoPoint = new ArrayList<DSEpointIR>();
     final ParameterCombinationExplorer pce = new ParameterCombinationExplorer(mparamsIR, scenario);
@@ -177,7 +180,7 @@ public class ParetoGraphTask extends AbstractTaskImplementation {
       final DSEpointIR dsep = runConfiguration(scenario, graph, architecture, scheduler);
       SetMalleableParametersTask.logCsvContentMparams(logDSEpoints, mparamsIR, dsep); // string builder with all the
                                                                                       // configuration tested
-      code = ParetoFrontierUpdate(paretoPoint, dsep, listComparator); // update of the pareto set
+      code = ParetoFrontierUpdate(paretoPoint, dsep, paretoComparator); // update of the pareto set
       PreesmLogger.getLogger().log(Level.FINE,
           "Return code of the new configuration after the update of the pareto set: " + code.toString() + " of point : "
               + dsep);
@@ -228,48 +231,31 @@ public class ParetoGraphTask extends AbstractTaskImplementation {
   }
 
   protected static ParetoPointState ParetoFrontierUpdate(List<DSEpointIR> listPareto, final DSEpointIR dsep,
-      List<Comparator<DSEpointIR>> listComparator) {
+      DSEpointParetoComparator paretoComparator) {
     ParetoPointState returnCode = ParetoPointState.newTradeoff;
-    boolean allMetricsGreaterOrEqual;
-    boolean allMetricsLowerOrEqual;
 
     Iterator<DSEpointIR> itPareto = listPareto.iterator();
     DSEpointIR d;
 
     if (!listPareto.isEmpty()) {// changé avc un iterator
-      while (itPareto.hasNext() && returnCode != ParetoPointState.overlapPoint) {
+      while (itPareto.hasNext()) {
         d = itPareto.next();
 
-        allMetricsGreaterOrEqual = true;
-        allMetricsLowerOrEqual = true;
-
-        for (Comparator<DSEpointIR> c : listComparator) {
-          if ((allMetricsGreaterOrEqual == true) && (c.compare(dsep, d) < 0)) {
-            // if allMetricsGreaterOrEqual already = false don't need to execute the true statement
-            allMetricsGreaterOrEqual = false;
-          } else if ((allMetricsLowerOrEqual == true) && (c.compare(dsep, d) > 0)) {
-            allMetricsLowerOrEqual = false;
-          }
-        }
-
-        if (allMetricsGreaterOrEqual && allMetricsLowerOrEqual) {
-          // dsep and d have all their metrics equals (d<=dsep && d=>dsep)
-          returnCode = ParetoPointState.overlapPoint;
-        }
-        if (!allMetricsLowerOrEqual && allMetricsGreaterOrEqual) {
-          // all the metrics of dsep are greater or equals than the metrics of d
-          return ParetoPointState.notRelevantTradeoff;
-        }
-        if (allMetricsLowerOrEqual && (allMetricsGreaterOrEqual == false)) {
-          // all the metrics of dsep are lower or equals than the metrics of d
+        switch (paretoComparator.compare(dsep, d)) {
+          case -1:
           itPareto.remove();
           returnCode = ParetoPointState.perfectTradeoff;
+            break;
+          case 1:
+            return ParetoPointState.notRelevantTradeoff;
+
+          default:
+            break;
         }
 
       }
     }
-    if (returnCode == ParetoPointState.newTradeoff || returnCode == ParetoPointState.perfectTradeoff
-        || returnCode == ParetoPointState.overlapPoint) {
+    if (returnCode == ParetoPointState.newTradeoff || returnCode == ParetoPointState.perfectTradeoff) {
       listPareto.add(dsep);
     }
     return returnCode;
