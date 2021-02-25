@@ -91,19 +91,25 @@ import org.preesm.workflow.implement.AbstractWorkflowNodeImplementation;
         @Port(name = "architecture", type = Design.class) },
 
     parameters = {
-        @org.preesm.commons.doc.annotations.Parameter(name = ParetoGraphTask.DEFAULT_LOG_NAME,
-            description = "Export all explored points with associated metrics in a csv file.",
-            values = {
-                @Value(name = ParetoGraphTask.DEFAULT_LOG_VALUE, effect = "Path relative to the project root.") }),
+        @org.preesm.commons.doc.annotations.Parameter(name = ParetoGraphTask.DEFAULT_COMPARISONS_NAME,
+            description = "Order of comparisons of the metrics (T for throughput or P for power or E for energy "
+                + "or L for latency or M for makespan, separated by >). Latency is indexed from 1 to "
+                + "the maximum number of pipeline stages allowed.",
+            values = { @Value(name = ParetoGraphTask.DEFAULT_COMPARAISON_VALUE,
+                effect = "Metrics are compare from left to right.") }),
         @org.preesm.commons.doc.annotations.Parameter(name = ParetoGraphTask.DEFAULT_LOG_NAME,
             description = "Export all explored points with associated metrics in a csv file.", values = {
                 @Value(name = ParetoGraphTask.DEFAULT_LOG_VALUE, effect = "Path relative to the project root.") }) })
 
 public class ParetoGraphTask extends AbstractTaskImplementation {
 
-  public static final String DEFAULT_LOG_VALUE = "/Code/generated/";
+  public static final String DEFAULT_COMPARAISON_VALUE = "T;L;P;M";
+  public static final String DEFAULT_LOG_VALUE         = "/Code/generated/";
 
-  public static final String DEFAULT_LOG_NAME = "1. Log path";
+  public static final String DEFAULT_COMPARISONS_NAME = "1. Comparaisons";
+  public static final String DEFAULT_LOG_NAME         = "2. Log path";
+
+  public static final String COMPARISONS_REGEX = "[EPLTM](;[EPLTM])*";
 
   @Override
   public Map<String, Object> execute(Map<String, Object> inputs, Map<String, String> parameters,
@@ -153,7 +159,8 @@ public class ParetoGraphTask extends AbstractTaskImplementation {
 
     PreesmLogger.getLogger().log(Level.FINE, "Start of the Pareto graph computation");
 
-    listParetoOptimum = paretoDSE(scenario, graph, architecture, dag, mparamsIR, paretoComparator, logDSEpoints);
+    listParetoOptimum = paretoDSE(scenario, graph, architecture, dag, mparamsIR, paretoComparator, logDSEpoints,
+        workflow);
 
     logCsvContentMparams(logParetoOptimum, mparamsIR, listParetoOptimum);
 
@@ -166,14 +173,16 @@ public class ParetoGraphTask extends AbstractTaskImplementation {
 
   protected static List<DSEpointIR> paretoDSE(final Scenario scenario, final PiGraph graph, final Design architecture,
       final MapperDAG dag, final List<MalleableParameterIR> mparamsIR, final DSEpointParetoComparator paretoComparator,
-      final StringBuilder logDSEpoints) {
+      final StringBuilder logDSEpoints, Workflow workflow) {
 
     final List<DSEpointIR> paretoPoint = new ArrayList<DSEpointIR>();
     final ParameterCombinationExplorer pce = new ParameterCombinationExplorer(mparamsIR, scenario);
     int index = 0;
+
     ParetoPointState code;
     while (pce.setNext()) {
       index++;
+
       PreesmLogger.getLogger().log(Level.FINE, "==> Testing combination: " + index);
 
       final PeriodicScheduler scheduler = new PeriodicScheduler();
@@ -181,6 +190,18 @@ public class ParetoGraphTask extends AbstractTaskImplementation {
       SetMalleableParametersTask.logCsvContentMparams(logDSEpoints, mparamsIR, dsep); // string builder with all the
                                                                                       // configuration tested
       code = ParetoFrontierUpdate(paretoPoint, dsep, paretoComparator); // update of the pareto set
+      if ((index % 500 == 0) && index > 0) {
+        StringBuilder logParetoOptimum = new StringBuilder();
+
+        logCsvContentMparams(logParetoOptimum, mparamsIR, paretoPoint);
+
+        logCsvFile(logParetoOptimum, mparamsIR, workflow, scenario, DEFAULT_LOG_VALUE,
+            "_pareto_set_log_IR_" + String.valueOf(index) + ".csv");
+        logCsvFile(logDSEpoints, mparamsIR, workflow, scenario, DEFAULT_LOG_VALUE,
+            "_all_points_log_IR" + String.valueOf(index) + ".csv");
+
+        PreesmLogger.getLogger().log(Level.INFO, "Intermediate save with index " + index);
+      }
       PreesmLogger.getLogger().log(Level.FINE,
           "Return code of the new configuration after the update of the pareto set: " + code.toString() + " of point : "
               + dsep);
@@ -191,7 +212,7 @@ public class ParetoGraphTask extends AbstractTaskImplementation {
 
   }
 
-  protected void logCsvFile(final StringBuilder logDSEpoints, final List<MalleableParameterIR> mparamsIR,
+  protected static void logCsvFile(final StringBuilder logDSEpoints, final List<MalleableParameterIR> mparamsIR,
       final Workflow workflow, final Scenario scenario, final String logPath, final String filename) {
     final StringBuilder header = new StringBuilder();
     for (MalleableParameterIR mpir : mparamsIR) {
@@ -304,9 +325,53 @@ public class ParetoGraphTask extends AbstractTaskImplementation {
     return new DSEpointIR(energy, iterationDelay, durationII, memory, true);
   }
 
+  public static DSEpointParetoComparator getParetoComparator(final Map<String, String> parameters,
+      final PiGraph graph) {
+
+    final String comparaisons = parameters.get(DEFAULT_COMPARISONS_NAME);
+
+    if (!comparaisons.matches(COMPARISONS_REGEX)) {
+      throw new PreesmRuntimeException("Comparisons string is not correct. Accepted regex: " + COMPARISONS_REGEX);
+    }
+
+    final String[] tabComparaison = comparaisons.split(";");
+    final char[] charComparaison = new char[tabComparaison.length];
+    for (int i = 0; i < tabComparaison.length; i++) {
+      charComparaison[i] = tabComparaison[i].charAt(0);
+    }
+
+    final List<Comparator<DSEpointIR>> listComparators = new ArrayList<>();
+
+    for (int i = 0; i < charComparaison.length; i++) {
+      switch (charComparaison[i]) {
+        case 'E':
+          listComparators.add(new DSEpointIR.EnergyMinComparator());
+          break;
+        case 'P':
+          listComparators.add(new DSEpointIR.PowerMinComparator());
+          break;
+        case 'L':
+          listComparators.add(new DSEpointIR.LatencyMinComparator());
+          break;
+        case 'M':
+          listComparators.add(new DSEpointIR.MemoryMinComparator());
+          break;
+        case 'T':
+          listComparators.add(new DSEpointIR.ThroughputMaxComparator());
+          break;
+        default:
+          break;
+      }
+    }
+
+    DSEpointParetoComparator paretoComparator = new DSEpointParetoComparator(listComparators);
+    return paretoComparator;
+  }
+
   @Override
   public Map<String, String> getDefaultParameters() {
     final Map<String, String> parameters = new LinkedHashMap<>();
+    parameters.put(DEFAULT_COMPARISONS_NAME, DEFAULT_COMPARAISON_VALUE);
     parameters.put(DEFAULT_LOG_NAME, DEFAULT_LOG_VALUE);
     return parameters;
   }
