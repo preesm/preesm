@@ -74,7 +74,8 @@ public class DSEpointIR {
   // minimum point since threshold are positive values
   public static final DSEpointIR ZERO = new DSEpointIR(0, 0, 0, 0, 0, new HashMap<>(), true);
 
-  public static final String CSV_HEADER_STRING = "Schedulability;Power;Latency;DurationII;Memory;AskedCuts;AskedPrecuts";
+  public static final String CSV_HEADER_STRING = "Schedulability;Power;Latency;DurationII;Memory;"
+      + "AskedCuts;AskedPrecuts";
 
   /**
    * Default constructor, with maximum values everywhere.

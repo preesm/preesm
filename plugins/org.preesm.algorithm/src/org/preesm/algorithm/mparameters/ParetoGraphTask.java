@@ -187,10 +187,12 @@ public class ParetoGraphTask extends AbstractTaskImplementation {
 
       final PeriodicScheduler scheduler = new PeriodicScheduler();
       final DSEpointIR dsep = runConfiguration(scenario, graph, architecture, scheduler);
-      SetMalleableParametersTask.logCsvContentMparams(logDSEpoints, mparamsIR, dsep); // string builder with all the
-                                                                                      // configuration tested
-      code = ParetoFrontierUpdate(paretoPoint, dsep, paretoComparator); // update of the pareto set
-      if ((index % 500 == 0) && index > 0) {
+      // string builder with all the configuration tested
+      SetMalleableParametersTask.logCsvContentMparams(logDSEpoints, mparamsIR, dsep);
+
+      // update of the pareto set
+      code = ParetoFrontierUpdate(paretoPoint, dsep, paretoComparator);
+      if ((index % 100 == 0) && index > 0) {
         StringBuilder logParetoOptimum = new StringBuilder();
 
         logCsvContentMparams(logParetoOptimum, mparamsIR, paretoPoint);
@@ -258,7 +260,7 @@ public class ParetoGraphTask extends AbstractTaskImplementation {
     Iterator<DSEpointIR> itPareto = listPareto.iterator();
     DSEpointIR d;
 
-    if (!listPareto.isEmpty()) {// changé avc un iterator
+    if (!listPareto.isEmpty()) {
       while (itPareto.hasNext()) {
         d = itPareto.next();
 
