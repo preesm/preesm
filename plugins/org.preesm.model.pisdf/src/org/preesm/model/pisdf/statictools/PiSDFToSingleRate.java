@@ -175,10 +175,12 @@ public class PiSDFToSingleRate extends PiMMSwitch<Boolean> {
     // 3. Compute BRV following the chosen method
     PreesmLogger.getLogger().log(Level.FINE, " >>   - compute brv");
     Map<AbstractVertex, Long> brv = PiBRV.compute(graphCopy, method);
-    // 4. Print the RV values
+    // 3.1 Print the RV values
     PreesmLogger.getLogger().log(Level.FINE, " >>   - print brv");
     PiBRV.printRV(brv);
-    // 4.5 Check periods with BRV
+    // 3.2 adds default RV of 1 for InterfaceActor of top level
+    graphCopy.getAllActors().stream().filter(x -> x instanceof InterfaceActor).forEach(x -> brv.put(x, 1L));
+    // 4 Check periods with BRV
     PreesmLogger.getLogger().log(Level.FINE, " >>   - check periodicity");
     PiMMHelper.checkPeriodicity(graphCopy, brv);
 
@@ -192,11 +194,11 @@ public class PiSDFToSingleRate extends PiMMSwitch<Boolean> {
     PiMMHelper.removeUnusedPorts(acyclicSRPiMM);
 
     // 6- do some optimization on the graph
-    PreesmLogger.getLogger().log(Level.FINE, " >>   - fork join optim");
+    PreesmLogger.getLogger().log(Level.FINE, " >> - fork join optim");
     final ForkJoinOptimization forkJoinOptimization = new ForkJoinOptimization();
     forkJoinOptimization.optimize(acyclicSRPiMM);
 
-    PreesmLogger.getLogger().log(Level.FINE, " >>   - broadcast/rbuffers optim");
+    PreesmLogger.getLogger().log(Level.FINE, " >> - broadcast/rbuffers optim");
     final BroadcastRoundBufferOptimization brRbOptimization = new BroadcastRoundBufferOptimization();
     brRbOptimization.optimize(acyclicSRPiMM);
 
@@ -224,9 +226,6 @@ public class PiSDFToSingleRate extends PiMMSwitch<Boolean> {
     for (final AbstractActor a : actors) {
       if (a instanceof PiGraph && !a.isCluster()) {
         throw new PreesmRuntimeException("Flatten graph should have no children graph: " + a.getName());
-      }
-      if (a instanceof InterfaceActor) {
-        throw new PreesmRuntimeException("Flatten graph should have no interface");
       }
       if (a.getContainingPiGraph() != graph) {
         throw new PreesmRuntimeException();
@@ -274,7 +273,6 @@ public class PiSDFToSingleRate extends PiMMSwitch<Boolean> {
 
       // Add the actor to the FIFO source/sink sets
       this.actor2SRActors.get(this.graphPrefix + actor.getName()).add(copyGraph);
-      instantiateParameters(actor, copyGraph);
     } else {
       doSwitch(actor);
     }
@@ -294,8 +292,6 @@ public class PiSDFToSingleRate extends PiMMSwitch<Boolean> {
     // Add the actor to the FIFO source/sink sets
     this.actor2SRActors.get(this.graphPrefix + actor.getName()).add(copyActor);
 
-    // Set the properties
-    instantiateParameters(actor, copyActor);
     return true;
   }
 
@@ -347,7 +343,7 @@ public class PiSDFToSingleRate extends PiMMSwitch<Boolean> {
   private List<AbstractVertex> generateList(final DataPort port, final AbstractActor actor, final String suffixe) {
     final List<AbstractVertex> list = new ArrayList<>();
     // 0. Get RV value of the Actor
-    final long actorRV = actor instanceof InterfaceActor ? 1 : this.brv.get(actor);
+    final long actorRV = this.brv.get(actor);
     // 1. Find matched actors
     IntegerName iN = new IntegerName(actorRV - 1);
     for (long i = 0; i < actorRV; ++i) {
@@ -414,12 +410,7 @@ public class PiSDFToSingleRate extends PiMMSwitch<Boolean> {
   }
 
   @Override
-  public Boolean caseDataInputInterface(final DataInputInterface actor) {
-    return true;
-  }
-
-  @Override
-  public Boolean caseDataOutputInterface(final DataOutputInterface actor) {
+  public Boolean caseInterfaceActor(final InterfaceActor actor) {
     return true;
   }
 
@@ -490,7 +481,7 @@ public class PiSDFToSingleRate extends PiMMSwitch<Boolean> {
    */
   private List<AbstractVertex> getSourceSetForSRLinker(final Fifo fifo, final DataOutputPort sourcePort,
       final DataInputPort targetPort, final AbstractActor sourceActor, final AbstractActor sinkActor) {
-    // There 3 mains special cases, source is an interface, source is a graph, source is a delay
+    // There are 3 mains special cases, source is an interface, source is a graph, source is a delay
     // Otherwise, we fall in "standard" case
     if (sourceActor instanceof InterfaceActor) {
       return handleDataInputInterface(targetPort, ((DataInputInterface) sourceActor), sinkActor);
@@ -528,7 +519,8 @@ public class PiSDFToSingleRate extends PiMMSwitch<Boolean> {
    *          Name of the current interface actor
    * @return The DataOutputPort found, null else
    */
-  private DataOutputPort lookForSourcePort(final PiGraph graph, final AbstractActor source, final String sourceName) {
+  private static DataOutputPort lookForSourcePort(final PiGraph graph, final AbstractActor source,
+      final String sourceName) {
     for (final DataOutputInterface doi : graph.getDataOutputInterfaces()) {
       if (doi.getName().equals(sourceName)) {
         final Fifo inFifo = doi.getDataPort().getFifo();
@@ -556,23 +548,23 @@ public class PiSDFToSingleRate extends PiMMSwitch<Boolean> {
    */
   private List<AbstractVertex> handleDataInputInterface(final DataInputPort targetPort,
       final DataInputInterface sourceActor, final AbstractActor sinkActor) {
-    final PiGraph graph = sourceActor.getContainingPiGraph();
-    final DataInputPort correspondingPort = (DataInputPort) graph.lookupGraphDataPortForInterfaceActor(sourceActor);
+    // 1 Get corresponding port in parent graph
+    final DataInputPort correspondingPortInParent = (DataInputPort) sourceActor.getGraphPort();
 
     // 2.1 Create the entry in the map
-    if (!inPort2SRActors.containsKey(correspondingPort)) {
-      inPort2SRActors.put(correspondingPort, new ArrayList<>());
+    if (!inPort2SRActors.containsKey(correspondingPortInParent)) {
+      inPort2SRActors.put(correspondingPortInParent, new ArrayList<>());
     }
 
     // 2.2 Now check if we need a BroadcastActor
-    long prod = correspondingPort.getPortRateExpression().evaluate();
+    long prod = correspondingPortInParent.getPortRateExpression().evaluate();
     long cons = targetPort.getPortRateExpression().evaluate();
     long sinkRV = this.brv.get(sinkActor);
     final boolean needBroadcastInterface = prod != (cons * sinkRV);
     final boolean needBroadcastDelay = sourceActor.getDataOutputPorts().get(0).getOutgoingFifo().getDelay() != null;
     if (needBroadcastInterface || needBroadcastDelay) {
       final BroadcastActor interfaceBR = addBroadCastIn(sourceActor);
-      inPort2SRActors.get(correspondingPort).add(interfaceBR);
+      inPort2SRActors.get(correspondingPortInParent).add(interfaceBR);
       return Collections.singletonList(interfaceBR);
     } else {
       final List<AbstractVertex> sinkSet;
@@ -585,7 +577,7 @@ public class PiSDFToSingleRate extends PiMMSwitch<Boolean> {
         }
         sinkSet = this.actor2SRActors.get(keyActor);
       }
-      inPort2SRActors.get(correspondingPort).addAll(sinkSet);
+      inPort2SRActors.get(correspondingPortInParent).addAll(sinkSet);
       return Collections.emptyList();
     }
   }
@@ -659,7 +651,8 @@ public class PiSDFToSingleRate extends PiMMSwitch<Boolean> {
    *          Name of the current interface actor
    * @return The DataInputPort found, null else
    */
-  private DataInputPort lookForTargetPort(final PiGraph graph, final AbstractActor target, final String targetName) {
+  private static DataInputPort lookForTargetPort(final PiGraph graph, final AbstractActor target,
+      final String targetName) {
     for (final DataInputInterface dii : graph.getDataInputInterfaces()) {
       if (dii.getName().equals(targetName)) {
         final Fifo outFifo = dii.getDataPort().getFifo();
@@ -687,8 +680,8 @@ public class PiSDFToSingleRate extends PiMMSwitch<Boolean> {
    */
   private List<AbstractVertex> handleDataOutputInterface(final DataOutputPort sourcePort,
       final AbstractActor sourceActor, final DataOutputInterface sinkActor, final List<AbstractVertex> sourceSet) {
-    final PiGraph graph = sinkActor.getContainingPiGraph();
-    final DataOutputPort correspondingPort = (DataOutputPort) graph.lookupGraphDataPortForInterfaceActor(sinkActor);
+    // 1 Get corresponding port in parent graph
+    final DataOutputPort correspondingPort = (DataOutputPort) sinkActor.getGraphPort();
 
     // 2.1 Create the entry in the map if needed
     if (!this.outPort2SRActors.containsKey(correspondingPort)) {
@@ -1019,7 +1012,7 @@ public class PiSDFToSingleRate extends PiMMSwitch<Boolean> {
         fifo.getType());
     graph.addActor(init);
     graph.addFifo(initFifo);
-    this.brv.put(init, (long) 1);
+    this.brv.put(init, 1L);
   }
 
   private void addEndActorAsGetter(final Fifo fifo, final DelayActor delayActor, final String delayExpression,
@@ -1050,6 +1043,6 @@ public class PiSDFToSingleRate extends PiMMSwitch<Boolean> {
         fifo.getType());
     graph.addActor(end);
     graph.addFifo(endFifo);
-    this.brv.put(end, (long) 1);
+    this.brv.put(end, 1L);
   }
 }

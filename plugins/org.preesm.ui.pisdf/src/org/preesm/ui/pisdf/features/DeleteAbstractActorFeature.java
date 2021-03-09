@@ -79,7 +79,7 @@ public class DeleteAbstractActorFeature extends DeleteParameterizableFeature {
     super.preDelete(context);
 
     // Delete all the Fifo and dependencies linked to this actor
-    final Map<IDeleteFeature, IDeleteContext> delFeatures = findPorts(context);
+    final Map<IDeleteFeature, IDeleteContext> delFeatures = findPorts();
     for (final Entry<IDeleteFeature, IDeleteContext> deleteEntry : delFeatures.entrySet()) {
       final IDeleteFeature deleteFeature = deleteEntry.getKey();
       final IDeleteContext deleteContext = deleteEntry.getValue();
@@ -87,8 +87,8 @@ public class DeleteAbstractActorFeature extends DeleteParameterizableFeature {
     }
   }
 
-  private Map<IDeleteFeature, IDeleteContext> findPorts(final IDeleteContext context) {
-    final ContainerShape cs = (ContainerShape) context.getPictogramElement();
+  private Map<IDeleteFeature, IDeleteContext> findPorts() {
+    final ContainerShape cs = (ContainerShape) pe;
 
     // First create all the deleteFeatures and their context and store them
     // in a Map. (this is because cs.getAnchor cannot be modified while
@@ -110,4 +110,5 @@ public class DeleteAbstractActorFeature extends DeleteParameterizableFeature {
     }
     return delFeatures;
   }
+
 }

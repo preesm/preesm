@@ -51,7 +51,6 @@ import org.eclipse.graphiti.features.context.impl.MultiDeleteInfo;
 import org.eclipse.graphiti.mm.algorithms.GraphicsAlgorithm;
 import org.eclipse.graphiti.mm.pictograms.BoxRelativeAnchor;
 import org.eclipse.graphiti.mm.pictograms.Connection;
-import org.eclipse.graphiti.ui.features.DefaultDeleteFeature;
 import org.preesm.model.pisdf.Dependency;
 import org.preesm.model.pisdf.Fifo;
 
@@ -60,7 +59,7 @@ import org.preesm.model.pisdf.Fifo;
  *
  * @author kdesnos
  */
-public class DeleteActorPortFeature extends DefaultDeleteFeature {
+public class DeleteActorPortFeature extends DeletePiMMelementFeature {
 
   /**
    * Default constructor.
@@ -80,9 +79,11 @@ public class DeleteActorPortFeature extends DefaultDeleteFeature {
    */
   @Override
   public void delete(final IDeleteContext context) {
-    // Retrieve the graphic algorithm of the enclosing actor
+
+    // here super.preDelete is called at the end so we cannot use pe and pimmObject from super class
     final BoxRelativeAnchor bra = (BoxRelativeAnchor) context.getPictogramElement();
 
+    // Retrieve the graphic algorithm of the enclosing actor
     final GraphicsAlgorithm actorGA = bra.getReferencedGraphicsAlgorithm();
 
     // fetch user decision beforehand
@@ -97,7 +98,7 @@ public class DeleteActorPortFeature extends DefaultDeleteFeature {
     if (userDecision) {
       // create a new delete context to avoid having multiple popups during deletion
       final DeleteContext deleteContext;
-      deleteContext = new DeleteContext(context.getPictogramElement());
+      deleteContext = new DeleteContext(bra);
       deleteContext.setMultiDeleteInfo(new MultiDeleteInfo(false, false, 0));
 
       // Begin by deleting the Fifos or dependencies linked to this port

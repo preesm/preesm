@@ -42,19 +42,12 @@ import java.util.Map.Entry;
 import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.Actor;
-import org.preesm.model.pisdf.ConfigInputInterface;
 import org.preesm.model.pisdf.ConfigInputPort;
-import org.preesm.model.pisdf.ConfigOutputInterface;
 import org.preesm.model.pisdf.ConfigOutputPort;
-import org.preesm.model.pisdf.DataInputInterface;
 import org.preesm.model.pisdf.DataInputPort;
-import org.preesm.model.pisdf.DataOutputInterface;
 import org.preesm.model.pisdf.DataOutputPort;
-import org.preesm.model.pisdf.DelayActor;
 import org.preesm.model.pisdf.Dependency;
-import org.preesm.model.pisdf.ExecutableActor;
 import org.preesm.model.pisdf.Fifo;
-import org.preesm.model.pisdf.Parameter;
 import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.pisdf.Port;
 import org.preesm.model.pisdf.util.PiMMSwitch;
@@ -92,10 +85,6 @@ public class SubgraphReconnector extends PiMMSwitch<Boolean> {
     }
   }
 
-  /** The current actor. */
-  // Actor in the outer graph corresponding to the currently visited graph
-  private AbstractActor currentActor = null;
-
   /** The graph replacements. */
   private final Map<PiGraph, List<ActorByGraphReplacement>> graphReplacements = new LinkedHashMap<>();
 
@@ -129,9 +118,7 @@ public class SubgraphReconnector extends PiMMSwitch<Boolean> {
     for (final AbstractActor v : pg.getActors()) {
       doSwitch(v);
     }
-    for (final Parameter p : pg.getParameters()) {
-      doSwitch(p);
-    }
+
     this.currentGraph = oldGraph;
     return true;
   }
@@ -148,7 +135,6 @@ public class SubgraphReconnector extends PiMMSwitch<Boolean> {
         // outgoing from innerGraph instead
         SubgraphReconnector.reconnectPiGraph(a, innerGraph);
 
-        this.currentActor = innerGraph;
         doSwitch(innerGraph);
 
         final ActorByGraphReplacement replacement = new ActorByGraphReplacement(a, innerGraph);
@@ -158,99 +144,6 @@ public class SubgraphReconnector extends PiMMSwitch<Boolean> {
         this.graphReplacements.get(this.currentGraph).add(replacement);
       }
     }
-    return true;
-  }
-
-  @Override
-  public Boolean caseDataInputInterface(final DataInputInterface dii) {
-    // Connect the interface to the incoming fifo from the outer graph, if
-    // any
-    if (this.currentActor != null) {
-      DataInputPort correspondingPort = null;
-      for (final DataInputPort dip : this.currentActor.getDataInputPorts()) {
-        if (dip.getName().equals(dii.getName())) {
-          correspondingPort = dip;
-          break;
-        }
-      }
-      if (correspondingPort != null) {
-        dii.setGraphPort(correspondingPort);
-      }
-    }
-    return true;
-  }
-
-  @Override
-  public Boolean caseDataOutputInterface(final DataOutputInterface doi) {
-    // Connect the interface to the outgoing fifo to the outer graph, if any
-    if (this.currentActor != null) {
-      DataOutputPort correspondingPort = null;
-      for (final DataOutputPort dop : this.currentActor.getDataOutputPorts()) {
-        if (dop.getName().equals(doi.getName())) {
-          correspondingPort = dop;
-          break;
-        }
-      }
-      if (correspondingPort != null) {
-        doi.setGraphPort(correspondingPort);
-      }
-    }
-    return true;
-  }
-
-  @Override
-  public Boolean caseConfigInputInterface(final ConfigInputInterface cii) {
-    // only reconnects if we parse a hierarchical actor and the current actor is the one containing the interface
-    if ((this.currentActor != null) && (cii.getContainingGraph() == this.currentActor)) {
-      // Connect the interface to the incoming dependencies from the outer
-      // graph
-      ConfigInputPort correspondingPort = null;
-      for (final ConfigInputPort cip : this.currentActor.getConfigInputPorts()) {
-        if (cip.getName().equals(cii.getName())) {
-          correspondingPort = cip;
-          break;
-        }
-      }
-
-      if (correspondingPort != null) {
-        cii.setGraphPort(correspondingPort);
-
-      }
-    }
-    return true;
-  }
-
-  @Override
-  public Boolean caseConfigOutputInterface(final ConfigOutputInterface coi) {
-    // Connect the interface to the outgoing dependencies to the outer graph
-    ConfigOutputPort correspondingPort = null;
-    for (final ConfigOutputPort cop : this.currentActor.getConfigOutputPorts()) {
-      if (cop.getName().equals(coi.getName())) {
-        correspondingPort = cop;
-        break;
-      }
-    }
-    if (correspondingPort != null) {
-      coi.setGraphPort(correspondingPort);
-    }
-    return true;
-  }
-
-  @Override
-  public Boolean caseParameter(final Parameter p) {
-    // We only do something for ConfigInputInterface (subclass of
-    // Parameter), other parameters are visited but nothing should be done
-    // DO NOTHING
-    return true;
-  }
-
-  @Override
-  public Boolean caseDelayActor(final DelayActor da) {
-    return true;
-  }
-
-  @Override
-  public Boolean caseExecutableActor(final ExecutableActor ea) {
     return true;
   }
 
@@ -264,6 +157,8 @@ public class SubgraphReconnector extends PiMMSwitch<Boolean> {
    */
   private static void reconnectPiGraph(final Actor hierarchicalActor, final PiGraph subGraph) {
     SubgraphOriginalActorTracker.trackOriginalActor(hierarchicalActor, subGraph);
+    // as we keep the PiGraph subgraphs instead of the hierarchical actor,
+    // we do not need to set again their graphPort, {@link org.preesm.model.pisdf.adapter.GraphInterfaceObserver}
     SubgraphReconnector.reconnectDataInputPorts(hierarchicalActor, subGraph);
     SubgraphReconnector.reconnectDataOutputPorts(hierarchicalActor, subGraph);
     SubgraphReconnector.reconnectConfigInputPorts(hierarchicalActor, subGraph);

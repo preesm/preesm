@@ -372,8 +372,7 @@ public class PiSDFFlattener extends PiMMSwitch<Boolean> {
   }
 
   private void checkInterfaceRate(final InterfaceActor actor, final Expression interfaceRateExpression) {
-    final PiGraph parentGraph = actor.getContainingPiGraph();
-    final DataPort correspondingPort = parentGraph.lookupGraphDataPortForInterfaceActor(actor);
+    final DataPort correspondingPort = actor.getGraphPort();
     final Expression correspondingExpression = correspondingPort.getExpression();
     if (!correspondingExpression.getExpressionAsString().equals(interfaceRateExpression.getExpressionAsString())) {
       throw new PreesmRuntimeException("Interface [" + actor.getName()
@@ -690,7 +689,13 @@ public class PiSDFFlattener extends PiMMSwitch<Boolean> {
       throw new PreesmRuntimeException("We have detected persistent and non-persistent delays in graph ["
           + graph.getName() + "]. This is not supported by the flattening transformation for now.");
     } else if (containsNonPersistent) {
-      quasiSRTransformation(graph);
+      if (graph.getContainingPiGraph() == null
+          && graph.getActors().stream().anyMatch(x -> x instanceof InterfaceActor)) {
+        throw new PreesmRuntimeException(
+            "Non-persistent delays are not supported if the top-level graph has interfaces.");
+      } else {
+        quasiSRTransformation(graph);
+      }
     } else {
       flatteningTransformation(graph);
     }

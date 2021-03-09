@@ -47,6 +47,7 @@ import org.preesm.model.pisdf.ConfigInputPort;
 import org.preesm.model.pisdf.ConfigOutputPort;
 import org.preesm.model.pisdf.DataInputPort;
 import org.preesm.model.pisdf.DataOutputPort;
+import org.preesm.model.pisdf.DataPort;
 import org.preesm.model.pisdf.InterfaceActor;
 import org.preesm.model.pisdf.Parameter;
 import org.preesm.model.pisdf.PiGraph;
@@ -105,7 +106,7 @@ public class GraphInterfaceObserver extends AdapterImpl {
    */
   protected void addInterfaceActor(final InterfaceActor iActor, final PiGraph graph) {
     // Create the Associated port and store it in the appropriate List
-    Port port;
+    DataPort port;
     switch (iActor.getKind()) {
       case DATA_INPUT:
         port = PiMMUserFactory.instance.createDataInputPort();
@@ -166,14 +167,14 @@ public class GraphInterfaceObserver extends AdapterImpl {
           break;
 
         case Notification.ADD_MANY:
-          final List<?> listToAdd = (List<?>) notification.getOldValue();
+          final List<?> listToAdd = (List<?>) notification.getNewValue();
           for (final Object object : listToAdd) {
             add((AbstractVertex) object, graph);
           }
           break;
 
         case Notification.REMOVE:
-          final AbstractVertex vertexToRemove = (AbstractVertex) notification.getNewValue();
+          final AbstractVertex vertexToRemove = (AbstractVertex) notification.getOldValue();
           remove(vertexToRemove, graph);
           break;
 
@@ -205,7 +206,6 @@ public class GraphInterfaceObserver extends AdapterImpl {
    *          The {@link PiGraph}
    */
   protected void remove(final AbstractVertex vertex, final PiGraph graph) {
-
     if (vertex instanceof InterfaceActor) {
       removeInterfaceActor((InterfaceActor) vertex, graph);
     } else if ((vertex instanceof Parameter) && ((Parameter) vertex).isConfigurationInterface()) {
@@ -222,8 +222,7 @@ public class GraphInterfaceObserver extends AdapterImpl {
    *          the observed {@link PiGraph}
    */
   protected void removeInterfaceActor(final InterfaceActor iActor, final PiGraph graph) {
-    // We remove from both list, but only one will actually remove
-    // something.
+    // We remove from both list, but only one will actually remove something.
     graph.getDataInputPorts().remove(iActor.getGraphPort());
     graph.getDataOutputPorts().remove(iActor.getGraphPort());
   }

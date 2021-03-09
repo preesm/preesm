@@ -55,12 +55,12 @@ import org.eclipse.graphiti.services.IGaService;
 import org.eclipse.graphiti.services.IPeCreateService;
 import org.eclipse.graphiti.ui.services.GraphitiUi;
 import org.eclipse.graphiti.util.IColorConstant;
-import org.preesm.model.pisdf.Parameter;
+import org.preesm.model.pisdf.ConfigInputInterface;
 import org.preesm.model.pisdf.PiGraph;
 
 // TODO: Auto-generated Javadoc
 /**
- * Add feature to add a new {@link Parameter} to the {@link PiGraph}.
+ * Add feature to add a new {@link ConfigInputInterface} to the {@link PiGraph}.
  *
  * @author kdesnos
  */
@@ -92,7 +92,7 @@ public class AddConfigInputInterfaceFeature extends AbstractAddFeature {
    */
   @Override
   public PictogramElement add(final IAddContext context) {
-    final Parameter addedParam = (Parameter) context.getNewObject();
+    final ConfigInputInterface addedParam = (ConfigInputInterface) context.getNewObject();
     final Diagram targetDiagram = (Diagram) context.getTargetContainer();
 
     // CONTAINER SHAPE WITH ROUNDED RECTANGLE
@@ -166,8 +166,7 @@ public class AddConfigInputInterfaceFeature extends AbstractAddFeature {
   public boolean canAdd(final IAddContext context) {
     // Check that the user wants to add an ConfigInputInterface to the
     // Diagram
-    return (context.getNewObject() instanceof Parameter)
-        && ((Parameter) context.getNewObject()).isConfigurationInterface()
+    return (context.getNewObject() instanceof ConfigInputInterface)
         && (context.getTargetContainer() instanceof Diagram);
   }
 
