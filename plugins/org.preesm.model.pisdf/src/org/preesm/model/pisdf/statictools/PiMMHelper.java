@@ -56,6 +56,7 @@ import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.AbstractVertex;
 import org.preesm.model.pisdf.BroadcastActor;
 import org.preesm.model.pisdf.ConfigInputPort;
+import org.preesm.model.pisdf.ConfigOutputPort;
 import org.preesm.model.pisdf.DataInputInterface;
 import org.preesm.model.pisdf.DataInputPort;
 import org.preesm.model.pisdf.DataOutputInterface;
@@ -297,11 +298,23 @@ public class PiMMHelper {
    *          the current connected component @ the PiMMHandlerException exception
    */
   private static void iterativeCCFetcher(final AbstractActor actor, final List<AbstractActor> cc) {
+    for (final ConfigOutputPort output : actor.getConfigOutputPorts()) {
+      final Fifo fifo = output.getOutgoingFifo();
+      if (fifo == null && output.getOutgoingDependencies().isEmpty()) {
+        throw new PreesmRuntimeException("Actor [" + actor.getName() + "] config data output port [" + output.getName()
+            + "] is not connected to a FIFO nor a parameter.");
+      }
+      final AbstractActor targetActor = fifo.getTargetPort().getContainingActor();
+      if (!cc.contains(targetActor)) {
+        cc.add(targetActor);
+        PiMMHelper.iterativeCCFetcher(targetActor, cc);
+      }
+    }
     for (final DataOutputPort output : actor.getDataOutputPorts()) {
       final Fifo fifo = output.getOutgoingFifo();
       if (fifo == null) {
         throw new PreesmRuntimeException(
-            "Actor [" + actor.getName() + "] data port [" + output.getName() + "] is not connected to a FIFO.");
+            "Actor [" + actor.getName() + "] data output port [" + output.getName() + "] is not connected to a FIFO.");
       }
       final AbstractActor targetActor = fifo.getTargetPort().getContainingActor();
       if (!cc.contains(targetActor)) {
@@ -313,7 +326,7 @@ public class PiMMHelper {
       final Fifo fifo = input.getIncomingFifo();
       if (fifo == null) {
         throw new PreesmRuntimeException(
-            "Actor [" + actor.getName() + "] data port [" + input.getName() + "] is not connected to a FIFO.");
+            "Actor [" + actor.getName() + "] data input port [" + input.getName() + "] is not connected to a FIFO.");
       }
       final AbstractActor sourceActor = fifo.getSourcePort().getContainingActor();
       if (!cc.contains(sourceActor)) {

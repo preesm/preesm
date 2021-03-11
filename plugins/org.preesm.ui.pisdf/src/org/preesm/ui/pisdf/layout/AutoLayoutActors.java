@@ -216,7 +216,9 @@ public class AutoLayoutActors {
   private static void findCandidates(final List<Fifo> feedbackFifos, final Set<AbstractActor> currentStage,
       final List<AbstractActor> previousStage) {
     for (final AbstractActor actor : previousStage) {
-      for (final DataOutputPort port : actor.getDataOutputPorts()) {
+      // iterate over the outgoing fifos
+      // consider both regular data output ports and config output port if linked to a fifo
+      for (final DataOutputPort port : actor.getAllConnectedDataOutputPorts()) {
         final Fifo outgoingFifo = port.getOutgoingFifo();
         if ((outgoingFifo != null) && !feedbackFifos.contains(outgoingFifo)) {
           final DataInputPort targetPort = outgoingFifo.getTargetPort();

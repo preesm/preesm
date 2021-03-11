@@ -171,6 +171,13 @@ public class SubgraphReconnector extends PiMMSwitch<Boolean> {
       found = false;
       for (final ConfigOutputPort cop2 : subGraph.getConfigOutputPorts()) {
         if (cop1.getName().equals(cop2.getName())) {
+          final Fifo fifo = cop1.getOutgoingFifo();
+          if (fifo != null) {
+            cop2.setOutgoingFifo(fifo);
+            fifo.setSourcePort(cop2);
+            cop2.setExpression(cop1.getPortRateExpression().getExpressionAsString());
+            cop2.setAnnotation(cop1.getAnnotation());
+          }
           for (final Dependency dep : cop1.getOutgoingDependencies()) {
             cop2.getOutgoingDependencies().add(dep);
             dep.setSetter(cop2);

@@ -57,6 +57,7 @@ import org.preesm.model.pisdf.Actor;
 import org.preesm.model.pisdf.BroadcastActor;
 import org.preesm.model.pisdf.CHeaderRefinement;
 import org.preesm.model.pisdf.ConfigInputPort;
+import org.preesm.model.pisdf.ConfigOutputInterface;
 import org.preesm.model.pisdf.ConfigOutputPort;
 import org.preesm.model.pisdf.DataInputInterface;
 import org.preesm.model.pisdf.DataInputPort;
@@ -534,6 +535,21 @@ public class PiSDFToSingleRate extends PiMMSwitch<Boolean> {
         return (DataOutputPort) source.lookupPort(sourcePort.getName());
       }
     }
+    // if not in regular data output interfaces, check the config output interfaces
+    for (final ConfigOutputInterface doi : graph.getConfigOutputInterfaces()) {
+      if (doi.getName().equals(sourceName)) {
+        final Fifo inFifo = doi.getDataPort().getFifo();
+        if (inFifo != null) {
+          final DataOutputPort sourcePort = inFifo.getSourcePort();
+          final AbstractActor containingActor = sourcePort.getContainingActor();
+          if (containingActor instanceof PiGraph) {
+            return lookForSourcePort((PiGraph) containingActor, source, sourcePort.getName());
+          }
+          return (DataOutputPort) source.lookupPort(sourcePort.getName());
+        }
+      }
+    }
+
     return null;
   }
 
@@ -751,12 +767,10 @@ public class PiSDFToSingleRate extends PiMMSwitch<Boolean> {
     // dummy fifo to trick the SR vertices linker
     final long rate = ia.getDataPort().getExpression().evaluate();
     final DataInputPort dummyDIP = PiMMUserFactory.instance.createDataInputPort(ia.getName());
-    final Expression expr1 = PiMMUserFactory.instance.createExpression(rate);
-    dummyDIP.setExpression(expr1);
+    dummyDIP.setExpression(rate);
     dummyDIP.setName(ia.getName());
     final DataOutputPort dummyDOP = PiMMUserFactory.instance.createDataOutputPort(ia.getName());
-    final Expression expr2 = PiMMUserFactory.instance.createExpression(rate);
-    dummyDOP.setExpression(expr2);
+    dummyDOP.setExpression(rate);
     dummyDOP.setName(ia.getName());
     final Fifo fifo = ia.getDataPort().getFifo();
     final Fifo dummyFifo = PiMMUserFactory.instance.createFifo(dummyDOP, dummyDIP, fifo.getType());

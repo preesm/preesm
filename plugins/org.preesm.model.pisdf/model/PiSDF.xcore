@@ -192,6 +192,10 @@ abstract class AbstractActor extends Configurable {
 	op unique DataPort[] getAllDataPorts() {
 		return (dataInputPorts + dataOutputPorts).toEList.unmodifiableView
 	}
+	op unique DataOutputPort[] getAllConnectedDataOutputPorts() {
+		return (dataOutputPorts + configOutputPorts).filter[it.outgoingFifo !== null].toEList.unmodifiableView
+	}
+	
 	op unique Port[] getAllConfigPorts() {
 		return (super.allConfigPorts + configOutputPorts).toEList.unmodifiableView
 	}
@@ -335,6 +339,9 @@ class PiGraph extends AbstractActor, Graph, PeriodicElement {
 	}
 	op unique DataOutputInterface[] getDataOutputInterfaces() {
 		return actors.filter(DataOutputInterface).toEList.unmodifiableView
+	}
+	op unique ConfigOutputInterface[] getConfigOutputInterfaces() {
+		return actors.filter(ConfigOutputInterface).toEList.unmodifiableView
 	}
 	op Parameter lookupParameterGivenGraph(String parameterName , String graphName) {
 		return allParameters.findFirst[it.name == parameterName && (it.containingPiGraph).name == graphName]

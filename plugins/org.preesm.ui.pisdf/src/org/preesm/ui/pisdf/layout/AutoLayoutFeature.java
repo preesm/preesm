@@ -497,7 +497,7 @@ public class AutoLayoutFeature extends AbstractCustomFeature {
 
       // Get all outgoingFifos of current stage
       final List<Fifo> outgoingFifos = new ArrayList<>();
-      stageSrc.forEach(a -> a.getDataOutputPorts().forEach(p -> outgoingFifos.add(p.getOutgoingFifo())));
+      stageSrc.forEach(a -> a.getAllConnectedDataOutputPorts().forEach(p -> outgoingFifos.add(p.getOutgoingFifo())));
 
       // Ignoring fifos going to delay actor
       outgoingFifos.removeIf(f -> (f != null) && ((f.getTargetPort().getContainingActor() instanceof DelayActor)
