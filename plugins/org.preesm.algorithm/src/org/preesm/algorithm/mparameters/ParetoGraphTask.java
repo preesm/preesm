@@ -266,8 +266,8 @@ public class ParetoGraphTask extends AbstractTaskImplementation {
 
         switch (paretoComparator.compare(dsep, d)) {
           case -1:
-          itPareto.remove();
-          returnCode = ParetoPointState.perfectTradeoff;
+            itPareto.remove();
+            returnCode = ParetoPointState.perfectTradeoff;
             break;
           case 1:
             return ParetoPointState.notRelevantTradeoff;
