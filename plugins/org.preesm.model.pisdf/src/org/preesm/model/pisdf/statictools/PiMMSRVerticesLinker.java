@@ -418,7 +418,7 @@ public class PiMMSRVerticesLinker {
     final boolean isSourceForkOrBroadcast = sourceVertex instanceof ForkActor || sourceVertex instanceof BroadcastActor;
     if (isSourceForkOrBroadcast) {
       // Update name and source port modifier
-      IntegerName iN = new IntegerName(srcDOP.size() - 1);
+      IntegerName iN = new IntegerName(srcDOP.size() - 1L);
       final int index = srcDOP.indexOf(currentSourcePort);
       currentSourcePort.setName(currentSourcePort.getName() + "_" + iN.toString(index));
       currentSourcePort.setAnnotation(PortMemoryAnnotation.WRITE_ONLY);
@@ -455,7 +455,7 @@ public class PiMMSRVerticesLinker {
     final boolean isSinkJoinOrRoundBuffer = sinkVertex instanceof JoinActor || sinkVertex instanceof RoundBufferActor;
     if (isSinkJoinOrRoundBuffer) {
       // Update name and sink port modifier
-      IntegerName iN = new IntegerName(snkDOP.size() - 1);
+      IntegerName iN = new IntegerName(snkDOP.size() - 1L);
       final int index = snkDOP.indexOf(currentSinkPort);
       currentSinkPort.setName(currentSinkPort.getName() + "_" + iN.toString(index));
       currentSinkPort.setAnnotation(PortMemoryAnnotation.READ_ONLY);

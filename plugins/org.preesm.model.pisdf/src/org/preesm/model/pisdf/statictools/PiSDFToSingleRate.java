@@ -178,7 +178,7 @@ public class PiSDFToSingleRate extends PiMMSwitch<Boolean> {
     // 3.1 Print the RV values
     PreesmLogger.getLogger().log(Level.FINE, " >>   - print brv");
     PiBRV.printRV(brv);
-    // 3.2 adds default RV of 1 for InterfaceActor of top level
+    // 3.2 adds default RV of 1 for InterfaceActor of all levels
     graphCopy.getAllActors().stream().filter(x -> x instanceof InterfaceActor).forEach(x -> brv.put(x, 1L));
     // 4 Check periods with BRV
     PreesmLogger.getLogger().log(Level.FINE, " >>   - check periodicity");
@@ -291,7 +291,6 @@ public class PiSDFToSingleRate extends PiMMSwitch<Boolean> {
 
     // Add the actor to the FIFO source/sink sets
     this.actor2SRActors.get(this.graphPrefix + actor.getName()).add(copyActor);
-
     return true;
   }
 
@@ -411,6 +410,9 @@ public class PiSDFToSingleRate extends PiMMSwitch<Boolean> {
 
   @Override
   public Boolean caseInterfaceActor(final InterfaceActor actor) {
+    if (PiMMHelper.isVertexAtTopLevel(actor)) {
+      return caseNonExecutableActor(actor);
+    }
     return true;
   }
 
@@ -484,7 +486,7 @@ public class PiSDFToSingleRate extends PiMMSwitch<Boolean> {
     // There are 3 mains special cases, source is an interface, source is a graph, source is a delay
     // Otherwise, we fall in "standard" case
     if (sourceActor instanceof InterfaceActor) {
-      return handleDataInputInterface(targetPort, ((DataInputInterface) sourceActor), sinkActor);
+      return handleDataInputInterface(targetPort, ((InterfaceActor) sourceActor), sinkActor);
     } else if (sourceActor instanceof PiGraph && !sourceActor.isCluster()) {
       // We should retrieve the correct source set
       if (!this.outPort2SRActors.containsKey(sourcePort)) {
@@ -547,7 +549,7 @@ public class PiSDFToSingleRate extends PiMMSwitch<Boolean> {
    * @return a list containing a BroadcastActor if needed, empty list else
    */
   private List<AbstractVertex> handleDataInputInterface(final DataInputPort targetPort,
-      final DataInputInterface sourceActor, final AbstractActor sinkActor) {
+      final InterfaceActor sourceActor, final AbstractActor sinkActor) {
     // 1 Get corresponding port in parent graph
     final DataInputPort correspondingPortInParent = (DataInputPort) sourceActor.getGraphPort();
 
@@ -561,7 +563,7 @@ public class PiSDFToSingleRate extends PiMMSwitch<Boolean> {
     long cons = targetPort.getPortRateExpression().evaluate();
     long sinkRV = this.brv.get(sinkActor);
     final boolean needBroadcastInterface = prod != (cons * sinkRV);
-    final boolean needBroadcastDelay = sourceActor.getDataOutputPorts().get(0).getOutgoingFifo().getDelay() != null;
+    final boolean needBroadcastDelay = sourceActor.getDataPort().getFifo().getDelay() != null;
     if (needBroadcastInterface || needBroadcastDelay) {
       final BroadcastActor interfaceBR = addBroadCastIn(sourceActor);
       inPort2SRActors.get(correspondingPortInParent).add(interfaceBR);
@@ -616,7 +618,7 @@ public class PiSDFToSingleRate extends PiMMSwitch<Boolean> {
       final List<AbstractVertex> sourceSet) {
 
     if (sinkActor instanceof InterfaceActor) {
-      return handleDataOutputInterface(sourcePort, sourceActor, (DataOutputInterface) sinkActor, sourceSet);
+      return handleDataOutputInterface(sourcePort, sourceActor, (InterfaceActor) sinkActor, sourceSet);
     } else if (sinkActor instanceof PiGraph && !sinkActor.isCluster()) {
       // We should retrieve the correct source set
       if (!this.inPort2SRActors.containsKey(targetPort)) {
@@ -668,7 +670,7 @@ public class PiSDFToSingleRate extends PiMMSwitch<Boolean> {
   }
 
   /**
-   * Handles a DataOutputInterface replacement
+   * Handles a DataOutputInterface replacement.
    *
    * @param targetPort
    *          the target port
@@ -679,10 +681,9 @@ public class PiSDFToSingleRate extends PiMMSwitch<Boolean> {
    * @return a list containing a RoundBufferActor if needed, empty list else
    */
   private List<AbstractVertex> handleDataOutputInterface(final DataOutputPort sourcePort,
-      final AbstractActor sourceActor, final DataOutputInterface sinkActor, final List<AbstractVertex> sourceSet) {
+      final AbstractActor sourceActor, final InterfaceActor sinkActor, final List<AbstractVertex> sourceSet) {
     // 1 Get corresponding port in parent graph
     final DataOutputPort correspondingPort = (DataOutputPort) sinkActor.getGraphPort();
-
     // 2.1 Create the entry in the map if needed
     if (!this.outPort2SRActors.containsKey(correspondingPort)) {
       this.outPort2SRActors.put(correspondingPort, new ArrayList<>());
@@ -693,7 +694,7 @@ public class PiSDFToSingleRate extends PiMMSwitch<Boolean> {
     long prod = sourcePort.getPortRateExpression().evaluate();
     long sourceRV = this.brv.get(sourceActor);
     final boolean needRoundbufferInterface = cons != (prod * sourceRV);
-    final boolean needRoundbufferDelay = sinkActor.getDataInputPorts().get(0).getIncomingFifo().getDelay() != null;
+    final boolean needRoundbufferDelay = sinkActor.getDataPort().getFifo().getDelay() != null;
     if (needRoundbufferInterface || needRoundbufferDelay) {
       final RoundBufferActor interfaceRB = addRoundBufferOut(sinkActor);
       this.outPort2SRActors.get(correspondingPort).add(interfaceRB);
@@ -726,6 +727,42 @@ public class PiSDFToSingleRate extends PiMMSwitch<Boolean> {
     // Add the RoundBufferActor to the graph
     this.result.addActor(interfaceRB);
     return interfaceRB;
+  }
+
+  private void reconnectTopLevelInterface(final InterfaceActor ia) {
+    List<AbstractVertex> sourceSet = null;
+    List<AbstractVertex> sinkSet = null;
+    List<AbstractVertex> interfacesSet = null;
+    if (ia instanceof DataInputInterface) {
+      sourceSet = actor2SRActors.get(this.graphPrefix + ia.getName());
+      interfacesSet = sourceSet;
+      sinkSet = inPort2SRActors.get(ia.getGraphPort());
+    } else {
+      sourceSet = outPort2SRActors.get(ia.getGraphPort());
+      sinkSet = actor2SRActors.get(this.graphPrefix + ia.getName());
+      interfacesSet = sinkSet;
+    }
+    // reset interface name (suffixed by _0 in populate)
+    // as RV is 1 for interfaces, there should be exactly one element in the list
+    final InterfaceActor iaCopy = (InterfaceActor) interfacesSet.get(0);
+    iaCopy.setName(ia.getName());
+    // we can remove the config dependencies since all parameters have been resolved
+    iaCopy.getConfigInputPorts().clear();
+    // dummy fifo to trick the SR vertices linker
+    final long rate = ia.getDataPort().getExpression().evaluate();
+    final DataInputPort dummyDIP = PiMMUserFactory.instance.createDataInputPort(ia.getName());
+    final Expression expr1 = PiMMUserFactory.instance.createExpression(rate);
+    dummyDIP.setExpression(expr1);
+    dummyDIP.setName(ia.getName());
+    final DataOutputPort dummyDOP = PiMMUserFactory.instance.createDataOutputPort(ia.getName());
+    final Expression expr2 = PiMMUserFactory.instance.createExpression(rate);
+    dummyDOP.setExpression(expr2);
+    dummyDOP.setName(ia.getName());
+    final Fifo fifo = ia.getDataPort().getFifo();
+    final Fifo dummyFifo = PiMMUserFactory.instance.createFifo(dummyDOP, dummyDIP, fifo.getType());
+    // perform the reconnection
+    final PiMMSRVerticesLinker srVerticesLinker = new PiMMSRVerticesLinker(dummyFifo, this.result, this.graphPrefix);
+    srVerticesLinker.execute(this.brv, sourceSet, sinkSet);
   }
 
   /**
@@ -794,13 +831,9 @@ public class PiSDFToSingleRate extends PiMMSwitch<Boolean> {
    *          the actor
    */
   private void populateSingleRatePiMMActor(final AbstractVertex actor) {
+    // special case for delays
     if (actor instanceof DelayActor) {
       caseDelayActor((DelayActor) actor);
-      return;
-    }
-
-    // Ignore DataInterfaces
-    if (actor instanceof InterfaceActor) {
       return;
     }
 
@@ -821,6 +854,8 @@ public class PiSDFToSingleRate extends PiMMSwitch<Boolean> {
       // actor has a BRV value >= to x resulting of two actors named the same
       this.firingInstance = backupInstance * actorRV + i;
       this.currentActorName = this.graphPrefix + actor.getName() + "_" + iN.toString(i);
+      // will dispatch to the correct case
+      // for interface actors, it is executed only if at top level
       caseAbstractActor((AbstractActor) actor);
     }
     this.firingInstance = backupInstance;
@@ -902,6 +937,13 @@ public class PiSDFToSingleRate extends PiMMSwitch<Boolean> {
     actors.stream().filter(a -> a.getAllDataPorts().isEmpty())
         .filter(a -> (a instanceof Actor) || (a instanceof PiGraph && a.isCluster()))
         .forEach(this::populateSingleRatePiMMActor);
+    // handle the case of interfaces of top level
+    if (graph.getContainingPiGraph() == null) {
+      actors.stream().filter(a -> (a instanceof InterfaceActor)).forEach(this::populateSingleRatePiMMActor);
+      // now we need to reconnect the top level interfaces
+      actors.stream().filter(a -> (a instanceof InterfaceActor))
+          .forEach(a -> reconnectTopLevelInterface((InterfaceActor) a));
+    }
 
     return true;
   }
