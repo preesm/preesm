@@ -76,11 +76,11 @@ import org.eclipse.ui.PlatformUI;
 import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.Actor;
 import org.preesm.model.pisdf.DataInputInterface;
-import org.preesm.model.pisdf.DataOutputInterface;
 import org.preesm.model.pisdf.Delay;
 import org.preesm.model.pisdf.DelayActor;
 import org.preesm.model.pisdf.Dependency;
 import org.preesm.model.pisdf.Fifo;
+import org.preesm.model.pisdf.InterfaceActor;
 import org.preesm.model.pisdf.Parameter;
 import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.pisdf.Port;
@@ -902,7 +902,7 @@ public class AutoLayoutFeature extends AbstractCustomFeature {
       final Point bPoint = Graphiti.getGaCreateService().createPoint(xPosition, currentY);
       ffc.getBendpoints().add(0, bPoint);
 
-      if ((getter instanceof DataInputInterface) || (getter instanceof DataOutputInterface)) {
+      if (getter instanceof InterfaceActor) {
         // fix strange behavior with FFC for interfaces ...
         ffc.getBendpoints().clear();
         ffc.getBendpoints().add(0, bPoint);

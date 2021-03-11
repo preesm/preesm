@@ -43,6 +43,7 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 import org.preesm.model.pisdf.AbstractActor;
+import org.preesm.model.pisdf.ConfigOutputInterface;
 import org.preesm.model.pisdf.DataInputInterface;
 import org.preesm.model.pisdf.DataInputPort;
 import org.preesm.model.pisdf.DataOutputInterface;
@@ -247,18 +248,16 @@ public class AutoLayoutActors {
         hasUnstagedPredecessor |= !isFeedbackFifo && !containedInProcessedActor;
 
         // For delay with setter, the delay Actor must always be in the previous stage
-        if ((incomingFifo != null) && (incomingFifo.getDelay() != null)) {
-          if (incomingFifo.getDelay().hasSetterActor()) {
-            hasUnstagedPredecessor |= !feedbackFifos.contains(incomingFifo)
-                && !processedActors.contains(incomingFifo.getDelay().getActor());
-            hasUnstagedPredecessor |= !processedActors.contains(incomingFifo.getDelay().getSetterActor());
-          }
+        if ((incomingFifo != null) && (incomingFifo.getDelay() != null) && (incomingFifo.getDelay().hasSetterActor())) {
+          hasUnstagedPredecessor |= !feedbackFifos.contains(incomingFifo)
+              && !processedActors.contains(incomingFifo.getDelay().getActor());
+          hasUnstagedPredecessor |= !processedActors.contains(incomingFifo.getDelay().getSetterActor());
         }
       }
       if (hasUnstagedPredecessor) {
         iter.remove();
         nextStage.add(actor);
-      } else if ((actor instanceof DataOutputInterface)) {
+      } else if ((actor instanceof DataOutputInterface) || (actor instanceof ConfigOutputInterface)) {
         dataOutputInterfaces.add(actor);
         processedActors.add(actor);
         iter.remove();
