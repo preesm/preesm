@@ -120,13 +120,13 @@ public class ParetoGraphTask extends AbstractTaskImplementation {
     final PiGraph graph = (PiGraph) inputs.get(AbstractWorkflowNodeImplementation.KEY_PI_GRAPH);
     final MapperDAG dag = (MapperDAG) inputs.get(AbstractWorkflowNodeImplementation.KEY_SDF_DAG);
 
-    final List<Comparator<DSEpointIR>> listComparators = new ArrayList<>();
-    listComparators.add(new DSEpointIR.ThroughputMaxComparator());
-    listComparators.add(new DSEpointIR.LatencyMinComparator());
-    listComparators.add(new DSEpointIR.PowerMinComparator());
-    listComparators.add(new DSEpointIR.MemoryMinComparator());
+    // final List<Comparator<DSEpointIR>> listComparators = new ArrayList<>();
+    // listComparators.add(new DSEpointIR.ThroughputMaxComparator());
+    // listComparators.add(new DSEpointIR.LatencyMinComparator());
+    // listComparators.add(new DSEpointIR.PowerMinComparator());
+    // listComparators.add(new DSEpointIR.MemoryMinComparator());
 
-    final DSEpointParetoComparator paretoComparator = new DSEpointParetoComparator(listComparators);
+    final DSEpointParetoComparator paretoComparator = getParetoComparator(parameters, graph);
 
     final Map<String, Object> output = new LinkedHashMap<>();
 
@@ -162,7 +162,7 @@ public class ParetoGraphTask extends AbstractTaskImplementation {
     listParetoOptimum = paretoDSE(scenario, graph, architecture, dag, mparamsIR, paretoComparator, logDSEpoints,
         workflow);
 
-    logCsvContentMparams(logParetoOptimum, mparamsIR, listParetoOptimum);
+    logCsvParetoSet(logParetoOptimum, listParetoOptimum);
 
     final String logPath = parameters.get(DEFAULT_LOG_NAME);
     logCsvFile(logDSEpoints, mparamsIR, workflow, scenario, logPath, "_all_points_log.csv");
@@ -186,16 +186,21 @@ public class ParetoGraphTask extends AbstractTaskImplementation {
       PreesmLogger.getLogger().log(Level.FINE, "==> Testing combination: " + index);
 
       final PeriodicScheduler scheduler = new PeriodicScheduler();
-      final DSEpointIR dsep = runConfiguration(scenario, graph, architecture, scheduler);
+      final DSEpointIR dsep = runConfiguration(scenario, graph, architecture, scheduler, mparamsIR);
+
       // string builder with all the configuration tested
       SetMalleableParametersTask.logCsvContentMparams(logDSEpoints, mparamsIR, dsep);
 
       // update of the pareto set
-      code = ParetoFrontierUpdate(paretoPoint, dsep, paretoComparator);
-      if ((index % 100 == 0) && index > 0) {
+      code = paretoFrontierUpdate(paretoPoint, dsep, paretoComparator);
+      PreesmLogger.getLogger().log(Level.FINE,
+          "Return code of the new configuration after the update of the pareto set: " + code.toString() + " of point : "
+              + dsep.toString());
+
+      if (((index % 100) == 0) || (index == 89) || (index == 90) || (index == 91) || (index == 92) || (index == 93)) {
         StringBuilder logParetoOptimum = new StringBuilder();
 
-        logCsvContentMparams(logParetoOptimum, mparamsIR, paretoPoint);
+        logCsvParetoSet(logParetoOptimum, paretoPoint);
 
         logCsvFile(logParetoOptimum, mparamsIR, workflow, scenario, DEFAULT_LOG_VALUE,
             "_pareto_set_log_IR_" + String.valueOf(index) + ".csv");
@@ -204,9 +209,6 @@ public class ParetoGraphTask extends AbstractTaskImplementation {
 
         PreesmLogger.getLogger().log(Level.INFO, "Intermediate save with index " + index);
       }
-      PreesmLogger.getLogger().log(Level.FINE,
-          "Return code of the new configuration after the update of the pareto set: " + code.toString() + " of point : "
-              + dsep);
 
     }
 
@@ -246,14 +248,16 @@ public class ParetoGraphTask extends AbstractTaskImplementation {
 
   }
 
-  protected static void logCsvContentMparams(final StringBuilder logDSEpoints,
-      final List<MalleableParameterIR> mparamsIR, final List<DSEpointIR> listPoint) {
+  protected static void logCsvParetoSet(final StringBuilder logDSEpoints, final List<DSEpointIR> listPoint) {
     for (DSEpointIR p : listPoint) {
-      SetMalleableParametersTask.logCsvContentMparams(logDSEpoints, mparamsIR, p);
+      for (long value : p.configuration) {
+        logDSEpoints.append(value + ";");
+      }
+      logDSEpoints.append(p.toCsvContentString() + "\n");
     }
   }
 
-  protected static ParetoPointState ParetoFrontierUpdate(List<DSEpointIR> listPareto, final DSEpointIR dsep,
+  protected static ParetoPointState paretoFrontierUpdate(List<DSEpointIR> listPareto, final DSEpointIR dsep,
       DSEpointParetoComparator paretoComparator) {
     ParetoPointState returnCode = ParetoPointState.newTradeoff;
 
@@ -276,6 +280,19 @@ public class ParetoGraphTask extends AbstractTaskImplementation {
             break;
         }
 
+        // if (allMetricsGreaterOrEqual && allMetricsLowerOrEqual) {
+        // // dsep and d have all their metrics equals (d<=dsep && d=>dsep)
+        // returnCode = ParetoPointState.overlapPoint;
+        // }
+        // if (!allMetricsLowerOrEqual && allMetricsGreaterOrEqual) {
+        // // all the metrics of dsep are greater or equals than the metrics of d
+        // return ParetoPointState.notRelevantTradeoff;
+        // }
+        // if (allMetricsLowerOrEqual && (allMetricsGreaterOrEqual == false)) {
+        // // all the metrics of dsep are lower or equals than the metrics of d
+        // itPareto.remove();
+        // returnCode = ParetoPointState.perfectTradeoff;
+        // }
       }
     }
     if (returnCode == ParetoPointState.newTradeoff || returnCode == ParetoPointState.perfectTradeoff) {
@@ -285,7 +302,7 @@ public class ParetoGraphTask extends AbstractTaskImplementation {
   }
 
   protected static DSEpointIR runConfiguration(final Scenario scenario, final PiGraph graph, final Design architecture,
-      final IScheduler scheduler) {
+      final IScheduler scheduler, final List<MalleableParameterIR> mparamsIR) {
     final Level backupLevel = PreesmLogger.getLogger().getLevel();
     PreesmLogger.getLogger().setLevel(Level.SEVERE);
 
@@ -293,7 +310,7 @@ public class ParetoGraphTask extends AbstractTaskImplementation {
     final int iterationDelay = IterationDelayedEvaluator.computeLatency(graph);
 
     final PiGraph dag = PiSDFToSingleRate.compute(graph, BRVMethod.LCM);
-
+    final List<Long> configuration = getConfiguration(mparamsIR);
     SynthesisResult scheduleAndMap = null;
     try {
       scheduleAndMap = scheduler.scheduleAndMap(dag, architecture, scenario);
@@ -301,9 +318,10 @@ public class ParetoGraphTask extends AbstractTaskImplementation {
       // put back all messages
       PreesmLogger.getLogger().setLevel(backupLevel);
       PreesmLogger.getLogger().log(Level.WARNING, "Scheduling was impossible.", e);
-      return new DSEpointIR(Long.MAX_VALUE, iterationDelay, Long.MAX_VALUE, Long.MAX_VALUE, false);
-    }
 
+      return new DSEpointIR(Long.MAX_VALUE, iterationDelay, Long.MAX_VALUE, Long.MAX_VALUE, false, configuration);
+    }
+    PreesmLogger.getLogger().log(Level.ALL, "\t schedule finished");
     // use implementation evaluation of PeriodicScheduler instead?
     final ScheduleOrderManager scheduleOM = new ScheduleOrderManager(dag, scheduleAndMap.schedule);
 
@@ -313,18 +331,20 @@ public class ParetoGraphTask extends AbstractTaskImplementation {
     final SimpleEnergyCost evaluateEnergy = new SimpleEnergyEvaluation().evaluate(dag, architecture, scenario,
         scheduleAndMap.mapping, scheduleOM);
     final long energy = evaluateEnergy.getValue();
+    PreesmLogger.getLogger().log(Level.ALL, "\t latency durationII and energy computed");
 
     // computation of the memory footprint
     final IMemoryAllocation simpleAlloc = new LegacyMemoryAllocation();
     final Allocation alloc = simpleAlloc.allocateMemory(dag, architecture, scenario, scheduleAndMap.schedule,
         scheduleAndMap.mapping);
     final Long memory = alloc.getPhysicalBuffers().get(alloc.getPhysicalBuffers().size() - 1).getSize();
+    // final Long memory = (long) 14400;
+    PreesmLogger.getLogger().log(Level.ALL, "\t memory computed");
 
     // put back all messages
+
     PreesmLogger.getLogger().setLevel(backupLevel);
-    // PreesmLogger.getLogger().log(Level.FINE, "Size of the list of buffer : " + alloc.getPhysicalBuffers().size());
-    // PreesmLogger.getLogger().log(Level.FINE, "buffer list : " + alloc.getPhysicalBuffers().toString());
-    return new DSEpointIR(energy, iterationDelay, durationII, memory, true);
+    return new DSEpointIR(energy, iterationDelay, durationII, memory, true, configuration);
   }
 
   public static DSEpointParetoComparator getParetoComparator(final Map<String, String> parameters,
@@ -368,6 +388,14 @@ public class ParetoGraphTask extends AbstractTaskImplementation {
 
     DSEpointParetoComparator paretoComparator = new DSEpointParetoComparator(listComparators);
     return paretoComparator;
+  }
+
+  public static List<Long> getConfiguration(final List<MalleableParameterIR> mparamsIR) {
+    final List<Long> configuration = new ArrayList<>();
+    for (MalleableParameterIR mpir : mparamsIR) {
+      configuration.add(mpir.mp.getExpression().evaluate());
+    }
+    return configuration;
   }
 
   @Override

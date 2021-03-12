@@ -64,7 +64,8 @@ public class DSEpointIR {
   public final long durationII; // inverse of throughput, makespan = latency * durationII
   public final long memory;     // memory required to store the data
 
-  public final Map<Pair<String, String>, Long> paramsValues; // values of parameters having objectives
+  public final Map<Pair<String, String>, Long> paramsValues;  // values of parameters having objectives
+  public final List<Long>                      configuration; // values of the malleable parameters
 
   // not used by comparators:
   public final int     askedCuts;    // > 0 if delay heuristic has been called
@@ -74,7 +75,7 @@ public class DSEpointIR {
   // minimum point since threshold are positive values
   public static final DSEpointIR ZERO = new DSEpointIR(0, 0, 0, 0, 0, new HashMap<>(), true);
 
-  public static final String CSV_HEADER_STRING = "Schedulability;Power;Latency;DurationII;Memory;"
+  public static final String CSV_HEADER_STRING = "Schedulability;Energy;Latency;DurationII;Memory;"
       + "AskedCuts;AskedPrecuts";
 
   /**
@@ -112,6 +113,7 @@ public class DSEpointIR {
     this.askedPreCuts = askedPreCuts;
     this.paramsValues = paramsValues;
     this.isSchedulable = isSchedulable;
+    this.configuration = new ArrayList<>();
   }
 
   /**
@@ -127,7 +129,7 @@ public class DSEpointIR {
    *          the memory footprint required to run the application
    */
   public DSEpointIR(final long energy, final int latency, final long durationII, final long memory,
-      final boolean isSchedulable) {
+      final boolean isSchedulable, final List<Long> config) {
     this.energy = energy;
     this.latency = latency;
     this.durationII = durationII;
@@ -136,6 +138,7 @@ public class DSEpointIR {
     this.askedPreCuts = 0;
     this.paramsValues = new HashMap<>();
     this.isSchedulable = isSchedulable;
+    this.configuration = config;
   }
 
   @Override
@@ -176,13 +179,13 @@ public class DSEpointIR {
    * @author ahonorat
    */
   public static class DSEpointGlobalComparator implements Comparator<DSEpointIR> {
-  
+
     protected final List<Comparator<DSEpointIR>> comparators;
     private final ParameterComparator            paramComparator;
     private final boolean                        hasThresholds;
     private final boolean                        delayAcceptance;
     private final int                            delayMaximumLatency;
-  
+
     /**
      * Builds a global comparator calling successively the comparators in the arguments.
      * 
@@ -206,20 +209,20 @@ public class DSEpointIR {
       this.paramComparator = new ParameterComparator(paramsObjvs);
       this.comparators.add(paramComparator);
     }
-  
+
     @Override
     public int compare(DSEpointIR o1, DSEpointIR o2) {
-  
+
       for (final Comparator<DSEpointIR> comparator : comparators) {
         final int res = comparator.compare(o1, o2);
         if (res != 0) {
           return res;
         }
       }
-  
+
       return 0;
     }
-  
+
     /**
      * Computes values of parameters in the current state of their graph.
      * 
@@ -230,7 +233,7 @@ public class DSEpointIR {
     public Map<Pair<String, String>, Long> getParamsValues(final PiGraph graph) {
       return paramComparator.getParamsValues(graph);
     }
-  
+
     /**
      * 
      * @return Whether or not this comparator has at least one threshold.
@@ -238,7 +241,7 @@ public class DSEpointIR {
     public boolean hasThresholds() {
       return hasThresholds;
     }
-  
+
     /**
      * Checks if all threshold comparators are met by the current point.
      * 
@@ -255,10 +258,10 @@ public class DSEpointIR {
           return false;
         }
       }
-  
+
       return true;
     }
-  
+
     /**
      * Checks if all threshold except throughput and energy are met by the current point. If so it may be interesting to
      * add delays. If not, adding delays will worsen the current point result.
@@ -277,10 +280,10 @@ public class DSEpointIR {
           return false;
         }
       }
-  
+
       return true;
     }
-  
+
     /**
      * 
      * @return Maximum latency if specified (greater than 0).
@@ -288,7 +291,7 @@ public class DSEpointIR {
     public int getMaximumLatency() {
       return delayMaximumLatency;
     }
-  
+
     /**
      * Get the maximal latency if specified.
      * 
@@ -304,7 +307,7 @@ public class DSEpointIR {
       }
       return Integer.MAX_VALUE;
     }
-  
+
     /**
      * If minimization of latency or makespan objectives are more important than throughput, then, no delays must be
      * added. (Except to respect graph period, not taken into account here).
@@ -314,7 +317,7 @@ public class DSEpointIR {
     public boolean doesAcceptsMoreDelays() {
       return delayAcceptance;
     }
-  
+
     /**
      * If minimization of latency or makespan objectives are more important than throughput, then, no delays must be
      * added. (Except to respect graph period, not taken into account here).
@@ -344,7 +347,7 @@ public class DSEpointIR {
       // if throughput is more important than latency or makespan, then we can add more delays
       return indexFirstT < indexFirstLMmin;
     }
-  
+
     /**
      * Computes a number of cuts to ask to improve the result.
      * 
@@ -381,30 +384,30 @@ public class DSEpointIR {
           final int maxDelay = (int) Math.ceil((double) durationII / talc.threshold) - 1;
           res = Math.min(res, maxDelay);
         }
-  
+
       }
       // ensures no negative
       return Math.max(res, 0);
     }
-  
+
   }
 
   public static class DSEpointParetoComparator extends DSEpointGlobalComparator {
-  
+
     public DSEpointParetoComparator(List<Comparator<DSEpointIR>> comparators) {
       super(comparators, new LinkedHashMap<Pair<String, String>, Character>());
-      // TODO Auto-generated constructor stub
     }
-  
+
     @Override
     public int compare(DSEpointIR o1, DSEpointIR o2) {
-  
+
       boolean allMetricsGreaterOrEqual = true;
       boolean allMetricsLowerOrEqual = true;
       int res;
-  
+
       for (final Comparator<DSEpointIR> comparator : comparators) {
         res = comparator.compare(o1, o2);
+        // PreesmLogger.getLogger().log(Level.FINE, "resultat : " + res);
         if ((allMetricsGreaterOrEqual == true) && (res < 0)) {
           // if allMetricsGreaterOrEqual already = false don't need to execute the true statement
           allMetricsGreaterOrEqual = false;
@@ -420,10 +423,10 @@ public class DSEpointIR {
         // all the metrics of o1 are lower or equals than the metrics of o2
         return -1;
       }
-  
+
       return 0;
     }
-  
+
   }
 
   public static class ParameterComparator implements Comparator<DSEpointIR> {
