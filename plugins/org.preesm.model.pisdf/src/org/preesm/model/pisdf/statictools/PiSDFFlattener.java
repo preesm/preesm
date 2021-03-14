@@ -53,6 +53,7 @@ import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.AbstractVertex;
 import org.preesm.model.pisdf.BroadcastActor;
 import org.preesm.model.pisdf.ConfigInputPort;
+import org.preesm.model.pisdf.ConfigOutputInterface;
 import org.preesm.model.pisdf.ConfigOutputPort;
 import org.preesm.model.pisdf.DataInputInterface;
 import org.preesm.model.pisdf.DataInputPort;
@@ -332,12 +333,45 @@ public class PiSDFFlattener extends PiMMSwitch<Boolean> {
 
   @Override
   public Boolean caseDataOutputInterface(final DataOutputInterface actor) {
-    final AbstractVertex parent = actor.getContainingPiGraph();
     // if we are at the top level then we keep the data interfaces
     if (PiMMHelper.isVertexAtTopLevel(actor)) {
       // parameters have been resolved we do not need dependencies
       actor.getConfigInputPorts().clear();
       return caseNonExecutableActor(actor);
+    }
+
+    final RoundBufferActor roundbufferOut = createRbForOutputInterface(actor);
+    // Add the actor to the graph
+    this.result.addActor(roundbufferOut);
+
+    // Map the actor for linking latter
+    this.actor2actor.put(actor, roundbufferOut);
+    instantiateDependencies(actor, roundbufferOut);
+    return true;
+  }
+
+  @Override
+  public Boolean caseConfigOutputInterface(final ConfigOutputInterface actor) {
+    // if we are at the top level then we keep the data interfaces
+    if (PiMMHelper.isVertexAtTopLevel(actor)) {
+      // parameters have been resolved we do not need dependencies
+      actor.getConfigInputPorts().clear();
+      return caseNonExecutableActor(actor);
+    }
+
+    final RoundBufferActor roundbufferOut = createRbForOutputInterface(actor);
+    // Add the actor to the graph
+    this.result.addActor(roundbufferOut);
+
+    // Map the actor for linking latter
+    this.actor2actor.put(actor, roundbufferOut);
+    // output dependencies must be carried out later
+    return true;
+  }
+
+  private RoundBufferActor createRbForOutputInterface(final InterfaceActor actor) {
+    if (actor instanceof DataInputInterface) {
+      throw new IllegalArgumentException("This method cannot be used wih input interfaces.");
     }
     // otherwise, we replace the interface
     final RoundBufferActor roundbufferOut = PiMMUserFactory.instance.createRoundBufferActor();
@@ -362,16 +396,10 @@ public class PiSDFFlattener extends PiMMSwitch<Boolean> {
     in.setExpression(sourceRate);
     roundbufferOut.getDataInputPorts().add(in);
 
-    // Add the actor to the graph
-    this.result.addActor(roundbufferOut);
-
-    // Map the actor for linking latter
-    this.actor2actor.put(actor, roundbufferOut);
-    instantiateDependencies(actor, roundbufferOut);
-    return true;
+    return roundbufferOut;
   }
 
-  private void checkInterfaceRate(final InterfaceActor actor, final Expression interfaceRateExpression) {
+  private static void checkInterfaceRate(final InterfaceActor actor, final Expression interfaceRateExpression) {
     final DataPort correspondingPort = actor.getGraphPort();
     final Expression correspondingExpression = correspondingPort.getExpression();
     if (!correspondingExpression.getExpressionAsString().equals(interfaceRateExpression.getExpressionAsString())) {
@@ -474,17 +502,17 @@ public class PiSDFFlattener extends PiMMSwitch<Boolean> {
   }
 
   @Override
+  public Boolean caseDataInputPort(final DataInputPort dip) {
+    throw new UnsupportedOperationException();
+  }
+
+  @Override
   public Boolean caseDataOutputPort(final DataOutputPort dop) {
     throw new UnsupportedOperationException();
   }
 
   @Override
   public Boolean caseDelay(final Delay d) {
-    throw new UnsupportedOperationException();
-  }
-
-  @Override
-  public Boolean caseDataInputPort(final DataInputPort dip) {
     throw new UnsupportedOperationException();
   }
 

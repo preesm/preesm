@@ -178,10 +178,14 @@ public class SubgraphReconnector extends PiMMSwitch<Boolean> {
             cop2.setExpression(cop1.getPortRateExpression().getExpressionAsString());
             cop2.setAnnotation(cop1.getAnnotation());
           }
-          for (final Dependency dep : cop1.getOutgoingDependencies()) {
+          final List<Dependency> depsToReconnect = new ArrayList<>(cop1.getOutgoingDependencies());
+          for (final Dependency dep : depsToReconnect) {
+            // this will also automatically set the setter of the dep to cop2
+            // and remove the dep from the list of outgoing deps of cop1
+            // (this is why we need to copy the list first)
             cop2.getOutgoingDependencies().add(dep);
-            dep.setSetter(cop2);
           }
+
           found = true;
           break;
         }
