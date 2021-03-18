@@ -33,7 +33,7 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL license and that you accept its terms.
  */
-package org.preesm.algorithm.throughput;
+package org.preesm.algorithm.throughput.sdf;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -46,13 +46,13 @@ import org.preesm.algorithm.model.sdf.SDFGraph;
 import org.preesm.algorithm.model.sdf.SDFInterfaceVertex;
 import org.preesm.algorithm.model.sdf.esdf.SDFSinkInterfaceVertex;
 import org.preesm.algorithm.model.sdf.esdf.SDFSourceInterfaceVertex;
-import org.preesm.algorithm.schedule.ALAPSchedulerDAG;
-import org.preesm.algorithm.schedule.ASAPSchedulerDAG;
-import org.preesm.algorithm.schedule.PeriodicSchedulerSDF;
-import org.preesm.algorithm.throughput.tools.GraphStructureHelper;
-import org.preesm.algorithm.throughput.tools.Identifier;
-import org.preesm.algorithm.throughput.tools.SDFTransformer;
-import org.preesm.algorithm.throughput.tools.SrSDFTransformer;
+import org.preesm.algorithm.schedule.sdf.ALAPSchedulerDAG;
+import org.preesm.algorithm.schedule.sdf.ASAPSchedulerDAG;
+import org.preesm.algorithm.schedule.sdf.PeriodicSchedulerSDF;
+import org.preesm.algorithm.throughput.sdf.tools.GraphStructureHelper;
+import org.preesm.algorithm.throughput.sdf.tools.Identifier;
+import org.preesm.algorithm.throughput.sdf.tools.SDFTransformer;
+import org.preesm.algorithm.throughput.sdf.tools.SrSDFTransformer;
 import org.preesm.commons.logger.PreesmLogger;
 
 /**

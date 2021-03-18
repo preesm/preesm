@@ -33,15 +33,15 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL license and that you accept its terms.
  */
-package org.preesm.algorithm.schedule;
+package org.preesm.algorithm.schedule.sdf;
 
 import java.util.ArrayList;
 import org.preesm.algorithm.model.sdf.SDFAbstractVertex;
 import org.preesm.algorithm.model.sdf.SDFEdge;
 import org.preesm.algorithm.model.sdf.SDFGraph;
 import org.preesm.algorithm.model.sdf.SDFInterfaceVertex;
-import org.preesm.algorithm.throughput.tools.GraphSimulationHelper;
-import org.preesm.algorithm.throughput.tools.Stopwatch;
+import org.preesm.algorithm.throughput.sdf.tools.GraphSimulationHelper;
+import org.preesm.algorithm.throughput.sdf.tools.Stopwatch;
 
 /**
  * @author hderoui

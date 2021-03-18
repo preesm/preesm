@@ -43,7 +43,7 @@ import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.osgi.framework.BundleContext;
 import org.preesm.algorithm.mathematicalmodels.PeriodicScheduleModelOjAlgo;
 import org.preesm.algorithm.mathematicalmodels.SolverMethod;
-import org.preesm.algorithm.schedule.PeriodicSchedulerSDF.Method;
+import org.preesm.algorithm.schedule.sdf.PeriodicSchedulerSDF.Method;
 
 /**
  *

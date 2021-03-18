@@ -39,8 +39,8 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.preesm.algorithm.deadlock.IBSDFConsistency;
 import org.preesm.algorithm.model.sdf.SDFGraph;
-import org.preesm.algorithm.throughput.ScheduleReplace;
-import org.preesm.algorithm.throughput.tools.GraphStructureHelper;
+import org.preesm.algorithm.throughput.sdf.ScheduleReplace;
+import org.preesm.algorithm.throughput.sdf.tools.GraphStructureHelper;
 
 /**
  * Unit test of ScheduleReplace class

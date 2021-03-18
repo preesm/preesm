@@ -39,7 +39,7 @@ package org.preesm.algorithm.deadlock;
 import java.util.logging.Level;
 import org.preesm.algorithm.model.sdf.SDFAbstractVertex;
 import org.preesm.algorithm.model.sdf.SDFGraph;
-import org.preesm.algorithm.throughput.tools.Stopwatch;
+import org.preesm.algorithm.throughput.sdf.tools.Stopwatch;
 import org.preesm.commons.logger.PreesmLogger;
 
 /**

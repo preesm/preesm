@@ -39,8 +39,8 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.preesm.algorithm.model.sdf.SDFEdge;
 import org.preesm.algorithm.model.sdf.SDFGraph;
-import org.preesm.algorithm.throughput.tools.GraphStructureHelper;
-import org.preesm.algorithm.throughput.tools.SrSDFTransformer;
+import org.preesm.algorithm.throughput.sdf.tools.GraphStructureHelper;
+import org.preesm.algorithm.throughput.sdf.tools.SrSDFTransformer;
 
 /**
  * Unit test of SrSDFTransformer class
