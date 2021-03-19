@@ -3,6 +3,7 @@ package org.preesm.model.slam.utils;
 import java.util.List;
 import org.preesm.model.slam.CPU;
 import org.preesm.model.slam.Design;
+import org.preesm.model.slam.FPGA;
 import org.preesm.model.slam.ProcessingElement;
 
 /**
@@ -50,7 +51,7 @@ public class SlamDesignPEtypeChecker {
    */
   public static boolean isSingleFPGA(final Design design) {
     List<ProcessingElement> pes = design.getProcessingElements();
-    return (pes.size() == 1 && pes.stream().allMatch(x -> (x instanceof CPU) && x.getInstances().size() == 1));
+    return (pes.size() == 1 && pes.stream().allMatch(x -> (x instanceof FPGA) && x.getInstances().size() == 1));
   }
 
 }
