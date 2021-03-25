@@ -1692,6 +1692,11 @@ public class PiScriptRunner {
       final boolean isMergeable = PortMemoryAnnotation.READ_ONLY.equals(annotation)
           || PortMemoryAnnotation.UNUSED.equals(annotation);
 
+      if (this.dataTypes.indexOfKey(dataType) == -1) {
+        final String message = "Memory Script cannot find " + dataType 
+                + " data type in scenario. Check simulation tab in scenario.";
+        this.logger.log(Level.SEVERE, message); 
+      }      
       final long dataSize = this.dataTypes.get(dataType);
       // Weight is already dataSize * (Cons || prod)
       final long nbTokens = it.getTargetPort().getPortRateExpression().evaluate(); // / dataSize
