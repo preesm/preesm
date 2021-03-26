@@ -9,7 +9,7 @@ PREESM Changelog
 ### Changes
 
 ### Bug fix
-
+* Add explicit log when data type size is not set in scenario making memory scripts crash.
 
 ## Release version 3.21.0
 *2020.10.01*
