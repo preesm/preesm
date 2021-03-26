@@ -52,7 +52,6 @@ import org.eclipse.core.resources.IWorkspace;
 import org.eclipse.core.resources.IWorkspaceRoot;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.IProgressMonitor;
-import org.preesm.algorithm.mapper.model.MapperDAG;
 import org.preesm.algorithm.memalloc.model.Allocation;
 import org.preesm.algorithm.mparameters.DSEpointIR.DSEpointParetoComparator;
 import org.preesm.algorithm.mparameters.DSEpointIR.ParetoPointState;
@@ -90,15 +89,15 @@ import org.preesm.workflow.implement.AbstractWorkflowNodeImplementation;
     inputs = { @Port(name = "PiMM", type = PiGraph.class), @Port(name = "scenario", type = Scenario.class),
         @Port(name = "architecture", type = Design.class) },
 
-    parameters = {
-        @org.preesm.commons.doc.annotations.Parameter(name = ParetoGraphTask.DEFAULT_COMPARISONS_NAME,
-            description = "Order of comparisons of the metrics (T for throughput or P for power or E for energy "
-                + "or L for latency or M for makespan, separated by >). Latency is indexed from 1 to "
-                + "the maximum number of pipeline stages allowed.",
-            values = { @Value(name = ParetoGraphTask.DEFAULT_COMPARAISON_VALUE,
-                effect = "Metrics are compare from left to right.") }),
+    parameters = { @org.preesm.commons.doc.annotations.Parameter(name = ParetoGraphTask.DEFAULT_COMPARISONS_NAME,
+        description = "Metrics used to compare the configurations of an application (T for throughput or P for power or E for energy "
+            + "or L for latency or M for memory, separated by ;). Latency is indexed from 1 to "
+            + "the maximum number of pipeline stages allowed. The order of the list is not important",
+        values = { @Value(name = ParetoGraphTask.DEFAULT_COMPARAISON_VALUE,
+            effect = "List of metrics used to compute the pareto set.") }),
         @org.preesm.commons.doc.annotations.Parameter(name = ParetoGraphTask.DEFAULT_LOG_NAME,
-            description = "Export all explored points with associated metrics in a csv file.", values = {
+            description = "Export all explored points and the pareto set with associated metrics in two csv files.",
+            values = {
                 @Value(name = ParetoGraphTask.DEFAULT_LOG_VALUE, effect = "Path relative to the project root.") }) })
 
 public class ParetoGraphTask extends AbstractTaskImplementation {
@@ -118,13 +117,6 @@ public class ParetoGraphTask extends AbstractTaskImplementation {
     final Scenario scenario = (Scenario) inputs.get(AbstractWorkflowNodeImplementation.KEY_SCENARIO);
     final Design architecture = (Design) inputs.get(AbstractWorkflowNodeImplementation.KEY_ARCHITECTURE);
     final PiGraph graph = (PiGraph) inputs.get(AbstractWorkflowNodeImplementation.KEY_PI_GRAPH);
-    final MapperDAG dag = (MapperDAG) inputs.get(AbstractWorkflowNodeImplementation.KEY_SDF_DAG);
-
-    // final List<Comparator<DSEpointIR>> listComparators = new ArrayList<>();
-    // listComparators.add(new DSEpointIR.ThroughputMaxComparator());
-    // listComparators.add(new DSEpointIR.LatencyMinComparator());
-    // listComparators.add(new DSEpointIR.PowerMinComparator());
-    // listComparators.add(new DSEpointIR.MemoryMinComparator());
 
     final DSEpointParetoComparator paretoComparator = getParetoComparator(parameters, graph);
 
@@ -159,8 +151,7 @@ public class ParetoGraphTask extends AbstractTaskImplementation {
 
     PreesmLogger.getLogger().log(Level.FINE, "Start of the Pareto graph computation");
 
-    listParetoOptimum = paretoDSE(scenario, graph, architecture, dag, mparamsIR, paretoComparator, logDSEpoints,
-        workflow);
+    listParetoOptimum = paretoDSE(scenario, graph, architecture, mparamsIR, paretoComparator, logDSEpoints, workflow);
 
     logCsvParetoSet(logParetoOptimum, listParetoOptimum);
 
@@ -172,7 +163,7 @@ public class ParetoGraphTask extends AbstractTaskImplementation {
   }
 
   protected static List<DSEpointIR> paretoDSE(final Scenario scenario, final PiGraph graph, final Design architecture,
-      final MapperDAG dag, final List<MalleableParameterIR> mparamsIR, final DSEpointParetoComparator paretoComparator,
+      final List<MalleableParameterIR> mparamsIR, final DSEpointParetoComparator paretoComparator,
       final StringBuilder logDSEpoints, Workflow workflow) {
 
     final List<DSEpointIR> paretoPoint = new ArrayList<DSEpointIR>();
@@ -197,7 +188,7 @@ public class ParetoGraphTask extends AbstractTaskImplementation {
           "Return code of the new configuration after the update of the pareto set: " + code.toString() + " of point : "
               + dsep.toString());
 
-      if (((index % 100) == 0) || (index == 89) || (index == 90) || (index == 91) || (index == 92) || (index == 93)) {
+      if ((index % 100) == 0) {
         StringBuilder logParetoOptimum = new StringBuilder();
 
         logCsvParetoSet(logParetoOptimum, paretoPoint);
@@ -271,6 +262,8 @@ public class ParetoGraphTask extends AbstractTaskImplementation {
         switch (paretoComparator.compare(dsep, d)) {
           case -1:
             itPareto.remove();
+            PreesmLogger.getLogger().log(Level.FINE,
+                "the following point has been remooved from the pareto set : " + d.toString());
             returnCode = ParetoPointState.perfectTradeoff;
             break;
           case 1:
@@ -279,20 +272,6 @@ public class ParetoGraphTask extends AbstractTaskImplementation {
           default:
             break;
         }
-
-        // if (allMetricsGreaterOrEqual && allMetricsLowerOrEqual) {
-        // // dsep and d have all their metrics equals (d<=dsep && d=>dsep)
-        // returnCode = ParetoPointState.overlapPoint;
-        // }
-        // if (!allMetricsLowerOrEqual && allMetricsGreaterOrEqual) {
-        // // all the metrics of dsep are greater or equals than the metrics of d
-        // return ParetoPointState.notRelevantTradeoff;
-        // }
-        // if (allMetricsLowerOrEqual && (allMetricsGreaterOrEqual == false)) {
-        // // all the metrics of dsep are lower or equals than the metrics of d
-        // itPareto.remove();
-        // returnCode = ParetoPointState.perfectTradeoff;
-        // }
       }
     }
     if (returnCode == ParetoPointState.newTradeoff || returnCode == ParetoPointState.perfectTradeoff) {
@@ -337,13 +316,13 @@ public class ParetoGraphTask extends AbstractTaskImplementation {
     final IMemoryAllocation simpleAlloc = new LegacyMemoryAllocation();
     final Allocation alloc = simpleAlloc.allocateMemory(dag, architecture, scenario, scheduleAndMap.schedule,
         scheduleAndMap.mapping);
-    final Long memory = alloc.getPhysicalBuffers().get(alloc.getPhysicalBuffers().size() - 1).getSize();
-    // final Long memory = (long) 14400;
+    final Long memory = alloc.getPhysicalBuffers().get(0).getSize();
     PreesmLogger.getLogger().log(Level.ALL, "\t memory computed");
 
     // put back all messages
 
     PreesmLogger.getLogger().setLevel(backupLevel);
+    PreesmLogger.getLogger().log(Level.FINE, "Number of physical buffer :  " + alloc.getPhysicalBuffers().size());
     return new DSEpointIR(energy, iterationDelay, durationII, memory, true, configuration);
   }
 
@@ -386,8 +365,7 @@ public class ParetoGraphTask extends AbstractTaskImplementation {
       }
     }
 
-    DSEpointParetoComparator paretoComparator = new DSEpointParetoComparator(listComparators);
-    return paretoComparator;
+    return new DSEpointParetoComparator(listComparators);
   }
 
   public static List<Long> getConfiguration(final List<MalleableParameterIR> mparamsIR) {
