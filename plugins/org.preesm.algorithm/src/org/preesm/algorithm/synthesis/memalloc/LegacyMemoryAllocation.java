@@ -88,6 +88,49 @@ import org.preesm.model.slam.utils.SlamDesignPEtypeChecker;
  */
 public class LegacyMemoryAllocation implements IMemoryAllocation {
 
+  /**
+   * Parameters of all workflow tasks called during the allocation.
+   */
+  protected final Map<String, String> parameters;
+
+  /**
+   * Creates new legacy memory allocation process, with default parameters.
+   */
+  public LegacyMemoryAllocation() {
+    parameters = getDefaultParameters();
+  }
+
+  /**
+   * Creates new legacy memory allocation process, with parameters given as an argument.
+   * 
+   * @param parameters
+   *          Parameters replacing the default values given by {@link #getDefaultParameters()}
+   */
+  public LegacyMemoryAllocation(Map<String, String> parameters) {
+    this();
+    this.parameters.putAll(parameters);
+  }
+
+  /**
+   * Get the default parameters of the legacy memory allocation process, for all workflow tasks called during this
+   * process.
+   * 
+   * @return Default values of parameters used by the workflow tasks computing the legacy memory allocation.
+   */
+  public static Map<String, String> getDefaultParameters() {
+    final Map<String, String> parameters = new LinkedHashMap<>();
+    parameters.put(MemoryScriptTask.PARAM_VERBOSE, MemoryScriptTask.VALUE_TRUE);
+    parameters.put(MemoryScriptTask.PARAM_CHECK, MemoryScriptTask.VALUE_CHECK_THOROUGH);
+    parameters.put(MemoryScriptTask.PARAM_LOG, MemoryScriptTask.VALUE_LOG);
+    parameters.put(MemoryAllocatorTask.PARAM_VERBOSE, MemoryAllocatorTask.VALUE_TRUE_FALSE_DEFAULT);
+    parameters.put(MemoryAllocatorTask.PARAM_ALLOCATORS, MemoryAllocatorTask.VALUE_ALLOCATORS_DEFAULT);
+    parameters.put(MemoryAllocatorTask.PARAM_XFIT_ORDER, MemoryAllocatorTask.VALUE_XFIT_ORDER_DEFAULT);
+    parameters.put(MemoryAllocatorTask.PARAM_NB_SHUFFLE, MemoryAllocatorTask.VALUE_NB_SHUFFLE_DEFAULT);
+    parameters.put(MemoryAllocatorTask.PARAM_ALIGNMENT, MemoryAllocatorTask.VALUE_ALIGNEMENT_DEFAULT);
+    parameters.put(MemoryAllocatorTask.PARAM_DISTRIBUTION_POLICY, MemoryAllocatorTask.VALUE_DISTRIBUTION_MIXED_MERGED);
+    return parameters;
+  }
+
   @Override
   public Allocation allocateMemory(final PiGraph piGraph, final Design slamDesign, final Scenario scenario,
       final Schedule schedule, final Mapping mapping) {
@@ -117,17 +160,6 @@ public class LegacyMemoryAllocation implements IMemoryAllocation {
     // *************
     // SCRIPTS
     // *************
-    final Map<String, String> parameters = new LinkedHashMap<>();
-    parameters.put(MemoryScriptTask.PARAM_VERBOSE, MemoryScriptTask.VALUE_TRUE);
-    parameters.put(MemoryScriptTask.PARAM_CHECK, MemoryScriptTask.VALUE_CHECK_THOROUGH);
-    parameters.put(MemoryScriptTask.PARAM_LOG, MemoryScriptTask.VALUE_LOG);
-    parameters.put(MemoryAllocatorTask.PARAM_VERBOSE, MemoryAllocatorTask.VALUE_TRUE_FALSE_DEFAULT);
-    parameters.put(MemoryAllocatorTask.PARAM_ALLOCATORS, MemoryAllocatorTask.VALUE_ALLOCATORS_DEFAULT);
-    parameters.put(MemoryAllocatorTask.PARAM_XFIT_ORDER, MemoryAllocatorTask.VALUE_XFIT_ORDER_DEFAULT);
-    parameters.put(MemoryAllocatorTask.PARAM_NB_SHUFFLE, MemoryAllocatorTask.VALUE_NB_SHUFFLE_DEFAULT);
-    parameters.put(MemoryAllocatorTask.PARAM_ALIGNMENT, MemoryAllocatorTask.VALUE_ALIGNEMENT_DEFAULT);
-    parameters.put(MemoryAllocatorTask.PARAM_DISTRIBUTION_POLICY, MemoryAllocatorTask.VALUE_DISTRIBUTION_MIXED_MERGED);
-
     final String log = parameters.get(MemoryScriptTask.PARAM_LOG);
     final String checkString = parameters.get(MemoryScriptTask.PARAM_CHECK);
     final String valueAlignment = parameters.get(MemoryAllocatorTask.PARAM_ALIGNMENT);
