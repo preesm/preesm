@@ -282,7 +282,6 @@ class Timings {
 	op long evaluateExecutionTimeOrDefault(AbstractActor actor, Component component) {
 		return evaluateTimingOrDefault(actor, component, TimingType.EXECUTION_TIME)
 	}
-// check this merge!!
 	op long evaluateTimingOrDefault(AbstractActor actor, Component component, TimingType timingType) {
 		if (this.actorTimings.containsKey(actor)) {
 			val String timingExpression = getTimingOrDefault(actor, component, timingType);
