@@ -13,6 +13,7 @@ PREESM Changelog
 * (scenario) multiple kinds of timings can be stored, especially for FPGA.
 
 ### Bug fix
+* Add explicit log when data type size is not set in scenario making memory scripts crash.
 * Fix #303 : (Linux only) error with SWT_AWT is now correctly handled.
 * Fix integration test : reinforcement learning scenario for training uses
 the training graph now.
