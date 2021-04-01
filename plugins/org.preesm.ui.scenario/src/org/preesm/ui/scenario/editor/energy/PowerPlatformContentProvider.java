@@ -75,7 +75,7 @@ public class PowerPlatformContentProvider implements IStructuredContentProvider 
       /**
        * PE powers are added for all operator types if non present
        */
-      for (final Component opDefId : design.getOperatorComponents()) {
+      for (final Component opDefId : design.getProcessingElements()) {
         if (!energyConfig.getPlatformPower().containsKey(opDefId.getVlnv().getName())) {
           energyConfig.getPlatformPower().put(opDefId.getVlnv().getName(),
               (double) ScenarioConstants.DEFAULT_POWER_PE.getValue());

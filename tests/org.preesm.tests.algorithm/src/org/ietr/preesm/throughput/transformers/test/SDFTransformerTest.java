@@ -40,8 +40,8 @@ import org.junit.Test;
 import org.preesm.algorithm.model.sdf.SDFAbstractVertex;
 import org.preesm.algorithm.model.sdf.SDFEdge;
 import org.preesm.algorithm.model.sdf.SDFGraph;
-import org.preesm.algorithm.throughput.tools.GraphStructureHelper;
-import org.preesm.algorithm.throughput.tools.SDFTransformer;
+import org.preesm.algorithm.throughput.sdf.tools.GraphStructureHelper;
+import org.preesm.algorithm.throughput.sdf.tools.SDFTransformer;
 
 /**
  * Unit test of SDFTransformer class

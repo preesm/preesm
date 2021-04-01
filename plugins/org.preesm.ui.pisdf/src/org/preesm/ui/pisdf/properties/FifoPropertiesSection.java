@@ -54,6 +54,8 @@ import org.eclipse.ui.views.properties.tabbed.ITabbedPropertyConstants;
 import org.eclipse.ui.views.properties.tabbed.TabbedPropertySheetPage;
 import org.eclipse.ui.views.properties.tabbed.TabbedPropertySheetWidgetFactory;
 import org.preesm.commons.math.ExpressionEvaluationException;
+import org.preesm.model.pisdf.ConfigOutputInterface;
+import org.preesm.model.pisdf.ConfigOutputPort;
 import org.preesm.model.pisdf.DataPort;
 import org.preesm.model.pisdf.Expression;
 import org.preesm.model.pisdf.Fifo;
@@ -328,21 +330,26 @@ public class FifoPropertiesSection extends DataPortPropertiesUpdater implements 
 
       if (bo instanceof Fifo) {
         final Fifo fifo = (Fifo) bo;
-        final Expression srcRate = fifo.getSourcePort().getPortRateExpression();
+
+        final DataPort srcPort = fifo.getSourcePort();
+        final Expression srcRate = srcPort.getPortRateExpression();
         final String srcExprString = srcRate.getExpressionAsString();
 
-        final Expression tgtRate = fifo.getTargetPort().getPortRateExpression();
-        final String tgtExprString = tgtRate.getExpressionAsString();
-
-        this.txtTypeObj.setText(fifo.getType());
         this.txtSourcePortExpression.setEnabled(true);
         if (!this.txtSourcePortExpression.getText().equals(srcExprString)) {
           this.txtSourcePortExpression.setText(srcExprString);
         }
+
+        final DataPort tgtPort = fifo.getTargetPort();
+        final Expression tgtRate = tgtPort.getPortRateExpression();
+        final String tgtExprString = tgtRate.getExpressionAsString();
+
         this.txtTargetPortExpression.setEnabled(true);
         if (!this.txtTargetPortExpression.getText().equals(tgtExprString)) {
           this.txtTargetPortExpression.setText(tgtExprString);
         }
+
+        this.txtTypeObj.setText(fifo.getType());
 
         try {
           // try out evaluating the expression
@@ -366,6 +373,19 @@ public class FifoPropertiesSection extends DataPortPropertiesUpdater implements 
           this.lblTargetPortValueObj.setText("Error : " + e.getMessage());
           this.txtTargetPortExpression.setBackground(new Color(null, 240, 150, 150));
         }
+
+        if (srcPort instanceof ConfigOutputPort) {
+          this.txtSourcePortExpression.setEnabled(false);
+          this.txtTypeObj.setEnabled(false);
+          this.lblSourcePortValueObj.setText("Rate of a config output port is always 1 long.");
+        }
+
+        if (tgtPort.getContainingActor() instanceof ConfigOutputInterface) {
+          this.txtTargetPortExpression.setEnabled(false);
+          this.txtTypeObj.setEnabled(false);
+          this.lblTargetPortValueObj.setText("Rate of a config output interface is always 1 long.");
+        }
+
       }
 
     }

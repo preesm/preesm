@@ -68,6 +68,7 @@ import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.model.scenario.Scenario;
 import org.preesm.model.slam.ComponentInstance;
 import org.preesm.model.slam.Design;
+import org.preesm.model.slam.utils.SlamDesignPEtypeChecker;
 import org.preesm.workflow.elements.Workflow;
 import org.preesm.workflow.implement.AbstractTaskImplementation;
 import org.preesm.workflow.implement.AbstractWorkflowNodeImplementation;
@@ -113,9 +114,17 @@ public abstract class AbstractMappingFromDAG extends AbstractTaskImplementation 
       throw new PreesmRuntimeException(" graph can't be scheduled, check console messages");
     }
 
+    // this is currently true for all tasks implementing this abstraction and their derived classes
+    // if a new subclass supports FPGA, this check will have to be duplicated in all subclasses
+    if (!SlamDesignPEtypeChecker.isOnlyCPU(architecture)) {
+      throw new PreesmRuntimeException(
+          "This task must be called with architectures containing only CPU processing elements.");
+    }
+
     final AbcParameters abcParams = new AbcParameters(parameters);
 
-    final MapperDAG clonedDag = dag.copy();
+    // if used instead of dag, fails the majority of integration tests
+    // final MapperDAG clonedDag = dag.copy();
 
     final LatencyAbc simu = new InfiniteHomogeneousAbc(abcParams, dag, architecture,
         abcParams.getSimulatorType().getTaskSchedType(), scenario);

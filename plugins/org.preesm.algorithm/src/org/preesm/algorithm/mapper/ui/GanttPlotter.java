@@ -59,9 +59,8 @@ import javax.swing.JMenuItem;
 import javax.swing.JRootPane;
 import javax.swing.WindowConstants;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.SWTError;
 import org.eclipse.swt.awt.SWT_AWT;
-import org.eclipse.swt.events.SelectionAdapter;
-import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
@@ -100,8 +99,8 @@ public class GanttPlotter {
   /**
    * Initial dimensions of the window
    */
-  public static final int xDimension = 700;
-  public static final int yDimension = 500;
+  public static final int WIN_DIMENSION_X = 700;
+  public static final int WIN_DIMENSION_Y = 500;
 
   /**
    * Creates a chart.
@@ -216,8 +215,8 @@ public class GanttPlotter {
     // JChart init
     final Map<String, Color> idTOcolor = new TreeMap<>();
     final JFreeChart chart = createChart(createDataset(ganttData, idTOcolor), idTOcolor);
-    ChartPanel cp = new ChartPanel(chart);
-    cp.setPreferredSize(new java.awt.Dimension(GanttPlotter.xDimension, GanttPlotter.yDimension));
+    final ChartPanel cp = new ChartPanel(chart);
+    cp.setPreferredSize(new java.awt.Dimension(GanttPlotter.WIN_DIMENSION_X, GanttPlotter.WIN_DIMENSION_Y));
     cp.setMouseZoomable(true, true);
     cp.setMouseWheelEnabled(true);
     final CategoryPlot categoryPlot = cp.getChart().getCategoryPlot();
@@ -227,7 +226,7 @@ public class GanttPlotter {
     cp.getPopupMenu().add(menuItem);
 
     final JFrame helpFrame = new JFrame("Gantt Help");
-    helpFrame.setSize(xDimension / 2, yDimension / 2);
+    helpFrame.setSize(WIN_DIMENSION_X / 2, WIN_DIMENSION_Y / 2);
     helpFrame.setLocationRelativeTo(cp);
     helpFrame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
 
@@ -246,7 +245,7 @@ public class GanttPlotter {
       ((JFrame) frame).setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
       RefineryUtilities.centerFrameOnScreen(frame);
 
-      plotFrameCP(frame, cp);
+      ChartPanelPlotterUtils.plotFrameCP(frame, cp);
 
     } else {
 
@@ -257,19 +256,20 @@ public class GanttPlotter {
       final Composite composite = new Composite(form.getBody(), SWT.EMBEDDED | SWT.FILL);
       Frame frame = null;
       try {
+        // related to PREESM issue #303
         // may not work because of a libswt-awt-gtk4928+.so bug which is not our responsability
         // see following bug report
         // https://bugs.eclipse.org/bugs/show_bug.cgi?id=558874
         // another bug prevents to generate the exception correctly, it has been fixed in latest swt
         // see following bug report
         // https://bugs.eclipse.org/bugs/show_bug.cgi?id=558681
-        // TODO this bug appears in other parts of Preesm using SWT_AWT:
+        // This bug appears in other parts of Preesm using SWT_AWT:
         // org/preesm/algorithm/mapper/ui/BestCostPlotter.java
         // (but we do not care since calling code is deprecated: Fast and PFast schedulers)
         // org/preesm/algorithm/mapper/ui/stats/PerformancePlotter.java
         // (we care but not too much since it is not used with the new Synthesis)
         frame = SWT_AWT.new_Frame(composite);
-      } catch (UnsatisfiedLinkError e) {
+      } catch (UnsatisfiedLinkError | SWTError e) {
         // we catch this error since we can recover from it
         // Level.WARNING may stop the workflow depending on options
         // and as we are in a separate thread, events are not always well managed ...
@@ -291,7 +291,7 @@ public class GanttPlotter {
         Container awtContainer = root.getContentPane();
         awtContainer.add(cp);
         frame.add(root);
-        plotFrameCP(frame, cp);
+        ChartPanelPlotterUtils.plotFrameCP(frame, cp);
 
       } else {
         // plot in a new window if user clicks on the button
@@ -301,17 +301,10 @@ public class GanttPlotter {
         externalDisplayButton
             .setToolTipText("We must do this because of a bug on Linux due to GTK/Eclipse most probably ...");
 
-        externalDisplayButton.addSelectionListener(new SelectionAdapterPlottingCP(cp));
+        externalDisplayButton.addSelectionListener(new ChartPanelPlotterUtils.SelectionAdapterPlottingCP(cp));
 
       }
     }
-  }
-
-  private static void plotFrameCP(Frame frame, ChartPanel cp) {
-    frame.add(cp);
-    // Set the visibility as true, thereby displaying it
-    frame.setVisible(true);
-    frame.pack();
   }
 
   /**
@@ -321,35 +314,10 @@ public class GanttPlotter {
    */
   public static LinearGradientPaint getBackgroundColorGradient() {
     final Point2D start = new Point2D.Float(0, 0);
-    final Point2D end = new Point2D.Float(xDimension, yDimension);
+    final Point2D end = new Point2D.Float(WIN_DIMENSION_X, WIN_DIMENSION_Y);
     final float[] dist = { 0.0f, 0.8f };
     final Color[] colors = { new Color(170, 160, 190), Color.WHITE };
     return new LinearGradientPaint(start, end, dist, colors);
-  }
-
-  /**
-   * 
-   * @author ahonorat
-   *
-   */
-  private static class SelectionAdapterPlottingCP extends SelectionAdapter {
-
-    final ChartPanel cp;
-
-    private SelectionAdapterPlottingCP(ChartPanel cp) {
-      this.cp = cp;
-    }
-
-    @Override
-    public void widgetSelected(final SelectionEvent e) {
-      Frame frame = new JFrame("Gantt Chart Plotter");
-      ((JFrame) frame).setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
-      RefineryUtilities.centerFrameOnScreen(frame);
-
-      plotFrameCP(frame, cp);
-
-    }
-
   }
 
 }

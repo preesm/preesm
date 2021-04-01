@@ -58,6 +58,7 @@ import javax.xml.parsers.ParserConfigurationException;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.emf.common.util.ECollections;
+import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.Actor;
@@ -79,6 +80,7 @@ import org.preesm.model.scenario.util.ScenarioUserFactory;
 import org.preesm.model.slam.Component;
 import org.preesm.model.slam.ComponentInstance;
 import org.preesm.model.slam.Design;
+import org.preesm.model.slam.TimingType;
 import org.preesm.model.slam.serialize.SlamParser;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -408,13 +410,13 @@ public class ScenarioParser {
             try {
               this.scenario.setAlgorithm(PiParser.getPiGraphWithReconnection(url));
             } catch (final Exception e) {
-              PreesmLogger.getLogger().log(Level.SEVERE, "Could not parse the algorithm: " + e.getMessage(), e);
+              throw new PreesmRuntimeException("Could not parse the algorithm: " + e.getMessage(), e);
             }
           } else if (type.equals("architecture")) {
             try {
               initializeArchitectureInformation(url);
             } catch (final Exception e) {
-              PreesmLogger.getLogger().log(Level.SEVERE, "Could not parse the architecture: " + e.getMessage(), e);
+              throw new PreesmRuntimeException("Could not parse the architecture: " + e.getMessage(), e);
             }
           } else if (type.equals("codegenDirectory")) {
             this.scenario.setCodegenDirectory(url);
@@ -835,14 +837,20 @@ public class ScenarioParser {
       if (type.equals("timing")) {
         final String vertexpath = timingElt.getAttribute("vertexname");
         final String opdefname = timingElt.getAttribute("opname");
+        final String timingTypeName = timingElt.getAttribute("timingtype");
         final String stringValue = timingElt.getAttribute("time");
 
         final Design design = this.scenario.getDesign();
         final boolean contains = design.containsComponent(opdefname);
         final AbstractActor lookup = VertexPath.lookup(this.scenario.getAlgorithm(), vertexpath);
+        TimingType timingType = TimingType.getByName(timingTypeName);
+        // Mutation to load Scenario not specialized per TimingType
+        if (timingType == null) {
+          timingType = TimingType.EXECUTION_TIME;
+        }
         if ((lookup != null) && contains) {
           final Component component = design.getComponent(opdefname);
-          this.scenario.getTimings().setTiming(lookup, component, stringValue);
+          this.scenario.getTimings().setTiming(lookup, component, timingType, stringValue);
         }
       }
     }

@@ -52,7 +52,6 @@ import org.eclipse.graphiti.mm.pictograms.BoxRelativeAnchor;
 import org.eclipse.graphiti.mm.pictograms.ChopboxAnchor;
 import org.eclipse.graphiti.mm.pictograms.Connection;
 import org.eclipse.graphiti.mm.pictograms.ContainerShape;
-import org.eclipse.graphiti.ui.features.DefaultDeleteFeature;
 import org.preesm.model.pisdf.Dependency;
 
 /**
@@ -61,7 +60,7 @@ import org.preesm.model.pisdf.Dependency;
  * @author kdesnos
  *
  */
-public class DeleteParameterizableFeature extends DefaultDeleteFeature {
+public class DeleteParameterizableFeature extends DeletePiMMelementFeature {
 
   /**
    * Default constructor for the {@link DeleteParameterizableFeature}.
@@ -128,7 +127,7 @@ public class DeleteParameterizableFeature extends DefaultDeleteFeature {
     super.preDelete(context);
 
     // Delete all the dependencies linked to this parameterizable element
-    final ContainerShape cs = (ContainerShape) context.getPictogramElement();
+    final ContainerShape cs = (ContainerShape) pe;
 
     // Scan the anchors
     final EList<Anchor> anchors = cs.getAnchors();
@@ -145,4 +144,18 @@ public class DeleteParameterizableFeature extends DefaultDeleteFeature {
       }
     }
   }
+
+  /*
+   * (non-Javadoc)
+   *
+   * @see org.eclipse.graphiti.ui.features.DefaultDeleteFeature#canDelete(org.eclipse.graphiti.features.context.
+   * IDeleteContext)
+   */
+  @Override
+  public boolean canDelete(final IDeleteContext context) {
+    // if the small triangle (BoxRelativAnchor) below the interface name is selected,
+    // we do not authorize the deletion
+    return (context.getPictogramElement() instanceof ContainerShape);
+  }
+
 }

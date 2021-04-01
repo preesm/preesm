@@ -112,6 +112,7 @@ public class CreateConfigOutputInterfaceFeature extends AbstractCreateFeature {
     // create ConfigOutInterface
     final ConfigOutputInterface newCfgOutIf = PiMMUserFactory.instance.createConfigOutputInterface();
     newCfgOutIf.setName(newCfgOutName);
+    newCfgOutIf.getDataPort().setName(newCfgOutName);
 
     // Add new ConfigOutInterface to the graph.
     if (graph.addActor(newCfgOutIf)) {

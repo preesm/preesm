@@ -5,11 +5,20 @@ PREESM Changelog
 *XXXX.XX.XX*
 
 ### New Feature
+ * new task "pisdf-synthesis.fpga-estimations" to analyse applications on FPGA architectures.
 
 ### Changes
+* (PiSDF) Flattening and SRDAG transformations now support data interfaces at top-level.
+* (SLAM) FPGA and CPU processing elements have they own type, which replace Operators.
+* (scenario) multiple kinds of timings can be stored, especially for FPGA.
 
 ### Bug fix
 * Add explicit log when data type size is not set in scenario making memory scripts crash.
+* Fix #303 : (Linux only) error with SWT_AWT is now correctly handled.
+* Fix integration test : reinforcement learning scenario for training uses
+the training graph now.
+* UI of PiSDF : better support of interfaces and model updates from GUI.
+
 
 ## Release version 3.21.0
 *2020.10.01*

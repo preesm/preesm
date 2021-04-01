@@ -46,8 +46,8 @@ import org.preesm.algorithm.model.sdf.SDFEdge;
 import org.preesm.algorithm.model.sdf.SDFGraph;
 import org.preesm.algorithm.model.sdf.esdf.SDFSinkInterfaceVertex;
 import org.preesm.algorithm.model.sdf.esdf.SDFSourceInterfaceVertex;
-import org.preesm.algorithm.throughput.tools.GraphStructureHelper;
-import org.preesm.algorithm.throughput.tools.Stopwatch;
+import org.preesm.algorithm.throughput.sdf.tools.GraphStructureHelper;
+import org.preesm.algorithm.throughput.sdf.tools.Stopwatch;
 
 /**
  * Unit test of GraphStrucutureHelper class

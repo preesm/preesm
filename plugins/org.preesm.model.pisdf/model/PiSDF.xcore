@@ -192,6 +192,10 @@ abstract class AbstractActor extends Configurable {
 	op unique DataPort[] getAllDataPorts() {
 		return (dataInputPorts + dataOutputPorts).toEList.unmodifiableView
 	}
+	op unique DataOutputPort[] getAllConnectedDataOutputPorts() {
+		return (dataOutputPorts + configOutputPorts).filter[it.outgoingFifo !== null].toEList.unmodifiableView
+	}
+	
 	op unique Port[] getAllConfigPorts() {
 		return (super.allConfigPorts + configOutputPorts).toEList.unmodifiableView
 	}
@@ -267,6 +271,7 @@ class PiGraph extends AbstractActor, Graph, PeriodicElement {
 	op unique Dependency[] getDependencies() {
 		return edges.filter(Dependency).toEList.unmodifiableView
 	}
+	
 	op unique boolean removeActor(AbstractActor actor) {
 		vertices.remove(actor);
 	}
@@ -277,9 +282,13 @@ class PiGraph extends AbstractActor, Graph, PeriodicElement {
 	op unique boolean removeFifo(Fifo fifo) {
 		edges.remove(fifo)
 	}
+	op unique boolean removeParameter(Parameter param) {
+		vertices.remove(param);
+	}
 	op unique boolean removeDependency(Dependency dep) {
 		edges.remove(dep)
 	}
+	
 	op unique Parameter[] getOnlyParameters() {
 		return parameters.filter(it|!((it instanceof ConfigInputInterface) || (it instanceof ConfigOutputInterface) )).
 			toEList.unmodifiableView
@@ -331,15 +340,11 @@ class PiGraph extends AbstractActor, Graph, PeriodicElement {
 	op unique DataOutputInterface[] getDataOutputInterfaces() {
 		return actors.filter(DataOutputInterface).toEList.unmodifiableView
 	}
+	op unique ConfigOutputInterface[] getConfigOutputInterfaces() {
+		return actors.filter(ConfigOutputInterface).toEList.unmodifiableView
+	}
 	op Parameter lookupParameterGivenGraph(String parameterName , String graphName) {
 		return allParameters.findFirst[it.name == parameterName && (it.containingPiGraph).name == graphName]
-	}
-	/*
-	 * Find the first {@link DataPort} of this {@link PiGraph} whose name matches the name of the {@link InterfaceActor} given as argument.
-	 * Return null if none matches.
-	 */
-	op DataPort lookupGraphDataPortForInterfaceActor(InterfaceActor interfaceActor) {
-		return allDataPorts.findFirst[it.name == interfaceActor.name]
 	}
 	op AbstractVertex lookupVertex(String vertexName) {
 		return (actors + parameters).findFirst[it.name == vertexName]
@@ -636,8 +641,8 @@ class Fifo extends Edge {
 	}
 }
 
-interface InterfaceActor extends AbstractActor {
-	refers Port graphPort
+interface InterfaceActor extends NonExecutableActor {
+	refers DataPort graphPort
 	op DataPort getDataPort() {
 		// Data in/out interfaces have only one data port
 		return allDataPorts.get(0)

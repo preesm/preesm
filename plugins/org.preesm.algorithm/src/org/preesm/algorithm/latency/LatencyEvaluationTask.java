@@ -44,10 +44,10 @@ import org.preesm.algorithm.deadlock.IBSDFConsistency;
 import org.preesm.algorithm.deadlock.IBSDFLiveness;
 import org.preesm.algorithm.model.sdf.SDFAbstractVertex;
 import org.preesm.algorithm.model.sdf.SDFGraph;
-import org.preesm.algorithm.schedule.ASAPSchedulerDAG;
-import org.preesm.algorithm.throughput.tools.GraphStructureHelper;
-import org.preesm.algorithm.throughput.tools.IBSDFTransformer;
-import org.preesm.algorithm.throughput.tools.SrSDFTransformer;
+import org.preesm.algorithm.schedule.sdf.ASAPSchedulerDAG;
+import org.preesm.algorithm.throughput.sdf.tools.GraphStructureHelper;
+import org.preesm.algorithm.throughput.sdf.tools.IBSDFTransformer;
+import org.preesm.algorithm.throughput.sdf.tools.SrSDFTransformer;
 import org.preesm.commons.doc.annotations.Parameter;
 import org.preesm.commons.doc.annotations.Port;
 import org.preesm.commons.doc.annotations.PreesmTask;
@@ -217,7 +217,7 @@ public class LatencyEvaluationTask extends AbstractTaskImplementation {
         if ("vertex".equals(actor.getKind())) {
           if (actor.getGraphDescription() == null) {
             // if atomic actor then copy the duration indicated in the scenario
-            final double duration = scenario.getTimings().evaluateTimingOrDefault(
+            final double duration = scenario.getTimings().evaluateExecutionTimeOrDefault(
                 (AbstractActor) actor.getReferencePiVertex(),
                 scenario.getSimulationInfo().getMainOperator().getComponent());
             actor.setPropertyValue(DURATION_LITTERAL, duration);
@@ -225,12 +225,12 @@ public class LatencyEvaluationTask extends AbstractTaskImplementation {
             // if hierarchical actor then as default the duration is 1
             // the real duration of the hierarchical actor will be defined later by scheduling its subgraph
             actor.setPropertyValue(DURATION_LITTERAL, 1.);
-            scenario.getTimings().setTiming((AbstractActor) actor.getReferencePiVertex(),
+            scenario.getTimings().setExecutionTime((AbstractActor) actor.getReferencePiVertex(),
                 scenario.getSimulationInfo().getMainOperator().getComponent(), 1); // to remove
           }
         } else {
           // keep the duration of input interfaces
-          final double duration = scenario.getTimings().evaluateTimingOrDefault(
+          final double duration = scenario.getTimings().evaluateExecutionTimeOrDefault(
               (AbstractActor) actor.getReferencePiVertex(),
               scenario.getSimulationInfo().getMainOperator().getComponent());
           actor.setPropertyValue(DURATION_LITTERAL, duration);

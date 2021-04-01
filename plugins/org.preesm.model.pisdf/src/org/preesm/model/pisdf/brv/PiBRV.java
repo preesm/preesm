@@ -152,10 +152,10 @@ public abstract class PiBRV {
     PiGraph motherGraph = graph.getContainingPiGraph();
     if (motherGraph != null) {
       // otherwise it means that we compute a local BRV (from GUI)
-      DataPort opposite = graph.lookupGraphDataPortForInterfaceActor(ia);
+      DataPort opposite = ia.getGraphPort();
       long oppositeRate = opposite.getExpression().evaluate();
       if (/* motherGraph != graph && */oppositeRate != rate) {
-        String msg = "DataPort [" + opposite.getName() + "] of actor [" + opposite.getContainingActor().getName()
+        String msg = "DataPort [" + opposite.getName() + "] of actor [" + opposite.getContainingActor().getVertexPath()
             + "] has different rates from inner interface definition: inner " + rate + " -- outer " + oppositeRate;
         throw new PreesmRuntimeException(msg);
       }

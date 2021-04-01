@@ -275,6 +275,7 @@ public final class PiMMUserFactory extends PiMMFactoryImpl implements PreesmUser
   public ConfigOutputPort createConfigOutputPort() {
     final ConfigOutputPort res = super.createConfigOutputPort();
     res.setExpression(createExpression());
+    res.setExpression(1L);
     return res;
   }
 
@@ -393,6 +394,7 @@ public final class PiMMUserFactory extends PiMMFactoryImpl implements PreesmUser
   public ConfigOutputInterface createConfigOutputInterface() {
     final ConfigOutputInterface res = super.createConfigOutputInterface();
     final DataInputPort port = PiMMUserFactory.instance.createDataInputPort();
+    port.setExpression(1L);
     res.getDataInputPorts().add(port);
     return res;
   }

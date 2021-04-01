@@ -149,6 +149,7 @@ import org.preesm.ui.pisdf.features.DeleteDelayFeature;
 import org.preesm.ui.pisdf.features.DeleteDependencyFeature;
 import org.preesm.ui.pisdf.features.DeleteFifoFeature;
 import org.preesm.ui.pisdf.features.DeleteParameterizableFeature;
+import org.preesm.ui.pisdf.features.DeletePiMMelementFeature;
 import org.preesm.ui.pisdf.features.DirectEditingAbstractActorNameFeature;
 import org.preesm.ui.pisdf.features.ExportSVGFeature;
 import org.preesm.ui.pisdf.features.LayoutActorFeature;
@@ -477,8 +478,7 @@ public class PiMMFeatureProvider extends DefaultFeatureProvider {
       if (eContainer instanceof ExecutableActor) {
         return new DeleteActorPortFeature(PiMMFeatureProvider.this);
       } else if (eContainer instanceof InterfaceActor) {
-        // We do not allow deletion of the port of an InterfaceVertex
-        // through the GUI
+        // We do not allow deletion of the port of an InterfaceActor through the GUI
         return new DefaultDeleteFeature(PiMMFeatureProvider.this) {
           @Override
           public boolean canDelete(final IDeleteContext context) {
@@ -486,7 +486,7 @@ public class PiMMFeatureProvider extends DefaultFeatureProvider {
           }
         };
       } else {
-        return new DefaultDeleteFeature(PiMMFeatureProvider.this);
+        return new DeletePiMMelementFeature(PiMMFeatureProvider.this);
       }
     }
 
@@ -517,7 +517,7 @@ public class PiMMFeatureProvider extends DefaultFeatureProvider {
 
     @Override
     public IDeleteFeature defaultCase(final EObject object) {
-      return new DefaultDeleteFeature(PiMMFeatureProvider.this);
+      return new DeletePiMMelementFeature(PiMMFeatureProvider.this);
     }
   }
 
@@ -541,7 +541,7 @@ public class PiMMFeatureProvider extends DefaultFeatureProvider {
       final PiMMDeleteFeatureSelectionSwitch piMMDeleteFeatureSelectionSwitch = new PiMMDeleteFeatureSelectionSwitch();
       delFeature = piMMDeleteFeatureSelectionSwitch.doSwitch((EObject) bo);
     } else {
-      delFeature = new DefaultDeleteFeature(this);
+      delFeature = new DeletePiMMelementFeature(this);
     }
 
     return delFeature;

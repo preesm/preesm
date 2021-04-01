@@ -54,7 +54,6 @@ import org.eclipse.graphiti.mm.pictograms.FreeFormConnection;
 import org.eclipse.graphiti.mm.pictograms.PictogramElement;
 import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.preesm.model.pisdf.Delay;
-import org.preesm.model.pisdf.DelayActor;
 import org.preesm.model.pisdf.Fifo;
 
 /**
@@ -83,14 +82,15 @@ public class DeleteDelayFeature extends DeleteParameterizableFeature {
   @Override
   public void preDelete(final IDeleteContext context) {
 
-    // Transform the two connections linked to the delay back into a single
-    // one. before deleting the delay.
+    // here super.preDelete is called at the end so we cannot use pe and pimmObject from super class
     final PictogramElement pictogramElement = context.getPictogramElement();
     final Delay delay = (Delay) getBusinessObjectForPictogramElement(pictogramElement);
 
+    // Transform the two connections linked to the delay back into a single
+    // one before deleting the delay.
     if (delay != null) {
-      // if multiple selection and a delay is selected, it may have been removed previously by actor removal
 
+      // if multiple selection and a delay is selected, it may have been removed previously by actor removal
       final Object[] allBusinessObjectsForPictogramElement = getAllBusinessObjectsForPictogramElement(pictogramElement);
       if (allBusinessObjectsForPictogramElement.length > 0) {
         // only disconnect if business delay exists.
@@ -101,11 +101,6 @@ public class DeleteDelayFeature extends DeleteParameterizableFeature {
       // Super call to delete the dependencies linked to the delay
       // Do it after deleting the connection (if it exists) to avoid looping infinitely
       super.preDelete(context);
-
-      // Remove the contained delay actor
-      final DelayActor delayActor = delay.getActor();
-      delayActor.getContainingPiGraph().removeActor(delayActor);
-
     }
   }
 

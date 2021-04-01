@@ -61,6 +61,7 @@ import org.preesm.model.pisdf.util.VertexPath;
 import org.preesm.model.scenario.Scenario;
 import org.preesm.model.slam.Component;
 import org.preesm.model.slam.ComponentInstance;
+import org.preesm.model.slam.ProcessingElement;
 
 /**
  * Importing timings in a scenario from a papify generated csv file. task names are rows while operators are columns
@@ -91,7 +92,7 @@ public class PapifyTimingParser {
    * @param opDefIds
    *          the op def ids
    */
-  public void parse(final String url, final List<Component> opDefIds) {
+  public void parse(final String url, final List<ProcessingElement> opDefIds) {
     PreesmLogger.getLogger().log(Level.INFO,
         "Importing timings from a papify generated csv sheet. Non precised timings are kept unmodified.");
 
@@ -196,7 +197,8 @@ public class PapifyTimingParser {
    * @throws CoreException
    *           the core exception
    */
-  private void parseTimings(final Map<AbstractActor, Map<Component, String>> timings, final List<Component> opDefIds) {
+  private void parseTimings(final Map<AbstractActor, Map<Component, String>> timings,
+      final List<ProcessingElement> opDefIds) {
     // Depending on the type of SDF graph we process (IBSDF or PISDF), call
     // one or the other method
     final PiGraph currentGraph = scenario.getAlgorithm();
@@ -214,7 +216,7 @@ public class PapifyTimingParser {
    *          the op def ids
    */
   private void parseTimingsForPISDFGraph(final Map<AbstractActor, Map<Component, String>> timings,
-      final PiGraph currentGraph, final List<Component> opDefIds) {
+      final PiGraph currentGraph, final List<ProcessingElement> opDefIds) {
 
     // parse timings of non hierarchical actors of currentGraph
     currentGraph.getActorsWithRefinement().stream().filter(a -> !a.isHierarchical())
@@ -234,7 +236,7 @@ public class PapifyTimingParser {
    *          the op def ids
    */
   private void parseTimingForVertex(final Map<AbstractActor, Map<Component, String>> timings, final AbstractActor actor,
-      final List<Component> componentList) {
+      final List<ProcessingElement> componentList) {
     // For each kind of processing elements, we look for a timing for given vertex
     for (final Component component : componentList) {
       if (component != null && actor != null) {
@@ -242,7 +244,7 @@ public class PapifyTimingParser {
         try {
           final String expression = timings.get(actor).get(component);
 
-          this.scenario.getTimings().setTiming(actor, component, expression);
+          this.scenario.getTimings().setExecutionTime(actor, component, expression);
 
           final String msg = "Importing timing: " + actor.getVertexPath() + " on " + component.getVlnv().getName()
               + " takes " + expression;

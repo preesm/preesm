@@ -1,6 +1,7 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2011 - 2019) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2011 - 2020) :
  *
+ * Mickaël Dardaillon [mickael.dardaillon@insa-rennes.fr] (2020)
  * Alexandre Honorat [alexandre.honorat@insa-rennes.fr] (2019)
  * Antoine Morvan [antoine.morvan@insa-rennes.fr] (2017 - 2019)
  * Clément Guy [clement.guy@insa-rennes.fr] (2014 - 2015)
@@ -40,7 +41,6 @@
  */
 package org.preesm.ui.scenario.editor.timings;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -89,6 +89,8 @@ import org.preesm.model.scenario.Scenario;
 import org.preesm.model.scenario.impl.MemoryInfoImpl;
 import org.preesm.model.slam.Component;
 import org.preesm.model.slam.Design;
+import org.preesm.model.slam.ProcessingElement;
+import org.preesm.model.slam.TimingType;
 import org.preesm.ui.scenario.editor.FileSelectionAdapter;
 import org.preesm.ui.scenario.editor.Messages;
 import org.preesm.ui.scenario.editor.ScenarioPage;
@@ -116,10 +118,57 @@ public class TimingsPage extends ScenarioPage {
   TableViewer tableViewer = null;
 
   /** The pisdf column names. */
-  private static final String[] PISDF_COLUMN_NAMES = { "Actors", "Input Parameters", "Expression", "Evaluation",
-      "Value" };
+  public enum TimingColumn {
+    ACTORS(0, "Actors", 200),
 
-  private static final int[] PISDF_COLUMN_SIZES = { 200, 200, 200, 50, 50 };
+    PARAMETERS(1, "Input Parameters", 200),
+
+    EXPRESSION(2, "Expression", 200),
+
+    STATUS(3, "Status", 50),
+
+    VALUE(4, "Value", 50);
+
+    public final int    columnIndex;
+    public final String name;
+    public final int    width;
+
+    TimingColumn(int columnIndex, String name, int width) {
+      this.columnIndex = columnIndex;
+      this.name = name;
+      this.width = width;
+    }
+
+    private static TimingColumn[] safeValuesByIndex() {
+      int length = TimingColumn.values().length;
+      TimingColumn[] orderedValues = new TimingColumn[length];
+      for (TimingColumn tc : TimingColumn.values()) {
+        orderedValues[tc.columnIndex] = tc;
+      }
+      return orderedValues;
+    }
+
+    private static int getSumColWidth() {
+      int sum = 0;
+      for (TimingColumn tc : TimingColumn.values()) {
+        sum += tc.width;
+      }
+      return sum;
+    }
+
+  }
+
+  /* Indexed version of the above enum. */
+  private static final TimingColumn[] columnTypes = TimingColumn.safeValuesByIndex();
+
+  static TimingColumn getTimingColumnTypeFromIndex(int columnIndex) {
+    if (columnTypes.length > columnIndex && columnIndex >= 0) {
+      return columnTypes[columnIndex];
+    }
+    return null;
+  }
+
+  static final int SUM_COL_WIDTH = TimingColumn.getSumColWidth();
 
   /**
    * Instantiates a new timings page.
@@ -354,8 +403,12 @@ public class TimingsPage extends ScenarioPage {
         new GridData(GridData.FILL_HORIZONTAL | GridData.VERTICAL_ALIGN_BEGINNING));
     final FormToolkit toolkit = managedForm.getToolkit();
 
-    final Combo coreCombo = addCoreSelector(container, toolkit);
-    addTimingsTable(container, toolkit, coreCombo);
+    final Composite combosContainer = toolkit.createComposite(container);
+    combosContainer.setLayout(new GridLayout(2, true));
+    final Combo coreCombo = addCoreSelector(combosContainer, toolkit);
+    final Combo timingTypeCombo = addTimingTypeSelector(combosContainer, toolkit, coreCombo);
+
+    addTimingsTable(container, toolkit, coreCombo, timingTypeCombo);
   }
 
   /**
@@ -377,9 +430,9 @@ public class TimingsPage extends ScenarioPage {
 
     combocps.setVisible(true);
     final Combo combo = new Combo(combocps, SWT.DROP_DOWN | SWT.READ_ONLY);
-    combo.setToolTipText(Messages.getString("Constraints.coreSelectionTooltip"));
-    comboDataInit(combo);
-    combo.select(0);
+    combo.setToolTipText(Messages.getString("Timings.coreSelectionTooltip"));
+    final Design design = this.scenario.getDesign();
+    comboCoreDataInit(combo, design);
     return combo;
   }
 
@@ -388,13 +441,60 @@ public class TimingsPage extends ScenarioPage {
    *
    * @param combo
    *          the combo
+   * @param design
+   *          the design
    */
-  private void comboDataInit(final Combo combo) {
+  private static void comboCoreDataInit(final Combo combo, final Design design) {
     combo.removeAll();
-    final Design design = this.scenario.getDesign();
-    for (final Component defId : design.getOperatorComponents()) {
+    for (final ProcessingElement defId : design.getProcessingElements()) {
       combo.add(defId.getVlnv().getName());
     }
+    combo.select(0);
+  }
+
+  /**
+   * Adds a combo box for the timing type selection.
+   *
+   * @param parent
+   *          the parent
+   * @param toolkit
+   *          the toolkit
+   * @param coreCombo
+   *          the coreCombo
+   * @return the combo
+   */
+  private Combo addTimingTypeSelector(final Composite parent, final FormToolkit toolkit, final Combo coreCombo) {
+    final Composite combocps = toolkit.createComposite(parent);
+    combocps.setLayout(new FillLayout());
+
+    final GridData componentNameGridData = new GridData();
+    componentNameGridData.widthHint = 250;
+    combocps.setLayoutData(componentNameGridData);
+
+    combocps.setVisible(true);
+    final Combo combo = new Combo(combocps, SWT.DROP_DOWN | SWT.READ_ONLY);
+    combo.setToolTipText(Messages.getString("Timings.timingTypeSelectionTooltip"));
+    String peName = coreCombo.getItem(coreCombo.getSelectionIndex());
+    ProcessingElement pe = this.scenario.getDesign().getProcessingElement(peName);
+    comboTimingTypeDataInit(combo, pe);
+    return combo;
+  }
+
+  /**
+   * Combo data init.
+   *
+   * @param combo
+   *          the combo
+   * @param pe
+   *          current pe
+   */
+  protected static void comboTimingTypeDataInit(final Combo combo, final ProcessingElement pe) {
+    // TODO make timing type selection dynamic based on selected processing element
+    combo.removeAll();
+    for (final TimingType timingType : pe.getTimingTypes()) {
+      combo.add(timingType.getLiteral());
+    }
+    combo.select(0);
   }
 
   /**
@@ -406,8 +506,11 @@ public class TimingsPage extends ScenarioPage {
    *          the toolkit
    * @param coreCombo
    *          the core combo
+   * @param timingTypeCombo
+   *          the timing type combo
    */
-  private void addTimingsTable(final Composite parent, final FormToolkit toolkit, final Combo coreCombo) {
+  private void addTimingsTable(final Composite parent, final FormToolkit toolkit, final Combo coreCombo,
+      final Combo timingTypeCombo) {
 
     final Composite tablecps = toolkit.createComposite(parent);
     tablecps.setVisible(true);
@@ -424,26 +527,27 @@ public class TimingsPage extends ScenarioPage {
     this.tableViewer.setContentProvider(new PreesmAlgorithmListContentProvider());
 
     final TimingsTableLabelProvider labelProvider = new TimingsTableLabelProvider(this.scenario, this.tableViewer,
-        this);
+        coreCombo, timingTypeCombo, this);
     this.tableViewer.setLabelProvider(labelProvider);
     coreCombo.addSelectionListener(labelProvider);
+    timingTypeCombo.addSelectionListener(labelProvider);
 
     // Create columns
-    final String[] columnNames = PISDF_COLUMN_NAMES;
-
-    final List<TableColumn> columns = new ArrayList<>();
-    for (int i = 0; i < columnNames.length; i++) {
-      final TableColumn column = new TableColumn(table, SWT.NONE, i);
-      column.setText(columnNames[i]);
-      column.setWidth(PISDF_COLUMN_SIZES[i]);
-      columns.add(column);
+    final TableColumn[] columns = new TableColumn[TimingColumn.values().length];
+    final String[] columnNames = new String[TimingColumn.values().length];
+    for (TimingColumn timingColumn : columnTypes) {
+      final TableColumn column = new TableColumn(table, SWT.NONE, timingColumn.columnIndex);
+      columnNames[timingColumn.columnIndex] = timingColumn.name;
+      column.setText(timingColumn.name);
+      column.setWidth(timingColumn.width);
+      columns[timingColumn.columnIndex] = column;
     }
 
     final CellEditor[] editors = new CellEditor[table.getColumnCount()];
     for (int i = 0; i < table.getColumnCount(); i++) {
       editors[i] = new TextCellEditor(table);
     }
-    this.tableViewer.setColumnProperties(PISDF_COLUMN_NAMES);
+    this.tableViewer.setColumnProperties(columnNames);
     this.tableViewer.setCellEditors(editors);
 
     this.tableViewer.setCellModifier(new ICellModifier() {
@@ -453,13 +557,14 @@ public class TimingsPage extends ScenarioPage {
           final TableItem ti = (TableItem) element;
           final AbstractActor actor = (AbstractActor) ti.getData();
           final String componentType = coreCombo.getText();
-          final Component component = TimingsPage.this.scenario.getDesign().getComponent(componentType);
+          final ProcessingElement proc = TimingsPage.this.scenario.getDesign().getProcessingElement(componentType);
+          final TimingType timingType = TimingType.get(timingTypeCombo.getText());
 
-          final String oldValue = TimingsPage.this.scenario.getTimings().getTimingOrDefault(actor, component);
+          final String oldValue = TimingsPage.this.scenario.getTimings().getTimingOrDefault(actor, proc, timingType);
           final String newValue = (String) value;
 
           if (!oldValue.equals(newValue)) {
-            TimingsPage.this.scenario.getTimings().setTiming(actor, component, newValue);
+            TimingsPage.this.scenario.getTimings().setTiming(actor, proc, timingType, newValue);
             firePropertyChange(IEditorPart.PROP_DIRTY);
             tableViewer.refresh(actor, false, false);
           }
@@ -472,20 +577,20 @@ public class TimingsPage extends ScenarioPage {
           final AbstractActor actor = (AbstractActor) element;
           final String componentType = coreCombo.getText();
           final Component component = TimingsPage.this.scenario.getDesign().getComponent(componentType);
-          return TimingsPage.this.scenario.getTimings().getTimingOrDefault(actor, component);
+          final TimingType timingType = TimingType.get(timingTypeCombo.getText());
+          return TimingsPage.this.scenario.getTimings().getTimingOrDefault(actor, component, timingType);
         }
         return "";
       }
 
       @Override
       public boolean canModify(final Object element, final String property) {
-        return property.contentEquals(PISDF_COLUMN_NAMES[2]);
+        return property.contentEquals(TimingColumn.EXPRESSION.name);
       }
     });
 
     final Table tref = table;
     final Composite comp = tablecps;
-    final List<TableColumn> fColumns = columns;
 
     // Setting the column width
     tablecps.addControlListener(new ControlAdapter() {
@@ -499,9 +604,9 @@ public class TimingsPage extends ScenarioPage {
           final Point vBarSize = vBar.getSize();
           width -= vBarSize.x;
         }
-        for (final TableColumn col : fColumns) {
-
-          col.setWidth((width / PISDF_COLUMN_NAMES.length) - 1);
+        float ratio = width / (float) SUM_COL_WIDTH;
+        for (final TimingColumn tc : columnTypes) {
+          columns[tc.columnIndex].setWidth((int) Math.floor(ratio * tc.width) - 1);
         }
         tref.setSize(area.width, area.height);
       }

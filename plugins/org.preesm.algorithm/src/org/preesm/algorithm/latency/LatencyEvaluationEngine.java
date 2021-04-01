@@ -43,9 +43,9 @@ import java.util.logging.Level;
 import org.preesm.algorithm.model.sdf.SDFAbstractVertex;
 import org.preesm.algorithm.model.sdf.SDFEdge;
 import org.preesm.algorithm.model.sdf.SDFGraph;
-import org.preesm.algorithm.throughput.tools.GraphStructureHelper;
-import org.preesm.algorithm.throughput.tools.SDFTransformer;
-import org.preesm.algorithm.throughput.tools.Stopwatch;
+import org.preesm.algorithm.throughput.sdf.tools.GraphStructureHelper;
+import org.preesm.algorithm.throughput.sdf.tools.SDFTransformer;
+import org.preesm.algorithm.throughput.sdf.tools.Stopwatch;
 import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.scenario.Scenario;
@@ -86,7 +86,8 @@ public class LatencyEvaluationEngine {
       } else {
         // case of regular actor : get its latency from the scenario
         if (scenario != null) {
-          actorLatency = scenario.getTimings().evaluateTimingOrDefault((AbstractActor) actor.getReferencePiVertex(),
+          actorLatency = scenario.getTimings().evaluateExecutionTimeOrDefault(
+              (AbstractActor) actor.getReferencePiVertex(),
               scenario.getSimulationInfo().getMainOperator().getComponent());
         } else {
           actorLatency = actor.getPropertyBean().getValue(DURATION_LITERAL);
@@ -128,7 +129,8 @@ public class LatencyEvaluationEngine {
       } else {
         // case of regular actor : get its latency from the scenario
         if (scenario != null) {
-          actorLatency = scenario.getTimings().evaluateTimingOrDefault((AbstractActor) actor.getReferencePiVertex(),
+          actorLatency = scenario.getTimings().evaluateExecutionTimeOrDefault(
+              (AbstractActor) actor.getReferencePiVertex(),
               scenario.getSimulationInfo().getMainOperator().getComponent());
         } else {
           actorLatency = actor.getPropertyBean().getValue(DURATION_LITERAL);
@@ -298,7 +300,8 @@ public class LatencyEvaluationEngine {
         // get actor duration
         double duration;
         if (this.scenario != null) {
-          duration = this.scenario.getTimings().evaluateTimingOrDefault((AbstractActor) actor.getReferencePiVertex(),
+          duration = this.scenario.getTimings().evaluateExecutionTimeOrDefault(
+              (AbstractActor) actor.getReferencePiVertex(),
               scenario.getSimulationInfo().getMainOperator().getComponent());
         } else {
           duration = (Double) actor.getPropertyBean().getValue(DURATION_LITERAL);

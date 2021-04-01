@@ -33,7 +33,7 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL license and that you accept its terms.
  */
-package org.preesm.algorithm.schedule;
+package org.preesm.algorithm.schedule.sdf;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -45,9 +45,9 @@ import org.preesm.algorithm.mathematicalmodels.SolverMethod;
 import org.preesm.algorithm.model.sdf.SDFAbstractVertex;
 import org.preesm.algorithm.model.sdf.SDFEdge;
 import org.preesm.algorithm.model.sdf.SDFGraph;
-import org.preesm.algorithm.throughput.tools.GraphStructureHelper;
-import org.preesm.algorithm.throughput.tools.SDFTransformer;
-import org.preesm.algorithm.throughput.tools.Stopwatch;
+import org.preesm.algorithm.throughput.sdf.tools.GraphStructureHelper;
+import org.preesm.algorithm.throughput.sdf.tools.SDFTransformer;
+import org.preesm.algorithm.throughput.sdf.tools.Stopwatch;
 import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.preesm.commons.math.MathFunctionsHelper;
 

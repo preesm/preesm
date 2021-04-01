@@ -368,7 +368,7 @@ public class IBSDFThroughputEvaluator extends ThroughputEvaluator {
         if (referencePiMMVertex instanceof AbstractActor) {
           final Component component = scenario.getSimulationInfo().getMainOperator().getComponent();
           final AbstractActor actor = (AbstractActor) referencePiMMVertex;
-          l = this.getScenar().getTimings().evaluateTimingOrDefault(actor, component);
+          l = this.getScenar().getTimings().evaluateExecutionTimeOrDefault(actor, component);
         } else {
           l = 0;
         }

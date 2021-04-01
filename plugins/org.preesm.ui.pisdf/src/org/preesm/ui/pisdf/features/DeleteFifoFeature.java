@@ -47,7 +47,6 @@ import org.eclipse.graphiti.features.context.impl.MultiDeleteInfo;
 import org.eclipse.graphiti.features.context.impl.RemoveContext;
 import org.eclipse.graphiti.mm.pictograms.AnchorContainer;
 import org.eclipse.graphiti.mm.pictograms.Connection;
-import org.eclipse.graphiti.ui.features.DefaultDeleteFeature;
 import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.preesm.model.pisdf.Delay;
 import org.preesm.model.pisdf.Fifo;
@@ -60,7 +59,7 @@ import org.preesm.ui.pisdf.features.helper.DelayOppositeFifoRetriever;
  * @author kdesnos
  *
  */
-public class DeleteFifoFeature extends DefaultDeleteFeature implements DelayOppositeFifoRetriever {
+public class DeleteFifoFeature extends DeletePiMMelementFeature implements DelayOppositeFifoRetriever {
 
   /**
    * If the {@link Fifo} has a {@link Delay}, it is associated to 2 {@link Connection}. One of the two
@@ -87,9 +86,9 @@ public class DeleteFifoFeature extends DefaultDeleteFeature implements DelayOppo
    */
   @Override
   public void preDelete(final IDeleteContext context) {
-    // If the Fifo has a delay, first delete it.
-    final Connection connection = (Connection) context.getPictogramElement();
 
+    // here super.preDelete is called at the end so we cannot use pe and pimmObject from super class
+    final Connection connection = (Connection) context.getPictogramElement();
     final Fifo fifo = (Fifo) getBusinessObjectForPictogramElement(connection);
 
     AnchorContainer delayFeature = null;
@@ -97,10 +96,11 @@ public class DeleteFifoFeature extends DefaultDeleteFeature implements DelayOppo
 
     Delay delay = fifo.getDelay();
 
+    // If the Fifo has a delay, first delete it.
     if (delay != null) {
+
       // Is the "first half" of the connection (the one before the delay)
       // the one given to the delete context, except if delay on getter.
-
       AnchorContainer parent = connection.getStart().getParent();
       Object obj = getBusinessObjectForPictogramElement(parent);
       if (obj instanceof Delay && obj == delay) {

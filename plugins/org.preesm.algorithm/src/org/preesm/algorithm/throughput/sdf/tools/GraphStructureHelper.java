@@ -33,7 +33,7 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL license and that you accept its terms.
  */
-package org.preesm.algorithm.throughput.tools;
+package org.preesm.algorithm.throughput.sdf.tools;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -683,7 +683,7 @@ public interface GraphStructureHelper {
       if (scenario != null) {
         final Component component = scenario.getSimulationInfo().getMainOperator().getComponent();
         AbstractActor referencePiMMVertex = currentSource.getReferencePiVertex();
-        actorDuration = scenario.getTimings().evaluateTimingOrDefault(referencePiMMVertex, component);
+        actorDuration = scenario.getTimings().evaluateExecutionTimeOrDefault(referencePiMMVertex, component);
       } else {
         actorDuration = currentSource.getPropertyBean().getValue(GraphStructureHelper.DURATION_PROPERTY);
       }

@@ -586,16 +586,21 @@ public class PiParser {
     sourcePortName = (sourcePortName.isEmpty()) ? null : sourcePortName;
     String targetPortName = edgeElt.getAttribute(PiIdentifiers.FIFO_TARGET_PORT);
     targetPortName = (targetPortName.isEmpty()) ? null : targetPortName;
-    final DataOutputPort oPort = (DataOutputPort) lookForPort(source.getDataOutputPorts(), sourcePortName);
-    final DataInputPort iPort = (DataInputPort) lookForPort(target.getDataInputPorts(), targetPortName);
 
-    if (oPort == null) {
-      throw new PreesmRuntimeException(
-          "Edge source port " + sourcePortName + " does not exist for vertex " + sourceName);
-    }
+    final DataInputPort iPort = (DataInputPort) lookForPort(target.getDataInputPorts(), targetPortName);
     if (iPort == null) {
       throw new PreesmRuntimeException(
           "Edge target port " + targetPortName + " does not exist for vertex " + targetName);
+    }
+
+    DataOutputPort oPort = (DataOutputPort) lookForPort(source.getDataOutputPorts(), sourcePortName);
+    if (oPort == null) {
+      // then try among ConfigOutputPort
+      oPort = (DataOutputPort) lookForPort(source.getConfigOutputPorts(), sourcePortName);
+      if (oPort == null) {
+        throw new PreesmRuntimeException(
+            "Edge source port " + sourcePortName + " does not exist for vertex " + sourceName);
+      }
     }
 
     final Fifo fifo = PiMMUserFactory.instance.createFifo(oPort, iPort, type);

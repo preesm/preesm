@@ -40,6 +40,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map.Entry;
 import java.util.stream.Collectors;
+import org.eclipse.emf.common.util.EMap;
 import org.eclipse.xtext.xbase.lib.Pair;
 import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.preesm.model.pisdf.AbstractActor;
@@ -51,6 +52,8 @@ import org.preesm.model.scenario.Scenario;
 import org.preesm.model.scenario.ScenarioConstants;
 import org.preesm.model.slam.Component;
 import org.preesm.model.slam.ComponentInstance;
+import org.preesm.model.slam.ProcessingElement;
+import org.preesm.model.slam.TimingType;
 
 /**
  * Class regrouping information related to an AbstractActor for the spider 2 codegen. Information such as timings,
@@ -125,14 +128,15 @@ public class Spider2CodegenActor {
   }
 
   private void generateTimings() {
-    final List<Entry<Component, String>> timings = this.scenario.getTimings().getActorTimings().get(actor);
+    final List<
+        Entry<Component, EMap<TimingType, String>>> timings = this.scenario.getTimings().getActorTimings().get(actor);
     if (timings != null) {
-      for (final Entry<Component, String> timing : timings) {
+      for (final Entry<Component, EMap<TimingType, String>> timing : timings) {
         final Component operator = timing.getKey();
-        this.timingList.add(new Pair<>(operator.getVlnv().getName(), timing.getValue()));
+        this.timingList.add(new Pair<>(operator.getVlnv().getName(), timing.getValue().get(TimingType.EXECUTION_TIME)));
       }
     }
-    final List<Component> components = this.scenario.getDesign().getOperatorComponents();
+    final List<ProcessingElement> components = this.scenario.getDesign().getProcessingElements();
     if (this.timingList.size() != components.size()) {
       final List<Component> defaultTimingComponents = components.stream()
           .filter(x -> this.timingList.stream().filter(p -> p.getKey().equals(x.getVlnv().getName())).count() == 0)

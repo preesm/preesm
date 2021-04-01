@@ -62,9 +62,6 @@ public class PerformancePage extends FormPage {
   /** The class generating the performance data. */
   private IStatGenerator statGen = null;
 
-  /** The class plotting the performance data. */
-  private PerformancePlotter plotter = null;
-
   /**
    * Instantiates a new performance page.
    *
@@ -97,7 +94,6 @@ public class PerformancePage extends FormPage {
     final GridLayout layout = new GridLayout();
     form.getBody().setLayout(layout);
 
-    this.plotter = new PerformancePlotter("Comparing the obtained speedup to ideal speedups");
     createChartSection(managedForm, Messages.getString("Performance.Chart.title"),
         Messages.getString("Performance.Chart.description"));
 
@@ -177,11 +173,11 @@ public class PerformancePage extends FormPage {
     final FormToolkit toolkit = mform.getToolkit();
 
     if ((workLength > 0) && (spanLength > 0) && (finalTime > 0) && (resultNbCores > 0)) {
-      this.plotter.setData(workLength, spanLength, finalTime, resultNbCores, resultNbMainCores);
-      this.plotter.display(client);
+      PerformancePlotter.display(toolkit, client, this.statGen);
     }
 
     toolkit.paintBordersFor(client);
+
   }
 
   public IStatGenerator getStatGen() {

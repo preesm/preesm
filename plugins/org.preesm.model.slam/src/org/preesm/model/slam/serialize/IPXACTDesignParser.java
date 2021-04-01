@@ -221,7 +221,8 @@ public class IPXACTDesignParser extends IPXACTParser {
     final EList<ComponentInstance> componentInstances = design.getComponentInstances();
     final Set<Integer> usedIDs = componentInstances.stream().map(ComponentInstance::getHardwareId)
         .collect(Collectors.toSet());
-
+    // this looks completely useless because the parseHardwareID method throws exceptions
+    // if one hardwareId is unset so it is dead code
     final List<ComponentInstance> unsetHardwareIDComponentInstances = componentInstances.stream()
         .filter(c -> c.getHardwareId() == -1).collect(Collectors.toList());
     if (!unsetHardwareIDComponentInstances.isEmpty()) {

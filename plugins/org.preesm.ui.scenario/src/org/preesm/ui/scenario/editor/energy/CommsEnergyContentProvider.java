@@ -69,7 +69,7 @@ public class CommsEnergyContentProvider implements IStructuredContentProvider {
       /**
        * Comms energies are added between all operator types if non present
        */
-      for (final Component opDefId : design.getOperatorComponents()) {
+      for (final Component opDefId : design.getProcessingElements()) {
         energyConfig.createNewCommNodeIfNeeded(opDefId.getVlnv().getName());
       }
 

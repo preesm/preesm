@@ -50,6 +50,7 @@ import org.eclipse.graphiti.mm.pictograms.Diagram;
 import org.eclipse.graphiti.mm.pictograms.PictogramElement;
 import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.ConfigInputPort;
+import org.preesm.model.pisdf.ConfigOutputInterface;
 import org.preesm.model.pisdf.ConfigOutputPort;
 import org.preesm.model.pisdf.DataInputPort;
 import org.preesm.model.pisdf.DataOutputPort;
@@ -398,6 +399,9 @@ public class CreateFifoFeature extends AbstractCreateConnectionFeature {
     final Fifo fifo = PiMMUserFactory.instance.createFifo();
     fifo.setSourcePort(source);
     fifo.setTargetPort(target);
+    if ((source instanceof ConfigOutputPort) || (target.getContainingActor() instanceof ConfigOutputInterface)) {
+      fifo.setType("long");
+    }
 
     // Add the new Fifo to the graph
     graph.addFifo(fifo);

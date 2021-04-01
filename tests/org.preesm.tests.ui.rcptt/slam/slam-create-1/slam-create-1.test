@@ -6,8 +6,8 @@ Element-Type: testcase
 Element-Version: 3.0
 External-Reference: 
 Id: _jBIQ8AIPEem5ROe3sIoWRg
-Runtime-Version: 2.4.2.201905080442
-Save-Time: 7/5/19, 11:03 AM
+Runtime-Version: 2.5.1.M3
+Save-Time: 2/10/21 12:57 PM
 Testcase-Type: ecl
 Verifications: _0QDPgAIZEem_19ziQctLSg
 
@@ -25,7 +25,7 @@ with [get-editor "4CoresX86.slam"] {
     with [get-palette] {
         get-palette-entry hierConnection | mouse-move 11 2 -height 23 -width 125
         get-palette-entry contentionComNode | mouse-move 34 0 -height 23 -width 125
-        with [get-palette-entry Operator] {
+        with [get-palette-entry CPU] {
             mouse-move 52 12 button1 -height 23 -width 125
             mouse-press 52 12 button1 -height 23 -width 125
             mouse-release 52 12 button1 524288 -height 23 -width 125
@@ -44,7 +44,7 @@ with [get-window "New vertex"] {
 with [get-editor "4CoresX86.slam"] {
     with [get-palette] {
         get-palette-entry contentionComNode | mouse-move 44 4 -height 23 -width 125
-        with [get-palette-entry Operator] {
+        with [get-palette-entry CPU] {
             mouse-move 82 10 button1 -height 23 -width 125
             mouse-press 82 10 button1 -height 23 -width 125
             mouse-release 82 10 button1 524288 -height 23 -width 125
@@ -61,7 +61,7 @@ with [get-window "New vertex"] {
     get-button OK | click
 }
 with [get-editor "4CoresX86.slam"] {
-    with [get-palette | get-palette-entry Operator] {
+    with [get-palette | get-palette-entry CPU] {
         mouse-move 34 10 button1 -height 23 -width 125
         mouse-press 34 10 button1 -height 23 -width 125
         mouse-release 34 10 button1 524288 -height 23 -width 125
@@ -77,7 +77,7 @@ with [get-window "New vertex"] {
     get-button OK | click
 }
 with [get-editor "4CoresX86.slam"] {
-    with [get-palette | get-palette-entry Operator] {
+    with [get-palette | get-palette-entry CPU] {
         mouse-move 37 13 button1 -height 23 -width 125
         mouse-press 37 13 button1 -height 23 -width 125
         mouse-release 37 13 button1 524288 -height 23 -width 125

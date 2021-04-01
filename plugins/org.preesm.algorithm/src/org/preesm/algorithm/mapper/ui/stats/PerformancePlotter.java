@@ -40,17 +40,19 @@
  */
 package org.preesm.algorithm.mapper.ui.stats;
 
-import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Container;
 import java.awt.Frame;
-import java.awt.event.WindowEvent;
 import java.util.logging.Level;
 import javax.swing.BorderFactory;
-import javax.swing.JPanel;
+import javax.swing.JRootPane;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.SWTError;
 import org.eclipse.swt.awt.SWT_AWT;
 import org.eclipse.swt.layout.FillLayout;
+import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
 import org.jfree.chart.axis.NumberAxis;
@@ -59,8 +61,7 @@ import org.jfree.chart.plot.CombinedDomainXYPlot;
 import org.jfree.chart.plot.XYPlot;
 import org.jfree.chart.renderer.xy.XYSplineRenderer;
 import org.jfree.data.xy.DefaultXYDataset;
-import org.jfree.ui.ApplicationFrame;
-import org.preesm.algorithm.mapper.ui.MouseClickedListener;
+import org.preesm.algorithm.mapper.ui.ChartPanelPlotterUtils;
 import org.preesm.commons.logger.PreesmLogger;
 
 /**
@@ -68,60 +69,37 @@ import org.preesm.commons.logger.PreesmLogger;
  *
  * @author mpelcat
  */
-public class PerformancePlotter extends ApplicationFrame {
-
-  private static final long serialVersionUID = 1L;
-
-  /** The data set containing the speedups. */
-  private DefaultXYDataset speedups;
-
-  /** Display panel. */
-  private ChartPanel chartPanel = null;
+public class PerformancePlotter {
 
   /**
-   * Constructs a new demonstration application.
-   *
-   * @param title
-   *          the frame title.
+   * Initial dimensions of the window
    */
-  public PerformancePlotter(final String title) {
-
-    super(title);
-
-    final JFreeChart chart = createChart(title);
-    final JPanel content = new JPanel(new BorderLayout());
-
-    this.chartPanel = new ChartPanel(chart);
-    content.add(this.chartPanel);
-
-    this.chartPanel.setPreferredSize(new java.awt.Dimension(500, 470));
-    this.chartPanel.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
-    setContentPane(content);
-
-  }
+  public static final int WIN_DIMENSION_X = 500;
+  public static final int WIN_DIMENSION_Y = 470;
 
   /**
    * Creates a chart in order to plot the speed-ups.
    *
-   * @param title
-   *          the title
+   * @param statGen
+   *          the stats
    * @return A chart.
    */
-  private JFreeChart createChart(final String title) {
+  private static JFreeChart createChart(final IStatGenerator statGen) {
+    final String title = "Comparing the obtained speedup to ideal speedups";
+
+    // Creating the best speedups subplot
+    final DefaultXYDataset speedups = setData(statGen);
 
     // Creating display domain
     final NumberAxis horizontalAxis = new NumberAxis("Number of operators");
     final CombinedDomainXYPlot plot = new CombinedDomainXYPlot(horizontalAxis);
-
-    // Creating the best speedups subplot
-    this.speedups = new DefaultXYDataset();
 
     final NumberAxis xAxis = new NumberAxis("speedups");
 
     xAxis.setAutoRangeIncludesZero(false);
 
     final XYSplineRenderer renderer = new XYSplineRenderer();
-    final XYPlot subplot = new XYPlot(this.speedups, null, xAxis, renderer);
+    final XYPlot subplot = new XYPlot(speedups, null, xAxis, renderer);
 
     subplot.setBackgroundPaint(Color.white);
     subplot.setDomainGridlinePaint(Color.lightGray);
@@ -150,28 +128,26 @@ public class PerformancePlotter extends ApplicationFrame {
   /**
    * Creates the graph values for input data:.
    *
-   * @param workLength
-   *          sum of all the actor timings
-   * @param spanLength
-   *          length of the longest path in the DAG
-   * @param resultTime
-   *          latency of the current simulation
-   * @param resultNbCores
-   *          number of cores for the current simulation
-   * @param resultNbMainCores
-   *          number of cores with type main for the current simulation
+   * @param statGen
+   *          Statistics to draw.
    */
-  public void setData(final long workLength, final long spanLength, final long resultTime, final int resultNbCores,
-      final int resultNbMainCores) {
+  private static DefaultXYDataset setData(final IStatGenerator statGen) {
+
+    final long workLength = statGen.getDAGWorkLength();
+    final long spanLength = statGen.getDAGSpanLength();
+    final long resultTime = statGen.getFinalTime();
+    final int resultNbMainCores = statGen.getNbMainTypeOperators();
 
     final double absoluteBestSpeedup = ((double) workLength) / ((double) spanLength);
     final int maxCoreNumber = (int) Math.ceil(absoluteBestSpeedup) + 10;
+
+    final DefaultXYDataset speedups = new DefaultXYDataset();
 
     // Creating point for current speedup
     final double[][] currentSpeedup = new double[2][1];
     currentSpeedup[0][0] = resultNbMainCores;
     currentSpeedup[1][0] = ((double) workLength) / ((double) resultTime);
-    this.speedups.addSeries("Currently obtained speedup", currentSpeedup);
+    speedups.addSeries("Currently obtained speedup", currentSpeedup);
 
     // Creating curve for best speedups
     // The speedup is limited y the span length
@@ -186,8 +162,7 @@ public class PerformancePlotter extends ApplicationFrame {
         bestSpeedups[1][nbCores - 1] = absoluteBestSpeedup;
       }
     }
-
-    this.speedups.addSeries("Maximum achievable speedups", bestSpeedups);
+    speedups.addSeries("Maximum achievable speedups", bestSpeedups);
 
     // Creating curve for best speedups
     // The speedup is limited y the span length
@@ -199,47 +174,62 @@ public class PerformancePlotter extends ApplicationFrame {
       reachableSpeedups[1][nbCores - 1] = ((double) (workLength * nbCores))
           / ((double) ((spanLength * nbCores) + workLength));
     }
+    speedups.addSeries("Greedy-Scheduling Theorem bound", reachableSpeedups);
 
-    this.speedups.addSeries("Greedy-Scheduling Theorem bound", reachableSpeedups);
-  }
-
-  @Override
-  public void windowClosing(final WindowEvent event) {
-    // nothing
+    return speedups;
   }
 
   /**
    * Display.
    *
+   * @param toolkit
+   *          managed form toolkit
    * @param parentComposite
-   *          the parent composite
+   *          where to integrate the chart in the form
+   * @param statGen
+   *          Statistics to plot.
    */
-  public void display(final Composite parentComposite) {
+  public static void display(final FormToolkit toolkit, final Composite parentComposite, final IStatGenerator statGen) {
+
+    final JFreeChart chart = createChart(statGen);
+    final ChartPanel cp = new ChartPanel(chart);
+    cp.setPreferredSize(new java.awt.Dimension(WIN_DIMENSION_X, WIN_DIMENSION_Y));
+    cp.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
 
     final Composite composite = new Composite(parentComposite, SWT.EMBEDDED | SWT.FILL);
     parentComposite.setLayout(new FillLayout());
-
     // see explanations in org.preesm.algorithm.mapper.ui.Ganttplotter#plotDeploymen
     Frame frame = null;
     try {
       frame = SWT_AWT.new_Frame(composite);
-    } catch (UnsatisfiedLinkError e) {
+    } catch (UnsatisfiedLinkError | SWTError e) {
       PreesmLogger.getLogger().log(Level.INFO,
           "An error occured while loading org.eclipse.swt.awt.SWT_AWT class "
               + "or its associated shared object libswt-awt-gtk-4928+.so, "
-              + "thus the Gantt diagram is not embedded in Eclipse. See error:\n" + e.getMessage());
+              + "thus the speedup diagram is not embedded in Eclipse. See error:\n" + e.getMessage());
       if (!composite.isDisposed()) {
         composite.dispose();
       }
     }
     if (frame != null) {
-      frame.add(getContentPane());
+      // plot inside the window
+      JRootPane root = new JRootPane();
+      Container awtContainer = root.getContentPane();
+      awtContainer.add(cp);
+      frame.add(root);
+      ChartPanelPlotterUtils.plotFrameCP(frame, cp);
+
+    } else {
+      // plot in a new window if user clicks on the button
+      final Button externalDisplayButton = toolkit.createButton(parentComposite,
+          "Click to open the speedup diagram in a new window", SWT.PUSH | SWT.CENTER);
+      externalDisplayButton
+          .setToolTipText("We must do this because of a bug on Linux due to GTK/Eclipse most probably ...");
+
+      externalDisplayButton.addSelectionListener(new ChartPanelPlotterUtils.SelectionAdapterPlottingCP(cp));
+
     }
 
-    final MouseClickedListener listener = new MouseClickedListener(frame);
-    this.chartPanel.addChartMouseListener(listener);
-    this.chartPanel.addMouseMotionListener(listener);
-    this.chartPanel.addMouseListener(listener);
   }
 
 }

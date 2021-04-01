@@ -39,8 +39,6 @@ package org.preesm.ui.pisdf.features;
 
 import org.eclipse.graphiti.features.IFeatureProvider;
 import org.eclipse.graphiti.features.context.IDeleteContext;
-import org.eclipse.graphiti.mm.pictograms.PictogramElement;
-import org.eclipse.graphiti.ui.features.DefaultDeleteFeature;
 import org.preesm.model.pisdf.ConfigInputPort;
 import org.preesm.model.pisdf.Configurable;
 import org.preesm.model.pisdf.Dependency;
@@ -53,7 +51,7 @@ import org.preesm.model.pisdf.ExecutableActor;
  * @author kdesnos
  *
  */
-public class DeleteDependencyFeature extends DefaultDeleteFeature {
+public class DeleteDependencyFeature extends DeletePiMMelementFeature {
 
   /**
    * Default constructor for {@link DeleteDependencyFeature}.
@@ -75,9 +73,7 @@ public class DeleteDependencyFeature extends DefaultDeleteFeature {
   public void preDelete(final IDeleteContext context) {
     super.preDelete(context);
 
-    final PictogramElement pe = context.getPictogramElement();
-    final Object obj = getBusinessObjectForPictogramElement(pe);
-    final ConfigInputPort iCfgPort = ((Dependency) obj).getGetter();
+    final ConfigInputPort iCfgPort = ((Dependency) pimmObject).getGetter();
     final Configurable portOwner = iCfgPort.getConfigurable();
     // If the getter is not an actor, delete the configInputPort
     if (!(portOwner instanceof ExecutableActor)) {
