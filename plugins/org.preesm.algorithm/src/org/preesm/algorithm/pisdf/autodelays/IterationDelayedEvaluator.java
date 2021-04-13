@@ -38,7 +38,6 @@ package org.preesm.algorithm.pisdf.autodelays;
 import java.util.ArrayDeque;
 import java.util.Deque;
 import java.util.LinkedHashMap;
-import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -50,7 +49,6 @@ import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.AbstractVertex;
-import org.preesm.model.pisdf.ExecutableActor;
 import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.pisdf.brv.BRVMethod;
 import org.preesm.model.pisdf.brv.PiBRV;
@@ -64,6 +62,10 @@ import org.preesm.model.pisdf.statictools.PiSDFFlattener;
  *
  */
 public class IterationDelayedEvaluator {
+
+  private IterationDelayedEvaluator() {
+    // do nothing
+  }
 
   /**
    * Performs a graph flattening and graph traversal in order to estimate the number of iterations needed to transform
@@ -92,23 +94,11 @@ public class IterationDelayedEvaluator {
     if (!cycles.isEmpty()) {
       throw new PreesmRuntimeException("The iteration latency evaluation computed a DAG which is not a DAG, abandon.");
     }
-    // 4. get source and sink actors
-    final Set<AbstractActor> sinkActors = new LinkedHashSet<>(heurFifoBreaks.additionalSinkActors);
-    final Set<AbstractActor> sourceActors = new LinkedHashSet<>(heurFifoBreaks.additionalSourceActors);
-    for (final AbstractActor absActor : absGraph.vertexSet()) {
-      if (absActor instanceof ExecutableActor) {
-        if (absGraph.outDegreeOf(absActor) == 0) {
-          sinkActors.add(absActor);
-        }
-        if (absGraph.inDegreeOf(absActor) == 0) {
-          sourceActors.add(absActor);
-        }
-      }
-    }
-    // 5 max+ algebra of the AbsGraph, as done for TopoRanking of HeuristicPeriodicActorSelection
-    Map<AbstractActor, ActorDelayInfo> actorDelayInfos = topologicalActorDelayEstimation(sourceActors, absGraph);
+    // 4 max+ algebra of the AbsGraph, as done for TopoRanking of HeuristicPeriodicActorSelection
+    Map<AbstractActor,
+        ActorDelayInfo> actorDelayInfos = topologicalActorDelayEstimation(heurFifoBreaks.allSourceActors, absGraph);
     int maxIteration = 0;
-    for (AbstractActor ska : sinkActors) {
+    for (AbstractActor ska : heurFifoBreaks.allSinkActors) {
       maxIteration = Math.max(maxIteration, actorDelayInfos.get(ska).delay);
     }
 

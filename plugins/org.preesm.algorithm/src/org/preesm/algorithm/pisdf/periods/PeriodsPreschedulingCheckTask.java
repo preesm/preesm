@@ -40,12 +40,10 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
-import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Set;
 import java.util.TreeMap;
 import java.util.logging.Level;
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -64,7 +62,6 @@ import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.AbstractVertex;
 import org.preesm.model.pisdf.Actor;
 import org.preesm.model.pisdf.DelayActor;
-import org.preesm.model.pisdf.ExecutableActor;
 import org.preesm.model.pisdf.PeriodicElement;
 import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.pisdf.brv.BRVMethod;
@@ -223,37 +220,24 @@ public class PeriodsPreschedulingCheckTask extends AbstractTaskImplementation {
     HeuristicLoopBreakingDelays heurFifoBreaks = new HeuristicLoopBreakingDelays();
     heurFifoBreaks.performAnalysis(graphCopy, brv);
 
-    // 1. find all actor w/o incoming edges and all others w/o outgoing edge
-    final Set<AbstractActor> sourceActors = new LinkedHashSet<>(heurFifoBreaks.additionalSourceActors);
-    final Set<AbstractActor> sinkActors = new LinkedHashSet<>(heurFifoBreaks.additionalSinkActors);
-    for (final AbstractActor absActor : graphCopy.getActors()) {
-      if (absActor instanceof ExecutableActor) {
-        if (absActor.getDataOutputPorts().isEmpty()) {
-          sinkActors.add(absActor);
-        }
-        if (absActor.getDataInputPorts().isEmpty()) {
-          sourceActors.add(absActor);
-        }
-      }
-    }
-
+    // 1. log all actor w/o incoming edges and all others w/o outgoing edge
     StringBuilder sources = new StringBuilder();
-    sourceActors.stream().forEach(a -> sources.append(a.getName() + " / "));
+    heurFifoBreaks.allSourceActors.stream().forEach(a -> sources.append(a.getName() + " / "));
     PreesmLogger.getLogger().log(Level.FINE, "Sources: " + sources.toString());
     StringBuilder sinks = new StringBuilder();
-    sinkActors.stream().forEach(a -> sinks.append(a.getName() + " / "));
+    heurFifoBreaks.allSinkActors.stream().forEach(a -> sinks.append(a.getName() + " / "));
     PreesmLogger.getLogger().log(Level.FINE, "Sinks: " + sinks.toString());
 
     // 2. perform heuristic to select periodic nodes
     final StringBuilder sbNBFF = new StringBuilder();
-    final Map<Actor, Double> actorsNBFF = HeuristicPeriodicActorSelection.selectActors(periodicActors, sourceActors,
-        heurFifoBreaks.actorsNbVisitsTopoRank, rate, wcets, false);
+    final Map<Actor, Double> actorsNBFF = HeuristicPeriodicActorSelection.selectActors(periodicActors, heurFifoBreaks,
+        rate, wcets, false);
     actorsNBFF.keySet().forEach(a -> sbNBFF.append(a.getName() + " / "));
     PreesmLogger.getLogger().log(Level.INFO, "Periodic actor for NBFF: " + sbNBFF.toString());
 
     final StringBuilder sbNBLF = new StringBuilder();
-    final Map<Actor, Double> actorsNBLF = HeuristicPeriodicActorSelection.selectActors(periodicActors, sinkActors,
-        heurFifoBreaks.actorsNbVisitsTopoRankT, rate, wcets, true);
+    final Map<Actor, Double> actorsNBLF = HeuristicPeriodicActorSelection.selectActors(periodicActors, heurFifoBreaks,
+        rate, wcets, true);
     actorsNBLF.keySet().forEach(a -> sbNBLF.append(a.getName() + " / "));
     PreesmLogger.getLogger().log(Level.INFO, "Periodic actor for NBLF: " + sbNBLF.toString());
 

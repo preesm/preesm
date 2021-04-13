@@ -83,14 +83,14 @@ public class TopologicalRanking {
   /**
    * Computes ASAP topological ranking of a flat graph.
    * 
-   * @param sourceActors
-   *          Source actors of the graph.
-   * @param actorsNbVisits
-   *          Number of considered inputs (thus excluding feedback fifos).
+   * @param hlbd
+   *          Heuristic used to break the cycles.
    * @return Rank of each actor.
    */
-  public static Map<AbstractActor, TopoVisit> topologicalASAPranking(final Set<AbstractActor> sourceActors,
-      final Map<AbstractActor, Integer> actorsNbVisits) {
+  public static Map<AbstractActor, TopoVisit> topologicalASAPranking(final HeuristicLoopBreakingDelays hlbd) {
+
+    final Set<AbstractActor> sourceActors = hlbd.allSourceActors;
+    final Map<AbstractActor, Integer> actorsNbVisits = hlbd.actorsNbVisitsTopoRank;
     final Map<AbstractActor, TopoVisit> topoRanks = new LinkedHashMap<>();
     for (final AbstractActor actor : sourceActors) {
       topoRanks.put(actor, new TopoVisit(0, 1));
@@ -135,14 +135,14 @@ public class TopologicalRanking {
   /**
    * Computes ASAP topological ranking of a mirrored flat graph.
    * 
-   * @param sinkActors
-   *          Sinks actors of the graph.
-   * @param actorsNbVisits
-   *          Number of considered inputs (thus excluding feedback fifos).
+   * @param hlbd
+   *          Heuristic used to break the cycles.
    * @return Rank of each actor.
    */
-  public static Map<AbstractActor, TopoVisit> topologicalASAPrankingT(final Set<AbstractActor> sinkActors,
-      final Map<AbstractActor, Integer> actorsNbVisits) {
+  public static Map<AbstractActor, TopoVisit> topologicalASAPrankingT(final HeuristicLoopBreakingDelays hlbd) {
+
+    final Set<AbstractActor> sinkActors = hlbd.allSinkActors;
+    final Map<AbstractActor, Integer> actorsNbVisits = hlbd.actorsNbVisitsTopoRankT;
     final Map<AbstractActor, TopoVisit> topoRanks = new LinkedHashMap<>();
     for (final AbstractActor actor : sinkActors) {
       topoRanks.put(actor, new TopoVisit(0, 1));

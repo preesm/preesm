@@ -38,9 +38,9 @@ package org.preesm.algorithm.pisdf.periods;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Set;
 import java.util.logging.Level;
 import java.util.stream.Collectors;
+import org.preesm.algorithm.pisdf.autodelays.HeuristicLoopBreakingDelays;
 import org.preesm.algorithm.pisdf.autodelays.TopologicalRanking;
 import org.preesm.algorithm.pisdf.autodelays.TopologicalRanking.TopoVisit;
 import org.preesm.commons.logger.PreesmLogger;
@@ -55,18 +55,17 @@ import org.preesm.model.pisdf.Actor;
  */
 class HeuristicPeriodicActorSelection {
 
-  static Map<Actor, Double> selectActors(final Map<Actor, Long> periodicActors, final Set<AbstractActor> originActors,
-      final Map<AbstractActor, Integer> actorsNbVisits, final int rate, final Map<AbstractVertex, Long> wcets,
-      final boolean reverse) {
+  static Map<Actor, Double> selectActors(final Map<Actor, Long> periodicActors, final HeuristicLoopBreakingDelays hlbd,
+      final int rate, final Map<AbstractVertex, Long> wcets, final boolean reverse) {
     if (rate == 0 || periodicActors.isEmpty()) {
       return new LinkedHashMap<>();
     }
 
     Map<AbstractActor, TopoVisit> topoRanks = null;
     if (reverse) {
-      topoRanks = TopologicalRanking.topologicalASAPrankingT(originActors, actorsNbVisits);
+      topoRanks = TopologicalRanking.topologicalASAPrankingT(hlbd);
     } else {
-      topoRanks = TopologicalRanking.topologicalASAPranking(originActors, actorsNbVisits);
+      topoRanks = TopologicalRanking.topologicalASAPranking(hlbd);
     }
     final Map<Actor, Double> topoRanksPeriodic = new LinkedHashMap<>();
     for (final Entry<Actor, Long> e : periodicActors.entrySet()) {

@@ -78,7 +78,6 @@ import org.preesm.commons.model.PreesmCopyTracker;
 import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.AbstractVertex;
 import org.preesm.model.pisdf.Delay;
-import org.preesm.model.pisdf.ExecutableActor;
 import org.preesm.model.pisdf.Fifo;
 import org.preesm.model.pisdf.PersistenceLevel;
 import org.preesm.model.pisdf.PiGraph;
@@ -306,20 +305,7 @@ public class AutoDelaysTask extends AbstractTaskImplementation {
 
     final Set<FifoAbstraction> forbiddenFifos = hlbd.getForbiddenFifos();
 
-    final Set<AbstractActor> sourceActors = new LinkedHashSet<>(hlbd.additionalSourceActors);
-    final Set<AbstractActor> sinkActors = new LinkedHashSet<>(hlbd.additionalSinkActors);
-    for (final AbstractActor absActor : graphCopy.getActors()) {
-      if (absActor instanceof ExecutableActor) {
-        if (absActor.getDataOutputPorts().isEmpty()) {
-          sinkActors.add(absActor);
-        }
-        if (absActor.getDataInputPorts().isEmpty()) {
-          sourceActors.add(absActor);
-        }
-      }
-    }
-    final Map<AbstractActor,
-        TopoVisit> topoRanks = TopologicalRanking.topologicalASAPranking(sourceActors, hlbd.actorsNbVisitsTopoRank);
+    final Map<AbstractActor, TopoVisit> topoRanks = TopologicalRanking.topologicalASAPranking(hlbd);
     // build intermediate list of actors per rank
     final SortedMap<Integer, Set<AbstractActor>> irRankActors = mapRankActors(topoRanks, false, 0);
     // offset of one to ease some computations
@@ -332,11 +318,10 @@ public class AutoDelaysTask extends AbstractTaskImplementation {
     final int selec = Math.min(nbPreCuts, maxRank - 1);
     final int maxii = Math.min(nbMaxCuts, maxRank - 1);
 
-    final Map<AbstractActor,
-        TopoVisit> topoRanksT = TopologicalRanking.topologicalASAPrankingT(sinkActors, hlbd.actorsNbVisitsTopoRankT);
+    final Map<AbstractActor, TopoVisit> topoRanksT = TopologicalRanking.topologicalASAPrankingT(hlbd);
     // what we are interested in is not exactly ALAP = inverse of ASAP_T, it is ALAP with all sources executed at the
     // beginning
-    sourceActors.stream().forEach(x -> {
+    hlbd.allSourceActors.stream().forEach(x -> {
       TopoVisit tv = topoRanksT.get(x);
       tv.rank = maxRank - 1;
     });

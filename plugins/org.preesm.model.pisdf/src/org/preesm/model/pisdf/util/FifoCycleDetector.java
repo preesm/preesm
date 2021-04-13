@@ -278,7 +278,7 @@ public class FifoCycleDetector extends PiMMSwitch<Void> {
    */
   public static List<Fifo> findCycleFeedbackFifos(final List<AbstractActor> cycle) {
     // Find the Fifos between each pair of actor of the cycle
-    final List<List<Fifo>> cyclesFifos = new ArrayList<>();
+    final List<List<Fifo>> cycleFifosPerEdge = new ArrayList<>();
     for (int i = 0; i < cycle.size(); i++) {
       final AbstractActor srcActor = cycle.get(i);
       final AbstractActor dstActor = cycle.get((i + 1) % cycle.size());
@@ -295,46 +295,46 @@ public class FifoCycleDetector extends PiMMSwitch<Void> {
           }
         }
       });
-      cyclesFifos.add(outFifos);
+      cycleFifosPerEdge.add(outFifos);
     }
 
     // Find a list of FIFO between a pair of actor with delays on all FIFOs
     List<Fifo> feedbackFifos = null;
     List<Integer> feedbackFifosIndex = new ArrayList<>();
     int indexFF = -1;
-    for (final List<Fifo> cycleFifos : cyclesFifos) {
+    for (final List<Fifo> edgeFifos : cycleFifosPerEdge) {
       indexFF += 1;
       boolean hasDelays = true;
-      for (final Fifo fifo : cycleFifos) {
+      for (final Fifo fifo : edgeFifos) {
         hasDelays &= (fifo.getDelay() != null);
       }
 
       if (hasDelays) {
         // Keep the shortest list of feedback delay
-        feedbackFifos = ((feedbackFifos == null) || (feedbackFifos.size() > cycleFifos.size())) ? cycleFifos
+        feedbackFifos = ((feedbackFifos == null) || (feedbackFifos.size() > edgeFifos.size())) ? edgeFifos
             : feedbackFifos;
         feedbackFifosIndex.add(indexFF);
       }
     }
-    final List<AbstractActor> actorsWithEntries = new ArrayList<>();
-    final List<AbstractActor> actorsWithExits = new ArrayList<>();
+    // if there is a unique connection with all fifos having delays, we cut here
+    if (feedbackFifosIndex.size() == 1) {
+      return feedbackFifos;
+    }
 
-    FifoBreakingCycleDetector.computeExitAndEntries(cycle, cyclesFifos, actorsWithEntries, actorsWithExits);
-    int breakingFifoIndex = FifoBreakingCycleDetector.retrieveBreakingFifoWhenDifficult(cycle, actorsWithEntries,
-        actorsWithExits);
+    int breakingFifoIndex = FifoBreakingCycleDetector.retrieveBreakingFifoWhenDifficult(cycle, cycleFifosPerEdge);
 
     if (feedbackFifosIndex.contains(breakingFifoIndex)) {
-      return cyclesFifos.get(breakingFifoIndex);
+      return cycleFifosPerEdge.get(breakingFifoIndex);
     } else if (feedbackFifos != null) {
       return feedbackFifos;
     } else if (breakingFifoIndex >= 0) {
-      return cyclesFifos.get(breakingFifoIndex);
+      return cycleFifosPerEdge.get(breakingFifoIndex);
     }
 
     // If no feedback fifo with delays were found. Select a list with a
     // small number of fifos
-    cyclesFifos.sort((l1, l2) -> l1.size() - l2.size());
-    return cyclesFifos.get(0);
+    cycleFifosPerEdge.sort((l1, l2) -> l1.size() - l2.size());
+    return cycleFifosPerEdge.get(0);
   }
 
 }

@@ -56,6 +56,7 @@ import org.preesm.commons.math.MathFunctionsHelper;
 import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.AbstractVertex;
 import org.preesm.model.pisdf.ExecutableActor;
+import org.preesm.model.pisdf.Fifo;
 import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.pisdf.util.FifoBreakingCycleDetector;
 
@@ -69,14 +70,18 @@ public class HeuristicLoopBreakingDelays {
   public final Map<AbstractActor, Integer> actorsNbVisitsTopoRank;
   public final Map<AbstractActor, Integer> actorsNbVisitsTopoRankT;
 
-  public final Set<AbstractActor> additionalSourceActors;
-  public final Set<AbstractActor> additionalSinkActors;
+  public final Set<AbstractActor> allSourceActors;
+  public final Set<AbstractActor> allSinkActors;
+  public final Set<AbstractActor> cyclesSourceActors;
+  public final Set<AbstractActor> cyclesSinkActors;
 
-  public final Map<AbstractVertex, Long>               minCycleBrv;
-  public final Set<FifoAbstraction>                    breakingFifosAbs;
-  public final Set<FifoAbstraction>                    selfLoopsAbs;
-  DefaultDirectedGraph<AbstractActor, FifoAbstraction> absGraph;
+  public final Map<AbstractVertex, Long> minCycleBrv;
+  public final Set<FifoAbstraction>      breakingFifosAbs;
+  public final Set<FifoAbstraction>      selfLoopsAbs;
+
   List<List<AbstractActor>>                            cycles;
+  Map<List<AbstractActor>, Long>                       cyclesRV;
+  DefaultDirectedGraph<AbstractActor, FifoAbstraction> absGraph;
 
   /**
    * This class computes and stores fifo able to break cycles.
@@ -85,14 +90,18 @@ public class HeuristicLoopBreakingDelays {
     this.actorsNbVisitsTopoRank = new LinkedHashMap<>();
     this.actorsNbVisitsTopoRankT = new LinkedHashMap<>();
 
-    this.additionalSourceActors = new LinkedHashSet<>();
-    this.additionalSinkActors = new LinkedHashSet<>();
+    this.allSourceActors = new LinkedHashSet<>();
+    this.allSinkActors = new LinkedHashSet<>();
+    this.cyclesSourceActors = new LinkedHashSet<>();
+    this.cyclesSinkActors = new LinkedHashSet<>();
 
     this.minCycleBrv = new HashMap<>();
     this.breakingFifosAbs = new HashSet<>();
     this.selfLoopsAbs = new HashSet<>();
-    this.absGraph = null;
+
     this.cycles = null;
+    this.cyclesRV = new LinkedHashMap<>();
+    this.absGraph = null;
   }
 
   /**
@@ -109,12 +118,15 @@ public class HeuristicLoopBreakingDelays {
   public void performAnalysis(final PiGraph graph, final Map<AbstractVertex, Long> brv) {
     actorsNbVisitsTopoRank.clear();
     actorsNbVisitsTopoRankT.clear();
-    additionalSourceActors.clear();
-    additionalSinkActors.clear();
+    allSourceActors.clear();
+    allSinkActors.clear();
+    cyclesSourceActors.clear();
+    cyclesSinkActors.clear();
     breakingFifosAbs.clear();
 
     minCycleBrv.clear();
     minCycleBrv.putAll(brv);
+    cyclesRV.clear();
     // 1. perform flat PiMM to simple JGraphT structure transition.
     absGraph = AbstractGraph.createAbsGraph(graph, brv);
     // 2. look for cycles
@@ -132,6 +144,7 @@ public class HeuristicLoopBreakingDelays {
         selfLoopsAbs.add(breakingFifoAbs);
       }
       long gcdCycle = MathFunctionsHelper.gcd(cycle.stream().map(a -> brv.get(a)).collect(Collectors.toList()));
+      cyclesRV.put(cycle, gcdCycle);
       cycle.forEach(a -> {
         long localBrv = brv.get(a) / gcdCycle;
         long cycleBrv = minCycleBrv.get(a);
@@ -160,13 +173,27 @@ public class HeuristicLoopBreakingDelays {
             + "> and <" + tgt.getName() + ">, leaving.");
       }
       if (newNbVisits == 0) {
-        this.additionalSourceActors.add(tgt);
+        this.cyclesSourceActors.add(tgt);
       }
       if (newNbVisitsT == 0) {
-        this.additionalSinkActors.add(src);
+        this.cyclesSinkActors.add(src);
       }
       this.actorsNbVisitsTopoRankT.put(src, newNbVisitsT);
       this.actorsNbVisitsTopoRank.put(tgt, newNbVisits);
+    }
+
+    // 5. set all source and sink actors
+    allSourceActors.addAll(cyclesSourceActors);
+    allSinkActors.addAll(cyclesSinkActors);
+    for (final AbstractActor absActor : graph.getActors()) {
+      if (absActor instanceof ExecutableActor) {
+        if (absActor.getDataOutputPorts().isEmpty()) {
+          allSinkActors.add(absActor);
+        }
+        if (absActor.getDataInputPorts().isEmpty()) {
+          allSourceActors.add(absActor);
+        }
+      }
     }
 
   }
@@ -182,6 +209,8 @@ public class HeuristicLoopBreakingDelays {
       return absGraph.getEdge(root, root);
     }
 
+    // Find the Fifos between each pair of actor of the cycle
+    final List<List<Fifo>> cycleFifosPerEdge = new ArrayList<>();
     // if only one fifo has fully delays, it is the one
     Iterator<AbstractActor> it = cycle.iterator();
     AbstractActor current = it.next();
@@ -191,6 +220,7 @@ public class HeuristicLoopBreakingDelays {
     while (it.hasNext()) {
       final AbstractActor next = it.next();
       temp = absGraph.getEdge(current, next);
+      cycleFifosPerEdge.add(temp.fifos);
       if (temp.fullyDelayed) {
         fifo = temp;
         i++;
@@ -198,6 +228,8 @@ public class HeuristicLoopBreakingDelays {
       current = next;
     }
     temp = absGraph.getEdge(current, root);
+    cycleFifosPerEdge.add(temp.fifos);
+
     if (temp.fullyDelayed) {
       fifo = temp;
       i++;
@@ -207,32 +239,7 @@ public class HeuristicLoopBreakingDelays {
     }
 
     // otherwise we select the fifo ourself if possible
-    final List<AbstractActor> actorsWithEntries = new ArrayList<>();
-    final List<AbstractActor> actorsWithExits = new ArrayList<>();
-    it = cycle.iterator();
-    current = it.next();
-    while (it.hasNext()) {
-      final AbstractActor next = it.next();
-      temp = absGraph.getEdge(current, next);
-      final int nbCommonPorts = temp.delays.size();
-      if (current.getDataOutputPorts().size() > nbCommonPorts) {
-        actorsWithExits.add(current);
-      }
-      if (next.getDataInputPorts().size() > nbCommonPorts) {
-        actorsWithEntries.add(next);
-      }
-      current = next;
-    }
-    temp = absGraph.getEdge(current, root);
-    final int nbCommonPorts = temp.delays.size();
-    if (current.getDataOutputPorts().size() > nbCommonPorts) {
-      actorsWithExits.add(current);
-    }
-    if (root.getDataInputPorts().size() > nbCommonPorts) {
-      actorsWithEntries.add(0, root);
-    }
-
-    int index = FifoBreakingCycleDetector.retrieveBreakingFifoWhenDifficult(cycle, actorsWithEntries, actorsWithExits);
+    int index = FifoBreakingCycleDetector.retrieveBreakingFifoWhenDifficult(cycle, cycleFifosPerEdge);
 
     if (index < 0) {
       index = 0;

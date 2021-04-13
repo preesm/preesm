@@ -42,6 +42,7 @@ import java.util.List;
 import java.util.regex.Pattern;
 import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.Fifo;
+import org.preesm.model.pisdf.util.FifoBreakingCycleDetector.CycleNodeType;
 
 /**
  * This class provides helper functions to compute the breaking fifo in a cycle.
@@ -59,11 +60,44 @@ public class FifoBreakingCycleDetector {
   protected enum CycleNodeType {
     NONE('n'), ENTRY('i'), EXIT('o'), BOTH('b');
 
-    public final char abbr;
+    public final String abbr;
 
     CycleNodeType(final char abbr) {
-      this.abbr = abbr;
+      this.abbr = String.valueOf(abbr);
     }
+
+  }
+
+  static final String FORMATTED_LOOP_MIDDLE_BOTH1 = String.format("%s*%s?%s*", CycleNodeType.ENTRY.abbr,
+      CycleNodeType.BOTH.abbr, CycleNodeType.ENTRY.abbr);
+  static final String FORMATTED_LOOP_MIDDLE_BOTH2 = String.format("%s*%s?%s*", CycleNodeType.EXIT.abbr,
+      CycleNodeType.BOTH.abbr, CycleNodeType.EXIT.abbr);
+
+  static final String FORMATTED_LOOP_PERM1 = String.format("%s*%s?%s+%s*", CycleNodeType.ENTRY.abbr,
+      CycleNodeType.BOTH.abbr, CycleNodeType.EXIT.abbr, CycleNodeType.ENTRY.abbr);
+  static final String FORMATTED_LOOP_PERM2 = String.format("%s*%s+%s?%s*", CycleNodeType.EXIT.abbr,
+      CycleNodeType.ENTRY.abbr, CycleNodeType.BOTH.abbr, CycleNodeType.EXIT.abbr);
+
+  static final String FORMATTED_LOOP_SIMPLE1 = String.format("%s?", CycleNodeType.BOTH.abbr);
+  static final String FORMATTED_LOOP_SIMPLE2 = String.format("%s%s", CycleNodeType.ENTRY.abbr, CycleNodeType.EXIT.abbr);
+  static final String FORMATTED_LOOP_SIMPLE3 = String.format("%s%s", CycleNodeType.EXIT.abbr, CycleNodeType.ENTRY.abbr);
+
+  /**
+   * This method needs a small paper to be explicated. Do not try to modify it.
+   *
+   * @param cycle
+   *          Cycle to consider.
+   * @param cyclesFifos
+   *          List of Fifos between these nodes (of same size as {@code cycle}).
+   * @return index in the cycle of the actor after whom the cycle can be broken.
+   */
+  public static int retrieveBreakingFifoWhenDifficult(final List<AbstractActor> cycle,
+      final List<List<Fifo>> cyclesFifos) {
+    final List<AbstractActor> actorsWithEntries = new ArrayList<>();
+    final List<AbstractActor> actorsWithExits = new ArrayList<>();
+
+    FifoBreakingCycleDetector.computeExitAndEntries(cycle, cyclesFifos, actorsWithEntries, actorsWithExits);
+    return retrieveBreakingFifoWhenDifficult(cycle, actorsWithEntries, actorsWithExits);
 
   }
 
@@ -81,12 +115,85 @@ public class FifoBreakingCycleDetector {
   public static int retrieveBreakingFifoWhenDifficult(final List<AbstractActor> cycle,
       final List<AbstractActor> actorsWithEntries, final List<AbstractActor> actorsWithExits) {
     final List<CycleNodeType> types = new ArrayList<>();
+    final StringBuilder sb = new StringBuilder();
+    final int nbBoth = computeCycleString(cycle, actorsWithEntries, actorsWithExits, types, sb);
+
+    // hazardous case with multiple I/O
+    if (nbBoth > 1) {
+      return types.lastIndexOf(CycleNodeType.BOTH) - 1;
+    }
+    // test correct cases
+    final String str = sb.toString();
+    if (str.isEmpty()) {
+      return 0;
+    }
+    if (Pattern.matches(FORMATTED_LOOP_MIDDLE_BOTH1, str) || Pattern.matches(FORMATTED_LOOP_MIDDLE_BOTH2, str)) {
+      if (nbBoth == 1) {
+        final int index = types.indexOf(CycleNodeType.BOTH);
+        return index == 0 ? types.size() - 1 : index - 1;
+      }
+    } else if (Pattern.matches(FORMATTED_LOOP_PERM1, str)) {
+      return types.lastIndexOf(CycleNodeType.EXIT);
+    } else if (Pattern.matches(FORMATTED_LOOP_PERM2, str)) {
+      final int index = types.indexOf(CycleNodeType.ENTRY);
+      return index == 0 ? types.size() - 1 : index - 1;
+    }
+    // for all other hazardous cases
+    final int index = types.indexOf(CycleNodeType.ENTRY);
+    if (index >= 0) {
+      return index == 0 ? types.size() - 1 : index - 1;
+    }
+    return -1;
+  }
+
+  /**
+   * Check if the cycle has a simple shape (only one exit and one entry).
+   * 
+   * @param cycle
+   *          List of nodes forming a cycle.
+   * @param cyclesFifos
+   *          List of Fifos between these nodes (of same size as {@code cycle}).
+   * @return True has simple shape, false otherwise.
+   */
+  public static boolean checkIfCycleHasSimpleShape(final List<AbstractActor> cycle,
+      final List<List<Fifo>> cyclesFifos) {
+    final List<AbstractActor> actorsWithEntries = new ArrayList<>();
+    final List<AbstractActor> actorsWithExits = new ArrayList<>();
+    FifoBreakingCycleDetector.computeExitAndEntries(cycle, cyclesFifos, actorsWithEntries, actorsWithExits);
+
+    final List<CycleNodeType> types = new ArrayList<>();
+    final StringBuilder sb = new StringBuilder();
+    computeCycleString(cycle, actorsWithEntries, actorsWithExits, types, sb);
+
+    final String str = sb.toString();
+    return (Pattern.matches(FORMATTED_LOOP_SIMPLE1, str) || Pattern.matches(FORMATTED_LOOP_SIMPLE2, str)
+        || Pattern.matches(FORMATTED_LOOP_SIMPLE3, str));
+  }
+
+  /**
+   * This method needs a small paper to be explicated. Do not try to modify it.
+   *
+   * @param cycle
+   *          Cycle to consider.
+   * @param actorsWithEntries
+   *          Actors in the cycle having also inputs from actors not being the cycle. In the same order as in the cycle.
+   * @param actorsWithExits
+   *          Actors in the cycle having also outputs to actors not being the cycle. In the same order as in the cycle.
+   * @param types
+   *          List of actor types according to {@link CycleNodeType}, in the same order as actors in the cycle. To be
+   *          set, must be initialized and empty.
+   * @param sb
+   *          String of actors built thanks the type list, in the same order as actors in the cycle, but ommiting
+   *          {@link CycleNodeType.NONE}. To be set, must be initialized and empty.
+   * @return number of actors being both an entry and an exit.
+   */
+  public static int computeCycleString(final List<AbstractActor> cycle, final List<AbstractActor> actorsWithEntries,
+      final List<AbstractActor> actorsWithExits, final List<CycleNodeType> types, final StringBuilder sb) {
     final Iterator<AbstractActor> itEntries = actorsWithEntries.iterator();
     final Iterator<AbstractActor> itExits = actorsWithExits.iterator();
     AbstractActor nextEntry = itEntries.hasNext() ? itEntries.next() : null;
     AbstractActor nextExit = itExits.hasNext() ? itExits.next() : null;
     int nbBoth = 0;
-    final StringBuilder sb = new StringBuilder();
     for (final AbstractActor aa : cycle) {
       if ((aa == nextEntry) && (aa == nextExit)) {
         types.add(CycleNodeType.BOTH);
@@ -106,33 +213,7 @@ public class FifoBreakingCycleDetector {
         types.add(CycleNodeType.NONE);
       }
     }
-    // hazardous case with multiple I/O
-    if (nbBoth > 1) {
-      return types.lastIndexOf(CycleNodeType.BOTH) - 1;
-    }
-    // test correct cases
-    final String str = sb.toString();
-    if (str.isEmpty()) {
-      return 0;
-    }
-    // this uses the enum abbr without telling it!
-    if (Pattern.matches("i*b?i*", str) || Pattern.matches("o*b?o*", str)) {
-      if (nbBoth == 1) {
-        final int index = types.indexOf(CycleNodeType.BOTH);
-        return index == 0 ? types.size() - 1 : index - 1;
-      }
-    } else if (Pattern.matches("i*b?o+i*", str)) {
-      return types.lastIndexOf(CycleNodeType.EXIT);
-    } else if (Pattern.matches("o*i+b?o*", str)) {
-      final int index = types.indexOf(CycleNodeType.ENTRY);
-      return index == 0 ? types.size() - 1 : index - 1;
-    }
-    // for all other hazardous cases
-    final int index = types.indexOf(CycleNodeType.ENTRY);
-    if (index >= 0) {
-      return index == 0 ? types.size() - 1 : index - 1;
-    }
-    return -1;
+    return nbBoth;
   }
 
   /**
@@ -143,9 +224,11 @@ public class FifoBreakingCycleDetector {
    * @param cyclesFifos
    *          List of Fifos between these nodes (of same size as {@code cycle}).
    * @param actorsWithEntries
-   *          Modified list with entry actors, in the same order as {@code cycle}.
+   *          Modified list with entry actors, in the same order as {@code cycle}. To be set, must be initialized and
+   *          empty.
    * @param actorsWithExits
-   *          Modified list with exit actors, in the same order as {@code cycle}.
+   *          Modified list with exit actors, in the same order as {@code cycle}. To be set, must be initialized and
+   *          empty.
    */
   public static void computeExitAndEntries(final List<AbstractActor> cycle, final List<List<Fifo>> cyclesFifos,
       final List<AbstractActor> actorsWithEntries, final List<AbstractActor> actorsWithExits) {
