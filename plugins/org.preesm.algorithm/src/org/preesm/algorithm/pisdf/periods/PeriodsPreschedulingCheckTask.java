@@ -79,6 +79,9 @@ import org.preesm.workflow.implement.AbstractWorkflowNodeImplementation;
 
 /**
  * This class computes necessary conditions for the schedulability of graphs with periods.
+ * <p>
+ * For more details, see conference paper "Scheduling of Synchronous Dataflow Graphs with Partially Periodic Real-Time
+ * Constraints", published at RTNS 2020 (DOI 10.1145/3394810.3394820).
  *
  * @author ahonorat
  *
@@ -161,7 +164,7 @@ public class PeriodsPreschedulingCheckTask extends AbstractTaskImplementation {
         }
       }
       if (absActor instanceof DelayActor) {
-        DelayActor da = (DelayActor) absActor;
+        final DelayActor da = (DelayActor) absActor;
         if (da.getSetterActor() != null || da.getGetterActor() != null) {
           throw new PreesmRuntimeException("DelayActor with getter or setter are not supported in this task, abandon.");
         }
@@ -172,7 +175,7 @@ public class PeriodsPreschedulingCheckTask extends AbstractTaskImplementation {
     // check that are all actor periods times brv are equal and set the graph period if needed
     PiMMHelper.checkPeriodicity(graphCopy, brv);
 
-    long graphPeriod = graphCopy.getPeriod().evaluate();
+    final long graphPeriod = graphCopy.getPeriod().evaluate();
     if (graphPeriod <= 0 && periodicActors.isEmpty()) {
       PreesmLogger.getLogger().log(Level.WARNING, "This task is useless when there is no period in the graph.");
       return output;
@@ -181,7 +184,7 @@ public class PeriodsPreschedulingCheckTask extends AbstractTaskImplementation {
     Map<AbstractVertex, Long> wcets = new HashMap<>();
     for (final Entry<AbstractVertex, Long> en : brv.entrySet()) {
       final AbstractVertex a = en.getKey();
-      AbstractVertex actor = PreesmCopyTracker.getOriginalSource(a);
+      final AbstractVertex actor = PreesmCopyTracker.getOriginalSource(a);
       long wcetMin = Long.MAX_VALUE;
       if (actor instanceof AbstractActor) {
         for (final Component operatorDefinitionID : architecture.getProcessingElements()) {
@@ -202,7 +205,7 @@ public class PeriodsPreschedulingCheckTask extends AbstractTaskImplementation {
 
     // simply check sum of wcets and return.
     long totC = 0L;
-    for (Entry<AbstractVertex, Long> en : wcets.entrySet()) {
+    for (final Entry<AbstractVertex, Long> en : wcets.entrySet()) {
       totC += en.getValue() * brv.get(en.getKey());
     }
     if (totC > nbCore * graphPeriod) {
@@ -217,14 +220,14 @@ public class PeriodsPreschedulingCheckTask extends AbstractTaskImplementation {
 
     // 0. find all cycles and retrieve actors placed after delays.
     PiMMHelper.removeNonExecutedActorsAndFifos(graphCopy, brv);
-    HeuristicLoopBreakingDelays heurFifoBreaks = new HeuristicLoopBreakingDelays();
+    final HeuristicLoopBreakingDelays heurFifoBreaks = new HeuristicLoopBreakingDelays();
     heurFifoBreaks.performAnalysis(graphCopy, brv);
 
     // 1. log all actor w/o incoming edges and all others w/o outgoing edge
-    StringBuilder sources = new StringBuilder();
+    final StringBuilder sources = new StringBuilder();
     heurFifoBreaks.allSourceActors.stream().forEach(a -> sources.append(a.getName() + " / "));
     PreesmLogger.getLogger().log(Level.FINE, "Sources: " + sources.toString());
-    StringBuilder sinks = new StringBuilder();
+    final StringBuilder sinks = new StringBuilder();
     heurFifoBreaks.allSinkActors.stream().forEach(a -> sinks.append(a.getName() + " / "));
     PreesmLogger.getLogger().log(Level.FINE, "Sinks: " + sinks.toString());
 
@@ -242,12 +245,12 @@ public class PeriodsPreschedulingCheckTask extends AbstractTaskImplementation {
     PreesmLogger.getLogger().log(Level.INFO, "Periodic actor for NBLF: " + sbNBLF.toString());
 
     // 3. for each selected periodic node for nblf:
-    performAllNBF(actorsNBLF, periodicActors, false, heurFifoBreaks.getAbsGraph(), heurFifoBreaks, wcets, nbCore);
+    performAllNBF(actorsNBLF, periodicActors, false, heurFifoBreaks, wcets, nbCore);
 
     // 4. for each selected periodic node for nbff:
-    performAllNBF(actorsNBFF, periodicActors, true, heurFifoBreaks.getAbsGraph(), heurFifoBreaks, wcets, nbCore);
+    performAllNBF(actorsNBFF, periodicActors, true, heurFifoBreaks, wcets, nbCore);
 
-    long duration = System.nanoTime() - time;
+    final long duration = System.nanoTime() - time;
     PreesmLogger.getLogger().info("Time+ " + Math.round(duration / 1e6) + " ms.");
 
     // 5. greetings to the user
@@ -289,16 +292,16 @@ public class PeriodsPreschedulingCheckTask extends AbstractTaskImplementation {
    * 
    */
   private static void performAllNBF(Map<Actor, Double> actorsNBF, Map<Actor, Long> allPeriodicActors, boolean reverse,
-      DefaultDirectedGraph<AbstractActor, FifoAbstraction> absGraph, HeuristicLoopBreakingDelays hlbd,
-      Map<AbstractVertex, Long> wcets, int nbCore) {
+      HeuristicLoopBreakingDelays hlbd, Map<AbstractVertex, Long> wcets, int nbCore) {
 
-    for (Actor a : actorsNBF.keySet()) {
-      long slack = allPeriodicActors.get(a) - wcets.get(a);
+    final DefaultDirectedGraph<AbstractActor, FifoAbstraction> absGraph = hlbd.getAbsGraph();
+    for (final Actor a : actorsNBF.keySet()) {
+      final long slack = allPeriodicActors.get(a) - wcets.get(a);
       long totC = 0;
-      HashMap<AbstractActor, Long> nbf = new HashMap<>();
+      final HashMap<AbstractActor, Long> nbf = new HashMap<>();
       nbf.put(a, 1L);
 
-      DefaultDirectedGraph<AbstractActor,
+      final DefaultDirectedGraph<AbstractActor,
           FifoAbstraction> subgraph = AbstractGraph.subDAGFrom(absGraph, a, hlbd.breakingFifosAbs, reverse);
       totC += performNBFinternal(a, subgraph, wcets, nbf, nbCore, reverse, slack);
 
@@ -312,13 +315,13 @@ public class PeriodsPreschedulingCheckTask extends AbstractTaskImplementation {
 
       // we perform nbf on actors not connected to the initial subgraph, updating each time the nbf values
       // iterating in the descendant order
-      for (Entry<Actor, Long> entry : nbTimesDuringAperiod.entrySet()) {
+      for (final Entry<Actor, Long> entry : nbTimesDuringAperiod.entrySet()) {
         if (nbf.containsKey(entry.getKey())) {
           continue;
         }
         nbf.put(entry.getKey(), entry.getValue());
-        DefaultDirectedGraph<AbstractActor, FifoAbstraction> unconnectedsubgraph = AbstractGraph.subDAGFrom(absGraph,
-            entry.getKey(), hlbd.breakingFifosAbs, reverse);
+        final DefaultDirectedGraph<AbstractActor, FifoAbstraction> unconnectedsubgraph = AbstractGraph
+            .subDAGFrom(absGraph, entry.getKey(), hlbd.breakingFifosAbs, reverse);
         totC += performNBFinternal(entry.getKey(), unconnectedsubgraph, wcets, nbf, nbCore, reverse, slack);
         totC += wcets.get(entry.getKey()) * entry.getValue();
       }
@@ -334,33 +337,33 @@ public class PeriodsPreschedulingCheckTask extends AbstractTaskImplementation {
 
   private static long performNBFinternal(Actor start, DefaultDirectedGraph<AbstractActor, FifoAbstraction> subgraph,
       Map<AbstractVertex, Long> wcets, Map<AbstractActor, Long> previousNbf, int nbCore, boolean reverse, long slack) {
-    HashMap<AbstractActor, Long> timeTo = new HashMap<>();
-    HashMap<AbstractActor, Integer> nbVisits = new HashMap<>();
-    HashMap<AbstractActor, Long> nbf = new HashMap<>();
+    final HashMap<AbstractActor, Long> timeTo = new HashMap<>();
+    final HashMap<AbstractActor, Integer> nbVisits = new HashMap<>();
+    final HashMap<AbstractActor, Long> nbf = new HashMap<>();
 
-    for (AbstractActor a : subgraph.vertexSet()) {
+    for (final AbstractActor a : subgraph.vertexSet()) {
       timeTo.put(a, 0L);
       nbVisits.put(a, 0);
       nbf.put(a, 0L);
     }
     nbf.put(start, previousNbf.get(start));
 
-    List<AbstractActor> toVisit = new LinkedList<>();
+    final List<AbstractActor> toVisit = new LinkedList<>();
     toVisit.add(start);
 
     while (!toVisit.isEmpty()) {
-      Iterator<AbstractActor> it = toVisit.iterator();
-      AbstractActor current = it.next();
+      final Iterator<AbstractActor> it = toVisit.iterator();
+      final AbstractActor current = it.next();
       it.remove();
 
-      for (FifoAbstraction fa : subgraph.outgoingEdgesOf(current)) {
-        AbstractActor dest = subgraph.getEdgeTarget(fa);
-        int nbVisitsDest = nbVisits.get(dest) + 1;
+      for (final FifoAbstraction fa : subgraph.outgoingEdgesOf(current)) {
+        final AbstractActor dest = subgraph.getEdgeTarget(fa);
+        final int nbVisitsDest = nbVisits.get(dest) + 1;
         nbVisits.put(dest, nbVisitsDest);
-        long destTimeTo = Math.max(timeTo.get(dest), timeTo.get(current));
+        final long destTimeTo = Math.max(timeTo.get(dest), timeTo.get(current));
         timeTo.put(dest, destTimeTo);
         long nbfDest = 0;
-        long delay = fa.delays.stream().min(Long::compare).orElse(0L);
+        final long delay = fa.delays.stream().min(Long::compare).orElse(0L);
         if (reverse) {
           nbfDest = (nbf.get(current) * fa.getConsRate() - delay + fa.getProdRate() - 1) / fa.getProdRate();
         } else {
@@ -368,7 +371,7 @@ public class PeriodsPreschedulingCheckTask extends AbstractTaskImplementation {
         }
         nbf.put(dest, Math.max(nbfDest, nbf.get(dest)));
         if (nbVisitsDest == subgraph.inDegreeOf(dest) && nbfDest > 0) {
-          long prevNBF = previousNbf.getOrDefault(dest, 0L);
+          final long prevNBF = previousNbf.getOrDefault(dest, 0L);
           if (prevNBF >= nbfDest) {
             continue;
           }
@@ -377,7 +380,7 @@ public class PeriodsPreschedulingCheckTask extends AbstractTaskImplementation {
           nbf.put(dest, nbfDest);
 
           toVisit.add(dest);
-          long time = destTimeTo + wcets.get(dest) * Math.max(1L, nbfDest / nbCore);
+          final long time = destTimeTo + wcets.get(dest) * Math.max(1L, nbfDest / nbCore);
           timeTo.put(dest, time);
           if (subgraph.outDegreeOf(dest) == 0) {
             if (time > slack) {
@@ -392,7 +395,7 @@ public class PeriodsPreschedulingCheckTask extends AbstractTaskImplementation {
     }
 
     long totC = -wcets.get(start) * previousNbf.get(start);
-    for (AbstractActor a : subgraph.vertexSet()) {
+    for (final AbstractActor a : subgraph.vertexSet()) {
       totC += wcets.get(a) * nbf.get(a);
     }
     if (totC > nbCore * slack) {

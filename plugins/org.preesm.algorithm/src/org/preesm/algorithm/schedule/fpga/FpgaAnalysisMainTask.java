@@ -3,7 +3,12 @@ package org.preesm.algorithm.schedule.fpga;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.SortedMap;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.preesm.algorithm.pisdf.autodelays.HeuristicLoopBreakingDelays;
+import org.preesm.algorithm.pisdf.autodelays.TopologicalRanking;
+import org.preesm.algorithm.pisdf.autodelays.TopologicalRanking.TopoVisit;
 import org.preesm.commons.doc.annotations.Port;
 import org.preesm.commons.doc.annotations.PreesmTask;
 import org.preesm.commons.exceptions.PreesmRuntimeException;
@@ -63,12 +68,21 @@ public class FpgaAnalysisMainTask extends AbstractTaskImplementation {
     // check interfaces
     checkInterfaces(flatGraph, brv);
 
-    // Get all sub graph composing the current graph
+    // Get all sub graph (connected components) composing the current graph
     final List<List<AbstractActor>> subgraphsWOInterfaces = PiMMHelper.getAllConnectedComponentsWOInterfaces(flatGraph);
     // check and set the II for each subgraph
     for (List<AbstractActor> cc : subgraphsWOInterfaces) {
       AsapFpgaIIevaluator.checkAndSetActorInfos(cc, scenario, brv);
     }
+
+    // check the cycles
+    final HeuristicLoopBreakingDelays hlbd = new HeuristicLoopBreakingDelays();
+    hlbd.performAnalysis(flatGraph, brv);
+    AsapFpgaIIevaluator.checkAndSetCyclesInfos(hlbd);
+
+    final Map<AbstractActor, TopoVisit> topoRanks = TopologicalRanking.topologicalASAPranking(hlbd);
+    // build intermediate list of actors per rank to perform scheduling analysis
+    final SortedMap<Integer, Set<AbstractActor>> irRankActors = TopologicalRanking.mapRankActors(topoRanks, false, 0);
 
     return new HashMap<>();
   }

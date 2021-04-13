@@ -98,6 +98,9 @@ import org.preesm.workflow.implement.AbstractWorkflowNodeImplementation;
 
 /**
  * This class computes best locations for delays.
+ * <p>
+ * For more details, see conference paper "A Fast Heuristic to Pipeline SDF Graphs", published at SAMOS 2020 (DOI
+ * 10.1007/978-3-030-60939-9_10).
  *
  * @author ahonorat
  *
@@ -307,7 +310,7 @@ public class AutoDelaysTask extends AbstractTaskImplementation {
 
     final Map<AbstractActor, TopoVisit> topoRanks = TopologicalRanking.topologicalASAPranking(hlbd);
     // build intermediate list of actors per rank
-    final SortedMap<Integer, Set<AbstractActor>> irRankActors = mapRankActors(topoRanks, false, 0);
+    final SortedMap<Integer, Set<AbstractActor>> irRankActors = TopologicalRanking.mapRankActors(topoRanks, false, 0);
     // offset of one to ease some computations
     final int maxRank = irRankActors.lastKey() + 1;
     if (maxRank < 2) {
@@ -325,7 +328,8 @@ public class AutoDelaysTask extends AbstractTaskImplementation {
       TopoVisit tv = topoRanksT.get(x);
       tv.rank = maxRank - 1;
     });
-    final SortedMap<Integer, Set<AbstractActor>> irRankActorsT = mapRankActors(topoRanksT, true, maxRank);
+    final SortedMap<Integer,
+        Set<AbstractActor>> irRankActorsT = TopologicalRanking.mapRankActors(topoRanksT, true, maxRank);
 
     final SortedMap<Integer, Long> rankWCETs = new TreeMap<>();
     for (Entry<AbstractActor, TopoVisit> e : topoRanks.entrySet()) {
@@ -606,26 +610,6 @@ public class AutoDelaysTask extends AbstractTaskImplementation {
         delay.setExpression(pipeSize);
       }
     }
-  }
-
-  private static SortedMap<Integer, Set<AbstractActor>> mapRankActors(final Map<AbstractActor, TopoVisit> topoRanks,
-      boolean reverse, int maxRank) {
-    final SortedMap<Integer, Set<AbstractActor>> irRankActors = new TreeMap<>();
-    for (Entry<AbstractActor, TopoVisit> e : topoRanks.entrySet()) {
-      final AbstractActor aa = e.getKey();
-      final TopoVisit tv = e.getValue();
-      int rank = tv.rank;
-      if (reverse) {
-        rank = maxRank - tv.rank;
-      }
-      Set<AbstractActor> aas = irRankActors.get(rank);
-      if (aas == null) {
-        aas = new HashSet<>();
-        irRankActors.put(rank, aas);
-      }
-      aas.add(aa);
-    }
-    return irRankActors;
   }
 
   private static SortedMap<Integer, Set<CutInformation>> computePossibleCuts(

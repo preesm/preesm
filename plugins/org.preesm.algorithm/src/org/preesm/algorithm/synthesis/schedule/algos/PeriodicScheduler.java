@@ -74,6 +74,9 @@ import org.preesm.model.slam.utils.SlamDesignPEtypeChecker;
 /**
  * This scheduler handles the periods defined in the PiGraph and in its actors. However, it does not take into account
  * communication time.
+ * <p>
+ * For more details, see conference paper "Scheduling of Synchronous Dataflow Graphs with Partially Periodic Real-Time
+ * Constraints", published at RTNS 2020 (DOI 10.1145/3394810.3394820).
  * 
  * @author ahonorat
  */

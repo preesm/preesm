@@ -78,9 +78,8 @@ public class FifoBreakingCycleDetector {
   static final String FORMATTED_LOOP_PERM2 = String.format("%s*%s+%s?%s*", CycleNodeType.EXIT.abbr,
       CycleNodeType.ENTRY.abbr, CycleNodeType.BOTH.abbr, CycleNodeType.EXIT.abbr);
 
-  static final String FORMATTED_LOOP_SIMPLE1 = String.format("%s?", CycleNodeType.BOTH.abbr);
-  static final String FORMATTED_LOOP_SIMPLE2 = String.format("%s%s", CycleNodeType.ENTRY.abbr, CycleNodeType.EXIT.abbr);
-  static final String FORMATTED_LOOP_SIMPLE3 = String.format("%s%s", CycleNodeType.EXIT.abbr, CycleNodeType.ENTRY.abbr);
+  static final String FORMATTED_LOOP_SIMPLE = String.format("%s*[%s|%s]?%s*", CycleNodeType.EXIT.abbr,
+      CycleNodeType.ENTRY.abbr, CycleNodeType.BOTH.abbr, CycleNodeType.EXIT.abbr);
 
   /**
    * This method needs a small paper to be explicated. Do not try to modify it.
@@ -147,7 +146,7 @@ public class FifoBreakingCycleDetector {
   }
 
   /**
-   * Check if the cycle has a simple shape (only one exit and one entry).
+   * Check if the cycle has a simple shape (only one entry actor).
    * 
    * @param cycle
    *          List of nodes forming a cycle.
@@ -166,8 +165,7 @@ public class FifoBreakingCycleDetector {
     computeCycleString(cycle, actorsWithEntries, actorsWithExits, types, sb);
 
     final String str = sb.toString();
-    return (Pattern.matches(FORMATTED_LOOP_SIMPLE1, str) || Pattern.matches(FORMATTED_LOOP_SIMPLE2, str)
-        || Pattern.matches(FORMATTED_LOOP_SIMPLE3, str));
+    return Pattern.matches(FORMATTED_LOOP_SIMPLE, str);
   }
 
   /**
