@@ -38,7 +38,7 @@ public class AsapFpgaIIevaluator {
     protected final long          normGraphII;
     protected long                avgII;
 
-    public ActorNormalizedInfos(final AbstractActor aa, final AbstractActor ori, final long oriET, final long oriII,
+    protected ActorNormalizedInfos(final AbstractActor aa, final AbstractActor ori, final long oriET, final long oriII,
         final long brv) {
       this.aa = aa;
       this.ori = ori;
@@ -47,6 +47,13 @@ public class AsapFpgaIIevaluator {
       this.brv = brv;
       this.normGraphII = brv * oriII;
     }
+  }
+
+  protected static class ActorScheduleInfos {
+    protected long startTime    = 0; // real start time
+    protected long minStartTime = 0; // minimum possible
+    protected long minDuration  = 0; // minimum duration of all firings
+    protected long finishTime   = 0; // real finish time > minStartTime + duration
   }
 
   /**

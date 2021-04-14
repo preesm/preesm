@@ -201,25 +201,25 @@ public class AbstractGraph {
    * @return A subgraph containing the given start node and all other nodes accessible from it.
    */
   public static DefaultDirectedGraph<AbstractActor, FifoAbstraction> subDAGFrom(
-      DefaultDirectedGraph<AbstractActor, FifoAbstraction> absGraph, AbstractActor start,
-      Set<FifoAbstraction> fifosToIgnore, boolean reverse) {
+      final DefaultDirectedGraph<AbstractActor, FifoAbstraction> absGraph, final AbstractActor start,
+      final Set<FifoAbstraction> fifosToIgnore, final boolean reverse) {
 
     final DefaultDirectedGraph<AbstractActor,
         FifoAbstraction> subGraph = new DefaultDirectedGraph<>(FifoAbstraction.class);
     subGraph.addVertex(start);
 
-    List<AbstractActor> toVisit = new LinkedList<>();
+    final List<AbstractActor> toVisit = new LinkedList<>();
     toVisit.add(start);
     subGraphDFS(absGraph, subGraph, fifosToIgnore, reverse, toVisit);
 
     return subGraph;
   }
 
-  private static void subGraphDFS(DefaultDirectedGraph<AbstractActor, FifoAbstraction> absGraph,
-      DefaultDirectedGraph<AbstractActor, FifoAbstraction> subGraph, Set<FifoAbstraction> fifosToIgnore,
-      boolean reverse, List<AbstractActor> visitPathStack) {
+  private static void subGraphDFS(final DefaultDirectedGraph<AbstractActor, FifoAbstraction> absGraph,
+      final DefaultDirectedGraph<AbstractActor, FifoAbstraction> subGraph, final Set<FifoAbstraction> fifosToIgnore,
+      final boolean reverse, final List<AbstractActor> visitPathStack) {
 
-    AbstractActor currentNode = visitPathStack.get(0);
+    final AbstractActor currentNode = visitPathStack.get(0);
     Set<FifoAbstraction> edges = null;
     if (reverse) {
       edges = absGraph.incomingEdgesOf(currentNode);
@@ -227,7 +227,7 @@ public class AbstractGraph {
       edges = absGraph.outgoingEdgesOf(currentNode);
     }
 
-    for (FifoAbstraction fa : edges) {
+    for (final FifoAbstraction fa : edges) {
       if (!fifosToIgnore.contains(fa)) {
         AbstractActor opposite = null;
         if (reverse) {
@@ -238,7 +238,7 @@ public class AbstractGraph {
         if (visitPathStack.contains(opposite)) {
           throw new PreesmRuntimeException("SubGraph is not a DAG, abandon.");
         }
-        boolean mustGoDeeper = !subGraph.vertexSet().contains(opposite);
+        final boolean mustGoDeeper = !subGraph.vertexSet().contains(opposite);
         if (mustGoDeeper) {
           subGraph.addVertex(opposite);
           visitPathStack.add(0, opposite);
@@ -261,15 +261,16 @@ public class AbstractGraph {
    * @return Shallow copy of the input.
    */
   public static DefaultDirectedGraph<AbstractActor, FifoAbstraction>
-      copyGraph(DefaultDirectedGraph<AbstractActor, FifoAbstraction> absGraph) {
+
+      copyGraph(final DefaultDirectedGraph<AbstractActor, FifoAbstraction> absGraph) {
     final DefaultDirectedGraph<AbstractActor,
         FifoAbstraction> copyGraph = new DefaultDirectedGraph<>(FifoAbstraction.class);
-    for (AbstractActor aa : absGraph.vertexSet()) {
+    for (final AbstractActor aa : absGraph.vertexSet()) {
       copyGraph.addVertex(aa);
     }
-    for (FifoAbstraction fa : absGraph.edgeSet()) {
-      AbstractActor src = absGraph.getEdgeSource(fa);
-      AbstractActor tgt = absGraph.getEdgeTarget(fa);
+    for (final FifoAbstraction fa : absGraph.edgeSet()) {
+      final AbstractActor src = absGraph.getEdgeSource(fa);
+      final AbstractActor tgt = absGraph.getEdgeTarget(fa);
       copyGraph.addEdge(src, tgt, fa);
     }
     return copyGraph;
