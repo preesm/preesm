@@ -78,8 +78,6 @@ public class FpgaAnalysisMainTask extends AbstractTaskImplementation {
     // check the cycles
     final HeuristicLoopBreakingDelays hlbd = new HeuristicLoopBreakingDelays();
     hlbd.performAnalysis(flatGraph, brv);
-    // might be useless?
-    AsapFpgaIIevaluator.checkAndSetCyclesInfos(hlbd);
     // TODO set min durations of all AsapFpgaIIevaluator.ActorScheduleInfos, with cycle latency if in a cycle
 
     final Map<AbstractActor, TopoVisit> topoRanks = TopologicalRanking.topologicalASAPranking(hlbd);

@@ -5,15 +5,11 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
-import org.preesm.algorithm.pisdf.autodelays.HeuristicLoopBreakingDelays;
-import org.preesm.algorithm.pisdf.autodelays.HeuristicLoopBreakingDelays.CycleInfos;
 import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.commons.model.PreesmCopyTracker;
 import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.AbstractVertex;
-import org.preesm.model.pisdf.util.FifoBreakingCycleDetector;
 import org.preesm.model.scenario.Scenario;
 import org.preesm.model.slam.ComponentInstance;
 import org.preesm.model.slam.TimingType;
@@ -24,10 +20,6 @@ import org.preesm.model.slam.TimingType;
  * @author ahonorat
  */
 public class AsapFpgaIIevaluator {
-
-  private AsapFpgaIIevaluator() {
-    // do nothing
-  }
 
   protected static class ActorNormalizedInfos {
     protected final AbstractActor aa;
@@ -54,6 +46,10 @@ public class AsapFpgaIIevaluator {
     protected long minStartTime = 0; // minimum possible
     protected long minDuration  = 0; // minimum duration of all firings
     protected long finishTime   = 0; // real finish time > minStartTime + duration
+  }
+
+  private AsapFpgaIIevaluator() {
+    // do nothing
   }
 
   /**
@@ -103,26 +99,6 @@ public class AsapFpgaIIevaluator {
 
     }
     return listInfos;
-  }
-
-  /**
-   * Check if all cycles have only one entry and one exit.
-   * 
-   * @param hlbd
-   *          Heuristic used to break the cycles.
-   * 
-   * @throws PreesmRuntimeException
-   * 
-   */
-  public static void checkAndSetCyclesInfos(HeuristicLoopBreakingDelays hlbd) {
-    for (final Entry<List<AbstractActor>, CycleInfos> entry : hlbd.cyclesInfos.entrySet()) {
-      final List<AbstractActor> cycle = entry.getKey();
-      final CycleInfos ci = entry.getValue();
-      if (!FifoBreakingCycleDetector.checkIfCycleHasSimpleShape(cycle, ci.buildAllFifosPerEdge())) {
-        throw new PreesmRuntimeException("Your graph has complex cycles which are not allowed for this analysis: "
-            + "cycles must have only one entry actor.");
-      }
-    }
   }
 
   public static class DecreasingGraphIIComparator implements Comparator<ActorNormalizedInfos> {

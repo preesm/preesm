@@ -42,7 +42,6 @@ import java.util.List;
 import java.util.regex.Pattern;
 import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.Fifo;
-import org.preesm.model.pisdf.util.FifoBreakingCycleDetector.CycleNodeType;
 
 /**
  * This class provides helper functions to compute the breaking fifo in a cycle.
@@ -76,9 +75,6 @@ public class FifoBreakingCycleDetector {
   static final String FORMATTED_LOOP_PERM1 = String.format("%s*%s?%s+%s*", CycleNodeType.ENTRY.abbr,
       CycleNodeType.BOTH.abbr, CycleNodeType.EXIT.abbr, CycleNodeType.ENTRY.abbr);
   static final String FORMATTED_LOOP_PERM2 = String.format("%s*%s+%s?%s*", CycleNodeType.EXIT.abbr,
-      CycleNodeType.ENTRY.abbr, CycleNodeType.BOTH.abbr, CycleNodeType.EXIT.abbr);
-
-  static final String FORMATTED_LOOP_SIMPLE = String.format("%s*[%s|%s]?%s*", CycleNodeType.EXIT.abbr,
       CycleNodeType.ENTRY.abbr, CycleNodeType.BOTH.abbr, CycleNodeType.EXIT.abbr);
 
   /**
@@ -143,29 +139,6 @@ public class FifoBreakingCycleDetector {
       return index == 0 ? types.size() - 1 : index - 1;
     }
     return -1;
-  }
-
-  /**
-   * Check if the cycle has a simple shape (only one entry actor).
-   * 
-   * @param cycle
-   *          List of nodes forming a cycle.
-   * @param cyclesFifos
-   *          List of Fifos between these nodes (of same size as {@code cycle}).
-   * @return True has simple shape, false otherwise.
-   */
-  public static boolean checkIfCycleHasSimpleShape(final List<AbstractActor> cycle,
-      final List<List<Fifo>> cyclesFifos) {
-    final List<AbstractActor> actorsWithEntries = new ArrayList<>();
-    final List<AbstractActor> actorsWithExits = new ArrayList<>();
-    FifoBreakingCycleDetector.computeExitAndEntries(cycle, cyclesFifos, actorsWithEntries, actorsWithExits);
-
-    final List<CycleNodeType> types = new ArrayList<>();
-    final StringBuilder sb = new StringBuilder();
-    computeCycleString(cycle, actorsWithEntries, actorsWithExits, types, sb);
-
-    final String str = sb.toString();
-    return Pattern.matches(FORMATTED_LOOP_SIMPLE, str);
   }
 
   /**
