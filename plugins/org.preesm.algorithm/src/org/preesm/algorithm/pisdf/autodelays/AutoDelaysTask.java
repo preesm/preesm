@@ -60,6 +60,7 @@ import org.preesm.algorithm.mapper.ui.stats.IStatGenerator;
 import org.preesm.algorithm.mapper.ui.stats.StatEditorInput;
 import org.preesm.algorithm.mapper.ui.stats.StatGeneratorSynthesis;
 import org.preesm.algorithm.pisdf.autodelays.AbstractGraph.FifoAbstraction;
+import org.preesm.algorithm.pisdf.autodelays.HeuristicLoopBreakingDelays.CycleInfos;
 import org.preesm.algorithm.pisdf.autodelays.TopologicalRanking.TopoVisit;
 import org.preesm.algorithm.synthesis.SynthesisResult;
 import org.preesm.algorithm.synthesis.evaluation.latency.LatencyCost;
@@ -572,20 +573,16 @@ public class AutoDelaysTask extends AbstractTaskImplementation {
   }
 
   private static void fillCycles(final HeuristicLoopBreakingDelays hlbd, final Map<AbstractVertex, Long> brv) {
-    for (FifoAbstraction fa : hlbd.breakingFifosAbs) {
+    for (final CycleInfos ci : hlbd.cyclesInfos.values()) {
+      final FifoAbstraction fa = ci.breakingFifo;
+      final long gcdCycle = ci.repetition;
       final List<Long> pipelineValues = fa.pipelineValues;
       final List<Fifo> fifos = fa.fifos;
       final int size = fifos.size();
+
       for (int i = 0; i < size; i++) {
         final Fifo f = fifos.get(i);
-        long pipeSize = pipelineValues.get(i);
-        final AbstractActor tgt = hlbd.absGraph.getEdgeTarget(fa);
-        final long brvTgt = brv.get(tgt);
-        final long brvTgtCycle = hlbd.minCycleBrv.get(tgt);
-        if (brvTgt > brvTgtCycle) {
-          pipeSize /= brvTgt;
-          pipeSize *= brvTgtCycle;
-        }
+        long pipeSize = pipelineValues.get(i) / gcdCycle;
 
         Delay delay = f.getDelay();
         if (delay == null) {
