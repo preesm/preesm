@@ -78,8 +78,8 @@ public class HeuristicLoopBreakingDelays {
   public final Set<AbstractActor> cyclesSourceActors;
   public final Set<AbstractActor> cyclesSinkActors;
 
-  public final Map<AbstractVertex, Long> minCycleBrv;
-  public final Set<FifoAbstraction>      breakingFifosAbs;
+  public final Map<AbstractVertex, Long> minCycleBrv;      // maximum auto-concurrent firings
+  public final Set<FifoAbstraction>      breakingFifosAbs; // fifos breaking cycles (one per cycle)
   public final Set<FifoAbstraction>      selfLoopsAbs;
 
   /**
@@ -275,10 +275,19 @@ public class HeuristicLoopBreakingDelays {
             + "> and <" + tgt.getName() + ">, leaving.");
       }
 
-      if (newNbVisits == 0) {
+      if (newNbVisits == 0 && breakingFifosAbs.containsAll(absGraph.incomingEdgesOf(tgt))) {
+        // Then tgt is a source actor, but only if all its incoming edges are also breaking fifos.
+        // To see why all its incoming edges must break cycles, consider two entangled cycles,
+        // with one having external entries (of tgt), which could also have delays.
+        // In such case, even if tgt could be visited from the beginning, there is no *need* to do it.
+        // Indeed, since delays do not modify the ranking of actors in acyclic graphs,
+        // it should be the same when entering into a cycle.
+        // So, the purpose of this piece of code is to ensure that we can start the topological visit of
+        // graphs starting with cycles only, i.e. graphs where all actors have incoming edges.
         this.cyclesSourceActors.add(tgt);
       }
-      if (newNbVisitsT == 0) {
+      if (newNbVisitsT == 0 && breakingFifosAbs.containsAll(absGraph.outgoingEdgesOf(src))) {
+        // symmetrically
         this.cyclesSinkActors.add(src);
       }
       this.actorsNbVisitsTopoRankT.put(src, newNbVisitsT);
