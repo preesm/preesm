@@ -82,7 +82,7 @@ package org.preesm.algorithm.memory.exclusiongraph;
 import java.util.Iterator;
 import java.util.List;
 import java.util.logging.Level;
-import org.eclipse.xtext.util.Pair;
+import org.eclipse.xtext.xbase.lib.Pair;
 import org.preesm.algorithm.mapper.graphtransfo.BufferAggregate;
 import org.preesm.algorithm.mapper.graphtransfo.BufferProperties;
 import org.preesm.algorithm.memory.script.Range;
