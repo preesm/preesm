@@ -1,19 +1,12 @@
 package org.preesm.algorithm.schedule.fpga;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
-import java.util.Set;
-import java.util.SortedMap;
 import org.eclipse.core.runtime.IProgressMonitor;
-import org.preesm.algorithm.pisdf.autodelays.HeuristicLoopBreakingDelays;
-import org.preesm.algorithm.pisdf.autodelays.TopologicalRanking;
-import org.preesm.algorithm.pisdf.autodelays.TopologicalRanking.TopoVisit;
 import org.preesm.commons.doc.annotations.Port;
 import org.preesm.commons.doc.annotations.PreesmTask;
 import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.preesm.commons.logger.PreesmLogger;
-import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.AbstractVertex;
 import org.preesm.model.pisdf.DataInputPort;
 import org.preesm.model.pisdf.DataOutputPort;
@@ -23,7 +16,6 @@ import org.preesm.model.pisdf.PersistenceLevel;
 import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.pisdf.brv.BRVMethod;
 import org.preesm.model.pisdf.brv.PiBRV;
-import org.preesm.model.pisdf.statictools.PiMMHelper;
 import org.preesm.model.pisdf.statictools.PiSDFFlattener;
 import org.preesm.model.scenario.Scenario;
 import org.preesm.model.slam.Design;
@@ -67,22 +59,10 @@ public class FpgaAnalysisMainTask extends AbstractTaskImplementation {
     final Map<AbstractVertex, Long> brv = PiBRV.compute(flatGraph, BRVMethod.LCM);
     // check interfaces
     checkInterfaces(flatGraph, brv);
-
-    // Get all sub graph (connected components) composing the current graph
-    final List<List<AbstractActor>> subgraphsWOInterfaces = PiMMHelper.getAllConnectedComponentsWOInterfaces(flatGraph);
-    // check and set the II for each subgraph
-    for (List<AbstractActor> cc : subgraphsWOInterfaces) {
-      AsapFpgaIIevaluator.checkAndSetActorInfos(cc, scenario, brv);
-    }
-
-    // check the cycles
-    final HeuristicLoopBreakingDelays hlbd = new HeuristicLoopBreakingDelays();
-    hlbd.performAnalysis(flatGraph, brv);
-    // TODO set min durations of all AsapFpgaIIevaluator.ActorScheduleInfos, with cycle latency if in a cycle
-
-    final Map<AbstractActor, TopoVisit> topoRanks = TopologicalRanking.topologicalASAPranking(hlbd);
-    // build intermediate list of actors per rank to perform scheduling analysis
-    final SortedMap<Integer, Set<AbstractActor>> irRankActors = TopologicalRanking.mapRankActors(topoRanks, false, 0);
+    // schedule the graph
+    final AsapFpgaIIevaluator fpgaEval = new AsapFpgaIIevaluator(flatGraph, scenario, brv);
+    fpgaEval.performAnalysis();
+    // TODO get the results
 
     return new HashMap<>();
   }

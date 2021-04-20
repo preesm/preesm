@@ -3,13 +3,23 @@ package org.preesm.algorithm.schedule.fpga;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
+import java.util.SortedMap;
+import org.preesm.algorithm.pisdf.autodelays.HeuristicLoopBreakingDelays;
+import org.preesm.algorithm.pisdf.autodelays.HeuristicLoopBreakingDelays.CycleInfos;
+import org.preesm.algorithm.pisdf.autodelays.TopologicalRanking;
+import org.preesm.algorithm.pisdf.autodelays.TopologicalRanking.TopoVisit;
 import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.commons.model.PreesmCopyTracker;
 import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.AbstractVertex;
+import org.preesm.model.pisdf.PiGraph;
+import org.preesm.model.pisdf.statictools.PiMMHelper;
 import org.preesm.model.scenario.Scenario;
 import org.preesm.model.slam.ComponentInstance;
 import org.preesm.model.slam.TimingType;
@@ -42,14 +52,60 @@ public class AsapFpgaIIevaluator {
   }
 
   protected static class ActorScheduleInfos {
-    protected long startTime    = 0; // real start time
-    protected long minStartTime = 0; // minimum possible
+    protected long nbFirings    = 0; // number of firings in this interval
+    protected long startTime    = 0; // real start time, refined afterwards
+    protected long minStartTime = 0; // minimum possible ensuring all dependencies
     protected long minDuration  = 0; // minimum duration of all firings
-    protected long finishTime   = 0; // real finish time > minStartTime + duration
+    protected long finishTime   = 0; // real finish time > startTime + min duration
   }
 
-  private AsapFpgaIIevaluator() {
-    // do nothing
+  final PiGraph                   flatGraph;
+  final Scenario                  scenario;
+  final Map<AbstractVertex, Long> brv;
+
+  /**
+   * Builds an evaluator of the ASAP schedule on FPGA.
+   * 
+   * @param flatGraph
+   *          Graph to analyse.
+   * @param scenario
+   *          Scenario to get the timings and mapping constraints.
+   * @param brv
+   *          Repetition vector of actors in cc.
+   */
+  public AsapFpgaIIevaluator(final PiGraph flatGraph, final Scenario scenario, final Map<AbstractVertex, Long> brv) {
+    this.flatGraph = flatGraph;
+    this.scenario = scenario;
+    this.brv = brv;
+  }
+
+  /**
+   * Analyze the graph, schedule it, and compute buffer sizes.
+   */
+  public void performAnalysis() {
+    // Get all sub graph (connected components) composing the current graph
+    final List<List<AbstractActor>> subgraphsWOInterfaces = PiMMHelper.getAllConnectedComponentsWOInterfaces(flatGraph);
+
+    Map<AbstractActor, ActorNormalizedInfos> mapActorNormalizedInfos = new LinkedHashMap<>();
+    // check and set the II for each subgraph
+    for (List<AbstractActor> cc : subgraphsWOInterfaces) {
+      mapActorNormalizedInfos.putAll(checkAndSetActorInfos(cc, scenario, brv));
+    }
+
+    // check the cycles
+    final HeuristicLoopBreakingDelays hlbd = new HeuristicLoopBreakingDelays();
+    hlbd.performAnalysis(flatGraph, brv);
+
+    final AbstractFifoEvaluator fifoEval = new FifoEvaluatorAsArray(mapActorNormalizedInfos, hlbd);
+    // TODO set min durations of all AsapFpgaIIevaluator.ActorScheduleInfos, with cycle latency if in a cycle
+    for (Entry<List<AbstractActor>, CycleInfos> e : hlbd.cyclesInfos.entrySet()) {
+      fifoEval.computeCycleMinII(e.getKey(), e.getValue());
+    }
+
+    final Map<AbstractActor, TopoVisit> topoRanks = TopologicalRanking.topologicalASAPranking(hlbd);
+    // build intermediate list of actors per rank to perform scheduling analysis
+    final SortedMap<Integer, Set<AbstractActor>> irRankActors = TopologicalRanking.mapRankActors(topoRanks, false, 0);
+
   }
 
   /**
@@ -63,10 +119,10 @@ public class AsapFpgaIIevaluator {
    *          Repetition vector of actors in cc.
    * @return List of actor infos, sorted by decreasing normGraphII.
    */
-  public static List<ActorNormalizedInfos> checkAndSetActorInfos(final List<AbstractActor> cc, final Scenario scenario,
-      final Map<AbstractVertex, Long> brv) {
+  public static Map<AbstractActor, ActorNormalizedInfos> checkAndSetActorInfos(final List<AbstractActor> cc,
+      final Scenario scenario, final Map<AbstractVertex, Long> brv) {
     final ComponentInstance fpga = scenario.getDesign().getComponentInstances().get(0);
-    final List<ActorNormalizedInfos> listInfos = new ArrayList<>();
+    final Map<AbstractActor, ActorNormalizedInfos> mapInfos = new LinkedHashMap<>();
     // check and set standard infos
     for (final AbstractActor aa : cc) {
       AbstractActor ori = PreesmCopyTracker.getOriginalSource(aa);
@@ -80,9 +136,10 @@ public class AsapFpgaIIevaluator {
           TimingType.EXECUTION_TIME);
       final long rv = brv.get(aa);
       final ActorNormalizedInfos ani = new ActorNormalizedInfos(aa, ori, et, ii, rv);
-      listInfos.add(ani);
+      mapInfos.put(aa, ani);
     }
 
+    final List<ActorNormalizedInfos> listInfos = new ArrayList<>(mapInfos.values());
     Collections.sort(listInfos, new DecreasingGraphIIComparator());
     // set each avg II
     final ActorNormalizedInfos slowestActorInfos = listInfos.get(0);
@@ -98,7 +155,7 @@ public class AsapFpgaIIevaluator {
               + " has its graph II=" + fastestActorInfos.normGraphII);
 
     }
-    return listInfos;
+    return mapInfos;
   }
 
   public static class DecreasingGraphIIComparator implements Comparator<ActorNormalizedInfos> {
