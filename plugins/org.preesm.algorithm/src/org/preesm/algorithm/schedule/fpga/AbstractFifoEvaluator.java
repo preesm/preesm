@@ -14,6 +14,7 @@ import org.preesm.algorithm.schedule.fpga.AsapFpgaIIevaluator.ActorScheduleInfos
 import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.model.pisdf.AbstractActor;
+import org.preesm.model.pisdf.Fifo;
 
 /**
  * This class is a base class for the evaluation of FIFO, i.e. computation of start and finish time of a producer
@@ -26,11 +27,74 @@ public abstract class AbstractFifoEvaluator {
   final HeuristicLoopBreakingDelays              hlbd;
   final Map<AbstractActor, ActorNormalizedInfos> mapActorNormalizedInfos;
 
+  protected static class FifoInformations {
+    final ActorScheduleInfos   producer;
+    final ActorNormalizedInfos prodNorms;
+    final long                 nbFiringsProdForFirstFiringCons;
+    final FifoAbstraction      fifoAbs;
+    final Fifo                 fifo;
+    final long                 nbFiringsConsForLastFiringProd;
+    final ActorScheduleInfos   consumer;
+    final ActorNormalizedInfos consNorms;
+
+    protected FifoInformations(final ActorScheduleInfos producer, final ActorNormalizedInfos prodNorms,
+        final long nbFiringsProdForFirstFiringCons, final FifoAbstraction fifoAbs, final Fifo fifo,
+        final long nbFiringsConsForLastFiringProd, final ActorScheduleInfos consumer,
+        final ActorNormalizedInfos consNorms) {
+      this.producer = producer;
+      this.prodNorms = prodNorms;
+      this.nbFiringsProdForFirstFiringCons = nbFiringsProdForFirstFiringCons;
+      this.fifoAbs = fifoAbs;
+      this.fifo = fifo;
+      this.nbFiringsConsForLastFiringProd = nbFiringsConsForLastFiringProd;
+      this.consumer = consumer;
+      this.consNorms = consNorms;
+    }
+
+  }
+
   public AbstractFifoEvaluator(final Map<AbstractActor, ActorNormalizedInfos> mapActorNormalizedInfos,
       final HeuristicLoopBreakingDelays hlbd) {
     this.mapActorNormalizedInfos = mapActorNormalizedInfos;
     this.hlbd = hlbd;
   }
+
+  /**
+   * Compute and set the minimum start time of
+   * 
+   * @param producer
+   *          Schedule informations about producer (to be read).
+   * @param fifoAbs
+   *          Fifo between the producer and the consumer (abstract level).
+   * @param consumer
+   *          Schedule informations about consumer (to be set).
+   */
+  public final void computeMinStartFinishTimeCons(final ActorScheduleInfos producer, final FifoAbstraction fifoAbs,
+      final ActorScheduleInfos consumer) {
+    consumer.minInStartTimes.clear();
+    consumer.minInFinishTimes.clear();
+    final AbstractActor src = hlbd.getAbsGraph().getEdgeSource(fifoAbs);
+    final AbstractActor dst = hlbd.getAbsGraph().getEdgeTarget(fifoAbs);
+
+    final long nbFiringsProdForFirstFiringCons = nbfOpposite(fifoAbs, 1L, true, false);
+    final long nbFiringsConsForLastFiringProd = nbfOpposite(fifoAbs, 1L, false, false);
+
+    for (final Fifo fifo : fifoAbs.fifos) {
+      final FifoInformations fifoInfos = new FifoInformations(producer, mapActorNormalizedInfos.get(src),
+          nbFiringsProdForFirstFiringCons, fifoAbs, fifo, nbFiringsConsForLastFiringProd, consumer,
+          mapActorNormalizedInfos.get(dst));
+      Pair<Long, Long> sf = computeMinStartFinishTimeCons(fifoInfos);
+      consumer.minInStartTimes.add(sf.getKey());
+      consumer.minInFinishTimes.add(sf.getValue());
+    }
+    // should we consier the previous value?
+    consumer.startTime = Math.max(consumer.startTime, consumer.minInStartTimes.stream().min(Long::compare).orElse(0L));
+    final long minFinishTime = consumer.startTime + consumer.minDuration;
+    consumer.finishTime = Math.max(consumer.finishTime,
+        consumer.minInFinishTimes.stream().min(Long::compare).orElse(minFinishTime));
+  }
+
+  protected abstract Pair<Long, Long> computeMinStartFinishTimeCons(final FifoInformations fifoInfos);
 
   /**
    * Get the number of firings of the consumer triggered by executing {@code nbfiringsOpposite} last firings of the
@@ -70,7 +134,7 @@ public abstract class AbstractFifoEvaluator {
    *          Extra information about the cycle (especially the breaking fifo).
    * @return Minimal II of the cycle (i.e. time duration between two iterations of the cycle).
    */
-  public long computeCycleMinII(final List<AbstractActor> cycleActors, final CycleInfos cycleInfos) {
+  public final long computeCycleMinII(final List<AbstractActor> cycleActors, final CycleInfos cycleInfos) {
 
     // 1. we break the cycle into multiple sub lists
     final FifoAbstraction breakingFifo = cycleInfos.breakingFifo;
@@ -85,9 +149,9 @@ public abstract class AbstractFifoEvaluator {
     for (int i = indexSrc + cycleActors.size() - 1; i >= indexSrc; i--) {
       final int iFA = i % cycleActors.size(); // cycleActors.size() == cycleFifos.size()
       final FifoAbstraction currentFifo = cycleInfos.fifosPerEdge.get(iFA);
-      final long tempNBF = AbstractFifoEvaluator.nbfOpposite(currentFifo, previousNBF, true, true);
+      final long tempNBF = nbfOpposite(currentFifo, previousNBF, true, true);
       if (tempNBF <= 0 || currentFifo == breakingFifo) {
-        previousNBF = AbstractFifoEvaluator.nbfOpposite(currentFifo, previousNBF, true, false);
+        previousNBF = nbfOpposite(currentFifo, previousNBF, true, false);
         // we create a new subcycle
         final List<Pair<AbstractActor, ActorScheduleInfos>> currentSubCycle = new LinkedList<>();
         subcycles.add(0, currentSubCycle);
@@ -106,6 +170,7 @@ public abstract class AbstractFifoEvaluator {
       currentSched.nbFirings = previousNBF;
       // update minII
       final ActorNormalizedInfos ani = mapActorNormalizedInfos.get(aa);
+      currentSched.minDuration = (previousNBF - 1L) * ani.oriII + ani.oriET;
       final long actorIIcycle = ani.oriII * (ani.brv / cycleInfos.repetition);
       minCycleII = Math.max(minCycleII, actorIIcycle);
     }
@@ -120,14 +185,17 @@ public abstract class AbstractFifoEvaluator {
     for (final List<Pair<AbstractActor, ActorScheduleInfos>> subcycle : subcycles) {
       Iterator<Pair<AbstractActor, ActorScheduleInfos>> itActors = subcycle.iterator();
       Pair<AbstractActor, ActorScheduleInfos> previousPair = itActors.next();
+      // set the duration of the first actor
+      final ActorScheduleInfos asiSrc = previousPair.getValue();
+      asiSrc.finishTime = asiSrc.startTime + asiSrc.minDuration;
+
       // schedule the actors
       while (itActors.hasNext()) {
         final Pair<AbstractActor, ActorScheduleInfos> p = itActors.next();
         final AbstractActor prodActor = previousPair.getKey();
         final AbstractActor consActor = p.getKey();
         final FifoAbstraction currentFifo = hlbd.getAbsGraph().getEdge(prodActor, consActor);
-        // TODO
-        // computeNextStartFinishTime(previousPair.getValue(), currentFifo, p.getValue());
+        computeMinStartFinishTimeCons(previousPair.getValue(), currentFifo, p.getValue());
         previousPair = p;
       }
       // retrieve the length
@@ -147,5 +215,4 @@ public abstract class AbstractFifoEvaluator {
 
     return minCycleII;
   }
-
 }

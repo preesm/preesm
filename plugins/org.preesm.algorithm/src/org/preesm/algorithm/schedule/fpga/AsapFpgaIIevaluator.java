@@ -52,11 +52,18 @@ public class AsapFpgaIIevaluator {
   }
 
   protected static class ActorScheduleInfos {
-    protected long nbFirings    = 0; // number of firings in this interval
-    protected long startTime    = 0; // real start time, refined afterwards
-    protected long minStartTime = 0; // minimum possible ensuring all dependencies
-    protected long minDuration  = 0; // minimum duration of all firings
-    protected long finishTime   = 0; // real finish time > startTime + min duration
+    // number of firings in this interval
+    protected long nbFirings = 0;
+    // minimum duration of all firings
+    protected long minDuration = 0;
+    // real start time, refined afterwards
+    protected long startTime = 0;
+    // minimum possible according to each incoming dependency
+    protected List<Long> minInStartTimes = new ArrayList<>();
+    // real finish time > startTime + min duration
+    protected long finishTime = 0;
+    // minimum possible according to each incoming dependency
+    protected List<Long> minInFinishTimes = new ArrayList<>();
   }
 
   final PiGraph                   flatGraph;
@@ -99,7 +106,9 @@ public class AsapFpgaIIevaluator {
     final AbstractFifoEvaluator fifoEval = new FifoEvaluatorAsArray(mapActorNormalizedInfos, hlbd);
     // TODO set min durations of all AsapFpgaIIevaluator.ActorScheduleInfos, with cycle latency if in a cycle
     for (Entry<List<AbstractActor>, CycleInfos> e : hlbd.cyclesInfos.entrySet()) {
-      fifoEval.computeCycleMinII(e.getKey(), e.getValue());
+      final long cycleLatency = fifoEval.computeCycleMinII(e.getKey(), e.getValue());
+      PreesmLogger.getLogger()
+          .info("Cycle starting from " + e.getKey().get(0).getVertexPath() + " has its II >= " + cycleLatency);
     }
 
     final Map<AbstractActor, TopoVisit> topoRanks = TopologicalRanking.topologicalASAPranking(hlbd);
