@@ -87,11 +87,12 @@ public abstract class AbstractFifoEvaluator {
       consumer.minInStartTimes.add(sf.getKey());
       consumer.minInFinishTimes.add(sf.getValue());
     }
-    // should we consier the previous value?
-    consumer.startTime = Math.max(consumer.startTime, consumer.minInStartTimes.stream().min(Long::compare).orElse(0L));
+    // should we consider the previous value?
+    consumer.startTime = Math.max(consumer.startTime,
+        consumer.minInStartTimes.stream().min(Long::compare).orElse(consumer.startTime));
     final long minFinishTime = consumer.startTime + consumer.minDuration;
-    consumer.finishTime = Math.max(consumer.finishTime,
-        consumer.minInFinishTimes.stream().min(Long::compare).orElse(minFinishTime));
+    consumer.finishTime = Math.max(minFinishTime,
+        consumer.minInFinishTimes.stream().min(Long::compare).orElse(consumer.finishTime));
   }
 
   protected abstract Pair<Long, Long> computeMinStartFinishTimeCons(final FifoInformations fifoInfos);

@@ -20,12 +20,13 @@ public class FifoEvaluatorAsArray extends AbstractFifoEvaluator {
   }
 
   protected Pair<Long, Long> computeMinStartFinishTimeCons(final FifoInformations fifoInfos) {
-    final long minStartTime = fifoInfos.producer.startTime
-        + (fifoInfos.nbFiringsProdForFirstFiringCons - 1) * fifoInfos.prodNorms.oriII + fifoInfos.prodNorms.oriET;
+    final long prodII = Math.max(fifoInfos.prodNorms.oriII, fifoInfos.prodNorms.cycledII);
+    final long minStartTime = fifoInfos.producer.startTime + (fifoInfos.nbFiringsProdForFirstFiringCons - 1) * prodII
+        + fifoInfos.prodNorms.oriET;
 
-    final long minFinishTime = fifoInfos.producer.finishTime
-        + (fifoInfos.nbFiringsConsForLastFiringProd - 1) * fifoInfos.consNorms.oriII + fifoInfos.consNorms.oriET;
-
+    final long consII = Math.max(fifoInfos.consNorms.oriII, fifoInfos.consNorms.cycledII);
+    final long minFinishTime = fifoInfos.producer.finishTime + (fifoInfos.nbFiringsConsForLastFiringProd - 1) * consII
+        + fifoInfos.consNorms.oriET;
     return new Pair<>(minStartTime, minFinishTime);
   }
 
