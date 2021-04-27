@@ -15,6 +15,7 @@ import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.Fifo;
+import org.preesm.model.scenario.Scenario;
 
 /**
  * This class is a base class for the evaluation of FIFO, i.e. computation of start and finish time of a producer
@@ -24,6 +25,7 @@ import org.preesm.model.pisdf.Fifo;
  */
 public abstract class AbstractFifoEvaluator {
 
+  final Scenario                                 scenario;
   final HeuristicLoopBreakingDelays              hlbd;
   final Map<AbstractActor, ActorNormalizedInfos> mapActorNormalizedInfos;
 
@@ -53,14 +55,25 @@ public abstract class AbstractFifoEvaluator {
 
   }
 
-  public AbstractFifoEvaluator(final Map<AbstractActor, ActorNormalizedInfos> mapActorNormalizedInfos,
-      final HeuristicLoopBreakingDelays hlbd) {
-    this.mapActorNormalizedInfos = mapActorNormalizedInfos;
+  /**
+   * Builds a fifo evaluator to perform scheduling and compute sizes.
+   * 
+   * @param scenario
+   *          Scenario (especially used for size of data types).
+   * @param hlbd
+   *          Cycle breaking informations and topological ordering.
+   * @param mapActorNormalizedInfos
+   *          Normalized informations about II and ET of actors.
+   */
+  public AbstractFifoEvaluator(final Scenario scenario, final HeuristicLoopBreakingDelays hlbd,
+      final Map<AbstractActor, ActorNormalizedInfos> mapActorNormalizedInfos) {
+    this.scenario = scenario;
     this.hlbd = hlbd;
+    this.mapActorNormalizedInfos = mapActorNormalizedInfos;
   }
 
   /**
-   * Compute and set the minimum start time of
+   * Compute and set the minimum start and finish time of a consumer wrt. a producer actor.
    * 
    * @param producer
    *          Schedule informations about producer (to be read).
@@ -83,7 +96,7 @@ public abstract class AbstractFifoEvaluator {
       final FifoInformations fifoInfos = new FifoInformations(producer, mapActorNormalizedInfos.get(src),
           nbFiringsProdForFirstFiringCons, fifoAbs, fifo, nbFiringsConsForLastFiringProd, consumer,
           mapActorNormalizedInfos.get(dst));
-      Pair<Long, Long> sf = computeMinStartFinishTimeCons(fifoInfos);
+      final Pair<Long, Long> sf = computeMinStartFinishTimeCons(fifoInfos);
       consumer.minInStartTimes.add(sf.getKey());
       consumer.minInFinishTimes.add(sf.getValue());
     }
@@ -96,6 +109,38 @@ public abstract class AbstractFifoEvaluator {
   }
 
   protected abstract Pair<Long, Long> computeMinStartFinishTimeCons(final FifoInformations fifoInfos);
+
+  /**
+   * Compute the list of fifo sizes between a producer and a consumer.
+   * 
+   * @param producer
+   *          Schedule informations about producer (to be read).
+   * @param fifoAbs
+   *          Fifo between the producer and the consumer (abstract level).
+   * @param consumer
+   *          Schedule informations about consumer (to be set).
+   * @return List of fifo sizes (in the same order than {@code fifoAbs}).
+   */
+  public final List<Long> computeFifoSizes(final ActorScheduleInfos producer, final FifoAbstraction fifoAbs,
+      final ActorScheduleInfos consumer) {
+    final AbstractActor src = hlbd.getAbsGraph().getEdgeSource(fifoAbs);
+    final AbstractActor dst = hlbd.getAbsGraph().getEdgeTarget(fifoAbs);
+
+    final long nbFiringsProdForFirstFiringCons = nbfOpposite(fifoAbs, 1L, true, false);
+    final long nbFiringsConsForLastFiringProd = nbfOpposite(fifoAbs, 1L, false, false);
+
+    List<Long> fifoSizes = new ArrayList<>();
+    for (final Fifo fifo : fifoAbs.fifos) {
+      final FifoInformations fifoInfos = new FifoInformations(producer, mapActorNormalizedInfos.get(src),
+          nbFiringsProdForFirstFiringCons, fifoAbs, fifo, nbFiringsConsForLastFiringProd, consumer,
+          mapActorNormalizedInfos.get(dst));
+      final long size = computeFifoSize(fifoInfos);
+      fifoSizes.add(size);
+    }
+    return fifoSizes;
+  }
+
+  protected abstract long computeFifoSize(final FifoInformations fifoInfos);
 
   /**
    * Get the number of firings of the consumer triggered by executing {@code nbfiringsOpposite} last firings of the

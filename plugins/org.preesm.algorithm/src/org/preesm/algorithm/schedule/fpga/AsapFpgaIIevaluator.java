@@ -105,7 +105,7 @@ public class AsapFpgaIIevaluator {
     final HeuristicLoopBreakingDelays hlbd = new HeuristicLoopBreakingDelays();
     hlbd.performAnalysis(flatGraph, brv);
 
-    final AbstractFifoEvaluator fifoEval = new FifoEvaluatorAsArray(mapActorNormalizedInfos, hlbd);
+    final AbstractFifoEvaluator fifoEval = new FifoEvaluatorAsArray(scenario, hlbd, mapActorNormalizedInfos);
     // TODO set min durations of all AsapFpgaIIevaluator.ActorScheduleInfos, with cycle latency if in a cycle
     for (Entry<List<AbstractActor>, CycleInfos> e : hlbd.cyclesInfos.entrySet()) {
       final long cycleLatency = fifoEval.computeCycleMinII(e.getKey(), e.getValue());
@@ -166,7 +166,9 @@ public class AsapFpgaIIevaluator {
       PreesmLogger.getLogger().fine(
           "ALAP reset start/finish time of " + src.getVertexPath() + " to: " + asi.startTime + "/" + asi.finishTime);
     }
+
     // ASAP
+    StringBuilder fifoSizesPrint = new StringBuilder("Sizes of fifos:\n");
     for (int i = minRank + 1; i <= maxRank; i++) {
       for (final AbstractActor aa : irRankActors.get(i)) {
         final ActorScheduleInfos cons = mapSchedInfos.get(aa);
@@ -179,8 +181,20 @@ public class AsapFpgaIIevaluator {
         }
         PreesmLogger.getLogger()
             .fine("Actor " + aa.getVertexPath() + " starts/finishes at " + cons.startTime + "/" + cons.finishTime);
+        // then compute the sizes
+        for (final FifoAbstraction fa : hlbd.getAbsGraph().incomingEdgesOf(aa)) {
+          if (!hlbd.breakingFifosAbs.contains(fa)) {
+            final AbstractActor opposite = hlbd.getAbsGraph().getEdgeSource(fa);
+            final ActorScheduleInfos prod = mapSchedInfos.get(opposite);
+            List<Long> fifoSizes = fifoEval.computeFifoSizes(prod, fa, cons);
+            for (int j = 0; j < fifoSizes.size(); j++) {
+              fifoSizesPrint.append(fa.fifos.get(j).getId() + " of size " + fifoSizes.get(j) + " bytes.\n");
+            }
+          }
+        }
       }
     }
+    PreesmLogger.getLogger().info(fifoSizesPrint.toString());
 
   }
 
