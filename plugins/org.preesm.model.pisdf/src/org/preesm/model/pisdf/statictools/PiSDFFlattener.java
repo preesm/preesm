@@ -129,18 +129,23 @@ public class PiSDFFlattener extends PiMMSwitch<Boolean> {
    */
   public static final PiGraph flatten(final PiGraph graph, boolean performOptim) {
     PiGraphConsistenceChecker.check(graph);
+
     // 0. we copy the graph since the transformation has side effects (especially on delay actors)
     final PiGraph graphCopy = PiMMUserFactory.instance.copyPiGraphWithHistory(graph);
     // 1. First we resolve all parameters.
     // It must be done first because, when removing persistence, local parameters have to be known at upper level
     PiMMHelper.resolveAllParameters(graphCopy);
-    // 2. We perform the delay transformation step that deals with persistence
-    PiMMHelper.removePersistence(graphCopy);
-    // 3. Compute BRV following the chosen method
+    // 2. Compute BRV following the chosen method
     Map<AbstractVertex, Long> brv = PiBRV.compute(graphCopy, BRVMethod.LCM);
-    // 4. Print the RV values
     PiBRV.printRV(brv);
-    // 4.5 Check periods with BRV
+    // then we remove all actors which will be not fired
+    // we do it before the persistence transformation whose new delays may change the BRV
+    PiMMHelper.removeNonExecutedActorsAndFifos(graphCopy, brv);
+    // 3. We perform the delay transformation step that deals with persistence
+    PiMMHelper.removePersistence(graphCopy);
+    // recompute brv since new delays added from persistence are not known yet
+    brv = PiBRV.compute(graphCopy, BRVMethod.LCM);
+    // 4 Check periods with BRV
     PiMMHelper.checkPeriodicity(graphCopy, brv);
     // 5. Now, flatten the graph
 

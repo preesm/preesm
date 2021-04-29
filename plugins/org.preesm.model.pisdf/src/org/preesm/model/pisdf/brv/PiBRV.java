@@ -51,6 +51,7 @@ import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.AbstractVertex;
+import org.preesm.model.pisdf.Actor;
 import org.preesm.model.pisdf.DataInputInterface;
 import org.preesm.model.pisdf.DataInputPort;
 import org.preesm.model.pisdf.DataOutputInterface;
@@ -109,25 +110,44 @@ public abstract class PiBRV {
 
   protected abstract Map<AbstractVertex, Long> computeBRV(final PiGraph piGraph);
 
-  protected Map<AbstractVertex, Long> computeChildrenBRV(final PiGraph parentGraph) {
+  protected Map<AbstractVertex, Long> computeChildrenBRV(final PiGraph parentGraph,
+      final Map<AbstractVertex, Long> parentBRV) {
     final Map<AbstractVertex, Long> resultBrv = new LinkedHashMap<>();
-    parentGraph.getChildrenGraphs().forEach(childGraph -> resultBrv.putAll(this.computeBRV(childGraph)));
+    for (final AbstractActor actor : parentGraph.getActors()) {
+      PiGraph childGraph = null;
+      if (actor instanceof PiGraph) {
+        childGraph = (PiGraph) actor;
+      } else if (actor instanceof Actor) {
+        final Actor act = (Actor) actor;
+        if (act.isHierarchical()) {
+          childGraph = act.getSubGraph();
+        }
+      }
+      if (childGraph != null) {
+        if (parentBRV.get(actor) == 0L) {
+          // the BRV of all actors in the subgraph will be 0 as well
+          childGraph.getAllActors().forEach(x -> resultBrv.put(x, 0L));
+        } else {
+          resultBrv.putAll(this.computeBRV(childGraph));
+        }
+      }
+    }
     return resultBrv;
   }
 
-  protected static void updateRVWithInterfaces(final PiGraph graph, final List<AbstractActor> subgraph,
+  protected static void updateRVWithInterfaces(final PiGraph graph, final List<AbstractActor> connectedComponent,
       final Map<AbstractVertex, Long> graphBRV) {
     // Update RV values based on the interface
     long scaleFactor = 1;
 
     // Compute scaleFactor for input interfaces
-    scaleFactor = getInputInterfacesScaleFactor(graph, subgraph, scaleFactor, graphBRV);
+    scaleFactor = getInputInterfacesScaleFactor(graph, connectedComponent, scaleFactor, graphBRV);
 
     // Compute scaleFactor for output interfaces
-    scaleFactor = getOutputInterfacesScaleFactor(graph, subgraph, scaleFactor, graphBRV);
+    scaleFactor = getOutputInterfacesScaleFactor(graph, connectedComponent, scaleFactor, graphBRV);
 
     // Do the actual update
-    for (final AbstractActor actor : subgraph) {
+    for (final AbstractActor actor : connectedComponent) {
       final long newRV = graphBRV.get(actor) * scaleFactor;
       graphBRV.put(actor, newRV);
       if ((actor instanceof DelayActor) && (newRV > 1)) {

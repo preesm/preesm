@@ -267,6 +267,7 @@ public class PiMMHelper {
     final List<List<AbstractActor>> listCCs = new ArrayList<>();
     final List<AbstractActor> fullActorList = new ArrayList<>();
     fullActorList.addAll(graph.getActors());
+
     for (final AbstractActor actor : fullActorList) {
       // Ignore unused delay actor
       if ((actor instanceof DelayActor) && !((DelayActor) actor).getLinkedDelay().isDynamic()) {
@@ -347,19 +348,53 @@ public class PiMMHelper {
   }
 
   /**
+   * Remove dependencies of an actor, the configure input port if not used anymore, and also the actor itself from
+   * graph.
+   *
+   * @param graph
+   *          Container of elements to remove.
+   * @param actor
+   *          To remove from graph.
+   */
+  public static void removeActorAndDependencies(final PiGraph graph, final AbstractActor actor) {
+    for (final ConfigInputPort cip : actor.getConfigInputPorts()) {
+      final Dependency incomingDependency = cip.getIncomingDependency();
+      graph.getEdges().remove(incomingDependency);
+      final ISetter setter = incomingDependency.getSetter();
+      setter.getOutgoingDependencies().remove(incomingDependency);
+      if (setter instanceof Parameter && setter.getOutgoingDependencies().isEmpty()
+          && !((Parameter) setter).isConfigurationInterface()) {
+        graph.getVertices().remove((Parameter) setter);
+      }
+    }
+    graph.removeActor(actor);
+  }
+
+  /**
+   * Remove dependencies, actor and fifo from graph.
+   *
+   * @param graph
+   *          Container of elements to remove.
+   * @param fifo
+   *          To remove from graph.
+   * @param actor
+   *          To remove from graph.
+   */
+  public static void removeActorAndFifo(final PiGraph graph, final Fifo fifo, final AbstractActor actor) {
+    removeActorAndDependencies(graph, actor);
+    graph.removeFifo(fifo);
+  }
+
+  /**
    * Removes all actors from flat PiGraph if they are not executed. Removes also fifo and ports having rates equal to 0.
    * If not flat, the graph is not modified.
    * 
    * @param piGraph
-   *          Flat PiGraph to consider
+   *          PiGraph to consider
    * @param brv
    *          Repetition vector
    */
   public static void removeNonExecutedActorsAndFifos(final PiGraph piGraph, final Map<AbstractVertex, Long> brv) {
-    if (!piGraph.getChildrenGraphs().isEmpty()) {
-      return;
-    }
-
     // remove unused fifos
     for (final Fifo f : piGraph.getAllFifos()) {
       final DataOutputPort dpi = f.getSourcePort();
@@ -378,17 +413,13 @@ public class PiMMHelper {
       }
     }
 
-    // remove non executed actors
-    for (final Entry<AbstractVertex, Long> av : brv.entrySet()) {
-      if (av.getValue() == 0 && (av.getKey() instanceof AbstractActor)) {
-        AbstractActor aa = (AbstractActor) av.getKey();
-        // removes incoming dependencies from graph
-        for (ConfigInputPort cip : aa.getConfigInputPorts()) {
-          piGraph.removeDependency(cip.getIncomingDependency());
-        }
-        aa.getConfigInputPorts().clear();
-        piGraph.removeActor(aa);
+    for (final AbstractActor actor : piGraph.getActors()) {
+      if (brv.getOrDefault(actor, 1L) == 0L) {
+        removeActorAndDependencies(piGraph, actor);
       }
+    }
+    for (final PiGraph childGraph : piGraph.getChildrenGraphs()) {
+      removeNonExecutedActorsAndFifos(childGraph, brv);
     }
 
     removeUnusedPorts(piGraph);
@@ -422,7 +453,7 @@ public class PiMMHelper {
           aa.getDataInputPorts().remove(p);
         }
       } else if (!toRemoveIn.isEmpty() && !(aa instanceof DelayActor)) {
-        throw new PreesmRuntimeException("After single rate transformation, actor <" + aa.getVertexPath()
+        throw new PreesmRuntimeException("After removing non executed actors, actor <" + aa.getVertexPath()
             + "> has input ports without fifo, this is not allowed except for special actors if not all ports.");
       }
 
@@ -432,7 +463,7 @@ public class PiMMHelper {
           aa.getDataOutputPorts().remove(p);
         }
       } else if (!toRemoveOut.isEmpty() && !(aa instanceof DelayActor)) {
-        throw new PreesmRuntimeException("After single rate transformation, actor <" + aa.getVertexPath()
+        throw new PreesmRuntimeException("After removing non executed actors, actor <" + aa.getVertexPath()
             + "> has output ports without fifo, this is not allowed except for special actors if not all ports.");
       }
 
@@ -688,43 +719,6 @@ public class PiMMHelper {
     }
     // We update the value of the graphRV accordingly
     return graphRV * graphHierarchicallRV;
-  }
-
-  /**
-   * Remove dependencies of an actor, the configure input port if not used anymore, and also the actor itself from
-   * graph.
-   *
-   * @param graph
-   *          Container of elements to remove.
-   * @param actor
-   *          To remove from graph.
-   */
-  public static void removeActorAndDependencies(final PiGraph graph, final AbstractActor actor) {
-    for (final ConfigInputPort cip : actor.getConfigInputPorts()) {
-      final Dependency incomingDependency = cip.getIncomingDependency();
-      graph.getEdges().remove(incomingDependency);
-      final ISetter setter = incomingDependency.getSetter();
-      setter.getOutgoingDependencies().remove(incomingDependency);
-      if (setter instanceof Parameter && setter.getOutgoingDependencies().isEmpty()) {
-        graph.getVertices().remove((Parameter) setter);
-      }
-    }
-    graph.removeActor(actor);
-  }
-
-  /**
-   * Remove dependencies, actor and fifo from graph.
-   *
-   * @param graph
-   *          Container of elements to remove.
-   * @param fifo
-   *          To remove from graph.
-   * @param actor
-   *          To remove from graph.
-   */
-  public static void removeActorAndFifo(final PiGraph graph, final Fifo fifo, final AbstractActor actor) {
-    removeActorAndDependencies(graph, actor);
-    graph.removeFifo(fifo);
   }
 
   /**

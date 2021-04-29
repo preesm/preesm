@@ -170,15 +170,19 @@ public class PiSDFToSingleRate extends PiMMSwitch<Boolean> {
     // It must be done first because, when removing persistence, local parameters have to be known at upper level
     PreesmLogger.getLogger().log(Level.FINE, " >>   - resolve params");
     PiMMHelper.resolveAllParameters(graphCopy);
-    // 2. We perform the delay transformation step that deals with persistence
+    // 2. Compute BRV following the chosen method
+    PreesmLogger.getLogger().log(Level.FINE, " >>   - compute brv");
+    final Map<AbstractVertex, Long> brvOriginal = PiBRV.compute(graphCopy, method);
+    PreesmLogger.getLogger().log(Level.FINE, " >>   - print brv");
+    PiBRV.printRV(brvOriginal);
+    // then we remove all actors which will be not fired
+    // we do it before the persistence transformation whose new delays may change the BRV
+    PiMMHelper.removeNonExecutedActorsAndFifos(graphCopy, brvOriginal);
+    // 3. We perform the delay transformation step that deals with persistence
     PreesmLogger.getLogger().log(Level.FINE, " >>   - remove persistence");
     PiMMHelper.removePersistence(graphCopy);
-    // 3. Compute BRV following the chosen method
-    PreesmLogger.getLogger().log(Level.FINE, " >>   - compute brv");
-    Map<AbstractVertex, Long> brv = PiBRV.compute(graphCopy, method);
-    // 3.1 Print the RV values
-    PreesmLogger.getLogger().log(Level.FINE, " >>   - print brv");
-    PiBRV.printRV(brv);
+    // 3.1 recompute brv since new delays added from persistence are not known yet
+    final Map<AbstractVertex, Long> brv = PiBRV.compute(graphCopy, method);
     // 3.2 adds default RV of 1 for InterfaceActor of all levels
     graphCopy.getAllActors().stream().filter(x -> x instanceof InterfaceActor).forEach(x -> brv.put(x, 1L));
     // 4 Check periods with BRV
@@ -192,7 +196,6 @@ public class PiSDFToSingleRate extends PiMMSwitch<Boolean> {
     final PiGraph acyclicSRPiMM = staticPiMM2ASrPiMMVisitor.getResult();
 
     srCheck(graphCopy, acyclicSRPiMM);
-    PiMMHelper.removeUnusedPorts(acyclicSRPiMM);
 
     // 6- do some optimization on the graph
     PreesmLogger.getLogger().log(Level.FINE, " >> - fork join optim");
@@ -887,7 +890,6 @@ public class PiSDFToSingleRate extends PiMMSwitch<Boolean> {
 
   @Override
   public Boolean casePiGraph(final PiGraph graph) {
-
     // If it is a cluster, do nothing
     if (graph.isCluster()) {
       return true;
@@ -915,8 +917,8 @@ public class PiSDFToSingleRate extends PiMMSwitch<Boolean> {
     for (final Fifo f : graph.getFifosWithDelay()) {
       splitDelayActors(f);
     }
-    final long graphRV = this.brv.get(graph) == null ? 1 : this.brv.get(graph);
     final String currentPrefix = this.graphPrefix;
+    final long graphRV = this.brv.getOrDefault(graph, 1L);
     IntegerName iN = new IntegerName(graphRV - 1);
     final long backupInstance = this.firingInstance;
     for (long i = 0; i < graphRV; ++i) {

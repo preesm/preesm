@@ -101,7 +101,7 @@ class TopologyBasedBRV extends PiBRV {
       // Update BRV values with interfaces
       updateRVWithInterfaces(piGraph, subgraph, graphBRV);
     }
-    computeChildrenBRV(piGraph);
+    computeChildrenBRV(piGraph, graphBRV);
     return graphBRV;
   }
 
