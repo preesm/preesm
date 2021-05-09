@@ -76,14 +76,14 @@ import org.preesm.workflow.implement.AbstractTaskImplementation;
         @Port(name = "Mapping", type = Mapping.class), @Port(name = "Allocation", type = Allocation.class) },
 
     parameters = {
-        @Parameter(name = StatsEditorSynthesisTask.DISPLAY_PARAM,
+        @Parameter(name = StatEditorSynthesisTask.DISPLAY_PARAM,
             description = "Specify if statistics, including Gantt diagram, must be displayed or not.",
             values = { @Value(name = "true/false") }),
-        @Parameter(name = StatsEditorSynthesisTask.EXPORT_PARAM,
+        @Parameter(name = StatEditorSynthesisTask.EXPORT_PARAM,
             description = "Folder to store Gantt diagram as xml file. Path is relative to the project, "
                 + "put \"/\" if at root, may be empty.",
             values = { @Value(name = "/path/to") }) })
-public class StatsEditorSynthesisTask extends AbstractTaskImplementation {
+public class StatEditorSynthesisTask extends AbstractTaskImplementation {
 
   public static final String DISPLAY_PARAM   = "display";
   public static final String DISPLAY_DEFAULT = "true";

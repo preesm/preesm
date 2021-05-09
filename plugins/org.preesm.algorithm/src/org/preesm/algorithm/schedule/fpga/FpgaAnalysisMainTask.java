@@ -3,8 +3,10 @@ package org.preesm.algorithm.schedule.fpga;
 import java.util.HashMap;
 import java.util.Map;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.preesm.commons.doc.annotations.Parameter;
 import org.preesm.commons.doc.annotations.Port;
 import org.preesm.commons.doc.annotations.PreesmTask;
+import org.preesm.commons.doc.annotations.Value;
 import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.model.pisdf.AbstractVertex;
@@ -36,8 +38,14 @@ import org.preesm.workflow.implement.AbstractWorkflowNodeImplementation;
         + "Only works for single FPGA architectures with single frequency domain."
         + "Periods in the graph are not taken into account.",
     inputs = { @Port(name = "PiMM", type = PiGraph.class), @Port(name = "architecture", type = Design.class),
-        @Port(name = "scenario", type = Scenario.class) })
+        @Port(name = "scenario", type = Scenario.class) },
+    parameters = { @Parameter(name = FpgaAnalysisMainTask.SHOW_SCHED_PARAM_NAME,
+        description = "Whether or not the schedule must be shown at the end.", values = {
+            @Value(name = FpgaAnalysisMainTask.SHOW_SCHED_PARAM_VALUE, effect = "False disables this feature.") }), })
 public class FpgaAnalysisMainTask extends AbstractTaskImplementation {
+
+  public static final String SHOW_SCHED_PARAM_NAME  = "Show schedule ?";
+  public static final String SHOW_SCHED_PARAM_VALUE = "false";
 
   @Override
   public Map<String, Object> execute(Map<String, Object> inputs, Map<String, String> parameters,
@@ -63,6 +71,24 @@ public class FpgaAnalysisMainTask extends AbstractTaskImplementation {
     final AsapFpgaIIevaluator fpgaEval = new AsapFpgaIIevaluator(flatGraph, scenario, brv);
     fpgaEval.performAnalysis();
     // TODO get the results
+
+    final String showSchedStr = parameters.get(SHOW_SCHED_PARAM_NAME);
+    final boolean showSched = Boolean.parseBoolean(showSchedStr);
+
+    if (showSched) {
+      // final IStatGenerator statGen = new StatGeneratorSynthesis(architecture, scenario, scheduleAndMap.mapping, null,
+      // evaluate);
+      // final IEditorInput input = new StatEditorInput(statGen);
+      //
+      // // Check if the workflow is running in command line mode
+      // try {
+      // // Run statistic editor
+      // PlatformUI.getWorkbench().getDisplay().asyncExec(new EditorRunnable(input));
+      // } catch (final IllegalStateException e) {
+      // PreesmLogger.getLogger().log(Level.INFO, "Gantt display is impossible in this context."
+      // + " Ignore this log entry if you are running the command line version of Preesm.");
+      // }
+    }
 
     return new HashMap<>();
   }
