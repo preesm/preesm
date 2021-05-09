@@ -8,28 +8,29 @@ import org.preesm.commons.math.LongFraction;
 import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.scenario.Scenario;
 
-/**
- * This class evalutes fifo dependencies and size as in the SDF model: all data are produced at the end while they are
- * consumed at the beginning of a firing.
- * 
- * @author ahonorat
- */
-public class FifoEvaluatorAsArray extends AbstractFifoEvaluator {
+public class FifoEvaluatorAsAverage extends AbstractFifoEvaluator {
 
-  public FifoEvaluatorAsArray(final Scenario scenario, final HeuristicLoopBreakingDelays hlbd,
-      final Map<AbstractActor, ActorNormalizedInfos> mapActorNormalizedInfos) {
+  /**
+   * This class evalutes fifo dependencies and size as if all data are produced/consumed according to their average
+   * rate, i.e. total tokens divided by (finish time minus start time).
+   * 
+   * @author ahonorat
+   */
+  public FifoEvaluatorAsAverage(Scenario scenario, HeuristicLoopBreakingDelays hlbd,
+      Map<AbstractActor, ActorNormalizedInfos> mapActorNormalizedInfos) {
     super(scenario, hlbd, mapActorNormalizedInfos);
   }
 
   @Override
-  protected Pair<Long, Long> computeMinStartFinishTimeCons(final FifoInformations fifoInfos) {
-    final long prodII = Math.max(fifoInfos.prodNorms.oriII, fifoInfos.prodNorms.cycledII);
-    final long minStartTime = fifoInfos.producer.startTime + (fifoInfos.nbFiringsProdForFirstFiringCons - 1) * prodII
-        + fifoInfos.prodNorms.oriET;
+  protected Pair<Long, Long> computeMinStartFinishTimeCons(FifoInformations fifoInfos) {
+    final long prodRate = fifoInfos.fifo.getSourcePort().getPortRateExpression().evaluate();
+    final long durationUntilFirstProd = (fifoInfos.prodNorms.oriET + prodRate - 1L) / prodRate;
+    final long minStartTime = fifoInfos.producer.startTime + durationUntilFirstProd;
 
-    final long consII = Math.max(fifoInfos.consNorms.oriII, fifoInfos.consNorms.cycledII);
-    final long minFinishTime = fifoInfos.producer.finishTime + (fifoInfos.nbFiringsConsForLastFiringProd - 1) * consII
-        + fifoInfos.consNorms.oriET;
+    final long consRate = fifoInfos.fifo.getTargetPort().getPortRateExpression().evaluate();
+    final long durationAfterLastCons = (fifoInfos.consNorms.oriET + consRate - 1L) / consRate;
+    final long minFinishTime = fifoInfos.producer.finishTime + durationAfterLastCons;
+
     return new Pair<>(minStartTime, minFinishTime);
   }
 
@@ -80,17 +81,17 @@ public class FifoEvaluatorAsArray extends AbstractFifoEvaluator {
     long overlapSize = 0L;
     if (prodRate > consRate) {
       if (overlapProd > overlapCons) {
-        final long extraPeak = consRate * (firingConsOverlap + firingProdOverlap - 1L) / firingProdOverlap;
+        final long extraPeak = (overlapCons + overlapProd - 1L) / overlapProd;
         overlapSize = (overlapProd - overlapCons) + extraPeak;
       } else if (firingProdOverlap > 0) {
-        overlapSize = prodRate;
+        overlapSize = 1L;
       }
     } else {
       if (overlapProd < overlapCons) {
-        final long extraPeak = prodRate * (firingProdOverlap + firingConsOverlap - 1L) / firingConsOverlap;
+        final long extraPeak = (overlapProd + overlapCons - 1L) / overlapCons;
         overlapSize = extraPeak;
       } else if (firingConsOverlap > 0) {
-        overlapSize = (overlapProd - overlapCons) + consRate;
+        overlapSize = (overlapProd - overlapCons) + 1L;
       } else {
         overlapSize = overlapProd;
       }
