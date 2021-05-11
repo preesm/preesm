@@ -54,7 +54,6 @@ import org.preesm.algorithm.synthesis.timer.ActorExecutionTiming;
 import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.slam.ComponentInstance;
-import org.preesm.model.slam.utils.LexicographicComponentInstanceComparator;
 
 /**
  * GanttData carries information that can be displayed in a Gantt chart.
@@ -64,7 +63,7 @@ import org.preesm.model.slam.utils.LexicographicComponentInstanceComparator;
 public class GanttData {
 
   /** The components. */
-  private Map<ComponentInstance, GanttComponent> components = null;
+  private Map<String, GanttComponent> components = null;
 
   /**
    * Instantiates a new gantt data.
@@ -81,7 +80,7 @@ public class GanttData {
    *          the id
    * @return the component
    */
-  private GanttComponent getComponent(final ComponentInstance id) {
+  private GanttComponent getComponent(final String id) {
     if (!this.components.containsKey(id)) {
       final GanttComponent cmp = new GanttComponent(id);
       this.components.put(id, cmp);
@@ -102,8 +101,8 @@ public class GanttData {
    *          the duration
    * @return true, if successful
    */
-  private boolean insertTask(final String taskId, final ComponentInstance componentId, final long startTime,
-      final long duration, final Color color) {
+  private boolean insertTask(final String taskId, final String componentId, final long startTime, final long duration,
+      final Color color) {
     final GanttComponent cmp = getComponent(componentId);
     final GanttTask task = new GanttTask(startTime, duration, taskId, color);
     return cmp.insertTask(task);
@@ -128,7 +127,7 @@ public class GanttData {
         final long startTime = currentVertex.getTiming().getTLevel();
         final long duration = currentVertex.getTiming().getCost();
         final String id = currentVertex.getName() + " (x" + currentVertex.getInit().getNbRepeat() + ")";
-        if (!insertTask(id, cmp, startTime, duration, tcs.mapperDAGcompability(currentVertex))) {
+        if (!insertTask(id, cmp.getInstanceName(), startTime, duration, tcs.mapperDAGcompability(currentVertex))) {
           return false;
         }
       } else {
@@ -156,7 +155,7 @@ public class GanttData {
       AbstractActor aa = e.getKey();
       ActorExecutionTiming aet = e.getValue();
       for (ComponentInstance ci : mapping.getMapping(aa)) {
-        if (!insertTask(aa.getName(), ci, aet.getStartTime(), aet.getDuration(), tcs.doSwitch(aa))) {
+        if (!insertTask(aa.getName(), ci.getInstanceName(), aet.getStartTime(), aet.getDuration(), tcs.doSwitch(aa))) {
           return false;
         }
       }
@@ -172,8 +171,8 @@ public class GanttData {
    */
   public List<GanttComponent> getComponents() {
     final List<GanttComponent> componentList = new ArrayList<>(this.components.values());
-    Collections.sort(componentList, (c1, c2) -> new LexicographicComponentInstanceComparator()
-        .compare(c1.getComponentInstance(), c2.getComponentInstance()));
+    Collections.sort(componentList);
     return componentList;
   }
+
 }
