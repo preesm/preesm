@@ -160,7 +160,6 @@ public class GanttComponent implements Comparable<GanttComponent> {
 
   @Override
   public int compareTo(GanttComponent arg0) {
-    final ComponentInstanceNameComparator comp = new ComponentInstanceNameComparator();
-    return comp.compare(this.id, arg0.id);
+    return ComponentInstanceNameComparator.compareStatic(this.id, arg0.id);
   }
 }

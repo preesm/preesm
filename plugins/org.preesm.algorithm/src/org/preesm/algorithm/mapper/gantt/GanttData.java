@@ -117,7 +117,7 @@ public class GanttData {
    */
   public boolean insertDag(final MapperDAG dag) {
     final TopologicalDAGIterator viterator = new TopologicalDAGIterator(dag);
-    TaskColorSelector tcs = new TaskColorSelector();
+    final TaskColorSelector tcs = new TaskColorSelector();
 
     while (viterator.hasNext()) {
       final MapperDAGVertex currentVertex = (MapperDAGVertex) viterator.next();
@@ -150,7 +150,7 @@ public class GanttData {
    */
   public boolean insertSchedulerMapping(final Mapping mapping,
       final Map<AbstractActor, ActorExecutionTiming> execTimings) {
-    TaskColorSelector tcs = new TaskColorSelector();
+    final TaskColorSelector tcs = new TaskColorSelector();
     for (Entry<AbstractActor, ActorExecutionTiming> e : execTimings.entrySet()) {
       AbstractActor aa = e.getKey();
       ActorExecutionTiming aet = e.getValue();

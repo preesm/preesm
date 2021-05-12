@@ -9,6 +9,10 @@ public class ComponentInstanceNameComparator implements Comparator<String> {
 
   @Override
   public int compare(String o1, String o2) {
+    return compareStatic(o1, o2);
+  }
+
+  public static int compareStatic(String o1, String o2) {
     final String o1StringPart = o1.replaceAll("\\d", "");
     final String o2StringPart = o2.replaceAll("\\d", "");
 

@@ -44,8 +44,7 @@ public class LexicographicComponentInstanceComparator implements Comparator<Comp
 
   @Override
   public int compare(ComponentInstance o1, ComponentInstance o2) {
-    final ComponentInstanceNameComparator comp = new ComponentInstanceNameComparator();
-    return comp.compare(o1.getInstanceName(), o2.getInstanceName());
+    return ComponentInstanceNameComparator.compareStatic(o1.getInstanceName(), o2.getInstanceName());
   }
 
 }
