@@ -3,6 +3,11 @@ package org.preesm.algorithm.schedule.fpga;
 import java.util.HashMap;
 import java.util.Map;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.ui.IEditorInput;
+import org.eclipse.ui.PlatformUI;
+import org.preesm.algorithm.mapper.ui.stats.EditorRunnable;
+import org.preesm.algorithm.mapper.ui.stats.IStatGenerator;
+import org.preesm.algorithm.mapper.ui.stats.StatEditorInput;
 import org.preesm.commons.doc.annotations.Parameter;
 import org.preesm.commons.doc.annotations.Port;
 import org.preesm.commons.doc.annotations.PreesmTask;
@@ -69,25 +74,22 @@ public class FpgaAnalysisMainTask extends AbstractTaskImplementation {
     checkInterfaces(flatGraph, brv);
     // schedule the graph
     final AsapFpgaIIevaluator fpgaEval = new AsapFpgaIIevaluator(flatGraph, scenario, brv);
-    fpgaEval.performAnalysis();
-    // TODO get the results
+    final IStatGenerator schedStats = fpgaEval.performAnalysis();
 
     final String showSchedStr = parameters.get(SHOW_SCHED_PARAM_NAME);
     final boolean showSched = Boolean.parseBoolean(showSchedStr);
 
     if (showSched) {
-      // final IStatGenerator statGen = new StatGeneratorSynthesis(architecture, scenario, scheduleAndMap.mapping, null,
-      // evaluate);
-      // final IEditorInput input = new StatEditorInput(statGen);
-      //
-      // // Check if the workflow is running in command line mode
-      // try {
-      // // Run statistic editor
-      // PlatformUI.getWorkbench().getDisplay().asyncExec(new EditorRunnable(input));
-      // } catch (final IllegalStateException e) {
-      // PreesmLogger.getLogger().log(Level.INFO, "Gantt display is impossible in this context."
-      // + " Ignore this log entry if you are running the command line version of Preesm.");
-      // }
+      final IEditorInput input = new StatEditorInput(schedStats);
+
+      // Check if the workflow is running in command line mode
+      try {
+        // Run statistic editor
+        PlatformUI.getWorkbench().getDisplay().asyncExec(new EditorRunnable(input));
+      } catch (final IllegalStateException e) {
+        PreesmLogger.getLogger().info("Gantt display is impossible in this context."
+            + " Ignore this log entry if you are running the command line version of Preesm.");
+      }
     }
 
     return new HashMap<>();

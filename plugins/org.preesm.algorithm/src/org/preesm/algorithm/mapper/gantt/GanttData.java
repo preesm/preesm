@@ -101,7 +101,7 @@ public class GanttData {
    *          the duration
    * @return true, if successful
    */
-  private boolean insertTask(final String taskId, final String componentId, final long startTime, final long duration,
+  public boolean insertTask(final String taskId, final String componentId, final long startTime, final long duration,
       final Color color) {
     final GanttComponent cmp = getComponent(componentId);
     final GanttTask task = new GanttTask(startTime, duration, taskId, color);

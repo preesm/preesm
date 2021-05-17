@@ -3,17 +3,22 @@ package org.preesm.algorithm.schedule.fpga;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.SortedMap;
+import org.preesm.algorithm.mapper.gantt.GanttData;
+import org.preesm.algorithm.mapper.gantt.TaskColorSelector;
+import org.preesm.algorithm.mapper.ui.stats.StatGeneratorPrecomputed;
 import org.preesm.algorithm.pisdf.autodelays.AbstractGraph.FifoAbstraction;
 import org.preesm.algorithm.pisdf.autodelays.HeuristicLoopBreakingDelays;
 import org.preesm.algorithm.pisdf.autodelays.HeuristicLoopBreakingDelays.CycleInfos;
 import org.preesm.algorithm.pisdf.autodelays.TopologicalRanking;
 import org.preesm.algorithm.pisdf.autodelays.TopologicalRanking.TopoVisit;
+import org.preesm.commons.IntegerName;
 import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.commons.model.PreesmCopyTracker;
@@ -91,11 +96,11 @@ public class AsapFpgaIIevaluator {
   /**
    * Analyze the graph, schedule it, and compute buffer sizes.
    */
-  public void performAnalysis() {
+  public StatGeneratorPrecomputed performAnalysis() {
     // Get all sub graph (connected components) composing the current graph
     final List<List<AbstractActor>> subgraphsWOInterfaces = PiMMHelper.getAllConnectedComponentsWOInterfaces(flatGraph);
 
-    Map<AbstractActor, ActorNormalizedInfos> mapActorNormalizedInfos = new LinkedHashMap<>();
+    final Map<AbstractActor, ActorNormalizedInfos> mapActorNormalizedInfos = new LinkedHashMap<>();
     // check and set the II for each subgraph
     for (List<AbstractActor> cc : subgraphsWOInterfaces) {
       mapActorNormalizedInfos.putAll(checkAndSetActorInfos(cc, scenario, brv));
@@ -123,8 +128,8 @@ public class AsapFpgaIIevaluator {
     final SortedMap<Integer, Set<AbstractActor>> irRankActors = TopologicalRanking.mapRankActors(topoRanks, false, 0);
     final SortedMap<Integer, Set<AbstractActor>> irRankActorsT = TopologicalRanking.mapRankActors(topoRanksT, false, 0);
     // build maps of sched infos
-    final Map<AbstractActor, ActorScheduleInfos> mapSchedInfos = new LinkedHashMap<>();
-    final Map<AbstractActor, ActorScheduleInfos> mapSchedInfosT = new LinkedHashMap<>();
+    final Map<AbstractActor, ActorScheduleInfos> mapActorSchedInfos = new LinkedHashMap<>();
+    final Map<AbstractActor, ActorScheduleInfos> mapActorSchedInfosT = new LinkedHashMap<>();
     for (final Entry<AbstractActor, ActorNormalizedInfos> e : mapActorNormalizedInfos.entrySet()) {
       final AbstractActor aa = e.getKey();
       final ActorNormalizedInfos ani = e.getValue();
@@ -133,8 +138,8 @@ public class AsapFpgaIIevaluator {
       final long minDuration = (ani.brv - 1) * Math.max(ani.oriII, ani.cycledII) + ani.oriET;
       asi.minDuration = minDuration;
       asiT.minDuration = minDuration;
-      mapSchedInfos.put(aa, asi);
-      mapSchedInfosT.put(aa, asiT);
+      mapActorSchedInfos.put(aa, asi);
+      mapActorSchedInfosT.put(aa, asiT);
     }
 
     // ASAP in reverse order (sort of ALAP)
@@ -142,11 +147,11 @@ public class AsapFpgaIIevaluator {
     final int maxRank = irRankActors.lastKey();
     for (int i = minRank + 1; i <= maxRank; i++) {
       for (final AbstractActor aa : irRankActorsT.get(i)) {
-        final ActorScheduleInfos reversedProd = mapSchedInfosT.get(aa);
+        final ActorScheduleInfos reversedProd = mapActorSchedInfosT.get(aa);
         for (final FifoAbstraction fa : hlbd.getAbsGraph().outgoingEdgesOf(aa)) {
           if (!hlbd.breakingFifosAbs.contains(fa)) {
             final AbstractActor opposite = hlbd.getAbsGraph().getEdgeTarget(fa);
-            final ActorScheduleInfos reversedCons = mapSchedInfosT.get(opposite);
+            final ActorScheduleInfos reversedCons = mapActorSchedInfosT.get(opposite);
             fifoEval.computeMinStartFinishTimeCons(reversedCons, fa, reversedProd);
           }
         }
@@ -155,12 +160,12 @@ public class AsapFpgaIIevaluator {
     // reuse the finish time of sources as their start time
     long maxFinishTime = 0;
     for (final AbstractActor src : hlbd.allSourceActors) {
-      final ActorScheduleInfos asiT = mapSchedInfosT.get(src);
+      final ActorScheduleInfos asiT = mapActorSchedInfosT.get(src);
       maxFinishTime = Math.max(maxFinishTime, asiT.finishTime);
     }
     for (final AbstractActor src : hlbd.allSourceActors) {
-      final ActorScheduleInfos asi = mapSchedInfos.get(src);
-      final ActorScheduleInfos asiT = mapSchedInfosT.get(src);
+      final ActorScheduleInfos asi = mapActorSchedInfos.get(src);
+      final ActorScheduleInfos asiT = mapActorSchedInfosT.get(src);
       asi.startTime = maxFinishTime - asiT.finishTime;
       asi.finishTime = asi.startTime + asi.minDuration;
       PreesmLogger.getLogger().fine(
@@ -168,14 +173,15 @@ public class AsapFpgaIIevaluator {
     }
 
     // ASAP
+    long sumFifoSizes = 0L;
     StringBuilder fifoSizesPrint = new StringBuilder("Sizes of fifos:\n");
     for (int i = minRank + 1; i <= maxRank; i++) {
       for (final AbstractActor aa : irRankActors.get(i)) {
-        final ActorScheduleInfos cons = mapSchedInfos.get(aa);
+        final ActorScheduleInfos cons = mapActorSchedInfos.get(aa);
         for (final FifoAbstraction fa : hlbd.getAbsGraph().incomingEdgesOf(aa)) {
           if (!hlbd.breakingFifosAbs.contains(fa)) {
             final AbstractActor opposite = hlbd.getAbsGraph().getEdgeSource(fa);
-            final ActorScheduleInfos prod = mapSchedInfos.get(opposite);
+            final ActorScheduleInfos prod = mapActorSchedInfos.get(opposite);
             fifoEval.computeMinStartFinishTimeCons(prod, fa, cons);
           }
         }
@@ -185,10 +191,12 @@ public class AsapFpgaIIevaluator {
         for (final FifoAbstraction fa : hlbd.getAbsGraph().incomingEdgesOf(aa)) {
           if (!hlbd.breakingFifosAbs.contains(fa)) {
             final AbstractActor opposite = hlbd.getAbsGraph().getEdgeSource(fa);
-            final ActorScheduleInfos prod = mapSchedInfos.get(opposite);
+            final ActorScheduleInfos prod = mapActorSchedInfos.get(opposite);
             List<Long> fifoSizes = fifoEval.computeFifoSizes(prod, fa, cons);
             for (int j = 0; j < fifoSizes.size(); j++) {
-              fifoSizesPrint.append(fa.fifos.get(j).getId() + " of size " + fifoSizes.get(j) + " bytes.\n");
+              final long fifoSize = fifoSizes.get(j);
+              sumFifoSizes += fifoSize;
+              fifoSizesPrint.append(fa.fifos.get(j).getId() + " of size " + fifoSize + " bytes.\n");
             }
           }
         }
@@ -196,6 +204,63 @@ public class AsapFpgaIIevaluator {
     }
     PreesmLogger.getLogger().info(fifoSizesPrint.toString());
 
+    return buildStatGenerator(irRankActors, sumFifoSizes, mapActorSchedInfos, mapActorNormalizedInfos);
+  }
+
+  private StatGeneratorPrecomputed buildStatGenerator(final SortedMap<Integer, Set<AbstractActor>> irRankActors,
+      final long totSize, final Map<AbstractActor, ActorScheduleInfos> mapActorSchedInfos,
+      final Map<AbstractActor, ActorNormalizedInfos> mapActorNormalizedInfos) {
+
+    final TaskColorSelector tcs = new TaskColorSelector();
+    // get the only FPGA component
+    final ComponentInstance fpga = scenario.getDesign().getComponentInstances().get(0);
+    final Map<ComponentInstance, Long> mems = new HashMap<>();
+    mems.put(fpga, totSize);
+    final Map<ComponentInstance, Long> loads = new HashMap<>();
+
+    // fill GanttData in topological order
+    long sumMinDuration = 0L;
+    double sumActorPipelinedRatio = 0L;
+    long maxRealGraphII = 0L;
+    long maxOriGraphII = 0L;
+    long topoIndex = 0;
+    final IntegerName intFormatter = new IntegerName(mapActorSchedInfos.size());
+    final GanttData gd = new GanttData();
+    for (final Set<AbstractActor> aas : irRankActors.values()) {
+      for (final AbstractActor aa : aas) {
+        topoIndex++;
+        final String componentName = fpga.getInstanceName() + "_" + intFormatter.toString(topoIndex);
+        final ActorScheduleInfos asi = mapActorSchedInfos.get(aa);
+        sumMinDuration += asi.minDuration;
+        final long time = asi.finishTime - asi.startTime;
+        sumActorPipelinedRatio += (asi.minDuration * (double) asi.minDuration) / time;
+        final ActorNormalizedInfos ani = mapActorNormalizedInfos.get(aa);
+        maxRealGraphII = Math.max(maxRealGraphII, time - ani.oriII);
+        maxOriGraphII = Math.max(maxOriGraphII, ani.normGraphII);
+        final String suffixName = getPipelinedCategory(time, asi.minDuration, ani.brv * ani.oriET);
+        final String actorName = suffixName + " " + ani.brv + "x " + aa.getVertexPath();
+        gd.insertTask(actorName, componentName, asi.startTime, asi.finishTime, tcs.doSwitch(aa));
+      }
+    }
+
+    loads.put(fpga, maxRealGraphII * (long) (sumActorPipelinedRatio / sumMinDuration));
+
+    return new StatGeneratorPrecomputed(scenario.getDesign(), scenario, maxOriGraphII, sumMinDuration, maxRealGraphII,
+        loads, mems, gd);
+  }
+
+  private static String getPipelinedCategory(final long actorTime, final long actorPipelinedTime,
+      final long actorSequentialTime) {
+    if (actorTime > actorSequentialTime) {
+      // not pipelined
+      return "[- - -]";
+    } else if (actorTime > actorPipelinedTime) {
+      // nont fully pipelined
+      return "[-|-|-]";
+    } else {
+      // fully pipelined
+      return "[-----]";
+    }
   }
 
   /**
