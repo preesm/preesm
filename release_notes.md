@@ -18,6 +18,7 @@ PREESM Changelog
 * Fix integration test : reinforcement learning scenario for training uses
 the training graph now.
 * UI of PiSDF : better support of interfaces and model updates from GUI.
+* Fix #275 : better error support when reconnecting hierarchical graph with wrong ports
 
 
 ## Release version 3.21.0

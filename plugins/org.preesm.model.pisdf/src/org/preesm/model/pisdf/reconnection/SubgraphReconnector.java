@@ -39,7 +39,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import org.preesm.commons.exceptions.PreesmRuntimeException;
+import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.Actor;
 import org.preesm.model.pisdf.ConfigInputPort;
@@ -167,6 +167,8 @@ public class SubgraphReconnector extends PiMMSwitch<Boolean> {
 
   private static void reconnectConfigOutputPorts(final Actor hierarchicalActor, final PiGraph subGraph) {
     boolean found;
+    final List<ConfigOutputPort> notFoundInSubGraph = new ArrayList<>(subGraph.getConfigOutputPorts());
+
     for (final ConfigOutputPort cop1 : hierarchicalActor.getConfigOutputPorts()) {
       found = false;
       for (final ConfigOutputPort cop2 : subGraph.getConfigOutputPorts()) {
@@ -187,18 +189,27 @@ public class SubgraphReconnector extends PiMMSwitch<Boolean> {
           }
 
           found = true;
+          notFoundInSubGraph.remove(cop2);
           break;
         }
       }
       if (!found) {
-        SubgraphReconnector.error(hierarchicalActor, subGraph, cop1);
+        SubgraphReconnector.warningPortHierarchical(hierarchicalActor, subGraph, cop1);
       }
+    }
+    // on the contrary, there might be ports in the subgraph which are not present
+    // in the hierarchical actor
+    for (final ConfigOutputPort cop2 : notFoundInSubGraph) {
+      SubgraphReconnector.warningPortSubGraph(hierarchicalActor, subGraph, cop2);
     }
   }
 
   private static void reconnectConfigInputPorts(final Actor hierarchicalActor, final PiGraph subGraph) {
+    boolean found;
+    final List<ConfigInputPort> notFoundInSubGraph = new ArrayList<>(subGraph.getConfigInputPorts());
+
     for (final ConfigInputPort topGraphActorConfigInputPort : hierarchicalActor.getConfigInputPorts()) {
-      boolean found = false;
+      found = false;
       for (final ConfigInputPort subGraphConfigInputPorts : subGraph.getConfigInputPorts()) {
         if (topGraphActorConfigInputPort.getName().equals(subGraphConfigInputPorts.getName())) {
           final Dependency topGraphDep = topGraphActorConfigInputPort.getIncomingDependency();
@@ -206,18 +217,27 @@ public class SubgraphReconnector extends PiMMSwitch<Boolean> {
           if (found) {
             subGraphConfigInputPorts.setIncomingDependency(topGraphDep);
             topGraphDep.setGetter(subGraphConfigInputPorts);
+            notFoundInSubGraph.remove(subGraphConfigInputPorts);
           }
           break;
         }
       }
       if (!found) {
-        SubgraphReconnector.error(hierarchicalActor, subGraph, topGraphActorConfigInputPort);
+        SubgraphReconnector.warningPortHierarchical(hierarchicalActor, subGraph, topGraphActorConfigInputPort);
       }
     }
+    // on the contrary, there might be ports in the subgraph which are not present
+    // in the hierarchical actor
+    for (final ConfigInputPort subGraphConfigInputPorts : notFoundInSubGraph) {
+      SubgraphReconnector.warningPortSubGraph(hierarchicalActor, subGraph, subGraphConfigInputPorts);
+    }
+
   }
 
   private static void reconnectDataOutputPorts(final Actor hierarchicalActor, final PiGraph subGraph) {
     boolean found;
+    final List<DataOutputPort> notFoundInSubGraph = new ArrayList<>(subGraph.getDataOutputPorts());
+
     for (final DataOutputPort dop1 : hierarchicalActor.getDataOutputPorts()) {
       found = false;
       for (final DataOutputPort dop2 : subGraph.getDataOutputPorts()) {
@@ -231,17 +251,26 @@ public class SubgraphReconnector extends PiMMSwitch<Boolean> {
             dop2.setAnnotation(dop1.getAnnotation());
           }
           found = true;
+          notFoundInSubGraph.remove(dop2);
           break;
         }
       }
       if (!found) {
-        SubgraphReconnector.error(hierarchicalActor, subGraph, dop1);
+        SubgraphReconnector.warningPortHierarchical(hierarchicalActor, subGraph, dop1);
       }
     }
+    // on the contrary, there might be ports in the subgraph which are not present
+    // in the hierarchical actor
+    for (final DataOutputPort dop2 : notFoundInSubGraph) {
+      SubgraphReconnector.warningPortSubGraph(hierarchicalActor, subGraph, dop2);
+    }
+
   }
 
   private static void reconnectDataInputPorts(final Actor hierarchicalActor, final PiGraph subGraph) {
     boolean found;
+    final List<DataInputPort> notFoundInSubGraph = new ArrayList<>(subGraph.getDataInputPorts());
+
     for (final DataInputPort dip1 : hierarchicalActor.getDataInputPorts()) {
       found = false;
       for (final DataInputPort dip2 : subGraph.getDataInputPorts()) {
@@ -255,18 +284,30 @@ public class SubgraphReconnector extends PiMMSwitch<Boolean> {
             dip2.setAnnotation(dip1.getAnnotation());
           }
           found = true;
+          notFoundInSubGraph.remove(dip2);
           break;
         }
       }
       if (!found) {
-        SubgraphReconnector.error(hierarchicalActor, subGraph, dip1);
+        SubgraphReconnector.warningPortHierarchical(hierarchicalActor, subGraph, dip1);
       }
     }
+    // on the contrary, there might be ports in the subgraph which are not present
+    // in the hierarchical actor
+    for (final DataInputPort dip2 : notFoundInSubGraph) {
+      SubgraphReconnector.warningPortSubGraph(hierarchicalActor, subGraph, dip2);
+    }
+
   }
 
-  private static void error(final Actor hierarchicalActor, final PiGraph subGraph, final Port port) {
-    throw new PreesmRuntimeException("PiGraph '" + subGraph.getName() + "' does not have a corresponding "
+  private static void warningPortHierarchical(final Actor hierarchicalActor, final PiGraph subGraph, final Port port) {
+    PreesmLogger.getLogger().warning("PiGraph '" + subGraph.getName() + "' does not have a corresponding "
         + port.getClass().getSimpleName() + " named '" + port.getName() + "' for Actor " + hierarchicalActor.getName());
+  }
+
+  private static void warningPortSubGraph(final Actor hierarchicalActor, final PiGraph subGraph, final Port port) {
+    PreesmLogger.getLogger().warning("Actor '" + hierarchicalActor.getName() + "' does not have a corresponding "
+        + port.getClass().getSimpleName() + " named '" + port.getName() + "' for PiGraph " + subGraph.getName());
   }
 
   public static void reconnectChildren(PiGraph graph) {
