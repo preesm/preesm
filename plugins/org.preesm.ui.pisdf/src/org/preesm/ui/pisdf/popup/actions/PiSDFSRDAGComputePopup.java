@@ -37,10 +37,8 @@ package org.preesm.ui.pisdf.popup.actions;
 
 import java.util.logging.Level;
 import org.eclipse.core.resources.IProject;
-import org.eclipse.emf.common.util.EList;
 import org.eclipse.swt.widgets.Shell;
 import org.preesm.commons.logger.PreesmLogger;
-import org.preesm.model.pisdf.ConfigInputPort;
 import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.pisdf.brv.BRVMethod;
 import org.preesm.model.pisdf.statictools.PiSDFToSingleRate;
@@ -54,12 +52,6 @@ public class PiSDFSRDAGComputePopup extends AbstractGenericMultiplePiHandler {
   @Override
   public void processPiSDF(final PiGraph pigraph, final IProject iProject, final Shell shell) {
     PreesmLogger.getLogger().log(Level.INFO, "Computing Single Rate DAG for " + pigraph.getName());
-
-    final EList<ConfigInputPort> configInputPorts = pigraph.getConfigInputPorts();
-    if (!configInputPorts.isEmpty()) {
-      PreesmLogger.getLogger().log(Level.WARNING, "Cannot compute the Single Rate DAG of a subgraph.");
-      return;
-    }
 
     final boolean locallyStatic = pigraph.isLocallyStatic();
     if (!locallyStatic) {
