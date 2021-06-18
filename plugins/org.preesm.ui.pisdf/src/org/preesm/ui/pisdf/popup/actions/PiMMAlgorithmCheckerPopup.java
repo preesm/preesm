@@ -37,86 +37,37 @@
  */
 package org.preesm.ui.pisdf.popup.actions;
 
-import java.util.logging.Level;
-import org.eclipse.core.commands.AbstractHandler;
-import org.eclipse.core.commands.ExecutionEvent;
-import org.eclipse.core.commands.ExecutionException;
-import org.eclipse.core.resources.IFile;
+import org.eclipse.core.resources.IProject;
 import org.eclipse.jface.dialogs.MessageDialog;
-import org.eclipse.jface.viewers.TreeSelection;
 import org.eclipse.swt.widgets.Shell;
-import org.eclipse.ui.IWorkbenchPage;
-import org.preesm.commons.exceptions.PreesmRuntimeException;
-import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.pisdf.check.PiMMAlgorithmChecker;
-import org.preesm.model.pisdf.serialize.PiParser;
-import org.preesm.ui.PreesmUIPlugin;
-import org.preesm.ui.utils.ErrorWithExceptionDialog;
 
 /**
  * Class to launch a PiGraph check through pop-up menu.
  *
  * @author cguy
  */
-public class PiMMAlgorithmCheckerPopup extends AbstractHandler {
+public class PiMMAlgorithmCheckerPopup extends AbstractGenericMultiplePiHandler {
 
-  /** The shell. */
-  private Shell shell;
-
-  /**
-   * Constructor.
-   */
-  public PiMMAlgorithmCheckerPopup() {
-    super();
-  }
-
-  /*
-   * (non-Javadoc)
-   *
-   * @see org.eclipse.core.commands.IHandler#execute(org.eclipse.core.commands.ExecutionEvent)
-   */
   @Override
-  public Object execute(final ExecutionEvent event) throws ExecutionException {
+  public void processPiSDF(final PiGraph pigraph, final IProject iProject, final Shell shell) {
     final PiMMAlgorithmChecker checker = new PiMMAlgorithmChecker();
-    try {
-
-      final IWorkbenchPage page = PreesmUIPlugin.getDefault().getWorkbench().getActiveWorkbenchWindow().getActivePage();
-      final TreeSelection selection = (TreeSelection) page.getSelection();
-      final IFile file = (IFile) selection.getFirstElement();
-      final PiGraph graph = getPiGraph(file);
-
-      final StringBuilder message = new StringBuilder();
-      if (checker.checkGraph(graph)) {
-        message.append(checker.getOkMsg());
-      } else {
-        if (checker.isErrors()) {
-          message.append(checker.getErrorMsg());
-          if (checker.isWarnings()) {
-            message.append("\n");
-          }
-        }
+    final StringBuilder message = new StringBuilder();
+    if (checker.checkGraph(pigraph)) {
+      message.append(checker.getOkMsg());
+    } else {
+      if (checker.isErrors()) {
+        message.append(checker.getErrorMsg());
         if (checker.isWarnings()) {
-          message.append(checker.getWarningMsg());
+          message.append("\n");
         }
       }
-
-      MessageDialog.openInformation(this.shell, "Checker", message.toString());
-    } catch (final Exception e) {
-      PreesmLogger.getLogger().log(Level.WARNING, "Could not check PiGraph", e);
+      if (checker.isWarnings()) {
+        message.append(checker.getWarningMsg());
+      }
     }
-    return null;
-  }
 
-  private PiGraph getPiGraph(final IFile file) {
-    final PiGraph graph;
-    try {
-      graph = PiParser.getPiGraphWithReconnection(file.getFullPath().toString());
-    } catch (PreesmRuntimeException e) {
-      ErrorWithExceptionDialog.errorDialogWithStackTrace("Error during operation.", e);
-      return null;
-    }
-    return graph;
+    MessageDialog.openInformation(shell, "Checker of PiGraph model", message.toString());
   }
-
 }

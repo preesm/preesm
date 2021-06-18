@@ -455,6 +455,21 @@
       <menuContribution
             allPopups="false"
             locationURI="popup:org.eclipse.ui.popup.any?after=additions">
+                    <!-- Check the selected pimm file -->
+            <command
+                  commandId="org.preesm.ui.pisdf.command.PimmChecker"
+                  icon="resources/icons/pi.gif"
+                  label="Check PiMM Model"
+                  mnemonic="C"
+                  style="push">
+			<visibleWhen checkEnabled="true">
+				<and>
+				<with variable="activePartId">
+					<equals value="org.preesm.ui.pisdf.editor.diagram"/>
+				</with>
+				</and>
+			</visibleWhen>
+            </command>
         <!-- Show/open Eclipse properties view -->
         <command
               commandId="org.eclipse.ui.views.showView"

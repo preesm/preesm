@@ -181,7 +181,7 @@ public class PiMMAlgorithmChecker {
    * @return the ok msg
    */
   public String getOkMsg() {
-    return "Validation of graph " + this.graph.getName() + " raised no error or warning:";
+    return "Validation of graph " + this.graph.getName() + " raised no error or warning.";
   }
 
   /**
