@@ -45,6 +45,7 @@ import java.util.List;
 import java.util.Map;
 import org.preesm.commons.IntegerName;
 import org.preesm.commons.exceptions.PreesmRuntimeException;
+import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.AbstractVertex;
 import org.preesm.model.pisdf.BroadcastActor;
@@ -120,8 +121,9 @@ public class PiMMSRVerticesLinker {
       throw new PreesmRuntimeException(
           "Invalid number of delays on fifo[" + fifo.getId() + "]: " + Long.toString(nDelays));
     } else if (nDelays < targetRate) {
-      throw new PreesmRuntimeException("Not enough delays on fifo[" + fifo.getId() + "]: number of delays: "
-          + Long.toString(nDelays) + ", consumption: " + Long.toString(targetRate));
+      PreesmLogger.getLogger()
+          .warning("Delays on fifo[" + fifo.getId() + "] are less than the consumption rate. (number of delays: "
+              + Long.toString(nDelays) + ", consumption: " + Long.toString(targetRate) + ")");
     }
     return nDelays;
   }

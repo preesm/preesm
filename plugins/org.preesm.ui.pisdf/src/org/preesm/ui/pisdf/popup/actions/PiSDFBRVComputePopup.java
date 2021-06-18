@@ -58,7 +58,7 @@ public class PiSDFBRVComputePopup extends AbstractGenericMultiplePiHandler {
 
     final boolean locallyStatic = pigraph.isLocallyStatic();
     if (!locallyStatic) {
-      PreesmLogger.getLogger().log(Level.WARNING, "Cannot compute the BRV of a dynamic graph");
+      PreesmLogger.getLogger().log(Level.WARNING, "Cannot compute the BRV of a dynamic graph.");
       return;
     }
 

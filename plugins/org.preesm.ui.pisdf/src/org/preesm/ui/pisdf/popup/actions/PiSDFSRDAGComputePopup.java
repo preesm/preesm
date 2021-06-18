@@ -57,13 +57,13 @@ public class PiSDFSRDAGComputePopup extends AbstractGenericMultiplePiHandler {
 
     final EList<ConfigInputPort> configInputPorts = pigraph.getConfigInputPorts();
     if (!configInputPorts.isEmpty()) {
-      PreesmLogger.getLogger().log(Level.WARNING, "Cannot compute the Single Rate DAG of a subgraph");
+      PreesmLogger.getLogger().log(Level.WARNING, "Cannot compute the Single Rate DAG of a subgraph.");
       return;
     }
 
     final boolean locallyStatic = pigraph.isLocallyStatic();
     if (!locallyStatic) {
-      PreesmLogger.getLogger().log(Level.WARNING, "Cannot compute the Single Rate DAG of a dynamic graph");
+      PreesmLogger.getLogger().log(Level.WARNING, "Cannot compute the Single Rate DAG of a dynamic graph.");
       return;
     }
 
