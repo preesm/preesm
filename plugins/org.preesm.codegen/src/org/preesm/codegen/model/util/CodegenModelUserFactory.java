@@ -189,7 +189,8 @@ public class CodegenModelUserFactory extends CodegenFactoryImpl {
       final String name = a.getName();
       final Port lookupPort = actor.lookupPort(name);
       if (lookupPort == null) {
-        throw new PreesmRuntimeException();
+        throw new PreesmRuntimeException(
+            "Cannot find function argument " + name + " for actor " + actor.getVertexPath());
       }
       final PortKind portKind = lookupPort.getKind();
       final Variable variable = portValues.get(lookupPort);
