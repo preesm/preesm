@@ -1,0 +1,36 @@
+name: 'Run Maven Build'
+description: 'Run Maven build with specific options'
+inputs:
+  maven_opts:
+    description: 'list of options'
+    required: true
+    default: ''
+  maven_target:
+    description: 'Maven target'
+    required: true
+    default: 'package'
+  java-version:
+    description: 'Java version'
+    required: true
+    default: '11'
+runs:
+  using: "composite"
+  steps:
+    - name: Set up JDK
+      uses: actions/setup-java@v1
+      with:
+        java-version: ${{ inputs.java-version }}
+    - name: Cache SonarCloud packages
+      uses: actions/cache@v1
+      with:
+        path: ~/.sonar/cache
+        key: ${{ runner.os }}-sonar
+        restore-keys: ${{ runner.os }}-sonar
+    - name: Cache Maven packages
+      uses: actions/cache@v1
+      with:
+        path: ~/.m2
+        key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
+        restore-keys: ${{ runner.os }}-m2
+    - name: Build
+      run: mvn -e -c ${{ inputs.maven_opts }} clean ${{ inputs.maven_target }} 
