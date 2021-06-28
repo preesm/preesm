@@ -11,6 +11,7 @@ PREESM Changelog
 * (PiSDF) Flattening and SRDAG transformations now support data interfaces at top-level.
 * (SLAM) FPGA and CPU processing elements have they own type, which replace Operators.
 * (scenario) multiple kinds of timings can be stored, especially for FPGA.
+* (UI) The parsing of C/C++ functions for actor refinements is safer, now done by Eclipse CDT instead of handmade regex.
 
 ### Bug fix
 * Add explicit log when data type size is not set in scenario making memory scripts crash.
