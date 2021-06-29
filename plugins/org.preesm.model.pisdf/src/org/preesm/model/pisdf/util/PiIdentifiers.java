@@ -163,6 +163,9 @@ public class PiIdentifiers {
   // REFINEMENTS
   public static final String REFINEMENT = "graph_desc";
 
+  /** The Constant IS_CPPDEF. */
+  public static final String IS_CPPDEF = "isCPPdefinition";
+
   /** The Constant REFINEMENT_LOOP. */
   public static final String REFINEMENT_LOOP = "loop";
 
@@ -171,6 +174,9 @@ public class PiIdentifiers {
 
   /** The Constant REFINEMENT_FUNCTION_PROTOTYPE_NAME. */
   public static final String REFINEMENT_FUNCTION_PROTOTYPE_NAME = PiIdentifiers.NAME;
+
+  /** The Constant REFINEMENT_FUNCTION_PROTOTYPE_IS_CPPDEF. */
+  public static final String REFINEMENT_FUNCTION_PROTOTYPE_IS_CPPDEF = PiIdentifiers.IS_CPPDEF;
 
   /** The Constant REFINEMENT_PARAMETER. */
   public static final String REFINEMENT_PARAMETER = "param";
@@ -186,6 +192,9 @@ public class PiIdentifiers {
 
   /** The Constant REFINEMENT_PARAMETER_IS_CONFIG. */
   public static final String REFINEMENT_PARAMETER_IS_CONFIG = "isConfig";
+
+  /** The Constant REFINEMENT_PARAMETER_IS_CPPDEF. */
+  public static final String REFINEMENT_PARAMETER_IS_CPPDEF = PiIdentifiers.IS_CPPDEF;
 
   /** The Constant PORT. */
   // PORTS

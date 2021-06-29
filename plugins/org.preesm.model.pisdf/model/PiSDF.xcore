@@ -842,6 +842,7 @@ class Delay extends Configurable, ExpressionHolder {
 
 class FunctionPrototype {
 	String name
+	boolean isCPPdefinition
 	contains FunctionArgument[] arguments
 	op unique FunctionArgument[] getInputConfigParameters() {
 		return arguments.filter[it.isConfigurationParameter == true && it.direction == Direction.IN].toEList.unmodifiableView;
@@ -855,14 +856,18 @@ class FunctionPrototype {
 	op unique FunctionArgument[] getOutputArguments() {
 		return arguments.filter[it.isConfigurationParameter == false && it.direction == Direction.OUT].toEList.unmodifiableView;
 	}
+	op boolean isCPP() {
+		return isCPPdefinition || arguments.exists[isCPPdefinition]
+	}
 }
 
 class FunctionArgument {
 	String name
-	Direction direction
 	String ^type
-	boolean isConfigurationParameter
+	Direction direction
 	int position
+	boolean isConfigurationParameter
+	boolean isCPPdefinition	= "false"
 }
 
 enum Direction {

@@ -269,7 +269,7 @@ public class SetActorRefinementFeature extends AbstractCustomFeature {
             // The file is a valid .h file.
             title = "Loop Function Selection";
             message = "Select a loop function for actor " + ((AbstractActor) actor).getName()
-                + "\n(* = any string, ? = any char):";
+                + "\n(* = any string, ? = any char):\nNote: return types are not considered.";
 
             loopPrototypes = getPrototypes(actor, PrototypeFilter.LOOP_ACTOR, allPrototypes);
             final FunctionPrototype[] loopProtoArray = loopPrototypes

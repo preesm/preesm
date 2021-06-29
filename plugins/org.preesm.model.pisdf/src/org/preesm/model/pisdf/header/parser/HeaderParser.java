@@ -55,8 +55,11 @@ import org.eclipse.cdt.core.dom.ast.IASTParameterDeclaration;
 import org.eclipse.cdt.core.dom.ast.IASTPointerOperator;
 import org.eclipse.cdt.core.dom.ast.IASTSimpleDeclaration;
 import org.eclipse.cdt.core.dom.ast.IASTTranslationUnit;
+import org.eclipse.cdt.core.dom.ast.cpp.ICPPASTDeclarator;
 import org.eclipse.cdt.core.dom.ast.cpp.ICPPASTNamespaceDefinition;
+import org.eclipse.cdt.core.dom.ast.cpp.ICPPASTSimpleDeclSpecifier;
 import org.eclipse.cdt.core.dom.ast.cpp.ICPPASTTemplateDeclaration;
+import org.eclipse.cdt.core.dom.ast.cpp.ICPPASTTemplateParameter;
 import org.eclipse.cdt.core.dom.ast.gnu.cpp.GPPLanguage;
 import org.eclipse.cdt.core.index.IIndex;
 import org.eclipse.cdt.core.model.ILanguage;
@@ -88,6 +91,9 @@ import org.preesm.model.pisdf.factory.PiMMUserFactory;
  *
  */
 public class HeaderParser {
+
+  private static final String TEMPLATE_WARNING = ". While analyzing it, "
+      + "template is not in a suitable format for PREESM, only int and long are supported.";
 
   private HeaderParser() {
     // forbid instantiation
@@ -150,14 +156,16 @@ public class HeaderParser {
     if (nodeAST instanceof IASTFunctionDefinition) {
       // we got a function definition, let's retrieve the declaration
       final IASTFunctionDefinition funcDef = (IASTFunctionDefinition) nodeAST;
+      returnTypeStack.addLast(funcDef.getDeclSpecifier());
       parseCXXHeaderRecAux(funcDef.getDeclarator(), namespaceStack, templateStack, returnTypeStack, resultList);
+      returnTypeStack.removeLast();
       return;
     }
     if (nodeAST instanceof IASTSimpleDeclaration) {
       // we got a simple declaration, which could start a function definition or declaration with its return type
-      final IASTSimpleDeclaration simpleDecl = (IASTSimpleDeclaration) nodeAST;
-      returnTypeStack.addLast(simpleDecl.getDeclSpecifier());
-      for (final IASTDeclarator declor : simpleDecl.getDeclarators()) {
+      final IASTSimpleDeclaration simpleDeclon = (IASTSimpleDeclaration) nodeAST;
+      returnTypeStack.addLast(simpleDeclon.getDeclSpecifier());
+      for (final IASTDeclarator declor : simpleDeclon.getDeclarators()) {
         parseCXXHeaderRecAux(declor, namespaceStack, templateStack, returnTypeStack, resultList);
       }
       returnTypeStack.removeLast();
@@ -165,9 +173,9 @@ public class HeaderParser {
     }
     if (nodeAST instanceof ICPPASTTemplateDeclaration) {
       // we got a template declaration, which could start a function definition or declaration
-      final ICPPASTTemplateDeclaration tempDecl = (ICPPASTTemplateDeclaration) nodeAST;
-      templateStack.addLast(tempDecl);
-      parseCXXHeaderRecAux(tempDecl.getDeclaration(), namespaceStack, templateStack, returnTypeStack, resultList);
+      final ICPPASTTemplateDeclaration tempDeclon = (ICPPASTTemplateDeclaration) nodeAST;
+      templateStack.addLast(tempDeclon);
+      parseCXXHeaderRecAux(tempDeclon.getDeclaration(), namespaceStack, templateStack, returnTypeStack, resultList);
       templateStack.removeLast();
       return;
     }
@@ -197,8 +205,8 @@ public class HeaderParser {
       LinkedList<ICPPASTNamespaceDefinition> namespaceStack, LinkedList<ICPPASTTemplateDeclaration> templateStack,
       LinkedList<IASTDeclSpecifier> returnTypeStack, List<FunctionPrototype> resultList) {
     final String rawName = funcDeclor.getName().getRawSignature();
-    // the return type of IASTFunctionDefinition is not added to the list apparently
-    if (returnTypeStack.size() > 1) {
+
+    if (returnTypeStack.size() != 1) {
       PreesmLogger.getLogger()
           .warning("Discarded function " + rawName + ". While analyzing it, multiple nested return types were found.");
       return;
@@ -214,14 +222,44 @@ public class HeaderParser {
           .warning("Discarded function " + rawName + ". While analyzing it, multiple nested templates were found.");
       return;
     }
-    // TODO manage params
-    final String namespace = namespaceStack.isEmpty() ? ""
+
+    // manage template
+    String templateSuffix = "";
+    if (templateStack.size() == 1) {
+      final StringBuilder sb = new StringBuilder();
+      final ICPPASTTemplateDeclaration tempDeclon = templateStack.getFirst();
+      for (final ICPPASTTemplateParameter tempParam : tempDeclon.getTemplateParameters()) {
+        final IASTNode[] childsParam = tempParam.getChildren();
+        if (childsParam.length != 2 || !(childsParam[0] instanceof ICPPASTSimpleDeclSpecifier)
+            || !(childsParam[1] instanceof ICPPASTDeclarator)) {
+          PreesmLogger.getLogger().warning("Discarded function " + rawName + TEMPLATE_WARNING);
+          return;
+        }
+        final String paramType = ((ICPPASTSimpleDeclSpecifier) childsParam[0]).getRawSignature();
+        if (!paramType.equals("int") && !paramType.equals("long")) {
+          PreesmLogger.getLogger().warning("Discarded function " + rawName + TEMPLATE_WARNING);
+          return;
+        }
+        final String paramName = ((ICPPASTDeclarator) childsParam[1]).getRawSignature();
+        sb.append(paramName);
+        sb.append(",");
+      }
+      final String templateCall = sb.toString();
+      if (!templateCall.isEmpty()) {
+        templateSuffix = "<" + templateCall.substring(0, templateCall.length() - 1) + ">";
+      }
+    }
+
+    final String namespacePrefix = namespaceStack.isEmpty() ? ""
         : namespaceStack.stream().map(x -> x.getName().getRawSignature()).collect(Collectors.joining("::")) + "::";
-    final String modifiedName = namespace + rawName; // + template call
+    final String modifiedName = namespacePrefix + rawName + templateSuffix;
 
     // signature of CPPASTParameterDeclaration given by funcDeclor.getChildren() do not include IN and OUT anymore
     final FunctionPrototype funcProto = PiMMUserFactory.instance.createFunctionPrototype();
     funcProto.setName(modifiedName);
+    if (!modifiedName.equals(rawName)) {
+      funcProto.setIsCPPdefinition(true);
+    }
     final EList<FunctionArgument> protoParameters = funcProto.getArguments();
 
     for (final IASTNode child : funcDeclor.getChildren()) {
@@ -231,6 +269,10 @@ public class HeaderParser {
         final IASTParameterDeclaration paramDeclon = (IASTParameterDeclaration) child;
         final String type = paramDeclon.getDeclSpecifier().getRawSignature();
         fA.setType(type);
+        if (type.contains("<") || type.contains(":")) {
+          // then the type contains a template or a namespace
+          fA.setIsCPPdefinition(true);
+        }
         final IASTDeclarator paramDeclor = paramDeclon.getDeclarator();
         IASTPointerOperator[] pops = paramDeclor.getPointerOperators();
         if (pops.length > 1) {

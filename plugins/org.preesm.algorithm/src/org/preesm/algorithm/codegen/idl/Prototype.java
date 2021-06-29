@@ -57,6 +57,9 @@ public class Prototype implements IRefinement {
   /** The nb args. */
   private int nbArgs;
 
+  /** If the prototype is standard C. */
+  private boolean isStandardC;
+
   /**
    * This map associates {@link CodeGenArgument} of the prototype with an integer that represent the order of the
    * argument in the prototype.
@@ -77,6 +80,7 @@ public class Prototype implements IRefinement {
     this.arguments = new LinkedHashMap<>();
     this.parameters = new LinkedHashMap<>();
     this.nbArgs = 0;
+    this.isStandardC = true;
   }
 
   /**
@@ -90,6 +94,7 @@ public class Prototype implements IRefinement {
     this.arguments = new LinkedHashMap<>();
     this.parameters = new LinkedHashMap<>();
     this.nbArgs = 0;
+    this.isStandardC = true;
   }
 
   /**
@@ -109,6 +114,27 @@ public class Prototype implements IRefinement {
    */
   public void setFunctionName(final String name) {
     this.functionName = name;
+  }
+
+  /**
+   * Gets the isStandardC attribute.
+   *
+   * @return The attribute value.
+   * 
+   */
+  public boolean getIsStandardC() {
+    return this.isStandardC;
+  }
+
+  /**
+   * Sets the isStandardC attribute.
+   *
+   * @param isStandardC
+   *          The new attribute value.
+   * 
+   */
+  public void setIsStandardC(final boolean isStandardC) {
+    this.isStandardC = isStandardC;
   }
 
   /**

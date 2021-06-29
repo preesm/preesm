@@ -268,7 +268,7 @@ public class CodegenModelGenerator2 {
       } else if (actor instanceof UserSpecialActor) {
         generateSpecialActor((UserSpecialActor) actor, this.memoryLinker.getPortToVariableMap(), coreBlock);
       } else if (actor instanceof SrdagActor) {
-        generateFifoCall((SrdagActor) actor, coreBlock);
+        generateInitEndFifoCall((SrdagActor) actor, coreBlock);
       } else if (actor instanceof CommunicationActor) {
         generateCommunication((CommunicationActor) actor, coreBlock);
       } else {
@@ -412,7 +412,7 @@ public class CodegenModelGenerator2 {
     }
   }
 
-  private void generateFifoCall(SrdagActor actor, CoreBlock coreBlock) {
+  private void generateInitEndFifoCall(SrdagActor actor, CoreBlock coreBlock) {
     // Create the Fifo call and set basic property
     final FifoCall fifoCall = CodegenModelUserFactory.eINSTANCE.createFifoCall();
     fifoCall.setName(actor.getName());

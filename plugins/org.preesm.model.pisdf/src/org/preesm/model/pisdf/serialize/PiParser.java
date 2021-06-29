@@ -362,8 +362,12 @@ public class PiParser {
    */
   private FunctionPrototype parseFunctionPrototype(final Element protoElt, final String protoName) {
     final FunctionPrototype proto = PiMMUserFactory.instance.createFunctionPrototype();
-
     proto.setName(protoName);
+
+    final String isCPPdef = protoElt.getAttribute(PiIdentifiers.REFINEMENT_FUNCTION_PROTOTYPE_IS_CPPDEF);
+    if (Boolean.parseBoolean(isCPPdef)) {
+      proto.setIsCPPdefinition(true);
+    }
     final NodeList childList = protoElt.getChildNodes();
     for (int i = 0; i < childList.getLength(); i++) {
       final Node elt = childList.item(i);
@@ -390,6 +394,11 @@ public class PiParser {
     param.setType(elt.getAttribute(PiIdentifiers.REFINEMENT_PARAMETER_TYPE));
     param.setDirection(Direction.valueOf(elt.getAttribute(PiIdentifiers.REFINEMENT_PARAMETER_DIRECTION)));
     param.setIsConfigurationParameter(Boolean.valueOf(elt.getAttribute(PiIdentifiers.REFINEMENT_PARAMETER_IS_CONFIG)));
+
+    final String isCPPdef = elt.getAttribute(PiIdentifiers.REFINEMENT_PARAMETER_IS_CPPDEF);
+    if (Boolean.parseBoolean(isCPPdef)) {
+      param.setIsCPPdefinition(true);
+    }
 
     return param;
   }

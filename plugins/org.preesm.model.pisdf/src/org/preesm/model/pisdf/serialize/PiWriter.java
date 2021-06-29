@@ -785,6 +785,10 @@ public class PiWriter {
       final String functionName) {
     final Element protoElt = appendChild(vertexElt, functionName);
     protoElt.setAttribute(PiIdentifiers.REFINEMENT_FUNCTION_PROTOTYPE_NAME, prototype.getName());
+    final boolean isCPPdef = prototype.isIsCPPdefinition();
+    if (isCPPdef) {
+      protoElt.setAttribute(PiIdentifiers.REFINEMENT_FUNCTION_PROTOTYPE_IS_CPPDEF, String.valueOf(isCPPdef));
+    }
     for (final FunctionArgument p : prototype.getArguments()) {
       writeFunctionParameter(protoElt, p);
     }
@@ -804,6 +808,10 @@ public class PiWriter {
     protoElt.setAttribute(PiIdentifiers.REFINEMENT_PARAMETER_TYPE, p.getType());
     protoElt.setAttribute(PiIdentifiers.REFINEMENT_PARAMETER_DIRECTION, p.getDirection().toString());
     protoElt.setAttribute(PiIdentifiers.REFINEMENT_PARAMETER_IS_CONFIG, String.valueOf(p.isIsConfigurationParameter()));
+    final boolean isCPPdef = p.isIsCPPdefinition();
+    if (isCPPdef) {
+      protoElt.setAttribute(PiIdentifiers.REFINEMENT_PARAMETER_IS_CPPDEF, String.valueOf(isCPPdef));
+    }
   }
 
   /**
