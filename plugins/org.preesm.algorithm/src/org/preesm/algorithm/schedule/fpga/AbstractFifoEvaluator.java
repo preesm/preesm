@@ -81,9 +81,11 @@ public abstract class AbstractFifoEvaluator {
    *          Fifo between the producer and the consumer (abstract level).
    * @param consumer
    *          Schedule informations about consumer (to be set).
+   * @param firstDepOnly
+   *          Whether or not only the first dep must be considered to compute the minimum start time.
    */
   public final void computeMinStartFinishTimeCons(final ActorScheduleInfos producer, final FifoAbstraction fifoAbs,
-      final ActorScheduleInfos consumer) {
+      final ActorScheduleInfos consumer, final boolean firstDepOnly) {
     consumer.minInStartTimes.clear();
     consumer.minInFinishTimes.clear();
     final AbstractActor src = hlbd.getAbsGraph().getEdgeSource(fifoAbs);
@@ -101,11 +103,21 @@ public abstract class AbstractFifoEvaluator {
       consumer.minInFinishTimes.add(sf.getValue());
     }
     // should we consider the previous value?
-    consumer.startTime = Math.max(consumer.startTime,
-        consumer.minInStartTimes.stream().min(Long::compare).orElse(consumer.startTime));
-    final long minFinishTime = consumer.startTime + consumer.minDuration;
-    consumer.finishTime = Math.max(minFinishTime,
-        consumer.minInFinishTimes.stream().min(Long::compare).orElse(consumer.finishTime));
+    long minStartTime = 0;
+    if (firstDepOnly) {
+      minStartTime = consumer.minInStartTimes.stream().min(Long::compare).orElse(consumer.startTime);
+    } else {
+      minStartTime = consumer.minInStartTimes.stream().max(Long::compare).orElse(consumer.startTime);
+    }
+    consumer.startTime = Math.max(consumer.startTime, minStartTime);
+
+    long minFinishTime = 0;
+    if (firstDepOnly) {
+      minFinishTime = consumer.minInFinishTimes.stream().min(Long::compare).orElse(consumer.finishTime);
+    } else {
+      minFinishTime = consumer.minInFinishTimes.stream().max(Long::compare).orElse(consumer.finishTime);
+    }
+    consumer.finishTime = Math.max(minFinishTime, consumer.startTime + consumer.minDuration);
   }
 
   protected abstract Pair<Long, Long> computeMinStartFinishTimeCons(final FifoInformations fifoInfos);
@@ -241,7 +253,7 @@ public abstract class AbstractFifoEvaluator {
         final AbstractActor prodActor = previousPair.getKey();
         final AbstractActor consActor = p.getKey();
         final FifoAbstraction currentFifo = hlbd.getAbsGraph().getEdge(prodActor, consActor);
-        computeMinStartFinishTimeCons(previousPair.getValue(), currentFifo, p.getValue());
+        computeMinStartFinishTimeCons(previousPair.getValue(), currentFifo, p.getValue(), false);
         previousPair = p;
       }
       // retrieve the length

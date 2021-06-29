@@ -111,7 +111,7 @@ public class AsapFpgaIIevaluator {
     hlbd.performAnalysis(flatGraph, brv);
 
     final AbstractFifoEvaluator fifoEval = new FifoEvaluatorAsArray(scenario, hlbd, mapActorNormalizedInfos);
-    // TODO set min durations of all AsapFpgaIIevaluator.ActorScheduleInfos, with cycle latency if in a cycle
+    // set min durations of all AsapFpgaIIevaluator.ActorScheduleInfos, with cycle latency if in a cycle
     for (Entry<List<AbstractActor>, CycleInfos> e : hlbd.cyclesInfos.entrySet()) {
       final long cycleLatency = fifoEval.computeCycleMinII(e.getKey(), e.getValue());
       PreesmLogger.getLogger()
@@ -152,7 +152,7 @@ public class AsapFpgaIIevaluator {
           if (!hlbd.breakingFifosAbs.contains(fa)) {
             final AbstractActor opposite = hlbd.getAbsGraph().getEdgeTarget(fa);
             final ActorScheduleInfos reversedCons = mapActorSchedInfosT.get(opposite);
-            fifoEval.computeMinStartFinishTimeCons(reversedCons, fa, reversedProd);
+            fifoEval.computeMinStartFinishTimeCons(reversedCons, fa, reversedProd, true);
           }
         }
       }
@@ -182,7 +182,7 @@ public class AsapFpgaIIevaluator {
           if (!hlbd.breakingFifosAbs.contains(fa)) {
             final AbstractActor opposite = hlbd.getAbsGraph().getEdgeSource(fa);
             final ActorScheduleInfos prod = mapActorSchedInfos.get(opposite);
-            fifoEval.computeMinStartFinishTimeCons(prod, fa, cons);
+            fifoEval.computeMinStartFinishTimeCons(prod, fa, cons, false);
           }
         }
         PreesmLogger.getLogger()
@@ -202,6 +202,20 @@ public class AsapFpgaIIevaluator {
         }
       }
     }
+    // at the very end, we can evaluate the size of breaking fifo
+    for (final FifoAbstraction fa : hlbd.breakingFifosAbs) {
+      final AbstractActor srcA = hlbd.getAbsGraph().getEdgeSource(fa);
+      final ActorScheduleInfos prod = mapActorSchedInfos.get(srcA);
+      final AbstractActor tgtA = hlbd.getAbsGraph().getEdgeTarget(fa);
+      final ActorScheduleInfos cons = mapActorSchedInfos.get(tgtA);
+      List<Long> fifoSizes = fifoEval.computeFifoSizes(prod, fa, cons);
+      for (int j = 0; j < fifoSizes.size(); j++) {
+        final long fifoSize = fifoSizes.get(j);
+        sumFifoSizes += fifoSize;
+        fifoSizesPrint.append(fa.fifos.get(j).getId() + " of size " + fifoSize + " bytes.\n");
+      }
+    }
+
     PreesmLogger.getLogger().info(fifoSizesPrint.toString());
 
     return buildStatGenerator(irRankActors, sumFifoSizes, mapActorSchedInfos, mapActorNormalizedInfos);

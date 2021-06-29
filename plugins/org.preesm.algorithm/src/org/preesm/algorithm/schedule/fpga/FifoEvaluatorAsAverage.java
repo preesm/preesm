@@ -49,8 +49,7 @@ public class FifoEvaluatorAsAverage extends AbstractFifoEvaluator {
     final long consRate = fifoInfos.fifo.getTargetPort().getPortRateExpression().evaluate();
     final long epilogSize = consRate * fifoInfos.nbFiringsConsForLastFiringProd;
 
-    final int indexFifo = fifoInfos.fifoAbs.fifos.indexOf(fifoInfos.fifo);
-    final long minConsStartTime = fifoInfos.consumer.minInStartTimes.get(indexFifo);
+    final long minConsStartTime = fifoInfos.consumer.startTime;
     // compute average prod firing rates
     final long remainingFiringsProd = fifoInfos.producer.nbFirings - fifoInfos.nbFiringsProdForFirstFiringCons;
     final long durationRegularProd = fifoInfos.producer.finishTime - minConsStartTime;
