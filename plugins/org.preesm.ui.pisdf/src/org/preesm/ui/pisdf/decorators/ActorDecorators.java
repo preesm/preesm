@@ -50,6 +50,12 @@ import org.eclipse.graphiti.tb.IDecorator;
 import org.eclipse.graphiti.tb.ImageDecorator;
 import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.Actor;
+import org.preesm.model.pisdf.CHeaderRefinement;
+import org.preesm.model.pisdf.DataPort;
+import org.preesm.model.pisdf.Fifo;
+import org.preesm.model.pisdf.FunctionArgument;
+import org.preesm.model.pisdf.InterfaceActor;
+import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.pisdf.PiSDFRefinement;
 import org.preesm.model.pisdf.Port;
 import org.preesm.ui.pisdf.diagram.PiMMImageProvider;
@@ -166,12 +172,46 @@ public class ActorDecorators {
             }
           }
         }
+        if (e.getKey().getKey() instanceof DataPort) {
+          reasons += checkFifoType(actor, (DataPort) e.getKey().getKey());
+        }
       }
       if (!reasons.equals("")) {
         return Reason.createTrueReason("Ports are out of sync with the refinement." + reasons);
       }
     }
     return Reason.createFalseReason();
+  }
+
+  private static String checkFifoType(final Actor actor, final DataPort port) {
+    String result = "";
+
+    final Fifo fifo = port.getFifo();
+    if (fifo == null) {
+      return result;
+    }
+    if (actor.isHierarchical()) {
+      final PiGraph subGraph = actor.getSubGraph();
+      final InterfaceActor ia = (InterfaceActor) subGraph.lookupVertex(port.getName());
+      final Fifo subFifo = ia.getDataPort().getFifo();
+
+      if (subFifo != null && !fifo.getType().equals(subFifo.getType())) {
+        result = "\nActor '" + actor.getName() + "' has a port named '" + port.getName()
+            + "' with a different Fifo type than its inner self in '" + subGraph.getName() + "': '" + fifo.getType()
+            + "' vs '" + subFifo.getType() + "'.";
+      }
+    } else if (actor.getRefinement() instanceof CHeaderRefinement) {
+      final CHeaderRefinement ref = (CHeaderRefinement) actor.getRefinement();
+      for (final FunctionArgument fa : ref.getLoopPrototype().getArguments()) {
+        if (fa.getName().equals(port.getName()) && !fa.getType().equals(fifo.getType())) {
+          result = "\nFifo type of port '" + port.getName() + "' is different from the one in refinement. "
+              + "\n(Ignore the preceding warning if using a data container supported by PREESM.)";
+          // check here the container type? hls::stream for FPGA
+        }
+      }
+    }
+
+    return result;
   }
 
 }
