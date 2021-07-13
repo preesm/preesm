@@ -21,6 +21,7 @@ the training graph now.
 * UI of PiSDF : better support of interfaces and model updates from GUI.
 * Fix #275 : better error support when reconnecting hierarchical graph with wrong ports
 * Fix #19 Fix #39 : new menu popup action to check liveness of PiSDF graphs.
+* Fix #322 : as C/C++ parsing is now done by Eclipse CDT, we accept headers with .h .H .hxx .hpp .hh .h++ file extensions, but they are not yet supported by regular codegen.
 
 
 ## Release version 3.21.0

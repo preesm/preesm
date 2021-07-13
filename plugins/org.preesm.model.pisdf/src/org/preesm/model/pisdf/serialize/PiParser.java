@@ -44,6 +44,7 @@ import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
 import java.util.List;
 import org.apache.commons.io.IOUtils;
 import org.eclipse.core.resources.IFile;
@@ -116,6 +117,20 @@ import org.w3c.dom.NodeList;
  * @author jheulot
  */
 public class PiParser {
+
+  /** All accepted header file extensions. */
+  public static final String[] acceptedHeaderExtensions = { "h", "hpp", "hxx", "h++", "hh", "H" };
+
+  /**
+   * Check if the given C/C++ header file extension is supported.
+   * 
+   * @param extension
+   *          The extension to check (as "hxx" for "MyHeader.hxx").
+   * @return Whether or not the file extension is supported.
+   */
+  public static boolean isAsupportedHeaderFileExtension(final String extension) {
+    return Arrays.asList(acceptedHeaderExtensions).stream().anyMatch(x -> x.equals(extension));
+  }
 
   /**
    * Gets the pi graph.
@@ -292,15 +307,12 @@ public class PiParser {
     if ((refinement != null) && !refinement.isEmpty()) {
       final IPath path = getWorkspaceRelativePathFrom(new Path(refinement));
       final String refinementExtension = path.getFileExtension();
-      switch (refinementExtension) {
-        case "h":
-          parseHeaderRefinement(nodeElt, actor, path);
-          break;
-        case "pi":
-          parsePiRefinement(actor, path);
-          break;
-        default:
-          throw new UnsupportedOperationException("Unsupported refinement extension " + refinementExtension);
+      if (isAsupportedHeaderFileExtension(refinementExtension)) {
+        parseHeaderRefinement(nodeElt, actor, path);
+      } else if ("pi".equals(refinementExtension)) {
+        parsePiRefinement(actor, path);
+      } else {
+        throw new UnsupportedOperationException("Unsupported refinement extension " + refinementExtension);
       }
 
     } else {

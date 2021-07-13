@@ -40,6 +40,7 @@
 package org.preesm.ui.pisdf.features;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
@@ -64,6 +65,7 @@ import org.preesm.model.pisdf.PiSDFRefinement;
 import org.preesm.model.pisdf.RefinementContainer;
 import org.preesm.model.pisdf.factory.PiMMUserFactory;
 import org.preesm.model.pisdf.header.parser.HeaderParser;
+import org.preesm.model.pisdf.serialize.PiParser;
 import org.preesm.ui.pisdf.util.PiMMUtil;
 import org.preesm.ui.utils.FileUtils;
 
@@ -177,7 +179,7 @@ public class SetActorRefinementFeature extends AbstractCustomFeature {
           rc = (InitActor) bo;
         }
 
-        final String question = "Please select a valid refinement file (.h, or .pi if Actor)";
+        final String question = "Please select a valid refinement file (.h/hpp, or .pi if Actor)";
         final String dialogTitle = "Select a refinement file";
         final IPath path = askRefinement(question, dialogTitle, acceptPiFiles);
         if (path != null) {
@@ -209,7 +211,7 @@ public class SetActorRefinementFeature extends AbstractCustomFeature {
     if (acceptPiFiles) {
       fileExtensions.add("pi");
     }
-    fileExtensions.add("h");
+    fileExtensions.addAll(Arrays.asList(PiParser.acceptedHeaderExtensions));
     return FileUtils.browseFiles(PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell(), dialogTitle, question,
         fileExtensions);
   }
@@ -232,8 +234,8 @@ public class SetActorRefinementFeature extends AbstractCustomFeature {
     boolean acceptPiFiles = actor instanceof Actor;
     boolean validRefinement = false;
     do {
-      // If the file is a .h header
-      if (newFilePath.getFileExtension().equals("h")) {
+      // If the file is a C/C++ header
+      if (PiParser.isAsupportedHeaderFileExtension(newFilePath.getFileExtension())) {
 
         List<FunctionPrototype> loopPrototypes;
         FunctionPrototype[] allProtoArray;
@@ -251,7 +253,7 @@ public class SetActorRefinementFeature extends AbstractCustomFeature {
 
         validRefinement = !allPrototypes.isEmpty();
         if (!validRefinement) {
-          final String message = "The .h file you selected does not contain any prototype."
+          final String message = "The header file you selected does not contain any prototype."
               + ".\nPlease select another valid file.";
           newFilePath = askRefinement(message, dialogTitle, acceptPiFiles);
 
@@ -266,7 +268,7 @@ public class SetActorRefinementFeature extends AbstractCustomFeature {
           FunctionPrototype loopProto = null;
 
           if (actor instanceof Actor) {
-            // The file is a valid .h file.
+            // The file is a valid header file.
             title = "Loop Function Selection";
             message = "Select a loop function for actor " + ((AbstractActor) actor).getName()
                 + "\n(* = any string, ? = any char):\nNote: return types are not considered.";
