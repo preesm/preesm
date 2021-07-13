@@ -57,6 +57,7 @@ import org.eclipse.cdt.core.dom.ast.IASTSimpleDeclaration;
 import org.eclipse.cdt.core.dom.ast.IASTTranslationUnit;
 import org.eclipse.cdt.core.dom.ast.cpp.ICPPASTDeclarator;
 import org.eclipse.cdt.core.dom.ast.cpp.ICPPASTNamespaceDefinition;
+import org.eclipse.cdt.core.dom.ast.cpp.ICPPASTReferenceOperator;
 import org.eclipse.cdt.core.dom.ast.cpp.ICPPASTSimpleDeclSpecifier;
 import org.eclipse.cdt.core.dom.ast.cpp.ICPPASTTemplateDeclaration;
 import org.eclipse.cdt.core.dom.ast.cpp.ICPPASTTemplateParameter;
@@ -262,6 +263,7 @@ public class HeaderParser {
     }
     final EList<FunctionArgument> protoParameters = funcProto.getArguments();
 
+    // parse arguments
     for (final IASTNode child : funcDeclor.getChildren()) {
       if (child instanceof IASTParameterDeclaration) {
         final FunctionArgument fA = PiMMUserFactory.instance.createFunctionArgument();
@@ -280,6 +282,11 @@ public class HeaderParser {
               + ". While analyzing it, at least one argument with multiple pointers was found.");
           return;
         } else if (pops.length == 0) {
+          fA.setIsConfigurationParameter(true);
+        } else if (pops[0] instanceof ICPPASTReferenceOperator) {
+          // then data structure is passed by reference, only for multiple data containers as streams or vectors
+          fA.setIsPassedByReference(true);
+          // and it is possible only for CPP
           fA.setIsConfigurationParameter(true);
         }
         final String name = paramDeclor.getName().getRawSignature();

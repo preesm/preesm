@@ -868,6 +868,7 @@ class FunctionArgument {
 	int position
 	boolean isConfigurationParameter
 	boolean isCPPdefinition	= "false"
+	boolean isPassedByReference = "false"
 }
 
 enum Direction {

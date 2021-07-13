@@ -812,6 +812,10 @@ public class PiWriter {
     if (isCPPdef) {
       protoElt.setAttribute(PiIdentifiers.REFINEMENT_PARAMETER_IS_CPPDEF, String.valueOf(isCPPdef));
     }
+    final boolean isPassedByRef = p.isIsPassedByReference();
+    if (isPassedByRef) {
+      protoElt.setAttribute(PiIdentifiers.REFINEMENT_PARAMETER_IS_PASSEDBYREF, String.valueOf(isPassedByRef));
+    }
   }
 
   /**

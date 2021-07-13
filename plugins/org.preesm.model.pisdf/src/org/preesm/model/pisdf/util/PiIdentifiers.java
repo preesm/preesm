@@ -196,6 +196,9 @@ public class PiIdentifiers {
   /** The Constant REFINEMENT_PARAMETER_IS_CPPDEF. */
   public static final String REFINEMENT_PARAMETER_IS_CPPDEF = PiIdentifiers.IS_CPPDEF;
 
+  /** The Constant REFINEMENT_PARAMETER_IS_CPPDEF. */
+  public static final String REFINEMENT_PARAMETER_IS_PASSEDBYREF = "isPassedByReference";
+
   /** The Constant PORT. */
   // PORTS
   public static final String PORT = "port";

@@ -399,6 +399,10 @@ public class PiParser {
     if (Boolean.parseBoolean(isCPPdef)) {
       param.setIsCPPdefinition(true);
     }
+    final String isPassedByRef = elt.getAttribute(PiIdentifiers.REFINEMENT_PARAMETER_IS_PASSEDBYREF);
+    if (Boolean.parseBoolean(isPassedByRef)) {
+      param.setIsPassedByReference(true);
+    }
 
     return param;
   }
