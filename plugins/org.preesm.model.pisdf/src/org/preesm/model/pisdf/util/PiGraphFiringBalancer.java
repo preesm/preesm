@@ -41,6 +41,7 @@ import org.preesm.model.pisdf.DataOutputInterface;
 import org.preesm.model.pisdf.DataPort;
 import org.preesm.model.pisdf.InterfaceActor;
 import org.preesm.model.pisdf.PiGraph;
+import org.preesm.model.pisdf.check.CheckerErrorLevel;
 import org.preesm.model.pisdf.check.PiGraphConsistenceChecker;
 
 /**
@@ -96,8 +97,10 @@ public class PiGraphFiringBalancer extends PiMMSwitch<Boolean> {
   public void balance() {
     // Process input PiGraph.
     doSwitch(this.graph);
-    // Check consistency of the graph.
-    PiGraphConsistenceChecker.check(this.graph);
+    // Check consistency of the graph (throw exception if recoverable or fatal error)
+    final PiGraphConsistenceChecker pgcc = new PiGraphConsistenceChecker(CheckerErrorLevel.RECOVERABLE,
+        CheckerErrorLevel.NONE);
+    pgcc.check(this.graph);
   }
 
   @Override

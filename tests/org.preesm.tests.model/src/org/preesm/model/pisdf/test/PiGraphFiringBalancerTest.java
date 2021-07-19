@@ -53,6 +53,7 @@ import org.preesm.model.pisdf.Fifo;
 import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.pisdf.brv.BRVMethod;
 import org.preesm.model.pisdf.brv.PiBRV;
+import org.preesm.model.pisdf.check.CheckerErrorLevel;
 import org.preesm.model.pisdf.check.PiGraphConsistenceChecker;
 import org.preesm.model.pisdf.factory.PiMMUserFactory;
 import org.preesm.model.pisdf.util.PiGraphFiringBalancer;
@@ -212,8 +213,10 @@ public class PiGraphFiringBalancerTest {
     this.subGraph = new PiSDFSubgraphBuilder(this.topGraph, Arrays.asList(this.actorB, this.actorC), "subgraph_0")
         .build();
 
-    // Check consistency of the graph
-    PiGraphConsistenceChecker.check(this.topGraph);
+    // Check consistency of the graph (throw exception if recoverable or fatal error)
+    final PiGraphConsistenceChecker pgcc = new PiGraphConsistenceChecker(CheckerErrorLevel.RECOVERABLE,
+        CheckerErrorLevel.NONE);
+    pgcc.check(this.topGraph);
   }
 
 }

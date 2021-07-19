@@ -79,6 +79,7 @@ import org.preesm.model.pisdf.PortMemoryAnnotation;
 import org.preesm.model.pisdf.RoundBufferActor;
 import org.preesm.model.pisdf.brv.BRVMethod;
 import org.preesm.model.pisdf.brv.PiBRV;
+import org.preesm.model.pisdf.check.CheckerErrorLevel;
 import org.preesm.model.pisdf.check.PiGraphConsistenceChecker;
 import org.preesm.model.pisdf.factory.PiMMUserFactory;
 import org.preesm.model.pisdf.statictools.optims.BroadcastRoundBufferOptimization;
@@ -128,7 +129,10 @@ public class PiSDFFlattener extends PiMMSwitch<Boolean> {
    * @return the SDFGraph obtained by visiting graph
    */
   public static final PiGraph flatten(final PiGraph graph, boolean performOptim) {
-    PiGraphConsistenceChecker.check(graph);
+    // Check consistency of the graph (throw exception if recoverable or fatal error)
+    final PiGraphConsistenceChecker pgcc = new PiGraphConsistenceChecker(CheckerErrorLevel.RECOVERABLE,
+        CheckerErrorLevel.NONE);
+    pgcc.check(graph);
 
     // 0. we copy the graph since the transformation has side effects (especially on delay actors)
     final PiGraph graphCopy = PiMMUserFactory.instance.copyPiGraphWithHistory(graph);
@@ -162,7 +166,10 @@ public class PiSDFFlattener extends PiMMSwitch<Boolean> {
       removeUselessStuffAfterOptim(result);
     }
 
-    PiGraphConsistenceChecker.check(result);
+    // Check consistency of the graph (throw exception if recoverable or fatal error)
+    final PiGraphConsistenceChecker pgccResult = new PiGraphConsistenceChecker(CheckerErrorLevel.RECOVERABLE,
+        CheckerErrorLevel.NONE);
+    pgccResult.check(result);
     flattenCheck(graphCopy, result);
 
     return result;

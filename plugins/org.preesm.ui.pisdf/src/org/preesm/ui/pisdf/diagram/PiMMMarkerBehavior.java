@@ -41,6 +41,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.logging.Level;
+import java.util.stream.Collectors;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.emf.common.notify.Notification;
 import org.eclipse.emf.common.ui.MarkerHelper;
@@ -62,7 +63,8 @@ import org.eclipse.swt.widgets.Display;
 import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.model.pisdf.PiGraph;
-import org.preesm.model.pisdf.check.PiMMAlgorithmChecker;
+import org.preesm.model.pisdf.check.CheckerErrorLevel;
+import org.preesm.model.pisdf.check.PiGraphConsistenceChecker;
 import org.preesm.model.pisdf.serialize.PiResourceImpl;
 import org.preesm.ui.PreesmUIPlugin;
 
@@ -145,18 +147,34 @@ public class PiMMMarkerBehavior extends DefaultMarkerBehavior {
    */
   public Diagnostic checkPiResourceProblems(final Resource resource) {
     // Check for errors before saving
-    final PiMMAlgorithmChecker checker = new PiMMAlgorithmChecker();
+    final PiGraphConsistenceChecker checker = new PiGraphConsistenceChecker();
 
     // Get the PiGraph resource
     if (resource instanceof PiResourceImpl) {
       final BasicDiagnostic result = new BasicDiagnostic();
       try {
         final Diagram diagram = this.diagramBehavior.getDiagramContainer().getDiagramTypeProvider().getDiagram();
-        if (!resource.getContents().isEmpty() && !checker.checkGraph((PiGraph) resource.getContents().get(0))) {
-          // Warnings
-          for (final Entry<String, EObject> msgs : checker.getWarningMsgs().entrySet()) {
-            final String msg = msgs.getKey();
-            final List<PictogramElement> pes = Graphiti.getLinkService().getPictogramElements(diagram, msgs.getValue());
+        if (!resource.getContents().isEmpty() && !checker.check((PiGraph) resource.getContents().get(0))) {
+
+          // warnings
+          for (final Entry<EObject, List<String>> msgs : checker.getErrorMap(CheckerErrorLevel.WARNING).entrySet()) {
+            final String msg = msgs.getValue().stream().collect(Collectors.joining("\n"));
+            final List<PictogramElement> pes = Graphiti.getLinkService().getPictogramElements(diagram, msgs.getKey());
+            if (!pes.isEmpty()) {
+              final PictogramElement pictogramElement = pes.get(0);
+              final String uriFragment = pictogramElement.eResource().getURIFragment(pictogramElement);
+              final BasicDiagnostic d = new BasicDiagnostic(org.eclipse.emf.common.util.Diagnostic.INFO,
+                  PreesmUIPlugin.PLUGIN_ID, 0, msg, new Object[] { pictogramElement, uriFragment });
+
+              result.add(d);
+            }
+          }
+
+          // recoverable errors
+          for (final Entry<EObject, List<String>> msgs : checker.getErrorMap(CheckerErrorLevel.RECOVERABLE)
+              .entrySet()) {
+            final String msg = msgs.getValue().stream().collect(Collectors.joining("\n"));
+            final List<PictogramElement> pes = Graphiti.getLinkService().getPictogramElements(diagram, msgs.getKey());
             if (!pes.isEmpty()) {
               final PictogramElement pictogramElement = pes.get(0);
               final String uriFragment = pictogramElement.eResource().getURIFragment(pictogramElement);
@@ -167,10 +185,10 @@ public class PiMMMarkerBehavior extends DefaultMarkerBehavior {
             }
           }
 
-          // Errors
-          for (final Entry<String, EObject> msgs : checker.getErrorMsgs().entrySet()) {
-            final String msg = msgs.getKey();
-            final EObject pisdfElement = msgs.getValue();
+          // fatal errors
+          for (final Entry<EObject, List<String>> msgs : checker.getErrorMap(CheckerErrorLevel.FATAL).entrySet()) {
+            final String msg = msgs.getValue().stream().collect(Collectors.joining("\n"));
+            final EObject pisdfElement = msgs.getKey();
             final List<PictogramElement> pes = Graphiti.getLinkService().getPictogramElements(diagram, pisdfElement);
             if (pes.isEmpty()) {
               final String errmsg = String.format("PiSDF element [%s] has not associated graphical element.",

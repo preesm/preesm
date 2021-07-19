@@ -44,7 +44,6 @@ import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
-import java.util.Arrays;
 import java.util.List;
 import org.apache.commons.io.IOUtils;
 import org.eclipse.core.resources.IFile;
@@ -99,8 +98,10 @@ import org.preesm.model.pisdf.Port;
 import org.preesm.model.pisdf.PortKind;
 import org.preesm.model.pisdf.PortMemoryAnnotation;
 import org.preesm.model.pisdf.RefinementContainer;
+import org.preesm.model.pisdf.check.CheckerErrorLevel;
 import org.preesm.model.pisdf.check.NameCheckerC;
 import org.preesm.model.pisdf.check.PiGraphConsistenceChecker;
+import org.preesm.model.pisdf.check.RefinementChecker;
 import org.preesm.model.pisdf.factory.PiMMUserFactory;
 import org.preesm.model.pisdf.reconnection.SubgraphReconnector;
 import org.preesm.model.pisdf.util.PiIdentifiers;
@@ -117,20 +118,6 @@ import org.w3c.dom.NodeList;
  * @author jheulot
  */
 public class PiParser {
-
-  /** All accepted header file extensions. */
-  public static final String[] acceptedHeaderExtensions = { "h", "hpp", "hxx", "h++", "hh", "H" };
-
-  /**
-   * Check if the given C/C++ header file extension is supported.
-   * 
-   * @param extension
-   *          The extension to check (as "hxx" for "MyHeader.hxx").
-   * @return Whether or not the file extension is supported.
-   */
-  public static boolean isAsupportedHeaderFileExtension(final String extension) {
-    return Arrays.asList(acceptedHeaderExtensions).stream().anyMatch(x -> x.equals(extension));
-  }
 
   /**
    * Gets the pi graph.
@@ -169,7 +156,10 @@ public class PiParser {
   public static PiGraph getPiGraphWithReconnection(final String algorithmURL) {
     final PiGraph graph = getPiGraph(algorithmURL);
     SubgraphReconnector.reconnectChildren(graph);
-    PiGraphConsistenceChecker.check(graph, false);
+    // Check consistency of the graph (throw exception if fatal error)
+    final PiGraphConsistenceChecker pgcc = new PiGraphConsistenceChecker(CheckerErrorLevel.FATAL,
+        CheckerErrorLevel.NONE);
+    pgcc.check(graph);
     return graph;
   }
 
@@ -307,7 +297,7 @@ public class PiParser {
     if ((refinement != null) && !refinement.isEmpty()) {
       final IPath path = getWorkspaceRelativePathFrom(new Path(refinement));
       final String refinementExtension = path.getFileExtension();
-      if (isAsupportedHeaderFileExtension(refinementExtension)) {
+      if (RefinementChecker.isAsupportedHeaderFileExtension(refinementExtension)) {
         parseHeaderRefinement(nodeElt, actor, path);
       } else if ("pi".equals(refinementExtension)) {
         parsePiRefinement(actor, path);

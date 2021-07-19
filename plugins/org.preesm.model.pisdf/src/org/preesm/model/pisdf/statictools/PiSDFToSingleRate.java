@@ -84,6 +84,7 @@ import org.preesm.model.pisdf.Refinement;
 import org.preesm.model.pisdf.RoundBufferActor;
 import org.preesm.model.pisdf.brv.BRVMethod;
 import org.preesm.model.pisdf.brv.PiBRV;
+import org.preesm.model.pisdf.check.CheckerErrorLevel;
 import org.preesm.model.pisdf.check.PiGraphConsistenceChecker;
 import org.preesm.model.pisdf.factory.PiMMUserFactory;
 import org.preesm.model.pisdf.statictools.optims.BroadcastRoundBufferOptimization;
@@ -163,7 +164,10 @@ public class PiSDFToSingleRate extends PiMMSwitch<Boolean> {
     PreesmLogger.getLogger().log(Level.FINE, " >> Start srdag transfo");
 
     PreesmLogger.getLogger().log(Level.FINE, " >>   - check");
-    PiGraphConsistenceChecker.check(graph);
+    // Check consistency of the graph (throw exception if recoverable or fatal error)
+    final PiGraphConsistenceChecker pgcc = new PiGraphConsistenceChecker(CheckerErrorLevel.RECOVERABLE,
+        CheckerErrorLevel.NONE);
+    pgcc.check(graph);
     // 0. we copy the graph since the transformation has side effects (especially on delay actors)
     final PiGraph graphCopy = PiMMUserFactory.instance.copyPiGraphWithHistory(graph);
     // 1. First we resolve all parameters.
@@ -207,7 +211,10 @@ public class PiSDFToSingleRate extends PiMMSwitch<Boolean> {
     brRbOptimization.optimize(acyclicSRPiMM);
 
     PreesmLogger.getLogger().log(Level.FINE, " >>   - check");
-    PiGraphConsistenceChecker.check(acyclicSRPiMM);
+    // Check consistency of the graph (throw exception if recoverable or fatal error)
+    final PiGraphConsistenceChecker pgccAfterwards = new PiGraphConsistenceChecker(CheckerErrorLevel.RECOVERABLE,
+        CheckerErrorLevel.NONE);
+    pgccAfterwards.check(acyclicSRPiMM);
 
     srCheck(graphCopy, acyclicSRPiMM);
     PreesmLogger.getLogger().log(Level.FINE, " >> End srdag transfo");

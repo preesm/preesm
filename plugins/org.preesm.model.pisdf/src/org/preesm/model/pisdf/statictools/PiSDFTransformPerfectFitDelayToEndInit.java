@@ -52,6 +52,7 @@ import org.preesm.model.pisdf.InitActor;
 import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.pisdf.brv.BRVMethod;
 import org.preesm.model.pisdf.brv.PiBRV;
+import org.preesm.model.pisdf.check.CheckerErrorLevel;
 import org.preesm.model.pisdf.check.PiGraphConsistenceChecker;
 import org.preesm.model.pisdf.factory.PiMMUserFactory;
 
@@ -74,7 +75,10 @@ public class PiSDFTransformPerfectFitDelayToEndInit {
     // Perform copy of input graph
     final PiGraph copyGraph = PiMMUserFactory.instance.copyPiGraphWithHistory(this.inputGraph);
 
-    PiGraphConsistenceChecker.check(copyGraph);
+    // Check consistency of the graph (throw exception if recoverable or fatal error)
+    final PiGraphConsistenceChecker pgcc = new PiGraphConsistenceChecker(CheckerErrorLevel.RECOVERABLE,
+        CheckerErrorLevel.NONE);
+    pgcc.check(copyGraph);
 
     copyGraph.setName(copyGraph.getName() + "_without_perfect_fit");
     // Compute BRV
@@ -136,7 +140,10 @@ public class PiSDFTransformPerfectFitDelayToEndInit {
       }
     }
 
-    PiGraphConsistenceChecker.check(copyGraph);
+    // Check consistency of the graph (throw exception if recoverable or fatal error)
+    final PiGraphConsistenceChecker pgccAfterwards = new PiGraphConsistenceChecker(CheckerErrorLevel.RECOVERABLE,
+        CheckerErrorLevel.NONE);
+    pgccAfterwards.check(copyGraph);
     return copyGraph;
   }
 

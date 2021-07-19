@@ -37,12 +37,9 @@ package org.preesm.model.pisdf.check;
 
 import com.google.common.base.Strings;
 import java.util.ArrayDeque;
-import java.util.ArrayList;
 import java.util.Deque;
 import java.util.List;
-import java.util.Optional;
-import org.eclipse.emf.ecore.EObject;
-import org.preesm.commons.exceptions.PreesmRuntimeException;
+import java.util.stream.Stream;
 import org.preesm.commons.graph.Graph;
 import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.ConfigInputPort;
@@ -55,41 +52,55 @@ import org.preesm.model.pisdf.Dependency;
 import org.preesm.model.pisdf.Fifo;
 import org.preesm.model.pisdf.ISetter;
 import org.preesm.model.pisdf.InterfaceActor;
-import org.preesm.model.pisdf.Parameter;
 import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.pisdf.Port;
-import org.preesm.model.pisdf.util.PiMMSwitch;
+import org.preesm.model.pisdf.util.DependencyCycleDetector;
 
 /**
- *
+ * Important note to devs (by ahonorat): this class is called in different contexts. Sometimes we want to check the
+ * whole graph even if we have already detected some errors. So DO NOT USE {@link Stream#allMatch} here because then we
+ * would not check the other faulty elements, but prefer an hand-made reduction ensuring a complete evaluation.
+ * Similarly, DO NOT USE lazy boolean evaluation as {@code &&} but prefer force boolean evaluation with {@code &=}.
+ * 
  */
-public class PiGraphConsistenceChecker extends PiMMSwitch<Boolean> {
-
-  /**
-   *
-   */
-  public static final void check(final PiGraph graph) {
-    PiGraphConsistenceChecker.check(graph, true);
-  }
-
-  /**
-   *
-   */
-  public static final Boolean check(final PiGraph graph, final boolean throwExceptions) {
-    final PiGraphConsistenceChecker piGraphConsistenceChecker = new PiGraphConsistenceChecker(throwExceptions);
-    final boolean graphIsConsistent = piGraphConsistenceChecker.doSwitch(graph);
-    final boolean hierarchyIsConsistent = piGraphConsistenceChecker.graphStack.isEmpty();
-    return graphIsConsistent && hierarchyIsConsistent;
-  }
+public class PiGraphConsistenceChecker extends AbstractPiSDFObjectChecker {
 
   private final Deque<PiGraph> graphStack;
-  private final boolean        throwExceptions;
-  private final List<String>   messages;
 
-  private PiGraphConsistenceChecker(final boolean throwExceptions) {
-    this.throwExceptions = throwExceptions;
+  /**
+   * Builds the checker without logging messages nor stopping on errors. Then the user has to call the
+   * {@link #check(PiGraph)} method.
+   * 
+   */
+  public PiGraphConsistenceChecker() {
+    this(CheckerErrorLevel.NONE, CheckerErrorLevel.NONE);
+  }
+
+  /**
+   * Builds the checker, then the user has to call the {@link #check(PiGraph)} method.
+   * 
+   * @param throwExceptionLevel
+   *          The maximum level of error throwing exceptions.
+   * @param loggerLevel
+   *          The maximum level of error generating logs.
+   */
+  public PiGraphConsistenceChecker(final CheckerErrorLevel throwExceptionLevel, final CheckerErrorLevel loggerLevel) {
+    super(throwExceptionLevel, loggerLevel);
     this.graphStack = new ArrayDeque<>();
-    this.messages = new ArrayList<>();
+  }
+
+  /**
+   * Check the whole graph, throwing exception for every warning but not logging them.
+   * 
+   * @param graph
+   *          The PiSDF graph to check.
+   * @return Whether or not the PiSDF graph is consistent.
+   */
+  public final Boolean check(final PiGraph graph) {
+    final boolean graphIsConsistent = doSwitch(graph);
+    final boolean hierarchyIsConsistent = graphStack.isEmpty();
+    graphStack.clear();
+    return graphIsConsistent && hierarchyIsConsistent;
   }
 
   @Override
@@ -98,8 +109,8 @@ public class PiGraphConsistenceChecker extends PiMMSwitch<Boolean> {
     final String portName = dataPort.getName();
     final String name = actor.getName();
     if (!name.equals(portName)) {
-      final String message = "The interface data port <%s> should have the same name as its containing actor '%s'";
-      error(message, portName, actor.getVertexPath());
+      final String message = "The interface data port <%s> should have the same name as its containing actor '%s'.";
+      reportError(CheckerErrorLevel.FATAL, actor, message, portName, actor.getVertexPath());
     }
     return super.caseInterfaceActor(actor);
   }
@@ -110,23 +121,30 @@ public class PiGraphConsistenceChecker extends PiMMSwitch<Boolean> {
     // visit children & references
     boolean graphValid = graph.getUrl() != null;
     if (!graphValid) {
-      error("Graph [%s] has null URL.", graph.getVertexPath());
+      // for an unknown reason, this cannot be a fatal error, otherwise it is triggered at each saving operation
+      reportError(CheckerErrorLevel.RECOVERABLE, graph, "Graph [%s] has null URL.", graph.getVertexPath());
     }
-    graphValid = graphValid && graph.getActors().stream().allMatch(this::doSwitch);
-    graphValid = graphValid && graph.getFifos().stream().allMatch(this::doSwitch);
-    graphValid = graphValid && graph.getDependencies().stream().allMatch(this::doSwitch);
-    graphValid = graphValid && graph.getChildrenGraphs().stream().allMatch(this::doSwitch);
+
+    graphValid &= graph.getDependencies().stream().map(x -> doSwitch(x)).reduce(true, (x, y) -> x && y);
+
+    final DependencyCycleDetector dcd = new DependencyCycleDetector();
+    dcd.doSwitch(graph);
+    graphValid &= !dcd.cyclesDetected();
+    if (dcd.cyclesDetected()) {
+      reportError(CheckerErrorLevel.RECOVERABLE, graph, "Graph [%s] has cyclic dependencies between its parameters.",
+          graph);
+    }
+
+    graphValid &= graph.getActors().stream().map(x -> doSwitch(x)).reduce(true, (x, y) -> x && y);
+
+    final RefinementChecker refinementChecker = new RefinementChecker(throwExceptionLevel, loggerLevel);
+    graphValid &= refinementChecker.doSwitch(graph);
+    mergeMessages(refinementChecker);
+
+    graphValid &= graph.getFifos().stream().map(x -> doSwitch(x)).reduce(true, (x, y) -> x && y);
+    graphValid &= graph.getChildrenGraphs().stream().map(x -> doSwitch(x)).reduce(true, (x, y) -> x && y);
     this.graphStack.pop();
     return graphValid;
-  }
-
-  private void error(final String messageFormat, final Object... args) {
-    final String msg = String.format(messageFormat, args);
-    if (this.throwExceptions) {
-      throw new PreesmRuntimeException(msg);
-    } else {
-      this.messages.add(msg);
-    }
   }
 
   @Override
@@ -135,17 +153,24 @@ public class PiGraphConsistenceChecker extends PiMMSwitch<Boolean> {
     final boolean sourcePortNotNull = fifo.getSourcePort() != null;
     final boolean targetPortNotNull = fifo.getTargetPort() != null;
     final boolean containedByGraph = this.graphStack.peek().getFifos().contains(fifo);
-    final boolean fifoValid = sourcePortNotNull && targetPortNotNull && containedByGraph;
+    boolean fifoValid = sourcePortNotNull && targetPortNotNull && containedByGraph;
 
     // Instantiate check result
     if (!fifoValid) {
-      error("Fifo [%s] is not valid", fifo);
+      reportError(CheckerErrorLevel.FATAL, fifo, "Fifo [%s] is not valid.", fifo);
+    } else {
+      final FifoChecker fifoChecker = new FifoChecker(throwExceptionLevel, loggerLevel);
+      fifoValid = fifoChecker.doSwitch(fifo);
+      mergeMessages(fifoChecker);
+      fifoValid &= doSwitch(fifo.getSourcePort());
+      fifoValid &= doSwitch(fifo.getTargetPort());
+
+      if (fifo.getDelay() != null) {
+        fifoValid &= doSwitch(fifo.getDelay());
+      }
     }
 
-    Optional.ofNullable(fifo.getDelay()).ifPresent(this::doSwitch);
-    final Boolean doSwitch = doSwitch(fifo.getSourcePort());
-    final Boolean doSwitch2 = doSwitch(fifo.getTargetPort());
-    return fifoValid && doSwitch && doSwitch2;
+    return fifoValid;
   }
 
   @Override
@@ -156,10 +181,10 @@ public class PiGraphConsistenceChecker extends PiMMSwitch<Boolean> {
 
     final boolean delayActorValid = hasLinkedDelay && delayProperlyContained;
     if (!hasLinkedDelay) {
-      error("DelayActor [%s] has no proper linked delay", actor);
+      reportError(CheckerErrorLevel.FATAL, actor, "DelayActor [%s] has no proper linked delay.", actor);
     }
     if (!delayProperlyContained) {
-      error("DelayActor [%s] has a delay not contained in the graph", actor);
+      reportError(CheckerErrorLevel.FATAL, actor, "DelayActor [%s] has a delay not contained in the graph.", actor);
     }
     return delayActorValid;
   }
@@ -171,26 +196,12 @@ public class PiGraphConsistenceChecker extends PiMMSwitch<Boolean> {
     final boolean delayActorProperlyContained = delay.getContainingPiGraph().getVertices().contains(actor);
     final boolean delayValid = actorLinkedProperly && delayActorProperlyContained;
     if (!actorLinkedProperly) {
-      error("Delay [%s] is no proper linked actor", delay);
+      reportError(CheckerErrorLevel.FATAL, delay, "Delay [%s] is no proper linked actor.", delay);
     }
     if (!delayActorProperlyContained) {
-      error("Delay [%s] has an actor not contained in the graph", delay);
+      reportError(CheckerErrorLevel.FATAL, delay, "Delay [%s] has an actor not contained in the graph.", delay);
     }
     return delayValid;
-  }
-
-  @Override
-  public Boolean caseParameter(final Parameter param) {
-    final boolean containOK = param.getContainingPiGraph() == this.graphStack.peek();
-    final boolean depsOk = param.getOutgoingDependencies().stream()
-        .allMatch(d -> d.getContainingGraph() == this.graphStack.peek());
-    return containOK && depsOk;
-  }
-
-  @Override
-  public Boolean defaultCase(final EObject object) {
-    error("Object [%s] has not been assessed as valid.", object);
-    return false;
   }
 
   @Override
@@ -204,7 +215,8 @@ public class PiGraphConsistenceChecker extends PiMMSwitch<Boolean> {
     final boolean getterContained = containingConfigurable != null;
     boolean properTarget = true;
     if (!getterContained) {
-      error("Dependency [%s] getter [%s] is not contained.", dependency, getter);
+      reportError(CheckerErrorLevel.FATAL, dependency, "Dependency [%s] getter [%s] is not contained.", dependency,
+          getter);
     } else {
 
       if (!(containingConfigurable instanceof PiGraph)) {
@@ -212,7 +224,8 @@ public class PiGraphConsistenceChecker extends PiMMSwitch<Boolean> {
         final PiGraph containingPiGraph = containingConfigurable.getContainingPiGraph();
         properTarget = containingPiGraph == peek;
         if (!properTarget) {
-          error("Dependency [%s] getter [%s] is contained in an actor that is not part of the graph.", dependency,
+          reportError(CheckerErrorLevel.FATAL, dependency,
+              "Dependency [%s] getter [%s] is contained in an actor that is not part of the graph.", dependency,
               getter);
         }
       }
@@ -233,26 +246,21 @@ public class PiGraphConsistenceChecker extends PiMMSwitch<Boolean> {
         final Port port2 = allPorts.get(j);
         final String name = port1.getName();
         final String name2 = port2.getName();
-        final boolean redundantPorts = !(Strings.nullToEmpty(name).equals(name2));
-        actorValid = actorValid && redundantPorts;
-        if (!redundantPorts) {
-          error("Actor [%s] has several ports with same name [%s]", actor, name);
+        final boolean redundantPorts = (Strings.nullToEmpty(name).equals(name2));
+        actorValid = actorValid && !redundantPorts;
+        if (redundantPorts) {
+          reportError(CheckerErrorLevel.FATAL, actor, "Actor [%s] has several ports with same name [%s].", actor, name);
         }
       }
     }
 
-    // Instantiate check result
-    if (!actorValid) {
-      final String message = "Actor [" + actor + "] is not valid.";
-      error(message);
-    }
-
     if (!(actor instanceof DelayActor)) {
       // visit children & references
-      actorValid = actorValid && actor.getAllDataPorts().stream().allMatch(this::doSwitch);
-      actorValid = actorValid && actor.getConfigInputPorts().stream().allMatch(this::doSwitch);
-      actorValid = actorValid && actor.getConfigOutputPorts().stream().allMatch(this::doSwitch);
+      actorValid &= actor.getAllDataPorts().stream().map(x -> doSwitch(x)).reduce(true, (x, y) -> x && y);
+      actorValid &= actor.getConfigInputPorts().stream().map(x -> doSwitch(x)).reduce(true, (x, y) -> x && y);
+      actorValid &= actor.getConfigOutputPorts().stream().map(x -> doSwitch(x)).reduce(true, (x, y) -> x && y);
     }
+
     return actorValid;
   }
 
@@ -261,13 +269,14 @@ public class PiGraphConsistenceChecker extends PiMMSwitch<Boolean> {
     final PiGraph peek = this.graphStack.peek();
     final boolean containedInProperGraph = cfgInPort.getConfigurable().getContainingPiGraph() == peek;
     if (!containedInProperGraph) {
-      error("Config input port [%s] is not contained in graph.", cfgInPort);
+      reportError(CheckerErrorLevel.FATAL, cfgInPort, "Config input port [%s] is not contained in graph.", cfgInPort);
     }
     final Dependency incomingDependency = cfgInPort.getIncomingDependency();
     final boolean portConnected = incomingDependency != null;
     boolean depInGraph = true;
     if (!portConnected) {
-      error("Config input port [%s] is not connected to a dependency.", cfgInPort);
+      reportError(CheckerErrorLevel.FATAL, cfgInPort, "Config input port [%s] is not connected to a dependency.",
+          cfgInPort);
     } else {
       final Graph containingGraph = incomingDependency.getContainingGraph();
       depInGraph = containingGraph == peek;
@@ -290,12 +299,13 @@ public class PiGraphConsistenceChecker extends PiMMSwitch<Boolean> {
     final String actorName = isContained ? containingActor.getName() : "unknown";
     boolean wellContained = true;
     if (!isContained) {
-      error("port [%s] has not containing actor", portName);
+      reportError(CheckerErrorLevel.FATAL, port, "Port [%s] has not containing actor.", portName);
     } else {
       final PiGraph containingPiGraph = containingActor.getContainingPiGraph();
       wellContained = (containingPiGraph == peek);
       if (!wellContained) {
-        error("port [<%s>:%s] containing actor graph [%s] differs from peek graph [%s]", actorName, portName,
+        reportError(CheckerErrorLevel.FATAL, port,
+            "Port [<%s>:%s] containing actor graph [%s] differs from peek graph [%s].", actorName, portName,
             containingPiGraph, peek);
       }
     }
@@ -303,22 +313,17 @@ public class PiGraphConsistenceChecker extends PiMMSwitch<Boolean> {
     final boolean hasFifo = fifo != null;
     boolean fifoWellContained = true;
     if (!hasFifo) {
-      error("port [<%s>:%s] is not connected to a fifo", actorName, portName);
+      reportError(CheckerErrorLevel.RECOVERABLE, port, "Port [<%s>:%s] is not connected to a fifo.", actorName,
+          portName);
     } else {
       final PiGraph containingPiGraph2 = fifo.getContainingPiGraph();
       fifoWellContained = (containingPiGraph2 == peek);
       if (!fifoWellContained) {
-        error("port [<%s>:%s] fifo graph [%s] differs from peek graph [%s]", actorName, portName, containingPiGraph2,
-            peek);
+        reportError(CheckerErrorLevel.FATAL, port, "Port [<%s>:%s] fifo graph [%s] differs from peek graph [%s].",
+            actorName, portName, containingPiGraph2, peek);
       }
     }
-    final boolean portValid = wellContained && fifoWellContained;
-
-    if (!portValid) {
-      error("Port [<%s>:%s] is not valid.", actorName, portName);
-    }
-
-    return portValid;
+    return wellContained && fifoWellContained;
   }
 
 }

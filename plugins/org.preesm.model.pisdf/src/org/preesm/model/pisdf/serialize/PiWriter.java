@@ -89,6 +89,7 @@ import org.preesm.model.pisdf.PiSDFRefinement;
 import org.preesm.model.pisdf.Port;
 import org.preesm.model.pisdf.Refinement;
 import org.preesm.model.pisdf.RoundBufferActor;
+import org.preesm.model.pisdf.check.CheckerErrorLevel;
 import org.preesm.model.pisdf.check.PiGraphConsistenceChecker;
 import org.preesm.model.pisdf.reconnection.SubgraphOriginalActorTracker;
 import org.preesm.model.pisdf.util.PiIdentifiers;
@@ -260,7 +261,10 @@ public class PiWriter {
    */
   public void write(final PiGraph graph, final OutputStream outputStream) {
 
-    PiGraphConsistenceChecker.check(graph, false);
+    // Check consistency of the graph (throw exception if fatal error)
+    final PiGraphConsistenceChecker pgcc = new PiGraphConsistenceChecker(CheckerErrorLevel.FATAL,
+        CheckerErrorLevel.NONE);
+    pgcc.check(graph);
 
     // Create the domDocument
     this.domDocument = DomUtil.createDocument("http://graphml.graphdrawing.org/xmlns", "graphml");

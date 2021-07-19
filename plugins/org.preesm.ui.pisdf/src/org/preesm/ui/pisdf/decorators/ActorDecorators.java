@@ -37,11 +37,8 @@
  */
 package org.preesm.ui.pisdf.decorators;
 
-import java.util.AbstractMap.SimpleEntry;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
 import org.eclipse.graphiti.features.IReason;
 import org.eclipse.graphiti.features.impl.Reason;
 import org.eclipse.graphiti.mm.pictograms.PictogramElement;
@@ -50,16 +47,10 @@ import org.eclipse.graphiti.tb.IDecorator;
 import org.eclipse.graphiti.tb.ImageDecorator;
 import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.Actor;
-import org.preesm.model.pisdf.CHeaderRefinement;
-import org.preesm.model.pisdf.DataPort;
-import org.preesm.model.pisdf.Fifo;
-import org.preesm.model.pisdf.FunctionArgument;
-import org.preesm.model.pisdf.InterfaceActor;
-import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.pisdf.PiSDFRefinement;
 import org.preesm.model.pisdf.Port;
+import org.preesm.model.pisdf.check.RefinementChecker;
 import org.preesm.ui.pisdf.diagram.PiMMImageProvider;
-import org.preesm.ui.pisdf.util.PortEqualityHelper;
 
 // TODO: Auto-generated Javadoc
 /**
@@ -156,62 +147,15 @@ public class ActorDecorators {
   public static IReason portsUpdateNeeded(final Actor actor) {
     final AbstractActor vertex = actor.getChildAbstractActor();
     if (vertex != null) {
-      final Map<SimpleEntry<Port, Port>, IReason> m = PortEqualityHelper.buildEquivalentPortsMap(actor, vertex);
+      final RefinementChecker refCheck = new RefinementChecker();
+      refCheck.caseActor(actor);
+      final String reason = refCheck.toString();
 
-      String reasons = "";
-      for (final Entry<SimpleEntry<Port, Port>, IReason> e : m.entrySet()) {
-        if (!e.getValue().toBoolean()) {
-          if (e.getValue().getText().equals(PortEqualityHelper.NULL_PORT)) {
-            final Port actorPort = e.getKey().getKey();
-            final Port refinePort = e.getKey().getValue();
-            if (actorPort != null) {
-              reasons += "\nPort \"" + actorPort.getName() + "\" not present in refinement.";
-            } else {
-              reasons += "\nRefinement has an extra " + refinePort.getKind() + " port \"" + refinePort.getName()
-                  + "\".";
-            }
-          }
-        }
-        if (e.getKey().getKey() instanceof DataPort) {
-          reasons += checkFifoType(actor, (DataPort) e.getKey().getKey());
-        }
-      }
-      if (!reasons.equals("")) {
-        return Reason.createTrueReason("Ports are out of sync with the refinement." + reasons);
+      if (!reason.isEmpty()) {
+        return Reason.createTrueReason("Ports are out of sync with the refinement\n." + reason);
       }
     }
     return Reason.createFalseReason();
-  }
-
-  private static String checkFifoType(final Actor actor, final DataPort port) {
-    String result = "";
-
-    final Fifo fifo = port.getFifo();
-    if (fifo == null) {
-      return result;
-    }
-    if (actor.isHierarchical()) {
-      final PiGraph subGraph = actor.getSubGraph();
-      final InterfaceActor ia = (InterfaceActor) subGraph.lookupVertex(port.getName());
-      final Fifo subFifo = ia.getDataPort().getFifo();
-
-      if (subFifo != null && !fifo.getType().equals(subFifo.getType())) {
-        result = "\nActor '" + actor.getName() + "' has a port named '" + port.getName()
-            + "' with a different Fifo type than its inner self in '" + subGraph.getName() + "': '" + fifo.getType()
-            + "' vs '" + subFifo.getType() + "'.";
-      }
-    } else if (actor.getRefinement() instanceof CHeaderRefinement) {
-      final CHeaderRefinement ref = (CHeaderRefinement) actor.getRefinement();
-      for (final FunctionArgument fa : ref.getLoopPrototype().getArguments()) {
-        if (fa.getName().equals(port.getName()) && !fa.getType().equals(fifo.getType())) {
-          result = "\nFifo type of port '" + port.getName() + "' is different from the one in refinement. "
-              + "\n(Ignore the preceding warning if using a data container supported by PREESM.)";
-          // check here the container type? hls::stream for FPGA
-        }
-      }
-    }
-
-    return result;
   }
 
 }

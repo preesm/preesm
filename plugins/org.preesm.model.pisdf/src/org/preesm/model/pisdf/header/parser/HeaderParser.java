@@ -205,7 +205,7 @@ public class HeaderParser {
   private static void parseFunctionDeclor(final IASTFunctionDeclarator funcDeclor,
       LinkedList<ICPPASTNamespaceDefinition> namespaceStack, LinkedList<ICPPASTTemplateDeclaration> templateStack,
       LinkedList<IASTDeclSpecifier> returnTypeStack, List<FunctionPrototype> resultList) {
-    final String rawName = funcDeclor.getName().getRawSignature();
+    final String rawName = funcDeclor.getName().getRawSignature().trim();
 
     if (returnTypeStack.size() != 1) {
       PreesmLogger.getLogger()
@@ -236,12 +236,12 @@ public class HeaderParser {
           PreesmLogger.getLogger().warning("Discarded function " + rawName + TEMPLATE_WARNING);
           return;
         }
-        final String paramType = ((ICPPASTSimpleDeclSpecifier) childsParam[0]).getRawSignature();
+        final String paramType = ((ICPPASTSimpleDeclSpecifier) childsParam[0]).getRawSignature().trim();
         if (!paramType.equals("int") && !paramType.equals("long")) {
           PreesmLogger.getLogger().warning("Discarded function " + rawName + TEMPLATE_WARNING);
           return;
         }
-        final String paramName = ((ICPPASTDeclarator) childsParam[1]).getRawSignature();
+        final String paramName = ((ICPPASTDeclarator) childsParam[1]).getRawSignature().trim();
         sb.append(paramName);
         sb.append(",");
       }
@@ -252,7 +252,8 @@ public class HeaderParser {
     }
 
     final String namespacePrefix = namespaceStack.isEmpty() ? ""
-        : namespaceStack.stream().map(x -> x.getName().getRawSignature()).collect(Collectors.joining("::")) + "::";
+        : namespaceStack.stream().map(x -> x.getName().getRawSignature().trim()).collect(Collectors.joining("::"))
+            + "::";
     final String modifiedName = namespacePrefix + rawName + templateSuffix;
 
     // signature of CPPASTParameterDeclaration given by funcDeclor.getChildren() do not include IN and OUT anymore
@@ -269,7 +270,7 @@ public class HeaderParser {
         final FunctionArgument fA = PiMMUserFactory.instance.createFunctionArgument();
         protoParameters.add(fA);
         final IASTParameterDeclaration paramDeclon = (IASTParameterDeclaration) child;
-        final String type = paramDeclon.getDeclSpecifier().getRawSignature();
+        final String type = paramDeclon.getDeclSpecifier().getRawSignature().trim();
         fA.setType(type);
         if (type.contains("<") || type.contains(":")) {
           // then the type contains a template or a namespace
@@ -289,7 +290,7 @@ public class HeaderParser {
           // and it is possible only for CPP
           fA.setIsConfigurationParameter(true);
         }
-        final String name = paramDeclor.getName().getRawSignature();
+        final String name = paramDeclor.getName().getRawSignature().trim();
         fA.setName(name);
 
       }

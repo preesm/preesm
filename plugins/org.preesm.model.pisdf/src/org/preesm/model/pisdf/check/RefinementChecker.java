@@ -36,15 +36,26 @@
  */
 package org.preesm.model.pisdf.check;
 
-import java.util.LinkedHashSet;
-import java.util.Set;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
+import org.eclipse.xtext.xbase.lib.Pair;
 import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.Actor;
+import org.preesm.model.pisdf.CHeaderRefinement;
+import org.preesm.model.pisdf.DataInputInterface;
+import org.preesm.model.pisdf.DataOutputInterface;
+import org.preesm.model.pisdf.DataPort;
+import org.preesm.model.pisdf.Fifo;
+import org.preesm.model.pisdf.FunctionArgument;
+import org.preesm.model.pisdf.FunctionPrototype;
+import org.preesm.model.pisdf.InterfaceActor;
 import org.preesm.model.pisdf.PiGraph;
+import org.preesm.model.pisdf.Port;
 import org.preesm.model.pisdf.Refinement;
 
 /**
@@ -54,66 +65,76 @@ import org.preesm.model.pisdf.Refinement;
  * @author cguy
  *
  */
-public class RefinementChecker {
+public class RefinementChecker extends AbstractPiSDFObjectChecker {
 
-  /** Actors with no refinement set */
-  private final Set<Actor> actorsWithoutRefinement;
+  /** All accepted header file extensions. */
+  public static final String[] acceptedHeaderExtensions = { "h", "hpp", "hxx", "h++", "hh", "H" };
 
-  /** Actors with refinement path pointing to non-existing file */
-  private final Set<Actor> actorsWithNonExistingRefinement;
-
-  /** Actors with refinement path pointing to non-authorized format file */
-  private final Set<Actor> actorsWithInvalidExtensionRefinement;
+  /**
+   * Check if the given C/C++ header file extension is supported.
+   * 
+   * @param extension
+   *          The extension to check (as "hxx" for "MyHeader.hxx").
+   * @return Whether or not the file extension is supported.
+   */
+  public static boolean isAsupportedHeaderFileExtension(final String extension) {
+    return Arrays.asList(acceptedHeaderExtensions).stream().anyMatch(x -> x.equals(extension));
+  }
 
   /**
    * Instantiates a new refinement checker.
    */
   public RefinementChecker() {
-    this.actorsWithoutRefinement = new LinkedHashSet<>();
-    this.actorsWithNonExistingRefinement = new LinkedHashSet<>();
-    this.actorsWithInvalidExtensionRefinement = new LinkedHashSet<>();
+    super();
   }
 
   /**
-   * Check the presence and validity of Refinements of all Actors of the graph
-   *
-   * <p>
-   * Precondition: graph has been connected through SubgraphConnector.
-   * </p>
-   *
-   * @param graph
-   *          PiGraph to check
-   * @return true if all refinements are set and valid, false otherwise
+   * Instantiates a new refinement checker.
+   * 
+   * @param throwExceptionLevel
+   *          The maximum level of error throwing exceptions.
+   * @param loggerLevel
+   *          The maximum level of error generating logs.
    */
-  public boolean checkRefinements(final PiGraph graph) {
+  public RefinementChecker(final CheckerErrorLevel throwExceptionLevel, final CheckerErrorLevel loggerLevel) {
+    super(throwExceptionLevel, loggerLevel);
+  }
+
+  @Override
+  public Boolean casePiGraph(final PiGraph graph) {
     boolean ok = true;
     for (final AbstractActor aa : graph.getActors()) {
       if (aa instanceof Actor) {
-        ok &= checkRefinement((Actor) aa);
+        ok &= doSwitch(aa);
       } else if (aa instanceof PiGraph) {
-        ok &= checkRefinements((PiGraph) aa);
+        // PiGraph as direct children means that a reconnection already occurred
+        // but we don't want a recursive pattern and it needs a different check
+        // Indeed, the SubgraphReconnector already checked the ports so we only need to check the fifo types.
+        ok &= checkReconnectedSubGraphFifoTypes((PiGraph) aa);
       }
     }
     return ok;
   }
 
-  /**
-   * Check the Refinement of an Actor.
-   *
-   * @param a
-   *          the Actor for which we want to check the Refinement
-   * @return true if the refinement is valid, false otherwise
-   */
-  private boolean checkRefinement(final Actor a) {
+  @Override
+  public Boolean caseActor(final Actor a) {
     final Refinement refinement = a.getRefinement();
+    boolean validity = false;
     if ((refinement != null) && (refinement.getFilePath() != null) && !refinement.getFilePath().isEmpty()) {
-      return checkRefinementExtension(a) && checkRefinementValidity(a);
+      validity = checkRefinementExtension(a) && checkRefinementValidity(a);
+      if (validity) {
+        final List<Pair<Port, Port>> correspondingPorts = getPiGraphRefinementCorrespondingPorts(a);
+        final List<Pair<Port, FunctionArgument>> correspondingArguments = getCHeaderRefinementCorrespondingArguments(a);
+
+        validity &= checkRefinementPorts(a, correspondingPorts, correspondingArguments);
+        validity &= checkRefinementFifoTypes(a, correspondingPorts, correspondingArguments);
+        // continue recursive visit if hierarchical?
+      }
     } else {
-      // a does not have a refinement, or has a refinement containing no
-      // file path
-      this.actorsWithoutRefinement.add(a);
-      return false;
+      reportError(CheckerErrorLevel.WARNING, a, "Actor [%s] has no refinement set.", a.getVertexPath());
     }
+
+    return validity;
   }
 
   /**
@@ -130,10 +151,11 @@ public class RefinementChecker {
   private boolean checkRefinementExtension(final Actor a) {
     final IPath path = new Path(a.getRefinement().getFilePath());
     final String fileExtension = path.getFileExtension();
-    if (!fileExtension.equals("h") && !fileExtension.equals("idl") && !fileExtension.equals("pi")) {
-      // File pointed by the refinement of a does not have a valid
-      // extension
-      this.actorsWithInvalidExtensionRefinement.add(a);
+    if (!fileExtension.equals("idl") && !fileExtension.equals("pi")
+        && !isAsupportedHeaderFileExtension(fileExtension)) {
+      // File pointed by the refinement of a does not have a valid extension
+      reportError(CheckerErrorLevel.RECOVERABLE, a, "Actor [%s] has an unrecognized refinement file extension.",
+          a.getVertexPath());
       return false;
     }
     return true;
@@ -155,36 +177,199 @@ public class RefinementChecker {
     final IFile file = ResourcesPlugin.getWorkspace().getRoot().getFile(path);
     if (!file.exists()) {
       // File pointed by the refinement does not exist
-      this.actorsWithNonExistingRefinement.add(a);
+      reportError(CheckerErrorLevel.RECOVERABLE, a,
+          "Actor [%s] has a refinement file missing in the file system: '%s'.", a.getVertexPath(),
+          a.getRefinement().getFilePath());
       return false;
     }
     return true;
   }
 
   /**
-   * Gets the actors without refinement.
-   *
-   * @return the actors without refinement
+   * Check if all the ports of the actor are present in the refinement, and vice versa.
+   * 
+   * @param a
+   *          the Actor for which we want to check the Refinement
+   * @param correspondingPorts
+   *          The corresponding ports if PiGraph refinement (null otherwise).
+   * @param correspondingArguments
+   *          The corresponding arguments if PiCHeader refinement (null otherwise).
+   * @return true if all ports are corresponding, false otherwise
    */
-  public Set<Actor> getActorsWithoutRefinement() {
-    return this.actorsWithoutRefinement;
+  private boolean checkRefinementPorts(final Actor a, final List<Pair<Port, Port>> correspondingPorts,
+      final List<Pair<Port, FunctionArgument>> correspondingArguments) {
+    boolean validity = true;
+
+    if (a.isHierarchical()) {
+      for (final Pair<Port, Port> correspondingPort : correspondingPorts) {
+        final Port topPort = correspondingPort.getKey();
+        final Port subPort = correspondingPort.getValue();
+
+        if (topPort != null && subPort == null) {
+          validity = false;
+          reportError(CheckerErrorLevel.RECOVERABLE, a, "Port [%s:%s] is not present in refinement.", a.getName(),
+              topPort.getName());
+        } else if (topPort == null && subPort != null) {
+          validity = false;
+          reportError(CheckerErrorLevel.RECOVERABLE, a, "Port [%s:%s] is only present in refinement.", a.getName(),
+              subPort.getName());
+        }
+
+      }
+    } else if (a.getRefinement() instanceof CHeaderRefinement) {
+      for (final Pair<Port, FunctionArgument> correspondingArgument : correspondingArguments) {
+        final Port topPort = correspondingArgument.getKey();
+        final FunctionArgument fa = correspondingArgument.getValue();
+
+        if (topPort != null && fa == null) {
+          validity = false;
+          reportError(CheckerErrorLevel.RECOVERABLE, a, "Port [%s:%s] is not present in refinement.", a.getName(),
+              topPort.getName());
+        } else if (topPort == null && fa != null) {
+          validity = false;
+          reportError(CheckerErrorLevel.RECOVERABLE, a, "Port [%s:%s] is only present in refinement.", a.getName(),
+              fa.getName());
+        }
+      }
+    }
+
+    return validity;
   }
 
   /**
-   * Gets the actors with non existing refinement.
-   *
-   * @return the actors with non existing refinement
+   * Check if all the fifo connected to the actor and its refinement have the same type.
+   * 
+   * @param a
+   *          the Actor for which we want to check the Refinement
+   * @param correspondingPorts
+   *          The corresponding ports if PiGraph refinement (null otherwise).
+   * @param correspondingArguments
+   *          The corresponding arguments if PiCHeader refinement (null otherwise).
+   * @return true if all (present) fifo types are corresponding, false otherwise
    */
-  public Set<Actor> getActorsWithNonExistingRefinement() {
-    return this.actorsWithNonExistingRefinement;
+  private boolean checkRefinementFifoTypes(final Actor a, final List<Pair<Port, Port>> correspondingPorts,
+      final List<Pair<Port, FunctionArgument>> correspondingArguments) {
+    boolean validity = true;
+
+    if (a.isHierarchical()) {
+      for (final Pair<Port, Port> correspondingPort : correspondingPorts) {
+        final Port topPort = correspondingPort.getKey();
+        final Port subPort = correspondingPort.getValue();
+
+        if (!(topPort instanceof DataPort) || !(subPort instanceof DataPort)) {
+          continue;
+        }
+
+        final Fifo topFifo = ((DataPort) topPort).getFifo();
+        final Fifo subFifo = ((DataPort) subPort).getFifo();
+
+        if (topFifo != null && subFifo != null && !topFifo.getType().equals(subFifo.getType())) {
+          validity = false;
+          reportError(CheckerErrorLevel.WARNING, a,
+              "Port [%s:%s] has a different fifo type than in its inner self [%s]: '%s' vs '%s'.", a.getName(),
+              topPort.getName(), a.getSubGraph().getName(), topFifo.getType(), subFifo.getType());
+        }
+      }
+    } else if (a.getRefinement() instanceof CHeaderRefinement) {
+      for (final Pair<Port, FunctionArgument> correspondingArgument : correspondingArguments) {
+        final Port topPort = correspondingArgument.getKey();
+        final FunctionArgument fa = correspondingArgument.getValue();
+
+        if (!(topPort instanceof DataPort) || fa == null) {
+          continue;
+        }
+
+        final Fifo topFifo = ((DataPort) topPort).getFifo();
+
+        if (topFifo != null && !fa.getType().equals(topFifo.getType())) {
+          validity = false;
+          reportError(CheckerErrorLevel.WARNING, a,
+              "Port [%s:%s] has a different fifo type than in its C/C++ refinement: '%s' vs '%s'.", a.getName(),
+              topPort.getName(), topFifo.getType(), fa.getType());
+          // check here the container type? hls::stream for FPGA
+        }
+      }
+    }
+
+    return validity;
   }
 
-  /**
-   * Gets the actors with invalid extension refinement.
-   *
-   * @return the actors with invalid extension refinement
-   */
-  public Set<Actor> getActorsWithInvalidExtensionRefinement() {
-    return this.actorsWithInvalidExtensionRefinement;
+  private boolean checkReconnectedSubGraphFifoTypes(final PiGraph graph) {
+    boolean validity = true;
+    for (final AbstractActor aa : graph.getActors()) {
+      if (aa instanceof DataInputInterface | aa instanceof DataOutputInterface) {
+        final InterfaceActor ia = (InterfaceActor) aa;
+        final DataPort iaPort = ia.getDataPort();
+        final DataPort graphPort = ia.getGraphPort();
+        if (iaPort == null || graphPort == null) {
+          // already reported elsewhere
+          continue;
+        }
+        final Fifo iaFifo = iaPort.getFifo(); // fifo sub graph
+        final Fifo graphFifo = graphPort.getFifo(); // fifo top graph
+        if (iaFifo != null && graphFifo != null && !iaFifo.getType().equals(graphFifo.getType())) {
+          validity = false;
+          reportError(CheckerErrorLevel.WARNING, graph,
+              "Port [%s:%s] has a different fifo type than in its inner Interface: '%s' vs '%s'.", graph.getName(),
+              graphPort.getName(), graphFifo.getType(), iaFifo.getType());
+        }
+
+      }
+    }
+
+    return validity;
   }
+
+  private static List<Pair<Port, FunctionArgument>> getCHeaderRefinementCorrespondingArguments(final Actor a) {
+    if (!(a.getRefinement() instanceof CHeaderRefinement)) {
+      return null;
+    }
+    final CHeaderRefinement ref = (CHeaderRefinement) a.getRefinement();
+    final FunctionPrototype fp = ref.getLoopPrototype();
+    if (fp == null) {
+      // there might be no given loop prototype
+      return null;
+    }
+
+    final List<FunctionArgument> noRefCorrespondingFoundYet = new ArrayList<>(fp.getArguments());
+    final List<Pair<Port, FunctionArgument>> result = new ArrayList<>();
+
+    for (final Port p1 : a.getAllPorts()) {
+      FunctionArgument correspondingFA = null;
+      for (final FunctionArgument fa : fp.getArguments()) {
+        if (p1.getName().equals(fa.getName())) {
+          correspondingFA = fa;
+          break;
+        }
+      }
+      noRefCorrespondingFoundYet.remove(correspondingFA);
+      result.add(new Pair<>(p1, correspondingFA));
+    }
+
+    // Function arguments in refinement without top corresponding port
+    for (final FunctionArgument fa : noRefCorrespondingFoundYet) {
+      result.add(new Pair<>(null, fa));
+    }
+
+    return result;
+  }
+
+  private static List<Pair<Port, Port>> getPiGraphRefinementCorrespondingPorts(final Actor a) {
+    if (!a.isHierarchical()) {
+      return null;
+    }
+
+    final PiGraph subGraph = a.getSubGraph();
+    // if it is reconnected, there is no point to do this, this case should not happen however
+    if (subGraph.getContainingPiGraph() != null) {
+      return new ArrayList<>();
+    }
+
+    // Then we try to perform a sort of reconnection ...
+    // but with the subgraph interface actors instead of the subgraph ports (except for Config Input ports).
+    // TODO
+
+    return new ArrayList<>();
+  }
+
 }

@@ -40,8 +40,10 @@ package org.preesm.ui.pisdf.popup.actions;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.widgets.Shell;
+import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.model.pisdf.PiGraph;
-import org.preesm.model.pisdf.check.PiMMAlgorithmChecker;
+import org.preesm.model.pisdf.check.CheckerErrorLevel;
+import org.preesm.model.pisdf.check.PiGraphConsistenceChecker;
 
 /**
  * Class to launch a PiGraph check through pop-up menu.
@@ -52,22 +54,16 @@ public class PiMMAlgorithmCheckerPopup extends AbstractGenericMultiplePiHandler 
 
   @Override
   public void processPiSDF(final PiGraph pigraph, final IProject iProject, final Shell shell) {
-    final PiMMAlgorithmChecker checker = new PiMMAlgorithmChecker();
-    final StringBuilder message = new StringBuilder();
-    if (checker.checkGraph(pigraph)) {
-      message.append(checker.getOkMsg());
-    } else {
-      if (checker.isErrors()) {
-        message.append(checker.getErrorMsg());
-        if (checker.isWarnings()) {
-          message.append("\n");
-        }
-      }
-      if (checker.isWarnings()) {
-        message.append(checker.getWarningMsg());
-      }
+
+    PreesmLogger.getLogger().info("Checking validity of graph " + pigraph.getName() + ".");
+    // Check the graph and display corresponding messages
+    final PiGraphConsistenceChecker pgcc = new PiGraphConsistenceChecker(CheckerErrorLevel.NONE,
+        CheckerErrorLevel.WARNING);
+    final boolean valid = pgcc.check(pigraph);
+    if (valid) {
+      PreesmLogger.getLogger().info("Graph " + pigraph.getName() + " is valid.");
     }
 
-    MessageDialog.openInformation(shell, "Checker of PiGraph model", message.toString());
+    MessageDialog.openInformation(shell, "Checker of PiGraph model", pgcc.toString());
   }
 }

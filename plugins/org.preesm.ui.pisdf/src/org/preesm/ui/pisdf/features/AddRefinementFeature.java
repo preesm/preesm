@@ -44,7 +44,7 @@ import org.eclipse.graphiti.features.context.IAddContext;
 import org.eclipse.graphiti.features.impl.AbstractAddFeature;
 import org.eclipse.graphiti.mm.pictograms.PictogramElement;
 import org.preesm.model.pisdf.Actor;
-import org.preesm.model.pisdf.serialize.PiParser;
+import org.preesm.model.pisdf.check.RefinementChecker;
 
 /**
  * When a file is drag and dropped on an actor, the feature attempts to set this file as the refinement of the actor.
@@ -78,7 +78,7 @@ public class AddRefinementFeature extends AbstractAddFeature {
     } else {
       final String fileExtension = ((IFile) context.getNewObject()).getFileExtension();
       return fileExtension.equals("pi") || fileExtension.equals("idl")
-          || PiParser.isAsupportedHeaderFileExtension(fileExtension);
+          || RefinementChecker.isAsupportedHeaderFileExtension(fileExtension);
     }
   }
 

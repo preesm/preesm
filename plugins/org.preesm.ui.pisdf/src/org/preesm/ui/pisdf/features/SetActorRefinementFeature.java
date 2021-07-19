@@ -63,9 +63,9 @@ import org.preesm.model.pisdf.InitActor;
 import org.preesm.model.pisdf.PersistenceLevel;
 import org.preesm.model.pisdf.PiSDFRefinement;
 import org.preesm.model.pisdf.RefinementContainer;
+import org.preesm.model.pisdf.check.RefinementChecker;
 import org.preesm.model.pisdf.factory.PiMMUserFactory;
 import org.preesm.model.pisdf.header.parser.HeaderParser;
-import org.preesm.model.pisdf.serialize.PiParser;
 import org.preesm.ui.pisdf.util.PiMMUtil;
 import org.preesm.ui.utils.FileUtils;
 
@@ -211,7 +211,7 @@ public class SetActorRefinementFeature extends AbstractCustomFeature {
     if (acceptPiFiles) {
       fileExtensions.add("pi");
     }
-    fileExtensions.addAll(Arrays.asList(PiParser.acceptedHeaderExtensions));
+    fileExtensions.addAll(Arrays.asList(RefinementChecker.acceptedHeaderExtensions));
     return FileUtils.browseFiles(PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell(), dialogTitle, question,
         fileExtensions);
   }
@@ -235,7 +235,7 @@ public class SetActorRefinementFeature extends AbstractCustomFeature {
     boolean validRefinement = false;
     do {
       // If the file is a C/C++ header
-      if (PiParser.isAsupportedHeaderFileExtension(newFilePath.getFileExtension())) {
+      if (RefinementChecker.isAsupportedHeaderFileExtension(newFilePath.getFileExtension())) {
 
         List<FunctionPrototype> loopPrototypes;
         FunctionPrototype[] allProtoArray;
