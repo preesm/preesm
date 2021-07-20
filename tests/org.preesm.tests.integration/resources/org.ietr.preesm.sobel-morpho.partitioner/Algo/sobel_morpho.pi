@@ -18,7 +18,7 @@
         <node expr="2" id="window" kind="param"/>
         <node expr="height/nbSlice+4*window" id="dilationHeight" kind="param"/>
         <node id="Read_YUV" kind="actor">
-            <data key="graph_desc">Code/include/yuvRead.h</data>
+            <data key="graph_desc">CodeMPPA2/include/yuvRead.h</data>
             <loop name="readYUV">
                 <param direction="IN" isConfig="true"
                     name="width" type="int"/>
@@ -44,7 +44,7 @@
                 kind="output" name="v"/>
         </node>
         <node id="display" kind="actor">
-            <data key="graph_desc">Code/include/yuvDisplay.h</data>
+            <data key="graph_desc">CodeMPPA2/include/yuvDisplay.h</data>
             <loop name="yuvDisplay">
                 <param direction="IN" isConfig="true" name="id" type="int"/>
                 <param direction="IN" isConfig="false" name="y" type="unsigned char"/>
@@ -69,7 +69,7 @@
                 kind="input" name="v"/>
         </node>
         <node id="Sobel" kind="actor">
-            <data key="graph_desc">Code/include/sobel.h</data>
+            <data key="graph_desc">CodeMPPA2/include/sobel.h</data>
             <loop name="sobel">
                 <param direction="IN" isConfig="true"
                     name="width" type="int"/>
@@ -88,7 +88,7 @@
                 kind="output" name="output"/>
         </node>
         <node id="Split" kind="actor">
-            <data key="graph_desc">Code/include/splitMerge.h</data>
+            <data key="graph_desc">CodeMPPA2/include/splitMerge.h</data>
             <loop name="split">
                 <param direction="IN" isConfig="true"
                     name="nbSlice" type="int"/>
@@ -103,7 +103,7 @@
                 <param direction="OUT" isConfig="false"
                     name="output" type="unsigned char"/>
             </loop>
-            <data key="memoryScript">Code/Scripts/split.bsh</data>
+            <data key="memoryScript">CodeMPPA2/Scripts/split.bsh</data>
             <port kind="cfg_input" name="width"/>
             <port kind="cfg_input" name="height"/>
             <port kind="cfg_input" name="nbSlice"/>
@@ -115,7 +115,7 @@
                 kind="output" name="output"/>
         </node>
         <node id="Dilation" kind="actor">
-            <data key="graph_desc">Code/include/morph.h</data>
+            <data key="graph_desc">CodeMPPA2/include/morph.h</data>
             <loop name="dilation">
                 <param direction="IN" isConfig="true"
                     name="height" type="int"/>
@@ -137,7 +137,7 @@
                 expr="(height-2*window)*width" kind="output" name="output"/>
         </node>
         <node id="Erosion" kind="actor">
-            <data key="graph_desc">Code/include/morph.h</data>
+            <data key="graph_desc">CodeMPPA2/include/morph.h</data>
             <loop name="erosion">
                 <param direction="IN" isConfig="true"
                     name="height" type="int"/>

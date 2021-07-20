@@ -601,7 +601,7 @@ class ConfigInputPort extends Port {
 	}
 }
 
-class ConfigOutputPort extends DataOutputPort , ISetter {
+class ConfigOutputPort extends DataOutputPort, ISetter {
 	op boolean isLocallyStatic() {
 		// config output ports are never considered static
 		return false

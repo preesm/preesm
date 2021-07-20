@@ -47,8 +47,8 @@ import org.eclipse.xtext.xbase.lib.Pair;
 import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.Actor;
 import org.preesm.model.pisdf.CHeaderRefinement;
-import org.preesm.model.pisdf.DataInputInterface;
-import org.preesm.model.pisdf.DataOutputInterface;
+import org.preesm.model.pisdf.ConfigInputInterface;
+import org.preesm.model.pisdf.ConfigInputPort;
 import org.preesm.model.pisdf.DataPort;
 import org.preesm.model.pisdf.Fifo;
 import org.preesm.model.pisdf.FunctionArgument;
@@ -221,7 +221,8 @@ public class RefinementChecker extends AbstractPiSDFObjectChecker {
         final Port topPort = correspondingArgument.getKey();
         final FunctionArgument fa = correspondingArgument.getValue();
 
-        if (topPort != null && fa == null) {
+        // ConfigInputPort are not required to be in the C/C++ refinement
+        if (topPort != null && fa == null && !(topPort instanceof ConfigInputPort)) {
           validity = false;
           reportError(CheckerErrorLevel.RECOVERABLE, a, "Port [%s:%s] is not present in refinement.", a.getName(),
               topPort.getName());
@@ -297,7 +298,7 @@ public class RefinementChecker extends AbstractPiSDFObjectChecker {
   private boolean checkReconnectedSubGraphFifoTypes(final PiGraph graph) {
     boolean validity = true;
     for (final AbstractActor aa : graph.getActors()) {
-      if (aa instanceof DataInputInterface | aa instanceof DataOutputInterface) {
+      if (aa instanceof InterfaceActor) {
         final InterfaceActor ia = (InterfaceActor) aa;
         final DataPort iaPort = ia.getDataPort();
         final DataPort graphPort = ia.getGraphPort();
@@ -313,7 +314,6 @@ public class RefinementChecker extends AbstractPiSDFObjectChecker {
               "Port [%s:%s] has a different fifo type than in its inner Interface: '%s' vs '%s'.", graph.getName(),
               graphPort.getName(), graphFifo.getType(), iaFifo.getType());
         }
-
       }
     }
 
@@ -365,11 +365,45 @@ public class RefinementChecker extends AbstractPiSDFObjectChecker {
       return new ArrayList<>();
     }
 
+    List<Port> noRefCorrespondingPort = new ArrayList<>();
     // Then we try to perform a sort of reconnection ...
     // but with the subgraph interface actors instead of the subgraph ports (except for Config Input ports).
-    // TODO
+    for (final AbstractActor aa : subGraph.getActors()) {
+      if (aa instanceof InterfaceActor) {
+        final InterfaceActor ia = (InterfaceActor) aa;
+        final Port iaPort = ia.getDataPort();
+        if (iaPort != null) {
+          noRefCorrespondingPort.add(iaPort);
+        }
+      }
+    }
+    for (final ConfigInputInterface cii : subGraph.getConfigInputInterfaces()) {
+      final Port graphPort = cii.getGraphPort();
+      if (graphPort != null) {
+        noRefCorrespondingPort.add(graphPort);
+      }
+    }
 
-    return new ArrayList<>();
+    final List<Pair<Port, Port>> result = new ArrayList<>();
+    // now we can try to match the ports
+    for (final Port p1 : a.getAllPorts()) {
+      Port correspondingPort = null;
+      for (final Port p2 : noRefCorrespondingPort) {
+        if (p1.getName().equals(p2.getName())) {
+          correspondingPort = p2;
+          break;
+        }
+      }
+      noRefCorrespondingPort.remove(correspondingPort);
+      result.add(new Pair<>(p1, correspondingPort));
+    }
+
+    // Ports in refinement without top corresponding port
+    for (final Port p2 : noRefCorrespondingPort) {
+      result.add(new Pair<>(null, p2));
+    }
+
+    return result;
   }
 
 }

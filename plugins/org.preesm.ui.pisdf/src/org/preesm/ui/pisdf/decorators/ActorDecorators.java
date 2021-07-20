@@ -45,7 +45,6 @@ import org.eclipse.graphiti.mm.pictograms.PictogramElement;
 import org.eclipse.graphiti.platform.IPlatformImageConstants;
 import org.eclipse.graphiti.tb.IDecorator;
 import org.eclipse.graphiti.tb.ImageDecorator;
-import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.Actor;
 import org.preesm.model.pisdf.PiSDFRefinement;
 import org.preesm.model.pisdf.Port;
@@ -145,16 +144,15 @@ public class ActorDecorators {
    * @return a reason stating if an update of the ports is needed
    */
   public static IReason portsUpdateNeeded(final Actor actor) {
-    final AbstractActor vertex = actor.getChildAbstractActor();
-    if (vertex != null) {
-      final RefinementChecker refCheck = new RefinementChecker();
-      refCheck.caseActor(actor);
-      final String reason = refCheck.toString();
+    final RefinementChecker refCheck = new RefinementChecker();
+    refCheck.caseActor(actor);
 
-      if (!reason.isEmpty()) {
-        return Reason.createTrueReason("Ports are out of sync with the refinement\n." + reason);
-      }
+    final String reason = refCheck.toString();
+
+    if (!reason.isEmpty()) {
+      return Reason.createTrueReason(reason);
     }
+
     return Reason.createFalseReason();
   }
 

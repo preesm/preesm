@@ -38,7 +38,12 @@ package org.preesm.model.pisdf.check;
 import com.google.common.base.Strings;
 import java.util.ArrayDeque;
 import java.util.Deque;
-import java.util.List;
+import java.util.HashMap;
+import java.util.LinkedHashSet;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
+import java.util.function.BinaryOperator;
 import java.util.stream.Stream;
 import org.preesm.commons.graph.Graph;
 import org.preesm.model.pisdf.AbstractActor;
@@ -52,8 +57,10 @@ import org.preesm.model.pisdf.Dependency;
 import org.preesm.model.pisdf.Fifo;
 import org.preesm.model.pisdf.ISetter;
 import org.preesm.model.pisdf.InterfaceActor;
+import org.preesm.model.pisdf.Parameter;
 import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.pisdf.Port;
+import org.preesm.model.pisdf.UserSpecialActor;
 import org.preesm.model.pisdf.util.DependencyCycleDetector;
 
 /**
@@ -104,18 +111,6 @@ public class PiGraphConsistenceChecker extends AbstractPiSDFObjectChecker {
   }
 
   @Override
-  public Boolean caseInterfaceActor(final InterfaceActor actor) {
-    final DataPort dataPort = actor.getDataPort();
-    final String portName = dataPort.getName();
-    final String name = actor.getName();
-    if (!name.equals(portName)) {
-      final String message = "The interface data port <%s> should have the same name as its containing actor '%s'.";
-      reportError(CheckerErrorLevel.FATAL, actor, message, portName, actor.getVertexPath());
-    }
-    return super.caseInterfaceActor(actor);
-  }
-
-  @Override
   public Boolean casePiGraph(final PiGraph graph) {
     this.graphStack.push(graph);
     // visit children & references
@@ -125,158 +120,123 @@ public class PiGraphConsistenceChecker extends AbstractPiSDFObjectChecker {
       reportError(CheckerErrorLevel.RECOVERABLE, graph, "Graph [%s] has null URL.", graph.getVertexPath());
     }
 
-    graphValid &= graph.getDependencies().stream().map(x -> doSwitch(x)).reduce(true, (x, y) -> x && y);
+    graphValid &= caseAbstractActor(graph);
+
+    final BinaryOperator<Boolean> reductor = (x, y) -> (x && y);
+    graphValid &= graph.getDependencies().stream().map(this::doSwitch).reduce(true, reductor);
 
     final DependencyCycleDetector dcd = new DependencyCycleDetector();
     dcd.doSwitch(graph);
     graphValid &= !dcd.cyclesDetected();
     if (dcd.cyclesDetected()) {
       reportError(CheckerErrorLevel.RECOVERABLE, graph, "Graph [%s] has cyclic dependencies between its parameters.",
-          graph);
+          graph.getVertexPath());
     }
 
-    graphValid &= graph.getActors().stream().map(x -> doSwitch(x)).reduce(true, (x, y) -> x && y);
+    graphValid &= graph.getActors().stream().map(this::doSwitch).reduce(true, reductor);
 
     final RefinementChecker refinementChecker = new RefinementChecker(throwExceptionLevel, loggerLevel);
     graphValid &= refinementChecker.doSwitch(graph);
     mergeMessages(refinementChecker);
 
-    graphValid &= graph.getFifos().stream().map(x -> doSwitch(x)).reduce(true, (x, y) -> x && y);
-    graphValid &= graph.getChildrenGraphs().stream().map(x -> doSwitch(x)).reduce(true, (x, y) -> x && y);
+    graphValid &= graph.getFifos().stream().map(this::doSwitch).reduce(true, reductor);
+    graphValid &= graph.getChildrenGraphs().stream().map(this::doSwitch).reduce(true, reductor);
     this.graphStack.pop();
     return graphValid;
   }
 
   @Override
-  public Boolean caseFifo(final Fifo fifo) {
-    // check fifo
-    final boolean sourcePortNotNull = fifo.getSourcePort() != null;
-    final boolean targetPortNotNull = fifo.getTargetPort() != null;
-    final boolean containedByGraph = this.graphStack.peek().getFifos().contains(fifo);
-    boolean fifoValid = sourcePortNotNull && targetPortNotNull && containedByGraph;
-
-    // Instantiate check result
-    if (!fifoValid) {
-      reportError(CheckerErrorLevel.FATAL, fifo, "Fifo [%s] is not valid.", fifo);
-    } else {
-      final FifoChecker fifoChecker = new FifoChecker(throwExceptionLevel, loggerLevel);
-      fifoValid = fifoChecker.doSwitch(fifo);
-      mergeMessages(fifoChecker);
-      fifoValid &= doSwitch(fifo.getSourcePort());
-      fifoValid &= doSwitch(fifo.getTargetPort());
-
-      if (fifo.getDelay() != null) {
-        fifoValid &= doSwitch(fifo.getDelay());
-      }
-    }
-
-    return fifoValid;
-  }
-
-  @Override
-  public Boolean caseDelayActor(final DelayActor actor) {
-    final Delay linkedDelay = actor.getLinkedDelay();
-    final boolean hasLinkedDelay = linkedDelay != null && linkedDelay.getActor() == actor;
-    final boolean delayProperlyContained = actor.getContainingPiGraph().getVertices().contains(linkedDelay);
-
-    final boolean delayActorValid = hasLinkedDelay && delayProperlyContained;
-    if (!hasLinkedDelay) {
-      reportError(CheckerErrorLevel.FATAL, actor, "DelayActor [%s] has no proper linked delay.", actor);
-    }
-    if (!delayProperlyContained) {
-      reportError(CheckerErrorLevel.FATAL, actor, "DelayActor [%s] has a delay not contained in the graph.", actor);
-    }
-    return delayActorValid;
-  }
-
-  @Override
-  public Boolean caseDelay(final Delay delay) {
-    final DelayActor actor = delay.getActor();
-    final boolean actorLinkedProperly = actor != null && actor.getLinkedDelay() == delay;
-    final boolean delayActorProperlyContained = delay.getContainingPiGraph().getVertices().contains(actor);
-    final boolean delayValid = actorLinkedProperly && delayActorProperlyContained;
-    if (!actorLinkedProperly) {
-      reportError(CheckerErrorLevel.FATAL, delay, "Delay [%s] is no proper linked actor.", delay);
-    }
-    if (!delayActorProperlyContained) {
-      reportError(CheckerErrorLevel.FATAL, delay, "Delay [%s] has an actor not contained in the graph.", delay);
-    }
-    return delayValid;
-  }
-
-  @Override
-  public Boolean caseDependency(final Dependency dependency) {
-    final ISetter setter = dependency.getSetter();
-    final boolean setterok = doSwitch(setter);
-
-    final ConfigInputPort getter = dependency.getGetter();
-    final Configurable containingConfigurable = getter.getConfigurable();
-
-    final boolean getterContained = containingConfigurable != null;
-    boolean properTarget = true;
-    if (!getterContained) {
-      reportError(CheckerErrorLevel.FATAL, dependency, "Dependency [%s] getter [%s] is not contained.", dependency,
-          getter);
-    } else {
-
-      if (!(containingConfigurable instanceof PiGraph)) {
-        final PiGraph peek = this.graphStack.peek();
-        final PiGraph containingPiGraph = containingConfigurable.getContainingPiGraph();
-        properTarget = containingPiGraph == peek;
-        if (!properTarget) {
-          reportError(CheckerErrorLevel.FATAL, dependency,
-              "Dependency [%s] getter [%s] is contained in an actor that is not part of the graph.", dependency,
-              getter);
-        }
-      }
-    }
-    return setterok && getterContained && properTarget;
-  }
-
-  @Override
   public Boolean caseAbstractActor(final AbstractActor actor) {
-    // check actor
-    boolean actorValid = true;
+    // check unicity of port names
+    int nullPortCount = 0;
+    final Map<String, Integer> allPortNameOccurrences = new HashMap<>();
+    for (final Port p : actor.getAllPorts()) {
+      final String key = Strings.nullToEmpty(p.getName());
+      if (!key.isEmpty()) {
+        final int count = allPortNameOccurrences.getOrDefault(key, 0);
+        allPortNameOccurrences.put(key, count + 1);
+      } else {
+        nullPortCount++;
+      }
+    }
 
-    final List<Port> allPorts = actor.getAllPorts();
-    final int nbPorts = allPorts.size();
-    for (int i = 0; i < (nbPorts - 1); i++) {
-      for (int j = i + 1; j < nbPorts; j++) {
-        final Port port1 = allPorts.get(i);
-        final Port port2 = allPorts.get(j);
-        final String name = port1.getName();
-        final String name2 = port2.getName();
-        final boolean redundantPorts = (Strings.nullToEmpty(name).equals(name2));
-        actorValid = actorValid && !redundantPorts;
-        if (redundantPorts) {
-          reportError(CheckerErrorLevel.FATAL, actor, "Actor [%s] has several ports with same name [%s].", actor, name);
+    final boolean redundantPorts = (actor.getAllPorts().size() + nullPortCount) != allPortNameOccurrences.size();
+    boolean actorValid = !redundantPorts;
+    if (redundantPorts) {
+      for (final Entry<String, Integer> e : allPortNameOccurrences.entrySet()) {
+        if (e.getValue() > 1) {
+          reportError(CheckerErrorLevel.FATAL, actor, "Actor [%s] has several ports with same name [%s].",
+              actor.getVertexPath(), e.getKey());
         }
       }
     }
 
-    if (!(actor instanceof DelayActor)) {
-      // visit children & references
-      actorValid &= actor.getAllDataPorts().stream().map(x -> doSwitch(x)).reduce(true, (x, y) -> x && y);
-      actorValid &= actor.getConfigInputPorts().stream().map(x -> doSwitch(x)).reduce(true, (x, y) -> x && y);
-      actorValid &= actor.getConfigOutputPorts().stream().map(x -> doSwitch(x)).reduce(true, (x, y) -> x && y);
+    if (!(actor instanceof PiGraph)) {
+      // visit children ports except for PiGraph since their ports will not be linked to anything if subgraph is
+      // not already reconnected
+
+      final BinaryOperator<Boolean> reductor = (x, y) -> (x && y);
+      actorValid &= actor.getConfigInputPorts().stream().map(this::doSwitch).reduce(true, reductor);
+      // note that fifo will also trigger a visit of their data ports, so we visit only the unconnected ones
+      actorValid &= actor.getAllConnectedDataOutputPorts().stream().map(this::doSwitch).reduce(true, reductor);
+      actorValid &= actor.getDataInputPorts().stream().filter(x -> x.getFifo() != null).map(this::doSwitch).reduce(true,
+          reductor);
     }
 
     return actorValid;
   }
 
   @Override
+  public Boolean caseUserSpecialActor(final UserSpecialActor actor) {
+    boolean actorValid = caseAbstractActor(actor);
+
+    final Set<String> typeSet = new LinkedHashSet<>();
+    // for special actor we also have to check that all fifos connected to it have the same type
+    actor.getAllConnectedDataOutputPorts().forEach(x -> typeSet.add(x.getFifo().getType()));
+    actor.getDataInputPorts().stream().filter(x -> x.getFifo() != null)
+        .forEach(x -> typeSet.add(x.getFifo().getType()));
+    // the getAllConnectedDataOutputPorts method already filters the non null fifo
+    if (typeSet.size() > 1) {
+      actorValid = false;
+      reportError(CheckerErrorLevel.WARNING, actor, "Special actor [%s] is connected to fifos of multiple types.",
+          actor.getVertexPath());
+    }
+
+    return actorValid;
+  }
+
+  @Override
+  public Boolean caseInterfaceActor(final InterfaceActor actor) {
+    final DataPort dataPort = actor.getDataPort();
+    final String portName = dataPort.getName();
+    final String name = actor.getName();
+    final boolean validity = name.equals(portName);
+    if (!validity) {
+      final String message = "The interface data port [%s] should have the same name as its containing actor '%s'.";
+      reportError(CheckerErrorLevel.FATAL, actor, message, portName, actor.getVertexPath());
+    }
+    return validity;
+  }
+
+  @Override
   public Boolean caseConfigInputPort(final ConfigInputPort cfgInPort) {
     final PiGraph peek = this.graphStack.peek();
-    final boolean containedInProperGraph = cfgInPort.getConfigurable().getContainingPiGraph() == peek;
-    if (!containedInProperGraph) {
-      reportError(CheckerErrorLevel.FATAL, cfgInPort, "Config input port [%s] is not contained in graph.", cfgInPort);
+    boolean containedInProperGraph = true;
+    final Configurable cfg = cfgInPort.getConfigurable();
+    if (!(cfg instanceof PiGraph)) {
+      // if a PiGraph then we would be at top level or in a non reconnected PiGraph
+      containedInProperGraph = cfg.getContainingPiGraph() == peek;
+      if (!containedInProperGraph) {
+        reportError(CheckerErrorLevel.FATAL, cfgInPort, "Config input port [%s] is not contained in graph.",
+            cfgInPort.getName());
+      }
     }
     final Dependency incomingDependency = cfgInPort.getIncomingDependency();
     final boolean portConnected = incomingDependency != null;
     boolean depInGraph = true;
     if (!portConnected) {
-      reportError(CheckerErrorLevel.FATAL, cfgInPort, "Config input port [%s] is not connected to a dependency.",
-          cfgInPort);
+      reportError(CheckerErrorLevel.RECOVERABLE, cfgInPort, "Config input port [%s] is not connected to a dependency.",
+          cfgInPort.getName());
     } else {
       final Graph containingGraph = incomingDependency.getContainingGraph();
       depInGraph = containingGraph == peek;
@@ -300,7 +260,8 @@ public class PiGraphConsistenceChecker extends AbstractPiSDFObjectChecker {
     boolean wellContained = true;
     if (!isContained) {
       reportError(CheckerErrorLevel.FATAL, port, "Port [%s] has not containing actor.", portName);
-    } else {
+    } else if (!(containingActor instanceof PiGraph)) {
+      // if a PiGraph then we would be at top level or in a non reconnected PiGraph
       final PiGraph containingPiGraph = containingActor.getContainingPiGraph();
       wellContained = (containingPiGraph == peek);
       if (!wellContained) {
@@ -315,7 +276,8 @@ public class PiGraphConsistenceChecker extends AbstractPiSDFObjectChecker {
     if (!hasFifo) {
       reportError(CheckerErrorLevel.RECOVERABLE, port, "Port [<%s>:%s] is not connected to a fifo.", actorName,
           portName);
-    } else {
+    } else if (!(containingActor instanceof PiGraph)) {
+      // if a PiGraph then we would be at top level or in a non reconnected PiGraph
       final PiGraph containingPiGraph2 = fifo.getContainingPiGraph();
       fifoWellContained = (containingPiGraph2 == peek);
       if (!fifoWellContained) {
@@ -324,6 +286,105 @@ public class PiGraphConsistenceChecker extends AbstractPiSDFObjectChecker {
       }
     }
     return wellContained && fifoWellContained;
+  }
+
+  @Override
+  public Boolean caseFifo(final Fifo fifo) {
+    // check fifo
+    final boolean sourcePortNotNull = fifo.getSourcePort() != null;
+    final boolean targetPortNotNull = fifo.getTargetPort() != null;
+    final boolean containedByGraph = this.graphStack.peek().getFifos().contains(fifo);
+    boolean fifoValid = sourcePortNotNull && targetPortNotNull && containedByGraph;
+
+    // Instantiate check result
+    if (!fifoValid) {
+      reportError(CheckerErrorLevel.FATAL, fifo, "Fifo [%s] is not valid.", fifo.getId());
+    } else {
+      final FifoChecker fifoChecker = new FifoChecker(throwExceptionLevel, loggerLevel);
+      fifoValid = fifoChecker.doSwitch(fifo);
+      mergeMessages(fifoChecker);
+      fifoValid &= doSwitch(fifo.getSourcePort());
+      fifoValid &= doSwitch(fifo.getTargetPort());
+
+      if (fifo.getDelay() != null) {
+        fifoValid &= doSwitch(fifo.getDelay());
+      }
+    }
+
+    return fifoValid;
+  }
+
+  @Override
+  public Boolean caseDelayActor(final DelayActor actor) {
+    final Delay linkedDelay = actor.getLinkedDelay();
+    final boolean hasLinkedDelay = linkedDelay != null && linkedDelay.getActor() == actor;
+    final boolean delayProperlyContained = actor.getContainingPiGraph().getVertices().contains(linkedDelay);
+
+    final boolean delayActorValid = hasLinkedDelay && delayProperlyContained;
+    if (!hasLinkedDelay) {
+      reportError(CheckerErrorLevel.FATAL, actor, "DelayActor [%s] has no proper linked delay.", actor.getVertexPath());
+    }
+    if (!delayProperlyContained) {
+      reportError(CheckerErrorLevel.FATAL, actor, "DelayActor [%s] has a delay not contained in the graph.",
+          actor.getVertexPath());
+    }
+    return delayActorValid;
+  }
+
+  @Override
+  public Boolean caseDelay(final Delay delay) {
+    final DelayActor actor = delay.getActor();
+    final boolean actorLinkedProperly = actor != null && actor.getLinkedDelay() == delay;
+    final boolean delayActorProperlyContained = delay.getContainingPiGraph().getVertices().contains(actor);
+    final boolean delayValid = actorLinkedProperly && delayActorProperlyContained;
+    if (!actorLinkedProperly) {
+      reportError(CheckerErrorLevel.FATAL, delay, "Delay [%s] is no proper linked actor.", delay.getName());
+    }
+    if (!delayActorProperlyContained) {
+      reportError(CheckerErrorLevel.FATAL, delay, "Delay [%s] has an actor not contained in the graph.",
+          delay.getName());
+    }
+    return delayValid;
+  }
+
+  @Override
+  public Boolean caseDependency(final Dependency dependency) {
+    final ISetter setter = dependency.getSetter();
+    final boolean setterok = doSwitch(setter);
+
+    final ConfigInputPort getter = dependency.getGetter();
+    final Configurable containingConfigurable = getter.getConfigurable();
+
+    final boolean getterContained = containingConfigurable != null;
+    boolean properTarget = true;
+    if (!getterContained) {
+      reportError(CheckerErrorLevel.FATAL, dependency, "Dependency [%s] getter [%s] is not contained.", dependency,
+          getter.getName());
+    } else if (!(containingConfigurable instanceof PiGraph)) {
+      // if a PiGraph then we would be at top level or in a non reconnected PiGraph
+      final PiGraph peek = this.graphStack.peek();
+      final PiGraph containingPiGraph = containingConfigurable.getContainingPiGraph();
+      properTarget = containingPiGraph == peek;
+      if (!properTarget) {
+        reportError(CheckerErrorLevel.FATAL, dependency,
+            "Dependency [%s] getter [%s] is contained in an actor that is not part of the graph.", dependency,
+            getter.getName());
+      }
+    }
+    return setterok && getterContained && properTarget;
+  }
+
+  @Override
+  public Boolean caseParameter(final Parameter param) {
+    final boolean containOK = param.getContainingPiGraph() == this.graphStack.peek();
+    final boolean depsOk = param.getOutgoingDependencies().stream()
+        .allMatch(d -> d.getContainingGraph() == this.graphStack.peek());
+    final boolean parameterOK = containOK && depsOk;
+    if (!parameterOK) {
+      reportError(CheckerErrorLevel.FATAL, param, "Parameter [%s] is not contained by graph [%s].", param.getName(),
+          graphStack.peek().getVertexPath());
+    }
+    return containOK && depsOk;
   }
 
 }
