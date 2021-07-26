@@ -34,14 +34,26 @@
  */
 package org.preesm.commons.files;
 
-import java.net.URI;
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.URL;
+import org.eclipse.core.resources.IFile;
+import org.eclipse.core.resources.IFolder;
+import org.eclipse.core.resources.ResourcesPlugin;
+import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.NullProgressMonitor;
+import org.eclipse.core.runtime.Path;
+import org.preesm.commons.exceptions.PreesmRuntimeException;
 
 /**
  *
  * Set of methods to help reading or writing "user" files, that is user input (algorithm, architecture, etc.) or output
  * (generated code, IR, etc.).
- *
+ * <p>
  * To find helper methods for Preesm resources (templates, default scripts, etc.), see {@link PreesmResourcesHelper}.
+ * <p>
+ * TODO complete this class with other methods to load a resource file, as a locate method, returning an URI.
  *
  * @author anmorvan
  *
@@ -54,8 +66,44 @@ public class PreesmIOHelper {
     return instance;
   }
 
-  public final URI locate() {
-    // TODO
-    return null;
+  /**
+   * Print the given content at a specific location. Create the file if not existent.
+   * 
+   * @param filePath
+   *          Path to the file to write.
+   * @param fileName
+   *          Name (with extension) of the file to write.
+   * @param fileContent
+   *          Content to write in the file.
+   * @return The printed file.
+   */
+  public IFile print(final String filePath, final String fileName, final CharSequence fileContent) {
+    final IFile iFile = ResourcesPlugin.getWorkspace().getRoot().getFile(new Path(filePath + fileName));
+    try {
+      final IFolder iFolder = ResourcesPlugin.getWorkspace().getRoot().getFolder(new Path(filePath));
+      if (!iFolder.exists()) {
+        iFolder.create(false, true, new NullProgressMonitor());
+      }
+      if (!iFile.exists()) {
+        iFile.create(new ByteArrayInputStream("".getBytes()), false, new NullProgressMonitor());
+      }
+      iFile.setContents(new ByteArrayInputStream(fileContent.toString().getBytes()), true, false,
+          new NullProgressMonitor());
+    } catch (final CoreException ex) {
+      throw new PreesmRuntimeException("Could not generate source file for " + fileName, ex);
+    }
+    return iFile;
   }
+
+  public InputStreamReader getFileReader(final String fileLocation, final Class<?> clazz) {
+    final URL mainTemplate = PreesmResourcesHelper.getInstance().resolve(fileLocation, clazz);
+    InputStreamReader reader = null;
+    try {
+      reader = new InputStreamReader(mainTemplate.openStream());
+    } catch (IOException e) {
+      throw new PreesmRuntimeException("Could not locate main template [" + fileLocation + "].", e);
+    }
+    return reader;
+  }
+
 }

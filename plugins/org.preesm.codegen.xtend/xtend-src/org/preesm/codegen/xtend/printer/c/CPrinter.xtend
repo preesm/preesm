@@ -99,6 +99,7 @@ import org.preesm.commons.exceptions.PreesmRuntimeException
 import org.preesm.commons.files.PreesmResourcesHelper
 import org.preesm.model.pisdf.util.CHeaderUsedLocator
 import org.preesm.commons.logger.PreesmLogger
+import org.preesm.commons.files.PreesmIOHelper
 
 /**
  * This printer is currently used to print C code only for GPP processors
@@ -846,13 +847,7 @@ class CPrinter extends BlankPrinter {
 
 	    // 3- init template reader
 	    val String templateLocalPath = "templates/c/preesm_gen.h";
-	    val URL mainTemplate = PreesmResourcesHelper.instance.resolve(templateLocalPath, this.class);
-	    var InputStreamReader reader = null;
-	    try {
-	      reader = new InputStreamReader(mainTemplate.openStream());
-	    } catch (IOException e) {
-	      throw new PreesmRuntimeException("Could not locate main template [" + templateLocalPath + "].", e);
-	    }
+	    val InputStreamReader reader = PreesmIOHelper.instance.getFileReader(templateLocalPath, this.class)
 
 	    // 4- init output writer
 	    val StringWriter writer = new StringWriter();

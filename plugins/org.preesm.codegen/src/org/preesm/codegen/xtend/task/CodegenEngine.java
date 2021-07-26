@@ -44,7 +44,6 @@
  */
 package org.preesm.codegen.xtend.task;
 
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -57,26 +56,22 @@ import java.util.Map.Entry;
 import java.util.Set;
 import java.util.logging.Level;
 import org.eclipse.core.resources.IFile;
-import org.eclipse.core.resources.IFolder;
-import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.IExtensionRegistry;
-import org.eclipse.core.runtime.NullProgressMonitor;
-import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
 import org.eclipse.emf.ecore.xmi.impl.XMIResourceFactoryImpl;
-import org.preesm.codegen.format.PreesmCFormatter;
-import org.preesm.codegen.format.PreesmXMLFormatter;
+import org.preesm.codegen.format.CodeFormatterAndPrinter;
 import org.preesm.codegen.model.Block;
 import org.preesm.codegen.model.CoreBlock;
 import org.preesm.codegen.printer.CodegenAbstractPrinter;
 import org.preesm.commons.exceptions.PreesmException;
 import org.preesm.commons.exceptions.PreesmRuntimeException;
+import org.preesm.commons.files.PreesmIOHelper;
 import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.scenario.Scenario;
@@ -292,7 +287,8 @@ public class CodegenEngine {
       for (final Block b : printerAndBlocks.getValue()) {
         final String fileContentString = printer.postProcessing(printer.doSwitch(b)).toString();
         final String fileName = b.getName() + extension;
-        print(fileName, fileContentString);
+        final IFile iFile = PreesmIOHelper.getInstance().print(this.codegenPath, fileName, fileContentString);
+        CodeFormatterAndPrinter.format(iFile);
       }
 
       // Print secondary files
@@ -300,52 +296,18 @@ public class CodegenEngine {
           this.codeBlocks);
       for (final Entry<String, CharSequence> entry : createSecondaryFiles.entrySet()) {
         final String fileName = entry.getKey();
-        print(fileName, entry.getValue());
+        final IFile iFile = PreesmIOHelper.getInstance().print(this.codegenPath, fileName, entry.getValue());
+        CodeFormatterAndPrinter.format(iFile);
       }
 
       // Add standard files for this printer
       final Map<String, CharSequence> generateStandardLibFiles = printer.generateStandardLibFiles();
       for (final Entry<String, CharSequence> entry : generateStandardLibFiles.entrySet()) {
         final String fileName = entry.getKey();
-        print(fileName, entry.getValue());
+        final IFile iFile = PreesmIOHelper.getInstance().print(this.codegenPath, fileName, entry.getValue());
+        CodeFormatterAndPrinter.format(iFile);
       }
     }
-  }
-
-  private void print(final String fileName, final CharSequence fileContent) {
-    final IFile iFile = ResourcesPlugin.getWorkspace().getRoot().getFile(new Path(this.codegenPath + fileName));
-    try {
-      final IFolder iFolder = ResourcesPlugin.getWorkspace().getRoot().getFolder(new Path(this.codegenPath));
-      if (!iFolder.exists()) {
-        iFolder.create(false, true, new NullProgressMonitor());
-      }
-      if (!iFile.exists()) {
-        iFile.create(new ByteArrayInputStream("".getBytes()), false, new NullProgressMonitor());
-      }
-      iFile.setContents(new ByteArrayInputStream(fileContent.toString().getBytes()), true, false,
-          new NullProgressMonitor());
-      format(iFile);
-    } catch (final CoreException ex) {
-      throw new PreesmRuntimeException("Could not generate source file for " + fileName, ex);
-    }
-  }
-
-  private void format(final IFile iFile) {
-    final String ext = iFile.getFileExtension();
-    switch (ext) {
-      case "c":
-      case "h":
-      case "cpp":
-        PreesmCFormatter.format(iFile);
-        break;
-      case "xml":
-        PreesmXMLFormatter.format(iFile);
-        break;
-      default:
-        final String msg = "One file with extension '" + ext + "' has been generated but not formatted.";
-        PreesmLogger.getLogger().log(Level.FINE, msg);
-    }
-
   }
 
   /**
