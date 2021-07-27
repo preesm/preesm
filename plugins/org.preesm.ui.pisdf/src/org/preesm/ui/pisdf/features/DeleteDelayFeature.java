@@ -54,6 +54,7 @@ import org.eclipse.graphiti.mm.pictograms.FreeFormConnection;
 import org.eclipse.graphiti.mm.pictograms.PictogramElement;
 import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.preesm.model.pisdf.Delay;
+import org.preesm.model.pisdf.DelayActor;
 import org.preesm.model.pisdf.Fifo;
 
 /**
@@ -62,6 +63,8 @@ import org.preesm.model.pisdf.Fifo;
  * @author kdesnos
  */
 public class DeleteDelayFeature extends DeleteParameterizableFeature {
+
+  protected DelayActor oppositeDelayActor;
 
   /**
    * Default Constructor of the {@link DeleteDelayFeature}.
@@ -89,6 +92,7 @@ public class DeleteDelayFeature extends DeleteParameterizableFeature {
     // Transform the two connections linked to the delay back into a single
     // one before deleting the delay.
     if (delay != null) {
+      oppositeDelayActor = delay.getActor();
 
       // if multiple selection and a delay is selected, it may have been removed previously by actor removal
       final Object[] allBusinessObjectsForPictogramElement = getAllBusinessObjectsForPictogramElement(pictogramElement);
@@ -102,6 +106,26 @@ public class DeleteDelayFeature extends DeleteParameterizableFeature {
       // Do it after deleting the connection (if it exists) to avoid looping infinitely
       super.preDelete(context);
     }
+  }
+
+  /*
+   * (non-Javadoc)
+   *
+   * @see org.eclipse.graphiti.ui.features.DeletePiMMelementFeature#postDelete(org.eclipse.graphiti.features.context.
+   * IDeleteContext)
+   */
+  @Override
+  public void postDelete(final IDeleteContext context) {
+    // The default delete feature actually unset the EObject, hence setting the opposite reference
+    // to the DelaayActor to null
+    // Then, even if removeDelay() called by the super function is itself
+    // calling removeActor() on the DelayActor ... it tries to remove a null reference which does nothing.
+    // In the end we have to remove it ourselves from the graph.
+    if (oppositeDelayActor != null && containingPiGraph != null) {
+      containingPiGraph.removeActor(oppositeDelayActor);
+    }
+    oppositeDelayActor = null;
+    super.postDelete(context);
   }
 
   /**
