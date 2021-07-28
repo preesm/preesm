@@ -137,23 +137,39 @@ public abstract class PiBRV {
 
   protected static void updateRVWithInterfaces(final PiGraph graph, final List<AbstractActor> connectedComponent,
       final Map<AbstractVertex, Long> graphBRV) {
-    // Update RV values based on the interface
-    long scaleFactor = 1;
 
     // Compute scaleFactor for input interfaces
-    scaleFactor = getInputInterfacesScaleFactor(graph, connectedComponent, scaleFactor, graphBRV);
-
+    final long scaleFactorIn1 = getInputInterfacesScaleFactor(graph, connectedComponent, 1L, graphBRV, false);
     // Compute scaleFactor for output interfaces
-    scaleFactor = getOutputInterfacesScaleFactor(graph, connectedComponent, scaleFactor, graphBRV);
+    final long scaleFactorOut1 = getOutputInterfacesScaleFactor(graph, connectedComponent, 1L, graphBRV, false);
 
-    // Do the actual update
-    for (final AbstractActor actor : connectedComponent) {
-      final long newRV = graphBRV.get(actor) * scaleFactor;
-      graphBRV.put(actor, newRV);
-      if ((actor instanceof DelayActor) && (newRV > 1)) {
-        String message = "Inconsistent graph. DelayActor [" + actor.getName() + "] with a repetition vector of "
-            + Long.toString(newRV);
-        throw new PreesmRuntimeException(message);
+    final long scaleFactorMax1 = Math.max(scaleFactorIn1, scaleFactorOut1);
+    // Check scaleFactor for input interfaces
+    final long scaleFactorInS = getInputInterfacesScaleFactor(graph, connectedComponent, scaleFactorMax1, graphBRV,
+        true);
+    // Check scaleFactor for output interfaces
+    final long scaleFactorOutS = getOutputInterfacesScaleFactor(graph, connectedComponent, scaleFactorMax1, graphBRV,
+        true);
+
+    final long scaleFactorMaxS = Math.max(scaleFactorInS, scaleFactorOutS);
+    if (scaleFactorMax1 != scaleFactorMaxS) {
+      throw new PreesmRuntimeException(
+          String.format("Check of scale factor for graph [%s] found a different scale factor (%d vs %d).",
+              graph.getVertexPath(), scaleFactorMax1, scaleFactorMaxS));
+    }
+
+    if (scaleFactorMaxS > 1) {
+      PreesmLogger.getLogger()
+          .info(() -> String.format("Scale factor for graph [%s] is: x%d.", graph.getVertexPath(), scaleFactorMaxS));
+      // Update RV values based on the interface
+      for (final AbstractActor actor : connectedComponent) {
+        final long newRV = graphBRV.get(actor) * scaleFactorMaxS;
+        graphBRV.put(actor, newRV);
+        if ((actor instanceof DelayActor) && (newRV > 1)) {
+          String message = "Inconsistent graph. DelayActor [" + actor.getName() + "] with a repetition vector of "
+              + Long.toString(newRV);
+          throw new PreesmRuntimeException(message);
+        }
       }
     }
   }
@@ -183,22 +199,6 @@ public abstract class PiBRV {
   }
 
   /**
-   * Emit a warning if several scale factors have been found.
-   *
-   * @param graph
-   *          Analyzed graph.
-   * @param scaleScaleFactors
-   *          Factors found from the interfaces of the graph.
-   */
-  private static void emitMultipleScaleFactorsWarning(PiGraph graph, SortedSet<Long> scaleScaleFactors) {
-    if (scaleScaleFactors.size() > 2) {
-      PreesmLogger.getLogger().log(Level.INFO,
-          () -> "Several different scaling factors have been derived from the input interfaces of the graph "
-              + graph.getName() + ", the highest one has been selected: " + scaleScaleFactors.last());
-    }
-  }
-
-  /**
    * Compute the scale factor to apply to RV values based on DataInputInterfaces
    *
    * @param graph
@@ -207,13 +207,16 @@ public abstract class PiBRV {
    *          the current connected component
    * @param scaleFactor
    *          the current scaleFactor
+   * @param graphBRV
+   *          the graph BRV
+   * @param emitWarningsForSpecialActors
+   *          whether or not warnings about needed special actors should be emit
    * @return new value of scale factor
    */
   private static long getOutputInterfacesScaleFactor(final PiGraph graph, final List<AbstractActor> subgraph,
-      final long inscaleFactor, final Map<AbstractVertex, Long> graphBRV) {
+      final long inscaleFactor, final Map<AbstractVertex, Long> graphBRV, final boolean emitWarningsForSpecialActors) {
     SortedSet<Long> scaleScaleFactors = new TreeSet<>();
     scaleScaleFactors.add(1L);
-    boolean emitScaleWarning = false;
     for (final DataOutputInterface out : graph.getDataOutputInterfaces()) {
       final DataInputPort dataInputPort = (DataInputPort) out.getDataPort();
       final long cons = dataInputPort.getPortRateExpression().evaluate();
@@ -227,28 +230,31 @@ public abstract class PiBRV {
         final long sourceRV = graphBRV.get(sourceActor);
         final long tmp = inscaleFactor * prod * sourceRV;
         if (tmp > 0) {
-          if (tmp > cons || (tmp < cons && cons % tmp != 0)) {
-            emitScaleWarning = true;
+          long scaleScaleFactor = 1L;
+          if (tmp < cons) {
+            scaleScaleFactor = (cons + tmp - 1) / tmp;
+            scaleScaleFactors.add(scaleScaleFactor);
+          }
+          final boolean higherProd = tmp > cons && emitWarningsForSpecialActors;
+          final boolean lowerUndivisorProd = tmp < cons && cons % tmp != 0;
+          if (higherProd || lowerUndivisorProd) {
             // we emit a warning only if producing too much, or not enough but with a wrong multiplicity
             // note that it is not allowed to produce less than the consumed tokens on the output interface
             // at the opposite, if more are produced, a roundbuffer is added.
-          }
-          if (tmp < cons) {
-            final long scaleScaleFactor = (cons + tmp - 1) / tmp;
-            scaleScaleFactors.add(scaleScaleFactor);
+            String message = String.format(
+                "The output interface [%s] does not correspond to its source total production (%d vs %d).",
+                out.getVertexPath(), cons, tmp);
+            if (higherProd) {
+              message += " A Roundbuffer will be added in SRDAG.";
+            } else {
+              message += String.format(" Scaling factor (>= x%d) is needed.", scaleScaleFactor);
+            }
+            PreesmLogger.getLogger().log(Level.INFO, message);
           }
         }
       }
     }
-    emitMultipleScaleFactorsWarning(graph, scaleScaleFactors);
-    long res = inscaleFactor * scaleScaleFactors.last();
-    if (emitScaleWarning) {
-      PreesmLogger.getLogger().log(Level.INFO,
-          () -> "The output interfaces of the graph " + graph.getName()
-              + " are not corresponding to their source total production." + " Roundbuffers and scaling factor (x" + res
-              + ") will be applied.");
-    }
-    return res;
+    return inscaleFactor * scaleScaleFactors.last();
   }
 
   /**
@@ -261,13 +267,16 @@ public abstract class PiBRV {
    *          the current connected component
    * @param scaleFactor
    *          the current scaleFactor
+   * @param graphBRV
+   *          the graph BRV
+   * @param emitWarningsForSpecialActors
+   *          whether or not warnings about needed special actors should be emit
    * @return new value of scale factor
    */
   private static long getInputInterfacesScaleFactor(final PiGraph graph, final List<AbstractActor> subgraph,
-      final long inscaleFactor, final Map<AbstractVertex, Long> graphBRV) {
+      final long inscaleFactor, final Map<AbstractVertex, Long> graphBRV, final boolean emitWarningsForSpecialActors) {
     SortedSet<Long> scaleScaleFactors = new TreeSet<>();
     scaleScaleFactors.add(1L);
-    boolean emitScaleWarning = false;
     for (final DataInputInterface in : graph.getDataInputInterfaces()) {
       final DataOutputPort dataOutputPort = (DataOutputPort) in.getDataPort();
       final long prod = dataOutputPort.getPortRateExpression().evaluate();
@@ -280,28 +289,31 @@ public abstract class PiBRV {
         final long cons = targetPort.getPortRateExpression().evaluate();
         final long tmp = inscaleFactor * cons * targetRV;
         if (tmp > 0) {
-          if (tmp > prod || (tmp < prod && prod % tmp != 0)) {
-            emitScaleWarning = true;
+          long scaleScaleFactor = 1L;
+          if (tmp < prod) {
+            scaleScaleFactor = (prod + tmp - 1) / tmp;
+            scaleScaleFactors.add(scaleScaleFactor);
+          }
+          final boolean higherCons = tmp > prod && emitWarningsForSpecialActors;
+          final boolean lowerUndivisorCons = tmp < prod && prod % tmp != 0;
+          if (higherCons || lowerUndivisorCons) {
             // we emit a warning only if consuming too much, or not enough but with a wrong multiplicity
             // note that it is not allowed to leave unconsumed tokens on the input interface
             // at the opposite, if more are consumed, a broadcast is added.
-          }
-          if (tmp < prod) {
-            final long scaleScaleFactor = (prod + tmp - 1) / tmp;
-            scaleScaleFactors.add(scaleScaleFactor);
+            String message = String.format(
+                "The input interface [%s] does not correspond to its target total production (%d vs %d).",
+                in.getVertexPath(), prod, tmp);
+            if (higherCons) {
+              message += " A Broadcast will be added in SRDAG.";
+            } else {
+              message += String.format(" Scaling factor (>= x%d) is needed.", scaleScaleFactor);
+            }
+            PreesmLogger.getLogger().log(Level.INFO, message);
           }
         }
       }
     }
-    emitMultipleScaleFactorsWarning(graph, scaleScaleFactors);
-    long res = inscaleFactor * scaleScaleFactors.last();
-    if (emitScaleWarning) {
-      PreesmLogger.getLogger().log(Level.INFO,
-          () -> "The input interfaces of the graph " + graph.getName()
-              + " are not corresponding to their target total consumption." + " Broadcasts and scaling factor (x" + res
-              + ") will be applied.");
-    }
-    return res;
+    return inscaleFactor * scaleScaleFactors.last();
   }
 
 }
