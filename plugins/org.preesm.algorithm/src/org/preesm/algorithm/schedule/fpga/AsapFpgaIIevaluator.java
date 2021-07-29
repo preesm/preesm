@@ -10,8 +10,10 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.SortedMap;
+import org.eclipse.xtext.xbase.lib.Pair;
 import org.preesm.algorithm.mapper.gantt.GanttData;
 import org.preesm.algorithm.mapper.gantt.TaskColorSelector;
+import org.preesm.algorithm.mapper.ui.stats.IStatGenerator;
 import org.preesm.algorithm.mapper.ui.stats.StatGeneratorPrecomputed;
 import org.preesm.algorithm.pisdf.autodelays.AbstractGraph.FifoAbstraction;
 import org.preesm.algorithm.pisdf.autodelays.HeuristicLoopBreakingDelays;
@@ -24,6 +26,7 @@ import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.commons.model.PreesmCopyTracker;
 import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.AbstractVertex;
+import org.preesm.model.pisdf.Fifo;
 import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.pisdf.statictools.PiMMHelper;
 import org.preesm.model.scenario.Scenario;
@@ -73,12 +76,12 @@ public class AsapFpgaIIevaluator {
     protected List<Long> minInFinishTimes = new ArrayList<>();
   }
 
-  final PiGraph                   flatGraph;
-  final Scenario                  scenario;
-  final Map<AbstractVertex, Long> brv;
+  private AsapFpgaIIevaluator() {
+    // forbid instantiation
+  }
 
   /**
-   * Builds an evaluator of the ASAP schedule on FPGA.
+   * Analyze the graph, schedule it with ASAP, and compute buffer sizes.
    * 
    * @param flatGraph
    *          Graph to analyse.
@@ -86,17 +89,11 @@ public class AsapFpgaIIevaluator {
    *          Scenario to get the timings and mapping constraints.
    * @param brv
    *          Repetition vector of actors in cc.
+   * @return StatGenerator for Gantt Data and map of all fifo sizes.
    */
-  public AsapFpgaIIevaluator(final PiGraph flatGraph, final Scenario scenario, final Map<AbstractVertex, Long> brv) {
-    this.flatGraph = flatGraph;
-    this.scenario = scenario;
-    this.brv = brv;
-  }
+  public static Pair<IStatGenerator, Map<Fifo, Long>> performAnalysis(final PiGraph flatGraph, final Scenario scenario,
+      final Map<AbstractVertex, Long> brv) {
 
-  /**
-   * Analyze the graph, schedule it, and compute buffer sizes.
-   */
-  public StatGeneratorPrecomputed performAnalysis() {
     // Get all sub graph (connected components) composing the current graph
     final List<List<AbstractActor>> subgraphsWOInterfaces = PiMMHelper.getAllConnectedComponentsWOInterfaces(flatGraph);
 
@@ -115,7 +112,7 @@ public class AsapFpgaIIevaluator {
     for (Entry<List<AbstractActor>, CycleInfos> e : hlbd.cyclesInfos.entrySet()) {
       final long cycleLatency = fifoEval.computeCycleMinII(e.getKey(), e.getValue());
       PreesmLogger.getLogger()
-          .info("Cycle starting from " + e.getKey().get(0).getVertexPath() + " has its II >= " + cycleLatency);
+          .info(() -> "Cycle starting from " + e.getKey().get(0).getVertexPath() + " has its II >= " + cycleLatency);
       for (final AbstractActor aa : e.getKey()) {
         final ActorNormalizedInfos ani = mapActorNormalizedInfos.get(aa);
         ani.cycledII = Math.max(ani.cycledII, (cycleLatency * e.getValue().repetition) / ani.brv);
@@ -168,10 +165,11 @@ public class AsapFpgaIIevaluator {
       final ActorScheduleInfos asiT = mapActorSchedInfosT.get(src);
       asi.startTime = maxFinishTime - asiT.finishTime;
       asi.finishTime = asi.startTime + asi.minDuration;
-      PreesmLogger.getLogger().fine(
-          "ALAP reset start/finish time of " + src.getVertexPath() + " to: " + asi.startTime + "/" + asi.finishTime);
+      PreesmLogger.getLogger().fine(() -> "ALAP reset start/finish time of " + src.getVertexPath() + " to: "
+          + asi.startTime + "/" + asi.finishTime);
     }
 
+    final Map<Fifo, Long> allFifoSizes = new LinkedHashMap<>();
     // ASAP
     long sumFifoSizes = 0L;
     StringBuilder fifoSizesPrint = new StringBuilder("Sizes of fifos:\n");
@@ -185,8 +183,8 @@ public class AsapFpgaIIevaluator {
             fifoEval.computeMinStartFinishTimeCons(prod, fa, cons, false);
           }
         }
-        PreesmLogger.getLogger()
-            .fine("Actor " + aa.getVertexPath() + " starts/finishes at " + cons.startTime + "/" + cons.finishTime);
+        PreesmLogger.getLogger().fine(
+            () -> "Actor " + aa.getVertexPath() + " starts/finishes at " + cons.startTime + "/" + cons.finishTime);
         // then compute the sizes
         for (final FifoAbstraction fa : hlbd.getAbsGraph().incomingEdgesOf(aa)) {
           if (!hlbd.breakingFifosAbs.contains(fa)) {
@@ -196,7 +194,9 @@ public class AsapFpgaIIevaluator {
             for (int j = 0; j < fifoSizes.size(); j++) {
               final long fifoSize = fifoSizes.get(j);
               sumFifoSizes += fifoSize;
-              fifoSizesPrint.append(fa.fifos.get(j).getId() + " of size " + fifoSize + " bytes.\n");
+              final Fifo fifo = fa.fifos.get(j);
+              allFifoSizes.put(fifo, fifoSize);
+              fifoSizesPrint.append(fifo.getId() + " of size " + fifoSize + " bytes.\n");
             }
           }
         }
@@ -212,17 +212,22 @@ public class AsapFpgaIIevaluator {
       for (int j = 0; j < fifoSizes.size(); j++) {
         final long fifoSize = fifoSizes.get(j);
         sumFifoSizes += fifoSize;
-        fifoSizesPrint.append(fa.fifos.get(j).getId() + " of size " + fifoSize + " bytes.\n");
+        final Fifo fifo = fa.fifos.get(j);
+        allFifoSizes.put(fifo, fifoSize);
+        fifoSizesPrint.append(fifo.getId() + " of size " + fifoSize + " bytes.\n");
       }
     }
 
-    PreesmLogger.getLogger().info(fifoSizesPrint.toString());
+    PreesmLogger.getLogger().info(fifoSizesPrint::toString);
 
-    return buildStatGenerator(irRankActors, sumFifoSizes, mapActorSchedInfos, mapActorNormalizedInfos);
+    final IStatGenerator statGen = buildStatGenerator(scenario, irRankActors, sumFifoSizes, mapActorSchedInfos,
+        mapActorNormalizedInfos);
+    return new Pair<>(statGen, allFifoSizes);
   }
 
-  private StatGeneratorPrecomputed buildStatGenerator(final SortedMap<Integer, Set<AbstractActor>> irRankActors,
-      final long totSize, final Map<AbstractActor, ActorScheduleInfos> mapActorSchedInfos,
+  private static StatGeneratorPrecomputed buildStatGenerator(final Scenario scenario,
+      final SortedMap<Integer, Set<AbstractActor>> irRankActors, final long totSize,
+      final Map<AbstractActor, ActorScheduleInfos> mapActorSchedInfos,
       final Map<AbstractActor, ActorNormalizedInfos> mapActorNormalizedInfos) {
 
     final TaskColorSelector tcs = new TaskColorSelector();
@@ -316,7 +321,7 @@ public class AsapFpgaIIevaluator {
     if (listInfos.size() > 1) {
       final ActorNormalizedInfos fastestActorInfos = listInfos.get(listInfos.size() - 1);
       PreesmLogger.getLogger()
-          .info("Throughput of your application is limited by the actor " + slowestActorInfos.ori.getVertexPath()
+          .info(() -> "Throughput of your application is limited by the actor " + slowestActorInfos.ori.getVertexPath()
               + " with graph II=" + slowestGraphII + " whereas fastest actor " + fastestActorInfos.ori.getVertexPath()
               + " has its graph II=" + fastestActorInfos.normGraphII);
 

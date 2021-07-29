@@ -63,7 +63,7 @@ public class CHeaderUsedLocator {
       if (element instanceof CHeaderRefinement) {
         final IPath filePath = Optional.ofNullable(((CHeaderRefinement) element).getFilePath()).map(Path::new)
             .orElse(null);
-        if (!(result.contains(filePath))) {
+        if ((filePath != null) && !(result.contains(filePath))) {
           result.add(filePath);
         }
       }
