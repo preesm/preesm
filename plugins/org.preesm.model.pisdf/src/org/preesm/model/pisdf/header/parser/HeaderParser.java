@@ -56,6 +56,7 @@ import org.eclipse.cdt.core.dom.ast.IASTPointerOperator;
 import org.eclipse.cdt.core.dom.ast.IASTSimpleDeclaration;
 import org.eclipse.cdt.core.dom.ast.IASTTranslationUnit;
 import org.eclipse.cdt.core.dom.ast.cpp.ICPPASTDeclarator;
+import org.eclipse.cdt.core.dom.ast.cpp.ICPPASTName;
 import org.eclipse.cdt.core.dom.ast.cpp.ICPPASTNamespaceDefinition;
 import org.eclipse.cdt.core.dom.ast.cpp.ICPPASTReferenceOperator;
 import org.eclipse.cdt.core.dom.ast.cpp.ICPPASTSimpleDeclSpecifier;
@@ -93,8 +94,11 @@ import org.preesm.model.pisdf.factory.PiMMUserFactory;
  */
 public class HeaderParser {
 
+  private static final String DISCARD_FUNC = "Discarded function ";
+
   private static final String TEMPLATE_WARNING = ". While analyzing it, "
-      + "template is not in a suitable format for PREESM, only int and long are supported.";
+      + "template is not in a suitable format for PREESM. "
+      + "Only int and long for parameter values and 'typename FIFO_TYPE_...' are supported.";
 
   private HeaderParser() {
     // forbid instantiation
@@ -209,7 +213,7 @@ public class HeaderParser {
 
     if (returnTypeStack.size() != 1) {
       PreesmLogger.getLogger()
-          .warning("Discarded function " + rawName + ". While analyzing it, multiple nested return types were found.");
+          .warning(() -> DISCARD_FUNC + rawName + ". While analyzing it, multiple nested return types were found.");
       return;
     }
     // this log is annoying if checked on all functions
@@ -220,7 +224,7 @@ public class HeaderParser {
     // }
     if (templateStack.size() > 1) {
       PreesmLogger.getLogger()
-          .warning("Discarded function " + rawName + ". While analyzing it, multiple nested templates were found.");
+          .warning(() -> DISCARD_FUNC + rawName + ". While analyzing it, multiple nested templates were found.");
       return;
     }
 
@@ -231,19 +235,36 @@ public class HeaderParser {
       final ICPPASTTemplateDeclaration tempDeclon = templateStack.getFirst();
       for (final ICPPASTTemplateParameter tempParam : tempDeclon.getTemplateParameters()) {
         final IASTNode[] childsParam = tempParam.getChildren();
-        if (childsParam.length != 2 || !(childsParam[0] instanceof ICPPASTSimpleDeclSpecifier)
-            || !(childsParam[1] instanceof ICPPASTDeclarator)) {
-          PreesmLogger.getLogger().warning("Discarded function " + rawName + TEMPLATE_WARNING);
+        if (childsParam.length == 2) {
+          if (!(childsParam[0] instanceof ICPPASTSimpleDeclSpecifier)
+              || !(childsParam[1] instanceof ICPPASTDeclarator)) {
+            PreesmLogger.getLogger().warning(() -> DISCARD_FUNC + rawName + TEMPLATE_WARNING);
+            return;
+          }
+          IASTPointerOperator[] pops = ((IASTDeclarator) childsParam[1]).getPointerOperators();
+          if (pops.length > 0) {
+            PreesmLogger.getLogger().warning(() -> DISCARD_FUNC + rawName + TEMPLATE_WARNING);
+            return;
+          }
+          final String paramType = ((ICPPASTSimpleDeclSpecifier) childsParam[0]).getRawSignature().trim();
+          final String paramName = ((ICPPASTDeclarator) childsParam[1]).getRawSignature().trim();
+          if (!paramType.equals("int") && !paramType.equals("long")) {
+            PreesmLogger.getLogger().warning(() -> DISCARD_FUNC + rawName + TEMPLATE_WARNING);
+            return;
+          }
+          sb.append(paramName + ",");
+        } else if (childsParam.length == 1) {
+          final ICPPASTName typename = (childsParam[0] instanceof ICPPASTName) ? (ICPPASTName) childsParam[0] : null;
+          if (!tempParam.getRawSignature().startsWith("typename") || typename == null
+              || !typename.getRawSignature().startsWith("FIFO_TYPE_")) {
+            PreesmLogger.getLogger().warning(() -> DISCARD_FUNC + rawName + TEMPLATE_WARNING);
+            return;
+          }
+          sb.append(typename.getRawSignature() + ",");
+        } else {
+          PreesmLogger.getLogger().warning(() -> DISCARD_FUNC + rawName + TEMPLATE_WARNING);
           return;
         }
-        final String paramType = ((ICPPASTSimpleDeclSpecifier) childsParam[0]).getRawSignature().trim();
-        if (!paramType.equals("int") && !paramType.equals("long")) {
-          PreesmLogger.getLogger().warning("Discarded function " + rawName + TEMPLATE_WARNING);
-          return;
-        }
-        final String paramName = ((ICPPASTDeclarator) childsParam[1]).getRawSignature().trim();
-        sb.append(paramName);
-        sb.append(",");
       }
       final String templateCall = sb.toString();
       if (!templateCall.isEmpty()) {
@@ -279,7 +300,7 @@ public class HeaderParser {
         final IASTDeclarator paramDeclor = paramDeclon.getDeclarator();
         IASTPointerOperator[] pops = paramDeclor.getPointerOperators();
         if (pops.length > 1) {
-          PreesmLogger.getLogger().warning("Discarded function " + rawName
+          PreesmLogger.getLogger().warning(() -> "Discarded function " + rawName
               + ". While analyzing it, at least one argument with multiple pointers was found.");
           return;
         } else if (pops.length == 0) {
