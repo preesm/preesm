@@ -3,14 +3,17 @@ package org.preesm.algorithm.schedule.fpga;
 import java.io.File;
 import java.io.InputStreamReader;
 import java.io.StringWriter;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.stream.Collectors;
 import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.VelocityEngine;
 import org.eclipse.xtext.xbase.lib.Pair;
 import org.preesm.commons.files.PreesmIOHelper;
-import org.preesm.model.pisdf.AbstractVertex;
+import org.preesm.model.pisdf.DataInputInterface;
+import org.preesm.model.pisdf.DataOutputInterface;
 import org.preesm.model.pisdf.Fifo;
 import org.preesm.model.pisdf.InterfaceActor;
 import org.preesm.model.pisdf.PiGraph;
@@ -26,20 +29,36 @@ public class FpgaCodeGenerator {
 
   public static final String TEMPLATE_DEFINE_HEADER_NAME = "PreesmAutoDefinedSizes.h";
 
-  public static final String TEMPLATE_KERNEL_RES_LOCATION = "templates/xilinxCodegen/template_host_fpga.cpp";
-  public static final String TEMPLATE_HOST_RES_LOCATION   = "templates/xilinxCodegen/template_kernel_fpga.cpp";
+  public static final String TEMPLATE_HOST_RES_LOCATION =
+
+      "templates/xilinxCodegen/template_host_fpga.cpp";
+
+  public static final String TEMPLATE_TOP_KERNEL_RES_LOCATION =
+
+      "templates/xilinxCodegen/template_top_kernel_fpga.cpp";
+
+  public static final String TEMPLATE_READ_KERNEL_RES_LOCATION =
+
+      "templates/xilinxCodegen/template_read_kernel_fpga.cpp";
+
+  public static final String TEMPLATE_WRITE_KERNEL_RES_LOCATION =
+
+      "templates/xilinxCodegen/template_write_kernel_fpga.cpp";
+
+  public static final String KERNEL_NAME_READ  = "mem_read";
+  public static final String KERNEL_NAME_WRITE = "mem_write";
 
   private final Scenario                              scenario;
   private final PiGraph                               graph;
-  private final Map<AbstractVertex, Long>             brv;
+  private final String                                graphName;
   private final Map<InterfaceActor, Pair<Long, Long>> interfaceRates;
   private final Map<Fifo, Long>                       allFifoSizes;
 
-  private FpgaCodeGenerator(final Scenario scenario, final PiGraph graph, final Map<AbstractVertex, Long> brv,
+  private FpgaCodeGenerator(final Scenario scenario, final PiGraph graph,
       final Map<InterfaceActor, Pair<Long, Long>> interfaceRates, final Map<Fifo, Long> allFifoSizes) {
     this.scenario = scenario;
     this.graph = graph;
-    this.brv = brv;
+    this.graphName = scenario.getAlgorithm().getName();
     this.interfaceRates = interfaceRates;
     this.allFifoSizes = allFifoSizes;
   }
@@ -51,16 +70,14 @@ public class FpgaCodeGenerator {
    *          Scenario with codegen path.
    * @param graph
    *          Flat graph of the app.
-   * @param brv
-   *          Repetition vector of the flat graph.
    * @param interfaceRates
    *          Interface rates of the flat graph.
    * @param allFifoSizes
    *          All sizes of the fifo.
    */
-  public static void generateFiles(final Scenario scenario, final PiGraph graph, Map<AbstractVertex, Long> brv,
+  public static void generateFiles(final Scenario scenario, final PiGraph graph,
       Map<InterfaceActor, Pair<Long, Long>> interfaceRates, Map<Fifo, Long> allFifoSizes) {
-    final FpgaCodeGenerator fcg = new FpgaCodeGenerator(scenario, graph, brv, interfaceRates, allFifoSizes);
+    final FpgaCodeGenerator fcg = new FpgaCodeGenerator(scenario, graph, interfaceRates, allFifoSizes);
 
     // 0- without the following class loader initialization, I get the following exception when running as Eclipse
     // plugin:
@@ -72,21 +89,26 @@ public class FpgaCodeGenerator {
 
     final String headerFileContent = fcg.writeDefineHeaderFile();
     final String hostFileContent = fcg.writeHostFile();
-    final String kernelFileContent = fcg.writeKernelFile();
+    final String topKernelFileContent = fcg.writeTopKernelFile();
+    final String readKernelFileContent = fcg.writeReadKernelFile();
+    final String writeKernelFileContent = fcg.writeWriteKernelFile();
+    final String connectivityFileContent = fcg.writeConnectivityFile();
 
     // 99- set back default class loader
     Thread.currentThread().setContextClassLoader(oldContextClassLoader);
 
     final String codegenPath = scenario.getCodegenDirectory() + File.separator;
-    final String graphName = scenario.getAlgorithm().getName();
 
-    PreesmIOHelper.getInstance().print(codegenPath, "define_" + graphName + ".h", headerFileContent);
-    PreesmIOHelper.getInstance().print(codegenPath, "host_" + graphName + ".cpp", hostFileContent);
-    PreesmIOHelper.getInstance().print(codegenPath, "kernel_" + graphName + ".cpp", kernelFileContent);
+    PreesmIOHelper.getInstance().print(codegenPath, TEMPLATE_DEFINE_HEADER_NAME + ".h", headerFileContent);
+    PreesmIOHelper.getInstance().print(codegenPath, "host_" + fcg.graphName + ".cpp", hostFileContent);
+    PreesmIOHelper.getInstance().print(codegenPath, "top_kernel_" + fcg.graphName + ".cpp", topKernelFileContent);
+    PreesmIOHelper.getInstance().print(codegenPath, "read_kernel_" + fcg.graphName + ".cpp", readKernelFileContent);
+    PreesmIOHelper.getInstance().print(codegenPath, "write_kernel_" + fcg.graphName + ".cpp", writeKernelFileContent);
+    PreesmIOHelper.getInstance().print(codegenPath, "connectivity_" + fcg.graphName + ".cfg", connectivityFileContent);
 
   }
 
-  public String writeDefineHeaderFile() {
+  protected String writeDefineHeaderFile() {
 
     final StringBuilder sb = new StringBuilder("// fifo sizes computed by PREESM\n");
     allFifoSizes.forEach((fifo, size) -> {
@@ -103,7 +125,7 @@ public class FpgaCodeGenerator {
     return sb.toString();
   }
 
-  public String writeHostFile() {
+  protected String writeHostFile() {
     // 1- init engine
     final VelocityEngine engine = new VelocityEngine();
     engine.init();
@@ -117,7 +139,7 @@ public class FpgaCodeGenerator {
     // TODO generate ther kernel args
 
     // 3- init template reader
-    final InputStreamReader reader = PreesmIOHelper.getInstance().getFileReader(TEMPLATE_KERNEL_RES_LOCATION,
+    final InputStreamReader reader = PreesmIOHelper.getInstance().getFileReader(TEMPLATE_TOP_KERNEL_RES_LOCATION,
         this.getClass());
 
     // 4- init output writer
@@ -128,7 +150,7 @@ public class FpgaCodeGenerator {
     return writer.toString();
   }
 
-  public String writeKernelFile() {
+  protected String writeTopKernelFile() {
     // 1- init engine
     final VelocityEngine engine = new VelocityEngine();
     engine.init();
@@ -143,7 +165,7 @@ public class FpgaCodeGenerator {
         findAllCHeaderFileNamesUsed.stream().map(x -> "#include \"" + x + "\"").collect(Collectors.joining("\n")));
 
     // 3- init template reader
-    final InputStreamReader reader = PreesmIOHelper.getInstance().getFileReader(TEMPLATE_KERNEL_RES_LOCATION,
+    final InputStreamReader reader = PreesmIOHelper.getInstance().getFileReader(TEMPLATE_TOP_KERNEL_RES_LOCATION,
         this.getClass());
 
     // 4- init output writer
@@ -152,6 +174,117 @@ public class FpgaCodeGenerator {
     engine.evaluate(context, writer, "org.apache.velocity", reader);
 
     return writer.toString();
+  }
+
+  protected String writeReadKernelFile() {
+    // 1- init engine
+    final VelocityEngine engine = new VelocityEngine();
+    engine.init();
+
+    // 2- init context
+    final VelocityContext context = new VelocityContext();
+    context.put("PREESM_INCLUDES", "#include \"" + TEMPLATE_DEFINE_HEADER_NAME + "\"\n");
+
+    // read kernel prototype
+    final StringBuilder sb = new StringBuilder("void mem_read(\n  ");
+    final List<String> args = new ArrayList<>();
+    for (final InterfaceActor ia : interfaceRates.keySet()) {
+      if (ia instanceof DataInputInterface) {
+        final Fifo f = ia.getDataPort().getFifo();
+        args.add(f.getType() + "* " + ia.getName() + "_mem");
+        args.add("hls::stream<" + f.getType() + ">" + " &" + ia.getName() + "_stream");
+      }
+    }
+    sb.append(args.stream().collect(Collectors.joining(",\n  ")));
+    sb.append(") {\n");
+    // read kernel body
+    for (final Entry<InterfaceActor, Pair<Long, Long>> e : interfaceRates.entrySet()) {
+      final InterfaceActor ia = e.getKey();
+      if (ia instanceof DataInputInterface) {
+        final Fifo f = ia.getDataPort().getFifo();
+        sb.append("    readInput<" + f.getType() + ">(" + ia.getName() + "_mem, " + ia.getName() + "_stream, "
+            + getInterfaceRateName(ia) + ", " + getInterfaceFactorName(ia) + ");\n");
+      }
+    }
+    sb.append("}\n");
+
+    context.put("PREESM_READ_KERNEL", sb.toString());
+
+    // 3- init template reader
+    final InputStreamReader reader = PreesmIOHelper.getInstance().getFileReader(TEMPLATE_READ_KERNEL_RES_LOCATION,
+        this.getClass());
+
+    // 4- init output writer
+    final StringWriter writer = new StringWriter();
+
+    engine.evaluate(context, writer, "org.apache.velocity", reader);
+
+    return writer.toString();
+  }
+
+  protected String writeWriteKernelFile() {
+    // 1- init engine
+    final VelocityEngine engine = new VelocityEngine();
+    engine.init();
+
+    // 2- init context
+    final VelocityContext context = new VelocityContext();
+    context.put("PREESM_INCLUDES", "#include \"" + TEMPLATE_DEFINE_HEADER_NAME + "\"\n");
+
+    // read kernel prototype
+    final StringBuilder sb = new StringBuilder("void mem_write(\n  ");
+    final List<String> args = new ArrayList<>();
+    for (final InterfaceActor ia : interfaceRates.keySet()) {
+      if (ia instanceof DataOutputInterface) {
+        final Fifo f = ia.getDataPort().getFifo();
+        args.add(f.getType() + "* " + ia.getName() + "_mem");
+        args.add("hls::stream<" + f.getType() + ">" + " &" + ia.getName() + "_stream");
+      }
+    }
+    sb.append(args.stream().collect(Collectors.joining(",\n  ")));
+    sb.append(") {\n");
+    // write kernel body
+    for (final Entry<InterfaceActor, Pair<Long, Long>> e : interfaceRates.entrySet()) {
+      final InterfaceActor ia = e.getKey();
+      if (ia instanceof DataOutputInterface) {
+        final Fifo f = ia.getDataPort().getFifo();
+        sb.append("    writeOutput<" + f.getType() + ">(" + ia.getName() + "_mem, " + ia.getName() + "_stream, "
+            + getInterfaceRateName(ia) + ", " + getInterfaceFactorName(ia) + ");\n");
+      }
+    }
+    sb.append("}\n");
+
+    context.put("PREESM_WRITE_KERNEL", sb.toString());
+
+    // 3- init template reader
+    final InputStreamReader reader = PreesmIOHelper.getInstance().getFileReader(TEMPLATE_WRITE_KERNEL_RES_LOCATION,
+        this.getClass());
+
+    // 4- init output writer
+    final StringWriter writer = new StringWriter();
+
+    engine.evaluate(context, writer, "org.apache.velocity", reader);
+
+    return writer.toString();
+  }
+
+  private String writeConnectivityFile() {
+    final StringBuilder sb = new StringBuilder("[connectivity]\n");
+    for (final InterfaceActor ia : interfaceRates.keySet()) {
+      sb.append("stream_connect=");
+      if (ia instanceof DataInputInterface) {
+        sb.append(KERNEL_NAME_READ + "_1.");
+        sb.append(ia.getName() + "_stream:");
+        sb.append(graphName + "_1.");
+        sb.append(ia.getName() + "_stream\n");
+      } else if (ia instanceof DataOutputInterface) {
+        sb.append(graphName + "_1.");
+        sb.append(ia.getName() + "_stream:");
+        sb.append(KERNEL_NAME_WRITE + "_1.");
+        sb.append(ia.getName() + "_stream\n");
+      }
+    }
+    return sb.toString();
   }
 
   public static String getFifoDataSizeName(final Fifo fifo) {

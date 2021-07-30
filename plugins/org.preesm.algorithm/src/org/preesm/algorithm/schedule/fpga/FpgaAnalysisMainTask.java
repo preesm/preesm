@@ -98,7 +98,7 @@ public class FpgaAnalysisMainTask extends AbstractTaskImplementation {
             + " Ignore this log entry if you are running the command line version of Preesm.");
       }
 
-      FpgaCodeGenerator.generateFiles(scenario, flatGraph, brv, interfaceRates, eval.getValue());
+      FpgaCodeGenerator.generateFiles(scenario, flatGraph, interfaceRates, eval.getValue());
 
     }
 
