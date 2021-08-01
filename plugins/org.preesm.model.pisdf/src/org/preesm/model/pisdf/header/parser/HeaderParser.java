@@ -76,6 +76,7 @@ import org.eclipse.cdt.internal.core.index.EmptyCIndex;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.emf.common.util.EList;
+import org.eclipse.xtext.xbase.lib.Pair;
 import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.model.pisdf.AbstractActor;
@@ -83,6 +84,7 @@ import org.preesm.model.pisdf.Direction;
 import org.preesm.model.pisdf.FunctionArgument;
 import org.preesm.model.pisdf.FunctionPrototype;
 import org.preesm.model.pisdf.Port;
+import org.preesm.model.pisdf.check.RefinementChecker;
 import org.preesm.model.pisdf.factory.PiMMUserFactory;
 
 /**
@@ -230,6 +232,7 @@ public class HeaderParser {
 
     // manage template
     String templateSuffix = "";
+    final List<String> functionTemplateNames = new ArrayList<>();
     if (templateStack.size() == 1) {
       final StringBuilder sb = new StringBuilder();
       final ICPPASTTemplateDeclaration tempDeclon = templateStack.getFirst();
@@ -252,15 +255,19 @@ public class HeaderParser {
             PreesmLogger.getLogger().warning(() -> DISCARD_FUNC + rawName + TEMPLATE_WARNING);
             return;
           }
+          functionTemplateNames.add(paramName);
           sb.append(paramName + ",");
         } else if (childsParam.length == 1) {
           final ICPPASTName typename = (childsParam[0] instanceof ICPPASTName) ? (ICPPASTName) childsParam[0] : null;
           if (!tempParam.getRawSignature().startsWith("typename") || typename == null
-              || !typename.getRawSignature().startsWith("FIFO_TYPE_")) {
+              || (!typename.getRawSignature().trim().startsWith(RefinementChecker.FIFO_TYPE_TEMPLATED_PREFIX)
+                  && !typename.getRawSignature().trim().startsWith(RefinementChecker.FIFO_DEPTH_TEMPLATED_PREFIX))) {
             PreesmLogger.getLogger().warning(() -> DISCARD_FUNC + rawName + TEMPLATE_WARNING);
             return;
           }
-          sb.append(typename.getRawSignature() + ",");
+          final String typeName = typename.getRawSignature().trim();
+          functionTemplateNames.add(typeName);
+          sb.append(typeName + ",");
         } else {
           PreesmLogger.getLogger().warning(() -> DISCARD_FUNC + rawName + TEMPLATE_WARNING);
           return;
@@ -293,14 +300,21 @@ public class HeaderParser {
         final IASTParameterDeclaration paramDeclon = (IASTParameterDeclaration) child;
         final String type = paramDeclon.getDeclSpecifier().getRawSignature().trim();
         fA.setType(type);
-        if (type.contains("<") || type.contains(":")) {
+        final boolean isTemplated = type.contains("<");
+        if (isTemplated || type.contains(":")) {
           // then the type contains a template or a namespace
           fA.setIsCPPdefinition(true);
+        }
+        if (isTemplated && !checkArgTemplateParam(functionTemplateNames, type)) {
+          // check that the template param is present in the function template
+          PreesmLogger.getLogger().warning(() -> DISCARD_FUNC + rawName
+              + ". While analyzing it, at least one argument is templated with an unknown type or name.");
+          return;
         }
         final IASTDeclarator paramDeclor = paramDeclon.getDeclarator();
         IASTPointerOperator[] pops = paramDeclor.getPointerOperators();
         if (pops.length > 1) {
-          PreesmLogger.getLogger().warning(() -> "Discarded function " + rawName
+          PreesmLogger.getLogger().warning(() -> DISCARD_FUNC + rawName
               + ". While analyzing it, at least one argument with multiple pointers was found.");
           return;
         } else if (pops.length == 0) {
@@ -318,6 +332,22 @@ public class HeaderParser {
     }
 
     resultList.add(funcProto);
+  }
+
+  private static boolean checkArgTemplateParam(final List<String> functionTemplateParams, final String templateParam) {
+    final Pair<String, String> fifInfos = RefinementChecker.isHlsStreamTemplated(templateParam);
+    if (fifInfos == null) {
+      return false;
+    }
+    final String fifoTypeName = fifInfos.getKey();
+    if (!functionTemplateParams.contains(fifoTypeName)) {
+      return false;
+    }
+    final String fifoTypeDepth = fifInfos.getValue();
+    if (fifoTypeDepth != null && !functionTemplateParams.contains(fifoTypeDepth)) {
+      return false;
+    }
+    return true;
   }
 
   /**

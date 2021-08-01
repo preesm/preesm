@@ -39,6 +39,8 @@ package org.preesm.model.pisdf.check;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.IPath;
@@ -57,6 +59,7 @@ import org.preesm.model.pisdf.InterfaceActor;
 import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.pisdf.Port;
 import org.preesm.model.pisdf.Refinement;
+import org.preesm.model.pisdf.header.parser.AutoFillHeaderTemplate;
 
 /**
  * Class to check different properties of the Refinements of the Actors of a PiGraph. Entry point is the
@@ -70,6 +73,12 @@ public class RefinementChecker extends AbstractPiSDFObjectChecker {
   /** All accepted header file extensions. */
   public static final String[] acceptedHeaderExtensions = { "h", "hpp", "hxx", "h++", "hh", "H" };
 
+  /** In templates, the FIFO_TYPE can be replaced automatically only if starting with this prefix. */
+  public static final String FIFO_TYPE_TEMPLATED_PREFIX = "FIFO_TYPE_";
+
+  /** In templates, the FIFO_DEPTH can be replaced automatically only if starting with this prefix. */
+  public static final String FIFO_DEPTH_TEMPLATED_PREFIX = "FIFO_DEPTH_";
+
   /**
    * Check if the given C/C++ header file extension is supported.
    * 
@@ -79,6 +88,33 @@ public class RefinementChecker extends AbstractPiSDFObjectChecker {
    */
   public static boolean isAsupportedHeaderFileExtension(final String extension) {
     return Arrays.asList(acceptedHeaderExtensions).stream().anyMatch(x -> x.equals(extension));
+  }
+
+  /**
+   * Check if the templated type of a FunctionArgument is an hls stream.
+   * 
+   * @param argType
+   *          The templated argument type to check.
+   * @return The parameter name of the stream type and the parameter name of the stream depth (optional). {@code null}
+   *         if not a valid hls stream type.
+   */
+  public static Pair<String, String> isHlsStreamTemplated(final String argType) {
+    final String argTypeWithoutWhiteSpaces = argType.replaceAll("\\s+", "");
+    final String regex1 = "^hls::stream<(" + FIFO_TYPE_TEMPLATED_PREFIX + "\\w+)>$";
+    final Pattern pattern1 = Pattern.compile(regex1);
+    final Matcher matcher1 = pattern1.matcher(argTypeWithoutWhiteSpaces);
+    if (matcher1.find()) {
+      return new Pair<>(matcher1.group(1), null);
+    }
+
+    final String regex2 = "^hls::stream<(" + FIFO_TYPE_TEMPLATED_PREFIX + "\\w+),(" + FIFO_DEPTH_TEMPLATED_PREFIX
+        + "\\w+)>$";
+    final Pattern pattern2 = Pattern.compile(regex2);
+    final Matcher matcher2 = pattern2.matcher(argTypeWithoutWhiteSpaces);
+    if (matcher2.find()) {
+      return new Pair<>(matcher2.group(1), matcher2.group(2));
+    }
+    return null;
   }
 
   /**
@@ -128,6 +164,7 @@ public class RefinementChecker extends AbstractPiSDFObjectChecker {
 
         validity &= checkRefinementPorts(a, correspondingPorts, correspondingArguments);
         validity &= checkRefinementFifoTypes(a, correspondingPorts, correspondingArguments);
+        validity &= checkRefinementTemplateParams(a);
         // continue recursive visit if hierarchical?
       }
     } else {
@@ -293,6 +330,28 @@ public class RefinementChecker extends AbstractPiSDFObjectChecker {
     }
 
     return validity;
+  }
+
+  /**
+   * Check if the template parameters of an actor with C/C++ refinement can be found in its containing actor or graph..
+   * 
+   * @param actor
+   *          The actor to check.
+   * @return Whether or not all function template parameters are correct.
+   */
+  private boolean checkRefinementTemplateParams(final Actor actor) {
+    final Refinement ref = actor.getRefinement();
+    if (ref instanceof CHeaderRefinement) {
+      final CHeaderRefinement cref = (CHeaderRefinement) ref;
+      // TODO check if no null value in the resulting pairs
+      if (cref.getInitPrototype() != null) {
+        AutoFillHeaderTemplate.getCorrespondingParamObject(cref, cref.getInitPrototype(), false);
+      }
+      if (cref.getLoopPrototype() != null) {
+        AutoFillHeaderTemplate.getCorrespondingParamObject(cref, cref.getLoopPrototype(), false);
+      }
+    }
+    return true;
   }
 
   private boolean checkReconnectedSubGraphFifoTypes(final PiGraph graph) {
