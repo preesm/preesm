@@ -99,23 +99,32 @@ public class RefinementChecker extends AbstractPiSDFObjectChecker {
    * @param argType
    *          The templated argument type to check.
    * @return The parameter name of the stream type and the parameter name of the stream depth (optional). {@code null}
-   *         if not a valid hls stream type.
+   *         if not a valid hls stream type. If not yet prefixed, the prefix will be add automatically.
    */
   public static Pair<String, String> isHlsStreamTemplated(final String argType) {
     final String argTypeWithoutWhiteSpaces = argType.replaceAll("\\s+", "");
-    final String regex1 = "^hls::stream<(" + FIFO_TYPE_TEMPLATED_PREFIX + "\\w+)>$";
+    final String regex1 = "^hls::stream<((" + FIFO_TYPE_TEMPLATED_PREFIX + ")?\\w+)>$";
     final Pattern pattern1 = Pattern.compile(regex1);
     final Matcher matcher1 = pattern1.matcher(argTypeWithoutWhiteSpaces);
     if (matcher1.find()) {
-      return new Pair<>(matcher1.group(1), null);
+      final String match = matcher1.group(1);
+      final String prefixedMatch = match.startsWith(FIFO_TYPE_TEMPLATED_PREFIX) ? match
+          : (FIFO_TYPE_TEMPLATED_PREFIX + match);
+      return new Pair<>(prefixedMatch, null);
     }
 
-    final String regex2 = "^hls::stream<(" + FIFO_TYPE_TEMPLATED_PREFIX + "\\w+),(" + FIFO_DEPTH_TEMPLATED_PREFIX
-        + "\\w+)>$";
+    final String regex2 = "^hls::stream<((" + FIFO_TYPE_TEMPLATED_PREFIX + ")?\\w+),((" + FIFO_DEPTH_TEMPLATED_PREFIX
+        + ")?\\w+)>$";
     final Pattern pattern2 = Pattern.compile(regex2);
     final Matcher matcher2 = pattern2.matcher(argTypeWithoutWhiteSpaces);
     if (matcher2.find()) {
-      return new Pair<>(matcher2.group(1), matcher2.group(2));
+      final String matchType = matcher2.group(1); // first group is the type
+      final String prefixedMatchType = matchType.startsWith(FIFO_TYPE_TEMPLATED_PREFIX) ? matchType
+          : (FIFO_TYPE_TEMPLATED_PREFIX + matchType);
+      final String matchDepth = matcher2.group(3); // third group is the depth
+      final String prefixedMatchDepth = matchDepth.startsWith(FIFO_TYPE_TEMPLATED_PREFIX) ? matchDepth
+          : (FIFO_TYPE_TEMPLATED_PREFIX + matchDepth);
+      return new Pair<>(prefixedMatchType, prefixedMatchDepth);
     }
     return null;
   }
@@ -466,8 +475,8 @@ public class RefinementChecker extends AbstractPiSDFObjectChecker {
                 "In templated refinement of actor [%s], "
                     + "template parameter '%s' has not been found but default value was provided.",
                 containerActor.getVertexPath(), paramName));
-
       }
+
       result.add(new Pair<>(paramName, relatedObject));
     }
 
@@ -517,7 +526,15 @@ public class RefinementChecker extends AbstractPiSDFObjectChecker {
     return validity;
   }
 
-  private static List<Pair<Port, FunctionArgument>> getCHeaderRefinementCorrespondingArguments(final Actor a) {
+  /**
+   * Fetch the {@link FunctionArgument} related to each port of an actor.
+   * 
+   * @param a
+   *          List of Pair with {@link Port} as value and {@link FunctionArgument} as key.
+   * @return The related {@link FunctionArgument} if founds, or {@code null} for missing and extra elements. Returns
+   *         {@code null} if not a {@link CHeaderRefinement}.
+   */
+  public static List<Pair<Port, FunctionArgument>> getCHeaderRefinementCorrespondingArguments(final Actor a) {
     if (!(a.getRefinement() instanceof CHeaderRefinement)) {
       return null;
     }
