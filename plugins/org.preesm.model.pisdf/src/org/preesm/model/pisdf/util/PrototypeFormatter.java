@@ -48,6 +48,9 @@ public class PrototypeFormatter {
 
   /**
    * Pretty prints a FunctionPrototype as a String formatted as follows: name (parameters types)
+   * 
+   * @param prototype
+   *          The prototype to format.
    */
   public static final String format(final FunctionPrototype prototype) {
     final StringBuilder result = new StringBuilder(prototype.getName() + "(");
@@ -65,4 +68,16 @@ public class PrototypeFormatter {
     result.append(")");
     return result.toString();
   }
+
+  /**
+   * Pretty prints a FunctionPrototype as a String formatted as follows: void name (parameters types);
+   * 
+   * @param prototype
+   *          The prototype to format.
+   */
+  public static final String formatAsCDeclaration(final FunctionPrototype prototype) {
+    final String shortFormat = format(prototype);
+    return "void " + shortFormat + ";";
+  }
+
 }

@@ -273,6 +273,10 @@
             id="org.preesm.ui.pisdf.command.PiSDFLivenessChecker"
             name="Liveness Check of this PiSDF">
       </command>
+      <command
+            id="org.preesm.ui.pisdf.command.PiSDFCHeaderGenerator"
+            name="Generate C header refinement of this PiSDF">
+      </command>
    </extension>
 
    <!-- Preesm command handlers (for menus) -->
@@ -301,6 +305,10 @@
       <handler
       		class="org.preesm.ui.pisdf.popup.actions.PiSDFLivenessCheckerPopup"
             commandId="org.preesm.ui.pisdf.command.PiSDFLivenessChecker">
+      </handler>
+      <handler
+            class="org.preesm.ui.pisdf.popup.actions.PiSDFCHeaderGeneratorPopup"
+            commandId="org.preesm.ui.pisdf.command.PiSDFCHeaderGenerator">
       </handler>
 
    </extension>
@@ -558,6 +566,21 @@
 				</and>
 			</visibleWhen>
         </command>
+        <!-- Generate C header refinement -->
+        <command
+              commandId="org.preesm.ui.pisdf.command.PiSDFCHeaderGenerator"
+              icon="resources/icons/pi.gif"
+              label="Generate C header refinement"
+              mnemonic="G"
+              style="push">
+			<visibleWhen checkEnabled="true">
+				<and>
+				<with variable="activePartId">
+					<equals value="org.preesm.ui.pisdf.editor.diagram"/>
+				</with>
+				</and>
+			</visibleWhen>
+        </command>        
       </menuContribution>
       <!-- ############################################################## -->
       <!-- actions available in the project navigator (not PiMM specific) -->
@@ -714,12 +737,41 @@
                   </with>
                </visibleWhen>
             </command>
-            <!-- Compute SRDAG of a PiGraph -->
+            <!-- Check Liveness of a PiGraph -->
             <command
                   commandId="org.preesm.ui.pisdf.command.PiSDFLivenessChecker"
                   icon="resources/icons/pi.gif"
                   label="Check PiSDF Liveness"
                   mnemonic="L"
+                  style="push">
+               <visibleWhen
+                     checkEnabled="true">
+                  <with
+                        variable="selection">
+                     <iterate
+                           ifEmpty="false"
+                           operator="and">
+                        <adapt
+                              type="org.eclipse.core.resources.IResource">
+                           <test
+                                 property="org.eclipse.core.resources.projectNature"
+                                 value="org.ietr.preesm.core.ui.wizards.nature">
+                           </test>
+                           <test
+                                 property="org.eclipse.core.resources.extension"
+                                 value="pi">
+                           </test>
+                        </adapt>
+                     </iterate>
+                  </with>
+               </visibleWhen>
+            </command>
+            <!-- Generate C header refinement of a PiGraph -->
+            <command
+                  commandId="org.preesm.ui.pisdf.command.PiSDFCHeaderGenerator"
+                  icon="resources/icons/pi.gif"
+                  label="Generate C header refinement"
+                  mnemonic="G"
                   style="push">
                <visibleWhen
                      checkEnabled="true">

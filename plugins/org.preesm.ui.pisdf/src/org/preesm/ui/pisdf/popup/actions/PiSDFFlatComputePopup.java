@@ -59,13 +59,13 @@ public class PiSDFFlatComputePopup extends AbstractGenericMultiplePiHandler {
     boolean optim = pigraph.getChildrenGraphs().isEmpty();
     String message = optim ? "Computing optimized graph of " : "Computing flat graphs of ";
 
-    PreesmLogger.getLogger().log(Level.INFO, message + pigraph.getName());
+    PreesmLogger.getLogger().log(Level.INFO, () -> message + pigraph.getName());
 
     final PiGraph flatOptimized = PiSDFFlattener.flatten(pigraph, true);
     final IPath folder = SavePiGraph.save(iProject, flatOptimized, "_optimized");
     if (!optim && folder != null) {
       final PiGraph flat = PiSDFFlattener.flatten(pigraph, false);
-      SavePiGraph.saveInFolder(iProject, folder, flat, "");
+      SavePiGraph.savePiGraphInFolder(iProject, folder, flat, "");
     }
 
   }

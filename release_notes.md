@@ -12,6 +12,7 @@ PREESM Changelog
 * (SLAM) FPGA and CPU processing elements have they own type, which replace Operators.
 * (scenario) multiple kinds of timings can be stored, especially for FPGA.
 * (UI) The parsing of C/C++ functions for actor refinements is safer, now done by Eclipse CDT instead of handmade regex.
+* (UI) new menu popup action to generate C header refinements of PiSDF graphs.
 
 ### Bug fix
 * Add explicit log when data type size is not set in scenario making memory scripts crash.
