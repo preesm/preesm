@@ -323,7 +323,7 @@ public class HeaderParser {
           // then data structure is passed by reference, only for multiple data containers as streams or vectors
           fA.setIsPassedByReference(true);
           // and it is possible only for CPP
-          fA.setIsConfigurationParameter(true);
+          fA.setIsCPPdefinition(true);
         }
         final String name = paramDeclor.getName().getRawSignature().trim();
         fA.setName(name);

@@ -99,7 +99,7 @@ public class FpgaCodeGenerator {
 
     final String codegenPath = scenario.getCodegenDirectory() + File.separator;
 
-    PreesmIOHelper.getInstance().print(codegenPath, TEMPLATE_DEFINE_HEADER_NAME + ".h", headerFileContent);
+    PreesmIOHelper.getInstance().print(codegenPath, TEMPLATE_DEFINE_HEADER_NAME, headerFileContent);
     PreesmIOHelper.getInstance().print(codegenPath, "host_" + fcg.graphName + ".cpp", hostFileContent);
     PreesmIOHelper.getInstance().print(codegenPath, "top_kernel_" + fcg.graphName + ".cpp", topKernelFileContent);
     PreesmIOHelper.getInstance().print(codegenPath, "read_kernel_" + fcg.graphName + ".cpp", readKernelFileContent);
@@ -136,10 +136,14 @@ public class FpgaCodeGenerator {
 
     context.put("PREESM_INCLUDES", "#include \"" + TEMPLATE_DEFINE_HEADER_NAME + "\"\n");
 
-    // TODO generate ther kernel args
+    // TODO
+    // // 2.1- generate vectors for interfaces
+    // final StringBuilder interfaceBuffers = new StringBuilder();
+    // interfaceRates.forEach((i, p) -> {
+    // });
 
     // 3- init template reader
-    final InputStreamReader reader = PreesmIOHelper.getInstance().getFileReader(TEMPLATE_TOP_KERNEL_RES_LOCATION,
+    final InputStreamReader reader = PreesmIOHelper.getInstance().getFileReader(TEMPLATE_HOST_RES_LOCATION,
         this.getClass());
 
     // 4- init output writer
@@ -163,6 +167,8 @@ public class FpgaCodeGenerator {
 
     context.put("USER_INCLUDES",
         findAllCHeaderFileNamesUsed.stream().map(x -> "#include \"" + x + "\"").collect(Collectors.joining("\n")));
+
+    // TODO
 
     // 3- init template reader
     final InputStreamReader reader = PreesmIOHelper.getInstance().getFileReader(TEMPLATE_TOP_KERNEL_RES_LOCATION,

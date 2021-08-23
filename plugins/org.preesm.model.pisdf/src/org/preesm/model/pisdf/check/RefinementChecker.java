@@ -122,8 +122,8 @@ public class RefinementChecker extends AbstractPiSDFObjectChecker {
       final String prefixedMatchType = matchType.startsWith(FIFO_TYPE_TEMPLATED_PREFIX) ? matchType
           : (FIFO_TYPE_TEMPLATED_PREFIX + matchType);
       final String matchDepth = matcher2.group(3); // third group is the depth
-      final String prefixedMatchDepth = matchDepth.startsWith(FIFO_TYPE_TEMPLATED_PREFIX) ? matchDepth
-          : (FIFO_TYPE_TEMPLATED_PREFIX + matchDepth);
+      final String prefixedMatchDepth = matchDepth.startsWith(FIFO_DEPTH_TEMPLATED_PREFIX) ? matchDepth
+          : (FIFO_DEPTH_TEMPLATED_PREFIX + matchDepth);
       return new Pair<>(prefixedMatchType, prefixedMatchDepth);
     }
     return null;
@@ -468,13 +468,13 @@ public class RefinementChecker extends AbstractPiSDFObjectChecker {
         }
       }
       // if param not found but default value is provided, we take it
-      if (relatedObject == null && equalSubparts.length > 2) {
+      if (relatedObject == null && equalSubparts.length > 1) {
         relatedObject = equalSubparts[1];
         PreesmLogger.getLogger()
             .warning(() -> String.format(
                 "In templated refinement of actor [%s], "
-                    + "template parameter '%s' has not been found but default value was provided.",
-                containerActor.getVertexPath(), paramName));
+                    + "template parameter '%s' has not been found but default value (%s) was provided.",
+                containerActor.getVertexPath(), paramName, equalSubparts[1]));
       }
 
       result.add(new Pair<>(paramName, relatedObject));
