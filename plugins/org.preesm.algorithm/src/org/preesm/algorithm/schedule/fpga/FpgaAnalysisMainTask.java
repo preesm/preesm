@@ -111,6 +111,9 @@ public class FpgaAnalysisMainTask extends AbstractTaskImplementation {
     flatGraph.getActors().stream().filter(x -> (x instanceof InterfaceActor)).forEach(x -> {
       final InterfaceActor ia = (InterfaceActor) x;
       final DataPort iaPort = ia.getDataPort();
+      if (iaPort.getFifo() == null) {
+        return; // if not connected, we do not care
+      }
       DataPort aaPort = null;
       if (iaPort instanceof DataInputPort) {
         aaPort = iaPort.getFifo().getSourcePort();

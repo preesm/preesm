@@ -45,8 +45,12 @@ public class FpgaCodeGenerator {
 
       "templates/xilinxCodegen/template_write_kernel_fpga.cpp";
 
-  public static final String KERNEL_NAME_READ  = "mem_read";
-  public static final String KERNEL_NAME_WRITE = "mem_write";
+  public static final String KERNEL_NAME_READ        = "mem_read";
+  public static final String KERNEL_NAME_WRITE       = "mem_write";
+  public static final String SUFFIX_INTERFACE_ARRAY  = "_mem";     // suffix name for read/write kernels
+  public static final String SUFFIX_INTERFACE_STREAM = "_stream";  // suffix name for other kernels
+  public static final String SUFFIX_INTERFACE_VECTOR = "_vect";    // suffix name for host vector
+  public static final String SUFFIX_INTERFACE_BUFFER = "_buff";    // suffix name for host buffer
 
   private final Scenario                              scenario;
   private final PiGraph                               graph;
@@ -136,11 +140,85 @@ public class FpgaCodeGenerator {
 
     context.put("PREESM_INCLUDES", "#include \"" + TEMPLATE_DEFINE_HEADER_NAME + "\"\n");
 
-    // TODO
-    // // 2.1- generate vectors for interfaces
-    // final StringBuilder interfaceBuffers = new StringBuilder();
-    // interfaceRates.forEach((i, p) -> {
-    // });
+    // 2.1- generate vectors for interfaces
+    final StringBuilder interfaceVectors = new StringBuilder("// vectors containing interface elements\n");
+    interfaceRates.forEach((i, p) -> {
+      final String type = i.getDataPort().getFifo().getType();
+      interfaceVectors.append("  std::vector<" + type + ", aligned_allocator<" + type + ">> ");
+      interfaceVectors.append(i.getName() + SUFFIX_INTERFACE_VECTOR + "(");
+      interfaceVectors.append(getInterfaceFactorName(i) + "*" + getInterfaceRateName(i) + ");\n");
+    });
+    context.put("INTERFACE_VECTORS", interfaceVectors.toString());
+
+    // 2.2- generate buffers for interfaces
+    final StringBuilder interfaceBuffers = new StringBuilder("// buffers referencing interface elements\n");
+    interfaceRates.forEach((i, p) -> {
+      String bufferDecl = "cl::Buffer " + i.getName() + SUFFIX_INTERFACE_BUFFER + "(context, CL_MEM_USE_HOST_PTR";
+      if (i instanceof DataInputInterface) {
+        bufferDecl += " | CL_MEM_READ_ONLY";
+      } else if (i instanceof DataOutputInterface) {
+        bufferDecl += " | CL_MEM_WRITE_ONLY";
+      }
+      final String type = i.getDataPort().getFifo().getType();
+      bufferDecl += ", sizeof(" + type + ")*" + getInterfaceFactorName(i) + "*" + getInterfaceRateName(i);
+      bufferDecl += ", " + i.getName() + SUFFIX_INTERFACE_VECTOR + ".data(), &err)";
+      interfaceBuffers.append("  " + surroundWithOCLcheck(bufferDecl) + "\n");
+    });
+    context.put("INTERFACE_BUFFERS", interfaceBuffers.toString());
+
+    // 2.3- set kernel args
+    final StringBuilder kernelLaunch = new StringBuilder("// set kernel arguments\n");
+    int indexArg = 0;
+    for (final InterfaceActor ia : interfaceRates.keySet()) {
+      if (ia instanceof DataInputInterface) {
+        String kernelArg = "err = krnl_mem_read.setArg(" + Integer.toString(indexArg) + ", " + ia.getName()
+            + SUFFIX_INTERFACE_BUFFER + ")";
+        kernelLaunch.append("  " + surroundWithOCLcheck(kernelArg) + "\n");
+        indexArg += 2;
+      }
+    }
+    indexArg = 0;
+    for (final InterfaceActor ia : interfaceRates.keySet()) {
+      if (ia instanceof DataOutputInterface) {
+        String kernelArg = "err = krnl_mem_write.setArg(" + Integer.toString(indexArg) + ", " + ia.getName()
+            + SUFFIX_INTERFACE_BUFFER + ")";
+        kernelLaunch.append("  " + surroundWithOCLcheck(kernelArg) + "\n");
+        indexArg += 2;
+      }
+    }
+
+    // 2.4- launch kernels
+    kernelLaunch.append("// launch the OpenCL tasks\n");
+    kernelLaunch.append("  std::cout << \"Copying data...\" << std::endl;\n");
+    final List<String> bufferArgs = new ArrayList<>();
+    for (final InterfaceActor ia : interfaceRates.keySet()) {
+      if (ia instanceof DataInputInterface) {
+        bufferArgs.add(ia.getName() + SUFFIX_INTERFACE_BUFFER);
+      }
+    }
+    final String migrateIn = "err = q.enqueueMigrateMemObjects({"
+        + bufferArgs.stream().collect(Collectors.joining(", ")) + "}, 0)";
+    kernelLaunch.append("  " + surroundWithOCLcheck(migrateIn) + "\n");
+    kernelLaunch.append("  " + printFinishQueue() + "\n");
+
+    kernelLaunch.append("  std::cout << \"Launching kernels...\" << std::endl;\n");
+    kernelLaunch.append("  " + surroundWithOCLcheck("err = q.enqueueTask(krnl_mem_read)") + "\n");
+    kernelLaunch.append("  " + surroundWithOCLcheck("err = q.enqueueTask(krnl_mem_write)") + "\n");
+    kernelLaunch.append("  " + printFinishQueue() + "\n");
+
+    kernelLaunch.append("  std::cout << \"Getting results...\" << std::endl;\n");
+    bufferArgs.clear();
+    for (final InterfaceActor ia : interfaceRates.keySet()) {
+      if (ia instanceof DataOutputInterface) {
+        bufferArgs.add(ia.getName() + SUFFIX_INTERFACE_BUFFER);
+      }
+    }
+    final String migrateOut = "err = q.enqueueMigrateMemObjects({"
+        + bufferArgs.stream().collect(Collectors.joining(", ")) + "}, CL_MIGRATE_MEM_OBJECT_HOST)";
+    kernelLaunch.append("  " + surroundWithOCLcheck(migrateOut) + "\n");
+    kernelLaunch.append("  " + printFinishQueue() + "\n");
+
+    context.put("KERNEL_LAUNCH", kernelLaunch.toString());
 
     // 3- init template reader
     final InputStreamReader reader = PreesmIOHelper.getInstance().getFileReader(TEMPLATE_HOST_RES_LOCATION,
@@ -197,8 +275,8 @@ public class FpgaCodeGenerator {
     for (final InterfaceActor ia : interfaceRates.keySet()) {
       if (ia instanceof DataInputInterface) {
         final Fifo f = ia.getDataPort().getFifo();
-        args.add(f.getType() + "* " + ia.getName() + "_mem");
-        args.add("hls::stream<" + f.getType() + ">" + " &" + ia.getName() + "_stream");
+        args.add(f.getType() + "* " + ia.getName() + SUFFIX_INTERFACE_ARRAY);
+        args.add("hls::stream<" + f.getType() + ">" + " &" + ia.getName() + SUFFIX_INTERFACE_STREAM);
       }
     }
     sb.append(args.stream().collect(Collectors.joining(",\n  ")));
@@ -208,8 +286,8 @@ public class FpgaCodeGenerator {
       final InterfaceActor ia = e.getKey();
       if (ia instanceof DataInputInterface) {
         final Fifo f = ia.getDataPort().getFifo();
-        sb.append("    readInput<" + f.getType() + ">(" + ia.getName() + "_mem, " + ia.getName() + "_stream, "
-            + getInterfaceRateName(ia) + ", " + getInterfaceFactorName(ia) + ");\n");
+        sb.append("    readInput<" + f.getType() + ">(" + ia.getName() + SUFFIX_INTERFACE_ARRAY + ", " + ia.getName()
+            + SUFFIX_INTERFACE_STREAM + ", " + getInterfaceRateName(ia) + ", " + getInterfaceFactorName(ia) + ");\n");
       }
     }
     sb.append("}\n");
@@ -237,14 +315,14 @@ public class FpgaCodeGenerator {
     final VelocityContext context = new VelocityContext();
     context.put("PREESM_INCLUDES", "#include \"" + TEMPLATE_DEFINE_HEADER_NAME + "\"\n");
 
-    // read kernel prototype
+    // write kernel prototype
     final StringBuilder sb = new StringBuilder("void mem_write(\n  ");
     final List<String> args = new ArrayList<>();
     for (final InterfaceActor ia : interfaceRates.keySet()) {
       if (ia instanceof DataOutputInterface) {
         final Fifo f = ia.getDataPort().getFifo();
-        args.add(f.getType() + "* " + ia.getName() + "_mem");
-        args.add("hls::stream<" + f.getType() + ">" + " &" + ia.getName() + "_stream");
+        args.add(f.getType() + "* " + ia.getName() + SUFFIX_INTERFACE_ARRAY);
+        args.add("hls::stream<" + f.getType() + ">" + " &" + ia.getName() + SUFFIX_INTERFACE_STREAM);
       }
     }
     sb.append(args.stream().collect(Collectors.joining(",\n  ")));
@@ -254,8 +332,8 @@ public class FpgaCodeGenerator {
       final InterfaceActor ia = e.getKey();
       if (ia instanceof DataOutputInterface) {
         final Fifo f = ia.getDataPort().getFifo();
-        sb.append("    writeOutput<" + f.getType() + ">(" + ia.getName() + "_mem, " + ia.getName() + "_stream, "
-            + getInterfaceRateName(ia) + ", " + getInterfaceFactorName(ia) + ");\n");
+        sb.append("    writeOutput<" + f.getType() + ">(" + ia.getName() + SUFFIX_INTERFACE_ARRAY + ", " + ia.getName()
+            + SUFFIX_INTERFACE_STREAM + ", " + getInterfaceRateName(ia) + ", " + getInterfaceFactorName(ia) + ");\n");
       }
     }
     sb.append("}\n");
@@ -274,34 +352,42 @@ public class FpgaCodeGenerator {
     return writer.toString();
   }
 
-  private String writeConnectivityFile() {
+  protected String writeConnectivityFile() {
     final StringBuilder sb = new StringBuilder("[connectivity]\n");
     for (final InterfaceActor ia : interfaceRates.keySet()) {
       sb.append("stream_connect=");
       if (ia instanceof DataInputInterface) {
         sb.append(KERNEL_NAME_READ + "_1.");
-        sb.append(ia.getName() + "_stream:");
-        sb.append(graphName + "_1.");
-        sb.append(ia.getName() + "_stream\n");
+        sb.append(ia.getName() + SUFFIX_INTERFACE_STREAM + ":");
+        sb.append("top_graph_1.");
+        sb.append(ia.getName() + SUFFIX_INTERFACE_STREAM + "\n");
       } else if (ia instanceof DataOutputInterface) {
-        sb.append(graphName + "_1.");
-        sb.append(ia.getName() + "_stream:");
+        sb.append("top_graph_1.");
+        sb.append(ia.getName() + SUFFIX_INTERFACE_STREAM + ":");
         sb.append(KERNEL_NAME_WRITE + "_1.");
-        sb.append(ia.getName() + "_stream\n");
+        sb.append(ia.getName() + SUFFIX_INTERFACE_STREAM + "\n");
       }
     }
     return sb.toString();
   }
 
-  public static String getFifoDataSizeName(final Fifo fifo) {
+  protected static final String printFinishQueue() {
+    return surroundWithOCLcheck("err = q.finish()");
+  }
+
+  protected static final String surroundWithOCLcheck(final String OCLcall) {
+    return "OCL_CHECK(err, " + OCLcall + ");";
+  }
+
+  public static final String getFifoDataSizeName(final Fifo fifo) {
     return "DEPTH_OF_" + fifo.getId().replace('.', '_').replace("-", "__");
   }
 
-  public static String getInterfaceRateName(final InterfaceActor ia) {
+  public static final String getInterfaceRateName(final InterfaceActor ia) {
     return "RATE_OF_" + ia.getName();
   }
 
-  public static String getInterfaceFactorName(final InterfaceActor ia) {
+  public static final String getInterfaceFactorName(final InterfaceActor ia) {
     return "FACTOR_OF_" + ia.getName();
   }
 
