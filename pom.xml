@@ -128,8 +128,8 @@
       <!-- ############## -->
       <jacoco.destFile>../../target/jacoco.exec</jacoco.destFile>
       <sonar.coverage.jacoco.xmlReportPaths>${project.reporting.outputDirectory}/jacoco/jacoco.xml</sonar.coverage.jacoco.xmlReportPaths>
-  <sonar.organization>jheulot</sonar.organization>
-  <sonar.host.url>https://sonarcloud.io</sonar.host.url>
+      <sonar.organization>preesm</sonar.organization>
+      <sonar.host.url>https://sonarcloud.io</sonar.host.url>
    </properties>
 
    <repositories>
