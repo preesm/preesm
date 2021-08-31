@@ -13,15 +13,16 @@ import org.preesm.model.pisdf.FunctionPrototype;
 import org.preesm.model.pisdf.Parameter;
 import org.preesm.model.pisdf.Port;
 import org.preesm.model.pisdf.check.RefinementChecker;
+import org.preesm.model.pisdf.check.RefinementChecker.CorrespondingTemplateParameterType;
 
 /**
- * This class provides helper to generate the code to call them.
+ * This class provides helper to generate the code to call templated C++ functions.
  * 
  * @author ahonorat
  */
-public class AutoFillHeaderTemplate {
+public class AutoFillHeaderTemplatedFunctions {
 
-  private AutoFillHeaderTemplate() {
+  private AutoFillHeaderTemplatedFunctions() {
     // forbid instantiation
   }
 
@@ -59,13 +60,14 @@ public class AutoFillHeaderTemplate {
   private static String getFilledTemplatePrototypePart(final CHeaderRefinement refinement,
       final FunctionPrototype proto, final List<Pair<Port, FunctionArgument>> correspondingArguments,
       Map<Fifo, Long> allFifoSizes) {
-    final List<Pair<String, Object>> relatedObjects = RefinementChecker
+    final Map<String, Pair<CorrespondingTemplateParameterType, Object>> relatedObjects = RefinementChecker
         .getCHeaderCorrespondingTemplateParamObject(refinement, proto, correspondingArguments);
     final List<String> evaluatedParams = new ArrayList<>();
 
-    for (final Pair<String, Object> p : relatedObjects) {
+    for (final Pair<CorrespondingTemplateParameterType, Object> p : relatedObjects.values()) {
       final Object o = p.getValue();
-      if (p.getKey() == null) {
+      final CorrespondingTemplateParameterType c = p.getKey();
+      if (c == CorrespondingTemplateParameterType.NONE || c == CorrespondingTemplateParameterType.MULTIPLE) {
         return null;
       }
       if (o instanceof Parameter) {
@@ -74,11 +76,10 @@ public class AutoFillHeaderTemplate {
       } else if (o instanceof String) {
         evaluatedParams.add((String) o);
       } else if (o instanceof Fifo) {
-        final String paramName = p.getKey();
         final Fifo f = ((Fifo) o);
-        if (paramName.startsWith(RefinementChecker.FIFO_TYPE_TEMPLATED_PREFIX)) {
+        if (c == CorrespondingTemplateParameterType.FIFO_TYPE) {
           evaluatedParams.add(f.getType());
-        } else if (paramName.startsWith(RefinementChecker.FIFO_DEPTH_TEMPLATED_PREFIX)) {
+        } else if (c == CorrespondingTemplateParameterType.FIFO_DEPTH) {
           final Long depth = allFifoSizes.getOrDefault(f, null);
           if (depth == null) {
             return null;
@@ -93,8 +94,11 @@ public class AutoFillHeaderTemplate {
       }
     }
 
-    final String values = evaluatedParams.stream().collect(Collectors.joining(","));
+    if (evaluatedParams.isEmpty()) {
+      return "";
+    }
 
+    final String values = evaluatedParams.stream().collect(Collectors.joining(","));
     return "<" + values + ">";
   }
 

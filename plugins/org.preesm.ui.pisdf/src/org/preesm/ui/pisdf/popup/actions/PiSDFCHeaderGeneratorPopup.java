@@ -36,6 +36,12 @@ import org.preesm.model.pisdf.factory.PiMMUserFactory;
 import org.preesm.model.pisdf.util.PrototypeFormatter;
 import org.preesm.ui.utils.FileUtils;
 
+/**
+ * Popup menu action to generate the missing C header refinements of a PiGraph. Only one file is created, and only for
+ * refinements of the top level.
+ * 
+ * @author ahonorat
+ */
 public class PiSDFCHeaderGeneratorPopup extends AbstractGenericMultiplePiHandler {
 
   @Override

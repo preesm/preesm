@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.InputStreamReader;
 import java.io.StringWriter;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -11,12 +12,19 @@ import java.util.stream.Collectors;
 import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.VelocityEngine;
 import org.eclipse.xtext.xbase.lib.Pair;
+import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.preesm.commons.files.PreesmIOHelper;
+import org.preesm.commons.logger.PreesmLogger;
+import org.preesm.commons.model.PreesmCopyTracker;
+import org.preesm.model.pisdf.AbstractActor;
+import org.preesm.model.pisdf.BroadcastActor;
 import org.preesm.model.pisdf.DataInputInterface;
 import org.preesm.model.pisdf.DataOutputInterface;
+import org.preesm.model.pisdf.DataPort;
 import org.preesm.model.pisdf.Fifo;
 import org.preesm.model.pisdf.InterfaceActor;
 import org.preesm.model.pisdf.PiGraph;
+import org.preesm.model.pisdf.UserSpecialActor;
 import org.preesm.model.pisdf.util.CHeaderUsedLocator;
 import org.preesm.model.scenario.Scenario;
 
@@ -26,6 +34,8 @@ import org.preesm.model.scenario.Scenario;
  * @author ahonorat
  */
 public class FpgaCodeGenerator {
+
+  public static final String VELOCITY_PACKAGE_NAME = "org.apache.velocity";
 
   public static final String TEMPLATE_DEFINE_HEADER_NAME = "PreesmAutoDefinedSizes.h";
 
@@ -65,6 +75,42 @@ public class FpgaCodeGenerator {
     this.graphName = scenario.getAlgorithm().getName();
     this.interfaceRates = interfaceRates;
     this.allFifoSizes = allFifoSizes;
+
+    // check broadcast being more than broadcasts ...
+    if (!checkPureBroadcasts(graph) || !checkOtherSpecialActorAbsence(graph)) {
+      throw new PreesmRuntimeException("The codegen does not support special actors (fork, join, roundbuffer) yet, "
+          + "but only broadcasts having all equal port rates.");
+    }
+
+  }
+
+  private static boolean checkPureBroadcasts(final PiGraph flatGraph) {
+    boolean valid = true;
+    for (final AbstractActor aa : flatGraph.getActors()) {
+      if (aa instanceof BroadcastActor) {
+        final long inputRate = aa.getDataInputPorts().get(0).getExpression().evaluate();
+        for (final DataPort dop : aa.getDataOutputPorts()) {
+          final long outputRate = dop.getExpression().evaluate();
+          if (outputRate != inputRate) {
+            PreesmLogger.getLogger()
+                .warning(() -> String.format("Broadcast output port [%s:%s] has different rate than its input.",
+                    PreesmCopyTracker.getOriginalSource(aa).getVertexPath(), dop.getName()));
+            valid = false;
+          }
+        }
+      }
+    }
+    return valid;
+  }
+
+  private static boolean checkOtherSpecialActorAbsence(final PiGraph flatGraph) {
+    boolean valid = true;
+    for (final AbstractActor aa : flatGraph.getActors()) {
+      if (aa instanceof UserSpecialActor && !(aa instanceof BroadcastActor)) {
+        valid = false;
+      }
+    }
+    return valid;
   }
 
   /**
@@ -227,7 +273,7 @@ public class FpgaCodeGenerator {
     // 4- init output writer
     final StringWriter writer = new StringWriter();
 
-    engine.evaluate(context, writer, "org.apache.velocity", reader);
+    engine.evaluate(context, writer, VELOCITY_PACKAGE_NAME, reader);
 
     return writer.toString();
   }
@@ -246,7 +292,25 @@ public class FpgaCodeGenerator {
     context.put("USER_INCLUDES",
         findAllCHeaderFileNamesUsed.stream().map(x -> "#include \"" + x + "\"").collect(Collectors.joining("\n")));
 
+    final Map<AbstractActor, String> actorsCalls = new LinkedHashMap<>();
+    final StringBuilder defs = new StringBuilder();
+    // 2.1- first we add the definitions of special actors
+    defs.append(FpgaSpecialActorsCodeGenerator.generateSpecialActorDefinitions(graph, actorsCalls));
+    context.put("PREESM_SPECIAL_ACTORS", defs.toString());
+    // 2.2- we add all other calls to the map
     // TODO
+    // 2.3- we wrap the actor calls producing delays
+    final StringBuilder wrapperDelays = new StringBuilder();
+    // TODO
+    context.put("PREESM_DELAY_WRAPPERS", wrapperDelays.toString());
+    // 2.4- we wrap the actor init calls
+    final StringBuilder wrapperInits = new StringBuilder();
+    // TODO
+    context.put("PREESM_INIT_WRAPPER", wrapperInits.toString());
+    // 2.5- we generate the top kernel function with all calls in the start time order
+    final StringBuilder topK = new StringBuilder();
+    // TODO
+    context.put("PREESM_TOP_KERNEL", topK.toString());
 
     // 3- init template reader
     final InputStreamReader reader = PreesmIOHelper.getInstance().getFileReader(TEMPLATE_TOP_KERNEL_RES_LOCATION,
@@ -255,7 +319,7 @@ public class FpgaCodeGenerator {
     // 4- init output writer
     final StringWriter writer = new StringWriter();
 
-    engine.evaluate(context, writer, "org.apache.velocity", reader);
+    engine.evaluate(context, writer, VELOCITY_PACKAGE_NAME, reader);
 
     return writer.toString();
   }
@@ -301,7 +365,7 @@ public class FpgaCodeGenerator {
     // 4- init output writer
     final StringWriter writer = new StringWriter();
 
-    engine.evaluate(context, writer, "org.apache.velocity", reader);
+    engine.evaluate(context, writer, VELOCITY_PACKAGE_NAME, reader);
 
     return writer.toString();
   }
@@ -347,7 +411,7 @@ public class FpgaCodeGenerator {
     // 4- init output writer
     final StringWriter writer = new StringWriter();
 
-    engine.evaluate(context, writer, "org.apache.velocity", reader);
+    engine.evaluate(context, writer, VELOCITY_PACKAGE_NAME, reader);
 
     return writer.toString();
   }
@@ -389,6 +453,10 @@ public class FpgaCodeGenerator {
 
   public static final String getInterfaceFactorName(final InterfaceActor ia) {
     return "FACTOR_OF_" + ia.getName();
+  }
+
+  public static final String getFifoName(final Fifo fifo) {
+    return fifo.getId();
   }
 
 }

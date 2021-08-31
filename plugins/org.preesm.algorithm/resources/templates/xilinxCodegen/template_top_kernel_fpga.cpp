@@ -48,10 +48,21 @@ $USER_INCLUDES
 
 $PREESM_INCLUDES
 
-// Duplicate actors
+// Preesm special actors
 
-$DUPLICATE_ACTORS
+$PREESM_SPECIAL_ACTORS
 
+// Wrappers to init delays
+
+$PREESM_DELAY_WRAPPERS
+
+// Wrapper to init actors
+
+$PREESM_INIT_WRAPPER
+
+// Top function
+
+$PREESM_TOP_KERNEL
 
 extern "C" {
 void graph_name(int* in, int* out, int size) {

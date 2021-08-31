@@ -38,9 +38,12 @@ package org.preesm.model.pisdf.check;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.IPath;
@@ -99,7 +102,7 @@ public class RefinementChecker extends AbstractPiSDFObjectChecker {
    * @param argType
    *          The templated argument type to check.
    * @return The parameter name of the stream type and the parameter name of the stream depth (optional). {@code null}
-   *         if not a valid hls stream type. If not yet prefixed, the prefix will be add automatically.
+   *         if not a valid hls stream type.
    */
   public static Pair<String, String> isHlsStreamTemplated(final String argType) {
     final String argTypeWithoutWhiteSpaces = argType.replaceAll("\\s+", "");
@@ -108,9 +111,7 @@ public class RefinementChecker extends AbstractPiSDFObjectChecker {
     final Matcher matcher1 = pattern1.matcher(argTypeWithoutWhiteSpaces);
     if (matcher1.find()) {
       final String match = matcher1.group(1);
-      final String prefixedMatch = match.startsWith(FIFO_TYPE_TEMPLATED_PREFIX) ? match
-          : (FIFO_TYPE_TEMPLATED_PREFIX + match);
-      return new Pair<>(prefixedMatch, null);
+      return new Pair<>(match, null);
     }
 
     final String regex2 = "^hls::stream<((" + FIFO_TYPE_TEMPLATED_PREFIX + ")?\\w+),((" + FIFO_DEPTH_TEMPLATED_PREFIX
@@ -118,13 +119,9 @@ public class RefinementChecker extends AbstractPiSDFObjectChecker {
     final Pattern pattern2 = Pattern.compile(regex2);
     final Matcher matcher2 = pattern2.matcher(argTypeWithoutWhiteSpaces);
     if (matcher2.find()) {
-      final String matchType = matcher2.group(1); // first group is the type
-      final String prefixedMatchType = matchType.startsWith(FIFO_TYPE_TEMPLATED_PREFIX) ? matchType
-          : (FIFO_TYPE_TEMPLATED_PREFIX + matchType);
-      final String matchDepth = matcher2.group(3); // third group is the depth
-      final String prefixedMatchDepth = matchDepth.startsWith(FIFO_DEPTH_TEMPLATED_PREFIX) ? matchDepth
-          : (FIFO_DEPTH_TEMPLATED_PREFIX + matchDepth);
-      return new Pair<>(prefixedMatchType, prefixedMatchDepth);
+      final String matchType = matcher2.group(1); // first group is the type and second is its optional prefix
+      final String matchDepth = matcher2.group(3); // third group is the depth and fourth is its optional prefix
+      return new Pair<>(matchType, matchDepth);
     }
     return null;
   }
@@ -336,7 +333,8 @@ public class RefinementChecker extends AbstractPiSDFObjectChecker {
           reportError(CheckerErrorLevel.WARNING, a,
               "Port [%s:%s] has a different fifo type than in its C/C++ refinement: '%s' vs '%s'.", a.getName(),
               topPort.getName(), topFifo.getType(), fa.getType());
-          // check here the container type? hls::stream for FPGA
+          // check here the container type? If hls::stream for FPGA,
+          // the templated FIFO type is either a parameter inferred by PREESM or direct value check along with the actor
         }
       }
     }
@@ -357,28 +355,65 @@ public class RefinementChecker extends AbstractPiSDFObjectChecker {
       final List<Pair<Port, FunctionArgument>> correspondingArguments) {
     final Refinement ref = actor.getRefinement();
     if (ref instanceof CHeaderRefinement) {
+      boolean validity = true;
       final CHeaderRefinement cref = (CHeaderRefinement) ref;
-      final List<Pair<String, Object>> correspondingObjects = new ArrayList<>();
       if (cref.getInitPrototype() != null) {
-        correspondingObjects
-            .addAll(getCHeaderCorrespondingTemplateParamObject(cref, cref.getInitPrototype(), correspondingArguments));
+        validity &= checkRefinementTemplateParamsAux(actor, correspondingArguments, cref, cref.getInitPrototype());
       }
       if (cref.getLoopPrototype() != null) {
-        correspondingObjects
-            .addAll(getCHeaderCorrespondingTemplateParamObject(cref, cref.getLoopPrototype(), correspondingArguments));
-      }
-      boolean validity = true;
-      for (final Pair<String, Object> correspondingObject : correspondingObjects) {
-        if (correspondingObject.getValue() == null) {
-          reportError(CheckerErrorLevel.RECOVERABLE, actor,
-              "Templated refinement of actor [%s] has an unknown parameter '%s'.", actor.getVertexPath(),
-              correspondingObject.getKey());
-          validity = false;
-        }
+        validity &= checkRefinementTemplateParamsAux(actor, correspondingArguments, cref, cref.getLoopPrototype());
       }
       return validity;
     }
     return true;
+  }
+
+  private boolean checkRefinementTemplateParamsAux(final Actor actor,
+      final List<Pair<Port, FunctionArgument>> correspondingArguments, final CHeaderRefinement cref,
+      final FunctionPrototype proto) {
+    boolean validity = true;
+    if (proto != null) {
+      final Map<String,
+          Pair<CorrespondingTemplateParameterType,
+              Object>> correspondingObjects = getCHeaderCorrespondingTemplateParamObject(cref, proto,
+                  correspondingArguments);
+      // check if the stream params are used multiple times
+      final List<String> badlyUsedStreamParams = new ArrayList<>();
+      correspondingObjects.forEach((x, y) -> {
+        if (y.getKey() == CorrespondingTemplateParameterType.MULTIPLE) {
+          badlyUsedStreamParams.add(x);
+        }
+      });
+      if (!badlyUsedStreamParams.isEmpty()) {
+        reportError(CheckerErrorLevel.WARNING, actor,
+            "Templated refinement of actor [%s] has parameters '%s' found multiple times for different usages.",
+            actor.getVertexPath(), badlyUsedStreamParams.stream().collect(Collectors.joining(",")));
+        validity = false;
+      }
+      // check if the function template params are all related to an object
+      final List<String> lonelyParams = new ArrayList<>();
+      correspondingObjects.forEach((x, y) -> {
+        if (y.getKey() == CorrespondingTemplateParameterType.NONE) {
+          lonelyParams.add(x);
+        }
+      });
+
+      if (!lonelyParams.isEmpty()) {
+        reportError(CheckerErrorLevel.WARNING, actor, "Templated refinement of actor [%s] has unknown parameters '%s'.",
+            actor.getVertexPath(), lonelyParams.stream().collect(Collectors.joining(",")));
+        validity = false;
+      }
+    }
+    return validity;
+  }
+
+  /**
+   * While checking a template parameter, we can categorize it depending on the object it refers to.
+   * 
+   * @author ahonorat
+   */
+  public enum CorrespondingTemplateParameterType {
+    ACTOR_PARAM, GRAPH_PARAM, DEFAULT_PARAM, FIFO_TYPE, FIFO_DEPTH, MULTIPLE, NONE;
   }
 
   /**
@@ -390,23 +425,27 @@ public class RefinementChecker extends AbstractPiSDFObjectChecker {
    *          The refinement prototype to consider (init or loop).
    * @param correspondingArguments
    *          List of ports corresponding to function arguments.
-   * @return A list of pair with template parameter name as key and related element as value ({@code null} if not
-   *         found).
+   * @return A map of function template parameter names to pair with parameter category as key and related element as
+   *         value ({@code null} if not found).
    */
-  public static List<Pair<String, Object>> getCHeaderCorrespondingTemplateParamObject(
-      final CHeaderRefinement refinement, final FunctionPrototype proto,
-      final List<Pair<Port, FunctionArgument>> correspondingArguments) {
-    final List<Pair<String, Object>> result = new ArrayList<>();
+  public static Map<String, Pair<CorrespondingTemplateParameterType, Object>>
+      getCHeaderCorrespondingTemplateParamObject(final CHeaderRefinement refinement, final FunctionPrototype proto,
+          final List<Pair<Port, FunctionArgument>> correspondingArguments) {
+    final Map<String, Pair<CorrespondingTemplateParameterType, Object>> result = new LinkedHashMap<>();
     // split the template parameters
     final String rawFunctionName = proto.getName();
-    final int indexStartTemplate = rawFunctionName.indexOf("<");
-    final int indexEndTemplate = rawFunctionName.lastIndexOf(">");
+    final int indexStartTemplate = rawFunctionName.indexOf('<');
+    final int indexEndTemplate = rawFunctionName.lastIndexOf('>');
     if (indexStartTemplate < 0 || indexEndTemplate < 0 || indexEndTemplate < indexStartTemplate) {
       // not templated
       return result;
     }
+    // refinement container always is an actor for now
+    final AbstractActor containerActor = (AbstractActor) PreesmCopyTracker
+        .getOriginalSource(refinement.getRefinementContainer());
     // get the hls tempated fifo (not always needed, but factorized for memoization)
-    final List<Pair<FunctionArgument, String>> hlsFAtoFifoParamName = getAllHlsStreamTemplated(proto);
+    final Map<String, Pair<CorrespondingTemplateParameterType,
+        List<FunctionArgument>>> hlsStreamParamsToFA = getAllHlsStreamTemplateParamNames(proto);
 
     // get the template names
     final String onlyTemplatePart = rawFunctionName.substring(indexStartTemplate + 1, indexEndTemplate);
@@ -416,16 +455,15 @@ public class RefinementChecker extends AbstractPiSDFObjectChecker {
       final String[] equalSubparts = rawTemplateSubpart.split("\\s*=\\s*");
       final String paramName = equalSubparts[0];
 
-      // refinement container always is an actor for now
-      final AbstractActor containerActor = (AbstractActor) PreesmCopyTracker
-          .getOriginalSource(refinement.getRefinementContainer());
       Object relatedObject = null;
+      CorrespondingTemplateParameterType relatedObjectCat = CorrespondingTemplateParameterType.NONE;
       // look for a parameter of the actor first
       for (final ConfigInputPort cip : containerActor.getConfigInputPorts()) {
         if (cip.getName().equals(paramName)) {
           final ISetter setter = cip.getIncomingDependency().getSetter();
           if (setter instanceof Parameter) {
-            relatedObject = (Parameter) setter;
+            relatedObject = setter;
+            relatedObjectCat = CorrespondingTemplateParameterType.ACTOR_PARAM;
             break;
           }
         }
@@ -436,6 +474,7 @@ public class RefinementChecker extends AbstractPiSDFObjectChecker {
         for (final Parameter paramG : containerGraph.getParameters()) {
           if (paramG.getName().equals(paramName)) {
             relatedObject = paramG;
+            relatedObjectCat = CorrespondingTemplateParameterType.GRAPH_PARAM;
             PreesmLogger.getLogger()
                 .warning(() -> String.format(
                     "In templated refinement of actor [%s], "
@@ -447,18 +486,19 @@ public class RefinementChecker extends AbstractPiSDFObjectChecker {
       }
       // look for FIFO infos if not found in parameters
       if (relatedObject == null) {
-        for (final Pair<FunctionArgument, String> faToFifoParamName : hlsFAtoFifoParamName) {
-          if (faToFifoParamName.getValue().equals(paramName)) {
+        final Pair<CorrespondingTemplateParameterType,
+            List<FunctionArgument>> correspondingFAs = hlsStreamParamsToFA.get(paramName);
+        if (correspondingFAs != null) {
+          for (final FunctionArgument fa : correspondingFAs.getValue()) {
             // then we got a matching fifo, get the port first
             for (final Pair<Port, FunctionArgument> portToFA : correspondingArguments) {
-              final FunctionArgument fa = faToFifoParamName.getKey();
-              // first FunctionArgument cannot be null, but second one might be
               if (fa.equals(portToFA.getValue())) {
                 final Port relatedPort = portToFA.getKey();
                 if (relatedPort instanceof DataPort) {
                   final Fifo relatedFifo = ((DataPort) relatedPort).getFifo();
                   if (relatedFifo != null) {
                     relatedObject = relatedFifo;
+                    relatedObjectCat = correspondingFAs.getKey();
                   }
                 }
                 break;
@@ -470,6 +510,7 @@ public class RefinementChecker extends AbstractPiSDFObjectChecker {
       // if param not found but default value is provided, we take it
       if (relatedObject == null && equalSubparts.length > 1) {
         relatedObject = equalSubparts[1];
+        relatedObjectCat = CorrespondingTemplateParameterType.DEFAULT_PARAM;
         PreesmLogger.getLogger()
             .warning(() -> String.format(
                 "In templated refinement of actor [%s], "
@@ -477,24 +518,41 @@ public class RefinementChecker extends AbstractPiSDFObjectChecker {
                 containerActor.getVertexPath(), paramName, equalSubparts[1]));
       }
 
-      result.add(new Pair<>(paramName, relatedObject));
+      result.put(paramName, new Pair<>(relatedObjectCat, relatedObject));
     }
+
+    // as we know here the template type of the prototype arguments,
+    // should we also check that the stream fifo types are correct?
+    // however, even if the stream type is not equal to the fifo type, it might be a macro ... and thus equal in the end
 
     return result;
   }
 
-  private static List<Pair<FunctionArgument, String>> getAllHlsStreamTemplated(final FunctionPrototype proto) {
-    final List<Pair<FunctionArgument, String>> result = new ArrayList<>();
+  private static Map<String, Pair<CorrespondingTemplateParameterType, List<FunctionArgument>>>
+      getAllHlsStreamTemplateParamNames(final FunctionPrototype proto) {
+    final Map<String, Pair<CorrespondingTemplateParameterType, List<FunctionArgument>>> result = new LinkedHashMap<>();
     for (final FunctionArgument fa : proto.getArguments()) {
       final Pair<String, String> hlsStream = isHlsStreamTemplated(fa.getType());
       if (hlsStream != null) {
         final String key = hlsStream.getKey();
         if (key != null) {
-          result.add(new Pair<>(fa, key));
+          final Pair<CorrespondingTemplateParameterType, List<FunctionArgument>> p = result.computeIfAbsent(key,
+              k -> new Pair<>(CorrespondingTemplateParameterType.FIFO_TYPE, new ArrayList<>()));
+          p.getValue().add(fa);
+          if (p.getKey() != CorrespondingTemplateParameterType.FIFO_TYPE) {
+            // a single parameter is used for different use cases
+            result.replace(key, new Pair<>(CorrespondingTemplateParameterType.MULTIPLE, p.getValue()));
+          }
         }
         final String value = hlsStream.getValue();
         if (value != null) {
-          result.add(new Pair<>(fa, value));
+          final Pair<CorrespondingTemplateParameterType, List<FunctionArgument>> p = result.computeIfAbsent(value,
+              k -> new Pair<>(CorrespondingTemplateParameterType.FIFO_DEPTH, new ArrayList<>()));
+          p.getValue().add(fa);
+          if (p.getKey() != CorrespondingTemplateParameterType.FIFO_DEPTH) {
+            // a single parameter is used for different use cases
+            result.replace(value, new Pair<>(CorrespondingTemplateParameterType.MULTIPLE, p.getValue()));
+          }
         }
       }
     }

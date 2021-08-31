@@ -3,6 +3,7 @@ package org.preesm.algorithm.schedule.fpga;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Objects;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.PlatformUI;
@@ -75,9 +76,10 @@ public class FpgaAnalysisMainTask extends AbstractTaskImplementation {
     final Map<AbstractVertex, Long> brv = PiBRV.compute(flatGraph, BRVMethod.LCM);
     // check interfaces
     final Map<InterfaceActor, Pair<Long, Long>> interfaceRates = checkInterfaces(flatGraph, brv);
-    if (interfaceRates.values().stream().anyMatch(x -> (x == null))) {
+    if (interfaceRates.values().stream().anyMatch(Objects::isNull)) {
       throw new PreesmRuntimeException("Some interfaces have weird rates (see log), abandon.");
     }
+
     // schedule the graph
     final Pair<IStatGenerator, Map<Fifo, Long>> eval = AsapFpgaIIevaluator.performAnalysis(flatGraph, scenario, brv);
     final IStatGenerator schedStats = eval.getKey();

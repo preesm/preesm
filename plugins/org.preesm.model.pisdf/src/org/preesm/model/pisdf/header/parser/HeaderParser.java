@@ -76,7 +76,6 @@ import org.eclipse.cdt.internal.core.index.EmptyCIndex;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.emf.common.util.EList;
-import org.eclipse.xtext.xbase.lib.Pair;
 import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.model.pisdf.AbstractActor;
@@ -239,18 +238,22 @@ public class HeaderParser {
       for (final ICPPASTTemplateParameter tempParam : tempDeclon.getTemplateParameters()) {
         final IASTNode[] childsParam = tempParam.getChildren();
         if (childsParam.length == 2) {
+          // check if it corresponds to <..., int PARAM, ...> or <..., long PARAM = 00, ...>
+          // "int/long" must be the first child node while everything else is in the second child node
           if (!(childsParam[0] instanceof ICPPASTSimpleDeclSpecifier)
               || !(childsParam[1] instanceof ICPPASTDeclarator)) {
             PreesmLogger.getLogger().warning(() -> DISCARD_FUNC + rawName + TEMPLATE_WARNING);
             return;
           }
           IASTPointerOperator[] pops = ((IASTDeclarator) childsParam[1]).getPointerOperators();
+          // pointers are not allowed her of course
           if (pops.length > 0) {
             PreesmLogger.getLogger().warning(() -> DISCARD_FUNC + rawName + TEMPLATE_WARNING);
             return;
           }
           final String paramType = ((ICPPASTSimpleDeclSpecifier) childsParam[0]).getRawSignature().trim();
           final String paramName = ((ICPPASTDeclarator) childsParam[1]).getRawSignature().trim();
+          // we do not support anything else then int and long static template parameters
           if (!paramType.equals("int") && !paramType.equals("long")) {
             PreesmLogger.getLogger().warning(() -> DISCARD_FUNC + rawName + TEMPLATE_WARNING);
             return;
@@ -258,12 +261,17 @@ public class HeaderParser {
           functionTemplateNames.add(paramName);
           sb.append(paramName + ",");
         } else if (childsParam.length == 1) {
+          // check if it corresponds to <..., typename NAME, ...> or <..., typename FIFO_DEPTH_NAME, ...>
+          // this is allowed but supported only for fifo type and depth
           final ICPPASTName typename = (childsParam[0] instanceof ICPPASTName) ? (ICPPASTName) childsParam[0] : null;
-          if (!tempParam.getRawSignature().startsWith("typename") || typename == null
-              || (!typename.getRawSignature().trim().startsWith(RefinementChecker.FIFO_TYPE_TEMPLATED_PREFIX)
-                  && !typename.getRawSignature().trim().startsWith(RefinementChecker.FIFO_DEPTH_TEMPLATED_PREFIX))) {
+          if (!tempParam.getRawSignature().startsWith("typename") || typename == null) {
             PreesmLogger.getLogger().warning(() -> DISCARD_FUNC + rawName + TEMPLATE_WARNING);
             return;
+          } else if (!typename.getRawSignature().trim().startsWith(RefinementChecker.FIFO_TYPE_TEMPLATED_PREFIX)
+              && !typename.getRawSignature().trim().startsWith(RefinementChecker.FIFO_DEPTH_TEMPLATED_PREFIX)) {
+            PreesmLogger.getLogger().info(() -> "Function " + rawName + " has template parameter <" + typename
+                + "> without the recommended prefix, codegen might not work.\n Allowed prefixes are: "
+                + RefinementChecker.FIFO_TYPE_TEMPLATED_PREFIX + ", " + RefinementChecker.FIFO_DEPTH_TEMPLATED_PREFIX);
           }
           final String typeName = typename.getRawSignature().trim();
           functionTemplateNames.add(typeName);
@@ -292,7 +300,7 @@ public class HeaderParser {
     }
     final EList<FunctionArgument> protoParameters = funcProto.getArguments();
 
-    // parse arguments
+    // parse function arguments
     for (final IASTNode child : funcDeclor.getChildren()) {
       if (child instanceof IASTParameterDeclaration) {
         final FunctionArgument fA = PiMMUserFactory.instance.createFunctionArgument();
@@ -305,12 +313,9 @@ public class HeaderParser {
           // then the type contains a template or a namespace
           fA.setIsCPPdefinition(true);
         }
-        if (isTemplated && !checkArgTemplateParam(functionTemplateNames, type)) {
-          // check that the template param is present in the function template
-          PreesmLogger.getLogger().warning(() -> DISCARD_FUNC + rawName
-              + ". While analyzing it, at least one argument is templated with an unknown type or name.");
-          return;
-        }
+        // NOTE: we do not check that the template params of the argument types are present in the function template
+        // since it is not possible to know if an argument template param is indeed a parameter to be replaced
+        // or is its actual value (and in this case we do not replace it)
         final IASTDeclarator paramDeclor = paramDeclon.getDeclarator();
         IASTPointerOperator[] pops = paramDeclor.getPointerOperators();
         if (pops.length > 1) {
@@ -332,22 +337,6 @@ public class HeaderParser {
     }
 
     resultList.add(funcProto);
-  }
-
-  private static boolean checkArgTemplateParam(final List<String> functionTemplateParams, final String templateParam) {
-    final Pair<String, String> fifInfos = RefinementChecker.isHlsStreamTemplated(templateParam);
-    if (fifInfos == null) {
-      return false;
-    }
-    final String fifoTypeName = fifInfos.getKey();
-    if (!functionTemplateParams.contains(fifoTypeName)) {
-      return false;
-    }
-    final String fifoTypeDepth = fifInfos.getValue();
-    if (fifoTypeDepth != null && !functionTemplateParams.contains(fifoTypeDepth)) {
-      return false;
-    }
-    return true;
   }
 
   /**

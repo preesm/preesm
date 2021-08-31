@@ -19,9 +19,9 @@ import org.preesm.model.pisdf.util.PiMMSwitch;
  * <p>
  * Important note to devs (by ahonorat): classes derived from this one are called in different contexts. Sometimes we
  * want to check the whole graph even if we have already detected some errors. So DO NOT USE {@link Stream#allMatch}
- * here because then we would not check the other faulty elements, but prefer an hand-made reduction ensuring a complete
- * evaluation. Similarly, DO NOT USE lazy boolean evaluation as {@code &&} but prefer force boolean evaluation with
- * {@code &=}.
+ * here because then we would not check the other faulty elements (lazy evaluation), but prefer an hand-made reduction
+ * ensuring a complete evaluation. Similarly, DO NOT USE lazy boolean evaluation as {@code &&} but prefer bit-wise
+ * boolean evaluation with {@code &} and bit-wise assignment with {@code &=}.
  * 
  * @author ahonorat
  */
