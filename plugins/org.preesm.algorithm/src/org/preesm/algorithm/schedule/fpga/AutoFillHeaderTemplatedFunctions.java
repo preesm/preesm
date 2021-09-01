@@ -1,4 +1,4 @@
-package org.preesm.model.pisdf.header.parser;
+package org.preesm.algorithm.schedule.fpga;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -16,7 +16,7 @@ import org.preesm.model.pisdf.check.RefinementChecker;
 import org.preesm.model.pisdf.check.RefinementChecker.CorrespondingTemplateParameterType;
 
 /**
- * This class provides helper to generate the code to call templated C++ functions.
+ * This class provides helper to generate the code to call FPGA templated C++ functions.
  * 
  * @author ahonorat
  */
@@ -31,11 +31,9 @@ public class AutoFillHeaderTemplatedFunctions {
    * 
    * @param a
    *          The actor to consider.
-   * @param allFifoSizes
-   *          The fifo sizes, used only if related template parameters are present.
    * @return A pair of suffixes, for init call as key, and for loop call as value.
    */
-  public static Pair<String, String> getFilledTemplateFunctionPart(final Actor a, Map<Fifo, Long> allFifoSizes) {
+  public static Pair<String, String> getFilledTemplateFunctionPart(final Actor a) {
     final List<Pair<Port, FunctionArgument>> correspondingArguments = RefinementChecker
         .getCHeaderRefinementCorrespondingArguments(a);
     if (correspondingArguments == null) {
@@ -46,20 +44,17 @@ public class AutoFillHeaderTemplatedFunctions {
     String initTemplate = null;
     String loopTemplate = null;
     if (cref.getInitPrototype() != null) {
-      initTemplate = getFilledTemplatePrototypePart(cref, cref.getInitPrototype(), correspondingArguments,
-          allFifoSizes);
+      initTemplate = getFilledTemplatePrototypePart(cref, cref.getInitPrototype(), correspondingArguments);
     }
     if (cref.getLoopPrototype() != null) {
-      loopTemplate = getFilledTemplatePrototypePart(cref, cref.getLoopPrototype(), correspondingArguments,
-          allFifoSizes);
+      loopTemplate = getFilledTemplatePrototypePart(cref, cref.getLoopPrototype(), correspondingArguments);
     }
 
     return new Pair<>(initTemplate, loopTemplate);
   }
 
   private static String getFilledTemplatePrototypePart(final CHeaderRefinement refinement,
-      final FunctionPrototype proto, final List<Pair<Port, FunctionArgument>> correspondingArguments,
-      Map<Fifo, Long> allFifoSizes) {
+      final FunctionPrototype proto, final List<Pair<Port, FunctionArgument>> correspondingArguments) {
     final Map<String, Pair<CorrespondingTemplateParameterType, Object>> relatedObjects = RefinementChecker
         .getCHeaderCorrespondingTemplateParamObject(refinement, proto, correspondingArguments);
     final List<String> evaluatedParams = new ArrayList<>();
@@ -80,11 +75,7 @@ public class AutoFillHeaderTemplatedFunctions {
         if (c == CorrespondingTemplateParameterType.FIFO_TYPE) {
           evaluatedParams.add(f.getType());
         } else if (c == CorrespondingTemplateParameterType.FIFO_DEPTH) {
-          final Long depth = allFifoSizes.getOrDefault(f, null);
-          if (depth == null) {
-            return null;
-          }
-          evaluatedParams.add(depth.toString());
+          evaluatedParams.add(FpgaCodeGenerator.getFifoDataSizeName(f));
         } else {
           return null;
         }

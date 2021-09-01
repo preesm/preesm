@@ -119,8 +119,10 @@ public class RefinementChecker extends AbstractPiSDFObjectChecker {
     final Pattern pattern2 = Pattern.compile(regex2);
     final Matcher matcher2 = pattern2.matcher(argTypeWithoutWhiteSpaces);
     if (matcher2.find()) {
-      final String matchType = matcher2.group(1); // first group is the type and second is its optional prefix
-      final String matchDepth = matcher2.group(3); // third group is the depth and fourth is its optional prefix
+      // first group is the full type param name and second is only its optional prefix
+      final String matchType = matcher2.group(1);
+      // third group is the full depth param name and fourth is only its optional prefix
+      final String matchDepth = matcher2.group(3);
       return new Pair<>(matchType, matchDepth);
     }
     return null;
