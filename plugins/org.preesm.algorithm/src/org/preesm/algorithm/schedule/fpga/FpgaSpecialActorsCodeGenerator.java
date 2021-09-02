@@ -68,9 +68,9 @@ public class FpgaSpecialActorsCodeGenerator {
   protected static String generateBroadcastCall(final AbstractActor aa) {
     final String name = aa.getName();
     final Fifo inputFifo = aa.getDataInputPorts().get(0).getFifo();
-    final StringBuilder call = new StringBuilder(name + "(" + FpgaCodeGenerator.getFifoName(inputFifo));
+    final StringBuilder call = new StringBuilder(name + "(" + FpgaCodeGenerator.getFifoStreamName(inputFifo));
     for (final DataPort dp : aa.getDataOutputPorts()) {
-      call.append(", " + dp.getName());
+      call.append(", " + FpgaCodeGenerator.getFifoStreamName(dp.getFifo()));
     }
     call.append(");\n");
     return call.toString();
