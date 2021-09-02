@@ -239,9 +239,13 @@ public class ScenariosGenerator {
       fillPiScenario(scenario, archi, piGraph);
     }
     // Add a main core (first of the list)
-    scenario.getSimulationInfo().setMainOperator(coreIds.get(0));
+    if (!coreIds.isEmpty()) {
+      scenario.getSimulationInfo().setMainOperator(coreIds.get(0));
+    }
     // Add a main com node (first of the list)
-    scenario.getSimulationInfo().setMainComNode(comNodeIds.get(0));
+    if (!comNodeIds.isEmpty()) {
+      scenario.getSimulationInfo().setMainComNode(comNodeIds.get(0));
+    }
     // Add a average transfer size
     scenario.getSimulationInfo().setAverageDataSize(ScenarioConstants.DEFAULT_AVG_DATA_TRANSFER_SIZE.getValue());
     // Set the default data type sizes

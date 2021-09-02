@@ -150,24 +150,19 @@ public class HeaderParser {
   private static void parseCXXHeaderRecAux(final IASTNode nodeAST,
       LinkedList<ICPPASTNamespaceDefinition> namespaceStack, LinkedList<ICPPASTTemplateDeclaration> templateStack,
       LinkedList<IASTDeclSpecifier> returnTypeStack, List<FunctionPrototype> resultList) {
-    // base case
     if (nodeAST instanceof IASTFunctionDeclarator) {
+      // BASE CASE
       // we got a function declaration !
       final IASTFunctionDeclarator funcDeclor = (IASTFunctionDeclarator) nodeAST;
       parseFunctionDeclor(funcDeclor, namespaceStack, templateStack, returnTypeStack, resultList);
-      return;
-    }
-
-    // deeper cases
-    if (nodeAST instanceof IASTFunctionDefinition) {
+    } else if (nodeAST instanceof IASTFunctionDefinition) {
+      // DEEPER CASES
       // we got a function definition, let's retrieve the declaration
       final IASTFunctionDefinition funcDef = (IASTFunctionDefinition) nodeAST;
       returnTypeStack.addLast(funcDef.getDeclSpecifier());
       parseCXXHeaderRecAux(funcDef.getDeclarator(), namespaceStack, templateStack, returnTypeStack, resultList);
       returnTypeStack.removeLast();
-      return;
-    }
-    if (nodeAST instanceof IASTSimpleDeclaration) {
+    } else if (nodeAST instanceof IASTSimpleDeclaration) {
       // we got a simple declaration, which could start a function definition or declaration with its return type
       final IASTSimpleDeclaration simpleDeclon = (IASTSimpleDeclaration) nodeAST;
       returnTypeStack.addLast(simpleDeclon.getDeclSpecifier());
@@ -175,17 +170,13 @@ public class HeaderParser {
         parseCXXHeaderRecAux(declor, namespaceStack, templateStack, returnTypeStack, resultList);
       }
       returnTypeStack.removeLast();
-      return;
-    }
-    if (nodeAST instanceof ICPPASTTemplateDeclaration) {
+    } else if (nodeAST instanceof ICPPASTTemplateDeclaration) {
       // we got a template declaration, which could start a function definition or declaration
       final ICPPASTTemplateDeclaration tempDeclon = (ICPPASTTemplateDeclaration) nodeAST;
       templateStack.addLast(tempDeclon);
       parseCXXHeaderRecAux(tempDeclon.getDeclaration(), namespaceStack, templateStack, returnTypeStack, resultList);
       templateStack.removeLast();
-      return;
-    }
-    if (nodeAST instanceof ICPPASTNamespaceDefinition) {
+    } else if (nodeAST instanceof ICPPASTNamespaceDefinition) {
       // we got a namespace definition, which could contain other namespaces and function definitions or declarations
       final ICPPASTNamespaceDefinition nsDef = (ICPPASTNamespaceDefinition) nodeAST;
       namespaceStack.addLast(nsDef);
@@ -193,11 +184,8 @@ public class HeaderParser {
         parseCXXHeaderRecAux(declon, namespaceStack, templateStack, returnTypeStack, resultList);
       }
       namespaceStack.removeLast();
-      return;
-    }
-
-    // top case
-    if (nodeAST instanceof IASTTranslationUnit) {
+    } else if (nodeAST instanceof IASTTranslationUnit) {
+      // TOP CASE
       // we got the full file, let's visit the declarations
       final IASTTranslationUnit tu = (IASTTranslationUnit) nodeAST;
       for (IASTDeclaration declon : tu.getDeclarations()) {
