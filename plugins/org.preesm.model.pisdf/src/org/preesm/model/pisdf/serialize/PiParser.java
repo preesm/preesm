@@ -699,12 +699,9 @@ public class PiParser {
     if (setter == null) {
       parseRefinement(nodeElt, delayActor);
       // Checks the validity of the H refinement of the delay
-      if (delayActor.getRefinement() instanceof CHeaderRefinement) {
-        final CHeaderRefinement hrefinement = (CHeaderRefinement) delayActor.getRefinement();
-        if (!delayActor.isValidRefinement(hrefinement)) {
-          throw new PreesmRuntimeException(
-              "Delay INIT prototype must match following prototype: void init(IN int params ..., OUT <type>* fifo)");
-        }
+      if (delayActor.getRefinement() != null && !delayActor.hasValidRefinement()) {
+        throw new PreesmRuntimeException(
+            "Delay LOOP prototype must match following prototype: void init(IN int params ..., OUT <type>* fifo)");
       }
     }
 

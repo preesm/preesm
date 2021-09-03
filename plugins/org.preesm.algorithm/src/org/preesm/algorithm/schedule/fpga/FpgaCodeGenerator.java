@@ -23,7 +23,10 @@ import org.preesm.model.pisdf.CHeaderRefinement;
 import org.preesm.model.pisdf.ConfigInputPort;
 import org.preesm.model.pisdf.DataInputInterface;
 import org.preesm.model.pisdf.DataOutputInterface;
+import org.preesm.model.pisdf.DataOutputPort;
 import org.preesm.model.pisdf.DataPort;
+import org.preesm.model.pisdf.Delay;
+import org.preesm.model.pisdf.DelayActor;
 import org.preesm.model.pisdf.Direction;
 import org.preesm.model.pisdf.Fifo;
 import org.preesm.model.pisdf.FunctionArgument;
@@ -63,13 +66,14 @@ public class FpgaCodeGenerator {
 
       "templates/xilinxCodegen/template_write_kernel_fpga.cpp";
 
-  public static final String KERNEL_NAME_READ        = "mem_read";
-  public static final String KERNEL_NAME_WRITE       = "mem_write";
-  public static final String KERNEL_NAME_TOP         = "top_graph";
-  public static final String SUFFIX_INTERFACE_ARRAY  = "_mem";     // suffix name for read/write kernels
-  public static final String SUFFIX_INTERFACE_STREAM = "_stream";  // suffix name for other kernels
-  public static final String SUFFIX_INTERFACE_VECTOR = "_vect";    // suffix name for host vector
-  public static final String SUFFIX_INTERFACE_BUFFER = "_buff";    // suffix name for host buffer
+  public static final String KERNEL_NAME_READ         = "mem_read";
+  public static final String KERNEL_NAME_WRITE        = "mem_write";
+  public static final String KERNEL_NAME_TOP          = "top_graph";
+  public static final String PREFIX_WRAPPER_DELAYPROD = "wrapperProdDelay_";
+  public static final String SUFFIX_INTERFACE_ARRAY   = "_mem";             // suffix name for read/write kernels
+  public static final String SUFFIX_INTERFACE_STREAM  = "_stream";          // suffix name for other kernels
+  public static final String SUFFIX_INTERFACE_VECTOR  = "_vect";            // suffix name for host vector
+  public static final String SUFFIX_INTERFACE_BUFFER  = "_buff";            // suffix name for host buffer
 
   private final Scenario                              scenario;
   private final PiGraph                               graph;
@@ -316,7 +320,7 @@ public class FpgaCodeGenerator {
     generateRegularActorCalls(actorTemplateParts, actorsCalls, false);
     // 2.3- we wrap the actor calls producing delays
     final StringBuilder wrapperDelays = new StringBuilder();
-    // TODO
+    wrapperDelays.append(generateDelayWrappers(actorsCalls));
     context.put("PREESM_DELAY_WRAPPERS", wrapperDelays.toString());
     // 2.4- we wrap the actor init calls
     final StringBuilder wrapperInits = new StringBuilder();
@@ -380,6 +384,7 @@ public class FpgaCodeGenerator {
       final Actor a = e.getKey();
       final Pair<String, String> templates = e.getValue();
       if (templates == null) {
+        // TODO remove this test
         // in prod we could even throw an exception, but useful for tests when no refinement set yet
         continue;
       }
@@ -414,7 +419,7 @@ public class FpgaCodeGenerator {
           // look for incoming/outgoing fifo with same port name
           // more efficient with a map?
           for (final DataPort dp : a.getAllDataPorts()) {
-            if (dp.getName().equals(arg.getName()) && dp.getFifo() != null) {
+            if (dp.getName().equals(arg.getName())) {
               listArgNames.add(getFifoStreamName(dp.getFifo()));
               break;
             }
@@ -431,6 +436,63 @@ public class FpgaCodeGenerator {
           + ");\n";
       actorCalls.put(a, functionFullCall);
     }
+  }
+
+  protected String generateDelayWrappers(final Map<AbstractActor, String> actorCalls) {
+    final StringBuilder sb = new StringBuilder();
+    for (final Entry<AbstractActor, String> e : actorCalls.entrySet()) {
+      final AbstractActor aa = e.getKey();
+      final List<Fifo> delayedFifos = new ArrayList<>();
+      for (final DataOutputPort dop : aa.getDataOutputPorts()) {
+        final Fifo fifo = dop.getFifo();
+        if (fifo.getDelay() != null) {
+          delayedFifos.add(fifo);
+        }
+      }
+      if (delayedFifos.isEmpty()) {
+        // the actor has no outgoing fifo with delays so we do not need to wrap it
+        continue;
+      }
+      // first we get the original call and build the new one
+      final String oriCall = e.getValue();
+      final StringBuilder newCall = new StringBuilder(PREFIX_WRAPPER_DELAYPROD + aa.getName() + "(");
+      final StringBuilder wrapperProto = new StringBuilder(
+          "static void " + PREFIX_WRAPPER_DELAYPROD + aa.getName() + "(");
+      final List<String> listArgCall = new ArrayList<>();
+      final List<String> listArgProto = new ArrayList<>();
+      for (final DataPort dp : aa.getAllDataPorts()) {
+        final Fifo f = dp.getFifo();
+        listArgCall.add(getFifoStreamName(f));
+        // we do not use port name because the original call already uses the fifo names
+        listArgProto.add("hls::stream<" + f.getType() + "> &" + getFifoStreamName(f));
+      }
+      newCall.append(listArgCall.stream().collect(Collectors.joining(", ")) + ");\n");
+      wrapperProto.append(listArgProto.stream().collect(Collectors.joining(", ")) + ") {\n");
+      e.setValue(newCall.toString());
+      // we fill the wrapper body
+      wrapperProto.append("  static bool init = false;\n  if (!init) {\n  init = true;\n");
+      for (final Fifo f : delayedFifos) {
+        // if the delay has an init function we call it, otherwise we fill with zero
+        final Delay d = f.getDelay();
+        final DelayActor da = d.getActor();
+        if (da != null && da.hasValidRefinement()) {
+          // then the delay actor has a prototype that we will call (it may have multiple params and only one output)
+          // TODO rewrite own function to get the call template params and arguments
+          // look for inputParameters of the related delay only, and isHlsStream of the only fifo type
+          // based on RefinementChecker#getCHeaderCorrespondingTemplateParamObject
+          // and AutoFillHeaderTemplatedPart#getFilledTemplatePrototypePart
+        } else {
+          final String size = Long.toString(d.getSizeExpression().evaluate());
+          // the type is surrounded by parenthesis to handle the case of "unsigned char" for example
+          // the constructor call is made by braces "{}" since it is safer (to avoid the famous *C++ most vexing parse*)
+          wrapperProto.append("  for (int i = 0; i < " + size + "; i++) {\n    " + getFifoStreamName(f) + ".write(("
+              + f.getType() + "){});\n  }\n");
+        }
+      }
+      wrapperProto.append("  }\n  " + oriCall + "}\n");
+      sb.append(wrapperProto.toString());
+    }
+    return sb.toString();
   }
 
   protected String writeReadKernelFile() {
