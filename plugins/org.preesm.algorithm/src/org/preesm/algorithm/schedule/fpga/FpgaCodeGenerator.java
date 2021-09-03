@@ -199,8 +199,7 @@ public class FpgaCodeGenerator {
     interfaceRates.forEach((i, p) -> {
       final String type = i.getDataPort().getFifo().getType();
       interfaceVectors.append("  std::vector<" + type + ", aligned_allocator<" + type + ">> ");
-      interfaceVectors.append(i.getName() + SUFFIX_INTERFACE_VECTOR + "(");
-      interfaceVectors.append(getInterfaceFactorName(i) + "*" + getInterfaceRateName(i) + ");\n");
+      interfaceVectors.append(i.getName() + SUFFIX_INTERFACE_VECTOR + "(" + getInterfaceRateName(i) + ");\n");
     });
     context.put("INTERFACE_VECTORS", interfaceVectors.toString());
 
@@ -214,7 +213,7 @@ public class FpgaCodeGenerator {
         bufferDecl += " | CL_MEM_WRITE_ONLY";
       }
       final String type = i.getDataPort().getFifo().getType();
-      bufferDecl += ", sizeof(" + type + ")*" + getInterfaceFactorName(i) + "*" + getInterfaceRateName(i);
+      bufferDecl += ", sizeof(" + type + ")*" + getInterfaceRateName(i);
       bufferDecl += ", " + i.getName() + SUFFIX_INTERFACE_VECTOR + ".data(), &err)";
       interfaceBuffers.append("  " + surroundWithOCLcheck(bufferDecl) + "\n");
     });
