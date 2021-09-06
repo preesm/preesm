@@ -524,22 +524,22 @@ class DelayActor extends NonExecutableActor, RefinementContainer {
 			return false
 		}
 		
-		var FunctionPrototype loopPrototype = (refinement as CHeaderRefinement).getLoopPrototype()
-		if (loopPrototype.arguments.isEmpty) {
+		var FunctionPrototype proto = (refinement as CHeaderRefinement).getInitPrototype()
+		if (proto.arguments.isEmpty) {
 			return false
 		}
 
-		if (loopPrototype.arguments.filter[it.getDirection() === Direction.OUT && 
+		if (proto.arguments.filter[it.getDirection() === Direction.OUT && 
 			!it.isIsConfigurationParameter].length != 1) {
 			return false
 		}
 
-		if (loopPrototype.arguments.filter[it.getDirection() === Direction.IN && 
+		if (proto.arguments.filter[it.getDirection() === Direction.IN && 
 			!it.isIsConfigurationParameter].length > 0) {
 			return false
 		}
 
-		if (loopPrototype.arguments.filter[it.getDirection() === Direction.OUT && 
+		if (proto.arguments.filter[it.getDirection() === Direction.OUT && 
 			it.isIsConfigurationParameter].length > 0) {
 			return false
 		}

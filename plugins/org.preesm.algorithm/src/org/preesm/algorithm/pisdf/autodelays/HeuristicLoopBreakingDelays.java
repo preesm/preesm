@@ -305,7 +305,9 @@ public class HeuristicLoopBreakingDelays {
     final AbstractActor root = cycle.get(0);
     // specific case of self loop
     if (cycle.size() == 1) {
-      return absGraph.getEdge(root, root);
+      final FifoAbstraction selfLoop = absGraph.getEdge(root, root);
+      ci.fifosPerEdge.add(selfLoop);
+      return selfLoop;
     }
 
     // Find the Fifos between each pair of actor of the cycle

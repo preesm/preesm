@@ -35,7 +35,9 @@ import org.preesm.model.pisdf.ISetter;
 import org.preesm.model.pisdf.InterfaceActor;
 import org.preesm.model.pisdf.Parameter;
 import org.preesm.model.pisdf.PiGraph;
+import org.preesm.model.pisdf.Port;
 import org.preesm.model.pisdf.UserSpecialActor;
+import org.preesm.model.pisdf.check.RefinementChecker;
 import org.preesm.model.pisdf.util.CHeaderUsedLocator;
 import org.preesm.model.scenario.Scenario;
 
@@ -69,6 +71,7 @@ public class FpgaCodeGenerator {
   public static final String KERNEL_NAME_READ         = "mem_read";
   public static final String KERNEL_NAME_WRITE        = "mem_write";
   public static final String KERNEL_NAME_TOP          = "top_graph";
+  public static final String NAME_WRAPPER_INITPROTO   = "preesmInitWrapper";
   public static final String PREFIX_WRAPPER_DELAYPROD = "wrapperProdDelay_";
   public static final String SUFFIX_INTERFACE_ARRAY   = "_mem";             // suffix name for read/write kernels
   public static final String SUFFIX_INTERFACE_STREAM  = "_stream";          // suffix name for other kernels
@@ -303,29 +306,31 @@ public class FpgaCodeGenerator {
     context.put("USER_INCLUDES",
         findAllCHeaderFileNamesUsed.stream().map(x -> "#include \"" + x + "\"").collect(Collectors.joining("\n")));
 
-    final Map<AbstractActor, String> actorsCalls = new LinkedHashMap<>();
+    final Map<AbstractActor, String> initActorsCalls = new LinkedHashMap<>();
+    final Map<AbstractActor, String> loopActorsCalls = new LinkedHashMap<>();
     final StringBuilder defs = new StringBuilder();
     // 2.1- first we add the definitions of special actors
-    defs.append(FpgaSpecialActorsCodeGenerator.generateSpecialActorDefinitions(graph, actorsCalls));
+    defs.append(FpgaSpecialActorsCodeGenerator.generateSpecialActorDefinitions(graph, loopActorsCalls));
     context.put("PREESM_SPECIAL_ACTORS", defs.toString());
     // 2.2- we add all other calls to the map
     final Map<Actor, Pair<String, String>> actorTemplateParts = new LinkedHashMap<>();
     graph.getActorsWithRefinement().forEach(x -> {
-      // TODO should not be check here but at the begining of the codegen (all actors should have a loop proto)
+      // TODO should not be check here but at the beginning of the codegen (all actors should have a loop proto)
       // in prod we could even throw an exception, but useful for tests when no refinement set yet
       if (x.getRefinement() instanceof CHeaderRefinement) {
         actorTemplateParts.put(x, AutoFillHeaderTemplatedFunctions.getFilledTemplateFunctionPart(x));
       }
     });
-    generateRegularActorCalls(actorTemplateParts, actorsCalls, false);
-    // 2.3- we wrap the actor calls producing delays
-    final StringBuilder wrapperDelays = new StringBuilder();
-    wrapperDelays.append(generateDelayWrappers(actorsCalls));
-    context.put("PREESM_DELAY_WRAPPERS", wrapperDelays.toString());
-    // 2.4- we wrap the actor init calls
-    final StringBuilder wrapperInits = new StringBuilder();
-    // TODO
-    context.put("PREESM_INIT_WRAPPER", wrapperInits.toString());
+    generateRegularActorCalls(actorTemplateParts, initActorsCalls, true);
+    generateRegularActorCalls(actorTemplateParts, loopActorsCalls, false);
+    // 2.3- we wrap the actor init calls
+    if (!initActorsCalls.isEmpty()) {
+      context.put("PREESM_INIT_WRAPPER", generateInitWrapper(initActorsCalls));
+    } else {
+      context.put("PREESM_INIT_WRAPPER", "");
+    }
+    // 2.4- we wrap the actor calls producing delays
+    context.put("PREESM_DELAY_WRAPPERS", generateDelayWrappers(loopActorsCalls));
     // 2.5- we generate the top kernel function with all calls in the start time order
     final StringBuilder topK = new StringBuilder("extern \"C\" {\nvoid " + KERNEL_NAME_TOP + "(\n");
     // add interface names
@@ -350,7 +355,10 @@ public class FpgaCodeGenerator {
     topK.append(generateAllFifoDefinitions(allFifoSizes));
     // add function calls
     topK.append("\n");
-    actorsCalls.forEach((x, y) -> topK.append("  " + y));
+    if (!initActorsCalls.isEmpty()) {
+      topK.append(NAME_WRAPPER_INITPROTO + "();\n\n");
+    }
+    loopActorsCalls.forEach((x, y) -> topK.append("  " + y));
 
     topK.append("}\n}\n");
     context.put("PREESM_TOP_KERNEL", topK.toString());
@@ -388,25 +396,50 @@ public class FpgaCodeGenerator {
         // in prod we could even throw an exception, but useful for tests when no refinement set yet
         continue;
       }
+      final String call = generateRegularActorCall((CHeaderRefinement) a.getRefinement(), templates, init);
+      if (call != null) {
+        actorCalls.put(a, call);
+      }
+    }
+  }
 
-      final String templatePart = init ? templates.getKey() : templates.getValue();
-      final CHeaderRefinement cref = (CHeaderRefinement) a.getRefinement();
-      final FunctionPrototype proto = init ? cref.getInitPrototype() : cref.getLoopPrototype();
-      final String funcRawName = proto.getName();
-      final int indexStartTemplate = funcRawName.indexOf('<');
-      final String funcShortName = indexStartTemplate < 0 ? funcRawName : funcRawName.substring(0, indexStartTemplate);
-      final String funcTemplatedName = funcShortName + templatePart;
+  protected String generateRegularActorCall(final CHeaderRefinement cref, final Pair<String, String> templates,
+      final boolean init) {
+    // this weird way of passing the refinement instead of the actor is needed to handle
+    // both Actor and DelayActor whose closest common ancestor is RefinementContainer
+    // (which can hold a PiGraph or a CHeaderRefinement)
+    // refinement container always is an actor for now
+    final AbstractActor containerActor = (AbstractActor) cref.getRefinementContainer();
+    final FunctionPrototype proto = init ? cref.getInitPrototype() : cref.getLoopPrototype();
+    if (proto == null) {
+      return null;
+    }
+    final String templatePart = init ? templates.getKey() : templates.getValue();
+    final String funcRawName = proto.getName();
+    final int indexStartTemplate = funcRawName.indexOf('<');
+    final String funcShortName = indexStartTemplate < 0 ? funcRawName : funcRawName.substring(0, indexStartTemplate);
+    final String funcTemplatedName = funcShortName + templatePart;
+    final String prefix = RefinementChecker.getActorNamePrefix(containerActor);
 
-      // now manage the arguments
-      final List<String> listArgNames = new ArrayList<>();
-      for (final FunctionArgument arg : proto.getArguments()) {
-        if (arg.isIsConfigurationParameter() && arg.getDirection() == Direction.OUT) {
-          throw new PreesmRuntimeException(
-              "FPGA codegen does not support dynamic parameters as in actor " + a.getVertexPath());
-        } else if (arg.isIsConfigurationParameter() && arg.getDirection() == Direction.IN) {
+    // now manage the arguments
+    final List<String> listArgNames = new ArrayList<>();
+    for (final FunctionArgument arg : proto.getArguments()) {
+      if (arg.isIsConfigurationParameter() && arg.getDirection() == Direction.OUT) {
+        throw new PreesmRuntimeException(
+            "FPGA codegen does not support dynamic parameters as in actor " + containerActor.getVertexPath());
+      } else if (arg.isIsConfigurationParameter() && arg.getDirection() == Direction.IN) {
+        if (containerActor instanceof DelayActor) {
+          // the graph parameter name may have been prefixed during a flattening transformation
+          for (final Parameter inputParam : ((DelayActor) containerActor).getInputParameters()) {
+            if (inputParam.getName().equals(prefix + arg.getName())) {
+              listArgNames.add(Long.toString(inputParam.getExpression().evaluate()));
+              break;
+            }
+          }
+        } else {
           // look for incoming parameter with same name
           // more efficient with a map?
-          for (final ConfigInputPort cip : a.getConfigInputPorts()) {
+          for (final ConfigInputPort cip : containerActor.getConfigInputPorts()) {
             if (cip.getName().equals(arg.getName())) {
               final ISetter setter = cip.getIncomingDependency().getSetter();
               if (setter instanceof Parameter) {
@@ -415,10 +448,16 @@ public class FpgaCodeGenerator {
               }
             }
           }
-        } else if (!arg.isIsConfigurationParameter()) {
+        }
+      } else if (!arg.isIsConfigurationParameter()) {
+        if (containerActor instanceof DelayActor) {
+          // there is only one fifo, we take it
+          final Fifo f = ((DelayActor) containerActor).getLinkedDelay().getContainingFifo();
+          listArgNames.add(getFifoStreamName(f));
+        } else {
           // look for incoming/outgoing fifo with same port name
           // more efficient with a map?
-          for (final DataPort dp : a.getAllDataPorts()) {
+          for (final DataPort dp : containerActor.getAllDataPorts()) {
             if (dp.getName().equals(arg.getName())) {
               listArgNames.add(getFifoStreamName(dp.getFifo()));
               break;
@@ -426,16 +465,24 @@ public class FpgaCodeGenerator {
           }
         }
       }
-      // check that we found as many objects as arguments:
-      if (listArgNames.size() != proto.getArguments().size()) {
-        throw new PreesmRuntimeException(
-            "FPGA codegen coudn't evaluate all the arguments of the prototype of actor " + a.getVertexPath() + ".");
-      }
-      // and otherwise we merge everything
-      final String functionFullCall = funcTemplatedName + "(" + listArgNames.stream().collect(Collectors.joining(","))
-          + ");\n";
-      actorCalls.put(a, functionFullCall);
     }
+    // check that we found as many objects as arguments:
+    if (listArgNames.size() != proto.getArguments().size()) {
+      throw new PreesmRuntimeException("FPGA codegen coudn't evaluate all the arguments of the prototype of actor "
+          + containerActor.getVertexPath() + ".");
+    }
+    // and otherwise we merge everything
+    return funcTemplatedName + "(" + listArgNames.stream().collect(Collectors.joining(",")) + ");\n";
+  }
+
+  protected String generateInitWrapper(final Map<AbstractActor, String> actorCalls) {
+    final StringBuilder sb = new StringBuilder("static void " + NAME_WRAPPER_INITPROTO + "() {\n");
+    sb.append("  static bool init = false;\n  if (!init) {\n  init = true;\n");
+    for (final String call : actorCalls.values()) {
+      sb.append("    " + call);
+    }
+    sb.append("  }\n}\n");
+    return sb.toString();
   }
 
   protected String generateDelayWrappers(final Map<AbstractActor, String> actorCalls) {
@@ -476,11 +523,9 @@ public class FpgaCodeGenerator {
         final Delay d = f.getDelay();
         final DelayActor da = d.getActor();
         if (da != null && da.hasValidRefinement()) {
-          // then the delay actor has a prototype that we will call (it may have multiple params and only one output)
-          // TODO rewrite own function to get the call template params and arguments
-          // look for inputParameters of the related delay only, and isHlsStream of the only fifo type
-          // based on RefinementChecker#getCHeaderCorrespondingTemplateParamObject
-          // and AutoFillHeaderTemplatedPart#getFilledTemplatePrototypePart
+          // then the delay actor has a prototype that we will call
+          // (it may have multiple params and only one output)
+          wrapperProto.append(generateDelayActorInitCall(da));
         } else {
           final String size = Long.toString(d.getSizeExpression().evaluate());
           // the type is surrounded by parenthesis to handle the case of "unsigned char" for example
@@ -493,6 +538,18 @@ public class FpgaCodeGenerator {
       sb.append(wrapperProto.toString());
     }
     return sb.toString();
+  }
+
+  protected String generateDelayActorInitCall(final DelayActor da) {
+    final CHeaderRefinement cref = (CHeaderRefinement) da.getRefinement();
+    // only loop prototype is used here and has already been checked
+    final FunctionPrototype fp = cref.getInitPrototype();
+    final List<Pair<Port, FunctionArgument>> correspondingArguments = RefinementChecker
+        .getCHeaderRefinementPrototypeCorrespondingArguments(da, fp);
+    final String funcFilledTemplate = AutoFillHeaderTemplatedFunctions.getFilledTemplatePrototypePart(cref, fp,
+        correspondingArguments);
+    return generateRegularActorCall(cref, new Pair<>(funcFilledTemplate, null), false);
+
   }
 
   protected String writeReadKernelFile() {

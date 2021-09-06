@@ -34,8 +34,9 @@ public class AutoFillHeaderTemplatedFunctions {
    * @return A pair of suffixes, for init call as key, and for loop call as value.
    */
   public static Pair<String, String> getFilledTemplateFunctionPart(final Actor a) {
-    final List<Pair<Port, FunctionArgument>> correspondingArguments = RefinementChecker
-        .getCHeaderRefinementCorrespondingArguments(a);
+    final Pair<List<Pair<Port, FunctionArgument>>,
+        List<Pair<Port, FunctionArgument>>> correspondingArguments = RefinementChecker
+            .getCHeaderRefinementCorrespondingArguments(a);
     if (correspondingArguments == null) {
       // not a CHeader
       return null;
@@ -44,16 +45,16 @@ public class AutoFillHeaderTemplatedFunctions {
     String initTemplate = null;
     String loopTemplate = null;
     if (cref.getInitPrototype() != null) {
-      initTemplate = getFilledTemplatePrototypePart(cref, cref.getInitPrototype(), correspondingArguments);
+      initTemplate = getFilledTemplatePrototypePart(cref, cref.getInitPrototype(), correspondingArguments.getKey());
     }
     if (cref.getLoopPrototype() != null) {
-      loopTemplate = getFilledTemplatePrototypePart(cref, cref.getLoopPrototype(), correspondingArguments);
+      loopTemplate = getFilledTemplatePrototypePart(cref, cref.getLoopPrototype(), correspondingArguments.getValue());
     }
 
     return new Pair<>(initTemplate, loopTemplate);
   }
 
-  private static String getFilledTemplatePrototypePart(final CHeaderRefinement refinement,
+  protected static String getFilledTemplatePrototypePart(final CHeaderRefinement refinement,
       final FunctionPrototype proto, final List<Pair<Port, FunctionArgument>> correspondingArguments) {
     final Map<String, Pair<CorrespondingTemplateParameterType, Object>> relatedObjects = RefinementChecker
         .getCHeaderCorrespondingTemplateParamObject(refinement, proto, correspondingArguments);

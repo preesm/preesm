@@ -267,11 +267,10 @@ public class PiSDFFlattener extends PiMMSwitch<Boolean> {
       // Map the actor for linking latter
       this.actor2actor.put(actor, copyActor);
       instantiateDependencies(actor, copyActor);
-
+      return true;
     } else {
-      doSwitch(actor);
+      throw new UnsupportedOperationException();
     }
-    return true;
   }
 
   /**
@@ -491,6 +490,9 @@ public class PiSDFFlattener extends PiMMSwitch<Boolean> {
     final DelayActor actor = delay.getActor();
     final DelayActor copyActor = copy.getActor();
     copyActor.setName(this.graphPrefix + actor.getName());
+    // tracking is useful for FPGA hls codegen where refinements of delay actors are supported
+    PreesmCopyTracker.trackCopy(actor, copyActor);
+
     final DataInputPort setterPort = actor.getDataInputPort();
     final DataInputPort copySetterPort = copyActor.getDataInputPort();
     copySetterPort.setName(setterPort.getName());

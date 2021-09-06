@@ -701,7 +701,7 @@ public class PiParser {
       // Checks the validity of the H refinement of the delay
       if (delayActor.getRefinement() != null && !delayActor.hasValidRefinement()) {
         throw new PreesmRuntimeException(
-            "Delay LOOP prototype must match following prototype: void init(IN int params ..., OUT <type>* fifo)");
+            "Delay INIT prototype must match following prototype: void init(IN int params ..., OUT <type>* fifo)");
       }
     }
 
