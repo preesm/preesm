@@ -60,10 +60,12 @@ public class PiMMAlgorithmCheckerPopup extends AbstractGenericMultiplePiHandler 
     final PiGraphConsistenceChecker pgcc = new PiGraphConsistenceChecker(CheckerErrorLevel.NONE,
         CheckerErrorLevel.WARNING);
     final boolean valid = pgcc.check(pigraph);
+    String message = pgcc.toString();
     if (valid) {
-      PreesmLogger.getLogger().info("Graph " + pigraph.getName() + " is valid.");
+      message = "Graph " + pigraph.getName() + " is valid.\n" + message;
+      PreesmLogger.getLogger().info(message);
     }
 
-    MessageDialog.openInformation(shell, "Checker of PiGraph model", pgcc.toString());
+    MessageDialog.openInformation(shell, "Checker of PiGraph model", message);
   }
 }
