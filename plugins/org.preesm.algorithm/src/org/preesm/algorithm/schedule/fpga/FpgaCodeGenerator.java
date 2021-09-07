@@ -82,7 +82,7 @@ public class FpgaCodeGenerator {
   private final PiGraph                               graph;
   private final String                                graphName;
   private final Map<InterfaceActor, Pair<Long, Long>> interfaceRates;
-  private final Map<Fifo, Long>                       allFifoSizes;
+  private final Map<Fifo, Long>                       allFifoDepths;
 
   private FpgaCodeGenerator(final Scenario scenario, final PiGraph graph,
       final Map<InterfaceActor, Pair<Long, Long>> interfaceRates, final Map<Fifo, Long> allFifoSizes) {
@@ -90,7 +90,13 @@ public class FpgaCodeGenerator {
     this.graph = graph;
     this.graphName = scenario.getAlgorithm().getName();
     this.interfaceRates = interfaceRates;
-    this.allFifoSizes = allFifoSizes;
+    this.allFifoDepths = new LinkedHashMap<>();
+
+    // the fifo sizes are given in bytes while we want the depth in number of elements
+    allFifoSizes.forEach((k, v) -> {
+      final long dataTypeSize = scenario.getSimulationInfo().getDataTypeSizeOrDefault(k.getType());
+      allFifoDepths.put(k, (v / dataTypeSize));
+    });
 
     // check broadcast being more than broadcasts ...
     if (!checkPureBroadcasts(graph) || !checkOtherSpecialActorAbsence(graph)) {
@@ -177,7 +183,7 @@ public class FpgaCodeGenerator {
   protected String writeDefineHeaderFile() {
 
     final StringBuilder sb = new StringBuilder("// fifo sizes computed by PREESM\n");
-    allFifoSizes.forEach((fifo, size) -> {
+    allFifoDepths.forEach((fifo, size) -> {
       sb.append(String.format("#define %s %d\n", getFifoDataSizeName(fifo), size));
     });
     sb.append("// interface sizes computed by PREESM\n");
@@ -352,7 +358,7 @@ public class FpgaCodeGenerator {
 
     topK.append("#pragma HLS interface ap_ctrl_none port=return\n#pragma HLS dataflow disable_start_propagation\n\n");
     // add fifo defs
-    topK.append(generateAllFifoDefinitions(allFifoSizes));
+    topK.append(generateAllFifoDefinitions(allFifoDepths));
     // add function calls
     topK.append("\n");
     if (!initActorsCalls.isEmpty()) {
@@ -509,9 +515,14 @@ public class FpgaCodeGenerator {
       final List<String> listArgProto = new ArrayList<>();
       for (final DataPort dp : aa.getAllDataPorts()) {
         final Fifo f = dp.getFifo();
-        listArgCall.add(getFifoStreamName(f));
-        // we do not use port name because the original call already uses the fifo names
-        listArgProto.add("hls::stream<" + f.getType() + "> &" + getFifoStreamName(f));
+        final String fifoName = getFifoStreamName(f);
+        // in the case of self-loops, the fifo would appear twice as an argument
+        // we need to avoid that
+        if (!listArgCall.contains(fifoName)) {
+          listArgCall.add(fifoName);
+          // we do not use port name because the original call already uses the fifo names
+          listArgProto.add("hls::stream<" + f.getType() + "> &" + fifoName);
+        }
       }
       newCall.append(listArgCall.stream().collect(Collectors.joining(", ")) + ");\n");
       wrapperProto.append(listArgProto.stream().collect(Collectors.joining(", ")) + ") {\n");
@@ -548,7 +559,7 @@ public class FpgaCodeGenerator {
         .getCHeaderRefinementPrototypeCorrespondingArguments(da, fp);
     final String funcFilledTemplate = AutoFillHeaderTemplatedFunctions.getFilledTemplatePrototypePart(cref, fp,
         correspondingArguments);
-    return generateRegularActorCall(cref, new Pair<>(funcFilledTemplate, null), false);
+    return generateRegularActorCall(cref, new Pair<>(funcFilledTemplate, null), true);
 
   }
 

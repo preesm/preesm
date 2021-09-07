@@ -76,6 +76,7 @@ import org.preesm.model.pisdf.PersistenceLevel;
 import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.pisdf.Port;
 import org.preesm.model.pisdf.PortMemoryAnnotation;
+import org.preesm.model.pisdf.Refinement;
 import org.preesm.model.pisdf.RoundBufferActor;
 import org.preesm.model.pisdf.brv.BRVMethod;
 import org.preesm.model.pisdf.brv.PiBRV;
@@ -152,7 +153,6 @@ public class PiSDFFlattener extends PiMMSwitch<Boolean> {
     // 4 Check periods with BRV
     PiMMHelper.checkPeriodicity(graphCopy, brv);
     // 5. Now, flatten the graph
-
     PiSDFFlattener staticPiMM2FlatPiMMVisitor = new PiSDFFlattener(brv);
     staticPiMM2FlatPiMMVisitor.doSwitch(graphCopy);
     PiGraph result = staticPiMM2FlatPiMMVisitor.result;
@@ -483,24 +483,34 @@ public class PiSDFFlattener extends PiMMSwitch<Boolean> {
 
   private Delay copyDelay(final Delay delay) {
     final Delay copy = PiMMUserFactory.instance.createDelay();
+    // We do not use {@link PiMMUserFactory#copyWithHistory} here
+    // because ports of DelayActor contain an expression proxy
+    // (see DelayLinkedExpression in the PiSDF model)
+
     // Copy Delay properties
     copy.setName(this.graphPrefix + delay.getName());
     copy.setLevel(delay.getLevel());
+    copy.setExpression(delay.getExpression().getExpressionAsString());
     // Copy DelayActor properties
     final DelayActor actor = delay.getActor();
     final DelayActor copyActor = copy.getActor();
     copyActor.setName(this.graphPrefix + actor.getName());
     // tracking is useful for FPGA hls codegen where refinements of delay actors are supported
     PreesmCopyTracker.trackCopy(actor, copyActor);
+    final Refinement ref = actor.getRefinement();
+    if (ref != null) {
+      final Refinement copyRef = PiMMUserFactory.instance.copy(ref);
+      copyActor.setRefinement(copyRef);
+    }
 
     final DataInputPort setterPort = actor.getDataInputPort();
     final DataInputPort copySetterPort = copyActor.getDataInputPort();
     copySetterPort.setName(setterPort.getName());
-    copySetterPort.setExpression(setterPort.getExpression().getExpressionAsString());
+
     final DataOutputPort getterPort = actor.getDataOutputPort();
     final DataOutputPort copyGetterPort = copyActor.getDataOutputPort();
     copyGetterPort.setName(getterPort.getName());
-    copyGetterPort.setExpression(getterPort.getExpression().getExpressionAsString());
+
     // Adding the entry in the map
     this.actor2actor.put(actor, copyActor);
     this.result.addDelay(copy);
