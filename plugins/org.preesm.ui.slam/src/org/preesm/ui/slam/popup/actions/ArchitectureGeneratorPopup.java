@@ -75,7 +75,7 @@ public class ArchitectureGeneratorPopup extends AbstractHandler {
       }
 
     } catch (final Exception e) {
-      throw new ExecutionException("Could not generate scenarios", e);
+      throw new ExecutionException("Could not generate architecture.", e);
     }
     return null;
   }

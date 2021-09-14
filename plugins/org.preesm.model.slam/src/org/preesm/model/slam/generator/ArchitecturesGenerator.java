@@ -111,8 +111,7 @@ public class ArchitecturesGenerator {
     operatorVLNV.setLibrary("");
     operatorVLNV.setVendor("");
     operatorVLNV.setVersion("");
-
-    final Component opX86 = SlamUserFactory.eINSTANCE.createComponent(operatorVLNV, CPU.class.getName());
+    final Component opX86 = SlamUserFactory.eINSTANCE.createComponent(operatorVLNV, CPU.class.getSimpleName());
     ch.getComponents().add(opX86);
 
     final ComInterface mi = SlamFactory.eINSTANCE.createComInterface();
