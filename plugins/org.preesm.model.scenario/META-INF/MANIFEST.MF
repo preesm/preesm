@@ -22,8 +22,9 @@ Require-Bundle: org.eclipse.core.runtime,
 Bundle-ActivationPolicy: lazy
 Bundle-Vendor: %providerName
 Export-Package: org.preesm.model.scenario,
- org.preesm.model.scenario.impl,
- org.preesm.model.scenario.util,
+ org.preesm.model.scenario.check,
  org.preesm.model.scenario.generator,
+ org.preesm.model.scenario.impl,
  org.preesm.model.scenario.serialize,
+ org.preesm.model.scenario.util,
  org.preesm.model.scenario.workflow

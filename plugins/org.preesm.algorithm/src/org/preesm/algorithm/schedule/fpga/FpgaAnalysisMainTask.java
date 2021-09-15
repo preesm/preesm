@@ -29,6 +29,7 @@ import org.preesm.model.pisdf.brv.BRVMethod;
 import org.preesm.model.pisdf.brv.PiBRV;
 import org.preesm.model.pisdf.statictools.PiSDFFlattener;
 import org.preesm.model.scenario.Scenario;
+import org.preesm.model.scenario.check.FifoTypeChecker;
 import org.preesm.model.slam.Design;
 import org.preesm.model.slam.utils.SlamDesignPEtypeChecker;
 import org.preesm.workflow.elements.Workflow;
@@ -70,6 +71,7 @@ public class FpgaAnalysisMainTask extends AbstractTaskImplementation {
     if (algorithm.getAllDelays().stream().anyMatch(x -> (x.getLevel() != PersistenceLevel.PERMANENT))) {
       throw new PreesmRuntimeException("This task must be called on PiGraph with only permanent delays.");
     }
+    FifoTypeChecker.checkMissingFifoTypeSizes(scenario);
 
     // Flatten the graph
     final PiGraph flatGraph = PiSDFFlattener.flatten(algorithm, true);
