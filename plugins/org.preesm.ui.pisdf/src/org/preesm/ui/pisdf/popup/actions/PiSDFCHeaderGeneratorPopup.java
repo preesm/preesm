@@ -62,13 +62,15 @@ public class PiSDFCHeaderGeneratorPopup extends AbstractGenericMultiplePiHandler
     // if no actor needs new refinement, then do nothing
     if (actorsWithoutRefinement.isEmpty()) {
       MessageDialog.openInformation(shell, "PiGraph C header refinement generator",
-          "The given PiSDF already has all its refinements.");
+          "The given PiSDF " + pigraph.getName() + " already has all its refinements.");
       return;
     }
 
     // get the target folder
     final IPath targetFolder = FileUtils.browseFiles(PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell(),
-        "Select result location", "Select the folder where to write the computed PiGraph.", (Collection<String>) null);
+        "Select result location",
+        "Select the folder where to write the computed refinement for PiGraph " + pigraph.getName() + ".",
+        (Collection<String>) null);
     if (targetFolder != null) {
       // save the file
       final String fileName = pigraph.getName() + "_header.h";
