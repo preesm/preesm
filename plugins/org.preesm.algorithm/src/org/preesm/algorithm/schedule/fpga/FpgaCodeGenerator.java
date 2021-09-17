@@ -483,10 +483,11 @@ public class FpgaCodeGenerator {
 
   protected String generateInitWrapper(final Map<AbstractActor, String> actorCalls) {
     final StringBuilder sb = new StringBuilder("static void " + NAME_WRAPPER_INITPROTO + "() {\n");
-    sb.append("  static bool init = false;\n  if (!init) {\n  init = true;\n");
+    sb.append("  static bool init = false;\n  if (!init) {\n");
     for (final String call : actorCalls.values()) {
       sb.append("    " + call);
     }
+    sb.append("    ap_wait();\n    init = true;\n");
     sb.append("  }\n}\n");
     return sb.toString();
   }
@@ -528,7 +529,7 @@ public class FpgaCodeGenerator {
       wrapperProto.append(listArgProto.stream().collect(Collectors.joining(", ")) + ") {\n");
       e.setValue(newCall.toString());
       // we fill the wrapper body
-      wrapperProto.append("  static bool init = false;\n  if (!init) {\n  init = true;\n");
+      wrapperProto.append("  static bool init = false;\n  if (!init) {\n");
       for (final Fifo f : delayedFifos) {
         // if the delay has an init function we call it, otherwise we fill with zero
         final Delay d = f.getDelay();
@@ -536,7 +537,7 @@ public class FpgaCodeGenerator {
         if (da != null && da.hasValidRefinement()) {
           // then the delay actor has a prototype that we will call
           // (it may have multiple params and only one output)
-          wrapperProto.append(generateDelayActorInitCall(da));
+          wrapperProto.append("    " + generateDelayActorInitCall(da));
         } else {
           final String size = Long.toString(d.getSizeExpression().evaluate());
           // the type is surrounded by parenthesis to handle the case of "unsigned char" for example
@@ -545,6 +546,7 @@ public class FpgaCodeGenerator {
               + f.getType() + "){});\n  }\n");
         }
       }
+      wrapperProto.append("    ap_wait();\n    init = true;\n");
       wrapperProto.append("  }\n  " + oriCall + "}\n");
       sb.append(wrapperProto.toString());
     }
