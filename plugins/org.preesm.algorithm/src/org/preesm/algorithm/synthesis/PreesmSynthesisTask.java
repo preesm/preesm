@@ -63,6 +63,7 @@ import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.scenario.Scenario;
+import org.preesm.model.scenario.check.FifoTypeChecker;
 import org.preesm.model.slam.Design;
 import org.preesm.workflow.elements.Workflow;
 import org.preesm.workflow.implement.AbstractTaskImplementation;
@@ -120,6 +121,12 @@ public class PreesmSynthesisTask extends AbstractTaskImplementation {
     comIns.insertCommunications(algorithm, architecture, scenario, scheduleAndMap.schedule, scheduleAndMap.mapping);
 
     PreesmLogger.getLogger().log(Level.INFO, () -> " -- Allocating Memory - " + allocationName);
+    try {
+      FifoTypeChecker.checkMissingFifoTypeSizes(scenario);
+    } catch (final PreesmRuntimeException e) {
+      throw new PreesmSynthesisException(
+          "Cannot perform the memory allocation since not all fifo types have a defined size.", e);
+    }
     final Allocation memalloc = alloc.allocateMemory(algorithm, architecture, scenario, scheduleAndMap.schedule,
         scheduleAndMap.mapping);
 

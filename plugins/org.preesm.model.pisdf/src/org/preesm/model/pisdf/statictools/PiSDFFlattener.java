@@ -131,7 +131,7 @@ public class PiSDFFlattener extends PiMMSwitch<Boolean> {
    */
   public static final PiGraph flatten(final PiGraph graph, boolean performOptim) {
     // Check consistency of the graph (throw exception if recoverable or fatal error)
-    final PiGraphConsistenceChecker pgcc = new PiGraphConsistenceChecker(CheckerErrorLevel.RECOVERABLE,
+    final PiGraphConsistenceChecker pgcc = new PiGraphConsistenceChecker(CheckerErrorLevel.FATAL_ANALYSIS,
         CheckerErrorLevel.NONE);
     pgcc.check(graph);
 
@@ -167,7 +167,7 @@ public class PiSDFFlattener extends PiMMSwitch<Boolean> {
     }
 
     // Check consistency of the graph (throw exception if recoverable or fatal error)
-    final PiGraphConsistenceChecker pgccResult = new PiGraphConsistenceChecker(CheckerErrorLevel.RECOVERABLE,
+    final PiGraphConsistenceChecker pgccResult = new PiGraphConsistenceChecker(CheckerErrorLevel.FATAL_ANALYSIS,
         CheckerErrorLevel.NONE);
     pgccResult.check(result);
     flattenCheck(graphCopy, result);

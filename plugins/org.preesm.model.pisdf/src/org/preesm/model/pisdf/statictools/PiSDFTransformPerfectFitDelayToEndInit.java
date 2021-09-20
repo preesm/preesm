@@ -76,7 +76,7 @@ public class PiSDFTransformPerfectFitDelayToEndInit {
     final PiGraph copyGraph = PiMMUserFactory.instance.copyPiGraphWithHistory(this.inputGraph);
 
     // Check consistency of the graph (throw exception if recoverable or fatal error)
-    final PiGraphConsistenceChecker pgcc = new PiGraphConsistenceChecker(CheckerErrorLevel.RECOVERABLE,
+    final PiGraphConsistenceChecker pgcc = new PiGraphConsistenceChecker(CheckerErrorLevel.FATAL_ANALYSIS,
         CheckerErrorLevel.NONE);
     pgcc.check(copyGraph);
 
@@ -141,7 +141,7 @@ public class PiSDFTransformPerfectFitDelayToEndInit {
     }
 
     // Check consistency of the graph (throw exception if recoverable or fatal error)
-    final PiGraphConsistenceChecker pgccAfterwards = new PiGraphConsistenceChecker(CheckerErrorLevel.RECOVERABLE,
+    final PiGraphConsistenceChecker pgccAfterwards = new PiGraphConsistenceChecker(CheckerErrorLevel.FATAL_ANALYSIS,
         CheckerErrorLevel.NONE);
     pgccAfterwards.check(copyGraph);
     return copyGraph;

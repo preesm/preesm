@@ -165,7 +165,7 @@ public class PiSDFToSingleRate extends PiMMSwitch<Boolean> {
 
     PreesmLogger.getLogger().log(Level.FINE, " >>   - check");
     // Check consistency of the graph (throw exception if recoverable or fatal error)
-    final PiGraphConsistenceChecker pgcc = new PiGraphConsistenceChecker(CheckerErrorLevel.RECOVERABLE,
+    final PiGraphConsistenceChecker pgcc = new PiGraphConsistenceChecker(CheckerErrorLevel.FATAL_ANALYSIS,
         CheckerErrorLevel.NONE);
     pgcc.check(graph);
     // 0. we copy the graph since the transformation has side effects (especially on delay actors)
@@ -212,7 +212,7 @@ public class PiSDFToSingleRate extends PiMMSwitch<Boolean> {
 
     PreesmLogger.getLogger().log(Level.FINE, " >>   - check");
     // Check consistency of the graph (throw exception if recoverable or fatal error)
-    final PiGraphConsistenceChecker pgccAfterwards = new PiGraphConsistenceChecker(CheckerErrorLevel.RECOVERABLE,
+    final PiGraphConsistenceChecker pgccAfterwards = new PiGraphConsistenceChecker(CheckerErrorLevel.FATAL_ANALYSIS,
         CheckerErrorLevel.NONE);
     pgccAfterwards.check(acyclicSRPiMM);
 

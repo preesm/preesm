@@ -58,7 +58,7 @@ public class PiMMAlgorithmCheckerPopup extends AbstractGenericMultiplePiHandler 
     PreesmLogger.getLogger().info("Checking validity of graph " + pigraph.getName() + ".");
     // Check the graph and display corresponding messages
     final PiGraphConsistenceChecker pgcc = new PiGraphConsistenceChecker(CheckerErrorLevel.NONE,
-        CheckerErrorLevel.WARNING);
+        CheckerErrorLevel.FATAL_CODEGEN);
     final boolean valid = pgcc.check(pigraph);
     String message = pgcc.toString();
     if (valid) {

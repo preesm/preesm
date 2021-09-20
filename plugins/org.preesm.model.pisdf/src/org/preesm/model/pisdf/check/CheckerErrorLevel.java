@@ -15,15 +15,19 @@ public enum CheckerErrorLevel {
   /**
    * Harmful for load/store.
    */
-  FATAL(0, Level.SEVERE),
+  FATAL_ALL(0, Level.SEVERE),
   /**
    * Harmful for any analysis.
    */
-  RECOVERABLE(1, Level.WARNING),
+  FATAL_ANALYSIS(1, Level.WARNING),
   /**
    * Harmful for code generation only.
    */
-  WARNING(2, Level.INFO);
+  FATAL_CODEGEN(2, Level.INFO),
+  /**
+   * Warnings only.
+   */
+  WARNING(3, Level.INFO);
 
   private int   index;
   private Level loggerCorrespondingLevel;

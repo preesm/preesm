@@ -117,7 +117,7 @@ public class PiGraphConsistenceChecker extends AbstractPiSDFObjectChecker {
     boolean graphValid = graph.getUrl() != null;
     if (!graphValid) {
       // for an unknown reason, this cannot be a fatal error, otherwise it is triggered at each saving operation
-      reportError(CheckerErrorLevel.RECOVERABLE, graph, "Graph [%s] has null URL.", graph.getVertexPath());
+      reportError(CheckerErrorLevel.FATAL_ANALYSIS, graph, "Graph [%s] has null URL.", graph.getVertexPath());
     }
 
     graphValid &= caseAbstractActor(graph);
@@ -129,7 +129,7 @@ public class PiGraphConsistenceChecker extends AbstractPiSDFObjectChecker {
     dcd.doSwitch(graph);
     graphValid &= !dcd.cyclesDetected();
     if (dcd.cyclesDetected()) {
-      reportError(CheckerErrorLevel.RECOVERABLE, graph, "Graph [%s] has cyclic dependencies between its parameters.",
+      reportError(CheckerErrorLevel.FATAL_ANALYSIS, graph, "Graph [%s] has cyclic dependencies between its parameters.",
           graph.getVertexPath());
     }
 
@@ -165,7 +165,7 @@ public class PiGraphConsistenceChecker extends AbstractPiSDFObjectChecker {
     if (redundantPorts) {
       for (final Entry<String, Integer> e : allPortNameOccurrences.entrySet()) {
         if (e.getValue() > 1) {
-          reportError(CheckerErrorLevel.FATAL, actor, "Actor [%s] has several ports with same name [%s].",
+          reportError(CheckerErrorLevel.FATAL_ALL, actor, "Actor [%s] has several ports with same name [%s].",
               actor.getVertexPath(), e.getKey());
         }
       }
@@ -198,7 +198,7 @@ public class PiGraphConsistenceChecker extends AbstractPiSDFObjectChecker {
     // the getAllConnectedDataOutputPorts method already filters the non null fifo
     if (typeSet.size() > 1) {
       actorValid = false;
-      reportError(CheckerErrorLevel.WARNING, actor, "Special actor [%s] is connected to fifos of multiple types.",
+      reportError(CheckerErrorLevel.FATAL_CODEGEN, actor, "Special actor [%s] is connected to fifos of multiple types.",
           actor.getVertexPath());
     }
 
@@ -213,7 +213,7 @@ public class PiGraphConsistenceChecker extends AbstractPiSDFObjectChecker {
     final boolean validity = name.equals(portName);
     if (!validity) {
       final String message = "The interface data port [%s] should have the same name as its containing actor '%s'.";
-      reportError(CheckerErrorLevel.FATAL, actor, message, portName, actor.getVertexPath());
+      reportError(CheckerErrorLevel.FATAL_ALL, actor, message, portName, actor.getVertexPath());
     }
     return validity;
   }
@@ -227,7 +227,7 @@ public class PiGraphConsistenceChecker extends AbstractPiSDFObjectChecker {
       // if a PiGraph then we would be at top level or in a non reconnected PiGraph
       containedInProperGraph = cfg.getContainingPiGraph() == peek;
       if (!containedInProperGraph) {
-        reportError(CheckerErrorLevel.FATAL, cfgInPort, "Config input port [%s] is not contained in graph.",
+        reportError(CheckerErrorLevel.FATAL_ALL, cfgInPort, "Config input port [%s] is not contained in graph.",
             cfgInPort.getName());
       }
     }
@@ -235,8 +235,8 @@ public class PiGraphConsistenceChecker extends AbstractPiSDFObjectChecker {
     final boolean portConnected = incomingDependency != null;
     boolean depInGraph = true;
     if (!portConnected) {
-      reportError(CheckerErrorLevel.RECOVERABLE, cfgInPort, "Config input port [%s] is not connected to a dependency.",
-          cfgInPort.getName());
+      reportError(CheckerErrorLevel.FATAL_ANALYSIS, cfgInPort,
+          "Config input port [%s] is not connected to a dependency.", cfgInPort.getName());
     } else {
       final Graph containingGraph = incomingDependency.getContainingGraph();
       depInGraph = containingGraph == peek;
@@ -259,13 +259,13 @@ public class PiGraphConsistenceChecker extends AbstractPiSDFObjectChecker {
     final String actorName = isContained ? containingActor.getName() : "unknown";
     boolean wellContained = true;
     if (!isContained) {
-      reportError(CheckerErrorLevel.FATAL, port, "Port [%s] has not containing actor.", portName);
+      reportError(CheckerErrorLevel.FATAL_ALL, port, "Port [%s] has not containing actor.", portName);
     } else if (!(containingActor instanceof PiGraph)) {
       // if a PiGraph then we would be at top level or in a non reconnected PiGraph
       final PiGraph containingPiGraph = containingActor.getContainingPiGraph();
       wellContained = (containingPiGraph == peek);
       if (!wellContained) {
-        reportError(CheckerErrorLevel.FATAL, port,
+        reportError(CheckerErrorLevel.FATAL_ALL, port,
             "Port [<%s>:%s] containing actor graph [%s] differs from peek graph [%s].", actorName, portName,
             containingPiGraph, peek);
       }
@@ -274,14 +274,14 @@ public class PiGraphConsistenceChecker extends AbstractPiSDFObjectChecker {
     final boolean hasFifo = fifo != null;
     boolean fifoWellContained = true;
     if (!hasFifo) {
-      reportError(CheckerErrorLevel.RECOVERABLE, port, "Port [<%s>:%s] is not connected to a fifo.", actorName,
+      reportError(CheckerErrorLevel.FATAL_ANALYSIS, port, "Port [<%s>:%s] is not connected to a fifo.", actorName,
           portName);
     } else if (!(containingActor instanceof PiGraph)) {
       // if a PiGraph then we would be at top level or in a non reconnected PiGraph
       final PiGraph containingPiGraph2 = fifo.getContainingPiGraph();
       fifoWellContained = (containingPiGraph2 == peek);
       if (!fifoWellContained) {
-        reportError(CheckerErrorLevel.FATAL, port, "Port [<%s>:%s] fifo graph [%s] differs from peek graph [%s].",
+        reportError(CheckerErrorLevel.FATAL_ALL, port, "Port [<%s>:%s] fifo graph [%s] differs from peek graph [%s].",
             actorName, portName, containingPiGraph2, peek);
       }
     }
@@ -298,7 +298,7 @@ public class PiGraphConsistenceChecker extends AbstractPiSDFObjectChecker {
 
     // Instantiate check result
     if (!fifoValid) {
-      reportError(CheckerErrorLevel.FATAL, fifo, "Fifo [%s] is not valid.", fifo.getId());
+      reportError(CheckerErrorLevel.FATAL_ALL, fifo, "Fifo [%s] is not valid.", fifo.getId());
     } else {
       final FifoChecker fifoChecker = new FifoChecker(throwExceptionLevel, loggerLevel);
       fifoValid = fifoChecker.doSwitch(fifo);
@@ -322,10 +322,11 @@ public class PiGraphConsistenceChecker extends AbstractPiSDFObjectChecker {
 
     final boolean delayActorValid = hasLinkedDelay && delayProperlyContained;
     if (!hasLinkedDelay) {
-      reportError(CheckerErrorLevel.FATAL, actor, "DelayActor [%s] has no proper linked delay.", actor.getVertexPath());
+      reportError(CheckerErrorLevel.FATAL_ALL, actor, "DelayActor [%s] has no proper linked delay.",
+          actor.getVertexPath());
     }
     if (!delayProperlyContained) {
-      reportError(CheckerErrorLevel.FATAL, actor, "DelayActor [%s] has a delay not contained in the graph.",
+      reportError(CheckerErrorLevel.FATAL_ALL, actor, "DelayActor [%s] has a delay not contained in the graph.",
           actor.getVertexPath());
     }
     return delayActorValid;
@@ -338,10 +339,10 @@ public class PiGraphConsistenceChecker extends AbstractPiSDFObjectChecker {
     final boolean delayActorProperlyContained = delay.getContainingPiGraph().getVertices().contains(actor);
     final boolean delayValid = actorLinkedProperly && delayActorProperlyContained;
     if (!actorLinkedProperly) {
-      reportError(CheckerErrorLevel.FATAL, delay, "Delay [%s] is no proper linked actor.", delay.getName());
+      reportError(CheckerErrorLevel.FATAL_ALL, delay, "Delay [%s] is no proper linked actor.", delay.getName());
     }
     if (!delayActorProperlyContained) {
-      reportError(CheckerErrorLevel.FATAL, delay, "Delay [%s] has an actor not contained in the graph.",
+      reportError(CheckerErrorLevel.FATAL_ALL, delay, "Delay [%s] has an actor not contained in the graph.",
           delay.getName());
     }
     return delayValid;
@@ -358,7 +359,7 @@ public class PiGraphConsistenceChecker extends AbstractPiSDFObjectChecker {
     final boolean getterContained = containingConfigurable != null;
     boolean properTarget = true;
     if (!getterContained) {
-      reportError(CheckerErrorLevel.FATAL, dependency, "Dependency [%s] getter [%s] is not contained.", dependency,
+      reportError(CheckerErrorLevel.FATAL_ALL, dependency, "Dependency [%s] getter [%s] is not contained.", dependency,
           getter.getName());
     } else if (!(containingConfigurable instanceof PiGraph)) {
       // if a PiGraph then we would be at top level or in a non reconnected PiGraph
@@ -366,7 +367,7 @@ public class PiGraphConsistenceChecker extends AbstractPiSDFObjectChecker {
       final PiGraph containingPiGraph = containingConfigurable.getContainingPiGraph();
       properTarget = containingPiGraph == peek;
       if (!properTarget) {
-        reportError(CheckerErrorLevel.FATAL, dependency,
+        reportError(CheckerErrorLevel.FATAL_ALL, dependency,
             "Dependency [%s] getter [%s] is contained in an actor that is not part of the graph.", dependency,
             getter.getName());
       }
@@ -381,7 +382,7 @@ public class PiGraphConsistenceChecker extends AbstractPiSDFObjectChecker {
         .allMatch(d -> d.getContainingGraph() == this.graphStack.peek());
     final boolean parameterOK = containOK && depsOk;
     if (!parameterOK) {
-      reportError(CheckerErrorLevel.FATAL, param, "Parameter [%s] is not contained by graph [%s].", param.getName(),
+      reportError(CheckerErrorLevel.FATAL_ALL, param, "Parameter [%s] is not contained by graph [%s].", param.getName(),
           graphStack.peek().getVertexPath());
     }
     return containOK && depsOk;

@@ -152,7 +152,7 @@ public class PiSDFSubgraphBuilder extends PiMMSwitch<Boolean> {
     }
     // Check consistency of parent graph
     // Check consistency of the graph (throw exception if recoverable or fatal error)
-    final PiGraphConsistenceChecker pgcc = new PiGraphConsistenceChecker(CheckerErrorLevel.RECOVERABLE,
+    final PiGraphConsistenceChecker pgcc = new PiGraphConsistenceChecker(CheckerErrorLevel.FATAL_ANALYSIS,
         CheckerErrorLevel.NONE);
     pgcc.check(this.parentGraph);
     return this.subGraph;

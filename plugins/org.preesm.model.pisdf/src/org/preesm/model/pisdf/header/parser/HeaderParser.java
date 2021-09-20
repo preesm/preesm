@@ -83,6 +83,7 @@ import org.preesm.model.pisdf.Direction;
 import org.preesm.model.pisdf.FunctionArgument;
 import org.preesm.model.pisdf.FunctionPrototype;
 import org.preesm.model.pisdf.Port;
+import org.preesm.model.pisdf.check.NameCheckerC;
 import org.preesm.model.pisdf.check.RefinementChecker;
 import org.preesm.model.pisdf.factory.PiMMUserFactory;
 
@@ -293,11 +294,14 @@ public class HeaderParser {
       if (child instanceof IASTParameterDeclaration) {
         final FunctionArgument fA = PiMMUserFactory.instance.createFunctionArgument();
         protoParameters.add(fA);
+
         final IASTParameterDeclaration paramDeclon = (IASTParameterDeclaration) child;
-        final String type = paramDeclon.getDeclSpecifier().getRawSignature().trim();
-        fA.setType(type);
-        final boolean isTemplated = type.contains("<");
-        if (isTemplated || type.contains(":")) {
+        final String rawArgType = paramDeclon.getDeclSpecifier().getRawSignature();
+        final String argType = NameCheckerC.removeCVqualifiers(rawArgType);
+
+        fA.setType(argType);
+        final boolean isTemplated = argType.contains("<");
+        if (isTemplated || argType.contains(":")) {
           // then the type contains a template or a namespace
           fA.setIsCPPdefinition(true);
         }
@@ -305,21 +309,31 @@ public class HeaderParser {
         // since it is not possible to know if an argument template param is indeed a parameter to be replaced
         // or is its actual value (and in this case we do not replace it)
         final IASTDeclarator paramDeclor = paramDeclon.getDeclarator();
+
+        final String argName = paramDeclor.getName().getRawSignature().trim();
+        fA.setName(argName);
+
         IASTPointerOperator[] pops = paramDeclor.getPointerOperators();
-        if (pops.length > 1) {
-          PreesmLogger.getLogger().warning(() -> DISCARD_FUNC + rawName
-              + ". While analyzing it, at least one argument with multiple pointers was found.");
-          return;
-        } else if (pops.length == 0) {
+        if (pops.length == 0) {
           fA.setIsConfigurationParameter(true);
-        } else if (pops[0] instanceof ICPPASTReferenceOperator) {
-          // then data structure is passed by reference, only for multiple data containers as streams or vectors
-          fA.setIsPassedByReference(true);
-          // and it is possible only for CPP
-          fA.setIsCPPdefinition(true);
+        } else {
+          if (pops.length > 1) {
+            // we automatically converts to void* since we only have to store the first address
+            fA.setType(RefinementChecker.DEFAULT_PTR_TYPE);
+            PreesmLogger.getLogger()
+                .warning(() -> "Argument " + argName + " of function " + rawName
+                    + " is a pointer to pointer, thus it is automatically replaced by "
+                    + RefinementChecker.DEFAULT_PTR_TYPE + ".");
+
+          }
+
+          if (pops[pops.length - 1] instanceof ICPPASTReferenceOperator) {
+            // then data structure is passed by reference, only for data containers as streams or vectors
+            fA.setIsPassedByReference(true);
+            // and it is possible only for CPP
+            fA.setIsCPPdefinition(true);
+          }
         }
-        final String name = paramDeclor.getName().getRawSignature().trim();
-        fA.setName(name);
 
       }
     }

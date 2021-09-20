@@ -95,7 +95,7 @@ public class FifoChecker extends AbstractPiSDFObjectChecker {
     final long rateSource = f.getSourcePort().getPortRateExpression().evaluate();
     final long rateTarget = f.getTargetPort().getPortRateExpression().evaluate();
     if ((rateSource == 0 && rateTarget != 0) || (rateSource != 0 && rateTarget == 0)) {
-      reportError(CheckerErrorLevel.RECOVERABLE, f, "Fifo [%s] has one of its rates being 0, but not the other.", f);
+      reportError(CheckerErrorLevel.FATAL_ANALYSIS, f, "Fifo [%s] has one of its rates being 0, but not the other.", f);
       return false;
     }
     return true;
@@ -110,7 +110,7 @@ public class FifoChecker extends AbstractPiSDFObjectChecker {
    */
   private boolean checkFifoType(final Fifo f) {
     if (f.getType().equals("void")) {
-      reportError(CheckerErrorLevel.WARNING, f, "Fifo [%s] has void type.", f.getId());
+      reportError(CheckerErrorLevel.FATAL_CODEGEN, f, "Fifo [%s] has void type.", f.getId());
       return false;
     }
     return true;

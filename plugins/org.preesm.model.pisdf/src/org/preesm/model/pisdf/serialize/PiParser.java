@@ -157,7 +157,7 @@ public class PiParser {
     final PiGraph graph = getPiGraph(algorithmURL);
     SubgraphReconnector.reconnectChildren(graph);
     // Check consistency of the graph (throw exception if fatal error)
-    final PiGraphConsistenceChecker pgcc = new PiGraphConsistenceChecker(CheckerErrorLevel.FATAL,
+    final PiGraphConsistenceChecker pgcc = new PiGraphConsistenceChecker(CheckerErrorLevel.FATAL_ALL,
         CheckerErrorLevel.NONE);
     pgcc.check(graph);
     return graph;

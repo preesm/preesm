@@ -154,39 +154,23 @@ public class PiMMMarkerBehavior extends DefaultMarkerBehavior {
       final BasicDiagnostic result = new BasicDiagnostic();
       try {
         final Diagram diagram = this.diagramBehavior.getDiagramContainer().getDiagramTypeProvider().getDiagram();
-        if (!resource.getContents().isEmpty() && !checker.check((PiGraph) resource.getContents().get(0))) {
+        if (!resource.getContents().isEmpty()
+            && Boolean.FALSE.equals(checker.check((PiGraph) resource.getContents().get(0)))) {
 
           // warnings
-          for (final Entry<EObject, List<String>> msgs : checker.getErrorMap(CheckerErrorLevel.WARNING).entrySet()) {
-            final String msg = msgs.getValue().stream().collect(Collectors.joining("\n"));
-            final List<PictogramElement> pes = Graphiti.getLinkService().getPictogramElements(diagram, msgs.getKey());
-            if (!pes.isEmpty()) {
-              final PictogramElement pictogramElement = pes.get(0);
-              final String uriFragment = pictogramElement.eResource().getURIFragment(pictogramElement);
-              final BasicDiagnostic d = new BasicDiagnostic(org.eclipse.emf.common.util.Diagnostic.INFO,
-                  PreesmUIPlugin.PLUGIN_ID, 0, msg, new Object[] { pictogramElement, uriFragment });
+          linkErrors(diagram, checker.getErrorMap(CheckerErrorLevel.WARNING), result,
+              org.eclipse.emf.common.util.Diagnostic.INFO);
 
-              result.add(d);
-            }
-          }
+          // codegen errors
+          linkErrors(diagram, checker.getErrorMap(CheckerErrorLevel.FATAL_CODEGEN), result,
+              org.eclipse.emf.common.util.Diagnostic.INFO);
 
-          // recoverable errors
-          for (final Entry<EObject, List<String>> msgs : checker.getErrorMap(CheckerErrorLevel.RECOVERABLE)
-              .entrySet()) {
-            final String msg = msgs.getValue().stream().collect(Collectors.joining("\n"));
-            final List<PictogramElement> pes = Graphiti.getLinkService().getPictogramElements(diagram, msgs.getKey());
-            if (!pes.isEmpty()) {
-              final PictogramElement pictogramElement = pes.get(0);
-              final String uriFragment = pictogramElement.eResource().getURIFragment(pictogramElement);
-              final BasicDiagnostic d = new BasicDiagnostic(org.eclipse.emf.common.util.Diagnostic.WARNING,
-                  PreesmUIPlugin.PLUGIN_ID, 0, msg, new Object[] { pictogramElement, uriFragment });
-
-              result.add(d);
-            }
-          }
+          // analysis errors
+          linkErrors(diagram, checker.getErrorMap(CheckerErrorLevel.FATAL_ANALYSIS), result,
+              org.eclipse.emf.common.util.Diagnostic.WARNING);
 
           // fatal errors
-          for (final Entry<EObject, List<String>> msgs : checker.getErrorMap(CheckerErrorLevel.FATAL).entrySet()) {
+          for (final Entry<EObject, List<String>> msgs : checker.getErrorMap(CheckerErrorLevel.FATAL_ALL).entrySet()) {
             final String msg = msgs.getValue().stream().collect(Collectors.joining("\n"));
             final EObject pisdfElement = msgs.getKey();
             final List<PictogramElement> pes = Graphiti.getLinkService().getPictogramElements(diagram, pisdfElement);
@@ -211,6 +195,22 @@ public class PiMMMarkerBehavior extends DefaultMarkerBehavior {
     }
 
     return Diagnostic.OK_INSTANCE;
+  }
+
+  protected static void linkErrors(final Diagram diagram, final Map<EObject, List<String>> errors,
+      final BasicDiagnostic result, int severity) {
+    for (final Entry<EObject, List<String>> msgs : errors.entrySet()) {
+      final String msg = msgs.getValue().stream().collect(Collectors.joining("\n"));
+      final List<PictogramElement> pes = Graphiti.getLinkService().getPictogramElements(diagram, msgs.getKey());
+      if (!pes.isEmpty()) {
+        final PictogramElement pictogramElement = pes.get(0);
+        final String uriFragment = pictogramElement.eResource().getURIFragment(pictogramElement);
+        final BasicDiagnostic d = new BasicDiagnostic(severity, PreesmUIPlugin.PLUGIN_ID, 0, msg,
+            new Object[] { pictogramElement, uriFragment });
+
+        result.add(d);
+      }
+    }
   }
 
   /*

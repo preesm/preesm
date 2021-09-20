@@ -66,7 +66,7 @@ public class PiGraphConsistenceCheckerTask extends AbstractTaskImplementation {
     PreesmLogger.getLogger().info("Checking validity of graph " + graph.getName() + ".");
     // Check the graph and display corresponding messages
     final PiGraphConsistenceChecker pgcc = new PiGraphConsistenceChecker(CheckerErrorLevel.NONE,
-        CheckerErrorLevel.WARNING);
+        CheckerErrorLevel.FATAL_CODEGEN);
     final boolean valid = pgcc.check(graph);
     if (valid) {
       PreesmLogger.getLogger().info("Graph " + graph.getName() + " is valid.");

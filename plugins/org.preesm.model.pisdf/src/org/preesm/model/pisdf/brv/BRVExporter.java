@@ -100,7 +100,7 @@ public class BRVExporter extends AbstractTaskImplementation {
     PreesmLogger.getLogger().log(Level.INFO, "Computing Repetition Vector for graph [" + graph.getName() + "]");
 
     // Check consistency of the graph (throw exception if fatal error)
-    final PiGraphConsistenceChecker pgcc = new PiGraphConsistenceChecker(CheckerErrorLevel.RECOVERABLE,
+    final PiGraphConsistenceChecker pgcc = new PiGraphConsistenceChecker(CheckerErrorLevel.FATAL_ANALYSIS,
         CheckerErrorLevel.NONE);
     pgcc.check(graph);
 

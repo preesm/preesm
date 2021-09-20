@@ -34,11 +34,15 @@ public abstract class AbstractPiSDFObjectChecker extends PiMMSwitch<Boolean> {
   /**
    * Errors which avoid to analyze a PiSDF graph.
    */
-  protected Map<EObject, List<String>> recoverableErrors;
+  protected Map<EObject, List<String>> fatalAnalysisErrors;
   /**
-   * Warnings, harmful for codegen only.
+   * Errors which avoid to execute the codegen only.
    */
-  protected Map<EObject, List<String>> onlyWarnings;
+  protected Map<EObject, List<String>> fatalCodegenErrors;
+  /**
+   * Warnings only.
+   */
+  protected Map<EObject, List<String>> warnings;
 
   protected CheckerErrorLevel throwExceptionLevel;
   protected CheckerErrorLevel loggerLevel;
@@ -51,8 +55,9 @@ public abstract class AbstractPiSDFObjectChecker extends PiMMSwitch<Boolean> {
     this.throwExceptionLevel = throwExceptionLevel;
     this.loggerLevel = loggerLevel;
     fatalErrors = new LinkedHashMap<>();
-    recoverableErrors = new LinkedHashMap<>();
-    onlyWarnings = new LinkedHashMap<>();
+    fatalAnalysisErrors = new LinkedHashMap<>();
+    fatalCodegenErrors = new LinkedHashMap<>();
+    warnings = new LinkedHashMap<>();
   }
 
   /**
@@ -99,14 +104,17 @@ public abstract class AbstractPiSDFObjectChecker extends PiMMSwitch<Boolean> {
   public Map<EObject, List<String>> getErrorMap(final CheckerErrorLevel level) {
     Map<EObject, List<String>> mapError = null;
     switch (level) {
-      case FATAL:
+      case FATAL_ALL:
         mapError = fatalErrors;
         break;
-      case RECOVERABLE:
-        mapError = recoverableErrors;
+      case FATAL_ANALYSIS:
+        mapError = fatalAnalysisErrors;
+        break;
+      case FATAL_CODEGEN:
+        mapError = fatalCodegenErrors;
         break;
       case WARNING:
-        mapError = onlyWarnings;
+        mapError = warnings;
         break;
       default:
         break;
@@ -123,8 +131,9 @@ public abstract class AbstractPiSDFObjectChecker extends PiMMSwitch<Boolean> {
     // big big generic to then iterate over the three maps to merge
     final List<Pair<Map<EObject, List<String>>, Map<EObject, List<String>>>> mapPairs = new ArrayList<>();
     mapPairs.add(new Pair<>(this.fatalErrors, checkerToCopy.fatalErrors));
-    mapPairs.add(new Pair<>(this.recoverableErrors, checkerToCopy.recoverableErrors));
-    mapPairs.add(new Pair<>(this.onlyWarnings, checkerToCopy.onlyWarnings));
+    mapPairs.add(new Pair<>(this.fatalAnalysisErrors, checkerToCopy.fatalAnalysisErrors));
+    mapPairs.add(new Pair<>(this.fatalCodegenErrors, checkerToCopy.fatalCodegenErrors));
+    mapPairs.add(new Pair<>(this.warnings, checkerToCopy.warnings));
 
     // we cannot use Map#putAll since we want to merge the List values of the key possibly
     // existing in both maps
@@ -150,15 +159,21 @@ public abstract class AbstractPiSDFObjectChecker extends PiMMSwitch<Boolean> {
         sb.append(messages.stream().collect(Collectors.joining("\n", "", "\n")));
       }
     }
-    if (!recoverableErrors.isEmpty()) {
-      sb.append("\nRecoverable errors:\n");
-      for (final List<String> messages : recoverableErrors.values()) {
+    if (!fatalAnalysisErrors.isEmpty()) {
+      sb.append("\nAnalysis errors:\n");
+      for (final List<String> messages : fatalAnalysisErrors.values()) {
         sb.append(messages.stream().collect(Collectors.joining("\n", "", "\n")));
       }
     }
-    if (!onlyWarnings.isEmpty()) {
+    if (!fatalCodegenErrors.isEmpty()) {
+      sb.append("\nCodegen errors:\n");
+      for (final List<String> messages : fatalCodegenErrors.values()) {
+        sb.append(messages.stream().collect(Collectors.joining("\n", "", "\n")));
+      }
+    }
+    if (!warnings.isEmpty()) {
       sb.append("\nWarnings:\n");
-      for (final List<String> messages : onlyWarnings.values()) {
+      for (final List<String> messages : warnings.values()) {
         sb.append(messages.stream().collect(Collectors.joining("\n", "", "\n")));
       }
     }

@@ -57,6 +57,12 @@ public class NameCheckerC {
   public static final String REGEX_C = "[a-zA-Z][a-zA-Z0-9_]*";
 
   /**
+   * CV-qualifiers to remove from types (PREESM does not need to know them).
+   */
+  public static final String REGEX_CV_QUAL = "\\sconst|const\\s|\\svolatile|volatile\\s|"
+      + "\\srestrict|restrict\\s|\\s_Atomic||_Atomic\\s";
+
+  /**
    * End of error message if name does not match {@link REGEX_C}
    */
   public static final String MESSAGE_VARIABLE_NAME_ERROR = "> must match the regex " + REGEX_C + ".";
@@ -121,6 +127,18 @@ public class NameCheckerC {
       throw new PreesmRuntimeException(componentName + " <" + name + MESSAGE_C_KEYWORD_NAME_ERROR);
     }
     return true;
+  }
+
+  /**
+   * Remove the const, restrict, volatile and _Atomic type qualifiers and harmonize whitespaces.
+   * 
+   * @param input
+   *          Where to remove the qualifiers.
+   * @return The input without qualifiers.
+   */
+  public static String removeCVqualifiers(final String input) {
+    final String withoutCV = input.replaceAll(NameCheckerC.REGEX_CV_QUAL, "");
+    return withoutCV.replaceAll("(\\s)+", " ").trim();
   }
 
 }

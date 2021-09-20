@@ -86,6 +86,9 @@ public class RefinementChecker extends AbstractPiSDFObjectChecker {
   /** In templates, the FIFO_DEPTH can be replaced automatically only if starting with this prefix. */
   public static final String FIFO_DEPTH_TEMPLATED_PREFIX = "FIFO_DEPTH_";
 
+  /** If the user wants a FIFO type being a pointer, then the default replacement type is the following. */
+  public static final String DEFAULT_PTR_TYPE = "void*";
+
   /**
    * Check if the given C/C++ header file extension is supported.
    * 
@@ -181,7 +184,7 @@ public class RefinementChecker extends AbstractPiSDFObjectChecker {
         // continue recursive visit if hierarchical?
       }
     } else {
-      reportError(CheckerErrorLevel.WARNING, a, "Actor [%s] has no refinement set.", a.getVertexPath());
+      reportError(CheckerErrorLevel.FATAL_CODEGEN, a, "Actor [%s] has no refinement set.", a.getVertexPath());
     }
 
     return validity;
@@ -204,7 +207,7 @@ public class RefinementChecker extends AbstractPiSDFObjectChecker {
     if (!fileExtension.equals("idl") && !fileExtension.equals("pi")
         && !isAsupportedHeaderFileExtension(fileExtension)) {
       // File pointed by the refinement of a does not have a valid extension
-      reportError(CheckerErrorLevel.RECOVERABLE, a, "Actor [%s] has an unrecognized refinement file extension.",
+      reportError(CheckerErrorLevel.FATAL_ANALYSIS, a, "Actor [%s] has an unrecognized refinement file extension.",
           a.getVertexPath());
       return false;
     }
@@ -227,7 +230,7 @@ public class RefinementChecker extends AbstractPiSDFObjectChecker {
     final IFile file = ResourcesPlugin.getWorkspace().getRoot().getFile(path);
     if (!file.exists()) {
       // File pointed by the refinement does not exist
-      reportError(CheckerErrorLevel.RECOVERABLE, a,
+      reportError(CheckerErrorLevel.FATAL_ANALYSIS, a,
           "Actor [%s] has a refinement file missing in the file system: '%s'.", a.getVertexPath(),
           a.getRefinement().getFilePath());
       return false;
@@ -257,11 +260,11 @@ public class RefinementChecker extends AbstractPiSDFObjectChecker {
 
         if (topPort != null && subPort == null) {
           validity = false;
-          reportError(CheckerErrorLevel.RECOVERABLE, a, "Port [%s:%s] is not present in refinement.", a.getName(),
+          reportError(CheckerErrorLevel.FATAL_CODEGEN, a, "Port [%s:%s] is not present in refinement.", a.getName(),
               topPort.getName());
         } else if (topPort == null && subPort != null) {
           validity = false;
-          reportError(CheckerErrorLevel.RECOVERABLE, a, "Port [%s:%s] is only present in refinement.", a.getName(),
+          reportError(CheckerErrorLevel.FATAL_CODEGEN, a, "Port [%s:%s] is only present in refinement.", a.getName(),
               subPort.getName());
         }
 
@@ -291,11 +294,11 @@ public class RefinementChecker extends AbstractPiSDFObjectChecker {
       // if init prototype, any kind of port is not required
       if (!(topPort instanceof ConfigInputPort) && !initProto && topPort != null && fa == null) {
         validity = false;
-        reportError(CheckerErrorLevel.RECOVERABLE, a, "Port [%s:%s] is not present in refinement.", a.getName(),
+        reportError(CheckerErrorLevel.FATAL_CODEGEN, a, "Port [%s:%s] is not present in refinement.", a.getName(),
             topPort.getName());
       } else if (topPort == null && fa != null) {
         validity = false;
-        reportError(CheckerErrorLevel.RECOVERABLE, a, "Port [%s:%s] is only present in refinement.", a.getName(),
+        reportError(CheckerErrorLevel.FATAL_CODEGEN, a, "Port [%s:%s] is only present in refinement.", a.getName(),
             fa.getName());
       }
     }
@@ -332,7 +335,7 @@ public class RefinementChecker extends AbstractPiSDFObjectChecker {
 
         if (topFifo != null && subFifo != null && !topFifo.getType().equals(subFifo.getType())) {
           validity = false;
-          reportError(CheckerErrorLevel.WARNING, a,
+          reportError(CheckerErrorLevel.FATAL_CODEGEN, a,
               "Port [%s:%s] has a different fifo type than in its inner self [%s]: '%s' vs '%s'.", a.getName(),
               topPort.getName(), a.getSubGraph().getName(), topFifo.getType(), subFifo.getType());
         }
@@ -351,16 +354,21 @@ public class RefinementChecker extends AbstractPiSDFObjectChecker {
           }
 
           final Fifo topFifo = ((DataPort) topPort).getFifo();
-
           if (topFifo != null && !fa.getType().equals(topFifo.getType())
               && isHlsStreamTemplated(fa.getType()) == null) {
             validity = false;
-            reportError(CheckerErrorLevel.WARNING, a,
+            reportError(CheckerErrorLevel.FATAL_CODEGEN, a,
                 "Port [%s:%s] has a different fifo type than in its C/C++ refinement: '%s' vs '%s'.", a.getName(),
                 topPort.getName(), topFifo.getType(), fa.getType());
             // check here the container type? If hls::stream for FPGA,
             // the templated FIFO type is either a parameter inferred by PREESM or direct value check along with the
             // actor
+          }
+          if (DEFAULT_PTR_TYPE.equals(fa.getType())) {
+            reportError(CheckerErrorLevel.WARNING, a,
+                "Port [%s:%s] is a %s pointer in its C/C++ refinement, "
+                    + "this is discouraged since outside of the memory allocated by PREESM.",
+                a.getName(), topPort.getName(), DEFAULT_PTR_TYPE);
           }
         }
       }
@@ -414,7 +422,7 @@ public class RefinementChecker extends AbstractPiSDFObjectChecker {
         }
       });
       if (!badlyUsedStreamParams.isEmpty()) {
-        reportError(CheckerErrorLevel.WARNING, actor,
+        reportError(CheckerErrorLevel.FATAL_CODEGEN, actor,
             "Templated refinement of actor [%s] has parameters '%s' found multiple times for different usages.",
             actor.getVertexPath(), badlyUsedStreamParams.stream().collect(Collectors.joining(",")));
         validity = false;
@@ -428,8 +436,9 @@ public class RefinementChecker extends AbstractPiSDFObjectChecker {
       });
 
       if (!lonelyParams.isEmpty()) {
-        reportError(CheckerErrorLevel.WARNING, actor, "Templated refinement of actor [%s] has unknown parameters '%s'.",
-            actor.getVertexPath(), lonelyParams.stream().collect(Collectors.joining(",")));
+        reportError(CheckerErrorLevel.FATAL_CODEGEN, actor,
+            "Templated refinement of actor [%s] has unknown parameters '%s'.", actor.getVertexPath(),
+            lonelyParams.stream().collect(Collectors.joining(",")));
         validity = false;
       }
     }
@@ -642,7 +651,7 @@ public class RefinementChecker extends AbstractPiSDFObjectChecker {
         final Fifo graphFifo = graphPort.getFifo(); // fifo top graph
         if (iaFifo != null && graphFifo != null && !iaFifo.getType().equals(graphFifo.getType())) {
           validity = false;
-          reportError(CheckerErrorLevel.WARNING, graph,
+          reportError(CheckerErrorLevel.FATAL_CODEGEN, graph,
               "Port [%s:%s] has a different fifo type than in its inner Interface: '%s' vs '%s'.", graph.getName(),
               graphPort.getName(), graphFifo.getType(), iaFifo.getType());
         }
