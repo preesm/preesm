@@ -297,7 +297,7 @@ public class AutoDelaysTask extends AbstractTaskImplementation {
 
     if (fillCycles) {
       PreesmLogger.getLogger().log(Level.WARNING, "Experimental breaking of cycles.");
-      fillCycles(hlbd, brv);
+      fillCycles(hlbd);
       // we redo the analysis since adding delays will modify the topo ranks
       hlbd.performAnalysis(graphCopy, brv);
     }
@@ -572,7 +572,7 @@ public class AutoDelaysTask extends AbstractTaskImplementation {
     return evaluate.getValue();
   }
 
-  private static void fillCycles(final HeuristicLoopBreakingDelays hlbd, final Map<AbstractVertex, Long> brv) {
+  private static void fillCycles(final HeuristicLoopBreakingDelays hlbd) {
     for (final CycleInfos ci : hlbd.cyclesInfos.values()) {
       final FifoAbstraction fa = ci.breakingFifo;
       final long gcdCycle = ci.repetition;

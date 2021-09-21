@@ -189,7 +189,7 @@ public class AutoLayoutActors {
       processedActors.addAll(currentStage);
       currentStage = nextStage;
 
-      if (previousStage.stream().allMatch(it -> it instanceof DelayActor) && !stages.isEmpty()) {
+      if (previousStage.stream().allMatch(DelayActor.class::isInstance) && !stages.isEmpty()) {
         // stages with only delay actors are merged with the previous one
         // not an ideal solution but better than nothing
         stages.get(stages.size() - 1).addAll(previousStage);

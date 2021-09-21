@@ -177,6 +177,10 @@ public class RefinementChecker extends AbstractPiSDFObjectChecker {
         final List<Pair<Port, Port>> correspondingPorts = getPiGraphRefinementCorrespondingPorts(a);
         final Pair<List<Pair<Port, FunctionArgument>>,
             List<Pair<Port, FunctionArgument>>> correspondingArguments = getCHeaderRefinementCorrespondingArguments(a);
+        // depending on the refinement type (PiGraph or CHeader),
+        // one of the two variables correspondingPorts/Arguments will be null
+        // sonar is detecting a bug here but this is fine:
+        // the following check methods will use only the variable corresponding to the refinement type
 
         validity &= checkRefinementPorts(a, correspondingPorts, correspondingArguments);
         validity &= checkRefinementFifoTypes(a, correspondingPorts, correspondingArguments);
@@ -495,8 +499,8 @@ public class RefinementChecker extends AbstractPiSDFObjectChecker {
     final String[] rawTemplateSubparts = onlyTemplatePart.split(",");
     for (final String rawTemplateSubpart : rawTemplateSubparts) {
       // we split again in case of a default value
-      final String[] equalSubparts = rawTemplateSubpart.split("\\s*=\\s*");
-      final String paramName = equalSubparts[0];
+      final String[] equalSubparts = rawTemplateSubpart.split("=");
+      final String paramName = equalSubparts[0].trim();
 
       Object relatedObject = null;
       CorrespondingTemplateParameterType relatedObjectCat = CorrespondingTemplateParameterType.NONE;
@@ -567,7 +571,7 @@ public class RefinementChecker extends AbstractPiSDFObjectChecker {
       }
       // if param not found but default value is provided, we take it
       if (relatedObject == null && equalSubparts.length > 1) {
-        relatedObject = equalSubparts[1];
+        relatedObject = equalSubparts[1].trim();
         relatedObjectCat = CorrespondingTemplateParameterType.DEFAULT_PARAM;
         PreesmLogger.getLogger()
             .warning(() -> String.format(
