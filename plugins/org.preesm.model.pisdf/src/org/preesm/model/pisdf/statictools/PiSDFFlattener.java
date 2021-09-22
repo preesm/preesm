@@ -741,13 +741,7 @@ public class PiSDFFlattener extends PiMMSwitch<Boolean> {
       throw new PreesmRuntimeException("We have detected persistent and non-persistent delays in graph ["
           + graph.getName() + "]. This is not supported by the flattening transformation for now.");
     } else if (containsNonPersistent) {
-      if (graph.getContainingPiGraph() == null
-          && graph.getActors().stream().anyMatch(x -> x instanceof InterfaceActor)) {
-        throw new PreesmRuntimeException(
-            "Non-persistent delays are not supported if the top-level graph has interfaces.");
-      } else {
-        quasiSRTransformation(graph);
-      }
+      quasiSRTransformation(graph);
     } else {
       flatteningTransformation(graph);
     }
@@ -779,13 +773,20 @@ public class PiSDFFlattener extends PiMMSwitch<Boolean> {
       flatteningTransformation(graph);
     }
     this.graphPrefix = backupPrefix;
-    // Now we need to deal with input / output interfaces
-    for (final DataInputInterface dii : graph.getDataInputInterfaces()) {
-      forkInputInterface(dii, graph);
+    if (graph.getContainingPiGraph() != null) {
+      // if we are not the parent graph, we need to deal with input / output interfaces
+      for (final DataInputInterface dii : graph.getDataInputInterfaces()) {
+        forkInputInterface(dii, graph);
+      }
+      for (final DataOutputInterface doi : graph.getDataOutputInterfaces()) {
+        joinOutputInterface(doi, graph);
+      }
+    } else if (graph.getContainingPiGraph() == null && graphRV != 1L) {
+      throw new PreesmRuntimeException(
+          "Inconsistent state reached during flattenning: the top graph has a repetition vector (RV) > 1, "
+              + "which cannot be handled with non persistent NONE delays. RV = " + graphRV);
     }
-    for (final DataOutputInterface doi : graph.getDataOutputInterfaces()) {
-      joinOutputInterface(doi, graph);
-    }
+
     this.graphPrefix = backupPrefix;
   }
 
