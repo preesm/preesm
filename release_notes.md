@@ -25,6 +25,7 @@ the training graph now.
 * Fix #322 : as C/C++ parsing is now done by Eclipse CDT, we accept headers with .h .H .hxx .hpp .hh .h++ file extensions, but they are not yet supported by regular codegen.
 * Fix #165 : UI warns if fifo types do not correspond to actor refinement using them.
 * (GUI) : removing a Delay (in the GUI only) was actually not removing its DelayActor from the PiGraph, now fixed.
+* Fix #339 : partial fix only, adds restriction to the removal of consecutive special actors for optimization (source and target rates must be equal now)
 
 
 ## Release version 3.21.0
