@@ -26,6 +26,7 @@ the training graph now.
 * Fix #165 : UI warns if fifo types do not correspond to actor refinement using them.
 * (GUI) : removing a Delay (in the GUI only) was actually not removing its DelayActor from the PiGraph, now fixed.
 * Fix #339 : partial fix only, adds restriction to the removal of consecutive special actors for optimization (source and target rates must be equal now)
+* Fix #342 : partial fix only, autolayout supports cycles involving DelayActor, but this is not checked by the model (would need an exhaustive cycle search)
 
 
 ## Release version 3.21.0

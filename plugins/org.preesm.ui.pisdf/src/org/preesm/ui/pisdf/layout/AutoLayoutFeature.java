@@ -73,6 +73,7 @@ import org.eclipse.graphiti.services.Graphiti;
 import org.eclipse.graphiti.services.IPeLayoutService;
 import org.eclipse.jface.dialogs.ErrorDialog;
 import org.eclipse.ui.PlatformUI;
+import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.Actor;
 import org.preesm.model.pisdf.DataInputInterface;
@@ -367,7 +368,6 @@ public class AutoLayoutFeature extends AbstractCustomFeature {
     final FifoCycleDetector detector = new FifoCycleDetector(true);
     do {
       hasCycle = false;
-
       // Find as many cycles as possible
       detector.clear();
       detector.addIgnoredFifos(feedbackEdges);
@@ -379,10 +379,15 @@ public class AutoLayoutFeature extends AbstractCustomFeature {
         hasCycle = true;
         // For each cycle find the feedback fifo(s).
         for (final List<AbstractActor> cycle : cycles) {
-          feedbackEdges.addAll(FifoCycleDetector.findCycleFeedbackFifos(cycle));
+          final List<Fifo> breakingFifos = detector.findCycleFeedbackFifos(cycle);
+          feedbackEdges.addAll(breakingFifos);
         }
       }
     } while (hasCycle);
+    if (detector.hasCyclesInvolvingDelayActors()) {
+      PreesmLogger.getLogger().warning(() -> "At least one of the cycle present in graph " + graph.getName()
+          + " is involving delays setter or getter. This is not supported by PREESM.");
+    }
 
     return feedbackEdges;
   }
