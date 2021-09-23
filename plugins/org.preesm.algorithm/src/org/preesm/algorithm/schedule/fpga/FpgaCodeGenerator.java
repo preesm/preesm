@@ -78,6 +78,8 @@ public class FpgaCodeGenerator {
   public static final String SUFFIX_INTERFACE_VECTOR  = "_vect";            // suffix name for host vector
   public static final String SUFFIX_INTERFACE_BUFFER  = "_buff";            // suffix name for host buffer
 
+  protected static final String PRAGMA_AXILITE_CTRL = "#pragma HLS INTERFACE s_axilite port=return\n";
+
   private final Scenario                              scenario;
   private final PiGraph                               graph;
   private final String                                graphName;
@@ -356,7 +358,14 @@ public class FpgaCodeGenerator {
     topK.append(args.stream().collect(Collectors.joining(",\n")));
     topK.append(") {\n");
 
+    // add interface protocols
+    for (final InterfaceActor ia : interfaceRates.keySet()) {
+      if (ia instanceof DataInputInterface || ia instanceof DataOutputInterface) {
+        topK.append(getPragmaAXIStream(ia));
+      }
+    }
     topK.append("#pragma HLS interface ap_ctrl_none port=return\n#pragma HLS dataflow disable_start_propagation\n\n");
+
     // add fifo defs
     topK.append(generateAllFifoDefinitions(allFifoDepths));
     // add function calls
@@ -586,6 +595,17 @@ public class FpgaCodeGenerator {
     }
     sb.append(args.stream().collect(Collectors.joining(",\n  ")));
     sb.append(") {\n");
+
+    // add interface protocols
+    for (final InterfaceActor ia : interfaceRates.keySet()) {
+      if (ia instanceof DataInputInterface) {
+        final Fifo f = ia.getDataPort().getFifo();
+        sb.append(getPragmaAXIMemory(ia));
+        sb.append(getPragmaAXIStream(ia));
+      }
+    }
+    sb.append(PRAGMA_AXILITE_CTRL + "\n");
+
     // read kernel body
     for (final Entry<InterfaceActor, Pair<Long, Long>> e : interfaceRates.entrySet()) {
       final InterfaceActor ia = e.getKey();
@@ -632,6 +652,16 @@ public class FpgaCodeGenerator {
     }
     sb.append(args.stream().collect(Collectors.joining(",\n  ")));
     sb.append(") {\n");
+
+    // add interface protocols
+    for (final InterfaceActor ia : interfaceRates.keySet()) {
+      if (ia instanceof DataOutputInterface) {
+        sb.append(getPragmaAXIMemory(ia));
+        sb.append(getPragmaAXIStream(ia));
+      }
+    }
+    sb.append(PRAGMA_AXILITE_CTRL + "\n");
+
     // write kernel body
     for (final Entry<InterfaceActor, Pair<Long, Long>> e : interfaceRates.entrySet()) {
       final InterfaceActor ia = e.getKey();
@@ -682,6 +712,14 @@ public class FpgaCodeGenerator {
 
   protected static final String surroundWithOCLcheck(final String OCLcall) {
     return "OCL_CHECK(err, " + OCLcall + ");";
+  }
+
+  protected static final String getPragmaAXIStream(InterfaceActor ia) {
+    return "#pragma HLS INTERFACE axis port=" + getFifoStreamName(ia.getDataPort().getFifo()) + "\n";
+  }
+
+  protected static final String getPragmaAXIMemory(InterfaceActor ia) {
+    return "#pragma HLS INTERFACE m_axi offset=slave port=" + ia.getName() + SUFFIX_INTERFACE_ARRAY + "\n";
   }
 
   public static final String getFifoDataSizeName(final Fifo fifo) {
