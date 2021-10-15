@@ -51,13 +51,13 @@ import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Path;
-import org.eclipse.emf.common.util.EMap;
 import org.preesm.algorithm.memory.script.CheckPolicy;
 import org.preesm.algorithm.synthesis.memalloc.meg.PiMemoryExclusionGraph;
 import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.scenario.Scenario;
+import org.preesm.model.scenario.SimulationInfo;
 
 /**
  * The Class MemoryScriptEngine.
@@ -99,17 +99,17 @@ public class PiMemoryScriptEngine {
    *
    * @param dag
    *          the dag
-   * @param dataTypes
-   *          the data types
+   * @param simulationInfo
+   *          the simulationInfo
    * @param checkString
    *          the check string
    */
-  public void runScripts(final PiGraph dag, final EMap<String, Long> dataTypes, final String checkString)
+  public void runScripts(final PiGraph dag, final SimulationInfo simulationInfo, final String checkString)
       throws EvalError {
     // Retrieve all the scripts
     final int nbScripts = this.sr.findScripts(dag);
 
-    this.sr.setDataTypes(dataTypes);
+    this.sr.setSimulationInfo(simulationInfo);
 
     // Execute all the scripts
     if (this.verbose) {

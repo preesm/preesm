@@ -65,7 +65,6 @@ import org.eclipse.core.runtime.IPath;
 import org.eclipse.emf.common.util.BasicEList;
 import org.eclipse.emf.common.util.ECollections;
 import org.eclipse.emf.common.util.EList;
-import org.eclipse.emf.common.util.EMap;
 import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.eclipse.xtext.xbase.lib.Pair;
 import org.preesm.algorithm.clustering.ClusteringHelper;
@@ -147,6 +146,7 @@ import org.preesm.model.scenario.PapiComponent;
 import org.preesm.model.scenario.PapiEvent;
 import org.preesm.model.scenario.PapifyConfig;
 import org.preesm.model.scenario.Scenario;
+import org.preesm.model.scenario.check.FifoTypeChecker;
 import org.preesm.model.slam.Component;
 import org.preesm.model.slam.ComponentInstance;
 import org.preesm.model.slam.Design;
@@ -2444,8 +2444,6 @@ public class CodegenModelGenerator extends AbstractCodegenModelGenerator {
    */
   protected long generateSubBuffers(final Buffer parentBuffer, final DAGEdge dagEdge) {
 
-    final EMap<String, Long> dataTypes = this.scenario.getSimulationInfo().getDataTypes();
-
     final BufferAggregate buffers = dagEdge.getPropertyBean().getValue(BufferAggregate.propertyBeanName);
 
     // Retrieve the corresponding memory object from the MEG
@@ -2512,10 +2510,10 @@ public class CodegenModelGenerator extends AbstractCodegenModelGenerator {
         throw new PreesmRuntimeException("There is a problem with datatypes.\n"
             + "Please make sure that all data types are defined in the Simulation tab of the scenario editor.");
       }
-      if (!dataTypes.containsKey(dataType)) {
-        throw new PreesmRuntimeException("Data type " + dataType + " is undefined in the scenario.");
-      }
-      final long subBuffDataType = dataTypes.get(dataType);
+
+      FifoTypeChecker.checkMissingFifoTypeSizes(this.scenario);
+
+      final long subBuffDataType = this.scenario.getSimulationInfo().getDataTypeSizeOrDefault(dataType);
       buff.setTypeSize(subBuffDataType);
       aggregateOffset += (buff.getSize() * subBuffDataType);
     }

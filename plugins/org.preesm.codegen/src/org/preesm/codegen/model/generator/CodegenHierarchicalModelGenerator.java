@@ -51,7 +51,6 @@ import java.util.TreeMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.eclipse.emf.common.util.EList;
-import org.eclipse.emf.common.util.EMap;
 import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.preesm.algorithm.clustering.AbstractClust;
 import org.preesm.algorithm.clustering.ClustSequence;
@@ -109,6 +108,7 @@ import org.preesm.model.scenario.PapiComponent;
 import org.preesm.model.scenario.PapiEvent;
 import org.preesm.model.scenario.PapifyConfig;
 import org.preesm.model.scenario.Scenario;
+import org.preesm.model.scenario.SimulationInfo;
 import org.preesm.model.slam.Component;
 
 /**
@@ -162,7 +162,7 @@ public class CodegenHierarchicalModelGenerator {
   /**
    *
    */
-  private final EMap<String, Long> dataTypes;
+  private final SimulationInfo simulationInfo;
 
   /**
    *
@@ -196,7 +196,7 @@ public class CodegenHierarchicalModelGenerator {
     this.scenario = scenario;
     this.linkHSDFEdgeBuffer = new LinkedHashMap<>();
     this.currentWorkingMemOffset = 0;
-    this.dataTypes = scenario.getSimulationInfo().getDataTypes();
+    this.simulationInfo = scenario.getSimulationInfo();
     this.papifiedPEs = papifiedPEs;
     this.configsAdded = configsAdded;
     this.papifyActive = papifyActive;
@@ -547,9 +547,9 @@ public class CodegenHierarchicalModelGenerator {
           buf.setSize((int) bufSize);
           buf.setType(currentEdge.getDataType().toString());
           // sorry lign of the death
-          final long edgeDataSize = this.dataTypes.get(currentEdge.getDataType().toString());
+          final long edgeDataSize = this.simulationInfo.getDataTypeSizeOrDefault(currentEdge.getDataType().toString());
           buf.setTypeSize(edgeDataSize);
-          this.currentWorkingMemOffset += bufSize * this.dataTypes.get(currentEdge.getDataType().toString());
+          this.currentWorkingMemOffset += bufSize * edgeDataSize;
           this.linkHSDFEdgeBuffer.put(currentEdge, buf);
         }
         var = buf;
@@ -724,7 +724,7 @@ public class CodegenHierarchicalModelGenerator {
           buf.setOffset(this.currentWorkingMemOffset);
           buf.setSize(bufSize);
           buf.setType(currentEdge.getDataType().toString());
-          final long value = this.dataTypes.get(currentEdge.getDataType().toString());
+          final long value = this.simulationInfo.getDataTypeSizeOrDefault(currentEdge.getDataType().toString());
           buf.setTypeSize(value);
           this.currentWorkingMemOffset += bufSize * value;
           this.linkHSDFEdgeBuffer.put(currentEdge, buf);

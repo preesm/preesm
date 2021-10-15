@@ -40,7 +40,6 @@ import bsh.EvalError;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.emf.common.util.EMap;
 import org.preesm.algorithm.memory.exclusiongraph.MemoryExclusionGraph;
 import org.preesm.algorithm.memory.script.MemoryScriptEngine;
 import org.preesm.algorithm.model.dag.DirectedAcyclicGraph;
@@ -50,6 +49,7 @@ import org.preesm.commons.doc.annotations.PreesmTask;
 import org.preesm.commons.doc.annotations.Value;
 import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.preesm.model.scenario.Scenario;
+import org.preesm.model.scenario.SimulationInfo;
 import org.preesm.model.scenario.check.FifoTypeChecker;
 import org.preesm.workflow.elements.Workflow;
 import org.preesm.workflow.implement.AbstractTaskImplementation;
@@ -161,7 +161,7 @@ public class MemoryScriptTask extends AbstractTaskImplementation {
     // Get the data types from the scenario
     final Scenario scenario = (Scenario) inputs.get("scenario");
     FifoTypeChecker.checkMissingFifoTypeSizes(scenario);
-    final EMap<String, Long> dataTypes = scenario.getSimulationInfo().getDataTypes();
+    final SimulationInfo simulationInfo = scenario.getSimulationInfo();
 
     // Get check policy
     final String checkString = parameters.get(MemoryScriptTask.PARAM_CHECK);
@@ -171,7 +171,7 @@ public class MemoryScriptTask extends AbstractTaskImplementation {
     // execute
     final MemoryScriptEngine engine = new MemoryScriptEngine(valueAlignment, log, verbose);
     try {
-      engine.runScripts(dag, dataTypes, checkString);
+      engine.runScripts(dag, simulationInfo, checkString);
     } catch (final EvalError e) {
       final String message = "An error occurred during memory scripts execution";
       throw new PreesmRuntimeException(message, e);

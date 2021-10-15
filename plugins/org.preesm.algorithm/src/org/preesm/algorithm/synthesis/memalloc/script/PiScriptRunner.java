@@ -58,7 +58,6 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.emf.common.util.EList;
-import org.eclipse.emf.common.util.EMap;
 import org.eclipse.xtext.xbase.lib.Pair;
 import org.preesm.algorithm.memory.script.Buffer;
 import org.preesm.algorithm.memory.script.CheckPolicy;
@@ -89,6 +88,7 @@ import org.preesm.model.pisdf.Parameter;
 import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.pisdf.PortMemoryAnnotation;
 import org.preesm.model.pisdf.RoundBufferActor;
+import org.preesm.model.scenario.SimulationInfo;
 
 /**
  *
@@ -114,10 +114,7 @@ public class PiScriptRunner {
 
   private CheckPolicy checkPolicy = CheckPolicy.NONE;
 
-  /**
-   * A {@link Map} that associates each {@link String} representing a type name with a corresponding {@link DataType}.
-   */
-  private EMap<String, Long> dataTypes;
+  private SimulationInfo simulationInfo;
 
   /**
    * A {@link Map} that associates each {@link DAGVertex} from the {@link #scriptedVertices} map to the result of the
@@ -1692,12 +1689,8 @@ public class PiScriptRunner {
       final boolean isMergeable = PortMemoryAnnotation.READ_ONLY.equals(annotation)
           || PortMemoryAnnotation.UNUSED.equals(annotation);
 
-      if (this.dataTypes.indexOfKey(dataType) == -1) {
-        final String message = "Memory Script cannot find " + dataType 
-                + " data type in scenario. Check simulation tab in scenario.";
-        this.logger.log(Level.SEVERE, message); 
-      }      
-      final long dataSize = this.dataTypes.get(dataType);
+      final long dataSize = this.simulationInfo.getDataTypeSizeOrDefault(dataType);
+
       // Weight is already dataSize * (Cons || prod)
       final long nbTokens = it.getTargetPort().getPortRateExpression().evaluate(); // / dataSize
       try {
@@ -1719,7 +1712,7 @@ public class PiScriptRunner {
       final boolean isMergeable = PortMemoryAnnotation.READ_ONLY.equals(annotation)
           || PortMemoryAnnotation.UNUSED.equals(annotation);
 
-      final long dataSize = this.dataTypes.get(dataType);
+      final long dataSize = this.simulationInfo.getDataTypeSizeOrDefault(dataType);
       // Weight is already dataSize * (Cons || prod)
       final long nbTokens = it.getTargetPort().getPortRateExpression().evaluate(); // / dataSize
       try {
@@ -2021,12 +2014,8 @@ public class PiScriptRunner {
     outputs.removeAll(unmatchedBuffer);
   }
 
-  public EMap<String, Long> getDataTypes() {
-    return this.dataTypes;
-  }
-
-  public void setDataTypes(final EMap<String, Long> dataTypes) {
-    this.dataTypes = dataTypes;
+  public void setSimulationInfo(final SimulationInfo simulationInfo) {
+    this.simulationInfo = simulationInfo;
   }
 
   public CheckPolicy getCheckPolicy() {

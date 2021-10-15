@@ -77,6 +77,7 @@ import org.preesm.model.pisdf.Fifo;
 import org.preesm.model.pisdf.InitActor;
 import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.scenario.Scenario;
+import org.preesm.model.scenario.check.FifoTypeChecker;
 import org.preesm.model.slam.ComponentInstance;
 import org.preesm.model.slam.Design;
 import org.preesm.model.slam.check.SlamDesignPEtypeChecker;
@@ -138,6 +139,7 @@ public class LegacyMemoryAllocation implements IMemoryAllocation {
     if (!SlamDesignPEtypeChecker.isOnlyCPU(slamDesign)) {
       throw new PreesmRuntimeException("This task must be called with a CPU architecture, abandon.");
     }
+    FifoTypeChecker.checkMissingFifoTypeSizes(scenario);
 
     // *************
     // INITIAL MEG BUILD
@@ -168,7 +170,7 @@ public class LegacyMemoryAllocation implements IMemoryAllocation {
 
     final PiMemoryScriptEngine engine = new PiMemoryScriptEngine(alignment, log, true);
     try {
-      engine.runScripts(piGraph, scenario.getSimulationInfo().getDataTypes(), checkString);
+      engine.runScripts(piGraph, scenario.getSimulationInfo(), checkString);
     } catch (final EvalError e) {
       final String message = "An error occurred during memory scripts execution";
       throw new PreesmRuntimeException(message, e);
