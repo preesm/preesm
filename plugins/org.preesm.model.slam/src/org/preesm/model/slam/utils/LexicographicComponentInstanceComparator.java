@@ -34,32 +34,17 @@
  */
 package org.preesm.model.slam.utils;
 
+import java.util.Comparator;
 import org.preesm.model.slam.ComponentInstance;
 
 /**
  * Comparing two components using their names.
  */
-public class LexicographicComponentInstanceComparator implements ComponentInstanceComparator {
+public class LexicographicComponentInstanceComparator implements Comparator<ComponentInstance> {
 
   @Override
-  public int compare(ComponentInstance cb1, ComponentInstance cb2) {
-    final String o1 = cb1.getInstanceName();
-    final String o2 = cb2.getInstanceName();
-
-    final String o1StringPart = o1.replaceAll("\\d", "");
-    final String o2StringPart = o2.replaceAll("\\d", "");
-
-    if (o1StringPart.equalsIgnoreCase(o2StringPart)) {
-      return extractInt(o1) - extractInt(o2);
-    } else {
-      return o1.compareTo(o2);
-    }
-  }
-
-  int extractInt(String s) {
-    String num = s.replaceAll("\\D", "");
-    // return 0 if no digits found
-    return num.isEmpty() ? 0 : Integer.parseInt(num);
+  public int compare(ComponentInstance o1, ComponentInstance o2) {
+    return ComponentInstanceNameComparator.compareStatic(o1.getInstanceName(), o2.getInstanceName());
   }
 
 }

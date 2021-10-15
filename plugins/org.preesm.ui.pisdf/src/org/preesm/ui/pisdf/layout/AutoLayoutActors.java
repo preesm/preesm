@@ -48,6 +48,7 @@ import org.preesm.model.pisdf.DataInputInterface;
 import org.preesm.model.pisdf.DataInputPort;
 import org.preesm.model.pisdf.DataOutputInterface;
 import org.preesm.model.pisdf.DataOutputPort;
+import org.preesm.model.pisdf.DelayActor;
 import org.preesm.model.pisdf.Fifo;
 import org.preesm.model.pisdf.PiGraph;
 
@@ -125,9 +126,12 @@ public class AutoLayoutActors {
 
       for (final DataInputPort port : actor.getDataInputPorts()) {
         final Fifo incomingFifo = port.getIncomingFifo();
-        final boolean contains = feedbackFifos.contains(incomingFifo);
-        final boolean fifoNotNull = incomingFifo != null;
-        hasInputFifos |= !contains && fifoNotNull;
+        final boolean isFeedbackInput = feedbackFifos.contains(incomingFifo);
+        final boolean isFifoNotNull = incomingFifo != null;
+        if (!isFeedbackInput && isFifoNotNull) {
+          hasInputFifos = true;
+          break;
+        }
       }
 
       if (!hasInputFifos) {
@@ -178,12 +182,20 @@ public class AutoLayoutActors {
     boolean test;
     do {
       // iterate returns actors that could not be scheduled in current stage but may be in next stage
-      Set<AbstractActor> nextStage = iterate(feedbackFifos, processedActors, currentStage, previousStage,
+      final Set<AbstractActor> nextStage = iterate(feedbackFifos, processedActors, currentStage, previousStage,
           dataOutputInterfaces);
+
       previousStage = new ArrayList<>(currentStage);
       processedActors.addAll(currentStage);
       currentStage = nextStage;
-      stages.add(previousStage);
+
+      if (previousStage.stream().allMatch(DelayActor.class::isInstance) && !stages.isEmpty()) {
+        // stages with only delay actors are merged with the previous one
+        // not an ideal solution but better than nothing
+        stages.get(stages.size() - 1).addAll(previousStage);
+      } else {
+        stages.add(previousStage);
+      }
 
       test = processedActors.size() < actors.size();
     } while (test);
@@ -249,11 +261,24 @@ public class AutoLayoutActors {
         }
         hasUnstagedPredecessor |= !isFeedbackFifo && !containedInProcessedActor;
 
-        // For delay with setter, the delay Actor must always be in the previous stage
+        // For delay with setter, the init actor must always be in the previous stage
         if ((incomingFifo != null) && (incomingFifo.getDelay() != null) && (incomingFifo.getDelay().hasSetterActor())) {
           hasUnstagedPredecessor |= !feedbackFifos.contains(incomingFifo)
               && !processedActors.contains(incomingFifo.getDelay().getActor());
           hasUnstagedPredecessor |= !processedActors.contains(incomingFifo.getDelay().getSetterActor());
+        }
+        if (hasUnstagedPredecessor) {
+          // no need to check the other ports
+          break;
+        }
+      }
+      // For delay actor, we wait that the token source has been processed
+      // but then we introduce a useless gap of one actor width :/
+      if (actor instanceof DelayActor && !hasUnstagedPredecessor) {
+        final AbstractActor incomingActor = ((DelayActor) actor).getLinkedDelay().getContainingFifo().getSourcePort()
+            .getContainingActor();
+        if (!processedActors.contains(incomingActor)) {
+          hasUnstagedPredecessor |= true;
         }
       }
       if (hasUnstagedPredecessor) {

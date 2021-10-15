@@ -47,7 +47,9 @@ import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Status;
+import org.eclipse.emf.common.util.URI;
 import org.eclipse.jface.viewers.ILabelProvider;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.jface.viewers.ViewerFilter;
@@ -58,6 +60,8 @@ import org.eclipse.ui.dialogs.ElementTreeSelectionDialog;
 import org.eclipse.ui.dialogs.ISelectionStatusValidator;
 import org.eclipse.ui.model.WorkbenchContentProvider;
 import org.eclipse.ui.model.WorkbenchLabelProvider;
+import org.preesm.commons.exceptions.PreesmRuntimeException;
+import org.preesm.commons.files.WorkspaceUtils;
 import org.preesm.workflow.WorkflowPlugin;
 
 /**
@@ -316,5 +320,39 @@ public class FileUtils {
     }
 
     return null;
+  }
+
+  /**
+   * Create a file in the given folder path.
+   * 
+   * @param iProject
+   *          original project of the graph.
+   * @param targetFolder
+   *          folder where to save the graph.
+   * @param fileName
+   *          The name of the file, with extension.
+   * @return The URI to the file with all folders being created.
+   */
+  public static URI getPathToFileInFolder(final IProject iProject, final IPath targetFolder, final String fileName) {
+    // The commented code is kept in case we would like to restrict the writing process to the given iProject.
+
+    // final IPath inProjectPath = targetFolder.removeFirstSegments(1);
+    final String relative = targetFolder.toString();
+
+    // final String sXmlPath = WorkspaceUtils.getAbsolutePath(relative, iProject.getName());
+    IPath xmlPath = new Path(relative);
+    // Get a complete valid path with all folders existing
+    try {
+      if (xmlPath.getFileExtension() != null) {
+        WorkspaceUtils.createMissingFolders(xmlPath.removeFileExtension().removeLastSegments(1));
+      } else {
+        WorkspaceUtils.createMissingFolders(xmlPath);
+        xmlPath = xmlPath.append(fileName);
+      }
+    } catch (CoreException | IllegalArgumentException e) {
+      throw new PreesmRuntimeException("Path " + relative + " is not a valid path for export.\n" + e.getMessage());
+    }
+
+    return URI.createPlatformResourceURI(xmlPath.toString(), true);
   }
 }

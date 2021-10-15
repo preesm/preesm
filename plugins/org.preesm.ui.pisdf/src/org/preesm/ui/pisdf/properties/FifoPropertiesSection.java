@@ -204,11 +204,12 @@ public class FifoPropertiesSection extends DataPortPropertiesUpdater implements 
         if (bo instanceof Fifo) {
           final Fifo fifo = (Fifo) bo;
           if (!FifoPropertiesSection.this.txtTypeObj.getText().equals(fifo.getType())) {
-            setNewType(fifo, FifoPropertiesSection.this.txtTypeObj.getText());
+            setNewType(fifo, FifoPropertiesSection.this.txtTypeObj.getText().trim());
             getDiagramTypeProvider().getDiagramBehavior().refreshContent();
           }
         }
       }
+      // no refresh, otherwise infinite loop occurs
     });
 
     /** SourcePort expression listener */
@@ -252,7 +253,6 @@ public class FifoPropertiesSection extends DataPortPropertiesUpdater implements 
           }
         }
       }
-
       refresh();
     });
 

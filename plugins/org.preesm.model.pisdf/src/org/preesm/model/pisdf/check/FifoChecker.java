@@ -35,8 +35,6 @@
  */
 package org.preesm.model.pisdf.check;
 
-import java.util.LinkedHashSet;
-import java.util.Set;
 import org.preesm.model.pisdf.Fifo;
 import org.preesm.model.pisdf.PiGraph;
 
@@ -47,52 +45,38 @@ import org.preesm.model.pisdf.PiGraph;
  * @author cguy
  *
  */
-public class FifoChecker {
-  // Fifos with "void" type (authorized but can lead to problems when
-  /** The fifo with void type. */
-  // generating code)
-  private final Set<Fifo> fifoWithVoidType;
-
-  /** The fifo with one zero rate. */
-  // Fifos with one rate (production or consumption) to 0 but not the other
-  private final Set<Fifo> fifoWithOneZeroRate;
-  // Fifos with rates (production and consumption) to 0 (authorized but user
-  /** The fifo with zero rates. */
-  // may have forgotten to set rates)
-  private final Set<Fifo> fifoWithZeroRates;
+public class FifoChecker extends AbstractPiSDFObjectChecker {
 
   /**
    * Instantiates a new fifo checker.
    */
   public FifoChecker() {
-    this.fifoWithVoidType = new LinkedHashSet<>();
-    this.fifoWithOneZeroRate = new LinkedHashSet<>();
-    this.fifoWithZeroRates = new LinkedHashSet<>();
+    super();
   }
 
   /**
-   * Check types and rates of the Fifos of a PiGraph.
-   *
-   * @param graph
-   *          the PiGraph for which we check Fifos
-   * @return true if all the Fifos of graph are valid, false otherwise
+   * Instantiates a new fifo checker.
+   * 
+   * @param throwExceptionLevel
+   *          The maximum level of error throwing exceptions.
+   * @param loggerLevel
+   *          The maximum level of error generating logs.
    */
-  public boolean checkFifos(final PiGraph graph) {
+  public FifoChecker(final CheckerErrorLevel throwExceptionLevel, final CheckerErrorLevel loggerLevel) {
+    super(throwExceptionLevel, loggerLevel);
+  }
+
+  @Override
+  public Boolean casePiGraph(final PiGraph graph) {
     boolean ok = true;
     for (final Fifo f : graph.getFifos()) {
-      ok &= checkFifo(f);
+      ok &= doSwitch(f);
     }
     return ok;
   }
 
-  /**
-   * Check type and rates of a Fifo.
-   *
-   * @param f
-   *          the Fifo to check
-   * @return true if f is valid, false otherwise
-   */
-  private boolean checkFifo(final Fifo f) {
+  @Override
+  public Boolean caseFifo(final Fifo f) {
     boolean ok = true;
     ok &= checkFifoType(f);
     ok &= checkFifoRates(f);
@@ -108,16 +92,10 @@ public class FifoChecker {
    * @return true if no rate of f is at 0, false otherwise
    */
   private boolean checkFifoRates(final Fifo f) {
-    if (f.getSourcePort().getPortRateExpression().getExpressionAsString().equals("0")) {
-      if (f.getTargetPort().getPortRateExpression().getExpressionAsString().equals("0")) {
-        this.fifoWithZeroRates.add(f);
-        return false;
-      } else {
-        this.fifoWithOneZeroRate.add(f);
-        return false;
-      }
-    } else if (f.getTargetPort().getPortRateExpression().getExpressionAsString().equals("0")) {
-      this.fifoWithOneZeroRate.add(f);
+    final long rateSource = f.getSourcePort().getPortRateExpression().evaluate();
+    final long rateTarget = f.getTargetPort().getPortRateExpression().evaluate();
+    if ((rateSource == 0 && rateTarget != 0) || (rateSource != 0 && rateTarget == 0)) {
+      reportError(CheckerErrorLevel.FATAL_ANALYSIS, f, "Fifo [%s] has one of its rates being 0, but not the other.", f);
       return false;
     }
     return true;
@@ -132,36 +110,10 @@ public class FifoChecker {
    */
   private boolean checkFifoType(final Fifo f) {
     if (f.getType().equals("void")) {
-      this.fifoWithVoidType.add(f);
+      reportError(CheckerErrorLevel.FATAL_CODEGEN, f, "Fifo [%s] has void type.", f.getId());
       return false;
     }
     return true;
   }
 
-  /**
-   * Gets the fifo with void type.
-   *
-   * @return the fifo with void type
-   */
-  public Set<Fifo> getFifoWithVoidType() {
-    return this.fifoWithVoidType;
-  }
-
-  /**
-   * Gets the fifo with one zero rate.
-   *
-   * @return the fifo with one zero rate
-   */
-  public Set<Fifo> getFifoWithOneZeroRate() {
-    return this.fifoWithOneZeroRate;
-  }
-
-  /**
-   * Gets the fifo with zero rates.
-   *
-   * @return the fifo with zero rates
-   */
-  public Set<Fifo> getFifoWithZeroRates() {
-    return this.fifoWithZeroRates;
-  }
 }

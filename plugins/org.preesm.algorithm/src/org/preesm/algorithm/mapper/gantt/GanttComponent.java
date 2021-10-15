@@ -42,19 +42,19 @@ import java.util.Objects;
 import java.util.TreeSet;
 import java.util.logging.Level;
 import org.preesm.commons.logger.PreesmLogger;
-import org.preesm.model.slam.ComponentInstance;
+import org.preesm.model.slam.utils.ComponentInstanceNameComparator;
 
 /**
  * A Gantt component is the information for 1 line in a Gantt chart.
  *
  * @author mpelcat
  */
-public class GanttComponent {
+public class GanttComponent implements Comparable<GanttComponent> {
 
   /**
    * Unique ID.
    */
-  private final ComponentInstance id;
+  private final String id;
 
   /**
    * List of the tasks in the order of their start times.
@@ -67,7 +67,7 @@ public class GanttComponent {
    * @param id
    *          the id
    */
-  public GanttComponent(final ComponentInstance id) {
+  public GanttComponent(final String id) {
     super();
     this.id = id;
     this.tasks = new TreeSet<>();
@@ -105,11 +105,7 @@ public class GanttComponent {
   }
 
   public String getId() {
-    return this.getComponentInstance().getInstanceName();
-  }
-
-  public ComponentInstance getComponentInstance() {
-    return this.id;
+    return id;
   }
 
   @Override
@@ -160,5 +156,10 @@ public class GanttComponent {
    */
   public Collection<GanttTask> getTasks() {
     return tasks;
+  }
+
+  @Override
+  public int compareTo(GanttComponent arg0) {
+    return ComponentInstanceNameComparator.compareStatic(this.id, arg0.id);
   }
 }

@@ -98,6 +98,8 @@ import org.preesm.codegen.printer.PrinterState
 import org.preesm.commons.exceptions.PreesmRuntimeException
 import org.preesm.commons.files.PreesmResourcesHelper
 import org.preesm.model.pisdf.util.CHeaderUsedLocator
+import org.preesm.commons.logger.PreesmLogger
+import org.preesm.commons.files.PreesmIOHelper
 
 /**
  * This printer is currently used to print C code only for GPP processors
@@ -592,6 +594,15 @@ class CPrinter extends BlankPrinter {
 	«ENDIF»
 
 	{
+	«IF input instanceof NullBuffer»		
+	«{
+		PreesmLogger.getLogger.warning("Broadcast " + call.name + " has a NULL buffer as an input, most probably resulting from a memory script." +
+										" Thus, memory copies are not generated for this Broadcast." +
+										" If this situation is not intended, please consider setting some connected port annotations to NONE" +
+										" in order to avoid this situation.")
+	}»
+	// this secures the next branch since there is a number division by input.size, which is 0 in case of a NullBuffer
+	«ELSE»
 	«FOR output : call.outputBuffers»«var outputIdx = 0L»
 		«// TODO: Change how this loop iterates (nbIter is used in a comment only ...)
 		FOR nbIter : 0..(output.size/input.size+1) as int/*Worst case is output.size exec of the loop */»
@@ -602,7 +613,9 @@ class CPrinter extends BlankPrinter {
 			«ENDIF»
 		«ENDFOR»
 	«ENDFOR»
+	«ENDIF»
 	}
+	
 	«IF state == PrinterState.PRINTING_LOOP_BLOCK && monitorAllFifoMD5»
 	#ifdef PREESM_MD5_UPDATE
 		preesmUpdateMD5Array_«printedCoreBlock.coreID»(bufferMd5);
@@ -834,13 +847,7 @@ class CPrinter extends BlankPrinter {
 
 	    // 3- init template reader
 	    val String templateLocalPath = "templates/c/preesm_gen.h";
-	    val URL mainTemplate = PreesmResourcesHelper.instance.resolve(templateLocalPath, this.class);
-	    var InputStreamReader reader = null;
-	    try {
-	      reader = new InputStreamReader(mainTemplate.openStream());
-	    } catch (IOException e) {
-	      throw new PreesmRuntimeException("Could not locate main template [" + templateLocalPath + "].", e);
-	    }
+	    val InputStreamReader reader = PreesmIOHelper.instance.getFileReader(templateLocalPath, this.class)
 
 	    // 4- init output writer
 	    val StringWriter writer = new StringWriter();

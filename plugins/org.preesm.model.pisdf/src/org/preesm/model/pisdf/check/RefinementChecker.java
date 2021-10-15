@@ -36,15 +36,36 @@
  */
 package org.preesm.model.pisdf.check;
 
-import java.util.LinkedHashSet;
-import java.util.Set;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
+import org.eclipse.xtext.xbase.lib.Pair;
+import org.preesm.commons.logger.PreesmLogger;
+import org.preesm.commons.model.PreesmCopyTracker;
 import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.Actor;
+import org.preesm.model.pisdf.CHeaderRefinement;
+import org.preesm.model.pisdf.ConfigInputInterface;
+import org.preesm.model.pisdf.ConfigInputPort;
+import org.preesm.model.pisdf.DataPort;
+import org.preesm.model.pisdf.DelayActor;
+import org.preesm.model.pisdf.Fifo;
+import org.preesm.model.pisdf.FunctionArgument;
+import org.preesm.model.pisdf.FunctionPrototype;
+import org.preesm.model.pisdf.ISetter;
+import org.preesm.model.pisdf.InterfaceActor;
+import org.preesm.model.pisdf.Parameter;
 import org.preesm.model.pisdf.PiGraph;
+import org.preesm.model.pisdf.Port;
 import org.preesm.model.pisdf.Refinement;
 
 /**
@@ -54,66 +75,123 @@ import org.preesm.model.pisdf.Refinement;
  * @author cguy
  *
  */
-public class RefinementChecker {
+public class RefinementChecker extends AbstractPiSDFObjectChecker {
 
-  /** Actors with no refinement set */
-  private final Set<Actor> actorsWithoutRefinement;
+  /** All accepted header file extensions. */
+  public static final String[] acceptedHeaderExtensions = { "h", "hpp", "hxx", "h++", "hh", "H" };
 
-  /** Actors with refinement path pointing to non-existing file */
-  private final Set<Actor> actorsWithNonExistingRefinement;
+  /** In templates, the FIFO_TYPE can be replaced automatically only if starting with this prefix. */
+  public static final String FIFO_TYPE_TEMPLATED_PREFIX = "FIFO_TYPE_";
 
-  /** Actors with refinement path pointing to non-authorized format file */
-  private final Set<Actor> actorsWithInvalidExtensionRefinement;
+  /** In templates, the FIFO_DEPTH can be replaced automatically only if starting with this prefix. */
+  public static final String FIFO_DEPTH_TEMPLATED_PREFIX = "FIFO_DEPTH_";
+
+  /** If the user wants a FIFO type being a pointer, then the default replacement type is the following. */
+  public static final String DEFAULT_PTR_TYPE = "void*";
+
+  /**
+   * Check if the given C/C++ header file extension is supported.
+   * 
+   * @param extension
+   *          The extension to check (as "hxx" for "MyHeader.hxx").
+   * @return Whether or not the file extension is supported.
+   */
+  public static boolean isAsupportedHeaderFileExtension(final String extension) {
+    return Arrays.asList(acceptedHeaderExtensions).stream().anyMatch(x -> x.equals(extension));
+  }
+
+  /**
+   * Check if the templated type of a FunctionArgument is an hls stream.
+   * 
+   * @param argType
+   *          The templated argument type to check.
+   * @return The parameter name of the stream type and the parameter name of the stream depth (optional). {@code null}
+   *         if not a valid hls stream type.
+   */
+  public static Pair<String, String> isHlsStreamTemplated(final String argType) {
+    final String argTypeWithoutWhiteSpaces = argType.replaceAll("\\s+", "");
+    final String regex1 = "^hls::stream<((" + FIFO_TYPE_TEMPLATED_PREFIX + ")?\\w+)>$";
+    final Pattern pattern1 = Pattern.compile(regex1);
+    final Matcher matcher1 = pattern1.matcher(argTypeWithoutWhiteSpaces);
+    if (matcher1.find()) {
+      final String match = matcher1.group(1);
+      return new Pair<>(match, null);
+    }
+
+    final String regex2 = "^hls::stream<((" + FIFO_TYPE_TEMPLATED_PREFIX + ")?\\w+),((" + FIFO_DEPTH_TEMPLATED_PREFIX
+        + ")?\\w+)>$";
+    final Pattern pattern2 = Pattern.compile(regex2);
+    final Matcher matcher2 = pattern2.matcher(argTypeWithoutWhiteSpaces);
+    if (matcher2.find()) {
+      // first group is the full type param name and second is only its optional prefix
+      final String matchType = matcher2.group(1);
+      // third group is the full depth param name and fourth is only its optional prefix
+      final String matchDepth = matcher2.group(3);
+      return new Pair<>(matchType, matchDepth);
+    }
+    return null;
+  }
 
   /**
    * Instantiates a new refinement checker.
    */
   public RefinementChecker() {
-    this.actorsWithoutRefinement = new LinkedHashSet<>();
-    this.actorsWithNonExistingRefinement = new LinkedHashSet<>();
-    this.actorsWithInvalidExtensionRefinement = new LinkedHashSet<>();
+    super();
   }
 
   /**
-   * Check the presence and validity of Refinements of all Actors of the graph
-   *
-   * <p>
-   * Precondition: graph has been connected through SubgraphConnector.
-   * </p>
-   *
-   * @param graph
-   *          PiGraph to check
-   * @return true if all refinements are set and valid, false otherwise
+   * Instantiates a new refinement checker.
+   * 
+   * @param throwExceptionLevel
+   *          The maximum level of error throwing exceptions.
+   * @param loggerLevel
+   *          The maximum level of error generating logs.
    */
-  public boolean checkRefinements(final PiGraph graph) {
+  public RefinementChecker(final CheckerErrorLevel throwExceptionLevel, final CheckerErrorLevel loggerLevel) {
+    super(throwExceptionLevel, loggerLevel);
+  }
+
+  @Override
+  public Boolean casePiGraph(final PiGraph graph) {
     boolean ok = true;
     for (final AbstractActor aa : graph.getActors()) {
       if (aa instanceof Actor) {
-        ok &= checkRefinement((Actor) aa);
+        ok &= doSwitch(aa);
       } else if (aa instanceof PiGraph) {
-        ok &= checkRefinements((PiGraph) aa);
+        // PiGraph as direct children means that a reconnection already occurred
+        // but we don't want a recursive pattern and it needs a different check
+        // Indeed, the SubgraphReconnector already checked the ports so we only need to check the fifo types.
+        ok &= checkReconnectedSubGraphFifoTypes((PiGraph) aa);
       }
     }
     return ok;
   }
 
-  /**
-   * Check the Refinement of an Actor.
-   *
-   * @param a
-   *          the Actor for which we want to check the Refinement
-   * @return true if the refinement is valid, false otherwise
-   */
-  private boolean checkRefinement(final Actor a) {
+  @Override
+  public Boolean caseActor(final Actor a) {
     final Refinement refinement = a.getRefinement();
+    boolean validity = false;
     if ((refinement != null) && (refinement.getFilePath() != null) && !refinement.getFilePath().isEmpty()) {
-      return checkRefinementExtension(a) && checkRefinementValidity(a);
+      validity = checkRefinementExtension(a) && checkRefinementValidity(a);
+      if (validity) {
+        final List<Pair<Port, Port>> correspondingPorts = getPiGraphRefinementCorrespondingPorts(a);
+        final Pair<List<Pair<Port, FunctionArgument>>,
+            List<Pair<Port, FunctionArgument>>> correspondingArguments = getCHeaderRefinementCorrespondingArguments(a);
+        // depending on the refinement type (PiGraph or CHeader),
+        // one of the two variables correspondingPorts/Arguments will be null
+        // sonar is detecting a bug here but this is fine:
+        // the following check methods will use only the variable corresponding to the refinement type
+
+        validity &= checkRefinementPorts(a, correspondingPorts, correspondingArguments);
+        validity &= checkRefinementFifoTypes(a, correspondingPorts, correspondingArguments);
+        validity &= checkRefinementTemplateParams(a, correspondingArguments);
+        // continue recursive visit if hierarchical?
+      }
     } else {
-      // a does not have a refinement, or has a refinement containing no
-      // file path
-      this.actorsWithoutRefinement.add(a);
-      return false;
+      reportError(CheckerErrorLevel.FATAL_CODEGEN, a, "Actor [%s] has no refinement set.", a.getVertexPath());
     }
+
+    return validity;
   }
 
   /**
@@ -130,10 +208,11 @@ public class RefinementChecker {
   private boolean checkRefinementExtension(final Actor a) {
     final IPath path = new Path(a.getRefinement().getFilePath());
     final String fileExtension = path.getFileExtension();
-    if (!fileExtension.equals("h") && !fileExtension.equals("idl") && !fileExtension.equals("pi")) {
-      // File pointed by the refinement of a does not have a valid
-      // extension
-      this.actorsWithInvalidExtensionRefinement.add(a);
+    if (!fileExtension.equals("idl") && !fileExtension.equals("pi")
+        && !isAsupportedHeaderFileExtension(fileExtension)) {
+      // File pointed by the refinement of a does not have a valid extension
+      reportError(CheckerErrorLevel.FATAL_ANALYSIS, a, "Actor [%s] has an unrecognized refinement file extension.",
+          a.getVertexPath());
       return false;
     }
     return true;
@@ -155,36 +234,552 @@ public class RefinementChecker {
     final IFile file = ResourcesPlugin.getWorkspace().getRoot().getFile(path);
     if (!file.exists()) {
       // File pointed by the refinement does not exist
-      this.actorsWithNonExistingRefinement.add(a);
+      reportError(CheckerErrorLevel.FATAL_ANALYSIS, a,
+          "Actor [%s] has a refinement file missing in the file system: '%s'.", a.getVertexPath(),
+          a.getRefinement().getFilePath());
       return false;
     }
     return true;
   }
 
   /**
-   * Gets the actors without refinement.
-   *
-   * @return the actors without refinement
+   * Check if all the ports of the actor are present in the refinement, and vice versa.
+   * 
+   * @param a
+   *          the Actor for which we want to check the Refinement
+   * @param correspondingPorts
+   *          The corresponding ports if PiGraph refinement (null otherwise).
+   * @param correspondingArguments
+   *          The corresponding arguments if PiCHeader refinement (null otherwise).
+   * @return true if all ports are corresponding, false otherwise
    */
-  public Set<Actor> getActorsWithoutRefinement() {
-    return this.actorsWithoutRefinement;
+  private boolean checkRefinementPorts(final Actor a, final List<Pair<Port, Port>> correspondingPorts,
+      final Pair<List<Pair<Port, FunctionArgument>>, List<Pair<Port, FunctionArgument>>> correspondingArguments) {
+    boolean validity = true;
+
+    if (a.isHierarchical()) {
+      for (final Pair<Port, Port> correspondingPort : correspondingPorts) {
+        final Port topPort = correspondingPort.getKey();
+        final Port subPort = correspondingPort.getValue();
+
+        if (topPort != null && subPort == null) {
+          validity = false;
+          reportError(CheckerErrorLevel.FATAL_CODEGEN, a, "Port [%s:%s] is not present in refinement.", a.getName(),
+              topPort.getName());
+        } else if (topPort == null && subPort != null) {
+          validity = false;
+          reportError(CheckerErrorLevel.FATAL_CODEGEN, a, "Port [%s:%s] is only present in refinement.", a.getName(),
+              subPort.getName());
+        }
+
+      }
+    } else if (a.getRefinement() instanceof CHeaderRefinement) {
+      final List<Pair<Port, FunctionArgument>> initMapArgs = correspondingArguments.getKey();
+      if (initMapArgs != null) {
+        validity &= checkCHeaderRefinementPrototypePorts(a, initMapArgs, true);
+      }
+      final List<Pair<Port, FunctionArgument>> loopMapArgs = correspondingArguments.getValue();
+      if (loopMapArgs != null) {
+        validity &= checkCHeaderRefinementPrototypePorts(a, loopMapArgs, false);
+      }
+    }
+
+    return validity;
+  }
+
+  private boolean checkCHeaderRefinementPrototypePorts(final Actor a,
+      List<Pair<Port, FunctionArgument>> correspondingArguments, final boolean initProto) {
+    boolean validity = true;
+    for (final Pair<Port, FunctionArgument> correspondingArgument : correspondingArguments) {
+      final Port topPort = correspondingArgument.getKey();
+      final FunctionArgument fa = correspondingArgument.getValue();
+
+      // ConfigInputPort are not required to be in the C/C++ refinement
+      // if init prototype, any kind of port is not required
+      if (!(topPort instanceof ConfigInputPort) && !initProto && topPort != null && fa == null) {
+        validity = false;
+        reportError(CheckerErrorLevel.FATAL_CODEGEN, a, "Port [%s:%s] is not present in refinement.", a.getName(),
+            topPort.getName());
+      } else if (topPort == null && fa != null) {
+        validity = false;
+        reportError(CheckerErrorLevel.FATAL_CODEGEN, a, "Port [%s:%s] is only present in refinement.", a.getName(),
+            fa.getName());
+      }
+    }
+
+    return validity;
   }
 
   /**
-   * Gets the actors with non existing refinement.
-   *
-   * @return the actors with non existing refinement
+   * Check if all the fifo connected to the actor and its refinement have the same type.
+   * 
+   * @param a
+   *          the Actor for which we want to check the Refinement
+   * @param correspondingPorts
+   *          The corresponding ports if PiGraph refinement (null otherwise).
+   * @param correspondingArguments
+   *          The corresponding arguments if CHeader refinement (null otherwise).
+   * @return true if all (present) fifo types are corresponding, false otherwise
    */
-  public Set<Actor> getActorsWithNonExistingRefinement() {
-    return this.actorsWithNonExistingRefinement;
+  private boolean checkRefinementFifoTypes(final Actor a, final List<Pair<Port, Port>> correspondingPorts,
+      final Pair<List<Pair<Port, FunctionArgument>>, List<Pair<Port, FunctionArgument>>> correspondingArguments) {
+    boolean validity = true;
+
+    if (a.isHierarchical()) {
+      for (final Pair<Port, Port> correspondingPort : correspondingPorts) {
+        final Port topPort = correspondingPort.getKey();
+        final Port subPort = correspondingPort.getValue();
+
+        if (!(topPort instanceof DataPort) || !(subPort instanceof DataPort)) {
+          continue;
+        }
+
+        final Fifo topFifo = ((DataPort) topPort).getFifo();
+        final Fifo subFifo = ((DataPort) subPort).getFifo();
+
+        if (topFifo != null && subFifo != null && !topFifo.getType().equals(subFifo.getType())) {
+          validity = false;
+          reportError(CheckerErrorLevel.FATAL_CODEGEN, a,
+              "Port [%s:%s] has a different fifo type than in its inner self [%s]: '%s' vs '%s'.", a.getName(),
+              topPort.getName(), a.getSubGraph().getName(), topFifo.getType(), subFifo.getType());
+        }
+      }
+    } else if (a.getRefinement() instanceof CHeaderRefinement) {
+      // we check only the loop prototype since the init one should not have any fifo connected to it
+      final List<Pair<Port, FunctionArgument>> loopMapArgs = correspondingArguments.getValue();
+      if (loopMapArgs != null) {
+
+        for (final Pair<Port, FunctionArgument> correspondingArgument : loopMapArgs) {
+          final Port topPort = correspondingArgument.getKey();
+          final FunctionArgument fa = correspondingArgument.getValue();
+
+          if (!(topPort instanceof DataPort) || fa == null) {
+            continue;
+          }
+
+          final Fifo topFifo = ((DataPort) topPort).getFifo();
+          if (topFifo != null && !fa.getType().equals(topFifo.getType())
+              && isHlsStreamTemplated(fa.getType()) == null) {
+            validity = false;
+            reportError(CheckerErrorLevel.FATAL_CODEGEN, a,
+                "Port [%s:%s] has a different fifo type than in its C/C++ refinement: '%s' vs '%s'.", a.getName(),
+                topPort.getName(), topFifo.getType(), fa.getType());
+            // check here the container type? If hls::stream for FPGA,
+            // the templated FIFO type is either a parameter inferred by PREESM or direct value check along with the
+            // actor
+          }
+          if (DEFAULT_PTR_TYPE.equals(fa.getType())) {
+            reportError(CheckerErrorLevel.WARNING, a,
+                "Port [%s:%s] is a %s pointer in its C/C++ refinement, "
+                    + "this is discouraged since outside of the memory allocated by PREESM.",
+                a.getName(), topPort.getName(), DEFAULT_PTR_TYPE);
+          }
+        }
+      }
+    }
+
+    return validity;
   }
 
   /**
-   * Gets the actors with invalid extension refinement.
-   *
-   * @return the actors with invalid extension refinement
+   * Check if the template parameters of an actor with C/C++ refinement can be found in its containing actor or graph..
+   * 
+   * @param actor
+   *          The actor to check.
+   * @param correspondingArguments
+   *          List of ports corresponding to function arguments.
+   * @return Whether or not all function template parameters are correct.
    */
-  public Set<Actor> getActorsWithInvalidExtensionRefinement() {
-    return this.actorsWithInvalidExtensionRefinement;
+  private boolean checkRefinementTemplateParams(final Actor actor,
+      final Pair<List<Pair<Port, FunctionArgument>>, List<Pair<Port, FunctionArgument>>> correspondingArguments) {
+    final Refinement ref = actor.getRefinement();
+    if (ref instanceof CHeaderRefinement) {
+      boolean validity = true;
+      final CHeaderRefinement cref = (CHeaderRefinement) ref;
+      if (cref.getInitPrototype() != null) {
+        validity &= checkRefinementTemplateParamsAux(actor, correspondingArguments.getKey(), cref,
+            cref.getInitPrototype());
+      }
+      if (cref.getLoopPrototype() != null) {
+        validity &= checkRefinementTemplateParamsAux(actor, correspondingArguments.getValue(), cref,
+            cref.getLoopPrototype());
+      }
+      return validity;
+    }
+    return true;
   }
+
+  private boolean checkRefinementTemplateParamsAux(final Actor actor,
+      final List<Pair<Port, FunctionArgument>> correspondingArguments, final CHeaderRefinement cref,
+      final FunctionPrototype proto) {
+    boolean validity = true;
+    if (proto != null) {
+      final Map<String,
+          Pair<CorrespondingTemplateParameterType,
+              Object>> correspondingObjects = getCHeaderCorrespondingTemplateParamObject(cref, proto,
+                  correspondingArguments);
+      // check if the stream params are used multiple times
+      final List<String> badlyUsedStreamParams = new ArrayList<>();
+      correspondingObjects.forEach((x, y) -> {
+        if (y.getKey() == CorrespondingTemplateParameterType.MULTIPLE) {
+          badlyUsedStreamParams.add(x);
+        }
+      });
+      if (!badlyUsedStreamParams.isEmpty()) {
+        reportError(CheckerErrorLevel.FATAL_CODEGEN, actor,
+            "Templated refinement of actor [%s] has parameters '%s' found multiple times for different usages.",
+            actor.getVertexPath(), badlyUsedStreamParams.stream().collect(Collectors.joining(",")));
+        validity = false;
+      }
+      // check if the function template params are all related to an object
+      final List<String> lonelyParams = new ArrayList<>();
+      correspondingObjects.forEach((x, y) -> {
+        if (y.getKey() == CorrespondingTemplateParameterType.NONE) {
+          lonelyParams.add(x);
+        }
+      });
+
+      if (!lonelyParams.isEmpty()) {
+        reportError(CheckerErrorLevel.FATAL_CODEGEN, actor,
+            "Templated refinement of actor [%s] has unknown parameters '%s'.", actor.getVertexPath(),
+            lonelyParams.stream().collect(Collectors.joining(",")));
+        validity = false;
+      }
+    }
+    return validity;
+  }
+
+  /**
+   * While checking a template parameter, we can categorize it depending on the object it refers to.
+   * 
+   * @author ahonorat
+   */
+  public enum CorrespondingTemplateParameterType {
+    ACTOR_PARAM, GRAPH_PARAM, DEFAULT_PARAM, FIFO_TYPE, FIFO_DEPTH, MULTIPLE, NONE;
+  }
+
+  /**
+   * Associates templated parameter names with their related Parameter or DataPort (if fifo info).
+   * 
+   * @param refinement
+   *          The refinement to consider.
+   * @param proto
+   *          The refinement prototype to consider (init or loop).
+   * @param correspondingArguments
+   *          List of ports corresponding to function arguments.
+   * @return A map of function template parameter names to pair with parameter category as key and related element as
+   *         value ({@code null} if not found).
+   */
+  public static Map<String, Pair<CorrespondingTemplateParameterType, Object>>
+      getCHeaderCorrespondingTemplateParamObject(final CHeaderRefinement refinement, final FunctionPrototype proto,
+          final List<Pair<Port, FunctionArgument>> correspondingArguments) {
+    final Map<String, Pair<CorrespondingTemplateParameterType, Object>> result = new LinkedHashMap<>();
+    // split the template parameters
+    final String rawFunctionName = proto.getName();
+    final int indexStartTemplate = rawFunctionName.indexOf('<');
+    final int indexEndTemplate = rawFunctionName.lastIndexOf('>');
+    if (indexStartTemplate < 0 || indexEndTemplate < 0 || indexEndTemplate < indexStartTemplate) {
+      // not templated
+      return result;
+    }
+    // this weird way of passing the refinement instead of the actor is needed to handle
+    // both Actor and DelayActor whose closest common ancestor is RefinementContainer
+    // (which can hold a PiGraph or a CHeaderRefinement)
+    // refinement container always is an actor for now
+    final AbstractActor containerActor = (AbstractActor) refinement.getRefinementContainer();
+    final PiGraph containerGraph = containerActor.getContainingPiGraph();
+    final String prefix = getActorNamePrefix(containerActor);
+
+    // get the hls tempated fifo (not always needed, but factorized for memoization)
+    final Map<String, Pair<CorrespondingTemplateParameterType,
+        List<FunctionArgument>>> hlsStreamParamsToFA = getAllHlsStreamTemplateParamNames(proto);
+
+    // get the template names
+    final String onlyTemplatePart = rawFunctionName.substring(indexStartTemplate + 1, indexEndTemplate);
+    final String[] rawTemplateSubparts = onlyTemplatePart.split(",");
+    for (final String rawTemplateSubpart : rawTemplateSubparts) {
+      // we split again in case of a default value
+      final String[] equalSubparts = rawTemplateSubpart.split("=");
+      final String paramName = equalSubparts[0].trim();
+
+      Object relatedObject = null;
+      CorrespondingTemplateParameterType relatedObjectCat = CorrespondingTemplateParameterType.NONE;
+      // look for a parameter of the actor first
+      if (containerActor instanceof DelayActor) {
+        for (final Parameter inputParam : ((DelayActor) containerActor).getInputParameters()) {
+          if (inputParam.getName().equals(prefix + paramName)) {
+            relatedObject = inputParam;
+            relatedObjectCat = CorrespondingTemplateParameterType.ACTOR_PARAM;
+            break;
+          }
+        }
+      } else {
+        for (final ConfigInputPort cip : containerActor.getConfigInputPorts()) {
+          if (cip.getName().equals(paramName)) {
+            final ISetter setter = cip.getIncomingDependency().getSetter();
+            if (setter instanceof Parameter) {
+              relatedObject = setter;
+              relatedObjectCat = CorrespondingTemplateParameterType.ACTOR_PARAM;
+              break;
+            }
+          }
+        }
+      }
+      // look for graph parameters if not found
+      if (relatedObject == null) {
+        for (final Parameter paramG : containerGraph.getParameters()) {
+          if (paramG.getName().equals(prefix + paramName)) {
+            relatedObject = paramG;
+            relatedObjectCat = CorrespondingTemplateParameterType.GRAPH_PARAM;
+            PreesmLogger.getLogger()
+                .warning(() -> String.format(
+                    "In templated refinement of actor [%s], "
+                        + "template parameter '%s' has been found in the original graph but not in the actor.",
+                    containerActor.getVertexPath(), paramName));
+            break;
+          }
+        }
+      }
+      // look for FIFO infos if not found in parameters
+      if (relatedObject == null) {
+        final Pair<CorrespondingTemplateParameterType,
+            List<FunctionArgument>> correspondingFAs = hlsStreamParamsToFA.get(paramName);
+        if (correspondingFAs != null) {
+          if (containerActor instanceof DelayActor) {
+            // in this case, there is only one fifo and one corresponding function argument
+            relatedObject = ((DelayActor) containerActor).getLinkedDelay().getContainingFifo();
+            relatedObjectCat = correspondingFAs.getKey();
+          } else {
+            // then we got at least one matching fifo, but we need to retrieve it
+            for (final FunctionArgument fa : correspondingFAs.getValue()) {
+              for (final Pair<Port, FunctionArgument> portToFA : correspondingArguments) {
+                if (fa.equals(portToFA.getValue())) {
+                  final Port relatedPort = portToFA.getKey();
+                  if (relatedPort instanceof DataPort) {
+                    final Fifo relatedFifo = ((DataPort) relatedPort).getFifo();
+                    if (relatedFifo != null) {
+                      relatedObject = relatedFifo;
+                      relatedObjectCat = correspondingFAs.getKey();
+                    }
+                  }
+                  break;
+                }
+              }
+            }
+          }
+        }
+      }
+      // if param not found but default value is provided, we take it
+      if (relatedObject == null && equalSubparts.length > 1) {
+        relatedObject = equalSubparts[1].trim();
+        relatedObjectCat = CorrespondingTemplateParameterType.DEFAULT_PARAM;
+        PreesmLogger.getLogger()
+            .warning(() -> String.format(
+                "In templated refinement of actor [%s], "
+                    + "template parameter '%s' has not been found but default value (%s) was provided.",
+                containerActor.getVertexPath(), paramName, equalSubparts[1]));
+      }
+
+      result.put(paramName, new Pair<>(relatedObjectCat, relatedObject));
+    }
+
+    // as we know here the template type of the prototype arguments,
+    // should we also check that the stream fifo types are correct?
+    // however, even if the stream type is not equal to the fifo type, it might be a macro ... and thus equal in the end
+
+    return result;
+  }
+
+  /**
+   * After a flattening transformation {@link org.preesm.model.pisdf.statictools.PiSDFFlattener}, inner element names
+   * have been prefixed with the top graph names, so this function retrieves the prefix. This is risky if other
+   * transformations are coded but not having the same prefix convention.
+   * 
+   * @param aa
+   *          Current actor (after transformation).
+   * @return Prefix of current actor name obtained by comparison with the original actor name.
+   */
+  public static String getActorNamePrefix(final AbstractActor aa) {
+    final AbstractActor aaOri = PreesmCopyTracker.getOriginalSource(aa);
+    final int offsetPrefix = aa.getName().lastIndexOf(aaOri.getName());
+    String prefix = "";
+    if (offsetPrefix > 0) {
+      prefix = aa.getName().substring(0, offsetPrefix);
+    }
+    return prefix;
+  }
+
+  private static Map<String, Pair<CorrespondingTemplateParameterType, List<FunctionArgument>>>
+      getAllHlsStreamTemplateParamNames(final FunctionPrototype proto) {
+    final Map<String, Pair<CorrespondingTemplateParameterType, List<FunctionArgument>>> result = new LinkedHashMap<>();
+    for (final FunctionArgument fa : proto.getArguments()) {
+      final Pair<String, String> hlsStream = isHlsStreamTemplated(fa.getType());
+      if (hlsStream != null) {
+        final String key = hlsStream.getKey();
+        if (key != null) {
+          final Pair<CorrespondingTemplateParameterType, List<FunctionArgument>> p = result.computeIfAbsent(key,
+              k -> new Pair<>(CorrespondingTemplateParameterType.FIFO_TYPE, new ArrayList<>()));
+          p.getValue().add(fa);
+          if (p.getKey() != CorrespondingTemplateParameterType.FIFO_TYPE) {
+            // a single parameter is used for different use cases
+            result.replace(key, new Pair<>(CorrespondingTemplateParameterType.MULTIPLE, p.getValue()));
+          }
+        }
+        final String value = hlsStream.getValue();
+        if (value != null) {
+          final Pair<CorrespondingTemplateParameterType, List<FunctionArgument>> p = result.computeIfAbsent(value,
+              k -> new Pair<>(CorrespondingTemplateParameterType.FIFO_DEPTH, new ArrayList<>()));
+          p.getValue().add(fa);
+          if (p.getKey() != CorrespondingTemplateParameterType.FIFO_DEPTH) {
+            // a single parameter is used for different use cases
+            result.replace(value, new Pair<>(CorrespondingTemplateParameterType.MULTIPLE, p.getValue()));
+          }
+        }
+      }
+    }
+    return result;
+  }
+
+  private boolean checkReconnectedSubGraphFifoTypes(final PiGraph graph) {
+    boolean validity = true;
+    for (final AbstractActor aa : graph.getActors()) {
+      if (aa instanceof InterfaceActor) {
+        final InterfaceActor ia = (InterfaceActor) aa;
+        final DataPort iaPort = ia.getDataPort();
+        final DataPort graphPort = ia.getGraphPort();
+        if (iaPort == null || graphPort == null) {
+          // already reported elsewhere
+          continue;
+        }
+        final Fifo iaFifo = iaPort.getFifo(); // fifo sub graph
+        final Fifo graphFifo = graphPort.getFifo(); // fifo top graph
+        if (iaFifo != null && graphFifo != null && !iaFifo.getType().equals(graphFifo.getType())) {
+          validity = false;
+          reportError(CheckerErrorLevel.FATAL_CODEGEN, graph,
+              "Port [%s:%s] has a different fifo type than in its inner Interface: '%s' vs '%s'.", graph.getName(),
+              graphPort.getName(), graphFifo.getType(), iaFifo.getType());
+        }
+      }
+    }
+
+    return validity;
+  }
+
+  /**
+   * Fetch the {@link FunctionArgument} related to each port of an actor.
+   * 
+   * @param a
+   *          List of Pair with {@link Port} as value and {@link FunctionArgument} as key.
+   * @return First key is for init refinement, second one for loop refinement. Each entry of the list contains as value
+   *         the related {@link FunctionArgument} if found, or {@code null} for missing and extra elements ({@link Port}
+   *         or {@link FunctionArgument}). Returns {@code null} if not a {@link CHeaderRefinement}.
+   */
+  public static Pair<List<Pair<Port, FunctionArgument>>, List<Pair<Port, FunctionArgument>>>
+      getCHeaderRefinementCorrespondingArguments(final Actor a) {
+    if (!(a.getRefinement() instanceof CHeaderRefinement)) {
+      return null;
+    }
+    final CHeaderRefinement ref = (CHeaderRefinement) a.getRefinement();
+
+    List<Pair<Port, FunctionArgument>> initResult = null;
+    final FunctionPrototype fpInit = ref.getInitPrototype();
+    if (fpInit != null) {
+      initResult = getCHeaderRefinementPrototypeCorrespondingArguments(a, fpInit);
+    }
+
+    List<Pair<Port, FunctionArgument>> loopResult = null;
+    final FunctionPrototype fpLoop = ref.getLoopPrototype();
+    if (fpLoop != null) {
+      loopResult = getCHeaderRefinementPrototypeCorrespondingArguments(a, fpLoop);
+    }
+
+    return new Pair<>(initResult, loopResult);
+  }
+
+  /**
+   * Create a list of port linked to function arguments.
+   * 
+   * @param a
+   *          The actor to consider.
+   * @param proto
+   *          The function prototype to consider of the given actor.
+   * @return A list of entries with port as key and function argument as value (one or the other might be {@code null}).
+   */
+  public static List<Pair<Port, FunctionArgument>>
+      getCHeaderRefinementPrototypeCorrespondingArguments(final AbstractActor a, final FunctionPrototype proto) {
+    final List<FunctionArgument> noRefCorrespondingFoundYet = new ArrayList<>(proto.getArguments());
+    final List<Pair<Port, FunctionArgument>> result = new ArrayList<>();
+
+    for (final Port p1 : a.getAllPorts()) {
+      FunctionArgument correspondingFA = null;
+      for (final FunctionArgument fa : proto.getArguments()) {
+        if (p1.getName().equals(fa.getName())) {
+          correspondingFA = fa;
+          break;
+        }
+      }
+      noRefCorrespondingFoundYet.remove(correspondingFA);
+      result.add(new Pair<>(p1, correspondingFA));
+    }
+
+    // Function arguments in refinement without top corresponding port
+    for (final FunctionArgument fa : noRefCorrespondingFoundYet) {
+      result.add(new Pair<>(null, fa));
+    }
+
+    return result;
+  }
+
+  private static List<Pair<Port, Port>> getPiGraphRefinementCorrespondingPorts(final Actor a) {
+    if (!a.isHierarchical()) {
+      return null;
+    }
+
+    final PiGraph subGraph = a.getSubGraph();
+    // if it is reconnected, there is no point to do this, this case should not happen however
+    if (subGraph.getContainingPiGraph() != null) {
+      return new ArrayList<>();
+    }
+
+    List<Port> noRefCorrespondingPort = new ArrayList<>();
+    // Then we try to perform a sort of reconnection ...
+    // but with the subgraph interface actors instead of the subgraph ports (except for Config Input ports).
+    for (final AbstractActor aa : subGraph.getActors()) {
+      if (aa instanceof InterfaceActor) {
+        final InterfaceActor ia = (InterfaceActor) aa;
+        final Port iaPort = ia.getDataPort();
+        if (iaPort != null) {
+          noRefCorrespondingPort.add(iaPort);
+        }
+      }
+    }
+    for (final ConfigInputInterface cii : subGraph.getConfigInputInterfaces()) {
+      final Port graphPort = cii.getGraphPort();
+      if (graphPort != null) {
+        noRefCorrespondingPort.add(graphPort);
+      }
+    }
+
+    final List<Pair<Port, Port>> result = new ArrayList<>();
+    // now we can try to match the ports
+    for (final Port p1 : a.getAllPorts()) {
+      Port correspondingPort = null;
+      for (final Port p2 : noRefCorrespondingPort) {
+        if (p1.getName().equals(p2.getName())) {
+          correspondingPort = p2;
+          break;
+        }
+      }
+      noRefCorrespondingPort.remove(correspondingPort);
+      result.add(new Pair<>(p1, correspondingPort));
+    }
+
+    // Ports in refinement without top corresponding port
+    for (final Port p2 : noRefCorrespondingPort) {
+      result.add(new Pair<>(null, p2));
+    }
+
+    return result;
+  }
+
 }

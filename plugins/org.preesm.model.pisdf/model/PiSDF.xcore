@@ -517,25 +517,29 @@ class DelayActor extends NonExecutableActor, RefinementContainer {
 	op ConfigInputPort[] lookupConfigInputPortsConnectedWithParameter(Parameter p) {
 		return linkedDelay.lookupConfigInputPortsConnectedWithParameter(p)
 	}
-	// Checks that the prototype matches the template
+	// Checks that the loop prototype matches the template
 	// void delayInitRefinement(IN int size, OUT <type> *fifo);
-	op boolean isValidRefinement(CHeaderRefinement hrefinement) {
-		var FunctionPrototype initPrototype = hrefinement.getInitPrototype()
-		if (initPrototype.arguments.isEmpty) {
+	op boolean hasValidRefinement() {
+		if (!(refinement instanceof CHeaderRefinement)) {
+			return false
+		}
+		
+		var FunctionPrototype proto = (refinement as CHeaderRefinement).getInitPrototype()
+		if (proto.arguments.isEmpty) {
 			return false
 		}
 
-		if (initPrototype.arguments.filter[it.getDirection() === Direction.OUT && 
+		if (proto.arguments.filter[it.getDirection() === Direction.OUT && 
 			!it.isIsConfigurationParameter].length != 1) {
 			return false
 		}
 
-		if (initPrototype.arguments.filter[it.getDirection() === Direction.IN && 
+		if (proto.arguments.filter[it.getDirection() === Direction.IN && 
 			!it.isIsConfigurationParameter].length > 0) {
 			return false
 		}
 
-		if (initPrototype.arguments.filter[it.getDirection() === Direction.OUT && 
+		if (proto.arguments.filter[it.getDirection() === Direction.OUT && 
 			it.isIsConfigurationParameter].length > 0) {
 			return false
 		}
@@ -601,7 +605,7 @@ class ConfigInputPort extends Port {
 	}
 }
 
-class ConfigOutputPort extends DataOutputPort , ISetter {
+class ConfigOutputPort extends DataOutputPort, ISetter {
 	op boolean isLocallyStatic() {
 		// config output ports are never considered static
 		return false
@@ -842,6 +846,7 @@ class Delay extends Configurable, ExpressionHolder {
 
 class FunctionPrototype {
 	String name
+	boolean isCPPdefinition
 	contains FunctionArgument[] arguments
 	op unique FunctionArgument[] getInputConfigParameters() {
 		return arguments.filter[it.isConfigurationParameter == true && it.direction == Direction.IN].toEList.unmodifiableView;
@@ -855,14 +860,19 @@ class FunctionPrototype {
 	op unique FunctionArgument[] getOutputArguments() {
 		return arguments.filter[it.isConfigurationParameter == false && it.direction == Direction.OUT].toEList.unmodifiableView;
 	}
+	op boolean isCPP() {
+		return isCPPdefinition || arguments.exists[isCPPdefinition]
+	}
 }
 
 class FunctionArgument {
 	String name
-	Direction direction
 	String ^type
-	boolean isConfigurationParameter
+	Direction direction
 	int position
+	boolean isConfigurationParameter
+	boolean isCPPdefinition	= "false"
+	boolean isPassedByReference = "false"
 }
 
 enum Direction {

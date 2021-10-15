@@ -82,7 +82,7 @@ class TopologyBasedBRV extends PiBRV {
       // The graph is consistent
       // We just have to update the BRV
       if (listFifo.isEmpty()) {
-        graphBRV.put(subgraph.get(0), (long) 1);
+        graphBRV.put(subgraph.get(0), 1L);
       } else {
         final double[][] topologyMatrix = getTopologyMatrix(listFifo, subgraph);
         final long rank = LinearAlgebra.rank(topologyMatrix);
@@ -93,15 +93,14 @@ class TopologyBasedBRV extends PiBRV {
         // Compute BRV
         final List<LongFraction> vrb = MathFunctionsHelper.computeRationnalNullSpace(topologyMatrix);
         // final List<Long> result = Rational.toNatural(new Vector<>(vrb))
-        final List<Long> result = new ArrayList<>();
-        MathFunctionsHelper.toNatural(vrb).forEach(rv -> result.add((long) rv));
+        final List<Long> result = new ArrayList<>(MathFunctionsHelper.toNatural(vrb));
         graphBRV.putAll(TopologyBasedBRV.zipToMap(subgraph, result));
       }
 
       // Update BRV values with interfaces
       updateRVWithInterfaces(piGraph, subgraph, graphBRV);
     }
-    computeChildrenBRV(piGraph);
+    computeChildrenBRV(piGraph, graphBRV);
     return graphBRV;
   }
 

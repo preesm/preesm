@@ -76,9 +76,11 @@ import org.preesm.model.pisdf.PersistenceLevel;
 import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.pisdf.Port;
 import org.preesm.model.pisdf.PortMemoryAnnotation;
+import org.preesm.model.pisdf.Refinement;
 import org.preesm.model.pisdf.RoundBufferActor;
 import org.preesm.model.pisdf.brv.BRVMethod;
 import org.preesm.model.pisdf.brv.PiBRV;
+import org.preesm.model.pisdf.check.CheckerErrorLevel;
 import org.preesm.model.pisdf.check.PiGraphConsistenceChecker;
 import org.preesm.model.pisdf.factory.PiMMUserFactory;
 import org.preesm.model.pisdf.statictools.optims.BroadcastRoundBufferOptimization;
@@ -128,22 +130,29 @@ public class PiSDFFlattener extends PiMMSwitch<Boolean> {
    * @return the SDFGraph obtained by visiting graph
    */
   public static final PiGraph flatten(final PiGraph graph, boolean performOptim) {
-    PiGraphConsistenceChecker.check(graph);
+    // Check consistency of the graph (throw exception if recoverable or fatal error)
+    final PiGraphConsistenceChecker pgcc = new PiGraphConsistenceChecker(CheckerErrorLevel.FATAL_ANALYSIS,
+        CheckerErrorLevel.NONE);
+    pgcc.check(graph);
+
     // 0. we copy the graph since the transformation has side effects (especially on delay actors)
     final PiGraph graphCopy = PiMMUserFactory.instance.copyPiGraphWithHistory(graph);
     // 1. First we resolve all parameters.
     // It must be done first because, when removing persistence, local parameters have to be known at upper level
     PiMMHelper.resolveAllParameters(graphCopy);
-    // 2. We perform the delay transformation step that deals with persistence
-    PiMMHelper.removePersistence(graphCopy);
-    // 3. Compute BRV following the chosen method
+    // 2. Compute BRV following the chosen method
     Map<AbstractVertex, Long> brv = PiBRV.compute(graphCopy, BRVMethod.LCM);
-    // 4. Print the RV values
     PiBRV.printRV(brv);
-    // 4.5 Check periods with BRV
+    // then we remove all actors which will be not fired
+    // we do it before the persistence transformation whose new delays may change the BRV
+    PiMMHelper.removeNonExecutedActorsAndFifos(graphCopy, brv);
+    // 3. We perform the delay transformation step that deals with persistence
+    PiMMHelper.removePersistence(graphCopy);
+    // recompute brv since new delays added from persistence are not known yet
+    brv = PiBRV.compute(graphCopy, BRVMethod.LCM);
+    // 4 Check periods with BRV
     PiMMHelper.checkPeriodicity(graphCopy, brv);
     // 5. Now, flatten the graph
-
     PiSDFFlattener staticPiMM2FlatPiMMVisitor = new PiSDFFlattener(brv);
     staticPiMM2FlatPiMMVisitor.doSwitch(graphCopy);
     PiGraph result = staticPiMM2FlatPiMMVisitor.result;
@@ -157,7 +166,10 @@ public class PiSDFFlattener extends PiMMSwitch<Boolean> {
       removeUselessStuffAfterOptim(result);
     }
 
-    PiGraphConsistenceChecker.check(result);
+    // Check consistency of the graph (throw exception if recoverable or fatal error)
+    final PiGraphConsistenceChecker pgccResult = new PiGraphConsistenceChecker(CheckerErrorLevel.FATAL_ANALYSIS,
+        CheckerErrorLevel.NONE);
+    pgccResult.check(result);
     flattenCheck(graphCopy, result);
 
     return result;
@@ -255,11 +267,10 @@ public class PiSDFFlattener extends PiMMSwitch<Boolean> {
       // Map the actor for linking latter
       this.actor2actor.put(actor, copyActor);
       instantiateDependencies(actor, copyActor);
-
+      return true;
     } else {
-      doSwitch(actor);
+      throw new UnsupportedOperationException();
     }
-    return true;
   }
 
   /**
@@ -472,21 +483,34 @@ public class PiSDFFlattener extends PiMMSwitch<Boolean> {
 
   private Delay copyDelay(final Delay delay) {
     final Delay copy = PiMMUserFactory.instance.createDelay();
+    // We do not use {@link PiMMUserFactory#copyWithHistory} here
+    // because ports of DelayActor contain an expression proxy
+    // (see DelayLinkedExpression in the PiSDF model)
+
     // Copy Delay properties
     copy.setName(this.graphPrefix + delay.getName());
     copy.setLevel(delay.getLevel());
+    copy.setExpression(delay.getExpression().getExpressionAsString());
     // Copy DelayActor properties
     final DelayActor actor = delay.getActor();
     final DelayActor copyActor = copy.getActor();
     copyActor.setName(this.graphPrefix + actor.getName());
+    // tracking is useful for FPGA hls codegen where refinements of delay actors are supported
+    PreesmCopyTracker.trackCopy(actor, copyActor);
+    final Refinement ref = actor.getRefinement();
+    if (ref != null) {
+      final Refinement copyRef = PiMMUserFactory.instance.copy(ref);
+      copyActor.setRefinement(copyRef);
+    }
+
     final DataInputPort setterPort = actor.getDataInputPort();
     final DataInputPort copySetterPort = copyActor.getDataInputPort();
     copySetterPort.setName(setterPort.getName());
-    copySetterPort.setExpression(setterPort.getExpression().getExpressionAsString());
+
     final DataOutputPort getterPort = actor.getDataOutputPort();
     final DataOutputPort copyGetterPort = copyActor.getDataOutputPort();
     copyGetterPort.setName(getterPort.getName());
-    copyGetterPort.setExpression(getterPort.getExpression().getExpressionAsString());
+
     // Adding the entry in the map
     this.actor2actor.put(actor, copyActor);
     this.result.addDelay(copy);
@@ -717,13 +741,7 @@ public class PiSDFFlattener extends PiMMSwitch<Boolean> {
       throw new PreesmRuntimeException("We have detected persistent and non-persistent delays in graph ["
           + graph.getName() + "]. This is not supported by the flattening transformation for now.");
     } else if (containsNonPersistent) {
-      if (graph.getContainingPiGraph() == null
-          && graph.getActors().stream().anyMatch(x -> x instanceof InterfaceActor)) {
-        throw new PreesmRuntimeException(
-            "Non-persistent delays are not supported if the top-level graph has interfaces.");
-      } else {
-        quasiSRTransformation(graph);
-      }
+      quasiSRTransformation(graph);
     } else {
       flatteningTransformation(graph);
     }
@@ -755,13 +773,20 @@ public class PiSDFFlattener extends PiMMSwitch<Boolean> {
       flatteningTransformation(graph);
     }
     this.graphPrefix = backupPrefix;
-    // Now we need to deal with input / output interfaces
-    for (final DataInputInterface dii : graph.getDataInputInterfaces()) {
-      forkInputInterface(dii, graph);
+    if (graph.getContainingPiGraph() != null) {
+      // if we are not the parent graph, we need to deal with input / output interfaces
+      for (final DataInputInterface dii : graph.getDataInputInterfaces()) {
+        forkInputInterface(dii, graph);
+      }
+      for (final DataOutputInterface doi : graph.getDataOutputInterfaces()) {
+        joinOutputInterface(doi, graph);
+      }
+    } else if (graph.getContainingPiGraph() == null && graphRV != 1L) {
+      throw new PreesmRuntimeException(
+          "Inconsistent state reached during flattenning: the top graph has a repetition vector (RV) > 1, "
+              + "which cannot be handled with non persistent NONE delays. RV = " + graphRV);
     }
-    for (final DataOutputInterface doi : graph.getDataOutputInterfaces()) {
-      joinOutputInterface(doi, graph);
-    }
+
     this.graphPrefix = backupPrefix;
   }
 

@@ -50,6 +50,7 @@ import org.preesm.commons.doc.annotations.PreesmTask;
 import org.preesm.commons.doc.annotations.Value;
 import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.preesm.model.scenario.Scenario;
+import org.preesm.model.scenario.check.FifoTypeChecker;
 import org.preesm.workflow.elements.Workflow;
 import org.preesm.workflow.implement.AbstractTaskImplementation;
 
@@ -159,6 +160,7 @@ public class MemoryScriptTask extends AbstractTaskImplementation {
 
     // Get the data types from the scenario
     final Scenario scenario = (Scenario) inputs.get("scenario");
+    FifoTypeChecker.checkMissingFifoTypeSizes(scenario);
     final EMap<String, Long> dataTypes = scenario.getSimulationInfo().getDataTypes();
 
     // Get check policy

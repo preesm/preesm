@@ -38,7 +38,6 @@ package org.preesm.model.pisdf.check;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.logging.Level;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.preesm.commons.doc.annotations.Port;
 import org.preesm.commons.doc.annotations.PreesmTask;
@@ -56,7 +55,7 @@ import org.preesm.workflow.implement.AbstractWorkflowNodeImplementation;
 @PreesmTask(id = "pisdf-checker", name = "PiSDF Checker",
 
     inputs = { @Port(name = "PiMM", type = PiGraph.class) }, outputs = { @Port(name = "PiMM", type = PiGraph.class) })
-public class PiMMAlgorithmCheckerTask extends AbstractTaskImplementation {
+public class PiGraphConsistenceCheckerTask extends AbstractTaskImplementation {
 
   @Override
   public Map<String, Object> execute(final Map<String, Object> inputs, final Map<String, String> parameters,
@@ -64,17 +63,13 @@ public class PiMMAlgorithmCheckerTask extends AbstractTaskImplementation {
 
     // Get the PiGraph to check
     final PiGraph graph = (PiGraph) inputs.get(AbstractWorkflowNodeImplementation.KEY_PI_GRAPH);
+    PreesmLogger.getLogger().info("Checking validity of graph " + graph.getName() + ".");
     // Check the graph and display corresponding messages
-    final PiMMAlgorithmChecker checker = new PiMMAlgorithmChecker();
-    if (checker.checkGraph(graph)) {
-      PreesmLogger.getLogger().log(Level.FINE, checker.getOkMsg());
-    } else {
-      if (checker.isErrors()) {
-        PreesmLogger.getLogger().log(Level.SEVERE, checker.getErrorMsg());
-      }
-      if (checker.isWarnings()) {
-        PreesmLogger.getLogger().log(Level.WARNING, checker.getWarningMsg());
-      }
+    final PiGraphConsistenceChecker pgcc = new PiGraphConsistenceChecker(CheckerErrorLevel.NONE,
+        CheckerErrorLevel.FATAL_CODEGEN);
+    final boolean valid = pgcc.check(graph);
+    if (valid) {
+      PreesmLogger.getLogger().info("Graph " + graph.getName() + " is valid.");
     }
 
     // Return the checked graph

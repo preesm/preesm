@@ -60,6 +60,7 @@ import org.preesm.algorithm.mapper.ui.stats.IStatGenerator;
 import org.preesm.algorithm.mapper.ui.stats.StatEditorInput;
 import org.preesm.algorithm.mapper.ui.stats.StatGeneratorSynthesis;
 import org.preesm.algorithm.pisdf.autodelays.AbstractGraph.FifoAbstraction;
+import org.preesm.algorithm.pisdf.autodelays.HeuristicLoopBreakingDelays.CycleInfos;
 import org.preesm.algorithm.pisdf.autodelays.TopologicalRanking.TopoVisit;
 import org.preesm.algorithm.synthesis.SynthesisResult;
 import org.preesm.algorithm.synthesis.evaluation.latency.LatencyCost;
@@ -78,7 +79,6 @@ import org.preesm.commons.model.PreesmCopyTracker;
 import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.AbstractVertex;
 import org.preesm.model.pisdf.Delay;
-import org.preesm.model.pisdf.ExecutableActor;
 import org.preesm.model.pisdf.Fifo;
 import org.preesm.model.pisdf.PersistenceLevel;
 import org.preesm.model.pisdf.PiGraph;
@@ -99,6 +99,9 @@ import org.preesm.workflow.implement.AbstractWorkflowNodeImplementation;
 
 /**
  * This class computes best locations for delays.
+ * <p>
+ * For more details, see conference paper "A Fast Heuristic to Pipeline SDF Graphs", published at SAMOS 2020 (DOI
+ * 10.1007/978-3-030-60939-9_10).
  *
  * @author ahonorat
  *
@@ -294,7 +297,7 @@ public class AutoDelaysTask extends AbstractTaskImplementation {
 
     if (fillCycles) {
       PreesmLogger.getLogger().log(Level.WARNING, "Experimental breaking of cycles.");
-      fillCycles(hlbd, brv);
+      fillCycles(hlbd);
       // we redo the analysis since adding delays will modify the topo ranks
       hlbd.performAnalysis(graphCopy, brv);
     }
@@ -306,22 +309,9 @@ public class AutoDelaysTask extends AbstractTaskImplementation {
 
     final Set<FifoAbstraction> forbiddenFifos = hlbd.getForbiddenFifos();
 
-    final Set<AbstractActor> sourceActors = new LinkedHashSet<>(hlbd.additionalSourceActors);
-    final Set<AbstractActor> sinkActors = new LinkedHashSet<>(hlbd.additionalSinkActors);
-    for (final AbstractActor absActor : graphCopy.getActors()) {
-      if (absActor instanceof ExecutableActor) {
-        if (absActor.getDataOutputPorts().isEmpty()) {
-          sinkActors.add(absActor);
-        }
-        if (absActor.getDataInputPorts().isEmpty()) {
-          sourceActors.add(absActor);
-        }
-      }
-    }
-    final Map<AbstractActor,
-        TopoVisit> topoRanks = TopologicalRanking.topologicalASAPranking(sourceActors, hlbd.actorsNbVisitsTopoRank);
+    final Map<AbstractActor, TopoVisit> topoRanks = TopologicalRanking.topologicalASAPranking(hlbd);
     // build intermediate list of actors per rank
-    final SortedMap<Integer, Set<AbstractActor>> irRankActors = mapRankActors(topoRanks, false, 0);
+    final SortedMap<Integer, Set<AbstractActor>> irRankActors = TopologicalRanking.mapRankActors(topoRanks, false, 0);
     // offset of one to ease some computations
     final int maxRank = irRankActors.lastKey() + 1;
     if (maxRank < 2) {
@@ -332,15 +322,15 @@ public class AutoDelaysTask extends AbstractTaskImplementation {
     final int selec = Math.min(nbPreCuts, maxRank - 1);
     final int maxii = Math.min(nbMaxCuts, maxRank - 1);
 
-    final Map<AbstractActor,
-        TopoVisit> topoRanksT = TopologicalRanking.topologicalASAPrankingT(sinkActors, hlbd.actorsNbVisitsTopoRankT);
+    final Map<AbstractActor, TopoVisit> topoRanksT = TopologicalRanking.topologicalASAPrankingT(hlbd);
     // what we are interested in is not exactly ALAP = inverse of ASAP_T, it is ALAP with all sources executed at the
     // beginning
-    sourceActors.stream().forEach(x -> {
+    hlbd.allSourceActors.stream().forEach(x -> {
       TopoVisit tv = topoRanksT.get(x);
       tv.rank = maxRank - 1;
     });
-    final SortedMap<Integer, Set<AbstractActor>> irRankActorsT = mapRankActors(topoRanksT, true, maxRank);
+    final SortedMap<Integer,
+        Set<AbstractActor>> irRankActorsT = TopologicalRanking.mapRankActors(topoRanksT, true, maxRank);
 
     final SortedMap<Integer, Long> rankWCETs = new TreeMap<>();
     for (Entry<AbstractActor, TopoVisit> e : topoRanks.entrySet()) {
@@ -582,21 +572,17 @@ public class AutoDelaysTask extends AbstractTaskImplementation {
     return evaluate.getValue();
   }
 
-  private static void fillCycles(final HeuristicLoopBreakingDelays hlbd, final Map<AbstractVertex, Long> brv) {
-    for (FifoAbstraction fa : hlbd.breakingFifosAbs) {
+  private static void fillCycles(final HeuristicLoopBreakingDelays hlbd) {
+    for (final CycleInfos ci : hlbd.cyclesInfos.values()) {
+      final FifoAbstraction fa = ci.breakingFifo;
+      final long gcdCycle = ci.repetition;
       final List<Long> pipelineValues = fa.pipelineValues;
       final List<Fifo> fifos = fa.fifos;
       final int size = fifos.size();
+
       for (int i = 0; i < size; i++) {
         final Fifo f = fifos.get(i);
-        long pipeSize = pipelineValues.get(i);
-        final AbstractActor tgt = hlbd.absGraph.getEdgeTarget(fa);
-        final long brvTgt = brv.get(tgt);
-        final long brvTgtCycle = hlbd.minCycleBrv.get(tgt);
-        if (brvTgt > brvTgtCycle) {
-          pipeSize /= brvTgt;
-          pipeSize *= brvTgtCycle;
-        }
+        long pipeSize = pipelineValues.get(i) / gcdCycle;
 
         Delay delay = f.getDelay();
         if (delay == null) {
@@ -621,26 +607,6 @@ public class AutoDelaysTask extends AbstractTaskImplementation {
         delay.setExpression(pipeSize);
       }
     }
-  }
-
-  private static SortedMap<Integer, Set<AbstractActor>> mapRankActors(final Map<AbstractActor, TopoVisit> topoRanks,
-      boolean reverse, int maxRank) {
-    final SortedMap<Integer, Set<AbstractActor>> irRankActors = new TreeMap<>();
-    for (Entry<AbstractActor, TopoVisit> e : topoRanks.entrySet()) {
-      final AbstractActor aa = e.getKey();
-      final TopoVisit tv = e.getValue();
-      int rank = tv.rank;
-      if (reverse) {
-        rank = maxRank - tv.rank;
-      }
-      Set<AbstractActor> aas = irRankActors.get(rank);
-      if (aas == null) {
-        aas = new HashSet<>();
-        irRankActors.put(rank, aas);
-      }
-      aas.add(aa);
-    }
-    return irRankActors;
   }
 
   private static SortedMap<Integer, Set<CutInformation>> computePossibleCuts(

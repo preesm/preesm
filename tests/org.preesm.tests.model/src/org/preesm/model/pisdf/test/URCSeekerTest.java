@@ -50,6 +50,7 @@ import org.preesm.model.pisdf.DataOutputPort;
 import org.preesm.model.pisdf.Delay;
 import org.preesm.model.pisdf.Fifo;
 import org.preesm.model.pisdf.PiGraph;
+import org.preesm.model.pisdf.check.CheckerErrorLevel;
 import org.preesm.model.pisdf.check.PiGraphConsistenceChecker;
 import org.preesm.model.pisdf.factory.PiMMUserFactory;
 import org.preesm.model.pisdf.util.URCSeeker;
@@ -214,8 +215,11 @@ public class URCSeekerTest {
     fifoDE.setDelay(delayDE);
     this.topGraph.addDelay(delayDE);
 
-    // Check consistency of the graph
-    PiGraphConsistenceChecker.check(this.topGraph);
+    // Check consistency of the graph (throw exception if recoverable or fatal error)
+    final PiGraphConsistenceChecker pgcc = new PiGraphConsistenceChecker(CheckerErrorLevel.FATAL_ANALYSIS,
+        CheckerErrorLevel.NONE);
+    pgcc.check(this.topGraph);
+
   }
 
 }

@@ -98,8 +98,10 @@ import org.preesm.model.pisdf.Port;
 import org.preesm.model.pisdf.PortKind;
 import org.preesm.model.pisdf.PortMemoryAnnotation;
 import org.preesm.model.pisdf.RefinementContainer;
+import org.preesm.model.pisdf.check.CheckerErrorLevel;
 import org.preesm.model.pisdf.check.NameCheckerC;
 import org.preesm.model.pisdf.check.PiGraphConsistenceChecker;
+import org.preesm.model.pisdf.check.RefinementChecker;
 import org.preesm.model.pisdf.factory.PiMMUserFactory;
 import org.preesm.model.pisdf.reconnection.SubgraphReconnector;
 import org.preesm.model.pisdf.util.PiIdentifiers;
@@ -154,7 +156,10 @@ public class PiParser {
   public static PiGraph getPiGraphWithReconnection(final String algorithmURL) {
     final PiGraph graph = getPiGraph(algorithmURL);
     SubgraphReconnector.reconnectChildren(graph);
-    PiGraphConsistenceChecker.check(graph, false);
+    // Check consistency of the graph (throw exception if fatal error)
+    final PiGraphConsistenceChecker pgcc = new PiGraphConsistenceChecker(CheckerErrorLevel.FATAL_ALL,
+        CheckerErrorLevel.NONE);
+    pgcc.check(graph);
     return graph;
   }
 
@@ -292,15 +297,12 @@ public class PiParser {
     if ((refinement != null) && !refinement.isEmpty()) {
       final IPath path = getWorkspaceRelativePathFrom(new Path(refinement));
       final String refinementExtension = path.getFileExtension();
-      switch (refinementExtension) {
-        case "h":
-          parseHeaderRefinement(nodeElt, actor, path);
-          break;
-        case "pi":
-          parsePiRefinement(actor, path);
-          break;
-        default:
-          throw new UnsupportedOperationException("Unsupported refinement extension " + refinementExtension);
+      if (RefinementChecker.isAsupportedHeaderFileExtension(refinementExtension)) {
+        parseHeaderRefinement(nodeElt, actor, path);
+      } else if ("pi".equals(refinementExtension)) {
+        parsePiRefinement(actor, path);
+      } else {
+        throw new UnsupportedOperationException("Unsupported refinement extension " + refinementExtension);
       }
 
     } else {
@@ -362,8 +364,12 @@ public class PiParser {
    */
   private FunctionPrototype parseFunctionPrototype(final Element protoElt, final String protoName) {
     final FunctionPrototype proto = PiMMUserFactory.instance.createFunctionPrototype();
-
     proto.setName(protoName);
+
+    final String isCPPdef = protoElt.getAttribute(PiIdentifiers.REFINEMENT_FUNCTION_PROTOTYPE_IS_CPPDEF);
+    if (Boolean.parseBoolean(isCPPdef)) {
+      proto.setIsCPPdefinition(true);
+    }
     final NodeList childList = protoElt.getChildNodes();
     for (int i = 0; i < childList.getLength(); i++) {
       final Node elt = childList.item(i);
@@ -390,6 +396,15 @@ public class PiParser {
     param.setType(elt.getAttribute(PiIdentifiers.REFINEMENT_PARAMETER_TYPE));
     param.setDirection(Direction.valueOf(elt.getAttribute(PiIdentifiers.REFINEMENT_PARAMETER_DIRECTION)));
     param.setIsConfigurationParameter(Boolean.valueOf(elt.getAttribute(PiIdentifiers.REFINEMENT_PARAMETER_IS_CONFIG)));
+
+    final String isCPPdef = elt.getAttribute(PiIdentifiers.REFINEMENT_PARAMETER_IS_CPPDEF);
+    if (Boolean.parseBoolean(isCPPdef)) {
+      param.setIsCPPdefinition(true);
+    }
+    final String isPassedByRef = elt.getAttribute(PiIdentifiers.REFINEMENT_PARAMETER_IS_PASSEDBYREF);
+    if (Boolean.parseBoolean(isPassedByRef)) {
+      param.setIsPassedByReference(true);
+    }
 
     return param;
   }
@@ -684,12 +699,9 @@ public class PiParser {
     if (setter == null) {
       parseRefinement(nodeElt, delayActor);
       // Checks the validity of the H refinement of the delay
-      if (delayActor.getRefinement() instanceof CHeaderRefinement) {
-        final CHeaderRefinement hrefinement = (CHeaderRefinement) delayActor.getRefinement();
-        if (!delayActor.isValidRefinement(hrefinement)) {
-          throw new PreesmRuntimeException(
-              "Delay INIT prototype must match following prototype: void init(IN int params ..., OUT <type>* fifo)");
-        }
+      if (delayActor.getRefinement() != null && !delayActor.hasValidRefinement()) {
+        throw new PreesmRuntimeException(
+            "Delay INIT prototype must match following prototype: void init(IN int params ..., OUT <type>* fifo)");
       }
     }
 

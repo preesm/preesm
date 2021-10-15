@@ -40,6 +40,7 @@
 package org.preesm.ui.pisdf.features;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
@@ -62,6 +63,7 @@ import org.preesm.model.pisdf.InitActor;
 import org.preesm.model.pisdf.PersistenceLevel;
 import org.preesm.model.pisdf.PiSDFRefinement;
 import org.preesm.model.pisdf.RefinementContainer;
+import org.preesm.model.pisdf.check.RefinementChecker;
 import org.preesm.model.pisdf.factory.PiMMUserFactory;
 import org.preesm.model.pisdf.header.parser.HeaderParser;
 import org.preesm.ui.pisdf.util.PiMMUtil;
@@ -177,7 +179,7 @@ public class SetActorRefinementFeature extends AbstractCustomFeature {
           rc = (InitActor) bo;
         }
 
-        final String question = "Please select a valid refinement file (.h, or .pi if Actor)";
+        final String question = "Please select a valid refinement file (.h/hpp, or .pi if Actor)";
         final String dialogTitle = "Select a refinement file";
         final IPath path = askRefinement(question, dialogTitle, acceptPiFiles);
         if (path != null) {
@@ -209,7 +211,7 @@ public class SetActorRefinementFeature extends AbstractCustomFeature {
     if (acceptPiFiles) {
       fileExtensions.add("pi");
     }
-    fileExtensions.add("h");
+    fileExtensions.addAll(Arrays.asList(RefinementChecker.acceptedHeaderExtensions));
     return FileUtils.browseFiles(PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell(), dialogTitle, question,
         fileExtensions);
   }
@@ -232,8 +234,8 @@ public class SetActorRefinementFeature extends AbstractCustomFeature {
     boolean acceptPiFiles = actor instanceof Actor;
     boolean validRefinement = false;
     do {
-      // If the file is a .h header
-      if (newFilePath.getFileExtension().equals("h")) {
+      // If the file is a C/C++ header
+      if (RefinementChecker.isAsupportedHeaderFileExtension(newFilePath.getFileExtension())) {
 
         List<FunctionPrototype> loopPrototypes;
         FunctionPrototype[] allProtoArray;
@@ -241,15 +243,17 @@ public class SetActorRefinementFeature extends AbstractCustomFeature {
 
         // We get it
         file = ResourcesPlugin.getWorkspace().getRoot().getFile(newFilePath);
+        if (file == null) {
+          throw new PreesmRuntimeException("Unable to open file " + newFilePath.toString());
+        }
 
         // Get all prototypes first (no filter)
-        final List<FunctionPrototype> allPrototypes = getPrototypes(file, actor, PrototypeFilter.NONE);
+        final List<FunctionPrototype> allPrototypes = HeaderParser.parseCXXHeader(file);
         allProtoArray = allPrototypes.toArray(new FunctionPrototype[allPrototypes.size()]);
 
-        loopPrototypes = getPrototypes(file, actor, PrototypeFilter.LOOP_ACTOR);
-        validRefinement = (!loopPrototypes.isEmpty()) || (!allPrototypes.isEmpty());
+        validRefinement = !allPrototypes.isEmpty();
         if (!validRefinement) {
-          final String message = "The .h file you selected does not contain any prototype."
+          final String message = "The header file you selected does not contain any prototype."
               + ".\nPlease select another valid file.";
           newFilePath = askRefinement(message, dialogTitle, acceptPiFiles);
 
@@ -264,10 +268,12 @@ public class SetActorRefinementFeature extends AbstractCustomFeature {
           FunctionPrototype loopProto = null;
 
           if (actor instanceof Actor) {
-            // The file is a valid .h file.
+            // The file is a valid header file.
             title = "Loop Function Selection";
             message = "Select a loop function for actor " + ((AbstractActor) actor).getName()
-                + "\n(* = any string, ? = any char):";
+                + "\n(* = any string, ? = any char):\nNote: return types are not considered.";
+
+            loopPrototypes = getPrototypes(actor, PrototypeFilter.LOOP_ACTOR, allPrototypes);
             final FunctionPrototype[] loopProtoArray = loopPrototypes
                 .toArray(new FunctionPrototype[loopPrototypes.size()]);
             loopProto = PiMMUtil.selectFunction(loopProtoArray, allProtoArray, title, message,
@@ -278,10 +284,10 @@ public class SetActorRefinementFeature extends AbstractCustomFeature {
           List<FunctionPrototype> allInitPrototypes = null;
           boolean showOnlyCorresponding = false;
           if (actor instanceof Actor) {
-            initPrototypes = getPrototypes(file, actor, PrototypeFilter.INIT_ACTOR);
-            allInitPrototypes = getPrototypes(file, actor, PrototypeFilter.INIT);
+            initPrototypes = getPrototypes(actor, PrototypeFilter.INIT_ACTOR, allPrototypes);
+            allInitPrototypes = getPrototypes(actor, PrototypeFilter.INIT, allPrototypes);
           } else {
-            initPrototypes = getPrototypes(file, actor, PrototypeFilter.INIT_DELAY_ACTOR);
+            initPrototypes = getPrototypes(actor, PrototypeFilter.INIT_DELAY_ACTOR, allPrototypes);
             allInitPrototypes = new ArrayList<>();
             showOnlyCorresponding = true;
           }
@@ -329,40 +335,37 @@ public class SetActorRefinementFeature extends AbstractCustomFeature {
   /**
    * Gets the prototypes.
    *
-   * @param file
-   *          the file
    * @param actor
    *          the actor
    * @param prototypeFilter
    *          the prototype filter
+   * @param allPrototypes
+   *          All the prototypes found in the file
    * @return the prototypes
    */
-  private List<FunctionPrototype> getPrototypes(final IFile file, final RefinementContainer actor,
-      final PrototypeFilter prototypeFilter) {
+  private List<FunctionPrototype> getPrototypes(final RefinementContainer actor, final PrototypeFilter prototypeFilter,
+      final List<FunctionPrototype> allPrototypes) {
 
     List<FunctionPrototype> result = null;
 
-    if (file != null) {
-      result = HeaderParser.parseHeader(file);
-
-      switch (prototypeFilter) {
-        case INIT_ACTOR:
-          result = HeaderParser.filterInitPrototypesFor((AbstractActor) actor, result);
-          break;
-        case LOOP_ACTOR:
-          result = HeaderParser.filterLoopPrototypesFor((AbstractActor) actor, result);
-          break;
-        case INIT:
-          result = HeaderParser.filterInitPrototypes(result);
-          break;
-        case INIT_DELAY_ACTOR:
-          result = HeaderParser.filterInitBufferPrototypes(result);
-          break;
-        case NONE:
-          break;
-        default:
-      }
+    switch (prototypeFilter) {
+      case INIT_ACTOR:
+        result = HeaderParser.filterInitPrototypesFor((AbstractActor) actor, allPrototypes);
+        break;
+      case LOOP_ACTOR:
+        result = HeaderParser.filterLoopPrototypesFor((AbstractActor) actor, allPrototypes);
+        break;
+      case INIT:
+        result = HeaderParser.filterInitPrototypes(allPrototypes);
+        break;
+      case INIT_DELAY_ACTOR:
+        result = HeaderParser.filterInitBufferPrototypes(allPrototypes);
+        break;
+      case NONE:
+        break;
+      default:
     }
+
     if (result == null) {
       throw new PreesmRuntimeException();
     }

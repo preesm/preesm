@@ -55,6 +55,7 @@ import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.pisdf.Port;
 import org.preesm.model.pisdf.brv.BRVMethod;
 import org.preesm.model.pisdf.brv.PiBRV;
+import org.preesm.model.pisdf.check.CheckerErrorLevel;
 import org.preesm.model.pisdf.check.PiGraphConsistenceChecker;
 import org.preesm.model.pisdf.factory.PiMMUserFactory;
 
@@ -140,7 +141,7 @@ public class PiSDFSubgraphBuilder extends PiMMSwitch<Boolean> {
   /**
    * Performs subgraph actors extraction from parent graph.
    * 
-   * @return The resulting PiGraph with the desired subgraph.
+   * @return The resulting subgraph.
    */
   public PiGraph build() {
     // Add subgraph to parent graph
@@ -150,7 +151,10 @@ public class PiSDFSubgraphBuilder extends PiMMSwitch<Boolean> {
       doSwitch(actor);
     }
     // Check consistency of parent graph
-    PiGraphConsistenceChecker.check(this.parentGraph);
+    // Check consistency of the graph (throw exception if recoverable or fatal error)
+    final PiGraphConsistenceChecker pgcc = new PiGraphConsistenceChecker(CheckerErrorLevel.FATAL_ANALYSIS,
+        CheckerErrorLevel.NONE);
+    pgcc.check(this.parentGraph);
     return this.subGraph;
   }
 

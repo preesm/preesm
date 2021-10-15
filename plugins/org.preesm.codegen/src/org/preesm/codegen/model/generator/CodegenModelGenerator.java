@@ -465,7 +465,7 @@ public class CodegenModelGenerator extends AbstractCodegenModelGenerator {
               break;
             case MapperDAGVertex.DAG_INIT_VERTEX:
             case MapperDAGVertex.DAG_END_VERTEX:
-              generateFifoCall(operatorBlock, vert);
+              generateInitEndFifoCall(operatorBlock, vert);
               break;
             default:
               final String message = "DAG Vertex " + vert + " has an unknown kind: " + vertKind;
@@ -654,6 +654,8 @@ public class CodegenModelGenerator extends AbstractCodegenModelGenerator {
         final Prototype loopPrototype = prototypes.getLoopPrototype();
         if (loopPrototype == null) {
           throw new PreesmRuntimeException("The actor " + dagVertex + " has no loop interface in its IDL refinement.");
+        } else if (!loopPrototype.getIsStandardC()) {
+          throw new PreesmRuntimeException("The actor " + dagVertex + " has a non standard C refinement.");
         }
         // adding the call to the FPGA load functions only once. The printFpgaLoad will
         // return a no-null string only with the right printer and nothing for the others
@@ -773,12 +775,15 @@ public class CodegenModelGenerator extends AbstractCodegenModelGenerator {
         // Generate the init FunctionCall (if any)
         final Prototype initPrototype = prototypes.getInitPrototype();
         if (initPrototype != null) {
+          if (!initPrototype.getIsStandardC()) {
+            throw new PreesmRuntimeException("The actor " + dagVertex + " has a non standard C refinement.");
+          }
+
           final FunctionCall functionCall2 = generateFunctionCall(dagVertex, initPrototype, true);
 
           registerCallVariableToCoreBlock(operatorBlock, functionCall2);
           // Add the function call to the operatorBlock
           operatorBlock.getInitBlock().getCodeElts().add(functionCall2);
-
         }
       } else {
         // If the actor has no refinement
@@ -1550,7 +1555,7 @@ public class CodegenModelGenerator extends AbstractCodegenModelGenerator {
    *          A {@link DAGInitVertex} or a {@link DAGEndVertex} that respectively correspond to a pull and a push
    *          operation.
    */
-  protected void generateFifoCall(final CoreBlock operatorBlock, final DAGVertex dagVertex) {
+  protected void generateInitEndFifoCall(final CoreBlock operatorBlock, final DAGVertex dagVertex) {
     // Create the Fifo call and set basic property
     final FifoCall fifoCall = CodegenModelUserFactory.eINSTANCE.createFifoCall();
     fifoCall.setName(dagVertex.getName());

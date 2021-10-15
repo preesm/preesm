@@ -530,12 +530,19 @@ public class SimulationPage extends ScenarioPage {
         final String dialogMessage = Messages.getString("Simulation.DataTypes.addType.dialog.message");
         final String init = "newType";
 
-        final IInputValidator validator = newText -> null;
+        // implements "public String isValid(String newText)"
+        final IInputValidator validator = newText -> {
+          final String trimmed = newText.trim();
+          if (trimmed.isEmpty()) {
+            return "The data type cannot be empty.";
+          }
+          return null;
+        };
 
         final InputDialog dialog = new InputDialog(PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell(),
             dialogTitle, dialogMessage, init, validator);
         if (dialog.open() == Window.OK) {
-          SimulationPage.this.scenario.getSimulationInfo().getDataTypes().put(dialog.getValue(),
+          SimulationPage.this.scenario.getSimulationInfo().getDataTypes().put(dialog.getValue().trim(),
               (long) ScenarioConstants.DEFAULT_DATA_TYPE_SIZE.getValue());
           tableViewer.refresh();
           propertyChanged(SimulationPage.this, IEditorPart.PROP_DIRTY);

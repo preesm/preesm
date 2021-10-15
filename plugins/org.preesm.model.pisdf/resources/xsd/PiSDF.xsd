@@ -109,6 +109,7 @@
          <xs:element name="param" minOccurs="0" maxOccurs="unbounded" type="pisdf:Parameter" />
       </xs:sequence>
       <xs:attribute type="xs:string" name="name" />
+      <xs:attribute type="xs:string" name="isCPPdefinition" use="optional"/>
    </xs:complexType>
 
    <xs:complexType name="Parameter">
@@ -118,6 +119,8 @@
             <xs:attribute type="xs:string" name="isConfig" use="optional" />
             <xs:attribute type="xs:string" name="name" use="optional" />
             <xs:attribute type="xs:string" name="type" use="optional" />
+	        <xs:attribute type="xs:string" name="isCPPdefinition" use="optional"/>
+	        <xs:attribute type="xs:string" name="isPassedByReference" use="optional"/>
          </xs:extension>
       </xs:simpleContent>
    </xs:complexType>

@@ -37,23 +37,19 @@
  */
 package org.preesm.ui.pisdf.decorators;
 
-import java.util.AbstractMap.SimpleEntry;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
 import org.eclipse.graphiti.features.IReason;
 import org.eclipse.graphiti.features.impl.Reason;
 import org.eclipse.graphiti.mm.pictograms.PictogramElement;
 import org.eclipse.graphiti.platform.IPlatformImageConstants;
 import org.eclipse.graphiti.tb.IDecorator;
 import org.eclipse.graphiti.tb.ImageDecorator;
-import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.Actor;
 import org.preesm.model.pisdf.PiSDFRefinement;
 import org.preesm.model.pisdf.Port;
+import org.preesm.model.pisdf.check.RefinementChecker;
 import org.preesm.ui.pisdf.diagram.PiMMImageProvider;
-import org.preesm.ui.pisdf.util.PortEqualityHelper;
 
 // TODO: Auto-generated Javadoc
 /**
@@ -148,29 +144,15 @@ public class ActorDecorators {
    * @return a reason stating if an update of the ports is needed
    */
   public static IReason portsUpdateNeeded(final Actor actor) {
-    final AbstractActor vertex = actor.getChildAbstractActor();
-    if (vertex != null) {
-      final Map<SimpleEntry<Port, Port>, IReason> m = PortEqualityHelper.buildEquivalentPortsMap(actor, vertex);
+    final RefinementChecker refCheck = new RefinementChecker();
+    refCheck.caseActor(actor);
 
-      String reasons = "";
-      for (final Entry<SimpleEntry<Port, Port>, IReason> e : m.entrySet()) {
-        if (!e.getValue().toBoolean()) {
-          if (e.getValue().getText().equals(PortEqualityHelper.NULL_PORT)) {
-            final Port actorPort = e.getKey().getKey();
-            final Port refinePort = e.getKey().getValue();
-            if (actorPort != null) {
-              reasons += "\nPort \"" + actorPort.getName() + "\" not present in refinement.";
-            } else {
-              reasons += "\nRefinement has an extra " + refinePort.getKind() + " port \"" + refinePort.getName()
-                  + "\".";
-            }
-          }
-        }
-      }
-      if (!reasons.equals("")) {
-        return Reason.createTrueReason("Ports are out of sync with the refinement." + reasons);
-      }
+    final String reason = refCheck.toString();
+
+    if (!reason.isEmpty()) {
+      return Reason.createTrueReason(reason);
     }
+
     return Reason.createFalseReason();
   }
 

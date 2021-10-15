@@ -97,17 +97,17 @@ class LCMBasedBRV extends PiBRV {
     }
 
     // Get all sub graph composing the current graph
-    final List<List<AbstractActor>> subgraphsWOInterfaces = PiMMHelper.getAllConnectedComponentsWOInterfaces(piGraph);
+    final List<List<AbstractActor>> ccWOInterfaces = PiMMHelper.getAllConnectedComponentsWOInterfaces(piGraph);
 
-    for (final List<AbstractActor> subgraph : subgraphsWOInterfaces) {
+    for (final List<AbstractActor> cc : ccWOInterfaces) {
       // Initializes all reps to 0
-      for (final AbstractActor actor : subgraph) {
+      for (final AbstractActor actor : cc) {
         // If unconnected, each actor is executed once by default.
         graphBRV.put(actor, 1L);
       }
 
       // initialize reps in topological order
-      final List<CCinfo> ccInfos = initRepsDFS(subgraph, graphBRV);
+      final List<CCinfo> ccInfos = initRepsDFS(cc, graphBRV);
 
       // there might be several connected components in each subgraph since
       // fifos having both production and consumption rates equal to 0
@@ -134,13 +134,13 @@ class LCMBasedBRV extends PiBRV {
       }
 
       // Update BRV values with interfaces
-      updateRVWithInterfaces(piGraph, subgraph, graphBRV);
+      updateRVWithInterfaces(piGraph, cc, graphBRV);
     }
 
     // Recursively compute BRV of sub-graphs
     // TODO maybe optimize this a recursive call to a secondary recursive method executeRec(final PiGraph graph)
     // or use visitor pattern
-    graphBRV.putAll(computeChildrenBRV(piGraph));
+    graphBRV.putAll(computeChildrenBRV(piGraph, graphBRV));
     return graphBRV;
   }
 
@@ -174,19 +174,19 @@ class LCMBasedBRV extends PiBRV {
   /**
    * Perform Depth First Search and return actors in the same order as visited (with initial value 0L).
    *
-   * @param subgraph
-   *          On which to perform DFS.
+   * @param cc
+   *          Connected component on which to perform DFS.
    * @param graphBRV
    *          Repetition vector of the graph. Updated for actors which will not be fired.
    * 
    * @return List of connected components, with ordered actors regarding the DFS traversal of subgraph, and fifo
    *         properties. Fifo having both rates equal to 0 are ignored for the connected components.
    */
-  private static List<CCinfo> initRepsDFS(List<AbstractActor> subgraph, final Map<AbstractVertex, Long> graphBRV) {
+  private static List<CCinfo> initRepsDFS(List<AbstractActor> cc, final Map<AbstractVertex, Long> graphBRV) {
     Set<AbstractActor> visited = new HashSet<>();
     List<CCinfo> ccs = new ArrayList<>();
 
-    for (AbstractActor aa : subgraph) {
+    for (AbstractActor aa : cc) {
       if (visited.contains(aa)) {
         // if already visited, nothing to do
         continue;

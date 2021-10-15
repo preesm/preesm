@@ -11,6 +11,8 @@ PREESM Changelog
 * (PiSDF) Flattening and SRDAG transformations now support data interfaces at top-level.
 * (SLAM) FPGA and CPU processing elements have they own type, which replace Operators.
 * (scenario) multiple kinds of timings can be stored, especially for FPGA.
+* (UI) The parsing of C/C++ functions for actor refinements is safer, now done by Eclipse CDT instead of handmade regex.
+* (UI) new menu popup action to generate C header refinements of PiSDF graphs.
 
 ### Bug fix
 * Add explicit log when data type size is not set in scenario making memory scripts crash.
@@ -18,6 +20,13 @@ PREESM Changelog
 * Fix integration test : reinforcement learning scenario for training uses
 the training graph now.
 * UI of PiSDF : better support of interfaces and model updates from GUI.
+* Fix #275 : better error support when reconnecting hierarchical graph with wrong ports
+* Fix #19 Fix #39 : new menu popup action to check liveness of PiSDF graphs.
+* Fix #322 : as C/C++ parsing is now done by Eclipse CDT, we accept headers with .h .H .hxx .hpp .hh .h++ file extensions, but they are not yet supported by regular codegen.
+* Fix #165 : UI warns if fifo types do not correspond to actor refinement using them.
+* (GUI) : removing a Delay (in the GUI only) was actually not removing its DelayActor from the PiGraph, now fixed.
+* Fix #339 : partial fix only, adds restriction to the removal of consecutive special actors for optimization (source and target rates must be equal now)
+* Fix #342 : partial fix only, autolayout supports cycles involving DelayActor, but this is not checked by the model (would need an exhaustive cycle search)
 
 
 ## Release version 3.21.0

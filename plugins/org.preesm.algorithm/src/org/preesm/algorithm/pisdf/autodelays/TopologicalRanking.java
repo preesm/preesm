@@ -37,13 +37,19 @@ package org.preesm.algorithm.pisdf.autodelays;
 
 import java.util.ArrayDeque;
 import java.util.Deque;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
+import java.util.SortedMap;
+import java.util.TreeMap;
 import java.util.logging.Level;
 import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.model.pisdf.AbstractActor;
+import org.preesm.model.pisdf.DataInputInterface;
 import org.preesm.model.pisdf.DataInputPort;
+import org.preesm.model.pisdf.DataOutputInterface;
 import org.preesm.model.pisdf.DataOutputPort;
 import org.preesm.model.pisdf.Fifo;
 
@@ -83,14 +89,14 @@ public class TopologicalRanking {
   /**
    * Computes ASAP topological ranking of a flat graph.
    * 
-   * @param sourceActors
-   *          Source actors of the graph.
-   * @param actorsNbVisits
-   *          Number of considered inputs (thus excluding feedback fifos).
+   * @param hlbd
+   *          Heuristic used to break the cycles.
    * @return Rank of each actor.
    */
-  public static Map<AbstractActor, TopoVisit> topologicalASAPranking(final Set<AbstractActor> sourceActors,
-      final Map<AbstractActor, Integer> actorsNbVisits) {
+  public static Map<AbstractActor, TopoVisit> topologicalASAPranking(final HeuristicLoopBreakingDelays hlbd) {
+
+    final Set<AbstractActor> sourceActors = hlbd.allSourceActors;
+    final Map<AbstractActor, Integer> actorsNbVisits = hlbd.actorsNbVisitsTopoRank;
     final Map<AbstractActor, TopoVisit> topoRanks = new LinkedHashMap<>();
     for (final AbstractActor actor : sourceActors) {
       topoRanks.put(actor, new TopoVisit(0, 1));
@@ -104,6 +110,9 @@ public class TopologicalRanking {
         final Fifo fifo = sport.getOutgoingFifo();
         final DataInputPort tport = fifo.getTargetPort();
         final AbstractActor dest = tport.getContainingActor();
+        if (dest instanceof DataOutputInterface) {
+          continue;
+        }
         if (!topoRanks.containsKey(dest)) {
           final TopoVisit av = new TopoVisit(actorsNbVisits.get(dest), rank);
           topoRanks.put(dest, av);
@@ -135,14 +144,14 @@ public class TopologicalRanking {
   /**
    * Computes ASAP topological ranking of a mirrored flat graph.
    * 
-   * @param sinkActors
-   *          Sinks actors of the graph.
-   * @param actorsNbVisits
-   *          Number of considered inputs (thus excluding feedback fifos).
+   * @param hlbd
+   *          Heuristic used to break the cycles.
    * @return Rank of each actor.
    */
-  public static Map<AbstractActor, TopoVisit> topologicalASAPrankingT(final Set<AbstractActor> sinkActors,
-      final Map<AbstractActor, Integer> actorsNbVisits) {
+  public static Map<AbstractActor, TopoVisit> topologicalASAPrankingT(final HeuristicLoopBreakingDelays hlbd) {
+
+    final Set<AbstractActor> sinkActors = hlbd.allSinkActors;
+    final Map<AbstractActor, Integer> actorsNbVisits = hlbd.actorsNbVisitsTopoRankT;
     final Map<AbstractActor, TopoVisit> topoRanks = new LinkedHashMap<>();
     for (final AbstractActor actor : sinkActors) {
       topoRanks.put(actor, new TopoVisit(0, 1));
@@ -156,6 +165,9 @@ public class TopologicalRanking {
         final Fifo fifo = tport.getIncomingFifo();
         final DataOutputPort sport = fifo.getSourcePort();
         final AbstractActor dest = sport.getContainingActor();
+        if (dest instanceof DataInputInterface) {
+          continue;
+        }
         if (!topoRanks.containsKey(dest)) {
           final TopoVisit av = new TopoVisit(actorsNbVisits.get(dest), rank);
           topoRanks.put(dest, av);
@@ -182,6 +194,38 @@ public class TopologicalRanking {
     }
 
     return topoRanks;
+  }
+
+  /**
+   * Computes a map of actors sorted per rank (ASAP or ALAP).
+   * 
+   * @param topoRanks
+   *          Ranks computed by {@link #topologicalASAPranking} or {@link #topologicalALAPranking}.
+   * @param reverse
+   *          true if considering ALAP ranks, false if considering ASAP ranks.
+   * @param maxRank
+   *          Only for ALAP ranks, reverse the order of the ranks with {maxRank - ALAPrank}. Should be set to the
+   *          highest possible rank.
+   * @return Map of actors, sorted by their rank.
+   */
+  public static SortedMap<Integer, Set<AbstractActor>> mapRankActors(final Map<AbstractActor, TopoVisit> topoRanks,
+      boolean reverse, int maxRank) {
+    final SortedMap<Integer, Set<AbstractActor>> irRankActors = new TreeMap<>();
+    for (Entry<AbstractActor, TopoVisit> e : topoRanks.entrySet()) {
+      final AbstractActor aa = e.getKey();
+      final TopoVisit tv = e.getValue();
+      int rank = tv.rank;
+      if (reverse) {
+        rank = maxRank - tv.rank;
+      }
+      Set<AbstractActor> aas = irRankActors.get(rank);
+      if (aas == null) {
+        aas = new HashSet<>();
+        irRankActors.put(rank, aas);
+      }
+      aas.add(aa);
+    }
+    return irRankActors;
   }
 
 }

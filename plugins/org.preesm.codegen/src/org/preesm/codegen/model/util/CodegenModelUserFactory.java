@@ -180,6 +180,11 @@ public class CodegenModelUserFactory extends CodegenFactoryImpl {
    */
   public final ActorFunctionCall createActorFunctionCall(final Actor actor, final FunctionPrototype prototype,
       final Map<Port, Variable> portValues) {
+    if (prototype.isCPP()) {
+      throw new PreesmRuntimeException(
+          "The codegen is not compatible with CPP function call as for: " + prototype.getName());
+    }
+
     final ActorFunctionCall afc = createActorFunctionCall();
     afc.setActorName(actor.getName());
     afc.setName(prototype.getName());
@@ -189,7 +194,8 @@ public class CodegenModelUserFactory extends CodegenFactoryImpl {
       final String name = a.getName();
       final Port lookupPort = actor.lookupPort(name);
       if (lookupPort == null) {
-        throw new PreesmRuntimeException();
+        throw new PreesmRuntimeException(
+            "Cannot find function argument " + name + " for actor " + actor.getVertexPath());
       }
       final PortKind portKind = lookupPort.getKind();
       final Variable variable = portValues.get(lookupPort);

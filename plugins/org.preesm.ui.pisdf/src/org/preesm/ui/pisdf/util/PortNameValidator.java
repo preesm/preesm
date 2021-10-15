@@ -39,6 +39,7 @@ package org.preesm.ui.pisdf.util;
 
 import java.util.LinkedHashSet;
 import java.util.Set;
+import java.util.stream.Collectors;
 import org.eclipse.jface.dialogs.IInputValidator;
 import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.Port;
@@ -74,23 +75,8 @@ public class PortNameValidator implements IInputValidator {
     this.renamedPort = renamedPort;
 
     // Create the list of already existing names
-    this.portsNames = new LinkedHashSet<>();
-
-    for (final Port port : vertex.getConfigInputPorts()) {
-      this.portsNames.add(port.getName());
-    }
-
-    for (final Port port : vertex.getConfigOutputPorts()) {
-      this.portsNames.add(port.getName());
-    }
-
-    for (final Port port : vertex.getDataInputPorts()) {
-      this.portsNames.add(port.getName());
-    }
-
-    for (final Port port : vertex.getDataOutputPorts()) {
-      this.portsNames.add(port.getName());
-    }
+    this.portsNames = vertex.getAllPorts().stream().map(Port::getName)
+        .collect(Collectors.toCollection(LinkedHashSet::new));
 
     if (this.renamedPort != null) {
       this.portsNames.remove(renamedPort.getName());

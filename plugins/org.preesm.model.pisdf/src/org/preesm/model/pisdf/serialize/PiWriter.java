@@ -89,6 +89,7 @@ import org.preesm.model.pisdf.PiSDFRefinement;
 import org.preesm.model.pisdf.Port;
 import org.preesm.model.pisdf.Refinement;
 import org.preesm.model.pisdf.RoundBufferActor;
+import org.preesm.model.pisdf.check.CheckerErrorLevel;
 import org.preesm.model.pisdf.check.PiGraphConsistenceChecker;
 import org.preesm.model.pisdf.reconnection.SubgraphOriginalActorTracker;
 import org.preesm.model.pisdf.util.PiIdentifiers;
@@ -260,7 +261,10 @@ public class PiWriter {
    */
   public void write(final PiGraph graph, final OutputStream outputStream) {
 
-    PiGraphConsistenceChecker.check(graph, false);
+    // Check consistency of the graph (throw exception if fatal error)
+    final PiGraphConsistenceChecker pgcc = new PiGraphConsistenceChecker(CheckerErrorLevel.FATAL_ALL,
+        CheckerErrorLevel.NONE);
+    pgcc.check(graph);
 
     // Create the domDocument
     this.domDocument = DomUtil.createDocument("http://graphml.graphdrawing.org/xmlns", "graphml");
@@ -785,6 +789,10 @@ public class PiWriter {
       final String functionName) {
     final Element protoElt = appendChild(vertexElt, functionName);
     protoElt.setAttribute(PiIdentifiers.REFINEMENT_FUNCTION_PROTOTYPE_NAME, prototype.getName());
+    final boolean isCPPdef = prototype.isIsCPPdefinition();
+    if (isCPPdef) {
+      protoElt.setAttribute(PiIdentifiers.REFINEMENT_FUNCTION_PROTOTYPE_IS_CPPDEF, String.valueOf(isCPPdef));
+    }
     for (final FunctionArgument p : prototype.getArguments()) {
       writeFunctionParameter(protoElt, p);
     }
@@ -804,6 +812,14 @@ public class PiWriter {
     protoElt.setAttribute(PiIdentifiers.REFINEMENT_PARAMETER_TYPE, p.getType());
     protoElt.setAttribute(PiIdentifiers.REFINEMENT_PARAMETER_DIRECTION, p.getDirection().toString());
     protoElt.setAttribute(PiIdentifiers.REFINEMENT_PARAMETER_IS_CONFIG, String.valueOf(p.isIsConfigurationParameter()));
+    final boolean isCPPdef = p.isIsCPPdefinition();
+    if (isCPPdef) {
+      protoElt.setAttribute(PiIdentifiers.REFINEMENT_PARAMETER_IS_CPPDEF, String.valueOf(isCPPdef));
+    }
+    final boolean isPassedByRef = p.isIsPassedByReference();
+    if (isPassedByRef) {
+      protoElt.setAttribute(PiIdentifiers.REFINEMENT_PARAMETER_IS_PASSEDBYREF, String.valueOf(isPassedByRef));
+    }
   }
 
   /**

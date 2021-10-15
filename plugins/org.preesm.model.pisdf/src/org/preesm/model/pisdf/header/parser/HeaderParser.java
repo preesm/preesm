@@ -38,25 +38,53 @@
  */
 package org.preesm.model.pisdf.header.parser;
 
-import java.io.IOException;
-import java.net.URI;
-import java.net.URL;
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
-import java.util.logging.Level;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import java.util.stream.Collectors;
+import org.eclipse.cdt.core.dom.ast.IASTDeclSpecifier;
+import org.eclipse.cdt.core.dom.ast.IASTDeclaration;
+import org.eclipse.cdt.core.dom.ast.IASTDeclarator;
+import org.eclipse.cdt.core.dom.ast.IASTFunctionDeclarator;
+import org.eclipse.cdt.core.dom.ast.IASTFunctionDefinition;
+import org.eclipse.cdt.core.dom.ast.IASTNode;
+import org.eclipse.cdt.core.dom.ast.IASTParameterDeclaration;
+import org.eclipse.cdt.core.dom.ast.IASTPointerOperator;
+import org.eclipse.cdt.core.dom.ast.IASTSimpleDeclaration;
+import org.eclipse.cdt.core.dom.ast.IASTTranslationUnit;
+import org.eclipse.cdt.core.dom.ast.cpp.ICPPASTDeclarator;
+import org.eclipse.cdt.core.dom.ast.cpp.ICPPASTName;
+import org.eclipse.cdt.core.dom.ast.cpp.ICPPASTNamespaceDefinition;
+import org.eclipse.cdt.core.dom.ast.cpp.ICPPASTReferenceOperator;
+import org.eclipse.cdt.core.dom.ast.cpp.ICPPASTSimpleDeclSpecifier;
+import org.eclipse.cdt.core.dom.ast.cpp.ICPPASTTemplateDeclaration;
+import org.eclipse.cdt.core.dom.ast.cpp.ICPPASTTemplateParameter;
+import org.eclipse.cdt.core.dom.ast.gnu.cpp.GPPLanguage;
+import org.eclipse.cdt.core.index.IIndex;
+import org.eclipse.cdt.core.model.ILanguage;
+import org.eclipse.cdt.core.model.ITranslationUnit;
+import org.eclipse.cdt.core.parser.DefaultLogService;
+import org.eclipse.cdt.core.parser.FileContent;
+import org.eclipse.cdt.core.parser.IParserLogService;
+import org.eclipse.cdt.core.parser.IScannerInfo;
+import org.eclipse.cdt.core.parser.IncludeFileContentProvider;
+import org.eclipse.cdt.core.parser.ScannerInfo;
+import org.eclipse.cdt.internal.core.index.EmptyCIndex;
 import org.eclipse.core.resources.IFile;
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.emf.common.util.EList;
-import org.preesm.commons.files.URLResolver;
+import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.Direction;
 import org.preesm.model.pisdf.FunctionArgument;
 import org.preesm.model.pisdf.FunctionPrototype;
 import org.preesm.model.pisdf.Port;
+import org.preesm.model.pisdf.check.NameCheckerC;
+import org.preesm.model.pisdf.check.RefinementChecker;
 import org.preesm.model.pisdf.factory.PiMMUserFactory;
 
 /**
@@ -68,221 +96,249 @@ import org.preesm.model.pisdf.factory.PiMMUserFactory;
  */
 public class HeaderParser {
 
+  private static final String DISCARD_FUNC = "Discarded function ";
+
+  private static final String TEMPLATE_WARNING = ". While analyzing it, "
+      + "template is not in a suitable format for PREESM. "
+      + "Only int and long for parameter values and 'typename FIFO_TYPE_...' are supported.";
+
   private HeaderParser() {
     // forbid instantiation
   }
 
   /**
-   * This Regular expression is used to identify and separate the different elements composing a function prototype
-   * parameter. It should be noted that before being processed by this regular expression, all consecutive whitespace
-   * were reduced to a single one. <br>
-   * <br>
-   * Explanation:
-   * <ul>
-   * <li><code>(IN|OUT)?</code>: <b>Group 1 - Direction</b> Check if either character string <code>IN</code> xor
-   * <code>OUT</code> are present, or not, at the beginning of the parameter declaration.</li>
-   * <li><code>\\s?</code>: Match 0 or 1 whitespace.</li>
-   * <li><code>([^\\*]+)</code>: <b>Group 2 - Type</b> Match as many characters different from '*' as possible (1 to
-   * infinite). For the pattern to match, the remaining of the regular expression must still be matchable. Which means
-   * that the "as many as possible" clause holds as long as the remaining patterns are also matched.</li>
-   * <li><code>\\s?</code>: Match 0 or 1 whitespace.</li>
-   * <li><code>(\\*+(?:\\s?const)?)?</code>: <b>Group 3 - Pointers</b> Match, if possible, a string '*' of length 1 to
-   * infinite. Also match optional <code> const</code> option for pointer.</li>
-   * <li><code>\\s</code>: Match exactly 1 whitespace.</li>
-   * <li><code>([\\S&&[^\\[\\]]]+)</code>: <b>Group 4 - Name</b></li> Match a string of non-whitespace characters
-   * (except '[' or ']') of length 1 to infinite.
-   * <li><code>(\\[(\\d|\\]\\[)*\\])?</code>: <b>Group 5 - Array</b></li> Match, if possible, a string of opening and
-   * closing square brackets '[]', possibly containing digits.
-   * </ul>
-   */
-  private static final String PARAM_BREAK_DOWN_REGEX = "(IN|OUT)?\\s?([^\\*]+)\\s?(\\*+(?:\\s?const)?)?"
-      + "\\s([\\S&&[^\\[\\]]]+)(\\[(\\d|\\]\\[)*\\])?\\s?";
-
-  /**
-   * This method parse a C header file and extract a set of function prototypes from it.
+   * This method parse a C/C++ header file and extract a set of function prototypes from it.
    *
    * @param file
-   *          the {@link IFile} corresponding to the C Header file to parse.
-   * @return The {@link Set} of {@link FunctionPrototype} found in the parsed C header file. Returns <code>null</code>
-   *         if no valid function prototype could be found.
+   *          the {@link IFile} corresponding to the C/C++ Header file to parse.
+   * @return The {@link Set} of {@link FunctionPrototype} found in the parsed C/C++ header file. Returns
+   *         <code>null</code> if no valid function prototype could be found.
    */
-  public static List<FunctionPrototype> parseHeader(final IFile file) {
-    // Read the file
-    List<FunctionPrototype> result = null;
-    if (file != null) {
-      try {
+  public static List<FunctionPrototype> parseCXXHeader(final IFile file) {
+    final Map<String, String> definedMacros = new HashMap<>();
+    definedMacros.put("IN", "");
+    definedMacros.put("OUT", "");
+    final FileContent fC = FileContent.create(file);
+    final String[] includePaths = new String[0];
+    final IScannerInfo info = new ScannerInfo(definedMacros, includePaths);
+    final IParserLogService log = new DefaultLogService();
+    final IIndex index = EmptyCIndex.INSTANCE; // or can be null
+    final IncludeFileContentProvider emptyIncludes = IncludeFileContentProvider.getEmptyFilesProvider();
+    final int options = ILanguage.OPTION_NO_IMAGE_LOCATIONS | ITranslationUnit.AST_SKIP_ALL_HEADERS;
 
-        // Read the file content
-        final URI locationURI = file.getLocationURI();
-        final URL url = locationURI.toURL();
-        final String string = url.toString();
-        String fileContent = URLResolver.readURL(string);
+    try {
 
-        // Filter unwanted content
-        fileContent = HeaderParser.filterHeaderFileContent(fileContent);
+      // Using: org.eclipse.cdt.internal.core.dom.parser.cpp.GNUCPPSourceParser
+      final IASTTranslationUnit translationUnit = GPPLanguage.getDefault().getASTTranslationUnit(fC, info,
+          emptyIncludes, index, options, log);
+      return parseCXXHeaderRec(translationUnit);
 
-        // Identify and isolate prototypes in the remaining code
-        final List<String> prototypes = HeaderParser.extractPrototypeStrings(fileContent);
-
-        // Create the FunctionPrototypes
-        result = HeaderParser.createFunctionPrototypes(prototypes);
-      } catch (IOException e) {
-        PreesmLogger.getLogger().log(Level.INFO, "Could not parse header '" + file + "'.", e);
-      }
+    } catch (CoreException e) {
+      throw new PreesmRuntimeException("Error while parsing header file " + file.getRawLocationURI(), e);
     }
-    return result;
   }
 
-  /**
-   * Given a {@link List} of C function prototypes represented as {@link String}, this function create the {@link List}
-   * of corresponding {@link FunctionPrototype}.
-   *
-   * @param prototypes
-   *          {@link List} of C function prototypes, as produced by the {@link #extractPrototypeStrings(String)} method.
-   * @return a {@link List} of {@link FunctionPrototype}, or <code>null</code> if something went wrong during the
-   *         parsing.
-   */
-  protected static List<FunctionPrototype> createFunctionPrototypes(final List<String> prototypes) {
-    List<FunctionPrototype> result;
-    result = new ArrayList<>();
+  private static List<FunctionPrototype> parseCXXHeaderRec(final IASTNode nodeAST) {
+    final LinkedList<ICPPASTNamespaceDefinition> namespaceStack = new LinkedList<>();
+    final LinkedList<ICPPASTTemplateDeclaration> templateStack = new LinkedList<>();
+    final LinkedList<IASTDeclSpecifier> returnTypeStack = new LinkedList<>();
+    final List<FunctionPrototype> resultList = new ArrayList<>();
 
-    // Unique RegEx to separate the return type, the function name
-    // and the list of parameters
-    final Pattern pattern = Pattern.compile("(.+?)\\s(\\S+?)\\s?\\((.*?)\\)");
-    for (final String prototypeString : prototypes) {
-      final FunctionPrototype funcProto = PiMMUserFactory.instance.createFunctionPrototype();
-
-      // Get the name
-      Matcher matcher = pattern.matcher(prototypeString);
-      if (matcher.matches()) { // apply the matcher
-        funcProto.setName(matcher.group(2));
-      }
-
-      // Get the parameters (if any)
-      // A new array list must be created because the list
-      // returned by Arrays.asList cannot be modified (in
-      // particular, no element can be removed from it).
-      final List<String> parameters = new ArrayList<>(Arrays.asList(matcher.group(3).split("\\s?,\\s?")));
-      // Remove empty match (is the function has no parameter)
-      parameters.remove("");
-      parameters.remove(" ");
-
-      final Pattern paramPattern = Pattern.compile(HeaderParser.PARAM_BREAK_DOWN_REGEX);
-      // Procces parameters one by one
-      for (final String param : parameters) {
-        processParameter(funcProto, paramPattern, param);
-      }
-      result.add(funcProto);
-    }
-    return result;
+    parseCXXHeaderRecAux(nodeAST, namespaceStack, templateStack, returnTypeStack, resultList);
+    return resultList;
   }
 
-  private static void processParameter(final FunctionPrototype funcProto, final Pattern paramPattern,
-      final String param) {
-    Matcher matcher;
-    final FunctionArgument fp = PiMMUserFactory.instance.createFunctionArgument();
-    matcher = paramPattern.matcher(param);
-    final boolean matched = matcher.matches();
-    if (matched) { // Apply the matcher (if possible)
-      // Get the parameter name
-      fp.setName(matcher.group(4));
-      // Get the parameter type
-      fp.setType(matcher.group(2));
-      // Check the direction (if any)
-      if (matcher.group(1) != null) {
-        if (matcher.group(1).equals("IN")) {
-          fp.setDirection(Direction.IN);
+  private static void parseCXXHeaderRecAux(final IASTNode nodeAST,
+      LinkedList<ICPPASTNamespaceDefinition> namespaceStack, LinkedList<ICPPASTTemplateDeclaration> templateStack,
+      LinkedList<IASTDeclSpecifier> returnTypeStack, List<FunctionPrototype> resultList) {
+    if (nodeAST instanceof IASTFunctionDeclarator) {
+      // BASE CASE
+      // we got a function declaration !
+      final IASTFunctionDeclarator funcDeclor = (IASTFunctionDeclarator) nodeAST;
+      parseFunctionDeclor(funcDeclor, namespaceStack, templateStack, returnTypeStack, resultList);
+    } else if (nodeAST instanceof IASTFunctionDefinition) {
+      // DEEPER CASES
+      // we got a function definition, let's retrieve the declaration
+      final IASTFunctionDefinition funcDef = (IASTFunctionDefinition) nodeAST;
+      returnTypeStack.addLast(funcDef.getDeclSpecifier());
+      parseCXXHeaderRecAux(funcDef.getDeclarator(), namespaceStack, templateStack, returnTypeStack, resultList);
+      returnTypeStack.removeLast();
+    } else if (nodeAST instanceof IASTSimpleDeclaration) {
+      // we got a simple declaration, which could start a function definition or declaration with its return type
+      final IASTSimpleDeclaration simpleDeclon = (IASTSimpleDeclaration) nodeAST;
+      returnTypeStack.addLast(simpleDeclon.getDeclSpecifier());
+      for (final IASTDeclarator declor : simpleDeclon.getDeclarators()) {
+        parseCXXHeaderRecAux(declor, namespaceStack, templateStack, returnTypeStack, resultList);
+      }
+      returnTypeStack.removeLast();
+    } else if (nodeAST instanceof ICPPASTTemplateDeclaration) {
+      // we got a template declaration, which could start a function definition or declaration
+      final ICPPASTTemplateDeclaration tempDeclon = (ICPPASTTemplateDeclaration) nodeAST;
+      templateStack.addLast(tempDeclon);
+      parseCXXHeaderRecAux(tempDeclon.getDeclaration(), namespaceStack, templateStack, returnTypeStack, resultList);
+      templateStack.removeLast();
+    } else if (nodeAST instanceof ICPPASTNamespaceDefinition) {
+      // we got a namespace definition, which could contain other namespaces and function definitions or declarations
+      final ICPPASTNamespaceDefinition nsDef = (ICPPASTNamespaceDefinition) nodeAST;
+      namespaceStack.addLast(nsDef);
+      for (final IASTDeclaration declon : nsDef.getDeclarations()) {
+        parseCXXHeaderRecAux(declon, namespaceStack, templateStack, returnTypeStack, resultList);
+      }
+      namespaceStack.removeLast();
+    } else if (nodeAST instanceof IASTTranslationUnit) {
+      // TOP CASE
+      // we got the full file, let's visit the declarations
+      final IASTTranslationUnit tu = (IASTTranslationUnit) nodeAST;
+      for (IASTDeclaration declon : tu.getDeclarations()) {
+        parseCXXHeaderRecAux(declon, namespaceStack, templateStack, returnTypeStack, resultList);
+      }
+    }
 
+  }
+
+  private static void parseFunctionDeclor(final IASTFunctionDeclarator funcDeclor,
+      LinkedList<ICPPASTNamespaceDefinition> namespaceStack, LinkedList<ICPPASTTemplateDeclaration> templateStack,
+      LinkedList<IASTDeclSpecifier> returnTypeStack, List<FunctionPrototype> resultList) {
+    final String rawName = funcDeclor.getName().getRawSignature().trim();
+
+    if (returnTypeStack.size() != 1) {
+      PreesmLogger.getLogger()
+          .warning(() -> DISCARD_FUNC + rawName + ". While analyzing it, multiple nested return types were found.");
+      return;
+    }
+    // this log is annoying if checked on all functions
+    // else if (!returnTypeStack.getFirst().getRawSignature().contains("void")) {
+    // PreesmLogger.getLogger()
+    // .warning("Return type of function " + rawName + " is not void, and will not be used by PREESM.");
+    // return;
+    // }
+    if (templateStack.size() > 1) {
+      PreesmLogger.getLogger()
+          .warning(() -> DISCARD_FUNC + rawName + ". While analyzing it, multiple nested templates were found.");
+      return;
+    }
+
+    // manage template
+    String templateSuffix = "";
+    final List<String> functionTemplateNames = new ArrayList<>();
+    if (templateStack.size() == 1) {
+      final StringBuilder sb = new StringBuilder();
+      final ICPPASTTemplateDeclaration tempDeclon = templateStack.getFirst();
+      for (final ICPPASTTemplateParameter tempParam : tempDeclon.getTemplateParameters()) {
+        final IASTNode[] childsParam = tempParam.getChildren();
+        if (childsParam.length == 2) {
+          // check if it corresponds to <..., int PARAM, ...> or <..., long PARAM = 00, ...>
+          // "int/long" must be the first child node while everything else is in the second child node
+          if (!(childsParam[0] instanceof ICPPASTSimpleDeclSpecifier)
+              || !(childsParam[1] instanceof ICPPASTDeclarator)) {
+            PreesmLogger.getLogger().warning(() -> DISCARD_FUNC + rawName + TEMPLATE_WARNING);
+            return;
+          }
+          IASTPointerOperator[] pops = ((IASTDeclarator) childsParam[1]).getPointerOperators();
+          // pointers are not allowed her of course
+          if (pops.length > 0) {
+            PreesmLogger.getLogger().warning(() -> DISCARD_FUNC + rawName + TEMPLATE_WARNING);
+            return;
+          }
+          final String paramType = ((ICPPASTSimpleDeclSpecifier) childsParam[0]).getRawSignature().trim();
+          final String paramName = ((ICPPASTDeclarator) childsParam[1]).getRawSignature().trim();
+          // we do not support anything else then int and long static template parameters
+          if (!paramType.equals("int") && !paramType.equals("long")) {
+            PreesmLogger.getLogger().warning(() -> DISCARD_FUNC + rawName + TEMPLATE_WARNING);
+            return;
+          }
+          functionTemplateNames.add(paramName);
+          sb.append(paramName + ",");
+        } else if (childsParam.length == 1) {
+          // check if it corresponds to <..., typename NAME, ...> or <..., typename FIFO_DEPTH_NAME, ...>
+          // this is allowed but supported only for fifo type and depth
+          final ICPPASTName typename = (childsParam[0] instanceof ICPPASTName) ? (ICPPASTName) childsParam[0] : null;
+          if (!tempParam.getRawSignature().startsWith("typename") || typename == null) {
+            PreesmLogger.getLogger().warning(() -> DISCARD_FUNC + rawName + TEMPLATE_WARNING);
+            return;
+          } else if (!typename.getRawSignature().trim().startsWith(RefinementChecker.FIFO_TYPE_TEMPLATED_PREFIX)
+              && !typename.getRawSignature().trim().startsWith(RefinementChecker.FIFO_DEPTH_TEMPLATED_PREFIX)) {
+            PreesmLogger.getLogger().info(() -> "Function " + rawName + " has template parameter <" + typename
+                + "> without the recommended prefix, codegen might not work.\n Allowed prefixes are: "
+                + RefinementChecker.FIFO_TYPE_TEMPLATED_PREFIX + ", " + RefinementChecker.FIFO_DEPTH_TEMPLATED_PREFIX);
+          }
+          final String typeName = typename.getRawSignature().trim();
+          functionTemplateNames.add(typeName);
+          sb.append(typeName + ",");
+        } else {
+          PreesmLogger.getLogger().warning(() -> DISCARD_FUNC + rawName + TEMPLATE_WARNING);
+          return;
         }
-        if (matcher.group(1).equals("OUT")) {
-          fp.setDirection(Direction.OUT);
-        }
       }
-
-      // if not pointer (group 3) nor array (group 5), then it's a parameter
-      if ((matcher.group(3) == null) && (matcher.group(5) == null)) {
-        fp.setIsConfigurationParameter(true);
+      final String templateCall = sb.toString();
+      if (!templateCall.isEmpty()) {
+        templateSuffix = "<" + templateCall.substring(0, templateCall.length() - 1) + ">";
       }
-      final EList<FunctionArgument> protoParameters = funcProto.getArguments();
-      protoParameters.add(fp);
     }
-  }
 
-  /**
-   * Separate the {@link String} corresponding to the function prototypes from the filtered file content.
-   *
-   * @param fileContent
-   *          the filtered file content provided by {@link #filterHeaderFileContent(String)}.
-   * @return the {@link List} of {@link String} corresponding to the function prototypes.
-   */
-  protected static List<String> extractPrototypeStrings(final String fileContent) {
-    // The remaining code is a single line containing only C code
-    // (enum, struct, prototypes, inline functions, ..)
-    final Pattern pattern = Pattern.compile("[^;}]([^;}{]*?\\(.*?\\))\\s?[;]");
-    final Matcher matcher = pattern.matcher(fileContent);
-    final List<String> prototypes = new ArrayList<>();
-    boolean containsPrototype;
-    do {
-      containsPrototype = matcher.find();
-      if (containsPrototype) {
-        prototypes.add(matcher.group(1));
+    final String namespacePrefix = namespaceStack.isEmpty() ? ""
+        : namespaceStack.stream().map(x -> x.getName().getRawSignature().trim()).collect(Collectors.joining("::"))
+            + "::";
+    final String modifiedName = namespacePrefix + rawName + templateSuffix;
+
+    // signature of CPPASTParameterDeclaration given by funcDeclor.getChildren() do not include IN and OUT anymore
+    final FunctionPrototype funcProto = PiMMUserFactory.instance.createFunctionPrototype();
+    funcProto.setName(modifiedName);
+    if (!modifiedName.equals(rawName)) {
+      funcProto.setIsCPPdefinition(true);
+    }
+    final EList<FunctionArgument> protoParameters = funcProto.getArguments();
+
+    // parse function arguments
+    for (final IASTNode child : funcDeclor.getChildren()) {
+      if (child instanceof IASTParameterDeclaration) {
+        final FunctionArgument fA = PiMMUserFactory.instance.createFunctionArgument();
+        protoParameters.add(fA);
+
+        final IASTParameterDeclaration paramDeclon = (IASTParameterDeclaration) child;
+        final String rawArgType = paramDeclon.getDeclSpecifier().getRawSignature();
+        final String argType = NameCheckerC.removeCVqualifiers(rawArgType);
+
+        fA.setType(argType);
+        final boolean isTemplated = argType.contains("<");
+        if (isTemplated || argType.contains(":")) {
+          // then the type contains a template or a namespace
+          fA.setIsCPPdefinition(true);
+        }
+        // NOTE: we do not check that the template params of the argument types are present in the function template
+        // since it is not possible to know if an argument template param is indeed a parameter to be replaced
+        // or is its actual value (and in this case we do not replace it)
+        final IASTDeclarator paramDeclor = paramDeclon.getDeclarator();
+
+        final String argName = paramDeclor.getName().getRawSignature().trim();
+        fA.setName(argName);
+
+        IASTPointerOperator[] pops = paramDeclor.getPointerOperators();
+        if (pops.length == 0) {
+          fA.setIsConfigurationParameter(true);
+        } else {
+          if (pops.length > 1) {
+            // we automatically converts to void* since we only have to store the first address
+            fA.setType(RefinementChecker.DEFAULT_PTR_TYPE);
+            PreesmLogger.getLogger()
+                .warning(() -> "Argument " + argName + " of function " + rawName
+                    + " is a pointer to pointer, thus it is automatically replaced by "
+                    + RefinementChecker.DEFAULT_PTR_TYPE + ".");
+
+          }
+
+          if (pops[pops.length - 1] instanceof ICPPASTReferenceOperator) {
+            // then data structure is passed by reference, only for data containers as streams or vectors
+            fA.setIsPassedByReference(true);
+            // and it is possible only for CPP
+            fA.setIsCPPdefinition(true);
+          }
+        }
+
       }
-    } while (containsPrototype);
-    return prototypes;
-  }
+    }
 
-  /**
-   * Filter the content of an header file as follows :
-   * <ul>
-   * <li>Filter comments between <code>/* * /</code></li>
-   * <li>Filter comments after //</li>
-   * <li>Filter all pre-processing commands</li>
-   * <li>Replace new lines and multiple spaces with a single space</li>
-   * <li>Make sure there always is a space before and after each group of * this will ease type identification during
-   * prototype identification.</li>
-   * </ul>
-   *
-   * @param fileContent
-   *          the content to filter as a {@link String}.
-   * @return the filtered content as a {@link String}
-   */
-  protected static String filterHeaderFileContent(String fileContent) {
-    // Order of the filter is important !
-    // Comments must be removed before pre-processing commands and
-    // end of lines.
-
-    // Filter comments between /* */
-    Pattern pattern = Pattern.compile("(/\\*)(.*?)(\\*/)", Pattern.DOTALL);
-    Matcher matcher = pattern.matcher(fileContent);
-    fileContent = matcher.replaceAll("");
-
-    // Filter comments after //
-    pattern = Pattern.compile("(//)(.*?\\n)", Pattern.DOTALL);
-    matcher = pattern.matcher(fileContent);
-    fileContent = matcher.replaceAll("");
-
-    // Filter all pre-processing (
-    pattern = Pattern.compile("^\\s*#\\s*(([^\\\\]+?)((\\\\$[^\\\\]+?)*?$))", Pattern.MULTILINE | Pattern.DOTALL);
-    matcher = pattern.matcher(fileContent);
-    fileContent = matcher.replaceAll("");
-
-    // Replace new lines and multiple spaces with a single space
-    pattern = Pattern.compile("\\s+", Pattern.MULTILINE);
-    matcher = pattern.matcher(fileContent);
-    fileContent = matcher.replaceAll(" ");
-
-    // Make sure there always is a space before and after each
-    // group of * this will ease type identification during
-    // prototype identification.
-    // 1. remove all spaces around "*"
-    pattern = Pattern.compile("\\s?\\*\\s?");
-    matcher = pattern.matcher(fileContent);
-    fileContent = matcher.replaceAll("*");
-    // 2. add space around each groupe of *
-    pattern = Pattern.compile(":?\\*+");
-    matcher = pattern.matcher(fileContent);
-    fileContent = matcher.replaceAll(" $0 ");
-    return fileContent;
+    resultList.add(funcProto);
   }
 
   /**

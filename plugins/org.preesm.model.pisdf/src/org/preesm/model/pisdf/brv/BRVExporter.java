@@ -63,6 +63,7 @@ import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.model.pisdf.AbstractVertex;
 import org.preesm.model.pisdf.PiGraph;
+import org.preesm.model.pisdf.check.CheckerErrorLevel;
 import org.preesm.model.pisdf.check.PiGraphConsistenceChecker;
 import org.preesm.model.pisdf.statictools.PiMMHelper;
 import org.preesm.workflow.elements.Workflow;
@@ -98,7 +99,11 @@ public class BRVExporter extends AbstractTaskImplementation {
     final PiGraph graph = (PiGraph) inputs.get(AbstractWorkflowNodeImplementation.KEY_PI_GRAPH);
     PreesmLogger.getLogger().log(Level.INFO, "Computing Repetition Vector for graph [" + graph.getName() + "]");
 
-    PiGraphConsistenceChecker.check(graph);
+    // Check consistency of the graph (throw exception if fatal error)
+    final PiGraphConsistenceChecker pgcc = new PiGraphConsistenceChecker(CheckerErrorLevel.FATAL_ANALYSIS,
+        CheckerErrorLevel.NONE);
+    pgcc.check(graph);
+
     // 1. First we resolve all parameters.
     // It must be done first because, when removing persistence, local parameters have to be known at upper level
     PiMMHelper.resolveAllParameters(graph);
