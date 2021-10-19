@@ -27,6 +27,7 @@ the training graph now.
 * (GUI) : removing a Delay (in the GUI only) was actually not removing its DelayActor from the PiGraph, now fixed.
 * Fix #339 : partial fix only, adds restriction to the removal of consecutive special actors for optimization (source and target rates must be equal now)
 * Fix #342 : partial fix only, autolayout supports cycles involving DelayActor, but this is not checked by the model (would need an exhaustive cycle search)
+* Fix #345 : fix Velocity template internal paths in Spider2 codegen (only tested on Linux)
 
 
 ## Release version 3.21.0
