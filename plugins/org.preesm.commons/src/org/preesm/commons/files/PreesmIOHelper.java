@@ -38,10 +38,12 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URL;
+import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Path;
 import org.preesm.commons.exceptions.PreesmRuntimeException;
@@ -54,7 +56,9 @@ import org.preesm.commons.exceptions.PreesmRuntimeException;
  * To find helper methods for Preesm resources (templates, default scripts, etc.), see {@link PreesmResourcesHelper}.
  * <p>
  * TODO complete this class with other methods to load a resource file, as a locate method, returning an URI.
- *
+ * 
+ * TODO use {@link java.nio.file.Files#copy} instead of printing unmodified content?
+ * 
  * @author anmorvan
  *
  */
@@ -81,9 +85,8 @@ public class PreesmIOHelper {
     final IFile iFile = ResourcesPlugin.getWorkspace().getRoot().getFile(new Path(filePath + fileName));
     try {
       final IFolder iFolder = ResourcesPlugin.getWorkspace().getRoot().getFolder(new Path(filePath));
-      if (!iFolder.exists()) {
-        iFolder.create(false, true, new NullProgressMonitor());
-      }
+      createFolderRecursively(iFolder, false, true, new NullProgressMonitor());
+
       if (!iFile.exists()) {
         iFile.create(new ByteArrayInputStream("".getBytes()), false, new NullProgressMonitor());
       }
@@ -93,6 +96,19 @@ public class PreesmIOHelper {
       throw new PreesmRuntimeException("Could not generate source file for " + fileName, ex);
     }
     return iFile;
+  }
+
+  // See
+  // https://stackoverflow.com/questions/68075036/eclipse-plugin-how-do-i-create-all-folders-ifolders-in-a-given-path-ipath
+  public static void createFolderRecursively(IFolder folder, boolean force, boolean local, IProgressMonitor monitor)
+      throws CoreException {
+    if (!folder.exists()) {
+      IContainer parent = folder.getParent();
+      if (parent instanceof IFolder) {
+        createFolderRecursively((IFolder) parent, force, local, null);
+      }
+      folder.create(force, local, monitor);
+    }
   }
 
   public InputStreamReader getFileReader(final String fileLocation, final Class<?> clazz) {

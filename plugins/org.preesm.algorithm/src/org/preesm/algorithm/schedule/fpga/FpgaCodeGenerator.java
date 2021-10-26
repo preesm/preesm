@@ -1,6 +1,6 @@
 package org.preesm.algorithm.schedule.fpga;
 
-import java.io.File;
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.StringWriter;
 import java.util.ArrayList;
@@ -14,6 +14,7 @@ import org.apache.velocity.app.VelocityEngine;
 import org.eclipse.xtext.xbase.lib.Pair;
 import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.preesm.commons.files.PreesmIOHelper;
+import org.preesm.commons.files.PreesmResourcesHelper;
 import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.commons.model.PreesmCopyTracker;
 import org.preesm.model.pisdf.AbstractActor;
@@ -52,9 +53,21 @@ public class FpgaCodeGenerator {
 
   public static final String TEMPLATE_DEFINE_HEADER_NAME = "PreesmAutoDefinedSizes.h";
 
-  public static final String TEMPLATE_HOST_RES_LOCATION =
+  public static final String TEMPLATE_PYNQ_MAKEFILE_RES_LOCATION =
 
-      "templates/xilinxCodegen/template_host_fpga.cpp";
+      "templates/xilinxCodegen/template_PYNQ_Makefile";
+
+  public static final String TEMPLATE_PYNQ_SCRIPT_VIVADO_RES_LOCATION =
+
+      "templates/xilinxCodegen/template_PYNQ_script_vivado.tcl";
+
+  public static final String TEMPLATE_PYNQ_HOST_NOTEBOOK_RES_LOCATION =
+
+      "templates/xilinxCodegen/template_PYNQ_host_notebook.ipynb";
+
+  public static final String TEMPLATE_OPENCL_HOST_RES_LOCATION =
+
+      "templates/xilinxCodegen/template_OpenCL_host_fpga.cpp";
 
   public static final String TEMPLATE_TOP_KERNEL_RES_LOCATION =
 
@@ -75,6 +88,15 @@ public class FpgaCodeGenerator {
   public static final String TEMPLATE_WRITE_KERNEL_MULTI_RES_LOCATION =
 
       "templates/xilinxCodegen/template_write_kernel_fpga_multi_interfaces.cpp";
+
+  public static final String STDFILE_SCRIPT_PYNQ_SUBDIR = "pynq/";
+  public static final String STDFILE_SCRIPT_PYNQ_HLS    = "stdfiles/xilinxCodegen/script_hls.tcl";
+  // xcl2 files have been written by Xilinx under Apache 2.0 license
+  // see https://github.com/Xilinx/Vitis_Accel_Examples/tree/master/common/includes/xcl2
+  // see also https://github.com/Xilinx/Vitis_Accel_Examples/issues/46
+  public static final String STDFILE_LIB_XOCL_SUBDIR = "libs/common/includes/xcl2/";
+  public static final String STDFILE_LIB_XOCL_CPP    = "stdfiles/xilinxCodegen/xcl2.cpp";
+  public static final String STDFILE_LIB_XOCL_HPP    = "stdfiles/xilinxCodegen/xcl2.hpp";
 
   public static final String KERNEL_NAME_READ         = "mem_read";
   public static final String KERNEL_NAME_WRITE        = "mem_write";
@@ -179,14 +201,32 @@ public class FpgaCodeGenerator {
     // 99- set back default class loader
     Thread.currentThread().setContextClassLoader(oldContextClassLoader);
 
-    final String codegenPath = scenario.getCodegenDirectory() + File.separator;
+    final String codegenPath = scenario.getCodegenDirectory() + "/";
 
+    // copy generated files
     PreesmIOHelper.getInstance().print(codegenPath, TEMPLATE_DEFINE_HEADER_NAME, headerFileContent);
     PreesmIOHelper.getInstance().print(codegenPath, "host_" + fcg.graphName + ".cpp", hostFileContent);
     PreesmIOHelper.getInstance().print(codegenPath, "top_kernel_" + fcg.graphName + ".cpp", topKernelFileContent);
     PreesmIOHelper.getInstance().print(codegenPath, "read_kernel_" + fcg.graphName + ".cpp", readKernelFileContent);
     PreesmIOHelper.getInstance().print(codegenPath, "write_kernel_" + fcg.graphName + ".cpp", writeKernelFileContent);
     PreesmIOHelper.getInstance().print(codegenPath, "connectivity_" + fcg.graphName + ".cfg", connectivityFileContent);
+
+    // copy stdfiles
+    try {
+
+      final String contentXOCLcpp = PreesmResourcesHelper.getInstance().read(STDFILE_LIB_XOCL_CPP, fcg.getClass());
+      PreesmIOHelper.getInstance().print(codegenPath + STDFILE_LIB_XOCL_SUBDIR, "xcl2.cpp", contentXOCLcpp);
+
+      final String contentXOCLhpp = PreesmResourcesHelper.getInstance().read(STDFILE_LIB_XOCL_HPP, fcg.getClass());
+      PreesmIOHelper.getInstance().print(codegenPath + STDFILE_LIB_XOCL_SUBDIR, "xcl2.hpp", contentXOCLhpp);
+
+      final String contentPYNQscript = PreesmResourcesHelper.getInstance().read(STDFILE_SCRIPT_PYNQ_HLS,
+          fcg.getClass());
+      PreesmIOHelper.getInstance().print(codegenPath + STDFILE_SCRIPT_PYNQ_SUBDIR, "script_hls.tcl", contentPYNQscript);
+
+    } catch (IOException e) {
+      throw new PreesmRuntimeException("Could not copy all the stdfiles.", e);
+    }
 
   }
 
@@ -297,7 +337,7 @@ public class FpgaCodeGenerator {
     context.put("KERNEL_LAUNCH", kernelLaunch.toString());
 
     // 3- init template reader
-    final InputStreamReader reader = PreesmIOHelper.getInstance().getFileReader(TEMPLATE_HOST_RES_LOCATION,
+    final InputStreamReader reader = PreesmIOHelper.getInstance().getFileReader(TEMPLATE_OPENCL_HOST_RES_LOCATION,
         this.getClass());
 
     // 4- init output writer

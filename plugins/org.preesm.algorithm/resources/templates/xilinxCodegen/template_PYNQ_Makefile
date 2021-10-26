@@ -1,0 +1,30 @@
+top_graph.zip: top_kernel_DoubleInDoubleOut.cpp
+	vitis_hls script_hls.tcl $(basename $@) $+
+
+mem_read.zip: read_kernel_DoubleInDoubleOut.cpp
+	vitis_hls script_hls.tcl $(basename $@) $+
+
+mem_write.zip: write_kernel_DoubleInDoubleOut.cpp
+	vitis_hls script_hls.tcl $(basename $@) $+
+
+vivado/vivado.runs/impl_1/design_1_wrapper.bit: top_graph.zip mem_read.zip mem_write.zip
+	mkdir ip ip/top_graph ip/mem_read ip/mem_write
+	unzip top_graph.zip -d ip/top_graph
+	unzip mem_read.zip -d ip/mem_read
+	unzip mem_write.zip -d ip/mem_write
+	vivado -mode tcl -source script_vivado.tcl
+
+top_graph.bit: vivado/vivado.runs/impl_1/design_1_wrapper.bit
+	cp $< $@
+
+top_graph.hwh: top_graph.bit
+	unzip vivado/vivado.runs/impl_1/design_1_wrapper.hwdef design_1.hwh
+	mv design_1.hwh $@
+
+all: top_graph.bit top_graph.hwh
+
+clean:
+	rm -f top_graph.zip mem_read.zip mem_write.zip top_graph.bit top_graph.hwh
+
+cleaner: clean
+	rm -rf hls/ ip/ NA/ vivado/ *.log *.jou
