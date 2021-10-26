@@ -68,6 +68,14 @@ public class FpgaCodeGenerator {
 
       "templates/xilinxCodegen/template_write_kernel_fpga.cpp";
 
+  public static final String TEMPLATE_READ_KERNEL_MULTI_RES_LOCATION =
+
+      "templates/xilinxCodegen/template_read_kernel_fpga_multi_interfaces.cpp";
+
+  public static final String TEMPLATE_WRITE_KERNEL_MULTI_RES_LOCATION =
+
+      "templates/xilinxCodegen/template_write_kernel_fpga_multi_interfaces.cpp";
+
   public static final String KERNEL_NAME_READ         = "mem_read";
   public static final String KERNEL_NAME_WRITE        = "mem_write";
   public static final String KERNEL_NAME_TOP          = "top_graph";
@@ -575,6 +583,9 @@ public class FpgaCodeGenerator {
   }
 
   protected String writeReadKernelFile() {
+    final long nbIa = interfaceRates.keySet().stream().filter(DataInputInterface.class::isInstance).count();
+    final boolean isMulti = nbIa > 1L;
+
     // 1- init engine
     final VelocityEngine engine = new VelocityEngine();
     engine.init();
@@ -599,7 +610,6 @@ public class FpgaCodeGenerator {
     // add interface protocols
     for (final InterfaceActor ia : interfaceRates.keySet()) {
       if (ia instanceof DataInputInterface) {
-        final Fifo f = ia.getDataPort().getFifo();
         sb.append(getPragmaAXIMemory(ia));
         sb.append(getPragmaAXIStream(ia));
       }
@@ -607,21 +617,38 @@ public class FpgaCodeGenerator {
     sb.append(PRAGMA_AXILITE_CTRL + "\n");
 
     // read kernel body
+    int idxIa = 0;
+    if (isMulti) {
+      sb.append("  bool shouldContinue = true;\n  while (shouldContinue) {\n    shouldContinue = false;\n");
+    }
+
     for (final Entry<InterfaceActor, Pair<Long, Long>> e : interfaceRates.entrySet()) {
       final InterfaceActor ia = e.getKey();
       if (ia instanceof DataInputInterface) {
         final Fifo f = ia.getDataPort().getFifo();
-        sb.append("    readInput<" + f.getType() + ">(" + ia.getName() + SUFFIX_INTERFACE_ARRAY + ", "
-            + getFifoStreamName(f) + ", " + getInterfaceRateName(ia) + ", " + getInterfaceFactorName(ia) + ");\n");
+        if (isMulti) {
+          final String templateParams = String.format("%s, %d, %s, %s", f.getType(), idxIa, getInterfaceFactorName(ia),
+              getInterfaceRateName(ia));
+          sb.append("    shouldContinue |= readInput<" + templateParams + ">(" + ia.getName() + SUFFIX_INTERFACE_ARRAY
+              + ", " + getFifoStreamName(f) + ");\n");
+        } else {
+          sb.append("    readInput<" + f.getType() + ">(" + ia.getName() + SUFFIX_INTERFACE_ARRAY + ", "
+              + getFifoStreamName(f) + ", " + getInterfaceRateName(ia) + ", " + getInterfaceFactorName(ia) + ");\n");
+        }
+        idxIa++;
       }
+    }
+
+    if (isMulti) {
+      sb.append("  }\n");
     }
     sb.append("}\n");
 
     context.put("PREESM_READ_KERNEL", sb.toString());
 
     // 3- init template reader
-    final InputStreamReader reader = PreesmIOHelper.getInstance().getFileReader(TEMPLATE_READ_KERNEL_RES_LOCATION,
-        this.getClass());
+    final String templateName = isMulti ? TEMPLATE_READ_KERNEL_MULTI_RES_LOCATION : TEMPLATE_READ_KERNEL_RES_LOCATION;
+    final InputStreamReader reader = PreesmIOHelper.getInstance().getFileReader(templateName, this.getClass());
 
     // 4- init output writer
     final StringWriter writer = new StringWriter();
@@ -632,6 +659,9 @@ public class FpgaCodeGenerator {
   }
 
   protected String writeWriteKernelFile() {
+    final long nbIa = interfaceRates.keySet().stream().filter(DataOutputInterface.class::isInstance).count();
+    final boolean isMulti = nbIa > 1L;
+
     // 1- init engine
     final VelocityEngine engine = new VelocityEngine();
     engine.init();
@@ -663,21 +693,38 @@ public class FpgaCodeGenerator {
     sb.append(PRAGMA_AXILITE_CTRL + "\n");
 
     // write kernel body
+    int idxIa = 0;
+    if (isMulti) {
+      sb.append("  bool shouldContinue = true;\n  while (shouldContinue) {\n    shouldContinue = false;\n");
+    }
+
     for (final Entry<InterfaceActor, Pair<Long, Long>> e : interfaceRates.entrySet()) {
       final InterfaceActor ia = e.getKey();
       if (ia instanceof DataOutputInterface) {
         final Fifo f = ia.getDataPort().getFifo();
-        sb.append("    writeOutput<" + f.getType() + ">(" + ia.getName() + SUFFIX_INTERFACE_ARRAY + ", "
-            + getFifoStreamName(f) + ", " + getInterfaceRateName(ia) + ", " + getInterfaceFactorName(ia) + ");\n");
+        if (isMulti) {
+          final String templateParams = String.format("%s, %d, %s, %s", f.getType(), idxIa, getInterfaceFactorName(ia),
+              getInterfaceRateName(ia));
+          sb.append("    shouldContinue |= writeOutput<" + templateParams + ">(" + ia.getName() + SUFFIX_INTERFACE_ARRAY
+              + ", " + getFifoStreamName(f) + ");\n");
+        } else {
+          sb.append("    writeOutput<" + f.getType() + ">(" + ia.getName() + SUFFIX_INTERFACE_ARRAY + ", "
+              + getFifoStreamName(f) + ", " + getInterfaceRateName(ia) + ", " + getInterfaceFactorName(ia) + ");\n");
+        }
+        idxIa++;
       }
+    }
+
+    if (isMulti) {
+      sb.append("  }\n");
     }
     sb.append("}\n");
 
     context.put("PREESM_WRITE_KERNEL", sb.toString());
 
     // 3- init template reader
-    final InputStreamReader reader = PreesmIOHelper.getInstance().getFileReader(TEMPLATE_WRITE_KERNEL_RES_LOCATION,
-        this.getClass());
+    final String templateName = isMulti ? TEMPLATE_WRITE_KERNEL_MULTI_RES_LOCATION : TEMPLATE_WRITE_KERNEL_RES_LOCATION;
+    final InputStreamReader reader = PreesmIOHelper.getInstance().getFileReader(templateName, this.getClass());
 
     // 4- init output writer
     final StringWriter writer = new StringWriter();
