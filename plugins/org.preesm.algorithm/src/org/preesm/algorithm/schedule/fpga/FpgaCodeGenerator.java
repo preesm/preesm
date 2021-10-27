@@ -89,7 +89,7 @@ public class FpgaCodeGenerator {
 
       "templates/xilinxCodegen/template_write_kernel_fpga_multi_interfaces.cpp";
 
-  public static final String STDFILE_SCRIPT_PYNQ_SUBDIR = "pynq/";
+  public static final String STDFILE_SCRIPT_PYNQ_SUBDIR = "scripts/";
   public static final String STDFILE_SCRIPT_PYNQ_HLS    = "stdfiles/xilinxCodegen/script_hls.tcl";
   // xcl2 files have been written by Xilinx under Apache 2.0 license
   // see https://github.com/Xilinx/Vitis_Accel_Examples/tree/master/common/includes/xcl2
@@ -108,7 +108,9 @@ public class FpgaCodeGenerator {
   public static final String SUFFIX_INTERFACE_VECTOR  = "_vect";            // suffix name for host vector
   public static final String SUFFIX_INTERFACE_BUFFER  = "_buff";            // suffix name for host buffer
 
-  protected static final String PRAGMA_AXILITE_CTRL = "#pragma HLS INTERFACE s_axilite port=return\n";
+  protected static final String PRAGMA_AXILITE_CTRL   = "#pragma HLS INTERFACE s_axilite port=return\n";
+  protected static final int    PYNQ_INTERFACE_DEPTH  = 64;
+  protected static final int    PYNQ_GLOBAL_CLOCK_MHZ = 100;
 
   private final Scenario                              scenario;
   private final PiGraph                               graph;
@@ -192,11 +194,17 @@ public class FpgaCodeGenerator {
     Thread.currentThread().setContextClassLoader(fcg.getClass().getClassLoader());
 
     final String headerFileContent = fcg.writeDefineHeaderFile();
-    final String hostFileContent = fcg.writeHostFile();
     final String topKernelFileContent = fcg.writeTopKernelFile();
     final String readKernelFileContent = fcg.writeReadKernelFile();
     final String writeKernelFileContent = fcg.writeWriteKernelFile();
+
+    // Xilinx OpenCL specific
     final String connectivityFileContent = fcg.writeConnectivityFile();
+    final String xoclHostFileContent = fcg.writeXOCLHostFile();
+
+    // Xilinx PYNQ specific
+    final String pynqVivadoScriptContent = fcg.writePYNQVivadoScriptFile();
+    final String pynqMakefileContent = fcg.writePYNQMakefile();
 
     // 99- set back default class loader
     Thread.currentThread().setContextClassLoader(oldContextClassLoader);
@@ -205,11 +213,16 @@ public class FpgaCodeGenerator {
 
     // copy generated files
     PreesmIOHelper.getInstance().print(codegenPath, TEMPLATE_DEFINE_HEADER_NAME, headerFileContent);
-    PreesmIOHelper.getInstance().print(codegenPath, "host_" + fcg.graphName + ".cpp", hostFileContent);
     PreesmIOHelper.getInstance().print(codegenPath, "top_kernel_" + fcg.graphName + ".cpp", topKernelFileContent);
     PreesmIOHelper.getInstance().print(codegenPath, "read_kernel_" + fcg.graphName + ".cpp", readKernelFileContent);
     PreesmIOHelper.getInstance().print(codegenPath, "write_kernel_" + fcg.graphName + ".cpp", writeKernelFileContent);
+
+    PreesmIOHelper.getInstance().print(codegenPath, "host_xocl_" + fcg.graphName + ".cpp", xoclHostFileContent);
     PreesmIOHelper.getInstance().print(codegenPath, "connectivity_" + fcg.graphName + ".cfg", connectivityFileContent);
+
+    PreesmIOHelper.getInstance().print(codegenPath + "/" + STDFILE_SCRIPT_PYNQ_SUBDIR, "script_vivado.tcl",
+        pynqVivadoScriptContent);
+    PreesmIOHelper.getInstance().print(codegenPath, "Makefile", pynqMakefileContent);
 
     // copy stdfiles
     try {
@@ -230,6 +243,82 @@ public class FpgaCodeGenerator {
 
   }
 
+  protected String writePYNQVivadoScriptFile() {
+    // 1- init engine
+    final VelocityEngine engine = new VelocityEngine();
+    engine.init();
+
+    // 2- init context
+    final VelocityContext context = new VelocityContext();
+
+    context.put("KERNEL_NAME_TOP", KERNEL_NAME_TOP);
+    context.put("KERNEL_NAME_READ", KERNEL_NAME_READ);
+    context.put("KERNEL_NAME_WRITE", KERNEL_NAME_WRITE);
+    context.put("PYNQ_GLOBAL_CLOCK_MHZ", Integer.toString(PYNQ_GLOBAL_CLOCK_MHZ));
+
+    final StringBuilder sb = new StringBuilder();
+    for (final InterfaceActor ia : interfaceRates.keySet()) {
+      final String fifoName = "axis_data_fifo_" + ia.getName() + "_stream";
+      sb.append("create_bd_cell -type ip -vlnv xilinx.com:ip:axis_data_fifo:2.0 " + fifoName + "\n"
+          + "set_property -dict [list CONFIG.FIFO_DEPTH {" + PYNQ_INTERFACE_DEPTH + "}] [get_bd_cells " + fifoName
+          + "]\n");
+      if (ia instanceof DataInputInterface) {
+        sb.append("connect_bd_intf_net [get_bd_intf_pins " + KERNEL_NAME_READ + "_0/" + ia.getName()
+            + SUFFIX_INTERFACE_STREAM + "_V] [get_bd_intf_pins " + fifoName + "/S_AXIS]\n"
+            + "connect_bd_intf_net [get_bd_intf_pins " + fifoName + "/M_AXIS] [get_bd_intf_pins " + KERNEL_NAME_TOP
+            + "_0/" + ia.getName() + SUFFIX_INTERFACE_STREAM + "_V]\n");
+      } else if (ia instanceof DataOutputInterface) {
+        sb.append("connect_bd_intf_net [get_bd_intf_pins " + KERNEL_NAME_TOP + "_0/" + ia.getName()
+            + SUFFIX_INTERFACE_STREAM + "_V] [get_bd_intf_pins " + fifoName + "/S_AXIS]\n"
+            + "connect_bd_intf_net [get_bd_intf_pins " + fifoName + "/M_AXIS] [get_bd_intf_pins " + KERNEL_NAME_WRITE
+            + "_0/" + ia.getName() + SUFFIX_INTERFACE_STREAM + "_V]\n");
+      }
+      sb.append("#apply_bd_automation -rule xilinx.com:bd_rule:clkrst -config { Clk {/processing_system7_0/FCLK_CLK0 ("
+          + PYNQ_GLOBAL_CLOCK_MHZ + " MHz)} Freq {" + PYNQ_GLOBAL_CLOCK_MHZ
+          + "} Ref_Clk0 {} Ref_Clk1 {} Ref_Clk2 {}}  [get_bd_pins " + fifoName + "/s_axis_aclk]\n\n");
+    }
+
+    context.put("PREESM_STREAM_CONNECTIVITY", sb.toString());
+
+    // 3- init template reader
+    final InputStreamReader reader = PreesmIOHelper.getInstance()
+        .getFileReader(TEMPLATE_PYNQ_SCRIPT_VIVADO_RES_LOCATION, this.getClass());
+
+    // 4- init output writer
+    final StringWriter writer = new StringWriter();
+
+    engine.evaluate(context, writer, VELOCITY_PACKAGE_NAME, reader);
+
+    return writer.toString();
+  }
+
+  protected String writePYNQMakefile() {
+    // 1- init engine
+    final VelocityEngine engine = new VelocityEngine();
+    engine.init();
+
+    // 2- init context
+    final VelocityContext context = new VelocityContext();
+    context.put("SCRIPTS_SUBDIR", STDFILE_SCRIPT_PYNQ_SUBDIR);
+    context.put("TOP_KERNEL_SOURCE", "top_kernel_" + graphName + ".cpp");
+    context.put("READ_KERNEL_SOURCE", "read_kernel_" + graphName + ".cpp");
+    context.put("WRITE_KERNEL_SOURCE", "write_kernel_" + graphName + ".cpp");
+    context.put("KERNEL_NAME_TOP", KERNEL_NAME_TOP);
+    context.put("KERNEL_NAME_READ", KERNEL_NAME_READ);
+    context.put("KERNEL_NAME_WRITE", KERNEL_NAME_WRITE);
+
+    // 3- init template reader
+    final InputStreamReader reader = PreesmIOHelper.getInstance().getFileReader(TEMPLATE_PYNQ_MAKEFILE_RES_LOCATION,
+        this.getClass());
+
+    // 4- init output writer
+    final StringWriter writer = new StringWriter();
+
+    engine.evaluate(context, writer, VELOCITY_PACKAGE_NAME, reader);
+
+    return writer.toString();
+  }
+
   protected String writeDefineHeaderFile() {
 
     final StringBuilder sb = new StringBuilder("// fifo sizes computed by PREESM\n");
@@ -247,7 +336,7 @@ public class FpgaCodeGenerator {
     return sb.toString();
   }
 
-  protected String writeHostFile() {
+  protected String writeXOCLHostFile() {
     // 1- init engine
     final VelocityEngine engine = new VelocityEngine();
     engine.init();
@@ -256,6 +345,8 @@ public class FpgaCodeGenerator {
     final VelocityContext context = new VelocityContext();
 
     context.put("PREESM_INCLUDES", "#include \"" + TEMPLATE_DEFINE_HEADER_NAME + "\"\n");
+    context.put("KERNEL_NAME_READ", KERNEL_NAME_READ);
+    context.put("KERNEL_NAME_WRITE", KERNEL_NAME_WRITE);
 
     // 2.1- generate vectors for interfaces
     final StringBuilder interfaceVectors = new StringBuilder("// vectors containing interface elements\n");
@@ -635,7 +726,7 @@ public class FpgaCodeGenerator {
     context.put("PREESM_INCLUDES", "#include \"" + TEMPLATE_DEFINE_HEADER_NAME + "\"\n");
 
     // read kernel prototype
-    final StringBuilder sb = new StringBuilder("void mem_read(\n  ");
+    final StringBuilder sb = new StringBuilder("void " + KERNEL_NAME_READ + "(\n  ");
     final List<String> args = new ArrayList<>();
     for (final InterfaceActor ia : interfaceRates.keySet()) {
       if (ia instanceof DataInputInterface) {
@@ -711,7 +802,7 @@ public class FpgaCodeGenerator {
     context.put("PREESM_INCLUDES", "#include \"" + TEMPLATE_DEFINE_HEADER_NAME + "\"\n");
 
     // write kernel prototype
-    final StringBuilder sb = new StringBuilder("void mem_write(\n  ");
+    final StringBuilder sb = new StringBuilder("void " + KERNEL_NAME_WRITE + "(\n  ");
     final List<String> args = new ArrayList<>();
     for (final InterfaceActor ia : interfaceRates.keySet()) {
       if (ia instanceof DataOutputInterface) {
