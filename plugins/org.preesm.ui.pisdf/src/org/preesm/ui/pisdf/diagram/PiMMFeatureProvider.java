@@ -151,6 +151,7 @@ import org.preesm.ui.pisdf.features.DeleteFifoFeature;
 import org.preesm.ui.pisdf.features.DeleteParameterizableFeature;
 import org.preesm.ui.pisdf.features.DeletePiMMelementFeature;
 import org.preesm.ui.pisdf.features.DirectEditingAbstractActorNameFeature;
+import org.preesm.ui.pisdf.features.ExchangePortCategory;
 import org.preesm.ui.pisdf.features.ExportSVGFeature;
 import org.preesm.ui.pisdf.features.LayoutActorFeature;
 import org.preesm.ui.pisdf.features.LayoutInterfaceFeature;
@@ -387,77 +388,92 @@ public class PiMMFeatureProvider extends DefaultFeatureProvider {
       return new ICustomFeature[0];
     }
 
-    final ArrayList<ICustomFeature> features = new ArrayList<>();
-
     final PictogramElement[] pes = context.getPictogramElements();
-    if (pes.length != 1) {
+    if (pes.length < 1) {
       return new ICustomFeature[0];
     }
+
+    final ArrayList<ICustomFeature> features = new ArrayList<>();
     final Object obj = getBusinessObjectForPictogramElement(pes[0]);
 
-    // Export SVG Feature is available for any selection
-    features.add(new ExportSVGFeature(this));
+    if (pes.length == 1) {
+      // handle single selection
 
-    if (obj instanceof DelayActor) {
-      return new ICustomFeature[0];
-    }
+      // Export SVG Feature is available for any selection
+      features.add(new ExportSVGFeature(this));
 
-    if (obj instanceof PiGraph) {
-      features.add(new SetVisibleAllDependenciesFeature(this, true));
-      features.add(new SetVisibleAllDependenciesFeature(this, false));
-      features.add(new AutoLayoutFeature(this));
-    }
-
-    if (obj instanceof AbstractVertex) {
-      features.add(new RenameAbstractVertexFeature(this));
-    }
-
-    if (obj instanceof ExecutableActor) {
-      final ICustomFeature[] actorFeatures = new ICustomFeature[] { new AddConfigInputPortFeature(this),
-          new AddConfigOutputPortFeature(this), new AddDataInputPortFeature(this),
-          new AddDataOutputPortFeature(this), };
-      for (final ICustomFeature feature : actorFeatures) {
-        features.add(feature);
+      if (obj instanceof DelayActor) {
+        return new ICustomFeature[0];
       }
-    }
-    if (obj instanceof InitActor) {
-      features.add(new SetActorRefinementFeature(this));
-      features.add(new ClearActorRefinementFeature(this));
-      features.add(new OpenRefinementFeature(this));
-    }
-    if (obj instanceof Actor) {
-      final ICustomFeature[] actorFeatures = new ICustomFeature[] { new SetActorRefinementFeature(this),
-          new ClearActorRefinementFeature(this), new OpenRefinementFeature(this), new SetActorMemoryScriptFeature(this),
-          new ClearActorMemoryScriptFeature(this), new OpenMemoryScriptFeature(this) };
-      for (final ICustomFeature feature : actorFeatures) {
-        features.add(feature);
+
+      if (obj instanceof PiGraph) {
+        features.add(new SetVisibleAllDependenciesFeature(this, true));
+        features.add(new SetVisibleAllDependenciesFeature(this, false));
+        features.add(new AutoLayoutFeature(this));
       }
+
+      if (obj instanceof AbstractVertex) {
+        features.add(new RenameAbstractVertexFeature(this));
+      }
+
+      if (obj instanceof ExecutableActor) {
+        final ICustomFeature[] actorFeatures = new ICustomFeature[] { new AddConfigInputPortFeature(this),
+            new AddConfigOutputPortFeature(this), new AddDataInputPortFeature(this),
+            new AddDataOutputPortFeature(this), };
+        for (final ICustomFeature feature : actorFeatures) {
+          features.add(feature);
+        }
+      }
+      if (obj instanceof InitActor) {
+        features.add(new SetActorRefinementFeature(this));
+        features.add(new ClearActorRefinementFeature(this));
+        features.add(new OpenRefinementFeature(this));
+      }
+      if (obj instanceof Actor) {
+        final ICustomFeature[] actorFeatures = new ICustomFeature[] { new SetActorRefinementFeature(this),
+            new ClearActorRefinementFeature(this), new OpenRefinementFeature(this),
+            new SetActorMemoryScriptFeature(this), new ClearActorMemoryScriptFeature(this),
+            new OpenMemoryScriptFeature(this) };
+        for (final ICustomFeature feature : actorFeatures) {
+          features.add(feature);
+        }
+      }
+
+      if (obj instanceof Parameter) {
+        features.add(new SetVisibleDependenciesFromParameterFeature(this, true));
+        features.add(new SetVisibleDependenciesFromParameterFeature(this, false));
+      }
+
+      if (obj instanceof Port) {
+        features.add(new RenameActorPortFeature(this));
+        features.add(new MoveUpActorPortFeature(this));
+        features.add(new MoveDownActorPortFeature(this));
+      }
+
+      if (obj instanceof DataPort) {
+        features.add(new SetPortMemoryAnnotationFeature(this));
+      }
+
+      if (obj instanceof Fifo) {
+        features.add(new AddDelayFeature(this));
+      }
+
+      if (obj instanceof Delay) {
+        features.add(new SetPersistenceLevelFeature(this));
+        features.add(new SetActorRefinementFeature(this));
+        features.add(new ClearActorRefinementFeature(this));
+        features.add(new OpenRefinementFeature(this));
+      }
+
     }
 
-    if (obj instanceof Parameter) {
-      features.add(new SetVisibleDependenciesFromParameterFeature(this, true));
-      features.add(new SetVisibleDependenciesFromParameterFeature(this, false));
-    }
+    if (pes.length >= 1) {
+      // handle multiple selection
 
-    if (obj instanceof Port) {
-      features.add(new RenameActorPortFeature(this));
-      features.add(new MoveUpActorPortFeature(this));
-      features.add(new MoveDownActorPortFeature(this));
-    }
+      if (obj instanceof Port) {
+        features.add(new ExchangePortCategory(this));
+      }
 
-    if (obj instanceof DataPort) {
-      features.add(new SetPortMemoryAnnotationFeature(this));
-    }
-
-    if (obj instanceof Fifo) {
-      features.add(new AddDelayFeature(this));
-    }
-
-    if (obj instanceof Delay) {
-      features.add(new SetPersistenceLevelFeature(this));
-      features.add(new SetActorRefinementFeature(this));
-      features.add(new ClearActorRefinementFeature(this));
-      features.add(new OpenRefinementFeature(this));
     }
 
     return features.toArray(new ICustomFeature[features.size()]);

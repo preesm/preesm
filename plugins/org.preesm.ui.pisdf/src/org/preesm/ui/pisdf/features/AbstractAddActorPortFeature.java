@@ -66,12 +66,19 @@ import org.preesm.ui.utils.DialogUtil;
  */
 public abstract class AbstractAddActorPortFeature extends AbstractCustomFeature {
 
+  public static final String DEFAULT_PORT_NAME = "newPort";
+
+  protected String givenName = null;
+
   /**
-   * The {@link ICustomContext} given to the {@link #execute(ICustomContext)} method can be associated to properties.
-   * The {@link #NAME_PROPERTY} key is associated to a {@link String} that should be used as a name for the created
-   * port, thus bypassing the need to ask for a port name to the user.
+   * Force the name of the new port, bypassing the dialog box if not null.
+   * 
+   * @param forcedName
+   *          Name of the port, overriding the default.
    */
-  public static final String NAME_PROPERTY = "name";
+  public void setGivenName(final String forcedName) {
+    givenName = forcedName;
+  }
 
   /**
    * Position of the port.
@@ -170,7 +177,7 @@ public abstract class AbstractAddActorPortFeature extends AbstractCustomFeature 
    */
   @Override
   public void execute(final ICustomContext context) {
-    execute(context, "newPort");
+    execute(context, DEFAULT_PORT_NAME);
   }
 
   /**
@@ -189,7 +196,7 @@ public abstract class AbstractAddActorPortFeature extends AbstractCustomFeature 
       // Get the actor
       final AbstractActor actor = (AbstractActor) getBusinessObjectForPictogramElement(pe);
 
-      final String portName = computePortName(context, defaultPortName, actor);
+      final String portName = computePortName(actor, defaultPortName);
       if (portName == null) {
         return;
       }
@@ -249,13 +256,11 @@ public abstract class AbstractAddActorPortFeature extends AbstractCustomFeature 
     return boxAnchor;
   }
 
-  private String computePortName(final ICustomContext context, final String defaultPortName,
-      final AbstractActor actor) {
+  private String computePortName(final AbstractActor actor, final String defaultPortName) {
     // If a name was given in the property, bypass the dialog box
-    final Object nameProperty = context.getProperty(AbstractAddActorPortFeature.NAME_PROPERTY);
     final String portName;
-    if ((nameProperty != null) && (nameProperty instanceof String)) {
-      portName = (String) nameProperty;
+    if (givenName != null && !givenName.isEmpty()) {
+      portName = givenName;
     } else {
       portName = DialogUtil.askString(getName(), getDescription(), defaultPortName, new PortNameValidator(actor, null));
       if (portName == null) {

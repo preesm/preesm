@@ -74,6 +74,7 @@ import org.preesm.ui.pisdf.decorators.DelayDecorators;
 import org.preesm.ui.pisdf.decorators.ParameterDecorators;
 import org.preesm.ui.pisdf.decorators.PiMMDecoratorAdapter;
 import org.preesm.ui.pisdf.decorators.PortDecorators;
+import org.preesm.ui.pisdf.features.ExchangePortCategory;
 import org.preesm.ui.pisdf.features.MoveDownActorPortFeature;
 import org.preesm.ui.pisdf.features.MoveUpActorPortFeature;
 import org.preesm.ui.pisdf.features.OpenRefinementFeature;
@@ -282,6 +283,8 @@ public class PiMMToolBehaviorProvider extends DefaultToolBehaviorProvider {
     final PictogramElement[] pes = context.getPictogramElements();
     if (pes.length > 0) {
       switch (hint) {
+        case ExchangePortCategory.HINT:
+          return new ExchangePortCategory(getFeatureProvider());
         case MoveUpActorPortFeature.HINT:
           return new MoveUpActorPortFeature(getFeatureProvider());
         case MoveDownActorPortFeature.HINT:
