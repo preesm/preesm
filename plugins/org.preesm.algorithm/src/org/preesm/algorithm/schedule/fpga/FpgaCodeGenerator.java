@@ -65,6 +65,10 @@ public class FpgaCodeGenerator {
 
       "templates/xilinxCodegen/template_PYNQ_host_notebook.ipynb";
 
+  public static final String TEMPLATE_PYNQ_HOST_RES_LOCATION =
+
+      "templates/xilinxCodegen/template_PYNQ_host_fpga.py";
+
   public static final String TEMPLATE_OPENCL_HOST_RES_LOCATION =
 
       "templates/xilinxCodegen/template_OpenCL_host_fpga.cpp";
@@ -203,6 +207,8 @@ public class FpgaCodeGenerator {
     final String xoclHostFileContent = fcg.writeXOCLHostFile();
 
     // Xilinx PYNQ specific
+    final String pynqHostFileContent = fcg.writePYNQHostFile();
+    final String pynqNotebookFileContent = fcg.writePYNQNotebookFile(pynqHostFileContent);
     final String pynqVivadoScriptContent = fcg.writePYNQVivadoScriptFile();
     final String pynqMakefileContent = fcg.writePYNQMakefile();
 
@@ -220,6 +226,8 @@ public class FpgaCodeGenerator {
     PreesmIOHelper.getInstance().print(codegenPath, "host_xocl_" + fcg.graphName + ".cpp", xoclHostFileContent);
     PreesmIOHelper.getInstance().print(codegenPath, "connectivity_" + fcg.graphName + ".cfg", connectivityFileContent);
 
+    PreesmIOHelper.getInstance().print(codegenPath, "host_pynq_" + fcg.graphName + ".py", pynqHostFileContent);
+    PreesmIOHelper.getInstance().print(codegenPath, "host_pynq_" + fcg.graphName + ".ipynb", pynqNotebookFileContent);
     PreesmIOHelper.getInstance().print(codegenPath + "/" + STDFILE_SCRIPT_PYNQ_SUBDIR, "script_vivado.tcl",
         pynqVivadoScriptContent);
     PreesmIOHelper.getInstance().print(codegenPath, "Makefile", pynqMakefileContent);
@@ -243,6 +251,83 @@ public class FpgaCodeGenerator {
 
   }
 
+  protected String writePYNQNotebookFile(final String rawPynqHostCode) {
+    // 1- init engine
+    final VelocityEngine engine = new VelocityEngine();
+    engine.init();
+
+    // 2- init context
+    final VelocityContext context = new VelocityContext();
+    final String[] rawCodeLines = rawPynqHostCode.split("\n");
+    final List<String> fmtCodeLines = new ArrayList<>();
+    for (final String line : rawCodeLines) {
+      fmtCodeLines.add("\"" + line.replaceAll("\"", "\\\\\"") + "\\n\"");
+    }
+
+    context.put("PREESM_PYNQ_HOST_CODE_FMT", fmtCodeLines.stream().collect(Collectors.joining(",\n")));
+
+    // 3- init template reader
+    final InputStreamReader reader = PreesmIOHelper.getInstance()
+        .getFileReader(TEMPLATE_PYNQ_HOST_NOTEBOOK_RES_LOCATION, this.getClass());
+
+    // 4- init output writer
+    final StringWriter writer = new StringWriter();
+
+    engine.evaluate(context, writer, VELOCITY_PACKAGE_NAME, reader);
+
+    return writer.toString();
+  }
+
+  protected String writePYNQHostFile() {
+    // 1- init engine
+    final VelocityEngine engine = new VelocityEngine();
+    engine.init();
+
+    // 2- init context
+    final VelocityContext context = new VelocityContext();
+    context.put("KERNEL_NAME_TOP", KERNEL_NAME_TOP);
+    context.put("KERNEL_NAME_READ", KERNEL_NAME_READ);
+    context.put("KERNEL_NAME_WRITE", KERNEL_NAME_WRITE);
+
+    final StringBuilder sbConstants = new StringBuilder();
+    interfaceRates.forEach((ia, p) -> {
+      final long rate = p.getKey();
+      sbConstants.append(String.format("%s = %d\n", getInterfaceRateName(ia), rate));
+    });
+    context.put("PREESM_CONSTANTS", sbConstants.toString());
+
+    final StringBuilder sbBufferInit = new StringBuilder();
+    final StringBuilder sbBufferMapping = new StringBuilder();
+    for (final InterfaceActor ia : interfaceRates.keySet()) {
+      final String type = ia.getDataPort().getFifo().getType();
+      sbBufferInit.append(ia.getName() + SUFFIX_INTERFACE_BUFFER + " = allocate(shape=(" + getInterfaceRateName(ia)
+          + ",), dtype=np.dtype('" + type + "'))\n");
+      if (ia instanceof DataInputInterface) {
+        sbBufferInit.append(ia.getName() + SUFFIX_INTERFACE_VECTOR + " = [" + type + "() for i in range("
+            + getInterfaceRateName(ia) + ")]\n" + "np.copyto(" + ia.getName() + SUFFIX_INTERFACE_BUFFER + ", "
+            + ia.getName() + SUFFIX_INTERFACE_VECTOR + ")\n\n");
+        sbBufferMapping.append("mem_read.write(mem_read.register_map." + ia.getName() + SUFFIX_INTERFACE_ARRAY
+            + "_1.address, " + ia.getName() + SUFFIX_INTERFACE_BUFFER + ".physical_address)\n");
+      } else if (ia instanceof DataOutputInterface) {
+        sbBufferMapping.append("mem_write.write(mem_write.register_map." + ia.getName() + SUFFIX_INTERFACE_ARRAY
+            + "_1.address, " + ia.getName() + SUFFIX_INTERFACE_BUFFER + ".physical_address)\n");
+      }
+    }
+    context.put("PREESM_BUFFER_INIT", sbBufferInit.toString());
+    context.put("PREESM_BUFFER_MAPPING", sbBufferMapping.toString());
+
+    // 3- init template reader
+    final InputStreamReader reader = PreesmIOHelper.getInstance().getFileReader(TEMPLATE_PYNQ_HOST_RES_LOCATION,
+        this.getClass());
+
+    // 4- init output writer
+    final StringWriter writer = new StringWriter();
+
+    engine.evaluate(context, writer, VELOCITY_PACKAGE_NAME, reader);
+
+    return writer.toString();
+  }
+
   protected String writePYNQVivadoScriptFile() {
     // 1- init engine
     final VelocityEngine engine = new VelocityEngine();
@@ -258,7 +343,7 @@ public class FpgaCodeGenerator {
 
     final StringBuilder sb = new StringBuilder();
     for (final InterfaceActor ia : interfaceRates.keySet()) {
-      final String fifoName = "axis_data_fifo_" + ia.getName() + "_stream";
+      final String fifoName = "axis_data_fifo_" + ia.getName() + SUFFIX_INTERFACE_STREAM;
       sb.append("create_bd_cell -type ip -vlnv xilinx.com:ip:axis_data_fifo:2.0 " + fifoName + "\n"
           + "set_property -dict [list CONFIG.FIFO_DEPTH {" + PYNQ_INTERFACE_DEPTH + "}] [get_bd_cells " + fifoName
           + "]\n");
