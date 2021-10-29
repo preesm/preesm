@@ -5,7 +5,9 @@ PREESM Changelog
 *XXXX.XX.XX*
 
 ### New Feature
- * new task "pisdf-synthesis.fpga-estimations" to analyse applications on FPGA architectures.
+* new task "pisdf-synthesis.fpga-estimations" to analyse applications on FPGA architectures.
+* (UI) Two menu commands to overcome the default parsing of C/C++ arguments as data input by default (due to Eclipse CDT):
+  'Exchange Port Direction In/Out' and 'Exchange Port Category Data/Config.'.
 
 ### Changes
 * (PiSDF) Flattening and SRDAG transformations now support data interfaces at top-level.
@@ -13,6 +15,7 @@ PREESM Changelog
 * (scenario) multiple kinds of timings can be stored, especially for FPGA.
 * (UI) The parsing of C/C++ functions for actor refinements is safer, now done by Eclipse CDT instead of handmade regex.
 * (UI) new menu popup action to generate C header refinements of PiSDF graphs.
+* (UI) Menu popup actions from right click in the diagram are grouped in a "Preesm" submenu (as in the Project Explorer view).
 
 ### Bug fix
 * Add explicit log when data type size is not set in scenario making memory scripts crash.

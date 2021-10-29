@@ -44,7 +44,7 @@ public class ExchangePortCategory extends AbstractCustomFeature {
    */
   @Override
   public String getName() {
-    return "Exchange Port Data/Config.";
+    return "Exchange Port Category Data/Config.";
   }
 
   /*
@@ -118,55 +118,61 @@ public class ExchangePortCategory extends AbstractCustomFeature {
       }
 
       // delete old ports
-      for (PictogramElement pe : pes) {
-        final DeleteActorPortFeature delPortFeature = new DeleteActorPortFeature(getFeatureProvider());
-        final DeleteContext delCtxt = new DeleteContext(pe);
-        final MultiDeleteInfo multi = new MultiDeleteInfo(false, false, 0);
-        delCtxt.setMultiDeleteInfo(multi);
-        delPortFeature.delete(delCtxt);
-      }
+      deletePortsToExchange(pes);
+      // recreate ports with new category context
+      recreateExchangedPorts(actorsToNewPorts);
+    }
+  }
 
-      // recreate ports with new category
-      // context.
-      for (final Entry<ExecutableActor, List<Pair<String, PortKind>>> e : actorsToNewPorts.entrySet()) {
-        // set the current selected element to the actor where to add ports
-        final PictogramElement[] peActor = new PictogramElement[1];
-        peActor[0] = getFeatureProvider().getPictogramElementForBusinessObject(e.getKey());
-        final List<Pair<String, PortKind>> newPorts = e.getValue();
-        for (final Pair<String, PortKind> newPort : newPorts) {
-          final String name = newPort.getKey();
-          final PortKind kind = newPort.getValue();
-          // we need a new context since the original one may have more than one pe,
-          // which is not supported by the add features
-          final CustomContext cc = new CustomContext(peActor);
-          switch (kind) {
-            case DATA_INPUT:
-              final AddDataInputPortFeature adipf = new AddDataInputPortFeature(getFeatureProvider());
-              adipf.setGivenName(name);
-              adipf.execute(cc);
-              break;
-            case DATA_OUTPUT:
-              final AddDataOutputPortFeature adopf = new AddDataOutputPortFeature(getFeatureProvider());
-              adopf.setGivenName(name);
-              adopf.execute(cc);
-              break;
-            case CFG_INPUT:
-              final AddConfigInputPortFeature acipf = new AddConfigInputPortFeature(getFeatureProvider());
-              acipf.setGivenName(name);
-              acipf.execute(cc);
-              break;
-            case CFG_OUTPUT:
-              final AddConfigOutputPortFeature acopf = new AddConfigOutputPortFeature(getFeatureProvider());
-              acopf.setGivenName(name);
-              acopf.execute(cc);
-              break;
-            default:
-              break;
-          }
+  protected void deletePortsToExchange(final PictogramElement[] ports) {
+    for (PictogramElement pe : ports) {
+      final DeleteActorPortFeature delPortFeature = new DeleteActorPortFeature(getFeatureProvider());
+      final DeleteContext delCtxt = new DeleteContext(pe);
+      final MultiDeleteInfo multi = new MultiDeleteInfo(false, false, 0);
+      delCtxt.setMultiDeleteInfo(multi);
+      delPortFeature.delete(delCtxt);
+    }
+  }
+
+  protected void recreateExchangedPorts(final Map<ExecutableActor, List<Pair<String, PortKind>>> actorsToNewPorts) {
+    for (final Entry<ExecutableActor, List<Pair<String, PortKind>>> e : actorsToNewPorts.entrySet()) {
+      // set the current selected element to the actor where to add ports
+      final PictogramElement[] peActor = new PictogramElement[1];
+      peActor[0] = getFeatureProvider().getPictogramElementForBusinessObject(e.getKey());
+      final List<Pair<String, PortKind>> newPorts = e.getValue();
+      for (final Pair<String, PortKind> newPort : newPorts) {
+        final String name = newPort.getKey();
+        final PortKind kind = newPort.getValue();
+        // we need a new context since the original one may have more than one pe,
+        // which is not supported by the add features
+        final CustomContext cc = new CustomContext(peActor);
+        switch (kind) {
+          case DATA_INPUT:
+            final AddDataInputPortFeature adipf = new AddDataInputPortFeature(getFeatureProvider());
+            adipf.setGivenName(name);
+            adipf.execute(cc);
+            break;
+          case DATA_OUTPUT:
+            final AddDataOutputPortFeature adopf = new AddDataOutputPortFeature(getFeatureProvider());
+            adopf.setGivenName(name);
+            adopf.execute(cc);
+            break;
+          case CFG_INPUT:
+            final AddConfigInputPortFeature acipf = new AddConfigInputPortFeature(getFeatureProvider());
+            acipf.setGivenName(name);
+            acipf.execute(cc);
+            break;
+          case CFG_OUTPUT:
+            final AddConfigOutputPortFeature acopf = new AddConfigOutputPortFeature(getFeatureProvider());
+            acopf.setGivenName(name);
+            acopf.execute(cc);
+            break;
+          default:
+            break;
         }
       }
-
     }
+
   }
 
 }

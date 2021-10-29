@@ -395,6 +395,17 @@
    <extension
          point="org.eclipse.ui.bindings">
       
+      <!-- Ctrl + right => Keyboard shortcut to exchange port direction -->
+      <key
+            commandId="org.eclipse.graphiti.ui.featureExecutionCommand"
+            contextId="org.ietr.preesm.experiment.ui.pimm"
+            schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"
+            sequence="M1+ARROW_RIGHT">
+         <parameter
+               id="org.eclipse.graphiti.ui.featureHint"
+               value="exchangeDirection">
+         </parameter>
+      </key>
       <!-- Ctrl + left => Keyboard shortcut to exchange port category -->
       <key
             commandId="org.eclipse.graphiti.ui.featureExecutionCommand"
@@ -406,7 +417,7 @@
                value="exchangeCategory">
          </parameter>
       </key>
-      <!-- ?? -->
+      <!-- Ctrl + up => Keyboard shortcut to move up port -->
       <key
             commandId="org.eclipse.graphiti.ui.featureExecutionCommand"
             contextId="org.ietr.preesm.experiment.ui.pimm"
@@ -417,7 +428,7 @@
                value="up">
          </parameter>
       </key>
-      <!-- ?? -->
+      <!-- Ctrl + up => Keyboard shortcut to move down port -->
       <key
             commandId="org.eclipse.graphiti.ui.featureExecutionCommand"
             contextId="org.ietr.preesm.experiment.ui.pimm"

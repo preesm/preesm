@@ -152,6 +152,7 @@ import org.preesm.ui.pisdf.features.DeleteParameterizableFeature;
 import org.preesm.ui.pisdf.features.DeletePiMMelementFeature;
 import org.preesm.ui.pisdf.features.DirectEditingAbstractActorNameFeature;
 import org.preesm.ui.pisdf.features.ExchangePortCategory;
+import org.preesm.ui.pisdf.features.ExchangePortDirection;
 import org.preesm.ui.pisdf.features.ExportSVGFeature;
 import org.preesm.ui.pisdf.features.LayoutActorFeature;
 import org.preesm.ui.pisdf.features.LayoutInterfaceFeature;
@@ -472,6 +473,7 @@ public class PiMMFeatureProvider extends DefaultFeatureProvider {
 
       if (obj instanceof Port) {
         features.add(new ExchangePortCategory(this));
+        features.add(new ExchangePortDirection(this));
       }
 
     }
