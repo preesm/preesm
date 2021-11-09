@@ -217,8 +217,9 @@ public class MemoryExclusionVertex extends AbstractVertex<MemoryExclusionGraph> 
     while (iter.hasNext()) {
       final BufferProperties properties = iter.next();
       final String dataType = properties.getDataType();
-      final long typeSize = scenario.getSimulationInfo().getDataTypeSizeOrDefault(dataType);
-      vertexWeight += properties.getSize() * typeSize;
+      // final long typeSize = scenario.getSimulationInfo().getDataTypeSizeInByte(dataType);
+      vertexWeight += scenario.getSimulationInfo().getBufferSizeInBit(dataType, properties.getNbToken());
+
     }
     return vertexWeight;
   }

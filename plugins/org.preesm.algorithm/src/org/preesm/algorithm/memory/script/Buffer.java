@@ -267,13 +267,13 @@ public class Buffer {
 
   final String name;
 
-  final long nbTokens;
+  private final long nbTokens;
 
   public long getNbTokens() {
     return this.nbTokens;
   }
 
-  final long tokenSize;
+  private final long tokenSize;
 
   public long getTokenSize() {
     return this.tokenSize;

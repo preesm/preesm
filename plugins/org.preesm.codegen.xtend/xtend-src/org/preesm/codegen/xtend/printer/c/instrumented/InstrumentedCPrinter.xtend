@@ -204,8 +204,8 @@ class InstrumentedCPrinter extends CPrinter {
 		}
 
 		// Set the final size of the Buffer
-		dumpTimedBuffer.size = globalID
-		nbExec.size = globalID/2
+		dumpTimedBuffer.nbToken = globalID
+		nbExec.nbToken = globalID/2
 
 		// Create the init method
 		var initCall = CodegenModelUserFactory.eINSTANCE.createFunctionCall;
@@ -216,7 +216,7 @@ class InstrumentedCPrinter extends CPrinter {
 				var const = CodegenModelUserFactory::eINSTANCE.createConstant
 				const.name = "nbDump"
 				const.type = "int"
-				const.value = dumpTimedBuffer.size
+				const.value = dumpTimedBuffer.getNbToken
 				const
 			}, PortDirection.NONE)
 		(printerBlocks.head as CoreBlock).initBlock.codeElts.add(initCall)
@@ -234,7 +234,7 @@ class InstrumentedCPrinter extends CPrinter {
 							val const = CodegenModelUserFactory::eINSTANCE.createConstant
 							const.name = "nbDump"
 							const.type = "int"
-							const.value = dumpTimedBuffer.size
+							const.value = dumpTimedBuffer.getNbToken
 							const
 						}.doSwitch», «nbExec.doSwitch»);
 				«ENDIF»

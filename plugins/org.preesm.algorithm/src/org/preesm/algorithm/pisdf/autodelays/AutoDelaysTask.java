@@ -893,7 +893,7 @@ public class AutoDelaysTask extends AbstractTaskImplementation {
       final int size = fifos.size();
       for (int i = 0; i < size; i++) {
         final Fifo f = fifos.get(i);
-        final long dataSize = si.getDataTypeSizeOrDefault(f.getType());
+        final long dataSize = si.getDataTypeSizeInBit(f.getType());
         long pipeSize = pipelineValues.get(i);
         pipeSize *= dataSize;
         totalSize += pipeSize;

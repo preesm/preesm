@@ -882,10 +882,14 @@ public class CodegenModelGenerator extends AbstractCodegenModelGenerator {
       final long size = meg.getPropertyBean().getValue(MemoryExclusionGraph.ALLOCATED_MEMORY_SIZE);
 
       final Buffer mainBuffer = CodegenModelUserFactory.eINSTANCE.createBuffer();
-      mainBuffer.setSize(size);
       mainBuffer.setName(memoryBank);
       mainBuffer.setType("char");
-      mainBuffer.setTypeSize(1); // char is 1 byte
+      mainBuffer.setTypeSize(8); // char is 8 bits
+
+      // To be removed
+      // mainBuffer.setSizeInBit(size);
+      // mainBuffer.setNbToken((long) (size + 7L) / mainBuffer.getTypeSize());
+      mainBuffer.setNbToken((long) Math.ceil((double) size / (double) mainBuffer.getTypeSize()));
       this.mainBuffers.put(memoryBank, mainBuffer);
 
       final Map<DAGEdge, Long> allocation = meg.getPropertyBean().getValue(MemoryExclusionGraph.DAG_EDGE_ALLOCATION);
@@ -911,7 +915,7 @@ public class CodegenModelGenerator extends AbstractCodegenModelGenerator {
           dagEdgeBuffer.reaffectContainer(mainBuffer);
           dagEdgeBuffer.setOffset(alloc);
           dagEdgeBuffer.setType("char");
-          dagEdgeBuffer.setTypeSize(1);
+          dagEdgeBuffer.setTypeSize(8);
 
           // Save the DAGEdgeBuffer
           final DAGVertex originalSource = this.algo.getVertex(source.getName());
@@ -923,7 +927,8 @@ public class CodegenModelGenerator extends AbstractCodegenModelGenerator {
             final Long dagEdgeSize = generateSubBuffers(dagEdgeBuffer, edge);
 
             // also accessible with dagAlloc.getKey().getWeight()
-            dagEdgeBuffer.setSize(dagEdgeSize);
+            // dagEdgeBuffer.setSize(dagEdgeSize);
+            dagEdgeBuffer.setNbToken((long) Math.ceil((double) dagEdgeSize / (double) dagEdgeBuffer.getTypeSize()));
             this.dagEdgeBuffers.put(originalDagEdge, dagEdgeBuffer);
           } else {
             if (!showWarningOnce) {
@@ -937,7 +942,8 @@ public class CodegenModelGenerator extends AbstractCodegenModelGenerator {
             final Long dagEdgeSize = generateTwinSubBuffers(dagEdgeBuffer, edge);
 
             // also accessible with dagAlloc.getKey().getWeight()
-            dagEdgeBuffer.setSize(dagEdgeSize);
+            // dagEdgeBuffer.setSize(dagEdgeSize);
+            dagEdgeBuffer.setNbToken((long) Math.ceil((double) dagEdgeSize / (double) dagEdgeBuffer.getTypeSize()));
             DistributedBuffer duplicatedBuffer = generateDistributedBuffer(this.dagEdgeBuffers.get(originalDagEdge),
                 dagEdgeBuffer);
             this.dagEdgeBuffers.put(originalDagEdge, duplicatedBuffer);
@@ -969,7 +975,8 @@ public class CodegenModelGenerator extends AbstractCodegenModelGenerator {
           final Long dagEdgeSize = generateSubBuffers(dagEdgeBuffer, edge);
 
           // We set the size to keep the information
-          dagEdgeBuffer.setSize(dagEdgeSize);
+          dagEdgeBuffer.setNbToken((long) Math.ceil((double) dagEdgeSize / (double) dagEdgeBuffer.getTypeSize()));
+          // dagEdgeBuffer.setSize(dagEdgeSize);
 
           // Save the DAGEdgeBuffer
           final DAGVertex originalSource = this.algo.getVertex(source.getName());
@@ -998,7 +1005,7 @@ public class CodegenModelGenerator extends AbstractCodegenModelGenerator {
         fifoBuffer.reaffectContainer(mainBuffer);
         fifoBuffer.setOffset(fifoAlloc.getValue());
         fifoBuffer.setType("char");
-        fifoBuffer.setSize(fifoAllocKey.getWeight());
+        fifoBuffer.setNbToken(8);
 
         // Get Init vertex
         final DAGVertex dagEndVertex = this.algo
@@ -2476,7 +2483,7 @@ public class CodegenModelGenerator extends AbstractCodegenModelGenerator {
         subBuff.reaffectContainer(parentBuffer);
         subBuff.setOffset(aggregateOffset);
         subBuff.setType(dataType);
-        subBuff.setSize(subBufferProperties.getSize());
+        subBuff.setNbToken(subBufferProperties.getNbToken());
 
         // Save the created SubBuffer
         this.srSDFEdgeBuffers.put(subBufferProperties, subBuff);
@@ -2513,9 +2520,8 @@ public class CodegenModelGenerator extends AbstractCodegenModelGenerator {
 
       FifoTypeChecker.checkMissingFifoTypeSizes(this.scenario);
 
-      final long subBuffDataType = this.scenario.getSimulationInfo().getDataTypeSizeOrDefault(dataType);
-      buff.setTypeSize(subBuffDataType);
-      aggregateOffset += (buff.getSize() * subBuffDataType);
+      buff.setTypeSize(this.scenario.getSimulationInfo().getDataTypeSizeInBit(dataType));
+      aggregateOffset += buff.getSizeInBit();
     }
 
     return aggregateOffset;
@@ -2688,7 +2694,7 @@ public class CodegenModelGenerator extends AbstractCodegenModelGenerator {
           start += ((SubBuffer) b).getOffset();
           b = ((SubBuffer) b).getContainer();
         }
-        final long end = start + (output.getSize() * output.getTypeSize());
+        final long end = start + (output.getNbToken() * output.getTypeSize());
 
         // Save allocated range
         outputRanges.add(new Pair<>(b, new Range(start, end)));
@@ -2737,7 +2743,7 @@ public class CodegenModelGenerator extends AbstractCodegenModelGenerator {
           start += ((SubBuffer) b).getOffset();
           b = ((SubBuffer) b).getContainer();
         }
-        final long end = start + (input.getSize() * input.getTypeSize());
+        final long end = start + (input.getNbToken() * input.getTypeSize());
 
         // Find the input range that are also covered by the output
         // ranges

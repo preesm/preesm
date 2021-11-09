@@ -526,8 +526,8 @@ public class CodegenHierarchicalModelGenerator {
             }
           }
         }
-        bufIterSize = subBufferProperties.getSize() / rep;
-        bufSize = subBufferProperties.getSize();
+        bufIterSize = subBufferProperties.getNbToken() / rep;
+        bufSize = subBufferProperties.getNbToken();
       } else {
         if (CodeGenArgument.INPUT.equals(arg.getDirection())) {
           bufIterSize = currentEdge.getCons().longValue();
@@ -544,12 +544,14 @@ public class CodegenHierarchicalModelGenerator {
           buf.setName(workingMemBuf.getName() + "_" + Integer.toString(this.currentWorkingMemOffset));
           buf.reaffectContainer(workingMemBuf);
           buf.setOffset(this.currentWorkingMemOffset);
-          buf.setSize((int) bufSize);
+          buf.setNbToken((int) bufSize);
           buf.setType(currentEdge.getDataType().toString());
           // sorry lign of the death
-          final long edgeDataSize = this.simulationInfo.getDataTypeSizeOrDefault(currentEdge.getDataType().toString());
+          final long edgeDataSize = this.simulationInfo.getDataTypeSizeInBit(currentEdge.getDataType().toString());
           buf.setTypeSize(edgeDataSize);
-          this.currentWorkingMemOffset += bufSize * edgeDataSize;
+          // this.currentWorkingMemOffset += bufSize * edgeDataSize;
+          this.currentWorkingMemOffset += this.simulationInfo.getBufferSizeInBit(currentEdge.getDataType().toString(),
+              bufSize);
           this.linkHSDFEdgeBuffer.put(currentEdge, buf);
         }
         var = buf;
@@ -581,7 +583,7 @@ public class CodegenHierarchicalModelGenerator {
       bufIter.setType(((SubBuffer) var).getType());
       bufIter.setOffset(((SubBuffer) var).getOffset());
       bufIter.setIterSize(bufIterSize);
-      bufIter.setSize(bufSize);
+      bufIter.setNbToken(bufSize);
 
       if (CodeGenArgument.INPUT.equals(arg.getDirection())) {
         // loopBlock.getInBuffers().add(bufIter);
@@ -722,9 +724,9 @@ public class CodegenHierarchicalModelGenerator {
           buf.setName(workingMemBuf.getName() + "_" + Integer.toString(this.currentWorkingMemOffset));
           buf.reaffectContainer(workingMemBuf);
           buf.setOffset(this.currentWorkingMemOffset);
-          buf.setSize(bufSize);
+          buf.setNbToken(bufSize);
           buf.setType(currentEdge.getDataType().toString());
-          final long value = this.simulationInfo.getDataTypeSizeOrDefault(currentEdge.getDataType().toString());
+          final long value = this.simulationInfo.getDataTypeSizeInBit(currentEdge.getDataType().toString());
           buf.setTypeSize(value);
           this.currentWorkingMemOffset += bufSize * value;
           this.linkHSDFEdgeBuffer.put(currentEdge, buf);

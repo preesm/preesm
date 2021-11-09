@@ -207,7 +207,7 @@ public class MemoryAllocatorTask extends AbstractTaskImplementation {
   public static final String VALUE_ALIGNEMENT_NONE               = "None";
   public static final String VALUE_ALIGNEMENT_DATA               = "Data";
   public static final String VALUE_ALIGNEMENT_FIXED              = "Fixed:=";
-  public static final String VALUE_ALIGNEMENT_DEFAULT            = "None";
+  public static final String VALUE_ALIGNEMENT_DEFAULT            = VALUE_ALIGNEMENT_FIXED + 8;
   public static final String PARAM_DISTRIBUTION_POLICY           = "Distribution";
   public static final String VALUE_DISTRIBUTION_SHARED_ONLY      = "SharedOnly";
   public static final String VALUE_DISTRIBUTION_DISTRIBUTED_ONLY = "DistributedOnly";

@@ -593,7 +593,7 @@ public class HSDFBuildLoops {
               "Internal Memory allocation failed for actor " + v.getName() + " unsupported special actor");
         }
 
-        final long sizeType = simulationInfo.getDataTypeSizeOrDefault(e.getDataType().toString());
+        final long sizeType = simulationInfo.getDataTypeSizeInBit(e.getDataType().toString());
 
         bufSize += mem * sizeType;
         allocEdge.add(e);

@@ -487,7 +487,7 @@ public class ScriptRunner {
     }
 
     final long oldMaxIndex = buffer.maxIndex;
-    if ((oldMaxIndex == (buffer.nbTokens * buffer.tokenSize)) || (((oldMaxIndex) % alignment) != 0)) {
+    if ((oldMaxIndex == (buffer.getNbTokens() * buffer.getTokenSize())) || (((oldMaxIndex) % alignment) != 0)) {
       buffer.maxIndex = ((oldMaxIndex / alignment) + 1) * alignment;
 
       // New range is indivisible with end of buffer
@@ -788,7 +788,7 @@ public class ScriptRunner {
 
       // and ends at the end of the buffer (or more)
       test = test && (entry.getValue().get(0).getLocalIndivisibleRange()
-          .getEnd() >= (candidate.nbTokens * candidate.tokenSize));
+          .getEnd() >= (candidate.getNbTokens() * candidate.getTokenSize()));
 
       // entry.key + entry.value.head.length >= candidate.nbTokens * candidate.tokenSize
       // and is not involved in any conflicting range
@@ -942,8 +942,8 @@ public class ScriptRunner {
         test = test && (matches.get(0).getLocalIndivisibleRange().getStart() <= 0);
 
         // and ends at the end of the buffer (or more)
-        test = test
-            && (matches.get(0).getLocalIndivisibleRange().getEnd() >= (candidate.nbTokens * candidate.tokenSize));
+        test = test && (matches.get(0).getLocalIndivisibleRange()
+            .getEnd() >= (candidate.getNbTokens() * candidate.getTokenSize()));
 
         // and is not involved in any conflicting match
         test = test && (matches.get(0).getConflictingMatches().isEmpty());
@@ -1112,7 +1112,7 @@ public class ScriptRunner {
 
       // and ends at the end of the buffer (or more)
       test = test && (entry.getValue().get(0).getLocalIndivisibleRange()
-          .getEnd() >= (candidate.nbTokens * candidate.tokenSize));
+          .getEnd() >= (candidate.getNbTokens() * candidate.getTokenSize()));
 
       // and is involved in any conflicting range
       final Match match = entry.getValue().get(0);
@@ -1296,8 +1296,8 @@ public class ScriptRunner {
         test = test && (matches.get(0).getLocalIndivisibleRange().getStart() <= 0);
 
         // and ends at the end of the buffer (or more)
-        test = test
-            && (matches.get(0).getLocalIndivisibleRange().getEnd() >= (candidate.nbTokens * candidate.tokenSize));
+        test = test && (matches.get(0).getLocalIndivisibleRange()
+            .getEnd() >= (candidate.getNbTokens() * candidate.getTokenSize()));
 
         if (test) {
           // and is involved in conflicting range
@@ -1574,7 +1574,7 @@ public class ScriptRunner {
                     validBuffers = true;
 
                     // Match them together
-                    final Match match = buffers.get(0).matchWith(0, buffers.get(1), 0, buffers.get(0).nbTokens);
+                    final Match match = buffers.get(0).matchWith(0, buffers.get(1), 0, buffers.get(0).getNbTokens());
                     final Match forwardMatch;
                     if (buffers.get(0).getVertexName().equals(dagEdge.getSource().getName())) {
                       match.setType(MatchType.FORWARD);
@@ -1692,7 +1692,7 @@ public class ScriptRunner {
       final String portModiferString = it.getTargetPortModifier() == null ? "" : it.getTargetPortModifier().toString();
       final boolean isMergeable = portModiferString.contains(SDFEdge.MODIFIER_READ_ONLY)
           || portModiferString.contains(SDFEdge.MODIFIER_UNUSED);
-      final long dataSize = this.simulationInfo.getDataTypeSizeOrDefault(dataType.toString());
+      final long dataSize = this.simulationInfo.getDataTypeSizeInBit(dataType.toString());
       // Weight is already dataSize * (Cons || prod)
       final long nbTokens = it.getWeight().longValue(); // / dataSize
       try {
@@ -1720,7 +1720,7 @@ public class ScriptRunner {
       final String portModiferString = it.getTargetPortModifier() == null ? "" : it.getTargetPortModifier().toString();
       final boolean isMergeable = portModiferString.contains(SDFEdge.MODIFIER_READ_ONLY)
           || portModiferString.contains(SDFEdge.MODIFIER_UNUSED);
-      final long dataSize = this.simulationInfo.getDataTypeSizeOrDefault(dataType.toString());
+      final long dataSize = this.simulationInfo.getDataTypeSizeInBit(dataType.toString());
       // Weight is already dataSize * (Cons || prod)
       final long nbTokens = it.getWeight().longValue(); // / dataSize
       try {
@@ -1805,7 +1805,7 @@ public class ScriptRunner {
               "Cannot find " + mObjCopy + " in the given MEG. Contact developers for more information.");
         }
 
-        if (mObj.getWeight() != (buffer.nbTokens * buffer.tokenSize)) {
+        if (mObj.getWeight() != (buffer.getNbTokens() * buffer.getTokenSize())) {
 
           // Karol's Note:
           // To process the aggregated dag edges, we will need to
@@ -1865,8 +1865,9 @@ public class ScriptRunner {
         mergedMObjects.put(mObj, new LinkedHashSet<>());
 
         // Save the real token range in the Mobj properties
-        final Range realTokenRange = new Range(0, buffer.tokenSize * buffer.nbTokens);
-        final Range actualRealTokenRange = new Range(-minIndex, (buffer.tokenSize * buffer.nbTokens) - minIndex);
+        final Range realTokenRange = new Range(0, buffer.getTokenSize() * buffer.getNbTokens());
+        final Range actualRealTokenRange = new Range(-minIndex,
+            (buffer.getTokenSize() * buffer.getNbTokens()) - minIndex);
         final List<Pair<MemoryExclusionVertex, Pair<Range, Range>>> ranges = new ArrayList<>();
         ranges.add(new Pair<>(mObj, new Pair<>(realTokenRange, actualRealTokenRange)));
         mObj.setPropertyValue(MemoryExclusionVertex.REAL_TOKEN_RANGE_PROPERTY, ranges);
@@ -1907,7 +1908,7 @@ public class ScriptRunner {
         // Fill the mobj properties (i.e. save the matched buffer info)
         final List<Pair<MemoryExclusionVertex, Pair<Range, Range>>> mObjRoots = new ArrayList<>();
         mObj.setPropertyValue(MemoryExclusionVertex.REAL_TOKEN_RANGE_PROPERTY, mObjRoots);
-        final Range realTokenRange = new Range(0, buffer.tokenSize * buffer.nbTokens);
+        final Range realTokenRange = new Range(0, buffer.getTokenSize() * buffer.getNbTokens());
 
         // For each subrange of real tokens, save the corresponding remote buffer
         // and range.

@@ -174,18 +174,18 @@ class CPrinter extends BlankPrinter {
 	'''
 
 	override printBufferDefinition(Buffer buffer) '''
-	«buffer.type» «buffer.name»[«buffer.size»]; // «buffer.comment» size:= «buffer.size»*«buffer.type»
+	«buffer.type» «buffer.name»[«buffer.getNbToken»]; // «buffer.comment» size:= «buffer.getNbToken»*«buffer.type»
 	'''
 
 	override printSubBufferDefinition(SubBuffer buffer) '''
 	«buffer.type» *const «buffer.name» = («buffer.type»*) («var offset = 0L»«
-	{offset = buffer.offset
+	{offset = buffer.gotOffsetInByte
 	 var b = buffer.container;
 	 while(b instanceof SubBuffer){
-	 	offset = offset + b.offset
+	 	offset = offset + b.gotOffsetInByte
 	  	b = b.container
 	  }
-	 b}.name»+«offset»);  // «buffer.comment» size:= «buffer.size»*«buffer.type»
+	 b}.name»+«offset»);  // «buffer.comment» size:= «buffer.getNbToken»*«buffer.type»
 	'''
 
 	override printDefinitionsFooter(List<Variable> list) '''
@@ -220,7 +220,7 @@ class CPrinter extends BlankPrinter {
 
 	void preesmUpdateMD5Array_«printedCoreBlock.coreID»(PREESM_MD5_CTX md5Array[]) {
 		«FOR buffer : getAllBuffers(printedCoreBlock)»
-		PREESM_MD5_Update(&md5Array[preesm_md5_ctx_«buffer.name»_id],(char *)«buffer.name», «buffer.size * buffer.typeSize»);
+		PREESM_MD5_Update(&md5Array[preesm_md5_ctx_«buffer.name»_id],(char *)«buffer.name», «buffer.getNbToken * buffer.typeSize»);
 		«ENDFOR»
 	}
 
@@ -295,7 +295,7 @@ class CPrinter extends BlankPrinter {
 	'''
 
 	override printSubBufferDeclaration(SubBuffer buffer) '''
-	extern «buffer.type» *const «buffer.name»;  // «buffer.comment» size:= «buffer.size»*«buffer.type» defined in «buffer.creator.name»
+	extern «buffer.type» *const «buffer.name»;  // «buffer.comment» size:= «buffer.getNbToken»*«buffer.type» defined in «buffer.creator.name»
 	'''
 
 	override printDeclarationsFooter(List<Variable> list) '''
@@ -528,10 +528,10 @@ class CPrinter extends BlankPrinter {
 
 		result = preCheck + result +
 			'''«fifoCall.headBuffer.name», «if (SIMPLE_BUFFER_SIZES)
-			fifoCall.headBuffer.size * engine.scenario.simulationInfo.getDataTypeSizeOrDefault(fifoCall.headBuffer.type) else
-			fifoCall.headBuffer.size+"*sizeof("+fifoCall.headBuffer.type+")"», '''
+			fifoCall.headBuffer.getNbToken * engine.scenario.simulationInfo.getDataTypeSizeOrDefault(fifoCall.headBuffer.type) else
+			fifoCall.headBuffer.getNbToken+"*sizeof("+fifoCall.headBuffer.type+")"», '''
 		return result = result + '''«IF fifoCall.bodyBuffer !== null»«fifoCall.bodyBuffer.name», «
-		if (SIMPLE_BUFFER_SIZES) fifoCall.bodyBuffer.size  * engine.scenario.simulationInfo.getDataTypeSizeOrDefault(fifoCall.bodyBuffer.type) else fifoCall.bodyBuffer.size+"*sizeof("+fifoCall.bodyBuffer.type+")"»«ELSE»NULL, 0«ENDIF»);
+		if (SIMPLE_BUFFER_SIZES) fifoCall.bodyBuffer.getNbToken  * engine.scenario.simulationInfo.getDataTypeSizeOrDefault(fifoCall.bodyBuffer.type) else fifoCall.bodyBuffer.getNbToken+"*sizeof("+fifoCall.bodyBuffer.type+")"»«ELSE»NULL, 0«ENDIF»);
 			«postCheck»'''
 	}
 
@@ -551,7 +551,7 @@ class CPrinter extends BlankPrinter {
 	«ENDIF»
 	{
 		«FOR output : call.outputBuffers»
-			«printMemcpy(output,0,input,index,output.size,output.type)»«{index=(output.size+index); ""}»
+			«printMemcpy(output,0,input,index,output.getNbToken,output.type)»«{index=(output.getNbToken+index); ""}»
 		«ENDFOR»
 	}
 	«IF state == PrinterState.PRINTING_LOOP_BLOCK && monitorAllFifoMD5»
@@ -605,11 +605,11 @@ class CPrinter extends BlankPrinter {
 	«ELSE»
 	«FOR output : call.outputBuffers»«var outputIdx = 0L»
 		«// TODO: Change how this loop iterates (nbIter is used in a comment only ...)
-		FOR nbIter : 0..(output.size/input.size+1) as int/*Worst case is output.size exec of the loop */»
-			«IF outputIdx < output.size /* Execute loop core until all output for current buffer are produced */»
-				«val value = Math::min(output.size-outputIdx,input.size-index)»// memcpy #«nbIter»
+		FOR nbIter : 0..(output.getNbToken/input.getNbToken+1) as int/*Worst case is output.size exec of the loop */»
+			«IF outputIdx < output.getNbToken /* Execute loop core until all output for current buffer are produced */»
+				«val value = Math::min(output.getNbToken-outputIdx,input.getNbToken-index)»// memcpy #«nbIter»
 				«printMemcpy(output,outputIdx,input,index,value,output.type)»«
-				{index=(index+value)%input.size;outputIdx=(outputIdx+value); ""}»
+				{index=(index+value)%input.getNbToken;outputIdx=(outputIdx+value); ""}»
 			«ENDIF»
 		«ENDFOR»
 	«ENDFOR»
@@ -659,29 +659,29 @@ class CPrinter extends BlankPrinter {
 	«ENDIF»
 
 	«/*Compute a list of useful memcpy (the one writing the outputed value) */
-	var copiedInBuffers = {var totalSize = call.inputBuffers.fold(0L)[res, buf | res+buf.size]
+	var copiedInBuffers = {var totalSize = call.inputBuffers.fold(0L)[res, buf | res+buf.getNbToken]
 		 var lastInputs = new ArrayList
 		 inputIdx = totalSize
 		 var i = call.inputBuffers.size	- 1
-		 while(totalSize-inputIdx < output.size){
-		 	inputIdx = inputIdx - call.inputBuffers.get(i).size
+		 while(totalSize-inputIdx < output.getNbToken){
+		 	inputIdx = inputIdx - call.inputBuffers.get(i).getNbToken
 		 	lastInputs.add(0,call.inputBuffers.get(i))
 			if (i < 0) {
 				throw new PreesmRuntimeException("Invalid RoundBuffer sizes: output size is greater than cumulative input size.")
 			}
 		 	i=i-1
 		 }
-		 inputIdx = inputIdx %  output.size
+		 inputIdx = inputIdx %  output.getNbToken
 		 lastInputs
 		 }»
 	{
 		«FOR input : copiedInBuffers»
 			«// TODO: Change how this loop iterates (nbIter is used in a comment only ...)
-			FOR nbIter : 0..(input.size/output.size+1) as int/*Worst number the loop exec */»
-				«IF inputIdx < input.size /* Execute loop core until all input for current buffer are produced */»
-					«val value = Math::min(input.size-inputIdx,output.size-index)»// memcpy #«nbIter»
+			FOR nbIter : 0..(input.getNbToken/output.getNbToken+1) as int/*Worst number the loop exec */»
+				«IF inputIdx < input.getNbToken /* Execute loop core until all input for current buffer are produced */»
+					«val value = Math::min(input.getNbToken-inputIdx,output.getNbToken-index)»// memcpy #«nbIter»
 					«printMemcpy(output,index,input,inputIdx,value,input.type)»«{
-						index=(index+value)%output.size;
+						index=(index+value)%output.getNbToken;
 						inputIdx=(inputIdx+value); ""
 					}»
 				«ENDIF»
@@ -729,7 +729,7 @@ class CPrinter extends BlankPrinter {
 
 	{
 		«FOR input : call.inputBuffers»
-			«printMemcpy(output,index,input,0,input.size,input.type)»«{index=(input.size+index); ""}»
+			«printMemcpy(output,index,input,0,input.getNbToken,input.type)»«{index=(input.getNbToken+index); ""}»
 		«ENDFOR»
 	}
 	«IF state == PrinterState.PRINTING_LOOP_BLOCK && monitorAllFifoMD5»
@@ -1083,7 +1083,7 @@ class CPrinter extends BlankPrinter {
 	override printPostFunctionCall(FunctionCall functionCall) '''
 	«IF state == PrinterState.PRINTING_LOOP_BLOCK && !monitorAllFifoMD5 && !printedCoreBlock.sinkFifoBuffers.isEmpty && functionCall instanceof ActorFunctionCall && (functionCall as ActorFunctionCall).getOriActor.dataOutputPorts.isEmpty»#ifdef PREESM_MD5_UPDATE
 	«FOR buffer : printedCoreBlock.sinkFifoBuffers»«IF functionCall.parameters.contains(buffer)»
-	PREESM_MD5_Update(&preesm_md5_ctx_«buffer.name»,(char *)«buffer.name», «buffer.size * buffer.typeSize»);
+	PREESM_MD5_Update(&preesm_md5_ctx_«buffer.name»,(char *)«buffer.name», «buffer.getSizeInByte»);
 	«ENDIF»«ENDFOR»#endif
 	«ENDIF»
 
@@ -1172,7 +1172,7 @@ class CPrinter extends BlankPrinter {
 
 	override printBufferIteratorDefinition(BufferIterator bufferIterator) ''''''
 
-	override printIteratedBuffer(IteratedBuffer iteratedBuffer) '''«doSwitch(iteratedBuffer.buffer)» + «printIntVar(iteratedBuffer.iter)» * «iteratedBuffer.size»'''
+	override printIteratedBuffer(IteratedBuffer iteratedBuffer) '''«doSwitch(iteratedBuffer.buffer)» + «printIntVar(iteratedBuffer.iter)» * «iteratedBuffer.getNbToken»'''
 
 	override printIntVar(IntVar intVar) '''«intVar.name»'''
 

@@ -188,17 +188,23 @@ class SimulationInfo {
 		}
 	}
 	op long getDataTypeSizeInByte(String typeName) {
+		return getBufferSizeInByte(typeName, 1)
+	}
+	op long getDataTypeSizeInBit(String typeName) {
+		return getBufferSizeInBit(typeName, 1)
+	}
+	op long getBufferSizeInByte(String typeName, long nbToken) {
 		if (dataTypes.containsKey(typeName)) {
-			return (dataTypes.get(typeName) + 7L) / 8L;
+			return (dataTypes.get(typeName) * nbToken + 7L) / 8L;
 		} else {
 			return ScenarioConstants.DEFAULT_MISSING_DATA_TYPE.value;
 		}
 	}
-	op long getDataTypeSizeInBit(String typeName) {
+	op long getBufferSizeInBit(String typeName, long nbToken) {
 		if (dataTypes.containsKey(typeName)) {
-			return dataTypes.get(typeName);
+			return dataTypes.get(typeName) * nbToken;
 		} else {
-			return ScenarioConstants.DEFAULT_MISSING_DATA_TYPE.value
+			return ScenarioConstants.DEFAULT_MISSING_DATA_TYPE.value;
 		}
 	}
 }

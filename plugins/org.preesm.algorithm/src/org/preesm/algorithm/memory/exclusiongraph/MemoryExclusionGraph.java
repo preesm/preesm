@@ -255,10 +255,11 @@ public class MemoryExclusionGraph extends SimpleGraph<MemoryExclusionVertex, Def
               + "This is not supported by the MemEx builder.\n" + "Please contact Preesm developers.");
         }
         final String typeName = buffers.get(0).getDataType();
-        final long typeSize = this.getScenario().getSimulationInfo().getDataTypeSizeOrDefault(typeName);
+        final long typeSize = this.getScenario().getSimulationInfo().getDataTypeSizeInBit(typeName);
         final MemoryExclusionVertex headMemoryNode = new MemoryExclusionVertex(
             MemoryExclusionGraph.FIFO_HEAD_PREFIX + dagEndVertex.getName(), dagInitVertex.getName(),
-            buffers.get(0).getSize() * typeSize, this.scenario);
+            this.getScenario().getSimulationInfo().getBufferSizeInBit(typeName, buffers.get(0).getNbToken()),
+            this.scenario);
         headMemoryNode.setPropertyValue(MemoryExclusionVertex.TYPE_SIZE, typeSize);
         // Add the head node to the MEG
         addVertex(headMemoryNode);
