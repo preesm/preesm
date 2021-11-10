@@ -56,6 +56,6 @@ spider::pisdf::Graph *spider::createUserApplicationGraph() {
                              /* = Number of config actors       = */  ${cfgActorCount});
 
     /* === Creates the parameter(s) === */
-#parse("templates/cpp/graph_template.vm")
+#parse("resources/templates/cpp/graph_template.vm")
     return graph;
 }

@@ -65,7 +65,7 @@ spider::pisdf::Vertex *spider::create${graphName}Subgraph(std::string name,
           /* = Name of the parameter  = */ "$param.name",
           /* = Parent parameter       = */  parentGraphParams[$inheritedParameters.indexOf($param)]);
 #end
-#parse("templates/cpp/graph_template.vm")
+#parse("resources/templates/cpp/graph_template.vm")
 
     /* == Return the graph as a Vertex == */
     return spider::api::convertGraphToVertex(graph);

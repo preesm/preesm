@@ -38,21 +38,20 @@ package org.preesm.codegen.xtend.spider2;
 
 import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;
 
-import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Writer;
-import java.net.URL;
 import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.logging.Level;
 import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.VelocityEngine;
+import org.apache.velocity.runtime.RuntimeConstants;
+import org.apache.velocity.runtime.resource.loader.ClasspathResourceLoader;
 import org.eclipse.core.resources.IWorkspace;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.xtext.xbase.lib.Pair;
@@ -61,8 +60,8 @@ import org.preesm.codegen.xtend.spider2.utils.Spider2CodegenPE;
 import org.preesm.codegen.xtend.spider2.utils.Spider2Config;
 import org.preesm.codegen.xtend.spider2.visitor.Spider2PreProcessVisitor;
 import org.preesm.commons.exceptions.PreesmRuntimeException;
+import org.preesm.commons.files.PreesmIOHelper;
 import org.preesm.commons.files.PreesmResourcesHelper;
-import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.model.pisdf.Actor;
 import org.preesm.model.pisdf.CHeaderRefinement;
 import org.preesm.model.pisdf.ConfigInputPort;
@@ -118,18 +117,21 @@ public class Spider2Codegen {
   }
 
   /**
-   * Initializes the context loader of the class.
+   * Initializes the context loader of the class. Must be call before every other method of this class.
    */
   public void init() {
     if (this.originalContextClassLoader != null) {
       return;
     }
     this.originalContextClassLoader = Thread.currentThread().getContextClassLoader();
-    Thread.currentThread().setContextClassLoader(Spider2Codegen.class.getClassLoader());
+    Thread.currentThread().setContextClassLoader(this.getClass().getClassLoader());
     this.velocityEngine = new VelocityEngine();
-    this.velocityEngine.setProperty("resource.loader", "class");
-    this.velocityEngine.setProperty("class.resource.loader.class",
-        "org.apache.velocity.runtime.resource.loader.ClasspathResourceLoader");
+    // https://stackoverflow.com/questions/9051413/unable-to-find-velocity-template-resources
+    this.velocityEngine.setProperty(RuntimeConstants.RESOURCE_LOADER, "classpath");
+    this.velocityEngine.setProperty("classpath.resource.loader.class", ClasspathResourceLoader.class.getName());
+    // this.velocityEngine.setProperty("resource.loader", "class");
+    // this.velocityEngine.setProperty("class.resource.loader.class",
+    // "org.apache.velocity.runtime.resource.loader.ClasspathResourceLoader");
     this.velocityEngine.init();
     this.velocityEngine.removeDirective("ifndef");
     this.velocityEngine.removeDirective("define");
@@ -137,10 +139,10 @@ public class Spider2Codegen {
   }
 
   /**
-   * Finalizes properly original class loader attribute.
+   * Finalizes properly original class loader attribute. Must be called after finishing to use this class object.
    */
   public void end() {
-    if (this.originalContextClassLoader != null) {
+    if (this.originalContextClassLoader == null) {
       return;
     }
     Thread.currentThread().setContextClassLoader(this.originalContextClassLoader);
@@ -197,7 +199,6 @@ public class Spider2Codegen {
             workspace.getRoot().getFolder(new Path(refFilePath)).getRawLocation().toOSString());
         final File targetFile = new File(includeDirectoryPath + refinement.getFileName());
 
-        copyFileFromTo("resources/cmake_modules/FindSpider2.cmake", "../cmake/modules/FindSpider2.cmake");
         try {
           Files.copy(oldFile.toPath(), targetFile.toPath(), REPLACE_EXISTING);
         } catch (IOException e) {
@@ -227,9 +228,6 @@ public class Spider2Codegen {
    * Generates the code of the physical architecture (s-lam based)
    */
   public void generateArchiCode() {
-    if (this.originalContextClassLoader == null) {
-      init();
-    }
     /* Fill out the context */
     VelocityContext context = new VelocityContext();
     context.put("mainPEName", this.preprocessor.getMainPEName());
@@ -249,9 +247,6 @@ public class Spider2Codegen {
    * Generates a default CMakeList for the spider project.
    */
   public void generateCMakeList() {
-    if (this.originalContextClassLoader == null) {
-      init();
-    }
     /* Fill out the context */
     VelocityContext context = new VelocityContext();
     context.put("appName", this.applicationName);
@@ -261,18 +256,16 @@ public class Spider2Codegen {
     writeVelocityContext(context, "templates/cpp/cmakelist_template.vm", "../CMakeLists.txt");
 
     /* Move FindThreads and FindSpider2.cmake files */
-    copyFileFromTo("resources/cmake_modules/FindSpider2.cmake", "../cmake/modules/FindSpider2.cmake");
-    copyFileFromTo("resources/cmake_modules/FindThreads.cmake", "../cmake/modules/FindThreads.cmake");
+    copyFileFromTo("resources/cmake_modules/", this.scenario.getCodegenDirectory() + "/../cmake/modules/",
+        "FindSpider2.cmake");
+    copyFileFromTo("resources/cmake_modules/", this.scenario.getCodegenDirectory() + "/../cmake/modules/",
+        "FindThreads.cmake");
   }
 
   /**
    * Generates the code of the main.cpp
    */
   public void generateMainCode(final Spider2Config config) {
-    if (this.originalContextClassLoader == null) {
-      init();
-    }
-
     /* Fill out the context */
     VelocityContext context = new VelocityContext();
     context.put("verbose", false);
@@ -318,10 +311,6 @@ public class Spider2Codegen {
    * Generates the code associated with the kernels of the application graph
    */
   public void generateKernelCode() {
-    if (this.originalContextClassLoader == null) {
-      init();
-    }
-
     /* Fill out the context */
     VelocityContext context = new VelocityContext();
     context.put("prototypes", this.preprocessor.getUniqueLoopPrototypeList());
@@ -334,10 +323,6 @@ public class Spider2Codegen {
    * Generates the application header file.
    */
   public void generateApplicationHeader() {
-    if (this.originalContextClassLoader == null) {
-      init();
-    }
-
     /* Fill out the context */
     VelocityContext context = new VelocityContext();
     context.put("appName", this.applicationName);
@@ -364,10 +349,6 @@ public class Spider2Codegen {
    * Generates CPP code for every unique pisdf graph of the application.
    */
   public void generateGraphCodes() {
-    if (this.originalContextClassLoader == null) {
-      init();
-    }
-
     for (final PiGraph graph : this.preprocessor.getUniqueGraphSet()) {
       generateUniqueGraphCode(graph);
     }
@@ -464,38 +445,22 @@ public class Spider2Codegen {
   private final void writeVelocityContext(final VelocityContext context, final String templateFileName,
       final String outputFileName) {
     try (Writer writer = new FileWriter(new File(this.folder, outputFileName))) {
-      final URL template = PreesmResourcesHelper.getInstance().resolve(templateFileName, this.getClass());
-
-      try (final InputStreamReader reader = new InputStreamReader(template.openStream())) {
-        velocityEngine.evaluate(context, writer, "org.apache.velocity", reader);
-        writer.flush();
-      } catch (IOException e) {
-        end();
-        throw new PreesmRuntimeException("Could not locate main template [" + template.getFile() + "].", e);
-      }
-
+      final InputStreamReader reader = PreesmIOHelper.getInstance().getFileReader(templateFileName, this.getClass());
+      velocityEngine.evaluate(context, writer, "org.apache.velocity", reader);
+      writer.flush();
     } catch (IOException e) {
       end();
-      PreesmLogger.getLogger().log(Level.SEVERE, "failed to open output file [" + outputFileName + "].");
-      PreesmLogger.getLogger().log(Level.SEVERE, e.toString());
+      throw new PreesmRuntimeException("Failed to open Spider2 codegen output file [" + outputFileName + "].", e);
     }
   }
 
-  private final void copyFileFromTo(final String originalFile, final String targetFile) {
-    final URL fileuRL = PreesmResourcesHelper.getInstance().resolve(originalFile, this.getClass());
-
-    try (Writer writer = new FileWriter(new File(this.folder, targetFile))) {
-      try (final BufferedReader reader = new BufferedReader(new InputStreamReader(fileuRL.openStream()))) {
-        String line;
-        while ((line = reader.readLine()) != null) {
-          writer.write(line + '\n');
-        }
-        writer.flush();
-      } catch (IOException e) {
-        throw new PreesmRuntimeException(e);
-      }
-    } catch (IOException e) {
-      throw new PreesmRuntimeException(e);
+  private final void copyFileFromTo(final String originalFolder, final String targetFolder, final String fileName) {
+    try {
+      final String content = PreesmResourcesHelper.getInstance().read(originalFolder + fileName, this.getClass());
+      PreesmIOHelper.getInstance().print(targetFolder, fileName, content);
+    } catch (final IOException e) {
+      throw new PreesmRuntimeException(
+          "Could not copy resource " + fileName + " from " + originalFolder + " to " + targetFolder + ".", e);
     }
   }
 
