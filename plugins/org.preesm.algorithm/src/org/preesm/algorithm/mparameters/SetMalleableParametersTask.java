@@ -412,8 +412,8 @@ public class SetMalleableParametersTask extends AbstractTaskImplementation {
       // retry with more delays
       DSEpointIR resRetry = runConfiguration(scenario, flatGraphWithDelays, architecture, scheduler, null);
       // adds cut information and params (from the unflat version since flattning change param names) to the point
-      resRetry = new DSEpointIR(resRetry.energy, resRetry.latency, resRetry.durationII, nbCuts, nbPreCuts,
-          res.paramsValues, resRetry.isSchedulable);
+      resRetry = new DSEpointIR(resRetry.energy, resRetry.latency, resRetry.durationII, resRetry.memory, nbCuts,
+          nbPreCuts, res.paramsValues, resRetry.isSchedulable);
       logCsvContentMparams(logDSEpoints, mparamsIR, resRetry);
 
       if (globalComparator.compare(resRetry, res) < 0) {
@@ -456,7 +456,7 @@ public class SetMalleableParametersTask extends AbstractTaskImplementation {
       // put back all messages
       PreesmLogger.getLogger().setLevel(backupLevel);
       PreesmLogger.getLogger().log(Level.WARNING, "Scheduling was impossible.", e);
-      return new DSEpointIR(Long.MAX_VALUE, iterationDelay, Long.MAX_VALUE, 0, 0, paramsValues, false);
+      return new DSEpointIR(Long.MAX_VALUE, iterationDelay, Long.MAX_VALUE, Long.MAX_VALUE, 0, 0, paramsValues, false);
     }
 
     // use implementation evaluation of PeriodicScheduler instead?
@@ -470,7 +470,8 @@ public class SetMalleableParametersTask extends AbstractTaskImplementation {
 
     // put back all messages
     PreesmLogger.getLogger().setLevel(backupLevel);
-    return new DSEpointIR(energy, iterationDelay, durationII, 0, 0, paramsValues, true);
+    // TODO manage memory
+    return new DSEpointIR(energy, iterationDelay, durationII, 0L, 0, 0, paramsValues, true);
   }
 
   protected static void resetAllMparams(List<MalleableParameterIR> mparamsIR) {
@@ -598,6 +599,9 @@ public class SetMalleableParametersTask extends AbstractTaskImplementation {
           case 'T':
             listComparators.add(new DSEpointIR.ThroughputMaxComparator());
             break;
+          case 'S':
+            listComparators.add(new DSEpointIR.MemoryMinComparator());
+            break;
           default:
             break;
         }
@@ -617,6 +621,9 @@ public class SetMalleableParametersTask extends AbstractTaskImplementation {
             break;
           case 'T':
             listComparators.add(new DSEpointIR.ThroughputAtLeastComparator(thresholdI.longValue()));
+            break;
+          case 'S':
+            listComparators.add(new DSEpointIR.MemoryAtMostComparator(thresholdI.longValue()));
             break;
           default:
             break;

@@ -45,6 +45,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import org.apache.commons.math3.ml.clustering.Clusterable;
 import org.eclipse.xtext.xbase.lib.Pair;
 import org.preesm.model.pisdf.Parameter;
 import org.preesm.model.pisdf.PiGraph;
@@ -56,12 +57,13 @@ import org.preesm.model.pisdf.PiGraph;
  * 
  * @author ahonorat
  */
-public class DSEpointIR {
+public class DSEpointIR implements Clusterable {
 
   // metrics for comparators:
   public final long energy;     // energy, power = energy / durationII
   public final int  latency;    // as factor of durationII
   public final long durationII; // inverse of throughput, makespan = latency * durationII
+  public final long memory;     // memory footprint (e.g. used by fifo buffers)
 
   public final Map<Pair<String, String>, Long> paramsValues; // values of parameters having objectives
 
@@ -71,15 +73,17 @@ public class DSEpointIR {
   public final boolean isSchedulable;
 
   // minimum point since threshold are positive values
-  public static final DSEpointIR ZERO = new DSEpointIR(0, 0, 0, 0, 0, new HashMap<>(), true);
+  public static final DSEpointIR ZERO = new DSEpointIR(0, 0, 0, 0, 0, 0, new HashMap<>(), true);
 
-  public static final String CSV_HEADER_STRING = "Schedulability;Power;Latency;DurationII;AskedCuts;AskedPrecuts";
+  public static final String CSV_HEADER_STRING =
+
+      "Schedulability;Power;Latency;DurationII;Memory;AskedCuts;AskedPrecuts";
 
   /**
    * Default constructor, with maximum values everywhere.
    */
   public DSEpointIR() {
-    this(Long.MAX_VALUE, Integer.MAX_VALUE, Long.MAX_VALUE, 0, 0, new HashMap<>(), false);
+    this(Long.MAX_VALUE, Integer.MAX_VALUE, Long.MAX_VALUE, Long.MAX_VALUE, 0, 0, new HashMap<>(), false);
   }
 
   /**
@@ -91,6 +95,8 @@ public class DSEpointIR {
    *          the latency (as factor of durationII)
    * @param durationII
    *          the durationII (inverse of throughput)
+   * @param memory
+   *          the memory footprint (e.g. sum of all fifo buffer sizes)
    * @param askedCuts
    *          the number of cuts asked to the delay placement heuristic
    * @param askedPreCuts
@@ -100,11 +106,12 @@ public class DSEpointIR {
    * @param isSchedulable
    *          Whether or not this configuration is schedulable.
    */
-  public DSEpointIR(final long energy, final int latency, final long durationII, final int askedCuts,
+  public DSEpointIR(final long energy, final int latency, final long durationII, final long memory, final int askedCuts,
       final int askedPreCuts, final Map<Pair<String, String>, Long> paramsValues, final boolean isSchedulable) {
     this.energy = energy;
     this.latency = latency;
     this.durationII = durationII;
+    this.memory = memory;
     this.askedCuts = askedCuts;
     this.askedPreCuts = askedPreCuts;
     this.paramsValues = paramsValues;
@@ -112,15 +119,25 @@ public class DSEpointIR {
   }
 
   @Override
+  public double[] getPoint() {
+    final double[] result = new double[4];
+    result[0] = latency;
+    result[1] = durationII;
+    result[2] = memory;
+    result[3] = energy;
+    return result;
+  }
+
+  @Override
   public String toString() {
     return "Schedulable:  " + isSchedulable + "  Energy:  " + energy + "  Latency:  " + latency + "x  DurationII:  "
-        + durationII + "  Asked cuts: " + askedCuts + " among " + askedPreCuts;
+        + durationII + "  Memory: " + memory + "  Asked cuts: " + askedCuts + " among " + askedPreCuts;
   }
 
   public String toCsvContentString() {
     // force US because one day we may want to print floating POINT numbers (not coma as in French)
-    return String.format(Locale.US, "%b;%d;%d;%d;%d;%d", isSchedulable, energy, latency, durationII, askedCuts,
-        askedPreCuts);
+    return String.format(Locale.US, "%b;%d;%d;%d;%d;%d;%d", isSchedulable, energy, latency, durationII, memory,
+        askedCuts, askedPreCuts);
   }
 
   /**
@@ -131,11 +148,11 @@ public class DSEpointIR {
    */
   public static class DSEpointGlobalComparator implements Comparator<DSEpointIR> {
 
-    private final List<Comparator<DSEpointIR>> comparators;
-    private final ParameterComparator          paramComparator;
-    private final boolean                      hasThresholds;
-    private final boolean                      delayAcceptance;
-    private final int                          delayMaximumLatency;
+    protected final List<Comparator<DSEpointIR>> comparators;
+    protected final ParameterComparator          paramComparator;
+    protected final boolean                      hasThresholds;
+    protected final boolean                      delayAcceptance;
+    protected final int                          delayMaximumLatency;
 
     /**
      * Builds a global comparator calling successively the comparators in the arguments.
@@ -172,6 +189,60 @@ public class DSEpointIR {
       }
 
       return 0;
+    }
+
+    /**
+     * Compare two DSE points with comparators in the same order as listed in the constructor arguments. All comparators
+     * are checked so that the Pareto front can be built.
+     * 
+     * @author tbourgoi
+     */
+    public static class DSEpointParetoComparator extends DSEpointGlobalComparator {
+
+      /**
+       * Builds a global Pareto comparator calling successively the comparators in the arguments.
+       * 
+       * @param comparators
+       *          List of comparators to call.
+       * @param paramsObjvs
+       *          Map of parameters, as pair of (parentName, parameterName), and their objectives (min: - or max: +),
+       *          evaluated in given order.
+       * 
+       */
+      public DSEpointParetoComparator(List<Comparator<DSEpointIR>> comparators,
+          final LinkedHashMap<Pair<String, String>, Character> paramsObjvs) {
+        // should the paramsObjvs be considered for Pareto front?
+        super(comparators, paramsObjvs);
+      }
+
+      @Override
+      public int compare(DSEpointIR o1, DSEpointIR o2) {
+
+        boolean allMetricsGreaterOrEqual = true;
+        boolean allMetricsLowerOrEqual = true;
+        int res;
+
+        for (final Comparator<DSEpointIR> comparator : comparators) {
+          res = comparator.compare(o1, o2);
+          if (allMetricsGreaterOrEqual && (res < 0)) {
+            // if allMetricsGreaterOrEqual already = false don't need to execute the true statement
+            allMetricsGreaterOrEqual = false;
+          } else if (allMetricsLowerOrEqual && (res > 0)) {
+            allMetricsLowerOrEqual = false;
+          }
+        }
+        if (!allMetricsLowerOrEqual && allMetricsGreaterOrEqual) {
+          // all the metrics of o1 are greater or equals than the metrics of o2
+          return 1;
+        }
+        if (allMetricsLowerOrEqual && !allMetricsGreaterOrEqual) {
+          // all the metrics of o1 are lower or equals than the metrics of o2
+          return -1;
+        }
+
+        return 0;
+      }
+
     }
 
     /**
@@ -472,6 +543,41 @@ public class DSEpointIR {
     @Override
     public int compare(DSEpointIR arg0, DSEpointIR arg1) {
       if (arg0.energy > threshold || arg1.energy > threshold) {
+        return Long.compare(arg0.energy, arg1.energy);
+      }
+      return 0;
+    }
+
+  }
+
+  /**
+   * Negative if first point has lower memory than second.
+   * 
+   * @author tbourgoi
+   */
+  public static class MemoryMinComparator implements Comparator<DSEpointIR> {
+
+    @Override
+    public int compare(DSEpointIR arg0, DSEpointIR arg1) {
+      return Long.compare(arg0.memory, arg1.memory);
+    }
+
+  }
+
+  /**
+   * Negative if first point has lower memory than second. 0 if both are below the threshold.
+   * 
+   * @author ahonorat
+   */
+  public static class MemoryAtMostComparator extends ThresholdComparator<Long> {
+
+    public MemoryAtMostComparator(final long threshold) {
+      super(threshold);
+    }
+
+    @Override
+    public int compare(DSEpointIR arg0, DSEpointIR arg1) {
+      if (arg0.memory > threshold || arg1.memory > threshold) {
         return Long.compare(arg0.energy, arg1.energy);
       }
       return 0;
