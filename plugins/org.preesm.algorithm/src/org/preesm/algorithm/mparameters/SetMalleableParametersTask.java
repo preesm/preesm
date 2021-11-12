@@ -40,11 +40,9 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Comparator;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.logging.Level;
 import java.util.stream.Collectors;
 import org.eclipse.core.resources.IProject;
@@ -54,17 +52,6 @@ import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.xtext.xbase.lib.Pair;
 import org.preesm.algorithm.mparameters.DSEpointIR.DSEpointGlobalComparator;
-import org.preesm.algorithm.pisdf.autodelays.AutoDelaysTask;
-import org.preesm.algorithm.pisdf.autodelays.IterationDelayedEvaluator;
-import org.preesm.algorithm.synthesis.SynthesisResult;
-import org.preesm.algorithm.synthesis.evaluation.energy.SimpleEnergyCost;
-import org.preesm.algorithm.synthesis.evaluation.energy.SimpleEnergyEvaluation;
-import org.preesm.algorithm.synthesis.evaluation.latency.LatencyCost;
-import org.preesm.algorithm.synthesis.evaluation.latency.SimpleLatencyEvaluation;
-import org.preesm.algorithm.synthesis.schedule.ScheduleOrderManager;
-import org.preesm.algorithm.synthesis.schedule.algos.IScheduler;
-import org.preesm.algorithm.synthesis.schedule.algos.PeriodicScheduler;
-import org.preesm.algorithm.synthesis.schedule.algos.PreesmSchedulingException;
 import org.preesm.commons.doc.annotations.Port;
 import org.preesm.commons.doc.annotations.PreesmTask;
 import org.preesm.commons.doc.annotations.Value;
@@ -73,12 +60,7 @@ import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.model.pisdf.MalleableParameter;
 import org.preesm.model.pisdf.Parameter;
 import org.preesm.model.pisdf.PiGraph;
-import org.preesm.model.pisdf.brv.BRVMethod;
 import org.preesm.model.pisdf.check.MalleableParameterExprChecker;
-import org.preesm.model.pisdf.factory.PiMMUserFactory;
-import org.preesm.model.pisdf.statictools.PiMMHelper;
-import org.preesm.model.pisdf.statictools.PiSDFFlattener;
-import org.preesm.model.pisdf.statictools.PiSDFToSingleRate;
 import org.preesm.model.scenario.Scenario;
 import org.preesm.model.slam.Design;
 import org.preesm.model.slam.utils.SlamDesignPEtypeChecker;
@@ -149,7 +131,7 @@ public class SetMalleableParametersTask extends AbstractTaskImplementation {
   public static final String DEFAULT_DELAY_RETRY_NAME  = "5. Retry with delays";
   public static final String DEFAULT_LOG_NAME          = "6. Log path";
 
-  public static final String COMPARISONS_REGEX = "[EPLTM](>[EPLTM])*";
+  public static final String COMPARISONS_REGEX = "[EPLTMS](>[EPLTMS])*";
   public static final String THRESHOLDS_REGEX  = "[0-9]+(.[0-9]+)?(>[0-9]+(.[0-9]+))*";
   public static final String PARAMS_REGEX      = ">|(>[+-][a-zA-Z0-9_]+/[a-zA-Z0-9_]+)*";
 
@@ -208,31 +190,39 @@ public class SetMalleableParametersTask extends AbstractTaskImplementation {
     }
     PreesmLogger.getLogger().log(Level.INFO, "The number of parameter combinations is: " + nbCombinations);
 
-    // set the scenario graph since it is used for timings
-    final Map<Parameter, String> backupParamOverride = new HashMap<>();
-    for (Entry<Parameter, String> e : scenario.getParameterValues().entrySet()) {
-      backupParamOverride.put(e.getKey(), e.getValue());
-    }
-
-    final DSEpointGlobalComparator globalComparator = getGlobalComparator(parameters, graph);
     final String delayRetryStr = parameters.get(DEFAULT_DELAY_RETRY_NAME);
     boolean delayRetryValue = Boolean.parseBoolean(delayRetryStr);
+    final String comparisons = parameters.get(DEFAULT_COMPARISONS_NAME);
+    boolean shouldEstimateMemory = comparisons.contains("S");
+
+    final DSEpointGlobalComparator globalComparator = getGlobalComparator(parameters, graph);
+    final AbstractConfigurationScheduler acs = new ConfigurationSchedulerPeriodic();
+
+    if (delayRetryValue && !acs.supportsExtraDelayCuts()) {
+      delayRetryValue = false;
+      PreesmLogger.getLogger().log(Level.WARNING,
+          "You ask for extra delays/cuts but the scheduler you asked does not support it, ignoring it.");
+    }
+    if (shouldEstimateMemory && !acs.supportsMemoryEstimation()) {
+      shouldEstimateMemory = false;
+      PreesmLogger.getLogger().log(Level.WARNING, "Your DSE comparison objectives asks for memory estimation "
+          + "but the scheduler you asked does not support it, ignoring it.");
+    }
 
     PiGraph outputGraph; // different of input graph only if delays has been added by the heuristic
-    StringBuilder logDSEpoints = new StringBuilder();
+    final SetMalleableParameters smp = new SetMalleableParameters(scenario, graph, architecture, mparamsIR,
+        globalComparator, shouldEstimateMemory, delayRetryValue);
 
     if (heuristicValue) {
-      outputGraph = numbersDSE(scenario, graph, architecture, mparamsIR, globalComparator, backupParamOverride,
-          delayRetryValue, logDSEpoints);
+      outputGraph = smp.numbersDSE(acs);
     } else {
-      outputGraph = exhaustiveDSE(scenario, graph, architecture, mparamsIR, globalComparator, backupParamOverride,
-          delayRetryValue, logDSEpoints);
+      outputGraph = smp.exhaustiveDSE(acs);
     }
     // erase previous value
     output.put(AbstractWorkflowNodeImplementation.KEY_PI_GRAPH, outputGraph);
     // exports log
     final String logPath = parameters.get(DEFAULT_LOG_NAME);
-    logCsvFile(logDSEpoints, mparamsIR, workflow, scenario, logPath);
+    logCsvFile(smp.getComparatorLog(), mparamsIR, workflow, scenario, logPath);
 
     return output;
   }
@@ -267,270 +257,6 @@ public class SetMalleableParametersTask extends AbstractTaskImplementation {
           "Unhable to write the DSE task log in file:" + exportAbsolutePath + fileName);
     }
 
-  }
-
-  protected static PiGraph exhaustiveDSE(final Scenario scenario, final PiGraph graph, final Design architecture,
-      final List<MalleableParameterIR> mparamsIR, final DSEpointGlobalComparator globalComparator,
-      final Map<Parameter, String> backupParamOverride, final boolean delayRetryValue,
-      final StringBuilder logDSEpoints) {
-    // build and test all possible configurations
-    final ParameterCombinationExplorer pce = new ParameterCombinationExplorer(mparamsIR, scenario);
-    DSEpointIR bestPoint = new DSEpointIR();
-    List<Integer> bestConfig = null;
-    int index = 0;
-    while (pce.setNext()) {
-      index++;
-
-      final DSEpointIR dsep = runAndRetryConfiguration(scenario, graph, architecture, index, delayRetryValue,
-          globalComparator, logDSEpoints, mparamsIR);
-      PreesmLogger.getLogger().log(Level.FINE, dsep.toString());
-      if (dsep.isSchedulable && globalComparator.compare(dsep, bestPoint) < 0) {
-        bestConfig = pce.recordConfiguration();
-        bestPoint = dsep;
-      }
-    }
-    if (bestConfig == null) {
-      resetAllMparams(mparamsIR);
-      scenario.getParameterValues().putAll(backupParamOverride);
-      PreesmLogger.getLogger().warning("No configuration was good, default malleable parameter values are put back.");
-    }
-
-    return logAndSetBestPoint(pce, bestPoint, bestConfig, globalComparator, graph, architecture, scenario);
-
-  }
-
-  protected static PiGraph numbersDSE(final Scenario scenario, final PiGraph graph, final Design architecture,
-      final List<MalleableParameterIR> mparamsIR, final DSEpointGlobalComparator globalComparator,
-      final Map<Parameter, String> backupParamOverride, final boolean delayRetryValue,
-      final StringBuilder logDSEpoints) {
-    // build and test all possible configurations
-    ParameterCombinationNumberExplorer pce = null;
-    DSEpointIR bestPoint = new DSEpointIR();
-    List<Integer> bestConfig = null;
-    ParameterCombinationNumberExplorer bestPceRound = null;
-    DSEpointIR bestLocalPoint;
-    List<Integer> bestLocalConfig;
-    int indexTot = 0;
-    int indexRound = 0;
-    do {
-      indexRound++;
-      PreesmLogger.getLogger().log(Level.INFO, "New DSE heuristic round: " + indexRound);
-
-      bestLocalPoint = new DSEpointIR();
-      bestLocalConfig = null;
-      pce = new ParameterCombinationNumberExplorer(mparamsIR, scenario);
-      while (pce.setNext()) {
-        indexTot++;
-
-        final DSEpointIR dsep = runAndRetryConfiguration(scenario, graph, architecture, indexTot, delayRetryValue,
-            globalComparator, logDSEpoints, mparamsIR);
-        PreesmLogger.getLogger().log(Level.FINE, dsep.toString());
-        if (dsep.isSchedulable) {
-          if (globalComparator.compare(dsep, bestPoint) < 0) {
-            bestConfig = pce.recordConfiguration();
-            bestPoint = dsep;
-            bestPceRound = pce;
-          }
-          if (globalComparator.compare(dsep, bestLocalPoint) < 0) {
-            bestLocalConfig = pce.recordConfiguration();
-            bestLocalPoint = dsep;
-          }
-        }
-      }
-      if (bestConfig == null) {
-        resetAllMparams(mparamsIR);
-        scenario.getParameterValues().putAll(backupParamOverride);
-        PreesmLogger.getLogger().warning("No configuration was good, default malleable parameter values are put back.");
-        break;
-      }
-    } while (pce.setForNextPartialDSEround(bestLocalConfig));
-
-    return logAndSetBestPoint(bestPceRound, bestPoint, bestConfig, globalComparator, graph, architecture, scenario);
-
-  }
-
-  protected static void logCsvContentMparams(final StringBuilder logDSEpoints,
-      final List<MalleableParameterIR> mparamsIR, final DSEpointIR point) {
-    for (MalleableParameterIR mpir : mparamsIR) {
-      logDSEpoints.append(mpir.mp.getExpression().evaluate() + ";");
-    }
-    logDSEpoints.append(point.toCsvContentString() + "\n");
-  }
-
-  protected static DSEpointIR runAndRetryConfiguration(final Scenario scenario, final PiGraph graph,
-      final Design architecture, final int index, final boolean delayRetryValue,
-      final DSEpointGlobalComparator globalComparator, final StringBuilder logDSEpoints,
-      final List<MalleableParameterIR> mparamsIR) {
-
-    PreesmLogger.getLogger().fine("==> Testing combination: " + index);
-    // for (Parameter p : graph.getAllParameters()) {
-    // PreesmLogger.getLogger().fine(p.getVertexPath() + ": " + p.getExpression().getExpressionAsString());
-    // }
-
-    final PeriodicScheduler scheduler = new PeriodicScheduler();
-    DSEpointIR res = runConfiguration(scenario, graph, architecture, scheduler, globalComparator);
-    logCsvContentMparams(logDSEpoints, mparamsIR, res);
-
-    if (delayRetryValue && globalComparator.doesAcceptsMoreDelays()
-        && globalComparator.areAllNonThroughputAndEnergyThresholdsMet(res)) {
-      PreesmLogger.getLogger().fine("Retrying combination with delays.");
-
-      // compute possible amount of delays
-      final int nbCore = architecture.getProcessingElements().get(0).getInstances().size();
-      final int iterationDelay = res.latency; // is greater or equal to 1
-      int maxCuts = globalComparator.getMaximumLatency(); // so -1 is performed in following test
-      if (maxCuts > iterationDelay) {
-        // ensure we can add at least one cut
-        maxCuts -= iterationDelay;
-      } else {
-        // we cannot add delays, so no retry
-        return res;
-      }
-
-      long period = scheduler.getGraphPeriod();
-      // original graph period has not been resolved, so we use the flat graph copy instead
-      long durationII = period > 0 ? period : scheduler.getLastEndTime();
-      final int nbCuts = globalComparator.computeCutsAmount(maxCuts, nbCore, durationII, scheduler.getTotalLoad(),
-          scheduler.getMaximalLoad());
-      if (nbCuts == 0) {
-        // may happen with makespan threshold
-        return res;
-      }
-      final int nbPreCuts = nbCuts + 1;
-
-      // deactivate fine logging for automatic pipelining
-      final Level backupLevel = PreesmLogger.getLogger().getLevel();
-      PreesmLogger.getLogger().setLevel(Level.SEVERE);
-      // copy and flatten transfo graph
-      final PiGraph flatGraphCopy = PiSDFFlattener.flatten(graph, true);
-      // add more delays
-      final PiGraph flatGraphWithDelays = AutoDelaysTask.addDelays(flatGraphCopy, architecture, scenario, false, false,
-          false, nbCore, nbPreCuts, nbCuts);
-      // reactivate logging
-      PreesmLogger.getLogger().setLevel(backupLevel);
-
-      // retry with more delays
-      DSEpointIR resRetry = runConfiguration(scenario, flatGraphWithDelays, architecture, scheduler, null);
-      // adds cut information and params (from the unflat version since flattning change param names) to the point
-      resRetry = new DSEpointIR(resRetry.energy, resRetry.latency, resRetry.durationII, resRetry.memory, nbCuts,
-          nbPreCuts, res.paramsValues, resRetry.isSchedulable);
-      logCsvContentMparams(logDSEpoints, mparamsIR, resRetry);
-
-      if (globalComparator.compare(resRetry, res) < 0) {
-        return resRetry;
-      }
-
-    }
-
-    return res;
-  }
-
-  protected static DSEpointIR runConfiguration(final Scenario scenario, final PiGraph graph, final Design architecture,
-      final IScheduler scheduler, final DSEpointGlobalComparator globalComparator) {
-    final Level backupLevel = PreesmLogger.getLogger().getLevel();
-    PreesmLogger.getLogger().setLevel(Level.SEVERE);
-
-    // copy graph since flatten transfo has side effects (on parameters)
-    final int iterationDelay = IterationDelayedEvaluator.computeLatency(graph);
-
-    Map<Pair<String, String>, Long> paramsValues;
-    if (globalComparator != null) {
-      final PiGraph graphResolvedCopy = PiMMUserFactory.instance.copyPiGraphWithHistory(graph);
-      PiMMHelper.resolveAllParameters(graphResolvedCopy);
-      paramsValues = globalComparator.getParamsValues(graphResolvedCopy);
-    } else {
-      // case of flatten graph with extra delays, so parameter names are not same,
-      // the real values will be updated by the calling method
-      paramsValues = new HashMap<>();
-    }
-
-    final PiGraph dag = PiSDFToSingleRate.compute(graph, BRVMethod.LCM);
-    // for (Parameter p : dag.getAllParameters()) {
-    // PreesmLogger.getLogger().fine(p.getName() + " (in DAG): " + p.getExpression().getExpressionAsString());
-    // }
-
-    SynthesisResult scheduleAndMap = null;
-    try {
-      scheduleAndMap = scheduler.scheduleAndMap(dag, architecture, scenario);
-    } catch (PreesmSchedulingException e) {
-      // put back all messages
-      PreesmLogger.getLogger().setLevel(backupLevel);
-      PreesmLogger.getLogger().log(Level.WARNING, "Scheduling was impossible.", e);
-      return new DSEpointIR(Long.MAX_VALUE, iterationDelay, Long.MAX_VALUE, Long.MAX_VALUE, 0, 0, paramsValues, false);
-    }
-
-    // use implementation evaluation of PeriodicScheduler instead?
-    final ScheduleOrderManager scheduleOM = new ScheduleOrderManager(dag, scheduleAndMap.schedule);
-    final LatencyCost evaluateLatency = new SimpleLatencyEvaluation().evaluate(dag, architecture, scenario,
-        scheduleAndMap.mapping, scheduleOM);
-    final long durationII = evaluateLatency.getValue();
-    final SimpleEnergyCost evaluateEnergy = new SimpleEnergyEvaluation().evaluate(dag, architecture, scenario,
-        scheduleAndMap.mapping, scheduleOM);
-    final long energy = evaluateEnergy.getValue();
-
-    // put back all messages
-    PreesmLogger.getLogger().setLevel(backupLevel);
-    // TODO manage memory
-    return new DSEpointIR(energy, iterationDelay, durationII, 0L, 0, 0, paramsValues, true);
-  }
-
-  protected static void resetAllMparams(List<MalleableParameterIR> mparamsIR) {
-    // we need to consider exprs only since values may be in a different order (if sorted, or if overriden in
-    // MalleableParameterNumberIR)
-    for (MalleableParameterIR mpir : mparamsIR) {
-      if (!mpir.exprs.isEmpty()) {
-        mpir.mp.setExpression(mpir.exprs.get(0));
-      }
-    }
-  }
-
-  /**
-   * Overrides malleable parameters values, also in scenario. Does nothing if bestConfig is null.
-   * 
-   * @param pce
-   *          used to set the bestConfig.
-   * @param bestPoint
-   *          Information about bestPoints.
-   * @param bestConfig
-   *          according to pce.
-   * @param globalComparator
-   *          comparator used to compute the best point
-   * @param scenario
-   *          Scenario to consider (only if adding delays).
-   * @param architecture
-   *          Architecture to consider (only if adding delays).
-   * @param graph
-   *          Original graph (only if adding delays).
-   * @return Original graph, or a flat copy if delays have been added.
-   */
-  protected static PiGraph logAndSetBestPoint(final ParameterCombinationExplorer pce, final DSEpointIR bestPoint,
-      final List<Integer> bestConfig, final DSEpointGlobalComparator globalComparator, final PiGraph graph,
-      final Design architecture, final Scenario scenario) {
-    if (bestConfig != null) {
-      pce.setConfiguration(bestConfig);
-      PreesmLogger.getLogger().log(Level.INFO, "Best configuration has metrics: " + bestPoint);
-      PreesmLogger.getLogger().log(Level.WARNING,
-          "The malleable parameters value have been overriden in the scenario!");
-      if (!globalComparator.areAllThresholdMet(bestPoint)) {
-        PreesmLogger.getLogger().log(Level.WARNING, "Best configuration does not respect all thresholds.");
-      }
-      if (bestPoint.askedCuts != 0) {
-        PreesmLogger.getLogger().log(Level.WARNING,
-            "Delays have been added to the graph (implies graph flattening and parameter expression resolution "
-                + "in output graph)!");
-
-        final int nbCore = architecture.getProcessingElements().get(0).getInstances().size();
-        final PiGraph graphCopy = PiMMUserFactory.instance.copyPiGraphWithHistory(graph);
-        final PiGraph flatGraph = graphCopy.getChildrenGraphs().isEmpty() ? graphCopy
-            : PiSDFFlattener.flatten(graphCopy, true);
-        return AutoDelaysTask.addDelays(flatGraph, architecture, scenario, false, false, false, nbCore,
-            bestPoint.askedPreCuts, bestPoint.askedCuts);
-      }
-
-    } else {
-      PreesmLogger.getLogger().log(Level.WARNING, "No configuration found!");
-    }
-    return graph;
   }
 
   /**

@@ -212,7 +212,7 @@ public class PeriodicScheduler extends AbstractScheduler {
    * 
    * @return Maximum firing execution time (except special actors).
    */
-  public long getMaximalLoad() {
+  public long getMaximalFiringLoad() {
     return Cmax;
   }
 
