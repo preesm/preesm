@@ -186,6 +186,6 @@ public class BestFitAllocator extends OrderedAllocator {
       allocateMemoryObject(vertex, bestFitOffset);
     }
 
-    return getMemorySize();
+    return getMemorySizeInByte();
   }
 }

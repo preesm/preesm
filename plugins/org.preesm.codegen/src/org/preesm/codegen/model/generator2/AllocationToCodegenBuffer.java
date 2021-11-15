@@ -124,8 +124,8 @@ public class AllocationToCodegenBuffer extends MemoryAllocationSwitch<Boolean> {
         final Buffer srcCodegenBuffer = this.btb.get(srcBuffer);
         final Buffer tgtCodegenBuffer = this.btb.get(tgtBuffer);
 
-        final long allocSize = srcCodegenBuffer.getSize();
-        final long typeSize = scenario.getSimulationInfo().getDataTypeSizeOrDefault(fifo.getType());
+        final long allocSize = srcCodegenBuffer.getSizeInBit();
+        final long typeSize = scenario.getSimulationInfo().getDataTypeSizeInBit(fifo.getType());
 
         if (tgtCodegenBuffer != srcCodegenBuffer) {
           // generate 2 codegen buffers and route
@@ -136,8 +136,8 @@ public class AllocationToCodegenBuffer extends MemoryAllocationSwitch<Boolean> {
           if (allocSize % typeSize != 0) {
             throw new PreesmRuntimeException("Buffer size in bytes is not a multiple of its type sizes.");
           }
-          srcCodegenBuffer.setSize(allocSize / typeSize);
-          srcCodegenBuffer.setTypeSize(typeSize);
+          srcCodegenBuffer.setNbToken(allocSize / typeSize);
+          srcCodegenBuffer.setTokenTypeSizeInBit(typeSize);
 
           final String scomment = fifo.getSourcePort().getId();
           srcCodegenBuffer.setComment(scomment);
@@ -155,8 +155,8 @@ public class AllocationToCodegenBuffer extends MemoryAllocationSwitch<Boolean> {
 
         tgtCodegenBuffer.setType(fifo.getType());
 
-        tgtCodegenBuffer.setSize(allocSize / typeSize);
-        tgtCodegenBuffer.setTypeSize(typeSize);
+        tgtCodegenBuffer.setNbToken(allocSize / typeSize);
+        tgtCodegenBuffer.setTokenTypeSizeInBit(typeSize);
 
         final String tcomment = fifo.getTargetPort().getId();
         tgtCodegenBuffer.setComment(tcomment);
@@ -182,10 +182,10 @@ public class AllocationToCodegenBuffer extends MemoryAllocationSwitch<Boolean> {
       final String uniqueName = generateUniqueBufferName(MemoryExclusionGraph.FIFO_HEAD_PREFIX + name);
       codegenBuffer.setName(uniqueName);
       codegenBuffer.setType(fifo.getType());
-      final long allocSize = codegenBuffer.getSize();
-      final long typeSize = scenario.getSimulationInfo().getDataTypeSizeOrDefault(fifo.getType());
-      codegenBuffer.setSize(allocSize / typeSize);
-      codegenBuffer.setTypeSize(typeSize);
+      final long allocSize = codegenBuffer.getSizeInBit();
+      final long typeSize = scenario.getSimulationInfo().getDataTypeSizeInBit(fifo.getType());
+      codegenBuffer.setNbToken(allocSize / typeSize);
+      codegenBuffer.setTokenTypeSizeInBit(typeSize);
     }
 
     final EList<AbstractActor> allActors = this.algo.getAllActors();
@@ -241,9 +241,14 @@ public class AllocationToCodegenBuffer extends MemoryAllocationSwitch<Boolean> {
   @Override
   public Boolean caseLogicalBuffer(final LogicalBuffer logicalBuffer) {
     final SubBuffer subBuffer = CodegenModelUserFactory.eINSTANCE.createSubBuffer();
-    subBuffer.setSize(logicalBuffer.getSize());
-    final long offset = logicalBuffer.getOffset();
-    subBuffer.setOffset(offset);
+
+    // At this time, the actual size of a token is out of reach. Set up as bit by default, will be fixed in link()
+    subBuffer.setType("bit");
+    subBuffer.setTokenTypeSizeInBit(1);
+    subBuffer.setNbToken(logicalBuffer.getSizeInBit());
+
+    final long offset = logicalBuffer.getOffsetInBit();
+    subBuffer.setOffsetInBit(offset);
 
     this.btb.put(logicalBuffer, subBuffer);
     this.codegenBufferStack.push(subBuffer);
@@ -265,10 +270,17 @@ public class AllocationToCodegenBuffer extends MemoryAllocationSwitch<Boolean> {
   @Override
   public Boolean casePhysicalBuffer(final PhysicalBuffer phys) {
     final Buffer mainBuffer = CodegenModelUserFactory.eINSTANCE.createBuffer();
-    mainBuffer.setSize(phys.getSize());
-    mainBuffer.setName(phys.getMemoryBank().getInstanceName());
+    // Size in PhysicalBuffer phys in in BITS
+
     mainBuffer.setType("char");
-    mainBuffer.setTypeSize(1); // char is 1 byte
+    mainBuffer.setTokenTypeSizeInBit(8); // char is 8 bits
+
+    //
+    mainBuffer.setNbToken(
+        (phys.getSizeInBit() + mainBuffer.getTokenTypeSizeInBit() - 1) / mainBuffer.getTokenTypeSizeInBit());
+
+    mainBuffer.setName(phys.getMemoryBank().getInstanceName());
+
     this.btb.put(phys, mainBuffer);
     this.codegenBufferStack.push(mainBuffer);
     this.allocBufferStack.push(phys);

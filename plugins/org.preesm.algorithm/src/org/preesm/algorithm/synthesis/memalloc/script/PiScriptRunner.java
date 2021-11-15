@@ -1689,7 +1689,7 @@ public class PiScriptRunner {
       final boolean isMergeable = PortMemoryAnnotation.READ_ONLY.equals(annotation)
           || PortMemoryAnnotation.UNUSED.equals(annotation);
 
-      final long dataSize = this.simulationInfo.getDataTypeSizeOrDefault(dataType);
+      final long dataSize = this.simulationInfo.getDataTypeSizeInBit(dataType);
 
       // Weight is already dataSize * (Cons || prod)
       final long nbTokens = it.getTargetPort().getPortRateExpression().evaluate(); // / dataSize
@@ -1712,7 +1712,7 @@ public class PiScriptRunner {
       final boolean isMergeable = PortMemoryAnnotation.READ_ONLY.equals(annotation)
           || PortMemoryAnnotation.UNUSED.equals(annotation);
 
-      final long dataSize = this.simulationInfo.getDataTypeSizeOrDefault(dataType);
+      final long dataSize = this.simulationInfo.getDataTypeSizeInBit(dataType);
       // Weight is already dataSize * (Cons || prod)
       final long nbTokens = it.getTargetPort().getPortRateExpression().evaluate(); // / dataSize
       try {

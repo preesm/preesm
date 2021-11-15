@@ -116,11 +116,11 @@ public abstract class PiMemoryAllocator {
         final Fifo edge = memObj.getEdge();
         if (edge != null) {
           final String dataType = edge.getType();
-          final long typeSize = meg.getScenario().getSimulationInfo().getDataTypeSizeOrDefault(dataType);
+          final long typeSize = meg.getScenario().getSimulationInfo().getDataTypeSizeInBit(dataType);
 
           final List<Long> interBufferSpaces = new ArrayList<>();
           long largestTypeSize = typeSize;
-          long internalOffset = 0; // In Bytes
+          long internalOffset = 0; // In Bits
           largestTypeSize = Math.max(typeSize, largestTypeSize);
           long interSpace = 0;
 
@@ -605,7 +605,7 @@ public abstract class PiMemoryAllocator {
 
           long internalOffset = 0;
           final String dataType = edge.getType();
-          final long typeSize = memObj.getScenario().getSimulationInfo().getDataTypeSizeOrDefault(dataType);
+          final long typeSize = memObj.getScenario().getSimulationInfo().getDataTypeSizeInBit(dataType);
 
           if (interBufferSpaces != null) {
             internalOffset += interBufferSpaces.get(0);
@@ -747,7 +747,7 @@ public abstract class PiMemoryAllocator {
    *
    * @return the memory Size
    */
-  public long getMemorySize() {
+  public long getMemorySizeInByte() {
     long memorySize = 0;
 
     // Use the memExNodeAllocation if available
@@ -759,7 +759,7 @@ public abstract class PiMemoryAllocator {
           memorySize = value + vertex.getWeight();
         }
       }
-      return memorySize;
+      return memorySize / 8L;
     }
 
     if (!this.edgeAllocation.isEmpty()) {
@@ -769,14 +769,14 @@ public abstract class PiMemoryAllocator {
         final Long value = entry.getValue();
 
         final long dataTypeSizeOrDefault = inputExclusionGraph.getScenario().getSimulationInfo()
-            .getDataTypeSizeOrDefault(edge.getType());
+            .getDataTypeSizeInBit(edge.getType());
         final long fifosize = edge.getSourcePort().getPortRateExpression().evaluate();
 
         if ((value + fifosize * dataTypeSizeOrDefault) > memorySize) {
           memorySize = value + fifosize * dataTypeSizeOrDefault;
         }
       }
-      return memorySize;
+      return memorySize / 8L;
     }
     return -1;
   }

@@ -119,7 +119,7 @@ public class StatGeneratorSynthesis extends AbstractStatGenerator {
     long res = 0L;
     if (memAlloc != null) {
       for (PhysicalBuffer pb : memAlloc.getPhysicalBuffers()) {
-        res += pb.getSize();
+        res += pb.getSizeInBit();
       }
     }
     return res;

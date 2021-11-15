@@ -212,15 +212,15 @@ class MPPA2ClusterPrinter extends BlankPrinter {
 		«ELSEIF buffer.name.contains("mem_") && parallel_for_stack.isEmpty() »
 			void* «buffer.name» = local_buffer + «scope_scratchpad_size»;
 		«ELSE»
-			«buffer.type» «buffer.name»[«buffer.getNbToken»] __attribute__ ((aligned(64))); // «buffer.comment» size:= «buffer.getNbToken»*«buffer.type» aligned on data cache line
+			«buffer.type» «buffer.name»[«buffer.getSizeInByte»] __attribute__ ((aligned(64))); // «buffer.comment» size:= «buffer.getNbToken»*«buffer.type» aligned on data cache line
 			«IF buffer.name.contains("Cluster")»
-				int local_memory_size = «buffer.getNbToken»;			
+				int local_memory_size = «buffer.getSizeInByte»;
 				
 			«ENDIF»
 		«ENDIF»
 		'''
 		if (buffer.name.contains("mem_") && parallel_for_stack.isEmpty()) {
-			scope_scratchpad_size += buffer.typeSize * buffer.getNbToken; 
+			scope_scratchpad_size += buffer.getSizeInByte;
 		 	if(scope_scratchpad_size > local_buffer_size)
 				local_buffer_size = scope_scratchpad_size;
 		}
@@ -236,10 +236,10 @@ class MPPA2ClusterPrinter extends BlankPrinter {
 
 	override printSubBufferDefinition(SubBuffer buffer) '''
 	«buffer.type» *const «buffer.name» = («buffer.type»*) («var offset = 0L»«
-	{offset = buffer.offset
+	{offset = buffer.getOffsetInByte
 	 var b = buffer.container;
 	 while(b instanceof SubBuffer){
-	 	offset = offset + b.offset
+		offset = offset + b.getOffsetInByte
 	  	b = b.container
 	  }
 	 b}.name»+«offset»);  // «buffer.comment» size:= «buffer.getNbToken»*«buffer.type»
@@ -264,17 +264,17 @@ class MPPA2ClusterPrinter extends BlankPrinter {
 				// Process if base buffer of the IteratedBuffer is a SubBuffer
 				if (subBuf instanceof SubBuffer) {
 					var b = subBuf.container;
-					var offset = subBuf.offset;
+					var offset = subBuf.getOffsetInByte;
 					while (b instanceof SubBuffer) {
-						offset += b.offset;
+						offset += b.getOffsetInByte;
 						b = b.container;
 					}
 					if (b.name == "Shared") {
 						gets += "	void* " + subBuf.name + " = local_buffer+" + local_offset +";\n";
-						gets += "	if(mppa_async_get(" + subBuf.name + ", &shared_segment, /* Shared + */ " + offset + ", " + subBuf.typeSize * subBuf.getNbToken + ", NULL) != 0){\n";
+						gets += "	if(mppa_async_get(" + subBuf.name + ", &shared_segment, /* Shared + */ " + offset + ", " + subBuf.getSizeInByte + ", NULL) != 0){\n";
 						gets += "		assert(0 && \"mppa_async_get\\n\");\n";
 						gets += "	}\n ";
-						local_offset += subBuf.typeSize * subBuf.getNbToken;
+						local_offset += subBuf.getSizeInByte;
 					}
 				}
 			}
@@ -287,15 +287,15 @@ class MPPA2ClusterPrinter extends BlankPrinter {
 				var subBuf = buffer.buffer;
 				if (subBuf instanceof SubBuffer) {
 					var b = subBuf.container;
-					var offset = subBuf.offset;
+					var offset = subBuf.getOffsetInByte;
 					while (b instanceof SubBuffer) {
-						offset += b.offset;
+						offset += b.getOffsetInByte;
 						b = b.container;
 					}
 					// If shared, declare the buffer
 					if (b.name == "Shared") {
 						gets += "	void* " + subBuf.name + " = local_buffer+" + local_offset +";\n";
-						local_offset += subBuf.typeSize * subBuf.getNbToken;
+						local_offset += subBuf.getSizeInByte;
 					}
 				}
 			}
@@ -328,16 +328,16 @@ class MPPA2ClusterPrinter extends BlankPrinter {
 					var subBuf = buffer.buffer;
 					if (subBuf instanceof SubBuffer) {
 						var b = subBuf.container
-						var offset = subBuf.offset
+						var offset = subBuf.getOffsetInByte
 						while (b instanceof SubBuffer) {
-							offset += b.offset;
+							offset += b.getOffsetInByte;
 							b = b.container;
 						}
 						if (b.name == "Shared") {
-							puts += "	if(mppa_async_put(" + subBuf.name + ", &shared_segment, /* Shared + */ " + offset + ", " + subBuf.typeSize * subBuf.getNbToken + ", NULL) != 0){\n";
+							puts += "	if(mppa_async_put(" + subBuf.name + ", &shared_segment, /* Shared + */ " + offset + ", " + subBuf.getSizeInByte + ", NULL) != 0){\n";
 							puts += "		assert(0 && \"mppa_async_put\\n\");\n";
 							puts += "	}\n";
-							local_offset += subBuf.typeSize * subBuf.getNbToken;
+							local_offset += subBuf.getSizeInByte;
 						}
 					}
 				}
@@ -363,7 +363,7 @@ class MPPA2ClusterPrinter extends BlankPrinter {
 			for (variable : block.definitions) {
 				if (variable instanceof Buffer) {
 					var Buffer buffer = variable;
-	 				scope_scratchpad_size -= buffer.typeSize * buffer.getNbToken;
+					scope_scratchpad_size -= buffer.getSizeInByte;
 				}
 			}
 		}
@@ -433,19 +433,19 @@ class MPPA2ClusterPrinter extends BlankPrinter {
 			if (param instanceof SubBuffer) {
 				var port = functionCall.parameterDirections.get(functionCall.parameters.indexOf(param))
 				var b = param.container;
-				var offset = param.offset;
+				var offset = param.getOffsetInByte;
 				while (b instanceof SubBuffer) {
-					offset += b.offset;
+					offset += b.getOffsetInByte;
 					b = b.container;
 				}
 				if (b.name == "Shared") {
 					gets += "	void* " + param.name + " = local_buffer+" + local_offset +";\n";
 					if(port.getName == "INPUT"){ /* we get data from DDR -> cluster only when INPUT */
-						gets += "	if(mppa_async_get(" + param.name + ", &shared_segment, /* Shared + */ " + offset + ", " + param.typeSize * param.getNbToken + ", NULL) != 0){\n";
+						gets += "	if(mppa_async_get(" + param.name + ", &shared_segment, /* Shared + */ " + offset + ", " + param.getSizeInByte + ", NULL) != 0){\n";
 						gets += "		assert(0 && \"mppa_async_get\\n\");\n";
 						gets += "	}\n ";
 					}
-					local_offset += param.typeSize * param.getNbToken;
+					local_offset += param.getSizeInByte;
 				}
 			}
 		}
@@ -461,18 +461,18 @@ class MPPA2ClusterPrinter extends BlankPrinter {
 			if (param instanceof SubBuffer) {
 				var port = functionCall.parameterDirections.get(functionCall.parameters.indexOf(param))
 				var b = param.container
-				var offset = param.offset
+				var offset = param.getOffsetInByte
 				while (b instanceof SubBuffer) {
-					offset += b.offset;
+					offset += b.getOffsetInByte;
 					b = b.container;
 				}
 				if (b.name == "Shared") {
 					if(port.getName == "OUTPUT"){ /* we put data from cluster -> DDR only when OUTPUT */
-						puts += "	if(mppa_async_put(" + param.name + ", &shared_segment, /* Shared + */ " + offset + ", " + param.typeSize * param.getNbToken + ", NULL) != 0){\n";
+						puts += "	if(mppa_async_put(" + param.name + ", &shared_segment, /* Shared + */ " + offset + ", " + param.getSizeInByte + ", NULL) != 0){\n";
 						puts += "		assert(0 && \"mppa_async_put\\n\");\n";
 						puts += "	}\n";
 					}
-					local_offset += param.typeSize * param.getNbToken;
+					local_offset += param.getSizeInByte;
 				}
 			}
 		}
@@ -501,10 +501,10 @@ class MPPA2ClusterPrinter extends BlankPrinter {
 
 	override printSubBufferDeclaration(SubBuffer buffer) '''
 			«buffer.type» *const «buffer.name» = («buffer.type»*) («var offset = 0L»«
-			{offset = buffer.offset
+			{offset = buffer.getOffsetInByte
 			 var b = buffer.container;
 			 while(b instanceof SubBuffer){
-			 	offset = offset + b.offset
+				offset = offset + b.getOffsetInByte
 			  	b = b.container
 			  }
 			 b}.name»+«offset»);  // «buffer.comment» size:= «buffer.getNbToken»*«buffer.type»
@@ -569,9 +569,8 @@ class MPPA2ClusterPrinter extends BlankPrinter {
 		}
 
 		result = result +
-			'''«fifoCall.headBuffer.name», «fifoCall.headBuffer.getNbToken»*sizeof(«fifoCall.headBuffer.type»), '''
-		result = result + '''«IF fifoCall.bodyBuffer !== null»«fifoCall.bodyBuffer.name», «fifoCall.bodyBuffer.getNbToken»*sizeof(«fifoCall.
-			bodyBuffer.type»)«ELSE»NULL, 0«ENDIF»);
+			'''«fifoCall.headBuffer.name», «fifoCall.headBuffer.getSizeInByte», '''
+		result = result + '''«IF fifoCall.bodyBuffer !== null»«fifoCall.bodyBuffer.name», «fifoCall.headBuffer.getSizeInByte»«ELSE»NULL, 0«ENDIF»);
 			'''
 
 		return result
@@ -581,7 +580,7 @@ class MPPA2ClusterPrinter extends BlankPrinter {
 	// Fork «call.name»«var input = call.inputBuffers.head»«var index = 0L»
 	{
 		«FOR output : call.outputBuffers»
-			«printMemcpy(output,0,input,index,output.getNbToken,output.type)»«{index=(output.getNbToken+index); ""}»
+			«printMemcpy(output,0,input,index,output.getNbToken,output.type)»«{index=(output.getSizeInByte+index); ""}»
 		«ENDFOR»
 	}
 	'''
@@ -602,7 +601,7 @@ class MPPA2ClusterPrinter extends BlankPrinter {
 	// Join «call.name»«var output = call.outputBuffers.head»«var index = 0L»
 	{
 		«FOR input : call.inputBuffers»
-			«printMemcpy(output,index,input,0,input.getNbToken,input.type)»«{index=(input.getNbToken+index); ""}»
+			«printMemcpy(output,index,input,0,input.getNbToken,input.type)»«{index=(input.getSizeInByte+index); ""}»
 		«ENDFOR»
 	}
 	'''
@@ -627,21 +626,21 @@ class MPPA2ClusterPrinter extends BlankPrinter {
 	 *            the type of objects copied
 	 * @return a {@link CharSequence} containing the memcpy call (if any)
 	 */
-	def CharSequence printMemcpy(Buffer output, long outOffset, Buffer input, long inOffset, long size, String type) {
+	def CharSequence printMemcpy(Buffer output, long outOffset, Buffer input, long inOffset, long nbToken, String type) {
 
 		// Retrieve the container buffer of the input and output as well
 		// as their offset in this buffer
-		var totalOffsetOut = outOffset*output.typeSize
+		var totalOffsetOut = (outOffset*output.getTokenTypeSizeInBit + 7L) / 8L
 		var bOutput = output
 		while (bOutput instanceof SubBuffer) {
-			totalOffsetOut = totalOffsetOut + bOutput.offset
+			totalOffsetOut = totalOffsetOut + bOutput.getOffsetInByte
 			bOutput = bOutput.container
 		}
 
-		var totalOffsetIn = inOffset*input.typeSize
+		var totalOffsetIn = (inOffset*input.getTokenTypeSizeInBit + 7L) / 8L
 		var bInput = input
 		while (bInput instanceof SubBuffer) {
-			totalOffsetIn = totalOffsetIn + bInput.offset
+			totalOffsetIn = totalOffsetIn + bInput.getOffsetInByte
 			bInput = bInput.container
 		}
 
@@ -651,7 +650,7 @@ class MPPA2ClusterPrinter extends BlankPrinter {
 			output instanceof NullBuffer || input instanceof NullBuffer){
 			return ""
 		} else {
-			return '''memcpy(«output.doSwitch»+«outOffset», «input.doSwitch»+«inOffset», «size»*sizeof(«type»)); '''
+			return '''memcpy(«output.doSwitch»+«outOffset», «input.doSwitch»+«inOffset», «engine.scenario.simulationInfo.getBufferSizeInByte(type, nbToken)»); '''
 		}
 	}
 
@@ -699,9 +698,9 @@ class MPPA2ClusterPrinter extends BlankPrinter {
 			printing = '''
 				«communication.direction.toString.toLowerCase»Distributed«communication.delimiter.toString.toLowerCase.toFirstUpper
 				»(/*Remote PE id*/ «receiverCoreID
-				»,/*Remote offset*/ «sendBuffer.offset
+				»,/*Remote offset*/ «sendBuffer.getOffsetInByte
 				»,/*Local address*/ «receiveBuffer.name
-				»,/*Transmission Size*/ «receiveBuffer.getNbToken
+				»,/*Transmission Size*/ «receiveBuffer.getSizeInByte
 				»);  // «communication.sendStart.coreContainer.name» > «
 				communication.receiveStart.coreContainer.name»: «communication.data.doSwitch»
 		'''
@@ -742,7 +741,7 @@ class MPPA2ClusterPrinter extends BlankPrinter {
 
 	override printBufferIteratorDefinition(BufferIterator bufferIterator) ''''''
 
-	override printIteratedBuffer(IteratedBuffer iteratedBuffer) '''«doSwitch(iteratedBuffer.buffer)» + «printIntVar(iteratedBuffer.iter)» * «iteratedBuffer.getNbToken»'''
+	override printIteratedBuffer(IteratedBuffer iteratedBuffer) '''«doSwitch(iteratedBuffer.buffer)» + «printIntVar(iteratedBuffer.iter)» * «iteratedBuffer.getSizeInByte»'''
 
 	override printIntVar(IntVar intVar) '''«intVar.name»'''
 

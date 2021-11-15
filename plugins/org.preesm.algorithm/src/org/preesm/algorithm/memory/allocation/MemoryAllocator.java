@@ -768,7 +768,7 @@ public abstract class MemoryAllocator {
    *
    * @return the memory Size
    */
-  public long getMemorySize() {
+  public long getMemorySizeInByte() {
     long memorySize = 0;
 
     // Use the memExNodeAllocation if available
@@ -780,7 +780,7 @@ public abstract class MemoryAllocator {
           memorySize = value + vertex.getWeight();
         }
       }
-      return memorySize;
+      return memorySize / 8L;
     }
 
     if (!this.edgeAllocation.isEmpty()) {
@@ -792,7 +792,7 @@ public abstract class MemoryAllocator {
           memorySize = value + edge.getWeight().longValue();
         }
       }
-      return memorySize;
+      return memorySize / 8L;
     }
     return -1;
   }

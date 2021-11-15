@@ -353,13 +353,13 @@ public class LegacyMemoryAllocation implements IMemoryAllocation {
 
     if ((allocator instanceof PiOrderedAllocator) && (((PiOrderedAllocator) allocator).getOrder() == Order.SHUFFLE)) {
       ((PiOrderedAllocator) allocator).setPolicy(Policy.WORST);
-      log += " worst: " + allocator.getMemorySize();
+      log += " worst: " + allocator.getMemorySizeInByte();
 
       ((PiOrderedAllocator) allocator).setPolicy(Policy.MEDIANE);
-      log += "(med: " + allocator.getMemorySize();
+      log += "(med: " + allocator.getMemorySizeInByte();
 
       ((PiOrderedAllocator) allocator).setPolicy(Policy.AVERAGE);
-      log += " avg: " + allocator.getMemorySize() + ")";
+      log += " avg: " + allocator.getMemorySizeInByte() + ")";
 
       ((PiOrderedAllocator) allocator).setPolicy(Policy.BEST);
     }
@@ -370,7 +370,7 @@ public class LegacyMemoryAllocation implements IMemoryAllocation {
   private String computeLog(final PiMemoryAllocator allocator, final long tStart, final String sAllocator,
       final long tFinish) {
     String unit = "bytes";
-    double size = allocator.getMemorySize();
+    double size = allocator.getMemorySizeInByte();
     if (size > 1024) {
       size /= 1024.0;
       unit = "kBytes";
@@ -457,7 +457,7 @@ public class LegacyMemoryAllocation implements IMemoryAllocation {
       }
       memAlloc.getPhysicalBuffers().add(mainBuffer);
       mainBuffer.setMemoryBank(componentInstance);
-      mainBuffer.setSize(size);
+      mainBuffer.setSizeInBit(size);
 
       final Map<Fifo,
           Long> fifoAllocationOffset = meg.getPropertyBean().getValue(PiMemoryExclusionGraph.DAG_EDGE_ALLOCATION);
@@ -482,9 +482,9 @@ public class LegacyMemoryAllocation implements IMemoryAllocation {
 
           // final long bufferTypeSize = scenario.getSimulationInfo().getDataTypeSizeInByte(edge.getType());
           final long edgeRate = edge.getSourcePort().getPortRateExpression().evaluate();
-          dagEdgeBuffer.setOffset(allocOffset);
+          dagEdgeBuffer.setOffsetInBit(allocOffset);
           // dagEdgeBuffer.setSize(edgeRate * bufferTypeSize);
-          dagEdgeBuffer.setSize(scenario.getSimulationInfo().getBufferSizeInBit(edge.getType(), edgeRate));
+          dagEdgeBuffer.setSizeInBit(scenario.getSimulationInfo().getBufferSizeInBit(edge.getType(), edgeRate));
 
         } else {
           // the buffer is a null buffer
@@ -494,7 +494,7 @@ public class LegacyMemoryAllocation implements IMemoryAllocation {
           fifoAllocation.setTargetBuffer(dagEdgeBuffer);
           mainBuffer.getChildren().add(dagEdgeBuffer);
 
-          dagEdgeBuffer.setSize(0);
+          dagEdgeBuffer.setSizeInBit(0);
 
         }
       }
@@ -511,8 +511,8 @@ public class LegacyMemoryAllocation implements IMemoryAllocation {
         final PiMemoryExclusionVertex fifoAllocKey = fifoAlloc.getKey();
         final String sink = fifoAllocKey.getSink();
 
-        delayBuffer.setOffset(fifoAlloc.getValue());
-        delayBuffer.setSize(fifoAllocKey.getWeight());
+        delayBuffer.setOffsetInBit(fifoAlloc.getValue());
+        delayBuffer.setSizeInBit(fifoAllocKey.getWeight());
 
         final InitActor initActor = (InitActor) pigraph.lookupVertex(sink);
         memAlloc.getDelayAllocations().put(initActor, delayBuffer);

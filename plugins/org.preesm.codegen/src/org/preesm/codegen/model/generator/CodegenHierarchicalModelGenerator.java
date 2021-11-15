@@ -543,12 +543,12 @@ public class CodegenHierarchicalModelGenerator {
           buf = CodegenModelUserFactory.eINSTANCE.createSubBuffer();
           buf.setName(workingMemBuf.getName() + "_" + Integer.toString(this.currentWorkingMemOffset));
           buf.reaffectContainer(workingMemBuf);
-          buf.setOffset(this.currentWorkingMemOffset);
+          buf.setOffsetInBit(this.currentWorkingMemOffset);
           buf.setNbToken((int) bufSize);
           buf.setType(currentEdge.getDataType().toString());
           // sorry lign of the death
           final long edgeDataSize = this.simulationInfo.getDataTypeSizeInBit(currentEdge.getDataType().toString());
-          buf.setTypeSize(edgeDataSize);
+          buf.setTokenTypeSizeInBit(edgeDataSize);
           // this.currentWorkingMemOffset += bufSize * edgeDataSize;
           this.currentWorkingMemOffset += this.simulationInfo.getBufferSizeInBit(currentEdge.getDataType().toString(),
               bufSize);
@@ -579,9 +579,9 @@ public class CodegenHierarchicalModelGenerator {
       bufIter.setName(var.getName());
       bufIter.reaffectContainer(((SubBuffer) var).getContainer());
       bufIter.setIter(currentIterVar);
-      bufIter.setTypeSize(((SubBuffer) var).getTypeSize());
+      bufIter.setTokenTypeSizeInBit(((SubBuffer) var).getTokenTypeSizeInBit());
       bufIter.setType(((SubBuffer) var).getType());
-      bufIter.setOffset(((SubBuffer) var).getOffset());
+      bufIter.setOffsetInBit(((SubBuffer) var).getOffsetInBit());
       bufIter.setIterSize(bufIterSize);
       bufIter.setNbToken(bufSize);
 
@@ -723,11 +723,11 @@ public class CodegenHierarchicalModelGenerator {
           buf = CodegenModelUserFactory.eINSTANCE.createSubBuffer();
           buf.setName(workingMemBuf.getName() + "_" + Integer.toString(this.currentWorkingMemOffset));
           buf.reaffectContainer(workingMemBuf);
-          buf.setOffset(this.currentWorkingMemOffset);
+          buf.setOffsetInBit(this.currentWorkingMemOffset);
           buf.setNbToken(bufSize);
           buf.setType(currentEdge.getDataType().toString());
           final long value = this.simulationInfo.getDataTypeSizeInBit(currentEdge.getDataType().toString());
-          buf.setTypeSize(value);
+          buf.setTokenTypeSizeInBit(value);
           this.currentWorkingMemOffset += bufSize * value;
           this.linkHSDFEdgeBuffer.put(currentEdge, buf);
         }

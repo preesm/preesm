@@ -182,8 +182,9 @@ public class PiMemoryExclusionVertex extends AbstractVertex<PiMemoryExclusionGra
           "Source and Target rate are not equal. PiGraph should be in SRDAG to run allocation.");
     }
     final String typeStr = inputEdge.getType();
-    final long type = scenario.getSimulationInfo().getDataTypeSizeOrDefault(typeStr);
-    return type * sourceRate;
+    final long type = scenario.getSimulationInfo().getDataTypeSizeInBit(typeStr);
+    // return type * sourceRate;
+    return scenario.getSimulationInfo().getBufferSizeInBit(typeStr, sourceRate);
   }
 
   /**

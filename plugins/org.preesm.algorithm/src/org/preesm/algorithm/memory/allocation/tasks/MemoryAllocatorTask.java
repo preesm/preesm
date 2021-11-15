@@ -386,13 +386,13 @@ public class MemoryAllocatorTask extends AbstractTaskImplementation {
 
     if ((allocator instanceof OrderedAllocator) && (((OrderedAllocator) allocator).getOrder() == Order.SHUFFLE)) {
       ((OrderedAllocator) allocator).setPolicy(Policy.WORST);
-      log += " worst: " + allocator.getMemorySize();
+      log += " worst: " + allocator.getMemorySizeInByte();
 
       ((OrderedAllocator) allocator).setPolicy(Policy.MEDIANE);
-      log += "(med: " + allocator.getMemorySize();
+      log += "(med: " + allocator.getMemorySizeInByte();
 
       ((OrderedAllocator) allocator).setPolicy(Policy.AVERAGE);
-      log += " avg: " + allocator.getMemorySize() + ")";
+      log += " avg: " + allocator.getMemorySizeInByte() + ")";
 
       ((OrderedAllocator) allocator).setPolicy(Policy.BEST);
     }
@@ -403,7 +403,7 @@ public class MemoryAllocatorTask extends AbstractTaskImplementation {
   private String computeLog(final MemoryAllocator allocator, final long tStart, final String sAllocator,
       final long tFinish) {
     String unit = "bytes";
-    double size = allocator.getMemorySize();
+    double size = allocator.getMemorySizeInByte();
     if (size > 1024) {
       size /= 1024.0;
       unit = "kBytes";

@@ -179,10 +179,10 @@ class CPrinter extends BlankPrinter {
 
 	override printSubBufferDefinition(SubBuffer buffer) '''
 	«buffer.type» *const «buffer.name» = («buffer.type»*) («var offset = 0L»«
-	{offset = buffer.gotOffsetInByte
+	{offset = buffer.getOffsetInByte
 	 var b = buffer.container;
 	 while(b instanceof SubBuffer){
-	 	offset = offset + b.gotOffsetInByte
+		offset = offset + b.getOffsetInByte
 	  	b = b.container
 	  }
 	 b}.name»+«offset»);  // «buffer.comment» size:= «buffer.getNbToken»*«buffer.type»
@@ -220,7 +220,7 @@ class CPrinter extends BlankPrinter {
 
 	void preesmUpdateMD5Array_«printedCoreBlock.coreID»(PREESM_MD5_CTX md5Array[]) {
 		«FOR buffer : getAllBuffers(printedCoreBlock)»
-		PREESM_MD5_Update(&md5Array[preesm_md5_ctx_«buffer.name»_id],(char *)«buffer.name», «buffer.getNbToken * buffer.typeSize»);
+		PREESM_MD5_Update(&md5Array[preesm_md5_ctx_«buffer.name»_id],(char *)«buffer.name», «buffer.sizeInByte»);
 		«ENDFOR»
 	}
 
@@ -527,11 +527,13 @@ class CPrinter extends BlankPrinter {
 		}
 
 		result = preCheck + result +
-			'''«fifoCall.headBuffer.name», «if (SIMPLE_BUFFER_SIZES)
-			fifoCall.headBuffer.getNbToken * engine.scenario.simulationInfo.getDataTypeSizeOrDefault(fifoCall.headBuffer.type) else
-			fifoCall.headBuffer.getNbToken+"*sizeof("+fifoCall.headBuffer.type+")"», '''
-		return result = result + '''«IF fifoCall.bodyBuffer !== null»«fifoCall.bodyBuffer.name», «
-		if (SIMPLE_BUFFER_SIZES) fifoCall.bodyBuffer.getNbToken  * engine.scenario.simulationInfo.getDataTypeSizeOrDefault(fifoCall.bodyBuffer.type) else fifoCall.bodyBuffer.getNbToken+"*sizeof("+fifoCall.bodyBuffer.type+")"»«ELSE»NULL, 0«ENDIF»);
+			'''«fifoCall.headBuffer.name», «fifoCall.headBuffer.getSizeInByte», '''
+		return result = result +
+			'''«IF fifoCall.bodyBuffer !== null»
+			«fifoCall.bodyBuffer.name», «
+			fifoCall.bodyBuffer.getSizeInByte»
+			«ELSE»NULL, 0
+			«ENDIF»);
 			«postCheck»'''
 	}
 
@@ -772,21 +774,21 @@ class CPrinter extends BlankPrinter {
 	 *            the type of objects copied
 	 * @return a {@link CharSequence} containing the memcpy call (if any)
 	 */
-	def String printMemcpy(Buffer output, long outOffset, Buffer input, long inOffset, long size, String type) {
+	def String printMemcpy(Buffer output, long outOffset, Buffer input, long inOffset, long nbToken, String type) {
 
 		// Retrieve the container buffer of the input and output as well
 		// as their offset in this buffer
-		var totalOffsetOut = outOffset*output.typeSize
+		var totalOffsetOut = outOffset*output.getTokenTypeSizeInByte
 		var bOutput = output
 		while (bOutput instanceof SubBuffer) {
-			totalOffsetOut = totalOffsetOut + bOutput.offset
+			totalOffsetOut = totalOffsetOut + bOutput.getOffsetInByte
 			bOutput = bOutput.container
 		}
 
-		var totalOffsetIn = inOffset*input.typeSize
+		var totalOffsetIn = inOffset*input.getTokenTypeSizeInByte
 		var bInput = input
 		while (bInput instanceof SubBuffer) {
-			totalOffsetIn = totalOffsetIn + bInput.offset
+			totalOffsetIn = totalOffsetIn + bInput.getOffsetInByte
 			bInput = bInput.container
 		}
 
@@ -796,7 +798,7 @@ class CPrinter extends BlankPrinter {
 			output instanceof NullBuffer || input instanceof NullBuffer){
 			return ''''''
 		} else {
-			return '''memcpy(«doSwitch(output)»+«outOffset», «doSwitch(input)»+«inOffset», «if (SIMPLE_BUFFER_SIZES) size * engine.scenario.simulationInfo.getDataTypeSizeOrDefault(type) else size+"*sizeof("+type+")"»);'''
+			return '''memcpy(«doSwitch(output)»+«outOffset», «doSwitch(input)»+«inOffset», «engine.scenario.simulationInfo.getBufferSizeInByte(type, nbToken)»);'''
 		}
 	}
 

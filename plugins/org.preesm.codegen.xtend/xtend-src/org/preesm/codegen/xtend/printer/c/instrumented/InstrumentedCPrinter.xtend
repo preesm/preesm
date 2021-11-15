@@ -121,7 +121,7 @@ class InstrumentedCPrinter extends CPrinter {
 		dumpTimedBuffer = CodegenModelUserFactory::eINSTANCE.createBuffer
 		dumpTimedBuffer.name = "dumpedTimes"
 		dumpTimedBuffer.type = "uint64_t"
-		dumpTimedBuffer.typeSize = 8 // size of a long
+		dumpTimedBuffer.tokenTypeSizeInBit = 8 // size of a long
 
 		nbExec = CodegenModelUserFactory::eINSTANCE.createBuffer
 		nbExec.name = "nbExec"
