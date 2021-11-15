@@ -146,13 +146,6 @@ class CPrinter extends BlankPrinter {
 	 */
 	protected static boolean IGNORE_USELESS_MEMCPY = true
 
-	/**
-	 * To control the way sizes are printed in memcopy/send/init/...
-	 * If false, the code will embed the operation "tokenCount * sizeof(token type)"
-	 * If true, the code will embed the result of the operation (type size is taken from scenario)
-	 */
-	protected static boolean SIMPLE_BUFFER_SIZES = false
-
 	override printCoreBlockHeader(CoreBlock block) '''
 			/**
 			 * @file «block.name».c
@@ -533,7 +526,7 @@ class CPrinter extends BlankPrinter {
 			«fifoCall.bodyBuffer.name», «
 			fifoCall.bodyBuffer.getSizeInByte»
 			«ELSE»NULL, 0
-			«ENDIF»);
+			«ENDIF»); // «fifoCall.headBuffer.getNbToken» * «fifoCall.headBuffer.getType»
 			«postCheck»'''
 	}
 
@@ -798,7 +791,7 @@ class CPrinter extends BlankPrinter {
 			output instanceof NullBuffer || input instanceof NullBuffer){
 			return ''''''
 		} else {
-			return '''memcpy(«doSwitch(output)»+«outOffset», «doSwitch(input)»+«inOffset», «engine.scenario.simulationInfo.getBufferSizeInByte(type, nbToken)»);'''
+			return '''memcpy(«doSwitch(output)»+«outOffset», «doSwitch(input)»+«inOffset», «engine.scenario.simulationInfo.getBufferSizeInByte(type, nbToken)»); // «nbToken» * «type»'''
 		}
 	}
 
