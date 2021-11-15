@@ -111,25 +111,35 @@ import org.preesm.workflow.implement.AbstractWorkflowNodeImplementation;
                 + "See workflow task pisdf-delays.setter. Number of pipelines is inferred automatically.",
             values = { @Value(name = SetMalleableParametersTask.DEFAULT_DELAY_RETRY_VALUE,
                 effect = "False disables the heuristic.") }),
+        @org.preesm.commons.doc.annotations.Parameter(name = SetMalleableParametersTask.DEFAULT_SCHEDULER_PARAM_NAME,
+            description = "Set the scheduler to use, among: " + SetMalleableParametersTask.SCHEDULER_PARAM_VALUE_LIST
+                + ", " + SetMalleableParametersTask.SCHEDULER_PARAM_VALUE_FPGA + ".",
+            values = { @Value(name = SetMalleableParametersTask.DEFAULT_SCHEDULER_VALUE,
+                effect = "Scheduler used to estimate each configuration point.") }),
         @org.preesm.commons.doc.annotations.Parameter(name = SetMalleableParametersTask.DEFAULT_LOG_NAME,
             description = "Export all explored points with associated metrics in a csv file.",
             values = { @Value(name = SetMalleableParametersTask.DEFAULT_LOG_VALUE,
                 effect = "Path relative to the project root.") }) })
 public class SetMalleableParametersTask extends AbstractTaskImplementation {
 
+  public static final String SCHEDULER_PARAM_VALUE_LIST = "homogeneousListPeriodic";
+  public static final String SCHEDULER_PARAM_VALUE_FPGA = "singleFPGA";
+
   public static final String DEFAULT_COMPARISONS_VALUE  = "T>P>L";
   public static final String DEFAULT_THRESHOLDS_VALUE   = "0>0>0";
   public static final String DEFAULT_PARAMS_OBJVS_VALUE = ">";
   public static final String DEFAULT_HEURISTIC_VALUE    = "false";
   public static final String DEFAULT_DELAY_RETRY_VALUE  = "false";
+  public static final String DEFAULT_SCHEDULER_VALUE    = SCHEDULER_PARAM_VALUE_LIST;
   public static final String DEFAULT_LOG_VALUE          = "/Code/generated/";
 
-  public static final String DEFAULT_COMPARISONS_NAME  = "1. Comparisons";
-  public static final String DEFAULT_THRESHOLDS_NAME   = "2. Thresholds";
-  public static final String DEFAULT_PARAMS_OBJVS_NAME = "3. Params objectives";
-  public static final String DEFAULT_HEURISTIC_NAME    = "4. Number heuristic";
-  public static final String DEFAULT_DELAY_RETRY_NAME  = "5. Retry with delays";
-  public static final String DEFAULT_LOG_NAME          = "6. Log path";
+  public static final String DEFAULT_COMPARISONS_NAME     = "1. Comparisons";
+  public static final String DEFAULT_THRESHOLDS_NAME      = "2. Thresholds";
+  public static final String DEFAULT_PARAMS_OBJVS_NAME    = "3. Params objectives";
+  public static final String DEFAULT_HEURISTIC_NAME       = "4. Number heuristic";
+  public static final String DEFAULT_DELAY_RETRY_NAME     = "5. Retry with delays";
+  public static final String DEFAULT_SCHEDULER_PARAM_NAME = "6. Scheduler";
+  public static final String DEFAULT_LOG_NAME             = "7. Log path";
 
   public static final String COMPARISONS_REGEX = "[EPLTMS](>[EPLTMS])*";
   public static final String THRESHOLDS_REGEX  = "[0-9]+(.[0-9]+)?(>[0-9]+(.[0-9]+))*";
@@ -194,9 +204,17 @@ public class SetMalleableParametersTask extends AbstractTaskImplementation {
     boolean delayRetryValue = Boolean.parseBoolean(delayRetryStr);
     final String comparisons = parameters.get(DEFAULT_COMPARISONS_NAME);
     boolean shouldEstimateMemory = comparisons.contains("S");
-
     final DSEpointGlobalComparator globalComparator = getGlobalComparator(parameters, graph);
-    final AbstractConfigurationScheduler acs = new ConfigurationSchedulerPeriodic();
+
+    final String schedulerName = parameters.get(DEFAULT_SCHEDULER_PARAM_NAME).toLowerCase();
+    AbstractConfigurationScheduler acs;
+    if (SCHEDULER_PARAM_VALUE_LIST.equalsIgnoreCase(schedulerName)) {
+      acs = new ConfigurationSchedulerPeriodic();
+    } else if (SCHEDULER_PARAM_VALUE_FPGA.equalsIgnoreCase(schedulerName)) {
+      acs = new ConfigurationSchedulerFPGA();
+    } else {
+      throw new PreesmRuntimeException("Unknown scheduler.");
+    }
 
     if (delayRetryValue && !acs.supportsExtraDelayCuts()) {
       delayRetryValue = false;

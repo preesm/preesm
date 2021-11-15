@@ -12,7 +12,7 @@ import org.preesm.model.slam.Design;
  */
 public abstract class AbstractConfigurationScheduler {
 
-  protected boolean          shouldEstimateMemory;
+  protected final boolean    shouldEstimateMemory;
   protected long             lastEndTime;
   protected Pair<Long, Long> lastMaxLoads;
 
@@ -68,7 +68,7 @@ public abstract class AbstractConfigurationScheduler {
    * 
    * @return The end time of the last schedule, or 0 if not yet set.
    */
-  public long getLastMakespan() {
+  public long getLastEndTime() {
     return lastEndTime;
   }
 

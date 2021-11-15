@@ -65,6 +65,74 @@ public class FpgaAnalysisMainTask extends AbstractTaskImplementation {
     final Design architecture = (Design) inputs.get(AbstractWorkflowNodeImplementation.KEY_ARCHITECTURE);
     final Scenario scenario = (Scenario) inputs.get(AbstractWorkflowNodeImplementation.KEY_SCENARIO);
 
+    // check everything and perform analysis
+    final AnalysisResultFPGA res = checkAndAnalyze(algorithm, architecture, scenario);
+
+    final String showSchedStr = parameters.get(SHOW_SCHED_PARAM_NAME);
+    final boolean showSched = Boolean.parseBoolean(showSchedStr);
+
+    // Optionally shows the Gantt diagram
+    if (showSched) {
+      final IEditorInput input = new StatEditorInput(res.statGenerator);
+
+      // Check if the workflow is running in command line mode
+      try {
+        // Run statistic editor
+        PlatformUI.getWorkbench().getDisplay().asyncExec(new EditorRunnable(input));
+      } catch (final IllegalStateException e) {
+        PreesmLogger.getLogger().info("Gantt display is impossible in this context."
+            + " Ignore this log entry if you are running the command line version of Preesm.");
+      }
+
+    }
+
+    // codegen
+    FpgaCodeGenerator.generateFiles(scenario, res.flatGraph, res.interfaceRates, res.flatFifoSizes);
+
+    return new HashMap<>();
+  }
+
+  /**
+   * Wraps the results in a single object.
+   * 
+   * @author ahonorat
+   */
+  public static class AnalysisResultFPGA {
+    // flattened graph
+    public final PiGraph flatGraph;
+    // repetition vector of the flat graph
+    public final Map<AbstractVertex, Long> flatBrv;
+    // interface rates (repetition factor + rate)
+    public final Map<InterfaceActor, Pair<Long, Long>> interfaceRates;
+    // computed fifo sizes
+    public final Map<Fifo, Long> flatFifoSizes;
+    // computed stats for UI or other
+    public final IStatGenerator statGenerator;
+
+    private AnalysisResultFPGA(final PiGraph flatGraph, final Map<AbstractVertex, Long> flatBrv,
+        final Map<InterfaceActor, Pair<Long, Long>> interfaceRates, final Map<Fifo, Long> flatFifoSizes,
+        final IStatGenerator statGenerator) {
+      this.flatGraph = flatGraph;
+      this.flatBrv = flatBrv;
+      this.interfaceRates = interfaceRates;
+      this.flatFifoSizes = flatFifoSizes;
+      this.statGenerator = statGenerator;
+    }
+  }
+
+  /**
+   * Check the inputs and analyze the graph for FPGA scheduling + buffer sizing.
+   * 
+   * @param algorithm
+   *          Graph to be analyzed (will be flattened).
+   * @param architecture
+   *          Targeted architecture.
+   * @param scenario
+   *          Application informations.
+   * @return The analysis results.
+   */
+  public static AnalysisResultFPGA checkAndAnalyze(final PiGraph algorithm, final Design architecture,
+      final Scenario scenario) {
     if (!SlamDesignPEtypeChecker.isSingleFPGA(architecture)) {
       throw new PreesmRuntimeException("This task must be called with a single FPGA architecture, abandon.");
     }
@@ -81,32 +149,10 @@ public class FpgaAnalysisMainTask extends AbstractTaskImplementation {
     if (interfaceRates.values().stream().anyMatch(Objects::isNull)) {
       throw new PreesmRuntimeException("Some interfaces have weird rates (see log), abandon.");
     }
-
     // schedule the graph
     final Pair<IStatGenerator, Map<Fifo, Long>> eval = AsapFpgaIIevaluator.performAnalysis(flatGraph, scenario, brv);
-    final IStatGenerator schedStats = eval.getKey();
 
-    final String showSchedStr = parameters.get(SHOW_SCHED_PARAM_NAME);
-    final boolean showSched = Boolean.parseBoolean(showSchedStr);
-
-    // Optionally shows the Gantt diagram
-    if (showSched) {
-      final IEditorInput input = new StatEditorInput(schedStats);
-
-      // Check if the workflow is running in command line mode
-      try {
-        // Run statistic editor
-        PlatformUI.getWorkbench().getDisplay().asyncExec(new EditorRunnable(input));
-      } catch (final IllegalStateException e) {
-        PreesmLogger.getLogger().info("Gantt display is impossible in this context."
-            + " Ignore this log entry if you are running the command line version of Preesm.");
-      }
-
-      FpgaCodeGenerator.generateFiles(scenario, flatGraph, interfaceRates, eval.getValue());
-
-    }
-
-    return new HashMap<>();
+    return new AnalysisResultFPGA(flatGraph, brv, interfaceRates, eval.getValue(), eval.getKey());
   }
 
   private static Map<InterfaceActor, Pair<Long, Long>> checkInterfaces(final PiGraph flatGraph,

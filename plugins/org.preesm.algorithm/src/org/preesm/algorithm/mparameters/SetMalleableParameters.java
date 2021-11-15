@@ -149,7 +149,7 @@ public class SetMalleableParameters {
         indexTot++;
 
         final DSEpointIR dsep = runAndRetryConfiguration(confSched, indexTot);
-        PreesmLogger.getLogger().log(Level.FINE, dsep.toString());
+        PreesmLogger.getLogger().log(Level.FINE, dsep::toString);
         if (dsep.isSchedulable) {
           if (globalComparator.compare(dsep, bestPoint) < 0) {
             bestConfig = pce.recordConfiguration();
@@ -206,7 +206,7 @@ public class SetMalleableParameters {
       }
 
       final Pair<Long, Long> maxLoads = confSched.getLastMaxLoads();
-      final int nbCuts = globalComparator.computeCutsAmount(maxCuts, nbCore, confSched.getLastMakespan(),
+      final int nbCuts = globalComparator.computeCutsAmount(maxCuts, nbCore, confSched.getLastEndTime(),
           maxLoads.getValue(), maxLoads.getKey());
       if (nbCuts == 0) {
         // may happen with makespan threshold

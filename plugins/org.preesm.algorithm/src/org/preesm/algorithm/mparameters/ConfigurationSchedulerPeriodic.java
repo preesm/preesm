@@ -30,7 +30,7 @@ import org.preesm.model.slam.Design;
  */
 public class ConfigurationSchedulerPeriodic extends AbstractConfigurationScheduler {
 
-  protected PeriodicScheduler scheduler;
+  protected final PeriodicScheduler scheduler;
 
   /**
    * Default constructor, without memory estimation.
