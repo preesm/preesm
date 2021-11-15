@@ -123,6 +123,7 @@ public class LegacyMemoryAllocation implements IMemoryAllocation {
     parameters.put(MemoryScriptTask.PARAM_VERBOSE, MemoryScriptTask.VALUE_TRUE);
     parameters.put(MemoryScriptTask.PARAM_CHECK, MemoryScriptTask.VALUE_CHECK_THOROUGH);
     parameters.put(MemoryScriptTask.PARAM_LOG, MemoryScriptTask.VALUE_LOG);
+    parameters.put(MemoryScriptTask.PARAM_FALSE_SHARING, MemoryScriptTask.VALUE_FALSE);
     parameters.put(MemoryAllocatorTask.PARAM_VERBOSE, MemoryAllocatorTask.VALUE_TRUE_FALSE_DEFAULT);
     parameters.put(MemoryAllocatorTask.PARAM_ALLOCATORS, MemoryAllocatorTask.VALUE_ALLOCATORS_DEFAULT);
     parameters.put(MemoryAllocatorTask.PARAM_XFIT_ORDER, MemoryAllocatorTask.VALUE_XFIT_ORDER_DEFAULT);
@@ -168,7 +169,10 @@ public class LegacyMemoryAllocation implements IMemoryAllocation {
     final String valueAllocators = parameters.get(MemoryAllocatorTask.PARAM_ALLOCATORS);
     final long alignment = IMemoryAllocation.extractAlignment(valueAlignment);
 
-    final PiMemoryScriptEngine engine = new PiMemoryScriptEngine(alignment, log, true);
+    final boolean false_sharing_prevention_flag = parameters.get(MemoryScriptTask.PARAM_FALSE_SHARING)
+        .equals(MemoryScriptTask.VALUE_FALSE);
+
+    final PiMemoryScriptEngine engine = new PiMemoryScriptEngine(false_sharing_prevention_flag, alignment, log, true);
     try {
       engine.runScripts(piGraph, scenario.getSimulationInfo(), checkString);
     } catch (final EvalError e) {

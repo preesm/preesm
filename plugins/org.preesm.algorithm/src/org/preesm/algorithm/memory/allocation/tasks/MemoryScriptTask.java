@@ -84,6 +84,12 @@ import org.preesm.workflow.implement.AbstractTaskImplementation;
                 @Value(name = "None",
                     effect = "No verification is performed. Use this policy to speed up workflow execution once all"
                         + " memory scripts have been validated..") }),
+        @Parameter(name = "False Sharing Prevention",
+            description = "Force additional allocation before/after buffer to prevent false sharing issues.",
+            values = { @Value(name = "False", effect = "The false sharing prevention mecanism will not be used."),
+                @Value(name = "True",
+                    effect = "The false sharing prevention mecanism will be used."
+                        + "Using the Data alignement parameter.") }),
         @Parameter(name = "Data alignment",
             description = "Option used to force the allocation of buffers with aligned addresses. The data"
                 + " alignment property should always have the same value as the one set in the properties of "
@@ -123,6 +129,7 @@ public class MemoryScriptTask extends AbstractTaskImplementation {
   public static final String VALUE_CHECK_NONE     = "None";
   public static final String VALUE_CHECK_FAST     = "Fast";
   public static final String VALUE_CHECK_THOROUGH = "Thorough";
+  public static final String PARAM_FALSE_SHARING  = "False Sharing Prevention";
 
   @Override
   public Map<String, String> getDefaultParameters() {
@@ -131,6 +138,7 @@ public class MemoryScriptTask extends AbstractTaskImplementation {
         "? C {" + MemoryScriptTask.VALUE_TRUE + ", " + MemoryScriptTask.VALUE_FALSE + "}");
     param.put(MemoryScriptTask.PARAM_CHECK, "? C {" + MemoryScriptTask.VALUE_CHECK_NONE + ", "
         + MemoryScriptTask.VALUE_CHECK_FAST + ", " + MemoryScriptTask.VALUE_CHECK_THOROUGH + "}");
+    param.put(MemoryScriptTask.PARAM_FALSE_SHARING, MemoryScriptTask.VALUE_FALSE);
     param.put(MemoryAllocatorTask.PARAM_ALIGNMENT, MemoryAllocatorTask.VALUE_ALIGNEMENT_DEFAULT);
     param.put(MemoryScriptTask.PARAM_LOG, MemoryScriptTask.VALUE_LOG);
 
@@ -152,6 +160,11 @@ public class MemoryScriptTask extends AbstractTaskImplementation {
     // Get the log parameter
     final String log = parameters.get(MemoryScriptTask.PARAM_LOG);
 
+    // Get false sharing prevention flag
+    boolean false_sharing_prevention_flag = false;
+    false_sharing_prevention_flag = parameters.get(MemoryScriptTask.PARAM_FALSE_SHARING)
+        .equals(MemoryScriptTask.VALUE_TRUE);
+
     // Retrieve the alignment param
     final String valueAlignment = parameters.get(MemoryAllocatorTask.PARAM_ALIGNMENT);
 
@@ -169,7 +182,8 @@ public class MemoryScriptTask extends AbstractTaskImplementation {
     final MemoryExclusionGraph meg = (MemoryExclusionGraph) inputs.get("MemEx");
 
     // execute
-    final MemoryScriptEngine engine = new MemoryScriptEngine(valueAlignment, log, verbose);
+    final MemoryScriptEngine engine = new MemoryScriptEngine(false_sharing_prevention_flag, valueAlignment, log,
+        verbose);
     try {
       engine.runScripts(dag, simulationInfo, checkString);
     } catch (final EvalError e) {

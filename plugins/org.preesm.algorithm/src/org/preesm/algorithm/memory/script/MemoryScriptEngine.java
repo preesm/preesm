@@ -81,7 +81,8 @@ public class MemoryScriptEngine {
    * @param verbose
    *          the verbose
    */
-  public MemoryScriptEngine(final String valueAlignment, final String log, final boolean verbose) {
+  public MemoryScriptEngine(final boolean false_sharing_prevention_flag, final String valueAlignment, final String log,
+      final boolean verbose) {
     this.verbose = verbose;
     // Get the logger
     final long alignment;
@@ -104,7 +105,7 @@ public class MemoryScriptEngine {
       this.logger.log(Level.INFO, message);
     }
 
-    this.sr = new ScriptRunner(alignment);
+    this.sr = new ScriptRunner(false_sharing_prevention_flag, alignment);
     this.sr.setGenerateLog(!(log.equals("")));
   }
 

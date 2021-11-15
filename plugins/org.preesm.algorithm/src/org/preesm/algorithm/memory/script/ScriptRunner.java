@@ -138,6 +138,8 @@ public class ScriptRunner {
    */
   private final long alignment;
 
+  private final boolean false_sharing_prevention_flag;
+
   /**
    * Check the results obtained when running the {@link #run()} method. Checks are performed according to the current
    * {@link #setCheckPolicy(CheckPolicy)}. The {@link #checkResult(File,Pair)} method is used to perform the checks.
@@ -403,7 +405,7 @@ public class ScriptRunner {
     this.scriptResults.entrySet().stream().forEach(e -> ScriptRunner.identifyDivisibleBuffers(e.getValue()));
 
     // Update output buffers for alignment
-    if (this.alignment > 0) {
+    if (this.false_sharing_prevention_flag && this.alignment > 0) {
       this.scriptResults.entrySet().stream().forEach(e -> e.getValue().getValue().stream().filter(it -> {
         // All outputs except the mergeable one linked only to read_only
         // inputs within their actor must be enlarged.
@@ -433,7 +435,7 @@ public class ScriptRunner {
     final List<List<DAGVertex>> groups = groupVertices();
 
     // Update input buffers on the group border for alignment
-    if (this.alignment > 0) {
+    if (this.false_sharing_prevention_flag && this.alignment > 0) {
 
       // For each group
       groups.stream()
@@ -480,7 +482,7 @@ public class ScriptRunner {
     }
     final long oldMinIndex = buffer.minIndex;
     if ((oldMinIndex == 0) || (((oldMinIndex) % alignment) != 0)) {
-      buffer.minIndex = ((oldMinIndex / alignment) - 1) * alignment;
+      buffer.minIndex = ((oldMinIndex / alignment) - 1) * alignment * 8L;
 
       // New range is indivisible with end of buffer
       Range.lazyUnion(buffer.indivisibleRanges, new Range(buffer.minIndex, oldMinIndex + 1));
@@ -488,7 +490,7 @@ public class ScriptRunner {
 
     final long oldMaxIndex = buffer.maxIndex;
     if ((oldMaxIndex == (buffer.getNbTokens() * buffer.getTokenSize())) || (((oldMaxIndex) % alignment) != 0)) {
-      buffer.maxIndex = ((oldMaxIndex / alignment) + 1) * alignment;
+      buffer.maxIndex = ((oldMaxIndex / alignment) + 1) * alignment * 8L;
 
       // New range is indivisible with end of buffer
       Range.lazyUnion(buffer.indivisibleRanges, new Range(oldMaxIndex - 1, buffer.maxIndex));
@@ -1457,11 +1459,13 @@ public class ScriptRunner {
   /**
   *
   */
-  public ScriptRunner(final long alignment) {
+  public ScriptRunner(final boolean false_sharing_prevention_flag, final long alignment) {
     // kdesnos: Data alignment is supposed to be equivalent
     // to no alignment from the script POV. (not 100% sure of this)
     this.alignment = (alignment <= 0) ? -1 : alignment;
     this.printTodo = false;
+
+    this.false_sharing_prevention_flag = false_sharing_prevention_flag;
   }
 
   /**
