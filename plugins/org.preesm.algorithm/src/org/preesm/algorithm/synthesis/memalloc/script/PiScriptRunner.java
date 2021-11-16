@@ -151,7 +151,7 @@ public class PiScriptRunner {
    */
   private final long alignment;
 
-  private final boolean false_sharing_prevention_flag;
+  private final boolean falseSharingPreventionFlag;
 
   /**
    * Check the results obtained when running the {@link #run()} method. Checks are performed according to the current
@@ -399,7 +399,7 @@ public class PiScriptRunner {
     this.scriptResults.entrySet().stream().forEach(e -> PiScriptRunner.identifyDivisibleBuffers(e.getValue()));
 
     // Update output buffers for alignment
-    if (this.false_sharing_prevention_flag && this.alignment > 0) {
+    if (this.falseSharingPreventionFlag && this.alignment > 0) {
       this.scriptResults.entrySet().stream().forEach(e -> e.getValue().getValue().stream().filter(it -> {
         // All outputs except the mergeable one linked only to read_only
         // inputs within their actor must be enlarged.
@@ -429,7 +429,7 @@ public class PiScriptRunner {
     final List<List<AbstractActor>> groups = groupVertices();
 
     // Update input buffers on the group border for alignment
-    if (this.false_sharing_prevention_flag && this.alignment > 0) {
+    if (this.falseSharingPreventionFlag && this.alignment > 0) {
 
       // For each group
       groups.stream()
@@ -1454,13 +1454,13 @@ public class PiScriptRunner {
   /**
   *
   */
-  public PiScriptRunner(final boolean false_sharing_prevention_flag, final long alignment) {
+  public PiScriptRunner(final boolean falseSharingPreventionFlag, final long alignment) {
     // kdesnos: Data alignment is supposed to be equivalent
     // to no alignment from the script POV. (not 100% sure of this)
     this.alignment = (alignment <= 0) ? -1 : alignment;
     this.printTodo = false;
 
-    this.false_sharing_prevention_flag = false_sharing_prevention_flag;
+    this.falseSharingPreventionFlag = falseSharingPreventionFlag;
   }
 
   /**
@@ -1841,7 +1841,7 @@ public class PiScriptRunner {
         // Enlarge the corresponding mObject to the required size
         final PiMemoryExclusionVertex mObj = bufferAndMObjectMap.get(buffer);
         final long minIndex;
-        if ((buffer.minIndex == 0) || (this.false_sharing_prevention_flag && (this.alignment == -1))) {
+        if (!this.falseSharingPreventionFlag && ((buffer.minIndex == 0) || (this.alignment <= 8))) {
           minIndex = buffer.minIndex;
         } else {
 

@@ -81,7 +81,7 @@ public class PiMemoryScriptEngine {
    * @param verbose
    *          the verbose
    */
-  public PiMemoryScriptEngine(final boolean false_sharing_prevention_flag, final long valueAlignment, final String log,
+  public PiMemoryScriptEngine(final boolean falseSharingPreventionFlag, final long valueAlignment, final String log,
       final boolean verbose) {
     this.verbose = verbose;
     // Get the logger
@@ -91,7 +91,7 @@ public class PiMemoryScriptEngine {
       this.logger.log(Level.INFO, message);
     }
 
-    this.sr = new PiScriptRunner(false_sharing_prevention_flag, alignment);
+    this.sr = new PiScriptRunner(falseSharingPreventionFlag, alignment);
     this.sr.setGenerateLog(!(log.equals("")));
   }
 

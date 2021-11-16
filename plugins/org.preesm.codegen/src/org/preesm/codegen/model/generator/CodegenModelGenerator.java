@@ -2487,6 +2487,7 @@ public class CodegenModelGenerator extends AbstractCodegenModelGenerator {
         subBuff.reaffectContainer(parentBuffer);
         subBuff.setOffsetInBit(aggregateOffset);
         subBuff.setType(dataType);
+        subBuff.setTokenTypeSizeInBit(scenario.getSimulationInfo().getDataTypeSizeInBit(dataType));
         subBuff.setNbToken(subBufferProperties.getNbToken());
 
         // Save the created SubBuffer

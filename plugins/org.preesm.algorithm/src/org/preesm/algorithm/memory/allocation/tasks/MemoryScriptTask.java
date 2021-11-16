@@ -161,8 +161,8 @@ public class MemoryScriptTask extends AbstractTaskImplementation {
     final String log = parameters.get(MemoryScriptTask.PARAM_LOG);
 
     // Get false sharing prevention flag
-    boolean false_sharing_prevention_flag = false;
-    false_sharing_prevention_flag = parameters.get(MemoryScriptTask.PARAM_FALSE_SHARING)
+    boolean falseSharingPreventionFlag = false;
+    falseSharingPreventionFlag = parameters.get(MemoryScriptTask.PARAM_FALSE_SHARING)
         .equals(MemoryScriptTask.VALUE_TRUE);
 
     // Retrieve the alignment param
@@ -182,7 +182,7 @@ public class MemoryScriptTask extends AbstractTaskImplementation {
     final MemoryExclusionGraph meg = (MemoryExclusionGraph) inputs.get("MemEx");
 
     // execute
-    final MemoryScriptEngine engine = new MemoryScriptEngine(false_sharing_prevention_flag, valueAlignment, log,
+    final MemoryScriptEngine engine = new MemoryScriptEngine(falseSharingPreventionFlag, valueAlignment, log,
         verbose);
     try {
       engine.runScripts(dag, simulationInfo, checkString);

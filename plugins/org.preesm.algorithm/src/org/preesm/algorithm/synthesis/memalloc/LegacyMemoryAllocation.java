@@ -169,10 +169,11 @@ public class LegacyMemoryAllocation implements IMemoryAllocation {
     final String valueAllocators = parameters.get(MemoryAllocatorTask.PARAM_ALLOCATORS);
     final long alignment = IMemoryAllocation.extractAlignment(valueAlignment);
 
-    final boolean false_sharing_prevention_flag = parameters.get(MemoryScriptTask.PARAM_FALSE_SHARING)
-        .equals(MemoryScriptTask.VALUE_FALSE);
+    // False by default
+    final boolean falseSharingPreventionFlag = parameters.get(MemoryScriptTask.PARAM_FALSE_SHARING)
+        .equals(MemoryScriptTask.VALUE_TRUE);
 
-    final PiMemoryScriptEngine engine = new PiMemoryScriptEngine(false_sharing_prevention_flag, alignment, log, true);
+    final PiMemoryScriptEngine engine = new PiMemoryScriptEngine(falseSharingPreventionFlag, alignment, log, true);
     try {
       engine.runScripts(piGraph, scenario.getSimulationInfo(), checkString);
     } catch (final EvalError e) {
