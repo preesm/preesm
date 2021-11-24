@@ -499,8 +499,8 @@ public class LegacyMemoryAllocation implements IMemoryAllocation {
           fifoAllocation.setTargetBuffer(dagEdgeBuffer);
           mainBuffer.getChildren().add(dagEdgeBuffer);
 
-          dagEdgeBuffer.setSizeInBit(0);
-
+          final long edgeRate = edge.getSourcePort().getPortRateExpression().evaluate();
+          dagEdgeBuffer.setSizeInBit(scenario.getSimulationInfo().getBufferSizeInBit(edge.getType(), edgeRate));
         }
       }
 
