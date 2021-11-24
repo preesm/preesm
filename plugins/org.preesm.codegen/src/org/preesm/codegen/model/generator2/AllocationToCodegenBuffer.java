@@ -50,6 +50,7 @@ import org.eclipse.emf.common.util.EList;
 import org.preesm.algorithm.memalloc.model.Allocation;
 import org.preesm.algorithm.memalloc.model.FifoAllocation;
 import org.preesm.algorithm.memalloc.model.LogicalBuffer;
+import org.preesm.algorithm.memalloc.model.NullBuffer;
 import org.preesm.algorithm.memalloc.model.PhysicalBuffer;
 import org.preesm.algorithm.memalloc.model.util.MemoryAllocationSwitch;
 import org.preesm.algorithm.memory.exclusiongraph.MemoryExclusionGraph;
@@ -129,8 +130,7 @@ public class AllocationToCodegenBuffer extends MemoryAllocationSwitch<Boolean> {
 
         if (tgtCodegenBuffer != srcCodegenBuffer) {
           // generate 2 codegen buffers and route
-          tgtCodegenBuffer.setName(generateUniqueBufferName("tgt_" + fifo.getTargetPort().getId()));
-          srcCodegenBuffer.setName(generateUniqueBufferName("src_" + fifo.getSourcePort().getId()));
+
           srcCodegenBuffer.setType(fifo.getType());
 
           if (allocSize % typeSize != 0) {
@@ -142,15 +142,29 @@ public class AllocationToCodegenBuffer extends MemoryAllocationSwitch<Boolean> {
           final String scomment = fifo.getSourcePort().getId();
           srcCodegenBuffer.setComment(scomment);
 
+          // If Buffer is a NullBuffer, leave the original name (NULL)
+          if (!(tgtCodegenBuffer instanceof org.preesm.codegen.model.NullBuffer)) {
+            tgtCodegenBuffer.setName(generateUniqueBufferName("tgt_" + fifo.getTargetPort().getId()));
+          }
+          if (!(srcCodegenBuffer instanceof org.preesm.codegen.model.NullBuffer)) {
+            srcCodegenBuffer.setName(generateUniqueBufferName("src_" + fifo.getSourcePort().getId()));
+          } else {
+            srcCodegenBuffer.setComment("NULL_" + scomment);
+          }
+
           this.portToVariable.put(fifo.getSourcePort(), srcCodegenBuffer);
 
           // TODO handle all route buffers
         } else {
-          this.portToVariable.put(fifo.getSourcePort(), tgtCodegenBuffer);
 
-          // XXX old style naming
-          tgtCodegenBuffer.setName(
-              generateUniqueBufferName(fifo.getSourcePort().getName() + "__" + fifo.getTargetPort().getName()));
+          // If Buffer is a NullBuffer, leave the original name (NULL)
+          if (!(tgtCodegenBuffer instanceof org.preesm.codegen.model.NullBuffer)) {
+            // XXX old style naming
+            tgtCodegenBuffer.setName(
+                generateUniqueBufferName(fifo.getSourcePort().getName() + "__" + fifo.getTargetPort().getName()));
+          }
+
+          this.portToVariable.put(fifo.getSourcePort(), tgtCodegenBuffer);
         }
 
         tgtCodegenBuffer.setType(fifo.getType());
@@ -160,6 +174,10 @@ public class AllocationToCodegenBuffer extends MemoryAllocationSwitch<Boolean> {
 
         final String tcomment = fifo.getTargetPort().getId();
         tgtCodegenBuffer.setComment(tcomment);
+
+        if ((tgtCodegenBuffer instanceof NullBuffer)) {
+          tgtCodegenBuffer.setComment("NULL_" + tcomment);
+        }
 
         this.portToVariable.put(fifo.getTargetPort(), tgtCodegenBuffer);
       }
@@ -176,11 +194,18 @@ public class AllocationToCodegenBuffer extends MemoryAllocationSwitch<Boolean> {
       final String sink = initActor.getName();
       final String source = initActor.getEndReference().getName();
       final String comment = source + " > " + sink;
-      codegenBuffer.setComment(comment);
 
-      final String name = source + "__" + sink;
-      final String uniqueName = generateUniqueBufferName(MemoryExclusionGraph.FIFO_HEAD_PREFIX + name);
-      codegenBuffer.setName(uniqueName);
+      // If Buffer is a NullBuffer, leave the original name (NULL)
+      if (codegenBuffer instanceof org.preesm.codegen.model.NullBuffer) {
+        codegenBuffer.setComment("NULL_" + comment);
+      } else {
+        codegenBuffer.setComment(comment);
+
+        final String name = source + "__" + sink;
+        final String uniqueName = generateUniqueBufferName(MemoryExclusionGraph.FIFO_HEAD_PREFIX + name);
+        codegenBuffer.setName(uniqueName);
+      }
+
       codegenBuffer.setType(fifo.getType());
       final long allocSize = codegenBuffer.getSizeInBit();
       final long typeSize = scenario.getSimulationInfo().getDataTypeSizeInBit(fifo.getType());
@@ -240,8 +265,21 @@ public class AllocationToCodegenBuffer extends MemoryAllocationSwitch<Boolean> {
 
   @Override
   public Boolean caseLogicalBuffer(final LogicalBuffer logicalBuffer) {
+
     final SubBuffer subBuffer = CodegenModelUserFactory.eINSTANCE.createSubBuffer();
 
+    return setLogicalBufferProperties(logicalBuffer, subBuffer);
+  }
+
+  @Override
+  public Boolean caseNullBuffer(final NullBuffer nullBuffer) {
+
+    final SubBuffer subBuffer = CodegenModelUserFactory.eINSTANCE.createNullBuffer();
+
+    return setLogicalBufferProperties(nullBuffer, subBuffer);
+  }
+
+  boolean setLogicalBufferProperties(final LogicalBuffer logicalBuffer, final SubBuffer subBuffer) {
     // At this time, the actual size of a token is out of reach. Set up as bit by default, will be fixed in link()
     subBuffer.setType("bit");
     subBuffer.setTokenTypeSizeInBit(1);
