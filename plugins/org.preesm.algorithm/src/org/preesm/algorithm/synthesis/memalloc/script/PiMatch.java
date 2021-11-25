@@ -140,6 +140,10 @@ public class PiMatch {
     return this.localIndex;
   }
 
+  public long getLocalIndexInByte() {
+    return (this.localIndex + 7L) / 8L;
+  }
+
   public void setLocalIndex(final long localIndex) {
     this.localIndex = localIndex;
   }
@@ -156,12 +160,20 @@ public class PiMatch {
     return this.remoteIndex;
   }
 
+  public long getRemoteIndexInByte() {
+    return (this.remoteIndex + 7L) / 8L;
+  }
+
   public void setRemoteIndex(final long remoteIndex) {
     this.remoteIndex = remoteIndex;
   }
 
   public long getLength() {
     return this.length;
+  }
+
+  public long getLengthInByte() {
+    return (this.length + 7L) / 8L;
   }
 
   public void setLength(final long length) {
@@ -335,9 +347,10 @@ public class PiMatch {
 
   @Override
   public String toString() {
-    return "" + getLocalBuffer().getVertexName() + "." + getLocalBuffer().name + "[" + getLocalIndex() + ".."
-        + (getLocalIndex() + getLength()) + "[=>" + getRemoteBuffer().getVertexName() + "." + getRemoteBuffer().name
-        + "[" + getRemoteIndex() + ".." + (getRemoteIndex() + getLength()) + "[";
+    return "" + getLocalBuffer().getVertexName() + "." + getLocalBuffer().name + "[" + getLocalIndexInByte() + ".."
+        + (getLocalIndexInByte() + getLengthInByte()) + "[=>" + getRemoteBuffer().getVertexName() + "."
+        + getRemoteBuffer().name + "[" + getRemoteIndexInByte() + ".." + (getRemoteIndexInByte() + getLengthInByte())
+        + "[";
   }
 
   /**

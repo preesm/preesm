@@ -270,16 +270,24 @@ public class PiBuffer {
 
   final String name;
 
-  final long nbTokens;
+  private final long nbTokens;
 
   public long getNbTokens() {
     return this.nbTokens;
   }
 
-  final long tokenSize;
+  private final long tokenSize;
 
   public long getTokenSize() {
     return this.tokenSize;
+  }
+
+  public long getBufferSizeInBit() {
+    return nbTokens * tokenSize;
+  }
+
+  public long getBufferSizeInByte() {
+    return (nbTokens * tokenSize + 7L) / 8L;
   }
 
   /* 2 strings used for proper error reporting and logging */
@@ -1271,7 +1279,7 @@ public class PiBuffer {
 
   @Override
   public String toString() {
-    final long size = this.nbTokens * this.tokenSize;
+    final long size = getBufferSizeInByte();
     return this.getVertexName() + "." + this.name + "[" + size + "]";
   }
 

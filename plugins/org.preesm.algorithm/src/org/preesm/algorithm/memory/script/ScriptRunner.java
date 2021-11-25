@@ -132,6 +132,22 @@ public class ScriptRunner {
   private long sizeBefore;
   private long sizeAfter;
 
+  private long getSizeBeforeInBit() {
+    return sizeBefore;
+  }
+
+  private long getSizeBeforeInByte() {
+    return (sizeBefore + 7L) / 8L;
+  }
+
+  private long getSizeAfterInBit() {
+    return sizeAfter;
+  }
+
+  private long getSizeAfterInByte() {
+    return (sizeAfter + 7L) / 8L;
+  }
+
   /**
    * This property is used to represent the alignment of buffers in memory. The same value, or a multiple should always
    * be used in the memory allocation.
@@ -458,9 +474,10 @@ public class ScriptRunner {
     if (isGenerateLog()) {
       this.log = "# Memory scripts summary" + '\n' + "- Independent match trees : *" + groups.size() + "*" + '\n'
           + "- Total number of buffers in these trees: From " + this.nbBuffersBefore + " to " + this.nbBuffersAfter
-          + " buffers." + "\n" + "- Total size of these buffers: From " + this.sizeBefore + " to " + this.sizeAfter
-          + " (" + ((100.0 * (this.sizeBefore - this.sizeAfter)) / this.sizeBefore) + "%)." + "\n\n"
-          + "# Match tree optimization log" + '\n' + this.log;
+          + " buffers." + "\n" + "- Total size of these buffers: From " + this.getSizeBeforeInByte() + " to "
+          + this.getSizeAfterInByte() + " ("
+          + ((100.0 * (this.getSizeBeforeInBit() - this.getSizeAfterInBit())) / this.getSizeBeforeInBit()) + "%)."
+          + "\n\n" + "# Match tree optimization log" + '\n' + this.log;
     }
   }
 
@@ -736,7 +753,7 @@ public class ScriptRunner {
     if (isGenerateLog()) {
       this.log = this.log + "\n" + "### Tree summary:" + '\n';
       this.log = this.log + "- From " + bufferList.size() + " buffers to " + buffers.size() + " buffers." + "\n";
-      this.log = this.log + "- From " + before + " bytes to " + after + " bytes ("
+      this.log = this.log + "- From " + (before + 7L) / 8L + " bytes to " + (after + 7L) / 8L + " bytes ("
           + ((100.0 * (before - after)) / before) + "%)" + "\n\n";
     }
 

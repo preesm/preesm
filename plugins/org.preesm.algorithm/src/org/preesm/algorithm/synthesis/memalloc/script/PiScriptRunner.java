@@ -145,6 +145,22 @@ public class PiScriptRunner {
   private long sizeBefore;
   private long sizeAfter;
 
+  private long getSizeBeforeInBit() {
+    return sizeBefore;
+  }
+
+  private long getSizeBeforeInByte() {
+    return (sizeBefore + 7L) / 8L;
+  }
+
+  private long getSizeAfterInBit() {
+    return sizeAfter;
+  }
+
+  private long getSizeAfterInByte() {
+    return (sizeAfter + 7L) / 8L;
+  }
+
   /**
    * This property is used to represent the alignment of buffers in memory. The same value, or a multiple should always
    * be used in the memory allocation.
@@ -453,9 +469,10 @@ public class PiScriptRunner {
     if (isGenerateLog()) {
       this.log = "# Memory scripts summary" + '\n' + "- Independent match trees : *" + groups.size() + "*" + '\n'
           + "- Total number of buffers in these trees: From " + this.nbBuffersBefore + " to " + this.nbBuffersAfter
-          + " buffers." + "\n" + "- Total size of these buffers: From " + this.sizeBefore + " to " + this.sizeAfter
-          + " (" + ((100.0 * (this.sizeBefore - this.sizeAfter)) / this.sizeBefore) + "%)." + "\n\n"
-          + "# Match tree optimization log" + '\n' + this.log;
+          + " buffers." + "\n" + "- Total size of these buffers: From " + this.getSizeBeforeInByte() + " to "
+          + this.getSizeAfterInByte() + " bytes ("
+          + ((100.0 * (this.getSizeBeforeInBit() - this.getSizeAfterInBit())) / this.getSizeBeforeInBit()) + "%)."
+          + "\n\n" + "# Match tree optimization log" + '\n' + this.log;
     }
   }
 
@@ -484,7 +501,7 @@ public class PiScriptRunner {
     }
 
     final long oldMaxIndex = buffer.maxIndex;
-    if ((oldMaxIndex == (buffer.nbTokens * buffer.tokenSize)) || (((oldMaxIndex) % alignment) != 0)) {
+    if ((oldMaxIndex == (buffer.getNbTokens() * buffer.getTokenSize())) || (((oldMaxIndex) % alignment) != 0)) {
       buffer.maxIndex = ((oldMaxIndex / alignment) + 1) * alignment;
 
       // New range is indivisible with end of buffer
@@ -731,7 +748,7 @@ public class PiScriptRunner {
     if (isGenerateLog()) {
       this.log = this.log + "\n" + "### Tree summary:" + '\n';
       this.log = this.log + "- From " + bufferList.size() + " buffers to " + buffers.size() + " buffers." + "\n";
-      this.log = this.log + "- From " + before + " bytes to " + after + " bytes ("
+      this.log = this.log + "- From " + (before + 7L) / 8L + " bytes to " + (after + 7L) / 8L + " bytes ("
           + ((100.0 * (before - after)) / before) + "%)" + "\n\n";
     }
 
@@ -784,8 +801,7 @@ public class PiScriptRunner {
       test = test && (entry.getValue().get(0).getLocalIndivisibleRange().getStart() <= 0);
 
       // and ends at the end of the buffer (or more)
-      test = test && (entry.getValue().get(0).getLocalIndivisibleRange()
-          .getEnd() >= (candidate.nbTokens * candidate.tokenSize));
+      test = test && (entry.getValue().get(0).getLocalIndivisibleRange().getEnd() >= (candidate.getBufferSizeInBit()));
 
       // entry.key + entry.value.head.length >= candidate.nbTokens * candidate.tokenSize
       // and is not involved in any conflicting range
@@ -939,8 +955,7 @@ public class PiScriptRunner {
         test = test && (matches.get(0).getLocalIndivisibleRange().getStart() <= 0);
 
         // and ends at the end of the buffer (or more)
-        test = test
-            && (matches.get(0).getLocalIndivisibleRange().getEnd() >= (candidate.nbTokens * candidate.tokenSize));
+        test = test && (matches.get(0).getLocalIndivisibleRange().getEnd() >= (candidate.getBufferSizeInBit()));
 
         // and is not involved in any conflicting match
         test = test && (matches.get(0).getConflictingMatches().isEmpty());
@@ -1108,8 +1123,7 @@ public class PiScriptRunner {
       test = test && (entry.getValue().get(0).getLocalIndivisibleRange().getStart() <= 0);
 
       // and ends at the end of the buffer (or more)
-      test = test && (entry.getValue().get(0).getLocalIndivisibleRange()
-          .getEnd() >= (candidate.nbTokens * candidate.tokenSize));
+      test = test && (entry.getValue().get(0).getLocalIndivisibleRange().getEnd() >= (candidate.getBufferSizeInBit()));
 
       // and is involved in any conflicting range
       final PiMatch match = entry.getValue().get(0);
@@ -1293,8 +1307,7 @@ public class PiScriptRunner {
         test = test && (matches.get(0).getLocalIndivisibleRange().getStart() <= 0);
 
         // and ends at the end of the buffer (or more)
-        test = test
-            && (matches.get(0).getLocalIndivisibleRange().getEnd() >= (candidate.nbTokens * candidate.tokenSize));
+        test = test && (matches.get(0).getLocalIndivisibleRange().getEnd() >= (candidate.getBufferSizeInBit()));
 
         if (test) {
           // and is involved in conflicting range
@@ -1577,7 +1590,7 @@ public class PiScriptRunner {
                     validBuffers = true;
 
                     // Match them together
-                    final PiMatch match = buffers.get(0).matchWith(0, buffers.get(1), 0, buffers.get(0).nbTokens);
+                    final PiMatch match = buffers.get(0).matchWith(0, buffers.get(1), 0, buffers.get(0).getNbTokens());
                     final PiMatch forwardMatch;
                     if (buffers.get(0).getVertexName().equals(fifo.getSourcePort().getContainingActor().getName())) {
                       match.setType(MatchType.FORWARD);
@@ -1800,7 +1813,7 @@ public class PiScriptRunner {
               "Cannot find " + mObjCopy + " in the given MEG. Contact developers for more information.");
         }
 
-        if (mObj.getWeight() != (buffer.nbTokens * buffer.tokenSize)) {
+        if (mObj.getWeight() != (buffer.getBufferSizeInBit())) {
 
           // Karol's Note:
           // To process the aggregated dag edges, we will need to
@@ -1860,8 +1873,8 @@ public class PiScriptRunner {
         mergedMObjects.put(mObj, new LinkedHashSet<>());
 
         // Save the real token range in the Mobj properties
-        final PiRange realTokenRange = new PiRange(0, buffer.tokenSize * buffer.nbTokens);
-        final PiRange actualRealTokenRange = new PiRange(-minIndex, (buffer.tokenSize * buffer.nbTokens) - minIndex);
+        final PiRange realTokenRange = new PiRange(0, buffer.getBufferSizeInBit());
+        final PiRange actualRealTokenRange = new PiRange(-minIndex, (buffer.getBufferSizeInBit()) - minIndex);
         final List<Pair<PiMemoryExclusionVertex, Pair<PiRange, PiRange>>> ranges = new ArrayList<>();
         ranges.add(new Pair<>(mObj, new Pair<>(realTokenRange, actualRealTokenRange)));
         mObj.setPropertyValue(PiMemoryExclusionVertex.REAL_TOKEN_RANGE_PROPERTY, ranges);
@@ -1906,7 +1919,7 @@ public class PiScriptRunner {
         // Fill the mobj properties (i.e. save the matched buffer info)
         final List<Pair<PiMemoryExclusionVertex, Pair<PiRange, PiRange>>> mObjRoots = new ArrayList<>();
         mObj.setPropertyValue(PiMemoryExclusionVertex.REAL_TOKEN_RANGE_PROPERTY, mObjRoots);
-        final PiRange realTokenRange = new PiRange(0, buffer.tokenSize * buffer.nbTokens);
+        final PiRange realTokenRange = new PiRange(0, buffer.getBufferSizeInBit());
 
         // For each subrange of real tokens, save the corresponding remote buffer
         // and range.

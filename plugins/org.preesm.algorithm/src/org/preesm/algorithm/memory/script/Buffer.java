@@ -279,6 +279,14 @@ public class Buffer {
     return this.tokenSize;
   }
 
+  public long getBufferSizeInBit() {
+    return nbTokens * tokenSize;
+  }
+
+  public long getBufferSizeInByte() {
+    return (nbTokens * tokenSize + 7L) / 8L;
+  }
+
   /* 2 strings used for proper error reporting and logging */
   private final String  vertexName;
   private final DAGEdge loggingEdgeName;
@@ -1264,7 +1272,7 @@ public class Buffer {
 
   @Override
   public String toString() {
-    final long size = this.nbTokens * this.tokenSize;
+    final long size = this.getBufferSizeInByte();
     return this.getVertexName() + "." + this.name + "[" + size + "]";
   }
 
