@@ -63,15 +63,15 @@ public class AsapFpgaIIevaluator {
 
   protected static class ActorScheduleInfos {
     // number of firings in this interval
-    protected long nbFirings = 0;
+    protected long nbFirings = 0L;
     // minimum duration of all firings
-    protected long minDuration = 0;
+    protected long minDuration = 0L;
     // real start time, refined afterwards
-    protected long startTime = 0;
+    protected long startTime = 0L;
     // minimum possible according to each incoming dependency
     protected List<Long> minInStartTimes = new ArrayList<>();
     // real finish time > startTime + min duration
-    protected long finishTime = 0;
+    protected long finishTime = 0L;
     // minimum possible according to each incoming dependency
     protected List<Long> minInFinishTimes = new ArrayList<>();
   }
@@ -84,7 +84,7 @@ public class AsapFpgaIIevaluator {
    * Analyze the graph, schedule it with ASAP, and compute buffer sizes.
    * 
    * @param flatGraph
-   *          Graph to analyse.
+   *          Graph to analyze.
    * @param scenario
    *          Scenario to get the timings and mapping constraints.
    * @param brv
@@ -108,6 +108,9 @@ public class AsapFpgaIIevaluator {
     hlbd.performAnalysis(flatGraph, brv);
 
     final AbstractFifoEvaluator fifoEval = new FifoEvaluatorAsArray(scenario, hlbd, mapActorNormalizedInfos);
+    // TODO set fifoEval by task parameter
+    // final AbstractFifoEvaluator fifoEval = new FifoEvaluatorAsAverage(scenario, hlbd, mapActorNormalizedInfos);
+
     // set min durations of all AsapFpgaIIevaluator.ActorScheduleInfos, with cycle latency if in a cycle
     for (Entry<List<AbstractActor>, CycleInfos> e : hlbd.cyclesInfos.entrySet()) {
       final long cycleLatency = fifoEval.computeCycleMinII(e.getKey(), e.getValue());
@@ -216,6 +219,10 @@ public class AsapFpgaIIevaluator {
       final long minDuration = (ani.brv - 1) * Math.max(ani.oriII, ani.cycledII) + ani.oriET;
       asi.minDuration = minDuration;
       asiT.minDuration = minDuration;
+      asi.finishTime = minDuration;
+      asiT.finishTime = minDuration;
+      asi.nbFirings = ani.brv;
+      asiT.nbFirings = ani.brv;
       mapActorSchedInfos.put(aa, asi);
       mapActorSchedInfosT.put(aa, asiT);
     }
@@ -274,7 +281,7 @@ public class AsapFpgaIIevaluator {
         maxOriGraphII = Math.max(maxOriGraphII, ani.normGraphII);
         final String suffixName = getPipelinedCategory(time, asi.minDuration, ani.brv * ani.oriET);
         final String actorName = suffixName + " " + ani.brv + "x " + aa.getVertexPath();
-        gd.insertTask(actorName, componentName, asi.startTime, asi.finishTime, tcs.doSwitch(aa));
+        gd.insertTask(actorName, componentName, asi.startTime, time, tcs.doSwitch(aa));
 
         if (asi.finishTime > maxFinishTime) {
           maxFinishTime = asi.finishTime;
