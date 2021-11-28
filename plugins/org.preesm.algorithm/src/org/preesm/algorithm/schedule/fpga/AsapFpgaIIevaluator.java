@@ -26,6 +26,7 @@ import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.commons.model.PreesmCopyTracker;
 import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.AbstractVertex;
+import org.preesm.model.pisdf.DataPort;
 import org.preesm.model.pisdf.Fifo;
 import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.pisdf.statictools.PiMMHelper;
@@ -330,14 +331,28 @@ public class AsapFpgaIIevaluator {
     // check and set standard infos
     for (final AbstractActor aa : cc) {
       AbstractActor ori = PreesmCopyTracker.getOriginalSource(aa);
+      // check mapping
       if (!scenario.getPossibleMappings(ori).contains(fpga)) {
         throw new PreesmRuntimeException("Actor " + ori.getVertexPath() + " is not mapped to the only fpga.");
       }
-      // check mapping
+      // check timings
       final long ii = scenario.getTimings().evaluateTimingOrDefault(ori, fpga.getComponent(),
           TimingType.INITIATION_INTERVAL);
       final long et = scenario.getTimings().evaluateTimingOrDefault(ori, fpga.getComponent(),
           TimingType.EXECUTION_TIME);
+      if (et < ii) {
+        throw new PreesmRuntimeException(
+            String.format("Actor %s has its execution time (%d) strictly lower than its initiation interval (%d).",
+                ori.getVertexPath(), et, ii));
+      }
+      final long maxRate = getActorMaximumRate(aa);
+      if (maxRate > ii) {
+        throw new PreesmRuntimeException(String.format(
+            "Actor %s has its maximal production/consumption (%d) strictly greater than its initiation interval (%d).",
+            ori.getVertexPath(), maxRate, ii));
+
+      }
+      // store infos
       final long rv = brv.get(aa);
       final ActorNormalizedInfos ani = new ActorNormalizedInfos(aa, ori, et, ii, rv);
       mapInfos.put(aa, ani);
@@ -357,6 +372,17 @@ public class AsapFpgaIIevaluator {
 
     }
     return mapInfos;
+  }
+
+  private static long getActorMaximumRate(final AbstractActor aa) {
+    long maxRate = 0L;
+    for (final DataPort dp : aa.getAllDataPorts()) {
+      final long rate = dp.getExpression().evaluate();
+      if (rate > maxRate) {
+        maxRate = rate;
+      }
+    }
+    return maxRate;
   }
 
   public static class DecreasingGraphIIComparator implements Comparator<ActorNormalizedInfos> {
