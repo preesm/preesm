@@ -41,6 +41,9 @@ import org.preesm.model.slam.TimingType;
  */
 public class AsapFpgaIIevaluator {
 
+  public static final String FIFO_EVALUATOR_SDF = "sdfFifoEval";
+  public static final String FIFO_EVALUATOR_AVG = "avgFifoEval";
+
   protected static class ActorNormalizedInfos {
     protected final AbstractActor aa;
     protected final AbstractActor ori;
@@ -90,10 +93,12 @@ public class AsapFpgaIIevaluator {
    *          Scenario to get the timings and mapping constraints.
    * @param brv
    *          Repetition vector of actors in cc.
+   * @param fifoEvaluatorName
+   *          String representing the evaluator to be used (for scheduling and fifo sizing).
    * @return StatGenerator for Gantt Data and map of all fifo sizes.
    */
   public static Pair<IStatGenerator, Map<Fifo, Long>> performAnalysis(final PiGraph flatGraph, final Scenario scenario,
-      final Map<AbstractVertex, Long> brv) {
+      final Map<AbstractVertex, Long> brv, final String fifoEvaluatorName) {
 
     // Get all sub graph (connected components) composing the current graph
     final List<List<AbstractActor>> subgraphsWOInterfaces = PiMMHelper.getAllConnectedComponentsWOInterfaces(flatGraph);
@@ -108,9 +113,14 @@ public class AsapFpgaIIevaluator {
     final HeuristicLoopBreakingDelays hlbd = new HeuristicLoopBreakingDelays();
     hlbd.performAnalysis(flatGraph, brv);
 
-    final AbstractFifoEvaluator fifoEval = new FifoEvaluatorAsArray(scenario, hlbd, mapActorNormalizedInfos);
-    // TODO set fifoEval by task parameter
-    // final AbstractFifoEvaluator fifoEval = new FifoEvaluatorAsAverage(scenario, hlbd, mapActorNormalizedInfos);
+    AbstractFifoEvaluator fifoEval;
+    if (FIFO_EVALUATOR_SDF.equalsIgnoreCase(fifoEvaluatorName)) {
+      fifoEval = new FifoEvaluatorAsArray(scenario, hlbd, mapActorNormalizedInfos);
+    } else if (FIFO_EVALUATOR_AVG.equalsIgnoreCase(fifoEvaluatorName)) {
+      fifoEval = new FifoEvaluatorAsAverage(scenario, hlbd, mapActorNormalizedInfos);
+    } else {
+      throw new PreesmRuntimeException("Could not recognize fifo evaluator name: " + fifoEvaluatorName);
+    }
 
     // set min durations of all AsapFpgaIIevaluator.ActorScheduleInfos, with cycle latency if in a cycle
     for (Entry<List<AbstractActor>, CycleInfos> e : hlbd.cyclesInfos.entrySet()) {

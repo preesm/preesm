@@ -49,13 +49,22 @@ import org.preesm.workflow.implement.AbstractWorkflowNodeImplementation;
         + "Periods in the graph are not taken into account.",
     inputs = { @Port(name = "PiMM", type = PiGraph.class), @Port(name = "architecture", type = Design.class),
         @Port(name = "scenario", type = Scenario.class) },
-    parameters = { @Parameter(name = FpgaAnalysisMainTask.SHOW_SCHED_PARAM_NAME,
-        description = "Whether or not the schedule must be shown at the end.", values = {
-            @Value(name = FpgaAnalysisMainTask.SHOW_SCHED_PARAM_VALUE, effect = "False disables this feature.") }), })
+    parameters = {
+        @Parameter(name = FpgaAnalysisMainTask.SHOW_SCHED_PARAM_NAME,
+            description = "Whether or not the schedule must be shown at the end.",
+            values = {
+                @Value(name = FpgaAnalysisMainTask.SHOW_SCHED_PARAM_VALUE, effect = "False disables this feature.") }),
+        @Parameter(name = FpgaAnalysisMainTask.FIFO_EVAL_PARAM_NAME,
+            description = "The name of fifo evaluator to be used.",
+            values = { @Value(name = AsapFpgaIIevaluator.FIFO_EVALUATOR_AVG, effect = "Evaluate with average mode."),
+                @Value(name = AsapFpgaIIevaluator.FIFO_EVALUATOR_SDF, effect = "Evaluate with SDF mode.") }) })
 public class FpgaAnalysisMainTask extends AbstractTaskImplementation {
 
   public static final String SHOW_SCHED_PARAM_NAME  = "Show schedule ?";
   public static final String SHOW_SCHED_PARAM_VALUE = "false";
+
+  public static final String FIFO_EVAL_PARAM_NAME  = "Fifo evaluator: ";
+  public static final String FIFO_EVAL_PARAM_VALUE = AsapFpgaIIevaluator.FIFO_EVALUATOR_AVG;
 
   @Override
   public Map<String, Object> execute(Map<String, Object> inputs, Map<String, String> parameters,
@@ -65,8 +74,9 @@ public class FpgaAnalysisMainTask extends AbstractTaskImplementation {
     final Design architecture = (Design) inputs.get(AbstractWorkflowNodeImplementation.KEY_ARCHITECTURE);
     final Scenario scenario = (Scenario) inputs.get(AbstractWorkflowNodeImplementation.KEY_SCENARIO);
 
+    final String fifoEvaluatorName = parameters.get(FIFO_EVAL_PARAM_NAME);
     // check everything and perform analysis
-    final AnalysisResultFPGA res = checkAndAnalyze(algorithm, architecture, scenario);
+    final AnalysisResultFPGA res = checkAndAnalyze(algorithm, architecture, scenario, fifoEvaluatorName);
 
     final String showSchedStr = parameters.get(SHOW_SCHED_PARAM_NAME);
     final boolean showSched = Boolean.parseBoolean(showSchedStr);
@@ -129,10 +139,12 @@ public class FpgaAnalysisMainTask extends AbstractTaskImplementation {
    *          Targeted architecture.
    * @param scenario
    *          Application informations.
+   * @param fifoEvaluatorName
+   *          String representing the evaluator to be used (for scheduling and fifo sizing).
    * @return The analysis results.
    */
   public static AnalysisResultFPGA checkAndAnalyze(final PiGraph algorithm, final Design architecture,
-      final Scenario scenario) {
+      final Scenario scenario, final String fifoEvaluatorName) {
     if (!SlamDesignPEtypeChecker.isSingleFPGA(architecture)) {
       throw new PreesmRuntimeException("This task must be called with a single FPGA architecture, abandon.");
     }
@@ -149,8 +161,10 @@ public class FpgaAnalysisMainTask extends AbstractTaskImplementation {
     if (interfaceRates.values().stream().anyMatch(Objects::isNull)) {
       throw new PreesmRuntimeException("Some interfaces have weird rates (see log), abandon.");
     }
+
     // schedule the graph
-    final Pair<IStatGenerator, Map<Fifo, Long>> eval = AsapFpgaIIevaluator.performAnalysis(flatGraph, scenario, brv);
+    final Pair<IStatGenerator,
+        Map<Fifo, Long>> eval = AsapFpgaIIevaluator.performAnalysis(flatGraph, scenario, brv, fifoEvaluatorName);
 
     return new AnalysisResultFPGA(flatGraph, brv, interfaceRates, eval.getValue(), eval.getKey());
   }
@@ -186,7 +200,10 @@ public class FpgaAnalysisMainTask extends AbstractTaskImplementation {
 
   @Override
   public Map<String, String> getDefaultParameters() {
-    return new HashMap<>();
+    final Map<String, String> defaultParams = new LinkedHashMap<>();
+    defaultParams.put(SHOW_SCHED_PARAM_NAME, SHOW_SCHED_PARAM_VALUE);
+    defaultParams.put(FIFO_EVAL_PARAM_NAME, FIFO_EVAL_PARAM_VALUE);
+    return defaultParams;
   }
 
   @Override

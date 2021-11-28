@@ -111,7 +111,7 @@ import org.preesm.workflow.implement.AbstractWorkflowNodeImplementation;
                 + "See workflow task pisdf-delays.setter. Number of pipelines is inferred automatically.",
             values = { @Value(name = SetMalleableParametersTask.DEFAULT_DELAY_RETRY_VALUE,
                 effect = "False disables the heuristic.") }),
-        @org.preesm.commons.doc.annotations.Parameter(name = SetMalleableParametersTask.DEFAULT_SCHEDULER_PARAM_NAME,
+        @org.preesm.commons.doc.annotations.Parameter(name = SetMalleableParametersTask.DEFAULT_SCHEDULER_NAME,
             description = "Set the scheduler to use, among: " + SetMalleableParametersTask.SCHEDULER_PARAM_VALUE_LIST
                 + ", " + SetMalleableParametersTask.SCHEDULER_PARAM_VALUE_FPGA + ".",
             values = { @Value(name = SetMalleableParametersTask.DEFAULT_SCHEDULER_VALUE,
@@ -123,7 +123,7 @@ import org.preesm.workflow.implement.AbstractWorkflowNodeImplementation;
 public class SetMalleableParametersTask extends AbstractTaskImplementation {
 
   public static final String SCHEDULER_PARAM_VALUE_LIST = "homogeneousListPeriodic";
-  public static final String SCHEDULER_PARAM_VALUE_FPGA = "singleFPGA";
+  public static final String SCHEDULER_PARAM_VALUE_FPGA = "singleFPGAavegarge";
 
   public static final String DEFAULT_COMPARISONS_VALUE  = "T>P>L";
   public static final String DEFAULT_THRESHOLDS_VALUE   = "0>0>0";
@@ -133,13 +133,13 @@ public class SetMalleableParametersTask extends AbstractTaskImplementation {
   public static final String DEFAULT_SCHEDULER_VALUE    = SCHEDULER_PARAM_VALUE_LIST;
   public static final String DEFAULT_LOG_VALUE          = "/Code/generated/";
 
-  public static final String DEFAULT_COMPARISONS_NAME     = "1. Comparisons";
-  public static final String DEFAULT_THRESHOLDS_NAME      = "2. Thresholds";
-  public static final String DEFAULT_PARAMS_OBJVS_NAME    = "3. Params objectives";
-  public static final String DEFAULT_HEURISTIC_NAME       = "4. Number heuristic";
-  public static final String DEFAULT_DELAY_RETRY_NAME     = "5. Retry with delays";
-  public static final String DEFAULT_SCHEDULER_PARAM_NAME = "6. Scheduler";
-  public static final String DEFAULT_LOG_NAME             = "7. Log path";
+  public static final String DEFAULT_COMPARISONS_NAME  = "1. Comparisons";
+  public static final String DEFAULT_THRESHOLDS_NAME   = "2. Thresholds";
+  public static final String DEFAULT_PARAMS_OBJVS_NAME = "3. Params objectives";
+  public static final String DEFAULT_HEURISTIC_NAME    = "4. Number heuristic";
+  public static final String DEFAULT_DELAY_RETRY_NAME  = "5. Retry with delays";
+  public static final String DEFAULT_SCHEDULER_NAME    = "6. Scheduler";
+  public static final String DEFAULT_LOG_NAME          = "7. Log path";
 
   public static final String COMPARISONS_REGEX = "[EPLTMS](>[EPLTMS])*";
   public static final String THRESHOLDS_REGEX  = "[0-9]+(.[0-9]+)?(>[0-9]+(.[0-9]+))*";
@@ -191,7 +191,7 @@ public class SetMalleableParametersTask extends AbstractTaskImplementation {
         }
       }).collect(Collectors.toList());
     } else {
-      mparamsIR = mparams.stream().map(x -> new MalleableParameterIR(x)).collect(Collectors.toList());
+      mparamsIR = mparams.stream().map(MalleableParameterIR::new).collect(Collectors.toList());
     }
 
     long nbCombinations = 1;
@@ -206,7 +206,7 @@ public class SetMalleableParametersTask extends AbstractTaskImplementation {
     boolean shouldEstimateMemory = comparisons.contains("S");
     final DSEpointGlobalComparator globalComparator = getGlobalComparator(parameters, graph);
 
-    final String schedulerName = parameters.get(DEFAULT_SCHEDULER_PARAM_NAME).toLowerCase();
+    final String schedulerName = parameters.get(DEFAULT_SCHEDULER_NAME).toLowerCase();
     AbstractConfigurationScheduler acs;
     if (SCHEDULER_PARAM_VALUE_LIST.equalsIgnoreCase(schedulerName)) {
       acs = new ConfigurationSchedulerPeriodic();
@@ -414,6 +414,7 @@ public class SetMalleableParametersTask extends AbstractTaskImplementation {
     parameters.put(DEFAULT_PARAMS_OBJVS_NAME, DEFAULT_PARAMS_OBJVS_VALUE);
     parameters.put(DEFAULT_HEURISTIC_NAME, DEFAULT_HEURISTIC_VALUE);
     parameters.put(DEFAULT_DELAY_RETRY_NAME, DEFAULT_DELAY_RETRY_VALUE);
+    parameters.put(DEFAULT_SCHEDULER_NAME, DEFAULT_SCHEDULER_VALUE);
     parameters.put(DEFAULT_LOG_NAME, DEFAULT_LOG_VALUE);
     return parameters;
   }
