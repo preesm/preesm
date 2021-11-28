@@ -133,7 +133,14 @@ public class FpgaCodeGenerator {
     // the fifo sizes are given in bytes while we want the depth in number of elements
     allFifoSizes.forEach((k, v) -> {
       final long dataTypeSize = scenario.getSimulationInfo().getDataTypeSizeOrDefault(k.getType());
-      allFifoDepths.put(k, (v / dataTypeSize));
+      final long depth = (v / dataTypeSize);
+      // if a fifo depth is less than 2, we promote it to 2
+      if (depth < 2L) {
+        PreesmLogger.getLogger().info(() -> "Fifo " + k.getId() + " had depth " + depth + ", increasing it to 2.");
+        allFifoDepths.put(k, 2L);
+      } else {
+        allFifoDepths.put(k, depth);
+      }
     });
 
     // check broadcast being more than broadcasts ...

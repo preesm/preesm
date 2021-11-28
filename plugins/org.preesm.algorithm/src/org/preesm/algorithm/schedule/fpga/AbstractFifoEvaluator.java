@@ -85,8 +85,6 @@ public abstract class AbstractFifoEvaluator {
    */
   public final void computeMinStartFinishTimeCons(final ActorScheduleInfos producer, final FifoAbstraction fifoAbs,
       final ActorScheduleInfos consumer, final boolean isReversedALAP) {
-    consumer.minInStartTimes.clear();
-    consumer.minInFinishTimes.clear();
     AbstractActor src = hlbd.getAbsGraph().getEdgeSource(fifoAbs);
     AbstractActor dst = hlbd.getAbsGraph().getEdgeTarget(fifoAbs);
     if (isReversedALAP) {

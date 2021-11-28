@@ -1,6 +1,7 @@
 package org.preesm.algorithm.schedule.fpga;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -29,6 +30,7 @@ import org.preesm.model.pisdf.AbstractVertex;
 import org.preesm.model.pisdf.DataPort;
 import org.preesm.model.pisdf.Fifo;
 import org.preesm.model.pisdf.PiGraph;
+import org.preesm.model.pisdf.UserSpecialActor;
 import org.preesm.model.pisdf.statictools.PiMMHelper;
 import org.preesm.model.scenario.Scenario;
 import org.preesm.model.slam.ComponentInstance;
@@ -106,7 +108,7 @@ public class AsapFpgaIIevaluator {
     final Map<AbstractActor, ActorNormalizedInfos> mapActorNormalizedInfos = new LinkedHashMap<>();
     // check and set the II for each subgraph
     for (List<AbstractActor> cc : subgraphsWOInterfaces) {
-      mapActorNormalizedInfos.putAll(checkAndSetActorInfos(cc, scenario, brv));
+      mapActorNormalizedInfos.putAll(checkAndSetActorNormalizedInfos(cc, scenario, brv));
     }
 
     // check the cycles
@@ -159,7 +161,7 @@ public class AsapFpgaIIevaluator {
         }
       }
     }
-    // reuse the finish time of sources as their start time
+    // reuse the finish time of sources as their start time and vice versa
     long maxFinishTime = 0;
     for (final AbstractActor src : hlbd.allSourceActors) {
       final ActorScheduleInfos asiT = mapActorSchedInfosT.get(src);
@@ -169,10 +171,13 @@ public class AsapFpgaIIevaluator {
       final ActorScheduleInfos asi = mapActorSchedInfos.get(src);
       final ActorScheduleInfos asiT = mapActorSchedInfosT.get(src);
       asi.startTime = maxFinishTime - asiT.finishTime;
-      asi.finishTime = asi.startTime + asi.minDuration;
+      // TODO other strategy for the finish time?
+      asi.finishTime = asiT.finishTime; // asi.startTime + asi.minDuration;
       PreesmLogger.getLogger().fine(() -> "ALAP reset start/finish time of " + src.getVertexPath() + " to: "
           + asi.startTime + "/" + asi.finishTime);
     }
+    // reset the temporary in start/finish times
+    resetAllInTimes(mapActorSchedInfos.values());
 
     // ASAP after which we can have FIFO sizes
     long sumFifoSizes = 0L;
@@ -216,6 +221,13 @@ public class AsapFpgaIIevaluator {
     final IStatGenerator statGen = buildStatGenerator(scenario, irRankActors, sumFifoSizes, mapActorSchedInfos,
         mapActorNormalizedInfos);
     return new Pair<>(statGen, allFifoSizes);
+  }
+
+  private static void resetAllInTimes(final Collection<ActorScheduleInfos> asis) {
+    asis.forEach(x -> {
+      x.minInStartTimes.clear();
+      x.minInFinishTimes.clear();
+    });
   }
 
   private static Pair<Map<AbstractActor, ActorScheduleInfos>, Map<AbstractActor, ActorScheduleInfos>>
@@ -334,7 +346,7 @@ public class AsapFpgaIIevaluator {
    *          Repetition vector of actors in cc.
    * @return List of actor infos, sorted by decreasing normGraphII.
    */
-  private static Map<AbstractActor, ActorNormalizedInfos> checkAndSetActorInfos(final List<AbstractActor> cc,
+  private static Map<AbstractActor, ActorNormalizedInfos> checkAndSetActorNormalizedInfos(final List<AbstractActor> cc,
       final Scenario scenario, final Map<AbstractVertex, Long> brv) {
     final ComponentInstance fpga = scenario.getDesign().getComponentInstances().get(0);
     final Map<AbstractActor, ActorNormalizedInfos> mapInfos = new LinkedHashMap<>();
@@ -345,17 +357,26 @@ public class AsapFpgaIIevaluator {
       if (!scenario.getPossibleMappings(ori).contains(fpga)) {
         throw new PreesmRuntimeException("Actor " + ori.getVertexPath() + " is not mapped to the only fpga.");
       }
-      // check timings
-      final long ii = scenario.getTimings().evaluateTimingOrDefault(ori, fpga.getComponent(),
-          TimingType.INITIATION_INTERVAL);
-      final long et = scenario.getTimings().evaluateTimingOrDefault(ori, fpga.getComponent(),
-          TimingType.EXECUTION_TIME);
-      if (et < ii) {
-        throw new PreesmRuntimeException(
-            String.format("Actor %s has its execution time (%d) strictly lower than its initiation interval (%d).",
-                ori.getVertexPath(), et, ii));
-      }
+
       final long maxRate = getActorMaximumRate(aa);
+      long ii;
+      long et;
+
+      if (aa instanceof UserSpecialActor) {
+        // set timings
+        ii = maxRate;
+        et = ii;
+      } else {
+        // check timings
+        ii = scenario.getTimings().evaluateTimingOrDefault(ori, fpga.getComponent(), TimingType.INITIATION_INTERVAL);
+        et = scenario.getTimings().evaluateTimingOrDefault(ori, fpga.getComponent(), TimingType.EXECUTION_TIME);
+        if (et < ii) {
+          throw new PreesmRuntimeException(
+              String.format("Actor %s has its execution time (%d) strictly lower than its initiation interval (%d).",
+                  ori.getVertexPath(), et, ii));
+        }
+      }
+
       if (maxRate > ii) {
         throw new PreesmRuntimeException(String.format(
             "Actor %s has its maximal production/consumption (%d) strictly greater than its initiation interval (%d).",
