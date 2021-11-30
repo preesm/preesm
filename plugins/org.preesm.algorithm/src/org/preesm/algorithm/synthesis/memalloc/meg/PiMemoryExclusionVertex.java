@@ -231,6 +231,10 @@ public class PiMemoryExclusionVertex extends AbstractVertex<PiMemoryExclusionGra
     return this.size;
   }
 
+  public Long getWeightInByte() {
+    return (this.size + 7L) / 8L;
+  }
+
   @Override
   public void setWeight(final Long w) {
     this.size = w;
@@ -284,6 +288,6 @@ public class PiMemoryExclusionVertex extends AbstractVertex<PiMemoryExclusionGra
 
   @Override
   public String toString() {
-    return this.getSource() + "=>" + this.getSink() + ":" + this.getWeight();
+    return this.getSource() + "=>" + this.getSink() + ":" + this.getWeightInByte();
   }
 }

@@ -273,7 +273,7 @@ public class MemoryAllocatorTask extends AbstractTaskImplementation {
         this.alignment = -1;
     }
     if (this.verbose) {
-      this.logger.log(Level.INFO, () -> "Allocation with alignment:=" + this.alignment + ".");
+      this.logger.log(Level.INFO, () -> "Allocation with alignment:=" + this.alignment + " bits.");
     }
 
     // Retrieve the ordering policies to test

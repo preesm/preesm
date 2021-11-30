@@ -87,7 +87,14 @@ public class PiMemoryScriptEngine {
     // Get the logger
     final long alignment = valueAlignment;
     if (verbose) {
-      final String message = "Scripts with alignment:=" + alignment + ".";
+      String message = "Scripts with alignment:=" + alignment + " bits.";
+      this.logger.log(Level.INFO, message);
+
+      if (falseSharingPreventionFlag) {
+        message = "False sharing prevention mecanism is activated.";
+      } else {
+        message = "False sharing prevention mecanism is NOT activated.";
+      }
       this.logger.log(Level.INFO, message);
     }
 
