@@ -113,8 +113,8 @@
         <mainComNode>shared_mem</mainComNode>
         <averageDataSize>1000</averageDataSize>
         <dataTypes>
-            <dataType name="uchar" size="1"/>
-            <dataType name="char" size="1"/>
+            <dataType name="uchar" size="8"/>
+            <dataType name="char" size="8"/>
         </dataTypes>
         <specialVertexOperators/>
     </simuParams>

@@ -16,7 +16,7 @@
         <dftools:data key="variables">
             <dftools:variable name="Allocator(s)" value="Basic"/>
             <dftools:variable name="Best/First Fit order" value="LargestFirst"/>
-            <dftools:variable name="Data alignment" value="None"/>
+            <dftools:variable name="Data alignment" value="Fixed:=8"/>
             <dftools:variable name="Distribution" value="SharedOnly"/>
             <dftools:variable name="Merge broadcasts" value="True"/>
             <dftools:variable name="Nb of Shuffling Tested" value="10"/>

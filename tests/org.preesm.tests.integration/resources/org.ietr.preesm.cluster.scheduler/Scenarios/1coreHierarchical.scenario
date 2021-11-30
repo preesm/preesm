@@ -27,7 +27,7 @@
         <mainComNode>shared_mem</mainComNode>
         <averageDataSize>1000</averageDataSize>
         <dataTypes>
-            <dataType name="void" size="1"/>
+            <dataType name="void" size="8"/>
         </dataTypes>
         <specialVertexOperators>
             <specialVertexOperator path="Core0"/>
