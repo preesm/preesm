@@ -321,8 +321,16 @@ public class Range implements CloneableProperty<Range> {
     return this.start;
   }
 
+  public long getStartInByte() {
+    return (this.start + 7L) / 8L;
+  }
+
   public long getEnd() {
     return this.end;
+  }
+
+  public long getEndInByte() {
+    return (this.end + 7L) / 8L;
   }
 
   private Range(final Range original) {
@@ -339,9 +347,13 @@ public class Range implements CloneableProperty<Range> {
     return getEnd() - getStart();
   }
 
+  public long getLengthInByte() {
+    return getEndInByte() - getStartInByte();
+  }
+
   @Override
   public String toString() {
-    return "[" + getStart() + ".." + getEnd() + "[";
+    return "[" + getStartInByte() + ".." + getEndInByte() + "[";
   }
 
   @Override

@@ -138,16 +138,16 @@ class C6678CPrinter extends CPrinter {
 
 	override printFifoCall(FifoCall fifoCall) '''
 		«IF fifoCall.operation == FifoOperation::POP»
-			cache_inv(«fifoCall.headBuffer.doSwitch», «fifoCall.headBuffer.getNbToken»*sizeof(«fifoCall.headBuffer.type»));
+			cache_inv(«fifoCall.headBuffer.doSwitch», «fifoCall.headBuffer.sizeInByte»); //«fifoCall.headBuffer.getNbToken»*sizeof(«fifoCall.headBuffer.type»)
 			«IF fifoCall.bodyBuffer !== null»
-				cache_inv(«fifoCall.bodyBuffer.doSwitch», «fifoCall.bodyBuffer.getNbToken»*sizeof(«fifoCall.bodyBuffer.type»));
+				cache_inv(«fifoCall.bodyBuffer.doSwitch», «fifoCall.bodyBuffer.sizeInByte»); //«fifoCall.bodyBuffer.getNbToken»*sizeof(«fifoCall.bodyBuffer.type»)
 			«ENDIF»
 		«ENDIF»
 		«super.printFifoCall(fifoCall)»
 		«IF fifoCall.operation == FifoOperation::PUSH || fifoCall.operation == FifoOperation::INIT»
-			cache_wbInv(«fifoCall.headBuffer.doSwitch», «fifoCall.headBuffer.getNbToken»*sizeof(«fifoCall.headBuffer.type»));
+			cache_wbInv(«fifoCall.headBuffer.doSwitch», «fifoCall.headBuffer.sizeInByte»); //«fifoCall.headBuffer.getNbToken»*sizeof(«fifoCall.headBuffer.type»)
 			«IF fifoCall.bodyBuffer !== null»
-				cache_wbInv(«fifoCall.bodyBuffer.doSwitch», «fifoCall.bodyBuffer.getNbToken»*sizeof(«fifoCall.bodyBuffer.type»));
+				cache_wbInv(«fifoCall.bodyBuffer.doSwitch», «fifoCall.bodyBuffer.sizeInByte»); //«fifoCall.bodyBuffer.getNbToken»*sizeof(«fifoCall.bodyBuffer.type»)
 			«ENDIF»
 		«ENDIF»
 		«printCacheCoherency(fifoCall)»
@@ -185,10 +185,10 @@ class C6678CPrinter extends CPrinter {
 				«IF call.parameterDirections.get(i) == PortDirection.INPUT && !((call.parameters.get(i) as Buffer).local)  && !(call.parameters.get(i) instanceof NullBuffer)»
 					«IF (call.parameters.get(i) as Buffer).mergedRange !== null»
 						«FOR range : (call.parameters.get(i) as Buffer).mergedRange»
-							cache_wb(((char*)«call.parameters.get(i).doSwitch») + «range.start», «range.length»);
+							cache_wb(((char*)«call.parameters.get(i).doSwitch») + «range.startInByte», «range.lengthInByte»);
 						«ENDFOR»
 					«ENDIF»
-					cache_inv(«call.parameters.get(i).doSwitch», «(call.parameters.get(i) as Buffer).getNbToken»);//«(call.parameters.get(i) as Buffer).getNbToken»*sizeof(«call.parameters.get(i).type»))
+					cache_inv(«call.parameters.get(i).doSwitch», «(call.parameters.get(i) as Buffer).sizeInByte»); //«(call.parameters.get(i) as Buffer).getNbToken»*sizeof(«call.parameters.get(i).type»)
 				«ENDIF»
 			«ENDFOR»
 		«ENDIF»
