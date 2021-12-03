@@ -4,6 +4,7 @@ import java.util.LinkedHashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
 import org.preesm.commons.exceptions.PreesmRuntimeException;
+import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.model.pisdf.Fifo;
 import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.scenario.Scenario;
@@ -37,6 +38,7 @@ public class FifoTypeChecker {
       final Long typeSize = scenario.getSimulationInfo().getDataTypes().get(typeName);
       if (typeSize == null) {
         result.add("'" + typeName + "'");
+        PreesmLogger.getLogger().warning("Unknown type: " + typeName + ", in Fifo: " + f.getId());
       }
 
     }
