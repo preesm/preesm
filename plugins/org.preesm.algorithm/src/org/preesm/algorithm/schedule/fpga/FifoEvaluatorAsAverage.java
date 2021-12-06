@@ -41,67 +41,46 @@ public class FifoEvaluatorAsAverage extends AbstractFifoEvaluator {
 
     final long overlapDuration = fifoInfos.producer.finishTime - fifoInfos.consumer.startTime;
     if (overlapDuration <= 0) {
-      // simple case
+      // simple case, there is no overlap so we must store all productions
       return dataTypeSize * prodRate * fifoInfos.producer.nbFirings;
     }
+    // otherwise we split the execution in multiple phases:
+    // 1. preamble -- only production of token (at average speed)
+    // 2. overlap -- overlap between producer and consumer (at average speed)
+    // 3. epilog -- only consumption of token (at average speed)
+    // At last, the total size is max (1+2, 2+3)
 
-    final long preambleSize = prodRate * fifoInfos.nbFiringsProdForFirstFiringCons;
     final long consRate = fifoInfos.fifo.getTargetPort().getPortRateExpression().evaluate();
-    final long epilogSize = consRate * fifoInfos.nbFiringsConsForLastFiringProd;
 
-    final long minConsStartTime = fifoInfos.consumer.startTime;
-    // compute average prod firing rates
-    final long remainingFiringsProd = fifoInfos.producer.nbFirings - fifoInfos.nbFiringsProdForFirstFiringCons;
-    final long durationRegularProd = fifoInfos.producer.finishTime - minConsStartTime;
-    final LongFraction regularProdFiringRate = new LongFraction(remainingFiringsProd, durationRegularProd);
-    // compute average cons firing rates
-    final long remainingFiringsCons = fifoInfos.consumer.nbFirings - fifoInfos.nbFiringsConsForLastFiringProd;
-    final long consII = Math.max(fifoInfos.consNorms.oriII, fifoInfos.consNorms.cycledII);
-    final long durationRegularCons = fifoInfos.consumer.finishTime - fifoInfos.nbFiringsConsForLastFiringProd * consII;
-    final LongFraction regularConsFiringRate = new LongFraction(remainingFiringsCons, durationRegularCons);
+    // 1. compute average prod token rates
+    final long totalProductionSize = prodRate * fifoInfos.producer.nbFirings;
+    final long totalProductionDuration = fifoInfos.producer.finishTime - fifoInfos.producer.startTime;
+    final LongFraction averageTokenProduction = new LongFraction(totalProductionSize, totalProductionDuration);
+    final long preambleSize = ((totalProductionDuration - overlapDuration) * averageTokenProduction.getNumerator())
+        / averageTokenProduction.getDenominator();
 
-    // firings average
-    final long maxFiringProdOverlap = (overlapDuration * regularProdFiringRate.getNumerator())
-        / regularProdFiringRate.getDenominator();
-    final long firingProdOverlap = Math.min(remainingFiringsProd, maxFiringProdOverlap);
-    final long firingProdRegularNotOverlap = remainingFiringsProd - firingProdOverlap;
+    // 3. compute average cons token rates
+    final long totalConsumptionSize = consRate * fifoInfos.consumer.nbFirings;
+    final long totalConsumptionDuration = fifoInfos.consumer.finishTime - fifoInfos.consumer.startTime;
+    final LongFraction averageTokenConsumption = new LongFraction(totalConsumptionSize, totalConsumptionDuration);
+    final long epilogSize = ((totalConsumptionDuration - overlapDuration) * averageTokenConsumption.getNumerator())
+        / averageTokenConsumption.getDenominator();
 
-    final long maxFiringConsOverlap = (overlapDuration * regularConsFiringRate.getNumerator())
-        / regularConsFiringRate.getDenominator();
-    final long firingConsOverlap = Math.min(remainingFiringsCons, maxFiringConsOverlap);
-    final long firingConsRegularNotOverlap = remainingFiringsCons - firingConsOverlap;
-
-    // size prod not overlap but average
-    final long regularProdNotOverlapSize = prodRate * firingProdRegularNotOverlap;
-
-    // sizes overlap, four possible cases
-    final long overlapProd = prodRate * firingProdOverlap;
-    final long overlapCons = consRate * firingConsOverlap;
+    // 2. overlap sizes, two possible cases, only increasing variation is counted
+    // TODO check divisions by 0
+    final long overlapProdSize = totalProductionSize - preambleSize;
+    final long overlapConsSize = totalConsumptionSize - epilogSize;
     long overlapSize = 0L;
-    if (prodRate > consRate) {
-      if (overlapProd > overlapCons) {
-        final long extraPeak = (overlapCons + overlapProd - 1L) / overlapProd;
-        overlapSize = (overlapProd - overlapCons) + extraPeak;
-      } else if (firingProdOverlap > 0) {
-        overlapSize = 1L;
-      }
-    } else {
-      if (overlapProd < overlapCons) {
-        final long extraPeak = (overlapProd + overlapCons - 1L) / overlapCons;
-        overlapSize = extraPeak;
-      } else if (firingConsOverlap > 0) {
-        overlapSize = (overlapProd - overlapCons) + 1L;
-      } else {
-        overlapSize = overlapProd;
-      }
-    }
-
-    // size cons not overlap but average
-    final long regularConsNotOverlapSize = consRate * firingConsRegularNotOverlap;
+    if (overlapProdSize > overlapConsSize) {
+      final long extraPeak = (overlapProdSize + overlapConsSize - 1L) / overlapConsSize;
+      overlapSize = (overlapProdSize - overlapConsSize) + extraPeak;
+    } else if (overlapProdSize > 0) {
+      overlapSize = 1L;
+    } // else there is no prod so overlap size is 0L (it's only decreasing)
 
     // sums everything
-    final long sizeProd = preambleSize + regularProdNotOverlapSize + overlapSize;
-    final long sizeCons = Math.max(epilogSize + regularConsNotOverlapSize, overlapSize);
+    final long sizeProd = preambleSize + overlapSize;
+    final long sizeCons = overlapSize + epilogSize;
 
     return dataTypeSize * Math.max(sizeProd, sizeCons);
   }
