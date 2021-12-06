@@ -56,6 +56,7 @@ import org.eclipse.cdt.core.dom.ast.IASTPointerOperator;
 import org.eclipse.cdt.core.dom.ast.IASTSimpleDeclaration;
 import org.eclipse.cdt.core.dom.ast.IASTTranslationUnit;
 import org.eclipse.cdt.core.dom.ast.cpp.ICPPASTDeclarator;
+import org.eclipse.cdt.core.dom.ast.cpp.ICPPASTLinkageSpecification;
 import org.eclipse.cdt.core.dom.ast.cpp.ICPPASTName;
 import org.eclipse.cdt.core.dom.ast.cpp.ICPPASTNamespaceDefinition;
 import org.eclipse.cdt.core.dom.ast.cpp.ICPPASTReferenceOperator;
@@ -185,6 +186,12 @@ public class HeaderParser {
         parseCXXHeaderRecAux(declon, namespaceStack, templateStack, returnTypeStack, resultList);
       }
       namespaceStack.removeLast();
+    } else if (nodeAST instanceof ICPPASTLinkageSpecification) {
+      final ICPPASTLinkageSpecification linkageSpec = (ICPPASTLinkageSpecification) nodeAST;
+      // inside an extern "C" block
+      for (final IASTDeclaration declon : linkageSpec.getDeclarations()) {
+        parseCXXHeaderRecAux(declon, namespaceStack, templateStack, returnTypeStack, resultList);
+      }
     } else if (nodeAST instanceof IASTTranslationUnit) {
       // TOP CASE
       // we got the full file, let's visit the declarations
