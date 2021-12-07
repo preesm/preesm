@@ -63,7 +63,6 @@ import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.pisdf.check.MalleableParameterExprChecker;
 import org.preesm.model.scenario.Scenario;
 import org.preesm.model.slam.Design;
-import org.preesm.model.slam.utils.SlamDesignPEtypeChecker;
 import org.preesm.workflow.elements.Workflow;
 import org.preesm.workflow.implement.AbstractTaskImplementation;
 import org.preesm.workflow.implement.AbstractWorkflowNodeImplementation;
@@ -112,10 +111,17 @@ import org.preesm.workflow.implement.AbstractWorkflowNodeImplementation;
             values = { @Value(name = SetMalleableParametersTask.DEFAULT_DELAY_RETRY_VALUE,
                 effect = "False disables the heuristic.") }),
         @org.preesm.commons.doc.annotations.Parameter(name = SetMalleableParametersTask.DEFAULT_SCHEDULER_NAME,
-            description = "Set the scheduler to use, among: " + SetMalleableParametersTask.SCHEDULER_PARAM_VALUE_LIST
-                + ", " + SetMalleableParametersTask.SCHEDULER_PARAM_VALUE_FPGA + ".",
-            values = { @Value(name = SetMalleableParametersTask.DEFAULT_SCHEDULER_VALUE,
-                effect = "Scheduler used to estimate each configuration point.") }),
+            description = "Set the scheduler used to estimate each configuration point.",
+            values = {
+                @Value(name = SetMalleableParametersTask.SCHEDULER_PARAM_VALUE_FPGA,
+                    effect = "Single FPGA average scheduler."),
+                @Value(name = SetMalleableParametersTask.SCHEDULER_PARAM_VALUE_LIST,
+                    effect = "Homogeneous periodic list scheduler.") }),
+        @org.preesm.commons.doc.annotations.Parameter(name = SetMalleableParametersTask.DEFAULT_CLUSTER_DISTANCE_NAME,
+            description = "Set the clustering (positive) distance to be used"
+                + "for DSE points on the metrics Pareto front.",
+            values = { @Value(name = SetMalleableParametersTask.DEFAULT_CLUSTER_DISTANCE_VALUE,
+                effect = "Disables clustering if zero.") }),
         @org.preesm.commons.doc.annotations.Parameter(name = SetMalleableParametersTask.DEFAULT_LOG_NAME,
             description = "Export all explored points with associated metrics in a csv file.",
             values = { @Value(name = SetMalleableParametersTask.DEFAULT_LOG_VALUE,
@@ -125,21 +131,23 @@ public class SetMalleableParametersTask extends AbstractTaskImplementation {
   public static final String SCHEDULER_PARAM_VALUE_LIST = "homogeneousListPeriodic";
   public static final String SCHEDULER_PARAM_VALUE_FPGA = "singleFPGAavegarge";
 
-  public static final String DEFAULT_COMPARISONS_VALUE  = "T>P>L";
-  public static final String DEFAULT_THRESHOLDS_VALUE   = "0>0>0";
-  public static final String DEFAULT_PARAMS_OBJVS_VALUE = ">";
-  public static final String DEFAULT_HEURISTIC_VALUE    = "false";
-  public static final String DEFAULT_DELAY_RETRY_VALUE  = "false";
-  public static final String DEFAULT_SCHEDULER_VALUE    = SCHEDULER_PARAM_VALUE_LIST;
-  public static final String DEFAULT_LOG_VALUE          = "/Code/generated/";
+  public static final String DEFAULT_COMPARISONS_VALUE      = "T>P>L";
+  public static final String DEFAULT_THRESHOLDS_VALUE       = "0>0>0";
+  public static final String DEFAULT_PARAMS_OBJVS_VALUE     = ">";
+  public static final String DEFAULT_HEURISTIC_VALUE        = "false";
+  public static final String DEFAULT_DELAY_RETRY_VALUE      = "false";
+  public static final String DEFAULT_SCHEDULER_VALUE        = SCHEDULER_PARAM_VALUE_LIST;
+  public static final String DEFAULT_CLUSTER_DISTANCE_VALUE = "0.0";
+  public static final String DEFAULT_LOG_VALUE              = "/Code/generated/";
 
-  public static final String DEFAULT_COMPARISONS_NAME  = "1. Comparisons";
-  public static final String DEFAULT_THRESHOLDS_NAME   = "2. Thresholds";
-  public static final String DEFAULT_PARAMS_OBJVS_NAME = "3. Params objectives";
-  public static final String DEFAULT_HEURISTIC_NAME    = "4. Number heuristic";
-  public static final String DEFAULT_DELAY_RETRY_NAME  = "5. Retry with delays";
-  public static final String DEFAULT_SCHEDULER_NAME    = "6. Scheduler";
-  public static final String DEFAULT_LOG_NAME          = "7. Log path";
+  public static final String DEFAULT_COMPARISONS_NAME      = "1. Comparisons";
+  public static final String DEFAULT_THRESHOLDS_NAME       = "2. Thresholds";
+  public static final String DEFAULT_PARAMS_OBJVS_NAME     = "3. Params objectives";
+  public static final String DEFAULT_HEURISTIC_NAME        = "4. Number heuristic";
+  public static final String DEFAULT_DELAY_RETRY_NAME      = "5. Retry with delays";
+  public static final String DEFAULT_SCHEDULER_NAME        = "6. Scheduler";
+  public static final String DEFAULT_CLUSTER_DISTANCE_NAME = "7. Clustering distance";
+  public static final String DEFAULT_LOG_NAME              = "8. Log path";
 
   public static final String COMPARISONS_REGEX = "[EPLTMS](>[EPLTMS])*";
   public static final String THRESHOLDS_REGEX  = "[0-9]+(.[0-9]+)?(>[0-9]+(.[0-9]+))*";
@@ -152,11 +160,6 @@ public class SetMalleableParametersTask extends AbstractTaskImplementation {
     final Scenario scenario = (Scenario) inputs.get(AbstractWorkflowNodeImplementation.KEY_SCENARIO);
     final PiGraph graph = (PiGraph) inputs.get(AbstractWorkflowNodeImplementation.KEY_PI_GRAPH);
     final Design architecture = (Design) inputs.get(AbstractWorkflowNodeImplementation.KEY_ARCHITECTURE);
-
-    // because our scheduler does not support anything else
-    if (!SlamDesignPEtypeChecker.isHomogeneousCPU(architecture)) {
-      throw new PreesmRuntimeException("This task must be called with a homogeneous CPU architecture, abandon.");
-    }
 
     final Map<String, Object> output = new LinkedHashMap<>();
     output.put(AbstractWorkflowNodeImplementation.KEY_PI_GRAPH, graph);
@@ -209,11 +212,17 @@ public class SetMalleableParametersTask extends AbstractTaskImplementation {
     final String schedulerName = parameters.get(DEFAULT_SCHEDULER_NAME).toLowerCase();
     AbstractConfigurationScheduler acs;
     if (SCHEDULER_PARAM_VALUE_LIST.equalsIgnoreCase(schedulerName)) {
-      acs = new ConfigurationSchedulerPeriodic();
+      acs = new ConfigurationSchedulerPeriodic(shouldEstimateMemory);
     } else if (SCHEDULER_PARAM_VALUE_FPGA.equalsIgnoreCase(schedulerName)) {
+      // for FPGA, the memory will be evaluated in any case
       acs = new ConfigurationSchedulerFPGA();
     } else {
       throw new PreesmRuntimeException("Unknown scheduler.");
+    }
+
+    if (shouldEstimateMemory && !acs.supportsMemoryEstimation()) {
+      PreesmLogger.getLogger().log(Level.WARNING, "Your DSE comparison objectives asks for memory estimation "
+          + "but the scheduler you asked does not support it, ignoring it.");
     }
 
     if (delayRetryValue && !acs.supportsExtraDelayCuts()) {
@@ -221,32 +230,43 @@ public class SetMalleableParametersTask extends AbstractTaskImplementation {
       PreesmLogger.getLogger().log(Level.WARNING,
           "You ask for extra delays/cuts but the scheduler you asked does not support it, ignoring it.");
     }
-    if (shouldEstimateMemory && !acs.supportsMemoryEstimation()) {
-      shouldEstimateMemory = false;
-      PreesmLogger.getLogger().log(Level.WARNING, "Your DSE comparison objectives asks for memory estimation "
-          + "but the scheduler you asked does not support it, ignoring it.");
-    }
 
     PiGraph outputGraph; // different of input graph only if delays has been added by the heuristic
     final SetMalleableParameters smp = new SetMalleableParameters(scenario, graph, architecture, mparamsIR,
-        globalComparator, shouldEstimateMemory, delayRetryValue);
+        globalComparator, delayRetryValue);
 
+    String suffix = "";
     if (heuristicValue) {
       outputGraph = smp.numbersDSE(acs);
+      suffix = "numberh";
     } else {
       outputGraph = smp.exhaustiveDSE(acs);
+      suffix = "exhaustive";
     }
     // erase previous value
     output.put(AbstractWorkflowNodeImplementation.KEY_PI_GRAPH, outputGraph);
+    // clustering of Pareto front
+    final String clusteringDistanceStr = parameters.get(DEFAULT_CLUSTER_DISTANCE_NAME);
+    try {
+      final double dist = Double.parseDouble(clusteringDistanceStr);
+      if (dist > 0.0d) {
+        smp.clusterParetoFront(dist);
+      }
+    } catch (final NumberFormatException e) {
+      PreesmLogger.getLogger().log(Level.WARNING,
+          "The clustering distance could not be parsed to a number, ignoring this step. " + e.getMessage());
+    }
+
     // exports log
     final String logPath = parameters.get(DEFAULT_LOG_NAME);
-    logCsvFile(smp.getComparatorLog(), mparamsIR, workflow, scenario, logPath);
+    logCsvFile(smp.getComparatorLog(), mparamsIR, workflow, scenario, logPath, suffix);
+    logCsvFile(smp.getParetorFrontLog(), mparamsIR, workflow, scenario, logPath, "pareto");
 
     return output;
   }
 
   protected void logCsvFile(final StringBuilder logDSEpoints, final List<MalleableParameterIR> mparamsIR,
-      final Workflow workflow, final Scenario scenario, final String logPath) {
+      final Workflow workflow, final Scenario scenario, final String logPath, final String suffix) {
     final StringBuilder header = new StringBuilder();
     for (MalleableParameterIR mpir : mparamsIR) {
       header.append(mpir.mp.getName() + ";");
@@ -265,7 +285,7 @@ public class SetMalleableParametersTask extends AbstractTaskImplementation {
     final File parent = new File(exportAbsolutePath);
     parent.mkdirs();
 
-    final String fileName = scenario.getScenarioName() + "_DSE_log.csv";
+    final String fileName = scenario.getScenarioName() + "_" + suffix + "DSE_log.csv";
     final File file = new File(parent, fileName);
     try (final FileWriter fw = new FileWriter(file, true)) {
       fw.write(header.toString());
@@ -415,6 +435,7 @@ public class SetMalleableParametersTask extends AbstractTaskImplementation {
     parameters.put(DEFAULT_HEURISTIC_NAME, DEFAULT_HEURISTIC_VALUE);
     parameters.put(DEFAULT_DELAY_RETRY_NAME, DEFAULT_DELAY_RETRY_VALUE);
     parameters.put(DEFAULT_SCHEDULER_NAME, DEFAULT_SCHEDULER_VALUE);
+    parameters.put(DEFAULT_CLUSTER_DISTANCE_NAME, DEFAULT_CLUSTER_DISTANCE_VALUE);
     parameters.put(DEFAULT_LOG_NAME, DEFAULT_LOG_VALUE);
     return parameters;
   }

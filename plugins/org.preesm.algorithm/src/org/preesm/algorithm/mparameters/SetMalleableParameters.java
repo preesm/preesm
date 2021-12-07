@@ -1,12 +1,18 @@
 package org.preesm.algorithm.mparameters;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.logging.Level;
+import org.apache.commons.math3.ml.clustering.Cluster;
+import org.apache.commons.math3.ml.clustering.Clusterable;
+import org.apache.commons.math3.ml.clustering.DBSCANClusterer;
 import org.eclipse.xtext.xbase.lib.Pair;
 import org.preesm.algorithm.mparameters.DSEpointIR.DSEpointGlobalComparator;
+import org.preesm.algorithm.mparameters.DSEpointIR.DSEpointParetoComparator;
 import org.preesm.algorithm.pisdf.autodelays.AutoDelaysTask;
 import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.model.pisdf.Parameter;
@@ -24,17 +30,24 @@ import org.preesm.model.slam.Design;
  */
 public class SetMalleableParameters {
 
+  /**
+   * Defines the minimal number of points to be in a cluster. If higher than 1, there might be no cluster at all with a
+   * too short distance.
+   */
+  public final int NB_POINTS_MIN_CLUSTERING = 2;
+
   protected final Scenario                   scenario;
   protected final PiGraph                    graph;
   protected final Design                     architecture;
   protected final List<MalleableParameterIR> mparamsIR;
   protected final DSEpointGlobalComparator   globalComparator;
-  protected final boolean                    shouldEstimateMemory;
+  protected final DSEpointParetoComparator   paretoComparator;
   protected final boolean                    delayRetryValue;
 
   protected final Map<Parameter, String> backupParamOverride;
 
-  protected StringBuilder logComparator;
+  protected StringBuilder                   logComparator;
+  protected List<DSEpointIRclusteringProxy> paretoFrontAndDsecr;
 
   /**
    * Set the right attributes for the DSE.
@@ -49,21 +62,19 @@ public class SetMalleableParameters {
    *          Malleable parameters IR to be used.
    * @param globalComparator
    *          Global comparator
-   * @param shouldEstimateMemory
-   *          If memory should be estimated.
    * @param delayRetryValue
    *          If cuts should be added.
    */
   public SetMalleableParameters(final Scenario scenario, final PiGraph graph, final Design architecture,
       final List<MalleableParameterIR> mparamsIR, final DSEpointGlobalComparator globalComparator,
-      final boolean shouldEstimateMemory, final boolean delayRetryValue) {
+      final boolean delayRetryValue) {
 
     this.scenario = scenario;
     this.graph = graph;
     this.architecture = architecture;
     this.mparamsIR = mparamsIR;
     this.globalComparator = globalComparator;
-    this.shouldEstimateMemory = shouldEstimateMemory;
+    this.paretoComparator = new DSEpointParetoComparator(globalComparator.comparators);
     this.delayRetryValue = delayRetryValue;
 
     // set the scenario graph since it is used for timings
@@ -73,6 +84,7 @@ public class SetMalleableParameters {
     }
 
     logComparator = new StringBuilder();
+    paretoFrontAndDsecr = new ArrayList<>();
   }
 
   /**
@@ -85,6 +97,17 @@ public class SetMalleableParameters {
   }
 
   /**
+   * Get the log of DSE points on the Pareto front of the metrics only.
+   * 
+   * @return The log in a CSV format.
+   */
+  public StringBuilder getParetorFrontLog() {
+    final StringBuilder sb = new StringBuilder();
+    paretoFrontAndDsecr.forEach(x -> sb.append(x.descr));
+    return sb;
+  }
+
+  /**
    * Run the exhaustive DSE.
    * 
    * @param confSched
@@ -93,6 +116,7 @@ public class SetMalleableParameters {
    */
   public PiGraph exhaustiveDSE(final AbstractConfigurationScheduler confSched) {
     logComparator = new StringBuilder();
+    paretoFrontAndDsecr = new ArrayList<>();
 
     // build and test all possible configurations
     final ParameterCombinationExplorer pce = new ParameterCombinationExplorer(mparamsIR, scenario);
@@ -103,10 +127,13 @@ public class SetMalleableParameters {
       index++;
 
       final DSEpointIR dsep = runAndRetryConfiguration(confSched, index);
-      PreesmLogger.getLogger().log(Level.FINE, () -> dsep.toString());
-      if (dsep.isSchedulable && globalComparator.compare(dsep, bestPoint) < 0) {
-        bestConfig = pce.recordConfiguration();
-        bestPoint = dsep;
+      PreesmLogger.getLogger().log(Level.FINE, dsep::toString);
+      if (dsep.isSchedulable) {
+        if (globalComparator.compare(dsep, bestPoint) < 0) {
+          bestConfig = pce.recordConfiguration();
+          bestPoint = dsep;
+        }
+        paretoFrontierUpdate(paretoFrontAndDsecr, dsep, paretoComparator);
       }
     }
     if (bestConfig == null) {
@@ -128,6 +155,7 @@ public class SetMalleableParameters {
    */
   public PiGraph numbersDSE(final AbstractConfigurationScheduler confSched) {
     logComparator = new StringBuilder();
+    paretoFrontAndDsecr = new ArrayList<>();
 
     // build and test all possible configurations
     ParameterCombinationNumberExplorer pce = null;
@@ -160,6 +188,7 @@ public class SetMalleableParameters {
             bestLocalConfig = pce.recordConfiguration();
             bestLocalPoint = dsep;
           }
+          paretoFrontierUpdate(paretoFrontAndDsecr, dsep, paretoComparator);
         }
       }
       if (bestConfig == null) {
@@ -172,6 +201,34 @@ public class SetMalleableParameters {
 
     return logAndSetBestPoint(bestPceRound, bestPoint, bestConfig);
 
+  }
+
+  protected void paretoFrontierUpdate(final List<DSEpointIRclusteringProxy> listPareto, final DSEpointIR dsep,
+      final DSEpointParetoComparator paretoComparator) {
+
+    final Iterator<DSEpointIRclusteringProxy> itPareto = listPareto.iterator();
+    DSEpointIR currentParetoPoint;
+    while (itPareto.hasNext()) {
+      currentParetoPoint = itPareto.next().dsep;
+      switch (paretoComparator.compare(dsep, currentParetoPoint)) {
+        case -1:
+          // the new point is better than the current one, removing it
+          itPareto.remove();
+          break;
+        case 0:
+          // the new point is not comparable with others
+          break;
+        case 1:
+          // bad point, we can return immediately
+          return;
+        default:
+          break;
+      }
+    }
+    // add the point
+    final StringBuilder sb = new StringBuilder();
+    logCsvContentMparams(sb, mparamsIR, dsep);
+    listPareto.add(new DSEpointIRclusteringProxy(dsep, sb.toString()));
   }
 
   protected DSEpointIR runAndRetryConfiguration(final AbstractConfigurationScheduler confSched, final int index) {
@@ -299,6 +356,31 @@ public class SetMalleableParameters {
         mpir.mp.setExpression(mpir.exprs.get(0));
       }
     }
+  }
+
+  protected class DSEpointIRclusteringProxy implements Clusterable {
+
+    protected final DSEpointIR dsep;
+    protected final String     descr;
+
+    protected DSEpointIRclusteringProxy(final DSEpointIR dsep, final String descr) {
+      this.dsep = dsep;
+      this.descr = descr;
+    }
+
+    @Override
+    public double[] getPoint() {
+      return dsep.getPoint();
+    }
+
+  }
+
+  public void clusterParetoFront(double dist) {
+    final DBSCANClusterer<DSEpointIRclusteringProxy> clusterer = new DBSCANClusterer<>(dist, NB_POINTS_MIN_CLUSTERING);
+    final List<Cluster<DSEpointIRclusteringProxy>> clusters = clusterer.cluster(paretoFrontAndDsecr);
+    // TODO change method, asks nbClusters instead of distance? seems inefficient currently
+    // TODO properly log the clusters
+    PreesmLogger.getLogger().info("The clustering algorithm found: " + clusters.size() + " clusters.");
   }
 
 }

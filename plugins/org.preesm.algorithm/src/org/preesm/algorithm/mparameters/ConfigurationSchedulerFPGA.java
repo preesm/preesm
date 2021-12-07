@@ -44,7 +44,7 @@ public class ConfigurationSchedulerFPGA extends AbstractConfigurationScheduler {
     final int latency = res.statGenerator.getNbUsedOperators();
     // and the final time is actually the graph durationII
     lastEndTime = res.statGenerator.getFinalTime();
-    long memory = architecture.getOperatorComponentInstances().stream().filter(FPGA.class::isInstance)
+    long memory = architecture.getOperatorComponentInstances().stream().filter(x -> (x.getComponent() instanceof FPGA))
         .collect(Collectors.summingLong(res.statGenerator::getMem));
 
     // put back all messages

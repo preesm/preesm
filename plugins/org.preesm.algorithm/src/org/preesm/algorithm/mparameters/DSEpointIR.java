@@ -192,60 +192,6 @@ public class DSEpointIR implements Clusterable {
     }
 
     /**
-     * Compare two DSE points with comparators in the same order as listed in the constructor arguments. All comparators
-     * are checked so that the Pareto front can be built.
-     * 
-     * @author tbourgoi
-     */
-    public static class DSEpointParetoComparator extends DSEpointGlobalComparator {
-
-      /**
-       * Builds a global Pareto comparator calling successively the comparators in the arguments.
-       * 
-       * @param comparators
-       *          List of comparators to call.
-       * @param paramsObjvs
-       *          Map of parameters, as pair of (parentName, parameterName), and their objectives (min: - or max: +),
-       *          evaluated in given order.
-       * 
-       */
-      public DSEpointParetoComparator(List<Comparator<DSEpointIR>> comparators,
-          final LinkedHashMap<Pair<String, String>, Character> paramsObjvs) {
-        // should the paramsObjvs be considered for Pareto front?
-        super(comparators, paramsObjvs);
-      }
-
-      @Override
-      public int compare(DSEpointIR o1, DSEpointIR o2) {
-
-        boolean allMetricsGreaterOrEqual = true;
-        boolean allMetricsLowerOrEqual = true;
-        int res;
-
-        for (final Comparator<DSEpointIR> comparator : comparators) {
-          res = comparator.compare(o1, o2);
-          if (allMetricsGreaterOrEqual && (res < 0)) {
-            // if allMetricsGreaterOrEqual already = false don't need to execute the true statement
-            allMetricsGreaterOrEqual = false;
-          } else if (allMetricsLowerOrEqual && (res > 0)) {
-            allMetricsLowerOrEqual = false;
-          }
-        }
-        if (!allMetricsLowerOrEqual && allMetricsGreaterOrEqual) {
-          // all the metrics of o1 are greater or equals than the metrics of o2
-          return 1;
-        }
-        if (allMetricsLowerOrEqual && !allMetricsGreaterOrEqual) {
-          // all the metrics of o1 are lower or equals than the metrics of o2
-          return -1;
-        }
-
-        return 0;
-      }
-
-    }
-
-    /**
      * Computes values of parameters in the current state of their graph.
      * 
      * @param graph
@@ -414,6 +360,56 @@ public class DSEpointIR implements Clusterable {
 
   }
 
+  /**
+   * Compare two DSE points with comparators in the same order as listed in the constructor arguments. All comparators
+   * are checked so that the Pareto front can be built.
+   * 
+   * @author tbourgoi
+   */
+  public static class DSEpointParetoComparator extends DSEpointGlobalComparator {
+
+    /**
+     * Builds a global Pareto comparator calling successively the comparators in the arguments.
+     * 
+     * @param comparators
+     *          List of comparators to call.
+     * 
+     */
+    public DSEpointParetoComparator(List<Comparator<DSEpointIR>> comparators) {
+      // TODO consider the paramsObjvs for Pareto front
+      super(comparators, new LinkedHashMap<>());
+    }
+
+    @Override
+    public int compare(DSEpointIR o1, DSEpointIR o2) {
+
+      boolean allMetricsGreaterOrEqual = true;
+      boolean allMetricsLowerOrEqual = true;
+      int res;
+
+      for (final Comparator<DSEpointIR> comparator : comparators) {
+        res = comparator.compare(o1, o2);
+        if (allMetricsGreaterOrEqual && (res < 0)) {
+          // if allMetricsGreaterOrEqual already = false don't need to execute the true statement
+          allMetricsGreaterOrEqual = false;
+        } else if (allMetricsLowerOrEqual && (res > 0)) {
+          allMetricsLowerOrEqual = false;
+        }
+      }
+      if (!allMetricsLowerOrEqual && allMetricsGreaterOrEqual) {
+        // all the metrics of o1 are greater or equals than the metrics of o2
+        return 1;
+      }
+      if (allMetricsLowerOrEqual && !allMetricsGreaterOrEqual) {
+        // all the metrics of o1 are lower or equals than the metrics of o2
+        return -1;
+      }
+
+      return 0;
+    }
+
+  }
+
   public static class ParameterComparator implements Comparator<DSEpointIR> {
 
     public final LinkedHashMap<Pair<String, String>, Character> paramsMinOrMax;
@@ -458,8 +454,8 @@ public class DSEpointIR implements Clusterable {
     public Map<Pair<String, String>, Long> getParamsValues(final PiGraph graph) {
       final Map<Pair<String, String>, Long> paramsValues = new HashMap<>();
       for (Entry<Pair<String, String>, Character> en : paramsMinOrMax.entrySet()) {
-        Pair<String, String> p = en.getKey();
-        Parameter param = graph.lookupParameterGivenGraph(p.getValue(), p.getKey());
+        final Pair<String, String> p = en.getKey();
+        final Parameter param = graph.lookupParameterGivenGraph(p.getValue(), p.getKey());
         paramsValues.put(p, param.getExpression().evaluate());
       }
       return paramsValues;
