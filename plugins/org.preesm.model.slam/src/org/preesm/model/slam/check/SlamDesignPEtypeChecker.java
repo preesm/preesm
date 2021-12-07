@@ -1,4 +1,4 @@
-package org.preesm.model.slam.utils;
+package org.preesm.model.slam.check;
 
 import java.util.List;
 import org.preesm.model.slam.CPU;

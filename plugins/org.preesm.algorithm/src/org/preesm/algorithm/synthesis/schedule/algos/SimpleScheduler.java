@@ -50,8 +50,8 @@ import org.preesm.model.pisdf.util.topology.PiSDFTopologyHelper;
 import org.preesm.model.scenario.Scenario;
 import org.preesm.model.slam.ComponentInstance;
 import org.preesm.model.slam.Design;
+import org.preesm.model.slam.check.SlamDesignPEtypeChecker;
 import org.preesm.model.slam.utils.LexicographicComponentInstanceComparator;
-import org.preesm.model.slam.utils.SlamDesignPEtypeChecker;
 
 /**
  * Scheduler that inserts actors in the topological order of their appearance in the graph.

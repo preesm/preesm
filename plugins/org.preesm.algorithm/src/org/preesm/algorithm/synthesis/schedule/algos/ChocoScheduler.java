@@ -63,7 +63,7 @@ import org.preesm.model.pisdf.util.AbstractActorNameComparator;
 import org.preesm.model.scenario.Scenario;
 import org.preesm.model.slam.ComponentInstance;
 import org.preesm.model.slam.Design;
-import org.preesm.model.slam.utils.SlamDesignPEtypeChecker;
+import org.preesm.model.slam.check.SlamDesignPEtypeChecker;
 
 /**
  * This class performs scheduling thanks to a choco constraint programming formulation.

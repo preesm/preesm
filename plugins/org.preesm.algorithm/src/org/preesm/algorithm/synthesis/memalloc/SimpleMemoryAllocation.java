@@ -54,7 +54,7 @@ import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.scenario.Scenario;
 import org.preesm.model.slam.ComponentInstance;
 import org.preesm.model.slam.Design;
-import org.preesm.model.slam.utils.SlamDesignPEtypeChecker;
+import org.preesm.model.slam.check.SlamDesignPEtypeChecker;
 
 /**
  * Allocate 1 physical buffer on the main com node then 1 logical buffer per Fifo in the graph and 1 buffer per delay

@@ -69,7 +69,7 @@ import org.preesm.model.scenario.ScenarioConstants;
 import org.preesm.model.slam.Component;
 import org.preesm.model.slam.ComponentInstance;
 import org.preesm.model.slam.Design;
-import org.preesm.model.slam.utils.SlamDesignPEtypeChecker;
+import org.preesm.model.slam.check.SlamDesignPEtypeChecker;
 
 /**
  * This scheduler handles the periods defined in the PiGraph and in its actors. However, it does not take into account
