@@ -48,7 +48,7 @@ public class FifoEvaluatorAsAverage extends AbstractFifoEvaluator {
     // 1. preamble -- only production of token (at average speed)
     // 2. overlap -- overlap between producer and consumer (at average speed)
     // 3. epilog -- only consumption of token (at average speed)
-    // At last, the total size is max (1+2, 2+3)
+    // At last, the total size is max (1+2, max(2,3))
 
     final long consRate = fifoInfos.fifo.getTargetPort().getPortRateExpression().evaluate();
 
@@ -80,7 +80,7 @@ public class FifoEvaluatorAsAverage extends AbstractFifoEvaluator {
 
     // sums everything
     final long sizeProd = preambleSize + overlapSize;
-    final long sizeCons = overlapSize + epilogSize;
+    final long sizeCons = Math.max(overlapSize, epilogSize);
 
     return dataTypeSize * Math.max(sizeProd, sizeCons);
   }

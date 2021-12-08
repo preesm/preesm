@@ -51,7 +51,7 @@ public class FifoEvaluatorAsArray extends AbstractFifoEvaluator {
     // 5. epilog -- consumption of token produced by the last producer firing (at max speed)
     // 4+5 could be done at the same time, but we separate them to get the average consumption,
     // with a computation symmetrical to the production
-    // At last, the total size is max (1+2+3, 3+4+5)
+    // At last, the total size is max (1+2+3, max(3,4+5))
 
     // 1. preamble
     final long preambleSize = prodRate * fifoInfos.nbFiringsProdForFirstFiringCons;
@@ -114,7 +114,7 @@ public class FifoEvaluatorAsArray extends AbstractFifoEvaluator {
 
     // sums everything
     final long sizeProd = preambleSize + regularProdNotOverlapSize + overlapSize;
-    final long sizeCons = overlapSize + regularConsNotOverlapSize + epilogSize;
+    final long sizeCons = Math.max(overlapSize, regularConsNotOverlapSize + epilogSize);
 
     return dataTypeSize * Math.max(sizeProd, sizeCons);
   }
