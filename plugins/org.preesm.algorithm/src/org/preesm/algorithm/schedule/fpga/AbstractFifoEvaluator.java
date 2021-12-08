@@ -106,19 +106,21 @@ public abstract class AbstractFifoEvaluator {
     }
     // should we consider the previous value?
     long minStartTime = 0;
-    if (isReversedALAP) {
-      minStartTime = consumer.minInStartTimes.stream().min(Long::compare).orElse(consumer.startTime);
-    } else {
-      minStartTime = consumer.minInStartTimes.stream().max(Long::compare).orElse(consumer.startTime);
-    }
+    // TODO only first dependency for ALAP?
+    // if (isReversedALAP) {
+    // minStartTime = consumer.minInStartTimes.stream().min(Long::compare).orElse(consumer.startTime);
+    // } else {
+    minStartTime = consumer.minInStartTimes.stream().max(Long::compare).orElse(consumer.startTime);
+    // }
     consumer.startTime = Math.max(consumer.startTime, minStartTime);
 
     long minFinishTime = 0;
-    if (isReversedALAP) {
-      minFinishTime = consumer.minInFinishTimes.stream().min(Long::compare).orElse(consumer.finishTime);
-    } else {
-      minFinishTime = consumer.minInFinishTimes.stream().max(Long::compare).orElse(consumer.finishTime);
-    }
+    // TODO only first dependency for ALAP?
+    // if (isReversedALAP) {
+    // minFinishTime = consumer.minInFinishTimes.stream().min(Long::compare).orElse(consumer.finishTime);
+    // } else {
+    minFinishTime = consumer.minInFinishTimes.stream().max(Long::compare).orElse(consumer.finishTime);
+    // }
     consumer.finishTime = Math.max(minFinishTime, consumer.startTime + consumer.minDuration);
   }
 

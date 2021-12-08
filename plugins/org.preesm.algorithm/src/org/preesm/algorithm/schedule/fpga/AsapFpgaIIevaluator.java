@@ -159,20 +159,21 @@ public class AsapFpgaIIevaluator {
             fifoEval.computeMinStartFinishTimeCons(reversedCons, fa, reversedProd, true);
           }
         }
+        final ActorScheduleInfos asiT = mapActorSchedInfosT.get(aa);
+        PreesmLogger.getLogger().fine(
+            () -> "ALAP start/finish time of " + aa.getVertexPath() + ": " + asiT.startTime + "/" + asiT.finishTime);
       }
     }
+    // get the latest finish time
+    final long maxFinishTime = mapActorSchedInfosT.values().stream().map(x -> x.finishTime).max(Long::compare)
+        .orElse(0L);
     // reuse the finish time of sources as their start time and vice versa
-    long maxFinishTime = 0;
-    for (final AbstractActor src : hlbd.allSourceActors) {
-      final ActorScheduleInfos asiT = mapActorSchedInfosT.get(src);
-      maxFinishTime = Math.max(maxFinishTime, asiT.finishTime);
-    }
     for (final AbstractActor src : hlbd.allSourceActors) {
       final ActorScheduleInfos asi = mapActorSchedInfos.get(src);
       final ActorScheduleInfos asiT = mapActorSchedInfosT.get(src);
       asi.startTime = maxFinishTime - asiT.finishTime;
       // TODO other strategy for the finish time?
-      asi.finishTime = asiT.finishTime; // asi.startTime + asi.minDuration;
+      asi.finishTime = maxFinishTime - asiT.startTime; // asi.startTime + asi.minDuration;
       PreesmLogger.getLogger().fine(() -> "ALAP reset start/finish time of " + src.getVertexPath() + " to: "
           + asi.startTime + "/" + asi.finishTime);
     }
