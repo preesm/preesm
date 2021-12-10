@@ -4,8 +4,8 @@
 # - arg 1-N file names
 
 # Create project and set top level function
-open_project hls
 variable top [lindex $argv 0]
+open_project $top
 set_top $top
 
 # Include files

@@ -356,14 +356,14 @@ public class FpgaCodeGenerator {
           + "]\n");
       if (ia instanceof DataInputInterface) {
         sb.append("connect_bd_intf_net [get_bd_intf_pins " + KERNEL_NAME_READ + "_0/" + ia.getName()
-            + SUFFIX_INTERFACE_STREAM + "_V] [get_bd_intf_pins " + fifoName + "/S_AXIS]\n"
+            + SUFFIX_INTERFACE_STREAM + "] [get_bd_intf_pins " + fifoName + "/S_AXIS]\n"
             + "connect_bd_intf_net [get_bd_intf_pins " + fifoName + "/M_AXIS] [get_bd_intf_pins " + KERNEL_NAME_TOP
-            + "_0/" + ia.getName() + SUFFIX_INTERFACE_STREAM + "_V]\n");
+            + "_0/" + ia.getName() + SUFFIX_INTERFACE_STREAM + "]\n");
       } else if (ia instanceof DataOutputInterface) {
         sb.append("connect_bd_intf_net [get_bd_intf_pins " + KERNEL_NAME_TOP + "_0/" + ia.getName()
-            + SUFFIX_INTERFACE_STREAM + "_V] [get_bd_intf_pins " + fifoName + "/S_AXIS]\n"
+            + SUFFIX_INTERFACE_STREAM + "] [get_bd_intf_pins " + fifoName + "/S_AXIS]\n"
             + "connect_bd_intf_net [get_bd_intf_pins " + fifoName + "/M_AXIS] [get_bd_intf_pins " + KERNEL_NAME_WRITE
-            + "_0/" + ia.getName() + SUFFIX_INTERFACE_STREAM + "_V]\n");
+            + "_0/" + ia.getName() + SUFFIX_INTERFACE_STREAM + "]\n");
       }
       sb.append("#apply_bd_automation -rule xilinx.com:bd_rule:clkrst -config { Clk {/processing_system7_0/FCLK_CLK0 ("
           + PYNQ_GLOBAL_CLOCK_MHZ + " MHz)} Freq {" + PYNQ_GLOBAL_CLOCK_MHZ
@@ -985,11 +985,13 @@ public class FpgaCodeGenerator {
   }
 
   protected static final String getPragmaAXIStream(InterfaceActor ia) {
-    return "#pragma HLS INTERFACE axis port=" + getFifoStreamName(ia.getDataPort().getFifo()) + "\n";
+    final String name = getFifoStreamName(ia.getDataPort().getFifo());
+    return "#pragma HLS INTERFACE axis port=" + name + " name=" + name + "\n";
   }
 
   protected static final String getPragmaAXIMemory(InterfaceActor ia) {
-    return "#pragma HLS INTERFACE m_axi offset=slave port=" + ia.getName() + SUFFIX_INTERFACE_ARRAY + "\n";
+    final String name = ia.getName() + SUFFIX_INTERFACE_ARRAY;
+    return "#pragma HLS INTERFACE m_axi offset=slave port=" + name + " name=" + name + "\n";
   }
 
   public static final String getFifoDataSizeName(final Fifo fifo) {
