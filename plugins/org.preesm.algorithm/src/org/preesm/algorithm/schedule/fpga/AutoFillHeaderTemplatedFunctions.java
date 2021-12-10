@@ -5,6 +5,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 import org.eclipse.xtext.xbase.lib.Pair;
+import org.preesm.commons.exceptions.PreesmRuntimeException;
+import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.Actor;
 import org.preesm.model.pisdf.CHeaderRefinement;
 import org.preesm.model.pisdf.Fifo;
@@ -64,7 +66,7 @@ public class AutoFillHeaderTemplatedFunctions {
       final Object o = p.getValue();
       final CorrespondingTemplateParameterType c = p.getKey();
       if (c == CorrespondingTemplateParameterType.NONE || c == CorrespondingTemplateParameterType.MULTIPLE) {
-        return null;
+        templateParametersException(refinement, proto);
       }
       if (o instanceof Parameter) {
         final Long value = ((Parameter) o).getExpression().evaluate();
@@ -78,11 +80,11 @@ public class AutoFillHeaderTemplatedFunctions {
         } else if (c == CorrespondingTemplateParameterType.FIFO_DEPTH) {
           evaluatedParams.add(FpgaCodeGenerator.getFifoDataSizeName(f));
         } else {
-          return null;
+          templateParametersException(refinement, proto);
         }
       } else {
         // could not evaluate the related object
-        return null;
+        templateParametersException(refinement, proto);
       }
     }
 
@@ -92,6 +94,11 @@ public class AutoFillHeaderTemplatedFunctions {
 
     final String values = evaluatedParams.stream().collect(Collectors.joining(","));
     return "<" + values + ">";
+  }
+
+  private static void templateParametersException(final CHeaderRefinement refinement, final FunctionPrototype proto) {
+    throw new PreesmRuntimeException("Codegen cannot deduce template parameters values for function " + proto.getName()
+        + " used by actor " + ((AbstractActor) refinement.getRefinementContainer()).getVertexPath());
   }
 
 }
