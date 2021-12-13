@@ -119,9 +119,13 @@ public class FifoChecker extends AbstractPiSDFObjectChecker {
    * @return true if the type of f is not void, false otherwise
    */
   private boolean checkFifoType(final Fifo f) {
-    if (f.getType().equals("void")) {
+    final String fifoType = f.getType();
+    if ("void".equals(fifoType)) {
       reportError(CheckerErrorLevel.FATAL_CODEGEN, f, "Fifo [%s] has void type.", f.getId());
       return false;
+    } else if (fifoType.contains("<") || fifoType.contains(">")) {
+      reportError(CheckerErrorLevel.WARNING, f, "Fifo [%s] type seems to be templated, "
+          + "be aware that template parameter evaluation is not yet available for fifo types.", f.getId());
     }
     return true;
   }

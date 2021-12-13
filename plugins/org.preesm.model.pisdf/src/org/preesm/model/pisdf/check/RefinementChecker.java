@@ -109,7 +109,7 @@ public class RefinementChecker extends AbstractPiSDFObjectChecker {
    */
   public static Pair<String, String> isHlsStreamTemplated(final String argType) {
     final String argTypeWithoutWhiteSpaces = argType.replaceAll("\\s+", "");
-    final String regex1 = "^hls::stream<((" + FIFO_TYPE_TEMPLATED_PREFIX + ")?\\w+)>$";
+    final String regex1 = "^hls::stream<((" + FIFO_TYPE_TEMPLATED_PREFIX + ")?(\\w|[<>])+)>$";
     final Pattern pattern1 = Pattern.compile(regex1);
     final Matcher matcher1 = pattern1.matcher(argTypeWithoutWhiteSpaces);
     if (matcher1.find()) {
@@ -117,8 +117,8 @@ public class RefinementChecker extends AbstractPiSDFObjectChecker {
       return new Pair<>(match, null);
     }
 
-    final String regex2 = "^hls::stream<((" + FIFO_TYPE_TEMPLATED_PREFIX + ")?\\w+),((" + FIFO_DEPTH_TEMPLATED_PREFIX
-        + ")?\\w+)>$";
+    final String regex2 = "^hls::stream<((" + FIFO_TYPE_TEMPLATED_PREFIX + ")?(\\\\w|[<>])+),(("
+        + FIFO_DEPTH_TEMPLATED_PREFIX + ")?\\w+)>$";
     final Pattern pattern2 = Pattern.compile(regex2);
     final Matcher matcher2 = pattern2.matcher(argTypeWithoutWhiteSpaces);
     if (matcher2.find()) {
@@ -489,7 +489,7 @@ public class RefinementChecker extends AbstractPiSDFObjectChecker {
     final PiGraph containerGraph = containerActor.getContainingPiGraph();
     final String prefix = getActorNamePrefix(containerActor);
 
-    // get the hls tempated fifo (not always needed, but factorized for memoization)
+    // get the hls templated fifo (not always needed, but factorized for memoization)
     final Map<String, Pair<CorrespondingTemplateParameterType,
         List<FunctionArgument>>> hlsStreamParamsToFA = getAllHlsStreamTemplateParamNames(proto);
 

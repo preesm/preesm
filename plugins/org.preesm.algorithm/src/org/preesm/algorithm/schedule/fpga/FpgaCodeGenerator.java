@@ -143,6 +143,14 @@ public class FpgaCodeGenerator {
       }
     });
 
+    // check that all actors have refinements
+    final List<Actor> actorsWithoutCrefinement = graph.getActorsWithRefinement().stream()
+        .filter(x -> !(x.getRefinement() instanceof CHeaderRefinement)).collect(Collectors.toList());
+    if (!actorsWithoutCrefinement.isEmpty()) {
+      throw new PreesmRuntimeException("Cannot perform codegen since some actors do not have refinements:\n"
+          + actorsWithoutCrefinement.stream().map(Actor::getVertexPath).collect(Collectors.joining("\n")));
+    }
+
     // check broadcast being more than broadcasts ...
     if (!checkPureBroadcasts(graph) || !checkOtherSpecialActorAbsence(graph)) {
       throw new PreesmRuntimeException("The codegen does not support special actors (fork, join, roundbuffer) yet, "
@@ -554,11 +562,8 @@ public class FpgaCodeGenerator {
     // 2.2- we add all other calls to the map
     final Map<Actor, Pair<String, String>> actorTemplateParts = new LinkedHashMap<>();
     graph.getActorsWithRefinement().forEach(x -> {
-      // TODO should not be check here but at the beginning of the codegen (all actors should have a loop proto)
-      // in prod we could even throw an exception, but useful for tests when no refinement set yet
-      if (x.getRefinement() instanceof CHeaderRefinement) {
-        actorTemplateParts.put(x, AutoFillHeaderTemplatedFunctions.getFilledTemplateFunctionPart(x));
-      }
+      // at this point, all actors should have a CHeaderRefinement
+      actorTemplateParts.put(x, AutoFillHeaderTemplatedFunctions.getFilledTemplateFunctionPart(x));
     });
     generateRegularActorCalls(actorTemplateParts, initActorsCalls, true);
     generateRegularActorCalls(actorTemplateParts, loopActorsCalls, false);
@@ -637,11 +642,7 @@ public class FpgaCodeGenerator {
     for (final Entry<Actor, Pair<String, String>> e : actorTemplateParts.entrySet()) {
       final Actor a = e.getKey();
       final Pair<String, String> templates = e.getValue();
-      if (templates == null) {
-        // TODO remove this test
-        // in prod we could even throw an exception, but useful for tests when no refinement set yet
-        continue;
-      }
+      // templates cannot be null since we check in the constructor that all actors have a CHeaderRefinement
       final String call = generateRegularActorCall((CHeaderRefinement) a.getRefinement(), templates, init);
       if (call != null) {
         actorCalls.put(a, call);
@@ -714,7 +715,7 @@ public class FpgaCodeGenerator {
     }
     // check that we found as many objects as arguments:
     if (listArgNames.size() != proto.getArguments().size()) {
-      throw new PreesmRuntimeException("FPGA codegen coudn't evaluate all the arguments of the prototype of actor "
+      throw new PreesmRuntimeException("FPGA codegen couldn't evaluate all the arguments of the prototype of actor "
           + containerActor.getVertexPath() + ".");
     }
     // and otherwise we merge everything

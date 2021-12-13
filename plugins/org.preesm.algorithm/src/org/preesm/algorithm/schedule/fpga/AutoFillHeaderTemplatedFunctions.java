@@ -98,8 +98,8 @@ public class AutoFillHeaderTemplatedFunctions {
   }
 
   private static void templateParametersException(final CHeaderRefinement refinement, final FunctionPrototype proto) {
-    throw new PreesmRuntimeException("Codegen cannot deduce template parameters values for function " + proto.getName()
-        + " used by actor " + ((AbstractActor) refinement.getRefinementContainer()).getVertexPath());
+    throw new PreesmRuntimeException("FPGA codegen couldn't deduce template parameters values for function "
+        + proto.getName() + " used by actor " + ((AbstractActor) refinement.getRefinementContainer()).getVertexPath());
   }
 
 }
