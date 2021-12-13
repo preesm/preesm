@@ -58,7 +58,8 @@ public class AutoFillHeaderTemplatedFunctions {
 
   protected static String getFilledTemplatePrototypePart(final CHeaderRefinement refinement,
       final FunctionPrototype proto, final List<Pair<Port, FunctionArgument>> correspondingArguments) {
-    final Map<String, Pair<CorrespondingTemplateParameterType, Object>> relatedObjects = RefinementChecker
+    final RefinementChecker refChecker = new RefinementChecker();
+    final Map<String, Pair<CorrespondingTemplateParameterType, Object>> relatedObjects = refChecker
         .getCHeaderCorrespondingTemplateParamObject(refinement, proto, correspondingArguments);
     final List<String> evaluatedParams = new ArrayList<>();
 

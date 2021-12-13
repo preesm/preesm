@@ -49,7 +49,6 @@ import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.xtext.xbase.lib.Pair;
-import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.commons.model.PreesmCopyTracker;
 import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.Actor;
@@ -470,9 +469,9 @@ public class RefinementChecker extends AbstractPiSDFObjectChecker {
    * @return A map of function template parameter names to pair with parameter category as key and related element as
    *         value ({@code null} if not found).
    */
-  public static Map<String, Pair<CorrespondingTemplateParameterType, Object>>
-      getCHeaderCorrespondingTemplateParamObject(final CHeaderRefinement refinement, final FunctionPrototype proto,
-          final List<Pair<Port, FunctionArgument>> correspondingArguments) {
+  public Map<String, Pair<CorrespondingTemplateParameterType, Object>> getCHeaderCorrespondingTemplateParamObject(
+      final CHeaderRefinement refinement, final FunctionPrototype proto,
+      final List<Pair<Port, FunctionArgument>> correspondingArguments) {
     final Map<String, Pair<CorrespondingTemplateParameterType, Object>> result = new LinkedHashMap<>();
     // split the template parameters
     final String rawFunctionName = proto.getName();
@@ -531,11 +530,10 @@ public class RefinementChecker extends AbstractPiSDFObjectChecker {
           if (paramG.getName().equals(prefix + paramName)) {
             relatedObject = paramG;
             relatedObjectCat = CorrespondingTemplateParameterType.GRAPH_PARAM;
-            PreesmLogger.getLogger()
-                .warning(() -> String.format(
-                    "In templated refinement of actor [%s], "
-                        + "template parameter '%s' has been found in the original graph but not in the actor.",
-                    containerActor.getVertexPath(), paramName));
+            reportError(CheckerErrorLevel.WARNING, refinement,
+                "In templated refinement of actor [%s], "
+                    + "template parameter '%s' has been found in the original graph but not in the actor.",
+                containerActor.getVertexPath(), paramName);
             break;
           }
         }
@@ -573,11 +571,10 @@ public class RefinementChecker extends AbstractPiSDFObjectChecker {
       if (relatedObject == null && equalSubparts.length > 1) {
         relatedObject = equalSubparts[1].trim();
         relatedObjectCat = CorrespondingTemplateParameterType.DEFAULT_PARAM;
-        PreesmLogger.getLogger()
-            .warning(() -> String.format(
-                "In templated refinement of actor [%s], "
-                    + "template parameter '%s' has not been found but default value (%s) was provided.",
-                containerActor.getVertexPath(), paramName, equalSubparts[1]));
+        reportError(CheckerErrorLevel.WARNING, refinement,
+            "In templated refinement of actor [%s], "
+                + "template parameter '%s' has not been found but default value (%s) was provided.",
+            containerActor.getVertexPath(), paramName, equalSubparts[1]);
       }
 
       result.put(paramName, new Pair<>(relatedObjectCat, relatedObject));
