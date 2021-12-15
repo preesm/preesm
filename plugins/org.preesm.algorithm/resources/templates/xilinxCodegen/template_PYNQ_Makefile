@@ -1,4 +1,6 @@
-#[[#]]# assumes in your $PATH: vitis_hls, vivado, unzip
+#[[#]]# assumes in your $PATH: vitis_hls, vivado
+
+VIVADO_PARALLEL_JOBS := 2
 
 all: ${KERNEL_NAME_TOP}.bit ${KERNEL_NAME_TOP}.hwh
 
@@ -11,7 +13,7 @@ ${KERNEL_NAME_TOP}.hwh: ${KERNEL_NAME_TOP}.bit
 
 vivado/vivado.runs/impl_1/design_1_wrapper.bit: ${KERNEL_NAME_TOP}.zip ${KERNEL_NAME_READ}.zip ${KERNEL_NAME_WRITE}.zip
 	rm -rf vivado
-	vivado -mode tcl -source $SCRIPTS_SUBDIR/script_vivado.tcl
+	vivado -mode tcl -source $SCRIPTS_SUBDIR/script_vivado.tcl -tclargs -j $(VIVADO_PARALLEL_JOBS)
 
 ${KERNEL_NAME_TOP}.zip: $TOP_KERNEL_SOURCE ../include
 	vitis_hls $SCRIPTS_SUBDIR/script_hls.tcl $KERNEL_NAME_TOP $+
