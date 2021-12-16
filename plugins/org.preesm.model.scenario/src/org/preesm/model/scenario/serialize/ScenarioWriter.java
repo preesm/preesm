@@ -115,6 +115,7 @@ public class ScenarioWriter {
 
     final Element root = this.dom.getDocumentElement();
 
+    writeFlags(root);
     writeFiles(root);
     writeConstraints(root);
     writeTimings(root);
@@ -124,6 +125,20 @@ public class ScenarioWriter {
     writeEnergyConfigs(root);
 
     return this.dom;
+  }
+
+  /**
+   * Adds the flags.
+   *
+   * @param parent
+   *          the parent
+   */
+  private void writeFlags(final Element parent) {
+    final Element flags = this.dom.createElement("flags");
+    parent.appendChild(flags);
+
+    final Element sizesAreInBit = this.dom.createElement("sizesAreInBit");
+    flags.appendChild(sizesAreInBit);
   }
 
   /**

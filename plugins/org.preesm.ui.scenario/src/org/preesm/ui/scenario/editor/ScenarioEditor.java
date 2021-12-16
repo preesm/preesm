@@ -44,6 +44,7 @@ import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.NullProgressMonitor;
+import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IEditorSite;
@@ -56,6 +57,7 @@ import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.preesm.model.scenario.Scenario;
 import org.preesm.model.scenario.serialize.ScenarioParser;
 import org.preesm.model.scenario.serialize.ScenarioWriter;
+import org.preesm.ui.PreesmUIPlugin;
 import org.preesm.ui.scenario.editor.codegen.CodegenPage;
 import org.preesm.ui.scenario.editor.constraints.ConstraintsPage;
 import org.preesm.ui.scenario.editor.energy.EnergyPage;
@@ -117,6 +119,12 @@ public class ScenarioEditor extends SharedHeaderFormEditor implements IPropertyL
       final ScenarioParser parser = new ScenarioParser();
       try {
         this.scenario = parser.parseXmlFile(this.scenarioFile);
+
+        if (!this.scenario.getSizesAreInBit()) {
+          MessageDialog.openError(PreesmUIPlugin.getDefault().getWorkbench().getActiveWorkbenchWindow().getShell(),
+              "Scenario is out-of-date",
+              "The Scenario was created with an older version of PREESM. Change the datatype sizes from bytes to bits in the Simulation tab and save the Scenario.");
+        }
       } catch (final Exception e) {
         final String errorTitle = "Could not open scenario";
         ErrorWithExceptionDialog.errorDialogWithStackTrace(errorTitle, e);

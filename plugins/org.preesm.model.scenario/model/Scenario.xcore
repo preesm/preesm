@@ -104,6 +104,7 @@ class Scenario {
 	contains ParameterValueOverride[] parameterValues opposite scenario
 	contains PapifyConfig papifyConfig opposite scenario
 	contains EnergyConfig energyConfig opposite scenario
+	Boolean sizesAreInBit = "false"
 	op String getScenarioName() {
 		val IPath algoPath = new Path(algorithm.url).removeFileExtension();
 		val String algoName = algoPath.lastSegment();
