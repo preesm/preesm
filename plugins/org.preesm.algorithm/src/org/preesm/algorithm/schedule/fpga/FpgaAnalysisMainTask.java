@@ -37,7 +37,7 @@ import org.preesm.workflow.implement.AbstractTaskImplementation;
 import org.preesm.workflow.implement.AbstractWorkflowNodeImplementation;
 
 /**
- * This task proposes to analyse throughput bottleneck of a PiGraph executed on FPGA, as well as to estimate its
+ * This task proposes to analyze throughput bottleneck of a PiGraph executed on FPGA, as well as to estimate its
  * requirements in FIFO sizes.
  * 
  * @author ahonorat
@@ -73,15 +73,14 @@ public class FpgaAnalysisMainTask extends AbstractTaskImplementation {
     final PiGraph algorithm = (PiGraph) inputs.get(AbstractWorkflowNodeImplementation.KEY_PI_GRAPH);
     final Design architecture = (Design) inputs.get(AbstractWorkflowNodeImplementation.KEY_ARCHITECTURE);
     final Scenario scenario = (Scenario) inputs.get(AbstractWorkflowNodeImplementation.KEY_SCENARIO);
-
     final String fifoEvaluatorName = parameters.get(FIFO_EVAL_PARAM_NAME);
+
     // check everything and perform analysis
     final AnalysisResultFPGA res = checkAndAnalyze(algorithm, architecture, scenario, fifoEvaluatorName);
 
+    // Optionally shows the Gantt diagram
     final String showSchedStr = parameters.get(SHOW_SCHED_PARAM_NAME);
     final boolean showSched = Boolean.parseBoolean(showSchedStr);
-
-    // Optionally shows the Gantt diagram
     if (showSched) {
       final IEditorInput input = new StatEditorInput(res.statGenerator);
 

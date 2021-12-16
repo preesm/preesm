@@ -14,8 +14,10 @@ PREESM Changelog
 * (SLAM) FPGA and CPU processing elements have they own type, which replace Operators.
 * (scenario) multiple kinds of timings can be stored, especially for FPGA.
 * (UI) The parsing of C/C++ functions for actor refinements is safer, now done by Eclipse CDT instead of handmade regex.
-* (UI) new menu popup action to generate C header refinements of PiSDF graphs.
+* (UI) New menu popup action to generate C header refinements of PiSDF graphs.
 * (UI) Menu popup actions from right click in the diagram are grouped in a "Preesm" submenu (as in the Project Explorer view).
+* (UI) New menu actions for ports in PiSDF graphs to exchange ports category and direction (accessible from a right-click on PiSDF diagrams).
+* (algo) Design Space Exploration of Malleable Parameters now computes memory footprint and Pareto front (integration of tbourgoi's work).
 
 ### Bug fix
 * Add explicit log when data type size is not set in scenario making memory scripts crash.
