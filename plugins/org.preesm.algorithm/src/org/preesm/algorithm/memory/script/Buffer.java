@@ -54,6 +54,7 @@ import org.preesm.commons.exceptions.PreesmRuntimeException;
  * This class implements the Buffer concept used in memory scripts.
  *
  * @author ahonorat
+ * @author kdesnos
  */
 public class Buffer {
 

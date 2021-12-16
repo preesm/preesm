@@ -56,6 +56,7 @@ import org.preesm.model.pisdf.Fifo;
  * This class implements the Buffer concept used in memory scripts.
  *
  * @author ahonorat
+ * @author kdesnos
  */
 public class PiBuffer {
 

@@ -122,7 +122,7 @@ public class ScenarioEditor extends SharedHeaderFormEditor implements IPropertyL
 
         if (!this.scenario.getSizesAreInBit()) {
           MessageDialog.openError(PreesmUIPlugin.getDefault().getWorkbench().getActiveWorkbenchWindow().getShell(),
-              "Scenario is out-of-date",
+              "Scenario is out-of-date.",
               "The Scenario was created with an older version of PREESM. Change the datatype sizes from bytes to bits in the Simulation tab and save the Scenario.");
         }
       } catch (final Exception e) {
