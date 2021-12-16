@@ -394,7 +394,30 @@
    <!-- keyboard shortcuts -->
    <extension
          point="org.eclipse.ui.bindings">
-      <!-- ?? -->
+      
+      <!-- Ctrl + right => Keyboard shortcut to exchange port direction -->
+      <key
+            commandId="org.eclipse.graphiti.ui.featureExecutionCommand"
+            contextId="org.ietr.preesm.experiment.ui.pimm"
+            schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"
+            sequence="M1+ARROW_RIGHT">
+         <parameter
+               id="org.eclipse.graphiti.ui.featureHint"
+               value="exchangeDirection">
+         </parameter>
+      </key>
+      <!-- Ctrl + left => Keyboard shortcut to exchange port category -->
+      <key
+            commandId="org.eclipse.graphiti.ui.featureExecutionCommand"
+            contextId="org.ietr.preesm.experiment.ui.pimm"
+            schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"
+            sequence="M1+ARROW_LEFT">
+         <parameter
+               id="org.eclipse.graphiti.ui.featureHint"
+               value="exchangeCategory">
+         </parameter>
+      </key>
+      <!-- Ctrl + up => Keyboard shortcut to move up port -->
       <key
             commandId="org.eclipse.graphiti.ui.featureExecutionCommand"
             contextId="org.ietr.preesm.experiment.ui.pimm"
@@ -405,7 +428,7 @@
                value="up">
          </parameter>
       </key>
-      <!-- ?? -->
+      <!-- Ctrl + up => Keyboard shortcut to move down port -->
       <key
             commandId="org.eclipse.graphiti.ui.featureExecutionCommand"
             contextId="org.ietr.preesm.experiment.ui.pimm"
@@ -472,6 +495,10 @@
       <menuContribution
             allPopups="false"
             locationURI="popup:org.eclipse.ui.popup.any?after=additions">
+         <menu
+               icon="resources/icons/preesmLogo_16x16.png"
+               id="org.preesm.ui.menu1"
+               label="Preesm">
                     <!-- Check the selected pimm file -->
             <command
                   commandId="org.preesm.ui.pisdf.command.PimmChecker"
@@ -580,7 +607,8 @@
 				</with>
 				</and>
 			</visibleWhen>
-        </command>        
+        </command>
+        </menu>
       </menuContribution>
       <!-- ############################################################## -->
       <!-- actions available in the project navigator (not PiMM specific) -->

@@ -33,20 +33,18 @@ public abstract class AbstractFifoEvaluator {
     final ActorScheduleInfos   producer;
     final ActorNormalizedInfos prodNorms;
     final long                 nbFiringsProdForFirstFiringCons;
-    final FifoAbstraction      fifoAbs;
     final Fifo                 fifo;
     final long                 nbFiringsConsForLastFiringProd;
     final ActorScheduleInfos   consumer;
     final ActorNormalizedInfos consNorms;
 
+    // should we store fifoAbs? and the isReversed property?
     protected FifoInformations(final ActorScheduleInfos producer, final ActorNormalizedInfos prodNorms,
-        final long nbFiringsProdForFirstFiringCons, final FifoAbstraction fifoAbs, final Fifo fifo,
-        final long nbFiringsConsForLastFiringProd, final ActorScheduleInfos consumer,
-        final ActorNormalizedInfos consNorms) {
+        final long nbFiringsProdForFirstFiringCons, final Fifo fifo, final long nbFiringsConsForLastFiringProd,
+        final ActorScheduleInfos consumer, final ActorNormalizedInfos consNorms) {
       this.producer = producer;
       this.prodNorms = prodNorms;
       this.nbFiringsProdForFirstFiringCons = nbFiringsProdForFirstFiringCons;
-      this.fifoAbs = fifoAbs;
       this.fifo = fifo;
       this.nbFiringsConsForLastFiringProd = nbFiringsConsForLastFiringProd;
       this.consumer = consumer;
@@ -81,22 +79,26 @@ public abstract class AbstractFifoEvaluator {
    *          Fifo between the producer and the consumer (abstract level).
    * @param consumer
    *          Schedule informations about consumer (to be set).
-   * @param firstDepOnly
-   *          Whether or not only the first dep must be considered to compute the minimum start time.
+   * @param isReversedALAP
+   *          If true, only the first dep must be considered to compute the minimum start time. If true, {@code fifoAbs}
+   *          is reversed (true if evaluating in reversed topological order).
    */
   public final void computeMinStartFinishTimeCons(final ActorScheduleInfos producer, final FifoAbstraction fifoAbs,
-      final ActorScheduleInfos consumer, final boolean firstDepOnly) {
-    consumer.minInStartTimes.clear();
-    consumer.minInFinishTimes.clear();
-    final AbstractActor src = hlbd.getAbsGraph().getEdgeSource(fifoAbs);
-    final AbstractActor dst = hlbd.getAbsGraph().getEdgeTarget(fifoAbs);
+      final ActorScheduleInfos consumer, final boolean isReversedALAP) {
+    AbstractActor src = hlbd.getAbsGraph().getEdgeSource(fifoAbs);
+    AbstractActor dst = hlbd.getAbsGraph().getEdgeTarget(fifoAbs);
+    if (isReversedALAP) {
+      final AbstractActor temp = src;
+      src = dst;
+      dst = temp;
+    }
 
-    final long nbFiringsProdForFirstFiringCons = nbfOpposite(fifoAbs, 1L, true, false);
-    final long nbFiringsConsForLastFiringProd = nbfOpposite(fifoAbs, 1L, false, false);
+    final long nbFiringsProdForFirstFiringCons = nbfOpposite(fifoAbs, 1L, true & !isReversedALAP, false);
+    final long nbFiringsConsForLastFiringProd = nbfOpposite(fifoAbs, 1L, false | isReversedALAP, false);
 
     for (final Fifo fifo : fifoAbs.fifos) {
       final FifoInformations fifoInfos = new FifoInformations(producer, mapActorNormalizedInfos.get(src),
-          nbFiringsProdForFirstFiringCons, fifoAbs, fifo, nbFiringsConsForLastFiringProd, consumer,
+          nbFiringsProdForFirstFiringCons, fifo, nbFiringsConsForLastFiringProd, consumer,
           mapActorNormalizedInfos.get(dst));
       final Pair<Long, Long> sf = computeMinStartFinishTimeCons(fifoInfos);
       consumer.minInStartTimes.add(sf.getKey());
@@ -104,19 +106,21 @@ public abstract class AbstractFifoEvaluator {
     }
     // should we consider the previous value?
     long minStartTime = 0;
-    if (firstDepOnly) {
-      minStartTime = consumer.minInStartTimes.stream().min(Long::compare).orElse(consumer.startTime);
-    } else {
-      minStartTime = consumer.minInStartTimes.stream().max(Long::compare).orElse(consumer.startTime);
-    }
+    // TODO only first dependency for ALAP?
+    // if (isReversedALAP) {
+    // minStartTime = consumer.minInStartTimes.stream().min(Long::compare).orElse(consumer.startTime);
+    // } else {
+    minStartTime = consumer.minInStartTimes.stream().max(Long::compare).orElse(consumer.startTime);
+    // }
     consumer.startTime = Math.max(consumer.startTime, minStartTime);
 
     long minFinishTime = 0;
-    if (firstDepOnly) {
-      minFinishTime = consumer.minInFinishTimes.stream().min(Long::compare).orElse(consumer.finishTime);
-    } else {
-      minFinishTime = consumer.minInFinishTimes.stream().max(Long::compare).orElse(consumer.finishTime);
-    }
+    // TODO only first dependency for ALAP?
+    // if (isReversedALAP) {
+    // minFinishTime = consumer.minInFinishTimes.stream().min(Long::compare).orElse(consumer.finishTime);
+    // } else {
+    minFinishTime = consumer.minInFinishTimes.stream().max(Long::compare).orElse(consumer.finishTime);
+    // }
     consumer.finishTime = Math.max(minFinishTime, consumer.startTime + consumer.minDuration);
   }
 
@@ -144,9 +148,10 @@ public abstract class AbstractFifoEvaluator {
     List<Long> fifoSizes = new ArrayList<>();
     for (final Fifo fifo : fifoAbs.fifos) {
       final FifoInformations fifoInfos = new FifoInformations(producer, mapActorNormalizedInfos.get(src),
-          nbFiringsProdForFirstFiringCons, fifoAbs, fifo, nbFiringsConsForLastFiringProd, consumer,
+          nbFiringsProdForFirstFiringCons, fifo, nbFiringsConsForLastFiringProd, consumer,
           mapActorNormalizedInfos.get(dst));
       final long size = computeFifoSize(fifoInfos);
+
       fifoSizes.add(size);
     }
     return fifoSizes;

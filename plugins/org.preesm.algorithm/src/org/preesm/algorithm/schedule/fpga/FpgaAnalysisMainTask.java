@@ -31,13 +31,13 @@ import org.preesm.model.pisdf.statictools.PiSDFFlattener;
 import org.preesm.model.scenario.Scenario;
 import org.preesm.model.scenario.check.FifoTypeChecker;
 import org.preesm.model.slam.Design;
-import org.preesm.model.slam.utils.SlamDesignPEtypeChecker;
+import org.preesm.model.slam.check.SlamDesignPEtypeChecker;
 import org.preesm.workflow.elements.Workflow;
 import org.preesm.workflow.implement.AbstractTaskImplementation;
 import org.preesm.workflow.implement.AbstractWorkflowNodeImplementation;
 
 /**
- * This task proposes to analyse throughput bottleneck of a PiGraph executed on FPGA, as well as to estimate its
+ * This task proposes to analyze throughput bottleneck of a PiGraph executed on FPGA, as well as to estimate its
  * requirements in FIFO sizes.
  * 
  * @author ahonorat
@@ -49,13 +49,22 @@ import org.preesm.workflow.implement.AbstractWorkflowNodeImplementation;
         + "Periods in the graph are not taken into account.",
     inputs = { @Port(name = "PiMM", type = PiGraph.class), @Port(name = "architecture", type = Design.class),
         @Port(name = "scenario", type = Scenario.class) },
-    parameters = { @Parameter(name = FpgaAnalysisMainTask.SHOW_SCHED_PARAM_NAME,
-        description = "Whether or not the schedule must be shown at the end.", values = {
-            @Value(name = FpgaAnalysisMainTask.SHOW_SCHED_PARAM_VALUE, effect = "False disables this feature.") }), })
+    parameters = {
+        @Parameter(name = FpgaAnalysisMainTask.SHOW_SCHED_PARAM_NAME,
+            description = "Whether or not the schedule must be shown at the end.",
+            values = {
+                @Value(name = FpgaAnalysisMainTask.SHOW_SCHED_PARAM_VALUE, effect = "False disables this feature.") }),
+        @Parameter(name = FpgaAnalysisMainTask.FIFO_EVAL_PARAM_NAME,
+            description = "The name of fifo evaluator to be used.",
+            values = { @Value(name = AsapFpgaIIevaluator.FIFO_EVALUATOR_AVG, effect = "Evaluate with average mode."),
+                @Value(name = AsapFpgaIIevaluator.FIFO_EVALUATOR_SDF, effect = "Evaluate with SDF mode.") }) })
 public class FpgaAnalysisMainTask extends AbstractTaskImplementation {
 
   public static final String SHOW_SCHED_PARAM_NAME  = "Show schedule ?";
   public static final String SHOW_SCHED_PARAM_VALUE = "false";
+
+  public static final String FIFO_EVAL_PARAM_NAME  = "Fifo evaluator: ";
+  public static final String FIFO_EVAL_PARAM_VALUE = AsapFpgaIIevaluator.FIFO_EVALUATOR_AVG;
 
   @Override
   public Map<String, Object> execute(Map<String, Object> inputs, Map<String, String> parameters,
@@ -64,7 +73,77 @@ public class FpgaAnalysisMainTask extends AbstractTaskImplementation {
     final PiGraph algorithm = (PiGraph) inputs.get(AbstractWorkflowNodeImplementation.KEY_PI_GRAPH);
     final Design architecture = (Design) inputs.get(AbstractWorkflowNodeImplementation.KEY_ARCHITECTURE);
     final Scenario scenario = (Scenario) inputs.get(AbstractWorkflowNodeImplementation.KEY_SCENARIO);
+    final String fifoEvaluatorName = parameters.get(FIFO_EVAL_PARAM_NAME);
 
+    // check everything and perform analysis
+    final AnalysisResultFPGA res = checkAndAnalyze(algorithm, architecture, scenario, fifoEvaluatorName);
+
+    // Optionally shows the Gantt diagram
+    final String showSchedStr = parameters.get(SHOW_SCHED_PARAM_NAME);
+    final boolean showSched = Boolean.parseBoolean(showSchedStr);
+    if (showSched) {
+      final IEditorInput input = new StatEditorInput(res.statGenerator);
+
+      // Check if the workflow is running in command line mode
+      try {
+        // Run statistic editor
+        PlatformUI.getWorkbench().getDisplay().asyncExec(new EditorRunnable(input));
+      } catch (final IllegalStateException e) {
+        PreesmLogger.getLogger().info("Gantt display is impossible in this context."
+            + " Ignore this log entry if you are running the command line version of Preesm.");
+      }
+
+    }
+
+    // codegen
+    FpgaCodeGenerator.generateFiles(scenario, res.flatGraph, res.interfaceRates, res.flatFifoSizes);
+
+    return new HashMap<>();
+  }
+
+  /**
+   * Wraps the results in a single object.
+   * 
+   * @author ahonorat
+   */
+  public static class AnalysisResultFPGA {
+    // flattened graph
+    public final PiGraph flatGraph;
+    // repetition vector of the flat graph
+    public final Map<AbstractVertex, Long> flatBrv;
+    // interface rates (repetition factor + rate)
+    public final Map<InterfaceActor, Pair<Long, Long>> interfaceRates;
+    // computed fifo sizes
+    public final Map<Fifo, Long> flatFifoSizes;
+    // computed stats for UI or other
+    public final IStatGenerator statGenerator;
+
+    private AnalysisResultFPGA(final PiGraph flatGraph, final Map<AbstractVertex, Long> flatBrv,
+        final Map<InterfaceActor, Pair<Long, Long>> interfaceRates, final Map<Fifo, Long> flatFifoSizes,
+        final IStatGenerator statGenerator) {
+      this.flatGraph = flatGraph;
+      this.flatBrv = flatBrv;
+      this.interfaceRates = interfaceRates;
+      this.flatFifoSizes = flatFifoSizes;
+      this.statGenerator = statGenerator;
+    }
+  }
+
+  /**
+   * Check the inputs and analyze the graph for FPGA scheduling + buffer sizing.
+   * 
+   * @param algorithm
+   *          Graph to be analyzed (will be flattened).
+   * @param architecture
+   *          Targeted architecture.
+   * @param scenario
+   *          Application informations.
+   * @param fifoEvaluatorName
+   *          String representing the evaluator to be used (for scheduling and fifo sizing).
+   * @return The analysis results.
+   */
+  public static AnalysisResultFPGA checkAndAnalyze(final PiGraph algorithm, final Design architecture,
+      final Scenario scenario, final String fifoEvaluatorName) {
     if (!SlamDesignPEtypeChecker.isSingleFPGA(architecture)) {
       throw new PreesmRuntimeException("This task must be called with a single FPGA architecture, abandon.");
     }
@@ -83,30 +162,10 @@ public class FpgaAnalysisMainTask extends AbstractTaskImplementation {
     }
 
     // schedule the graph
-    final Pair<IStatGenerator, Map<Fifo, Long>> eval = AsapFpgaIIevaluator.performAnalysis(flatGraph, scenario, brv);
-    final IStatGenerator schedStats = eval.getKey();
+    final Pair<IStatGenerator,
+        Map<Fifo, Long>> eval = AsapFpgaIIevaluator.performAnalysis(flatGraph, scenario, brv, fifoEvaluatorName);
 
-    final String showSchedStr = parameters.get(SHOW_SCHED_PARAM_NAME);
-    final boolean showSched = Boolean.parseBoolean(showSchedStr);
-
-    // Optionally shows the Gantt diagram
-    if (showSched) {
-      final IEditorInput input = new StatEditorInput(schedStats);
-
-      // Check if the workflow is running in command line mode
-      try {
-        // Run statistic editor
-        PlatformUI.getWorkbench().getDisplay().asyncExec(new EditorRunnable(input));
-      } catch (final IllegalStateException e) {
-        PreesmLogger.getLogger().info("Gantt display is impossible in this context."
-            + " Ignore this log entry if you are running the command line version of Preesm.");
-      }
-
-      FpgaCodeGenerator.generateFiles(scenario, flatGraph, interfaceRates, eval.getValue());
-
-    }
-
-    return new HashMap<>();
+    return new AnalysisResultFPGA(flatGraph, brv, interfaceRates, eval.getValue(), eval.getKey());
   }
 
   private static Map<InterfaceActor, Pair<Long, Long>> checkInterfaces(final PiGraph flatGraph,
@@ -140,7 +199,10 @@ public class FpgaAnalysisMainTask extends AbstractTaskImplementation {
 
   @Override
   public Map<String, String> getDefaultParameters() {
-    return new HashMap<>();
+    final Map<String, String> defaultParams = new LinkedHashMap<>();
+    defaultParams.put(SHOW_SCHED_PARAM_NAME, SHOW_SCHED_PARAM_VALUE);
+    defaultParams.put(FIFO_EVAL_PARAM_NAME, FIFO_EVAL_PARAM_VALUE);
+    return defaultParams;
   }
 
   @Override

@@ -8,6 +8,7 @@ Bundle-ClassPath: .
 Bundle-Localization: plugin
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Export-Package: org.preesm.model.slam,
+ org.preesm.model.slam.check,
  org.preesm.model.slam.generator,
  org.preesm.model.slam.impl,
  org.preesm.model.slam.process,

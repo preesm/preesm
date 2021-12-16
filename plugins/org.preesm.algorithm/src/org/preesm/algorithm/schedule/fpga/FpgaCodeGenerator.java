@@ -1,6 +1,6 @@
 package org.preesm.algorithm.schedule.fpga;
 
-import java.io.File;
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.StringWriter;
 import java.util.ArrayList;
@@ -14,6 +14,7 @@ import org.apache.velocity.app.VelocityEngine;
 import org.eclipse.xtext.xbase.lib.Pair;
 import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.preesm.commons.files.PreesmIOHelper;
+import org.preesm.commons.files.PreesmResourcesHelper;
 import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.commons.model.PreesmCopyTracker;
 import org.preesm.model.pisdf.AbstractActor;
@@ -52,9 +53,25 @@ public class FpgaCodeGenerator {
 
   public static final String TEMPLATE_DEFINE_HEADER_NAME = "PreesmAutoDefinedSizes.h";
 
-  public static final String TEMPLATE_HOST_RES_LOCATION =
+  public static final String TEMPLATE_PYNQ_MAKEFILE_RES_LOCATION =
 
-      "templates/xilinxCodegen/template_host_fpga.cpp";
+      "templates/xilinxCodegen/template_PYNQ_Makefile";
+
+  public static final String TEMPLATE_PYNQ_SCRIPT_VIVADO_RES_LOCATION =
+
+      "templates/xilinxCodegen/template_PYNQ_script_vivado.tcl";
+
+  public static final String TEMPLATE_PYNQ_HOST_NOTEBOOK_RES_LOCATION =
+
+      "templates/xilinxCodegen/template_PYNQ_host_notebook.ipynb";
+
+  public static final String TEMPLATE_PYNQ_HOST_RES_LOCATION =
+
+      "templates/xilinxCodegen/template_PYNQ_host_fpga.py";
+
+  public static final String TEMPLATE_OPENCL_HOST_RES_LOCATION =
+
+      "templates/xilinxCodegen/template_OpenCL_host_fpga.cpp";
 
   public static final String TEMPLATE_TOP_KERNEL_RES_LOCATION =
 
@@ -68,6 +85,23 @@ public class FpgaCodeGenerator {
 
       "templates/xilinxCodegen/template_write_kernel_fpga.cpp";
 
+  public static final String TEMPLATE_READ_KERNEL_MULTI_RES_LOCATION =
+
+      "templates/xilinxCodegen/template_read_kernel_fpga_multi_interfaces.cpp";
+
+  public static final String TEMPLATE_WRITE_KERNEL_MULTI_RES_LOCATION =
+
+      "templates/xilinxCodegen/template_write_kernel_fpga_multi_interfaces.cpp";
+
+  public static final String STDFILE_SCRIPT_PYNQ_SUBDIR = "scripts/";
+  public static final String STDFILE_SCRIPT_PYNQ_HLS    = "stdfiles/xilinxCodegen/script_hls.tcl";
+  // xcl2 files have been written by Xilinx under Apache 2.0 license
+  // see https://github.com/Xilinx/Vitis_Accel_Examples/tree/master/common/includes/xcl2
+  // see also https://github.com/Xilinx/Vitis_Accel_Examples/issues/46
+  public static final String STDFILE_LIB_XOCL_SUBDIR = "libs/common/includes/xcl2/";
+  public static final String STDFILE_LIB_XOCL_CPP    = "stdfiles/xilinxCodegen/xcl2.cpp";
+  public static final String STDFILE_LIB_XOCL_HPP    = "stdfiles/xilinxCodegen/xcl2.hpp";
+
   public static final String KERNEL_NAME_READ         = "mem_read";
   public static final String KERNEL_NAME_WRITE        = "mem_write";
   public static final String KERNEL_NAME_TOP          = "top_graph";
@@ -78,7 +112,9 @@ public class FpgaCodeGenerator {
   public static final String SUFFIX_INTERFACE_VECTOR  = "_vect";            // suffix name for host vector
   public static final String SUFFIX_INTERFACE_BUFFER  = "_buff";            // suffix name for host buffer
 
-  protected static final String PRAGMA_AXILITE_CTRL = "#pragma HLS INTERFACE s_axilite port=return\n";
+  protected static final String PRAGMA_AXILITE_CTRL   = "#pragma HLS INTERFACE s_axilite port=return\n";
+  protected static final int    PYNQ_INTERFACE_DEPTH  = 64;
+  protected static final int    PYNQ_GLOBAL_CLOCK_MHZ = 100;
 
   private final Scenario                              scenario;
   private final PiGraph                               graph;
@@ -97,8 +133,23 @@ public class FpgaCodeGenerator {
     // the fifo sizes are given in bytes while we want the depth in number of elements
     allFifoSizes.forEach((k, v) -> {
       final long dataTypeSize = scenario.getSimulationInfo().getDataTypeSizeOrDefault(k.getType());
-      allFifoDepths.put(k, (v / dataTypeSize));
+      final long depth = (v / dataTypeSize);
+      // if a fifo depth is less than 2, we promote it to 2
+      if (depth < 2L) {
+        PreesmLogger.getLogger().info(() -> "Fifo " + k.getId() + " had depth " + depth + ", increasing it to 2.");
+        allFifoDepths.put(k, 2L);
+      } else {
+        allFifoDepths.put(k, depth);
+      }
     });
+
+    // check that all actors have refinements
+    final List<Actor> actorsWithoutCrefinement = graph.getActorsWithRefinement().stream()
+        .filter(x -> !(x.getRefinement() instanceof CHeaderRefinement)).collect(Collectors.toList());
+    if (!actorsWithoutCrefinement.isEmpty()) {
+      throw new PreesmRuntimeException("Cannot perform codegen since some actors do not have refinements:\n"
+          + actorsWithoutCrefinement.stream().map(Actor::getVertexPath).collect(Collectors.joining("\n")));
+    }
 
     // check broadcast being more than broadcasts ...
     if (!checkPureBroadcasts(graph) || !checkOtherSpecialActorAbsence(graph)) {
@@ -162,24 +213,210 @@ public class FpgaCodeGenerator {
     Thread.currentThread().setContextClassLoader(fcg.getClass().getClassLoader());
 
     final String headerFileContent = fcg.writeDefineHeaderFile();
-    final String hostFileContent = fcg.writeHostFile();
     final String topKernelFileContent = fcg.writeTopKernelFile();
     final String readKernelFileContent = fcg.writeReadKernelFile();
     final String writeKernelFileContent = fcg.writeWriteKernelFile();
+
+    // Xilinx OpenCL specific
     final String connectivityFileContent = fcg.writeConnectivityFile();
+    final String xoclHostFileContent = fcg.writeXOCLHostFile();
+
+    // Xilinx PYNQ specific
+    final String pynqHostFileContent = fcg.writePYNQHostFile();
+    final String pynqNotebookFileContent = fcg.writePYNQNotebookFile(pynqHostFileContent);
+    final String pynqVivadoScriptContent = fcg.writePYNQVivadoScriptFile();
+    final String pynqMakefileContent = fcg.writePYNQMakefile();
 
     // 99- set back default class loader
     Thread.currentThread().setContextClassLoader(oldContextClassLoader);
 
-    final String codegenPath = scenario.getCodegenDirectory() + File.separator;
+    final String codegenPath = scenario.getCodegenDirectory() + "/";
 
+    // copy generated files
     PreesmIOHelper.getInstance().print(codegenPath, TEMPLATE_DEFINE_HEADER_NAME, headerFileContent);
-    PreesmIOHelper.getInstance().print(codegenPath, "host_" + fcg.graphName + ".cpp", hostFileContent);
     PreesmIOHelper.getInstance().print(codegenPath, "top_kernel_" + fcg.graphName + ".cpp", topKernelFileContent);
     PreesmIOHelper.getInstance().print(codegenPath, "read_kernel_" + fcg.graphName + ".cpp", readKernelFileContent);
     PreesmIOHelper.getInstance().print(codegenPath, "write_kernel_" + fcg.graphName + ".cpp", writeKernelFileContent);
+
+    PreesmIOHelper.getInstance().print(codegenPath, "host_xocl_" + fcg.graphName + ".cpp", xoclHostFileContent);
     PreesmIOHelper.getInstance().print(codegenPath, "connectivity_" + fcg.graphName + ".cfg", connectivityFileContent);
 
+    PreesmIOHelper.getInstance().print(codegenPath, "host_pynq_" + fcg.graphName + ".py", pynqHostFileContent);
+    PreesmIOHelper.getInstance().print(codegenPath, "host_pynq_" + fcg.graphName + ".ipynb", pynqNotebookFileContent);
+    PreesmIOHelper.getInstance().print(codegenPath + "/" + STDFILE_SCRIPT_PYNQ_SUBDIR, "script_vivado.tcl",
+        pynqVivadoScriptContent);
+    PreesmIOHelper.getInstance().print(codegenPath, "Makefile", pynqMakefileContent);
+
+    // copy stdfiles
+    try {
+
+      final String contentXOCLcpp = PreesmResourcesHelper.getInstance().read(STDFILE_LIB_XOCL_CPP, fcg.getClass());
+      PreesmIOHelper.getInstance().print(codegenPath + STDFILE_LIB_XOCL_SUBDIR, "xcl2.cpp", contentXOCLcpp);
+
+      final String contentXOCLhpp = PreesmResourcesHelper.getInstance().read(STDFILE_LIB_XOCL_HPP, fcg.getClass());
+      PreesmIOHelper.getInstance().print(codegenPath + STDFILE_LIB_XOCL_SUBDIR, "xcl2.hpp", contentXOCLhpp);
+
+      final String contentPYNQscript = PreesmResourcesHelper.getInstance().read(STDFILE_SCRIPT_PYNQ_HLS,
+          fcg.getClass());
+      PreesmIOHelper.getInstance().print(codegenPath + STDFILE_SCRIPT_PYNQ_SUBDIR, "script_hls.tcl", contentPYNQscript);
+
+    } catch (IOException e) {
+      throw new PreesmRuntimeException("Could not copy all the stdfiles.", e);
+    }
+
+  }
+
+  protected String writePYNQNotebookFile(final String rawPynqHostCode) {
+    // 1- init engine
+    final VelocityEngine engine = new VelocityEngine();
+    engine.init();
+
+    // 2- init context
+    final VelocityContext context = new VelocityContext();
+    final String[] rawCodeLines = rawPynqHostCode.split("\n");
+    final List<String> fmtCodeLines = new ArrayList<>();
+    for (final String line : rawCodeLines) {
+      fmtCodeLines.add("\"" + line.replaceAll("\"", "\\\\\"") + "\\n\"");
+    }
+
+    context.put("PREESM_PYNQ_HOST_CODE_FMT", fmtCodeLines.stream().collect(Collectors.joining(",\n")));
+
+    // 3- init template reader
+    final InputStreamReader reader = PreesmIOHelper.getInstance()
+        .getFileReader(TEMPLATE_PYNQ_HOST_NOTEBOOK_RES_LOCATION, this.getClass());
+
+    // 4- init output writer
+    final StringWriter writer = new StringWriter();
+
+    engine.evaluate(context, writer, VELOCITY_PACKAGE_NAME, reader);
+
+    return writer.toString();
+  }
+
+  protected String writePYNQHostFile() {
+    // 1- init engine
+    final VelocityEngine engine = new VelocityEngine();
+    engine.init();
+
+    // 2- init context
+    final VelocityContext context = new VelocityContext();
+    context.put("KERNEL_NAME_TOP", KERNEL_NAME_TOP);
+    context.put("KERNEL_NAME_READ", KERNEL_NAME_READ);
+    context.put("KERNEL_NAME_WRITE", KERNEL_NAME_WRITE);
+
+    final StringBuilder sbConstants = new StringBuilder();
+    interfaceRates.forEach((ia, p) -> {
+      final long rate = p.getKey();
+      sbConstants.append(String.format("%s = %d\n", getInterfaceRateName(ia), rate));
+    });
+    context.put("PREESM_CONSTANTS", sbConstants.toString());
+
+    final StringBuilder sbBufferInit = new StringBuilder();
+    final StringBuilder sbBufferMapping = new StringBuilder();
+    for (final InterfaceActor ia : interfaceRates.keySet()) {
+      final String type = ia.getDataPort().getFifo().getType();
+      sbBufferInit.append(ia.getName() + SUFFIX_INTERFACE_BUFFER + " = allocate(shape=(" + getInterfaceRateName(ia)
+          + ",), dtype=np.dtype('" + type + "'))\n");
+      if (ia instanceof DataInputInterface) {
+        sbBufferInit.append(ia.getName() + SUFFIX_INTERFACE_VECTOR + " = [" + type + "() for i in range("
+            + getInterfaceRateName(ia) + ")]\n" + "np.copyto(" + ia.getName() + SUFFIX_INTERFACE_BUFFER + ", "
+            + ia.getName() + SUFFIX_INTERFACE_VECTOR + ")\n\n");
+        sbBufferMapping.append("mem_read.write(mem_read.register_map." + ia.getName() + SUFFIX_INTERFACE_ARRAY
+            + "_1.address, " + ia.getName() + SUFFIX_INTERFACE_BUFFER + ".physical_address)\n");
+      } else if (ia instanceof DataOutputInterface) {
+        sbBufferMapping.append("mem_write.write(mem_write.register_map." + ia.getName() + SUFFIX_INTERFACE_ARRAY
+            + "_1.address, " + ia.getName() + SUFFIX_INTERFACE_BUFFER + ".physical_address)\n");
+      }
+    }
+    context.put("PREESM_BUFFER_INIT", sbBufferInit.toString());
+    context.put("PREESM_BUFFER_MAPPING", sbBufferMapping.toString());
+
+    // 3- init template reader
+    final InputStreamReader reader = PreesmIOHelper.getInstance().getFileReader(TEMPLATE_PYNQ_HOST_RES_LOCATION,
+        this.getClass());
+
+    // 4- init output writer
+    final StringWriter writer = new StringWriter();
+
+    engine.evaluate(context, writer, VELOCITY_PACKAGE_NAME, reader);
+
+    return writer.toString();
+  }
+
+  protected String writePYNQVivadoScriptFile() {
+    // 1- init engine
+    final VelocityEngine engine = new VelocityEngine();
+    engine.init();
+
+    // 2- init context
+    final VelocityContext context = new VelocityContext();
+
+    context.put("KERNEL_NAME_TOP", KERNEL_NAME_TOP);
+    context.put("KERNEL_NAME_READ", KERNEL_NAME_READ);
+    context.put("KERNEL_NAME_WRITE", KERNEL_NAME_WRITE);
+    context.put("PYNQ_GLOBAL_CLOCK_MHZ", Integer.toString(PYNQ_GLOBAL_CLOCK_MHZ));
+
+    final StringBuilder sb = new StringBuilder();
+    for (final InterfaceActor ia : interfaceRates.keySet()) {
+      final String fifoName = "axis_data_fifo_" + ia.getName() + SUFFIX_INTERFACE_STREAM;
+      sb.append("create_bd_cell -type ip -vlnv xilinx.com:ip:axis_data_fifo:2.0 " + fifoName + "\n"
+          + "set_property -dict [list CONFIG.FIFO_DEPTH {" + PYNQ_INTERFACE_DEPTH + "}] [get_bd_cells " + fifoName
+          + "]\n");
+      if (ia instanceof DataInputInterface) {
+        sb.append("connect_bd_intf_net [get_bd_intf_pins " + KERNEL_NAME_READ + "_0/" + ia.getName()
+            + SUFFIX_INTERFACE_STREAM + "] [get_bd_intf_pins " + fifoName + "/S_AXIS]\n"
+            + "connect_bd_intf_net [get_bd_intf_pins " + fifoName + "/M_AXIS] [get_bd_intf_pins " + KERNEL_NAME_TOP
+            + "_0/" + ia.getName() + SUFFIX_INTERFACE_STREAM + "]\n");
+      } else if (ia instanceof DataOutputInterface) {
+        sb.append("connect_bd_intf_net [get_bd_intf_pins " + KERNEL_NAME_TOP + "_0/" + ia.getName()
+            + SUFFIX_INTERFACE_STREAM + "] [get_bd_intf_pins " + fifoName + "/S_AXIS]\n"
+            + "connect_bd_intf_net [get_bd_intf_pins " + fifoName + "/M_AXIS] [get_bd_intf_pins " + KERNEL_NAME_WRITE
+            + "_0/" + ia.getName() + SUFFIX_INTERFACE_STREAM + "]\n");
+      }
+      sb.append("#apply_bd_automation -rule xilinx.com:bd_rule:clkrst -config { Clk {/processing_system7_0/FCLK_CLK0 ("
+          + PYNQ_GLOBAL_CLOCK_MHZ + " MHz)} Freq {" + PYNQ_GLOBAL_CLOCK_MHZ
+          + "} Ref_Clk0 {} Ref_Clk1 {} Ref_Clk2 {}}  [get_bd_pins " + fifoName + "/s_axis_aclk]\n\n");
+    }
+
+    context.put("PREESM_STREAM_CONNECTIVITY", sb.toString());
+
+    // 3- init template reader
+    final InputStreamReader reader = PreesmIOHelper.getInstance()
+        .getFileReader(TEMPLATE_PYNQ_SCRIPT_VIVADO_RES_LOCATION, this.getClass());
+
+    // 4- init output writer
+    final StringWriter writer = new StringWriter();
+
+    engine.evaluate(context, writer, VELOCITY_PACKAGE_NAME, reader);
+
+    return writer.toString();
+  }
+
+  protected String writePYNQMakefile() {
+    // 1- init engine
+    final VelocityEngine engine = new VelocityEngine();
+    engine.init();
+
+    // 2- init context
+    final VelocityContext context = new VelocityContext();
+    context.put("SCRIPTS_SUBDIR", STDFILE_SCRIPT_PYNQ_SUBDIR);
+    context.put("TOP_KERNEL_SOURCE", "top_kernel_" + graphName + ".cpp");
+    context.put("READ_KERNEL_SOURCE", "read_kernel_" + graphName + ".cpp");
+    context.put("WRITE_KERNEL_SOURCE", "write_kernel_" + graphName + ".cpp");
+    context.put("KERNEL_NAME_TOP", KERNEL_NAME_TOP);
+    context.put("KERNEL_NAME_READ", KERNEL_NAME_READ);
+    context.put("KERNEL_NAME_WRITE", KERNEL_NAME_WRITE);
+
+    // 3- init template reader
+    final InputStreamReader reader = PreesmIOHelper.getInstance().getFileReader(TEMPLATE_PYNQ_MAKEFILE_RES_LOCATION,
+        this.getClass());
+
+    // 4- init output writer
+    final StringWriter writer = new StringWriter();
+
+    engine.evaluate(context, writer, VELOCITY_PACKAGE_NAME, reader);
+
+    return writer.toString();
   }
 
   protected String writeDefineHeaderFile() {
@@ -199,7 +436,7 @@ public class FpgaCodeGenerator {
     return sb.toString();
   }
 
-  protected String writeHostFile() {
+  protected String writeXOCLHostFile() {
     // 1- init engine
     final VelocityEngine engine = new VelocityEngine();
     engine.init();
@@ -208,6 +445,8 @@ public class FpgaCodeGenerator {
     final VelocityContext context = new VelocityContext();
 
     context.put("PREESM_INCLUDES", "#include \"" + TEMPLATE_DEFINE_HEADER_NAME + "\"\n");
+    context.put("KERNEL_NAME_READ", KERNEL_NAME_READ);
+    context.put("KERNEL_NAME_WRITE", KERNEL_NAME_WRITE);
 
     // 2.1- generate vectors for interfaces
     final StringBuilder interfaceVectors = new StringBuilder("// vectors containing interface elements\n");
@@ -289,7 +528,7 @@ public class FpgaCodeGenerator {
     context.put("KERNEL_LAUNCH", kernelLaunch.toString());
 
     // 3- init template reader
-    final InputStreamReader reader = PreesmIOHelper.getInstance().getFileReader(TEMPLATE_HOST_RES_LOCATION,
+    final InputStreamReader reader = PreesmIOHelper.getInstance().getFileReader(TEMPLATE_OPENCL_HOST_RES_LOCATION,
         this.getClass());
 
     // 4- init output writer
@@ -323,11 +562,8 @@ public class FpgaCodeGenerator {
     // 2.2- we add all other calls to the map
     final Map<Actor, Pair<String, String>> actorTemplateParts = new LinkedHashMap<>();
     graph.getActorsWithRefinement().forEach(x -> {
-      // TODO should not be check here but at the beginning of the codegen (all actors should have a loop proto)
-      // in prod we could even throw an exception, but useful for tests when no refinement set yet
-      if (x.getRefinement() instanceof CHeaderRefinement) {
-        actorTemplateParts.put(x, AutoFillHeaderTemplatedFunctions.getFilledTemplateFunctionPart(x));
-      }
+      // at this point, all actors should have a CHeaderRefinement
+      actorTemplateParts.put(x, AutoFillHeaderTemplatedFunctions.getFilledTemplateFunctionPart(x));
     });
     generateRegularActorCalls(actorTemplateParts, initActorsCalls, true);
     generateRegularActorCalls(actorTemplateParts, loopActorsCalls, false);
@@ -406,11 +642,7 @@ public class FpgaCodeGenerator {
     for (final Entry<Actor, Pair<String, String>> e : actorTemplateParts.entrySet()) {
       final Actor a = e.getKey();
       final Pair<String, String> templates = e.getValue();
-      if (templates == null) {
-        // TODO remove this test
-        // in prod we could even throw an exception, but useful for tests when no refinement set yet
-        continue;
-      }
+      // templates cannot be null since we check in the constructor that all actors have a CHeaderRefinement
       final String call = generateRegularActorCall((CHeaderRefinement) a.getRefinement(), templates, init);
       if (call != null) {
         actorCalls.put(a, call);
@@ -483,7 +715,7 @@ public class FpgaCodeGenerator {
     }
     // check that we found as many objects as arguments:
     if (listArgNames.size() != proto.getArguments().size()) {
-      throw new PreesmRuntimeException("FPGA codegen coudn't evaluate all the arguments of the prototype of actor "
+      throw new PreesmRuntimeException("FPGA codegen couldn't evaluate all the arguments of the prototype of actor "
           + containerActor.getVertexPath() + ".");
     }
     // and otherwise we merge everything
@@ -575,6 +807,9 @@ public class FpgaCodeGenerator {
   }
 
   protected String writeReadKernelFile() {
+    final long nbIa = interfaceRates.keySet().stream().filter(DataInputInterface.class::isInstance).count();
+    final boolean isMulti = nbIa > 1L;
+
     // 1- init engine
     final VelocityEngine engine = new VelocityEngine();
     engine.init();
@@ -584,7 +819,7 @@ public class FpgaCodeGenerator {
     context.put("PREESM_INCLUDES", "#include \"" + TEMPLATE_DEFINE_HEADER_NAME + "\"\n");
 
     // read kernel prototype
-    final StringBuilder sb = new StringBuilder("void mem_read(\n  ");
+    final StringBuilder sb = new StringBuilder("void " + KERNEL_NAME_READ + "(\n  ");
     final List<String> args = new ArrayList<>();
     for (final InterfaceActor ia : interfaceRates.keySet()) {
       if (ia instanceof DataInputInterface) {
@@ -599,7 +834,6 @@ public class FpgaCodeGenerator {
     // add interface protocols
     for (final InterfaceActor ia : interfaceRates.keySet()) {
       if (ia instanceof DataInputInterface) {
-        final Fifo f = ia.getDataPort().getFifo();
         sb.append(getPragmaAXIMemory(ia));
         sb.append(getPragmaAXIStream(ia));
       }
@@ -607,21 +841,38 @@ public class FpgaCodeGenerator {
     sb.append(PRAGMA_AXILITE_CTRL + "\n");
 
     // read kernel body
+    int idxIa = 0;
+    if (isMulti) {
+      sb.append("  bool shouldContinue = true;\n  while (shouldContinue) {\n    shouldContinue = false;\n");
+    }
+
     for (final Entry<InterfaceActor, Pair<Long, Long>> e : interfaceRates.entrySet()) {
       final InterfaceActor ia = e.getKey();
       if (ia instanceof DataInputInterface) {
         final Fifo f = ia.getDataPort().getFifo();
-        sb.append("    readInput<" + f.getType() + ">(" + ia.getName() + SUFFIX_INTERFACE_ARRAY + ", "
-            + getFifoStreamName(f) + ", " + getInterfaceRateName(ia) + ", " + getInterfaceFactorName(ia) + ");\n");
+        if (isMulti) {
+          final String templateParams = String.format("%s, %d, %s, %s", f.getType(), idxIa, getInterfaceFactorName(ia),
+              getInterfaceRateName(ia));
+          sb.append("    shouldContinue |= readInput<" + templateParams + ">(" + ia.getName() + SUFFIX_INTERFACE_ARRAY
+              + ", " + getFifoStreamName(f) + ");\n");
+        } else {
+          sb.append("    readInput<" + f.getType() + ">(" + ia.getName() + SUFFIX_INTERFACE_ARRAY + ", "
+              + getFifoStreamName(f) + ", " + getInterfaceRateName(ia) + ", " + getInterfaceFactorName(ia) + ");\n");
+        }
+        idxIa++;
       }
+    }
+
+    if (isMulti) {
+      sb.append("  }\n");
     }
     sb.append("}\n");
 
     context.put("PREESM_READ_KERNEL", sb.toString());
 
     // 3- init template reader
-    final InputStreamReader reader = PreesmIOHelper.getInstance().getFileReader(TEMPLATE_READ_KERNEL_RES_LOCATION,
-        this.getClass());
+    final String templateName = isMulti ? TEMPLATE_READ_KERNEL_MULTI_RES_LOCATION : TEMPLATE_READ_KERNEL_RES_LOCATION;
+    final InputStreamReader reader = PreesmIOHelper.getInstance().getFileReader(templateName, this.getClass());
 
     // 4- init output writer
     final StringWriter writer = new StringWriter();
@@ -632,6 +883,9 @@ public class FpgaCodeGenerator {
   }
 
   protected String writeWriteKernelFile() {
+    final long nbIa = interfaceRates.keySet().stream().filter(DataOutputInterface.class::isInstance).count();
+    final boolean isMulti = nbIa > 1L;
+
     // 1- init engine
     final VelocityEngine engine = new VelocityEngine();
     engine.init();
@@ -641,7 +895,7 @@ public class FpgaCodeGenerator {
     context.put("PREESM_INCLUDES", "#include \"" + TEMPLATE_DEFINE_HEADER_NAME + "\"\n");
 
     // write kernel prototype
-    final StringBuilder sb = new StringBuilder("void mem_write(\n  ");
+    final StringBuilder sb = new StringBuilder("void " + KERNEL_NAME_WRITE + "(\n  ");
     final List<String> args = new ArrayList<>();
     for (final InterfaceActor ia : interfaceRates.keySet()) {
       if (ia instanceof DataOutputInterface) {
@@ -663,21 +917,38 @@ public class FpgaCodeGenerator {
     sb.append(PRAGMA_AXILITE_CTRL + "\n");
 
     // write kernel body
+    int idxIa = 0;
+    if (isMulti) {
+      sb.append("  bool shouldContinue = true;\n  while (shouldContinue) {\n    shouldContinue = false;\n");
+    }
+
     for (final Entry<InterfaceActor, Pair<Long, Long>> e : interfaceRates.entrySet()) {
       final InterfaceActor ia = e.getKey();
       if (ia instanceof DataOutputInterface) {
         final Fifo f = ia.getDataPort().getFifo();
-        sb.append("    writeOutput<" + f.getType() + ">(" + ia.getName() + SUFFIX_INTERFACE_ARRAY + ", "
-            + getFifoStreamName(f) + ", " + getInterfaceRateName(ia) + ", " + getInterfaceFactorName(ia) + ");\n");
+        if (isMulti) {
+          final String templateParams = String.format("%s, %d, %s, %s", f.getType(), idxIa, getInterfaceFactorName(ia),
+              getInterfaceRateName(ia));
+          sb.append("    shouldContinue |= writeOutput<" + templateParams + ">(" + ia.getName() + SUFFIX_INTERFACE_ARRAY
+              + ", " + getFifoStreamName(f) + ");\n");
+        } else {
+          sb.append("    writeOutput<" + f.getType() + ">(" + ia.getName() + SUFFIX_INTERFACE_ARRAY + ", "
+              + getFifoStreamName(f) + ", " + getInterfaceRateName(ia) + ", " + getInterfaceFactorName(ia) + ");\n");
+        }
+        idxIa++;
       }
+    }
+
+    if (isMulti) {
+      sb.append("  }\n");
     }
     sb.append("}\n");
 
     context.put("PREESM_WRITE_KERNEL", sb.toString());
 
     // 3- init template reader
-    final InputStreamReader reader = PreesmIOHelper.getInstance().getFileReader(TEMPLATE_WRITE_KERNEL_RES_LOCATION,
-        this.getClass());
+    final String templateName = isMulti ? TEMPLATE_WRITE_KERNEL_MULTI_RES_LOCATION : TEMPLATE_WRITE_KERNEL_RES_LOCATION;
+    final InputStreamReader reader = PreesmIOHelper.getInstance().getFileReader(templateName, this.getClass());
 
     // 4- init output writer
     final StringWriter writer = new StringWriter();
@@ -715,11 +986,13 @@ public class FpgaCodeGenerator {
   }
 
   protected static final String getPragmaAXIStream(InterfaceActor ia) {
-    return "#pragma HLS INTERFACE axis port=" + getFifoStreamName(ia.getDataPort().getFifo()) + "\n";
+    final String name = getFifoStreamName(ia.getDataPort().getFifo());
+    return "#pragma HLS INTERFACE axis port=" + name + " name=" + name + "\n";
   }
 
   protected static final String getPragmaAXIMemory(InterfaceActor ia) {
-    return "#pragma HLS INTERFACE m_axi offset=slave port=" + ia.getName() + SUFFIX_INTERFACE_ARRAY + "\n";
+    final String name = ia.getName() + SUFFIX_INTERFACE_ARRAY;
+    return "#pragma HLS INTERFACE m_axi offset=slave port=" + name + " name=" + name + "\n";
   }
 
   public static final String getFifoDataSizeName(final Fifo fifo) {

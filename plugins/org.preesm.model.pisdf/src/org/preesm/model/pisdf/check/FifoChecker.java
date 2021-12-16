@@ -35,6 +35,7 @@
  */
 package org.preesm.model.pisdf.check;
 
+import org.preesm.commons.math.ExpressionEvaluationException;
 import org.preesm.model.pisdf.Fifo;
 import org.preesm.model.pisdf.PiGraph;
 
@@ -92,10 +93,19 @@ public class FifoChecker extends AbstractPiSDFObjectChecker {
    * @return true if no rate of f is at 0, false otherwise
    */
   private boolean checkFifoRates(final Fifo f) {
-    final long rateSource = f.getSourcePort().getPortRateExpression().evaluate();
-    final long rateTarget = f.getTargetPort().getPortRateExpression().evaluate();
+    long rateSource = 0L;
+    long rateTarget = 0L;
+    try {
+      rateSource = f.getSourcePort().getPortRateExpression().evaluate();
+      rateTarget = f.getTargetPort().getPortRateExpression().evaluate();
+    } catch (ExpressionEvaluationException e) {
+      reportError(CheckerErrorLevel.FATAL_ANALYSIS, f, "Cannot evaluate expression on fifo [%s]: " + e.toString(),
+          f.getId());
+      return false;
+    }
     if ((rateSource == 0 && rateTarget != 0) || (rateSource != 0 && rateTarget == 0)) {
-      reportError(CheckerErrorLevel.FATAL_ANALYSIS, f, "Fifo [%s] has one of its rates being 0, but not the other.", f);
+      reportError(CheckerErrorLevel.FATAL_ANALYSIS, f, "Fifo [%s] has one of its rates being 0, but not the other.",
+          f.getId());
       return false;
     }
     return true;
@@ -109,9 +119,13 @@ public class FifoChecker extends AbstractPiSDFObjectChecker {
    * @return true if the type of f is not void, false otherwise
    */
   private boolean checkFifoType(final Fifo f) {
-    if (f.getType().equals("void")) {
+    final String fifoType = f.getType();
+    if ("void".equals(fifoType)) {
       reportError(CheckerErrorLevel.FATAL_CODEGEN, f, "Fifo [%s] has void type.", f.getId());
       return false;
+    } else if (fifoType.contains("<") || fifoType.contains(">")) {
+      reportError(CheckerErrorLevel.WARNING, f, "Fifo [%s] type seems to be templated, "
+          + "be aware that template parameter evaluation is not yet available for fifo types.", f.getId());
     }
     return true;
   }

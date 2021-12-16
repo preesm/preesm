@@ -50,6 +50,7 @@ import org.eclipse.graphiti.mm.pictograms.PictogramElement;
 import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.Actor;
 import org.preesm.model.pisdf.Port;
+import org.preesm.model.pisdf.check.RefinementChecker;
 
 /**
  * The Class AddActorFromRefinementFeature.
@@ -87,7 +88,8 @@ public class AddActorFromRefinementFeature extends AbstractAddFeature {
     } else {
       final String fileExtension = ((IFile) context.getNewObject()).getFileExtension();
 
-      return "pi".equals(fileExtension) || "h".equals(fileExtension) || "idl".equals(fileExtension);
+      return "pi".equals(fileExtension) || "idl".equals(fileExtension)
+          || RefinementChecker.isAsupportedHeaderFileExtension(fileExtension);
     }
   }
 

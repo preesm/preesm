@@ -17,19 +17,21 @@ public class StatGeneratorPrecomputed extends AbstractStatGenerator {
   public final long                         DAGSpanLength;
   public final long                         DAGWorkLength;
   public final long                         FinalTime;
+  public final int                          nbUsedOperators;
   public final Map<ComponentInstance, Long> loads;
   public final Map<ComponentInstance, Long> mems;
 
   public final GanttData gantt;
 
   public StatGeneratorPrecomputed(final Design architecture, final Scenario scenario, final long DAGSpanLength,
-      final long DAGWorkLength, final long FinalTime, final Map<ComponentInstance, Long> loads,
-      final Map<ComponentInstance, Long> mems, final GanttData gantt) {
+      final long DAGWorkLength, final long FinalTime, final int nbUsedOperators,
+      final Map<ComponentInstance, Long> loads, final Map<ComponentInstance, Long> mems, final GanttData gantt) {
     super(architecture, scenario);
 
     this.DAGSpanLength = DAGSpanLength;
     this.DAGWorkLength = DAGWorkLength;
     this.FinalTime = FinalTime;
+    this.nbUsedOperators = nbUsedOperators;
     this.loads = new HashMap<>(loads);
     this.mems = new HashMap<>(mems);
     this.gantt = gantt;
@@ -62,7 +64,9 @@ public class StatGeneratorPrecomputed extends AbstractStatGenerator {
 
   @Override
   public int getNbUsedOperators() {
-    return (int) gantt.getComponents().stream().filter(x -> !x.getTasks().isEmpty()).count();
+    // alternatively, if it was not given:
+    // (int) gantt.getComponents().stream().filter(x -> !x.getTasks().isEmpty()).count();
+    return nbUsedOperators;
   }
 
   @Override
