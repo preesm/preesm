@@ -1,5 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <scenario>
+    <flags>
+        <sizesAreInBit/>
+    </flags>
     <files>
         <algorithm url="/org.ietr.preesm.reinforcement_learning/Algo/prediction/prediction.pi"/>
         <architecture url="/org.ietr.preesm.reinforcement_learning/Archi/1CoreX86.slam"/>

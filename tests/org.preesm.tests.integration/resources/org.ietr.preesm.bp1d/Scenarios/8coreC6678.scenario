@@ -1,5 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <scenario>
+    <flags>
+        <sizesAreInBit/>
+    </flags>
     <files>
         <algorithm url="/org.ietr.preesm.loopgen-sobel-erosion-dilation/Algo/myapp.pi"/>
         <architecture url="/org.ietr.preesm.loopgen-sobel-erosion-dilation/Archi/8CoreC6678.slam"/>

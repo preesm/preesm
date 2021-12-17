@@ -1,5 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <scenario>
+    <flags>
+        <sizesAreInBit/>
+    </flags>
     <files>
         <algorithm url="/org.ietr.preesm.sobel-morpho.partitioner/Algo/sobel_morpho.pi"/>
         <architecture url="/org.ietr.preesm.sobel-morpho.partitioner/Archi/MPPA2.slam"/>
