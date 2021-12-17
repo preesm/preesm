@@ -759,7 +759,7 @@ public abstract class PiMemoryAllocator {
           memorySize = value + vertex.getWeight();
         }
       }
-      return memorySize / 8L;
+      return (memorySize + 7L) / 8L;
     }
 
     if (!this.edgeAllocation.isEmpty()) {
@@ -776,7 +776,7 @@ public abstract class PiMemoryAllocator {
           memorySize = value + fifosize * dataTypeSizeOrDefault;
         }
       }
-      return memorySize / 8L;
+      return (memorySize + 7L) / 8L;
     }
     return -1;
   }

@@ -780,7 +780,7 @@ public abstract class MemoryAllocator {
           memorySize = value + vertex.getWeight();
         }
       }
-      return memorySize / 8L;
+      return (memorySize + 7L) / 8L;
     }
 
     if (!this.edgeAllocation.isEmpty()) {
@@ -792,7 +792,7 @@ public abstract class MemoryAllocator {
           memorySize = value + edge.getWeight().longValue();
         }
       }
-      return memorySize / 8L;
+      return (memorySize + 7L) / 8L;
     }
     return -1;
   }
