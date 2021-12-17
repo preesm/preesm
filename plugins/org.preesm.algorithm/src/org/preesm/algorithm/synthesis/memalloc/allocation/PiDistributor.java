@@ -230,7 +230,7 @@ public class PiDistributor {
 
       // If only one bank is used for all MObjs of this host,
       // skip the split operation as it is useless (and may induce extra
-      // bytes for alignment reasons)
+      // bits for alignment reasons)
       if (mobjByBank.size() != 1) {
         // Apply only for mObj falling in the current bank
         PiDistributor.splitMergedBuffers(mobjByBank, Collections.singleton(memory), entry, meg, alignment);
@@ -303,7 +303,7 @@ public class PiDistributor {
 
       // If only one bank is used for all MObjs of this host,
       // skip the split operation as it is useless (and may induce extra
-      // bytes for alignment reasons)
+      // bits for alignment reasons)
       if (mobjByBank.size() != 1) {
 
         // Create the reverse bankByMobj map
@@ -459,7 +459,7 @@ public class PiDistributor {
       // index 0 of the new host buffer is aligned !
       final long newHostOldStart = newHostOldRange.get(0).getValue().getValue().getStart(); // .value.value
       // If the result of te modulo is not null, unaligned
-      // corresponds to the number of "extra" bytes making
+      // corresponds to the number of "extra" bits making
       // index 0 of newHost not aligned with respect to
       // currentRangeStart
       final long unaligned = (newHostOldStart - currentRange.getStart()) % alignment;
@@ -468,7 +468,7 @@ public class PiDistributor {
         minIndex = currentRange.getStart();
       } else {
         // Index 0 of new host is not aligned
-        // Extra-bytes are added to the new range
+        // Extra-bits are added to the new range
         // to re-align it.
         minIndex = currentRange.getStart() - (alignment - unaligned);
       }

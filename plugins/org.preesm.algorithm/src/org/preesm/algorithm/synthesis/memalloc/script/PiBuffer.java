@@ -420,36 +420,36 @@ public class PiBuffer {
           + buffer.nbTokens + ".");
     }
 
-    return byteMatchWith(localIdx * this.tokenSize, buffer, remoteIdx * this.tokenSize, size * this.tokenSize, false);
+    return bitMatchWith(localIdx * this.tokenSize, buffer, remoteIdx * this.tokenSize, size * this.tokenSize, false);
   }
 
   /**
    * May be called from a BeanShell memory script.
    *
-   * @param localByteIdx
+   * @param localBitIdx
    *          start index of the matched range for the local {@link PiBuffer}.
    * @param buffer
    *          remote {@link PiBuffer}
-   * @param remoteByteIdx
+   * @param remoteBitIdx
    *          start index of the matched range for the remote {@link PiBuffer}
-   * @param byteSize
+   * @param bitSize
    *          the size of the matched range
    * @return the created local {@link PiMatch}
    */
-  public PiMatch byteMatchWith(final long localByteIdx, final PiBuffer buffer, final long remoteByteIdx,
-      final long byteSize) {
-    return byteMatchWith(localByteIdx, buffer, remoteByteIdx, byteSize, true);
+  public PiMatch bitMatchWith(final long localBitIdx, final PiBuffer buffer, final long remoteBitIdx,
+      final long bitSize) {
+    return bitMatchWith(localBitIdx, buffer, remoteBitIdx, bitSize, true);
   }
 
   /**
-   * Cf. {@link PiBuffer#byteMatchWith(long, PiBuffer, long, long)} with possibility to disable the checking.
+   * Cf. {@link PiBuffer#bitMatchWith(long, PiBuffer, long, long)} with possibility to disable the checking.
    */
-  private PiMatch byteMatchWith(final long localByteIdx, final PiBuffer buffer, final long remoteByteIdx,
-      final long byteSize, final boolean check) {
-    final long byteLMax = (localByteIdx + byteSize) - 1;
-    final long byteRMax = (remoteByteIdx + byteSize) - 1;
+  private PiMatch bitMatchWith(final long localBitIdx, final PiBuffer buffer, final long remoteBitIdx,
+      final long bitSize, final boolean check) {
+    final long bitLMax = (localBitIdx + bitSize) - 1;
+    final long bitRMax = (remoteBitIdx + bitSize) - 1;
 
-    // Test if a matched range is completely out of real bytes
+    // Test if a matched range is completely out of real bits
     // This rule is indispensable to make sure that "virtual" token
     // exist for a reason. Without this rule, the match application would
     // fall down, especially because if a pure virtual token was matched
@@ -469,68 +469,68 @@ public class PiBuffer {
     // Then, Match1 will not be forwarded to B.out because it has no overlap with the
     // real tokens.
     if (check) {
-      if ((localByteIdx >= (this.nbTokens * this.tokenSize)) || (byteLMax < 0)) {
+      if ((localBitIdx >= (this.nbTokens * this.tokenSize)) || (bitLMax < 0)) {
         final long tokenLMax = (this.nbTokens * this.tokenSize) - 1;
-        throw new PreesmRuntimeException("Cannot match bytes " + this.getVertexName() + "." + this.name + "["
-            + localByteIdx + ".." + byteLMax + "] and " + buffer.getVertexName() + "." + buffer.name + "["
-            + remoteByteIdx + ".." + byteRMax + "] because no \"real\" byte from " + this.getVertexName() + "."
-            + this.name + "[0.." + tokenLMax + "] is matched.");
+        throw new PreesmRuntimeException("Cannot match bits " + this.getVertexName() + "." + this.name + "["
+            + localBitIdx + ".." + bitLMax + "] and " + buffer.getVertexName() + "." + buffer.name + "[" + remoteBitIdx
+            + ".." + bitRMax + "] because no \"real\" bit from " + this.getVertexName() + "." + this.name + "[0.."
+            + tokenLMax + "] is matched.");
       }
-      if ((remoteByteIdx >= (buffer.nbTokens * buffer.tokenSize)) || (byteRMax < 0)) {
+      if ((remoteBitIdx >= (buffer.nbTokens * buffer.tokenSize)) || (bitRMax < 0)) {
         final long tokenRMax = (buffer.nbTokens * buffer.tokenSize) - 1;
-        throw new PreesmRuntimeException("Cannot match bytes " + this.getVertexName() + "." + this.name + "["
-            + localByteIdx + ".." + byteLMax + "] and " + buffer.getVertexName() + "." + buffer.name + "["
-            + remoteByteIdx + ".." + byteRMax + "] because no \"real\" byte from " + buffer.getVertexName() + "."
-            + buffer.name + "[0.." + tokenRMax + "] is matched.");
+        throw new PreesmRuntimeException("Cannot match bits " + this.getVertexName() + "." + this.name + "["
+            + localBitIdx + ".." + bitLMax + "] and " + buffer.getVertexName() + "." + buffer.name + "[" + remoteBitIdx
+            + ".." + bitRMax + "] because no \"real\" bit from " + buffer.getVertexName() + "." + buffer.name + "[0.."
+            + tokenRMax + "] is matched.");
       }
 
       // Are "virtual" tokens matched together
 
-      // Both ranges begins before the first byte
-      final boolean bPositiveIndex = (localByteIdx < 0) && (remoteByteIdx < 0);
-      // or both buffers ends after the last byte
-      final boolean bTooLargeBuffer = (byteLMax >= (this.nbTokens * this.tokenSize))
-          && (byteRMax >= (buffer.nbTokens * buffer.tokenSize));
-      // or local range begins with less real bytes than the number of virtual bytes beginning remote range
-      final boolean bLocalVirtual = (localByteIdx >= 0)
-          && (((this.nbTokens * this.tokenSize) - localByteIdx) <= -Math.min(0, remoteByteIdx));
-      // or remote range begins with less real bytes than the number of virtual bytes beginning local range
-      final boolean bRemoteVirtual = (remoteByteIdx >= 0)
-          && (((buffer.nbTokens * buffer.tokenSize) - remoteByteIdx) <= -Math.min(0, localByteIdx));
+      // Both ranges begins before the first bit
+      final boolean bPositiveIndex = (localBitIdx < 0) && (remoteBitIdx < 0);
+      // or both buffers ends after the last bit
+      final boolean bTooLargeBuffer = (bitLMax >= (this.nbTokens * this.tokenSize))
+          && (bitRMax >= (buffer.nbTokens * buffer.tokenSize));
+      // or local range begins with less real bits than the number of virtual bits beginning remote range
+      final boolean bLocalVirtual = (localBitIdx >= 0)
+          && (((this.nbTokens * this.tokenSize) - localBitIdx) <= -Math.min(0, remoteBitIdx));
+      // or remote range begins with less real bits than the number of virtual bits beginning local range
+      final boolean bRemoteVirtual = (remoteBitIdx >= 0)
+          && (((buffer.nbTokens * buffer.tokenSize) - remoteBitIdx) <= -Math.min(0, localBitIdx));
       if (bPositiveIndex || bTooLargeBuffer || bLocalVirtual || bRemoteVirtual) {
-        throw new PreesmRuntimeException("Cannot match bytes " + this.getVertexName() + "." + this.name + "["
-            + localByteIdx + ".." + byteLMax + "] and " + buffer.getVertexName() + "." + buffer.name + "["
-            + remoteByteIdx + ".." + byteRMax + "] because \"virtual bytes\" cannot be matched together.\nInformation: "
+        throw new PreesmRuntimeException("Cannot match bits " + this.getVertexName() + "." + this.name + "["
+            + localBitIdx + ".." + bitLMax + "] and " + buffer.getVertexName() + "." + buffer.name + "[" + remoteBitIdx
+            + ".." + bitRMax + "] because \"virtual bits\" cannot be matched together.\nInformation: "
             + this.getVertexName() + "." + this.name + " size = " + (this.nbTokens * this.tokenSize) + " and "
             + buffer.getVertexName() + "." + buffer.name + " size = " + (buffer.nbTokens * buffer.tokenSize) + ".");
       }
     }
 
     // If needed, update the buffers min/max indexes
-    if (!((localByteIdx >= 0) && (byteLMax < (this.nbTokens * this.tokenSize)))) {
-      this.minIndex = Math.min(this.minIndex, localByteIdx);
-      this.maxIndex = Math.max(this.maxIndex, (localByteIdx + byteSize));
+    if (!((localBitIdx >= 0) && (bitLMax < (this.nbTokens * this.tokenSize)))) {
+      this.minIndex = Math.min(this.minIndex, localBitIdx);
+      this.maxIndex = Math.max(this.maxIndex, (localBitIdx + bitSize));
     }
-    if (!((remoteByteIdx >= 0) && (byteRMax < (buffer.nbTokens * buffer.tokenSize)))) {
-      buffer.minIndex = Math.min(buffer.minIndex, remoteByteIdx);
-      buffer.maxIndex = Math.max(buffer.maxIndex, (remoteByteIdx + byteSize));
+    if (!((remoteBitIdx >= 0) && (bitRMax < (buffer.nbTokens * buffer.tokenSize)))) {
+      buffer.minIndex = Math.min(buffer.minIndex, remoteBitIdx);
+      buffer.maxIndex = Math.max(buffer.maxIndex, (remoteBitIdx + bitSize));
     }
 
     // Do the match
-    if (!this.matchTable.containsKey(localByteIdx)) {
-      this.matchTable.put(localByteIdx, new ArrayList<>());
+    if (!this.matchTable.containsKey(localBitIdx)) {
+      this.matchTable.put(localBitIdx, new ArrayList<>());
     }
 
-    final List<PiMatch> matchSet = this.matchTable.get(localByteIdx);
-    final PiMatch localMatch = new PiMatch(this, localByteIdx, buffer, remoteByteIdx, byteSize);
+    final List<PiMatch> matchSet = this.matchTable.get(localBitIdx);
+    final PiMatch localMatch = new PiMatch(this, localBitIdx, buffer, remoteBitIdx, bitSize);
     matchSet.add(localMatch);
 
-    if (!buffer.matchTable.containsKey(remoteByteIdx)) {
-      buffer.matchTable.put(remoteByteIdx, new ArrayList<>());
+    if (!buffer.matchTable.containsKey(remoteBitIdx)) {
+      buffer.matchTable.put(remoteBitIdx, new ArrayList<>());
     }
-    final List<PiMatch> remoteMatchSet = buffer.matchTable.get(remoteByteIdx);
+    final List<PiMatch> remoteMatchSet = buffer.matchTable.get(remoteBitIdx);
 
-    final PiMatch remoteMatch = new PiMatch(buffer, remoteByteIdx, this, localByteIdx, byteSize);
+    final PiMatch remoteMatch = new PiMatch(buffer, remoteBitIdx, this, localBitIdx, bitSize);
     remoteMatchSet.add(remoteMatch);
 
     localMatch.setReciprocate(remoteMatch);

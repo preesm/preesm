@@ -134,7 +134,7 @@ public class AllocationToCodegenBuffer extends MemoryAllocationSwitch<Boolean> {
           srcCodegenBuffer.setType(fifo.getType());
 
           if (allocSize % typeSize != 0) {
-            throw new PreesmRuntimeException("Buffer size in bytes is not a multiple of its type sizes.");
+            throw new PreesmRuntimeException("Buffer size in bits is not a multiple of its type sizes.");
           }
           srcCodegenBuffer.setNbToken(allocSize / typeSize);
           srcCodegenBuffer.setTokenTypeSizeInBit(typeSize);

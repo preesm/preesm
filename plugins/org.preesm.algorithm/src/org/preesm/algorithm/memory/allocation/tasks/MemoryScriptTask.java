@@ -97,10 +97,10 @@ import org.preesm.workflow.implement.AbstractTaskImplementation;
             values = { @Value(name = "None", effect = "No special care is taken to align the buffers in memory."),
                 @Value(name = "Data",
                     effect = "All buffers are aligned on addresses that are multiples of their size. For example,"
-                        + "a 4 bytes integer is aligned on 4 bytes address."),
+                        + "a 32 bits integer is aligned on 32 bits address."),
                 @Value(name = "Fixed:=$$n$$",
                     effect = "Where $$n\\in \\mathbb{N}^*$$. This forces the allocation algorithm to align all buffers"
-                        + " on addresses that are multiples of n bytes.") }),
+                        + " on addresses that are multiples of n bits.") }),
         @Parameter(name = "Log Path",
             description = "Specify whether, and where, a log of the buffer matching optimization should be "
                 + "generated. Generated log are in the markdown format, and provide information "
@@ -182,8 +182,7 @@ public class MemoryScriptTask extends AbstractTaskImplementation {
     final MemoryExclusionGraph meg = (MemoryExclusionGraph) inputs.get("MemEx");
 
     // execute
-    final MemoryScriptEngine engine = new MemoryScriptEngine(falseSharingPreventionFlag, valueAlignment, log,
-        verbose);
+    final MemoryScriptEngine engine = new MemoryScriptEngine(falseSharingPreventionFlag, valueAlignment, log, verbose);
     try {
       engine.runScripts(dag, simulationInfo, checkString);
     } catch (final EvalError e) {

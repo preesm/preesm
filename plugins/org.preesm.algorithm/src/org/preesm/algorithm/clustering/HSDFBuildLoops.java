@@ -644,7 +644,7 @@ public class HSDFBuildLoops {
       final long bufSize = getNaiveWorkingMemAlloc(resultGraph);
 
       g.getPropertyBean().setValue("working_memory", bufSize);
-      p("Internal Working Memory Graph " + g.getName() + " has allocated " + bufSize + " bytes");
+      p("Internal Working Memory Graph " + g.getName() + " has allocated " + bufSize + " bits");
     }
     return inputGraph;
   }

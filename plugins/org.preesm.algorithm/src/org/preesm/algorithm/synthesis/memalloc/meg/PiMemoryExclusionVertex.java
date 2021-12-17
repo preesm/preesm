@@ -74,9 +74,9 @@ public class PiMemoryExclusionVertex extends AbstractVertex<PiMemoryExclusionGra
    * This {@link List} stores {@link Pair} of {@link PiMemoryExclusionVertex} and {@link Pair}. Each {@link Pair}
    * corresponds to a {@link Range} of real tokens of the memory object and their position in the actual
    * {@link PiMemoryExclusionVertex} (i.e. the key of the first {@link Pair}). <br>
-   * For the host memory object, this property gives the position of the range of bytes of the host within the memory
+   * For the host memory object, this property gives the position of the range of bits of the host within the memory
    * allocated for it.<br>
-   * For hosted memory object, this property gives the position of the range(s) of bytes of the hosted memory object
+   * For hosted memory object, this property gives the position of the range(s) of bits of the hosted memory object
    * relatively to the position of the 0 index of the host memory object within the memory allocated for it.
    */
   public static final String REAL_TOKEN_RANGE_PROPERTY = "real_token_range";
@@ -104,14 +104,14 @@ public class PiMemoryExclusionVertex extends AbstractVertex<PiMemoryExclusionGra
 
   /**
    * Property of the {@link PiMemoryExclusionVertex}. The object associated to this property is an {@link Integer} that
-   * corresponds to the space in bytes between the offset at which the {@link PiMemoryExclusionVertex} is allocated and
+   * corresponds to the space in bits between the offset at which the {@link PiMemoryExclusionVertex} is allocated and
    * the actual beginning of the real token ranges. This property is set after the memory script execution.
    */
   public static final String EMPTY_SPACE_BEFORE = "empty_space_before";
 
   /**
    * Property of the {@link PiMemoryExclusionVertex}. The object associated to this property is an {@link Integer} that
-   * corresponds to the size in bytes of the {@link PiMemoryExclusionVertex} when it hosts merged
+   * corresponds to the size in bits of the {@link PiMemoryExclusionVertex} when it hosts merged
    * {@link PiMemoryExclusionVertex} as a result of scripts execution. This value is stored in case the host
    * {@link PiMemoryExclusionVertex} needs to be deallocated, and restored to the size it has when all hosted
    * {@link PiMemoryExclusionVertex} are merged.
@@ -128,7 +128,7 @@ public class PiMemoryExclusionVertex extends AbstractVertex<PiMemoryExclusionGra
 
   /**
    * {@link PiMemoryExclusionVertex} property associated to a {@link List} of {@link Integer} that represent the space
-   * <b>in bytes</b> between successive "subbuffers" of a {@link PiMemoryExclusionVertex}.
+   * <b>in bits</b> between successive "subbuffers" of a {@link PiMemoryExclusionVertex}.
    */
   public static final String INTER_BUFFER_SPACES = "inter_buffer_spaces";
 

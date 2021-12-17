@@ -90,7 +90,6 @@ public class SimpleMemoryAllocation implements IMemoryAllocation {
       final List<Fifo> fifos = actor.getDataOutputPorts().stream().map(DataPort::getFifo).collect(Collectors.toList());
       for (final Fifo fifo : fifos) {
         final String fifoType = fifo.getType();
-        // final long dataTypeSize = scenario.getSimulationInfo().getDataTypeSizeInByte(fifoType);
         final long fifoTokenSize = fifo.getTargetPort().getPortRateExpression().evaluate();
         final long fifoBufferSize = scenario.getSimulationInfo().getBufferSizeInBit(fifoType, fifoTokenSize);
 

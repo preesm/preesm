@@ -148,11 +148,11 @@ import org.preesm.workflow.implement.AbstractTaskImplementation;
                 + "the Memory Scripts task.",
             values = { @Value(name = "None", effect = "No special care is taken to align the buffers in memory."),
                 @Value(name = "Data",
-                    effect = "All buffers are aligned on addresses that are multiples of their size. For example, a 4 "
-                        + "bytes integer is aligned on 4 bytes address."),
+                    effect = "All buffers are aligned on addresses that are multiples of their size. For example, a 32 "
+                        + "bites integer is aligned on 32 bits address."),
                 @Value(name = "Fixed:=n",
                     effect = "Where $$n\\in \\mathbb{N}^*$$. This forces the allocation algorithm to align all buffers"
-                        + " on addresses that are multiples of n bytes.") }),
+                        + " on addresses that are multiples of n bits.") }),
         @Parameter(name = "Nb of Shuffling Tested",
             description = "Number of random order tested when using the Shuffle value for the Best/First Fit order"
                 + " parameter.",
