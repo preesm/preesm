@@ -63,20 +63,40 @@ public class RangeTest {
     ranges1.add(new Range(2, 3));
     ranges1.add(new Range(5, 14));
 
+    List<Range> ranges_input = new ArrayList<>();
+
     // Check the result of range0 - range1
+    ranges_input.add(new Range(0, 5));
     List<Range> difference = range0.difference(range1);
-    assertEquals("[[0..5[]", difference.toString());
+    assertEquals(ranges_input, difference);
+    ranges_input.clear();
 
     // Check the result of range0 - range3
-    assertEquals("[[0..10[]", range0.difference(range3).toString());
+    ranges_input.add(new Range(0, 10));
+    difference = range0.difference(range3);
+    assertEquals(ranges_input, difference);
+    ranges_input.clear();
 
-    // Check the result of range0 - range1
-    assertEquals("[[0..3[, [7..10[]", range0.difference(range2).toString());
+    // Check the result of range0 - range2
+    ranges_input.add(new Range(0, 3));
+    ranges_input.add(new Range(7, 10));
+    difference = range0.difference(range2);
+    assertEquals(ranges_input, difference);
+    ranges_input.clear();
 
     // Check the result of ranges - range1
-    assertEquals("[[0..5[, [15..17[]", Range.difference(ranges, range1).toString());
+    ranges_input.add(new Range(0, 5));
+    ranges_input.add(new Range(15, 17));
+    difference = Range.difference(ranges, range1);
+    assertEquals(ranges_input, difference);
+    ranges_input.clear();
 
     // Check the result of ranges - ranges1
-    assertEquals("[[0..2[, [3..5[, [14..17[]", Range.difference(ranges, ranges1).toString());
+    ranges_input.add(new Range(0, 2));
+    ranges_input.add(new Range(3, 5));
+    ranges_input.add(new Range(14, 17));
+    difference = Range.difference(ranges, ranges1);
+    assertEquals(ranges_input, difference);
+    ranges_input.clear();
   }
 }
