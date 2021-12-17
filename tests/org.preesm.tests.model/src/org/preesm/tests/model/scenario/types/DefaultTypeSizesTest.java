@@ -55,13 +55,13 @@ public class DefaultTypeSizesTest {
   @Test
   public void testCharTypeSize() {
     final long defaultTypeSize = DefaultTypeSizes.getInstance().getDefaultTypeSize("char");
-    assertEquals(1L, defaultTypeSize);
+    assertEquals(8L, defaultTypeSize);
   }
 
   @Test
   public void testINT32TTypeSize() {
     final long defaultTypeSize = DefaultTypeSizes.getInstance().getDefaultTypeSize("int32_t");
-    assertEquals(4L, defaultTypeSize);
+    assertEquals(32L, defaultTypeSize);
   }
 
 }
