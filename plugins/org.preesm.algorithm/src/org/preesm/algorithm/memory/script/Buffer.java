@@ -422,6 +422,23 @@ public class Buffer {
   /**
    * May be called from a BeanShell memory script.
    *
+   * @param localByteIdx
+   *          start index of the matched range for the local {@link Buffer}.
+   * @param buffer
+   *          remote {@link Buffer}
+   * @param remoteByteIdx
+   *          start index of the matched range for the remote {@link Buffer}
+   * @param byteSize
+   *          the size of the matched range
+   * @return the created local {@link Match}
+   */
+  public Match byteMatchWith(final long localByteIdx, final Buffer buffer, final long remoteByteIdx, final long byteSize) {
+    return bitMatchWith(localByteIdx * 8L, buffer, remoteByteIdx * 8L, byteSize * 8L, true);
+  }
+
+  /**
+   * May be called from a BeanShell memory script.
+   *
    * @param localBitIdx
    *          start index of the matched range for the local {@link Buffer}.
    * @param buffer

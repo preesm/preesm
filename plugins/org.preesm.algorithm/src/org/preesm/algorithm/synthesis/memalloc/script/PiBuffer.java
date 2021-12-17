@@ -426,6 +426,24 @@ public class PiBuffer {
   /**
    * May be called from a BeanShell memory script.
    *
+   * @param localByteIdx
+   *          start index of the matched range for the local {@link PiBuffer}.
+   * @param buffer
+   *          remote {@link PiBuffer}
+   * @param remoteByteIdx
+   *          start index of the matched range for the remote {@link PiBuffer}
+   * @param byteSize
+   *          the size of the matched range
+   * @return the created local {@link PiMatch}
+   */
+  public PiMatch byteMatchWith(final long localByteIdx, final PiBuffer buffer, final long remoteByteIdx,
+      final long byteSize) {
+    return bitMatchWith(localByteIdx * 8L, buffer, remoteByteIdx * 8L, byteSize * 8L, true);
+  }
+
+  /**
+   * May be called from a BeanShell memory script.
+   *
    * @param localBitIdx
    *          start index of the matched range for the local {@link PiBuffer}.
    * @param buffer
