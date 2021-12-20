@@ -54,12 +54,14 @@ public class BufferProperties {
   /**
    * Instantiates a new buffer properties.
    *
+   * @param dataTypeName
+   *          the name of the type
    * @param sourceOutputPortID
    *          the source output port ID
    * @param destInputPortID
    *          the dest input port ID
-   * @param size
-   *          the size
+   * @param nbToken
+   *          the number of token
    */
   public BufferProperties(final String dataTypeName, final String sourceOutputPortID, final String destInputPortID,
       final long nbToken) {

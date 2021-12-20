@@ -432,7 +432,8 @@ public class Buffer {
    *          the size of the matched range
    * @return the created local {@link Match}
    */
-  public Match byteMatchWith(final long localByteIdx, final Buffer buffer, final long remoteByteIdx, final long byteSize) {
+  public Match byteMatchWith(final long localByteIdx, final Buffer buffer, final long remoteByteIdx,
+      final long byteSize) {
     return bitMatchWith(localByteIdx * 8L, buffer, remoteByteIdx * 8L, byteSize * 8L, true);
   }
 

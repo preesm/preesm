@@ -337,7 +337,8 @@ public class CodegenClusterModelGeneratorSwitch extends ScheduleSwitch<CodeElt> 
           memcpyCall.addParameter(delayBufferTriple.getRight(), PortDirection.INPUT); // remaining subbuffer
           // Compute size of transfer
           final Constant constant = CodegenModelUserFactory.eINSTANCE.createConstant();
-          constant.setValue(delayBufferTriple.getRight().getNbToken() * delayBufferTriple.getRight().getTokenTypeSizeInBit());
+          constant.setValue(
+              delayBufferTriple.getRight().getNbToken() * delayBufferTriple.getRight().getTokenTypeSizeInBit());
           memcpyCall.addParameter(constant, PortDirection.INPUT);
           // Add pop to the loop block
           loopBlock.getCodeElts().add(memcpyCall);
