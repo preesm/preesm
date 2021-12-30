@@ -3,7 +3,7 @@ package org.preesm.algorithm.schedule.fpga;
 import java.util.Map;
 import org.eclipse.xtext.xbase.lib.Pair;
 import org.preesm.algorithm.pisdf.autodelays.HeuristicLoopBreakingDelays;
-import org.preesm.algorithm.schedule.fpga.AsapFpgaIIevaluator.ActorNormalizedInfos;
+import org.preesm.algorithm.schedule.fpga.AbstractGenericFpgaFifoEvaluator.ActorNormalizedInfos;
 import org.preesm.commons.math.LongFraction;
 import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.scenario.Scenario;
@@ -14,7 +14,7 @@ import org.preesm.model.scenario.Scenario;
  * 
  * @author ahonorat
  */
-public class FifoEvaluatorAsArray extends AbstractFifoEvaluator {
+public class FifoEvaluatorAsArray extends AbstractAsapFpgaFifoEvaluator {
 
   public FifoEvaluatorAsArray(final Scenario scenario, final HeuristicLoopBreakingDelays hlbd,
       final Map<AbstractActor, ActorNormalizedInfos> mapActorNormalizedInfos) {

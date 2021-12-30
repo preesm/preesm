@@ -2,7 +2,7 @@ package org.preesm.algorithm.mparameters;
 
 import java.util.logging.Level;
 import java.util.stream.Collectors;
-import org.preesm.algorithm.schedule.fpga.AsapFpgaIIevaluator;
+import org.preesm.algorithm.schedule.fpga.AsapFpgaFifoEvaluator;
 import org.preesm.algorithm.schedule.fpga.FpgaAnalysisMainTask;
 import org.preesm.algorithm.schedule.fpga.FpgaAnalysisMainTask.AnalysisResultFPGA;
 import org.preesm.commons.exceptions.PreesmRuntimeException;
@@ -31,7 +31,8 @@ public class ConfigurationSchedulerFPGA extends AbstractConfigurationScheduler {
 
     AnalysisResultFPGA res = null;
     try {
-      res = FpgaAnalysisMainTask.checkAndAnalyze(graph, architecture, scenario, AsapFpgaIIevaluator.FIFO_EVALUATOR_AVG);
+      res = FpgaAnalysisMainTask.checkAndAnalyze(graph, architecture, scenario,
+          AsapFpgaFifoEvaluator.FIFO_EVALUATOR_AVG);
     } catch (PreesmRuntimeException e) {
       // put back all messages
       PreesmLogger.getLogger().setLevel(backupLevel);

@@ -3,12 +3,12 @@ package org.preesm.algorithm.schedule.fpga;
 import java.util.Map;
 import org.eclipse.xtext.xbase.lib.Pair;
 import org.preesm.algorithm.pisdf.autodelays.HeuristicLoopBreakingDelays;
-import org.preesm.algorithm.schedule.fpga.AsapFpgaIIevaluator.ActorNormalizedInfos;
+import org.preesm.algorithm.schedule.fpga.AbstractGenericFpgaFifoEvaluator.ActorNormalizedInfos;
 import org.preesm.commons.math.LongFraction;
 import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.scenario.Scenario;
 
-public class FifoEvaluatorAsAverage extends AbstractFifoEvaluator {
+public class FifoEvaluatorAsAverage extends AbstractAsapFpgaFifoEvaluator {
 
   /**
    * This class evalutes fifo dependencies and size as if all data are produced/consumed according to their average

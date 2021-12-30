@@ -56,15 +56,16 @@ import org.preesm.workflow.implement.AbstractWorkflowNodeImplementation;
                 @Value(name = FpgaAnalysisMainTask.SHOW_SCHED_PARAM_VALUE, effect = "False disables this feature.") }),
         @Parameter(name = FpgaAnalysisMainTask.FIFO_EVAL_PARAM_NAME,
             description = "The name of fifo evaluator to be used.",
-            values = { @Value(name = AsapFpgaIIevaluator.FIFO_EVALUATOR_AVG, effect = "Evaluate with average mode."),
-                @Value(name = AsapFpgaIIevaluator.FIFO_EVALUATOR_SDF, effect = "Evaluate with SDF mode.") }) })
+            values = { @Value(name = AsapFpgaFifoEvaluator.FIFO_EVALUATOR_AVG, effect = "Evaluate with average mode."),
+                @Value(name = AsapFpgaFifoEvaluator.FIFO_EVALUATOR_SDF, effect = "Evaluate with SDF mode."),
+                @Value(name = AdfgFpgaFifoEvaluator.FIFO_EVALUATOR_ADFG, effect = "Evaluate with ADFG mode.") }) })
 public class FpgaAnalysisMainTask extends AbstractTaskImplementation {
 
   public static final String SHOW_SCHED_PARAM_NAME  = "Show schedule ?";
   public static final String SHOW_SCHED_PARAM_VALUE = "false";
 
   public static final String FIFO_EVAL_PARAM_NAME  = "Fifo evaluator: ";
-  public static final String FIFO_EVAL_PARAM_VALUE = AsapFpgaIIevaluator.FIFO_EVALUATOR_AVG;
+  public static final String FIFO_EVAL_PARAM_VALUE = AsapFpgaFifoEvaluator.FIFO_EVALUATOR_AVG;
 
   @Override
   public Map<String, Object> execute(Map<String, Object> inputs, Map<String, String> parameters,
@@ -162,8 +163,9 @@ public class FpgaAnalysisMainTask extends AbstractTaskImplementation {
     }
 
     // schedule the graph
-    final Pair<IStatGenerator,
-        Map<Fifo, Long>> eval = AsapFpgaIIevaluator.performAnalysis(flatGraph, scenario, brv, fifoEvaluatorName);
+    final AbstractGenericFpgaFifoEvaluator evaluator = AbstractGenericFpgaFifoEvaluator
+        .getEvaluatorInstance(fifoEvaluatorName);
+    final Pair<IStatGenerator, Map<Fifo, Long>> eval = evaluator.performAnalysis(flatGraph, scenario, brv);
 
     return new AnalysisResultFPGA(flatGraph, brv, interfaceRates, eval.getValue(), eval.getKey());
   }
