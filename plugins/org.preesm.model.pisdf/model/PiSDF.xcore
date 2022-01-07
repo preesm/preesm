@@ -217,6 +217,9 @@ class PiGraph extends AbstractActor, Graph, PeriodicElement {
 	// URL to the file where this graph is saved
 	String url
 	boolean clusterValue = "false"
+	int parameterIndex = "0"
+	int actorIndex = "0"
+
 	op boolean isCluster() {
 		return clusterValue
 	}
@@ -234,11 +237,23 @@ class PiGraph extends AbstractActor, Graph, PeriodicElement {
 		// and if all its children graphs are locally static
 		return super.isLocallyStatic && parameters.forall[isLocallyStatic] && childrenGraphs.forall[isLocallyStatic]
 	}
+
+	// Add the actor at the end of the actor sublist before
+	// the first delay, as the PiWriter reorder vertices in a
+	// Parameter => Actor => Delay order
 	op unique boolean addActor(AbstractActor actor) {
-		vertices.add(actor)
+		vertices.add(parameterIndex + actorIndex, actor)
+		actorIndex = actorIndex + 1
+		return actor.equals(vertices.get(parameterIndex + actorIndex - 1))
 	}
+
+	// Add the parameter at the end of the parameter sublist before
+	// the first actor, as the PiWriter reorder vertices in a
+	// Parameter => Actor => Delay order
 	op unique boolean addParameter(Parameter parameter) {
-		vertices.add(parameter)
+		vertices.add(parameterIndex, parameter)
+		parameterIndex = parameterIndex + 1
+		return parameter.equals(vertices.get(parameterIndex - 1))
 	}
 	op unique boolean addDelay(Delay delay) {
 		vertices.add(delay)
@@ -273,6 +288,7 @@ class PiGraph extends AbstractActor, Graph, PeriodicElement {
 	}
 	
 	op unique boolean removeActor(AbstractActor actor) {
+		actorIndex = actorIndex - 1
 		vertices.remove(actor);
 	}
 	op unique boolean removeDelay(Delay delay) {
@@ -283,6 +299,7 @@ class PiGraph extends AbstractActor, Graph, PeriodicElement {
 		edges.remove(fifo)
 	}
 	op unique boolean removeParameter(Parameter param) {
+		parameterIndex = parameterIndex - 1
 		vertices.remove(param);
 	}
 	op unique boolean removeDependency(Dependency dep) {
