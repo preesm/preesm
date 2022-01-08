@@ -217,8 +217,12 @@ class PiGraph extends AbstractActor, Graph, PeriodicElement {
 	// URL to the file where this graph is saved
 	String url
 	boolean clusterValue = "false"
+
 	int parameterIndex = "0"
 	int actorIndex = "0"
+
+	int fifoWithDelayIndex = "0"
+	int fifoWithoutDelayIndex = "0"
 
 	op boolean isCluster() {
 		return clusterValue
@@ -259,8 +263,21 @@ class PiGraph extends AbstractActor, Graph, PeriodicElement {
 		vertices.add(delay)
 		vertices.add(delay.getActor())
 	}
+
+	// Add the fifo at the end of the correct fifo sublist before
+	// the first dependency, as the PiWriter reorder vertices in a
+	// FifoWithDelay => FifoWithoutDelay => Dependency order
 	op unique boolean addFifo(Fifo fifo) {
-		edges.add(fifo)
+		var int index
+		if (fifo.delay !== null) {
+			index = fifoWithDelayIndex
+			fifoWithDelayIndex = fifoWithDelayIndex + 1
+		} else {
+			index = fifoWithDelayIndex + fifoWithoutDelayIndex
+			fifoWithoutDelayIndex = fifoWithoutDelayIndex + 1
+		}
+		edges.add(index, fifo)
+		return fifo.equals(edges.get(index))
 	}
 	op unique boolean addDependency(Dependency dependency) {
 		edges.add(dependency)
@@ -288,19 +305,33 @@ class PiGraph extends AbstractActor, Graph, PeriodicElement {
 	}
 	
 	op unique boolean removeActor(AbstractActor actor) {
-		actorIndex = actorIndex - 1
-		vertices.remove(actor);
+		var boolean actorRemoved = vertices.remove(actor);
+		if (actorRemoved) {
+			actorIndex = actorIndex - 1
+		}
+		return actorRemoved
 	}
 	op unique boolean removeDelay(Delay delay) {
-		removeActor(delay.actor)
+		vertices.remove(delay.actor)
 		vertices.remove(delay)
 	}
 	op unique boolean removeFifo(Fifo fifo) {
-		edges.remove(fifo)
+		var boolean fifoRemoved = edges.remove(fifo)
+		if (fifoRemoved) {
+			if (fifo.delay !== null) {
+				fifoWithDelayIndex = fifoWithDelayIndex - 1
+			} else {
+				fifoWithoutDelayIndex = fifoWithoutDelayIndex - 1
+			}
+		}
+		return fifoRemoved
 	}
 	op unique boolean removeParameter(Parameter param) {
-		parameterIndex = parameterIndex - 1
-		vertices.remove(param);
+		var boolean parameterRemoved = vertices.remove(param);
+		if (parameterRemoved) {
+			parameterIndex = parameterIndex - 1
+		}
+		return parameterRemoved
 	}
 	op unique boolean removeDependency(Dependency dep) {
 		edges.remove(dep)
