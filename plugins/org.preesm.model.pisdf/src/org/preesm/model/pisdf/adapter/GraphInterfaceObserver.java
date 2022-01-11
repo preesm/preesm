@@ -41,6 +41,8 @@ import java.util.List;
 import org.eclipse.emf.common.notify.Adapter;
 import org.eclipse.emf.common.notify.Notification;
 import org.eclipse.emf.common.notify.impl.AdapterImpl;
+import org.preesm.commons.graph.Edge;
+import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.AbstractVertex;
 import org.preesm.model.pisdf.ConfigInputInterface;
 import org.preesm.model.pisdf.ConfigInputPort;
@@ -48,6 +50,10 @@ import org.preesm.model.pisdf.ConfigOutputPort;
 import org.preesm.model.pisdf.DataInputPort;
 import org.preesm.model.pisdf.DataOutputPort;
 import org.preesm.model.pisdf.DataPort;
+import org.preesm.model.pisdf.Delay;
+import org.preesm.model.pisdf.DelayActor;
+import org.preesm.model.pisdf.Dependency;
+import org.preesm.model.pisdf.Fifo;
 import org.preesm.model.pisdf.InterfaceActor;
 import org.preesm.model.pisdf.Parameter;
 import org.preesm.model.pisdf.PiGraph;
@@ -87,12 +93,35 @@ public class GraphInterfaceObserver extends AdapterImpl {
    */
   protected void add(final AbstractVertex vertex, final PiGraph graph) {
 
-    if (vertex instanceof InterfaceActor) {
+    if ((vertex instanceof AbstractActor) && !(vertex instanceof DelayActor)) {
+      if (vertex instanceof InterfaceActor) {
+        // If the added vertex is an Interface of the graph
+        addInterfaceActor((InterfaceActor) vertex, graph);
+      }
+      graph.incrementActorIndex();
+    } else if ((vertex instanceof Parameter)) {
+      if (((Parameter) vertex).isConfigurationInterface()) {
+        // If the added vertex is an Parameter and an Interface of the graph
+        addParamInterfaceActor((ConfigInputInterface) vertex, graph);
+      }
+      graph.incrementParameterIndex();
+    } else if ((vertex instanceof Delay)) {
+      graph.incrementDelayIndex();
+    }
+  }
+
+  protected void add(final Edge edge, final PiGraph graph) {
+
+    if (edge instanceof Fifo) {
       // If the added vertex is an Interface of the graph
-      addInterfaceActor((InterfaceActor) vertex, graph);
-    } else if ((vertex instanceof Parameter) && ((Parameter) vertex).isConfigurationInterface()) {
-      // If the added vertex is an Parameter and an Interface of the graph
-      addParamInterfaceActor((ConfigInputInterface) vertex, graph);
+      final Fifo fifo = (Fifo) edge;
+      if (fifo.getDelay() != null) {
+        graph.incrementFifoWithDelayIndex();
+      } else {
+        graph.incrementFifoWithoutDelayIndex();
+      }
+    } else if (edge instanceof Dependency) {
+      // Nothing to do
     }
   }
 
@@ -188,6 +217,42 @@ public class GraphInterfaceObserver extends AdapterImpl {
         default:
           // nothing
       }
+    } else if ((notification.getNotifier() instanceof PiGraph)
+        && (notification.getFeatureID(null) == PiMMPackage.PI_GRAPH__EDGES)) {
+
+      final PiGraph graph = (PiGraph) notification.getNotifier();
+
+      switch (notification.getEventType()) {
+        case Notification.ADD:
+          // It is safe to cast because we already checked that the
+          // notification
+          // was caused by an addition to the graph vertices.
+          final Edge edgetoAdd = (Edge) notification.getNewValue();
+          add(edgetoAdd, graph);
+          break;
+
+        case Notification.ADD_MANY:
+          final List<?> listToAdd = (List<?>) notification.getNewValue();
+          for (final Object object : listToAdd) {
+            add((Edge) object, graph);
+          }
+          break;
+
+        case Notification.REMOVE:
+          final Edge edgeToRemove = (Edge) notification.getOldValue();
+          remove(edgeToRemove, graph);
+          break;
+
+        case Notification.REMOVE_MANY:
+          final List<?> listToRemove = (List<?>) notification.getOldValue();
+          for (final Object object : listToRemove) {
+            remove((Edge) object, graph);
+          }
+          break;
+
+        default:
+          // nothing
+      }
     }
 
     // TODO Add support when a Parameter changes from a config interface to a non config param
@@ -206,10 +271,32 @@ public class GraphInterfaceObserver extends AdapterImpl {
    *          The {@link PiGraph}
    */
   protected void remove(final AbstractVertex vertex, final PiGraph graph) {
-    if (vertex instanceof InterfaceActor) {
-      removeInterfaceActor((InterfaceActor) vertex, graph);
-    } else if ((vertex instanceof Parameter) && ((Parameter) vertex).isConfigurationInterface()) {
-      removeParamInterfaceActor((ConfigInputInterface) vertex, graph);
+    if ((vertex instanceof Parameter)) {
+      if (((Parameter) vertex).isConfigurationInterface()) {
+        // If the added vertex is an Parameter and an Interface of the graph
+        removeParamInterfaceActor((ConfigInputInterface) vertex, graph);
+      }
+      graph.decrementParameterIndex();
+    } else if ((vertex instanceof AbstractActor) && !(vertex instanceof DelayActor)) {
+      if (vertex instanceof InterfaceActor) {
+        removeInterfaceActor((InterfaceActor) vertex, graph);
+      }
+      graph.decrementActorIndex();
+    } else if ((vertex instanceof Delay)) {
+      graph.decrementDelayIndex();
+    }
+  }
+
+  protected void remove(final Edge edge, final PiGraph graph) {
+    if ((edge instanceof Fifo) && (graph.getEdges().contains(edge))) {
+      // If the added vertex is an Interface of the graph
+      if (((Fifo) edge).getDelay() != null) {
+        graph.decrementFifoWithDelayIndex();
+      } else {
+        graph.decrementFifoWithoutDelayIndex();
+      }
+    } else if (edge instanceof Dependency) {
+      // Nothing to do
     }
   }
 

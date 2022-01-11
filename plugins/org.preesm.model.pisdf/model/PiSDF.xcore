@@ -218,11 +218,45 @@ class PiGraph extends AbstractActor, Graph, PeriodicElement {
 	String url
 	boolean clusterValue = "false"
 
+	// Indexes used for vertices and edges insertion/deletion in a way that matches the .pi
 	int parameterIndex = "0"
 	int actorIndex = "0"
+	int delayIndex = "0"
 
 	int fifoWithDelayIndex = "0"
 	int fifoWithoutDelayIndex = "0"
+
+	op void incrementParameterIndex() {
+		parameterIndex = parameterIndex + 1
+	}
+	op void incrementActorIndex() {
+		actorIndex = actorIndex + 1
+	}
+	op void incrementDelayIndex() {
+		delayIndex = delayIndex + 1
+	}
+	op void incrementFifoWithDelayIndex() {
+		fifoWithDelayIndex = fifoWithDelayIndex + 1
+	}
+	op void incrementFifoWithoutDelayIndex() {
+		fifoWithoutDelayIndex = fifoWithoutDelayIndex + 1
+	}
+
+	op void decrementParameterIndex() {
+		parameterIndex = parameterIndex - 1
+	}
+	op void decrementActorIndex() {
+		actorIndex = actorIndex - 1
+	}
+	op void decrementDelayIndex() {
+		delayIndex = delayIndex - 1
+	}
+	op void decrementFifoWithDelayIndex() {
+		fifoWithDelayIndex = fifoWithDelayIndex - 1
+	}
+	op void decrementFifoWithoutDelayIndex() {
+		fifoWithoutDelayIndex = fifoWithoutDelayIndex - 1
+	}
 
 	op boolean isCluster() {
 		return clusterValue
@@ -247,7 +281,6 @@ class PiGraph extends AbstractActor, Graph, PeriodicElement {
 	// Parameter => Actor => Delay order
 	op unique boolean addActor(AbstractActor actor) {
 		vertices.add(parameterIndex + actorIndex, actor)
-		actorIndex = actorIndex + 1
 		return actor.equals(vertices.get(parameterIndex + actorIndex - 1))
 	}
 
@@ -256,12 +289,13 @@ class PiGraph extends AbstractActor, Graph, PeriodicElement {
 	// Parameter => Actor => Delay order
 	op unique boolean addParameter(Parameter parameter) {
 		vertices.add(parameterIndex, parameter)
-		parameterIndex = parameterIndex + 1
 		return parameter.equals(vertices.get(parameterIndex - 1))
 	}
 	op unique boolean addDelay(Delay delay) {
-		vertices.add(delay)
-		vertices.add(delay.getActor())
+		var boolean additionStatus = false
+		vertices.add(parameterIndex + actorIndex + delayIndex, delay)
+		additionStatus = delay.equals(vertices.get(parameterIndex + actorIndex + delayIndex - 1))
+		return additionStatus && vertices.add(delay.getActor())
 	}
 
 	// Add the fifo at the end of the correct fifo sublist before
@@ -271,10 +305,8 @@ class PiGraph extends AbstractActor, Graph, PeriodicElement {
 		var int index
 		if (fifo.delay !== null) {
 			index = fifoWithDelayIndex
-			fifoWithDelayIndex = fifoWithDelayIndex + 1
 		} else {
 			index = fifoWithDelayIndex + fifoWithoutDelayIndex
-			fifoWithoutDelayIndex = fifoWithoutDelayIndex + 1
 		}
 		edges.add(index, fifo)
 		return fifo.equals(edges.get(index))
@@ -305,36 +337,19 @@ class PiGraph extends AbstractActor, Graph, PeriodicElement {
 	}
 	
 	op unique boolean removeActor(AbstractActor actor) {
-		var boolean actorRemoved = vertices.remove(actor);
-		if (actorRemoved) {
-			actorIndex = actorIndex - 1
-		}
-		return actorRemoved
+		return vertices.remove(actor)
 	}
 	op unique boolean removeDelay(Delay delay) {
-		vertices.remove(delay.actor)
-		vertices.remove(delay)
+		return vertices.remove(delay.getActor()) && vertices.remove(delay)
 	}
 	op unique boolean removeFifo(Fifo fifo) {
-		var boolean fifoRemoved = edges.remove(fifo)
-		if (fifoRemoved) {
-			if (fifo.delay !== null) {
-				fifoWithDelayIndex = fifoWithDelayIndex - 1
-			} else {
-				fifoWithoutDelayIndex = fifoWithoutDelayIndex - 1
-			}
-		}
-		return fifoRemoved
+		return edges.remove(fifo)
 	}
 	op unique boolean removeParameter(Parameter param) {
-		var boolean parameterRemoved = vertices.remove(param);
-		if (parameterRemoved) {
-			parameterIndex = parameterIndex - 1
-		}
-		return parameterRemoved
+		return vertices.remove(param)
 	}
 	op unique boolean removeDependency(Dependency dep) {
-		edges.remove(dep)
+		return edges.remove(dep)
 	}
 	
 	op unique Parameter[] getOnlyParameters() {
