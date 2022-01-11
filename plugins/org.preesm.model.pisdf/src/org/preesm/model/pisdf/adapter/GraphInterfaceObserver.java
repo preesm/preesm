@@ -113,9 +113,7 @@ public class GraphInterfaceObserver extends AdapterImpl {
   protected void add(final Edge edge, final PiGraph graph) {
 
     if (edge instanceof Fifo) {
-      // If the added vertex is an Interface of the graph
-      final Fifo fifo = (Fifo) edge;
-      if (fifo.getDelay() != null) {
+      if (((Fifo) edge).getDelay() != null) {
         graph.incrementFifoWithDelayIndex();
       } else {
         graph.incrementFifoWithoutDelayIndex();
@@ -288,7 +286,7 @@ public class GraphInterfaceObserver extends AdapterImpl {
   }
 
   protected void remove(final Edge edge, final PiGraph graph) {
-    if ((edge instanceof Fifo) && (graph.getEdges().contains(edge))) {
+    if (edge instanceof Fifo) {
       // If the added vertex is an Interface of the graph
       if (((Fifo) edge).getDelay() != null) {
         graph.decrementFifoWithDelayIndex();
