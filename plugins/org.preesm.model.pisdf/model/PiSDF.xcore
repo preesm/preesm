@@ -279,9 +279,14 @@ class PiGraph extends AbstractActor, Graph, PeriodicElement {
 	// Add the actor at the end of the actor sublist before
 	// the first delay, as the PiWriter reorder vertices in a
 	// Parameter => Actor => Delay order
+	// DelayActor are added last
 	op unique boolean addActor(AbstractActor actor) {
-		vertices.add(parameterIndex + actorIndex, actor)
-		return actor.equals(vertices.get(parameterIndex + actorIndex - 1))
+		if (!(actor instanceof DelayActor)) {
+			vertices.add(parameterIndex + actorIndex, actor)
+			return actor.equals(vertices.get(parameterIndex + actorIndex - 1))
+		} else {
+			return vertices.add(actor)
+		}
 	}
 
 	// Add the parameter at the end of the parameter sublist before
@@ -295,7 +300,7 @@ class PiGraph extends AbstractActor, Graph, PeriodicElement {
 		var boolean additionStatus = false
 		vertices.add(parameterIndex + actorIndex + delayIndex, delay)
 		additionStatus = delay.equals(vertices.get(parameterIndex + actorIndex + delayIndex - 1))
-		return additionStatus && vertices.add(delay.getActor())
+		return additionStatus && this.addActor(delay.getActor())
 	}
 
 	// Add the fifo at the end of the correct fifo sublist before

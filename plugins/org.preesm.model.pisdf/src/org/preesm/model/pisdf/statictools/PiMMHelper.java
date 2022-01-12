@@ -396,7 +396,7 @@ public class PiMMHelper {
    */
   public static void removeNonExecutedActorsAndFifos(final PiGraph piGraph, final Map<AbstractVertex, Long> brv) {
     // remove unused fifos
-    for (final Fifo f : piGraph.getAllFifos()) {
+    for (final Fifo f : piGraph.getFifos()) {
       final DataOutputPort dpi = f.getSourcePort();
       final DataInputPort dpo = f.getTargetPort();
       final long ri = dpi.getExpression().evaluate();
