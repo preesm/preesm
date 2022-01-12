@@ -193,7 +193,7 @@ public class PiSDFSubgraphBuilder extends PiMMSwitch<Boolean> {
       Delay oldDelay = oldFifo.getDelay();
       this.parentGraph.removeFifo(oldFifo); // remove FIFO from containing graph
       if (oldDelay != null) {
-        incomingFifo.setDelay(oldDelay);
+        incomingFifo.affectDelay(oldDelay);
       }
       this.parentGraph.addFifo(incomingFifo);
       String dataType = oldFifo.getType();
@@ -240,7 +240,7 @@ public class PiSDFSubgraphBuilder extends PiMMSwitch<Boolean> {
       Delay oldDelay = oldFifo.getDelay();
       this.parentGraph.removeFifo(oldFifo); // remove FIFO from containing graph
       if (oldDelay != null) {
-        outsideOutgoingFifo.setDelay(oldDelay);
+        outsideOutgoingFifo.affectDelay(oldDelay);
       }
       String dataType = oldFifo.getType();
       outsideOutgoingFifo.setTargetPort(oldFifo.getTargetPort());

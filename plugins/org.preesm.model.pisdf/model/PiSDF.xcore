@@ -692,6 +692,36 @@ class Fifo extends Edge {
 	op PiGraph getContainingPiGraph() {
 		return containingGraph as PiGraph
 	}
+	// When affecting a delay to a fifo without delay, the fifo change from a fifo without delay to a fifo with delay
+	op void affectDelay(Delay newDelay) {
+		val Fifo oldFifo = newDelay.getContainingFifo()
+		var PiGraph oldGraph = null
+		val Fifo newFifo = this
+		var PiGraph newGraph = newFifo.getContainingPiGraph()
+		// Removing the fifo that is currently holding the delay from its graph
+		if (oldFifo !== null) {
+			oldGraph = oldFifo.getContainingPiGraph()
+			if(oldGraph !== null) {
+				oldGraph.removeFifo(oldFifo)
+			}
+		}
+		// Removing the fifo that will receive the delay from its graph
+		if (newGraph !== null) {
+			newGraph.removeFifo(this)
+		}
+		// Re-affecting the delay from oldFifo to newFifo
+		this.setDelay(newDelay)
+		// Re-adding the fifo that was holding the delay to its graph
+		if (newGraph !== null) {
+			newGraph.addFifo(this)
+		}
+		// Re-adding the fifo that was holding the delay to its graph
+		if (oldFifo !== null) {
+			if(oldGraph !== null) {
+				oldGraph.addFifo(oldFifo)
+			}
+		}
+	}
 	/*
 	 * Return a {@link String} composed as follow:<br>
 	 * "&ltSourceName&gt[.&ltSourcePortName&gt]-&ltTargetName&gt[.&ltTargetPortName&gt]" <br>

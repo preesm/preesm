@@ -515,7 +515,7 @@ public class AutoDelaysTask extends AbstractTaskImplementation {
         Delay delay = f.getDelay();
         if (delay == null && !reset) {
           delay = PiMMUserFactory.instance.createDelay();
-          f.setDelay(delay);
+          f.affectDelay(delay);
           delay.setName(delay.getId());
           delay.getActor().setName(delay.getId());
           final PiGraph graphFifo = f.getContainingPiGraph();
@@ -587,7 +587,7 @@ public class AutoDelaysTask extends AbstractTaskImplementation {
         Delay delay = f.getDelay();
         if (delay == null) {
           delay = PiMMUserFactory.instance.createDelay();
-          f.setDelay(delay);
+          f.affectDelay(delay);
           delay.setName(delay.getId());
           delay.getActor().setName(delay.getId());
           final PiGraph graphFifo = f.getContainingPiGraph();

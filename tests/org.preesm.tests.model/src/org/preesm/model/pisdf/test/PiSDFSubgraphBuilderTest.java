@@ -305,17 +305,17 @@ public class PiSDFSubgraphBuilderTest {
     // Set delay to fifo AC
     Delay delayAC = PiMMUserFactory.instance.createDelay();
     delayAC.setExpression(16);
-    fifoAB.setDelay(delayAC);
+    fifoAB.affectDelay(delayAC);
     topGraph.addDelay(delayAC);
     // Set delay to fifo BC
     Delay delayBC = PiMMUserFactory.instance.createDelay();
     delayBC.setExpression(2);
-    fifoBC.setDelay(delayBC);
+    fifoBC.affectDelay(delayBC);
     topGraph.addDelay(delayBC);
     // Set delay to fifo CD
     Delay delayCD = PiMMUserFactory.instance.createDelay();
     delayCD.setExpression(4);
-    fifoCD.setDelay(delayCD);
+    fifoCD.affectDelay(delayCD);
     topGraph.addDelay(delayCD);
     // Create a list for the 3 fifos to easily add them to the top graph
     List<Fifo> fifosList = Arrays.asList(fifoAB, fifoBC, fifoCD);

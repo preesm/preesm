@@ -403,7 +403,7 @@ public class PiMMHelper {
       final long ro = dpo.getExpression().evaluate();
       if (ri == 0 && ro == 0) {
         final Delay d = f.getDelay();
-        f.setDelay(null);
+        f.affectDelay(null);
         if (d != null) {
           piGraph.removeDelay(d);
         }
@@ -493,7 +493,7 @@ public class PiMMHelper {
     StringBuilder sb = new StringBuilder("Following delays are removed since their size is 0: ");
     for (Delay d : toRemove) {
       Fifo f = d.getContainingFifo();
-      f.setDelay(null);
+      f.affectDelay(null);
       piGraph.removeDelay(d);
       sb.append(d.getName() + "; ");
     }
@@ -628,7 +628,7 @@ public class PiMMHelper {
     newDelayActor.getDataInputPort().setName(originalDelayActor.getDataInputPort().getName());
     newDelayActor.getDataOutputPort().setName(originalDelayActor.getDataOutputPort().getName());
 
-    fifoPersistence.setDelay(delayPersistence);
+    fifoPersistence.affectDelay(delayPersistence);
     graph.getContainingPiGraph().addDelay(delayPersistence);
 
     return delayPersistence;

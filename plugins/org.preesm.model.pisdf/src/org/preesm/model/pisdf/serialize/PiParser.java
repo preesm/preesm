@@ -639,7 +639,7 @@ public class PiParser {
         }
       }
       // Adds the delay to the FIFO (and sets the FIFO of the delay at the same time)
-      fifo.setDelay(delay);
+      fifo.affectDelay(delay);
     }
 
     // Add the new Fifo to the graph
