@@ -294,12 +294,6 @@ public class PiSDFSubgraphBuilderTest {
     Fifo fifoAB = PiMMUserFactory.instance.createFifo(outputA, inputB, "void");
     Fifo fifoBC = PiMMUserFactory.instance.createFifo(outputB, inputC, "void");
     Fifo fifoCD = PiMMUserFactory.instance.createFifo(outputC, inputD, "void");
-    // Create a list for the 3 fifos to easily add them to the top graph
-    List<Fifo> fifosList = Arrays.asList(fifoAB, fifoBC, fifoCD);
-    // Add fifos to the top graph
-    for (Fifo fifo : fifosList) {
-      topGraph.addFifo(fifo);
-    }
     // Setup data output and input ports rates
     // Repetition vector should be equal to [1, 8, 4, 2]'
     outputA.setExpression(16);
@@ -323,6 +317,12 @@ public class PiSDFSubgraphBuilderTest {
     delayCD.setExpression(4);
     fifoCD.setDelay(delayCD);
     topGraph.addDelay(delayCD);
+    // Create a list for the 3 fifos to easily add them to the top graph
+    List<Fifo> fifosList = Arrays.asList(fifoAB, fifoBC, fifoCD);
+    // Add fifos to the top graph
+    for (Fifo fifo : fifosList) {
+      topGraph.addFifo(fifo);
+    }
     // Add a parameter to actor B
     Parameter parameter = PiMMUserFactory.instance.createParameter("useless", 2);
     ConfigInputPort configInputB = PiMMUserFactory.instance.createConfigInputPort();
