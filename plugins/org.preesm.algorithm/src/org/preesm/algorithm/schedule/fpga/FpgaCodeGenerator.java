@@ -421,11 +421,7 @@ public class FpgaCodeGenerator {
 
   protected String writeDefineHeaderFile() {
 
-    final StringBuilder sb = new StringBuilder("// fifo sizes computed by PREESM\n");
-    allFifoDepths.forEach((fifo, size) -> {
-      sb.append(String.format("#define %s %d\n", getFifoDataSizeName(fifo), size));
-    });
-    sb.append("// interface sizes computed by PREESM\n");
+    final StringBuilder sb = new StringBuilder("// interface sizes computed by PREESM\n");
     interfaceRates.forEach((ia, p) -> {
       final long rate = p.getKey();
       final long factor = p.getValue();
