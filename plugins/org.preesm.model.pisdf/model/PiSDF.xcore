@@ -282,7 +282,17 @@ class PiGraph extends AbstractActor, Graph, PeriodicElement {
 	// DelayActor are added last
 	op unique boolean addActor(AbstractActor actor) {
 		if (!(actor instanceof DelayActor)) {
-			vertices.add(parameterIndex + actorIndex, actor)
+			val int oldActorIndex = this.actorIndex
+			try {
+				vertices.add(parameterIndex + actorIndex, actor)
+			} catch (IllegalArgumentException ignore) {
+				return false
+			}
+			// Dirty fix for when the observer isn't triggered for whatever bs reason
+			// Happens when actor is a PiGraph
+			if (oldActorIndex == this.actorIndex) {
+				incrementActorIndex()
+			}
 			return actor.equals(vertices.get(parameterIndex + actorIndex - 1))
 		} else {
 			return vertices.add(actor)
@@ -293,12 +303,21 @@ class PiGraph extends AbstractActor, Graph, PeriodicElement {
 	// the first actor, as the PiWriter reorder vertices in a
 	// Parameter => Actor => Delay order
 	op unique boolean addParameter(Parameter parameter) {
-		vertices.add(parameterIndex, parameter)
-		return parameter.equals(vertices.get(parameterIndex - 1))
+		try {
+			vertices.add(parameterIndex, parameter)
+		} catch (IllegalArgumentException ignore) {
+			return false
+		}
+		//return parameter.equals(vertices.get(parameterIndex - 1))
+		return true
 	}
 	op unique boolean addDelay(Delay delay) {
 		var boolean additionStatus = false
-		vertices.add(parameterIndex + actorIndex + delayIndex, delay)
+		try {
+			vertices.add(parameterIndex + actorIndex + delayIndex, delay)
+		} catch (IllegalArgumentException ignore) {
+			return false
+		}
 		additionStatus = delay.equals(vertices.get(parameterIndex + actorIndex + delayIndex - 1))
 		return additionStatus && this.addActor(delay.getActor())
 	}
@@ -345,6 +364,7 @@ class PiGraph extends AbstractActor, Graph, PeriodicElement {
 		val int oldActorIndex = this.actorIndex
 		val boolean actorRemoved = vertices.remove(actor)
 		// Dirty fix for when the observer isn't triggered for whatever bs reason
+		// Happens when actor is a PiGraph
 		if (oldActorIndex == this.actorIndex) {
 			decrementActorIndex()
 		}
