@@ -123,7 +123,7 @@ public class Spider2CodegenEdge {
       throw new PreesmRuntimeException("can not create Spider2CodegenEdge from null fifo.");
     }
     /* Retrieve the size of the edge */
-    this.size = Long.toString(simulationInfo.getDataTypeSizeOrDefault(fifo.getType()));
+    this.size = Long.toString(simulationInfo.getDataTypeSizeInByte(fifo.getType()));
 
     /* Retrieve source information */
     this.source = fifo.getSourcePort().getContainingActor();
@@ -188,7 +188,7 @@ public class Spider2CodegenEdge {
   }
 
   private String getDelayDataSize(final DataPort port, final SimulationInfo simulationInfo) {
-    return port != null ? Long.toString(simulationInfo.getDataTypeSizeOrDefault(port.getFifo().getType())) : "0";
+    return port != null ? Long.toString(simulationInfo.getDataTypeSizeInByte(port.getFifo().getType())) : "0";
   }
 
   private long getRealSourcePortIx(final AbstractActor actor, final DataOutputPort sourcePort) {

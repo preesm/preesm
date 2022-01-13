@@ -367,6 +367,7 @@ public class PiMMHelper {
         graph.getVertices().remove((Parameter) setter);
       }
     }
+    PreesmLogger.getLogger().fine("Removing Actor: " + actor.getVertexPath());
     graph.removeActor(actor);
   }
 
@@ -396,7 +397,7 @@ public class PiMMHelper {
    */
   public static void removeNonExecutedActorsAndFifos(final PiGraph piGraph, final Map<AbstractVertex, Long> brv) {
     // remove unused fifos
-    for (final Fifo f : piGraph.getAllFifos()) {
+    for (final Fifo f : piGraph.getFifos()) {
       final DataOutputPort dpi = f.getSourcePort();
       final DataInputPort dpo = f.getTargetPort();
       final long ri = dpi.getExpression().evaluate();
@@ -407,6 +408,7 @@ public class PiMMHelper {
         if (d != null) {
           piGraph.removeDelay(d);
         }
+        PreesmLogger.getLogger().fine("Removing unused Fifo: " + f.getId());
         piGraph.removeFifo(f);
         dpi.setOutgoingFifo(null);
         dpo.setIncomingFifo(null);
@@ -450,6 +452,7 @@ public class PiMMHelper {
       if ((aa instanceof JoinActor || aa instanceof RoundBufferActor)
           && toRemoveIn.size() < aa.getDataInputPorts().size()) {
         for (DataInputPort p : toRemoveIn) {
+          PreesmLogger.getLogger().fine("Removing unused input Port: " + aa.getVertexPath() + ":" + p.getName());
           aa.getDataInputPorts().remove(p);
         }
       } else if (!toRemoveIn.isEmpty() && !(aa instanceof DelayActor)) {
@@ -460,6 +463,7 @@ public class PiMMHelper {
       if ((aa instanceof ForkActor || aa instanceof BroadcastActor)
           && toRemoveOut.size() < aa.getDataOutputPorts().size()) {
         for (DataOutputPort p : toRemoveOut) {
+          PreesmLogger.getLogger().fine("Removing unused output Port: " + aa.getVertexPath() + ":" + p.getName());
           aa.getDataOutputPorts().remove(p);
         }
       } else if (!toRemoveOut.isEmpty() && !(aa instanceof DelayActor)) {

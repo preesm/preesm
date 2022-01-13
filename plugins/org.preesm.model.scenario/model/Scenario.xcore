@@ -86,7 +86,8 @@ enum ScenarioConstants {
 	DEFAULT_MEMCOPY_SETUP_TIME = 1
 	DEFAULT_MEMCOPY_UNIT_PER_TIME = 1000
 	DEFAULT_AVG_DATA_TRANSFER_SIZE = 1000
-	DEFAULT_DATA_TYPE_SIZE = 1
+	DEFAULT_DATA_TYPE_SIZE = 8
+	DEFAULT_MISSING_DATA_TYPE = -1
 	DEFAULT_POWER_PE = 10
 	DEFAULT_ENERGY_TASK = 1
 	DEFAULT_ENERGY_COMM = 1
@@ -103,6 +104,7 @@ class Scenario {
 	contains ParameterValueOverride[] parameterValues opposite scenario
 	contains PapifyConfig papifyConfig opposite scenario
 	contains EnergyConfig energyConfig opposite scenario
+	Boolean sizesAreInBit = "false"
 	op String getScenarioName() {
 		val IPath algoPath = new Path(algorithm.url).removeFileExtension();
 		val String algoName = algoPath.lastSegment();
@@ -183,7 +185,27 @@ class SimulationInfo {
 		if (dataTypes.containsKey(typeName)) {
 			return dataTypes.get(typeName);
 		} else {
-			return ScenarioConstants.DEFAULT_DATA_TYPE_SIZE.value
+			return ScenarioConstants.DEFAULT_DATA_TYPE_SIZE.value;
+		}
+	}
+	op long getDataTypeSizeInByte(String typeName) {
+		return getBufferSizeInByte(typeName, 1)
+	}
+	op long getDataTypeSizeInBit(String typeName) {
+		return getBufferSizeInBit(typeName, 1)
+	}
+	op long getBufferSizeInByte(String typeName, long nbToken) {
+		if (dataTypes.containsKey(typeName)) {
+			return (dataTypes.get(typeName) * nbToken + 7L) / 8L;
+		} else {
+			return ScenarioConstants.DEFAULT_MISSING_DATA_TYPE.value;
+		}
+	}
+	op long getBufferSizeInBit(String typeName, long nbToken) {
+		if (dataTypes.containsKey(typeName)) {
+			return dataTypes.get(typeName) * nbToken;
+		} else {
+			return ScenarioConstants.DEFAULT_MISSING_DATA_TYPE.value;
 		}
 	}
 }

@@ -156,7 +156,7 @@ public class ClusteringHelper {
   /**
    * @param schedule
    *          schedule to get memory space needed for
-   * @return bytes needed for execution of schedule
+   * @return bits needed for execution of schedule
    */
   public static final long getMemorySpaceNeededFor(Schedule schedule) {
     long result = 0;

@@ -48,25 +48,27 @@ public class BufferProperties {
 
   private final String dataTypeName;
   private final String destInputPortID;
-  private final long   size;
+  private final long   nbToken;
   private final String sourceOutputPortID;
 
   /**
    * Instantiates a new buffer properties.
    *
+   * @param dataTypeName
+   *          the name of the type
    * @param sourceOutputPortID
    *          the source output port ID
    * @param destInputPortID
    *          the dest input port ID
-   * @param size
-   *          the size
+   * @param nbToken
+   *          the number of token
    */
   public BufferProperties(final String dataTypeName, final String sourceOutputPortID, final String destInputPortID,
-      final long size) {
+      final long nbToken) {
     super();
     this.dataTypeName = dataTypeName;
     this.destInputPortID = destInputPortID;
-    this.size = size;
+    this.nbToken = nbToken;
     this.sourceOutputPortID = sourceOutputPortID;
   }
 
@@ -78,8 +80,8 @@ public class BufferProperties {
     return this.destInputPortID;
   }
 
-  public long getSize() {
-    return this.size;
+  public long getNbToken() {
+    return this.nbToken;
   }
 
   public String getSourceOutputPortID() {

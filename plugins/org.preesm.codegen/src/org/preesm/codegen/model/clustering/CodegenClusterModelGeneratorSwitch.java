@@ -337,7 +337,8 @@ public class CodegenClusterModelGeneratorSwitch extends ScheduleSwitch<CodeElt> 
           memcpyCall.addParameter(delayBufferTriple.getRight(), PortDirection.INPUT); // remaining subbuffer
           // Compute size of transfer
           final Constant constant = CodegenModelUserFactory.eINSTANCE.createConstant();
-          constant.setValue(delayBufferTriple.getRight().getSize() * delayBufferTriple.getRight().getTypeSize());
+          constant.setValue(
+              delayBufferTriple.getRight().getNbToken() * delayBufferTriple.getRight().getTokenTypeSizeInBit());
           memcpyCall.addParameter(constant, PortDirection.INPUT);
           // Add pop to the loop block
           loopBlock.getCodeElts().add(memcpyCall);
@@ -441,39 +442,39 @@ public class CodegenClusterModelGeneratorSwitch extends ScheduleSwitch<CodeElt> 
   private final Buffer generateDelayBuffer(final Fifo fifo, final Buffer delayBuffer, final int iterator) {
 
     // Fill delay buffer information
-    final long workingBufferSize = delayBuffer.getSize();
+    final long workingBufferSize = delayBuffer.getNbToken();
     final long delayCapacity = fifo.getDelay().getExpression().evaluate();
     delayBuffer.setName("delay_" + ((AbstractActor) fifo.getSource()).getName() + "_to_"
         + ((AbstractActor) fifo.getTarget()).getName() + "_" + iterator);
-    delayBuffer.setSize(delayCapacity + workingBufferSize);
+    delayBuffer.setNbToken(delayCapacity + workingBufferSize);
     this.delayBufferList.add(delayBuffer);
 
     // Initialize SubBuffer for reading into delay's fifo
     final SubBuffer readBuffer = CodegenModelUserFactory.eINSTANCE.createSubBuffer();
     readBuffer.setContainer(delayBuffer);
-    readBuffer.setOffset(0);
+    readBuffer.setOffsetInBit(0);
     readBuffer.setName("read_to_" + delayBuffer.getName());
     readBuffer.setType(delayBuffer.getType());
-    readBuffer.setTypeSize(delayBuffer.getTypeSize());
-    readBuffer.setSize(fifo.getTargetPort().getExpression().evaluate());
+    readBuffer.setTokenTypeSizeInBit(delayBuffer.getTokenTypeSizeInBit());
+    readBuffer.setNbToken(fifo.getTargetPort().getExpression().evaluate());
 
     // Initialize SubBuffer for writting into delay's fifo
     final SubBuffer writeBuffer = CodegenModelUserFactory.eINSTANCE.createSubBuffer();
     writeBuffer.setContainer(delayBuffer);
-    writeBuffer.setOffset(delayCapacity);
+    writeBuffer.setOffsetInBit(delayCapacity);
     writeBuffer.setName("write_to_" + delayBuffer.getName());
     writeBuffer.setType(delayBuffer.getType());
-    writeBuffer.setTypeSize(delayBuffer.getTypeSize());
-    writeBuffer.setSize(workingBufferSize);
+    writeBuffer.setTokenTypeSizeInBit(delayBuffer.getTokenTypeSizeInBit());
+    writeBuffer.setNbToken(workingBufferSize);
 
     // Initialize SubBuffer for shifting remaining value in delay's fifo
     final SubBuffer remainingTokensBuffer = CodegenModelUserFactory.eINSTANCE.createSubBuffer();
     remainingTokensBuffer.setContainer(delayBuffer);
-    remainingTokensBuffer.setOffset(workingBufferSize);
+    remainingTokensBuffer.setOffsetInBit(workingBufferSize);
     remainingTokensBuffer.setName("remaining_tokens_of_" + delayBuffer.getName());
     remainingTokensBuffer.setType(delayBuffer.getType());
-    remainingTokensBuffer.setTypeSize(delayBuffer.getTypeSize());
-    remainingTokensBuffer.setSize(delayCapacity);
+    remainingTokensBuffer.setTokenTypeSizeInBit(delayBuffer.getTokenTypeSizeInBit());
+    remainingTokensBuffer.setNbToken(delayCapacity);
 
     // Add buffers to delay buffer map
     this.delaySubBufferMap.put(fifo, new ImmutableTriple<>(readBuffer, writeBuffer, remainingTokensBuffer));
@@ -583,9 +584,9 @@ public class CodegenClusterModelGeneratorSwitch extends ScheduleSwitch<CodeElt> 
       iteratedBuffer = CodegenModelUserFactory.eINSTANCE.createIteratedBuffer();
       iteratedBuffer.setBuffer(buffer);
       iteratedBuffer.setIter(this.iterMap.get(actor));
-      iteratedBuffer.setSize(dataPort.getExpression().evaluate());
+      iteratedBuffer.setNbToken(dataPort.getExpression().evaluate());
       iteratedBuffer.setType(buffer.getType());
-      iteratedBuffer.setTypeSize(buffer.getTypeSize());
+      iteratedBuffer.setTokenTypeSizeInBit(buffer.getTokenTypeSizeInBit());
       return iteratedBuffer;
     } else {
       return buffer;
@@ -600,8 +601,8 @@ public class CodegenClusterModelGeneratorSwitch extends ScheduleSwitch<CodeElt> 
     buffer.setName("mem_" + ((AbstractActor) fifo.getSource()).getName() + "_to_"
         + ((AbstractActor) fifo.getTarget()).getName() + "_" + iterator);
     buffer.setType(fifo.getType());
-    buffer.setTypeSize(this.scenario.getSimulationInfo().getDataTypeSizeOrDefault(fifo.getType()));
-    buffer.setSize(fifo.getSourcePort().getExpression().evaluate() * this.repVector.get(fifo.getSource()));
+    buffer.setTokenTypeSizeInBit(this.scenario.getSimulationInfo().getDataTypeSizeInBit(fifo.getType()));
+    buffer.setNbToken(fifo.getSourcePort().getExpression().evaluate() * this.repVector.get(fifo.getSource()));
 
     if (fifo.getDelay() != null) {
       // Is the fifo delayed?

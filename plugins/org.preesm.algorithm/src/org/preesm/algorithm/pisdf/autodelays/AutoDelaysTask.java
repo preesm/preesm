@@ -376,7 +376,7 @@ public class AutoDelaysTask extends AbstractTaskImplementation {
     for (int index = 0; index < nbCuts; index++) {
       CutInformation ci = bestCuts.get(index);
       PreesmLogger.getLogger().log(Level.INFO,
-          "Setting cut from rank " + ci.getRankStr() + " using " + ci.memSize + " Bytes.");
+          "Setting cut from rank " + ci.getRankStr() + " using " + ci.memSize + " bits.");
       // set the graph
       Map<FifoAbstraction, Integer> cutMap = new HashMap<>();
       for (FifoAbstraction fa : ci.edgeCut) {
@@ -893,7 +893,7 @@ public class AutoDelaysTask extends AbstractTaskImplementation {
       final int size = fifos.size();
       for (int i = 0; i < size; i++) {
         final Fifo f = fifos.get(i);
-        final long dataSize = si.getDataTypeSizeOrDefault(f.getType());
+        final long dataSize = si.getDataTypeSizeInBit(f.getType());
         long pipeSize = pipelineValues.get(i);
         pipeSize *= dataSize;
         totalSize += pipeSize;

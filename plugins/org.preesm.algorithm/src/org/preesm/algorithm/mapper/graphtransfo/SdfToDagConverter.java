@@ -171,7 +171,7 @@ public class SdfToDagConverter {
   private static void setDataSizeForSDF(final SDFGraph graph, final Scenario scenario) {
     for (final SDFEdge edge : graph.edgeSet()) {
       final String type = edge.getDataType().toString();
-      final long size = scenario.getSimulationInfo().getDataTypeSizeOrDefault(type);
+      final long size = scenario.getSimulationInfo().getDataTypeSizeInBit(type);
       edge.setDataSize(new LongEdgePropertyType(size));
     }
   }

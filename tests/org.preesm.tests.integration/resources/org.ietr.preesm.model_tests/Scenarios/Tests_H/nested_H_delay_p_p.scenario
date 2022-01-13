@@ -1,5 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <scenario>
+    <flags>
+        <sizesAreInBit/>
+    </flags>
     <files>
         <algorithm url="/org.ietr.preesm.model_tests/Algo/Test_H/nested_H_delay_p_p.pi"/>
         <architecture url="/org.ietr.preesm.model_tests/Archi/1CoreX86.slam"/>
@@ -28,7 +31,7 @@
         <mainComNode>shared_mem</mainComNode>
         <averageDataSize>1000</averageDataSize>
         <dataTypes>
-            <dataType name="char" size="1"/>
+            <dataType name="char" size="8"/>
         </dataTypes>
         <specialVertexOperators>
             <specialVertexOperator path="Core0"/>

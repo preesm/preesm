@@ -1,5 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <scenario>
+    <flags>
+        <sizesAreInBit/>
+    </flags>
     <files>
         <algorithm url="/fi.abo.preesm.data_par_eg/Algo/acyclic_two_actors.pi"/>
         <architecture url="/fi.abo.preesm.data_par_eg/Archi/1CoreX86.slam"/>
@@ -22,7 +25,7 @@
         <mainComNode>shared_mem</mainComNode>
         <averageDataSize>1000</averageDataSize>
         <dataTypes>
-            <dataType name="uint" size="1"/>
+            <dataType name="uint" size="32"/>
         </dataTypes>
         <specialVertexOperators>
             <specialVertexOperator path="Core0"/>

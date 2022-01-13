@@ -35,7 +35,7 @@ public class FifoEvaluatorAsArray extends AbstractFifoEvaluator {
 
   @Override
   protected long computeFifoSize(FifoInformations fifoInfos) {
-    final long dataTypeSize = scenario.getSimulationInfo().getDataTypeSizeOrDefault(fifoInfos.fifo.getType());
+    final long dataTypeSize = scenario.getSimulationInfo().getDataTypeSizeInBit(fifoInfos.fifo.getType());
     final long prodRate = fifoInfos.fifo.getSourcePort().getPortRateExpression().evaluate();
 
     final long overlapDuration = fifoInfos.producer.finishTime - fifoInfos.consumer.startTime;

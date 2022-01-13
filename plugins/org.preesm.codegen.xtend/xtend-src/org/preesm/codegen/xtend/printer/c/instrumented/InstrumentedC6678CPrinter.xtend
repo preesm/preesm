@@ -98,7 +98,7 @@ class InstrumentedC6678CPrinter extends InstrumentedCPrinter {
 							cache_wb(((char*)«call.parameters.get(i).doSwitch») + «range.start», «range.length»);
 						«ENDFOR»
 					«ENDIF»
-					cache_inv(«call.parameters.get(i).doSwitch», «(call.parameters.get(i) as Buffer).size»*sizeof(«call.parameters.get(i).type»));
+					cache_inv(«call.parameters.get(i).doSwitch», «(call.parameters.get(i) as Buffer).getNbToken»*sizeof(«call.parameters.get(i).type»));
 				«ENDIF»
 			«ENDFOR»
 		«ENDIF»
@@ -159,16 +159,16 @@ class InstrumentedC6678CPrinter extends InstrumentedCPrinter {
 	'''
 	override printFifoCall(FifoCall fifoCall) '''
 		«IF fifoCall.operation == FifoOperation::POP»
-			cache_inv(«fifoCall.headBuffer.doSwitch», «fifoCall.headBuffer.size»*sizeof(«fifoCall.headBuffer.type»));
+			cache_inv(«fifoCall.headBuffer.doSwitch», «fifoCall.headBuffer.getNbToken»*sizeof(«fifoCall.headBuffer.type»));
 			«IF fifoCall.bodyBuffer !== null»
-				cache_inv(«fifoCall.bodyBuffer.doSwitch», «fifoCall.bodyBuffer.size»*sizeof(«fifoCall.bodyBuffer.type»));
+				cache_inv(«fifoCall.bodyBuffer.doSwitch», «fifoCall.bodyBuffer.getNbToken»*sizeof(«fifoCall.bodyBuffer.type»));
 			«ENDIF»
 		«ENDIF»
 		«super.printFifoCall(fifoCall)»
 		«IF fifoCall.operation == FifoOperation::PUSH || fifoCall.operation == FifoOperation::INIT»
-			cache_wbInv(«fifoCall.headBuffer.doSwitch», «fifoCall.headBuffer.size»*sizeof(«fifoCall.headBuffer.type»));
+			cache_wbInv(«fifoCall.headBuffer.doSwitch», «fifoCall.headBuffer.getNbToken»*sizeof(«fifoCall.headBuffer.type»));
 			«IF fifoCall.bodyBuffer !== null»
-				cache_wbInv(«fifoCall.bodyBuffer.doSwitch», «fifoCall.bodyBuffer.size»*sizeof(«fifoCall.bodyBuffer.type»));
+				cache_wbInv(«fifoCall.bodyBuffer.doSwitch», «fifoCall.bodyBuffer.getNbToken»*sizeof(«fifoCall.bodyBuffer.type»));
 			«ENDIF»
 		«ENDIF»
 		«printCacheCoherency(fifoCall)»
@@ -191,7 +191,7 @@ class InstrumentedC6678CPrinter extends InstrumentedCPrinter {
 
 	override printSharedMemoryCommunication(SharedMemoryCommunication communication) '''
 		«IF communication.direction == Direction::SEND && communication.delimiter == Delimiter::START»
-		cache_wbInv(«communication.data.doSwitch», «communication.data.size»*sizeof(«communication.data.type»));
+		cache_wbInv(«communication.data.doSwitch», «communication.data.getNbToken»*sizeof(«communication.data.type»));
 		«ENDIF»
 		«communication.direction.toString.toLowerCase»«communication.delimiter.toString.toLowerCase.toFirstUpper»(«IF (communication.
 			direction == Direction::SEND && communication.delimiter == Delimiter::START) ||
@@ -205,7 +205,7 @@ class InstrumentedC6678CPrinter extends InstrumentedCPrinter {
 		}»«ENDIF»); // «communication.sendStart.coreContainer.name» > «communication.receiveStart.coreContainer.name»: «communication.
 			data.doSwitch»
 		«IF communication.direction == Direction::RECEIVE && communication.delimiter == Delimiter::END»
-		cache_inv(«communication.data.doSwitch», «communication.data.size»*sizeof(«communication.data.type»));
+		cache_inv(«communication.data.doSwitch», «communication.data.getNbToken»*sizeof(«communication.data.type»));
 		«ENDIF»
 	'''
 
@@ -223,7 +223,7 @@ class InstrumentedC6678CPrinter extends InstrumentedCPrinter {
 						val const = CodegenModelUserFactory::eINSTANCE.createConstant
 						const.name = "nbDump"
 						const.type = "int"
-						const.value = dumpTimedBuffer.size
+						const.value = dumpTimedBuffer.getNbToken
 						const
 					}.doSwitch», «nbExec.doSwitch»);
 			«ENDIF»
@@ -254,13 +254,13 @@ class InstrumentedC6678CPrinter extends InstrumentedCPrinter {
 		// merged buffer is executed on the same core, its data will still be valid
 		if(result.empty) {
 						if (!(input instanceof NullBuffer)) {
-				result = '''cache_wb(«input.doSwitch», «input.size»*sizeof(«input.type»));'''
+				result = '''cache_wb(«input.doSwitch», «input.getNbToken»*sizeof(«input.type»));'''
 			} else {
 
 				// The input buffer is null write back the output instead
 				// since if the input is null, it means it has been exploded
 				// into the output by the memory scripts.
-				result = '''cache_wb(«output.doSwitch», «output.size»*sizeof(«output.type»));'''
+				result = '''cache_wb(«output.doSwitch», «output.getNbToken»*sizeof(«output.type»));'''
 			}
 			if (!currentOperationMemcpy.contains(result)) {
 				currentOperationMemcpy.add(result)

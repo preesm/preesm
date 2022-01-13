@@ -148,11 +148,11 @@ import org.preesm.workflow.implement.AbstractTaskImplementation;
                 + "the Memory Scripts task.",
             values = { @Value(name = "None", effect = "No special care is taken to align the buffers in memory."),
                 @Value(name = "Data",
-                    effect = "All buffers are aligned on addresses that are multiples of their size. For example, a 4 "
-                        + "bytes integer is aligned on 4 bytes address."),
+                    effect = "All buffers are aligned on addresses that are multiples of their size. For example, a 32 "
+                        + "bites integer is aligned on 32 bits address."),
                 @Value(name = "Fixed:=n",
                     effect = "Where $$n\\in \\mathbb{N}^*$$. This forces the allocation algorithm to align all buffers"
-                        + " on addresses that are multiples of n bytes.") }),
+                        + " on addresses that are multiples of n bits.") }),
         @Parameter(name = "Nb of Shuffling Tested",
             description = "Number of random order tested when using the Shuffle value for the Best/First Fit order"
                 + " parameter.",
@@ -207,7 +207,7 @@ public class MemoryAllocatorTask extends AbstractTaskImplementation {
   public static final String VALUE_ALIGNEMENT_NONE               = "None";
   public static final String VALUE_ALIGNEMENT_DATA               = "Data";
   public static final String VALUE_ALIGNEMENT_FIXED              = "Fixed:=";
-  public static final String VALUE_ALIGNEMENT_DEFAULT            = "None";
+  public static final String VALUE_ALIGNEMENT_DEFAULT            = VALUE_ALIGNEMENT_FIXED + 8;
   public static final String PARAM_DISTRIBUTION_POLICY           = "Distribution";
   public static final String VALUE_DISTRIBUTION_SHARED_ONLY      = "SharedOnly";
   public static final String VALUE_DISTRIBUTION_DISTRIBUTED_ONLY = "DistributedOnly";
@@ -273,7 +273,7 @@ public class MemoryAllocatorTask extends AbstractTaskImplementation {
         this.alignment = -1;
     }
     if (this.verbose) {
-      this.logger.log(Level.INFO, () -> "Allocation with alignment:=" + this.alignment + ".");
+      this.logger.log(Level.INFO, () -> "Allocation with alignment:=" + this.alignment + " bits.");
     }
 
     // Retrieve the ordering policies to test
@@ -386,13 +386,13 @@ public class MemoryAllocatorTask extends AbstractTaskImplementation {
 
     if ((allocator instanceof OrderedAllocator) && (((OrderedAllocator) allocator).getOrder() == Order.SHUFFLE)) {
       ((OrderedAllocator) allocator).setPolicy(Policy.WORST);
-      log += " worst: " + allocator.getMemorySize();
+      log += " worst: " + allocator.getMemorySizeInByte();
 
       ((OrderedAllocator) allocator).setPolicy(Policy.MEDIANE);
-      log += "(med: " + allocator.getMemorySize();
+      log += "(med: " + allocator.getMemorySizeInByte();
 
       ((OrderedAllocator) allocator).setPolicy(Policy.AVERAGE);
-      log += " avg: " + allocator.getMemorySize() + ")";
+      log += " avg: " + allocator.getMemorySizeInByte() + ")";
 
       ((OrderedAllocator) allocator).setPolicy(Policy.BEST);
     }
@@ -403,7 +403,7 @@ public class MemoryAllocatorTask extends AbstractTaskImplementation {
   private String computeLog(final MemoryAllocator allocator, final long tStart, final String sAllocator,
       final long tFinish) {
     String unit = "bytes";
-    double size = allocator.getMemorySize();
+    double size = allocator.getMemorySizeInByte();
     if (size > 1024) {
       size /= 1024.0;
       unit = "kBytes";
