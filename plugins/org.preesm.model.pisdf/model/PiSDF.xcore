@@ -342,7 +342,13 @@ class PiGraph extends AbstractActor, Graph, PeriodicElement {
 	}
 	
 	op unique boolean removeActor(AbstractActor actor) {
-		return vertices.remove(actor)
+		val int oldActorIndex = this.actorIndex
+		val boolean actorRemoved = vertices.remove(actor)
+		// Dirty fix for when the observer isn't triggered for whatever bs reason
+		if (oldActorIndex == this.actorIndex) {
+			decrementActorIndex()
+		}
+		return actorRemoved
 	}
 	op unique boolean removeDelay(Delay delay) {
 		return vertices.remove(delay.getActor()) && vertices.remove(delay)
