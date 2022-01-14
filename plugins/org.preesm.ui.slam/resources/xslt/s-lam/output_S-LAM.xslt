@@ -149,6 +149,12 @@
             <xsl:if test="contains(@type,'Dma')">
                 <xsl:attribute name="slam:setupTime" select="parameters/parameter[@name = 'setupTime']/@value"/>
             </xsl:if>
+
+            <xsl:if test="contains(@type,'FPGA')">
+                <xsl:attribute name="slam:frequency" select="parameters/parameter[@name = 'frequency']/@value"/>
+                <xsl:attribute name="slam:part" select="parameters/parameter[@name = 'part']/@value"/>
+                <xsl:attribute name="slam:board" select="parameters/parameter[@name = 'board']/@value"/>
+            </xsl:if>
         </xsl:element>
     </xsl:template>
 

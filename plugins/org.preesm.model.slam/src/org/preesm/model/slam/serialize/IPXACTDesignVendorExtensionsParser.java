@@ -524,6 +524,10 @@ public class IPXACTDesignVendorExtensionsParser {
       description.addSpecificParameter("slam:size", parent.getAttribute("slam:size"));
     } else if (componentType.contains("Dma")) {
       description.addSpecificParameter("slam:setupTime", parent.getAttribute("slam:setupTime"));
+    } else if (componentType.contains("FPGA")) {
+      description.addSpecificParameter("slam:frequency", parent.getAttribute("slam:frequency"));
+      description.addSpecificParameter("slam:part", parent.getAttribute("slam:part"));
+      description.addSpecificParameter("slam:board", parent.getAttribute("slam:board"));
     }
 
     // Retrieving known specific parameters

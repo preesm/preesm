@@ -31,6 +31,7 @@ import org.preesm.model.pisdf.statictools.PiSDFFlattener;
 import org.preesm.model.scenario.Scenario;
 import org.preesm.model.scenario.check.FifoTypeChecker;
 import org.preesm.model.slam.Design;
+import org.preesm.model.slam.FPGA;
 import org.preesm.model.slam.check.SlamDesignPEtypeChecker;
 import org.preesm.workflow.elements.Workflow;
 import org.preesm.workflow.implement.AbstractTaskImplementation;
@@ -77,7 +78,8 @@ public class FpgaAnalysisMainTask extends AbstractTaskImplementation {
     final String fifoEvaluatorName = parameters.get(FIFO_EVAL_PARAM_NAME);
 
     // check everything and perform analysis
-    final AnalysisResultFPGA res = checkAndAnalyze(algorithm, architecture, scenario, fifoEvaluatorName);
+    final FPGA fpga = getSingleFPGA(architecture);
+    final AnalysisResultFPGA res = checkAndAnalyze(algorithm, scenario, fifoEvaluatorName);
 
     // Optionally shows the Gantt diagram
     final String showSchedStr = parameters.get(SHOW_SCHED_PARAM_NAME);
@@ -97,7 +99,7 @@ public class FpgaAnalysisMainTask extends AbstractTaskImplementation {
     }
 
     // codegen
-    FpgaCodeGenerator.generateFiles(scenario, res.flatGraph, res.interfaceRates, res.flatFifoSizes);
+    FpgaCodeGenerator.generateFiles(scenario, fpga, res.flatGraph, res.interfaceRates, res.flatFifoSizes);
 
     return new HashMap<>();
   }
@@ -135,19 +137,14 @@ public class FpgaAnalysisMainTask extends AbstractTaskImplementation {
    * 
    * @param algorithm
    *          Graph to be analyzed (will be flattened).
-   * @param architecture
-   *          Targeted architecture.
    * @param scenario
    *          Application informations.
    * @param fifoEvaluatorName
    *          String representing the evaluator to be used (for scheduling and fifo sizing).
    * @return The analysis results.
    */
-  public static AnalysisResultFPGA checkAndAnalyze(final PiGraph algorithm, final Design architecture,
-      final Scenario scenario, final String fifoEvaluatorName) {
-    if (!SlamDesignPEtypeChecker.isSingleFPGA(architecture)) {
-      throw new PreesmRuntimeException("This task must be called with a single FPGA architecture, abandon.");
-    }
+  public static AnalysisResultFPGA checkAndAnalyze(final PiGraph algorithm, final Scenario scenario,
+      final String fifoEvaluatorName) {
     if (algorithm.getAllDelays().stream().anyMatch(x -> (x.getLevel() != PersistenceLevel.PERMANENT))) {
       throw new PreesmRuntimeException("This task must be called on PiGraph with only permanent delays.");
     }
@@ -168,6 +165,20 @@ public class FpgaAnalysisMainTask extends AbstractTaskImplementation {
     final Pair<IStatGenerator, Map<Fifo, Long>> eval = evaluator.performAnalysis(flatGraph, scenario, brv);
 
     return new AnalysisResultFPGA(flatGraph, brv, interfaceRates, eval.getValue(), eval.getKey());
+  }
+
+  /**
+   * Check that platform is composed of single FPGA and returns it
+   * 
+   * @param architecture
+   *          Architecture to inspect
+   * @return The single FPGA
+   */
+  private FPGA getSingleFPGA(final Design architecture) {
+    if (!SlamDesignPEtypeChecker.isSingleFPGA(architecture)) {
+      throw new PreesmRuntimeException("This task must be called with a single FPGA architecture, abandon.");
+    }
+    return (FPGA) architecture.getProcessingElements().stream().findFirst().orElseThrow();
   }
 
   private static Map<InterfaceActor, Pair<Long, Long>> checkInterfaces(final PiGraph flatGraph,

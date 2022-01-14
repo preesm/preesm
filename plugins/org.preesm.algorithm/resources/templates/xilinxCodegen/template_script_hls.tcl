@@ -13,12 +13,12 @@ foreach source [lrange $argv 1 end] {
 	add_files $source -cflags "-I../include"
 }
 
-# Setup solution for target Zynq 7020
+# Setup solution for target FPGA
 open_solution "solution1" -flow_target vivado
-set_part {xc7z020-clg400-1}
+set_part {$PART_NAME}
 
-# Set clock target to 10 ns
-create_clock -period 10 -name default
+# Set clock target to $GLOBAL_PERIOD_NS ns
+create_clock -period $GLOBAL_PERIOD_NS -name default
 
 # Synthesize and export top.zip
 csynth_design

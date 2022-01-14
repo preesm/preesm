@@ -31,8 +31,7 @@ public class ConfigurationSchedulerFPGA extends AbstractConfigurationScheduler {
 
     AnalysisResultFPGA res = null;
     try {
-      res = FpgaAnalysisMainTask.checkAndAnalyze(graph, architecture, scenario,
-          AsapFpgaFifoEvaluator.FIFO_EVALUATOR_AVG);
+      res = FpgaAnalysisMainTask.checkAndAnalyze(graph, scenario, AsapFpgaFifoEvaluator.FIFO_EVALUATOR_AVG);
     } catch (PreesmRuntimeException e) {
       // put back all messages
       PreesmLogger.getLogger().setLevel(backupLevel);

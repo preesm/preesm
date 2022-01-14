@@ -197,6 +197,15 @@
                   name="custom parameters"
                   type="java.util.Map">
             </parameter>
+            <parameter name="frequency"
+               type="java.lang.String">
+            </parameter>
+            <parameter name="part"
+               type="java.lang.String">
+            </parameter>
+            <parameter name="board"
+               type="java.lang.String">
+            </parameter>
          </vertexType>
          <vertexType name="Mem">
             <color blue="173" green="237" red="198">

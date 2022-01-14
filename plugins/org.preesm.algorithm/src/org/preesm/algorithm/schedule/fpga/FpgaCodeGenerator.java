@@ -41,6 +41,7 @@ import org.preesm.model.pisdf.UserSpecialActor;
 import org.preesm.model.pisdf.check.RefinementChecker;
 import org.preesm.model.pisdf.util.CHeaderUsedLocator;
 import org.preesm.model.scenario.Scenario;
+import org.preesm.model.slam.FPGA;
 
 /**
  * This class generates code for Xilinx FPGA with OpenCL HLS flow.
@@ -93,8 +94,11 @@ public class FpgaCodeGenerator {
 
       "templates/xilinxCodegen/template_write_kernel_fpga_multi_interfaces.cpp";
 
+  public static final String TEMPLATE_SCRIPT_PYNQ_HLS =
+
+      "templates/xilinxCodegen/template_script_hls.tcl";
+
   public static final String STDFILE_SCRIPT_PYNQ_SUBDIR = "scripts/";
-  public static final String STDFILE_SCRIPT_PYNQ_HLS    = "stdfiles/xilinxCodegen/script_hls.tcl";
   // xcl2 files have been written by Xilinx under Apache 2.0 license
   // see https://github.com/Xilinx/Vitis_Accel_Examples/tree/master/common/includes/xcl2
   // see also https://github.com/Xilinx/Vitis_Accel_Examples/issues/46
@@ -112,19 +116,18 @@ public class FpgaCodeGenerator {
   public static final String SUFFIX_INTERFACE_VECTOR  = "_vect";            // suffix name for host vector
   public static final String SUFFIX_INTERFACE_BUFFER  = "_buff";            // suffix name for host buffer
 
-  protected static final String PRAGMA_AXILITE_CTRL   = "#pragma HLS INTERFACE s_axilite port=return\n";
-  protected static final int    PYNQ_INTERFACE_DEPTH  = 64;
-  protected static final int    PYNQ_GLOBAL_CLOCK_MHZ = 100;
+  protected static final String PRAGMA_AXILITE_CTRL  = "#pragma HLS INTERFACE s_axilite port=return\n";
+  protected static final int    PYNQ_INTERFACE_DEPTH = 64;
 
-  private final Scenario                              scenario;
+  private final FPGA                                  fpga;
   private final PiGraph                               graph;
   private final String                                graphName;
   private final Map<InterfaceActor, Pair<Long, Long>> interfaceRates;
   private final Map<Fifo, Long>                       allFifoDepths;
 
-  private FpgaCodeGenerator(final Scenario scenario, final PiGraph graph,
+  private FpgaCodeGenerator(final Scenario scenario, final FPGA fpga, final PiGraph graph,
       final Map<InterfaceActor, Pair<Long, Long>> interfaceRates, final Map<Fifo, Long> allFifoSizes) {
-    this.scenario = scenario;
+    this.fpga = fpga;
     this.graph = graph;
     this.graphName = scenario.getAlgorithm().getName();
     this.interfaceRates = interfaceRates;
@@ -193,6 +196,8 @@ public class FpgaCodeGenerator {
    * 
    * @param scenario
    *          Scenario with codegen path.
+   * @param fpga
+   *          FPGA targeted by codegen.
    * @param graph
    *          Flat graph of the app.
    * @param interfaceRates
@@ -200,9 +205,9 @@ public class FpgaCodeGenerator {
    * @param allFifoSizes
    *          All sizes of the fifo.
    */
-  public static void generateFiles(final Scenario scenario, final PiGraph graph,
+  public static void generateFiles(final Scenario scenario, final FPGA fpga, final PiGraph graph,
       Map<InterfaceActor, Pair<Long, Long>> interfaceRates, Map<Fifo, Long> allFifoSizes) {
-    final FpgaCodeGenerator fcg = new FpgaCodeGenerator(scenario, graph, interfaceRates, allFifoSizes);
+    final FpgaCodeGenerator fcg = new FpgaCodeGenerator(scenario, fpga, graph, interfaceRates, allFifoSizes);
 
     // 0- without the following class loader initialization, I get the following exception when running as Eclipse
     // plugin:
@@ -224,7 +229,8 @@ public class FpgaCodeGenerator {
     // Xilinx PYNQ specific
     final String pynqHostFileContent = fcg.writePYNQHostFile();
     final String pynqNotebookFileContent = fcg.writePYNQNotebookFile(pynqHostFileContent);
-    final String pynqVivadoScriptContent = fcg.writePYNQVivadoScriptFile();
+    final String pynqVivadoScriptContent = fcg.writeVivadoScriptFile();
+    final String hlsScriptContent = fcg.writeHlsScriptFile();
     final String pynqMakefileContent = fcg.writePYNQMakefile();
 
     // 99- set back default class loader
@@ -245,6 +251,8 @@ public class FpgaCodeGenerator {
     PreesmIOHelper.getInstance().print(codegenPath, "host_pynq_" + fcg.graphName + ".ipynb", pynqNotebookFileContent);
     PreesmIOHelper.getInstance().print(codegenPath + "/" + STDFILE_SCRIPT_PYNQ_SUBDIR, "script_vivado.tcl",
         pynqVivadoScriptContent);
+    PreesmIOHelper.getInstance().print(codegenPath + "/" + STDFILE_SCRIPT_PYNQ_SUBDIR, "script_hls.tcl",
+        hlsScriptContent);
     PreesmIOHelper.getInstance().print(codegenPath, "Makefile", pynqMakefileContent);
 
     // copy stdfiles
@@ -255,10 +263,6 @@ public class FpgaCodeGenerator {
 
       final String contentXOCLhpp = PreesmResourcesHelper.getInstance().read(STDFILE_LIB_XOCL_HPP, fcg.getClass());
       PreesmIOHelper.getInstance().print(codegenPath + STDFILE_LIB_XOCL_SUBDIR, "xcl2.hpp", contentXOCLhpp);
-
-      final String contentPYNQscript = PreesmResourcesHelper.getInstance().read(STDFILE_SCRIPT_PYNQ_HLS,
-          fcg.getClass());
-      PreesmIOHelper.getInstance().print(codegenPath + STDFILE_SCRIPT_PYNQ_SUBDIR, "script_hls.tcl", contentPYNQscript);
 
     } catch (IOException e) {
       throw new PreesmRuntimeException("Could not copy all the stdfiles.", e);
@@ -343,7 +347,7 @@ public class FpgaCodeGenerator {
     return writer.toString();
   }
 
-  protected String writePYNQVivadoScriptFile() {
+  protected String writeVivadoScriptFile() {
     // 1- init engine
     final VelocityEngine engine = new VelocityEngine();
     engine.init();
@@ -354,7 +358,9 @@ public class FpgaCodeGenerator {
     context.put("KERNEL_NAME_TOP", KERNEL_NAME_TOP);
     context.put("KERNEL_NAME_READ", KERNEL_NAME_READ);
     context.put("KERNEL_NAME_WRITE", KERNEL_NAME_WRITE);
-    context.put("PYNQ_GLOBAL_CLOCK_MHZ", Integer.toString(PYNQ_GLOBAL_CLOCK_MHZ));
+    context.put("GLOBAL_CLOCK_MHZ", Integer.toString(fpga.getFrequency()));
+    context.put("PART_NAME", fpga.getPart());
+    context.put("BOARD_NAME", fpga.getBoard());
 
     final StringBuilder sb = new StringBuilder();
     for (final InterfaceActor ia : interfaceRates.keySet()) {
@@ -374,7 +380,7 @@ public class FpgaCodeGenerator {
             + "_0/" + ia.getName() + SUFFIX_INTERFACE_STREAM + "]\n");
       }
       sb.append("#apply_bd_automation -rule xilinx.com:bd_rule:clkrst -config { Clk {/processing_system7_0/FCLK_CLK0 ("
-          + PYNQ_GLOBAL_CLOCK_MHZ + " MHz)} Freq {" + PYNQ_GLOBAL_CLOCK_MHZ
+          + fpga.getFrequency() + " MHz)} Freq {" + fpga.getFrequency()
           + "} Ref_Clk0 {} Ref_Clk1 {} Ref_Clk2 {}}  [get_bd_pins " + fifoName + "/s_axis_aclk]\n\n");
     }
 
@@ -383,6 +389,29 @@ public class FpgaCodeGenerator {
     // 3- init template reader
     final InputStreamReader reader = PreesmIOHelper.getInstance()
         .getFileReader(TEMPLATE_PYNQ_SCRIPT_VIVADO_RES_LOCATION, this.getClass());
+
+    // 4- init output writer
+    final StringWriter writer = new StringWriter();
+
+    engine.evaluate(context, writer, VELOCITY_PACKAGE_NAME, reader);
+
+    return writer.toString();
+  }
+
+  protected String writeHlsScriptFile() {
+    // 1- init engine
+    final VelocityEngine engine = new VelocityEngine();
+    engine.init();
+
+    // 2- init context
+    final VelocityContext context = new VelocityContext();
+
+    context.put("GLOBAL_PERIOD_NS", Double.toString(1000.0 / fpga.getFrequency()));
+    context.put("PART_NAME", fpga.getPart());
+
+    // 3- init template reader
+    final InputStreamReader reader = PreesmIOHelper.getInstance().getFileReader(TEMPLATE_SCRIPT_PYNQ_HLS,
+        this.getClass());
 
     // 4- init output writer
     final StringWriter writer = new StringWriter();

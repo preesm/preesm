@@ -249,6 +249,9 @@ class FPGA extends ProcessingElement {
 	op TimingType[] getTimingTypes() {
 		return #[TimingType.EXECUTION_TIME, TimingType.INITIATION_INTERVAL].toEList.unmodifiableEList
 	}
+	int frequency = "100"
+	String part
+	String board
 }
 
 class ComNode extends Component {
