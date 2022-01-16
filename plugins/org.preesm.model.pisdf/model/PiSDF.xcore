@@ -249,9 +249,15 @@ class PiGraph extends AbstractActor, Graph, PeriodicElement {
 		parameterIndex = parameterIndex - 1
 	}
 	op void decrementActorIndex() {
+		if (actorIndex === 0) {
+			throw new PreesmRuntimeException("Actor removal anomaly")
+		}
 		actorIndex = actorIndex - 1
 	}
 	op void decrementDelayIndex() {
+		if (delayIndex === 0) {
+			throw new PreesmRuntimeException("Delay removal anomaly")
+		}
 		delayIndex = delayIndex - 1
 	}
 	op void decrementFifoWithDelayIndex() {
