@@ -359,12 +359,15 @@ public class PiMMHelper {
   public static void removeActorAndDependencies(final PiGraph graph, final AbstractActor actor) {
     for (final ConfigInputPort cip : actor.getConfigInputPorts()) {
       final Dependency incomingDependency = cip.getIncomingDependency();
-      graph.getEdges().remove(incomingDependency);
+      // graph.getEdges().remove(incomingDependency);
+      graph.removeDependency(incomingDependency);
       final ISetter setter = incomingDependency.getSetter();
       setter.getOutgoingDependencies().remove(incomingDependency);
+      // setter.getOutgoingDependencies().
       if (setter instanceof Parameter && setter.getOutgoingDependencies().isEmpty()
           && !((Parameter) setter).isConfigurationInterface()) {
-        graph.getVertices().remove((Parameter) setter);
+        // graph.getVertices().remove((Parameter) setter);
+        graph.removeParameter((Parameter) setter);
       }
     }
     graph.removeActor(actor);

@@ -243,6 +243,9 @@ class PiGraph extends AbstractActor, Graph, PeriodicElement {
 	}
 
 	op void decrementParameterIndex() {
+		if (parameterIndex === 0) {
+			throw new PreesmRuntimeException("Parameter removal anomaly")
+		}
 		parameterIndex = parameterIndex - 1
 	}
 	op void decrementActorIndex() {
@@ -252,9 +255,15 @@ class PiGraph extends AbstractActor, Graph, PeriodicElement {
 		delayIndex = delayIndex - 1
 	}
 	op void decrementFifoWithDelayIndex() {
+		if (fifoWithDelayIndex === 0) {
+			throw new PreesmRuntimeException("Fifo (with delay) removal anomaly")
+		}
 		fifoWithDelayIndex = fifoWithDelayIndex - 1
 	}
 	op void decrementFifoWithoutDelayIndex() {
+		if (fifoWithoutDelayIndex === 0) {
+			throw new PreesmRuntimeException("Fifo (without delay) removal anomaly")
+		}
 		fifoWithoutDelayIndex = fifoWithoutDelayIndex - 1
 	}
 
@@ -332,8 +341,12 @@ class PiGraph extends AbstractActor, Graph, PeriodicElement {
 		} else {
 			index = fifoWithDelayIndex + fifoWithoutDelayIndex
 		}
-		edges.add(index, fifo)
-		return fifo.equals(edges.get(index))
+		try {
+			edges.add(index, fifo)
+		} catch (IllegalArgumentException ignore) {
+			return false
+		}
+		return true
 	}
 	op unique boolean addDependency(Dependency dependency) {
 		edges.add(dependency)
@@ -362,10 +375,13 @@ class PiGraph extends AbstractActor, Graph, PeriodicElement {
 	
 	op unique boolean removeActor(AbstractActor actor) {
 		val int oldActorIndex = this.actorIndex
-		val boolean actorRemoved = vertices.remove(actor)
+		var boolean actorRemoved = false
+		if (vertices.contains(actor)) {
+			actorRemoved = vertices.remove(actor)
+		}
 		// Dirty fix for when the observer isn't triggered for whatever bs reason
 		// Happens when actor is a PiGraph
-		if (oldActorIndex == this.actorIndex) {
+		if (actorRemoved && (oldActorIndex == this.actorIndex)) {
 			decrementActorIndex()
 		}
 		return actorRemoved
@@ -374,7 +390,11 @@ class PiGraph extends AbstractActor, Graph, PeriodicElement {
 		return vertices.remove(delay.getActor()) && vertices.remove(delay)
 	}
 	op unique boolean removeFifo(Fifo fifo) {
-		return edges.remove(fifo)
+		var boolean fifoRemoved = false
+		if (edges.contains(fifo)) {
+			fifoRemoved = edges.remove(fifo)
+		}
+		return fifoRemoved
 	}
 	op unique boolean removeParameter(Parameter param) {
 		return vertices.remove(param)
@@ -725,6 +745,11 @@ class Fifo extends Edge {
 	}
 	// When affecting a delay to a fifo without delay, the fifo change from a fifo without delay to a fifo with delay
 	op void affectDelay(Delay newDelay) {
+		if (newDelay === null) {
+			setDelay(null)
+			return
+		}
+
 		val Fifo oldFifo = newDelay.getContainingFifo()
 		var PiGraph oldGraph = null
 		val Fifo newFifo = this

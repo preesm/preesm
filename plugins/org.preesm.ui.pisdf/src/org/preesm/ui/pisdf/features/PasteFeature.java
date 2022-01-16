@@ -344,7 +344,7 @@ public class PasteFeature extends AbstractPasteFeature {
       final Delay delayCopy) {
 
     // the add delay feature can only execute if the fifos delay is null.
-    copiedFifo.affectDelay(null);
+    copiedFifo.setDelay(null);
 
     // add graphical element for delay
     final AddDelayFeature addDelayFeature = new AddDelayFeature(getFeatureProvider());
@@ -355,10 +355,10 @@ public class PasteFeature extends AbstractPasteFeature {
 
     // Remove the secondary delay that was created in addDelayFeature
     copiedFifo.getContainingPiGraph().removeDelay(copiedFifo.getDelay());
-    copiedFifo.affectDelay(null);
+    copiedFifo.setDelay(null);
 
     // one delay is created during the addDelayFeature: overwrite it with the copy
-    copiedFifo.affectDelay(delayCopy);
+    copiedFifo.setDelay(delayCopy);
 
     // also overwrite Graphiti links
     final List<PictogramElement> createdPEs = addDelayFeature.getCreatedPEs();

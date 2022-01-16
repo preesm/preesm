@@ -154,7 +154,7 @@ public class AddDelayFeature extends AbstractCustomFeature {
 
     // Create the Delay and add it to the Fifo
     final Delay delay = PiMMUserFactory.instance.createDelay();
-    fifo.affectDelay(delay);
+    fifo.setDelay(delay);
     delay.setName(delay.getId());
     delay.getActor().setName(delay.getId());
 
