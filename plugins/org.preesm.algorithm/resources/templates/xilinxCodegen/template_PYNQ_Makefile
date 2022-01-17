@@ -2,12 +2,12 @@
 
 VIVADO_PARALLEL_JOBS := 2
 
-all: ${KERNEL_NAME_TOP}.bit ${KERNEL_NAME_TOP}.hwh
+all: ${APPLI_NAME}.bit ${APPLI_NAME}.hwh
 
-${KERNEL_NAME_TOP}.bit: vivado/vivado.runs/impl_1/design_1_wrapper.bit
+${APPLI_NAME}.bit: vivado/vivado.runs/impl_1/design_1_wrapper.bit
 	cp $< $@
 
-${KERNEL_NAME_TOP}.hwh: ${KERNEL_NAME_TOP}.bit
+${APPLI_NAME}.hwh: ${APPLI_NAME}.bit
 	unzip vivado/vivado.gen/sources_1/bd/design_1/synth/design_1.hwdef design_1.hwh
 	mv design_1.hwh $@
 
@@ -25,7 +25,7 @@ ${KERNEL_NAME_WRITE}.zip: $WRITE_KERNEL_SOURCE ../include
 	vitis_hls $SCRIPTS_SUBDIR/script_hls.tcl $KERNEL_NAME_WRITE $+
 
 clean:
-	rm -f ${KERNEL_NAME_TOP}.zip ${KERNEL_NAME_READ}.zip ${KERNEL_NAME_WRITE}.zip ${KERNEL_NAME_TOP}.bit ${KERNEL_NAME_TOP}.hwh
+	rm -f ${KERNEL_NAME_TOP}.zip ${KERNEL_NAME_READ}.zip ${KERNEL_NAME_WRITE}.zip ${APPLI_NAME}.bit ${APPLI_NAME}.hwh
 
 cleaner: clean
 	rm -rf ${KERNEL_NAME_TOP}/ ${KERNEL_NAME_READ}/ ${KERNEL_NAME_WRITE}/ NA/ vivado/ *.log *.jou

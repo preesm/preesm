@@ -106,9 +106,6 @@ public class FpgaCodeGenerator {
   public static final String STDFILE_LIB_XOCL_CPP    = "stdfiles/xilinxCodegen/xcl2.cpp";
   public static final String STDFILE_LIB_XOCL_HPP    = "stdfiles/xilinxCodegen/xcl2.hpp";
 
-  public static final String KERNEL_NAME_READ         = "mem_read";
-  public static final String KERNEL_NAME_WRITE        = "mem_write";
-  public static final String KERNEL_NAME_TOP          = "top_graph";
   public static final String NAME_WRAPPER_INITPROTO   = "preesmInitWrapper";
   public static final String PREFIX_WRAPPER_DELAYPROD = "wrapperProdDelay_";
   public static final String SUFFIX_INTERFACE_ARRAY   = "_mem";             // suffix name for read/write kernels
@@ -240,9 +237,9 @@ public class FpgaCodeGenerator {
 
     // copy generated files
     PreesmIOHelper.getInstance().print(codegenPath, TEMPLATE_DEFINE_HEADER_NAME, headerFileContent);
-    PreesmIOHelper.getInstance().print(codegenPath, "top_kernel_" + fcg.graphName + ".cpp", topKernelFileContent);
-    PreesmIOHelper.getInstance().print(codegenPath, "read_kernel_" + fcg.graphName + ".cpp", readKernelFileContent);
-    PreesmIOHelper.getInstance().print(codegenPath, "write_kernel_" + fcg.graphName + ".cpp", writeKernelFileContent);
+    PreesmIOHelper.getInstance().print(codegenPath, fcg.getTopKernelName() + ".cpp", topKernelFileContent);
+    PreesmIOHelper.getInstance().print(codegenPath, fcg.getReadKernelName() + ".cpp", readKernelFileContent);
+    PreesmIOHelper.getInstance().print(codegenPath, fcg.getWriteKernelName() + ".cpp", writeKernelFileContent);
 
     PreesmIOHelper.getInstance().print(codegenPath, "host_xocl_" + fcg.graphName + ".cpp", xoclHostFileContent);
     PreesmIOHelper.getInstance().print(codegenPath, "connectivity_" + fcg.graphName + ".cfg", connectivityFileContent);
@@ -304,9 +301,9 @@ public class FpgaCodeGenerator {
 
     // 2- init context
     final VelocityContext context = new VelocityContext();
-    context.put("KERNEL_NAME_TOP", KERNEL_NAME_TOP);
-    context.put("KERNEL_NAME_READ", KERNEL_NAME_READ);
-    context.put("KERNEL_NAME_WRITE", KERNEL_NAME_WRITE);
+    context.put("APPLI_NAME", graphName);
+    context.put("KERNEL_NAME_READ", getReadKernelName());
+    context.put("KERNEL_NAME_WRITE", getWriteKernelName());
 
     final StringBuilder sbConstants = new StringBuilder();
     interfaceRates.forEach((ia, p) -> {
@@ -355,9 +352,9 @@ public class FpgaCodeGenerator {
     // 2- init context
     final VelocityContext context = new VelocityContext();
 
-    context.put("KERNEL_NAME_TOP", KERNEL_NAME_TOP);
-    context.put("KERNEL_NAME_READ", KERNEL_NAME_READ);
-    context.put("KERNEL_NAME_WRITE", KERNEL_NAME_WRITE);
+    context.put("KERNEL_NAME_TOP", getTopKernelName());
+    context.put("KERNEL_NAME_READ", getReadKernelName());
+    context.put("KERNEL_NAME_WRITE", getWriteKernelName());
     context.put("GLOBAL_CLOCK_MHZ", Integer.toString(fpga.getFrequency()));
     context.put("PART_NAME", fpga.getPart());
     context.put("BOARD_NAME", fpga.getBoard());
@@ -369,14 +366,14 @@ public class FpgaCodeGenerator {
           + "set_property -dict [list CONFIG.FIFO_DEPTH {" + PYNQ_INTERFACE_DEPTH + "}] [get_bd_cells " + fifoName
           + "]\n");
       if (ia instanceof DataInputInterface) {
-        sb.append("connect_bd_intf_net [get_bd_intf_pins " + KERNEL_NAME_READ + "_0/" + ia.getName()
+        sb.append("connect_bd_intf_net [get_bd_intf_pins " + getReadKernelName() + "_0/" + ia.getName()
             + SUFFIX_INTERFACE_STREAM + "] [get_bd_intf_pins " + fifoName + "/S_AXIS]\n"
-            + "connect_bd_intf_net [get_bd_intf_pins " + fifoName + "/M_AXIS] [get_bd_intf_pins " + KERNEL_NAME_TOP
+            + "connect_bd_intf_net [get_bd_intf_pins " + fifoName + "/M_AXIS] [get_bd_intf_pins " + getTopKernelName()
             + "_0/" + ia.getName() + SUFFIX_INTERFACE_STREAM + "]\n");
       } else if (ia instanceof DataOutputInterface) {
-        sb.append("connect_bd_intf_net [get_bd_intf_pins " + KERNEL_NAME_TOP + "_0/" + ia.getName()
+        sb.append("connect_bd_intf_net [get_bd_intf_pins " + getTopKernelName() + "_0/" + ia.getName()
             + SUFFIX_INTERFACE_STREAM + "] [get_bd_intf_pins " + fifoName + "/S_AXIS]\n"
-            + "connect_bd_intf_net [get_bd_intf_pins " + fifoName + "/M_AXIS] [get_bd_intf_pins " + KERNEL_NAME_WRITE
+            + "connect_bd_intf_net [get_bd_intf_pins " + fifoName + "/M_AXIS] [get_bd_intf_pins " + getWriteKernelName()
             + "_0/" + ia.getName() + SUFFIX_INTERFACE_STREAM + "]\n");
       }
       sb.append("#apply_bd_automation -rule xilinx.com:bd_rule:clkrst -config { Clk {/processing_system7_0/FCLK_CLK0 ("
@@ -429,12 +426,13 @@ public class FpgaCodeGenerator {
     // 2- init context
     final VelocityContext context = new VelocityContext();
     context.put("SCRIPTS_SUBDIR", STDFILE_SCRIPT_PYNQ_SUBDIR);
-    context.put("TOP_KERNEL_SOURCE", "top_kernel_" + graphName + ".cpp");
-    context.put("READ_KERNEL_SOURCE", "read_kernel_" + graphName + ".cpp");
-    context.put("WRITE_KERNEL_SOURCE", "write_kernel_" + graphName + ".cpp");
-    context.put("KERNEL_NAME_TOP", KERNEL_NAME_TOP);
-    context.put("KERNEL_NAME_READ", KERNEL_NAME_READ);
-    context.put("KERNEL_NAME_WRITE", KERNEL_NAME_WRITE);
+    context.put("TOP_KERNEL_SOURCE", getTopKernelName() + ".cpp");
+    context.put("READ_KERNEL_SOURCE", getReadKernelName() + ".cpp");
+    context.put("WRITE_KERNEL_SOURCE", getWriteKernelName() + ".cpp");
+    context.put("KERNEL_NAME_TOP", getTopKernelName());
+    context.put("KERNEL_NAME_READ", getReadKernelName());
+    context.put("KERNEL_NAME_WRITE", getWriteKernelName());
+    context.put("APPLI_NAME", graphName);
 
     // 3- init template reader
     final InputStreamReader reader = PreesmIOHelper.getInstance().getFileReader(TEMPLATE_PYNQ_MAKEFILE_RES_LOCATION,
@@ -470,8 +468,8 @@ public class FpgaCodeGenerator {
     final VelocityContext context = new VelocityContext();
 
     context.put("PREESM_INCLUDES", "#include \"" + TEMPLATE_DEFINE_HEADER_NAME + "\"\n");
-    context.put("KERNEL_NAME_READ", KERNEL_NAME_READ);
-    context.put("KERNEL_NAME_WRITE", KERNEL_NAME_WRITE);
+    context.put("KERNEL_NAME_READ", getReadKernelName());
+    context.put("KERNEL_NAME_WRITE", getWriteKernelName());
 
     // 2.1- generate vectors for interfaces
     final StringBuilder interfaceVectors = new StringBuilder("// vectors containing interface elements\n");
@@ -601,7 +599,7 @@ public class FpgaCodeGenerator {
     // 2.4- we wrap the actor calls producing delays
     context.put("PREESM_DELAY_WRAPPERS", generateDelayWrappers(loopActorsCalls));
     // 2.5- we generate the top kernel function with all calls in the start time order
-    final StringBuilder topK = new StringBuilder("extern \"C\" {\nvoid " + KERNEL_NAME_TOP + "(\n");
+    final StringBuilder topK = new StringBuilder("extern \"C\" {\nvoid " + getTopKernelName() + "(\n");
     // add interface names
     final List<String> args = new ArrayList<>();
     for (final InterfaceActor ia : interfaceRates.keySet()) {
@@ -844,7 +842,7 @@ public class FpgaCodeGenerator {
     context.put("PREESM_INCLUDES", "#include \"" + TEMPLATE_DEFINE_HEADER_NAME + "\"\n");
 
     // read kernel prototype
-    final StringBuilder sb = new StringBuilder("void " + KERNEL_NAME_READ + "(\n  ");
+    final StringBuilder sb = new StringBuilder("void " + getReadKernelName() + "(\n  ");
     final List<String> args = new ArrayList<>();
     for (final InterfaceActor ia : interfaceRates.keySet()) {
       if (ia instanceof DataInputInterface) {
@@ -920,7 +918,7 @@ public class FpgaCodeGenerator {
     context.put("PREESM_INCLUDES", "#include \"" + TEMPLATE_DEFINE_HEADER_NAME + "\"\n");
 
     // write kernel prototype
-    final StringBuilder sb = new StringBuilder("void " + KERNEL_NAME_WRITE + "(\n  ");
+    final StringBuilder sb = new StringBuilder("void " + getWriteKernelName() + "(\n  ");
     final List<String> args = new ArrayList<>();
     for (final InterfaceActor ia : interfaceRates.keySet()) {
       if (ia instanceof DataOutputInterface) {
@@ -988,14 +986,14 @@ public class FpgaCodeGenerator {
     for (final InterfaceActor ia : interfaceRates.keySet()) {
       sb.append("stream_connect=");
       if (ia instanceof DataInputInterface) {
-        sb.append(KERNEL_NAME_READ + "_1.");
+        sb.append(getReadKernelName() + "_1.");
         sb.append(ia.getName() + SUFFIX_INTERFACE_STREAM + ":");
-        sb.append(KERNEL_NAME_TOP + "_1.");
+        sb.append(getTopKernelName() + "_1.");
         sb.append(ia.getName() + SUFFIX_INTERFACE_STREAM + "\n");
       } else if (ia instanceof DataOutputInterface) {
-        sb.append(KERNEL_NAME_TOP + "_1.");
+        sb.append(getTopKernelName() + "_1.");
         sb.append(ia.getName() + SUFFIX_INTERFACE_STREAM + ":");
-        sb.append(KERNEL_NAME_WRITE + "_1.");
+        sb.append(getWriteKernelName() + "_1.");
         sb.append(ia.getName() + SUFFIX_INTERFACE_STREAM + "\n");
       }
     }
@@ -1042,4 +1040,15 @@ public class FpgaCodeGenerator {
     return "stream__" + fifo.getId().replace('.', '_').replace("-", "__");
   }
 
+  public final String getReadKernelName() {
+    return "mem_read_" + graphName;
+  }
+
+  public final String getWriteKernelName() {
+    return "mem_write_" + graphName;
+  }
+
+  public final String getTopKernelName() {
+    return "top_graph_" + graphName;
+  }
 }
