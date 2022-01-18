@@ -62,36 +62,35 @@ import org.preesm.model.pisdf.Port;
 import org.preesm.model.pisdf.factory.PiMMUserFactory;
 
 /**
- * The purpose of this {@link Adapter} is to observe the {@link PiGraph#getActors()} list of a {@link PiGraph} to detect
- * the addition, the deletion and the renaming of {@link PiGraph} interfaces in order to automatically compute the
- * repercussions on {@link PiGraph#getInputPorts()}, {@link PiGraph#getOutputPorts()} and
- * {@link PiGraph#getConfigInputPorts()}.
+ * The purpose of this {@link Adapter} is to observe the {@link Vertex} list and {@link Edge} of a {@link PiGraph} to
+ * detect the addition, the deletion and the renaming of {@link PiGraph} element in order to automatically compute the
+ * repercussions on {@link PiGraph} and storage indexes.
  *
  * @author kdesnos
  *
  */
-public class GraphInterfaceObserver extends AdapterImpl {
+public class GraphObserver extends AdapterImpl {
 
   /**
-   * Default constructor of the {@link GraphInterfaceObserver}.
+   * Default constructor of the {@link GraphObserver}.
    */
-  public GraphInterfaceObserver() {
+  public GraphObserver() {
     // Nothing to do here
   }
 
   /**
-   * Method called when an Interface is possibly added to the Observed {@link PiGraph}. <br>
+   * Method called when an {@link AbstractVertex} is possibly added to the Observed {@link PiGraph}. <br>
    * <br>
    * This Method create the {@link Port} port corresponding to the added {@link InterfaceActor} or {@link Parameter} and
    * add it to the {@link PiGraph#getInputPorts()}, the {@link PiGraph#getOutputPorts()}, or the
-   * {@link PiGraph#getConfigInputPorts()} list of the {@link PiGraph}.
+   * {@link PiGraph#getConfigInputPorts()} list of the {@link PiGraph}. It also handles the vertex storage indexes
    *
    * @param vertex
-   *          The {@link InterfaceActor} or {@link Parameter} added to the {@link PiGraph}
+   *          The {@link AbstractVertex} added to the {@link PiGraph}
    * @param graph
    *          The {@link PiGraph}
    */
-  protected void add(final AbstractVertex vertex, final PiGraph graph) {
+  protected void addVertex(final AbstractVertex vertex, final PiGraph graph) {
 
     if ((vertex instanceof AbstractActor) && !(vertex instanceof DelayActor)) {
       if (vertex instanceof InterfaceActor) {
@@ -110,7 +109,17 @@ public class GraphInterfaceObserver extends AdapterImpl {
     }
   }
 
-  protected void add(final Edge edge, final PiGraph graph) {
+  /**
+   * Method called when an {@link Edge} is possibly added to the Observed {@link PiGraph}. <br>
+   * <br>
+   * It handles the {@link Edge} storage indexes
+   *
+   * @param vertex
+   *          The {@link Edge} added to the {@link PiGraph}
+   * @param graph
+   *          The {@link PiGraph}
+   */
+  protected void addEdge(final Edge edge, final PiGraph graph) {
 
     if (edge instanceof Fifo) {
       if (((Fifo) edge).getDelay() != null) {
@@ -190,25 +199,25 @@ public class GraphInterfaceObserver extends AdapterImpl {
           // notification
           // was caused by an addition to the graph vertices.
           final AbstractVertex vertextoAdd = (AbstractVertex) notification.getNewValue();
-          add(vertextoAdd, graph);
+          addVertex(vertextoAdd, graph);
           break;
 
         case Notification.ADD_MANY:
           final List<?> listToAdd = (List<?>) notification.getNewValue();
           for (final Object object : listToAdd) {
-            add((AbstractVertex) object, graph);
+            addVertex((AbstractVertex) object, graph);
           }
           break;
 
         case Notification.REMOVE:
           final AbstractVertex vertexToRemove = (AbstractVertex) notification.getOldValue();
-          remove(vertexToRemove, graph);
+          removeVertex(vertexToRemove, graph);
           break;
 
         case Notification.REMOVE_MANY:
           final List<?> listToRemove = (List<?>) notification.getOldValue();
           for (final Object object : listToRemove) {
-            remove((AbstractVertex) object, graph);
+            removeVertex((AbstractVertex) object, graph);
           }
           break;
 
@@ -224,27 +233,27 @@ public class GraphInterfaceObserver extends AdapterImpl {
         case Notification.ADD:
           // It is safe to cast because we already checked that the
           // notification
-          // was caused by an addition to the graph vertices.
+          // was caused by an addition to the graph edge.
           final Edge edgetoAdd = (Edge) notification.getNewValue();
-          add(edgetoAdd, graph);
+          addEdge(edgetoAdd, graph);
           break;
 
         case Notification.ADD_MANY:
           final List<?> listToAdd = (List<?>) notification.getNewValue();
           for (final Object object : listToAdd) {
-            add((Edge) object, graph);
+            addEdge((Edge) object, graph);
           }
           break;
 
         case Notification.REMOVE:
           final Edge edgeToRemove = (Edge) notification.getOldValue();
-          remove(edgeToRemove, graph);
+          removeEdge(edgeToRemove, graph);
           break;
 
         case Notification.REMOVE_MANY:
           final List<?> listToRemove = (List<?>) notification.getOldValue();
           for (final Object object : listToRemove) {
-            remove((Edge) object, graph);
+            removeEdge((Edge) object, graph);
           }
           break;
 
@@ -257,18 +266,18 @@ public class GraphInterfaceObserver extends AdapterImpl {
   }
 
   /**
-   * Method called when an Interface is possibly removed to the Observed {@link PiGraph}. <br>
+   * Method called when an {@link AbstractVertex} is possibly removed to the Observed {@link PiGraph}. <br>
    * <br>
    * This Method remove the {@link Port} port corresponding to the removed {@link InterfaceActor} or {@link Parameter}
    * and from the {@link PiGraph#getInputPorts()}, the {@link PiGraph#getOutputPorts()}, or the
-   * {@link PiGraph#getConfigInputPorts()} list of the {@link PiGraph}.
+   * {@link PiGraph#getConfigInputPorts()} list of the {@link PiGraph}. Also handles storage indexes.
    *
    * @param vertex
-   *          The {@link InterfaceActor} or {@link Parameter} removed from the {@link PiGraph}
+   *          The {@link AbstractVertex} removed from the {@link PiGraph}
    * @param graph
    *          The {@link PiGraph}
    */
-  protected void remove(final AbstractVertex vertex, final PiGraph graph) {
+  protected void removeVertex(final AbstractVertex vertex, final PiGraph graph) {
     if ((vertex instanceof Parameter)) {
       if (((Parameter) vertex).isConfigurationInterface()) {
         // If the added vertex is an Parameter and an Interface of the graph
@@ -285,7 +294,17 @@ public class GraphInterfaceObserver extends AdapterImpl {
     }
   }
 
-  protected void remove(final Edge edge, final PiGraph graph) {
+  /**
+   * Method called when an {@link Edge} is possibly removed to the Observed {@link PiGraph}. <br>
+   * <br>
+   * Handles storage indexes.
+   *
+   * @param edge
+   *          The {@link Edge} removed from the {@link PiGraph}
+   * @param graph
+   *          The {@link PiGraph}
+   */
+  protected void removeEdge(final Edge edge, final PiGraph graph) {
     if (edge instanceof Fifo) {
       // If the added vertex is an Interface of the graph
       if (((Fifo) edge).getDelay() != null) {

@@ -66,7 +66,7 @@ import org.preesm.model.pisdf.Parameter;
 import org.preesm.model.pisdf.PersistenceLevel;
 import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.pisdf.StringExpression;
-import org.preesm.model.pisdf.adapter.GraphInterfaceObserver;
+import org.preesm.model.pisdf.adapter.GraphObserver;
 import org.preesm.model.pisdf.impl.PiMMFactoryImpl;
 
 /**
@@ -94,7 +94,7 @@ public final class PiMMUserFactory extends PiMMFactoryImpl implements PreesmUser
     allPiGraph.add(copyGraph);
     while (!allPiGraph.isEmpty()) {
       PiGraph pg = allPiGraph.remove(0);
-      pg.eAdapters().add(new GraphInterfaceObserver());
+      pg.eAdapters().add(new GraphObserver());
       allPiGraph.addAll(pg.getChildrenGraphs());
     }
 
@@ -317,7 +317,7 @@ public final class PiMMUserFactory extends PiMMFactoryImpl implements PreesmUser
     final PiGraph res = super.createPiGraph();
     final Expression exp = createExpression();
     res.setExpression(exp);
-    res.eAdapters().add(new GraphInterfaceObserver());
+    res.eAdapters().add(new GraphObserver());
     return res;
   }
 
