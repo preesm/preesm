@@ -323,7 +323,6 @@ class PiGraph extends AbstractActor, Graph, PeriodicElement {
 		} catch (IllegalArgumentException ignore) {
 			return false
 		}
-		//return parameter.equals(vertices.get(parameterIndex - 1))
 		return true
 	}
 	op unique boolean addDelay(Delay delay) {
@@ -342,7 +341,7 @@ class PiGraph extends AbstractActor, Graph, PeriodicElement {
 	// FifoWithDelay => FifoWithoutDelay => Dependency order
 	op unique boolean addFifo(Fifo fifo) {
 		var int index
-		if (fifo.delay !== null) {
+		if (fifo.hasADelay === true) {
 			index = fifoWithDelayIndex
 		} else {
 			index = fifoWithDelayIndex + fifoWithoutDelayIndex
@@ -387,13 +386,14 @@ class PiGraph extends AbstractActor, Graph, PeriodicElement {
 		}
 		// Dirty fix for when the observer isn't triggered for whatever bs reason
 		// Happens when actor is a PiGraph
-		if (actorRemoved && (oldActorIndex == this.actorIndex)) {
+		if (actorRemoved && (oldActorIndex == this.actorIndex) && !(actor instanceof DelayActor)) {
 			decrementActorIndex()
 		}
 		return actorRemoved
 	}
 	op unique boolean removeDelay(Delay delay) {
-		return vertices.remove(delay.getActor()) && vertices.remove(delay)
+		val boolean delayRemoved = vertices.remove(delay.getActor()) && vertices.remove(delay)
+		return delayRemoved
 	}
 	op unique boolean removeFifo(Fifo fifo) {
 		var boolean fifoRemoved = false
@@ -740,6 +740,7 @@ class Fifo extends Edge {
 	refers DataInputPort targetPort opposite incomingFifo
 	refers Delay delay opposite containingFifo
 	String ^type = "void"
+	boolean hasADelay = "false"
 	op Vertex getSource() {
 		sourcePort.containingActor
 	}
@@ -749,10 +750,12 @@ class Fifo extends Edge {
 	op PiGraph getContainingPiGraph() {
 		return containingGraph as PiGraph
 	}
+
 	// When affecting a delay to a fifo without delay, the fifo change from a fifo without delay to a fifo with delay
 	op void affectDelay(Delay newDelay) {
 		if (newDelay === null) {
 			setDelay(null)
+			hasADelay = false
 			return
 		}
 
@@ -773,6 +776,7 @@ class Fifo extends Edge {
 		}
 		// Re-affecting the delay from oldFifo to newFifo
 		this.setDelay(newDelay)
+		hasADelay = true
 		// Re-adding the fifo that was holding the delay to its graph
 		if (newGraph !== null) {
 			newGraph.addFifo(this)

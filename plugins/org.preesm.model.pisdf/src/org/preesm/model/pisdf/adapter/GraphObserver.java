@@ -122,7 +122,7 @@ public class GraphObserver extends AdapterImpl {
   protected void addEdge(final Edge edge, final PiGraph graph) {
 
     if (edge instanceof Fifo) {
-      if (((Fifo) edge).getDelay() != null) {
+      if (((Fifo) edge).isHasADelay() == true) {
         graph.incrementFifoWithDelayIndex();
       } else {
         graph.incrementFifoWithoutDelayIndex();
@@ -260,6 +260,43 @@ public class GraphObserver extends AdapterImpl {
         default:
           // nothing
       }
+    } else if ((notification.getNotifier() instanceof Fifo)
+        && (notification.getFeatureID(null) == PiMMPackage.FIFO__DELAY)) {
+
+      final Fifo fifo = (Fifo) notification.getNotifier();
+      final PiGraph graph = fifo.getContainingPiGraph();
+
+      // if the fifo isn't in a graph, nothing to do
+      if (graph != null) {
+
+        final Delay oldDelay = (Delay) notification.getOldValue();
+        final Delay newDelay = (Delay) notification.getNewValue();
+
+        switch (notification.getEventType()) {
+          case Notification.SET:
+            // If a delay as been added to the fifo
+            if ((oldDelay == null) && (newDelay != null)) {
+              // The delay was attached to the fifo
+              graph.removeFifo(fifo);
+              fifo.setHasADelay(true);
+              graph.addFifo(fifo);
+            } else if ((oldDelay != null) && (newDelay != null)) {
+              // The fifo had its delay replaced by another
+              // Nothing to do
+            }
+            if ((oldDelay != null) && (newDelay == null)) {
+              // The delay was removed from the fifo
+              graph.removeFifo(fifo);
+              fifo.setHasADelay(false);
+              graph.addFifo(fifo);
+            } else {
+              // should never go there
+            }
+            break;
+          default:
+        }
+      }
+
     }
 
     // TODO Add support when a Parameter changes from a config interface to a non config param
@@ -307,7 +344,7 @@ public class GraphObserver extends AdapterImpl {
   protected void removeEdge(final Edge edge, final PiGraph graph) {
     if (edge instanceof Fifo) {
       // If the added vertex is an Interface of the graph
-      if (((Fifo) edge).getDelay() != null) {
+      if (((Fifo) edge).isHasADelay() == true) {
         graph.decrementFifoWithDelayIndex();
       } else {
         graph.decrementFifoWithoutDelayIndex();

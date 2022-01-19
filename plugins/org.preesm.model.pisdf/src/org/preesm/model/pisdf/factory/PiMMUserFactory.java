@@ -173,6 +173,7 @@ public final class PiMMUserFactory extends PiMMFactoryImpl implements PreesmUser
     res.setSourcePort(sourcePort);
     res.setTargetPort(targetPort);
     res.setType(type);
+    res.eAdapters().add(new GraphObserver());
     return res;
   }
 
