@@ -641,6 +641,10 @@ class PiGraph extends AbstractActor, Graph, PeriodicElement {
 		return (actors.filter(PiGraph) + actorsWithRefinement.filter[isHierarchical].map[subGraph]).toEList.
 			unmodifiableView
 	}
+	op unique PiGraph[] getAllChildrenGraphs() {
+		return (allActors.filter(PiGraph) + actorsWithRefinement.filter[isHierarchical].map[subGraph]).toEList.
+			unmodifiableView
+	}
 	op unique AbstractActor[] getAllActors() {
 		return (actors + childrenGraphs.map[allActors].flatten).toEList.unmodifiableView
 	}
