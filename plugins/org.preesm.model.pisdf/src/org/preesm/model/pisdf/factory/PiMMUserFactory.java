@@ -39,7 +39,9 @@ package org.preesm.model.pisdf.factory;
 
 import java.util.ArrayList;
 import java.util.List;
+import org.eclipse.emf.common.notify.Adapter;
 import org.eclipse.emf.common.util.EList;
+import org.eclipse.emf.ecore.EObject;
 import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.preesm.commons.model.PreesmCopyTracker;
 import org.preesm.commons.model.PreesmUserFactory;
@@ -82,6 +84,52 @@ public final class PiMMUserFactory extends PiMMFactoryImpl implements PreesmUser
     // forbid instantiation
   }
 
+  public <T extends EObject> T copyWithHistory(final T eObject) {
+    final T copy = PreesmUserFactory.super.copyWithHistory(eObject);
+
+    if (copy instanceof PiGraph) {
+
+      // Check if the PiGraph has an observer
+      boolean hasAnObserver = false;
+      for (Adapter adapt : ((PiGraph) copy).eAdapters()) {
+        if (adapt instanceof GraphObserver) {
+          hasAnObserver = true;
+        }
+      }
+      if (!hasAnObserver) {
+        copy.eAdapters().add(new GraphObserver());
+      }
+
+      // Check for all subgraph in this PiGraph and its subgraph
+      for (PiGraph graph : ((PiGraph) copy).getAllChildrenGraphs()) {
+        hasAnObserver = false;
+        for (Adapter adapt : graph.eAdapters()) {
+          if (adapt instanceof GraphObserver) {
+            hasAnObserver = true;
+          }
+        }
+        if (!hasAnObserver) {
+          graph.eAdapters().add(new GraphObserver());
+        }
+      }
+
+      // Check for all fifos in this PiGraph and its subgraph
+      for (Fifo fifo : ((PiGraph) copy).getAllFifos()) {
+        hasAnObserver = false;
+        for (Adapter adapt : fifo.eAdapters()) {
+          if (adapt instanceof GraphObserver) {
+            hasAnObserver = true;
+          }
+        }
+        if (!hasAnObserver) {
+          fifo.eAdapters().add(new GraphObserver());
+        }
+      }
+    }
+
+    return copy;
+  }
+
   /**
    * Copy PiGraph tracking history of its children (actors, fifos, parameters, dependencies).
    */
@@ -94,7 +142,6 @@ public final class PiMMUserFactory extends PiMMFactoryImpl implements PreesmUser
     allPiGraph.add(copyGraph);
     while (!allPiGraph.isEmpty()) {
       PiGraph pg = allPiGraph.remove(0);
-      pg.eAdapters().add(new GraphObserver());
       allPiGraph.addAll(pg.getChildrenGraphs());
     }
 
