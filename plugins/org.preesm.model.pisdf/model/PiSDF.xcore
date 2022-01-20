@@ -219,53 +219,158 @@ class PiGraph extends AbstractActor, Graph, PeriodicElement {
 	boolean clusterValue = "false"
 
 	// Indexes used for vertices and edges insertion/deletion in a way that matches the .pi
+	/* Index used to know where to insert {@link Parameter} into the {@link PiGraph#vertices} */
 	int parameterIndex = "0"
+
+	/* Index used to know where to insert {@link AbstractActor} into the {@link PiGraph#vertices} */
 	int actorIndex = "0"
+
+	/* Index used to know where to insert {@link Delay} into the {@link PiGraph#vertices} */
 	int delayIndex = "0"
 
+	/* Index used to know where to insert {@link Fifo} with {@link Delay} into the {@link PiGraph#edges} */
 	int fifoWithDelayIndex = "0"
+
+	/* Index used to know where to insert {@link Fifo} without {@link Delay} into the {@link PiGraph#edges} */
 	int fifoWithoutDelayIndex = "0"
 
+	/*
+	 * Increment the parameter storage index {@link PiGraph#parameterIndex} used when adding a {@link Parameter} to {@link PiGraph#vertices}.
+	 * <br>
+	 * Called by {@link org.preesm.model.pisdf.adapter.GraphObserver#addVertex(AbstractVertex, PiGraph) <em>GraphObserver.addVertex(AbstractVertex, PiGraph)</em>}.
+	 * 
+	 * @see org.preesm.model.pisdf.adapter.GraphObserver#addVertex(AbstractVertex, PiGraph)
+	 * 		org.preesm.model.pisdf.adapter.GraphObserver.addVertex(AbstractVertex, PiGraph)
+	 */
 	op void incrementParameterIndex() {
 		parameterIndex = parameterIndex + 1
 	}
+
+	/*
+	 * Increment the actor storage index {@link PiGraph#actorIndex} used when adding an {@link AbstractActor} to {@link PiGraph#vertices}, but not a {@link DelayActor}.
+	 * <br>
+	 * Called by {@link org.preesm.model.pisdf.adapter.GraphObserver#addVertex(AbstractVertex, PiGraph) <em>GraphObserver.addVertex(AbstractVertex, PiGraph)</em>}.
+	 * 
+	 * @see org.preesm.model.pisdf.adapter.GraphObserver#addVertex(AbstractVertex, PiGraph)
+	 * 		org.preesm.model.pisdf.adapter.GraphObserver.addVertex(AbstractVertex, PiGraph)
+	 */
 	op void incrementActorIndex() {
 		actorIndex = actorIndex + 1
 	}
+
+	/*
+	 * Increment the delay storage index {@link PiGraph#delayIndex} used when adding an {@link Delay} to {@link PiGraph#vertices}.
+	 * <br>
+	 * Called by {@link org.preesm.model.pisdf.adapter.GraphObserver#addVertex(AbstractVertex, PiGraph) <em>GraphObserver.addVertex(AbstractVertex, PiGraph)</em>}.
+	 * 
+	 * @see org.preesm.model.pisdf.adapter.GraphObserver#addVertex(AbstractVertex, PiGraph)
+	 * 		org.preesm.model.pisdf.adapter.GraphObserver.addVertex(AbstractVertex, PiGraph)
+	 */
 	op void incrementDelayIndex() {
 		delayIndex = delayIndex + 1
 	}
+
+	/*
+	 * Increment the fifo (WITH delay) storage index {@link PiGraph#fifoWithDelayIndex} used when adding an {@link Fifo} to {@link PiGraph#edges}.
+	 * <br>
+	 * Called by {@link org.preesm.model.pisdf.adapter.GraphObserver#addEdge(Edge, PiGraph) <em>GraphObserver.addEdge(Edge, PiGraph)</em>}.
+	 * 
+	 * @see org.preesm.model.pisdf.adapter.GraphObserver#addEdge(Edge, PiGraph)
+	 * 		org.preesm.model.pisdf.adapter.GraphObserver.addEdge(Edge, PiGraph)
+	 */
 	op void incrementFifoWithDelayIndex() {
 		fifoWithDelayIndex = fifoWithDelayIndex + 1
 	}
+
+	/*
+	 * Increment the fifo (WITHOUT delay) storage index {@link PiGraph#fifoWithoutDelayIndex} used when adding an {@link Fifo} to {@link PiGraph#edges}.
+	 * <br>
+	 * Called by {@link org.preesm.model.pisdf.adapter.GraphObserver#addEdge(Edge, PiGraph) <em>GraphObserver.addEdge(Edge, PiGraph)</em>}.
+	 * 
+	 * @see org.preesm.model.pisdf.adapter.GraphObserver#addEdge(Edge, PiGraph)
+	 * 		org.preesm.model.pisdf.adapter.GraphObserver.addEdge(Edge, PiGraph)
+	 */
 	op void incrementFifoWithoutDelayIndex() {
 		fifoWithoutDelayIndex = fifoWithoutDelayIndex + 1
 	}
 
+	/*
+	 * Decrement the parameter storage index {@link PiGraph#parameterIndex} used when adding a {@link Parameter} to {@link PiGraph#vertices}.
+	 * <br>
+	 * Called by {@link org.preesm.model.pisdf.adapter.GraphObserver#removeVertex(AbstractVertex, PiGraph) <em>GraphObserver.removeVertex(AbstractVertex, PiGraph)</em>}.
+	 * 
+	 * @throws PreesmRuntimeException If the {@link PiGraph#parameterIndex} is already at 0.
+	 * 
+	 * @see org.preesm.model.pisdf.adapter.GraphObserver#removeVertex(AbstractVertex, PiGraph)
+	 * 		org.preesm.model.pisdf.adapter.GraphObserver.removeVertex(AbstractVertex, PiGraph)
+	 */
 	op void decrementParameterIndex() {
 		if (parameterIndex === 0) {
 			throw new PreesmRuntimeException("Parameter removal anomaly")
 		}
 		parameterIndex = parameterIndex - 1
 	}
+	/*
+	 * Decrement the actor storage index {@link PiGraph#actorIndex} used when adding an {@link AbstractActor} to {@link PiGraph#vertices}, but not a {@link DelayActor}.
+	 * <br>
+	 * Called by {@link org.preesm.model.pisdf.adapter.GraphObserver#removeVertex(AbstractVertex, PiGraph) <em>GraphObserver.removeVertex(AbstractVertex, PiGraph)</em>}.
+	 * 
+	 * @throws PreesmRuntimeException If the {@link PiGraph#actorIndex} is already at 0.
+	 * 
+	 * @see org.preesm.model.pisdf.adapter.GraphObserver#removeVertex(AbstractVertex, PiGraph)
+	 * 		org.preesm.model.pisdf.adapter.GraphObserver.removeVertex(AbstractVertex, PiGraph)
+	 */
 	op void decrementActorIndex() {
 		if (actorIndex === 0) {
 			throw new PreesmRuntimeException("Actor removal anomaly")
 		}
 		actorIndex = actorIndex - 1
 	}
+
+	/*
+	 * Decrement the delay storage index {@link PiGraph#delayIndex} used when adding a {@link Delay} to {@link PiGraph#vertices}.
+	 * <br>
+	 * Called by {@link org.preesm.model.pisdf.adapter.GraphObserver#removeVertex(AbstractVertex, PiGraph) <em>GraphObserver.removeVertex(AbstractVertex, PiGraph)</em>}.
+	 * 
+	 * @throws PreesmRuntimeException If the {@link PiGraph#delayIndex} is already at 0.
+	 * 
+	 * @see org.preesm.model.pisdf.adapter.GraphObserver#removeVertex(AbstractVertex, PiGraph)
+	 * 		org.preesm.model.pisdf.adapter.GraphObserver.removeVertex(AbstractVertex, PiGraph)
+	 */
 	op void decrementDelayIndex() {
 		if (delayIndex === 0) {
 			throw new PreesmRuntimeException("Delay removal anomaly")
 		}
 		delayIndex = delayIndex - 1
 	}
+
+	/*
+	 * Decrement the fifo (WITH delay) storage index {@link PiGraph#fifoWithDelayIndex} used when adding a {@link Fifo} to {@link PiGraph#edges}.
+	 * <br>
+	 * Called by {@link org.preesm.model.pisdf.adapter.GraphObserver#removeEdge(Edge, PiGraph) <em>GraphObserver.removeEdge(Edge, PiGraph)</em>}.
+	 * 
+	 * @throws PreesmRuntimeException If the {@link PiGraph#fifoWithDelayIndex} is already at 0.
+	 * 
+	 * @see org.preesm.model.pisdf.adapter.GraphObserver#removeEdge(Edge, PiGraph)
+	 * 		org.preesm.model.pisdf.adapter.GraphObserver.removeEdge(Edge, PiGraph)
+	 */
 	op void decrementFifoWithDelayIndex() {
 		if (fifoWithDelayIndex === 0) {
 			throw new PreesmRuntimeException("Fifo (with delay) removal anomaly")
 		}
 		fifoWithDelayIndex = fifoWithDelayIndex - 1
 	}
+
+	/*
+	 * Decrement the fifo (WITHOUT delay) storage index {@link PiGraph#fifoWithoutDelayIndex} used when adding a {@link Fifo} to {@link PiGraph#edges}.
+	 * <br>
+	 * Called by {@link org.preesm.model.pisdf.adapter.GraphObserver#removeEdge(Edge, PiGraph) <em>GraphObserver.removeEdge(Edge, PiGraph)</em>}.
+	 * 
+	 * @throws PreesmRuntimeException If the {@link PiGraph#fifoWithoutDelayIndex} is already at 0.
+	 * 
+	 * @see org.preesm.model.pisdf.adapter.GraphObserver#removeEdge(Edge, PiGraph)
+	 * 		org.preesm.model.pisdf.adapter.GraphObserver.removeEdge(Edge, PiGraph)
+	 */
 	op void decrementFifoWithoutDelayIndex() {
 		if (fifoWithoutDelayIndex === 0) {
 			throw new PreesmRuntimeException("Fifo (without delay) removal anomaly")
@@ -291,10 +396,17 @@ class PiGraph extends AbstractActor, Graph, PeriodicElement {
 		return super.isLocallyStatic && parameters.forall[isLocallyStatic] && childrenGraphs.forall[isLocallyStatic]
 	}
 
-	// Add the actor at the end of the actor sublist before
-	// the first delay, as the PiWriter reorder vertices in a
-	// Parameter => Actor => Delay order
-	// DelayActor are added last
+	/*
+	 * Add the {@link AbstractActor} at the end of the actor sublist before the first {@link Delay},<br>
+	 * as the {@link org.preesm.model.pisdf.serialize.PiWriter <em>PiWriter</em>} reorder vertices in a<br>
+	 * {@link Parameter} => {@link AbstractActor} => {@link Delay} => {@link DelayActor} order.
+	 * <br>
+	 * 
+	 * @param actor
+	 * 			The {@link AbstractActor} to be added to {@link PiGraph#vertices}
+	 * 
+	 * @return true is the {@link AbstractActor} was successfully added, false otherwise
+	 */
 	op unique boolean addActor(AbstractActor actor) {
 		if (!(actor instanceof DelayActor)) {
 			val int oldActorIndex = this.actorIndex
@@ -314,9 +426,17 @@ class PiGraph extends AbstractActor, Graph, PeriodicElement {
 		}
 	}
 
-	// Add the parameter at the end of the parameter sublist before
-	// the first actor, as the PiWriter reorder vertices in a
-	// Parameter => Actor => Delay order
+	/*
+	 * Add the {@link Parameter} at the end of the {@link Parameter} sublist before the first {@link AbstractActor},<br>
+	 * as the {@link org.preesm.model.pisdf.serialize.PiWriter <em>PiWriter</em>} reorder vertices in a<br>
+	 * {@link Parameter} => {@link AbstractActor} => {@link Delay} => {@link DelayActor} order.
+	 * <br>
+	 * 
+	 * @param actor
+	 * 			The {@link Parameter} to be added to {@link PiGraph#vertices}
+	 * 
+	 * @return true is the {@link Parameter} was successfully added, false otherwise
+	 */
 	op unique boolean addParameter(Parameter parameter) {
 		try {
 			vertices.add(parameterIndex, parameter)
@@ -325,6 +445,18 @@ class PiGraph extends AbstractActor, Graph, PeriodicElement {
 		}
 		return true
 	}
+
+	/*
+	 * Add the {@link Delay} at the end of the {@link Delay} sublist before the first {@link DelayActor},<br>
+	 * as the {@link org.preesm.model.pisdf.serialize.PiWriter <em>PiWriter</em>} reorder vertices in a<br>
+	 * {@link Parameter} => {@link AbstractActor} => {@link Delay} => {@link DelayActor} order.
+	 * <br>
+	 * 
+	 * @param actor
+	 * 			The {@link Delay} to be added to {@link PiGraph#vertices}
+	 * 
+	 * @return true is the {@link Delay} was successfully added, false otherwise
+	 */
 	op unique boolean addDelay(Delay delay) {
 		var boolean additionStatus = false
 		try {
@@ -336,9 +468,17 @@ class PiGraph extends AbstractActor, Graph, PeriodicElement {
 		return additionStatus && this.addActor(delay.getActor())
 	}
 
-	// Add the fifo at the end of the correct fifo sublist before
-	// the first dependency, as the PiWriter reorder vertices in a
-	// FifoWithDelay => FifoWithoutDelay => Dependency order
+	/*
+	 * Add the {@link Fifo} at the end of the appropriate {@link Fifo} sublist before the first {@link Dependency},<br>
+	 * as the {@link org.preesm.model.pisdf.serialize.PiWriter <em>PiWriter</em>} reorder edges in a<br>
+	 * {@link Fifo} with {@link Delay} => {@link Fifo} without {@link Delay} => {@link Dependency} order.
+	 * <br>
+	 * 
+	 * @param fifo
+	 * 			The {@link Fifo} to be added to {@link PiGraph#edges}
+	 * 
+	 * @return true is the {@link Fifo} was successfully added, false otherwise
+	 */
 	op unique boolean addFifo(Fifo fifo) {
 		var int index
 		if (fifo.hasADelay === true) {
@@ -353,9 +493,22 @@ class PiGraph extends AbstractActor, Graph, PeriodicElement {
 		}
 		return true
 	}
+
+	/*
+	 * Add the {@link Dependency} at the end of the {@link PiGraph#edges} list,<br>
+	 * as the {@link org.preesm.model.pisdf.serialize.PiWriter <em>PiWriter</em>} reorder edges in a<br>
+	 * {@link Fifo} with {@link Delay} => {@link Fifo} without {@link Delay} => {@link Dependency} order.
+	 * <br>
+	 * 
+	 * @param fifo
+	 * 			The {@link Dependency} to be added to {@link PiGraph#edges}
+	 * 
+	 * @return true is the {@link Dependency} was successfully added, false otherwise
+	 */
 	op unique boolean addDependency(Dependency dependency) {
 		edges.add(dependency)
 	}
+
 	op unique Parameter[] getParameters() {
 		return vertices.filter(Parameter).toEList.unmodifiableView
 	}
@@ -377,7 +530,16 @@ class PiGraph extends AbstractActor, Graph, PeriodicElement {
 	op unique Dependency[] getDependencies() {
 		return edges.filter(Dependency).toEList.unmodifiableView
 	}
-	
+
+	/*
+	 * Removes the {@link AbstractActor} from the {@link Pigraph#vertices} list,<br>
+	 * <br>
+	 * 
+	 * @param actor
+	 * 			The {@link AbstractActor} to be removed from {@link PiGraph#vertices}
+	 * 
+	 * @return true is the {@link AbstractActor} was successfully removed, false otherwise
+	 */
 	op unique boolean removeActor(AbstractActor actor) {
 		val int oldActorIndex = this.actorIndex
 		var boolean actorRemoved = false
@@ -391,10 +553,30 @@ class PiGraph extends AbstractActor, Graph, PeriodicElement {
 		}
 		return actorRemoved
 	}
+
+	/*
+	 * Removes the {@link Delay} and its associated {@link DelayActor} from the {@link Pigraph#vertices} list,<br>
+	 * <br>
+	 * 
+	 * @param delay
+	 * 			The {@link Delay} to be removed from {@link PiGraph#vertices}
+	 * 
+	 * @return true is the {@link Delay} its associated {@link DelayActor} were successfully removed, false otherwise
+	 */
 	op unique boolean removeDelay(Delay delay) {
 		val boolean delayRemoved = vertices.remove(delay.getActor()) && vertices.remove(delay)
 		return delayRemoved
 	}
+
+	/*
+	 * Removes the {@link Fifo} from the {@link Pigraph#edges} list,<br>
+	 * <br>
+	 * 
+	 * @param fifo
+	 * 			The {@link Fifo} to be removed from {@link PiGraph#edges}
+	 * 
+	 * @return true is the {@link Fifo} was successfully removed, false otherwise
+	 */
 	op unique boolean removeFifo(Fifo fifo) {
 		var boolean fifoRemoved = false
 		if (edges.contains(fifo)) {
@@ -402,9 +584,29 @@ class PiGraph extends AbstractActor, Graph, PeriodicElement {
 		}
 		return fifoRemoved
 	}
+
+	/*
+	 * Removes the {@link Parameter} from the {@link Pigraph#vertices} list,<br>
+	 * <br>
+	 * 
+	 * @param param
+	 * 			The {@link Parameter} to be removed from {@link PiGraph#vertices}
+	 * 
+	 * @return true is the {@link Parameter} was successfully removed, false otherwise
+	 */
 	op unique boolean removeParameter(Parameter param) {
 		return vertices.remove(param)
 	}
+
+	/*
+	 * Removes the {@link Dependency} from the {@link Pigraph#edges} list,<br>
+	 * <br>
+	 * 
+	 * @param dep
+	 * 			The {@link Dependency} to be removed from {@link PiGraph#edges}
+	 * 
+	 * @return true is the {@link Dependency} was successfully removed, false otherwise
+	 */
 	op unique boolean removeDependency(Dependency dep) {
 		return edges.remove(dep)
 	}
