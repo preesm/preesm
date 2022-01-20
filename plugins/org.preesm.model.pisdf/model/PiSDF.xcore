@@ -740,7 +740,10 @@ class Fifo extends Edge {
 	refers DataInputPort targetPort opposite incomingFifo
 	refers Delay delay opposite containingFifo
 	String ^type = "void"
+
+	/* Flag used to mark if the current {@link Fifo} is supposed to be associated with a {@link Delay} */
 	boolean hasADelay = "false"
+
 	op Vertex getSource() {
 		sourcePort.containingActor
 	}
@@ -751,8 +754,19 @@ class Fifo extends Edge {
 		return containingGraph as PiGraph
 	}
 
-	// When affecting a delay to a fifo without delay, the fifo change from a fifo without delay to a fifo with delay
-	op void affectDelay(Delay newDelay) {
+	/*
+	 * Assign the provided {@link Delay} to the current {@link Fifo}.<br>
+	 * Check if the provided {@link Delay} already belongs to a {@link Fifo} which belongs to a {@link PiGraph},<br>
+	 * and if so, re-assign the oldFifo as a {@link Fifo} without {@link Delay}.<br>
+	 * <br>
+	 * 
+	 * Additionally, if the current {@link Fifo} belongs to a {@link PiGraph}, it is removed and re-added to ensure<br>
+	 * it is correctly placed within the {@link PiGraph#edges} list.
+	 * 
+	 * @param newDelay
+	 * 			The {@link Delay} to assign to the current {@link Fifo}.
+	 */
+	op void assignDelay(Delay newDelay) {
 		if (newDelay === null) {
 			setDelay(null)
 			hasADelay = false

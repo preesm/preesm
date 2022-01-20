@@ -212,7 +212,7 @@ public class URCSeekerTest {
     // Set delay to fifo DE
     Delay delayDE = PiMMUserFactory.instance.createDelay();
     delayDE.setExpression(1);
-    fifoDE.affectDelay(delayDE);
+    fifoDE.assignDelay(delayDE);
     this.topGraph.addDelay(delayDE);
 
     // Check consistency of the graph (throw exception if recoverable or fatal error)
