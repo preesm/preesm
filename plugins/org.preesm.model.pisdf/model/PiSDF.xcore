@@ -59,6 +59,7 @@ import org.preesm.commons.graph.Vertex
 import org.preesm.model.pisdf.expression.ExpressionEvaluator
 import org.preesm.model.pisdf.factory.PiMMUserFactory
 import org.preesm.model.pisdf.util.RefinementResolver
+import org.preesm.commons.logger.PreesmLogger
 
 // !!! This is needed as of the current versions of xcore/xtext
 // For some reason when using the default String/... (i.e. without the following)
@@ -418,6 +419,7 @@ class PiGraph extends AbstractActor, Graph, PeriodicElement {
 			// Dirty fix for when the observer isn't triggered for whatever bs reason
 			// Happens when actor is a PiGraph
 			if (oldActorIndex == this.actorIndex) {
+				PreesmLogger.getLogger().warning("The GraphObserver didn't catch actor " + actor.getName() + " insertion.")
 				incrementActorIndex()
 			}
 			return actor.equals(vertices.get(parameterIndex + actorIndex - 1))
@@ -549,6 +551,7 @@ class PiGraph extends AbstractActor, Graph, PeriodicElement {
 		// Dirty fix for when the observer isn't triggered for whatever bs reason
 		// Happens when actor is a PiGraph
 		if (actorRemoved && (oldActorIndex == this.actorIndex) && !(actor instanceof DelayActor)) {
+			PreesmLogger.getLogger().warning("The GraphObserver didn't catch actor " + actor.getName() + " removal.")
 			decrementActorIndex()
 		}
 		return actorRemoved
