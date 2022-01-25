@@ -104,7 +104,7 @@ public class SubgraphReconnector extends PiMMSwitch<Boolean> {
 
     for (final Entry<PiGraph, List<ActorByGraphReplacement>> e : this.graphReplacements.entrySet()) {
       for (final ActorByGraphReplacement r : e.getValue()) {
-        e.getKey().getVertices().remove(r.toBeRemoved);
+        e.getKey().removeActor(r.toBeRemoved);
         e.getKey().addActor(r.toBeAdded);
 
       }
