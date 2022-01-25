@@ -308,6 +308,7 @@ public class PasteFeature extends AbstractPasteFeature {
       final Delay delay = originalFifo.getDelay();
       if (delay != null) {
         final Delay delayCopy = PiMMUserFactory.instance.copy(delay);
+        delayCopy.setActor(PiMMUserFactory.instance.copy(delay.getActor()));
         addGraphicalRepresentationForDelay(copiedFifo, addGraphicalRepresentationForFifo, delayCopy);
         autoConnectInputConfigPorts(delay, delayCopy);
         this.copiedObjects.put(delay, delayCopy);
@@ -359,6 +360,9 @@ public class PasteFeature extends AbstractPasteFeature {
 
     // one delay is created during the addDelayFeature: overwrite it with the copy
     copiedFifo.setDelay(delayCopy);
+    copiedFifo.getContainingPiGraph().addDelay(delayCopy);
+    delayCopy.setName(delayCopy.getId());
+    delayCopy.getActor().setName(delayCopy.getId());
 
     // also overwrite Graphiti links
     final List<PictogramElement> createdPEs = addDelayFeature.getCreatedPEs();
