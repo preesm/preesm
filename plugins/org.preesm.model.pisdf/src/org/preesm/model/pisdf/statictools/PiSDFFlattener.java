@@ -186,7 +186,7 @@ public class PiSDFFlattener extends PiMMSwitch<Boolean> {
     // remove params that are not connected to anything
     for (final Parameter p : graph.getParameters()) {
       if (p.getOutgoingDependencies().isEmpty()) {
-        graph.getVertices().remove(p);
+        graph.removeParameter(p);
       }
     }
   }
