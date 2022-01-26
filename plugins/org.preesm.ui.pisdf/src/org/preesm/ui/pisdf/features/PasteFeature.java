@@ -146,6 +146,14 @@ public class PasteFeature extends AbstractPasteFeature {
       final Configurable copy = PiMMUserFactory.instance.copy(vertex);
       final String name = computeUniqueNameForCopy(vertex);
       copy.setName(name);
+
+      // If the vertex to copy is a Delay, creating a copy of the DelayActor and attaching it to the Delay copy
+      if (copy instanceof Delay) {
+        final DelayActor delayActorCopy = PiMMUserFactory.instance.copy(((Delay) vertex).getActor());
+        delayActorCopy.setName(name);
+        ((Delay) copy).setActor(delayActorCopy);
+      }
+
       final Pair<Integer, Integer> pair = caluclatePositions.get(vertexCopy);
       final Integer x = pair.getKey();
       final Integer y = pair.getValue();
@@ -307,11 +315,9 @@ public class PasteFeature extends AbstractPasteFeature {
 
       final Delay delay = originalFifo.getDelay();
       if (delay != null) {
-        final Delay delayCopy = PiMMUserFactory.instance.copy(delay);
-        delayCopy.setActor(PiMMUserFactory.instance.copy(delay.getActor()));
+        final Delay delayCopy = (Delay) this.copiedObjects.get(delay);
         addGraphicalRepresentationForDelay(copiedFifo, addGraphicalRepresentationForFifo, delayCopy);
         autoConnectInputConfigPorts(delay, delayCopy);
-        this.copiedObjects.put(delay, delayCopy);
       }
 
     }
@@ -361,8 +367,6 @@ public class PasteFeature extends AbstractPasteFeature {
     // one delay is created during the addDelayFeature: overwrite it with the copy
     copiedFifo.setDelay(delayCopy);
     copiedFifo.getContainingPiGraph().addDelay(delayCopy);
-    delayCopy.setName(delayCopy.getId());
-    delayCopy.getActor().setName(delayCopy.getId());
 
     // also overwrite Graphiti links
     final List<PictogramElement> createdPEs = addDelayFeature.getCreatedPEs();
@@ -397,8 +401,7 @@ public class PasteFeature extends AbstractPasteFeature {
       final DataInputPort targetPort = fifo.getTargetPort();
       final EObject sourceVertex = sourcePort.eContainer();
       final EObject targetVertex = targetPort.eContainer();
-      if (((sourceVertex != null) && (sourceVertex instanceof AbstractActor))
-          && ((targetVertex != null) && (targetVertex instanceof AbstractActor))) {
+      if ((sourceVertex instanceof AbstractActor) && (targetVertex instanceof AbstractActor)) {
         // ok
         final AbstractActor source = (AbstractActor) sourceVertex;
         final AbstractActor target = (AbstractActor) targetVertex;
@@ -411,7 +414,6 @@ public class PasteFeature extends AbstractPasteFeature {
 
           final Fifo copiedFifo = PiMMUserFactory.instance.createFifo(sourcePortCopy, targetPortCopy, fifo.getType());
           newFifos.put(copiedFifo, fifo);
-
         }
       } else {
         // not supported
