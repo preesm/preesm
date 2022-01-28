@@ -405,16 +405,41 @@ public class PasteFeature extends AbstractPasteFeature {
         // ok
         final AbstractActor source = (AbstractActor) sourceVertex;
         final AbstractActor target = (AbstractActor) targetVertex;
-        if (this.copiedObjects.containsKey(source) && this.copiedObjects.containsKey(target)) {
-          final AbstractActor sourceCopy = (AbstractActor) this.copiedObjects.get(source);
-          final AbstractActor targetCopy = (AbstractActor) this.copiedObjects.get(target);
 
-          final DataOutputPort sourcePortCopy = lookupDataOutputPort(sourceCopy, sourcePort);
-          final DataInputPort targetPortCopy = lookupDataInputPort(targetCopy, targetPort);
-
-          final Fifo copiedFifo = PiMMUserFactory.instance.createFifo(sourcePortCopy, targetPortCopy, fifo.getType());
-          newFifos.put(copiedFifo, fifo);
+        // Checking if source is NOT in the list of copied AbstractActor and
+        // if it is a DelayActor belonging to a Delay which is NOT in the list of copied AbstractActor
+        if ((!this.copiedObjects.containsKey(source)) && ((source instanceof DelayActor)
+            && (!this.copiedObjects.containsKey(((DelayActor) source).getLinkedDelay())))) {
+          continue;
         }
+
+        // Checking if target is NOT in the list of copied AbstractActor and
+        // if it is a DelayActor belonging to a Delay which is NOT in the list of copied AbstractActor
+        if ((!this.copiedObjects.containsKey(target)) && ((target instanceof DelayActor)
+            && (!this.copiedObjects.containsKey(((DelayActor) target).getLinkedDelay())))) {
+          continue;
+        }
+
+        AbstractActor sourceCopy;
+        AbstractActor targetCopy;
+
+        if (source instanceof DelayActor) {
+          sourceCopy = ((Delay) this.copiedObjects.get(((DelayActor) source).getLinkedDelay())).getActor();
+        } else {
+          sourceCopy = (AbstractActor) this.copiedObjects.get(source);
+        }
+
+        if (target instanceof DelayActor) {
+          targetCopy = ((Delay) this.copiedObjects.get(((DelayActor) target).getLinkedDelay())).getActor();
+        } else {
+          targetCopy = (AbstractActor) this.copiedObjects.get(target);
+        }
+
+        final DataOutputPort sourcePortCopy = lookupDataOutputPort(sourceCopy, sourcePort);
+        final DataInputPort targetPortCopy = lookupDataInputPort(targetCopy, targetPort);
+
+        final Fifo copiedFifo = PiMMUserFactory.instance.createFifo(sourcePortCopy, targetPortCopy, fifo.getType());
+        newFifos.put(copiedFifo, fifo);
       } else {
         // not supported
         throw new UnsupportedOperationException();

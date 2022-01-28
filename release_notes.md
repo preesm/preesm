@@ -34,7 +34,7 @@ the training graph now.
 * Fix #342 : partial fix only, autolayout supports cycles involving DelayActor, but this is not checked by the model (would need an exhaustive cycle search)
 * Fix #345 : fix Velocity template internal paths in Spider2 codegen (only tested on Linux)
 * Fix #351, #91 and #122 : Fix .pi and .diagram being out of sync.
-* Fixed pasting operation failing when a delay is in the clipboard. Delay setter and getter fifos are not yet supported and are not pasted.
+* Fixed pasting operation failing when a delay is in the clipboard.
 
 
 ## Release version 3.21.0
