@@ -77,8 +77,8 @@
    <properties>
       <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
-      <jacoco-version>0.8.4</jacoco-version>
-      <tycho-version>2.0.0</tycho-version>
+      <jacoco-version>0.8.7</jacoco-version>
+      <tycho-version>2.1.0</tycho-version>
       <findbugs-version>3.0.5</findbugs-version>
       <sonar-version>3.6.0.1398</sonar-version>
       <checkstyle-version>8.29</checkstyle-version>
@@ -119,8 +119,8 @@
       <updatesite.preesm>http://preesm.insa-rennes.fr/repo/</updatesite.preesm>
       <updatesite.preesm.externaldeps>${updatesite.preesm}/org.preesm.externaldeps/</updatesite.preesm.externaldeps>
       <updatesite.preesm.graphiti>${updatesite.preesm}/org.ietr.graphiti/</updatesite.preesm.graphiti>
-      <updatesite.eclipse>${eclipse.mirror}/releases/2019-09/</updatesite.eclipse>
-      <updatesite.eclipse.updates>${eclipse.mirror}/eclipse/updates/4.13</updatesite.eclipse.updates>
+      <updatesite.eclipse>${eclipse.mirror}/releases/2021-09/</updatesite.eclipse>
+      <updatesite.eclipse.updates>${eclipse.mirror}/eclipse/updates/4.21</updatesite.eclipse.updates>
       <updatesite.tmf>${eclipse.mirror}/modeling/tmf/xtext/updates/releases/${xtext-version}</updatesite.tmf>
 
       <!-- ############## -->
@@ -245,7 +245,7 @@
                   <dependency>
                      <groupId>org.eclipse.platform</groupId>
                      <artifactId>org.eclipse.core.resources</artifactId>
-                     <version>3.13.300</version>
+                     <version>3.16.0</version>
                   </dependency>
                   <dependency>
                      <groupId>org.eclipse.xtext</groupId>
@@ -688,7 +688,7 @@
       <dependency>
          <groupId>junit</groupId>
          <artifactId>junit</artifactId>
-         <version>4.12</version>
+         <version>4.13.2</version>
          <scope>test</scope>
       </dependency>
 
