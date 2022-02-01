@@ -38,6 +38,7 @@ the training graph now.
 * Fix #345 : fix Velocity template internal paths in Spider2 codegen (only tested on Linux)
 * Fix #287 : fix codegen printing memcpy when it should not.
 * (PiMM) : fix issue when removing unused Fifo (rates at 0) in hierarchical graphs
+* Fix #352: Update dependencies for eclispe 2021.9
 
 
 ## Release version 3.21.0
