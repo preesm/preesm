@@ -111,12 +111,12 @@
       <!-- http://ftp.fau.de/eclipse/ -->
       <!-- http://ftp.halifax.rwth-aachen.de/eclipse/ -->
       <!-- http://mirror.switch.ch/eclipse/ -->
-      <eclipse.mirror>http://ftp.halifax.rwth-aachen.de/eclipse/</eclipse.mirror>
+      <eclipse.mirror>https://ftp.halifax.rwth-aachen.de/eclipse/</eclipse.mirror>
 
       <!-- ############### -->
       <!-- P2 REPOS CONFIG -->
       <!-- ############### -->
-      <updatesite.preesm>http://preesm.insa-rennes.fr/repo/</updatesite.preesm>
+      <updatesite.preesm>https://preesm.insa-rennes.fr/repo/</updatesite.preesm>
       <updatesite.preesm.externaldeps>${updatesite.preesm}/org.preesm.externaldeps/</updatesite.preesm.externaldeps>
       <updatesite.preesm.graphiti>${updatesite.preesm}/org.ietr.graphiti/</updatesite.preesm.graphiti>
       <updatesite.eclipse>${eclipse.mirror}/releases/2021-09/</updatesite.eclipse>
@@ -134,7 +134,7 @@
       <!-- Official Maven Central repo hosted in UK -->
       <repository>
          <id>UK Central</id>
-         <url>http://uk.maven.org/maven2</url>
+         <url>https://uk.maven.org/maven2</url>
       </repository>
       <!-- add Eclipse repository to resolve dependencies -->
       <repository>
