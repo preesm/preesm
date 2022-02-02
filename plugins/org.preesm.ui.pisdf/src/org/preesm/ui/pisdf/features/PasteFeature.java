@@ -317,7 +317,9 @@ public class PasteFeature extends AbstractPasteFeature {
       if (delay != null) {
         final Delay delayCopy = (Delay) this.copiedObjects.get(delay);
         addGraphicalRepresentationForDelay(copiedFifo, addGraphicalRepresentationForFifo, delayCopy);
-        autoConnectInputConfigPorts(delay, delayCopy);
+        // Commented out the next line to prevent an issue where Delay with a dependency wouldn't be pasted.
+        // TODO Fix this issue
+        // autoConnectInputConfigPorts(delay, delayCopy);
       }
 
     }
@@ -449,6 +451,12 @@ public class PasteFeature extends AbstractPasteFeature {
 
   private void autoConnectInputConfigPorts(final Configurable originalParameterizable,
       final Configurable parameterizableCopy) {
+
+    // Early exit to prevent an issue where Delay with a dependency wouldn't be pasted.
+    // TODO Fix this issue
+    if (originalParameterizable instanceof Delay) {
+      return;
+    }
 
     if (getPiGraph() != getOriginalPiGraph()) {
       return;
@@ -688,6 +696,9 @@ public class PasteFeature extends AbstractPasteFeature {
           } else {
             throw new IllegalStateException();
           }
+        } else if (vertexModelCopy instanceof Delay) {
+          // Dirty fix for Delay with dependency
+          return;
         } else {
           final IPeService peService = GraphitiUi.getPeService();
           final Anchor chopboxAnchor = peService.getChopboxAnchor((AnchorContainer) newVertexPE);
