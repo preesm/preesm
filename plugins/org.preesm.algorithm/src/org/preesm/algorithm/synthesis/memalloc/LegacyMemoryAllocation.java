@@ -77,6 +77,7 @@ import org.preesm.model.pisdf.Fifo;
 import org.preesm.model.pisdf.InitActor;
 import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.scenario.Scenario;
+import org.preesm.model.scenario.check.FifoTypeChecker;
 import org.preesm.model.slam.ComponentInstance;
 import org.preesm.model.slam.Design;
 import org.preesm.model.slam.check.SlamDesignPEtypeChecker;
@@ -122,6 +123,7 @@ public class LegacyMemoryAllocation implements IMemoryAllocation {
     parameters.put(MemoryScriptTask.PARAM_VERBOSE, MemoryScriptTask.VALUE_TRUE);
     parameters.put(MemoryScriptTask.PARAM_CHECK, MemoryScriptTask.VALUE_CHECK_THOROUGH);
     parameters.put(MemoryScriptTask.PARAM_LOG, MemoryScriptTask.VALUE_LOG);
+    parameters.put(MemoryScriptTask.PARAM_FALSE_SHARING, MemoryScriptTask.VALUE_FALSE);
     parameters.put(MemoryAllocatorTask.PARAM_VERBOSE, MemoryAllocatorTask.VALUE_TRUE_FALSE_DEFAULT);
     parameters.put(MemoryAllocatorTask.PARAM_ALLOCATORS, MemoryAllocatorTask.VALUE_ALLOCATORS_DEFAULT);
     parameters.put(MemoryAllocatorTask.PARAM_XFIT_ORDER, MemoryAllocatorTask.VALUE_XFIT_ORDER_DEFAULT);
@@ -138,6 +140,7 @@ public class LegacyMemoryAllocation implements IMemoryAllocation {
     if (!SlamDesignPEtypeChecker.isOnlyCPU(slamDesign)) {
       throw new PreesmRuntimeException("This task must be called with a CPU architecture, abandon.");
     }
+    FifoTypeChecker.checkMissingFifoTypeSizes(scenario);
 
     // *************
     // INITIAL MEG BUILD
@@ -166,9 +169,13 @@ public class LegacyMemoryAllocation implements IMemoryAllocation {
     final String valueAllocators = parameters.get(MemoryAllocatorTask.PARAM_ALLOCATORS);
     final long alignment = IMemoryAllocation.extractAlignment(valueAlignment);
 
-    final PiMemoryScriptEngine engine = new PiMemoryScriptEngine(alignment, log, true);
+    // False by default
+    final boolean falseSharingPreventionFlag = parameters.get(MemoryScriptTask.PARAM_FALSE_SHARING)
+        .equals(MemoryScriptTask.VALUE_TRUE);
+
+    final PiMemoryScriptEngine engine = new PiMemoryScriptEngine(falseSharingPreventionFlag, alignment, log, true);
     try {
-      engine.runScripts(piGraph, scenario.getSimulationInfo().getDataTypes(), checkString);
+      engine.runScripts(piGraph, scenario.getSimulationInfo(), checkString);
     } catch (final EvalError e) {
       final String message = "An error occurred during memory scripts execution";
       throw new PreesmRuntimeException(message, e);
@@ -351,13 +358,13 @@ public class LegacyMemoryAllocation implements IMemoryAllocation {
 
     if ((allocator instanceof PiOrderedAllocator) && (((PiOrderedAllocator) allocator).getOrder() == Order.SHUFFLE)) {
       ((PiOrderedAllocator) allocator).setPolicy(Policy.WORST);
-      log += " worst: " + allocator.getMemorySize();
+      log += " worst: " + allocator.getMemorySizeInByte();
 
       ((PiOrderedAllocator) allocator).setPolicy(Policy.MEDIANE);
-      log += "(med: " + allocator.getMemorySize();
+      log += "(med: " + allocator.getMemorySizeInByte();
 
       ((PiOrderedAllocator) allocator).setPolicy(Policy.AVERAGE);
-      log += " avg: " + allocator.getMemorySize() + ")";
+      log += " avg: " + allocator.getMemorySizeInByte() + ")";
 
       ((PiOrderedAllocator) allocator).setPolicy(Policy.BEST);
     }
@@ -368,7 +375,7 @@ public class LegacyMemoryAllocation implements IMemoryAllocation {
   private String computeLog(final PiMemoryAllocator allocator, final long tStart, final String sAllocator,
       final long tFinish) {
     String unit = "bytes";
-    double size = allocator.getMemorySize();
+    double size = allocator.getMemorySizeInByte();
     if (size > 1024) {
       size /= 1024.0;
       unit = "kBytes";
@@ -455,7 +462,7 @@ public class LegacyMemoryAllocation implements IMemoryAllocation {
       }
       memAlloc.getPhysicalBuffers().add(mainBuffer);
       mainBuffer.setMemoryBank(componentInstance);
-      mainBuffer.setSize(size);
+      mainBuffer.setSizeInBit(size);
 
       final Map<Fifo,
           Long> fifoAllocationOffset = meg.getPropertyBean().getValue(PiMemoryExclusionGraph.DAG_EDGE_ALLOCATION);
@@ -478,10 +485,9 @@ public class LegacyMemoryAllocation implements IMemoryAllocation {
           fifoAllocation.setTargetBuffer(dagEdgeBuffer);
           mainBuffer.getChildren().add(dagEdgeBuffer);
 
-          final long bufferTypeSize = scenario.getSimulationInfo().getDataTypeSizeOrDefault(edge.getType());
           final long edgeRate = edge.getSourcePort().getPortRateExpression().evaluate();
-          dagEdgeBuffer.setOffset(allocOffset);
-          dagEdgeBuffer.setSize(edgeRate * bufferTypeSize);
+          dagEdgeBuffer.setOffsetInBit(allocOffset);
+          dagEdgeBuffer.setSizeInBit(scenario.getSimulationInfo().getBufferSizeInBit(edge.getType(), edgeRate));
 
         } else {
           // the buffer is a null buffer
@@ -491,8 +497,8 @@ public class LegacyMemoryAllocation implements IMemoryAllocation {
           fifoAllocation.setTargetBuffer(dagEdgeBuffer);
           mainBuffer.getChildren().add(dagEdgeBuffer);
 
-          dagEdgeBuffer.setSize(0);
-
+          final long edgeRate = edge.getSourcePort().getPortRateExpression().evaluate();
+          dagEdgeBuffer.setSizeInBit(scenario.getSimulationInfo().getBufferSizeInBit(edge.getType(), edgeRate));
         }
       }
 
@@ -508,8 +514,8 @@ public class LegacyMemoryAllocation implements IMemoryAllocation {
         final PiMemoryExclusionVertex fifoAllocKey = fifoAlloc.getKey();
         final String sink = fifoAllocKey.getSink();
 
-        delayBuffer.setOffset(fifoAlloc.getValue());
-        delayBuffer.setSize(fifoAllocKey.getWeight());
+        delayBuffer.setOffsetInBit(fifoAlloc.getValue());
+        delayBuffer.setSizeInBit(fifoAllocKey.getWeight());
 
         final InitActor initActor = (InitActor) pigraph.lookupVertex(sink);
         memAlloc.getDelayAllocations().put(initActor, delayBuffer);

@@ -59,14 +59,14 @@ class XMLPrinter extends BlankPrinter {
 		<CompoundCode name="«call.name»">«var input = call.inputBuffers.head»«var index = 0L»
 		«FOR output : call.outputBuffers»«var outputIdx = 0L»
 			«// TODO: Change how this loop iterates (nbIter is used in a comment only ...)
-			FOR nbIter : 0..((output.size/input.size)+1) as int /*Worst number the loop exec */»
-				«IF outputIdx < output.size /* Execute only first loop cores */»
+			FOR nbIter : 0..((output.getNbToken/input.getNbToken)+1) as int /*Worst number the loop exec */»
+				«IF outputIdx < output.getNbToken /* Execute only first loop cores */»
 					<!-- memcpy #«nbIter» -->
 					<userFunctionCall comment="" name="memcpy">
 						<bufferAtIndex index="«outputIdx»" name="«output.name»"/>
 						<bufferAtIndex index="«index»" name="«input.name»"/>
-						<constant name="size" type="string" value="«val value = Math::min(output.size-outputIdx,input.size-index)»«value»*sizeof(«output.type»)"/>
-					</userFunctionCall>«{index=(index+value)%input.size;outputIdx=(outputIdx+value); ""}»
+						<constant name="size" type="string" value="«val value = Math::min(output.getNbToken-outputIdx,input.getNbToken-index)»«value»*sizeof(«output.type»)"/>
+					</userFunctionCall>«{index=(index+value)%input.getNbToken;outputIdx=(outputIdx+value); ""}»
 				«ENDIF»
 			«ENDFOR»
 		«ENDFOR»
@@ -74,7 +74,7 @@ class XMLPrinter extends BlankPrinter {
 	'''
 
 	override printBuffer(Buffer buffer) '''
-		<buffer name="«buffer.name»" size="«buffer.size»" type="«buffer.type»"/>
+		<buffer name="«buffer.name»" size="«buffer.getNbToken»" type="«buffer.type»"/>
 	'''
 
 	override printBufferDeclaration(Buffer buffer) {
@@ -84,7 +84,7 @@ class XMLPrinter extends BlankPrinter {
 	override printBufferDefinition(Buffer buffer) '''
 		<bufferAllocation
 			comment="«buffer.class.simpleName»: «buffer.comment»"
-			name="«buffer.name»" size="«buffer.size»" type="«buffer.type»"/>
+			name="«buffer.name»" size="«buffer.getNbToken»" type="«buffer.type»"/>
 	'''
 
 	override printConstant(Constant constant) '''
@@ -185,21 +185,21 @@ class XMLPrinter extends BlankPrinter {
 			«ENDIF»
 			«IF fifoCall.operation != FifoOperation::INIT»
 				«fifoCall.parameters.head.doSwitch»
-				<constant name="nb_token" type="long" value="«(fifoCall.parameters.head as Buffer).size»"/>
+				<constant name="nb_token" type="long" value="«(fifoCall.parameters.head as Buffer).getNbToken»"/>
 			«ENDIF»
 			<constant name="size" type="string" value="sizeof(«fifoCall.headBuffer.type»)"/>
 			«{
 			var const = CodegenModelUserFactory::eINSTANCE.createConstant
 			const.name = "head_size"
 			const.type = "int"
-			const.value = fifoCall.headBuffer.size
+			const.value = fifoCall.headBuffer.getNbToken
 			const
 			}.doSwitch»
 			«{
 			var const = CodegenModelUserFactory::eINSTANCE.createConstant
 			const.name = "fifo_size"
 			const.type = "int"
-			const.value = fifoCall.headBuffer.size + (if(fifoCall.bodyBuffer === null)0 else fifoCall.bodyBuffer.size)
+			const.value = fifoCall.headBuffer.getNbToken + (if(fifoCall.bodyBuffer === null)0 else fifoCall.bodyBuffer.getNbToken)
 			const
 			}.doSwitch»
 		</userFunctionCall>
@@ -211,8 +211,8 @@ class XMLPrinter extends BlankPrinter {
 				<userFunctionCall comment="" name="memcpy">
 					«output.doSwitch»
 					<bufferAtIndex index="«index»" name="«input.name»"/>
-					<constant name="size" type="string" value="«output.size»*sizeof(«output.type»)"/>
-				</userFunctionCall>«{index=(index+output.size); ""}»
+					<constant name="size" type="string" value="«output.getNbToken»*sizeof(«output.type»)"/>
+				</userFunctionCall>«{index=(index+output.getNbToken); ""}»
 			«ENDFOR»
 		</CompoundCode>	«/*<CompoundCode name="«call.name»"> «var input = call.inputBuffers.head»
 			«FOR index : 0 .. call.outputBuffers.size - 1»
@@ -228,8 +228,8 @@ class XMLPrinter extends BlankPrinter {
 				<userFunctionCall comment="" name="memcpy">
 					<bufferAtIndex index="«index»" name="«output.name»"/>
 					«input.doSwitch»
-					<constant name="size" type="string" value="«input.size»*sizeof(«input.type»)"/>
-				</userFunctionCall>«{index=(index+input.size); ""}»
+					<constant name="size" type="string" value="«input.getNbToken»*sizeof(«input.type»)"/>
+				</userFunctionCall>«{index=(index+input.getNbToken); ""}»
 			«ENDFOR»
 			</CompoundCode>	«/*<CompoundCode name="«call.name»">«var output = call.outputBuffers.head»
 			«FOR index : 0 .. call.inputBuffers.size - 1»
@@ -252,14 +252,14 @@ class XMLPrinter extends BlankPrinter {
 		<CompoundCode name="«call.name»">«var output = call.outputBuffers.head»«var index = 0L»
 		«FOR buffer : call.inputBuffers»«var inputIdx = 0L»
 			«// TODO: Change how this loop iterates (nbIter is used in a comment only ...)
-			FOR nbIter : 0..(buffer.size/output.size+1) as int/*Worst case id buffer.size exec of the loop */»
-				«IF inputIdx < buffer.size /* Execute only first loop core */»
+			FOR nbIter : 0..(buffer.getNbToken/output.getNbToken+1) as int/*Worst case id buffer.size exec of the loop */»
+				«IF inputIdx < buffer.getNbToken /* Execute only first loop core */»
 					<!-- memcpy #«nbIter» -->
 					<userFunctionCall comment="" name="memcpy">
 						<bufferAtIndex index="«index»" name="«output.name»"/>
 						<bufferAtIndex index="«inputIdx»" name="«buffer.name»"/>
-						<constant name="size" type="string" value="«val value = Math::min(buffer.size-inputIdx,output.size-index)»«value»*sizeof(«buffer.type»)"/>
-					</userFunctionCall>«{index=(index+value)%output.size;inputIdx=(inputIdx+value); ""}»
+						<constant name="size" type="string" value="«val value = Math::min(buffer.getNbToken-inputIdx,output.getNbToken-index)»«value»*sizeof(«buffer.type»)"/>
+					</userFunctionCall>«{index=(index+value)%output.getNbToken;inputIdx=(inputIdx+value); ""}»
 				«ENDIF»
 			«ENDFOR»
 		«ENDFOR»

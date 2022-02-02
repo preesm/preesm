@@ -271,7 +271,7 @@ class CHardwarePrinter extends CPrinter {
 		«var count = 0»
 		«FOR buffer : action.buffers»
 			«IF (action.parameterDirections.get(count).toString == 'INPUT')»
-				memcpy((void *) global_artico3_«count» + («buffer.size» * «this.dataTransferCallNumber» * sizeof(a3data_t)), (void *)«buffer.name», «buffer.size»*sizeof(a3data_t)); // input «count++»
+				memcpy((void *) global_artico3_«count» + («buffer.getNbToken» * «this.dataTransferCallNumber» * sizeof(a3data_t)), (void *)«buffer.name», «buffer.getNbToken»*sizeof(a3data_t)); // input «count++»
 			«ELSE»
 				// output «count++»
 			«ENDIF»
@@ -286,7 +286,7 @@ class CHardwarePrinter extends CPrinter {
 			«IF (action.parameterDirections.get(count).toString == 'INPUT')»
 				// input «count++»
 			«ELSE»
-				memcpy((void *)«buffer.name», (void *) global_artico3_«count» + («buffer.size» * «this.dataOutputTransferCallNumber» * sizeof(a3data_t)), «buffer.size»*sizeof(a3data_t)); // output «count++»
+				memcpy((void *)«buffer.name», (void *) global_artico3_«count» + («buffer.getNbToken» * «this.dataOutputTransferCallNumber» * sizeof(a3data_t)), «buffer.getNbToken»*sizeof(a3data_t)); // output «count++»
 			«ENDIF»
 		«ENDFOR»
 		//«this.dataOutputTransferCallNumber++»
@@ -322,10 +322,10 @@ class CHardwarePrinter extends CPrinter {
 		«FOR buffer : action.buffers»
 			«IF buffer.name.contains("localImageSize")»
 			a3data_t *global_artico3_«count» = NULL;
-			global_artico3_«count» = artico3_alloc(«buffer.size»«IF (this.factorNumber > 0)» * «this.factorNumber»«ENDIF» * sizeof *«buffer.name», "«action.name»", "«buffer.doSwitch»",  A3_P_C ); // «count++»
+			global_artico3_«count» = artico3_alloc(«buffer.getNbToken»«IF (this.factorNumber > 0)» * «this.factorNumber»«ENDIF» * sizeof *«buffer.name», "«action.name»", "«buffer.doSwitch»",  A3_P_C ); // «count++»
 			«ELSE»
 			a3data_t *global_artico3_«count» = NULL;
-			global_artico3_«count» = artico3_alloc(«buffer.size»«IF (this.factorNumber > 0)» * «this.factorNumber»«ENDIF» * sizeof *«buffer.name», "«action.name»", "«buffer.doSwitch»",  «action.parameterDirections.get(count++)»);
+			global_artico3_«count» = artico3_alloc(«buffer.getNbToken»«IF (this.factorNumber > 0)» * «this.factorNumber»«ENDIF» * sizeof *«buffer.name», "«action.name»", "«buffer.doSwitch»",  «action.parameterDirections.get(count++)»);
 			«ENDIF»
 			
 		«ENDFOR»

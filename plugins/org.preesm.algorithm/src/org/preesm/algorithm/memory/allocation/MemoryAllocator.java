@@ -123,11 +123,11 @@ public abstract class MemoryAllocator {
 
           final List<Long> interBufferSpaces = new ArrayList<>();
           long largestTypeSize = 1;
-          long internalOffset = 0; // In Bytes
+          long internalOffset = 0; // In Bits
           while (iter.hasNext()) {
             final BufferProperties properties = iter.next();
             final String dataType = properties.getDataType();
-            final long typeSize = meg.getScenario().getSimulationInfo().getDataTypeSizeOrDefault(dataType);
+            final long typeSize = meg.getScenario().getSimulationInfo().getDataTypeSizeInBit(dataType);
             largestTypeSize = Math.max(typeSize, largestTypeSize);
             long interSpace = 0;
 
@@ -147,7 +147,7 @@ public abstract class MemoryAllocator {
             }
 
             interBufferSpaces.add(interSpace);
-            internalOffset += interSpace + (typeSize * properties.getSize());
+            internalOffset += interSpace + (typeSize * properties.getNbToken());
           }
 
           // Update the size of the memObject and add the interbuffer
@@ -617,7 +617,7 @@ public abstract class MemoryAllocator {
           while (iter.hasNext()) {
             final BufferProperties properties = iter.next();
             final String dataType = properties.getDataType();
-            final long typeSize = memObj.getScenario().getSimulationInfo().getDataTypeSizeOrDefault(dataType);
+            final long typeSize = memObj.getScenario().getSimulationInfo().getDataTypeSizeInBit(dataType);
 
             if (interBufferSpaces != null) {
               internalOffset += interBufferSpaces.get(i);
@@ -637,7 +637,8 @@ public abstract class MemoryAllocator {
               break;
             }
 
-            internalOffset += typeSize * properties.getSize();
+            internalOffset += typeSize * properties.getNbToken();
+            // internalOffset += (typeSize * properties.getNbToken() + this.alignment-1) / this.alignment;
 
           }
         } else {
@@ -767,7 +768,7 @@ public abstract class MemoryAllocator {
    *
    * @return the memory Size
    */
-  public long getMemorySize() {
+  public long getMemorySizeInByte() {
     long memorySize = 0;
 
     // Use the memExNodeAllocation if available
@@ -779,7 +780,7 @@ public abstract class MemoryAllocator {
           memorySize = value + vertex.getWeight();
         }
       }
-      return memorySize;
+      return (memorySize + 7L) / 8L;
     }
 
     if (!this.edgeAllocation.isEmpty()) {
@@ -791,7 +792,7 @@ public abstract class MemoryAllocator {
           memorySize = value + edge.getWeight().longValue();
         }
       }
-      return memorySize;
+      return (memorySize + 7L) / 8L;
     }
     return -1;
   }

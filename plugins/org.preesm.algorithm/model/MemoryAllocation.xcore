@@ -64,7 +64,7 @@ type double wraps double
 
 
 interface Buffer {
-	long size // size in byte
+	long sizeInBit // size in bit
 	contains LogicalBuffer[] children opposite containingBuffer
 	op PhysicalBuffer getBank()
 	op Allocation getAllocation() {
@@ -72,6 +72,10 @@ interface Buffer {
 	}
 	op boolean isEqualsOrRecursivelyContains(Buffer other) {
 		return this == other || children.exists[it.isEqualsOrRecursivelyContains(other)]
+	}
+	
+	op long getSizeInByte() {
+		return (getSizeInBit + 7L) / 8L;
 	}
 }
 
@@ -84,7 +88,7 @@ class PhysicalBuffer extends Buffer {
 }
 
 class LogicalBuffer extends Buffer {
-	long offset // absolute offset in bytes wrt parent address 0
+	long offsetInBit // absolute offset in bits wrt parent address 0
 	refers Buffer containingBuffer opposite children
 	op PhysicalBuffer getBank() {
 		return containingBuffer.getBank()

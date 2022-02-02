@@ -1,5 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <scenario>
+    <flags>
+        <sizesAreInBit/>
+    </flags>
     <files>
         <algorithm url="/org.ietr.preesm.bp1d/Algo/myappBP1D.pi"/>
         <architecture url="/org.ietr.preesm.bp1d/Archi/4CoreX86.slam"/>
@@ -64,9 +67,9 @@
         <mainComNode>shared_mem</mainComNode>
         <averageDataSize>1000</averageDataSize>
         <dataTypes>
-            <dataType name="uchar" size="1"/>
-            <dataType name="short" size="2"/>
-            <dataType name="PHI_B_TYPE" size="2"/>
+            <dataType name="uchar" size="8"/>
+            <dataType name="short" size="16"/>
+            <dataType name="PHI_B_TYPE" size="16"/>
         </dataTypes>
         <specialVertexOperators>
             <specialVertexOperator path="Core0"/>

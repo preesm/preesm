@@ -176,6 +176,6 @@ public class FirstFitAllocator extends OrderedAllocator {
       allocateMemoryObject(vertex, firstFitOffset);
     }
 
-    return getMemorySize();
+    return getMemorySizeInByte();
   }
 }

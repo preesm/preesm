@@ -41,7 +41,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import org.eclipse.emf.common.util.EMap;
 import org.preesm.algorithm.mapper.model.MapperDAG;
 import org.preesm.algorithm.model.AbstractGraph;
 import org.preesm.algorithm.model.AbstractVertex;
@@ -61,6 +60,7 @@ import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.commons.math.MathFunctionsHelper;
 import org.preesm.model.scenario.Scenario;
+import org.preesm.model.scenario.SimulationInfo;
 import org.preesm.model.slam.Design;
 
 /**
@@ -75,7 +75,7 @@ public class HSDFBuildLoops {
 
   private final Logger logger = PreesmLogger.getLogger();
 
-  private final EMap<String, Long> dataTypes;
+  private final SimulationInfo simulationInfo;
 
   /**
    * Build loops.
@@ -86,7 +86,7 @@ public class HSDFBuildLoops {
    *          the architecture to pass
    */
   public HSDFBuildLoops(final Scenario scenario, final Design architecture) {
-    this.dataTypes = scenario.getSimulationInfo().getDataTypes();
+    this.simulationInfo = scenario.getSimulationInfo();
   }
 
   private void p(final String s) {
@@ -593,7 +593,7 @@ public class HSDFBuildLoops {
               "Internal Memory allocation failed for actor " + v.getName() + " unsupported special actor");
         }
 
-        final long sizeType = this.dataTypes.get(e.getDataType().toString());
+        final long sizeType = simulationInfo.getDataTypeSizeInBit(e.getDataType().toString());
 
         bufSize += mem * sizeType;
         allocEdge.add(e);
@@ -644,7 +644,7 @@ public class HSDFBuildLoops {
       final long bufSize = getNaiveWorkingMemAlloc(resultGraph);
 
       g.getPropertyBean().setValue("working_memory", bufSize);
-      p("Internal Working Memory Graph " + g.getName() + " has allocated " + bufSize + " bytes");
+      p("Internal Working Memory Graph " + g.getName() + " has allocated " + bufSize + " bits");
     }
     return inputGraph;
   }

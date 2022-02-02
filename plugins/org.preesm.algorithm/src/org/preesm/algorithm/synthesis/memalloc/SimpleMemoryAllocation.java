@@ -90,14 +90,13 @@ public class SimpleMemoryAllocation implements IMemoryAllocation {
       final List<Fifo> fifos = actor.getDataOutputPorts().stream().map(DataPort::getFifo).collect(Collectors.toList());
       for (final Fifo fifo : fifos) {
         final String fifoType = fifo.getType();
-        final long dataTypeSize = scenario.getSimulationInfo().getDataTypeSizeOrDefault(fifoType);
         final long fifoTokenSize = fifo.getTargetPort().getPortRateExpression().evaluate();
-        final long fifoBufferSize = dataTypeSize * fifoTokenSize;
+        final long fifoBufferSize = scenario.getSimulationInfo().getBufferSizeInBit(fifoType, fifoTokenSize);
 
         final LogicalBuffer logicBuff = MemoryAllocationFactory.eINSTANCE.createLogicalBuffer();
         logicBuff.setContainingBuffer(physBuff);
-        logicBuff.setSize(fifoBufferSize);
-        logicBuff.setOffset(totalSize);
+        logicBuff.setSizeInBit(fifoBufferSize);
+        logicBuff.setOffsetInBit(totalSize);
 
         final FifoAllocation fifoAllocation = MemoryAllocationFactory.eINSTANCE.createFifoAllocation();
         fifoAllocation.setFifo(fifo);
@@ -115,21 +114,22 @@ public class SimpleMemoryAllocation implements IMemoryAllocation {
         .map(InitActor.class::cast).filter(a -> a.getEndReference() instanceof EndActor).collect(Collectors.toList());
     for (final InitActor initActor : initActors) {
       final String fifoType = initActor.getDataPort().getFifo().getType();
-      final long dataTypeSize = scenario.getSimulationInfo().getDataTypeSizeOrDefault(fifoType);
+      final long dataTypeSize = scenario.getSimulationInfo().getDataTypeSizeInBit(fifoType);
       final long delayTokenSize = initActor.getDelaySize();
-      final long delayBufferSize = dataTypeSize * delayTokenSize;
+      // final long delayBufferSize = dataTypeSize * delayTokenSize;
+      final long delayBufferSize = scenario.getSimulationInfo().getBufferSizeInBit(fifoType, delayTokenSize);
 
       final LogicalBuffer logicBuff = MemoryAllocationFactory.eINSTANCE.createLogicalBuffer();
       logicBuff.setContainingBuffer(physBuff);
-      logicBuff.setSize(delayBufferSize);
-      logicBuff.setOffset(totalSize);
+      logicBuff.setSizeInBit(delayBufferSize);
+      logicBuff.setOffsetInBit(totalSize);
 
       memAlloc.getDelayAllocations().put(initActor, logicBuff);
 
       totalSize += delayBufferSize;
     }
 
-    physBuff.setSize(totalSize);
+    physBuff.setSizeInBit(totalSize);
     return memAlloc;
   }
 

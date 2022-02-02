@@ -186,6 +186,6 @@ public class PiBestFitAllocator extends PiOrderedAllocator {
       allocateMemoryObject(vertex, bestFitOffset);
     }
 
-    return getMemorySize();
+    return getMemorySizeInByte();
   }
 }

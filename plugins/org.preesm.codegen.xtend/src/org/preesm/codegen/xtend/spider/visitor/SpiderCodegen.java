@@ -423,7 +423,7 @@ public class SpiderCodegen {
 
     final StringBuilder tmp = new StringBuilder();
     final SpiderCodegenVisitor codeGenerator = new SpiderCodegenVisitor(this, tmp, this.preprocessor, this.timings,
-        this.constraints, this.scenario.getSimulationInfo().getDataTypes(), this.energies);
+        this.constraints, this.scenario.getSimulationInfo(), this.energies);
     // Generate C++ code for the whole PiGraph, at the end, tmp will contain
     // the vertex declaration for pg
     codeGenerator.doSwitch(pg);

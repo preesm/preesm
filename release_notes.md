@@ -18,23 +18,28 @@ PREESM Changelog
 * (UI) Menu popup actions from right click in the diagram are grouped in a "Preesm" submenu (as in the Project Explorer view).
 * (UI) New menu actions for ports in PiSDF graphs to exchange ports category and direction (accessible from a right-click on PiSDF diagrams).
 * (algo) Design Space Exploration of Malleable Parameters now computes memory footprint and Pareto front (integration of tbourgoi's work).
+* (scenario) The data type now needs to be given in bits. A check was added when opening/executing project from a previous version of PREEEM
+* (workflow) The data alignment now needs to be given in bits (default is now Fixed:=8) for MemoryAllocatorTask and MemoryScriptTask.
+* (workflow) Added an explicit False Sharing Prevention flag (false by default) to MemoryScriptTask.
 
 ### Bug fix
 * Add explicit log when data type size is not set in scenario making memory scripts crash.
 * Fix #303 : (Linux only) error with SWT_AWT is now correctly handled.
 * Fix integration test : reinforcement learning scenario for training uses
 the training graph now.
-* UI of PiSDF : better support of interfaces and model updates from GUI.
+* (GUI) UI of PiSDF : better support of interfaces and model updates from GUI.
 * Fix #275 : better error support when reconnecting hierarchical graph with wrong ports
 * Fix #19 Fix #39 : new menu popup action to check liveness of PiSDF graphs.
 * Fix #322 : as C/C++ parsing is now done by Eclipse CDT, we accept headers with .h .H .hxx .hpp .hh .h++ file extensions, but they are not yet supported by regular codegen.
 * Fix #165 : UI warns if fifo types do not correspond to actor refinement using them.
-* (GUI) : removing a Delay (in the GUI only) was actually not removing its DelayActor from the PiGraph, now fixed.
+* (GUI) UI of PiSDF : removing a Delay (in the GUI only) was actually not removing its DelayActor from the PiGraph, now fixed.
 * Fix #339 : partial fix only, adds restriction to the removal of consecutive special actors for optimization (source and target rates must be equal now)
 * Fix #342 : partial fix only, autolayout supports cycles involving DelayActor, but this is not checked by the model (would need an exhaustive cycle search)
 * Fix #345 : fix Velocity template internal paths in Spider2 codegen (only tested on Linux)
+* Fix #287 : fix codegen printing memcpy when it should not.
+* (PiMM) : fix issue when removing unused Fifo (rates at 0) in hierarchical graphs
 * Fix #351, #91 and #122 : Fix .pi and .diagram being out of sync.
-* Fixed pasting operation failing when a delay is in the clipboard.
+* (GUI) UI of PiSDF : fix pasting operation failing when a delay is in the clipboard.
 
 
 ## Release version 3.21.0

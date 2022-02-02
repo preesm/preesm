@@ -103,16 +103,34 @@ abstract class Variable extends Commentable {
 }
 
 class Buffer extends Variable {
-	long size
+	long nbToken
 	refers SubBuffer[] childrens opposite ^container
-	long typeSize
+	long tokenTypeSizeInBit // in Bits
+	//long size
 	transient EEList<range>mergedRange
 	boolean ^local = "false"
+
+	op long getTokenTypeSizeInByte() {
+		return (tokenTypeSizeInBit + 7L) / 8L;
+	}
+
+	op long getSizeInBit() {
+		return getNbToken() * getTokenTypeSizeInBit;
+	}
+	op long getSizeInByte() {
+		return (getNbToken() * getTokenTypeSizeInBit + 7L) / 8L;
+	}
 }
 
 class SubBuffer extends Buffer {
 	refers Buffer ^container opposite childrens
-	long offset
+	long offsetInBit
+	
+	
+	op long getOffsetInByte() {
+		return (offsetInBit + 7L) / 8L;
+	}
+	
 	op void reaffectContainer(Buffer newContainer) {
 	    setContainer(newContainer);
 	    if (getCreator() !== null) {

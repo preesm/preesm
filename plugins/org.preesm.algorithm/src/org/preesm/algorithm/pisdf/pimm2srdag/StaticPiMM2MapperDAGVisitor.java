@@ -441,7 +441,7 @@ public class StaticPiMM2MapperDAGVisitor extends PiMMSwitch<Boolean> {
       newEdge.setTargetPortModifier(new StringEdgePropertyType(targetModifier));
     }
     // 1.4 Set the different properties of the Edge
-    final long dataSize = this.scenario.getSimulationInfo().getDataTypeSizeOrDefault(fifo.getType());
+    final long dataSize = this.scenario.getSimulationInfo().getDataTypeSizeInBit(fifo.getType());
     newEdge.setPropertyValue(SDFEdge.DATA_TYPE, fifo.getType());
     newEdge.setPropertyValue(SDFEdge.DATA_SIZE, dataSize);
     newEdge.setWeight(new LongEdgePropertyType(weight));
@@ -451,7 +451,9 @@ public class StaticPiMM2MapperDAGVisitor extends PiMMSwitch<Boolean> {
     newEdge.setContainingEdge(edge);
 
     edge.getAggregate().add(newEdge);
-    edge.setWeight(new LongEdgePropertyType(weight * dataSize));
+    // edge.setWeight(new LongEdgePropertyType(weight * dataSize));
+    edge.setWeight(
+        new LongEdgePropertyType(this.scenario.getSimulationInfo().getBufferSizeInBit(fifo.getType(), weight)));
 
     return true;
   }

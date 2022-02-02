@@ -105,7 +105,7 @@ public class ConfigurationSchedulerPeriodic extends AbstractConfigurationSchedul
       final IMemoryAllocation legacyAlloc = new LegacyMemoryAllocation();
       final Allocation alloc = legacyAlloc.allocateMemory(dag, architecture, scenario, scheduleAndMap.schedule,
           scheduleAndMap.mapping);
-      memory = alloc.getPhysicalBuffers().stream().collect(Collectors.summingLong(PhysicalBuffer::getSize));
+      memory = alloc.getPhysicalBuffers().stream().collect(Collectors.summingLong(PhysicalBuffer::getSizeInBit));
     }
     // put back all messages
     PreesmLogger.getLogger().setLevel(backupLevel);

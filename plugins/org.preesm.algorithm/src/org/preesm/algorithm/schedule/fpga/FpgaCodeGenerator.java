@@ -130,9 +130,9 @@ public class FpgaCodeGenerator {
     this.interfaceRates = interfaceRates;
     this.allFifoDepths = new LinkedHashMap<>();
 
-    // the fifo sizes are given in bytes while we want the depth in number of elements
+    // the fifo sizes are given in bits while we want the depth in number of elements
     allFifoSizes.forEach((k, v) -> {
-      final long dataTypeSize = scenario.getSimulationInfo().getDataTypeSizeOrDefault(k.getType());
+      final long dataTypeSize = scenario.getSimulationInfo().getDataTypeSizeInBit(k.getType());
       final long depth = (v / dataTypeSize);
       // if a fifo depth is less than 2, we promote it to 2
       if (depth < 2L) {

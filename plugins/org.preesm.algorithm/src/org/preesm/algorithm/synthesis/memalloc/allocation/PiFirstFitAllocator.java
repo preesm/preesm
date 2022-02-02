@@ -176,6 +176,6 @@ public class PiFirstFitAllocator extends PiOrderedAllocator {
       allocateMemoryObject(vertex, firstFitOffset);
     }
 
-    return getMemorySize();
+    return getMemorySizeInByte();
   }
 }

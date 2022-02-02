@@ -184,12 +184,22 @@ public class ScenarioParser {
             case "relativeconstraints":
               // deprecated
               break;
+            case "flags":
+              parseFlags(elt);
+              break;
             default:
           }
         }
 
         node = node.getNextSibling();
       }
+    }
+
+    if (!this.scenario.getSizesAreInBit()) {
+      PreesmLogger.getLogger()
+          .severe(() -> "The Scenario was created with an older version of PREESM."
+              + " Change the datatype sizes from bytes to bits in the Simulation tab and save the Scenario."
+              + " Check the \"Data alignment\" in Workflow tasks.");
     }
 
     this.scenario.setScenarioURL(file.getFullPath().toString());
@@ -1071,6 +1081,34 @@ public class ScenarioParser {
       String destinationPeType = nodeDestinationPeType.getNodeValue();
       final double commEnergyValue = Double.parseDouble(energyValue);
       this.scenario.getEnergyConfig().setCommEnergy(sourcePeType, destinationPeType, commEnergyValue);
+    }
+  }
+
+  /**
+   * Retrieves flags from scenario.
+   *
+   * @param flagsElt
+   *          the param values elt
+   */
+  private void parseFlags(final Element flagsElt) {
+
+    Node node = flagsElt.getFirstChild();
+
+    while (node != null) {
+
+      if (node instanceof Element) {
+        final Element elt = (Element) node;
+        final String type = elt.getTagName();
+
+        switch (type) {
+          case "sizesAreInBit":
+            this.scenario.setSizesAreInBit(true);
+            break;
+          default:
+        }
+      }
+
+      node = node.getNextSibling();
     }
   }
 }

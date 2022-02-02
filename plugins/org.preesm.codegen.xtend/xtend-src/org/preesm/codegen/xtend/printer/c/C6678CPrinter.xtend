@@ -138,16 +138,16 @@ class C6678CPrinter extends CPrinter {
 
 	override printFifoCall(FifoCall fifoCall) '''
 		«IF fifoCall.operation == FifoOperation::POP»
-			cache_inv(«fifoCall.headBuffer.doSwitch», «fifoCall.headBuffer.size»*sizeof(«fifoCall.headBuffer.type»));
+			cache_inv(«fifoCall.headBuffer.doSwitch», «fifoCall.headBuffer.sizeInByte»); //«fifoCall.headBuffer.getNbToken»*sizeof(«fifoCall.headBuffer.type»)
 			«IF fifoCall.bodyBuffer !== null»
-				cache_inv(«fifoCall.bodyBuffer.doSwitch», «fifoCall.bodyBuffer.size»*sizeof(«fifoCall.bodyBuffer.type»));
+				cache_inv(«fifoCall.bodyBuffer.doSwitch», «fifoCall.bodyBuffer.sizeInByte»); //«fifoCall.bodyBuffer.getNbToken»*sizeof(«fifoCall.bodyBuffer.type»)
 			«ENDIF»
 		«ENDIF»
 		«super.printFifoCall(fifoCall)»
 		«IF fifoCall.operation == FifoOperation::PUSH || fifoCall.operation == FifoOperation::INIT»
-			cache_wbInv(«fifoCall.headBuffer.doSwitch», «fifoCall.headBuffer.size»*sizeof(«fifoCall.headBuffer.type»));
+			cache_wbInv(«fifoCall.headBuffer.doSwitch», «fifoCall.headBuffer.sizeInByte»); //«fifoCall.headBuffer.getNbToken»*sizeof(«fifoCall.headBuffer.type»)
 			«IF fifoCall.bodyBuffer !== null»
-				cache_wbInv(«fifoCall.bodyBuffer.doSwitch», «fifoCall.bodyBuffer.size»*sizeof(«fifoCall.bodyBuffer.type»));
+				cache_wbInv(«fifoCall.bodyBuffer.doSwitch», «fifoCall.bodyBuffer.sizeInByte»); //«fifoCall.bodyBuffer.getNbToken»*sizeof(«fifoCall.bodyBuffer.type»)
 			«ENDIF»
 		«ENDIF»
 		«printCacheCoherency(fifoCall)»
@@ -185,10 +185,10 @@ class C6678CPrinter extends CPrinter {
 				«IF call.parameterDirections.get(i) == PortDirection.INPUT && !((call.parameters.get(i) as Buffer).local)  && !(call.parameters.get(i) instanceof NullBuffer)»
 					«IF (call.parameters.get(i) as Buffer).mergedRange !== null»
 						«FOR range : (call.parameters.get(i) as Buffer).mergedRange»
-							cache_wb(((char*)«call.parameters.get(i).doSwitch») + «range.start», «range.length»);
+							cache_wb(((char*)«call.parameters.get(i).doSwitch») + «range.startInByte», «range.lengthInByte»);
 						«ENDFOR»
 					«ENDIF»
-					cache_inv(«call.parameters.get(i).doSwitch», «(call.parameters.get(i) as Buffer).size»*sizeof(«call.parameters.get(i).type»));
+					cache_inv(«call.parameters.get(i).doSwitch», «(call.parameters.get(i) as Buffer).sizeInByte»); //«(call.parameters.get(i) as Buffer).getNbToken»*sizeof(«call.parameters.get(i).type»)
 				«ENDIF»
 			«ENDFOR»
 		«ENDIF»
@@ -208,13 +208,13 @@ class C6678CPrinter extends CPrinter {
 		// Unless the buffer is in a local memory
 		if (result.empty && !input.local) {
 			if (!(input instanceof NullBuffer)) {
-				result = '''cache_wb(«input.doSwitch», «input.size»*sizeof(«input.type»));'''
+				result = '''cache_wb(«input.doSwitch», «input.sizeInByte»); // «input.getNbToken»*sizeof(«input.type»)'''
 			} else {
 
 				// The input buffer is null write back the output instead
 				// since if the input is null, it means it has been exploded
 				// into the output by the memory scripts.
-				result = '''cache_wb(«output.doSwitch», «output.size»*sizeof(«output.type»));'''
+				result = '''cache_wb(«output.doSwitch», «output.sizeInByte»); // «output.getNbToken»*sizeof(«output.type»)'''
 			}
 			if (!currentOperationMemcpy.contains(result)) {
 				currentOperationMemcpy.add(result)
@@ -237,7 +237,7 @@ class C6678CPrinter extends CPrinter {
 	override printSharedMemoryCommunication(SharedMemoryCommunication communication) '''
 		«IF communication.direction == Direction::SEND && communication.delimiter == Delimiter::START»
 			«IF !(communication.data instanceof NullBuffer)»
-				cache_wbInv(«communication.data.doSwitch», «communication.data.size»*sizeof(«communication.data.type»));
+				cache_wbInv(«communication.data.doSwitch», «communication.data.sizeInByte»); // «communication.data.getNbToken»*sizeof(«communication.data.type»)
 			«ENDIF»
 		«ENDIF»
 		«/** TODO: replace with super.printSharedMemoryCommunication() */
@@ -254,7 +254,7 @@ class C6678CPrinter extends CPrinter {
 			data.doSwitch»
 		«IF communication.direction == Direction::RECEIVE && communication.delimiter == Delimiter::END»
 			«IF !(communication.data instanceof NullBuffer)»
-				cache_inv(«communication.data.doSwitch», «communication.data.size»*sizeof(«communication.data.type»));
+				cache_inv(«communication.data.doSwitch», «communication.data.sizeInByte»); // «communication.data.getNbToken»*sizeof(«communication.data.type»)
 			«ENDIF»
 		«ENDIF»
 	'''

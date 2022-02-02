@@ -1,5 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <scenario>
+    <flags>
+        <sizesAreInBit/>
+    </flags>
     <files>
         <algorithm url="/org.preesm.tests.testHardware/Algo/matrix_mul.pi"/>
         <architecture url="/org.preesm.tests.testHardware/Archi/HardwareMultipleSlots.slam"/>
@@ -55,7 +58,7 @@
         <mainComNode>shared_mem</mainComNode>
         <averageDataSize>1000</averageDataSize>
         <dataTypes>
-            <dataType name="int" size="4"/>
+            <dataType name="int" size="32"/>
         </dataTypes>
         <specialVertexOperators>
             <specialVertexOperator path="Core0"/>

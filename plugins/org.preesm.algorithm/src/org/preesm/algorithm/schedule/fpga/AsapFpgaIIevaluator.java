@@ -263,7 +263,7 @@ public class AsapFpgaIIevaluator {
       sumFifoSizes += fifoSize;
       final Fifo fifo = fa.fifos.get(j);
       allFifoSizes.put(fifo, fifoSize);
-      fifoSizesPrint.append(fifo.getId() + " of size " + fifoSize + " bytes.\n");
+      fifoSizesPrint.append(fifo.getId() + " of size " + fifoSize + " bits.\n");
     }
     return sumFifoSizes;
   }

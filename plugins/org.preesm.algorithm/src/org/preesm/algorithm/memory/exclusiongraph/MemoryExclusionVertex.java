@@ -114,9 +114,9 @@ public class MemoryExclusionVertex extends AbstractVertex<MemoryExclusionGraph> 
    * This {@link List} stores {@link Pair} of {@link MemoryExclusionVertex} and {@link Pair}. Each {@link Pair}
    * corresponds to a {@link Range} of real tokens of the memory object and their position in the actual
    * {@link MemoryExclusionVertex} (i.e. the key of the first {@link Pair}). <br>
-   * For the host memory object, this property gives the position of the range of bytes of the host within the memory
+   * For the host memory object, this property gives the position of the range of bits of the host within the memory
    * allocated for it.<br>
-   * For hosted memory object, this property gives the position of the range(s) of bytes of the hosted memory object
+   * For hosted memory object, this property gives the position of the range(s) of bits of the hosted memory object
    * relatively to the position of the 0 index of the host memory object within the memory allocated for it.
    */
   public static final String REAL_TOKEN_RANGE_PROPERTY = "real_token_range";
@@ -144,14 +144,14 @@ public class MemoryExclusionVertex extends AbstractVertex<MemoryExclusionGraph> 
 
   /**
    * Property of the {@link MemoryExclusionVertex}. The object associated to this property is an {@link Integer} that
-   * corresponds to the space in bytes between the offset at which the {@link MemoryExclusionVertex} is allocated and
-   * the actual beginning of the real token ranges. This property is set after the memory script execution.
+   * corresponds to the space in bits between the offset at which the {@link MemoryExclusionVertex} is allocated and the
+   * actual beginning of the real token ranges. This property is set after the memory script execution.
    */
   public static final String EMPTY_SPACE_BEFORE = "empty_space_before";
 
   /**
    * Property of the {@link MemoryExclusionVertex}. The object associated to this property is an {@link Integer} that
-   * corresponds to the size in bytes of the {@link MemoryExclusionVertex} when it hosts merged
+   * corresponds to the size in bits of the {@link MemoryExclusionVertex} when it hosts merged
    * {@link MemoryExclusionVertex} as a result of scripts execution. This value is stored in case the host
    * {@link MemoryExclusionVertex} needs to be deallocated, and restored to the size it has when all hosted
    * {@link MemoryExclusionVertex} are merged.
@@ -168,7 +168,7 @@ public class MemoryExclusionVertex extends AbstractVertex<MemoryExclusionGraph> 
 
   /**
    * {@link MemoryExclusionVertex} property associated to a {@link List} of {@link Integer} that represent the space
-   * <b>in bytes</b> between successive "subbuffers" of a {@link MemoryExclusionVertex}.
+   * <b>in bits</b> between successive "subbuffers" of a {@link MemoryExclusionVertex}.
    */
   public static final String INTER_BUFFER_SPACES = "inter_buffer_spaces";
 
@@ -217,8 +217,8 @@ public class MemoryExclusionVertex extends AbstractVertex<MemoryExclusionGraph> 
     while (iter.hasNext()) {
       final BufferProperties properties = iter.next();
       final String dataType = properties.getDataType();
-      final long typeSize = scenario.getSimulationInfo().getDataTypeSizeOrDefault(dataType);
-      vertexWeight += properties.getSize() * typeSize;
+      vertexWeight += scenario.getSimulationInfo().getBufferSizeInBit(dataType, properties.getNbToken());
+
     }
     return vertexWeight;
   }
@@ -265,6 +265,10 @@ public class MemoryExclusionVertex extends AbstractVertex<MemoryExclusionGraph> 
   @Override
   public Long getWeight() {
     return this.size;
+  }
+
+  public Long getWeightInByte() {
+    return (this.size + 7L) / 8L;
   }
 
   @Override
@@ -319,7 +323,7 @@ public class MemoryExclusionVertex extends AbstractVertex<MemoryExclusionGraph> 
 
   @Override
   public String toString() {
-    return this.getSource() + "=>" + this.getSink() + ":" + this.getWeight();
+    return this.getSource() + "=>" + this.getSink() + ":" + this.getWeightInByte();
   }
 
 }

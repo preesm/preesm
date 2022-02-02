@@ -226,11 +226,11 @@ public class PiMemoryExclusionGraph extends SimpleGraph<PiMemoryExclusionVertex,
         // Create the Head Memory Object. Get the typeSize
         final Fifo outgoingEdge = dataPort.getFifo();
         final String typeName = outgoingEdge.getType();
-        final long typeSize = this.getScenario().getSimulationInfo().getDataTypeSizeOrDefault(typeName);
+        final long typeSize = this.getScenario().getSimulationInfo().getDataTypeSizeInBit(typeName);
         final long fifoSize = dataPort.getPortRateExpression().evaluate();
         final PiMemoryExclusionVertex headMemoryNode = new PiMemoryExclusionVertex(
             PiMemoryExclusionGraph.FIFO_HEAD_PREFIX + dagEndVertex.getName(), dagInitVertex.getName(),
-            fifoSize * typeSize, this.scenario);
+            this.getScenario().getSimulationInfo().getBufferSizeInBit(typeName, fifoSize), this.scenario);
         headMemoryNode.setPropertyValue(PiMemoryExclusionVertex.TYPE_SIZE, typeSize);
         // Add the head node to the MEG
         addVertex(headMemoryNode);
