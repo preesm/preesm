@@ -408,15 +408,15 @@ public class PasteFeature extends AbstractPasteFeature {
 
         // Checking if source is NOT in the list of copied AbstractActor and
         // if it is a DelayActor belonging to a Delay which is NOT in the list of copied AbstractActor
-        if ((!this.copiedObjects.containsKey(source)) && ((source instanceof DelayActor)
-            && (!this.copiedObjects.containsKey(((DelayActor) source).getLinkedDelay())))) {
+        if (!((this.copiedObjects.containsKey(source)) || ((source instanceof DelayActor)
+            && (this.copiedObjects.containsKey(((DelayActor) source).getLinkedDelay()))))) {
           continue;
         }
 
         // Checking if target is NOT in the list of copied AbstractActor and
         // if it is a DelayActor belonging to a Delay which is NOT in the list of copied AbstractActor
-        if ((!this.copiedObjects.containsKey(target)) && ((target instanceof DelayActor)
-            && (!this.copiedObjects.containsKey(((DelayActor) target).getLinkedDelay())))) {
+        if (!((this.copiedObjects.containsKey(target)) || ((target instanceof DelayActor)
+            && (this.copiedObjects.containsKey(((DelayActor) target).getLinkedDelay()))))) {
           continue;
         }
 
