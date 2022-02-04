@@ -64,7 +64,10 @@ import org.preesm.model.pisdf.factory.PiMMUserFactory;
 /**
  * The purpose of this {@link Adapter} is to observe the {@link Vertex} list and {@link Edge} of a {@link PiGraph} to
  * detect the addition, the deletion and the renaming of {@link PiGraph} element in order to automatically compute the
- * repercussions on {@link PiGraph} and storage indexes.
+ * repercussions on {@link PiGraph} and storage indexes. <br>
+ * <br>
+ *
+ * The observer is also used on {@link PiGraph} {@link Fifo} to track the addition/removal of {@link Delay}.
  *
  * @author kdesnos
  *
@@ -72,9 +75,29 @@ import org.preesm.model.pisdf.factory.PiMMUserFactory;
 public class GraphObserver extends AdapterImpl {
 
   /**
-   * Default constructor of the {@link GraphObserver}.
+   * Private static class attribute holding the only instance of {@link GraphObserver}. Use to ensure that only a single
+   * instance of {@link GraphObserver} is created.
    */
-  public GraphObserver() {
+  private static GraphObserver _instance = null;
+
+  /**
+   * Method to return the current instance of the {@link GraphObserver} class if one has been instantiated or, if not,
+   * create and return the new one.
+   *
+   * @return The single globally-accessible instance of {@link GraphObserver}
+   */
+  public static GraphObserver getInstance() {
+    if (_instance == null) {
+      _instance = new GraphObserver();
+    }
+    return _instance;
+  }
+
+  /**
+   * Private constructor of the {@link GraphObserver}. <br>
+   * Should only be called by {@link GraphObserver#getInstance()}.
+   */
+  private GraphObserver() {
     // Nothing to do here
   }
 

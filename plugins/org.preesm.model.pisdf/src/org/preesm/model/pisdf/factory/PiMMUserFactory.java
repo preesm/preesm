@@ -97,7 +97,7 @@ public final class PiMMUserFactory extends PiMMFactoryImpl implements PreesmUser
         }
       }
       if (!hasAnObserver) {
-        copy.eAdapters().add(new GraphObserver());
+        copy.eAdapters().add(GraphObserver.getInstance());
       }
 
       // Check for all subgraph in this PiGraph and its subgraph
@@ -109,7 +109,7 @@ public final class PiMMUserFactory extends PiMMFactoryImpl implements PreesmUser
           }
         }
         if (!hasAnObserver) {
-          graph.eAdapters().add(new GraphObserver());
+          graph.eAdapters().add(GraphObserver.getInstance());
         }
       }
 
@@ -122,7 +122,7 @@ public final class PiMMUserFactory extends PiMMFactoryImpl implements PreesmUser
           }
         }
         if (!hasAnObserver) {
-          fifo.eAdapters().add(new GraphObserver());
+          fifo.eAdapters().add(GraphObserver.getInstance());
         }
       }
     }
@@ -220,7 +220,7 @@ public final class PiMMUserFactory extends PiMMFactoryImpl implements PreesmUser
     res.setSourcePort(sourcePort);
     res.setTargetPort(targetPort);
     res.setType(type);
-    res.eAdapters().add(new GraphObserver());
+    res.eAdapters().add(GraphObserver.getInstance());
     return res;
   }
 
@@ -365,7 +365,7 @@ public final class PiMMUserFactory extends PiMMFactoryImpl implements PreesmUser
     final PiGraph res = super.createPiGraph();
     final Expression exp = createExpression();
     res.setExpression(exp);
-    res.eAdapters().add(new GraphObserver());
+    res.eAdapters().add(GraphObserver.getInstance());
     return res;
   }
 
