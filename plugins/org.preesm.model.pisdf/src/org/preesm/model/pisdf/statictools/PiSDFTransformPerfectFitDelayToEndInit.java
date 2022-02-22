@@ -133,7 +133,8 @@ public class PiSDFTransformPerfectFitDelayToEndInit {
         copyGraph.addFifo(sourceFifo);
         copyGraph.addFifo(targetFifo);
         for (final ConfigInputPort cip : delay.getConfigInputPorts()) {
-          copyGraph.getEdges().remove(cip.getIncomingDependency());
+          // copyGraph.getEdges().remove(cip.getIncomingDependency());
+          copyGraph.removeDependency(cip.getIncomingDependency());
         }
         copyGraph.removeDelay(delay);
         copyGraph.removeFifo(fifo);

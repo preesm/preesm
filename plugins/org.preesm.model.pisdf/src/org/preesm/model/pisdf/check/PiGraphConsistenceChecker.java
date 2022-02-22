@@ -318,7 +318,7 @@ public class PiGraphConsistenceChecker extends AbstractPiSDFObjectChecker {
   public Boolean caseDelayActor(final DelayActor actor) {
     final Delay linkedDelay = actor.getLinkedDelay();
     final boolean hasLinkedDelay = linkedDelay != null && linkedDelay.getActor() == actor;
-    final boolean delayProperlyContained = actor.getContainingPiGraph().getVertices().contains(linkedDelay);
+    final boolean delayProperlyContained = actor.getContainingPiGraph().getDelays().contains(linkedDelay);
 
     final boolean delayActorValid = hasLinkedDelay && delayProperlyContained;
     if (!hasLinkedDelay) {
@@ -336,7 +336,7 @@ public class PiGraphConsistenceChecker extends AbstractPiSDFObjectChecker {
   public Boolean caseDelay(final Delay delay) {
     final DelayActor actor = delay.getActor();
     final boolean actorLinkedProperly = actor != null && actor.getLinkedDelay() == delay;
-    final boolean delayActorProperlyContained = delay.getContainingPiGraph().getVertices().contains(actor);
+    final boolean delayActorProperlyContained = delay.getContainingPiGraph().getActors().contains(actor);
     final boolean delayValid = actorLinkedProperly && delayActorProperlyContained;
     if (!actorLinkedProperly) {
       reportError(CheckerErrorLevel.FATAL_ALL, delay, "Delay [%s] is no proper linked actor.", delay.getName());

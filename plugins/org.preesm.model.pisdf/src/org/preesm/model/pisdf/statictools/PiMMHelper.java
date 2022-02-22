@@ -359,12 +359,15 @@ public class PiMMHelper {
   public static void removeActorAndDependencies(final PiGraph graph, final AbstractActor actor) {
     for (final ConfigInputPort cip : actor.getConfigInputPorts()) {
       final Dependency incomingDependency = cip.getIncomingDependency();
-      graph.getEdges().remove(incomingDependency);
+      // graph.getEdges().remove(incomingDependency);
+      graph.removeDependency(incomingDependency);
       final ISetter setter = incomingDependency.getSetter();
       setter.getOutgoingDependencies().remove(incomingDependency);
+      // setter.getOutgoingDependencies().
       if (setter instanceof Parameter && setter.getOutgoingDependencies().isEmpty()
           && !((Parameter) setter).isConfigurationInterface()) {
-        graph.getVertices().remove((Parameter) setter);
+        // graph.getVertices().remove((Parameter) setter);
+        graph.removeParameter((Parameter) setter);
       }
     }
     PreesmLogger.getLogger().fine("Removing Actor: " + actor.getVertexPath());
@@ -404,7 +407,7 @@ public class PiMMHelper {
       final long ro = dpo.getExpression().evaluate();
       if (ri == 0 && ro == 0) {
         final Delay d = f.getDelay();
-        f.setDelay(null);
+        f.assignDelay(null);
         if (d != null) {
           piGraph.removeDelay(d);
         }
@@ -497,7 +500,7 @@ public class PiMMHelper {
     StringBuilder sb = new StringBuilder("Following delays are removed since their size is 0: ");
     for (Delay d : toRemove) {
       Fifo f = d.getContainingFifo();
-      f.setDelay(null);
+      f.assignDelay(null);
       piGraph.removeDelay(d);
       sb.append(d.getName() + "; ");
     }
@@ -632,7 +635,7 @@ public class PiMMHelper {
     newDelayActor.getDataInputPort().setName(originalDelayActor.getDataInputPort().getName());
     newDelayActor.getDataOutputPort().setName(originalDelayActor.getDataOutputPort().getName());
 
-    fifoPersistence.setDelay(delayPersistence);
+    fifoPersistence.assignDelay(delayPersistence);
     graph.getContainingPiGraph().addDelay(delayPersistence);
 
     return delayPersistence;

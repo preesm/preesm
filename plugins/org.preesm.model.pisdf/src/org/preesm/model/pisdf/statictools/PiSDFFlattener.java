@@ -186,7 +186,7 @@ public class PiSDFFlattener extends PiMMSwitch<Boolean> {
     // remove params that are not connected to anything
     for (final Parameter p : graph.getParameters()) {
       if (p.getOutgoingDependencies().isEmpty()) {
-        graph.getVertices().remove(p);
+        graph.removeParameter(p);
       }
     }
   }
@@ -456,7 +456,7 @@ public class PiSDFFlattener extends PiMMSwitch<Boolean> {
     final Delay delay = fifo.getDelay();
     if (delay != null) {
       final Delay copy = copyDelay(delay);
-      newFifo.setDelay(copy);
+      newFifo.assignDelay(copy);
     }
     // Add the FIFO to the result
     this.result.addFifo(newFifo);

@@ -189,16 +189,16 @@ public class PiSDFSubgraphBuilder extends PiMMSwitch<Boolean> {
       // Interconnect the outside with hierarchical actor
       Fifo incomingFifo = PiMMUserFactory.instance.createFifo();
       inputPort.setIncomingFifo(incomingFifo);
-      this.parentGraph.addFifo(incomingFifo);
       Fifo oldFifo = object.getFifo();
       Delay oldDelay = oldFifo.getDelay();
+      this.parentGraph.removeFifo(oldFifo); // remove FIFO from containing graph
       if (oldDelay != null) {
-        incomingFifo.setDelay(oldDelay);
+        incomingFifo.assignDelay(oldDelay);
       }
+      this.parentGraph.addFifo(incomingFifo);
       String dataType = oldFifo.getType();
       incomingFifo.setSourcePort(oldFifo.getSourcePort());
       incomingFifo.setType(dataType);
-      this.parentGraph.removeFifo(oldFifo); // remove FIFO from containing graph
 
       // Setup inside communication with DataInputInterface
       DataOutputPort outputPort = (DataOutputPort) inputInterface.getDataPort();
@@ -238,13 +238,13 @@ public class PiSDFSubgraphBuilder extends PiMMSwitch<Boolean> {
       this.parentGraph.addFifo(outsideOutgoingFifo);
       Fifo oldFifo = object.getFifo();
       Delay oldDelay = oldFifo.getDelay();
+      this.parentGraph.removeFifo(oldFifo); // remove FIFO from containing graph
       if (oldDelay != null) {
-        outsideOutgoingFifo.setDelay(oldDelay);
+        outsideOutgoingFifo.assignDelay(oldDelay);
       }
       String dataType = oldFifo.getType();
       outsideOutgoingFifo.setTargetPort(oldFifo.getTargetPort());
       outsideOutgoingFifo.setType(dataType);
-      this.parentGraph.removeFifo(oldFifo); // remove FIFO from containing graph
 
       // Setup inside communication with DataOutputInterface
       DataInputPort inputDataPort = (DataInputPort) outputInterface.getDataPort();

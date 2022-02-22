@@ -117,7 +117,7 @@ public class DeleteDelayFeature extends DeleteParameterizableFeature {
   @Override
   public void postDelete(final IDeleteContext context) {
     // The default delete feature actually unset the EObject, hence setting the opposite reference
-    // to the DelaayActor to null
+    // to the DelayActor to null
     // Then, even if removeDelay() called by the super function is itself
     // calling removeActor() on the DelayActor ... it tries to remove a null reference which does nothing.
     // In the end we have to remove it ourselves from the graph.

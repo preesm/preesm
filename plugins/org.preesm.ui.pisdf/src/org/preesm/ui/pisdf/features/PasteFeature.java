@@ -146,6 +146,14 @@ public class PasteFeature extends AbstractPasteFeature {
       final Configurable copy = PiMMUserFactory.instance.copy(vertex);
       final String name = computeUniqueNameForCopy(vertex);
       copy.setName(name);
+
+      // If the vertex to copy is a Delay, creating a copy of the DelayActor and attaching it to the Delay copy
+      if (copy instanceof Delay) {
+        final DelayActor delayActorCopy = PiMMUserFactory.instance.copy(((Delay) vertex).getActor());
+        delayActorCopy.setName(name);
+        ((Delay) copy).setActor(delayActorCopy);
+      }
+
       final Pair<Integer, Integer> pair = caluclatePositions.get(vertexCopy);
       final Integer x = pair.getKey();
       final Integer y = pair.getValue();
@@ -307,10 +315,11 @@ public class PasteFeature extends AbstractPasteFeature {
 
       final Delay delay = originalFifo.getDelay();
       if (delay != null) {
-        final Delay delayCopy = PiMMUserFactory.instance.copy(delay);
+        final Delay delayCopy = (Delay) this.copiedObjects.get(delay);
         addGraphicalRepresentationForDelay(copiedFifo, addGraphicalRepresentationForFifo, delayCopy);
-        autoConnectInputConfigPorts(delay, delayCopy);
-        this.copiedObjects.put(delay, delayCopy);
+        // Commented out the next line to prevent an issue where Delay with a dependency wouldn't be pasted.
+        // TODO Fix this issue
+        // autoConnectInputConfigPorts(delay, delayCopy);
       }
 
     }
@@ -359,6 +368,7 @@ public class PasteFeature extends AbstractPasteFeature {
 
     // one delay is created during the addDelayFeature: overwrite it with the copy
     copiedFifo.setDelay(delayCopy);
+    copiedFifo.getContainingPiGraph().addDelay(delayCopy);
 
     // also overwrite Graphiti links
     final List<PictogramElement> createdPEs = addDelayFeature.getCreatedPEs();
@@ -393,22 +403,45 @@ public class PasteFeature extends AbstractPasteFeature {
       final DataInputPort targetPort = fifo.getTargetPort();
       final EObject sourceVertex = sourcePort.eContainer();
       final EObject targetVertex = targetPort.eContainer();
-      if (((sourceVertex != null) && (sourceVertex instanceof AbstractActor))
-          && ((targetVertex != null) && (targetVertex instanceof AbstractActor))) {
+      if ((sourceVertex instanceof AbstractActor) && (targetVertex instanceof AbstractActor)) {
         // ok
         final AbstractActor source = (AbstractActor) sourceVertex;
         final AbstractActor target = (AbstractActor) targetVertex;
-        if (this.copiedObjects.containsKey(source) && this.copiedObjects.containsKey(target)) {
-          final AbstractActor sourceCopy = (AbstractActor) this.copiedObjects.get(source);
-          final AbstractActor targetCopy = (AbstractActor) this.copiedObjects.get(target);
 
-          final DataOutputPort sourcePortCopy = lookupDataOutputPort(sourceCopy, sourcePort);
-          final DataInputPort targetPortCopy = lookupDataInputPort(targetCopy, targetPort);
-
-          final Fifo copiedFifo = PiMMUserFactory.instance.createFifo(sourcePortCopy, targetPortCopy, fifo.getType());
-          newFifos.put(copiedFifo, fifo);
-
+        // Checking if source is NOT in the list of copied AbstractActor and
+        // if it is a DelayActor belonging to a Delay which is NOT in the list of copied AbstractActor
+        if (!((this.copiedObjects.containsKey(source)) || ((source instanceof DelayActor)
+            && (this.copiedObjects.containsKey(((DelayActor) source).getLinkedDelay()))))) {
+          continue;
         }
+
+        // Checking if target is NOT in the list of copied AbstractActor and
+        // if it is a DelayActor belonging to a Delay which is NOT in the list of copied AbstractActor
+        if (!((this.copiedObjects.containsKey(target)) || ((target instanceof DelayActor)
+            && (this.copiedObjects.containsKey(((DelayActor) target).getLinkedDelay()))))) {
+          continue;
+        }
+
+        AbstractActor sourceCopy;
+        AbstractActor targetCopy;
+
+        if (source instanceof DelayActor) {
+          sourceCopy = ((Delay) this.copiedObjects.get(((DelayActor) source).getLinkedDelay())).getActor();
+        } else {
+          sourceCopy = (AbstractActor) this.copiedObjects.get(source);
+        }
+
+        if (target instanceof DelayActor) {
+          targetCopy = ((Delay) this.copiedObjects.get(((DelayActor) target).getLinkedDelay())).getActor();
+        } else {
+          targetCopy = (AbstractActor) this.copiedObjects.get(target);
+        }
+
+        final DataOutputPort sourcePortCopy = lookupDataOutputPort(sourceCopy, sourcePort);
+        final DataInputPort targetPortCopy = lookupDataInputPort(targetCopy, targetPort);
+
+        final Fifo copiedFifo = PiMMUserFactory.instance.createFifo(sourcePortCopy, targetPortCopy, fifo.getType());
+        newFifos.put(copiedFifo, fifo);
       } else {
         // not supported
         throw new UnsupportedOperationException();
@@ -418,6 +451,12 @@ public class PasteFeature extends AbstractPasteFeature {
 
   private void autoConnectInputConfigPorts(final Configurable originalParameterizable,
       final Configurable parameterizableCopy) {
+
+    // Early exit to prevent an issue where Delay with a dependency wouldn't be pasted.
+    // TODO Fix this issue
+    if (originalParameterizable instanceof Delay) {
+      return;
+    }
 
     if (getPiGraph() != getOriginalPiGraph()) {
       return;
@@ -657,6 +696,9 @@ public class PasteFeature extends AbstractPasteFeature {
           } else {
             throw new IllegalStateException();
           }
+        } else if (vertexModelCopy instanceof Delay) {
+          // Dirty fix for Delay with dependency
+          return;
         } else {
           final IPeService peService = GraphitiUi.getPeService();
           final Anchor chopboxAnchor = peService.getChopboxAnchor((AnchorContainer) newVertexPE);
