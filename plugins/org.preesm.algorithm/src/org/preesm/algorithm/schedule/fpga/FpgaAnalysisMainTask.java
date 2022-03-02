@@ -78,8 +78,8 @@ public class FpgaAnalysisMainTask extends AbstractTaskImplementation {
     final String fifoEvaluatorName = parameters.get(FIFO_EVAL_PARAM_NAME);
 
     // check everything and perform analysis
-    final FPGA fpga = getSingleFPGA(architecture);
-    final AnalysisResultFPGA res = checkAndAnalyze(algorithm, scenario, fifoEvaluatorName);
+    final FPGA fpga = checkAndGetSingleFPGA(architecture);
+    final AnalysisResultFPGA res = checkAndAnalyzeAlgorithm(algorithm, scenario, fifoEvaluatorName);
 
     // Optionally shows the Gantt diagram
     final String showSchedStr = parameters.get(SHOW_SCHED_PARAM_NAME);
@@ -143,7 +143,7 @@ public class FpgaAnalysisMainTask extends AbstractTaskImplementation {
    *          String representing the evaluator to be used (for scheduling and fifo sizing).
    * @return The analysis results.
    */
-  public static AnalysisResultFPGA checkAndAnalyze(final PiGraph algorithm, final Scenario scenario,
+  public static AnalysisResultFPGA checkAndAnalyzeAlgorithm(final PiGraph algorithm, final Scenario scenario,
       final String fifoEvaluatorName) {
     if (algorithm.getAllDelays().stream().anyMatch(x -> (x.getLevel() != PersistenceLevel.PERMANENT))) {
       throw new PreesmRuntimeException("This task must be called on PiGraph with only permanent delays.");
@@ -174,11 +174,11 @@ public class FpgaAnalysisMainTask extends AbstractTaskImplementation {
    *          Architecture to inspect
    * @return The single FPGA
    */
-  private FPGA getSingleFPGA(final Design architecture) {
+  private FPGA checkAndGetSingleFPGA(final Design architecture) {
     if (!SlamDesignPEtypeChecker.isSingleFPGA(architecture)) {
       throw new PreesmRuntimeException("This task must be called with a single FPGA architecture, abandon.");
     }
-    return (FPGA) architecture.getProcessingElements().stream().findFirst().orElseThrow();
+    return (FPGA) architecture.getProcessingElements().get(0);
   }
 
   private static Map<InterfaceActor, Pair<Long, Long>> checkInterfaces(final PiGraph flatGraph,
