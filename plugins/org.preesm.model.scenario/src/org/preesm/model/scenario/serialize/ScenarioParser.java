@@ -144,6 +144,7 @@ public class ScenarioParser {
       PreesmLogger.getLogger().log(Level.WARNING, "Could not parse file: " + e.getMessage(), e);
       return null;
     }
+    this.scenario.setScenarioURL(file.getFullPath().toString());
 
     if (this.dom != null) {
       // get the root elememt
@@ -202,7 +203,6 @@ public class ScenarioParser {
               + " Check the \"Data alignment\" in Workflow tasks.");
     }
 
-    this.scenario.setScenarioURL(file.getFullPath().toString());
     return this.scenario;
   }
 
@@ -420,13 +420,13 @@ public class ScenarioParser {
             try {
               this.scenario.setAlgorithm(PiParser.getPiGraphWithReconnection(url));
             } catch (final Exception e) {
-              throw new PreesmRuntimeException("Could not parse the algorithm: " + e.getMessage(), e);
+              throw new PreesmRuntimeException("Could not parse the refered algorithm:\n" + e.getMessage(), e);
             }
           } else if (type.equals("architecture")) {
             try {
               initializeArchitectureInformation(url);
             } catch (final Exception e) {
-              throw new PreesmRuntimeException("Could not parse the architecture: " + e.getMessage(), e);
+              throw new PreesmRuntimeException("Could not parse the refered architecture:\n" + e.getMessage(), e);
             }
           } else if (type.equals("codegenDirectory")) {
             this.scenario.setCodegenDirectory(url);

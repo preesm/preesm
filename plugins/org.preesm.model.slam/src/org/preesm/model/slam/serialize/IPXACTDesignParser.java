@@ -319,7 +319,8 @@ public class IPXACTDesignParser extends IPXACTParser {
           ((FPGA) component).setBoard(description.getSpecificParameter("slam:board"));
         }
       } catch (final NumberFormatException e) {
-        throw new PreesmRuntimeException("Could not parse component instance", e);
+        throw new PreesmRuntimeException("Could not parse a numeric property of component instance <"
+            + instance.getInstanceName() + ">, please check it in the slam.", e);
       }
 
     }
