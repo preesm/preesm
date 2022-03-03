@@ -41,6 +41,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import org.jgrapht.graph.DefaultDirectedGraph;
+import org.jgrapht.graph.DefaultUndirectedGraph;
 import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.preesm.commons.math.MathFunctionsHelper;
 import org.preesm.model.pisdf.AbstractActor;
@@ -274,6 +275,34 @@ public class AbstractGraph {
       copyGraph.addEdge(src, tgt, fa);
     }
     return copyGraph;
+  }
+
+  /**
+   * Shallow undirected copy of a graph.
+   * <p>
+   * If two FifoAbstracttion are present in the original graph (going in opposite directions by construction), then only
+   * the first encountered one is copied.
+   * 
+   * @param absGraph
+   *          Graph to be copied with undirected edges.
+   * @return Shallow copy of the input as an undirected graph.
+   */
+  public static DefaultUndirectedGraph<AbstractActor, FifoAbstraction>
+
+      undirectedGraph(final DefaultDirectedGraph<AbstractActor, FifoAbstraction> absGraph) {
+    final DefaultUndirectedGraph<AbstractActor,
+        FifoAbstraction> undirectedGraph = new DefaultUndirectedGraph<>(FifoAbstraction.class);
+    for (final AbstractActor aa : absGraph.vertexSet()) {
+      undirectedGraph.addVertex(aa);
+    }
+    for (final FifoAbstraction fa : absGraph.edgeSet()) {
+      final AbstractActor src = absGraph.getEdgeSource(fa);
+      final AbstractActor tgt = absGraph.getEdgeTarget(fa);
+      if (undirectedGraph.getEdge(src, tgt) == null) {
+        undirectedGraph.addEdge(src, tgt, fa);
+      }
+    }
+    return undirectedGraph;
   }
 
 }

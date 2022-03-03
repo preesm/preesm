@@ -4,13 +4,22 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 import org.eclipse.xtext.xbase.lib.Pair;
+import org.jgrapht.alg.cycle.PatonCycleBase;
+import org.jgrapht.graph.DefaultDirectedGraph;
+import org.jgrapht.graph.DefaultUndirectedGraph;
+import org.ojalgo.optimisation.ExpressionsBasedModel;
 import org.preesm.algorithm.mapper.ui.stats.IStatGenerator;
+import org.preesm.algorithm.pisdf.autodelays.AbstractGraph;
+import org.preesm.algorithm.pisdf.autodelays.AbstractGraph.FifoAbstraction;
 import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.preesm.commons.logger.PreesmLogger;
+import org.preesm.commons.math.LongFraction;
 import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.AbstractVertex;
+import org.preesm.model.pisdf.DataPort;
 import org.preesm.model.pisdf.Fifo;
 import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.pisdf.statictools.PiMMHelper;
@@ -44,15 +53,18 @@ public class AdfgFpgaFifoEvaluator extends AbstractGenericFpgaFifoEvaluator {
     }
 
     // compute the lambda of each actor
+    final Map<DataPort, LongFraction> lambdaPerPort = new LinkedHashMap<>();
     final StringBuilder logLambda = new StringBuilder(
         "Lambda of actor ports (in number of tokens between 0 and the rate, the closest to 0 the better):\n");
     mapActorNormalizedInfos.values().forEach(ani -> {
       logLambda.append(String.format("/actor <%s>\n", ani.aa.getName()));
 
       final String logLambdaPorts = ani.aa.getAllDataPorts().stream().map(dp -> {
-        final double rate = (double) dp.getExpression().evaluate();
-        final double lambda = rate * (1.0d - rate / ani.oriII);
-        return String.format(Locale.US, "%s: %4.2e", dp.getName(), lambda);
+        final long rate = dp.getExpression().evaluate();
+        final LongFraction lambdaFr = new LongFraction(-rate, ani.oriII).add(1).multiply(rate);
+        // final double lambda = rate * (1.0d - rate / ani.oriII);
+        lambdaPerPort.put(dp, lambdaFr);
+        return String.format(Locale.US, "%s: %4.2e", dp.getName(), lambdaFr.doubleValue());
       }).collect(Collectors.joining(", "));
 
       logLambda.append(logLambdaPorts + "\n");
@@ -65,6 +77,17 @@ public class AdfgFpgaFifoEvaluator extends AbstractGenericFpgaFifoEvaluator {
     // ADFG stands for Affine DataFlow Graph (work of Adnan Bouakaz)
     // ojAlgo dependency should be used to create the model because it has dedicated code to ILP,
     // or Choco (but not dedicated to ILP) at last resort.
+
+    // create intermediate graphs
+    final DefaultDirectedGraph<AbstractActor, FifoAbstraction> ddg = AbstractGraph.createAbsGraph(flatGraph, brv);
+    final DefaultUndirectedGraph<AbstractActor, FifoAbstraction> dug = AbstractGraph.undirectedGraph(ddg);
+    final Set<List<FifoAbstraction>> cycles = (new PatonCycleBase<AbstractActor, FifoAbstraction>(dug)).getCycleBasis()
+        .getCycles();
+    // create Maps to retrieve ID of variables (ID in order of addition in the model)
+    // Fifo to theta and delta Variable ID
+    // FifoAbstracttion to phi Variable ID
+    // build model
+    final ExpressionsBasedModel model = new ExpressionsBasedModel();
 
     // TODO build a schedule using the normalized graph II and each actor offset (computed by the ILP)
 
