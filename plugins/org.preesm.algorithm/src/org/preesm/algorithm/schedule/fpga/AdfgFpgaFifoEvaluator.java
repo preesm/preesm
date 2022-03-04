@@ -11,6 +11,7 @@ import org.jgrapht.alg.cycle.PatonCycleBase;
 import org.jgrapht.graph.DefaultDirectedGraph;
 import org.jgrapht.graph.DefaultUndirectedGraph;
 import org.ojalgo.optimisation.ExpressionsBasedModel;
+import org.ojalgo.optimisation.Variable;
 import org.preesm.algorithm.mapper.ui.stats.IStatGenerator;
 import org.preesm.algorithm.pisdf.autodelays.AbstractGraph;
 import org.preesm.algorithm.pisdf.autodelays.AbstractGraph.FifoAbstraction;
@@ -83,11 +84,37 @@ public class AdfgFpgaFifoEvaluator extends AbstractGenericFpgaFifoEvaluator {
     final DefaultUndirectedGraph<AbstractActor, FifoAbstraction> dug = AbstractGraph.undirectedGraph(ddg);
     final Set<List<FifoAbstraction>> cycles = (new PatonCycleBase<AbstractActor, FifoAbstraction>(dug)).getCycleBasis()
         .getCycles();
-    // create Maps to retrieve ID of variables (ID in order of addition in the model)
-    // Fifo to theta and delta Variable ID
-    // FifoAbstracttion to phi Variable ID
+
     // build model
+    // create Maps to retrieve ID of variables (ID in order of addition in the model)
     final ExpressionsBasedModel model = new ExpressionsBasedModel();
+
+    // FifoAbstraction to phi Variable ID
+    final Map<FifoAbstraction, Integer> fifoAbsToPhiVariableID = new LinkedHashMap<>();
+    for (final FifoAbstraction fifoAbs : dug.edgeSet()) {
+      final int index = fifoAbsToPhiVariableID.size();
+      final Variable varPhi = new Variable("phi_" + index);
+      varPhi.setInteger(true);
+      // TODO separate neg. from pos.?
+      fifoAbsToPhiVariableID.put(fifoAbs, index);
+      model.addVariable(varPhi);
+    }
+
+    // add equation for cycles to the model
+    for (final List<FifoAbstraction> cycle : cycles) {
+      // create cycle equation
+    }
+
+    // Fifo to delta/size Variable ID (theta/delay is fixed for us, so not a variable)
+    final Map<Fifo, Integer> fifoToSizeVariableID = new LinkedHashMap<>();
+    // create size variables/equations
+    for (final FifoAbstraction fifoAbs : ddg.edgeSet()) {
+      for (final Fifo fifo : fifoAbs.fifos) {
+        // create size variable and underflow and overflow expression
+      }
+    }
+
+    // objective function (minimize buffer sizes + phi)
 
     // TODO build a schedule using the normalized graph II and each actor offset (computed by the ILP)
 
