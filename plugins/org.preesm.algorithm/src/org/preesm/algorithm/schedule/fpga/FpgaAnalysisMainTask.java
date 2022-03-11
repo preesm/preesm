@@ -85,17 +85,20 @@ public class FpgaAnalysisMainTask extends AbstractTaskImplementation {
     final String showSchedStr = parameters.get(SHOW_SCHED_PARAM_NAME);
     final boolean showSched = Boolean.parseBoolean(showSchedStr);
     if (showSched) {
-      final IEditorInput input = new StatEditorInput(res.statGenerator);
-
-      // Check if the workflow is running in command line mode
-      try {
-        // Run statistic editor
-        PlatformUI.getWorkbench().getDisplay().asyncExec(new EditorRunnable(input));
-      } catch (final IllegalStateException e) {
-        PreesmLogger.getLogger().info("Gantt display is impossible in this context."
-            + " Ignore this log entry if you are running the command line version of Preesm.");
+      if (res.statGenerator == null) {
+        PreesmLogger.getLogger()
+            .warning("The selected FIFO evaluator does not give any schedule or was not able to compute it.");
+      } else {
+        final IEditorInput input = new StatEditorInput(res.statGenerator);
+        // Check if the workflow is running in command line mode
+        try {
+          // Run statistic editor
+          PlatformUI.getWorkbench().getDisplay().asyncExec(new EditorRunnable(input));
+        } catch (final IllegalStateException e) {
+          PreesmLogger.getLogger().info("Gantt display is impossible in this context."
+              + " Ignore this log entry if you are running the command line version of Preesm.");
+        }
       }
-
     }
 
     // codegen

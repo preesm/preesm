@@ -58,7 +58,7 @@ public abstract class AbstractGenericFpgaFifoEvaluator {
    *          Scenario to get the timings and mapping constraints.
    * @param brv
    *          Repetition vector of actors in cc.
-   * @return StatGenerator for Gantt Data and map of all fifo sizes.
+   * @return StatGenerator for Gantt Data and map of all fifo sizes in bit.
    */
   public abstract Pair<IStatGenerator, Map<Fifo, Long>> performAnalysis(final PiGraph flatGraph,
       final Scenario scenario, final Map<AbstractVertex, Long> brv);
