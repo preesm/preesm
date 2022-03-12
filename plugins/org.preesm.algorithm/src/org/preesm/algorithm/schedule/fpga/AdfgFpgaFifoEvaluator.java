@@ -1,5 +1,6 @@
 package org.preesm.algorithm.schedule.fpga;
 
+import java.math.BigDecimal;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
@@ -16,6 +17,7 @@ import org.jgrapht.graph.DefaultUndirectedGraph;
 import org.ojalgo.optimisation.Expression;
 import org.ojalgo.optimisation.ExpressionsBasedModel;
 import org.ojalgo.optimisation.Optimisation.Result;
+import org.ojalgo.optimisation.Optimisation.State;
 import org.ojalgo.optimisation.Variable;
 import org.preesm.algorithm.mapper.ui.stats.IStatGenerator;
 import org.preesm.algorithm.pisdf.autodelays.AbstractGraph;
@@ -61,23 +63,7 @@ public class AdfgFpgaFifoEvaluator extends AbstractGenericFpgaFifoEvaluator {
     }
 
     // compute the lambda of each actor
-    final Map<DataPort, LongFraction> lambdaPerPort = new LinkedHashMap<>();
-    final StringBuilder logLambda = new StringBuilder(
-        "Lambda of actor ports (in number of tokens between 0 and the rate, the closest to 0 the better):\n");
-    mapActorNormalizedInfos.values().forEach(ani -> {
-      logLambda.append(String.format("/actor <%s>\n", ani.aa.getName()));
-
-      final String logLambdaPorts = ani.aa.getAllDataPorts().stream().map(dp -> {
-        final long rate = dp.getExpression().evaluate();
-        final LongFraction lambdaFr = new LongFraction(-rate, ani.oriII).add(1).multiply(rate);
-        // final double lambda = rate * (1.0d - rate / ani.oriII);
-        lambdaPerPort.put(dp, lambdaFr);
-        return String.format(Locale.US, "%s: %4.2e", dp.getName(), lambdaFr.doubleValue());
-      }).collect(Collectors.joining(", "));
-
-      logLambda.append(logLambdaPorts + "\n");
-    });
-    PreesmLogger.getLogger().info(logLambda::toString);
+    final Map<DataPort, LongFraction> lambdaPerPort = computeAndLogLambdas(mapActorNormalizedInfos);
 
     // compute the fifo sizes thanks to the ARS ILP formulation of ADFG
     // ILP stands for Integer Linear Programming
@@ -103,12 +89,10 @@ public class AdfgFpgaFifoEvaluator extends AbstractGenericFpgaFifoEvaluator {
       final Variable varPhiPos = new Variable("phi_pos_" + index);
       varPhiPos.setInteger(true);
       varPhiPos.lower(0L);
-      varPhiPos.weight(0L);
       model.addVariable(varPhiPos);
       final Variable varPhiNeg = new Variable("phi_neg_" + index);
       varPhiNeg.setInteger(true);
       varPhiNeg.lower(0L);
-      varPhiNeg.weight(0L);
       model.addVariable(varPhiNeg);
     }
 
@@ -144,6 +128,8 @@ public class AdfgFpgaFifoEvaluator extends AbstractGenericFpgaFifoEvaluator {
 
     // objective function (minimize buffer sizes + phi)
     final Result modelResult = model.minimise();
+    logModelAndResults(model, modelResult);
+
     // fill FIFO sizes map result
     final Map<Fifo, Long> computedFifoSizes = new LinkedHashMap<>();
     final int indexOffset = 2 * ddg.edgeSet().size(); // offset for phi
@@ -152,10 +138,69 @@ public class AdfgFpgaFifoEvaluator extends AbstractGenericFpgaFifoEvaluator {
       computedFifoSizes.put(k, size);
     });
 
+    final State modelState = modelResult.getState();
+    if (modelState != State.OPTIMAL) {
+      throw new PreesmRuntimeException("ILP result was not optimal state: " + modelState
+          + ".\n Check consistency or retry with extra delays on feedback FIFO buffers.");
+    }
+
     // TODO build a schedule using the normalized graph II and each actor offset (computed by the ILP)
     // same ILP as in ADFG but not fixing Tbasis: only fixing all T being greater than 1
     // result will be a period in number of cycles and will be overestimated
     return new Pair<>(null, computedFifoSizes);
+  }
+
+  /**
+   * Compute and log all lambda (as map per data port). Lambda are symmetrical: upper = lower.
+   * 
+   * @param mapActorNormalizedInfos
+   *          Standard information about actors, used to get II.
+   * @return Map of lambda per data port of all actors in the given map.
+   */
+  protected static Map<DataPort, LongFraction>
+      computeAndLogLambdas(final Map<AbstractActor, ActorNormalizedInfos> mapActorNormalizedInfos) {
+    final Map<DataPort, LongFraction> lambdaPerPort = new LinkedHashMap<>();
+    final StringBuilder logLambda = new StringBuilder(
+        "Lambda of actor ports (in number of tokens between 0 and the rate, the closest to 0 the better):\n");
+    mapActorNormalizedInfos.values().forEach(ani -> {
+      logLambda.append(String.format("/actor <%s>\n", ani.aa.getName()));
+
+      final String logLambdaPorts = ani.aa.getAllDataPorts().stream().map(dp -> {
+        final long rate = dp.getExpression().evaluate();
+        final LongFraction lambdaFr = new LongFraction(-rate, ani.oriII).add(1).multiply(rate);
+        // final double lambda = rate * (1.0d - rate / ani.oriII);
+        lambdaPerPort.put(dp, lambdaFr);
+        return String.format(Locale.US, "%s: %4.2e", dp.getName(), lambdaFr.doubleValue());
+      }).collect(Collectors.joining(", "));
+
+      logLambda.append(logLambdaPorts + "\n");
+    });
+    PreesmLogger.getLogger().info(logLambda::toString);
+    return lambdaPerPort;
+  }
+
+  /**
+   * Log expressions in the model, and variables values.
+   * 
+   * @param model
+   *          Model to log (expressions).
+   * @param modelResult
+   *          Result to log (variables).
+   */
+  protected static void logModelAndResults(final ExpressionsBasedModel model, final Result modelResult) {
+    final StringBuilder sbLogModel = new StringBuilder("Details of ILP model.\n");
+    sbLogModel.append("-- expressions: " + model.countExpressions() + "\n");
+    for (final Expression exp : model.getExpressions()) {
+      sbLogModel.append(exp.toString() + "\n");
+      sbLogModel.append(exp.getLinearEntrySet().stream()
+          .map(e -> model.getVariable(e.getKey()).getName() + " x " + e.getValue().longValue())
+          .collect(Collectors.joining(" + ")) + "\n");
+    }
+    sbLogModel.append("-- varibales: " + model.countVariables() + "\n");
+    for (int i = 0; i < model.countVariables(); i++) {
+      sbLogModel.append(model.getVariable(i).getName() + ": " + modelResult.get(i) + "\n");
+    }
+    PreesmLogger.getLogger().fine(sbLogModel::toString);
   }
 
   protected static class AffineRelation {
@@ -205,8 +250,10 @@ public class AdfgFpgaFifoEvaluator extends AbstractGenericFpgaFifoEvaluator {
       final AffineRelation ar = new AffineRelation(fa.getProdRate() * (tgtII / gcdII),
           fa.getConsRate() * (srcII / gcdII), fifoAbsToPhiVariableID.get(fa), false);
       ddgAR.addEdge(src, tgt, ar);
-      final AffineRelation arReverse = new AffineRelation(ar.dCons, ar.nProd, ar.phiIndex, true);
-      ddgAR.addEdge(tgt, src, arReverse);
+      if (src != tgt) {
+        final AffineRelation arReverse = new AffineRelation(ar.dCons, ar.nProd, ar.phiIndex, true);
+        ddgAR.addEdge(tgt, src, arReverse);
+      }
     }
 
     return ddgAR;
@@ -226,14 +273,29 @@ public class AdfgFpgaFifoEvaluator extends AbstractGenericFpgaFifoEvaluator {
    */
   protected static void generateCycleConstraint(final DefaultDirectedGraph<AbstractActor, AffineRelation> ddgAR,
       final List<AbstractActor> cycleAA, final ExpressionsBasedModel model) {
+    // cycle is redundant (last == first)
     final int cycleSize = cycleAA.size();
-    if (cycleSize < 2) {
-      return;
+    if (cycleSize <= 2) {
+      // since cycle is redundant, then only two actors in it means it is a selfloop
+      // phi for self loops is forced to be positive
+      if (cycleSize == 2 && cycleAA.get(0) == cycleAA.get(1)) {
+        final AffineRelation ar = ddgAR.getEdge(cycleAA.get(0), cycleAA.get(1));
+        final int index_2 = ar.phiIndex * 2;
+        // TODO force the value oh phi to be II?
+        // final Expression expPhiPos = model.addExpression().level(1L);
+        // final Variable varPhiPos = model.getVariable(index_2);
+        // expPhiPos.set(varPhiPos, 1L);
+        final Expression expPhiNeg = model.addExpression().level(0L);
+        final Variable varPhiNeg = model.getVariable(index_2 + 1);
+        expPhiNeg.set(varPhiNeg, 1L);
+        return;
+      }
+      throw new PreesmRuntimeException("While building model, one cycle could not be considered: "
+          + cycleAA.stream().map(AbstractActor::getName).collect(Collectors.joining(" --> ")));
     }
-
     // the constraint expression must be always equal to 0
     final Expression expression = model.addExpression().level(0L);
-
+    // init arrays storing coefs for memoization
     final AffineRelation[] ars = new AffineRelation[cycleSize];
     final long[] coefsPhi = new long[cycleSize];
     for (int i = 0; i < coefsPhi.length; ++i) {
@@ -242,8 +304,7 @@ public class AdfgFpgaFifoEvaluator extends AbstractGenericFpgaFifoEvaluator {
     int nbPhi = 0;
     long mulN = 1;
     long mulD = 1;
-
-    // cycle is redundant (last == first)
+    // update all memoized coefs
     final Iterator<AbstractActor> aaIterator = cycleAA.iterator();
     AbstractActor dest = aaIterator.next();
     while (aaIterator.hasNext()) {
@@ -276,6 +337,7 @@ public class AdfgFpgaFifoEvaluator extends AbstractGenericFpgaFifoEvaluator {
     if (mulN != mulD) {
       throw new PreesmRuntimeException("Some cycles do not satisfy consistency Part 1.");
     }
+    // create equation
     for (int i = 0; i < ars.length - 1; ++i) {
       final long coefSign = ars[i].phiNegate ? -1L : 1L;
       final int index_2 = ars[i].phiIndex * 2;
@@ -323,7 +385,8 @@ public class AdfgFpgaFifoEvaluator extends AbstractGenericFpgaFifoEvaluator {
     // write objective for phase to be minimized (weight for positive and negative part should be equal)
     final Variable phi_pos = model.getVariable(ar.phiIndex * 2);
     final Variable phi_neg = model.getVariable(ar.phiIndex * 2 + 1);
-    final long currentPhiPosWeight = phi_pos.getContributionWeight().longValue();
+    final BigDecimal rawCurrentPhiPosWeight = phi_pos.getContributionWeight();
+    final long currentPhiPosWeight = rawCurrentPhiPosWeight != null ? rawCurrentPhiPosWeight.longValue() : 0L;
     final long fifoProdSize = fifo.getSourcePort().getExpression().evaluate();
     long ceilPhiRatio = typeSizeBits * ((fifoProdSize + ar.dCons - 1L) / ar.dCons);
     phi_pos.weight(currentPhiPosWeight + ceilPhiRatio);
