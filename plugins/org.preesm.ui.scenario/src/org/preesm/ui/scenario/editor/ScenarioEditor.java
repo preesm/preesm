@@ -120,7 +120,7 @@ public class ScenarioEditor extends SharedHeaderFormEditor implements IPropertyL
       try {
         this.scenario = parser.parseXmlFile(this.scenarioFile);
 
-        if (!this.scenario.getSizesAreInBit()) {
+        if (Boolean.FALSE.equals(this.scenario.getSizesAreInBit())) {
           MessageDialog.openError(PreesmUIPlugin.getDefault().getWorkbench().getActiveWorkbenchWindow().getShell(),
               "Scenario is out-of-date.",
               "The Scenario was created with an older version of PREESM."
