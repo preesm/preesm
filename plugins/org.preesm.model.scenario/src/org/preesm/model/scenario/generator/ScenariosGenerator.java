@@ -252,7 +252,7 @@ public class ScenariosGenerator {
     for (final Fifo f : scenario.getAlgorithm().getAllFifos()) {
       final String typeName = f.getType();
       scenario.getSimulationInfo().getDataTypes().put(typeName,
-          DefaultTypeSizes.getInstance().getDefaultTypeSize(typeName));
+          DefaultTypeSizes.getInstance().getTypeSizeOrDefault(typeName));
     }
 
     scenario.setCodegenDirectory("/" + project.getName() + "/Code/generated/");

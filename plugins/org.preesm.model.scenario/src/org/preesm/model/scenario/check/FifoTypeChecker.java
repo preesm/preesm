@@ -8,6 +8,7 @@ import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.model.pisdf.Fifo;
 import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.scenario.Scenario;
+import org.preesm.model.scenario.util.DefaultTypeSizes;
 
 /**
  * This class check if all fifos of the algorithm have a known data type size.
@@ -35,10 +36,24 @@ public class FifoTypeChecker {
     }
     for (final Fifo f : graph.getAllFifos()) {
       final String typeName = f.getType();
-      final Long typeSize = scenario.getSimulationInfo().getDataTypes().get(typeName);
-      if (typeSize == null) {
+      // Search for typeName in the Scenario
+
+      if (scenario.getSimulationInfo().getDataTypes().get(typeName) != null) {
+        // If typeName is known in the Scenario
+        continue;
+      }
+
+      final long typeSize = DefaultTypeSizes.getInstance().getTypeSize(typeName);
+
+      if (typeSize != -1) {
+        // If typeName matches a default known type
+        scenario.getSimulationInfo().getDataTypes().put(typeName, typeSize);
+        PreesmLogger.getLogger().warning(() -> "A default size of " + typeSize + " bits was used for '" + typeName
+            + "' for this Workflow execution.");
+      } else {
+        // If typeName is completely unknown
         result.add("'" + typeName + "'");
-        PreesmLogger.getLogger().warning("Unknown type: " + typeName + ", in Fifo: " + f.getId());
+        PreesmLogger.getLogger().warning(() -> "Unknown type: " + typeName + ", in Fifo: " + f.getId());
       }
 
     }

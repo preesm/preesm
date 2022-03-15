@@ -583,7 +583,7 @@ public class SimulationPage extends ScenarioPage {
         for (final Fifo f : scenario.getAlgorithm().getAllFifos()) {
           final String typeName = f.getType();
           SimulationPage.this.scenario.getSimulationInfo().getDataTypes().put(typeName,
-              DefaultTypeSizes.getInstance().getDefaultTypeSize(typeName));
+              DefaultTypeSizes.getInstance().getTypeSizeOrDefault(typeName));
         }
 
         tableViewer.refresh();

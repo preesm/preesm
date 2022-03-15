@@ -48,37 +48,37 @@ public class DefaultTypeSizesTest {
 
   @Test
   public void testVoidTypeSize() {
-    final long defaultTypeSize = DefaultTypeSizes.getInstance().getDefaultTypeSize("void");
+    final long defaultTypeSize = DefaultTypeSizes.getInstance().getTypeSizeOrDefault("void");
     assertEquals(1L, defaultTypeSize);
   }
 
   @Test
   public void testCharTypeSize() {
-    final long defaultTypeSize = DefaultTypeSizes.getInstance().getDefaultTypeSize("char");
+    final long defaultTypeSize = DefaultTypeSizes.getInstance().getTypeSizeOrDefault("char");
     assertEquals(8L, defaultTypeSize);
   }
 
   @Test
   public void testShortTypeSize() {
-    final long defaultTypeSize = DefaultTypeSizes.getInstance().getDefaultTypeSize("short");
+    final long defaultTypeSize = DefaultTypeSizes.getInstance().getTypeSizeOrDefault("short");
     assertEquals(16L, defaultTypeSize);
   }
 
   @Test
   public void testINT32TTypeSize() {
-    final long defaultTypeSize = DefaultTypeSizes.getInstance().getDefaultTypeSize("int32_t");
+    final long defaultTypeSize = DefaultTypeSizes.getInstance().getTypeSizeOrDefault("int32_t");
     assertEquals(32L, defaultTypeSize);
   }
 
   @Test
   public void testDoubleTypeSize() {
-    final long defaultTypeSize = DefaultTypeSizes.getInstance().getDefaultTypeSize("double");
+    final long defaultTypeSize = DefaultTypeSizes.getInstance().getTypeSizeOrDefault("double");
     assertEquals(64L, defaultTypeSize);
   }
 
   @Test
   public void testLongDoubleTypeSize() {
-    final long defaultTypeSize = DefaultTypeSizes.getInstance().getDefaultTypeSize("long double");
+    final long defaultTypeSize = DefaultTypeSizes.getInstance().getTypeSizeOrDefault("long double");
     assertEquals(128L, defaultTypeSize);
   }
 
