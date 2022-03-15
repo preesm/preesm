@@ -20,6 +20,7 @@ Bundle-Version: 3.21.0.qualifier
 Export-Package: org.preesm.codegen.xtend,
  org.preesm.codegen.xtend.printer,
  org.preesm.codegen.xtend.printer.c,
+ org.preesm.codegen.xtend.printer.c.axb,
  org.preesm.codegen.xtend.printer.c.instrumented,
  org.preesm.codegen.xtend.printer.net.c,
  org.preesm.codegen.xtend.spider,

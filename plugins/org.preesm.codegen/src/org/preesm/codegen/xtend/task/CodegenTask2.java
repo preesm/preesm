@@ -88,7 +88,8 @@ import org.preesm.workflow.implement.AbstractTaskImplementation;
                     + "and arm architectures."),
             @Value(name = "InstrumentedC",
                 effect = "Print C code instrumented with profiling code, and shared-memory based communications. "
-                    + "Currently compatible with x86, c6678 architectures.."),
+                    + "Currently compatible with x86, c6678 architectures."),
+            @Value(name = "AxBC", effect = "Print C code with AxB."),
             @Value(name = "XML",
                 effect = "Print XML code with all informations used by other printers to print code. "
                     + "Compatible with x86, c6678.") }),

@@ -110,7 +110,7 @@ import org.preesm.commons.files.PreesmIOHelper
  */
 class CPrinter extends BlankPrinter {
 
-	boolean monitorAllFifoMD5 = false;
+	protected boolean monitorAllFifoMD5 = false;
 
 	Map<CoreBlock, Set<FifoCall>> fifoPops = new HashMap();
 
