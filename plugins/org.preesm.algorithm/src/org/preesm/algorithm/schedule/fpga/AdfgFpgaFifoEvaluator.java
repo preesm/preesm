@@ -400,7 +400,10 @@ public class AdfgFpgaFifoEvaluator extends AbstractGenericFpgaFifoEvaluator {
     // compute coefficients: lambda and others
     final LongFraction lambda_p = lambdaPerPort.get(fifo.getSourcePort());
     final LongFraction lambda_c = lambdaPerPort.get(fifo.getTargetPort());
-    final LongFraction lambda_sum = lambda_p.add(lambda_c);
+    // lambda is between 0 and rate, we take ceil to avoid capacity overflow
+    final long lambda_p_ceil = (lambda_p.getNumerator() + lambda_p.getDenominator() - 1L) / lambda_p.getDenominator();
+    final long lambda_c_ceil = (lambda_c.getNumerator() + lambda_c.getDenominator() - 1L) / lambda_c.getDenominator();
+    final LongFraction lambda_sum = new LongFraction(lambda_p_ceil + lambda_c_ceil);
     final LongFraction coef_under = new LongFraction(ar.nProd + ar.dCons - 1L, ar.nProd);
     final LongFraction coef_over = new LongFraction(ar.nProd + ar.dCons - 1L, ar.dCons);
     final AbstractActor src = fifo.getSourcePort().getContainingActor();
@@ -434,7 +437,7 @@ public class AdfgFpgaFifoEvaluator extends AbstractGenericFpgaFifoEvaluator {
     final Expression expressionO = model.addExpression().lower(sumConstantOreduced.getNumerator());
     expressionO.set(varPhiPos, coefPhiOreduced.getNumerator() * (-coefSign));
     expressionO.set(varPhiNeg, coefPhiOreduced.getNumerator() * coefSign);
-    expressionO.set(sizeVar, 1L);
+    expressionO.set(sizeVar, lcmDenomO);
   }
 
 }

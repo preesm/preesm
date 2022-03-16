@@ -412,7 +412,7 @@ public class LongFraction extends Number implements FieldElement<LongFraction>, 
 
     // result is (t/d2) / (u'/d1)(v'/d2)
     BigInteger w = t.divide(BigInteger.valueOf(d2));
-    if (w.bitLength() > 31) {
+    if (w.bitLength() > 63) {
       throw new MathArithmeticException(LocalizedFormats.NUMERATOR_OVERFLOW_AFTER_MULTIPLY, w);
     }
     return new LongFraction(w.longValue(), ArithmeticUtils.mulAndCheck(denominator / d1, fraction.denominator / d2));
