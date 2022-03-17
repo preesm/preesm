@@ -42,7 +42,8 @@ import org.preesm.model.scenario.Scenario;
  */
 public class AdfgFpgaFifoEvaluator extends AbstractGenericFpgaFifoEvaluator {
 
-  public static final String FIFO_EVALUATOR_ADFG = "adfgFifoEval";
+  public static final String FIFO_EVALUATOR_ADFG     = "adfgFifoEval";
+  public static final int    MAX_BIT_LENGTHS_FRACION = 30;
 
   protected AdfgFpgaFifoEvaluator() {
     super();
@@ -400,7 +401,7 @@ public class AdfgFpgaFifoEvaluator extends AbstractGenericFpgaFifoEvaluator {
     // compute coefficients: lambda and others
     final LongFraction lambda_p = lambdaPerPort.get(fifo.getSourcePort());
     final LongFraction lambda_c = lambdaPerPort.get(fifo.getTargetPort());
-    // lambda is between 0 and rate, we take ceil to avoid capacity overflow
+    // lambda is between 0 and rate, we take ceil to avoid fraction representation capacity overflow
     final long lambda_p_ceil = (lambda_p.getNumerator() + lambda_p.getDenominator() - 1L) / lambda_p.getDenominator();
     final long lambda_c_ceil = (lambda_c.getNumerator() + lambda_c.getDenominator() - 1L) / lambda_c.getDenominator();
     final LongFraction lambda_sum = new LongFraction(lambda_p_ceil + lambda_c_ceil);
@@ -418,8 +419,9 @@ public class AdfgFpgaFifoEvaluator extends AbstractGenericFpgaFifoEvaluator {
     final Variable varPhiPos = model.getVariable(index_2);
     final Variable varPhiNeg = model.getVariable(index_2 + 1);
     // write underflow constraint
-    final LongFraction sumConstantU = lambda_sum.subtract(delaySize).add(a_p.multiply(coef_under));
-    final LongFraction coefPhiU = a_p.divide(ar.nProd);
+    final LongFraction sumConstantU = lambda_sum.subtract(delaySize).add(a_p.multiply(coef_under))
+        .getCeiledRounding(MAX_BIT_LENGTHS_FRACION);
+    final LongFraction coefPhiU = a_p.divide(ar.nProd).getFlooredRounding(MAX_BIT_LENGTHS_FRACION);
     final long lcmDenomU = MathFunctionsHelper.lcm(sumConstantU.getDenominator(), coefPhiU.getDenominator());
     final LongFraction sumConstantUreduced = sumConstantU.multiply(lcmDenomU);
     final LongFraction coefPhiUreduced = coefPhiU.multiply(lcmDenomU);
@@ -428,8 +430,9 @@ public class AdfgFpgaFifoEvaluator extends AbstractGenericFpgaFifoEvaluator {
     expressionU.set(varPhiPos, coefPhiUreduced.getNumerator() * coefSign);
     expressionU.set(varPhiNeg, coefPhiUreduced.getNumerator() * (-coefSign));
     // write overflow constraint
-    final LongFraction sumConstantO = lambda_sum.add(delaySize).add(a_p.multiply(coef_over));
-    final LongFraction coefPhiO = a_c.divide(ar.dCons);
+    final LongFraction sumConstantO = lambda_sum.add(delaySize).add(a_p.multiply(coef_over))
+        .getCeiledRounding(MAX_BIT_LENGTHS_FRACION);
+    final LongFraction coefPhiO = a_c.divide(ar.dCons).getCeiledRounding(MAX_BIT_LENGTHS_FRACION);
     final long lcmDenomO = MathFunctionsHelper.lcm(sumConstantO.getDenominator(), coefPhiO.getDenominator());
     final LongFraction sumConstantOreduced = sumConstantO.multiply(lcmDenomO);
     final LongFraction coefPhiOreduced = coefPhiO.multiply(lcmDenomO);
