@@ -43,7 +43,7 @@ import org.preesm.model.scenario.Scenario;
 public class AdfgFpgaFifoEvaluator extends AbstractGenericFpgaFifoEvaluator {
 
   public static final String FIFO_EVALUATOR_ADFG     = "adfgFifoEval";
-  public static final int    MAX_BIT_LENGTHS_FRACION = 30;
+  public static final int    MAX_BIT_LENGTHS_FRACION = 10;
 
   protected AdfgFpgaFifoEvaluator() {
     super();
@@ -90,10 +90,14 @@ public class AdfgFpgaFifoEvaluator extends AbstractGenericFpgaFifoEvaluator {
       final Variable varPhiPos = new Variable("phi_pos_" + index);
       varPhiPos.setInteger(true);
       varPhiPos.lower(0L);
+      varPhiPos.upper(Long.MAX_VALUE);
       model.addVariable(varPhiPos);
+      PreesmLogger.getLogger()
+          .fine("Created variable " + varPhiPos.getName() + " for fifo abs rep " + fifoAbs.fifos.get(0).getId());
       final Variable varPhiNeg = new Variable("phi_neg_" + index);
       varPhiNeg.setInteger(true);
       varPhiNeg.lower(0L);
+      varPhiNeg.upper(Long.MAX_VALUE);
       model.addVariable(varPhiNeg);
     }
 
@@ -131,6 +135,12 @@ public class AdfgFpgaFifoEvaluator extends AbstractGenericFpgaFifoEvaluator {
     final Result modelResult = model.minimise();
     logModelAndResults(model, modelResult);
 
+    final State modelState = modelResult.getState();
+    if (modelState != State.OPTIMAL && !model.getVariables().isEmpty()) {
+      throw new PreesmRuntimeException("ILP result was not optimal state: " + modelState
+          + ".\n Check consistency or retry with extra delays on feedback FIFO buffers.");
+    }
+
     // fill FIFO sizes map result
     final Map<Fifo, Long> computedFifoSizes = new LinkedHashMap<>();
     final int indexOffset = 2 * ddg.edgeSet().size(); // offset for phi
@@ -138,12 +148,6 @@ public class AdfgFpgaFifoEvaluator extends AbstractGenericFpgaFifoEvaluator {
       final long size = modelResult.get((long) v + indexOffset).longValue();
       computedFifoSizes.put(k, size);
     });
-
-    final State modelState = modelResult.getState();
-    if (modelState != State.OPTIMAL) {
-      throw new PreesmRuntimeException("ILP result was not optimal state: " + modelState
-          + ".\n Check consistency or retry with extra delays on feedback FIFO buffers.");
-    }
 
     // TODO build a schedule using the normalized graph II and each actor offset (computed by the ILP)
     // same ILP as in ADFG but not fixing Tbasis: only fixing all T being greater than 1
@@ -189,17 +193,21 @@ public class AdfgFpgaFifoEvaluator extends AbstractGenericFpgaFifoEvaluator {
    *          Result to log (variables).
    */
   protected static void logModelAndResults(final ExpressionsBasedModel model, final Result modelResult) {
-    final StringBuilder sbLogModel = new StringBuilder("Details of ILP model.\n");
-    sbLogModel.append("-- expressions: " + model.countExpressions() + "\n");
-    for (final Expression exp : model.getExpressions()) {
-      sbLogModel.append(exp.toString() + "\n");
-      sbLogModel.append(exp.getLinearEntrySet().stream()
-          .map(e -> model.getVariable(e.getKey()).getName() + " x " + e.getValue().longValue())
-          .collect(Collectors.joining(" + ")) + "\n");
-    }
+    final StringBuilder sbLogModel = new StringBuilder(
+        "Details of ILP model (compatible with GNU MathProg Language Reference).\n");
     sbLogModel.append("-- varibales: " + model.countVariables() + "\n");
     for (int i = 0; i < model.countVariables(); i++) {
-      sbLogModel.append(model.getVariable(i).getName() + ": " + modelResult.get(i) + "\n");
+      sbLogModel.append("var " + model.getVariable(i).getName() + " integer = " + modelResult.get(i) + ";\n");
+    }
+    sbLogModel.append("minimize o: ");
+    sbLogModel.append(model.getVariables().stream().map(v -> v.getContributionWeight() + "*" + v.getName())
+        .collect(Collectors.joining(" + ")));
+    sbLogModel.append(";\n-- constraints: " + model.countExpressions() + "\n");
+    for (final Expression exp : model.getExpressions()) {
+      sbLogModel.append("subject to " + exp.getName() + ": " + exp.getLowerLimit() + " <= ");
+      sbLogModel.append(exp.getLinearEntrySet().stream()
+          .map(e -> e.getValue().longValue() + "*" + model.getVariable(e.getKey()).getName())
+          .collect(Collectors.joining(" + ")) + ";\n");
     }
     PreesmLogger.getLogger().fine(sbLogModel::toString);
   }
@@ -376,8 +384,10 @@ public class AdfgFpgaFifoEvaluator extends AbstractGenericFpgaFifoEvaluator {
       final Map<DataPort, LongFraction> lambdaPerPort, final Fifo fifo, final AffineRelation ar) {
     final int index = fifoToSizeVariableID.size();
     final Variable sizeVar = new Variable("size_" + index);
+    PreesmLogger.getLogger().fine("Created variable " + sizeVar.getName() + " for fifo " + fifo.getId());
     sizeVar.setInteger(true);
     sizeVar.lower(0L); // could be refined to max(prod, cons, delau)
+    sizeVar.upper(Long.MAX_VALUE); // could be refined to total production/consumption
     model.addVariable(sizeVar);
     fifoToSizeVariableID.put(fifo, index);
     // write objective for data size to be minimized
@@ -405,8 +415,10 @@ public class AdfgFpgaFifoEvaluator extends AbstractGenericFpgaFifoEvaluator {
     final long lambda_p_ceil = (lambda_p.getNumerator() + lambda_p.getDenominator() - 1L) / lambda_p.getDenominator();
     final long lambda_c_ceil = (lambda_c.getNumerator() + lambda_c.getDenominator() - 1L) / lambda_c.getDenominator();
     final LongFraction lambda_sum = new LongFraction(lambda_p_ceil + lambda_c_ceil);
-    final LongFraction coef_under = new LongFraction(ar.nProd + ar.dCons - 1L, ar.nProd);
-    final LongFraction coef_over = new LongFraction(ar.nProd + ar.dCons - 1L, ar.dCons);
+    final LongFraction coef_under = new LongFraction(ar.nProd + ar.dCons - 1L, ar.nProd)
+        .getCeiledRounding(MAX_BIT_LENGTHS_FRACION);
+    final LongFraction coef_over = new LongFraction(ar.nProd + ar.dCons - 1L, ar.dCons)
+        .getCeiledRounding(MAX_BIT_LENGTHS_FRACION);
     final AbstractActor src = fifo.getSourcePort().getContainingActor();
     final AbstractActor tgt = fifo.getTargetPort().getContainingActor();
     final long srcII = mapActorNormalizedInfos.get(src).oriII;
