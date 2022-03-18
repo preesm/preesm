@@ -18,7 +18,7 @@ public class AxbFifoTypeChecker {
   private static final String REGEX_CFP_INFIX  = "CFP<";
   private static final String REGEX_AXB_SUFIX  = ">$";
 
-  private static final String REGEX_OPT_SIGN = "([[1][-][\\+]]\\.)?";
+  private static final String REGEX_OPT_SIGN = "([[1][-][+]],)?";
   private static final String REGEX_NUM      = "-?[0-9]+";
   private static final String REGEX_POS_NUM  = "[0-9]+";
   private static final String REGEX_SEP      = ",";
@@ -41,13 +41,13 @@ public class AxbFifoTypeChecker {
   }
 
   public static boolean isAxbFxp(String typeName) {
-    // return typeName.matches("^AXB_FXP<([[1][\\-][\\+]]\\.)?-?[0-9]+\\.-?[0-9]+>$");
+    // Should resolve to "^AXB_FXP<([[1][-][+]],)?-?[0-9]+,-?[0-9]+>$"
     return typeName.matches(
         REGEX_AXB_PREFIX + REGEX_FXP_INFIX + REGEX_OPT_SIGN + REGEX_NUM + REGEX_SEP + REGEX_NUM + REGEX_AXB_SUFIX);
   }
 
   public static boolean isAxbCfp(String typeName) {
-    // return typeName.matches("^AXB_CFP<([[1][\\-][\\+]]\\.)?[0-9]+\\.[0-9]+\\.-?[0-9]+>$");
+    // Should resolve to "^AXB_CFP<([[1][-][+]],)?[0-9]+,[0-9]+,-?[0-9]+>$");
     return typeName.matches(REGEX_AXB_PREFIX + REGEX_CFP_INFIX + REGEX_OPT_SIGN + REGEX_POS_NUM + REGEX_SEP
         + REGEX_POS_NUM + REGEX_SEP + REGEX_POS_NUM + REGEX_AXB_SUFIX);
   }
