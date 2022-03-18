@@ -195,7 +195,7 @@ public class ScenarioParser {
       }
     }
 
-    if (!this.scenario.getSizesAreInBit()) {
+    if (Boolean.FALSE.equals(this.scenario.getSizesAreInBit())) {
       PreesmLogger.getLogger()
           .severe(() -> "The Scenario was created with an older version of PREESM."
               + " Change the datatype sizes from bytes to bits in the Simulation tab and save the Scenario."

@@ -6,7 +6,7 @@ import org.preesm.codegen.model.SubBuffer
 import org.preesm.codegen.model.CallBlock
 import org.preesm.codegen.xtend.printer.c.CPrinter
 import org.preesm.model.scenario.check.FifoTypeChecker
-
+import org.preesm.model.scenario.check.AxbFifoTypeChecker
 
 /**
  * This printer currently prints C code for X86 cores with all
@@ -43,7 +43,7 @@ class AxBCPrinter extends CPrinter {
 	'''
 
 	override printSubBufferDefinition(SubBuffer buffer) '''
-	«IF FifoTypeChecker.isAxb(buffer.type)»
+	«IF AxbFifoTypeChecker.isAxbType(buffer.type)»
 		char *const «buffer.name + "_axb_segment"» = (char*) («var offset = 0L»«
 		{offset = buffer.getOffsetInByte
 		 var b = buffer.container;
@@ -51,7 +51,7 @@ class AxBCPrinter extends CPrinter {
 			offset = offset + b.getOffsetInByte
 		  	b = b.container
 		  }
-		 b}.name»+«offset»);  // «buffer.comment» size:= «buffer.getNbToken»*«buffer.type» («buffer.getNbToken»*«FifoTypeChecker.getAxbTokenSize(buffer.type)» bits)
+		 b}.name»+«offset»);  // «buffer.comment» size:= «buffer.getNbToken»*«buffer.type» («buffer.getNbToken»*«AxbFifoTypeChecker.getAxbTokenSize(buffer.type)» bits)
 
 		ApproximateBuffer «buffer.name + "_axb_struct"»;
 		void *const «buffer.name» = (void*) &«buffer.name + "_axb_struct"»;
@@ -76,20 +76,20 @@ class AxBCPrinter extends CPrinter {
 
 		«FOR buffer : getAllBuffers(printedCoreBlock)»
 			// Setting-up Approximate Buffer with token type «buffer.type»
-			«IF FifoTypeChecker.isAxb(buffer.type)»
+			«IF AxbFifoTypeChecker.isAxbType(buffer.type)»
 				«buffer.name + "_axb_struct"».pointerToBuffer = (uint8_t*) «buffer.name + "_axb_segment"»;
-				«buffer.name + "_axb_struct"».storageSize = «FifoTypeChecker.getAxbTokenSize(buffer.type)»;
+				«buffer.name + "_axb_struct"».storageSize = «AxbFifoTypeChecker.getAxbTokenSize(buffer.type)»;
 				«buffer.name + "_axb_struct"».workingSize = 32;
-				«IF FifoTypeChecker.isAxbFxp(buffer.type)»
+				«IF AxbFifoTypeChecker.isAxbFxp(buffer.type)»
 					«buffer.name + "_axb_struct"».axbType = FXP;
-					«buffer.name + "_axb_struct"».fractionalSize = «FifoTypeChecker.getAxbFxpFractionalSize(buffer.type)»;
-					«buffer.name + "_axb_struct"».signBit = «FifoTypeChecker.getAxbSignBit(buffer.type)»;
-				«ELSEIF FifoTypeChecker.isAxbCfp(buffer.type)»
+					«buffer.name + "_axb_struct"».fractionalSize = «AxbFifoTypeChecker.getAxbFxpFractionalSize(buffer.type)»;
+					«buffer.name + "_axb_struct"».signBit = «AxbFifoTypeChecker.getAxbSignBit(buffer.type)»;
+				«ELSEIF AxbFifoTypeChecker.isAxbCfp(buffer.type)»
 					«buffer.name + "_axb_struct"».axbType = CFP;
-					«buffer.name + "_axb_struct"».exponentSize = «FifoTypeChecker.getAxbCfpExponentSize(buffer.type)»;
-					«buffer.name + "_axb_struct"».mantissaSize = «FifoTypeChecker.getAxbCfpMantissaSize(buffer.type)»;
-					«buffer.name + "_axb_struct"».exponentBias = «FifoTypeChecker.getAxbCfpBias(buffer.type)»;
-					«buffer.name + "_axb_struct"».signBit = «FifoTypeChecker.getAxbSignBit(buffer.type)»;
+					«buffer.name + "_axb_struct"».exponentSize = «AxbFifoTypeChecker.getAxbCfpExponentSize(buffer.type)»;
+					«buffer.name + "_axb_struct"».mantissaSize = «AxbFifoTypeChecker.getAxbCfpMantissaSize(buffer.type)»;
+					«buffer.name + "_axb_struct"».exponentBias = «AxbFifoTypeChecker.getAxbCfpBias(buffer.type)»;
+					«buffer.name + "_axb_struct"».signBit = «AxbFifoTypeChecker.getAxbSignBit(buffer.type)»;
 				«ELSE»
 					«buffer.name + "_axb_struct"».axbType = NO_TYPE;
 				«ENDIF»
