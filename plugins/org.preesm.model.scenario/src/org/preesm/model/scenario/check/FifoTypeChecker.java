@@ -38,28 +38,23 @@ public class FifoTypeChecker {
       final String typeName = f.getType();
       // Search for typeName in the Scenario
 
-      if (scenario.getSimulationInfo().getDataTypes().get(typeName) != null) {
-        // If typeName is known in the Scenario
+      // If typeName is known in the Scenario
+      if (scenario.getSimulationInfo().getDataTypes().containsKey(typeName)) {
         continue;
       }
 
       final long typeSize = DefaultTypeSizes.getInstance().getTypeSize(typeName);
 
-      if (typeSize != -1) {
+      if (typeSize != DefaultTypeSizes.UNKNOWN_TYPE) {
         // If typeName matches a default known type
         scenario.getSimulationInfo().getDataTypes().put(typeName, typeSize);
         PreesmLogger.getLogger().warning(() -> "A default size of " + typeSize + " bits was used for '" + typeName
-            + "' for this Workflow execution.");
-      } else if (isSpecialType(typeName)) {
-        scenario.getSimulationInfo().getDataTypes().put(typeName, getSpecialTypeTokenSize(typeName));
-        PreesmLogger.getLogger().warning(() -> "A size of " + getSpecialTypeTokenSize(typeName) + " bits was used for '"
-            + typeName + "' for this Workflow execution.");
+            + "' in fifo '" + f.getId() + "' for this Workflow execution.");
       } else {
         // If typeName is completely unknown
         result.add("'" + typeName + "'");
         PreesmLogger.getLogger().warning(() -> "Unknown type: " + typeName + ", in Fifo: " + f.getId());
       }
-
     }
     return result;
   }
@@ -80,19 +75,4 @@ public class FifoTypeChecker {
           "Cannot find the size of the following fifo types: " + formattedMissingDataTypeSizes + ".");
     }
   }
-
-  public static boolean isSpecialType(String typeName) {
-    return AxbFifoTypeChecker.isAxbType(typeName) || VitisFifoTypeChecker.isVitisType(typeName);
-  }
-
-  public static long getSpecialTypeTokenSize(String typeName) {
-    if (AxbFifoTypeChecker.isAxbType(typeName)) {
-      return AxbFifoTypeChecker.getAxbTokenSize(typeName);
-    } else if (VitisFifoTypeChecker.isVitisType(typeName)) {
-      return VitisFifoTypeChecker.getVitisTokenSize(typeName);
-    } else {
-      throw new PreesmRuntimeException("Cannot find the size of '" + typeName + "'.");
-    }
-  }
-
 }

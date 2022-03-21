@@ -57,6 +57,8 @@ public final class DefaultTypeSizes {
 
   private static final String CSV_FILE_UBUNTU_18_04_X64_GCC_7_4_0 = "default_type_sizes_ubuntu_18.04_x64_gcc_7.4.0.csv";
 
+  public static final long UNKNOWN_TYPE = -1;
+
   public static final DefaultTypeSizes getInstance() {
     return DefaultTypeSizes.instance;
   }
@@ -99,8 +101,11 @@ public final class DefaultTypeSizes {
    * @return The size of the type name if known, default {@link ScenarioConstants.DEFAULT_DATA_TYPE_SIZE} otherwise.
    */
   public final long getTypeSizeOrDefault(final String typeName) {
-    if (this.defaultTypeSizesMap.containsKey(typeName)) {
-      return this.defaultTypeSizesMap.get(typeName);
+
+    final long typeSize = getTypeSize(typeName);
+
+    if (typeSize != UNKNOWN_TYPE) {
+      return typeSize;
     } else {
       return ScenarioConstants.DEFAULT_DATA_TYPE_SIZE.getValue();
     }
@@ -116,8 +121,24 @@ public final class DefaultTypeSizes {
   public final long getTypeSize(final String typeName) {
     if (this.defaultTypeSizesMap.containsKey(typeName)) {
       return this.defaultTypeSizesMap.get(typeName);
+    } else if (isSpecialType(typeName)) {
+      return getSpecialTypeTokenSize(typeName);
     } else {
-      return -1;
+      return UNKNOWN_TYPE;
+    }
+  }
+
+  public static boolean isSpecialType(String typeName) {
+    return AxbTypeSize.isAxbType(typeName) || VitisTypeSize.isVitisType(typeName);
+  }
+
+  public static long getSpecialTypeTokenSize(String typeName) {
+    if (AxbTypeSize.isAxbType(typeName)) {
+      return AxbTypeSize.getAxbTokenSize(typeName);
+    } else if (VitisTypeSize.isVitisType(typeName)) {
+      return VitisTypeSize.getVitisTokenSize(typeName);
+    } else {
+      throw new PreesmRuntimeException("Cannot find the size of '" + typeName + "'.");
     }
   }
 

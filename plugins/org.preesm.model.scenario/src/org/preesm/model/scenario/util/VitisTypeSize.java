@@ -1,4 +1,4 @@
-package org.preesm.model.scenario.check;
+package org.preesm.model.scenario.util;
 
 import org.preesm.commons.exceptions.PreesmRuntimeException;
 
@@ -7,9 +7,9 @@ import org.preesm.commons.exceptions.PreesmRuntimeException;
  *
  * @author hmiomand
  */
-public class VitisFifoTypeChecker {
+public class VitisTypeSize {
 
-  private VitisFifoTypeChecker() {
+  private VitisTypeSize() {
     // forbid instantiation
   }
 
