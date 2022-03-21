@@ -44,7 +44,7 @@ import org.preesm.model.scenario.Scenario;
 public class AdfgFpgaFifoEvaluator extends AbstractGenericFpgaFifoEvaluator {
 
   public static final String FIFO_EVALUATOR_ADFG     = "adfgFifoEval";
-  public static final int    MAX_BIT_LENGTHS_FRACION = 15;
+  public static final int    MAX_BIT_LENGTHS_FRACION = 10;
 
   protected AdfgFpgaFifoEvaluator() {
     super();
@@ -131,14 +131,15 @@ public class AdfgFpgaFifoEvaluator extends AbstractGenericFpgaFifoEvaluator {
       }
     }
 
-    final StringBuilder sbLogModel = new StringBuilder(
-        "Details of ILP model (compatible with GNU MathProg Language Reference).\n");
-    sbLogModel.append("-- variable initial domain:\n");
-    model.getVariables().stream().forEach(v -> sbLogModel
-        .append("var " + v.getName() + " integer >= " + v.getLowerLimit() + ", <= " + v.getUpperLimit() + ";\n"));
-    // objective function (minimize buffer sizes + phi)
+    logModel(model);
+    // call objective function (minimize buffer sizes + phi)
     final Result modelResult = model.minimise();
-    logModelAndResults(sbLogModel, model, modelResult);
+    final StringBuilder sbLogResult = new StringBuilder("-- variable final values: " + model.countVariables() + "\n");
+    for (int i = 0; i < model.countVariables(); i++) {
+      final Variable v = model.getVariable(i);
+      sbLogResult.append("var " + v.getName() + " integer = " + modelResult.get(i) + ";\n");
+    }
+    PreesmLogger.getLogger().fine(sbLogResult::toString);
 
     final State modelState = modelResult.getState();
     if (modelState != State.OPTIMAL && !model.getVariables().isEmpty()) {
@@ -146,12 +147,13 @@ public class AdfgFpgaFifoEvaluator extends AbstractGenericFpgaFifoEvaluator {
           + ".\n Check consistency or retry with extra delays on feedback FIFO buffers.");
     }
 
-    // fill FIFO sizes map result
+    // fill FIFO sizes map result in number of elements
     final Map<Fifo, Long> computedFifoSizes = new LinkedHashMap<>();
     final int indexOffset = 2 * ddg.edgeSet().size(); // offset for phi
     fifoToSizeVariableID.forEach((k, v) -> {
-      final long size = modelResult.get((long) v + indexOffset).longValue();
-      computedFifoSizes.put(k, size);
+      final long sizeInElts = modelResult.get((long) v + indexOffset).longValue();
+      final long typeSizeBits = scenario.getSimulationInfo().getDataTypeSizeInBit(k.getType());
+      computedFifoSizes.put(k, sizeInElts * typeSizeBits);
     });
 
     // TODO build a schedule using the normalized graph II and each actor offset (computed by the ILP)
@@ -180,8 +182,7 @@ public class AdfgFpgaFifoEvaluator extends AbstractGenericFpgaFifoEvaluator {
       logLambda.append(String.format("/actor <%s>\n", ani.aa.getName()));
 
       final String logLambdaPorts = ani.aa.getAllDataPorts().stream().map(dp -> {
-        final long typeSizeBits = scenario.getSimulationInfo().getDataTypeSizeInBit(dp.getFifo().getType());
-        final long rate = dp.getExpression().evaluate() * typeSizeBits;
+        final long rate = dp.getExpression().evaluate();
         final LongFraction lambdaFr = new LongFraction(-rate, ani.oriII).add(1L).multiply(rate);
         lambdaPerPort.put(dp, lambdaFr);
         final double valD = lambdaFr.doubleValue();
@@ -203,22 +204,17 @@ public class AdfgFpgaFifoEvaluator extends AbstractGenericFpgaFifoEvaluator {
   }
 
   /**
-   * Log expressions in the model, and variables values.
+   * Log expressions in the model, and variable domain.
    * 
-   * @param sbLogModel
-   *          StringBuilder to be appended and logged.
    * @param model
    *          Model to log (expressions).
-   * @param modelResult
-   *          Result to log (variables).
    */
-  protected static void logModelAndResults(final StringBuilder sbLogModel, final ExpressionsBasedModel model,
-      final Result modelResult) {
-    sbLogModel.append("-- varibale final values: " + model.countVariables() + "\n");
-    for (int i = 0; i < model.countVariables(); i++) {
-      final Variable v = model.getVariable(i);
-      sbLogModel.append("var " + v.getName() + " integer = " + modelResult.get(i) + ";\n");
-    }
+  protected static void logModel(final ExpressionsBasedModel model) {
+    final StringBuilder sbLogModel = new StringBuilder(
+        "Details of ILP model (compatible with GNU MathProg Language Reference).\n");
+    sbLogModel.append("-- variable initial domain:\n");
+    model.getVariables().stream().forEach(v -> sbLogModel
+        .append("var " + v.getName() + " integer >= " + v.getLowerLimit() + ", <= " + v.getUpperLimit() + ";\n"));
     sbLogModel.append("minimize o: ");
     sbLogModel.append(model.getVariables().stream().map(v -> v.getContributionWeight() + "*" + v.getName())
         .collect(Collectors.joining(" + ")));
@@ -404,13 +400,14 @@ public class AdfgFpgaFifoEvaluator extends AbstractGenericFpgaFifoEvaluator {
       final Map<DataPort, LongFraction> lambdaPerPort, final Fifo fifo, final AffineRelation ar) {
     final int index = fifoToSizeVariableID.size();
     final Variable sizeVar = new Variable("size_" + index);
-    PreesmLogger.getLogger().fine("Created variable " + sizeVar.getName() + " for fifo " + fifo.getId());
+    PreesmLogger.getLogger().fine(() -> "Created variable " + sizeVar.getName() + " for fifo " + fifo.getId());
     sizeVar.setInteger(true);
     sizeVar.lower(0L); // could be refined to max(prod, cons, delau)
     // ojAlgo seems to bug if we set upper limit above Integer.MAX_VALUE
     model.addVariable(sizeVar);
     fifoToSizeVariableID.put(fifo, index);
     // write objective for data size to be minimized
+    // weighted by type size (used only for objective)
     final long typeSizeBits = scenario.getSimulationInfo().getDataTypeSizeInBit(fifo.getType());
     sizeVar.weight(typeSizeBits);
     // write objective for phase to be minimized (weight for positive and negative part should be equal)
@@ -426,7 +423,7 @@ public class AdfgFpgaFifoEvaluator extends AbstractGenericFpgaFifoEvaluator {
     final Delay delay = fifo.getDelay();
     long delaySize = 0L;
     if (delay != null) {
-      delaySize = delay.getExpression().evaluate() * typeSizeBits;
+      delaySize = delay.getExpression().evaluate();
     }
     // compute coefficients: lambda and others
     final LongFraction lambda_p = lambdaPerPort.get(fifo.getSourcePort());
@@ -434,7 +431,7 @@ public class AdfgFpgaFifoEvaluator extends AbstractGenericFpgaFifoEvaluator {
     // lambda is between 0 and rate, we take ceil to avoid fraction representation capacity overflow
     final long lambda_p_ceil = (lambda_p.getNumerator() + lambda_p.getDenominator() - 1L) / lambda_p.getDenominator();
     final long lambda_c_ceil = (lambda_c.getNumerator() + lambda_c.getDenominator() - 1L) / lambda_c.getDenominator();
-    final LongFraction lambda_sum = new LongFraction(lambda_p_ceil + lambda_c_ceil);
+    final long lambda_sum = lambda_p_ceil + lambda_c_ceil;
     final LongFraction coef_under = new LongFraction(ar.nProd + ar.dCons - 1L, ar.nProd)
         .getCeiledRounding(MAX_BIT_LENGTHS_FRACION);
     final LongFraction coef_over = new LongFraction(ar.nProd + ar.dCons - 1L, ar.dCons)
@@ -443,37 +440,40 @@ public class AdfgFpgaFifoEvaluator extends AbstractGenericFpgaFifoEvaluator {
     final AbstractActor tgt = fifo.getTargetPort().getContainingActor();
     final long srcII = mapActorNormalizedInfos.get(src).oriII;
     final long tgtII = mapActorNormalizedInfos.get(tgt).oriII;
-    final LongFraction a_p = new LongFraction(fifoProdSize, srcII).multiply(typeSizeBits);
-    final LongFraction a_c = new LongFraction(fifo.getTargetPort().getExpression().evaluate(), tgtII)
-        .multiply(typeSizeBits);
+    final LongFraction a_p = new LongFraction(fifoProdSize, srcII);
+    final LongFraction a_c = new LongFraction(fifo.getTargetPort().getExpression().evaluate(), tgtII);
     // get phi variables
     final long coefSign = ar.phiNegate ? -1L : 1L;
     final int index_2 = ar.phiIndex * 2;
     final Variable varPhiPos = model.getVariable(index_2);
     final Variable varPhiNeg = model.getVariable(index_2 + 1);
+    final StringBuilder constantsLog = new StringBuilder("n = " + ar.nProd + " d = " + ar.dCons + "\n");
+    constantsLog.append("a_p = " + a_p + " a_c = " + a_c + "\n");
     // write underflow constraint
-    final LongFraction sumConstantU = lambda_sum.subtract(delaySize).add(a_p.multiply(coef_under))
-        .getCeiledRounding(MAX_BIT_LENGTHS_FRACION);
-    final LongFraction coefPhiU = a_p.divide(ar.nProd).getFlooredRounding(MAX_BIT_LENGTHS_FRACION);
-    final long lcmDenomU = MathFunctionsHelper.lcm(sumConstantU.getDenominator(), coefPhiU.getDenominator());
-    final LongFraction sumConstantUreduced = sumConstantU.multiply(lcmDenomU);
-    final LongFraction coefPhiUreduced = coefPhiU.multiply(lcmDenomU);
-    // here the reduced denominators should be 1
-    final Expression expressionU = model.addExpression().lower(sumConstantUreduced.getNumerator());
-    expressionU.set(varPhiPos, coefPhiUreduced.getNumerator() * coefSign);
-    expressionU.set(varPhiNeg, coefPhiUreduced.getNumerator() * (-coefSign));
+    final LongFraction fractionConstantU = a_p.reciprocal().multiply(ar.nProd * (lambda_sum - delaySize));
+    final long ceilFractionConstantU = (fractionConstantU.getNumerator() + fractionConstantU.getDenominator() - 1L)
+        / fractionConstantU.getDenominator();
+    final long sumConstantU = ceilFractionConstantU + ar.nProd + ar.dCons + 1L;
+    constantsLog.append("ConstantU = " + sumConstantU + "\n");
+    final Expression expressionU = model.addExpression().lower(sumConstantU);
+    expressionU.set(varPhiPos, coefSign);
+    expressionU.set(varPhiNeg, -coefSign);
     // write overflow constraint
-    final LongFraction sumConstantO = lambda_sum.add(delaySize).add(a_p.multiply(coef_over))
-        .getCeiledRounding(MAX_BIT_LENGTHS_FRACION);
-    final LongFraction coefPhiO = a_c.divide(ar.dCons).getCeiledRounding(MAX_BIT_LENGTHS_FRACION);
-    final long lcmDenomO = MathFunctionsHelper.lcm(sumConstantO.getDenominator(), coefPhiO.getDenominator());
-    final LongFraction sumConstantOreduced = sumConstantO.multiply(lcmDenomO);
-    final LongFraction coefPhiOreduced = coefPhiO.multiply(lcmDenomO);
+    final LongFraction fractionConstantO = a_c.multiply(ar.nProd + ar.dCons - 1L);
+    final long ceilFractionConstantO = (fractionConstantO.getNumerator() + fractionConstantO.getDenominator() - 1L)
+        / fractionConstantO.getDenominator();
+    final long sumConstantO = ar.dCons * (lambda_sum + delaySize) + ceilFractionConstantO;
+    constantsLog.append("ConstantO = " + sumConstantO + "\n");
+    final LongFraction coefPhiO = a_c;
+    final long ceilCoefPhiO = (coefPhiO.getNumerator() + coefPhiO.getDenominator() - 1L) / coefPhiO.getDenominator();
+    final long floorCoefPhiO = coefPhiO.getNumerator() / coefPhiO.getDenominator();
+    constantsLog.append("CoefPhiO = " + coefPhiO + "\n");
     // here the reduced denominators should be 1
-    final Expression expressionO = model.addExpression().lower(sumConstantOreduced.getNumerator());
-    expressionO.set(varPhiPos, coefPhiOreduced.getNumerator() * (-coefSign));
-    expressionO.set(varPhiNeg, coefPhiOreduced.getNumerator() * coefSign);
-    expressionO.set(sizeVar, lcmDenomO);
+    final Expression expressionO = model.addExpression().lower(sumConstantO);
+    expressionO.set(varPhiPos, ceilCoefPhiO * (-coefSign));
+    expressionO.set(varPhiNeg, floorCoefPhiO * coefSign);
+    expressionO.set(sizeVar, ar.dCons);
+    PreesmLogger.getLogger().fine(constantsLog::toString);
   }
 
 }
