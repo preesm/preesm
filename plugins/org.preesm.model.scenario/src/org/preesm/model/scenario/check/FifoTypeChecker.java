@@ -48,7 +48,7 @@ public class FifoTypeChecker {
       if (typeSize != DefaultTypeSizes.UNKNOWN_TYPE) {
         // If typeName matches a default known type
         scenario.getSimulationInfo().getDataTypes().put(typeName, typeSize);
-        PreesmLogger.getLogger().warning(() -> "A default size of " + typeSize + " bits was used for '" + typeName
+        PreesmLogger.getLogger().info(() -> "A default size of " + typeSize + " bits was used for '" + typeName
             + "' in fifo '" + f.getId() + "' for this Workflow execution.");
       } else {
         // If typeName is completely unknown

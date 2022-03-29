@@ -90,7 +90,6 @@ import org.eclipse.ui.forms.widgets.Section;
 import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.model.pisdf.Fifo;
 import org.preesm.model.scenario.Scenario;
-import org.preesm.model.scenario.ScenarioConstants;
 import org.preesm.model.scenario.impl.DataTypeImpl;
 import org.preesm.model.scenario.util.DefaultTypeSizes;
 import org.preesm.model.slam.ComponentInstance;
@@ -543,7 +542,7 @@ public class SimulationPage extends ScenarioPage {
             dialogTitle, dialogMessage, init, validator);
         if (dialog.open() == Window.OK) {
           SimulationPage.this.scenario.getSimulationInfo().getDataTypes().put(dialog.getValue().trim(),
-              (long) ScenarioConstants.DEFAULT_DATA_TYPE_SIZE.getValue());
+              DefaultTypeSizes.getInstance().getTypeSizeOrDefault(dialog.getValue().trim()));
           tableViewer.refresh();
           propertyChanged(SimulationPage.this, IEditorPart.PROP_DIRTY);
           gd.heightHint = Math.max(50,

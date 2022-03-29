@@ -128,11 +128,11 @@ public final class DefaultTypeSizes {
     }
   }
 
-  public static boolean isSpecialType(String typeName) {
+  public boolean isSpecialType(String typeName) {
     return AxbTypeSize.isAxbType(typeName) || VitisTypeSize.isVitisType(typeName);
   }
 
-  public static long getSpecialTypeTokenSize(String typeName) {
+  public long getSpecialTypeTokenSize(String typeName) {
     if (AxbTypeSize.isAxbType(typeName)) {
       return AxbTypeSize.getAxbTokenSize(typeName);
     } else if (VitisTypeSize.isVitisType(typeName)) {
