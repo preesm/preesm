@@ -60,7 +60,7 @@ public class VitisTypeSize {
     long typeSize = Integer.parseInt(format);
 
     if (typeSize <= 0) {
-      throw new PreesmRuntimeException("'" + typeName + "' is not a valid name.");
+      return DefaultTypeSizes.UNKNOWN_TYPE;
     }
 
     return typeSize;
@@ -72,7 +72,7 @@ public class VitisTypeSize {
     long typeSize = Integer.parseInt(values[0]);
 
     if (typeSize <= 0) {
-      throw new PreesmRuntimeException("'" + typeName + "' is not a valid name.");
+      return DefaultTypeSizes.UNKNOWN_TYPE;
     }
 
     return typeSize;

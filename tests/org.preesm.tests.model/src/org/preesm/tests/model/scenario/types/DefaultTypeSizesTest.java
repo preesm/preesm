@@ -35,8 +35,10 @@
 package org.preesm.tests.model.scenario.types;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThrows;
 
 import org.junit.Test;
+import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.preesm.model.scenario.util.DefaultTypeSizes;
 
 /**
@@ -47,39 +49,304 @@ import org.preesm.model.scenario.util.DefaultTypeSizes;
 public class DefaultTypeSizesTest {
 
   @Test
+  public void testUnknownTypeSize() {
+    final long defaultTypeSize = DefaultTypeSizes.getInstance().getTypeSize("THIS_IS_AN_UNKNOWN_TYPENAME");
+    assertEquals(DefaultTypeSizes.UNKNOWN_TYPE, defaultTypeSize);
+  }
+
+  @Test
   public void testVoidTypeSize() {
-    final long defaultTypeSize = DefaultTypeSizes.getInstance().getTypeSizeOrDefault("void");
+    final long defaultTypeSize = DefaultTypeSizes.getInstance().getTypeSize("void");
     assertEquals(1L, defaultTypeSize);
   }
 
   @Test
   public void testCharTypeSize() {
-    final long defaultTypeSize = DefaultTypeSizes.getInstance().getTypeSizeOrDefault("char");
+    final long defaultTypeSize = DefaultTypeSizes.getInstance().getTypeSize("char");
+    assertEquals(8L, defaultTypeSize);
+  }
+
+  @Test
+  public void testUnsignedCharTypeSize() {
+    final long defaultTypeSize = DefaultTypeSizes.getInstance().getTypeSize("unsigned char");
     assertEquals(8L, defaultTypeSize);
   }
 
   @Test
   public void testShortTypeSize() {
-    final long defaultTypeSize = DefaultTypeSizes.getInstance().getTypeSizeOrDefault("short");
+    final long defaultTypeSize = DefaultTypeSizes.getInstance().getTypeSize("short");
     assertEquals(16L, defaultTypeSize);
   }
 
   @Test
-  public void testINT32TTypeSize() {
-    final long defaultTypeSize = DefaultTypeSizes.getInstance().getTypeSizeOrDefault("int32_t");
+  public void testUnsignedShortTypeSize() {
+    final long defaultTypeSize = DefaultTypeSizes.getInstance().getTypeSize("unsigned short");
+    assertEquals(16L, defaultTypeSize);
+  }
+
+  @Test
+  public void testIntTypeSize() {
+    final long defaultTypeSize = DefaultTypeSizes.getInstance().getTypeSize("int");
+    assertEquals(32L, defaultTypeSize);
+  }
+
+  @Test
+  public void testUnsignedIntTypeSize() {
+    final long defaultTypeSize = DefaultTypeSizes.getInstance().getTypeSize("unsigned int");
+    assertEquals(32L, defaultTypeSize);
+  }
+
+  @Test
+  public void testlongTypeSize() {
+    final long defaultTypeSize = DefaultTypeSizes.getInstance().getTypeSize("long");
+    assertEquals(64L, defaultTypeSize);
+  }
+
+  @Test
+  public void testUnsignedLongTypeSize() {
+    final long defaultTypeSize = DefaultTypeSizes.getInstance().getTypeSize("unsigned long");
+    assertEquals(64L, defaultTypeSize);
+  }
+
+  @Test
+  public void testLongLongTypeSize() {
+    final long defaultTypeSize = DefaultTypeSizes.getInstance().getTypeSize("long long");
+    assertEquals(64L, defaultTypeSize);
+  }
+
+  @Test
+  public void testUnsignedLongLongTypeSize() {
+    final long defaultTypeSize = DefaultTypeSizes.getInstance().getTypeSize("unsigned long long");
+    assertEquals(64L, defaultTypeSize);
+  }
+
+  @Test
+  public void testFloatTypeSize() {
+    final long defaultTypeSize = DefaultTypeSizes.getInstance().getTypeSize("float");
     assertEquals(32L, defaultTypeSize);
   }
 
   @Test
   public void testDoubleTypeSize() {
-    final long defaultTypeSize = DefaultTypeSizes.getInstance().getTypeSizeOrDefault("double");
+    final long defaultTypeSize = DefaultTypeSizes.getInstance().getTypeSize("double");
     assertEquals(64L, defaultTypeSize);
   }
 
   @Test
   public void testLongDoubleTypeSize() {
-    final long defaultTypeSize = DefaultTypeSizes.getInstance().getTypeSizeOrDefault("long double");
+    final long defaultTypeSize = DefaultTypeSizes.getInstance().getTypeSize("long double");
     assertEquals(128L, defaultTypeSize);
   }
 
+  @Test
+  public void testInt8TypeSize() {
+    final long defaultTypeSize = DefaultTypeSizes.getInstance().getTypeSize("int8_t");
+    assertEquals(8L, defaultTypeSize);
+  }
+
+  @Test
+  public void testInt16TypeSize() {
+    final long defaultTypeSize = DefaultTypeSizes.getInstance().getTypeSize("int16_t");
+    assertEquals(16L, defaultTypeSize);
+  }
+
+  @Test
+  public void testInt32TypeSize() {
+    final long defaultTypeSize = DefaultTypeSizes.getInstance().getTypeSize("int32_t");
+    assertEquals(32L, defaultTypeSize);
+  }
+
+  @Test
+  public void testInt64TypeSize() {
+    final long defaultTypeSize = DefaultTypeSizes.getInstance().getTypeSize("int64_t");
+    assertEquals(64L, defaultTypeSize);
+  }
+
+  @Test
+  public void testIntFast8TypeSize() {
+    final long defaultTypeSize = DefaultTypeSizes.getInstance().getTypeSize("int_fast8_t");
+    assertEquals(8L, defaultTypeSize);
+  }
+
+  @Test
+  public void testIntFast16TypeSize() {
+    final long defaultTypeSize = DefaultTypeSizes.getInstance().getTypeSize("int_fast16_t");
+    assertEquals(64L, defaultTypeSize);
+  }
+
+  @Test
+  public void testIntFast32TypeSize() {
+    final long defaultTypeSize = DefaultTypeSizes.getInstance().getTypeSize("int_fast32_t");
+    assertEquals(64L, defaultTypeSize);
+  }
+
+  @Test
+  public void testIntFast64TypeSize() {
+    final long defaultTypeSize = DefaultTypeSizes.getInstance().getTypeSize("int_fast64_t");
+    assertEquals(64L, defaultTypeSize);
+  }
+
+  @Test
+  public void testIntLeast8TypeSize() {
+    final long defaultTypeSize = DefaultTypeSizes.getInstance().getTypeSize("int_least8_t");
+    assertEquals(8L, defaultTypeSize);
+  }
+
+  @Test
+  public void testIntLeast16TypeSize() {
+    final long defaultTypeSize = DefaultTypeSizes.getInstance().getTypeSize("int_least16_t");
+    assertEquals(16L, defaultTypeSize);
+  }
+
+  @Test
+  public void testIntLeast32TypeSize() {
+    final long defaultTypeSize = DefaultTypeSizes.getInstance().getTypeSize("int_least32_t");
+    assertEquals(32L, defaultTypeSize);
+  }
+
+  @Test
+  public void testIntLeast64TypeSize() {
+    final long defaultTypeSize = DefaultTypeSizes.getInstance().getTypeSize("int_least64_t");
+    assertEquals(64L, defaultTypeSize);
+  }
+
+  @Test
+  public void testIntmaxTypeSize() {
+    final long defaultTypeSize = DefaultTypeSizes.getInstance().getTypeSize("intmax_t");
+    assertEquals(64L, defaultTypeSize);
+  }
+
+  @Test
+  public void testIntptrTypeSize() {
+    final long defaultTypeSize = DefaultTypeSizes.getInstance().getTypeSize("intptr_t");
+    assertEquals(64L, defaultTypeSize);
+  }
+
+  @Test
+  public void testUint8TypeSize() {
+    final long defaultTypeSize = DefaultTypeSizes.getInstance().getTypeSize("uint8_t");
+    assertEquals(8L, defaultTypeSize);
+  }
+
+  @Test
+  public void testUint16TypeSize() {
+    final long defaultTypeSize = DefaultTypeSizes.getInstance().getTypeSize("uint16_t");
+    assertEquals(16L, defaultTypeSize);
+  }
+
+  @Test
+  public void testUint32TypeSize() {
+    final long defaultTypeSize = DefaultTypeSizes.getInstance().getTypeSize("uint32_t");
+    assertEquals(32L, defaultTypeSize);
+  }
+
+  @Test
+  public void testUint64TypeSize() {
+    final long defaultTypeSize = DefaultTypeSizes.getInstance().getTypeSize("uint64_t");
+    assertEquals(64L, defaultTypeSize);
+  }
+
+  @Test
+  public void testUintFast8TypeSize() {
+    final long defaultTypeSize = DefaultTypeSizes.getInstance().getTypeSize("uint_fast8_t");
+    assertEquals(8L, defaultTypeSize);
+  }
+
+  @Test
+  public void testUintFast16TypeSize() {
+    final long defaultTypeSize = DefaultTypeSizes.getInstance().getTypeSize("uint_fast16_t");
+    assertEquals(64L, defaultTypeSize);
+  }
+
+  @Test
+  public void testUintFast32TypeSize() {
+    final long defaultTypeSize = DefaultTypeSizes.getInstance().getTypeSize("uint_fast32_t");
+    assertEquals(64L, defaultTypeSize);
+  }
+
+  @Test
+  public void testUintFast64TypeSize() {
+    final long defaultTypeSize = DefaultTypeSizes.getInstance().getTypeSize("uint_fast64_t");
+    assertEquals(64L, defaultTypeSize);
+  }
+
+  @Test
+  public void testUintLeast8TypeSize() {
+    final long defaultTypeSize = DefaultTypeSizes.getInstance().getTypeSize("uint_least8_t");
+    assertEquals(8L, defaultTypeSize);
+  }
+
+  @Test
+  public void testUintLeast16TypeSize() {
+    final long defaultTypeSize = DefaultTypeSizes.getInstance().getTypeSize("uint_least16_t");
+    assertEquals(16L, defaultTypeSize);
+  }
+
+  @Test
+  public void testUintLeast32TypeSize() {
+    final long defaultTypeSize = DefaultTypeSizes.getInstance().getTypeSize("uint_least32_t");
+    assertEquals(32L, defaultTypeSize);
+  }
+
+  @Test
+  public void testUintLeast64TypeSize() {
+    final long defaultTypeSize = DefaultTypeSizes.getInstance().getTypeSize("uint_least64_t");
+    assertEquals(64L, defaultTypeSize);
+  }
+
+  @Test
+  public void testUintmaxTypeSize() {
+    final long defaultTypeSize = DefaultTypeSizes.getInstance().getTypeSize("uintmax_t");
+    assertEquals(64L, defaultTypeSize);
+  }
+
+  @Test
+  public void testUintptrTypeSize() {
+    final long defaultTypeSize = DefaultTypeSizes.getInstance().getTypeSize("uintptr_t");
+    assertEquals(64L, defaultTypeSize);
+  }
+
+  @Test
+  public void testAxbFxpSize() {
+    assertEquals(10L, DefaultTypeSizes.getInstance().getTypeSize("AXB_FXP<-,5,5>"));
+    assertEquals(10L, DefaultTypeSizes.getInstance().getTypeSize("AXB_FXP<+,5,5>"));
+    assertEquals(11L, DefaultTypeSizes.getInstance().getTypeSize("AXB_FXP<1,5,5>"));
+    assertEquals(10L, DefaultTypeSizes.getInstance().getTypeSize("AXB_FXP<5,5>"));
+    assertEquals(10L, DefaultTypeSizes.getInstance().getTypeSize("AXB_FXP<15,-5>"));
+    assertEquals(10L, DefaultTypeSizes.getInstance().getTypeSize("AXB_FXP<-5,15>"));
+
+    assertEquals(DefaultTypeSizes.UNKNOWN_TYPE, DefaultTypeSizes.getInstance().getTypeSize("AXB_FXP<2,5,5>"));
+
+    assertThrows(PreesmRuntimeException.class, () -> DefaultTypeSizes.getInstance().getTypeSize("AXB_FXP<5,-5>"));
+  }
+
+  @Test
+  public void testAxbCfpSize() {
+    assertEquals(10L, DefaultTypeSizes.getInstance().getTypeSize("AXB_CFP<-,5,5,42>"));
+    assertEquals(10L, DefaultTypeSizes.getInstance().getTypeSize("AXB_CFP<+,5,5,42>"));
+    assertEquals(11L, DefaultTypeSizes.getInstance().getTypeSize("AXB_CFP<1,5,5,42>"));
+
+    assertEquals(DefaultTypeSizes.UNKNOWN_TYPE, DefaultTypeSizes.getInstance().getTypeSize("AXB_CFP<1,5,-5>"));
+  }
+
+  @Test
+  public void testVitisApIntSize() {
+    assertEquals(10L, DefaultTypeSizes.getInstance().getTypeSize("ap_int<10>"));
+    assertEquals(10L, DefaultTypeSizes.getInstance().getTypeSize("ap_uint<10>"));
+
+    assertEquals(DefaultTypeSizes.UNKNOWN_TYPE, DefaultTypeSizes.getInstance().getTypeSize("ap_int<0>"));
+    assertEquals(DefaultTypeSizes.UNKNOWN_TYPE, DefaultTypeSizes.getInstance().getTypeSize("ap_int<-1>"));
+  }
+
+  @Test
+  public void testVitisApFixedSize() {
+    assertEquals(10L, DefaultTypeSizes.getInstance().getTypeSize("ap_fixed<10,5>"));
+    assertEquals(10L, DefaultTypeSizes.getInstance().getTypeSize("ap_ufixed<10,5>"));
+    assertEquals(10L, DefaultTypeSizes.getInstance().getTypeSize("ap_ufixed<10,8, AP_RND>"));
+    assertEquals(10L, DefaultTypeSizes.getInstance().getTypeSize("ap_ufixed<10,8, AP_RND, AP_SAT>"));
+
+    assertEquals(DefaultTypeSizes.UNKNOWN_TYPE, DefaultTypeSizes.getInstance().getTypeSize("ap_ufixed<0,8, AP_RND>"));
+    assertEquals(DefaultTypeSizes.UNKNOWN_TYPE, DefaultTypeSizes.getInstance().getTypeSize("ap_ufixed<-1,8, AP_RND>"));
+    assertEquals(DefaultTypeSizes.UNKNOWN_TYPE, DefaultTypeSizes.getInstance().getTypeSize("ap_ufixed<10,8, ERROR>"));
+  }
 }
