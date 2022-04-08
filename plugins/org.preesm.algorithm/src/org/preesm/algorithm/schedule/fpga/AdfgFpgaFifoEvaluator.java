@@ -186,7 +186,7 @@ public class AdfgFpgaFifoEvaluator extends AbstractGenericFpgaFifoEvaluator {
         final LongFraction lambdaFr = new LongFraction(-rate, ani.oriII).add(1L).multiply(rate);
         lambdaPerPort.put(dp, lambdaFr);
         final double valD = lambdaFr.doubleValue();
-        if (valD < -1d) {
+        if (valD < 0d) {
           negativeDP.add(dp);
         }
         return String.format(Locale.US, "%s: %4.2e", dp.getName(), valD);
@@ -432,10 +432,6 @@ public class AdfgFpgaFifoEvaluator extends AbstractGenericFpgaFifoEvaluator {
     final long lambda_p_ceil = (lambda_p.getNumerator() + lambda_p.getDenominator() - 1L) / lambda_p.getDenominator();
     final long lambda_c_ceil = (lambda_c.getNumerator() + lambda_c.getDenominator() - 1L) / lambda_c.getDenominator();
     final long lambda_sum = lambda_p_ceil + lambda_c_ceil;
-    final LongFraction coef_under = new LongFraction(ar.nProd + ar.dCons - 1L, ar.nProd)
-        .getCeiledRounding(MAX_BIT_LENGTHS_FRACION);
-    final LongFraction coef_over = new LongFraction(ar.nProd + ar.dCons - 1L, ar.dCons)
-        .getCeiledRounding(MAX_BIT_LENGTHS_FRACION);
     final AbstractActor src = fifo.getSourcePort().getContainingActor();
     final AbstractActor tgt = fifo.getTargetPort().getContainingActor();
     final long srcII = mapActorNormalizedInfos.get(src).oriII;
