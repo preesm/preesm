@@ -148,7 +148,7 @@ public class OpenRefinementFeature extends AbstractCustomFeature {
             final IResource diagResource = ResourcesPlugin.getWorkspace().getRoot().getFile(diagramFile);
 
             // Check if the diaram file exists
-            if (diagResource == null) {
+            if (!diagResource.exists()) {
               MessageDialog.openError(dw.getShell(), "Problem opening editor",
                   "No diagram file for " + refinementPath.lastSegment());
             } else {
