@@ -77,7 +77,7 @@ public class DSEpointIR implements Clusterable {
 
   public static final String CSV_HEADER_STRING =
 
-      "Schedulability;Power;Latency;DurationII;Memory;AskedCuts;AskedPrecuts";
+      "Schedulability;Energy;Latency;DurationII;Memory;AskedCuts;AskedPrecuts";
 
   /**
    * Default constructor, with maximum values everywhere.
