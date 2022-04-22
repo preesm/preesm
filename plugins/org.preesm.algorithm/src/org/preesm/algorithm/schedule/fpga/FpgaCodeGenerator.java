@@ -8,16 +8,22 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
+import java.util.SortedMap;
 import java.util.stream.Collectors;
 import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.VelocityEngine;
 import org.eclipse.xtext.xbase.lib.Pair;
+import org.preesm.algorithm.pisdf.autodelays.HeuristicLoopBreakingDelays;
+import org.preesm.algorithm.pisdf.autodelays.TopologicalRanking;
+import org.preesm.algorithm.pisdf.autodelays.TopologicalRanking.TopoVisit;
 import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.preesm.commons.files.PreesmIOHelper;
 import org.preesm.commons.files.PreesmResourcesHelper;
 import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.commons.model.PreesmCopyTracker;
 import org.preesm.model.pisdf.AbstractActor;
+import org.preesm.model.pisdf.AbstractVertex;
 import org.preesm.model.pisdf.Actor;
 import org.preesm.model.pisdf.BroadcastActor;
 import org.preesm.model.pisdf.CHeaderRefinement;
@@ -38,6 +44,8 @@ import org.preesm.model.pisdf.Parameter;
 import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.pisdf.Port;
 import org.preesm.model.pisdf.UserSpecialActor;
+import org.preesm.model.pisdf.brv.BRVMethod;
+import org.preesm.model.pisdf.brv.PiBRV;
 import org.preesm.model.pisdf.check.RefinementChecker;
 import org.preesm.model.pisdf.util.CHeaderUsedLocator;
 import org.preesm.model.scenario.Scenario;
@@ -675,10 +683,23 @@ public class FpgaCodeGenerator {
     context.put("PREESM_SPECIAL_ACTORS", defs.toString());
     // 2.2- we add all other calls to the map
     final Map<Actor, Pair<String, String>> actorTemplateParts = new LinkedHashMap<>();
-    graph.getActorsWithRefinement().forEach(x -> {
-      // at this point, all actors should have a CHeaderRefinement
-      actorTemplateParts.put(x, AutoFillHeaderTemplatedFunctions.getFilledTemplateFunctionPart(x));
-    });
+
+    // Compute the topological sort to generate simulation compliant code for acyclic graphs
+    final HeuristicLoopBreakingDelays hlbd = new HeuristicLoopBreakingDelays();
+    final Map<AbstractVertex, Long> brv = PiBRV.compute(graph, BRVMethod.LCM);
+    hlbd.performAnalysis(graph, brv);
+    final Map<AbstractActor, TopoVisit> topoRanks = TopologicalRanking.topologicalASAPranking(hlbd);
+    final SortedMap<Integer, Set<AbstractActor>> irRankActors = TopologicalRanking.mapRankActors(topoRanks, false, 0);
+
+    for (final Entry<Integer, Set<AbstractActor>> actorSet : irRankActors.entrySet()) {
+      for (final AbstractActor actor : actorSet.getValue()) {
+        if (actor instanceof Actor) {
+          actorTemplateParts.put((Actor) actor,
+              AutoFillHeaderTemplatedFunctions.getFilledTemplateFunctionPart((Actor) actor));
+        }
+      }
+    }
+
     generateRegularActorCalls(actorTemplateParts, initActorsCalls, true);
     generateRegularActorCalls(actorTemplateParts, loopActorsCalls, false);
     // 2.3- we wrap the actor init calls
@@ -723,7 +744,7 @@ public class FpgaCodeGenerator {
     if (!initActorsCalls.isEmpty()) {
       topK.append(NAME_WRAPPER_INITPROTO + "();\n\n");
     }
-    loopActorsCalls.forEach((x, y) -> topK.append("  " + y));
+    loopActorsCalls.forEach((x, y) -> topK.append("  " + generateSimulationForLoop(y, brv.get(x))));
 
     topK.append("}\n}\n");
     context.put("PREESM_TOP_KERNEL", topK.toString());
@@ -917,7 +938,15 @@ public class FpgaCodeGenerator {
     final String funcFilledTemplate = AutoFillHeaderTemplatedFunctions.getFilledTemplatePrototypePart(cref, fp,
         correspondingArguments);
     return generateRegularActorCall(cref, new Pair<>(funcFilledTemplate, null), true);
+  }
 
+  protected String generateSimulationForLoop(final String actorCall, final long repetition) {
+    if (repetition > 1) {
+      return "#ifndef __SYNTHESIS__\n" + "  for(int i = 0; i < " + repetition + "; i++) {\n#endif\n    " + actorCall
+          + "#ifndef __SYNTHESIS__\n  }\n#endif\n";
+    } else {
+      return actorCall;
+    }
   }
 
   protected String writeReadKernelFile() {
