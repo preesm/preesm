@@ -90,7 +90,17 @@ public class AdfgFpgaFifoEvaluator extends AbstractGenericFpgaFifoEvaluator {
       // we separate neg. from pos. because unsure that ojAlgo handles negative integers
       final Variable varPhiPos = new Variable("phi_pos_" + index);
       varPhiPos.setInteger(true);
-      varPhiPos.lower(0L);
+
+      if (fifoAbs.isFullyDelayed()) {
+        varPhiPos.lower(0L);
+      } else {
+        // Add phi to represent delay before token production, production happens only during II cycles.
+        final AbstractActor src = ddg.getEdgeSource(fifoAbs);
+        final long srcII = mapActorNormalizedInfos.get(src).oriII;
+        final long srcET = mapActorNormalizedInfos.get(src).oriET;
+        varPhiPos.lower(srcET - srcII);
+      }
+
       model.addVariable(varPhiPos);
       PreesmLogger.getLogger()
           .fine("Created variable " + varPhiPos.getName() + " for fifo abs rep " + fifoAbs.fifos.get(0).getId());

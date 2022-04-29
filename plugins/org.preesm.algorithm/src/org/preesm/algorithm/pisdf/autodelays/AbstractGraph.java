@@ -298,7 +298,12 @@ public class AbstractGraph {
     for (final FifoAbstraction fa : absGraph.edgeSet()) {
       final AbstractActor src = absGraph.getEdgeSource(fa);
       final AbstractActor tgt = absGraph.getEdgeTarget(fa);
-      if (undirectedGraph.getEdge(src, tgt) == null) {
+      final FifoAbstraction edge = undirectedGraph.getEdge(src, tgt);
+      if (edge == null) {
+        undirectedGraph.addEdge(src, tgt, fa);
+      } else if (edge.fullyDelayed) {
+        // Gives priority to edges without delays. Required for ADFG computation in FPGA scheduling.
+        undirectedGraph.removeEdge(edge);
         undirectedGraph.addEdge(src, tgt, fa);
       }
     }
