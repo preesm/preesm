@@ -1,6 +1,7 @@
 package org.preesm.algorithm.schedule.fpga;
 
 import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
@@ -332,9 +333,10 @@ public class AdfgFpgaFifoEvaluator extends AbstractGenericFpgaFifoEvaluator {
     final Expression expression = model.addExpression().level(0L);
     // init arrays storing coefs for memoization
     final AffineRelation[] ars = new AffineRelation[cycleSize];
-    final long[] coefsPhi = new long[cycleSize];
+    // final long[] coefsPhi = new long[cycleSize];
+    final BigInteger[] coefsPhi = new BigInteger[cycleSize];
     for (int i = 0; i < coefsPhi.length; ++i) {
-      coefsPhi[i] = 1;
+      coefsPhi[i] = BigInteger.ONE;
     }
     int nbPhi = 0;
     long mulN = 1;
@@ -349,22 +351,22 @@ public class AdfgFpgaFifoEvaluator extends AbstractGenericFpgaFifoEvaluator {
       ars[nbPhi] = ar;
 
       for (int i = 0; i < nbPhi; ++i) {
-        coefsPhi[i] *= ar.nProd;
+        coefsPhi[i] = coefsPhi[i].multiply(BigInteger.valueOf(ar.nProd));
       }
       for (int i = nbPhi + 1; i < coefsPhi.length; ++i) {
-        coefsPhi[i] *= ar.dCons;
+        coefsPhi[i] = coefsPhi[i].multiply(BigInteger.valueOf(ar.dCons));
       }
       mulN *= ar.nProd;
       mulD *= ar.dCons;
       long g = MathFunctionsHelper.gcd(mulN, mulD);
       mulN /= g;
       mulD /= g;
-      g = coefsPhi[0];
+      BigInteger gb = coefsPhi[0];
       for (int i = 0; i < coefsPhi.length; ++i) {
-        g = MathFunctionsHelper.gcd(g, coefsPhi[i]);
+        gb = gb.gcd(coefsPhi[i]);
       }
       for (int i = 0; i < coefsPhi.length; ++i) {
-        coefsPhi[i] = coefsPhi[i] / g;
+        coefsPhi[i] = coefsPhi[i].divide(gb);
       }
       ++nbPhi;
     }
@@ -377,9 +379,10 @@ public class AdfgFpgaFifoEvaluator extends AbstractGenericFpgaFifoEvaluator {
       final long coefSign = ars[i].phiNegate ? -1L : 1L;
       final int index_2 = ars[i].phiIndex * 2;
       final Variable varPhiPos = model.getVariable(index_2);
-      expression.set(varPhiPos, coefsPhi[i] * coefSign);
+      final long coefPhi = coefsPhi[i].longValueExact();
+      expression.set(varPhiPos, coefPhi * coefSign);
       final Variable varPhiNeg = model.getVariable(index_2 + 1);
-      expression.set(varPhiNeg, coefsPhi[i] * (-coefSign));
+      expression.set(varPhiNeg, coefPhi * (-coefSign));
     }
 
   }
@@ -412,7 +415,7 @@ public class AdfgFpgaFifoEvaluator extends AbstractGenericFpgaFifoEvaluator {
     final Variable sizeVar = new Variable("size_" + index);
     PreesmLogger.getLogger().fine(() -> "Created variable " + sizeVar.getName() + " for fifo " + fifo.getId());
     sizeVar.setInteger(true);
-    sizeVar.lower(0L); // could be refined to max(prod, cons, delau)
+    sizeVar.lower(2L); // could be refined to max(prod, cons, delau)
     // ojAlgo seems to bug if we set upper limit above Integer.MAX_VALUE
     model.addVariable(sizeVar);
     fifoToSizeVariableID.put(fifo, index);
