@@ -3,6 +3,8 @@ package org.preesm.algorithm.schedule.fpga;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
@@ -65,8 +67,23 @@ public class AdfgFpgaFifoEvaluator extends AbstractGenericFpgaFifoEvaluator {
       mapActorNormalizedInfos.putAll(checkAndSetActorNormalizedInfos(cc, scenario, brv));
     }
 
+    // Increase actor II for small differences to avoid overflow in ADFG cycle computation
+    final List<ActorNormalizedInfos> listInfos = new ArrayList<>(mapActorNormalizedInfos.values());
+    Collections.sort(listInfos, new DecreasingActorIIComparator());
+    for (int i = 0; i < listInfos.size() - 1; i++) {
+      ActorNormalizedInfos current = listInfos.get(i);
+      ActorNormalizedInfos next = listInfos.get(i + 1);
+      if (current.oriII != next.oriII && (current.oriII - next.oriII) / next.oriII < 0.01) {
+        long updatedET = Math.max(current.oriII, next.oriET);
+        ActorNormalizedInfos updatedNext = new ActorNormalizedInfos(next.aa, next.ori, updatedET, current.oriII,
+            next.brv);
+        mapActorNormalizedInfos.put(updatedNext.aa, updatedNext);
+        listInfos.set(i + 1, updatedNext);
+      }
+    }
+
     // compute the lambda of each actor
-    final Map<DataPort, LongFraction> lambdaPerPort = computeAndLogLambdas(scenario, mapActorNormalizedInfos);
+    final Map<DataPort, LongFraction> lambdaPerPort = computeAndLogLambdas(mapActorNormalizedInfos);
 
     // compute the fifo sizes thanks to the ARS ILP formulation of ADFG
     // ILP stands for Integer Linear Programming
@@ -176,14 +193,12 @@ public class AdfgFpgaFifoEvaluator extends AbstractGenericFpgaFifoEvaluator {
   /**
    * Compute and log all lambda (as map per data port). Lambda are symmetrical: upper = lower.
    * 
-   * @param scenario
-   *          Scenario where to find type sizes in bits.
    * @param mapActorNormalizedInfos
    *          Standard information about actors, used to get II.
    * @return Map of lambda per data port of all actors in the given map.
    */
-  protected static Map<DataPort, LongFraction> computeAndLogLambdas(final Scenario scenario,
-      final Map<AbstractActor, ActorNormalizedInfos> mapActorNormalizedInfos) {
+  protected static Map<DataPort, LongFraction>
+      computeAndLogLambdas(final Map<AbstractActor, ActorNormalizedInfos> mapActorNormalizedInfos) {
     final Map<DataPort, LongFraction> lambdaPerPort = new LinkedHashMap<>();
     final StringBuilder logLambda = new StringBuilder(
         "Lambda of actor ports (in number of tokens between 0 and the rate, the closest to 0 the better):\n");
@@ -485,4 +500,10 @@ public class AdfgFpgaFifoEvaluator extends AbstractGenericFpgaFifoEvaluator {
     PreesmLogger.getLogger().fine(constantsLog::toString);
   }
 
+  public static class DecreasingActorIIComparator implements Comparator<ActorNormalizedInfos> {
+    @Override
+    public int compare(ActorNormalizedInfos arg0, ActorNormalizedInfos arg1) {
+      return Long.compare(arg1.oriII, arg0.oriII);
+    }
+  }
 }
