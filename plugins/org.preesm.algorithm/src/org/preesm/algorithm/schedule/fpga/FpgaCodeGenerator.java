@@ -683,23 +683,10 @@ public class FpgaCodeGenerator {
     context.put("PREESM_SPECIAL_ACTORS", defs.toString());
     // 2.2- we add all other calls to the map
     final Map<Actor, Pair<String, String>> actorTemplateParts = new LinkedHashMap<>();
-
-    // Compute the topological sort to generate simulation compliant code for acyclic graphs
-    final HeuristicLoopBreakingDelays hlbd = new HeuristicLoopBreakingDelays();
-    final Map<AbstractVertex, Long> brv = PiBRV.compute(graph, BRVMethod.LCM);
-    hlbd.performAnalysis(graph, brv);
-    final Map<AbstractActor, TopoVisit> topoRanks = TopologicalRanking.topologicalASAPranking(hlbd);
-    final SortedMap<Integer, Set<AbstractActor>> irRankActors = TopologicalRanking.mapRankActors(topoRanks, false, 0);
-
-    for (final Entry<Integer, Set<AbstractActor>> actorSet : irRankActors.entrySet()) {
-      for (final AbstractActor actor : actorSet.getValue()) {
-        if (actor instanceof Actor) {
-          actorTemplateParts.put((Actor) actor,
-              AutoFillHeaderTemplatedFunctions.getFilledTemplateFunctionPart((Actor) actor));
-        }
-      }
-    }
-
+    graph.getActorsWithRefinement().forEach(x -> {
+      // at this point, all actors should have a CHeaderRefinement
+      actorTemplateParts.put(x, AutoFillHeaderTemplatedFunctions.getFilledTemplateFunctionPart(x));
+    });
     generateRegularActorCalls(actorTemplateParts, initActorsCalls, true);
     generateRegularActorCalls(actorTemplateParts, loopActorsCalls, false);
     // 2.3- we wrap the actor init calls
@@ -744,7 +731,21 @@ public class FpgaCodeGenerator {
     if (!initActorsCalls.isEmpty()) {
       topK.append(NAME_WRAPPER_INITPROTO + "();\n\n");
     }
-    loopActorsCalls.forEach((x, y) -> topK.append("  " + generateSimulationForLoop(y, brv.get(x))));
+
+    // Compute the topological sort to generate simulation compliant code for acyclic graphs
+    final HeuristicLoopBreakingDelays hlbd = new HeuristicLoopBreakingDelays();
+    final Map<AbstractVertex, Long> brv = PiBRV.compute(graph, BRVMethod.LCM);
+    hlbd.performAnalysis(graph, brv);
+    final Map<AbstractActor, TopoVisit> topoRanks = TopologicalRanking.topologicalASAPranking(hlbd);
+    final SortedMap<Integer, Set<AbstractActor>> irRankActors = TopologicalRanking.mapRankActors(topoRanks, false, 0);
+
+    for (final Entry<Integer, Set<AbstractActor>> actorSet : irRankActors.entrySet()) {
+      for (final AbstractActor actor : actorSet.getValue()) {
+        if (loopActorsCalls.containsKey(actor)) {
+          topK.append("  " + generateSimulationForLoop(loopActorsCalls.get(actor), brv.get(actor)));
+        }
+      }
+    }
 
     topK.append("}\n}\n");
     context.put("PREESM_TOP_KERNEL", topK.toString());
