@@ -347,9 +347,9 @@ public class AdfgFpgaFifoEvaluator extends AbstractGenericFpgaFifoEvaluator {
     // the constraint expression must be always equal to 0
     final Expression expression = model.addExpression().level(0L);
     // init arrays storing coefs for memoization
-    final AffineRelation[] ars = new AffineRelation[cycleSize];
-    // final long[] coefsPhi = new long[cycleSize];
-    final BigInteger[] coefsPhi = new BigInteger[cycleSize];
+    final AffineRelation[] ars = new AffineRelation[cycleSize - 1];
+    // final long[] coefsPhi = new long[cycleSize - 1];
+    final BigInteger[] coefsPhi = new BigInteger[cycleSize - 1];
     for (int i = 0; i < coefsPhi.length; ++i) {
       coefsPhi[i] = BigInteger.ONE;
     }
@@ -366,10 +366,10 @@ public class AdfgFpgaFifoEvaluator extends AbstractGenericFpgaFifoEvaluator {
       ars[nbPhi] = ar;
 
       for (int i = 0; i < nbPhi; ++i) {
-        coefsPhi[i] = coefsPhi[i].multiply(BigInteger.valueOf(ar.nProd));
+        coefsPhi[i] = coefsPhi[i].multiply(BigInteger.valueOf(ar.dCons));
       }
       for (int i = nbPhi + 1; i < coefsPhi.length; ++i) {
-        coefsPhi[i] = coefsPhi[i].multiply(BigInteger.valueOf(ar.dCons));
+        coefsPhi[i] = coefsPhi[i].multiply(BigInteger.valueOf(ar.nProd));
       }
       mulN *= ar.nProd;
       mulD *= ar.dCons;
@@ -377,7 +377,7 @@ public class AdfgFpgaFifoEvaluator extends AbstractGenericFpgaFifoEvaluator {
       mulN /= g;
       mulD /= g;
       BigInteger gb = coefsPhi[0];
-      for (int i = 0; i < coefsPhi.length; ++i) {
+      for (int i = 1; i < coefsPhi.length; ++i) {
         gb = gb.gcd(coefsPhi[i]);
       }
       for (int i = 0; i < coefsPhi.length; ++i) {
@@ -390,7 +390,7 @@ public class AdfgFpgaFifoEvaluator extends AbstractGenericFpgaFifoEvaluator {
       throw new PreesmRuntimeException("Some cycles do not satisfy consistency Part 1.");
     }
     // create equation
-    for (int i = 0; i < ars.length - 1; ++i) {
+    for (int i = 0; i < ars.length; ++i) {
       final long coefSign = ars[i].phiNegate ? -1L : 1L;
       final int index_2 = ars[i].phiIndex * 2;
       final Variable varPhiPos = model.getVariable(index_2);
@@ -477,7 +477,7 @@ public class AdfgFpgaFifoEvaluator extends AbstractGenericFpgaFifoEvaluator {
     final LongFraction fractionConstantU = a_p.reciprocal().multiply(ar.nProd * (lambda_sum - delaySize));
     final long ceilFractionConstantU = (fractionConstantU.getNumerator() + fractionConstantU.getDenominator() - 1L)
         / fractionConstantU.getDenominator();
-    final long sumConstantU = ceilFractionConstantU + ar.nProd + ar.dCons + 1L;
+    final long sumConstantU = ceilFractionConstantU + ar.nProd + ar.dCons - 1L;
     constantsLog.append("ConstantU = " + sumConstantU + "\n");
     final Expression expressionU = model.addExpression().lower(sumConstantU);
     expressionU.set(varPhiPos, coefSign);
