@@ -2,9 +2,11 @@ package org.preesm.algorithm.schedule.fpga;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Deque;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
@@ -13,6 +15,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
+import org.apache.commons.math3.fraction.BigFraction;
 import org.eclipse.xtext.xbase.lib.Pair;
 import org.jgrapht.GraphPath;
 import org.jgrapht.alg.cycle.PatonCycleBase;
@@ -28,7 +31,6 @@ import org.preesm.algorithm.pisdf.autodelays.AbstractGraph;
 import org.preesm.algorithm.pisdf.autodelays.AbstractGraph.FifoAbstraction;
 import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.preesm.commons.logger.PreesmLogger;
-import org.preesm.commons.math.LongFraction;
 import org.preesm.commons.math.MathFunctionsHelper;
 import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.AbstractVertex;
@@ -67,23 +69,59 @@ public class AdfgFpgaFifoEvaluator extends AbstractGenericFpgaFifoEvaluator {
       mapActorNormalizedInfos.putAll(checkAndSetActorNormalizedInfos(cc, scenario, brv));
     }
 
+    // create intermediate FifoAbstraction graphs
+    final DefaultDirectedGraph<AbstractActor, FifoAbstraction> ddg = AbstractGraph.createAbsGraph(flatGraph, brv);
+    final DefaultUndirectedGraph<AbstractActor, FifoAbstraction> dug = AbstractGraph.undirectedGraph(ddg);
+
+    // Perform rounding of actors II ratios to avoid overflow in ADFG channel computation
+    // TODO perform additional optimization on n/d ratios
+    final Deque<FifoAbstraction> workList = new ArrayDeque<>();
+    workList.addAll(dug.edgeSet());
+    while (!workList.isEmpty()) {
+      FifoAbstraction fifoAbs = workList.pop();
+      final AbstractActor src = ddg.getEdgeSource(fifoAbs);
+      final AbstractActor tgt = ddg.getEdgeTarget(fifoAbs);
+      final long srcII = mapActorNormalizedInfos.get(src).oriII;
+      final long tgtII = mapActorNormalizedInfos.get(tgt).oriII;
+      if (srcII != tgtII) {
+        final long min = Math.min(srcII, tgtII);
+        final long max = Math.max(srcII, tgtII);
+        final long factor = Math.round((double) max / min);
+        final long diff = max - min * factor;
+        if (diff != 0 && (double) Math.abs(diff) / max < 0.05) {
+          final long updatedMin;
+          final long updatedMax;
+          if (diff < 0 || (double) Math.abs(diff) / min < 0.05) {
+            updatedMin = (max + factor - 1) / factor;
+            updatedMax = updatedMin * factor;
+          } else {
+            updatedMin = min;
+            updatedMax = max + min - diff;
+          }
+          final long updatedSrcII = srcII == min ? updatedMin : updatedMax;
+          final long updatedTgtII = tgtII == min ? updatedMin : updatedMax;
+          updateIIInfo(mapActorNormalizedInfos, src, updatedSrcII);
+          updateIIInfo(mapActorNormalizedInfos, tgt, updatedTgtII);
+          workList.addAll(dug.edgesOf(src));
+          workList.addAll(dug.edgesOf(tgt));
+        }
+      }
+    }
+
     // Increase actor II for small differences to avoid overflow in ADFG cycle computation
     final List<ActorNormalizedInfos> listInfos = new ArrayList<>(mapActorNormalizedInfos.values());
     Collections.sort(listInfos, new DecreasingActorIIComparator());
     for (int i = 0; i < listInfos.size() - 1; i++) {
       ActorNormalizedInfos current = listInfos.get(i);
       ActorNormalizedInfos next = listInfos.get(i + 1);
-      if (current.oriII != next.oriII && (current.oriII - next.oriII) / next.oriII < 0.01) {
-        long updatedET = Math.max(current.oriII, next.oriET);
-        ActorNormalizedInfos updatedNext = new ActorNormalizedInfos(next.aa, next.ori, updatedET, current.oriII,
-            next.brv);
-        mapActorNormalizedInfos.put(updatedNext.aa, updatedNext);
-        listInfos.set(i + 1, updatedNext);
+      if (current.oriII != next.oriII && current.oriII / next.oriII < 1.01) {
+        updateIIInfo(mapActorNormalizedInfos, next.aa, current.oriII);
+        listInfos.set(i + 1, mapActorNormalizedInfos.get(next.aa));
       }
     }
 
     // compute the lambda of each actor
-    final Map<DataPort, LongFraction> lambdaPerPort = computeAndLogLambdas(mapActorNormalizedInfos);
+    final Map<DataPort, BigFraction> lambdaPerPort = computeAndLogLambdas(mapActorNormalizedInfos);
 
     // compute the fifo sizes thanks to the ARS ILP formulation of ADFG
     // ILP stands for Integer Linear Programming
@@ -91,10 +129,6 @@ public class AdfgFpgaFifoEvaluator extends AbstractGenericFpgaFifoEvaluator {
     // ADFG stands for Affine DataFlow Graph (work of Adnan Bouakaz)
     // ojAlgo dependency should be used to create the model because it has dedicated code to ILP,
     // or Choco (but not dedicated to ILP) at last resort.
-
-    // create intermediate FifoAbstraction graphs
-    final DefaultDirectedGraph<AbstractActor, FifoAbstraction> ddg = AbstractGraph.createAbsGraph(flatGraph, brv);
-    final DefaultUndirectedGraph<AbstractActor, FifoAbstraction> dug = AbstractGraph.undirectedGraph(ddg);
 
     // build model
     // create Maps to retrieve ID of variables (ID in order of addition in the model)
@@ -191,15 +225,34 @@ public class AdfgFpgaFifoEvaluator extends AbstractGenericFpgaFifoEvaluator {
   }
 
   /**
+   * Update II Information in ActorNormalizedInfos map
+   * 
+   * @param mapActorNormalizedInfos
+   *          map to be updated
+   * @param aa
+   *          actor to update
+   * @param ii
+   *          new II
+   */
+  private void updateIIInfo(final Map<AbstractActor, ActorNormalizedInfos> mapActorNormalizedInfos,
+      final AbstractActor aa, final long ii) {
+    ActorNormalizedInfos ori = mapActorNormalizedInfos.get(aa);
+    final long updatedET = Math.max(ori.oriET, ii);
+    ActorNormalizedInfos updated = new ActorNormalizedInfos(ori.aa, ori.ori, updatedET, ii, ori.brv);
+    mapActorNormalizedInfos.put(ori.aa, updated);
+  }
+
+  /**
    * Compute and log all lambda (as map per data port). Lambda are symmetrical: upper = lower.
    * 
    * @param mapActorNormalizedInfos
    *          Standard information about actors, used to get II.
    * @return Map of lambda per data port of all actors in the given map.
    */
-  protected static Map<DataPort, LongFraction>
+  protected static Map<DataPort, BigFraction>
+
       computeAndLogLambdas(final Map<AbstractActor, ActorNormalizedInfos> mapActorNormalizedInfos) {
-    final Map<DataPort, LongFraction> lambdaPerPort = new LinkedHashMap<>();
+    final Map<DataPort, BigFraction> lambdaPerPort = new LinkedHashMap<>();
     final StringBuilder logLambda = new StringBuilder(
         "Lambda of actor ports (in number of tokens between 0 and the rate, the closest to 0 the better):\n");
 
@@ -209,7 +262,7 @@ public class AdfgFpgaFifoEvaluator extends AbstractGenericFpgaFifoEvaluator {
 
       final String logLambdaPorts = ani.aa.getAllDataPorts().stream().map(dp -> {
         final long rate = dp.getExpression().evaluate();
-        final LongFraction lambdaFr = new LongFraction(-rate, ani.oriII).add(1L).multiply(rate);
+        final BigFraction lambdaFr = new BigFraction(-rate, ani.oriII).add(1L).multiply(rate);
         lambdaPerPort.put(dp, lambdaFr);
         final double valD = lambdaFr.doubleValue();
         if (valD < 0d) {
@@ -297,9 +350,10 @@ public class AdfgFpgaFifoEvaluator extends AbstractGenericFpgaFifoEvaluator {
       final AbstractActor tgt = ddg.getEdgeTarget(fa);
       final long srcII = mapActorNormalizedInfos.get(src).oriII;
       final long tgtII = mapActorNormalizedInfos.get(tgt).oriII;
-      final long gcdII = MathFunctionsHelper.gcd(tgtII, srcII);
-      final AffineRelation ar = new AffineRelation(fa.getProdRate() * (tgtII / gcdII),
-          fa.getConsRate() * (srcII / gcdII), fifoAbsToPhiVariableID.get(fa), false);
+      final long nProd = fa.getProdRate() * tgtII;
+      final long dCons = fa.getConsRate() * srcII;
+      final long gcd = MathFunctionsHelper.gcd(nProd, dCons);
+      final AffineRelation ar = new AffineRelation(nProd / gcd, dCons / gcd, fifoAbsToPhiVariableID.get(fa), false);
       ddgAR.addEdge(src, tgt, ar);
       if (src != tgt) {
         final AffineRelation arReverse = new AffineRelation(ar.dCons, ar.nProd, ar.phiIndex, true);
@@ -357,6 +411,7 @@ public class AdfgFpgaFifoEvaluator extends AbstractGenericFpgaFifoEvaluator {
     long mulN = 1;
     long mulD = 1;
     // update all memoized coefs
+    // Algorithm is applying required coefficient to all phi at once, which is equivalent to ADFG proposition 2.8
     final Iterator<AbstractActor> aaIterator = cycleAA.iterator();
     AbstractActor dest = aaIterator.next();
     while (aaIterator.hasNext()) {
@@ -366,10 +421,10 @@ public class AdfgFpgaFifoEvaluator extends AbstractGenericFpgaFifoEvaluator {
       ars[nbPhi] = ar;
 
       for (int i = 0; i < nbPhi; ++i) {
-        coefsPhi[i] = coefsPhi[i].multiply(BigInteger.valueOf(ar.dCons));
+        coefsPhi[i] = coefsPhi[i].multiply(BigInteger.valueOf(ar.nProd));
       }
       for (int i = nbPhi + 1; i < coefsPhi.length; ++i) {
-        coefsPhi[i] = coefsPhi[i].multiply(BigInteger.valueOf(ar.nProd));
+        coefsPhi[i] = coefsPhi[i].multiply(BigInteger.valueOf(ar.dCons));
       }
       mulN *= ar.nProd;
       mulD *= ar.dCons;
@@ -425,7 +480,7 @@ public class AdfgFpgaFifoEvaluator extends AbstractGenericFpgaFifoEvaluator {
   protected static void generateChannelConstraint(final Scenario scenario, final ExpressionsBasedModel model,
       final Map<Fifo, Integer> fifoToSizeVariableID,
       final Map<AbstractActor, ActorNormalizedInfos> mapActorNormalizedInfos,
-      final Map<DataPort, LongFraction> lambdaPerPort, final Fifo fifo, final AffineRelation ar) {
+      final Map<DataPort, BigFraction> lambdaPerPort, final Fifo fifo, final AffineRelation ar) {
     final int index = fifoToSizeVariableID.size();
     final Variable sizeVar = new Variable("size_" + index);
     PreesmLogger.getLogger().fine(() -> "Created variable " + sizeVar.getName() + " for fifo " + fifo.getId());
@@ -454,18 +509,15 @@ public class AdfgFpgaFifoEvaluator extends AbstractGenericFpgaFifoEvaluator {
       delaySize = delay.getExpression().evaluate();
     }
     // compute coefficients: lambda and others
-    final LongFraction lambda_p = lambdaPerPort.get(fifo.getSourcePort());
-    final LongFraction lambda_c = lambdaPerPort.get(fifo.getTargetPort());
-    // lambda is between 0 and rate, we take ceil to avoid fraction representation capacity overflow
-    final long lambda_p_ceil = (lambda_p.getNumerator() + lambda_p.getDenominator() - 1L) / lambda_p.getDenominator();
-    final long lambda_c_ceil = (lambda_c.getNumerator() + lambda_c.getDenominator() - 1L) / lambda_c.getDenominator();
-    final long lambda_sum = lambda_p_ceil + lambda_c_ceil;
+    final BigFraction lambda_p = lambdaPerPort.get(fifo.getSourcePort());
+    final BigFraction lambda_c = lambdaPerPort.get(fifo.getTargetPort());
+    final BigFraction lambda_sum = lambda_p.add(lambda_c);
     final AbstractActor src = fifo.getSourcePort().getContainingActor();
     final AbstractActor tgt = fifo.getTargetPort().getContainingActor();
     final long srcII = mapActorNormalizedInfos.get(src).oriII;
     final long tgtII = mapActorNormalizedInfos.get(tgt).oriII;
-    final LongFraction a_p = new LongFraction(fifoProdSize, srcII);
-    final LongFraction a_c = new LongFraction(fifo.getTargetPort().getExpression().evaluate(), tgtII);
+    final BigFraction a_p = new BigFraction(fifoProdSize, srcII);
+    final BigFraction a_c = new BigFraction(fifo.getTargetPort().getExpression().evaluate(), tgtII);
     // get phi variables
     final long coefSign = ar.phiNegate ? -1L : 1L;
     final int index_2 = ar.phiIndex * 2;
@@ -473,31 +525,40 @@ public class AdfgFpgaFifoEvaluator extends AbstractGenericFpgaFifoEvaluator {
     final Variable varPhiNeg = model.getVariable(index_2 + 1);
     final StringBuilder constantsLog = new StringBuilder("n = " + ar.nProd + " d = " + ar.dCons + "\n");
     constantsLog.append("a_p = " + a_p + " a_c = " + a_c + "\n");
+    // compute common coefficients
+    final BigFraction a_cOverd = a_c.divide(ar.dCons);
+    final BigFraction fractionConstant = lambda_sum.add(a_cOverd.multiply(ar.nProd + ar.dCons - 1L));
     // write underflow constraint
-    final LongFraction fractionConstantU = a_p.reciprocal().multiply(ar.nProd * (lambda_sum - delaySize));
-    final long ceilFractionConstantU = (fractionConstantU.getNumerator() + fractionConstantU.getDenominator() - 1L)
-        / fractionConstantU.getDenominator();
-    final long sumConstantU = ceilFractionConstantU + ar.nProd + ar.dCons - 1L;
+    final BigFraction fractionSumConstantU = fractionConstant.subtract(delaySize).multiply(a_cOverd.reciprocal());
+    final long sumConstantU = fractionSumConstantU.getNumerator().longValueExact();
     constantsLog.append("ConstantU = " + sumConstantU + "\n");
     final Expression expressionU = model.addExpression().lower(sumConstantU);
-    expressionU.set(varPhiPos, coefSign);
-    expressionU.set(varPhiNeg, -coefSign);
+    final long coefPhiU = fractionSumConstantU.getDenominator().longValueExact();
+    constantsLog.append("CoefPhiU = " + coefPhiU + "\n");
+    expressionU.set(varPhiPos, coefPhiU * coefSign);
+    expressionU.set(varPhiNeg, coefPhiU * (-coefSign));
     // write overflow constraint
-    final LongFraction fractionConstantO = a_c.multiply(ar.nProd + ar.dCons - 1L);
-    final long ceilFractionConstantO = (fractionConstantO.getNumerator() + fractionConstantO.getDenominator() - 1L)
-        / fractionConstantO.getDenominator();
-    final long sumConstantO = ar.dCons * (lambda_sum + delaySize) + ceilFractionConstantO;
+    final BigFraction fractionSumConstantO = fractionConstant.add(delaySize).multiply(a_cOverd.reciprocal());
+    final BigFraction fractionCoefSize = a_cOverd.reciprocal();
+    final long sumConstantO = ceiling(fractionSumConstantO).longValueExact();
+    final long coefPhiO = 1;
+    final long coefSize = floor(fractionCoefSize).longValueExact();
     constantsLog.append("ConstantO = " + sumConstantO + "\n");
-    final LongFraction coefPhiO = a_c;
-    final long ceilCoefPhiO = (coefPhiO.getNumerator() + coefPhiO.getDenominator() - 1L) / coefPhiO.getDenominator();
-    final long floorCoefPhiO = coefPhiO.getNumerator() / coefPhiO.getDenominator();
     constantsLog.append("CoefPhiO = " + coefPhiO + "\n");
-    // here the reduced denominators should be 1
+    constantsLog.append("CoefSize = " + coefSize + "\n");
     final Expression expressionO = model.addExpression().lower(sumConstantO);
-    expressionO.set(varPhiPos, ceilCoefPhiO * (-coefSign));
-    expressionO.set(varPhiNeg, floorCoefPhiO * coefSign);
-    expressionO.set(sizeVar, ar.dCons);
+    expressionO.set(varPhiPos, coefPhiO * (-coefSign));
+    expressionO.set(varPhiNeg, coefPhiO * (coefSign));
+    expressionO.set(sizeVar, coefSize);
     PreesmLogger.getLogger().fine(constantsLog::toString);
+  }
+
+  private static BigInteger ceiling(BigFraction frac) {
+    return frac.getNumerator().add(frac.getDenominator()).subtract(BigInteger.ONE).divide(frac.getDenominator());
+  }
+
+  private static BigInteger floor(BigFraction frac) {
+    return frac.getNumerator().divide(frac.getDenominator());
   }
 
   public static class DecreasingActorIIComparator implements Comparator<ActorNormalizedInfos> {
