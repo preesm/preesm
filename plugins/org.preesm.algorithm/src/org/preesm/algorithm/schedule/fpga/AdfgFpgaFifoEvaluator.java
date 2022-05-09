@@ -2,11 +2,9 @@ package org.preesm.algorithm.schedule.fpga;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
-import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.Deque;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
@@ -73,41 +71,6 @@ public class AdfgFpgaFifoEvaluator extends AbstractGenericFpgaFifoEvaluator {
     final DefaultDirectedGraph<AbstractActor, FifoAbstraction> ddg = AbstractGraph.createAbsGraph(flatGraph, brv);
     final DefaultUndirectedGraph<AbstractActor, FifoAbstraction> dug = AbstractGraph.undirectedGraph(ddg);
 
-    // Perform rounding of actors II ratios to avoid overflow in ADFG channel computation
-    // TODO perform additional optimization on n/d ratios
-    final Deque<FifoAbstraction> workList = new ArrayDeque<>();
-    workList.addAll(dug.edgeSet());
-    while (!workList.isEmpty()) {
-      FifoAbstraction fifoAbs = workList.pop();
-      final AbstractActor src = ddg.getEdgeSource(fifoAbs);
-      final AbstractActor tgt = ddg.getEdgeTarget(fifoAbs);
-      final long srcII = mapActorNormalizedInfos.get(src).oriII;
-      final long tgtII = mapActorNormalizedInfos.get(tgt).oriII;
-      if (srcII != tgtII) {
-        final long min = Math.min(srcII, tgtII);
-        final long max = Math.max(srcII, tgtII);
-        final long factor = Math.round((double) max / min);
-        final long diff = max - min * factor;
-        if (diff != 0 && (double) Math.abs(diff) / max < 0.05) {
-          final long updatedMin;
-          final long updatedMax;
-          if (diff < 0 || (double) Math.abs(diff) / min < 0.05) {
-            updatedMin = (max + factor - 1) / factor;
-            updatedMax = updatedMin * factor;
-          } else {
-            updatedMin = min;
-            updatedMax = max + min - diff;
-          }
-          final long updatedSrcII = srcII == min ? updatedMin : updatedMax;
-          final long updatedTgtII = tgtII == min ? updatedMin : updatedMax;
-          updateIIInfo(mapActorNormalizedInfos, src, updatedSrcII);
-          updateIIInfo(mapActorNormalizedInfos, tgt, updatedTgtII);
-          workList.addAll(dug.edgesOf(src));
-          workList.addAll(dug.edgesOf(tgt));
-        }
-      }
-    }
-
     // Increase actor II for small differences to avoid overflow in ADFG cycle computation
     final List<ActorNormalizedInfos> listInfos = new ArrayList<>(mapActorNormalizedInfos.values());
     Collections.sort(listInfos, new DecreasingActorIIComparator());
@@ -141,7 +104,7 @@ public class AdfgFpgaFifoEvaluator extends AbstractGenericFpgaFifoEvaluator {
       fifoAbsToPhiVariableID.put(fifoAbs, index);
       // we separate neg. from pos. because unsure that ojAlgo handles negative integers
       final Variable varPhiPos = new Variable("phi_pos_" + index);
-      varPhiPos.setInteger(true);
+      varPhiPos.setInteger(false);
 
       if (fifoAbs.isFullyDelayed()) {
         varPhiPos.lower(0L);
@@ -157,7 +120,7 @@ public class AdfgFpgaFifoEvaluator extends AbstractGenericFpgaFifoEvaluator {
       PreesmLogger.getLogger()
           .fine("Created variable " + varPhiPos.getName() + " for fifo abs rep " + fifoAbs.fifos.get(0).getId());
       final Variable varPhiNeg = new Variable("phi_neg_" + index);
-      varPhiNeg.setInteger(true);
+      varPhiNeg.setInteger(false);
       varPhiNeg.lower(0L);
       // note that we cannot set an upper limit to both neg and post part, ojAlgo bug?!
       model.addVariable(varPhiNeg);
@@ -213,7 +176,7 @@ public class AdfgFpgaFifoEvaluator extends AbstractGenericFpgaFifoEvaluator {
     final Map<Fifo, Long> computedFifoSizes = new LinkedHashMap<>();
     final int indexOffset = 2 * ddg.edgeSet().size(); // offset for phi
     fifoToSizeVariableID.forEach((k, v) -> {
-      final long sizeInElts = modelResult.get((long) v + indexOffset).longValue();
+      final long sizeInElts = (long) Math.ceil(modelResult.get((long) v + indexOffset).floatValue());
       final long typeSizeBits = scenario.getSimulationInfo().getDataTypeSizeInBit(k.getType());
       computedFifoSizes.put(k, sizeInElts * typeSizeBits);
     });
@@ -484,7 +447,7 @@ public class AdfgFpgaFifoEvaluator extends AbstractGenericFpgaFifoEvaluator {
     final int index = fifoToSizeVariableID.size();
     final Variable sizeVar = new Variable("size_" + index);
     PreesmLogger.getLogger().fine(() -> "Created variable " + sizeVar.getName() + " for fifo " + fifo.getId());
-    sizeVar.setInteger(true);
+    sizeVar.setInteger(false);
     sizeVar.lower(2L); // could be refined to max(prod, cons, delau)
     // ojAlgo seems to bug if we set upper limit above Integer.MAX_VALUE
     model.addVariable(sizeVar);
