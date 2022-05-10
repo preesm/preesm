@@ -77,7 +77,7 @@ public class AdfgFpgaFifoEvaluator extends AbstractGenericFpgaFifoEvaluator {
     for (int i = 0; i < listInfos.size() - 1; i++) {
       ActorNormalizedInfos current = listInfos.get(i);
       ActorNormalizedInfos next = listInfos.get(i + 1);
-      if (current.oriII != next.oriII && current.oriII / next.oriII < 1.01) {
+      if (current.oriII != next.oriII && (float) current.oriII / next.oriII < 1.01) {
         updateIIInfo(mapActorNormalizedInfos, next.aa, current.oriII);
         listInfos.set(i + 1, mapActorNormalizedInfos.get(next.aa));
       }
