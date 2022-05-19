@@ -12,7 +12,7 @@ ${APPLI_NAME}.hwh: ${APPLI_NAME}.bit
 	mv design_1.hwh $@
 
 ${APPLI_NAME}.xsa: vivado/vivado.runs/impl_1/design_1_wrapper.bit
-	vivado -mode tcl -source $SCRIPTS_SUBDIR/script_vivado_xsa.tcl -name $@
+	vivado -mode tcl -source $SCRIPTS_SUBDIR/script_vivado_xsa.tcl -tclargs -name $@
 
 vivado/vivado.runs/impl_1/design_1_wrapper.bit: ${KERNEL_NAME_TOP}.zip ${KERNEL_NAME_READ}.zip ${KERNEL_NAME_WRITE}.zip
 	rm -rf vivado
