@@ -170,8 +170,6 @@ public class FpgaCodeGenerator {
     this.interfaceRates = interfaceRates;
     this.allFifoDepths = new LinkedHashMap<>();
 
-    final Map<AbstractVertex, Long> brv = PiBRV.compute(graph, BRVMethod.LCM);
-
     // the fifo sizes are given in bits while we want the depth in number of elements
     allFifoSizes.forEach((fifo, v) -> {
       final long dataTypeSize = scenario.getSimulationInfo().getDataTypeSizeInBit(fifo.getType());
@@ -204,6 +202,17 @@ public class FpgaCodeGenerator {
 
   }
 
+  /**
+   * Computes best packing to reduce the BRAM usage.
+   *
+   * @param fifo
+   *          The fifo to pack.
+   * @param depth
+   *          The initial depth.
+   * @param dataTypeSize
+   *          The size of a token in bit.
+   * @return A Pair<Long, Long> containing the width of the data pack and the new depth.
+   */
   private static Pair<Long, Long> computePacking(Fifo fifo, long depth, long dataTypeSize) {
     // If dataTypeSize matches a default size
     if (bramMap.containsKey(dataTypeSize))
