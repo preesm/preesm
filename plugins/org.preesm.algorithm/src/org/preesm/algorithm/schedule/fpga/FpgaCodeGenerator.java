@@ -3,7 +3,6 @@ package org.preesm.algorithm.schedule.fpga;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.StringWriter;
-import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -12,7 +11,6 @@ import java.util.Map.Entry;
 import java.util.Set;
 import java.util.SortedMap;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.VelocityEngine;
 import org.eclipse.xtext.xbase.lib.Pair;
@@ -120,6 +118,7 @@ public class FpgaCodeGenerator {
   public static final String STDFILE_LIB_XOCL_CPP    = "stdfiles/xilinxCodegen/xcl2.cpp";
   public static final String STDFILE_LIB_XOCL_HPP    = "stdfiles/xilinxCodegen/xcl2.hpp";
   public static final String SCRIPT_VIVADO_TCL       = "stdfiles/xilinxCodegen/script_vivado_xsa.tcl";
+  public static final String STDFILE_PACKING_HPP     = "stdfiles/xilinxCodegen/packing.hpp";
 
   public static final String NAME_WRAPPER_INITPROTO   = "preesmInitWrapper";
   public static final String PREFIX_WRAPPER_DELAYPROD = "wrapperProdDelay_";
@@ -137,31 +136,6 @@ public class FpgaCodeGenerator {
   private final Map<InterfaceActor, Pair<Long, Long>> interfaceRates;
   private final Map<Fifo, Long>                       allFifoDepths;
 
-  // Might be better to remove sizes of 1, 2, 4, 8, 16, 32 and 64 bits as they only allow
-  // the use of 32k/36k of the bram, if packing ends up being used.
-  // private static final Long[] bramSizes = { 1L, 2L, 4L, 8L, 9L, 16L, 18L, 32L, 36L, 64L, 72L };
-
-  // private static final Map<Long, Long> peeps = Map.of(1L, 32L * 1024, 2L, 16L * 1024, 4L, 8L * 1024, 8L, 4L * 1024,
-  // 9L,
-  // 4L * 1024, 16L, 2L * 1024, 18L, 2L * 1024, 32L, 1L * 1024, 36L, 1L * 1024, 64L, 512L, 72L, 512L);
-
-  // private static final Map<Long,
-  // Long> bramMap = Stream.of(new Long[][] { { 1L, 32L * 1024 }, { 2L, 16L * 1024 }, { 4L, 8L * 1024 },
-  // { 8L, 4L * 1024 }, { 9L, 4L * 1024 }, { 16L, 2L * 1024 }, { 18L, 2L * 1024 }, { 32L, 1L * 1024 },
-  // { 36L, 1L * 1024 }, { 64L, 512L }, { 72L, 512L } }).collect(Collectors.toMap(p -> p[0], p -> p[1]));
-
-  // Would ideally be pulled from the scenario
-  private static final Map<Long, Long> bramMap = Stream.of(new AbstractMap.SimpleImmutableEntry<>(1L, 32L * 1024),
-      new AbstractMap.SimpleImmutableEntry<>(2L, 16L * 1024), new AbstractMap.SimpleImmutableEntry<>(4L, 8L * 1024),
-      new AbstractMap.SimpleImmutableEntry<>(8L, 4L * 1024), new AbstractMap.SimpleImmutableEntry<>(9L, 4L * 1024),
-      new AbstractMap.SimpleImmutableEntry<>(16L, 2L * 1024), new AbstractMap.SimpleImmutableEntry<>(18L, 2L * 1024),
-      new AbstractMap.SimpleImmutableEntry<>(32L, 1L * 1024), new AbstractMap.SimpleImmutableEntry<>(36L, 1L * 1024),
-      new AbstractMap.SimpleImmutableEntry<>(64L, 512L), new AbstractMap.SimpleImmutableEntry<>(72L, 512L))
-      .collect(Collectors.toUnmodifiableMap(Map.Entry::getKey, Map.Entry::getValue));
-
-  private static final Long BRAM_36K = 36 * 1024L;
-  private static final Long BRAM_32K = 32 * 1024L;
-
   private FpgaCodeGenerator(final Scenario scenario, final FPGA fpga, final PiGraph graph,
       final Map<InterfaceActor, Pair<Long, Long>> interfaceRates, final Map<Fifo, Long> allFifoSizes) {
     this.fpga = fpga;
@@ -176,7 +150,6 @@ public class FpgaCodeGenerator {
       // ceil the depth
       final long depth = ((v + dataTypeSize - 1L) / dataTypeSize);
 
-      Pair<Long, Long> foo = computePacking(fifo, depth, dataTypeSize);
       // if a fifo depth is less than 2, we promote it to 2
       if (depth < 2L) {
         PreesmLogger.getLogger().info(() -> "Fifo " + fifo.getId() + " had depth " + depth + ", increasing it to 2.");
@@ -200,100 +173,6 @@ public class FpgaCodeGenerator {
           + "but only broadcasts having all equal port rates.");
     }
 
-  }
-
-  /**
-   * Computes best packing to reduce the BRAM usage.
-   *
-   * @param fifo
-   *          The fifo to pack.
-   * @param depth
-   *          The initial depth.
-   * @param dataTypeSize
-   *          The size of a token in bit.
-   * @return A Pair<Long, Long> containing the width of the data pack and the new depth.
-   */
-  private static Pair<Long, Long> computePacking(Fifo fifo, long depth, long dataTypeSize) {
-    // If dataTypeSize matches a default size
-    if (bramMap.containsKey(dataTypeSize))
-      return null;
-
-    long defaultBramWidth = Long.MAX_VALUE;
-
-    for (Map.Entry<Long, Long> bramEntry : bramMap.entrySet()) {
-      if (bramEntry.getKey() > dataTypeSize && bramEntry.getKey() < defaultBramWidth)
-        defaultBramWidth = bramEntry.getKey();
-    }
-
-    final long actualFootprint = depth * defaultBramWidth;
-
-    final long baseNbBram = (long) Math
-        .ceil((float) actualFootprint / (defaultBramWidth * bramMap.get(defaultBramWidth)));
-
-    // if the BRAM usage is already at 1, no packing needed
-    if (baseNbBram <= 1)
-      return null;
-
-    long bestBramWidth = defaultBramWidth;
-    long bestNbBram = baseNbBram;
-    long newDepth = depth;
-
-    // if defaultBramWidth is a power of 2, bram size is 32K, else it is 36K
-    // TODO: Only keep the 36K bram size and pack powers of 2 when needed.
-    if ((((defaultBramWidth & (defaultBramWidth - 1)) == 0) && (actualFootprint > BRAM_32K))
-        || (((defaultBramWidth & (defaultBramWidth - 1)) != 0) && (actualFootprint > BRAM_36K))) {
-      // if (footprint > BRAM_32K) {
-      // PreesmLogger.getLogger().fine("More than 1 BRAM is required.");
-
-      for (Map.Entry<Long, Long> bramEntry : bramMap.entrySet()) {
-
-        final long packingSize = bramEntry.getKey();
-
-        final float test = packingSize / (float) dataTypeSize;
-
-        // Skip if there isn't at least 2 data packed
-        if (test < 2.0f)
-          continue;
-
-        final long nbData = (long) Math.floor(test);
-
-        final Map<AbstractVertex, Long> brv = PiBRV.compute(fifo.getContainingPiGraph(), BRVMethod.LCM);
-
-        final long srcRv = brv.get(fifo.getSourcePort().getContainingActor());
-        final long tgtRv = brv.get(fifo.getTargetPort().getContainingActor());
-
-        final long srcRate = fifo.getSourcePort().getExpression().evaluate();
-        final long tgtRate = fifo.getTargetPort().getExpression().evaluate();
-
-        if (srcRv * srcRate != tgtRv * tgtRate) {
-          throw new PreesmRuntimeException(
-              fifo + " prod and cons do not match: " + srcRv * srcRate + "," + tgtRv * tgtRate);
-        }
-
-        // Check if the number of bram is reduced, and keep the best reduction
-        if ((srcRate * srcRv) % nbData == 0) {
-          final long packedDepth = (long) Math.ceil((float) depth / nbData);
-
-          final long packedFootprint = packedDepth * packingSize;
-
-          final long testNbBram = (long) Math.ceil((float) packedFootprint / (packingSize * bramMap.get(packingSize)));
-
-          // Compare this result with the previous best case
-          if (testNbBram < bestNbBram) {
-            bestNbBram = testNbBram;
-            bestBramWidth = packingSize;
-            newDepth = packedDepth;
-          }
-        }
-      }
-    }
-
-    if (bestNbBram != Long.MAX_VALUE) {
-      PreesmLogger.getLogger()
-          .fine(fifo + " can be packed. Reduction from " + baseNbBram + " to " + bestNbBram + " BRAM");
-    }
-
-    return new Pair<>(bestBramWidth, newDepth);
   }
 
   private static boolean checkPureBroadcasts(final PiGraph flatGraph) {
@@ -401,6 +280,9 @@ public class FpgaCodeGenerator {
 
       final String contentXOCLhpp = PreesmResourcesHelper.getInstance().read(STDFILE_LIB_XOCL_HPP, fcg.getClass());
       PreesmIOHelper.getInstance().print(codegenPath + STDFILE_LIB_XOCL_SUBDIR, "xcl2.hpp", contentXOCLhpp);
+
+      final String contentPackingHpp = PreesmResourcesHelper.getInstance().read(STDFILE_PACKING_HPP, fcg.getClass());
+      PreesmIOHelper.getInstance().print(codegenPath, "packing.hpp", contentPackingHpp);
 
       final String contentScriptXsa = PreesmResourcesHelper.getInstance().read(SCRIPT_VIVADO_TCL, fcg.getClass());
       PreesmIOHelper.getInstance().print(codegenPath + "/" + STDFILE_SCRIPT_SUBDIR, "script_vivado_xsa.tcl",

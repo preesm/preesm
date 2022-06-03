@@ -2,6 +2,7 @@ package org.preesm.algorithm.schedule.fpga;
 
 import java.util.HashMap;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -11,6 +12,7 @@ import org.eclipse.xtext.xbase.lib.Pair;
 import org.preesm.algorithm.mapper.ui.stats.EditorRunnable;
 import org.preesm.algorithm.mapper.ui.stats.IStatGenerator;
 import org.preesm.algorithm.mapper.ui.stats.StatEditorInput;
+import org.preesm.algorithm.schedule.fpga.TokenPackingAnalysis.PackedFifoConfig;
 import org.preesm.commons.doc.annotations.Parameter;
 import org.preesm.commons.doc.annotations.Port;
 import org.preesm.commons.doc.annotations.PreesmTask;
@@ -59,7 +61,11 @@ import org.preesm.workflow.implement.AbstractWorkflowNodeImplementation;
             description = "The name of fifo evaluator to be used.",
             values = { @Value(name = AsapFpgaFifoEvaluator.FIFO_EVALUATOR_AVG, effect = "Evaluate with average mode."),
                 @Value(name = AsapFpgaFifoEvaluator.FIFO_EVALUATOR_SDF, effect = "Evaluate with SDF mode."),
-                @Value(name = AdfgFpgaFifoEvaluator.FIFO_EVALUATOR_ADFG, effect = "Evaluate with ADFG mode.") }) })
+                @Value(name = AdfgFpgaFifoEvaluator.FIFO_EVALUATOR_ADFG, effect = "Evaluate with ADFG mode.") }),
+        @Parameter(name = FpgaAnalysisMainTask.PACK_TOKENS_PARAM_NAME,
+            description = "Whether or not the tokens should be packed to otpimize bram usage.",
+            values = { @Value(name = FpgaAnalysisMainTask.PACK_TOKENS_PARAM_VALUE,
+                effect = "False disables this feature.") }) })
 public class FpgaAnalysisMainTask extends AbstractTaskImplementation {
 
   public static final String SHOW_SCHED_PARAM_NAME  = "Show schedule ?";
@@ -67,6 +73,9 @@ public class FpgaAnalysisMainTask extends AbstractTaskImplementation {
 
   public static final String FIFO_EVAL_PARAM_NAME  = "Fifo evaluator: ";
   public static final String FIFO_EVAL_PARAM_VALUE = AsapFpgaFifoEvaluator.FIFO_EVALUATOR_AVG;
+
+  public static final String PACK_TOKENS_PARAM_NAME  = "Pack tokens ?";
+  public static final String PACK_TOKENS_PARAM_VALUE = "false";
 
   @Override
   public Map<String, Object> execute(Map<String, Object> inputs, Map<String, String> parameters,
@@ -79,7 +88,18 @@ public class FpgaAnalysisMainTask extends AbstractTaskImplementation {
 
     // check everything and perform analysis
     final FPGA fpga = checkAndGetSingleFPGA(architecture);
-    final AnalysisResultFPGA res = checkAndAnalyzeAlgorithm(algorithm, scenario, fifoEvaluatorName);
+    AnalysisResultFPGA res = checkAndAnalyzeAlgorithm(algorithm, scenario, fifoEvaluatorName);
+
+    // optionally pack tokens in BRAM
+    final String packTokensStr = parameters.get(PACK_TOKENS_PARAM_NAME);
+    final boolean packTokens = Boolean.parseBoolean(packTokensStr);
+    if (packTokens) {
+      List<PackedFifoConfig> workList = TokenPackingAnalysis.analysis(res, scenario);
+      if (!workList.isEmpty()) {
+        TokenPackingTransformation.transform(res, scenario, workList);
+        res = checkAndAnalyzeAlgorithm(algorithm, scenario, fifoEvaluatorName);
+      }
+    }
 
     // Optionally shows the Gantt diagram
     final String showSchedStr = parameters.get(SHOW_SCHED_PARAM_NAME);
