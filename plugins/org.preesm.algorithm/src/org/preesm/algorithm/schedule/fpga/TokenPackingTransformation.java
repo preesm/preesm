@@ -3,6 +3,7 @@ package org.preesm.algorithm.schedule.fpga;
 import java.util.List;
 import org.preesm.algorithm.schedule.fpga.FpgaAnalysisMainTask.AnalysisResultFPGA;
 import org.preesm.algorithm.schedule.fpga.TokenPackingAnalysis.PackedFifoConfig;
+import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.Actor;
 import org.preesm.model.pisdf.CHeaderRefinement;
 import org.preesm.model.pisdf.ConfigInputPort;
@@ -16,6 +17,7 @@ import org.preesm.model.pisdf.FunctionPrototype;
 import org.preesm.model.pisdf.Parameter;
 import org.preesm.model.pisdf.factory.PiMMUserFactory;
 import org.preesm.model.scenario.Scenario;
+import org.preesm.model.slam.ComponentInstance;
 
 public final class TokenPackingTransformation {
 
@@ -37,9 +39,16 @@ public final class TokenPackingTransformation {
     createRefinement(unpacker, false);
     res.flatGraph.addActor(unpacker);
 
+    // Map packer and unpacker to FPGA targeted by packed actor
+    ComponentInstance target = scenario.getPossibleMappings((AbstractActor) fifo.getTarget()).get(0);
+    scenario.getConstraints().addConstraint(target, packer);
+    scenario.getConstraints().addConstraint(target, unpacker);
+
     // Connect size parameters
     final Parameter unpacked = PiMMUserFactory.instance.createParameter(fifo.getId() + "_unpacked", unpackedSize);
+    unpacked.setContainingGraph(res.flatGraph);
     final Parameter packed = PiMMUserFactory.instance.createParameter(fifo.getId() + "_packed", packedSize);
+    packed.setContainingGraph(res.flatGraph);
     connectParameter(packer, unpacked, Direction.IN);
     connectParameter(packer, packed, Direction.OUT);
     connectParameter(unpacker, packed, Direction.IN);
@@ -71,6 +80,7 @@ public final class TokenPackingTransformation {
 
   private static Fifo createFifo(String type, DataOutputPort source, DataInputPort sink) {
     final Fifo newFifo = PiMMUserFactory.instance.createFifo();
+    newFifo.setContainingGraph(source.getContainingActor().getContainingGraph());
     newFifo.setType(type);
     newFifo.setSourcePort(source);
     newFifo.setTargetPort(sink);
@@ -98,7 +108,10 @@ public final class TokenPackingTransformation {
     width.setName(dir == Direction.IN ? "IN_W" : "OUT_W");
     actor.getConfigInputPorts().add(width);
     final Dependency depInputWidth = PiMMUserFactory.instance.createDependency();
+    depInputWidth.setContainingGraph(actor.getContainingGraph());
+    depInputWidth.setGetter(width);
     width.setIncomingDependency(depInputWidth);
+    depInputWidth.setSetter(param);
     param.getOutgoingDependencies().add(depInputWidth);
   }
 
@@ -116,7 +129,9 @@ public final class TokenPackingTransformation {
 
     final CHeaderRefinement newRefinement = PiMMUserFactory.instance.createCHeaderRefinement();
     newRefinement.setLoopPrototype(funcProto);
-    newRefinement.setFilePath("packing.hpp");
+    newRefinement.setFilePath(actor.getName() + "/packing.hpp");
+    newRefinement.setRefinementContainer(actor);
+    newRefinement.setGenerated(true);
     actor.setRefinement(newRefinement);
   }
 

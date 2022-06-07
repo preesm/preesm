@@ -97,7 +97,7 @@ public class FpgaAnalysisMainTask extends AbstractTaskImplementation {
       List<PackedFifoConfig> workList = TokenPackingAnalysis.analysis(res, scenario);
       if (!workList.isEmpty()) {
         TokenPackingTransformation.transform(res, scenario, workList);
-        res = checkAndAnalyzeAlgorithm(algorithm, scenario, fifoEvaluatorName);
+        res = checkAndAnalyzeAlgorithm(res.flatGraph, scenario, fifoEvaluatorName);
       }
     }
 

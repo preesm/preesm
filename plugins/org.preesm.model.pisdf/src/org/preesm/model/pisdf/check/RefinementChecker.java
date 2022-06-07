@@ -229,6 +229,9 @@ public class RefinementChecker extends AbstractPiSDFObjectChecker {
    * @return true if the file exists, false otherwise
    */
   private boolean checkRefinementValidity(final Actor a) {
+    if (a.getRefinement().isGenerated()) {
+      return true;
+    }
     final IPath path = new Path(a.getRefinement().getFilePath());
     final IFile file = ResourcesPlugin.getWorkspace().getRoot().getFile(path);
     if (!file.exists()) {
