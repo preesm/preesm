@@ -122,7 +122,7 @@ public class AdfgFpgaFifoEvaluator extends AbstractGenericFpgaFifoEvaluator {
 
       model.addVariable(varPhiPos);
       PreesmLogger.getLogger()
-          .fine("Created variable " + varPhiPos.getName() + " for fifo abs rep " + fifoAbs.fifos.get(0).getId());
+          .finer("Created variable " + varPhiPos.getName() + " for fifo abs rep " + fifoAbs.fifos.get(0).getId());
       final Variable varPhiNeg = new Variable("phi_neg_" + index);
       varPhiNeg.setInteger(exactEvaluation);
       varPhiNeg.lower(0L);
@@ -168,7 +168,7 @@ public class AdfgFpgaFifoEvaluator extends AbstractGenericFpgaFifoEvaluator {
       final Variable v = model.getVariable(i);
       sbLogResult.append("var " + v.getName() + " integer = " + modelResult.get(i) + ";\n");
     }
-    PreesmLogger.getLogger().fine(sbLogResult::toString);
+    PreesmLogger.getLogger().finer(sbLogResult::toString);
 
     final State modelState = modelResult.getState();
     if (modelState != State.OPTIMAL && !model.getVariables().isEmpty()) {
@@ -517,7 +517,7 @@ public class AdfgFpgaFifoEvaluator extends AbstractGenericFpgaFifoEvaluator {
     expressionO.set(varPhiPos, coefPhiO * (-coefSign));
     expressionO.set(varPhiNeg, coefPhiO * (coefSign));
     expressionO.set(sizeVar, coefSize);
-    PreesmLogger.getLogger().fine(constantsLog::toString);
+    PreesmLogger.getLogger().finer(constantsLog::toString);
   }
 
   private static BigInteger ceiling(BigFraction frac) {
