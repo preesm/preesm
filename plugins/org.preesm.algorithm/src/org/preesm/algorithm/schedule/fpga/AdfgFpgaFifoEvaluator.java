@@ -46,12 +46,16 @@ import org.preesm.model.scenario.Scenario;
  */
 public class AdfgFpgaFifoEvaluator extends AbstractGenericFpgaFifoEvaluator {
 
-  public static final String FIFO_EVALUATOR_ADFG     = "adfgFifoEval";
-  public static final int    MAX_BIT_LENGTHS_FRACION = 10;
+  public static final String FIFO_EVALUATOR_ADFG_EXACT  = "adfgFifoEvalExact";
+  public static final String FIFO_EVALUATOR_ADFG_LINEAR = "adfgFifoEvalLinear";
+  public static final int    MAX_BIT_LENGTHS_FRACION    = 10;
 
-  protected AdfgFpgaFifoEvaluator() {
+  private final boolean exactEvaluation;
+
+  protected AdfgFpgaFifoEvaluator(boolean exactEvaluation) {
     super();
     // forbid instantiation outside package and inherited classed
+    this.exactEvaluation = exactEvaluation;
   }
 
   @Override
@@ -104,7 +108,7 @@ public class AdfgFpgaFifoEvaluator extends AbstractGenericFpgaFifoEvaluator {
       fifoAbsToPhiVariableID.put(fifoAbs, index);
       // we separate neg. from pos. because unsure that ojAlgo handles negative integers
       final Variable varPhiPos = new Variable("phi_pos_" + index);
-      varPhiPos.setInteger(false);
+      varPhiPos.setInteger(exactEvaluation);
 
       if (fifoAbs.isFullyDelayed()) {
         varPhiPos.lower(0L);
@@ -120,7 +124,7 @@ public class AdfgFpgaFifoEvaluator extends AbstractGenericFpgaFifoEvaluator {
       PreesmLogger.getLogger()
           .fine("Created variable " + varPhiPos.getName() + " for fifo abs rep " + fifoAbs.fifos.get(0).getId());
       final Variable varPhiNeg = new Variable("phi_neg_" + index);
-      varPhiNeg.setInteger(false);
+      varPhiNeg.setInteger(exactEvaluation);
       varPhiNeg.lower(0L);
       // note that we cannot set an upper limit to both neg and post part, ojAlgo bug?!
       model.addVariable(varPhiNeg);
@@ -440,14 +444,14 @@ public class AdfgFpgaFifoEvaluator extends AbstractGenericFpgaFifoEvaluator {
    * @param ar
    *          Affine Relation to consider.
    */
-  protected static void generateChannelConstraint(final Scenario scenario, final ExpressionsBasedModel model,
+  protected void generateChannelConstraint(final Scenario scenario, final ExpressionsBasedModel model,
       final Map<Fifo, Integer> fifoToSizeVariableID,
       final Map<AbstractActor, ActorNormalizedInfos> mapActorNormalizedInfos,
       final Map<DataPort, BigFraction> lambdaPerPort, final Fifo fifo, final AffineRelation ar) {
     final int index = fifoToSizeVariableID.size();
     final Variable sizeVar = new Variable("size_" + index);
     PreesmLogger.getLogger().fine(() -> "Created variable " + sizeVar.getName() + " for fifo " + fifo.getId());
-    sizeVar.setInteger(false);
+    sizeVar.setInteger(exactEvaluation);
     sizeVar.lower(2L); // could be refined to max(prod, cons, delau)
     // ojAlgo seems to bug if we set upper limit above Integer.MAX_VALUE
     model.addVariable(sizeVar);

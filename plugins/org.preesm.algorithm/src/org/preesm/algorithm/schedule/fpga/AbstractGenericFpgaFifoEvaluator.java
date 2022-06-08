@@ -74,8 +74,10 @@ public abstract class AbstractGenericFpgaFifoEvaluator {
     if (AsapFpgaFifoEvaluator.FIFO_EVALUATOR_SDF.equalsIgnoreCase(fifoEvaluatorName)
         || AsapFpgaFifoEvaluator.FIFO_EVALUATOR_AVG.equalsIgnoreCase(fifoEvaluatorName)) {
       return new AsapFpgaFifoEvaluator(fifoEvaluatorName);
-    } else if (AdfgFpgaFifoEvaluator.FIFO_EVALUATOR_ADFG.equalsIgnoreCase(fifoEvaluatorName)) {
-      return new AdfgFpgaFifoEvaluator();
+    } else if (AdfgFpgaFifoEvaluator.FIFO_EVALUATOR_ADFG_EXACT.equalsIgnoreCase(fifoEvaluatorName)) {
+      return new AdfgFpgaFifoEvaluator(true);
+    } else if (AdfgFpgaFifoEvaluator.FIFO_EVALUATOR_ADFG_LINEAR.equalsIgnoreCase(fifoEvaluatorName)) {
+      return new AdfgFpgaFifoEvaluator(false);
     }
     throw new PreesmRuntimeException("Could not recognize fifo evaluator name: " + fifoEvaluatorName);
   }
