@@ -29,16 +29,27 @@ public class TokenPackingAnalysis {
   // { 36L, 1L * 1024 }, { 64L, 512L }, { 72L, 512L } }).collect(Collectors.toMap(p -> p[0], p -> p[1]));
 
   // Would ideally be pulled from the scenario
-  private static final Map<Long, Long> bramMap = Stream.of(new AbstractMap.SimpleImmutableEntry<>(1L, 32L * 1024),
-      new AbstractMap.SimpleImmutableEntry<>(2L, 16L * 1024), new AbstractMap.SimpleImmutableEntry<>(4L, 8L * 1024),
-      new AbstractMap.SimpleImmutableEntry<>(8L, 4L * 1024), new AbstractMap.SimpleImmutableEntry<>(9L, 4L * 1024),
-      new AbstractMap.SimpleImmutableEntry<>(16L, 2L * 1024), new AbstractMap.SimpleImmutableEntry<>(18L, 2L * 1024),
-      new AbstractMap.SimpleImmutableEntry<>(32L, 1L * 1024), new AbstractMap.SimpleImmutableEntry<>(36L, 1L * 1024),
-      new AbstractMap.SimpleImmutableEntry<>(64L, 512L), new AbstractMap.SimpleImmutableEntry<>(72L, 512L))
+  // private static final Map<Long, Long> bramMap = Stream.of(new AbstractMap.SimpleImmutableEntry<>(1L, 32L * 1024),
+  // new AbstractMap.SimpleImmutableEntry<>(2L, 16L * 1024), new AbstractMap.SimpleImmutableEntry<>(4L, 8L * 1024),
+  // new AbstractMap.SimpleImmutableEntry<>(8L, 4L * 1024), new AbstractMap.SimpleImmutableEntry<>(9L, 4L * 1024),
+  // new AbstractMap.SimpleImmutableEntry<>(16L, 2L * 1024), new AbstractMap.SimpleImmutableEntry<>(18L, 2L * 1024),
+  // new AbstractMap.SimpleImmutableEntry<>(32L, 1L * 1024), new AbstractMap.SimpleImmutableEntry<>(36L, 1L * 1024),
+  // new AbstractMap.SimpleImmutableEntry<>(64L, 512L), new AbstractMap.SimpleImmutableEntry<>(72L, 512L))
+  // .collect(Collectors.toUnmodifiableMap(Map.Entry::getKey, Map.Entry::getValue));
+
+  private static final Map<Long, Long> bramMap = Stream
+      .of(new AbstractMap.SimpleImmutableEntry<>(1L, 16L * 1024), new AbstractMap.SimpleImmutableEntry<>(2L, 8L * 1024),
+          new AbstractMap.SimpleImmutableEntry<>(4L, 4L * 1024), new AbstractMap.SimpleImmutableEntry<>(8L, 2L * 1024),
+          new AbstractMap.SimpleImmutableEntry<>(9L, 2L * 1024), new AbstractMap.SimpleImmutableEntry<>(16L, 1L * 1024),
+          new AbstractMap.SimpleImmutableEntry<>(18L, 1L * 1024), new AbstractMap.SimpleImmutableEntry<>(32L, 1L * 512),
+          new AbstractMap.SimpleImmutableEntry<>(36L, 1L * 512), new AbstractMap.SimpleImmutableEntry<>(64L, 256L),
+          new AbstractMap.SimpleImmutableEntry<>(72L, 256L))
       .collect(Collectors.toUnmodifiableMap(Map.Entry::getKey, Map.Entry::getValue));
 
   private static final Long BRAM_36K = 36 * 1024L;
   private static final Long BRAM_32K = 32 * 1024L;
+  private static final Long BRAM_18K = 18 * 1024L;
+  private static final Long BRAM_16K = 16 * 1024L;
 
   public static class PackedFifoConfig {
     // fifo to pack
@@ -133,7 +144,7 @@ public class TokenPackingAnalysis {
 
         if (srcRv * srcRate != tgtRv * tgtRate) {
           throw new PreesmRuntimeException(
-              fifo + " prod and cons do not match: " + srcRv * srcRate + "," + tgtRv * tgtRate);
+              fifo.getId() + " prod and cons do not match: " + srcRv * srcRate + "," + tgtRv * tgtRate);
         }
 
         // Check if the number of bram is reduced, and keep the best reduction
@@ -153,12 +164,14 @@ public class TokenPackingAnalysis {
       }
     }
 
-    if (bestNbBram != Long.MAX_VALUE) {
+    if (bestNbBram != baseNbBram) {
       PreesmLogger.getLogger()
-          .fine(fifo + " can be packed. Reduction from " + baseNbBram + " to " + bestNbBram + " BRAM");
+          .fine(fifo.getId() + " can be packed. Reduction from " + baseNbBram + " to " + bestNbBram + " BRAM");
+      return new PackedFifoConfig(fifo, dataTypeSize, bestBramWidth);
     }
 
-    return new PackedFifoConfig(fifo, dataTypeSize, bestBramWidth);
+    PreesmLogger.getLogger().fine(fifo.getId() + " (on " + baseNbBram + " bram) can't be packed.");
+    return null;
   }
 
   private static long bramUsage(long memoryFootprint, long dataWidth) {
