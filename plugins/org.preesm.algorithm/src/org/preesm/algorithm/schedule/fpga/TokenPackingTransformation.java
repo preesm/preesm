@@ -18,6 +18,7 @@ import org.preesm.model.pisdf.Parameter;
 import org.preesm.model.pisdf.factory.PiMMUserFactory;
 import org.preesm.model.scenario.Scenario;
 import org.preesm.model.slam.ComponentInstance;
+import org.preesm.model.slam.TimingType;
 
 public final class TokenPackingTransformation {
 
@@ -43,6 +44,16 @@ public final class TokenPackingTransformation {
     ComponentInstance target = scenario.getPossibleMappings((AbstractActor) fifo.getTarget()).get(0);
     scenario.getConstraints().addConstraint(target, packer);
     scenario.getConstraints().addConstraint(target, unpacker);
+
+    // Add packer and unpacker timing infos
+    scenario.getTimings().setTiming(packer, target.getComponent(), TimingType.EXECUTION_TIME,
+        Long.toString(compressionRatio));
+    scenario.getTimings().setTiming(packer, target.getComponent(), TimingType.INITIATION_INTERVAL,
+        Long.toString(compressionRatio));
+    scenario.getTimings().setTiming(unpacker, target.getComponent(), TimingType.EXECUTION_TIME,
+        Long.toString(compressionRatio));
+    scenario.getTimings().setTiming(unpacker, target.getComponent(), TimingType.INITIATION_INTERVAL,
+        Long.toString(compressionRatio));
 
     // Connect size parameters
     final Parameter unpacked = PiMMUserFactory.instance.createParameter(fifo.getId() + "_unpacked", unpackedSize);
