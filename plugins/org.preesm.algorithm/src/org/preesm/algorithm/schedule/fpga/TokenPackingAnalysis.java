@@ -110,13 +110,13 @@ public class TokenPackingAnalysis {
     }
 
     final long actualFootprint = depth * defaultBramWidth;
-    final long baseNbBram = bramUsage(actualFootprint, defaultBramWidth);
+    final long baseNbBram = bramUsageVitis(depth, dataTypeSize);
 
     // if the BRAM usage is already at 1, no packing needed
     if (baseNbBram <= 1)
       return null;
 
-    long bestBramWidth = defaultBramWidth;
+    long bestPacketWidth = defaultBramWidth;
     long bestNbBram = baseNbBram;
 
     // if defaultBramWidth is a power of 2, bram size is 32K, else it is 36K
@@ -151,14 +151,16 @@ public class TokenPackingAnalysis {
         if ((srcRate * srcRv) % nbData == 0) {
           final long packedDepth = (long) Math.ceil((float) depth / nbData);
 
-          final long packedFootprint = packedDepth * packingSize;
+          // final long packedFootprint = packedDepth * packingSize;
 
-          final long testNbBram = bramUsage(packedFootprint, packingSize);
+          final long testPacketWidth = nbData * dataTypeSize;
+
+          final long testNbBram = bramUsageVitis(packedDepth, testPacketWidth);
 
           // Compare this result with the previous best case
           if (testNbBram < bestNbBram) {
             bestNbBram = testNbBram;
-            bestBramWidth = nbData * dataTypeSize;
+            bestPacketWidth = nbData * dataTypeSize;
           }
         }
       }
@@ -167,19 +169,55 @@ public class TokenPackingAnalysis {
     if (bestNbBram != baseNbBram) {
       PreesmLogger.getLogger()
           .fine(fifo.getId() + " can be packed. Reduction from " + baseNbBram + " to " + bestNbBram + " BRAM");
-      return new PackedFifoConfig(fifo, dataTypeSize, bestBramWidth);
+
+      final long newDepth = (long) Math.ceil((float) depth / ((double) bestPacketWidth / dataTypeSize));
+      PreesmLogger.getLogger().finer(() -> "New depth is " + newDepth);
+      PreesmLogger.getLogger().finer(dataTypeSize + "-bit packed in packets of " + bestPacketWidth + " bits");
+
+      return new PackedFifoConfig(fifo, dataTypeSize, bestPacketWidth);
     }
 
     PreesmLogger.getLogger().fine(fifo.getId() + " (on " + baseNbBram + " bram) can't be packed.");
     return null;
   }
 
-  private static long bramUsage(long memoryFootprint, long dataWidth) {
-    long bramUsage = (long) Math.ceil((float) memoryFootprint / (dataWidth * bramMap.get(dataWidth)));
-    // When reaching more than 18 bits bus width, bram are used in pairs
-    if (dataWidth > 18 && bramUsage % 2 == 1) {
-      bramUsage = bramUsage + 1;
-    }
-    return bramUsage;
+  /*
+   * Compute how many BRAM used on a FIFO, from the depth and the token size, to match with Vitis HLS
+   *
+   * If depth < 512 Math.ceil(dataWidth/18) A partir du moment où ça passe en BRAM
+   *
+   * If 512 < depth < 2048 bramWidth = 18*1024
+   *
+   * If 2048 < depth < 4096 bramWidth = 18*1024 If dataWidth == 13 || dataWidth == 21 || dataWidth == 22 || dataWidth >
+   * 28 BRAM++ as result need to be even
+   *
+   * If 4096 < depth bramWidth = 16*1024
+   *
+   *
+   * @param depth The initial depth.
+   *
+   * @param dataWidth The size of a token in bits.
+   *
+   * @return The number of BRAM.
+   *
+   */
+
+  private static long bramUsageVitis(long depth, long dataWidth) {
+
+    if (depth < 512)
+      return (long) Math.ceil(dataWidth / 18);
+    else if (512 <= depth && depth < 2048)
+      return (long) Math.ceil(Math.pow(2, Math.ceil(Math.log(depth) / Math.log(2))) * dataWidth / BRAM_18K);
+    else if (2048 <= depth && depth < 4096) {
+      long bram = (long) Math.ceil(Math.pow(2, Math.ceil(Math.log(depth) / Math.log(2))) * dataWidth / BRAM_18K);
+
+      if ((dataWidth == 13 || dataWidth == 21 || dataWidth == 22 || dataWidth > 28) && (bram % 2 == 1))
+        bram++;
+
+      return bram;
+    } else if (4096 <= depth)
+      return (long) Math.ceil(Math.pow(2, Math.ceil(Math.log(depth) / Math.log(2))) * dataWidth / BRAM_16K);
+
+    throw new PreesmRuntimeException("Something went wrong during BRAM computation.");
   }
 }
