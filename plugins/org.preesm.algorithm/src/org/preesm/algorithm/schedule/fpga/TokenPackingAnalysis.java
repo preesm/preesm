@@ -1,11 +1,8 @@
 package org.preesm.algorithm.schedule.fpga;
 
-import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 import org.preesm.algorithm.schedule.fpga.FpgaAnalysisMainTask.AnalysisResultFPGA;
 import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.preesm.commons.logger.PreesmLogger;
@@ -15,39 +12,7 @@ import org.preesm.model.pisdf.InterfaceActor;
 import org.preesm.model.scenario.Scenario;
 
 public class TokenPackingAnalysis {
-  // Might be better to remove sizes of 1, 2, 4, 8, 16, 32 and 64 bits as they only allow
-  // the use of 32k/36k of the bram, if packing ends up being used.
-  // private static final Long[] bramSizes = { 1L, 2L, 4L, 8L, 9L, 16L, 18L, 32L, 36L, 64L, 72L };
 
-  // private static final Map<Long, Long> peeps = Map.of(1L, 32L * 1024, 2L, 16L * 1024, 4L, 8L * 1024, 8L, 4L * 1024,
-  // 9L,
-  // 4L * 1024, 16L, 2L * 1024, 18L, 2L * 1024, 32L, 1L * 1024, 36L, 1L * 1024, 64L, 512L, 72L, 512L);
-
-  // private static final Map<Long,
-  // Long> bramMap = Stream.of(new Long[][] { { 1L, 32L * 1024 }, { 2L, 16L * 1024 }, { 4L, 8L * 1024 },
-  // { 8L, 4L * 1024 }, { 9L, 4L * 1024 }, { 16L, 2L * 1024 }, { 18L, 2L * 1024 }, { 32L, 1L * 1024 },
-  // { 36L, 1L * 1024 }, { 64L, 512L }, { 72L, 512L } }).collect(Collectors.toMap(p -> p[0], p -> p[1]));
-
-  // Would ideally be pulled from the scenario
-  // private static final Map<Long, Long> bramMap = Stream.of(new AbstractMap.SimpleImmutableEntry<>(1L, 32L * 1024),
-  // new AbstractMap.SimpleImmutableEntry<>(2L, 16L * 1024), new AbstractMap.SimpleImmutableEntry<>(4L, 8L * 1024),
-  // new AbstractMap.SimpleImmutableEntry<>(8L, 4L * 1024), new AbstractMap.SimpleImmutableEntry<>(9L, 4L * 1024),
-  // new AbstractMap.SimpleImmutableEntry<>(16L, 2L * 1024), new AbstractMap.SimpleImmutableEntry<>(18L, 2L * 1024),
-  // new AbstractMap.SimpleImmutableEntry<>(32L, 1L * 1024), new AbstractMap.SimpleImmutableEntry<>(36L, 1L * 1024),
-  // new AbstractMap.SimpleImmutableEntry<>(64L, 512L), new AbstractMap.SimpleImmutableEntry<>(72L, 512L))
-  // .collect(Collectors.toUnmodifiableMap(Map.Entry::getKey, Map.Entry::getValue));
-
-  private static final Map<Long, Long> bramMap = Stream
-      .of(new AbstractMap.SimpleImmutableEntry<>(1L, 16L * 1024), new AbstractMap.SimpleImmutableEntry<>(2L, 8L * 1024),
-          new AbstractMap.SimpleImmutableEntry<>(4L, 4L * 1024), new AbstractMap.SimpleImmutableEntry<>(8L, 2L * 1024),
-          new AbstractMap.SimpleImmutableEntry<>(9L, 2L * 1024), new AbstractMap.SimpleImmutableEntry<>(16L, 1L * 1024),
-          new AbstractMap.SimpleImmutableEntry<>(18L, 1L * 1024), new AbstractMap.SimpleImmutableEntry<>(32L, 1L * 512),
-          new AbstractMap.SimpleImmutableEntry<>(36L, 1L * 512), new AbstractMap.SimpleImmutableEntry<>(64L, 256L),
-          new AbstractMap.SimpleImmutableEntry<>(72L, 256L))
-      .collect(Collectors.toUnmodifiableMap(Map.Entry::getKey, Map.Entry::getValue));
-
-  private static final Long BRAM_36K = 36 * 1024L;
-  private static final Long BRAM_32K = 32 * 1024L;
   private static final Long BRAM_18K = 18 * 1024L;
   private static final Long BRAM_16K = 16 * 1024L;
 
@@ -98,18 +63,9 @@ public class TokenPackingAnalysis {
    */
   private static PackedFifoConfig computePacking(Fifo fifo, long depth, long dataTypeSize,
       Map<AbstractVertex, Long> brv) {
-    // If dataTypeSize matches a default size
-    if (bramMap.containsKey(dataTypeSize))
-      return null;
 
-    long defaultBramWidth = Long.MAX_VALUE;
+    long defaultBramWidth = dataTypeSize;
 
-    for (Map.Entry<Long, Long> bramEntry : bramMap.entrySet()) {
-      if (bramEntry.getKey() > dataTypeSize && bramEntry.getKey() < defaultBramWidth)
-        defaultBramWidth = bramEntry.getKey();
-    }
-
-    final long actualFootprint = depth * defaultBramWidth;
     final long baseNbBram = bramUsageVitis(depth, dataTypeSize);
 
     // if the BRAM usage is already at 1, no packing needed
@@ -119,79 +75,68 @@ public class TokenPackingAnalysis {
     long bestPacketWidth = defaultBramWidth;
     long bestNbBram = baseNbBram;
 
-    // if defaultBramWidth is a power of 2, bram size is 32K, else it is 36K
-    // TODO: Only keep the 36K bram size and pack powers of 2 when needed.
-    if ((((defaultBramWidth & (defaultBramWidth - 1)) == 0) && (actualFootprint > BRAM_32K))
-        || (((defaultBramWidth & (defaultBramWidth - 1)) != 0) && (actualFootprint > BRAM_36K))) {
+    for (long packingSize = dataTypeSize * 2; packingSize <= 72; packingSize++) {
 
-      for (Map.Entry<Long, Long> bramEntry : bramMap.entrySet()) {
+      final float test = packingSize / (float) dataTypeSize;
 
-        final long packingSize = bramEntry.getKey();
+      final long nbData = (long) Math.floor(test);
 
-        final float test = packingSize / (float) dataTypeSize;
+      final long srcRv = brv.get(fifo.getSource());
+      final long tgtRv = brv.get(fifo.getTarget());
 
-        // Skip if there isn't at least 2 data packed
-        if (test < 2.0f)
-          continue;
+      final long srcRate = fifo.getSourcePort().getExpression().evaluate();
+      final long tgtRate = fifo.getTargetPort().getExpression().evaluate();
 
-        final long nbData = (long) Math.floor(test);
+      if (srcRv * srcRate != tgtRv * tgtRate) {
+        throw new PreesmRuntimeException(
+            fifo.getId() + " prod and cons do not match: " + srcRv * srcRate + "," + tgtRv * tgtRate);
+      }
 
-        final long srcRv = brv.get(fifo.getSource());
-        final long tgtRv = brv.get(fifo.getTarget());
+      // Check if the number of bram is reduced, and keep the best reduction
+      if ((srcRate * srcRv) % nbData == 0) {
+        final long packedDepth = (long) Math.ceil((float) depth / nbData);
 
-        final long srcRate = fifo.getSourcePort().getExpression().evaluate();
-        final long tgtRate = fifo.getTargetPort().getExpression().evaluate();
+        final long testPacketWidth = nbData * dataTypeSize;
 
-        if (srcRv * srcRate != tgtRv * tgtRate) {
-          throw new PreesmRuntimeException(
-              fifo.getId() + " prod and cons do not match: " + srcRv * srcRate + "," + tgtRv * tgtRate);
-        }
+        final long testNbBram = bramUsageVitis(packedDepth, testPacketWidth);
 
-        // Check if the number of bram is reduced, and keep the best reduction
-        if ((srcRate * srcRv) % nbData == 0) {
-          final long packedDepth = (long) Math.ceil((float) depth / nbData);
-
-          // final long packedFootprint = packedDepth * packingSize;
-
-          final long testPacketWidth = nbData * dataTypeSize;
-
-          final long testNbBram = bramUsageVitis(packedDepth, testPacketWidth);
-
-          // Compare this result with the previous best case
-          if (testNbBram < bestNbBram) {
-            bestNbBram = testNbBram;
-            bestPacketWidth = nbData * dataTypeSize;
-          }
+        // Compare this result with the previous best case
+        if (testNbBram < bestNbBram) {
+          bestNbBram = testNbBram;
+          bestPacketWidth = nbData * dataTypeSize;
         }
       }
     }
 
     if (bestNbBram != baseNbBram) {
+      final long finalNbBram = bestNbBram;
+      final long finalPacketWidth = bestPacketWidth;
+
       PreesmLogger.getLogger()
-          .fine(fifo.getId() + " can be packed. Reduction from " + baseNbBram + " to " + bestNbBram + " BRAM");
+          .fine(() -> fifo.getId() + " can be packed. Reduction from " + baseNbBram + " to " + finalNbBram + " BRAM");
 
-      final long newDepth = (long) Math.ceil((float) depth / ((double) bestPacketWidth / dataTypeSize));
+      final long newDepth = (long) Math.ceil((float) depth / ((double) finalPacketWidth / dataTypeSize));
       PreesmLogger.getLogger().finer(() -> "New depth is " + newDepth);
-      PreesmLogger.getLogger().finer(dataTypeSize + "-bit packed in packets of " + bestPacketWidth + " bits");
+      PreesmLogger.getLogger().finer(() -> dataTypeSize + "-bit packed in packets of " + finalPacketWidth + " bits");
 
-      return new PackedFifoConfig(fifo, dataTypeSize, bestPacketWidth);
+      return new PackedFifoConfig(fifo, dataTypeSize, finalPacketWidth);
     }
 
-    PreesmLogger.getLogger().fine(fifo.getId() + " (on " + baseNbBram + " bram) can't be packed.");
+    PreesmLogger.getLogger().fine(() -> fifo.getId() + " (on " + baseNbBram + " bram) can't be packed.");
     return null;
   }
 
   /*
    * Compute how many BRAM used on a FIFO, from the depth and the token size, to match with Vitis HLS
    *
-   * If depth < 512 Math.ceil(dataWidth/18) A partir du moment où ça passe en BRAM
+   * If depth is lower than 512, BRAM = Math.ceil(dataWidth/18) if the data is actually stored in bram.
    *
-   * If 512 < depth < 2048 bramWidth = 18*1024
+   * If depth is between 512 and 2048, bramWidth = 18*1024
    *
-   * If 2048 < depth < 4096 bramWidth = 18*1024 If dataWidth == 13 || dataWidth == 21 || dataWidth == 22 || dataWidth >
-   * 28 BRAM++ as result need to be even
+   * If depth is between 2048 and 4096, bramWidth = 18*1024. For dataWidth equal to 13, 21, 22 or above 28, the number
+   * of bram needs to be evened.
    *
-   * If 4096 < depth bramWidth = 16*1024
+   * If depth is above 4096, bramWidth = 16*1024
    *
    *
    * @param depth The initial depth.
@@ -201,11 +146,10 @@ public class TokenPackingAnalysis {
    * @return The number of BRAM.
    *
    */
-
   private static long bramUsageVitis(long depth, long dataWidth) {
 
     if (depth < 512)
-      return (long) Math.ceil(dataWidth / 18);
+      return (long) Math.ceil((double) dataWidth / 18);
     else if (512 <= depth && depth < 2048)
       return (long) Math.ceil(Math.pow(2, Math.ceil(Math.log(depth) / Math.log(2))) * dataWidth / BRAM_18K);
     else if (2048 <= depth && depth < 4096) {
