@@ -15,7 +15,7 @@ Require-Bundle: org.eclipse.ui.console;bundle-version="3.5.100",
  org.eclipse.emf.edit.ui,
  org.eclipse.xtend.lib,
  org.apache.commons.io;bundle-version="2.6.0",
- net.sourceforge.jexcelapi.jxl;bundle-version="2.6.10",
+ wrapped.net.sourceforge.jexcelapi.jxl;bundle-version="2.6.12",
  org.preesm.ui,
  org.preesm.algorithm
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8

@@ -17,7 +17,7 @@ Require-Bundle: org.eclipse.core.runtime,
  org.preesm.model.pisdf;visibility:=reexport,
  org.preesm.commons;visibility:=reexport,
  org.apache.commons.io;bundle-version="2.6.0",
- net.sourceforge.jexcelapi.jxl;bundle-version="2.6.10",
+ wrapped.net.sourceforge.jexcelapi.jxl;bundle-version="2.6.12",
  org.apache.commons.lang3;bundle-version="3.8.1"
 Bundle-ActivationPolicy: lazy
 Bundle-Vendor: %providerName

@@ -1788,13 +1788,13 @@ public class ScriptRunner {
     } catch (final ParseException error) {
 
       // Logger is used to display messages in the console
-      final String message = error.getRawMessage() + "\n" + error.getCause();
+      final String message = error.getMessage() + "\n" + error.getCause();
       ScriptRunner.logger.log(Level.WARNING, "Parse error in " + dagVertex.getName() + " memory script:\n" + message,
           error);
     } catch (final EvalError error) {
 
       // Logger is used to display messages in the console
-      final String message = error.getRawMessage() + "\n" + error.getCause();
+      final String message = error.getMessage() + "\n" + error.getCause();
       ScriptRunner.logger.log(Level.WARNING, "Evaluation error in " + dagVertex.getName() + " memory script:\n[Line "
           + error.getErrorLineNumber() + "] " + message, error);
     } catch (final IOException exception) {
