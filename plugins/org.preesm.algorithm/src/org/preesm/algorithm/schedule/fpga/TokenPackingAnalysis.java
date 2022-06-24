@@ -122,7 +122,8 @@ public class TokenPackingAnalysis {
       return new PackedFifoConfig(fifo, dataTypeSize, finalPacketWidth);
     }
 
-    PreesmLogger.getLogger().fine(() -> fifo.getId() + " (on " + baseNbBram + " bram) can't be packed.");
+    PreesmLogger.getLogger().fine(() -> fifo.getId() + " with " + depth + " token of " + dataTypeSize + " bits on "
+        + baseNbBram + " bram can't be packed.");
     return null;
   }
 
@@ -147,6 +148,10 @@ public class TokenPackingAnalysis {
    *
    */
   private static long bramUsageVitis(long depth, long dataWidth) {
+
+    // If less than 1KB, data isn't stored in a BRAM
+    if (depth * dataWidth < 1024)
+      return 0;
 
     if (depth < 512)
       return (long) Math.ceil((double) dataWidth / 18);
