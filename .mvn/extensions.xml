@@ -1,9 +1,8 @@
 <!--
 
-    Copyright or © or Copr. IETR/INSA - Rennes (2018 - 2020) :
+    Copyright or © or Copr. IETR/INSA - Rennes (2020) :
 
-    Antoine Morvan [antoine.morvan@insa-rennes.fr] (2018 - 2019)
-    Julien Heulot [julien.heulot@insa-rennes.fr] (2019 - 2020)
+    Julien Heulot [julien.heulot@insa-rennes.fr] (2020)
 
     This software is a computer program whose purpose is to help prototyping
     parallel applications using dataflow formalism.
@@ -35,36 +34,10 @@
     knowledge of the CeCILL license and that you accept its terms.
 
 -->
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-   <modelVersion>4.0.0</modelVersion>
-   <artifactId>org.preesm.model.slam</artifactId>
-   <packaging>eclipse-plugin</packaging>
-   <name>PREESM :: Plugins :: Slam Model</name>
-
-   <parent>
-      <groupId>org.preesm</groupId>
-      <artifactId>org.preesm.plugins</artifactId>
-      <version>3.21.0-SNAPSHOT</version>
-      <relativePath>..</relativePath>
-   </parent>
-
-   <build>
-      <plugins>
-         <plugin>
-            <groupId>org.eclipse.xtext</groupId>
-            <artifactId>xtext-maven-plugin</artifactId>
-         </plugin>
-         <!-- 
-           Enable xtend maven plugin on XCore projects in order to 
-           automatically apply XText nature on the eclipse project 
-           via M2E plugins;
-           -->
-         <plugin>
-            <groupId>org.eclipse.xtend</groupId>
-            <artifactId>xtend-maven-plugin</artifactId>
-         </plugin>
-      </plugins>
-   </build>
-</project>
+<extensions>
+  <extension>
+    <groupId>org.eclipse.tycho</groupId>
+    <artifactId>tycho-build</artifactId>
+    <version>2.7.3</version>
+</extension>
+</extensions>

@@ -3,34 +3,40 @@
 <target name="preesm">
 	<locations>
 		<location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="planner" includeSource="false" type="InstallableUnit">
-			<repository location="https://download.eclipse.org/releases/latest" /> <!--"file:/home/jheulot/mirror/"/> -->
-			<unit id="org.eclipse.emf.ecoretools.sdk.feature.group" version="3.4.0.202201202026" />
-			<unit id="org.eclipse.emf.sdk.feature.group" version="2.30.0.v20220516-1117" />
-			<unit id="org.eclipse.gef.common.sdk.feature.group" version="5.0.1.202206070201" />
-			<unit id="org.eclipse.graphiti.sdk.plus.feature.feature.group" version="0.18.0.202106091000" />
-			<unit id="org.eclipse.graphiti.sdk.plus.feature.source.feature.group" version="0.18.0.202106091000" />
-			<unit id="org.eclipse.emf.ecore.xcore.sdk.feature.group" version="1.21.0.v20220426-0617" />
-			<unit id="org.eclipse.egit.feature.group" version="6.2.0.202206071550-r" />
+			<repository location="https://download.eclipse.org/releases/latest"/> <!--"file:/home/jheulot/mirror/"/> -->
+			<unit id="org.eclipse.emf.ecoretools.sdk.feature.group" version="3.4.0.202201202026"/>
+			<unit id="org.eclipse.emf.sdk.feature.group" version="2.30.0.v20220516-1117"/>
+			<unit id="org.eclipse.gef.common.sdk.feature.group" version="5.0.1.202206070201"/>
+			<unit id="org.eclipse.graphiti.sdk.plus.feature.feature.group" version="0.18.0.202106091000"/>
+			<unit id="org.eclipse.graphiti.sdk.plus.feature.source.feature.group" version="0.18.0.202106091000"/>
+			<unit id="org.eclipse.emf.ecore.xcore.sdk.feature.group" version="1.21.0.v20220426-0617"/>
+			<unit id="org.eclipse.egit.feature.group" version="6.2.0.202206071550-r"/>
 			<unit id="org.eclipse.ecf.remoteservice.sdk.feature.feature.group" version="3.14.33.v20220224-2257"/>
+			<unit id="org.eclipse.emf.codegen.ecore.feature.group" version="2.30.0.v20220426-0617"/>
+			<unit id="org.eclipse.emf.codegen.ecore.ui.feature.group" version="2.30.0.v20220313-0955"/>
+			<unit id="org.eclipse.emf.codegen.feature.group" version="2.23.0.v20210924-1718"/>
+			<unit id="org.eclipse.emf.codegen.ui.feature.group" version="2.24.0.v20210924-1718"/>
+			<unit id="org.eclipse.equinox.executable.feature.group" version="3.8.1700.v20220509-0833"/>
+			<unit id="org.eclipse.emf.codegen.ecore.xtext"/>
 		</location>
 		<location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="planner" includeSource="false" type="InstallableUnit">
-			<repository location="https://download.eclipse.org/eclipse/updates/4.24" />
-			<unit id="org.eclipse.pde.feature.group" version="3.14.1200.v20220607-0700" />
-			<unit id="org.eclipse.platform.sdk" version="4.24.0.I20220607-0700" />
-			<unit id="org.eclipse.sdk.ide" version="4.24.0.I20220607-0700" />
+			<repository location="https://download.eclipse.org/eclipse/updates/4.24"/>
+			<unit id="org.eclipse.pde.feature.group" version="3.14.1200.v20220607-0700"/>
+			<unit id="org.eclipse.platform.sdk" version="4.24.0.I20220607-0700"/>
+			<unit id="org.eclipse.sdk.ide" version="4.24.0.I20220607-0700"/>
 		</location>
 		<location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="planner" includeSource="false" type="InstallableUnit">
-			<repository location="https://download.eclipse.org/modeling/tmf/xtext/updates/composite/releases/" />
-			<unit id="org.eclipse.xtend.sdk.feature.group" version="2.27.0.v20220530-0508" />
-			<unit id="org.eclipse.xtext.sdk.feature.group" version="2.27.0.v20220530-0508" />
+			<repository location="https://download.eclipse.org/modeling/tmf/xtext/updates/composite/releases/"/>
+			<unit id="org.eclipse.xtend.sdk.feature.group" version="2.27.0.v20220530-0508"/>
+			<unit id="org.eclipse.xtext.sdk.feature.group" version="2.27.0.v20220530-0508"/>
 		</location>
 		<location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="planner" includeSource="false" type="InstallableUnit">
-			<repository location="https://download.eclipse.org/tools/cdt/releases/latest" />
-			<unit id="org.eclipse.cdt.feature.group" version="10.7.0.202206081808" />
+			<repository location="https://download.eclipse.org/tools/cdt/releases/latest"/>
+			<unit id="org.eclipse.cdt.feature.group" version="10.7.0.202206081808"/>
 		</location>
 		<location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="planner" includeSource="false" type="InstallableUnit">
-			<repository location="https://preesm.insa-rennes.fr/repo" />
-			<unit id="org.ietr.graphiti.feature.feature.group" version="1.13.12" />
+			<repository location="https://preesm.insa-rennes.fr/repo"/>
+			<unit id="org.ietr.graphiti.feature.feature.group" version="1.13.12"/>
 		</location>
 		<location includeDependencyDepth="none" includeDependencyScopes="compile" includeSource="true" missingManifest="generate" type="Maven">
 			<dependencies>
@@ -48,18 +54,8 @@
 				</dependency>
 			</dependencies>
 		</location>
-		<location includeDependencyDepth="none" includeDependencyScopes="compile" includeSource="false" missingManifest="generate" type="Maven">
+		<location includeDependencyDepth="none" includeDependencyScopes="compile" missingManifest="generate" type="Maven">
 			<dependencies>
-				<dependency>
-					<groupId>org.antlr</groupId>
-					<artifactId>antlr4-runtime</artifactId>
-					<version>4.10.1</version>
-				</dependency>
-				<dependency>
-				    <groupId>org.antlr</groupId>
-				    <artifactId>antlr4</artifactId>
-				    <version>4.10.1</version>
-				</dependency>
 				<dependency>
 					<groupId>com.fasterxml.jackson.core</groupId>
 					<artifactId>jackson-annotations</artifactId>
@@ -109,6 +105,18 @@
 					<type>jar</type>
 				</dependency>
 				<dependency>
+					<groupId>jfree</groupId>
+					<artifactId>jcommon</artifactId>
+					<version>1.0.16</version>
+					<type>jar</type>
+				</dependency>
+				<dependency>
+					<groupId>jfree</groupId>
+					<artifactId>jfreechart</artifactId>
+					<version>1.0.13</version>
+					<type>jar</type>
+				</dependency>
+				<dependency>
 					<groupId>jgraph</groupId>
 					<artifactId>jgraph</artifactId>
 					<version>5.5.1</version>
@@ -121,9 +129,15 @@
 					<type>jar</type>
 				</dependency>
 				<dependency>
-					<groupId>org.apache-extras.beanshell</groupId>
-					<artifactId>bsh</artifactId>
-					<version>2.0b6</version>
+					<groupId>org.antlr</groupId>
+					<artifactId>antlr4-runtime</artifactId>
+					<version>4.10.1</version>
+					<type>jar</type>
+				</dependency>
+				<dependency>
+					<groupId>org.antlr</groupId>
+					<artifactId>antlr4</artifactId>
+					<version>4.10.1</version>
 					<type>jar</type>
 				</dependency>
 				<dependency>
@@ -142,8 +156,8 @@
 					<groupId>org.apache.commons</groupId>
 					<artifactId>commons-text</artifactId>
 					<version>1.8</version>
+					<type>jar</type>
 				</dependency>
-
 				<dependency>
 					<groupId>org.apache.velocity</groupId>
 					<artifactId>velocity</artifactId>
@@ -161,17 +175,6 @@
 					<artifactId>jacorb-idl-compiler</artifactId>
 					<version>2.3.1</version>
 					<type>jar</type>
-				</dependency>
-				<dependency>
-					<groupId>jfree</groupId>
-					<artifactId>jcommon</artifactId>
-					<version>1.0.16</version>
-				</dependency>
-
-				<dependency>
-					<groupId>jfree</groupId>
-					<artifactId>jfreechart</artifactId>
-					<version>1.0.13</version>
 				</dependency>
 				<dependency>
 					<groupId>org.jgrapht</groupId>
@@ -213,6 +216,18 @@
 					<groupId>org.scijava</groupId>
 					<artifactId>jep</artifactId>
 					<version>2.4.2</version>
+					<type>jar</type>
+				</dependency>
+				<dependency>
+					<groupId>org.slf4j</groupId>
+					<artifactId>slf4j-api</artifactId>
+					<version>1.7.36</version>
+					<type>jar</type>
+				</dependency>
+				<dependency>
+					<groupId>org.slf4j</groupId>
+					<artifactId>slf4j-simple</artifactId>
+					<version>1.7.36</version>
 					<type>jar</type>
 				</dependency>
 			</dependencies>
