@@ -47,8 +47,8 @@ import org.preesm.algorithm.throughput.sdf.tools.TurbineParser;
  */
 public class TurbineParserTest {
 
-  @Ignore
   @Test
+  @Ignore
   public void testIBSDFGraphShouldBeImported() {
 
     // ------------------------- Import an SDF Graph ------------------

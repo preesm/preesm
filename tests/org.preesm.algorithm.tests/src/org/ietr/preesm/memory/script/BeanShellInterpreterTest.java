@@ -89,7 +89,7 @@ public class BeanShellInterpreterTest {
     interpreter.eval("import " + List.class.getName() + ";");
     interpreter.eval("import " + ArrayList.class.getName() + ";");
 
-    Object result = interpreter.eval("list = new ArrayList<String>(10)");
+    Object result = interpreter.eval("list = new ArrayList(10)");
     Assert.assertNotNull(result);
     Assert.assertTrue(result instanceof ArrayList);
     result = interpreter.eval("list");
@@ -133,7 +133,7 @@ public class BeanShellInterpreterTest {
     interpreter.eval("import " + List.class.getName() + ";");
     interpreter.eval("import " + ArrayList.class.getName() + ";");
 
-    final Object result = interpreter.eval("list = new ArrayList<String>(10)");
+    final Object result = interpreter.eval("list = new ArrayList(10)");
     Assert.assertNotNull(result);
     Assert.assertTrue(result instanceof ArrayList);
     try {
