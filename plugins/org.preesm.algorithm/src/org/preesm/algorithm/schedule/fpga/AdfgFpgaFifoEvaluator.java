@@ -125,7 +125,11 @@ public class AdfgFpgaFifoEvaluator extends AbstractGenericFpgaFifoEvaluator {
           .finer("Created variable " + varPhiPos.getName() + " for fifo abs rep " + fifoAbs.fifos.get(0).getId());
       final Variable varPhiNeg = new Variable("phi_neg_" + index);
       varPhiNeg.setInteger(exactEvaluation);
-      varPhiNeg.lower(0L);
+      if (fifoAbs.isFullyDelayed()) {
+        varPhiNeg.lower(0L);
+      } else {
+        varPhiNeg.level(0L);
+      }
       // note that we cannot set an upper limit to both neg and post part, ojAlgo bug?!
       model.addVariable(varPhiNeg);
     }
@@ -180,9 +184,13 @@ public class AdfgFpgaFifoEvaluator extends AbstractGenericFpgaFifoEvaluator {
     final Map<Fifo, Long> computedFifoSizes = new LinkedHashMap<>();
     final int indexOffset = 2 * ddg.edgeSet().size(); // offset for phi
     fifoToSizeVariableID.forEach((k, v) -> {
-      final long sizeInElts = (long) Math.ceil(modelResult.get((long) v + indexOffset).floatValue());
+      final ActorNormalizedInfos srcInfos = mapActorNormalizedInfos.get(k.getSource());
+      final long sizeInElts = (long) Math.ceil(modelResult.get((long) v + indexOffset).floatValue())
+          - (srcInfos.oriET - srcInfos.oriII);
       final long typeSizeBits = scenario.getSimulationInfo().getDataTypeSizeInBit(k.getType());
-      computedFifoSizes.put(k, sizeInElts * typeSizeBits);
+      final long fifoSizeInBits = Math.max(sizeInElts, 2) * typeSizeBits;
+      computedFifoSizes.put(k, fifoSizeInBits);
+      PreesmLogger.getLogger().info("FIFO " + k.getId() + " size: " + fifoSizeInBits + " bits");
     });
 
     // TODO build a schedule using the normalized graph II and each actor offset (computed by the ILP)
@@ -271,7 +279,7 @@ public class AdfgFpgaFifoEvaluator extends AbstractGenericFpgaFifoEvaluator {
           .map(e -> e.getValue().longValue() + "*" + model.getVariable(e.getKey()).getName())
           .collect(Collectors.joining(" + ")) + ";\n");
     }
-    PreesmLogger.getLogger().fine(sbLogModel::toString);
+    PreesmLogger.getLogger().finer(sbLogModel::toString);
   }
 
   protected static class AffineRelation {
@@ -450,9 +458,9 @@ public class AdfgFpgaFifoEvaluator extends AbstractGenericFpgaFifoEvaluator {
       final Map<DataPort, BigFraction> lambdaPerPort, final Fifo fifo, final AffineRelation ar) {
     final int index = fifoToSizeVariableID.size();
     final Variable sizeVar = new Variable("size_" + index);
-    PreesmLogger.getLogger().fine(() -> "Created variable " + sizeVar.getName() + " for fifo " + fifo.getId());
+    PreesmLogger.getLogger().finer(() -> "Created variable " + sizeVar.getName() + " for fifo " + fifo.getId());
     sizeVar.setInteger(exactEvaluation);
-    sizeVar.lower(2L); // could be refined to max(prod, cons, delau)
+    sizeVar.lower(1L); // could be refined to max(prod, cons, delau)
     // ojAlgo seems to bug if we set upper limit above Integer.MAX_VALUE
     model.addVariable(sizeVar);
     fifoToSizeVariableID.put(fifo, index);
