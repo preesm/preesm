@@ -79,7 +79,7 @@ public class AutoFillHeaderTemplatedFunctions {
         if (c == CorrespondingTemplateParameterType.FIFO_TYPE) {
           evaluatedParams.add(f.getType());
         } else if (c == CorrespondingTemplateParameterType.FIFO_DEPTH) {
-          evaluatedParams.add(FpgaCodeGenerator.getFifoDataSizeName(f));
+          evaluatedParams.add(FpgaCodeGenerator.getFifoDataSizeNameMacro(f));
         } else {
           templateParametersException(refinement, proto);
         }
