@@ -184,9 +184,7 @@ public class AdfgFpgaFifoEvaluator extends AbstractGenericFpgaFifoEvaluator {
     final Map<Fifo, Long> computedFifoSizes = new LinkedHashMap<>();
     final int indexOffset = 2 * ddg.edgeSet().size(); // offset for phi
     fifoToSizeVariableID.forEach((k, v) -> {
-      final ActorNormalizedInfos srcInfos = mapActorNormalizedInfos.get(k.getSource());
-      final long sizeInElts = (long) Math.ceil(modelResult.get((long) v + indexOffset).floatValue())
-          - (srcInfos.oriET - srcInfos.oriII);
+      final long sizeInElts = (long) Math.ceil(modelResult.get((long) v + indexOffset).floatValue());
       final long typeSizeBits = scenario.getSimulationInfo().getDataTypeSizeInBit(k.getType());
       final long fifoSizeInBits = Math.max(sizeInElts, 2) * typeSizeBits;
       computedFifoSizes.put(k, fifoSizeInBits);
