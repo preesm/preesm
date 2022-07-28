@@ -24,6 +24,9 @@ def write_buffer_sizes(buffer_sizes):
         for i in range(len(names)):
             file.write('#[[#]]#define ' + names[i] + ' ' + str(buffer_sizes[i]) + '\n')
 
+def dichotomy(lower, upper):
+    return int(lower + (upper - lower)/2)
+
 if __name__=="__main__":
     start = time.time()
     nb_cosim = 1
@@ -31,8 +34,8 @@ if __name__=="__main__":
     best_throughput = parse_cosim_results()
     for i in range(len(names)):
         buffer_sizes = upper_bound.copy()
-        while(lower_bound[i] + 1 < upper_bound[i]):
-            buffer_sizes[i] = int((upper_bound[i] - lower_bound[i]) / 2)
+        buffer_sizes[i] = dichotomy(lower_bound[i], upper_bound[i])
+        while(buffer_sizes[i] + 1 < upper_bound[i]):
             write_buffer_sizes(buffer_sizes)
             run_cosim()
             nb_cosim += 1
@@ -40,6 +43,7 @@ if __name__=="__main__":
                 upper_bound[i] = buffer_sizes[i]
             else:
                 lower_bound[i] = buffer_sizes[i]
+            buffer_sizes[i] = dichotomy(lower_bound[i], upper_bound[i])
     end = time.time()
     print('nb_cosim: ' + str(nb_cosim))
     print('runtime: ' + str(end - start))
