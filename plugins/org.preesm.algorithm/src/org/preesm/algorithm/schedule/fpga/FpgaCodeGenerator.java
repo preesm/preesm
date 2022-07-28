@@ -752,7 +752,7 @@ public class FpgaCodeGenerator {
     for (final InterfaceActor ia : interfaceRates.keySet()) {
       final Fifo f = ia.getDataPort().getFifo();
       declareStream.append(getFifoStreamDeclaration(f));
-      final String rate = getInterfaceRateNameMacro(ia) + " * " + getInterfaceFactorNameMacro(ia) + " * NB_ITERATIONS";
+      final String rate = getInterfaceRateNameMacro(ia) + " * " + getInterfaceFactorNameMacro(ia);
       if (ia instanceof DataInputInterface) {
         String write = getFifoStreamName(f) + ".write(0);\n";
         initStream.append(generateForLoop(write, rate));

@@ -1,3 +1,4 @@
+import math
 import re
 import subprocess
 import time
@@ -25,7 +26,7 @@ def write_buffer_sizes(buffer_sizes):
             file.write('#[[#]]#define ' + names[i] + ' ' + str(buffer_sizes[i]) + '\n')
 
 def dichotomy(lower, upper):
-    return int(lower + (upper - lower)/2)
+    return math.ceil(lower + (upper - lower)/2)
 
 if __name__=="__main__":
     start = time.time()
@@ -35,7 +36,7 @@ if __name__=="__main__":
     for i in range(len(names)):
         buffer_sizes = upper_bound.copy()
         buffer_sizes[i] = dichotomy(lower_bound[i], upper_bound[i])
-        while(buffer_sizes[i] + 1 < upper_bound[i]):
+        while(buffer_sizes[i] < upper_bound[i]):
             write_buffer_sizes(buffer_sizes)
             run_cosim()
             nb_cosim += 1
@@ -45,6 +46,7 @@ if __name__=="__main__":
                 lower_bound[i] = buffer_sizes[i]
             buffer_sizes[i] = dichotomy(lower_bound[i], upper_bound[i])
     end = time.time()
+    write_buffer_sizes(upper_bound)
     print('nb_cosim: ' + str(nb_cosim))
     print('runtime: ' + str(end - start))
 
