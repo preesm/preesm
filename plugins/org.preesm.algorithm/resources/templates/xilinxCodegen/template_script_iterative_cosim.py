@@ -6,7 +6,7 @@ import time
 top_kernel_name = $PREESM_TOP_KERNEL_NAME
 names = [ $PREESM_FIFO_NAMES ]
 upper_bound = [ $PREESM_FIFO_SIZES ]
-lower_bound = [2, 2, 2, 2]
+lower_bound = [ $PREESM_FIFO_MIN_SIZES ]
 
 def run_cosim():
     subprocess.run(['vitis_hls', 'scripts/script_hls.tcl',  'cosim', top_kernel_name, top_kernel_name + '.cpp'])

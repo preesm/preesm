@@ -471,12 +471,15 @@ public class FpgaCodeGenerator {
 
     final List<String> nameArgs = new ArrayList<>();
     final List<String> sizeArgs = new ArrayList<>();
+    final List<String> sizeMinArgs = new ArrayList<>();
     allFifoDepths.forEach((f, s) -> {
       nameArgs.add("'" + getFifoStreamSizeNameMacro(f) + "'");
       sizeArgs.add(s.toString());
+      sizeMinArgs.add("2");
     });
     context.put("PREESM_FIFO_NAMES", nameArgs.stream().collect(Collectors.joining(", ")));
     context.put("PREESM_FIFO_SIZES", sizeArgs.stream().collect(Collectors.joining(", ")));
+    context.put("PREESM_FIFO_MIN_SIZES", sizeMinArgs.stream().collect(Collectors.joining(", ")));
 
     // 3- init template reader
     final InputStreamReader reader = PreesmIOHelper.getInstance().getFileReader(TEMPLATE_SCRIPT_COSIM_HLS,
