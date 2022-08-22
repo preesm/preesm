@@ -10,8 +10,9 @@ lower_bound = [ $PREESM_FIFO_MIN_SIZES ]
 
 def run_cosim():
     subprocess.run(['vitis_hls', 'scripts/script_hls.tcl',  'cosim', top_kernel_name, top_kernel_name + '.cpp'])
+    return get_cosim_ii()
 
-def parse_cosim_results():
+def get_cosim_ii():
     with open(top_kernel_name + '/solution1/sim/report/' + top_kernel_name + '_cosim.rpt') as file:
         result = file.readlines()[10]
         result = result.split('|')
@@ -28,25 +29,28 @@ def write_buffer_sizes(buffer_sizes):
 def dichotomy(lower, upper):
     return math.ceil(lower + (upper - lower)/2)
 
-if __name__=="__main__":
-    start = time.time()
+def iterative_cosim():
+    best_ii = run_cosim()
     nb_cosim = 1
-    run_cosim()
-    best_throughput = parse_cosim_results()
     for i in range(len(names)):
         buffer_sizes = upper_bound.copy()
         buffer_sizes[i] = dichotomy(lower_bound[i], upper_bound[i])
         while(buffer_sizes[i] < upper_bound[i]):
             write_buffer_sizes(buffer_sizes)
-            run_cosim()
+            current_ii = run_cosim()
             nb_cosim += 1
-            if(parse_cosim_results() == best_throughput):
+            if(current_ii == best_ii):
                 upper_bound[i] = buffer_sizes[i]
             else:
                 lower_bound[i] = buffer_sizes[i]
             buffer_sizes[i] = dichotomy(lower_bound[i], upper_bound[i])
-    end = time.time()
     write_buffer_sizes(upper_bound)
+    return nb_cosim
+
+if __name__=="__main__":
+    start = time.time()
+    nb_cosim = iterative_cosim()
+    end = time.time()
     print('nb_cosim: ' + str(nb_cosim))
     print('runtime: ' + str(end - start))
 
