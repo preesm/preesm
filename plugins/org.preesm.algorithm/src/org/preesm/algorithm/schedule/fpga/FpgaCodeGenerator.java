@@ -49,7 +49,6 @@ import org.preesm.model.pisdf.brv.PiBRV;
 import org.preesm.model.pisdf.check.RefinementChecker;
 import org.preesm.model.pisdf.util.CHeaderUsedLocator;
 import org.preesm.model.scenario.Scenario;
-import org.preesm.model.scenario.Timings;
 import org.preesm.model.slam.FPGA;
 import org.preesm.model.slam.TimingType;
 
@@ -128,6 +127,7 @@ public class FpgaCodeGenerator {
   public static final String STDFILE_LIB_XOCL_CPP    = "stdfiles/xilinxCodegen/xcl2.cpp";
   public static final String STDFILE_LIB_XOCL_HPP    = "stdfiles/xilinxCodegen/xcl2.hpp";
   public static final String SCRIPT_VIVADO_TCL       = "stdfiles/xilinxCodegen/script_vivado_xsa.tcl";
+  public static final String MODEL_FIFO_ZYNQ         = "stdfiles/xilinxCodegen/model_fifo_zynq.py";
   public static final String STDFILE_PACKING_HPP     = "stdfiles/xilinxCodegen/packing.hpp";
 
   public static final String NAME_WRAPPER_INITPROTO   = "preesmInitWrapper";
@@ -248,7 +248,7 @@ public class FpgaCodeGenerator {
     final String topKernelTestbenchFileContent = fcg.writeTopKernelTestbenchFile();
     final String vivadoScriptContent = fcg.writeVivadoScriptFile();
     final String hlsScriptContent = fcg.writeHlsScriptFile();
-    final String cosimScriptContent = fcg.writeCosimScriptFile(scenario.getTimings());
+    final String cosimScriptContent = fcg.writeCosimScriptFile(scenario);
     final String makefileContent = fcg.writeMakefile();
 
     // Xilinx OpenCL specific
@@ -303,6 +303,10 @@ public class FpgaCodeGenerator {
       final String contentScriptXsa = PreesmResourcesHelper.getInstance().read(SCRIPT_VIVADO_TCL, fcg.getClass());
       PreesmIOHelper.getInstance().print(codegenPath + "/" + STDFILE_SCRIPT_SUBDIR, "script_vivado_xsa.tcl",
           contentScriptXsa);
+
+      final String contentModelFifoZynq = PreesmResourcesHelper.getInstance().read(MODEL_FIFO_ZYNQ, fcg.getClass());
+      PreesmIOHelper.getInstance().print(codegenPath + "/" + STDFILE_SCRIPT_SUBDIR, "model_fifo_zynq.py",
+          contentModelFifoZynq);
 
     } catch (IOException e) {
       throw new PreesmRuntimeException("Could not copy all the stdfiles.", e);
@@ -461,7 +465,7 @@ public class FpgaCodeGenerator {
     return writer.toString();
   }
 
-  protected String writeCosimScriptFile(Timings timings) {
+  protected String writeCosimScriptFile(Scenario scenario) {
     // 1- init engine
     final VelocityEngine engine = new VelocityEngine();
     engine.init();
@@ -475,22 +479,27 @@ public class FpgaCodeGenerator {
     final List<String> sizeArgs = new ArrayList<>();
     final List<String> sizeMinArgs = new ArrayList<>();
     final List<String> lambdaArgs = new ArrayList<>();
+    final List<String> widthArgs = new ArrayList<>();
     allFifoDepths.forEach((f, s) -> {
       nameArgs.add("'" + getFifoStreamSizeNameMacro(f) + "'");
       sizeArgs.add(s.toString());
       sizeMinArgs.add("2");
       long srcRate = f.getSourcePort().getExpression().evaluate();
-      long srcII = timings.evaluateTimingOrDefault((AbstractActor) f.getSource(), fpga, TimingType.INITIATION_INTERVAL);
+      long srcII = scenario.getTimings().evaluateTimingOrDefault((AbstractActor) f.getSource(), fpga,
+          TimingType.INITIATION_INTERVAL);
       long srcLambda = AdfgFpgaFifoEvaluator.computeLambda(srcRate, srcII).longValue();
       long snkRate = f.getTargetPort().getExpression().evaluate();
-      long snkII = timings.evaluateTimingOrDefault((AbstractActor) f.getTarget(), fpga, TimingType.INITIATION_INTERVAL);
+      long snkII = scenario.getTimings().evaluateTimingOrDefault((AbstractActor) f.getTarget(), fpga,
+          TimingType.INITIATION_INTERVAL);
       long snkLambda = AdfgFpgaFifoEvaluator.computeLambda(snkRate, snkII).longValue();
       lambdaArgs.add(Long.toString(srcLambda + snkLambda));
+      widthArgs.add(Long.toString(scenario.getSimulationInfo().getDataTypeSizeInBit(f.getType())));
     });
     context.put("PREESM_FIFO_NAMES", nameArgs.stream().collect(Collectors.joining(", ")));
     context.put("PREESM_FIFO_SIZES", sizeArgs.stream().collect(Collectors.joining(", ")));
     context.put("PREESM_FIFO_MIN_SIZES", sizeMinArgs.stream().collect(Collectors.joining(", ")));
     context.put("PREESM_FIFO_LAMBDAS", lambdaArgs.stream().collect(Collectors.joining(", ")));
+    context.put("PREESM_FIFO_WIDTHS", widthArgs.stream().collect(Collectors.joining(", ")));
 
     // 3- init template reader
     final InputStreamReader reader = PreesmIOHelper.getInstance().getFileReader(TEMPLATE_SCRIPT_COSIM_HLS,

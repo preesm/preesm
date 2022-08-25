@@ -1,4 +1,5 @@
 import math
+import model_fifo_zynq
 import re
 import subprocess
 import time
@@ -8,6 +9,7 @@ names = [ $PREESM_FIFO_NAMES ]
 upper_bound = [ $PREESM_FIFO_SIZES ]
 lower_bound = [ $PREESM_FIFO_MIN_SIZES ]
 lambdas = [ $PREESM_FIFO_LAMBDAS ]
+widths = [ $PREESM_FIFO_WIDTHS ]
 
 def run_cosim(buffer_sizes):
     write_buffer_sizes(buffer_sizes)
@@ -28,32 +30,52 @@ def write_buffer_sizes(buffer_sizes):
         for i in range(len(names)):
             file.write('#[[#]]#define ' + names[i] + ' ' + str(buffer_sizes[i]) + '\n')
 
-def candidate_buffer_size(lower, upper):
-    return dichotomy(lower, upper)
+def candidate_buffer_size(lower, upper, width):
+    return next_smaller_buffer(lower, upper, width)
 
 def dichotomy(lower, upper):
     return math.ceil(lower + (upper - lower)/2)
 
-def is_improved(candidate, upper):
+def next_smaller_buffer(lower, upper, width):
+    proposed_depth = dichotomy(lower, upper)
+    if model_fifo_zynq.bram_usage(proposed_depth, width) != 0:
+        proposed_depth = model_fifo_zynq.next_smaller_fifo(upper, width)
+    if proposed_depth == lower:
+        proposed_depth = upper
+    return proposed_depth
+
+def is_improved(candidate, upper, width):
+    return is_improved_ressource_wise(candidate, upper, width)
+
+def is_improved_token_wise(candidate, upper):
     return candidate < upper
+
+def is_improved_ressource_wise(candidate, upper, width):
+    candidate_cost = model_fifo_zynq.bram_usage(candidate, width)
+    if (candidate_cost == 0):
+        return is_improved_token_wise(candidate, upper)
+    upper_cost = model_fifo_zynq.bram_usage(upper, width)
+    return candidate_cost < upper_cost
 
 def iterative_cosim():
     best_ii = run_cosim(upper_bound)
+    if(best_ii == -1):
+        raise ValueError('Graph deadlocked with original buffer sizes')
     return greedy_iterative_cosim(best_ii) + 1
 
 def sequential_iterative_cosim(best_ii):
     nb_cosim = 0
     for i in range(len(names)):
         buffer_sizes = [x for x in upper_bound]
-        buffer_sizes[i] = candidate_buffer_size(lower_bound[i], upper_bound[i])
-        while is_improved(buffer_sizes[i], upper_bound[i]):
+        buffer_sizes[i] = candidate_buffer_size(lower_bound[i], upper_bound[i], widths[i])
+        while is_improved(buffer_sizes[i], upper_bound[i], widths[i]):
             current_ii = run_cosim(buffer_sizes)
             nb_cosim += 1
             if current_ii == best_ii:
                 upper_bound[i] = buffer_sizes[i]
             else:
                 lower_bound[i] = buffer_sizes[i]
-            buffer_sizes[i] = candidate_buffer_size(lower_bound[i], upper_bound[i])
+            buffer_sizes[i] = candidate_buffer_size(lower_bound[i], upper_bound[i], widths[i])
     write_buffer_sizes(upper_bound)
     return nb_cosim
 
@@ -63,19 +85,19 @@ def greedy_iterative_cosim(best_ii):
         candidates = [i for (i, c) in zip(range(len(lambdas)), lambdas) if c > 0.5 * max(lambdas)]
         buffer_sizes = [x for x in upper_bound]
         for i in candidates:
-            buffer_sizes[i] = candidate_buffer_size(lower_bound[i], upper_bound[i])
+            buffer_sizes[i] = candidate_buffer_size(lower_bound[i], upper_bound[i], widths[i])
         current_ii = run_cosim(buffer_sizes)
         nb_cosim += 1
         if(current_ii == best_ii):
             for i in candidates:
                 upper_bound[i] = buffer_sizes[i]
                 lambdas[i] = lambdas[i] / 2
-                if not is_improved(candidate_buffer_size(lower_bound[i], upper_bound[i]), upper_bound[i]):
+                if not is_improved(candidate_buffer_size(lower_bound[i], upper_bound[i], widths[i]), upper_bound[i], widths[i]):
                     lambdas[i] = 0
         else:
             buffer_sizes = [x for x in upper_bound]
             for i in candidates:
-                buffer_sizes[i] = candidate_buffer_size(lower_bound[i], upper_bound[i])
+                buffer_sizes[i] = candidate_buffer_size(lower_bound[i], upper_bound[i], widths[i])
                 current_ii = run_cosim(buffer_sizes)
                 nb_cosim += 1
                 if(current_ii == best_ii):
