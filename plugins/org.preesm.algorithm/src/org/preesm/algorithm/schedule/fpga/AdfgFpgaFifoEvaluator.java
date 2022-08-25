@@ -235,7 +235,7 @@ public class AdfgFpgaFifoEvaluator extends AbstractGenericFpgaFifoEvaluator {
 
       final String logLambdaPorts = ani.aa.getAllDataPorts().stream().map(dp -> {
         final long rate = dp.getExpression().evaluate();
-        final BigFraction lambdaFr = new BigFraction(-rate, ani.oriII).add(1L).multiply(rate);
+        final BigFraction lambdaFr = computeLambda(rate, ani.oriII);
         lambdaPerPort.put(dp, lambdaFr);
         final double valD = lambdaFr.doubleValue();
         if (valD < 0d) {
@@ -253,6 +253,19 @@ public class AdfgFpgaFifoEvaluator extends AbstractGenericFpgaFifoEvaluator {
               + "Please increase the Initiation Interval of corresponding actors in the scenario to fix that..");
     }
     return lambdaPerPort;
+  }
+
+  /**
+   * Compute the lambda value for a given rate and II
+   * 
+   * @param rate
+   *          production/consumption rate of the port
+   * @param ii
+   *          initiation interval of the port's actor
+   * @return lambda value
+   */
+  public static BigFraction computeLambda(long rate, long ii) {
+    return new BigFraction(-rate, ii).add(1L).multiply(rate);
   }
 
   /**

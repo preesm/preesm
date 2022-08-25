@@ -49,7 +49,9 @@ import org.preesm.model.pisdf.brv.PiBRV;
 import org.preesm.model.pisdf.check.RefinementChecker;
 import org.preesm.model.pisdf.util.CHeaderUsedLocator;
 import org.preesm.model.scenario.Scenario;
+import org.preesm.model.scenario.Timings;
 import org.preesm.model.slam.FPGA;
+import org.preesm.model.slam.TimingType;
 
 /**
  * This class generates code for Xilinx FPGA with OpenCL HLS flow.
@@ -246,7 +248,7 @@ public class FpgaCodeGenerator {
     final String topKernelTestbenchFileContent = fcg.writeTopKernelTestbenchFile();
     final String vivadoScriptContent = fcg.writeVivadoScriptFile();
     final String hlsScriptContent = fcg.writeHlsScriptFile();
-    final String cosimScriptContent = fcg.writeCosimScriptFile();
+    final String cosimScriptContent = fcg.writeCosimScriptFile(scenario.getTimings());
     final String makefileContent = fcg.writeMakefile();
 
     // Xilinx OpenCL specific
@@ -459,7 +461,7 @@ public class FpgaCodeGenerator {
     return writer.toString();
   }
 
-  protected String writeCosimScriptFile() {
+  protected String writeCosimScriptFile(Timings timings) {
     // 1- init engine
     final VelocityEngine engine = new VelocityEngine();
     engine.init();
@@ -472,14 +474,23 @@ public class FpgaCodeGenerator {
     final List<String> nameArgs = new ArrayList<>();
     final List<String> sizeArgs = new ArrayList<>();
     final List<String> sizeMinArgs = new ArrayList<>();
+    final List<String> lambdaArgs = new ArrayList<>();
     allFifoDepths.forEach((f, s) -> {
       nameArgs.add("'" + getFifoStreamSizeNameMacro(f) + "'");
       sizeArgs.add(s.toString());
       sizeMinArgs.add("2");
+      long srcRate = f.getSourcePort().getExpression().evaluate();
+      long srcII = timings.evaluateTimingOrDefault((AbstractActor) f.getSource(), fpga, TimingType.INITIATION_INTERVAL);
+      long srcLambda = AdfgFpgaFifoEvaluator.computeLambda(srcRate, srcII).longValue();
+      long snkRate = f.getTargetPort().getExpression().evaluate();
+      long snkII = timings.evaluateTimingOrDefault((AbstractActor) f.getTarget(), fpga, TimingType.INITIATION_INTERVAL);
+      long snkLambda = AdfgFpgaFifoEvaluator.computeLambda(snkRate, snkII).longValue();
+      lambdaArgs.add(Long.toString(srcLambda + snkLambda));
     });
     context.put("PREESM_FIFO_NAMES", nameArgs.stream().collect(Collectors.joining(", ")));
     context.put("PREESM_FIFO_SIZES", sizeArgs.stream().collect(Collectors.joining(", ")));
     context.put("PREESM_FIFO_MIN_SIZES", sizeMinArgs.stream().collect(Collectors.joining(", ")));
+    context.put("PREESM_FIFO_LAMBDAS", lambdaArgs.stream().collect(Collectors.joining(", ")));
 
     // 3- init template reader
     final InputStreamReader reader = PreesmIOHelper.getInstance().getFileReader(TEMPLATE_SCRIPT_COSIM_HLS,
