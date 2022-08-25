@@ -106,7 +106,6 @@ def greedy_iterative_cosim(best_ii):
                 else:
                     lower_bound[i] = buffer_sizes[i]
                     lambdas[i] = 0
-                    break
     return sequential_iterative_cosim(best_ii) + nb_cosim
 
 if __name__=="__main__":
