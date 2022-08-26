@@ -4,12 +4,18 @@ import re
 import subprocess
 import time
 
+#[[#]]# Graph parameters
 top_kernel_name = $PREESM_TOP_KERNEL_NAME
 names = [ $PREESM_FIFO_NAMES ]
 upper_bound = [ $PREESM_FIFO_SIZES ]
 lower_bound = [ $PREESM_FIFO_MIN_SIZES ]
 lambdas = [ $PREESM_FIFO_LAMBDAS ]
 widths = [ $PREESM_FIFO_WIDTHS ]
+
+#[[#]]# DSE options
+use_ressource_wise = True
+use_lambdas = True
+use_initial_tests = True
 
 def run_cosim(buffer_sizes):
     write_buffer_sizes(buffer_sizes)
@@ -28,10 +34,13 @@ def get_cosim_ii():
 def write_buffer_sizes(buffer_sizes):
     with open('PreesmAutoDefinedSizes.h', 'a') as file:
         for i in range(len(names)):
-            file.write('#[[#]]#define ' + names[i] + ' ' + str(buffer_sizes[i]) + '\n')
+            file.write('#[[#]]#define ' + names[i] + ' ' + str(int(buffer_sizes[i])) + '\n')
 
 def candidate_buffer_size(lower, upper, width):
-    return next_smaller_buffer(lower, upper, width)
+    if use_ressource_wise:
+        return next_smaller_buffer(lower, upper, width)
+    else:
+        return dichotomy(lower, upper)
 
 def dichotomy(lower, upper):
     return math.ceil(lower + (upper - lower)/2)
@@ -45,7 +54,10 @@ def next_smaller_buffer(lower, upper, width):
     return proposed_depth
 
 def is_improved(candidate, upper, width):
-    return is_improved_ressource_wise(candidate, upper, width)
+    if use_ressource_wise:
+        return is_improved_ressource_wise(candidate, upper, width)
+    else:
+        return is_improved_token_wise(candidate, upper)
 
 def is_improved_token_wise(candidate, upper):
     return candidate < upper
@@ -61,7 +73,14 @@ def iterative_cosim():
     best_ii = run_cosim(upper_bound)
     if(best_ii == -1):
         raise ValueError('Graph deadlocked with original buffer sizes')
-    return greedy_iterative_cosim(best_ii) + 1
+    nb_cosim = 1
+    if use_initial_tests:
+        nb_cosim += initial_tests_cosim(best_ii)
+    if use_lambdas:
+        nb_cosim += lambda_iterative_cosim(best_ii)
+    nb_cosim += sequential_iterative_cosim(best_ii)
+    write_buffer_sizes(upper_bound)
+    return nb_cosim
 
 def sequential_iterative_cosim(best_ii):
     nb_cosim = 0
@@ -76,10 +95,24 @@ def sequential_iterative_cosim(best_ii):
             else:
                 lower_bound[i] = buffer_sizes[i]
             buffer_sizes[i] = candidate_buffer_size(lower_bound[i], upper_bound[i], widths[i])
-    write_buffer_sizes(upper_bound)
     return nb_cosim
 
-def greedy_iterative_cosim(best_ii):
+def initial_tests_cosim(best_ii):
+    nb_cosim = 0
+    for i in range(len(names)):
+        buffer_sizes = [x for x in upper_bound]
+        buffer_sizes[i] = 5
+        if is_improved(buffer_sizes[i], upper_bound[i], widths[i]):
+            current_ii = run_cosim(buffer_sizes)
+            nb_cosim += 1
+            if current_ii == best_ii:
+                upper_bound[i] = buffer_sizes[i]
+                lambdas[i] = 4
+            else:
+                lower_bound[i] = buffer_sizes[i]
+    return nb_cosim
+
+def lambda_iterative_cosim(best_ii):
     nb_cosim = 0
     while max(lambdas) > 0:
         candidates = [i for (i, c) in zip(range(len(lambdas)), lambdas) if c > 0.5 * max(lambdas)]
@@ -106,11 +139,12 @@ def greedy_iterative_cosim(best_ii):
                 else:
                     lower_bound[i] = buffer_sizes[i]
                     lambdas[i] = 0
-    return sequential_iterative_cosim(best_ii) + nb_cosim
+    return nb_cosim
 
 if __name__=="__main__":
     start = time.time()
     nb_cosim = iterative_cosim()
     end = time.time()
-    print('nb_cosim: ' + str(nb_cosim))
-    print('runtime: ' + str(end - start))
+    print('buffer sizes: ', upper_bound)
+    print('nb_cosim: ', nb_cosim)
+    print('runtime: ', end - start)
