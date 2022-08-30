@@ -128,8 +128,8 @@ def lambda_iterative_cosim(best_ii):
                 if not is_improved(candidate_buffer_size(lower_bound[i], upper_bound[i], widths[i]), upper_bound[i], widths[i]):
                     lambdas[i] = 0
         else:
-            buffer_sizes = [x for x in upper_bound]
             for i in candidates:
+                buffer_sizes = [x for x in upper_bound]
                 buffer_sizes[i] = candidate_buffer_size(lower_bound[i], upper_bound[i], widths[i])
                 current_ii = run_cosim(buffer_sizes)
                 nb_cosim += 1
