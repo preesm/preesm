@@ -6,6 +6,7 @@ import java.util.Map;
 import org.preesm.algorithm.schedule.fpga.FpgaAnalysisMainTask.AnalysisResultFPGA;
 import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.preesm.commons.logger.PreesmLogger;
+import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.AbstractVertex;
 import org.preesm.model.pisdf.Fifo;
 import org.preesm.model.pisdf.InterfaceActor;
@@ -23,11 +24,14 @@ public class TokenPackingAnalysis {
     public final Long originalWidth;
     // updated data width in bits containing multiple tokens
     public final Long updatedWidth;
+    // Actor which the packer and unpacker will be clusterized with
+    public final AbstractActor attachedActor;
 
-    private PackedFifoConfig(Fifo fifo, Long originalWidth, Long updatedWidth) {
+    private PackedFifoConfig(Fifo fifo, Long originalWidth, Long updatedWidth, AbstractActor actor) {
       this.fifo = fifo;
       this.originalWidth = originalWidth;
       this.updatedWidth = updatedWidth;
+      this.attachedActor = actor;
     }
   }
 
@@ -64,6 +68,8 @@ public class TokenPackingAnalysis {
   private static PackedFifoConfig computePacking(Fifo fifo, long depth, long dataTypeSize,
       Map<AbstractVertex, Long> brv) {
 
+    AbstractActor attachedActor = null;
+
     long defaultBramWidth = dataTypeSize;
 
     final long baseNbBram = bramUsageVitis(depth, dataTypeSize);
@@ -75,35 +81,35 @@ public class TokenPackingAnalysis {
     long bestPacketWidth = defaultBramWidth;
     long bestNbBram = baseNbBram;
 
-    for (long packingSize = dataTypeSize * 2; packingSize <= 72; packingSize++) {
+    for (long packingSize = dataTypeSize * 2; packingSize <= dataTypeSize * 10; packingSize++) {
 
       final float test = packingSize / (float) dataTypeSize;
 
-      final long nbData = (long) Math.floor(test);
-
-      final long srcRv = brv.get(fifo.getSource());
-      final long tgtRv = brv.get(fifo.getTarget());
+      final long nbDataInPacket = (long) Math.floor(test);
 
       final long srcRate = fifo.getSourcePort().getExpression().evaluate();
       final long tgtRate = fifo.getTargetPort().getExpression().evaluate();
 
-      if (srcRv * srcRate != tgtRv * tgtRate) {
-        throw new PreesmRuntimeException(
-            fifo.getId() + " prod and cons do not match: " + srcRv * srcRate + "," + tgtRv * tgtRate);
-      }
+      // Check if packing ratio is a divisor of the source rate or target rate
+      if (srcRate % nbDataInPacket == 0 || tgtRate % nbDataInPacket == 0) {
+        final long packedDepth = (long) Math.ceil((float) depth / nbDataInPacket);
 
-      // Check if the number of bram is reduced, and keep the best reduction
-      if ((srcRate * srcRv) % nbData == 0) {
-        final long packedDepth = (long) Math.ceil((float) depth / nbData);
-
-        final long testPacketWidth = nbData * dataTypeSize;
+        final long testPacketWidth = nbDataInPacket * dataTypeSize;
 
         final long testNbBram = bramUsageVitis(packedDepth, testPacketWidth);
 
         // Compare this result with the previous best case
         if (testNbBram < bestNbBram) {
+
+          if (srcRate % nbDataInPacket == 0)
+            attachedActor = fifo.getSourcePort().getContainingActor();
+          else if (tgtRate % nbDataInPacket == 0)
+            attachedActor = fifo.getTargetPort().getContainingActor();
+          else
+            throw new PreesmRuntimeException("wtf");
+
           bestNbBram = testNbBram;
-          bestPacketWidth = nbData * dataTypeSize;
+          bestPacketWidth = nbDataInPacket * dataTypeSize;
         }
       }
     }
@@ -119,7 +125,7 @@ public class TokenPackingAnalysis {
       PreesmLogger.getLogger().finer(() -> "New depth is " + newDepth);
       PreesmLogger.getLogger().finer(() -> dataTypeSize + "-bit packed in packets of " + finalPacketWidth + " bits");
 
-      return new PackedFifoConfig(fifo, dataTypeSize, finalPacketWidth);
+      return new PackedFifoConfig(fifo, dataTypeSize, finalPacketWidth, attachedActor);
     }
 
     PreesmLogger.getLogger().fine(() -> fifo.getId() + " with " + depth + " token of " + dataTypeSize + " bits on "
