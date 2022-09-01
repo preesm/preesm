@@ -34,7 +34,6 @@ import org.preesm.model.scenario.Scenario;
 import org.preesm.model.scenario.check.FifoTypeChecker;
 import org.preesm.model.slam.Design;
 import org.preesm.model.slam.FPGA;
-import org.preesm.model.slam.TimingType;
 import org.preesm.model.slam.check.SlamDesignPEtypeChecker;
 import org.preesm.workflow.elements.Workflow;
 import org.preesm.workflow.implement.AbstractTaskImplementation;
@@ -105,10 +104,10 @@ public class FpgaAnalysisMainTask extends AbstractTaskImplementation {
         // Adding the latency due to packing to the II of corresponding attached actor into the scenario
         for (PackedFifoConfig packedFifoConfig : workList) {
           final long additionalLatency = packedFifoConfig.updatedWidth / packedFifoConfig.originalWidth + 1;
-          final long newII = Long.parseLong(scenario.getTimings().getTimingOrDefault(packedFifoConfig.attachedActor,
-              fpga, TimingType.INITIATION_INTERVAL)) + additionalLatency;
-          scenario.getTimings().setTiming(packedFifoConfig.attachedActor, fpga, TimingType.INITIATION_INTERVAL,
-              Long.toString(newII));
+          final long newExecutionTime = Long
+              .parseLong(scenario.getTimings().getExecutionTimeOrDefault(packedFifoConfig.attachedActor, fpga))
+              + additionalLatency;
+          scenario.getTimings().setExecutionTime(packedFifoConfig.attachedActor, fpga, newExecutionTime);
         }
       }
     }
