@@ -90,7 +90,7 @@ def sequential_iterative_cosim(best_ii):
         while is_improved(buffer_sizes[i], upper_bound[i], widths[i]):
             current_ii = run_cosim(buffer_sizes)
             nb_cosim += 1
-            if current_ii == best_ii:
+            if current_ii <= best_ii and current_ii > 0:
                 upper_bound[i] = buffer_sizes[i]
             else:
                 lower_bound[i] = buffer_sizes[i]
@@ -105,7 +105,7 @@ def initial_tests_cosim(best_ii):
         if is_improved(buffer_sizes[i], upper_bound[i], widths[i]):
             current_ii = run_cosim(buffer_sizes)
             nb_cosim += 1
-            if current_ii == best_ii:
+            if current_ii <= best_ii and current_ii > 0:
                 upper_bound[i] = buffer_sizes[i]
                 lambdas[i] = 4
             else:
@@ -121,7 +121,7 @@ def lambda_iterative_cosim(best_ii):
             buffer_sizes[i] = candidate_buffer_size(lower_bound[i], upper_bound[i], widths[i])
         current_ii = run_cosim(buffer_sizes)
         nb_cosim += 1
-        if(current_ii == best_ii):
+        if(current_ii <= best_ii and current_ii > 0):
             for i in candidates:
                 upper_bound[i] = buffer_sizes[i]
                 lambdas[i] = lambdas[i] / 2
@@ -133,7 +133,7 @@ def lambda_iterative_cosim(best_ii):
                 buffer_sizes[i] = candidate_buffer_size(lower_bound[i], upper_bound[i], widths[i])
                 current_ii = run_cosim(buffer_sizes)
                 nb_cosim += 1
-                if(current_ii == best_ii):
+                if(current_ii <= best_ii and current_ii > 0):
                     upper_bound[i] = buffer_sizes[i]
                     lambdas[i] = lambdas[i] / 2
                 else:
