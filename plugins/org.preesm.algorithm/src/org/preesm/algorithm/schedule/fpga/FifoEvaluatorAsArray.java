@@ -9,7 +9,7 @@ import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.scenario.Scenario;
 
 /**
- * This class evalutes fifo dependencies and size as in the SDF model: all data are produced at the end while they are
+ * This class evaluates fifo dependencies and size as in the SDF model: all data are produced at the end while they are
  * consumed at the beginning of a firing.
  * 
  * @author ahonorat

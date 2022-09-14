@@ -1,7 +1,7 @@
 package org.preesm.algorithm.schedule.fpga;
 
 import java.util.List;
-import org.preesm.algorithm.schedule.fpga.FpgaAnalysisMainTask.AnalysisResultFPGA;
+import org.preesm.algorithm.schedule.fpga.AbstractGenericFpgaFifoEvaluator.AnalysisResultFPGA;
 import org.preesm.algorithm.schedule.fpga.TokenPackingAnalysis.PackedFifoConfig;
 import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.Actor;

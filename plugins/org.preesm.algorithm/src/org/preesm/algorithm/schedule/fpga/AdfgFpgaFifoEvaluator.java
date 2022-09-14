@@ -14,7 +14,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 import org.apache.commons.math3.fraction.BigFraction;
-import org.eclipse.xtext.xbase.lib.Pair;
 import org.jgrapht.GraphPath;
 import org.jgrapht.alg.cycle.PatonCycleBase;
 import org.jgrapht.graph.DefaultDirectedGraph;
@@ -24,19 +23,15 @@ import org.ojalgo.optimisation.ExpressionsBasedModel;
 import org.ojalgo.optimisation.Optimisation.Result;
 import org.ojalgo.optimisation.Optimisation.State;
 import org.ojalgo.optimisation.Variable;
-import org.preesm.algorithm.mapper.ui.stats.IStatGenerator;
 import org.preesm.algorithm.pisdf.autodelays.AbstractGraph;
 import org.preesm.algorithm.pisdf.autodelays.AbstractGraph.FifoAbstraction;
 import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.commons.math.MathFunctionsHelper;
 import org.preesm.model.pisdf.AbstractActor;
-import org.preesm.model.pisdf.AbstractVertex;
 import org.preesm.model.pisdf.DataPort;
 import org.preesm.model.pisdf.Delay;
 import org.preesm.model.pisdf.Fifo;
-import org.preesm.model.pisdf.PiGraph;
-import org.preesm.model.pisdf.statictools.PiMMHelper;
 import org.preesm.model.scenario.Scenario;
 
 /**
@@ -59,20 +54,14 @@ public class AdfgFpgaFifoEvaluator extends AbstractGenericFpgaFifoEvaluator {
   }
 
   @Override
-  public Pair<IStatGenerator, Map<Fifo, Long>> performAnalysis(PiGraph flatGraph, Scenario scenario,
-      Map<AbstractVertex, Long> brv) {
+  public void performAnalysis(final Scenario scenario, final AnalysisResultFPGA analysisResult) {
 
-    // Get all sub graph (connected components) composing the current graph
-    final List<List<AbstractActor>> subgraphsWOInterfaces = PiMMHelper.getAllConnectedComponentsWOInterfaces(flatGraph);
-
-    final Map<AbstractActor, ActorNormalizedInfos> mapActorNormalizedInfos = new LinkedHashMap<>();
-    // check and set the II for each subgraph
-    for (List<AbstractActor> cc : subgraphsWOInterfaces) {
-      mapActorNormalizedInfos.putAll(checkAndSetActorNormalizedInfos(cc, scenario, brv));
-    }
+    final Map<AbstractActor,
+        ActorNormalizedInfos> mapActorNormalizedInfos = logCheckAndSetActorNormalizedInfos(scenario, analysisResult);
 
     // create intermediate FifoAbstraction graphs
-    final DefaultDirectedGraph<AbstractActor, FifoAbstraction> ddg = AbstractGraph.createAbsGraph(flatGraph, brv);
+    final DefaultDirectedGraph<AbstractActor,
+        FifoAbstraction> ddg = AbstractGraph.createAbsGraph(analysisResult.flatGraph, analysisResult.flatBrv);
     final DefaultUndirectedGraph<AbstractActor, FifoAbstraction> dug = AbstractGraph.undirectedGraph(ddg);
 
     // Increase actor II for small differences to avoid overflow in ADFG cycle computation
@@ -191,10 +180,11 @@ public class AdfgFpgaFifoEvaluator extends AbstractGenericFpgaFifoEvaluator {
       PreesmLogger.getLogger().info("FIFO " + k.getId() + " size: " + fifoSizeInBits + " bits");
     });
 
+    // store the results before returning
+    analysisResult.flatFifoSizes = computedFifoSizes;
     // TODO build a schedule using the normalized graph II and each actor offset (computed by the ILP)
     // same ILP as in ADFG but not fixing Tbasis: only fixing all T being greater than 1
     // result will be a period in number of cycles and will be overestimated, seems not useful
-    return new Pair<>(null, computedFifoSizes);
   }
 
   /**

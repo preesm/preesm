@@ -12,7 +12,6 @@ import java.util.SortedMap;
 import org.eclipse.xtext.xbase.lib.Pair;
 import org.preesm.algorithm.mapper.gantt.GanttData;
 import org.preesm.algorithm.mapper.gantt.TaskColorSelector;
-import org.preesm.algorithm.mapper.ui.stats.IStatGenerator;
 import org.preesm.algorithm.mapper.ui.stats.StatGeneratorPrecomputed;
 import org.preesm.algorithm.pisdf.autodelays.AbstractGraph.FifoAbstraction;
 import org.preesm.algorithm.pisdf.autodelays.HeuristicLoopBreakingDelays;
@@ -23,10 +22,7 @@ import org.preesm.commons.IntegerName;
 import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.model.pisdf.AbstractActor;
-import org.preesm.model.pisdf.AbstractVertex;
 import org.preesm.model.pisdf.Fifo;
-import org.preesm.model.pisdf.PiGraph;
-import org.preesm.model.pisdf.statictools.PiMMHelper;
 import org.preesm.model.scenario.Scenario;
 import org.preesm.model.slam.ComponentInstance;
 
@@ -67,21 +63,14 @@ public class AsapFpgaFifoEvaluator extends AbstractGenericFpgaFifoEvaluator {
   }
 
   @Override
-  public Pair<IStatGenerator, Map<Fifo, Long>> performAnalysis(final PiGraph flatGraph, final Scenario scenario,
-      final Map<AbstractVertex, Long> brv) {
+  public void performAnalysis(final Scenario scenario, final AnalysisResultFPGA analysisResult) {
 
-    // Get all sub graph (connected components) composing the current graph
-    final List<List<AbstractActor>> subgraphsWOInterfaces = PiMMHelper.getAllConnectedComponentsWOInterfaces(flatGraph);
-
-    final Map<AbstractActor, ActorNormalizedInfos> mapActorNormalizedInfos = new LinkedHashMap<>();
-    // check and set the II for each subgraph
-    for (List<AbstractActor> cc : subgraphsWOInterfaces) {
-      mapActorNormalizedInfos.putAll(checkAndSetActorNormalizedInfos(cc, scenario, brv));
-    }
+    final Map<AbstractActor,
+        ActorNormalizedInfos> mapActorNormalizedInfos = logCheckAndSetActorNormalizedInfos(scenario, analysisResult);
 
     // check the cycles
     final HeuristicLoopBreakingDelays hlbd = new HeuristicLoopBreakingDelays();
-    hlbd.performAnalysis(flatGraph, brv);
+    hlbd.performAnalysis(analysisResult.flatGraph, analysisResult.flatBrv);
 
     AbstractAsapFpgaFifoEvaluator fifoEval;
     if (FIFO_EVALUATOR_SDF.equalsIgnoreCase(fifoEvaluatorName)) {
@@ -186,10 +175,11 @@ public class AsapFpgaFifoEvaluator extends AbstractGenericFpgaFifoEvaluator {
     }
 
     PreesmLogger.getLogger().info(fifoSizesPrint::toString);
-
-    final IStatGenerator statGen = buildStatGenerator(scenario, irRankActors, sumFifoSizes, mapActorSchedInfos,
+    // store the results before returning
+    analysisResult.irRankActors = irRankActors;
+    analysisResult.flatFifoSizes = allFifoSizes;
+    analysisResult.statGenerator = buildStatGenerator(scenario, irRankActors, sumFifoSizes, mapActorSchedInfos,
         mapActorNormalizedInfos);
-    return new Pair<>(statGen, allFifoSizes);
   }
 
   private static void resetAllInTimes(final Collection<ActorScheduleInfos> asis) {

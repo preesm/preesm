@@ -17,13 +17,13 @@ import org.eclipse.xtext.xbase.lib.Pair;
 import org.preesm.algorithm.pisdf.autodelays.HeuristicLoopBreakingDelays;
 import org.preesm.algorithm.pisdf.autodelays.TopologicalRanking;
 import org.preesm.algorithm.pisdf.autodelays.TopologicalRanking.TopoVisit;
+import org.preesm.algorithm.schedule.fpga.AbstractGenericFpgaFifoEvaluator.AnalysisResultFPGA;
 import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.preesm.commons.files.PreesmIOHelper;
 import org.preesm.commons.files.PreesmResourcesHelper;
 import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.commons.model.PreesmCopyTracker;
 import org.preesm.model.pisdf.AbstractActor;
-import org.preesm.model.pisdf.AbstractVertex;
 import org.preesm.model.pisdf.Actor;
 import org.preesm.model.pisdf.BroadcastActor;
 import org.preesm.model.pisdf.CHeaderRefinement;
@@ -44,8 +44,6 @@ import org.preesm.model.pisdf.Parameter;
 import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.pisdf.Port;
 import org.preesm.model.pisdf.UserSpecialActor;
-import org.preesm.model.pisdf.brv.BRVMethod;
-import org.preesm.model.pisdf.brv.PiBRV;
 import org.preesm.model.pisdf.check.RefinementChecker;
 import org.preesm.model.pisdf.util.CHeaderUsedLocator;
 import org.preesm.model.scenario.Scenario;
@@ -140,22 +138,20 @@ public class FpgaCodeGenerator {
   protected static final String PRAGMA_AXILITE_CTRL  = "#pragma HLS INTERFACE s_axilite port=return\n";
   protected static final int    PYNQ_INTERFACE_DEPTH = 64;
 
-  private final FPGA                                  fpga;
-  private final PiGraph                               graph;
-  private final String                                graphName;
-  private final Map<InterfaceActor, Pair<Long, Long>> interfaceRates;
-  private final Map<Fifo, Long>                       allFifoDepths;
+  private final FPGA               fpga;
+  private final String             graphName;
+  private final AnalysisResultFPGA analysisResult;
+  private final Map<Fifo, Long>    allFifoDepths;
 
-  private FpgaCodeGenerator(final Scenario scenario, final FPGA fpga, final PiGraph graph,
-      final Map<InterfaceActor, Pair<Long, Long>> interfaceRates, final Map<Fifo, Long> allFifoSizes) {
+  private FpgaCodeGenerator(final Scenario scenario, final FPGA fpga, final AnalysisResultFPGA analysisResult) {
     this.fpga = fpga;
-    this.graph = graph;
     this.graphName = scenario.getAlgorithm().getName();
-    this.interfaceRates = interfaceRates;
+    this.analysisResult = analysisResult;
     this.allFifoDepths = new LinkedHashMap<>();
+    final PiGraph graph = analysisResult.flatGraph;
 
     // the fifo sizes are given in bits while we want the depth in number of elements
-    allFifoSizes.forEach((fifo, v) -> {
+    analysisResult.flatFifoSizes.forEach((fifo, v) -> {
       final long dataTypeSize = scenario.getSimulationInfo().getDataTypeSizeInBit(fifo.getType());
       // ceil the depth
       final long depth = ((v + dataTypeSize - 1L) / dataTypeSize);
@@ -221,16 +217,11 @@ public class FpgaCodeGenerator {
    *          Scenario with codegen path.
    * @param fpga
    *          FPGA targeted by codegen.
-   * @param graph
-   *          Flat graph of the app.
-   * @param interfaceRates
-   *          Interface rates of the flat graph.
-   * @param allFifoSizes
-   *          All sizes of the fifo.
+   * @param analysisResult
+   *          Result container storing the flat graph of the app, its interface rates and all fifo sizes.
    */
-  public static void generateFiles(final Scenario scenario, final FPGA fpga, final PiGraph graph,
-      Map<InterfaceActor, Pair<Long, Long>> interfaceRates, Map<Fifo, Long> allFifoSizes) {
-    final FpgaCodeGenerator fcg = new FpgaCodeGenerator(scenario, fpga, graph, interfaceRates, allFifoSizes);
+  public static void generateFiles(final Scenario scenario, final FPGA fpga, final AnalysisResultFPGA analysisResult) {
+    final FpgaCodeGenerator fcg = new FpgaCodeGenerator(scenario, fpga, analysisResult);
 
     // 0- without the following class loader initialization, I get the following exception when running as Eclipse
     // plugin:
@@ -353,7 +344,7 @@ public class FpgaCodeGenerator {
     context.put("KERNEL_NAME_WRITE", getWriteKernelName());
 
     final StringBuilder sbConstants = new StringBuilder();
-    interfaceRates.forEach((ia, p) -> {
+    analysisResult.interfaceRates.forEach((ia, p) -> {
       final long rate = p.getKey();
       sbConstants.append(String.format("%s = %d\n", getInterfaceRateNameMacro(ia), rate));
     });
@@ -361,7 +352,7 @@ public class FpgaCodeGenerator {
 
     final StringBuilder sbBufferInit = new StringBuilder();
     final StringBuilder sbBufferMapping = new StringBuilder();
-    for (final InterfaceActor ia : interfaceRates.keySet()) {
+    for (final InterfaceActor ia : analysisResult.interfaceRates.keySet()) {
       final String type = ia.getDataPort().getFifo().getType();
       sbBufferInit.append(ia.getName() + SUFFIX_INTERFACE_BUFFER + " = allocate(shape=(" + getInterfaceRateNameMacro(ia)
           + ",), dtype=np.dtype('" + type + "'))\n");
@@ -407,7 +398,7 @@ public class FpgaCodeGenerator {
     context.put("BOARD_NAME", fpga.getBoard());
 
     final StringBuilder sb = new StringBuilder();
-    for (final InterfaceActor ia : interfaceRates.keySet()) {
+    for (final InterfaceActor ia : analysisResult.interfaceRates.keySet()) {
       final String fifoName = "axis_data_fifo_" + ia.getName() + SUFFIX_INTERFACE_STREAM;
       sb.append("create_bd_cell -type ip -vlnv xilinx.com:ip:axis_data_fifo:2.0 " + fifoName + "\n"
           + "set_property -dict [list CONFIG.FIFO_DEPTH {" + PYNQ_INTERFACE_DEPTH + "}] [get_bd_cells " + fifoName
@@ -544,7 +535,7 @@ public class FpgaCodeGenerator {
   protected String writeDefineHeaderFile() {
 
     final StringBuilder sb = new StringBuilder("// interface sizes computed by PREESM\n");
-    interfaceRates.forEach((ia, p) -> {
+    analysisResult.interfaceRates.forEach((ia, p) -> {
       final long rate = p.getKey();
       final long factor = p.getValue();
       sb.append(String.format("#define %s %d%n", getInterfaceRateNameMacro(ia), rate));
@@ -572,7 +563,7 @@ public class FpgaCodeGenerator {
 
     // 2.1- generate vectors for interfaces
     final StringBuilder interfaceVectors = new StringBuilder("// vectors containing interface elements\n");
-    interfaceRates.forEach((i, p) -> {
+    analysisResult.interfaceRates.forEach((i, p) -> {
       final String type = i.getDataPort().getFifo().getType();
       interfaceVectors.append("  std::vector<" + type + ", aligned_allocator<" + type + ">> ");
       interfaceVectors.append(i.getName() + SUFFIX_INTERFACE_VECTOR + "(" + getInterfaceRateNameMacro(i) + ");\n");
@@ -581,7 +572,7 @@ public class FpgaCodeGenerator {
 
     // 2.2- generate buffers for interfaces
     final StringBuilder interfaceBuffers = new StringBuilder("// buffers referencing interface elements\n");
-    interfaceRates.forEach((i, p) -> {
+    analysisResult.interfaceRates.forEach((i, p) -> {
       String bufferDecl = "cl::Buffer " + i.getName() + SUFFIX_INTERFACE_BUFFER + "(context, CL_MEM_USE_HOST_PTR";
       if (i instanceof DataInputInterface) {
         bufferDecl += " | CL_MEM_READ_ONLY";
@@ -598,7 +589,7 @@ public class FpgaCodeGenerator {
     // 2.3- set kernel args
     final StringBuilder kernelLaunch = new StringBuilder("// set kernel arguments\n");
     int indexArg = 0;
-    for (final InterfaceActor ia : interfaceRates.keySet()) {
+    for (final InterfaceActor ia : analysisResult.interfaceRates.keySet()) {
       if (ia instanceof DataInputInterface) {
         String kernelArg = "err = krnl_mem_read.setArg(" + Integer.toString(indexArg) + ", " + ia.getName()
             + SUFFIX_INTERFACE_BUFFER + ")";
@@ -607,7 +598,7 @@ public class FpgaCodeGenerator {
       }
     }
     indexArg = 0;
-    for (final InterfaceActor ia : interfaceRates.keySet()) {
+    for (final InterfaceActor ia : analysisResult.interfaceRates.keySet()) {
       if (ia instanceof DataOutputInterface) {
         String kernelArg = "err = krnl_mem_write.setArg(" + Integer.toString(indexArg) + ", " + ia.getName()
             + SUFFIX_INTERFACE_BUFFER + ")";
@@ -620,7 +611,7 @@ public class FpgaCodeGenerator {
     kernelLaunch.append("// launch the OpenCL tasks\n");
     kernelLaunch.append("  std::cout << \"Copying data...\" << std::endl;\n");
     final List<String> bufferArgs = new ArrayList<>();
-    for (final InterfaceActor ia : interfaceRates.keySet()) {
+    for (final InterfaceActor ia : analysisResult.interfaceRates.keySet()) {
       if (ia instanceof DataInputInterface) {
         bufferArgs.add(ia.getName() + SUFFIX_INTERFACE_BUFFER);
       }
@@ -637,7 +628,7 @@ public class FpgaCodeGenerator {
 
     kernelLaunch.append("  std::cout << \"Getting results...\" << std::endl;\n");
     bufferArgs.clear();
-    for (final InterfaceActor ia : interfaceRates.keySet()) {
+    for (final InterfaceActor ia : analysisResult.interfaceRates.keySet()) {
       if (ia instanceof DataOutputInterface) {
         bufferArgs.add(ia.getName() + SUFFIX_INTERFACE_BUFFER);
       }
@@ -686,7 +677,7 @@ public class FpgaCodeGenerator {
     final StringBuilder inBufferFlushing = new StringBuilder();
     final StringBuilder outBufferFlushing = new StringBuilder();
 
-    interfaceRates.forEach((i, p) -> {
+    analysisResult.interfaceRates.forEach((i, p) -> {
       final String type = i.getDataPort().getFifo().getType();
       final String name = i.getName();
       final String rate = getInterfaceRateNameMacro(i);
@@ -719,7 +710,7 @@ public class FpgaCodeGenerator {
 
     // 2.1- generate vectors for interfaces
     final StringBuilder interfaceVectors = new StringBuilder("// vectors containing interface elements\n");
-    interfaceRates.forEach((i, p) -> {
+    analysisResult.interfaceRates.forEach((i, p) -> {
       final String type = i.getDataPort().getFifo().getType();
       interfaceVectors.append("  std::vector<" + type + ", aligned_allocator<" + type + ">> ");
       interfaceVectors.append(i.getName() + SUFFIX_INTERFACE_VECTOR + "(" + getInterfaceRateNameMacro(i) + ");\n");
@@ -752,12 +743,12 @@ public class FpgaCodeGenerator {
 
     final StringBuilder runKernel = new StringBuilder(getTopKernelName() + "(");
     final List<String> args = new ArrayList<>();
-    for (final InterfaceActor ia : interfaceRates.keySet()) {
+    for (final InterfaceActor ia : analysisResult.interfaceRates.keySet()) {
       if (ia instanceof DataInputInterface) {
         args.add(getFifoStreamName(ia.getDataPort().getFifo()));
       }
     }
-    for (final InterfaceActor ia : interfaceRates.keySet()) {
+    for (final InterfaceActor ia : analysisResult.interfaceRates.keySet()) {
       if (ia instanceof DataOutputInterface) {
         args.add(getFifoStreamName(ia.getDataPort().getFifo()));
       }
@@ -772,7 +763,7 @@ public class FpgaCodeGenerator {
     final StringBuilder initStream = new StringBuilder();
     final StringBuilder readStream = new StringBuilder();
 
-    for (final InterfaceActor ia : interfaceRates.keySet()) {
+    for (final InterfaceActor ia : analysisResult.interfaceRates.keySet()) {
       final Fifo f = ia.getDataPort().getFifo();
       declareStream.append(getFifoStreamDeclaration(f));
       final String rate = getInterfaceRateNameMacro(ia) + " * " + getInterfaceFactorNameMacro(ia);
@@ -808,7 +799,8 @@ public class FpgaCodeGenerator {
 
     // 2- init context
     final VelocityContext context = new VelocityContext();
-    final List<String> findAllCHeaderFileNamesUsed = CHeaderUsedLocator.findAllCHeaderFileNamesUsed(graph);
+    final List<
+        String> findAllCHeaderFileNamesUsed = CHeaderUsedLocator.findAllCHeaderFileNamesUsed(analysisResult.flatGraph);
 
     context.put("PREESM_INCLUDES", includeCFile(TEMPLATE_DEFINE_HEADER_NAME));
 
@@ -819,11 +811,12 @@ public class FpgaCodeGenerator {
     final Map<AbstractActor, String> loopActorsCalls = new LinkedHashMap<>();
     final StringBuilder defs = new StringBuilder();
     // 2.1- first we add the definitions of special actors
-    defs.append(FpgaSpecialActorsCodeGenerator.generateSpecialActorDefinitions(graph, loopActorsCalls));
+    defs.append(
+        FpgaSpecialActorsCodeGenerator.generateSpecialActorDefinitions(analysisResult.flatGraph, loopActorsCalls));
     context.put("PREESM_SPECIAL_ACTORS", defs.toString());
     // 2.2- we add all other calls to the map
     final Map<Actor, Pair<String, String>> actorTemplateParts = new LinkedHashMap<>();
-    graph.getActorsWithRefinement().forEach(x -> {
+    analysisResult.flatGraph.getActorsWithRefinement().forEach(x -> {
       // at this point, all actors should have a CHeaderRefinement
       actorTemplateParts.put(x, AutoFillHeaderTemplatedFunctions.getFilledTemplateFunctionPart(x));
     });
@@ -841,7 +834,7 @@ public class FpgaCodeGenerator {
     final StringBuilder topK = new StringBuilder("extern \"C\" {\n" + getTopKernelSignature() + "{\n");
 
     // add interface protocols
-    for (final InterfaceActor ia : interfaceRates.keySet()) {
+    for (final InterfaceActor ia : analysisResult.interfaceRates.keySet()) {
       if (ia instanceof DataInputInterface || ia instanceof DataOutputInterface) {
         topK.append(getPragmaAXIStream(ia));
       }
@@ -856,17 +849,21 @@ public class FpgaCodeGenerator {
       topK.append(NAME_WRAPPER_INITPROTO + "();\n\n");
     }
 
-    // Compute the topological sort to generate simulation compliant code for acyclic graphs
-    final HeuristicLoopBreakingDelays hlbd = new HeuristicLoopBreakingDelays();
-    final Map<AbstractVertex, Long> brv = PiBRV.compute(graph, BRVMethod.LCM);
-    hlbd.performAnalysis(graph, brv);
-    final Map<AbstractActor, TopoVisit> topoRanks = TopologicalRanking.topologicalASAPranking(hlbd);
-    final SortedMap<Integer, Set<AbstractActor>> irRankActors = TopologicalRanking.mapRankActors(topoRanks, false, 0);
+    // Get the topological sort to generate simulation compliant code for acyclic graphs
+    SortedMap<Integer, Set<AbstractActor>> irRankActors = analysisResult.irRankActors;
+    if (irRankActors == null) {
+      // Compute it if not present (happens for ADFG analysis)
+      // TODO wrap in a dedicated function?
+      final HeuristicLoopBreakingDelays hlbd = new HeuristicLoopBreakingDelays();
+      hlbd.performAnalysis(analysisResult.flatGraph, analysisResult.flatBrv);
+      final Map<AbstractActor, TopoVisit> topoRanks = TopologicalRanking.topologicalASAPranking(hlbd);
+      irRankActors = TopologicalRanking.mapRankActors(topoRanks, false, 0);
+    }
 
     for (final Entry<Integer, Set<AbstractActor>> actorSet : irRankActors.entrySet()) {
       for (final AbstractActor actor : actorSet.getValue()) {
         if (loopActorsCalls.containsKey(actor)) {
-          topK.append("  " + generateSimulationForLoop(loopActorsCalls.get(actor), brv.get(actor)));
+          topK.append("  " + generateSimulationForLoop(loopActorsCalls.get(actor), analysisResult.flatBrv.get(actor)));
         }
       }
     }
@@ -886,9 +883,9 @@ public class FpgaCodeGenerator {
     return writer.toString();
   }
 
-  protected String generateAllFifoDefinitions(final Map<Fifo, Long> allFifoSizes) {
+  protected String generateAllFifoDefinitions(final Map<Fifo, Long> allFifoDepths) {
     final StringBuilder sb = new StringBuilder();
-    allFifoSizes.forEach((x, y) -> {
+    allFifoDepths.forEach((x, y) -> {
       final String sizeValue = getFifoStreamSizeNameMacro(x);
       final String sizeName = sizeValue.toLowerCase();
       sb.append(getFifoStreamDeclaration(x));
@@ -1081,7 +1078,8 @@ public class FpgaCodeGenerator {
   }
 
   protected String writeReadKernelFile() {
-    final long nbIa = interfaceRates.keySet().stream().filter(DataInputInterface.class::isInstance).count();
+    final long nbIa = analysisResult.interfaceRates.keySet().stream().filter(DataInputInterface.class::isInstance)
+        .count();
     final boolean isMulti = nbIa > 1L;
 
     // 1- init engine
@@ -1095,7 +1093,7 @@ public class FpgaCodeGenerator {
     // read kernel prototype
     final StringBuilder sb = new StringBuilder("void " + getReadKernelName() + "(\n  ");
     final List<String> args = new ArrayList<>();
-    for (final InterfaceActor ia : interfaceRates.keySet()) {
+    for (final InterfaceActor ia : analysisResult.interfaceRates.keySet()) {
       if (ia instanceof DataInputInterface) {
         final Fifo f = ia.getDataPort().getFifo();
         args.add(f.getType() + "* " + ia.getName() + SUFFIX_INTERFACE_ARRAY);
@@ -1106,7 +1104,7 @@ public class FpgaCodeGenerator {
     sb.append(") {\n");
 
     // add interface protocols
-    for (final InterfaceActor ia : interfaceRates.keySet()) {
+    for (final InterfaceActor ia : analysisResult.interfaceRates.keySet()) {
       if (ia instanceof DataInputInterface) {
         sb.append(getPragmaAXIMemory(ia));
         sb.append(getPragmaAXIStream(ia));
@@ -1120,7 +1118,7 @@ public class FpgaCodeGenerator {
       sb.append("  bool shouldContinue = true;\n  while (shouldContinue) {\n    shouldContinue = false;\n");
     }
 
-    for (final Entry<InterfaceActor, Pair<Long, Long>> e : interfaceRates.entrySet()) {
+    for (final Entry<InterfaceActor, Pair<Long, Long>> e : analysisResult.interfaceRates.entrySet()) {
       final InterfaceActor ia = e.getKey();
       if (ia instanceof DataInputInterface) {
         final Fifo f = ia.getDataPort().getFifo();
@@ -1158,7 +1156,8 @@ public class FpgaCodeGenerator {
   }
 
   protected String writeWriteKernelFile() {
-    final long nbIa = interfaceRates.keySet().stream().filter(DataOutputInterface.class::isInstance).count();
+    final long nbIa = analysisResult.interfaceRates.keySet().stream().filter(DataOutputInterface.class::isInstance)
+        .count();
     final boolean isMulti = nbIa > 1L;
 
     // 1- init engine
@@ -1172,7 +1171,7 @@ public class FpgaCodeGenerator {
     // write kernel prototype
     final StringBuilder sb = new StringBuilder("void " + getWriteKernelName() + "(\n  ");
     final List<String> args = new ArrayList<>();
-    for (final InterfaceActor ia : interfaceRates.keySet()) {
+    for (final InterfaceActor ia : analysisResult.interfaceRates.keySet()) {
       if (ia instanceof DataOutputInterface) {
         final Fifo f = ia.getDataPort().getFifo();
         args.add(f.getType() + "* " + ia.getName() + SUFFIX_INTERFACE_ARRAY);
@@ -1183,7 +1182,7 @@ public class FpgaCodeGenerator {
     sb.append(") {\n");
 
     // add interface protocols
-    for (final InterfaceActor ia : interfaceRates.keySet()) {
+    for (final InterfaceActor ia : analysisResult.interfaceRates.keySet()) {
       if (ia instanceof DataOutputInterface) {
         sb.append(getPragmaAXIMemory(ia));
         sb.append(getPragmaAXIStream(ia));
@@ -1197,7 +1196,7 @@ public class FpgaCodeGenerator {
       sb.append("  bool shouldContinue = true;\n  while (shouldContinue) {\n    shouldContinue = false;\n");
     }
 
-    for (final Entry<InterfaceActor, Pair<Long, Long>> e : interfaceRates.entrySet()) {
+    for (final Entry<InterfaceActor, Pair<Long, Long>> e : analysisResult.interfaceRates.entrySet()) {
       final InterfaceActor ia = e.getKey();
       if (ia instanceof DataOutputInterface) {
         final Fifo f = ia.getDataPort().getFifo();
@@ -1236,7 +1235,7 @@ public class FpgaCodeGenerator {
 
   protected String writeConnectivityFile() {
     final StringBuilder sb = new StringBuilder("[connectivity]\n");
-    for (final InterfaceActor ia : interfaceRates.keySet()) {
+    for (final InterfaceActor ia : analysisResult.interfaceRates.keySet()) {
       sb.append("stream_connect=");
       if (ia instanceof DataInputInterface) {
         sb.append(getReadKernelName() + "_1.");
@@ -1326,13 +1325,13 @@ public class FpgaCodeGenerator {
     final StringBuilder topK = new StringBuilder("void " + getTopKernelName() + "(\n");
     // add interface names
     final List<String> args = new ArrayList<>();
-    for (final InterfaceActor ia : interfaceRates.keySet()) {
+    for (final InterfaceActor ia : analysisResult.interfaceRates.keySet()) {
       if (ia instanceof DataInputInterface) {
         final Fifo f = ia.getDataPort().getFifo();
         args.add("  hls::stream<" + f.getType() + ">" + " &" + getFifoStreamName(f));
       }
     }
-    for (final InterfaceActor ia : interfaceRates.keySet()) {
+    for (final InterfaceActor ia : analysisResult.interfaceRates.keySet()) {
       if (ia instanceof DataOutputInterface) {
         final Fifo f = ia.getDataPort().getFifo();
         args.add("  hls::stream<" + f.getType() + ">" + " &" + getFifoStreamName(f));

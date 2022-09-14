@@ -10,8 +10,8 @@ import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.xtext.xbase.lib.Pair;
 import org.preesm.algorithm.mapper.ui.stats.EditorRunnable;
-import org.preesm.algorithm.mapper.ui.stats.IStatGenerator;
 import org.preesm.algorithm.mapper.ui.stats.StatEditorInput;
+import org.preesm.algorithm.schedule.fpga.AbstractGenericFpgaFifoEvaluator.AnalysisResultFPGA;
 import org.preesm.algorithm.schedule.fpga.TokenPackingAnalysis.PackedFifoConfig;
 import org.preesm.commons.doc.annotations.Parameter;
 import org.preesm.commons.doc.annotations.Port;
@@ -23,7 +23,6 @@ import org.preesm.model.pisdf.AbstractVertex;
 import org.preesm.model.pisdf.DataInputPort;
 import org.preesm.model.pisdf.DataOutputPort;
 import org.preesm.model.pisdf.DataPort;
-import org.preesm.model.pisdf.Fifo;
 import org.preesm.model.pisdf.InterfaceActor;
 import org.preesm.model.pisdf.PersistenceLevel;
 import org.preesm.model.pisdf.PiGraph;
@@ -91,7 +90,7 @@ public class FpgaAnalysisMainTask extends AbstractTaskImplementation {
 
     // check everything and perform analysis
     final FPGA fpga = checkAndGetSingleFPGA(architecture);
-    AnalysisResultFPGA res = checkAndAnalyzeAlgorithm(algorithm, scenario, fifoEvaluatorName);
+    final AnalysisResultFPGA res = checkAndAnalyzeAlgorithm(algorithm, scenario, fifoEvaluatorName);
 
     // optionally pack tokens in BRAM
     final String packTokensStr = parameters.get(PACK_TOKENS_PARAM_NAME);
@@ -133,37 +132,9 @@ public class FpgaAnalysisMainTask extends AbstractTaskImplementation {
     }
 
     // codegen
-    FpgaCodeGenerator.generateFiles(scenario, fpga, res.flatGraph, res.interfaceRates, res.flatFifoSizes);
+    FpgaCodeGenerator.generateFiles(scenario, fpga, res);
 
     return new HashMap<>();
-  }
-
-  /**
-   * Wraps the results in a single object.
-   * 
-   * @author ahonorat
-   */
-  public static class AnalysisResultFPGA {
-    // flattened graph
-    public final PiGraph flatGraph;
-    // repetition vector of the flat graph
-    public final Map<AbstractVertex, Long> flatBrv;
-    // interface rates (repetition factor + rate)
-    public final Map<InterfaceActor, Pair<Long, Long>> interfaceRates;
-    // computed fifo sizes
-    public final Map<Fifo, Long> flatFifoSizes;
-    // computed stats for UI or other
-    public final IStatGenerator statGenerator;
-
-    private AnalysisResultFPGA(final PiGraph flatGraph, final Map<AbstractVertex, Long> flatBrv,
-        final Map<InterfaceActor, Pair<Long, Long>> interfaceRates, final Map<Fifo, Long> flatFifoSizes,
-        final IStatGenerator statGenerator) {
-      this.flatGraph = flatGraph;
-      this.flatBrv = flatBrv;
-      this.interfaceRates = interfaceRates;
-      this.flatFifoSizes = flatFifoSizes;
-      this.statGenerator = statGenerator;
-    }
   }
 
   /**
@@ -196,9 +167,9 @@ public class FpgaAnalysisMainTask extends AbstractTaskImplementation {
     // schedule the graph
     final AbstractGenericFpgaFifoEvaluator evaluator = AbstractGenericFpgaFifoEvaluator
         .getEvaluatorInstance(fifoEvaluatorName);
-    final Pair<IStatGenerator, Map<Fifo, Long>> eval = evaluator.performAnalysis(flatGraph, scenario, brv);
-
-    return new AnalysisResultFPGA(flatGraph, brv, interfaceRates, eval.getValue(), eval.getKey());
+    final AnalysisResultFPGA resHolder = new AnalysisResultFPGA(flatGraph, brv, interfaceRates);
+    evaluator.performAnalysis(scenario, resHolder);
+    return resHolder;
   }
 
   /**

@@ -8,14 +8,14 @@ import org.preesm.commons.math.LongFraction;
 import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.scenario.Scenario;
 
+/**
+ * This class evaluates fifo dependencies and size as if all data are produced/consumed according to their average
+ * rate, i.e. total tokens divided by (finish time minus start time).
+ * 
+ * @author ahonorat
+ */
 public class FifoEvaluatorAsAverage extends AbstractAsapFpgaFifoEvaluator {
 
-  /**
-   * This class evalutes fifo dependencies and size as if all data are produced/consumed according to their average
-   * rate, i.e. total tokens divided by (finish time minus start time).
-   * 
-   * @author ahonorat
-   */
   public FifoEvaluatorAsAverage(Scenario scenario, HeuristicLoopBreakingDelays hlbd,
       Map<AbstractActor, ActorNormalizedInfos> mapActorNormalizedInfos) {
     super(scenario, hlbd, mapActorNormalizedInfos);

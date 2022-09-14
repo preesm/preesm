@@ -3,7 +3,7 @@ package org.preesm.algorithm.schedule.fpga;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import org.preesm.algorithm.schedule.fpga.FpgaAnalysisMainTask.AnalysisResultFPGA;
+import org.preesm.algorithm.schedule.fpga.AbstractGenericFpgaFifoEvaluator.AnalysisResultFPGA;
 import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.model.pisdf.AbstractActor;

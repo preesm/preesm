@@ -6,6 +6,8 @@ import java.util.Comparator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.SortedMap;
 import org.eclipse.xtext.xbase.lib.Pair;
 import org.preesm.algorithm.mapper.ui.stats.IStatGenerator;
 import org.preesm.commons.exceptions.PreesmRuntimeException;
@@ -15,8 +17,10 @@ import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.AbstractVertex;
 import org.preesm.model.pisdf.DataPort;
 import org.preesm.model.pisdf.Fifo;
+import org.preesm.model.pisdf.InterfaceActor;
 import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.pisdf.UserSpecialActor;
+import org.preesm.model.pisdf.statictools.PiMMHelper;
 import org.preesm.model.scenario.Scenario;
 import org.preesm.model.slam.ComponentInstance;
 import org.preesm.model.slam.TimingType;
@@ -50,18 +54,45 @@ public abstract class AbstractGenericFpgaFifoEvaluator {
   }
 
   /**
+   * Wraps the results in a single object. /!\ No mechanism ensures the correct filling of this data structure, should
+   * be checked by the developper for now.
+   * 
+   * @author ahonorat
+   */
+  public static class AnalysisResultFPGA {
+    // given flattened graph
+    public final PiGraph flatGraph;
+    // given repetition vector of the flat graph
+    public final Map<AbstractVertex, Long> flatBrv;
+    // given interface rates (repetition factor + rate)
+    public final Map<InterfaceActor, Pair<Long, Long>> interfaceRates;
+    // computed graphII, i.e. slowest actor normalized II
+    public Long graphII = null;
+    // optionally computed irRanks Asap
+    public SortedMap<Integer, Set<AbstractActor>> irRankActors = null;
+    // computed fifo sizes
+    public Map<Fifo, Long> flatFifoSizes = null;
+    // computed stats for UI or other
+    public IStatGenerator statGenerator = null;
+
+    protected AnalysisResultFPGA(final PiGraph flatGraph, final Map<AbstractVertex, Long> flatBrv,
+        final Map<InterfaceActor, Pair<Long, Long>> interfaceRates) {
+      this.flatGraph = flatGraph;
+      this.flatBrv = flatBrv;
+      this.interfaceRates = interfaceRates;
+    }
+  }
+
+  /**
    * Analyze the graph, schedule it with ASAP, and compute buffer sizes.
    * 
-   * @param flatGraph
-   *          Graph to analyze.
    * @param scenario
    *          Scenario to get the timings and mapping constraints.
-   * @param brv
-   *          Repetition vector of actors in cc.
-   * @return StatGenerator for Gantt Data and map of all fifo sizes in bit.
+   * @param analysisResult
+   *          Container storing the flat graph and its repetition vector, to be updated with all available results (at
+   *          least fifo sizes in bit).
    */
-  public abstract Pair<IStatGenerator, Map<Fifo, Long>> performAnalysis(final PiGraph flatGraph,
-      final Scenario scenario, final Map<AbstractVertex, Long> brv);
+  public abstract void performAnalysis(final Scenario scenario, final AnalysisResultFPGA analysisResult);
 
   /**
    * Builds the corresponding evaluator object.
@@ -85,16 +116,57 @@ public abstract class AbstractGenericFpgaFifoEvaluator {
   /**
    * Computes the normalized infos about actors II.
    * 
+   * @param scenario
+   *          Scenario to get the timings and mapping constraints.
+   * @param analysisResult
+   *          Container of the graph to analyze and its brv. Its graphII attribute will be updated.
+   * @return Map of actor infos.
+   */
+  public static Map<AbstractActor, ActorNormalizedInfos> logCheckAndSetActorNormalizedInfos(final Scenario scenario,
+      final AnalysisResultFPGA analysisResult) {
+
+    // Get all sub graph (connected components) composing the current graph
+    final List<List<AbstractActor>> subgraphsWOInterfaces = PiMMHelper
+        .getAllConnectedComponentsWOInterfaces(analysisResult.flatGraph);
+
+    final Map<AbstractActor, ActorNormalizedInfos> mapActorNormalizedInfos = new LinkedHashMap<>();
+    // check and set the II for each subgraph
+    for (final List<AbstractActor> cc : subgraphsWOInterfaces) {
+      mapActorNormalizedInfos.putAll(checkAndSetActorNormalizedInfosInCC(cc, scenario, analysisResult.flatBrv));
+    }
+
+    final List<ActorNormalizedInfos> listInfos = new ArrayList<>(mapActorNormalizedInfos.values());
+    Collections.sort(listInfos, new DecreasingGraphIIComparator());
+    // set graph II
+    final ActorNormalizedInfos slowestActorInfos = listInfos.get(0);
+    final long slowestGraphII = slowestActorInfos.normGraphII;
+    analysisResult.graphII = new Long(slowestGraphII);
+    // log graph II
+    if (listInfos.size() > 1) {
+      final ActorNormalizedInfos fastestActorInfos = listInfos.get(listInfos.size() - 1);
+      PreesmLogger.getLogger()
+          .info(() -> "Throughput of your application is limited by the actor " + slowestActorInfos.ori.getVertexPath()
+              + " with graph II=" + slowestGraphII + " whereas fastest actor " + fastestActorInfos.ori.getVertexPath()
+              + " has its graph II=" + fastestActorInfos.normGraphII);
+
+    }
+    return mapActorNormalizedInfos;
+  }
+
+  /**
+   * Computes the normalized infos about actors II.
+   * 
    * @param cc
    *          Actors in the connected component, except interfaces.
    * @param scenario
    *          Scenario to get the timings and mapping constraints.
    * @param brv
    *          Repetition vector of actors in cc.
-   * @return List of actor infos, sorted by decreasing normGraphII.
+   * @return Map of actor infos.
    */
-  public static Map<AbstractActor, ActorNormalizedInfos> checkAndSetActorNormalizedInfos(final List<AbstractActor> cc,
-      final Scenario scenario, final Map<AbstractVertex, Long> brv) {
+  protected static Map<AbstractActor, ActorNormalizedInfos> checkAndSetActorNormalizedInfosInCC(
+      final List<AbstractActor> cc, final Scenario scenario, final Map<AbstractVertex, Long> brv) {
+
     final ComponentInstance fpga = scenario.getDesign().getComponentInstances().get(0);
     final Map<AbstractActor, ActorNormalizedInfos> mapInfos = new LinkedHashMap<>();
     // check and set standard infos
@@ -136,19 +208,6 @@ public abstract class AbstractGenericFpgaFifoEvaluator {
       mapInfos.put(aa, ani);
     }
 
-    final List<ActorNormalizedInfos> listInfos = new ArrayList<>(mapInfos.values());
-    Collections.sort(listInfos, new DecreasingGraphIIComparator());
-    // set each avg II
-    final ActorNormalizedInfos slowestActorInfos = listInfos.get(0);
-    final long slowestGraphII = slowestActorInfos.normGraphII;
-    if (listInfos.size() > 1) {
-      final ActorNormalizedInfos fastestActorInfos = listInfos.get(listInfos.size() - 1);
-      PreesmLogger.getLogger()
-          .info(() -> "Throughput of your application is limited by the actor " + slowestActorInfos.ori.getVertexPath()
-              + " with graph II=" + slowestGraphII + " whereas fastest actor " + fastestActorInfos.ori.getVertexPath()
-              + " has its graph II=" + fastestActorInfos.normGraphII);
-
-    }
     return mapInfos;
   }
 
