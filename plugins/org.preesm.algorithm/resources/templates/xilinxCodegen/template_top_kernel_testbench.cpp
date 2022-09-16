@@ -43,8 +43,6 @@
 
 $PREESM_INCLUDES
 
-#[[#]]#define NB_ITERATIONS 2
-
 // Top function
 
 $PREESM_TOP_KERNEL
@@ -53,7 +51,7 @@ int main() {
 
 	$PREESM_DECLARE_STREAM
 
-	for (int i = 0; i < NB_ITERATIONS; i++) {
+	for (int i = 0; i < NB_ITERATIONS_COSIM; i++) {
 		// TODO initialize stream with application values
 		$PREESM_INIT_STREAM
 

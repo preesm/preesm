@@ -491,6 +491,7 @@ public class FpgaCodeGenerator {
     context.put("PREESM_FIFO_MIN_SIZES", sizeMinArgs.stream().collect(Collectors.joining(", ")));
     context.put("PREESM_FIFO_LAMBDAS", lambdaArgs.stream().collect(Collectors.joining(", ")));
     context.put("PREESM_FIFO_WIDTHS", widthArgs.stream().collect(Collectors.joining(", ")));
+    context.put("PREESM_GRAPH_II", analysisResult.graphII);
 
     // 3- init template reader
     final InputStreamReader reader = PreesmIOHelper.getInstance().getFileReader(TEMPLATE_SCRIPT_COSIM_HLS,
@@ -545,6 +546,7 @@ public class FpgaCodeGenerator {
     allFifoDepths.forEach((x, y) -> {
       sb.append(String.format("#define %s %d%n", getFifoStreamSizeNameMacro(x), y));
     });
+    sb.append("#define NB_ITERATIONS_COSIM 2\n");
 
     return sb.toString();
   }
