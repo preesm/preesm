@@ -90,7 +90,7 @@ public class FpgaAnalysisMainTask extends AbstractTaskImplementation {
 
     // check everything and perform analysis
     final FPGA fpga = checkAndGetSingleFPGA(architecture);
-    final AnalysisResultFPGA res = checkAndAnalyzeAlgorithm(algorithm, scenario, fifoEvaluatorName);
+    AnalysisResultFPGA res = checkAndAnalyzeAlgorithm(algorithm, scenario, fifoEvaluatorName);
 
     // optionally pack tokens in BRAM
     final String packTokensStr = parameters.get(PACK_TOKENS_PARAM_NAME);
@@ -100,7 +100,8 @@ public class FpgaAnalysisMainTask extends AbstractTaskImplementation {
       if (!workList.isEmpty()) {
         TokenPackingTransformation.transform(res, scenario, workList);
 
-        // Adding the latency due to packing to the II of corresponding attached actor into the scenario
+        // Adding the latency due to packing to the execution time of corresponding attached actor into the scenario
+        // Added latency is equal to packing ratio + 1
         for (PackedFifoConfig packedFifoConfig : workList) {
           final long additionalLatency = packedFifoConfig.updatedWidth / packedFifoConfig.originalWidth + 1;
           final long newExecutionTime = Long
@@ -108,6 +109,9 @@ public class FpgaAnalysisMainTask extends AbstractTaskImplementation {
               + additionalLatency;
           scenario.getTimings().setExecutionTime(packedFifoConfig.attachedActor, fpga, newExecutionTime);
         }
+
+        // Rerun adfg to get new fifo depth with modified timing (because of packer/unpacker delay)
+        res = checkAndAnalyzeAlgorithm(algorithm, scenario, fifoEvaluatorName);
       }
     }
 
