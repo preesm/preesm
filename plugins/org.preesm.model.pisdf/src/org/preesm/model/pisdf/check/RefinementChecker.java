@@ -360,7 +360,7 @@ public class RefinementChecker extends AbstractPiSDFObjectChecker {
           }
 
           final Fifo topFifo = ((DataPort) topPort).getFifo();
-          if (topFifo != null && !fa.getType().equals(topFifo.getType())
+          if (topFifo != null && !fa.getType().trim().equals(topFifo.getType())
               && isHlsStreamTemplated(fa.getType()) == null) {
             validity = false;
             reportError(CheckerErrorLevel.FATAL_CODEGEN, a,
