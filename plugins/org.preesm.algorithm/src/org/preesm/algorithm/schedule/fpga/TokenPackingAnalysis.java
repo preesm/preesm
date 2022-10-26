@@ -6,6 +6,7 @@ import java.util.Map;
 import org.preesm.algorithm.schedule.fpga.AbstractGenericFpgaFifoEvaluator.AnalysisResultFPGA;
 import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.preesm.commons.logger.PreesmLogger;
+import org.preesm.commons.model.PreesmCopyTracker;
 import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.AbstractVertex;
 import org.preesm.model.pisdf.Fifo;
@@ -16,6 +17,9 @@ public class TokenPackingAnalysis {
 
   private static final Long BRAM_18K = 18 * 1024L;
   private static final Long BRAM_16K = 16 * 1024L;
+
+  private static Long noPackingSum = 0L;
+  private static Long packingSum   = 0L;
 
   public static class PackedFifoConfig {
     // fifo to pack
@@ -38,6 +42,9 @@ public class TokenPackingAnalysis {
   public static List<PackedFifoConfig> analysis(AnalysisResultFPGA res, Scenario scenario) {
     final List<PackedFifoConfig> packedFifos = new ArrayList<>();
 
+    noPackingSum = 0L;
+    packingSum = 0L;
+
     for (Fifo fifo : res.flatGraph.getAllFifos()) {
       // TODO add test to verify if fifo can be packed without creating deadlock
 
@@ -50,6 +57,9 @@ public class TokenPackingAnalysis {
         }
       }
     }
+
+    PreesmLogger.getLogger().info(() -> "Unpacked BRAM usage: " + noPackingSum);
+    PreesmLogger.getLogger().info(() -> "Packed BRAM usage: " + packingSum);
 
     return packedFifos;
   }
@@ -74,9 +84,13 @@ public class TokenPackingAnalysis {
 
     final long baseNbBram = bramUsageVitis(depth, dataTypeSize);
 
+    noPackingSum += baseNbBram;
+
     // if the BRAM usage is already at 1, no packing needed
-    if (baseNbBram <= 1)
+    if (baseNbBram <= 1) {
+      packingSum += baseNbBram;
       return null;
+    }
 
     long bestPacketWidth = defaultBramWidth;
     long bestNbBram = baseNbBram;
@@ -102,9 +116,9 @@ public class TokenPackingAnalysis {
         if (testNbBram < bestNbBram) {
 
           if (srcRate % nbDataInPacket == 0)
-            attachedActor = fifo.getSourcePort().getContainingActor();
+            attachedActor = PreesmCopyTracker.getOriginalSource(fifo.getSourcePort().getContainingActor());
           else if (tgtRate % nbDataInPacket == 0)
-            attachedActor = fifo.getTargetPort().getContainingActor();
+            attachedActor = PreesmCopyTracker.getOriginalSource(fifo.getTargetPort().getContainingActor());
           else
             throw new PreesmRuntimeException("wtf");
 
@@ -118,17 +132,20 @@ public class TokenPackingAnalysis {
       final long finalNbBram = bestNbBram;
       final long finalPacketWidth = bestPacketWidth;
 
-      PreesmLogger.getLogger()
-          .fine(() -> fifo.getId() + " can be packed. Reduction from " + baseNbBram + " to " + finalNbBram + " BRAM");
+      packingSum += finalNbBram;
 
-      final long newDepth = (long) Math.ceil((float) depth / ((double) finalPacketWidth / dataTypeSize));
-      PreesmLogger.getLogger().finer(() -> "New depth is " + newDepth);
-      PreesmLogger.getLogger().finer(() -> dataTypeSize + "-bit packed in packets of " + finalPacketWidth + " bits");
+      PreesmLogger.getLogger().finer(() -> fifo.getId() + " can be packed with a ratio of "
+          + finalPacketWidth / dataTypeSize + ". Reduction from " + baseNbBram + " to " + finalNbBram + " BRAM.");
+
+      final long newDepth = (long) Math.ceil(depth / ((double) finalPacketWidth / dataTypeSize));
+      PreesmLogger.getLogger().finest(() -> "Old depth is " + depth + ", New depth is " + newDepth + ".");
+      PreesmLogger.getLogger().finest(() -> dataTypeSize + "-bit packed in packets of " + finalPacketWidth + " bits.");
 
       return new PackedFifoConfig(fifo, dataTypeSize, finalPacketWidth, attachedActor);
     }
 
-    PreesmLogger.getLogger().fine(() -> fifo.getId() + " with " + depth + " token of " + dataTypeSize + " bits on "
+    packingSum += baseNbBram;
+    PreesmLogger.getLogger().finer(() -> fifo.getId() + " with " + depth + " token of " + dataTypeSize + " bits on "
         + baseNbBram + " bram can't be packed.");
     return null;
   }
@@ -159,6 +176,7 @@ public class TokenPackingAnalysis {
     if (depth * dataWidth < 1024)
       return 0;
 
+    // TODO Bien vérifier la formule pour le cas depth < 512. Cette division par 18 me parait étrange.
     if (depth < 512)
       return (long) Math.ceil((double) dataWidth / 18);
     else if (512 <= depth && depth < 2048)

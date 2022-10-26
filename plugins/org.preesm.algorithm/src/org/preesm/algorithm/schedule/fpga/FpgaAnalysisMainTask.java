@@ -112,6 +112,13 @@ public class FpgaAnalysisMainTask extends AbstractTaskImplementation {
 
         // Rerun adfg to get new fifo depth with modified timing (because of packer/unpacker delay)
         res = checkAndAnalyzeAlgorithm(algorithm, scenario, fifoEvaluatorName);
+        // res.flatGraph is new, so actor from worklist do not match with res.flatGraph anymore
+        // Workaround is to generate a new worklist2 from the new res, which SHOULD match with worklist
+        // A better solution would be to match worklist actors (from the previous res.flatGraph) to the new
+        // res.flatGraph, a match by name sould be enough.
+        // TODO: Fix this.
+        List<PackedFifoConfig> workList2 = TokenPackingAnalysis.analysis(res, scenario);
+        TokenPackingTransformation.transform(res, scenario, workList2);
       }
     }
 
