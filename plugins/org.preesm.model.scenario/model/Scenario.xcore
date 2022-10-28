@@ -308,7 +308,7 @@ class Timings {
 		if (this.actorTimings.containsKey(actor)) {
 			val String timingExpression = getTimingOrDefault(actor, component, timingType);
 			var long t;
-			if (timingExpression !== null) {
+			if ((timingExpression !== null) && (!timingExpression.isEmpty())) {
 			   	t = ExpressionEvaluator.evaluate(actor.containingPiGraph, timingExpression, scenario.parameterValues.map);
 			} else {
 				t = ScenarioConstants.DEFAULT_TIMING_TASK.value;
