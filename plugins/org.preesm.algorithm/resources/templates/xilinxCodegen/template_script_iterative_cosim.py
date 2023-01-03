@@ -12,6 +12,12 @@ lower_bound = [ $PREESM_FIFO_MIN_SIZES ]
 lambdas = [ $PREESM_FIFO_LAMBDAS ]
 widths = [ $PREESM_FIFO_WIDTHS ]
 graph_ii = $PREESM_GRAPH_II
+
+#[[#]]# DSE constants and variables
+INI_BUF_DEPTH = 5
+INI_LAMBDA_SUM = 4
+COEF_II = 0.99
+COEF_LAMBDAS = 0.5
 nb_iterations_cosim = 2
 
 #[[#]]# DSE options
@@ -40,7 +46,7 @@ def get_cosim_ii_list():
         return [-1]
 
 def is_expected_ii(cosim_ii_list):
-    return max(cosim_ii_list) <= graph_ii and max(cosim_ii_list) > graph_ii * 0.99
+    return max(cosim_ii_list) <= graph_ii and max(cosim_ii_list) > graph_ii * COEF_II
 
 def write_buffer_sizes(buffer_sizes):
     with open('PreesmAutoDefinedSizes.h', 'a') as file:
@@ -122,13 +128,13 @@ def initial_tests_cosim():
     nb_cosim = 0
     for i in range(len(names)):
         buffer_sizes = [x for x in upper_bound]
-        buffer_sizes[i] = 5
+        buffer_sizes[i] = INI_BUF_DEPTH
         if is_improved(buffer_sizes[i], upper_bound[i], widths[i]):
             cosim_ii_list = run_cosim(buffer_sizes)
             nb_cosim += 1
             if is_expected_ii(cosim_ii_list):
                 upper_bound[i] = buffer_sizes[i]
-                lambdas[i] = 4
+                lambdas[i] = INI_LAMBDA_SUM
             else:
                 lower_bound[i] = buffer_sizes[i]
     return nb_cosim
@@ -136,7 +142,7 @@ def initial_tests_cosim():
 def lambda_iterative_cosim():
     nb_cosim = 0
     while max(lambdas) > 0:
-        candidates = [i for (i, c) in zip(range(len(lambdas)), lambdas) if c > 0.5 * max(lambdas)]
+        candidates = [i for (i, c) in enumerate(lambdas) if c >  max(lambdas)* COEF_LAMBDAS]
         buffer_sizes = [x for x in upper_bound]
         for i in candidates:
             buffer_sizes[i] = candidate_buffer_size(lower_bound[i], upper_bound[i], widths[i])

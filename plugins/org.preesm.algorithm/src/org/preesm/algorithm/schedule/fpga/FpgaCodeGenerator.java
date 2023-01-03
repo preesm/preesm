@@ -137,6 +137,7 @@ public class FpgaCodeGenerator {
 
   protected static final String PRAGMA_AXILITE_CTRL  = "#pragma HLS INTERFACE s_axilite port=return\n";
   protected static final int    PYNQ_INTERFACE_DEPTH = 64;
+  protected static final long       MIN_BUFFER_DEPTH = 2L;
 
   private final FPGA               fpga;
   private final String             graphName;
@@ -157,9 +158,10 @@ public class FpgaCodeGenerator {
       final long depth = ((v + dataTypeSize - 1L) / dataTypeSize);
 
       // if a fifo depth is less than 2, we promote it to 2
-      if (depth < 2L) {
-        PreesmLogger.getLogger().info(() -> "Fifo " + fifo.getId() + " had depth " + depth + ", increasing it to 2.");
-        allFifoDepths.put(fifo, 2L);
+      if (depth < MIN_BUFFER_DEPTH) {
+        PreesmLogger.getLogger().info(() -> "Fifo " + fifo.getId() + " had depth " + depth +
+				      ", increasing it to " + MIN_BUFFER_DEPTH + ".");
+        allFifoDepths.put(fifo, MIN_BUFFER_DEPTH);
       } else {
         allFifoDepths.put(fifo, depth);
       }
@@ -474,7 +476,7 @@ public class FpgaCodeGenerator {
     allFifoDepths.forEach((f, s) -> {
       nameArgs.add("'" + getFifoStreamSizeNameMacro(f) + "'");
       sizeArgs.add(s.toString());
-      sizeMinArgs.add("2");
+      sizeMinArgs.add(Long.toString(MIN_BUFFER_DEPTH));
       long srcRate = f.getSourcePort().getExpression().evaluate();
       long srcII = scenario.getTimings().evaluateTimingOrDefault((AbstractActor) f.getSource(), fpga,
           TimingType.INITIATION_INTERVAL);
