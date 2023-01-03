@@ -291,9 +291,6 @@ public class PiSDFSubgraphBuilderTest {
     _actorC.getDataInputPorts().add(inputC);
     _actorD.getDataInputPorts().add(inputD);
     // Create fifos and form a chain such as A -> B -> C -> D
-    Fifo fifoAB = PiMMUserFactory.instance.createFifo(outputA, inputB, "void");
-    Fifo fifoBC = PiMMUserFactory.instance.createFifo(outputB, inputC, "void");
-    Fifo fifoCD = PiMMUserFactory.instance.createFifo(outputC, inputD, "void");
     // Setup data output and input ports rates
     // Repetition vector should be equal to [1, 8, 4, 2]'
     outputA.setExpression(16);
@@ -305,16 +302,19 @@ public class PiSDFSubgraphBuilderTest {
     // Set delay to fifo AC
     Delay delayAC = PiMMUserFactory.instance.createDelay();
     delayAC.setExpression(16);
+    Fifo fifoAB = PiMMUserFactory.instance.createFifo(outputA, inputB, "void");
     fifoAB.assignDelay(delayAC);
     topGraph.addDelay(delayAC);
     // Set delay to fifo BC
     Delay delayBC = PiMMUserFactory.instance.createDelay();
     delayBC.setExpression(2);
+    Fifo fifoBC = PiMMUserFactory.instance.createFifo(outputB, inputC, "void");
     fifoBC.assignDelay(delayBC);
     topGraph.addDelay(delayBC);
     // Set delay to fifo CD
     Delay delayCD = PiMMUserFactory.instance.createDelay();
     delayCD.setExpression(4);
+    Fifo fifoCD = PiMMUserFactory.instance.createFifo(outputC, inputD, "void");
     fifoCD.assignDelay(delayCD);
     topGraph.addDelay(delayCD);
     // Create a list for the 3 fifos to easily add them to the top graph
