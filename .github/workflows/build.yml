@@ -1,0 +1,36 @@
+name: Build
+on:
+  push:
+    branches:
+      - migrate_to_github_actions
+  pull_request:
+    types: [opened, synchronize, reopened]
+jobs:
+  build:
+    name: Build
+    strategy:
+      matrix:
+        # os: [ubuntu-16.04, ubuntu-18.04, ubuntu-20.04]
+        # java-version: [11, 12, 13, 14]
+        os: [ubuntu-20.04]
+        java-version: [17]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - name: Set up JDK
+        uses: actions/setup-java@v1
+        with:
+          java-version: 17
+      - name: Git Checkout
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0  # Shallow clones should be disabled for a better relevancy of analysis
+      - name: Build & Test
+        shell: bash
+        run: releng/build_and_test.sh
+      - name: Archive production artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: preesm-products
+          path: |
+            releng/org.preesm.product/target/products/preesm-*.zip
+            releng/org.preesm.product/target/org.preesm.product-*.zip
