@@ -1,0 +1,7 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Target-platform
+Bundle-SymbolicName: org.preesm.target-platform
+Bundle-Version: 3.21.0.qualifier
+Automatic-Module-Name: org.preesm.target.platform
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8

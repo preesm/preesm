@@ -3,7 +3,7 @@
 <target name="preesm">
 	<locations>
 		<location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="planner" includeSource="false" type="InstallableUnit">
-			<repository location="https://download.eclipse.org/releases/latest"/> <!--"file:/home/jheulot/mirror/"/> -->
+			<repository location="https://download.eclipse.org/releases/2022-06"/> <!--"file:/home/jheulot/mirror/"/> -->
 			<unit id="org.eclipse.emf.ecoretools.sdk.feature.group" version="3.4.0.202201202026"/>
 			<unit id="org.eclipse.emf.sdk.feature.group" version="2.30.0.v20220516-1117"/>
 			<unit id="org.eclipse.gef.common.sdk.feature.group" version="5.0.1.202206070201"/>
@@ -17,22 +17,12 @@
 			<unit id="org.eclipse.emf.codegen.feature.group" version="2.23.0.v20210924-1718"/>
 			<unit id="org.eclipse.emf.codegen.ui.feature.group" version="2.24.0.v20210924-1718"/>
 			<unit id="org.eclipse.equinox.executable.feature.group" version="3.8.1700.v20220509-0833"/>
-			<unit id="org.eclipse.emf.codegen.ecore.xtext"/>
-		</location>
-		<location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="planner" includeSource="false" type="InstallableUnit">
-			<repository location="https://download.eclipse.org/eclipse/updates/4.24"/>
-			<unit id="org.eclipse.pde.feature.group" version="3.14.1200.v20220607-0700"/>
-			<unit id="org.eclipse.platform.sdk" version="4.24.0.I20220607-0700"/>
-			<unit id="org.eclipse.sdk.ide" version="4.24.0.I20220607-0700"/>
-		</location>
-		<location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="planner" includeSource="false" type="InstallableUnit">
-			<repository location="https://download.eclipse.org/modeling/tmf/xtext/updates/composite/releases/"/>
 			<unit id="org.eclipse.xtend.sdk.feature.group" version="2.27.0.v20220530-0508"/>
 			<unit id="org.eclipse.xtext.sdk.feature.group" version="2.27.0.v20220530-0508"/>
-		</location>
-		<location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="planner" includeSource="false" type="InstallableUnit">
-			<repository location="https://download.eclipse.org/tools/cdt/releases/latest"/>
-			<unit id="org.eclipse.cdt.feature.group" version="10.7.0.202206081808"/>
+			<unit id="org.eclipse.cdt.sdk.feature.group" version="10.7.0.202206081808"/>
+			<unit id="org.eclipse.pde.feature.group" version="3.14.1200.v20220607-0700"/>
+			<unit id="org.eclipse.sdk.feature.group" version="4.24.0.v20220607-0700"/>
+			<unit id="org.eclipse.platform.feature.group" version="4.24.0.v20220607-0700"/>
 		</location>
 		<location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="planner" includeSource="false" type="InstallableUnit">
 			<repository location="https://preesm.insa-rennes.fr/repo"/>
@@ -59,25 +49,30 @@
 				<dependency>
 					<groupId>com.fasterxml.jackson.core</groupId>
 					<artifactId>jackson-annotations</artifactId>
-					<version>2.13.3</version>
+					<version>2.14.1</version>
 					<type>jar</type>
+				</dependency>
+				<dependency>
+				    <groupId>org.ow2.sat4j</groupId>
+				    <artifactId>org.ow2.sat4j.core</artifactId>
+				    <version>2.3.6</version>
 				</dependency>
 				<dependency>
 					<groupId>com.fasterxml.jackson.core</groupId>
 					<artifactId>jackson-core</artifactId>
-					<version>2.13.3</version>
+					<version>2.14.1</version>
 					<type>jar</type>
 				</dependency>
 				<dependency>
 					<groupId>com.fasterxml.jackson.core</groupId>
 					<artifactId>jackson-databind</artifactId>
-					<version>2.13.3</version>
+					<version>2.14.1</version>
 					<type>jar</type>
 				</dependency>
 				<dependency>
 					<groupId>com.fasterxml.jackson.module</groupId>
 					<artifactId>jackson-module-jsonSchema</artifactId>
-					<version>2.13.3</version>
+					<version>2.14.1</version>
 					<type>jar</type>
 				</dependency>
 				<dependency>
@@ -89,7 +84,7 @@
 				<dependency>
 					<groupId>commons-collections</groupId>
 					<artifactId>commons-collections</artifactId>
-					<version>3.2.2</version>
+					<version>20040616</version>
 					<type>jar</type>
 				</dependency>
 				<dependency>
@@ -111,15 +106,21 @@
 					<type>jar</type>
 				</dependency>
 				<dependency>
-					<groupId>jfree</groupId>
-					<artifactId>jfreechart</artifactId>
-					<version>1.0.13</version>
-					<type>jar</type>
-				</dependency>
-				<dependency>
 					<groupId>jgraph</groupId>
 					<artifactId>jgraph</artifactId>
 					<version>5.5.1</version>
+					<type>jar</type>
+				</dependency>
+				<dependency>
+					<groupId>net.bytebuddy</groupId>
+					<artifactId>byte-buddy-agent</artifactId>
+					<version>1.12.20</version>
+					<type>jar</type>
+				</dependency>
+				<dependency>
+					<groupId>net.bytebuddy</groupId>
+					<artifactId>byte-buddy</artifactId>
+					<version>1.12.20</version>
 					<type>jar</type>
 				</dependency>
 				<dependency>
@@ -131,14 +132,25 @@
 				<dependency>
 					<groupId>org.antlr</groupId>
 					<artifactId>antlr4-runtime</artifactId>
-					<version>4.10.1</version>
+					<version>4.11.1</version>
 					<type>jar</type>
 				</dependency>
 				<dependency>
 					<groupId>org.antlr</groupId>
 					<artifactId>antlr4</artifactId>
-					<version>4.10.1</version>
+					<version>4.11.1</version>
 					<type>jar</type>
+				</dependency>
+				<dependency>
+					<groupId>org.apache-extras.beanshell</groupId>
+					<artifactId>bsh</artifactId>
+					<version>2.0b6</version>
+					<type>jar</type>
+				</dependency>
+				<dependency>
+				    <groupId>org.beanshell</groupId>
+				    <artifactId>bsh</artifactId>
+				    <version>2.0b5</version>
 				</dependency>
 				<dependency>
 					<groupId>org.apache.commons</groupId>
@@ -155,7 +167,7 @@
 				<dependency>
 					<groupId>org.apache.commons</groupId>
 					<artifactId>commons-text</artifactId>
-					<version>1.8</version>
+					<version>1.10.0</version>
 					<type>jar</type>
 				</dependency>
 				<dependency>
@@ -167,13 +179,19 @@
 				<dependency>
 					<groupId>org.choco-solver</groupId>
 					<artifactId>choco-solver</artifactId>
-					<version>4.0.9</version>
+					<version>4.10.10</version>
 					<type>jar</type>
 				</dependency>
 				<dependency>
 					<groupId>org.jacorb</groupId>
 					<artifactId>jacorb-idl-compiler</artifactId>
 					<version>2.3.1</version>
+					<type>jar</type>
+				</dependency>
+				<dependency>
+					<groupId>org.jfree</groupId>
+					<artifactId>jfreechart</artifactId>
+					<version>1.0.14</version>
 					<type>jar</type>
 				</dependency>
 				<dependency>
@@ -202,14 +220,20 @@
 				</dependency>
 				<dependency>
 					<groupId>org.mockito</groupId>
-					<artifactId>mockito-all</artifactId>
-					<version>2.0.2-beta</version>
+					<artifactId>mockito-core</artifactId>
+					<version>4.10.0</version>
+					<type>jar</type>
+				</dependency>
+				<dependency>
+					<groupId>org.objenesis</groupId>
+					<artifactId>objenesis</artifactId>
+					<version>3.3</version>
 					<type>jar</type>
 				</dependency>
 				<dependency>
 					<groupId>org.ojalgo</groupId>
 					<artifactId>ojalgo</artifactId>
-					<version>51.3.0</version>
+					<version>52.0.1</version>
 					<type>jar</type>
 				</dependency>
 				<dependency>
@@ -221,16 +245,32 @@
 				<dependency>
 					<groupId>org.slf4j</groupId>
 					<artifactId>slf4j-api</artifactId>
-					<version>1.7.36</version>
+					<version>2.0.6</version>
 					<type>jar</type>
 				</dependency>
 				<dependency>
 					<groupId>org.slf4j</groupId>
 					<artifactId>slf4j-simple</artifactId>
-					<version>1.7.36</version>
+					<version>2.0.6</version>
 					<type>jar</type>
 				</dependency>
 			</dependencies>
+		</location>
+		<location includeDependencyDepth="none" includeDependencyScopes="compile" includeSource="true" missingManifest="generate" type="Maven">
+			<dependencies>
+				<dependency>
+					<groupId>org.jboss.tools.tycho-plugins</groupId>
+					<artifactId>repository-utils</artifactId>
+					<version>2.7.5</version>
+					<type>jar</type>
+				</dependency>
+			</dependencies>
+			<repositories>
+				<repository>
+					<id>JBOSS</id>
+					<url>https://repository.jboss.org/nexus/content/repositories/public/</url>
+				</repository>
+			</repositories>
 		</location>
 	</locations>
 </target>

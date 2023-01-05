@@ -16,7 +16,7 @@ Require-Bundle: org.eclipse.core.runtime,
  org.preesm.commons;visibility:=reexport,
  org.preesm.workflow,
  org.eclipse.cdt.core
-Bundle-RequiredExecutionEnvironment: JavaSE-1.8
+Bundle-RequiredExecutionEnvironment: JavaSE-17
 Export-Package: org.preesm.model.pisdf,
  org.preesm.model.pisdf.adapter,
  org.preesm.model.pisdf.brv,

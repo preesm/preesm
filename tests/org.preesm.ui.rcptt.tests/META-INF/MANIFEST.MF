@@ -1,0 +1,7 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Tests
+Bundle-SymbolicName: org.preesm.ui.rcptt.tests
+Bundle-Version: 3.21.0.qualifier
+Automatic-Module-Name: org.preesm.ui.rcptt.tests
+Bundle-RequiredExecutionEnvironment: JavaSE-17

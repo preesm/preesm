@@ -76,7 +76,7 @@
    <properties>
       <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
       <jacoco-version>0.8.4</jacoco-version>
-      <tycho-version>2.7.3</tycho-version>
+      <tycho-version>2.7.5</tycho-version>
       <findbugs-version>3.0.5</findbugs-version>
       <sonar-version>3.6.0.1398</sonar-version>
       <checkstyle-version>8.29</checkstyle-version>
@@ -109,12 +109,12 @@
       <!-- http://ftp.fau.de/eclipse/ -->
       <!-- http://ftp.halifax.rwth-aachen.de/eclipse/ -->
       <!-- http://mirror.switch.ch/eclipse/ -->
-      <eclipse.mirror>http://ftp.fau.de/eclipse/</eclipse.mirror>
+      <eclipse.mirror>https://ftp.fau.de/eclipse/</eclipse.mirror>
 
       <!-- ############### -->
       <!-- P2 REPOS CONFIG -->
       <!-- ############### -->
-      <updatesite.preesm>http://preesm.insa-rennes.fr/repo/</updatesite.preesm>
+      <updatesite.preesm>https://preesm.insa-rennes.fr/repo/</updatesite.preesm>
       <updatesite.preesm.externaldeps>${updatesite.preesm}/org.preesm.externaldeps/</updatesite.preesm.externaldeps>
       <updatesite.preesm.graphiti>${updatesite.preesm}/org.ietr.graphiti/</updatesite.preesm.graphiti>
       <updatesite.eclipse>${eclipse.mirror}/releases/2019-09/</updatesite.eclipse>
@@ -129,40 +129,15 @@
    </properties>
 
    <repositories>
-      <!-- Official Maven Central repo hosted in UK -->
+      <!-- Official Maven Central repo -->
       <repository>
-         <id>UK Central</id>
-         <url>http://uk.maven.org/maven2</url>
-      </repository>
-      <!-- add Eclipse repository to resolve dependencies -->
-<!--       <repository>
-         <id>Eclipse</id>
-         <layout>p2</layout>
-         <url>${updatesite.eclipse}</url>
-      </repository> -->
-      <!-- add Eclipse updates for latest releases -->
-<!--       <repository>
-         <id>Eclipse Updates</id>
-         <layout>p2</layout>
-         <url>${updatesite.eclipse.updates}</url>
-      </repository> -->
-      <!-- add Preesm repository to resolve dependencies -->
-<!--       <repository>
-         <id>Preesm External Dependencies Repo</id>
-         <layout>p2</layout>
-         <url>${updatesite.preesm.externaldeps}</url>
+         <id>Maven Central</id>
+         <url>https://repo1.maven.org/maven2/</url>
       </repository>
       <repository>
-         <id>Graphiti Repo</id>
-         <layout>p2</layout>
-         <url>${updatesite.preesm.graphiti}</url>
-      </repository> -->
-      <!-- add TMF repository for latest Xtend -->
-<!--       <repository>
-         <id>TMF Repo</id>
-         <layout>p2</layout>
-         <url>${updatesite.tmf}</url>
-      </repository> -->
+         <id>JBoss Repository</id>
+         <url>https://repository.jboss.org/nexus/content/repositories/releases/</url>
+      </repository>
    </repositories>
 
    <build>
@@ -250,92 +225,7 @@
                      <groupId>org.eclipse.emf</groupId>
                      <artifactId>org.eclipse.emf.ecore.xcore</artifactId>
                      <version>${ecore-xcore-version}</version>
-                  </dependency><!--
-                  <dependency>
-                     <groupId>org.eclipse.platform</groupId>
-                     <artifactId>org.eclipse.text</artifactId>
-                     <version>3.8.100</version>
                   </dependency>
-                  <dependency>
-                     <groupId>org.eclipse.platform</groupId>
-                     <artifactId>org.eclipse.core.resources</artifactId>
-                     <version>3.13.300</version>
-                  </dependency>
-                  <dependency>
-                     <groupId>org.eclipse.xtext</groupId>
-                     <artifactId>org.eclipse.xtext.ecore</artifactId>
-                     <version>${xtext-version}</version>
-                  </dependency>
-                  <dependency>
-                     <groupId>org.eclipse.xtext</groupId>
-                     <artifactId>org.eclipse.xtext.generator</artifactId>
-                     <version>${xtext-version}</version>
-                  </dependency>
-                  <dependency>
-                     <groupId>org.eclipse.xtext</groupId>
-                     <artifactId>org.eclipse.xtext.builder.standalone</artifactId>
-                     <version>${xtext-version}</version>
-                  </dependency>
-                  <dependency>
-                     <groupId>org.eclipse.emf</groupId>
-                     <artifactId>org.eclipse.emf.codegen.ecore.xtext</artifactId>
-                     <version>${ecore-xtext-version}</version>
-                  </dependency>
-                  <dependency>
-                     <groupId>org.eclipse.emf</groupId>
-                     <artifactId>org.eclipse.emf.common</artifactId>
-                     <version>${emf-common-version}</version>
-                  </dependency>
-                  <dependency>
-                     <groupId>org.eclipse.emf</groupId>
-                     <artifactId>org.eclipse.emf.ecore</artifactId>
-                     <version>${emf-version}</version>
-                  </dependency>
-                  <dependency>
-                     <groupId>org.eclipse.emf</groupId>
-                     <artifactId>org.eclipse.emf.ecore.xmi</artifactId>
-                     <version>2.16.0</version>
-                  </dependency>
-                  <dependency>
-                     <groupId>org.eclipse.emf</groupId>
-                     <artifactId>org.eclipse.emf.codegen</artifactId>
-                     <version>2.21.0</version>
-                  </dependency>
-                  <dependency>
-                     <groupId>org.eclipse.emf</groupId>
-                     <artifactId>org.eclipse.emf.codegen.ecore</artifactId>
-                     <version>${emf-codegen-version}</version>
-                  </dependency>
-                  <dependency>
-                     <groupId>org.eclipse.emf</groupId>
-                     <artifactId>org.eclipse.emf.ecore.xcore</artifactId>
-                     <version>${ecore-xcore-version}</version>
-                  </dependency>
-                  <dependency>
-                     <groupId>org.eclipse.emf</groupId>
-                     <artifactId>org.eclipse.emf.ecore.xcore.lib</artifactId>
-                     <version>${ecore-xcore-lib-version}</version>
-                  </dependency>
-                  <dependency>
-                     <groupId>org.antlr</groupId>
-                     <artifactId>antlr-runtime</artifactId>
-                     <version>[3.2.0,3.3.0)</version>
-                  </dependency>
-                  <dependency>
-                    <groupId>org.eclipse.jdt</groupId>
-                    <artifactId>org.eclipse.jdt.core</artifactId>
-                    <version>3.17.0</version>
-                  </dependency>
-                  <dependency>
-                    <groupId>org.eclipse.jdt</groupId>
-                    <artifactId>org.eclipse.jdt.compiler.apt</artifactId>
-                    <version>1.3.500</version>
-                  </dependency>
-                  <dependency>
-                    <groupId>org.eclipse.jdt</groupId>
-                    <artifactId>org.eclipse.jdt.compiler.tool</artifactId>
-                    <version>1.2.500</version>
-                  </dependency> -->
                </dependencies>
             </plugin>
          </plugins>
@@ -672,6 +562,14 @@
                 <useUIThread>true</useUIThread>
             </configuration>
          </plugin>
+           <plugin>
+              <groupId>org.eclipse.xtext</groupId>
+              <artifactId>xtext-maven-plugin</artifactId>
+           </plugin>
+           <plugin>
+              <groupId>org.eclipse.xtend</groupId>
+              <artifactId>xtend-maven-plugin</artifactId>
+           </plugin>
       </plugins>
    </build>
    <modules>

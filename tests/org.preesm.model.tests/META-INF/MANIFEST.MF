@@ -5,13 +5,13 @@ Automatic-Module-Name: org.preesm.model.tests
 Bundle-SymbolicName: org.preesm.model.tests
 Bundle-Version: 3.21.0.qualifier
 Bundle-Vendor: IETR / INSA Rennes - VAADER
-Bundle-RequiredExecutionEnvironment: JavaSE-1.8
+Bundle-RequiredExecutionEnvironment: JavaSE-17
 Require-Bundle: org.junit;bundle-version="4.12.0",
- org.mockito.mockito-all;bundle-version="1.10.19",
+ org.mockito.mockito-core,
  org.preesm.model.pisdf,
  org.preesm.model.slam,
  org.preesm.model.scenario,
- wrapped.org.scijava.jep;bundle-version="2.4.2"
+ wrapped.org.scijava.jep
 Export-Package: org.ietr.preesm.architecture.test,
  org.preesm.model.pisdf.test,
  org.preesm.model.slam.test

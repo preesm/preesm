@@ -1,7 +1,7 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: PREESM :: Plugins :: Scenario UI
-Automatic-Module-Name: org.preesm.ui.scenario
+Automatic-Module-Name: org.preesm.ui.scenario.singleton.true
 Bundle-SymbolicName: org.preesm.ui.scenario;singleton:=true
 Bundle-Version: 3.21.0.qualifier
 Bundle-Vendor: IETR / INSA Rennes - VAADER
@@ -18,7 +18,7 @@ Require-Bundle: org.eclipse.ui.console;bundle-version="3.5.100",
  wrapped.net.sourceforge.jexcelapi.jxl;bundle-version="2.6.12",
  org.preesm.ui,
  org.preesm.algorithm
-Bundle-RequiredExecutionEnvironment: JavaSE-1.8
+Bundle-RequiredExecutionEnvironment: JavaSE-17
 Bundle-ActivationPolicy: lazy
 Eclipse-BuddyPolicy: global
 Export-Package: org.preesm.ui.scenario.editor,
@@ -30,4 +30,3 @@ Export-Package: org.preesm.ui.scenario.editor,
  org.preesm.ui.scenario.editor.timings,
  org.preesm.ui.scenario.popup.actions,
  org.preesm.ui.scenario.wizards
-

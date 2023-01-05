@@ -1,7 +1,7 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: PREESM :: Plugins :: UI
-Automatic-Module-Name: org.preesm.ui
+Automatic-Module-Name: org.preesm.ui.singleton.true
 Bundle-SymbolicName: org.preesm.ui;singleton:=true
 Bundle-Version: 3.21.0.qualifier
 Bundle-Activator: org.preesm.ui.PreesmUIPlugin
@@ -18,7 +18,7 @@ Require-Bundle: org.eclipse.core.runtime;visibility:=reexport,
  org.ietr.graphiti.ui;bundle-version="[1.13.0,2.0.0)";visibility:=reexport,
  org.preesm.workflow
 Bundle-ActivationPolicy: lazy
-Bundle-RequiredExecutionEnvironment: JavaSE-1.8
+Bundle-RequiredExecutionEnvironment: JavaSE-17
 Export-Package: org.preesm.ui,
  org.preesm.ui.console,
  org.preesm.ui.editor.graph.validators,

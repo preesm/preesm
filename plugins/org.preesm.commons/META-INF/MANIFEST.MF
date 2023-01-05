@@ -18,10 +18,8 @@ Require-Bundle: javax.annotation;bundle-version="1.2.0";visibility:=reexport,
  org.apache.commons.io;bundle-version="2.6.0",
  org.apache.xerces;bundle-version="2.12.2",
  wrapped.org.scijava.jep;bundle-version="2.4.2",
- org.eclipse.emf.ecore;visibility:=reexport,
- org.eclipse.emf.codegen.ecore.xtext;bundle-version="1.6.0",
- org.eclipse.emf.codegen.ecore.xtext.source;bundle-version="1.6.0"
-Bundle-RequiredExecutionEnvironment: JavaSE-1.8
+ org.eclipse.emf.ecore;visibility:=reexport
+Bundle-RequiredExecutionEnvironment: JavaSE-17
 Bundle-ActivationPolicy: lazy
 Export-Package: org.preesm.commons,
  org.preesm.commons.doc.annotations,
@@ -38,4 +36,3 @@ Export-Package: org.preesm.commons,
  org.preesm.commons.messages,
  org.preesm.commons.model
 Bundle-Activator: org.preesm.commons.PreesmPlugin
-

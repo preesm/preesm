@@ -26,9 +26,12 @@ Bundle-ClassPath: .
 Bundle-Vendor: %providerName
 Bundle-Localization: plugin
 Export-Package: org.preesm.codegen.model,
+ org.preesm.codegen.format,
+ org.preesm.codegen.model.clustering,
+ org.preesm.codegen.model.generator,
+ org.preesm.codegen.model.generator2,
  org.preesm.codegen.model.impl,
  org.preesm.codegen.model.util,
  org.preesm.codegen.printer,
  org.preesm.codegen.xtend.task
 Import-Package: org.apache.commons.lang3.tuple
-
