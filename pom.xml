@@ -79,7 +79,7 @@
       <tycho-version>2.7.5</tycho-version>
       <findbugs-version>3.0.5</findbugs-version>
       <sonar-version>3.6.0.1398</sonar-version>
-      <checkstyle-version>8.29</checkstyle-version>
+      <checkstyle-version>10.4</checkstyle-version>
       <rcptt-version>2.4.3</rcptt-version>
       <rcptt-runner-version>2.4.3</rcptt-runner-version>
       <preesm.coding.policy.version>1.3.1</preesm.coding.policy.version>
@@ -360,21 +360,15 @@
          <plugin>
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-checkstyle-plugin</artifactId>
-            <version>3.1.0</version>
+            <version>3.2.0</version>
             <configuration>
-               <configLocation>/VAADER_checkstyle.xml</configLocation>
+               <configLocation>releng/org.preesm.target-platform/VAADER_checkstyle.xml</configLocation>
                <failsOnError>true</failsOnError>
                <includes>**/*.java</includes>
                <sourceDirectories>src/</sourceDirectories>
                <consoleOutput>true</consoleOutput>
             </configuration>
             <dependencies>
-               <!-- get settings -->
-               <dependency>
-                  <groupId>org.preesm.maven</groupId>
-                  <artifactId>coding-policy</artifactId>
-                  <version>${preesm.coding.policy.version}</version>
-               </dependency>
                <!-- Override checkstyle version -->
                <dependency>
                   <groupId>com.puppycrawl.tools</groupId>

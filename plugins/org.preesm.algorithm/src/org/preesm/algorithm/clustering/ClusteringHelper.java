@@ -344,7 +344,7 @@ public class ClusteringHelper {
    *          list of actor
    * @param scenario
    *          scenario
-   * @return
+   * @return List of components
    */
   public static List<ComponentInstance> getListOfCommonComponent(List<AbstractActor> actorList, Scenario scenario) {
     List<ComponentInstance> globalList = new LinkedList<>();

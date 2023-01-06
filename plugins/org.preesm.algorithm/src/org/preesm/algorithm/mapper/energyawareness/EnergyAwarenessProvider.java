@@ -435,7 +435,7 @@ public class EnergyAwarenessProvider {
    *          cores used of each type
    * @param scenarioMapping
    *          {@link Scenario} used in the mapping
-   * @return
+   * @return Computed power of the platform.
    */
   public static double computePlatformPower(Map<String, Integer> coresUsedOfEachType, Scenario scenarioMapping) {
     double powerPlatform = scenarioMapping.getEnergyConfig().getPeTypePowerOrDefault("Base");
@@ -452,7 +452,7 @@ public class EnergyAwarenessProvider {
    *          mapping done
    * @param scenarioMapping
    *          {@link Scenario} used in the mapping
-   * @return
+   * @return Computed dynamic energy.
    */
   public static long computeDynamicEnergy(Mapping mapping, Scenario scenarioMapping) {
     long energyDynamic = 0;
@@ -475,7 +475,7 @@ public class EnergyAwarenessProvider {
    *          mapping done
    * @param scenarioMapping
    *          {@link Scenario} used in the mapping
-   * @return
+   * @return Computed dynamic energy.
    */
   public static double computeDynamicEnergy(MapperDAG dagMapping, Scenario scenarioMapping) {
     double energyDynamic = 0.0;
@@ -601,7 +601,7 @@ public class EnergyAwarenessProvider {
    *          cores used of each type
    * @param configsAlreadyUsed
    *          configs already used
-   * @return
+   * @return True if the configuration is valid.
    */
   public static boolean configValid(Map<String, Integer> coresUsedOfEachType,
       Set<Map<String, Integer>> configsAlreadyUsed) {
@@ -620,7 +620,7 @@ public class EnergyAwarenessProvider {
    * 
    * @param scenarioMapping
    *          {@link Scenario} used in the mapping
-   * @return
+   * @return Set of imprescindible PEs.
    */
   public static Set<String> getImprescindiblePes(Scenario scenarioMapping) {
     Set<String> imprescindiblePes = new LinkedHashSet<>();
