@@ -22,6 +22,7 @@ import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.pisdf.UserSpecialActor;
 import org.preesm.model.pisdf.statictools.PiMMHelper;
 import org.preesm.model.scenario.Scenario;
+import org.preesm.model.scenario.ScenarioConstants;
 import org.preesm.model.slam.ComponentInstance;
 import org.preesm.model.slam.TimingType;
 
@@ -180,6 +181,31 @@ public abstract class AbstractGenericFpgaFifoEvaluator {
       final long maxRate = getActorMaximumRate(aa);
       long ii;
       long et;
+
+      // TODO checker si l'acteur à un temps dans le scénario
+      // sinon tester si specialActor
+      // sinon exception
+      // if ((scenario.getTimings().evaluateTiming(ori, fpga.getComponent(),
+      // TimingType.INITIATION_INTERVAL) == ScenarioConstants.DEFAULT_MISSING_TIMING.getValue()
+      // || scenario.getTimings().evaluateTiming(ori, fpga.getComponent(),
+      // TimingType.EXECUTION_TIME) == ScenarioConstants.DEFAULT_MISSING_TIMING.getValue())
+      // && !(aa instanceof UserSpecialActor)) {
+      // throw new PreesmRuntimeException("wtf");
+      // }
+
+      // If the actor ISN'T a special actor
+      if (!(aa instanceof UserSpecialActor)) {
+        if (scenario.getTimings().evaluateTiming(ori, fpga.getComponent(),
+            TimingType.INITIATION_INTERVAL) == ScenarioConstants.DEFAULT_MISSING_TIMING.getValue()) {
+          throw new PreesmRuntimeException(String
+              .format("Actor %s does not have a valid Initiation Interval in the Scenario.", ori.getVertexPath()));
+        }
+        if (scenario.getTimings().evaluateTiming(ori, fpga.getComponent(),
+            TimingType.EXECUTION_TIME) == ScenarioConstants.DEFAULT_MISSING_TIMING.getValue()) {
+          throw new PreesmRuntimeException(
+              String.format("Actor %s does not have a valid Execution Time in the Scenario.", ori.getVertexPath()));
+        }
+      }
 
       if (aa instanceof UserSpecialActor) {
         // set timings

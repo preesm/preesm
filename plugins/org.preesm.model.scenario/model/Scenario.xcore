@@ -83,6 +83,7 @@ type double wraps double
 enum ScenarioConstants {
 	DEFAULT_TIMING_TASK = 100
 	DEFAULT_TIMING_SPECIAL_TASK = 10
+	DEFAULT_MISSING_TIMING = -1
 	DEFAULT_MEMCOPY_SETUP_TIME = 1
 	DEFAULT_MEMCOPY_UNIT_PER_TIME = 1000
 	DEFAULT_AVG_DATA_TRANSFER_SIZE = 1000
@@ -290,38 +291,89 @@ class Timings {
 	op String getExecutionTimeOrDefault(AbstractActor actor, Component component) {
 		return getTimingOrDefault(actor, component, TimingType.EXECUTION_TIME)
 	}
+
 	op String getTimingOrDefault(AbstractActor actor, Component component, TimingType timingType) {
+		val String timing = getTiming(actor, component, timingType);
+		if (timing.isEmpty()) {
+			return Long.toString(ScenarioConstants.DEFAULT_TIMING_TASK.value);
+		}
+		return timing;
+	}
+
+	// CAN return an empty string
+	op String getTiming(AbstractActor actor, Component component, TimingType timingType) {
 		val timing = this.actorTimings.get(actor)?.get(component)?.get(timingType)
-		if (timing !== null) {
+		if ((timing !== null) && (!timing.isEmpty())) {
 			return timing
 		}
 		val AbstractActor source = PreesmCopyTracker.getSource(actor);
 		if (source !== actor) {
-			return getTimingOrDefault(source, component, timingType);
+			return getTiming(source, component, timingType);
 		}
-		return Long.toString(ScenarioConstants.DEFAULT_TIMING_TASK.value);
+		return "";
 	}
+
 	op long evaluateExecutionTimeOrDefault(AbstractActor actor, Component component) {
 		return evaluateTimingOrDefault(actor, component, TimingType.EXECUTION_TIME)
 	}
+
+	/*
+	 * Evaluate timing expression.
+	 * <br>
+	 *
+	 * @param actor
+	 * 			The {@link AbstractActor} from which the timing value is requested
+	 *
+	 * @param component
+	 * 			The {@link Component}
+	 *
+	 * @param timingType
+	 * 			The {@link TimingType}
+	 *
+	 * @return the timing value if the expression is valid, ScenarioConstants.DEFAULT_TIMING_TASK otherwise.
+	 */
 	op long evaluateTimingOrDefault(AbstractActor actor, Component component, TimingType timingType) {
+		val long timingValue = evaluateTiming(actor, component, timingType);
+		if (timingValue !== ScenarioConstants.DEFAULT_MISSING_TIMING.value) {
+			return timingValue;
+		}
+		return ScenarioConstants.DEFAULT_TIMING_TASK.value;
+	}
+
+	/*
+	 * Evaluate timing expression.
+	 * <br>
+	 *
+	 * @param actor
+	 * 			The {@link AbstractActor} from which the timing value is requested
+	 *
+	 * @param component
+	 * 			The {@link Component}
+	 *
+	 * @param timingType
+	 * 			The {@link TimingType}
+	 *
+	 * @return the timing value if the expression is valid, ScenarioConstants.DEFAULT_MISSING_TIMING otherwise.
+	 */
+	op long evaluateTiming(AbstractActor actor, Component component, TimingType timingType) {
 		if (this.actorTimings.containsKey(actor)) {
 			val String timingExpression = getTimingOrDefault(actor, component, timingType);
 			var long t;
 			if ((timingExpression !== null) && (!timingExpression.isEmpty())) {
 			   	t = ExpressionEvaluator.evaluate(actor.containingPiGraph, timingExpression, scenario.parameterValues.map);
 			} else {
-				t = ScenarioConstants.DEFAULT_TIMING_TASK.value;
+				t = ScenarioConstants.DEFAULT_MISSING_TIMING.value;
 			}
 			return t;
 		} else {
 			val AbstractActor source = PreesmCopyTracker.getSource(actor);
 			if (source !== actor) {
-				return evaluateTimingOrDefault(source, component, timingType);
+				return evaluateTiming(source, component, timingType);
 			}			
 		}
-		return ScenarioConstants.DEFAULT_TIMING_TASK.value;
+		return ScenarioConstants.DEFAULT_MISSING_TIMING.value;
 	}
+
 	// TODO Memory values should be moved to SLAM
 	contains MemoryInfo[] memTimings opposite timings
 }
