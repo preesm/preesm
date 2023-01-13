@@ -476,7 +476,7 @@ public class FpgaCodeGenerator {
     allFifoDepths.forEach((f, s) -> {
       nameArgs.add("'" + getFifoStreamSizeNameMacro(f) + "'");
       sizeArgs.add(s.toString());
-      sizeMinArgs.add(Long.toString(MIN_BUFFER_DEPTH));
+      sizeMinArgs.add(Long.toString(MIN_BUFFER_DEPTH - 1)); // Lower bound is excluded from range of values
       long srcRate = f.getSourcePort().getExpression().evaluate();
       long srcII = scenario.getTimings().evaluateTimingOrDefault((AbstractActor) f.getSource(), fpga,
           TimingType.INITIATION_INTERVAL);

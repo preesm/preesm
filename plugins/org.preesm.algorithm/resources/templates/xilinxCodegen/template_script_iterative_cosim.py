@@ -7,8 +7,8 @@ import time
 #[[#]]# Graph parameters
 top_kernel_name = $PREESM_TOP_KERNEL_NAME
 names = [ $PREESM_FIFO_NAMES ]
-upper_bound = [ $PREESM_FIFO_SIZES ]
-lower_bound = [ $PREESM_FIFO_MIN_SIZES ]
+upper_bound = [ $PREESM_FIFO_SIZES ] #[[#]]# Upper bound included from range of values
+lower_bound = [ $PREESM_FIFO_MIN_SIZES ] #[[#]]# Lower bound excluded from range of values
 lambdas = [ $PREESM_FIFO_LAMBDAS ]
 widths = [ $PREESM_FIFO_WIDTHS ]
 graph_ii = $PREESM_GRAPH_II
