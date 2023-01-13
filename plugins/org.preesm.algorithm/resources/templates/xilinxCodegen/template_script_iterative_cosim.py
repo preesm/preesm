@@ -18,7 +18,7 @@ graph_ii = $PREESM_GRAPH_II
 INI_BUF_DEPTH = 5
 INI_LAMBDA_SUM = 4
 COEF_LAMBDAS = 0.5
-nb_iterations = 2
+nb_iterations = 3
 total_nb_cosim = 0
 total_nb_iterations = 0
 
