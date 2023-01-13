@@ -1,9 +1,9 @@
 import math
 import model_fifo_zynq
 from pathlib import Path
-import re
 import subprocess
 import time
+import xml.etree.ElementTree as ET
 
 #[[#]]# Graph parameters
 top_kernel_name = $PREESM_TOP_KERNEL_NAME
@@ -55,6 +55,14 @@ def get_cosim_timings():
     except FileNotFoundError:
         return ([-1],[-1])
 
+def get_synthesis_ressources():
+    tree = ET.parse(top_kernel_name + '/solution1/syn/report/csynth.xml')
+    ff = tree.find("./AreaEstimates/Resources/FF").text
+    lut = tree.find("./AreaEstimates/Resources/LUT").text
+    bram = tree.find("./AreaEstimates/Resources/BRAM_18K").text
+    dsp = tree.find("./AreaEstimates/Resources/DSP").text
+    return (ff, lut, bram, dsp)
+
 def is_expected_ii(cosim_timings):
     return max(cosim_timings[1]) <= graph_ii and is_steady_state(cosim_timings)
 
@@ -74,13 +82,15 @@ def write_cosim_log(buffer_sizes, nb_iterations, runtime, cosim_timings):
     f = Path('cosim_log.csv')
     if not f.is_file():
         with f.open('w') as file:
-            file.write('Appli,ressource_wise,use_lambdas,use_initial_tests,nb_iterations,runtime,ii,is_expected_ii')
+            file.write('Appli,ressource_wise,use_lambdas,use_initial_tests,nb_iterations,runtime,ii,is_expected_ii,ff,lut,bram,dsp')
             for i in range(len(names)):
                 file.write(',' + names[i])
             file.write('\n')
     with f.open('a') as file:
         file.write(top_kernel_name + ',' + str(use_ressource_wise) + ',' + str(use_lambdas) + ',' + str(use_initial_tests))
-        file.write(',' + str(nb_iterations) + ',' + str(runtime) + ',' + str(cosim_timings[1][-1]) + ',' + str(is_expected_ii(cosim_timings)))
+        file.write(',' + str(nb_iterations) + ',' + str(int(runtime)) + ',' + str(cosim_timings[1][-1]) + ',' + str(is_expected_ii(cosim_timings)))
+        ressources = get_synthesis_ressources()
+        [file.write(',' + str(res)) for res in ressources]
         for i in range(len(buffer_sizes)):
             file.write(',' + str(int(buffer_sizes[i])))
         file.write('\n')
