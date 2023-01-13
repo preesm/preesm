@@ -82,12 +82,12 @@ def write_cosim_log(buffer_sizes, nb_iterations, runtime, cosim_timings):
     f = Path('cosim_log.csv')
     if not f.is_file():
         with f.open('w') as file:
-            file.write('Appli,ressource_wise,use_lambdas,use_initial_tests,nb_iterations,runtime,ii,is_expected_ii,ff,lut,bram,dsp')
+            file.write('Appli,vitis_fifo_sizing,ressource_wise,use_lambdas,use_initial_tests,nb_iterations,runtime,ii,is_expected_ii,ff,lut,bram,dsp')
             for i in range(len(names)):
                 file.write(',' + names[i])
             file.write('\n')
     with f.open('a') as file:
-        file.write(top_kernel_name + ',' + str(use_ressource_wise) + ',' + str(use_lambdas) + ',' + str(use_initial_tests))
+        file.write(top_kernel_name + ',False,' + str(use_ressource_wise) + ',' + str(use_lambdas) + ',' + str(use_initial_tests))
         file.write(',' + str(nb_iterations) + ',' + str(int(runtime)) + ',' + str(cosim_timings[1][-1]) + ',' + str(is_expected_ii(cosim_timings)))
         ressources = get_synthesis_ressources()
         [file.write(',' + str(res)) for res in ressources]
