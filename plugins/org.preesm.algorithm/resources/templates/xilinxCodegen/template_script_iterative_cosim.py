@@ -1,5 +1,6 @@
 import math
 import model_fifo_zynq
+from pathlib import Path
 import re
 import subprocess
 import time
@@ -29,13 +30,16 @@ detect_steady_state = True
 
 def run_cosim(buffer_sizes):
     write_buffer_sizes(buffer_sizes)
+    start = time.time()
     subprocess.run(['vitis_hls', 'scripts/script_hls.tcl',  'cosim', top_kernel_name, top_kernel_name + '.cpp'])
+    end = time.time()
     global total_nb_cosim
     total_nb_cosim += 1
     global nb_iterations
     global total_nb_iterations
     total_nb_iterations += nb_iterations
     cosim_timings = get_cosim_timings()
+    write_cosim_log(buffer_sizes, nb_iterations, end - start, cosim_timings)
     # Reduce number of required iterations based on ET results
     if is_expected_ii(cosim_timings) and detect_steady_state:
         nb_iterations = cosim_timings[0].index(cosim_timings[0][-1]) + 2
@@ -65,6 +69,21 @@ def write_buffer_sizes(buffer_sizes):
         for i in range(len(names)):
             file.write('#[[#]]#define ' + names[i] + ' ' + str(int(buffer_sizes[i])) + '\n')
         file.write('#[[#]]#define NB_ITERATIONS_COSIM ' + str(nb_iterations) + '\n')
+
+def write_cosim_log(buffer_sizes, nb_iterations, runtime, cosim_timings):
+    f = Path('cosim_log.csv')
+    if not f.is_file():
+        with f.open('w') as file:
+            file.write('Appli,ressource_wise,use_lambdas,use_initial_tests,nb_iterations,runtime,ii,is_expected_ii')
+            for i in range(len(names)):
+                file.write(',' + names[i])
+            file.write('\n')
+    with f.open('a') as file:
+        file.write(top_kernel_name + ',' + str(use_ressource_wise) + ',' + str(use_lambdas) + ',' + str(use_initial_tests))
+        file.write(',' + str(nb_iterations) + ',' + str(runtime) + ',' + str(cosim_timings[1][-1]) + ',' + str(is_expected_ii(cosim_timings)))
+        for i in range(len(buffer_sizes)):
+            file.write(',' + str(int(buffer_sizes[i])))
+        file.write('\n')
 
 def candidate_buffer_size(lower, upper, width):
     if use_ressource_wise:
