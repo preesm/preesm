@@ -64,7 +64,7 @@ def get_synthesis_ressources():
     return (ff, lut, bram, dsp)
 
 def is_expected_ii(cosim_timings):
-    return max(cosim_timings[1]) <= graph_ii and is_steady_state(cosim_timings)
+    return cosim_timings[1][-1] <= graph_ii and is_steady_state(cosim_timings)
 
 def is_steady_state(cosim_timings):
     if detect_steady_state:
@@ -134,7 +134,7 @@ def iterative_cosim():
     if cosim_timings[1] == [-1]:
         raise ValueError('Graph deadlocked with original buffer sizes')
     while not is_expected_ii(cosim_timings):
-        if max(cosim_timings[1]) > graph_ii:
+        if cosim_timings[1][-1] > graph_ii:
             raise ValueError('Graph does not reach II with original buffer sizes')
         global nb_iterations
         nb_iterations = nb_iterations * 2
