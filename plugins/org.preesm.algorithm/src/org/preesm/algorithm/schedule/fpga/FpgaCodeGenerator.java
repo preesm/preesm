@@ -137,7 +137,7 @@ public class FpgaCodeGenerator {
 
   protected static final String PRAGMA_AXILITE_CTRL  = "#pragma HLS INTERFACE s_axilite port=return\n";
   protected static final int    PYNQ_INTERFACE_DEPTH = 64;
-  protected static final long       MIN_BUFFER_DEPTH = 2L;
+  protected static final long   MIN_BUFFER_DEPTH     = 2L;
 
   private final FPGA               fpga;
   private final String             graphName;
@@ -159,8 +159,8 @@ public class FpgaCodeGenerator {
 
       // if a fifo depth is less than 2, we promote it to 2
       if (depth < MIN_BUFFER_DEPTH) {
-        PreesmLogger.getLogger().info(() -> "Fifo " + fifo.getId() + " had depth " + depth +
-				      ", increasing it to " + MIN_BUFFER_DEPTH + ".");
+        PreesmLogger.getLogger().info(
+            () -> "Fifo " + fifo.getId() + " had depth " + depth + ", increasing it to " + MIN_BUFFER_DEPTH + ".");
         allFifoDepths.put(fifo, MIN_BUFFER_DEPTH);
       } else {
         allFifoDepths.put(fifo, depth);
@@ -548,7 +548,7 @@ public class FpgaCodeGenerator {
     allFifoDepths.forEach((x, y) -> {
       sb.append(String.format("#define %s %d%n", getFifoStreamSizeNameMacro(x), y));
     });
-    sb.append("#define NB_ITERATIONS_COSIM 2\n");
+    sb.append("#define NB_ITERATIONS_COSIM 3\n");
 
     return sb.toString();
   }
