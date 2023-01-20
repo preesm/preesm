@@ -1,68 +1,31 @@
 <!--
-
-    Copyright or © or Copr. IETR/INSA - Rennes (2017 - 2020) :
-
-    Antoine Morvan [antoine.morvan@insa-rennes.fr] (2017 - 2019)
-    Julien Heulot [julien.heulot@insa-rennes.fr] (2019 - 2020)
-
-    This software is a computer program whose purpose is to help prototyping
-    parallel applications using dataflow formalism.
-
-    This software is governed by the CeCILL  license under French law and
-    abiding by the rules of distribution of free software.  You can  use,
-    modify and/ or redistribute the software under the terms of the CeCILL
-    license as circulated by CEA, CNRS and INRIA at the following URL
-    "http://www.cecill.info".
-
-    As a counterpart to the access to the source code and  rights to copy,
-    modify and redistribute granted by the license, users are provided only
-    with a limited warranty  and the software's author,  the holder of the
-    economic rights,  and the successive licensors  have only  limited
-    liability.
-
-    In this respect, the user's attention is drawn to the risks associated
-    with loading,  using,  modifying and/or developing or reproducing the
-    software by the user in light of its specific status of free software,
-    that may mean  that it is complicated to manipulate,  and  that  also
-    therefore means  that it is reserved for developers  and  experienced
-    professionals having in-depth computer knowledge. Users are therefore
-    encouraged to load and test the software's suitability as regards their
-    requirements in conditions enabling the security of their systems and/or
-    data to be ensured and,  more generally, to use and operate it in the
-    same conditions as regards security.
-
-    The fact that you are presently reading this means that you have had
-    knowledge of the CeCILL license and that you accept its terms.
-
--->
+    Copyright (c) 2009, 2019 Xored Software Inc and others.
+    All rights reserved. This program and the accompanying materials
+    are made available under the terms of the Eclipse Public License v2.0
+    which accompanies this distribution, and is available at
+    https://www.eclipse.org/legal/epl-v20.html
+     
+    Contributors:
+    	Xored Software Inc - initial API and implementation and/or initial documentation
+ -->
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-	<modelVersion>4.0.0</modelVersion>
-	<artifactId>org.preesm.tests.ui.rcptt</artifactId>
-	<packaging>rcpttTest</packaging>
-    <name>PREESM :: Tests :: RCPTT</name>
+	     xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <!-- Set artifact id according to a RCPTT project name  -->
+  <artifactId>org.preesm.tests.ui.rcptt</artifactId>
+  <!-- Set group id based on application under test name -->
+  <groupId>org.preesm</groupId>
+  <version>3.21.0-SNAPSHOT</version>
+  <!-- RCPTT Maven Plugin provides this packaging type -->
+  <packaging>rcpttTest</packaging>
+  <name>PREESM :: Tests :: RCPTT</name>
 
-	<parent>
-		<groupId>org.preesm</groupId>
-		<artifactId>org.preesm.parent</artifactId>
-		<version>3.21.0-SNAPSHOT</version>
-		<relativePath>../..</relativePath>
-	</parent>
-
-  <repositories>
-		<repository>
-			<id>rcptt-releases</id>
-			<name>RCPTT Maven repository</name>
-			<url>https://repo.eclipse.org/content/repositories/rcptt-releases/</url>
-		</repository>
-  </repositories>
-  <pluginRepositories>
-		<pluginRepository>
-			<id>rcptt-releases</id>
-			<name>RCPTT Maven repository</name>
-			<url>https://repo.eclipse.org/content/repositories/rcptt-releases/</url>
-		</pluginRepository>
-  </pluginRepositories>
+  <parent>
+    <groupId>org.preesm</groupId>
+    <artifactId>org.preesm.parent</artifactId>
+    <version>3.21.0-SNAPSHOT</version>
+    <relativePath>../..</relativePath>
+  </parent>
 
   <dependencies>
     <!--
@@ -79,65 +42,159 @@
     </dependency>
   </dependencies>
 
-  <profiles>
-    <!--
-      Specific profile for Eclipse to skip downloading the RCPTT
-      runner related configuration.
-    -->
-    <profile>
-      <id>not-eclipse</id>
-      <activation>
-        <property>
-          <name>!m2e.version</name>
-        </property>
-      </activation>
-      <dependencies>
-        <!-- for safe go-offline execution -->
-        <dependency>
-          <groupId>org.jacoco</groupId>
-          <artifactId>jacoco-maven-plugin</artifactId>
-          <version>${jacoco-version}</version>
-        </dependency>
-        <dependency>
-          <groupId>org.eclipse.rcptt.runner</groupId>
-          <artifactId>rcptt.runner</artifactId>
-          <version>${rcptt-runner-version}</version>
-          <type>zip</type>
-        </dependency>
-      </dependencies>
-    </profile>
-  </profiles>
+  <!-- RCPTT Maven Plugin and RCPTT Runner are hosted in this repository -->
+  <pluginRepositories>
+    <pluginRepository>
+      <id>rcptt-releases</id>
+      <name>RCPTT Maven repository</name>
+      <url>https://repo.eclipse.org/content/repositories/rcptt-releases/</url>
+    </pluginRepository>
+    <pluginRepository>
+      <id>rcptt-snapshots</id>
+      <name>RCPTT Maven Snapshots repository</name>
+      <snapshots>
+        <updatePolicy>always</updatePolicy>
+      </snapshots>
+      <url>https://repo.eclipse.org/content/repositories/rcptt-snapshots/</url>
+    </pluginRepository>
+  </pluginRepositories>
 
+  <!-- 
+       If RCPTT tests are planned to be run on an update site, 
+       RCPTT Maven Plugin can download Eclipse SDK of required version
+       for current platform from repository below (to see 
+       an up-to-date list of available versions visit this link:
+       http://maven.xored.com/nexus/content/repositories/ci4rcptt-releases/org/eclipse/sdk/
+  -->
+  <properties>
+    <rcptt-maven-version>2.5.4</rcptt-maven-version>
+  </properties>
+
+  <!-- The main part of RCPTT Maven plugin -->
   <build>
-    <pluginManagement>
-      <plugins>
-        <plugin>
-          <groupId>org.eclipse.rcptt</groupId>
-          <artifactId>rcptt-maven-plugin</artifactId>
-          <version>${rcptt-version}</version>
-          <extensions>true</extensions>
-          <configuration>
-            <runner>
-              <version>${rcptt-runner-version}</version>
-            </runner>
-            <!-- The main configuration section goes here -->
-            <aut>
-              <groupId>org.preesm</groupId>
-              <artifactId>org.preesm.product</artifactId>
-              <version>${project.version}</version>
-              <vmArgs>
-                <vmArg>-javaagent:${settings.localRepository}/org/jacoco/org.jacoco.agent/${jacoco-version}/org.jacoco.agent-${jacoco-version}-runtime.jar=destfile=${project.basedir}/${jacoco.destFile},append=true</vmArg>
-              </vmArgs>
-            </aut>
-          </configuration>
-        </plugin>
-      </plugins>
-    </pluginManagement>
     <plugins>
       <plugin>
         <groupId>org.eclipse.rcptt</groupId>
         <artifactId>rcptt-maven-plugin</artifactId>
+        <version>${rcptt-maven-version}</version>
+        <extensions>true</extensions>
+        <configuration>
+
+          <!-- This element describes where to get an AUT to run tests -->
+          <aut>
+            <!-- AUT can be downloaded automatically from Maven repository -->
+            <groupId>org.preesm</groupId>
+            <artifactId>org.preesm.product</artifactId>
+            <version>${project.version}</version>
+                 
+            <injections>
+              <!-- features are optional - when omitted, all features from given site will be installed -->
+              <!--
+              <injection>
+                <site></site>
+                <features>
+                  <feature>com.comanyname.featureid</feature>
+                </features>
+              </injection>
+              -->
+            </injections>
+
+           <!-- additional AUT args (besides taken in its ini-file) can be set 
+                Use one argument per <arg> element -->
+           <!-- 
+            <args>
+              <arg>-ws</arg>
+              <arg>$${target.ws}</arg>
+            </args>
+            -->
+           <!-- optional VM args can be set too -->
+           
+      		   <vmArgs>
+      			 <vmArg>-Xmx768m</vmArg>
+      			 <!-- <vmArg>-XX:MaxPermSize=256m</vmArg> -->
+      		   </vmArgs>
+           
+          </aut>
+
+          <runner>
+            <!-- RCPTT Runner location can be set using the same methods 
+                 as AUT location:
+            -->
+            <!--
+            <explicit>/path/to/rcptt/runner</explicit>
+            -->
+            
+            <!-- but the most convenient way is to just set its version,
+                 RCPTT maven plugin will automatically set right groupId and
+                 artifact ID and will download RCPTT Runner from Xored Maven Repo -->
+            <version>${rcptt-maven-version}</version>
+
+            <vmArgs>
+              <vmArg>-Xmx1024m</vmArg>
+            </vmArgs>
+          </runner>
+
+          <!-- Test options for RCPTT Runner, most popular options listed here.
+               Full list of options is available at:
+               https://ci.xored.com/doc/runner/
+          -->
+          <testOptions>
+            <!-- Timeout for all tests, in seconds -->
+            <execTimeout>1800</execTimeout>
+            <!-- Timeout for a single test case, in seconds -->
+            <testExecTimeout>300</testExecTimeout>
+
+            <!-- When set to true, in case of test failure
+                 AUT will be restarted. This significantly
+                 slows down execution, but may be useful 
+                 for some test suites -->
+            <!--
+            <restartAUTOnFailure>true</restartAUTOnFailure>
+            -->
+          </testOptions>
+
+          <!-- By default RCPTT Runner runs tests from a project directory,
+               but in some cases it might be required to import additional 
+               projects into runner's workspace -->
+          <!--
+          <projects>
+            <project>${project.basedir}/../project</project>
+          </projects>
+          -->
+
+          <!-- By default RCPTT Runner runs all tests from workspace,
+               but it is possible to pass test suite names, so it
+               will execute only test suites from given project. -->
+
+          <!--
+		  <suites>
+			<suite>MyTestSuite</suite>
+		  </suites>
+          -->
+
+          <!-- Sometimes it might be useful to skip a test case
+               (for instance because of some unresolved bug). RCPTT
+               can skip tests based on its tags. By default RCPTT skips
+               tests with tag 'skipExecution' (this value has been 
+               chosen because on one hand it is descriptive enough,
+               on another hand it is unlikely that this tag name
+               will collide with some user's tag)
+               -->
+          <!--
+          <skipTags>
+            <skipTag>linuxOnly</skipTag>
+          </skipTags>
+          -->
+
+          <!-- By default RCPTT generates a single HTML report file with
+               all tests, but it is possible to generate one file per
+               test -->
+          <!--
+          <splitHtmlReport>true</splitHtmlReport>
+          -->
+        </configuration>
       </plugin>
     </plugins>
   </build>
+
 </project>
