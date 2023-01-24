@@ -78,7 +78,7 @@
       <jacoco-version>0.8.4</jacoco-version>
       <tycho-version>2.7.5</tycho-version>
       <findbugs-version>3.0.5</findbugs-version>
-      <sonar-version>3.6.0.1398</sonar-version>
+      <sonar-version>3.9.1.2184</sonar-version>
       <checkstyle-version>10.4</checkstyle-version>
       <rcptt-version>2.4.3</rcptt-version>
       <rcptt-runner-version>2.4.3</rcptt-runner-version>
@@ -125,6 +125,9 @@
       <!-- SONAR CONFIG -->
       <!-- ############## -->
       <jacoco.destFile>../../target/jacoco.exec</jacoco.destFile>
+      <sonar.organization>preesm</sonar.organization>
+      <sonar.project>preesm</sonar.project>
+      <sonar.host.url>https://sonarcloud.io</sonar.host.url>
       <sonar.coverage.jacoco.xmlReportPaths>${project.reporting.outputDirectory}/jacoco/jacoco.xml</sonar.coverage.jacoco.xmlReportPaths>
    </properties>
 
