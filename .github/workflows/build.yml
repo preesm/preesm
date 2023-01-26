@@ -1,10 +1,10 @@
 name: Build
 on:
   push:
-    branches:
-      - migrate_to_github_actions
   pull_request:
-    types: [opened, synchronize, reopened]
+  schedule:
+    - cron:  '0 7 * * MON'
+    
 jobs:
   build:
     name: Build
