@@ -21,6 +21,9 @@ PREESM Changelog
 * (scenario) The data type now needs to be given in bits. A check was added when opening/executing project from a previous version of PREEEM
 * (workflow) The data alignment now needs to be given in bits (default is now Fixed:=8) for MemoryAllocatorTask and MemoryScriptTask.
 * (workflow) Added an explicit False Sharing Prevention flag (false by default) to MemoryScriptTask.
+* (Build) Make Tycho Pomless build for many plugins, using Eclipse Target Platform to specify maven dependencies. This makes tests plugins to be renamed for tycho. 
+* (RCPTT) Update to a fresher version for JAVA 17 execution
+* (CI) Makes Github Actions run tests
 
 ### Bug fix
 * Add explicit log when data type size is not set in scenario making memory scripts crash.
@@ -40,7 +43,7 @@ the training graph now.
 * (PiMM) : fix issue when removing unused Fifo (rates at 0) in hierarchical graphs
 * Fix #351, #91 and #122 : Fix .pi and .diagram being out of sync.
 * (GUI) UI of PiSDF : fix pasting operation failing when a delay is in the clipboard.
-
+* Fix some Checkstyle errors
 
 ## Release version 3.21.0
 *2020.10.01*
