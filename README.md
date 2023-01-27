@@ -6,10 +6,10 @@ PREESM (the Parallel and Real-time Embedded Executives Scheduling Method) is an 
 
 ## Build Status
 
-| All branches | [Github Action] | [SonarCloud](https://sonarcloud.io/organizations/preesm/projects) ) |
+| All branches | [Github Action] | [SonarCloud](https://sonarcloud.io/organizations/preesm/projects) |
 | ------------- |  ------------- |    -------------  |
-| master  |  [![Build & Test](https://github.com/preesm/preesm/actions/workflows/build_and_test.yml/badge.svg?branch=release)](https://github.com/preesm/preesm/actions/workflows/build_and_test.yml) | [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=preesm_preesm&metric=alert_status&branch=master)](https://sonarcloud.io/summary/new_code?id=preesm_preesm) [![Coverage](https://sonarcloud.io/api/project_badges/measure?project=preesm_preesm&metric=coverage&branch=master)](https://sonarcloud.io/summary/new_code?id=preesm_preesm) |
-| develop  | [![Build & Test](https://github.com/preesm/preesm/actions/workflows/build_and_test.yml/badge.svg?branch=develop)](https://github.com/preesm/preesm/actions/workflows/build_and_test.yml)  | [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=preesm_preesm&metric=alert_status&branch=develop)](https://sonarcloud.io/summary/new_code?id=preesm_preesm) [![Coverage](https://sonarcloud.io/api/project_badges/measure?project=preesm_preesm&metric=coverage&branch=develop)](https://sonarcloud.io/summary/new_code?id=preesm_preesm)  |
+| master  |  [![Build & Test](https://github.com/preesm/preesm/actions/workflows/check_master.yml/badge.svg)](https://github.com/preesm/preesm/actions/workflows/check_master.yml) | [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=preesm_preesm&metric=alert_status&branch=master)](https://sonarcloud.io/summary/new_code?id=preesm_preesm) [![Coverage](https://sonarcloud.io/api/project_badges/measure?project=preesm_preesm&metric=coverage&branch=master)](https://sonarcloud.io/summary/new_code?id=preesm_preesm) |
+| develop  | [![Build & Test](https://github.com/preesm/preesm/actions/workflows/build.yml/badge.svg?branch=develop)](https://github.com/preesm/preesm/actions/workflows/build.yml)  | [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=preesm_preesm&metric=alert_status&branch=develop)](https://sonarcloud.io/summary/new_code?id=preesm_preesm) [![Coverage](https://sonarcloud.io/api/project_badges/measure?project=preesm_preesm&metric=coverage&branch=develop)](https://sonarcloud.io/summary/new_code?id=preesm_preesm)  |
 
 ## Documentation
 
