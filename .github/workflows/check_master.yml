@@ -1,13 +1,11 @@
-name: Build & Test
+name: Build & Test - Master weekly
 on:
-  push:
-  pull_request:
   schedule:
-    - cron:  '0 7 * * MON'
+    - cron:  '0 6 * * MON'
     
 jobs:
   build:
-    name: Build & Test
+    name: Build & Test - Master weekly
     strategy:
       matrix:
         # os: [ubuntu-16.04, ubuntu-18.04, ubuntu-20.04]
@@ -23,6 +21,7 @@ jobs:
       - name: Git Checkout
         uses: actions/checkout@v2
         with:
+          ref: master
           fetch-depth: 0  # Shallow clones should be disabled for a better relevancy of analysis
       - name: Build & Test
         shell: bash
