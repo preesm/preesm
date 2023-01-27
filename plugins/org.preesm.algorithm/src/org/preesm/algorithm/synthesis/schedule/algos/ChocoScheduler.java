@@ -178,7 +178,7 @@ public class ChocoScheduler extends PeriodicScheduler {
     }
 
     if (verbose) {
-      solver.setOut(System.err);
+      solver.log().add(System.err);
       solver.printStatistics();
     }
 
