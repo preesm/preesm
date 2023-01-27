@@ -69,7 +69,7 @@ public class PiSDFTransformPerfectFitDelayToEndInit {
   }
 
   /**
-   * @return
+   * @return Copy of Graph modified
    */
   public PiGraph replacePerfectFitDelay() {
     // Perform copy of input graph

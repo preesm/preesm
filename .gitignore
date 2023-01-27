@@ -61,9 +61,5 @@ new-site
 
 # Eclipse files #
 #################
-**/.settings
-**/.project
-**/.classpath
-**/.checkstyle
 **/.metadata
 

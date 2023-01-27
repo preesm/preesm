@@ -187,7 +187,6 @@ public class MoveAbstractActorFeature extends DefaultMoveShapeFeature
    *          The current list of selected business objects with delay actors instead of delay.
    * @param selectedPEs
    *          The current list of selected elements.
-   * @return
    */
   protected void findExtraConnectedDelaysAndConnections(final Set<Delay> delaysToTest, final List<Object> listBOd,
       final List<PictogramElement> selectedPEs, Set<FreeFormConnection> allConnections, Set<Delay> allDelays) {

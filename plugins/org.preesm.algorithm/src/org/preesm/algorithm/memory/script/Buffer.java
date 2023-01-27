@@ -558,8 +558,7 @@ public class Buffer {
    * <b> An {@link Buffer} that is not {@link #isIndivisible() indivisible} is not necessarily divisible. Indeed, it
    * might fulfill parts of the conditions to be divisible.</b>
    *
-   * @return <code>true</code> if the {@link Buffer} is divisible, <code>
-   * false</code> otherwise.
+   * @return <code>true</code> if the {@link Buffer} is divisible, <code> false</code> otherwise.
    */
 
   boolean isDivisible() {

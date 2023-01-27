@@ -6,7 +6,7 @@ Bundle-SymbolicName: org.preesm.model.slam;singleton:=true
 Bundle-Version: 3.21.0.qualifier
 Bundle-ClassPath: .
 Bundle-Localization: plugin
-Bundle-RequiredExecutionEnvironment: JavaSE-1.8
+Bundle-RequiredExecutionEnvironment: JavaSE-17
 Export-Package: org.preesm.model.slam,
  org.preesm.model.slam.check,
  org.preesm.model.slam.generator,
@@ -21,7 +21,6 @@ Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.xtext.xbase.lib,
  org.eclipse.emf.ecore.xcore.lib,
  org.apache.commons.lang3,
- org.preesm.model.slam;visibility:=reexport,
  org.preesm.commons;visibility:=reexport,
  org.preesm.workflow;visibility:=reexport
 Bundle-ActivationPolicy: lazy

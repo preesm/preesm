@@ -1,0 +1,15 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: PREESM :: Tests :: UI
+Automatic-Module-Name: org.preesm.ui.tests.singleton.true
+Bundle-SymbolicName: org.preesm.ui.tests;singleton:=true
+Bundle-Version: 3.21.0.qualifier
+Bundle-Vendor: IETR / INSA Rennes - VAADER
+Bundle-RequiredExecutionEnvironment: JavaSE-17
+Require-Bundle: org.junit;bundle-version="4.12.0",
+ org.preesm.ui,
+ org.preesm.ui.pisdf,
+ org.preesm.ui.scenario,
+ org.preesm.ui.sdf,
+ org.preesm.ui.slam
+Export-Package: org.ietr.preesm.ui.test

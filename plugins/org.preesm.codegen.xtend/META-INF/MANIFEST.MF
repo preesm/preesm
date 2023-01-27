@@ -1,7 +1,7 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: PREESM :: Plugins :: Xtend Code Generation
-Automatic-Module-Name: org.preesm.codegen.xtend
+Automatic-Module-Name: org.preesm.codegen.xtend.singleton.true
 Bundle-SymbolicName: org.preesm.codegen.xtend;singleton:=true
 Bundle-ClassPath: .
 Bundle-Vendor: IETR / INSA Rennes - VAADER
@@ -15,7 +15,7 @@ Require-Bundle: org.apache.velocity;bundle-version="1.7.0",
  org.preesm.codegen;visibility:=reexport,
  org.apache.commons.math3
 Bundle-ActivationPolicy: lazy
-Bundle-RequiredExecutionEnvironment: JavaSE-1.8
+Bundle-RequiredExecutionEnvironment: JavaSE-17
 Bundle-Version: 3.21.0.qualifier
 Export-Package: org.preesm.codegen.xtend,
  org.preesm.codegen.xtend.printer,
@@ -24,6 +24,8 @@ Export-Package: org.preesm.codegen.xtend,
  org.preesm.codegen.xtend.printer.net.c,
  org.preesm.codegen.xtend.spider,
  org.preesm.codegen.xtend.spider.utils,
- org.preesm.codegen.xtend.spider.visitor
+ org.preesm.codegen.xtend.spider.visitor,
+ org.preesm.codegen.xtend.spider2,
+ org.preesm.codegen.xtend.spider2.utils,
+ org.preesm.codegen.xtend.spider2.visitor
 Import-Package: org.apache.commons.lang3
-

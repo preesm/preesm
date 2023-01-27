@@ -1,0 +1,7 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Product
+Bundle-SymbolicName: org.preesm.product
+Bundle-Version: 3.21.0.qualifier
+Automatic-Module-Name: org.preesm.product
+Bundle-RequiredExecutionEnvironment: JavaSE-17

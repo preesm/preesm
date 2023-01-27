@@ -172,7 +172,7 @@ public class PGANScheduler {
    *          Reference to the cluster in the copied graph.
    * @param childSchedule
    *          Schedule of contained actors.
-   * @return
+   * @return the builded schedule.
    */
   private Schedule buildClusterSchedule(final PiGraph cluster, PiGraph copiedCluster, Schedule childSchedule) {
 

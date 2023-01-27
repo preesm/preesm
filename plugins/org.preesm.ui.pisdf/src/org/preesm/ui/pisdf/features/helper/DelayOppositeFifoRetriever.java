@@ -61,7 +61,7 @@ public interface DelayOppositeFifoRetriever {
    *          Parent delay of the Fifo.
    * @param connec
    *          Half of the Fifo, source part
-   * @return
+   * @return The target connection.
    */
   default Connection getTargetConnection(AbstractFeature af, Delay delay, AnchorContainer delayFeature,
       Connection connec) {
@@ -82,7 +82,7 @@ public interface DelayOppositeFifoRetriever {
   }
 
   /**
-   * Retrieve the target connection when fifo contains a delay
+   * Retrieve the source connection when fifo contains a delay
    * 
    * @param delay
    *          Delay object.
@@ -90,7 +90,7 @@ public interface DelayOppositeFifoRetriever {
    *          Parent delay of the Fifo.
    * @param connec
    *          Half of the Fifo, source part
-   * @return
+   * @return the source connection.
    */
   default Connection getSourceConnection(AbstractFeature af, Delay delay, AnchorContainer delayFeature,
       Connection connec) {

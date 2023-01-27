@@ -563,8 +563,7 @@ public class PiBuffer {
    * <b> An {@link PiBuffer} that is not {@link #isIndivisible() indivisible} is not necessarily divisible. Indeed, it
    * might fulfill parts of the conditions to be divisible.</b>
    *
-   * @return <code>true</code> if the {@link PiBuffer} is divisible, <code>
-   * false</code> otherwise.
+   * @return <code>true</code> if the {@link PiBuffer} is divisible, <code> false </code> otherwise.
    */
 
   boolean isDivisible() {

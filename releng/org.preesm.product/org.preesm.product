@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?pde version="3.5"?>
 
-<product name="Preesm" uid="org.preesm.product" id="org.preesm.ui.product" application="org.eclipse.ui.ide.workbench" version="3.21.0.qualifier" useFeatures="true" includeLaunchers="true">
+<product name="Preesm" uid="org.preesm.product" id="org.preesm.ui.product" application="org.eclipse.ui.ide.workbench" version="3.21.0.qualifier" useFeatures="true" includeLaunchers="true" autoIncludeRequirements="true">
 
    <aboutInfo>
       <image path="/org.preesm.ui/resources/icons/preesmLogo_48x48.png"/>
@@ -597,9 +597,9 @@ Version 1.0 dated 2006-09-05.
       <feature id="org.eclipse.xtext.xbase.lib"/>
       <feature id="org.eclipse.graphiti.feature"/>
       <feature id="org.ietr.graphiti.feature"/>
-      <feature id="org.preesm.feature"/>
-      <feature id="org.eclipse.ecf.filetransfer.httpclient45.feature"/>
       <feature id="org.eclipse.ecf.filetransfer.ssl.feature"/>
+      <feature id="org.eclipse.ecf.filetransfer.httpclient5.feature"/>
+      <feature id="org.preesm.feature" installMode="root"/>
    </features>
 
    <configurations>
@@ -612,7 +612,7 @@ Version 1.0 dated 2006-09-05.
    </configurations>
 
    <repositories>
-      <repository location="http://preesm.insa-rennes.fr/repo/" enabled="true" />
+      <repository location="https://preesm.insa-rennes.fr/repo/" enabled="true" />
    </repositories>
 
    <preferencesInfo>

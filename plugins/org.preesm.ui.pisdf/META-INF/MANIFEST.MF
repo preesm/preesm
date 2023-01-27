@@ -1,7 +1,7 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: PREESM :: Plugins :: PiSDF UI
-Automatic-Module-Name: org.preesm.ui.pisdf
+Automatic-Module-Name: org.preesm.ui.pisdf.singleton.true
 Bundle-SymbolicName: org.preesm.ui.pisdf;singleton:=true
 Bundle-Version: 3.21.0.qualifier
 Bundle-Vendor: IETR / INSA Rennes - VAADER
@@ -14,12 +14,12 @@ Require-Bundle: org.eclipse.ui.console;bundle-version="3.5.100",
  org.eclipse.text,
  org.eclipse.emf.edit.ui,
  org.eclipse.xtend.lib,
- net.sourceforge.jexcelapi.jxl;bundle-version="2.6.10",
+ wrapped.net.sourceforge.jexcelapi.jxl;bundle-version="2.6.12",
  org.apache.commons.io;bundle-version="2.6.0",
  org.preesm.ui,
  org.preesm.model.pisdf,
  org.preesm.algorithm
-Bundle-RequiredExecutionEnvironment: JavaSE-1.8
+Bundle-RequiredExecutionEnvironment: JavaSE-17
 Bundle-ActivationPolicy: lazy
 Eclipse-BuddyPolicy: global
 Export-Package: org.preesm.ui.pisdf.decorators,
@@ -31,4 +31,3 @@ Export-Package: org.preesm.ui.pisdf.decorators,
  org.preesm.ui.pisdf.refactoring,
  org.preesm.ui.pisdf.util,
  org.preesm.ui.pisdf.wizards
-
