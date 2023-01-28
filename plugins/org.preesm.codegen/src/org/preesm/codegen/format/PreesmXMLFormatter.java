@@ -95,6 +95,7 @@ public class PreesmXMLFormatter {
   private static final Document parseXmlFile(final String in) {
     try {
       DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+      dbf.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
       DocumentBuilder db = dbf.newDocumentBuilder();
       InputSource is = new InputSource(new StringReader(in));
       return db.parse(is);
