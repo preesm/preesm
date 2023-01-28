@@ -95,19 +95,11 @@ public class ReconnectionFifoFeature extends DefaultReconnectionFeature implemen
     if ((newPort != null) && newPort.getClass().equals(oldPort.getClass())) {
       // Check that no Fifo is connected to the ports
       if (newPort instanceof DataOutputPort) {
-        if (((DataOutputPort) newPort).getOutgoingFifo() == null) {
-          return true;
-        } else {
-          return false;
-        }
+        return ((DataOutputPort) newPort).getOutgoingFifo() == null;
       }
 
       if (newPort instanceof DataInputPort) {
-        if (((DataInputPort) newPort).getIncomingFifo() == null) {
-          return true;
-        } else {
-          return false;
-        }
+        return ((DataInputPort) newPort).getIncomingFifo() == null;
       }
     }
 
