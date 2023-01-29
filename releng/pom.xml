@@ -52,7 +52,6 @@
 
   <modules>
     <module>org.preesm.target-platform</module>
-    <!-- <module>eclipse-repository</module>  -->
     <module>org.preesm.feature</module> 
     <module>org.preesm.product</module>
     <module>org.preesm.site</module>  

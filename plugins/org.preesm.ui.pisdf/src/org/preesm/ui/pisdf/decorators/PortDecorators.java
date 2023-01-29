@@ -61,6 +61,12 @@ import org.preesm.model.pisdf.util.DependencyCycleDetector;
  * @author jheulot
  */
 public class PortDecorators {
+  /**
+   * Private constructor to ensure that this utility class cannot be instantiated.
+   */
+  private PortDecorators() {
+    throw new IllegalStateException("This is an utility class that should not be instantiated");
+  }
 
   /**
    * Methods that returns all the {@link IDecorator} for a given {@link Port} .
