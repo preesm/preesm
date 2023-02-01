@@ -23,7 +23,8 @@ total_nb_cosim = 0
 total_nb_iterations = 0
 
 #[[#]]# DSE options
-use_ressource_wise = True
+use_bram_wise = True
+use_all_resource_wise = True
 use_lambdas = True
 use_initial_tests = True
 detect_steady_state = True
@@ -55,7 +56,7 @@ def get_cosim_timings():
     except FileNotFoundError:
         return ([-1],[-1])
 
-def get_synthesis_ressources():
+def get_synthesis_resources():
     tree = ET.parse(top_kernel_name + '/solution1/syn/report/csynth.xml')
     ff = tree.find("./AreaEstimates/Resources/FF").text
     lut = tree.find("./AreaEstimates/Resources/LUT").text
@@ -82,21 +83,21 @@ def write_cosim_log(buffer_sizes, nb_iterations, runtime, cosim_timings):
     f = Path('cosim_log.csv')
     if not f.is_file():
         with f.open('w') as file:
-            file.write('Appli,vitis_fifo_sizing,ressource_wise,use_lambdas,use_initial_tests,nb_iterations,runtime,ii,is_expected_ii,ff,lut,bram,dsp')
+            file.write('Appli,vitis_fifo_sizing,bram_wise,all_resource_wise,use_lambdas,use_initial_tests,nb_iterations,runtime,ii,is_expected_ii,ff,lut,bram,dsp')
             for i in range(len(names)):
                 file.write(',' + names[i])
             file.write('\n')
     with f.open('a') as file:
-        file.write(top_kernel_name + ',False,' + str(use_ressource_wise) + ',' + str(use_lambdas) + ',' + str(use_initial_tests))
+        file.write(top_kernel_name + ',False,' + str(use_bram_wise)  + ',' + str(use_all_resource_wise) + ',' + str(use_lambdas) + ',' + str(use_initial_tests))
         file.write(',' + str(nb_iterations) + ',' + str(int(runtime)) + ',' + str(cosim_timings[1][-1]) + ',' + str(is_expected_ii(cosim_timings)))
-        ressources = get_synthesis_ressources()
-        [file.write(',' + str(res)) for res in ressources]
+        resources = get_synthesis_resources()
+        [file.write(',' + str(res)) for res in resources]
         for i in range(len(buffer_sizes)):
             file.write(',' + str(int(buffer_sizes[i])))
         file.write('\n')
 
 def candidate_buffer_size(lower, upper, width):
-    if use_ressource_wise:
+    if use_bram_wise:
         return next_smaller_buffer(lower, upper, width)
     else:
         return dichotomy(lower, upper)
@@ -113,19 +114,22 @@ def next_smaller_buffer(lower, upper, width):
     return proposed_depth
 
 def is_improved(candidate, upper, width):
-    if use_ressource_wise:
-        return is_improved_ressource_wise(candidate, upper, width)
+    if use_bram_wise:
+        return is_improved_resource_wise(candidate, upper, width)
     else:
         return is_improved_token_wise(candidate, upper)
 
 def is_improved_token_wise(candidate, upper):
     return candidate < upper
 
-def is_improved_ressource_wise(candidate, upper, width):
+def is_improved_resource_wise(candidate, upper, width):
     candidate_cost = model_fifo_zynq.bram_usage(candidate, width)
-    if (candidate_cost == 0):
-        return is_improved_token_wise(candidate, upper)
     upper_cost = model_fifo_zynq.bram_usage(upper, width)
+    if (candidate_cost == 0):
+        if use_all_resource_wise:
+            return candidate_cost < upper_cost # Consider no gain in reducing size for fifo in logic
+        else:
+            return is_improved_token_wise(candidate, upper)
     return candidate_cost < upper_cost
 
 def iterative_cosim():
