@@ -179,15 +179,22 @@ def lambda_iterative_cosim():
     while max(lambdas) > 0:
         candidates = [i for (i, c) in enumerate(lambdas) if c >  max(lambdas)* COEF_LAMBDAS]
         buffer_sizes = [x for x in upper_bound]
+        improved = False
         for i in candidates:
-            buffer_sizes[i] = candidate_buffer_size(lower_bound[i], upper_bound[i], widths[i])
+            proposition = candidate_buffer_size(lower_bound[i], upper_bound[i], widths[i])
+            if is_improved(proposition, upper_bound[i], widths[i]):
+                buffer_sizes[i] = proposition
+                improved = True
+            else:
+                lambdas[i] = 0
+                candidates.remove(i)
+        if not improved:
+            return
         cosim_timings = run_cosim(buffer_sizes)
         if is_expected_ii(cosim_timings):
             for i in candidates:
                 upper_bound[i] = buffer_sizes[i]
                 lambdas[i] = lambdas[i] / 2
-                if not is_improved(candidate_buffer_size(lower_bound[i], upper_bound[i], widths[i]), upper_bound[i], widths[i]):
-                    lambdas[i] = 0
         else:
             for i in candidates:
                 buffer_sizes = [x for x in upper_bound]
