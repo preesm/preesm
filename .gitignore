@@ -62,4 +62,6 @@ new-site
 # Eclipse files #
 #################
 **/.metadata
-
+*.polyglot.category.xml
+*.polyglot.META-INF
+*.polyglot.pom.tycho
