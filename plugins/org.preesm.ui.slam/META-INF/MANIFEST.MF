@@ -1,6 +1,6 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
-Bundle-Name: PREESM :: Plugins :: Salm UI
+Bundle-Name: PREESM :: Plugins :: Slam UI
 Automatic-Module-Name: org.preesm.ui.slam.singleton.true
 Bundle-SymbolicName: org.preesm.ui.slam;singleton:=true
 Bundle-Version: 3.21.0.qualifier
