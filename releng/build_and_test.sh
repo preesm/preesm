@@ -69,13 +69,11 @@ echo "Build goal = ${BUILDGOAL}"
 echo " --"
 echo ""
 
-mvn --version
-
 #flush maven local repo
-mvn help:evaluate -Dexpression=settings.localRepository -q -DforceStdout
+#mvn help:evaluate -Dexpression=settings.localRepository -q -DforceStdout
 
 (cd $DIR && ./releng/fetch-rcptt-runner.sh)
-time (cd $DIR && mvn -X -e -c ${BATCHMODE} clean ${BUILDGOAL} ${TESTMODE})
+time (cd $DIR && mvn -q -N io.takari:maven:0.7.7:wrapper -Dmaven=3.6.3 && ./mvnw -e -c ${BATCHMODE} clean ${BUILDGOAL} ${TESTMODE})
 
 # Sonar
 if [ "${SONAR}" == "YES" ]; then
