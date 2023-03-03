@@ -1,5 +1,7 @@
 #!/bin/bash -eu
 
+set -x
+
 function find_free_display_number {
   USEDXDISPLAYS=`find /tmp -maxdepth 1 -type f -name ".X*-lock" | rev | cut -d"/" -f 1 | colrm 1 5 | rev | colrm 1 2`
   for i in {99..1}
