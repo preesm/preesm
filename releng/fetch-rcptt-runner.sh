@@ -19,7 +19,7 @@ if [ ! -e "${HOME}/.m2/repository/org/eclipse/rcptt/runner/rcptt.runner/${RCPTTV
 
   URLVER=$(echo ${RCPTTVER} | sed -e 's#-#/#g')
   wget ${MIRROR}/rcptt/release/${URLVER}/runner/rcptt.runner-${RCPTTVER}.zip -O rcptt.runner-${RCPTTVER}.zip
-  ./mvnw -Dtycho.mode=maven install:install-file -Dfile=rcptt.runner-${RCPTTVER}.zip -DgroupId=org.eclipse.rcptt.runner -DartifactId=rcptt.runner -Dversion=${RCPTTVER} -Dpackaging=zip
+  mvn -Dtycho.mode=maven install:install-file -Dfile=rcptt.runner-${RCPTTVER}.zip -DgroupId=org.eclipse.rcptt.runner -DartifactId=rcptt.runner -Dversion=${RCPTTVER} -Dpackaging=zip
   rm rcptt.runner-${RCPTTVER}.zip
 fi
 
