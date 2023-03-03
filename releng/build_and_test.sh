@@ -70,9 +70,6 @@ echo " --"
 echo ""
 
 (cd $DIR && ./releng/fetch-rcptt-runner.sh)
-
-echo "rcptt-runner DONE"
-
 time (cd $DIR && mvn -e -c ${BATCHMODE} clean ${BUILDGOAL} ${TESTMODE})
 
 # Sonar
