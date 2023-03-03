@@ -71,7 +71,7 @@ echo ""
 
 
 (cd $DIR && ./releng/fetch-rcptt-runner.sh)
-time (cd $DIR && mvn -e -c ${BATCHMODE} clean ${BUILDGOAL} ${TESTMODE})
+time (cd $DIR && mvn -e -c -X ${BATCHMODE} clean ${BUILDGOAL} ${TESTMODE})
 
 # Sonar
 if [ "${SONAR}" == "YES" ]; then
