@@ -71,7 +71,9 @@ echo ""
 
 
 (cd $DIR && ./releng/fetch-rcptt-runner.sh)
-time (cd $DIR && mvn -e -c -X ${BATCHMODE} clean ${BUILDGOAL} ${TESTMODE})
+time (cd $DIR && mvn -X -e -c ${BATCHMODE} clean ${BUILDGOAL} ${TESTMODE} &> maven.log)
+
+cat maven.log
 
 # Sonar
 if [ "${SONAR}" == "YES" ]; then
