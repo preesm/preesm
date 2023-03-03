@@ -1,7 +1,5 @@
 #!/bin/bash -eu
 
-set -x
-
 function find_free_display_number {
   USEDXDISPLAYS=`find /tmp -maxdepth 1 -type f -name ".X*-lock" | rev | cut -d"/" -f 1 | colrm 1 5 | rev | colrm 1 2`
   for i in {99..1}
@@ -71,11 +69,11 @@ echo "Build goal = ${BUILDGOAL}"
 echo " --"
 echo ""
 
+#flush maven local repo
+mvn help:evaluate -Dexpression=settings.localRepository -q -DforceStdout
 
 (cd $DIR && ./releng/fetch-rcptt-runner.sh)
-time (cd $DIR && mvn -X -e -c ${BATCHMODE} clean ${BUILDGOAL} ${TESTMODE} &> maven.log)
-
-cat maven.log
+time (cd $DIR && mvn -X -e -c ${BATCHMODE} clean ${BUILDGOAL} ${TESTMODE})
 
 # Sonar
 if [ "${SONAR}" == "YES" ]; then
