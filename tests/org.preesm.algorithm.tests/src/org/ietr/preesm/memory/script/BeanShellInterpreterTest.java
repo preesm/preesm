@@ -305,7 +305,7 @@ public class BeanShellInterpreterTest {
   @Test
   public void testFork() throws URISyntaxException, IOException, EvalError {
     final String plugin_name = MEMORY_SCRIPT_PLUGIN;
-    final String script_path = "/scripts/fork.bsh";
+    final String script_path = "/resources/scripts/fork.bsh";
 
     final StringBuffer content = new StringBuffer();
     final File scriptFile = new File("../../plugins/" + plugin_name + "/" + script_path);
@@ -374,7 +374,7 @@ public class BeanShellInterpreterTest {
   @Test
   public void testJoin() throws URISyntaxException, IOException, EvalError {
     final String plugin_name = MEMORY_SCRIPT_PLUGIN;
-    final String script_path = "/scripts/join.bsh";
+    final String script_path = "/resources/scripts/join.bsh";
 
     final StringBuffer content = new StringBuffer();
     final File scriptFile = new File("../../plugins/" + plugin_name + "/" + script_path);
@@ -429,7 +429,7 @@ public class BeanShellInterpreterTest {
   @Test
   public void testRoundBuffer() throws URISyntaxException, IOException, EvalError {
     final String plugin_name = MEMORY_SCRIPT_PLUGIN;
-    final String script_path = "/scripts/roundbuffer.bsh";
+    final String script_path = "/resources/scripts/roundbuffer.bsh";
 
     final StringBuffer content = new StringBuffer();
     final File scriptFile = new File("../../plugins/" + plugin_name + "/" + script_path);
@@ -490,7 +490,7 @@ public class BeanShellInterpreterTest {
   @Test
   public void testBroadCast() throws URISyntaxException, IOException, EvalError {
     final String plugin_name = MEMORY_SCRIPT_PLUGIN;
-    final String script_path = "/scripts/broadcast.bsh";
+    final String script_path = "/resources/scripts/broadcast.bsh";
 
     final StringBuffer content = new StringBuffer();
     final File scriptFile = new File("../../plugins/" + plugin_name + "/" + script_path);

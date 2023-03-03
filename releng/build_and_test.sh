@@ -69,7 +69,6 @@ echo "Build goal = ${BUILDGOAL}"
 echo " --"
 echo ""
 
-
 (cd $DIR && ./releng/fetch-rcptt-runner.sh)
 time (cd $DIR && mvn -e -c ${BATCHMODE} clean ${BUILDGOAL} ${TESTMODE})
 
