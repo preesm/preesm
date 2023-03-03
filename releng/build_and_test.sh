@@ -69,6 +69,8 @@ echo "Build goal = ${BUILDGOAL}"
 echo " --"
 echo ""
 
+mvn --version
+
 #flush maven local repo
 mvn help:evaluate -Dexpression=settings.localRepository -q -DforceStdout
 
