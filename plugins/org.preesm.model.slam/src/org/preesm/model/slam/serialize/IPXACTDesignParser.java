@@ -66,6 +66,7 @@ import org.preesm.model.slam.ComponentHolder;
 import org.preesm.model.slam.ComponentInstance;
 import org.preesm.model.slam.Design;
 import org.preesm.model.slam.Dma;
+import org.preesm.model.slam.FPGA;
 import org.preesm.model.slam.HierarchyPort;
 import org.preesm.model.slam.Link;
 import org.preesm.model.slam.Mem;
@@ -312,9 +313,14 @@ public class IPXACTDesignParser extends IPXACTParser {
           ((Mem) component).setSize(Integer.valueOf(description.getSpecificParameter("slam:size")));
         } else if (component instanceof Dma) {
           ((Dma) component).setSetupTime(Integer.valueOf(description.getSpecificParameter("slam:setupTime")));
+        } else if (component instanceof FPGA) {
+          ((FPGA) component).setFrequency(Integer.valueOf(description.getSpecificParameter("slam:frequency")));
+          ((FPGA) component).setPart(description.getSpecificParameter("slam:part"));
+          ((FPGA) component).setBoard(description.getSpecificParameter("slam:board"));
         }
       } catch (final NumberFormatException e) {
-        throw new PreesmRuntimeException("Could not parse component instance", e);
+        throw new PreesmRuntimeException("Could not parse a numeric property of component instance <"
+            + instance.getInstanceName() + ">, please check it in the slam.", e);
       }
 
     }

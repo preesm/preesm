@@ -3,18 +3,18 @@ package org.preesm.algorithm.schedule.fpga;
 import java.util.Map;
 import org.eclipse.xtext.xbase.lib.Pair;
 import org.preesm.algorithm.pisdf.autodelays.HeuristicLoopBreakingDelays;
-import org.preesm.algorithm.schedule.fpga.AsapFpgaIIevaluator.ActorNormalizedInfos;
+import org.preesm.algorithm.schedule.fpga.AbstractGenericFpgaFifoEvaluator.ActorNormalizedInfos;
 import org.preesm.commons.math.LongFraction;
 import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.scenario.Scenario;
 
 /**
- * This class evalutes fifo dependencies and size as in the SDF model: all data are produced at the end while they are
+ * This class evaluates fifo dependencies and size as in the SDF model: all data are produced at the end while they are
  * consumed at the beginning of a firing.
  * 
  * @author ahonorat
  */
-public class FifoEvaluatorAsArray extends AbstractFifoEvaluator {
+public class FifoEvaluatorAsArray extends AbstractAsapFpgaFifoEvaluator {
 
   public FifoEvaluatorAsArray(final Scenario scenario, final HeuristicLoopBreakingDelays hlbd,
       final Map<AbstractActor, ActorNormalizedInfos> mapActorNormalizedInfos) {

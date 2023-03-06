@@ -229,6 +229,9 @@ public class RefinementChecker extends AbstractPiSDFObjectChecker {
    * @return true if the file exists, false otherwise
    */
   private boolean checkRefinementValidity(final Actor a) {
+    if (a.getRefinement().isGenerated()) {
+      return true;
+    }
     final IPath path = new Path(a.getRefinement().getFilePath());
     final IFile file = ResourcesPlugin.getWorkspace().getRoot().getFile(path);
     if (!file.exists()) {
@@ -357,7 +360,7 @@ public class RefinementChecker extends AbstractPiSDFObjectChecker {
           }
 
           final Fifo topFifo = ((DataPort) topPort).getFifo();
-          if (topFifo != null && !fa.getType().equals(topFifo.getType())
+          if (topFifo != null && !fa.getType().trim().equals(topFifo.getType())
               && isHlsStreamTemplated(fa.getType()) == null) {
             validity = false;
             reportError(CheckerErrorLevel.FATAL_CODEGEN, a,

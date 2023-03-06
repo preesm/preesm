@@ -230,6 +230,22 @@
                     </xsl:element>
                 </xsl:if>
 
+                <!-- node parameters -->
+                <xsl:if test="$componentType='FPGA'">
+                    <xsl:element name="parameter">
+                        <xsl:attribute name="name">frequency</xsl:attribute>
+                        <xsl:attribute name="value" select="//slam:componentDescription[@slam:componentRef=$componentName]/@slam:frequency"/>
+                    </xsl:element>
+                    <xsl:element name="parameter">
+                        <xsl:attribute name="name">part</xsl:attribute>
+                        <xsl:attribute name="value" select="//slam:componentDescription[@slam:componentRef=$componentName]/@slam:part"/>
+                    </xsl:element>
+                    <xsl:element name="parameter">
+                        <xsl:attribute name="name">board</xsl:attribute>
+                        <xsl:attribute name="value" select="//slam:componentDescription[@slam:componentRef=$componentName]/@slam:board"/>
+                    </xsl:element>
+                </xsl:if>
+
             </xsl:element>
         </xsl:element>
     </xsl:template>

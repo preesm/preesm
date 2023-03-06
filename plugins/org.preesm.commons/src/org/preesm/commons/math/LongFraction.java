@@ -46,7 +46,8 @@ import org.apache.commons.math3.exception.util.LocalizedFormats;
 import org.apache.commons.math3.util.ArithmeticUtils;
 
 /**
- * This is a copy of the Apache {@link Fraction} with long numerator and denominator instead of Long.
+ * This is a copy of the Apache {@link Fraction} with long numerator and denominator instead of Long. It also adds two
+ * new methods: {@link #getCeiledRounding(int)} and {@link #getFlooredRounding(int)}.
  *
  * @author anmorvan
  *
@@ -412,7 +413,7 @@ public class LongFraction extends Number implements FieldElement<LongFraction>, 
 
     // result is (t/d2) / (u'/d1)(v'/d2)
     BigInteger w = t.divide(BigInteger.valueOf(d2));
-    if (w.bitLength() > 31) {
+    if (w.bitLength() > 63) {
       throw new MathArithmeticException(LocalizedFormats.NUMERATOR_OVERFLOW_AFTER_MULTIPLY, w);
     }
     return new LongFraction(w.longValue(), ArithmeticUtils.mulAndCheck(denominator / d1, fraction.denominator / d2));
@@ -552,6 +553,62 @@ public class LongFraction extends Number implements FieldElement<LongFraction>, 
     numerator /= gcd;
     denominator /= gcd;
     return new LongFraction(numerator, denominator);
+  }
+
+  /**
+   * Returns an approximated ceiled version of the Fraction.
+   * 
+   * @param maxBinaryPrecision
+   *          Maximal number of bits.
+   * @return A ceiled fraction of the original with no more bits than the given precision on both the numerator and the
+   *         denominator. Or a copy of the original fraction if precision was already lower.
+   */
+  public LongFraction getCeiledRounding(final int maxBinaryPrecision) {
+    if (maxBinaryPrecision < 2) {
+      throw new IllegalArgumentException("The binary precision cannot be lower than 2 bits (unsigned).");
+    }
+    final int nbBitsNum = BigInteger.valueOf(numerator).bitLength();
+    final int nbBitsDenom = BigInteger.valueOf(denominator).bitLength();
+    if (nbBitsNum < maxBinaryPrecision && nbBitsDenom < maxBinaryPrecision) {
+      // not enough precision, so we keep the same
+      return new LongFraction(this);
+    }
+    final int maxBitsToRemove = Math.min(nbBitsNum, nbBitsDenom) - 1;
+    final int minBitsToRemove = Math.max(nbBitsNum, nbBitsDenom) - maxBinaryPrecision;
+    final int nbBitsToRemove = Math.min(maxBitsToRemove, minBitsToRemove);
+    final long dividor = 1L << nbBitsToRemove;
+    // for ceil Fraction we ceil numerator while flooring denominator
+    final long newNum = (numerator + dividor - 1L) / dividor;
+    final long newDenom = denominator / dividor;
+    return new LongFraction(newNum, newDenom);
+  }
+
+  /**
+   * Returns an approximated floored version of the Fraction.
+   * 
+   * @param maxBinaryPrecision
+   *          Maximal number of bits.
+   * @return A floored fraction of the original with no more bits than the given precision on both the numerator and the
+   *         denominator. Or a copy of the original fraction if precision was already lower.
+   */
+  public LongFraction getFlooredRounding(final int maxBinaryPrecision) {
+    if (maxBinaryPrecision < 2) {
+      throw new IllegalArgumentException("The binary precision cannot be lower than 2 bits (unsigned).");
+    }
+    final int nbBitsNum = BigInteger.valueOf(numerator).bitLength();
+    final int nbBitsDenom = BigInteger.valueOf(denominator).bitLength();
+    if (nbBitsNum < maxBinaryPrecision && nbBitsDenom < maxBinaryPrecision) {
+      // not enough precision, so we keep the same
+      return new LongFraction(this);
+    }
+    final int maxBitsToRemove = Math.min(nbBitsNum, nbBitsDenom) - 1;
+    final int minBitsToRemove = Math.max(nbBitsNum, nbBitsDenom) - maxBinaryPrecision;
+    final int nbBitsToRemove = Math.min(maxBitsToRemove, minBitsToRemove);
+    final long dividor = 1L << nbBitsToRemove;
+    // for ceil Fraction we ceil numerator while flooring denominator
+    final long newNum = numerator / dividor;
+    final long newDenom = (denominator + dividor - 1L) / dividor;
+    return new LongFraction(newNum, newDenom);
   }
 
   /**

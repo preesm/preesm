@@ -122,13 +122,15 @@ public class ScenarioEditor extends SharedHeaderFormEditor implements IPropertyL
 
         if (!this.scenario.getSizesAreInBit()) {
           MessageDialog.openError(PreesmUIPlugin.getDefault().getWorkbench().getActiveWorkbenchWindow().getShell(),
-              "Scenario is out-of-date.",
+              "Scenario " + scenario.getScenarioURL() + " is out-of-date.\n",
               "The Scenario was created with an older version of PREESM."
                   + " Change the datatype sizes from bytes to bits in the Simulation tab and save the Scenario."
                   + " Check the \"Data alignment\" in Workflow tasks.");
         }
       } catch (final Exception e) {
-        final String errorTitle = "Could not open scenario";
+        final String scenarioName = (this.scenario == null) ? this.scenarioFile.toString()
+            : this.scenario.getScenarioURL();
+        final String errorTitle = "Could not open scenario " + scenarioName;
         ErrorWithExceptionDialog.errorDialogWithStackTrace(errorTitle, e);
         throw new PartInitException(errorTitle, e);
       }

@@ -13,9 +13,9 @@ try {
 	exit 1
 }
 
-#[[#]]# Create project with PYNQ board
-create_project vivado vivado -part xc7z020clg400-1
-set_property board_part tul.com.tw:pynq-z2:part0:1.0 [current_project]
+#[[#]]# Create project with board
+create_project vivado vivado -part $PART_NAME
+set_property board_part $BOARD_NAME [current_project]
 
 #[[#]]# Add Processor and configure
 create_bd_design "design_1"
@@ -39,13 +39,13 @@ apply_bd_automation -rule xilinx.com:bd_rule:axi4 -config { Clk_master {Auto} Cl
 
 #[[#]]# AXI memory ports
 apply_bd_automation -rule xilinx.com:bd_rule:axi4 -config { Clk_master {Auto} Clk_slave {Auto} Clk_xbar {Auto} Master {/${KERNEL_NAME_READ}_0/m_axi_gmem} Slave {/processing_system7_0/S_AXI_HP0} ddr_seg {Auto} intc_ip {New AXI Interconnect} master_apm {0}}  [get_bd_intf_pins processing_system7_0/S_AXI_HP0]
-apply_bd_automation -rule xilinx.com:bd_rule:axi4 -config { Clk_master {/processing_system7_0/FCLK_CLK0 (100 MHz)} Clk_slave {/processing_system7_0/FCLK_CLK0 (100 MHz)} Clk_xbar {/processing_system7_0/FCLK_CLK0 (100 MHz)} Master {/${KERNEL_NAME_WRITE}_0/m_axi_gmem} Slave {/processing_system7_0/S_AXI_HP0} ddr_seg {Auto} intc_ip {/axi_mem_intercon} master_apm {0}}  [get_bd_intf_pins ${KERNEL_NAME_WRITE}_0/m_axi_gmem]
+apply_bd_automation -rule xilinx.com:bd_rule:axi4 -config { Clk_master {/processing_system7_0/FCLK_CLK0 ($GLOBAL_CLOCK_MHZ MHz)} Clk_slave {/processing_system7_0/FCLK_CLK0 ($GLOBAL_CLOCK_MHZ MHz)} Clk_xbar {/processing_system7_0/FCLK_CLK0 ($GLOBAL_CLOCK_MHZ MHz)} Master {/${KERNEL_NAME_WRITE}_0/m_axi_gmem} Slave {/processing_system7_0/S_AXI_HP0} ddr_seg {Auto} intc_ip {/axi_mem_intercon} master_apm {0}}  [get_bd_intf_pins ${KERNEL_NAME_WRITE}_0/m_axi_gmem]
 
 #[[#]]# AXI internal FIFOs
 $PREESM_STREAM_CONNECTIVITY
 
 #[[#]]# Kernel clock (automatically connect FIFOs)
-apply_bd_automation -rule xilinx.com:bd_rule:clkrst -config { Clk {/processing_system7_0/FCLK_CLK0 ($PYNQ_GLOBAL_CLOCK_MHZ MHz)} Freq {$PYNQ_GLOBAL_CLOCK_MHZ} Ref_Clk0 {} Ref_Clk1 {} Ref_Clk2 {}}  [get_bd_pins ${KERNEL_NAME_TOP}_0/ap_clk]
+apply_bd_automation -rule xilinx.com:bd_rule:clkrst -config { Clk {/processing_system7_0/FCLK_CLK0 ($GLOBAL_CLOCK_MHZ MHz)} Freq {$GLOBAL_CLOCK_MHZ} Ref_Clk0 {} Ref_Clk1 {} Ref_Clk2 {}}  [get_bd_pins ${KERNEL_NAME_TOP}_0/ap_clk]
 
 save_bd_design
 

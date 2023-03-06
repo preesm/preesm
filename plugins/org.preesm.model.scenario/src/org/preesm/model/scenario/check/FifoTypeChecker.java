@@ -38,7 +38,7 @@ public class FifoTypeChecker {
       final Long typeSize = scenario.getSimulationInfo().getDataTypes().get(typeName);
       if (typeSize == null) {
         result.add("'" + typeName + "'");
-        PreesmLogger.getLogger().warning("Unknown type: " + typeName + ", in Fifo: " + f.getId());
+        PreesmLogger.getLogger().warning(() -> "Unknown type: " + typeName + ", in Fifo: " + f.getId());
       }
 
     }

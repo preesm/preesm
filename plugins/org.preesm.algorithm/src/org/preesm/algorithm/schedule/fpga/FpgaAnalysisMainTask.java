@@ -2,6 +2,7 @@ package org.preesm.algorithm.schedule.fpga;
 
 import java.util.HashMap;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -9,8 +10,9 @@ import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.xtext.xbase.lib.Pair;
 import org.preesm.algorithm.mapper.ui.stats.EditorRunnable;
-import org.preesm.algorithm.mapper.ui.stats.IStatGenerator;
 import org.preesm.algorithm.mapper.ui.stats.StatEditorInput;
+import org.preesm.algorithm.schedule.fpga.AbstractGenericFpgaFifoEvaluator.AnalysisResultFPGA;
+import org.preesm.algorithm.schedule.fpga.TokenPackingAnalysis.PackedFifoConfig;
 import org.preesm.commons.doc.annotations.Parameter;
 import org.preesm.commons.doc.annotations.Port;
 import org.preesm.commons.doc.annotations.PreesmTask;
@@ -21,7 +23,6 @@ import org.preesm.model.pisdf.AbstractVertex;
 import org.preesm.model.pisdf.DataInputPort;
 import org.preesm.model.pisdf.DataOutputPort;
 import org.preesm.model.pisdf.DataPort;
-import org.preesm.model.pisdf.Fifo;
 import org.preesm.model.pisdf.InterfaceActor;
 import org.preesm.model.pisdf.PersistenceLevel;
 import org.preesm.model.pisdf.PiGraph;
@@ -31,6 +32,7 @@ import org.preesm.model.pisdf.statictools.PiSDFFlattener;
 import org.preesm.model.scenario.Scenario;
 import org.preesm.model.scenario.check.FifoTypeChecker;
 import org.preesm.model.slam.Design;
+import org.preesm.model.slam.FPGA;
 import org.preesm.model.slam.check.SlamDesignPEtypeChecker;
 import org.preesm.workflow.elements.Workflow;
 import org.preesm.workflow.implement.AbstractTaskImplementation;
@@ -56,15 +58,26 @@ import org.preesm.workflow.implement.AbstractWorkflowNodeImplementation;
                 @Value(name = FpgaAnalysisMainTask.SHOW_SCHED_PARAM_VALUE, effect = "False disables this feature.") }),
         @Parameter(name = FpgaAnalysisMainTask.FIFO_EVAL_PARAM_NAME,
             description = "The name of fifo evaluator to be used.",
-            values = { @Value(name = AsapFpgaIIevaluator.FIFO_EVALUATOR_AVG, effect = "Evaluate with average mode."),
-                @Value(name = AsapFpgaIIevaluator.FIFO_EVALUATOR_SDF, effect = "Evaluate with SDF mode.") }) })
+            values = { @Value(name = AsapFpgaFifoEvaluator.FIFO_EVALUATOR_AVG, effect = "Evaluate with average mode."),
+                @Value(name = AsapFpgaFifoEvaluator.FIFO_EVALUATOR_SDF, effect = "Evaluate with SDF mode."),
+                @Value(name = AdfgFpgaFifoEvaluator.FIFO_EVALUATOR_ADFG_EXACT,
+                    effect = "Evaluate with ADFG exact mode."),
+                @Value(name = AdfgFpgaFifoEvaluator.FIFO_EVALUATOR_ADFG_LINEAR,
+                    effect = "Evaluate with ADFG linear approximation mode.") }),
+        @Parameter(name = FpgaAnalysisMainTask.PACK_TOKENS_PARAM_NAME,
+            description = "Whether or not the tokens should be packed to otpimize bram usage.",
+            values = { @Value(name = FpgaAnalysisMainTask.PACK_TOKENS_PARAM_VALUE,
+                effect = "False disables this feature.") }) })
 public class FpgaAnalysisMainTask extends AbstractTaskImplementation {
 
   public static final String SHOW_SCHED_PARAM_NAME  = "Show schedule ?";
   public static final String SHOW_SCHED_PARAM_VALUE = "false";
 
   public static final String FIFO_EVAL_PARAM_NAME  = "Fifo evaluator: ";
-  public static final String FIFO_EVAL_PARAM_VALUE = AsapFpgaIIevaluator.FIFO_EVALUATOR_AVG;
+  public static final String FIFO_EVAL_PARAM_VALUE = AsapFpgaFifoEvaluator.FIFO_EVALUATOR_AVG;
+
+  public static final String PACK_TOKENS_PARAM_NAME  = "Pack tokens ?";
+  public static final String PACK_TOKENS_PARAM_VALUE = "false";
 
   @Override
   public Map<String, Object> execute(Map<String, Object> inputs, Map<String, String> parameters,
@@ -76,57 +89,63 @@ public class FpgaAnalysisMainTask extends AbstractTaskImplementation {
     final String fifoEvaluatorName = parameters.get(FIFO_EVAL_PARAM_NAME);
 
     // check everything and perform analysis
-    final AnalysisResultFPGA res = checkAndAnalyze(algorithm, architecture, scenario, fifoEvaluatorName);
+    final FPGA fpga = checkAndGetSingleFPGA(architecture);
+    AnalysisResultFPGA res = checkAndAnalyzeAlgorithm(algorithm, scenario, fifoEvaluatorName);
+
+    // optionally pack tokens in BRAM
+    final String packTokensStr = parameters.get(PACK_TOKENS_PARAM_NAME);
+    final boolean packTokens = Boolean.parseBoolean(packTokensStr);
+    if (packTokens) {
+      List<PackedFifoConfig> workList = TokenPackingAnalysis.analysis(res, scenario);
+      if (!workList.isEmpty()) {
+        TokenPackingTransformation.transform(res, scenario, workList);
+
+        // Adding the latency due to packing to the execution time of corresponding attached actor into the scenario
+        // Added latency is equal to packing ratio + 1
+        for (PackedFifoConfig packedFifoConfig : workList) {
+          final long additionalLatency = packedFifoConfig.updatedWidth / packedFifoConfig.originalWidth + 1;
+          final long newExecutionTime = Long
+              .parseLong(scenario.getTimings().getExecutionTimeOrDefault(packedFifoConfig.attachedActor, fpga))
+              + additionalLatency;
+          scenario.getTimings().setExecutionTime(packedFifoConfig.attachedActor, fpga, newExecutionTime);
+        }
+
+        // Rerun adfg to get new fifo depth with modified timing (because of packer/unpacker delay)
+        res = checkAndAnalyzeAlgorithm(algorithm, scenario, fifoEvaluatorName);
+        // res.flatGraph is new, so actor from worklist do not match with res.flatGraph anymore
+        // Workaround is to generate a new worklist2 from the new res, which SHOULD match with worklist
+        // A better solution would be to match worklist actors (from the previous res.flatGraph) to the new
+        // res.flatGraph, a match by name sould be enough.
+        // TODO: Fix this.
+        List<PackedFifoConfig> workList2 = TokenPackingAnalysis.analysis(res, scenario);
+        TokenPackingTransformation.transform(res, scenario, workList2);
+      }
+    }
 
     // Optionally shows the Gantt diagram
     final String showSchedStr = parameters.get(SHOW_SCHED_PARAM_NAME);
     final boolean showSched = Boolean.parseBoolean(showSchedStr);
     if (showSched) {
-      final IEditorInput input = new StatEditorInput(res.statGenerator);
-
-      // Check if the workflow is running in command line mode
-      try {
-        // Run statistic editor
-        PlatformUI.getWorkbench().getDisplay().asyncExec(new EditorRunnable(input));
-      } catch (final IllegalStateException e) {
-        PreesmLogger.getLogger().info("Gantt display is impossible in this context."
-            + " Ignore this log entry if you are running the command line version of Preesm.");
+      if (res.statGenerator == null) {
+        PreesmLogger.getLogger()
+            .warning("The selected FIFO evaluator does not give any schedule or was not able to compute it.");
+      } else {
+        final IEditorInput input = new StatEditorInput(res.statGenerator);
+        // Check if the workflow is running in command line mode
+        try {
+          // Run statistic editor
+          PlatformUI.getWorkbench().getDisplay().asyncExec(new EditorRunnable(input));
+        } catch (final IllegalStateException e) {
+          PreesmLogger.getLogger().info("Gantt display is impossible in this context."
+              + " Ignore this log entry if you are running the command line version of Preesm.");
+        }
       }
-
     }
 
     // codegen
-    FpgaCodeGenerator.generateFiles(scenario, res.flatGraph, res.interfaceRates, res.flatFifoSizes);
+    FpgaCodeGenerator.generateFiles(scenario, fpga, res);
 
     return new HashMap<>();
-  }
-
-  /**
-   * Wraps the results in a single object.
-   * 
-   * @author ahonorat
-   */
-  public static class AnalysisResultFPGA {
-    // flattened graph
-    public final PiGraph flatGraph;
-    // repetition vector of the flat graph
-    public final Map<AbstractVertex, Long> flatBrv;
-    // interface rates (repetition factor + rate)
-    public final Map<InterfaceActor, Pair<Long, Long>> interfaceRates;
-    // computed fifo sizes
-    public final Map<Fifo, Long> flatFifoSizes;
-    // computed stats for UI or other
-    public final IStatGenerator statGenerator;
-
-    private AnalysisResultFPGA(final PiGraph flatGraph, final Map<AbstractVertex, Long> flatBrv,
-        final Map<InterfaceActor, Pair<Long, Long>> interfaceRates, final Map<Fifo, Long> flatFifoSizes,
-        final IStatGenerator statGenerator) {
-      this.flatGraph = flatGraph;
-      this.flatBrv = flatBrv;
-      this.interfaceRates = interfaceRates;
-      this.flatFifoSizes = flatFifoSizes;
-      this.statGenerator = statGenerator;
-    }
   }
 
   /**
@@ -134,19 +153,14 @@ public class FpgaAnalysisMainTask extends AbstractTaskImplementation {
    * 
    * @param algorithm
    *          Graph to be analyzed (will be flattened).
-   * @param architecture
-   *          Targeted architecture.
    * @param scenario
    *          Application informations.
    * @param fifoEvaluatorName
    *          String representing the evaluator to be used (for scheduling and fifo sizing).
    * @return The analysis results.
    */
-  public static AnalysisResultFPGA checkAndAnalyze(final PiGraph algorithm, final Design architecture,
-      final Scenario scenario, final String fifoEvaluatorName) {
-    if (!SlamDesignPEtypeChecker.isSingleFPGA(architecture)) {
-      throw new PreesmRuntimeException("This task must be called with a single FPGA architecture, abandon.");
-    }
+  public static AnalysisResultFPGA checkAndAnalyzeAlgorithm(final PiGraph algorithm, final Scenario scenario,
+      final String fifoEvaluatorName) {
     if (algorithm.getAllDelays().stream().anyMatch(x -> (x.getLevel() != PersistenceLevel.PERMANENT))) {
       throw new PreesmRuntimeException("This task must be called on PiGraph with only permanent delays.");
     }
@@ -162,10 +176,25 @@ public class FpgaAnalysisMainTask extends AbstractTaskImplementation {
     }
 
     // schedule the graph
-    final Pair<IStatGenerator,
-        Map<Fifo, Long>> eval = AsapFpgaIIevaluator.performAnalysis(flatGraph, scenario, brv, fifoEvaluatorName);
+    final AbstractGenericFpgaFifoEvaluator evaluator = AbstractGenericFpgaFifoEvaluator
+        .getEvaluatorInstance(fifoEvaluatorName);
+    final AnalysisResultFPGA resHolder = new AnalysisResultFPGA(flatGraph, brv, interfaceRates);
+    evaluator.performAnalysis(scenario, resHolder);
+    return resHolder;
+  }
 
-    return new AnalysisResultFPGA(flatGraph, brv, interfaceRates, eval.getValue(), eval.getKey());
+  /**
+   * Check that platform is composed of single FPGA and returns it
+   * 
+   * @param architecture
+   *          Architecture to inspect
+   * @return The single FPGA
+   */
+  private FPGA checkAndGetSingleFPGA(final Design architecture) {
+    if (!SlamDesignPEtypeChecker.isSingleFPGA(architecture)) {
+      throw new PreesmRuntimeException("This task must be called with a single FPGA architecture, abandon.");
+    }
+    return (FPGA) architecture.getProcessingElements().get(0);
   }
 
   private static Map<InterfaceActor, Pair<Long, Long>> checkInterfaces(final PiGraph flatGraph,

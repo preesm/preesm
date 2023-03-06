@@ -9,8 +9,8 @@ import org.eclipse.xtext.xbase.lib.Pair;
 import org.preesm.algorithm.pisdf.autodelays.AbstractGraph.FifoAbstraction;
 import org.preesm.algorithm.pisdf.autodelays.HeuristicLoopBreakingDelays;
 import org.preesm.algorithm.pisdf.autodelays.HeuristicLoopBreakingDelays.CycleInfos;
-import org.preesm.algorithm.schedule.fpga.AsapFpgaIIevaluator.ActorNormalizedInfos;
-import org.preesm.algorithm.schedule.fpga.AsapFpgaIIevaluator.ActorScheduleInfos;
+import org.preesm.algorithm.schedule.fpga.AbstractGenericFpgaFifoEvaluator.ActorNormalizedInfos;
+import org.preesm.algorithm.schedule.fpga.AsapFpgaFifoEvaluator.ActorScheduleInfos;
 import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.model.pisdf.AbstractActor;
@@ -23,7 +23,7 @@ import org.preesm.model.scenario.Scenario;
  * 
  * @author ahonorat
  */
-public abstract class AbstractFifoEvaluator {
+public abstract class AbstractAsapFpgaFifoEvaluator {
 
   final Scenario                                 scenario;
   final HeuristicLoopBreakingDelays              hlbd;
@@ -63,7 +63,7 @@ public abstract class AbstractFifoEvaluator {
    * @param mapActorNormalizedInfos
    *          Normalized informations about II and ET of actors.
    */
-  public AbstractFifoEvaluator(final Scenario scenario, final HeuristicLoopBreakingDelays hlbd,
+  public AbstractAsapFpgaFifoEvaluator(final Scenario scenario, final HeuristicLoopBreakingDelays hlbd,
       final Map<AbstractActor, ActorNormalizedInfos> mapActorNormalizedInfos) {
     this.scenario = scenario;
     this.hlbd = hlbd;

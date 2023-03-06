@@ -5,7 +5,7 @@ import numpy as np
 import time
 
 #[[#]]# Load the kernels
-overlay = Overlay('/home/xilinx/jupyter_notebooks/preesm/${KERNEL_NAME_TOP}.bit')
+overlay = Overlay('/home/xilinx/jupyter_notebooks/preesm/${APPLI_NAME}.bit')
 mem_read = overlay.${KERNEL_NAME_READ}_0
 mem_write = overlay.${KERNEL_NAME_WRITE}_0
 

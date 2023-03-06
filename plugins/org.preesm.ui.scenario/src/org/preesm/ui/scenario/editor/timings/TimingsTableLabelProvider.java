@@ -151,8 +151,7 @@ public class TimingsTableLabelProvider extends BaseLabelProvider implements ITab
     if ((element instanceof AbstractActor) && (this.currentPE != null) && (this.currentTimingType != null)) {
       final AbstractActor vertex = (AbstractActor) element;
 
-      final String timing = this.scenario.getTimings().getTimingOrDefault(vertex, this.currentPE,
-          this.currentTimingType);
+      final String timing = this.scenario.getTimings().getTiming(vertex, this.currentPE, this.currentTimingType);
       final TimingColumn indexCol = TimingsPage.getTimingColumnTypeFromIndex(columnIndex);
       if (indexCol == TimingColumn.STATUS) {
         if (ExpressionEvaluator.canEvaluate(vertex, timing)) {
@@ -177,7 +176,7 @@ public class TimingsTableLabelProvider extends BaseLabelProvider implements ITab
     }
 
     final AbstractActor vertex = (AbstractActor) element;
-    final String timing = this.scenario.getTimings().getTimingOrDefault(vertex, this.currentPE, this.currentTimingType);
+    final String timing = this.scenario.getTimings().getTiming(vertex, this.currentPE, this.currentTimingType);
     final TimingColumn indexCol = TimingsPage.getTimingColumnTypeFromIndex(columnIndex);
 
     switch (indexCol) {
