@@ -73,7 +73,8 @@ public class TokenPackingAnalysis {
    *          The initial depth.
    * @param dataTypeSize
    *          The size of a token in bits.
-   * @return A Pair<Long, Long> containing the width of the data pack and the new depth.
+   * @return A PackedFifoConfig containing the concerned Fifo, the token size, the final packet width and the actor to
+   *         which the fifo is attached for the next analysis step.
    */
   private static PackedFifoConfig computePacking(Fifo fifo, long depth, long dataTypeSize,
       Map<AbstractVertex, Long> brv) {
@@ -115,12 +116,13 @@ public class TokenPackingAnalysis {
         // Compare this result with the previous best case
         if (testNbBram < bestNbBram) {
 
-          if (srcRate % nbDataInPacket == 0)
+          if (srcRate % nbDataInPacket == 0) {
             attachedActor = PreesmCopyTracker.getOriginalSource(fifo.getSourcePort().getContainingActor());
-          else if (tgtRate % nbDataInPacket == 0)
+          } else if (tgtRate % nbDataInPacket == 0) {
             attachedActor = PreesmCopyTracker.getOriginalSource(fifo.getTargetPort().getContainingActor());
-          else
+          } else {
             throw new PreesmRuntimeException("wtf");
+          }
 
           bestNbBram = testNbBram;
           bestPacketWidth = nbDataInPacket * dataTypeSize;
@@ -173,23 +175,26 @@ public class TokenPackingAnalysis {
   private static long bramUsageVitis(long depth, long dataWidth) {
 
     // If less than 1KB, data isn't stored in a BRAM
-    if (depth * dataWidth < 1024)
+    if (depth * dataWidth < 1024) {
       return 0;
+    }
 
     // TODO Bien vérifier la formule pour le cas depth < 512. Cette division par 18 me parait étrange.
-    if (depth < 512)
+    if (depth < 512) {
       return (long) Math.ceil((double) dataWidth / 18);
-    else if (512 <= depth && depth < 2048)
+    } else if (512 <= depth && depth < 2048) {
       return (long) Math.ceil(Math.pow(2, Math.ceil(Math.log(depth) / Math.log(2))) * dataWidth / BRAM_18K);
-    else if (2048 <= depth && depth < 4096) {
+    } else if (2048 <= depth && depth < 4096) {
       long bram = (long) Math.ceil(Math.pow(2, Math.ceil(Math.log(depth) / Math.log(2))) * dataWidth / BRAM_18K);
 
-      if ((dataWidth == 13 || dataWidth == 21 || dataWidth == 22 || dataWidth > 28) && (bram % 2 == 1))
+      if ((dataWidth == 13 || dataWidth == 21 || dataWidth == 22 || dataWidth > 28) && (bram % 2 == 1)) {
         bram++;
+      }
 
       return bram;
-    } else if (4096 <= depth)
+    } else if (4096 <= depth) {
       return (long) Math.ceil(Math.pow(2, Math.ceil(Math.log(depth) / Math.log(2))) * dataWidth / BRAM_16K);
+    }
 
     throw new PreesmRuntimeException("Something went wrong during BRAM computation.");
   }

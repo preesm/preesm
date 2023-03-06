@@ -30,7 +30,6 @@ public final class TokenPackingTransformation {
 
   public static void addTokenPacking(AnalysisResultFPGA res, Scenario scenario, Fifo fifo, long unpackedSize,
       long packedSize) {
-    long compressionRatio = packedSize / unpackedSize;
 
     // Create packer and unpacker
     final Actor packer = PiMMUserFactory.instance.createActor(fifo.getId() + "_packing");
@@ -44,6 +43,8 @@ public final class TokenPackingTransformation {
     ComponentInstance target = scenario.getPossibleMappings((AbstractActor) fifo.getTarget()).get(0);
     scenario.getConstraints().addConstraint(target, packer);
     scenario.getConstraints().addConstraint(target, unpacker);
+
+    long compressionRatio = packedSize / unpackedSize;
 
     // Add packer and unpacker timing infos
     scenario.getTimings().setTiming(packer, target.getComponent(), TimingType.EXECUTION_TIME,
