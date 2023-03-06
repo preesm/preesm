@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<graphml xmlns="http://graphml.graphdrawing.org/xmlns">
+    <key attr.name="parameters" for="graph" id="parameters"/>
+    <key attr.name="variables" for="graph" id="variables"/>
+    <key attr.name="arguments" for="node" id="arguments"/>
+    <key attr.name="name" attr.type="string" for="graph"/>
+    <key attr.name="graph_desc" attr.type="string" for="node"/>
+    <graph edgedefault="directed">
+        <data key="name">Triangle</data>
+        <node expr="10000" id="N" kind="param"/>
+        <node expr="N/1000" id="M" kind="param"/>
+        <node id="B" kind="actor">
+            <data key="graph_desc">Code/include/triangle.hpp</data>
+            <loop isCPPdefinition="true" name="copy&lt;M>">
+                <param direction="IN" isCPPdefinition="true"
+                    isConfig="false" isPassedByReference="true"
+                    name="src" type="hls::stream&lt;ap_uint&lt;10>>"/>
+                <param direction="OUT" isCPPdefinition="true"
+                    isConfig="false" isPassedByReference="true"
+                    name="snk" type="hls::stream&lt;ap_uint&lt;10>>"/>
+            </loop>
+            <port kind="cfg_input" name="M"/>
+            <port annotation="NONE" expr="M" kind="input" name="src"/>
+            <port annotation="NONE" expr="M" kind="output" name="snk"/>
+        </node>
+        <node id="C" kind="actor">
+            <data key="graph_desc">Code/include/triangle.hpp</data>
+            <loop isCPPdefinition="true" name="merge&lt;N>">
+                <param direction="IN" isCPPdefinition="true"
+                    isConfig="false" isPassedByReference="true"
+                    name="src1" type="hls::stream&lt;ap_uint&lt;10>>"/>
+                <param direction="IN" isCPPdefinition="true"
+                    isConfig="false" isPassedByReference="true"
+                    name="src2" type="hls::stream&lt;ap_uint&lt;10>>"/>
+                <param direction="OUT" isCPPdefinition="true"
+                    isConfig="false" isPassedByReference="true"
+                    name="snk" type="hls::stream&lt;ap_uint&lt;10>>"/>
+            </loop>
+            <port kind="cfg_input" name="N"/>
+            <port annotation="NONE" expr="N" kind="input" name="src1"/>
+            <port annotation="NONE" expr="N" kind="input" name="src2"/>
+            <port annotation="NONE" expr="N*2" kind="output" name="snk"/>
+        </node>
+        <node id="input" kind="src">
+            <port annotation="NONE" expr="N" kind="output" name="input"/>
+        </node>
+        <node id="output" kind="snk">
+            <port annotation="NONE" expr="N*2" kind="input" name="output"/>
+        </node>
+        <node id="Broadcast" kind="broadcast">
+            <port annotation="NONE" expr="1" kind="input" name="src"/>
+            <port annotation="NONE" expr="1" kind="output" name="snk1"/>
+            <port annotation="NONE" expr="1" kind="output" name="snk2"/>
+        </node>
+        <edge kind="fifo" source="B" sourceport="snk" target="C"
+            targetport="src1" type="ap_uint&lt;10>"/>
+        <edge kind="fifo" source="C" sourceport="snk"
+            target="output" targetport="output" type="ap_uint&lt;10>"/>
+        <edge kind="fifo" source="input" sourceport="input"
+            target="Broadcast" targetport="src" type="ap_uint&lt;10>"/>
+        <edge kind="fifo" source="Broadcast" sourceport="snk1"
+            target="B" targetport="src" type="ap_uint&lt;10>"/>
+        <edge kind="fifo" source="Broadcast" sourceport="snk2"
+            target="C" targetport="src2" type="ap_uint&lt;10>"/>
+        <edge kind="dependency" source="N" target="C" targetport="N"/>
+        <edge kind="dependency" source="N" target="input"/>
+        <edge kind="dependency" source="N" target="output"/>
+        <edge kind="dependency" source="N" target="M"/>
+        <edge kind="dependency" source="M" target="B" targetport="M"/>
+    </graph>
+</graphml>

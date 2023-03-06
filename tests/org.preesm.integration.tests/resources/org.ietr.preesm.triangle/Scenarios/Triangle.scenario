@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<scenario>
+    <flags>
+        <sizesAreInBit/>
+    </flags>
+    <files>
+        <algorithm url="/org.ietr.preesm.triangle/Algo/Triangle.pi"/>
+        <architecture url="/org.ietr.preesm.triangle/Archi/PYNQ.slam"/>
+        <codegenDirectory url="/org.ietr.preesm.triangle/Code/generated"/>
+    </files>
+    <constraints excelUrl="">
+        <constraintGroup>
+            <operator name="Zynq"/>
+            <task name="Triangle/B"/>
+            <task name="Triangle/C"/>
+            <task name="Triangle"/>
+        </constraintGroup>
+    </constraints>
+    <timings excelUrl="">
+        <timing opname="FPGA" time="M+1"
+            timingtype="EXECUTION_TIME" vertexname="Triangle/B"/>
+        <timing opname="FPGA" time="M"
+            timingtype="INITIATION_INTERVAL" vertexname="Triangle/B"/>
+        <timing opname="FPGA" time="N*2+1"
+            timingtype="EXECUTION_TIME" vertexname="Triangle/C"/>
+        <timing opname="FPGA" time="N*2"
+            timingtype="INITIATION_INTERVAL" vertexname="Triangle/C"/>
+        <memcpyspeed opname="FPGA" setuptime="1" timeperunit="0.001"/>
+    </timings>
+    <simuParams>
+        <mainCore/>
+        <mainComNode/>
+        <averageDataSize>1000</averageDataSize>
+        <dataTypes>
+            <dataType name="int" size="32"/>
+            <dataType name="ap_uint&lt;10>" size="10"/>
+        </dataTypes>
+        <specialVertexOperators>
+            <specialVertexOperator path="Zynq"/>
+        </specialVertexOperators>
+    </simuParams>
+    <parameterValues/>
+    <papifyConfigs xmlUrl=""/>
+    <energyConfigs xmlUrl="">
+        <performanceObjective objectiveEPS="0.0"/>
+        <peActorsEnergy/>
+    </energyConfigs>
+</scenario>

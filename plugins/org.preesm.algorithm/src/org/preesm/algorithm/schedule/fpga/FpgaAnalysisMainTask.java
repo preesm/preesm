@@ -104,9 +104,8 @@ public class FpgaAnalysisMainTask extends AbstractTaskImplementation {
         // Added latency is equal to packing ratio + 1
         for (PackedFifoConfig packedFifoConfig : workList) {
           final long additionalLatency = packedFifoConfig.updatedWidth / packedFifoConfig.originalWidth + 1;
-          final long newExecutionTime = Long
-              .parseLong(scenario.getTimings().getExecutionTimeOrDefault(packedFifoConfig.attachedActor, fpga))
-              + additionalLatency;
+          final long newExecutionTime = scenario.getTimings()
+              .evaluateExecutionTimeOrDefault(packedFifoConfig.attachedActor, fpga) + additionalLatency;
           scenario.getTimings().setExecutionTime(packedFifoConfig.attachedActor, fpga, newExecutionTime);
         }
 
