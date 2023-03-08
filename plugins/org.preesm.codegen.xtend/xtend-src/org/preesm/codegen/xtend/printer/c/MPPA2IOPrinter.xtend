@@ -45,31 +45,17 @@ import java.io.StringWriter
 import java.net.URL
 import java.util.Collection
 import java.util.Date
-import java.util.LinkedHashMap
-import java.util.LinkedHashSet
 import java.util.List
-import java.util.Map
-import java.util.Set
 import org.apache.velocity.VelocityContext
 import org.apache.velocity.app.VelocityEngine
-import org.eclipse.emf.common.util.EList
 import org.preesm.codegen.model.Block
-import org.preesm.codegen.model.Buffer
-import org.preesm.codegen.model.CodeElt
 import org.preesm.codegen.model.CoreBlock
-import org.preesm.codegen.model.FiniteLoopBlock
 import org.preesm.codegen.model.LoopBlock
 import org.preesm.codegen.model.PapifyFunctionCall
 import org.preesm.codegen.model.PapifyType
-import org.preesm.codegen.model.SubBuffer
-import org.preesm.codegen.model.Variable
 import org.preesm.commons.exceptions.PreesmRuntimeException
 import org.preesm.commons.files.PreesmResourcesHelper
 import org.preesm.model.pisdf.util.CHeaderUsedLocator
-import org.preesm.codegen.model.SharedMemoryCommunication
-import org.preesm.codegen.model.Delimiter
-import org.preesm.codegen.model.Direction
-import org.preesm.codegen.model.PapifyAction
 
 class MPPA2IOPrinter extends MPPA2ClusterPrinter {
 

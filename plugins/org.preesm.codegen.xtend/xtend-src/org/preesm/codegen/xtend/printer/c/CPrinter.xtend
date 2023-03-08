@@ -48,7 +48,6 @@ package org.preesm.codegen.xtend.printer.c
 import java.io.IOException
 import java.io.InputStreamReader
 import java.io.StringWriter
-import java.net.URL
 import java.util.ArrayList
 import java.util.Arrays
 import java.util.Collection
