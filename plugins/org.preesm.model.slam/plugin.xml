@@ -48,30 +48,6 @@
             genModel="model/Slam.xcore"/>
    </extension>
 
-   <extension point="org.eclipse.emf.ecore.generated_package">
-      <!-- @generated Attributes -->
-      <package
-            uri="http://org.preesm/model/slam/attributes"
-            class="org.preesm.model.slam.attributes.AttributesPackage"
-            genModel="model/Attributes.xcore"/>
-   </extension>
-
-   <extension point="org.eclipse.emf.ecore.generated_package">
-      <!-- @generated Component -->
-      <package
-            uri="http://org.preesm/model/slam/component"
-            class="org.preesm.model.slam.component.ComponentPackage"
-            genModel="model/Component.xcore"/>
-   </extension>
-
-   <extension point="org.eclipse.emf.ecore.generated_package">
-      <!-- @generated Link -->
-      <package
-            uri="http://org.preesm/model/slam/link"
-            class="org.preesm.model.slam.link.LinkPackage"
-            genModel="model/Link.xcore"/>
-   </extension>
-
    <extension
          point="org.preesm.commons.plugin">
    </extension>

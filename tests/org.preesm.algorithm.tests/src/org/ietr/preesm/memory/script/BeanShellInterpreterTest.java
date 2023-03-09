@@ -112,7 +112,7 @@ public class BeanShellInterpreterTest {
   public void testParameterSet() throws EvalError {
     final Interpreter interpreter = new Interpreter();
     final Map<String, Double> hashMap = new LinkedHashMap<>();
-    hashMap.put("item1", new Double(5.125));
+    hashMap.put("item1", Double.valueOf(5.125));
     interpreter.set("myParam", hashMap);
 
     final Object result = interpreter.eval("myParam");

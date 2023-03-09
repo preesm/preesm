@@ -141,7 +141,7 @@ public abstract class AbstractGenericFpgaFifoEvaluator {
     // set graph II
     final ActorNormalizedInfos slowestActorInfos = listInfos.get(0);
     final long slowestGraphII = slowestActorInfos.normGraphII;
-    analysisResult.graphII = new Long(slowestGraphII);
+    analysisResult.graphII = Long.valueOf(slowestGraphII);
     // log graph II
     if (listInfos.size() > 1) {
       final ActorNormalizedInfos fastestActorInfos = listInfos.get(listInfos.size() - 1);
