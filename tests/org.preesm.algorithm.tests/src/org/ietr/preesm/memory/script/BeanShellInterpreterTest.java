@@ -307,7 +307,7 @@ public class BeanShellInterpreterTest {
     final String plugin_name = MEMORY_SCRIPT_PLUGIN;
     final String script_path = "/resources/scripts/fork.bsh";
 
-    final StringBuffer content = new StringBuffer();
+    final StringBuilder content = new StringBuilder();
     final File scriptFile = new File("../../plugins/" + plugin_name + "/" + script_path);
 
     try (final BufferedReader in = open(plugin_name, script_path, scriptFile);) {
@@ -376,7 +376,7 @@ public class BeanShellInterpreterTest {
     final String plugin_name = MEMORY_SCRIPT_PLUGIN;
     final String script_path = "/resources/scripts/join.bsh";
 
-    final StringBuffer content = new StringBuffer();
+    final StringBuilder content = new StringBuilder();
     final File scriptFile = new File("../../plugins/" + plugin_name + "/" + script_path);
     try (final BufferedReader in = open(plugin_name, script_path, scriptFile)) {
       String inputLine;
@@ -431,7 +431,7 @@ public class BeanShellInterpreterTest {
     final String plugin_name = MEMORY_SCRIPT_PLUGIN;
     final String script_path = "/resources/scripts/roundbuffer.bsh";
 
-    final StringBuffer content = new StringBuffer();
+    final StringBuilder content = new StringBuilder();
     final File scriptFile = new File("../../plugins/" + plugin_name + "/" + script_path);
 
     try (final BufferedReader in = open(plugin_name, script_path, scriptFile)) {
@@ -492,7 +492,7 @@ public class BeanShellInterpreterTest {
     final String plugin_name = MEMORY_SCRIPT_PLUGIN;
     final String script_path = "/resources/scripts/broadcast.bsh";
 
-    final StringBuffer content = new StringBuffer();
+    final StringBuilder content = new StringBuilder();
     final File scriptFile = new File("../../plugins/" + plugin_name + "/" + script_path);
     final InputStreamReader streamReader;
     if (scriptFile.exists()) {

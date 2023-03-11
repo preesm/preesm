@@ -43,6 +43,7 @@ import org.preesm.algorithm.model.AbstractGraph;
 import org.preesm.algorithm.model.dag.DirectedAcyclicGraph;
 import org.preesm.algorithm.model.generic.GenericGraph;
 import org.preesm.algorithm.model.sdf.SDFGraph;
+import org.preesm.commons.exceptions.PreesmRuntimeException;
 
 /**
  * A factory for creating ModelGraph objects.
@@ -67,17 +68,20 @@ public class ModelGraphFactory {
    * @param model
    *          the model
    * @return the model
-   * @throws InstantiationException
-   *           the instantiation exception
-   * @throws IllegalAccessException
-   *           the illegal access exception
+   * @throws Exception
+   *           one of the following exception InstantiationException, IllegalAccessException, IllegalArgumentException,
+   *           InvocationTargetException, NoSuchMethodException, SecurityException
    */
-  @SuppressWarnings("rawtypes")
-  public static AbstractGraph getModel(final String model) throws InstantiationException, IllegalAccessException {
+  @SuppressWarnings({ "rawtypes", "unchecked" })
+  public static AbstractGraph getModel(final String model) throws Exception {
     Class modelClass = ModelGraphFactory.models.get(model);
     if (modelClass == null) {
       modelClass = GenericGraph.class;
     }
-    return (AbstractGraph) modelClass.newInstance();
+    try {
+      return (AbstractGraph) modelClass.getDeclaredConstructor().newInstance();
+    } catch (final Exception e) {
+      throw new PreesmRuntimeException("Failed to get model with message :" + e.getMessage());
+    }
   }
 }
