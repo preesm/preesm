@@ -35,8 +35,9 @@
  */
 package org.ietr.preesm.throughput.parsers.test;
 
-import org.junit.Ignore;
+import org.junit.Assert;
 import org.junit.Test;
+import org.preesm.algorithm.model.sdf.SDFGraph;
 import org.preesm.algorithm.throughput.sdf.tools.TurbineParser;
 
 /**
@@ -48,17 +49,16 @@ import org.preesm.algorithm.throughput.sdf.tools.TurbineParser;
 public class TurbineParserTest {
 
   @Test
-  @Ignore
   public void testIBSDFGraphShouldBeImported() {
 
     // ------------------------- Import an SDF Graph ------------------
     final String dirPath = "resources/";
     final String sdf_file = "SDF_test.tur";
 
-    TurbineParser.importIBSDFGraph(dirPath + sdf_file);
+    final SDFGraph graph = TurbineParser.importIBSDFGraph(dirPath + sdf_file);
 
-    // check the results
-    // Assert.assertEquals(36200, latency, 0);
+    final int nbVertex = graph.getAllVertices().size();
+
+    Assert.assertEquals(4, nbVertex);
   }
-
 }
