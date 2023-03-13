@@ -65,3 +65,5 @@ new-site
 *.polyglot.category.xml
 *.polyglot.META-INF
 *.polyglot.pom.tycho
+pom.tycho
+.tycho-consumer-pom.xml
