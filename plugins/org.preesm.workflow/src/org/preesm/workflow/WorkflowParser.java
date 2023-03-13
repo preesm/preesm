@@ -40,6 +40,8 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.logging.Level;
 import javax.xml.XMLConstants;
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.parsers.SAXParserFactory;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
@@ -56,7 +58,6 @@ import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 import org.xml.sax.XMLReader;
 import org.xml.sax.ext.DefaultHandler2;
-import org.xml.sax.helpers.XMLReaderFactory;
 
 /**
  * This class provides a workflow parser, allowing to parse a .workflow file and to obtain a Workflow java object.
@@ -108,12 +109,12 @@ public class WorkflowParser extends DefaultHandler2 {
    */
   public Workflow parse(final IFile file) {
     try {
-      final XMLReader reader = XMLReaderFactory.createXMLReader();
+      final XMLReader reader = SAXParserFactory.newInstance().newSAXParser().getXMLReader();
       reader.setProperty(XMLConstants.ACCESS_EXTERNAL_DTD, "");
       reader.setProperty(XMLConstants.ACCESS_EXTERNAL_SCHEMA, "");
       reader.setContentHandler(this);
       reader.parse(new InputSource(file.getContents()));
-    } catch (SAXException | IOException | CoreException e) {
+    } catch (SAXException | IOException | CoreException | ParserConfigurationException e) {
       throw new PreesmFrameworkException("Could not parse workflow", e);
     }
     return this.workflow;
