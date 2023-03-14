@@ -103,7 +103,7 @@ public class LegacyMemoryAllocation implements IMemoryAllocation {
 
   /**
    * Creates new legacy memory allocation process, with parameters given as an argument.
-   * 
+   *
    * @param parameters
    *          Parameters replacing the default values given by {@link #getDefaultParameters()}
    */
@@ -115,7 +115,7 @@ public class LegacyMemoryAllocation implements IMemoryAllocation {
   /**
    * Get the default parameters of the legacy memory allocation process, for all workflow tasks called during this
    * process.
-   * 
+   *
    * @return Default values of parameters used by the workflow tasks computing the legacy memory allocation.
    */
   public static Map<String, String> getDefaultParameters() {
@@ -242,28 +242,24 @@ public class LegacyMemoryAllocation implements IMemoryAllocation {
     final String valueXFitOrder = parameters.get(MemoryAllocatorTask.PARAM_XFIT_ORDER);
 
     int nbShuffle = 0;
-    Order ordering = null;
-    if (MemoryAllocatorTask.VALUE_XFIT_ORDER_SHUFFLE.equals(valueXFitOrder)) {
-      nbShuffle = Integer.decode(valueNbShuffle);
-      ordering = (Order.SHUFFLE);
-    } else if (MemoryAllocatorTask.VALUE_XFIT_ORDER_LARGEST_FIRST.equals(valueXFitOrder)) {
-      ordering = (Order.LARGEST_FIRST);
-    } else if (MemoryAllocatorTask.VALUE_XFIT_ORDER_APPROX_STABLE_SET.equals(valueXFitOrder)) {
-      ordering = (Order.STABLE_SET);
-    } else if (MemoryAllocatorTask.VALUE_XFIT_ORDER_EXACT_STABLE_SET.equals(valueXFitOrder)) {
-      ordering = (Order.EXACT_STABLE_SET);
-    } else if (MemoryAllocatorTask.VALUE_XFIT_ORDER_SCHEDULING.equals(valueXFitOrder)) {
-      ordering = (Order.SCHEDULING);
-    } else {
-      throw new IllegalArgumentException("unknonwn order " + valueXFitOrder);
-    }
+    final Order ordering = switch (valueXFitOrder) {
+      case MemoryAllocatorTask.VALUE_XFIT_ORDER_SHUFFLE -> {
+        nbShuffle = Integer.decode(valueNbShuffle);
+        yield Order.SHUFFLE;
+      }
+      case MemoryAllocatorTask.VALUE_XFIT_ORDER_LARGEST_FIRST -> Order.LARGEST_FIRST;
+      case MemoryAllocatorTask.VALUE_XFIT_ORDER_APPROX_STABLE_SET -> Order.STABLE_SET;
+      case MemoryAllocatorTask.VALUE_XFIT_ORDER_EXACT_STABLE_SET -> Order.EXACT_STABLE_SET;
+      case MemoryAllocatorTask.VALUE_XFIT_ORDER_SCHEDULING -> Order.SCHEDULING;
+      default -> throw new IllegalArgumentException("unknown order " + valueXFitOrder);
+    };
 
     for (final Entry<String, PiMemoryExclusionGraph> entry : megs.entrySet()) {
 
       final String memoryBank = entry.getKey();
       final PiMemoryExclusionGraph meg = entry.getValue();
 
-      PiMemoryAllocator allocator = createAllocators(valueAllocators, alignment, ordering, nbShuffle, meg);
+      final PiMemoryAllocator allocator = createAllocators(valueAllocators, alignment, ordering, nbShuffle, meg);
 
       final String msg = "Heat up MemEx for " + memoryBank + " memory bank.";
       PreesmLogger.getLogger().log(Level.INFO, msg);

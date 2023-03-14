@@ -461,8 +461,6 @@ public class BeanShellInterpreterTest {
     final List<Match> resList = new ArrayList<>();
 
     final Interpreter interpreter = new Interpreter();
-    // final BshClassManager classManager = interpreter.getClassManager();
-    // classManager.cacheClassInfo("Buffer", Buffer.class);
     interpreter.eval("import " + Buffer.class.getName() + ";");
     interpreter.eval("import " + Match.class.getName() + ";");
     interpreter.eval("import " + List.class.getName() + ";");

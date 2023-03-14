@@ -232,11 +232,9 @@ public class CLIWorkflowExecutor extends AbstractWorkflowExecutor implements IAp
     // For each of its members
     for (final IResource resource : folder.members()) {
       // If this member is a IFile with the given extension
-      if (resource instanceof final IFile file) {
-        if (file.getProjectRelativePath().getFileExtension().equals(extension)) {
-          // add its path to the return set
-          filePaths.add((new Path(project.getName()).append(file.getProjectRelativePath())).toPortableString());
-        }
+      if (resource instanceof final IFile file && file.getProjectRelativePath().getFileExtension().equals(extension)) {
+        // add its path to the return set
+        filePaths.add((new Path(project.getName()).append(file.getProjectRelativePath())).toPortableString());
       }
     }
     return filePaths;

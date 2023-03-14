@@ -121,7 +121,7 @@ public class ExcelConstraintsParser {
         }
       }
     } catch (BiffException | IOException | CoreException e) {
-      e.printStackTrace();
+      throw new PreesmRuntimeException("Could not parse constraint files", e);
     }
 
   }
@@ -160,20 +160,17 @@ public class ExcelConstraintsParser {
         } else {
           PreesmLogger.getLogger().log(Level.FINE, "Importing constraint: {" + operatorId + "," + vertex + ",no}");
         }
-      } else {
-        if ((vertexCell == null) && !missingVertices.contains(vertex)) {
-          if (vertex.getRefinement() != null) {
-            PreesmLogger.getLogger().log(Level.WARNING,
-                "No line found in excel sheet for hierarchical vertex: " + vertexName);
-          } else {
-            final String message = "No line found in excel sheet for atomic vertex: " + vertexName;
-            throw new PreesmRuntimeException(message);
-          }
-          missingVertices.add(vertex);
-        } else if ((operatorCell == null) && !missingOperators.contains(operatorId)) {
-          final String message = "No column found in excel sheet for operator: " + operatorId;
+      } else if ((vertexCell == null) && !missingVertices.contains(vertex)) {
+        if (vertex.getRefinement() == null) {
+          final String message = "No line found in excel sheet for atomic vertex: " + vertexName;
           throw new PreesmRuntimeException(message);
         }
+        PreesmLogger.getLogger().log(Level.WARNING,
+            "No line found in excel sheet for hierarchical vertex: " + vertexName);
+        missingVertices.add(vertex);
+      } else if ((operatorCell == null) && !missingOperators.contains(operatorId)) {
+        final String message = "No column found in excel sheet for operator: " + operatorId;
+        throw new PreesmRuntimeException(message);
       }
     }
   }

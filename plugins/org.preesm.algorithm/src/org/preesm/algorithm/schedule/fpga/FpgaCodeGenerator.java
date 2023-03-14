@@ -52,7 +52,7 @@ import org.preesm.model.slam.TimingType;
 
 /**
  * This class generates code for Xilinx FPGA with OpenCL HLS flow.
- * 
+ *
  * @author ahonorat
  */
 public class FpgaCodeGenerator {
@@ -214,7 +214,7 @@ public class FpgaCodeGenerator {
 
   /**
    * Perform the codegen.
-   * 
+   *
    * @param scenario
    *          Scenario with codegen path.
    * @param fpga
@@ -301,7 +301,7 @@ public class FpgaCodeGenerator {
       PreesmIOHelper.getInstance().print(codegenPath + "/" + STDFILE_SCRIPT_SUBDIR, "model_fifo_zynq.py",
           contentModelFifoZynq);
 
-    } catch (IOException e) {
+    } catch (final IOException e) {
       throw new PreesmRuntimeException("Could not copy all the stdfiles.", e);
     }
 
@@ -317,7 +317,7 @@ public class FpgaCodeGenerator {
     final String[] rawCodeLines = rawPynqHostCode.split("\n");
     final List<String> fmtCodeLines = new ArrayList<>();
     for (final String line : rawCodeLines) {
-      fmtCodeLines.add("\"" + line.replaceAll("\"", "\\\\\"") + "\\n\"");
+      fmtCodeLines.add("\"" + line.replace("\"", "\\\"") + "\\n\"");
     }
 
     context.put("PREESM_PYNQ_HOST_CODE_FMT", fmtCodeLines.stream().collect(Collectors.joining(",\n")));
@@ -477,14 +477,14 @@ public class FpgaCodeGenerator {
       nameArgs.add("'" + getFifoStreamSizeNameMacro(f) + "'");
       sizeArgs.add(s.toString());
       sizeMinArgs.add(Long.toString(MIN_BUFFER_DEPTH - 1)); // Lower bound is excluded from range of values
-      long srcRate = f.getSourcePort().getExpression().evaluate();
-      long srcII = scenario.getTimings().evaluateTimingOrDefault((AbstractActor) f.getSource(), fpga,
+      final long srcRate = f.getSourcePort().getExpression().evaluate();
+      final long srcII = scenario.getTimings().evaluateTimingOrDefault((AbstractActor) f.getSource(), fpga,
           TimingType.INITIATION_INTERVAL);
-      long srcLambda = AdfgFpgaFifoEvaluator.computeLambda(srcRate, srcII).longValue();
-      long snkRate = f.getTargetPort().getExpression().evaluate();
-      long snkII = scenario.getTimings().evaluateTimingOrDefault((AbstractActor) f.getTarget(), fpga,
+      final long srcLambda = AdfgFpgaFifoEvaluator.computeLambda(srcRate, srcII).longValue();
+      final long snkRate = f.getTargetPort().getExpression().evaluate();
+      final long snkII = scenario.getTimings().evaluateTimingOrDefault((AbstractActor) f.getTarget(), fpga,
           TimingType.INITIATION_INTERVAL);
-      long snkLambda = AdfgFpgaFifoEvaluator.computeLambda(snkRate, snkII).longValue();
+      final long snkLambda = AdfgFpgaFifoEvaluator.computeLambda(snkRate, snkII).longValue();
       lambdaArgs.add(Long.toString(srcLambda + snkLambda));
       widthArgs.add(Long.toString(scenario.getSimulationInfo().getDataTypeSizeInBit(f.getType())));
     });
@@ -595,7 +595,7 @@ public class FpgaCodeGenerator {
     int indexArg = 0;
     for (final InterfaceActor ia : analysisResult.interfaceRates.keySet()) {
       if (ia instanceof DataInputInterface) {
-        String kernelArg = "err = krnl_mem_read.setArg(" + Integer.toString(indexArg) + ", " + ia.getName()
+        final String kernelArg = "err = krnl_mem_read.setArg(" + Integer.toString(indexArg) + ", " + ia.getName()
             + SUFFIX_INTERFACE_BUFFER + ")";
         kernelLaunch.append("  " + surroundWithOCLcheck(kernelArg) + "\n");
         indexArg += 2;
@@ -604,7 +604,7 @@ public class FpgaCodeGenerator {
     indexArg = 0;
     for (final InterfaceActor ia : analysisResult.interfaceRates.keySet()) {
       if (ia instanceof DataOutputInterface) {
-        String kernelArg = "err = krnl_mem_write.setArg(" + Integer.toString(indexArg) + ", " + ia.getName()
+        final String kernelArg = "err = krnl_mem_write.setArg(" + Integer.toString(indexArg) + ", " + ia.getName()
             + SUFFIX_INTERFACE_BUFFER + ")";
         kernelLaunch.append("  " + surroundWithOCLcheck(kernelArg) + "\n");
         indexArg += 2;
@@ -772,10 +772,10 @@ public class FpgaCodeGenerator {
       declareStream.append(getFifoStreamDeclaration(f));
       final String rate = getInterfaceRateNameMacro(ia) + " * " + getInterfaceFactorNameMacro(ia);
       if (ia instanceof DataInputInterface) {
-        String write = getFifoStreamName(f) + ".write(0);\n";
+        final String write = getFifoStreamName(f) + ".write(0);\n";
         initStream.append(generateForLoop(write, rate));
       } else if (ia instanceof DataOutputInterface) {
-        String read = getFifoStreamName(f) + ".read();\n";
+        final String read = getFifoStreamName(f) + ".read();\n";
         readStream.append(generateForLoop(read, rate));
       }
     }
@@ -937,10 +937,11 @@ public class FpgaCodeGenerator {
       if (arg.isIsConfigurationParameter() && arg.getDirection() == Direction.OUT) {
         throw new PreesmRuntimeException(
             "FPGA codegen does not support dynamic parameters as in actor " + containerActor.getVertexPath());
-      } else if (arg.isIsConfigurationParameter() && arg.getDirection() == Direction.IN) {
-        if (containerActor instanceof DelayActor) {
+      }
+      if (arg.isIsConfigurationParameter() && arg.getDirection() == Direction.IN) {
+        if (containerActor instanceof final DelayActor delayActor) {
           // the graph parameter name may have been prefixed during a flattening transformation
-          for (final Parameter inputParam : ((DelayActor) containerActor).getInputParameters()) {
+          for (final Parameter inputParam : delayActor.getInputParameters()) {
             if (inputParam.getName().equals(prefix + arg.getName())) {
               listArgNames.add(Long.toString(inputParam.getExpression().evaluate()));
               break;
@@ -952,17 +953,17 @@ public class FpgaCodeGenerator {
           for (final ConfigInputPort cip : containerActor.getConfigInputPorts()) {
             if (cip.getName().equals(arg.getName())) {
               final ISetter setter = cip.getIncomingDependency().getSetter();
-              if (setter instanceof Parameter) {
-                listArgNames.add(Long.toString(((Parameter) setter).getExpression().evaluate()));
+              if (setter instanceof final Parameter parameter) {
+                listArgNames.add(Long.toString(parameter.getExpression().evaluate()));
                 break;
               }
             }
           }
         }
       } else if (!arg.isIsConfigurationParameter()) {
-        if (containerActor instanceof DelayActor) {
+        if (containerActor instanceof final DelayActor delayActor) {
           // there is only one fifo, we take it
-          final Fifo f = ((DelayActor) containerActor).getLinkedDelay().getContainingFifo();
+          final Fifo f = delayActor.getLinkedDelay().getContainingFifo();
           listArgNames.add(getFifoStreamName(f));
         } else {
           // look for incoming/outgoing fifo with same port name
@@ -1072,9 +1073,8 @@ public class FpgaCodeGenerator {
     if (repetition > 1) {
       return "#ifndef __SYNTHESIS__\n" + "  for(int i = 0; i < " + repetition + "; i++) {\n#endif\n    " + actorCall
           + "#ifndef __SYNTHESIS__\n  }\n#endif\n";
-    } else {
-      return actorCall;
     }
+    return actorCall;
   }
 
   protected String generateForLoop(final String body, final String repetition) {

@@ -134,10 +134,9 @@ public interface TurbineParser {
 
       // subgraphs
       TurbineParser.jumpToLine(br, 2);
-      // line = br.readLine().split(" ");
 
       // In case of no subgraph, the BufferedReader is not ready.
-      if (br.ready() == false) {
+      if (!br.ready()) {
         line[0] = "0";
       } else {
         line = br.readLine().split(" ");
