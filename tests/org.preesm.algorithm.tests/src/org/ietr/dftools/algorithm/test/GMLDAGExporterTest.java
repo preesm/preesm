@@ -108,9 +108,9 @@ public class GMLDAGExporterTest {
     if (SystemUtils.IS_OS_UNIX) {
       final FileAttribute<Set<PosixFilePermission>> attr = PosixFilePermissions
           .asFileAttribute(PosixFilePermissions.fromString("rw-------"));
-      createTempFile = Files.createTempFile("export_test_", ".graphml", attr).toFile(); // Compliant
+      createTempFile = Files.createTempFile("export_test_", ".graphml", attr).toFile();
     } else {
-      createTempFile = Files.createTempFile("export_test_", ".graphml").toFile(); // Compliant
+      createTempFile = Files.createTempFile("export_test_", ".graphml").toFile();
       createTempFile.setReadable(true, true);
       createTempFile.setWritable(true, true);
       createTempFile.setExecutable(true, true);

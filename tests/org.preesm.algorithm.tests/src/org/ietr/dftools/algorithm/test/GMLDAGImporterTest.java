@@ -76,9 +76,9 @@ public class GMLDAGImporterTest {
     if (SystemUtils.IS_OS_UNIX) {
       final FileAttribute<Set<PosixFilePermission>> attr = PosixFilePermissions
           .asFileAttribute(PosixFilePermissions.fromString("rw-------"));
-      createTempFile = Files.createTempFile("export_test_", ".xml", attr).toFile(); // Compliant
+      createTempFile = Files.createTempFile("export_test_", ".xml", attr).toFile();
     } else {
-      createTempFile = Files.createTempFile("export_test_", ".xml").toFile(); // Compliant
+      createTempFile = Files.createTempFile("export_test_", ".xml").toFile();
       createTempFile.setReadable(true, true);
       createTempFile.setWritable(true, true);
       createTempFile.setExecutable(true, true);
