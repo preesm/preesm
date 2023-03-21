@@ -37,9 +37,9 @@ package org.preesm.cli;
 import java.util.logging.Level;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
+import org.apache.commons.cli.DefaultParser;
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
-import org.apache.commons.cli.PosixParser;
 import org.eclipse.equinox.app.IApplication;
 import org.eclipse.equinox.app.IApplicationContext;
 import org.preesm.commons.doc.generators.MarkdownPrinter;
@@ -66,7 +66,7 @@ public class DocGenApplication implements IApplication {
   public Object start(IApplicationContext context) throws Exception {
 
     final Options options = getCommandLineOptions();
-    final CommandLineParser parser = new PosixParser();
+    final CommandLineParser parser = new DefaultParser();
 
     final CommandLine line = parser.parse(options,
         (String[]) context.getArguments().get(IApplicationContext.APPLICATION_ARGS));
@@ -74,10 +74,9 @@ public class DocGenApplication implements IApplication {
       final String mdFilePath = line.getOptionValue("mdd");
       MarkdownPrinter.prettyPrintTo(mdFilePath);
       return IApplication.EXIT_OK;
-    } else {
-      PreesmLogger.getLogger().log(Level.SEVERE, "Expecting -mdd <path> option");
-      return IApplication.EXIT_OK;
     }
+    PreesmLogger.getLogger().log(Level.SEVERE, "Expecting -mdd <path> option");
+    return IApplication.EXIT_OK;
   }
 
   @Override

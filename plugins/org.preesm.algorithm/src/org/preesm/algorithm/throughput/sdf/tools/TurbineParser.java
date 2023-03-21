@@ -85,8 +85,8 @@ public interface TurbineParser {
       // create new graph
       final SDFGraph g = new SDFGraph();
       g.setName(graphName);
-      int nbActors = 0;
-      int nbEdges = 0;
+      int nbActors;
+      int nbEdges;
 
       // reading the number of actor and edges
       String[] line = TurbineParser.jumpToLine(br, 2).split(" ");
@@ -134,7 +134,14 @@ public interface TurbineParser {
 
       // subgraphs
       TurbineParser.jumpToLine(br, 2);
-      line = br.readLine().split(" ");
+
+      // In case of no subgraph, the BufferedReader is not ready.
+      if (!br.ready()) {
+        line[0] = "0";
+      } else {
+        line = br.readLine().split(" ");
+      }
+
       final int nbSubGraphs = Integer.parseInt(line[0]);
 
       for (int i = 0; i < nbSubGraphs; i++) {
@@ -158,9 +165,9 @@ public interface TurbineParser {
         line = TurbineParser.jumpToLine(br, 2).split(" ");
         nbActors = Integer.parseInt(line[0]);
         nbEdges = Integer.parseInt(line[1]);
-        int nbInI = 0;
+        int nbInI;
         nbInI = Integer.parseInt(line[2]);
-        int nbOutI = 0;
+        int nbOutI;
         nbOutI = Integer.parseInt(line[3]);
 
         // reading actors description

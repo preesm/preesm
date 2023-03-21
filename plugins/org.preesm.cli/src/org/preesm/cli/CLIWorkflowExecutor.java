@@ -43,10 +43,10 @@ import java.util.Set;
 import java.util.logging.Level;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
+import org.apache.commons.cli.DefaultParser;
 import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
-import org.apache.commons.cli.PosixParser;
 import org.apache.commons.cli.UnrecognizedOptionException;
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.core.resources.IFile;
@@ -107,7 +107,7 @@ public class CLIWorkflowExecutor extends AbstractWorkflowExecutor implements IAp
     final Options options = getCommandLineOptions();
 
     try {
-      final CommandLineParser parser = new PosixParser();
+      final CommandLineParser parser = new DefaultParser();
 
       final String cliOpts = StringUtils
           .join((Object[]) context.getArguments().get(IApplicationContext.APPLICATION_ARGS), " ");
@@ -121,9 +121,7 @@ public class CLIWorkflowExecutor extends AbstractWorkflowExecutor implements IAp
 
       return executeWorkflow(cliOpts, line);
 
-    } catch (final UnrecognizedOptionException uoe) {
-      printUsage(options, uoe.getLocalizedMessage());
-    } catch (final ParseException exp) {
+    } catch (final UnrecognizedOptionException | ParseException exp) {
       printUsage(options, exp.getLocalizedMessage());
     }
     return IApplication.EXIT_OK;
@@ -152,8 +150,8 @@ public class CLIWorkflowExecutor extends AbstractWorkflowExecutor implements IAp
     // Set of scenarios to execute
     Set<String> scenarioPaths = new LinkedHashSet<>();
 
-    String workflowPath = line.getOptionValue('w');
-    String scenarioPath = line.getOptionValue('s');
+    final String workflowPath = line.getOptionValue('w');
+    final String scenarioPath = line.getOptionValue('s');
     // If paths to workflow and scenario are not specified using
     // options, find them in the project given as arguments
     workflowPaths = extractWorkflowPaths(projectName, workflowPaths, workflowPath);
@@ -234,12 +232,9 @@ public class CLIWorkflowExecutor extends AbstractWorkflowExecutor implements IAp
     // For each of its members
     for (final IResource resource : folder.members()) {
       // If this member is a IFile with the given extension
-      if (resource instanceof IFile) {
-        final IFile file = (IFile) resource;
-        if (file.getProjectRelativePath().getFileExtension().equals(extension)) {
-          // add its path to the return set
-          filePaths.add((new Path(project.getName()).append(file.getProjectRelativePath())).toPortableString());
-        }
+      if (resource instanceof final IFile file && file.getProjectRelativePath().getFileExtension().equals(extension)) {
+        // add its path to the return set
+        filePaths.add((new Path(project.getName()).append(file.getProjectRelativePath())).toPortableString());
       }
     }
     return filePaths;

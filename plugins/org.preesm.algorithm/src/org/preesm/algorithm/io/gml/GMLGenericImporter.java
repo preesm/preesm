@@ -126,7 +126,7 @@ public class GMLGenericImporter extends GMLImporter<AbstractGraph, AbstractVerte
       }
       parseKeys(graphElt, graph);
       return graph;
-    } catch (final InstantiationException | IllegalAccessException e) {
+    } catch (final Exception e) {
       throw new PreesmRuntimeException("Failed to parse graph with message :" + e.getMessage());
     }
   }

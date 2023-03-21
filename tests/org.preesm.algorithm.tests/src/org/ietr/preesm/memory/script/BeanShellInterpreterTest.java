@@ -35,7 +35,6 @@
  */
 package org.ietr.preesm.memory.script;
 
-import bsh.BshClassManager;
 import bsh.EvalError;
 import bsh.Interpreter;
 import java.io.BufferedReader;
@@ -112,7 +111,7 @@ public class BeanShellInterpreterTest {
   public void testParameterSet() throws EvalError {
     final Interpreter interpreter = new Interpreter();
     final Map<String, Double> hashMap = new LinkedHashMap<>();
-    hashMap.put("item1", new Double(5.125));
+    hashMap.put("item1", Double.valueOf(5.125));
     interpreter.set("myParam", hashMap);
 
     final Object result = interpreter.eval("myParam");
@@ -307,7 +306,7 @@ public class BeanShellInterpreterTest {
     final String plugin_name = MEMORY_SCRIPT_PLUGIN;
     final String script_path = "/resources/scripts/fork.bsh";
 
-    final StringBuffer content = new StringBuffer();
+    final StringBuilder content = new StringBuilder();
     final File scriptFile = new File("../../plugins/" + plugin_name + "/" + script_path);
 
     try (final BufferedReader in = open(plugin_name, script_path, scriptFile);) {
@@ -376,7 +375,7 @@ public class BeanShellInterpreterTest {
     final String plugin_name = MEMORY_SCRIPT_PLUGIN;
     final String script_path = "/resources/scripts/join.bsh";
 
-    final StringBuffer content = new StringBuffer();
+    final StringBuilder content = new StringBuilder();
     final File scriptFile = new File("../../plugins/" + plugin_name + "/" + script_path);
     try (final BufferedReader in = open(plugin_name, script_path, scriptFile)) {
       String inputLine;
@@ -431,7 +430,7 @@ public class BeanShellInterpreterTest {
     final String plugin_name = MEMORY_SCRIPT_PLUGIN;
     final String script_path = "/resources/scripts/roundbuffer.bsh";
 
-    final StringBuffer content = new StringBuffer();
+    final StringBuilder content = new StringBuilder();
     final File scriptFile = new File("../../plugins/" + plugin_name + "/" + script_path);
 
     try (final BufferedReader in = open(plugin_name, script_path, scriptFile)) {
@@ -462,8 +461,6 @@ public class BeanShellInterpreterTest {
     final List<Match> resList = new ArrayList<>();
 
     final Interpreter interpreter = new Interpreter();
-    final BshClassManager classManager = interpreter.getClassManager();
-    // classManager.cacheClassInfo("Buffer", Buffer.class);
     interpreter.eval("import " + Buffer.class.getName() + ";");
     interpreter.eval("import " + Match.class.getName() + ";");
     interpreter.eval("import " + List.class.getName() + ";");
@@ -492,7 +489,7 @@ public class BeanShellInterpreterTest {
     final String plugin_name = MEMORY_SCRIPT_PLUGIN;
     final String script_path = "/resources/scripts/broadcast.bsh";
 
-    final StringBuffer content = new StringBuffer();
+    final StringBuilder content = new StringBuilder();
     final File scriptFile = new File("../../plugins/" + plugin_name + "/" + script_path);
     final InputStreamReader streamReader;
     if (scriptFile.exists()) {

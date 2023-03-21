@@ -1,7 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<fileset-config file-format-version="1.2.0" simple-config="true" sync-formatter="false">
-  <fileset name="all" enabled="true" check-config-name="VAADER Coding Rules" local="false">
-    <file-match-pattern match-pattern="." include-pattern="true"/>
+<fileset-config file-format-version="1.2.0" simple-config="false" sync-formatter="false">
+  <local-check-config name="VAADER Coding Rules" location="/org.preesm.target-platform/VAADER_checkstyle.xml" type="project" description="">
+    <additional-data name="protect-config-file" value="false"/>
+  </local-check-config>
+  <fileset name="java-sources-check-checkstyle" enabled="true" check-config-name="VAADER Coding Rules" local="true">
+    <file-match-pattern match-pattern="^src/.*\.java" include-pattern="true"/>
+    <file-match-pattern match-pattern="^resources/.*\.properties" include-pattern="true"/>
+    <file-match-pattern match-pattern="^src/test/resources.*\.properties" include-pattern="true"/>
   </fileset>
 </fileset-config>

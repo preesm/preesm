@@ -146,6 +146,43 @@ public class DomUtil {
    *          The {@link OutputStream} to write to.
    */
   public static void writeDocument(final Document document, final OutputStream byteStream) {
+
+    // TODO
+    // The following commented code using the LSSerializer is meant to replace to
+    // deprecated XMLSerializer and OutputFormat. However, the LSSerializer does
+    // not allow the customisation of the xml line width, resulting in a valid
+    // but slightly different generated *.pi file. These differences break RCPTT
+    // tests, but I don't want to go through the trouble of either reformatting
+    // the xml string the match the XMLSerializer output nor to modify RCPTT
+    // tests for the LSSerializer.
+
+    // try {
+    // final DOMImplementationLS format = (DOMImplementationLS) DOMImplementationRegistry.newInstance()
+    // .getDOMImplementation("LS");
+    //
+    // final LSSerializer serializer = format.createLSSerializer();
+    //
+    // serializer.getDomConfig().setParameter("format-pretty-print", true);
+    // serializer.setNewLine("\n");
+    //
+    // final LSOutput output = format.createLSOutput();
+    // output.setEncoding("UTF-8");
+    // output.setByteStream(byteStream);
+    //
+    // String xmlString = serializer.writeToString(document);
+    //
+    // // Add a line break after the XML declaration
+    // xmlString = xmlString.replace("?><graphml", "?>\n<graphml");
+    //
+    // // Change encoding tag from UTF-16 to UTF-8
+    // xmlString = xmlString.replace("UTF-16", "UTF-8");
+    //
+    // byteStream.write(xmlString.getBytes("UTF-8"));
+    //
+    // } catch (final Exception e) {
+    // throw new PreesmRuntimeException("Could not write Graph", e);
+    // }
+
     final OutputFormat format = new OutputFormat(document, "UTF-8", true);
     format.setIndent(4);
     format.setLineSeparator("\n");
@@ -158,6 +195,6 @@ public class DomUtil {
     } catch (final IOException e) {
       throw new PreesmRuntimeException("Could not write Graph", e);
     }
-  }
 
+  }
 }

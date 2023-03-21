@@ -38,7 +38,12 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.nio.file.attribute.FileAttribute;
+import java.nio.file.attribute.PosixFilePermission;
+import java.nio.file.attribute.PosixFilePermissions;
 import java.util.List;
+import java.util.Set;
+import org.apache.commons.lang3.SystemUtils;
 import org.junit.Assert;
 import org.junit.Test;
 import org.preesm.algorithm.io.gml.GMLGenericExporter;
@@ -57,7 +62,17 @@ public class GMLSDFImporterTest {
     final GMLSDFImporter importer = new GMLSDFImporter();
     final SDFGraph graph = importer.parse(new File(filePath));
 
-    final File createTempFile = File.createTempFile("export_test_", ".graphml");
+    File createTempFile;
+    if (SystemUtils.IS_OS_UNIX) {
+      final FileAttribute<Set<PosixFilePermission>> attr = PosixFilePermissions
+          .asFileAttribute(PosixFilePermissions.fromString("rw-------"));
+      createTempFile = Files.createTempFile("export_test_", ".graphml", attr).toFile();
+    } else {
+      createTempFile = Files.createTempFile("export_test_", ".graphml").toFile();
+      createTempFile.setReadable(true, true);
+      createTempFile.setWritable(true, true);
+      createTempFile.setExecutable(true, true);
+    }
     createTempFile.deleteOnExit();
 
     @SuppressWarnings({ "unchecked", "rawtypes" })

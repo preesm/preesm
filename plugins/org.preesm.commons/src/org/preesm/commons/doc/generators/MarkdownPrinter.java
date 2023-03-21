@@ -34,6 +34,7 @@
  */
 package org.preesm.commons.doc.generators;
 
+import com.google.common.io.FileWriteMode;
 import com.google.common.io.Files;
 import java.io.File;
 import java.io.IOException;
@@ -69,8 +70,8 @@ public class MarkdownPrinter {
     final String prettyPrint = prettyPrint();
     final File f = new File(filePath);
     try {
-      Files.append(prettyPrint, f, StandardCharsets.UTF_8);
-    } catch (IOException e) {
+      Files.asCharSink(f, StandardCharsets.UTF_8, FileWriteMode.APPEND).write(prettyPrint);
+    } catch (final IOException e) {
       PreesmLogger.getLogger().log(Level.SEVERE, "Could not output MarkDown task reference to " + filePath, e);
     }
   }
@@ -142,7 +143,7 @@ public class MarkdownPrinter {
   }
 
   private static Object generateDescription(final PreesmTask annotation) {
-    StringBuilder sb = new StringBuilder("\n#### Description\n");
+    final StringBuilder sb = new StringBuilder("\n#### Description\n");
     if (annotation.description().isEmpty()) {
       sb.append(annotation.shortDescription() + "\n");
     } else {
@@ -152,15 +153,14 @@ public class MarkdownPrinter {
   }
 
   private static String generateSeeAlso(final String[] seeAlso) {
-    if (seeAlso.length > 0) {
-      final StringBuilder sb = new StringBuilder("\n#### See Also\n\n");
-      for (final String s : seeAlso) {
-        sb.append("  * " + s + "\n");
-      }
-      return sb.toString();
-    } else {
+    if (seeAlso.length <= 0) {
       return "";
     }
+    final StringBuilder sb = new StringBuilder("\n#### See Also\n\n");
+    for (final String s : seeAlso) {
+      sb.append("  * " + s + "\n");
+    }
+    return sb.toString();
   }
 
   private static final String generateParameters(final Parameter[] parameters) {
@@ -184,22 +184,21 @@ public class MarkdownPrinter {
   }
 
   private static final String generateDocumentedErrors(final DocumentedError[] documentedErrors) {
-    if (documentedErrors.length > 0) {
-      final StringBuilder sb = new StringBuilder("\n#### Documented Errors\n");
-      sb.append("\n| Message | Explanation |\n| --- | --- |\n");
-      for (final DocumentedError error : documentedErrors) {
-        sb.append("| **" + error.message() + "** | " + error.explanation() + " |\n");
-      }
-      return sb.toString();
-    } else {
+    if (documentedErrors.length <= 0) {
       return "";
     }
+    final StringBuilder sb = new StringBuilder("\n#### Documented Errors\n");
+    sb.append("\n| Message | Explanation |\n| --- | --- |\n");
+    for (final DocumentedError error : documentedErrors) {
+      sb.append("| **" + error.message() + "** | " + error.explanation() + " |\n");
+    }
+    return sb.toString();
   }
 
   private static final String generatePorts(final String direction, final Port[] ports) {
     final StringBuilder sb = new StringBuilder("\n#### " + direction + "\n");
     if (ports.length > 0) {
-      for (Port p : ports) {
+      for (final Port p : ports) {
         sb.append("  * **" + p.name() + "** (of _" + p.type().getSimpleName() + "_)");
         if (!p.description().isEmpty()) {
           sb.append(" : " + p.description());
