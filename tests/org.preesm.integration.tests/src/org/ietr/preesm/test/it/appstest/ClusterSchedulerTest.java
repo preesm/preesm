@@ -47,9 +47,9 @@ import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
 
 /**
- * 
+ *
  * Testing Cluster Scheduler Algorithm
- * 
+ *
  * @author dgageot
  * @author jheulot
  *
@@ -79,13 +79,13 @@ public class ClusterSchedulerTest {
   @Parameters(name = "{0} - {1}")
   public static Collection<Object[]> data() {
     final List<Object[]> params = new ArrayList<>();
-    for (String workflow : WORKFLOWS_GRAPH) {
-      for (String scenario : SCENARIOS) {
+    for (final String workflow : WORKFLOWS_GRAPH) {
+      for (final String scenario : SCENARIOS) {
         params.add(new Object[] { workflow, scenario });
       }
     }
-    for (String workflow : WORKFLOWS_CLUSTER) {
-      for (String scenario : SCENARIOS) {
+    for (final String workflow : WORKFLOWS_CLUSTER) {
+      for (final String scenario : SCENARIOS) {
         params.add(new Object[] { workflow, scenario });
       }
       params.add(new Object[] { workflow, "1coreHierarchical.scenario" });
@@ -97,7 +97,7 @@ public class ClusterSchedulerTest {
   public void testClusterScheduler() throws IOException, CoreException {
     final String workflowFilePathStr = "/Workflows/" + workflow;
     final String scenarioFilePathStr = "/Scenarios/" + scenario;
-    final boolean success = WorkflowRunner.runWorkFlow(PROJECT, workflowFilePathStr, scenarioFilePathStr);
+    final boolean success = WorkflowRunner.runWorkFlow(null, PROJECT, workflowFilePathStr, scenarioFilePathStr);
     Assert.assertTrue("Workflow [" + workflow + "] with scenario [" + scenario + "] caused failure", success);
   }
 }

@@ -75,7 +75,7 @@ public class DataParallelTest {
   public static Collection<Object[]> data() {
     final Object[][] params = new Object[scenarios.length][1];
     int i = 0;
-    for (String scenario : scenarios) {
+    for (final String scenario : scenarios) {
       params[i][0] = scenario;
       i++;
     }
@@ -86,7 +86,7 @@ public class DataParallelTest {
   public void testAll() throws IOException, CoreException {
     final String workflowFilePathStr = "/Workflows/" + workflow;
     final String scenarioFilePathStr = "/Scenarios/" + scenario;
-    final boolean success = WorkflowRunner.runWorkFlow(projectName, workflowFilePathStr, scenarioFilePathStr);
+    final boolean success = WorkflowRunner.runWorkFlow(null, projectName, workflowFilePathStr, scenarioFilePathStr);
     Assert.assertTrue("Workflow [" + workflow + "] with scenario [" + scenario + "] caused failure", success);
   }
 }

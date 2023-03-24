@@ -89,7 +89,7 @@ public class PiMMFlattenerTest {
   public void testPiMMFlattener() throws IOException, CoreException {
     final String workflowFilePathStr = "/Workflows/" + workflow;
     final String scenarioFilePathStr = "/Scenarios/" + scenario;
-    final boolean success = WorkflowRunner.runWorkFlow(projectName, workflowFilePathStr, scenarioFilePathStr);
+    final boolean success = WorkflowRunner.runWorkFlow(null, projectName, workflowFilePathStr, scenarioFilePathStr);
     Assert.assertTrue("Workflow [" + workflow + "] with scenario [" + scenario + "] caused failure", success);
   }
 }

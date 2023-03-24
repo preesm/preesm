@@ -74,8 +74,8 @@ public class SpiderTest {
   public static Collection<Object[]> data() {
     final List<Object[]> params = new ArrayList<>();
 
-    for (String workflow : workflows) {
-      for (String scenario : scenarios) {
+    for (final String workflow : workflows) {
+      for (final String scenario : scenarios) {
         params.add(new Object[] { workflow, scenario });
       }
     }
@@ -86,7 +86,7 @@ public class SpiderTest {
   public void testSobelSpider() throws IOException, CoreException {
     final String workflowFilePathStr = "/Workflows/" + workflow;
     final String scenarioFilePathStr = "/Scenarios/" + scenario;
-    final boolean success = WorkflowRunner.runWorkFlow(projectName, workflowFilePathStr, scenarioFilePathStr);
+    final boolean success = WorkflowRunner.runWorkFlow(null, projectName, workflowFilePathStr, scenarioFilePathStr);
     if ("Codegen.workflow".equals(workflow)) {
       Assert.assertFalse("Workflow [" + workflow + "] with scenario [" + scenario + "] caused failure", success);
     } else {

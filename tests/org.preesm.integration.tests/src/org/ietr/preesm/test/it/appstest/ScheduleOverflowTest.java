@@ -56,7 +56,7 @@ public class ScheduleOverflowTest {
       for (final String scenario : scenarios) {
         final String workflowFilePathStr = "/Workflows/" + workflow;
         final String scenarioFilePathStr = "/Scenarios/" + scenario;
-        final boolean success = WorkflowRunner.runWorkFlow(projectName, workflowFilePathStr, scenarioFilePathStr);
+        final boolean success = WorkflowRunner.runWorkFlow(null, projectName, workflowFilePathStr, scenarioFilePathStr);
         Assert.assertTrue("[FAILED] Workflow [" + workflow + "] with scenario [" + scenario + "] failed.", success);
       }
     }

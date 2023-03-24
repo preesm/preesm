@@ -79,8 +79,8 @@ public class ModelTransfoTest {
     String[] scenarios = new String[] { "Tests_Flat/simple.scenario", "Tests_Flat/delay_simple.scenario",
         "Tests_Flat/delay_setter_getter.scenario" };
     String[] workflows = new String[] { "StaticPiMM2SRDAGCodegen.workflow", "StaticPiMMFlattenerCodegen.workflow" };
-    for (String workflow : workflows) {
-      for (String scenario : scenarios) {
+    for (final String workflow : workflows) {
+      for (final String scenario : scenarios) {
         params.add(new Object[] { projectName, workflow, scenario, true });
       }
     }
@@ -90,8 +90,8 @@ public class ModelTransfoTest {
         "Tests_H/simple_H_delay_no_p.scenario", "Tests_H/simple_H_delay_p_no_p.scenario",
         "Tests_H/simple_H_delay_p_p.scenario" };
     workflows = new String[] { "StaticPiMM2SRDAGCodegen.workflow", "StaticPiMMFlattenerCodegen.workflow" };
-    for (String workflow : workflows) {
-      for (String scenario : scenarios) {
+    for (final String workflow : workflows) {
+      for (final String scenario : scenarios) {
         final boolean shouldFail = scenario.equals("Tests_H/simple_H_delay_p_no_p.scenario")
             && workflow.equals("StaticPiMMFlattenerCodegen.workflow");
         params.add(new Object[] { projectName, workflow, scenario, !shouldFail });
@@ -103,8 +103,8 @@ public class ModelTransfoTest {
         "Tests_H/nested_H_RB.scenario", "Tests_H/nested_H_delay_p.scenario", "Tests_H/nested_H_delay_no_p.scenario",
         "Tests_H/nested_H_delay_p_no_p.scenario", "Tests_H/nested_H_delay_p_p.scenario" };
     workflows = new String[] { "StaticPiMM2SRDAGCodegen.workflow", "StaticPiMMFlattenerCodegen.workflow" };
-    for (String workflow : workflows) {
-      for (String scenario : scenarios) {
+    for (final String workflow : workflows) {
+      for (final String scenario : scenarios) {
         final boolean shouldFail = scenario.equals("Tests_H/nested_H_delay_p_no_p.scenario")
             && workflow.equals("StaticPiMMFlattenerCodegen.workflow");
         params.add(new Object[] { projectName, workflow, scenario, !shouldFail });
@@ -118,7 +118,7 @@ public class ModelTransfoTest {
   public void testModelTransfos() throws IOException, CoreException {
     final String workflowFilePathStr = "/Workflows/" + workflow;
     final String scenarioFilePathStr = "/Scenarios/" + scenario;
-    final boolean success = WorkflowRunner.runWorkFlow(projectName, workflowFilePathStr, scenarioFilePathStr);
+    final boolean success = WorkflowRunner.runWorkFlow(null, projectName, workflowFilePathStr, scenarioFilePathStr);
     Assert.assertEquals("Workflow [" + workflow + "] with scenario [" + scenario + "] ended unexpectedly",
         shouldSuccess, success);
   }
