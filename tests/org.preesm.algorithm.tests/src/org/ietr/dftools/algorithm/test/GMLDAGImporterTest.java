@@ -79,9 +79,13 @@ public class GMLDAGImporterTest {
       createTempFile = Files.createTempFile("export_test_", ".xml", attr).toFile();
     } else {
       createTempFile = Files.createTempFile("export_test_", ".xml").toFile();
-      createTempFile.setReadable(true, true);
-      createTempFile.setWritable(true, true);
-      createTempFile.setExecutable(true, true);
+
+      boolean fail = true;
+
+      fail &= createTempFile.setReadable(true, true);
+      fail &= createTempFile.setWritable(true, true);
+      fail &= createTempFile.setExecutable(true, true);
+      Assert.assertTrue(fail);
     }
     createTempFile.deleteOnExit();
 
