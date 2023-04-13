@@ -538,15 +538,6 @@
             <groupId>org.eclipse.tycho</groupId>
             <artifactId>tycho-surefire-plugin</artifactId>
             <version>${tycho-version}</version>
-            <dependencies>
-               <dependency>
-                  <groupId>org.junit.jupiter</groupId>
-                  <artifactId>junit-jupiter</artifactId>
-                  <version>5.8.1</version>
-               </dependency>
-            </dependencies>
-            <id>test</id>
-            <phase>test</phase>
             <configuration>
                 <includes>
             		<include>**/*Test.java</include>
