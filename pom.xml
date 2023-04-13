@@ -76,7 +76,7 @@
    <properties>
       <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
       <jacoco-version>0.8.8</jacoco-version>
-      <tycho-version>2.7.5</tycho-version>
+      <tycho-version>3.0.4</tycho-version>
       <findbugs-version>3.0.5</findbugs-version>
       <sonar-version>3.9.1.2184</sonar-version>
       <checkstyle-version>10.4</checkstyle-version>
@@ -535,8 +535,18 @@
             </executions>
          </plugin>
          <plugin>
-           <groupId>org.eclipse.tycho</groupId>
-           <artifactId>tycho-surefire-plugin</artifactId>
+            <groupId>org.eclipse.tycho</groupId>
+            <artifactId>tycho-surefire-plugin</artifactId>
+            <version>${tycho-version}</version>
+            <dependencies>
+               <dependency>
+                  <groupId>org.junit.jupiter</groupId>
+                  <artifactId>junit-jupiter</artifactId>
+                  <version>5.8.1</version>
+               </dependency>
+            </dependencies>
+            <id>test</id>
+            <phase>test</phase>
             <configuration>
                 <includes>
             		<include>**/*Test.java</include>
