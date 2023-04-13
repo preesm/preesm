@@ -38,6 +38,6 @@
   <extension>
     <groupId>org.eclipse.tycho</groupId>
     <artifactId>tycho-build</artifactId>
-    <version>2.7.5</version>
-</extension>
+    <version>3.0.4</version>
+  </extension>
 </extensions>
