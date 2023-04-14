@@ -22,12 +22,12 @@ Export-Package: org.ietr.dftools.algorithm.test,
  org.ietr.preesm.mapper.schedule.test,
  org.ietr.preesm.mapper.test,
  org.ietr.preesm.mathematicalModels.test,
- org.ietr.preesm.memory.script,
+ org.ietr.preesm.memory.script.test,
  org.ietr.preesm.memory.test,
  org.ietr.preesm.schedule.test,
  org.ietr.preesm.throughput.helpers.test,
  org.ietr.preesm.throughput.parsers.test,
  org.ietr.preesm.throughput.test,
  org.ietr.preesm.throughput.transformers.test,
- org.preesm.algorithm.synthesis
+ org.preesm.algorithm.synthesis.test
 Bundle-ClassPath: .
