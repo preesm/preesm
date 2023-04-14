@@ -14,14 +14,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Stream;
+import javax.xml.XMLConstants;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 import org.apache.commons.lang3.SystemUtils;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.errors.GitAPIException;
-import org.eclipse.jgit.api.errors.InvalidRemoteException;
-import org.eclipse.jgit.api.errors.TransportException;
 import org.ietr.preesm.test.it.api.WorkflowRunner;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
@@ -37,10 +36,10 @@ import org.yaml.snakeyaml.constructor.Constructor;
 
 public class PreesmAppsTest {
 
-  private final String CI_FILENAME = ".ci.yaml";
+  private static final String CI_FILENAME = ".ci.yaml";
 
-  private final String SCENARIO_KEY = "scenario";
-  private final String WORKFLOW_KEY = "workflow";
+  private static final String SCENARIO_KEY = "scenario";
+  private static final String WORKFLOW_KEY = "workflow";
 
   private static final String PREESM_APP_REPO = "https://github.com/preesm/preesm-apps.git";
 
@@ -55,7 +54,7 @@ public class PreesmAppsTest {
   }
 
   @BeforeAll
-  public static void setupTest() throws IOException, InvalidRemoteException, TransportException, GitAPIException {
+  public static void setupTest() throws IOException, GitAPIException {
 
     // Create temp folder with specific access
     if (SystemUtils.IS_OS_UNIX) {
@@ -145,6 +144,8 @@ public class PreesmAppsTest {
 
     try {
       final SAXParser saxParser = factory.newSAXParser();
+      saxParser.setProperty(XMLConstants.ACCESS_EXTERNAL_DTD, "");
+      saxParser.setProperty(XMLConstants.ACCESS_EXTERNAL_SCHEMA, "");
       final CustomHandler handler = new CustomHandler();
 
       saxParser.parse(projectRoot + ".project", handler);
@@ -154,20 +155,4 @@ public class PreesmAppsTest {
       throw new PreesmResourceException(e);
     }
   }
-
-  // public void runScript(String command) {
-  // final CommandLine oCmdLine = CommandLine.parse(command);
-  // final DefaultExecutor oDefaultExecutor = new DefaultExecutor();
-  // oDefaultExecutor.setExitValue(0);
-  // try {
-  // iExitValue = oDefaultExecutor.execute(oCmdLine);
-  // } catch (final ExecuteException e) {
-  // System.err.println("Execution failed.");
-  // e.printStackTrace();
-  // } catch (final IOException e) {
-  // System.err.println("permission denied.");
-  // e.printStackTrace();
-  // }
-  // }
-
 }
