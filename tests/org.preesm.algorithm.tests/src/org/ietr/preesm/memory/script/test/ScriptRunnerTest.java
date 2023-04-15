@@ -50,6 +50,6 @@ public class ScriptRunnerTest {
   public void testFindScripts() {
     final File dir = new File(ScriptRunnerTest.SCRIPT_FOLDER_PATH);
     final String[] list = dir.list();
-    Assert.assertEquals(14, list.length);
+    Assert.assertEquals(18, list.length);
   }
 }
