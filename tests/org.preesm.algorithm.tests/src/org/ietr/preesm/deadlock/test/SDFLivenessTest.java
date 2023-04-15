@@ -81,7 +81,6 @@ public class SDFLivenessTest {
       Assert.fail();
     } catch (final PreesmException e) {
       // success
-      return;
     }
   }
 

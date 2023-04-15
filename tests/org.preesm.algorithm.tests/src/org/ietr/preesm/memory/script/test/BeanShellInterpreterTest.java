@@ -40,7 +40,6 @@ import bsh.Interpreter;
 import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -82,7 +81,7 @@ public class BeanShellInterpreterTest {
   private static final String O_OUTPUT = "o_output";
 
   private static final String MATCH       = "match = ";
-  private static final String RESLIST_    = "resList;";
+  private static final String RESLIST_SC    = "resList;";
   private static final String RESLIST_ADD = "resList.add(match);\n";
 
   private static final String INPUT_BUFFER  = "inputBuffer";
@@ -241,7 +240,7 @@ public class BeanShellInterpreterTest {
   }
 
   @Test
-  public void testSplit() throws EvalError, FileNotFoundException, IOException {
+  public void testSplit() throws EvalError, IOException {
     final Interpreter interpreter = new Interpreter();
     final String bshFileUnderTest = ScriptRunnerTest.SCRIPT_FOLDER_PATH + "/split_standalonetest.bsh";
 
@@ -342,7 +341,7 @@ public class BeanShellInterpreterTest {
           content.append(RESLIST_ADD);
         }
       }
-      content.append(RESLIST_);
+      content.append(RESLIST_SC);
     }
     Assert.assertTrue(content.toString().contains("inputs.get(0).matchWith(inIdx,output,0,outSize);"));
 
@@ -410,7 +409,7 @@ public class BeanShellInterpreterTest {
           content.append(RESLIST_ADD);
         }
       }
-      content.append(RESLIST_);
+      content.append(RESLIST_SC);
     }
     Assert.assertTrue(content.toString().contains("outputs.get(0).matchWith(outIdx,input,0,inSize);"));
 
@@ -468,7 +467,7 @@ public class BeanShellInterpreterTest {
       }
       in.close();
     }
-    content.append(RESLIST_);
+    content.append(RESLIST_SC);
 
     Assert.assertTrue(content.toString().contains("RuntimeException"));
 
@@ -529,7 +528,7 @@ public class BeanShellInterpreterTest {
       }
       in.close();
     }
-    content.append(RESLIST_);
+    content.append(RESLIST_SC);
 
     Assert.assertTrue(content.toString().contains("inputs.get(0).matchWith(inIdx,output,outIdx,matchSize);"));
 
