@@ -46,7 +46,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.PrintStream;
-import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
@@ -56,6 +55,7 @@ import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import org.eclipse.core.runtime.IPath;
 import org.junit.Assert;
 import org.junit.Test;
 import org.preesm.algorithm.memory.script.Buffer;
@@ -70,7 +70,26 @@ import org.preesm.commons.exceptions.PreesmRuntimeException;
 public class BeanShellInterpreterTest {
 
   private static final String MEMORY_SCRIPT_PLUGIN = "org.preesm.algorithm";
-  private static final String IMPORT               = "import ";
+
+  private static final String IMPORT = "import ";
+
+  private static final String HEIGHT  = "Height";
+  private static final String WIDTH   = "Width";
+  private static final String NBSLICE = "NbSlice";
+  private static final String OVERLAP = "Overlap";
+
+  private static final String I_INPUT  = "i_input";
+  private static final String O_OUTPUT = "o_output";
+
+  private static final String MATCH       = "match = ";
+  private static final String RESLIST_    = "resList;";
+  private static final String RESLIST_ADD = "resList.add(match);\n";
+
+  private static final String INPUT_BUFFER  = "inputBuffer";
+  private static final String OUTPUT_BUFFER = "outputBuffer";
+  private static final String INPUTS        = "inputs";
+  private static final String OUTPUTS       = "outputs";
+  private static final String RESLIST       = "resList";
 
   @Test
   public void testBasicEval() throws EvalError {
@@ -147,7 +166,7 @@ public class BeanShellInterpreterTest {
   }
 
   @Test
-  public void testDesinterleave() throws EvalError, FileNotFoundException, IOException {
+  public void testDesinterleave() throws EvalError, IOException {
     final Interpreter interpreter = new Interpreter();
     final String bshFileUnderTest = ScriptRunnerTest.SCRIPT_FOLDER_PATH + "/desinterleave_standalonetest.bsh";
 
@@ -184,7 +203,7 @@ public class BeanShellInterpreterTest {
   }
 
   @Test
-  public void testShuffleSplit() throws EvalError, FileNotFoundException, IOException {
+  public void testShuffleSplit() throws EvalError, IOException {
     final Interpreter interpreter = new Interpreter();
     final String bshFileUnderTest = ScriptRunnerTest.SCRIPT_FOLDER_PATH + "/ShuffleSplit_standalonetest.bsh";
 
@@ -195,10 +214,10 @@ public class BeanShellInterpreterTest {
 
     final Map<String, Integer> arguments = new LinkedHashMap<>();
     final int NbSlice = 8;
-    arguments.put("Height", 1080);
-    arguments.put("Width", 1920);
-    arguments.put("NbSlice", NbSlice);
-    arguments.put("Overlap", 1);
+    arguments.put(HEIGHT, 1080);
+    arguments.put(WIDTH, 1920);
+    arguments.put(NBSLICE, NbSlice);
+    arguments.put(OVERLAP, 1);
 
     arguments.forEach((k, v) -> {
       try {
@@ -209,8 +228,8 @@ public class BeanShellInterpreterTest {
     });
     final Buffer i = new Buffer(null, "v1", "i", 1024 * 1024 * 1024, 1, true);
     final Buffer o = new Buffer(null, "v1", "o", 1024 * 1024 * 1024, 1, true);
-    interpreter.set("i_input", i);
-    interpreter.set("o_output", o);
+    interpreter.set(I_INPUT, i);
+    interpreter.set(O_OUTPUT, o);
     final Object eval = interpreter.source(bshFileUnderTest);
     Assert.assertNotNull(eval);
     Assert.assertTrue(eval instanceof ArrayList);
@@ -233,10 +252,10 @@ public class BeanShellInterpreterTest {
 
     final Map<String, Integer> arguments = new LinkedHashMap<>();
     final int NbSlice = 80;
-    arguments.put("Height", 1080);
-    arguments.put("Width", 1920);
-    arguments.put("NbSlice", NbSlice);
-    arguments.put("Overlap", 1);
+    arguments.put(HEIGHT, 1080);
+    arguments.put(WIDTH, 1920);
+    arguments.put(NBSLICE, NbSlice);
+    arguments.put(OVERLAP, 1);
 
     arguments.forEach((k, v) -> {
       try {
@@ -247,8 +266,8 @@ public class BeanShellInterpreterTest {
     });
     final Buffer i = new Buffer(null, "v1", "i", 1024 * 1024 * 1024, 1, true);
     final Buffer o = new Buffer(null, "v1", "o", 1024 * 1024 * 1024, 1, true);
-    interpreter.set("i_input", i);
-    interpreter.set("o_output", o);
+    interpreter.set(I_INPUT, i);
+    interpreter.set(O_OUTPUT, o);
     final Object eval = interpreter.source(bshFileUnderTest);
     Assert.assertNotNull(eval);
     Assert.assertTrue(eval instanceof ArrayList);
@@ -260,16 +279,16 @@ public class BeanShellInterpreterTest {
   }
 
   @Test
-  public void testSplitFail() throws EvalError, FileNotFoundException, IOException {
+  public void testSplitFail() throws EvalError, IOException {
     final Interpreter interpreter = new Interpreter();
     final String bshFileUnderTest = ScriptRunnerTest.SCRIPT_FOLDER_PATH + "/split_standalonetest.bsh";
 
     final Map<String, Integer> arguments = new LinkedHashMap<>();
     final int NbSlice = 800;
-    arguments.put("Height", 1080);
-    arguments.put("Width", 1920);
-    arguments.put("NbSlice", NbSlice);
-    arguments.put("Overlap", 10);
+    arguments.put(HEIGHT, 1080);
+    arguments.put(WIDTH, 1920);
+    arguments.put(NBSLICE, NbSlice);
+    arguments.put(OVERLAP, 10);
 
     arguments.forEach((k, v) -> {
       try {
@@ -280,8 +299,8 @@ public class BeanShellInterpreterTest {
     });
     final Buffer i = new Buffer(null, "v1", "i", 10, 1, true);
     final Buffer o = new Buffer(null, "v1", "o", 10, 1, true);
-    interpreter.set("i_input", i);
-    interpreter.set("o_output", o);
+    interpreter.set(I_INPUT, i);
+    interpreter.set(O_OUTPUT, o);
 
     try {
       interpreter.source(bshFileUnderTest);
@@ -305,10 +324,10 @@ public class BeanShellInterpreterTest {
   @Test
   public void testFork() throws URISyntaxException, IOException, EvalError {
     final String plugin_name = MEMORY_SCRIPT_PLUGIN;
-    final String script_path = "/resources/scripts/fork.bsh";
+    final String script_path = "/ressources/scripts/fork.bsh";
 
     final StringBuilder content = new StringBuilder();
-    final File scriptFile = new File("../../plugins/" + plugin_name + "/" + script_path);
+    final File scriptFile = new File(ScriptRunnerTest.SCRIPT_FOLDER_PATH + "fork.bsh");
 
     try (final BufferedReader in = open(plugin_name, script_path, scriptFile);) {
       String inputLine;
@@ -316,14 +335,14 @@ public class BeanShellInterpreterTest {
       while ((inputLine = in.readLine()) != null) {
         final boolean contains = inputLine.contains("matchWith");
         if (contains) {
-          content.append("match = ");
+          content.append(MATCH);
         }
         content.append(inputLine + "\n");
         if (contains) {
-          content.append("resList.add(match);\n");
+          content.append(RESLIST_ADD);
         }
       }
-      content.append("resList;");
+      content.append(RESLIST_);
     }
     Assert.assertTrue(content.toString().contains("inputs.get(0).matchWith(inIdx,output,0,outSize);"));
 
@@ -331,10 +350,10 @@ public class BeanShellInterpreterTest {
     final int numberOfForks = 8;
 
     final List<Buffer> inputs = new ArrayList<>(1);
-    inputs.add(new Buffer(null, "v1", "inputBuffer", bufferToSplitSize, 1, true));
+    inputs.add(new Buffer(null, "v1", INPUT_BUFFER, bufferToSplitSize, 1, true));
     final List<Buffer> outputs = new ArrayList<>(numberOfForks);
     for (int i = 0; i < numberOfForks; i++) {
-      outputs.add(new Buffer(null, "v1", "outputBuffer" + i, bufferToSplitSize / numberOfForks, 1, true));
+      outputs.add(new Buffer(null, "v1", OUTPUT_BUFFER + i, bufferToSplitSize / numberOfForks, 1, true));
     }
     final List<Match> resList = new ArrayList<>();
 
@@ -344,9 +363,9 @@ public class BeanShellInterpreterTest {
     interpreter.eval(IMPORT + List.class.getName() + ";");
     interpreter.eval(IMPORT + ArrayList.class.getName() + ";");
     interpreter.eval(IMPORT + Arrays.class.getName() + ".*;");
-    interpreter.set("inputs", inputs);
-    interpreter.set("outputs", outputs);
-    interpreter.set("resList", resList);
+    interpreter.set(INPUTS, inputs);
+    interpreter.set(OUTPUTS, outputs);
+    interpreter.set(RESLIST, resList);
     final Object eval = interpreter.eval(content.toString());
     Assert.assertEquals(resList, eval);
 
@@ -355,12 +374,12 @@ public class BeanShellInterpreterTest {
   }
 
   private BufferedReader open(final String plugin_name, final String script_path, final File scriptFile)
-      throws FileNotFoundException, MalformedURLException, IOException {
+      throws IOException {
     final BufferedReader in;
     if (scriptFile.exists()) {
       in = new BufferedReader(new FileReader(scriptFile));
     } else {
-      final URL url = new URL("platform:/plugin/" + plugin_name + "/" + script_path);
+      final URL url = new URL("platform:/plugin/" + plugin_name + IPath.SEPARATOR + script_path);
       final InputStream inputStream = url.openConnection().getInputStream();
       in = new BufferedReader(new InputStreamReader(inputStream));
     }
@@ -377,21 +396,21 @@ public class BeanShellInterpreterTest {
     final String script_path = "/resources/scripts/join.bsh";
 
     final StringBuilder content = new StringBuilder();
-    final File scriptFile = new File("../../plugins/" + plugin_name + "/" + script_path);
+    final File scriptFile = new File(ScriptRunnerTest.SCRIPT_FOLDER_PATH + "join.bsh");
     try (final BufferedReader in = open(plugin_name, script_path, scriptFile)) {
       String inputLine;
       // instrument code to return the list of matches
       while ((inputLine = in.readLine()) != null) {
         final boolean contains = inputLine.contains("matchWith");
         if (contains) {
-          content.append("match = ");
+          content.append(MATCH);
         }
         content.append(inputLine + "\n");
         if (contains) {
-          content.append("resList.add(match);\n");
+          content.append(RESLIST_ADD);
         }
       }
-      content.append("resList;");
+      content.append(RESLIST_);
     }
     Assert.assertTrue(content.toString().contains("outputs.get(0).matchWith(outIdx,input,0,inSize);"));
 
@@ -400,10 +419,10 @@ public class BeanShellInterpreterTest {
 
     final List<Buffer> inputs = new ArrayList<>(1);
     for (int i = 0; i < numberOfForks; i++) {
-      inputs.add(new Buffer(null, "v1", "inputBuffer" + i, bufferToSplitSize / numberOfForks, 1, true));
+      inputs.add(new Buffer(null, "v1", INPUT_BUFFER + i, bufferToSplitSize / numberOfForks, 1, true));
     }
     final List<Buffer> outputs = new ArrayList<>(1);
-    outputs.add(new Buffer(null, "v1", "outputBuffer", bufferToSplitSize, 1, true));
+    outputs.add(new Buffer(null, "v1", OUTPUT_BUFFER, bufferToSplitSize, 1, true));
     final List<Match> resList = new ArrayList<>();
 
     final Interpreter interpreter = new Interpreter();
@@ -412,9 +431,9 @@ public class BeanShellInterpreterTest {
     interpreter.eval(IMPORT + List.class.getName() + ";");
     interpreter.eval(IMPORT + ArrayList.class.getName() + ";");
     interpreter.eval(IMPORT + Arrays.class.getName() + ".*;");
-    interpreter.set("inputs", inputs);
-    interpreter.set("outputs", outputs);
-    interpreter.set("resList", resList);
+    interpreter.set(INPUTS, inputs);
+    interpreter.set(OUTPUTS, outputs);
+    interpreter.set(RESLIST, resList);
     final Object eval = interpreter.eval(content.toString());
     Assert.assertEquals(resList, eval);
 
@@ -432,7 +451,7 @@ public class BeanShellInterpreterTest {
     final String script_path = "/resources/scripts/roundbuffer.bsh";
 
     final StringBuilder content = new StringBuilder();
-    final File scriptFile = new File("../../plugins/" + plugin_name + "/" + script_path);
+    final File scriptFile = new File(ScriptRunnerTest.SCRIPT_FOLDER_PATH + "roundbuffer.bsh");
 
     try (final BufferedReader in = open(plugin_name, script_path, scriptFile)) {
       String inputLine;
@@ -440,24 +459,25 @@ public class BeanShellInterpreterTest {
       while ((inputLine = in.readLine()) != null) {
         final boolean contains = inputLine.contains("input.matchWith(");
         if (contains) {
-          content.append("match = ");
+          content.append(MATCH);
         }
         content.append(inputLine + "\n");
         if (contains) {
-          content.append("resList.add(match);\n");
+          content.append(RESLIST_ADD);
         }
       }
+      in.close();
     }
-    content.append("resList;");
+    content.append(RESLIST_);
 
     Assert.assertTrue(content.toString().contains("RuntimeException"));
 
     final int bufferToBroadcastSize = 1024 * 1024 * 8; // 8MB
 
     final List<Buffer> inputs = new ArrayList<>(1);
-    inputs.add(new Buffer(null, "v1", "inputBuffer", bufferToBroadcastSize, 1, true));
+    inputs.add(new Buffer(null, "v1", INPUT_BUFFER, bufferToBroadcastSize, 1, true));
     final List<Buffer> outputs = new ArrayList<>(1);
-    outputs.add(new Buffer(null, "v1", "outputBuffer", bufferToBroadcastSize, 1, true));
+    outputs.add(new Buffer(null, "v1", OUTPUT_BUFFER, bufferToBroadcastSize, 1, true));
 
     final List<Match> resList = new ArrayList<>();
 
@@ -469,9 +489,9 @@ public class BeanShellInterpreterTest {
     interpreter.eval(IMPORT + Arrays.class.getName() + ".*;");
     interpreter.eval(IMPORT + Collections.class.getName() + ";");
     interpreter.eval(IMPORT + Math.class.getName() + ";");
-    interpreter.set("inputs", inputs);
-    interpreter.set("outputs", outputs);
-    interpreter.set("resList", resList);
+    interpreter.set(INPUTS, inputs);
+    interpreter.set(OUTPUTS, outputs);
+    interpreter.set(RESLIST, resList);
     final Object eval = interpreter.eval(content.toString());
     Assert.assertNotNull(eval);
     Assert.assertTrue(eval instanceof List);
@@ -491,33 +511,26 @@ public class BeanShellInterpreterTest {
     final String script_path = "/resources/scripts/broadcast.bsh";
 
     final StringBuilder content = new StringBuilder();
-    final File scriptFile = new File("../../plugins/" + plugin_name + "/" + script_path);
-    final InputStreamReader streamReader;
-    if (scriptFile.exists()) {
-      streamReader = new FileReader(scriptFile);
-    } else {
-      final URL url = new URL("platform:/plugin/" + plugin_name + "/" + script_path);
-      final InputStream inputStream = url.openConnection().getInputStream();
-      streamReader = new InputStreamReader(inputStream);
-    }
-    try (final BufferedReader in = new BufferedReader(streamReader)) {
+    final File scriptFile = new File(ScriptRunnerTest.SCRIPT_FOLDER_PATH + "broadcast.bsh");
+
+    try (final BufferedReader in = open(plugin_name, script_path, scriptFile)) {
       String inputLine;
 
       // instrument code to return the list of matches
       while ((inputLine = in.readLine()) != null) {
         final boolean contains = inputLine.contains("inputs.get(0).matchWith(inIdx,output,outIdx,matchSize);");
         if (contains) {
-          content.append("match = ");
+          content.append(MATCH);
         }
         content.append(inputLine + "\n");
         if (contains) {
-          content.append("resList.add(match);\n");
+          content.append(RESLIST_ADD);
         }
       }
+      in.close();
     }
-    streamReader.close();
+    content.append(RESLIST_);
 
-    content.append("resList;");
     Assert.assertTrue(content.toString().contains("inputs.get(0).matchWith(inIdx,output,outIdx,matchSize);"));
 
     final long nbOutputBuffers = 2L;
@@ -526,10 +539,10 @@ public class BeanShellInterpreterTest {
     final long inputBuffersSize = bufferToBroadcastSize / ratio;
 
     final List<Buffer> inputs = new ArrayList<>(1);
-    inputs.add(new Buffer(null, "v1", "inputBuffer", inputBuffersSize, 1, true));
+    inputs.add(new Buffer(null, "v1", INPUT_BUFFER, inputBuffersSize, 1, true));
     final List<Buffer> outputs = new ArrayList<>((int) nbOutputBuffers);
     for (int i = 0; i < nbOutputBuffers; i++) {
-      outputs.add(new Buffer(null, "v1", "outputBuffer" + i, bufferToBroadcastSize, 1, true));
+      outputs.add(new Buffer(null, "v1", OUTPUT_BUFFER + i, bufferToBroadcastSize, 1, true));
     }
     final List<Match> resList = new ArrayList<>();
 
@@ -539,9 +552,9 @@ public class BeanShellInterpreterTest {
     interpreter.eval(IMPORT + List.class.getName() + ";");
     interpreter.eval(IMPORT + ArrayList.class.getName() + ";");
     interpreter.eval(IMPORT + Arrays.class.getName() + ".*;");
-    interpreter.set("inputs", inputs);
-    interpreter.set("outputs", outputs);
-    interpreter.set("resList", resList);
+    interpreter.set(INPUTS, inputs);
+    interpreter.set(OUTPUTS, outputs);
+    interpreter.set(RESLIST, resList);
     final Object eval = interpreter.eval(content.toString());
     Assert.assertNotNull(eval);
     Assert.assertTrue(eval instanceof List);

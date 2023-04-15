@@ -93,8 +93,8 @@ public abstract class AbstractAsapFpgaFifoEvaluator {
       dst = temp;
     }
 
-    final long nbFiringsProdForFirstFiringCons = nbfOpposite(fifoAbs, 1L, true & !isReversedALAP, false);
-    final long nbFiringsConsForLastFiringProd = nbfOpposite(fifoAbs, 1L, false | isReversedALAP, false);
+    final long nbFiringsProdForFirstFiringCons = nbfOpposite(fifoAbs, 1L, !isReversedALAP, false);
+    final long nbFiringsConsForLastFiringProd = nbfOpposite(fifoAbs, 1L, isReversedALAP, false);
 
     for (final Fifo fifo : fifoAbs.fifos) {
       final FifoInformations fifoInfos = new FifoInformations(producer, mapActorNormalizedInfos.get(src),
