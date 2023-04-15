@@ -70,6 +70,7 @@ import org.preesm.commons.exceptions.PreesmRuntimeException;
 public class BeanShellInterpreterTest {
 
   private static final String MEMORY_SCRIPT_PLUGIN = "org.preesm.algorithm";
+  private static final String IMPORT               = "import ";
 
   @Test
   public void testBasicEval() throws EvalError {
@@ -85,8 +86,8 @@ public class BeanShellInterpreterTest {
   @Test
   public void testListIteration() throws EvalError {
     final Interpreter interpreter = new Interpreter();
-    interpreter.eval("import " + List.class.getName() + ";");
-    interpreter.eval("import " + ArrayList.class.getName() + ";");
+    interpreter.eval(IMPORT + List.class.getName() + ";");
+    interpreter.eval(IMPORT + ArrayList.class.getName() + ";");
 
     Object result = interpreter.eval("list = new ArrayList(10)");
     Assert.assertNotNull(result);
@@ -129,8 +130,8 @@ public class BeanShellInterpreterTest {
   @Test
   public void testMethodNotDefined() throws EvalError {
     final Interpreter interpreter = new Interpreter();
-    interpreter.eval("import " + List.class.getName() + ";");
-    interpreter.eval("import " + ArrayList.class.getName() + ";");
+    interpreter.eval(IMPORT + List.class.getName() + ";");
+    interpreter.eval(IMPORT + ArrayList.class.getName() + ";");
 
     final Object result = interpreter.eval("list = new ArrayList(10)");
     Assert.assertNotNull(result);
@@ -150,10 +151,10 @@ public class BeanShellInterpreterTest {
     final Interpreter interpreter = new Interpreter();
     final String bshFileUnderTest = ScriptRunnerTest.SCRIPT_FOLDER_PATH + "/desinterleave_standalonetest.bsh";
 
-    interpreter.eval("import " + Buffer.class.getName() + ";");
-    interpreter.eval("import " + Match.class.getName() + ";");
-    interpreter.eval("import " + List.class.getName() + ";");
-    interpreter.eval("import " + ArrayList.class.getName() + ";");
+    interpreter.eval(IMPORT + Buffer.class.getName() + ";");
+    interpreter.eval(IMPORT + Match.class.getName() + ";");
+    interpreter.eval(IMPORT + List.class.getName() + ";");
+    interpreter.eval(IMPORT + ArrayList.class.getName() + ";");
 
     final Map<String, Integer> arguments = new LinkedHashMap<>();
     final int N = 4;
@@ -187,10 +188,10 @@ public class BeanShellInterpreterTest {
     final Interpreter interpreter = new Interpreter();
     final String bshFileUnderTest = ScriptRunnerTest.SCRIPT_FOLDER_PATH + "/ShuffleSplit_standalonetest.bsh";
 
-    interpreter.eval("import " + Buffer.class.getName() + ";");
-    interpreter.eval("import " + Match.class.getName() + ";");
-    interpreter.eval("import " + List.class.getName() + ";");
-    interpreter.eval("import " + ArrayList.class.getName() + ";");
+    interpreter.eval(IMPORT + Buffer.class.getName() + ";");
+    interpreter.eval(IMPORT + Match.class.getName() + ";");
+    interpreter.eval(IMPORT + List.class.getName() + ";");
+    interpreter.eval(IMPORT + ArrayList.class.getName() + ";");
 
     final Map<String, Integer> arguments = new LinkedHashMap<>();
     final int NbSlice = 8;
@@ -225,10 +226,10 @@ public class BeanShellInterpreterTest {
     final Interpreter interpreter = new Interpreter();
     final String bshFileUnderTest = ScriptRunnerTest.SCRIPT_FOLDER_PATH + "/split_standalonetest.bsh";
 
-    interpreter.eval("import " + Buffer.class.getName() + ";");
-    interpreter.eval("import " + Match.class.getName() + ";");
-    interpreter.eval("import " + List.class.getName() + ";");
-    interpreter.eval("import " + ArrayList.class.getName() + ";");
+    interpreter.eval(IMPORT + Buffer.class.getName() + ";");
+    interpreter.eval(IMPORT + Match.class.getName() + ";");
+    interpreter.eval(IMPORT + List.class.getName() + ";");
+    interpreter.eval(IMPORT + ArrayList.class.getName() + ";");
 
     final Map<String, Integer> arguments = new LinkedHashMap<>();
     final int NbSlice = 80;
@@ -338,11 +339,11 @@ public class BeanShellInterpreterTest {
     final List<Match> resList = new ArrayList<>();
 
     final Interpreter interpreter = new Interpreter();
-    interpreter.eval("import " + Buffer.class.getName() + ";");
-    interpreter.eval("import " + Match.class.getName() + ";");
-    interpreter.eval("import " + List.class.getName() + ";");
-    interpreter.eval("import " + ArrayList.class.getName() + ";");
-    interpreter.eval("import " + Arrays.class.getName() + ".*;");
+    interpreter.eval(IMPORT + Buffer.class.getName() + ";");
+    interpreter.eval(IMPORT + Match.class.getName() + ";");
+    interpreter.eval(IMPORT + List.class.getName() + ";");
+    interpreter.eval(IMPORT + ArrayList.class.getName() + ";");
+    interpreter.eval(IMPORT + Arrays.class.getName() + ".*;");
     interpreter.set("inputs", inputs);
     interpreter.set("outputs", outputs);
     interpreter.set("resList", resList);
@@ -406,11 +407,11 @@ public class BeanShellInterpreterTest {
     final List<Match> resList = new ArrayList<>();
 
     final Interpreter interpreter = new Interpreter();
-    interpreter.eval("import " + Buffer.class.getName() + ";");
-    interpreter.eval("import " + Match.class.getName() + ";");
-    interpreter.eval("import " + List.class.getName() + ";");
-    interpreter.eval("import " + ArrayList.class.getName() + ";");
-    interpreter.eval("import " + Arrays.class.getName() + ".*;");
+    interpreter.eval(IMPORT + Buffer.class.getName() + ";");
+    interpreter.eval(IMPORT + Match.class.getName() + ";");
+    interpreter.eval(IMPORT + List.class.getName() + ";");
+    interpreter.eval(IMPORT + ArrayList.class.getName() + ";");
+    interpreter.eval(IMPORT + Arrays.class.getName() + ".*;");
     interpreter.set("inputs", inputs);
     interpreter.set("outputs", outputs);
     interpreter.set("resList", resList);
@@ -461,13 +462,13 @@ public class BeanShellInterpreterTest {
     final List<Match> resList = new ArrayList<>();
 
     final Interpreter interpreter = new Interpreter();
-    interpreter.eval("import " + Buffer.class.getName() + ";");
-    interpreter.eval("import " + Match.class.getName() + ";");
-    interpreter.eval("import " + List.class.getName() + ";");
-    interpreter.eval("import " + ArrayList.class.getName() + ";");
-    interpreter.eval("import " + Arrays.class.getName() + ".*;");
-    interpreter.eval("import " + Collections.class.getName() + ";");
-    interpreter.eval("import " + Math.class.getName() + ";");
+    interpreter.eval(IMPORT + Buffer.class.getName() + ";");
+    interpreter.eval(IMPORT + Match.class.getName() + ";");
+    interpreter.eval(IMPORT + List.class.getName() + ";");
+    interpreter.eval(IMPORT + ArrayList.class.getName() + ";");
+    interpreter.eval(IMPORT + Arrays.class.getName() + ".*;");
+    interpreter.eval(IMPORT + Collections.class.getName() + ";");
+    interpreter.eval(IMPORT + Math.class.getName() + ";");
     interpreter.set("inputs", inputs);
     interpreter.set("outputs", outputs);
     interpreter.set("resList", resList);
@@ -533,11 +534,11 @@ public class BeanShellInterpreterTest {
     final List<Match> resList = new ArrayList<>();
 
     final Interpreter interpreter = new Interpreter();
-    interpreter.eval("import " + Buffer.class.getName() + ";");
-    interpreter.eval("import " + Match.class.getName() + ";");
-    interpreter.eval("import " + List.class.getName() + ";");
-    interpreter.eval("import " + ArrayList.class.getName() + ";");
-    interpreter.eval("import " + Arrays.class.getName() + ".*;");
+    interpreter.eval(IMPORT + Buffer.class.getName() + ";");
+    interpreter.eval(IMPORT + Match.class.getName() + ";");
+    interpreter.eval(IMPORT + List.class.getName() + ";");
+    interpreter.eval(IMPORT + ArrayList.class.getName() + ";");
+    interpreter.eval(IMPORT + Arrays.class.getName() + ".*;");
     interpreter.set("inputs", inputs);
     interpreter.set("outputs", outputs);
     interpreter.set("resList", resList);
