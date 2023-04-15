@@ -42,11 +42,8 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.io.PrintStream;
 import java.net.URISyntaxException;
-import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -54,7 +51,6 @@ import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import org.eclipse.core.runtime.IPath;
 import org.junit.Assert;
 import org.junit.Test;
 import org.preesm.algorithm.memory.script.Buffer;
@@ -70,6 +66,16 @@ public class BeanShellInterpreterTest {
 
   private static final String MEMORY_SCRIPT_PLUGIN = "org.preesm.algorithm";
 
+  // Fetch memory scripts from the org.preesm.algorithm package
+  private static final String BROADCAST_SCRIPT   = "../../plugins/" + MEMORY_SCRIPT_PLUGIN
+      + "/resources/scripts/broadcast.bsh";
+  private static final String FORK_SCRIPT        = "../../plugins/" + MEMORY_SCRIPT_PLUGIN
+      + "/resources/scripts/fork.bsh";
+  private static final String JOIN_SCRIPT        = "../../plugins/" + MEMORY_SCRIPT_PLUGIN
+      + "/resources/scripts/join.bsh";
+  private static final String ROUNDBUFFER_SCRIPT = "../../plugins/" + MEMORY_SCRIPT_PLUGIN
+      + "/resources/scripts/roundbuffer.bsh";
+
   private static final String IMPORT = "import ";
 
   private static final String HEIGHT  = "Height";
@@ -81,7 +87,7 @@ public class BeanShellInterpreterTest {
   private static final String O_OUTPUT = "o_output";
 
   private static final String MATCH       = "match = ";
-  private static final String RESLIST_SC    = "resList;";
+  private static final String RESLIST_SC  = "resList;";
   private static final String RESLIST_ADD = "resList.add(match);\n";
 
   private static final String INPUT_BUFFER  = "inputBuffer";
@@ -322,13 +328,11 @@ public class BeanShellInterpreterTest {
    */
   @Test
   public void testFork() throws URISyntaxException, IOException, EvalError {
-    final String plugin_name = MEMORY_SCRIPT_PLUGIN;
-    final String script_path = "/ressources/scripts/fork.bsh";
 
     final StringBuilder content = new StringBuilder();
-    final File scriptFile = new File(ScriptRunnerTest.SCRIPT_FOLDER_PATH + "fork.bsh");
+    final File scriptFile = new File(FORK_SCRIPT);
 
-    try (final BufferedReader in = open(plugin_name, script_path, scriptFile);) {
+    try (final BufferedReader in = new BufferedReader(new FileReader(scriptFile));) {
       String inputLine;
       // instrument code to return the list of matches
       while ((inputLine = in.readLine()) != null) {
@@ -372,31 +376,17 @@ public class BeanShellInterpreterTest {
     Assert.assertEquals(numberOfForks, size);
   }
 
-  private BufferedReader open(final String plugin_name, final String script_path, final File scriptFile)
-      throws IOException {
-    final BufferedReader in;
-    if (scriptFile.exists()) {
-      in = new BufferedReader(new FileReader(scriptFile));
-    } else {
-      final URL url = new URL("platform:/plugin/" + plugin_name + IPath.SEPARATOR + script_path);
-      final InputStream inputStream = url.openConnection().getInputStream();
-      in = new BufferedReader(new InputStreamReader(inputStream));
-    }
-    return in;
-  }
-
   /**
    * Requires Plugin testing
    *
    */
   @Test
   public void testJoin() throws URISyntaxException, IOException, EvalError {
-    final String plugin_name = MEMORY_SCRIPT_PLUGIN;
-    final String script_path = "/resources/scripts/join.bsh";
 
     final StringBuilder content = new StringBuilder();
-    final File scriptFile = new File(ScriptRunnerTest.SCRIPT_FOLDER_PATH + "join.bsh");
-    try (final BufferedReader in = open(plugin_name, script_path, scriptFile)) {
+    final File scriptFile = new File(JOIN_SCRIPT);
+
+    try (final BufferedReader in = new BufferedReader(new FileReader(scriptFile));) {
       String inputLine;
       // instrument code to return the list of matches
       while ((inputLine = in.readLine()) != null) {
@@ -446,13 +436,11 @@ public class BeanShellInterpreterTest {
    */
   @Test
   public void testRoundBuffer() throws URISyntaxException, IOException, EvalError {
-    final String plugin_name = MEMORY_SCRIPT_PLUGIN;
-    final String script_path = "/resources/scripts/roundbuffer.bsh";
 
     final StringBuilder content = new StringBuilder();
-    final File scriptFile = new File(ScriptRunnerTest.SCRIPT_FOLDER_PATH + "roundbuffer.bsh");
+    final File scriptFile = new File(ROUNDBUFFER_SCRIPT);
 
-    try (final BufferedReader in = open(plugin_name, script_path, scriptFile)) {
+    try (final BufferedReader in = new BufferedReader(new FileReader(scriptFile));) {
       String inputLine;
       // instrument code to return the list of matches
       while ((inputLine = in.readLine()) != null) {
@@ -465,7 +453,6 @@ public class BeanShellInterpreterTest {
           content.append(RESLIST_ADD);
         }
       }
-      in.close();
     }
     content.append(RESLIST_SC);
 
@@ -506,15 +493,12 @@ public class BeanShellInterpreterTest {
    */
   @Test
   public void testBroadCast() throws URISyntaxException, IOException, EvalError {
-    final String plugin_name = MEMORY_SCRIPT_PLUGIN;
-    final String script_path = "/resources/scripts/broadcast.bsh";
 
     final StringBuilder content = new StringBuilder();
-    final File scriptFile = new File(ScriptRunnerTest.SCRIPT_FOLDER_PATH + "broadcast.bsh");
+    final File scriptFile = new File(BROADCAST_SCRIPT);
 
-    try (final BufferedReader in = open(plugin_name, script_path, scriptFile)) {
+    try (final BufferedReader in = new BufferedReader(new FileReader(scriptFile));) {
       String inputLine;
-
       // instrument code to return the list of matches
       while ((inputLine = in.readLine()) != null) {
         final boolean contains = inputLine.contains("inputs.get(0).matchWith(inIdx,output,outIdx,matchSize);");
@@ -526,7 +510,6 @@ public class BeanShellInterpreterTest {
           content.append(RESLIST_ADD);
         }
       }
-      in.close();
     }
     content.append(RESLIST_SC);
 
