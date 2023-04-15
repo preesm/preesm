@@ -77,7 +77,8 @@ public class FpgaSynthesisTest {
 
     final String triangleProjectName = "org.ietr.preesm.triangle";
     final String[] stereoScenarios = new String[] { "Triangle.scenario" };
-    final String[] stereoWorkflows = new String[] { "FPGAanalysis.workflow", "FPGAanalysisPacking.workflow" };
+    final String[] stereoWorkflows = new String[] { "FPGAanalysis.workflow", "FPGAanalysisADFGLinear.workflow",
+        "FPGAanalysisAVGEval.workflow", "FPGAanalysisSDFEval.workflow", "FPGAanalysisPacking.workflow" };
     for (final String workflow : stereoWorkflows) {
       for (final String scenario : stereoScenarios) {
         params.add(new Object[] { workflow, scenario, triangleProjectName });
