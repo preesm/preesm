@@ -64,16 +64,15 @@ import org.preesm.commons.exceptions.PreesmRuntimeException;
  */
 public class BeanShellInterpreterTest {
 
+  private static final String PLUGIN_PATH          = "../../plugins/";
   private static final String MEMORY_SCRIPT_PLUGIN = "org.preesm.algorithm";
 
   // Fetch memory scripts from the org.preesm.algorithm package
-  private static final String BROADCAST_SCRIPT   = "../../plugins/" + MEMORY_SCRIPT_PLUGIN
+  private static final String BROADCAST_SCRIPT   = PLUGIN_PATH + MEMORY_SCRIPT_PLUGIN
       + "/resources/scripts/broadcast.bsh";
-  private static final String FORK_SCRIPT        = "../../plugins/" + MEMORY_SCRIPT_PLUGIN
-      + "/resources/scripts/fork.bsh";
-  private static final String JOIN_SCRIPT        = "../../plugins/" + MEMORY_SCRIPT_PLUGIN
-      + "/resources/scripts/join.bsh";
-  private static final String ROUNDBUFFER_SCRIPT = "../../plugins/" + MEMORY_SCRIPT_PLUGIN
+  private static final String FORK_SCRIPT        = PLUGIN_PATH + MEMORY_SCRIPT_PLUGIN + "/resources/scripts/fork.bsh";
+  private static final String JOIN_SCRIPT        = PLUGIN_PATH + MEMORY_SCRIPT_PLUGIN + "/resources/scripts/join.bsh";
+  private static final String ROUNDBUFFER_SCRIPT = PLUGIN_PATH + MEMORY_SCRIPT_PLUGIN
       + "/resources/scripts/roundbuffer.bsh";
 
   private static final String IMPORT = "import ";
@@ -117,6 +116,7 @@ public class BeanShellInterpreterTest {
     Assert.assertNotNull(result);
     Assert.assertTrue(result instanceof ArrayList);
     result = interpreter.eval("list");
+    Assert.assertNotNull(result);
 
     final ByteArrayOutputStream baos = new ByteArrayOutputStream();
     final PrintStream ps = new PrintStream(baos);
