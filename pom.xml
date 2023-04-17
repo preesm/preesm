@@ -75,7 +75,7 @@
 
    <properties>
       <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-      <jacoco-version>0.8.8</jacoco-version>
+      <jacoco-version>0.8.9</jacoco-version>
       <tycho-version>2.7.5</tycho-version>
       <findbugs-version>3.0.5</findbugs-version>
       <sonar-version>3.9.1.2184</sonar-version>
@@ -86,6 +86,7 @@
       <maven.compiler.release>17</maven.compiler.release>
       <maven.compiler.source>${maven.compiler.release}</maven.compiler.source>
       <maven.compiler.target>${maven.compiler.source}</maven.compiler.target>
+      <maven-antrun-version>3.1.0</maven-antrun-version>
 
 
       <!-- ############## -->
@@ -95,9 +96,9 @@
       <emf-version>2.27.0</emf-version>
       <emf-common-version>2.25.0</emf-common-version>
       <emf-codegen-version>2.30.0</emf-codegen-version>
-      <xtext-version>2.29.0</xtext-version>
-      <ecore-xtext-version>1.6.0</ecore-xtext-version>
-      <ecore-xcore-version>1.21.0</ecore-xcore-version>
+      <xtext-version>2.30.0</xtext-version>
+      <ecore-xtext-version>1.7.0</ecore-xtext-version>
+      <ecore-xcore-version>1.24.0</ecore-xcore-version>
       <ecore-xcore-lib-version>1.6.0</ecore-xcore-lib-version>
 
       <!-- ############### -->
@@ -163,7 +164,7 @@
             <plugin>
                <groupId>org.apache.maven.plugins</groupId>
                <artifactId>maven-install-plugin</artifactId>
-               <version>2.5.2</version>
+               <version>3.1.1</version>
             </plugin>
             <!-- configure Xtend compiler -->
             <plugin>
@@ -240,7 +241,7 @@
          <plugin>
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-compiler-plugin</artifactId>
-            <version>3.8.0</version>
+            <version>3.11.0</version>
             <configuration>
                <source>${maven.compiler.release}</source>
                <target>${maven.compiler.release}</target>
@@ -250,7 +251,7 @@
          <plugin>
             <groupId>org.commonjava.maven.plugins</groupId>
             <artifactId>directory-maven-plugin</artifactId>
-            <version>0.3.1</version>
+            <version>1.0</version>
             <executions>
                <execution>
                   <id>directories</id>
@@ -336,8 +337,9 @@
          </plugin>
          <!-- Make sure clean goal removes xtend generated files -->
          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-clean-plugin</artifactId>
-            <version>3.1.0</version>
+            <version>3.2.0</version>
             <configuration>
                <filesets>
                   <fileset>
@@ -355,18 +357,18 @@
          <plugin>
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-antrun-plugin</artifactId>
-            <version>1.8</version>
+            <version>${maven-antrun-version}</version>
          </plugin>
          <plugin>
-            <artifactId>exec-maven-plugin</artifactId>
             <groupId>org.codehaus.mojo</groupId>
-            <version>1.6.0</version>
+            <artifactId>exec-maven-plugin</artifactId>
+            <version>3.1.0</version>
          </plugin>
          <!-- Enable checkstyle and specify custom configuration file -->
          <plugin>
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-checkstyle-plugin</artifactId>
-            <version>3.2.0</version>
+            <version>3.2.1</version>
             <configuration>
                <configLocation>releng/org.preesm.target-platform/VAADER_checkstyle.xml</configLocation>
                <failsOnError>true</failsOnError>
@@ -398,7 +400,7 @@
          <plugin>
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-deploy-plugin</artifactId>
-            <version>2.8.2</version>
+            <version>3.1.1</version>
             <configuration>
                <skip>true</skip>
             </configuration>
@@ -407,7 +409,7 @@
          <plugin>
             <groupId>com.mycila</groupId>
             <artifactId>license-maven-plugin</artifactId>
-            <version>3.0</version>
+            <version>4.2</version>
             <configuration>
                <!-- Indicate the path to a file containing the license header -->
                <header>releng/copyright_template.txt</header>
@@ -457,7 +459,7 @@
          <plugin>
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-dependency-plugin</artifactId>
-            <version>3.1.1</version>
+            <version>3.5.0</version>
          </plugin>
          <plugin>
             <groupId>org.codehaus.mojo</groupId>
@@ -473,7 +475,7 @@
          <plugin>
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-enforcer-plugin</artifactId>
-            <version>3.0.0-M2</version>
+            <version>3.3.0</version>
             <configuration>
                <rules>
                   <bannedPlugins>
