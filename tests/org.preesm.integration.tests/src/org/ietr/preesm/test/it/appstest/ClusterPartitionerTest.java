@@ -48,9 +48,9 @@ import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
 
 /**
- * 
+ *
  * Testing Cluster Partitioner Task
- * 
+ *
  * @author dgageot
  *
  */
@@ -75,8 +75,8 @@ public class ClusterPartitionerTest {
   @Parameters(name = "{0} - {1}")
   public static Collection<Object[]> data() {
     final List<Object[]> params = new ArrayList<>();
-    for (String workflow : WORKFLOWS) {
-      for (String scenario : SCENARIOS) {
+    for (final String workflow : WORKFLOWS) {
+      for (final String scenario : SCENARIOS) {
         params.add(new Object[] { workflow, scenario });
       }
     }
@@ -87,7 +87,7 @@ public class ClusterPartitionerTest {
   public void testClusterScheduler() throws IOException, CoreException {
     final String workflowFilePathStr = "/Workflows/" + workflow;
     final String scenarioFilePathStr = "/Scenarios/" + scenario;
-    final boolean success = WorkflowRunner.runWorkFlow(PROJECT, workflowFilePathStr, scenarioFilePathStr);
+    final boolean success = WorkflowRunner.runWorkFlow(null, PROJECT, workflowFilePathStr, scenarioFilePathStr);
     Assert.assertTrue("Workflow [" + workflow + "] with scenario [" + scenario + "] caused failure", success);
   }
 }

@@ -77,8 +77,8 @@ public class DistributedMemoryCommsHierarchicalTest {
   public static Collection<Object[]> data() {
     final Object[][] params = new Object[workflows.length * scenarios.length][2];
     int i = 0;
-    for (String workflow : workflows) {
-      for (String scenario : scenarios) {
+    for (final String workflow : workflows) {
+      for (final String scenario : scenarios) {
         params[i][0] = workflow;
         params[i][1] = scenario;
         i++;
@@ -91,7 +91,7 @@ public class DistributedMemoryCommsHierarchicalTest {
   public void testDistributedMemoryComms() throws IOException, CoreException {
     final String workflowFilePathStr = "/Workflows/" + workflow;
     final String scenarioFilePathStr = "/Scenarios/" + scenario;
-    final boolean success = WorkflowRunner.runWorkFlow(projectName, workflowFilePathStr, scenarioFilePathStr);
+    final boolean success = WorkflowRunner.runWorkFlow(null, projectName, workflowFilePathStr, scenarioFilePathStr);
     Assert.assertTrue("Workflow [" + workflow + "] with scenario [" + scenario + "] caused failure", success);
   }
 }

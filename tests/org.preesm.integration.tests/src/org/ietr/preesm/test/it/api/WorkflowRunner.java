@@ -62,9 +62,21 @@ import org.preesm.workflow.AbstractWorkflowExecutor;
 public class WorkflowRunner {
 
   /**
+   * Executes a workflow on a given scenario. Exclusively used for unit tests. The project can be in the resources
+   * folder or at a specific location.
+   *
+   * @param projectRoot
+   *          The location of the project, or null if in resources folder
+   * @param projectName
+   *          The project name
+   * @param workflowFilePathStr
+   *          the path to the workflow file within the project
+   * @param scenarioFilePathStr
+   *          the path to the scenario file within the project
+   * @return true, if successful
    */
-  public static final boolean runWorkFlow(final String projectName, final String workflowFilePathStr,
-      final String scenarioFilePathStr) throws CoreException, IOException {
+  public static final boolean runWorkFlow(final String projectRoot, final String projectName,
+      final String workflowFilePathStr, final String scenarioFilePathStr) throws CoreException, IOException {
     // init workspace and project
     final IWorkspace workspace = ResourcesPlugin.getWorkspace();
     final IWorkspaceRoot root = workspace.getRoot();
@@ -80,7 +92,13 @@ public class WorkflowRunner {
 
     try {
       // copy content
-      final URL resolve = PreesmResourcesHelper.getInstance().resolve(projectName, WorkflowRunner.class);
+      URL resolve;
+
+      if (projectRoot == null) {
+        resolve = PreesmResourcesHelper.getInstance().resolve(projectName, WorkflowRunner.class);
+      } else {
+        resolve = new URL("file://" + projectRoot);
+      }
       URLHelper.copyContent(resolve, project);
 
       // run workflow

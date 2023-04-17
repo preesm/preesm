@@ -77,9 +77,10 @@ public class FpgaSynthesisTest {
 
     final String triangleProjectName = "org.ietr.preesm.triangle";
     final String[] stereoScenarios = new String[] { "Triangle.scenario" };
-    final String[] stereoWorkflows = new String[] { "FPGAanalysis.workflow", "FPGAanalysisPacking.workflow" };
-    for (String workflow : stereoWorkflows) {
-      for (String scenario : stereoScenarios) {
+    final String[] stereoWorkflows = new String[] { "FPGAanalysis.workflow", "FPGAanalysisADFGLinear.workflow",
+        "FPGAanalysisAVGEval.workflow", "FPGAanalysisSDFEval.workflow", "FPGAanalysisPacking.workflow" };
+    for (final String workflow : stereoWorkflows) {
+      for (final String scenario : stereoScenarios) {
         params.add(new Object[] { workflow, scenario, triangleProjectName });
       }
     }
@@ -91,7 +92,7 @@ public class FpgaSynthesisTest {
   public void test() throws IOException, CoreException {
     final String workflowFilePathStr = "/Workflows/" + workflow;
     final String scenarioFilePathStr = "/Scenarios/" + scenario;
-    final boolean success = WorkflowRunner.runWorkFlow(projectName, workflowFilePathStr, scenarioFilePathStr);
+    final boolean success = WorkflowRunner.runWorkFlow(null, projectName, workflowFilePathStr, scenarioFilePathStr);
     Assert.assertTrue("Workflow [" + workflow + "] with scenario [" + scenario + "] caused failure", success);
   }
 }

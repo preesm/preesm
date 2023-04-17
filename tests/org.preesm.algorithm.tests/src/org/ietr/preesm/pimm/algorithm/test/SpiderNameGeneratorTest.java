@@ -48,6 +48,6 @@ public class SpiderNameGeneratorTest {
     final String expectedOutput = "CORE_TOTO";
     final String coreName = SpiderNameGenerator.getCoreName(inputString);
     Assert.assertNotNull(coreName);
-    Assert.assertTrue(expectedOutput.equals(coreName));
+    Assert.assertEquals(expectedOutput, coreName);
   }
 }

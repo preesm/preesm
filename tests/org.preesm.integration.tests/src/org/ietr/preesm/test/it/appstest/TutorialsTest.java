@@ -79,8 +79,8 @@ public class TutorialsTest {
     final String[] sobelScenarios = new String[] { "1core.scenario", "4core.scenario", "8coreC6678.scenario" };
     final String[] sobelWorkflows = new String[] { "Codegen.workflow", "InstrumentedCodegen.workflow",
         "CodegenMemoryDeGreef.workflow" };
-    for (String workflow : sobelWorkflows) {
-      for (String scenario : sobelScenarios) {
+    for (final String workflow : sobelWorkflows) {
+      for (final String scenario : sobelScenarios) {
         params.add(new Object[] { workflow, scenario, sobelProjectName });
       }
     }
@@ -90,8 +90,8 @@ public class TutorialsTest {
         "lowMaxDisparity.scenario", "YUV4core.scenario" };
     final String[] stereoWorkflows = new String[] { "CodegenMemoryScriptsMixedMerged.workflow",
         "StaticPiMMCodegen.workflow", "StaticPiMMCodegenMemoryScripts.workflow", "CodegenMemoryDeGreef.workflow" };
-    for (String workflow : stereoWorkflows) {
-      for (String scenario : stereoScenarios) {
+    for (final String workflow : stereoWorkflows) {
+      for (final String scenario : stereoScenarios) {
         params.add(new Object[] { workflow, scenario, stereoProjectName });
       }
     }
@@ -109,7 +109,7 @@ public class TutorialsTest {
   public void test() throws IOException, CoreException {
     final String workflowFilePathStr = "/Workflows/" + workflow;
     final String scenarioFilePathStr = "/Scenarios/" + scenario;
-    final boolean success = WorkflowRunner.runWorkFlow(projectName, workflowFilePathStr, scenarioFilePathStr);
+    final boolean success = WorkflowRunner.runWorkFlow(null, projectName, workflowFilePathStr, scenarioFilePathStr);
     Assert.assertTrue("Workflow [" + workflow + "] with scenario [" + scenario + "] caused failure", success);
   }
 }

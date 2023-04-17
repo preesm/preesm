@@ -79,8 +79,8 @@ public class NewSynthesisTest {
         "lowMaxDisparity.scenario", "YUV4core.scenario" };
     final String[] stereoWorkflows = new String[] { "NEWSynthesisAPI_legacy.workflow",
         "NEWSynthesisAPI_simple.workflow", "NEWSynthesisAPI_periodic.workflow" };
-    for (String workflow : stereoWorkflows) {
-      for (String scenario : stereoScenarios) {
+    for (final String workflow : stereoWorkflows) {
+      for (final String scenario : stereoScenarios) {
         params.add(new Object[] { workflow, scenario, stereoProjectName });
       }
     }
@@ -92,7 +92,7 @@ public class NewSynthesisTest {
   public void test() throws IOException, CoreException {
     final String workflowFilePathStr = "/Workflows/" + workflow;
     final String scenarioFilePathStr = "/Scenarios/" + scenario;
-    final boolean success = WorkflowRunner.runWorkFlow(projectName, workflowFilePathStr, scenarioFilePathStr);
+    final boolean success = WorkflowRunner.runWorkFlow(null, projectName, workflowFilePathStr, scenarioFilePathStr);
     Assert.assertTrue("Workflow [" + workflow + "] with scenario [" + scenario + "] caused failure", success);
   }
 }

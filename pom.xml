@@ -304,6 +304,7 @@
             <artifactId>target-platform-configuration</artifactId>
             <version>${tycho-version}</version>
             <configuration>
+               <executionEnvironment>JavaSE-17</executionEnvironment>
                <target> 
                   <artifact> 
                       <groupId>org.preesm</groupId> 
@@ -534,8 +535,9 @@
             </executions>
          </plugin>
          <plugin>
-           <groupId>org.eclipse.tycho</groupId>
-           <artifactId>tycho-surefire-plugin</artifactId>
+            <groupId>org.eclipse.tycho</groupId>
+            <artifactId>tycho-surefire-plugin</artifactId>
+            <version>${tycho-version}</version>
             <configuration>
                 <includes>
             		<include>**/*Test.java</include>

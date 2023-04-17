@@ -32,7 +32,7 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL license and that you accept its terms.
  */
-package org.ietr.preesm.memory.script;
+package org.ietr.preesm.memory.script.test;
 
 import static org.junit.Assert.assertEquals;
 
@@ -63,40 +63,40 @@ public class RangeTest {
     ranges1.add(new Range(2, 3));
     ranges1.add(new Range(5, 14));
 
-    List<Range> ranges_input = new ArrayList<>();
+    List<Range> rangesInput = new ArrayList<>();
 
     // Check the result of range0 - range1
-    ranges_input.add(new Range(0, 5));
+    rangesInput.add(new Range(0, 5));
     List<Range> difference = range0.difference(range1);
-    assertEquals(ranges_input, difference);
-    ranges_input.clear();
+    assertEquals(rangesInput, difference);
+    rangesInput.clear();
 
     // Check the result of range0 - range3
-    ranges_input.add(new Range(0, 10));
+    rangesInput.add(new Range(0, 10));
     difference = range0.difference(range3);
-    assertEquals(ranges_input, difference);
-    ranges_input.clear();
+    assertEquals(rangesInput, difference);
+    rangesInput.clear();
 
     // Check the result of range0 - range2
-    ranges_input.add(new Range(0, 3));
-    ranges_input.add(new Range(7, 10));
+    rangesInput.add(new Range(0, 3));
+    rangesInput.add(new Range(7, 10));
     difference = range0.difference(range2);
-    assertEquals(ranges_input, difference);
-    ranges_input.clear();
+    assertEquals(rangesInput, difference);
+    rangesInput.clear();
 
     // Check the result of ranges - range1
-    ranges_input.add(new Range(0, 5));
-    ranges_input.add(new Range(15, 17));
+    rangesInput.add(new Range(0, 5));
+    rangesInput.add(new Range(15, 17));
     difference = Range.difference(ranges, range1);
-    assertEquals(ranges_input, difference);
-    ranges_input.clear();
+    assertEquals(rangesInput, difference);
+    rangesInput.clear();
 
     // Check the result of ranges - ranges1
-    ranges_input.add(new Range(0, 2));
-    ranges_input.add(new Range(3, 5));
-    ranges_input.add(new Range(14, 17));
+    rangesInput.add(new Range(0, 2));
+    rangesInput.add(new Range(3, 5));
+    rangesInput.add(new Range(14, 17));
     difference = Range.difference(ranges, ranges1);
-    assertEquals(ranges_input, difference);
-    ranges_input.clear();
+    assertEquals(rangesInput, difference);
+    rangesInput.clear();
   }
 }

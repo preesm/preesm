@@ -32,7 +32,7 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL license and that you accept its terms.
  */
-package org.ietr.preesm.memory.script;
+package org.ietr.preesm.memory.script.test;
 
 import java.io.File;
 import org.junit.Assert;

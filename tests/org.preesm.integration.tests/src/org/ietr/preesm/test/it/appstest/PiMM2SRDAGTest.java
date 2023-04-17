@@ -77,8 +77,8 @@ public class PiMM2SRDAGTest {
     String[] scenarios = new String[] { "1corePrediction.scenario", "4corePrediction.scenario",
         "1coreTraining.scenario", "4coreTraining.scenario" };
     String[] workflows = new String[] { "StaticPiMM2SRDAGCodegen.workflow", "StaticPiMMCodegen.workflow" };
-    for (String workflow : workflows) {
-      for (String scenario : scenarios) {
+    for (final String workflow : workflows) {
+      for (final String scenario : scenarios) {
         params.add(new Object[] { workflow, scenario, projectName });
       }
     }
@@ -88,8 +88,8 @@ public class PiMM2SRDAGTest {
         "YUV4core.scenario" };
     workflows = new String[] { "PiMM2SRDAGCodegenMemoryScriptsMixedMerged.workflow", "StaticPiMM2SRDAGCodegen.workflow",
         "XMLCodegen.workflow" };
-    for (String workflow : workflows) {
-      for (String scenario : scenarios) {
+    for (final String workflow : workflows) {
+      for (final String scenario : scenarios) {
         params.add(new Object[] { workflow, scenario, projectName });
       }
     }
@@ -97,8 +97,8 @@ public class PiMM2SRDAGTest {
     projectName = "org.ietr.preesm.sobel";
     scenarios = new String[] { "1core.scenario", "4core.scenario", "8coreC6678.scenario" };
     workflows = new String[] { "StaticPiMM2SRDAGCodegen.workflow", "XMLCodegen.workflow" };
-    for (String workflow : workflows) {
-      for (String scenario : scenarios) {
+    for (final String workflow : workflows) {
+      for (final String scenario : scenarios) {
         params.add(new Object[] { workflow, scenario, projectName });
       }
     }
@@ -110,7 +110,7 @@ public class PiMM2SRDAGTest {
   public void testSrdag() throws IOException, CoreException {
     final String workflowFilePathStr = "/Workflows/" + workflow;
     final String scenarioFilePathStr = "/Scenarios/" + scenario;
-    final boolean success = WorkflowRunner.runWorkFlow(projectName, workflowFilePathStr, scenarioFilePathStr);
+    final boolean success = WorkflowRunner.runWorkFlow(null, projectName, workflowFilePathStr, scenarioFilePathStr);
     Assert.assertTrue("Workflow [" + workflow + "] with scenario [" + scenario + "] caused failure", success);
   }
 }

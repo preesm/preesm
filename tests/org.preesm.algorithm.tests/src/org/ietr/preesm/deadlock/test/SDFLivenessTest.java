@@ -59,7 +59,11 @@ public class SDFLivenessTest {
     // generate the SDF graph ABC326
     final SDFGraph ABC = generateSDFGraphABC326();
     // check the liveness of the graph
-    SDFLiveness.evaluate(ABC);
+    try {
+      SDFLiveness.evaluate(ABC);
+    } catch (final PreesmException e) {
+      Assert.fail();
+    }
   }
 
   @Test
@@ -75,7 +79,7 @@ public class SDFLivenessTest {
     try {
       SDFLiveness.evaluate(ABC);
       Assert.fail();
-    } catch (PreesmException e) {
+    } catch (final PreesmException e) {
       // success
     }
   }
@@ -107,5 +111,4 @@ public class SDFLivenessTest {
     SDFConsistency.computeRV(graph);
     return graph;
   }
-
 }
