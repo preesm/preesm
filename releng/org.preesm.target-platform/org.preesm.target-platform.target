@@ -95,15 +95,17 @@
 					<type>jar</type>
 				</dependency>
 				<dependency>
+					<!-- Required by org.mockito.mockito-core -->
 					<groupId>net.bytebuddy</groupId>
 					<artifactId>byte-buddy-agent</artifactId>
-					<version>1.12.20</version>
+					<version>1.14.3</version>
 					<type>jar</type>
 				</dependency>
 				<dependency>
+					<!-- Required by org.mockito.mockito-core -->
 					<groupId>net.bytebuddy</groupId>
 					<artifactId>byte-buddy</artifactId>
-					<version>1.12.20</version>
+					<version>1.14.3</version>
 					<type>jar</type>
 				</dependency>
 				<dependency>
@@ -115,13 +117,13 @@
 				<dependency>
 					<groupId>org.antlr</groupId>
 					<artifactId>antlr4-runtime</artifactId>
-					<version>4.11.1</version>
+					<version>4.12.0</version>
 					<type>jar</type>
 				</dependency>
 				<dependency>
 					<groupId>org.antlr</groupId>
 					<artifactId>antlr4</artifactId>
-					<version>4.11.1</version>
+					<version>4.12.0</version>
 					<type>jar</type>
 				</dependency>
 				<dependency>
@@ -155,15 +157,9 @@
 					<type>jar</type>
 				</dependency>
 				<dependency>
-					<groupId>org.beanshell</groupId>
-					<artifactId>bsh</artifactId>
-					<version>2.0b5</version>
-					<type>jar</type>
-				</dependency>
-				<dependency>
 					<groupId>org.choco-solver</groupId>
 					<artifactId>choco-solver</artifactId>
-					<version>4.10.10</version>
+					<version>4.10.12</version>
 					<type>jar</type>
 				</dependency>
 				<dependency>
@@ -175,18 +171,12 @@
 				<dependency>
 					<groupId>org.jfree</groupId>
 					<artifactId>jfreechart</artifactId>
-					<version>1.0.14</version>
+					<version>1.5.4</version>
 					<type>jar</type>
 				</dependency>
 				<dependency>
 					<groupId>org.jgrapht</groupId>
 					<artifactId>jgrapht-core</artifactId>
-					<version>1.5.1</version>
-					<type>jar</type>
-				</dependency>
-				<dependency>
-					<groupId>org.jgrapht</groupId>
-					<artifactId>jgrapht-io</artifactId>
 					<version>1.5.1</version>
 					<type>jar</type>
 				</dependency>
@@ -205,7 +195,7 @@
 				<dependency>
 					<groupId>org.mockito</groupId>
 					<artifactId>mockito-core</artifactId>
-					<version>4.10.0</version>
+					<version>5.3.0</version>
 					<type>jar</type>
 				</dependency>
 				<dependency>
@@ -217,7 +207,7 @@
 				<dependency>
 					<groupId>org.ojalgo</groupId>
 					<artifactId>ojalgo</artifactId>
-					<version>52.0.1</version>
+					<version>53.0.0</version>
 					<type>jar</type>
 				</dependency>
 				<dependency>

@@ -53,9 +53,9 @@ import org.jfree.chart.plot.CategoryPlot;
 import org.jfree.chart.renderer.category.BarRenderer;
 import org.jfree.chart.renderer.category.CategoryItemRendererState;
 import org.jfree.chart.renderer.category.GanttRenderer;
+import org.jfree.chart.ui.RectangleEdge;
 import org.jfree.data.gantt.GanttCategoryDataset;
 import org.jfree.data.gantt.TaskSeriesCollection;
-import org.jfree.ui.RectangleEdge;
 
 /**
  * This renderer plots rounded rectangles.
@@ -71,7 +71,7 @@ public class MyGanttRenderer extends GanttRenderer {
 
   /**
    * Initializes colors.
-   * 
+   *
    * @param idTOcolor
    *          Color map (by task id).
    */
@@ -155,8 +155,8 @@ public class MyGanttRenderer extends GanttRenderer {
 
       }
 
-      RoundRectangle2D bar = new RoundRectangle2D.Double(translatedValue0, rectStart, rectLength, rectBreadth, 10.0,
-          10.0);
+      final RoundRectangle2D bar = new RoundRectangle2D.Double(translatedValue0, rectStart, rectLength, rectBreadth,
+          10.0, 10.0);
       g2.fill(bar);
 
       if (isDrawBarOutline() && (state.getBarWidth() > BarRenderer.BAR_OUTLINE_WIDTH_THRESHOLD)) {
