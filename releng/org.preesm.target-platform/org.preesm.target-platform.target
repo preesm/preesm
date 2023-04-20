@@ -65,6 +65,13 @@
 					<type>jar</type>
 				</dependency>
 				<dependency>
+					<!-- Outdated 1.1.0.Final is required by jackson-module-jsonSchema -->
+					<groupId>javax.validation</groupId>
+					<artifactId>validation-api</artifactId>
+					<version>1.1.0.Final</version>
+					<type>jar</type>
+				</dependency>
+				<dependency>
 					<groupId>com.github.yannrichet</groupId>
 					<artifactId>JMathArray</artifactId>
 					<version>1.0</version>
@@ -77,12 +84,6 @@
 					<type>jar</type>
 				</dependency>
 				<dependency>
-					<groupId>javax.validation</groupId>
-					<artifactId>validation-api</artifactId>
-					<version>1.1.0.Final</version>
-					<type>jar</type>
-				</dependency>
-				<dependency>
 					<groupId>jfree</groupId>
 					<artifactId>jcommon</artifactId>
 					<version>1.0.16</version>
@@ -92,6 +93,12 @@
 					<groupId>jgraph</groupId>
 					<artifactId>jgraph</artifactId>
 					<version>5.5.1</version>
+					<type>jar</type>
+				</dependency>
+				<dependency>
+					<groupId>org.mockito</groupId>
+					<artifactId>mockito-core</artifactId>
+					<version>5.3.0</version>
 					<type>jar</type>
 				</dependency>
 				<dependency>
@@ -193,12 +200,6 @@
 					<type>jar</type>
 				</dependency>
 				<dependency>
-					<groupId>org.mockito</groupId>
-					<artifactId>mockito-core</artifactId>
-					<version>5.3.0</version>
-					<type>jar</type>
-				</dependency>
-				<dependency>
 					<groupId>org.objenesis</groupId>
 					<artifactId>objenesis</artifactId>
 					<version>3.3</version>
@@ -225,13 +226,13 @@
 				<dependency>
 					<groupId>org.slf4j</groupId>
 					<artifactId>slf4j-api</artifactId>
-					<version>2.0.6</version>
+					<version>2.0.7</version>
 					<type>jar</type>
 				</dependency>
 				<dependency>
 					<groupId>org.slf4j</groupId>
 					<artifactId>slf4j-simple</artifactId>
-					<version>2.0.6</version>
+					<version>2.0.7</version>
 					<type>jar</type>
 				</dependency>
 				<dependency>
