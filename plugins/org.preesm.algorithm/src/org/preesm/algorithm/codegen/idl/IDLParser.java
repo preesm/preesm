@@ -66,7 +66,7 @@ public class IDLParser extends parser {
    */
   public static void parse(final String filePath, final IDLTreeVisitor visitor) {
     try {
-      parser.init();
+      parser.cleanup();
       parser.setGenerator(visitor);
       GlobalInputStream.init();
       GlobalInputStream.setInput(filePath);

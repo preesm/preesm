@@ -288,7 +288,7 @@ public class IDLPrototypeFactory implements IFunctionFactory, IDLTreeVisitor {
     } else {
       final CodeGenArgument argument = new CodeGenArgument(arg0.simple_declarator.name(), CodeGenArgument.OUTPUT);
       if ((arg0.paramTypeSpec.name() == null) || (arg0.paramTypeSpec.name().length() == 0)) {
-        argument.setType(arg0.paramTypeSpec.getIDLTypeName());
+        argument.setType(arg0.paramTypeSpec.typeName());
       } else {
         argument.setType(arg0.paramTypeSpec.name());
       }
@@ -303,7 +303,7 @@ public class IDLPrototypeFactory implements IFunctionFactory, IDLTreeVisitor {
     } else {
       final CodeGenArgument argument = new CodeGenArgument(arg0.simple_declarator.name(), CodeGenArgument.INPUT);
       if ((arg0.paramTypeSpec.name() == null) || (arg0.paramTypeSpec.name().length() == 0)) {
-        argument.setType(arg0.paramTypeSpec.getIDLTypeName());
+        argument.setType(arg0.paramTypeSpec.typeName());
       } else {
         argument.setType(arg0.paramTypeSpec.name());
       }
