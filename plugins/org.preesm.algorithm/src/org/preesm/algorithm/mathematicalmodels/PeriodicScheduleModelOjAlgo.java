@@ -65,18 +65,17 @@ public class PeriodicScheduleModelOjAlgo implements SolverMethod {
    */
   @Override
   public Fraction computeNormalizedPeriod(final SDFGraph sdf) {
+
+    // ----- ojAlgo model ---------------------------------
+    final ExpressionsBasedModel model = new ExpressionsBasedModel();
+
     // ----- Variables ---------------------------------------------
     final Map<String, Variable> edgeVariables = new LinkedHashMap<>(sdf.edgeSet().size());
     for (final SDFEdge e : sdf.edgeSet()) {
       edgeVariables.put((String) e.getPropertyBean().getValue(EDGE_NAME),
-          Variable.make((String) e.getPropertyBean().getValue(EDGE_NAME)).lower(0).upper(1)
+          model.newVariable((String) e.getPropertyBean().getValue(EDGE_NAME)).lower(0).upper(1)
               .weight((Double) e.getSource().getPropertyBean().getValue("duration")));
-
     }
-
-    // ----- ojAlgo model ---------------------------------
-    final ExpressionsBasedModel model = new ExpressionsBasedModel();
-    model.addVariables(edgeVariables.values());
 
     // ----- Constraints ------------------------------------------
     // First constraint

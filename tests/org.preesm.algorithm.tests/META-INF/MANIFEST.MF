@@ -6,15 +6,9 @@ Bundle-SymbolicName: org.preesm.algorithm.tests
 Bundle-Version: 3.21.0.qualifier
 Bundle-Vendor: IETR / INSA Rennes - VAADER
 Bundle-RequiredExecutionEnvironment: JavaSE-17
-Require-Bundle: org.junit;bundle-version="4.12.0",
- org.apache.commons.lang3;bundle-version="3.7.0",
- org.jgrapht.core;bundle-version="1.1.0",
- org.preesm.algorithm,
- org.preesm.cli,
- org.preesm.codegen,
+Require-Bundle: org.junit;bundle-version="4.13.2",
+ org.apache.commons.lang3;bundle-version="3.12.0",
  org.preesm.codegen.xtend,
- org.preesm.model.pisdf,
- org.preesm.ui,
  wrapped.org.apache-extras.beanshell.bsh
 Export-Package: org.ietr.dftools.algorithm.test,
  org.ietr.preesm.core.test,

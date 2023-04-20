@@ -75,12 +75,12 @@ import org.jfree.chart.labels.IntervalCategoryItemLabelGenerator;
 import org.jfree.chart.plot.CategoryPlot;
 import org.jfree.chart.plot.DefaultDrawingSupplier;
 import org.jfree.chart.plot.PlotOrientation;
+import org.jfree.chart.ui.RectangleInsets;
 import org.jfree.data.category.IntervalCategoryDataset;
 import org.jfree.data.gantt.Task;
 import org.jfree.data.gantt.TaskSeries;
 import org.jfree.data.gantt.TaskSeriesCollection;
 import org.jfree.data.time.SimpleTimePeriod;
-import org.jfree.ui.RectangleInsets;
 import org.jfree.ui.RefineryUtilities;
 import org.preesm.algorithm.mapper.gantt.GanttComponent;
 import org.preesm.algorithm.mapper.gantt.GanttData;
@@ -241,7 +241,7 @@ public class GanttPlotter {
 
     // Frame init
     if (managedForm == null) {
-      Frame frame = new JFrame("Gantt Chart Plotter");
+      final Frame frame = new JFrame("Gantt Chart Plotter");
       ((JFrame) frame).setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
       RefineryUtilities.centerFrameOnScreen(frame);
 
@@ -287,8 +287,8 @@ public class GanttPlotter {
 
       if (frame != null) {
         // plot inside the window
-        JRootPane root = new JRootPane();
-        Container awtContainer = root.getContentPane();
+        final JRootPane root = new JRootPane();
+        final Container awtContainer = root.getContentPane();
         awtContainer.add(cp);
         frame.add(root);
         ChartPanelPlotterUtils.plotFrameCP(frame, cp);
