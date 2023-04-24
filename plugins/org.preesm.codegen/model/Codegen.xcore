@@ -221,6 +221,14 @@ class CoreBlock extends Block {
 	unordered id int coreID
 }
 
+class ClusterRaiserBlock extends Block {
+	refers FunctionCall clusterFunc 
+	refers LoopBlock bodyBlock
+	refers Buffer[] sinkFifoBuffers
+	String coreType
+	unordered id int coreID
+}
+
 class ClusterBlock extends Block {
 	String schedule
 	boolean parallel
@@ -334,6 +342,14 @@ class FiniteLoopBlock extends LoopBlock {
 	refers IteratedBuffer[] outBuffers
 }
 
+class FiniteLoopClusterRaiserBlock extends LoopBlock {
+	int nbIter
+
+	refers IntVar iter
+	refers IteratedBuffer[] inBuffers
+	refers IteratedBuffer[] outBuffers
+}
+
 class IntVar extends Variable {
 }
 
@@ -345,6 +361,11 @@ class BufferIterator extends SubBuffer {
 class IteratedBuffer extends Buffer {
 	refers Buffer buffer
 	refers IntVar iter
+}
+
+class DynamicBuffer extends Buffer {
+	refers Buffer buffer
+
 }
 
 class PapifyAction extends Variable {

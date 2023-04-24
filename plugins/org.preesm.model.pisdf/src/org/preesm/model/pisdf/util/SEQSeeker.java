@@ -39,7 +39,6 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import org.preesm.commons.graph.Vertex;
 import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.AbstractVertex;
@@ -48,63 +47,110 @@ import org.preesm.model.pisdf.DataInputInterface;
 import org.preesm.model.pisdf.DataInputPort;
 import org.preesm.model.pisdf.DataOutputInterface;
 import org.preesm.model.pisdf.DataOutputPort;
+import org.preesm.model.pisdf.Delay;
 import org.preesm.model.pisdf.DelayActor;
-import org.preesm.model.pisdf.ExecutableActor;
 import org.preesm.model.pisdf.Fifo;
 import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.pisdf.SpecialActor;
 
 /**
- * This class is used to seek chain of actors in a given PiGraph that form a Uniform Repetition Count (URC) without
- * internal state (see the article of Pino et al. "A Hierarchical Multiprocessor Scheduling System For DSP
- * Applications").
+ * This class is used to seek distribute sequential actors in several PiGraph in order to obtain subgraphs of uniform
+ * time and fitting with the number of Procesing elements
  *
- * @author dgageot
+ * @author orenaud
  *
  */
-public class URCSeeker extends PiMMSwitch<Boolean> {
+public class SEQSeeker extends PiMMSwitch<Boolean> {
 
   /**
    * Input graph.
    */
   final PiGraph graph;
 
-  /**
-   * List of identified URCs.
-   */
-  final List<List<AbstractActor>> identifiedURCs;
+  final int                       nPEs;
   final Map<AbstractVertex, Long> brv;
-  final List<AbstractActor>       nonClusterableList;
-  final Map<AbstractActor, Long>  topoOrder;
 
   /**
-   * Builds a URCSeeker based on a input graph.
+   * List of identified SEQs.
+   */
+  final List<List<AbstractActor>> identifiedSEQs;
+  final List<AbstractActor>       nonClusterableList;
+  final Map<AbstractVertex, Long> actorTiming;
+
+  final Map<AbstractActor, Long> topoOrder;
+  final int                      subgraphGen;
+
+  /**
+   * Builds a SEQSeeker based on a input graph.
    *
    * @param inputGraph
    *          Input graph to search in.
+   * @param numberOfPEs
+   * @param brv
+   * @param subgraphGen
    */
-  public URCSeeker(final PiGraph inputGraph, List<AbstractActor> nonClusterableList, Map<AbstractVertex, Long> brv) {
+  public SEQSeeker(final PiGraph inputGraph, int numberOfPEs, Map<AbstractVertex, Long> brv,
+      List<AbstractActor> nonClusterableList, Map<AbstractVertex, Long> actorTiming, int subgraphGen) {
     this.graph = inputGraph;
-    this.identifiedURCs = new LinkedList<>();
-    this.nonClusterableList = nonClusterableList;
+    this.identifiedSEQs = new LinkedList<>();
+    this.nPEs = numberOfPEs;
     this.brv = brv;
+    this.actorTiming = actorTiming;
     this.topoOrder = new HashMap<>();
+    this.nonClusterableList = nonClusterableList;
+    this.subgraphGen = subgraphGen;
   }
 
   /**
-   * Seek for URC chain in the input graph.
+   * Seek for SRV chain in the input graph.
    *
    * @return List of identified URC chain.
    */
   public List<List<AbstractActor>> seek() {
     // Clear the list of identified URCs
-    this.identifiedURCs.clear();
-    // compute topological order
-    computeTopoOrder();
-    // Explore all executable actors of the graph
-    this.graph.getActors().stream().filter(x -> x instanceof ExecutableActor).forEach(x -> doSwitch(x));
+    this.identifiedSEQs.clear();
+    if ((!this.graph.getName().contains("seq_") && subgraphGen == 1) || (subgraphGen == 2)) {
+      // compute topological order
+      computeTopoOrder();
+      // fill seq list
+      computeSeqList(); // SpecialActor)
+    }
     // Return identified URCs
-    return identifiedURCs;
+    return identifiedSEQs;
+  }
+
+  private void computeSeqList() {
+    final List<AbstractActor> seqList = new LinkedList<>();
+    final List<AbstractActor> seqListcopy = new LinkedList<>();
+    Long rank = 0L;
+    boolean endList = false;
+    // check if ranks contain GRAIN candidate (RV< and negligible timing)
+    while (!endList) {
+      for (final AbstractActor a : this.graph.getExecutableActors()) {
+        if (brv.get(a) < nPEs && topoOrder.get(a).equals(rank) && ((seqListcopy.isEmpty())
+            || (!seqListcopy.isEmpty() && !a.getDataInputPorts().stream().anyMatch(x -> x.getFifo().isHasADelay())))) {
+          seqList.add(a);
+        }
+      }
+      // if there is more than one candidate add it to the list
+      if (seqList.isEmpty() && seqListcopy.size() > 1 || rank == this.graph.getExecutableActors().size()) {
+        endList = true;
+      } else if (seqList.isEmpty() && seqListcopy.size() == 1) {
+        seqListcopy.clear();
+      } else {
+        seqListcopy.addAll(seqList);
+
+        rank++;
+        seqList.clear();
+      }
+
+    }
+    if (seqListcopy.size() == 1) {
+      seqListcopy.clear();
+    }
+    if (!seqListcopy.isEmpty()) {
+      this.identifiedSEQs.add(seqListcopy);
+    }
   }
 
   private void computeTopoOrder() {
@@ -164,94 +210,85 @@ public class URCSeeker extends PiMMSwitch<Boolean> {
       nextRankList.clear();
       currentRank++;
     }
+    // add getter setter
+    for (final Delay d : graph.getDelays()) {
+      if (d.hasGetterActor()) {
+        if (d.getGetterActor() instanceof Actor || d.getGetterActor() instanceof SpecialActor) {
+          this.topoOrder.put(d.getGetterActor(), currentRank);
+        }
+      }
+      if (d.hasSetterActor()) {
+        if (d.getSetterActor() instanceof Actor || d.getSetterActor() instanceof SpecialActor) {
+          this.topoOrder.put(d.getSetterActor(), 0L);
+        }
+      }
+    }
   }
 
   @Override
   public Boolean caseAbstractActor(AbstractActor base) {
-    boolean barrier = false;
-    // Check that all fifos are homogeneous and without delay
-    final boolean homogeneousRates = base.getDataOutputPorts().stream()
-        .allMatch(x -> doSwitch(x.getFifo()).booleanValue());
+
+    final boolean heterogenousRate = base.getDataOutputPorts().stream()
+        .anyMatch(x -> doSwitch(x.getFifo()).booleanValue());
     // Return false if rates are not homogeneous or that the corresponding actor was a sink (no output)
-    if (!homogeneousRates || base.getDataOutputPorts().isEmpty() || nonClusterableList.contains(base)) {
-      return false;
-    }
-    final boolean hiddenDelayOk = base.getDataInputPorts().stream().allMatch(x -> doSwitch(x).booleanValue());
-    if (!hiddenDelayOk) {
+    if (!heterogenousRate || base.getDataOutputPorts().isEmpty() || nonClusterableList.contains(base)) {
       return false;
     }
 
-    // Get the candidate i.e. the following actor in the topological order
-    for (final DataOutputPort p : base.getDataOutputPorts()) {
+    return true;
 
-      barrier = false;
-      // Check that the actually processed actor as only fifos outgoing to the candidate actor
-      final AbstractActor candidate = (AbstractActor) p.getFifo().getTarget();
-
-      final boolean homogeneousRatesBis = candidate.getDataInputPorts().stream()
-          // Check that the candidate actor as only fifos incoming from the base actor
-          .allMatch(x -> doSwitch(x.getFifo()).booleanValue());
-
-      if (!homogeneousRatesBis || nonClusterableList.contains(candidate) || candidate instanceof DelayActor
-          || candidate instanceof PiGraph) {
-        barrier = true;
-      }
-
-      if (!barrier && topoOrder.get(base) != null && topoOrder.get(candidate) != null) {
-        // Check that the actually processed actor as only fifos outgoing to the candidate actor
-        final boolean allOutputGoesToOrAfterCandidate = base.getDataOutputPorts().stream()
-            .allMatch(x -> topoOrder.get(x.getFifo().getTarget()) > topoOrder.get(candidate)
-                || x.getFifo().getTarget().equals(candidate));
-        // Check that the candidate actor as only fifos incoming from the base actor
-        final boolean allInputComeFromOrBeforeBase = candidate.getDataInputPorts().stream().allMatch(
-            x -> topoOrder.get(base) < topoOrder.get(x.getFifo().getSource()) || x.getFifo().getSource().equals(base));
-
-        // If the candidate agree with the conditions, register this URC
-        if (allOutputGoesToOrAfterCandidate && allInputComeFromOrBeforeBase && !base.getName().contains("urc")
-            && !base.getName().contains("loop") && !(base instanceof PiGraph)) {
-
-          List<AbstractActor> actorURC = new LinkedList<>();
-
-          // URC found with base actor in it?
-          final Optional<List<AbstractActor>> actorListOpt = this.identifiedURCs.stream().filter(x -> x.contains(base))
-              .findFirst();
-          if (actorListOpt.isPresent()) {
-            actorURC = actorListOpt.get();
-          } else {
-            // If no URC chain list has been found, create it
-            // Create a URC list for the new one
-            actorURC.add(base);
-            // Add it to identified URC
-            this.identifiedURCs.add(actorURC);
-          }
-
-          // URC found with candidate actor in it?
-          final Optional<List<AbstractActor>> candidateListOpt = this.identifiedURCs.stream()
-              .filter(x -> x.contains(candidate)).findFirst();
-          if (candidateListOpt.isPresent()) {
-            final List<AbstractActor> candidateURC = candidateListOpt.get();
-            // Remove the list from identified URCs
-            this.identifiedURCs.remove(candidateURC);
-            // Add all elements to the list of actor
-            actorURC.addAll(candidateURC);
-          } else {
-            // Add the candidate in the URC chain of actor
-            actorURC.add(candidate);
-          }
-          return true;
-        }
-      }
-
-    }
-
-    return false;
   }
 
   @Override
   public Boolean caseFifo(Fifo fifo) {
-    // Return true if rates are homogeneous and that no delay is involved
-    return (fifo.getSourcePort().getExpression().evaluate() == fifo.getTargetPort().getExpression().evaluate())
-        && (fifo.getDelay() == null);
+    if (!(fifo.getTarget() instanceof Actor)) {
+      return false;
+    }
+
+    // hidden delay cond
+    final boolean hiddenDelay = fifo.isHasADelay();
+
+    // precedence shift cond
+    boolean firstShift = false;
+    for (final DataOutputPort p : ((AbstractActor) fifo.getSource()).getDataOutputPorts()) {
+      if (p.getFifo().isHasADelay()) {
+        firstShift = true;
+      }
+    }
+
+    boolean secondShift = false;
+    for (final DataInputPort p : ((AbstractActor) fifo.getTarget()).getDataInputPorts()) {
+      if (p.getFifo().isHasADelay()) {
+        secondShift = true;
+      }
+    }
+
+    // cycle introduction
+    final boolean cycle = false;
+
+    // Return true if rates are heterogeneous and that no delay is involved
+    if (!hiddenDelay && !firstShift && !secondShift && !cycle && !(fifo.getSource() instanceof DataInputInterface)
+        && !(fifo.getTarget() instanceof DataOutputInterface)) {
+
+      return true;
+    }
+    return false;
   }
 
+  private int sizeofbit(String type) {
+    // TODO Auto-generated method stub
+    if (type.equals("byte") || type.equals("boolean")) {
+      return 8;
+    }
+    if (type.equals("short") || type.equals("char") || type.equals("uchar")) {
+      return 8;
+    }
+    if (type.equals("int") || type.equals("float")) {
+      return 32;
+    }
+    if (type.equals("Long") || type.equals("double")) {
+      return 64;
+    }
+    return 32;
+  }
 }
