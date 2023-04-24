@@ -131,6 +131,7 @@ class ClusterRaiserSchedule{
 	boolean endLoop
 	boolean LoopPrec
 	int endLoopNb
+	refers ComponentInstance cmp
 }
 
 /*

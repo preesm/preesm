@@ -40,6 +40,7 @@ package org.preesm.codegen.printer;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -47,11 +48,13 @@ import java.util.stream.Collectors;
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.xtend2.lib.StringConcatenation;
+import org.preesm.codegen.model.ActorFunctionCall;
 import org.preesm.codegen.model.Block;
 import org.preesm.codegen.model.Buffer;
 import org.preesm.codegen.model.BufferIterator;
 import org.preesm.codegen.model.CallBlock;
 import org.preesm.codegen.model.ClusterBlock;
+import org.preesm.codegen.model.ClusterRaiserBlock;
 import org.preesm.codegen.model.CodeElt;
 import org.preesm.codegen.model.CodegenPackage;
 import org.preesm.codegen.model.Communication;
@@ -60,8 +63,10 @@ import org.preesm.codegen.model.ConstantString;
 import org.preesm.codegen.model.CoreBlock;
 import org.preesm.codegen.model.DataTransferAction;
 import org.preesm.codegen.model.DistributedMemoryCommunication;
+import org.preesm.codegen.model.DynamicBuffer;
 import org.preesm.codegen.model.FifoCall;
 import org.preesm.codegen.model.FiniteLoopBlock;
+import org.preesm.codegen.model.FiniteLoopClusterRaiserBlock;
 import org.preesm.codegen.model.FpgaLoadAction;
 import org.preesm.codegen.model.FreeDataTransferBuffer;
 import org.preesm.codegen.model.FunctionCall;
@@ -83,6 +88,7 @@ import org.preesm.codegen.model.Variable;
 import org.preesm.codegen.model.util.CodegenSwitch;
 import org.preesm.codegen.xtend.task.CodegenEngine;
 import org.preesm.commons.exceptions.PreesmRuntimeException;
+import org.preesm.model.pisdf.Actor;
 import org.preesm.model.slam.ComponentInstance;
 
 /**
@@ -439,6 +445,202 @@ public abstract class CodegenAbstractPrinter extends CodegenSwitch<CharSequence>
     return result;
   }
 
+  @Override
+  public CharSequence caseClusterRaiserBlock(final ClusterRaiserBlock clusterRaiserBlock) {
+
+    // The ClusterRaiserblock is structured as follow:
+    // ClusterRaiserblock
+    // - FunctionInitBlock
+    // - FunctionCallBlock
+    // - BufferBlock
+    // - CoreLoopBlock
+
+    final String indentationClusterBlock = "";
+    final StringConcatenation result = new StringConcatenation();
+
+    final FunctionCall function = clusterRaiserBlock.getClusterFunc();
+
+    final EList<Variable> definitions = clusterRaiserBlock.getDefinitions();
+    final ArrayList<Variable> declarations = new ArrayList<>();
+    for (final Variable declaration : clusterRaiserBlock.getDefinitions()) {
+      if (declaration instanceof DynamicBuffer && declaration.getComment().equals("store data port")) {
+        declarations.add(declaration);
+      }
+    }
+
+    // print ClusterRaiserblock Header
+    result.append(printclusterRaiserHeader(clusterRaiserBlock), indentationClusterBlock);
+    // visit global buffer
+    for (int i = 0; i < clusterRaiserBlock.getInitBuffers().size(); i++) {
+      result.append(clusterRaiserBlock.getInitBuffers().get(i).getType() + " "
+          + clusterRaiserBlock.getInitBuffers().get(i).getName() + "["
+          + clusterRaiserBlock.getInitBuffers().get(i).getSizeInBit() + "];\n", indentationClusterBlock);
+    }
+    // print init func
+    if (!clusterRaiserBlock.getInitBuffers().isEmpty() || clusterRaiserBlock.getInitBlock() != null) {
+      result.append(function.getName() + "Init(){\n", indentationClusterBlock);
+      if (clusterRaiserBlock.getInitBuffers() != null) {
+        result.append("\n//Buffer Initialisation \n", indentationClusterBlock);
+        for (final Buffer bf : clusterRaiserBlock.getInitBuffers()) {
+          result.append("fifoInit(" + bf.getName() + "," + bf.getComment() + ",NULL,0); // " + bf.getComment() + " * "
+              + bf.getType() + "\n", indentationClusterBlock);
+        }
+      }
+      // init actor
+      if (clusterRaiserBlock.getInitBlock() != null) {
+        result.append("\n//Actor Initialisation \n", indentationClusterBlock);
+        for (final CodeElt a : clusterRaiserBlock.getInitBlock().getCodeElts()) {
+          final ActorFunctionCall afc = (ActorFunctionCall) a;
+          result.append(afc.getName() + "(", indentationClusterBlock);
+          for (final Variable p : afc.getParameters()) {
+            result.append(p.getName() + ",", indentationClusterBlock);
+          }
+          result.append("); //" + afc.getActorName() + "\n", indentationClusterBlock);
+        }
+
+      }
+      result.append("}\n", indentationClusterBlock);
+    }
+    // Visit function param.
+    final StringConcatenation result2 = printFunctionClusterRaiserBlock(clusterRaiserBlock, indentationClusterBlock,
+        function);
+    result.append(result2, indentationClusterBlock);
+    // Visit buffer block
+    result.append("\n//Buffer definition \n", indentationClusterBlock);
+    final int defSize = definitions.size() - 1;
+    for (int i = 0; i < definitions.size() - 1; i++) {
+      if (!definitions.get(defSize - i).getComment().equals("store data port")) {
+        // result.append("extern " + definitions.get(defSize - i).getType() + " " + definitions.get(defSize -
+        // i).getName()
+        // + "[]; \n", indentationClusterBlock);
+        definitions.remove(definitions.get(defSize - i));
+        if (definitions.isEmpty()) {
+          break;
+        }
+      }
+    }
+    final StringConcatenation result3_0 = printDefinitionsClusterRaiserBlock(indentationClusterBlock, definitions);
+    result.append(result3_0, indentationClusterBlock);
+
+    // Visit loop block
+    result.append("\n//Begin Firing actor \n", indentationClusterBlock);
+    final StringConcatenation result4 = printLoopClusterRaiserBlock(clusterRaiserBlock, indentationClusterBlock);
+    result.append(result4, indentationClusterBlock);
+
+    result.append("\n//Free Buffer \n", indentationClusterBlock);
+    final int decSize = declarations.size() - 1;
+    for (int i = 0; i < declarations.size() - 1; i++) {
+      if (!declarations.get(decSize - i).getComment().equals("store data port")) {
+        declarations.remove(declarations.get(decSize - i));
+        if (declarations.isEmpty()) {
+          break;
+        }
+      }
+    }
+
+    final StringConcatenation result5 = printFreeClusterRaiserBlock(indentationClusterBlock, declarations);
+    result.append(result5, indentationClusterBlock);
+
+    // print ClusterRaiserblock Footer
+    result.append("}", indentationClusterBlock);
+
+    return result;
+  }
+
+  private StringConcatenation printDefinitionsClusterRaiserBlock(final String indentationClusterBlock,
+      final EList<Variable> definitions) {
+    StringConcatenation result = new StringConcatenation();
+    String indentation;
+    boolean hasNewLine;
+    setState(PrinterState.PRINTING_DEFINITIONS);
+    result.append(" ", indentationClusterBlock);
+    indentation = CodegenAbstractPrinter.getLastLineIndentation(result);
+    result = CodegenAbstractPrinter.trimLastEOL(result);
+    hasNewLine = CodegenAbstractPrinter.endWithEOL(result);
+
+    // result.append(coreBlock.definitions.map[doSwitch].join(''), indentation)
+    for (final Variable v : definitions) {
+      final CharSequence code = doSwitch(v);
+      result.append(code, "");
+    }
+
+    setState(PrinterState.IDLE);
+    return result;
+  }
+
+  private StringConcatenation printFreeClusterRaiserBlock(String indentationClusterBlock,
+      ArrayList<Variable> declarations) {
+    StringConcatenation result = new StringConcatenation();
+    String indentation;
+    boolean hasNewLine;
+    setState(PrinterState.PRINTING_DECLARATIONS);
+    result.append(" ", indentationClusterBlock);
+    indentation = CodegenAbstractPrinter.getLastLineIndentation(result);
+    result = CodegenAbstractPrinter.trimLastEOL(result);
+    hasNewLine = CodegenAbstractPrinter.endWithEOL(result);
+
+    // result.append(coreBlock.definitions.map[doSwitch].join(''), indentation)
+    for (final Variable v : declarations) {
+      final CharSequence code = doSwitch(v);
+      result.append(code, indentation);
+    }
+
+    setState(PrinterState.IDLE);
+
+    return result;
+  }
+
+  private StringConcatenation printLoopClusterRaiserBlock(final ClusterRaiserBlock clusterRaiserBlock,
+      final String indentationClusterBlock) {
+    final StringConcatenation result = new StringConcatenation();
+    result.append(doSwitch(clusterRaiserBlock.getBodyBlock()), indentationClusterBlock);
+
+    return result;
+  }
+
+  private StringConcatenation printFunctionClusterRaiserBlock(ClusterRaiserBlock clusterRaiserBlock,
+      String indentationClusterBlock, FunctionCall function) {
+    final StringConcatenation result = new StringConcatenation();
+    result.append("void ", indentationClusterBlock);// type fct
+
+    result.append(function.getName() + "(", indentationClusterBlock);// name fct
+    for (int i = 0; i < function.getParameters().size() - 1; i++) {
+      if (function.getParameters().get(i).getComment().equals("cfg")
+          || function.getParameters().get(i).getComment().equals("input")
+          || function.getParameters().get(i).getComment().equals("output")
+              && !result.toString().contains(function.getParameters().get(i).getName())) {
+        result.append(function.getParameters().get(i).getType() + " ", indentationClusterBlock);
+        result.append(function.getParameters().get(i).getName() + ",", indentationClusterBlock);
+      }
+    }
+    if (function.getParameters().size() > 0) {
+      result.append(function.getParameters().get(function.getParameters().size() - 1).getType() + " ",
+          indentationClusterBlock);
+      result.append(function.getParameters().get(function.getParameters().size() - 1).getName() + ")",
+          indentationClusterBlock);
+    } else {
+      result.append(")", indentationClusterBlock);
+    }
+
+    result.append("{", indentationClusterBlock);// compute fct
+
+    // print parameters expression
+    for (int i = 0; i < function.getParameters().size() - 1; i++) {
+      // if (result.toString().contains(function.getParameters().get(i).getName())) {
+      // function.getParameters().remove(i);
+      // }
+      if (!function.getParameters().get(i).getComment().equals("cfg")
+          && !function.getParameters().get(i).getComment().equals("output")
+          && !function.getParameters().get(i).getComment().equals("input")
+          && !result.toString().contains(function.getParameters().get(i).getName())) {
+        result.append(function.getParameters().get(i).getType() + " " + function.getParameters().get(i).getName()
+            + " = " + function.getParameters().get(i).getComment() + ";", indentationClusterBlock);// compute fct
+      }
+    }
+
+    return result;
+  }
+
   private StringConcatenation printDeclarations(final CoreBlock coreBlock, StringConcatenation result,
       final String indentationCoreBlock, final EList<Variable> definitions) {
     String indentation;
@@ -607,9 +809,8 @@ public abstract class CodegenAbstractPrinter extends CodegenSwitch<CharSequence>
   public CharSequence casePapifyAction(final PapifyAction action) {
     if (this.state.equals(PrinterState.PRINTING_DEFINITIONS)) {
       return printPapifyActionDefinition(action);
-    } else {
-      return printPapifyActionParam(action);
     }
+    return printPapifyActionParam(action);
 
   }
 
@@ -709,6 +910,31 @@ public abstract class CodegenAbstractPrinter extends CodegenSwitch<CharSequence>
 
     return result;
   }
+
+  @Override
+  public CharSequence caseFiniteLoopClusterRaiserBlock(final FiniteLoopClusterRaiserBlock loopBlock) {
+
+    // The FiniteLoopClusterRaiserBlock is structured as follow :
+    // FiniteLoopClusterRaiserBlock
+    // - loopBlock
+    // - codeLoopBlock
+
+    final StringConcatenation result = new StringConcatenation();
+    final CharSequence finiteLoopBlockheader = printFiniteLoopClusterRaiserBlockHeader(loopBlock);
+    result.append(finiteLoopBlockheader, "");
+
+    // Visit all codeElements
+    final EList<CodeElt> codeElts = loopBlock.getCodeElts();
+    for (final CodeElt codeElt : codeElts) {
+      final CharSequence code = doSwitch(codeElt);
+      result.append(code, "");
+    }
+    result.append("}", "");
+
+    return result;
+  }
+
+  protected abstract CharSequence printFiniteLoopClusterRaiserBlockHeader(FiniteLoopClusterRaiserBlock loopBlock);
 
   @Override
   public CharSequence caseClusterBlock(final ClusterBlock clusterBlock) {
@@ -830,6 +1056,19 @@ public abstract class CodegenAbstractPrinter extends CodegenSwitch<CharSequence>
     }
 
     return printSubBuffer(subBuffer);
+  }
+
+  @Override
+  public CharSequence caseDynamicBuffer(final DynamicBuffer dynamicBuffer) {
+    if (this.state.equals(PrinterState.PRINTING_DEFINITIONS)) {
+      return printDynamicBufferDefinition(dynamicBuffer);
+    }
+
+    if (this.state.equals(PrinterState.PRINTING_DECLARATIONS)) {
+      return printDynamicBufferFree(dynamicBuffer);
+    }
+
+    return printDynamicBuffer(dynamicBuffer);
   }
 
   @Override
@@ -1365,6 +1604,36 @@ public abstract class CodegenAbstractPrinter extends CodegenSwitch<CharSequence>
   public abstract CharSequence printSubBuffer(SubBuffer subBuffer);
 
   /**
+   * Method called to print a {@link DynamicBuffer} within the {@link CoreBlock#declaration() declaration}
+   * {@link CallBlock} of a {@link CoreBlock}
+   *
+   * @param subBuffer
+   *          the {@link DynamicBuffer} to print.
+   * @return the printed {@link CharSequence}
+   */
+  public abstract CharSequence printDynamicBufferFree(DynamicBuffer dynamicBuffer);
+
+  /**
+   * Method called to print a {@link DynamicBuffer} within the {@link CoreBlock#getDefinitions() definition}
+   * {@link CallBlock} of a {@link CoreBlock}
+   *
+   * @param subBuffer
+   *          the {@link DynamicBuffer} to print.
+   * @return the printed {@link CharSequence}
+   */
+  public abstract CharSequence printDynamicBufferDefinition(DynamicBuffer dynamicBuffer);
+
+  /**
+   * Method called to print a {@link SubBuffer} outside the {@link CoreBlock#getDefinitions() definition} or the
+   * {@link CoreBlock#getDeclarations() declaration} of a {@link CoreBlock}
+   *
+   * @param subBuffer
+   *          the {@link SubBuffer} to print.
+   * @return the printed {@link CharSequence}
+   */
+  public abstract CharSequence printDynamicBuffer(DynamicBuffer dynamicBuffer);
+
+  /**
    * Method called to print a {@link SubBuffer} within the {@link CoreBlock#getDeclarations() declaration}
    * {@link CallBlock} of a {@link CoreBlock}
    *
@@ -1483,4 +1752,53 @@ public abstract class CodegenAbstractPrinter extends CodegenSwitch<CharSequence>
    * @return the printed {@link CharSequence}
    */
   public abstract CharSequence printGlobalBufferDeclaration(final GlobalBufferDeclaration action);
+
+  public CharSequence clusterRaiserSecondaryFileHeader(ClusterRaiserBlock block) {
+    final StringConcatenation result = new StringConcatenation();
+    final String indentationClusterBlock = "";
+    final FunctionCall function = block.getClusterFunc();
+    // retrieve actors
+    final List<Actor> actors = new LinkedList<>();
+    for (final CodeElt ce : block.getBodyBlock().getCodeElts()) {
+      if (ce instanceof ActorFunctionCall) {
+        actors.add((Actor) ((ActorFunctionCall) ce).getOriActor());
+      } else if (ce instanceof FiniteLoopClusterRaiserBlock) {
+        for (final CodeElt innerce : ((FiniteLoopClusterRaiserBlock) ce).getCodeElts()) {
+          if (innerce instanceof ActorFunctionCall) {
+            actors.add((Actor) ((ActorFunctionCall) innerce).getOriActor());
+          }
+        }
+      }
+    } // not good method --> complex when nested loop
+    final FunctionCall func = block.getClusterFunc();
+    result.append(printclusterRaiserSecondaryFileHeader(block, actors, func), indentationClusterBlock);
+
+    result.append("void ", indentationClusterBlock);// type fct
+    function.getName();
+    result.append(function.getName() + "(", indentationClusterBlock);// name fct
+    for (int i = 0; i < function.getParameters().size() - 1; i++) {
+      if (function.getParameters().get(i).getComment().equals("cfg")
+          || function.getParameters().get(i).getComment().equals("input")
+          || function.getParameters().get(i).getComment().equals("output")
+              && !result.toString().contains(function.getParameters().get(i).getName())) {
+        result.append(function.getParameters().get(i).getType() + " ", indentationClusterBlock);
+        result.append(function.getParameters().get(i).getName() + ",", indentationClusterBlock);
+      }
+    }
+    if (function.getParameters().size() > 0) {
+      result.append(function.getParameters().get(function.getParameters().size() - 1).getType() + " ",
+          indentationClusterBlock);
+      result.append(function.getParameters().get(function.getParameters().size() - 1).getName() + ");",
+          indentationClusterBlock);
+    } else {
+      result.append(");", indentationClusterBlock);
+    }
+    result.append("#endif", indentationClusterBlock);
+    return result;
+  }
+
+  protected abstract CharSequence printclusterRaiserHeader(ClusterRaiserBlock block);
+
+  protected abstract CharSequence printclusterRaiserSecondaryFileHeader(ClusterRaiserBlock block, List<Actor> actors,
+      FunctionCall func);
 }

@@ -222,12 +222,23 @@ class CoreBlock extends Block {
 }
 
 class ClusterRaiserBlock extends Block {
+	String initFunc
 	refers FunctionCall clusterFunc 
 	refers LoopBlock bodyBlock
+	refers Block initBlock
 	refers Buffer[] sinkFifoBuffers
+	refers Buffer[] initBuffers
 	String coreType
 	unordered id int coreID
 }
+
+//class ClusterInitBlock extends Block {
+//	refers FunctionCall clusterFunc 
+//	refers Block bodyBlock
+//	refers Buffer[] sinkFifoBuffers
+//	String coreType
+//	unordered id int coreID
+//}
 
 class ClusterBlock extends Block {
 	String schedule

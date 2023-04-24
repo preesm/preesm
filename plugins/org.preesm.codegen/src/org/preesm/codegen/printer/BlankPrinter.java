@@ -46,14 +46,17 @@ import org.preesm.codegen.model.Buffer;
 import org.preesm.codegen.model.BufferIterator;
 import org.preesm.codegen.model.CallBlock;
 import org.preesm.codegen.model.ClusterBlock;
+import org.preesm.codegen.model.ClusterRaiserBlock;
 import org.preesm.codegen.model.Communication;
 import org.preesm.codegen.model.Constant;
 import org.preesm.codegen.model.ConstantString;
 import org.preesm.codegen.model.CoreBlock;
 import org.preesm.codegen.model.DataTransferAction;
 import org.preesm.codegen.model.DistributedMemoryCommunication;
+import org.preesm.codegen.model.DynamicBuffer;
 import org.preesm.codegen.model.FifoCall;
 import org.preesm.codegen.model.FiniteLoopBlock;
+import org.preesm.codegen.model.FiniteLoopClusterRaiserBlock;
 import org.preesm.codegen.model.FpgaLoadAction;
 import org.preesm.codegen.model.FreeDataTransferBuffer;
 import org.preesm.codegen.model.FunctionCall;
@@ -71,6 +74,7 @@ import org.preesm.codegen.model.SharedMemoryCommunication;
 import org.preesm.codegen.model.SpecialCall;
 import org.preesm.codegen.model.SubBuffer;
 import org.preesm.codegen.model.Variable;
+import org.preesm.model.pisdf.Actor;
 
 /**
  * This {@link BlankPrinter} is a dummy implementation of the {@link CodegenAbstractPrinter} where all print methods
@@ -349,6 +353,43 @@ public class BlankPrinter extends CodegenAbstractPrinter {
 
   @Override
   public CharSequence printPostFunctionCall(FunctionCall functionCall) {
+    return "";
+  }
+
+  @Override
+  protected CharSequence printclusterRaiserSecondaryFileHeader(ClusterRaiserBlock block, List<Actor> actors,
+      FunctionCall func) {
+    // TODO Auto-generated method stub
+    return "";
+  }
+
+  @Override
+  protected CharSequence printFiniteLoopClusterRaiserBlockHeader(FiniteLoopClusterRaiserBlock loopBlock) {
+    // TODO Auto-generated method stub
+    return "";
+  }
+
+  @Override
+  public CharSequence printDynamicBufferFree(DynamicBuffer dynamicBuffer) {
+    // TODO Auto-generated method stub
+    return "";
+  }
+
+  @Override
+  public CharSequence printDynamicBufferDefinition(DynamicBuffer dynamicBuffer) {
+    // TODO Auto-generated method stub
+    return null;
+  }
+
+  @Override
+  public CharSequence printDynamicBuffer(DynamicBuffer dynamicBuffer) {
+    // TODO Auto-generated method stub
+    return null;
+  }
+
+  @Override
+  protected CharSequence printclusterRaiserHeader(ClusterRaiserBlock block) {
+    // TODO Auto-generated method stub
     return "";
   }
 }

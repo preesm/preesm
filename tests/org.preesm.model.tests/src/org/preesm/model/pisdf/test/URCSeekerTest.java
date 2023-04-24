@@ -80,7 +80,7 @@ public class URCSeekerTest {
     // Create a chained actors PiGraph
     createChainedActorsPiGraph();
     // Build the URC seeker
-    this.seeker = new URCSeeker(this.topGraph);
+    this.seeker = new URCSeeker(this.topGraph, null, null);
     // Retrieve list of URC chain in the graph
     seekerResults = this.seeker.seek();
   }
@@ -108,19 +108,19 @@ public class URCSeekerTest {
 
   @Test
   public void testExpectToFoundChainBCD() {
-    List<AbstractActor> expectedChain = Arrays.asList(this.actorB, this.actorC, this.actorD);
+    final List<AbstractActor> expectedChain = Arrays.asList(this.actorB, this.actorC, this.actorD);
     assertTrue(this.seekerResults.contains(expectedChain));
   }
 
   @Test
   public void testExpectToFoundChainEFG() {
-    List<AbstractActor> expectedChain = Arrays.asList(this.actorE, this.actorF, this.actorG);
+    final List<AbstractActor> expectedChain = Arrays.asList(this.actorE, this.actorF, this.actorG);
     assertTrue(this.seekerResults.contains(expectedChain));
   }
 
   @Test
   public void testDoesntExpectToFoundChainDE() {
-    List<AbstractActor> expectedChain = Arrays.asList(this.actorD, this.actorE);
+    final List<AbstractActor> expectedChain = Arrays.asList(this.actorD, this.actorE);
     assertFalse(this.seekerResults.contains(expectedChain));
   }
 
@@ -140,27 +140,27 @@ public class URCSeekerTest {
     this.actorG = PiMMUserFactory.instance.createActor("G");
 
     // Create a list for the actors to easily add them to the top graph
-    List<AbstractActor> actorsList = Arrays.asList(this.actorC, this.actorD, this.actorB, this.actorE, this.actorF,
-        this.actorA, this.actorG);
+    final List<AbstractActor> actorsList = Arrays.asList(this.actorC, this.actorD, this.actorB, this.actorE,
+        this.actorF, this.actorA, this.actorG);
 
     // Add actors to the top graph
     actorsList.stream().forEach(x -> this.topGraph.addActor(x));
 
     // Create data output and input ports
-    DataOutputPort outputA = PiMMUserFactory.instance.createDataOutputPort("out");
-    DataOutputPort outputB1 = PiMMUserFactory.instance.createDataOutputPort("out1");
-    DataOutputPort outputB2 = PiMMUserFactory.instance.createDataOutputPort("out2");
-    DataOutputPort outputC = PiMMUserFactory.instance.createDataOutputPort("out");
-    DataOutputPort outputD = PiMMUserFactory.instance.createDataOutputPort("out");
-    DataOutputPort outputE = PiMMUserFactory.instance.createDataOutputPort("out");
-    DataOutputPort outputF = PiMMUserFactory.instance.createDataOutputPort("out");
-    DataInputPort inputB = PiMMUserFactory.instance.createDataInputPort("in");
-    DataInputPort inputC1 = PiMMUserFactory.instance.createDataInputPort("in1");
-    DataInputPort inputC2 = PiMMUserFactory.instance.createDataInputPort("in2");
-    DataInputPort inputD = PiMMUserFactory.instance.createDataInputPort("in");
-    DataInputPort inputE = PiMMUserFactory.instance.createDataInputPort("in");
-    DataInputPort inputF = PiMMUserFactory.instance.createDataInputPort("in");
-    DataInputPort inputG = PiMMUserFactory.instance.createDataInputPort("in");
+    final DataOutputPort outputA = PiMMUserFactory.instance.createDataOutputPort("out");
+    final DataOutputPort outputB1 = PiMMUserFactory.instance.createDataOutputPort("out1");
+    final DataOutputPort outputB2 = PiMMUserFactory.instance.createDataOutputPort("out2");
+    final DataOutputPort outputC = PiMMUserFactory.instance.createDataOutputPort("out");
+    final DataOutputPort outputD = PiMMUserFactory.instance.createDataOutputPort("out");
+    final DataOutputPort outputE = PiMMUserFactory.instance.createDataOutputPort("out");
+    final DataOutputPort outputF = PiMMUserFactory.instance.createDataOutputPort("out");
+    final DataInputPort inputB = PiMMUserFactory.instance.createDataInputPort("in");
+    final DataInputPort inputC1 = PiMMUserFactory.instance.createDataInputPort("in1");
+    final DataInputPort inputC2 = PiMMUserFactory.instance.createDataInputPort("in2");
+    final DataInputPort inputD = PiMMUserFactory.instance.createDataInputPort("in");
+    final DataInputPort inputE = PiMMUserFactory.instance.createDataInputPort("in");
+    final DataInputPort inputF = PiMMUserFactory.instance.createDataInputPort("in");
+    final DataInputPort inputG = PiMMUserFactory.instance.createDataInputPort("in");
 
     // Attach them to actors
     this.actorA.getDataOutputPorts().add(outputA);
@@ -179,16 +179,16 @@ public class URCSeekerTest {
     this.actorG.getDataInputPorts().add(inputG);
 
     // Create fifos and form a chain such as A -> B -> (x2) C -> D -> (delay) E -> F -> G
-    Fifo fifoAB = PiMMUserFactory.instance.createFifo(outputA, inputB, "void");
-    Fifo fifoBC1 = PiMMUserFactory.instance.createFifo(outputB1, inputC1, "void");
-    Fifo fifoBC2 = PiMMUserFactory.instance.createFifo(outputB2, inputC2, "void");
-    Fifo fifoCD = PiMMUserFactory.instance.createFifo(outputC, inputD, "void");
-    Fifo fifoDE = PiMMUserFactory.instance.createFifo(outputD, inputE, "void");
-    Fifo fifoEF = PiMMUserFactory.instance.createFifo(outputE, inputF, "void");
-    Fifo fifoFG = PiMMUserFactory.instance.createFifo(outputF, inputG, "void");
+    final Fifo fifoAB = PiMMUserFactory.instance.createFifo(outputA, inputB, "void");
+    final Fifo fifoBC1 = PiMMUserFactory.instance.createFifo(outputB1, inputC1, "void");
+    final Fifo fifoBC2 = PiMMUserFactory.instance.createFifo(outputB2, inputC2, "void");
+    final Fifo fifoCD = PiMMUserFactory.instance.createFifo(outputC, inputD, "void");
+    final Fifo fifoDE = PiMMUserFactory.instance.createFifo(outputD, inputE, "void");
+    final Fifo fifoEF = PiMMUserFactory.instance.createFifo(outputE, inputF, "void");
+    final Fifo fifoFG = PiMMUserFactory.instance.createFifo(outputF, inputG, "void");
 
     // Create a list for the fifos to easily add them to the top graph
-    List<Fifo> fifosList = Arrays.asList(fifoAB, fifoBC1, fifoBC2, fifoCD, fifoDE, fifoEF, fifoFG);
+    final List<Fifo> fifosList = Arrays.asList(fifoAB, fifoBC1, fifoBC2, fifoCD, fifoDE, fifoEF, fifoFG);
 
     // Add fifos to the top graph
     fifosList.stream().forEach(x -> this.topGraph.addFifo(x));
@@ -210,7 +210,7 @@ public class URCSeekerTest {
     inputG.setExpression(5);
 
     // Set delay to fifo DE
-    Delay delayDE = PiMMUserFactory.instance.createDelay();
+    final Delay delayDE = PiMMUserFactory.instance.createDelay();
     delayDE.setExpression(1);
     fifoDE.assignDelay(delayDE);
     this.topGraph.addDelay(delayDE);

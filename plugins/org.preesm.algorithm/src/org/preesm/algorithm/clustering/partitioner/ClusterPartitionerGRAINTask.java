@@ -43,7 +43,10 @@ import org.preesm.commons.doc.annotations.Parameter;
 import org.preesm.commons.doc.annotations.Port;
 import org.preesm.commons.doc.annotations.PreesmTask;
 import org.preesm.commons.doc.annotations.Value;
+import org.preesm.model.pisdf.AbstractVertex;
 import org.preesm.model.pisdf.PiGraph;
+import org.preesm.model.pisdf.brv.BRVMethod;
+import org.preesm.model.pisdf.brv.PiBRV;
 import org.preesm.model.scenario.Scenario;
 import org.preesm.workflow.elements.Workflow;
 import org.preesm.workflow.implement.AbstractTaskImplementation;
@@ -51,10 +54,10 @@ import org.preesm.workflow.implement.AbstractTaskImplementation;
 /**
  * Cluster Partitioner Task
  *
- * @author dgageot
+ * @author orenaud
  *
  */
-@PreesmTask(id = "cluster-partitioner", name = "Cluster Partitioner",
+@PreesmTask(id = "cluster-partitioner-grain", name = "Cluster Partitioner GRAIN",
     inputs = { @Port(name = "PiMM", type = PiGraph.class, description = "Input PiSDF graph"),
         @Port(name = "scenario", type = Scenario.class, description = "Scenario") },
     outputs = { @Port(name = "PiMM", type = PiGraph.class, description = "Output PiSDF graph") },
@@ -62,8 +65,7 @@ import org.preesm.workflow.implement.AbstractTaskImplementation;
         description = "The number of PEs in compute clusters. This information is used to balance actor firings"
             + " between coarse and fine-grained levels.",
         values = { @Value(name = "Fixed:=n", effect = "Where $$n\\in \\mathbb{N}^*$$.") }) })
-public class ClusterPartitionerTask extends AbstractTaskImplementation {
-
+public class ClusterPartitionerGRAINTask extends AbstractTaskImplementation {
   public static final String NB_PE         = "Number of PEs in compute clusters";
   public static final String DEFAULT_NB_PE = "1";
 
@@ -78,7 +80,8 @@ public class ClusterPartitionerTask extends AbstractTaskImplementation {
     final String nbPE = parameters.get(NB_PE);
 
     // Cluster input graph
-    final PiGraph outputGraph = new ClusterPartitioner(inputGraph, scenario, Integer.parseInt(nbPE), null, 0, null)
+    final Map<AbstractVertex, Long> brv = PiBRV.compute(inputGraph, BRVMethod.LCM);
+    final PiGraph outputGraph = new ClusterPartitionerSRV(inputGraph, scenario, Integer.parseInt(nbPE), brv, 0, null)
         .cluster();
 
     // Build output map
@@ -99,5 +102,4 @@ public class ClusterPartitionerTask extends AbstractTaskImplementation {
   public String monitorMessage() {
     return "Starting Execution of Cluster Partitioner Task";
   }
-
 }
