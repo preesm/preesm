@@ -90,7 +90,6 @@ import org.eclipse.ui.forms.widgets.Section;
 import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.model.pisdf.Fifo;
 import org.preesm.model.scenario.Scenario;
-import org.preesm.model.scenario.ScenarioConstants;
 import org.preesm.model.scenario.impl.DataTypeImpl;
 import org.preesm.model.scenario.util.DefaultTypeSizes;
 import org.preesm.model.slam.ComponentInstance;
@@ -460,8 +459,7 @@ public class SimulationPage extends ScenarioPage {
     tableViewer.setCellModifier(new ICellModifier() {
       @Override
       public void modify(final Object element, final String property, final Object value) {
-        if (element instanceof TableItem) {
-          final TableItem ti = (TableItem) element;
+        if (element instanceof TableItem ti) {
           final DataTypeImpl data = (DataTypeImpl) ti.getData();
           final long oldValue = data.getValue();
           try {
@@ -543,7 +541,7 @@ public class SimulationPage extends ScenarioPage {
             dialogTitle, dialogMessage, init, validator);
         if (dialog.open() == Window.OK) {
           SimulationPage.this.scenario.getSimulationInfo().getDataTypes().put(dialog.getValue().trim(),
-              (long) ScenarioConstants.DEFAULT_DATA_TYPE_SIZE.getValue());
+              DefaultTypeSizes.getInstance().getTypeSizeOrDefault(dialog.getValue().trim()));
           tableViewer.refresh();
           propertyChanged(SimulationPage.this, IEditorPart.PROP_DIRTY);
           gd.heightHint = Math.max(50,
@@ -583,7 +581,7 @@ public class SimulationPage extends ScenarioPage {
         for (final Fifo f : scenario.getAlgorithm().getAllFifos()) {
           final String typeName = f.getType();
           SimulationPage.this.scenario.getSimulationInfo().getDataTypes().put(typeName,
-              DefaultTypeSizes.getInstance().getDefaultTypeSize(typeName));
+              DefaultTypeSizes.getInstance().getTypeSizeOrDefault(typeName));
         }
 
         tableViewer.refresh();
@@ -703,12 +701,10 @@ public class SimulationPage extends ScenarioPage {
     treeviewer.setLabelProvider(new LabelProvider() {
       @Override
       public String getText(final Object element) {
-        if (element instanceof ComponentInstance) {
-          final ComponentInstance ci = (ComponentInstance) element;
+        if (element instanceof ComponentInstance ci) {
           return ci.getInstanceName() + " (" + ci.getComponent().getVlnv().getName() + ")";
-        } else {
-          return super.getText(element);
         }
+        return super.getText(element);
       }
     });
     treeviewer.setAutoExpandLevel(AbstractTreeViewer.ALL_LEVELS);

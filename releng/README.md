@@ -8,7 +8,7 @@ This document explains the build process of Preesm and its components (Graphiti 
 Introduction
 ------------
 
-Graphiti and Preesm are sets of Eclipse plugins. Their source code is hosted on GitHub (see the [Preesm team](https://github.com/preesm) page). These projects are built using [Maven](https://maven.apache.org/) and the [Tycho](https://eclipse.org/tycho/) plugins, and mostly developed using the [Eclipse IDE](https://eclipse.org/). Facilities are provided to ease the interactions between these tools. The [Continuous Integration](https://en.wikipedia.org/wiki/Continuous_integration) server [Travis](https://travis-ci.org/) is in charge of building and running tests on evey push. This document describes complete interaction between all the repositories and services involved.
+Graphiti and Preesm are sets of Eclipse plugins. Their source code is hosted on GitHub (see the [Preesm team](https://github.com/preesm) page). These projects are built using [Maven](https://maven.apache.org/) and the [Tycho](https://eclipse.org/tycho/) plugins, and mostly developed using the [Eclipse IDE](https://eclipse.org/). Facilities are provided to ease the interactions between these tools. The [Continuous Integration](https://en.wikipedia.org/wiki/Continuous_integration) server [GitHub Actions](https://github.com/preesm/preesm/actions) is in charge of building and running tests on evey push. This document describes complete interaction between all the repositories and services involved.
 
 ### Documentation
 
@@ -130,10 +130,10 @@ On the main projects, the master and develop branches of the repositories are [p
 | org.preesm.product/ | Maven module for generating the end user [Eclipse products](https://wiki.eclipse.org/FAQ_What_is_an_Eclipse_product%3F), including Preesm feature and useful dependencies |
 | org.preesm.site/ | The module responsible for generating the update site, including Preesm feature |
 |||
-| **build_and_test.sh** | Script for building and testing Preesm. Automatically starts X virtual frame buffer (Xvfb) for running graphic tests if binary is present. This script is called by Travis CI. | 
+| **build_and_test.sh** | Script for building and testing Preesm. Automatically starts X virtual frame buffer (Xvfb) for running graphic tests if binary is present. This script is called by GutHub Actions CI. | 
 | copyright_template.txt | Copyright template to include in file headers. Used by the **Maven License Plugin** during **fix_header_copyright_and_authors.sh** script. |
 | deploy.sh | Wraps clean build test deploy within a scripts that runs Xvfb if present. | 
-| fetch-rcptt-runner.sh | RCPTT runner is bundled as a zip file of few hundreds of MB. The default Maven mirror hosting this file is slow, and causes the Travis CI build to timeout. This script fetches the runner from the configured mirror (see `<properties>` section of the parent POM file) and install it in the local Maven repository. | 
+| fetch-rcptt-runner.sh | RCPTT runner is bundled as a zip file of few hundreds of MB. This script fetches the runner from the configured mirror (see `<properties>` section of the parent POM file) and install it in the local Maven repository. | 
 | fix_header_copyright_and_authors.sh | Bash script that replaces all source file header comment with the copyright_template.txt file content using the **Maven License Plugin**, then use the **git log** commands for replacing copyright template tokens (i.e. %%DATE%%) with proper data. |
 | pom.xml | The main releng POM. |
 | README.md | This file |
@@ -142,7 +142,7 @@ On the main projects, the master and develop branches of the repositories are [p
 | snapshot_predeploy.sh | Called by Travis CI when building develop branch. This script fetches the [snapshot update site of Preesm](https://github.com/preesm/preesm-snapshot-site), prepare it to integrate current built version, then push the changes. | 
 | update-version.sh | Small Bash script that calls Maven with proper arguments to set a new version for all submodules. Calls the **Maven Tycho Version Plugin**. |
 
-The **.travis.yml** file at the root of the repositories defines what needs to be done by the Travis CI service. See https://docs.travis-ci.com/
+The **yml** files in .github/workflows/ define what needs to be done by GutHub Actions.
 
 Build Process in Maven
 ----------------------
@@ -352,15 +352,13 @@ Those repositories do not have a release mecanism, nor require one.
 Continuous Integration
 ----------------------
 
-[Continuous Integration](https://en.wikipedia.org/wiki/Continuous_integration) is a practice that consists in integrating everyhing that is pushed to the source code repository. This include compiling, testing, coding policy checking, etc. This helps uncovering integration issues as soon as possible. For the Preesm project, we rely on the [Travis Ci](https://travis-ci.org/) service to continously integrate changes.
+[Continuous Integration](https://en.wikipedia.org/wiki/Continuous_integration) is a practice that consists in integrating everyhing that is pushed to the source code repository. This include compiling, testing, coding policy checking, etc. This helps uncovering integration issues as soon as possible. For the Preesm project, we rely on the GitHub Actions service to continously integrate changes.
 
 Continuous integration can check for the [quality of the code](https://en.wikipedia.org/wiki/Software_quality) and report failure upon low code quality (see [Quality Gates](https://docs.sonarqube.org/display/SONAR/Quality+Gates)). The current build process does not fail upon such criteria. However, since having reports about quality can give hints and help solving bugs, it is designed to run along with SonarQube.
 
-### Travis CI
+### GitHub Actions CI
 
-_"Travis CI is a hosted continuous integration service used to build and test software projects hosted at GitHub."_ ([Wikipedia](https://en.wikipedia.org/wiki/Travis_CI))
-
-This service is used to trigger automatic build and test on every git push received by Github. The configuration is stored in the **.travis.yml** file at the root of the repository. 
+This service is used to trigger automatic build and test on every git push received by Github. The configuration is stored in the **.github/workflows/\*.yml** file at the root of the repository. 
 
 The service is also responsible for notifying developers via email or the Slack chat. In the Preesm project, it also deploys the snapshot artifacts to a dedicated repository.
 

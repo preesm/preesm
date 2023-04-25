@@ -8,6 +8,7 @@ PREESM Changelog
 * new task "pisdf-synthesis.fpga-estimations" to analyse applications on FPGA architectures.
 * (UI) Two menu commands to overcome the default parsing of C/C++ arguments as data input by default (due to Eclipse CDT):
   'Exchange Port Direction In/Out' and 'Exchange Port Category Data/Config.'.
+* Common datatype sizes are now directly inferred if not provided in the scenario when executing a workflow.
 
 ### Changes
 * (PiSDF) Flattening and SRDAG transformations now support data interfaces at top-level.
