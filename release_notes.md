@@ -20,6 +20,7 @@ PREESM Changelog
 * (UI) New menu actions for ports in PiSDF graphs to exchange ports category and direction (accessible from a right-click on PiSDF diagrams).
 * (algo) Design Space Exploration of Malleable Parameters now computes memory footprint and Pareto front (integration of tbourgoi's work).
 * (scenario) The data type now needs to be given in bits. A check was added when opening/executing project from a previous version of PREEEM
+* (scenario) Common datatypes sizes are now known and automatically used by PREESM, including templated VitisHLS ap_int and ap_fixed types.
 * (workflow) The data alignment now needs to be given in bits (default is now Fixed:=8) for MemoryAllocatorTask and MemoryScriptTask.
 * (workflow) Added an explicit False Sharing Prevention flag (false by default) to MemoryScriptTask.
 * (Build) Make Tycho Pomless build for many plugins, using Eclipse Target Platform to specify maven dependencies. This makes tests plugins to be renamed for tycho. 
