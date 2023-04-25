@@ -14,12 +14,12 @@ public class VitisTypeSize {
   }
 
   private static final String REGEX_VITIS_PREFIX      = "^ap_";
-  private static final String REGEX_VITIS_INT_INFIX   = "[u]?int<";
-  private static final String REGEX_VITIS_FIXED_INFIX = "[u]?fixed<";
+  private static final String REGEX_VITIS_INT_INFIX   = "u?int<";
+  private static final String REGEX_VITIS_FIXED_INFIX = "u?fixed<";
   private static final String REGEX_VITIS_SUFIX       = ">$";
 
-  private static final String REGEX_NUM     = "-?[0-9]+";
-  private static final String REGEX_POS_NUM = "[0-9]+";
+  private static final String REGEX_NUM     = "-?\\d+";
+  private static final String REGEX_POS_NUM = "\\d+";
   private static final String REGEX_SEP     = ",";
 
   private static final String REGEX_VITIS_QTZ = "(AP_RND|AP_RND_ZERO|AP_RND_MIN_INF|AP_RND_INF|AP_RND_CONV"

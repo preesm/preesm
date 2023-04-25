@@ -109,6 +109,9 @@ public class SimulationPage extends ScenarioPage {
 
   private static final String[] DATA_TYPE_TABLE_TITLES = { DATA_TYPE_NAME_TITLE, DATA_TYPE_SIZE_TITLE };
 
+  private static final String COM_NODE = "comNode";
+  private static final String OPERATOR = "operator";
+
   /**
    * The listener interface for receiving comboBox events. The class that is interested in processing a comboBox event
    * implements this interface, and the object created with that class is registered with a component using the
@@ -140,14 +143,13 @@ public class SimulationPage extends ScenarioPage {
 
     @Override
     public void widgetSelected(final SelectionEvent e) {
-      if (e.getSource() instanceof Combo) {
-        final Combo combo = ((Combo) e.getSource());
+      if (e.getSource() instanceof final Combo combo) {
         final String item = combo.getItem(combo.getSelectionIndex());
 
         final ComponentInstance compInstance = scenario.getDesign().getComponentInstance(item);
-        if (this.type.equals("operator")) {
+        if (this.type.equals(OPERATOR)) {
           SimulationPage.this.scenario.getSimulationInfo().setMainOperator(compInstance);
-        } else if (this.type.equals("comNode")) {
+        } else if (this.type.equals(COM_NODE)) {
           SimulationPage.this.scenario.getSimulationInfo().setMainComNode(compInstance);
         }
       }
@@ -198,12 +200,12 @@ public class SimulationPage extends ScenarioPage {
       // Main operator chooser section
       createComboBoxSection(managedForm, Messages.getString("Simulation.mainOperator.title"),
           Messages.getString("Simulation.mainOperator.description"),
-          Messages.getString("Simulation.mainOperatorSelectionTooltip"), "operator");
+          Messages.getString("Simulation.mainOperatorSelectionTooltip"), OPERATOR);
 
       // Main medium chooser section
       createComboBoxSection(managedForm, Messages.getString("Simulation.mainMedium.title"),
           Messages.getString("Simulation.mainMedium.description"),
-          Messages.getString("Simulation.mainMediumSelectionTooltip"), "comNode");
+          Messages.getString("Simulation.mainMediumSelectionTooltip"), COM_NODE);
 
       // Text modification listener that updates the average data size
       final ModifyListener averageDataSizeListener = new ModifyListener() {
@@ -363,7 +365,7 @@ public class SimulationPage extends ScenarioPage {
     combo.setToolTipText(tooltip);
 
     final Design design = this.scenario.getDesign();
-    if (type.equals("operator")) {
+    if (type.equals(OPERATOR)) {
       for (final ComponentInstance opId : design.getOrderedOperatorComponentInstances()) {
         combo.add(opId.getInstanceName());
       }
@@ -372,7 +374,7 @@ public class SimulationPage extends ScenarioPage {
       if (mainOperator != null) {
         combo.select(combo.indexOf(mainOperator.getInstanceName()));
       }
-    } else if (type.equals("comNode")) {
+    } else if (type.equals(COM_NODE)) {
       for (final ComponentInstance nodeId : design.getCommunicationComponentInstances()) {
         combo.add(nodeId.getInstanceName());
       }
@@ -459,7 +461,7 @@ public class SimulationPage extends ScenarioPage {
     tableViewer.setCellModifier(new ICellModifier() {
       @Override
       public void modify(final Object element, final String property, final Object value) {
-        if (element instanceof TableItem ti) {
+        if (element instanceof final TableItem ti) {
           final DataTypeImpl data = (DataTypeImpl) ti.getData();
           final long oldValue = data.getValue();
           try {
@@ -480,8 +482,8 @@ public class SimulationPage extends ScenarioPage {
 
       @Override
       public Object getValue(final Object element, final String property) {
-        if (element instanceof DataTypeImpl) {
-          return Long.toString(((DataTypeImpl) element).getValue());
+        if (element instanceof final DataTypeImpl delayTypeImpl) {
+          return Long.toString(delayTypeImpl.getValue());
         }
         return "";
       }
@@ -701,7 +703,7 @@ public class SimulationPage extends ScenarioPage {
     treeviewer.setLabelProvider(new LabelProvider() {
       @Override
       public String getText(final Object element) {
-        if (element instanceof ComponentInstance ci) {
+        if (element instanceof final ComponentInstance ci) {
           return ci.getInstanceName() + " (" + ci.getComponent().getVlnv().getName() + ")";
         }
         return super.getText(element);

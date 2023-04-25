@@ -107,7 +107,7 @@ public final class DefaultTypeSizes {
     if (typeSize != UNKNOWN_TYPE) {
       return typeSize;
     }
-    return ScenarioConstants.DEFAULT_DATA_TYPE_SIZE.getValue();
+    return ScenarioConstants.DEFAULT_DATA_TYPE_SIZE_VALUE;
   }
 
   /**
