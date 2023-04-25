@@ -54,7 +54,7 @@ import org.preesm.model.slam.serialize.IPXACTResourceFactoryImpl;
 
 /**
  */
-public class SlamTester2 {
+public class SlamTest {
 
   /**
    */

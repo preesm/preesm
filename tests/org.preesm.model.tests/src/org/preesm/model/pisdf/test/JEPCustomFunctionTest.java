@@ -109,7 +109,7 @@ public class JEPCustomFunctionTest {
 
   @Test
   public void jepCeilTest() {
-
+    testEvaluation("ceil(5/2)", 3);
   }
 
   @Test

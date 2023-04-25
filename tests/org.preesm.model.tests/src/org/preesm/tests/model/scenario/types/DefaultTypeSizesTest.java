@@ -53,6 +53,10 @@ import org.preesm.model.scenario.util.DefaultTypeSizes;
 @RunWith(Enclosed.class)
 public class DefaultTypeSizesTest {
 
+  private DefaultTypeSizesTest() {
+
+  }
+
   @RunWith(Parameterized.class)
   public static class DefaultTypeSizesParamTest {
     private final String typeName;

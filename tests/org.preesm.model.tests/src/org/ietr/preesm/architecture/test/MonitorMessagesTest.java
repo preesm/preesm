@@ -51,7 +51,7 @@ public class MonitorMessagesTest {
   public void testSlamHierarchyFlatteningMonitorMessage() {
     final SlamHierarchyFlattening architectureExporter = new SlamHierarchyFlattening();
     final String monitorMessage = architectureExporter.monitorMessage();
-    Assert.assertTrue("Flattening an S-LAM model hierarchy.".equals(monitorMessage));
+    Assert.assertEquals("Flattening an S-LAM model hierarchy.", monitorMessage);
   }
 
 }
