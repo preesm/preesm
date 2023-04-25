@@ -22,7 +22,8 @@ public class VitisTypeSize {
   private static final String REGEX_POS_NUM = "[0-9]+";
   private static final String REGEX_SEP     = ",";
 
-  private static final String REGEX_VITIS_QTZ = "(AP_RND|AP_RND_ZERO|AP_RND_MIN_INF|AP_RND_INF|AP_RND_CONV|AP_TRN|AP_TRN_ZERO)";
+  private static final String REGEX_VITIS_QTZ = "(AP_RND|AP_RND_ZERO|AP_RND_MIN_INF|AP_RND_INF|AP_RND_CONV"
+      + "|AP_TRN|AP_TRN_ZERO)";
   private static final String REGEX_VITIS_OVF = "(AP_SAT|AP_SAT_ZERO|AP_SAT_SYM|AP_WRAP|AP_WRAP_SM)";
 
   public static boolean isVitisType(String typeName) {
@@ -32,13 +33,10 @@ public class VitisTypeSize {
   }
 
   private static boolean isVitisApInt(String typeName) {
-    // Should resolve to "^ap_[u]?int<[0-9]+>$"
     return typeName.matches(REGEX_VITIS_PREFIX + REGEX_VITIS_INT_INFIX + REGEX_POS_NUM + REGEX_VITIS_SUFIX);
   }
 
   private static boolean isVitisApFixed(String typeName) {
-    // Should resolve to
-    // ("^ap_[u]?fixed<[0-9]+,-?[0-9]+((,(AP_RND|AP_RND_ZERO|AP_RND_MIN_INF|AP_RND_INF|AP_RND_CONV|AP_TRN|AP_TRN_ZERO))(,(AP_SAT|AP_SAT_ZERO|AP_SAT_SYM|AP_WRAP|AP_WRAP_SM))?)?>$");
     return typeName.matches(REGEX_VITIS_PREFIX + REGEX_VITIS_FIXED_INFIX + REGEX_POS_NUM + REGEX_SEP + REGEX_NUM + "((,"
         + REGEX_VITIS_QTZ + ")(," + REGEX_VITIS_OVF + ")?)?" + REGEX_VITIS_SUFIX);
   }
