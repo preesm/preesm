@@ -66,14 +66,14 @@ public class GraphExporterTask extends AbstractTaskImplementation {
         if(this.config) {//return flat graph
         	final PiGraph flat = PiSDFFlattener.flatten(inputGraph, false);
 		    IProject iProject = file.getProject();
-		    SavePiGraph.savePiGraphInFolder(iProject, fromPortableString, flat, "_wowflat");
+		    SavePiGraph.savePiGraphInFolder(iProject, fromPortableString, flat, "_flat");
         }else {//return hierarchical graph
         	for(PiGraph subgraph : inputGraph.getAllChildrenGraphs()) {
         		IProject iProject = file.getProject();
-    		    SavePiGraph.savePiGraphInFolder(iProject, fromPortableString, subgraph, "_wowH");
+    		    SavePiGraph.savePiGraphInFolder(iProject, fromPortableString, subgraph, "_H");
         	}
         	IProject iProject = file.getProject();
-		    SavePiGraph.savePiGraphInFolder(iProject, fromPortableString, inputGraph, "_wowH");
+		    SavePiGraph.savePiGraphInFolder(iProject, fromPortableString, inputGraph, "_H");
         	
         }
  
