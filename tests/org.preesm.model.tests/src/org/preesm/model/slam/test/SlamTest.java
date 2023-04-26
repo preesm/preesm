@@ -37,8 +37,13 @@ package org.preesm.model.slam.test;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.nio.file.attribute.FileAttribute;
+import java.nio.file.attribute.PosixFilePermission;
+import java.nio.file.attribute.PosixFilePermissions;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import org.apache.commons.lang3.SystemUtils;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EPackage;
 import org.eclipse.emf.ecore.resource.Resource;
@@ -54,7 +59,7 @@ import org.preesm.model.slam.serialize.IPXACTResourceFactoryImpl;
 
 /**
  */
-public class SlamTester2 {
+public class SlamTest {
 
   /**
    */
@@ -76,7 +81,21 @@ public class SlamTester2 {
       EPackage.Registry.INSTANCE.put(SlamPackage.eNS_URI, SlamPackage.eINSTANCE);
     }
 
-    final File createTempFile = File.createTempFile("output_", ".slam");
+    File createTempFile;
+    if (SystemUtils.IS_OS_UNIX) {
+      final FileAttribute<Set<PosixFilePermission>> attr = PosixFilePermissions
+          .asFileAttribute(PosixFilePermissions.fromString("rwx------"));
+      createTempFile = Files.createTempFile("output_", ".slam", attr).toFile();
+    } else {
+      createTempFile = Files.createTempFile("output_", ".slam").toFile();
+
+      boolean success = true;
+
+      success &= createTempFile.setReadable(true, true);
+      success &= createTempFile.setWritable(true, true);
+      success &= createTempFile.setExecutable(true, true);
+      Assert.assertTrue(success);
+    }
     createTempFile.deleteOnExit();
 
     flatten("./resources/4CoreX86.slam", createTempFile.getAbsolutePath());

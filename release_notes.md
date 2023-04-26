@@ -8,6 +8,7 @@ PREESM Changelog
 * new task "pisdf-synthesis.fpga-estimations" to analyse applications on FPGA architectures.
 * (UI) Two menu commands to overcome the default parsing of C/C++ arguments as data input by default (due to Eclipse CDT):
   'Exchange Port Direction In/Out' and 'Exchange Port Category Data/Config.'.
+* Common datatype sizes are now directly inferred if not provided in the scenario when executing a workflow.
 
 ### Changes
 * (PiSDF) Flattening and SRDAG transformations now support data interfaces at top-level.
@@ -19,6 +20,7 @@ PREESM Changelog
 * (UI) New menu actions for ports in PiSDF graphs to exchange ports category and direction (accessible from a right-click on PiSDF diagrams).
 * (algo) Design Space Exploration of Malleable Parameters now computes memory footprint and Pareto front (integration of tbourgoi's work).
 * (scenario) The data type now needs to be given in bits. A check was added when opening/executing project from a previous version of PREEEM
+* (scenario) Common datatypes sizes are now known and automatically used by PREESM, including templated VitisHLS ap_int and ap_fixed types.
 * (workflow) The data alignment now needs to be given in bits (default is now Fixed:=8) for MemoryAllocatorTask and MemoryScriptTask.
 * (workflow) Added an explicit False Sharing Prevention flag (false by default) to MemoryScriptTask.
 * (Build) Make Tycho Pomless build for many plugins, using Eclipse Target Platform to specify maven dependencies. This makes tests plugins to be renamed for tycho. 

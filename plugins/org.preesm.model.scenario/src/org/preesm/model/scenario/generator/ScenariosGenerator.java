@@ -111,8 +111,8 @@ public class ScenariosGenerator {
   final IProject project;
 
   /**
-   * 
-   * 
+   *
+   *
    * @param project
    *          the IProject containing the architectures and algorithms. project is supposed to have the
    *          PreesmProjectNature and to follow the standard Preesm folder hierarchy
@@ -155,16 +155,13 @@ public class ScenariosGenerator {
     final Set<String> archis = new LinkedHashSet<>();
     final Set<String> algos = new LinkedHashSet<>();
     for (final IResource resource : archiDir.members()) {
-      if (resource instanceof IFile) {
-        final IFile file = (IFile) resource;
-        if (file.getProjectRelativePath().getFileExtension().equals(ScenariosGenerator.ARCHI_EXT)) {
-          archis.add(file.getFullPath().toString());
-        }
+      if (resource instanceof final IFile file
+          && file.getProjectRelativePath().getFileExtension().equals(ScenariosGenerator.ARCHI_EXT)) {
+        archis.add(file.getFullPath().toString());
       }
     }
     for (final IResource resource : algoDir.members()) {
-      if (resource instanceof IFile) {
-        final IFile file = (IFile) resource;
+      if (resource instanceof final IFile file) {
         final String ext = file.getProjectRelativePath().getFileExtension();
         if (ext.equals(ScenariosGenerator.PI_GRAPH_EXT)) {
           algos.add(file.getFullPath().toString());
@@ -252,7 +249,7 @@ public class ScenariosGenerator {
     for (final Fifo f : scenario.getAlgorithm().getAllFifos()) {
       final String typeName = f.getType();
       scenario.getSimulationInfo().getDataTypes().put(typeName,
-          DefaultTypeSizes.getInstance().getDefaultTypeSize(typeName));
+          DefaultTypeSizes.getInstance().getTypeSizeOrDefault(typeName));
     }
 
     scenario.setCodegenDirectory("/" + project.getName() + "/Code/generated/");

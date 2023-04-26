@@ -52,8 +52,13 @@ import org.preesm.ui.utils.ErrorWithExceptionDialog;
  */
 public class NewScenarioFileWizard extends BasicNewFileResourceWizard {
 
-  public static final String SCENARIO_INITIAL_CONTENT = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" + "<scenario>\n"
-      + "</scenario>";
+  public static final String SCENARIO_INITIAL_CONTENT = """
+      <?xml version="1.0" encoding="UTF-8"?>
+      <scenario>
+          <flags>
+              <sizesAreInBit/>
+          </flags>
+      </scenario>""";
 
   @Override
   public void addPages() {
@@ -77,7 +82,7 @@ public class NewScenarioFileWizard extends BasicNewFileResourceWizard {
     final IFile createdFile = page.createNewFile();
     try {
       createdFile.setContents(source, IResource.FORCE, null);
-    } catch (CoreException e) {
+    } catch (final CoreException e) {
       ErrorWithExceptionDialog.errorDialogWithStackTrace("Could not initialize scenario file content", e);
     }
 
