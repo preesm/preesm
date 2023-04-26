@@ -36,7 +36,6 @@
  */
 package org.preesm.ui.pisdf.popup.actions;
 
-import java.io.IOException;
 import java.util.Iterator;
 import org.eclipse.core.commands.AbstractHandler;
 import org.eclipse.core.commands.ExecutionEvent;
@@ -46,50 +45,19 @@ import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IWorkspace;
 import org.eclipse.core.resources.IWorkspaceRoot;
 import org.eclipse.core.resources.ResourcesPlugin;
-import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
-import org.eclipse.emf.common.command.CommandStack;
 import org.eclipse.emf.common.util.URI;
-import org.eclipse.emf.ecore.resource.Resource;
-import org.eclipse.emf.ecore.resource.ResourceSet;
-import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
-import org.eclipse.emf.transaction.RecordingCommand;
-import org.eclipse.emf.transaction.TransactionalEditingDomain;
-import org.eclipse.graphiti.dt.IDiagramTypeProvider;
-import org.eclipse.graphiti.features.IFeatureProvider;
-import org.eclipse.graphiti.features.context.impl.CustomContext;
-import org.eclipse.graphiti.features.context.impl.PasteContext;
-import org.eclipse.graphiti.mm.pictograms.Diagram;
-import org.eclipse.graphiti.mm.pictograms.FreeFormConnection;
-import org.eclipse.graphiti.mm.pictograms.PictogramElement;
-import org.eclipse.graphiti.mm.pictograms.PictogramLink;
-import org.eclipse.graphiti.mm.pictograms.PictogramsFactory;
-import org.eclipse.graphiti.platform.IDiagramBehavior;
-import org.eclipse.graphiti.services.Graphiti;
 import org.eclipse.graphiti.ui.editor.IDiagramEditorInput;
 import org.eclipse.jface.viewers.TreeSelection;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Shell;
-import org.eclipse.ui.IEditorDescriptor;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchPage;
-import org.eclipse.ui.PartInitException;
-import org.eclipse.ui.PlatformUI;
-import org.eclipse.ui.part.FileEditorInput;
-import org.preesm.model.pisdf.AbstractVertex;
-import org.preesm.model.pisdf.Delay;
-import org.preesm.model.pisdf.DelayActor;
-import org.preesm.model.pisdf.Dependency;
-import org.preesm.model.pisdf.Fifo;
-import org.preesm.model.pisdf.Parameter;
-import org.preesm.model.pisdf.PiGraph;
-import org.preesm.model.pisdf.serialize.PiParser;
 import org.preesm.ui.PreesmUIPlugin;
 import org.preesm.ui.pisdf.diagram.PiMMDiagramEditor;
-import org.preesm.ui.pisdf.features.PasteFeature;
-import org.preesm.ui.pisdf.layout.AutoLayoutFeature;
+import org.preesm.ui.pisdf.util.PiMM2DiagramGenerator;
 import org.preesm.ui.utils.ErrorWithExceptionDialog;
 
 /**
@@ -112,17 +80,16 @@ public class PiMM2DiagramGeneratorPopup extends AbstractHandler {
     final Iterator<?> iterator = selection.iterator();
     while (iterator.hasNext()) {
       final Object next = iterator.next();
-      if (next instanceof IFile) {
-        final IFile file = (IFile) next;
+      if (next instanceof final IFile file) {
         generateDiagramFile(file);
       }
     }
     return null;
   }
 
-  private void generateDiagramFile(final IFile file) throws ExecutionException {
+  private void generateDiagramFile(final IFile piFile) throws ExecutionException {
     try {
-      final IPath fullPath = file.getFullPath();
+      final IPath fullPath = piFile.getFullPath();
       final IPath diagramFilePath = fullPath.removeFileExtension().addFileExtension("diagram");
 
       final boolean diagramAlreadyExists = checkExists(diagramFilePath);
@@ -130,19 +97,17 @@ public class PiMM2DiagramGeneratorPopup extends AbstractHandler {
       int userDecision = SWT.OK;
       if (diagramAlreadyExists) {
         userDecision = askUserConfirmation(PiMM2DiagramGeneratorPopup.SHELL, diagramFilePath);
-
       }
+
       if (!diagramAlreadyExists || (userDecision == SWT.OK)) {
         closeEditorIfOpen(diagramFilePath);
-        // Get PiGraph, init empty Diagram, and link them together
-        final PiGraph graph = PiParser.getPiGraphWithReconnection(fullPath.toString());
-        final Diagram diagram = Graphiti.getPeCreateService().createDiagram("PiMM", graph.getName(), true);
-        linkPiGraphAndDiagram(graph, diagram);
 
-        // create the resource (safe because the wizard does not allow existing
-        // resources to be overridden)
-        final IFile diagramFile = initDiagramResource(diagramFilePath, diagram, diagramAlreadyExists);
-        openAndPopulateDiagram(diagramFile);
+        final IFile file = PiMM2DiagramGeneratorPopup.WORKSPACE_ROOT.getFile(diagramFilePath);
+        file.delete(true, null);
+        file.getParent().refreshLocal(IResource.DEPTH_INFINITE, null);
+        PiMM2DiagramGeneratorPopup.WORKSPACE.save(true, null);
+
+        PiMM2DiagramGenerator.generateDiagramFile(piFile);
 
       }
     } catch (final Exception cause) {
@@ -153,10 +118,9 @@ public class PiMM2DiagramGeneratorPopup extends AbstractHandler {
 
   private void closeEditorIfOpen(final IPath diagramFilePath) {
     final IWorkbench workbench = PiMM2DiagramGeneratorPopup.WORKBENCH;
-    IWorkbenchPage page = workbench.getActiveWorkbenchWindow().getActivePage();
-    for (IEditorPart activeEditor : page.getEditors()) {
-      if (activeEditor instanceof PiMMDiagramEditor) {
-        final PiMMDiagramEditor diagEditor = (PiMMDiagramEditor) activeEditor;
+    final IWorkbenchPage page = workbench.getActiveWorkbenchWindow().getActivePage();
+    for (final IEditorPart activeEditor : page.getEditors()) {
+      if (activeEditor instanceof final PiMMDiagramEditor diagEditor) {
         // check if current diagram editor targets the diagram file we want to overwrite
         final IDiagramEditorInput diagramEditorInput = diagEditor.getDiagramEditorInput();
         final URI uri = diagramEditorInput.getUri();
@@ -184,114 +148,7 @@ public class PiMM2DiagramGeneratorPopup extends AbstractHandler {
     return userDecision;
   }
 
-  /**
-   *
-   */
-  class PopulateDiagramCommand extends RecordingCommand {
-
-    private final PiGraph           graph;
-    private final PiMMDiagramEditor editor;
-
-    PopulateDiagramCommand(final PiMMDiagramEditor editor, final TransactionalEditingDomain domain,
-        final PiGraph graph) {
-      super(domain);
-      this.editor = editor;
-      this.graph = graph;
-    }
-
-    @Override
-    protected void doExecute() {
-
-      final IFeatureProvider featureProvider = this.editor.getDiagramTypeProvider().getFeatureProvider();
-      final PasteContext pasteContext = new PasteContext(new PictogramElement[0]);
-      pasteContext.setLocation(0, 0);
-      final PasteFeature pasteFeature = new PasteFeature(featureProvider);
-
-      for (final Parameter p : this.graph.getParameters()) {
-        pasteFeature.addGraphicalRepresentationForVertex(p, 0, 0);
-      }
-      for (final AbstractVertex v : this.graph.getActors()) {
-        if (v instanceof DelayActor) {
-          continue;
-        }
-        pasteFeature.addGraphicalRepresentationForVertex(v, 0, 0);
-      }
-
-      for (final Fifo fifo : this.graph.getFifos()) {
-        final FreeFormConnection pe = pasteFeature.addGraphicalRepresentationForFifo(fifo);
-        final Delay delay = fifo.getDelay();
-        if (delay != null) {
-          pasteFeature.addGraphicalRepresentationForDelay(fifo, pe, delay);
-        }
-      }
-
-      // connect dependencies after fifos (for connecting the delays)
-      for (final Dependency dep : this.graph.getDependencies()) {
-        pasteFeature.addGraphicalRepresentationForDependency(dep);
-      }
-      pasteFeature.postProcess();
-
-      final AutoLayoutFeature autoLayoutFeature = new AutoLayoutFeature(featureProvider);
-      final CustomContext context = new CustomContext();
-      autoLayoutFeature.execute(context);
-    }
-  }
-
-  private void openAndPopulateDiagram(final IFile diagramFile) throws PartInitException {
-
-    // open editor
-    final IWorkbench workbench = PiMM2DiagramGeneratorPopup.WORKBENCH;
-    final IWorkbenchPage page = workbench.getActiveWorkbenchWindow().getActivePage();
-    final IEditorDescriptor desc = PlatformUI.getWorkbench().getEditorRegistry()
-        .getDefaultEditor(diagramFile.getName());
-
-    final PiMMDiagramEditor editor = (PiMMDiagramEditor) page.openEditor(new FileEditorInput(diagramFile),
-        desc.getId());
-
-    final IDiagramTypeProvider diagramTypeProvider = editor.getDiagramTypeProvider();
-
-    final IDiagramBehavior diagramBehavior = diagramTypeProvider.getDiagramBehavior();
-    final TransactionalEditingDomain editingDomain = diagramBehavior.getEditingDomain();
-    // use the diagram from the editor instead of the previously created one
-    final Diagram diagram = diagramTypeProvider.getDiagram();
-
-    // and the PiGraph from this diagram to get consistent links
-    final PiGraph graph = (PiGraph) diagram.getLink().getBusinessObjects().get(0);
-
-    PopulateDiagramCommand command = new PopulateDiagramCommand(editor, editingDomain, graph);
-    CommandStack commandStack = editingDomain.getCommandStack();
-    commandStack.execute(command);
-
-    // save the .diagram file
-    editor.doSave(null);
-  }
-
-  private IFile initDiagramResource(final IPath diagramFilePath, final Diagram diagram,
-      final boolean deleteExistingFileFirst) throws IOException, CoreException {
-    final IFile file = PiMM2DiagramGeneratorPopup.WORKSPACE_ROOT.getFile(diagramFilePath);
-    if (deleteExistingFileFirst) {
-      file.delete(true, null);
-      file.getParent().refreshLocal(IResource.DEPTH_INFINITE, null);
-      PiMM2DiagramGeneratorPopup.WORKSPACE.save(true, null);
-    }
-    final ResourceSet set = new ResourceSetImpl();
-    final URI uri = URI.createPlatformResourceURI(diagramFilePath.toString(), false);
-    final Resource resource = set.createResource(uri);
-    resource.getContents().add(diagram);
-    resource.save(null);
-    PiMM2DiagramGeneratorPopup.WORKSPACE.save(true, null);
-    file.getParent().refreshLocal(IResource.DEPTH_INFINITE, null);
-    return file;
-  }
-
   private boolean checkExists(final IPath diagramFilePath) {
     return PiMM2DiagramGeneratorPopup.WORKSPACE_ROOT.exists(diagramFilePath);
   }
-
-  private void linkPiGraphAndDiagram(final PiGraph graph, final Diagram diagram) {
-    final PictogramLink link = PictogramsFactory.eINSTANCE.createPictogramLink();
-    link.getBusinessObjects().add(graph);
-    diagram.setLink(link);
-  }
-
 }
