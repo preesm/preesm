@@ -70,12 +70,12 @@ public class GMLSDFImporterTest {
     } else {
       createTempFile = Files.createTempFile("export_test_", ".graphml").toFile();
 
-      boolean fail = true;
+      boolean success = true;
 
-      fail &= createTempFile.setReadable(true, true);
-      fail &= createTempFile.setWritable(true, true);
-      fail &= createTempFile.setExecutable(true, true);
-      Assert.assertTrue(fail);
+      success &= createTempFile.setReadable(true, true);
+      success &= createTempFile.setWritable(true, true);
+      success &= createTempFile.setExecutable(true, true);
+      Assert.assertTrue(success);
     }
     createTempFile.deleteOnExit();
 
