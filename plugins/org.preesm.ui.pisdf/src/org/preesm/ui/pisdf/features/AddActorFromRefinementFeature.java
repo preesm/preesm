@@ -47,9 +47,13 @@ import org.eclipse.graphiti.features.context.impl.CreateContext;
 import org.eclipse.graphiti.features.context.impl.CustomContext;
 import org.eclipse.graphiti.features.impl.AbstractAddFeature;
 import org.eclipse.graphiti.mm.pictograms.PictogramElement;
+import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.Actor;
-import org.preesm.model.pisdf.Port;
+import org.preesm.model.pisdf.ConfigInputPort;
+import org.preesm.model.pisdf.ConfigOutputPort;
+import org.preesm.model.pisdf.DataInputPort;
+import org.preesm.model.pisdf.DataOutputPort;
 import org.preesm.model.pisdf.check.RefinementChecker;
 
 /**
@@ -85,12 +89,11 @@ public class AddActorFromRefinementFeature extends AbstractAddFeature {
   public boolean canAdd(final IAddContext context) {
     if (!(context.getNewObject() instanceof IFile)) {
       return false;
-    } else {
-      final String fileExtension = ((IFile) context.getNewObject()).getFileExtension();
-
-      return "pi".equals(fileExtension) || "idl".equals(fileExtension)
-          || RefinementChecker.isAsupportedHeaderFileExtension(fileExtension);
     }
+    final String fileExtension = ((IFile) context.getNewObject()).getFileExtension();
+
+    return "pi".equals(fileExtension) || "idl".equals(fileExtension)
+        || RefinementChecker.isAsupportedHeaderFileExtension(fileExtension);
   }
 
   /*
@@ -107,21 +110,20 @@ public class AddActorFromRefinementFeature extends AbstractAddFeature {
     if (actors == null) {
       this.hasDoneChanges = false;
       return null;
-    } else {
-      final Actor actor = actors;
-
-      // 2- Set Refinement
-      final boolean validFile = setRefinement(context, actor);
-      if (!validFile) {
-        this.hasDoneChanges = false;
-        return null;
-      }
-
-      // 3- Create all ports corresponding to the refinement.
-      final PictogramElement[] pictElements = createPorts(actor);
-
-      return pictElements[0];
     }
+    final Actor actor = actors;
+
+    // 2- Set Refinement
+    final boolean validFile = setRefinement(context, actor);
+    if (!validFile) {
+      this.hasDoneChanges = false;
+      return null;
+    }
+
+    // 3- Create all ports corresponding to the refinement.
+    final PictogramElement[] pictElements = createPorts(actor);
+
+    return pictElements[0];
   }
 
   private PictogramElement[] createPorts(final Actor actor) {
@@ -132,37 +134,27 @@ public class AddActorFromRefinementFeature extends AbstractAddFeature {
     // protoPort is Null if actor creation was cancelled during refinement
     // prototype selection
     if (protoPort != null) {
-      // Process DataInputPorts
-      for (final Port p : protoPort.getDataInputPorts()) {
-        final AddDataInputPortFeature addFeature = new AddDataInputPortFeature(getFeatureProvider());
-        final ICustomContext portContext = new CustomContext(pictElements);
-        portContext.putProperty("name", p.getName());
-        addFeature.execute(portContext);
-      }
 
-      // Process DataOutputPorts
-      for (final Port p : protoPort.getDataOutputPorts()) {
-        final AddDataOutputPortFeature addFeature = new AddDataOutputPortFeature(getFeatureProvider());
-        final ICustomContext portContext = new CustomContext(pictElements);
-        portContext.putProperty("name", p.getName());
-        addFeature.execute(portContext);
-      }
+      protoPort.getAllPorts().forEach(port -> {
+        AbstractAddActorPortFeature addFeature;
 
-      // Process ConfigInputPorts
-      for (final Port p : protoPort.getConfigInputPorts()) {
-        final AddConfigInputPortFeature addFeature = new AddConfigInputPortFeature(getFeatureProvider());
-        final ICustomContext portContext = new CustomContext(pictElements);
-        portContext.putProperty("name", p.getName());
-        addFeature.execute(portContext);
-      }
+        // Could be replaced with instanceof pattern matching in a switch statement once it comes out of preview
+        if (port instanceof DataInputPort) {
+          addFeature = new AddDataInputPortFeature(getFeatureProvider());
+        } else if (port instanceof DataOutputPort) {
+          addFeature = new AddDataOutputPortFeature(getFeatureProvider());
+        } else if (port instanceof ConfigInputPort) {
+          addFeature = new AddConfigInputPortFeature(getFeatureProvider());
+        } else if (port instanceof ConfigOutputPort) {
+          addFeature = new AddConfigOutputPortFeature(getFeatureProvider());
+        } else {
+          throw new PreesmRuntimeException("Unrecognized port type");
+        }
 
-      // Process ConfigOutputPorts
-      for (final Port p : protoPort.getConfigOutputPorts()) {
-        final AddConfigOutputPortFeature addFeature = new AddConfigOutputPortFeature(getFeatureProvider());
         final ICustomContext portContext = new CustomContext(pictElements);
-        portContext.putProperty("name", p.getName());
+        addFeature.setGivenName(port.getName());
         addFeature.execute(portContext);
-      }
+      });
     }
     return pictElements;
   }
@@ -170,11 +162,10 @@ public class AddActorFromRefinementFeature extends AbstractAddFeature {
   private boolean setRefinement(final IAddContext context, final Actor actor) {
     final SetActorRefinementFeature setRefinementFeature = new SetActorRefinementFeature(getFeatureProvider());
     IPath newFilePath;
-    if (context.getNewObject() instanceof IFile) {
-      newFilePath = ((IFile) context.getNewObject()).getFullPath();
-    } else {
+    if (!(context.getNewObject() instanceof IFile)) {
       return false;
     }
+    newFilePath = ((IFile) context.getNewObject()).getFullPath();
     setRefinementFeature.setShowOnlyValidPrototypes(false);
     setRefinementFeature.setActorRefinement(actor, newFilePath);
     return true;
@@ -191,9 +182,8 @@ public class AddActorFromRefinementFeature extends AbstractAddFeature {
     final Object[] actors = createActorFeature.getObjects();
     if (actors.length > 0) {
       return (Actor) actors[0];
-    } else {
-      return null;
     }
+    return null;
   }
 
   /*
