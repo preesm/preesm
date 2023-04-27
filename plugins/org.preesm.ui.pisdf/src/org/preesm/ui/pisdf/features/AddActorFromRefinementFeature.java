@@ -139,14 +139,15 @@ public class AddActorFromRefinementFeature extends AbstractAddFeature {
         AbstractAddActorPortFeature addFeature;
 
         // Could be replaced with instanceof pattern matching in a switch statement once it comes out of preview
-        if (port instanceof DataInputPort) {
-          addFeature = new AddDataInputPortFeature(getFeatureProvider());
-        } else if (port instanceof DataOutputPort) {
-          addFeature = new AddDataOutputPortFeature(getFeatureProvider());
-        } else if (port instanceof ConfigInputPort) {
+        // Instance of ConfigOutputPort needs to be check BEFORE DataOutputPort because the former extends the latter
+        if (port instanceof ConfigInputPort) {
           addFeature = new AddConfigInputPortFeature(getFeatureProvider());
         } else if (port instanceof ConfigOutputPort) {
           addFeature = new AddConfigOutputPortFeature(getFeatureProvider());
+        } else if (port instanceof DataInputPort) {
+          addFeature = new AddDataInputPortFeature(getFeatureProvider());
+        } else if (port instanceof DataOutputPort) {
+          addFeature = new AddDataOutputPortFeature(getFeatureProvider());
         } else {
           throw new PreesmRuntimeException("Unrecognized port type");
         }
