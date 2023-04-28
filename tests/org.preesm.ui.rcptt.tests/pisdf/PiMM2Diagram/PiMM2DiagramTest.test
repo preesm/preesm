@@ -1,0 +1,298 @@
+--- RCPTT testcase ---
+Format-Version: 1.0
+Element-Name: PiMM2DiagramTest
+Element-Type: testcase
+Element-Version: 3.0
+External-Reference: 
+Id: _c95JAOUIEe2gVs9UH7tlOw
+Runtime-Version: 2.5.4.202210020716
+Save-Time: 4/28/23, 12:51 PM
+Testcase-Type: ecl
+Verifications: _TqXjYOWxEe2yotkpYlnSWQ
+
+------=_.content-0a7243a0-75d3-3d5f-9791-539de0e5b7ac
+Content-Type: text/ecl
+Entry-Name: .content
+
+get-menu -path "File/New/Project..." | click -metaKeys ""
+with [get-window "New Project"] {
+    get-tree | select "Preesm/Preesm Project"
+    get-button "Next >" | click -metaKeys ""
+    get-editbox -after [get-label "Project name:"] | set-text PiMM2Diagram
+    get-button Finish | click
+}
+get-view "Project Explorer" | get-tree | select "PiMM2Diagram/Algo" | get-menu -path "New/Preesm Algorithm (PiSDF)" 
+    | click -metaKeys ""
+with [get-window "New Algorithm (PiMM)"] {
+    with [get-editbox -after [get-label "File name:"]] {
+        key-type Right
+        key-type "M1+ARROW_LEFT"
+        key-type Left
+        key-type "M1+BS"
+        set-text ".diagram"
+        key-type "M1+BS"
+        set-text "bottom.diagram"
+    }
+    get-button Finish | click
+}
+with [get-editor bottom] {
+    get-diagram -index 1 | key-type "M1+s"
+    with [get-palette | get-palette-entry Actor] {
+        mouse-move 53 5 button1 -height 24 -width 130
+        mouse-press 53 5 button1 -height 24 -width 130
+        mouse-release 53 5 button1 "" -height 24 -width 130
+    }
+    with [get-diagram -index 1] {
+        mouse-move 343 165 button1 -height 387 -width 630
+        mouse-press 343 165 button1 -height 387 -width 630
+        mouse-release 343 165 button1 "" -height 387 -width 630
+    }
+}
+with [get-window "Create Actor"] {
+    get-editbox -after [get-label "Enter new actor name"] | set-text testActor
+    get-button OK | click
+}
+with [get-editor bottom] {
+    with [get-diagram -index 1] {
+        mouse-move 251 202 button1 -height 387 -width 630
+        mouse-press 251 202 button1 -height 387 -width 630
+        mouse-release 251 202 button1 "" -height 387 -width 630
+        mouse-hover 251 202 -height 387 -width 630
+    }
+    with [get-palette] {
+        get-palette-entry Parameter | mouse-move 66 22 -height 24 -width 130
+        get-palette-entry "Malleable Parameter" | mouse-move 74 40 -height 41 -width 130
+        with [get-palette-entry "Config. Input Interface"] {
+            mouse-move 74 8 -height 41 -width 130
+            mouse-hover 74 8 -height 41 -width 130
+            mouse-move 74 8 button1 -height 41 -width 130
+            mouse-press 74 8 button1 -height 41 -width 130
+            mouse-release 74 8 button1 "" -height 41 -width 130
+        }
+    }
+    with [get-diagram -index 1] {
+        mouse-move 120 112 button1 -height 387 -width 630
+        mouse-press 120 112 button1 -height 387 -width 630
+        mouse-hover 120 112 -mask "" -height 387 -width 630
+        mouse-release 120 112 button1 "" -height 387 -width 630
+    }
+}
+with [get-window "Create Config. Input Interface"] {
+    get-editbox -after [get-label "Enter new configuration input interface name"] | set-text configIn
+    get-button OK | click
+}
+with [get-editor bottom] {
+    get-diagram -index 1 | get-edit-part -name bottom | get-edit-part -text configIn | mouse-move 27 14 -height 31 
+        -width 44
+    with [get-palette | get-palette-entry "Config Output Interface"] {
+        mouse-move 23 25 button1 -height 41 -width 130
+        mouse-press 23 25 button1 -height 41 -width 130
+        mouse-release 23 24 button1 "" -height 41 -width 130
+    }
+    with [get-diagram -index 1] {
+        mouse-move 524 181 button1 -height 387 -width 630
+        mouse-press 524 181 button1 -height 387 -width 630
+        mouse-release 524 181 button1 "" -height 387 -width 630
+    }
+}
+with [get-window "Create Config. Output Interface"] {
+    get-editbox -after [get-label "Enter new Config. Output Interface name"] | set-text configOut
+    get-button OK | click
+}
+with [get-editor bottom] {
+    with [get-diagram -index 1] {
+        get-edit-part -name bottom | get-edit-part -text configOut | mouse-move 0 18 -height 20 -width 72
+        mouse-hover 581 341 -height 387 -width 630
+    }
+    with [get-palette | get-palette-entry "Data Input Interface"] {
+        mouse-move 27 21 button1 -height 41 -width 130
+        mouse-press 27 21 button1 -height 41 -width 130
+        mouse-release 28 21 button1 "" -height 41 -width 130
+    }
+    with [get-diagram -index 1] {
+        mouse-move 115 238 button1 -height 387 -width 630
+        mouse-press 115 238 button1 -height 387 -width 630
+        mouse-release 115 238 button1 "" -height 387 -width 630
+    }
+}
+with [get-window "Create Source Interface"] {
+    get-editbox -after [get-label "Enter new Source Interface name"] | set-text dataIn
+    get-button OK | click
+}
+with [get-editor bottom] {
+    get-diagram -index 1 | get-edit-part -name bottom | get-edit-part -text dataIn | mouse-move 40 0 -height 20 
+        -width 52
+    with [get-palette] {
+        get-palette-entry Objects | mouse-hover 0 139 -height 235 -width 130
+        with [get-palette-entry "Data Output Interface"] {
+            mouse-move 28 18 button1 -height 41 -width 130
+            mouse-press 28 18 button1 -height 41 -width 130
+            mouse-release 28 18 button1 "" -height 41 -width 130
+            mouse-hover 28 18 -height 41 -width 130
+        }
+    }
+    with [get-diagram -index 1] {
+        mouse-move 504 283 button1 -height 387 -width 630
+        mouse-press 504 283 button1 -height 387 -width 630
+        mouse-release 504 283 button1 "" -height 387 -width 630
+    }
+}
+with [get-window "Create Sink Interface"] {
+    get-editbox -after [get-label "Enter new Sink Interface name"] | set-text dataOut
+    get-button OK | click -metaKeys ""
+}
+with [get-editor bottom] {
+    get-diagram -index 1 | mouse-hover 560 120 -height 387 -width 630
+    with [get-palette | get-palette-entry Dependency] {
+        mouse-move 15 13 button1 -height 24 -width 130
+        mouse-press 15 13 button1 -height 24 -width 130
+        mouse-release 15 13 button1 "" -height 24 -width 130
+        mouse-move 11 13 -height 24 -width 130
+    }
+    with [get-diagram -index 1 | get-edit-part -name bottom] {
+        with [get-edit-part -text configIn] {
+            mouse-move 25 27 -height 31 -width 44
+            with [get-edit-part -className AdvancedAnchorEditPart] {
+                mouse-move 10 12 button1 -height 17 -width 17
+                mouse-press 10 12 button1 -height 17 -width 17
+                mouse-release 10 12 button1 "" -height 17 -width 17
+            }
+            mouse-move 43 29 -height 31 -width 44
+        }
+        get-edit-part -text testActor | mouse-move 0 15 -height 23 -width 79
+        get-figure -path 1 | mouse-move 6 13 -height 16 -width 16
+        get-figure -path 1 | mouse-move 9 13 -height 16 -width 16
+        with [get-edit-part -text testActor] {
+            mouse-move 32 15 -height 23 -width 79
+            mouse-hover 32 15 -height 23 -width 79
+            mouse-move 32 15 button1 -height 23 -width 79
+            mouse-press 32 15 button1 -height 23 -width 79
+        }
+    }
+}
+get-window "Add Config. Input Port" | get-button OK | click
+with [get-editor bottom] {
+    with [get-diagram -index 1] {
+        get-edit-part -name bottom | get-edit-part -text testActor | mouse-move 60 1 -height 38 -width 79
+        mouse-hover 602 116 -height 387 -width 630
+        key-type ESC
+    }
+    with [get-palette | get-palette-entry Fifo] {
+        mouse-move 15 10 button1 -height 24 -width 130
+        mouse-press 15 10 button1 -height 24 -width 130
+        mouse-release 15 10 button1 "" -height 24 -width 130
+        mouse-hover 15 10 -height 24 -width 130
+    }
+    with [get-diagram -index 1 | get-edit-part -name bottom] {
+        with [get-edit-part -text dataIn | get-edit-part -className AdvancedAnchorEditPart] {
+            mouse-move 11 8 button1 -height 16 -width 16
+            mouse-press 11 8 button1 -height 16 -width 16
+            mouse-release 11 8 button1 "" -height 16 -width 16
+        }
+        with [get-edit-part -text testActor] {
+            mouse-move 68 23 button1 -height 38 -width 79
+            mouse-press 68 23 button1 -height 38 -width 79
+        }
+    }
+}
+with [get-window "Add Data Input Port"] {
+    get-editbox -after [get-label "Add a data input port to the Actor"] | set-text in
+    get-button OK | click
+}
+with [get-editor bottom | get-diagram -index 1 | get-edit-part -name bottom] {
+    with [get-edit-part -text testActor] {
+        mouse-move 60 41 button1 -height 53 -width 79
+        mouse-press 60 41 button1 -height 53 -width 79
+        mouse-release 60 41 button1 "" -height 53 -width 79
+        mouse-hover 60 41 -height 53 -width 79
+        mouse-move 67 48 -height 53 -width 79
+    }
+    with [get-edit-part -text configOut] {
+        mouse-move 4 14 -height 20 -width 72
+        with [get-edit-part -className AdvancedAnchorEditPart] {
+            mouse-move 4 11 button1 -height 17 -width 17
+            mouse-press 4 11 button1 -height 17 -width 17
+        }
+    }
+}
+with [get-window "Add Data Output Port"] {
+    get-editbox -after [get-label "Add a data output port to the Actor"] | set-text configOut
+    get-button OK | click
+}
+with [get-editor bottom | get-diagram -index 1 | get-edit-part -name bottom] {
+    with [get-edit-part -text testActor] {
+        mouse-move 40 44 button1 -height 53 -width 110
+        mouse-press 40 44 button1 -height 53 -width 110
+        mouse-release 40 44 button1 "" -height 53 -width 110
+        mouse-move 51 50 -height 53 -width 110
+    }
+    with [get-edit-part -text dataOut] {
+        mouse-move 0 1 -height 20 -width 61
+        with [get-edit-part -className AdvancedAnchorEditPart] {
+            mouse-move 10 12 button1 -height 16 -width 16
+            mouse-press 10 12 button1 -height 16 -width 16
+        }
+    }
+}
+with [get-window "Add Data Output Port"] {
+    get-editbox -after [get-label "Add a data output port to the Actor"] | set-text out
+    get-button OK | click -metaKeys ""
+}
+with [get-editor bottom | get-diagram -index 1] {
+    mouse-hover 324 296 -height 387 -width 630
+    key-type ESC
+    key-type "M1+s"
+    key-type "M1+M2+f"
+    key-type "M1+s"
+}
+get-view "Project Explorer" | get-tree | select "PiMM2Diagram/Algo" | get-menu -path "New/Preesm Algorithm (PiSDF)" 
+    | click -metaKeys ""
+with [get-window "New Algorithm (PiMM)"] {
+    with [get-editbox -after [get-label "File name:"]] {
+        key-type Right
+        key-type "M1+ARROW_LEFT"
+        key-type Left
+        key-type "M1+BS"
+        set-text ".diagram"
+        key-type "M1+BS"
+        set-text "top.diagram"
+    }
+    get-button Finish | click
+}
+get-editor top | get-diagram -index 1 | key-type "M1+s"
+with [get-view "Project Explorer" | get-tree] {
+    select "PiMM2Diagram/Algo/bottom.pi"
+    with [get-item -path "PiMM2Diagram/Algo/bottom.pi"] {
+        drag-start 35 8
+        drag-enter 43 10 -detail move
+    }
+    drag-over 239 92
+    get-item -path "PiMM2Diagram/Algo/top.diagram" | drag-over 174 0
+}
+with [get-editor top | get-diagram -index 1 | get-edit-part -name top] {
+    drag-enter 11 127 -detail move
+    drag-exit
+    drag-over 242 167 -detail copy
+    drag-exit
+    drag-accept 242 167 -detail copy
+}
+get-view "Project Explorer" | get-tree | drag-set-data
+get-editor top | get-diagram -index 1 | get-edit-part -name top | drop 242 167 -detail copy
+with [get-window "Create Actor"] {
+    get-editbox -after [get-label "Enter new actor name"] | set-text actor
+    get-button OK | click -metaKeys ""
+}
+get-view "Project Explorer" | get-tree | drag-end -detail copy
+with [get-editor top] {
+    with [get-diagram -index 1] {
+        mouse-move 440 285 button1 -height 387 -width 630
+        mouse-press 440 285 button1 -height 387 -width 630
+        mouse-release 440 285 button1 "" -height 387 -width 630
+        key-type "M1+s"
+    }
+    with [get-palette] {
+        get-palette-entry Fifo | mouse-move 68 1 -height 24 -width 130
+        get-palette-entry Marquee | mouse-move 118 21 -height 24 -width 130
+    }
+}
+------=_.content-0a7243a0-75d3-3d5f-9791-539de0e5b7ac--
