@@ -259,7 +259,7 @@ public class CodegenModelGeneratorClusteringRaiser {
               final Long nbTokenIn = sc.getActor().getDataOutputPorts().get(i).getExpression().evaluate()
                   * brv.get(sc.getActor());
 
-              if (stackSizeDecounter - nbTokenIn < 0) {// if stack overflow
+              if (stackSizeDecounter - nbTokenIn < 0) { // if stack overflow
 
                 final DynamicBuffer buffer = CodegenModelUserFactory.eINSTANCE.createDynamicBuffer();
                 buffer.setName(sc.getActor().getDataOutputPorts().get(i).getName() + "__"
@@ -1249,7 +1249,7 @@ public class CodegenModelGeneratorClusteringRaiser {
     // do {
     // iterActor = (Actor) iterActor.getDirectPredecessors().get(0);
     // } while (!this.iterMap.containsKey(iterActor));
-    IteratedBuffer iteratedBuffer = CodegenModelUserFactory.eINSTANCE.createIteratedBuffer();
+    final IteratedBuffer iteratedBuffer = CodegenModelUserFactory.eINSTANCE.createIteratedBuffer();
     iteratedBuffer.setBuffer(buffer);
     iteratedBuffer.setIter(this.iterMap.get(iterActor));
     iteratedBuffer.setNbToken(dataPort.getExpression().evaluate());
@@ -1276,7 +1276,7 @@ public class CodegenModelGeneratorClusteringRaiser {
     do {
       iterActor = (SpecialActor) iterActor.getDirectPredecessors().get(0);
     } while (!this.iterMap.containsKey(iterActor));
-    IteratedBuffer iteratedBuffer = CodegenModelUserFactory.eINSTANCE.createIteratedBuffer();
+    final IteratedBuffer iteratedBuffer = CodegenModelUserFactory.eINSTANCE.createIteratedBuffer();
     iteratedBuffer.setBuffer(buffer);
     iteratedBuffer.setIter(this.iterMap.get(iterActor));
     iteratedBuffer.setNbToken(dataPort.getExpression().evaluate());
