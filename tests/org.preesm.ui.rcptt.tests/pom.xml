@@ -82,8 +82,9 @@
             <version>${project.version}</version>
            
       		   <vmArgs>
-      			 <vmArg>-Xmx768m</vmArg>
-      			 <!-- <vmArg>-XX:MaxPermSize=256m</vmArg> -->
+				 <vmArg>-Xmx768m</vmArg>
+				 <!-- <vmArg>-XX:MaxPermSize=256m</vmArg> -->
+				 <vmArg>-javaagent:${env.HOME}/.m2/repository/org/jacoco/org.jacoco.agent/${jacoco-version}/org.jacoco.agent-${jacoco-version}-runtime.jar=destfile=${project.basedir}/../../target/jacoco.exec,append=true</vmArg>
       		   </vmArgs>
            
           </aut>

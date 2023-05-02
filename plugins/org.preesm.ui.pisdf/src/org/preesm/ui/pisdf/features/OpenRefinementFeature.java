@@ -59,6 +59,7 @@ import org.preesm.model.pisdf.Delay;
 import org.preesm.model.pisdf.InitActor;
 import org.preesm.model.pisdf.Refinement;
 import org.preesm.model.pisdf.RefinementContainer;
+import org.preesm.ui.pisdf.util.PiMM2DiagramGenerator;
 
 /**
  * Custom feature in charge of opening an editor for the refinement of an actor.
@@ -147,13 +148,12 @@ public class OpenRefinementFeature extends AbstractCustomFeature {
             final IPath diagramFile = refinementPath.removeFileExtension().addFileExtension("diagram");
             final IResource diagResource = ResourcesPlugin.getWorkspace().getRoot().getFile(diagramFile);
 
-            // Check if the diaram file exists
+            // try to create the diagram file if it doesn't exist
             if (!diagResource.exists()) {
-              MessageDialog.openError(dw.getShell(), "Problem opening editor",
-                  "No diagram file for " + refinementPath.lastSegment());
-            } else {
-              refResource = diagResource;
+              PiMM2DiagramGenerator
+                  .generateDiagramFile(ResourcesPlugin.getWorkspace().getRoot().getFile(refinementPath));
             }
+            refResource = diagResource;
           }
 
           // Open the editor for the refinement
