@@ -58,8 +58,8 @@ import javax.swing.JFrame;
 import javax.swing.JMenuItem;
 import javax.swing.JRootPane;
 import javax.swing.WindowConstants;
+import org.apache.commons.lang3.SystemUtils;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.SWTError;
 import org.eclipse.swt.awt.SWT_AWT;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Button;
@@ -255,7 +255,7 @@ public class GanttPlotter {
 
       final Composite composite = new Composite(form.getBody(), SWT.EMBEDDED | SWT.FILL);
       Frame frame = null;
-      try {
+      if (!SystemUtils.IS_OS_LINUX) {
         // related to PREESM issue #303
         // may not work because of a libswt-awt-gtk4928+.so bug which is not our responsability
         // see following bug report
@@ -269,7 +269,7 @@ public class GanttPlotter {
         // org/preesm/algorithm/mapper/ui/stats/PerformancePlotter.java
         // (we care but not too much since it is not used with the new Synthesis)
         frame = SWT_AWT.new_Frame(composite);
-      } catch (UnsatisfiedLinkError | SWTError e) {
+      } else {
         // we catch this error since we can recover from it
         // Level.WARNING may stop the workflow depending on options
         // and as we are in a separate thread, events are not always well managed ...
@@ -277,7 +277,7 @@ public class GanttPlotter {
         PreesmLogger.getLogger().log(Level.INFO,
             "An error occured while loading org.eclipse.swt.awt.SWT_AWT class "
                 + "or its associated shared object libswt-awt-gtk-4928+.so, "
-                + "thus the Gantt diagram is not embedded in Eclipse. See error:\n" + e.getMessage());
+                + "thus the Gantt diagram is not embedded in Eclipse.");
         // the created composite cannot be used so we dispose it and force to reset layout
         if (!composite.isDisposed()) {
           composite.dispose();
