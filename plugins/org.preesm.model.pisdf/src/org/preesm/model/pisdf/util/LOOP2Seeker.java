@@ -40,8 +40,7 @@ public class LOOP2Seeker extends PiMMSwitch<Boolean> {
    *
    * @param inputGraph
    *          Input graph to search in.
-   * @param numberOfPEs
-   * @param brv
+   * 
    */
   public LOOP2Seeker(final PiGraph inputGraph) {
     this.graph = inputGraph;

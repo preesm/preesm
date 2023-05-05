@@ -78,7 +78,9 @@ public class SRVSeeker extends PiMMSwitch<Boolean> {
    * @param inputGraph
    *          Input graph to search in.
    * @param numberOfPEs
+   *          number of PEs
    * @param brv
+   *          repetition vector
    */
   public SRVSeeker(final PiGraph inputGraph, int numberOfPEs, Map<AbstractVertex, Long> brv) {
     this.graph = inputGraph;
@@ -96,9 +98,7 @@ public class SRVSeeker extends PiMMSwitch<Boolean> {
     // Clear the list of identified URCs
     this.identifiedSRVs.clear();
     // Explore all executable actors of the graph
-    this.graph.getActors().stream().filter(x -> x instanceof ExecutableActor).forEach(x -> doSwitch(x));// && !(x
-                                                                                                        // instanceof
-                                                                                                        // SpecialActor)
+    this.graph.getActors().stream().filter(x -> x instanceof ExecutableActor).forEach(x -> doSwitch(x));
     // Return identified URCs
     return identifiedSRVs;
   }

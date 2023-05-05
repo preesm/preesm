@@ -86,8 +86,11 @@ public class SEQSeeker extends PiMMSwitch<Boolean> {
    * @param inputGraph
    *          Input graph to search in.
    * @param numberOfPEs
+   *          numberof PEs
    * @param brv
+   *          repetition vector
    * @param subgraphGen
+   *          no
    */
   public SEQSeeker(final PiGraph inputGraph, int numberOfPEs, Map<AbstractVertex, Long> brv,
       List<AbstractActor> nonClusterableList, Map<AbstractVertex, Long> actorTiming, int subgraphGen) {

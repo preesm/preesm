@@ -31,8 +31,7 @@ public class LOOP1Seeker extends PiMMSwitch<Boolean> {
    *
    * @param inputGraph
    *          Input graph to search in.
-   * @param numberOfPEs
-   * @param brv
+   * 
    */
   public LOOP1Seeker(final PiGraph inputGraph) {
     this.graph = inputGraph;
@@ -70,9 +69,8 @@ public class LOOP1Seeker extends PiMMSwitch<Boolean> {
       if (this.connectedDelays.contains(fifo.getDelay())) {
         this.identifiedDelays.add(fifo.getDelay());
         return true;
-      } else {
-        this.connectedDelays.add(fifo.getDelay());
       }
+      this.connectedDelays.add(fifo.getDelay());
     }
     return false;
   }

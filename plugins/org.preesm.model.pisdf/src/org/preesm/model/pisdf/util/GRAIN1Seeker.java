@@ -50,10 +50,14 @@ public class GRAIN1Seeker extends PiMMSwitch<Boolean> {
    * @param inputGraph
    *          Input graph to search in.
    * @param nonClusterableList
+   *          List of non clusterable actors
    * @param actorTiming
+   *          list of timing
    * @param memcpySpeed
+   *          speed of memcpy func.
    * @param memcpySetUp
-   * @param scenario
+   *          set up of memcpy func.
+   * 
    */
   public GRAIN1Seeker(final PiGraph inputGraph, int numberOfPEs, Map<AbstractVertex, Long> brv,
       List<AbstractActor> nonClusterableList, Map<AbstractVertex, Long> actorTiming, double memcpySpeed,
