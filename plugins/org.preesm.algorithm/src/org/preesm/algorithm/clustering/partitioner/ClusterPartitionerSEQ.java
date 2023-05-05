@@ -92,9 +92,13 @@ public class ClusterPartitionerSEQ {
    *          Number of processing elements in compute clusters.
    *
    * @param brv
+   *          repetition vector
    * @param clusterId
+   *          cluster identificator
    * @param nonClusterableList
+   *          List of non clusterable actors
    * @param archi
+   *          architecture
    */
   public ClusterPartitionerSEQ(final PiGraph graph, final Scenario scenario, final int numberOfPEs,
       Map<AbstractVertex, Long> brv, int clusterId, List<AbstractActor> nonClusterableList, Design archi) {

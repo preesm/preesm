@@ -53,11 +53,12 @@ public class GRAIN2Seeker extends PiMMSwitch<Boolean> {
    * @param inputGraph
    *          Input graph to search in.
    * @param nonClusterableList
+   *          List of non clusterable actors
    * @param actorTiming
+   *          list of timing
    * @param longestParallelTiming
-   * @param memcpySpeed
-   * @param memcpySetUp
-   * @param scenario
+   *          actor with the longest timing
+   * 
    */
   public GRAIN2Seeker(final PiGraph inputGraph, int numberOfPEs, Map<AbstractVertex, Long> brv,
       List<AbstractActor> nonClusterableList, Map<AbstractVertex, Long> actorTiming, Long longestParallelTiming) {

@@ -473,10 +473,9 @@ public abstract class CodegenAbstractPrinter extends CodegenSwitch<CharSequence>
     // print ClusterRaiserblock Header
     result.append(printclusterRaiserHeader(clusterRaiserBlock), indentationClusterBlock);
     // visit global buffer
-    for (int i = 0; i < clusterRaiserBlock.getInitBuffers().size(); i++) {
-      result.append(clusterRaiserBlock.getInitBuffers().get(i).getType() + " "
-          + clusterRaiserBlock.getInitBuffers().get(i).getName() + "["
-          + clusterRaiserBlock.getInitBuffers().get(i).getSizeInBit() + "];\n", indentationClusterBlock);
+    for (final Buffer element : clusterRaiserBlock.getInitBuffers()) {
+      result.append(element.getType() + " " + element.getName() + "[" + element.getSizeInBit() + "];\n",
+          indentationClusterBlock);
     }
     // print init func
     if (!clusterRaiserBlock.getInitBuffers().isEmpty() || clusterRaiserBlock.getInitBlock() != null) {
@@ -552,13 +551,11 @@ public abstract class CodegenAbstractPrinter extends CodegenSwitch<CharSequence>
   private StringConcatenation printDefinitionsClusterRaiserBlock(final String indentationClusterBlock,
       final EList<Variable> definitions) {
     StringConcatenation result = new StringConcatenation();
-    String indentation;
-    boolean hasNewLine;
+    // boolean hasNewLine;
     setState(PrinterState.PRINTING_DEFINITIONS);
     result.append(" ", indentationClusterBlock);
-    indentation = CodegenAbstractPrinter.getLastLineIndentation(result);
     result = CodegenAbstractPrinter.trimLastEOL(result);
-    hasNewLine = CodegenAbstractPrinter.endWithEOL(result);
+    // hasNewLine = CodegenAbstractPrinter.endWithEOL(result);
 
     // result.append(coreBlock.definitions.map[doSwitch].join(''), indentation)
     for (final Variable v : definitions) {
@@ -574,12 +571,11 @@ public abstract class CodegenAbstractPrinter extends CodegenSwitch<CharSequence>
       ArrayList<Variable> declarations) {
     StringConcatenation result = new StringConcatenation();
     String indentation;
-    boolean hasNewLine;
+
     setState(PrinterState.PRINTING_DECLARATIONS);
     result.append(" ", indentationClusterBlock);
     indentation = CodegenAbstractPrinter.getLastLineIndentation(result);
     result = CodegenAbstractPrinter.trimLastEOL(result);
-    hasNewLine = CodegenAbstractPrinter.endWithEOL(result);
 
     // result.append(coreBlock.definitions.map[doSwitch].join(''), indentation)
     for (final Variable v : declarations) {
@@ -1612,7 +1608,7 @@ public abstract class CodegenAbstractPrinter extends CodegenSwitch<CharSequence>
    * Method called to print a {@link DynamicBuffer} within the {@link CoreBlock#declaration() declaration}
    * {@link CallBlock} of a {@link CoreBlock}
    *
-   * @param subBuffer
+   * @param dynamicBuffer
    *          the {@link DynamicBuffer} to print.
    * @return the printed {@link CharSequence}
    */
@@ -1622,7 +1618,7 @@ public abstract class CodegenAbstractPrinter extends CodegenSwitch<CharSequence>
    * Method called to print a {@link DynamicBuffer} within the {@link CoreBlock#getDefinitions() definition}
    * {@link CallBlock} of a {@link CoreBlock}
    *
-   * @param subBuffer
+   * @param dynamicBuffer
    *          the {@link DynamicBuffer} to print.
    * @return the printed {@link CharSequence}
    */
@@ -1632,7 +1628,7 @@ public abstract class CodegenAbstractPrinter extends CodegenSwitch<CharSequence>
    * Method called to print a {@link SubBuffer} outside the {@link CoreBlock#getDefinitions() definition} or the
    * {@link CoreBlock#getDeclarations() declaration} of a {@link CoreBlock}
    *
-   * @param subBuffer
+   * @param dynamicBuffer
    *          the {@link SubBuffer} to print.
    * @return the printed {@link CharSequence}
    */

@@ -114,8 +114,8 @@ public class CodegenModelGeneratorClusteringRaiser {
 
     }
 
-    final int indexLoopElt[] = new int[100];
-    final int indexLoopEltClosed[] = new int[100];
+    // final int[] indexLoopElt = new int[100];
+    // final int indexLoopEltClosed[] = new int[100];
 
     // final Map<org.preesm.model.pisdf.AbstractVertex,
     // Long> brv = PiBRV.compute(this.scenario.getAlgorithm(), BRVMethod.TOPOLOGY);
@@ -205,7 +205,7 @@ public class CodegenModelGeneratorClusteringRaiser {
       if (sc.getActor().getDataInputPorts().size() > 0) {
         for (int i = 0; i < sc.getActor().getDataInputPorts().size(); i++) {
           if (sc.getActor().getDataInputPorts().get(i).getFifo().getSource() instanceof DataInputInterface) {
-            // this.scenario.getAlgorithm().getDataInputInterfaces().get(i).getDataOutputPorts().get(0).getExpression().evaluate()
+
             final Long nbTokenIn = ((DataInputInterface) sc.getActor().getDataInputPorts().get(i).getFifo().getSource())
                 .getDataPort().getExpression().evaluate() * brv.get(sc.getActor());
             final Buffer buffer = CodegenModelUserFactory.eINSTANCE.createBuffer();
@@ -321,7 +321,7 @@ public class CodegenModelGeneratorClusteringRaiser {
           final FunctionCall fct = CodegenModelUserFactory.eINSTANCE.createFunctionCall();
           final Long nbTokenIn = sc.getActor().getDataOutputPorts().get(i).getExpression().evaluate()
               * brv.get(sc.getActor());
-          if (stackSizeDecounter - nbTokenIn < 0) {// if stack overflow
+          if (stackSizeDecounter - nbTokenIn < 0) {
             final DynamicBuffer buffer = CodegenModelUserFactory.eINSTANCE.createDynamicBuffer();
             final String str = ((AbstractActor) sc.getActor().getDirectSuccessors().get(i)).getDataInputPorts().get(0)
                 .getName();
@@ -368,7 +368,7 @@ public class CodegenModelGeneratorClusteringRaiser {
         final FunctionCall fct = CodegenModelUserFactory.eINSTANCE.createFunctionCall();
         final Long nbTokenIn = sc.getActor().getDataOutputPorts().get(0).getExpression().evaluate()
             * brv.get(sc.getActor());
-        if (stackSizeDecounter - nbTokenIn < 0) {// if stack overflow
+        if (stackSizeDecounter - nbTokenIn < 0) {
           final DynamicBuffer buffer = CodegenModelUserFactory.eINSTANCE.createDynamicBuffer();
           final String str = ((AbstractActor) sc.getActor().getDirectSuccessors().get(0)).getDataInputPorts().get(0)
               .getName();
@@ -414,7 +414,7 @@ public class CodegenModelGeneratorClusteringRaiser {
           final FunctionCall fct = CodegenModelUserFactory.eINSTANCE.createFunctionCall();
           final Long nbTokenIn = sc.getActor().getDataOutputPorts().get(i).getExpression().evaluate()
               * brv.get(sc.getActor());// ?
-          if (stackSizeDecounter - nbTokenIn < 0) {// if stack overflow
+          if (stackSizeDecounter - nbTokenIn < 0) {
             final DynamicBuffer buffer = CodegenModelUserFactory.eINSTANCE.createDynamicBuffer();
             final String str = ((AbstractActor) sc.getActor().getDirectSuccessors().get(i)).getDataInputPorts().get(0)
                 .getName();
@@ -460,7 +460,7 @@ public class CodegenModelGeneratorClusteringRaiser {
         final FunctionCall fct = CodegenModelUserFactory.eINSTANCE.createFunctionCall();
         final Long nbTokenIn = sc.getActor().getDataOutputPorts().get(0).getExpression().evaluate()
             * brv.get(sc.getActor());// oo
-        if (stackSizeDecounter - nbTokenIn < 0) {// if stack overflow
+        if (stackSizeDecounter - nbTokenIn < 0) {
           final DynamicBuffer buffer = CodegenModelUserFactory.eINSTANCE.createDynamicBuffer();
           final String str = ((AbstractActor) sc.getActor().getDirectSuccessors().get(0)).getDataInputPorts().get(0)
               .getName();
@@ -534,16 +534,16 @@ public class CodegenModelGeneratorClusteringRaiser {
 
         if (element instanceof DataInputPort) {
           final Port p = element.getFifo().getSourcePort();
-          if (this.internalBufferHeapMap.containsKey(p)) {//
+          if (this.internalBufferHeapMap.containsKey(p)) {
             portToVariable.put(element, this.internalBufferHeapMap.get(p));
           }
-          if (this.specialBufferHeapMap.containsKey(p)) {//
+          if (this.specialBufferHeapMap.containsKey(p)) {
             portToVariable.put(element, this.specialBufferHeapMap.get(p));
           }
-          if (this.internalBufferStackMap.containsKey(p)) {//
+          if (this.internalBufferStackMap.containsKey(p)) {
             portToVariable.put(element, this.internalBufferStackMap.get(p));
           }
-          if (this.specialBufferStackMap.containsKey(p)) {//
+          if (this.specialBufferStackMap.containsKey(p)) {
             portToVariable.put(element, this.specialBufferStackMap.get(p));
           }
           if (element.getFifo().getTarget() instanceof DataOutputInterface) {
@@ -615,7 +615,7 @@ public class CodegenModelGeneratorClusteringRaiser {
 
       // 3.1 link actor firing
 
-      if (sc.getActor() instanceof Actor) {// if actor
+      if (sc.getActor() instanceof Actor) {
         // init
         // get init actor
         if (((Actor) sc.getActor()).getRefinement() != null) {
@@ -664,7 +664,7 @@ public class CodegenModelGeneratorClusteringRaiser {
 
         }
 
-      } else if (sc.getActor() instanceof SpecialActor) {// if special actor
+      } else if (sc.getActor() instanceof SpecialActor) {
         if (!sc.isBeginLoop() && !sc.isEndLoop() && !sc.isLoopPrec()) {
           generateSpecialActorFiring(sc.getIterator(), (SpecialActor) sc.getActor(), portToVariable, operatorBlock);
 
@@ -729,12 +729,9 @@ public class CodegenModelGeneratorClusteringRaiser {
     if (!this.scenario.getAlgorithm().getConfigInputInterfaces().isEmpty()) {
       for (final ConfigInputInterface element : this.scenario.getAlgorithm().getConfigInputInterfaces()) {
         final Variable argCfg = CodegenModelUserFactory.eINSTANCE.createConstant();
-        argCfg.setName(element.getName());// retrieve cluster
-                                          // parameters
+        argCfg.setName(element.getName());
         argCfg.setType("int");
-        // if (!isLastCluster)
-        // argCfg.setComment("cfg"); // name
-        // else
+
         argCfg.setComment("cfg"); // name
         fct2.addParameter(argCfg, PortDirection.NONE);
         // operatorBlock.getClusterFunc().addParameter(argParam, PortDirection.INPUT);
@@ -758,8 +755,7 @@ public class CodegenModelGeneratorClusteringRaiser {
     if (!this.scenario.getAlgorithm().getDataInputInterfaces().isEmpty()) {
       for (final DataInputInterface element : this.scenario.getAlgorithm().getDataInputInterfaces()) {
         final Variable argIn = CodegenModelUserFactory.eINSTANCE.createConstant();
-        argIn.setName("*" + element.getName());// retrieve cluster
-                                               // input
+        argIn.setName("*" + element.getName());
         argIn.setType(element.getDataOutputPorts().get(0).getFifo().getType());
         argIn.setComment("input"); // name
         fct2.addParameter(argIn, PortDirection.INPUT);
@@ -769,8 +765,7 @@ public class CodegenModelGeneratorClusteringRaiser {
     if (!this.scenario.getAlgorithm().getDataOutputInterfaces().isEmpty()) {
       for (final DataOutputInterface element : this.scenario.getAlgorithm().getDataOutputInterfaces()) {
         final Variable argOut = CodegenModelUserFactory.eINSTANCE.createConstant();
-        argOut.setName("*" + element.getName());// retrieve
-                                                // cluster
+        argOut.setName("*" + element.getName());
         argOut.setType(element.getDataInputPorts().get(0).getFifo().getType());
         // argOut.setType("unsigned char");
         argOut.setComment("output"); // name
@@ -1294,18 +1289,14 @@ public class CodegenModelGeneratorClusteringRaiser {
       pa = port.getFifo().getSourcePort();//
     }
 
-    if (port.getKind().getValue() == 1 && this.externalBufferMap.containsKey(port)) { // if
-                                                                                      // input
-                                                                                      // return
-                                                                                      // incoming
+    if (port.getKind().getValue() == 1 && this.externalBufferMap.containsKey(port)) {
       // buffer
       if (this.externalBufferMap.get(port).getComment().equals("input interface")) {
         return this.externalBufferMap.get(port);
       }
 
     }
-    if (port.getKind().getValue() == 1 && this.internalBufferHeapMap.containsKey(port.getFifo().getSourcePort())) { // com
-                                                                                                                    // atoa
+    if (port.getKind().getValue() == 1 && this.internalBufferHeapMap.containsKey(port.getFifo().getSourcePort())) {
       return this.internalBufferHeapMap.get(port.getFifo().getSourcePort());
     }
 
@@ -1328,8 +1319,8 @@ public class CodegenModelGeneratorClusteringRaiser {
       }
     }
 
-    if (port.getKind().getValue() == 1 && this.internalBufferStackMap.containsKey(port.getFifo().getSourcePort())) { // com
-                                                                                                                     // atoa
+    if (port.getKind().getValue() == 1 && this.internalBufferStackMap.containsKey(port.getFifo().getSourcePort())) {
+
       return this.internalBufferStackMap.get(port.getFifo().getSourcePort());
     }
 

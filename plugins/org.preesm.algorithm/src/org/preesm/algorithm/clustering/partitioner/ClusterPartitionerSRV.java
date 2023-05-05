@@ -86,16 +86,19 @@ public class ClusterPartitionerSRV {
    * Builds a ClusterPartitioner object.
    *
    * @param graph
-   * 
+   *
    *          Input graph.
    * @param scenario
    *          Workflow scenario.
    * @param numberOfPEs
    *          Number of processing elements in compute clusters.
    * @param brv
-   *
+   * 
+   *          repetition vector
    * @param clusterId
+   *          List of non clusterable actors
    * @param nonClusterableList
+   *          List of non clusterable actors cluster identificator
    */
   public ClusterPartitionerSRV(final PiGraph graph, final Scenario scenario, final int numberOfPEs,
       Map<AbstractVertex, Long> brv, int clusterId, List<AbstractActor> nonClusterableList) {
