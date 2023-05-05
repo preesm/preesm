@@ -636,7 +636,7 @@ if(lastLevel.isClusterValue()) {
 			
 			if(out.getFifo().getDelay().hasGetterActor()) {
 				Fifo fdout = PiMMUserFactory.instance.createFifo();
-				dupActorsList.get((int) (value-2)).getDataOutputPorts().stream().filter(x->x.getFifo()==null).forEach(x -> x.setOutgoingFifo(fdout));
+				dupActorsList.get((int) (value-2)).getDataOutputPorts().stream().filter(x -> x.getFifo()==null).forEach(x -> x.setOutgoingFifo(fdout));
 				fdout.setTargetPort(out.getFifo().getDelay().getGetterPort());
 				fdout.setContainingGraph(oEmpty.getContainingGraph());
 				
