@@ -15,3 +15,4 @@ Require-Bundle: org.junit;bundle-version="4.13.2",
 Export-Package: org.ietr.preesm.architecture.test,
  org.preesm.model.pisdf.test,
  org.preesm.model.slam.test
+Import-Package: org.apache.commons.lang3
