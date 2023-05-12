@@ -1051,7 +1051,7 @@ public class FpgaCodeGenerator {
               + f.getType() + "){});\n  }\n");
         }
       }
-      wrapperProto.append("    ap_wait();\n    init = true;\n");
+      wrapperProto.append("#ifdef __SYNTHESIS__\n    ap_wait();\n#endif\n    init = true;\n");
       wrapperProto.append("  }\n  " + oriCall + "}\n");
       sb.append(wrapperProto.toString());
     }
