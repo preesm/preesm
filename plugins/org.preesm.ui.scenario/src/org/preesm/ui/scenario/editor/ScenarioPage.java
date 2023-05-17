@@ -45,7 +45,7 @@ import org.eclipse.ui.forms.editor.FormPage;
  */
 public abstract class ScenarioPage extends FormPage implements IPropertyListener {
 
-  public ScenarioPage(FormEditor editor, String id, String title) {
+  protected ScenarioPage(FormEditor editor, String id, String title) {
     super(editor, id, title);
   }
 
