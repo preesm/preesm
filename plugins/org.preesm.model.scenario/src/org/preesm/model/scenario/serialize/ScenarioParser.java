@@ -435,7 +435,7 @@ public class ScenarioParser {
                 // Do nothing
             }
           } else {
-            PreesmLogger.getLogger().log(Level.WARNING, "Could not find file: {}", url);
+            PreesmLogger.getLogger().log(Level.WARNING, () -> "Could not find file: " + url);
           }
         }
       }
