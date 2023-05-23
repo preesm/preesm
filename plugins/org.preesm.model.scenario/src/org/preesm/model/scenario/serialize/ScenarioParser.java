@@ -414,32 +414,23 @@ public class ScenarioParser {
 
         final URI uri = URI.createPlatformResourceURI(url, true);
 
-        // This gives "True" if url is empty
+        // This gives "True" even if url is empty
         final ResourceSet resourceSet = new ResourceSetImpl();
         final Boolean exists = resourceSet.getURIConverter().exists(uri, null);
 
         if (!url.isEmpty()) {
 
-          if (Boolean.TRUE.equals(exists)) {
-            switch (type) {
-              case "algorithm":
-                this.scenario.setAlgorithm(PiParser.getPiGraphWithReconnection(url));
-                break;
-              case "architecture":
-                initializeArchitectureInformation(url);
-                break;
-              case "codegenDirectory":
-                this.scenario.setCodegenDirectory(url);
-                break;
-              default:
-                // Do nothing
-            }
+          if (type.equals("algorithm") && Boolean.TRUE.equals(exists)) {
+            this.scenario.setAlgorithm(PiParser.getPiGraphWithReconnection(url));
+          } else if (type.equals("architecture") && Boolean.TRUE.equals(exists)) {
+            initializeArchitectureInformation(url);
+          } else if (type.equals("codegenDirectory")) {
+            this.scenario.setCodegenDirectory(url);
           } else {
             PreesmLogger.getLogger().log(Level.WARNING, () -> "Could not find file: " + url);
           }
         }
       }
-
       node = node.getNextSibling();
     }
   }
