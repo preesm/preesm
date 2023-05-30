@@ -52,10 +52,6 @@ $PREESM_INCLUDES
 
 $PREESM_SPECIAL_ACTORS
 
-// Wrappers to init delays
-
-$PREESM_DELAY_WRAPPERS
-
 // Wrapper to init actors
 
 $PREESM_INIT_WRAPPER

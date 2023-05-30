@@ -30,9 +30,7 @@ import org.preesm.model.pisdf.CHeaderRefinement;
 import org.preesm.model.pisdf.ConfigInputPort;
 import org.preesm.model.pisdf.DataInputInterface;
 import org.preesm.model.pisdf.DataOutputInterface;
-import org.preesm.model.pisdf.DataOutputPort;
 import org.preesm.model.pisdf.DataPort;
-import org.preesm.model.pisdf.Delay;
 import org.preesm.model.pisdf.DelayActor;
 import org.preesm.model.pisdf.Direction;
 import org.preesm.model.pisdf.Fifo;
@@ -127,6 +125,7 @@ public class FpgaCodeGenerator {
   public static final String SCRIPT_VIVADO_TCL       = "stdfiles/xilinxCodegen/script_vivado_xsa.tcl";
   public static final String MODEL_FIFO_ZYNQ         = "stdfiles/xilinxCodegen/model_fifo_zynq.py";
   public static final String STDFILE_PACKING_HPP     = "stdfiles/xilinxCodegen/packing.hpp";
+  public static final String STDFILE_DELAY_ACTOR_HPP = "stdfiles/xilinxCodegen/delay_actor.hpp";
 
   public static final String NAME_WRAPPER_INITPROTO   = "preesmInitWrapper";
   public static final String PREFIX_WRAPPER_DELAYPROD = "wrapperProdDelay_";
@@ -292,6 +291,9 @@ public class FpgaCodeGenerator {
 
       final String contentPackingHpp = PreesmResourcesHelper.getInstance().read(STDFILE_PACKING_HPP, fcg.getClass());
       PreesmIOHelper.getInstance().print(codegenPath, "packing.hpp", contentPackingHpp);
+
+      final String delayActorHpp = PreesmResourcesHelper.getInstance().read(STDFILE_DELAY_ACTOR_HPP, fcg.getClass());
+      PreesmIOHelper.getInstance().print(codegenPath, "delay_actor.hpp", delayActorHpp);
 
       final String contentScriptXsa = PreesmResourcesHelper.getInstance().read(SCRIPT_VIVADO_TCL, fcg.getClass());
       PreesmIOHelper.getInstance().print(codegenPath + "/" + STDFILE_SCRIPT_SUBDIR, "script_vivado_xsa.tcl",
@@ -832,9 +834,7 @@ public class FpgaCodeGenerator {
     } else {
       context.put("PREESM_INIT_WRAPPER", "");
     }
-    // 2.4- we wrap the actor calls producing delays
-    context.put("PREESM_DELAY_WRAPPERS", generateDelayWrappers(loopActorsCalls));
-    // 2.5- we generate the top kernel function with all calls in the start time order
+    // 2.4- we generate the top kernel function with all calls in the start time order
     final StringBuilder topK = new StringBuilder("extern \"C\" {\n" + getTopKernelSignature() + "{\n");
 
     // add interface protocols
@@ -994,67 +994,6 @@ public class FpgaCodeGenerator {
     }
     sb.append("    ap_wait();\n    init = true;\n");
     sb.append("  }\n}\n");
-    return sb.toString();
-  }
-
-  protected String generateDelayWrappers(final Map<AbstractActor, String> actorCalls) {
-    final StringBuilder sb = new StringBuilder();
-    for (final Entry<AbstractActor, String> e : actorCalls.entrySet()) {
-      final AbstractActor aa = e.getKey();
-      final List<Fifo> delayedFifos = new ArrayList<>();
-      for (final DataOutputPort dop : aa.getDataOutputPorts()) {
-        final Fifo fifo = dop.getFifo();
-        if (fifo.getDelay() != null) {
-          delayedFifos.add(fifo);
-        }
-      }
-      if (delayedFifos.isEmpty()) {
-        // the actor has no outgoing fifo with delays so we do not need to wrap it
-        continue;
-      }
-      // first we get the original call and build the new one
-      final String oriCall = e.getValue();
-      final StringBuilder newCall = new StringBuilder(PREFIX_WRAPPER_DELAYPROD + aa.getName() + "(");
-      final StringBuilder wrapperProto = new StringBuilder(
-          "static void " + PREFIX_WRAPPER_DELAYPROD + aa.getName() + "(");
-      final List<String> listArgCall = new ArrayList<>();
-      final List<String> listArgProto = new ArrayList<>();
-      for (final DataPort dp : aa.getAllDataPorts()) {
-        final Fifo f = dp.getFifo();
-        final String fifoName = getFifoStreamName(f);
-        // in the case of self-loops, the fifo would appear twice as an argument
-        // we need to avoid that
-        if (!listArgCall.contains(fifoName)) {
-          listArgCall.add(fifoName);
-          // we do not use port name because the original call already uses the fifo names
-          listArgProto.add("hls::stream<" + f.getType() + "> &" + fifoName);
-        }
-      }
-      newCall.append(listArgCall.stream().collect(Collectors.joining(", ")) + ");\n");
-      wrapperProto.append(listArgProto.stream().collect(Collectors.joining(", ")) + ") {\n");
-      e.setValue(newCall.toString());
-      // we fill the wrapper body
-      wrapperProto.append("  static bool init = false;\n  if (!init) {\n");
-      for (final Fifo f : delayedFifos) {
-        // if the delay has an init function we call it, otherwise we fill with zero
-        final Delay d = f.getDelay();
-        final DelayActor da = d.getActor();
-        if (da != null && da.hasValidRefinement()) {
-          // then the delay actor has a prototype that we will call
-          // (it may have multiple params and only one output)
-          wrapperProto.append("    " + generateDelayActorInitCall(da));
-        } else {
-          final String size = Long.toString(d.getSizeExpression().evaluate());
-          // the type is surrounded by parenthesis to handle the case of "unsigned char" for example
-          // the constructor call is made by braces "{}" since it is safer (to avoid the famous *C++ most vexing parse*)
-          wrapperProto.append("  for (int i = 0; i < " + size + "; i++) {\n    " + getFifoStreamName(f) + ".write(("
-              + f.getType() + "){});\n  }\n");
-        }
-      }
-      wrapperProto.append("#ifdef __SYNTHESIS__\n    ap_wait();\n#endif\n    init = true;\n");
-      wrapperProto.append("  }\n  " + oriCall + "}\n");
-      sb.append(wrapperProto.toString());
-    }
     return sb.toString();
   }
 
