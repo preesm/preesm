@@ -1,6 +1,8 @@
 import math
 import model_fifo_zynq
 from pathlib import Path
+import os
+import signal
 import subprocess
 import time
 import xml.etree.ElementTree as ET
@@ -21,6 +23,7 @@ COEF_LAMBDAS = 0.5
 nb_iterations = 3
 total_nb_cosim = 0
 total_nb_iterations = 0
+target_runtime = None
 
 #[[#]]# DSE options
 use_bram_wise = True
@@ -32,7 +35,11 @@ detect_steady_state = True
 def run_cosim(buffer_sizes):
     write_buffer_sizes(buffer_sizes)
     start = time.time()
-    subprocess.run(['vitis_hls', 'scripts/script_hls.tcl',  'cosim', top_kernel_name, top_kernel_name + '.cpp'])
+    try:
+        p = subprocess.Popen(['vitis_hls', 'scripts/script_hls.tcl',  'cosim', top_kernel_name, top_kernel_name + '.cpp'], start_new_session=True)
+        p.wait(timeout=target_runtime)
+    except subprocess.TimeoutExpired:
+        os.killpg(os.getpgid(p.pid), signal.SIGTERM)
     end = time.time()
     global total_nb_cosim
     total_nb_cosim += 1
@@ -134,7 +141,9 @@ def is_improved_resource_wise(candidate, upper, width):
 
 def iterative_cosim():
     # Start by setting the number of iterations of cosim to reach steady state
+    start = time.time()
     cosim_timings = run_cosim(upper_bound)
+    end = time.time()
     if cosim_timings[1] == [-1]:
         raise ValueError('Graph deadlocked with original buffer sizes')
     while not is_expected_ii(cosim_timings):
@@ -142,7 +151,11 @@ def iterative_cosim():
             raise ValueError('Graph does not reach II with original buffer sizes')
         global nb_iterations
         nb_iterations = nb_iterations * 2
+        start = time.time()
         cosim_timings = run_cosim(upper_bound)
+        end = time.time()
+    global target_runtime
+    target_runtime = (end - start) * 2
     # Perform cosim using the different strategies
     if use_initial_tests:
         initial_tests_cosim()
