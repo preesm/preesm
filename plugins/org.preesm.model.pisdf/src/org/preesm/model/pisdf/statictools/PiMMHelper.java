@@ -174,7 +174,7 @@ public class PiMMHelper {
       final Fifo fifo = port.getFifo();
       if (fifo == null) {
         throw new PreesmRuntimeException(
-            "Actor [" + actor.getName() + "] data port [" + port.getName() + "] is not connected to a FIFO.");
+            "Actor [" + actor.getVertexPath() + "] data port [" + port.getName() + "] is not connected to a FIFO.");
       }
       final AbstractActor sourceActor = fifo.getSourcePort().getContainingActor();
       final AbstractActor targetActor = fifo.getTargetPort().getContainingActor();
@@ -265,12 +265,10 @@ public class PiMMHelper {
   private static List<List<AbstractActor>> ccsFetcher(final PiGraph graph) {
     // Fetch all actors without interfaces in the PiGraph
     final List<List<AbstractActor>> listCCs = new ArrayList<>();
-    final List<AbstractActor> fullActorList = new ArrayList<>();
-    fullActorList.addAll(graph.getActors());
-
+    final List<AbstractActor> fullActorList = new ArrayList<>(graph.getActors());
     for (final AbstractActor actor : fullActorList) {
       // Ignore unused delay actor
-      if ((actor instanceof DelayActor) && !((DelayActor) actor).getLinkedDelay().isDynamic()) {
+      if ((actor instanceof final DelayActor delayActor) && !delayActor.getLinkedDelay().isDynamic()) {
         continue;
       }
       boolean alreadyContained = false;
@@ -302,8 +300,8 @@ public class PiMMHelper {
     for (final ConfigOutputPort output : actor.getConfigOutputPorts()) {
       final Fifo fifo = output.getOutgoingFifo();
       if (fifo == null && output.getOutgoingDependencies().isEmpty()) {
-        throw new PreesmRuntimeException("Actor [" + actor.getName() + "] config data output port [" + output.getName()
-            + "] is not connected to a FIFO nor a parameter.");
+        throw new PreesmRuntimeException("Actor [" + actor.getVertexPath() + "] config data output port ["
+            + output.getName() + "] is not connected to a FIFO nor a parameter.");
       }
       final AbstractActor targetActor = fifo.getTargetPort().getContainingActor();
       if (!cc.contains(targetActor)) {
@@ -314,8 +312,8 @@ public class PiMMHelper {
     for (final DataOutputPort output : actor.getDataOutputPorts()) {
       final Fifo fifo = output.getOutgoingFifo();
       if (fifo == null) {
-        throw new PreesmRuntimeException(
-            "Actor [" + actor.getName() + "] data output port [" + output.getName() + "] is not connected to a FIFO.");
+        throw new PreesmRuntimeException("Actor [" + actor.getVertexPath() + "] data output port [" + output.getName()
+            + "] is not connected to a FIFO.");
       }
       final AbstractActor targetActor = fifo.getTargetPort().getContainingActor();
       if (!cc.contains(targetActor)) {
@@ -326,8 +324,8 @@ public class PiMMHelper {
     for (final DataInputPort input : actor.getDataInputPorts()) {
       final Fifo fifo = input.getIncomingFifo();
       if (fifo == null) {
-        throw new PreesmRuntimeException(
-            "Actor [" + actor.getName() + "] data input port [" + input.getName() + "] is not connected to a FIFO.");
+        throw new PreesmRuntimeException("Actor [" + actor.getVertexPath() + "] data input port [" + input.getName()
+            + "] is not connected to a FIFO.");
       }
       final AbstractActor sourceActor = fifo.getSourcePort().getContainingActor();
       if (!cc.contains(sourceActor)) {
@@ -359,15 +357,12 @@ public class PiMMHelper {
   public static void removeActorAndDependencies(final PiGraph graph, final AbstractActor actor) {
     for (final ConfigInputPort cip : actor.getConfigInputPorts()) {
       final Dependency incomingDependency = cip.getIncomingDependency();
-      // graph.getEdges().remove(incomingDependency);
       graph.removeDependency(incomingDependency);
       final ISetter setter = incomingDependency.getSetter();
       setter.getOutgoingDependencies().remove(incomingDependency);
-      // setter.getOutgoingDependencies().
-      if (setter instanceof Parameter && setter.getOutgoingDependencies().isEmpty()
-          && !((Parameter) setter).isConfigurationInterface()) {
-        // graph.getVertices().remove((Parameter) setter);
-        graph.removeParameter((Parameter) setter);
+      if (setter instanceof final Parameter parameter && setter.getOutgoingDependencies().isEmpty()
+          && !parameter.isConfigurationInterface()) {
+        graph.removeParameter(parameter);
       }
     }
     PreesmLogger.getLogger().fine("Removing Actor: " + actor.getVertexPath());
@@ -392,7 +387,7 @@ public class PiMMHelper {
   /**
    * Removes all actors from flat PiGraph if they are not executed. Removes also fifo and ports having rates equal to 0.
    * If not flat, the graph is not modified.
-   * 
+   *
    * @param piGraph
    *          PiGraph to consider
    * @param brv
@@ -434,27 +429,27 @@ public class PiMMHelper {
   /**
    * Remove actor ports having no fifo (may happen if source or destination actor has 0 as repetition factor). Does not
    * look at delay actor.
-   * 
+   *
    * @param graph
    *          PiGraph to update
    */
   public static final void removeUnusedPorts(final PiGraph graph) {
-    for (AbstractActor aa : graph.getActors()) {
+    for (final AbstractActor aa : graph.getActors()) {
       final Set<DataInputPort> toRemoveIn = new HashSet<>();
       final Set<DataOutputPort> toRemoveOut = new HashSet<>();
-      for (DataPort p : aa.getAllDataPorts()) {
-        Fifo f = p.getFifo();
+      for (final DataPort p : aa.getAllDataPorts()) {
+        final Fifo f = p.getFifo();
         if (f == null) {
-          if (p instanceof DataInputPort) {
-            toRemoveIn.add((DataInputPort) p);
-          } else if (p instanceof DataOutputPort) {
-            toRemoveOut.add((DataOutputPort) p);
+          if (p instanceof final DataInputPort datainputport) {
+            toRemoveIn.add(datainputport);
+          } else if (p instanceof final DataOutputPort dataOutputport) {
+            toRemoveOut.add(dataOutputport);
           }
         }
       }
       if ((aa instanceof JoinActor || aa instanceof RoundBufferActor)
           && toRemoveIn.size() < aa.getDataInputPorts().size()) {
-        for (DataInputPort p : toRemoveIn) {
+        for (final DataInputPort p : toRemoveIn) {
           PreesmLogger.getLogger().fine("Removing unused input Port: " + aa.getVertexPath() + ":" + p.getName());
           aa.getDataInputPorts().remove(p);
         }
@@ -465,7 +460,7 @@ public class PiMMHelper {
 
       if ((aa instanceof ForkActor || aa instanceof BroadcastActor)
           && toRemoveOut.size() < aa.getDataOutputPorts().size()) {
-        for (DataOutputPort p : toRemoveOut) {
+        for (final DataOutputPort p : toRemoveOut) {
           PreesmLogger.getLogger().fine("Removing unused output Port: " + aa.getVertexPath() + ":" + p.getName());
           aa.getDataOutputPorts().remove(p);
         }
@@ -483,7 +478,7 @@ public class PiMMHelper {
    * @ the PiMMHandlerException exception
    */
   public static void removePersistence(final PiGraph piGraph) {
-    List<Delay> toRemove = new ArrayList<>();
+    final List<Delay> toRemove = new ArrayList<>();
     for (final Fifo fifo : piGraph.getFifosWithDelay()) {
       final Delay delay = fifo.getDelay();
       // 0. Rename all the data ports of delay actors
@@ -497,9 +492,9 @@ public class PiMMHelper {
         toRemove.add(delay);
       }
     }
-    StringBuilder sb = new StringBuilder("Following delays are removed since their size is 0: ");
-    for (Delay d : toRemove) {
-      Fifo f = d.getContainingFifo();
+    final StringBuilder sb = new StringBuilder("Following delays are removed since their size is 0: ");
+    for (final Delay d : toRemove) {
+      final Fifo f = d.getContainingFifo();
       f.assignDelay(null);
       piGraph.removeDelay(d);
       sb.append(d.getName() + "; ");
@@ -520,7 +515,7 @@ public class PiMMHelper {
     // he did it explicitly.
     for (final Fifo fifo : graph.getFifosWithDelay()) {
       final Delay delay = fifo.getDelay();
-      String delayShortID = delay.getId();
+      final String delayShortID = delay.getId();
       delay.getActor().getDataInputPort().setName(fifo.getTargetPort().getName());
       delay.getActor().getDataOutputPort().setName(fifo.getSourcePort().getName());
       if (delay.getLevel().equals(PersistenceLevel.LOCAL)) {
@@ -545,13 +540,11 @@ public class PiMMHelper {
           currentGraph = currentGraph.getContainingPiGraph();
           currentDelay = newDelay;
         } while (currentGraph.getContainingPiGraph() != null);
-      } else {
-        if (((delay.hasSetterActor()) && !(delay.hasGetterActor()))
-            || ((delay.hasGetterActor()) && (!delay.hasSetterActor()))) {
-          throw new PreesmRuntimeException(
-              "Asymetric configuration for delay setter / getter actor is not yet supported.\n"
-                  + "Please Contact PREESM developers.");
-        }
+      } else if (((delay.hasSetterActor()) && !(delay.hasGetterActor()))
+          || ((delay.hasGetterActor()) && (!delay.hasSetterActor()))) {
+        throw new PreesmRuntimeException(
+            "Asymetric configuration for delay setter / getter actor is not yet supported.\n"
+                + "Please Contact PREESM developers.");
       }
     }
     for (final PiGraph g : graph.getChildrenGraphs()) {
@@ -663,8 +656,7 @@ public class PiMMHelper {
       if (!levelBRV.containsKey(container)) {
         levelBRV.put(container, getHierarchichalRV(container, graphBRV));
       }
-      if (av instanceof PeriodicElement) {
-        final PeriodicElement actor = (PeriodicElement) av;
+      if (av instanceof final PeriodicElement actor) {
         final long actorPeriod = actor.getPeriod().evaluate();
         if (actorPeriod > 0) {
           final Long actorRV = en.getValue() * levelBRV.get(container);
@@ -672,30 +664,32 @@ public class PiMMHelper {
           if (!mapGraphPeriods.containsKey(period)) {
             mapGraphPeriods.put(period, new ArrayList<>());
           }
-          mapGraphPeriods.get(period).add((AbstractVertex) av);
+          mapGraphPeriods.get(period).add(av);
         }
       }
     }
 
     if (mapGraphPeriods.size() > 1) {
-      StringBuilder sb = new StringBuilder("Different graph periods have been found in actors:");
+      final StringBuilder sb = new StringBuilder("Different graph periods have been found in actors:");
       for (final Entry<Long, List<AbstractVertex>> en : mapGraphPeriods.entrySet()) {
         sb.append("\n" + en.getKey() + " from: ");
-        for (AbstractVertex a : en.getValue()) {
+        for (final AbstractVertex a : en.getValue()) {
           sb.append(a.getName() + " / ");
         }
       }
       sb.append("\n");
       PreesmLogger.getLogger().log(Level.SEVERE, sb::toString);
       throw new PreesmRuntimeException("Periods are not consistent, abandon.");
-    } else if (mapGraphPeriods.size() == 1) {
+    }
+    if (mapGraphPeriods.size() == 1) {
       final long period = mapGraphPeriods.keySet().stream().findAny().orElse(0L);
       if (graphPeriod != 0 && period != 0 && graphPeriod != period) {
         PreesmLogger.getLogger().log(Level.SEVERE,
             "Graph period " + graphPeriod + " is different from the one derived from actors: " + period);
         throw new PreesmRuntimeException(
             "Periods are not consistent (graph period different from actors periods), abandon.");
-      } else if (graphPeriod == 0 && period != 0) {
+      }
+      if (graphPeriod == 0 && period != 0) {
         piGraph.setExpression(period);
         PreesmLogger.getLogger().log(Level.INFO, () -> ("The graph period is set to: " + period));
       }
@@ -730,7 +724,7 @@ public class PiMMHelper {
 
   /**
    * Check if a vertex is contained in a top-level graph.
-   * 
+   *
    * @param vertex
    *          The vertex to check.
    * @return true if the containing graph is not contained by another graph, false otherwise.

@@ -301,13 +301,15 @@ public class SubgraphReconnector extends PiMMSwitch<Boolean> {
   }
 
   private static void warningPortHierarchical(final Actor hierarchicalActor, final PiGraph subGraph, final Port port) {
-    PreesmLogger.getLogger().warning("PiGraph '" + subGraph.getName() + "' does not have a corresponding "
-        + port.getClass().getSimpleName() + " named '" + port.getName() + "' for Actor " + hierarchicalActor.getName());
+    PreesmLogger.getLogger()
+        .warning("PiGraph '" + subGraph.getVertexPath() + "' does not have a corresponding "
+            + port.getClass().getSimpleName() + " named '" + port.getName() + "' for Actor "
+            + hierarchicalActor.getVertexPath());
   }
 
   private static void warningPortSubGraph(final Actor hierarchicalActor, final PiGraph subGraph, final Port port) {
-    PreesmLogger.getLogger().warning("Actor '" + hierarchicalActor.getName() + "' does not have a corresponding "
-        + port.getClass().getSimpleName() + " named '" + port.getName() + "' for PiGraph " + subGraph.getName());
+    PreesmLogger.getLogger().warning("Actor '" + hierarchicalActor.getVertexPath() + "' does not have a corresponding "
+        + port.getClass().getSimpleName() + " named '" + port.getName() + "' for PiGraph " + subGraph.getVertexPath());
   }
 
   public static void reconnectChildren(PiGraph graph) {
