@@ -564,7 +564,7 @@ Version 1.0 dated 2006-09-05.
    </license>
 
    <plugins>
-      <plugin id="org.eclipse.justj.openjdk.hotspot.jre.full.stripped"/>
+    <!-- <plugin id="org.eclipse.justj.openjdk.hotspot.jre.full.stripped"/> -->
    </plugins>
 
    <features>
@@ -601,6 +601,7 @@ Version 1.0 dated 2006-09-05.
       <feature id="org.eclipse.ecf.filetransfer.ssl.feature"/>
       <feature id="org.eclipse.ecf.filetransfer.httpclient5.feature"/>
       <feature id="org.preesm.feature" installMode="root"/>
+      <feature id="org.eclipse.justj.openjdk.hotspot.jre.full.stripped" installMode="root"/>
    </features>
 
    <configurations>

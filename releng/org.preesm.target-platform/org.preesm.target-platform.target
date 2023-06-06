@@ -28,7 +28,7 @@
 			<repository location="https://preesm.insa-rennes.fr/repo"/>
 			<unit id="org.ietr.graphiti.feature.feature.group" version="1.13.12"/>
 		</location>
-		<location includeDependencyDepth="none" includeDependencyScopes="compile" includeSource="true" missingManifest="generate" type="Maven">
+		<location includeMode="planner" includeDependencyDepth="none" includeDependencyScopes="compile" includeSource="true" missingManifest="generate" type="Maven">
 			<dependencies>
 				<dependency>
 					<groupId>org.apache.commons</groupId>
@@ -38,7 +38,7 @@
 				</dependency>
 			</dependencies>
 		</location>
-		<location includeDependencyDepth="none" includeDependencyScopes="compile" missingManifest="generate" type="Maven">
+		<location includeMode="planner" includeDependencyDepth="none" includeDependencyScopes="compile" missingManifest="generate" type="Maven">
 			<dependencies>
 				<dependency>
 					<groupId>com.fasterxml.jackson.core</groupId>
@@ -243,7 +243,7 @@
 				</dependency>
 			</dependencies>
 		</location>
-		<location includeDependencyDepth="none" includeDependencyScopes="compile" includeSource="true" missingManifest="generate" type="Maven">
+		<location includeMode="planner" includeDependencyDepth="none" includeDependencyScopes="compile" includeSource="true" missingManifest="generate" type="Maven">
 			<dependencies>
 				<dependency>
 					<groupId>org.jboss.tools.tycho-plugins</groupId>
