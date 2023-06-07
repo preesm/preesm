@@ -28,7 +28,7 @@
 			<repository location="https://preesm.insa-rennes.fr/repo"/>
 			<unit id="org.ietr.graphiti.feature.feature.group" version="1.13.12"/>
 		</location>
-		<location includeDependencyDepth="none" includeDependencyScopes="compile" includeSource="true" missingManifest="generate" type="Maven">
+		<location includeMode="planner" includeDependencyDepth="none" includeDependencyScopes="compile" includeSource="true" missingManifest="generate" type="Maven">
 			<dependencies>
 				<dependency>
 					<groupId>org.apache.commons</groupId>
@@ -38,7 +38,7 @@
 				</dependency>
 			</dependencies>
 		</location>
-		<location includeDependencyDepth="none" includeDependencyScopes="compile" missingManifest="generate" type="Maven">
+		<location includeMode="planner" includeDependencyDepth="none" includeDependencyScopes="compile" missingManifest="generate" type="Maven">
 			<dependencies>
 				<dependency>
 					<groupId>com.fasterxml.jackson.core</groupId>
@@ -243,7 +243,7 @@
 				</dependency>
 			</dependencies>
 		</location>
-		<location includeDependencyDepth="none" includeDependencyScopes="compile" includeSource="true" missingManifest="generate" type="Maven">
+		<location includeMode="planner" includeDependencyDepth="none" includeDependencyScopes="compile" includeSource="true" missingManifest="generate" type="Maven">
 			<dependencies>
 				<dependency>
 					<groupId>org.jboss.tools.tycho-plugins</groupId>
@@ -258,6 +258,10 @@
 					<url>https://repository.jboss.org/nexus/content/repositories/public/</url>
 				</repository>
 			</repositories>
+		</location>
+		<location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="planner" includeSource="false" type="InstallableUnit">
+			<repository location="https://download.eclipse.org/justj/jres/17/updates/release/latest"/>
+			<unit id="org.eclipse.justj.openjdk.hotspot.jre.full.stripped.feature.group" version="17.0.7.v20230425-1502"/>
 		</location>
 	</locations>
 </target>
