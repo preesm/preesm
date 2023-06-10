@@ -283,7 +283,7 @@ public class OstergardSolver<V extends IWeightedVertex<Long>, E extends DefaultE
         return;
       }
 
-      // i:=min{j|vj�U}
+      // i:=min{j|vj U}
       final V fixedVertex = vertexSet.get(0);
       final int i = this.orderedVertexSet.indexOf(fixedVertex);
 
