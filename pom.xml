@@ -109,10 +109,10 @@
       <!-- ## Full list of mirrors : -->
       <!-- https://www.eclipse.org/downloads/download.php?format=xml -->
       <!-- ## Usually good performing mirrors : -->
-      <!-- http://ftp.fau.de/eclipse/ -->
-      <!-- http://ftp.halifax.rwth-aachen.de/eclipse/ -->
-      <!-- http://mirror.switch.ch/eclipse/ -->
-      <eclipse.mirror>https://ftp.fau.de/eclipse/</eclipse.mirror>
+      <!-- https://ftp.fau.de/eclipse/ (stopped using on 11/06/23 because of expired certificate) -->
+      <!-- https://ftp.halifax.rwth-aachen.de/eclipse/ -->
+      <!-- https://mirror.switch.ch/eclipse/ -->
+      <eclipse.mirror>https://ftp.halifax.rwth-aachen.de/eclipse/</eclipse.mirror>
 
       <!-- ############### -->
       <!-- P2 REPOS CONFIG -->
