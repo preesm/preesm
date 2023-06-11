@@ -55,7 +55,7 @@ jobs:
       - name: Archive macOS x86_64 product
         uses: actions/upload-artifact@v3
         with:
-          name: mac-aarch64-products
+          name: mac-x86-products
           path: releng/org.preesm.product/target/products/preesm-*-macosx.cocoa.x86_64.zip
       - name: Archive Windows product
         uses: actions/upload-artifact@v3
