@@ -96,28 +96,33 @@ public class AdfgFpgaFifoEvaluator extends AbstractGenericFpgaFifoEvaluator {
       final int index = fifoAbsToPhiVariableID.size();
       fifoAbsToPhiVariableID.put(fifoAbs, index);
       // we separate neg. from pos. because unsure that ojAlgo handles negative integers
+      // commented code corresponds to the former loose ET-II constraint
+      // now this constraint is coded with the channel constraints
       final Variable varPhiPos = model.newVariable("phi_pos_" + index);
       varPhiPos.setInteger(exactEvaluation);
-
-      if (fifoAbs.isFullyDelayed()) {
-        varPhiPos.lower(0L);
-      } else {
-        // Add phi to represent delay before token production, production happens only during II cycles.
-        final AbstractActor src = ddg.getEdgeSource(fifoAbs);
-        final long srcII = mapActorNormalizedInfos.get(src).oriII;
-        final long srcET = mapActorNormalizedInfos.get(src).oriET;
-        varPhiPos.lower(srcET - srcII);
-      }
+      varPhiPos.lower(0L);
 
       PreesmLogger.getLogger()
           .finer("Created variable " + varPhiPos.getName() + " for fifo abs rep " + fifoAbs.fifos.get(0).getId());
+
+      // if (fifoAbs.isFullyDelayed()) {
+      // varPhiPos.lower(0L);
+      // } else {
+      // // Add phi to represent delay before token production, production happens only during II cycles.
+      // final AbstractActor src = ddg.getEdgeSource(fifoAbs);
+      // final long srcII = mapActorNormalizedInfos.get(src).oriII;
+      // final long srcET = mapActorNormalizedInfos.get(src).oriET;
+      // varPhiPos.lower(srcET - srcII);
+      // }
+
       final Variable varPhiNeg = model.newVariable("phi_neg_" + index);
       varPhiNeg.setInteger(exactEvaluation);
-      if (fifoAbs.isFullyDelayed()) {
-        varPhiNeg.lower(0L);
-      } else {
-        varPhiNeg.level(0L);
-      }
+      varPhiNeg.lower(0L);
+      // if (fifoAbs.isFullyDelayed()) {
+      // varPhiNeg.lower(0L);
+      // } else {
+      // varPhiNeg.level(0L);
+      // }
       // note that we cannot set an upper limit to both neg and post part, ojAlgo bug?!
     }
 
@@ -500,6 +505,16 @@ public class AdfgFpgaFifoEvaluator extends AbstractGenericFpgaFifoEvaluator {
     // compute common coefficients
     final BigFraction aCOverd = aC.divide(ar.dCons);
     final BigFraction fractionConstant = lambdaSum.add(aCOverd.multiply(ar.nProd + ar.dCons - 1L));
+
+    // write ET-II constraint
+    final long srcTimeDiff = mapActorNormalizedInfos.get(src).oriET - srcII;
+    // safe approximation -- needs to be expressed as lower bound
+    final BigFraction scaledDelay = aCOverd.reciprocal().multiply(delaySize);
+    final long ceiledDelay = ceiling(scaledDelay).longValueExact();
+    final Expression expressionPhase = model.addExpression().lower(srcTimeDiff - ceiledDelay);
+    expressionPhase.set(varPhiPos, coefSign);
+    expressionPhase.set(varPhiNeg, -coefSign);
+
     // write underflow constraint
     final BigFraction fractionSumConstantU = fractionConstant.subtract(delaySize).multiply(aCOverd.reciprocal());
     final long sumConstantU = fractionSumConstantU.getNumerator().longValueExact();

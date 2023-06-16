@@ -9,7 +9,7 @@ import org.preesm.model.pisdf.PiGraph;
 
 /**
  * This class generates the code for PiSDF special actors.
- * 
+ *
  * @author ahonorat
  */
 public class FpgaSpecialActorsCodeGenerator {
@@ -20,7 +20,7 @@ public class FpgaSpecialActorsCodeGenerator {
 
   /**
    * Generate the function definition of special actor, and give the call prototype.
-   * 
+   *
    * @param flatGraph
    *          Graph to consider.
    * @param actorCalls
@@ -55,6 +55,7 @@ public class FpgaSpecialActorsCodeGenerator {
       def.append(", " + typeFifo + " &" + dp.getName());
     }
     def.append(") {\n");
+    def.append("#pragma HLS PIPELINE II=1 style=flp\n");
     // body
     def.append(typeElt + " tmp = " + inputName + ".read();\n");
     for (final DataPort dp : aa.getDataOutputPorts()) {

@@ -41,7 +41,7 @@ import org.preesm.workflow.implement.AbstractWorkflowNodeImplementation;
 /**
  * This task proposes to analyze throughput bottleneck of a PiGraph executed on FPGA, as well as to estimate its
  * requirements in FIFO sizes.
- * 
+ *
  * @author ahonorat
  */
 @PreesmTask(id = "pisdf-synthesis.fpga-estimations", name = "FPGA estimation (thoughput + FIFO sizes)",
@@ -96,13 +96,13 @@ public class FpgaAnalysisMainTask extends AbstractTaskImplementation {
     final String packTokensStr = parameters.get(PACK_TOKENS_PARAM_NAME);
     final boolean packTokens = Boolean.parseBoolean(packTokensStr);
     if (packTokens) {
-      List<PackedFifoConfig> workList = TokenPackingAnalysis.analysis(res, scenario);
+      final List<PackedFifoConfig> workList = TokenPackingAnalysis.analysis(res, scenario);
       if (!workList.isEmpty()) {
-        TokenPackingTransformation.transform(res, scenario, workList);
+        TokenPackingTransform.transform(res, scenario, workList);
 
         // Adding the latency due to packing to the execution time of corresponding attached actor into the scenario
         // Added latency is equal to packing ratio + 1
-        for (PackedFifoConfig packedFifoConfig : workList) {
+        for (final PackedFifoConfig packedFifoConfig : workList) {
           final long additionalLatency = packedFifoConfig.updatedWidth / packedFifoConfig.originalWidth + 1;
           final long newExecutionTime = scenario.getTimings()
               .evaluateExecutionTimeOrDefault(packedFifoConfig.attachedActor, fpga) + additionalLatency;
@@ -116,8 +116,8 @@ public class FpgaAnalysisMainTask extends AbstractTaskImplementation {
         // A better solution would be to match worklist actors (from the previous res.flatGraph) to the new
         // res.flatGraph, a match by name sould be enough.
         // TODO: Fix this.
-        List<PackedFifoConfig> workList2 = TokenPackingAnalysis.analysis(res, scenario);
-        TokenPackingTransformation.transform(res, scenario, workList2);
+        final List<PackedFifoConfig> workList2 = TokenPackingAnalysis.analysis(res, scenario);
+        TokenPackingTransform.transform(res, scenario, workList2);
       }
     }
 
@@ -149,7 +149,7 @@ public class FpgaAnalysisMainTask extends AbstractTaskImplementation {
 
   /**
    * Check the inputs and analyze the graph for FPGA scheduling + buffer sizing.
-   * 
+   *
    * @param algorithm
    *          Graph to be analyzed (will be flattened).
    * @param scenario
@@ -167,8 +167,10 @@ public class FpgaAnalysisMainTask extends AbstractTaskImplementation {
 
     // Flatten the graph
     final PiGraph flatGraph = PiSDFFlattener.flatten(algorithm, true);
-    final Map<AbstractVertex, Long> brv = PiBRV.compute(flatGraph, BRVMethod.LCM);
+    // Expose delays as actors on the graph
+    DelayActorTransform.transform(scenario, flatGraph);
     // check interfaces
+    final Map<AbstractVertex, Long> brv = PiBRV.compute(flatGraph, BRVMethod.LCM);
     final Map<InterfaceActor, Pair<Long, Long>> interfaceRates = checkInterfaces(flatGraph, brv);
     if (interfaceRates.values().stream().anyMatch(Objects::isNull)) {
       throw new PreesmRuntimeException("Some interfaces have weird rates (see log), abandon.");
@@ -184,7 +186,7 @@ public class FpgaAnalysisMainTask extends AbstractTaskImplementation {
 
   /**
    * Check that platform is composed of single FPGA and returns it
-   * 
+   *
    * @param architecture
    *          Architecture to inspect
    * @return The single FPGA
