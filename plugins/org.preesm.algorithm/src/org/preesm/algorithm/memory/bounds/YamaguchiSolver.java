@@ -173,7 +173,7 @@ public class YamaguchiSolver<V extends IWeightedVertex<Long>, E extends DefaultE
     // (1) let PI be the empty sequence
     final List<V> orderedVertexSet = new ArrayList<>();
 
-    // (2) For each v � V, les a(v) <- w(v)
+    // (2) For each v in V, les a(v) <- w(v)
     // (3) let S <- V
     final Map<V, Long> tempCost = new LinkedHashMap<>();
     final Set<V> unorderedVertexSet = new LinkedHashSet<>();

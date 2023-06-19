@@ -17,11 +17,12 @@ jobs:
     runs-on: ${{ matrix.os }}
     steps:
       - name: Set up JDK
-        uses: actions/setup-java@v1
+        uses: actions/setup-java@v3
         with:
+          distribution: 'zulu'
           java-version: 17
       - name: Git Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           fetch-depth: 0  # Shallow clones should be disabled for a better relevancy of analysis
       - name: Set up Maven
@@ -40,6 +41,24 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: preesm-products
-          path: |
-            releng/org.preesm.product/target/products/preesm-*.zip
-            releng/org.preesm.product/target/org.preesm.product-*.zip
+          path: releng/org.preesm.product/target/org.preesm.product-*.zip
+      - name: Archive Linux product
+        uses: actions/upload-artifact@v3
+        with:
+          name: Linux-products
+          path: releng/org.preesm.product/target/products/preesm-*-linux.gtk.x86_64.zip
+      - name: Archive macOS aarch64 product
+        uses: actions/upload-artifact@v3
+        with:
+          name: mac-aarch64-products
+          path: releng/org.preesm.product/target/products/preesm-*-macosx.cocoa.aarch64.zip
+      - name: Archive macOS x86_64 product
+        uses: actions/upload-artifact@v3
+        with:
+          name: mac-x86-products
+          path: releng/org.preesm.product/target/products/preesm-*-macosx.cocoa.x86_64.zip
+      - name: Archive Windows product
+        uses: actions/upload-artifact@v3
+        with:
+          name: windows-products
+          path: releng/org.preesm.product/target/products/preesm-*-win32.win32.x86_64.zip
