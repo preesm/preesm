@@ -377,13 +377,13 @@ public class PiSDFToSingleRate extends PiMMSwitch<Boolean> {
       final AbstractActor oppositeActor = oppositePort.getContainingActor();
 
       // Only relevant if RV > 1
-      if (oppositeActor instanceof ForkActor) {
+      if (actorRV > 1 && oppositeActor instanceof ForkActor) {
         final Fifo forkInputFifo = oppositeActor.getDataInputPorts().get(0).getFifo();
         oppositePort = forkInputFifo.getSourcePort();
 
         actorToRemove.add(oppositeActor);
         fifoToRemove.add(forkInputFifo);
-      } else if (oppositeActor instanceof JoinActor) {
+      } else if (actorRV > 1 && oppositeActor instanceof JoinActor) {
         final Fifo joinOutputFifo = oppositeActor.getDataOutputPorts().get(0).getFifo();
         oppositePort = joinOutputFifo.getTargetPort();
 
