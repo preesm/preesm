@@ -1037,7 +1037,7 @@ public class PiSDFToSingleRate extends PiMMSwitch<Boolean> {
       throw new PreesmRuntimeException(
           "Delay setter [" + setterActorName + ":" + setterActorPortName + "] rate cannot be greater than its delay.");
     }
-    if (delayRate > getterRate) {
+    if (getterRate > delayRate) {
       final String getterActorName = delayActor.getDataOutputPort().getOutgoingFifo().getTargetPort()
           .getContainingActor().getVertexPath();
       final String getterActorPortName = delayActor.getDataOutputPort().getOutgoingFifo().getTargetPort().getName();
