@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<scenario>
+    <flags>
+        <sizesAreInBit/>
+    </flags>
+    <files>
+        <algorithm url="/org.ietr.preesm.model_tests/Algo/Test_Flat/delay_setter_getter_rv2.pi"/>
+        <architecture url="/org.ietr.preesm.model_tests/Archi/1CoreX86.slam"/>
+        <codegenDirectory url="/org.ietr.preesm.model_tests/Code/generated"/>
+    </files>
+    <constraints excelUrl="">
+        <constraintGroup>
+            <operator name="Core0"/>
+            <task name="delay_setter_getter_rv2/Read"/>
+            <task name="delay_setter_getter_rv2/loop"/>
+            <task name="delay_setter_getter_rv2/Write"/>
+            <task name="delay_setter_getter_rv2/setter"/>
+            <task name="delay_setter_getter_rv2/getter"/>
+            <task name="delay_setter_getter_rv2"/>
+        </constraintGroup>
+    </constraints>
+    <timings excelUrl="">
+        <memcpyspeed opname="x86" setuptime="1" timeperunit="0.001"/>
+    </timings>
+    <simuParams>
+        <mainCore>Core0</mainCore>
+        <mainComNode>shared_mem</mainComNode>
+        <averageDataSize>1000</averageDataSize>
+        <dataTypes>
+            <dataType name="char" size="8"/>
+        </dataTypes>
+        <specialVertexOperators>
+            <specialVertexOperator path="Core0"/>
+        </specialVertexOperators>
+    </simuParams>
+    <parameterValues/>
+    <papifyConfigs xmlUrl=""/>
+    <energyConfigs xmlUrl="">
+        <performanceObjective objectiveEPS="0.0"/>
+        <pePower opName="Base" pePower="10.0"/>
+        <pePower opName="x86" pePower="10.0"/>
+        <peActorsEnergy/>
+        <peTypeCommsEnergy sourcePeType="x86"/>
+    </energyConfigs>
+</scenario>

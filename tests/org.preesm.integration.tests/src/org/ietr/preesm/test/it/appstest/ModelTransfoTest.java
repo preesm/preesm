@@ -77,7 +77,7 @@ public class ModelTransfoTest {
 
     String projectName = "org.ietr.preesm.model_tests";
     String[] scenarios = new String[] { "Tests_Flat/simple.scenario", "Tests_Flat/delay_simple.scenario",
-        "Tests_Flat/delay_setter_getter.scenario" };
+        "Tests_Flat/delay_setter_getter.scenario", "Tests_Flat/delay_setter_getter_rv2.scenario" };
     String[] workflows = new String[] { "StaticPiMM2SRDAGCodegen.workflow", "StaticPiMMFlattenerCodegen.workflow" };
     for (final String workflow : workflows) {
       for (final String scenario : scenarios) {
