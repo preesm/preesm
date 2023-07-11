@@ -145,14 +145,26 @@ public class PiMMSRVerticesLinker {
 
     // Setting Source properties
     this.sourcePort = fifo.getSourcePort();
-    final Expression sourceExpression = this.sourcePort.getPortRateExpression();
-    this.sourceProduction = sourceExpression.evaluate();
+    Expression sourceExpression = this.sourcePort.getPortRateExpression();
 
     // Setting Sink properties
     this.sinkPort = fifo.getTargetPort();
-    final Expression sinkExpression = this.sinkPort.getPortRateExpression();
-    this.sinkConsumption = sinkExpression.evaluate();
+    Expression sinkExpression = this.sinkPort.getPortRateExpression();
 
+    // Dirty hack for non-uniform rates and delays
+    final AbstractActor sourceActor = fifo.getSourcePort().getContainingActor();
+    final AbstractActor sinkActor = fifo.getTargetPort().getContainingActor();
+
+    // if the current PiSDF fifo is interacting with a delay setter/getter, the actual rate of the corresponding SrDAG
+    // fifo(s) needs to match the production/consumption from the delay
+    if (sinkActor instanceof final DelayActor delaySetter) {
+      sinkExpression = delaySetter.getLinkedDelay().getContainingFifo().getTargetPort().getPortRateExpression();
+    } else if (sourceActor instanceof final DelayActor delayGetter) {
+      sourceExpression = delayGetter.getLinkedDelay().getContainingFifo().getSourcePort().getPortRateExpression();
+    }
+
+    this.sourceProduction = sourceExpression.evaluate();
+    this.sinkConsumption = sinkExpression.evaluate();
   }
 
   /**

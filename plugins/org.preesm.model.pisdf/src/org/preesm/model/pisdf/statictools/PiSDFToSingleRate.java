@@ -376,7 +376,7 @@ public class PiSDFToSingleRate extends PiMMSwitch<Boolean> {
       DataPort oppositePort = dataPort instanceof DataOutputPort ? fifo.getTargetPort() : fifo.getSourcePort();
       final AbstractActor oppositeActor = oppositePort.getContainingActor();
 
-      // Only relevant if RV > 1
+      // Only relevant if RV > 1 and opposite actor is a fork/join to remove
       if (actorRV > 1 && oppositeActor instanceof ForkActor) {
         final Fifo forkInputFifo = oppositeActor.getDataInputPorts().get(0).getFifo();
         oppositePort = forkInputFifo.getSourcePort();
@@ -1017,6 +1017,7 @@ public class PiSDFToSingleRate extends PiMMSwitch<Boolean> {
     final DelayActor delayActor = fifo.getDelay().getActor();
     final String delayExpression = fifo.getDelay().getExpression().getExpressionAsString();
     final PiGraph parentGraph = fifo.getContainingPiGraph();
+
     // 0. Check if the DelayActor need to add Init / End
     if (delayActor.getSetterActor() == null) {
       addInitActorAsSetter(fifo, delayActor, delayExpression, parentGraph);
@@ -1024,17 +1025,28 @@ public class PiSDFToSingleRate extends PiMMSwitch<Boolean> {
     if (delayActor.getGetterActor() == null) {
       addEndActorAsGetter(fifo, delayActor, delayExpression, parentGraph);
     }
+
     // 1. We split the current actor in two for more convenience
     // 1.1 Let start by the setterActor
     final DelayActor setterActor = PiMMUserFactory.instance.createDelayActor();
     setterActor.setName(delayActor.getName() + "_setter");
+
+    // The setter actor might need to access rates the the fifo containing the associated delay so we're creating
+    // a copy of the delay, with a copy of the containing fifo, with a copy of the source and target ports
+    setterActor.setLinkedDelay(PiMMUserFactory.instance.copy(fifo.getDelay()));
+    setterActor.getLinkedDelay().setContainingFifo(PiMMUserFactory.instance.copy(fifo));
+    setterActor.getLinkedDelay().getContainingFifo().setSourcePort(PiMMUserFactory.instance.copy(fifo.getSourcePort()));
+    setterActor.getLinkedDelay().getContainingFifo().setTargetPort(PiMMUserFactory.instance.copy(fifo.getTargetPort()));
+
     final DataInputPort setPort = PiMMUserFactory.instance.createDataInputPort();
     setPort.setName(delayActor.getDataInputPort().getName());
-    setPort.setExpression(delayExpression);
     setterActor.getDataInputPorts().add(setPort);
+
     // 1.1.1 Setting the new target port of the setter FIFO
     final Fifo setterFifo = delayActor.getDataInputPort().getFifo();
     setterFifo.setTargetPort(setPort);
+    setPort.setExpression(delayExpression);
+
     // 1.1.2 Setting the BRV value
     final AbstractActor srcContainingActor = setterFifo.getSourcePort().getContainingActor();
     final long brvSetter;
@@ -1044,16 +1056,27 @@ public class PiSDFToSingleRate extends PiMMSwitch<Boolean> {
       brvSetter = 1L;
     }
     this.brv.put(setterActor, brvSetter);
+
     // 1.2 Now we do the getter actor
     final DelayActor getterActor = PiMMUserFactory.instance.createDelayActor();
     getterActor.setName(delayActor.getName() + "_getter");
+
+    // The getter actor might need to access rates the the fifo containing the associated delay so we're creating
+    // a copy of the delay, with a copy of the containing fifo, with a copy of the source and target ports
+    getterActor.setLinkedDelay(PiMMUserFactory.instance.copy(fifo.getDelay()));
+    getterActor.getLinkedDelay().setContainingFifo(PiMMUserFactory.instance.copy(fifo));
+    getterActor.getLinkedDelay().getContainingFifo().setSourcePort(PiMMUserFactory.instance.copy(fifo.getSourcePort()));
+    getterActor.getLinkedDelay().getContainingFifo().setTargetPort(PiMMUserFactory.instance.copy(fifo.getTargetPort()));
+
     final DataOutputPort getPort = PiMMUserFactory.instance.createDataOutputPort();
     getPort.setName(delayActor.getDataOutputPort().getName());
-    getPort.setExpression(delayExpression);
     getterActor.getDataOutputPorts().add(getPort);
+
     // 1.2.1 Setting the new source port of the getter FIFO
     final Fifo getterFifo = delayActor.getDataOutputPort().getFifo();
     getterFifo.setSourcePort(getPort);
+    getPort.setExpression(delayExpression);
+
     // 1.2.2 Setting the BRV value
     final AbstractActor tgtContainingActor = getterFifo.getTargetPort().getContainingActor();
     final long brvGetter;
@@ -1063,6 +1086,7 @@ public class PiSDFToSingleRate extends PiMMSwitch<Boolean> {
       brvGetter = 1L;
     }
     this.brv.put(getterActor, brvGetter);
+
     // 2 We remove the old actor and add the new ones
     parentGraph.removeActor(delayActor);
     parentGraph.addActor(setterActor);

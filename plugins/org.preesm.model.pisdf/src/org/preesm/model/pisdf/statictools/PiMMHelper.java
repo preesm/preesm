@@ -579,6 +579,7 @@ public class PiMMHelper {
     setterIn.getDataPort().setName(setterName);
     setterIn.getDataPort().setAnnotation(PortMemoryAnnotation.READ_ONLY);
     setterIn.getDataPort().setExpression(delayExpression);
+
     // Add the DataOutputInterface to the graph
     final DataOutputInterface getterOut = PiMMUserFactory.instance.createDataOutputInterface();
     final DataOutputPort sourcePort = containingFifo.getSourcePort();
@@ -587,6 +588,7 @@ public class PiMMHelper {
     getterOut.getDataPort().setName(getterName);
     getterOut.getDataPort().setAnnotation(PortMemoryAnnotation.WRITE_ONLY);
     getterOut.getDataPort().setExpression(delayExpression);
+
     graph.addActor(setterIn);
     graph.addActor(getterOut);
 
