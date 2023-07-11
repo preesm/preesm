@@ -200,6 +200,7 @@ public class PiSDFToSingleRate extends PiMMSwitch<Boolean> {
     final PiSDFToSingleRate staticPiMM2ASrPiMMVisitor = new PiSDFToSingleRate(graphCopy, brv);
     staticPiMM2ASrPiMMVisitor.doSwitch(graphCopy);
     final PiGraph acyclicSRPiMM = staticPiMM2ASrPiMMVisitor.getResult();
+    acyclicSRPiMM.setName(acyclicSRPiMM.getName() + "_srdag");
 
     srCheck(graphCopy, acyclicSRPiMM);
 

@@ -61,7 +61,7 @@ public class PiSDFSRDAGComputePopup extends AbstractGenericMultiplePiHandler {
 
     final PiGraph srdag = PiSDFToSingleRate.compute(pigraph, BRVMethod.LCM);
 
-    SavePiGraph.save(iProject, srdag, "_srdag");
+    SavePiGraph.save(iProject, srdag, "");
   }
 
 }
