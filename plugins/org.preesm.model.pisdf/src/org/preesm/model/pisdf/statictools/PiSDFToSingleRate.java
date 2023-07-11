@@ -1027,6 +1027,24 @@ public class PiSDFToSingleRate extends PiMMSwitch<Boolean> {
       addEndActorAsGetter(fifo, delayActor, delayExpression, parentGraph);
     }
 
+    final long setterRate = delayActor.getDataInputPort().getIncomingFifo().getSourcePort().getExpression().evaluate();
+    final long getterRate = delayActor.getDataOutputPort().getOutgoingFifo().getTargetPort().getExpression().evaluate();
+    final long delayRate = fifo.getDelay().getExpression().evaluate();
+    if (setterRate > delayRate) {
+      final String setterActorName = delayActor.getDataInputPort().getIncomingFifo().getSourcePort()
+          .getContainingActor().getVertexPath();
+      final String setterActorPortName = delayActor.getDataInputPort().getIncomingFifo().getSourcePort().getName();
+      throw new PreesmRuntimeException(
+          "Delay setter [" + setterActorName + ":" + setterActorPortName + "] rate cannot be greater than its delay.");
+    }
+    if (delayRate > getterRate) {
+      final String getterActorName = delayActor.getDataOutputPort().getOutgoingFifo().getTargetPort()
+          .getContainingActor().getVertexPath();
+      final String getterActorPortName = delayActor.getDataOutputPort().getOutgoingFifo().getTargetPort().getName();
+      throw new PreesmRuntimeException(
+          "Delay getter [" + getterActorName + ":" + getterActorPortName + "] rate cannot be greater than its delay.");
+    }
+
     // 1. We split the current actor in two for more convenience
     // 1.1 Let start by the setterActor
     final DelayActor setterActor = PiMMUserFactory.instance.createDelayActor();
