@@ -358,11 +358,25 @@ public class PiSDFToSingleRate extends PiMMSwitch<Boolean> {
     final List<Fifo> fifoToRemove = new ArrayList<>();
 
     // 0. Get RV value of the Actor
-    final long actorRV = this.brv.get(actor);
+    AbstractActor actorToMatch;
+
+    // If the actor is not in the BRV, it means (probably) that the current fifo source was a PiGraph.
+    // This source was replaced by the corresponding srdag actor within this subgraph, and is therefore
+    // not found in the BRV. In such case, we need to find the subgraph which was used as placeholder init actor.
+    if (this.brv.containsKey(actor)) {
+      actorToMatch = actor;
+    } else if (this.brv.containsKey(PreesmCopyTracker.getSource(actor))) {
+      actorToMatch = PreesmCopyTracker.getSource(actor).getContainingPiGraph();
+    } else {
+      throw new PreesmRuntimeException("Can't find " + actor.getName() + " in BRV.");
+    }
+
+    final long actorRV = this.brv.get(actorToMatch);
+
     // 1. Find matched actors
     final IntegerName iN = new IntegerName(actorRV - 1);
     for (long i = 0; i < actorRV; ++i) {
-      final String name = actor.getName() + suffixe + iN.toString(i);
+      final String name = actorToMatch.getName() + suffixe + iN.toString(i);
       final AbstractActor foundActor = (AbstractActor) this.result.lookupVertex(name);
       if (foundActor == null) {
         throw new PreesmRuntimeException("Unable to find actor [" + name + "] in generated DAG.");
@@ -1027,6 +1041,7 @@ public class PiSDFToSingleRate extends PiMMSwitch<Boolean> {
       addEndActorAsGetter(fifo, delayActor, delayExpression, parentGraph);
     }
 
+    // A setter/getter rate higher than the associated delay rate is not supported (for now ?)
     final long setterRate = delayActor.getDataInputPort().getIncomingFifo().getSourcePort().getExpression().evaluate();
     final long getterRate = delayActor.getDataOutputPort().getOutgoingFifo().getTargetPort().getExpression().evaluate();
     final long delayRate = fifo.getDelay().getExpression().evaluate();

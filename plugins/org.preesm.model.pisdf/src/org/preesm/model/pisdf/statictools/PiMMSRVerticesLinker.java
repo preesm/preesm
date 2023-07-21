@@ -621,10 +621,10 @@ public class PiMMSRVerticesLinker {
 
       final Fifo incomingFifo = setterDelayActor.getDataInputPort().getIncomingFifo();
       final AbstractActor setterActor = incomingFifo.getSourcePort().getContainingActor();
-      final String setterName = setterActor.getName();
       final Expression setterRateExpression = incomingFifo.getSourcePort().getPortRateExpression();
       final long setterRate = setterRateExpression.evaluate();
       if (setterActor instanceof InitActor) {
+        final String setterName = setterActor.getName();
         final InitActor init = PiMMUserFactory.instance.createInitActor();
         init.getDataOutputPorts().add(PiMMUserFactory.instance.createDataOutputPort());
         init.setName(this.graphPrefixe + setterName);
@@ -646,6 +646,7 @@ public class PiMMSRVerticesLinker {
       } else {
         final IntegerName iN = new IntegerName(setterRV - 1);
         for (long i = 0; i < setterRV; ++i) {
+          final String setterName = setterActor.getName();
           final InitActor init = PiMMUserFactory.instance.createInitActor();
           init.getDataOutputPorts().add(PiMMUserFactory.instance.createDataOutputPort());
           final String name = setterName + "_init_" + iN.toString(i);
