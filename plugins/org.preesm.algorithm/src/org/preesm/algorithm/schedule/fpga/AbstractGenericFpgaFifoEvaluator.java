@@ -28,7 +28,7 @@ import org.preesm.model.slam.TimingType;
 
 /**
  * Generic class for Fpga Fifo Evaluators.
- * 
+ *
  * @author ahonorat
  */
 public abstract class AbstractGenericFpgaFifoEvaluator {
@@ -57,7 +57,7 @@ public abstract class AbstractGenericFpgaFifoEvaluator {
   /**
    * Wraps the results in a single object. /!\ No mechanism ensures the correct filling of this data structure, should
    * be checked by the developper for now.
-   * 
+   *
    * @author ahonorat
    */
   public static class AnalysisResultFPGA {
@@ -86,7 +86,7 @@ public abstract class AbstractGenericFpgaFifoEvaluator {
 
   /**
    * Analyze the graph, schedule it with ASAP, and compute buffer sizes.
-   * 
+   *
    * @param scenario
    *          Scenario to get the timings and mapping constraints.
    * @param analysisResult
@@ -97,7 +97,7 @@ public abstract class AbstractGenericFpgaFifoEvaluator {
 
   /**
    * Builds the corresponding evaluator object.
-   * 
+   *
    * @param fifoEvaluatorName
    *          String representing the evaluator to be used (for scheduling and fifo sizing).
    * @return Instance of the correct evaluator.
@@ -106,17 +106,22 @@ public abstract class AbstractGenericFpgaFifoEvaluator {
     if (AsapFpgaFifoEvaluator.FIFO_EVALUATOR_SDF.equalsIgnoreCase(fifoEvaluatorName)
         || AsapFpgaFifoEvaluator.FIFO_EVALUATOR_AVG.equalsIgnoreCase(fifoEvaluatorName)) {
       return new AsapFpgaFifoEvaluator(fifoEvaluatorName);
-    } else if (AdfgFpgaFifoEvaluator.FIFO_EVALUATOR_ADFG_EXACT.equalsIgnoreCase(fifoEvaluatorName)) {
-      return new AdfgFpgaFifoEvaluator(true);
-    } else if (AdfgFpgaFifoEvaluator.FIFO_EVALUATOR_ADFG_LINEAR.equalsIgnoreCase(fifoEvaluatorName)) {
-      return new AdfgFpgaFifoEvaluator(false);
+    }
+    if (AdfgOjalgoFpgaFifoEvaluator.FIFO_EVALUATOR_ADFG_OJALGO_EXACT.equalsIgnoreCase(fifoEvaluatorName)) {
+      return new AdfgOjalgoFpgaFifoEvaluator(true);
+    } else if (AdfgOjalgoFpgaFifoEvaluator.FIFO_EVALUATOR_ADFG_OJALGO_LINEAR.equalsIgnoreCase(fifoEvaluatorName)) {
+      return new AdfgOjalgoFpgaFifoEvaluator(false);
+    } else if (AdfgGlpkFpgaFifoEvaluator.FIFO_EVALUATOR_ADFG_GLPK_EXACT.equalsIgnoreCase(fifoEvaluatorName)) {
+      return new AdfgOjalgoFpgaFifoEvaluator(true);
+    } else if (AdfgGlpkFpgaFifoEvaluator.FIFO_EVALUATOR_ADFG_GLPK_LINEAR.equalsIgnoreCase(fifoEvaluatorName)) {
+      return new AdfgOjalgoFpgaFifoEvaluator(false);
     }
     throw new PreesmRuntimeException("Could not recognize fifo evaluator name: " + fifoEvaluatorName);
   }
 
   /**
    * Computes the normalized infos about actors II.
-   * 
+   *
    * @param scenario
    *          Scenario to get the timings and mapping constraints.
    * @param analysisResult
@@ -156,7 +161,7 @@ public abstract class AbstractGenericFpgaFifoEvaluator {
 
   /**
    * Computes the normalized infos about actors II.
-   * 
+   *
    * @param cc
    *          Actors in the connected component, except interfaces.
    * @param scenario
@@ -172,7 +177,7 @@ public abstract class AbstractGenericFpgaFifoEvaluator {
     final Map<AbstractActor, ActorNormalizedInfos> mapInfos = new LinkedHashMap<>();
     // check and set standard infos
     for (final AbstractActor aa : cc) {
-      AbstractActor ori = PreesmCopyTracker.getOriginalSource(aa);
+      final AbstractActor ori = PreesmCopyTracker.getOriginalSource(aa);
       // check mapping
       if (!scenario.getPossibleMappings(ori).contains(fpga)) {
         throw new PreesmRuntimeException("Actor " + ori.getVertexPath() + " is not mapped to the only fpga.");

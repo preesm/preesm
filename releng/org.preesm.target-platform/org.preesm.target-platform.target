@@ -28,7 +28,11 @@
 			<repository location="https://preesm.insa-rennes.fr/repo"/>
 			<unit id="org.ietr.graphiti.feature.feature.group" version="1.13.12"/>
 		</location>
-		<location includeMode="planner" includeDependencyDepth="none" includeDependencyScopes="compile" includeSource="true" missingManifest="generate" type="Maven">
+		<location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="planner" includeSource="false" type="InstallableUnit">
+			<repository location="https://download.eclipse.org/justj/jres/17/updates/release/latest"/>
+			<unit id="org.eclipse.justj.openjdk.hotspot.jre.full.stripped.feature.group" version="17.0.7.v20230425-1502"/>
+		</location>
+		<location includeDependencyDepth="none" includeDependencyScopes="compile" includeSource="true" missingManifest="generate" type="Maven">
 			<dependencies>
 				<dependency>
 					<groupId>org.apache.commons</groupId>
@@ -38,7 +42,7 @@
 				</dependency>
 			</dependencies>
 		</location>
-		<location includeMode="planner" includeDependencyDepth="none" includeDependencyScopes="compile" missingManifest="generate" type="Maven">
+		<location includeDependencyDepth="none" includeDependencyScopes="compile" missingManifest="generate" type="Maven">
 			<dependencies>
 				<dependency>
 					<groupId>com.fasterxml.jackson.core</groupId>
@@ -65,13 +69,6 @@
 					<type>jar</type>
 				</dependency>
 				<dependency>
-					<!-- Outdated 1.1.0.Final is required by jackson-module-jsonSchema -->
-					<groupId>javax.validation</groupId>
-					<artifactId>validation-api</artifactId>
-					<version>1.1.0.Final</version>
-					<type>jar</type>
-				</dependency>
-				<dependency>
 					<groupId>com.github.yannrichet</groupId>
 					<artifactId>JMathArray</artifactId>
 					<version>1.0</version>
@@ -81,6 +78,12 @@
 					<groupId>gov.nist.math</groupId>
 					<artifactId>jama</artifactId>
 					<version>1.0.3</version>
+					<type>jar</type>
+				</dependency>
+				<dependency>
+					<groupId>javax.validation</groupId>
+					<artifactId>validation-api</artifactId>
+					<version>1.1.0.Final</version>
 					<type>jar</type>
 				</dependency>
 				<dependency>
@@ -96,20 +99,12 @@
 					<type>jar</type>
 				</dependency>
 				<dependency>
-					<groupId>org.mockito</groupId>
-					<artifactId>mockito-core</artifactId>
-					<version>5.3.0</version>
-					<type>jar</type>
-				</dependency>
-				<dependency>
-					<!-- Required by org.mockito.mockito-core -->
 					<groupId>net.bytebuddy</groupId>
 					<artifactId>byte-buddy-agent</artifactId>
 					<version>1.14.3</version>
 					<type>jar</type>
 				</dependency>
 				<dependency>
-					<!-- Required by org.mockito.mockito-core -->
 					<groupId>net.bytebuddy</groupId>
 					<artifactId>byte-buddy</artifactId>
 					<version>1.14.3</version>
@@ -200,6 +195,12 @@
 					<type>jar</type>
 				</dependency>
 				<dependency>
+					<groupId>org.mockito</groupId>
+					<artifactId>mockito-core</artifactId>
+					<version>5.3.0</version>
+					<type>jar</type>
+				</dependency>
+				<dependency>
 					<groupId>org.objenesis</groupId>
 					<artifactId>objenesis</artifactId>
 					<version>3.3</version>
@@ -243,7 +244,7 @@
 				</dependency>
 			</dependencies>
 		</location>
-		<location includeMode="planner" includeDependencyDepth="none" includeDependencyScopes="compile" includeSource="true" missingManifest="generate" type="Maven">
+		<location includeDependencyDepth="none" includeDependencyScopes="compile" includeSource="true" missingManifest="generate" type="Maven">
 			<dependencies>
 				<dependency>
 					<groupId>org.jboss.tools.tycho-plugins</groupId>
@@ -259,9 +260,21 @@
 				</repository>
 			</repositories>
 		</location>
-		<location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="planner" includeSource="false" type="InstallableUnit">
-			<repository location="https://download.eclipse.org/justj/jres/17/updates/release/latest"/>
-			<unit id="org.eclipse.justj.openjdk.hotspot.jre.full.stripped.feature.group" version="17.0.7.v20230425-1502"/>
+		<location includeDependencyDepth="none" missingManifest="generate" type="Maven">
+			<dependencies>
+				<dependency>
+					<groupId>org.gnu.glpk</groupId>
+					<artifactId>glpk-java</artifactId>
+					<version>1.12.0</version>
+					<type>jar</type>
+				</dependency>
+			</dependencies>
+			<repositories>
+				<repository>
+					<id>xypron-glpk-java</id>
+					<url>https://www.xypron.de/repository/</url>
+				</repository>
+			</repositories>
 		</location>
 	</locations>
 </target>

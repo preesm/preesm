@@ -2,14 +2,10 @@ package org.preesm.algorithm.schedule.fpga;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -25,6 +21,7 @@ import org.ojalgo.optimisation.Optimisation.State;
 import org.ojalgo.optimisation.Variable;
 import org.preesm.algorithm.pisdf.autodelays.AbstractGraph;
 import org.preesm.algorithm.pisdf.autodelays.AbstractGraph.FifoAbstraction;
+import org.preesm.algorithm.schedule.fpga.AdfgUtils.AffineRelation;
 import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.commons.math.MathFunctionsHelper;
@@ -35,19 +32,18 @@ import org.preesm.model.pisdf.Fifo;
 import org.preesm.model.scenario.Scenario;
 
 /**
- * Class to evaluate buffer sizes thanks to an ADFG abstraction.
+ * Class to evaluate buffer sizes thanks to an ADFG abstraction, using ojAlgo internal solver.
  *
  * @author ahonorat
  */
-public class AdfgFpgaFifoEvaluator extends AbstractGenericFpgaFifoEvaluator {
+public class AdfgOjalgoFpgaFifoEvaluator extends AbstractGenericFpgaFifoEvaluator {
 
-  public static final String FIFO_EVALUATOR_ADFG_EXACT  = "adfgFifoEvalExact";
-  public static final String FIFO_EVALUATOR_ADFG_LINEAR = "adfgFifoEvalLinear";
-  public static final int    MAX_BIT_LENGTHS_FRACION    = 10;
+  public static final String FIFO_EVALUATOR_ADFG_OJALGO_EXACT  = "adfgPOjalgoFifoEvalExact";
+  public static final String FIFO_EVALUATOR_ADFG_OJALGO_LINEAR = "adfgOjalgoFifoEvalLinear";
 
   private final boolean exactEvaluation;
 
-  protected AdfgFpgaFifoEvaluator(boolean exactEvaluation) {
+  AdfgOjalgoFpgaFifoEvaluator(boolean exactEvaluation) {
     super();
     // forbid instantiation outside package and inherited classed
     this.exactEvaluation = exactEvaluation;
@@ -65,19 +61,10 @@ public class AdfgFpgaFifoEvaluator extends AbstractGenericFpgaFifoEvaluator {
     final DefaultUndirectedGraph<AbstractActor, FifoAbstraction> dug = AbstractGraph.undirectedGraph(ddg);
 
     // Increase actor II for small differences to avoid overflow in ADFG cycle computation
-    final List<ActorNormalizedInfos> listInfos = new ArrayList<>(mapActorNormalizedInfos.values());
-    Collections.sort(listInfos, new DecreasingActorIIComparator());
-    for (int i = 0; i < listInfos.size() - 1; i++) {
-      final ActorNormalizedInfos current = listInfos.get(i);
-      final ActorNormalizedInfos next = listInfos.get(i + 1);
-      if (current.oriII != next.oriII && (float) current.oriII / next.oriII < 1.01) {
-        updateIIInfo(mapActorNormalizedInfos, next.aa, current.oriII);
-        listInfos.set(i + 1, mapActorNormalizedInfos.get(next.aa));
-      }
-    }
+    AdfgUtils.equalizeII(mapActorNormalizedInfos);
 
     // compute the lambda of each actor
-    final Map<DataPort, BigFraction> lambdaPerPort = computeAndLogLambdas(mapActorNormalizedInfos);
+    final Map<DataPort, BigFraction> lambdaPerPort = AdfgUtils.computeAndLogLambdas(mapActorNormalizedInfos);
 
     // compute the fifo sizes thanks to the ARS ILP formulation of ADFG
     // ILP stands for Integer Linear Programming
@@ -128,7 +115,7 @@ public class AdfgFpgaFifoEvaluator extends AbstractGenericFpgaFifoEvaluator {
 
     // create intermediate AffineRelation graph and cycle lists
     final DefaultDirectedGraph<AbstractActor,
-        AffineRelation> ddgAR = buildGraphAR(ddg, dug, mapActorNormalizedInfos, fifoAbsToPhiVariableID);
+        AffineRelation> ddgAR = AdfgUtils.buildGraphAR(ddg, dug, mapActorNormalizedInfos, fifoAbsToPhiVariableID);
     final Set<GraphPath<AbstractActor, FifoAbstraction>> cyclesGP = new PatonCycleBase<>(dug).getCycleBasis()
         .getCyclesAsGraphPaths();
     final Set<List<AbstractActor>> cyclesAA = new LinkedHashSet<>();
@@ -190,77 +177,6 @@ public class AdfgFpgaFifoEvaluator extends AbstractGenericFpgaFifoEvaluator {
   }
 
   /**
-   * Update II Information in ActorNormalizedInfos map
-   *
-   * @param mapActorNormalizedInfos
-   *          map to be updated
-   * @param aa
-   *          actor to update
-   * @param ii
-   *          new II
-   */
-  private void updateIIInfo(final Map<AbstractActor, ActorNormalizedInfos> mapActorNormalizedInfos,
-      final AbstractActor aa, final long ii) {
-    final ActorNormalizedInfos ori = mapActorNormalizedInfos.get(aa);
-    final long updatedET = Math.max(ori.oriET, ii);
-    final ActorNormalizedInfos updated = new ActorNormalizedInfos(ori.aa, ori.ori, updatedET, ii, ori.brv);
-    mapActorNormalizedInfos.put(ori.aa, updated);
-  }
-
-  /**
-   * Compute and log all lambda (as map per data port). Lambda are symmetrical: upper = lower.
-   *
-   * @param mapActorNormalizedInfos
-   *          Standard information about actors, used to get II.
-   * @return Map of lambda per data port of all actors in the given map.
-   */
-  protected static Map<DataPort, BigFraction>
-
-      computeAndLogLambdas(final Map<AbstractActor, ActorNormalizedInfos> mapActorNormalizedInfos) {
-    final Map<DataPort, BigFraction> lambdaPerPort = new LinkedHashMap<>();
-    final StringBuilder logLambda = new StringBuilder(
-        "Lambda of actor ports (in number of tokens between 0 and the rate, the closest to 0 the better):\n");
-
-    final List<DataPort> negativeDP = new ArrayList<>();
-    mapActorNormalizedInfos.values().forEach(ani -> {
-      logLambda.append(String.format("/actor <%s>%n", ani.aa.getName()));
-
-      final String logLambdaPorts = ani.aa.getAllDataPorts().stream().map(dp -> {
-        final long rate = dp.getExpression().evaluate();
-        final BigFraction lambdaFr = computeLambda(rate, ani.oriII);
-        lambdaPerPort.put(dp, lambdaFr);
-        final double valD = lambdaFr.doubleValue();
-        if (valD < 0d) {
-          negativeDP.add(dp);
-        }
-        return String.format(Locale.US, "%s: %4.2e", dp.getName(), valD);
-      }).collect(Collectors.joining(", "));
-
-      logLambda.append(logLambdaPorts + "\n");
-    });
-    PreesmLogger.getLogger().info(logLambda::toString);
-    if (!negativeDP.isEmpty()) {
-      throw new PreesmRuntimeException(
-          "Some lambda were negative which means that they produce more than 1 bit per cycle. "
-              + "Please increase the Initiation Interval of corresponding actors in the scenario to fix that..");
-    }
-    return lambdaPerPort;
-  }
-
-  /**
-   * Compute the lambda value for a given rate and II
-   *
-   * @param rate
-   *          production/consumption rate of the port
-   * @param ii
-   *          initiation interval of the port's actor
-   * @return lambda value
-   */
-  public static BigFraction computeLambda(long rate, long ii) {
-    return new BigFraction(-rate, ii).add(1L).multiply(rate);
-  }
-
-  /**
    * Log expressions in the model, and variable domain.
    *
    * @param model
@@ -283,63 +199,6 @@ public class AdfgFpgaFifoEvaluator extends AbstractGenericFpgaFifoEvaluator {
           .collect(Collectors.joining(" + ")) + ";\n");
     }
     PreesmLogger.getLogger().finer(sbLogModel::toString);
-  }
-
-  protected static class AffineRelation {
-    protected final long    nProd;
-    protected final long    dCons;
-    protected final int     phiIndex;
-    protected final boolean phiNegate;
-
-    protected AffineRelation(final long nProd, final long dCons, final int phiIndex, final boolean phiNegate) {
-      this.nProd = nProd;
-      this.dCons = dCons;
-      this.phiIndex = phiIndex;
-      this.phiNegate = phiNegate;
-    }
-
-  }
-
-  /**
-   * Builds a directed graph with affine relation information. Each edge is doubled (in a direction and in the opposite,
-   * even if only one direction is present in the original graph).
-   *
-   * @param ddg
-   *          Abstract directed simple graph.
-   * @param dug
-   *          Abstract undirected simple graph.
-   * @param mapActorNormalizedInfos
-   *          Map of actor general informations, used to get II.
-   * @param fifoAbsToPhiVariableID
-   *          Map from edges in the undirected graph to the phi variable index in the model.
-   * @return Directed simple graph of doubled affine relation (one in each direction).
-   */
-  protected static DefaultDirectedGraph<AbstractActor, AffineRelation> buildGraphAR(
-      final DefaultDirectedGraph<AbstractActor, FifoAbstraction> ddg,
-      final DefaultUndirectedGraph<AbstractActor, FifoAbstraction> dug,
-      final Map<AbstractActor, ActorNormalizedInfos> mapActorNormalizedInfos,
-      final Map<FifoAbstraction, Integer> fifoAbsToPhiVariableID) {
-    final DefaultDirectedGraph<AbstractActor, AffineRelation> ddgAR = new DefaultDirectedGraph<>(AffineRelation.class);
-    for (final AbstractActor aa : ddg.vertexSet()) {
-      ddgAR.addVertex(aa);
-    }
-    for (final FifoAbstraction fa : dug.edgeSet()) {
-      final AbstractActor src = ddg.getEdgeSource(fa);
-      final AbstractActor tgt = ddg.getEdgeTarget(fa);
-      final long srcII = mapActorNormalizedInfos.get(src).oriII;
-      final long tgtII = mapActorNormalizedInfos.get(tgt).oriII;
-      final long nProd = fa.getProdRate() * tgtII;
-      final long dCons = fa.getConsRate() * srcII;
-      final long gcd = MathFunctionsHelper.gcd(nProd, dCons);
-      final AffineRelation ar = new AffineRelation(nProd / gcd, dCons / gcd, fifoAbsToPhiVariableID.get(fa), false);
-      ddgAR.addEdge(src, tgt, ar);
-      if (src != tgt) {
-        final AffineRelation arReverse = new AffineRelation(ar.dCons, ar.nProd, ar.phiIndex, true);
-        ddgAR.addEdge(tgt, src, arReverse);
-      }
-    }
-
-    return ddgAR;
   }
 
   /**
@@ -376,8 +235,7 @@ public class AdfgFpgaFifoEvaluator extends AbstractGenericFpgaFifoEvaluator {
       throw new PreesmRuntimeException("While building model, one cycle could not be considered: "
           + cycleAA.stream().map(AbstractActor::getName).collect(Collectors.joining(" --> ")));
     }
-    // the constraint expression must be always equal to 0
-    final Expression expression = model.addExpression().level(0L);
+
     // init arrays storing coefs for memoization
     final AffineRelation[] ars = new AffineRelation[cycleSize - 1];
     // final long[] coefsPhi = new long[cycleSize - 1];
@@ -418,10 +276,12 @@ public class AdfgFpgaFifoEvaluator extends AbstractGenericFpgaFifoEvaluator {
       }
       ++nbPhi;
     }
-
     if (mulN != mulD) {
       throw new PreesmRuntimeException("Some cycles do not satisfy consistency Part 1.");
     }
+
+    // the constraint expression must be always equal to 0
+    final Expression expression = model.addExpression().level(0L);
     // create equation
     for (int i = 0; i < ars.length; ++i) {
       final long coefSign = ars[i].phiNegate ? -1L : 1L;
@@ -510,7 +370,7 @@ public class AdfgFpgaFifoEvaluator extends AbstractGenericFpgaFifoEvaluator {
     final long srcTimeDiff = mapActorNormalizedInfos.get(src).oriET - srcII;
     // safe approximation -- needs to be expressed as lower bound
     final BigFraction scaledDelay = aCOverd.reciprocal().multiply(delaySize);
-    final long ceiledDelay = ceiling(scaledDelay).longValueExact();
+    final long ceiledDelay = AdfgUtils.ceiling(scaledDelay).longValueExact();
     final Expression expressionPhase = model.addExpression().lower(srcTimeDiff - ceiledDelay);
     expressionPhase.set(varPhiPos, coefSign);
     expressionPhase.set(varPhiNeg, -coefSign);
@@ -527,9 +387,9 @@ public class AdfgFpgaFifoEvaluator extends AbstractGenericFpgaFifoEvaluator {
     // write overflow constraint
     final BigFraction fractionSumConstantO = fractionConstant.add(delaySize).multiply(aCOverd.reciprocal());
     final BigFraction fractionCoefSize = aCOverd.reciprocal();
-    final long sumConstantO = ceiling(fractionSumConstantO).longValueExact();
+    final long sumConstantO = AdfgUtils.ceiling(fractionSumConstantO).longValueExact();
     final long coefPhiO = 1;
-    final long coefSize = floor(fractionCoefSize).longValueExact();
+    final long coefSize = AdfgUtils.floor(fractionCoefSize).longValueExact();
     constantsLog.append("ConstantO = " + sumConstantO + "\n");
     constantsLog.append("CoefPhiO = " + coefPhiO + "\n");
     constantsLog.append("CoefSize = " + coefSize + "\n");
@@ -540,18 +400,4 @@ public class AdfgFpgaFifoEvaluator extends AbstractGenericFpgaFifoEvaluator {
     PreesmLogger.getLogger().finer(constantsLog::toString);
   }
 
-  private static BigInteger ceiling(BigFraction frac) {
-    return frac.getNumerator().add(frac.getDenominator()).subtract(BigInteger.ONE).divide(frac.getDenominator());
-  }
-
-  private static BigInteger floor(BigFraction frac) {
-    return frac.getNumerator().divide(frac.getDenominator());
-  }
-
-  public static class DecreasingActorIIComparator implements Comparator<ActorNormalizedInfos> {
-    @Override
-    public int compare(ActorNormalizedInfos arg0, ActorNormalizedInfos arg1) {
-      return Long.compare(arg1.oriII, arg0.oriII);
-    }
-  }
 }
