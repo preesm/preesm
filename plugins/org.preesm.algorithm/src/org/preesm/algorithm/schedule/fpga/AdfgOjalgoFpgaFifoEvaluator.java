@@ -186,12 +186,14 @@ public class AdfgOjalgoFpgaFifoEvaluator extends AbstractGenericFpgaFifoEvaluato
     final StringBuilder sbLogModel = new StringBuilder(
         "Details of ILP model (compatible with GNU MathProg Language Reference).\n");
     sbLogModel.append("-- variable initial domain:\n");
-    model.getVariables().stream().forEach(v -> sbLogModel
-        .append("var " + v.getName() + " integer >= " + v.getLowerLimit() + ", <= " + v.getUpperLimit() + ";\n"));
+    // we have only integer variables without upper limit in our case
+    model.getVariables().stream()
+        .forEach(v -> sbLogModel.append("var " + v.getName() + " integer >= " + v.getLowerLimit() + ";\n"));
     sbLogModel.append("minimize o: ");
     sbLogModel.append(model.getVariables().stream().map(v -> v.getContributionWeight() + "*" + v.getName())
         .collect(Collectors.joining(" + ")));
     sbLogModel.append(";\n-- constraints: " + model.countExpressions() + "\n");
+    // we have only expressions with lower limit in our case
     for (final Expression exp : model.getExpressions()) {
       sbLogModel.append("subject to " + exp.getName() + ": " + exp.getLowerLimit() + " <= ");
       sbLogModel.append(exp.getLinearEntrySet().stream()
@@ -323,7 +325,7 @@ public class AdfgOjalgoFpgaFifoEvaluator extends AbstractGenericFpgaFifoEvaluato
     final Variable sizeVar = model.newVariable("size_" + index);
     PreesmLogger.getLogger().finer(() -> "Created variable " + sizeVar.getName() + " for fifo " + fifo.getId());
     sizeVar.setInteger(exactEvaluation);
-    sizeVar.lower(1L); // could be refined to max(prod, cons, delau)
+    sizeVar.lower(1L); // could be refined to max(prod, cons, delay)
     // ojAlgo seems to bug if we set upper limit above Integer.MAX_VALUE
     fifoToSizeVariableID.put(fifo, index);
     // write objective for data size to be minimized

@@ -13,7 +13,9 @@ import org.gnu.glpk.GLPK;
 import org.gnu.glpk.GLPKConstants;
 import org.gnu.glpk.SWIGTYPE_p_double;
 import org.gnu.glpk.SWIGTYPE_p_int;
+import org.gnu.glpk.glp_iocp;
 import org.gnu.glpk.glp_prob;
+import org.gnu.glpk.glp_smcp;
 import org.jgrapht.GraphPath;
 import org.jgrapht.alg.cycle.PatonCycleBase;
 import org.jgrapht.graph.DefaultDirectedGraph;
@@ -26,6 +28,8 @@ import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.commons.math.MathFunctionsHelper;
 import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.DataPort;
+import org.preesm.model.pisdf.Delay;
+import org.preesm.model.pisdf.Fifo;
 import org.preesm.model.scenario.Scenario;
 
 /**
@@ -82,6 +86,8 @@ public class AdfgGlpkFpgaFifoEvaluator extends AbstractGenericFpgaFifoEvaluator 
 
     final glp_prob model = GLPK.glp_create_prob();
     GLPK.glp_set_prob_name(model, "ADFGLPKfpgaFifoEvaluation");
+    GLPK.glp_set_obj_name(model, "minSumSizePhi");
+    GLPK.glp_set_obj_dir(model, GLPKConstants.GLP_MIN);
 
     // FifoAbstraction to phi Variable ID
     final Map<FifoAbstraction, Integer> fifoAbsToPhiVariableID = new LinkedHashMap<>();
@@ -100,7 +106,7 @@ public class AdfgGlpkFpgaFifoEvaluator extends AbstractGenericFpgaFifoEvaluator 
       } else {
         GLPK.glp_set_col_kind(model, index * 2 + 1, GLPKConstants.GLP_CV);
       }
-      GLPK.glp_set_col_bnds(model, index * 2 + 1, GLPKConstants.GLP_LO, 0, 0);
+      GLPK.glp_set_col_bnds(model, index * 2 + 1, GLPKConstants.GLP_LO, 0.0, 0.0);
       PreesmLogger.getLogger().finer("Created variable " + GLPK.glp_get_col_name(model, index * 2 + 1)
           + " for fifo abs rep " + fifoAbs.fifos.get(0).getId());
 
@@ -110,7 +116,7 @@ public class AdfgGlpkFpgaFifoEvaluator extends AbstractGenericFpgaFifoEvaluator 
       } else {
         GLPK.glp_set_col_kind(model, index * 2 + 2, GLPKConstants.GLP_CV);
       }
-      GLPK.glp_set_col_bnds(model, index * 2 + 2, GLPKConstants.GLP_LO, 0, 0);
+      GLPK.glp_set_col_bnds(model, index * 2 + 2, GLPKConstants.GLP_LO, 0.0, 0.0);
     }
 
     // create intermediate AffineRelation graph and cycle lists
@@ -126,6 +132,104 @@ public class AdfgGlpkFpgaFifoEvaluator extends AbstractGenericFpgaFifoEvaluator 
       generateCycleConstraint(ddgAR, cycleAA, model);
     }
 
+    // Fifo to delta/size Variable ID (theta/delay is fixed for us, so not a variable)
+    // before using this ID, we must offset it by the number of phi variables (twice the number of FAs)
+    final Map<Fifo, Integer> fifoToSizeVariableID = new LinkedHashMap<>();
+    // create size variables/equations
+    for (final FifoAbstraction fa : ddg.edgeSet()) {
+      final AbstractActor src = ddg.getEdgeSource(fa);
+      final AbstractActor tgt = ddg.getEdgeTarget(fa);
+      final AffineRelation ar = ddgAR.getEdge(src, tgt);
+
+      for (final Fifo fifo : fa.fifos) {
+        // create size variable and underflow and overflow expression, set objective
+        generateChannelConstraint(scenario, model, fifoToSizeVariableID, mapActorNormalizedInfos, lambdaPerPort, fifo,
+            ar);
+      }
+    }
+
+    logModel(model);
+    // solve model
+    int returnValue = GLPK.GLP_EFAIL;
+    if (exactEvaluation) {
+      final glp_iocp parm = new glp_iocp();
+      GLPK.glp_init_iocp(parm);
+      returnValue = GLPK.glp_intopt(model, parm);
+    } else {
+      final glp_smcp parm = new glp_smcp();
+      GLPK.glp_init_smcp(parm);
+      returnValue = GLPK.glp_simplex(model, parm);
+    }
+    // 0 == GLPK.GLP_SOL ?
+    if (returnValue != 0) {
+      throw new PreesmRuntimeException("ILP solver did not succeed, return value is: " + returnValue
+          + ".\n Check consistency or retry with extra delays on feedback FIFO buffers.");
+    }
+
+    final int nbCols = GLPK.glp_get_num_cols(model);
+    final StringBuilder sbLogResult = new StringBuilder("-- variable final values: " + nbCols + "\n");
+    // we have only integer variables without upper limit in our case
+    for (int i = 1; i <= nbCols; ++i) {
+      sbLogResult
+          .append("var " + GLPK.glp_get_col_name(model, i) + " integer = " + GLPK.glp_get_col_prim(model, i) + ";\n");
+    }
+
+    // fill FIFO sizes map result in number of elements
+    final Map<Fifo, Long> computedFifoSizes = new LinkedHashMap<>();
+    fifoToSizeVariableID.forEach((k, v) -> {
+      final long sizeInElts = (long) Math.ceil(GLPK.glp_get_col_prim(model, v));
+      final long typeSizeBits = scenario.getSimulationInfo().getDataTypeSizeInBit(k.getType());
+      final long fifoSizeInBits = Math.max(sizeInElts, 2) * typeSizeBits;
+      computedFifoSizes.put(k, fifoSizeInBits);
+      PreesmLogger.getLogger().info("FIFO " + k.getId() + " size: " + fifoSizeInBits + " bits");
+    });
+
+    // store the results before returning
+    analysisResult.flatFifoSizes = computedFifoSizes;
+    // TODO build a schedule using the normalized graph II and each actor offset (computed by the ILP)
+    // same ILP as in ADFG but not fixing Tbasis: only fixing all T being greater than 1
+    // result will be a period in number of cycles and will be overestimated, seems not useful
+  }
+
+  /**
+   * Log expressions in the model, and variable domain.
+   *
+   * @param model
+   *          Model to log (expressions).
+   */
+  protected static void logModel(final glp_prob model) {
+    final StringBuilder sbLogModel = new StringBuilder(
+        "Details of ILP model (compatible with GNU MathProg Language Reference).\n");
+    sbLogModel.append("-- variable initial domain:\n");
+    final int nbCols = GLPK.glp_get_num_cols(model);
+    // we have only integer variables without upper limit in our case
+    for (int i = 1; i <= nbCols; ++i) {
+      sbLogModel
+          .append("var " + GLPK.glp_get_col_name(model, i) + " integer >= " + GLPK.glp_get_col_lb(model, i) + ";\n");
+    }
+    sbLogModel.append("minimize o: ");
+    for (int i = 1; i < nbCols; ++i) {
+      sbLogModel.append(GLPK.glp_get_obj_coef(model, i) + "*" + GLPK.glp_get_col_name(model, i) + " + ");
+    }
+    sbLogModel.append(GLPK.glp_get_obj_coef(model, nbCols) + "*" + GLPK.glp_get_col_name(model, nbCols));
+    final int nbRows = GLPK.glp_get_num_rows(model);
+    sbLogModel.append(";\n-- constraints: " + nbRows + "\n");
+    for (int i = 1; i <= nbRows; ++i) {
+      sbLogModel
+          .append("subject to " + GLPK.glp_get_row_name(model, i) + ": " + GLPK.glp_get_row_lb(model, i) + " <= ");
+      // we have only expressions with lower limit in our case
+      final int lenMat = GLPK.glp_get_mat_row(model, i, null, null);
+      final SWIGTYPE_p_int ind = GLPK.new_intArray(lenMat);
+      final SWIGTYPE_p_double val = GLPK.new_doubleArray(lenMat);
+      GLPK.glp_get_mat_row(model, i, ind, val);
+      for (int j = 1; j < lenMat; ++j) {
+        final int varIndex = GLPK.intArray_getitem(ind, j);
+        final double varVal = GLPK.doubleArray_getitem(val, j);
+        sbLogModel.append(Double.toString(varVal) + "*" + GLPK.glp_get_col_name(model, varIndex) + " + ");
+      }
+      sbLogModel.append(Double.toString(lenMat) + "*" + GLPK.glp_get_col_name(model, lenMat) + ";\n");
+    }
+    PreesmLogger.getLogger().finer(sbLogModel::toString);
   }
 
   /**
@@ -156,7 +260,8 @@ public class AdfgGlpkFpgaFifoEvaluator extends AbstractGenericFpgaFifoEvaluator 
         // expPhiPos.set(varPhiPos, 1L);
 
         final int row_num = GLPK.glp_add_rows(model, 1);
-        GLPK.glp_set_row_bnds(model, 1, GLPKConstants.GLP_FX, 0, 0);
+        GLPK.glp_set_row_name(model, row_num, "cycleCstr" + Integer.toString(row_num));
+        GLPK.glp_set_row_bnds(model, 1, GLPKConstants.GLP_FX, 0.0, 0.0);
         final SWIGTYPE_p_int ind = GLPK.new_intArray(1);
         GLPK.intArray_setitem(ind, 1, index_2 + 1);
         final SWIGTYPE_p_double val = GLPK.new_doubleArray(1);
@@ -214,7 +319,8 @@ public class AdfgGlpkFpgaFifoEvaluator extends AbstractGenericFpgaFifoEvaluator 
 
     // the constraint expression must be always equal to 0
     final int row_num = GLPK.glp_add_rows(model, 1);
-    GLPK.glp_set_row_bnds(model, 1, GLPKConstants.GLP_FX, 0, 0);
+    GLPK.glp_set_row_name(model, row_num, "cycleCstr" + Integer.toString(row_num));
+    GLPK.glp_set_row_bnds(model, 1, GLPKConstants.GLP_FX, 0.0, 0.0);
     // create equation
     for (int i = 0; i < ars.length; ++i) {
       final long coefSign = ars[i].phiNegate ? -1L : 1L;
@@ -231,8 +337,138 @@ public class AdfgGlpkFpgaFifoEvaluator extends AbstractGenericFpgaFifoEvaluator 
       GLPK.glp_set_mat_row(model, row_num, 2, ind, val);
     }
 
-    // TODO finish !!
+  }
 
+  /**
+   * Fill the model with underflow and overflow equations. Also set the minimization objective.
+   * <p>
+   * See Adnan Bouakaz thesis p. 72-78.
+   *
+   * @param scenario
+   *          Scenario used to get FIFO data sizes.
+   * @param model
+   *          Model to consider.
+   * @param fifoToSizeVariableID
+   *          Map of fifo to variable index in model (to be updated).
+   * @param mapActorNormalizedInfos
+   *          Map of actor general informations, used to get II.
+   * @param lambdaPerPort
+   *          Map of port to lambda to consider.
+   * @param fifo
+   *          Fifo to consider.
+   * @param ar
+   *          Affine Relation to consider.
+   */
+  protected void generateChannelConstraint(final Scenario scenario, final glp_prob model,
+      final Map<Fifo, Integer> fifoToSizeVariableID,
+      final Map<AbstractActor, ActorNormalizedInfos> mapActorNormalizedInfos,
+      final Map<DataPort, BigFraction> lambdaPerPort, final Fifo fifo, final AffineRelation ar) {
+    final int index = GLPK.glp_add_cols(model, 1);
+    // all index starts from 1 in GLPK
+
+    GLPK.glp_set_col_name(model, index, "size_" + index);
+    if (exactEvaluation) {
+      GLPK.glp_set_col_kind(model, index, GLPKConstants.GLP_IV);
+    } else {
+      GLPK.glp_set_col_kind(model, index, GLPKConstants.GLP_CV);
+    }
+    GLPK.glp_set_col_bnds(model, index, GLPKConstants.GLP_LO, 1.0, 0);
+    // could be refined to max(prod, cons, delay)
+
+    PreesmLogger.getLogger()
+        .finer(() -> "Created variable " + GLPK.glp_get_col_name(model, index) + " for fifo " + fifo.getId());
+    fifoToSizeVariableID.put(fifo, index);
+    // write objective for data size to be minimized
+    // weighted by type size (used only for objective)
+    final long typeSizeBits = scenario.getSimulationInfo().getDataTypeSizeInBit(fifo.getType());
+    GLPK.glp_set_obj_coef(model, index, typeSizeBits);
+    // write objective for phase to be minimized (weight for positive and negative part should be equal)
+    final double rawCurrentPhiPosWeight = GLPK.glp_get_obj_coef(model, ar.phiIndex * 2 + 1);
+    final long currentPhiPosWeight = (long) Math.ceil(rawCurrentPhiPosWeight);
+    final long fifoProdSize = fifo.getSourcePort().getExpression().evaluate();
+    final long ceilPhiRatio = typeSizeBits * ((fifoProdSize + ar.dCons - 1L) / ar.dCons);
+    GLPK.glp_set_obj_coef(model, ar.phiIndex * 2 + 1, currentPhiPosWeight + ceilPhiRatio);
+    GLPK.glp_set_obj_coef(model, ar.phiIndex * 2 + 2, currentPhiPosWeight + ceilPhiRatio);
+    // compute delay if any
+    final Delay delay = fifo.getDelay();
+    long delaySize = 0L;
+    if (delay != null) {
+      delaySize = delay.getExpression().evaluate();
+    }
+    // compute coefficients: lambda and others
+    final BigFraction lambdaP = lambdaPerPort.get(fifo.getSourcePort());
+    final BigFraction lambdaC = lambdaPerPort.get(fifo.getTargetPort());
+    final BigFraction lambdaSum = lambdaP.add(lambdaC);
+    final AbstractActor src = fifo.getSourcePort().getContainingActor();
+    final AbstractActor tgt = fifo.getTargetPort().getContainingActor();
+    final long srcII = mapActorNormalizedInfos.get(src).oriII;
+    final long tgtII = mapActorNormalizedInfos.get(tgt).oriII;
+    final BigFraction aP = new BigFraction(fifoProdSize, srcII);
+    final BigFraction aC = new BigFraction(fifo.getTargetPort().getExpression().evaluate(), tgtII);
+    // get phi variables
+    final long coefSign = ar.phiNegate ? -1L : 1L;
+    final int index_2 = ar.phiIndex * 2 + 1;
+    final StringBuilder constantsLog = new StringBuilder("n = " + ar.nProd + " d = " + ar.dCons + "\n");
+    constantsLog.append("a_p = " + aP + " a_c = " + aC + "\n");
+    // compute common coefficients
+    final BigFraction aCOverd = aC.divide(ar.dCons);
+    final BigFraction fractionConstant = lambdaSum.add(aCOverd.multiply(ar.nProd + ar.dCons - 1L));
+    final int row_num = GLPK.glp_add_rows(model, 3);
+
+    // write ET-II constraint
+    final long srcTimeDiff = mapActorNormalizedInfos.get(src).oriET - srcII;
+    // safe approximation -- needs to be expressed as lower bound
+    final BigFraction scaledDelay = aCOverd.reciprocal().multiply(delaySize);
+    final long ceiledDelay = AdfgUtils.ceiling(scaledDelay).longValueExact();
+    final long lowBnd = srcTimeDiff - ceiledDelay;
+    GLPK.glp_set_row_name(model, row_num, "iietCstr" + Integer.toString(row_num));
+    GLPK.glp_set_row_bnds(model, row_num, GLPKConstants.GLP_LO, lowBnd, 0.0);
+    final SWIGTYPE_p_int ind = GLPK.new_intArray(2);
+    GLPK.intArray_setitem(ind, 1, index_2);
+    GLPK.intArray_setitem(ind, 2, index_2 + 1);
+    final SWIGTYPE_p_double val = GLPK.new_doubleArray(2);
+    GLPK.doubleArray_setitem(val, 1, coefSign);
+    GLPK.doubleArray_setitem(val, 2, -coefSign);
+    GLPK.glp_set_mat_row(model, row_num, 2, ind, val);
+
+    // write underflow constraint
+    final BigFraction fractionSumConstantU = fractionConstant.subtract(delaySize).multiply(aCOverd.reciprocal());
+    final long sumConstantU = fractionSumConstantU.getNumerator().longValueExact();
+    constantsLog.append("ConstantU = " + sumConstantU + "\n");
+    final double coefPhiU = fractionSumConstantU.getDenominator().doubleValue();
+    constantsLog.append("CoefPhiU = " + coefPhiU + "\n");
+    GLPK.glp_set_row_name(model, row_num + 1, "underflowCstr" + Integer.toString(row_num + 1));
+    GLPK.glp_set_row_bnds(model, row_num + 1, GLPKConstants.GLP_LO, sumConstantU, 0.0);
+    final SWIGTYPE_p_int indu = GLPK.new_intArray(2);
+    GLPK.intArray_setitem(indu, 1, index_2);
+    GLPK.intArray_setitem(indu, 2, index_2 + 1);
+    final SWIGTYPE_p_double valu = GLPK.new_doubleArray(2);
+    GLPK.doubleArray_setitem(valu, 1, coefPhiU * coefSign);
+    GLPK.doubleArray_setitem(valu, 2, coefPhiU * (-coefSign));
+    GLPK.glp_set_mat_row(model, row_num + 1, 2, indu, valu);
+
+    // write overflow constraint
+    final BigFraction fractionSumConstantO = fractionConstant.add(delaySize).multiply(aCOverd.reciprocal());
+    final BigFraction fractionCoefSize = aCOverd.reciprocal();
+    final long sumConstantO = AdfgUtils.ceiling(fractionSumConstantO).longValueExact();
+    final double coefPhiO = 1.0;
+    final double coefSize = AdfgUtils.floor(fractionCoefSize).doubleValue();
+    constantsLog.append("ConstantO = " + sumConstantO + "\n");
+    constantsLog.append("CoefPhiO = " + coefPhiO + "\n");
+    constantsLog.append("CoefSize = " + coefSize + "\n");
+    GLPK.glp_set_row_name(model, row_num + 2, "overflowCstr" + Integer.toString(row_num + 2));
+    GLPK.glp_set_row_bnds(model, row_num + 2, GLPKConstants.GLP_LO, sumConstantO, 0.0);
+    final SWIGTYPE_p_int indo = GLPK.new_intArray(3);
+    GLPK.intArray_setitem(indo, 1, index_2);
+    GLPK.intArray_setitem(indo, 2, index_2 + 1);
+    GLPK.intArray_setitem(indo, 3, index);
+    final SWIGTYPE_p_double valo = GLPK.new_doubleArray(3);
+    GLPK.doubleArray_setitem(valo, 1, coefPhiO * (-coefSign));
+    GLPK.doubleArray_setitem(valo, 2, coefPhiO * coefSign);
+    GLPK.doubleArray_setitem(valo, 3, coefSize);
+    GLPK.glp_set_mat_row(model, row_num + 2, 3, indo, valo);
+
+    PreesmLogger.getLogger().finer(constantsLog::toString);
   }
 
 }
