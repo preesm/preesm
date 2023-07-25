@@ -40,17 +40,17 @@ import org.preesm.model.scenario.Scenario;
  */
 public class AdfgGlpkFpgaFifoEvaluator extends AbstractGenericFpgaFifoEvaluator {
 
-  static {
-    try {
-      // try to load Linux library
-      System.loadLibrary("glpk_java");
-    } catch (final UnsatisfiedLinkError e) {
-      // try to load Windows library
-      PreesmLogger.getLogger().severe("Could not find the glpk_java library in the system, will fail.");
-    }
-  }
+  // static {
+  // try {
+  // // try to load Linux library
+  // System.loadLibrary("glpk_java");
+  // } catch (final UnsatisfiedLinkError e) {
+  // // try to load Windows library
+  // PreesmLogger.getLogger().severe("Could not find the glpk_java library in the system, will fail.");
+  // }
+  // }
 
-  public static final String FIFO_EVALUATOR_ADFG_GLPK_EXACT  = "adfgPGlpkFifoEvalExact";
+  public static final String FIFO_EVALUATOR_ADFG_GLPK_EXACT  = "adfgGlpkFifoEvalExact";
   public static final String FIFO_EVALUATOR_ADFG_GLPK_LINEAR = "adfgGlpkFifoEvalLinear";
 
   private final boolean exactEvaluation;
@@ -63,6 +63,8 @@ public class AdfgGlpkFpgaFifoEvaluator extends AbstractGenericFpgaFifoEvaluator 
 
   @Override
   public void performAnalysis(Scenario scenario, AnalysisResultFPGA analysisResult) {
+    // final ClassLoader oldContextClassLoader = Thread.currentThread().getContextClassLoader();
+    // Thread.currentThread().setContextClassLoader(this.getClass().getClassLoader());
 
     final Map<AbstractActor,
         ActorNormalizedInfos> mapActorNormalizedInfos = logCheckAndSetActorNormalizedInfos(scenario, analysisResult);
@@ -189,6 +191,9 @@ public class AdfgGlpkFpgaFifoEvaluator extends AbstractGenericFpgaFifoEvaluator 
     // TODO build a schedule using the normalized graph II and each actor offset (computed by the ILP)
     // same ILP as in ADFG but not fixing Tbasis: only fixing all T being greater than 1
     // result will be a period in number of cycles and will be overestimated, seems not useful
+
+    // // 99- set back default class loader
+    // Thread.currentThread().setContextClassLoader(oldContextClassLoader);
   }
 
   /**

@@ -38,8 +38,10 @@ import org.preesm.model.scenario.Scenario;
  */
 public class AdfgOjalgoFpgaFifoEvaluator extends AbstractGenericFpgaFifoEvaluator {
 
-  public static final String FIFO_EVALUATOR_ADFG_OJALGO_EXACT  = "adfgPOjalgoFifoEvalExact";
-  public static final String FIFO_EVALUATOR_ADFG_OJALGO_LINEAR = "adfgOjalgoFifoEvalLinear";
+  public static final String FIFO_EVALUATOR_ADFG_OJALGO_EXACT   = "adfgOjalgoFifoEvalExact";
+  public static final String FIFO_EVALUATOR_ADFG_OJALGO_LINEAR  = "adfgOjalgoFifoEvalLinear";
+  public static final String FIFO_EVALUATOR_ADFG_DEFAULT_EXACT  = "adfgFifoEvalExact";
+  public static final String FIFO_EVALUATOR_ADFG_DEFAULT_LINEAR = "adfgFifoEvalLinear";
 
   private final boolean exactEvaluation;
 
