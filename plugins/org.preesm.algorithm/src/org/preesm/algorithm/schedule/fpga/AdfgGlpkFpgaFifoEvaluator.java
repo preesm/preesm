@@ -40,6 +40,10 @@ import org.preesm.model.scenario.Scenario;
  */
 public class AdfgGlpkFpgaFifoEvaluator extends AbstractGenericFpgaFifoEvaluator {
 
+  // to use GLP, set Eclipse launching with :
+  // -Djava.library.path=/usr/lib/x86_64-linux-gnu/jni/
+  // this is where libglpk-lib Ubuntu package installed itself
+
   // static {
   // try {
   // // try to load Linux library
@@ -65,7 +69,7 @@ public class AdfgGlpkFpgaFifoEvaluator extends AbstractGenericFpgaFifoEvaluator 
   public void performAnalysis(Scenario scenario, AnalysisResultFPGA analysisResult) {
     // final ClassLoader oldContextClassLoader = Thread.currentThread().getContextClassLoader();
     // Thread.currentThread().setContextClassLoader(this.getClass().getClassLoader());
-    PreesmLogger.getLogger().warning("This evaluator does not work yet!! Should be fixed one day.");
+    PreesmLogger.getLogger().warning("This evaluator is not always properly working!");
 
     final Map<AbstractActor,
         ActorNormalizedInfos> mapActorNormalizedInfos = logCheckAndSetActorNormalizedInfos(scenario, analysisResult);
@@ -87,10 +91,14 @@ public class AdfgGlpkFpgaFifoEvaluator extends AbstractGenericFpgaFifoEvaluator 
     // ADFG stands for Affine DataFlow Graph (work of Adnan Bouakaz)
     // external GLPK dependency is used to create the model because ojAlgo seems bugged.
 
+    // disable GLPK output on launching console
+    GLPK.glp_term_out(0);
     final glp_prob model = GLPK.glp_create_prob();
     GLPK.glp_set_prob_name(model, "ADFGLPKfpgaFifoEvaluation");
     GLPK.glp_set_obj_name(model, "minSumSizePhi");
     GLPK.glp_set_obj_dir(model, GLPKConstants.GLP_MIN);
+    // not sure what is this 0 coefficient
+    GLPK.glp_set_obj_coef(model, 0, 1.0);
 
     // FifoAbstraction to phi Variable ID
     final Map<FifoAbstraction, Integer> fifoAbsToPhiVariableID = new LinkedHashMap<>();
@@ -139,7 +147,7 @@ public class AdfgGlpkFpgaFifoEvaluator extends AbstractGenericFpgaFifoEvaluator 
         } else {
           GLPK.glp_set_col_kind(model, indexF, GLPKConstants.GLP_CV);
         }
-        GLPK.glp_set_col_bnds(model, indexF, GLPKConstants.GLP_LO, 1.0, 0);
+        GLPK.glp_set_col_bnds(model, indexF, GLPKConstants.GLP_LO, 1.0, 0.0);
         PreesmLogger.getLogger()
             .finer(() -> "Created variable " + GLPK.glp_get_col_name(model, indexF) + " for fifo " + fifo.getId());
       }
@@ -201,10 +209,11 @@ public class AdfgGlpkFpgaFifoEvaluator extends AbstractGenericFpgaFifoEvaluator 
     logModel(model);
 
     // solve model
-    int returnValue = GLPK.GLP_EFAIL;
+    int returnValue = GLPKConstants.GLP_EFAIL;
     if (exactEvaluation) {
       final glp_iocp parm = new glp_iocp();
       GLPK.glp_init_iocp(parm);
+      parm.setPresolve(GLPKConstants.GLP_ON);
       returnValue = GLPK.glp_intopt(model, parm);
     } else {
       final glp_smcp parm = new glp_smcp();
@@ -221,7 +230,7 @@ public class AdfgGlpkFpgaFifoEvaluator extends AbstractGenericFpgaFifoEvaluator 
     final StringBuilder sbLogResult = new StringBuilder("# variable final values: " + nbCols + "\n");
     // we have only integer variables without upper limit in our case
     for (int i = 1; i <= nbCols; ++i) {
-      if (GLPK.glp_get_col_type(model, i) == GLPK.GLP_IV) {
+      if (GLPK.glp_get_col_type(model, i) == GLPKConstants.GLP_IV) {
         sbLogResult
             .append("var " + GLPK.glp_get_col_name(model, i) + " integer = " + GLPK.glp_get_col_prim(model, i) + ";\n");
       } else {
@@ -247,6 +256,8 @@ public class AdfgGlpkFpgaFifoEvaluator extends AbstractGenericFpgaFifoEvaluator 
 
     // // 99- set back default class loader
     // Thread.currentThread().setContextClassLoader(oldContextClassLoader);
+    GLPK.glp_delete_prob(model);
+
   }
 
   /**
@@ -262,7 +273,7 @@ public class AdfgGlpkFpgaFifoEvaluator extends AbstractGenericFpgaFifoEvaluator 
     final int nbCols = GLPK.glp_get_num_cols(model);
     // we have only integer variables without upper limit in our case
     for (int i = 1; i <= nbCols; ++i) {
-      if (GLPK.glp_get_col_type(model, i) == GLPK.GLP_IV) {
+      if (GLPK.glp_get_col_type(model, i) == GLPKConstants.GLP_IV) {
         sbLogModel
             .append("var " + GLPK.glp_get_col_name(model, i) + " integer >= " + GLPK.glp_get_col_lb(model, i) + ";\n");
       } else {
@@ -281,8 +292,8 @@ public class AdfgGlpkFpgaFifoEvaluator extends AbstractGenericFpgaFifoEvaluator 
           .append("subject to " + GLPK.glp_get_row_name(model, i) + ": " + GLPK.glp_get_row_lb(model, i) + " <= ");
       // we have only expressions with lower limit in our case, except for cycles (lower = upper = 0)
       final int lenMat = GLPK.glp_get_mat_row(model, i, null, null);
-      final SWIGTYPE_p_int ind = GLPK.new_intArray(lenMat);
-      final SWIGTYPE_p_double val = GLPK.new_doubleArray(lenMat);
+      final SWIGTYPE_p_int ind = GLPK.new_intArray(lenMat + 1);
+      final SWIGTYPE_p_double val = GLPK.new_doubleArray(lenMat + 1);
       GLPK.glp_get_mat_row(model, i, ind, val);
       for (int j = 1; j < lenMat; ++j) {
         final int varIndex = GLPK.intArray_getitem(ind, j);
@@ -292,10 +303,12 @@ public class AdfgGlpkFpgaFifoEvaluator extends AbstractGenericFpgaFifoEvaluator 
       final int varIndex = GLPK.intArray_getitem(ind, lenMat);
       final double varVal = GLPK.doubleArray_getitem(val, lenMat);
       sbLogModel.append(Double.toString(varVal) + "*" + GLPK.glp_get_col_name(model, varIndex));
-      if (GLPK.glp_get_row_type(model, i) == GLPK.GLP_FX) {
+      if (GLPK.glp_get_row_type(model, i) == GLPKConstants.GLP_FX) {
         sbLogModel.append(" <= " + GLPK.glp_get_row_lb(model, i));
       }
       sbLogModel.append(";\n");
+      GLPK.delete_intArray(ind);
+      GLPK.delete_doubleArray(val);
     }
     PreesmLogger.getLogger().finer(sbLogModel::toString);
   }
@@ -330,11 +343,13 @@ public class AdfgGlpkFpgaFifoEvaluator extends AbstractGenericFpgaFifoEvaluator 
         final int row_num = GLPK.glp_add_rows(model, 1);
         GLPK.glp_set_row_name(model, row_num, "cycleCstr" + Integer.toString(row_num));
         GLPK.glp_set_row_bnds(model, row_num, GLPKConstants.GLP_FX, 0.0, 0.0);
-        final SWIGTYPE_p_int ind = GLPK.new_intArray(1);
+        final SWIGTYPE_p_int ind = GLPK.new_intArray(2);
         GLPK.intArray_setitem(ind, 1, index_2 + 1);
-        final SWIGTYPE_p_double val = GLPK.new_doubleArray(1);
+        final SWIGTYPE_p_double val = GLPK.new_doubleArray(2);
         GLPK.doubleArray_setitem(val, 1, 1.0);
         GLPK.glp_set_mat_row(model, row_num, 1, ind, val);
+        GLPK.delete_intArray(ind);
+        GLPK.delete_doubleArray(val);
         return;
       }
       throw new PreesmRuntimeException("While building model, one cycle could not be considered: "
@@ -389,8 +404,8 @@ public class AdfgGlpkFpgaFifoEvaluator extends AbstractGenericFpgaFifoEvaluator 
     final int row_num = GLPK.glp_add_rows(model, 1);
     GLPK.glp_set_row_name(model, row_num, "cycleCstr" + Integer.toString(row_num));
     GLPK.glp_set_row_bnds(model, row_num, GLPKConstants.GLP_FX, 0.0, 0.0);
-    final SWIGTYPE_p_int ind = GLPK.new_intArray(ars.length * 2);
-    final SWIGTYPE_p_double val = GLPK.new_doubleArray(ars.length * 2);
+    final SWIGTYPE_p_int ind = GLPK.new_intArray(ars.length * 2 + 1);
+    final SWIGTYPE_p_double val = GLPK.new_doubleArray(ars.length * 2 + 1);
     // create equation
     for (int i = 0; i < ars.length; ++i) {
       final long coefSign = ars[i].phiNegate ? -1L : 1L;
@@ -403,6 +418,8 @@ public class AdfgGlpkFpgaFifoEvaluator extends AbstractGenericFpgaFifoEvaluator 
       GLPK.doubleArray_setitem(val, i * 2 + 2, coefPhi * (-coefSign));
     }
     GLPK.glp_set_mat_row(model, row_num, ars.length * 2, ind, val);
+    GLPK.delete_intArray(ind);
+    GLPK.delete_doubleArray(val);
 
   }
 
@@ -431,7 +448,7 @@ public class AdfgGlpkFpgaFifoEvaluator extends AbstractGenericFpgaFifoEvaluator 
       final Map<AbstractActor, ActorNormalizedInfos> mapActorNormalizedInfos,
       final Map<DataPort, BigFraction> lambdaPerPort, final Fifo fifo, final AffineRelation ar) {
 
-    final int indexF = fifoToSizeVariableID.get(fifo);
+    final int indexF = fifoToSizeVariableID.get(fifo).intValue();
 
     // compute delay if any
     final Delay delay = fifo.getDelay();
@@ -465,55 +482,59 @@ public class AdfgGlpkFpgaFifoEvaluator extends AbstractGenericFpgaFifoEvaluator 
     final BigFraction scaledDelay = aCOverd.reciprocal().multiply(delaySize);
     final double ceiledDelay = AdfgUtils.ceiling(scaledDelay).doubleValue();
     final double lowBnd = srcTimeDiff - ceiledDelay;
-    final int row_num = GLPK.glp_add_rows(model, 2);
+    final int row_num = GLPK.glp_add_rows(model, 3);
     GLPK.glp_set_row_name(model, row_num, "iietCstr" + Integer.toString(row_num));
     GLPK.glp_set_row_bnds(model, row_num, GLPKConstants.GLP_LO, lowBnd, 0.0);
-    final SWIGTYPE_p_int ind = GLPK.new_intArray(2);
+    final SWIGTYPE_p_int ind = GLPK.new_intArray(3);
     GLPK.intArray_setitem(ind, 1, index_2);
     GLPK.intArray_setitem(ind, 2, index_2 + 1);
-    final SWIGTYPE_p_double val = GLPK.new_doubleArray(2);
+    final SWIGTYPE_p_double val = GLPK.new_doubleArray(3);
     GLPK.doubleArray_setitem(val, 1, coefSign);
     GLPK.doubleArray_setitem(val, 2, -coefSign);
     GLPK.glp_set_mat_row(model, row_num, 2, ind, val);
+    GLPK.delete_intArray(ind);
+    GLPK.delete_doubleArray(val);
 
     // write underflow constraint
     final BigFraction fractionSumConstantU = fractionConstant.subtract(delaySize).multiply(aCOverd.reciprocal());
-    final long sumConstantU = fractionSumConstantU.getNumerator().longValueExact();
+    final double sumConstantU = fractionSumConstantU.getNumerator().doubleValue();
     constantsLog.append("ConstantU = " + sumConstantU + "\n");
     final double coefPhiU = fractionSumConstantU.getDenominator().doubleValue();
     constantsLog.append("CoefPhiU = " + coefPhiU + "\n");
     GLPK.glp_set_row_name(model, row_num + 1, "underflowCstr" + Integer.toString(row_num + 1));
     GLPK.glp_set_row_bnds(model, row_num + 1, GLPKConstants.GLP_LO, sumConstantU, 0.0);
-    final SWIGTYPE_p_int indu = GLPK.new_intArray(2);
+    final SWIGTYPE_p_int indu = GLPK.new_intArray(3);
     GLPK.intArray_setitem(indu, 1, index_2);
     GLPK.intArray_setitem(indu, 2, index_2 + 1);
-    final SWIGTYPE_p_double valu = GLPK.new_doubleArray(2);
+    final SWIGTYPE_p_double valu = GLPK.new_doubleArray(3);
     GLPK.doubleArray_setitem(valu, 1, coefPhiU * coefSign);
     GLPK.doubleArray_setitem(valu, 2, coefPhiU * (-coefSign));
     GLPK.glp_set_mat_row(model, row_num + 1, 2, indu, valu);
+    GLPK.delete_intArray(indu);
+    GLPK.delete_doubleArray(valu);
 
-    // FOLLOWING CODE FAILS, DONT KNOW WHY!!! should not be commented
     // write overflow constraint
-    // final BigFraction fractionSumConstantO = fractionConstant.add(delaySize).multiply(aCOverd.reciprocal());
-    // final BigFraction fractionCoefSize = aCOverd.reciprocal();
-    // final long sumConstantO = AdfgUtils.ceiling(fractionSumConstantO).longValueExact();
-    // final double coefPhiO = 1.0;
-    // final double coefSize = AdfgUtils.floor(fractionCoefSize).doubleValue();
-    // constantsLog.append("ConstantO = " + sumConstantO + "\n");
-    // constantsLog.append("CoefPhiO = " + coefPhiO + "\n");
-    // constantsLog.append("CoefSize = " + coefSize + "\n");
-    // final int row_num3 = GLPK.glp_add_rows(model, 1);
-    // GLPK.glp_set_row_name(model, row_num3, "overflowCstr" + Integer.toString(row_num + 2));
-    // GLPK.glp_set_row_bnds(model, row_num3, GLPKConstants.GLP_LO, sumConstantO, 0.0);
-    // final SWIGTYPE_p_int indo = GLPK.new_intArray(3);
-    // GLPK.intArray_setitem(indo, 1, index_2);
-    // GLPK.intArray_setitem(indo, 2, index_2 + 1);
-    // GLPK.intArray_setitem(indo, 3, indexF);
-    // final SWIGTYPE_p_double valo = GLPK.new_doubleArray(3);
-    // GLPK.doubleArray_setitem(valo, 1, coefPhiO * (-coefSign));
-    // GLPK.doubleArray_setitem(valo, 2, coefPhiO * coefSign);
-    // GLPK.doubleArray_setitem(valo, 3, coefSize);
-    // GLPK.glp_set_mat_row(model, row_num3, 3, indo, valo);
+    final BigFraction fractionSumConstantO = fractionConstant.add(delaySize).multiply(aCOverd.reciprocal());
+    final BigFraction fractionCoefSize = aCOverd.reciprocal();
+    final double sumConstantO = AdfgUtils.ceiling(fractionSumConstantO).doubleValue();
+    final double coefPhiO = 1.0;
+    final double coefSize = AdfgUtils.floor(fractionCoefSize).doubleValue();
+    constantsLog.append("ConstantO = " + sumConstantO + "\n");
+    constantsLog.append("CoefPhiO = " + coefPhiO + "\n");
+    constantsLog.append("CoefSize = " + coefSize + "\n");
+    GLPK.glp_set_row_name(model, row_num + 2, "overflowCstr" + Integer.toString(row_num + 2));
+    GLPK.glp_set_row_bnds(model, row_num + 2, GLPKConstants.GLP_LO, sumConstantO, 0.0);
+    final SWIGTYPE_p_int indo = GLPK.new_intArray(4);
+    GLPK.intArray_setitem(indo, 1, index_2);
+    GLPK.intArray_setitem(indo, 2, index_2 + 1);
+    GLPK.intArray_setitem(indo, 3, indexF);
+    final SWIGTYPE_p_double valo = GLPK.new_doubleArray(4);
+    GLPK.doubleArray_setitem(valo, 1, coefPhiO * (-coefSign));
+    GLPK.doubleArray_setitem(valo, 2, coefPhiO * coefSign);
+    GLPK.doubleArray_setitem(valo, 3, coefSize);
+    GLPK.glp_set_mat_row(model, row_num + 2, 3, indo, valo);
+    GLPK.delete_intArray(indo);
+    GLPK.delete_doubleArray(valo);
 
     PreesmLogger.getLogger().finer(constantsLog::toString);
   }
