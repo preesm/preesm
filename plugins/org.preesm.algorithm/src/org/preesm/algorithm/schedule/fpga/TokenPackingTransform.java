@@ -79,8 +79,11 @@ public final class TokenPackingTransform extends ActorConstructTransform {
     final DataOutputPort unpackerOutput = createDataOutputPort(unpacker, compressionRatio);
 
     // Create and connect FIFOs
-    final Fifo newFifo = createFifo(fifo.getType(), unpackerOutput, fifo.getTargetPort());
-    final Fifo newPackedFifo = createFifo("ap_uint<" + packedSize + ">", packerOutput, unpackerInput);
+    final Fifo newFifo = PiMMUserFactory.instance.createFifo(unpackerOutput, fifo.getTargetPort(), fifo.getType());
+    res.flatGraph.addFifo(newFifo);
+    final Fifo newPackedFifo = PiMMUserFactory.instance.createFifo(packerOutput, unpackerInput,
+        "ap_uint<" + packedSize + ">");
+    res.flatGraph.addFifo(newPackedFifo);
     fifo.setTargetPort(packerInput);
     scenario.getSimulationInfo().getDataTypes().put("ap_uint<" + packedSize + ">", packedSize);
 
