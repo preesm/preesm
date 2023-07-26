@@ -147,7 +147,7 @@ public class AdfgOjalgoFpgaFifoEvaluator extends AbstractGenericFpgaFifoEvaluato
     logModel(model);
     // call objective function (minimize buffer sizes + phi)
     final Result modelResult = model.minimise();
-    final StringBuilder sbLogResult = new StringBuilder("-- variable final values: " + model.countVariables() + "\n");
+    final StringBuilder sbLogResult = new StringBuilder("# variable final values: " + model.countVariables() + "\n");
     for (int i = 0; i < model.countVariables(); i++) {
       final Variable v = model.getVariable(i);
       sbLogResult.append("var " + v.getName() + " integer = " + modelResult.get(i) + ";\n");
@@ -187,14 +187,14 @@ public class AdfgOjalgoFpgaFifoEvaluator extends AbstractGenericFpgaFifoEvaluato
   protected static void logModel(final ExpressionsBasedModel model) {
     final StringBuilder sbLogModel = new StringBuilder(
         "Details of ILP model (compatible with GNU MathProg Language Reference).\n");
-    sbLogModel.append("-- variable initial domain:\n");
+    sbLogModel.append("# variable initial domain:\n");
     // we have only integer variables without upper limit in our case
     model.getVariables().stream()
         .forEach(v -> sbLogModel.append("var " + v.getName() + " integer >= " + v.getLowerLimit() + ";\n"));
     sbLogModel.append("minimize o: ");
     sbLogModel.append(model.getVariables().stream().map(v -> v.getContributionWeight() + "*" + v.getName())
         .collect(Collectors.joining(" + ")));
-    sbLogModel.append(";\n-- constraints: " + model.countExpressions() + "\n");
+    sbLogModel.append(";\n# constraints: " + model.countExpressions() + "\n");
     // we have only expressions with lower limit in our case
     for (final Expression exp : model.getExpressions()) {
       sbLogModel.append("subject to " + exp.getName() + ": " + exp.getLowerLimit() + " <= ");
