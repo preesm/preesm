@@ -32,11 +32,11 @@ use_lambdas = True
 use_initial_tests = True
 detect_steady_state = True
 
-def run_cosim(buffer_sizes):
+def run_cosim(buffer_sizes, mode='cosim'):
     write_buffer_sizes(buffer_sizes)
     start = time.time()
     try:
-        p = subprocess.Popen(['vitis_hls', 'scripts/script_hls.tcl',  'cosim', top_kernel_name, top_kernel_name + '.cpp'], start_new_session=True)
+        p = subprocess.Popen(['vitis_hls', 'scripts/script_hls.tcl', mode, top_kernel_name, top_kernel_name + '.cpp'], start_new_session=True)
         p.wait(timeout=target_runtime)
     except subprocess.TimeoutExpired:
         os.killpg(os.getpgid(p.pid), signal.SIGTERM)

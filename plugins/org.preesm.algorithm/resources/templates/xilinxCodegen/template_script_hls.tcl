@@ -33,5 +33,8 @@ if {[string match [lindex $argv 0] csynth] == 1} {
 if {[string match [lindex $argv 0] cosim] == 1} {
   cosim_design -O
 }
+if {[string match [lindex $argv 0] enable_fifo_sizing] == 1} {
+  cosim_design -O -enable_fifo_sizing
+}
 
 exit
