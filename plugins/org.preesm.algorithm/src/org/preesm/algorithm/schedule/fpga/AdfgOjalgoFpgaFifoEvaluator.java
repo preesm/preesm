@@ -200,7 +200,11 @@ public class AdfgOjalgoFpgaFifoEvaluator extends AbstractGenericFpgaFifoEvaluato
       sbLogModel.append("subject to " + exp.getName() + ": " + exp.getLowerLimit() + " <= ");
       sbLogModel.append(exp.getLinearEntrySet().stream()
           .map(e -> e.getValue().longValue() + "*" + model.getVariable(e.getKey()).getName())
-          .collect(Collectors.joining(" + ")) + ";\n");
+          .collect(Collectors.joining(" + ")));
+      if (exp.getUpperLimit() != null) {
+        sbLogModel.append(" <= " + exp.getUpperLimit());
+      }
+      sbLogModel.append(";\n");
     }
     PreesmLogger.getLogger().finer(sbLogModel::toString);
   }
