@@ -150,7 +150,11 @@ public class AdfgOjalgoFpgaFifoEvaluator extends AbstractGenericFpgaFifoEvaluato
     final StringBuilder sbLogResult = new StringBuilder("# variable final values: " + model.countVariables() + "\n");
     for (int i = 0; i < model.countVariables(); i++) {
       final Variable v = model.getVariable(i);
-      sbLogResult.append("var " + v.getName() + " integer = " + modelResult.get(i) + ";\n");
+      if (v.isInteger()) {
+        sbLogResult.append("var " + v.getName() + " integer = " + modelResult.get(i) + ";\n");
+      } else {
+        sbLogResult.append("var " + v.getName() + " = " + modelResult.get(i) + ";\n");
+      }
     }
     PreesmLogger.getLogger().finer(sbLogResult::toString);
 
@@ -189,8 +193,13 @@ public class AdfgOjalgoFpgaFifoEvaluator extends AbstractGenericFpgaFifoEvaluato
         "Details of ILP model (compatible with GNU MathProg Language Reference).\n");
     sbLogModel.append("# variable initial domain:\n");
     // we have only integer variables without upper limit in our case
-    model.getVariables().stream()
-        .forEach(v -> sbLogModel.append("var " + v.getName() + " integer >= " + v.getLowerLimit() + ";\n"));
+    for (final Variable var : model.getVariables()) {
+      if (var.isInteger()) {
+        sbLogModel.append("var " + var.getName() + " integer >= " + var.getLowerLimit() + ";\n");
+      } else {
+        sbLogModel.append("var " + var.getName() + " >= " + var.getLowerLimit() + ";\n");
+      }
+    }
     sbLogModel.append("minimize o: ");
     sbLogModel.append(model.getVariables().stream().map(v -> v.getContributionWeight() + "*" + v.getName())
         .collect(Collectors.joining(" + ")));

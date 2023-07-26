@@ -65,6 +65,7 @@ public class AdfgGlpkFpgaFifoEvaluator extends AbstractGenericFpgaFifoEvaluator 
   public void performAnalysis(Scenario scenario, AnalysisResultFPGA analysisResult) {
     // final ClassLoader oldContextClassLoader = Thread.currentThread().getContextClassLoader();
     // Thread.currentThread().setContextClassLoader(this.getClass().getClassLoader());
+    PreesmLogger.getLogger().warning("This evaluator does not work yet!! Should be fixed one day.");
 
     final Map<AbstractActor,
         ActorNormalizedInfos> mapActorNormalizedInfos = logCheckAndSetActorNormalizedInfos(scenario, analysisResult);
@@ -220,8 +221,12 @@ public class AdfgGlpkFpgaFifoEvaluator extends AbstractGenericFpgaFifoEvaluator 
     final StringBuilder sbLogResult = new StringBuilder("# variable final values: " + nbCols + "\n");
     // we have only integer variables without upper limit in our case
     for (int i = 1; i <= nbCols; ++i) {
-      sbLogResult
-          .append("var " + GLPK.glp_get_col_name(model, i) + " integer = " + GLPK.glp_get_col_prim(model, i) + ";\n");
+      if (GLPK.glp_get_col_type(model, i) == GLPK.GLP_IV) {
+        sbLogResult
+            .append("var " + GLPK.glp_get_col_name(model, i) + " integer = " + GLPK.glp_get_col_prim(model, i) + ";\n");
+      } else {
+        sbLogResult.append("var " + GLPK.glp_get_col_name(model, i) + " = " + GLPK.glp_get_col_prim(model, i) + ";\n");
+      }
     }
 
     // fill FIFO sizes map result in number of elements
@@ -257,8 +262,12 @@ public class AdfgGlpkFpgaFifoEvaluator extends AbstractGenericFpgaFifoEvaluator 
     final int nbCols = GLPK.glp_get_num_cols(model);
     // we have only integer variables without upper limit in our case
     for (int i = 1; i <= nbCols; ++i) {
-      sbLogModel
-          .append("var " + GLPK.glp_get_col_name(model, i) + " integer >= " + GLPK.glp_get_col_lb(model, i) + ";\n");
+      if (GLPK.glp_get_col_type(model, i) == GLPK.GLP_IV) {
+        sbLogModel
+            .append("var " + GLPK.glp_get_col_name(model, i) + " integer >= " + GLPK.glp_get_col_lb(model, i) + ";\n");
+      } else {
+        sbLogModel.append("var " + GLPK.glp_get_col_name(model, i) + " >= " + GLPK.glp_get_col_lb(model, i) + ";\n");
+      }
     }
     sbLogModel.append("minimize o: ");
     for (int i = 1; i < nbCols; ++i) {
@@ -483,6 +492,7 @@ public class AdfgGlpkFpgaFifoEvaluator extends AbstractGenericFpgaFifoEvaluator 
     GLPK.doubleArray_setitem(valu, 2, coefPhiU * (-coefSign));
     GLPK.glp_set_mat_row(model, row_num + 1, 2, indu, valu);
 
+    // FOLLOWING CODE FAILS, DONT KNOW WHY!!! should not be commented
     // write overflow constraint
     // final BigFraction fractionSumConstantO = fractionConstant.add(delaySize).multiply(aCOverd.reciprocal());
     // final BigFraction fractionCoefSize = aCOverd.reciprocal();
