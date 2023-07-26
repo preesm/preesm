@@ -162,7 +162,7 @@ public class AdfgOjalgoFpgaFifoEvaluator extends AbstractGenericFpgaFifoEvaluato
 
     // fill FIFO sizes map result in number of elements
     final Map<Fifo, Long> computedFifoSizes = new LinkedHashMap<>();
-    final int indexOffset = 2 * ddg.edgeSet().size(); // offset for phi
+    final int indexOffset = 2 * dug.edgeSet().size(); // offset for phi
     fifoToSizeVariableID.forEach((k, v) -> {
       final long sizeInElts = (long) Math.ceil(modelResult.get((long) v + indexOffset).floatValue());
       final long typeSizeBits = scenario.getSimulationInfo().getDataTypeSizeInBit(k.getType());
@@ -195,7 +195,7 @@ public class AdfgOjalgoFpgaFifoEvaluator extends AbstractGenericFpgaFifoEvaluato
     sbLogModel.append(model.getVariables().stream().map(v -> v.getContributionWeight() + "*" + v.getName())
         .collect(Collectors.joining(" + ")));
     sbLogModel.append(";\n# constraints: " + model.countExpressions() + "\n");
-    // we have only expressions with lower limit in our case
+    // we have only expressions with lower limit in our case, except for cycles (lower = upper = 0)
     for (final Expression exp : model.getExpressions()) {
       sbLogModel.append("subject to " + exp.getName() + ": " + exp.getLowerLimit() + " <= ");
       sbLogModel.append(exp.getLinearEntrySet().stream()

@@ -270,7 +270,7 @@ public class AdfgGlpkFpgaFifoEvaluator extends AbstractGenericFpgaFifoEvaluator 
     for (int i = 1; i <= nbRows; ++i) {
       sbLogModel
           .append("subject to " + GLPK.glp_get_row_name(model, i) + ": " + GLPK.glp_get_row_lb(model, i) + " <= ");
-      // we have only expressions with lower limit in our case
+      // we have only expressions with lower limit in our case, except for cycles (lower = upper = 0)
       final int lenMat = GLPK.glp_get_mat_row(model, i, null, null);
       final SWIGTYPE_p_int ind = GLPK.new_intArray(lenMat);
       final SWIGTYPE_p_double val = GLPK.new_doubleArray(lenMat);
@@ -282,7 +282,11 @@ public class AdfgGlpkFpgaFifoEvaluator extends AbstractGenericFpgaFifoEvaluator 
       }
       final int varIndex = GLPK.intArray_getitem(ind, lenMat);
       final double varVal = GLPK.doubleArray_getitem(val, lenMat);
-      sbLogModel.append(Double.toString(varVal) + "*" + GLPK.glp_get_col_name(model, varIndex) + ";\n");
+      sbLogModel.append(Double.toString(varVal) + "*" + GLPK.glp_get_col_name(model, varIndex));
+      if (GLPK.glp_get_row_type(model, i) == GLPK.GLP_FX) {
+        sbLogModel.append(" <= " + GLPK.glp_get_row_lb(model, i));
+      }
+      sbLogModel.append(";\n");
     }
     PreesmLogger.getLogger().finer(sbLogModel::toString);
   }
