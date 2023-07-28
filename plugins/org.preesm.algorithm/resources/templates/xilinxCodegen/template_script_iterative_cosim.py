@@ -47,7 +47,7 @@ def run_cosim(buffer_sizes, mode='cosim'):
     global total_nb_iterations
     total_nb_iterations += nb_iterations
     cosim_timings = get_cosim_timings()
-    write_cosim_log(buffer_sizes, nb_iterations, end - start, cosim_timings)
+    write_cosim_log(mode, buffer_sizes, nb_iterations, end - start, cosim_timings)
     # Reduce number of required iterations based on ET results
     if is_expected_ii(cosim_timings) and detect_steady_state:
         nb_iterations = cosim_timings[0].index(cosim_timings[0][-1]) + 2
@@ -86,7 +86,7 @@ def write_buffer_sizes(buffer_sizes):
             file.write('#[[#]]#define ' + names[i] + ' ' + str(int(buffer_sizes[i])) + '\n')
         file.write('#[[#]]#define NB_ITERATIONS_COSIM ' + str(nb_iterations) + '\n')
 
-def write_cosim_log(buffer_sizes, nb_iterations, runtime, cosim_timings):
+def write_cosim_log(mode, buffer_sizes, nb_iterations, runtime, cosim_timings):
     f = Path('cosim_log.csv')
     if not f.is_file():
         with f.open('w') as file:
@@ -95,7 +95,7 @@ def write_cosim_log(buffer_sizes, nb_iterations, runtime, cosim_timings):
                 file.write(',' + names[i])
             file.write('\n')
     with f.open('a') as file:
-        file.write(top_kernel_name + ',False,' + str(use_bram_wise)  + ',' + str(use_all_resource_wise) + ',' + str(use_lambdas) + ',' + str(use_initial_tests))
+        file.write(top_kernel_name + ',' + str(mode == 'enable_fifo_sizing') + ',' + str(use_bram_wise)  + ',' + str(use_all_resource_wise) + ',' + str(use_lambdas) + ',' + str(use_initial_tests))
         file.write(',' + str(nb_iterations) + ',' + str(int(runtime)) + ',' + str(cosim_timings[1][-1]) + ',' + str(is_expected_ii(cosim_timings)))
         resources = get_synthesis_resources()
         [file.write(',' + str(res)) for res in resources]
