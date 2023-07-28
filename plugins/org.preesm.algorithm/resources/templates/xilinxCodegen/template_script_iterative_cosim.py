@@ -140,9 +140,20 @@ def is_improved_resource_wise(candidate, upper, width):
     return candidate_cost < upper_cost
 
 def iterative_cosim():
+    global target_runtime
+    target_runtime = steady_state_iterative_cosim()
+    # Perform cosim using the different strategies
+    if use_initial_tests:
+        initial_tests_cosim()
+    if use_lambdas:
+        lambda_iterative_cosim()
+    sequential_iterative_cosim()
+    write_buffer_sizes(upper_bound)
+
+def steady_state_iterative_cosim(mode='cosim'):
     # Start by setting the number of iterations of cosim to reach steady state
     start = time.time()
-    cosim_timings = run_cosim(upper_bound)
+    cosim_timings = run_cosim(upper_bound, mode)
     end = time.time()
     if cosim_timings[1] == [-1]:
         raise ValueError('Graph deadlocked with original buffer sizes')
@@ -152,17 +163,10 @@ def iterative_cosim():
         global nb_iterations
         nb_iterations = nb_iterations * 2
         start = time.time()
-        cosim_timings = run_cosim(upper_bound)
+        cosim_timings = run_cosim(upper_bound, mode)
         end = time.time()
-    global target_runtime
-    target_runtime = (end - start) * 2
-    # Perform cosim using the different strategies
-    if use_initial_tests:
-        initial_tests_cosim()
-    if use_lambdas:
-        lambda_iterative_cosim()
-    sequential_iterative_cosim()
-    write_buffer_sizes(upper_bound)
+    # define as target runtime 2x the runtime of the algo
+    return (end - start) * 2
 
 def sequential_iterative_cosim():
     for i in range(len(names)):

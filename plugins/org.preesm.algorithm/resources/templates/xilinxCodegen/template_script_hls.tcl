@@ -1,6 +1,6 @@
 # Generate ip in Vivado format
 # arguments :
-# - arg 0 mode to use, either csynth or cosim
+# - arg 0 mode to use, either csynth, cosim or enable_fifo_sizing
 # - arg 1 name of the top function and output IP
 # - arg 2-N file names
 
@@ -15,6 +15,10 @@ foreach source [lrange $argv 2 end] {
 }
 
 if {[string match [lindex $argv 0] cosim] == 1} {
+  add_files -tb ${top}_testbench.cpp
+}
+
+if {[string match [lindex $argv 0] enable_fifo_sizing] == 1} {
   add_files -tb ${top}_testbench.cpp
 }
 
