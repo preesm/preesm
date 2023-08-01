@@ -87,11 +87,11 @@ public final class PiMMUserFactory extends PiMMFactoryImpl implements PreesmUser
   public <T extends EObject> T copyWithHistory(final T eObject) {
     final T copy = PreesmUserFactory.super.copyWithHistory(eObject);
 
-    if (copy instanceof PiGraph) {
+    if (copy instanceof final PiGraph copyPiGraph) {
 
       // Check if the PiGraph has an observer
       boolean hasAnObserver = false;
-      for (Adapter adapt : ((PiGraph) copy).eAdapters()) {
+      for (final Adapter adapt : copyPiGraph.eAdapters()) {
         if (adapt instanceof GraphObserver) {
           hasAnObserver = true;
         }
@@ -101,9 +101,9 @@ public final class PiMMUserFactory extends PiMMFactoryImpl implements PreesmUser
       }
 
       // Check for all subgraph in this PiGraph and its subgraph
-      for (PiGraph graph : ((PiGraph) copy).getAllChildrenGraphs()) {
+      for (final PiGraph graph : copyPiGraph.getAllChildrenGraphs()) {
         hasAnObserver = false;
-        for (Adapter adapt : graph.eAdapters()) {
+        for (final Adapter adapt : graph.eAdapters()) {
           if (adapt instanceof GraphObserver) {
             hasAnObserver = true;
           }
@@ -114,9 +114,9 @@ public final class PiMMUserFactory extends PiMMFactoryImpl implements PreesmUser
       }
 
       // Check for all fifos in this PiGraph and its subgraph
-      for (Fifo fifo : ((PiGraph) copy).getAllFifos()) {
+      for (final Fifo fifo : copyPiGraph.getAllFifos()) {
         hasAnObserver = false;
-        for (Adapter adapt : fifo.eAdapters()) {
+        for (final Adapter adapt : fifo.eAdapters()) {
           if (adapt instanceof GraphObserver) {
             hasAnObserver = true;
           }
@@ -138,10 +138,10 @@ public final class PiMMUserFactory extends PiMMFactoryImpl implements PreesmUser
     final PiGraph copyGraph = this.copyWithHistory(origGraph);
 
     // we copy all known observer to all relevant objects (here for PiGraph)
-    List<PiGraph> allPiGraph = new ArrayList<>();
+    final List<PiGraph> allPiGraph = new ArrayList<>();
     allPiGraph.add(copyGraph);
     while (!allPiGraph.isEmpty()) {
-      PiGraph pg = allPiGraph.remove(0);
+      final PiGraph pg = allPiGraph.remove(0);
       allPiGraph.addAll(pg.getChildrenGraphs());
     }
 

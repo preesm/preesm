@@ -535,10 +535,10 @@ public class PiSDFToSingleRate extends PiMMSwitch<Boolean> {
       final DataInputPort targetPort, final AbstractActor sourceActor, final AbstractActor sinkActor) {
     // There are 3 mains special cases, source is an interface, source is a graph, source is a delay
     // Otherwise, we fall in "standard" case
-    if (sourceActor instanceof InterfaceActor) {
-      return handleDataInputInterface(targetPort, ((InterfaceActor) sourceActor), sinkActor);
+    if (sourceActor instanceof final InterfaceActor sourceInterface) {
+      return handleDataInputInterface(targetPort, sourceInterface, sinkActor);
     }
-    if (sourceActor instanceof PiGraph && !sourceActor.isCluster()) {
+    if (sourceActor instanceof final PiGraph sourcePiGraph && !sourceActor.isCluster()) {
       // We should retrieve the correct source set
       if (!this.outPort2SRActors.containsKey(sourcePort)) {
         throw new PreesmRuntimeException("No replacement found for DataOutputPort [" + sourcePort.getName()
@@ -547,7 +547,7 @@ public class PiSDFToSingleRate extends PiMMSwitch<Boolean> {
       final List<AbstractVertex> sourceSet = this.outPort2SRActors.remove(sourcePort);
       // Now we change the "sourcePort" of the FIFO to match the one of the sourceSet
       final AbstractActor firstOfSet = (AbstractActor) sourceSet.get(0);
-      final DataOutputPort foundPort = lookForSourcePort((PiGraph) sourceActor, firstOfSet, sourcePort.getName());
+      final DataOutputPort foundPort = lookForSourcePort(sourcePiGraph, firstOfSet, sourcePort.getName());
       if (foundPort != null) {
         fifo.setSourcePort(foundPort);
       }
@@ -578,8 +578,8 @@ public class PiSDFToSingleRate extends PiMMSwitch<Boolean> {
         final Fifo inFifo = doi.getDataPort().getFifo();
         final DataOutputPort sourcePort = inFifo.getSourcePort();
         final AbstractActor containingActor = sourcePort.getContainingActor();
-        if (containingActor instanceof final PiGraph piGraph) {
-          return lookForSourcePort(piGraph, source, sourcePort.getName());
+        if (containingActor instanceof final PiGraph containingPiGraph) {
+          return lookForSourcePort(containingPiGraph, source, sourcePort.getName());
         }
         return (DataOutputPort) source.lookupPort(sourcePort.getName());
       }
@@ -591,8 +591,8 @@ public class PiSDFToSingleRate extends PiMMSwitch<Boolean> {
         if (inFifo != null) {
           final DataOutputPort sourcePort = inFifo.getSourcePort();
           final AbstractActor containingActor = sourcePort.getContainingActor();
-          if (containingActor instanceof final PiGraph piGraph) {
-            return lookForSourcePort(piGraph, source, sourcePort.getName());
+          if (containingActor instanceof final PiGraph containingPiGraph) {
+            return lookForSourcePort(containingPiGraph, source, sourcePort.getName());
           }
           return (DataOutputPort) source.lookupPort(sourcePort.getName());
         }
@@ -681,10 +681,10 @@ public class PiSDFToSingleRate extends PiMMSwitch<Boolean> {
       final DataInputPort targetPort, final AbstractActor sourceActor, final AbstractActor sinkActor,
       final List<AbstractVertex> sourceSet) {
 
-    if (sinkActor instanceof InterfaceActor) {
-      return handleDataOutputInterface(sourcePort, sourceActor, (InterfaceActor) sinkActor, sourceSet);
+    if (sinkActor instanceof final InterfaceActor sinkInterface) {
+      return handleDataOutputInterface(sourcePort, sourceActor, sinkInterface, sourceSet);
     }
-    if (sinkActor instanceof PiGraph && !sinkActor.isCluster()) {
+    if (sinkActor instanceof final PiGraph sinkPiGraph && !sinkActor.isCluster()) {
       // We should retrieve the correct source set
       if (!this.inPort2SRActors.containsKey(targetPort)) {
         throw new PreesmRuntimeException("No replacement found for DataInputPort [" + targetPort.getName()
@@ -693,7 +693,7 @@ public class PiSDFToSingleRate extends PiMMSwitch<Boolean> {
       final List<AbstractVertex> sinkSet = this.inPort2SRActors.remove(targetPort);
       // Now we change the "sinkPort" of the FIFO to match the one of the sinkSet if needed
       final AbstractActor firstOfSet = (AbstractActor) sinkSet.get(0);
-      final DataInputPort foundPort = lookForTargetPort((PiGraph) sinkActor, firstOfSet, targetPort.getName());
+      final DataInputPort foundPort = lookForTargetPort(sinkPiGraph, firstOfSet, targetPort.getName());
       if (foundPort != null) {
         fifo.setTargetPort(foundPort);
       }
