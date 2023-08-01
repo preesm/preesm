@@ -246,7 +246,7 @@ public final class PiMMUserFactory extends PiMMFactoryImpl implements PreesmUser
   }
 
   /**
-   * 
+   *
    */
   public MalleableParameter createMalleableParameter(final String name, final long evaluate) {
     final MalleableParameter res = super.createMalleableParameter();
@@ -426,6 +426,15 @@ public final class PiMMUserFactory extends PiMMFactoryImpl implements PreesmUser
   public DataOutputInterface createDataOutputInterface() {
     final DataOutputInterface res = super.createDataOutputInterface();
     final DataInputPort port = PiMMUserFactory.instance.createDataInputPort();
+    res.getDataInputPorts().add(port);
+    return res;
+  }
+
+  public DataOutputInterface createDataOutputInterface(final String name) {
+    final DataOutputInterface res = super.createDataOutputInterface();
+    res.setName(name);
+    final DataInputPort port = PiMMUserFactory.instance.createDataInputPort();
+    port.setName(name);
     res.getDataInputPorts().add(port);
     return res;
   }

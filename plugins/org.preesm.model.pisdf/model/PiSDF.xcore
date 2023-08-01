@@ -672,6 +672,9 @@ class PiGraph extends AbstractActor, Graph, PeriodicElement {
 	op unique ConfigOutputInterface[] getConfigOutputInterfaces() {
 		return actors.filter(ConfigOutputInterface).toEList.unmodifiableView
 	}
+	op DataOutputInterface lookupDataOutputInterface(String outputInterfaceName) {
+		return getDataOutputInterfaces.findFirst[it.name == outputInterfaceName]
+	}
 	op Parameter lookupParameterGivenGraph(String parameterName , String graphName) {
 		return allParameters.findFirst[it.name == parameterName && (it.containingPiGraph).name == graphName]
 	}
