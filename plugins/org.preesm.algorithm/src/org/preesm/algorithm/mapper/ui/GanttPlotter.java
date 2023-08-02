@@ -58,7 +58,6 @@ import javax.swing.JFrame;
 import javax.swing.JMenuItem;
 import javax.swing.JRootPane;
 import javax.swing.WindowConstants;
-import org.apache.commons.lang3.SystemUtils;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.awt.SWT_AWT;
 import org.eclipse.swt.layout.FillLayout;
@@ -255,7 +254,12 @@ public class GanttPlotter {
 
       final Composite composite = new Composite(form.getBody(), SWT.EMBEDDED | SWT.FILL);
       Frame frame = null;
-      if (!SystemUtils.IS_OS_LINUX) {
+
+      // This fix is now required as we now ship PREESM with the JustJ JDK.
+      // Leaving the original code just in case this issue is resolved some day.
+
+      // if (!SystemUtils.IS_OS_LINUX) {
+      if (false) {
         // related to PREESM issue #303
         // may not work because of a libswt-awt-gtk4928+.so bug which is not our responsability
         // see following bug report
