@@ -260,7 +260,7 @@
 			</repositories>
 		</location>
 		<location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="planner" includeSource="false" type="InstallableUnit">
-			<repository location="https://download.eclipse.org/justj/jres/17/updates/release/latest"/>
+			<repository location="https://download.eclipse.org/justj/jres/17/updates/release/17.0.7"/>
 			<unit id="org.eclipse.justj.openjdk.hotspot.jre.full.stripped.feature.group" version="17.0.7.v20230425-1502"/>
 		</location>
 	</locations>
