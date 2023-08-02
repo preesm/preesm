@@ -91,7 +91,7 @@ public class SrDAGGenerationTest {
 
     topGraph.addDelay(loopDelay);
 
-    final PiGraph srdag = PiSDFToSingleRate.compute(topGraph, BRVMethod.LCM);
+    PiSDFToSingleRate.compute(topGraph, BRVMethod.LCM);
 
     Assert.assertTrue(true);
 
