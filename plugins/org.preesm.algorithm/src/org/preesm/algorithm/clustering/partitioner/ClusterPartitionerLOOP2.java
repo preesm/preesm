@@ -96,7 +96,7 @@ public class ClusterPartitionerLOOP2 {
       // Retrieve LOOP chains in input graph and verify that will not induce conflict loop.
       final List<AbstractActor> graphLOOP2s = new LOOP2Seeker(loopGraph).seek();
       if (graphLOOP2s != null) {
-        final PiGraph subGraph = new PiSDFSubgraphBuilder(loopGraph, graphLOOP2s, "loop_" + index++).buildSRV();
+        final PiGraph subGraph = new PiSDFSubgraphBuilder(loopGraph, graphLOOP2s, "loop_" + index++).build();
 
         // identify the delay to extract
         final List<Delay> d = new LinkedList<>();

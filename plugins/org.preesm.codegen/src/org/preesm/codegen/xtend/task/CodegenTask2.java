@@ -161,12 +161,8 @@ public class CodegenTask2 extends AbstractTaskImplementation {
 
     engine.registerPrintersAndBlocks(selectedPrinter);
     engine.preprocessPrinters();
-    if (!multinode) {
-      engine.print();
-    } else {
-      engine.print2();
-    }
 
+    engine.print();
     // Create empty output map (codegen doesn't have output)
     return new LinkedHashMap<>();
   }

@@ -61,7 +61,6 @@ public class CodegenModelGeneratorSimSDP {
           final Constant argCfg = CodegenModelUserFactory.eINSTANCE.createConstant();
           argCfg.setName(cfg.getName());
           argCfg.setType("int");
-          // param2arg(argCfg, a);
           argCfg.setComment(
               String.valueOf(((ExpressionHolder) cfg.getIncomingDependency().getSetter()).getExpression().evaluate())); // name
           fct.addParameter(argCfg, PortDirection.NONE);
@@ -72,7 +71,6 @@ public class CodegenModelGeneratorSimSDP {
           final Constant argIn = CodegenModelUserFactory.eINSTANCE.createConstant();
           argIn.setName(in.getFifo().getSourcePort().getName());
           argIn.setType(in.getFifo().getType());
-          // Constant i =0;
           argIn.setComment(buffer2arg(argIn, (AbstractActor) in.getFifo().getSource())); // name
           fct.addParameter(argIn, PortDirection.INPUT);
           argIn.setValue(1L);
@@ -99,15 +97,8 @@ public class CodegenModelGeneratorSimSDP {
 
   }
 
-  private void param2arg(Constant argCfg, AbstractActor a) {
-    // TODO Auto-generated method stub
-
-  }
-
   private String buffer2arg(Constant arg, AbstractActor a) {
-    final String result = "";
-    // mainSimsdpBlock.getBuffers().stream().filter(x ->
-    // x.getName().contains(a.getName())).filter(x->x.getName().contains(arg.getName())).forEach(x-> result="1");
+
     for (final Buffer bf : mainSimsdpBlock.getBuffers()) {
       if (bf.getName().contains(arg.getName()) && bf.getName().contains(a.getName())) {
         return bf.getName();

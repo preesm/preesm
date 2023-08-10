@@ -96,6 +96,10 @@ public class NodePartitioner {
 	
 	private Map<Long,Map<AbstractActor,Long>> subs;//id node/ actor/instances
 	
+	static String fileError = "Error occurred during file generation: ";
+	private String graphPath="";
+	private String includePath="";
+	
 	Map<Long,Map<AbstractActor,Long>> subsCopy = new HashMap<>();
 	private PiGraph topGraph = null;
 	public NodePartitioner(PiGraph graph, Scenario scenario, Design archi,String archipath,String workloadpath, String printer) {
@@ -117,6 +121,10 @@ public class NodePartitioner {
 		
 	}
 	public PiGraph execute() {
+		final String[] uriString = graph.getUrl().split("/");
+		graphPath = File.separator+uriString[1]+File.separator+uriString[2]+"/generated/";
+		includePath = uriString[1]+"/Code/include/";
+		
 		//0. check level
 		if( !graph.getAllChildrenGraphs().isEmpty())
 			PreesmLogger.getLogger().log(Level.INFO, "Hierarchical graphs are not handle yet, please feed a flat version");
@@ -161,23 +169,23 @@ public class NodePartitioner {
 		File file =new File(workloadpath);
 		Map<Long,Long> wl = new HashMap<>();
 		try {
-            FileReader read = new FileReader(file);
-            BufferedReader buffer = new BufferedReader(read);
-            
-            String line;
-            
-            while ((line = buffer.readLine()) != null) {
-            	String[] split = line.split(";");
-            	Long node = Long.valueOf(split[0]);
-            	Long workload = Long.valueOf(split[1]);
-            	wl.put(node, workload);
-
-            }
-            buffer.close();
-            read.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+		    FileReader read = new FileReader(file);
+		    BufferedReader buffer = new BufferedReader(read);
+		    try {
+		        String line;
+		        while ((line = buffer.readLine()) != null) {
+		            String[] split = line.split(";");
+		            Long node = Long.valueOf(split[0]);
+		            Long workload = Long.valueOf(split[1]);
+		            wl.put(node, workload);
+		        }
+		    } finally {		        
+		            buffer.close();
+		    }
+		} catch (IOException e) {
+		    String errorMessage = fileError + workloadpath;
+		    PreesmLogger.getLogger().log(Level.INFO, errorMessage);
+		}
 		// compute average workload
 		Long average = 0L;
 		for(Long i = 0L; i< wl.size();i++) {
@@ -192,8 +200,8 @@ public class NodePartitioner {
 	private void constructTop() {
 		//1. replace by an empty actor
 		topGraph.setName("top");
-		final String[] uriString = graph.getUrl().split("/");
-		topGraph.setUrl("/"+uriString[1]+"/"+uriString[2]+"/generated/"+topGraph.getName()+".pi");
+		
+		topGraph.setUrl(graphPath+topGraph.getName()+".pi");
 		for(AbstractActor pi:topGraph.getActors()) {
 			if(pi instanceof PiGraph) {
 				Actor aEmpty = PiMMUserFactory.instance.createActor();
@@ -230,7 +238,6 @@ public class NodePartitioner {
 		for(AbstractActor a : topGraph.getExecutableActors()) {
 			List<String> cfgOccur = new ArrayList<>();
 			for(int i=0; i<a.getConfigInputPorts().size();i++) {
-				//String name = a.getConfigInputPorts().get(i).getName();
 				a.getConfigInputPorts().get(i).setName(((AbstractVertex) a.getConfigInputPorts().get(i).getIncomingDependency().getSetter()).getName());
 				String name = a.getConfigInputPorts().get(i).getName();
 				
@@ -243,26 +250,19 @@ public class NodePartitioner {
 			}
 			
 		}
-		//topGraph.getAllParameters().stream().filter(x->x.getOutgoingDependencies().stream().anyMatch(y->y.getGetter().getName()==null)).forEach(x-> topGraph.removeDependency(x));
-		//topGraph.getDependencies().stream().filter(x->x.getGetter().getName()==null).forEach(x-> topGraph.removeDependency(x));
 		topGraph.getAllParameters().stream().filter(x->!x.getContainingPiGraph().equals(topGraph)).forEach(x-> topGraph.removeParameter(x));
 		for(Parameter param: topGraph.getAllParameters()) {
 			for(int i = 0; i< param.getOutgoingDependencies().size();i++) {
 				if(param.getOutgoingDependencies().get(i).getContainingGraph()!=topGraph) {
 					param.getOutgoingDependencies().get(i).setContainingGraph(topGraph);
-					//topGraph.removeDependency(param.getOutgoingDependencies().get(i));
-					//i--;
 				}
 			}
-			//boolean depsOk = param.getOutgoingDependencies().stream()
-			    //    .allMatch(d -> d.getContainingGraph() == topGraph);
 		}
 		for(Dependency i : topGraph.getAllDependencies()) {
 			
 			boolean getterContained = i.getGetter().getConfigurable()!= null;
 			if(!getterContained) {
 				i.getSetter().getOutgoingDependencies().remove(i);
-				//topGraph.removeParameter((Parameter) i.getSetter());
 				topGraph.removeDependency(i);
 			}
 		}
@@ -301,11 +301,8 @@ public class NodePartitioner {
 				list.add(a);
 			}
 			final PiGraph subgraph = new PiSDFSubgraphBuilder(graph, list,"sub_"+subRank).build();
-			
-			
-			
+
 			sublist.add(subgraph);
-			
 			
 		}
 		topGraph = PiMMUserFactory.instance.copyPiGraphWithHistory(graph);
@@ -316,13 +313,12 @@ public class NodePartitioner {
 				src.setName("src_"+in.getName());
 				Refinement refinement = PiMMUserFactory.instance.createCHeaderRefinement();
 	            src.setRefinement(refinement);
-	            CHeaderRefinement cHeaderRefinement = (CHeaderRefinement) (((Actor) src).getRefinement());
+	            CHeaderRefinement cHeaderRefinement = (CHeaderRefinement) ((src).getRefinement());
 	            Prototype oEmptyPrototype = new Prototype();
 	            oEmptyPrototype.setIsStandardC(true);
 	            
-	            final String[] uriString = graph.getUrl().split("/");
-	    		String strPath = uriString[1]+"/Code/include/";
-	            cHeaderRefinement.setFilePath(strPath+src.getName()+".h");
+	           
+	            cHeaderRefinement.setFilePath(includePath+src.getName()+".h");
 	            FunctionPrototype functionPrototype = PiMMUserFactory.instance.createFunctionPrototype();
 	            cHeaderRefinement.setLoopPrototype(functionPrototype);
 	            functionPrototype.setName(src.getName());
@@ -350,9 +346,7 @@ public class NodePartitioner {
 	            Prototype oEmptyPrototype = new Prototype();
 	            oEmptyPrototype.setIsStandardC(true);
 	            
-	            final String[] uriString = graph.getUrl().split("/");
-	    		String strPath = uriString[1]+"/Code/include/";
-	            cHeaderRefinement.setFilePath(strPath+snk.getName()+".h");
+	            cHeaderRefinement.setFilePath(includePath+snk.getName()+".h");
 	            FunctionPrototype functionPrototype = PiMMUserFactory.instance.createFunctionPrototype();
 	            cHeaderRefinement.setLoopPrototype(functionPrototype);
 	            functionPrototype.setName(snk.getName());	            
@@ -377,7 +371,6 @@ public class NodePartitioner {
 				((ConfigInputInterface)dep.getSetter()).getGraphPort().setName(dep.getGetter().getName());
 				
 			}
-			//List<ConfigInputPort> cfgOccur = new ArrayList<>();
 			int paramSize = subgraph.getParameters().size();
 			for(int i=0; i <paramSize;i++) {
 				for(int j=i+1;j<paramSize;j++) {
@@ -389,7 +382,6 @@ public class NodePartitioner {
 					}
 				}
 			}
-			//paramSize = subgraph.getParameters().size();
 			for(int i=0; i <subgraph.getConfigInputPorts().size();i++) {
 				if(!( subgraph.getConfigInputPorts().get(i) instanceof Parameter)) {
 					Parameter p = PiMMUserFactory.instance.createParameter(subgraph.getParameters().get(i).getName(), subgraph.getParameters().get(i).getExpression().evaluate());
@@ -404,17 +396,15 @@ public class NodePartitioner {
 					i--;
 				}
 			}
-			//int i=0;
-			
 			
 			//remove empty fifo
 			subgraph.getFifos().stream().filter(x->x.getSourcePort()==null).forEach(x-> subgraph.removeFifo(x));
-			subgraph.getFifos().stream().filter(x->x.getTargetPort()==null).forEach(x->subgraph.removeFifo(x));
+			subgraph.getFifos().stream().filter(x->x.getTargetPort()==null).forEach(subgraph::removeFifo);
 			subgraph.getAllActors().stream().filter(x-> x instanceof DataInputInterface ||x instanceof DataOutputInterface).forEach(x-> subgraph.removeActor(x));
 			//subgraph.remove
 			PiBRV.compute(subgraph, BRVMethod.LCM);
 			final String[] uriString = graph.getUrl().split("/");
-			subgraph.setUrl("/"+uriString[1]+"/"+uriString[2]+"/generated/"+subgraph.getName()+".pi");
+			subgraph.setUrl(graphPath+subgraph.getName()+".pi");
 			//4. export subs
 			graphExporter(subgraph);
 			
@@ -454,7 +444,6 @@ public class NodePartitioner {
     		        gp.getValue().add(actor);
     		      }
 		    }
-		    
 
 			subScenario.setCodegenDirectory("/"+uriString[1]+"/Code/generated/"+subgraph.getName());
 			subScenario.setSizesAreInBit(true);
@@ -465,22 +454,21 @@ public class NodePartitioner {
 		
 	}
 	private void generateFileH(Actor snk) {
-		String entry = "/home/orenaud/runtime-EclipseApplication";
+		String entry = "/home/orenaud/runtime-EclipseApplication/";
 		final String[] uriString = graph.getUrl().split("/");
 		String content = "// jfécekejepeu \n #ifndef "+snk.getName().toUpperCase()+"_H \n #define "+snk.getName().toUpperCase()+"_H \n void "+snk.getName()+"("+snk.getAllDataPorts().get(0).getFifo().getType()+" "+snk.getAllDataPorts().get(0).getName()+"); \n #endif";
-		String path = entry+"/"+uriString[1]+"/Code/include/"+snk.getName()+".h";
+		String path = entry+uriString[1]+"/Code/include/"+snk.getName()+".h";
 		 try (FileOutputStream outputStream = new FileOutputStream(path)) {
 	            byte[] bytes = content.getBytes();
 	            outputStream.write(bytes);
-	            System.out.println("Le fichier a été généré avec succès.");
 	        } catch (IOException e) {
-	            System.out.println("Erreur lors de la génération du fichier : " + e.getMessage());
+	        	String errorMessage = fileError + e.getMessage();
+	        	PreesmLogger.getLogger().log(Level.INFO, errorMessage);
 	        } 
 		
 	}
 	private Long split(AbstractActor key, Long rv1, Long rv2,Long subRank) {
 		//if data pattern
-		//if(!key.getDataOutputPorts().stream().anyMatch(x -> x.getFifo().isHasADelay())) {
 			// copy instance
 			AbstractActor copy = PiMMUserFactory.instance.copy(key);
 			copy.setContainingGraph(key.getContainingGraph());
@@ -516,10 +504,8 @@ public class NodePartitioner {
 					fout.setSourcePort(dout);
 					fout.setTargetPort(in);
 					fout.setContainingGraph(key.getContainingGraph());
-					// remove extra fifo --> non en fait c'est bon
 					
 					// connect fork to duplicated actors
-					//for(int i = 1; i <= 2;i++) {
 						DataOutputPort doutn = PiMMUserFactory.instance.createDataOutputPort();
 						doutn.setName("out_"+1);
 						doutn.setExpression(dt-((rv2-rv1)*rt));
@@ -529,8 +515,7 @@ public class NodePartitioner {
 						foutn.setSourcePort(doutn);
 						foutn.setContainingGraph(key.getContainingGraph());
 					copy.getDataInputPorts().stream().filter(x->x.getName().equals(in.getName())).forEach(x -> x.setIncomingFifo(foutn));
-					
-					//}
+
 					subsCopy.get(subRank).put(frk, 1L);
 					index++;
 				}else {
@@ -603,10 +588,8 @@ public class NodePartitioner {
 					fin.setSourcePort(out);
 					fin.setTargetPort(din);
 					fin.setContainingGraph(key.getContainingGraph());
-					// remove extra fifo --> non en fait c'est bon
 					
 					// connect duplicated actors to Join
-					//for(int i = 1; i <= 2;i++) {
 						DataInputPort dinn = PiMMUserFactory.instance.createDataInputPort();
 						dinn.setName("in_"+1);
 						dinn.setExpression(dt-(rv2-rv1)*out.getFifo().getSourcePort().getExpression().evaluate());
@@ -683,7 +666,7 @@ public class NodePartitioner {
 			for(ConfigInputPort cfg:key.getConfigInputPorts()) {
 				copy.getConfigInputPorts().stream().filter(x -> x.getName().equals(cfg.getName())).forEach(x->PiMMUserFactory.instance.createDependency(cfg.getIncomingDependency().getSetter(), x));
 				copy.getConfigInputPorts().stream().filter(x -> x.getName().equals(cfg.getName())).forEach(x -> x.getIncomingDependency().setContainingGraph(cfg.getIncomingDependency().getContainingGraph()));
-				//Dependency dep = PiMMUserFactory.instance.createDependency(cfg.getIncomingDependency().getSetter(), cfg);
+
 			}
 			// interconnect duplicated actor on their delayed port
 			for(int i = 0;i<=2;i++) {
@@ -708,7 +691,7 @@ public class NodePartitioner {
 		preprocessCycle();
 		Map<AbstractActor,Long> list = new HashMap<>();
 		Long lastEntry = (long) (topoOrderASAP.entrySet().size()-1);
-		int lastKey = (int) (topoOrderASAP.get(lastEntry).size()-1);
+		int lastKey = (topoOrderASAP.get(lastEntry).size()-1);
 		AbstractActor lastActor = topoOrderASAP.get(lastEntry).get(lastKey);
 		for(Entry<Long, List<AbstractActor>> entry: topoOrderASAP.entrySet()) {
 			for(AbstractActor a:entry.getValue()) {
@@ -731,7 +714,7 @@ public class NodePartitioner {
 				}
 				
 				//add instance while lower than target sub time
-				Long i = 0L;
+				Long i;
 				for( i=0L; count +i<brv.get(a) && timTemp < timeEq.get(nodeID); i++) {
 					timTemp = timTemp + slow;					
 				}
@@ -747,31 +730,13 @@ public class NodePartitioner {
 				}
 			}
 		}
-	//int a=1;
 	}
 	private void preprocessCycle() {
 		// TODO Identify cycle actor list
 		//2. create subs
 		
 	}
-//	private boolean patternBlock(AbstractActor a) {
-//		
-//		// if is not in a global cycle
-//		for(Delay d:graph.getAllDelays()) {
-//			if (d.getLevel().equals(PersistenceLevel.PERMANENT) ||d.getLevel().equals(PersistenceLevel.LOCAL)) {
-//				AbstractActor aa= (AbstractActor) d.getContainingFifo().getTarget();
-//				if(aa==a) {return true;}
-//				for(Vertex aaa:aa.getDirectSuccessors() ){
-//					if(aaa==a) {return true;}
-//					if(aaa == aa){break;}
-//				}
-//			}
-//			if(d.getLevel().equals(PersistenceLevel.NONE) ) {
-//				//TODO: cluster
-//			}
-//		}
-//		return false;
-//	}
+
 	private void computeTopoASAP() {
 		List<AbstractActor> temp = new ArrayList<>();
 		List<AbstractActor> entry = new ArrayList<>();
@@ -794,13 +759,11 @@ public class NodePartitioner {
 				for(Vertex aa: a.getDirectSuccessors()) {
 					//this is piece of art, don't remove
 					final Long rankMatch = rank+1;
-					if(aa.getDirectPredecessors().stream().filter(x ->x instanceof Actor||x instanceof SpecialActor).allMatch(x -> topoOrderASAP.entrySet().stream().filter(y -> y.getKey()<rankMatch).anyMatch(y -> y.getValue().contains(x)))) {
-						if(!list.contains(aa)) {
+					if(aa.getDirectPredecessors().stream().filter(x ->x instanceof Actor||x instanceof SpecialActor).allMatch(x -> topoOrderASAP.entrySet().stream().filter(y -> y.getKey()<rankMatch).anyMatch(y -> y.getValue().contains(x))) && (!list.contains(aa))) {
 						list.add((AbstractActor) aa);
 						temp.remove(aa);
-						}
-					}
-					
+						
+					}					
 				}
 			}
 			rank++;
@@ -812,7 +775,7 @@ public class NodePartitioner {
 		Long totTCeq = 0L;
 		for(AbstractActor a: graph.getExecutableActors()) {
 			if (a instanceof Actor) {
-				Long slow =0L;
+				Long slow;
 				if(scenario.getTimings().getActorTimings().get(a)!=null) {
 				slow = Long.valueOf(scenario.getTimings().getActorTimings().get(a).get(0).getValue().get(TimingType.EXECUTION_TIME));
 				for(int i = 0; i<scenario.getTimings().getActorTimings().get(a).size(); i++) {
@@ -849,7 +812,7 @@ public class NodePartitioner {
             		
             		if(!nodeNames.containsValue(split[0])) {
             			nodeID++;
-            			Long node = nodeID;//Long.valueOf(split[0]);
+            			Long node = nodeID;
             			Long core = Long.valueOf(split[1]);
             			Long freq = Long.valueOf(split[2]);
             			Map<Long, Long> basis = new HashMap<>();
@@ -883,7 +846,8 @@ public class NodePartitioner {
             buffer.close();
             read.close();
         } catch (IOException e) {
-            e.printStackTrace();
+        	String errorMessage = fileError + e.getMessage();
+        	PreesmLogger.getLogger().log(Level.INFO, errorMessage);
         }
 		Map<Long,Long> architemp = new HashMap<>();
 		//construct equivalent archi structure
@@ -916,9 +880,7 @@ public class NodePartitioner {
 
 	private void graphExporter(PiGraph printgraph) {
 		PiBRV.compute(printgraph, BRVMethod.LCM);
-		final String[] uriString = graph.getUrl().split("/");
-		String strPath = "/"+uriString[1]+"/"+uriString[2]+"/generated/";
-		final IPath fromPortableString = Path.fromPortableString(strPath);
+		final IPath fromPortableString = Path.fromPortableString(graphPath);
 		final IFile file = ResourcesPlugin.getWorkspace().getRoot().getFile(fromPortableString);
 		IProject iProject = file.getProject();
 		SavePiGraph.savePiGraphInFolder(iProject, fromPortableString, printgraph, "");
@@ -928,8 +890,10 @@ public class NodePartitioner {
 	private void scenarioExporter(Scenario scenario) {
 		Set<Scenario> scenarios = new HashSet<>();
 		scenarios.add(scenario);
+		
 		final String[] uriString = graph.getUrl().split("/");
-		String strPath = "/"+uriString[1]+"/Scenarios/generated/";
+		
+		String strPath = File.separator+uriString[1]+"/Scenarios/generated/";
 		final IPath fromPortableString = Path.fromPortableString(strPath);
 		final IFile file = ResourcesPlugin.getWorkspace().getRoot().getFile(fromPortableString);
 		IProject iProject = file.getProject();
@@ -939,7 +903,8 @@ public class NodePartitioner {
 		try {
 			s.saveScenarios(scenarios, scenarioDir);
 		} catch (CoreException e) {
-			e.printStackTrace();
+			String errorMessage = fileError + e.getMessage();
+        	PreesmLogger.getLogger().log(Level.INFO, errorMessage);
 		}
 	}
 	 
