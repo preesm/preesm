@@ -126,7 +126,7 @@ public class ClusterPartitionerSRV {
     // Cluster constrained SRV chains.
     if (!graphSRVs.isEmpty()) {
       final List<AbstractActor> srv = graphSRVs.get(0);// cluster one by one
-      final PiGraph subGraph = new PiSDFSubgraphBuilder(this.graph, srv, "srv_" + clusterId).buildSRV();
+      final PiGraph subGraph = new PiSDFSubgraphBuilder(this.graph, srv, "srv_" + clusterId).build();
 
       subGraph.setClusterValue(true);
       // Add constraints of the cluster in the scenario.
@@ -196,13 +196,11 @@ public class ClusterPartitionerSRV {
     Long i;
     Long ncDivisor = 0L;
     for (i = 1L; i <= n; i++) {
-      if (n % i == 0) {
-        // Si i est un diviseur de n
-        if (i > nC) {
-          // Sélectionne le premier diviseur qui est plus grand que nC
-          ncDivisor = i;
-          break; // On sort de la boucle car on a trouvé le diviseur souhaité
-        }
+      if (n % i == 0 && (i > nC)) {
+        // Sélectionne le premier diviseur qui est plus grand que nC
+        ncDivisor = i;
+        break; // On sort de la boucle car on a trouvé le diviseur souhaité
+
       }
     }
     return ncDivisor;

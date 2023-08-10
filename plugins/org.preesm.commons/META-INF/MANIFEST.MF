@@ -18,7 +18,7 @@ Require-Bundle: org.eclipse.core.runtime,
  org.apache.xerces;bundle-version="2.12.2",
  wrapped.org.scijava.jep;bundle-version="2.4.2",
  org.eclipse.emf.ecore;visibility:=reexport
-Bundle-RequiredExecutionEnvironment: JavaSE-17
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-ActivationPolicy: lazy
 Export-Package: org.preesm.commons,
  org.preesm.commons.doc.annotations,

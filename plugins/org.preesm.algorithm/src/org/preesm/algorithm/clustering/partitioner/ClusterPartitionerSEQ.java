@@ -136,7 +136,7 @@ public class ClusterPartitionerSEQ {
 
       if (!graphSEQs.isEmpty()) {
         final List<AbstractActor> SEQ = graphSEQs.get(0);// cluster one by one
-        final PiGraph subGraph = new PiSDFSubgraphBuilder(this.graph, SEQ, "seq_" + clusterId).buildSRV();
+        final PiGraph subGraph = new PiSDFSubgraphBuilder(this.graph, SEQ, "seq_" + clusterId).build();
         final PiGraph subGraphCutted = AutoDelaysTask.addDelays(subGraph, archi, scenario, false, false, false,
             numberOfPEs, numberOfPEs, numberOfPEs + 1);// subGraphCutted
         graph.replaceActor(subGraph, subGraphCutted);
@@ -152,7 +152,7 @@ public class ClusterPartitionerSEQ {
         // Subgraph 2st generation
         if (!graphSEQ2s.isEmpty()) {
           final List<AbstractActor> SEQ2 = graphSEQ2s.get(0);// cluster one by one
-          final PiGraph subsubGraph = new PiSDFSubgraphBuilder(subGraphCutted, SEQ2, "stage_" + clusterId).buildSRV();
+          final PiGraph subsubGraph = new PiSDFSubgraphBuilder(subGraphCutted, SEQ2, "stage_" + clusterId).build();
           subsubGraph.setClusterValue(true);
           // Add constraints of the cluster in the scenario.
           for (final ComponentInstance component : ClusteringHelper.getListOfCommonComponent(SEQ2, this.scenario)) {

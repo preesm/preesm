@@ -168,6 +168,7 @@ public class PiSDFSubgraphBuilder extends PiMMSwitch<Boolean> {
     return this.subGraph;
   }
 
+  @Deprecated
   public PiGraph buildSRV() {
     // Add subgraph to parent graph
     this.parentGraph.addActor(subGraph);
@@ -179,7 +180,7 @@ public class PiSDFSubgraphBuilder extends PiMMSwitch<Boolean> {
     // Check consistency of the graph (throw exception if recoverable or fatal error)
     final PiGraphConsistenceChecker pgcc = new PiGraphConsistenceChecker(CheckerErrorLevel.FATAL_ANALYSIS,
         CheckerErrorLevel.NONE);
-    // pgcc.check(this.parentGraph);
+    pgcc.check(this.parentGraph);
     return this.subGraph;
   }
 

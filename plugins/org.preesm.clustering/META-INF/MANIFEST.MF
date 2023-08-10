@@ -1,7 +1,8 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
-Bundle-Name: Clustering
+Bundle-Name: %pluginName
 Bundle-SymbolicName: org.preesm.clustering;singleton:=true
+Bundle-Vendor: %providerName
 Bundle-Version: 1.0.0.qualifier
 Import-Package: org.eclipse.core.commands,
  org.eclipse.core.internal.resources,
@@ -18,4 +19,5 @@ Require-Bundle: org.preesm.workflow;bundle-version="3.21.0",
  org.preesm.algorithm;bundle-version="3.21.0",
  org.preesm.model.pisdf
 Automatic-Module-Name: org.preesm.clustering
+Bundle-ActivationPolicy: lazy
 Bundle-RequiredExecutionEnvironment: JavaSE-17

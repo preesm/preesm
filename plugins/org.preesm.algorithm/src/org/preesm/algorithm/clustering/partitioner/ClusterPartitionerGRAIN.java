@@ -39,6 +39,7 @@ import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import org.preesm.algorithm.clustering.ClusteringHelper;
 import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.AbstractVertex;
@@ -49,7 +50,6 @@ import org.preesm.model.pisdf.JoinActor;
 import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.pisdf.RoundBufferActor;
 import org.preesm.model.pisdf.SpecialActor;
-import org.preesm.model.pisdf.statictools.PiMMHelper;
 import org.preesm.model.pisdf.util.GRAIN1Seeker;
 import org.preesm.model.pisdf.util.GRAIN2Seeker;
 import org.preesm.model.pisdf.util.PiSDFSubgraphBuilder;
@@ -125,10 +125,9 @@ public class ClusterPartitionerGRAIN {
         this.nonClusterableList, this.actorTiming, memcpySpeed, memcpySetUp).seek();
     final List<List<AbstractActor>> constrainedGRAINs = new LinkedList<>();
     if (!graphGRAINs.isEmpty()) {
-      final List<AbstractActor> SRV = graphGRAINs.get(0);// cluster one by one
-      // for (List<AbstractActor> SRV : graphSRVs) {
-      if (!ClusteringHelper.getListOfCommonComponent(SRV, this.scenario).isEmpty()) {
-        constrainedGRAINs.add(SRV);
+      final List<AbstractActor> grain = graphGRAINs.get(0);// cluster one by one
+      if (!ClusteringHelper.getListOfCommonComponent(grain, this.scenario).isEmpty()) {
+        constrainedGRAINs.add(grain);
       }
     }
 
@@ -136,21 +135,12 @@ public class ClusterPartitionerGRAIN {
 
     final List<PiGraph> subGraphs = new LinkedList<>();
     if (!graphGRAINs.isEmpty()) {
-      final List<AbstractActor> GRAIN = graphGRAINs.get(0);// cluster one by one
-      // for (List<AbstractActor> SRV : graphSRVs) {
-      final PiGraph subGraph = new PiSDFSubgraphBuilder(this.graph, GRAIN, "grain_" + clusterId).buildSRV();
-
-      for (final AbstractActor delay : this.graph.getDelayActors()) {
-        for (final AbstractActor delaySub : subGraph.getDelayActors()) {
-          if (delay.getName().equals(delaySub.getName())) {
-            PiMMHelper.removeActorAndDependencies(this.graph, delay);
-          }
-        }
-      }
+      final List<AbstractActor> grain = graphGRAINs.get(0);// cluster one by one
+      final PiGraph subGraph = new PiSDFSubgraphBuilder(this.graph, grain, "grain_" + clusterId).build();
 
       subGraph.setClusterValue(true);
       // Add constraints of the cluster in the scenario.
-      for (final ComponentInstance component : ClusteringHelper.getListOfCommonComponent(GRAIN, this.scenario)) {
+      for (final ComponentInstance component : ClusteringHelper.getListOfCommonComponent(grain, this.scenario)) {
         this.scenario.getConstraints().addConstraint(component, subGraph);
       }
       subGraphs.add(subGraph);
@@ -171,26 +161,25 @@ public class ClusterPartitionerGRAIN {
               scenario.getTimings().getActorTimings().get(a).get(0).getValue().get(TimingType.EXECUTION_TIME)));
         }
       } else if (a instanceof SpecialActor) {
-        Long NbToken = 0L;
+        Long nbToken = 0L;
 
         if (a instanceof ForkActor) {
-          NbToken = a.getDataInputPorts().get(0).getExpression().evaluate();
+          nbToken = a.getDataInputPorts().get(0).getExpression().evaluate();
         } else if (a instanceof JoinActor) {
-          NbToken = a.getDataOutputPorts().get(0).getExpression().evaluate();
+          nbToken = a.getDataOutputPorts().get(0).getExpression().evaluate();
         } else if (a instanceof BroadcastActor) {
-          NbToken = a.getDataInputPorts().get(0).getExpression().evaluate() * a.getDataOutputPorts().size();
+          nbToken = a.getDataInputPorts().get(0).getExpression().evaluate() * a.getDataOutputPorts().size();
         } else if (a instanceof RoundBufferActor) {
-          NbToken = a.getDataOutputPorts().get(0).getExpression().evaluate() * a.getDataInputPorts().size();
+          nbToken = a.getDataOutputPorts().get(0).getExpression().evaluate() * a.getDataInputPorts().size();
         }
         this.actorTiming.put(a,
-            (long) (NbToken * sizeofbit(a.getDataInputPorts().get(0).getFifo().getType()) * memcpySpeed + memcpySetUp));
+            (long) (nbToken * sizeofbit(a.getDataInputPorts().get(0).getFifo().getType()) * memcpySpeed + memcpySetUp));
 
       }
     }
   }
 
   private int sizeofbit(String type) {
-    // TODO Auto-generated method stub
     if (type.equals("byte") || type.equals("boolean")) {
       return 8;
     }
@@ -214,10 +203,9 @@ public class ClusterPartitionerGRAIN {
         this.nonClusterableList, this.actorTiming, longestParallelTiming).seek();
     final List<List<AbstractActor>> constrainedGRAINs = new LinkedList<>();
     if (!graphGRAINs.isEmpty()) {
-      final List<AbstractActor> SRV = graphGRAINs.get(0);// cluster one by one
-      // for (List<AbstractActor> SRV : graphSRVs) {
-      if (!ClusteringHelper.getListOfCommonComponent(SRV, this.scenario).isEmpty()) {
-        constrainedGRAINs.add(SRV);
+      final List<AbstractActor> grain = graphGRAINs.get(0);// cluster one by one
+      if (!ClusteringHelper.getListOfCommonComponent(grain, this.scenario).isEmpty()) {
+        constrainedGRAINs.add(grain);
       }
     }
 
@@ -225,21 +213,12 @@ public class ClusterPartitionerGRAIN {
 
     final List<PiGraph> subGraphs = new LinkedList<>();
     if (!graphGRAINs.isEmpty()) {
-      final List<AbstractActor> GRAIN = graphGRAINs.get(0);// cluster one by one
-      // for (List<AbstractActor> SRV : graphSRVs) {
-      final PiGraph subGraph = new PiSDFSubgraphBuilder(this.graph, GRAIN, "grain_" + clusterId).buildSRV();
-
-      for (final AbstractActor delay : this.graph.getDelayActors()) {
-        for (final AbstractActor delaySub : subGraph.getDelayActors()) {
-          if (delay.getName().equals(delaySub.getName())) {
-            PiMMHelper.removeActorAndDependencies(this.graph, delay);
-          }
-        }
-      }
+      final List<AbstractActor> grain = graphGRAINs.get(0);// cluster one by one
+      final PiGraph subGraph = new PiSDFSubgraphBuilder(this.graph, grain, "grain_" + clusterId).build();
 
       subGraph.setClusterValue(true);
       // Add constraints of the cluster in the scenario.
-      for (final ComponentInstance component : ClusteringHelper.getListOfCommonComponent(GRAIN, this.scenario)) {
+      for (final ComponentInstance component : ClusteringHelper.getListOfCommonComponent(grain, this.scenario)) {
         this.scenario.getConstraints().addConstraint(component, subGraph);
       }
       subGraphs.add(subGraph);
@@ -250,9 +229,9 @@ public class ClusterPartitionerGRAIN {
 
   private Long computelongestParallelTiming() {
     Long max = 0L;
-    for (final AbstractVertex a : this.actorTiming.keySet()) {
-      if (this.actorTiming.get(a) > max) {
-        max = this.actorTiming.get(a);
+    for (final Entry<AbstractVertex, Long> a : actorTiming.entrySet()) {
+      if (actorTiming.get(a.getKey()) > max) {
+        max = this.actorTiming.get(a.getKey());
       }
     }
     return max;

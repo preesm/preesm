@@ -29,19 +29,14 @@ import org.preesm.model.pisdf.DataInputInterface;
 import org.preesm.model.pisdf.DataInputPort;
 import org.preesm.model.pisdf.DataOutputInterface;
 import org.preesm.model.pisdf.DataOutputPort;
-import org.preesm.model.pisdf.Delay;
-import org.preesm.model.pisdf.Dependency;
 import org.preesm.model.pisdf.Direction;
 import org.preesm.model.pisdf.Fifo;
 import org.preesm.model.pisdf.ForkActor;
 import org.preesm.model.pisdf.FunctionArgument;
 import org.preesm.model.pisdf.FunctionPrototype;
 import org.preesm.model.pisdf.JoinActor;
-import org.preesm.model.pisdf.Parameter;
-import org.preesm.model.pisdf.PersistenceLevel;
 import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.pisdf.Refinement;
-import org.preesm.model.pisdf.RefinementContainer;
 import org.preesm.model.pisdf.SpecialActor;
 import org.preesm.model.pisdf.brv.BRVMethod;
 import org.preesm.model.pisdf.brv.PiBRV;
@@ -89,11 +84,7 @@ public class Clustering {
 	   */
 	  private Component clusterComponent;
 	  /**
-	   * Repetition Vector.
-	   */
-	  //private Map<AbstractVertex, Long> brv;
-	  /**
-	   * Store the non clusterable actor chosen manually by the operator.
+	   * Store the non cluster-able actor chosen manually by the operator.
 	   */
 	  private List<AbstractActor> nonClusterableList;
 
@@ -122,9 +113,9 @@ public class Clustering {
 	public PiGraph execute2() {
 		// construct hierarchical structure
 		fillHierarchicalStrcuture();
-		// compute clusterable level ID
+		// compute cluster-able level ID
 		computeClusterableLevel();
-		// Coarse clustering while clusterable level are not reached
+		// Coarse clustering while cluster-able level are not reached
 		coarseCluster();
 		// Pattern identification
 		patternIDs();
@@ -202,10 +193,8 @@ public class Clustering {
 		for(Long i=totalLevelNumber; i> levelBound;i--) {
 			for(PiGraph g: hierarchicalLevelOrdered.get(i)) {
 				cluster(g);
-			}
-			
+			}			
 		}
-		//hierarchicalLevelOrdered.entrySet().stream().filter(entry -> entry.getKey() > levelBound).map(Map.Entry::getValue).flatMap(Collection::stream).forEach(g->cluster(g));
 	}
 	  /**
 	   * Compute the hierarchical level to be coarsely clustered and identify hierarchical level to be cleverly clustered
@@ -296,7 +285,7 @@ public class Clustering {
 	        final String selectedPrinter = "C";
 	        final String clusterPath = scenario.getCodegenDirectory() + File.separator;
 	        PiGraph copiedCluster = PiMMUserFactory.instance.copyPiGraphWithHistory(g);
-	        // Create the codegen engine
+	        // Create the code generation engine
 	        final CodegenEngine engine = new CodegenEngine(clusterPath, codeBlocks, copiedCluster, archi, clusterScenario);
 	        if (SCAPEClusteringTask.VALUE_PRINTER_IR.equals(selectedPrinter)) {
 	          engine.initializePrinterIR(clusterPath);
@@ -432,23 +421,19 @@ public class Clustering {
 				}else {
 					PreesmLogger.getLogger().log(Level.INFO, "unrolled loops requires setter and getter affected to a local delay");
 					Actor set = PiMMUserFactory.instance.createActor();
-					//InitActor set = PiMMUserFactory.instance.createInitActor();
 					set.setName("setter");
 					Refinement refinement = PiMMUserFactory.instance.createCHeaderRefinement();
 
 		            set.setRefinement(refinement);
-		            //((Actor) oEmpty).getRefinement().getFileName()
 		            // Set the refinement
-		            CHeaderRefinement cHeaderRefinement = (CHeaderRefinement) (((Actor) set).getRefinement());
+		            CHeaderRefinement cHeaderRefinement = (CHeaderRefinement) ((set).getRefinement());
 		            Prototype oEmptyPrototype = new Prototype();
 		            oEmptyPrototype.setIsStandardC(true);
-		            //String fileName = ;//lastLevel.getActorPath().replace("/", "_");
 		            cHeaderRefinement.setFilePath(((Actor) oEmpty).getRefinement().getFilePath());
 		            FunctionPrototype functionPrototype = PiMMUserFactory.instance.createFunctionPrototype();
 		            cHeaderRefinement.setLoopPrototype(functionPrototype);
 		            functionPrototype.setName(((Actor) oEmpty).getRefinement().getFileName());
 					
-					//set.setEndReference(oEmpty);
 					set.setContainingGraph(oEmpty.getContainingGraph());
 					DataOutputPort dout = PiMMUserFactory.instance.createDataOutputPort();
 					set.getDataOutputPorts().add(dout);
@@ -487,7 +472,6 @@ public class Clustering {
 				fin.setSourcePort(out);
 				fin.setTargetPort(din);
 				fin.setContainingGraph(oEmpty.getContainingGraph());
-				// remove extra fifo --> non en fait c'est bon
 				
 				// connect duplicated actors to Join
 				for(int i = 1; i < value;i++) {
@@ -513,22 +497,19 @@ public class Clustering {
 				
 			}else {
 				PreesmLogger.getLogger().log(Level.INFO, "unrolled loops requires setter and getter affected to a local delay");
-				//EndActor get = PiMMUserFactory.instance.createEndActor();
 				Actor get = PiMMUserFactory.instance.createActor();
 				get.setName("getter");
 				///******
 				Refinement refinement = PiMMUserFactory.instance.createCHeaderRefinement();
 	            get.setRefinement(refinement);
 	            // Set the refinement
-	            CHeaderRefinement cHeaderRefinement = (CHeaderRefinement) (((Actor) get).getRefinement());
+	            CHeaderRefinement cHeaderRefinement = (CHeaderRefinement) ((get).getRefinement());
 	            Prototype oEmptyPrototype = new Prototype();
 	            oEmptyPrototype.setIsStandardC(true);
-	            //String fileName = ;//lastLevel.getActorPath().replace("/", "_");
 	            cHeaderRefinement.setFilePath(((Actor) oEmpty).getRefinement().getFilePath());
 	            FunctionPrototype functionPrototype = PiMMUserFactory.instance.createFunctionPrototype();
 	            cHeaderRefinement.setLoopPrototype(functionPrototype);
-	            functionPrototype.setName(((Actor) oEmpty).getRefinement().getFileName());/**/
-				//get.setInitReference(dupActorsList.get((int) (value-2)));
+	            functionPrototype.setName(((Actor) oEmpty).getRefinement().getFileName());
 	            
 				get.setContainingGraph(oEmpty.getContainingGraph());
 				DataInputPort din = PiMMUserFactory.instance.createDataInputPort();
@@ -610,16 +591,15 @@ public class Clustering {
 	          }
 	          if(aaa != null) {
 	        	  String time = scenario.getTimings().getActorTimings().get(aaa).get(0).getValue().get(TimingType.EXECUTION_TIME);
-	        	  Long brv = repetitionVector.get(a);//aaa
+	        	  Long brv = repetitionVector.get(a);
 	        	  if(brv == null)
 	        		  brv = (long) 1;
 	        	  sumTiming = sumTiming + (Long.valueOf(time)*brv);
 
 	        	  clusterComponent = scenario.getTimings().getActorTimings().get(aaa).get(0).getKey();
 		            this.clusterComponent = clusterComponent;
-		          //}
 	          }else {
-	        	  this.clusterComponent = archi.getComponentHolder().getComponents().get(0);//temp
+	        	  this.clusterComponent = archi.getComponentHolder().getComponents().get(0);
 	        	  String time = "100";
 	        	  Long brv = repetitionVector.get(a);
 	        	  sumTiming = sumTiming + (Long.valueOf(time)*brv);
@@ -682,7 +662,6 @@ public class Clustering {
 	   */
 	  private String registerClusterSchedule(PiGraph graph, Map<AbstractVertex, Long> rv) {
 		  // Schedule subgraph
-		    //checkSchedulability(graph);
 
 		    String result = "";
 		    List<AbstractActor> actorList = graph.getAllExecutableActors();
@@ -937,8 +916,8 @@ public class Clustering {
 			        		if(!result.contains(maxRight.getName())){//si g avant d
 			        			result = result  + "*" +maxRight.getName() ;
 			        			removeRight = true;
-			        		}else
-			        			result = maxLeft.getName()  + "*" + result ;
+			        		} else {
+			        			result = maxLeft.getName()  + "*" + result ;}
 			        		 lastIndex = (long) 1;
 
 			        } else if (repetitionVector.get(maxRight)>1 || repetitionVector.get(maxLeft)>1){
@@ -1074,16 +1053,6 @@ public class Clustering {
 
 				        }
 			        repetitionCount.remove(maxRight);
-//			        if (repetitionCount.containsKey(maxRight)) {
-//			        	 repetitionCount.replace(maxLeft, repetitionCount.get(maxLeft), repetitionCount.get(maxRight));//
-//			          repetitionCount.remove(maxRight);
-//			        }
-//			        if (repetitionCount.get(maxLeft).containsKey(maxRight)) {
-//			        	if(repetitionCount.get(maxLeft).size()==1)
-//			        		repetitionCount.remove(maxLeft);
-//			        	else
-//			        		repetitionCount.get(maxLeft).remove(maxRight);
-//			        }
 			      }
 			    }
 

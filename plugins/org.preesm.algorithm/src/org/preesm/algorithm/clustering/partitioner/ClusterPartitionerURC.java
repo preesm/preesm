@@ -224,8 +224,8 @@ public class ClusterPartitionerURC {
    * 
    */
   private Long computeScalingFactor(PiGraph subGraph) {
-    final Map<AbstractVertex, Long> brv = PiBRV.compute(subGraph, BRVMethod.LCM);
-    final Long[] numbers = brv.values().toArray(new Long[brv.size()]);
+    final Map<AbstractVertex, Long> rv = PiBRV.compute(subGraph, BRVMethod.LCM);
+    final Long[] numbers = rv.values().toArray(new Long[rv.size()]);
     Long scale;
     if (subGraph.getDataInputInterfaces().stream().anyMatch(x -> x.getGraphPort().getFifo().isHasADelay())
         && subGraph.getDataOutputInterfaces().stream().anyMatch(x -> x.getGraphPort().getFifo().isHasADelay())) {
@@ -293,12 +293,10 @@ public class ClusterPartitionerURC {
     }
     Long multiple = 1L;
     if (gcd > nc) {
-      multiple = (long) Math.ceil(nc / gcd);
+      multiple = (long) Math.ceil((double) nc / gcd);
     }
 
-    final Long nextDivisor = gcd * multiple;
-
-    return nextDivisor;
+    return gcd * multiple;
   }
 
 }

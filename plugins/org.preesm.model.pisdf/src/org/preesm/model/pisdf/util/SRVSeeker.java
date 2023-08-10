@@ -161,12 +161,12 @@ public class SRVSeeker extends PiMMSwitch<Boolean> {
    * @param long2
    *          long value 2
    */
-  private Long gcd(Long long1, Long long2) {
-    if (long2 == 0) {
-      return long1;
-    }
-    return gcd(long2, long1 % long2);
-  }
+  // private Long gcd(Long long1, Long long2) {
+  // if (long2 == 0) {
+  // return long1;
+  // }
+  // return gcd(long2, long1 % long2);
+  // }
 
   @Override
   public Boolean caseDataInputPort(DataInputPort din) {

@@ -25,6 +25,7 @@ import org.preesm.model.pisdf.SpecialActor;
  * @author orenaud
  *
  */
+@Deprecated
 public class GRAIN2Seeker extends PiMMSwitch<Boolean> {
 
   /**
@@ -58,7 +59,7 @@ public class GRAIN2Seeker extends PiMMSwitch<Boolean> {
    *          list of timing
    * @param longestParallelTiming
    *          actor with the longest timing
-   * 
+   *
    */
   public GRAIN2Seeker(final PiGraph inputGraph, int numberOfPEs, Map<AbstractVertex, Long> brv,
       List<AbstractActor> nonClusterableList, Map<AbstractVertex, Long> actorTiming, Long longestParallelTiming) {
@@ -87,8 +88,6 @@ public class GRAIN2Seeker extends PiMMSwitch<Boolean> {
     computeGrainList();
 
     // Explore all executable actors in the topologic order of the graph
-    // this.topoOrder.keySet().stream().filter(x -> x instanceof ExecutableActor).forEach(x -> doSwitch(x));
-    // this.graph.getActors().stream().filter(x -> x instanceof ExecutableActor).forEach(x -> doSwitch(x));
     // Return identified GRAINs
     return identifiedGRAINs;
   }
@@ -158,13 +157,9 @@ public class GRAIN2Seeker extends PiMMSwitch<Boolean> {
               boolean flag = false;
               for (final DataInputPort din : ((AbstractActor) aa).getDataInputPorts()) {
                 final AbstractActor aaa = (AbstractActor) din.getFifo().getSource();
-                // for (Vertex aaa : aa.getDirectPredecessors()) {
                 if (!topoOrder.containsKey(aaa)
                     && (aaa instanceof Actor || aaa instanceof SpecialActor || aaa instanceof PiGraph)
                     && !din.getFifo().isHasADelay() || nextRankList.contains(aaa)) {
-                  // predecessors
-                  // are in the
-                  // list
                   flag = true;
                 }
               }
@@ -189,15 +184,13 @@ public class GRAIN2Seeker extends PiMMSwitch<Boolean> {
     }
     // add getter setter
     for (final Delay d : graph.getDelays()) {
-      if (d.hasGetterActor()) {
-        if (d.getGetterActor() instanceof Actor || d.getGetterActor() instanceof SpecialActor) {
-          this.topoOrder.put(d.getGetterActor(), currentRank);
-        }
+      if (d.hasGetterActor() && (d.getGetterActor() instanceof Actor || d.getGetterActor() instanceof SpecialActor)) {
+        this.topoOrder.put(d.getGetterActor(), currentRank);
+
       }
-      if (d.hasSetterActor()) {
-        if (d.getSetterActor() instanceof Actor || d.getSetterActor() instanceof SpecialActor) {
-          this.topoOrder.put(d.getSetterActor(), 0L);
-        }
+      if (d.hasSetterActor() && (d.getSetterActor() instanceof Actor || d.getSetterActor() instanceof SpecialActor)) {
+        this.topoOrder.put(d.getSetterActor(), 0L);
+
       }
     }
   }
@@ -208,11 +201,8 @@ public class GRAIN2Seeker extends PiMMSwitch<Boolean> {
     final boolean heterogenousRate = base.getDataOutputPorts().stream()
         .anyMatch(x -> doSwitch(x.getFifo()).booleanValue());
     // Return false if rates are not homogeneous or that the corresponding actor was a sink (no output)
-    if (!heterogenousRate || base.getDataOutputPorts().isEmpty() || nonClusterableList.contains(base)) {
-      return false;
-    }
 
-    return true;
+    return !heterogenousRate || base.getDataOutputPorts().isEmpty() || nonClusterableList.contains(base);
   }
 
   @Override
@@ -220,10 +210,6 @@ public class GRAIN2Seeker extends PiMMSwitch<Boolean> {
     if (!(fifo.getTarget() instanceof Actor)) {
       return false;
     }
-    final Long srcTime = this.actorTiming.get(fifo.getSource());
-    final Long srcScale = this.brv.get(fifo.getSource()) / this.nPEs;
-    final Long snkTime = this.actorTiming.get(fifo.getTarget());
-    final Long snkScale = this.brv.get(fifo.getTarget()) / this.nPEs;
 
     // hidden delay cond
     final boolean hiddenDelay = fifo.isHasADelay();
@@ -244,32 +230,11 @@ public class GRAIN2Seeker extends PiMMSwitch<Boolean> {
     }
 
     // cycle introduction
-    final boolean cycle = false;
 
     // Return true if rates are heterogeneous and that no delay is involved
-    if (!hiddenDelay && !firstShift && !secondShift && !cycle && !(fifo.getSource() instanceof DataInputInterface)
-        && !(fifo.getTarget() instanceof DataOutputInterface)) {
 
-      return true;
-    }
-    return false;
-  }
-
-  private int sizeofbit(String type) {
-    // TODO Auto-generated method stub
-    if (type.equals("byte") || type.equals("boolean")) {
-      return 8;
-    }
-    if (type.equals("short") || type.equals("char") || type.equals("uchar")) {
-      return 8;
-    }
-    if (type.equals("int") || type.equals("float")) {
-      return 32;
-    }
-    if (type.equals("Long") || type.equals("double")) {
-      return 64;
-    }
-    return 32;
+    return !hiddenDelay && !firstShift && !secondShift && !(fifo.getSource() instanceof DataInputInterface)
+        && !(fifo.getTarget() instanceof DataOutputInterface);
   }
 
 }

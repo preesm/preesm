@@ -106,7 +106,6 @@ import org.preesm.codegen.model.DynamicBuffer
 import org.preesm.codegen.model.FiniteLoopClusterRaiserBlock
 import org.preesm.codegen.model.ClusterRaiserBlock
 import org.preesm.model.pisdf.Actor
-import org.preesm.model.pisdf.AbstractActor
 import org.preesm.codegen.model.MainSimsdpBlock
 
 /**
