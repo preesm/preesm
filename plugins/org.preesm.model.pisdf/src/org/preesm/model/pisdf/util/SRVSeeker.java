@@ -48,7 +48,6 @@ import org.preesm.model.pisdf.DataOutputPort;
 import org.preesm.model.pisdf.ExecutableActor;
 import org.preesm.model.pisdf.Fifo;
 import org.preesm.model.pisdf.PiGraph;
-import org.preesm.model.pisdf.SpecialActor;
 
 /**
  * This class is used to seek an isolate actor in a given PiGraph with a RV above PE number that form a Single
@@ -107,14 +106,16 @@ public class SRVSeeker extends PiMMSwitch<Boolean> {
   public Boolean caseAbstractActor(AbstractActor base) {
 
     // Check that all fifos are homogeneous and without delay
-    final boolean homogeneousOutputRates = base.getDataOutputPorts().stream().allMatch(x -> doSwitch(x).booleanValue());
-
-    final boolean homogeneousInputRates = base.getDataInputPorts().stream().allMatch(x -> doSwitch(x).booleanValue());
-    // Return false if rates are not homogeneous or that the corresponding actor was a sink (no output)
-    if (!homogeneousInputRates || !homogeneousOutputRates || base instanceof SpecialActor) {
-      return false;
-    }
-    if (brv.get(base) > nPEs && gcd(brv.get(base), (long) nPEs) > 1 && !base.getName().contains("srv")) {
+    // final boolean homogeneousOutputRates = base.getDataOutputPorts().stream().allMatch(x ->
+    // doSwitch(x).booleanValue());
+    //
+    // final boolean homogeneousInputRates = base.getDataInputPorts().stream().allMatch(x ->
+    // doSwitch(x).booleanValue());
+    // // Return false if rates are not homogeneous or that the corresponding actor was a sink (no output)
+    // if (!homogeneousInputRates || !homogeneousOutputRates || base instanceof SpecialActor) {
+    // return false;
+    // }
+    if (brv.get(base) > nPEs && !base.getName().contains("srv")) {
       final List<AbstractActor> actorSRV = new LinkedList<>();
       actorSRV.add(base);
       // if brv > core number, too much parallelism

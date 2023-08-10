@@ -62,7 +62,7 @@ import org.preesm.workflow.implement.AbstractTaskImplementation;
         description = "The number of PEs in compute clusters. This information is used to balance actor firings"
             + " between coarse and fine-grained levels.",
         values = { @Value(name = "Fixed:=n", effect = "Where $$n\\in \\mathbb{N}^*$$.") }) })
-public class ClusterPartitionerTask extends AbstractTaskImplementation {
+public class ClusterPartitionerURCTask extends AbstractTaskImplementation {
 
   public static final String NB_PE         = "Number of PEs in compute clusters";
   public static final String DEFAULT_NB_PE = "1";
@@ -79,7 +79,7 @@ public class ClusterPartitionerTask extends AbstractTaskImplementation {
 
     // Cluster input graph
 
-    final PiGraph outputGraph = new ClusterPartitioner(inputGraph, scenario, Integer.parseInt(nbPE), null, 0, null)
+    final PiGraph outputGraph = new ClusterPartitionerURC(inputGraph, scenario, Integer.parseInt(nbPE), null, 0, null)
         .cluster();
 
     // Build output map

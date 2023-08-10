@@ -237,6 +237,7 @@ public abstract class AbstractWorkflowExecutor {
       final boolean printLog) {
     final Workflow workflow = new WorkflowParser().parse(workflowPath);
     final long startTime = System.currentTimeMillis();
+
     boolean result = initAndCheck(workflowPath, monitor, workflow);
     if (!result) {
       return false;
@@ -278,6 +279,7 @@ public abstract class AbstractWorkflowExecutor {
     final String timing = String.valueOf(endTime - startTime);
     final String message = "Total elapsed time in execution of workflow is : " + timing + " ms";
     PreesmLogger.getLogger().log(Level.INFO, message);
+
     return result;
   }
 

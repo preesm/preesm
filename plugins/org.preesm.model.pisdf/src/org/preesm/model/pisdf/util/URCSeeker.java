@@ -254,4 +254,10 @@ public class URCSeeker extends PiMMSwitch<Boolean> {
         && (fifo.getDelay() == null);
   }
 
+  @Override
+  public Boolean caseDataInputPort(DataInputPort dataInputPort) {
+    // Return true if rates are homogeneous and that no delay is involved
+    return (true);
+  }
+
 }

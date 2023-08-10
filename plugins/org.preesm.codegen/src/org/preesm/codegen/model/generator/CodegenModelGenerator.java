@@ -291,7 +291,6 @@ public class CodegenModelGenerator extends AbstractCodegenModelGenerator {
     this.scheduleMapping = scheduleMapping;
 
     this.multinode = false;
-    this.topBuffer = new ArrayList<>();
   }
 
   /**
@@ -432,12 +431,10 @@ public class CodegenModelGenerator extends AbstractCodegenModelGenerator {
     // init coreBlocks
     for (final ComponentInstance cmp : this.archi.getOperatorComponentInstances()) {
 
-      if (cmp.getComponent() instanceof CPU) {
-        this.coreBlocks.computeIfAbsent(cmp, key -> {
-          final CoreBlock operatorBlock = CodegenModelUserFactory.eINSTANCE.createCoreBlock(key);
-          operatorBlock.setMultinode(multinode);
-          return operatorBlock;
-        });
+      if (!this.coreBlocks.containsKey(cmp)) {
+        final CoreBlock operatorBlock = CodegenModelUserFactory.eINSTANCE.createCoreBlock(cmp);
+        operatorBlock.setMultinode(multinode);
+        this.coreBlocks.put(cmp, operatorBlock);
       }
     }
 
@@ -447,16 +444,16 @@ public class CodegenModelGenerator extends AbstractCodegenModelGenerator {
 
       // 1.0 - Identify the core used.
 
-      // This call can not fail as checks were already performed in the constructor
+      // This call can not fail as checks were already performed in
+      // the constructor
       final ComponentInstance operator = vert.getPropertyBean().getValue(ImplementationPropertyNames.Vertex_Operator);
-      // If this is the first time this operator is encountered, create a Block and store it.
-      if (operator instanceof GPU) {
-        return;
-      }
+      // If this is the first time this operator is encountered,
+      // Create a Block and store it.
       if (!this.coreBlocks.containsKey(operator)) {
         throw new PreesmRuntimeException();
       }
       final CoreBlock operatorBlock = this.coreBlocks.get(operator);
+
       // 1.1 - Construct the "loop" of each core.
       final String vertexType = vert.getPropertyBean().getValue(ImplementationPropertyNames.VERTEX_VERTEX_TYPE)
           .toString();
@@ -510,6 +507,7 @@ public class CodegenModelGenerator extends AbstractCodegenModelGenerator {
     // 3 - Put the buffer definition in their right place
     // generateTopBuffers(resultList);
     generateBufferDefinitions();
+    generateTopBuffers(resultList);
 
     // 4 - Set enough info to compact instrumentation code
     compactPapifyUsage(resultList);
@@ -535,11 +533,13 @@ public class CodegenModelGenerator extends AbstractCodegenModelGenerator {
   void compactPapifyUsage(List<Block> allBlocks) {
     for (final Block cluster : allBlocks) {
 
-      if (cluster instanceof final CoreBlock coreBlock) {
+      if (cluster instanceof CoreBlock) {
+        int usingPapify = 0;
         final EList<Variable> definitions = cluster.getDefinitions();
-        final EList<CodeElt> loopBlockElts = coreBlock.getLoopBlock().getCodeElts();
-        final EList<CodeElt> initBlockElts = coreBlock.getInitBlock().getCodeElts();
-
+        final EList<CodeElt> loopBlockElts = ((CoreBlock) cluster).getLoopBlock().getCodeElts();
+        final EList<CodeElt> initBlockElts = ((CoreBlock) cluster).getInitBlock().getCodeElts();
+        int iterator = 0;
+        boolean closed = false;
         /*
          * Only one #ifdef _PREESM_MONITORING_INIT in the definition code Assumption: All the PapifyActions are printed
          * consecutively (AS CONSTANTS ARE NOT PRINTED, THIS IS USUALLY TRUE)
@@ -682,15 +682,17 @@ public class CodegenModelGenerator extends AbstractCodegenModelGenerator {
 
       if (prototypes == null) {
         // If the actor has no refinement
-        throw new PreesmRuntimeException(ERROR_NO_REFINEMENT.formatted(dagVertex));
+
+        throw new PreesmRuntimeException("Actor (" + dagVertex + ") has no valid refinement (.idl, .h or .graphml)."
+            + " Associate a refinement to this actor before generating code.");
       }
       // Generate the loop functionCall
       final Prototype loopPrototype = prototypes.getLoopPrototype();
       if (loopPrototype == null) {
-        throw new PreesmRuntimeException(ERROR_NO_LOOP_INTERFACE.formatted(dagVertex));
+        throw new PreesmRuntimeException("The actor " + dagVertex + " has no loop interface in its IDL refinement.");
       }
       if (!loopPrototype.getIsStandardC()) {
-        throw new PreesmRuntimeException(ERROR_NON_C_REFINEMENT.formatted(dagVertex));
+        throw new PreesmRuntimeException("The actor " + dagVertex + " has a non standard C refinement.");
       }
       // adding the call to the FPGA load functions only once. The printFpgaLoad will
       // return a no-null string only with the right printer and nothing for the others
@@ -1112,6 +1114,24 @@ public class CodegenModelGenerator extends AbstractCodegenModelGenerator {
     }
   }
 
+  private void generateTopBuffers(List<Block> resultList) {
+    if (multinode) {
+      for (final Block block : resultList) {
+        final CoreBlock coreBlock = (CoreBlock) block;
+        for (int i = 0; i < coreBlock.getSinkFifoBuffers().size(); i++) {
+          // for (final Buffer buffer : coreBlock.getSinkFifoBuffers()) {
+          if (coreBlock.getSinkFifoBuffers().get(i).getComment().contains("> snk")) {
+            coreBlock.getTopBuffers().add(coreBlock.getSinkFifoBuffers().get(i));
+            coreBlock.getSinkFifoBuffers().remove(coreBlock.getSinkFifoBuffers().get(i));
+            i--;
+          }
+        }
+      }
+
+    }
+
+  }
+
   /**
    * This method generates the list of variable corresponding to a prototype of the {@link DAGVertex} firing. The
    * {@link Prototype} passed as a parameter must belong to the processed {@link DAGVertex}.
@@ -1147,7 +1167,8 @@ public class CodegenModelGenerator extends AbstractCodegenModelGenerator {
       // At this point, the dagEdge, srsdfEdge corresponding to the current argument were identified
       // Get the corresponding Variable
       final Variable varFirstFound = this.srSDFEdgeBuffers.get(subBufferProperties);
-      Variable variable = null;
+
+      Variable var = null;
       if (varFirstFound instanceof final DistributedBuffer distributedBuffer) {
         final EList<Buffer> repeatedBuffers = distributedBuffer.getDistributedCopies();
         final String coreBlockName = dagVertex.getPropertyStringValue(OPERATOR_LITERAL);
@@ -1641,6 +1662,8 @@ public class CodegenModelGenerator extends AbstractCodegenModelGenerator {
     }
     // There might be more than one edge, if one is connected to a
     // send/receive
+
+    Buffer buffer;
     DAGEdge edge = null;
     for (final DAGEdge currentEdge : edges) {
       final DAGVertex source = currentEdge.getSource();
@@ -2238,13 +2261,15 @@ public class CodegenModelGenerator extends AbstractCodegenModelGenerator {
       // Get the corresponding Buffer
       final Buffer firstFound = this.srSDFEdgeBuffers.get(subBuffProperty);
       Buffer buffer = null;
-      if (firstFound instanceof final DistributedBuffer distributedBuffer) {
 
-        final String coreBlockName = switch (f.getType()) {
-          case FORK, BROADCAST -> source.getPropertyStringValue(OPERATOR_LITERAL);
-          default -> target.getPropertyStringValue(OPERATOR_LITERAL);
-        };
-
+      if (firstFound instanceof DistributedBuffer) {
+        String coreBlockName = "";
+        if (f.getType().equals(SpecialType.FORK) || f.getType().equals(SpecialType.BROADCAST)) {
+          coreBlockName = source.getPropertyStringValue(OPERATOR_LITERAL);
+        } else {
+          coreBlockName = target.getPropertyStringValue(OPERATOR_LITERAL);
+        }
+        final DistributedBuffer distributedBuffer = (DistributedBuffer) firstFound;
         final EList<Buffer> repeatedBuffers = distributedBuffer.getDistributedCopies();
         for (final Buffer bufferRepeatedChecker : repeatedBuffers) {
           final SubBuffer subBufferChecker = (SubBuffer) bufferRepeatedChecker;
@@ -2359,8 +2384,10 @@ public class CodegenModelGenerator extends AbstractCodegenModelGenerator {
     final BufferProperties lastBuffProperty = bufferAggregate.get(0);
     final Buffer lastBufferFirstFound = this.srSDFEdgeBuffers.get(lastBuffProperty);
     Buffer lastBuffer = null;
-    if (lastBufferFirstFound instanceof final DistributedBuffer distributedBuffer) {
+
+    if (lastBufferFirstFound instanceof DistributedBuffer) {
       final String coreBlockName = operatorBlock.getName();
+      final DistributedBuffer distributedBuffer = (DistributedBuffer) lastBufferFirstFound;
       final EList<Buffer> repeatedBuffers = distributedBuffer.getDistributedCopies();
       for (final Buffer bufferRepeatedChecker : repeatedBuffers) {
         final SubBuffer subBufferChecker = (SubBuffer) bufferRepeatedChecker;
@@ -2581,7 +2608,8 @@ public class CodegenModelGenerator extends AbstractCodegenModelGenerator {
      */
     final Map<BufferProperties, Buffer> backUpOriginal = new LinkedHashMap<>();
 
-    final BufferAggregate buffers = dagEdge.getPropertyBean().getValue(BufferAggregate.PROPERTY_BEAN_NAME);
+
+    final BufferAggregate buffers = dagEdge.getPropertyBean().getValue(BufferAggregate.propertyBeanName);
     for (final BufferProperties subBufferProperties : buffers) {
       final Buffer buff = this.srSDFEdgeBuffers.get(subBufferProperties);
       backUpOriginal.put(subBufferProperties, buff);
@@ -2623,8 +2651,9 @@ public class CodegenModelGenerator extends AbstractCodegenModelGenerator {
   protected DistributedBuffer generateDistributedBuffer(final Buffer originalBuffer, final Buffer repeatedBuffer) {
 
     final DistributedBuffer duplicatedBuffer = CodegenModelUserFactory.eINSTANCE.createDistributedBuffer();
-    if (originalBuffer instanceof final DistributedBuffer distributedBuffer) {
-      duplicatedBuffer.getDistributedCopies().addAll(distributedBuffer.getDistributedCopies());
+
+    if (originalBuffer instanceof DistributedBuffer) {
+      duplicatedBuffer.getDistributedCopies().addAll(((DistributedBuffer) originalBuffer).getDistributedCopies());
     } else {
       duplicatedBuffer.getDistributedCopies().add(originalBuffer);
     }
@@ -3031,4 +3060,5 @@ public class CodegenModelGenerator extends AbstractCodegenModelGenerator {
       }
     }
   }
+
 }

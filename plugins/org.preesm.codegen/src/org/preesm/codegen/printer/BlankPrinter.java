@@ -64,6 +64,7 @@ import org.preesm.codegen.model.GlobalBufferDeclaration;
 import org.preesm.codegen.model.IntVar;
 import org.preesm.codegen.model.IteratedBuffer;
 import org.preesm.codegen.model.LoopBlock;
+import org.preesm.codegen.model.MainSimsdpBlock;
 import org.preesm.codegen.model.NullBuffer;
 import org.preesm.codegen.model.OutputDataTransfer;
 import org.preesm.codegen.model.PapifyAction;
@@ -371,8 +372,6 @@ public class BlankPrinter extends CodegenAbstractPrinter {
     return "";
   }
 
-<<<<<<< HEAD
-=======
   @Override
   protected CharSequence printclusterRaiserSecondaryFileHeader(ClusterRaiserBlock block, List<Actor> actors,
       FunctionCall func) {
@@ -409,5 +408,21 @@ public class BlankPrinter extends CodegenAbstractPrinter {
     // TODO Auto-generated method stub
     return "";
   }
->>>>>>> 4bf258336 (Signed-off-by: Ophelie-Renaud <ophelie.renaud@insa-rennes.fr>)
+
+  public CharSequence printMainSimsdpHeader(MainSimsdpBlock block, int nodes) {
+    // TODO Auto-generated method stub
+    return null;
+  }
+
+  @Override
+  public CharSequence printMainSimsdpHeader(MainSimsdpBlock block, int nodes, String[] nodeID) {
+    // TODO Auto-generated method stub
+    return null;
+  }
+
+  @Override
+  protected CharSequence printmpi(MainSimsdpBlock block) {
+    // TODO Auto-generated method stub
+    return null;
+  }
 }

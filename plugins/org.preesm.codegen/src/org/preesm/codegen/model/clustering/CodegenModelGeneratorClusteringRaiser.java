@@ -28,7 +28,6 @@ import org.preesm.codegen.model.PortDirection;
 import org.preesm.codegen.model.SpecialCall;
 import org.preesm.codegen.model.SpecialType;
 import org.preesm.codegen.model.Variable;
-import org.preesm.codegen.model.generator2.AllocationToCodegenBuffer;
 import org.preesm.codegen.model.util.CodegenModelUserFactory;
 import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.preesm.model.pisdf.AbstractActor;
@@ -43,7 +42,6 @@ import org.preesm.model.pisdf.DataInputPort;
 import org.preesm.model.pisdf.DataOutputInterface;
 import org.preesm.model.pisdf.DataPort;
 import org.preesm.model.pisdf.Direction;
-import org.preesm.model.pisdf.Fifo;
 import org.preesm.model.pisdf.ForkActor;
 import org.preesm.model.pisdf.FunctionArgument;
 import org.preesm.model.pisdf.FunctionPrototype;
@@ -74,10 +72,10 @@ public class CodegenModelGeneratorClusteringRaiser {
 
   private final Map<ConfigInputPort, IntVar> parameterMap;
 
-  private final FunctionCall clusterFunc;
-  Long                       stackSize;
+  // private final FunctionCall clusterFunc;
+  Long stackSize;
 
-  private AllocationToCodegenBuffer    memoryLinker;
+  // private AllocationToCodegenBuffer memoryLinker;
   private FiniteLoopClusterRaiserBlock lastLevel;
 
   public CodegenModelGeneratorClusteringRaiser(Design archi, Scenario scenario, String schedulesMap, Long stackSize) {
@@ -94,7 +92,7 @@ public class CodegenModelGeneratorClusteringRaiser {
     this.specialBufferStackMap = new LinkedHashMap<>();
     this.parameterMap = new LinkedHashMap<>();
 
-    this.clusterFunc = CodegenModelUserFactory.eINSTANCE.createFunctionCall();
+    // this.clusterFunc = CodegenModelUserFactory.eINSTANCE.createFunctionCall();
     this.stackSize = stackSize;
     this.lastLevel = CodegenModelUserFactory.eINSTANCE.createFiniteLoopClusterRaiserBlock();
 
@@ -323,9 +321,10 @@ public class CodegenModelGeneratorClusteringRaiser {
               * brv.get(sc.getActor());
           if (stackSizeDecounter - nbTokenIn < 0) {
             final DynamicBuffer buffer = CodegenModelUserFactory.eINSTANCE.createDynamicBuffer();
-            final String str = ((AbstractActor) sc.getActor().getDirectSuccessors().get(i)).getDataInputPorts().get(0)
-                .getName();
-            final String str2 = ((AbstractActor) sc.getActor().getDirectSuccessors().get(i)).getName();
+            // final String str = ((AbstractActor)
+            // sc.getActor().getDirectSuccessors().get(i)).getDataInputPorts().get(0)
+            // .getName();
+            // final String str2 = ((AbstractActor) sc.getActor().getDirectSuccessors().get(i)).getName();
             buffer.setName(sc.getActor().getDataOutputPorts().get(i).getName() + "__"
                 + ((AbstractActor) sc.getActor().getDirectSuccessors().get(i)).getDataInputPorts().get(0).getName()
                 + "__" + sc.getActor().getName() + "__"
@@ -342,9 +341,10 @@ public class CodegenModelGeneratorClusteringRaiser {
             buffers.add(buffer);
           } else {
             final Buffer buffer = CodegenModelUserFactory.eINSTANCE.createBuffer();
-            final String str = ((AbstractActor) sc.getActor().getDirectSuccessors().get(i)).getDataInputPorts().get(0)
-                .getName();
-            final String str2 = ((AbstractActor) sc.getActor().getDirectSuccessors().get(i)).getName();
+            // final String str = ((AbstractActor)
+            // sc.getActor().getDirectSuccessors().get(i)).getDataInputPorts().get(0)
+            // .getName();
+            // final String str2 = ((AbstractActor) sc.getActor().getDirectSuccessors().get(i)).getName();
             buffer.setName(sc.getActor().getDataOutputPorts().get(i).getName() + "__"
                 + ((AbstractActor) sc.getActor().getDirectSuccessors().get(i)).getDataInputPorts().get(0).getName()
                 + "__" + sc.getActor().getName() + "__"
@@ -370,9 +370,9 @@ public class CodegenModelGeneratorClusteringRaiser {
             * brv.get(sc.getActor());
         if (stackSizeDecounter - nbTokenIn < 0) {
           final DynamicBuffer buffer = CodegenModelUserFactory.eINSTANCE.createDynamicBuffer();
-          final String str = ((AbstractActor) sc.getActor().getDirectSuccessors().get(0)).getDataInputPorts().get(0)
-              .getName();
-          final String str2 = ((AbstractActor) sc.getActor().getDirectSuccessors().get(0)).getName();
+          // final String str = ((AbstractActor) sc.getActor().getDirectSuccessors().get(0)).getDataInputPorts().get(0)
+          // .getName();
+          // final String str2 = ((AbstractActor) sc.getActor().getDirectSuccessors().get(0)).getName();
           buffer.setName(sc.getActor().getDataOutputPorts().get(0).getName() + "__"
               + ((AbstractActor) sc.getActor().getDirectSuccessors().get(0)).getDataInputPorts().get(0).getName() + "__"
               + sc.getActor().getName() + "__"
@@ -389,9 +389,9 @@ public class CodegenModelGeneratorClusteringRaiser {
           buffers.add(buffer);
         } else {
           final Buffer buffer = CodegenModelUserFactory.eINSTANCE.createDynamicBuffer();
-          final String str = ((AbstractActor) sc.getActor().getDirectSuccessors().get(0)).getDataInputPorts().get(0)
-              .getName();
-          final String str2 = ((AbstractActor) sc.getActor().getDirectSuccessors().get(0)).getName();
+          // final String str = ((AbstractActor) sc.getActor().getDirectSuccessors().get(0)).getDataInputPorts().get(0)
+          // .getName();
+          // final String str2 = ((AbstractActor) sc.getActor().getDirectSuccessors().get(0)).getName();
           buffer.setName(sc.getActor().getDataOutputPorts().get(0).getName() + "__"
               + ((AbstractActor) sc.getActor().getDirectSuccessors().get(0)).getDataInputPorts().get(0).getName() + "__"
               + sc.getActor().getName() + "__"
@@ -416,9 +416,10 @@ public class CodegenModelGeneratorClusteringRaiser {
               * brv.get(sc.getActor());// ?
           if (stackSizeDecounter - nbTokenIn < 0) {
             final DynamicBuffer buffer = CodegenModelUserFactory.eINSTANCE.createDynamicBuffer();
-            final String str = ((AbstractActor) sc.getActor().getDirectSuccessors().get(i)).getDataInputPorts().get(0)
-                .getName();
-            final String str2 = ((AbstractActor) sc.getActor().getDirectSuccessors().get(i)).getName();
+            // final String str = ((AbstractActor)
+            // sc.getActor().getDirectSuccessors().get(i)).getDataInputPorts().get(0)
+            // .getName();
+            // final String str2 = ((AbstractActor) sc.getActor().getDirectSuccessors().get(i)).getName();
             buffer.setName(sc.getActor().getDataOutputPorts().get(i).getName() + "__"
                 + ((AbstractActor) sc.getActor().getDirectSuccessors().get(i)).getDataInputPorts().get(0).getName()
                 + "__" + sc.getActor().getName() + "__"
@@ -435,9 +436,10 @@ public class CodegenModelGeneratorClusteringRaiser {
             buffers.add(buffer);
           } else {
             final Buffer buffer = CodegenModelUserFactory.eINSTANCE.createBuffer();
-            final String str = ((AbstractActor) sc.getActor().getDirectSuccessors().get(i)).getDataInputPorts().get(0)
-                .getName();
-            final String str2 = ((AbstractActor) sc.getActor().getDirectSuccessors().get(i)).getName();
+            // final String str = ((AbstractActor)
+            // sc.getActor().getDirectSuccessors().get(i)).getDataInputPorts().get(0)
+            // .getName();
+            // final String str2 = ((AbstractActor) sc.getActor().getDirectSuccessors().get(i)).getName();
             buffer.setName(sc.getActor().getDataOutputPorts().get(i).getName() + "__"
                 + ((AbstractActor) sc.getActor().getDirectSuccessors().get(i)).getDataInputPorts().get(0).getName()
                 + "__" + sc.getActor().getName() + "__"
@@ -462,9 +464,9 @@ public class CodegenModelGeneratorClusteringRaiser {
             * brv.get(sc.getActor());// oo
         if (stackSizeDecounter - nbTokenIn < 0) {
           final DynamicBuffer buffer = CodegenModelUserFactory.eINSTANCE.createDynamicBuffer();
-          final String str = ((AbstractActor) sc.getActor().getDirectSuccessors().get(0)).getDataInputPorts().get(0)
-              .getName();
-          final String str2 = ((AbstractActor) sc.getActor().getDirectSuccessors().get(0)).getName();
+          // final String str = ((AbstractActor) sc.getActor().getDirectSuccessors().get(0)).getDataInputPorts().get(0)
+          // .getName();
+          // final String str2 = ((AbstractActor) sc.getActor().getDirectSuccessors().get(0)).getName();
           buffer.setName(sc.getActor().getDataOutputPorts().get(0).getName() + "__"
               + ((AbstractActor) sc.getActor().getDirectSuccessors().get(0)).getDataInputPorts().get(0).getName() + "__"
               + sc.getActor().getName() + "__"
@@ -481,9 +483,9 @@ public class CodegenModelGeneratorClusteringRaiser {
           buffers.add(buffer);
         } else {
           final Buffer buffer = CodegenModelUserFactory.eINSTANCE.createBuffer();
-          final String str = ((AbstractActor) sc.getActor().getDirectSuccessors().get(0)).getDataInputPorts().get(0)
-              .getName();
-          final String str2 = ((AbstractActor) sc.getActor().getDirectSuccessors().get(0)).getName();
+          // final String str = ((AbstractActor) sc.getActor().getDirectSuccessors().get(0)).getDataInputPorts().get(0)
+          // .getName();
+          // final String str2 = ((AbstractActor) sc.getActor().getDirectSuccessors().get(0)).getName();
           buffer.setName(sc.getActor().getDataOutputPorts().get(0).getName() + "__"
               + ((AbstractActor) sc.getActor().getDirectSuccessors().get(0)).getDataInputPorts().get(0).getName() + "__"
               + sc.getActor().getName() + "__"
@@ -507,10 +509,10 @@ public class CodegenModelGeneratorClusteringRaiser {
     this.stackSize = stackSizeDecounter;
 
     // 3. Iterate over actors in SCHEDULING Order !
-    final LoopBlock loop = CodegenModelUserFactory.eINSTANCE.createLoopBlock();
+    // final LoopBlock loop = CodegenModelUserFactory.eINSTANCE.createLoopBlock();
     // int indexBuffer = 0;
     Boolean precLoop = false;
-    final FiniteLoopClusterRaiserBlock lastlevel = null;
+    // final FiniteLoopClusterRaiserBlock lastlevel = null;
     AbstractActor iterActor = null;
     for (final ClusterRaiserSchedule sc : cs) {
 
@@ -999,7 +1001,7 @@ public class CodegenModelGeneratorClusteringRaiser {
       Buffer associatedBuffer = null;
       associatedBuffer = retrieveAssociatedBuffer(actor, dp);
 
-      final Buffer iteratedBuffer = null;
+      // final Buffer iteratedBuffer = null;
       // generateSpecialIteratedBuffer(associatedBuffer, actor, dp, iterActor);
 
       if (dp instanceof DataInputPort) {
@@ -1176,7 +1178,7 @@ public class CodegenModelGeneratorClusteringRaiser {
       final DataPort port, final FunctionArgument arg, final FiniteLoopClusterRaiserBlock flcrb,
       AbstractActor iterActor) {
     // Retrieve associated Fifo
-    final Fifo associatedFifo = port.getFifo();
+    // final Fifo associatedFifo = port.getFifo();
 
     // Retrieve associated Buffer
     Buffer associatedBuffer = retrieveAssociatedBuffer(actor, port);
@@ -1201,7 +1203,7 @@ public class CodegenModelGeneratorClusteringRaiser {
   private final void addSpecialDataPortArgument(final SpecialCall functionCall, final AbstractActor actor,
       final DataPort port, final FiniteLoopClusterRaiserBlock flcrb, AbstractActor iterActor, int brv) {
     // Retrieve associated Fifo
-    final Fifo associatedFifo = port.getFifo();
+    // final Fifo associatedFifo = port.getFifo();
 
     // Retrieve associated Buffer
     final Buffer associatedBuffer = retrieveAssociatedBuffer(actor, port);
