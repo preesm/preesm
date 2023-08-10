@@ -91,6 +91,7 @@ import org.preesm.codegen.model.IteratedBuffer
 import org.preesm.codegen.printer.BlankPrinter
 import java.util.ArrayDeque
 import java.util.Deque
+import org.preesm.codegen.model.MainSimsdpBlock
 
 class MPPA2ClusterPrinter extends BlankPrinter {
 
@@ -1243,4 +1244,13 @@ class MPPA2ClusterPrinter extends BlankPrinter {
 		var ret = charSequence.toString.replace("int local_buffer_size = 0;", "int local_buffer_size = " + local_buffer_size + ";");
 		return ret;
 	}
+	
+	override printMainSimsdpHeader(MainSimsdpBlock block, int nodes, String[] nodeID) {
+		throw new UnsupportedOperationException("TODO: auto-generated method stub")
+	}
+	
+	override protected printmpi(MainSimsdpBlock block) {
+		throw new UnsupportedOperationException("TODO: auto-generated method stub")
+	}
+	
 }

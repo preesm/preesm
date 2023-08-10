@@ -64,6 +64,7 @@ import org.preesm.codegen.model.GlobalBufferDeclaration;
 import org.preesm.codegen.model.IntVar;
 import org.preesm.codegen.model.IteratedBuffer;
 import org.preesm.codegen.model.LoopBlock;
+import org.preesm.codegen.model.MainSimsdpBlock;
 import org.preesm.codegen.model.NullBuffer;
 import org.preesm.codegen.model.OutputDataTransfer;
 import org.preesm.codegen.model.PapifyAction;
@@ -391,5 +392,22 @@ public class BlankPrinter extends CodegenAbstractPrinter {
   protected CharSequence printclusterRaiserHeader(ClusterRaiserBlock block) {
     // TODO Auto-generated method stub
     return "";
+  }
+
+  public CharSequence printMainSimsdpHeader(MainSimsdpBlock block, int nodes) {
+    // TODO Auto-generated method stub
+    return null;
+  }
+
+  @Override
+  public CharSequence printMainSimsdpHeader(MainSimsdpBlock block, int nodes, String[] nodeID) {
+    // TODO Auto-generated method stub
+    return null;
+  }
+
+  @Override
+  protected CharSequence printmpi(MainSimsdpBlock block) {
+    // TODO Auto-generated method stub
+    return null;
   }
 }

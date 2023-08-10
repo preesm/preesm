@@ -38,16 +38,14 @@ package org.preesm.algorithm.clustering.partitioner;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Level;
 import org.preesm.algorithm.clustering.ClusteringHelper;
-import org.preesm.commons.logger.PreesmLogger;
-import org.preesm.commons.math.MathFunctionsHelper;
 import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.AbstractVertex;
+import org.preesm.model.pisdf.DataInputInterface;
+import org.preesm.model.pisdf.DataOutputInterface;
 import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.pisdf.brv.BRVMethod;
 import org.preesm.model.pisdf.brv.PiBRV;
-import org.preesm.model.pisdf.statictools.PiMMHelper;
 import org.preesm.model.pisdf.util.PiSDFSubgraphBuilder;
 import org.preesm.model.pisdf.util.SRVSeeker;
 import org.preesm.model.scenario.Scenario;
@@ -78,8 +76,8 @@ public class ClusterPartitionerSRV {
 
   private final Map<AbstractVertex, Long> brv;
 
-  private final int                 clusterId;
-  private final List<AbstractActor> nonClusterableList;
+  private final int clusterId;
+  // private final List<AbstractActor> nonClusterableList;
 
   /**
    * Builds a ClusterPartitioner object.
@@ -104,7 +102,7 @@ public class ClusterPartitionerSRV {
     this.numberOfPEs = numberOfPEs;
     this.brv = brv;
     this.clusterId = clusterId;
-    this.nonClusterableList = nonClusterableList;
+    // this.nonClusterableList = nonClusterableList;
   }
 
   /**
@@ -112,52 +110,106 @@ public class ClusterPartitionerSRV {
    */
   public PiGraph cluster() {
 
-    // TODO: Look for actor groups other than URC chains.
     // Retrieve URC chains in input graph and verify that actors share component constraints.
     final List<List<AbstractActor>> graphSRVs = new SRVSeeker(this.graph, this.numberOfPEs, this.brv).seek();
     final List<List<AbstractActor>> constrainedSRVs = new LinkedList<>();
     if (!graphSRVs.isEmpty()) {
-      final List<AbstractActor> SRV = graphSRVs.get(0);// cluster one by one
-      // for (List<AbstractActor> SRV : graphSRVs) {
-      if (!ClusteringHelper.getListOfCommonComponent(SRV, this.scenario).isEmpty()) {
-        constrainedSRVs.add(SRV);
+      final List<AbstractActor> srv = graphSRVs.get(0);// cluster one by one
+      if (!ClusteringHelper.getListOfCommonComponent(srv, this.scenario).isEmpty()) {
+        constrainedSRVs.add(srv);
       }
     }
-
     // Cluster constrained SRV chains.
-
-    final List<PiGraph> subGraphs = new LinkedList<>();
     if (!graphSRVs.isEmpty()) {
-      final List<AbstractActor> SRV = graphSRVs.get(0);// cluster one by one
-      // for (List<AbstractActor> SRV : graphSRVs) {
-      final PiGraph subGraph = new PiSDFSubgraphBuilder(this.graph, SRV, "srv_" + clusterId).buildSRV();
-
-      for (final AbstractActor delay : this.graph.getDelayActors()) {
-        for (final AbstractActor delaySub : subGraph.getDelayActors()) {
-          if (delay.getName().equals(delaySub.getName())) {
-            PiMMHelper.removeActorAndDependencies(this.graph, delay);
-          }
-        }
-      }
+      final List<AbstractActor> srv = graphSRVs.get(0);// cluster one by one
+      final PiGraph subGraph = new PiSDFSubgraphBuilder(this.graph, srv, "srv_" + clusterId).buildSRV();
 
       subGraph.setClusterValue(true);
       // Add constraints of the cluster in the scenario.
-      for (final ComponentInstance component : ClusteringHelper.getListOfCommonComponent(SRV, this.scenario)) {
+      for (final ComponentInstance component : ClusteringHelper.getListOfCommonComponent(srv, this.scenario)) {
         this.scenario.getConstraints().addConstraint(component, subGraph);
       }
-      subGraphs.add(subGraph);
-    }
 
-    // Compute BRV and balance actor firings between coarse and fine-grained parallelism.
-    final Map<AbstractVertex, Long> brv = PiBRV.compute(this.graph, BRVMethod.LCM);
-    for (final PiGraph subgraph : subGraphs) {
-      final long factor = MathFunctionsHelper.gcd(brv.get(subgraph), this.numberOfPEs);
-      final String message = String.format("%1$s: firings balanced by %3$d, leaving %2$d firings at coarse-grained.",
-          subgraph.getName(), brv.get(subgraph) / factor, factor);
-      PreesmLogger.getLogger().log(Level.INFO, message);
-      // new PiGraphFiringBalancer(subgraph, factor).balance();
+      // apply scaling
+      final Long scale = computeScalingFactor(subGraph);
+      for (final DataInputInterface din : subGraph.getDataInputInterfaces()) {
+        din.getGraphPort().setExpression(
+            din.getGraphPort().getExpression().evaluate() * brv.get(subGraph.getExecutableActors().get(0)) / scale);
+        din.getDataPort().setExpression(din.getGraphPort().getExpression().evaluate());
+      }
+      for (final DataOutputInterface dout : subGraph.getDataOutputInterfaces()) {
+        dout.getGraphPort().setExpression(
+            dout.getGraphPort().getExpression().evaluate() * brv.get(subGraph.getExecutableActors().get(0)) / scale);
+        dout.getDataPort().setExpression(dout.getGraphPort().getExpression().evaluate());
+      }
     }
+    // Compute BRV and balance actor firings between coarse and fine-grained parallelism.
+    PiBRV.compute(this.graph, BRVMethod.LCM);
 
     return this.graph;
+  }
+
+  /**
+   * Used to compute the scaling factor :)
+   *
+   * @param subGraph
+   *          graph
+   */
+  private Long computeScalingFactor(PiGraph subGraph) {
+    // final Map<AbstractVertex, Long> brv = PiBRV.compute(subGraph, BRVMethod.LCM);
+    final Long numbers = brv.get(subGraph.getExecutableActors().get(0));
+    Long scale;
+    if (subGraph.getDataInputInterfaces().stream().anyMatch(x -> x.getGraphPort().getFifo().isHasADelay())
+        && subGraph.getDataOutputInterfaces().stream().anyMatch(x -> x.getGraphPort().getFifo().isHasADelay())) {
+      final Long ratio = computeDelayRatio(subGraph);
+      scale = gcd(ratio, numbers);
+    } else {
+      scale = ncDivisor((long) numberOfPEs, numbers);
+    }
+    if (scale == 0L) {
+      scale = 1L;
+    }
+    return scale;
+  }
+
+  private Long computeDelayRatio(PiGraph subGraph) {
+    long count = 0L;
+    for (final DataInputInterface din : subGraph.getDataInputInterfaces()) {
+      if (din.getGraphPort().getFifo().isHasADelay()) {
+        final long ratio = din.getGraphPort().getFifo().getDelay().getExpression().evaluate()
+            / din.getGraphPort().getExpression().evaluate();
+        count = Math.max(count, ratio);
+      }
+    }
+    return count;
+  }
+
+  /**
+   * Used to compute the greatest common divisor between 2 values
+   *
+   */
+  private Long ncDivisor(Long nC, Long n) {
+    Long i;
+    Long ncDivisor = 0L;
+    for (i = 1L; i <= n; i++) {
+      if (n % i == 0) {
+        // Si i est un diviseur de n
+        if (i > nC) {
+          // Sélectionne le premier diviseur qui est plus grand que nC
+          ncDivisor = i;
+          break; // On sort de la boucle car on a trouvé le diviseur souhaité
+        }
+      }
+    }
+    return ncDivisor;
+  }
+
+  private Long gcd(Long a, Long b) {
+    while (b != 0L) {
+      final Long temp = b;
+      b = a % b;
+      a = temp;
+    }
+    return a;
   }
 }

@@ -233,6 +233,7 @@ public abstract class AbstractWorkflowExecutor {
    */
   public boolean execute(final String workflowPath, final String scenarioPath, final IProgressMonitor monitor) {
     final Workflow workflow = new WorkflowParser().parse(workflowPath);
+    final long startTime = System.currentTimeMillis();
 
     boolean result = initAndCheck(workflowPath, monitor, workflow);
     if (!result) {
@@ -248,7 +249,7 @@ public abstract class AbstractWorkflowExecutor {
       final Iterator<AbstractWorkflowNode<?>> iterator = workflow.vertexTopologicalList().iterator();
 
       while (result && iterator.hasNext()) {
-        AbstractWorkflowNode<?> node = iterator.next();
+        final AbstractWorkflowNode<?> node = iterator.next();
         result = executeNode(scenarioPath, monitor, workflow, node);
       }
 
@@ -267,6 +268,10 @@ public abstract class AbstractWorkflowExecutor {
       this.logger.removeHandler(eowHandler);
       this.logger.setLevel(oldLevel);
     }
+    final long endTime = System.currentTimeMillis();
+    final String timing = String.valueOf(endTime - startTime);
+    PreesmLogger.getLogger().log(Level.INFO, "Total elapsed time in execution of workflow is : " + timing + " ms");
+
     return result;
   }
 

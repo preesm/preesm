@@ -600,6 +600,10 @@ class PiGraph extends AbstractActor, Graph, PeriodicElement {
 	op unique boolean removeParameter(Parameter param) {
 		return vertices.remove(param)
 	}
+	//opr
+	op unique boolean removeConfigInputPort(ConfigInputPort config) {
+		return vertices.remove(config)
+	}
 
 	/*
 	 * Removes the {@link Dependency} from the {@link Pigraph#edges} list,<br>

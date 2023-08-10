@@ -83,7 +83,7 @@ import org.preesm.workflow.implement.AbstractWorkflowNodeImplementation;
             + "and interfaced dataflow meta-model for MPSoCs runtime reconfiguration. In Embedded Computer "
             + "Systems: Architectures, Modeling, and Simulation (SAMOS XIII), 2013 International Conference "
             + "on, pages 41–48. IEEE, 2013." })
-@Deprecated
+// @Deprecated
 public class StaticPiMM2SDFTask extends AbstractTaskImplementation {
 
   /*
@@ -103,7 +103,7 @@ public class StaticPiMM2SDFTask extends AbstractTaskImplementation {
     timer.start();
 
     final StaticPiMM2SDFLauncher launcher = new StaticPiMM2SDFLauncher(scenario, graph);
-    SDFGraph result = null;
+    SDFGraph result;
     result = launcher.launch();
 
     timer.stop();

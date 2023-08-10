@@ -28,7 +28,9 @@ import org.preesm.workflow.elements.Workflow;
 import org.preesm.workflow.implement.AbstractTaskImplementation;
 /**
  * This class cluster actor in order to match the target architecture
- * For more details, see conference paper "SCAPE: HW-Aware Clustering of Dataflow Actors for Tunable Scheduling Complexity", published at DASIP 2023
+ * For more details, see conference paper: "SCAPE: HW-Aware Clustering of Dataflow Actors for Tunable Scheduling Complexity", published at DASIP 2023,
+ * "Automated Clustering and Pipelining of Dataflow Actors for Controlled Scheduling Complexity" published at EUSIPCO 2023, and,
+ * "Automated Level-Based Clustering of Dataflow Actors for Controlled Scheduling Complexity", published at JSA 2023
  * @author orenaud
  *
  */
@@ -64,30 +66,16 @@ import org.preesm.workflow.implement.AbstractTaskImplementation;
         values = { @Value(name = "Fixed:=n",
             effect = "the number of level to cluster in order to reach flattener performance and compromising analysis time") }),
 
-        //@Parameter(name = "SrDAG max", description = "limit of the srdag number which induces a desired analysis time limit",
-        //values = { @Value(name = "Fixed:=n",
-            //effect = "the algorithm searches for the SrDAG with the best performance in the limit") }),
-
-        @Parameter(name = "SCAPE mode", description = "choose the clustering mode : 1 = coarse then  id on the *level number, 2 = id on each levels, 3 = coarse then id on id levels ",
+        @Parameter(name = "SCAPE mode", description = "choose the clustering mode : 1 = set of clustering config + only fit data parallelism, 2 = set of clustering config + fit data & pip parallelism, 3 = best clustering config ",
             values = { @Value(name = "Fixed:=n", effect = "switch of clustering algorithm") }),
 
         @Parameter(name = "Optimized Cluster", description = "compute the best cluster number at : false = level, true = APGAN(level)",
         values = { @Value(name = "true/false", effect = "switch of cluster level") }),
-
-        //@Parameter(name = "Auto", description = "enable SCAPE on nested level",
-        //values = { @Value(name = "true/false", effect = "switch of several granularity configuration or the other one") }),
-
-        //@Parameter(name = "Parallelizable cluster", description = "allows the mapping of the cluster on : false = 1core, true = several core",
-        //values = { @Value(name = "true/false", effect = "switch of cluster scheduling method") }),
         
         @Parameter(name = "Non-cluster actor", description = "does not allow to group the actors entered in parameter",
         values = { @Value(name = "String", effect = "disable cluster") }),
-
-//        @Parameter(name = "Apollo", description = "Enable the use of Apollo for intra-actor optimization",
-//            values = { @Value(name = "true/false",
-//                effect = "Print C code with Apollo function calls. " + "Currently compatibe with x86") })
     })
-public class ClusteringRaiserTask extends AbstractTaskImplementation {
+public class SCAPEClusteringTask extends AbstractTaskImplementation {
 	  public static final String STACK_SIZE_DEFAULT      = "1000000";    // 1MB
 	  public static final String STACK_PARAM             = "Stack size";
 	  public static final String CORE_AMOUNT_DEFAULT     = "1";          // 1
@@ -96,14 +84,6 @@ public class ClusteringRaiserTask extends AbstractTaskImplementation {
 	  public static final String CLUSTERING_PARAM        = "SCAPE mode";
 	  public static final String CLUSTER_NUMBER_DEFAULT     = "1";          // 1
 	  public static final String CLUSTER_PARAM              = "Level number";
-	  //public static final String SrDAG_NUMBER_DEFAULT     = "2000";          // 100--> 1s; 1000--> 1min4s; 2000--> 10min14s; 3000-->37min47s; 4000-->1h34min1s; 5000--> 3h9min14s
-	  //public static final String SrDAG_PARAM              = "SrDAG max";
-	  //public static final String PARALLEL_CLUSTER_DEFAULT = "false";      // no parallel
-	  //public static final String PARALLEL_CLUSTER_PARAM        = "Parallelizable cluster";
-	  //public static final String CLUSTER_OPTIM_DEFAULT     = "false";          // no algo
-	  //public static final String CLUSTER_OPTIM_PARAM              = "Optimized Cluster";
-	  //public static final String AUTO_DEFAULT     = "false";          // no algo
-	  //public static final String AUTO_PARAM              = "Auto";
 	  public static final String NON_CLUSTER_DEFAULT              = "";
 	  public static final String NON_CLUSTER_PARAM              = "Non-cluster actor";
 
@@ -113,41 +93,25 @@ public class ClusteringRaiserTask extends AbstractTaskImplementation {
 	  protected long             stack;
 	  protected long             core;
 	  protected int             cluster;
-	  //protected int             srdagMax;
 	  protected int          mode;
-	  //protected boolean          parallelCluster;
-	  //protected boolean             optimizedCluster;
-	  //protected boolean             auto;
 
 	@Override
 	public Map<String, Object> execute(Map<String, Object> inputs, Map<String, String> parameters,
 			IProgressMonitor monitor, String nodeName, Workflow workflow) {
 	    // retrieve input parameter stack size
-	    String stack = parameters.get(ClusteringRaiserTask.STACK_PARAM);
+	    String stack = parameters.get(SCAPEClusteringTask.STACK_PARAM);
 	    this.stack = Integer.decode(stack);
 	    // retrieve input parameter
-	    String core = parameters.get(ClusteringRaiserTask.CORE_PARAM);
+	    String core = parameters.get(SCAPEClusteringTask.CORE_PARAM);
 	    this.core = Integer.decode(core);
 	 // retrieve input parameter
-	    String cluster = parameters.get(ClusteringRaiserTask.CLUSTER_PARAM);
+	    String cluster = parameters.get(SCAPEClusteringTask.CLUSTER_PARAM);
 	    this.cluster = Integer.decode(cluster);
 	    // retrieve input parameter
-	    String mode = parameters.get(ClusteringRaiserTask.CLUSTERING_PARAM);
+	    String mode = parameters.get(SCAPEClusteringTask.CLUSTERING_PARAM);
 	    this.mode = Integer.decode(mode);
-	 // retrieve input parameter
-	    //String srdagMax = parameters.get(ClusteringRaiserTask.SrDAG_PARAM);
-	    //this.srdagMax = Integer.decode(srdagMax);
-	 // retrieve input parameter
-	    //String parallelCluster = parameters.get(ClusteringRaiserTask.PARALLEL_CLUSTER_PARAM);
-	    //this.parallelCluster = bool(parallelCluster);
-	 // retrieve input parameter
-	    //String optimizedCluster = parameters.get(ClusteringRaiserTask.CLUSTER_OPTIM_PARAM);
-	    //this.optimizedCluster = bool(optimizedCluster);
-	 // retrieve input parameter
-	    //String auto = parameters.get(ClusteringRaiserTask.AUTO_PARAM);
-	    //this.auto = bool(auto);
-	 // retrieve input parameter
-	    String nonClusterable = parameters.get(ClusteringRaiserTask.NON_CLUSTER_PARAM);
+
+	    String nonClusterable = parameters.get(SCAPEClusteringTask.NON_CLUSTER_PARAM);
 	    String[] StrNonClusterableList = nonClusterable.split("\\*");
 	    
 
@@ -165,9 +129,8 @@ public class ClusteringRaiserTask extends AbstractTaskImplementation {
 	    	for(AbstractActor a: inputGraph.getExecutableActors())
 	    		if(a.getName().equals(StrNonClusterableList[i]) && !nonClusterableList.contains(a))
 	    			nonClusterableList.add(a);
-	    //...
-	    //PiGraph tempGraph = null;
-	    PiGraph tempGraph = new Clustering(inputGraph, scenario, archi, stackSize, coreAmount, clusteringMode, clusterNumber,nonClusterableList).execute();
+
+	    PiGraph tempGraph = new Clustering(inputGraph, scenario, archi, stackSize, coreAmount, clusteringMode, clusterNumber,nonClusterableList).execute2();
 
 	    Map<String, Object> output = new HashMap<>();
 	    // return topGraph
@@ -190,12 +153,12 @@ public class ClusteringRaiserTask extends AbstractTaskImplementation {
 	    return output;
 	}
 
-	private boolean bool(String mode2) {
-		if(mode2.equals("true")) {
-			return true;
-		}
-		return false;
-	}
+//	private boolean bool(String mode2) {
+//		if(mode2.equals("true")) {
+//			return true;
+//		}
+//		return false;
+//	}
 
 	@Override
 	public Map<String, String> getDefaultParameters() {
@@ -215,28 +178,20 @@ public class ClusteringRaiserTask extends AbstractTaskImplementation {
 		    for (final String lang : languages) {
 		      avilableLanguages.append(lang + ", ");
 		    }
-		    avilableLanguages.append(ClusteringRaiserTask.VALUE_PRINTER_IR + "}");
+		    avilableLanguages.append(SCAPEClusteringTask.VALUE_PRINTER_IR + "}");
 
-		    parameters.put(ClusteringRaiserTask.PARAM_PRINTER, avilableLanguages.toString());
+		    parameters.put(SCAPEClusteringTask.PARAM_PRINTER, avilableLanguages.toString());
 
 		    // stack default
-		    parameters.put(ClusteringRaiserTask.STACK_PARAM, ClusteringRaiserTask.STACK_SIZE_DEFAULT);
+		    parameters.put(SCAPEClusteringTask.STACK_PARAM, SCAPEClusteringTask.STACK_SIZE_DEFAULT);
 		    // core default
-		    parameters.put(ClusteringRaiserTask.CORE_PARAM, ClusteringRaiserTask.CORE_AMOUNT_DEFAULT);
+		    parameters.put(SCAPEClusteringTask.CORE_PARAM, SCAPEClusteringTask.CORE_AMOUNT_DEFAULT);
 		 // core default
-		    parameters.put(ClusteringRaiserTask.CLUSTER_PARAM, ClusteringRaiserTask.CLUSTER_NUMBER_DEFAULT);
+		    parameters.put(SCAPEClusteringTask.CLUSTER_PARAM, SCAPEClusteringTask.CLUSTER_NUMBER_DEFAULT);
 		    // mode default
-		    parameters.put(ClusteringRaiserTask.CLUSTERING_PARAM, ClusteringRaiserTask.CLUSTERING_MODE_DEFAULT);
+		    parameters.put(SCAPEClusteringTask.CLUSTERING_PARAM, SCAPEClusteringTask.CLUSTERING_MODE_DEFAULT);
 		 // mode default
-		    //parameters.put(ClusteringRaiserTask.SrDAG_PARAM, ClusteringRaiserTask.SrDAG_NUMBER_DEFAULT);
-		 // mode default
-		    //parameters.put(ClusteringRaiserTask.PARALLEL_CLUSTER_PARAM, ClusteringRaiserTask.PARALLEL_CLUSTER_DEFAULT);
-		 // mode default
-		    //parameters.put(ClusteringRaiserTask.CLUSTER_OPTIM_PARAM, ClusteringRaiserTask.CLUSTER_OPTIM_DEFAULT);
-		 // mode default
-		    //parameters.put(ClusteringRaiserTask.AUTO_PARAM, ClusteringRaiserTask.AUTO_DEFAULT);
-		 // mode default
-		    parameters.put(ClusteringRaiserTask.NON_CLUSTER_PARAM, ClusteringRaiserTask.NON_CLUSTER_DEFAULT);
+		    parameters.put(SCAPEClusteringTask.NON_CLUSTER_PARAM, SCAPEClusteringTask.NON_CLUSTER_DEFAULT);
 
 		    return parameters;
 	}

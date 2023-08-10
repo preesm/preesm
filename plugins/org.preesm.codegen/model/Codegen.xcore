@@ -217,6 +217,8 @@ class CoreBlock extends Block {
 	refers LoopBlock loopBlock
 	refers CallBlock initBlock
 	refers Buffer[] sinkFifoBuffers
+	refers Buffer[] topBuffers//opr
+	boolean multinode//opr
 	String coreType
 	unordered id int coreID
 }
@@ -230,6 +232,15 @@ class ClusterRaiserBlock extends Block {
 	refers Buffer[] initBuffers
 	String coreType
 	unordered id int coreID
+}
+
+class MainSimsdpBlock extends Block{
+	String[] nodeID
+	refers Buffer[] buffers
+	refers FunctionCall[] subFunc
+	String coreType
+	
+	
 }
 
 //class ClusterInitBlock extends Block {

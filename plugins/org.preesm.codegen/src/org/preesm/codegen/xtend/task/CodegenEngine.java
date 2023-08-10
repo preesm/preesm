@@ -69,6 +69,7 @@ import org.preesm.codegen.format.CodeFormatterAndPrinter;
 import org.preesm.codegen.model.Block;
 import org.preesm.codegen.model.ClusterRaiserBlock;
 import org.preesm.codegen.model.CoreBlock;
+import org.preesm.codegen.model.MainSimsdpBlock;
 import org.preesm.codegen.model.util.CodegenModelUserFactory;
 import org.preesm.codegen.printer.CodegenAbstractPrinter;
 import org.preesm.commons.exceptions.PreesmException;
@@ -196,8 +197,13 @@ public class CodegenEngine {
   private void registerBlockPrinters(final String selectedPrinter, final Set<IConfigurationElement> usablePrinters,
       final Block b) {
     IConfigurationElement foundPrinter = null;
-    if (b instanceof ClusterRaiserBlock) {
-      final String coreType = ((ClusterRaiserBlock) b).getCoreType();
+    if (b instanceof ClusterRaiserBlock || b instanceof MainSimsdpBlock) {
+      String coreType = "";
+      if (b instanceof ClusterRaiserBlock) {
+        coreType = ((ClusterRaiserBlock) b).getCoreType();
+      } else {
+        coreType = ((MainSimsdpBlock) b).getCoreType();
+      }
       for (final IConfigurationElement printer : usablePrinters) {
         final IConfigurationElement[] supportedCores = printer.getChildren();
         for (final IConfigurationElement supportedCore : supportedCores) {
@@ -306,33 +312,50 @@ public class CodegenEngine {
 
       final String extension = printerAndBlocks.getKey().getAttribute("extension");
       final CodegenAbstractPrinter printer = this.realPrinters.get(printerAndBlocks.getKey());
-
+      boolean multinode = false;
       for (final Block b : printerAndBlocks.getValue()) {
         final String fileContentString = printer.postProcessing(printer.doSwitch(b)).toString();
         final String fileName = b.getName() + extension;
         final IFile iFile = PreesmIOHelper.getInstance().print(this.codegenPath, fileName, fileContentString);
         CodeFormatterAndPrinter.format(iFile);
+        if (b instanceof CoreBlock) {
+          multinode = ((CoreBlock) b).isMultinode();
+        }
       }
+      if (!multinode) {
+        // Print secondary files (main file)
+        final Map<String, CharSequence> createSecondaryFiles = printer.createSecondaryFiles(printerAndBlocks.getValue(),
+            this.codeBlocks);
+        for (final Entry<String, CharSequence> entry : createSecondaryFiles.entrySet()) {
+          final String fileName = entry.getKey();
+          final IFile iFile = PreesmIOHelper.getInstance().print(this.codegenPath, fileName, entry.getValue());
+          CodeFormatterAndPrinter.format(iFile);
+        }
 
-      // Print secondary files
-      final Map<String, CharSequence> createSecondaryFiles = printer.createSecondaryFiles(printerAndBlocks.getValue(),
-          this.codeBlocks);
-      for (final Entry<String, CharSequence> entry : createSecondaryFiles.entrySet()) {
-        final String fileName = entry.getKey();
-        final IFile iFile = PreesmIOHelper.getInstance().print(this.codegenPath, fileName, entry.getValue());
-        CodeFormatterAndPrinter.format(iFile);
-      }
+        // Add standard files for this printer
+        final Map<String, CharSequence> generateStandardLibFiles = printer.generateStandardLibFiles();
+        for (final Entry<String, CharSequence> entry : generateStandardLibFiles.entrySet()) {
+          final String fileName = entry.getKey();
+          final IFile iFile = PreesmIOHelper.getInstance().print(this.codegenPath, fileName, entry.getValue());
+          CodeFormatterAndPrinter.format(iFile);
+        }
+      } else {
+        // Print secondary files (main file)
+        final Map<String, CharSequence> createSecondaryFiles = printer.createSecondaryFiles(printerAndBlocks.getValue(),
+            this.codeBlocks);
+        for (final Entry<String, CharSequence> entry : createSecondaryFiles.entrySet()) {
 
-      // Add standard files for this printer
-      final Map<String, CharSequence> generateStandardLibFiles = printer.generateStandardLibFiles();
-      for (final Entry<String, CharSequence> entry : generateStandardLibFiles.entrySet()) {
-        final String fileName = entry.getKey();
-        final IFile iFile = PreesmIOHelper.getInstance().print(this.codegenPath, fileName, entry.getValue());
-        CodeFormatterAndPrinter.format(iFile);
+          final String fileName = this.algo.getName() + ".c";
+          final IFile iFile = PreesmIOHelper.getInstance().print(this.codegenPath, fileName, entry.getValue());
+          CodeFormatterAndPrinter.format(iFile);
+        }
       }
     }
   }
 
+  /**
+   * Prints SCAPE cluster files
+   */
   public void printClusterRaiser() {
 
     // Print C files
@@ -363,9 +386,7 @@ public class CodegenEngine {
             CodeFormatterAndPrinter.format(iFileH);
           }
         }
-
       }
-
     }
   }
 
@@ -376,5 +397,30 @@ public class CodegenEngine {
    */
   public void registerApollo(String apolloFlag) {
     this.apolloEnabled = "true".equalsIgnoreCase(apolloFlag);
+  }
+
+  /**
+   * Prints Main multi-node file
+   */
+  public void printMainSimSDP() {
+    for (final Entry<IConfigurationElement, List<Block>> printerAndBlocks : this.registeredPrintersAndBlocks
+        .entrySet()) {
+      final String extension = printerAndBlocks.getKey().getAttribute("extension");
+      final CodegenAbstractPrinter printer = this.realPrinters.get(printerAndBlocks.getKey());
+      for (final Block b : printerAndBlocks.getValue()) {
+        b.setName("mainSimSDP");
+        final String fileContentString = printer.postProcessing(printer.doSwitch(b)).toString();
+        final String fileName = b.getName() + extension;
+
+        final IFile iFile = PreesmIOHelper.getInstance().print(this.codegenPath, fileName, fileContentString);
+        CodeFormatterAndPrinter.format(iFile);
+      }
+
+    }
+  }
+
+  public void print2() {
+    // TODO Auto-generated method stub
+
   }
 }

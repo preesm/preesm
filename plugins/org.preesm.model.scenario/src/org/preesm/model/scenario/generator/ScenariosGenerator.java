@@ -111,8 +111,8 @@ public class ScenariosGenerator {
   final IProject project;
 
   /**
-   * 
-   * 
+   *
+   *
    * @param project
    *          the IProject containing the architectures and algorithms. project is supposed to have the
    *          PreesmProjectNature and to follow the standard Preesm folder hierarchy
@@ -155,16 +155,14 @@ public class ScenariosGenerator {
     final Set<String> archis = new LinkedHashSet<>();
     final Set<String> algos = new LinkedHashSet<>();
     for (final IResource resource : archiDir.members()) {
-      if (resource instanceof IFile) {
-        final IFile file = (IFile) resource;
+      if (resource instanceof IFile file) {
         if (file.getProjectRelativePath().getFileExtension().equals(ScenariosGenerator.ARCHI_EXT)) {
           archis.add(file.getFullPath().toString());
         }
       }
     }
     for (final IResource resource : algoDir.members()) {
-      if (resource instanceof IFile) {
-        final IFile file = (IFile) resource;
+      if (resource instanceof IFile file) {
         final String ext = file.getProjectRelativePath().getFileExtension();
         if (ext.equals(ScenariosGenerator.PI_GRAPH_EXT)) {
           algos.add(file.getFullPath().toString());
@@ -317,7 +315,7 @@ public class ScenariosGenerator {
    * @throws CoreException
    *           the core exception
    */
-  private void saveScenarios(final Set<Scenario> scenarios, final IFolder scenarioDir) throws CoreException {
+  public void saveScenarios(final Set<Scenario> scenarios, final IFolder scenarioDir) throws CoreException {
     for (final Scenario scenario : scenarios) {
       final String scenarioName = scenario.getScenarioName();
       final IPath scenarioPath = new Path(scenarioName).addFileExtension("scenario");
@@ -327,7 +325,7 @@ public class ScenariosGenerator {
       }
       saveScenario(scenario, scenarioFile);
     }
-  }
+  }// opr change private -> public
 
   /**
    * Save a given PreesmScenario in a given IFile.

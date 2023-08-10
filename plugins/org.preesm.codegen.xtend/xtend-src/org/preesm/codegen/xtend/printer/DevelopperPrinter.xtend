@@ -77,6 +77,7 @@ import org.preesm.codegen.model.ClusterRaiserBlock
 import org.preesm.model.pisdf.Actor
 import org.preesm.codegen.model.DynamicBuffer
 import org.preesm.codegen.model.FiniteLoopClusterRaiserBlock
+import org.preesm.codegen.model.MainSimsdpBlock
 
 /**
  * This {@link DevelopperPrinter} is a dummy implementation of the
@@ -262,6 +263,16 @@ class DevelopperPrinter extends CodegenAbstractPrinter {
 	}
 
 	override protected printclusterRaiserHeader(ClusterRaiserBlock block) {
+		throw new UnsupportedOperationException("TODO: auto-generated method stub")
+	}
+	
+	
+	
+	override printMainSimsdpHeader(MainSimsdpBlock block, int nodes, String[] nodeID) {
+		throw new UnsupportedOperationException("TODO: auto-generated method stub")
+	}
+	
+	override protected printmpi(MainSimsdpBlock block) {
 		throw new UnsupportedOperationException("TODO: auto-generated method stub")
 	}
 
