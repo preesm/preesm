@@ -30,7 +30,7 @@
 		</location>
 		<location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="planner" includeSource="false" type="InstallableUnit">
 			<repository location="https://download.eclipse.org/justj/jres/17/updates/release/latest"/>
-			<unit id="org.eclipse.justj.openjdk.hotspot.jre.full.stripped.feature.group" version="17.0.7.v20230425-1502"/>
+			<unit id="org.eclipse.justj.openjdk.hotspot.jre.full.stripped.feature.group" version="17.0.8.v20230801-1951"/>
 		</location>
 		<location includeDependencyDepth="none" includeDependencyScopes="compile" includeSource="true" missingManifest="generate" type="Maven">
 			<dependencies>
@@ -257,22 +257,6 @@
 				<repository>
 					<id>JBOSS</id>
 					<url>https://repository.jboss.org/nexus/content/repositories/public/</url>
-				</repository>
-			</repositories>
-		</location>
-		<location includeDependencyDepth="none" missingManifest="generate" type="Maven">
-			<dependencies>
-				<dependency>
-					<groupId>org.gnu.glpk</groupId>
-					<artifactId>glpk-java</artifactId>
-					<version>1.12.0</version>
-					<type>jar</type>
-				</dependency>
-			</dependencies>
-			<repositories>
-				<repository>
-					<id>xypron-glpk-java</id>
-					<url>https://www.xypron.de/repository/</url>
 				</repository>
 			</repositories>
 		</location>

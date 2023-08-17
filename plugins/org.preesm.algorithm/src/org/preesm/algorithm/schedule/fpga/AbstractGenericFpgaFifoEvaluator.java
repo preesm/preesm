@@ -107,19 +107,11 @@ public abstract class AbstractGenericFpgaFifoEvaluator {
         || AsapFpgaFifoEvaluator.FIFO_EVALUATOR_AVG.equalsIgnoreCase(fifoEvaluatorName)) {
       return new AsapFpgaFifoEvaluator(fifoEvaluatorName);
     }
-    if (AdfgOjalgoFpgaFifoEvaluator.FIFO_EVALUATOR_ADFG_OJALGO_EXACT.equalsIgnoreCase(fifoEvaluatorName)
-        | AdfgOjalgoFpgaFifoEvaluator.FIFO_EVALUATOR_ADFG_DEFAULT_EXACT.equalsIgnoreCase(fifoEvaluatorName)) {
+    if (AdfgOjalgoFpgaFifoEvaluator.FIFO_EVALUATOR_ADFG_DEFAULT_EXACT.equalsIgnoreCase(fifoEvaluatorName)) {
       return new AdfgOjalgoFpgaFifoEvaluator(true);
     }
-    if (AdfgOjalgoFpgaFifoEvaluator.FIFO_EVALUATOR_ADFG_OJALGO_LINEAR.equalsIgnoreCase(fifoEvaluatorName)
-        | AdfgOjalgoFpgaFifoEvaluator.FIFO_EVALUATOR_ADFG_DEFAULT_LINEAR.equalsIgnoreCase(fifoEvaluatorName)) {
+    if (AdfgOjalgoFpgaFifoEvaluator.FIFO_EVALUATOR_ADFG_DEFAULT_LINEAR.equalsIgnoreCase(fifoEvaluatorName)) {
       return new AdfgOjalgoFpgaFifoEvaluator(false);
-    }
-    if (AdfgGlpkFpgaFifoEvaluator.FIFO_EVALUATOR_ADFG_GLPK_EXACT.equalsIgnoreCase(fifoEvaluatorName)) {
-      return new AdfgGlpkFpgaFifoEvaluator(true);
-    }
-    if (AdfgGlpkFpgaFifoEvaluator.FIFO_EVALUATOR_ADFG_GLPK_LINEAR.equalsIgnoreCase(fifoEvaluatorName)) {
-      return new AdfgGlpkFpgaFifoEvaluator(false);
     }
     throw new PreesmRuntimeException("Could not recognize fifo evaluator name: " + fifoEvaluatorName);
   }
