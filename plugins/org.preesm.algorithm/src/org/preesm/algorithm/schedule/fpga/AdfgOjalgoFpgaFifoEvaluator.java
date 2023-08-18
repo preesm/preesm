@@ -92,24 +92,9 @@ public class AdfgOjalgoFpgaFifoEvaluator extends AbstractGenericFpgaFifoEvaluato
       PreesmLogger.getLogger()
           .finer("Created variable " + varPhiPos.getName() + " for fifo abs rep " + fifoAbs.fifos.get(0).getId());
 
-      // if (fifoAbs.isFullyDelayed()) {
-      // varPhiPos.lower(0L);
-      // } else {
-      // // Add phi to represent delay before token production, production happens only during II cycles.
-      // final AbstractActor src = ddg.getEdgeSource(fifoAbs);
-      // final long srcII = mapActorNormalizedInfos.get(src).oriII;
-      // final long srcET = mapActorNormalizedInfos.get(src).oriET;
-      // varPhiPos.lower(srcET - srcII);
-      // }
-
       final Variable varPhiNeg = model.newVariable("phi_neg_" + index);
       varPhiNeg.setInteger(exactEvaluation);
       varPhiNeg.lower(0L);
-      // if (fifoAbs.isFullyDelayed()) {
-      // varPhiNeg.lower(0L);
-      // } else {
-      // varPhiNeg.level(0L);
-      // }
       // note that we cannot set an upper limit to both neg and post part, ojAlgo bug?!
     }
 
@@ -239,9 +224,7 @@ public class AdfgOjalgoFpgaFifoEvaluator extends AbstractGenericFpgaFifoEvaluato
         final AffineRelation ar = ddgAR.getEdge(cycleAA.get(0), cycleAA.get(1));
         final int index_2 = ar.phiIndex * 2;
         // TODO force the value oh phi to be II?
-        // final Expression expPhiPos = model.addExpression().level(1L);
-        // final Variable varPhiPos = model.getVariable(index_2);
-        // expPhiPos.set(varPhiPos, 1L);
+
         final Expression expPhiNeg = model.addExpression().level(0L);
         final Variable varPhiNeg = model.getVariable(index_2 + 1);
         expPhiNeg.set(varPhiNeg, 1L);
@@ -253,7 +236,6 @@ public class AdfgOjalgoFpgaFifoEvaluator extends AbstractGenericFpgaFifoEvaluato
 
     // init arrays storing coefs for memoization
     final AffineRelation[] ars = new AffineRelation[cycleSize - 1];
-    // final long[] coefsPhi = new long[cycleSize - 1];
     final BigInteger[] coefsPhi = new BigInteger[cycleSize - 1];
     for (int i = 0; i < coefsPhi.length; ++i) {
       coefsPhi[i] = BigInteger.ONE;
