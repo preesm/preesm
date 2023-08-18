@@ -2,6 +2,7 @@ package org.preesm.algorithm.schedule.fpga;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.util.Arrays;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
@@ -9,6 +10,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 import org.apache.commons.math3.fraction.BigFraction;
 import org.jgrapht.GraphPath;
 import org.jgrapht.alg.cycle.PatonCycleBase;
@@ -176,11 +178,11 @@ public class AdfgOjalgoFpgaFifoEvaluator extends AbstractGenericFpgaFifoEvaluato
         "Details of ILP model (compatible with GNU MathProg Language Reference).\n");
     sbLogModel.append("# variable initial domain:\n");
     // we have only integer variables without upper limit in our case
-    for (final Variable var : model.getVariables()) {
-      if (var.isInteger()) {
-        sbLogModel.append("var " + var.getName() + " integer >= " + var.getLowerLimit() + ";\n");
+    for (final Variable v : model.getVariables()) {
+      if (v.isInteger()) {
+        sbLogModel.append("var " + v.getName() + " integer >= " + v.getLowerLimit() + ";\n");
       } else {
-        sbLogModel.append("var " + var.getName() + " >= " + var.getLowerLimit() + ";\n");
+        sbLogModel.append("var " + v.getName() + " >= " + v.getLowerLimit() + ";\n");
       }
     }
     sbLogModel.append("minimize o: ");
@@ -237,9 +239,9 @@ public class AdfgOjalgoFpgaFifoEvaluator extends AbstractGenericFpgaFifoEvaluato
     // init arrays storing coefs for memoization
     final AffineRelation[] ars = new AffineRelation[cycleSize - 1];
     final BigInteger[] coefsPhi = new BigInteger[cycleSize - 1];
-    for (int i = 0; i < coefsPhi.length; ++i) {
-      coefsPhi[i] = BigInteger.ONE;
-    }
+
+    Arrays.fill(coefsPhi, BigInteger.ONE);
+
     int nbPhi = 0;
     long mulN = 1;
     long mulD = 1;
@@ -253,24 +255,19 @@ public class AdfgOjalgoFpgaFifoEvaluator extends AbstractGenericFpgaFifoEvaluato
       final AffineRelation ar = ddgAR.getEdge(src, dest);
       ars[nbPhi] = ar;
 
-      for (int i = 0; i < nbPhi; ++i) {
-        coefsPhi[i] = coefsPhi[i].multiply(BigInteger.valueOf(ar.nProd));
-      }
-      for (int i = nbPhi + 1; i < coefsPhi.length; ++i) {
-        coefsPhi[i] = coefsPhi[i].multiply(BigInteger.valueOf(ar.dCons));
-      }
+      IntStream.range(0, nbPhi).forEach(i -> coefsPhi[i] = coefsPhi[i].multiply(BigInteger.valueOf(ar.nProd)));
+      IntStream.range(nbPhi + 1, coefsPhi.length)
+          .forEach(i -> coefsPhi[i] = coefsPhi[i].multiply(BigInteger.valueOf(ar.dCons)));
+
       mulN *= ar.nProd;
       mulD *= ar.dCons;
       final long g = MathFunctionsHelper.gcd(mulN, mulD);
       mulN /= g;
       mulD /= g;
-      BigInteger gb = coefsPhi[0];
-      for (int i = 1; i < coefsPhi.length; ++i) {
-        gb = gb.gcd(coefsPhi[i]);
-      }
-      for (int i = 0; i < coefsPhi.length; ++i) {
-        coefsPhi[i] = coefsPhi[i].divide(gb);
-      }
+
+      final BigInteger gb = Arrays.stream(coefsPhi).reduce(coefsPhi[0], BigInteger::gcd);
+      Arrays.setAll(coefsPhi, i -> coefsPhi[i].divide(gb));
+
       ++nbPhi;
     }
     if (mulN != mulD) {
