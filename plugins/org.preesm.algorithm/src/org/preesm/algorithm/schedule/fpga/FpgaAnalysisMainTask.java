@@ -201,7 +201,7 @@ public class FpgaAnalysisMainTask extends AbstractTaskImplementation {
   private static Map<InterfaceActor, Pair<Long, Long>> checkInterfaces(final PiGraph flatGraph,
       final Map<AbstractVertex, Long> brv) {
     final Map<InterfaceActor, Pair<Long, Long>> result = new LinkedHashMap<>();
-    flatGraph.getActors().stream().filter(x -> (x instanceof InterfaceActor)).forEach(x -> {
+    flatGraph.getActors().stream().filter(InterfaceActor.class::isInstance).forEach(x -> {
       final InterfaceActor ia = (InterfaceActor) x;
       final DataPort iaPort = ia.getDataPort();
       if (iaPort.getFifo() == null) {

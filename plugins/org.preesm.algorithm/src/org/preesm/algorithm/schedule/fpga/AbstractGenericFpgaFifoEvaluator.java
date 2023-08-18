@@ -103,17 +103,14 @@ public abstract class AbstractGenericFpgaFifoEvaluator {
    * @return Instance of the correct evaluator.
    */
   public static AbstractGenericFpgaFifoEvaluator getEvaluatorInstance(final String fifoEvaluatorName) {
-    if (AsapFpgaFifoEvaluator.FIFO_EVALUATOR_SDF.equalsIgnoreCase(fifoEvaluatorName)
-        || AsapFpgaFifoEvaluator.FIFO_EVALUATOR_AVG.equalsIgnoreCase(fifoEvaluatorName)) {
-      return new AsapFpgaFifoEvaluator(fifoEvaluatorName);
-    }
-    if (AdfgOjalgoFpgaFifoEvaluator.FIFO_EVALUATOR_ADFG_DEFAULT_EXACT.equalsIgnoreCase(fifoEvaluatorName)) {
-      return new AdfgOjalgoFpgaFifoEvaluator(true);
-    }
-    if (AdfgOjalgoFpgaFifoEvaluator.FIFO_EVALUATOR_ADFG_DEFAULT_LINEAR.equalsIgnoreCase(fifoEvaluatorName)) {
-      return new AdfgOjalgoFpgaFifoEvaluator(false);
-    }
-    throw new PreesmRuntimeException("Could not recognize fifo evaluator name: " + fifoEvaluatorName);
+
+    return switch (fifoEvaluatorName) {
+      case AsapFpgaFifoEvaluator.FIFO_EVALUATOR_SDF, AsapFpgaFifoEvaluator.FIFO_EVALUATOR_AVG ->
+        new AsapFpgaFifoEvaluator(fifoEvaluatorName);
+      case AdfgOjalgoFpgaFifoEvaluator.FIFO_EVALUATOR_ADFG_DEFAULT_EXACT -> new AdfgOjalgoFpgaFifoEvaluator(true);
+      case AdfgOjalgoFpgaFifoEvaluator.FIFO_EVALUATOR_ADFG_DEFAULT_LINEAR -> new AdfgOjalgoFpgaFifoEvaluator(false);
+      default -> throw new PreesmRuntimeException("Could not recognize fifo evaluator name: " + fifoEvaluatorName);
+    };
   }
 
   /**
