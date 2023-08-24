@@ -112,8 +112,14 @@ public class AlgorithmAndArchitectureScenarioNode extends AbstractScenarioImplem
       piAlgorithm = scenario.getAlgorithm();
       applyScenarioParameterValues(scenario);
       // delete previous generated files
-      final String codegenPath = scenario.getCodegenDirectory() + File.separator;
-      erasePreviousFilesExtensions(codegenPath);
+      final String codegenPath = scenario.getCodegenDirectory();
+
+      if (codegenPath == null) {
+        throw new PreesmRuntimeException(
+            "Code generation directory in Scenario " + scenario.getScenarioURL() + " must be set.");
+      }
+
+      erasePreviousFilesExtensions(codegenPath + File.separator);
 
     } catch (FileNotFoundException | CoreException e) {
       throw new PreesmRuntimeException(e.getMessage());
