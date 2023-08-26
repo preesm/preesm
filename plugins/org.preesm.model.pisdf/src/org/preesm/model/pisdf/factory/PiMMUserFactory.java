@@ -39,7 +39,6 @@ package org.preesm.model.pisdf.factory;
 
 import java.util.ArrayList;
 import java.util.List;
-import org.eclipse.emf.common.notify.Adapter;
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.ecore.EObject;
 import org.preesm.commons.exceptions.PreesmRuntimeException;
@@ -90,24 +89,14 @@ public final class PiMMUserFactory extends PiMMFactoryImpl implements PreesmUser
     if (copy instanceof final PiGraph copyPiGraph) {
 
       // Check if the PiGraph has an observer
-      boolean hasAnObserver = false;
-      for (final Adapter adapt : copyPiGraph.eAdapters()) {
-        if (adapt instanceof GraphObserver) {
-          hasAnObserver = true;
-        }
-      }
+      boolean hasAnObserver = copyPiGraph.eAdapters().stream().anyMatch(GraphObserver.class::isInstance);
       if (!hasAnObserver) {
         copy.eAdapters().add(GraphObserver.getInstance());
       }
 
       // Check for all subgraph in this PiGraph and its subgraph
       for (final PiGraph graph : copyPiGraph.getAllChildrenGraphs()) {
-        hasAnObserver = false;
-        for (final Adapter adapt : graph.eAdapters()) {
-          if (adapt instanceof GraphObserver) {
-            hasAnObserver = true;
-          }
-        }
+        hasAnObserver = graph.eAdapters().stream().anyMatch(GraphObserver.class::isInstance);
         if (!hasAnObserver) {
           graph.eAdapters().add(GraphObserver.getInstance());
         }
@@ -115,12 +104,7 @@ public final class PiMMUserFactory extends PiMMFactoryImpl implements PreesmUser
 
       // Check for all fifos in this PiGraph and its subgraph
       for (final Fifo fifo : copyPiGraph.getAllFifos()) {
-        hasAnObserver = false;
-        for (final Adapter adapt : fifo.eAdapters()) {
-          if (adapt instanceof GraphObserver) {
-            hasAnObserver = true;
-          }
-        }
+        hasAnObserver = fifo.eAdapters().stream().anyMatch(GraphObserver.class::isInstance);
         if (!hasAnObserver) {
           fifo.eAdapters().add(GraphObserver.getInstance());
         }

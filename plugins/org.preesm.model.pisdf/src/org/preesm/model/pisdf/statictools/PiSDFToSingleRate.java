@@ -375,7 +375,7 @@ public class PiSDFToSingleRate extends PiMMSwitch<Boolean> {
 
     // 1. Find matched actors
     final IntegerName iN = new IntegerName(actorRV - 1);
-    for (long i = 0; i < actorRV; ++i) {
+    for (int i = 0; i < actorRV; ++i) {
       final String name = actorToMatch.getName() + suffixe + iN.toString(i);
       final AbstractActor foundActor = (AbstractActor) this.result.lookupVertex(name);
       if (foundActor == null) {
@@ -894,8 +894,8 @@ public class PiSDFToSingleRate extends PiMMSwitch<Boolean> {
    */
   private void populateSingleRatePiMMActor(final AbstractVertex actor) {
     // special case for delays
-    if (actor instanceof DelayActor) {
-      caseDelayActor((DelayActor) actor);
+    if (actor instanceof final DelayActor delayActor) {
+      caseDelayActor(delayActor);
       return;
     }
 
@@ -1000,9 +1000,9 @@ public class PiSDFToSingleRate extends PiMMSwitch<Boolean> {
         .forEach(this::populateSingleRatePiMMActor);
     // handle the case of interfaces of top level
     if (graph.getContainingPiGraph() == null) {
-      actors.stream().filter(a -> (a instanceof InterfaceActor)).forEach(this::populateSingleRatePiMMActor);
+      actors.stream().filter(InterfaceActor.class::isInstance).forEach(this::populateSingleRatePiMMActor);
       // now we need to reconnect the top level interfaces
-      actors.stream().filter(a -> (a instanceof InterfaceActor))
+      actors.stream().filter(InterfaceActor.class::isInstance)
           .forEach(a -> reconnectTopLevelInterface((InterfaceActor) a));
     }
 
