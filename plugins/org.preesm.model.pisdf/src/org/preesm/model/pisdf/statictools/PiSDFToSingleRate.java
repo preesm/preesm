@@ -79,6 +79,7 @@ import org.preesm.model.pisdf.InterfaceActor;
 import org.preesm.model.pisdf.JoinActor;
 import org.preesm.model.pisdf.NonExecutableActor;
 import org.preesm.model.pisdf.Parameter;
+import org.preesm.model.pisdf.PersistenceLevel;
 import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.pisdf.Port;
 import org.preesm.model.pisdf.PortMemoryAnnotation;
@@ -388,30 +389,53 @@ public class PiSDFToSingleRate extends PiMMSwitch<Boolean> {
       final Fifo fifo = dataPort.getFifo();
 
       // Retrieve the opposite port of the FIFO
-      DataPort oppositePort = dataPort instanceof DataOutputPort ? fifo.getTargetPort() : fifo.getSourcePort();
-      final AbstractActor oppositeActor = oppositePort.getContainingActor();
+      final List<DataPort> oppositePorts = new ArrayList<>();
+      oppositePorts.add(dataPort instanceof DataOutputPort ? fifo.getTargetPort() : fifo.getSourcePort());
+      final AbstractActor oppositeActor = oppositePorts.get(0).getContainingActor();
 
-      // Only relevant if RV > 1 and opposite actor is a fork/join to remove
-      if (actorRV > 1 && oppositeActor instanceof ForkActor) {
-        final Fifo forkInputFifo = oppositeActor.getDataInputPorts().get(0).getFifo();
-        oppositePort = forkInputFifo.getSourcePort();
+      if (((DelayActor) port.getContainingActor()).getLinkedDelay().getLevel() == PersistenceLevel.NONE) {
 
-        actorToRemove.add(oppositeActor);
-        fifoToRemove.add(forkInputFifo);
-      } else if (actorRV > 1 && oppositeActor instanceof JoinActor) {
-        final Fifo joinOutputFifo = oppositeActor.getDataOutputPorts().get(0).getFifo();
-        oppositePort = joinOutputFifo.getTargetPort();
+        // Only relevant if RV > 1 and opposite actor is a fork/join to remove
+        if (actorRV > 1 && oppositeActor instanceof ForkActor) { // ForkActor before multiple Getters
+          final Fifo forkInputFifo = oppositeActor.getDataInputPorts().get(0).getFifo();
+          oppositePorts.set(0, forkInputFifo.getSourcePort());
 
-        actorToRemove.add(oppositeActor);
-        fifoToRemove.add(joinOutputFifo);
+          actorToRemove.add(oppositeActor);
+          fifoToRemove.add(forkInputFifo);
+        } else if (actorRV > 1 && oppositeActor instanceof JoinActor) { // JoinActor before multiple Setters
+          final Fifo joinOutputFifo = oppositeActor.getDataOutputPorts().get(0).getFifo();
+          oppositePorts.set(0, joinOutputFifo.getTargetPort());
+
+          actorToRemove.add(oppositeActor);
+          fifoToRemove.add(joinOutputFifo);
+        } else if (foundActor instanceof EndActor && oppositeActor instanceof JoinActor) { // JoinActor before a Getter
+          final List<Fifo> joinInputFifos = oppositeActor.getDataInputPorts().stream().map(DataPort::getFifo).toList();
+          oppositePorts.clear();
+          oppositePorts.addAll(joinInputFifos.stream().map(f -> (DataPort) f.getSourcePort()).toList());
+
+          actorToRemove.add(oppositeActor);
+          fifoToRemove.addAll(joinInputFifos);
+        } else if (foundActor instanceof InitActor && oppositeActor instanceof ForkActor) { // ForkActor after a Setter
+          final List<
+              Fifo> forkOutputFifos = oppositeActor.getDataOutputPorts().stream().map(DataPort::getFifo).toList();
+          oppositePorts.clear();
+          oppositePorts.addAll(forkOutputFifos.stream().map(f -> (DataPort) f.getTargetPort()).toList());
+
+          actorToRemove.add(oppositeActor);
+          fifoToRemove.addAll(forkOutputFifos);
+        }
+
       }
 
-      final AbstractActor actorToAdd = oppositePort.getContainingActor();
+      final List<AbstractActor> actorsToAdd = new ArrayList<>(
+          oppositePorts.stream().map(DataPort::getContainingActor).toList());
+      // final AbstractActor actorToAdd = oppositePorts.getContainingActor();
       // Update the DataPort name to match the one of the corresponding port
-      final String portName = oppositePort.getName();
+      final String portName = oppositePorts.get(0).getName();
       port.setName(portName);
       // Add the actor to the list
-      list.add(actorToAdd);
+      // list.add(actorToAdd);
+      list.addAll(actorsToAdd);
       // Remove actor and FIFO from the result graph
       actorToRemove.add(foundActor);
       fifoToRemove.add(fifo);
@@ -1045,19 +1069,19 @@ public class PiSDFToSingleRate extends PiMMSwitch<Boolean> {
     final long setterRate = delayActor.getDataInputPort().getIncomingFifo().getSourcePort().getExpression().evaluate();
     final long getterRate = delayActor.getDataOutputPort().getOutgoingFifo().getTargetPort().getExpression().evaluate();
     final long delayRate = fifo.getDelay().getExpression().evaluate();
-    if (setterRate > delayRate) {
+    if (setterRate > delayRate || delayRate % setterRate != 0) {
       final String setterActorName = delayActor.getDataInputPort().getIncomingFifo().getSourcePort()
           .getContainingActor().getVertexPath();
       final String setterActorPortName = delayActor.getDataInputPort().getIncomingFifo().getSourcePort().getName();
-      throw new PreesmRuntimeException(
-          "Delay setter [" + setterActorName + ":" + setterActorPortName + "] rate cannot be greater than its delay.");
+      throw new PreesmRuntimeException("Delay setter [" + setterActorName + ":" + setterActorPortName
+          + "] rate must be >= to its delay, and be a divisor.");
     }
-    if (getterRate > delayRate) {
+    if (getterRate > delayRate || delayRate % getterRate != 0) {
       final String getterActorName = delayActor.getDataOutputPort().getOutgoingFifo().getTargetPort()
           .getContainingActor().getVertexPath();
       final String getterActorPortName = delayActor.getDataOutputPort().getOutgoingFifo().getTargetPort().getName();
-      throw new PreesmRuntimeException(
-          "Delay getter [" + getterActorName + ":" + getterActorPortName + "] rate cannot be greater than its delay.");
+      throw new PreesmRuntimeException("Delay getter [" + getterActorName + ":" + getterActorPortName
+          + "] rate must be >= to its delay, and be a divisor.");
     }
 
     // 1. We split the current actor in two for more convenience
