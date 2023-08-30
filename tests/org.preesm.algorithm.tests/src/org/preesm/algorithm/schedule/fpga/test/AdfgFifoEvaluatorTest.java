@@ -22,7 +22,7 @@ import org.preesm.model.slam.generator.ArchitecturesGenerator;
 public class AdfgFifoEvaluatorTest {
 
   @Test
-  public void DiamondPerfectPipelineTest() {
+  public void diamondPerfectPipelineTest() {
     final List<
         Long> fifoSize = createExecuteDiamondGraph(List.of("10", "10", "1", "100"), List.of("10", "10", "1", "100"));
     Assert.assertEquals(2 * 32L, (long) fifoSize.get(0));
@@ -32,7 +32,7 @@ public class AdfgFifoEvaluatorTest {
   }
 
   @Test
-  public void DiamondSlowInputTest() {
+  public void diamondSlowInputTest() {
     final List<
         Long> fifoSize = createExecuteDiamondGraph(List.of("20", "10", "1", "100"), List.of("20", "10", "1", "100"));
     Assert.assertEquals(12 * 32L, (long) fifoSize.get(0));
@@ -42,7 +42,7 @@ public class AdfgFifoEvaluatorTest {
   }
 
   @Test
-  public void DiamondSlowOutputTest() {
+  public void diamondSlowOutputTest() {
     final List<
         Long> fifoSize = createExecuteDiamondGraph(List.of("10", "10", "1", "200"), List.of("10", "10", "1", "200"));
     Assert.assertEquals(2 * 32L, (long) fifoSize.get(0));
@@ -52,7 +52,7 @@ public class AdfgFifoEvaluatorTest {
   }
 
   @Test
-  public void DiamondLatencyBTest() {
+  public void diamondLatencyBTest() {
     final List<
         Long> fifoSize = createExecuteDiamondGraph(List.of("10", "20", "1", "100"), List.of("10", "10", "1", "100"));
     Assert.assertEquals(2 * 32L, (long) fifoSize.get(0));
@@ -62,7 +62,7 @@ public class AdfgFifoEvaluatorTest {
   }
 
   @Test
-  public void DiamondLatencyCTest() {
+  public void diamondLatencyCTest() {
     final List<
         Long> fifoSize = createExecuteDiamondGraph(List.of("10", "10", "4", "100"), List.of("10", "10", "1", "100"));
     Assert.assertEquals(4 * 32L, (long) fifoSize.get(0));
@@ -72,25 +72,25 @@ public class AdfgFifoEvaluatorTest {
   }
 
   @Test
-  public void ChainPerfectPipelineTest() {
+  public void chainPerfectPipelineTest() {
     final Long fifoSize = createExecuteChainGraph(List.of("10", "10"), List.of("10", "10"));
     Assert.assertEquals((long) fifoSize, 2 * 32L);
   }
 
   @Test
-  public void ChainSlowInputTest() {
+  public void chainSlowInputTest() {
     final Long fifoSize = createExecuteChainGraph(List.of("20", "10"), List.of("20", "10"));
     Assert.assertEquals((long) fifoSize, 12 * 32L);
   }
 
   @Test
-  public void ChainSlowOutputTest() {
+  public void chainSlowOutputTest() {
     final Long fifoSize = createExecuteChainGraph(List.of("10", "20"), List.of("10", "20"));
     Assert.assertEquals((long) fifoSize, 12 * 32L);
   }
 
   @Test
-  public void ChainLatencyTest() {
+  public void chainLatencyTest() {
     final Long fifoSize = createExecuteChainGraph(List.of("20", "20"), List.of("10", "10"));
     Assert.assertEquals((long) fifoSize, 11 * 32L);
   }

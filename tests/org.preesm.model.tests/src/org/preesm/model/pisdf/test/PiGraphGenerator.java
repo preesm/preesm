@@ -8,6 +8,11 @@ import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.pisdf.factory.PiMMUserFactory;
 
 public class PiGraphGenerator {
+
+  private PiGraphGenerator() {
+    // forbid instantiation
+  }
+
   public static PiGraph createChainGraph() {
     final Actor actorA = PiMMUserFactory.instance.createActor("A");
     final DataOutputPort aOut = PiMMUserFactory.instance.createDataOutputPort("A.out");
