@@ -1,9 +1,11 @@
-package org.preesm.algorithm.schedule.fpga;
+package org.preesm.algorithm.schedule.fpga.test;
 
 import java.util.List;
 import org.junit.Assert;
 import org.junit.Test;
 import org.preesm.algorithm.schedule.fpga.AbstractGenericFpgaFifoEvaluator.AnalysisResultFPGA;
+import org.preesm.algorithm.schedule.fpga.AdfgOjalgoFpgaFifoEvaluator;
+import org.preesm.algorithm.schedule.fpga.FpgaAnalysisMainTask;
 import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.Fifo;
 import org.preesm.model.pisdf.PiGraph;
