@@ -84,8 +84,16 @@ public class ArchitecturesGenerator {
    * @param nbX86cores
    *          Number of cores in the generated architecture.
    */
-  public void generateAndSaveArchitecture(int nbX86cores) {
-    saveArchitecture(generatex86Architecture(nbX86cores));
+  public void generateAndSaveX86Architecture(int nbX86cores) {
+    saveArchitecture(generateX86Architecture(nbX86cores));
+  }
+
+  /**
+   * Generate and save default Fpga architecture.
+   *
+   */
+  public void generateAndSaveFpgaArchitecture() {
+    saveArchitecture(generateFpgaArchitecture());
   }
 
   /**
@@ -95,7 +103,7 @@ public class ArchitecturesGenerator {
    *          Number of cores in the generated architecture.
    * @return The generated architecture.
    */
-  public static Design generatex86Architecture(int nbX86cores) {
+  public static Design generateX86Architecture(int nbX86cores) {
     final VLNV rootVLNV = SlamFactory.eINSTANCE.createVLNV();
     rootVLNV.setName(nbX86cores + "CoresX86");
     rootVLNV.setLibrary("preesm");
