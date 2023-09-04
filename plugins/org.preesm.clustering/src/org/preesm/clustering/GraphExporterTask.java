@@ -14,6 +14,8 @@ import org.preesm.commons.doc.annotations.Port;
 import org.preesm.commons.doc.annotations.PreesmTask;
 import org.preesm.commons.doc.annotations.Value;
 import org.preesm.model.pisdf.PiGraph;
+import org.preesm.model.pisdf.check.CheckerErrorLevel;
+import org.preesm.model.pisdf.check.PiGraphConsistenceChecker;
 import org.preesm.model.pisdf.statictools.PiSDFFlattener;
 import org.preesm.model.scenario.Scenario;
 import org.preesm.ui.pisdf.util.SavePiGraph;
@@ -52,12 +54,19 @@ public class GraphExporterTask extends AbstractTaskImplementation {
 	    PiGraph inputGraph = (PiGraph) inputs.get("PiMM");
 	    Scenario scenario = (Scenario) inputs.get("scenario");
 	    
+	    final PiGraphConsistenceChecker pgcc = new PiGraphConsistenceChecker(CheckerErrorLevel.FATAL_ALL,
+	            CheckerErrorLevel.FATAL_ALL);
+	        pgcc.check(inputGraph);
+	    
 	    final String[] uriString = scenario.getAlgorithm().getUrl().split("/");
 	    String strPath = "/"+uriString[1]+"/"+uriString[2]+"/generated/";
         final IPath fromPortableString = Path.fromPortableString(strPath);
         final IFile file = ResourcesPlugin.getWorkspace().getRoot().getFile(fromPortableString);
         if(this.config) {//return flat graph
         	final PiGraph flat = PiSDFFlattener.flatten(inputGraph, false);
+    	    final PiGraphConsistenceChecker pgcc2 = new PiGraphConsistenceChecker(CheckerErrorLevel.FATAL_ALL,
+    	            CheckerErrorLevel.FATAL_ALL);
+    	        pgcc2.check(flat);
 		    IProject iProject = file.getProject();
 		    SavePiGraph.savePiGraphInFolder(iProject, fromPortableString, flat, "_wowflat");
         }else {//return hierarchical graph

@@ -35,10 +35,12 @@
  */
 package org.preesm.model.pisdf.util;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import org.preesm.commons.graph.Vertex;
 import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.AbstractVertex;
@@ -47,8 +49,6 @@ import org.preesm.model.pisdf.DataInputInterface;
 import org.preesm.model.pisdf.DataInputPort;
 import org.preesm.model.pisdf.DataOutputInterface;
 import org.preesm.model.pisdf.DataOutputPort;
-import org.preesm.model.pisdf.Delay;
-import org.preesm.model.pisdf.DelayActor;
 import org.preesm.model.pisdf.Fifo;
 import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.pisdf.SpecialActor;
@@ -75,10 +75,10 @@ public class SEQSeeker extends PiMMSwitch<Boolean> {
    */
   final List<List<AbstractActor>> identifiedSEQs;
   final List<AbstractActor>       nonClusterableList;
-  final Map<AbstractVertex, Long> actorTiming;
+  // final Map<AbstractVertex, Long> actorTiming;
 
-  final Map<AbstractActor, Long> topoOrder;
-  final int                      subgraphGen;
+  final Map<Long, List<AbstractActor>> topoOrderASAP;
+  // final int subgraphGen;
 
   /**
    * Builds a SEQSeeker based on a input graph.
@@ -93,15 +93,15 @@ public class SEQSeeker extends PiMMSwitch<Boolean> {
    *          no
    */
   public SEQSeeker(final PiGraph inputGraph, int numberOfPEs, Map<AbstractVertex, Long> brv,
-      List<AbstractActor> nonClusterableList, Map<AbstractVertex, Long> actorTiming, int subgraphGen) {
+      List<AbstractActor> nonClusterableList) {
     this.graph = inputGraph;
     this.identifiedSEQs = new LinkedList<>();
     this.nPEs = numberOfPEs;
     this.brv = brv;
-    this.actorTiming = actorTiming;
-    this.topoOrder = new HashMap<>();
+    // this.actorTiming = actorTiming;
+    this.topoOrderASAP = new HashMap<>();
     this.nonClusterableList = nonClusterableList;
-    this.subgraphGen = subgraphGen;
+    // this.subgraphGen = subgraphGen;
   }
 
   /**
@@ -112,119 +112,81 @@ public class SEQSeeker extends PiMMSwitch<Boolean> {
   public List<List<AbstractActor>> seek() {
     // Clear the list of identified URCs
     this.identifiedSEQs.clear();
-    if ((!this.graph.getName().contains("seq_") && subgraphGen == 1) || (subgraphGen == 2)) {
-      // compute topological order
-      computeTopoOrder();
-      // fill seq list
-      computeSeqList(); // SpecialActor)
-    }
+    // compute topological order
+    computeTopoASAP();
+    // fill seq list
+    computeSeqList();
     // Return identified URCs
     return identifiedSEQs;
   }
 
   private void computeSeqList() {
     final List<AbstractActor> seqList = new LinkedList<>();
-    final List<AbstractActor> seqListcopy = new LinkedList<>();
-    Long rank = 0L;
-    boolean endList = false;
-    // check if ranks contain GRAIN candidate (RV< and negligible timing)
-    while (!endList) {
-      for (final AbstractActor a : this.graph.getExecutableActors()) {
-        if (brv.get(a) < nPEs && topoOrder.get(a).equals(rank) && ((seqListcopy.isEmpty())
-            || (!seqListcopy.isEmpty() && !a.getDataInputPorts().stream().anyMatch(x -> x.getFifo().isHasADelay())))) {
-          seqList.add(a);
+    // final List<AbstractActor> seqListcopy = new LinkedList<>();
+
+    // check if ranks contain sequential candidate (RV< and negligible timing)
+    for (final Entry<Long, List<AbstractActor>> entry : topoOrderASAP.entrySet()) {
+      Long sum = 0L;
+      for (final AbstractActor listActor : entry.getValue()) {
+        sum = brv.get(listActor) + sum;
+      }
+      if (sum < nPEs) {
+        for (final AbstractActor listActor : entry.getValue()) {
+          seqList.add(listActor);
         }
       }
-      // if there is more than one candidate add it to the list
-      if (seqList.isEmpty() && seqListcopy.size() > 1 || rank == this.graph.getExecutableActors().size()) {
-        endList = true;
-      } else if (seqList.isEmpty() && seqListcopy.size() == 1) {
-        seqListcopy.clear();
-      } else {
-        seqListcopy.addAll(seqList);
-
-        rank++;
-        seqList.clear();
+      if (sum >= nPEs && !seqList.isEmpty()) {
+        this.identifiedSEQs.add(seqList);
       }
 
     }
-    if (seqListcopy.size() == 1) {
-      seqListcopy.clear();
-    }
-    if (!seqListcopy.isEmpty()) {
-      this.identifiedSEQs.add(seqListcopy);
+
+    if (!seqList.isEmpty()) {
+      this.identifiedSEQs.add(seqList);
     }
   }
 
-  private void computeTopoOrder() {
-    boolean isLast = false;
-    final List<AbstractActor> curentRankList = new LinkedList<>();
-    final List<AbstractActor> nextRankList = new LinkedList<>();
-    // Init
-    for (final DataInputInterface i : graph.getDataInputInterfaces()) {
-      if (i.getDirectSuccessors().get(0) instanceof Actor || i.getDirectSuccessors().get(0) instanceof SpecialActor) {
-        this.topoOrder.put((AbstractActor) i.getDirectSuccessors().get(0), 0L);
-        curentRankList.add((AbstractActor) i.getDirectSuccessors().get(0));
-      }
-    }
+  private void computeTopoASAP() {
+    final List<AbstractActor> temp = new ArrayList<>();
+    final List<AbstractActor> entry = new ArrayList<>();
+    Long rank = 0L;
     for (final AbstractActor a : graph.getActors()) {
-      if (a.getDataInputPorts().isEmpty() && (a instanceof Actor || a instanceof SpecialActor)) {
-        this.topoOrder.put(a, 0L);
-        curentRankList.add(a);
+      temp.add(a);
+    }
+    // feed the 1st rank
+    for (final AbstractActor a : graph.getActors()) {
+      if (a.getDataInputPorts().isEmpty()) {
+        entry.add(a);
+        temp.remove(a);
       }
     }
+    topoOrderASAP.put(rank, entry);
+    // feed the rest
+    while (!temp.isEmpty()) {
+      final List<AbstractActor> list = new ArrayList<>();
+      for (final AbstractActor a : topoOrderASAP.get(rank)) {
+        for (final Vertex aa : a.getDirectSuccessors()) {
+          // this is piece of art, don't remove
+          final Long rankMatch = rank + 1;
+          if (aa.getDirectPredecessors().stream().filter(x -> x instanceof Actor || x instanceof SpecialActor)
+              .allMatch(x -> topoOrderASAP.entrySet().stream().filter(y -> y.getKey() < rankMatch)
+                  .anyMatch(y -> y.getValue().contains(x)))
+              && (!list.contains(aa))) {
+            list.add((AbstractActor) aa);
+            temp.remove(aa);
 
-    // Loop
-    Long currentRank = 1L;
-    while (!isLast) {
-      for (final AbstractActor a : curentRankList) {
-        if (!a.getDirectSuccessors().isEmpty()) {
-          for (final Vertex aa : a.getDirectSuccessors()) {
-            if (!(aa instanceof DataOutputInterface) || !(aa instanceof DelayActor)) {
-              boolean flag = false;
-              for (final DataInputPort din : ((AbstractActor) aa).getDataInputPorts()) {
-                final AbstractActor aaa = (AbstractActor) din.getFifo().getSource();
-                // for (Vertex aaa : aa.getDirectPredecessors()) {
-                if (!topoOrder.containsKey(aaa)
-                    && (aaa instanceof Actor || aaa instanceof SpecialActor || aaa instanceof PiGraph)
-                    && !din.getFifo().isHasADelay() || nextRankList.contains(aaa)) {
-                  // predecessors
-                  // are in the
-                  // list
-                  flag = true;
-                }
-              }
-              if (!flag && !topoOrder.containsKey(aa)
-                  && (aa instanceof Actor || aa instanceof SpecialActor || aa instanceof PiGraph)) {
-                topoOrder.put((AbstractActor) aa, currentRank);
-                nextRankList.add((AbstractActor) aa);
-              }
-
-            }
           }
         }
-
       }
-      if (nextRankList.isEmpty()) {
-        isLast = true;
-      }
-      curentRankList.clear();
-      curentRankList.addAll(nextRankList);
-      nextRankList.clear();
-      currentRank++;
-    }
-    // add getter setter
-    for (final Delay d : graph.getDelays()) {
-      if (d.hasGetterActor()) {
-        if (d.getGetterActor() instanceof Actor || d.getGetterActor() instanceof SpecialActor) {
-          this.topoOrder.put(d.getGetterActor(), currentRank);
-        }
-      }
-      if (d.hasSetterActor()) {
-        if (d.getSetterActor() instanceof Actor || d.getSetterActor() instanceof SpecialActor) {
-          this.topoOrder.put(d.getSetterActor(), 0L);
-        }
-      }
+      // orders the list in descending order of the execution time of the actors in the rank
+      final List<AbstractActor> sortedList = new ArrayList<>(list);
+      // Collections.sort(sortedList, (actor1, actor2) -> {
+      // final double time1 = slowestTime(actor1);
+      // final double time2 = slowestTime(actor2);
+      // return Double.compare(time2, time1);
+      // });
+      rank++;
+      topoOrderASAP.put(rank, sortedList);
     }
   }
 
@@ -278,20 +240,4 @@ public class SEQSeeker extends PiMMSwitch<Boolean> {
     return false;
   }
 
-  private int sizeofbit(String type) {
-    // TODO Auto-generated method stub
-    if (type.equals("byte") || type.equals("boolean")) {
-      return 8;
-    }
-    if (type.equals("short") || type.equals("char") || type.equals("uchar")) {
-      return 8;
-    }
-    if (type.equals("int") || type.equals("float")) {
-      return 32;
-    }
-    if (type.equals("Long") || type.equals("double")) {
-      return 64;
-    }
-    return 32;
-  }
 }

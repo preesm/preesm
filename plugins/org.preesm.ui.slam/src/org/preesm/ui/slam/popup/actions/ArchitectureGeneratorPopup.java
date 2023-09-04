@@ -49,7 +49,7 @@ import org.preesm.ui.wizards.PreesmProjectNature;
 
 /**
  * Provides commands to generate default architectures.
- * 
+ *
  * @author ahonorat
  *
  */
@@ -64,14 +64,14 @@ public class ArchitectureGeneratorPopup extends AbstractHandler {
       final IProject project = (IProject) selection.getFirstElement();
       // If it is a Preesm project, generate default design in Archi/ folder
       if (project.hasNature(PreesmProjectNature.ID)) {
-        String input = DialogUtil.askString("Generate default X86 architecture file.", "Enter the number of cores.", "",
-            new NbCoresValidator());
+        final String input = DialogUtil.askString("Generate default X86 architecture file.",
+            "Enter the number of cores.", "", new NbCoresValidator());
         if (input == null || input.isEmpty()) {
           return null;
         }
 
-        ArchitecturesGenerator generator = new ArchitecturesGenerator(project);
-        generator.generateAndSaveArchitecture(Integer.parseInt(input));
+        final ArchitecturesGenerator generator = new ArchitecturesGenerator(project);
+        generator.generateAndSaveArchitecture(Integer.parseInt(input), null);
       }
 
     } catch (final Exception e) {

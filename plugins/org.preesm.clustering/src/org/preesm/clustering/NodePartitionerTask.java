@@ -72,7 +72,6 @@ public static final String VALUE_PRINTER_IR = "IR";
 	    Scenario scenario = (Scenario) inputs.get("scenario");
 	    Design archi = (Design) inputs.get("architecture");
 	    new NodePartitioner(inputGraph,scenario,archi, archipath,workloadpath,printer).execute();
-//PiGraph graph = new NodePartitioner(inputGraph,scenario,archi, archipath,workloadpath,printer).execute();
 		return new LinkedHashMap<>();
 	}
 

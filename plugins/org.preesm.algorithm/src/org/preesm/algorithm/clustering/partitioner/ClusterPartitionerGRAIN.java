@@ -65,6 +65,7 @@ import org.preesm.model.slam.TimingType;
  * @author orenaud
  *
  */
+@SuppressWarnings("deprecation")
 public class ClusterPartitionerGRAIN {
 
   /**
@@ -195,6 +196,10 @@ public class ClusterPartitionerGRAIN {
     return 32;
   }
 
+  /**
+   * @deprecated
+   */
+  @Deprecated
   public PiGraph cluster2() {
     actorTiming();
     final Long longestParallelTiming = computelongestParallelTiming();

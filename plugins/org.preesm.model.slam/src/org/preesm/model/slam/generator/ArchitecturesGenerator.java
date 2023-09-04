@@ -62,7 +62,7 @@ import org.preesm.model.slam.utils.SlamUserFactory;
 
 /**
  * Class to generate default architectures.
- * 
+ *
  * @author ahonorat
  *
  */
@@ -79,24 +79,30 @@ public class ArchitecturesGenerator {
 
   /**
    * Generate and save default X86 architecture with the specified number or cores.
-   * 
+   *
    * @param nbX86cores
    *          Number of cores in the generated architecture.
+   * @param string
    */
-  public void generateAndSaveArchitecture(int nbX86cores) {
-    saveArchitecture(generateArchitecture(nbX86cores));
+  public void generateAndSaveArchitecture(int nbX86cores, String nodeName) {
+    saveArchitecture(generateArchitecture(nbX86cores, nodeName));
   }
 
   /**
    * Generate and save default X86 architecture with the specified number or cores.
-   * 
+   *
    * @param nbX86cores
    *          Number of cores in the generated architecture.
+   * @param nodeName
    * @return The generated architecture.
    */
-  public static Design generateArchitecture(int nbX86cores) {
-    VLNV rootVLNV = SlamFactory.eINSTANCE.createVLNV();
-    rootVLNV.setName(nbX86cores + "CoresX86");
+  public static Design generateArchitecture(int nbX86cores, String nodeName) {
+    final VLNV rootVLNV = SlamFactory.eINSTANCE.createVLNV();
+    if (nodeName == null) {
+      rootVLNV.setName(nbX86cores + "CoresX86");
+    } else {
+      rootVLNV.setName(nodeName);
+    }
     rootVLNV.setLibrary("preesm");
     rootVLNV.setVendor("ietr");
     rootVLNV.setVersion("1");
@@ -118,7 +124,7 @@ public class ArchitecturesGenerator {
     mi.setName("BUSshared_mem");
     opX86.getInterfaces().add(mi);
 
-    ComponentInstance[] cores = new ComponentInstance[nbX86cores];
+    final ComponentInstance[] cores = new ComponentInstance[nbX86cores];
     for (int i = 0; i < nbX86cores; ++i) {
       cores[i] = SlamFactory.eINSTANCE.createComponentInstance();
       cores[i].setHardwareId(i);
@@ -162,7 +168,7 @@ public class ArchitecturesGenerator {
 
   /**
    * Save the specified architecture in the Archi folder.
-   * 
+   *
    * @param design
    *          Architecture to save.
    */
@@ -173,7 +179,7 @@ public class ArchitecturesGenerator {
     if (!archiFile.exists()) {
       try {
         archiFile.create(null, false, null);
-      } catch (CoreException e) {
+      } catch (final CoreException e) {
         throw new PreesmRuntimeException(e);
       }
     }

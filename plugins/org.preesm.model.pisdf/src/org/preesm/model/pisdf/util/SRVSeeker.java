@@ -105,16 +105,6 @@ public class SRVSeeker extends PiMMSwitch<Boolean> {
   @Override
   public Boolean caseAbstractActor(AbstractActor base) {
 
-    // Check that all fifos are homogeneous and without delay
-    // final boolean homogeneousOutputRates = base.getDataOutputPorts().stream().allMatch(x ->
-    // doSwitch(x).booleanValue());
-    //
-    // final boolean homogeneousInputRates = base.getDataInputPorts().stream().allMatch(x ->
-    // doSwitch(x).booleanValue());
-    // // Return false if rates are not homogeneous or that the corresponding actor was a sink (no output)
-    // if (!homogeneousInputRates || !homogeneousOutputRates || base instanceof SpecialActor) {
-    // return false;
-    // }
     if (brv.get(base) > nPEs && !base.getName().contains("srv")) {
       final List<AbstractActor> actorSRV = new LinkedList<>();
       actorSRV.add(base);
@@ -172,7 +162,7 @@ public class SRVSeeker extends PiMMSwitch<Boolean> {
   public Boolean caseDataInputPort(DataInputPort din) {
     // Return true if rates are homogeneous and that no delay is involved
     final Fifo fifo = din.getIncomingFifo();
-    final int i = 0;
+
     // test if delay is hidden upper level
     if ((fifo.getSource() instanceof DataInputInterface)) {
       return false;
@@ -206,7 +196,7 @@ public class SRVSeeker extends PiMMSwitch<Boolean> {
   public Boolean caseDataOutputPort(DataOutputPort dout) {
     // Return true if rates are homogeneous and that no delay is involved
     final Fifo fifo = dout.getOutgoingFifo();
-    final int i = 0;
+
     if (!fifo.isHasADelay() || (fifo.isHasADelay()
         && fifo.getDelay().getExpression().evaluate() > fifo.getSourcePort().getExpression().evaluate()
         && fifo.getDelay().getExpression().evaluate() > fifo.getTargetPort().getExpression().evaluate())) {

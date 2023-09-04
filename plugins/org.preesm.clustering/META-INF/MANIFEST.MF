@@ -17,7 +17,8 @@ Import-Package: org.eclipse.core.commands,
 Require-Bundle: org.preesm.workflow;bundle-version="3.21.0",
  org.eclipse.core.runtime;bundle-version="3.25.0",
  org.preesm.algorithm;bundle-version="3.21.0",
- org.preesm.model.pisdf
+ org.preesm.model.pisdf,
+ org.preesm.model.slam
 Automatic-Module-Name: org.preesm.clustering
 Bundle-ActivationPolicy: lazy
 Bundle-RequiredExecutionEnvironment: JavaSE-17
