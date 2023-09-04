@@ -11,6 +11,7 @@ import java.util.Set;
 import java.util.logging.Level;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -23,6 +24,7 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.emf.common.util.EList;
+import org.eclipse.xtend2.lib.StringConcatenation;
 import org.preesm.algorithm.codegen.idl.Prototype;
 import org.preesm.codegen.model.Block;
 import org.preesm.codegen.model.clustering.CodegenModelGeneratorSimSDP;
@@ -58,7 +60,6 @@ import org.preesm.model.pisdf.brv.PiBRV;
 import org.preesm.model.pisdf.factory.PiMMUserFactory;
 import org.preesm.model.pisdf.util.PiSDFSubgraphBuilder;
 import org.preesm.model.scenario.Scenario;
-import org.preesm.model.scenario.ScenarioConstants;
 import org.preesm.model.scenario.generator.ScenariosGenerator;
 import org.preesm.model.scenario.util.DefaultTypeSizes;
 import org.preesm.model.scenario.util.ScenarioUserFactory;
@@ -66,6 +67,8 @@ import org.preesm.model.slam.Component;
 import org.preesm.model.slam.ComponentInstance;
 import org.preesm.model.slam.Design;
 import org.preesm.model.slam.TimingType;
+import org.preesm.model.slam.generator.ArchitecturesGenerator;
+import org.preesm.model.slam.utils.SlamUserFactory;
 import org.preesm.ui.pisdf.util.SavePiGraph;
 
 public class NodePartitioner {
@@ -95,11 +98,14 @@ public class NodePartitioner {
 	private Map<Long,String> nodeNames;
 	
 	private Map<Long,Map<AbstractActor,Long>> subs;//id node/ actor/instances
+	private List<Design> archiList = new ArrayList<>();
 	
 	static String fileError = "Error occurred during file generation: ";
 	private String graphPath="";
+	private String archiPath="";
+	private String scenariiPath="";
 	private String includePath="";
-	
+	private String workspaceLocation = ResourcesPlugin.getWorkspace().getRoot().getLocation().toString();
 	Map<Long,Map<AbstractActor,Long>> subsCopy = new HashMap<>();
 	private PiGraph topGraph = null;
 	public NodePartitioner(PiGraph graph, Scenario scenario, Design archi,String archipath,String workloadpath, String printer) {
@@ -123,13 +129,17 @@ public class NodePartitioner {
 	public PiGraph execute() {
 		final String[] uriString = graph.getUrl().split("/");
 		graphPath = File.separator+uriString[1]+File.separator+uriString[2]+"/generated/";
+		scenariiPath = File.separator+uriString[1]+"/Scenarios/generated/";
+		archiPath=File.separator+uriString[1]+"/Archi/";
 		includePath = uriString[1]+"/Code/include/";
-		
 		//0. check level
 		if( !graph.getAllChildrenGraphs().isEmpty())
 			PreesmLogger.getLogger().log(Level.INFO, "Hierarchical graphs are not handle yet, please feed a flat version");
+		
 		//1. compute the number of equivalent core
 		computeEqCore();
+		if(graph.getActorIndex()<totArchiEq)
+			PreesmLogger.getLogger().log(Level.INFO, "O(G_app)<O(G_archi) SimSDP 1.0 isn't appropriated (reduce archi or change method)");
 		//2. compute cumulative equivalent time
 		brv = PiBRV.compute(graph, BRVMethod.LCM);//test
 		computeWorkload();
@@ -162,7 +172,12 @@ public class NodePartitioner {
 		return null;
 		
 	}
-
+	  /**
+	   * Read a csv file containing implementation length on each node
+	   * compute the average implementation length
+	   * for each node compute the excess/!excess
+	   * file a structure load
+	   */
 	private void computeWorkload() {
 		//1. read file
 		if(!workloadpath.isEmpty()) {
@@ -200,7 +215,7 @@ public class NodePartitioner {
 	private void constructTop() {
 		//1. replace by an empty actor
 		topGraph.setName("top");
-		
+		int nodeIndex=0;
 		topGraph.setUrl(graphPath+topGraph.getName()+".pi");
 		for(AbstractActor pi:topGraph.getActors()) {
 			if(pi instanceof PiGraph) {
@@ -219,6 +234,7 @@ public class NodePartitioner {
 	              aEmpty.getConfigInputPorts().add(cfgInputPort);
 	            }
 	            topGraph.replaceActor(pi, aEmpty);
+	            nodeIndex++;
 			}
 		}
 		brv = PiBRV.compute(topGraph, BRVMethod.LCM);//test
@@ -270,10 +286,18 @@ public class NodePartitioner {
 		//3. export graph
 		PiBRV.compute(topGraph, BRVMethod.LCM);
 		graphExporter(topGraph);
+		final IPath fromPortableString = Path.fromPortableString(scenariiPath);
+		final IFile file2 = ResourcesPlugin.getWorkspace().getRoot().getFile(fromPortableString);
+		IProject iProject = file2.getProject();
+		ArchitecturesGenerator a = new ArchitecturesGenerator(iProject);
+		Design topArchi = ArchitecturesGenerator.generateArchitecture(nodeIndex, "top");
+		a.saveArchitecture(topArchi);
+		topArchi.setUrl(archiPath+"top.slam");
+		//archiList.add(subArchi);
 		//4. generate scenario
 		Scenario subScenario = ScenarioUserFactory.createScenario();
 		subScenario.setAlgorithm(topGraph);
-		subScenario.setDesign(archi);//temp
+		subScenario.setDesign(topArchi);
 		String codegenpath = scenario.getCodegenDirectory();
 		subScenario.setCodegenDirectory(codegenpath+"/top");
 		scenarioExporter(subScenario);
@@ -307,6 +331,7 @@ public class NodePartitioner {
 		}
 		topGraph = PiMMUserFactory.instance.copyPiGraphWithHistory(graph);
 		//3. free subs (Interface --> sink; container)
+		int nodeIndex = 0;
 		for(PiGraph subgraph: sublist) {
 			for(DataInputInterface in: subgraph.getDataInputInterfaces()) {
 				Actor src = PiMMUserFactory.instance.createActor();
@@ -335,6 +360,10 @@ public class NodePartitioner {
 	            functionArgument.setDirection(Direction.OUT);
 	            functionPrototype.getArguments().add(functionArgument);
 				generateFileH(src);
+				//set 1 because it's an interface
+				for(final Component opId: archi.getProcessingElements()) {
+			    			scenario.getTimings().setExecutionTime(src, opId, 1L);	
+			    }
 	            
 			}
 			for(DataOutputInterface out : subgraph.getDataOutputInterfaces()) {
@@ -363,7 +392,10 @@ public class NodePartitioner {
 	            functionArgument.setDirection(Direction.IN);
 	            functionPrototype.getArguments().add(functionArgument);
 				generateFileH(snk);
-
+				//set 1 because it's an interface
+				for(final Component opId: archi.getProcessingElements()) {
+			    			scenario.getTimings().setExecutionTime(snk, opId, 1L);	
+			    }
 			}
 			//merge cfg
 			for(Dependency dep: subgraph.getDependencies()) {
@@ -412,17 +444,16 @@ public class NodePartitioner {
 			
 			
 			Scenario subScenario = ScenarioUserFactory.createScenario();
-			subScenario.setDesign(archi);//temp
+			Design subArchi = archiList.get(nodeIndex);
+			subScenario.setDesign(subArchi);//temp
 			
 			subScenario.setAlgorithm(subgraph);
 			// Get com nodes and cores names
-		    final List<ComponentInstance> coreIds = new ArrayList<>(archi.getOperatorComponentInstances());
-		    final List<ComponentInstance> comNodeIds = archi.getCommunicationComponentInstances();
+		    final List<ComponentInstance> coreIds = new ArrayList<>(subArchi.getOperatorComponentInstances());
+		    final List<ComponentInstance> comNodeIds = subArchi.getCommunicationComponentInstances();
 			
 			 // Set default values for constraints, timings and simulation parameters
-		    if (subgraph.getUrl().endsWith("pi")) {
-		      fillPiScenario(subScenario, archi, subgraph);
-		    }
+		    
 		 // Add a main core (first of the list)
 		    if (!coreIds.isEmpty()) {
 		    	subScenario.getSimulationInfo().setMainOperator(coreIds.get(0));
@@ -430,8 +461,28 @@ public class NodePartitioner {
 		    if (!comNodeIds.isEmpty()) {
 		    	subScenario.getSimulationInfo().setMainComNode(comNodeIds.get(0));
 		    }
+		    
+		    //subScenario.getTimings().setExcelFileURL("");
+		    csvGenerator(subScenario, subgraph, subArchi);
+		    for(final Component opId: subArchi.getProcessingElements()) {
+		    	for(final AbstractActor aa: subgraph.getAllActors()) {
+		    		if(aa instanceof Actor)
+		    			subScenario.getTimings().setExecutionTime(aa, opId, this.scenario.getTimings().getExecutionTimeOrDefault(aa, archi.getProcessingElement(opId.getVlnv().getName())));
+		    	}
+		    	
+		    }
+		    subScenario.getTimings().getMemTimings().addAll(scenario.getTimings().getMemTimings());
+		    
+		    for(final ComponentInstance coreId : coreIds) {
+		    	for(final AbstractActor aa: subgraph.getAllActors())
+		    		if(aa instanceof Actor) {
+		    			subScenario.getConstraints().addConstraint(coreId, aa);}
+		    	subScenario.getConstraints().addConstraint(coreId, subgraph);
+		    	subScenario.getSimulationInfo().addSpecialVertexOperator(coreId);
+		    }
+		    
 		 // Add a average transfer size
-		    subScenario.getSimulationInfo().setAverageDataSize(ScenarioConstants.DEFAULT_AVG_DATA_TRANSFER_SIZE.getValue());
+		    subScenario.getSimulationInfo().setAverageDataSize(scenario.getSimulationInfo().getAverageDataSize());
 		    // Set the default data type sizes
 		    for (final Fifo f : subScenario.getAlgorithm().getAllFifos()) {
 		      final String typeName = f.getType();
@@ -439,11 +490,14 @@ public class NodePartitioner {
 		          DefaultTypeSizes.getInstance().getDefaultTypeSize(typeName));
 		    }
 		    //add constraint
+		    subScenario.getConstraints().setGroupConstraintsFileURL("");
 		    for(Entry<ComponentInstance, EList<AbstractActor>> gp: subScenario.getConstraints().getGroupConstraints()) {
 		    	for (final AbstractActor actor : subgraph.getAllActors()) {
     		        gp.getValue().add(actor);
     		      }
 		    }
+//		    for(Entry<Parameter, String> p: scenario.getParameterValues())
+//		    	subScenario.getParameterValues().add(p);
 
 			subScenario.setCodegenDirectory("/"+uriString[1]+"/Code/generated/"+subgraph.getName());
 			subScenario.setSizesAreInBit(true);
@@ -453,11 +507,51 @@ public class NodePartitioner {
 		
 		
 	}
+	private void csvGenerator(Scenario scenar, PiGraph pigraph, Design architecture) {
+		// Create the list of core_types
+        List<Component> coreTypes = new ArrayList<>(architecture.getProcessingElements()); // List of core_types
+
+        // Create the CSV header
+        StringConcatenation content = new StringConcatenation();
+        content.append("Actors;");
+		for(Component coreType: coreTypes) {
+			coreType.getVlnv().getName();
+			content.append(coreType.getVlnv().getName()+";");
+		}
+			
+		content.append("\n"); 
+
+        // Create data rows
+        for (AbstractActor actor : pigraph.getActors()) {
+        	if(actor instanceof Actor && !(actor instanceof SpecialActor)) {
+        		content.append(actor.getVertexPath().replace(graph.getName()+"/", "")+";");
+            
+
+            for (Component coreType : coreTypes) {
+                String executionTime = scenar.getTimings().getExecutionTimeOrDefault(actor, coreType);
+                content.append(executionTime);
+            }
+
+            content.append("\n");
+        	}
+        }
+String path = workspaceLocation+ scenariiPath+pigraph.getName()+".csv";
+scenar.getTimings().setExcelFileURL(scenariiPath+pigraph.getName()+".csv");
+try (FileOutputStream outputStream = new FileOutputStream(path)) {
+    byte[] bytes = content.toString().getBytes();
+    outputStream.write(bytes);
+} catch (IOException e) {
+	String errorMessage = fileError + e.getMessage();
+	PreesmLogger.getLogger().log(Level.INFO, errorMessage);
+} 
+
+    
+	}
 	private void generateFileH(Actor snk) {
-		String entry = "/home/orenaud/runtime-EclipseApplication/";
+
 		final String[] uriString = graph.getUrl().split("/");
 		String content = "// jfécekejepeu \n #ifndef "+snk.getName().toUpperCase()+"_H \n #define "+snk.getName().toUpperCase()+"_H \n void "+snk.getName()+"("+snk.getAllDataPorts().get(0).getFifo().getType()+" "+snk.getAllDataPorts().get(0).getName()+"); \n #endif";
-		String path = entry+uriString[1]+"/Code/include/"+snk.getName()+".h";
+		String path = workspaceLocation+"/"+uriString[1]+"/Code/include/"+snk.getName()+".h";
 		 try (FileOutputStream outputStream = new FileOutputStream(path)) {
 	            byte[] bytes = content.getBytes();
 	            outputStream.write(bytes);
@@ -511,7 +605,7 @@ public class NodePartitioner {
 						doutn.setExpression(dt-((rv2-rv1)*rt));
 						frk.getDataOutputPorts().add(doutn);
 						Fifo foutn = PiMMUserFactory.instance.createFifo();
-						foutn.setType(in.getFifo().getType());
+						foutn.setType(fin.getType());
 						foutn.setSourcePort(doutn);
 						foutn.setContainingGraph(key.getContainingGraph());
 					copy.getDataInputPorts().stream().filter(x->x.getName().equals(in.getName())).forEach(x -> x.setIncomingFifo(foutn));
@@ -575,6 +669,7 @@ public class NodePartitioner {
 					dout.setExpression(dt);
 					jn.getDataOutputPorts().add(dout);
 					Fifo fout = PiMMUserFactory.instance.createFifo();
+					fout.setType(out.getFifo().getType());
 					fout.setSourcePort(dout);
 					fout.setTargetPort(out.getFifo().getTargetPort());
 					fout.setContainingGraph(key.getContainingGraph());
@@ -588,6 +683,7 @@ public class NodePartitioner {
 					fin.setSourcePort(out);
 					fin.setTargetPort(din);
 					fin.setContainingGraph(key.getContainingGraph());
+					out.getFifo().setType(fout.getType());
 					
 					// connect duplicated actors to Join
 						DataInputPort dinn = PiMMUserFactory.instance.createDataInputPort();
@@ -595,6 +691,7 @@ public class NodePartitioner {
 						dinn.setExpression(dt-(rv2-rv1)*out.getFifo().getSourcePort().getExpression().evaluate());
 						jn.getDataInputPorts().add(dinn);
 						Fifo finn = PiMMUserFactory.instance.createFifo();
+						finn.setType(fout.getType());
 						finn.setTargetPort(dinn);
 						finn.setContainingGraph(key.getContainingGraph());
 					copy.getDataOutputPorts().stream().filter(x->x.getName().equals(out.getName())).forEach(x -> x.setOutgoingFifo(finn));
@@ -669,12 +766,16 @@ public class NodePartitioner {
 
 			}
 			// interconnect duplicated actor on their delayed port
-			for(int i = 0;i<=2;i++) {
-			Fifo fd = PiMMUserFactory.instance.createFifo();
-			copy.getDataOutputPorts().stream().filter(x->x.getFifo()==null).forEach(x -> x.setOutgoingFifo(fd));
-			copy.getDataInputPorts().stream().filter(x->x.getFifo()==null).forEach(x -> x.setIncomingFifo(fd));
-			fd.setContainingGraph(key.getContainingGraph());
-			}
+//			for(int i = 0;i<=2;i++) {
+//			Fifo fd = PiMMUserFactory.instance.createFifo();
+//			copy.getDataOutputPorts().stream().filter(x->x.getFifo()==null).forEach(x -> x.setOutgoingFifo(fd));
+//			copy.getDataInputPorts().stream().filter(x->x.getFifo()==null).forEach(x -> x.setIncomingFifo(fd));
+//			fd.setContainingGraph(key.getContainingGraph());
+//			}
+			//set 1 because it's an interface
+			for(final Component opId: archi.getProcessingElements()) {
+		    			scenario.getTimings().setExecutionTime(copy, opId, scenario.getTimings().getExecutionTimeOrDefault(key, opId));	
+		    }
 			//remove delay
 			((PiGraph)key.getContainingGraph()).getDelays().stream().filter(x->x.getContainingFifo().getSourcePort()==null).forEach(x->((PiGraph)key.getContainingGraph()).removeDelay(x));
 			//remove empty fifo
@@ -766,9 +867,31 @@ public class NodePartitioner {
 					}					
 				}
 			}
+			//orders the list in descending order of the execution time of the actors in the rank
+			List<AbstractActor> sortedList = new ArrayList<>(list);
+	        Collections.sort(sortedList, (actor1, actor2) -> {
+	            double time1 = slowestTime(actor1);
+	            double time2 = slowestTime(actor2);
+	            return Double.compare(time2, time1); 
+	        });
 			rank++;
-			topoOrderASAP.put(rank, list);			
+			topoOrderASAP.put(rank, sortedList);			
 		}
+	}
+	private Long slowestTime(AbstractActor actor) {
+		Long slow;
+		if(scenario.getTimings().getActorTimings().get(actor)!=null) {
+		slow = Long.valueOf(scenario.getTimings().getActorTimings().get(actor).get(0).getValue().get(TimingType.EXECUTION_TIME));
+		for(int i = 0; i<scenario.getTimings().getActorTimings().get(actor).size(); i++) {
+			Long timeSeek = Long.valueOf(scenario.getTimings().getActorTimings().get(actor).get(i).getValue().get(TimingType.EXECUTION_TIME));
+			 if(timeSeek<slow) {
+				 slow = timeSeek;
+			 }
+			}
+		}else {
+			slow=100L;
+		}
+		return slow;
 	}
 	private void computeEqTime() {
 		// total equivalent cumulative time
@@ -797,10 +920,10 @@ public class NodePartitioner {
 		}
 	}
 	private void computeEqCore() {
-		// Read tempoari archi file, extract composition and build structure
-		// file -> |Node name|coreID|freq|
+		// Read temporary architecture file, extract composition and build structure
+		// file -> |Node name|coreID|frequency|
 		File file =new File(archipath);
-		Long minFreq = (long) 10000000;//MHz
+		Long minFreq = Long.MAX_VALUE;//MHz
 		try {
             FileReader read = new FileReader(file);
             BufferedReader buffer = new BufferedReader(read);
@@ -862,20 +985,32 @@ public class NodePartitioner {
 			totArchiEq = totArchiEq + coreEq;
 		}	
 		// sort in descending order of performance
-		Long temp;
-		Long j;
-		for(Long i = 0L; i<architemp.keySet().size();i++) {
-			temp = architemp.get(i);
-	        j = i - 1;
-	        while (j >= 0 && architemp.get(j) < temp) {
-	        	archiEq.put(j+1, architemp.get(j));
-	            j = j - 1;
-	        }
-	        archiEq.put(j+1, temp);
-		}
+		//first is the one with the max number of highest frequency
 		
-		// reorder name tab
+		//if homogeneous frequency first is the one with highest core
+
+
+		// Ordonner les nœuds en fonction de archiEq, archiH et les critères donnés
+		List<Map.Entry<Long, Long>> nodeList = new ArrayList<>(architemp.entrySet());
+		nodeList.sort((node1, node2) -> Long.compare(node2.getValue(), node1.getValue())); // Tri décroissant
+
+		Long newIndex = 0L;
+		for (Map.Entry<Long, Long> entry : nodeList) {
+			archiEq.put(newIndex++, entry.getValue());
+			final IPath fromPortableString = Path.fromPortableString(scenariiPath);
+			final IFile file2 = ResourcesPlugin.getWorkspace().getRoot().getFile(fromPortableString);
+			IProject iProject = file2.getProject();
+			ArchitecturesGenerator a = new ArchitecturesGenerator(iProject);
+			Design subArchi = ArchitecturesGenerator.generateArchitecture(entry.getValue().intValue(), "Node"+(newIndex-1));
+			a.saveArchitecture(subArchi);
+			subArchi.setUrl(archiPath+"Node"+(newIndex-1)+".slam");
+			archiList.add(subArchi);
+			//a.generateAndSaveArchitecture(entry.getValue().intValue(),"Node"+(newIndex-1));
+
+		}
+
 	}
+	
 	
 
 	private void graphExporter(PiGraph printgraph) {
@@ -891,13 +1026,10 @@ public class NodePartitioner {
 		Set<Scenario> scenarios = new HashSet<>();
 		scenarios.add(scenario);
 		
-		final String[] uriString = graph.getUrl().split("/");
-		
-		String strPath = File.separator+uriString[1]+"/Scenarios/generated/";
-		final IPath fromPortableString = Path.fromPortableString(strPath);
+		final IPath fromPortableString = Path.fromPortableString(scenariiPath);
 		final IFile file = ResourcesPlugin.getWorkspace().getRoot().getFile(fromPortableString);
 		IProject iProject = file.getProject();
-		scenario.setScenarioURL(strPath+scenario.getAlgorithm().getName()+".scenario");
+		scenario.setScenarioURL(scenariiPath+scenario.getAlgorithm().getName()+".scenario");
 		ScenariosGenerator s = new ScenariosGenerator(iProject);
 		IFolder  scenarioDir = iProject.getFolder("Scenarios/generated");
 		try {
@@ -907,29 +1039,15 @@ public class NodePartitioner {
         	PreesmLogger.getLogger().log(Level.INFO, errorMessage);
 		}
 	}
+	
+	private void slamExporter(Design architecture) {
+		final IPath fromPortableString = Path.fromPortableString(scenariiPath);
+		final IFile file = ResourcesPlugin.getWorkspace().getRoot().getFile(fromPortableString);
+		IProject iProject = file.getProject();
+		ArchitecturesGenerator a = new ArchitecturesGenerator(iProject);
+		a.saveArchitecture(architecture);
+		//a.generateAndSaveArchitecture(1);
+	}
 	 
-	 private void fillPiScenario(final Scenario scenario, final Design archi, final PiGraph piGraph) {
-		    // Get com nodes and cores names
-		    scenario.setAlgorithm(piGraph);
-		    final List<ComponentInstance> coreIds = new ArrayList<>(archi.getOperatorComponentInstances());
-
-		    // for all different type of cores, add default timing
-		    for (final Component opId : archi.getProcessingElements()) {
-		      for (final AbstractActor aa : piGraph.getAllActors()) {
-		        scenario.getTimings().setExecutionTime(aa, opId, ScenarioConstants.DEFAULT_TIMING_TASK.getValue());
-		      }
-		    }
-		    // for all different type of cores, allow mapping on it
-		    for (final ComponentInstance coreId : coreIds) {
-		      for (final AbstractActor actor : piGraph.getAllActors()) {
-		        // Add constraint: aa can be run on ci
-		        scenario.getConstraints().addConstraint(coreId, actor);
-		      }
-		      // Add special actors operator id (all cores can execute special
-		      // actors)
-		      scenario.getSimulationInfo().addSpecialVertexOperator(coreId);
-		    }
-
-		  }
 
 }

@@ -25,7 +25,10 @@ import org.preesm.model.pisdf.SpecialActor;
  * @author orenaud
  *
  */
-@Deprecated
+/**
+ * @deprecated (when, why, refactoring advice...)
+ */
+@Deprecated(since = "3.16.0", forRemoval = true)
 public class GRAIN2Seeker extends PiMMSwitch<Boolean> {
 
   /**
@@ -103,8 +106,8 @@ public class GRAIN2Seeker extends PiMMSwitch<Boolean> {
       for (final AbstractActor a : this.graph.getExecutableActors()) {
         if (brv.get(a) == 1L
             && this.longestParallelTiming.floatValue() / this.actorTiming.get(a).floatValue() >= limitRatio
-            && topoOrder.get(a).equals(rank) && ((grainListcopy.isEmpty()) || (!grainListcopy.isEmpty()
-                && !a.getDataInputPorts().stream().anyMatch(x -> x.getFifo().isHasADelay())))) {
+            && topoOrder.get(a).equals(rank) && ((grainListcopy.isEmpty()) || (grainListcopy.isEmpty()
+                && !a.getDataInputPorts().stream().noneMatch(x -> x.getFifo().isHasADelay())))) {
           grainList.add(a);
         }
       }

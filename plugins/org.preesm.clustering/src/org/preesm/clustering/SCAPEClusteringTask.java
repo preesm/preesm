@@ -8,6 +8,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.logging.Level;
 import java.util.Set;
 
 import org.eclipse.core.runtime.IConfigurationElement;
@@ -19,6 +20,7 @@ import org.preesm.commons.doc.annotations.Parameter;
 import org.preesm.commons.doc.annotations.Port;
 import org.preesm.commons.doc.annotations.PreesmTask;
 import org.preesm.commons.doc.annotations.Value;
+import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.scenario.Scenario;
@@ -80,10 +82,10 @@ public class SCAPEClusteringTask extends AbstractTaskImplementation {
 	  public static final String STACK_PARAM             = "Stack size";
 	  public static final String CORE_AMOUNT_DEFAULT     = "1";          // 1
 	  public static final String CORE_PARAM              = "Core number";
-	  public static final String CLUSTERING_MODE_DEFAULT = "1";      // SCAPE1
+	  public static final String CLUSTERING_MODE_DEFAULT = "0";      // SCAPE1
 	  public static final String CLUSTERING_PARAM        = "SCAPE mode";
-	  public static final String CLUSTER_NUMBER_DEFAULT     = "1";          // 1
-	  public static final String CLUSTER_PARAM              = "Level number";
+	  public static final String LEVEL_NUMBER_DEFAULT     = "1";          // 1
+	  public static final String LEVEL_PARAM              = "Level number";
 	  public static final String NON_CLUSTER_DEFAULT              = "";
 	  public static final String NON_CLUSTER_PARAM              = "Non-cluster actor";
 
@@ -99,20 +101,25 @@ public class SCAPEClusteringTask extends AbstractTaskImplementation {
 	public Map<String, Object> execute(Map<String, Object> inputs, Map<String, String> parameters,
 			IProgressMonitor monitor, String nodeName, Workflow workflow) {
 	    // retrieve input parameter stack size
-	    String stack = parameters.get(SCAPEClusteringTask.STACK_PARAM);
-	    this.stack = Integer.decode(stack);
+	    String stackStr = parameters.get(SCAPEClusteringTask.STACK_PARAM);
+	    this.stack = Integer.decode(stackStr);
 	    // retrieve input parameter
-	    String core = parameters.get(SCAPEClusteringTask.CORE_PARAM);
-	    this.core = Integer.decode(core);
+	    String coreStr = parameters.get(SCAPEClusteringTask.CORE_PARAM);
+	    this.core = Integer.decode(coreStr);
 	 // retrieve input parameter
-	    String cluster = parameters.get(SCAPEClusteringTask.CLUSTER_PARAM);
-	    this.cluster = Integer.decode(cluster);
+	    String clusterStr = parameters.get(SCAPEClusteringTask.LEVEL_PARAM);
+	    this.cluster = Integer.decode(clusterStr);
 	    // retrieve input parameter
-	    String mode = parameters.get(SCAPEClusteringTask.CLUSTERING_PARAM);
-	    this.mode = Integer.decode(mode);
+	    String modeStr = parameters.get(SCAPEClusteringTask.CLUSTERING_PARAM);
+	    this.mode = Integer.decode(modeStr);
+	    if(!(this.mode==0L||this.mode ==1L||this.mode == 2L)) {
+	    	String errorMessage = "SCAPE mode-> 0: data// + set of config, 1: all// +set of config, 2: all//+best config";
+        	PreesmLogger.getLogger().log(Level.SEVERE, errorMessage);
+	    }
+	    
 
 	    String nonClusterable = parameters.get(SCAPEClusteringTask.NON_CLUSTER_PARAM);
-	    String[] StrNonClusterableList = nonClusterable.split("\\*");
+	    String[] nonClusterableListStr = nonClusterable.split("\\*");
 	    
 
 	    // Task inputs
@@ -120,14 +127,14 @@ public class SCAPEClusteringTask extends AbstractTaskImplementation {
 	    Scenario scenario = (Scenario) inputs.get("scenario");
 	    Design archi = (Design) inputs.get("architecture");
 	    Long stackSize = this.stack;
-	    Long coreAmount = this.core;
+	    Long coreAmount = (long) archi.getOperatorComponentInstances().size();
 	    int clusterNumber = this.cluster;
 	    int clusteringMode = this.mode;
 	    
 	    List<AbstractActor> nonClusterableList = new LinkedList<>();
-	    for(int i = 0; i < StrNonClusterableList.length;i++)
+	    for(int i = 0; i < nonClusterableListStr.length;i++)
 	    	for(AbstractActor a: inputGraph.getExecutableActors())
-	    		if(a.getName().equals(StrNonClusterableList[i]) && !nonClusterableList.contains(a))
+	    		if(a.getName().equals(nonClusterableListStr[i]) && !nonClusterableList.contains(a))
 	    			nonClusterableList.add(a);
 
 	    PiGraph tempGraph = new Clustering(inputGraph, scenario, archi, stackSize, coreAmount, clusteringMode, clusterNumber,nonClusterableList).execute2();
@@ -153,12 +160,6 @@ public class SCAPEClusteringTask extends AbstractTaskImplementation {
 	    return output;
 	}
 
-//	private boolean bool(String mode2) {
-//		if(mode2.equals("true")) {
-//			return true;
-//		}
-//		return false;
-//	}
 
 	@Override
 	public Map<String, String> getDefaultParameters() {
@@ -187,7 +188,7 @@ public class SCAPEClusteringTask extends AbstractTaskImplementation {
 		    // core default
 		    parameters.put(SCAPEClusteringTask.CORE_PARAM, SCAPEClusteringTask.CORE_AMOUNT_DEFAULT);
 		 // core default
-		    parameters.put(SCAPEClusteringTask.CLUSTER_PARAM, SCAPEClusteringTask.CLUSTER_NUMBER_DEFAULT);
+		    parameters.put(SCAPEClusteringTask.LEVEL_PARAM, SCAPEClusteringTask.LEVEL_NUMBER_DEFAULT);
 		    // mode default
 		    parameters.put(SCAPEClusteringTask.CLUSTERING_PARAM, SCAPEClusteringTask.CLUSTERING_MODE_DEFAULT);
 		 // mode default

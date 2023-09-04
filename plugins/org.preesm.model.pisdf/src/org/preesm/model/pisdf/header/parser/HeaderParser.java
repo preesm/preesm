@@ -153,39 +153,38 @@ public class HeaderParser {
   private static void parseCXXHeaderRecAux(final IASTNode nodeAST,
       LinkedList<ICPPASTNamespaceDefinition> namespaceStack, LinkedList<ICPPASTTemplateDeclaration> templateStack,
       LinkedList<IASTDeclSpecifier> returnTypeStack, List<FunctionPrototype> resultList) {
-    if (nodeAST instanceof final IASTFunctionDeclarator funcDeclor) {
 
+    if (nodeAST instanceof final IASTFunctionDeclarator funcDeclor) {
       parseFunctionDeclor(funcDeclor, namespaceStack, templateStack, returnTypeStack, resultList);
     } else if (nodeAST instanceof final IASTFunctionDefinition funcDef) {
       returnTypeStack.addLast(funcDef.getDeclSpecifier());
       parseCXXHeaderRecAux(funcDef.getDeclarator(), namespaceStack, templateStack, returnTypeStack, resultList);
       returnTypeStack.removeLast();
     } else if (nodeAST instanceof final IASTSimpleDeclaration simpleDeclon) {
-
       returnTypeStack.addLast(simpleDeclon.getDeclSpecifier());
       for (final IASTDeclarator declor : simpleDeclon.getDeclarators()) {
         parseCXXHeaderRecAux(declor, namespaceStack, templateStack, returnTypeStack, resultList);
       }
       returnTypeStack.removeLast();
-    } else if (nodeAST instanceof final ICPPASTTemplateDeclaration tempDeclon) {
 
+    } else if (nodeAST instanceof final ICPPASTTemplateDeclaration tempDeclon) {
       templateStack.addLast(tempDeclon);
       parseCXXHeaderRecAux(tempDeclon.getDeclaration(), namespaceStack, templateStack, returnTypeStack, resultList);
       templateStack.removeLast();
     } else if (nodeAST instanceof final ICPPASTNamespaceDefinition nsDef) {
-
       namespaceStack.addLast(nsDef);
       for (final IASTDeclaration declon : nsDef.getDeclarations()) {
         parseCXXHeaderRecAux(declon, namespaceStack, templateStack, returnTypeStack, resultList);
       }
       namespaceStack.removeLast();
+
     } else if (nodeAST instanceof final ICPPASTLinkageSpecification linkageSpec) {
       // inside an extern "C" block
       for (final IASTDeclaration declon : linkageSpec.getDeclarations()) {
         parseCXXHeaderRecAux(declon, namespaceStack, templateStack, returnTypeStack, resultList);
       }
-    } else if (nodeAST instanceof final IASTTranslationUnit tu) {
 
+    } else if (nodeAST instanceof final IASTTranslationUnit tu) {
       for (final IASTDeclaration declon : tu.getDeclarations()) {
         parseCXXHeaderRecAux(declon, namespaceStack, templateStack, returnTypeStack, resultList);
       }
@@ -203,12 +202,7 @@ public class HeaderParser {
           .warning(() -> DISCARD_FUNC + rawName + ". While analyzing it, multiple nested return types were found.");
       return;
     }
-    // this log is annoying if checked on all functions
-    // else if (!returnTypeStack.getFirst().getRawSignature().contains("void")) {
-    // PreesmLogger.getLogger()
-    // .warning("Return type of function " + rawName + " is not void, and will not be used by PREESM.");
-    // return;
-    // }
+
     if (templateStack.size() > 1) {
       PreesmLogger.getLogger()
           .warning(() -> DISCARD_FUNC + rawName + ". While analyzing it, multiple nested templates were found.");

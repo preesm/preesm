@@ -44,8 +44,6 @@ import org.preesm.model.pisdf.AbstractVertex;
 import org.preesm.model.pisdf.DataInputInterface;
 import org.preesm.model.pisdf.DataOutputInterface;
 import org.preesm.model.pisdf.PiGraph;
-import org.preesm.model.pisdf.brv.BRVMethod;
-import org.preesm.model.pisdf.brv.PiBRV;
 import org.preesm.model.pisdf.util.PiSDFSubgraphBuilder;
 import org.preesm.model.pisdf.util.SRVSeeker;
 import org.preesm.model.scenario.Scenario;
@@ -148,7 +146,7 @@ public class ClusterPartitionerSRV {
       }
     }
     // Compute BRV and balance actor firings between coarse and fine-grained parallelism.
-    PiBRV.compute(this.graph, BRVMethod.LCM);
+    // PiBRV.compute(this.graph, BRVMethod.LCM);
 
     return this.graph;
   }
@@ -196,7 +194,7 @@ public class ClusterPartitionerSRV {
     Long i;
     Long ncDivisor = 0L;
     for (i = 1L; i <= n; i++) {
-      if (n % i == 0 && (i > nC)) {
+      if (n % i == 0 && (i >= nC)) {
         // Sélectionne le premier diviseur qui est plus grand que nC
         ncDivisor = i;
         break; // On sort de la boucle car on a trouvé le diviseur souhaité

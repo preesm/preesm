@@ -66,13 +66,15 @@ public class ArchitectureGeneratorX86Popup extends AbstractHandler {
       // If it is a Preesm project, generate default design in Archi/ folder
       if (project.hasNature(PreesmProjectNature.ID)) {
         final String input = DialogUtil.askString("Generate default x86 architecture file.",
+
             "Enter the number of cores.", "", new NbCoresValidator());
         if (input == null || input.isEmpty()) {
           return null;
         }
 
         final ArchitecturesGenerator generator = new ArchitecturesGenerator(project);
-        generator.generateAndSaveX86Architecture(Integer.parseInt(input));
+
+        generator.generateAndSaveArchitecture(Integer.parseInt(input), null);
       }
 
     } catch (final Exception e) {

@@ -258,7 +258,7 @@ public class HeuristicLoopBreakingDelays {
 
         if (f != null) {
           final AbstractActor src = f.getSourcePort().getContainingActor();
-          if (src instanceof ExecutableActor) {
+          if (src instanceof ExecutableActor) {// && !(src instanceof SpecialActor)
             final int newNbVisitsT = this.actorsNbVisitsTopoRankT.get(src) - 1;
             this.actorsNbVisitsTopoRankT.put(src, newNbVisitsT);
             if (newNbVisitsT == 0) {

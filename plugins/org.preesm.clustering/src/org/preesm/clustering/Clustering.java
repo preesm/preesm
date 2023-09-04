@@ -9,6 +9,7 @@ import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.logging.Level;
 
 import org.preesm.algorithm.clustering.partitioner.ClusterPartitionerURC;
@@ -121,7 +122,8 @@ public class Clustering {
 		patternIDs();
 		//pipeline
 		
-		PiBRV.compute(graph, BRVMethod.LCM);
+		Map<AbstractVertex, Long> brv = PiBRV.compute(graph, BRVMethod.LCM);
+		PiBRV.printRV(brv);
 		return graph;
 		
 	}
@@ -173,11 +175,13 @@ public class Clustering {
 							newCluster = new ClusterPartitionerURC(g, scenario, coreNumber.intValue(),rv,clusterId,nonClusterableList).cluster();//URC transfo
 						if(graph.getAllChildrenGraphs().size()==size)
 							newCluster = new ClusterPartitionerSRV(g, scenario, coreNumber.intValue(),rv,clusterId,nonClusterableList).cluster();//SRV transfo
-						//if(graph.getAllChildrenGraphs().size()==size)
-							//newCluster = new ClusterPartitionerSEQ(g, scenario, coreNumber.intValue(),rv,clusterId,nonClusterableList,archi).cluster();//SEQ transfo
-						if(graph.getAllChildrenGraphs().size()==size)
+						if(graph.getAllChildrenGraphs().size()==size) {
+							newCluster = new ClusterPartitionerSEQ(g, scenario, coreNumber.intValue(),rv,clusterId,nonClusterableList,archi).cluster();//SEQ transfo
 							isHasCluster = false;
-						if(!newCluster.getChildrenGraphs().isEmpty()) {
+						}
+							if(graph.getAllChildrenGraphs().size()==size)
+							isHasCluster = false;
+						if(!newCluster.getChildrenGraphs().isEmpty()&&!isHasCluster) {
 							cluster(newCluster.getChildrenGraphs().get(0));
 							clusterId++;
 						}
@@ -275,7 +279,7 @@ public class Clustering {
 	        rv = PiBRV.compute(g, BRVMethod.LCM);
 	        final Collection<Block> codeBlocks = generator.generate(isLastCluster, rv,loopedBuffer);// 2
 	        for(Block b : codeBlocks) {
-	        	if(previousInitFunc!="")
+	        	if(!"".equals(previousInitFunc))
 	        		((ClusterRaiserBlock) b).setInitFunc(previousInitFunc);
 	        	if(((ClusterRaiserBlock) b).getInitBuffers()!=null ||((ClusterRaiserBlock) b).getInitBlock()!=null) {
 	        		previousInitFunc = b.getName();
@@ -358,7 +362,7 @@ public class Clustering {
 	   * @param value
 	   *          highest divisor of brv(loop) just above the number of processing element
 	   */
-	private void PipLoopTransfo(AbstractActor oEmpty, Long value) {
+	private void pipLoopTransfo(AbstractActor oEmpty, Long value) {
 		List<AbstractActor> dupActorsList = new LinkedList<>();	
 		for(int i = 1;i< value;i++) {
 			AbstractActor dupActor = PiMMUserFactory.instance.copy(oEmpty);
@@ -663,12 +667,12 @@ public class Clustering {
 	  private String registerClusterSchedule(PiGraph graph, Map<AbstractVertex, Long> rv) {
 		  // Schedule subgraph
 
-		    String result = "";
+		  StringBuilder result = new StringBuilder();
 		    List<AbstractActor> actorList = graph.getAllExecutableActors();
 
 		    if(rv.size()==1) {
-		    	result = rv.get(actorList.get(0)) +"("+ actorList.get(0).getName()+")";
-		    	return result;
+		    	result.append(rv.get(actorList.get(0)) +"("+ actorList.get(0).getName()+")") ;
+		    	return result.toString();
 
 		    }
 		    // Compute BRV
@@ -726,8 +730,7 @@ public class Clustering {
 		    	  }
 	    	  for(AbstractActor a: actorList) {
 	    		  flag = 0;
-	    		  if(a.getDataInputPorts().isEmpty()) {
-	    			  if(!actorListOrdered.contains(a)) {//s'il ne contient pas déja l'acteur
+	    		  if(a.getDataInputPorts().isEmpty() && (!actorListOrdered.contains(a))) {//s'il ne contient pas déja l'acteur
 	    				  for(int i=0;i<a.getDataInputPorts().size();i++)
 	    					  if(actorListOrdered.contains(a.getDataInputPorts().get(i).getFifo().getSource())) {
 	    						  flag++;
@@ -736,16 +739,15 @@ public class Clustering {
 	    					  actorListOrdered.add(a);
 	    						  totalsize--;
 	    				  }
-	    			  }
+	    			  
 	    		  }
 	    	  }
 		      }else {
 		    	  for(AbstractActor a: actorList) {
-		    		  if(a.getDataInputPorts().isEmpty()) {
-		    			  if(!actorListOrdered.contains(a)) {
+		    		  if(a.getDataInputPorts().isEmpty() && (!actorListOrdered.contains(a))) {
 		    			  actorListOrdered.add(a);
 		    			  totalsize--;
-		    			  }
+		    			  
 		    		  }
 		    	  }
 		      }
@@ -806,7 +808,7 @@ public class Clustering {
 
 			      //find pair with the biggest repetition count
 
-			      if (result == "") {
+			      if (result.isEmpty()) {
 			    	   maxLeft = null;
 				       maxRight = null;
 				       max = (long) 0;
@@ -831,9 +833,9 @@ public class Clustering {
 			    	  for (int i = 0; i < actorList.size(); i++) {
 			    		  int rang = actorList.size()-i-1;
 			    		  if(actorList.get(rang) instanceof Actor||actorList.get(rang) instanceof SpecialActor)
-			    		  result = result+"*"+actorList.get(rang).getName();
+			    			  result.append("*"+actorList.get(rang).getName());
 			    	  }
-			    	  return result;
+			    	  return result.toString();
 			      }
 			      if(repetitionVector.get(maxLeft)==null) {
 			    	  boolean hasPredecessor = false;
@@ -843,16 +845,14 @@ public class Clustering {
 				        	if (repetitionCount.get(actorList.get(rang)).containsKey(maxRight)&&!hasPredecessor) {
 				              max = repetitionCount.get(actorList.get(rang)).get(maxRight);
 				              maxLeft = actorList.get(rang);
-				              //maxRight =  maxRight;
 				              hasPredecessor = true;
 
 				            }
 
 				        }
 				        }
-			    	  if(!hasPredecessor)
+			    	  if(!hasPredecessor) {
 						for (AbstractActor element : actorList) {
-			    			  //int rang = actorList.size()-i-1;
 
 				        if(repetitionCount.containsKey(maxRight)) {//if maxRight to left
 				        	if (repetitionCount.get(maxRight).containsKey(element)&&!hasPredecessor) {
@@ -862,7 +862,7 @@ public class Clustering {
 					              hasPredecessor = true;
 					            }
 				        }
-			    		  }
+			    		  }}
 			      }else if(repetitionVector.get(maxRight)==null) {
 			    	  boolean hasSuccessor = false;
 			    	  for (int i = 0; i < actorList.size(); i++) {
@@ -877,26 +877,26 @@ public class Clustering {
 				            }
 
 				        }}
-			    	  if(!hasSuccessor)
+			    	  if(!hasSuccessor) {
 			    	  for (int i = 0; i < actorList.size(); i++) {
-			    		  //int rang = actorList.size()-i-1;
 				        if (repetitionCount.containsKey(maxLeft)) { //if maxLeft to left
 				        	if (repetitionCount.get(maxLeft).containsKey(actorList.get(i))&&!hasSuccessor) {
 					              max = repetitionCount.get(maxLeft).get(actorList.get(i));
 					              maxRight = actorList.get(i);
-					              //maxLeft = maxLeft;
 					              hasSuccessor = true;
 					            }
 
 					        }
 				      }
+			    	  }
 			      }
+			      
 			      // compute String schedule
-			      if (result == "") {
+			      if (result.isEmpty()) {
 			        if (max == 1) {
-			          result = maxLeft.getName() + "*" + maxRight.getName();
+			          result.append(maxLeft.getName() + "*" + maxRight.getName());
 			        } else {
-			          result = String.valueOf(max) + "(" + maxLeft.getName() + "*" + maxRight.getName() + ")";
+			          result.append(String.valueOf(max) + "(" + maxLeft.getName() + "*" + maxRight.getName() + ")");
 			        }
 			        lastIndex = max;
 			        if (maxRight.getDataInputPorts().size() > maxLeft.getDataOutputPorts().size())
@@ -906,84 +906,84 @@ public class Clustering {
 			      } else {
 			    	  if(repetitionVector.get(maxRight)==null ||repetitionVector.get(maxLeft)==null) {// si bout de queue
 			    		  for(AbstractVertex a: repetitionVector.keySet())
-			    			  if(!result.contains(a.getName()))
-			    				  result = result +"*"+a.getName();
-			    		  return result;
+			    			  if(!result.toString().contains(a.getName()))
+			    				  result.append("*"+a.getName());
+			    		  return result.toString();
 			    	  }
 			        if (repetitionVector.get(maxRight)==1 && repetitionVector.get(maxLeft)==1 ) {
 			        	//if rv = 1*
 			        	if(maxRight !=null)
-			        		if(!result.contains(maxRight.getName())){//si g avant d
-			        			result = result  + "*" +maxRight.getName() ;
+			        		if(!result.toString().contains(maxRight.getName())){//si g avant d
+			        			result.append("*" +maxRight.getName()) ;
 			        			removeRight = true;
 			        		} else {
-			        			result = maxLeft.getName()  + "*" + result ;}
+			        			result.insert(0, maxLeft.getName()  + "*" ) ;}
 			        		 lastIndex = (long) 1;
 
 			        } else if (repetitionVector.get(maxRight)>1 || repetitionVector.get(maxLeft)>1){
 			        	// if same loop
-			        	if(!result.contains(maxRight.getName())) { //ajout de maxRight
+			        	if(!result.toString().contains(maxRight.getName())) { //ajout de maxRight
 			        		//add loop
-				        	if(repetitionVector.get(maxRight)==lastIndex) {
+				        	if(Objects.equals(repetitionVector.get(maxRight), lastIndex)) {
 				        		if(repetitionVector.get(maxRight)>1) {
-						        	if(result.contains(repetitionVector.get(maxRight)+"(")&& result.indexOf(String.valueOf(repetitionVector.get(maxRight)))==0) {
-						        		String temp = result.replace(repetitionVector.get(maxRight)+"(", "");
-
-						        		result = temp.replaceFirst("\\)", "");
-						        		result = repetitionVector.get(maxRight)+"("+result  + "*" +maxRight.getName()+")" ;
-						        	}else if(result.contains(repetitionVector.get(maxRight)+"(")&& result.indexOf(String.valueOf(repetitionVector.get(maxRight)))!=0){
-						        		char[] temp = result.toCharArray();
+						        	if(result.toString().contains(repetitionVector.get(maxRight)+"(")&& result.indexOf(String.valueOf(repetitionVector.get(maxRight)))==0) {
+						        		String temp = result.toString().replace(repetitionVector.get(maxRight)+"(", "");
+						        		StringBuilder temp2 = new StringBuilder(temp.replaceFirst("\\)", ""));
+						        		result = temp2;
+						        		result.insert(0,repetitionVector.get(maxRight)+"(");
+						        		result.append("*" +maxRight.getName()+")" );
+						        	}else if(result.toString().contains(repetitionVector.get(maxRight)+"(")&& result.indexOf(String.valueOf(repetitionVector.get(maxRight)))!=0){
+						        		char[] temp = result.toString().toCharArray();
 						        		String tempi = "";
 						        		for(int i = 0; i<temp.length-2;i++) {
 						        			tempi = tempi+temp[i];
 						        		}
-						        		result = tempi+ "*" +maxRight.getName()+")" ;
+						        		result = new StringBuilder(tempi+ "*" +maxRight.getName()+")") ;
 						        	}
 
 					        	lastIndex =repetitionVector.get(maxRight);
 
 				        	}else {
-				        		result = result  + "*" +maxRight.getName() ;
+				        		result.append("*" +maxRight.getName() ) ;
 				        		lastIndex = (long) 1;
 				        	}
 				        	}else {
 				        		// add into prec loop
 				        		if(Long.valueOf(result.charAt(result.lastIndexOf("(")-1)).equals(repetitionVector.get(maxRight))) {// si la derniere loop est egale au rv
-			        				result.replace(repetitionVector.get(maxRight)+"(", "");
+			        				result.toString().replace(repetitionVector.get(maxRight)+"(", "");
 
 			        			}else {
-			        				//result =  result +  ;
 			        			}
-			        			result = result +"*"+repetitionVector.get(maxRight)+"("+maxRight.getName()+")";
+			        			result.append("*"+repetitionVector.get(maxRight)+"("+maxRight.getName()+")");
 			        			lastIndex =repetitionVector.get(maxRight);
 				        	}
 			        		removeRight = true;
-			        	}else if(!result.contains(maxLeft.getName())) { //ajout de maxLeft
-				        	if(repetitionVector.get(maxLeft)==lastIndex) {
+			        	}else if(!result.toString().contains(maxLeft.getName())) { //ajout de maxLeft
+				        	if(Objects.equals(repetitionVector.get(maxLeft), lastIndex)) {
 				        		if(repetitionVector.get(maxLeft)>1) {
-					        	if(result.contains(repetitionVector.get(maxLeft)+"(")) {
-					        		String temp = result.replace(repetitionVector.get(maxLeft)+"(", "");
-					        		result = temp;//.replaceFirst("\\)", "");
+					        	if(result.toString().contains(repetitionVector.get(maxLeft)+"(")) {
+					        		StringBuilder temp = new StringBuilder(result.toString().replace(repetitionVector.get(maxLeft)+"(", ""));
+					        		result = temp;
 					        	}
-					        	result = repetitionVector.get(maxLeft)+"("+maxLeft.getName()  + "*" + result ;
+					        	result.insert(0, repetitionVector.get(maxLeft)+"("+maxLeft.getName()  + "*");
 					        	lastIndex =repetitionVector.get(maxLeft);
 				        	}else {
-				        		result = maxLeft.getName()  + "*" + result;
+				        		result.insert(0, maxLeft.getName()  + "*" );
 				        		lastIndex = (long) 1;
 				        	}
 				        	}else {
-				        		String[] temp = result.split("\\(");
+				        		String[] temp = result.toString().split("\\(");
 				        		if(temp[0].equals(repetitionVector.get(maxLeft))) {// in first position : result.contains(repetitionVector.get(maxLeft)+"(")
-			        				String tempo = result.replace(repetitionVector.get(maxLeft)+"(", "");
+			        				StringBuilder tempo = new StringBuilder(result.toString().replace(repetitionVector.get(maxLeft)+"(", ""));
 			        				result = tempo;
-			        				result = repetitionVector.get(maxLeft)+"("+maxLeft.getName()+ result ;
+			        				result.insert(0, repetitionVector.get(maxLeft)+"("+maxLeft.getName()) ;
 				        			lastIndex =repetitionVector.get(maxLeft);
 			        			}else if(repetitionVector.get(maxLeft)>1){
-			        				result = ")" + "*" + result ;
-			        				result = repetitionVector.get(maxLeft)+"("+maxLeft.getName()+ result ;
+			        				result.insert(0,  ")" + "*" ) ;
+			        				result.insert(0, repetitionVector.get(maxLeft)+"("+maxLeft.getName());
 				        			lastIndex =repetitionVector.get(maxLeft);
 			        			}else {
-			        				result = maxLeft.getName()+"*"+ result;
+			        				result.insert(0, maxLeft.getName()+"*");
 			        				lastIndex = (long) 1;
 			        			}
 
@@ -995,23 +995,23 @@ public class Clustering {
 			        }else {
 			        	// if not same loop
 
-			        	if(!result.contains(maxRight.getName())){//si g avant d
+			        	if(!result.toString().contains(maxRight.getName())){//si g avant d
 			        		if(Long.valueOf(result.charAt(result.lastIndexOf("(")-1)).equals(repetitionVector.get(maxRight))) {// si la derniere loop est egale au rv
-		        				result.replace(repetitionVector.get(maxRight)+"(", "");
+		        				result.toString().replace(repetitionVector.get(maxRight)+"(", "");
 
 		        			}else {
-		        				result = ")" + "*" + result ;
+		        				result.insert(0, ")" + "*" ) ;
 		        			}
-		        			result = result +"*"+repetitionVector.get(maxRight)+"("+maxRight.getName()+")";
+		        			result.append("*"+repetitionVector.get(maxRight)+"("+maxRight.getName()+")");
 		        			removeRight = true;
 			        	}else {
-		        			if(result.contains(repetitionVector.get(maxLeft)+"(")) {
-		        				String temp = result.replace(repetitionVector.get(maxLeft)+"(", "");
+		        			if(result.toString().contains(repetitionVector.get(maxLeft)+"(")) {
+		        				StringBuilder temp = new StringBuilder(result.toString().replace(repetitionVector.get(maxLeft)+"(", ""));
 		        				result = temp;
 		        			}else {
-		        				result = ")" + "*" + result ;
+		        				result.insert(0,")" + "*" ) ;
 		        			}
-		        			result = repetitionVector.get(maxLeft)+"("+maxLeft.getName() +"*"+ result ;
+		        			result.insert(0,repetitionVector.get(maxLeft)+"("+maxLeft.getName() ) ;
 			        	}
 
 			        }
@@ -1025,8 +1025,8 @@ public class Clustering {
 			          if(repetitionCount.containsKey(a))
 			            if (repetitionCount.get(a).containsKey(maxLeft)) {
 			              for(AbstractVertex aa :repetitionCount.get(maxLeft).keySet())
-			            	  if(!a.equals(aa))
-			            	  repetitionCount.get(a).put(aa, repetitionCount.get(maxLeft).get(aa));
+			            	  if(!a.equals(aa)) {
+			            	  repetitionCount.get(a).put(aa, repetitionCount.get(maxLeft).get(aa));}
 			              repetitionCount.get(a).remove(maxLeft);
 			            }
 
@@ -1043,22 +1043,22 @@ public class Clustering {
 			        for (AbstractActor a : graph.getAllExecutableActors()) {
 				          if(repetitionCount.containsKey(a))
 				            if (repetitionCount.get(a).containsKey(maxRight)) {
-				            	if(repetitionCount.containsKey(maxRight))
-				            	if(!repetitionCount.get(maxRight).entrySet().isEmpty())
+				            	if(repetitionCount.containsKey(maxRight)) {
+				            	if(!repetitionCount.get(maxRight).entrySet().isEmpty()) {
 				              for(AbstractVertex aa :repetitionCount.get(maxRight).keySet())
 				            	  if(!a.equals(aa))
-				            	  repetitionCount.get(a).put(aa, repetitionCount.get(maxRight).get(aa));
+				            		  repetitionCount.get(a).put(aa, repetitionCount.get(maxRight).get(aa));
 				              repetitionCount.get(a).remove(maxRight);
-				            }
+				            }}}
 
 				        }
 			        repetitionCount.remove(maxRight);
 			      }
 			    }
 
-
-		    return result;
-	  }
+			   
+		    return result.toString();
+			     }
 	  /**
 	   * Used to compute the greatest common denominator between 2 long values
 	   *

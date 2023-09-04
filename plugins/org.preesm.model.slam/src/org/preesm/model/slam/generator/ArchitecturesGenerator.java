@@ -105,6 +105,7 @@ public class ArchitecturesGenerator {
   public void generateAndSaveArchitecture(Map<String, Integer> cores, String nodeName, Double communicationRate,
       int coreIDStart) {
     saveArchitecture(generateArchitecture(cores, nodeName, communicationRate, coreIDStart));
+
   }
 
   /**
@@ -124,6 +125,7 @@ public class ArchitecturesGenerator {
     rootVLNV.setName(nbX86cores + "CoresX86");
 
     rootVLNV.setLibrary(LIBRARY_NAME);
+
     rootVLNV.setVendor("ietr");
     rootVLNV.setVersion("1");
 

@@ -41,6 +41,12 @@ import org.preesm.algorithm.clustering.ClusteringHelper;
 import org.preesm.algorithm.pisdf.autodelays.AutoDelaysTask;
 import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.AbstractVertex;
+import org.preesm.model.pisdf.ConfigInputInterface;
+import org.preesm.model.pisdf.DataInputInterface;
+import org.preesm.model.pisdf.DataOutputInterface;
+import org.preesm.model.pisdf.Dependency;
+import org.preesm.model.pisdf.Fifo;
+import org.preesm.model.pisdf.Parameter;
 import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.pisdf.brv.BRVMethod;
 import org.preesm.model.pisdf.brv.PiBRV;
@@ -117,51 +123,127 @@ public class ClusterPartitionerSEQ {
 
   public PiGraph cluster() {
 
-    // TODO: Look for actor groups other than SEQ chains.
-    // Retrieve SEQ chains in input graph and verify that actors share component constraints.
-    if (this.graph.getAllDelays().size() == 0) {
-      final List<List<AbstractActor>> graphSEQs = new SEQSeeker(this.graph, this.numberOfPEs, this.brv,
-          nonClusterableList, brv, 1).seek();
+    // Look for actor groups other than SEQ chains.
+    // if (this.graph.getAllDelays().size() == 0) {
+    // if (this.graph.getChildrenGraphs().isEmpty()) {
+    final List<List<
+        AbstractActor>> graphSEQs = new SEQSeeker(this.graph, this.numberOfPEs, this.brv, nonClusterableList).seek();
 
-      // List<List<AbstractActor>> constrainedSEQs = new LinkedList<>();
-      // if (!graphSEQs.isEmpty()) {
-      // List<AbstractActor> SEQ = graphSEQs.get(0);// cluster one by one //
-      // for (List<AbstractActor> SRV : graphSRVs) {
-      // if (!ClusteringHelper.getListOfCommonComponent(SEQ, this.scenario).isEmpty()) {
-      // constrainedSEQs.add(SEQ);
+    // Subgraph 1st generation
+
+    if (!graphSEQs.isEmpty()) {
+      final List<AbstractActor> seq = graphSEQs.get(0);// cluster one by one
+      final PiGraph subGraph = new PiSDFSubgraphBuilder(this.graph, seq, "seq_" + clusterId).build();
+      int numberOfCut = numberOfPEs - 1;
+      if (subGraph.getExecutableActors().size() < numberOfPEs) {
+        numberOfCut = subGraph.getExecutableActors().size() - 1;
+      }
+      PiBRV.compute(this.graph, BRVMethod.LCM);
+      for (final ComponentInstance component : ClusteringHelper.getListOfCommonComponent(seq, this.scenario)) {
+        this.scenario.getConstraints().addConstraint(component, subGraph);
+      }
+      final PiGraph subGraphCutted = AutoDelaysTask.addDelays(subGraph, archi, scenario, false, false, false,
+          numberOfPEs, numberOfCut, numberOfCut + 1);// subGraphCutted
+      graph.replaceActor(subGraph, subGraphCutted);
+      // partiallyFlatten(subGraphCutted);
+
+    }
+    // }
+    return this.graph;
+  }
+
+  // temporary func.
+  private void partiallyFlatten(PiGraph graph) {
+    final PiGraph parentGraph = graph.getContainingPiGraph();
+    // Substitute subgraph parameters with expression set in their parent graph
+    // /!\ Getting prod and cons rate from the subgraph will no longer
+    // be possible afterwards, unless it is copied in the parent.
+
+    // ...
+    // Connect FIFO that were connected to ports of the flattened actor
+    // and those connected to interfaces in the subgraph
+
+    for (final DataInputInterface din : graph.getDataInputInterfaces()) {
+      final Fifo fifo = din.getDataPort().getFifo();
+      final Fifo fifoTrash = din.getGraphPort().getFifo();
+      final Long rate = fifoTrash.getSourcePort().getExpression().evaluate();
+      fifo.setSourcePort(din.getGraphPort().getFifo().getSourcePort());
+      fifo.getSourcePort().setExpression(rate);
+      graph.removeFifo(fifoTrash);
+    }
+    for (final DataOutputInterface dout : graph.getDataOutputInterfaces()) {
+      final Fifo fifo = dout.getDataPort().getFifo();
+      final Fifo fifoTrash = dout.getGraphPort().getFifo();
+      final Long rate = fifoTrash.getTargetPort().getExpression().evaluate();
+
+      fifo.setTargetPort(dout.getGraphPort().getFifo().getTargetPort());
+      fifo.getTargetPort().setExpression(rate);
+      graph.removeFifo(fifoTrash);
+    }
+    for (final Parameter cfg : graph.getParameters()) {
+      final int size = cfg.getOutgoingDependencies().size();
+      for (int i = size - 1; i >= 0; i--) {
+        final Dependency dep = cfg.getOutgoingDependencies().get(i);
+        dep.setSetter(((ConfigInputInterface) cfg).getGraphPort().getIncomingDependency().getSetter());
+        dep.setContainingGraph(parentGraph);
+        // dep.getGetter().set
+      }
+
+    }
+
+    // transfer element upper
+    for (final AbstractActor actor : graph.getExecutableActors()) {
+      actor.setContainingGraph(parentGraph);
+    }
+    for (final Fifo fifo : graph.getFifos()) {
+      fifo.setContainingGraph(parentGraph);
+    }
+    for (final Fifo fifo : parentGraph.getFifos()) {
+      if (fifo.getTargetPort() == null) {
+        parentGraph.removeFifo(fifo);
+      }
+      if (fifo.getSourcePort() == null) {
+        parentGraph.removeFifo(fifo);
+      }
+    }
+    for (final Dependency dep : parentGraph.getDependencies()) {
+      dep.getGetter().getConfigurable();
+      // dep.getTarget()
+      // if (((Vertex) dep.getGetter()).getContainingGraph() != parentGraph) {
+      // ((Vertex) dep.getGetter()).setContainingGraph(parentGraph);
       // }
-      // }
+    }
+    // final int size = parentGraph.getAllDependencies().size();
+    // for (int i = size - 1; i >= 0; i--) {
+    // final Dependency dep = parentGraph.getAllDependencies().get(i);
+    // if (dep.getContainingGraph() != parentGraph) {
+    // graph.removeDependency(dep);
+    // parentGraph.removeDependency(dep);
+    // }
+    // }
+    int size = graph.getAllDependencies().size();
+    for (int i = size - 1; i >= 0; i--) {
+      final Dependency dep = graph.getAllDependencies().get(i);
+      graph.removeDependency(dep);
+    }
 
-      // Subgraph 1st generation
+    parentGraph.removeActor(graph);
 
-      if (!graphSEQs.isEmpty()) {
-        final List<AbstractActor> SEQ = graphSEQs.get(0);// cluster one by one
-        final PiGraph subGraph = new PiSDFSubgraphBuilder(this.graph, SEQ, "seq_" + clusterId).build();
-        final PiGraph subGraphCutted = AutoDelaysTask.addDelays(subGraph, archi, scenario, false, false, false,
-            numberOfPEs, numberOfPEs, numberOfPEs + 1);// subGraphCutted
-        graph.replaceActor(subGraph, subGraphCutted);
-        // subGraphCutted.setClusterValue(true);
-        // Add constraints of the cluster in the scenario.
-        for (final ComponentInstance component : ClusteringHelper.getListOfCommonComponent(SEQ, this.scenario)) {
-          this.scenario.getConstraints().addConstraint(component, subGraphCutted);
-        }
-        final Map<AbstractVertex, Long> brvcut = PiBRV.compute(this.graph, BRVMethod.LCM);
-        // Retrieve pipeline stages
-        final List<List<AbstractActor>> graphSEQ2s = new SEQSeeker(subGraphCutted, this.numberOfPEs, brvcut,
-            nonClusterableList, brvcut, 2).seek();
-        // Subgraph 2st generation
-        if (!graphSEQ2s.isEmpty()) {
-          final List<AbstractActor> SEQ2 = graphSEQ2s.get(0);// cluster one by one
-          final PiGraph subsubGraph = new PiSDFSubgraphBuilder(subGraphCutted, SEQ2, "stage_" + clusterId).build();
-          subsubGraph.setClusterValue(true);
-          // Add constraints of the cluster in the scenario.
-          for (final ComponentInstance component : ClusteringHelper.getListOfCommonComponent(SEQ2, this.scenario)) {
-            this.scenario.getConstraints().addConstraint(component, subsubGraph);
-          }
+    for (final Parameter param : parentGraph.getParameters()) {
+      for (final Dependency dep : param.getOutgoingDependencies()) {
+        if (dep.getGetter() == null) {
+          int i;
+          i = 0;
         }
       }
     }
-    return this.graph;
+    size = parentGraph.getAllDependencies().size();
+    for (int i = size - 1; i >= 0; i--) {
+      final Dependency dep = parentGraph.getAllDependencies().get(i);
+      if (dep.getGetter() == null) {
+        parentGraph.removeDependency(dep);
+      }
+    }
   }
 
 }
