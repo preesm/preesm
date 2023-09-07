@@ -316,7 +316,7 @@ public class ScenariosGenerator {
    * @throws CoreException
    *           the core exception
    */
-  private void saveScenarios(final Set<Scenario> scenarios, final IFolder scenarioDir) throws CoreException {
+  public void saveScenarios(final Set<Scenario> scenarios, final IFolder scenarioDir) throws CoreException {
     for (final Scenario scenario : scenarios) {
       final String scenarioName = scenario.getScenarioName();
       final IPath scenarioPath = new Path(scenarioName).addFileExtension("scenario");

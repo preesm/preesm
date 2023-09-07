@@ -546,6 +546,12 @@ class PiGraph extends AbstractActor, Graph, PeriodicElement {
 	op unique AbstractActor[] getAllActors() {
 		return (actors + childrenGraphs.map[allActors].flatten).toEList.unmodifiableView
 	}
+		op unique AbstractActor[] getExecutableActors() {
+			return (actors.filter(it|(it instanceof ExecutableActor))).toEList.unmodifiableView
+	}
+		op unique AbstractActor[] getAllExecutableActors() {
+			return (allActors.filter(it|(it instanceof ExecutableActor))).toEList.unmodifiableView
+	}
 	op unique Fifo[] getAllFifos() {
 		return (fifos + childrenGraphs.map[allFifos].flatten).toEList.unmodifiableView
 	}
@@ -593,7 +599,11 @@ class PiGraph extends AbstractActor, Graph, PeriodicElement {
 	op unique Fifo[] getFifosWithoutDelay() {
 		return (fifos.filter[delay === null]).toEList.unmodifiableView
 	}
+	//Hugo implS
+	op unique void replaceActor(AbstractActor oldActor, AbstractActor newActor) {
+	}
 }
+
 
 abstract class ExecutableActor extends AbstractActor {
 }
