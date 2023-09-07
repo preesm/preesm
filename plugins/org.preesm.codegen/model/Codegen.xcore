@@ -227,6 +227,14 @@ class ClusterBlock extends Block {
 	boolean containParallelism
 }
 
+class MainSimsdpBlock extends Block{
+		String[] nodeID
+		refers Buffer[] buffers
+		refers FunctionCall[] subFunc
+		String coreType
+	
+}
+
 class SectionBlock extends Block {
 }
 

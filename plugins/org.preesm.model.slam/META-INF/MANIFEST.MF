@@ -6,7 +6,7 @@ Bundle-SymbolicName: org.preesm.model.slam;singleton:=true
 Bundle-Version: 3.21.0.qualifier
 Bundle-ClassPath: .
 Bundle-Localization: plugin
-Bundle-RequiredExecutionEnvironment: JavaSE-17
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Export-Package: org.preesm.model.slam,
  org.preesm.model.slam.check,
  org.preesm.model.slam.generator,
