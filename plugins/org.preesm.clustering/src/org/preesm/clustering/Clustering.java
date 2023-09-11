@@ -175,11 +175,13 @@ public class Clustering {
 							newCluster = new ClusterPartitionerURC(g, scenario, coreNumber.intValue(),rv,clusterId,nonClusterableList).cluster();//URC transfo
 						if(graph.getAllChildrenGraphs().size()==size)
 							newCluster = new ClusterPartitionerSRV(g, scenario, coreNumber.intValue(),rv,clusterId,nonClusterableList).cluster();//SRV transfo
-						if(graph.getAllChildrenGraphs().size()==size)
+						if(graph.getAllChildrenGraphs().size()==size) {
 							newCluster = new ClusterPartitionerSEQ(g, scenario, coreNumber.intValue(),rv,clusterId,nonClusterableList,archi).cluster();//SEQ transfo
-						if(graph.getAllChildrenGraphs().size()==size)
 							isHasCluster = false;
-						if(!newCluster.getChildrenGraphs().isEmpty()) {
+						}
+							if(graph.getAllChildrenGraphs().size()==size)
+							isHasCluster = false;
+						if(!newCluster.getChildrenGraphs().isEmpty()&&!isHasCluster) {
 							cluster(newCluster.getChildrenGraphs().get(0));
 							clusterId++;
 						}
