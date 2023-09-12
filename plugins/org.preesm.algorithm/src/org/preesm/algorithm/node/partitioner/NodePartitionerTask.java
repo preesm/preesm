@@ -62,12 +62,11 @@ public class NodePartitionerTask extends AbstractTaskImplementation {
 
     final String archipath = parameters.get(NodePartitionerTask.ARCHI_PATH_PARAM);
     final String workloadpath = parameters.get(NodePartitionerTask.WORKLOAD_PATH_PARAM);
-    final String printer = parameters.get(NodePartitionerTask.PARAM_PRINTER);
 
     final PiGraph inputGraph = (PiGraph) inputs.get("PiMM");
     final Scenario scenario = (Scenario) inputs.get("scenario");
     final Design archi = (Design) inputs.get("architecture");
-    new NodePartitioner(inputGraph, scenario, archi, archipath, workloadpath, printer).execute();
+    new NodePartitioner(inputGraph, scenario, archi, archipath, workloadpath).execute();
     return new LinkedHashMap<>();
   }
 

@@ -121,6 +121,24 @@ interface Schedule {
 	}
 }
 
+class ScapeSchedule{
+		int iterator
+		refers AbstractActor actor
+		boolean beginLoop
+		boolean endLoop
+		boolean LoopPrec
+		int endLoopNb
+		refers ComponentInstance cmp	
+}
+class ScapeBuilder{
+	String initFunc
+	String[] subInit
+	String loopFunc
+	String body
+	String[] buffer
+	String[] dynmicBuffer
+}
+
 /*
  * Denotes a schedule whose children can be executed simultaneously.
  *
