@@ -226,6 +226,17 @@ class ClusterBlock extends Block {
 	boolean parallel
 	boolean containParallelism
 }
+class ScapeBlock extends Block {
+		String initFunc
+		refers FunctionCall clusterFunc 
+		refers LoopBlock bodyBlock
+		refers Block initBlock
+		refers Buffer[] sinkFifoBuffers
+		refers Buffer[] initBuffers
+		String coreType
+		unordered id int coreID
+	
+}
 
 class MainSimsdpBlock extends Block{
 		String[] nodeID
@@ -341,6 +352,12 @@ class FiniteLoopBlock extends LoopBlock {
 	refers IteratedBuffer[] inBuffers
 	refers IteratedBuffer[] outBuffers
 }
+class FiniteLoopScapeBlock extends LoopBlock {
+		int nbIter
+		refers IntVar iter
+		refers IteratedBuffer[] inBuffers
+		refers IteratedBuffer[] outBuffers
+}
 
 class IntVar extends Variable {
 }
@@ -353,6 +370,10 @@ class BufferIterator extends SubBuffer {
 class IteratedBuffer extends Buffer {
 	refers Buffer buffer
 	refers IntVar iter
+}
+class DynamicBuffer extends Buffer {
+		refers Buffer buffer
+	
 }
 
 class PapifyAction extends Variable {

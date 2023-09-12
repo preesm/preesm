@@ -35,33 +35,28 @@
  */
 package org.preesm.algorithm.clustering.partitioner;
 
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Level;
 import org.preesm.algorithm.clustering.ClusteringHelper;
-import org.preesm.commons.logger.PreesmLogger;
-import org.preesm.commons.math.MathFunctionsHelper;
+import org.preesm.algorithm.pisdf.autodelays.AutoDelaysTask;
 import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.AbstractVertex;
 import org.preesm.model.pisdf.PiGraph;
-import org.preesm.model.pisdf.brv.BRVMethod;
-import org.preesm.model.pisdf.brv.PiBRV;
-import org.preesm.model.pisdf.util.PiGraphFiringBalancer;
 import org.preesm.model.pisdf.util.PiSDFSubgraphBuilder;
-import org.preesm.model.pisdf.util.URCSeeker;
+import org.preesm.model.pisdf.util.SEQSeeker;
 import org.preesm.model.scenario.Scenario;
 import org.preesm.model.slam.ComponentInstance;
+import org.preesm.model.slam.Design;
 
 /**
  * This class provide an algorithm to cluster a PiSDF graph and balance actor firings of clustered actor between coarse
  * and fine-grained parallelism. Resulting clusters are marked as PiSDF cluster, they have to be schedule with the
  * Cluster Scheduler.
  *
- * @author dgageot
+ * @author orenaud
  *
  */
-public class ClusterPartitioner {
+public class ClusterPartitionerSEQ {
 
   /**
    * Input graph.
@@ -76,6 +71,13 @@ public class ClusterPartitioner {
    */
   private final int      numberOfPEs;
 
+  private final Design archi;
+
+  private final Map<AbstractVertex, Long> brv;
+
+  private final int                 clusterId;
+  private final List<AbstractActor> nonClusterableList;
+
   /**
    * Builds a ClusterPartitioner object.
    *
@@ -85,11 +87,24 @@ public class ClusterPartitioner {
    *          Workflow scenario.
    * @param numberOfPEs
    *          Number of processing elements in compute clusters.
+   * @param brv
+   *          repetition vector
+   * @param clusterId
+   *          cluster identification
+   * @param nonClusterableList
+   *          List of non able to be cluster actors
+   * @param archi
+   *          architecture
    */
-  public ClusterPartitioner(final PiGraph graph, final Scenario scenario, final int numberOfPEs) {
+  public ClusterPartitionerSEQ(final PiGraph graph, final Scenario scenario, final int numberOfPEs,
+      Map<AbstractVertex, Long> brv, int clusterId, List<AbstractActor> nonClusterableList, Design archi) {
     this.graph = graph;
     this.scenario = scenario;
     this.numberOfPEs = numberOfPEs;
+    this.brv = brv;
+    this.clusterId = clusterId;
+    this.nonClusterableList = nonClusterableList;
+    this.archi = archi;
   }
 
   /**
@@ -97,39 +112,28 @@ public class ClusterPartitioner {
    */
   public PiGraph cluster() {
 
-    // Look for actor groups other than URC chains.
-    // Retrieve URC chains in input graph and verify that actors share component constraints.
-    final List<List<AbstractActor>> graphURCs = new URCSeeker(this.graph).seek();
-    final List<List<AbstractActor>> constrainedURCs = new LinkedList<>();
-    for (final List<AbstractActor> URC : graphURCs) {
-      if (!ClusteringHelper.getListOfCommonComponent(URC, this.scenario).isEmpty()) {
-        constrainedURCs.add(URC);
-      }
-    }
+    // Look for actor groups other than SEQ chains.
+    final List<List<
+        AbstractActor>> graphSEQs = new SEQSeeker(this.graph, this.numberOfPEs, this.brv, nonClusterableList).seek();
 
-    // Cluster constrained URC chains.
-    long index = 0;
-    final List<PiGraph> subGraphs = new LinkedList<>();
-    for (final List<AbstractActor> URC : graphURCs) {
-      final PiGraph subGraph = new PiSDFSubgraphBuilder(this.graph, URC, "urc_" + index++).build();
-      subGraph.setClusterValue(true);
+    // Subgraph 1st generation
+
+    if (!graphSEQs.isEmpty()) {
+      final List<AbstractActor> seq = graphSEQs.get(0);// cluster one by one
+      final PiGraph subGraph = new PiSDFSubgraphBuilder(this.graph, seq, "seq_" + clusterId).build();
+      int numberOfCut = numberOfPEs - 1;
+      if (subGraph.getExecutableActors().size() < numberOfPEs) {
+        numberOfCut = subGraph.getExecutableActors().size() - 1;
+      }
+      final PiGraph subGraphCutted = AutoDelaysTask.addDelays(subGraph, archi, scenario, false, false, false,
+          numberOfPEs, numberOfCut, numberOfCut + 1);// subGraphCutted
+      graph.replaceActor(subGraph, subGraphCutted);
       // Add constraints of the cluster in the scenario.
-      for (final ComponentInstance component : ClusteringHelper.getListOfCommonComponent(URC, this.scenario)) {
-        this.scenario.getConstraints().addConstraint(component, subGraph);
+      for (final ComponentInstance component : ClusteringHelper.getListOfCommonComponent(seq, this.scenario)) {
+        this.scenario.getConstraints().addConstraint(component, subGraphCutted);
       }
-      subGraphs.add(subGraph);
-    }
 
-    // Compute BRV and balance actor firings between coarse and fine-grained parallelism.
-    final Map<AbstractVertex, Long> brv = PiBRV.compute(this.graph, BRVMethod.LCM);
-    for (final PiGraph subgraph : subGraphs) {
-      final long factor = MathFunctionsHelper.gcd(brv.get(subgraph), this.numberOfPEs);
-      final String message = String.format("%1$s: firings balanced by %3$d, leaving %2$d firings at coarse-grained.",
-          subgraph.getName(), brv.get(subgraph) / factor, factor);
-      PreesmLogger.getLogger().log(Level.INFO, message);
-      new PiGraphFiringBalancer(subgraph, factor).balance();
     }
-
     return this.graph;
   }
 

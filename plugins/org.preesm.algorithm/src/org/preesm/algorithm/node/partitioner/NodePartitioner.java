@@ -64,7 +64,6 @@ import org.preesm.model.slam.ComponentInstance;
 import org.preesm.model.slam.Design;
 import org.preesm.model.slam.TimingType;
 import org.preesm.model.slam.generator.ArchitecturesGenerator;
-import org.preesm.workflow.implement.AbstractTaskImplementation;
 
 public class NodePartitioner {
   /**
@@ -80,9 +79,8 @@ public class NodePartitioner {
    */
   private final Design   archi;
 
-  private final String archipath;
-  private final String workloadpath;
-  // private final String printer;
+  private final String                         archicsvpath;
+  private final String                         workloadpath;
   private final Map<Long, Map<Long, Long>>     archiH;       // id node/id core/freq
   private final Map<Long, Long>                archiEq;      // id node/nb core
   private Long                                 totArchiEq;
@@ -105,14 +103,12 @@ public class NodePartitioner {
   Map<Long, Map<AbstractActor, Long>> subsCopy          = new HashMap<>();
   private PiGraph                     topGraph          = null;
 
-  public NodePartitioner(PiGraph graph, Scenario scenario, Design archi, String archipath, String workloadpath,
-      String printer) {
+  public NodePartitioner(PiGraph graph, Scenario scenario, Design archi, String archicsvpath, String workloadpath) {
     this.graph = graph;
     this.scenario = scenario;
     this.archi = archi;
-    this.archipath = archipath;
+    this.archicsvpath = archicsvpath;
     this.workloadpath = workloadpath;
-    // this.printer = printer;
     this.archiH = new HashMap<>();
     this.archiEq = new HashMap<>();
     this.totArchiEq = 0L;
@@ -139,8 +135,8 @@ public class NodePartitioner {
     // 1. compute the number of equivalent core
     computeEqCore();
     if (graph.getActorIndex() < totArchiEq) {
-      PreesmLogger.getLogger().log(Level.INFO,
-          "O(G_app)<O(G_archi) SimSDP 1.0 isn't appropriated (reduce archi or change method)");
+      final String issue = "O(G_app)<O(G_archi) SimSDP 1.0 isn't appropriated (reduce archi or change method)";
+      PreesmLogger.getLogger().log(Level.INFO, issue);
     }
     // 2. compute cumulative equivalent time
     brv = PiBRV.compute(graph, BRVMethod.LCM);// test
@@ -156,8 +152,7 @@ public class NodePartitioner {
     // 7. construct top
     constructTop();
     // 9. generate main file
-    final AbstractTaskImplementation task = null;
-    task.execute(null, null, null, archiPath, null);
+    new CodegenSimSDP(scenario, topGraph, nodeNames);
 
     return null;
 
@@ -286,7 +281,6 @@ public class NodePartitioner {
     final Design topArchi = ArchitecturesGenerator.generateArchitecture(nodeIndex, "top");
     a.saveArchitecture(topArchi);
     topArchi.setUrl(archiPath + "top.slam");
-    // archiList.add(subArchi);
     // 4. generate scenario
     final Scenario subScenario = ScenarioUserFactory.createScenario();
     subScenario.setAlgorithm(topGraph);
@@ -425,7 +419,7 @@ public class NodePartitioner {
         }
       }
 
-      // remove empty fifo
+      // remove empty FIFO
       subgraph.getFifos().stream().filter(x -> x.getSourcePort() == null).forEach(x -> subgraph.removeFifo(x));
       subgraph.getFifos().stream().filter(x -> x.getTargetPort() == null).forEach(subgraph::removeFifo);
       subgraph.getAllActors().stream().filter(x -> x instanceof DataInputInterface || x instanceof DataOutputInterface)
@@ -437,11 +431,11 @@ public class NodePartitioner {
       // 4. export subs
       graphExporter(subgraph);
 
-      // 5. generate scenarii
+      // 5. generate scenario
 
       final Scenario subScenario = ScenarioUserFactory.createScenario();
       final Design subArchi = archiList.get(nodeIndex);
-      subScenario.setDesign(subArchi);// temp
+      subScenario.setDesign(subArchi);
 
       subScenario.setAlgorithm(subgraph);
       // Get com nodes and cores names
@@ -458,7 +452,6 @@ public class NodePartitioner {
         subScenario.getSimulationInfo().setMainComNode(comNodeIds.get(0));
       }
 
-      // subScenario.getTimings().setExcelFileURL("");
       csvGenerator(subScenario, subgraph, subArchi);
       for (final Component opId : subArchi.getProcessingElements()) {
         for (final AbstractActor aa : subgraph.getAllActors()) {
@@ -497,8 +490,6 @@ public class NodePartitioner {
           gp.getValue().add(actor);
         }
       }
-      // for(Entry<Parameter, String> p: scenario.getParameterValues())
-      // subScenario.getParameterValues().add(p);
 
       subScenario.setCodegenDirectory("/" + uriString[1] + "/Code/generated/" + subgraph.getName());
       subScenario.setSizesAreInBit(true);
@@ -617,45 +608,7 @@ public class NodePartitioner {
         subsCopy.get(subRank).put(frk, 1L);
         index++;
       } else {
-        // if setter
-        // if(in.getFifo().getDelay().hasSetterActor()) {
-        // Fifo fd = PiMMUserFactory.instance.createFifo();
-        // fd.setSourcePort(in.getFifo().getDelay().getSetterPort());
-        // fd.setTargetPort(in);
-        // fd.setContainingGraph(key.getContainingGraph());
-        //
-        // }//else {
-        // PreesmLogger.getLogger().log(Level.INFO, "unrolled loops requires setter and getter affected to a local
-        // delay");
-        // Actor set = PiMMUserFactory.instance.createActor();
-        // //InitActor set = PiMMUserFactory.instance.createInitActor();
-        // set.setName("setter");
-        // Refinement refinement = PiMMUserFactory.instance.createCHeaderRefinement();
-        //
-        // set.setRefinement(refinement);
-        // //((Actor) oEmpty).getRefinement().getFileName()
-        // // Set the refinement
-        // CHeaderRefinement cHeaderRefinement = (CHeaderRefinement) (((Actor) set).getRefinement());
-        // Prototype oEmptyPrototype = new Prototype();
-        // oEmptyPrototype.setIsStandardC(true);
-        // //String fileName = ;//lastLevel.getActorPath().replace("/", "_");
-        // cHeaderRefinement.setFilePath(((Actor) key).getRefinement().getFilePath());
-        // FunctionPrototype functionPrototype = PiMMUserFactory.instance.createFunctionPrototype();
-        // cHeaderRefinement.setLoopPrototype(functionPrototype);
-        // functionPrototype.setName(((Actor) key).getRefinement().getFileName());
-        //
-        // //set.setEndReference(oEmpty);
-        // set.setContainingGraph(key.getContainingGraph());
-        // DataOutputPort dout = PiMMUserFactory.instance.createDataOutputPort();
-        // set.getDataOutputPorts().add(dout);
-        // dout.setName("out");
-        // dout.setExpression(in.getFifo().getDelay().getExpression().evaluate());
-        // Fifo fd = PiMMUserFactory.instance.createFifo();
-        // fd.setSourcePort(set.getDataOutputPorts().get(0));
-        // fd.setTargetPort(in);
-        // fd.setContainingGraph(key.getContainingGraph());
-        // subs.get(subRank).put(set, 1L);
-        // }
+        PreesmLogger.getLogger().log(Level.INFO, "global delay not yet handle");
       }
     }
     index = 0;
@@ -715,49 +668,6 @@ public class NodePartitioner {
         index++;
       } else {
 
-        // if getter
-        // connect last one to getter
-        // Fifo fd = PiMMUserFactory.instance.createFifo();
-
-        // if(out.getFifo().getDelay().hasGetterActor()) {
-        // Fifo fdout = PiMMUserFactory.instance.createFifo();
-        // copy.getDataOutputPorts().stream().filter(x -> x.getFifo()==null).forEach(x -> x.setOutgoingFifo(fdout));
-        // fdout.setTargetPort(out.getFifo().getDelay().getGetterPort());
-        // fdout.setContainingGraph(key.getContainingGraph());
-        //
-        // }//else {
-        // PreesmLogger.getLogger().log(Level.INFO, "unrolled loops requires setter and getter affected to a local
-        // delay");
-        // //EndActor get = PiMMUserFactory.instance.createEndActor();
-        // Actor get = PiMMUserFactory.instance.createActor();
-        // get.setName("getter");
-        // ///******
-        // Refinement refinement = PiMMUserFactory.instance.createCHeaderRefinement();
-        //
-        // get.setRefinement(refinement);
-        // //((Actor) oEmpty).getRefinement().getFileName()
-        // // Set the refinement
-        // CHeaderRefinement cHeaderRefinement = (CHeaderRefinement) (((Actor) get).getRefinement());
-        // Prototype oEmptyPrototype = new Prototype();
-        // oEmptyPrototype.setIsStandardC(true);
-        // //String fileName = ;//lastLevel.getActorPath().replace("/", "_");
-        // cHeaderRefinement.setFilePath(((Actor) oEmpty).getRefinement().getFilePath());
-        // FunctionPrototype functionPrototype = PiMMUserFactory.instance.createFunctionPrototype();
-        // cHeaderRefinement.setLoopPrototype(functionPrototype);
-        // functionPrototype.setName(((Actor) oEmpty).getRefinement().getFileName());/**/
-        // //get.setInitReference(dupActorsList.get((int) (value-2)));
-        //
-        // get.setContainingGraph(oEmpty.getContainingGraph());
-        // DataInputPort din = PiMMUserFactory.instance.createDataInputPort();
-        // get.getDataInputPorts().add(din);
-        // din.setName("in");
-        // din.setExpression(out.getFifo().getDelay().getExpression().evaluate());
-        // Fifo fdout = PiMMUserFactory.instance.createFifo();
-        // dupActorsList.get((int) (value-2)).getDataOutputPorts().stream().filter(x->x.getFifo()==null).forEach(x ->
-        // x.setOutgoingFifo(fdout));
-        // fdout.setTargetPort(get.getDataInputPorts().get(0));
-        // fdout.setContainingGraph(oEmpty.getContainingGraph());
-        // }
         // connect oEmpty delayed output to 1st duplicated actor
         final Fifo fdin = PiMMUserFactory.instance.createFifo();
         fdin.setSourcePort(out);
@@ -947,7 +857,7 @@ public class NodePartitioner {
   private void computeEqCore() {
     // Read temporary architecture file, extract composition and build structure
     // file -> |Node name|coreID|frequency|
-    final File file = new File(archipath);
+    final File file = new File(archicsvpath);
     Long minFreq = Long.MAX_VALUE;// MHz
     try {
       final FileReader read = new FileReader(file);
