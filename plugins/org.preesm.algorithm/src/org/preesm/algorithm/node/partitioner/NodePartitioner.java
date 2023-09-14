@@ -54,6 +54,7 @@ import org.preesm.model.pisdf.SpecialActor;
 import org.preesm.model.pisdf.brv.BRVMethod;
 import org.preesm.model.pisdf.brv.PiBRV;
 import org.preesm.model.pisdf.factory.PiMMUserFactory;
+import org.preesm.model.pisdf.util.LOOPSeeker;
 import org.preesm.model.pisdf.util.PiSDFSubgraphBuilder;
 import org.preesm.model.scenario.Scenario;
 import org.preesm.model.scenario.generator.ScenariosGenerator;
@@ -200,42 +201,10 @@ public class NodePartitioner {
   private void constructTop() {
     // 1. replace by an empty actor
     topGraph.setName("top");
-    int nodeIndex = 0;
-    topGraph.setUrl(graphPath + topGraph.getName() + ".pi");
-    for (final AbstractActor pi : topGraph.getActors()) {
-      if (pi instanceof PiGraph) {
-        final Actor aEmpty = PiMMUserFactory.instance.createActor();
-        aEmpty.setName(pi.getName());
-        for (int i = 0; i < pi.getDataInputPorts().size(); i++) {
-          final DataInputPort inputPort = PiMMUserFactory.instance.copy(pi.getDataInputPorts().get(i));
-          aEmpty.getDataInputPorts().add(inputPort);
-        }
-        for (int i = 0; i < pi.getDataOutputPorts().size(); i++) {
-          final DataOutputPort outputPort = PiMMUserFactory.instance.copy(pi.getDataOutputPorts().get(i));
-          aEmpty.getDataOutputPorts().add(outputPort);
-        }
-        for (int i = 0; i < pi.getConfigInputPorts().size(); i++) {
-          final ConfigInputPort cfgInputPort = PiMMUserFactory.instance.copy(pi.getConfigInputPorts().get(i));
-          aEmpty.getConfigInputPorts().add(cfgInputPort);
-        }
-        topGraph.replaceActor(pi, aEmpty);
-        nodeIndex++;
-      }
-    }
-    brv = PiBRV.compute(topGraph, BRVMethod.LCM);// test
+    final int nodeIndex = emptyTop();
     // 2. insert delay
-    int index = 0;
-    for (final Fifo f : topGraph.getFifos()) {
-      final Delay d = PiMMUserFactory.instance.createDelay();
-      d.setName(((AbstractActor) f.getSource()).getName() + "_out_" + ((AbstractActor) f.getTarget()).getName() + "_in_"
-          + index);
-      d.setLevel(PersistenceLevel.PERMANENT);
-      d.setExpression(f.getSourcePort().getExpression().evaluate());
-      d.setContainingGraph(f.getContainingGraph());
-      f.assignDelay(d);
-      d.getActor().setContainingGraph(f.getContainingGraph());
-      index++;
-    }
+    pipelineTop();
+
     // remove extra parameter
     for (final AbstractActor a : topGraph.getExecutableActors()) {
       final List<String> cfgOccur = new ArrayList<>();
@@ -289,6 +258,47 @@ public class NodePartitioner {
     subScenario.setCodegenDirectory(codegenpath + "/top");
     scenarioExporter(subScenario);
 
+  }
+
+  private void pipelineTop() {
+    int index = 0;
+    for (final Fifo f : topGraph.getFifos()) {
+      final Delay d = PiMMUserFactory.instance.createDelay();
+      d.setName(((AbstractActor) f.getSource()).getName() + "_out_" + ((AbstractActor) f.getTarget()).getName() + "_in_"
+          + index);
+      d.setLevel(PersistenceLevel.PERMANENT);
+      d.setExpression(f.getSourcePort().getExpression().evaluate());
+      d.setContainingGraph(f.getContainingGraph());
+      f.assignDelay(d);
+      d.getActor().setContainingGraph(f.getContainingGraph());
+      index++;
+    }
+  }
+
+  private int emptyTop() {
+    int nodeIndex = 0;
+    topGraph.setUrl(graphPath + topGraph.getName() + ".pi");
+    for (final AbstractActor pi : topGraph.getActors()) {
+      if (pi instanceof PiGraph) {
+        final Actor aEmpty = PiMMUserFactory.instance.createActor();
+        aEmpty.setName(pi.getName());
+        for (int i = 0; i < pi.getDataInputPorts().size(); i++) {
+          final DataInputPort inputPort = PiMMUserFactory.instance.copy(pi.getDataInputPorts().get(i));
+          aEmpty.getDataInputPorts().add(inputPort);
+        }
+        for (int i = 0; i < pi.getDataOutputPorts().size(); i++) {
+          final DataOutputPort outputPort = PiMMUserFactory.instance.copy(pi.getDataOutputPorts().get(i));
+          aEmpty.getDataOutputPorts().add(outputPort);
+        }
+        for (int i = 0; i < pi.getConfigInputPorts().size(); i++) {
+          final ConfigInputPort cfgInputPort = PiMMUserFactory.instance.copy(pi.getConfigInputPorts().get(i));
+          aEmpty.getConfigInputPorts().add(cfgInputPort);
+        }
+        topGraph.replaceActor(pi, aEmpty);
+        nodeIndex++;
+      }
+    }
+    return nodeIndex;
   }
 
   private void constructSubs() {
@@ -758,7 +768,11 @@ public class NodePartitioner {
   }
 
   private void preprocessCycle() {
-    // TODO Identify cycle actor list
+    final List<AbstractActor> graphLOOPs = new LOOPSeeker(graph).seek();
+    if (!graphLOOPs.isEmpty()) {
+      PreesmLogger.getLogger().log(Level.INFO, "cycles are not handle yet");
+
+    }
     // 2. create subs
 
   }

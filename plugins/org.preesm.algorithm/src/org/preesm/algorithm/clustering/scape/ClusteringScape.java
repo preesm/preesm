@@ -1,6 +1,7 @@
 package org.preesm.algorithm.clustering.scape;
 
 import java.util.ArrayList;
+import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
@@ -35,6 +36,7 @@ import org.preesm.model.pisdf.SpecialActor;
 import org.preesm.model.pisdf.brv.BRVMethod;
 import org.preesm.model.pisdf.brv.PiBRV;
 import org.preesm.model.pisdf.factory.PiMMUserFactory;
+import org.preesm.model.pisdf.util.LOOPSeeker;
 import org.preesm.model.scenario.Scenario;
 import org.preesm.model.scenario.ScenarioFactory;
 import org.preesm.model.scenario.util.ScenarioUserFactory;
@@ -61,10 +63,6 @@ public class ClusteringScape {
    */
   private final Long     stackSize;
   /**
-   * Number of Processing elements.
-   */
-  private final Long     coreNumber;
-  /**
    * Number of hierarchical level.
    */
   private final int      levelNumber;
@@ -73,10 +71,6 @@ public class ClusteringScape {
    */
   private final int      mode;
 
-  /**
-   * assign elements of the same cluster to the same component.
-   */
-  private Component                 clusterComponent;
   /**
    * Store the non cluster-able actor chosen manually by the operator.
    */
@@ -88,24 +82,25 @@ public class ClusteringScape {
   private final Map<Long, List<PiGraph>> hierarchicalLevelOrdered;
   private Long                           totalLevelNumber = 0L;
   private Long                           levelBound       = 0L;
-  private final boolean                  isLastCluster    = false;
-  private final List<String[]>           loopedBuffer     = new ArrayList<>();
-  private final String                   previousInitFunc = "";
+  private Long                           coreEquivalent   = 1L;
 
-  public ClusteringScape(PiGraph graph, Scenario scenario, Design archi, Long stackSize, Long coreNumber, int mode,
-      int levelNumber, List<AbstractActor> nonClusterableList) {
-    this.graph = graph;
+  public ClusteringScape(Scenario scenario, Long stackSize, int mode, int levelNumber,
+      List<AbstractActor> nonClusterableList) {
+    this.graph = scenario.getAlgorithm();
     this.scenario = scenario;
-    this.archi = archi;
+    this.archi = scenario.getDesign();
     this.stackSize = stackSize;
-    this.coreNumber = coreNumber;
     this.mode = mode;
     this.levelNumber = levelNumber;
     this.nonClusterableList = nonClusterableList;
     this.hierarchicalLevelOrdered = new HashMap<>();
+    this.coreEquivalent = new EuclideTransfo(scenario).computeSingleNodeCoreEquivalent();
   }
 
   public PiGraph execute() {
+
+    final PiGraph euclide = new EuclideTransfo(scenario).execute();
+    scenario.setAlgorithm(euclide);
     // construct hierarchical structure
     fillHierarchicalStrcuture();
     // compute cluster-able level ID
@@ -114,7 +109,6 @@ public class ClusteringScape {
     coarseCluster();
     // Pattern identification
     patternIDs();
-    // pipeline
 
     final Map<AbstractVertex, Long> brv = PiBRV.compute(graph, BRVMethod.LCM);
     PiBRV.printRV(brv);
@@ -128,75 +122,90 @@ public class ClusteringScape {
   private void patternIDs() {
 
     if (mode == 0) {
-      for (final PiGraph g : hierarchicalLevelOrdered.get(levelBound)) {
-        PiGraph newCluster = null;
-        do {
-          final int size = graph.getAllChildrenGraphs().size();
-          final Map<AbstractVertex, Long> rv = PiBRV.compute(g, BRVMethod.LCM);
-          newCluster = new ClusterPartitionerURC(g, scenario, coreNumber.intValue(), rv, clusterId, nonClusterableList)
-              .cluster();// URC transfo
-          if (graph.getAllChildrenGraphs().size() == size) {
-            newCluster = new ClusterPartitionerSRV(g, scenario, coreNumber.intValue(), rv, clusterId,
-                nonClusterableList).cluster();// SRV transfo
-          }
-          cluster(newCluster);
-        } while (newCluster != null);
-      }
+      executeMode0();
+
     }
     if (mode == 1) {
-      for (final PiGraph g : hierarchicalLevelOrdered.get(levelBound)) {
+      executeMode1();
+
+    }
+    if (mode == 2) {
+      executeMode2();
+
+    }
+  }
+
+  private void executeMode2() {
+    for (Long i = levelBound; i >= 0L; i--) {
+      for (final PiGraph g : hierarchicalLevelOrdered.get(i)) {
         PiGraph newCluster = null;
+        boolean isHasCluster = true;
         do {
           final int size = graph.getAllChildrenGraphs().size();
           final Map<AbstractVertex, Long> rv = PiBRV.compute(g, BRVMethod.LCM);
           newCluster = new ClusterPartitionerLOOP(g, scenario).cluster();// LOOP2 transfo
           if (graph.getAllChildrenGraphs().size() == size) {
-            newCluster = new ClusterPartitionerURC(g, scenario, coreNumber.intValue(), rv, clusterId,
+            newCluster = new ClusterPartitionerURC(g, scenario, coreEquivalent.intValue(), rv, clusterId,
                 nonClusterableList).cluster();// URC transfo
           }
           if (graph.getAllChildrenGraphs().size() == size) {
-            newCluster = new ClusterPartitionerSRV(g, scenario, coreNumber.intValue(), rv, clusterId,
+            newCluster = new ClusterPartitionerSRV(g, scenario, coreEquivalent.intValue(), rv, clusterId,
                 nonClusterableList).cluster();// SRV transfo
           }
           if (graph.getAllChildrenGraphs().size() == size) {
-            newCluster = new ClusterPartitionerSEQ(g, scenario, coreNumber.intValue(), rv, clusterId,
+            newCluster = new ClusterPartitionerSEQ(g, scenario, coreEquivalent.intValue(), rv, clusterId,
                 nonClusterableList, archi).cluster();// SEQ transfo
           }
-          cluster(newCluster.getChildrenGraphs().get(0));
-        } while (newCluster.getChildrenGraphs() != null);
+          if (graph.getAllChildrenGraphs().size() == size) {
+            isHasCluster = false;
+          }
+          if (!newCluster.getChildrenGraphs().isEmpty()) {
+            cluster(newCluster.getChildrenGraphs().get(0));
+            clusterId++;
+          }
+        } while (isHasCluster);
       }
     }
-    if (mode == 2) {
-      for (Long i = levelBound; i >= 0L; i--) {
-        for (final PiGraph g : hierarchicalLevelOrdered.get(i)) {
-          PiGraph newCluster = null;
-          boolean isHasCluster = true;
-          do {
-            final int size = graph.getAllChildrenGraphs().size();
-            final Map<AbstractVertex, Long> rv = PiBRV.compute(g, BRVMethod.LCM);
-            newCluster = new ClusterPartitionerLOOP(g, scenario).cluster();// LOOP2 transfo
-            if (graph.getAllChildrenGraphs().size() == size) {
-              newCluster = new ClusterPartitionerURC(g, scenario, coreNumber.intValue(), rv, clusterId,
-                  nonClusterableList).cluster();// URC transfo
-            }
-            if (graph.getAllChildrenGraphs().size() == size) {
-              newCluster = new ClusterPartitionerSRV(g, scenario, coreNumber.intValue(), rv, clusterId,
-                  nonClusterableList).cluster();// SRV transfo
-            }
-            if (graph.getAllChildrenGraphs().size() == size) {
-              newCluster = new ClusterPartitionerSEQ(g, scenario, coreNumber.intValue(), rv, clusterId,
-                  nonClusterableList, archi).cluster();// SEQ transfo
-            }
-            if (graph.getAllChildrenGraphs().size() == size) {
-              isHasCluster = false;
-            }
-            if (!newCluster.getChildrenGraphs().isEmpty()) {
-              cluster(newCluster.getChildrenGraphs().get(0));
-              clusterId++;
-            }
-          } while (isHasCluster);
+  }
+
+  private void executeMode1() {
+    for (final PiGraph g : hierarchicalLevelOrdered.get(levelBound)) {
+      PiGraph newCluster = null;
+      do {
+        final int size = graph.getAllChildrenGraphs().size();
+        final Map<AbstractVertex, Long> rv = PiBRV.compute(g, BRVMethod.LCM);
+        newCluster = new ClusterPartitionerLOOP(g, scenario).cluster();// LOOP2 transfo
+        if (graph.getAllChildrenGraphs().size() == size) {
+          newCluster = new ClusterPartitionerURC(g, scenario, coreEquivalent.intValue(), rv, clusterId,
+              nonClusterableList).cluster();// URC transfo
         }
-      }
+        if (graph.getAllChildrenGraphs().size() == size) {
+          newCluster = new ClusterPartitionerSRV(g, scenario, coreEquivalent.intValue(), rv, clusterId,
+              nonClusterableList).cluster();// SRV transfo
+        }
+        if (graph.getAllChildrenGraphs().size() == size) {
+          newCluster = new ClusterPartitionerSEQ(g, scenario, coreEquivalent.intValue(), rv, clusterId,
+              nonClusterableList, archi).cluster();// SEQ transfo
+        }
+        cluster(newCluster.getChildrenGraphs().get(0));
+      } while (newCluster.getChildrenGraphs() != null);
+    }
+  }
+
+  private void executeMode0() {
+    for (final PiGraph g : hierarchicalLevelOrdered.get(levelBound)) {
+      PiGraph newCluster = null;
+      do {
+        final int size = graph.getAllChildrenGraphs().size();
+        final Map<AbstractVertex, Long> rv = PiBRV.compute(g, BRVMethod.LCM);
+        newCluster = new ClusterPartitionerURC(g, scenario, coreEquivalent.intValue(), rv, clusterId,
+            nonClusterableList).cluster();// URC transfo
+        if (graph.getAllChildrenGraphs().size() == size) {
+          newCluster = new ClusterPartitionerSRV(g, scenario, coreEquivalent.intValue(), rv, clusterId,
+              nonClusterableList).cluster();// SRV transfo
+        }
+        cluster(newCluster.getChildrenGraphs().get(0));
+      } while (newCluster.getChildrenGraphs() != null);
     }
   }
 
@@ -222,18 +231,20 @@ public class ClusteringScape {
       Long count = 0L;
       // detect the highest delay
       for (final Fifo fd : graph.getFifosWithDelay()) {
-        // detect loop
-        // TODO
-        // detect
-        final PiGraph g = fd.getContainingPiGraph();
-        for (Long i = 0L; i < totalLevelNumber; i++) {
-          if (hierarchicalLevelOrdered.get(i).contains(g)) {
-            count = Math.max(count, i);
+        // detect loop --> no pipeline and contains hierarchical graph
+        final List<AbstractActor> graphLOOPs = new LOOPSeeker(fd.getContainingPiGraph()).seek();
+        if (!graphLOOPs.isEmpty() && graphLOOPs.stream().anyMatch(PiGraph.class::isInstance)) {
+          // compute high
+          for (Long i = 0L; i < totalLevelNumber; i++) {
+            if (hierarchicalLevelOrdered.get(i).contains(fd.getContainingPiGraph())) {
+              count = Math.max(count, i);
+            }
           }
         }
       }
       levelBound = count;
     }
+
   }
 
   /**
@@ -284,9 +295,8 @@ public class ClusteringScape {
     final Scenario clusterScenario = lastLevelScenario(g);
     // retrieve cluster timing
     rv = PiBRV.compute(g, BRVMethod.LCM);
-    final Long sumTiming = clusterTiming(rv, g, scenario);
+    final Map<Component, Map<TimingType, String>> sumTiming = clusterTiming(rv, g);
 
-    rv = PiBRV.compute(g, BRVMethod.LCM);
     new CodegenScape(clusterScenario, g, schedulesMap, stackSize);
 
     replaceBehavior(g);
@@ -558,14 +568,17 @@ public class ClusteringScape {
    * @param lastLevel
    *          PiGraph of the cluster
    */
-  private void updateTiming(Long sumTiming, PiGraph lastLevel) {
+  private void updateTiming(Map<Component, Map<TimingType, String>> sumTiming, PiGraph lastLevel) {
     AbstractActor aaa = null;
     if (sumTiming != null) {
       for (final AbstractActor aa : graph.getAllActors()) {
         if (lastLevel.getName().equals(aa.getName()) || aa.getName().contains(lastLevel.getName())) {
           aaa = aa;
           // update timing
-          scenario.getTimings().setTiming(aaa, clusterComponent, TimingType.EXECUTION_TIME, String.valueOf(sumTiming));
+          for (final Component opId : archi.getProcessingElements()) {
+            scenario.getTimings().setTiming(aaa, opId, TimingType.EXECUTION_TIME,
+                sumTiming.get(opId).get(TimingType.EXECUTION_TIME));
+          }
         }
       }
     }
@@ -581,51 +594,31 @@ public class ClusteringScape {
    * @param scenario2
    *          contains list of timing
    */
-  private Long clusterTiming(Map<AbstractVertex, Long> repetitionVector, PiGraph copiedCluster, Scenario scenario2) {
-    long sumTiming = 0L;
-    Component clusterComponent = null;
-    if (!scenario2.getTimings().getActorTimings().isEmpty()) {
-
-      for (final AbstractActor a : copiedCluster.getAllActors()) {
-        if (a instanceof Actor) {
-
-          AbstractActor aaa = null;
-          for (final AbstractActor aa : scenario.getTimings().getActorTimings().keySet()) {
-            if (a.getName().equals(aa.getName())) {
-              aaa = aa;
-            }
-          }
-          if (aaa != null) {
-            final String time = scenario.getTimings().getActorTimings().get(aaa).get(0).getValue()
-                .get(TimingType.EXECUTION_TIME);
-            Long brv = repetitionVector.get(a);
-            if (brv == null) {
-              brv = (long) 1;
-            }
-            sumTiming = sumTiming + (Long.valueOf(time) * brv);
-
-            clusterComponent = scenario.getTimings().getActorTimings().get(aaa).get(0).getKey();
-            this.clusterComponent = clusterComponent;
-          } else {
-            this.clusterComponent = archi.getComponentHolder().getComponents().get(0);
-            final String time = "100";
-            final Long brv = repetitionVector.get(a);
-            sumTiming = sumTiming + (Long.valueOf(time) * brv);
+  private Map<Component, Map<TimingType, String>> clusterTiming(Map<AbstractVertex, Long> repetitionVector,
+      PiGraph cluster) {
+    final Map<Component, Map<TimingType, String>> clusterTiming = new HashMap<>();
+    // Initialise
+    for (final Component opId : archi.getProcessingElements()) {
+      final Map<TimingType, String> val = new EnumMap<>(TimingType.class);
+      val.put(TimingType.EXECUTION_TIME, String.valueOf(0L));
+      clusterTiming.put(opId, val);
+    }
+    if (!scenario.getTimings().getActorTimings().isEmpty()) {
+      for (final AbstractActor actor : cluster.getOnlyActors()) {
+        AbstractActor aaa = null;
+        for (final AbstractActor aa : scenario.getTimings().getActorTimings().keySet()) {
+          if (actor.getName().equals(aa.getName())) {
+            aaa = aa;
           }
         }
-
-      }
-    } else {
-      for (final AbstractActor a : copiedCluster.getAllActors()) {
-        if (a instanceof Actor) {
-          this.clusterComponent = archi.getComponentHolder().getComponents().get(0);// temp
-          final String time = "100";
-          final Long brv = repetitionVector.get(a);
-          sumTiming = sumTiming + (Long.valueOf(time) * brv);
+        for (final Component opId : archi.getProcessingElements()) {
+          final Long sum = scenario.getTimings().evaluateTimingOrDefault(aaa, opId, TimingType.EXECUTION_TIME)
+              * repetitionVector.get(actor);
+          clusterTiming.get(opId).replace(TimingType.EXECUTION_TIME, String.valueOf(sum));
         }
       }
     }
-    return sumTiming;
+    return clusterTiming;
   }
 
   /**

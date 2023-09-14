@@ -2,17 +2,12 @@ package org.preesm.algorithm.clustering.scape;
 
 import java.util.HashMap;
 import java.util.LinkedHashMap;
-import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Set;
 import java.util.logging.Level;
-import org.eclipse.core.runtime.IConfigurationElement;
-import org.eclipse.core.runtime.IExtensionRegistry;
 import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.core.runtime.Platform;
 import org.eclipse.emf.common.util.EList;
 import org.preesm.commons.doc.annotations.Parameter;
 import org.preesm.commons.doc.annotations.Port;
@@ -23,7 +18,6 @@ import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.scenario.Scenario;
 import org.preesm.model.slam.ComponentInstance;
-import org.preesm.model.slam.Design;
 import org.preesm.workflow.elements.Workflow;
 import org.preesm.workflow.implement.AbstractTaskImplementation;
 
@@ -36,35 +30,16 @@ import org.preesm.workflow.implement.AbstractTaskImplementation;
  * @author orenaud
  *
  */
-@PreesmTask(id = "clustering.raiser.task.identifier", name = "Clustering Task",
-    inputs = { @Port(name = "PiMM", type = PiGraph.class), @Port(name = "scenario", type = Scenario.class),
-        @Port(name = "architecture", type = Design.class) },
+@PreesmTask(id = "scape.task.identifier", name = "Clustering Task",
+    inputs = { @Port(name = "scenario", type = Scenario.class) },
     outputs = { @Port(name = "PiMM", type = PiGraph.class), @Port(name = "scenario", type = Scenario.class) },
 
-    parameters = { @Parameter(name = "Printer",
-        description = "Specify which printer should be used to generate code. Printers are defined in Preesm source"
-            + " code using an extension mechanism that make it possible to define a single printer name for several "
-            + "targeted architecture. Hence, depending on the type of PEs declared in the architecture model, Preesm "
-            + "will automatically select the associated printer class, if it exists.",
-        values = {
-            @Value(name = "C",
-                effect = "Print C code and shared-memory based communications. Currently compatible with x86, c6678, "
-                    + "and arm architectures."),
-            @Value(name = "InstrumentedC",
-                effect = "Print C code instrumented with profiling code, and shared-memory based communications. "
-                    + "Currently compatible with x86, c6678 architectures.."),
-            @Value(name = "XML",
-                effect = "Print XML code with all informations used by other printers to print code. "
-                    + "Compatible with x86, c6678.") }),
+    parameters = {
 
         @Parameter(name = "Stack size", description = "stack size (in Byte)",
             values = { @Value(name = "Fixed:=n",
                 effect = "the size of the stack allows to quantify the number of allocable buffer "
                     + "in the stack the rest in the heap") }),
-
-        @Parameter(name = "Core number", description = "number of target cores",
-            values = { @Value(name = "Fixed:=n",
-                effect = "the number of cores of the target allows to quantify the number of possible clusters") }),
 
         @Parameter(name = "Level number", description = "number of level to cluster",
             values = { @Value(name = "Fixed:=n",
@@ -83,10 +58,9 @@ import org.preesm.workflow.implement.AbstractTaskImplementation;
         @Parameter(name = "Non-cluster actor", description = "does not allow to group the actors entered in parameter",
             values = { @Value(name = "String", effect = "disable cluster") }), })
 public class ClusteringScapeTask extends AbstractTaskImplementation {
-  public static final String STACK_SIZE_DEFAULT      = "1000000";          // 1MB
-  public static final String STACK_PARAM             = "Stack size";
-  public static final String CORE_AMOUNT_DEFAULT     = "1";                // 1
-  public static final String CORE_PARAM              = "Core number";
+  public static final String STACK_SIZE_DEFAULT = "1000000";   // 1MB
+  public static final String STACK_PARAM        = "Stack size";
+
   public static final String CLUSTERING_MODE_DEFAULT = "0";                // SCAPE1
   public static final String CLUSTERING_PARAM        = "SCAPE mode";
   public static final String LEVEL_NUMBER_DEFAULT    = "1";                // 1
@@ -108,9 +82,7 @@ public class ClusteringScapeTask extends AbstractTaskImplementation {
     // retrieve input parameter stack size
     final String stackStr = parameters.get(ClusteringScapeTask.STACK_PARAM);
     this.stack = Integer.decode(stackStr);
-    // retrieve input parameter
-    final String coreStr = parameters.get(ClusteringScapeTask.CORE_PARAM);
-    this.core = Integer.decode(coreStr);
+
     // retrieve input parameter
     final String clusterStr = parameters.get(ClusteringScapeTask.LEVEL_PARAM);
     this.cluster = Integer.decode(clusterStr);
@@ -127,25 +99,22 @@ public class ClusteringScapeTask extends AbstractTaskImplementation {
     final String[] nonClusterableListStr = nonClusterable.split("\\*");
 
     // Task inputs
-    final PiGraph inputGraph = (PiGraph) inputs.get("PiMM");
     final Scenario scenario = (Scenario) inputs.get("scenario");
-    final Design archi = (Design) inputs.get("architecture");
     final Long stackSize = this.stack;
-    final Long coreAmount = (long) archi.getOperatorComponentInstances().size();
     final int clusterNumber = this.cluster;
     final int clusteringMode = this.mode;
 
     final List<AbstractActor> nonClusterableList = new LinkedList<>();
     for (final String element : nonClusterableListStr) {
-      for (final AbstractActor a : inputGraph.getExecutableActors()) {
+      for (final AbstractActor a : scenario.getAlgorithm().getExecutableActors()) {
         if (a.getName().equals(element) && !nonClusterableList.contains(a)) {
           nonClusterableList.add(a);
         }
       }
     }
 
-    final PiGraph tempGraph = new ClusteringScape(inputGraph, scenario, archi, stackSize, coreAmount, clusteringMode,
-        clusterNumber, nonClusterableList).execute();
+    final PiGraph tempGraph = new ClusteringScape(scenario, stackSize, clusteringMode, clusterNumber,
+        nonClusterableList).execute();
 
     final Map<String, Object> output = new HashMap<>();
     // return topGraph
@@ -170,29 +139,10 @@ public class ClusteringScapeTask extends AbstractTaskImplementation {
   @Override
   public Map<String, String> getDefaultParameters() {
     final Map<String, String> parameters = new LinkedHashMap<>();
-    final StringBuilder avilableLanguages = new StringBuilder("? C {");
-
-    // Retrieve the languages registered with the printers
-    final Set<String> languages = new LinkedHashSet<>();
-    final IExtensionRegistry registry = Platform.getExtensionRegistry();
-
-    final IConfigurationElement[] elements = registry
-        .getConfigurationElementsFor("org.ietr.preesm.codegen.xtend.printers");
-    for (final IConfigurationElement element : elements) {
-      languages.add(element.getAttribute("language"));
-    }
-
-    for (final String lang : languages) {
-      avilableLanguages.append(lang + ", ");
-    }
-    avilableLanguages.append(ClusteringScapeTask.VALUE_PRINTER_IR + "}");
-
-    parameters.put(ClusteringScapeTask.PARAM_PRINTER, avilableLanguages.toString());
 
     // stack default
     parameters.put(ClusteringScapeTask.STACK_PARAM, ClusteringScapeTask.STACK_SIZE_DEFAULT);
-    // core default
-    parameters.put(ClusteringScapeTask.CORE_PARAM, ClusteringScapeTask.CORE_AMOUNT_DEFAULT);
+
     // core default
     parameters.put(ClusteringScapeTask.LEVEL_PARAM, ClusteringScapeTask.LEVEL_NUMBER_DEFAULT);
     // mode default
