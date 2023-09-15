@@ -93,18 +93,17 @@ public class ClusterPartitionerSEQ {
    *          cluster identification
    * @param nonClusterableList
    *          List of non able to be cluster actors
-   * @param archi
-   *          architecture
+   * 
    */
   public ClusterPartitionerSEQ(final PiGraph graph, final Scenario scenario, final int numberOfPEs,
-      Map<AbstractVertex, Long> brv, int clusterId, List<AbstractActor> nonClusterableList, Design archi) {
+      Map<AbstractVertex, Long> brv, int clusterId, List<AbstractActor> nonClusterableList) {
     this.graph = graph;
     this.scenario = scenario;
     this.numberOfPEs = numberOfPEs;
     this.brv = brv;
     this.clusterId = clusterId;
     this.nonClusterableList = nonClusterableList;
-    this.archi = archi;
+    this.archi = scenario.getDesign();
   }
 
   /**

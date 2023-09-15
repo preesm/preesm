@@ -258,7 +258,7 @@ public class ScheduleScape {
 
       // find pair with the biggest repetition count
 
-      if (result.isEmpty()) {
+      if (result.length() == 0) {
         maxLeft = null;
         maxRight = null;
         max = (long) 0;
@@ -345,7 +345,7 @@ public class ScheduleScape {
       }
 
       // compute String schedule
-      if (result.isEmpty()) {
+      if (result.length() == 0) {
         if (max == 1) {
           result.append(maxLeft.getName() + "*" + maxRight.getName());
         } else {

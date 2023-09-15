@@ -150,7 +150,7 @@ public class ClusteringScape {
           }
           if (graph.getAllChildrenGraphs().size() == size) {
             newCluster = new ClusterPartitionerSEQ(g, scenario, coreEquivalent.intValue(), rv, clusterId,
-                nonClusterableList, archi).cluster();// SEQ transfo
+                nonClusterableList).cluster();// SEQ transfo
           }
           if (graph.getAllChildrenGraphs().size() == size) {
             isHasCluster = false;
@@ -181,7 +181,7 @@ public class ClusteringScape {
         }
         if (graph.getAllChildrenGraphs().size() == size) {
           newCluster = new ClusterPartitionerSEQ(g, scenario, coreEquivalent.intValue(), rv, clusterId,
-              nonClusterableList, archi).cluster();// SEQ transfo
+              nonClusterableList).cluster();// SEQ transfo
         }
         cluster(newCluster.getChildrenGraphs().get(0));
       } while (newCluster.getChildrenGraphs() != null);

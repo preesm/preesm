@@ -59,7 +59,7 @@ import org.preesm.model.pisdf.SpecialActor;
  * internal state (see the article of Pino et al. "A Hierarchical Multiprocessor Scheduling System For DSP
  * Applications").
  *
- * @author dgageot
+ * @author orenaud
  *
  */
 public class URCSeeker2 extends PiMMSwitch<Boolean> {
