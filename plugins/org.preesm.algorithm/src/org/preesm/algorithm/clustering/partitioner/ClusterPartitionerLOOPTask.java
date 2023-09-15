@@ -43,10 +43,7 @@ import org.preesm.commons.doc.annotations.Parameter;
 import org.preesm.commons.doc.annotations.Port;
 import org.preesm.commons.doc.annotations.PreesmTask;
 import org.preesm.commons.doc.annotations.Value;
-import org.preesm.model.pisdf.AbstractVertex;
 import org.preesm.model.pisdf.PiGraph;
-import org.preesm.model.pisdf.brv.BRVMethod;
-import org.preesm.model.pisdf.brv.PiBRV;
 import org.preesm.model.scenario.Scenario;
 import org.preesm.workflow.elements.Workflow;
 import org.preesm.workflow.implement.AbstractTaskImplementation;
@@ -76,11 +73,8 @@ public class ClusterPartitionerLOOPTask extends AbstractTaskImplementation {
     final PiGraph inputGraph = (PiGraph) inputs.get("PiMM");
     final Scenario scenario = (Scenario) inputs.get("scenario");
 
-    // Parameters
-    final String nbPE = parameters.get(NB_PE);
-
     // Cluster input graph
-    final Map<AbstractVertex, Long> brv = PiBRV.compute(inputGraph, BRVMethod.LCM);
+
     final PiGraph outputGraph = new ClusterPartitionerLOOP(inputGraph, scenario).cluster();
 
     // Build output map

@@ -147,7 +147,7 @@ public class ClusteringScapeTask extends AbstractTaskImplementation {
     parameters.put(ClusteringScapeTask.LEVEL_PARAM, ClusteringScapeTask.LEVEL_NUMBER_DEFAULT);
     // mode default
     parameters.put(ClusteringScapeTask.CLUSTERING_PARAM, ClusteringScapeTask.CLUSTERING_MODE_DEFAULT);
-    // mode default
+    // non cluster default
     parameters.put(ClusteringScapeTask.NON_CLUSTER_PARAM, ClusteringScapeTask.NON_CLUSTER_DEFAULT);
 
     return parameters;

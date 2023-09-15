@@ -61,7 +61,6 @@ import org.preesm.model.slam.ComponentInstance;
  * and fine-grained parallelism. Resulting clusters are marked as PiSDF cluster, they have to be schedule with the
  * Cluster Scheduler.
  *
- * @author dgageot
  * @author orenaud
  *
  */
