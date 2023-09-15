@@ -6,7 +6,6 @@ import java.util.List;
 import java.util.Map;
 import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.AbstractVertex;
-import org.preesm.model.pisdf.Actor;
 import org.preesm.model.pisdf.ConfigInputPort;
 import org.preesm.model.pisdf.DataInputPort;
 import org.preesm.model.pisdf.DataOutputPort;
@@ -14,13 +13,13 @@ import org.preesm.model.pisdf.Fifo;
 import org.preesm.model.pisdf.ForkActor;
 import org.preesm.model.pisdf.JoinActor;
 import org.preesm.model.pisdf.PiGraph;
-import org.preesm.model.pisdf.SpecialActor;
 import org.preesm.model.pisdf.brv.BRVMethod;
 import org.preesm.model.pisdf.brv.PiBRV;
 import org.preesm.model.pisdf.check.CheckerErrorLevel;
 import org.preesm.model.pisdf.check.PiGraphConsistenceChecker;
 import org.preesm.model.pisdf.factory.PiMMUserFactory;
 import org.preesm.model.pisdf.util.LOOPSeeker;
+import org.preesm.model.pisdf.util.PiSDFSubgraphBuilder;
 import org.preesm.model.scenario.Scenario;
 import org.preesm.model.slam.Component;
 import org.preesm.model.slam.Design;
@@ -96,11 +95,10 @@ public class EuclideTransfo {
     for (Long i = levelBound; i >= 0L; i--) {
       for (final PiGraph g : hierarchicalLevelOrdered.get(i)) {
         final Map<AbstractVertex, Long> rv = PiBRV.compute(g, BRVMethod.LCM);
-        for (final AbstractActor a : g.getActors()) {
-          if (a instanceof Actor && !(a instanceof SpecialActor)) {
-            if (rv.get(a) % coreEquivalent > 0 && rv.get(a) > coreEquivalent) {
-              euclide(a, rv);
-            }
+        for (final AbstractActor a : g.getOnlyActors()) {
+          // maybe not for Special Actor
+          if (rv.get(a) % coreEquivalent > 0 && rv.get(a) > coreEquivalent) {
+            euclide(a, rv);
           }
         }
       }
@@ -110,7 +108,7 @@ public class EuclideTransfo {
   private void euclide(AbstractActor a, Map<AbstractVertex, Long> rv) {
     //
     final Long rv2 = rv.get(a) % coreEquivalent; // rest
-    final Long rv1 = rv.get(a) - rv2;// quotient * diviseur
+    final Long rv1 = rv.get(a) - rv2;// quotient * divisor
     // copy instance
     final AbstractActor copy = PiMMUserFactory.instance.copy(a);
     copy.setName(a.getName() + "2");
@@ -209,16 +207,6 @@ public class EuclideTransfo {
         copy.getDataOutputPorts().stream().filter(x -> x.getName().equals(out.getName()))
             .forEach(x -> x.setOutgoingFifo(finn));
 
-        // }
-        // if(subsCopy.get(subRank+1)==null) {
-        // subsCopy.get(subRank).put(jn, 1L);
-        // subsCopy.get(subRank).remove(key);
-        // subsCopy.get(subRank).put(copy, rv2-rv1);
-        // }else {
-        // subsCopy.get(subRank+1).put(jn, 1L);
-        // subsCopy.get(subRank+1).remove(key);
-        // subsCopy.get(subRank+1).put(copy, rv2-rv1);
-        // }
         index++;
       } else {
 
@@ -237,13 +225,7 @@ public class EuclideTransfo {
           .forEach(x -> x.getIncomingDependency().setContainingGraph(cfg.getIncomingDependency().getContainingGraph()));
 
     }
-    // interconnect duplicated actor on their delayed port
-    // for (int i = 0; i <= 2; i++) {
-    // final Fifo fd = PiMMUserFactory.instance.createFifo();
-    // copy.getDataOutputPorts().stream().filter(x -> x.getFifo() == null).forEach(x -> x.setOutgoingFifo(fd));
-    // copy.getDataInputPorts().stream().filter(x -> x.getFifo() == null).forEach(x -> x.setIncomingFifo(fd));
-    // fd.setContainingGraph(a.getContainingGraph());
-    // }
+
     // remove delay
     ((PiGraph) a.getContainingGraph()).getDelays().stream().filter(x -> x.getContainingFifo().getSourcePort() == null)
         .forEach(x -> ((PiGraph) a.getContainingGraph()).removeDelay(x));
@@ -255,12 +237,19 @@ public class EuclideTransfo {
 
   }
 
+  /**
+   * depending on the highest loop and the further clustering, dividing is relevant only if cluster tend to be adapt to
+   * the target
+   */
   private void computeDividableLevel() {
     Long count = 0L;
+    final Long gcd = 1L;
+    final List<List<AbstractActor>> list = new ArrayList<>();
     // detect the highest delay
     for (final Fifo fd : graph.getFifosWithDelay()) {
       // detect loop
       final List<AbstractActor> graphLOOPs = new LOOPSeeker(fd.getContainingPiGraph()).seek();
+      list.add(graphLOOPs);
       // detect
       if (!graphLOOPs.isEmpty()) {
         final PiGraph g = fd.getContainingPiGraph();
@@ -271,7 +260,14 @@ public class EuclideTransfo {
         }
       }
     }
-    levelBound = count;
+    if (gcd >= this.coreEquivalent) {
+      levelBound = count;
+    } else {
+      for (final List<AbstractActor> l : list) {
+        new PiSDFSubgraphBuilder(graph, l, "sub_" + l.get(0).getContainingPiGraph().getName()).build();
+
+      }
+    }
   }
 
   /**

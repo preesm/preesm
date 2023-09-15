@@ -1,12 +1,10 @@
 package org.preesm.algorithm.clustering.scape;
 
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import org.eclipse.xtend2.lib.StringConcatenation;
 import org.preesm.algorithm.schedule.model.ScapeBuilder;
 import org.preesm.algorithm.schedule.model.ScapeSchedule;
-import org.preesm.algorithm.schedule.model.ScheduleFactory;
 import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.AbstractVertex;
 import org.preesm.model.pisdf.ConfigInputPort;
@@ -18,10 +16,9 @@ import org.preesm.model.pisdf.Parameter;
 import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.pisdf.brv.BRVMethod;
 import org.preesm.model.pisdf.brv.PiBRV;
-import org.preesm.model.pisdf.factory.PiMMUserFactory;
 
 public class CodegenScapeBuilder {
-  public CodegenScapeBuilder(ScapeBuilder build, String clusterSchedule, PiGraph subGraph, Long stackSize) {
+  public CodegenScapeBuilder(ScapeBuilder build, List<ScapeSchedule> cs, PiGraph subGraph, Long stackSize) {
     final Map<AbstractVertex, Long> brv = PiBRV.compute(subGraph, BRVMethod.LCM);
     // build initial function
     final String funcI = " void " + subGraph.getName() + "Init(";
@@ -52,7 +49,6 @@ public class CodegenScapeBuilder {
       }
     }
     // build body
-    final List<ScapeSchedule> cs = schedule(clusterSchedule, subGraph);
     final String body = bodyFunction(cs);
     build.setBody(body);
 
@@ -102,61 +98,4 @@ public class CodegenScapeBuilder {
     return funcL;
   }
 
-  private List<ScapeSchedule> schedule(String clusterSchedule, PiGraph subGraph) {
-    final List<ScapeSchedule> cs = new LinkedList<>();
-    final List<AbstractActor> actorList = subGraph.getExecutableActors();
-    final String scheduleMonoCore = clusterSchedule.replace("/", ""); // doesn't deal with parallelism
-    final String[] splitActor = scheduleMonoCore.split("\\*");
-    String[] splitRate;
-    int openLoopCounter = 0;
-
-    for (int i = 0; i < splitActor.length; i++) {
-      final ScapeSchedule sc = ScheduleFactory.eINSTANCE.createScapeSchedule();
-      if (splitActor[i].contains("(")) {
-        sc.setBeginLoop(true);
-        openLoopCounter++;
-        splitRate = splitActor[i].split("\\(");
-        sc.setIterator(Integer.parseInt(splitRate[0]));
-        splitActor[i] = splitRate[1];
-      } else {
-        sc.setBeginLoop(false);
-        sc.setIterator(1);
-      }
-      if (splitActor[i].contains(")")) {
-        openLoopCounter--;
-        sc.setEndLoop(true);
-        sc.setEndLoopNb(compterOccurrences(splitActor[i], ')'));
-        splitActor[i] = splitActor[i].replace("\\)", "");
-
-      } else {
-        sc.setEndLoop(false);
-      }
-      sc.setActor(PiMMUserFactory.instance.createActor());
-      sc.getActor().setName(splitActor[i]);
-
-      sc.setLoopPrec((openLoopCounter >= 1 && !sc.isBeginLoop()));
-
-      cs.add(sc);
-
-    }
-    for (final ScapeSchedule element : cs) {
-      for (final AbstractActor element2 : actorList) {
-        if (element.getActor().getName().equals(element2.getName())) {
-          element.setActor(element2);
-        }
-      }
-    }
-
-    return cs;
-  }
-
-  public static int compterOccurrences(String maChaine, char recherche) {
-    int nb = 0;
-    for (int i = 0; i < maChaine.length(); i++) {
-      if (maChaine.charAt(i) == recherche) {
-        nb++;
-      }
-    }
-    return nb;
-  }
 }

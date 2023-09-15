@@ -6,10 +6,8 @@ import java.util.Map;
 import java.util.Map.Entry;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.emf.common.util.EList;
-import org.preesm.commons.doc.annotations.Parameter;
 import org.preesm.commons.doc.annotations.Port;
 import org.preesm.commons.doc.annotations.PreesmTask;
-import org.preesm.commons.doc.annotations.Value;
 import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.pisdf.check.CheckerErrorLevel;
@@ -29,12 +27,7 @@ import org.preesm.workflow.implement.AbstractTaskImplementation;
  */
 @PreesmTask(id = "euclide.transfo.task.identifier", name = "Euclide Task",
     inputs = { @Port(name = "scenario", type = Scenario.class) },
-    outputs = { @Port(name = "PiMM", type = PiGraph.class), @Port(name = "scenario", type = Scenario.class) },
-    parameters = {
-        @Parameter(name = "Core number", description = "number of target cores", values = { @Value(name = "Fixed:=n",
-            effect = "the number of cores of the target allows to quantify the number of possible clusters") }),
-
-    })
+    outputs = { @Port(name = "PiMM", type = PiGraph.class), @Port(name = "scenario", type = Scenario.class) })
 public class EuclideTransfoTask extends AbstractTaskImplementation {
   @Override
   public Map<String, Object> execute(Map<String, Object> inputs, Map<String, String> parameters,
