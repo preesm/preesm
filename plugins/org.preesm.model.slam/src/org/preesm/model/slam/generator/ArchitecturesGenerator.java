@@ -82,9 +82,11 @@ public class ArchitecturesGenerator {
    *
    * @param nbX86cores
    *          Number of cores in the generated architecture.
+   * @param nodeName
+   *          Architecture Name
    */
-  public void generateAndSaveArchitecture(int nbX86cores) {
-    saveArchitecture(generateArchitecture(nbX86cores, null));
+  public void generateAndSaveArchitecture(int nbX86cores, String nodeName) {
+    saveArchitecture(generateArchitecture(nbX86cores, nodeName));
   }
 
   /**
@@ -92,13 +94,17 @@ public class ArchitecturesGenerator {
    *
    * @param nbX86cores
    *          Number of cores in the generated architecture.
-   * @param string
-   *          Name
+   * @param nodeName
+   *          Architecture Name
    * @return The generated architecture.
    */
-  public static Design generateArchitecture(int nbX86cores, String string) {
+  public static Design generateArchitecture(int nbX86cores, String nodeName) {
     final VLNV rootVLNV = SlamFactory.eINSTANCE.createVLNV();
-    rootVLNV.setName(nbX86cores + "CoresX86");
+    if (nodeName == null) {
+      rootVLNV.setName(nbX86cores + "CoresX86");
+    } else {
+      rootVLNV.setName(nodeName);
+    }
     rootVLNV.setLibrary("preesm");
     rootVLNV.setVendor("ietr");
     rootVLNV.setVersion("1");

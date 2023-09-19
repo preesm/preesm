@@ -79,6 +79,9 @@ public abstract class AbstractCodegenModelGenerator {
   /** The flag to activate PAPIFY instrumentation. */
   protected boolean papifyActive;
 
+  /** The flag to activate MULTINODE mode. */
+  protected boolean multinode;
+
   /**
    * @param archi
    *          See {@link AbstractCodegenPrinter#archi}
@@ -109,6 +112,16 @@ public abstract class AbstractCodegenModelGenerator {
       this.papifyActive = false;
     } else {
       this.papifyActive = true;
+    }
+
+  }
+
+  public final void registerMultinode(final String multinode) {
+
+    if (!multinode.equalsIgnoreCase("true")) {
+      this.multinode = false;
+    } else {
+      this.multinode = true;
     }
 
   }

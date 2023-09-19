@@ -133,3 +133,4 @@ Export-Package: org.preesm.algorithm,
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-ActivationPolicy: lazy
 Bundle-Activator: org.preesm.algorithm.PreesmAlgorithmPlugin
+Import-Package: org.preesm.ui.utils

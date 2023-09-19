@@ -5,6 +5,7 @@ import java.util.Map;
 import org.eclipse.xtend2.lib.StringConcatenation;
 import org.preesm.commons.files.PreesmIOHelper;
 import org.preesm.model.pisdf.AbstractActor;
+import org.preesm.model.pisdf.Actor;
 import org.preesm.model.pisdf.ConfigInputPort;
 import org.preesm.model.pisdf.DataInputPort;
 import org.preesm.model.pisdf.DataOutputPort;
@@ -34,38 +35,42 @@ public class CodegenSimSDP {
   private StringConcatenation exeNode(PiGraph topGraph) {
     StringConcatenation result = new StringConcatenation();
     for (final AbstractActor node : topGraph.getOnlyActors()) {
-      final String indexStr = node.getName().replace("sub", "");
-      final Long indexL = Long.decode(indexStr);
-      result.append("if (world_rank ==" + indexL + "){ \n");
-      for (final DataInputPort din : node.getDataInputPorts()) {
-        result.append("MPI_Recv(" + ((AbstractActor) din.getFifo().getSource()).getName() + ","
-            + din.getExpression().evaluate() + "," + din.getFifo().getType() + "," + (indexL - 1)
-            + ", MPI_ANY_TAG, MPI_COMM_WORLD, MPI_STATUS_IGNORE);\n");
+      if (node instanceof Actor) {
+        final String indexStr = node.getName().replace("sub_", "");
+        final Long indexL = Long.decode(indexStr);
+        result.append("if (world_rank ==" + indexL + "){ \n");
+        for (final DataInputPort din : node.getDataInputPorts()) {
+          result.append("MPI_Recv(" + ((AbstractActor) din.getFifo().getSource()).getName() + ","
+              + din.getExpression().evaluate() + "," + din.getFifo().getType() + "," + (indexL - 1)
+              + ", MPI_ANY_TAG, MPI_COMM_WORLD, MPI_STATUS_IGNORE);\n");
+        }
+        result.append(node.getName() + "(");
+        for (final ConfigInputPort cfg : node.getConfigInputPorts()) {
+          result.append(cfg.getName() + ",");
+        }
+        for (final DataInputPort din : node.getDataInputPorts()) {
+          result.append(((AbstractActor) din.getFifo().getSource()).getName() + ",");
+        }
+        for (final DataOutputPort dout : node.getDataOutputPorts()) {
+          result.append(dout.getName() + ",");
+        }
+        final String temp = result.toString().substring(0, result.length() - 1);
+        result = new StringConcatenation();
+        result.append(temp);
+        for (final DataOutputPort dout : node.getDataOutputPorts()) {
+          result.append("MPI_Ssend(" + dout.getName() + "," + dout.getExpression().evaluate() + ","
+              + dout.getFifo().getType() + "," + (indexL + 1) + ", MPI_COMM_WORLD);\n");
+        }
+        result.append("initNode" + indexL + " = 0;\n }\n");
       }
-      result.append(node.getName() + "(");
-      for (final ConfigInputPort cfg : node.getConfigInputPorts()) {
-        result.append(cfg.getName() + ",");
-      }
-      for (final DataInputPort din : node.getDataInputPorts()) {
-        result.append(((AbstractActor) din.getFifo().getSource()).getName() + ",");
-      }
-      for (final DataOutputPort dout : node.getDataOutputPorts()) {
-        result.append(dout.getName() + ",");
-      }
-      final String temp = result.toString().substring(0, result.length() - 1);
-      result = new StringConcatenation();
-      result.append(temp);
-      for (final DataOutputPort dout : node.getDataOutputPorts()) {
-        result.append("MPI_Ssend(" + dout.getName() + "," + dout.getExpression().evaluate() + ","
-            + dout.getFifo().getType() + "," + (indexL + 1) + ", MPI_COMM_WORLD);\n");
-      }
-      result.append("initNode" + indexL + " = 0;\n }\n");
     }
     result.append("}\n");
     for (final AbstractActor node : topGraph.getOnlyActors()) {
-      for (final DataOutputPort dout : node.getDataOutputPorts()) {
-        result.append("MPI_Free_mem(" + dout.getName());
+      if (node instanceof Actor) {
+        for (final DataOutputPort dout : node.getDataOutputPorts()) {
+          result.append("MPI_Free_mem(" + dout.getName());
 
+        }
       }
     }
     result.append("MPI_Finalize();\n");
@@ -94,10 +99,12 @@ public class CodegenSimSDP {
     final StringConcatenation result = new StringConcatenation();
     result.append("//Allocate buffers in distributed memory \n");
     for (final AbstractActor node : topGraph.getOnlyActors()) {
-      for (final DataOutputPort dout : node.getDataOutputPorts()) {
-        result.append(dout.getFifo().getType() + " *" + dout.getName() + ";\n");
-        result.append("MPI_Alloc_mem(" + dout.getExpression().evaluate() + " * sizeof(" + dout.getFifo().getType()
-            + "), MPI_INFO_NULL, &" + dout.getName() + "); \n");
+      if (node instanceof Actor) {
+        for (final DataOutputPort dout : node.getDataOutputPorts()) {
+          result.append(dout.getFifo().getType() + " *" + dout.getName() + ";\n");
+          result.append("MPI_Alloc_mem(" + dout.getExpression().evaluate() + " * sizeof(" + dout.getFifo().getType()
+              + "), MPI_INFO_NULL, &" + dout.getName() + "); \n");
+        }
       }
     }
     return result;
@@ -116,8 +123,10 @@ public class CodegenSimSDP {
   private StringConcatenation initNode(PiGraph topGraph, Map<Long, String> nodeNames) {
     final StringConcatenation result = new StringConcatenation();
     result.append("int MPIStopNode = 0;\n");
-    for (int i = 0; i < topGraph.getOnlyActors().size(); i++) {
+    for (int i = 0; i < nodeNames.size(); i++) {
+
       result.append("int initNode" + i + " = 1;\n");
+
     }
     result.append("char nodeset[" + nodeNames.size() + "] = {");
     for (Long i = 0L; i < nodeNames.size(); i++) {

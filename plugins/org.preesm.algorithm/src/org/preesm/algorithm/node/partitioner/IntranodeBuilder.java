@@ -1,19 +1,31 @@
 package org.preesm.algorithm.node.partitioner;
 
-import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 import java.util.logging.Level;
+import org.eclipse.core.resources.IFile;
+import org.eclipse.core.resources.IFolder;
+import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.ResourcesPlugin;
+import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IPath;
+import org.eclipse.core.runtime.Path;
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.common.util.EMap;
+import org.eclipse.emf.common.util.URI;
 import org.eclipse.xtend2.lib.StringConcatenation;
 import org.preesm.algorithm.codegen.idl.Prototype;
+import org.preesm.commons.exceptions.PreesmRuntimeException;
+import org.preesm.commons.files.PreesmIOHelper;
+import org.preesm.commons.files.WorkspaceUtils;
 import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.AbstractVertex;
@@ -40,78 +52,75 @@ import org.preesm.model.pisdf.SpecialActor;
 import org.preesm.model.pisdf.brv.BRVMethod;
 import org.preesm.model.pisdf.brv.PiBRV;
 import org.preesm.model.pisdf.factory.PiMMUserFactory;
+import org.preesm.model.pisdf.serialize.PiWriter;
 import org.preesm.model.pisdf.util.LOOPSeeker;
 import org.preesm.model.pisdf.util.PiSDFSubgraphBuilder;
 import org.preesm.model.scenario.Scenario;
+import org.preesm.model.scenario.generator.ScenariosGenerator;
 import org.preesm.model.scenario.util.DefaultTypeSizes;
 import org.preesm.model.scenario.util.ScenarioUserFactory;
 import org.preesm.model.slam.Component;
 import org.preesm.model.slam.ComponentInstance;
 import org.preesm.model.slam.Design;
 import org.preesm.model.slam.TimingType;
+import org.preesm.ui.utils.FileUtils;
 
 public class IntranodeBuilder {
   /**
    * Workflow scenario.
    */
   private final Scenario scenario;
-  /**
-   * Input graph.
-   */
-  /**
-   * Architecture design.
-   */
+
   private final Design archi;
 
   private final PiGraph                   graph;
+  private PiGraph                         topGraph = null;
   private final Map<AbstractVertex, Long> brv;
-  private final Map<Long, Long>           timeEq; // id node/cumulative time
+  private final Map<Long, Long>           timeEq;         // id node/cumulative time
 
   private final List<Design> archiList;
 
-  private final Map<Long, List<AbstractActor>>      topoOrderASAP     = new HashMap<>();
-  private final Map<Long, Map<AbstractActor, Long>> subs              = new HashMap<>();
-  Map<Long, Map<AbstractActor, Long>>               subsCopy          = new HashMap<>();
-  List<PiGraph>                                     sublist           = new ArrayList<>();
-  private String                                    includePath       = "";
-  private String                                    graphPath         = "";
-  private final String                              workspaceLocation = ResourcesPlugin.getWorkspace().getRoot()
-      .getLocation().toString();
-  static String                                     fileError         = "Error occurred during file generation: ";
-  private String                                    scenariiPath      = "";
+  private final Map<Long, List<AbstractActor>>      topoOrderASAP;
+  private final Map<Long, Map<AbstractActor, Long>> subs        = new HashMap<>();
+  Map<Long, Map<AbstractActor, Long>>               subsCopy    = new HashMap<>();
+  List<PiGraph>                                     sublist     = new ArrayList<>();
+  private String                                    includePath = "";
+  private String                                    graphPath   = "";
+
+  static String  fileError    = "Error occurred during file generation: ";
+  private String scenariiPath = "";
 
   public IntranodeBuilder(Scenario scenario, Map<AbstractVertex, Long> brv, Map<Long, Long> timeEq,
-      List<Design> archiList) {
+      List<Design> archiList, Map<Long, List<AbstractActor>> topoOrderASAP) {
     this.scenario = scenario;
     this.graph = scenario.getAlgorithm();
     this.archi = scenario.getDesign();
     this.brv = brv;
     this.timeEq = timeEq;
     this.archiList = archiList;
+    this.topoOrderASAP = topoOrderASAP;
   }
 
   public List<PiGraph> execute() {
     final String[] uriString = graph.getUrl().split("/");
-    graphPath = File.separator + uriString[1] + File.separator + uriString[2] + "/generated/";
-    scenariiPath = File.separator + uriString[1] + "/Scenarios/generated/";
-    includePath = uriString[1] + "/Code/include/";
-    // Identify the actors who will form the sub
+    graphPath = "/" + uriString[1] + "/" + uriString[2] + "/generated/";
+    scenariiPath = "/" + uriString[1] + "/Scenarios/generated/";
+    includePath = uriString[1] + "/Code/generated/interface/";
+
     computeSubs();
+
     computeSplits();
 
-    // Construct subs
     constructSubs();
 
-    // export
     exportSubs();
+    sublist.add(topGraph);
     return sublist;
 
   }
 
   private void exportSubs() {
     for (final PiGraph subgraph : sublist) {
-      subgraph.setUrl(graphPath + subgraph.getName() + ".pi");
-      // 4. export subs
       graphExporter(subgraph);
       scenarioExporter(subgraph);
     }
@@ -120,7 +129,7 @@ public class IntranodeBuilder {
 
   private void scenarioExporter(PiGraph subgraph) {
     final Scenario subScenario = ScenarioUserFactory.createScenario();
-    final String indexStr = subgraph.getName().replace("sub", "");
+    final String indexStr = subgraph.getName().replace("sub_", "");
     final Long indexL = Long.decode(indexStr);
     final Design subArchi = archiList.get(indexL.intValue());
     subScenario.setDesign(subArchi);
@@ -180,6 +189,20 @@ public class IntranodeBuilder {
     final String[] uriString = graph.getUrl().split("/");
     subScenario.setCodegenDirectory("/" + uriString[1] + "/Code/generated/" + subgraph.getName());
     subScenario.setSizesAreInBit(true);
+    final IPath fromPortableString = Path.fromPortableString(scenariiPath);
+    final IFile file = ResourcesPlugin.getWorkspace().getRoot().getFile(fromPortableString);
+    final IProject iProject = file.getProject();
+    subScenario.setScenarioURL(scenariiPath + subgraph.getName() + ".scenario");
+    final ScenariosGenerator s = new ScenariosGenerator(iProject);
+    final IFolder scenarioDir = iProject.getFolder("Scenarios/generated");
+    final Set<Scenario> scenarios = new HashSet<>();
+    scenarios.add(subScenario);
+    try {
+      s.saveScenarios(scenarios, scenarioDir);
+    } catch (final CoreException e) {
+      final String errorMessage = fileError + e.getMessage();
+      PreesmLogger.getLogger().log(Level.INFO, errorMessage);
+    }
   }
 
   private void csvGenerator(Scenario scenar, PiGraph pigraph, Design architecture) {
@@ -209,15 +232,11 @@ public class IntranodeBuilder {
         content.append("\n");
       }
     }
-    final String path = workspaceLocation + scenariiPath + pigraph.getName() + ".csv";
+
     scenar.getTimings().setExcelFileURL(scenariiPath + pigraph.getName() + ".csv");
-    try (FileOutputStream outputStream = new FileOutputStream(path)) {
-      final byte[] bytes = content.toString().getBytes();
-      outputStream.write(bytes);
-    } catch (final IOException e) {
-      final String errorMessage = fileError + e.getMessage();
-      PreesmLogger.getLogger().log(Level.INFO, errorMessage);
-    }
+    PreesmIOHelper.getInstance().print(scenariiPath, pigraph.getName() + ".csv", content);
+    PreesmLogger.getLogger().log(Level.INFO, "sub csv print in : ", scenariiPath);
+
   }
 
   private void computeSplits() {
@@ -244,6 +263,7 @@ public class IntranodeBuilder {
       sublist.add(subgraph);
 
     }
+    this.topGraph = PiMMUserFactory.instance.copyPiGraphWithHistory(graph);
   }
 
   private void constructSubs() {
@@ -355,14 +375,35 @@ public class IntranodeBuilder {
           .forEach(x -> subgraph.removeActor(x));
       // subgraph.remove
       PiBRV.compute(subgraph, BRVMethod.LCM);
+      subgraph.setContainingGraph(null);
 
     }
 
   }
 
-  private void graphExporter(PiGraph subgraph) {
-    // TODO Auto-generated method stub
+  private void graphExporter(PiGraph printgraph) {
+    printgraph.setUrl(graphPath + printgraph.getName() + ".pi");
+    PiBRV.compute(printgraph, BRVMethod.LCM);
 
+    final IPath fromPortableString = Path.fromPortableString(graphPath);
+    final IFile file = ResourcesPlugin.getWorkspace().getRoot().getFile(fromPortableString);
+    final IProject iProject = file.getProject();
+    final String fileName = printgraph.getName() + "" + ".pi";
+    final URI uri = FileUtils.getPathToFileInFolder(iProject, fromPortableString, fileName);
+
+    // Get the project
+    final String platformString = uri.toPlatformString(true);
+    final IFile documentFile = ResourcesPlugin.getWorkspace().getRoot().getFile(new Path(platformString));
+    final String osString = documentFile.getLocation().toOSString();
+    try (final OutputStream outStream = new FileOutputStream(osString);) {
+      // Write the Graph to the OutputStream using the Pi format
+      new PiWriter(uri).write(printgraph, outStream);
+    } catch (final IOException e) {
+      throw new PreesmRuntimeException("Could not open outputstream file " + uri.toPlatformString(false));
+    }
+
+    PreesmLogger.getLogger().log(Level.INFO, "sub print in : " + graphPath);
+    WorkspaceUtils.updateWorkspace();
   }
 
   private Long split(AbstractActor key, Long rv1, Long rv2, Long subRank) {
@@ -512,19 +553,14 @@ public class IntranodeBuilder {
   }
 
   private void generateFileH(Actor actor) {
-    final String[] uriString = graph.getUrl().split("/");
+    // final String[] uriString = graph.getUrl().split("/");
     final String content = "// jfécekejepeu \n #ifndef " + actor.getName().toUpperCase() + "_H \n #define "
         + actor.getName().toUpperCase() + "_H \n void " + actor.getName() + "("
         + actor.getAllDataPorts().get(0).getFifo().getType() + " " + actor.getAllDataPorts().get(0).getName()
         + "); \n #endif";
-    final String path = workspaceLocation + "/" + uriString[1] + "/Code/include/" + actor.getName() + ".h";
-    try (FileOutputStream outputStream = new FileOutputStream(path)) {
-      final byte[] bytes = content.getBytes();
-      outputStream.write(bytes);
-    } catch (final IOException e) {
-      final String errorMessage = fileError + e.getMessage();
-      PreesmLogger.getLogger().log(Level.INFO, errorMessage);
-    }
+    // final String path = workspaceLocation + "/" + uriString[1] + "/Code/include/" + actor.getName() + ".h";
+    final String codegenPath = scenario.getCodegenDirectory() + "/interface/";
+    PreesmIOHelper.getInstance().print(codegenPath, actor.getName() + ".h", content);
   }
 
   private void computeSubs() {
@@ -556,7 +592,6 @@ public class IntranodeBuilder {
               slow = 100L;
             }
           }
-
           // add instance while lower than target sub time
           Long i;
           for (i = 0L; count + i < brv.get(a) && timTemp < timeEq.get(nodeID); i++) {
@@ -578,11 +613,13 @@ public class IntranodeBuilder {
 
   private void preprocessCycle() {
     final List<AbstractActor> graphLOOPs = new LOOPSeeker(scenario.getAlgorithm()).seek();
-    if (!graphLOOPs.isEmpty()) {
-      PreesmLogger.getLogger().log(Level.INFO, "cycles are not handle yet");
+    if (graphLOOPs != null) {
+      if (!graphLOOPs.isEmpty()) {
+        PreesmLogger.getLogger().log(Level.INFO, "cycles are not handle yet");
 
+      }
+      // 2. create subs
     }
-    // 2. create subs
 
   }
 }

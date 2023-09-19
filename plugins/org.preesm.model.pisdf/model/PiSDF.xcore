@@ -704,8 +704,48 @@ class PiGraph extends AbstractActor, Graph, PeriodicElement {
 	op unique Fifo[] getFifosWithoutDelay() {
 		return (fifos.filter[delay === null]).toEList.unmodifiableView
 	}
-	//Hugo implS
 	op unique void replaceActor(AbstractActor oldActor, AbstractActor newActor) {
+		
+//		val int oldActorNbConfigInputPorts
+
+		if(oldActor.configInputPorts.size != newActor.configInputPorts.size ||
+			oldActor.configOutputPorts.size != newActor.configOutputPorts.size ||
+			oldActor.dataInputPorts.size != newActor.dataInputPorts.size || 
+			oldActor.dataOutputPorts.size != newActor.dataOutputPorts.size) {
+				throw new PreesmRuntimeException("Actor replacement does not match with the actor to replace.")
+			}
+
+
+		// Input configuration port
+		for (var int index = 0; index < oldActor.configInputPorts.size; index++) {
+//			val Dependency dep = oldActor.configInputPorts.get(index).incomingDependency
+			oldActor.configInputPorts.get(index).incomingDependency.getter = newActor.configInputPorts.get(index)
+		}
+
+		// Output configuration port
+		for (var int index = 0; index < oldActor.configOutputPorts.size; index++) {
+			val Dependency[] deps = oldActor.configOutputPorts.get(index).outgoingDependencies
+			for (var int jindex = 0; jindex < deps.size; jindex++) {
+				deps.get(jindex).source.replace(newActor.configOutputPorts.get(index))
+			}
+		}
+
+		// Input data port
+		for (var int index = 0; index < oldActor.dataInputPorts.size; index++) {
+			val Fifo fifo = oldActor.dataInputPorts.get(index).fifo
+			fifo.targetPort = newActor.dataInputPorts.get(index)
+		}
+
+		// Output data port
+		for (var int index = 0; index < oldActor.dataOutputPorts.size; index++) {
+			val Fifo fifo = oldActor.dataOutputPorts.get(index).fifo
+			fifo.sourcePort = newActor.dataOutputPorts.get(index)
+		}
+
+		this.removeActor(oldActor)
+		this.addActor(newActor)
+
+		
 	}
 }
 

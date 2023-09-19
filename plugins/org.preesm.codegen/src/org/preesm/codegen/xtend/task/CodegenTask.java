@@ -111,7 +111,8 @@ import org.preesm.workflow.implement.AbstractTaskImplementation;
                     + " of PAPIFY tab in the scenario. Currently compatibe with x86 and MPPA-256") }),
         @Parameter(name = "Apollo", description = "Enable the use of Apollo for intra-actor optimization",
             values = { @Value(name = "true/false",
-                effect = "Print C code with Apollo function calls. " + "Currently compatibe with x86") }) })
+                effect = "Print C code with Apollo function calls. " + "Currently compatibe with x86") }),
+        @Parameter(name = "Multinode", description = "oué", values = { @Value(name = "true/false", effect = "oué") }) })
 public class CodegenTask extends AbstractTaskImplementation {
 
   /** The Constant PARAM_PRINTER. */
@@ -125,6 +126,9 @@ public class CodegenTask extends AbstractTaskImplementation {
 
   /** The Constant PARAM_APOLLO. */
   public static final String PARAM_APOLLO = "Apollo";
+
+  /** The Constant PARAM_MULTINODE. */
+  public static final String PARAM_MULTINODE = "Multinode";
 
   /*
    * (non-Javadoc)
@@ -146,11 +150,9 @@ public class CodegenTask extends AbstractTaskImplementation {
     final DirectedAcyclicGraph algoDAG = (DirectedAcyclicGraph) inputs.get("DAG");
     @SuppressWarnings("unchecked")
     final Map<String, MemoryExclusionGraph> megs = (Map<String, MemoryExclusionGraph>) inputs.get("MEGs");
-    if (!(algoDAG instanceof MapperDAG)) {
+    if (!(algoDAG instanceof final MapperDAG algo)) {
       throw new PreesmRuntimeException("The input DAG has not been scheduled");
     }
-    final MapperDAG algo = (MapperDAG) algoDAG;
-
     // Generate intermediate model
     final CodegenModelGenerator generator = new CodegenModelGenerator(archi, algo, megs, scenario, null);
     // Retrieve the PAPIFY flag
@@ -159,6 +161,10 @@ public class CodegenTask extends AbstractTaskImplementation {
 
     // Retrieve the APOLLO flag
     final String apolloFlag = parameters.get(CodegenTask.PARAM_APOLLO);
+
+    // Retrieve the MULTINODE flag
+    final String multinode = parameters.get(CodegenTask.PARAM_MULTINODE);
+    generator.registerMultinode(multinode);
 
     final Collection<Block> codeBlocks = generator.generate();
 
@@ -212,6 +218,8 @@ public class CodegenTask extends AbstractTaskImplementation {
     parameters.put(CodegenTask.PARAM_PRINTER, avilableLanguages.toString());
     // Papify default
     parameters.put(CodegenTask.PARAM_PAPIFY, "false");
+
+    parameters.put(CodegenTask.PARAM_MULTINODE, "false");
     return parameters;
   }
 

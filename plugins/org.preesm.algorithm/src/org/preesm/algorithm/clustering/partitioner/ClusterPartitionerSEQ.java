@@ -37,15 +37,12 @@ package org.preesm.algorithm.clustering.partitioner;
 
 import java.util.List;
 import java.util.Map;
-import org.preesm.algorithm.clustering.ClusteringHelper;
-import org.preesm.algorithm.pisdf.autodelays.AutoDelaysTask;
 import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.AbstractVertex;
 import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.pisdf.util.PiSDFSubgraphBuilder;
 import org.preesm.model.pisdf.util.SEQSeeker;
 import org.preesm.model.scenario.Scenario;
-import org.preesm.model.slam.ComponentInstance;
 import org.preesm.model.slam.Design;
 
 /**
@@ -93,7 +90,7 @@ public class ClusterPartitionerSEQ {
    *          cluster identification
    * @param nonClusterableList
    *          List of non able to be cluster actors
-   * 
+   *
    */
   public ClusterPartitionerSEQ(final PiGraph graph, final Scenario scenario, final int numberOfPEs,
       Map<AbstractVertex, Long> brv, int clusterId, List<AbstractActor> nonClusterableList) {
@@ -124,13 +121,13 @@ public class ClusterPartitionerSEQ {
       if (subGraph.getExecutableActors().size() < numberOfPEs) {
         numberOfCut = subGraph.getExecutableActors().size() - 1;
       }
-      final PiGraph subGraphCutted = AutoDelaysTask.addDelays(subGraph, archi, scenario, false, false, false,
-          numberOfPEs, numberOfCut, numberOfCut + 1);// subGraphCutted
-      graph.replaceActor(subGraph, subGraphCutted);
+      // final PiGraph subGraphCutted = AutoDelaysTask.addDelays(subGraph, archi, scenario, false, false, false,
+      // numberOfPEs, numberOfCut, numberOfCut + 1);// subGraphCutted
+      // graph.replaceActor(subGraph, subGraphCutted);
       // Add constraints of the cluster in the scenario.
-      for (final ComponentInstance component : ClusteringHelper.getListOfCommonComponent(seq, this.scenario)) {
-        this.scenario.getConstraints().addConstraint(component, subGraphCutted);
-      }
+      // for (final ComponentInstance component : ClusteringHelper.getListOfCommonComponent(seq, this.scenario)) {
+      // this.scenario.getConstraints().addConstraint(component, subGraphCutted);
+      // }
 
     }
     return this.graph;

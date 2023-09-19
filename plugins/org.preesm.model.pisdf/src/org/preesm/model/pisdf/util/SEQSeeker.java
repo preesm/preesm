@@ -96,10 +96,8 @@ public class SEQSeeker extends PiMMSwitch<Boolean> {
     this.identifiedSEQs = new LinkedList<>();
     this.nPEs = numberOfPEs;
     this.brv = brv;
-    // this.actorTiming = actorTiming;
     this.topoOrderASAP = new HashMap<>();
     this.nonClusterableList = nonClusterableList;
-    // this.subgraphGen = subgraphGen;
   }
 
   /**
@@ -134,13 +132,29 @@ public class SEQSeeker extends PiMMSwitch<Boolean> {
         }
       }
       if (sum >= nPEs && !seqList.isEmpty()) {
-        this.identifiedSEQs.add(seqList);
+        int count = 0;
+        for (final AbstractActor a : seqList) {
+          if (a instanceof Actor) {
+            count++;
+          }
+        }
+        if (count > nPEs) {
+          this.identifiedSEQs.add(seqList);
+        }
       }
 
     }
 
     if (!seqList.isEmpty()) {
-      this.identifiedSEQs.add(seqList);
+      int count = 0;
+      for (final AbstractActor a : seqList) {
+        if (a instanceof Actor) {
+          count++;
+        }
+      }
+      if (count > nPEs) {
+        this.identifiedSEQs.add(seqList);
+      }
     }
   }
 
@@ -170,7 +184,9 @@ public class SEQSeeker extends PiMMSwitch<Boolean> {
               .allMatch(x -> topoOrderASAP.entrySet().stream().filter(y -> y.getKey() < rankMatch)
                   .anyMatch(y -> y.getValue().contains(x)))
               && (!list.contains(aa))) {
-            list.add((AbstractActor) aa);
+            if (!((AbstractVertex) aa).getName().contains("snk_")) {
+              list.add((AbstractActor) aa);
+            }
             temp.remove(aa);
 
           }
@@ -185,7 +201,15 @@ public class SEQSeeker extends PiMMSwitch<Boolean> {
       // });
       rank++;
       topoOrderASAP.put(rank, sortedList);
+
     }
+    // for (final Entry<Long, List<AbstractActor>> entry1 : topoOrderASAP.entrySet()) {
+    // for (final AbstractActor actor : entry1.getValue()) {
+    // if (actor.getName().contains("src_") || actor.getName().contains("snk_")) {
+    // entry1.getValue().remove(actor);
+    // }
+    // }
+    // }
   }
 
   @Override
