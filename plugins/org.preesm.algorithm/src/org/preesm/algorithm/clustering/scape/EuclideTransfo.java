@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.AbstractVertex;
+import org.preesm.model.pisdf.Actor;
 import org.preesm.model.pisdf.ConfigInputPort;
 import org.preesm.model.pisdf.DataInputPort;
 import org.preesm.model.pisdf.DataOutputPort;
@@ -21,10 +22,18 @@ import org.preesm.model.pisdf.factory.PiMMUserFactory;
 import org.preesm.model.pisdf.util.LOOPSeeker;
 import org.preesm.model.pisdf.util.PiSDFSubgraphBuilder;
 import org.preesm.model.scenario.Scenario;
-import org.preesm.model.slam.Component;
+import org.preesm.model.slam.ComponentInstance;
 import org.preesm.model.slam.Design;
 import org.preesm.model.slam.TimingType;
 
+/**
+ * This class divides the data parallelism according to Euclidean division based on the architecture's equivalent core
+ * count. The number of equivalent cores comes down to calculating the linear function that relates the frequency of the
+ * cores that make up the architecture.
+ *
+ * @author orenaud
+ *
+ */
 public class EuclideTransfo {
   /**
    * Input graph.
@@ -47,6 +56,13 @@ public class EuclideTransfo {
   private Long                           totalLevelNumber         = 0L;
   private Long                           levelBound               = 0L;
 
+  /**
+   * Builds a EuclideTransfo object.
+   *
+   * @param scenario
+   *          Workflow scenario.
+   *
+   */
   public EuclideTransfo(Scenario scenario) {
     this.graph = scenario.getAlgorithm();
     this.scenario = scenario;
@@ -54,6 +70,9 @@ public class EuclideTransfo {
 
   }
 
+  /**
+   * @return Transformed PiGraph
+   */
   public PiGraph execute() {
     coreEquivalent = computeSingleNodeCoreEquivalent();
     // construct hierarchical structure
@@ -71,26 +90,48 @@ public class EuclideTransfo {
     return graph;
   }
 
+  /**
+   * the method compute the number of equivalent cores that comes down to calculating the linear function that relates
+   * the frequency of the cores that make up the architecture.
+   *
+   * @return The number of equivalent cores (not sure for Long value, may be an int)
+   */
+
   public Long computeSingleNodeCoreEquivalent() {
     Long coreEq = 0L;
+    int actorNumber = 0;
     for (final AbstractActor actor : graph.getOnlyActors()) {
+      // sink and source actor replace interface for SimSDP
+      if (actor instanceof Actor && !actor.getName().contains("src_") && !actor.getName().contains("snk_")) {
 
-      Long sumTiming = 0L;
-      Long slow = Long
-          .valueOf(scenario.getTimings().getActorTimings().get(actor).get(0).getValue().get(TimingType.EXECUTION_TIME));
-      for (final Component opId : archi.getProcessingElements()) {
-        sumTiming += Long.valueOf(scenario.getTimings().getExecutionTimeOrDefault(actor, opId));
-        final Long timeSeek = Long.valueOf(scenario.getTimings().getExecutionTimeOrDefault(actor, opId));
-        if (timeSeek < slow) {
-          slow = timeSeek;
+        Long sumTiming = 0L;
+        Long slow = Long.valueOf(
+            scenario.getTimings().getActorTimings().get(actor).get(0).getValue().get(TimingType.EXECUTION_TIME));
+        for (final ComponentInstance opId : archi.getOperatorComponentInstances()) {
+          sumTiming += Long.valueOf(scenario.getTimings().getExecutionTimeOrDefault(actor, opId.getComponent()));
+          final Long timeSeek = Long
+              .valueOf(scenario.getTimings().getExecutionTimeOrDefault(actor, opId.getComponent()));
+          if (timeSeek < slow) {
+            slow = timeSeek;
+          }
         }
+        coreEq += (sumTiming / slow);
+        actorNumber++;
       }
-      coreEq += sumTiming / slow;
     }
-    coreEq /= graph.getOnlyActors().size();
+    if (actorNumber > 0) {
+      coreEq /= actorNumber;
+    } else {
+      coreEq = (long) archi.getOperatorComponentInstances().size();
+    }
     return coreEq;
   }
 
+  /**
+   * Identify potential candidates, i.e. players with a degree of parallelism not divisible by the number of equivalent
+   * cores in the target.
+   *
+   */
   private void divideIDs() {
     for (Long i = levelBound; i >= 0L; i--) {
       for (final PiGraph g : hierarchicalLevelOrdered.get(i)) {
@@ -104,6 +145,16 @@ public class EuclideTransfo {
       }
     }
   }
+
+  /**
+   * The process consists in dividing an actor instance into 2. One will repeat QxD, the other R. To do this, we
+   * duplicate the instance and redistribute the data.
+   *
+   * @param a
+   *          The identified actor
+   * @param rv
+   *          The genuine repetition vector
+   */
 
   private void euclide(AbstractActor a, Map<AbstractVertex, Long> rv) {
     //

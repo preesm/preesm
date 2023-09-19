@@ -556,16 +556,18 @@ public class ClusteringScape {
     }
     if (!scenario.getTimings().getActorTimings().isEmpty()) {
       for (final AbstractActor actor : cluster.getOnlyActors()) {
-        AbstractActor aaa = null;
-        for (final AbstractActor aa : scenario.getTimings().getActorTimings().keySet()) {
-          if (actor.getName().equals(aa.getName())) {
-            aaa = aa;
+        if (actor instanceof Actor) {
+          AbstractActor aaa = null;
+          for (final AbstractActor aa : scenario.getTimings().getActorTimings().keySet()) {
+            if (actor.getName().equals(aa.getName())) {
+              aaa = aa;
+            }
           }
-        }
-        for (final Component opId : archi.getProcessingElements()) {
-          final Long sum = scenario.getTimings().evaluateTimingOrDefault(aaa, opId, TimingType.EXECUTION_TIME)
-              * repetitionVector.get(actor);
-          clusterTiming.get(opId).replace(TimingType.EXECUTION_TIME, String.valueOf(sum));
+          for (final Component opId : archi.getProcessingElements()) {
+            final Long sum = scenario.getTimings().evaluateTimingOrDefault(aaa, opId, TimingType.EXECUTION_TIME)
+                * repetitionVector.get(actor);
+            clusterTiming.get(opId).replace(TimingType.EXECUTION_TIME, String.valueOf(sum));
+          }
         }
       }
     }
@@ -580,6 +582,7 @@ public class ClusteringScape {
    */
   private Scenario lastLevelScenario(PiGraph copiedCluster) {
     final Scenario clusterScenario = ScenarioUserFactory.createScenario();
+    clusterScenario.setCodegenDirectory(scenario.getCodegenDirectory());
 
     clusterScenario.setAlgorithm(copiedCluster);
     clusterScenario.setDesign(archi);

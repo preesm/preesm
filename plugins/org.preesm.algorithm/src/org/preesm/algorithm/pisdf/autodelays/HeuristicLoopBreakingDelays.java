@@ -194,7 +194,9 @@ public class HeuristicLoopBreakingDelays {
         selfLoopsAbs.add(breakingFifoAbs);
       }
       ci.breakingFifo = breakingFifoAbs;
+
       final long gcdCycle = MathFunctionsHelper.gcd(cycle.stream().map(brv::get).collect(Collectors.toList()));
+
       ci.repetition = gcdCycle;
       cycle.forEach(a -> {
         final long localBrv = brv.get(a) / gcdCycle;
@@ -236,8 +238,10 @@ public class HeuristicLoopBreakingDelays {
     }
     // for interfaces at top level, we decrease the nbVisit value
     for (final AbstractActor aa : graph.getActors()) {
+
       if (aa instanceof final DataInputInterface dii) {
         final Fifo f = dii.getDataPort().getFifo();
+
         if (f != null) {
           final AbstractActor tgt = f.getTargetPort().getContainingActor();
           if (tgt instanceof ExecutableActor) {
@@ -251,6 +255,7 @@ public class HeuristicLoopBreakingDelays {
 
       } else if (aa instanceof final DataOutputInterface doi) {
         final Fifo f = doi.getDataPort().getFifo();
+
         if (f != null) {
           final AbstractActor src = f.getSourcePort().getContainingActor();
           if (src instanceof ExecutableActor) {

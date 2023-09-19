@@ -60,8 +60,7 @@ public class ScheduleScape {
         openLoopCounter--;
         sc.setEndLoop(true);
         sc.setEndLoopNb(occurrency(splitActor[i], ')'));
-        splitActor[i] = splitActor[i].replace("\\)", "");
-
+        splitActor[i] = splitActor[i].replace(")", "");
       } else {
         sc.setEndLoop(false);
       }

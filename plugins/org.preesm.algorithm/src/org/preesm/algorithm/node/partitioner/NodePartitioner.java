@@ -7,17 +7,13 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Set;
 import java.util.logging.Level;
 import org.eclipse.core.resources.IFile;
-import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.ResourcesPlugin;
-import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.emf.common.util.EMap;
@@ -26,22 +22,11 @@ import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.AbstractVertex;
 import org.preesm.model.pisdf.Actor;
-import org.preesm.model.pisdf.ConfigInputPort;
-import org.preesm.model.pisdf.DataInputPort;
-import org.preesm.model.pisdf.DataOutputPort;
-import org.preesm.model.pisdf.Delay;
-import org.preesm.model.pisdf.Dependency;
-import org.preesm.model.pisdf.Fifo;
-import org.preesm.model.pisdf.Parameter;
-import org.preesm.model.pisdf.PersistenceLevel;
 import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.pisdf.SpecialActor;
 import org.preesm.model.pisdf.brv.BRVMethod;
 import org.preesm.model.pisdf.brv.PiBRV;
-import org.preesm.model.pisdf.factory.PiMMUserFactory;
 import org.preesm.model.scenario.Scenario;
-import org.preesm.model.scenario.generator.ScenariosGenerator;
-import org.preesm.model.scenario.util.ScenarioUserFactory;
 import org.preesm.model.slam.Component;
 import org.preesm.model.slam.Design;
 import org.preesm.model.slam.TimingType;
@@ -56,13 +41,9 @@ public class NodePartitioner {
    * Workflow scenario.
    */
   private final Scenario scenario;
-  /**
-   * Architecture design.
-   */
-  private final Design   archi;
 
-  private final String                         archicsvpath;
-  private final String                         workloadpath;
+  private final String archicsvpath;
+
   private final Map<Long, Map<Long, Long>>     archiH;       // id node/id core/freq
   private final Map<Long, Long>                archiEq;      // id node/nb core
   private Long                                 totArchiEq;
@@ -72,25 +53,18 @@ public class NodePartitioner {
   private final Map<Long, List<AbstractActor>> topoOrderASAP;// id rank/actor
   private final Map<Long, String>              nodeNames;
 
-  private List<PiGraph>      subs      = null;
   private final List<Design> archiList = new ArrayList<>();
 
-  static String                       fileError         = "Error occurred during file generation: ";
-  private String                      graphPath         = "";
-  private String                      archiPath         = "";
-  private String                      scenariiPath      = "";
-  private String                      includePath       = "";
-  private final String                workspaceLocation = ResourcesPlugin.getWorkspace().getRoot().getLocation()
-      .toString();
-  Map<Long, Map<AbstractActor, Long>> subsCopy          = new HashMap<>();
-  private final PiGraph               topGraph          = null;
+  static String                       fileError    = "Error occurred during file generation: ";
+  private String                      archiPath    = "";
+  private String                      scenariiPath = "";
+  private String                      workloadpath = "";
+  Map<Long, Map<AbstractActor, Long>> subsCopy     = new HashMap<>();
 
-  public NodePartitioner(PiGraph graph, Scenario scenario, Design archi, String archicsvpath, String workloadpath) {
-    this.graph = graph;
+  public NodePartitioner(Scenario scenario, String archicsvpath) {
+    this.graph = scenario.getAlgorithm();
     this.scenario = scenario;
-    this.archi = archi;
     this.archicsvpath = archicsvpath;
-    this.workloadpath = workloadpath;
     this.archiH = new HashMap<>();
     this.archiEq = new HashMap<>();
     this.totArchiEq = 0L;
@@ -104,10 +78,9 @@ public class NodePartitioner {
 
   public PiGraph execute() {
     final String[] uriString = graph.getUrl().split("/");
-    graphPath = File.separator + uriString[1] + File.separator + uriString[2] + "/generated/";
     scenariiPath = File.separator + uriString[1] + "/Scenarios/generated/";
     archiPath = File.separator + uriString[1] + "/Archi/";
-    includePath = uriString[1] + "/Code/include/";
+    workloadpath = File.separator + uriString[1] + "/Scenarios/workload/";
     // 0. check level
     if (!graph.getAllChildrenGraphs().isEmpty()) {
       PreesmLogger.getLogger().log(Level.INFO, "Hierarchical graphs are not handle yet, please feed a flat version");
@@ -125,13 +98,10 @@ public class NodePartitioner {
     computeEqTime();
     // 3. sort actor in topological as soon as possible order
     computeTopoASAP();
-    // homogeneous transform (if delay create sub of cycle path)
-    // 4. identifies the actors who will form the sub
-    this.subs = new IntranodeBuilder(scenario, brv, timeEq, archiList).execute();
-    // 5. construct subs
-    // constructSubs();
+    // 4. construct subGraphs
+    final List<PiGraph> subs = new IntranodeBuilder(scenario, brv, timeEq, archiList, topoOrderASAP).execute();
     // 7. construct top
-    constructTop();
+    final PiGraph topGraph = new InternodeBuilder(scenario, subs).execute();
     // 9. generate main file
     new CodegenSimSDP(scenario, topGraph, nodeNames);
 
@@ -176,109 +146,6 @@ public class NodePartitioner {
       }
     }
 
-  }
-
-  private void constructTop() {
-    // 1. replace by an empty actor
-    topGraph.setName("top");
-    final int nodeIndex = emptyTop();
-    // 2. insert delay
-    pipelineTop();
-
-    // remove extra parameter
-    for (final AbstractActor a : topGraph.getExecutableActors()) {
-      final List<String> cfgOccur = new ArrayList<>();
-      for (int i = 0; i < a.getConfigInputPorts().size(); i++) {
-        a.getConfigInputPorts().get(i)
-            .setName(((AbstractVertex) a.getConfigInputPorts().get(i).getIncomingDependency().getSetter()).getName());
-        final String name = a.getConfigInputPorts().get(i).getName();
-
-        if (cfgOccur.contains(a.getConfigInputPorts().get(i).getName())) {
-          topGraph.removeDependency(a.getConfigInputPorts().get(i).getIncomingDependency());
-          a.getConfigInputPorts().remove(a.getConfigInputPorts().get(i));
-          i--;
-        }
-        cfgOccur.add(name);
-      }
-
-    }
-    topGraph.getAllParameters().stream().filter(x -> !x.getContainingPiGraph().equals(topGraph))
-        .forEach(x -> topGraph.removeParameter(x));
-    for (final Parameter param : topGraph.getAllParameters()) {
-      for (final Dependency element : param.getOutgoingDependencies()) {
-        if (element.getContainingGraph() != topGraph) {
-          element.setContainingGraph(topGraph);
-        }
-      }
-    }
-    for (final Dependency i : topGraph.getAllDependencies()) {
-
-      final boolean getterContained = i.getGetter().getConfigurable() != null;
-      if (!getterContained) {
-        i.getSetter().getOutgoingDependencies().remove(i);
-        topGraph.removeDependency(i);
-      }
-    }
-
-    // 3. export graph
-    PiBRV.compute(topGraph, BRVMethod.LCM);
-    graphExporter(topGraph);
-    final IPath fromPortableString = Path.fromPortableString(scenariiPath);
-    final IFile file2 = ResourcesPlugin.getWorkspace().getRoot().getFile(fromPortableString);
-    final IProject iProject = file2.getProject();
-    final ArchitecturesGenerator a = new ArchitecturesGenerator(iProject);
-    final Design topArchi = ArchitecturesGenerator.generateArchitecture(nodeIndex, "top");
-    a.saveArchitecture(topArchi);
-    topArchi.setUrl(archiPath + "top.slam");
-    // 4. generate scenario
-    final Scenario subScenario = ScenarioUserFactory.createScenario();
-    subScenario.setAlgorithm(topGraph);
-    subScenario.setDesign(topArchi);
-    final String codegenpath = scenario.getCodegenDirectory();
-    subScenario.setCodegenDirectory(codegenpath + "/top");
-    scenarioExporter(subScenario);
-
-  }
-
-  private void pipelineTop() {
-    int index = 0;
-    for (final Fifo f : topGraph.getFifos()) {
-      final Delay d = PiMMUserFactory.instance.createDelay();
-      d.setName(((AbstractActor) f.getSource()).getName() + "_out_" + ((AbstractActor) f.getTarget()).getName() + "_in_"
-          + index);
-      d.setLevel(PersistenceLevel.PERMANENT);
-      d.setExpression(f.getSourcePort().getExpression().evaluate());
-      d.setContainingGraph(f.getContainingGraph());
-      f.assignDelay(d);
-      d.getActor().setContainingGraph(f.getContainingGraph());
-      index++;
-    }
-  }
-
-  private int emptyTop() {
-    int nodeIndex = 0;
-    topGraph.setUrl(graphPath + topGraph.getName() + ".pi");
-    for (final AbstractActor pi : topGraph.getActors()) {
-      if (pi instanceof PiGraph) {
-        final Actor aEmpty = PiMMUserFactory.instance.createActor();
-        aEmpty.setName(pi.getName());
-        for (int i = 0; i < pi.getDataInputPorts().size(); i++) {
-          final DataInputPort inputPort = PiMMUserFactory.instance.copy(pi.getDataInputPorts().get(i));
-          aEmpty.getDataInputPorts().add(inputPort);
-        }
-        for (int i = 0; i < pi.getDataOutputPorts().size(); i++) {
-          final DataOutputPort outputPort = PiMMUserFactory.instance.copy(pi.getDataOutputPorts().get(i));
-          aEmpty.getDataOutputPorts().add(outputPort);
-        }
-        for (int i = 0; i < pi.getConfigInputPorts().size(); i++) {
-          final ConfigInputPort cfgInputPort = PiMMUserFactory.instance.copy(pi.getConfigInputPorts().get(i));
-          aEmpty.getConfigInputPorts().add(cfgInputPort);
-        }
-        topGraph.replaceActor(pi, aEmpty);
-        nodeIndex++;
-      }
-    }
-    return nodeIndex;
   }
 
   private void computeTopoASAP() {
@@ -441,10 +308,6 @@ public class NodePartitioner {
     }
     // sort in descending order of performance
     // first is the one with the max number of highest frequency
-
-    // if homogeneous frequency first is the one with highest core
-
-    // Ordonner les nœuds en fonction de archiEq, archiH et les critères donnés
     final List<Map.Entry<Long, Long>> nodeList = new ArrayList<>(architemp.entrySet());
     nodeList.sort((node1, node2) -> Long.compare(node2.getValue(), node1.getValue())); // Tri décroissant
 
@@ -460,46 +323,10 @@ public class NodePartitioner {
       a.saveArchitecture(subArchi);
       subArchi.setUrl(archiPath + "Node" + (newIndex - 1) + ".slam");
       archiList.add(subArchi);
-      // a.generateAndSaveArchitecture(entry.getValue().intValue(),"Node"+(newIndex-1));
+      a.generateAndSaveArchitecture(entry.getValue().intValue(), "Node" + (newIndex - 1));
 
     }
 
-  }
-
-  private void graphExporter(PiGraph printgraph) {
-    PiBRV.compute(printgraph, BRVMethod.LCM);
-    final IPath fromPortableString = Path.fromPortableString(graphPath);
-    final IFile file = ResourcesPlugin.getWorkspace().getRoot().getFile(fromPortableString);
-    final IProject iProject = file.getProject();
-    // SavePiGraph.savePiGraphInFolder(iProject, fromPortableString, printgraph, "");
-
-  }
-
-  private void scenarioExporter(Scenario scenario) {
-    final Set<Scenario> scenarios = new HashSet<>();
-    scenarios.add(scenario);
-
-    final IPath fromPortableString = Path.fromPortableString(scenariiPath);
-    final IFile file = ResourcesPlugin.getWorkspace().getRoot().getFile(fromPortableString);
-    final IProject iProject = file.getProject();
-    scenario.setScenarioURL(scenariiPath + scenario.getAlgorithm().getName() + ".scenario");
-    final ScenariosGenerator s = new ScenariosGenerator(iProject);
-    final IFolder scenarioDir = iProject.getFolder("Scenarios/generated");
-    try {
-      s.saveScenarios(scenarios, scenarioDir);
-    } catch (final CoreException e) {
-      final String errorMessage = fileError + e.getMessage();
-      PreesmLogger.getLogger().log(Level.INFO, errorMessage);
-    }
-  }
-
-  private void slamExporter(Design architecture) {
-    final IPath fromPortableString = Path.fromPortableString(scenariiPath);
-    final IFile file = ResourcesPlugin.getWorkspace().getRoot().getFile(fromPortableString);
-    final IProject iProject = file.getProject();
-    final ArchitecturesGenerator a = new ArchitecturesGenerator(iProject);
-    a.saveArchitecture(architecture);
-    // a.generateAndSaveArchitecture(1);
   }
 
 }

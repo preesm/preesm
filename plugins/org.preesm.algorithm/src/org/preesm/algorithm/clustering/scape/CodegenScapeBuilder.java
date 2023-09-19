@@ -21,7 +21,7 @@ public class CodegenScapeBuilder {
   public CodegenScapeBuilder(ScapeBuilder build, List<ScapeSchedule> cs, PiGraph subGraph, Long stackSize) {
     final Map<AbstractVertex, Long> brv = PiBRV.compute(subGraph, BRVMethod.LCM);
     // build initial function
-    final String funcI = " void " + subGraph.getName() + "Init(";
+    final String funcI = " void " + subGraph.getName() + "Init()";
     build.setInitFunc(funcI);
     // build loop function
     final String funcL = loopFunction(subGraph);
@@ -64,18 +64,34 @@ public class CodegenScapeBuilder {
       }
       final StringConcatenation actor = new StringConcatenation();
       actor.append(sc.getActor().getName() + "(");
+      final int nbArg = sc.getActor().getConfigInputPorts().size() + sc.getActor().getDataInputPorts().size()
+          + sc.getActor().getDataOutputPorts().size();
+      int countArg = 1;
       for (final ConfigInputPort cfg : sc.getActor().getConfigInputPorts()) {
-        actor.append("int " + ((AbstractVertex) cfg.getIncomingDependency().getSource()).getName() + ";");
+        actor.append(((AbstractVertex) cfg.getIncomingDependency().getSource()).getName());
+        if (countArg < nbArg) {
+          actor.append(",");
+        }
+        countArg++;
       }
       for (final DataInputPort in : sc.getActor().getDataInputPorts()) {
-        actor.append(in.getFifo().getType() + " " + in.getName() + ";");
+        actor.append(in.getName());
+        if (countArg < nbArg) {
+          actor.append(",");
+        }
+        countArg++;
       }
       for (final DataOutputPort out : sc.getActor().getDataOutputPorts()) {
-        actor.append(out.getFifo().getType() + " " + out.getName() + ";");
+        actor.append(out.getName());
+        if (countArg < nbArg) {
+          actor.append(",");
+        }
+        countArg++;
       }
+      actor.append(");");
       body.append(actor, "");
       for (int i = 0; i < sc.getEndLoopNb(); i++) {
-        body.append("}");
+        body.append("\n }");
       }
     }
     return body.toString();
@@ -83,19 +99,33 @@ public class CodegenScapeBuilder {
 
   private String loopFunction(PiGraph subGraph) {
     final StringConcatenation funcLoop = new StringConcatenation();
-    funcLoop.append("void" + subGraph.getName() + "(", "");
+    funcLoop.append("void " + subGraph.getName() + "(", "");
+    final int nbArg = subGraph.getParameters().size() + subGraph.getDataInputInterfaces().size()
+        + subGraph.getDataOutputInterfaces().size();
+    int i = 1;
     for (final Parameter param : subGraph.getParameters()) {
-      funcLoop.append("int " + param.getName() + ",");
+      funcLoop.append("int " + param.getName());
+      if (i < nbArg) {
+        funcLoop.append(",");
+      }
+      i++;
     }
     for (final DataInputInterface input : subGraph.getDataInputInterfaces()) {
-      funcLoop.append(input.getDataPort().getFifo().getType() + " " + input.getName() + ",");
+      funcLoop.append(input.getDataPort().getFifo().getType() + " " + input.getName());
+      if (i < nbArg) {
+        funcLoop.append(",");
+      }
+      i++;
     }
     for (final DataOutputInterface output : subGraph.getDataOutputInterfaces()) {
-      funcLoop.append(output.getDataPort().getFifo().getType() + " " + output.getName() + ",");
+      funcLoop.append(output.getDataPort().getFifo().getType() + " " + output.getName());
+      if (i < nbArg) {
+        funcLoop.append(",");
+      }
+      i++;
     }
-    String funcL = funcLoop.toString().substring(0, funcLoop.length() - 1);
-    funcL += "{\n";
-    return funcL;
+    funcLoop.append(")");
+    return funcLoop.toString();
   }
 
 }

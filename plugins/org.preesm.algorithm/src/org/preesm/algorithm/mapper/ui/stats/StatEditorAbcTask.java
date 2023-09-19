@@ -50,7 +50,6 @@ import org.preesm.algorithm.mapper.abc.impl.latency.LatencyAbc;
 import org.preesm.commons.doc.annotations.Port;
 import org.preesm.commons.doc.annotations.PreesmTask;
 import org.preesm.commons.logger.PreesmLogger;
-import org.preesm.model.scenario.Scenario;
 import org.preesm.workflow.elements.Workflow;
 import org.preesm.workflow.implement.AbstractTaskImplementation;
 
@@ -58,12 +57,12 @@ import org.preesm.workflow.implement.AbstractTaskImplementation;
  * Displays the gantt chart of the given mapped dag
  *
  * TODO: remove scenario from inputs (already contained in ABC)
- * 
+ *
  * @author mpelcat
  */
 @PreesmTask(id = "org.ietr.preesm.plugin.mapper.plot", name = "ABC Gantt displayer", category = "Gantt exporters",
 
-    inputs = { @Port(name = "ABC", type = LatencyAbc.class), @Port(name = "scenario", type = Scenario.class) },
+    inputs = { @Port(name = "ABC", type = LatencyAbc.class) },
 
     shortDescription = "Displays the result of a mapping/scheduling algorithm as a Gantt diagram.",
 
