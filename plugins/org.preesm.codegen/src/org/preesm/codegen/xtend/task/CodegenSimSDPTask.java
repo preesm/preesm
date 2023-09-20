@@ -1,12 +1,11 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2013 - 2024) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2013 - 2019) :
  *
- * Alexandre Honorat [alexandre.honorat@inria.fr] (2019)
+ * Alexandre Honorat [alexandre.honorat@insa-rennes.fr] (2019)
  * Antoine Morvan [antoine.morvan@insa-rennes.fr] (2017 - 2019)
  * Clément Guy [clement.guy@insa-rennes.fr] (2014 - 2015)
  * Daniel Madroñal [daniel.madronal@upm.es] (2019)
  * Dylan Gageot [gageot.dylan@gmail.com] (2019)
- * Hugo Miomandre [hugo.miomandre@insa-rennes.fr] (2024)
  * Julien Hascoet [jhascoet@kalray.eu] (2016)
  * Karol Desnos [karol.desnos@insa-rennes.fr] (2013 - 2015)
  * Maxime Pelcat [maxime.pelcat@insa-rennes.fr] (2013)
@@ -67,18 +66,15 @@ import org.preesm.model.scenario.Scenario;
 import org.preesm.model.slam.Design;
 import org.preesm.workflow.elements.Workflow;
 import org.preesm.workflow.implement.AbstractTaskImplementation;
-import org.preesm.workflow.implement.AbstractWorkflowNodeImplementation;
 
 /**
  * The Class CodegenTask.
  */
-@PreesmTask(id = "org.ietr.preesm.codegen.xtend.task.CodegenTask", name = "Code Generation",
+@PreesmTask(id = "org.ietr.preesm.codegen.xtend.task.CodegenSimSDPTask", name = "Intra Node Code Generation",
     category = "Code Generation",
 
-    inputs = { @Port(name = "MEGs", type = Map.class),
-        @Port(name = AbstractWorkflowNodeImplementation.KEY_SDF_DAG, type = DirectedAcyclicGraph.class),
-        @Port(name = AbstractWorkflowNodeImplementation.KEY_SCENARIO, type = Scenario.class),
-        @Port(name = AbstractWorkflowNodeImplementation.KEY_ARCHITECTURE, type = Design.class) },
+    inputs = { @Port(name = "MEGs", type = Map.class), @Port(name = "DAG", type = DirectedAcyclicGraph.class),
+        @Port(name = "scenario", type = Scenario.class), @Port(name = "architecture", type = Design.class) },
 
     shortDescription = "Generate code for the application deployment resulting from the workflow execution.",
 
@@ -115,8 +111,9 @@ import org.preesm.workflow.implement.AbstractWorkflowNodeImplementation;
                     + " of PAPIFY tab in the scenario. Currently compatibe with x86 and MPPA-256") }),
         @Parameter(name = "Apollo", description = "Enable the use of Apollo for intra-actor optimization",
             values = { @Value(name = "true/false",
-                effect = "Print C code with Apollo function calls. " + "Currently compatibe with x86") }) })
-public class CodegenTask extends AbstractTaskImplementation {
+                effect = "Print C code with Apollo function calls. " + "Currently compatibe with x86") }),
+        @Parameter(name = "Multinode", description = "oué", values = { @Value(name = "true/false", effect = "oué") }) })
+public class CodegenSimSDPTask extends AbstractTaskImplementation {
 
   /** The Constant PARAM_PRINTER. */
   public static final String PARAM_PRINTER = "Printer";
@@ -130,6 +127,9 @@ public class CodegenTask extends AbstractTaskImplementation {
   /** The Constant PARAM_APOLLO. */
   public static final String PARAM_APOLLO = "Apollo";
 
+  /** The Constant PARAM_MULTINODE. */
+  public static final String PARAM_MULTINODE = "Multinode";
+
   /*
    * (non-Javadoc)
    *
@@ -141,14 +141,13 @@ public class CodegenTask extends AbstractTaskImplementation {
       final IProgressMonitor monitor, final String nodeName, final Workflow workflow) {
 
     // Retrieve inputs
-    final Scenario scenario = (Scenario) inputs.get(AbstractWorkflowNodeImplementation.KEY_SCENARIO);
+    final Scenario scenario = (Scenario) inputs.get("scenario");
     if (scenario.getCodegenDirectory() == null) {
       throw new PreesmRuntimeException("Codegen path has not been specified in scenario, cannot go further.");
     }
 
-    final Design archi = (Design) inputs.get(AbstractWorkflowNodeImplementation.KEY_ARCHITECTURE);
-    final DirectedAcyclicGraph algoDAG = (DirectedAcyclicGraph) inputs
-        .get(AbstractWorkflowNodeImplementation.KEY_SDF_DAG);
+    final Design archi = (Design) inputs.get("architecture");
+    final DirectedAcyclicGraph algoDAG = (DirectedAcyclicGraph) inputs.get("DAG");
     @SuppressWarnings("unchecked")
     final Map<String, MemoryExclusionGraph> megs = (Map<String, MemoryExclusionGraph>) inputs.get("MEGs");
     if (!(algoDAG instanceof final MapperDAG algo)) {
@@ -157,23 +156,27 @@ public class CodegenTask extends AbstractTaskImplementation {
     // Generate intermediate model
     final CodegenModelGenerator generator = new CodegenModelGenerator(archi, algo, megs, scenario, null);
     // Retrieve the PAPIFY flag
-    final String papifyMonitoring = parameters.get(CodegenTask.PARAM_PAPIFY);
+    final String papifyMonitoring = parameters.get(CodegenSimSDPTask.PARAM_PAPIFY);
     generator.registerPapify(papifyMonitoring);
 
     // Retrieve the APOLLO flag
-    final String apolloFlag = parameters.get(CodegenTask.PARAM_APOLLO);
+    final String apolloFlag = parameters.get(CodegenSimSDPTask.PARAM_APOLLO);
+
+    // Retrieve the MULTINODE flag
+    final String multinode = parameters.get(CodegenSimSDPTask.PARAM_MULTINODE);
+    generator.registerMultinode(multinode);
 
     final Collection<Block> codeBlocks = generator.generate();
 
     // Retrieve the desired printer and target folder path
-    final String selectedPrinter = parameters.get(CodegenTask.PARAM_PRINTER);
+    final String selectedPrinter = parameters.get(CodegenSimSDPTask.PARAM_PRINTER);
     final String codegenPath = scenario.getCodegenDirectory() + File.separator;
 
     // Create the codegen engine
     final CodegenEngine engine = new CodegenEngine(codegenPath, codeBlocks, algo.getReferencePiMMGraph(), archi,
         scenario);
 
-    if (CodegenTask.VALUE_PRINTER_IR.equals(selectedPrinter)) {
+    if (CodegenSimSDPTask.VALUE_PRINTER_IR.equals(selectedPrinter)) {
       engine.initializePrinterIR(codegenPath);
     }
 
@@ -210,12 +213,13 @@ public class CodegenTask extends AbstractTaskImplementation {
     for (final String lang : languages) {
       avilableLanguages.append(lang + ", ");
     }
-    avilableLanguages.append(CodegenTask.VALUE_PRINTER_IR + "}");
+    avilableLanguages.append(CodegenSimSDPTask.VALUE_PRINTER_IR + "}");
 
-    parameters.put(CodegenTask.PARAM_PRINTER, avilableLanguages.toString());
+    parameters.put(CodegenSimSDPTask.PARAM_PRINTER, avilableLanguages.toString());
     // Papify default
-    parameters.put(CodegenTask.PARAM_PAPIFY, "false");
+    parameters.put(CodegenSimSDPTask.PARAM_PAPIFY, "false");
 
+    parameters.put(CodegenSimSDPTask.PARAM_MULTINODE, "false");
     return parameters;
   }
 
@@ -226,7 +230,7 @@ public class CodegenTask extends AbstractTaskImplementation {
    */
   @Override
   public String monitorMessage() {
-    return "Generate xtend code";
+    return "Generate intra node xtend code";
   }
 
 }

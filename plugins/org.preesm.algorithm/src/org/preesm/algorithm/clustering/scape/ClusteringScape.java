@@ -72,9 +72,8 @@ public class ClusteringScape {
    */
   private final List<AbstractActor> nonClusterableList;
 
-  int         clusterIndex = -1;// topological index
-  private int clusterId    = 0; // index cluster created
-
+  int                                    clusterIndex     = -1;   // topological index
+  private int                            clusterId        = 0;    // index cluster created
   private final Map<Long, List<PiGraph>> hierarchicalLevelOrdered;
   private Long                           totalLevelNumber = 0L;
   private Long                           levelBound       = 0L;
@@ -131,6 +130,12 @@ public class ClusteringScape {
     }
   }
 
+  /**
+   * The second extension of the SCAPE method takes into account the hierarchical context when choosing the clustering
+   * approach. This allows for the adaptation of parallelism or the coarsening of identified hierarchical levels based
+   * on the context.
+   *
+   */
   private void executeMode2() {
     for (Long i = levelBound; i >= 0L; i--) {
       for (final PiGraph g : hierarchicalLevelOrdered.get(i)) {
@@ -164,6 +169,12 @@ public class ClusteringScape {
     }
   }
 
+  /**
+   * The first extension introduces two additional patterns to the original SCAPE method: LOOP for cycles and SEQ for
+   * sequential parts. This extended method retains its parameterized nature, with the aim of reducing data parallelism
+   * and enhancing pipeline parallelism to align with the intended target.
+   *
+   */
   private void executeMode1() {
     for (final PiGraph g : hierarchicalLevelOrdered.get(levelBound)) {
       PiGraph newCluster = null;
@@ -188,6 +199,13 @@ public class ClusteringScape {
     }
   }
 
+  /**
+   * The original SCAPE method only takes into account two patterns for clustering, which are Actor Unique Repetition
+   * Count (URC) and Single Repetition Vector (SRV). This method is parameterized, meaning it accepts a number as a
+   * parameter that corresponds to the number of hierarchical levels to be coarsely clustered. The clustering occurs at
+   * this specified level, which implies that there can be as many clustering configurations as there are hierarchical
+   * levels in the input graph. The goal is two reduce the data parallelism to the target.
+   */
   private void executeMode0() {
     for (final PiGraph g : hierarchicalLevelOrdered.get(levelBound)) {
       PiGraph newCluster = null;
@@ -577,14 +595,14 @@ public class ClusteringScape {
   /**
    * Used to create a temporary scenario of the cluster
    *
-   * @param copiedCluster
+   * @param subgraph
    *          PiGraph of the cluster
    */
-  private Scenario lastLevelScenario(PiGraph copiedCluster) {
+  private Scenario lastLevelScenario(PiGraph subgraph) {
     final Scenario clusterScenario = ScenarioUserFactory.createScenario();
     clusterScenario.setCodegenDirectory(scenario.getCodegenDirectory());
 
-    clusterScenario.setAlgorithm(copiedCluster);
+    clusterScenario.setAlgorithm(subgraph);
     clusterScenario.setDesign(archi);
     clusterScenario.setTimings(ScenarioFactory.eINSTANCE.createTimings());
     clusterScenario.setEnergyConfig(ScenarioFactory.eINSTANCE.createEnergyConfig());
@@ -592,7 +610,7 @@ public class ClusteringScape {
     final List<ComponentInstance> coreIds = new ArrayList<>(archi.getOperatorComponentInstances());
     // for all different type of cores, allow mapping on it
     for (final ComponentInstance coreId : coreIds) {
-      for (final AbstractActor actor : copiedCluster.getAllActors()) {
+      for (final AbstractActor actor : subgraph.getAllActors()) {
         // Add constraint
         clusterScenario.getConstraints().addConstraint(coreId, actor);
 

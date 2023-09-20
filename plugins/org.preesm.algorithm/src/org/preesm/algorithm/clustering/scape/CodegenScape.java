@@ -14,6 +14,12 @@ import org.preesm.model.pisdf.CHeaderRefinement;
 import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.scenario.Scenario;
 
+/**
+ * This class generates additional .c and .h files for the identified cluster.
+ *
+ * @author orenaud
+ *
+ */
 public class CodegenScape {
 
   public CodegenScape(final Scenario scenario, final PiGraph subGraph, List<ScapeSchedule> schedule, Long stackSize) {
@@ -33,6 +39,15 @@ public class CodegenScape {
     PreesmIOHelper.getInstance().print(clusterPath, hfile, clusterHContent);
   }
 
+  /**
+   * The .h file contains function prototypes associated with the actors contained in the cluster.
+   *
+   * @param build
+   *          ...
+   * @param subGraph
+   *          Graph to consider.
+   * @return The string content of the .h file.
+   */
   private StringConcatenation buildHContent(ScapeBuilder build, PiGraph subGraph) {
     final StringConcatenation result = new StringConcatenation();
     result.append(header(subGraph));
@@ -45,6 +60,15 @@ public class CodegenScape {
     return result;
   }
 
+  /**
+   * The .c file contains scheduled functions call associated with the actors contained in the cluster.
+   *
+   * @param build
+   *          ...
+   * @param subGraph
+   *          Graph to consider.
+   * @return The string content of the .c file.
+   */
   private StringConcatenation buildCContent(ScapeBuilder build, PiGraph subGraph) {
 
     final StringConcatenation result = new StringConcatenation();
@@ -84,6 +108,13 @@ public class CodegenScape {
     return result;
   }
 
+  /**
+   * The header file contains file information.
+   *
+   * @param subGraph
+   *          Graph to consider.
+   * @return The string content of the header file.
+   */
   private StringConcatenation header(PiGraph subGraph) {
     final StringConcatenation result = new StringConcatenation();
     result.append("/** \n");
