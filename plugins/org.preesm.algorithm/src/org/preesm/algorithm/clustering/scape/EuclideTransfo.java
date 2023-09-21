@@ -137,6 +137,7 @@ public class EuclideTransfo {
       for (final PiGraph g : hierarchicalLevelOrdered.get(i)) {
         final Map<AbstractVertex, Long> rv = PiBRV.compute(g, BRVMethod.LCM);
         for (final AbstractActor a : g.getOnlyActors()) {
+          // rv = PiBRV.compute(g, BRVMethod.LCM);
           // maybe not for Special Actor
           if (rv.get(a) % coreEquivalent > 0 && rv.get(a) > coreEquivalent) {
             euclide(a, rv);
@@ -174,7 +175,9 @@ public class EuclideTransfo {
         // connect din to frk
         final DataInputPort din = PiMMUserFactory.instance.createDataInputPort();
         din.setName("in");
-        final Long dt = in.getFifo().getSourcePort().getExpression().evaluate() * rv.get(in.getFifo().getSource());
+        //
+        final Long dt = in.getExpression().evaluate() * rv.get(a);
+        // final Long dt = in.getFifo().getSourcePort().getExpression().evaluate() * rv.get(in.getFifo().getSource());
         final Long rt1 = in.getExpression().evaluate() * rv1;
         final Long rt2 = in.getExpression().evaluate() * rv2;
         din.setExpression(dt);
@@ -224,7 +227,8 @@ public class EuclideTransfo {
         final DataOutputPort dout = PiMMUserFactory.instance.createDataOutputPort();
 
         dout.setName("out");
-        final Long dt = out.getFifo().getTargetPort().getExpression().evaluate() * rv.get(out.getFifo().getTarget());
+        final Long dt = out.getExpression().evaluate() * rv.get(a);
+        // final Long dt = out.getFifo().getTargetPort().getExpression().evaluate() * rv.get(out.getFifo().getTarget());
         final Long rt1 = out.getExpression().evaluate() * rv1;
         final Long rt2 = out.getExpression().evaluate() * rv2;
         dout.setExpression(dt);

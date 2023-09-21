@@ -65,30 +65,32 @@ import org.preesm.model.slam.Design;
 import org.preesm.model.slam.TimingType;
 import org.preesm.ui.utils.FileUtils;
 
+/**
+ * This class aims to generate time-balanced subgraphs, each associated with one node.
+ *
+ * @author orenaud
+ *
+ */
 public class IntranodeBuilder {
   /**
    * Workflow scenario.
    */
   private final Scenario scenario;
 
-  private final Design archi;
-
-  private final PiGraph                   graph;
-  private PiGraph                         topGraph = null;
-  private final Map<AbstractVertex, Long> brv;
-  private final Map<Long, Long>           timeEq;         // id node/cumulative time
-
-  private final List<Design> archiList;
-
+  private final Design                              archi;
+  private final PiGraph                             graph;
+  private PiGraph                                   topGraph     = null;
+  private final Map<AbstractVertex, Long>           brv;
+  private final Map<Long, Long>                     timeEq;
+  private final List<Design>                        archiList;
   private final Map<Long, List<AbstractActor>>      topoOrderASAP;
-  private final Map<Long, Map<AbstractActor, Long>> subs        = new HashMap<>();
-  Map<Long, Map<AbstractActor, Long>>               subsCopy    = new HashMap<>();
-  List<PiGraph>                                     sublist     = new ArrayList<>();
-  private String                                    includePath = "";
-  private String                                    graphPath   = "";
-
-  static String  fileError    = "Error occurred during file generation: ";
-  private String scenariiPath = "";
+  private final Map<Long, Map<AbstractActor, Long>> subs         = new HashMap<>();
+  Map<Long, Map<AbstractActor, Long>>               subsCopy     = new HashMap<>();
+  List<PiGraph>                                     sublist      = new ArrayList<>();
+  private String                                    includePath  = "";
+  private String                                    graphPath    = "";
+  static String                                     fileError    = "Error occurred during file generation: ";
+  private String                                    scenariiPath = "";
 
   public IntranodeBuilder(Scenario scenario, Map<AbstractVertex, Long> brv, Map<Long, Long> timeEq,
       List<Design> archiList, Map<Long, List<AbstractActor>> topoOrderASAP) {
@@ -119,6 +121,10 @@ public class IntranodeBuilder {
 
   }
 
+  /**
+   * Export .pi and .scenario for each subgraph
+   *
+   */
   private void exportSubs() {
     for (final PiGraph subgraph : sublist) {
       graphExporter(subgraph);
@@ -127,6 +133,13 @@ public class IntranodeBuilder {
 
   }
 
+  /**
+   * Build and export scenario for the newly created subgraphs
+   *
+   * @param subgraph
+   *          Graph to consider.
+   *
+   */
   private void scenarioExporter(PiGraph subgraph) {
     final Scenario subScenario = ScenarioUserFactory.createScenario();
     final String indexStr = subgraph.getName().replace("sub_", "");
@@ -149,7 +162,6 @@ public class IntranodeBuilder {
       subScenario.getSimulationInfo().setMainComNode(comNodeIds.get(0));
     }
 
-    csvGenerator(subScenario, subgraph, subArchi);
     for (final Component opId : subArchi.getProcessingElements()) {
       for (final AbstractActor aa : subgraph.getAllActors()) {
         if (aa instanceof Actor) {
@@ -160,7 +172,8 @@ public class IntranodeBuilder {
 
     }
     subScenario.getTimings().getMemTimings().addAll(scenario.getTimings().getMemTimings());
-
+    // store timing in case
+    csvGenerator(subScenario, subgraph, subArchi);
     for (final ComponentInstance coreId : coreIds) {
       for (final AbstractActor aa : subgraph.getAllActors()) {
         if (aa instanceof Actor) {
@@ -203,8 +216,20 @@ public class IntranodeBuilder {
       final String errorMessage = fileError + e.getMessage();
       PreesmLogger.getLogger().log(Level.INFO, errorMessage);
     }
+    PreesmLogger.getLogger().log(Level.INFO, "sub scenario print in : " + scenariiPath);
   }
 
+  /**
+   * export CSV file containing subgraph actor timing
+   *
+   * @param scenar
+   *          scenario to consider.
+   * @param pigraph
+   *          Graph to consider.
+   * @param architecture
+   *          architecture to consider.
+   *
+   */
   private void csvGenerator(Scenario scenar, PiGraph pigraph, Design architecture) {
     // Create the list of core_types
     final List<Component> coreTypes = new ArrayList<>(architecture.getProcessingElements()); // List of core_types
@@ -235,10 +260,15 @@ public class IntranodeBuilder {
 
     scenar.getTimings().setExcelFileURL(scenariiPath + pigraph.getName() + ".csv");
     PreesmIOHelper.getInstance().print(scenariiPath, pigraph.getName() + ".csv", content);
-    PreesmLogger.getLogger().log(Level.INFO, "sub csv print in : ", scenariiPath);
+    PreesmLogger.getLogger().log(Level.INFO, "sub csv print in : " + scenariiPath);
 
   }
 
+  /**
+   * Localize splitting of split-able actor in order to obtain balanced subgraphs formation
+   *
+   *
+   */
   private void computeSplits() {
     // 1. split tasks if it's required
     for (final Entry<Long, Map<AbstractActor, Long>> a : subs.entrySet()) {
@@ -263,9 +293,15 @@ public class IntranodeBuilder {
       sublist.add(subgraph);
 
     }
+    // store the topgraph in order to preserve inter-subgraphs connections
     this.topGraph = PiMMUserFactory.instance.copyPiGraphWithHistory(graph);
   }
 
+  /**
+   * Isolate subgraphs in order to obtain consistent graphs able to be code generated
+   *
+   *
+   */
   private void constructSubs() {
 
     // 3. free subs (Interface --> sink; container)
@@ -381,6 +417,12 @@ public class IntranodeBuilder {
 
   }
 
+  /**
+   * Export subgraph
+   *
+   * @param printgraph
+   *          Graph to consider.
+   */
   private void graphExporter(PiGraph printgraph) {
     printgraph.setUrl(graphPath + printgraph.getName() + ".pi");
     PiBRV.compute(printgraph, BRVMethod.LCM);
@@ -406,6 +448,9 @@ public class IntranodeBuilder {
     WorkspaceUtils.updateWorkspace();
   }
 
+  /**
+   * Split an actor into two actor and dispatch data tokens
+   */
   private Long split(AbstractActor key, Long rv1, Long rv2, Long subRank) {
     // if data pattern
     // copy instance
@@ -553,16 +598,18 @@ public class IntranodeBuilder {
   }
 
   private void generateFileH(Actor actor) {
-    // final String[] uriString = graph.getUrl().split("/");
     final String content = "// jfécekejepeu \n #ifndef " + actor.getName().toUpperCase() + "_H \n #define "
         + actor.getName().toUpperCase() + "_H \n void " + actor.getName() + "("
         + actor.getAllDataPorts().get(0).getFifo().getType() + " " + actor.getAllDataPorts().get(0).getName()
         + "); \n #endif";
-    // final String path = workspaceLocation + "/" + uriString[1] + "/Code/include/" + actor.getName() + ".h";
     final String codegenPath = scenario.getCodegenDirectory() + "/interface/";
     PreesmIOHelper.getInstance().print(codegenPath, actor.getName() + ".h", content);
   }
 
+  /**
+   * Build subgraphs by adding one by one actors in the topological order until reaching balanced execution time per
+   * graph.
+   */
   private void computeSubs() {
     Long nodeID = 0L;
     Long timTemp = 0L;
@@ -611,6 +658,9 @@ public class IntranodeBuilder {
     }
   }
 
+  /**
+   * the method can only split data parallelism that are not unrolled by a global cycle.
+   */
   private void preprocessCycle() {
     final List<AbstractActor> graphLOOPs = new LOOPSeeker(scenario.getAlgorithm()).seek();
     if (graphLOOPs != null) {
