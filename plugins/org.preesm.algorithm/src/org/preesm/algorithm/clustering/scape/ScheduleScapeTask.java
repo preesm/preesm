@@ -13,8 +13,14 @@ import org.preesm.workflow.elements.Workflow;
 import org.preesm.workflow.implement.AbstractTaskImplementation;
 
 /**
- * This class schedule
+ * This class computes the schedule of the cluster using the authentic APGAN method, which relies on Repetition Count
+ * computation, specifically the Greatest Common Divisor (GCD) of the repetition vectors (RVs) of a pair of connected
+ * actors. The fundamental principle of APGAN involves iteratively clustering pairs of actors until a single entity is
+ * obtained. Initiating the process by clustering pairs with the maximum repetition count has been demonstrated to
+ * result in a schedule with minimal memory requirements. The resulting schedule consists of nested looped schedules,
+ * designed to make the behavior of the cluster sequential.
  *
+ * @see "https://apps.dtic.mil/sti/pdfs/ADA455067.pdf"
  * @author orenaud
  *
  */

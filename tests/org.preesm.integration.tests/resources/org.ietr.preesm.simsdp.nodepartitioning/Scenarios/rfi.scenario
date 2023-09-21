@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<scenario>
+    <flags>
+        <sizesAreInBit/>
+    </flags>
+    <files>
+        <algorithm url="/org.ietr.preesm.simsdp.nodepartitioning/Algo/rfi.pi"/>
+        <architecture url="/org.ietr.preesm.simsdp.nodepartitioning/Archi/1CoresX86.slam"/>
+        <codegenDirectory url="/org.ietr.preesm.simsdp.nodepartitioning/Code/generated"/>
+    </files>
+    <constraints excelUrl="">
+        <constraintGroup>
+            <operator name="Core0"/>
+            <task name="rfi/Data_Acquisition"/>
+            <task name="rfi/Plot_RnI_Histo"/>
+            <task name="rfi/MAD_Computation"/>
+            <task name="rfi/STD_Computation"/>
+            <task name="rfi/Plot_Threshold"/>
+            <task name="rfi/RFI_Filter"/>
+            <task name="rfi/Plot_Filtered_Data"/>
+            <task name="rfi/Data_Restitution"/>
+            <task name="rfi"/>
+        </constraintGroup>
+    </constraints>
+    <timings excelUrl="/org.ietr.preesm.simsdp.nodepartitioning/Scenarios/rfi.csv">
+        <timing opname="x86" time="6370070"
+            timingtype="EXECUTION_TIME" vertexname="rfi/Data_Acquisition"/>
+        <timing opname="x86" time="77213526"
+            timingtype="EXECUTION_TIME" vertexname="rfi/Plot_RnI_Histo"/>
+        <timing opname="x86" time="476205"
+            timingtype="EXECUTION_TIME" vertexname="rfi/MAD_Computation"/>
+        <timing opname="x86" time="300964"
+            timingtype="EXECUTION_TIME" vertexname="rfi/STD_Computation"/>
+        <timing opname="x86" time="77213526"
+            timingtype="EXECUTION_TIME" vertexname="rfi/Plot_Threshold"/>
+        <timing opname="x86" time="68244"
+            timingtype="EXECUTION_TIME" vertexname="rfi/RFI_Filter"/>
+        <timing opname="x86" time="77213526"
+            timingtype="EXECUTION_TIME" vertexname="rfi/Plot_Filtered_Data"/>
+        <timing opname="x86" time="5011027"
+            timingtype="EXECUTION_TIME" vertexname="rfi/Data_Restitution"/>
+        <memcpyspeed opname="x86" setuptime="1" timeperunit="0.001"/>
+        <memcpyspeed opname="x86" setuptime="1" timeperunit="0.001"/>
+    </timings>
+    <simuParams>
+        <mainCore>Core0</mainCore>
+        <mainComNode>shared_mem</mainComNode>
+        <averageDataSize>1000</averageDataSize>
+        <dataTypes>
+            <dataType name="double" size="64"/>
+        </dataTypes>
+        <specialVertexOperators>
+            <specialVertexOperator path="Core0"/>
+            <specialVertexOperator path="Core0"/>
+        </specialVertexOperators>
+    </simuParams>
+    <parameterValues/>
+    <papifyConfigs xmlUrl=""/>
+    <energyConfigs xmlUrl="">
+        <performanceObjective objectiveEPS="0.0"/>
+        <peActorsEnergy/>
+    </energyConfigs>
+</scenario>

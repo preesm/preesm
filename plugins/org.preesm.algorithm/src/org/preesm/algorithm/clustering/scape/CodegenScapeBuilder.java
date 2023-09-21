@@ -17,6 +17,12 @@ import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.pisdf.brv.BRVMethod;
 import org.preesm.model.pisdf.brv.PiBRV;
 
+/**
+ * This class fill the clustering SCAPE structure
+ *
+ * @author orenaud
+ *
+ */
 public class CodegenScapeBuilder {
   public CodegenScapeBuilder(ScapeBuilder build, List<ScapeSchedule> cs, PiGraph subGraph, Long stackSize) {
     final Map<AbstractVertex, Long> brv = PiBRV.compute(subGraph, BRVMethod.LCM);
@@ -54,6 +60,13 @@ public class CodegenScapeBuilder {
 
   }
 
+  /**
+   * Translate the schedule firing of actor into string C code.
+   *
+   * @param cs
+   *          Schedule structure of the cluster
+   * @return The string content of the bodyFunction.
+   */
   private String bodyFunction(List<ScapeSchedule> cs) {
     final StringConcatenation body = new StringConcatenation();
     for (final ScapeSchedule sc : cs) {
@@ -97,6 +110,13 @@ public class CodegenScapeBuilder {
     return body.toString();
   }
 
+  /**
+   * Translate the subgraph into string C function declaration.
+   *
+   * @param subgraph
+   *          Graph to consider.
+   * @return The string content of the loopFunction.
+   */
   private String loopFunction(PiGraph subGraph) {
     final StringConcatenation funcLoop = new StringConcatenation();
     funcLoop.append("void " + subGraph.getName() + "(", "");

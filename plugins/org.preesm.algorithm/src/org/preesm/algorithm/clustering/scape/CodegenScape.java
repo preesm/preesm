@@ -43,7 +43,7 @@ public class CodegenScape {
    * The .h file contains function prototypes associated with the actors contained in the cluster.
    *
    * @param build
-   *          ...
+   *          Clustering structure
    * @param subGraph
    *          Graph to consider.
    * @return The string content of the .h file.
@@ -64,7 +64,7 @@ public class CodegenScape {
    * The .c file contains scheduled functions call associated with the actors contained in the cluster.
    *
    * @param build
-   *          ...
+   *          Clustering structure
    * @param subGraph
    *          Graph to consider.
    * @return The string content of the .c file.

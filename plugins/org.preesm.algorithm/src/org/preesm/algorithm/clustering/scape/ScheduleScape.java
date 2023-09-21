@@ -20,6 +20,18 @@ import org.preesm.model.pisdf.brv.BRVMethod;
 import org.preesm.model.pisdf.brv.PiBRV;
 import org.preesm.model.pisdf.factory.PiMMUserFactory;
 
+/**
+ * This class computes the schedule of the cluster using the authentic APGAN method, which relies on Repetition Count
+ * computation, specifically the Greatest Common Divisor (GCD) of the repetition vectors (RVs) of a pair of connected
+ * actors. The fundamental principle of APGAN involves iteratively clustering pairs of actors until a single entity is
+ * obtained. Initiating the process by clustering pairs with the maximum repetition count has been demonstrated to
+ * result in a schedule with minimal memory requirements. The resulting schedule consists of nested looped schedules,
+ * designed to make the behavior of the cluster sequential.
+ *
+ * @see "https://apps.dtic.mil/sti/pdfs/ADA455067.pdf"
+ * @author orenaud
+ *
+ */
 public class ScheduleScape {
   /**
    * Input graph.
@@ -36,6 +48,12 @@ public class ScheduleScape {
 
   }
 
+  /**
+   * Translate String into a structure for the dedicated cluster code generation
+   *
+   * @param scheduleStr
+   *          The string schedule to translate
+   */
   private List<ScapeSchedule> str2schedule(String scheduleStr) {
     final List<ScapeSchedule> cs = new LinkedList<>();
     final List<AbstractActor> actorList = graph.getExecutableActors();
