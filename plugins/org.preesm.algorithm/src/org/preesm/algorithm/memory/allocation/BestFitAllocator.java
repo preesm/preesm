@@ -103,7 +103,8 @@ public class BestFitAllocator extends OrderedAllocator {
 
       // Alignment constraint
       long align = -1;
-      final Long typeSize = vertex.getPropertyBean().getValue(MemoryExclusionVertex.TYPE_SIZE);
+      final Long typeSize = vertex.getVertexAlignmentConstraint();
+
       if (this.alignment == 0) {
         align = typeSize;
       } else if (this.alignment > 0) {
@@ -147,13 +148,11 @@ public class BestFitAllocator extends OrderedAllocator {
             if (iterFrom.hasNext()) {
               from = iterFrom.next();
               nbExcludeFrom++;
-            } else {
-              if (!lastFromTreated) {
-                lastFromTreated = true;
-                // Add a from to avoid considering the end of
-                // lastTo as a free space
-                nbExcludeFrom++;
-              }
+            } else if (!lastFromTreated) {
+              lastFromTreated = true;
+              // Add a from to avoid considering the end of
+              // lastTo as a free space
+              nbExcludeFrom++;
             }
           }
 

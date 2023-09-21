@@ -91,6 +91,7 @@ import org.preesm.algorithm.model.PropertyBean;
 import org.preesm.algorithm.model.PropertyFactory;
 import org.preesm.algorithm.model.dag.DAGEdge;
 import org.preesm.commons.logger.PreesmLogger;
+import org.preesm.commons.math.MathFunctionsHelper;
 import org.preesm.model.scenario.Scenario;
 
 /**
@@ -239,6 +240,32 @@ public class MemoryExclusionVertex extends AbstractVertex<MemoryExclusionGraph> 
     this.source = sourceTask;
     this.sink = sinkTask;
     this.size = sizeMem;
+  }
+
+  /**
+   * Function returning the alignment constraint for the current {@link MemoryExclusionVertex}. If the
+   * {@link MemoryExclusionVertex} corresponds to a {@link BufferAggregate}, the returned alignmentConstraint needs to
+   * enable proper alignment for every subbuffer of the {@link BufferAggregate}.
+   *
+   * @return alignmentConstraint The alignment constraint
+   */
+
+  public Long getVertexAlignmentConstraint() {
+
+    Long alignmentConstraint = 1L;
+
+    if (this.getEdge() != null) {
+      final BufferAggregate buffers = this.getEdge().getPropertyBean().getValue(BufferAggregate.propertyBeanName);
+
+      for (final BufferProperties properties : buffers) {
+        final String dataType = properties.getDataType();
+        final Long dataTypeSize = this.getScenario().getSimulationInfo().getDataTypeSizeInBit(dataType);
+        alignmentConstraint = MathFunctionsHelper.lcm(alignmentConstraint, dataTypeSize);
+      }
+    } else {
+      alignmentConstraint = this.getPropertyBean().getValue(MemoryExclusionVertex.TYPE_SIZE);
+    }
+    return alignmentConstraint;
   }
 
   public final Scenario getScenario() {
