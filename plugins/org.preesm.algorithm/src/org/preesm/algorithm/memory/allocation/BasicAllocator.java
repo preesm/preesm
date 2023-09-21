@@ -81,18 +81,19 @@ public class BasicAllocator extends MemoryAllocator {
     // modified during graph allocation.
     final Set<MemoryExclusionVertex> vertexList = new LinkedHashSet<>(this.inputExclusionGraph.vertexSet());
     for (final MemoryExclusionVertex vertex : vertexList) {
-      // If a data alignment is required
+
+      // Alignment constraint
+      long align = -1;
       final Long typeSize = vertex.getVertexAlignmentConstraint();
 
       if (this.alignment == 0) {
-        offset += ((offset % typeSize) == 0) ? 0 : typeSize - (offset % typeSize);
+        align = typeSize;
       } else if (this.alignment > 0) {
-        // Fixed alignment case
-        final long align = MathFunctionsHelper.lcm(typeSize, this.alignment);
-
-        offset += ((offset % align) == 0) ? 0 : align - (offset % align);
-
+        align = MathFunctionsHelper.lcm(typeSize, this.alignment);
       }
+
+      offset += ((offset % align) == 0) ? 0 : align - (offset % align);
+
       // Save the verexWeight befor allocating.
       // Since the Mobject may be the result of a merge
       // vertex.getWeight may be changed during the call to

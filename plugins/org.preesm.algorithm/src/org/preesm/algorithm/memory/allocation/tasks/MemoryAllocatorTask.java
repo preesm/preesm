@@ -498,13 +498,10 @@ public class MemoryAllocatorTask extends AbstractTaskImplementation {
         final String msg = "Heat up MemEx for " + memoryBank + " memory bank.";
         this.logger.log(Level.INFO, msg);
       }
-      for (final MemoryExclusionVertex vertex : meg.vertexSet()) {
-        meg.getAdjacentVertexOf(vertex);
-      }
 
-      for (final MemoryAllocator allocator : this.allocators) {
-        allocateWith(allocator);
-      }
+      meg.vertexSet().stream().forEach(meg::getAdjacentVertexOf);
+
+      this.allocators.stream().forEach(this::allocateWith);
     }
 
     final Map<String, Object> output = new LinkedHashMap<>();

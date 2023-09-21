@@ -154,15 +154,13 @@ public class MemoryScriptTask extends AbstractTaskImplementation {
   public Map<String, Object> execute(final Map<String, Object> inputs, final Map<String, String> parameters,
       final IProgressMonitor monitor, final String nodeName, final Workflow workflow) {
     // Get verbose parameter
-    boolean verbose = false;
-    verbose = parameters.get(MemoryScriptTask.PARAM_VERBOSE).equals(MemoryScriptTask.VALUE_TRUE);
+    final boolean verbose = parameters.get(MemoryScriptTask.PARAM_VERBOSE).equals(MemoryScriptTask.VALUE_TRUE);
 
     // Get the log parameter
     final String log = parameters.get(MemoryScriptTask.PARAM_LOG);
 
     // Get false sharing prevention flag
-    boolean falseSharingPreventionFlag = false;
-    falseSharingPreventionFlag = parameters.get(MemoryScriptTask.PARAM_FALSE_SHARING)
+    final boolean falseSharingPreventionFlag = parameters.get(MemoryScriptTask.PARAM_FALSE_SHARING)
         .equals(MemoryScriptTask.VALUE_TRUE);
 
     // Retrieve the alignment param

@@ -145,14 +145,12 @@ public class SerialMemoryBoundsEstimator extends AbstractTaskImplementation {
     if (verbose) {
       if (valueSolver.equals(SerialMemoryBoundsEstimator.VALUE_SOLVER_DEFAULT)) {
         logger.log(Level.INFO, "No solver specified. Heuristic solver used by default.");
+      } else if (valueSolver.equals(SerialMemoryBoundsEstimator.VALUE_SOLVER_HEURISTIC)
+          || valueSolver.equals(SerialMemoryBoundsEstimator.VALUE_SOLVER_OSTERGARD)
+          || valueSolver.equals(SerialMemoryBoundsEstimator.VALUE_SOLVER_YAMAGUCHI)) {
+        logger.log(Level.INFO, () -> valueSolver + " solver used.");
       } else {
-        if (valueSolver.equals(SerialMemoryBoundsEstimator.VALUE_SOLVER_HEURISTIC)
-            || valueSolver.equals(SerialMemoryBoundsEstimator.VALUE_SOLVER_OSTERGARD)
-            || valueSolver.equals(SerialMemoryBoundsEstimator.VALUE_SOLVER_YAMAGUCHI)) {
-          logger.log(Level.INFO, () -> valueSolver + " solver used.");
-        } else {
-          logger.log(Level.INFO, () -> "Incorrect solver :" + valueSolver + ". Heuristic solver used by default.");
-        }
+        logger.log(Level.INFO, () -> "Incorrect solver :" + valueSolver + ". Heuristic solver used by default.");
       }
     }
 

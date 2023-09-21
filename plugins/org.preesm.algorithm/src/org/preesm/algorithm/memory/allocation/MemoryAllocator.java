@@ -108,7 +108,7 @@ public abstract class MemoryAllocator {
         .getValue(MemoryExclusionGraph.HOST_MEMORY_OBJECT_PROPERTY);
 
     if (hostMap != null) {
-      hostMap.values().stream().forEach(mergedMObjects -> allMObjects.addAll(mergedMObjects));
+      hostMap.values().stream().forEach(allMObjects::addAll);
     }
 
     // Scan the vertices of the graph
