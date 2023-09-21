@@ -202,8 +202,7 @@ public class ScriptRunner {
    * @return <code>true</code> if all checks were valid, <code>false</code> otherwise.
    */
   private boolean checkResult(final URL script, final Pair<List<Buffer>, List<Buffer>> result) {
-    final List<Buffer> allBuffers = new ArrayList<>();
-    allBuffers.addAll(result.getKey());
+    final List<Buffer> allBuffers = new ArrayList<>(result.getKey());
     allBuffers.addAll(result.getValue());
 
     // Check that all matches are reciprocal
@@ -391,9 +390,8 @@ public class ScriptRunner {
       final String message = "Memory script [" + scriptFile + "] of [" + vertexName
           + "] vertices not found. Please contact Preesm developers.";
       throw new IllegalStateException(message);
-    } else {
-      this.scriptedVertices.put(dagVertex, scriptFile);
     }
+    this.scriptedVertices.put(dagVertex, scriptFile);
   }
 
   /**
@@ -544,9 +542,8 @@ public class ScriptRunner {
       flatten.stream().forEach(match -> {
         if (result.getKey().contains(match.getRemoteBuffer())) {
           throw new PreesmRuntimeException("Inter-sibling matches are no longer allowed.");
-        } else {
-          match.setType(MatchType.FORWARD);
         }
+        match.setType(MatchType.FORWARD);
       });
     });
 
@@ -556,9 +553,8 @@ public class ScriptRunner {
       flatten.stream().forEach(match -> {
         if (result.getValue().contains(match.getRemoteBuffer())) {
           throw new PreesmRuntimeException("Inter-sibling matches are no longer allowed.");
-        } else {
-          match.setType(MatchType.BACKWARD);
         }
+        match.setType(MatchType.BACKWARD);
       });
     });
 
@@ -568,8 +564,7 @@ public class ScriptRunner {
    * Also fill the {@link Buffer#getDivisibilityRequiredMatches() divisibilityRequiredMatches} {@link List}.
    */
   private static void identifyDivisibleBuffers(final Pair<List<Buffer>, List<Buffer>> result) {
-    final List<Buffer> allBuffers = new ArrayList<>();
-    allBuffers.addAll(result.getKey());
+    final List<Buffer> allBuffers = new ArrayList<>(result.getKey());
     allBuffers.addAll(result.getValue());
 
     // A buffer is potentially divisible
@@ -1290,10 +1285,9 @@ public class ScriptRunner {
       // Alphabetical order for buffers of equal size
       if (cmp != 0) {
         return cmp;
-      } else {
-        final int nameRes = a.getVertexName().compareTo(b.getVertexName());
-        return (nameRes != 0) ? nameRes : a.name.compareTo(b.name);
       }
+      final int nameRes = a.getVertexName().compareTo(b.getVertexName());
+      return (nameRes != 0) ? nameRes : a.name.compareTo(b.name);
     });
 
     for (final Buffer candidate : buffers) {
@@ -1639,8 +1633,7 @@ public class ScriptRunner {
       // Set as indivisible all buffers that are on the edge of the group.
       group.stream().forEach(it -> {
         final Pair<List<Buffer>, List<Buffer>> results = this.scriptResults.get(it);
-        final List<Buffer> flatten = new ArrayList<>();
-        flatten.addAll(results.getKey());
+        final List<Buffer> flatten = new ArrayList<>(results.getKey());
         flatten.addAll(results.getValue());
 
         flatten.stream().filter(buf -> !intraGroupBuffer.contains(buf))
@@ -1979,27 +1972,22 @@ public class ScriptRunner {
     }
     //
     // List of the unused and pureout memobjects
-    final List<MemoryExclusionVertex> unusedMObjects = new ArrayList<>();
-
-    // Find unusedMObjects that were not processed by the scripts.
-    unusedMObjects.addAll(meg.vertexSet().stream().filter(mObj -> {
-      if (mObj.getEdge() != null) {
-
-        // Find unused write_only edges
-        final EdgeAggregate aggregate = mObj.getEdge().getAggregate();
-        return aggregate.stream().allMatch(dagEdge -> {
-          Object o = ((DAGEdge) dagEdge).getPropertyStringValue(SDFEdge.SOURCE_PORT_MODIFIER);
-          String str = o != null ? o.toString() : "";
-          final boolean b1 = str.contains(SDFEdge.MODIFIER_WRITE_ONLY);
-
-          o = ((DAGEdge) dagEdge).getPropertyStringValue(SDFEdge.TARGET_PORT_MODIFIER);
-          str = o != null ? o.toString() : "";
-          final boolean b2 = str.contains(SDFEdge.MODIFIER_UNUSED);
-          return b1 && b2;
-        });
-      } else {
+    final List<MemoryExclusionVertex> unusedMObjects = new ArrayList<>(meg.vertexSet().stream().filter(mObj -> {
+      if (mObj.getEdge() == null) {
         return false;
       }
+      // Find unused write_only edges
+      final EdgeAggregate aggregate = mObj.getEdge().getAggregate();
+      return aggregate.stream().allMatch(dagEdge -> {
+        Object o = ((DAGEdge) dagEdge).getPropertyStringValue(SDFEdge.SOURCE_PORT_MODIFIER);
+        String str = o != null ? o.toString() : "";
+        final boolean b1 = str.contains(SDFEdge.MODIFIER_WRITE_ONLY);
+
+        o = ((DAGEdge) dagEdge).getPropertyStringValue(SDFEdge.TARGET_PORT_MODIFIER);
+        str = o != null ? o.toString() : "";
+        final boolean b2 = str.contains(SDFEdge.MODIFIER_UNUSED);
+        return b1 && b2;
+      });
     }).filter(mObj -> {
       final List<Buffer> flatten = new ArrayList<>();
       getBufferGroups().stream().forEach(flatten::addAll);
@@ -2009,9 +1997,8 @@ public class ScriptRunner {
           .filter(buf -> (mObj.getEdge().getAggregate()).contains(buf.getLoggingEdgeName())).findFirst().orElse(null);
       if (correspondingBuffer != null) {
         return !correspondingBuffer.host;
-      } else {
-        return true;
       }
+      return true;
     }).collect(Collectors.toList()));
 
     // Remove all exclusions between unused buffers
@@ -2028,8 +2015,7 @@ public class ScriptRunner {
    * removed from the {@link #scriptResults}.
    */
   private static void simplifyResult(final List<Buffer> inputs, final List<Buffer> outputs) {
-    final List<Buffer> allBuffers = new ArrayList<>();
-    allBuffers.addAll(inputs);
+    final List<Buffer> allBuffers = new ArrayList<>(inputs);
     allBuffers.addAll(outputs);
 
     // Matches whose reciprocate has been processed

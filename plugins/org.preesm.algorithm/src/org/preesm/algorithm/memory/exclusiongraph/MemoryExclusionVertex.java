@@ -79,7 +79,6 @@
  */
 package org.preesm.algorithm.memory.exclusiongraph;
 
-import java.util.Iterator;
 import java.util.List;
 import java.util.logging.Level;
 import org.eclipse.xtext.xbase.lib.Pair;
@@ -213,10 +212,8 @@ public class MemoryExclusionVertex extends AbstractVertex<MemoryExclusionGraph> 
   private static long getSize(final DAGEdge inputEdge, final Scenario scenario) {
     // if datatype is defined, correct the vertex weight
     final BufferAggregate buffers = inputEdge.getPropertyBean().getValue(BufferAggregate.propertyBeanName);
-    final Iterator<BufferProperties> iter = buffers.iterator();
     long vertexWeight = 0;
-    while (iter.hasNext()) {
-      final BufferProperties properties = iter.next();
+    for (final BufferProperties properties : buffers) {
       final String dataType = properties.getDataType();
       vertexWeight += scenario.getSimulationInfo().getBufferSizeInBit(dataType, properties.getNbToken());
 
@@ -333,14 +330,13 @@ public class MemoryExclusionVertex extends AbstractVertex<MemoryExclusionGraph> 
    */
   @Override
   public boolean equals(final Object o) {
-    if (o instanceof MemoryExclusionVertex) {
+    if (o instanceof final MemoryExclusionVertex memExVertex) {
       // final boolean sameEdge = this.edge == ((MemoryExclusionVertex) o).edge
-      final boolean sameSource = this.getSource().equals(((MemoryExclusionVertex) o).getSource());
-      final boolean sameSink = this.getSink().equals(((MemoryExclusionVertex) o).getSink());
+      final boolean sameSource = this.getSource().equals(memExVertex.getSource());
+      final boolean sameSink = this.getSink().equals(memExVertex.getSink());
       return sameSink && sameSource;// && sameEdge
-    } else {
-      return false;
     }
+    return false;
   }
 
   @Override
