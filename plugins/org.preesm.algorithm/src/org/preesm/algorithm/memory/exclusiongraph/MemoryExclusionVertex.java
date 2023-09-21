@@ -206,7 +206,6 @@ public class MemoryExclusionVertex extends AbstractVertex<MemoryExclusionGraph> 
     if (this.size == 0) {
       PreesmLogger.getLogger().log(Level.WARNING, "Probable ERROR: Vertex weight is 0");
     }
-
   }
 
   private static long getSize(final DAGEdge inputEdge, final Scenario scenario) {
@@ -216,7 +215,6 @@ public class MemoryExclusionVertex extends AbstractVertex<MemoryExclusionGraph> 
     for (final BufferProperties properties : buffers) {
       final String dataType = properties.getDataType();
       vertexWeight += scenario.getSimulationInfo().getBufferSizeInBit(dataType, properties.getNbToken());
-
     }
     return vertexWeight;
   }
@@ -249,16 +247,15 @@ public class MemoryExclusionVertex extends AbstractVertex<MemoryExclusionGraph> 
 
   public Long getVertexAlignmentConstraint() {
 
-    Long alignmentConstraint = 1L;
+    Long alignmentConstraint;
 
     if (this.getEdge() != null) {
       final BufferAggregate buffers = this.getEdge().getPropertyBean().getValue(BufferAggregate.propertyBeanName);
 
-      for (final BufferProperties properties : buffers) {
-        final String dataType = properties.getDataType();
-        final Long dataTypeSize = this.getScenario().getSimulationInfo().getDataTypeSizeInBit(dataType);
-        alignmentConstraint = MathFunctionsHelper.lcm(alignmentConstraint, dataTypeSize);
-      }
+      alignmentConstraint = buffers.stream()
+          .mapToLong(p -> this.getScenario().getSimulationInfo().getDataTypeSizeInBit(p.getDataType()))
+          .reduce(1L, MathFunctionsHelper::lcm);
+
     } else {
       alignmentConstraint = this.getPropertyBean().getValue(MemoryExclusionVertex.TYPE_SIZE);
     }

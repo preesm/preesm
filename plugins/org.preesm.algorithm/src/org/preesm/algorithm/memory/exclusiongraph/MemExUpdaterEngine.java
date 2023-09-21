@@ -50,8 +50,7 @@ public class MemExUpdaterEngine {
   private final DirectedAcyclicGraph dag;
   private final MemoryExclusionGraph memEx;
   private DirectedAcyclicGraph       localDAG;
-  private int                        before;
-  private double                     density;
+  private final int                  before;
   private final Logger               logger = PreesmLogger.getLogger();
 
   /**
@@ -84,12 +83,12 @@ public class MemExUpdaterEngine {
 
     this.memEx.updateWithSchedule(this.localDAG);
 
-    this.density = this.memEx.edgeSet().size()
+    final double density = this.memEx.edgeSet().size()
         / ((this.memEx.vertexSet().size() * (this.memEx.vertexSet().size() - 1)) / 2.0);
 
     if (this.verbose) {
       this.logger.log(Level.INFO, () -> "Memory exclusion graph updated with " + this.memEx.vertexSet().size()
-          + " vertices and density = " + this.density);
+          + " vertices and density = " + density);
       this.logger.log(Level.INFO, () -> "Exclusions removed: " + (this.before - this.memEx.edgeSet().size()) + " ("
           + Math.round((100.00 * (this.before - this.memEx.edgeSet().size())) / this.before) + "%)");
     }
