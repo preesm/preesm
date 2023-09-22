@@ -672,8 +672,7 @@ public abstract class MemoryAllocator {
 
       // If an allocation was created only based on a memory exclusion
       // graph, the edge attribute of MemoryExclusionGraphNodes will be
-      // null and
-      // allocation table won't be valid.
+      // null and allocation table won't be valid.
 
       sourceOffset = this.memExNodeAllocation.get(source);
       targetOffset = this.memExNodeAllocation.get(target);
