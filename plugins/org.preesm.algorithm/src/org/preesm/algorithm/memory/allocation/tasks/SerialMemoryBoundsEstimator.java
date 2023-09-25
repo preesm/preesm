@@ -138,19 +138,18 @@ public class SerialMemoryBoundsEstimator extends AbstractTaskImplementation {
 
     // Check Workflow element parameters
     final String valueVerbose = parameters.get(SerialMemoryBoundsEstimator.PARAM_VERBOSE);
-    boolean verbose;
-    verbose = valueVerbose.equals(SerialMemoryBoundsEstimator.VALUE_VERBOSE_TRUE);
+    final boolean verbose = valueVerbose.equals(SerialMemoryBoundsEstimator.VALUE_VERBOSE_TRUE);
 
     final String valueSolver = parameters.get(SerialMemoryBoundsEstimator.PARAM_SOLVER);
     if (verbose) {
-      if (valueSolver.equals(SerialMemoryBoundsEstimator.VALUE_SOLVER_DEFAULT)) {
-        logger.log(Level.INFO, "No solver specified. Heuristic solver used by default.");
-      } else if (valueSolver.equals(SerialMemoryBoundsEstimator.VALUE_SOLVER_HEURISTIC)
-          || valueSolver.equals(SerialMemoryBoundsEstimator.VALUE_SOLVER_OSTERGARD)
-          || valueSolver.equals(SerialMemoryBoundsEstimator.VALUE_SOLVER_YAMAGUCHI)) {
-        logger.log(Level.INFO, () -> valueSolver + " solver used.");
-      } else {
-        logger.log(Level.INFO, () -> "Incorrect solver :" + valueSolver + ". Heuristic solver used by default.");
+      switch (valueSolver) {
+        case SerialMemoryBoundsEstimator.VALUE_SOLVER_DEFAULT ->
+          logger.log(Level.INFO, "No solver specified. Heuristic solver used by default.");
+        case SerialMemoryBoundsEstimator.VALUE_SOLVER_HEURISTIC, SerialMemoryBoundsEstimator.VALUE_SOLVER_OSTERGARD,
+            SerialMemoryBoundsEstimator.VALUE_SOLVER_YAMAGUCHI ->
+          logger.log(Level.INFO, () -> valueSolver + " solver used.");
+        default ->
+          logger.log(Level.INFO, () -> "Incorrect solver :" + valueSolver + ". Heuristic solver used by default.");
       }
     }
 

@@ -73,6 +73,13 @@
             <dftools:variable name="Verbose" value="True"/>
         </dftools:data>
     </dftools:task>
+    <dftools:task
+        pluginId="org.ietr.preesm.memory.bounds.SerialMemoryBoundsEstimator" taskId="Serial Memory Bounds Estimator">
+        <dftools:data key="variables">
+            <dftools:variable name="Solver" value="Yamaguchi"/>
+            <dftools:variable name="Verbose" value="False"/>
+        </dftools:data>
+    </dftools:task>
     <dftools:dataTransfer from="scenario"
         sourceport="architecture" targetport="architecture" to="Scheduling"/>
     <dftools:dataTransfer from="scenario" sourceport="scenario"
@@ -107,4 +114,6 @@
         targetport="DAG" to="Memory Scripts"/>
     <dftools:dataTransfer from="pisdf-srdag" sourceport="PiMM"
         targetport="PiMM" to="Scheduling"/>
+    <dftools:dataTransfer from="Memory Allocation"
+        sourceport="MEGs" targetport="MEGs" to="Serial Memory Bounds Estimator"/>
 </dftools:workflow>
