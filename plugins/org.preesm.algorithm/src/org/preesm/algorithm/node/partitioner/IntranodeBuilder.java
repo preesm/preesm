@@ -142,7 +142,7 @@ public class IntranodeBuilder {
    */
   private void scenarioExporter(PiGraph subgraph) {
     final Scenario subScenario = ScenarioUserFactory.createScenario();
-    final String indexStr = subgraph.getName().replace("sub_", "");
+    final String indexStr = subgraph.getName().replace("sub", "");
     final Long indexL = Long.decode(indexStr);
     final Design subArchi = archiList.get(indexL.intValue());
     subScenario.setDesign(subArchi);
@@ -205,7 +205,7 @@ public class IntranodeBuilder {
     final IPath fromPortableString = Path.fromPortableString(scenariiPath);
     final IFile file = ResourcesPlugin.getWorkspace().getRoot().getFile(fromPortableString);
     final IProject iProject = file.getProject();
-    subScenario.setScenarioURL(scenariiPath + subgraph.getName() + ".scenario");
+    subScenario.setScenarioURL(scenariiPath + subScenario.getScenarioName() + ".scenario");
     final ScenariosGenerator s = new ScenariosGenerator(iProject);
     final IFolder scenarioDir = iProject.getFolder("Scenarios/generated");
     final Set<Scenario> scenarios = new HashSet<>();
@@ -217,6 +217,7 @@ public class IntranodeBuilder {
       PreesmLogger.getLogger().log(Level.INFO, errorMessage);
     }
     PreesmLogger.getLogger().log(Level.INFO, "sub scenario print in : " + scenariiPath);
+
   }
 
   /**
@@ -288,7 +289,7 @@ public class IntranodeBuilder {
       for (final AbstractActor a : subsCopy.get(subRank).keySet()) {
         list.add(a);
       }
-      final PiGraph subgraph = new PiSDFSubgraphBuilder(graph, list, "sub_" + subRank).build();
+      final PiGraph subgraph = new PiSDFSubgraphBuilder(graph, list, "sub" + subRank).build();
 
       sublist.add(subgraph);
 

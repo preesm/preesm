@@ -36,7 +36,7 @@ public class CodegenSimSDP {
     StringConcatenation result = new StringConcatenation();
     for (final AbstractActor node : topGraph.getOnlyActors()) {
       if (node instanceof Actor) {
-        final String indexStr = node.getName().replace("sub_", "");
+        final String indexStr = node.getName().replace("sub", "");
         final Long indexL = Long.decode(indexStr);
         result.append("if (world_rank ==" + indexL + "){ \n");
         for (final DataInputPort din : node.getDataInputPorts()) {
