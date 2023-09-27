@@ -37,30 +37,37 @@ package org.ietr.preesm.test.it.appstest;
 
 import java.io.IOException;
 import org.eclipse.core.runtime.CoreException;
+import org.ietr.preesm.test.it.api.WorkflowRunner;
+import org.junit.Assert;
 import org.junit.Test;
 
 /**
- * Testing the overall SimSDP process
+ * Testing SimSDP Node Simulation workflow
  *
  * @author orenaud
  */
-public class SimSDPTest {
+public class SimSDPNodeSimulationTest {
 
-  // private final String[] workflow = { "NodePartitioning.workflow", "ThreadPartitioning.workflow",
-  // "ThreadPartitioning.workflow", "ThreadPartitioning.workflow", "NodeSimulation.workflow" };
-  // private final String[] scenario = { "rfi.scenario", "sub_0_Node0.scenario", "sub_1.scenario", "sub_2.scenario",
-  // "top.scenario" };
-  // private final String projectName = "org.ietr.preesm.simsdp";
+  private final String workflow    = "NodeSimulation.workflow";
+  private final String scenario    = "top_top.scenario";
+  private final String projectName = "org.ietr.preesm.simsdp.nodesimulation";
+
+  /**
+   */
+  // public SimSDPTest(final String workflow, final String scenario, final String projectName) {
+  // this.scenario = scenario;
+  // this.workflow = workflow;
+  // this.projectName = projectName;
+  // }
 
   @Test
-  public void testSimSDPTest() throws IOException, CoreException {
+  public void testSimSDPNodeSimulationTest() throws IOException, CoreException {
 
-    // final String workflowFilePathStr = "/Workflows/" + workflow[i];
-    // String scenarioFilePathStr = "/Scenarios/" + scenario[i];
-    //
-    //
-    // final boolean success = WorkflowRunner.runWorkFlow(null, projectName, workflowFilePathStr, scenarioFilePathStr);
-    // Assert.assertTrue("Workflow [" + workflow[i] + "] with scenario [" + scenario[i] + "] caused failure", success);
+    final String workflowFilePathStr = "/Workflows/" + workflow;
+    final String scenarioFilePathStr = "/Scenarios/generated/" + scenario;
 
+    final boolean success = WorkflowRunner.runWorkFlow(null, projectName, workflowFilePathStr, scenarioFilePathStr);
+    Assert.assertTrue("Workflow [" + workflow + "] with scenario [" + scenario + "] caused failure", success);
   }
+
 }

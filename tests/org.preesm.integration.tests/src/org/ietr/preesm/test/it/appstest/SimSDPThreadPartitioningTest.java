@@ -49,7 +49,7 @@ import org.junit.Test;
 public class SimSDPThreadPartitioningTest {
 
   private final String   workflow    = "ThreadPartitioning.workflow";
-  private final String[] scenario    = { "sub_0_Node0.scenario", "sub_1_Node1.scenario", "sub_2_Node2.scenario" };
+  private final String[] scenario    = { "sub0_Node0.scenario", "sub1_Node1.scenario", "sub2_Node2.scenario" };
   private final String   projectName = "org.ietr.preesm.simsdp.threadpartitioning";
 
   /**

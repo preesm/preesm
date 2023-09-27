@@ -4,6 +4,8 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -11,6 +13,7 @@ import java.util.Map.Entry;
 import java.util.logging.Level;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.ResourcesPlugin;
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.xtend2.lib.StringConcatenation;
@@ -19,6 +22,7 @@ import org.preesm.commons.doc.annotations.Parameter;
 import org.preesm.commons.doc.annotations.Port;
 import org.preesm.commons.doc.annotations.PreesmTask;
 import org.preesm.commons.doc.annotations.Value;
+import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.preesm.commons.files.PreesmIOHelper;
 import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.model.slam.ComponentInstance;
@@ -207,6 +211,21 @@ public class NodeStatsExporterTask extends AbstractTaskImplementation {
     final IFile iFile = ResourcesPlugin.getWorkspace().getRoot().getFile(new Path(filePath + fileName));
     if (!iFile.exists()) {
       content.append("Actors;Node;\n");
+    } else {
+
+      InputStream inputStream;
+      try {
+        inputStream = iFile.getContents();
+
+        final BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
+        String line;
+        while ((line = reader.readLine()) != null) {
+          content.append(line + "\n");
+        }
+        inputStream.close();
+      } catch (CoreException | IOException e) {
+        throw new PreesmRuntimeException("Could not generate source file for " + fileName, e);
+      }
     }
     content.append(abc.getScenario().getAlgorithm().getName() + ";" + abc.getFinalLatency() + "; \n");
     PreesmIOHelper.getInstance().print(scenarioPath, fileName, content);

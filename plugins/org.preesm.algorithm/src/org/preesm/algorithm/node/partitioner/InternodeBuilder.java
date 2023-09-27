@@ -65,13 +65,13 @@ public class InternodeBuilder {
 
   private PiGraph constructTop() {
     PiGraph topGraph = PiMMUserFactory.instance.createPiGraph();
-    topGraph.setName("top");
+
     for (final PiGraph sub : subGraphs) {
       if (sub.getName().contains("top")) {
         topGraph = sub;
       }
     }
-
+    topGraph.setName("top");
     emptyTop(topGraph);
     // 2. insert delay
     pipelineTop(topGraph);
@@ -172,7 +172,8 @@ public class InternodeBuilder {
     final String codegenpath = scenario.getCodegenDirectory();
     topScenario.setCodegenDirectory(codegenpath + "/top");
     topScenario.setSizesAreInBit(true);
-    topScenario.setScenarioURL(scenariiPath + topGraph.getName() + ".scenario");
+    topScenario.setScenarioURL(scenariiPath + topScenario.getScenarioName() + ".scenario");
+    topScenario.getTimings().setExcelFileURL(scenariiPath + "top_tim.csv");
     final ScenariosGenerator s = new ScenariosGenerator(iProject);
     final IFolder scenarioDir = iProject.getFolder("Scenarios/generated");
     final Set<Scenario> scenarios = new HashSet<>();
