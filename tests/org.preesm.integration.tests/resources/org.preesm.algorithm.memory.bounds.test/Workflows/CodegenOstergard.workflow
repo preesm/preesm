@@ -60,7 +60,7 @@
         pluginId="org.ietr.preesm.memory.bounds.MemoryBoundsEstimator" taskId="Memory Bounds Estimator">
         <dftools:data key="variables">
             <dftools:variable name="Solver" value="Ostergard"/>
-            <dftools:variable name="Verbose" value="False"/>
+            <dftools:variable name="Verbose" value="True"/>
         </dftools:data>
     </dftools:task>
     <dftools:task
@@ -77,7 +77,7 @@
         pluginId="org.ietr.preesm.memory.bounds.SerialMemoryBoundsEstimator" taskId="Serial Memory Bounds Estimator">
         <dftools:data key="variables">
             <dftools:variable name="Solver" value="Ostergard"/>
-            <dftools:variable name="Verbose" value="False"/>
+            <dftools:variable name="Verbose" value="True"/>
         </dftools:data>
     </dftools:task>
     <dftools:dataTransfer from="scenario"

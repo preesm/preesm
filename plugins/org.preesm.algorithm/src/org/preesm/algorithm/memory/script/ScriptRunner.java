@@ -224,7 +224,7 @@ public class ScriptRunner {
             final List<Match> remoteMatches = match.getRemoteBuffer().matchTable.get(match.getRemoteIndex());
             return !((remoteMatches != null) && remoteMatches.contains(new Match(match.getRemoteBuffer(),
                 match.getRemoteIndex(), localBuffer, match.getLocalIndex(), match.getLength())));
-          }).collect(Collectors.toList()).toString();
+          }).toList().toString();
 
           final String message = "Error in " + script + ":\nBuffer " + localBuffer + " has nonreciprocal matches:\n"
               + buffDefs + "\nPlease set matches only by using Buffer.matchWith() methods.";
@@ -256,7 +256,7 @@ public class ScriptRunner {
         buffer.matchTable.values().forEach(flatten::addAll);
         flatten.stream().forEach(match -> {
           if (!result.getValue().contains(match.getRemoteBuffer())) {
-            ScriptRunner.logger.log(Level.WARNING, "Error in " + script + ":\nMatch " + match
+            ScriptRunner.logger.log(Level.WARNING, () -> "Error in " + script + ":\nMatch " + match
                 + " links an input to another." + "\nPlease set matches only between inputs and outputs.");
           }
         });
@@ -267,7 +267,7 @@ public class ScriptRunner {
         buffer.matchTable.values().forEach(flatten::addAll);
         flatten.stream().forEach(match -> {
           if (!result.getKey().contains(match.getRemoteBuffer())) {
-            ScriptRunner.logger.log(Level.WARNING, "Error in " + script + ":\nMatch " + match
+            ScriptRunner.logger.log(Level.WARNING, () -> "Error in " + script + ":\nMatch " + match
                 + " links an output to another." + "\nPlease set matches only between inputs and outputs.");
           }
         });
@@ -276,7 +276,7 @@ public class ScriptRunner {
 
     // Find ranges from input and output with multiple matches
     final List<Pair<Buffer, List<Range>>> multipleRanges = allBuffers.stream()
-        .map(b -> new Pair<>(b, b.getMultipleMatchRange())).collect(Collectors.toList());
+        .map(b -> new Pair<>(b, b.getMultipleMatchRange())).toList();
 
     // There can be no multiple match range in the output buffers !
     final boolean res3 = multipleRanges.stream()
@@ -587,7 +587,7 @@ public class ScriptRunner {
     // always attached to real token by an overlapping
     // indivisible range !
     final List<Buffer> divisibleCandidates = allBuffers.stream()
-        .filter(buffer -> (buffer.matchTable.size() > 1) && buffer.isCompletelyMatched()).collect(Collectors.toList());
+        .filter(buffer -> (buffer.matchTable.size() > 1) && buffer.isCompletelyMatched()).toList();
 
     divisibleCandidates.stream().forEach(buffer -> {
       // All are divisible BUT it will not be possible to match divided
@@ -639,7 +639,7 @@ public class ScriptRunner {
 
       // Update the potential conflict list of all matches
       matches.stream().forEach(match -> match.getReciprocate().getConflictCandidates()
-          .addAll(matches.stream().filter(it -> it != match).map(Match::getReciprocate).collect(Collectors.toList())));
+          .addAll(matches.stream().filter(it -> it != match).map(Match::getReciprocate).toList()));
 
     }
 
@@ -664,9 +664,8 @@ public class ScriptRunner {
     vertices.stream().forEach(it -> {
       final Pair<List<Buffer>, List<Buffer>> pair = this.scriptResults.get(it);
       // Buffer that were already merged are not processed
-      buffers.addAll(pair.getKey().stream().filter(buf -> buf.appliedMatches.size() == 0).collect(Collectors.toList()));
-      buffers
-          .addAll(pair.getValue().stream().filter(buf -> buf.appliedMatches.size() == 0).collect(Collectors.toList()));
+      buffers.addAll(pair.getKey().stream().filter(buf -> buf.appliedMatches.size() == 0).toList());
+      buffers.addAll(pair.getValue().stream().filter(buf -> buf.appliedMatches.size() == 0).toList());
     });
 
     // copy the buffer list for later use in MEG update
@@ -674,7 +673,7 @@ public class ScriptRunner {
     getBufferGroups().add(bufferList);
     this.nbBuffersBefore = this.nbBuffersBefore + buffers.size();
 
-    final long before = buffers.stream().map(buf -> buf.getBufferSize()).reduce((l1, l2) -> l1 + l2).orElse(0L);
+    final long before = buffers.stream().map(Buffer::getBufferSize).reduce((l1, l2) -> l1 + l2).orElse(0L);
 
     this.sizeBefore = this.sizeBefore + before;
     if (isGenerateLog()) {
@@ -694,43 +693,22 @@ public class ScriptRunner {
         return (nameRes != 0) ? nameRes : a.name.compareTo(b.name);
       });
 
-      final List<Buffer> matchedBuffers;
-      switch (step) {
+      final List<Buffer> matchedBuffers = switch (step) {
         // First step: Merge non-conflicting buffer with a unique match
-        case 0:
-          matchedBuffers = processGroupStep0(buffers);
-          break;
-        // Second step: Merge divisible buffers with multiple matchs
-        // and no conflict
-        case 1:
-          matchedBuffers = processGroupStep1(buffers);
-          break;
-        // Third step: Same as step 0, but test forward matches
-        // of buffers only
-        case 2:
-          matchedBuffers = processGroupStep2(buffers);
-          break;
-        // Fourth step: Like case 1 but considering forward only
-        // or backward only matches
-        case 3:
-          matchedBuffers = processGroupStep3(buffers);
-          break;
+        case 0 -> processGroupStep0(buffers);
+        // Second step: Merge divisible buffers with multiple matchs and no conflict
+        case 1 -> processGroupStep1(buffers);
+        // Third step: Same as step 0, but test forward matches of buffers only
+        case 2 -> processGroupStep2(buffers);
+        // Fourth step: Like case 1 but considering forward only or backward only matches
+        case 3 -> processGroupStep3(buffers);
         // Fifth step: Mergeable buffers with a unique backward match that have conflict(s)
-        case 4:
-          matchedBuffers = processGroupStep4(buffers);
-          break;
-        case 5:
-          matchedBuffers = processGroupStep5(buffers);
-          break;
-        case 6:
-          matchedBuffers = processGroupStep6(buffers);
-          break;
-        case 7:
-          matchedBuffers = processGroupStep7(buffers);
-          break;
-        default:
-          throw new PreesmRuntimeException("Unsupported step number " + step);
-      }
+        case 4 -> processGroupStep4(buffers);
+        case 5 -> processGroupStep5(buffers);
+        case 6 -> processGroupStep6(buffers);
+        case 7 -> processGroupStep7(buffers);
+        default -> throw new PreesmRuntimeException("Unsupported step number " + step);
+      };
 
       if (!matchedBuffers.isEmpty()) {
         step = 0;
@@ -743,7 +721,7 @@ public class ScriptRunner {
 
     } while ((step < 8) && !stop);
 
-    final long after = buffers.stream().map(buf -> buf.getBufferSize()).reduce((l1, l2) -> l1 + l2).orElse(0L);
+    final long after = buffers.stream().map(Buffer::getBufferSize).reduce((l1, l2) -> l1 + l2).orElse(0L);
 
     if (isGenerateLog()) {
       this.log = this.log + "\n" + "### Tree summary:" + '\n';
@@ -756,17 +734,18 @@ public class ScriptRunner {
     if (isGenerateLog()) {
       this.log = this.log + "### Unapplied matches:" + "\n>";
       final List<Match> logged = new ArrayList<>();
-      for (final Buffer buffer : bufferList) {
+
+      bufferList.forEach(buffer -> {
         final List<Match> flatten = new ArrayList<>();
         buffer.matchTable.values().stream().forEach(flatten::addAll);
 
-        for (final Match match : flatten.stream().filter(it -> !it.isApplied()).collect(Collectors.toList())) {
-          if (!logged.contains(match.getReciprocate())) {
-            this.log = this.log + match.getOriginalMatch().toString() + ", ";
-            logged.add(match);
-          }
-        }
-      }
+        flatten.stream().filter(it -> !it.isApplied()).toList().stream()
+            .filter(match -> !logged.contains(match.getReciprocate())).forEach(match -> {
+              this.log = this.log + match.getOriginalMatch().toString() + ", ";
+              logged.add(match);
+            });
+      });
+
       this.log = this.log + "\n";
     }
 
@@ -945,8 +924,7 @@ public class ScriptRunner {
         final List<Match> flatten = new ArrayList<>();
         candidate.matchTable.values().stream().forEach(flatten::addAll);
 
-        final List<
-            Match> matches = flatten.stream().filter(it -> it.getType() == currentType).collect(Collectors.toList());
+        final List<Match> matches = flatten.stream().filter(it -> it.getType() == currentType).toList();
 
         // Returns true if:
         // There is a unique forward match
@@ -1030,8 +1008,7 @@ public class ScriptRunner {
         final List<Match> flatten = new ArrayList<>();
         candidate.matchTable.values().stream().forEach(flatten::addAll);
 
-        final List<
-            Match> matches = flatten.stream().filter(it -> it.getType() == currentType).collect(Collectors.toList());
+        final List<Match> matches = flatten.stream().filter(it -> it.getType() == currentType).toList();
 
         // Returns true if:
         // Has a several matches
@@ -1080,7 +1057,7 @@ public class ScriptRunner {
       }
 
       ScriptRunner.applyDivisionMatch(candidate.getKey(),
-          flatten.stream().filter(it -> it.getType() == candidate.getValue()).collect(Collectors.toList()));
+          flatten.stream().filter(it -> it.getType() == candidate.getValue()).toList());
     }
     if (isGenerateLog() && !candidates.isEmpty()) {
       this.log = this.log + "\n";
@@ -1192,8 +1169,7 @@ public class ScriptRunner {
     for (final Buffer candidate : buffers) {
       final List<Match> flatten = new ArrayList<>();
       candidate.matchTable.values().stream().forEach(flatten::addAll);
-      final List<Match> matches = flatten.stream().filter(it -> it.getType() == MatchType.BACKWARD)
-          .collect(Collectors.toList());
+      final List<Match> matches = flatten.stream().filter(it -> it.getType() == MatchType.BACKWARD).toList();
 
       // Returns true if:
       // Has a several matches
@@ -1247,7 +1223,7 @@ public class ScriptRunner {
         this.log = this.log + flatten.stream().map(Object::toString).collect(Collectors.joining(", "));
       }
       ScriptRunner.applyDivisionMatch(candidate,
-          flatten.stream().filter(it -> it.getType() == MatchType.BACKWARD).collect(Collectors.toList()));
+          flatten.stream().filter(it -> it.getType() == MatchType.BACKWARD).toList());
     }
     if (isGenerateLog() && !candidates.isEmpty()) {
       this.log = this.log + "\n";
@@ -1298,8 +1274,7 @@ public class ScriptRunner {
 
         final List<Match> flatten = new ArrayList<>();
         candidate.matchTable.values().stream().forEach(flatten::addAll);
-        final List<
-            Match> matches = flatten.stream().filter(it -> it.getType() == currentType).collect(Collectors.toList());
+        final List<Match> matches = flatten.stream().filter(it -> it.getType() == currentType).toList();
 
         // Returns true if:
         // There is a unique forward match
@@ -1392,8 +1367,7 @@ public class ScriptRunner {
 
         final List<Match> flatten = new ArrayList<>();
         candidate.matchTable.values().stream().forEach(flatten::addAll);
-        final List<
-            Match> matches = flatten.stream().filter(it -> it.getType() == currentType).collect(Collectors.toList());
+        final List<Match> matches = flatten.stream().filter(it -> it.getType() == currentType).toList();
 
         // Returns true if:
         // Has a several matches
@@ -1455,7 +1429,7 @@ public class ScriptRunner {
             .collect(Collectors.joining(", "));
       }
       ScriptRunner.applyDivisionMatch(candidate.getKey(),
-          flatten.stream().filter(it -> it.getType() == candidate.getValue()).collect(Collectors.toList()));
+          flatten.stream().filter(it -> it.getType() == candidate.getValue()).toList());
     }
     if (isGenerateLog() && !candidates.isEmpty()) {
       this.log = this.log + "\n";
@@ -1494,11 +1468,9 @@ public class ScriptRunner {
     // Remove the matches from each other conflict candidates
     matches.stream().forEach(it -> {
       it.getConflictCandidates().removeAll(matches);
-      it.getReciprocate().getConflictCandidates()
-          .removeAll(matches.stream().map(Match::getReciprocate).collect(Collectors.toList()));
+      it.getReciprocate().getConflictCandidates().removeAll(matches.stream().map(Match::getReciprocate).toList());
       it.getConflictingMatches().removeAll(matches);
-      it.getReciprocate().getConflictingMatches()
-          .removeAll(matches.stream().map(Match::getReciprocate).collect(Collectors.toList()));
+      it.getReciprocate().getConflictingMatches().removeAll(matches.stream().map(Match::getReciprocate).toList());
     });
 
     // apply the matches of the buffer one by one
@@ -1584,7 +1556,7 @@ public class ScriptRunner {
 
                   // Find the 2 buffers corresponding to this sdfEdge
                   final List<Buffer> buffers = bufferCandidates.stream()
-                      .filter(it -> it.getLoggingEdgeName() == aggEdge).collect(Collectors.toList());
+                      .filter(it -> it.getLoggingEdgeName() == aggEdge).toList();
                   if (buffers.size() == 2) {
                     validBuffers = true;
 
@@ -1673,7 +1645,7 @@ public class ScriptRunner {
   private void runScript(final DAGVertex dagVertex, final URL script) throws EvalError {
     final Interpreter interpreter = new Interpreter();
 
-    // TODO : isolate Interpreter initializatino
+    // TODO : isolate Interpreter initialization
     final BshClassManager classManager = interpreter.getClassManager();
     classManager.cacheClassInfo("Buffer", Buffer.class);
 
@@ -1693,8 +1665,7 @@ public class ScriptRunner {
     // @farresti: I use toSet instead of toList as it retrieves the unique reference of the edge
 
     List<List<DAGEdge>> edgeListToFlatten = dagVertex.incomingEdges().stream()
-        .map(it -> it.getAggregate().stream().map(edge -> ((DAGEdge) edge)).collect(Collectors.toList()))
-        .collect(Collectors.toList());
+        .map(it -> it.getAggregate().stream().map(DAGEdge.class::cast).toList()).toList();
 
     // use LinkedHashSet for unicity and determinism (order kept)
     final Set<DAGEdge> incomingEdges = new LinkedHashSet<>();
@@ -1716,13 +1687,13 @@ public class ScriptRunner {
             + it.getTarget().getName() + "_" + it.getTargetLabel() + " has unknows type " + dataType.toString()
             + ". Add the corresponding data type to the scenario.", exc);
       }
+      // This List needs to be mutable.
     }).collect(Collectors.toList());
 
     // outgoing edges
 
     edgeListToFlatten = dagVertex.outgoingEdges().stream()
-        .map(it -> it.getAggregate().stream().map(edge -> ((DAGEdge) edge)).collect(Collectors.toList()))
-        .collect(Collectors.toList());
+        .map(it -> it.getAggregate().stream().map(DAGEdge.class::cast).toList()).toList();
 
     // use LinkedHashSet for unicity and determinism (order kept)
     final Set<DAGEdge> outgoingEdges = new LinkedHashSet<>();
@@ -1744,6 +1715,7 @@ public class ScriptRunner {
             + it.getTarget().getName() + "_" + it.getTargetLabel() + " has unknows type " + dataType.toString()
             + ". Add the corresponding data type to the scenario.", exc);
       }
+      // This List needs to be mutable.
     }).collect(Collectors.toList());
 
     // Import the necessary libraries
@@ -1854,8 +1826,7 @@ public class ScriptRunner {
     for (final List<Buffer> buffers : getBufferGroups()) {
 
       // For each unmatched buffer that received matched buffers
-      for (final Buffer buffer : buffers.stream().filter(it -> (it.matched == null) && it.host)
-          .collect(Collectors.toList())) {
+      for (final Buffer buffer : buffers.stream().filter(it -> (it.matched == null) && it.host).toList()) {
 
         // Enlarge the corresponding mObject to the required size
         final MemoryExclusionVertex mObj = bufferAndMObjectMap.get(buffer);
@@ -1888,7 +1859,7 @@ public class ScriptRunner {
       }
 
       // For each matched buffers
-      for (final Buffer buffer : buffers.stream().filter(it -> it.matched != null).collect(Collectors.toList())) {
+      for (final Buffer buffer : buffers.stream().filter(it -> it.matched != null).toList()) {
 
         // find the root buffer(s)
         // there might be several roots if the buffer was divided
@@ -1903,7 +1874,7 @@ public class ScriptRunner {
         final MemoryExclusionVertex mObj = bufferAndMObjectMap.get(buffer);
 
         // For buffer receiving a part of the current buffer
-        for (final Buffer rootBuffer : rootBuffers.values().stream().map(Pair::getKey).collect(Collectors.toList())) {
+        for (final Buffer rootBuffer : rootBuffers.values().stream().map(Pair::getKey).toList()) {
           final MemoryExclusionVertex rootMObj = bufferAndMObjectMap.get(rootBuffer);
 
           // Update the meg hostList property
@@ -1948,18 +1919,19 @@ public class ScriptRunner {
           // mObject in distributed memory to make sure that the
           // divided buffer remains accessible everywhere it is
           // needed, and otherwise forbid its division.
-          final List<Buffer> sourceAndDestBuffers = new ArrayList<>();
 
           // buffers in which the divided buffer is mapped
-          sourceAndDestBuffers.addAll(rootBuffers.values().stream().map(Pair::getKey).collect(Collectors.toList()));
+          final List<
+              Buffer> sourceAndDestBuffers = new ArrayList<>(rootBuffers.values().stream().map(Pair::getKey).toList());
+
           // buffers mapped in the divided buffer
           sourceAndDestBuffers.addAll(buffers.stream()
               .filter(it -> it.appliedMatches.values().stream().map(Pair::getKey).anyMatch(buf -> buf.equals(buffer)))
-              .collect(Collectors.toList()));
+              .toList());
 
           // Find corresponding mObjects
           final List<MemoryExclusionVertex> srcAndDestMObj = sourceAndDestBuffers.stream().map(bufferAndMObjectMap::get)
-              .collect(Collectors.toList());
+              .toList();
 
           // Save this list in the attributes of the divided buffer
           mObj.setPropertyValue(MemoryExclusionVertex.DIVIDED_PARTS_HOSTS, srcAndDestMObj);
@@ -1999,12 +1971,12 @@ public class ScriptRunner {
         return !correspondingBuffer.host;
       }
       return true;
-    }).collect(Collectors.toList()));
+    }).toList());
 
     // Remove all exclusions between unused buffers
     unusedMObjects.stream().forEach(mObj -> {
       final List<MemoryExclusionVertex> unusedNeighbors = meg.getAdjacentVertexOf(mObj).stream()
-          .filter(unusedMObjects::contains).collect(Collectors.toList());
+          .filter(unusedMObjects::contains).toList();
       unusedNeighbors.stream().forEach(it -> meg.removeEdge(mObj, it));
     });
   }
@@ -2026,8 +1998,7 @@ public class ScriptRunner {
     allBuffers.stream().forEach(it -> it.simplifyMatches(processedMatch));
 
     // If a buffer has an empty matchTable, remove it from its list
-    final List<Buffer> unmatchedBuffer = allBuffers.stream().filter(it -> it.matchTable.isEmpty())
-        .collect(Collectors.toList());
+    final List<Buffer> unmatchedBuffer = allBuffers.stream().filter(it -> it.matchTable.isEmpty()).toList();
     inputs.removeAll(unmatchedBuffer);
     outputs.removeAll(unmatchedBuffer);
   }
