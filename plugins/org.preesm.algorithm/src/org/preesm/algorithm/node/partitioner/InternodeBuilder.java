@@ -38,7 +38,9 @@ import org.preesm.model.pisdf.factory.PiMMUserFactory;
 import org.preesm.model.pisdf.serialize.PiWriter;
 import org.preesm.model.scenario.Scenario;
 import org.preesm.model.scenario.generator.ScenariosGenerator;
+import org.preesm.model.scenario.util.DefaultTypeSizes;
 import org.preesm.model.scenario.util.ScenarioUserFactory;
+import org.preesm.model.slam.ComponentInstance;
 import org.preesm.model.slam.Design;
 import org.preesm.model.slam.generator.ArchitecturesGenerator;
 import org.preesm.ui.utils.FileUtils;
@@ -169,8 +171,48 @@ public class InternodeBuilder {
     final Scenario topScenario = ScenarioUserFactory.createScenario();
     topScenario.setAlgorithm(topGraph);
     topScenario.setDesign(topArchi);
-    final String codegenpath = scenario.getCodegenDirectory();
-    topScenario.setCodegenDirectory(codegenpath + "/top");
+    final List<ComponentInstance> coreIds = new ArrayList<>(topArchi.getOperatorComponentInstances());
+    final List<ComponentInstance> comNodeIds = topArchi.getCommunicationComponentInstances();
+
+    // Add a main core (first of the list)
+    if (!coreIds.isEmpty()) {
+      topScenario.getSimulationInfo().setMainOperator(coreIds.get(0));
+    }
+    if (!comNodeIds.isEmpty()) {
+      topScenario.getSimulationInfo().setMainComNode(comNodeIds.get(0));
+    }
+
+    for (final ComponentInstance coreId : coreIds) {
+      for (final AbstractActor aa : topGraph.getAllActors()) {
+        if (aa instanceof Actor) {
+          if (coreId.getInstanceName().replace("Core", "").equals(aa.getName().replace("sub", ""))) {
+
+            topScenario.getConstraints().addConstraint(coreId, aa);
+          }
+        }
+      }
+      topScenario.getConstraints().addConstraint(coreId, topGraph);
+      topScenario.getSimulationInfo().addSpecialVertexOperator(coreId);
+    }
+    // Add a average transfer size
+    topScenario.getSimulationInfo().setAverageDataSize(scenario.getSimulationInfo().getAverageDataSize());
+    // Set the default data type sizes
+    for (final Fifo f : topScenario.getAlgorithm().getAllFifos()) {
+      final String typeName = f.getType();
+      topScenario.getSimulationInfo().getDataTypes().put(typeName,
+          DefaultTypeSizes.getInstance().getTypeSize(typeName));
+    }
+    // add constraint
+    // topScenario.getConstraints().setGroupConstraintsFileURL("");
+    // for (final Entry<ComponentInstance, EList<AbstractActor>> gp :
+    // topScenario.getConstraints().getGroupConstraints()) {
+    // for (final AbstractActor actor : topGraph.getAllActors()) {
+    // if (gp.getKey().getInstanceName().replace("Core", "").equals(actor.getName().replace("sub", ""))) {
+    // gp.getValue().add(actor);
+    // }
+    // }
+    // }
+    topScenario.setCodegenDirectory(scenario.getCodegenDirectory() + "/top");
     topScenario.setSizesAreInBit(true);
     topScenario.setScenarioURL(scenariiPath + topScenario.getScenarioName() + ".scenario");
     topScenario.getTimings().setExcelFileURL(scenariiPath + "top_tim.csv");
@@ -184,6 +226,8 @@ public class InternodeBuilder {
       final String errorMessage = fileError + e.getMessage();
       PreesmLogger.getLogger().log(Level.INFO, errorMessage);
     }
+    PreesmLogger.getLogger().log(Level.INFO, "top scenario print in : " + scenariiPath);
+
   }
 
   private void graphExporter(PiGraph printgraph) {

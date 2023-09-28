@@ -1,9 +1,6 @@
 package org.preesm.algorithm.node.partitioner;
 
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -17,6 +14,7 @@ import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.emf.common.util.EMap;
+import org.preesm.commons.files.PreesmIOHelper;
 import org.preesm.commons.graph.Vertex;
 import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.model.pisdf.AbstractActor;
@@ -55,11 +53,13 @@ public class NodePartitioner {
 
   private final List<Design> archiList = new ArrayList<>();
 
-  static String                       fileError    = "Error occurred during file generation: ";
-  private String                      archiPath    = "";
-  private String                      scenariiPath = "";
-  private String                      workloadpath = "";
-  Map<Long, Map<AbstractActor, Long>> subsCopy     = new HashMap<>();
+  static String  fileError    = "No such File find in folder: ";
+  private String archiPath    = "";
+  private String scenariiPath = "";
+  // private String workloadpath = "";
+  // private final String workspaceLocation = ResourcesPlugin.getWorkspace().getRoot().getLocation()
+  // .toString();
+  Map<Long, Map<AbstractActor, Long>> subsCopy = new HashMap<>();
 
   public NodePartitioner(Scenario scenario, String archicsvpath) {
     this.graph = scenario.getAlgorithm();
@@ -80,7 +80,7 @@ public class NodePartitioner {
     final String[] uriString = graph.getUrl().split("/");
     scenariiPath = File.separator + uriString[1] + "/Scenarios/generated/";
     archiPath = File.separator + uriString[1] + "/Archi/";
-    workloadpath = File.separator + uriString[1] + "/Scenarios/workload/";
+    // workloadpath = workspaceLocation + "/" + uriString[1] + "/Scenarios/generated/workload.csv";
     // 0. check level
     if (!graph.getAllChildrenGraphs().isEmpty()) {
       PreesmLogger.getLogger().log(Level.INFO, "Hierarchical graphs are not handle yet, please feed a flat version");
@@ -115,37 +115,20 @@ public class NodePartitioner {
    */
   private void computeWorkload() {
     // 1. read file
-    if (!workloadpath.isEmpty()) {
-      final File file = new File(workloadpath);
-      final Map<Long, Long> wl = new HashMap<>();
-      try {
-        final FileReader read = new FileReader(file);
-        final BufferedReader buffer = new BufferedReader(read);
-        try {
-          String line;
-          while ((line = buffer.readLine()) != null) {
-            final String[] split = line.split(";");
-            final Long node = Long.valueOf(split[0]);
-            final Long workload = Long.valueOf(split[1]);
-            wl.put(node, workload);
-          }
-        } finally {
-          buffer.close();
+    final IFile iFile = ResourcesPlugin.getWorkspace().getRoot().getFile(new Path(scenariiPath + "workload.csv"));
+    if (!iFile.exists()) {
+      final String content = PreesmIOHelper.getInstance().read(scenariiPath, "workload.csv");
+      final String[] line = content.split("\\n");
+      for (final String element : line) {
+        final String[] split = element.split(";");
+        if (!split[0].equals("Nodes") && !split[0].equals("Latency") && !split[0].equals("SigmaW")) {
+          final Long node = Long.valueOf(split[0].replace("node", ""));
+          final Long workload = Long.valueOf(split[1]);
+          load.put(node, workload);
         }
-      } catch (final IOException e) {
-        final String errorMessage = fileError + workloadpath;
-        PreesmLogger.getLogger().log(Level.INFO, errorMessage);
       }
-      // compute average workload
-      Long average = 0L;
-      for (Long i = 0L; i < wl.size(); i++) {
-        average = average + wl.get(i) / wl.size();
-      }
-      for (Long i = 0L; i < wl.size(); i++) {
-        load.put(i, wl.get(i) - average);
-      }
-    }
 
+    }
   }
 
   private void computeTopoASAP() {
@@ -242,39 +225,17 @@ public class NodePartitioner {
   private void computeEqCore() {
     // Read temporary architecture file, extract composition and build structure
     // file -> |Node name|coreID|frequency|
-    final File file = new File(archicsvpath);
+    final String content = PreesmIOHelper.getInstance().read(archiPath, archicsvpath);
     Long minFreq = Long.MAX_VALUE;// MHz
-    try {
-      final FileReader read = new FileReader(file);
-      final BufferedReader buffer = new BufferedReader(read);
-      long nodeID = 0L;
-      String line;
-      while ((line = buffer.readLine()) != null) {
-        final String[] split = line.split(";");
-        if (!archiH.isEmpty()) {
+    long nodeID = 0L;
 
-          if (!nodeNames.containsValue(split[0])) {
-            nodeID++;
-            final Long node = nodeID;
-            final Long core = Long.valueOf(split[1]);
-            final Long freq = Long.valueOf(split[2]);
-            final Map<Long, Long> basis = new HashMap<>();
-            basis.put(core, freq);
-            archiH.put(node, basis);
-            nodeNames.put(nodeID, split[0]);
-            if (freq < minFreq) {
-              minFreq = freq;
-            }
-          } else {
-            final Long core = Long.valueOf(split[1]);
-            final Long freq = Long.valueOf(split[2]);
+    final String[] line = content.split("\\n");
+    for (final String element : line) {
+      final String[] split = element.split(";");
+      if (!archiH.isEmpty()) {
 
-            archiH.get(nodeID).put(core, freq);
-            if (freq < minFreq) {
-              minFreq = freq;
-            }
-          }
-        } else {
+        if (!nodeNames.containsValue(split[0])) {
+          nodeID++;
           final Long node = nodeID;
           final Long core = Long.valueOf(split[1]);
           final Long freq = Long.valueOf(split[2]);
@@ -285,15 +246,29 @@ public class NodePartitioner {
           if (freq < minFreq) {
             minFreq = freq;
           }
-        }
+        } else {
+          final Long core = Long.valueOf(split[1]);
+          final Long freq = Long.valueOf(split[2]);
 
+          archiH.get(nodeID).put(core, freq);
+          if (freq < minFreq) {
+            minFreq = freq;
+          }
+        }
+      } else {
+        final Long node = nodeID;
+        final Long core = Long.valueOf(split[1]);
+        final Long freq = Long.valueOf(split[2]);
+        final Map<Long, Long> basis = new HashMap<>();
+        basis.put(core, freq);
+        archiH.put(node, basis);
+        nodeNames.put(nodeID, split[0]);
+        if (freq < minFreq) {
+          minFreq = freq;
+        }
       }
-      buffer.close();
-      read.close();
-    } catch (final IOException e) {
-      final String errorMessage = fileError + e.getMessage();
-      PreesmLogger.getLogger().log(Level.INFO, errorMessage);
     }
+
     final Map<Long, Long> architemp = new HashMap<>();
     // construct equivalent archi structure
     for (Long i = 0L; i < archiH.keySet().size(); i++) {

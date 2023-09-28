@@ -34,8 +34,10 @@
  */
 package org.preesm.commons.files;
 
+import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.URL;
 import org.eclipse.core.resources.IContainer;
@@ -56,9 +58,9 @@ import org.preesm.commons.exceptions.PreesmRuntimeException;
  * To find helper methods for Preesm resources (templates, default scripts, etc.), see {@link PreesmResourcesHelper}.
  * <p>
  * TODO complete this class with other methods to load a resource file, as a locate method, returning an URI.
- * 
+ *
  * TODO use {@link java.nio.file.Files#copy} instead of printing unmodified content?
- * 
+ *
  * @author anmorvan
  *
  */
@@ -72,7 +74,7 @@ public class PreesmIOHelper {
 
   /**
    * Print the given content at a specific location. Create the file if not existent.
-   * 
+   *
    * @param filePath
    *          Path to the file to write.
    * @param fileName
@@ -83,6 +85,7 @@ public class PreesmIOHelper {
    */
   public IFile print(final String filePath, final String fileName, final CharSequence fileContent) {
     final IFile iFile = ResourcesPlugin.getWorkspace().getRoot().getFile(new Path(filePath + fileName));
+
     try {
       final IFolder iFolder = ResourcesPlugin.getWorkspace().getRoot().getFolder(new Path(filePath));
       createFolderRecursively(iFolder, false, true, new NullProgressMonitor());
@@ -98,12 +101,38 @@ public class PreesmIOHelper {
     return iFile;
   }
 
+  // orenaud
+  public final String read(final String filePath, final String fileName) {
+    final StringBuilder content = new StringBuilder();
+    final IFile iFile = ResourcesPlugin.getWorkspace().getRoot().getFile(new Path(filePath + fileName));
+    try {
+
+      final InputStream fileContent = iFile.getContents();
+      final InputStreamReader inputStreamReader = new InputStreamReader(fileContent);
+      final BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
+
+      String line;
+      while ((line = bufferedReader.readLine()) != null) {
+        content.append(line).append("\n");
+      }
+
+      // Close the streams
+      bufferedReader.close();
+      inputStreamReader.close();
+      fileContent.close();
+
+    } catch (final CoreException | IOException ex) {
+      throw new PreesmRuntimeException("Could not find source file for " + fileName, ex);
+    }
+    return content.toString();
+  }
+
   // See
   // https://stackoverflow.com/questions/68075036/eclipse-plugin-how-do-i-create-all-folders-ifolders-in-a-given-path-ipath
   public static void createFolderRecursively(IFolder folder, boolean force, boolean local, IProgressMonitor monitor)
       throws CoreException {
     if (!folder.exists()) {
-      IContainer parent = folder.getParent();
+      final IContainer parent = folder.getParent();
       if (parent instanceof IFolder) {
         createFolderRecursively((IFolder) parent, force, local, null);
       }
@@ -116,7 +145,7 @@ public class PreesmIOHelper {
     InputStreamReader reader = null;
     try {
       reader = new InputStreamReader(mainTemplate.openStream());
-    } catch (IOException e) {
+    } catch (final IOException e) {
       throw new PreesmRuntimeException("Could not locate main template [" + fileLocation + "].", e);
     }
     return reader;
