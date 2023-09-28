@@ -3,7 +3,7 @@
     <dftools:scenario pluginId="org.ietr.preesm.scenario.task"/>
     <dftools:task pluginId="node.partitioner.task.identifier" taskId="Node Partitioner">
         <dftools:data key="variables">
-            <dftools:variable name="archi path" value="/home/orenaud/preesm_dev/preesm/tests/org.preesm.integration.tests/resources/org.ietr.preesm.simsdp/Archi/H_3node_3.3.3_f0.csv"/>
+            <dftools:variable name="archi path" value="H_3node_3.3.3_f0.csv"/>
         </dftools:data>
     </dftools:task>
     <dftools:dataTransfer from="scenario" sourceport="scenario"

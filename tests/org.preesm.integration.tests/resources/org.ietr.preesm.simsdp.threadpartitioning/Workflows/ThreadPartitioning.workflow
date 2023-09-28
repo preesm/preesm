@@ -52,7 +52,7 @@
     </dftools:task>
     <dftools:task pluginId="NodeStatsExporterTask.identifier" taskId="CSV exporter">
         <dftools:data key="variables">
-            <dftools:variable name="Multinode" value="false"/>
+            <dftools:variable name="Multinode" value="true"/>
             <dftools:variable name="Top" value="false"/>
         </dftools:data>
     </dftools:task>

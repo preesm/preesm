@@ -1,8 +1,6 @@
 package org.preesm.algorithm.node.partitioner;
 
 import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -132,42 +130,38 @@ public class NodeStatsExporterTask extends AbstractTaskImplementation {
     final Long sigma = (long) Math.sqrt((sum / wl.size()));
 
     // retrieve previous deviation
-
-    final String workloadPath = workspaceLocation + scenarioPath + "workload.csv";
-    Long prevLatency = 0L;
-    Long prevSigmaWorkload = 0L;
-    if (!workloadPath.isEmpty()) {
-
-      final File file = new File(workloadPath);
-      try {
-        final FileReader read = new FileReader(file);
-        final BufferedReader buffer = new BufferedReader(read);
-        try {
-          String line;
-          while ((line = buffer.readLine()) != null) {
-            final String[] split = line.split(";");
-            if (split[0].equals("Latency")) {
-              prevLatency = Long.valueOf(split[1]);
-            }
-
-            if (split[0].equals("SigmaW")) {
-              prevSigmaWorkload = Long.valueOf(split[1]);
-            }
-            // update workload deviation (ws)
-            for (final Entry<String, Long> entry : ws.entrySet()) {
-              if (split[0].equals(entry.getKey())) {
-                entry.setValue(entry.getValue() + Long.valueOf(split[1]));
-              }
-            }
-
-          }
-        } finally {
-          buffer.close();
+    final IFile iFile = ResourcesPlugin.getWorkspace().getRoot().getFile(new Path(scenarioPath + "workload.csv"));
+    if (!iFile.exists()) {
+      Long prevLatency = 0L;
+      Long prevSigmaWorkload = 0L;
+      final String content = PreesmIOHelper.getInstance().read(scenarioPath, "workload.csv");
+      final String[] line = content.split("\\n");
+      for (final String element : line) {
+        final String[] split = element.split(";");
+        if (split[0].equals("Latency")) {
+          prevLatency = Long.valueOf(split[1]);
         }
 
-      } catch (final IOException e) {
-        final String errorMessage = fileError + workloadPath;
-        PreesmLogger.getLogger().log(Level.INFO, errorMessage);
+        if (split[0].equals("SigmaW")) {
+          prevSigmaWorkload = Long.valueOf(split[1]);
+        }
+        // update workload deviation (ws)
+        for (final Entry<String, Long> entry : ws.entrySet()) {
+          if (split[0].equals(entry.getKey())) {
+            entry.setValue(entry.getValue() + Long.valueOf(split[1]));
+          }
+        }
+      }
+      // convergence check : standard deviation & latency deviation
+      if (prevLatency <= abc.getFinalLatency()) {
+        final String message = "Latency tend to increase from: " + prevLatency + "to: " + abc.getFinalLatency();
+        PreesmLogger.getLogger().log(Level.INFO, message);
+      }
+      if (prevSigmaWorkload <= sigma) {
+        final String message = "Standard workload deviation tend to increase from: " + prevSigmaWorkload + "to: "
+            + sigma;
+        PreesmLogger.getLogger().log(Level.INFO, message);
+
       }
     }
 
@@ -183,16 +177,6 @@ public class NodeStatsExporterTask extends AbstractTaskImplementation {
 
     PreesmIOHelper.getInstance().print(scenarioPath, fileName, content);
 
-    // convergence check : standard deviation & latency deviation
-    if (prevLatency <= abc.getFinalLatency()) {
-      final String message = "Latency tend to increase from: " + prevLatency + "to: " + abc.getFinalLatency();
-      PreesmLogger.getLogger().log(Level.INFO, message);
-    }
-    if (prevSigmaWorkload <= sigma) {
-      final String message = "Standard workload deviation tend to increase from: " + prevSigmaWorkload + "to: " + sigma;
-      PreesmLogger.getLogger().log(Level.INFO, message);
-
-    }
   }
 
   /**
