@@ -131,7 +131,7 @@ public class NodeStatsExporterTask extends AbstractTaskImplementation {
 
     // retrieve previous deviation
     final IFile iFile = ResourcesPlugin.getWorkspace().getRoot().getFile(new Path(scenarioPath + "workload.csv"));
-    if (!iFile.exists()) {
+    if (iFile.isAccessible()) {
       Long prevLatency = 0L;
       Long prevSigmaWorkload = 0L;
       final String content = PreesmIOHelper.getInstance().read(scenarioPath, "workload.csv");
