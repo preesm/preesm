@@ -107,12 +107,14 @@ public class NodeSimulatorTask extends AbstractTaskImplementation {
     // e.printStackTrace();
     // }
     // Command to run
-    final String command = "/home/orenaud/.local/bin/simsdp /home/orenaud/Téléchargements/simsdp-master/tests/test_data/ABC\\ -\\ 8n\\ -\\ round0 -c";
-    final String simsdpLocation = "/home/orenaud/.local/bin/simsdp ";
-    final String pixmlLocation = "/home/orenaud/Téléchargements/simsdp-master/tests/test_data/ABC\\ -\\ 8n\\ -\\ round0 ";
-    final String cmd = simsdpLocation + pixmlLocation + "-c";
+    // final String command = "/home/orenaud/.local/bin/simsdp
+    // /home/orenaud/Téléchargements/simsdp-master/tests/test_data/ABC\\ -\\ 8n\\ -\\ round0 -c";
+    // final String simsdpLocation = "/home/orenaud/.local/bin/simsdp ";
+    // final String pixmlLocation = "/home/orenaud/Téléchargements/simsdp-master/tests/test_data/ABC\\ -\\ 8n\\ -\\
+    // round0 ";
+    // final String cmd = simsdpLocation + pixmlLocation + "-c";
     // final String command = "ls -l";
-
+    final String command = "";
     try {
       // Create a process builder for the command
       final ProcessBuilder processBuilder = new ProcessBuilder("bash", "-c", command);
