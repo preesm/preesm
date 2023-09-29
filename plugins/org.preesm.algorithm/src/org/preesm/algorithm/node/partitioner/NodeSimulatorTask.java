@@ -1,8 +1,6 @@
 package org.preesm.algorithm.node.partitioner;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -64,32 +62,79 @@ public class NodeSimulatorTask extends AbstractTaskImplementation {
     // } catch (IOException | InterruptedException e) {
     // e.printStackTrace();
     // }
+    // try {
+    //
+    // final Process process = Runtime.getRuntime().exec("python3 " + pythonScript);
+    // final BufferedReader errorReader = new BufferedReader(new InputStreamReader(process.getErrorStream()));
+    // String errorLine;
+    // while ((errorLine = errorReader.readLine()) != null) {
+    // System.err.println(errorLine);
+    // }
+    //
+    // final BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
+    // String line;
+    // while ((line = reader.readLine()) != null) {
+    // System.out.println(line);
+    // }
+    //
+    // final int exitCode = process.waitFor();
+    // if (exitCode == 0) {
+    // System.out.println("Script executed successfully:");
+    // // System.out.println(output);
+    // } else {
+    // System.err.println("Script failed to execute. Exit code: " + exitCode);
+    // }
+    // } catch (IOException | InterruptedException e) {
+    // e.printStackTrace();
+    // }
+    // Command to run
+    // final String command = "/home/orenaud/.local/bin/simsdp
+    // /home/orenaud/Téléchargements/simsdp-master/tests/test_data/ABC\\ -\\ 8n\\ -\\ round0";
+    //
+    // try {
+    // // Create a process builder for the command
+    // final ProcessBuilder processBuilder = new ProcessBuilder("bash", "-c", command);
+    //
+    // // Start the process
+    // final Process process = processBuilder.start();
+    //
+    // // Wait for the process to complete
+    // final int exitCode = process.waitFor();
+    //
+    // // Print the exit code (0 usually means success)
+    // System.out.println("Command exited with code: " + exitCode);
+    // } catch (IOException | InterruptedException e) {
+    // e.printStackTrace();
+    // }
+    // Command to run
+    final String command = "/home/orenaud/.local/bin/simsdp /home/orenaud/Téléchargements/simsdp-master/tests/test_data/ABC\\ -\\ 8n\\ -\\ round0 -c";
+    final String simsdpLocation = "/home/orenaud/.local/bin/simsdp ";
+    final String pixmlLocation = "/home/orenaud/Téléchargements/simsdp-master/tests/test_data/ABC\\ -\\ 8n\\ -\\ round0 ";
+    final String cmd = simsdpLocation + pixmlLocation + "-c";
+    // final String command = "ls -l";
+
     try {
+      // Create a process builder for the command
+      final ProcessBuilder processBuilder = new ProcessBuilder("bash", "-c", command);
 
-      final Process process = Runtime.getRuntime().exec("python3 " + pythonScript);
-      final BufferedReader errorReader = new BufferedReader(new InputStreamReader(process.getErrorStream()));
-      String errorLine;
-      while ((errorLine = errorReader.readLine()) != null) {
-        System.err.println(errorLine);
-      }
+      // Start the process
+      final Process process = processBuilder.start();
 
-      final BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
-      String line;
-      while ((line = reader.readLine()) != null) {
-        System.out.println(line);
-      }
+      // Read and print the output of the command
+      final java.io.InputStream inputStream = process.getInputStream();
+      final java.util.Scanner scanner = new java.util.Scanner(inputStream).useDelimiter("\\A");
+      final String output = scanner.hasNext() ? scanner.next() : "";
 
+      System.out.println(output);
+
+      // Wait for the process to complete
       final int exitCode = process.waitFor();
-      if (exitCode == 0) {
-        System.out.println("Script executed successfully:");
-        // System.out.println(output);
-      } else {
-        System.err.println("Script failed to execute. Exit code: " + exitCode);
-      }
+
+      // Print the exit code (0 usually means success)
+      System.out.println("Command exited with code: " + exitCode);
     } catch (IOException | InterruptedException e) {
       e.printStackTrace();
     }
-
     return new LinkedHashMap<>();
   }
 

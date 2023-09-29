@@ -116,7 +116,7 @@ public class NodePartitioner {
   private void computeWorkload() {
     // 1. read file
     final IFile iFile = ResourcesPlugin.getWorkspace().getRoot().getFile(new Path(scenariiPath + "workload.csv"));
-    if (!iFile.exists()) {
+    if (iFile.isAccessible()) {
       final String content = PreesmIOHelper.getInstance().read(scenariiPath, "workload.csv");
       final String[] line = content.split("\\n");
       for (final String element : line) {
