@@ -49,7 +49,9 @@ import org.preesm.model.pisdf.DataInputInterface;
 import org.preesm.model.pisdf.DataInputPort;
 import org.preesm.model.pisdf.DataOutputInterface;
 import org.preesm.model.pisdf.DataOutputPort;
+import org.preesm.model.pisdf.DelayActor;
 import org.preesm.model.pisdf.Fifo;
+import org.preesm.model.pisdf.PersistenceLevel;
 import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.pisdf.SpecialActor;
 
@@ -108,6 +110,10 @@ public class SEQSeeker extends PiMMSwitch<Boolean> {
   public List<List<AbstractActor>> seek() {
     // Clear the list of identified URCs
     this.identifiedSEQs.clear();
+    // detect cycle
+    if (graph.getDelays().stream().anyMatch(x -> x.getLevel().equals(PersistenceLevel.NONE))) {
+      return identifiedSEQs;
+    }
     // compute topological order
     computeTopoASAP();
     // fill seq list
@@ -118,9 +124,7 @@ public class SEQSeeker extends PiMMSwitch<Boolean> {
 
   private void computeSeqList() {
     final List<AbstractActor> seqList = new LinkedList<>();
-    // final List<AbstractActor> seqListcopy = new LinkedList<>();
 
-    // check if ranks contain sequential candidate (RV< and negligible timing)
     for (final Entry<Long, List<AbstractActor>> entry : topoOrderASAP.entrySet()) {
       Long sum = 0L;
       for (final AbstractActor listActor : entry.getValue()) {
@@ -163,7 +167,9 @@ public class SEQSeeker extends PiMMSwitch<Boolean> {
     final List<AbstractActor> entry = new ArrayList<>();
     Long rank = 0L;
     for (final AbstractActor a : graph.getActors()) {
-      temp.add(a);
+      if (!(a instanceof DelayActor)) {
+        temp.add(a);
+      }
     }
     // feed the 1st rank
     for (final AbstractActor a : graph.getActors()) {
@@ -194,22 +200,12 @@ public class SEQSeeker extends PiMMSwitch<Boolean> {
       }
       // orders the list in descending order of the execution time of the actors in the rank
       final List<AbstractActor> sortedList = new ArrayList<>(list);
-      // Collections.sort(sortedList, (actor1, actor2) -> {
-      // final double time1 = slowestTime(actor1);
-      // final double time2 = slowestTime(actor2);
-      // return Double.compare(time2, time1);
-      // });
+
       rank++;
       topoOrderASAP.put(rank, sortedList);
 
     }
-    // for (final Entry<Long, List<AbstractActor>> entry1 : topoOrderASAP.entrySet()) {
-    // for (final AbstractActor actor : entry1.getValue()) {
-    // if (actor.getName().contains("src_") || actor.getName().contains("snk_")) {
-    // entry1.getValue().remove(actor);
-    // }
-    // }
-    // }
+
   }
 
   @Override

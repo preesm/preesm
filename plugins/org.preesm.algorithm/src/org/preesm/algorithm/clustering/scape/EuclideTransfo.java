@@ -10,6 +10,7 @@ import org.preesm.model.pisdf.Actor;
 import org.preesm.model.pisdf.ConfigInputPort;
 import org.preesm.model.pisdf.DataInputPort;
 import org.preesm.model.pisdf.DataOutputPort;
+import org.preesm.model.pisdf.DelayActor;
 import org.preesm.model.pisdf.Fifo;
 import org.preesm.model.pisdf.ForkActor;
 import org.preesm.model.pisdf.JoinActor;
@@ -24,7 +25,6 @@ import org.preesm.model.pisdf.util.PiSDFSubgraphBuilder;
 import org.preesm.model.scenario.Scenario;
 import org.preesm.model.slam.ComponentInstance;
 import org.preesm.model.slam.Design;
-import org.preesm.model.slam.TimingType;
 
 /**
  * This class divides the data parallelism according to Euclidean division based on the architecture's equivalent core
@@ -78,7 +78,7 @@ public class EuclideTransfo {
     // construct hierarchical structure
     fillHierarchicalStrcuture();
     // compute Euclide-able level ID
-    computeDividableLevel();
+    // computeDividableLevel();
     // divide ID happens between bound level that gonna be coarsely clustered and the top level
     divideIDs();
     final Map<AbstractVertex, Long> brv = PiBRV.compute(graph, BRVMethod.LCM);
@@ -102,11 +102,12 @@ public class EuclideTransfo {
     int actorNumber = 0;
     for (final AbstractActor actor : graph.getOnlyActors()) {
       // sink and source actor replace interface for SimSDP
-      if (actor instanceof Actor && !actor.getName().contains("src_") && !actor.getName().contains("snk_")) {
+      if (actor instanceof Actor && !actor.getName().contains("src_") && !actor.getName().contains("snk_")
+          && !(actor instanceof DelayActor)) {
 
         Long sumTiming = 0L;
-        Long slow = Long.valueOf(
-            scenario.getTimings().getActorTimings().get(actor).get(0).getValue().get(TimingType.EXECUTION_TIME));
+        Long slow = Long.valueOf(scenario.getTimings().getExecutionTimeOrDefault(actor,
+            archi.getOperatorComponentInstances().get(0).getComponent()));
         for (final ComponentInstance opId : archi.getOperatorComponentInstances()) {
           sumTiming += Long.valueOf(scenario.getTimings().getExecutionTimeOrDefault(actor, opId.getComponent()));
           final Long timeSeek = Long
@@ -306,7 +307,7 @@ public class EuclideTransfo {
       final List<AbstractActor> graphLOOPs = new LOOPSeeker(fd.getContainingPiGraph()).seek();
       list.add(graphLOOPs);
       // detect
-      if (!graphLOOPs.isEmpty()) {
+      if (graphLOOPs != null) {
         final PiGraph g = fd.getContainingPiGraph();
         for (Long i = 0L; i < totalLevelNumber; i++) {
           if (hierarchicalLevelOrdered.get(i).contains(g)) {
