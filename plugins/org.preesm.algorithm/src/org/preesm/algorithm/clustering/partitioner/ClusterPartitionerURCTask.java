@@ -47,7 +47,12 @@ import org.preesm.commons.doc.annotations.Port;
 import org.preesm.commons.doc.annotations.PreesmTask;
 import org.preesm.commons.doc.annotations.Value;
 import org.preesm.model.pisdf.AbstractActor;
+import org.preesm.model.pisdf.AbstractVertex;
 import org.preesm.model.pisdf.PiGraph;
+import org.preesm.model.pisdf.brv.BRVMethod;
+import org.preesm.model.pisdf.brv.PiBRV;
+import org.preesm.model.pisdf.check.CheckerErrorLevel;
+import org.preesm.model.pisdf.check.PiGraphConsistenceChecker;
 import org.preesm.model.scenario.Scenario;
 import org.preesm.workflow.elements.Workflow;
 import org.preesm.workflow.implement.AbstractTaskImplementation;
@@ -59,8 +64,7 @@ import org.preesm.workflow.implement.AbstractTaskImplementation;
  *
  */
 @PreesmTask(id = "cluster-partitioner-URC", name = "Cluster Partitioner",
-    inputs = { @Port(name = "PiMM", type = PiGraph.class, description = "Input PiSDF graph"),
-        @Port(name = "scenario", type = Scenario.class, description = "Scenario") },
+    inputs = { @Port(name = "scenario", type = Scenario.class, description = "Scenario") },
     outputs = { @Port(name = "PiMM", type = PiGraph.class, description = "Output PiSDF graph") },
     parameters = {
         @Parameter(name = "Number of PEs in clusters",
@@ -80,9 +84,9 @@ public class ClusterPartitionerURCTask extends AbstractTaskImplementation {
   public Map<String, Object> execute(Map<String, Object> inputs, Map<String, String> parameters,
       IProgressMonitor monitor, String nodeName, Workflow workflow) {
     // Task inputs
-    final PiGraph inputGraph = (PiGraph) inputs.get("PiMM");
-    final Scenario scenario = (Scenario) inputs.get("scenario");
 
+    final Scenario scenario = (Scenario) inputs.get("scenario");
+    final PiGraph inputGraph = scenario.getAlgorithm();
     // Parameters
     final String nbPE = parameters.get(NB_PE);
 
@@ -96,9 +100,16 @@ public class ClusterPartitionerURCTask extends AbstractTaskImplementation {
         }
       }
     }
+    Map<AbstractVertex, Long> brv = PiBRV.compute(inputGraph, BRVMethod.LCM);
     // Cluster input graph
-    final PiGraph outputGraph = new ClusterPartitionerURC(inputGraph, scenario, Integer.parseInt(nbPE), null, 0,
+    final PiGraph outputGraph = new ClusterPartitionerURC(inputGraph, scenario, Integer.parseInt(nbPE), brv, 0,
         nonClusterableList).cluster();
+
+    final PiGraphConsistenceChecker pgcc = new PiGraphConsistenceChecker(CheckerErrorLevel.FATAL_ALL,
+        CheckerErrorLevel.FATAL_ALL);
+    pgcc.check(outputGraph);
+    brv = PiBRV.compute(inputGraph, BRVMethod.LCM);
+    PiBRV.printRV(brv);
 
     // Build output map
     final Map<String, Object> output = new HashMap<>();
