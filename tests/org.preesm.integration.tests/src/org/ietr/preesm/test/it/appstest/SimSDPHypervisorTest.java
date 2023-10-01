@@ -42,16 +42,15 @@ import org.junit.Assert;
 import org.junit.Test;
 
 /**
- * Testing SCAPE graph transformation
+ * Testing SimSDP hypervisor process
  *
  * @author orenaud
  */
-public class SCAPEPartitioningTest {
+public class SimSDPHypervisorTest {
 
-  private final String[] workflow    = { "euclide.workflow", "urc2.workflow", "srv.workflow", "loop.workflow",
-      "seq.workflow", "schedule.workflow" };
-  private final String   scenario    = "ABC_3CoresX86.scenario";
-  private final String   projectName = "org.ietr.preesm.scape";
+  private final String workflow    = "hypervisor.workflow";
+  private final String scenario    = "rfi.scenario";
+  private final String projectName = "org.ietr.preesm.simsdp.hypervisor";
 
   /**
    */
@@ -62,14 +61,13 @@ public class SCAPEPartitioningTest {
   // }
 
   @Test
-  public void testSCAPEPartitioningTest() throws IOException, CoreException {
+  public void testSimSDPNodePartitioningTest() throws IOException, CoreException {
 
-    for (int i = 0; i < 6; i++) {
-      final String workflowFilePathStr = "/Workflows/" + workflow[i];
-      final String scenarioFilePathStr = "/Scenarios/" + scenario;
+    final String workflowFilePathStr = "/Workflows/" + workflow;
+    final String scenarioFilePathStr = "/Scenarios/" + scenario;
 
-      final boolean success = WorkflowRunner.runWorkFlow(null, projectName, workflowFilePathStr, scenarioFilePathStr);
-      Assert.assertTrue("Workflow [" + workflow[i] + "] with scenario [" + scenario + "] caused failure", success);
-    }
+    final boolean success = WorkflowRunner.runWorkFlow(null, projectName, workflowFilePathStr, scenarioFilePathStr);
+    Assert.assertTrue("Workflow [" + workflow + "] with scenario [" + scenario + "] caused failure", success);
+
   }
 }

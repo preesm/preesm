@@ -30,16 +30,19 @@ import org.preesm.workflow.implement.AbstractTaskImplementation;
             values = { @Value(name = "integer", effect = "...") }),
         @Parameter(name = "Deviation Target", description = "Deviation target",
             values = { @Value(name = "integer", effect = "...") }),
-        @Parameter(name = "Round", description = "Round", values = { @Value(name = "integer", effect = "...") })
+        @Parameter(name = "Round", description = "Round", values = { @Value(name = "integer", effect = "...") }),
+        @Parameter(name = "SimGrid", description = "PREESM or SimGrid simulator",
+            values = { @Value(name = "true/false", effect = "...") })
 
     })
 public class HypervisorTask extends AbstractTaskImplementation {
-  public static final String LATENCY_DEFAULT   = "";
+  public static final String LATENCY_DEFAULT   = "1";
   public static final String LATENCY_PARAM     = "Latency Target";
-  public static final String DEVIATION_DEFAULT = "";
+  public static final String DEVIATION_DEFAULT = "1";
   public static final String DEVIATION_PARAM   = "Deviation Target";
-  public static final String ROUND_DEFAULT     = "";
+  public static final String ROUND_DEFAULT     = "1";
   public static final String ROUND_PARAM       = "Round";
+  public static final String SIM_PARAM         = "SimGrid";
 
   @Override
   public Map<String, Object> execute(Map<String, Object> inputs, Map<String, String> parameters,
@@ -49,12 +52,14 @@ public class HypervisorTask extends AbstractTaskImplementation {
     final int targetLatency = Integer.parseInt(parameters.get(HypervisorTask.LATENCY_PARAM));
     final int targetDeviation = Integer.parseInt(parameters.get(HypervisorTask.DEVIATION_PARAM));
     final int targetRound = Integer.parseInt(parameters.get(HypervisorTask.ROUND_PARAM));
+    final boolean simgrid = Boolean.getBoolean(parameters.get(HypervisorTask.SIM_PARAM));
+    final String project = "/" + workflow.getProjectName();
 
     int countRound = 0;
     while (!boundary) {
       // Launch node partitioning
-      String workflowPath = "/rfifilter/Workflows/NodePartitioning.workflow";
-      String scenarioPath = "/rfifilter/Scenarios/rfi.scenario";
+      String workflowPath = project + "/Workflows/NodePartitioning.workflow";
+      String scenarioPath = project + "/Scenarios/rfi.scenario";
 
       final WorkflowManager workflowManager = new WorkflowManager();
       workflowManager.execute(workflowPath, scenarioPath, monitor);
@@ -62,14 +67,18 @@ public class HypervisorTask extends AbstractTaskImplementation {
       // Launch thread partitioning
       final int nSubGraphs = 3;
       for (int i = 0; i < nSubGraphs; i++) {
-        workflowPath = "/rfifilter/Workflows/ThreadPartitioning.workflow";
-        scenarioPath = "/rfifilter/Scenarios/generated/Node" + i + ".scenario";
+        workflowPath = project + "/Workflows/ThreadPartitioning.workflow";
+        scenarioPath = project + "/Scenarios/generated/sub" + i + "_Node" + i + ".scenario";
         workflowManager.execute(workflowPath, scenarioPath, monitor);
       }
 
       // Launch node simulator
-      workflowPath = "/rfifilter/Workflows/ThreadPartitioning.workflow";
-      scenarioPath = "/rfifilter/Scenarios/generated/Top.scenario";
+      if (simgrid) {
+        workflowPath = project + "/Workflows/NodeSimulatorV2.workflow";
+      } else {
+        workflowPath = project + "/Workflows/NodeSimulatorV1.workflow";
+      }
+      scenarioPath = project + "/Scenarios/generated/top_top.scenario";
       workflowManager.execute(workflowPath, scenarioPath, monitor);
 
       // Convergence check
@@ -87,6 +96,7 @@ public class HypervisorTask extends AbstractTaskImplementation {
     parameters.put(HypervisorTask.LATENCY_PARAM, HypervisorTask.LATENCY_DEFAULT);
     parameters.put(HypervisorTask.DEVIATION_PARAM, HypervisorTask.DEVIATION_DEFAULT);
     parameters.put(HypervisorTask.ROUND_PARAM, HypervisorTask.ROUND_DEFAULT);
+    parameters.put(HypervisorTask.SIM_PARAM, "false");
     return parameters;
   }
 

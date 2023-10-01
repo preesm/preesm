@@ -4,25 +4,16 @@
         <sizesAreInBit/>
     </flags>
     <files>
-        <algorithm url="/org.ietr.preesm.simsdp/Algo/rfi.pi"/>
-        <architecture url="/org.ietr.preesm.simsdp/Archi/1CoresX86.slam"/>
-        <codegenDirectory url="/org.ietr.preesm.simsdp/Code/generated"/>
+        <algorithm url="/org.ietr.preesm.simsdp.hypervisor/Algo/rfi.pi"/>
+        <architecture url="/org.ietr.preesm.simsdp.hypervisor/Archi/1CoresX86.slam"/>
+        <codegenDirectory url="/org.ietr.preesm.simsdp.hypervisor/Code/generated"/>
     </files>
     <constraints excelUrl="">
         <constraintGroup>
             <operator name="Core0"/>
-            <task name="rfi/Data_Acquisition"/>
-            <task name="rfi/Plot_RnI_Histo"/>
-            <task name="rfi/MAD_Computation"/>
-            <task name="rfi/STD_Computation"/>
-            <task name="rfi/Plot_Threshold"/>
-            <task name="rfi/RFI_Filter"/>
-            <task name="rfi/Plot_Filtered_Data"/>
-            <task name="rfi/Data_Restitution"/>
-            <task name="rfi"/>
         </constraintGroup>
     </constraints>
-    <timings excelUrl="/org.ietr.preesm.simsdp/Scenarios/rfi.csv">
+    <timings excelUrl="/org.ietr.preesm.simsdp.nodepartitioning/Scenarios/rfi.csv">
         <timing opname="x86" time="6370070"
             timingtype="EXECUTION_TIME" vertexname="rfi/Data_Acquisition"/>
         <timing opname="x86" time="77213526"

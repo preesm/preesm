@@ -1,6 +1,5 @@
 package org.preesm.algorithm.node.partitioner;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -78,8 +77,8 @@ public class NodePartitioner {
 
   public PiGraph execute() {
     final String[] uriString = graph.getUrl().split("/");
-    scenariiPath = File.separator + uriString[1] + "/Scenarios/generated/";
-    archiPath = File.separator + uriString[1] + "/Archi/";
+    scenariiPath = "/" + uriString[1] + "/Scenarios/generated/";
+    archiPath = "/" + uriString[1] + "/Archi/";
     // workloadpath = workspaceLocation + "/" + uriString[1] + "/Scenarios/generated/workload.csv";
     // 0. check level
     if (!graph.getAllChildrenGraphs().isEmpty()) {

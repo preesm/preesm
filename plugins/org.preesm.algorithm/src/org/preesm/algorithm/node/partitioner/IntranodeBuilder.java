@@ -604,7 +604,8 @@ public class IntranodeBuilder {
         + actor.getAllDataPorts().get(0).getFifo().getType() + " " + actor.getAllDataPorts().get(0).getName()
         + "); \n #endif";
     final String codegenPath = scenario.getCodegenDirectory() + "/interface/";
-    PreesmIOHelper.getInstance().print(codegenPath, actor.getName() + ".h", content);
+    PreesmIOHelper.getInstance().print(includePath, actor.getName() + ".h", content);
+    PreesmLogger.getLogger().log(Level.INFO, "interface file print in : " + includePath);
   }
 
   /**
