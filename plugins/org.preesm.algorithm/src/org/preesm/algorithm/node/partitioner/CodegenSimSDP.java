@@ -2,8 +2,10 @@ package org.preesm.algorithm.node.partitioner;
 
 import java.io.File;
 import java.util.Map;
+import java.util.logging.Level;
 import org.eclipse.xtend2.lib.StringConcatenation;
 import org.preesm.commons.files.PreesmIOHelper;
+import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.Actor;
 import org.preesm.model.pisdf.ConfigInputPort;
@@ -20,6 +22,7 @@ public class CodegenSimSDP {
 
     final StringConcatenation content = buildContent(topGraph, nodeNames);
     PreesmIOHelper.getInstance().print(topPath, fileName, content);
+    PreesmLogger.getLogger().log(Level.INFO, "interface file print in : " + topPath);
   }
 
   private StringConcatenation buildContent(PiGraph topGraph, Map<Long, String> nodeNames) {

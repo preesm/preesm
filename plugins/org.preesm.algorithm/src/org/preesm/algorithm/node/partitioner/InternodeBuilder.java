@@ -1,6 +1,5 @@
 package org.preesm.algorithm.node.partitioner;
 
-import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
@@ -69,7 +68,7 @@ public class InternodeBuilder {
     PiGraph topGraph = PiMMUserFactory.instance.createPiGraph();
 
     for (final PiGraph sub : subGraphs) {
-      if (sub.getName().contains("top")) {
+      if (!sub.getName().contains("sub")) {
         topGraph = sub;
       }
     }
@@ -158,8 +157,8 @@ public class InternodeBuilder {
 
   private void scenarioExporter(PiGraph topGraph) {
     final String[] uriString = scenario.getAlgorithm().getUrl().split("/");
-    final String scenariiPath = File.separator + uriString[1] + "/Scenarios/generated/";
-    final String archiPath = File.separator + uriString[1] + "/Archi/";
+    final String scenariiPath = "/" + uriString[1] + "/Scenarios/generated/";
+    final String archiPath = "/" + uriString[1] + "/Archi/";
     final IPath fromPortableString = Path.fromPortableString(scenariiPath);
     final IFile file2 = ResourcesPlugin.getWorkspace().getRoot().getFile(fromPortableString);
     final IProject iProject = file2.getProject();

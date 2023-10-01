@@ -6,8 +6,10 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.logging.Level;
 import org.preesm.algorithm.schedule.model.ScapeSchedule;
 import org.preesm.algorithm.schedule.model.ScheduleFactory;
+import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.AbstractVertex;
 import org.preesm.model.pisdf.Actor;
@@ -44,6 +46,8 @@ public class ScheduleScape {
 
   public List<ScapeSchedule> execute() {
     final String scheduleStr = pisdf2str();
+    PreesmLogger.getLogger().log(Level.INFO, "APGAN schedule: " + scheduleStr);
+
     return str2schedule(scheduleStr);
 
   }
