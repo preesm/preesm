@@ -61,7 +61,7 @@ public class SimSDPHypervisorTest {
   // }
 
   @Test
-  public void testSimSDPNodePartitioningTest() throws IOException, CoreException {
+  public void testSimSDPHypervisorTest() throws IOException, CoreException {
 
     final String workflowFilePathStr = "/Workflows/" + workflow;
     final String scenarioFilePathStr = "/Scenarios/" + scenario;
