@@ -48,9 +48,9 @@ import org.junit.Test;
  */
 public class SimSDPNodeSimulationTest {
 
-  private final String workflow    = "NodeSimulation.workflow";
-  private final String scenario    = "top_top.scenario";
-  private final String projectName = "org.ietr.preesm.simsdp.nodesimulation";
+  private final String[] workflow    = { "NodeSimulatorV1.workflow", "NodeSimulatorV2.workflow" };
+  private final String   scenario    = "top_top.scenario";
+  private final String   projectName = "org.ietr.preesm.simsdp.nodesimulation";
 
   /**
    */
@@ -62,12 +62,12 @@ public class SimSDPNodeSimulationTest {
 
   @Test
   public void testSimSDPNodeSimulationTest() throws IOException, CoreException {
+    for (int i = 0; i < 2; i++) {
+      final String workflowFilePathStr = "/Workflows/" + workflow[i];
+      final String scenarioFilePathStr = "/Scenarios/generated/" + scenario;
 
-    final String workflowFilePathStr = "/Workflows/" + workflow;
-    final String scenarioFilePathStr = "/Scenarios/generated/" + scenario;
-
-    final boolean success = WorkflowRunner.runWorkFlow(null, projectName, workflowFilePathStr, scenarioFilePathStr);
-    Assert.assertTrue("Workflow [" + workflow + "] with scenario [" + scenario + "] caused failure", success);
+      final boolean success = WorkflowRunner.runWorkFlow(null, projectName, workflowFilePathStr, scenarioFilePathStr);
+      Assert.assertTrue("Workflow [" + workflow[i] + "] with scenario [" + scenario + "] caused failure", success);
+    }
   }
-
 }
