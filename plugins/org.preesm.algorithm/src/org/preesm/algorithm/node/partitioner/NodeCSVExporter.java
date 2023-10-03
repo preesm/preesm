@@ -39,13 +39,7 @@ public class NodeCSVExporter {
       ws.put(entry.getKey(), entry.getValue() - average);
     }
 
-    //
-    sum = 0d;
-    for (final Double value : wl.values()) {
-      sum += Math.pow((value - average), 2);
-    }
-    final Double sigma = Math.sqrt((sum / wl.size()));
-
+    final Double sigma = sigma(wl);
     // retrieve previous deviation
     previousDeviation(ws, latency, sigma, path);
 
@@ -59,6 +53,15 @@ public class NodeCSVExporter {
     content.append("SigmaW;" + sigma);
 
     PreesmIOHelper.getInstance().print(path, FILE_NAME, content);
+  }
+
+  private static Double sigma(Map<String, Double> wl) {
+    Double sum = 0d;
+    final Double average = sum / wl.size();
+    for (final Double value : wl.values()) {
+      sum += Math.pow((value - average), 2);
+    }
+    return Math.sqrt((sum / wl.size()));
   }
 
   private static void previousDeviation(Map<String, Double> ws, Double latency, Double sigma, String path) {
@@ -99,6 +102,22 @@ public class NodeCSVExporter {
       final String message = "Standard workload deviation tend to increase from: " + prevSigmaWorkload + "to: " + sigma;
       PreesmLogger.getLogger().log(Level.INFO, message);
 
+    }
+  }
+
+  public static void exportDeviation(Map<String, Double> wl, Double latency, String path) {
+
+    final StringConcatenation content = new StringConcatenation();
+
+    // if the file exists, we write to it otherwise we create the template
+    final IFile iFile = ResourcesPlugin.getWorkspace().getRoot().getFile(new Path(path + "workload_trend.csv"));
+    if (iFile.isAccessible()) {
+      content.append(sigma(wl) + "\n");
+      PreesmIOHelper.getInstance().print(path, "workload_trend.csv", content);
+    } else {
+      content.append(PreesmIOHelper.getInstance().read(path, "workload_trend.csv"));
+      content.append(sigma(wl) + "\n");
+      PreesmIOHelper.getInstance().print(path, "workload_trend.csv", content);
     }
   }
 

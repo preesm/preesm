@@ -33,7 +33,7 @@ import org.preesm.workflow.implement.AbstractWorkflowNodeImplementation;
  *
  * @author orenaud
  */
-@PreesmTask(id = "NodeStatsExporterTask.identifier", name = "ABC Node exporter", category = "Gantt exporters",
+@PreesmTask(id = "NodeStatsExporterTask.identifier", name = "ABC Node exporter", category = "CSV exporters",
 
     inputs = { @Port(name = "ABC", type = LatencyAbc.class) },
 
@@ -89,90 +89,6 @@ public class NodeStatsExporterTask extends AbstractTaskImplementation {
     }
     return new LinkedHashMap<>();
   }
-
-  // public void exportWorkload(Map<String, Double> wl, Long latency) {
-  // // compute max workload
-  // Double maxValue = Double.NEGATIVE_INFINITY;
-  // for (final Double value : wl.values()) {
-  // if (value > maxValue) {
-  // maxValue = value;
-  // }
-  // }
-  // // compute average
-  // long sum = 0;
-  // for (final Double value : wl.values()) {
-  // sum += value;
-  // }
-  // final long average = sum / wl.size();
-  //
-  // // compute node deviation
-  // final Map<String, Double> ws = new HashMap<>();
-  // for (final Entry<String, Double> entry : wl.entrySet()) {
-  // ws.put(entry.getKey(), entry.getValue() - average);
-  // }
-  //
-  // //
-  // sum = 0;
-  // for (final Double value : wl.values()) {
-  // sum += Math.pow((value - average), 2);
-  // }
-  // final Long sigma = (long) Math.sqrt((sum / wl.size()));
-  //
-  // // retrieve previous deviation
-  // previousDeviation(ws, latency, sigma);
-  //
-  // // generate new workload file
-  // final StringConcatenation content = new StringConcatenation();
-  // content.append("Nodes;Workload;\n");
-  // for (final Entry<String, Double> entry : ws.entrySet()) {
-  // content.append(entry.getKey() + ";" + entry.getValue() + "; \n");
-  // }
-  // content.append("Latency;" + latency + ";\n");
-  // content.append("SigmaW;" + sigma);
-  //
-  // PreesmIOHelper.getInstance().print(scenarioPath, FILE_NAME, content);
-  // }
-
-  // private void previousDeviation(Map<String, Double> ws, Long latency, Long sigma) {
-  // final IFile iFile = ResourcesPlugin.getWorkspace().getRoot().getFile(new Path(scenarioPath + FILE_NAME));
-  // if (iFile.isAccessible()) {
-  // Long prevLatency = 0L;
-  // Long prevSigmaWorkload = 0L;
-  // final String content = PreesmIOHelper.getInstance().read(scenarioPath, FILE_NAME);
-  // final String[] line = content.split("\\n");
-  // for (final String element : line) {
-  // final String[] split = element.split(";");
-  // if (split[0].equals("Latency")) {
-  // prevLatency = Long.valueOf(split[1]);
-  // }
-  //
-  // if (split[0].equals("SigmaW")) {
-  // prevSigmaWorkload = Long.valueOf(split[1]);
-  // }
-  // // update workload deviation (ws)
-  // for (final Entry<String, Double> entry : ws.entrySet()) {
-  // if (split[0].equals(entry.getKey())) {
-  // entry.setValue(entry.getValue() + Long.valueOf(split[1]));
-  // }
-  // }
-  // }
-  // // convergence check : standard deviation & latency deviation
-  // convergenceCheck(prevLatency, latency, prevSigmaWorkload, sigma);
-  //
-  // }
-  // }
-
-  // private void convergenceCheck(Long prevLatency, Long latency, Long prevSigmaWorkload, Long sigma) {
-  // if (prevLatency <= latency) {
-  // final String message = "Latency tend to increase from: " + prevLatency + "to: " + latency;
-  // PreesmLogger.getLogger().log(Level.INFO, message);
-  // }
-  // if (prevSigmaWorkload <= sigma) {
-  // final String message = "Standard workload deviation tend to increase from: " + prevSigmaWorkload + "to: " + sigma;
-  // PreesmLogger.getLogger().log(Level.INFO, message);
-  //
-  // }
-  // }
 
   /**
    * The method check the inter-node workload and latency convergence
