@@ -1,17 +1,20 @@
 name: Build & Test
 on:
   push:
-  pull_request:
+  #pull_request:
   schedule:
     - cron:  '0 7 * * MON'
     
 jobs:
   build:
+    # Prevent workflow from running twice when push to PR from main repo,
+    # maintains workflow run when PR from forked repo
+    #if: github.event_name != 'pull_request' ||
+    #  github.event.pull_request.head.repo.full_name !=
+    #  github.event.pull_request.base.repo.full_name
     name: Build & Test
     strategy:
       matrix:
-        # os: [ubuntu-16.04, ubuntu-18.04, ubuntu-20.04]
-        # java-version: [11, 12, 13, 14]
         os: [ubuntu-20.04]
         java-version: [17]
     runs-on: ${{ matrix.os }}
@@ -31,21 +34,21 @@ jobs:
           maven-version: 3.6.3
       - name: Build & Test
         shell: bash
-        run: releng/build_and_test.sh --ci        
+        run: releng/build_and_test.sh --ci
       - name: Analyze with SONAR
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-        run: mvn -B -e -c -Dtycho.mode=maven jacoco:report -Djacoco.dataFile=../../target/jacoco.exec -Dsonar.projectKey=preesm_preesm -Dsonar.login=$SONAR_TOKEN sonar:sonar
-      - name: Archive production artifacts
-        uses: actions/upload-artifact@v3
-        with:
-          name: preesm-products
-          path: releng/org.preesm.product/target/org.preesm.product-*.zip
+        run: mvn -B -e -c -Dtycho.mode=maven jacoco:report -Djacoco.dataFile=../../target/jacoco.exec -Dsonar.projectKey=preesm_preesm -Dsonar.token=$SONAR_TOKEN sonar:sonar
+      # - name: Archive production artifacts
+      #   uses: actions/upload-artifact@v3
+      #   with:
+      #     name: preesm-products
+      #     path: releng/org.preesm.product/target/org.preesm.product-*.zip
       - name: Archive Linux product
         uses: actions/upload-artifact@v3
         with:
-          name: Linux-products
+          name: linux-products
           path: releng/org.preesm.product/target/products/preesm-*-linux.gtk.x86_64.zip
       - name: Archive macOS aarch64 product
         uses: actions/upload-artifact@v3
@@ -62,3 +65,63 @@ jobs:
         with:
           name: windows-products
           path: releng/org.preesm.product/target/products/preesm-*-win32.win32.x86_64.zip
+
+      - name: Generate changelog
+        shell: bash
+        run: git log $(git describe --tags --abbrev=0)..HEAD --oneline --no-decorate > dev-changelog.txt
+
+      - name: Upload changelog
+        uses: actions/upload-artifact@v3
+        with:
+          name: changelog
+          path: dev-changelog.txt
+
+  deploy:
+    # `if` required because a workflow run is triggered regardless of
+    # the result of the previous workflow (see the documentation page)
+    if: github.ref == 'refs/heads/develop' && github.event.schedule != '0 7 * * MON'
+    name: GihHub Release
+    needs: build
+    runs-on: ubuntu-20.04
+    steps:
+      - name: Download Linux artifacts
+        uses: actions/download-artifact@v3
+        with:
+          name: linux-products
+      - name: Download Mac aarch64 artifacts
+        uses: actions/download-artifact@v3
+        with:
+          name: mac-aarch64-products
+      - name: Download Mac x86 artifacts
+        uses: actions/download-artifact@v3
+        with:
+          name: mac-x86-products
+      - name: Download Windows artifacts
+        uses: actions/download-artifact@v3
+        with:
+          name: windows-products
+
+      - name: Download changelog
+        uses: actions/download-artifact@v3
+        with:
+          name: changelog
+
+      # - name: Display structure of downloaded files
+      #   run: ls -R
+      - name: Generate release tag
+        id: tag
+        run: |
+          echo "release_tag=DevBuild_$(date +"%Y.%m.%d_%H-%M")" >> $GITHUB_OUTPUT
+      - name: Release
+        uses: softprops/action-gh-release@v1
+        with:
+          fail_on_unmatched_files: true
+          prerelease: true
+          tag_name: ${{ steps.tag.outputs.release_tag }}
+          #body: Check commit history for detailled changes.
+          body_path: dev-changelog.txt
+          files: |
+            preesm-*-linux.gtk.x86_64.zip
+            preesm-*-macosx.cocoa.aarch64.zip
+            preesm-*-macosx.cocoa.x86_64.zip
+            preesm-*-win32.win32.x86_64.zip

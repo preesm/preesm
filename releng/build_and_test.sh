@@ -76,7 +76,7 @@ time (cd $DIR && mvn -e -c ${BATCHMODE} clean ${BUILDGOAL} ${TESTMODE})
 if [ "${SONAR}" == "YES" ]; then
   # needs to be run in a second step; See:
   # https://community.sonarsource.com/t/jacoco-coverage-switch-from-deprecated-binary-to-xml-format-in-a-tycho-build-shows-0/
-  (cd $DIR && mvn -e -c ${BATCHMODE} -Dtycho.mode=maven jacoco:report -Djacoco.dataFile=../../target/jacoco.exec -Dsonar.projectKey=preesm_preesm -Dsonar.login=$SONAR_TOKEN sonar:sonar )
+  (cd $DIR && mvn -e -c ${BATCHMODE} -Dtycho.mode=maven jacoco:report -Djacoco.dataFile=../../target/jacoco.exec -Dsonar.projectKey=preesm_preesm -Dsonar.token=$SONAR_TOKEN sonar:sonar )
 
 
 fi
