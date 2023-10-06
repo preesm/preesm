@@ -336,7 +336,7 @@ public class ScenariosGenerator {
    * @param scenarioFile
    *          the IFile in which to save the PreesmScenario
    */
-  private void saveScenario(final Scenario scenario, final IFile scenarioFile) {
+  public void saveScenario(final Scenario scenario, final IFile scenarioFile) {
     final ScenarioWriter writer = new ScenarioWriter(scenario);
     final Document generateScenarioDOM = writer.generateScenarioDOM();
     try (final ByteArrayOutputStream byteStream = new ByteArrayOutputStream()) {

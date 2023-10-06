@@ -170,7 +170,7 @@ public class EuclideTransfo {
     for (final DataInputPort in : a.getDataInputPorts()) {
       if (!in.getFifo().isHasADelay()) {
         final ForkActor frk = PiMMUserFactory.instance.createForkActor();
-        frk.setName("Fork_" + a.getName() + index);
+        frk.setName("Fork_eu_" + a.getName() + index);
         frk.setContainingGraph(a.getContainingGraph());
 
         // connect din to frk
@@ -221,7 +221,7 @@ public class EuclideTransfo {
     for (final DataOutputPort out : a.getDataOutputPorts()) {
       if (!out.getFifo().isHasADelay()) {
         final JoinActor jn = PiMMUserFactory.instance.createJoinActor();
-        jn.setName("Join_" + a.getName() + index);
+        jn.setName("Join_eu_" + a.getName() + index);
         jn.setContainingGraph(a.getContainingGraph());
 
         // connect Join to dout

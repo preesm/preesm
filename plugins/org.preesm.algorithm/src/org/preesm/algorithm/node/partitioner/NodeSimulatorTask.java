@@ -44,9 +44,7 @@ public class NodeSimulatorTask extends AbstractTaskImplementation {
     final IWorkspaceRoot root = ResourcesPlugin.getWorkspace().getRoot();
     final IProject project = root.getProject(workflow.getProjectName());
     final String projectFullPath = project.getLocationURI().getPath();
-    // final String project = "/" + workflow.getProjectName();
     final String command = simpath + " " + projectFullPath + folderpath + " -c";
-    // final String command = "ls -l";
     final String workloadPath = "/" + workflow.getProjectName() + "/Scenarios/generated/";
     try {
       // Create a process builder for the command
@@ -59,13 +57,14 @@ public class NodeSimulatorTask extends AbstractTaskImplementation {
       final java.io.InputStream inputStream = process.getInputStream();
       final java.util.Scanner scanner = new java.util.Scanner(inputStream).useDelimiter("\\A");
       final String output = scanner.hasNext() ? scanner.next() : "";
-      if ("".equals(output)) {
-        PreesmLogger.getLogger().log(Level.SEVERE, "Error bash");
+      //
+      if (!"".equals(output)) {
+        PreesmLogger.getLogger().log(Level.INFO, "simsdp bash command not found");
+      } else {
+        PreesmLogger.getLogger().log(Level.INFO, output);
+        final Map<String, Double> wl = extractWorkload(output);
+        NodeCSVExporter.exportWorkload(wl, (double) Math.round(Latency), workloadPath);
       }
-      PreesmLogger.getLogger().log(Level.INFO, output);
-      final Map<String, Double> wl = extractWorkload(output);
-      NodeCSVExporter.exportWorkload(wl, (double) Math.round(Latency), workloadPath);
-
       // Wait for the process to complete
       final int exitCode = process.waitFor();
 

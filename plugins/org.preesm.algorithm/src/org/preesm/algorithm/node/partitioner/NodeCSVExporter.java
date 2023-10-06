@@ -106,18 +106,24 @@ public class NodeCSVExporter {
   }
 
   public static void exportDeviation(Map<String, Double> wl, Double latency, String path) {
+    csvTrend(sigma(wl), path, "workload_trend.csv");
+    csvTrend(latency, path, "latency_trend.csv");
+  }
 
+  private static void csvTrend(Double data, String path, String fileName) {
     final StringConcatenation content = new StringConcatenation();
 
     // if the file exists, we write to it otherwise we create the template
-    final IFile iFile = ResourcesPlugin.getWorkspace().getRoot().getFile(new Path(path + "workload_trend.csv"));
+    final IFile iFile = ResourcesPlugin.getWorkspace().getRoot().getFile(new Path(path + fileName));
     if (iFile.isAccessible()) {
-      content.append(sigma(wl) + "\n");
-      PreesmIOHelper.getInstance().print(path, "workload_trend.csv", content);
+      content.append(PreesmIOHelper.getInstance().read(path, fileName));
+      content.append(data + "\n");
+      PreesmIOHelper.getInstance().print(path, fileName, content);
     } else {
-      content.append(PreesmIOHelper.getInstance().read(path, "workload_trend.csv"));
-      content.append(sigma(wl) + "\n");
-      PreesmIOHelper.getInstance().print(path, "workload_trend.csv", content);
+
+      content.append(data + "\n");
+      PreesmIOHelper.getInstance().print(path, fileName, content);
+
     }
   }
 

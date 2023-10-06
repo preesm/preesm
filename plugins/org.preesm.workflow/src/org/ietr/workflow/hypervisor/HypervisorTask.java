@@ -2,10 +2,15 @@ package org.ietr.workflow.hypervisor;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
+import org.eclipse.core.resources.IFile;
+import org.eclipse.core.resources.ResourcesPlugin;
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.Path;
 import org.preesm.commons.doc.annotations.Parameter;
 import org.preesm.commons.doc.annotations.PreesmTask;
 import org.preesm.commons.doc.annotations.Value;
+import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.preesm.workflow.WorkflowManager;
 import org.preesm.workflow.elements.Workflow;
 import org.preesm.workflow.implement.AbstractTaskImplementation;
@@ -47,16 +52,22 @@ public class HypervisorTask extends AbstractTaskImplementation {
   @Override
   public Map<String, Object> execute(Map<String, Object> inputs, Map<String, String> parameters,
       IProgressMonitor monitor, String nodeName, Workflow workflow) {
-    boolean boundary = false;
+
     // retrieve inputs
     final int targetLatency = Integer.parseInt(parameters.get(HypervisorTask.LATENCY_PARAM));
     final int targetDeviation = Integer.parseInt(parameters.get(HypervisorTask.DEVIATION_PARAM));
     final int targetRound = Integer.parseInt(parameters.get(HypervisorTask.ROUND_PARAM));
     final boolean simgrid = Boolean.getBoolean(parameters.get(HypervisorTask.SIM_PARAM));
     final String project = "/" + workflow.getProjectName();
-
+    // clean project
+    deleteFile(project + "/Scenarios/generated/workload_trend.csv");
+    deleteFile(project + "/Scenarios/generated/latency_trend.csv");
+    deleteFile(project + "/Scenarios/generated/workload.csv");
     int countRound = 0;
+    boolean boundary = false;
     while (!boundary) {
+      // delete CSV top timing in order to generate new ones
+      deleteFile(project + "/Scenarios/generated/top_tim.csv");
       // Launch node partitioning
       String workflowPath = project + "/Workflows/NodePartitioning.workflow";
       String scenarioPath = project + "/Scenarios/rfi.scenario";
@@ -70,6 +81,7 @@ public class HypervisorTask extends AbstractTaskImplementation {
         workflowPath = project + "/Workflows/ThreadPartitioning.workflow";
         scenarioPath = project + "/Scenarios/generated/sub" + i + "_Node" + i + ".scenario";
         workflowManager.execute(workflowPath, scenarioPath, monitor);
+
       }
 
       // Launch node simulator
@@ -81,6 +93,8 @@ public class HypervisorTask extends AbstractTaskImplementation {
       scenarioPath = project + "/Scenarios/generated/top_top.scenario";
       workflowManager.execute(workflowPath, scenarioPath, monitor);
 
+      // delete CSV top timing in oredr to generate new ones
+
       // Convergence check
       countRound++;
       if (countRound >= targetRound) {
@@ -88,6 +102,17 @@ public class HypervisorTask extends AbstractTaskImplementation {
       }
     }
     return new LinkedHashMap<>();
+  }
+
+  private void deleteFile(String path) {
+    final IFile iFile = ResourcesPlugin.getWorkspace().getRoot().getFile(new Path(path));
+    if (iFile.exists()) {
+      try {
+        iFile.delete(true, null);
+      } catch (final CoreException e) {
+        throw new PreesmRuntimeException(e);
+      }
+    }
   }
 
   @Override

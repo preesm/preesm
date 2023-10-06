@@ -199,7 +199,9 @@ public class CodegenEngine {
     if (!(b instanceof final CoreBlock coreBlock)) {
       throw new PreesmRuntimeException("Only CoreBlock CodeBlocks can be printed in the current version of Preesm.");
     }
-    final String coreType = coreBlock.getCoreType();
+
+    // temporary handle multiple frequency per core type
+    final String coreType = ((CoreBlock) b).getCoreType().split("_")[0];
 
     for (final IConfigurationElement printer : usablePrinters) {
       final IConfigurationElement[] supportedCores = printer.getChildren();
@@ -226,6 +228,7 @@ public class CodegenEngine {
 
     final List<Block> blocks = this.registeredPrintersAndBlocks.get(foundPrinter);
     blocks.add(coreBlock);
+
   }
 
   private Set<IConfigurationElement> getLanguagePrinter(final String selectedPrinter) {
