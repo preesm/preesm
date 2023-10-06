@@ -13,6 +13,9 @@ import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.emf.common.util.EMap;
+import org.preesm.algorithm.mapping.model.CoreMapping;
+import org.preesm.algorithm.mapping.model.MappingFactory;
+import org.preesm.algorithm.mapping.model.NodeMapping;
 import org.preesm.commons.files.PreesmIOHelper;
 import org.preesm.commons.graph.Vertex;
 import org.preesm.commons.logger.PreesmLogger;
@@ -40,38 +43,32 @@ public class NodePartitioner {
   private final Scenario scenario;
 
   private final String archicsvpath;
+  List<NodeMapping>    hierarchicalArchitecture;
 
-  private final Map<Long, Map<Long, Long>>     archiH;       // id node/id core/freq
-  private final Map<Long, Long>                archiEq;      // id node/nb core
-  private Long                                 totArchiEq;
-  private final Map<Long, Long>                timeEq;       // id node/cumulative time
-  private final Map<Long, Long>                load;         // id node/exceed
+  private final Map<Integer, Long>             timeEq;       // id node/cumulative time
+  private final Map<Integer, Double>           load;         // id node/exceed
   private Map<AbstractVertex, Long>            brv;          // actor/brv
   private final Map<Long, List<AbstractActor>> topoOrderASAP;// id rank/actor
   private final Map<Long, String>              nodeNames;
 
   private final List<Design> archiList = new ArrayList<>();
 
-  static String  fileError    = "No such File find in folder: ";
-  private String archiPath    = "";
-  private String scenariiPath = "";
-  // private String workloadpath = "";
-  // private final String workspaceLocation = ResourcesPlugin.getWorkspace().getRoot().getLocation()
-  // .toString();
-  Map<Long, Map<AbstractActor, Long>> subsCopy = new HashMap<>();
+  static String                       fileError    = "No such File find in folder: ";
+  private String                      archiPath    = "";
+  private String                      scenariiPath = "";
+  Map<Long, Map<AbstractActor, Long>> subsCopy     = new HashMap<>();
 
   public NodePartitioner(Scenario scenario, String archicsvpath) {
     this.graph = scenario.getAlgorithm();
     this.scenario = scenario;
     this.archicsvpath = archicsvpath;
-    this.archiH = new HashMap<>();
-    this.archiEq = new HashMap<>();
-    this.totArchiEq = 0L;
+
     this.timeEq = new HashMap<>();
     this.load = new HashMap<>();
     this.brv = new HashMap<>();
     this.topoOrderASAP = new HashMap<>();
     this.nodeNames = new HashMap<>();
+    this.hierarchicalArchitecture = new ArrayList<>();
 
   }
 
@@ -79,28 +76,30 @@ public class NodePartitioner {
     final String[] uriString = graph.getUrl().split("/");
     scenariiPath = "/" + uriString[1] + "/Scenarios/generated/";
     archiPath = "/" + uriString[1] + "/Archi/";
-    // workloadpath = workspaceLocation + "/" + uriString[1] + "/Scenarios/generated/workload.csv";
     // 0. check level
     if (!graph.getAllChildrenGraphs().isEmpty()) {
       PreesmLogger.getLogger().log(Level.INFO, "Hierarchical graphs are not handle yet, please feed a flat version");
     }
 
     // 1. compute the number of equivalent core
-    computeEqCore();
-    if (graph.getActorIndex() < totArchiEq) {
+    final int sumNodeEquivalent = fillNodeMapping();
+    if (graph.getActorIndex() < sumNodeEquivalent) {
       final String issue = "O(G_app)<O(G_archi) SimSDP 1.0 isn't appropriated (reduce archi or change method)";
       PreesmLogger.getLogger().log(Level.INFO, issue);
     }
+    exportArchitecture();
     // 2. compute cumulative equivalent time
     brv = PiBRV.compute(graph, BRVMethod.LCM);// test
     computeWorkload();
-    computeEqTime();
+    computeEqTime(sumNodeEquivalent);
     // 3. sort actor in topological as soon as possible order
     computeTopoASAP();
     // 4. construct subGraphs
-    final List<PiGraph> subs = new IntranodeBuilder(scenario, brv, timeEq, archiList, topoOrderASAP).execute();
+    final List<
+        PiGraph> subs = new IntranodeBuilder(scenario, brv, timeEq, archiList, topoOrderASAP, hierarchicalArchitecture)
+            .execute();
     // 7. construct top
-    final PiGraph topGraph = new InternodeBuilder(scenario, subs).execute();
+    final PiGraph topGraph = new InternodeBuilder(scenario, subs, hierarchicalArchitecture).execute();
     // 9. generate main file
     new CodegenSimSDP(scenario, topGraph, nodeNames);
 
@@ -108,9 +107,100 @@ public class NodePartitioner {
 
   }
 
+  private void exportArchitecture() {
+    for (final NodeMapping node : hierarchicalArchitecture) {
+      final IPath fromPortableString = Path.fromPortableString(scenariiPath);
+      final IFile file = ResourcesPlugin.getWorkspace().getRoot().getFile(fromPortableString);
+      final IProject iProject = file.getProject();
+      final ArchitecturesGenerator a = new ArchitecturesGenerator(iProject);
+      final Map<String, Integer> type2nb = new HashMap<>();
+      for (final CoreMapping core : node.getCores()) {
+        if (type2nb.containsKey(core.getCoreType())) {
+          type2nb.replace(core.getCoreType(), type2nb.get(core.getCoreType()), type2nb.get(core.getCoreType()) + 1);
+        } else {
+          type2nb.put(core.getCoreType(), 1);
+        }
+      }
+      final Design subArchi = ArchitecturesGenerator.generateArchitecture(type2nb, "Node" + node.getID());
+
+      subArchi.setUrl(archiPath + "Node" + node.getID() + ".slam");
+      archiList.add(subArchi);
+      a.saveArchitecture(subArchi);
+      a.generateAndSaveArchitecture(type2nb, "Node" + node.getID());
+
+    }
+  }
+
+  private int fillNodeMapping() {
+    final String content = PreesmIOHelper.getInstance().read(archiPath, archicsvpath);
+    final String[] line = content.split("[\n]");
+    int coreID = 0;
+    for (final String l : line) {
+      final String[] element = l.split("[,]");
+      final int lastIndex = hierarchicalArchitecture.size() - 1;
+
+      if ((lastIndex == -1) || !element[0].equals(hierarchicalArchitecture.get(lastIndex).getNodeName())) {
+        final NodeMapping newNode = MappingFactory.eINSTANCE.createNodeMapping();
+        newNode.setNodeName(element[0]);
+        newNode.setNodeMemcpySpeed(Double.valueOf(element[4]));
+        final CoreMapping newCore = MappingFactory.eINSTANCE.createCoreMapping();
+        newCore.setID(Integer.valueOf(element[1]));
+        newCore.setCoreFrequency(Double.valueOf(element[2]));
+        newCore.setCoreMemcpySpeed(Double.valueOf(element[3]));
+        newCore.setID(coreID);
+        newNode.getCores().add(newCore);
+        hierarchicalArchitecture.add(newNode);
+      } else {
+        final CoreMapping newCore = MappingFactory.eINSTANCE.createCoreMapping();
+        newCore.setID(Integer.valueOf(element[1]));
+        newCore.setCoreFrequency(Double.valueOf(element[2]));
+        newCore.setCoreMemcpySpeed(Double.valueOf(element[3]));
+        newCore.setID(coreID);
+        hierarchicalArchitecture.get(lastIndex).getCores().add(newCore);
+      }
+      coreID++;
+    }
+
+    return computeEquivalentArchitecture();
+  }
+
+  private int computeEquivalentArchitecture() {
+    Double minFreq = Double.MAX_VALUE;
+
+    // compute Min frequency
+    for (final NodeMapping node : hierarchicalArchitecture) {
+      for (final CoreMapping core : node.getCores()) {
+        minFreq = Math.min(core.getCoreFrequency(), minFreq);
+      }
+    }
+    // compute ratio
+    int sumNodeEquivalent = 0;
+    for (final NodeMapping node : hierarchicalArchitecture) {
+      int coreEquivalent = 0;
+      for (final CoreMapping core : node.getCores()) {
+        coreEquivalent = (int) (coreEquivalent + core.getCoreFrequency() / minFreq);
+        core.setCoreType("x86_f" + Math.round(core.getCoreFrequency() / minFreq));
+      }
+      node.setNbCoreEquivalent(coreEquivalent);
+
+      sumNodeEquivalent += coreEquivalent;
+    }
+    // Sort list by nbCoreEquivalent in descending order
+    Collections.sort(hierarchicalArchitecture,
+        (node1, node2) -> Integer.compare(node2.getNbCoreEquivalent(), node1.getNbCoreEquivalent()));
+    // Assign ascending IDs based on sorting
+    int rank = 0;
+    for (final NodeMapping node : hierarchicalArchitecture) {
+      node.setID(rank);
+      rank++;
+    }
+    return sumNodeEquivalent;
+  }
+
   /**
    * Read a CSV file containing implementation length on each node compute the average implementation length for each
-   * node compute the excess/!excess file a structure load
+   * node compute the excess/!excess file a structure load. Loads are in % format, current node load to maximum node
+   * load.
    */
   private void computeWorkload() {
     // 1. read file
@@ -121,13 +211,13 @@ public class NodePartitioner {
       for (final String element : line) {
         final String[] split = element.split(";");
         if (!split[0].equals("Nodes") && !split[0].equals("Latency") && !split[0].equals("SigmaW")) {
-          final Long node = Long.valueOf(split[0].replace("node", ""));
-          final Long workload = Long.valueOf(split[1]);
+          final Integer node = Integer.valueOf(split[0].replace("node", ""));
+          final Double workload = Double.valueOf(split[1]);
           load.put(node, workload);
         }
       }
-
     }
+
   }
 
   private void computeTopoASAP() {
@@ -192,7 +282,7 @@ public class NodePartitioner {
     return slow;
   }
 
-  private void computeEqTime() {
+  private void computeEqTime(int sumNodeEquivalent) {
     // total equivalent cumulative time
     Long totTCeq = 0L;
     for (final AbstractActor a : graph.getExecutableActors()) {
@@ -215,92 +305,18 @@ public class NodePartitioner {
       }
     }
     // construct structure
-    for (long i = 0; i < archiEq.keySet().size(); i++) {
-      final Long timeEqSeek = totTCeq * archiEq.get(i) / totArchiEq;
-      timeEq.put(i, timeEqSeek);
-    }
-  }
 
-  private void computeEqCore() {
-    // Read temporary architecture file, extract composition and build structure
-    // file -> |Node name|coreID|frequency|
-    final String content = PreesmIOHelper.getInstance().read(archiPath, archicsvpath);
-    Long minFreq = Long.MAX_VALUE;// MHz
-    long nodeID = 0L;
+    for (final NodeMapping node : hierarchicalArchitecture) {
 
-    final String[] line = content.split("\\n");
-    for (final String element : line) {
-      final String[] split = element.split(";");
-      if (!archiH.isEmpty()) {
-
-        if (!nodeNames.containsValue(split[0])) {
-          nodeID++;
-          final Long node = nodeID;
-          final Long core = Long.valueOf(split[1]);
-          final Long freq = Long.valueOf(split[2]);
-          final Map<Long, Long> basis = new HashMap<>();
-          basis.put(core, freq);
-          archiH.put(node, basis);
-          nodeNames.put(nodeID, split[0]);
-          if (freq < minFreq) {
-            minFreq = freq;
-          }
-        } else {
-          final Long core = Long.valueOf(split[1]);
-          final Long freq = Long.valueOf(split[2]);
-
-          archiH.get(nodeID).put(core, freq);
-          if (freq < minFreq) {
-            minFreq = freq;
-          }
-        }
+      final Long timeEqSeek = totTCeq * node.getNbCoreEquivalent() / sumNodeEquivalent;
+      Long timEqSeekUpdate;
+      if (!load.isEmpty()) {
+        timEqSeekUpdate = Math.round(timeEqSeek * (1 - load.get(node.getID())));
       } else {
-        final Long node = nodeID;
-        final Long core = Long.valueOf(split[1]);
-        final Long freq = Long.valueOf(split[2]);
-        final Map<Long, Long> basis = new HashMap<>();
-        basis.put(core, freq);
-        archiH.put(node, basis);
-        nodeNames.put(nodeID, split[0]);
-        if (freq < minFreq) {
-          minFreq = freq;
-        }
+        timEqSeekUpdate = timeEqSeek;
       }
+      timeEq.put(node.getID(), timEqSeekUpdate);
     }
-
-    final Map<Long, Long> architemp = new HashMap<>();
-    // construct equivalent archi structure
-    for (Long i = 0L; i < archiH.keySet().size(); i++) {
-      Long coreEq = 0L;
-      for (final Entry<Long, Long> j : archiH.get(i).entrySet()) {
-        final Long ratio = j.getValue() / minFreq;
-        coreEq = coreEq + ratio;
-      }
-
-      architemp.put(i, coreEq);
-      totArchiEq = totArchiEq + coreEq;
-    }
-    // sort in descending order of performance
-    // first is the one with the max number of highest frequency
-    final List<Map.Entry<Long, Long>> nodeList = new ArrayList<>(architemp.entrySet());
-    nodeList.sort((node1, node2) -> Long.compare(node2.getValue(), node1.getValue())); // Tri décroissant
-
-    Long newIndex = 0L;
-    for (final Map.Entry<Long, Long> entry : nodeList) {
-      archiEq.put(newIndex++, entry.getValue());
-      final IPath fromPortableString = Path.fromPortableString(scenariiPath);
-      final IFile file2 = ResourcesPlugin.getWorkspace().getRoot().getFile(fromPortableString);
-      final IProject iProject = file2.getProject();
-      final ArchitecturesGenerator a = new ArchitecturesGenerator(iProject);
-      final Design subArchi = ArchitecturesGenerator.generateArchitecture(entry.getValue().intValue(),
-          "Node" + (newIndex - 1));
-      a.saveArchitecture(subArchi);
-      subArchi.setUrl(archiPath + "Node" + (newIndex - 1) + ".slam");
-      archiList.add(subArchi);
-      a.generateAndSaveArchitecture(entry.getValue().intValue(), "Node" + (newIndex - 1));
-
-    }
-
   }
 
 }

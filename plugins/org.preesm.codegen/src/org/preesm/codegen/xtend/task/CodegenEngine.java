@@ -197,7 +197,8 @@ public class CodegenEngine {
     if (!(b instanceof CoreBlock)) {
       throw new PreesmRuntimeException("Only CoreBlock CodeBlocks can be printed in the current version of Preesm.");
     }
-    final String coreType = ((CoreBlock) b).getCoreType();
+    // temporary handle multiple frequency per core type
+    final String coreType = ((CoreBlock) b).getCoreType().split("_")[0];
     for (final IConfigurationElement printer : usablePrinters) {
       final IConfigurationElement[] supportedCores = printer.getChildren();
       for (final IConfigurationElement supportedCore : supportedCores) {
@@ -210,17 +211,15 @@ public class CodegenEngine {
         break;
       }
     }
-    if (foundPrinter != null) {
-
-      if (!this.registeredPrintersAndBlocks.containsKey(foundPrinter)) {
-        this.registeredPrintersAndBlocks.put(foundPrinter, new ArrayList<>());
-      }
-      final List<Block> blocks = this.registeredPrintersAndBlocks.get(foundPrinter);
-      blocks.add(b);
-    } else {
+    if (foundPrinter == null) {
       throw new PreesmRuntimeException(
           "Could not find a printer for language \"" + selectedPrinter + "\" and core type \"" + coreType + "\".");
     }
+    if (!this.registeredPrintersAndBlocks.containsKey(foundPrinter)) {
+      this.registeredPrintersAndBlocks.put(foundPrinter, new ArrayList<>());
+    }
+    final List<Block> blocks = this.registeredPrintersAndBlocks.get(foundPrinter);
+    blocks.add(b);
   }
 
   private Set<IConfigurationElement> getLanguagePrinter(final String selectedPrinter) {

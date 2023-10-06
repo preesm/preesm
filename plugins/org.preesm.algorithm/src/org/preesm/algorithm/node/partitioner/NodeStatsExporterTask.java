@@ -1,6 +1,7 @@
 package org.preesm.algorithm.node.partitioner;
 
 import java.io.BufferedReader;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -22,6 +23,11 @@ import org.preesm.commons.doc.annotations.Value;
 import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.preesm.commons.files.PreesmIOHelper;
 import org.preesm.commons.logger.PreesmLogger;
+import org.preesm.model.pisdf.AbstractActor;
+import org.preesm.model.scenario.Scenario;
+import org.preesm.model.scenario.generator.ScenariosGenerator;
+import org.preesm.model.scenario.serialize.ScenarioParser;
+import org.preesm.model.slam.Component;
 import org.preesm.model.slam.ComponentInstance;
 import org.preesm.workflow.elements.Workflow;
 import org.preesm.workflow.implement.AbstractTaskImplementation;
@@ -83,11 +89,22 @@ public class NodeStatsExporterTask extends AbstractTaskImplementation {
     // Fill in the SimSDP node workload file
     if (Boolean.TRUE.equals(Boolean.valueOf(topnode))) {
       final Map<String, Double> wl = convertABC(abc);
-      final Double latency = (double) abc.getFinalLatency();
+      final Double latency = maxLoad(abc);
       NodeCSVExporter.exportWorkload(wl, latency, scenarioPath);
+      final String path = "/" + workflow.getProjectName() + "/Scenarios/generated/";
+      NodeCSVExporter.exportDeviation(wl, latency, path);
+
       // exportWorkload(wl, latency);
     }
     return new LinkedHashMap<>();
+  }
+
+  private Double maxLoad(LatencyAbc abc) {
+    Long maxLoad = Long.MIN_VALUE;
+    for (final ComponentInstance cp : abc.getArchitecture().getComponentInstances()) {
+      maxLoad = Math.max(abc.getLoad(cp), maxLoad);
+    }
+    return (double) maxLoad;
   }
 
   /**
@@ -100,9 +117,14 @@ public class NodeStatsExporterTask extends AbstractTaskImplementation {
   private Map<String, Double> convertABC(LatencyAbc abc) {
     // read (normally SimGrid CSV simulation file) but here PREESM inter-node simulation
     final Map<String, Double> wl = new HashMap<>();
-    // retrieve inter-node workload |nodename|workload|
+    Long maxLoad = Long.MIN_VALUE;
     for (final ComponentInstance cp : abc.getArchitecture().getComponentInstances()) {
-      wl.put("node" + cp.getHardwareId(), (double) abc.getLoad(cp));
+      maxLoad = Math.max(abc.getLoad(cp), maxLoad);
+    }
+
+    // retrieve inter-node workload |nodename|workload|
+    for (final ComponentInstance cp : abc.getArchitecture().getOperatorComponentInstances()) {
+      wl.put("node" + cp.getHardwareId(), (double) abc.getLoad(cp) / maxLoad);
     }
 
     return wl;
@@ -120,11 +142,12 @@ public class NodeStatsExporterTask extends AbstractTaskImplementation {
     final String fileName = "top_tim.csv";
     final String filePath = scenarioPath;
     final StringConcatenation content = new StringConcatenation();
-
+    final ScenarioParser scenarioParser = new ScenarioParser();
     // if the file exists, we write to it otherwise we create the template
     final IFile iFile = ResourcesPlugin.getWorkspace().getRoot().getFile(new Path(filePath + fileName));
+
     if (!iFile.exists()) {
-      content.append("Actors;Node;\n");
+      content.append("Actors;node;\n");
     } else {
 
       InputStream inputStream;
@@ -137,12 +160,33 @@ public class NodeStatsExporterTask extends AbstractTaskImplementation {
           content.append(line + "\n");
         }
         inputStream.close();
+
       } catch (CoreException | IOException e) {
         throw new PreesmRuntimeException("Could not generate source file for " + fileName, e);
       }
     }
-    content.append(abc.getScenario().getAlgorithm().getName() + ";" + abc.getFinalLatency() + "; \n");
+    content.append("top/" + abc.getScenario().getAlgorithm().getName() + ";" + abc.getFinalLatency() + "; \n");
+
     PreesmIOHelper.getInstance().print(scenarioPath, fileName, content);
+    final String scenarioName = "top_top.scenario";
+    final IFile iFileScenario = ResourcesPlugin.getWorkspace().getRoot().getFile(new Path(filePath + scenarioName));
+
+    Scenario scenario;
+    try {
+      scenario = scenarioParser.parseXmlFile(iFileScenario);
+      for (final Component opId : scenario.getDesign().getProcessingElements()) {
+        for (final AbstractActor actor : scenario.getAlgorithm().getExecutableActors()) {
+          if (actor.getName().equals(abc.getScenario().getAlgorithm().getName())) {
+            scenario.getTimings().setExecutionTime(actor, opId, abc.getFinalLatency());
+          }
+        }
+      }
+      final ScenariosGenerator s = new ScenariosGenerator(iFileScenario.getProject());
+      s.saveScenario(scenario, iFileScenario);
+    } catch (final FileNotFoundException | CoreException e) {
+      throw new PreesmRuntimeException("Could not generate source file for " + scenarioName, e);
+    }
+
   }
 
   @Override

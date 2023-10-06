@@ -71,7 +71,7 @@ public class ArchitectureGeneratorPopup extends AbstractHandler {
         }
 
         final ArchitecturesGenerator generator = new ArchitecturesGenerator(project);
-        generator.generateAndSaveArchitecture(Integer.parseInt(input), null);
+        generator.generateAndSaveArchitecture(Integer.parseInt(input));
       }
 
     } catch (final Exception e) {

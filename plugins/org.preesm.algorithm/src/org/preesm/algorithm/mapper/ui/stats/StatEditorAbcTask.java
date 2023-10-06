@@ -47,10 +47,13 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.PlatformUI;
 import org.preesm.algorithm.mapper.abc.impl.latency.LatencyAbc;
+import org.preesm.algorithm.mapper.gantt.GanttComponent;
+import org.preesm.algorithm.mapper.gantt.GanttTask;
 import org.preesm.commons.doc.annotations.Port;
 import org.preesm.commons.doc.annotations.PreesmTask;
 import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.model.scenario.Scenario;
+import org.preesm.model.slam.ComponentInstance;
 import org.preesm.workflow.elements.Workflow;
 import org.preesm.workflow.implement.AbstractTaskImplementation;
 
@@ -78,7 +81,36 @@ public class StatEditorAbcTask extends AbstractTaskImplementation {
     final LatencyAbc abc = (LatencyAbc) inputs.get("ABC");
 
     final IEditorInput input = new StatEditorInput(new StatGeneratorAbc(abc));
+    // test opr
+    final StatGeneratorAbc i = new StatGeneratorAbc(abc);
+    final Long span = i.getDAGSpanLength();
+    final Long work = i.getDAGWorkLength();
+    final Long implem = i.getFinalTime();
+    final Double speedup = (double) (work) / (double) (implem);
+    final Double nodeOccupy = speedup / i.getNbUsedOperators();
+    long sum = 0L;
+    Long max = Long.MIN_VALUE;
+    for (final ComponentInstance ci : abc.getArchitecture().getOperatorComponentInstances()) {
+      sum += i.getLoad(ci);
+      max = Math.max(i.getLoad(ci), max);
+    }
+    final Double occupy = (double) (sum)
+        / (double) (max * abc.getArchitecture().getOperatorComponentInstances().size());
 
+    PreesmLogger.getLogger().log(Level.INFO, "Node occupation ==> " + occupy);
+    for (final GanttComponent ci : i.getGanttData().getComponents()) {
+      Long sumCpt = 0L;
+      Long sumCom = 0L;
+      for (final GanttTask a : ci.getTasks()) {
+        if (a.getColor() == null) {
+          sumCpt += a.getDuration();
+        } else {
+          sumCom += a.getDuration();
+        }
+      }
+      PreesmLogger.getLogger().log(Level.INFO, "Computation sum ==> " + sumCpt);
+      PreesmLogger.getLogger().log(Level.INFO, "Communication sum ==> " + sumCom);
+    }
     // Check if the workflow is running in command line mode
     try {
       // Run statistic editor

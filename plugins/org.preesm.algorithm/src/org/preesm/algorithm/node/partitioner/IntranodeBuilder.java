@@ -23,6 +23,7 @@ import org.eclipse.emf.common.util.EMap;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.xtend2.lib.StringConcatenation;
 import org.preesm.algorithm.codegen.idl.Prototype;
+import org.preesm.algorithm.mapping.model.NodeMapping;
 import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.preesm.commons.files.PreesmIOHelper;
 import org.preesm.commons.files.WorkspaceUtils;
@@ -55,6 +56,7 @@ import org.preesm.model.pisdf.factory.PiMMUserFactory;
 import org.preesm.model.pisdf.serialize.PiWriter;
 import org.preesm.model.pisdf.util.LOOPSeeker;
 import org.preesm.model.pisdf.util.PiSDFSubgraphBuilder;
+import org.preesm.model.scenario.MemoryCopySpeedValue;
 import org.preesm.model.scenario.Scenario;
 import org.preesm.model.scenario.generator.ScenariosGenerator;
 import org.preesm.model.scenario.util.DefaultTypeSizes;
@@ -75,25 +77,27 @@ public class IntranodeBuilder {
   /**
    * Workflow scenario.
    */
-  private final Scenario scenario;
+  private final Scenario          scenario;
+  private final List<NodeMapping> hierarchicalArchitecture;
 
-  private final Design                              archi;
-  private final PiGraph                             graph;
-  private PiGraph                                   topGraph     = null;
-  private final Map<AbstractVertex, Long>           brv;
-  private final Map<Long, Long>                     timeEq;
-  private final List<Design>                        archiList;
-  private final Map<Long, List<AbstractActor>>      topoOrderASAP;
-  private final Map<Long, Map<AbstractActor, Long>> subs         = new HashMap<>();
-  Map<Long, Map<AbstractActor, Long>>               subsCopy     = new HashMap<>();
-  List<PiGraph>                                     sublist      = new ArrayList<>();
-  private String                                    includePath  = "";
-  private String                                    graphPath    = "";
-  static String                                     fileError    = "Error occurred during file generation: ";
-  private String                                    scenariiPath = "";
+  private final Design                                 archi;
+  private final PiGraph                                graph;
+  private PiGraph                                      topGraph     = null;
+  private final Map<AbstractVertex, Long>              brv;
+  private final Map<Integer, Long>                     timeEq;
+  private final List<Design>                           archiList;
+  private final Map<Long, List<AbstractActor>>         topoOrderASAP;
+  private final Map<Integer, Map<AbstractActor, Long>> subs         = new HashMap<>();
+  Map<Integer, Map<AbstractActor, Long>>               subsCopy     = new HashMap<>();
+  List<PiGraph>                                        sublist      = new ArrayList<>();
+  private String                                       includePath  = "";
+  private String                                       graphPath    = "";
+  static String                                        fileError    = "Error occurred during file generation: ";
+  private String                                       scenariiPath = "";
 
-  public IntranodeBuilder(Scenario scenario, Map<AbstractVertex, Long> brv, Map<Long, Long> timeEq,
-      List<Design> archiList, Map<Long, List<AbstractActor>> topoOrderASAP) {
+  public IntranodeBuilder(Scenario scenario, Map<AbstractVertex, Long> brv, Map<Integer, Long> timeEq,
+      List<Design> archiList, Map<Long, List<AbstractActor>> topoOrderASAP,
+      List<NodeMapping> hierarchicalArchitecture) {
     this.scenario = scenario;
     this.graph = scenario.getAlgorithm();
     this.archi = scenario.getDesign();
@@ -101,6 +105,7 @@ public class IntranodeBuilder {
     this.timeEq = timeEq;
     this.archiList = archiList;
     this.topoOrderASAP = topoOrderASAP;
+    this.hierarchicalArchitecture = hierarchicalArchitecture;
   }
 
   public List<PiGraph> execute() {
@@ -169,9 +174,13 @@ public class IntranodeBuilder {
               archi.getProcessingElement(opId.getVlnv().getName())));
         }
       }
-
+      final MemoryCopySpeedValue createMemoryCopySpeedValue = ScenarioUserFactory.createMemoryCopySpeedValue();
+      createMemoryCopySpeedValue.setSetupTime(1L);
+      createMemoryCopySpeedValue.setTimePerUnit(
+          1 / (hierarchicalArchitecture.get(indexL.intValue()).getCores().get(0).getCoreMemcpySpeed() * 100.0));
+      subScenario.getTimings().getMemTimings().put(opId, createMemoryCopySpeedValue);
     }
-    subScenario.getTimings().getMemTimings().addAll(scenario.getTimings().getMemTimings());
+
     // store timing in case
     csvGenerator(subScenario, subgraph, subArchi);
     for (final ComponentInstance coreId : coreIds) {
@@ -272,18 +281,18 @@ public class IntranodeBuilder {
    */
   private void computeSplits() {
     // 1. split tasks if it's required
-    for (final Entry<Long, Map<AbstractActor, Long>> a : subs.entrySet()) {
+    for (final Entry<Integer, Map<AbstractActor, Long>> a : subs.entrySet()) {
       final Map<AbstractActor, Long> newValue = new HashMap<>(a.getValue());
       subsCopy.put(a.getKey(), newValue);
     }
-    for (Long subRank = 0L; subRank < subs.size(); subRank++) {
+    for (Integer subRank = 0; subRank < subs.size(); subRank++) {
       for (final Entry<AbstractActor, Long> a : subs.get(subRank).entrySet()) {
         if (a.getValue() < brv.get(a.getKey())) {
           brv.replace(a.getKey(), split(a.getKey(), a.getValue(), brv.get(a.getKey()), subRank));
         }
       }
     }
-    for (Long subRank = 0L; subRank < subs.size(); subRank++) {
+    for (Integer subRank = 0; subRank < subs.size(); subRank++) {
       // 2. generate subs
       final List<AbstractActor> list = new ArrayList<>();
       for (final AbstractActor a : subsCopy.get(subRank).keySet()) {
@@ -451,11 +460,20 @@ public class IntranodeBuilder {
 
   /**
    * Split an actor into two actor and dispatch data tokens
+   *
+   * @param key
+   *          Actor to split
+   * @param rv1
+   *          desire repetition vector
+   * @param rv2
+   *          genuine repetition vector to split
    */
-  private Long split(AbstractActor key, Long rv1, Long rv2, Long subRank) {
+  private Long split(AbstractActor key, Long rv1, Long rv2, Integer subRank) {
     // if data pattern
     // copy instance
     final AbstractActor copy = PiMMUserFactory.instance.copy(key);
+    // copy.setName(key.getName()+"n2");
+    // brv.put(copy, rv2);
     copy.setContainingGraph(key.getContainingGraph());
     int index = 0;
     for (final DataInputPort in : key.getDataInputPorts()) {
@@ -503,6 +521,7 @@ public class IntranodeBuilder {
             .forEach(x -> x.setIncomingFifo(foutn));
 
         subsCopy.get(subRank).put(frk, 1L);
+        brv.put(frk, 1L);
         index++;
       } else {
         PreesmLogger.getLogger().log(Level.INFO, "global delay not yet handle");
@@ -551,8 +570,8 @@ public class IntranodeBuilder {
         finn.setContainingGraph(key.getContainingGraph());
         copy.getDataOutputPorts().stream().filter(x -> x.getName().equals(out.getName()))
             .forEach(x -> x.setOutgoingFifo(finn));
+        brv.put(jn, 1L);
 
-        // }
         if (subsCopy.get(subRank + 1) == null) {
           subsCopy.get(subRank).put(jn, 1L);
           subsCopy.get(subRank).remove(key);
@@ -609,11 +628,11 @@ public class IntranodeBuilder {
   }
 
   /**
-   * Build subgraphs by adding one by one actors in the topological order until reaching balanced execution time per
-   * graph.
+   * Constructs the structure associating each sub-graph with a list of actors and their recalculated repetition
+   * (according to the division undergone)
    */
   private void computeSubs() {
-    Long nodeID = 0L;
+    Integer nodeID = 0;
     Long timTemp = 0L;
     preprocessCycle();
     Map<AbstractActor, Long> list = new HashMap<>();

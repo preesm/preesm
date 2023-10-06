@@ -40,8 +40,8 @@ public class DeviationChartTask extends AbstractTaskImplementation {
     }
 
     final XYSeriesCollection dataset = new XYSeriesCollection(series);
-    final JFreeChart chart = ChartFactory.createXYLineChart("Curve1", "Round", "Deviation", dataset,
-        PlotOrientation.VERTICAL, true, true, false);
+    final JFreeChart chart = ChartFactory.createXYLineChart("Internode Workload Standard Deviation", "Round",
+        "Deviation", dataset, PlotOrientation.VERTICAL, true, true, false);
 
     final XYPlot plot = chart.getXYPlot();
     final XYLineAndShapeRenderer renderer = new XYLineAndShapeRenderer();
@@ -52,11 +52,11 @@ public class DeviationChartTask extends AbstractTaskImplementation {
     // read latency trend
     final String[] arrayLatency = PreesmIOHelper.getInstance().read(path, LATENCY_NAME).split("\n");
     for (int i = 0; i < arrayLatency.length; i++) {
-      series.add(i, Double.valueOf(arrayLatency[i]));
+      series2.add(i, Double.valueOf(arrayLatency[i]));
     }
 
     final XYSeriesCollection dataset2 = new XYSeriesCollection(series2);
-    final JFreeChart chart2 = ChartFactory.createXYLineChart("Curve2", "Round", "Latency", dataset2,
+    final JFreeChart chart2 = ChartFactory.createXYLineChart("Latency", "Round", "Latency", dataset2,
         PlotOrientation.VERTICAL, true, true, false);
 
     final XYPlot plot2 = chart2.getXYPlot();

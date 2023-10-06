@@ -38,6 +38,8 @@ package org.preesm.model.slam.generator;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.util.Map;
+import java.util.Map.Entry;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
@@ -82,11 +84,14 @@ public class ArchitecturesGenerator {
    *
    * @param nbX86cores
    *          Number of cores in the generated architecture.
-   * @param nodeName
-   *          Architecture Name
+   *
    */
-  public void generateAndSaveArchitecture(int nbX86cores, String nodeName) {
-    saveArchitecture(generateArchitecture(nbX86cores, nodeName));
+  public void generateAndSaveArchitecture(int nbX86cores) {
+    saveArchitecture(generateArchitecture(nbX86cores));
+  }
+
+  public void generateAndSaveArchitecture(Map<String, Integer> cores, String nodeName) {
+    saveArchitecture(generateArchitecture(cores, nodeName));
   }
 
   /**
@@ -94,17 +99,14 @@ public class ArchitecturesGenerator {
    *
    * @param nbX86cores
    *          Number of cores in the generated architecture.
-   * @param nodeName
-   *          Architecture Name
+   *
    * @return The generated architecture.
    */
-  public static Design generateArchitecture(int nbX86cores, String nodeName) {
+  public static Design generateArchitecture(int nbX86cores) {
     final VLNV rootVLNV = SlamFactory.eINSTANCE.createVLNV();
-    if (nodeName == null) {
-      rootVLNV.setName(nbX86cores + "CoresX86");
-    } else {
-      rootVLNV.setName(nodeName);
-    }
+
+    rootVLNV.setName(nbX86cores + "CoresX86");
+
     rootVLNV.setLibrary("preesm");
     rootVLNV.setVendor("ietr");
     rootVLNV.setVersion("1");
@@ -163,6 +165,77 @@ public class ArchitecturesGenerator {
       dl.setSourceInterface(mi);
       dl.setDestinationInterface(mi);
       design.getLinks().add(dl);
+    }
+
+    return design;
+  }
+
+  public static Design generateArchitecture(Map<String, Integer> coresList, String nodeName) {
+    final int i1 = 0;
+    final Design design = SlamFactory.eINSTANCE.createDesign();
+    final ComponentHolder ch = SlamFactory.eINSTANCE.createComponentHolder();
+    final ComInterface mi = SlamFactory.eINSTANCE.createComInterface();
+    final VLNV comNodeVLNV = SlamUserFactory.eINSTANCE.createVLNV();
+
+    comNodeVLNV.setName("SHARED_MEM");
+    comNodeVLNV.setLibrary("");
+    comNodeVLNV.setVendor("");
+    comNodeVLNV.setVersion("");
+
+    final ComNode cn = SlamFactory.eINSTANCE.createComNode();
+    cn.setParallel(true);
+    cn.setSpeed(1000000000F); // 1 000 000 000 = 1E9F
+    cn.setVlnv(comNodeVLNV);
+    cn.getInterfaces().add(mi);
+    ch.getComponents().add(cn);
+
+    final ComponentInstance sharedMem = SlamFactory.eINSTANCE.createComponentInstance();
+    sharedMem.setHardwareId(0);
+    sharedMem.setInstanceName("shared_mem");
+    design.getComponentInstances().add(sharedMem);
+    sharedMem.setComponent(cn);
+
+    for (final Entry<String, Integer> coreMap : coresList.entrySet()) {
+      final VLNV rootVLNV = SlamFactory.eINSTANCE.createVLNV();
+      rootVLNV.setName(nodeName);
+
+      rootVLNV.setLibrary("preesm");
+      rootVLNV.setVendor("ietr");
+      rootVLNV.setVersion("1");
+
+      design.setVlnv(rootVLNV);
+
+      design.setComponentHolder(ch);
+
+      final VLNV operatorVLNV = SlamFactory.eINSTANCE.createVLNV();
+      operatorVLNV.setName(coreMap.getKey());
+      operatorVLNV.setLibrary("");
+      operatorVLNV.setVendor("");
+      operatorVLNV.setVersion("");
+      final Component opZ = SlamUserFactory.eINSTANCE.createComponent(operatorVLNV, CPU.class.getSimpleName());
+      ch.getComponents().add(opZ);
+
+      mi.setName("BUSshared_mem");
+      opZ.getInterfaces().add(mi);
+
+      final ComponentInstance[] cores = new ComponentInstance[coreMap.getValue()];
+      for (int i = i1; i < i1 + coreMap.getValue(); ++i) {
+        cores[i] = SlamFactory.eINSTANCE.createComponentInstance();
+        cores[i].setHardwareId(i);
+        cores[i].setInstanceName("Core" + i);
+        design.getComponentInstances().add(cores[i]);
+        cores[i].setComponent(opZ);
+      }
+      for (int i = i1; i < coreMap.getValue(); ++i) {
+        final DataLink dl = SlamFactory.eINSTANCE.createDataLink();
+        dl.setDirected(false);
+        dl.setUuid(Integer.toString(i));
+        dl.setSourceComponentInstance(cores[i]);
+        dl.setDestinationComponentInstance(sharedMem);
+        dl.setSourceInterface(mi);
+        dl.setDestinationInterface(mi);
+        design.getLinks().add(dl);
+      }
     }
 
     return design;
