@@ -39,7 +39,6 @@
 package org.preesm.algorithm.memory.allocation;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -97,72 +96,71 @@ public abstract class MemoryAllocator {
    */
   public static long alignSubBuffers(final MemoryExclusionGraph meg, final long alignment) {
     long addedSpace = 0;
-    if (alignment != -1) {
 
-      // Build a list of all MObject of the graph, including merged ones
-      final Set<MemoryExclusionVertex> allMObjects = new LinkedHashSet<>();
-      allMObjects.addAll(meg.vertexSet());
-      // Include merged Mobjects (if any)
-      final Map<MemoryExclusionVertex, Set<MemoryExclusionVertex>> hostMap = meg.getPropertyBean()
-          .getValue(MemoryExclusionGraph.HOST_MEMORY_OBJECT_PROPERTY);
-      if (hostMap != null) {
-        for (final Set<MemoryExclusionVertex> mergedMOBjects : hostMap.values()) {
-          allMObjects.addAll(mergedMOBjects);
-        }
+    if (alignment == -1) {
+      return addedSpace;
+    }
+
+    // Build a list of all MObject of the graph, including merged ones
+    final Set<MemoryExclusionVertex> allMObjects = new LinkedHashSet<>(meg.vertexSet());
+    // Include merged Mobjects (if any)
+    final Map<MemoryExclusionVertex, Set<MemoryExclusionVertex>> hostMap = meg.getPropertyBean()
+        .getValue(MemoryExclusionGraph.HOST_MEMORY_OBJECT_PROPERTY);
+
+    if (hostMap != null) {
+      hostMap.values().stream().forEach(allMObjects::addAll);
+    }
+
+    // Scan the vertices of the graph
+    for (final MemoryExclusionVertex memObj : allMObjects) {
+      // Check alignment of DAGEdge (that may involve subbuffers)
+      // other memory objects can be ignored in this method.
+      final DAGEdge edge = memObj.getEdge();
+      if (edge == null) {
+        continue;
       }
 
-      // Scan the vertices of the graph
-      for (final MemoryExclusionVertex memObj : allMObjects) {
-        // Check alignment of DAGEdge (that may involve subbuffers)
-        // other memory objects can be ignored in this method.
-        final DAGEdge edge = memObj.getEdge();
-        if (edge != null) {
+      final BufferAggregate buffers = edge.getPropertyBean().getValue(BufferAggregate.propertyBeanName);
+      final List<Long> interBufferSpaces = new ArrayList<>();
+      long largestTypeSize = 1;
+      long internalOffset = 0; // In Bits
+      for (final BufferProperties properties : buffers) {
+        final String dataType = properties.getDataType();
+        final long typeSize = meg.getScenario().getSimulationInfo().getDataTypeSizeInBit(dataType);
+        largestTypeSize = Math.max(typeSize, largestTypeSize);
+        long interSpace = 0;
 
-          final BufferAggregate buffers = edge.getPropertyBean().getValue(BufferAggregate.propertyBeanName);
-          final Iterator<BufferProperties> iter = buffers.iterator();
-
-          final List<Long> interBufferSpaces = new ArrayList<>();
-          long largestTypeSize = 1;
-          long internalOffset = 0; // In Bits
-          while (iter.hasNext()) {
-            final BufferProperties properties = iter.next();
-            final String dataType = properties.getDataType();
-            final long typeSize = meg.getScenario().getSimulationInfo().getDataTypeSizeInBit(dataType);
-            largestTypeSize = Math.max(typeSize, largestTypeSize);
-            long interSpace = 0;
-
-            // Data alignment case
-            // If the subbuffer is not aligned, add an interspace.
-            if ((alignment == 0) && ((internalOffset % typeSize) != 0)) {
-              interSpace = typeSize - (internalOffset % typeSize);
-            }
-
-            // Fixed alignment
-            // If the subbuffer is not aligned, add an interspace.
-            if (alignment > 0) {
-              final long align = MathFunctionsHelper.lcm(typeSize, alignment);
-              if ((internalOffset % align) != 0) {
-                interSpace = align - (internalOffset % align);
-              }
-            }
-
-            interBufferSpaces.add(interSpace);
-            internalOffset += interSpace + (typeSize * properties.getNbToken());
-          }
-
-          // Update the size of the memObject and add the interbuffer
-          // space if it does not contain with 0.
-          if ((internalOffset - memObj.getWeight()) > 0) {
-            memObj.setPropertyValue(MemoryExclusionVertex.INTER_BUFFER_SPACES, interBufferSpaces);
-            addedSpace += internalOffset - memObj.getWeight();
-            memObj.setWeight(internalOffset);
-          }
-          // Backup the largest typeSize contained in the aggregate.
-          // This information will be used to align the memObject
-          // during allocation
-          memObj.setPropertyValue(MemoryExclusionVertex.TYPE_SIZE, largestTypeSize);
+        // Data alignment case
+        // If the subbuffer is not aligned, add an interspace.
+        if ((alignment == 0) && ((internalOffset % typeSize) != 0)) {
+          interSpace = typeSize - (internalOffset % typeSize);
         }
+
+        // Fixed alignment
+        // If the subbuffer is not aligned, add an interspace.
+        if (alignment > 0) {
+          final long align = MathFunctionsHelper.lcm(typeSize, alignment);
+          if ((internalOffset % align) != 0) {
+            interSpace = align - (internalOffset % align);
+          }
+        }
+
+        interBufferSpaces.add(interSpace);
+        internalOffset += interSpace + (typeSize * properties.getNbToken());
       }
+
+      // Update the size of the memObject and add the interbuffer
+      // space if it does not contain with 0.
+      if ((internalOffset - memObj.getWeight()) > 0) {
+        memObj.setPropertyValue(MemoryExclusionVertex.INTER_BUFFER_SPACES, interBufferSpaces);
+        addedSpace += internalOffset - memObj.getWeight();
+        memObj.setWeight(internalOffset);
+      }
+      // Backup the largest typeSize contained in the aggregate.
+      // This information will be used to align the memObject
+      // during allocation
+      memObj.setPropertyValue(MemoryExclusionVertex.TYPE_SIZE, largestTypeSize);
+
     }
     return addedSpace;
   }
@@ -490,9 +488,7 @@ public abstract class MemoryAllocator {
                 if (this.inputExclusionGraph.containsVertex(neighbor)) {
                   this.inputExclusionGraph.addEdge(fakeMObj, neighbor);
                 } else {
-                  // The neighbor is not in the graph, it
-                  // must be
-                  // hosted by another mObject or divided.
+                  // The neighbor is not in the graph, it must be hosted by another mObject or divided.
                   excludeWithHostedNeighbor(fakeMObj, neighbor);
                 }
               }
@@ -593,70 +589,57 @@ public abstract class MemoryAllocator {
     final Map<MemoryExclusionVertex, Long> unalignedObjects = new LinkedHashMap<>();
 
     // Check the alignment constraint
-    if (this.alignment != -1) {
-      for (final MemoryExclusionVertex memObj : this.inputExclusionGraph.vertexSet()) {
-        final long offset = this.memExNodeAllocation.get(memObj);
+    if (this.alignment == -1) {
+      return unalignedObjects;
+    }
 
-        // Check if the buffer was merged as a result of memory script
-        // execution.
-        final boolean isMerged = memObj.getPropertyBean().getValue(MemoryExclusionVertex.EMPTY_SPACE_BEFORE) != null;
+    for (final MemoryExclusionVertex memObj : this.inputExclusionGraph.vertexSet()) {
+      final long offset = this.memExNodeAllocation.get(memObj);
 
-        // Check alignment of DAGEdge (that may involve subbuffers)
-        // Do not perform the test for buffers involved in a merge
-        // operation
-        final DAGEdge edge = memObj.getEdge();
-        if ((edge != null) && !isMerged) {
-          final BufferAggregate buffers = edge.getPropertyBean().getValue(BufferAggregate.propertyBeanName);
-          final Iterator<BufferProperties> iter = buffers.iterator();
+      // Check if the buffer was merged as a result of memory script
+      // execution.
+      final boolean isMerged = memObj.getPropertyBean().getValue(MemoryExclusionVertex.EMPTY_SPACE_BEFORE) != null;
 
-          final List<
-              Long> interBufferSpaces = memObj.getPropertyBean().getValue(MemoryExclusionVertex.INTER_BUFFER_SPACES);
+      // Check alignment of DAGEdge (that may involve subbuffers)
+      // Do not perform the test for buffers involved in a merge
+      // operation
+      final DAGEdge edge = memObj.getEdge();
+      if ((edge != null) && !isMerged) {
+        final BufferAggregate buffers = edge.getPropertyBean().getValue(BufferAggregate.propertyBeanName);
+        final List<
+            Long> interBufferSpaces = memObj.getPropertyBean().getValue(MemoryExclusionVertex.INTER_BUFFER_SPACES);
 
-          long internalOffset = 0;
-          int i = 0;
-          while (iter.hasNext()) {
-            final BufferProperties properties = iter.next();
-            final String dataType = properties.getDataType();
-            final long typeSize = memObj.getScenario().getSimulationInfo().getDataTypeSizeInBit(dataType);
+        long internalOffset = 0;
+        int i = 0;
+        for (final BufferProperties properties : buffers) {
+          final String dataType = properties.getDataType();
+          final long typeSize = memObj.getScenario().getSimulationInfo().getDataTypeSizeInBit(dataType);
 
-            if (interBufferSpaces != null) {
-              internalOffset += interBufferSpaces.get(i);
-            }
-            i++;
-
-            // Both data and fixed alignment must be aligned on
-            // data typeSize
-            if ((this.alignment >= 0) && (((internalOffset + offset) % typeSize) != 0)) {
-              unalignedObjects.put(memObj, offset);
-              break;
-            }
-
-            // Check the fixed alignment
-            if ((this.alignment > 0) && (((internalOffset + offset) % this.alignment) != 0)) {
-              unalignedObjects.put(memObj, offset);
-              break;
-            }
-
-            internalOffset += typeSize * properties.getNbToken();
-            // internalOffset += (typeSize * properties.getNbToken() + this.alignment-1) / this.alignment;
-
+          if (interBufferSpaces != null) {
+            internalOffset += interBufferSpaces.get(i);
           }
-        } else {
-          // Check alignment of memory objects not associated with an
-          // edge.
-          // In the current version, working memory of actor is not
-          // aligned since it has
-          // no declared type.
-          // Process fifo memobjects here
-          if (memObj.getSource().startsWith(MemoryExclusionGraph.FIFO_HEAD_PREFIX)) {
-            final Long typeSize = memObj.getPropertyBean().getValue(MemoryExclusionVertex.TYPE_SIZE);
-            if ((this.alignment == 0) && ((offset % typeSize) != 0)) {
-              unalignedObjects.put(memObj, offset);
-            }
+          i++;
 
+          // Both data and fixed alignment must be aligned on
+          // data typeSize
+          // Check the fixed alignment
+          if (((this.alignment >= 0) && (((internalOffset + offset) % typeSize) != 0))
+              || ((this.alignment > 0) && (((internalOffset + offset) % this.alignment) != 0))) {
+            unalignedObjects.put(memObj, offset);
+            break;
           }
 
+          internalOffset += typeSize * properties.getNbToken();
         }
+      } else if (memObj.getSource().startsWith(MemoryExclusionGraph.FIFO_HEAD_PREFIX)) {
+        // Check alignment of memory objects not associated with an edge.
+        // In the current version, working memory of actor is not aligned since it has no declared type.
+        // Process fifo memobjects here
+        final Long typeSize = memObj.getPropertyBean().getValue(MemoryExclusionVertex.TYPE_SIZE);
+        if ((this.alignment == 0) && ((offset % typeSize) != 0)) {
+          unalignedObjects.put(memObj, offset);
+        }
+
       }
     }
     return unalignedObjects;
@@ -689,8 +672,7 @@ public abstract class MemoryAllocator {
 
       // If an allocation was created only based on a memory exclusion
       // graph, the edge attribute of MemoryExclusionGraphNodes will be
-      // null and
-      // allocation table won't be valid.
+      // null and allocation table won't be valid.
 
       sourceOffset = this.memExNodeAllocation.get(source);
       targetOffset = this.memExNodeAllocation.get(target);

@@ -59,7 +59,7 @@ public abstract class AbstractTaskImplementation extends AbstractWorkflowNodeImp
   /**
    * Instantiates a new abstract task implementation.
    */
-  public AbstractTaskImplementation() {
+  protected AbstractTaskImplementation() {
     this.inputPrototype = new LinkedHashMap<>();
   }
 
@@ -91,13 +91,12 @@ public abstract class AbstractTaskImplementation extends AbstractWorkflowNodeImp
         PreesmLogger.logFromProperty(Level.SEVERE, "Workflow.FalseInputEdge", protoInputPortName,
             this.getWorkflowNode().getName(), this.getWorkflowNode().getID());
         return false;
-      } else {
-        final String graphType = graphInputPorts.get(protoInputPortName);
-        if (!protoType.equals(graphType)) {
-          PreesmLogger.logFromProperty(Level.SEVERE, "Workflow.FalseInputType", protoInputPortName,
-              this.getWorkflowNode().getName(), this.getWorkflowNode().getID(), graphType, protoType);
-          return false;
-        }
+      }
+      final String graphType = graphInputPorts.get(protoInputPortName);
+      if (!protoType.equals(graphType)) {
+        PreesmLogger.logFromProperty(Level.SEVERE, "Workflow.FalseInputType", protoInputPortName,
+            this.getWorkflowNode().getName(), this.getWorkflowNode().getID(), graphType, protoType);
+        return false;
       }
     }
 
