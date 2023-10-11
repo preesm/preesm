@@ -618,11 +618,6 @@ public class Buffer {
     }
 
     // Check that all matches are applicable
-    // if (matches.stream().anyMatch(it -> !it.isApplicable() || !it.getReciprocate().isApplicable())) {
-    // throw new PreesmRuntimeException(
-    // "Incorrect call to applyMatches method.\n " + "One or more applied matches are not applicable.\n"
-    // + matches.stream().filter(it -> !it.isApplicable() || !it.getReciprocate().isApplicable()));
-    // }
     matches.stream().filter(it -> !it.isApplicable() || !it.getReciprocate().isApplicable()).findFirst()
         .ifPresent(o -> {
           throw new PreesmRuntimeException(
