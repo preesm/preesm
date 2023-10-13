@@ -90,7 +90,7 @@ public class IntranodeBuilder {
   private final Map<Integer, Map<AbstractActor, Long>> subs         = new HashMap<>();
   Map<Integer, Map<AbstractActor, Long>>               subsCopy     = new HashMap<>();
   List<PiGraph>                                        sublist      = new ArrayList<>();
-  private String                                       includePath  = "";
+  private String                                       codegenPath  = "";
   private String                                       graphPath    = "";
   static String                                        fileError    = "Error occurred during file generation: ";
   private String                                       scenariiPath = "";
@@ -112,7 +112,7 @@ public class IntranodeBuilder {
     final String[] uriString = graph.getUrl().split("/");
     graphPath = "/" + uriString[1] + "/" + uriString[2] + "/generated/";
     scenariiPath = "/" + uriString[1] + "/Scenarios/generated/";
-    includePath = uriString[1] + "/Code/generated/interface/";
+    codegenPath = uriString[1] + "/Code/generated/";
 
     computeSubs();
 
@@ -146,87 +146,91 @@ public class IntranodeBuilder {
    *
    */
   private void scenarioExporter(PiGraph subgraph) {
-    final Scenario subScenario = ScenarioUserFactory.createScenario();
-    final String indexStr = subgraph.getName().replace("sub", "");
-    final Long indexL = Long.decode(indexStr);
-    final Design subArchi = archiList.get(indexL.intValue());
-    subScenario.setDesign(subArchi);
+    // generate subscenario only if subgraph contain actor
 
-    subScenario.setAlgorithm(subgraph);
-    // Get com nodes and cores names
-    final List<ComponentInstance> coreIds = new ArrayList<>(subArchi.getOperatorComponentInstances());
-    final List<ComponentInstance> comNodeIds = subArchi.getCommunicationComponentInstances();
+    if (!subgraph.getActors().isEmpty()) {
+      final Scenario subScenario = ScenarioUserFactory.createScenario();
+      final String indexStr = subgraph.getName().replace("sub", "");
+      final Long indexL = Long.decode(indexStr);
+      final Design subArchi = archiList.get(indexL.intValue());
+      subScenario.setDesign(subArchi);
 
-    // Set default values for constraints, timings and simulation parameters
+      subScenario.setAlgorithm(subgraph);
+      // Get com nodes and cores names
+      final List<ComponentInstance> coreIds = new ArrayList<>(subArchi.getOperatorComponentInstances());
+      final List<ComponentInstance> comNodeIds = subArchi.getCommunicationComponentInstances();
 
-    // Add a main core (first of the list)
-    if (!coreIds.isEmpty()) {
-      subScenario.getSimulationInfo().setMainOperator(coreIds.get(0));
-    }
-    if (!comNodeIds.isEmpty()) {
-      subScenario.getSimulationInfo().setMainComNode(comNodeIds.get(0));
-    }
+      // Set default values for constraints, timings and simulation parameters
 
-    for (final Component opId : subArchi.getProcessingElements()) {
-      for (final AbstractActor aa : subgraph.getAllActors()) {
-        if (aa instanceof Actor) {
-          subScenario.getTimings().setExecutionTime(aa, opId, this.scenario.getTimings().getExecutionTimeOrDefault(aa,
-              archi.getProcessingElement(opId.getVlnv().getName())));
+      // Add a main core (first of the list)
+      if (!coreIds.isEmpty()) {
+        subScenario.getSimulationInfo().setMainOperator(coreIds.get(0));
+      }
+      if (!comNodeIds.isEmpty()) {
+        subScenario.getSimulationInfo().setMainComNode(comNodeIds.get(0));
+      }
+
+      for (final Component opId : subArchi.getProcessingElements()) {
+        for (final AbstractActor aa : subgraph.getAllActors()) {
+          if (aa instanceof Actor) {
+            subScenario.getTimings().setExecutionTime(aa, opId, this.scenario.getTimings().getExecutionTimeOrDefault(aa,
+                archi.getProcessingElement(opId.getVlnv().getName())));
+          }
+        }
+        final MemoryCopySpeedValue createMemoryCopySpeedValue = ScenarioUserFactory.createMemoryCopySpeedValue();
+        createMemoryCopySpeedValue.setSetupTime(1L);
+        createMemoryCopySpeedValue.setTimePerUnit(
+            1 / (hierarchicalArchitecture.get(indexL.intValue()).getCores().get(0).getCoreMemcpySpeed() * 10.0));
+        subScenario.getTimings().getMemTimings().put(opId, createMemoryCopySpeedValue);
+      }
+
+      // store timing in case
+      csvGenerator(subScenario, subgraph, subArchi);
+      for (final ComponentInstance coreId : coreIds) {
+        for (final AbstractActor aa : subgraph.getAllActors()) {
+          if (aa instanceof Actor) {
+            subScenario.getConstraints().addConstraint(coreId, aa);
+          }
+        }
+        subScenario.getConstraints().addConstraint(coreId, subgraph);
+        subScenario.getSimulationInfo().addSpecialVertexOperator(coreId);
+      }
+
+      // Add a average transfer size
+      subScenario.getSimulationInfo().setAverageDataSize(scenario.getSimulationInfo().getAverageDataSize());
+      // Set the default data type sizes
+      for (final Fifo f : subScenario.getAlgorithm().getAllFifos()) {
+        final String typeName = f.getType();
+        subScenario.getSimulationInfo().getDataTypes().put(typeName,
+            DefaultTypeSizes.getInstance().getTypeSize(typeName));
+      }
+      // add constraint
+      subScenario.getConstraints().setGroupConstraintsFileURL("");
+      for (final Entry<ComponentInstance, EList<AbstractActor>> gp : subScenario.getConstraints()
+          .getGroupConstraints()) {
+        for (final AbstractActor actor : subgraph.getAllActors()) {
+          gp.getValue().add(actor);
         }
       }
-      final MemoryCopySpeedValue createMemoryCopySpeedValue = ScenarioUserFactory.createMemoryCopySpeedValue();
-      createMemoryCopySpeedValue.setSetupTime(1L);
-      createMemoryCopySpeedValue.setTimePerUnit(
-          1 / (hierarchicalArchitecture.get(indexL.intValue()).getCores().get(0).getCoreMemcpySpeed() * 100.0));
-      subScenario.getTimings().getMemTimings().put(opId, createMemoryCopySpeedValue);
-    }
-
-    // store timing in case
-    csvGenerator(subScenario, subgraph, subArchi);
-    for (final ComponentInstance coreId : coreIds) {
-      for (final AbstractActor aa : subgraph.getAllActors()) {
-        if (aa instanceof Actor) {
-          subScenario.getConstraints().addConstraint(coreId, aa);
-        }
+      final String[] uriString = graph.getUrl().split("/");
+      subScenario.setCodegenDirectory("/" + uriString[1] + "/Code/generated/" + subgraph.getName());
+      subScenario.setSizesAreInBit(true);
+      final IPath fromPortableString = Path.fromPortableString(scenariiPath);
+      final IFile file = ResourcesPlugin.getWorkspace().getRoot().getFile(fromPortableString);
+      final IProject iProject = file.getProject();
+      subScenario.setScenarioURL(scenariiPath + subScenario.getScenarioName() + ".scenario");
+      final ScenariosGenerator s = new ScenariosGenerator(iProject);
+      final IFolder scenarioDir = iProject.getFolder("Scenarios/generated");
+      final Set<Scenario> scenarios = new HashSet<>();
+      scenarios.add(subScenario);
+      try {
+        s.saveScenarios(scenarios, scenarioDir);
+      } catch (final CoreException e) {
+        final String errorMessage = fileError + e.getMessage();
+        PreesmLogger.getLogger().log(Level.INFO, errorMessage);
       }
-      subScenario.getConstraints().addConstraint(coreId, subgraph);
-      subScenario.getSimulationInfo().addSpecialVertexOperator(coreId);
+      PreesmLogger.getLogger().log(Level.INFO, "sub scenario print in : " + scenariiPath);
     }
-
-    // Add a average transfer size
-    subScenario.getSimulationInfo().setAverageDataSize(scenario.getSimulationInfo().getAverageDataSize());
-    // Set the default data type sizes
-    for (final Fifo f : subScenario.getAlgorithm().getAllFifos()) {
-      final String typeName = f.getType();
-      subScenario.getSimulationInfo().getDataTypes().put(typeName,
-          DefaultTypeSizes.getInstance().getTypeSize(typeName));
-    }
-    // add constraint
-    subScenario.getConstraints().setGroupConstraintsFileURL("");
-    for (final Entry<ComponentInstance, EList<AbstractActor>> gp : subScenario.getConstraints().getGroupConstraints()) {
-      for (final AbstractActor actor : subgraph.getAllActors()) {
-        gp.getValue().add(actor);
-      }
-    }
-    final String[] uriString = graph.getUrl().split("/");
-    subScenario.setCodegenDirectory("/" + uriString[1] + "/Code/generated/" + subgraph.getName());
-    subScenario.setSizesAreInBit(true);
-    final IPath fromPortableString = Path.fromPortableString(scenariiPath);
-    final IFile file = ResourcesPlugin.getWorkspace().getRoot().getFile(fromPortableString);
-    final IProject iProject = file.getProject();
-    subScenario.setScenarioURL(scenariiPath + subScenario.getScenarioName() + ".scenario");
-    final ScenariosGenerator s = new ScenariosGenerator(iProject);
-    final IFolder scenarioDir = iProject.getFolder("Scenarios/generated");
-    final Set<Scenario> scenarios = new HashSet<>();
-    scenarios.add(subScenario);
-    try {
-      s.saveScenarios(scenarios, scenarioDir);
-    } catch (final CoreException e) {
-      final String errorMessage = fileError + e.getMessage();
-      PreesmLogger.getLogger().log(Level.INFO, errorMessage);
-    }
-    PreesmLogger.getLogger().log(Level.INFO, "sub scenario print in : " + scenariiPath);
-
   }
 
   /**
@@ -261,7 +265,7 @@ public class IntranodeBuilder {
 
         for (final Component coreType : coreTypes) {
           final String executionTime = scenar.getTimings().getExecutionTimeOrDefault(actor, coreType);
-          content.append(executionTime);
+          content.append(executionTime + ";");
         }
 
         content.append("\n");
@@ -316,6 +320,7 @@ public class IntranodeBuilder {
 
     // 3. free subs (Interface --> sink; container)
     for (final PiGraph subgraph : sublist) {
+      final int index = Integer.valueOf(subgraph.getName().replace("sub", ""));
       for (final DataInputInterface in : subgraph.getDataInputInterfaces()) {
         final Actor src = PiMMUserFactory.instance.createActor();
         src.setName("src_" + in.getName());
@@ -325,7 +330,7 @@ public class IntranodeBuilder {
         final Prototype oEmptyPrototype = new Prototype();
         oEmptyPrototype.setIsStandardC(true);
 
-        cHeaderRefinement.setFilePath(includePath + src.getName() + ".h");
+        cHeaderRefinement.setFilePath(codegenPath + "interface/sub" + index + "/" + src.getName() + ".h");
         final FunctionPrototype functionPrototype = PiMMUserFactory.instance.createFunctionPrototype();
         cHeaderRefinement.setLoopPrototype(functionPrototype);
         functionPrototype.setName(src.getName());
@@ -341,7 +346,7 @@ public class IntranodeBuilder {
         functionArgument.setType(dout.getFifo().getType());
         functionArgument.setDirection(Direction.OUT);
         functionPrototype.getArguments().add(functionArgument);
-        generateFileH(src);
+        generateFileH(src, index);
         // set 1 because it's an interface
         for (final Component opId : archi.getProcessingElements()) {
           scenario.getTimings().setExecutionTime(src, opId, 1L);
@@ -357,7 +362,7 @@ public class IntranodeBuilder {
         final Prototype oEmptyPrototype = new Prototype();
         oEmptyPrototype.setIsStandardC(true);
 
-        cHeaderRefinement.setFilePath(includePath + snk.getName() + ".h");
+        cHeaderRefinement.setFilePath(codegenPath + "interface/sub" + index + "/" + snk.getName() + ".h");
         final FunctionPrototype functionPrototype = PiMMUserFactory.instance.createFunctionPrototype();
         cHeaderRefinement.setLoopPrototype(functionPrototype);
         functionPrototype.setName(snk.getName());
@@ -373,7 +378,7 @@ public class IntranodeBuilder {
         functionArgument.setType(din.getFifo().getType());
         functionArgument.setDirection(Direction.IN);
         functionPrototype.getArguments().add(functionArgument);
-        generateFileH(snk);
+        generateFileH(snk, index);
         // set 1 because it's an interface
         for (final Component opId : archi.getProcessingElements()) {
           scenario.getTimings().setExecutionTime(snk, opId, 1L);
@@ -617,14 +622,15 @@ public class IntranodeBuilder {
 
   }
 
-  private void generateFileH(Actor actor) {
+  private void generateFileH(Actor actor, int index) {
     final String content = "// jfécekejepeu \n #ifndef " + actor.getName().toUpperCase() + "_H \n #define "
         + actor.getName().toUpperCase() + "_H \n void " + actor.getName() + "("
         + actor.getAllDataPorts().get(0).getFifo().getType() + " " + actor.getAllDataPorts().get(0).getName()
         + "); \n #endif";
-    final String codegenPath = scenario.getCodegenDirectory() + "/interface/";
-    PreesmIOHelper.getInstance().print(includePath, actor.getName() + ".h", content);
-    PreesmLogger.getLogger().log(Level.INFO, "interface file print in : " + includePath);
+
+    PreesmIOHelper.getInstance().print(codegenPath + "interface/sub" + index + "/", actor.getName() + ".h", content);
+    PreesmLogger.getLogger().log(Level.INFO,
+        "interface file print in : " + codegenPath + "interface/sub" + index + "/");
   }
 
   /**
@@ -640,43 +646,49 @@ public class IntranodeBuilder {
     final int lastKey = (topoOrderASAP.get(lastEntry).size() - 1);
     final AbstractActor lastActor = topoOrderASAP.get(lastEntry).get(lastKey);
     for (final Entry<Long, List<AbstractActor>> entry : topoOrderASAP.entrySet()) {
+      Long count = 0L;
       for (final AbstractActor a : entry.getValue()) {
-        Long count = 0L;
-        while (count < brv.get(a)) {
-          // 1. compute actor timing on slowest core
-          Long slow = 0L;
-          if (a instanceof Actor) {
-            if (scenario.getTimings().getActorTimings().get(a) != null) {
-              slow = Long.valueOf(
-                  scenario.getTimings().getActorTimings().get(a).get(0).getValue().get(TimingType.EXECUTION_TIME));
-              for (final Entry<Component, EMap<TimingType, String>> element : scenario.getTimings().getActorTimings()
-                  .get(a)) {
-                final Long timeSeek = Long.valueOf(element.getValue().get(TimingType.EXECUTION_TIME));
-                if (timeSeek < slow) {
-                  slow = timeSeek;
+        count = 0L;
+        if (nodeID < (timeEq.size() - 1)) {
+          while (count < brv.get(a)) {
+            // 1. compute actor timing on slowest core
+            Long slow = 0L;
+            if (a instanceof Actor) {
+              if (scenario.getTimings().getActorTimings().get(a) != null) {
+                slow = Long.valueOf(
+                    scenario.getTimings().getActorTimings().get(a).get(0).getValue().get(TimingType.EXECUTION_TIME));
+                for (final Entry<Component, EMap<TimingType, String>> element : scenario.getTimings().getActorTimings()
+                    .get(a)) {
+                  final Long timeSeek = Long.valueOf(element.getValue().get(TimingType.EXECUTION_TIME));
+                  if (timeSeek < slow) {
+                    slow = timeSeek;
+                  }
                 }
+              } else {
+                slow = 100L;
               }
-            } else {
-              slow = 100L;
+            }
+            // add instance while lower than target sub time
+            Long i;
+            for (i = 0L; count + i < brv.get(a) && timTemp < timeEq.get(nodeID); i++) {
+              timTemp = timTemp + slow;
+            }
+            count = count + i;
+            list.put(a, i);
+            if (timTemp > timeEq.get(nodeID) || a.equals(lastActor)) {
+
+              subs.put(nodeID, list);
+              nodeID++;
+              list = new HashMap<>();
+              timTemp = 0L;
             }
           }
-          // add instance while lower than target sub time
-          Long i;
-          for (i = 0L; count + i < brv.get(a) && timTemp < timeEq.get(nodeID); i++) {
-            timTemp = timTemp + slow;
-          }
-          count = count + i;
-          list.put(a, i);
-          if (timTemp > timeEq.get(nodeID) || a.equals(lastActor)) {
-
-            subs.put(nodeID, list);
-            nodeID++;
-            list = new HashMap<>();
-            timTemp = 0L;
-          }
+        } else {
+          list.put(a, brv.get(a) - count);
         }
       }
     }
+    subs.put(nodeID, list);
   }
 
   /**

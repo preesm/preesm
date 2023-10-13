@@ -218,7 +218,7 @@ public class InternodeBuilder {
     for (final Component opId : topArchi.getProcessingElements()) {
       final MemoryCopySpeedValue createMemoryCopySpeedValue = ScenarioUserFactory.createMemoryCopySpeedValue();
       createMemoryCopySpeedValue.setSetupTime(1L);
-      createMemoryCopySpeedValue.setTimePerUnit(1 / (hierarchicalArchitecture.get(0).getNodeMemcpySpeed() * 100.0));
+      createMemoryCopySpeedValue.setTimePerUnit(1 / (hierarchicalArchitecture.get(0).getNodeMemcpySpeed() * 10.0));
       topScenario.getTimings().getMemTimings().put(opId, createMemoryCopySpeedValue);
     }
     final ScenariosGenerator s = new ScenariosGenerator(iProject);
