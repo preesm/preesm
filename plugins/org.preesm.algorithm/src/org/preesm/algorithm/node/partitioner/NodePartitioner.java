@@ -160,6 +160,7 @@ public class NodePartitioner {
       }
       coreID++;
     }
+    // new NodeCompararator(coreID, hierarchicalArchitecture, graph);
 
     return computeEquivalentArchitecture();
   }

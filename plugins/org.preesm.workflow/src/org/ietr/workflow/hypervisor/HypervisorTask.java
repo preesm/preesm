@@ -65,9 +65,15 @@ public class HypervisorTask extends AbstractTaskImplementation {
     deleteFile(project + "/Scenarios/generated/workload.csv");
     int countRound = 0;
     boolean boundary = false;
+    final int nSubGraphs = 3;
     while (!boundary) {
       // delete CSV top timing in order to generate new ones
       deleteFile(project + "/Scenarios/generated/top_tim.csv");
+      // suppress generated
+      for (int i = 0; i < nSubGraphs; i++) {
+        deleteFile(project + "/Algo/generated/sub" + i + ".pi");
+        deleteFile(project + "/Scenarios/generated/sub" + i + "_Node" + i + ".scenario");
+      }
       // Launch node partitioning
       String workflowPath = project + "/Workflows/NodePartitioning.workflow";
       String scenarioPath = project + "/Scenarios/rfi.scenario";
@@ -76,11 +82,15 @@ public class HypervisorTask extends AbstractTaskImplementation {
       workflowManager.execute(workflowPath, scenarioPath, monitor);
 
       // Launch thread partitioning
-      final int nSubGraphs = 3;
+
       for (int i = 0; i < nSubGraphs; i++) {
         workflowPath = project + "/Workflows/ThreadPartitioning.workflow";
         scenarioPath = project + "/Scenarios/generated/sub" + i + "_Node" + i + ".scenario";
-        workflowManager.execute(workflowPath, scenarioPath, monitor);
+        // it's possible that all node are not exploited
+        final IFile iFile = ResourcesPlugin.getWorkspace().getRoot().getFile(new Path(scenarioPath));
+        if (iFile.exists()) {
+          workflowManager.execute(workflowPath, scenarioPath, monitor);
+        }
 
       }
 

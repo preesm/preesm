@@ -183,7 +183,7 @@ public class ArchitecturesGenerator {
   }
 
   public static Design generateArchitecture(Map<String, Integer> coresList, String nodeName) {
-    final int i1 = 0;
+    int i1 = 0;
     final Design design = SlamFactory.eINSTANCE.createDesign();
     final ComponentHolder ch = SlamFactory.eINSTANCE.createComponentHolder();
     final ComInterface mi = SlamFactory.eINSTANCE.createComInterface();
@@ -232,22 +232,23 @@ public class ArchitecturesGenerator {
 
       final ComponentInstance[] cores = new ComponentInstance[coreMap.getValue()];
       for (int i = i1; i < i1 + coreMap.getValue(); ++i) {
-        cores[i] = SlamFactory.eINSTANCE.createComponentInstance();
-        cores[i].setHardwareId(i);
-        cores[i].setInstanceName("Core" + i);
-        design.getComponentInstances().add(cores[i]);
-        cores[i].setComponent(opZ);
+        cores[i - i1] = SlamFactory.eINSTANCE.createComponentInstance();
+        cores[i - i1].setHardwareId(i);
+        cores[i - i1].setInstanceName("Core" + i);
+        design.getComponentInstances().add(cores[i - i1]);
+        cores[i - i1].setComponent(opZ);
       }
-      for (int i = i1; i < coreMap.getValue(); ++i) {
+      for (int i = i1; i < i1 + coreMap.getValue(); ++i) {
         final DataLink dl = SlamFactory.eINSTANCE.createDataLink();
         dl.setDirected(false);
         dl.setUuid(Integer.toString(i));
-        dl.setSourceComponentInstance(cores[i]);
+        dl.setSourceComponentInstance(cores[i - i1]);
         dl.setDestinationComponentInstance(sharedMem);
         dl.setSourceInterface(mi);
         dl.setDestinationInterface(mi);
         design.getLinks().add(dl);
       }
+      i1 += coreMap.getValue();
     }
 
     return design;
