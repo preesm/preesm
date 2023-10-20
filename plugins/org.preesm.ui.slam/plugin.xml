@@ -419,6 +419,30 @@
                   </with>
                </visibleWhen>
             </command>
+            <command
+                  commandId="org.preesm.ui.slam.command.ArchitectureSimSDPGenerator"
+                  icon="resources/icons/graphiti.gif"
+                  label="Generate custom SimSDP Architecture"
+                  tooltip="Generate a custom SimSDP architecture in this project."
+         style="push">
+               <visibleWhen
+                     checkEnabled="true">
+                  <with
+                        variable="selection">
+                     <iterate
+                           ifEmpty="false"
+                           operator="and">
+                        <adapt
+                              type="org.eclipse.core.resources.IProject">
+                           <test
+                                 property="org.eclipse.core.resources.projectNature"
+                                 value="org.ietr.preesm.core.ui.wizards.nature">
+                           </test>
+                        </adapt>
+                     </iterate>
+                  </with>
+               </visibleWhen>
+            </command>
          </menu>
       </menuContribution>
    </extension>
@@ -439,6 +463,11 @@
             class="org.preesm.ui.slam.popup.actions.ArchitectureGeneratorPopup"
             commandId="org.preesm.ui.slam.command.ArchitectureGenerator">
       </handler>
+            <handler
+            class="org.preesm.ui.slam.popup.actions.ArchitectureSimSDPGeneratorPopup"
+            commandId="org.preesm.ui.slam.command.ArchitectureSimSDPGenerator">
+      </handler>
    </extension>
    
+      
 </plugin>
