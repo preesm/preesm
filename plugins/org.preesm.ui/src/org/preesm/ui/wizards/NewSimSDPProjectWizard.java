@@ -49,16 +49,16 @@ import org.eclipse.ui.wizards.newresource.BasicNewProjectResourceWizard;
 public class NewSimSDPProjectWizard extends BasicNewProjectResourceWizard {
 
   /** Strings displayed in the wizard (titles, names, descriptions...) */
-  private static final String WINDOW_TITLE = "New PREESM Project";
+  private static final String WINDOW_TITLE = "New SimSDP Project";
 
   /** The Constant PAGE_NAME. */
-  private static final String PAGE_NAME = "PREESM Project Wizard";
+  private static final String PAGE_NAME = "SimSDP Project Wizard";
 
   /** The Constant PAGE_TITLE. */
-  private static final String PAGE_TITLE = "PREESM Project";
+  private static final String PAGE_TITLE = "SimSDP Project";
 
   /** The Constant PAGE_DESCRIPTION. */
-  private static final String PAGE_DESCRIPTION = "Create a new PREESM project.";
+  private static final String PAGE_DESCRIPTION = "Create a new SimSDP project.";
 
   /** Pages of the wizard */
   private WizardNewProjectCreationPage firstPage;
