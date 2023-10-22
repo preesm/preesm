@@ -1,16 +1,20 @@
 package org.ietr.workflow.hypervisor;
 
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.Path;
+import org.eclipse.xtend2.lib.StringConcatenation;
 import org.preesm.commons.doc.annotations.Parameter;
 import org.preesm.commons.doc.annotations.PreesmTask;
 import org.preesm.commons.doc.annotations.Value;
 import org.preesm.commons.exceptions.PreesmRuntimeException;
+import org.preesm.commons.files.PreesmIOHelper;
 import org.preesm.workflow.WorkflowManager;
 import org.preesm.workflow.elements.Workflow;
 import org.preesm.workflow.implement.AbstractTaskImplementation;
@@ -22,7 +26,7 @@ import org.preesm.workflow.implement.AbstractTaskImplementation;
  * reached beforehand.
  *
  * @see conference paper: "SimSDP: Dataflow Application Distribution on Heterogeneous Multi-Node Multi-Core
- *      Architectures, published at xx 2024
+ *      Architectures, published at TACO 2024
  *
  * @author orenaud
  *
@@ -48,6 +52,12 @@ public class HypervisorTask extends AbstractTaskImplementation {
   public static final String ROUND_DEFAULT     = "1";
   public static final String ROUND_PARAM       = "Round";
   public static final String SIM_PARAM         = "SimGrid";
+  public static final String DSE_NAME          = "dse_trend.csv";
+  public static final String DSE_PART_NAME     = "dse_part_trend.csv";
+  List<Long>                 itationTime       = new ArrayList<>();
+  List<Long>                 nodePartTime      = new ArrayList<>();
+  List<Long>                 threadPartTime    = new ArrayList<>();
+  List<Long>                 simuTime          = new ArrayList<>();
 
   @Override
   public Map<String, Object> execute(Map<String, Object> inputs, Map<String, String> parameters,
@@ -60,13 +70,20 @@ public class HypervisorTask extends AbstractTaskImplementation {
     final boolean simgrid = Boolean.getBoolean(parameters.get(HypervisorTask.SIM_PARAM));
     final String project = "/" + workflow.getProjectName();
     // clean project
+    deleteFile(project + "/Scenarios/generated/dse_trend.csv");
+    deleteFile(project + "/Scenarios/generated/speedup_trend.csv");
+    deleteFile(project + "/Scenarios/generated/occupation_trend.csv");
     deleteFile(project + "/Scenarios/generated/workload_trend.csv");
     deleteFile(project + "/Scenarios/generated/latency_trend.csv");
     deleteFile(project + "/Scenarios/generated/workload.csv");
+    // Initialisation
     int countRound = 0;
     boolean boundary = false;
     final int nSubGraphs = 3;
+
+    // final long startTime = System.currentTimeMillis();
     while (!boundary) {
+      final long startTime = System.currentTimeMillis();
       // delete CSV top timing in order to generate new ones
       deleteFile(project + "/Scenarios/generated/top_tim.csv");
       // suppress generated
@@ -80,7 +97,8 @@ public class HypervisorTask extends AbstractTaskImplementation {
 
       final WorkflowManager workflowManager = new WorkflowManager();
       workflowManager.execute(workflowPath, scenarioPath, monitor);
-
+      nodePartTime.add(System.currentTimeMillis() - startTime);
+      long reset = System.currentTimeMillis();
       // Launch thread partitioning
 
       for (int i = 0; i < nSubGraphs; i++) {
@@ -93,7 +111,8 @@ public class HypervisorTask extends AbstractTaskImplementation {
         }
 
       }
-
+      threadPartTime.add(reset - startTime);
+      reset = System.currentTimeMillis();
       // Launch node simulator
       if (simgrid) {
         workflowPath = project + "/Workflows/NodeSimulatorV2.workflow";
@@ -102,6 +121,7 @@ public class HypervisorTask extends AbstractTaskImplementation {
       }
       scenarioPath = project + "/Scenarios/generated/top_top.scenario";
       workflowManager.execute(workflowPath, scenarioPath, monitor);
+      simuTime.add(reset - startTime);
 
       // delete CSV top timing in oredr to generate new ones
 
@@ -110,8 +130,27 @@ public class HypervisorTask extends AbstractTaskImplementation {
       if (countRound >= targetRound) {
         boundary = true;
       }
+      itationTime.add(System.currentTimeMillis() - startTime);
     }
+    exportDSE(project + "/Scenarios/generated/");
     return new LinkedHashMap<>();
+  }
+
+  private void exportDSE(String path) {
+    StringConcatenation content = new StringConcatenation();
+    // print dse
+    for (final long data : itationTime) {
+      content.append(data + "\n");
+    }
+    PreesmIOHelper.getInstance().print(path, DSE_NAME, content);
+    // print part dse
+    content = new StringConcatenation();
+    for (int i = 0; i < itationTime.size(); i++) {
+      content.append(nodePartTime.get(i) + ";");
+      content.append(threadPartTime.get(i) + ";");
+      content.append(simuTime.get(i) + ";\n");
+    }
+    PreesmIOHelper.getInstance().print(path, DSE_PART_NAME, content);
   }
 
   private void deleteFile(String path) {

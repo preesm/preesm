@@ -76,8 +76,9 @@ import org.preesm.workflow.implement.AbstractTaskImplementation;
     seeAlso = { "**Speedup assessment chart**: Maxime Pelcat. Prototypage Rapide et Génération de Code pour DSP Multi-"
         + "Coeurs Appliqués à la Couche Physique des Stations de Base 3GPP LTE. PhD thesis, INSA de Rennes, 2010." })
 public class StatEditorAbcTask extends AbstractTaskImplementation {
-  public static final String FILE_NAME = "occupation_trend.csv";
-  static String              path      = "";
+  public static final String OCCUPATION_NAME = "occupation_trend.csv";
+  public static final String SPEEDUP_NAME    = "speedup_trend.csv";
+  static String              path            = "";
 
   @Override
   public Map<String, Object> execute(final Map<String, Object> inputs, final Map<String, String> parameters,
@@ -122,7 +123,7 @@ public class StatEditorAbcTask extends AbstractTaskImplementation {
       maxSpeedup = absoluteBestSpeedup;
     }
     final String data = currentSpeedup + ";" + maxSpeedup;
-    csvTrend(data, abc, FILE_NAME);
+    csvTrend(data, abc, OCCUPATION_NAME);
   }
 
   private void nodeOccupationExport(LatencyAbc abc) {
@@ -138,24 +139,26 @@ public class StatEditorAbcTask extends AbstractTaskImplementation {
 
     PreesmLogger.getLogger().log(Level.INFO, "Node occupation ==> " + occupy);
 
-    csvTrend(occupy.toString(), abc, FILE_NAME);
+    csvTrend(occupy.toString(), abc, SPEEDUP_NAME);
   }
 
   private void csvTrend(String data, LatencyAbc abc, String fileName) {
-    final StringConcatenation content = new StringConcatenation();
-    final IFile iFile = ResourcesPlugin.getWorkspace().getRoot().getFile(new Path(path + fileName));
-    final int nodeID = Integer.getInteger(abc.getArchitecture().getVlnv().getName().replace("Node", ""));
-    if (iFile.isAccessible()) {
-      content.append(PreesmIOHelper.getInstance().read(path, fileName));
-      if (nodeID == 0) {
-        content.append("\n" + data);
+    if (!abc.getArchitecture().getVlnv().getName().equals("top")) {
+      final StringConcatenation content = new StringConcatenation();
+      final IFile iFile = ResourcesPlugin.getWorkspace().getRoot().getFile(new Path(path + fileName));
+      final int nodeID = Integer.decode(abc.getArchitecture().getVlnv().getName().replace("Node", ""));
+      if (iFile.isAccessible()) {
+        content.append(PreesmIOHelper.getInstance().read(path, fileName));
+        if (nodeID == 0) {
+          content.append("\n" + data);
+        } else {
+          content.append(";" + data);
+        }
       } else {
-        content.append(";" + data);
+        content.append(data);
       }
-    } else {
-      content.append(data);
+      PreesmIOHelper.getInstance().print(path, fileName, content);
     }
-    PreesmIOHelper.getInstance().print(path, fileName, content);
   }
 
   @Override
