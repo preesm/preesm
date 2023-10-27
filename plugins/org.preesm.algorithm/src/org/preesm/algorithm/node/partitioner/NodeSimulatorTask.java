@@ -37,7 +37,7 @@ public class NodeSimulatorTask extends AbstractTaskImplementation {
 
   @Override
   public Map<String, Object> execute(Map<String, Object> inputs, Map<String, String> parameters,
-      IProgressMonitor monitor, String nodeName, Workflow workflow) {
+      IProgressMonitor monitor, String nodeName, Workflow workflow) throws InterruptedException {
     final String simpath = parameters.get(NodeSimulatorTask.PARAM_SIMPATH);
     final String folderpath = parameters.get(NodeSimulatorTask.PARAM_FOLDERPATH);
 
@@ -71,8 +71,10 @@ public class NodeSimulatorTask extends AbstractTaskImplementation {
       // Print the exit code (0 usually means success)
       PreesmLogger.getLogger().log(Level.INFO, () -> "Command exited with code: " + exitCode);
       scanner.close();
-    } catch (IOException | InterruptedException e) {
+    } catch (final IOException e) {
       throw new PreesmRuntimeException(e);
+      // } catch (InterruptedException a) {
+      // throw new PreesmRuntimeException(a);
     }
     return new LinkedHashMap<>();
   }

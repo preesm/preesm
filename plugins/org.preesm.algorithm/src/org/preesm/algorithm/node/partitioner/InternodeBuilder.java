@@ -38,7 +38,6 @@ import org.preesm.model.pisdf.brv.BRVMethod;
 import org.preesm.model.pisdf.brv.PiBRV;
 import org.preesm.model.pisdf.factory.PiMMUserFactory;
 import org.preesm.model.pisdf.serialize.PiWriter;
-import org.preesm.model.scenario.MemoryCopySpeedValue;
 import org.preesm.model.scenario.Scenario;
 import org.preesm.model.scenario.generator.ScenariosGenerator;
 import org.preesm.model.scenario.util.DefaultTypeSizes;
@@ -172,7 +171,8 @@ public class InternodeBuilder {
     final ArchitecturesGenerator a = new ArchitecturesGenerator(iProject);
     final Map<String, Integer> nodeList = new HashMap<>();
     nodeList.put("node", nodeIndex);
-    final Design topArchi = ArchitecturesGenerator.generateArchitecture(nodeList, "top");
+    final Design topArchi = ArchitecturesGenerator.generateArchitecture(nodeList, "top",
+        hierarchicalArchitecture.get(0).getNodeCommunicationRate());
     a.saveArchitecture(topArchi);
     topArchi.setUrl(archiPath + "top.slam");
     // 4. generate scenario
@@ -199,7 +199,6 @@ public class InternodeBuilder {
           }
         }
       }
-      // topScenario.getConstraints().addConstraint(coreId, topGraph);
       topScenario.getSimulationInfo().addSpecialVertexOperator(coreId);
     }
     // Add a average transfer size
@@ -216,11 +215,9 @@ public class InternodeBuilder {
     topScenario.setScenarioURL(scenariiPath + topScenario.getScenarioName() + ".scenario");
     topScenario.getTimings().setExcelFileURL(scenariiPath + "top_tim.csv");
     for (final Component opId : topArchi.getProcessingElements()) {
-      final MemoryCopySpeedValue createMemoryCopySpeedValue = ScenarioUserFactory.createMemoryCopySpeedValue();
-      createMemoryCopySpeedValue.setSetupTime(1L);
-      createMemoryCopySpeedValue.setTimePerUnit(1 / (hierarchicalArchitecture.get(0).getNodeMemcpySpeed() * 10.0));
-      topScenario.getTimings().getMemTimings().put(opId, createMemoryCopySpeedValue);
+      // topScenario.getTimings().getMemTimings().put(opId, scenario.getTimings().getMemTimings().get(0).getValue());
     }
+
     final ScenariosGenerator s = new ScenariosGenerator(iProject);
     final IFolder scenarioDir = iProject.getFolder("Scenarios/generated");
     final Set<Scenario> scenarios = new HashSet<>();

@@ -378,6 +378,7 @@ public class AutoDelaysTask extends AbstractTaskImplementation {
     final int nbCuts = Math.min(bestCuts.size(), maxii);
     for (int index = 0; index < nbCuts; index++) {
       final CutInformation ci = bestCuts.get(index);
+
       PreesmLogger.getLogger()
           .info(() -> "Setting cut from rank " + ci.getRankStr() + " using " + ci.memSize + " bits.");
       // set the graph
@@ -394,7 +395,9 @@ public class AutoDelaysTask extends AbstractTaskImplementation {
       for (int index = 0; index < nbCuts; index++) {
         final CutInformation ci = bestCuts.get(index);
         final Map<FifoAbstraction, Integer> cutMap = new HashMap<>();
+
         ci.edgeCut.forEach(fa -> cutMap.put(fa, 1));
+
         setCut(cutMap, true);
       }
       // call choco
@@ -519,7 +522,9 @@ public class AutoDelaysTask extends AbstractTaskImplementation {
         } else if (delay != null) {
           if (!reset) {
             pipeSize += delay.getExpression().evaluate();
+
             PreesmLogger.getLogger().warning(() -> "Reset fifo delay size and type of: " + f.getId());
+
           } else {
             pipeSize = delay.getExpression().evaluate() - pipeSize;
           }
@@ -655,7 +660,9 @@ public class AutoDelaysTask extends AbstractTaskImplementation {
     if (PreesmLogger.getLogger().isLoggable(Level.FINE)) {
       for (final Entry<Integer, Set<CutInformation>> e : result.entrySet()) {
         final int rank = e.getKey();
+
         PreesmLogger.getLogger().fine(() -> "=====> Rank " + rank);
+
         for (final CutInformation ci : e.getValue()) {
           final Set<FifoAbstraction> fas = ci.edgeCut;
           final StringBuilder sb = new StringBuilder("Cut: \n");
@@ -778,6 +785,7 @@ public class AutoDelaysTask extends AbstractTaskImplementation {
 
     final String strPreSelected = String.join(", ", preSelectedRanks.stream().map(i -> Integer.toString(i)).toList());
     PreesmLogger.getLogger().fine(() -> "Preselected cut ranks: " + strPreSelected);
+
     // select remaining cuts sorted by memory size
     final List<CutInformation> bestCuts = new ArrayList<>();
     for (final int i : preSelectedRanks) {
@@ -853,6 +861,7 @@ public class AutoDelaysTask extends AbstractTaskImplementation {
           }
         }
       }
+
       final String strRemovedClose = String.join(", ", cisToRemove.stream().map(x -> x.getRankStr()).toList());
       PreesmLogger.getLogger().fine(() -> "Removed too close cut ranks: " + strRemovedClose);
 

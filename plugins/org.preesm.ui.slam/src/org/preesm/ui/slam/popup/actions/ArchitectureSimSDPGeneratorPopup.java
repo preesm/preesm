@@ -64,7 +64,7 @@ public class ArchitectureSimSDPGeneratorPopup extends AbstractHandler {
       // If it is a Preesm project, generate default design in Archi/ folder
       if (project.hasNature(PreesmProjectNature.ID)) {
         final String input = DialogUtil.askString("Generate a custom multinode architecture file.",
-            "Enter the number of node.", "", new NbNodesValidator());
+            "Enter the number of node.", "", new NbNodesValidator(project));
         if (input == null || input.isEmpty()) {
           return null;
         }

@@ -121,12 +121,13 @@ public class NodePartitioner {
           type2nb.put(core.getCoreType(), 1);
         }
       }
-      final Design subArchi = ArchitecturesGenerator.generateArchitecture(type2nb, "Node" + node.getID());
+      final Design subArchi = ArchitecturesGenerator.generateArchitecture(type2nb, "Node" + node.getID(),
+          node.getCores().get(0).getCoreCommunicationRate());
 
       subArchi.setUrl(archiPath + "Node" + node.getID() + ".slam");
       archiList.add(subArchi);
       a.saveArchitecture(subArchi);
-      a.generateAndSaveArchitecture(type2nb, "Node" + node.getID());
+      a.generateAndSaveArchitecture(type2nb, "Node" + node.getID(), node.getCores().get(0).getCoreCommunicationRate());
 
     }
   }
@@ -142,11 +143,11 @@ public class NodePartitioner {
       if ((lastIndex == -1) || !element[0].equals(hierarchicalArchitecture.get(lastIndex).getNodeName())) {
         final NodeMapping newNode = MappingFactory.eINSTANCE.createNodeMapping();
         newNode.setNodeName(element[0]);
-        newNode.setNodeMemcpySpeed(Double.valueOf(element[4]));
+        newNode.setNodeCommunicationRate(Double.valueOf(element[4]));
         final CoreMapping newCore = MappingFactory.eINSTANCE.createCoreMapping();
         newCore.setID(Integer.valueOf(element[1]));
         newCore.setCoreFrequency(Double.valueOf(element[2]));
-        newCore.setCoreMemcpySpeed(Double.valueOf(element[3]));
+        newCore.setCoreCommunicationRate(Double.valueOf(element[3]));
         newCore.setID(coreID);
         newNode.getCores().add(newCore);
         hierarchicalArchitecture.add(newNode);
@@ -154,13 +155,12 @@ public class NodePartitioner {
         final CoreMapping newCore = MappingFactory.eINSTANCE.createCoreMapping();
         newCore.setID(Integer.valueOf(element[1]));
         newCore.setCoreFrequency(Double.valueOf(element[2]));
-        newCore.setCoreMemcpySpeed(Double.valueOf(element[3]));
+        newCore.setCoreCommunicationRate(Double.valueOf(element[3]));
         newCore.setID(coreID);
         hierarchicalArchitecture.get(lastIndex).getCores().add(newCore);
       }
       coreID++;
     }
-    // new NodeCompararator(coreID, hierarchicalArchitecture, graph);
 
     return computeEquivalentArchitecture();
   }

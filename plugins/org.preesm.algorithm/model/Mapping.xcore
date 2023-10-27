@@ -86,14 +86,14 @@ class CoreMapping{
 	int ID
 	String coreType
 	Double coreFrequency
-	Double coreMemcpySpeed
+	Double coreCommunicationRate
 	
 }
 
 class NodeMapping{
 	int ID
 	String nodeName
-	Double nodeMemcpySpeed
+	Double nodeCommunicationRate
 	refers CoreMapping[] cores
 	int nbCoreEquivalent
 	

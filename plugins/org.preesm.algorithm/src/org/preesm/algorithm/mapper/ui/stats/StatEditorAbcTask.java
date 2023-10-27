@@ -49,8 +49,9 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.PlatformUI;
-import org.eclipse.xtend2.lib.StringConcatenation;
 import org.preesm.algorithm.mapper.abc.impl.latency.LatencyAbc;
+import org.preesm.algorithm.mapper.gantt.GanttComponent;
+import org.preesm.algorithm.mapper.gantt.GanttTask;
 import org.preesm.commons.doc.annotations.Port;
 import org.preesm.commons.doc.annotations.PreesmTask;
 import org.preesm.commons.files.PreesmIOHelper;
@@ -90,8 +91,10 @@ public class StatEditorAbcTask extends AbstractTaskImplementation {
     final IEditorInput input = new StatEditorInput(new StatGeneratorAbc(abc));
 
     // export
-    nodeOccupationExport(abc);
-    nodeSpeedupExport(abc);
+    if (workflow.getWorkflowName().equals("ThreadPartitioning.workflow")) {
+      nodeOccupationExport(abc);
+      nodeSpeedupExport(abc);
+    }
 
     // Check if the workflow is running in command line mode
     try {
@@ -123,7 +126,8 @@ public class StatEditorAbcTask extends AbstractTaskImplementation {
       maxSpeedup = absoluteBestSpeedup;
     }
     final String data = currentSpeedup + ";" + maxSpeedup;
-    csvTrend(data, abc, OCCUPATION_NAME);
+
+    csvTrend(data, abc, SPEEDUP_NAME);
   }
 
   private void nodeOccupationExport(LatencyAbc abc) {
@@ -133,29 +137,50 @@ public class StatEditorAbcTask extends AbstractTaskImplementation {
     for (final ComponentInstance ci : abc.getArchitecture().getOperatorComponentInstances()) {
       sum += stat.getLoad(ci);
       max = Math.max(stat.getLoad(ci), max);
+
     }
     final Double occupy = (double) (sum)
         / (double) (max * abc.getArchitecture().getOperatorComponentInstances().size());
 
     PreesmLogger.getLogger().log(Level.INFO, "Node occupation ==> " + occupy);
-
-    csvTrend(occupy.toString(), abc, SPEEDUP_NAME);
+    for (final GanttComponent ci : abc.getGanttData().getComponents()) {
+      Long sumCpt = 0L;
+      Long sumCom = 0L;
+      for (final GanttTask a : ci.getTasks()) {
+        if (a.getColor() == null) {
+          sumCpt += a.getDuration();
+        } else {
+          sumCom += a.getDuration();
+        }
+      }
+      PreesmLogger.getLogger().log(Level.INFO, "Computation sum ==> " + sumCpt);
+      PreesmLogger.getLogger().log(Level.INFO, "Communication sum ==> " + sumCom);
+    }
+    csvTrend(occupy.toString(), abc, OCCUPATION_NAME);
   }
 
   private void csvTrend(String data, LatencyAbc abc, String fileName) {
     if (!abc.getArchitecture().getVlnv().getName().equals("top")) {
-      final StringConcatenation content = new StringConcatenation();
+      // final StringConcatenation content = new StringConcatenation();
+      String content = "";
       final IFile iFile = ResourcesPlugin.getWorkspace().getRoot().getFile(new Path(path + fileName));
       final int nodeID = Integer.decode(abc.getArchitecture().getVlnv().getName().replace("Node", ""));
       if (iFile.isAccessible()) {
-        content.append(PreesmIOHelper.getInstance().read(path, fileName));
+        String originalString = PreesmIOHelper.getInstance().read(path, fileName); // Votre chaîne d'origine
+        if (originalString.endsWith("\n")) {
+          originalString = originalString.substring(0, originalString.length() - 1); // Retire le dernier "\n"
+        }
+        // content.append(PreesmIOHelper.getInstance().read(path, fileName));
         if (nodeID == 0) {
-          content.append("\n" + data);
+          content += originalString + "\n" + data;
+          // content.append(PreesmIOHelper.getInstance().read(path, fileName) + "\n" + data);
         } else {
-          content.append(";" + data);
+          content += originalString + ";" + data;
+          // content.append(PreesmIOHelper.getInstance().read(path, fileName) + ";" + data);
         }
       } else {
-        content.append(data);
+        content += data;
+        // content.append(data);
       }
       PreesmIOHelper.getInstance().print(path, fileName, content);
     }

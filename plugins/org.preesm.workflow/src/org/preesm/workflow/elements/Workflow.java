@@ -132,6 +132,10 @@ public class Workflow extends DirectedMultigraph<AbstractWorkflowNode<?>, Workfl
     return this.path.segment(0);
   }
 
+  public String getWorkflowName() {
+    return this.path.segment(2);
+  }
+
   /**
    * Checks for scenario.
    *
