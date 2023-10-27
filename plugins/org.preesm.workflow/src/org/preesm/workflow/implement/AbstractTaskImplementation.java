@@ -91,13 +91,12 @@ public abstract class AbstractTaskImplementation extends AbstractWorkflowNodeImp
         PreesmLogger.logFromProperty(Level.SEVERE, "Workflow.FalseInputEdge", protoInputPortName,
             this.getWorkflowNode().getName(), this.getWorkflowNode().getID());
         return false;
-      } else {
-        final String graphType = graphInputPorts.get(protoInputPortName);
-        if (!protoType.equals(graphType)) {
-          PreesmLogger.logFromProperty(Level.SEVERE, "Workflow.FalseInputType", protoInputPortName,
-              this.getWorkflowNode().getName(), this.getWorkflowNode().getID(), graphType, protoType);
-          return false;
-        }
+      }
+      final String graphType = graphInputPorts.get(protoInputPortName);
+      if (!protoType.equals(graphType)) {
+        PreesmLogger.logFromProperty(Level.SEVERE, "Workflow.FalseInputType", protoInputPortName,
+            this.getWorkflowNode().getName(), this.getWorkflowNode().getID(), graphType, protoType);
+        return false;
       }
     }
 
@@ -135,11 +134,13 @@ public abstract class AbstractTaskImplementation extends AbstractWorkflowNodeImp
    * @param workflow
    *          the workflow that launched the task
    * @return a map associating output objects to their data type in the graph
+   * @throws InterruptedException
+   *           the other
    * @throws PreesmException
    *           the workflow exception
    */
   public abstract Map<String, Object> execute(Map<String, Object> inputs, Map<String, String> parameters,
-      IProgressMonitor monitor, String nodeName, Workflow workflow);
+      IProgressMonitor monitor, String nodeName, Workflow workflow) throws InterruptedException;
 
   /**
    * Returns the task parameters and their default values. These parameters are automatically added in the graph if not

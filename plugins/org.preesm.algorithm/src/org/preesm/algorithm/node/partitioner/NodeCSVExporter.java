@@ -57,11 +57,20 @@ public class NodeCSVExporter {
 
   private static Double sigma(Map<String, Double> wl) {
     Double sum = 0d;
+    // Calculate the sum of values
+    for (final Double value : wl.values()) {
+      sum += value;
+    }
+    // Calculate the mean
     final Double average = sum / wl.size();
+    // Reset the sum for calculating the sum of squares
+    sum = 0d;
+    // Calculate the sum of squares of deviations from the mean
     for (final Double value : wl.values()) {
       sum += Math.pow((value - average), 2);
     }
-    return Math.sqrt((sum / wl.size()));
+    // Calculate the standard deviation
+    return Math.sqrt(sum / wl.size());
   }
 
   private static void previousDeviation(Map<String, Double> ws, Double latency, Double sigma, String path) {

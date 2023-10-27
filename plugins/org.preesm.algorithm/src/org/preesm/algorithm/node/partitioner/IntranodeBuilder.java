@@ -56,7 +56,6 @@ import org.preesm.model.pisdf.factory.PiMMUserFactory;
 import org.preesm.model.pisdf.serialize.PiWriter;
 import org.preesm.model.pisdf.util.LOOPSeeker;
 import org.preesm.model.pisdf.util.PiSDFSubgraphBuilder;
-import org.preesm.model.scenario.MemoryCopySpeedValue;
 import org.preesm.model.scenario.Scenario;
 import org.preesm.model.scenario.generator.ScenariosGenerator;
 import org.preesm.model.scenario.util.DefaultTypeSizes;
@@ -177,11 +176,8 @@ public class IntranodeBuilder {
                 archi.getProcessingElement(opId.getVlnv().getName())));
           }
         }
-        final MemoryCopySpeedValue createMemoryCopySpeedValue = ScenarioUserFactory.createMemoryCopySpeedValue();
-        createMemoryCopySpeedValue.setSetupTime(1L);
-        createMemoryCopySpeedValue.setTimePerUnit(
-            1 / (hierarchicalArchitecture.get(indexL.intValue()).getCores().get(0).getCoreMemcpySpeed() * 10.0));
-        subScenario.getTimings().getMemTimings().put(opId, createMemoryCopySpeedValue);
+
+        // subScenario.getTimings().getMemTimings().put(opId, scenario.getTimings().getMemTimings().get(0).getValue());
       }
 
       // store timing in case

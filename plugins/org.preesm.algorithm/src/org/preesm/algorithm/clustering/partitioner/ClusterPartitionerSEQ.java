@@ -37,11 +37,10 @@ package org.preesm.algorithm.clustering.partitioner;
 
 import java.util.List;
 import java.util.Map;
+import org.preesm.algorithm.pisdf.autodelays.AutoDelaysTask;
 import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.AbstractVertex;
 import org.preesm.model.pisdf.PiGraph;
-import org.preesm.model.pisdf.util.PiSDFSubgraphBuilder;
-import org.preesm.model.pisdf.util.SEQSeeker;
 import org.preesm.model.scenario.Scenario;
 import org.preesm.model.slam.Design;
 
@@ -108,29 +107,12 @@ public class ClusterPartitionerSEQ {
    */
   public PiGraph cluster() {
 
-    // Look for actor groups other than SEQ chains.
-    final List<List<
-        AbstractActor>> graphSEQs = new SEQSeeker(this.graph, this.numberOfPEs, this.brv, nonClusterableList).seek();
-
-    // Subgraph 1st generation
-
-    if (!graphSEQs.isEmpty()) {
-      final List<AbstractActor> seq = graphSEQs.get(0);// cluster one by one
-      final PiGraph subGraph = new PiSDFSubgraphBuilder(this.graph, seq, "seq_" + clusterId).build();
-      int numberOfCut = numberOfPEs - 1;
-      if (subGraph.getExecutableActors().size() < numberOfPEs) {
-        numberOfCut = subGraph.getExecutableActors().size() - 1;
-      }
-      // final PiGraph subGraphCutted = AutoDelaysTask.addDelays(subGraph, archi, scenario, false, false, false,
-      // numberOfPEs, numberOfCut, numberOfCut + 1);// subGraphCutted
-      // graph.replaceActor(subGraph, subGraphCutted);
-      // Add constraints of the cluster in the scenario.
-      // for (final ComponentInstance component : ClusteringHelper.getListOfCommonComponent(seq, this.scenario)) {
-      // this.scenario.getConstraints().addConstraint(component, subGraphCutted);
-      // }
+    if (graph.getDelayIndex() == 0) {
+      final int numberOfCut = numberOfPEs;
+      final int maxCut = numberOfPEs - 1;
+      return AutoDelaysTask.addDelays(graph, archi, scenario, false, false, false, numberOfPEs, numberOfCut, maxCut);
 
     }
     return this.graph;
   }
-
 }

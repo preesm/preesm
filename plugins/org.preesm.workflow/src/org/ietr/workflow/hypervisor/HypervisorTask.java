@@ -71,6 +71,7 @@ public class HypervisorTask extends AbstractTaskImplementation {
     final String project = "/" + workflow.getProjectName();
     // clean project
     deleteFile(project + "/Scenarios/generated/dse_trend.csv");
+    deleteFile(project + "/Scenarios/generated/dse_part_trend.csv");
     deleteFile(project + "/Scenarios/generated/speedup_trend.csv");
     deleteFile(project + "/Scenarios/generated/occupation_trend.csv");
     deleteFile(project + "/Scenarios/generated/workload_trend.csv");

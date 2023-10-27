@@ -1,5 +1,7 @@
 package org.preesm.ui.slam;
 
+import java.util.ArrayList;
+import java.util.List;
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.window.Window;
 import org.eclipse.swt.SWT;
@@ -16,12 +18,14 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 
 public class CustomNodePropertiesDialog extends Dialog {
-  public static final String errorInput = "/!\\ You must enter a strictly positive integer. /!\\";
-  private final int          numNodes;
+  public static final String         errorInput = "/!\\ You must enter a strictly positive integer. /!\\";
+  private final int                  numNodes;
+  private final List<List<CoreInfo>> nodeInfoList;
 
   public CustomNodePropertiesDialog(Shell parentShell, int numNodes) {
     super(parentShell);
     this.numNodes = numNodes;
+    this.nodeInfoList = new ArrayList<>();
   }
 
   @Override
@@ -29,10 +33,10 @@ public class CustomNodePropertiesDialog extends Dialog {
     final Composite container = (Composite) super.createDialogArea(parent);
     final GridLayout layout = new GridLayout(1, false);
     container.setLayout(layout);
-    final Label memcpylabel = new Label(container, SWT.NONE);
-    memcpylabel.setText("Enter the internode memcpy speed");
-    final Text memcpytext = new Text(container, SWT.BORDER);
-    memcpytext.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
+    final Label ratelabel = new Label(container, SWT.NONE);
+    ratelabel.setText("Enter the internode communication rate");
+    final Text rateText = new Text(container, SWT.BORDER);
+    rateText.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
     for (int i = 0; i < numNodes; i++) {
       final int nodeIndex = i;
       final Label label = new Label(container, SWT.BOLD);
@@ -41,10 +45,10 @@ public class CustomNodePropertiesDialog extends Dialog {
       sublabel.setText("Enter the number of cores of node " + i);
       final Text text = new Text(container, SWT.BORDER);
       text.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
-      final Label subsublabel = new Label(container, SWT.NONE);
-      subsublabel.setText("Enter the intranode memcpy speed on node " + i);
-      final Text subtext = new Text(container, SWT.BORDER);
-      subtext.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
+      // final Label subsublabel = new Label(container, SWT.NONE);
+      // subsublabel.setText("Enter the intranode communication rate on node " + i);
+      // final Text rateText = new Text(container, SWT.BORDER);
+      // rateText.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
       final Button button = new Button(container, SWT.PUSH);
       button.setBackground(Display.getCurrent().getSystemColor(SWT.COLOR_DARK_GREEN));
       button.setForeground(Display.getCurrent().getSystemColor(SWT.COLOR_WHITE));
@@ -53,8 +57,9 @@ public class CustomNodePropertiesDialog extends Dialog {
         @Override
         public void widgetSelected(SelectionEvent e) {
           if (true) {
+            final String nodeCommunicationRate = rateText.getText();
             // Composite childrenContainer = container.get
-            configureNode(parent, nodeIndex, Integer.parseInt(text.getText()));
+            configureNode(parent, nodeIndex, Integer.parseInt(text.getText()), nodeCommunicationRate);
           }
         }
 
@@ -73,11 +78,16 @@ public class CustomNodePropertiesDialog extends Dialog {
     }
   }
 
-  private void configureNode(Composite parent, int nodeIndex, int numCores) {
+  private void configureNode(Composite parent, int nodeIndex, int numCores, String nodeCommunicationRate) {
     final CustomCorePropertiesDialog coreDialog = new CustomCorePropertiesDialog(Display.getCurrent().getActiveShell(),
-        nodeIndex, numCores);
+        nodeIndex, nodeCommunicationRate, numCores);
+
     if (coreDialog.open() == Window.OK) {
-      // Traitez les propriétés du cœur configurées par l'utilisateur.
+      nodeInfoList.add(coreDialog.getCoreInfoList());
     }
+  }
+
+  public List<List<CoreInfo>> getNodeInfoList() {
+    return nodeInfoList;
   }
 }

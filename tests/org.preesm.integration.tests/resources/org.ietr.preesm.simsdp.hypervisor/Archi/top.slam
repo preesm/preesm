@@ -7,31 +7,31 @@
     <spirit:version>1</spirit:version>
     <spirit:componentInstances>
         <spirit:componentInstance>
+            <spirit:instanceName>shared_mem</spirit:instanceName>
+            <spirit:hardwareId>0</spirit:hardwareId>
+            <spirit:componentRef spirit:library=""
+                spirit:name="SHARED_MEM" spirit:vendor="" spirit:version=""/>
+            <spirit:configurableElementValues/>
+        </spirit:componentInstance>
+        <spirit:componentInstance>
             <spirit:instanceName>Core0</spirit:instanceName>
             <spirit:hardwareId>0</spirit:hardwareId>
             <spirit:componentRef spirit:library=""
-                spirit:name="x86" spirit:vendor="" spirit:version=""/>
+                spirit:name="node" spirit:vendor="" spirit:version=""/>
             <spirit:configurableElementValues/>
         </spirit:componentInstance>
         <spirit:componentInstance>
             <spirit:instanceName>Core1</spirit:instanceName>
             <spirit:hardwareId>1</spirit:hardwareId>
             <spirit:componentRef spirit:library=""
-                spirit:name="x86" spirit:vendor="" spirit:version=""/>
+                spirit:name="node" spirit:vendor="" spirit:version=""/>
             <spirit:configurableElementValues/>
         </spirit:componentInstance>
         <spirit:componentInstance>
             <spirit:instanceName>Core2</spirit:instanceName>
             <spirit:hardwareId>2</spirit:hardwareId>
             <spirit:componentRef spirit:library=""
-                spirit:name="x86" spirit:vendor="" spirit:version=""/>
-            <spirit:configurableElementValues/>
-        </spirit:componentInstance>
-        <spirit:componentInstance>
-            <spirit:instanceName>shared_mem</spirit:instanceName>
-            <spirit:hardwareId>0</spirit:hardwareId>
-            <spirit:componentRef spirit:library=""
-                spirit:name="SHARED_MEM" spirit:vendor="" spirit:version=""/>
+                spirit:name="node" spirit:vendor="" spirit:version=""/>
             <spirit:configurableElementValues/>
         </spirit:componentInstance>
     </spirit:componentInstances>
@@ -55,12 +55,12 @@
     <spirit:hierConnections/>
     <spirit:vendorExtensions>
         <slam:componentDescriptions>
-            <slam:componentDescription slam:componentRef="x86"
-                slam:componentType="CPU" slam:refinement=""/>
             <slam:componentDescription
                 slam:componentRef="SHARED_MEM"
                 slam:componentType="parallelComNode"
-                slam:refinement="" slam:speed="1.0E9"/>
+                slam:refinement="" slam:speed="9.42"/>
+            <slam:componentDescription slam:componentRef="node"
+                slam:componentType="CPU" slam:refinement=""/>
         </slam:componentDescriptions>
         <slam:linkDescriptions>
             <slam:linkDescription slam:directedLink="undirected"

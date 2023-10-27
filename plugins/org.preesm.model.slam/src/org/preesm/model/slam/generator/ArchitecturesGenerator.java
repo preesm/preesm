@@ -90,8 +90,8 @@ public class ArchitecturesGenerator {
     saveArchitecture(generateArchitecture(nbX86cores));
   }
 
-  public void generateAndSaveArchitecture(Map<String, Integer> cores, String nodeName) {
-    saveArchitecture(generateArchitecture(cores, nodeName));
+  public void generateAndSaveArchitecture(Map<String, Integer> cores, String nodeName, Double communicationRate) {
+    saveArchitecture(generateArchitecture(cores, nodeName, communicationRate));
   }
 
   /**
@@ -170,7 +170,7 @@ public class ArchitecturesGenerator {
     return design;
   }
 
-  public static Design generateArchitecture(Map<String, Integer> coresList, String nodeName) {
+  public static Design generateArchitecture(Map<String, Integer> coresList, String nodeName, Double communicationRate) {
     int i1 = 0;
     final Design design = SlamFactory.eINSTANCE.createDesign();
     final ComponentHolder ch = SlamFactory.eINSTANCE.createComponentHolder();
@@ -184,7 +184,7 @@ public class ArchitecturesGenerator {
 
     final ComNode cn = SlamFactory.eINSTANCE.createComNode();
     cn.setParallel(true);
-    cn.setSpeed(1000000000F); // 1 000 000 000 = 1E9F
+    cn.setSpeed(communicationRate.floatValue()); // 1 000 000 000 = 1E9F
     cn.setVlnv(comNodeVLNV);
     cn.getInterfaces().add(mi);
     ch.getComponents().add(cn);
