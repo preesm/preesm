@@ -56,6 +56,9 @@
             <dftools:variable name="Top" value="false"/>
         </dftools:data>
     </dftools:task>
+    <dftools:task pluginId="org.ietr.preesm.plugin.mapper.plot" taskId="Gantt Display">
+        <dftools:data key="variables"/>
+    </dftools:task>
     <dftools:dataTransfer from="scenario" sourceport="scenario"
         targetport="scenario" to="SCAPE"/>
     <dftools:dataTransfer from="SCAPE" sourceport="PiMM"
@@ -82,4 +85,8 @@
         sourceport="architecture" targetport="architecture" to="PiSDF Scheduling"/>
     <dftools:dataTransfer from="PiSDF Scheduling"
         sourceport="ABC" targetport="ABC" to="CSV exporter"/>
+    <dftools:dataTransfer from="PiSDF Scheduling"
+        sourceport="ABC" targetport="ABC" to="Gantt Display"/>
+    <dftools:dataTransfer from="SCAPE" sourceport="scenario"
+        targetport="scenario" to="Gantt Display"/>
 </dftools:workflow>
