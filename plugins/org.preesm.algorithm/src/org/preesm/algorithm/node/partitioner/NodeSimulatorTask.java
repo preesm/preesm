@@ -1,6 +1,7 @@
 package org.preesm.algorithm.node.partitioner;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -9,10 +10,12 @@ import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IWorkspaceRoot;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.xtend2.lib.StringConcatenation;
 import org.preesm.commons.doc.annotations.Parameter;
 import org.preesm.commons.doc.annotations.PreesmTask;
 import org.preesm.commons.doc.annotations.Value;
 import org.preesm.commons.exceptions.PreesmRuntimeException;
+import org.preesm.commons.files.PreesmIOHelper;
 import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.workflow.elements.Workflow;
 import org.preesm.workflow.implement.AbstractTaskImplementation;
@@ -34,10 +37,24 @@ public class NodeSimulatorTask extends AbstractTaskImplementation {
   public static final String PARAM_SIMPATH    = "SimGrid Path";
   public static final String PARAM_FOLDERPATH = "Folder Path";
   private Float              Latency          = 0.0f;
+  String                     workloadPath     = "";
+  String                     scriptPath       = "";
 
   @Override
   public Map<String, Object> execute(Map<String, Object> inputs, Map<String, String> parameters,
       IProgressMonitor monitor, String nodeName, Workflow workflow) throws InterruptedException {
+    workloadPath = "/" + workflow.getProjectName() + "/Scenarios/generated/";
+    scriptPath = "/" + workflow.getProjectName() + "/Script/";
+
+    final String osName = System.getProperty("os.name").toLowerCase();
+    if (!(osName.contains("nix") || osName.contains("nux"))) {
+
+      PreesmLogger.getLogger().log(Level.INFO, "Operating system not supported : " + osName);
+      return new LinkedHashMap<>();
+    }
+    generateScript();
+    executeScript();
+
     final String simpath = parameters.get(NodeSimulatorTask.PARAM_SIMPATH);
     final String folderpath = parameters.get(NodeSimulatorTask.PARAM_FOLDERPATH);
 
@@ -45,7 +62,12 @@ public class NodeSimulatorTask extends AbstractTaskImplementation {
     final IProject project = root.getProject(workflow.getProjectName());
     final String projectFullPath = project.getLocationURI().getPath();
     final String command = simpath + " " + projectFullPath + folderpath + " -c";
-    final String workloadPath = "/" + workflow.getProjectName() + "/Scenarios/generated/";
+    launchSimGrid(command);
+
+    return new LinkedHashMap<>();
+  }
+
+  private void launchSimGrid(String command) throws InterruptedException {
     try {
       // Create a process builder for the command
       final ProcessBuilder processBuilder = new ProcessBuilder("/usr/bin/bash", "-c", command);
@@ -73,10 +95,57 @@ public class NodeSimulatorTask extends AbstractTaskImplementation {
       scanner.close();
     } catch (final IOException e) {
       throw new PreesmRuntimeException(e);
-      // } catch (InterruptedException a) {
-      // throw new PreesmRuntimeException(a);
     }
-    return new LinkedHashMap<>();
+  }
+
+  private void executeScript() throws InterruptedException {
+    final String scriptFileName = "install_script.sh";
+
+    try {
+      // Créer un processus pour exécuter le script
+      final ProcessBuilder processBuilder = new ProcessBuilder("/usr/bin/bash", scriptPath + scriptFileName);
+      final Process process = processBuilder.start();
+
+      // Rediriger la sortie standard du processus vers la console
+      final InputStream inputStream = process.getInputStream();
+      int bytesRead;
+      final byte[] buffer = new byte[1024];
+      while ((bytesRead = inputStream.read(buffer)) != -1) {
+        System.out.write(buffer, 0, bytesRead);
+      }
+
+      final int exitCode = process.waitFor();
+      System.out.println("Le script s'est terminé avec le code de sortie : " + exitCode);
+
+    } catch (final IOException e) {
+      throw new PreesmRuntimeException(e);
+    }
+  }
+
+  private void generateScript() {
+    final String scriptFileName = "install_script.sh";
+    final StringConcatenation content = new StringConcatenation();
+    content.append("#!/bin/bash\n"); // Entête du script
+
+    // Commande pour vérifier si un dossier existe, sinon cloner depuis GitHub
+    content.append("if [ ! -d \"simsdp\" ]; then\n");
+    content.append(" git clone https://github.com/adrgougeon/simsdp.git\n");
+    content.append("sudo apt update\n");
+    content.append("sudo apt install -y python3 pip default-jdk cmake git libboost-dev meson pkg-config doxygen\n");
+    content.append("pip install -r requirements.txt\n");
+    content.append("pip install .\n");
+    content.append("fi\n");
+
+    // Cloner le référentiel SimGrid
+    content.append("if [ ! -d \"simgrid\" ]; then\n");
+    content.append(" git clone https://framagit.org/simgrid/simgrid\n");
+    content.append("cd simgrid\n");
+    content.append("cmake -B build .\n");
+    content.append("sudo make install -j$(nproc) -C build\n");
+    content.append("pip install .\n");
+    content.append("sudo ldconfig\n");
+    content.append("fi\n");
+    PreesmIOHelper.getInstance().print(scriptPath, scriptFileName, content);
   }
 
   private Map<String, Double> extractWorkload(String output) {
