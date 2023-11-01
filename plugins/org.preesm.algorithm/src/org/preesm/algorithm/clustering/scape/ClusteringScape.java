@@ -32,7 +32,6 @@ import org.preesm.model.pisdf.Refinement;
 import org.preesm.model.pisdf.brv.BRVMethod;
 import org.preesm.model.pisdf.brv.PiBRV;
 import org.preesm.model.pisdf.factory.PiMMUserFactory;
-import org.preesm.model.pisdf.util.LOOPSeeker;
 import org.preesm.model.scenario.Scenario;
 import org.preesm.model.scenario.ScenarioFactory;
 import org.preesm.model.scenario.util.ScenarioUserFactory;
@@ -72,12 +71,11 @@ public class ClusteringScape {
    */
   private final List<AbstractActor> nonClusterableList;
 
-  int                                    clusterIndex     = -1;   // topological index
-  private int                            clusterId        = 0;    // index cluster created
-  private final Map<Long, List<PiGraph>> hierarchicalLevelOrdered;
-  private Long                           totalLevelNumber = 0L;
-  private Long                           levelBound       = 0L;
-  private Long                           coreEquivalent   = 1L;
+  int                              clusterIndex   = -1;     // topological index
+  private int                      clusterId      = 0;      // index cluster created
+  private Map<Long, List<PiGraph>> hierarchicalLevelOrdered;
+  private Long                     levelBound     = 0L;
+  private Long                     coreEquivalent = 1L;
 
   public ClusteringScape(Scenario scenario, Long stackSize, int mode, int levelNumber,
       List<AbstractActor> nonClusterableList) {
@@ -89,17 +87,17 @@ public class ClusteringScape {
     this.levelNumber = levelNumber;
     this.nonClusterableList = nonClusterableList;
     this.hierarchicalLevelOrdered = new HashMap<>();
-    this.coreEquivalent = new EuclideTransfo(scenario).computeSingleNodeCoreEquivalent();
+    this.coreEquivalent = EuclideTransfo.computeSingleNodeCoreEquivalent(scenario);
   }
 
   public PiGraph execute() {
 
-    final PiGraph euclide = new EuclideTransfo(scenario).execute();
+    final PiGraph euclide = new EuclideTransfo(scenario, mode, levelNumber).execute();
     scenario.setAlgorithm(euclide);
     // construct hierarchical structure
-    fillHierarchicalStrcuture();
+    hierarchicalLevelOrdered = HierarchicalRoute.fillHierarchicalStructure(graph);
     // compute cluster-able level ID
-    computeClusterableLevel();
+    levelBound = HierarchicalRoute.computeClusterableLevel(graph, mode, levelNumber, hierarchicalLevelOrdered);
     // Coarse clustering while cluster-able level are not reached
     coarseCluster();
     // Pattern identification
@@ -227,71 +225,12 @@ public class ClusteringScape {
    * Coarsely cluster identified hierarchical level that require it
    */
   private void coarseCluster() {
+    final Long totalLevelNumber = (long) hierarchicalLevelOrdered.size() - 1;
     for (Long i = totalLevelNumber; i > levelBound; i--) {
       for (final PiGraph g : hierarchicalLevelOrdered.get(i)) {
         cluster(g);
       }
     }
-  }
-
-  /**
-   * Compute the hierarchical level to be coarsely clustered and identify hierarchical level to be cleverly clustered
-   */
-  private void computeClusterableLevel() {
-    if (mode == 0 || mode == 1) {
-      levelBound = (long) levelNumber;
-
-    } else {
-      Long count = 0L;
-      // detect the highest delay
-      for (final Fifo fd : graph.getFifosWithDelay()) {
-        // detect loop --> no pipeline and contains hierarchical graph
-        final List<AbstractActor> graphLOOPs = new LOOPSeeker(fd.getContainingPiGraph()).seek();
-        if (!graphLOOPs.isEmpty() && graphLOOPs.stream().anyMatch(PiGraph.class::isInstance)) {
-          // compute high
-          for (Long i = 0L; i < totalLevelNumber; i++) {
-            if (hierarchicalLevelOrdered.get(i).contains(fd.getContainingPiGraph())) {
-              count = Math.max(count, i);
-            }
-          }
-        }
-      }
-      levelBound = count;
-    }
-
-  }
-
-  /**
-   * Order the hierarchical subgraph in order to compute cluster in the bottom up way
-   */
-  private void fillHierarchicalStrcuture() {
-
-    for (final PiGraph g : graph.getAllChildrenGraphs()) {
-      Long count = 0L;
-      PiGraph tempg = g;
-      while (tempg.getContainingPiGraph() != null) {
-        tempg = tempg.getContainingPiGraph();
-        count++;
-      }
-      final List<PiGraph> list = new ArrayList<>();
-      list.add(g);
-      if (hierarchicalLevelOrdered.get(count) == null) {
-        hierarchicalLevelOrdered.put(count, list);
-      } else {
-        hierarchicalLevelOrdered.get(count).add(g);
-      }
-      if (count > totalLevelNumber) {
-        totalLevelNumber = count;
-      }
-
-    }
-    if (graph.getAllChildrenGraphs().isEmpty()) {
-      final List<PiGraph> list = new ArrayList<>();
-      list.add(graph);
-      hierarchicalLevelOrdered.put(0L, list);
-      totalLevelNumber = 0L;
-    }
-
   }
 
   /**

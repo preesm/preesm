@@ -1,6 +1,5 @@
 package org.preesm.algorithm.clustering.scape;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -10,18 +9,18 @@ import org.preesm.model.pisdf.Actor;
 import org.preesm.model.pisdf.ConfigInputPort;
 import org.preesm.model.pisdf.DataInputPort;
 import org.preesm.model.pisdf.DataOutputPort;
+import org.preesm.model.pisdf.Delay;
 import org.preesm.model.pisdf.DelayActor;
 import org.preesm.model.pisdf.Fifo;
 import org.preesm.model.pisdf.ForkActor;
 import org.preesm.model.pisdf.JoinActor;
+import org.preesm.model.pisdf.PersistenceLevel;
 import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.pisdf.brv.BRVMethod;
 import org.preesm.model.pisdf.brv.PiBRV;
 import org.preesm.model.pisdf.check.CheckerErrorLevel;
 import org.preesm.model.pisdf.check.PiGraphConsistenceChecker;
 import org.preesm.model.pisdf.factory.PiMMUserFactory;
-import org.preesm.model.pisdf.util.LOOPSeeker;
-import org.preesm.model.pisdf.util.PiSDFSubgraphBuilder;
 import org.preesm.model.scenario.Scenario;
 import org.preesm.model.slam.ComponentInstance;
 import org.preesm.model.slam.Design;
@@ -43,18 +42,19 @@ public class EuclideTransfo {
    * Workflow scenario.
    */
   private final Scenario scenario;
-  /**
-   * Architecture design.
-   */
-  private final Design   archi;
-  /**
-   * Number of Processing elements.
-   */
-  private Long           coreEquivalent = 1L;
 
-  private final Map<Long, List<PiGraph>> hierarchicalLevelOrdered = new HashMap<>();
-  private Long                           totalLevelNumber         = 0L;
-  private Long                           levelBound               = 0L;
+  /**
+   * Number of hierarchical level.
+   */
+  private final int levelNumber;
+  /**
+   * SCAPE mode : 1 (...); 2 (...); 3 (...).
+   */
+  private final int mode;
+
+  private Map<Long, List<PiGraph>> hierarchicalLevelOrdered = new HashMap<>();
+
+  private Long levelBound = 0L;
 
   /**
    * Builds a EuclideTransfo object.
@@ -63,10 +63,11 @@ public class EuclideTransfo {
    *          Workflow scenario.
    *
    */
-  public EuclideTransfo(Scenario scenario) {
+  public EuclideTransfo(Scenario scenario, int mode, int levelNumber) {
     this.graph = scenario.getAlgorithm();
     this.scenario = scenario;
-    this.archi = scenario.getDesign();
+    this.mode = mode;
+    this.levelNumber = levelNumber;
 
   }
 
@@ -74,15 +75,20 @@ public class EuclideTransfo {
    * @return Transformed PiGraph
    */
   public PiGraph execute() {
-    coreEquivalent = computeSingleNodeCoreEquivalent();
+    // check if there is no global or local delay, and there is only single actor loop
+    if (graph.getDelays().stream().anyMatch(x -> x.getLevel() != PersistenceLevel.NONE) && !graph.getDelays().stream()
+        .allMatch(x -> x.getContainingFifo().getSource().equals(x.getContainingFifo().getTarget()))) {
+      return graph;
+    }
+    final Long coreEquivalent = computeSingleNodeCoreEquivalent(scenario);
     // construct hierarchical structure
-    fillHierarchicalStrcuture();
-    // compute Euclide-able level ID
-    // computeDividableLevel();
-    // divide ID happens between bound level that gonna be coarsely clustered and the top level
-    divideIDs();
-    final Map<AbstractVertex, Long> brv = PiBRV.compute(graph, BRVMethod.LCM);
+    hierarchicalLevelOrdered = HierarchicalRoute.fillHierarchicalStructure(graph);
+    levelBound = (long) (hierarchicalLevelOrdered.size() - 1);
 
+    // compute Euclide-able level ID
+    divideIDs(coreEquivalent);
+    // check consistency
+    final Map<AbstractVertex, Long> brv = PiBRV.compute(graph, BRVMethod.LCM);
     final PiGraphConsistenceChecker pgcc = new PiGraphConsistenceChecker(CheckerErrorLevel.FATAL_ALL,
         CheckerErrorLevel.NONE);
     pgcc.check(graph);
@@ -97,21 +103,23 @@ public class EuclideTransfo {
    * @return The number of equivalent cores (not sure for Long value, may be an int)
    */
 
-  public Long computeSingleNodeCoreEquivalent() {
+  public static Long computeSingleNodeCoreEquivalent(Scenario inputScenario) {
+    final PiGraph inputGraph = inputScenario.getAlgorithm();
+    final Design inputArchi = inputScenario.getDesign();
     Long coreEq = 0L;
     int actorNumber = 0;
-    for (final AbstractActor actor : graph.getOnlyActors()) {
+    for (final AbstractActor actor : inputGraph.getOnlyActors()) {
       // sink and source actor replace interface for SimSDP
       if (actor instanceof Actor && !actor.getName().contains("src_") && !actor.getName().contains("snk_")
           && !(actor instanceof DelayActor)) {
 
         Long sumTiming = 0L;
-        Long slow = Long.valueOf(scenario.getTimings().getExecutionTimeOrDefault(actor,
-            archi.getOperatorComponentInstances().get(0).getComponent()));
-        for (final ComponentInstance opId : archi.getOperatorComponentInstances()) {
-          sumTiming += Long.valueOf(scenario.getTimings().getExecutionTimeOrDefault(actor, opId.getComponent()));
+        Long slow = Long.valueOf(inputScenario.getTimings().getExecutionTimeOrDefault(actor,
+            inputArchi.getOperatorComponentInstances().get(0).getComponent()));
+        for (final ComponentInstance opId : inputArchi.getOperatorComponentInstances()) {
+          sumTiming += Long.valueOf(inputScenario.getTimings().getExecutionTimeOrDefault(actor, opId.getComponent()));
           final Long timeSeek = Long
-              .valueOf(scenario.getTimings().getExecutionTimeOrDefault(actor, opId.getComponent()));
+              .valueOf(inputScenario.getTimings().getExecutionTimeOrDefault(actor, opId.getComponent()));
           if (timeSeek < slow) {
             slow = timeSeek;
           }
@@ -123,25 +131,26 @@ public class EuclideTransfo {
     if (actorNumber > 0) {
       coreEq /= actorNumber;
     } else {
-      coreEq = (long) archi.getOperatorComponentInstances().size();
+      coreEq = (long) inputArchi.getOperatorComponentInstances().size();
     }
     return coreEq;
   }
 
   /**
-   * Identify potential candidates, i.e. players with a degree of parallelism not divisible by the number of equivalent
+   * Identify potential candidates, i.e. actors with a degree of parallelism not divisible by the number of equivalent
    * cores in the target.
    *
+   * @param coreEquivalent
+   *
    */
-  private void divideIDs() {
+  private void divideIDs(Long coreEquivalent) {
     for (Long i = levelBound; i >= 0L; i--) {
       for (final PiGraph g : hierarchicalLevelOrdered.get(i)) {
         final Map<AbstractVertex, Long> rv = PiBRV.compute(g, BRVMethod.LCM);
         for (final AbstractActor a : g.getOnlyActors()) {
-          // rv = PiBRV.compute(g, BRVMethod.LCM);
           // maybe not for Special Actor
           if (rv.get(a) % coreEquivalent > 0 && rv.get(a) > coreEquivalent) {
-            euclide(a, rv);
+            euclide(a, rv, coreEquivalent);
           }
         }
       }
@@ -156,16 +165,18 @@ public class EuclideTransfo {
    *          The identified actor
    * @param rv
    *          The genuine repetition vector
+   * @param coreEquivalent
+   *          number of equivalent cores
    */
 
-  private void euclide(AbstractActor a, Map<AbstractVertex, Long> rv) {
+  private void euclide(AbstractActor a, Map<AbstractVertex, Long> rv, Long coreEquivalent) {
     //
     final Long rv2 = rv.get(a) % coreEquivalent; // rest
     final Long rv1 = rv.get(a) - rv2;// quotient * divisor
     // copy instance
-    final AbstractActor copy = PiMMUserFactory.instance.copy(a);
-    copy.setName(a.getName() + "2");
-    copy.setContainingGraph(a.getContainingGraph());
+    final AbstractActor copyActor = PiMMUserFactory.instance.copy(a);
+    copyActor.setName(a.getName() + "2");
+    copyActor.setContainingGraph(a.getContainingGraph());
     int index = 0;
     for (final DataInputPort in : a.getDataInputPorts()) {
       if (!in.getFifo().isHasADelay()) {
@@ -178,7 +189,6 @@ public class EuclideTransfo {
         din.setName("in");
         //
         final Long dt = in.getExpression().evaluate() * rv.get(a);
-        // final Long dt = in.getFifo().getSourcePort().getExpression().evaluate() * rv.get(in.getFifo().getSource());
         final Long rt1 = in.getExpression().evaluate() * rv1;
         final Long rt2 = in.getExpression().evaluate() * rv2;
         din.setExpression(dt);
@@ -211,10 +221,45 @@ public class EuclideTransfo {
         foutn.setType(fin.getType());
         foutn.setSourcePort(doutn);
         foutn.setContainingGraph(a.getContainingGraph());
-        copy.getDataInputPorts().stream().filter(x -> x.getName().equals(in.getName()))
+        copyActor.getDataInputPorts().stream().filter(x -> x.getName().equals(in.getName()))
             .forEach(x -> x.setIncomingFifo(foutn));
 
         index++;
+      } else {
+        // copy delay
+        final Fifo fdin = PiMMUserFactory.instance.createFifo();
+        final String type = in.getFifo().getType();
+        fdin.setType(type);
+        fdin.setContainingGraph(a.getContainingGraph());
+        final Delay copyDelay = PiMMUserFactory.instance.copy(in.getFifo().getDelay());
+        copyDelay.setName(in.getFifo().getDelay().getName() + "2");
+        copyDelay.setContainingGraph(a.getContainingGraph());
+        final DelayActor copyDelayActor = PiMMUserFactory.instance.copy(in.getFifo().getDelay().getActor());
+        copyDelayActor.setName(in.getFifo().getDelay().getActor().getName() + "2");
+        copyDelayActor.setContainingGraph(a.getContainingGraph());
+        copyDelay.setActor(copyDelayActor);
+        fdin.assignDelay(copyDelay);
+        // the getter of the initial delay is moved to get the delay of the copied actor
+        final DataInputPort getterPort = in.getFifo().getDelay().getActor().getDataOutputPort().getFifo()
+            .getTargetPort();
+        // the setter of the copied delay is the output of the initial delay
+        final Fifo fDelayActorIn = PiMMUserFactory.instance.createFifo();
+        fDelayActorIn.setType(type);
+        fDelayActorIn.setContainingGraph(a.getContainingGraph());
+        fDelayActorIn.setSourcePort(in.getFifo().getDelay().getActor().getDataOutputPort());
+        fDelayActorIn.setTargetPort(copyDelayActor.getDataInputPort());
+        final Fifo fDelayActorOut = PiMMUserFactory.instance.createFifo();
+        fDelayActorOut.setType(type);
+        fDelayActorOut.setContainingGraph(a.getContainingGraph());
+        fDelayActorOut.setTargetPort(getterPort);
+        fDelayActorOut.setSourcePort(copyDelayActor.getDataOutputPort());
+
+        // connect delay to actor
+        copyActor.getDataInputPorts().stream().filter(x -> x.getName().equals(in.getName()))
+            .forEach(x -> x.setIncomingFifo(fdin));
+        copyActor.getDataOutputPorts().stream().filter(x -> x.getName().equals(in.getFifo().getSourcePort().getName()))
+            .forEach(x -> x.setOutgoingFifo(fdin));
+
       }
     }
     index = 0;
@@ -229,7 +274,6 @@ public class EuclideTransfo {
 
         dout.setName("out");
         final Long dt = out.getExpression().evaluate() * rv.get(a);
-        // final Long dt = out.getFifo().getTargetPort().getExpression().evaluate() * rv.get(out.getFifo().getTarget());
         final Long rt1 = out.getExpression().evaluate() * rv1;
         final Long rt2 = out.getExpression().evaluate() * rv2;
         dout.setExpression(dt);
@@ -260,32 +304,21 @@ public class EuclideTransfo {
         finn.setType(fout.getType());
         finn.setTargetPort(dinn);
         finn.setContainingGraph(a.getContainingGraph());
-        copy.getDataOutputPorts().stream().filter(x -> x.getName().equals(out.getName()))
+        copyActor.getDataOutputPorts().stream().filter(x -> x.getName().equals(out.getName()))
             .forEach(x -> x.setOutgoingFifo(finn));
 
         index++;
-      } else {
-
-        // connect oEmpty delayed output to 1st duplicated actor
-        final Fifo fdin = PiMMUserFactory.instance.createFifo();
-        fdin.setSourcePort(out);
-        copy.getDataInputPorts().stream().filter(x -> x.getFifo() == null).forEach(x -> x.setIncomingFifo(fdin));
-        fdin.setContainingGraph(a.getContainingGraph());
-
       }
     }
     for (final ConfigInputPort cfg : a.getConfigInputPorts()) {
-      copy.getConfigInputPorts().stream().filter(x -> x.getName().equals(cfg.getName()))
+      copyActor.getConfigInputPorts().stream().filter(x -> x.getName().equals(cfg.getName()))
           .forEach(x -> PiMMUserFactory.instance.createDependency(cfg.getIncomingDependency().getSetter(), x));
-      copy.getConfigInputPorts().stream().filter(x -> x.getName().equals(cfg.getName()))
+      copyActor.getConfigInputPorts().stream().filter(x -> x.getName().equals(cfg.getName()))
           .forEach(x -> x.getIncomingDependency().setContainingGraph(cfg.getIncomingDependency().getContainingGraph()));
 
     }
 
-    // remove delay
-    ((PiGraph) a.getContainingGraph()).getDelays().stream().filter(x -> x.getContainingFifo().getSourcePort() == null)
-        .forEach(x -> ((PiGraph) a.getContainingGraph()).removeDelay(x));
-    // remove empty fifo
+    // remove empty introduced fifo
     ((PiGraph) a.getContainingGraph()).getFifos().stream().filter(x -> x.getSourcePort() == null)
         .forEach(x -> ((PiGraph) a.getContainingGraph()).removeFifo(x));
     ((PiGraph) a.getContainingGraph()).getFifos().stream().filter(x -> x.getTargetPort() == null)
@@ -293,69 +326,4 @@ public class EuclideTransfo {
 
   }
 
-  /**
-   * depending on the highest loop and the further clustering, dividing is relevant only if cluster tend to be adapt to
-   * the target
-   */
-  private void computeDividableLevel() {
-    Long count = 0L;
-    final Long gcd = 1L;
-    final List<List<AbstractActor>> list = new ArrayList<>();
-    // detect the highest delay
-    for (final Fifo fd : graph.getFifosWithDelay()) {
-      // detect loop
-      final List<AbstractActor> graphLOOPs = new LOOPSeeker(fd.getContainingPiGraph()).seek();
-      list.add(graphLOOPs);
-      // detect
-      if (graphLOOPs != null) {
-        final PiGraph g = fd.getContainingPiGraph();
-        for (Long i = 0L; i < totalLevelNumber; i++) {
-          if (hierarchicalLevelOrdered.get(i).contains(g)) {
-            count = Math.max(count, i);
-          }
-        }
-      }
-    }
-    if (gcd >= this.coreEquivalent) {
-      levelBound = count;
-    } else {
-      for (final List<AbstractActor> l : list) {
-        new PiSDFSubgraphBuilder(graph, l, "sub_" + l.get(0).getContainingPiGraph().getName()).build();
-
-      }
-    }
-  }
-
-  /**
-   * Order the hierarchical subgraph in order to compute cluster in the bottom up way
-   */
-  private void fillHierarchicalStrcuture() {
-
-    for (final PiGraph g : graph.getAllChildrenGraphs()) {
-      Long count = 0L;
-      PiGraph tempg = g;
-      while (tempg.getContainingPiGraph() != null) {
-        tempg = tempg.getContainingPiGraph();
-        count++;
-      }
-      final List<PiGraph> list = new ArrayList<>();
-      list.add(g);
-      if (hierarchicalLevelOrdered.get(count) == null) {
-        hierarchicalLevelOrdered.put(count, list);
-      } else {
-        hierarchicalLevelOrdered.get(count).add(g);
-      }
-      if (count > totalLevelNumber) {
-        totalLevelNumber = count;
-      }
-
-    }
-    if (graph.getAllChildrenGraphs().isEmpty()) {
-      final List<PiGraph> list = new ArrayList<>();
-      list.add(graph);
-      hierarchicalLevelOrdered.put(0L, list);
-      totalLevelNumber = 0L;
-    }
-
-  }
 }

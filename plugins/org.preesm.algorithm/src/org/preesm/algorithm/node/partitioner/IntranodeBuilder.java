@@ -178,6 +178,10 @@ public class IntranodeBuilder {
         }
 
         // subScenario.getTimings().getMemTimings().put(opId, scenario.getTimings().getMemTimings().get(0).getValue());
+        // final MemoryCopySpeedValue createMemoryCopySpeedValue = ScenarioUserFactory.createMemoryCopySpeedValue();
+        // createMemoryCopySpeedValue.setSetupTime(1L);
+        // createMemoryCopySpeedValue.setTimePerUnit(1. / 10);
+        // subScenario.getTimings().getMemTimings().put(opId, createMemoryCopySpeedValue);
       }
 
       // store timing in case

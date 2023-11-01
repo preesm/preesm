@@ -5,7 +5,7 @@
     </flags>
     <files>
         <algorithm url="/org.ietr.preesm.scape/Algo/ABC.pi"/>
-        <architecture url="/org.ietr.preesm.scape/Archi/3CoresX86.slam"/>
+        <architecture url="/org.ietr.preesm.scape/Archi/5CoresX86.slam"/>
         <codegenDirectory url="/org.ietr.preesm.scape/Code/generated/"/>
     </files>
     <constraints excelUrl="">
@@ -31,6 +31,26 @@
         </constraintGroup>
         <constraintGroup>
             <operator name="Core2"/>
+            <task name="ABC/A"/>
+            <task name="ABC/B"/>
+            <task name="ABC/C"/>
+            <task name="ABC/D"/>
+            <task name="ABC/E"/>
+            <task name="ABC/set"/>
+            <task name="ABC/get"/>
+        </constraintGroup>
+        <constraintGroup>
+            <operator name="Core3"/>
+            <task name="ABC/A"/>
+            <task name="ABC/B"/>
+            <task name="ABC/C"/>
+            <task name="ABC/D"/>
+            <task name="ABC/E"/>
+            <task name="ABC/set"/>
+            <task name="ABC/get"/>
+        </constraintGroup>
+        <constraintGroup>
+            <operator name="Core4"/>
             <task name="ABC/A"/>
             <task name="ABC/B"/>
             <task name="ABC/C"/>
@@ -69,6 +89,8 @@
             <specialVertexOperator path="Core0"/>
             <specialVertexOperator path="Core1"/>
             <specialVertexOperator path="Core2"/>
+            <specialVertexOperator path="Core3"/>
+            <specialVertexOperator path="Core4"/>
         </specialVertexOperators>
     </simuParams>
     <parameterValues/>
