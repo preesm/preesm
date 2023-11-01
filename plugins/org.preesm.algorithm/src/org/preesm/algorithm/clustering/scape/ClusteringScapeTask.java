@@ -54,10 +54,6 @@ import org.preesm.workflow.implement.AbstractTaskImplementation;
                 + " 2 = set of clustering config + fit data & pip parallelism, 3 = best clustering config ",
             values = { @Value(name = "Fixed:=n", effect = "switch of clustering algorithm") }),
 
-        @Parameter(name = "Optimized Cluster",
-            description = "compute the best cluster number at : false = level, true = APGAN(level)",
-            values = { @Value(name = "true/false", effect = "switch of cluster level") }),
-
         @Parameter(name = "Non-cluster actor", description = "does not allow to group the actors entered in parameter",
             values = { @Value(name = "String", effect = "disable cluster") }), })
 public class ClusteringScapeTask extends AbstractTaskImplementation {
@@ -146,11 +142,10 @@ public class ClusteringScapeTask extends AbstractTaskImplementation {
     // stack default
     parameters.put(ClusteringScapeTask.STACK_PARAM, ClusteringScapeTask.STACK_SIZE_DEFAULT);
 
-    // core default
     parameters.put(ClusteringScapeTask.LEVEL_PARAM, ClusteringScapeTask.LEVEL_NUMBER_DEFAULT);
-    // mode default
+
     parameters.put(ClusteringScapeTask.CLUSTERING_PARAM, ClusteringScapeTask.CLUSTERING_MODE_DEFAULT);
-    // non cluster default
+
     parameters.put(ClusteringScapeTask.NON_CLUSTER_PARAM, ClusteringScapeTask.NON_CLUSTER_DEFAULT);
 
     return parameters;

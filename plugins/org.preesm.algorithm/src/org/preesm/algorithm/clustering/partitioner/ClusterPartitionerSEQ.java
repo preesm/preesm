@@ -43,6 +43,7 @@ import org.preesm.model.pisdf.AbstractVertex;
 import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.scenario.Scenario;
 import org.preesm.model.slam.Design;
+import org.preesm.model.slam.check.SlamDesignPEtypeChecker;
 
 /**
  * This class provide an algorithm to cluster a PiSDF graph and balance actor firings of clustered actor between coarse
@@ -107,7 +108,7 @@ public class ClusterPartitionerSEQ {
    */
   public PiGraph cluster() {
 
-    if (graph.getDelayIndex() == 0) {
+    if (graph.getDelayIndex() == 0 && SlamDesignPEtypeChecker.isHomogeneousCPU(scenario.getDesign())) {
       final int numberOfCut = numberOfPEs;
       final int maxCut = numberOfPEs - 1;
       return AutoDelaysTask.addDelays(graph, archi, scenario, false, false, false, numberOfPEs, numberOfCut, maxCut);

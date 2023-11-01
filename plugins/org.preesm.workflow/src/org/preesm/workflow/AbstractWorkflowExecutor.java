@@ -338,6 +338,7 @@ public abstract class AbstractWorkflowExecutor {
             getLogger().log(Level.SEVERE, "Unexpected Exception: " + e.getClass().getCanonicalName() + ":"
                 + e.getMessage() + "\n Contact Preesm developers if you cannot solve the problem.", e);
             nodeResult = false;
+            throw e;
           }
         }
       } else if (node.isTaskNode()) {

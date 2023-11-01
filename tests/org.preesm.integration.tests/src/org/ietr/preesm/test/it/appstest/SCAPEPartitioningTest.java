@@ -50,7 +50,8 @@ public class SCAPEPartitioningTest {
 
   private final String[] workflow    = { "euclide.workflow", "urc2.workflow", "srv.workflow", "loop.workflow",
       "seq.workflow", "schedule.workflow" };
-  private final String   scenario    = "ABC_3CoresX86.scenario";
+  private final String[] scenario    = { "ABC_5CoresX86.scenario", "ABC_3CoresX86.scenario", "ABC_3CoresX86.scenario",
+      "ABC_3CoresX86.scenario", "ABC_3CoresX86.scenario", "ABC_3CoresX86.scenario" };
   private final String   projectName = "org.ietr.preesm.scape";
 
   /**
@@ -66,7 +67,7 @@ public class SCAPEPartitioningTest {
 
     for (int i = 0; i < 6; i++) {
       final String workflowFilePathStr = "/Workflows/" + workflow[i];
-      final String scenarioFilePathStr = "/Scenarios/" + scenario;
+      final String scenarioFilePathStr = "/Scenarios/" + scenario[i];
 
       final boolean success = WorkflowRunner.runWorkFlow(null, projectName, workflowFilePathStr, scenarioFilePathStr);
       Assert.assertTrue("Workflow [" + workflow[i] + "] with scenario [" + scenario + "] caused failure", success);
