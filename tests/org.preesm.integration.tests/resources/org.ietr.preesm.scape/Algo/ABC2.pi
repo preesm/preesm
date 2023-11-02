@@ -6,11 +6,7 @@
     <key attr.name="name" attr.type="string" for="graph"/>
     <graph edgedefault="directed">
         <data key="name">ABC2</data>
-        <node id="A" kind="actor">
-            <port annotation="NONE" expr="1" kind="output" name="o"/>
-        </node>
         <node id="B" kind="actor">
-            <port annotation="NONE" expr="1" kind="input" name="i"/>
             <port annotation="NONE" expr="12" kind="output" name="o"/>
         </node>
         <node id="C" kind="actor">
@@ -24,8 +20,6 @@
         <node id="E" kind="actor">
             <port annotation="NONE" expr="3" kind="input" name="i"/>
         </node>
-        <edge kind="fifo" source="A" sourceport="o" target="B"
-            targetport="i" type="char"/>
         <edge kind="fifo" source="B" sourceport="o" target="C"
             targetport="i" type="char"/>
         <edge kind="fifo" source="C" sourceport="o" target="D"
