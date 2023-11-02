@@ -2,12 +2,12 @@ package org.preesm.algorithm.clustering.scape;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.Fifo;
 import org.preesm.model.pisdf.PiGraph;
-import org.preesm.model.pisdf.util.LOOPSeeker;
 
 public class HierarchicalRoute {
 
@@ -56,7 +56,7 @@ public class HierarchicalRoute {
     // detect the highest delay
     for (final Fifo fd : graph.getFifosWithDelay()) {
       // detect loop --> no pipeline and contains hierarchical graph
-      final List<AbstractActor> graphLOOPs = new LOOPSeeker(fd.getContainingPiGraph()).seek();
+      final List<AbstractActor> graphLOOPs = new LinkedList<>();
       if (!graphLOOPs.isEmpty() && graphLOOPs.stream().anyMatch(PiGraph.class::isInstance)) {
         // compute high
         for (Long i = 0L; i < totalLevelNumber; i++) {

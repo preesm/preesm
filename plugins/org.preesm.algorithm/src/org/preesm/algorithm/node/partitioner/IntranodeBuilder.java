@@ -47,6 +47,7 @@ import org.preesm.model.pisdf.FunctionArgument;
 import org.preesm.model.pisdf.FunctionPrototype;
 import org.preesm.model.pisdf.JoinActor;
 import org.preesm.model.pisdf.Parameter;
+import org.preesm.model.pisdf.PersistenceLevel;
 import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.pisdf.Refinement;
 import org.preesm.model.pisdf.SpecialActor;
@@ -54,7 +55,6 @@ import org.preesm.model.pisdf.brv.BRVMethod;
 import org.preesm.model.pisdf.brv.PiBRV;
 import org.preesm.model.pisdf.factory.PiMMUserFactory;
 import org.preesm.model.pisdf.serialize.PiWriter;
-import org.preesm.model.pisdf.util.LOOPSeeker;
 import org.preesm.model.pisdf.util.PiSDFSubgraphBuilder;
 import org.preesm.model.scenario.Scenario;
 import org.preesm.model.scenario.generator.ScenariosGenerator;
@@ -695,14 +695,10 @@ public class IntranodeBuilder {
    * the method can only split data parallelism that are not unrolled by a global cycle.
    */
   private void preprocessCycle() {
-    final List<AbstractActor> graphLOOPs = new LOOPSeeker(scenario.getAlgorithm()).seek();
-    if (graphLOOPs != null) {
-      if (!graphLOOPs.isEmpty()) {
-        PreesmLogger.getLogger().log(Level.INFO, "cycles are not handle yet");
-
-      }
-      // 2. create subs
+    if (graph.getDelays().stream().anyMatch(x -> x.getLevel().equals(PersistenceLevel.PERMANENT))) {
+      PreesmLogger.getLogger().log(Level.INFO, "cycles are not handle yet");
     }
 
   }
+
 }

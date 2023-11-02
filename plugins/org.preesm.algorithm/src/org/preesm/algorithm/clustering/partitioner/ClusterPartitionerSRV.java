@@ -75,7 +75,6 @@ public class ClusterPartitionerSRV {
   private final Map<AbstractVertex, Long> brv;
 
   private final int clusterId;
-  // private final List<AbstractActor> nonClusterableList;
 
   /**
    * Builds a ClusterPartitioner object.
@@ -100,7 +99,6 @@ public class ClusterPartitionerSRV {
     this.numberOfPEs = numberOfPEs;
     this.brv = brv;
     this.clusterId = clusterId;
-    // this.nonClusterableList = nonClusterableList;
   }
 
   /**
@@ -154,13 +152,13 @@ public class ClusterPartitionerSRV {
    *          graph
    */
   private Long computeScalingFactor(PiGraph subGraph) {
-    // final Map<AbstractVertex, Long> brv = PiBRV.compute(subGraph, BRVMethod.LCM);
+
     final Long numbers = brv.get(subGraph.getExecutableActors().get(0));
     Long scale;
     if (subGraph.getDataInputInterfaces().stream().anyMatch(x -> x.getGraphPort().getFifo().isHasADelay())
         && subGraph.getDataOutputInterfaces().stream().anyMatch(x -> x.getGraphPort().getFifo().isHasADelay())) {
       final Long ratio = computeDelayRatio(subGraph);
-      scale = gcd(ratio, numbers);
+      scale = ClusterPartitionerURC.gcd(ratio, numbers);
     } else {
       scale = ncDivisor((long) numberOfPEs, numbers);
     }
@@ -200,12 +198,4 @@ public class ClusterPartitionerSRV {
     return ncDivisor;
   }
 
-  private Long gcd(Long a, Long b) {
-    while (b != 0L) {
-      final Long temp = b;
-      b = a % b;
-      a = temp;
-    }
-    return a;
-  }
 }

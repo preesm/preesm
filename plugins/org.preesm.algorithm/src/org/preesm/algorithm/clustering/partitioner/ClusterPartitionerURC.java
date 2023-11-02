@@ -245,7 +245,7 @@ public class ClusterPartitionerURC {
    * Used to compute the greatest common divisor between 2 values
    *
    */
-  private Long gcd(Long a, Long b) {
+  public static Long gcd(Long a, Long b) {
     while (b != 0L) {
       final Long temp = b;
       b = a % b;

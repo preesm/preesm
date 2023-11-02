@@ -77,13 +77,16 @@ public class ClusterPartitionerLOOPTask extends AbstractTaskImplementation {
 
     final Scenario scenario = (Scenario) inputs.get("scenario");
     final PiGraph inputGraph = scenario.getAlgorithm();
+    // Parameters
+    final String nbPE = parameters.get(NB_PE);
     // Cluster input graph
-
-    final PiGraph outputGraph = new ClusterPartitionerLOOP(inputGraph, scenario).cluster();
+    Map<AbstractVertex, Long> brv = PiBRV.compute(inputGraph, BRVMethod.LCM);
+    final PiGraph outputGraph = new ClusterPartitionerLOOP(inputGraph, scenario, Integer.parseInt(nbPE), brv, 0)
+        .cluster();
     final PiGraphConsistenceChecker pgcc = new PiGraphConsistenceChecker(CheckerErrorLevel.FATAL_ALL,
         CheckerErrorLevel.FATAL_ALL);
     pgcc.check(outputGraph);
-    final Map<AbstractVertex, Long> brv = PiBRV.compute(inputGraph, BRVMethod.LCM);
+    brv = PiBRV.compute(inputGraph, BRVMethod.LCM);
     PiBRV.printRV(brv);
     // Build output map
     final Map<String, Object> output = new HashMap<>();
