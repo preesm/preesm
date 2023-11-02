@@ -21,16 +21,8 @@ public class LOOPSeeker extends PiMMSwitch<Boolean> {
   /**
    * Input graph.
    */
-  final PiGraph                   graph;
-  /**
-   * List of identified URCs.
-   */
-  final List<List<AbstractActor>> identifiedLOOPs;
-  /**
-   * List of identified URCs.
-   */
-  final List<Delay>               identifiedDelays;
-  final List<Delay>               connectedDelays;
+  final PiGraph graph;
+
   final int                       nPEs;
   final Map<AbstractVertex, Long> brv;
 
@@ -46,9 +38,6 @@ public class LOOPSeeker extends PiMMSwitch<Boolean> {
    */
   public LOOPSeeker(final PiGraph inputGraph, int numberOfPEs, Map<AbstractVertex, Long> brv) {
     this.graph = inputGraph;
-    this.identifiedDelays = new LinkedList<>();
-    this.connectedDelays = new LinkedList<>();
-    this.identifiedLOOPs = new LinkedList<>();
     this.nPEs = numberOfPEs;
     this.brv = brv;
   }

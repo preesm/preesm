@@ -41,12 +41,6 @@ import java.util.Map;
 import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.AbstractVertex;
 import org.preesm.model.pisdf.Actor;
-import org.preesm.model.pisdf.BroadcastActor;
-import org.preesm.model.pisdf.DataInputInterface;
-import org.preesm.model.pisdf.DataInputPort;
-import org.preesm.model.pisdf.DataOutputPort;
-import org.preesm.model.pisdf.ExecutableActor;
-import org.preesm.model.pisdf.Fifo;
 import org.preesm.model.pisdf.PiGraph;
 
 /**
@@ -67,11 +61,6 @@ public class SRVSeeker extends PiMMSwitch<Boolean> {
   final Map<AbstractVertex, Long> brv;
 
   /**
-   * List of identified URCs.
-   */
-  final List<List<AbstractActor>> identifiedSRVs;
-
-  /**
    * Builds a SRVSeeker based on a input graph.
    *
    * @param inputGraph
@@ -83,7 +72,7 @@ public class SRVSeeker extends PiMMSwitch<Boolean> {
    */
   public SRVSeeker(final PiGraph inputGraph, int numberOfPEs, Map<AbstractVertex, Long> brv) {
     this.graph = inputGraph;
-    this.identifiedSRVs = new LinkedList<>();
+
     this.nPEs = numberOfPEs;
     this.brv = brv;
   }
@@ -91,104 +80,23 @@ public class SRVSeeker extends PiMMSwitch<Boolean> {
   /**
    * Seek for SRV chain in the input graph.
    *
-   * @return List of identified URC chain.
+   * @return first of identified SRV candidate.
    */
-  public List<List<AbstractActor>> seek() {
-    // Clear the list of identified URCs
-    this.identifiedSRVs.clear();
-    // Explore all executable actors of the graph
-    this.graph.getActors().stream().filter(x -> x instanceof ExecutableActor).forEach(x -> doSwitch(x));
-    // Return identified URCs
-    return identifiedSRVs;
-  }
+  public List<AbstractActor> seek() {
+    final List<AbstractActor> actorSRV = new LinkedList<>();
 
-  @Override
-  public Boolean caseAbstractActor(AbstractActor base) {
-
-    if (brv.get(base) > nPEs && !base.getName().contains("srv")) {
-      final List<AbstractActor> actorSRV = new LinkedList<>();
-      actorSRV.add(base);
-      // if brv > core number, too much parallelism
-
-      this.identifiedSRVs.add(actorSRV);
-      return true;
+    for (final AbstractActor srvCandidate : graph.getExecutableActors()) {
+      if (brv.get(srvCandidate) > nPEs
+          && srvCandidate.getDirectSuccessors().stream().filter(x -> x instanceof Actor)
+              .noneMatch(x -> brv.get(x).equals(brv.get(srvCandidate)))
+          && srvCandidate.getDirectPredecessors().stream().filter(x -> x instanceof Actor)
+              .noneMatch(x -> brv.get(x).equals(brv.get(srvCandidate)))) {
+        actorSRV.add(srvCandidate);
+        return actorSRV;
+      }
     }
 
-    return false;
-
-  }
-
-  // @Override
-  // public Boolean caseFifo(Fifo fifo) {
-  // // Return true if rates are homogeneous and that no delay is involved
-  // int i = 0;
-  // if (!fifo.isHasADelay() && (fifo.getSource() instanceof Actor))
-  // return true;
-  //
-  // if (!fifo.isHasADelay() && (fifo.getSource() instanceof BroadcastActor)
-  // && !((BroadcastActor) fifo.getSource()).getDataInputPorts().get(0).getFifo().isHasADelay())
-  // return true;
-  // if (fifo.isHasADelay()
-  // && fifo.getDelay().getExpression().evaluate() > fifo.getSourcePort().getExpression().evaluate()
-  // && fifo.getDelay().getExpression().evaluate() > fifo.getTargetPort().getExpression().evaluate())
-  // return true;
-  // if (fifo.getSource() instanceof BroadcastActor
-  // && ((BroadcastActor) fifo.getSource()).getDataInputPorts().get(0).getFifo().isHasADelay()
-  // && ((BroadcastActor) fifo.getSource()).getDataInputPorts().get(0).getFifo().getDelay().getExpression()
-  // .evaluate() > ((BroadcastActor) fifo.getSource()).getDataInputPorts().get(0).getExpression().evaluate())
-  // return true;
-  // if (!(fifo.getSource() instanceof DataInputInterface))
-  // return true;
-  //
-  // return false;
-  // }
-
-  @Override
-  public Boolean caseDataInputPort(DataInputPort din) {
-    // Return true if rates are homogeneous and that no delay is involved
-    final Fifo fifo = din.getIncomingFifo();
-
-    // test if delay is hidden upper level
-    if ((fifo.getSource() instanceof DataInputInterface)) {
-      return false;
-    }
-
-    if ((!fifo.isHasADelay() && (fifo.getSource() instanceof Actor))
-        || (!fifo.isHasADelay() && (fifo.getSource() instanceof PiGraph))) {
-      return true;
-    }
-
-    if (!fifo.isHasADelay() && (fifo.getSource() instanceof BroadcastActor)
-        && !((BroadcastActor) fifo.getSource()).getDataInputPorts().get(0).getFifo().isHasADelay()) {
-      return true;
-    }
-    if (fifo.isHasADelay()
-        && fifo.getDelay().getExpression().evaluate() > fifo.getSourcePort().getExpression().evaluate()
-        && fifo.getDelay().getExpression().evaluate() > fifo.getTargetPort().getExpression().evaluate()) {
-      return true;
-    }
-    if (fifo.getSource() instanceof BroadcastActor
-        && ((BroadcastActor) fifo.getSource()).getDataInputPorts().get(0).getFifo().isHasADelay()
-        && ((BroadcastActor) fifo.getSource()).getDataInputPorts().get(0).getFifo().getDelay().getExpression()
-            .evaluate() > ((BroadcastActor) fifo.getSource()).getDataInputPorts().get(0).getExpression().evaluate()) {
-      return true;
-    }
-
-    return false;
-  }
-
-  @Override
-  public Boolean caseDataOutputPort(DataOutputPort dout) {
-    // Return true if rates are homogeneous and that no delay is involved
-    final Fifo fifo = dout.getOutgoingFifo();
-
-    if (!fifo.isHasADelay() || (fifo.isHasADelay()
-        && fifo.getDelay().getExpression().evaluate() > fifo.getSourcePort().getExpression().evaluate()
-        && fifo.getDelay().getExpression().evaluate() > fifo.getTargetPort().getExpression().evaluate())) {
-      return true;
-    }
-
-    return false;
+    return actorSRV;
   }
 
 }

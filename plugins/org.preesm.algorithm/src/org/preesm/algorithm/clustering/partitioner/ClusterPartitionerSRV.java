@@ -35,7 +35,6 @@
  */
 package org.preesm.algorithm.clustering.partitioner;
 
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import org.preesm.algorithm.clustering.ClusteringHelper;
@@ -106,23 +105,17 @@ public class ClusterPartitionerSRV {
    */
   public PiGraph cluster() {
 
-    // Retrieve URC chains in input graph and verify that actors share component constraints.
-    final List<List<AbstractActor>> graphSRVs = new SRVSeeker(this.graph, this.numberOfPEs, this.brv).seek();
-    final List<List<AbstractActor>> constrainedSRVs = new LinkedList<>();
-    if (!graphSRVs.isEmpty()) {
-      final List<AbstractActor> srv = graphSRVs.get(0);// cluster one by one
-      if (!ClusteringHelper.getListOfCommonComponent(srv, this.scenario).isEmpty()) {
-        constrainedSRVs.add(srv);
-      }
-    }
+    // Retrieve SRV first candidate in input graph and verify that actors share component constraints.
+    final List<AbstractActor> graphSRVs = new SRVSeeker(this.graph, this.numberOfPEs, this.brv).seek();
+
     // Cluster constrained SRV chains.
     if (!graphSRVs.isEmpty()) {
-      final List<AbstractActor> srv = graphSRVs.get(0);// cluster one by one
-      final PiGraph subGraph = new PiSDFSubgraphBuilder(this.graph, srv, "srv_" + clusterId).build();
+
+      final PiGraph subGraph = new PiSDFSubgraphBuilder(this.graph, graphSRVs, "srv_" + clusterId).build();
 
       subGraph.setClusterValue(true);
       // Add constraints of the cluster in the scenario.
-      for (final ComponentInstance component : ClusteringHelper.getListOfCommonComponent(srv, this.scenario)) {
+      for (final ComponentInstance component : ClusteringHelper.getListOfCommonComponent(graphSRVs, this.scenario)) {
         this.scenario.getConstraints().addConstraint(component, subGraph);
       }
 
@@ -139,8 +132,6 @@ public class ClusterPartitionerSRV {
         dout.getDataPort().setExpression(dout.getGraphPort().getExpression().evaluate());
       }
     }
-    // Compute BRV and balance actor firings between coarse and fine-grained parallelism.
-    // PiBRV.compute(this.graph, BRVMethod.LCM);
 
     return this.graph;
   }
