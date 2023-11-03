@@ -1,13 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <dftools:workflow errorOnWarning="true" verboseLevel="INFO" xmlns:dftools="http://net.sf.dftools">
     <dftools:scenario pluginId="org.ietr.preesm.scenario.task"/>
-    <dftools:task pluginId="cluster-partitioner-URC" taskId="urc2">
+    <dftools:task pluginId="scape.task.identifier" taskId="SCAPE3">
         <dftools:data key="variables">
+            <dftools:variable name="Level number" value="1"/>
             <dftools:variable name="Non-cluster actor" value=""/>
-            <dftools:variable
-                name="Number of PEs in compute clusters" value="3"/>
+            <dftools:variable name="SCAPE mode" value="2"/>
+            <dftools:variable name="Stack size" value="1000000"/>
         </dftools:data>
     </dftools:task>
     <dftools:dataTransfer from="scenario" sourceport="scenario"
-        targetport="scenario" to="urc2"/>
+        targetport="scenario" to="SCAPE3"/>
 </dftools:workflow>

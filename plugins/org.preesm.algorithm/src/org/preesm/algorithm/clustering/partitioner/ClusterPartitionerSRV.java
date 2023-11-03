@@ -74,12 +74,12 @@ public class ClusterPartitionerSRV {
   private final Map<AbstractVertex, Long> brv;
 
   private final int clusterId;
+  private final int SCAPEmode;
 
   /**
    * Builds a ClusterPartitioner object.
    *
-   * @param graph
-   *          Input graph.
+   *
    * @param scenario
    *          Workflow scenario.
    * @param numberOfPEs
@@ -91,13 +91,14 @@ public class ClusterPartitionerSRV {
    * @param nonClusterableList
    *          List of non clusterable actors cluster identificator
    */
-  public ClusterPartitionerSRV(final PiGraph graph, final Scenario scenario, final int numberOfPEs,
-      Map<AbstractVertex, Long> brv, int clusterId, List<AbstractActor> nonClusterableList) {
-    this.graph = graph;
+  public ClusterPartitionerSRV(final Scenario scenario, final int numberOfPEs, Map<AbstractVertex, Long> brv,
+      int clusterId, List<AbstractActor> nonClusterableList, int SCAPEmode) {
+    this.graph = scenario.getAlgorithm();
     this.scenario = scenario;
     this.numberOfPEs = numberOfPEs;
     this.brv = brv;
     this.clusterId = clusterId;
+    this.SCAPEmode = SCAPEmode;
   }
 
   /**
@@ -120,7 +121,8 @@ public class ClusterPartitionerSRV {
       }
 
       // apply scaling
-      final Long scale = computeScalingFactor(subGraph);
+      final Long scale = ClusterPartitionerURC.computeScalingFactor(subGraph,
+          brv.get(subGraph.getExecutableActors().get(0)), (long) numberOfPEs, SCAPEmode);
       for (final DataInputInterface din : subGraph.getDataInputInterfaces()) {
         din.getGraphPort().setExpression(
             din.getGraphPort().getExpression().evaluate() * brv.get(subGraph.getExecutableActors().get(0)) / scale);
@@ -134,59 +136,6 @@ public class ClusterPartitionerSRV {
     }
 
     return this.graph;
-  }
-
-  /**
-   * Used to compute the scaling factor :)
-   *
-   * @param subGraph
-   *          graph
-   */
-  private Long computeScalingFactor(PiGraph subGraph) {
-
-    final Long numbers = brv.get(subGraph.getExecutableActors().get(0));
-    Long scale;
-    if (subGraph.getDataInputInterfaces().stream().anyMatch(x -> x.getGraphPort().getFifo().isHasADelay())
-        && subGraph.getDataOutputInterfaces().stream().anyMatch(x -> x.getGraphPort().getFifo().isHasADelay())) {
-      final Long ratio = computeDelayRatio(subGraph);
-      scale = ClusterPartitionerURC.gcd(ratio, numbers);
-    } else {
-      scale = ncDivisor((long) numberOfPEs, numbers);
-    }
-    if (scale == 0L) {
-      scale = 1L;
-    }
-    return scale;
-  }
-
-  private Long computeDelayRatio(PiGraph subGraph) {
-    long count = 0L;
-    for (final DataInputInterface din : subGraph.getDataInputInterfaces()) {
-      if (din.getGraphPort().getFifo().isHasADelay()) {
-        final long ratio = din.getGraphPort().getFifo().getDelay().getExpression().evaluate()
-            / din.getGraphPort().getExpression().evaluate();
-        count = Math.max(count, ratio);
-      }
-    }
-    return count;
-  }
-
-  /**
-   * Used to compute the greatest common divisor between 2 values
-   *
-   */
-  private Long ncDivisor(Long nC, Long n) {
-    Long i;
-    Long ncDivisor = 0L;
-    for (i = 1L; i <= n; i++) {
-      if (n % i == 0 && (i >= nC)) {
-        // Sélectionne le premier diviseur qui est plus grand que nC
-        ncDivisor = i;
-        break; // On sort de la boucle car on a trouvé le diviseur souhaité
-
-      }
-    }
-    return ncDivisor;
   }
 
 }

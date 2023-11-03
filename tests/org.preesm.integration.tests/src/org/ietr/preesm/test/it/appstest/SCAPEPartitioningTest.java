@@ -48,24 +48,16 @@ import org.junit.Test;
  */
 public class SCAPEPartitioningTest {
 
-  private final String[] workflow    = { "euclide.workflow", "urc2.workflow", "srv.workflow", "loop.workflow",
-      "seq.workflow", "schedule.workflow" };
+  private final String[] workflow    = { "euclide.workflow", "data.workflow", "pip.workflow", "scape1.workflow",
+      "scape2.workflow", "scape2.workflow", "schedule.workflow" };
   private final String[] scenario    = { "ABC_5CoresX86.scenario", "ABC_3CoresX86.scenario", "ABC_3CoresX86.scenario",
-      "ABC_3CoresX86.scenario", "ABC_3CoresX86.scenario", "ABC_3CoresX86.scenario" };
+      "ABC_3CoresX86.scenario", "ABC_3CoresX86.scenario", "ABC_3CoresX86.scenario", "ABC_3CoresX86.scenario" };
   private final String   projectName = "org.ietr.preesm.scape";
-
-  /**
-   */
-  // public SimSDPTest(final String workflow, final String scenario, final String projectName) {
-  // this.scenario = scenario;
-  // this.workflow = workflow;
-  // this.projectName = projectName;
-  // }
 
   @Test
   public void testSCAPEPartitioningTest() throws IOException, CoreException {
 
-    for (int i = 0; i < 6; i++) {
+    for (int i = 0; i < 7; i++) {
       final String workflowFilePathStr = "/Workflows/" + workflow[i];
       final String scenarioFilePathStr = "/Scenarios/" + scenario[i];
 

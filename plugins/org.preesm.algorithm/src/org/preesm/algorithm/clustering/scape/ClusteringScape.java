@@ -68,7 +68,7 @@ public class ClusteringScape {
   int                              clusterIndex   = -1;     // topological index
   private int                      clusterId      = 0;      // index cluster created
   private Map<Long, List<PiGraph>> hierarchicalLevelOrdered;
-  private Long                     levelBound     = 0L;
+  private Long                     fulcrumLevelID = 0L;
   private Long                     coreEquivalent = 1L;
 
   public ClusteringScape(Scenario scenario, Long stackSize, int mode, int levelNumber,
@@ -91,7 +91,7 @@ public class ClusteringScape {
     // construct hierarchical structure
     hierarchicalLevelOrdered = HierarchicalRoute.fillHierarchicalStructure(graph);
     // compute cluster-able level ID
-    levelBound = HierarchicalRoute.computeClusterableLevel(graph, mode, levelNumber, hierarchicalLevelOrdered);
+    fulcrumLevelID = HierarchicalRoute.computeClusterableLevel(graph, mode, levelNumber, hierarchicalLevelOrdered);
     // Coarse clustering while cluster-able level are not reached
     coarseCluster();
     // Pattern identification
@@ -129,7 +129,8 @@ public class ClusteringScape {
    *
    */
   private void executeMode2() {
-    for (Long i = levelBound; i >= 0L; i--) {
+    final Long fulcrumLevel = fulcrumLevelID - 1;
+    for (Long i = fulcrumLevel; i >= 0L; i--) {
       for (final PiGraph g : hierarchicalLevelOrdered.get(i)) {
         PiGraph newCluster = null;
         boolean isHasCluster = true;
@@ -138,12 +139,12 @@ public class ClusteringScape {
           final Map<AbstractVertex, Long> rv = PiBRV.compute(g, BRVMethod.LCM);
           newCluster = new ClusterPartitionerLOOP(g, scenario, coreEquivalent.intValue(), rv, clusterId).cluster();
           if (graph.getAllChildrenGraphs().size() == size) {
-            newCluster = new ClusterPartitionerURC(g, scenario, coreEquivalent.intValue(), rv, clusterId,
-                nonClusterableList).cluster();// URC transfo
+            newCluster = new ClusterPartitionerURC(scenario, coreEquivalent.intValue(), rv, clusterId,
+                nonClusterableList, mode).cluster();// URC transfo
           }
           if (graph.getAllChildrenGraphs().size() == size) {
-            newCluster = new ClusterPartitionerSRV(g, scenario, coreEquivalent.intValue(), rv, clusterId,
-                nonClusterableList).cluster();// SRV transfo
+            newCluster = new ClusterPartitionerSRV(scenario, coreEquivalent.intValue(), rv, clusterId,
+                nonClusterableList, mode).cluster();// SRV transfo
           }
           if (graph.getAllChildrenGraphs().size() == size) {
             newCluster = new ClusterPartitionerSEQ(g, scenario, coreEquivalent.intValue(), rv, clusterId,
@@ -163,66 +164,87 @@ public class ClusteringScape {
 
   /**
    * The first extension introduces two additional patterns to the original SCAPE method: LOOP for cycles and SEQ for
-   * sequential parts. This extended method retains its parameterized nature, with the aim of reducing data parallelism
+   * sequential parts. This extended method retains its parameterised nature, with the aim of reducing data parallelism
    * and enhancing pipeline parallelism to align with the intended target.
    *
    */
   private void executeMode1() {
-    for (final PiGraph g : hierarchicalLevelOrdered.get(levelBound)) {
+    final Long fulcrumLevel = fulcrumLevelID - 1;
+    for (final PiGraph g : hierarchicalLevelOrdered.get(fulcrumLevel)) {
       PiGraph newCluster = null;
+      boolean isHasCluster = true;
       do {
         final int size = graph.getAllChildrenGraphs().size();
         final Map<AbstractVertex, Long> rv = PiBRV.compute(g, BRVMethod.LCM);
         newCluster = new ClusterPartitionerLOOP(g, scenario, coreEquivalent.intValue(), rv, clusterId).cluster();
         if (graph.getAllChildrenGraphs().size() == size) {
-          newCluster = new ClusterPartitionerURC(g, scenario, coreEquivalent.intValue(), rv, clusterId,
-              nonClusterableList).cluster();// URC transfo
+          newCluster = new ClusterPartitionerURC(scenario, coreEquivalent.intValue(), rv, clusterId, nonClusterableList,
+              mode).cluster();// URC transfo
         }
         if (graph.getAllChildrenGraphs().size() == size) {
-          newCluster = new ClusterPartitionerSRV(g, scenario, coreEquivalent.intValue(), rv, clusterId,
-              nonClusterableList).cluster();// SRV transfo
+          newCluster = new ClusterPartitionerSRV(scenario, coreEquivalent.intValue(), rv, clusterId, nonClusterableList,
+              mode).cluster();// SRV transfo
         }
         if (graph.getAllChildrenGraphs().size() == size) {
           newCluster = new ClusterPartitionerSEQ(g, scenario, coreEquivalent.intValue(), rv, clusterId,
               nonClusterableList).cluster();// SEQ transfo
         }
-        cluster(newCluster.getChildrenGraphs().get(0));
-      } while (newCluster.getChildrenGraphs() != null);
+        if (graph.getAllChildrenGraphs().size() == size) {
+          isHasCluster = false;
+        }
+        if (!newCluster.getChildrenGraphs().isEmpty()) {
+          cluster(newCluster.getChildrenGraphs().get(0));
+          clusterId++;
+        }
+      } while (isHasCluster);
     }
   }
 
   /**
    * The original SCAPE method only takes into account two patterns for clustering, which are Actor Unique Repetition
-   * Count (URC) and Single Repetition Vector (SRV). This method is parameterized, meaning it accepts a number as a
+   * Count (URC) and Single Repetition Vector (SRV). This method is parameterised, meaning it accepts a number as a
    * parameter that corresponds to the number of hierarchical levels to be coarsely clustered. The clustering occurs at
    * this specified level, which implies that there can be as many clustering configurations as there are hierarchical
    * levels in the input graph. The goal is two reduce the data parallelism to the target.
    */
   private void executeMode0() {
-    for (final PiGraph g : hierarchicalLevelOrdered.get(levelBound)) {
+    final Long fulcrumLevel = fulcrumLevelID - 1;
+    for (final PiGraph g : hierarchicalLevelOrdered.get(fulcrumLevel)) {
       PiGraph newCluster = null;
+      boolean isHasCluster = true;
       do {
         final int size = graph.getAllChildrenGraphs().size();
         final Map<AbstractVertex, Long> rv = PiBRV.compute(g, BRVMethod.LCM);
-        newCluster = new ClusterPartitionerURC(g, scenario, coreEquivalent.intValue(), rv, clusterId,
-            nonClusterableList).cluster();// URC transfo
+        newCluster = new ClusterPartitionerURC(scenario, coreEquivalent.intValue(), rv, clusterId, nonClusterableList,
+            mode).cluster();// URC transfo
         if (graph.getAllChildrenGraphs().size() == size) {
-          newCluster = new ClusterPartitionerSRV(g, scenario, coreEquivalent.intValue(), rv, clusterId,
-              nonClusterableList).cluster();// SRV transfo
+          newCluster = new ClusterPartitionerSRV(scenario, coreEquivalent.intValue(), rv, clusterId, nonClusterableList,
+              mode).cluster();// SRV transfo
         }
-        cluster(newCluster.getChildrenGraphs().get(0));
-      } while (newCluster.getChildrenGraphs() != null);
+        if (graph.getAllChildrenGraphs().size() == size) {
+          isHasCluster = false;
+        }
+        if (!newCluster.getChildrenGraphs().isEmpty()) {
+          cluster(newCluster.getChildrenGraphs().get(0));
+          clusterId++;
+        }
+      } while (isHasCluster);
     }
   }
 
   /**
-   * Coarsely cluster identified hierarchical level that require it
+   * Coarsely cluster the levels below the fulcrumLevel (bound). Hierarchical levels are ordered in ascending order Top
+   * = 0, below =n++. The fulcrum level ID indicates what is to be coarsely cluster and identified intelligently: 0 = do
+   * nothing, 1 = ID on bottom level and no coarse , n = ID on level n-1, coarse until n
    */
   private void coarseCluster() {
-    final Long totalLevelNumber = (long) hierarchicalLevelOrdered.size() - 1;
-    for (Long i = totalLevelNumber; i > levelBound; i--) {
-      for (final PiGraph g : hierarchicalLevelOrdered.get(i)) {
-        cluster(g);
+    if (fulcrumLevelID > 1) {
+      final Long totalLevelNumber = (long) hierarchicalLevelOrdered.size() - 1;
+      final Long fulcrumLevel = fulcrumLevelID - 2;
+      for (Long i = totalLevelNumber; i > fulcrumLevel; i--) {
+        for (final PiGraph g : hierarchicalLevelOrdered.get(i)) {
+          cluster(g);
+        }
       }
     }
   }

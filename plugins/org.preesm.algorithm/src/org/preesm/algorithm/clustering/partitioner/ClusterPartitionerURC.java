@@ -75,24 +75,25 @@ public class ClusterPartitionerURC {
   private final int                 numberOfPEs;
   private Map<AbstractVertex, Long> brv;
   private final int                 clusterId;
+  private final int                 scapeMode;
 
   /**
    * Builds a ClusterPartitioner object.
    *
-   * @param graph
-   *          Input graph.
+   *
    * @param scenario
    *          Workflow scenario.
    * @param numberOfPEs
    *          Number of processing elements in compute clusters.
    */
-  public ClusterPartitionerURC(final PiGraph graph, final Scenario scenario, final int numberOfPEs,
-      Map<AbstractVertex, Long> brv, int clusterId, List<AbstractActor> nonClusterableList) {
-    this.graph = graph;
+  public ClusterPartitionerURC(final Scenario scenario, final int numberOfPEs, Map<AbstractVertex, Long> brv,
+      int clusterId, List<AbstractActor> nonClusterableList, int scapeMode) {
+    this.graph = scenario.getAlgorithm();
     this.scenario = scenario;
     this.numberOfPEs = numberOfPEs;
     this.brv = brv;
     this.clusterId = clusterId;
+    this.scapeMode = scapeMode;
   }
 
   /**
@@ -115,7 +116,8 @@ public class ClusterPartitionerURC {
       final PiGraph subGraph = new PiSDFSubgraphBuilder(this.graph, urc, "urc_" + clusterId).build();
       brv = PiBRV.compute(graph, BRVMethod.LCM);
       // apply scaling
-      final Long scale = computeScalingFactor(subGraph);
+      final Long scale = computeScalingFactor(subGraph, brv.get(subGraph.getExecutableActors().get(0)),
+          (long) numberOfPEs, scapeMode);
       for (final DataInputInterface din : subGraph.getDataInputInterfaces()) {
         din.getGraphPort().setExpression(
             din.getGraphPort().getExpression().evaluate() * brv.get(subGraph.getExecutableActors().get(0)) / scale);
@@ -143,21 +145,18 @@ public class ClusterPartitionerURC {
    *
    * @param subGraph
    *          graph
+   * @param clustredActorRepetition
+   *          repetition vector coefficient of the clustered actors
    */
-  private Long computeScalingFactor(PiGraph subGraph) {
-    final Map<AbstractVertex, Long> rv = PiBRV.compute(subGraph, BRVMethod.LCM);
-    final Long subRv = brv.get(subGraph);
-    final Long[] numbers = rv.values().toArray(new Long[rv.size()]);
-    for (int i = 0; i < numbers.length; i++) {
-      numbers[i] *= subRv;
-    }
+  public static Long computeScalingFactor(PiGraph subGraph, Long clustredActorRepetition, Long nPE, int mode) {
+
     Long scale;
-    if (subGraph.getDataInputInterfaces().stream().anyMatch(x -> x.getGraphPort().getFifo().isHasADelay())
+    if (mode == 0 && subGraph.getDataInputInterfaces().stream().anyMatch(x -> x.getGraphPort().getFifo().isHasADelay())
         && subGraph.getDataOutputInterfaces().stream().anyMatch(x -> x.getGraphPort().getFifo().isHasADelay())) {
       final Long ratio = computeDelayRatio(subGraph);
-      scale = gcdSuite(ratio, numbers);
+      scale = gcd(ratio, clustredActorRepetition);
     } else {
-      scale = ncDivisor((long) numberOfPEs, numbers);
+      scale = ncDivisor(nPE, clustredActorRepetition);
     }
     if (scale == 0L) {
       scale = 1L;
@@ -165,7 +164,7 @@ public class ClusterPartitionerURC {
     return scale;
   }
 
-  private Long computeDelayRatio(PiGraph subGraph) {
+  private static Long computeDelayRatio(PiGraph subGraph) {
     long count = 0L;
     for (final DataInputInterface din : subGraph.getDataInputInterfaces()) {
       if (din.getGraphPort().getFifo().isHasADelay()) {
@@ -191,26 +190,10 @@ public class ClusterPartitionerURC {
   }
 
   /**
-   * Function to calculate the GCD of a list of numbers
+   * Used to compute the greatest common divisor between 2 values
    *
-   * @param nC
-   *          number of Processing Element
-   * @param number
-   *          List of number
    */
-  private Long gcdSuite(Long nC, Long[] numbers) {
-    if (numbers.length != 0) {
-      Long pgcd = nC;
-      for (final Long num : numbers) {
-        pgcd = gcd(pgcd, num);
-      }
-      return pgcd;
-    }
-    return 1L;
-  }
-
-  private Long ncDivisor(Long nC, Long[] numbers) {
-    final Long n = numbers[0];
+  private static Long ncDivisor(Long nC, Long n) {
     Long i;
     Long ncDivisor = 0L;
     for (i = 1L; i <= n; i++) {
