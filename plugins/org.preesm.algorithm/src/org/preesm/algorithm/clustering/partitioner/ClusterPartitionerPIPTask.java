@@ -1,8 +1,6 @@
 /**
  * Copyright or © or Copr. IETR/INSA - Rennes (2020) :
- *
- * Dylan Gageot [gageot.dylan@gmail.com] (2020)
- * Julien Heulot [julien.heulot@insa-rennes.fr] (2020)
+
  *
  * This software is a computer program whose purpose is to help prototyping
  * parallel applications using dataflow formalism.
@@ -37,12 +35,16 @@ package org.preesm.algorithm.clustering.partitioner;
 
 import java.util.HashMap;
 import java.util.LinkedHashMap;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.preesm.algorithm.clustering.scape.ClusteringScapeTask;
 import org.preesm.commons.doc.annotations.Parameter;
 import org.preesm.commons.doc.annotations.Port;
 import org.preesm.commons.doc.annotations.PreesmTask;
 import org.preesm.commons.doc.annotations.Value;
+import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.AbstractVertex;
 import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.pisdf.brv.BRVMethod;
@@ -59,16 +61,21 @@ import org.preesm.workflow.implement.AbstractTaskImplementation;
  * @author orenaud
  *
  */
-@PreesmTask(id = "cluster-partitioner-loop2", name = "Cluster Partitioner LOOP2",
+@PreesmTask(id = "cluster-partitioner-PIP", name = "Cluster Partitioner",
     inputs = { @Port(name = "scenario", type = Scenario.class, description = "Scenario") },
     outputs = { @Port(name = "PiMM", type = PiGraph.class, description = "Output PiSDF graph") },
-    parameters = { @Parameter(name = "Number of PEs in clusters",
-        description = "The number of PEs in compute clusters. This information is used to balance actor firings"
-            + " between coarse and fine-grained levels.",
-        values = { @Value(name = "Fixed:=n", effect = "Where $$n\\in \\mathbb{N}^*$$.") }) })
-public class ClusterPartitionerLOOPTask extends AbstractTaskImplementation {
-  public static final String NB_PE         = "Number of PEs in compute clusters";
-  public static final String DEFAULT_NB_PE = "1";
+    parameters = {
+        @Parameter(name = "Number of PEs in clusters",
+            description = "The number of PEs in compute clusters. This information is used to balance actor firings"
+                + " between coarse and fine-grained levels.",
+            values = { @Value(name = "Fixed:=n", effect = "Where $$n\\in \\mathbb{N}^*$$.") }),
+        @Parameter(name = "Non-cluster actor", description = "does not allow to group the actors entered in parameter",
+            values = { @Value(name = "String", effect = "disable cluster") }) })
+public class ClusterPartitionerPIPTask extends AbstractTaskImplementation {
+  public static final String NB_PE               = "Number of PEs in compute clusters";
+  public static final String DEFAULT_NB_PE       = "1";
+  public static final String NON_CLUSTER_DEFAULT = "";
+  public static final String NON_CLUSTER_PARAM   = "Non-cluster actor";
 
   @Override
   public Map<String, Object> execute(Map<String, Object> inputs, Map<String, String> parameters,
@@ -77,10 +84,23 @@ public class ClusterPartitionerLOOPTask extends AbstractTaskImplementation {
 
     final Scenario scenario = (Scenario) inputs.get("scenario");
     final PiGraph inputGraph = scenario.getAlgorithm();
+
     // Parameters
     final String nbPE = parameters.get(NB_PE);
+    final String nonClusterable = parameters.get(ClusteringScapeTask.NON_CLUSTER_PARAM);
+    final String[] nonClusterableListStr = nonClusterable.split("\\*");
+    final List<AbstractActor> nonClusterableList = new LinkedList<>();
+    for (final String element : nonClusterableListStr) {
+      for (final AbstractActor a : scenario.getAlgorithm().getExecutableActors()) {
+        if (a.getName().equals(element) && !nonClusterableList.contains(a)) {
+          nonClusterableList.add(a);
+        }
+      }
+    }
     // Cluster input graph
     Map<AbstractVertex, Long> brv = PiBRV.compute(inputGraph, BRVMethod.LCM);
+    new ClusterPartitionerSEQ(inputGraph, scenario, Integer.parseInt(nbPE), brv, 0, nonClusterableList).cluster();
+    brv = PiBRV.compute(inputGraph, BRVMethod.LCM);
     final PiGraph outputGraph = new ClusterPartitionerLOOP(inputGraph, scenario, Integer.parseInt(nbPE), brv, 0)
         .cluster();
     final PiGraphConsistenceChecker pgcc = new PiGraphConsistenceChecker(CheckerErrorLevel.FATAL_ALL,
@@ -99,11 +119,13 @@ public class ClusterPartitionerLOOPTask extends AbstractTaskImplementation {
   public Map<String, String> getDefaultParameters() {
     final Map<String, String> defaultParams = new LinkedHashMap<>();
     defaultParams.put(NB_PE, DEFAULT_NB_PE);
+    defaultParams.put(NON_CLUSTER_PARAM, NON_CLUSTER_DEFAULT);
     return defaultParams;
   }
 
   @Override
   public String monitorMessage() {
-    return "Starting Execution of Cluster Partitioner Task";
+    return "Starting Execution of Cluster Partitioner Focusing Pipeline Parallelism (Seq+Loop) Task";
   }
+
 }

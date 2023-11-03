@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<graphml xmlns="http://graphml.graphdrawing.org/xmlns">
+    <key attr.name="parameters" for="graph" id="parameters"/>
+    <key attr.name="variables" for="graph" id="variables"/>
+    <key attr.name="arguments" for="node" id="arguments"/>
+    <key attr.name="name" attr.type="string" for="graph"/>
+    <key attr.name="delay" attr.type="string" for="edge"/>
+    <graph edgedefault="directed">
+        <data key="name">top_Z</data>
+        <node id="H" kind="actor">
+            <port annotation="NONE" expr="1" kind="input" name="in2"/>
+            <port annotation="NONE" expr="1" kind="output" name="out"/>
+            <port annotation="NONE" expr="1" kind="output" name="out2"/>
+        </node>
+        <node id="I" kind="actor">
+            <port annotation="NONE" expr="3" kind="input" name="in"/>
+        </node>
+        <node expr="0" getter="" id="H_out2__H_in2" kind="delay"
+            level="permanent" setter="">
+            <port annotation="NONE" expr="0" kind="input" name="set"/>
+            <port annotation="NONE" expr="0" kind="output" name="get"/>
+        </node>
+        <edge expr="0" kind="fifo" source="H" sourceport="out2"
+            target="H" targetport="in2" type="char">
+            <data key="delay">H_out2__H_in2</data>
+        </edge>
+        <edge kind="fifo" source="H" sourceport="out" target="I"
+            targetport="in" type="char"/>
+    </graph>
+</graphml>

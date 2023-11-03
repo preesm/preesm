@@ -9,6 +9,10 @@ import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.Fifo;
 import org.preesm.model.pisdf.PiGraph;
 
+/**
+ * This class arranges the hierarchical levels for efficient routing. Level 0 is the top n++ for the subgraph below.
+ */
+
 public class HierarchicalRoute {
 
   /**
@@ -41,7 +45,7 @@ public class HierarchicalRoute {
   }
 
   /**
-   * Compute the hierarchical level to be coarsely clustered and identify hierarchical level to be cleverly clustered
+   * Compute the hierarchical level to be coarsely clustered and identify hierarchical level to be cleverly clustered.
    *
    * @return levelBound level bound
    */
@@ -52,7 +56,7 @@ public class HierarchicalRoute {
       return (long) levelNumber;
 
     }
-    Long count = 0L;
+    Long count = 1L;
     // detect the highest delay
     for (final Fifo fd : graph.getFifosWithDelay()) {
       // detect loop --> no pipeline and contains hierarchical graph

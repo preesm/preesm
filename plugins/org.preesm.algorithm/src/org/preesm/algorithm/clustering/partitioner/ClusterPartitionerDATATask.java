@@ -1,8 +1,6 @@
 /**
  * Copyright or © or Copr. IETR/INSA - Rennes (2020) :
- *
- * Dylan Gageot [gageot.dylan@gmail.com] (2020)
- * Julien Heulot [julien.heulot@insa-rennes.fr] (2020)
+
  *
  * This software is a computer program whose purpose is to help prototyping
  * parallel applications using dataflow formalism.
@@ -41,7 +39,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import org.eclipse.core.runtime.IProgressMonitor;
-import org.preesm.algorithm.clustering.scape.ClusteringScapeTask;
 import org.preesm.commons.doc.annotations.Parameter;
 import org.preesm.commons.doc.annotations.Port;
 import org.preesm.commons.doc.annotations.PreesmTask;
@@ -63,7 +60,7 @@ import org.preesm.workflow.implement.AbstractTaskImplementation;
  * @author orenaud
  *
  */
-@PreesmTask(id = "cluster-partitioner-URC", name = "Cluster Partitioner",
+@PreesmTask(id = "cluster-partitioner-DATA", name = "Cluster Partitioner",
     inputs = { @Port(name = "scenario", type = Scenario.class, description = "Scenario") },
     outputs = { @Port(name = "PiMM", type = PiGraph.class, description = "Output PiSDF graph") },
     parameters = {
@@ -71,14 +68,20 @@ import org.preesm.workflow.implement.AbstractTaskImplementation;
             description = "The number of PEs in compute clusters. This information is used to balance actor firings"
                 + " between coarse and fine-grained levels.",
             values = { @Value(name = "Fixed:=n", effect = "Where $$n\\in \\mathbb{N}^*$$.") }),
+        @Parameter(name = "SCAPE mode",
+            description = "choose the clustering mode : 1 = set of clustering config + only fit data parallelism,"
+                + " 2 = set of clustering config + fit data & pip parallelism, 3 = best clustering config ",
+            values = { @Value(name = "Fixed:=n", effect = "switch of clustering algorithm") }),
         @Parameter(name = "Non-cluster actor", description = "does not allow to group the actors entered in parameter",
             values = { @Value(name = "String", effect = "disable cluster") }) })
-public class ClusterPartitionerURCTask extends AbstractTaskImplementation {
+public class ClusterPartitionerDATATask extends AbstractTaskImplementation {
 
-  public static final String NB_PE               = "Number of PEs in compute clusters";
-  public static final String DEFAULT_NB_PE       = "1";
-  public static final String NON_CLUSTER_DEFAULT = "";
-  public static final String NON_CLUSTER_PARAM   = "Non-cluster actor";
+  public static final String NB_PE                   = "Number of PEs in compute clusters";
+  public static final String DEFAULT_NB_PE           = "1";
+  public static final String CLUSTERING_MODE_DEFAULT = "0";                                // SCAPE1
+  public static final String CLUSTERING_PARAM        = "SCAPE mode";
+  public static final String NON_CLUSTER_DEFAULT     = "";
+  public static final String NON_CLUSTER_PARAM       = "Non-cluster actor";
 
   @Override
   public Map<String, Object> execute(Map<String, Object> inputs, Map<String, String> parameters,
@@ -89,8 +92,8 @@ public class ClusterPartitionerURCTask extends AbstractTaskImplementation {
     final PiGraph inputGraph = scenario.getAlgorithm();
     // Parameters
     final String nbPE = parameters.get(NB_PE);
-
-    final String nonClusterable = parameters.get(ClusteringScapeTask.NON_CLUSTER_PARAM);
+    final String modeStr = parameters.get(ClusterPartitionerDATATask.CLUSTERING_PARAM);
+    final String nonClusterable = parameters.get(ClusterPartitionerDATATask.NON_CLUSTER_PARAM);
     final String[] nonClusterableListStr = nonClusterable.split("\\*");
     final List<AbstractActor> nonClusterableList = new LinkedList<>();
     for (final String element : nonClusterableListStr) {
@@ -102,9 +105,10 @@ public class ClusterPartitionerURCTask extends AbstractTaskImplementation {
     }
     Map<AbstractVertex, Long> brv = PiBRV.compute(inputGraph, BRVMethod.LCM);
     // Cluster input graph
-    final PiGraph outputGraph = new ClusterPartitionerURC(inputGraph, scenario, Integer.parseInt(nbPE), brv, 0,
-        nonClusterableList).cluster();
-
+    new ClusterPartitionerURC(scenario, Integer.parseInt(nbPE), brv, 0, nonClusterableList, Integer.decode(modeStr))
+        .cluster();
+    final PiGraph outputGraph = new ClusterPartitionerSRV(scenario, Integer.parseInt(nbPE), brv, 0, nonClusterableList,
+        Integer.decode(modeStr)).cluster();
     final PiGraphConsistenceChecker pgcc = new PiGraphConsistenceChecker(CheckerErrorLevel.FATAL_ALL,
         CheckerErrorLevel.FATAL_ALL);
     pgcc.check(outputGraph);
@@ -123,13 +127,14 @@ public class ClusterPartitionerURCTask extends AbstractTaskImplementation {
     final Map<String, String> defaultParams = new LinkedHashMap<>();
     defaultParams.put(NB_PE, DEFAULT_NB_PE);
     // non cluster default
-    defaultParams.put(ClusteringScapeTask.NON_CLUSTER_PARAM, ClusteringScapeTask.NON_CLUSTER_DEFAULT);
+    defaultParams.put(NON_CLUSTER_PARAM, NON_CLUSTER_DEFAULT);
+    defaultParams.put(CLUSTERING_PARAM, CLUSTERING_MODE_DEFAULT);
     return defaultParams;
   }
 
   @Override
   public String monitorMessage() {
-    return "Starting Execution of Cluster Partitioner URC Task";
+    return "Starting Execution of Cluster Partitioner Focusing Data Parallelism (URC+SRV) Task";
   }
 
 }
