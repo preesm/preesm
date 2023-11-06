@@ -48,6 +48,7 @@ import java.util.logging.Logger;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.preesm.commons.exceptions.PreesmException;
 import org.preesm.commons.exceptions.PreesmFrameworkException;
+import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.preesm.commons.files.WorkspaceUtils;
 import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.commons.messages.PreesmMessages;
@@ -342,7 +343,6 @@ public abstract class AbstractWorkflowExecutor {
             getLogger().log(Level.SEVERE, "Unexpected Exception: " + e.getClass().getCanonicalName() + ":"
                 + e.getMessage() + "\n Contact Preesm developers if you cannot solve the problem.", e);
             nodeResult = false;
-            throw e;
           }
         }
       } else if (node.isTaskNode()) {
@@ -422,10 +422,14 @@ public abstract class AbstractWorkflowExecutor {
           } catch (final PreesmException e) {
             getLogger().log(Level.SEVERE, e.getMessage(), e);
             nodeResult = false;
+          } catch (final InterruptedException e) {
+            Thread.currentThread().interrupt();
+            throw new PreesmRuntimeException("Unexpected error, please contact PREESM developers.", e);
           } catch (final Exception e) {
+            nodeResult = false;
             getLogger().log(Level.SEVERE, "Unexpected Exception: " + e.getClass().getCanonicalName() + ":"
                 + e.getMessage() + "\n Contact Preesm developers if you cannot solve the problem.", e);
-            nodeResult = false;
+
           }
         }
       }

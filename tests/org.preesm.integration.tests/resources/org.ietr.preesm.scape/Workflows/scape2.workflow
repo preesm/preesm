@@ -9,6 +9,14 @@
             <dftools:variable name="Stack size" value="1000000"/>
         </dftools:data>
     </dftools:task>
+    <dftools:task pluginId="pisdf-export" taskId="PiSDF Export">
+        <dftools:data key="variables">
+            <dftools:variable name="hierarchical" value="true"/>
+            <dftools:variable name="path" value="/Algo/scape"/>
+        </dftools:data>
+    </dftools:task>
     <dftools:dataTransfer from="scenario" sourceport="scenario"
         targetport="scenario" to="SCAPE2"/>
+    <dftools:dataTransfer from="SCAPE2" sourceport="PiMM"
+        targetport="PiMM" to="PiSDF Export"/>
 </dftools:workflow>

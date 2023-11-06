@@ -62,7 +62,7 @@ public class LOOPSeeker extends PiMMSwitch<Boolean> {
       if (delays.getLevel().equals(PersistenceLevel.NONE)
           && !delays.getContainingFifo().getTarget().equals(delays.getContainingFifo().getSource())
           && delays.hasGetterActor() && delays.hasSetterActor()) {
-        final int i = 0;
+        // TODO
       }
     }
     return actorLOOP;
