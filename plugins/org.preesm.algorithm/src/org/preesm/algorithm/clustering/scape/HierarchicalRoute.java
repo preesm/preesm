@@ -36,11 +36,11 @@ public class HierarchicalRoute {
       }
 
     }
-    if (graph.getAllChildrenGraphs().isEmpty()) {
-      final List<PiGraph> list = new ArrayList<>();
-      list.add(graph);
-      hierarchicalLevelOrdered.put(0L, list);
-    }
+    // if (graph.getAllChildrenGraphs().isEmpty()) {
+    final List<PiGraph> list = new ArrayList<>();
+    list.add(graph);
+    hierarchicalLevelOrdered.put(0L, list);
+    // }
     return hierarchicalLevelOrdered;
   }
 

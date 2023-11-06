@@ -147,7 +147,7 @@ public class EuclideTransfo {
     for (Long i = levelBound; i >= 0L; i--) {
       for (final PiGraph g : hierarchicalLevelOrdered.get(i)) {
         final Map<AbstractVertex, Long> rv = PiBRV.compute(g, BRVMethod.LCM);
-        for (final AbstractActor a : g.getOnlyActors()) {
+        for (final AbstractActor a : g.getExecutableActors()) {
           // maybe not for Special Actor
           if (rv.get(a) % coreEquivalent > 0 && rv.get(a) > coreEquivalent) {
             euclide(a, rv, coreEquivalent);

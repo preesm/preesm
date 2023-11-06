@@ -1,0 +1,184 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<graphml xmlns="http://graphml.graphdrawing.org/xmlns">
+    <key attr.name="parameters" for="graph" id="parameters"/>
+    <key attr.name="variables" for="graph" id="variables"/>
+    <key attr.name="arguments" for="node" id="arguments"/>
+    <key attr.name="name" attr.type="string" for="graph"/>
+    <key attr.name="graph_desc" attr.type="string" for="node"/>
+    <key attr.name="delay" attr.type="string" for="edge"/>
+    <graph edgedefault="directed">
+        <data key="name">ABC</data>
+        <node id="E" kind="actor">
+            <port annotation="NONE" expr="3" kind="input" name="i"/>
+        </node>
+        <node id="set" kind="actor">
+            <port annotation="NONE" expr="1" kind="output" name="o"/>
+        </node>
+        <node id="get" kind="actor">
+            <port annotation="NONE" expr="1" kind="input" name="i"/>
+        </node>
+        <node id="E2" kind="actor">
+            <port annotation="NONE" expr="3" kind="input" name="i"/>
+        </node>
+        <node id="Fork_loop_D0" kind="fork">
+            <port annotation="NONE" expr="12" kind="input" name="in"/>
+            <port annotation="NONE" expr="4" kind="output" name="out_0"/>
+            <port annotation="NONE" expr="4" kind="output" name="out_1"/>
+            <port annotation="NONE" expr="4" kind="output" name="out_2"/>
+        </node>
+        <node id="loop_0" kind="actor">
+            <data key="graph_desc">Code/generated/Cluster_ABC_loop_0.h</data>
+            <loop name="loop_0">
+                <param direction="IN" isConfig="false"
+                    name="in_0" type="char"/>
+                <param direction="IN" isConfig="false"
+                    name="in_1" type="char"/>
+                <param direction="OUT" isConfig="false"
+                    name="out_0" type="char"/>
+                <param direction="OUT" isConfig="false"
+                    name="out_1" type="char"/>
+            </loop>
+            <port annotation="NONE" expr="4" kind="input" name="in_0"/>
+            <port annotation="NONE" expr="1" kind="input" name="in_1"/>
+            <port annotation="NONE" expr="1" kind="output" name="out_0"/>
+            <port annotation="NONE" expr="4" kind="output" name="out_1"/>
+        </node>
+        <node id="loop_1" kind="actor">
+            <data key="graph_desc">Code/generated/Cluster_ABC_loop_1.h</data>
+            <loop name="loop_1">
+                <param direction="IN" isConfig="false"
+                    name="in_0" type="char"/>
+                <param direction="IN" isConfig="false"
+                    name="in_1" type="char"/>
+                <param direction="OUT" isConfig="false"
+                    name="out_0" type="char"/>
+                <param direction="OUT" isConfig="false"
+                    name="out_1" type="char"/>
+            </loop>
+            <port annotation="NONE" expr="4" kind="input" name="in_0"/>
+            <port annotation="NONE" expr="1" kind="input" name="in_1"/>
+            <port annotation="NONE" expr="1" kind="output" name="out_0"/>
+            <port annotation="NONE" expr="4" kind="output" name="out_1"/>
+        </node>
+        <node id="loop_2" kind="actor">
+            <data key="graph_desc">Code/generated/Cluster_ABC_loop_2.h</data>
+            <loop name="loop_2">
+                <param direction="IN" isConfig="false"
+                    name="in_0" type="char"/>
+                <param direction="IN" isConfig="false"
+                    name="in_1" type="char"/>
+                <param direction="OUT" isConfig="false"
+                    name="out_0" type="char"/>
+                <param direction="OUT" isConfig="false"
+                    name="out_1" type="char"/>
+            </loop>
+            <port annotation="NONE" expr="4" kind="input" name="in_0"/>
+            <port annotation="NONE" expr="1" kind="input" name="in_1"/>
+            <port annotation="NONE" expr="1" kind="output" name="out_0"/>
+            <port annotation="NONE" expr="4" kind="output" name="out_1"/>
+        </node>
+        <node id="urc_1" kind="actor">
+            <data key="graph_desc">Code/generated/Cluster_ABC_urc_1.h</data>
+            <loop name="urc_1">
+                <param direction="OUT" isConfig="false"
+                    name="out_0" type="char"/>
+            </loop>
+            <port annotation="NONE" expr="12" kind="output" name="out_0"/>
+        </node>
+        <node id="urc_2" kind="actor">
+            <data key="graph_desc">Code/generated/Cluster_ABC_urc_2.h</data>
+            <loop name="urc_2">
+                <param direction="IN" isConfig="false"
+                    name="in_0" type="char"/>
+                <param direction="IN" isConfig="false"
+                    name="in_1" type="char"/>
+                <param direction="IN" isConfig="false"
+                    name="in_2" type="char"/>
+                <param direction="OUT" isConfig="false"
+                    name="out_0" type="char"/>
+                <param direction="OUT" isConfig="false"
+                    name="out_1" type="char"/>
+            </loop>
+            <port annotation="NONE" expr="4" kind="input" name="in_0"/>
+            <port annotation="NONE" expr="4" kind="input" name="in_1"/>
+            <port annotation="NONE" expr="4" kind="input" name="in_2"/>
+            <port annotation="NONE" expr="9" kind="output" name="out_0"/>
+            <port annotation="NONE" expr="3" kind="output" name="out_1"/>
+        </node>
+        <node id="srv_3" kind="actor">
+            <data key="graph_desc">Algo/scape/srv_3.pi</data>
+            <port annotation="NONE" expr="4" kind="input" name="in_0"/>
+            <port annotation="NONE" expr="4" kind="output" name="out_0"/>
+        </node>
+        <node expr="1" getter="" id="loop_0.out_0_loop_0.out_0"
+            kind="delay" level="permanent" setter="">
+            <port annotation="NONE" expr="1" kind="input" name="set"/>
+            <port annotation="NONE" expr="1" kind="output" name="get"/>
+        </node>
+        <node expr="4" getter="" id="loop_0.out_1_loop_0.out_1"
+            kind="delay" level="permanent" setter="">
+            <port annotation="NONE" expr="4" kind="input" name="set"/>
+            <port annotation="NONE" expr="4" kind="output" name="get"/>
+        </node>
+        <node expr="1" getter="" id="loop_1.out_0_loop_1.out_0"
+            kind="delay" level="permanent" setter="">
+            <port annotation="NONE" expr="1" kind="input" name="set"/>
+            <port annotation="NONE" expr="1" kind="output" name="get"/>
+        </node>
+        <node expr="4" getter="" id="loop_1.out_1_loop_1.out_1"
+            kind="delay" level="permanent" setter="">
+            <port annotation="NONE" expr="4" kind="input" name="set"/>
+            <port annotation="NONE" expr="4" kind="output" name="get"/>
+        </node>
+        <node expr="1" getter="" id="loop_2.out_0_loop_2.out_0"
+            kind="delay" level="permanent" setter="">
+            <port annotation="NONE" expr="1" kind="input" name="set"/>
+            <port annotation="NONE" expr="1" kind="output" name="get"/>
+        </node>
+        <node expr="4" getter="" id="loop_2.out_1_loop_2.out_1"
+            kind="delay" level="permanent" setter="">
+            <port annotation="NONE" expr="4" kind="input" name="set"/>
+            <port annotation="NONE" expr="4" kind="output" name="get"/>
+        </node>
+        <edge expr="4" kind="fifo" source="loop_0"
+            sourceport="out_1" target="urc_2" targetport="in_0" type="char">
+            <data key="delay">loop_0.out_1_loop_0.out_1</data>
+        </edge>
+        <edge expr="4" kind="fifo" source="loop_1"
+            sourceport="out_1" target="urc_2" targetport="in_1" type="char">
+            <data key="delay">loop_1.out_1_loop_1.out_1</data>
+        </edge>
+        <edge expr="4" kind="fifo" source="loop_2"
+            sourceport="out_1" target="urc_2" targetport="in_2" type="char">
+            <data key="delay">loop_2.out_1_loop_2.out_1</data>
+        </edge>
+        <edge expr="1" kind="fifo" source="loop_1"
+            sourceport="out_0" target="get" targetport="i" type="char">
+            <data key="delay">loop_1.out_0_loop_1.out_0</data>
+        </edge>
+        <edge expr="1" kind="fifo" source="loop_0"
+            sourceport="out_0" target="loop_2" targetport="in_1" type="char">
+            <data key="delay">loop_0.out_0_loop_0.out_0</data>
+        </edge>
+        <edge expr="1" kind="fifo" source="loop_2"
+            sourceport="out_0" target="loop_1" targetport="in_1" type="char">
+            <data key="delay">loop_2.out_0_loop_2.out_0</data>
+        </edge>
+        <edge kind="fifo" source="Fork_loop_D0"
+            sourceport="out_0" target="loop_0" targetport="in_0" type="char"/>
+        <edge kind="fifo" source="set" sourceport="o"
+            target="loop_0" targetport="in_1" type="char"/>
+        <edge kind="fifo" source="Fork_loop_D0"
+            sourceport="out_1" target="loop_1" targetport="in_0" type="char"/>
+        <edge kind="fifo" source="Fork_loop_D0"
+            sourceport="out_2" target="loop_2" targetport="in_0" type="char"/>
+        <edge kind="fifo" source="urc_2" sourceport="out_0"
+            target="E" targetport="i" type="char"/>
+        <edge kind="fifo" source="urc_2" sourceport="out_1"
+            target="E2" targetport="i" type="char"/>
+        <edge kind="fifo" source="urc_1" sourceport="out_0"
+            target="srv_3" targetport="in_0" type="char"/>
+        <edge kind="fifo" source="srv_3" sourceport="out_0"
+            target="Fork_loop_D0" targetport="in" type="char"/>
+    </graph>
+</graphml>

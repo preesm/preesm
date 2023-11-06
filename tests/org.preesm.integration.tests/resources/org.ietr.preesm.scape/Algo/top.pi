@@ -4,27 +4,29 @@
     <key attr.name="variables" for="graph" id="variables"/>
     <key attr.name="arguments" for="node" id="arguments"/>
     <key attr.name="name" attr.type="string" for="graph"/>
+    <key attr.name="graph_desc" attr.type="string" for="node"/>
     <key attr.name="delay" attr.type="string" for="edge"/>
     <graph edgedefault="directed">
-        <data key="name">top_Z</data>
-        <node id="H" kind="actor">
-            <port annotation="NONE" expr="1" kind="input" name="in2"/>
+        <data key="name">top</data>
+        <node id="h" kind="actor">
+            <data key="graph_desc">Algo/sub.pi</data>
+            <port annotation="NONE" expr="1" kind="input" name="inD"/>
             <port annotation="NONE" expr="1" kind="output" name="out"/>
-            <port annotation="NONE" expr="1" kind="output" name="out2"/>
+            <port annotation="NONE" expr="1" kind="output" name="outD"/>
         </node>
         <node id="I" kind="actor">
             <port annotation="NONE" expr="3" kind="input" name="in"/>
         </node>
-        <node expr="0" getter="" id="H_out2__H_in2" kind="delay"
+        <node expr="1" getter="" id="h_outD__h_inD" kind="delay"
             level="permanent" setter="">
-            <port annotation="NONE" expr="0" kind="input" name="set"/>
-            <port annotation="NONE" expr="0" kind="output" name="get"/>
+            <port annotation="NONE" expr="1" kind="input" name="set"/>
+            <port annotation="NONE" expr="1" kind="output" name="get"/>
         </node>
-        <edge expr="0" kind="fifo" source="H" sourceport="out2"
-            target="H" targetport="in2" type="char">
-            <data key="delay">H_out2__H_in2</data>
+        <edge expr="1" kind="fifo" source="h" sourceport="outD"
+            target="h" targetport="inD" type="char">
+            <data key="delay">h_outD__h_inD</data>
         </edge>
-        <edge kind="fifo" source="H" sourceport="out" target="I"
+        <edge kind="fifo" source="h" sourceport="out" target="I"
             targetport="in" type="char"/>
     </graph>
 </graphml>

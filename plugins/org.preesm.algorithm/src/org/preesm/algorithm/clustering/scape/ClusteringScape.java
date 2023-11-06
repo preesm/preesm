@@ -193,7 +193,10 @@ public class ClusteringScape {
           isHasCluster = false;
         }
         if (!newCluster.getChildrenGraphs().isEmpty()) {
-          cluster(newCluster.getChildrenGraphs().get(0));
+          final int newSize = graph.getAllChildrenGraphs().size();
+          for (int i = 0; i < (newSize - size); i++) {
+            cluster(newCluster.getChildrenGraphs().get(0));
+          }
           clusterId++;
         }
       } while (isHasCluster);
