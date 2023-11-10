@@ -60,8 +60,10 @@ public class NewSimSDPProjectCreator {
         }
       }
       PreesmLogger.getLogger().log(Level.INFO, "Template SimSDP project successfully copied!");
+
     } else {
       PreesmLogger.getLogger().log(Level.SEVERE, "Could not copy SimSDP base project, missing source file");
+
     }
   }
 
@@ -87,11 +89,13 @@ public class NewSimSDPProjectCreator {
       }
 
     } else {
+
       // copy missing worflows and .project
       try {
         Files.copy(source.toPath(), destination.toPath());
       } catch (final IOException e) {
         PreesmLogger.getLogger().log(Level.SEVERE, "Could not create simsdp template project", e);
+
       }
     }
   }
