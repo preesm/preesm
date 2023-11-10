@@ -102,7 +102,15 @@ public class PreesmIOHelper {
     return iFile;
   }
 
-  // orenaud
+  /**
+   * Read the given content at a specific location.
+   *
+   * @param filePath
+   *          Path to the file to write.
+   * @param fileName
+   *          Name (with extension) of the file to write.
+   * @return fileContent Content to read in the file.
+   */
   public final String read(final String filePath, final String fileName) {
     final StringBuilder content = new StringBuilder();
     final IFile iFile = ResourcesPlugin.getWorkspace().getRoot().getFile(new Path(filePath + fileName));

@@ -42,7 +42,7 @@ import org.eclipse.ui.dialogs.WizardNewProjectCreationPage;
 import org.eclipse.ui.wizards.newresource.BasicNewProjectResourceWizard;
 
 /**
- * This class provides a wizard to create a new Preesm Project.
+ * This class provides a wizard to create a new SimSDP Project.
  *
  * @author orenaud
  */
@@ -64,7 +64,7 @@ public class NewSimSDPProjectWizard extends BasicNewProjectResourceWizard {
   private WizardNewProjectCreationPage firstPage;
 
   /**
-   * Instantiates a new new preesm project wizard.
+   * Instantiates a new simSDP project wizard.
    */
   public NewSimSDPProjectWizard() {
     setWindowTitle(NewSimSDPProjectWizard.WINDOW_TITLE);
@@ -82,12 +82,12 @@ public class NewSimSDPProjectWizard extends BasicNewProjectResourceWizard {
   @Override
   public boolean performFinish() {
     final String name = this.firstPage.getProjectName();
-    URI location = null;
+    URI location = this.firstPage.getLocationURI();
     if (!this.firstPage.useDefaults()) {
       location = this.firstPage.getLocationURI();
     }
 
-    NewPreesmProjectCreator.createProject(name, location);
+    NewSimSDPProjectCreator.createProject(name, location);
 
     return true;
   }
