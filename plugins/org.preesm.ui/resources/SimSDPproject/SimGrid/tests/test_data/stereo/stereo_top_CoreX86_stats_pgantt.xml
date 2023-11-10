@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<data>
+    <event color="#c896fa" end="1078" mapping="Core0" start="0" title="sub0_node0_0 (x1)">Step_sub0_node0_0_(x1).</event>
+    <event color="#d7e4bd" end="1088" mapping="Core0" start="1078" title="sub2_node1_init_out_0 (x1)">Step_sub2_node1_init_out_0_(x1).</event>
+    <event color="#c896fa" end="1708" mapping="Core0" start="1088" title="sub2_node1_0 (x1)">Step_sub2_node1_0_(x1).</event>
+    <event color="#c896fa" end="8508" mapping="Core0" start="1708" title="sub1_node2_0 (x1)">Step_sub1_node2_0_(x1).</event>
+    <event color="#e6b9b8" end="8518" mapping="Core0" start="8508" title="sub1_node2_end_in_0 (x1)">Step_sub1_node2_end_in_0_(x1).</event>
+    <event color="#d7e4bd" end="10" mapping="Core1" start="0" title="sub1_node2_init_out_0 (x1)">Step_sub1_node2_init_out_0_(x1).</event>
+    <event color="#d7e4bd" end="20" mapping="Core1" start="10" title="sub1_node2_init_out_1 (x1)">Step_sub1_node2_init_out_1_(x1).</event>
+    <event color="#d7e4bd" end="30" mapping="Core1" start="20" title="sub1_node2_init_out_2 (x1)">Step_sub1_node2_init_out_2_(x1).</event>
+    <event color="#d7e4bd" end="40" mapping="Core1" start="30" title="sub1_node2_init_out_3 (x1)">Step_sub1_node2_init_out_3_(x1).</event>
+    <event color="#d7e4bd" end="50" mapping="Core1" start="40" title="sub1_node2_init_out_5 (x1)">Step_sub1_node2_init_out_5_(x1).</event>
+    <event color="#d7e4bd" end="60" mapping="Core1" start="50" title="sub1_node2_init_out_6 (x1)">Step_sub1_node2_init_out_6_(x1).</event>
+    <event color="#d7e4bd" end="64" mapping="Core1" start="60" title="sub1_node2_init_out_7 (x1)">Step_sub1_node2_init_out_7_(x1).</event>
+    <event color="#e6b9b8" end="1088" mapping="Core1" start="1078" title="sub0_node0_end_in_0 (x1)">Step_sub0_node0_end_in_0_(x1).</event>
+    <event color="#e6b9b8" end="1098" mapping="Core1" start="1088" title="sub0_node0_end_in_1 (x1)">Step_sub0_node0_end_in_1_(x1).</event>
+    <event color="#e6b9b8" end="1108" mapping="Core1" start="1098" title="sub0_node0_end_in_2 (x1)">Step_sub0_node0_end_in_2_(x1).</event>
+    <event color="#e6b9b8" end="1118" mapping="Core1" start="1108" title="sub0_node0_end_in_3 (x1)">Step_sub0_node0_end_in_3_(x1).</event>
+    <event color="#e6b9b8" end="1128" mapping="Core1" start="1118" title="sub0_node0_end_in_5 (x1)">Step_sub0_node0_end_in_5_(x1).</event>
+    <event color="#e6b9b8" end="1138" mapping="Core1" start="1128" title="sub0_node0_end_in_6 (x1)">Step_sub0_node0_end_in_6_(x1).</event>
+    <event color="#e6b9b8" end="1142" mapping="Core1" start="1138" title="sub0_node0_end_in_7 (x1)">Step_sub0_node0_end_in_7_(x1).</event>
+    <perfs impl_length="8518" impl_nbCores="2" impl_nbUsedCores="2" span="7893" work="8646">
+        <core id="Core0" load="8518" used_mem="15518333440">Core_Core0.</core>
+        <core id="Core1" load="128" used_mem="10449352320">Core_Core1.</core>
+    </perfs>
+</data>
