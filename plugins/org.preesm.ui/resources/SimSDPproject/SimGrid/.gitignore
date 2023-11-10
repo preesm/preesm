@@ -1,0 +1,6 @@
+docs/xml
+*build
+*__pycache__
+*__tmp__
+simsdp.egg-info
+docs/notebooks/.ipynb_checkpoints/

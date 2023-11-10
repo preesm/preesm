@@ -1,0 +1,58 @@
+# This workflow will install Python dependencies, run tests and lint with a variety of Python versions
+# For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-python
+
+name: Build and Deploy
+
+on:
+  push:
+    branches: [ "master" ]
+  pull_request:
+    branches: [ "master" ]
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+
+    runs-on: ubuntu-22.04
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v3
+      
+    - name: Install dependencies
+      run: |
+        sudo apt update
+        sudo apt install -y python3 pip default-jdk cmake git libboost-dev meson pkg-config doxygen
+        pip install -r requirements.txt
+        pip install .
+
+    - name: Install SimGrid
+      run: |
+        git clone https://framagit.org/simgrid/simgrid
+        cd simgrid
+        cmake -B build .
+        sudo make install -j$(nproc) -C build
+        pip install .
+        sudo ldconfig
+
+    - name: Test with pytest
+      run: |
+        cd tests && pytest
+
+    - name: Command line tests
+      run: |
+        simsdp tests/test_data/stereo/ -p tests/platforms/generated_platform.xml
+        simsdp tests/test_data/stereo/ -p tests/platforms/generated_platform_energy.xml -j
+
+    - name: Build doc
+      run: |
+        pip install -r docs/requirements.txt
+        cd docs && ./build_doc.sh
+        
+    - name: Deploy pages
+      uses: JamesIves/github-pages-deploy-action@v4
+      with:
+          folder: docs/build
+        
