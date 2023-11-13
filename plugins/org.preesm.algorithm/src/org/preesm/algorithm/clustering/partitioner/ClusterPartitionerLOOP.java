@@ -47,6 +47,7 @@ import org.preesm.model.pisdf.DataInputInterface;
 import org.preesm.model.pisdf.DataInputPort;
 import org.preesm.model.pisdf.DataOutputInterface;
 import org.preesm.model.pisdf.DataOutputPort;
+import org.preesm.model.pisdf.DataPort;
 import org.preesm.model.pisdf.Delay;
 import org.preesm.model.pisdf.DelayActor;
 import org.preesm.model.pisdf.Fifo;
@@ -216,24 +217,74 @@ public class ClusterPartitionerLOOP {
           output.getGraphPort().setExpression(scale);
           output.getDataPort().setExpression(output.getGraphPort().getExpression().evaluate());
         }
-
       }
     }
-    for (final AbstractActor sub : pipList) {
-      for (final DataOutputPort output : sub.getDataOutputPorts()) {
-        createPipeline(sub, output);
+    int pipelineStage = 1;
+    for (final PiGraph sub : pipList) {
+
+      for (final DataOutputInterface out : sub.getDataOutputInterfaces()) {
+        createPipeline(sub, out.getDataPort(), out.getGraphPort(), pipelineStage);
       }
+      pipelineStage++;
     }
 
   }
 
-  private void createPipeline(AbstractActor sub, DataOutputPort output) {
+  /**
+   * Add delay between each loop actor in order to create pipeline stage. if the output is not a loop output, then the
+   * delay must contain as many initial tokens as there are stages before the pipeline output. Otherwise the number of
+   * initial token to store equals the loop delay.
+   *
+   * @param sub
+   *          the subgraph as actor
+   * @param dataPort
+   *          the inner subgraph port
+   * @param graphPort
+   *          the outer subgraph port
+   * @param pipelineStage
+   *          the number of stage already pipelined
+   *
+   */
+  private void createPipeline(PiGraph sub, DataPort dataPort, DataPort graphPort, int pipelineStage) {
+    final Delay pipDelay = PiMMUserFactory.instance.createDelay();
+    pipDelay.setName(graphPort.getContainingActor().getName() + "." + graphPort.getName() + "_"
+        + graphPort.getContainingActor().getName() + "." + graphPort.getFifo().getSourcePort().getName());
+    pipDelay.setContainingGraph(sub.getContainingGraph());
+    pipDelay.setLevel(PersistenceLevel.PERMANENT);
+    if (dataPort.getFifo().getSourcePort().getContainingActor() instanceof DelayActor) {
+      pipDelay.setExpression(dataPort.getExpression().evaluate());
+    } else {
+      pipDelay.setExpression(dataPort.getExpression().evaluate() * pipelineStage);
+    }
+    pipDelay.getActor().setContainingGraph(sub.getContainingGraph());
+    graphPort.getFifo().setDelay(pipDelay);
+  }
+
+  /**
+   * Add delay between each loop actor in order to create pipeline stage. if the output is not a loop output, then the
+   * delay must contain as many initial tokens as there are stages before the pipeline output. Otherwise the number of
+   * initial token to store equals the loop delay.
+   *
+   * @param sub
+   *          the subgraph as actor
+   * @param output
+   *          the output to pipeline
+   * @param pipelineStage
+   *          the number of stage already pipelined
+   *
+   */
+  private void createPipeline(AbstractActor sub, DataOutputPort output, int pipelineStage) {
     final Delay pipDelay = PiMMUserFactory.instance.createDelay();
     pipDelay.setName(output.getContainingActor().getName() + "." + output.getName() + "_"
         + output.getContainingActor().getName() + "." + output.getFifo().getSourcePort().getName());
     pipDelay.setContainingGraph(sub.getContainingGraph());
     pipDelay.setLevel(PersistenceLevel.PERMANENT);
-    pipDelay.setExpression(output.getExpression().evaluate());
+    // if the output is not a loop output, then the delay must contain as many initial tokens as there are stages before
+    // the pipeline output.
+    // output.get
+    if (output.getFifo().isHasADelay()) {
+      pipDelay.setExpression(output.getExpression().evaluate() * pipelineStage);
+    }
     pipDelay.getActor().setContainingGraph(sub.getContainingGraph());
     output.getFifo().setDelay(pipDelay);
   }

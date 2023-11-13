@@ -56,6 +56,15 @@ public class CodegenScape {
     result.append("#define " + upper + "\n", "");
     result.append(build.getInitFunc() + ";\n ", "");
     result.append(build.getLoopFunc() + ";\n ", "");
+    for (final AbstractActor actor : subGraph.getOnlyActors()) {
+      if (actor instanceof Actor) {
+        final CHeaderRefinement cHeaderRefinement = (CHeaderRefinement) (((Actor) actor).getRefinement());
+        if (cHeaderRefinement.getInitPrototype() != null) {
+          result.append("#include \"" + cHeaderRefinement.getFileName() + "\" \n\n", "");
+        }
+      }
+    }
+
     result.append("#endif \n", "");
     return result;
   }
@@ -81,7 +90,7 @@ public class CodegenScape {
       if (actor instanceof Actor) {
         final CHeaderRefinement cHeaderRefinement = (CHeaderRefinement) (((Actor) actor).getRefinement());
         if (cHeaderRefinement.getInitPrototype() != null) {
-          result.append(cHeaderRefinement.getInitPrototype().getName() + "; \n\n", "");
+          result.append(cHeaderRefinement.getInitPrototype().getName() + "(); \n\n", "");
         }
       }
     }
@@ -95,13 +104,17 @@ public class CodegenScape {
     for (final String buffer : build.getBuffer()) {
       result.append(buffer + "\n ", "");
     }
+    for (final String buffer : build.getDynmicBuffer()) {
+      result.append(buffer + "\n ", "");
+    }
     result.append("// body \n ", "");
     final String body = build.getBody();
     result.append(body + "\n\n ", "");
 
     result.append("// free buffer  \n ", "");
-    for (final String buffer : build.getBuffer()) {
-      result.append(buffer + "\n ", "");
+    for (final String buffer : build.getDynmicBuffer()) {
+      final String buff = buffer.split("\\s|\\[|\\]")[1];
+      result.append("free(" + buff + "); \n ", "");
     }
 
     result.append("}\n", "");

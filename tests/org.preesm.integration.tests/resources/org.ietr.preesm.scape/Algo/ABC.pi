@@ -4,10 +4,16 @@
     <key attr.name="variables" for="graph" id="variables"/>
     <key attr.name="arguments" for="node" id="arguments"/>
     <key attr.name="name" attr.type="string" for="graph"/>
+    <key attr.name="graph_desc" attr.type="string" for="node"/>
     <key attr.name="delay" attr.type="string" for="edge"/>
     <graph edgedefault="directed">
         <data key="name">ABC</data>
         <node id="A" kind="actor">
+            <data key="graph_desc">Code/include/h.h</data>
+            <loop name="src">
+                <param direction="OUT" isConfig="false" name="o" type="char"/>
+            </loop>
+            <init name="src"/>
             <port annotation="NONE" expr="1" kind="output" name="o"/>
         </node>
         <node id="B" kind="actor">

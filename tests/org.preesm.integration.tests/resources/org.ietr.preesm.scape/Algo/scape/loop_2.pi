@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<graphml xmlns="http://graphml.graphdrawing.org/xmlns">
+    <key attr.name="parameters" for="graph" id="parameters"/>
+    <key attr.name="variables" for="graph" id="variables"/>
+    <key attr.name="arguments" for="node" id="arguments"/>
+    <key attr.name="name" attr.type="string" for="graph"/>
+    <key attr.name="delay" attr.type="string" for="edge"/>
+    <graph edgedefault="directed">
+        <data key="name">loop_2</data>
+        <node id="D_2" kind="actor">
+            <port annotation="NONE" expr="1" kind="input" name="i"/>
+            <port annotation="NONE" expr="1" kind="input" name="li"/>
+            <port annotation="NONE" expr="1" kind="output" name="o"/>
+            <port annotation="NONE" expr="1" kind="output" name="lo"/>
+        </node>
+        <node id="in_0" kind="src">
+            <port annotation="NONE" expr="4" kind="output" name="in_0"/>
+        </node>
+        <node id="in_1" kind="src">
+            <port annotation="NONE" expr="1" kind="output" name="in_1"/>
+        </node>
+        <node id="out_0" kind="snk">
+            <port annotation="NONE" expr="1" kind="input" name="out_0"/>
+        </node>
+        <node id="out_1" kind="snk">
+            <port annotation="NONE" expr="4" kind="input" name="out_1"/>
+        </node>
+        <node expr="1" getter="out_0" id="D_lo__D_li2"
+            kind="delay" level="none" setter="in_1">
+            <port annotation="NONE" expr="1" kind="input" name="set"/>
+            <port annotation="NONE" expr="1" kind="output" name="get"/>
+        </node>
+        <edge expr="1" kind="fifo" source="D_2" sourceport="lo"
+            target="D_2" targetport="li" type="char">
+            <data key="delay">D_lo__D_li2</data>
+        </edge>
+        <edge kind="fifo" source="in_0" sourceport="in_0"
+            target="D_2" targetport="i" type="char"/>
+        <edge kind="fifo" source="in_1" sourceport="in_1"
+            target="D_lo__D_li2" targetport="set" type="char"/>
+        <edge kind="fifo" source="D_lo__D_li2" sourceport="get"
+            target="out_0" targetport="out_0" type="char"/>
+        <edge kind="fifo" source="D_2" sourceport="o"
+            target="out_1" targetport="out_1" type="char"/>
+    </graph>
+</graphml>

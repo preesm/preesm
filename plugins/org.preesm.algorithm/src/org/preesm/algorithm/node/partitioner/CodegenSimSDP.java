@@ -71,12 +71,12 @@ public class CodegenSimSDP {
     for (final AbstractActor node : topGraph.getOnlyActors()) {
       if (node instanceof Actor) {
         for (final DataOutputPort dout : node.getDataOutputPorts()) {
-          result.append("MPI_Free_mem(" + dout.getName());
+          result.append("MPI_Free_mem(" + dout.getName() + ");\n");
 
         }
       }
     }
-    result.append("MPI_Finalize();\n");
+    result.append("MPI_Finalize();\n }");
 
     return result;
   }

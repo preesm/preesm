@@ -12,6 +12,7 @@ import org.preesm.model.pisdf.DataInputInterface;
 import org.preesm.model.pisdf.DataInputPort;
 import org.preesm.model.pisdf.DataOutputInterface;
 import org.preesm.model.pisdf.DataOutputPort;
+import org.preesm.model.pisdf.Delay;
 import org.preesm.model.pisdf.Parameter;
 import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.pisdf.brv.BRVMethod;
@@ -37,7 +38,7 @@ public class CodegenScapeBuilder {
     for (final AbstractActor actor : subGraph.getExecutableActors()) {
       for (final DataOutputPort dout : actor.getDataOutputPorts()) {
         String buff = "";
-        if (!(dout.getOutgoingFifo().getTarget() instanceof DataOutputInterface)) {
+        if (!(dout.getOutgoingFifo().getTarget() instanceof DataOutputInterface) && !dout.getFifo().isHasADelay()) {
           final String buffName = dout.getContainingActor().getName() + "_" + dout.getName() + "__"
               + ((AbstractVertex) dout.getFifo().getTarget()).getName() + "_"
               + dout.getFifo().getTargetPort().getName();
@@ -70,41 +71,82 @@ public class CodegenScapeBuilder {
   private String bodyFunction(List<ScapeSchedule> cs) {
     final StringConcatenation body = new StringConcatenation();
     for (final ScapeSchedule sc : cs) {
-      if (sc.isBeginLoop()) {
-        final String bodyLine = "for(int index = 0; index <" + sc.getIterator() + ";index++){\n";
-        body.append(bodyLine, "");
+      if (!sc.getActor().getName().isEmpty()) {
+        if (sc.isBeginLoop()) {
+          final String bodyLine = "for(int index" + sc.getActor().getName() + " = 0; index <" + sc.getIterator()
+              + ";index++){\n";
+          body.append(bodyLine, "");
 
-      }
-      final StringConcatenation actor = new StringConcatenation();
-      actor.append(sc.getActor().getName() + "(");
-      final int nbArg = sc.getActor().getConfigInputPorts().size() + sc.getActor().getDataInputPorts().size()
-          + sc.getActor().getDataOutputPorts().size();
-      int countArg = 1;
-      for (final ConfigInputPort cfg : sc.getActor().getConfigInputPorts()) {
-        actor.append(((AbstractVertex) cfg.getIncomingDependency().getSource()).getName());
-        if (countArg < nbArg) {
-          actor.append(",");
         }
-        countArg++;
-      }
-      for (final DataInputPort in : sc.getActor().getDataInputPorts()) {
-        actor.append(in.getName());
-        if (countArg < nbArg) {
-          actor.append(",");
+        final StringConcatenation actor = new StringConcatenation();
+        actor.append(sc.getActor().getName() + "(");
+        final int nbArg = sc.getActor().getConfigInputPorts().size() + sc.getActor().getDataInputPorts().size()
+            + sc.getActor().getDataOutputPorts().size();
+        int countArg = 1;
+        for (final ConfigInputPort cfg : sc.getActor().getConfigInputPorts()) {
+          actor.append(((AbstractVertex) cfg.getIncomingDependency().getSource()).getName());
+          if (countArg < nbArg) {
+            actor.append(",");
+          }
+          countArg++;
         }
-        countArg++;
-      }
-      for (final DataOutputPort out : sc.getActor().getDataOutputPorts()) {
-        actor.append(out.getName());
-        if (countArg < nbArg) {
-          actor.append(",");
+        for (final DataInputPort in : sc.getActor().getDataInputPorts()) {
+          String buffname = "";
+          if (in.getFifo().getSource() instanceof final DataInputInterface din) {
+
+            buffname = din.getName();
+          } else if (in.getFifo().isHasADelay()) {
+            final Delay delay = in.getFifo().getDelay();
+            buffname = delay.getActor().getSetterActor().getName();
+          } else {
+
+            buffname = ((AbstractVertex) in.getFifo().getSource()).getName() + "_"
+                + in.getFifo().getSourcePort().getName() + "__" + sc.getActor().getName() + "_" + in.getName();
+          }
+          if (sc.isLoopPrec() || sc.isBeginLoop() || sc.isEndLoop()) {
+            buffname += " + index" + sc.getActor().getName();
+          }
+          actor.append(buffname);
+          if (countArg < nbArg) {
+            actor.append(",");
+          }
+          countArg++;
         }
-        countArg++;
-      }
-      actor.append(");");
-      body.append(actor, "");
-      for (int i = 0; i < sc.getEndLoopNb(); i++) {
-        body.append("\n }");
+        String memcpy = "";
+        for (final DataOutputPort out : sc.getActor().getDataOutputPorts()) {
+          String buffname = "";
+          if (out.getFifo().getTarget() instanceof final DataOutputInterface dout) {
+            buffname = dout.getName();
+          } else if (out.getFifo().isHasADelay()) {
+            final Delay delay = out.getFifo().getDelay();
+            buffname = delay.getActor().getGetterActor().getName();
+          } else {
+            buffname = sc.getActor().getName() + "_" + out.getName() + "__"
+                + ((AbstractVertex) out.getFifo().getTarget()).getName() + "_"
+                + out.getFifo().getTargetPort().getName();
+          }
+          if (sc.isLoopPrec() || sc.isBeginLoop() || sc.isEndLoop()) {
+            buffname += " + index" + sc.getActor().getName();
+          }
+          actor.append(buffname);
+          if (countArg < nbArg) {
+            actor.append(",");
+          }
+          countArg++;
+          if (out.getFifo().isHasADelay()) {
+            final Delay delay = out.getFifo().getDelay();
+            memcpy += "memcpy(" + delay.getActor().getSetterActor().getName() + ","
+                + delay.getActor().getGetterActor().getName() + ","
+                + out.getFifo().getDelay().getExpression().evaluate() + "); \n";
+
+          }
+        }
+        actor.append("); \n");
+        body.append(actor, "");
+        body.append(memcpy);
+        for (int i = 0; i < sc.getEndLoopNb(); i++) {
+          body.append("\n }");
+        }
       }
     }
     return body.toString();

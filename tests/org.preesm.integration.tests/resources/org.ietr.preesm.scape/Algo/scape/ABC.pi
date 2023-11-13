@@ -106,7 +106,13 @@
             <port annotation="NONE" expr="3" kind="output" name="out_1"/>
         </node>
         <node id="srv_3" kind="actor">
-            <data key="graph_desc">Algo/scape/srv_3.pi</data>
+            <data key="graph_desc">Code/generated/Cluster_ABC_srv_3.h</data>
+            <loop name="srv_3">
+                <param direction="IN" isConfig="false"
+                    name="in_0" type="char"/>
+                <param direction="OUT" isConfig="false"
+                    name="out_0" type="char"/>
+            </loop>
             <port annotation="NONE" expr="4" kind="input" name="in_0"/>
             <port annotation="NONE" expr="4" kind="output" name="out_0"/>
         </node>
@@ -125,30 +131,30 @@
             <port annotation="NONE" expr="1" kind="input" name="set"/>
             <port annotation="NONE" expr="1" kind="output" name="get"/>
         </node>
-        <node expr="4" getter="" id="loop_1.out_1_loop_1.out_1"
+        <node expr="8" getter="" id="loop_1.out_1_loop_1.out_1"
             kind="delay" level="permanent" setter="">
-            <port annotation="NONE" expr="4" kind="input" name="set"/>
-            <port annotation="NONE" expr="4" kind="output" name="get"/>
+            <port annotation="NONE" expr="8" kind="input" name="set"/>
+            <port annotation="NONE" expr="8" kind="output" name="get"/>
         </node>
         <node expr="1" getter="" id="loop_2.out_0_loop_2.out_0"
             kind="delay" level="permanent" setter="">
             <port annotation="NONE" expr="1" kind="input" name="set"/>
             <port annotation="NONE" expr="1" kind="output" name="get"/>
         </node>
-        <node expr="4" getter="" id="loop_2.out_1_loop_2.out_1"
+        <node expr="12" getter="" id="loop_2.out_1_loop_2.out_1"
             kind="delay" level="permanent" setter="">
-            <port annotation="NONE" expr="4" kind="input" name="set"/>
-            <port annotation="NONE" expr="4" kind="output" name="get"/>
+            <port annotation="NONE" expr="12" kind="input" name="set"/>
+            <port annotation="NONE" expr="12" kind="output" name="get"/>
         </node>
         <edge expr="4" kind="fifo" source="loop_0"
             sourceport="out_1" target="urc_2" targetport="in_0" type="char">
             <data key="delay">loop_0.out_1_loop_0.out_1</data>
         </edge>
-        <edge expr="4" kind="fifo" source="loop_1"
+        <edge expr="8" kind="fifo" source="loop_1"
             sourceport="out_1" target="urc_2" targetport="in_1" type="char">
             <data key="delay">loop_1.out_1_loop_1.out_1</data>
         </edge>
-        <edge expr="4" kind="fifo" source="loop_2"
+        <edge expr="12" kind="fifo" source="loop_2"
             sourceport="out_1" target="urc_2" targetport="in_2" type="char">
             <data key="delay">loop_2.out_1_loop_2.out_1</data>
         </edge>

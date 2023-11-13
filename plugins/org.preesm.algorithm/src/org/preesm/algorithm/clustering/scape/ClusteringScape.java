@@ -326,9 +326,7 @@ public class ClusteringScape {
     }
 
     graph.replaceActor(g, oEmpty);
-    // if (oEmpty.getName().contains("loop")) {
-    // pipLoopTransfo(oEmpty, this.coreEquivalent);
-    // }
+
   }
 
   /**

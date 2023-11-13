@@ -1,6 +1,7 @@
 package org.preesm.algorithm.clustering.scape;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -16,6 +17,7 @@ import org.preesm.model.pisdf.Actor;
 import org.preesm.model.pisdf.DataInputInterface;
 import org.preesm.model.pisdf.DataOutputInterface;
 import org.preesm.model.pisdf.DataOutputPort;
+import org.preesm.model.pisdf.DelayActor;
 import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.pisdf.SpecialActor;
 import org.preesm.model.pisdf.brv.BRVMethod;
@@ -120,11 +122,20 @@ public class ScheduleScape {
    *
    */
   private String pisdf2str() {
-    final Map<AbstractVertex, Long> rv = PiBRV.compute(graph, BRVMethod.LCM);
+    Map<AbstractVertex, Long> rv = PiBRV.compute(graph, BRVMethod.LCM);
+    final Map<AbstractVertex, Long> filteredMap = new HashMap<>(rv);
+
+    for (final Map.Entry<AbstractVertex, Long> entry : rv.entrySet()) {
+      if (entry.getKey() instanceof DelayActor) {
+        filteredMap.remove(entry.getKey());
+      }
+    }
+    rv = filteredMap;
     // Schedule subgraph
 
     StringBuilder result = new StringBuilder();
     List<AbstractActor> actorList = graph.getAllExecutableActors();
+    actorList.removeIf(DelayActor.class::isInstance);
 
     if (rv.size() == 1) {
       result.append(rv.get(actorList.get(0)) + "(" + actorList.get(0).getName() + ")");
