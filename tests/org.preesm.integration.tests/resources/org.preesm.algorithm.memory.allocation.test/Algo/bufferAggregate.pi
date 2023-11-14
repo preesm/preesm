@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<graphml xmlns="http://graphml.graphdrawing.org/xmlns">
+    <key attr.name="parameters" for="graph" id="parameters"/>
+    <key attr.name="variables" for="graph" id="variables"/>
+    <key attr.name="arguments" for="node" id="arguments"/>
+    <key attr.name="name" attr.type="string" for="graph"/>
+    <key attr.name="graph_desc" attr.type="string" for="node"/>
+    <graph edgedefault="directed">
+        <data key="name">bufferAggregate</data>
+        <node id="Actor" kind="actor">
+            <data key="graph_desc">Code/include/actor.h</data>
+            <loop name="actor">
+                <param direction="IN" isConfig="false" name="in" type="char"/>
+                <param direction="OUT" isConfig="false"
+                    name="out_128" type="d128"/>
+                <param direction="OUT" isConfig="false"
+                    name="out_192" type="d192"/>
+            </loop>
+            <port annotation="WRITE_ONLY" expr="33" kind="input" name="in"/>
+            <port annotation="WRITE_ONLY" expr="100"
+                kind="output" name="out_128"/>
+            <port annotation="WRITE_ONLY" expr="100"
+                kind="output" name="out_192"/>
+        </node>
+        <node id="sink" kind="actor">
+            <data key="graph_desc">Code/include/actor.h</data>
+            <loop name="sinkBA">
+                <param direction="IN" isConfig="false"
+                    name="in_128" type="d128"/>
+                <param direction="IN" isConfig="false"
+                    name="in_192" type="d192"/>
+            </loop>
+            <port annotation="READ_ONLY" expr="100" kind="input" name="in_128"/>
+            <port annotation="READ_ONLY" expr="100" kind="input" name="in_192"/>
+        </node>
+        <node id="source0" kind="actor">
+            <data key="graph_desc">Code/include/actor.h</data>
+            <loop name="source">
+                <param direction="OUT" isConfig="false"
+                    name="out" type="char"/>
+            </loop>
+            <port annotation="READ_ONLY" expr="66" kind="output" name="out"/>
+        </node>
+        <edge kind="fifo" source="Actor" sourceport="out_128"
+            target="sink" targetport="in_128" type="d128"/>
+        <edge kind="fifo" source="Actor" sourceport="out_192"
+            target="sink" targetport="in_192" type="d192"/>
+        <edge kind="fifo" source="source0" sourceport="out"
+            target="Actor" targetport="in" type="int"/>
+    </graph>
+</graphml>

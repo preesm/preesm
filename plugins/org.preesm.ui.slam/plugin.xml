@@ -396,10 +396,34 @@
                label="Preesm">
             <!-- generate a default empty scenario in the selected project -->
             <command
-                  commandId="org.preesm.ui.slam.command.ArchitectureGenerator"
+                  commandId="org.preesm.ui.slam.command.ArchitectureGeneratorX86"
                   icon="resources/icons/graphiti.gif"
-                  label="Generate Default Architecture"
-                  tooltip="Generate a default homogeneous X86 architecture in this project."
+                  label="Generate Default x86 Architecture"
+                  tooltip="Generate a default homogeneous x86 architecture in this project."
+                  style="push">
+               <visibleWhen
+                     checkEnabled="true">
+                  <with
+                        variable="selection">
+                     <iterate
+                           ifEmpty="false"
+                           operator="and">
+                        <adapt
+                              type="org.eclipse.core.resources.IProject">
+                           <test
+                                 property="org.eclipse.core.resources.projectNature"
+                                 value="org.ietr.preesm.core.ui.wizards.nature">
+                           </test>
+                        </adapt>
+                     </iterate>
+                  </with>
+               </visibleWhen>
+            </command>
+            <command
+                  commandId="org.preesm.ui.slam.command.ArchitectureGeneratorFpga"
+                  icon="resources/icons/graphiti.gif"
+                  label="Generate Default FPGA Architecture"
+                  tooltip="Generate a default homogeneous FPGA architecture in this project."
                   style="push">
                <visibleWhen
                      checkEnabled="true">
@@ -451,8 +475,12 @@
    <extension
          point="org.eclipse.ui.commands">
       <command
-            id="org.preesm.ui.slam.command.ArchitectureGenerator"
-            name="Architecture Generator">
+            id="org.preesm.ui.slam.command.ArchitectureGeneratorX86"
+            name="Architecture Generator x86">
+      </command>
+      <command
+            id="org.preesm.ui.slam.command.ArchitectureGeneratorFpga"
+            name="Architecture Generator FPGA">
       </command>
    </extension>
 
@@ -460,8 +488,12 @@
    <extension
          point="org.eclipse.ui.handlers">
       <handler
-            class="org.preesm.ui.slam.popup.actions.ArchitectureGeneratorPopup"
-            commandId="org.preesm.ui.slam.command.ArchitectureGenerator">
+            class="org.preesm.ui.slam.popup.actions.ArchitectureGeneratorX86Popup"
+            commandId="org.preesm.ui.slam.command.ArchitectureGeneratorX86">
+      </handler>
+      <handler
+            class="org.preesm.ui.slam.popup.actions.ArchitectureGeneratorFpgaPopup"
+            commandId="org.preesm.ui.slam.command.ArchitectureGeneratorFpga">
       </handler>
             <handler
             class="org.preesm.ui.slam.popup.actions.ArchitectureSimSDPGeneratorPopup"

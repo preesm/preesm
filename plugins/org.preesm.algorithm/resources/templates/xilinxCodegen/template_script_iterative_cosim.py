@@ -32,11 +32,11 @@ use_lambdas = True
 use_initial_tests = True
 detect_steady_state = True
 
-def run_cosim(buffer_sizes):
+def run_cosim(buffer_sizes, mode='cosim'):
     write_buffer_sizes(buffer_sizes)
     start = time.time()
     try:
-        p = subprocess.Popen(['vitis_hls', 'scripts/script_hls.tcl',  'cosim', top_kernel_name, top_kernel_name + '.cpp'], start_new_session=True)
+        p = subprocess.Popen(['vitis_hls', 'scripts/script_hls.tcl', mode, top_kernel_name, top_kernel_name + '.cpp'], start_new_session=True)
         p.wait(timeout=target_runtime)
     except subprocess.TimeoutExpired:
         os.killpg(os.getpgid(p.pid), signal.SIGTERM)
@@ -47,7 +47,7 @@ def run_cosim(buffer_sizes):
     global total_nb_iterations
     total_nb_iterations += nb_iterations
     cosim_timings = get_cosim_timings()
-    write_cosim_log(buffer_sizes, nb_iterations, end - start, cosim_timings)
+    write_cosim_log(mode, buffer_sizes, nb_iterations, end - start, cosim_timings)
     # Reduce number of required iterations based on ET results
     if is_expected_ii(cosim_timings) and detect_steady_state:
         nb_iterations = cosim_timings[0].index(cosim_timings[0][-1]) + 2
@@ -86,7 +86,7 @@ def write_buffer_sizes(buffer_sizes):
             file.write('#[[#]]#define ' + names[i] + ' ' + str(int(buffer_sizes[i])) + '\n')
         file.write('#[[#]]#define NB_ITERATIONS_COSIM ' + str(nb_iterations) + '\n')
 
-def write_cosim_log(buffer_sizes, nb_iterations, runtime, cosim_timings):
+def write_cosim_log(mode, buffer_sizes, nb_iterations, runtime, cosim_timings):
     f = Path('cosim_log.csv')
     if not f.is_file():
         with f.open('w') as file:
@@ -95,7 +95,7 @@ def write_cosim_log(buffer_sizes, nb_iterations, runtime, cosim_timings):
                 file.write(',' + names[i])
             file.write('\n')
     with f.open('a') as file:
-        file.write(top_kernel_name + ',False,' + str(use_bram_wise)  + ',' + str(use_all_resource_wise) + ',' + str(use_lambdas) + ',' + str(use_initial_tests))
+        file.write(top_kernel_name + ',' + str(mode == 'enable_fifo_sizing') + ',' + str(use_bram_wise)  + ',' + str(use_all_resource_wise) + ',' + str(use_lambdas) + ',' + str(use_initial_tests))
         file.write(',' + str(nb_iterations) + ',' + str(int(runtime)) + ',' + str(cosim_timings[1][-1]) + ',' + str(is_expected_ii(cosim_timings)))
         resources = get_synthesis_resources()
         [file.write(',' + str(res)) for res in resources]
@@ -140,9 +140,20 @@ def is_improved_resource_wise(candidate, upper, width):
     return candidate_cost < upper_cost
 
 def iterative_cosim():
+    global target_runtime
+    target_runtime = steady_state_iterative_cosim()
+    # Perform cosim using the different strategies
+    if use_initial_tests:
+        initial_tests_cosim()
+    if use_lambdas:
+        lambda_iterative_cosim()
+    sequential_iterative_cosim()
+    write_buffer_sizes(upper_bound)
+
+def steady_state_iterative_cosim(mode='cosim'):
     # Start by setting the number of iterations of cosim to reach steady state
     start = time.time()
-    cosim_timings = run_cosim(upper_bound)
+    cosim_timings = run_cosim(upper_bound, mode)
     end = time.time()
     if cosim_timings[1] == [-1]:
         raise ValueError('Graph deadlocked with original buffer sizes')
@@ -152,17 +163,10 @@ def iterative_cosim():
         global nb_iterations
         nb_iterations = nb_iterations * 2
         start = time.time()
-        cosim_timings = run_cosim(upper_bound)
+        cosim_timings = run_cosim(upper_bound, mode)
         end = time.time()
-    global target_runtime
-    target_runtime = (end - start) * 2
-    # Perform cosim using the different strategies
-    if use_initial_tests:
-        initial_tests_cosim()
-    if use_lambdas:
-        lambda_iterative_cosim()
-    sequential_iterative_cosim()
-    write_buffer_sizes(upper_bound)
+    # define as target runtime 2x the runtime of the algo
+    return (end - start) * 2
 
 def sequential_iterative_cosim():
     for i in range(len(names)):

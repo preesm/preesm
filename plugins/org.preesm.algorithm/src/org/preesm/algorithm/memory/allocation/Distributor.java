@@ -116,27 +116,20 @@ public class Distributor {
     // Each entry of this map associate a memory to the set
     // of vertices of its MemEx. This map will be differently
     // depending on the policy chosen.
-    Map<String, Set<MemoryExclusionVertex>> memExesVerticesSet;
-    switch (valuePolicy) {
-      case MemoryAllocatorTask.VALUE_DISTRIBUTION_MIXED:
+
+    final Map<String, Set<MemoryExclusionVertex>> memExesVerticesSet = switch (valuePolicy) {
+      case MemoryAllocatorTask.VALUE_DISTRIBUTION_MIXED -> {
         // Split merged buffers (! modifies the memEx !)
         Distributor.splitMergedBuffersMixed(memEx, alignment);
-        memExesVerticesSet = Distributor.distributeMegMixed(memEx);
-        break;
-      case MemoryAllocatorTask.VALUE_DISTRIBUTION_MIXED_MERGED:
-        memExesVerticesSet = Distributor.distributeMegMixedMerged(memEx);
-        break;
-      case MemoryAllocatorTask.VALUE_DISTRIBUTION_DISTRIBUTED_ONLY:
-        memExesVerticesSet = Distributor.distributeMegDistributedOnly(memEx);
-        break;
-      case MemoryAllocatorTask.VALUE_DISTRIBUTION_SHARED_ONLY:
-      case MemoryAllocatorTask.VALUE_DISTRIBUTION_DEFAULT:
-        memExesVerticesSet = Distributor.distributeMegSharedOnly(memEx);
-        break;
-      default:
-        throw new PreesmRuntimeException("Unexpected distribution policy: " + valuePolicy + ".\n Allowed values are "
-            + MemoryAllocatorTask.VALUE_DISTRIBUTION_DEFAULT);
-    }
+        yield Distributor.distributeMegMixed(memEx);
+      }
+      case MemoryAllocatorTask.VALUE_DISTRIBUTION_MIXED_MERGED -> Distributor.distributeMegMixedMerged(memEx);
+      case MemoryAllocatorTask.VALUE_DISTRIBUTION_DISTRIBUTED_ONLY -> Distributor.distributeMegDistributedOnly(memEx);
+      case MemoryAllocatorTask.VALUE_DISTRIBUTION_SHARED_ONLY, MemoryAllocatorTask.VALUE_DISTRIBUTION_DEFAULT ->
+        Distributor.distributeMegSharedOnly(memEx);
+      default -> throw new PreesmRuntimeException("Unexpected distribution policy: " + valuePolicy
+          + ".\n Allowed values are " + MemoryAllocatorTask.VALUE_DISTRIBUTION_DEFAULT);
+    };
 
     // Update the memExexVerticesSet to include hosted mObjects
     // (splitMergedBuffers ensured that all mObjects hosted by another do
@@ -151,7 +144,7 @@ public class Distributor {
         // addAll: Add these memory objects to the entry sets of mObject
         entry.getValue()
             .addAll(hosts.entrySet().stream().filter(mapEntry -> entry.getValue().contains(mapEntry.getKey()))
-                .map(Entry::getValue).flatMap(Collection::stream).collect(Collectors.toList()));
+                .map(Entry::getValue).flatMap(Collection::stream).toList());
       }
     }
 
@@ -363,7 +356,7 @@ public class Distributor {
     // into this memory bank.
     final LinkedHashSet<MemoryExclusionVertex> newHostsMObjs = new LinkedHashSet<>();
     for (final Entry<String, Set<MemoryExclusionVertex>> bankEntry : mobjByBank.entrySet().stream()
-        .filter(mapEntry -> banks.contains(mapEntry.getKey())).collect(Collectors.toList())) {
+        .filter(mapEntry -> banks.contains(mapEntry.getKey())).toList()) {
       createHostRange(mobjByBank, alignment, hosts, bankByMobj, mObjsToUndivide, newHostsMObjs, bankEntry);
     }
 
@@ -555,16 +548,14 @@ public class Distributor {
             // as a host in the next step
             mObjInCurrentRange.add(0, mObj);
           }
-        } else {
+        } else if (ranges.stream().anyMatch(range -> range.getValue().getValue().intersection(currentRange) != null)) {
           // Buffer is divided, check if *any* of its range
           // intersects with the current range in bank
           // (i.e. check if *not* none of its range intersect with the range)
-          if (ranges.stream().anyMatch(range -> range.getValue().getValue().intersection(currentRange) != null)) {
-            // Add divided object at the end of the list
-            // to make sure that no divided object will ever be selected
-            // as a host in the next step
-            mObjInCurrentRange.add(mObj);
-          }
+          // Add divided object at the end of the list
+          // to make sure that no divided object will ever be selected
+          // as a host in the next step
+          mObjInCurrentRange.add(mObj);
         }
       }
       rangesInBankAndMObjs.put(currentRange, mObjInCurrentRange);
@@ -590,7 +581,7 @@ public class Distributor {
       // all stored in the same memory bank
       final List<MemoryExclusionVertex> dividedPartsHosts = mobj.getPropertyBean()
           .getValue(MemoryExclusionVertex.DIVIDED_PARTS_HOSTS);
-      final List<String> partsHostsSet = dividedPartsHosts.stream().map(bankByMobj::get).collect(Collectors.toList());
+      final List<String> partsHostsSet = dividedPartsHosts.stream().map(bankByMobj::get).toList();
       if ((partsHostsSet.size() == 1) && partsHostsSet.get(0).equals(bankEntry.getKey())) {
         // All hosts were allocated in the same bank
         // And this bank is the current bankEntry
@@ -765,7 +756,7 @@ public class Distributor {
     for (int i = 0; i < 2; i++) {
       // Retrieve the component on which the DAG Vertex is mapped
       final DAGEdge edge = mObj.getEdge();
-      DAGVertex dagVertex = retriveDagVertex(mObj, memEx, i, edge);
+      final DAGVertex dagVertex = retriveDagVertex(mObj, memEx, i, edge);
 
       final ComponentInstance component = dagVertex.getPropertyBean().getValue(Distributor.OPERATOR);
 

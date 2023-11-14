@@ -78,7 +78,7 @@ public abstract class AbstractMaximumWeightCliqueSolver<V extends IWeightedVerte
 
   /**
    */
-  public AbstractMaximumWeightCliqueSolver(final SimpleGraph<V, E> graph) {
+  protected AbstractMaximumWeightCliqueSolver(final SimpleGraph<V, E> graph) {
     // Keep a reference to the graph
     this.graph = graph;
     this.heaviestClique = new LinkedHashSet<>();
@@ -174,8 +174,8 @@ public abstract class AbstractMaximumWeightCliqueSolver<V extends IWeightedVerte
   public void clearAdjacentVerticesBackup() {
     this.adjacentVerticesBackup.clear();
 
-    if (this.graph instanceof MemoryExclusionGraph) {
-      ((MemoryExclusionGraph) this.graph).clearAdjacentVerticesBackup();
+    if (this.graph instanceof final MemoryExclusionGraph memExGraph) {
+      memExGraph.clearAdjacentVerticesBackup();
     }
   }
 

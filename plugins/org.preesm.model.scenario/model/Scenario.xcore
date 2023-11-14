@@ -60,6 +60,7 @@ import org.preesm.model.pisdf.PiGraph
 import org.preesm.model.pisdf.SpecialActor
 import org.preesm.model.pisdf.expression.ExpressionEvaluator
 import org.preesm.model.pisdf.serialize.PiParser
+import org.preesm.model.scenario.util.DefaultTypeSizes
 import org.preesm.model.slam.ComponentInstance
 import org.preesm.model.slam.Design
 import org.preesm.model.slam.serialize.SlamParser
@@ -198,6 +199,8 @@ class SimulationInfo {
 	op long getBufferSizeInByte(String typeName, long nbToken) {
 		if (dataTypes.containsKey(typeName)) {
 			return (dataTypes.get(typeName) * nbToken + 7L) / 8L;
+		} else if (DefaultTypeSizes.getInstance().getTypeSize(typeName) !== DefaultTypeSizes.UNKNOWN_TYPE) {
+			return (DefaultTypeSizes.getInstance().getTypeSize(typeName) * nbToken + 7L) / 8L;
 		} else {
 			return ScenarioConstants.DEFAULT_MISSING_DATA_TYPE.value;
 		}
@@ -205,6 +208,8 @@ class SimulationInfo {
 	op long getBufferSizeInBit(String typeName, long nbToken) {
 		if (dataTypes.containsKey(typeName)) {
 			return dataTypes.get(typeName) * nbToken;
+		} else if (DefaultTypeSizes.getInstance().getTypeSize(typeName) !== DefaultTypeSizes.UNKNOWN_TYPE) {
+			return DefaultTypeSizes.getInstance().getTypeSize(typeName) * nbToken;
 		} else {
 			return ScenarioConstants.DEFAULT_MISSING_DATA_TYPE.value;
 		}

@@ -1,6 +1,6 @@
 # Generate ip in Vivado format
 # arguments :
-# - arg 0 mode to use, either csynth or cosim
+# - arg 0 mode to use, either csynth, cosim or enable_fifo_sizing
 # - arg 1 name of the top function and output IP
 # - arg 2-N file names
 
@@ -18,6 +18,10 @@ if {[string match [lindex $argv 0] cosim] == 1} {
   add_files -tb ${top}_testbench.cpp
 }
 
+if {[string match [lindex $argv 0] enable_fifo_sizing] == 1} {
+  add_files -tb ${top}_testbench.cpp
+}
+
 # Setup solution for target FPGA
 open_solution "solution1" -flow_target vivado
 set_part {xc7z020-clg400-1}
@@ -32,6 +36,9 @@ if {[string match [lindex $argv 0] csynth] == 1} {
 }
 if {[string match [lindex $argv 0] cosim] == 1} {
   cosim_design -O
+}
+if {[string match [lindex $argv 0] enable_fifo_sizing] == 1} {
+  cosim_design -O -enable_fifo_sizing
 }
 
 exit

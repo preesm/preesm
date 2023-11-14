@@ -66,7 +66,8 @@ import org.preesm.workflow.implement.AbstractTaskImplementation;
 
     parameters = {
 
-        @Parameter(name = "Verbose", values = { @Value(name = "? C {True, False}", effect = "") }),
+        @Parameter(name = MapperTask.PARAM_VERBOSE,
+            values = { @Value(name = MapperTask.VALUE_VERBOSE_DEFAULT, effect = "") }),
         @Parameter(name = "Distribution",
             description = "Specify which memory architecture should be used to allocate the memory.",
             values = { @Value(name = "SharedOnly",

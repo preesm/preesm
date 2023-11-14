@@ -75,9 +75,8 @@ public class DeGreefAllocator extends MemoryAllocator {
 
     ArrayList<IntegerAndVertex> nonAllocatedVertices;
     nonAllocatedVertices = new ArrayList<>();
-    for (final MemoryExclusionVertex vertex : this.inputExclusionGraph.vertexSet()) {
-      nonAllocatedVertices.add(new IntegerAndVertex(0, vertex));
-    }
+
+    this.inputExclusionGraph.vertexSet().forEach(v -> nonAllocatedVertices.add(new IntegerAndVertex(0, v)));
 
     Collections.sort(nonAllocatedVertices);
 
@@ -94,13 +93,12 @@ public class DeGreefAllocator extends MemoryAllocator {
       // Construct two lists that contains the exclusion ranges in memory
       final List<Long> excludeFrom = new ArrayList<>();
       final List<Long> excludeTo = new ArrayList<>();
-      for (final MemoryExclusionVertex neighbor : neighbors) {
-        if (this.memExNodeAllocation.containsKey(neighbor)) {
-          final long neighborOffset = this.memExNodeAllocation.get(neighbor);
-          excludeFrom.add(neighborOffset);
-          excludeTo.add(neighborOffset + neighbor.getWeight());
-        }
-      }
+
+      neighbors.stream().filter(neighbor -> this.memExNodeAllocation.containsKey(neighbor)).forEach(n -> {
+        final long neighborOffset = this.memExNodeAllocation.get(n);
+        excludeFrom.add(neighborOffset);
+        excludeTo.add(neighborOffset + n.getWeight());
+      });
 
       Collections.sort(excludeFrom);
       Collections.sort(excludeTo);
@@ -110,7 +108,7 @@ public class DeGreefAllocator extends MemoryAllocator {
 
       // Alignment constraint
       long align = -1;
-      final Long typeSize = vertex.getPropertyBean().getValue(MemoryExclusionVertex.TYPE_SIZE);
+      final Long typeSize = vertex.getVertexAlignmentConstraint();
       if (this.alignment == 0) {
         align = typeSize;
       } else if (this.alignment > 0) {
@@ -151,13 +149,11 @@ public class DeGreefAllocator extends MemoryAllocator {
             if (iterFrom.hasNext()) {
               from = iterFrom.next();
               nbExcludeFrom++;
-            } else {
-              if (!lastFromTreated) {
-                lastFromTreated = true;
-                // Add a from to avoid considering the end of
-                // lastTo as a free space
-                nbExcludeFrom++;
-              }
+            } else if (!lastFromTreated) {
+              lastFromTreated = true;
+              // Add a from to avoid considering the end of
+              // lastTo as a free space
+              nbExcludeFrom++;
             }
           }
 
@@ -220,18 +216,12 @@ public class DeGreefAllocator extends MemoryAllocator {
 
     @Override
     public boolean equals(final Object other) {
-      if (other instanceof IntegerAndVertex) {
-        final IntegerAndVertex otherPair = (IntegerAndVertex) other;
+      if (other instanceof final IntegerAndVertex otherPair) {
         return ((this.first == otherPair.first) && ((this.second == otherPair.second)
             || ((this.second != null) && (otherPair.second != null) && this.second.equals(otherPair.second))));
       }
 
       return false;
-    }
-
-    @Override
-    public String toString() {
-      return "(" + this.first + ", " + this.second + ")";
     }
 
     public long getFirst() {
@@ -248,7 +238,8 @@ public class DeGreefAllocator extends MemoryAllocator {
       final long firstDiff = this.first - o.first;
       if (firstDiff > 0) {
         return 1;
-      } else if (firstDiff < 0) {
+      }
+      if (firstDiff < 0) {
         return -1;
       }
 

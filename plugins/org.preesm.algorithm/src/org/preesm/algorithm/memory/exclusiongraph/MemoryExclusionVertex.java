@@ -79,7 +79,6 @@
  */
 package org.preesm.algorithm.memory.exclusiongraph;
 
-import java.util.Iterator;
 import java.util.List;
 import java.util.logging.Level;
 import org.eclipse.xtext.xbase.lib.Pair;
@@ -91,6 +90,7 @@ import org.preesm.algorithm.model.PropertyBean;
 import org.preesm.algorithm.model.PropertyFactory;
 import org.preesm.algorithm.model.dag.DAGEdge;
 import org.preesm.commons.logger.PreesmLogger;
+import org.preesm.commons.math.MathFunctionsHelper;
 import org.preesm.model.scenario.Scenario;
 
 /**
@@ -206,19 +206,15 @@ public class MemoryExclusionVertex extends AbstractVertex<MemoryExclusionGraph> 
     if (this.size == 0) {
       PreesmLogger.getLogger().log(Level.WARNING, "Probable ERROR: Vertex weight is 0");
     }
-
   }
 
   private static long getSize(final DAGEdge inputEdge, final Scenario scenario) {
     // if datatype is defined, correct the vertex weight
     final BufferAggregate buffers = inputEdge.getPropertyBean().getValue(BufferAggregate.propertyBeanName);
-    final Iterator<BufferProperties> iter = buffers.iterator();
     long vertexWeight = 0;
-    while (iter.hasNext()) {
-      final BufferProperties properties = iter.next();
+    for (final BufferProperties properties : buffers) {
       final String dataType = properties.getDataType();
       vertexWeight += scenario.getSimulationInfo().getBufferSizeInBit(dataType, properties.getNbToken());
-
     }
     return vertexWeight;
   }
@@ -239,6 +235,31 @@ public class MemoryExclusionVertex extends AbstractVertex<MemoryExclusionGraph> 
     this.source = sourceTask;
     this.sink = sinkTask;
     this.size = sizeMem;
+  }
+
+  /**
+   * Function returning the alignment constraint for the current {@link MemoryExclusionVertex}. If the
+   * {@link MemoryExclusionVertex} corresponds to a {@link BufferAggregate}, the returned alignmentConstraint needs to
+   * enable proper alignment for every subbuffer of the {@link BufferAggregate}.
+   *
+   * @return alignmentConstraint The alignment constraint
+   */
+
+  public Long getVertexAlignmentConstraint() {
+
+    Long alignmentConstraint;
+
+    if (this.getEdge() != null) {
+      final BufferAggregate buffers = this.getEdge().getPropertyBean().getValue(BufferAggregate.propertyBeanName);
+
+      alignmentConstraint = buffers.stream()
+          .mapToLong(p -> this.getScenario().getSimulationInfo().getDataTypeSizeInBit(p.getDataType()))
+          .reduce(1L, MathFunctionsHelper::lcm);
+
+    } else {
+      alignmentConstraint = this.getPropertyBean().getValue(MemoryExclusionVertex.TYPE_SIZE);
+    }
+    return alignmentConstraint;
   }
 
   public final Scenario getScenario() {
@@ -306,14 +327,13 @@ public class MemoryExclusionVertex extends AbstractVertex<MemoryExclusionGraph> 
    */
   @Override
   public boolean equals(final Object o) {
-    if (o instanceof MemoryExclusionVertex) {
+    if (o instanceof final MemoryExclusionVertex memExVertex) {
       // final boolean sameEdge = this.edge == ((MemoryExclusionVertex) o).edge
-      final boolean sameSource = this.getSource().equals(((MemoryExclusionVertex) o).getSource());
-      final boolean sameSink = this.getSink().equals(((MemoryExclusionVertex) o).getSink());
+      final boolean sameSource = this.getSource().equals(memExVertex.getSource());
+      final boolean sameSink = this.getSink().equals(memExVertex.getSink());
       return sameSink && sameSource;// && sameEdge
-    } else {
-      return false;
     }
+    return false;
   }
 
   @Override

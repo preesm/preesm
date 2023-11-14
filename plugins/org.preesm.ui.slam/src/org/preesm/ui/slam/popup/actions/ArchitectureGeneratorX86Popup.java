@@ -53,7 +53,7 @@ import org.preesm.ui.wizards.PreesmProjectNature;
  * @author ahonorat
  *
  */
-public class ArchitectureGeneratorPopup extends AbstractHandler {
+public class ArchitectureGeneratorX86Popup extends AbstractHandler {
 
   @Override
   public Object execute(ExecutionEvent event) throws ExecutionException {
@@ -64,14 +64,18 @@ public class ArchitectureGeneratorPopup extends AbstractHandler {
       final IProject project = (IProject) selection.getFirstElement();
       // If it is a Preesm project, generate default design in Archi/ folder
       if (project.hasNature(PreesmProjectNature.ID)) {
-        final String input = DialogUtil.askString("Generate default X86 architecture file.",
+
+        final String input = DialogUtil.askString("Generate default x86 architecture file.",
+
             "Enter the number of cores.", "", new NbCoresValidator());
         if (input == null || input.isEmpty()) {
           return null;
         }
 
         final ArchitecturesGenerator generator = new ArchitecturesGenerator(project);
-        generator.generateAndSaveArchitecture(Integer.parseInt(input));
+
+        generator.generateAndSaveX86Architecture(Integer.parseInt(input));
+
       }
 
     } catch (final Exception e) {
@@ -79,5 +83,4 @@ public class ArchitectureGeneratorPopup extends AbstractHandler {
     }
     return null;
   }
-
 }

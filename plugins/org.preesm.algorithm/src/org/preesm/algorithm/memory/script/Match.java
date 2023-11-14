@@ -278,6 +278,7 @@ public class Match {
     // Copy the overlapping indivisible range(s)
     final List<Range> indivisibleRanges = getLocalBuffer().indivisibleRanges;
     // toList to make sure the map function is applied only once
+    // This List needs to be mutable.
     final List<Range> overlappingIndivisibleRanges = indivisibleRanges.stream()
         .filter(r -> Range.hasOverlap(r, localIndivisiblerange)).map(Range::copy).collect(Collectors.toList());
 
@@ -331,10 +332,7 @@ public class Match {
     if (this == obj) {
       return true;
     }
-    if (obj == null) {
-      return false;
-    }
-    if (this.getClass() != obj.getClass()) {
+    if ((obj == null) || (this.getClass() != obj.getClass())) {
       return false;
     }
     final Match other = (Match) obj;
@@ -363,16 +361,13 @@ public class Match {
     final boolean rangeEmpty = Range.intersection(getForbiddenLocalRanges(), impactedTokens).isEmpty();
     if (!rangeEmpty) {
       return false;
-    } else {
-      // And match only localMergeableRange are in fact mergeable
-      if (getType() == MatchType.FORWARD) {
-        return true;
-      } else {
-        final List<Range> mustBeMergeableRanges = Range.intersection(getMergeableLocalRanges(), impactedTokens);
-        final List<Range> mergeableRanges = Range.intersection(getLocalBuffer().mergeableRanges, impactedTokens);
-        return Range.difference(mustBeMergeableRanges, mergeableRanges).isEmpty();
-      }
     }
+    if (getType() == MatchType.FORWARD) {
+      return true;
+    }
+    final List<Range> mustBeMergeableRanges = Range.intersection(getMergeableLocalRanges(), impactedTokens);
+    final List<Range> mergeableRanges = Range.intersection(getLocalBuffer().mergeableRanges, impactedTokens);
+    return Range.difference(mustBeMergeableRanges, mergeableRanges).isEmpty();
   }
 
   /**
@@ -395,8 +390,8 @@ public class Match {
     } else {
       // Else, recursive call
 
-      final List<Match> c = matched.stream().filter(m -> Range.hasOverlap(m.getLocalIndivisibleRange(), remoteRange))
-          .collect(Collectors.toList());
+      final List<
+          Match> c = matched.stream().filter(m -> Range.hasOverlap(m.getLocalIndivisibleRange(), remoteRange)).toList();
 
       for (final Match match : c) {
         final Map<Range, Pair<Buffer, Range>> recursiveResult = match.getRoot();

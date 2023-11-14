@@ -49,6 +49,7 @@ import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Path;
 import org.preesm.algorithm.memory.allocation.tasks.MemoryAllocatorTask;
@@ -85,21 +86,17 @@ public class MemoryScriptEngine {
       final boolean verbose) {
     this.verbose = verbose;
     // Get the logger
-    final long alignment;
-    switch (valueAlignment.substring(0, Math.min(valueAlignment.length(), 7))) {
-      case MemoryAllocatorTask.VALUE_ALIGNEMENT_NONE:
-        alignment = -1;
-        break;
-      case MemoryAllocatorTask.VALUE_ALIGNEMENT_DATA:
-        alignment = 0;
-        break;
-      case MemoryAllocatorTask.VALUE_ALIGNEMENT_FIXED:
+
+    final long alignment = switch (valueAlignment.substring(0, Math.min(valueAlignment.length(), 7))) {
+      case MemoryAllocatorTask.VALUE_ALIGNEMENT_NONE -> -1;
+      case MemoryAllocatorTask.VALUE_ALIGNEMENT_DATA -> 0;
+      case MemoryAllocatorTask.VALUE_ALIGNEMENT_FIXED -> {
         final String fixedValue = valueAlignment.substring(7);
-        alignment = Long.parseLong(fixedValue);
-        break;
-      default:
-        alignment = -1;
-    }
+        yield Long.parseLong(fixedValue);
+      }
+      default -> -1;
+    };
+
     if (verbose) {
       String message = "Scripts with alignment:=" + alignment + " bits.";
       this.logger.log(Level.INFO, message);
@@ -154,20 +151,15 @@ public class MemoryScriptEngine {
   private void check(String checkString) {
     // Check the result
     switch (checkString) {
-      case VALUE_CHECK_NONE:
-        this.sr.setCheckPolicy(CheckPolicy.NONE);
-        break;
-      case VALUE_CHECK_FAST:
-        this.sr.setCheckPolicy(CheckPolicy.FAST);
-        break;
-      case VALUE_CHECK_THOROUGH:
-        this.sr.setCheckPolicy(CheckPolicy.THOROUGH);
-        break;
-      default:
+      case VALUE_CHECK_NONE -> this.sr.setCheckPolicy(CheckPolicy.NONE);
+      case VALUE_CHECK_FAST -> this.sr.setCheckPolicy(CheckPolicy.FAST);
+      case VALUE_CHECK_THOROUGH -> this.sr.setCheckPolicy(CheckPolicy.THOROUGH);
+      default -> {
         checkString = MemoryScriptEngine.VALUE_CHECK_FAST;
         this.sr.setCheckPolicy(CheckPolicy.FAST);
-        break;
+      }
     }
+
     if (this.verbose) {
       final String message = "Checking results of memory scripts with checking policy: " + checkString + ".";
       this.logger.log(Level.INFO, message);
@@ -202,7 +194,7 @@ public class MemoryScriptEngine {
     if (scenario.getCodegenDirectory() == null) {
       throw new PreesmRuntimeException("Codegen path has not been specified in scenario, cannot go further.");
     }
-    final String codegenPath = scenario.getCodegenDirectory() + "/";
+    final String codegenPath = scenario.getCodegenDirectory() + IPath.SEPARATOR;
     final IFile iFile;
     try {
       iFile = ResourcesPlugin.getWorkspace().getRoot().getFile(new Path(codegenPath + log + ".txt"));

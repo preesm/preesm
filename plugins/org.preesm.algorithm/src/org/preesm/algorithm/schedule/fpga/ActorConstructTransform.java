@@ -7,7 +7,6 @@ import org.preesm.model.pisdf.DataInputPort;
 import org.preesm.model.pisdf.DataOutputPort;
 import org.preesm.model.pisdf.Dependency;
 import org.preesm.model.pisdf.Direction;
-import org.preesm.model.pisdf.Fifo;
 import org.preesm.model.pisdf.FunctionArgument;
 import org.preesm.model.pisdf.FunctionPrototype;
 import org.preesm.model.pisdf.Parameter;
@@ -20,26 +19,15 @@ import org.preesm.model.pisdf.factory.PiMMUserFactory;
  */
 
 public abstract class ActorConstructTransform {
-  protected static Fifo createFifo(String type, DataOutputPort source, DataInputPort sink) {
-    final Fifo newFifo = PiMMUserFactory.instance.createFifo();
-    newFifo.setContainingGraph(source.getContainingActor().getContainingGraph());
-    newFifo.setType(type);
-    newFifo.setSourcePort(source);
-    newFifo.setTargetPort(sink);
-    return newFifo;
-  }
-
   protected static DataInputPort createDataInputPort(final Actor actor, long rate) {
-    final DataInputPort inputPort = PiMMUserFactory.instance.createDataInputPort();
-    inputPort.setName("input");
+    final DataInputPort inputPort = PiMMUserFactory.instance.createDataInputPort("input");
     inputPort.setExpression(rate);
     actor.getDataInputPorts().add(inputPort);
     return inputPort;
   }
 
   protected static DataOutputPort createDataOutputPort(final Actor actor, long rate) {
-    final DataOutputPort outputPort = PiMMUserFactory.instance.createDataOutputPort();
-    outputPort.setName("output");
+    final DataOutputPort outputPort = PiMMUserFactory.instance.createDataOutputPort("output");
     outputPort.setExpression(rate);
     actor.getDataOutputPorts().add(outputPort);
     return outputPort;
@@ -49,11 +37,9 @@ public abstract class ActorConstructTransform {
     final ConfigInputPort width = PiMMUserFactory.instance.createConfigInputPort();
     width.setName(name);
     actor.getConfigInputPorts().add(width);
-    final Dependency depInputWidth = PiMMUserFactory.instance.createDependency();
-    depInputWidth.setContainingGraph(actor.getContainingGraph());
-    depInputWidth.setGetter(width);
+    final Dependency depInputWidth = PiMMUserFactory.instance.createDependency(param, width);
+    actor.getContainingPiGraph().addDependency(depInputWidth);
     width.setIncomingDependency(depInputWidth);
-    depInputWidth.setSetter(param);
     param.getOutgoingDependencies().add(depInputWidth);
   }
 

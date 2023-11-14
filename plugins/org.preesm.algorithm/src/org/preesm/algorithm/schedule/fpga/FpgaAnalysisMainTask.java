@@ -60,10 +60,10 @@ import org.preesm.workflow.implement.AbstractWorkflowNodeImplementation;
             description = "The name of fifo evaluator to be used.",
             values = { @Value(name = AsapFpgaFifoEvaluator.FIFO_EVALUATOR_AVG, effect = "Evaluate with average mode."),
                 @Value(name = AsapFpgaFifoEvaluator.FIFO_EVALUATOR_SDF, effect = "Evaluate with SDF mode."),
-                @Value(name = AdfgFpgaFifoEvaluator.FIFO_EVALUATOR_ADFG_EXACT,
-                    effect = "Evaluate with ADFG exact mode."),
-                @Value(name = AdfgFpgaFifoEvaluator.FIFO_EVALUATOR_ADFG_LINEAR,
-                    effect = "Evaluate with ADFG linear approximation mode.") }),
+                @Value(name = AdfgOjalgoFpgaFifoEvaluator.FIFO_EVALUATOR_ADFG_DEFAULT_EXACT,
+                    effect = "Evaluate with ADFG exact mode using ojAlgo."),
+                @Value(name = AdfgOjalgoFpgaFifoEvaluator.FIFO_EVALUATOR_ADFG_DEFAULT_LINEAR,
+                    effect = "Evaluate with ADFG linear approximation mode using ojAlgo.") }),
         @Parameter(name = FpgaAnalysisMainTask.PACK_TOKENS_PARAM_NAME,
             description = "Whether or not the tokens should be packed to otpimize bram usage.",
             values = { @Value(name = FpgaAnalysisMainTask.PACK_TOKENS_PARAM_VALUE,
@@ -201,7 +201,7 @@ public class FpgaAnalysisMainTask extends AbstractTaskImplementation {
   private static Map<InterfaceActor, Pair<Long, Long>> checkInterfaces(final PiGraph flatGraph,
       final Map<AbstractVertex, Long> brv) {
     final Map<InterfaceActor, Pair<Long, Long>> result = new LinkedHashMap<>();
-    flatGraph.getActors().stream().filter(x -> (x instanceof InterfaceActor)).forEach(x -> {
+    flatGraph.getActors().stream().filter(InterfaceActor.class::isInstance).forEach(x -> {
       final InterfaceActor ia = (InterfaceActor) x;
       final DataPort iaPort = ia.getDataPort();
       if (iaPort.getFifo() == null) {

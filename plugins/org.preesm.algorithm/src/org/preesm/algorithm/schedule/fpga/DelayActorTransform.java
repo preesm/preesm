@@ -7,6 +7,7 @@ import org.preesm.model.pisdf.Actor;
 import org.preesm.model.pisdf.DataInputPort;
 import org.preesm.model.pisdf.DataOutputPort;
 import org.preesm.model.pisdf.Delay;
+import org.preesm.model.pisdf.Fifo;
 import org.preesm.model.pisdf.Parameter;
 import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.pisdf.factory.PiMMUserFactory;
@@ -56,7 +57,9 @@ public class DelayActorTransform extends ActorConstructTransform {
 
     // Create and connect FIFO
     // Connect actor after delay to facilitate initialization during simulation
-    createFifo(delay.getContainingFifo().getType(), delayActorOutput, delay.getContainingFifo().getTargetPort());
+    final Fifo fifo = PiMMUserFactory.instance.createFifo(delayActorOutput, delay.getContainingFifo().getTargetPort(),
+        delay.getContainingFifo().getType());
+    flatGraph.addFifo(fifo);
     delay.getContainingFifo().setTargetPort(delayActorInput);
   }
 }

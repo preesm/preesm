@@ -73,31 +73,23 @@ public class MemoryBoundsEstimatorEngine {
    */
   public void selectSolver(final String valueSolver) {
     if (this.verbose) {
-      if (valueSolver.equals(MemoryBoundsEstimatorEngine.VALUE_SOLVER_DEFAULT)) {
-        this.logger.log(Level.INFO, "No solver specified. Heuristic solver used by default.");
-      } else {
-        if (valueSolver.equals(MemoryBoundsEstimatorEngine.VALUE_SOLVER_HEURISTIC)
-            || valueSolver.equals(MemoryBoundsEstimatorEngine.VALUE_SOLVER_OSTERGARD)
-            || valueSolver.equals(MemoryBoundsEstimatorEngine.VALUE_SOLVER_YAMAGUCHI)) {
+      switch (valueSolver) {
+        case MemoryBoundsEstimatorEngine.VALUE_SOLVER_DEFAULT ->
+          this.logger.log(Level.INFO, "No solver specified. Heuristic solver used by default.");
+        case MemoryBoundsEstimatorEngine.VALUE_SOLVER_HEURISTIC, MemoryBoundsEstimatorEngine.VALUE_SOLVER_OSTERGARD,
+            MemoryBoundsEstimatorEngine.VALUE_SOLVER_YAMAGUCHI ->
           this.logger.log(Level.INFO, () -> valueSolver + " solver used.");
-        } else {
+        default ->
           this.logger.log(Level.INFO, () -> "Incorrect solver :" + valueSolver + ". Heuristic solver used by default.");
-        }
       }
     }
-    switch (valueSolver) {
-      case VALUE_SOLVER_HEURISTIC:
-        this.solver = new HeuristicSolver<>(this.memEx);
-        break;
-      case VALUE_SOLVER_OSTERGARD:
-        this.solver = new OstergardSolver<>(this.memEx);
-        break;
-      case VALUE_SOLVER_YAMAGUCHI:
-        this.solver = new YamaguchiSolver<>(this.memEx);
-        break;
-      default:
-        this.solver = new HeuristicSolver<>(this.memEx);
-    }
+
+    this.solver = switch (valueSolver) {
+      case VALUE_SOLVER_HEURISTIC -> new HeuristicSolver<>(this.memEx);
+      case VALUE_SOLVER_OSTERGARD -> new OstergardSolver<>(this.memEx);
+      case VALUE_SOLVER_YAMAGUCHI -> new YamaguchiSolver<>(this.memEx);
+      default -> new HeuristicSolver<>(this.memEx);
+    };
   }
 
   /**
