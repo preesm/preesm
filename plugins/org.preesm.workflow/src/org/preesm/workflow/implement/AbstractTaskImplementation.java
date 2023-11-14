@@ -59,7 +59,7 @@ public abstract class AbstractTaskImplementation extends AbstractWorkflowNodeImp
   /**
    * Instantiates a new abstract task implementation.
    */
-  public AbstractTaskImplementation() {
+  protected AbstractTaskImplementation() {
     this.inputPrototype = new LinkedHashMap<>();
   }
 

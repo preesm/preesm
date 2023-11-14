@@ -57,6 +57,7 @@ import org.preesm.model.slam.ComponentHolder;
 import org.preesm.model.slam.ComponentInstance;
 import org.preesm.model.slam.DataLink;
 import org.preesm.model.slam.Design;
+import org.preesm.model.slam.FPGA;
 import org.preesm.model.slam.SlamFactory;
 import org.preesm.model.slam.VLNV;
 import org.preesm.model.slam.serialize.IPXACTDesignWriter;
@@ -86,8 +87,16 @@ public class ArchitecturesGenerator {
    *          Number of cores in the generated architecture.
    *
    */
-  public void generateAndSaveArchitecture(int nbX86cores) {
-    saveArchitecture(generateArchitecture(nbX86cores));
+  public void generateAndSaveX86Architecture(int nbX86cores) {
+    saveArchitecture(generateX86Architecture(nbX86cores));
+  }
+
+  /**
+   * Generate and save default Fpga architecture.
+   *
+   */
+  public void generateAndSaveFpgaArchitecture() {
+    saveArchitecture(generateFpgaArchitecture());
   }
 
   public void generateAndSaveArchitecture(Map<String, Integer> cores, String nodeName, Double communicationRate) {
@@ -102,7 +111,8 @@ public class ArchitecturesGenerator {
    *
    * @return The generated architecture.
    */
-  public static Design generateArchitecture(int nbX86cores) {
+
+  public static Design generateX86Architecture(int nbX86cores) {
     final VLNV rootVLNV = SlamFactory.eINSTANCE.createVLNV();
 
     rootVLNV.setName(nbX86cores + "CoresX86");
@@ -238,6 +248,40 @@ public class ArchitecturesGenerator {
       }
       i1 += coreMap.getValue();
     }
+
+    return design;
+  }
+
+  /**
+   * Generate and save fpga architecture with.
+   *
+   * @return The generated architecture.
+   */
+  public static Design generateFpgaArchitecture() {
+    final VLNV rootVLNV = SlamFactory.eINSTANCE.createVLNV();
+    rootVLNV.setName("fpga");
+    rootVLNV.setLibrary("preesm");
+    rootVLNV.setVendor("ietr");
+    rootVLNV.setVersion("1");
+
+    final Design design = SlamFactory.eINSTANCE.createDesign();
+    design.setVlnv(rootVLNV);
+    final ComponentHolder ch = SlamFactory.eINSTANCE.createComponentHolder();
+    design.setComponentHolder(ch);
+
+    final VLNV operatorVLNV = SlamFactory.eINSTANCE.createVLNV();
+    operatorVLNV.setName("FPGA");
+    operatorVLNV.setLibrary("");
+    operatorVLNV.setVendor("");
+    operatorVLNV.setVersion("");
+    final Component opFpga = SlamUserFactory.eINSTANCE.createComponent(operatorVLNV, FPGA.class.getSimpleName());
+    ch.getComponents().add(opFpga);
+
+    final ComponentInstance fpga = SlamFactory.eINSTANCE.createComponentInstance();
+    fpga.setHardwareId(0);
+    fpga.setInstanceName("Fpga");
+    design.getComponentInstances().add(fpga);
+    fpga.setComponent(opFpga);
 
     return design;
   }

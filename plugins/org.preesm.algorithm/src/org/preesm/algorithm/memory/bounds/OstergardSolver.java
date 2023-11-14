@@ -38,7 +38,6 @@ package org.preesm.algorithm.memory.bounds;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 import org.jgrapht.graph.DefaultEdge;
@@ -186,43 +185,36 @@ public class OstergardSolver<V extends IWeightedVertex<Long>, E extends DefaultE
     // Vertices are added one by one to the ordered vertex set
     while (!unorderedSet.isEmpty()) {
 
-      // Select the vertex with the smallest weight but the largest sum of
-      // weight of adjacent nodes
-      final Iterator<V> iter = unorderedSet.iterator();
       V selectedVertex = unorderedSet.get(0);
       final long selectedWeight = unorderedSet.get(0).getWeight();
       long selectedAdjacentWeight = 0;
 
-      while (iter.hasNext()) {
-        final V currentVertex = iter.next();
-
+      for (V currentVertex : unorderedSet) {
         // If the vertex weight is equal to the selectedWeight
-        if (currentVertex.getWeight() == selectedWeight) {
-
-          // Sum the weight of vertices adjacent to the current vertex
-          // in graphCopy
-          long currentAdjacentWeight = 0;
-          final Set<E> edges = graphCopy.edgesOf(currentVertex);
-          for (final E edge : edges) {
-            // As we don't know if the current vertex is source or
-            // target of the edge,
-            // both weights are added and the currentVertex Weight
-            // is substracted
-            currentAdjacentWeight += graphCopy.getEdgeSource(edge).getWeight();
-            currentAdjacentWeight += graphCopy.getEdgeTarget(edge).getWeight();
-            currentAdjacentWeight -= selectedWeight;
-          }
-
-          // If the weight of adacent vertices is higher, the current
-          // vertex is selected
-          if (currentAdjacentWeight > selectedAdjacentWeight) {
-            selectedVertex = currentVertex;
-            selectedAdjacentWeight = currentAdjacentWeight;
-          }
-        } else {
+        if (currentVertex.getWeight() != selectedWeight) {
           // Leave the loop, the current vertex is heavier than the
           // minimum weight of unsorted vertices
           break;
+        }
+        // Sum the weight of vertices adjacent to the current vertex
+        // in graphCopy
+        long currentAdjacentWeight = 0;
+        final Set<E> edges = graphCopy.edgesOf(currentVertex);
+        for (final E edge : edges) {
+          // As we don't know if the current vertex is source or
+          // target of the edge,
+          // both weights are added and the currentVertex Weight
+          // is substracted
+          currentAdjacentWeight += graphCopy.getEdgeSource(edge).getWeight();
+          currentAdjacentWeight += graphCopy.getEdgeTarget(edge).getWeight();
+          currentAdjacentWeight -= selectedWeight;
+        }
+
+        // If the weight of adacent vertices is higher, the current
+        // vertex is selected
+        if (currentAdjacentWeight > selectedAdjacentWeight) {
+          selectedVertex = currentVertex;
+          selectedAdjacentWeight = currentAdjacentWeight;
         }
       }
       // Add the selected vertex to the ordered set
@@ -379,24 +371,7 @@ public class OstergardSolver<V extends IWeightedVertex<Long>, E extends DefaultE
 
       // if D(i) was not calculated for this i or
       // D(i) + C(i+1) > max, compute the wclique
-      if (!this.speedup || (this.dcost.get(i) == 0) || ((this.dcost.get(i) + this.cost.get(i + 1)) > this.max)) {
-
-        // wclique(Si inter N(vi), w(i))
-        final List<V> vertexSet = getSi(i);
-        final V fixedVertex = vertexSet.get(0);
-        vertexSet.retainAll(adjacentVerticesOf(fixedVertex));
-
-        // for speed-up purpose
-        this.found = false;
-
-        // Add the fixed vertex to the working set
-        this.workingSet.add(fixedVertex);
-        wClique(vertexSet, fixedVertex.getWeight());
-
-        // Remove the fixedVertex from the working set before next
-        // iteration
-        this.workingSet.remove(fixedVertex);
-      } else {
+      if (this.speedup && (this.dcost.get(i) != 0) && ((this.dcost.get(i) + this.cost.get(i + 1)) <= this.max)) {
         // This code is reached if D(i) was calculated for the current i
         // and D(i) + C(i+1) <= max
         this.cost.set(i, this.max);
@@ -404,6 +379,21 @@ public class OstergardSolver<V extends IWeightedVertex<Long>, E extends DefaultE
         // Then, exit the search !
         return;
       }
+      // wclique(Si inter N(vi), w(i))
+      final List<V> vertexSet = getSi(i);
+      final V fixedVertex = vertexSet.get(0);
+      vertexSet.retainAll(adjacentVerticesOf(fixedVertex));
+
+      // for speed-up purpose
+      this.found = false;
+
+      // Add the fixed vertex to the working set
+      this.workingSet.add(fixedVertex);
+      wClique(vertexSet, fixedVertex.getWeight());
+
+      // Remove the fixedVertex from the working set before next
+      // iteration
+      this.workingSet.remove(fixedVertex);
       // C[i] := max
       this.cost.set(i, this.max);
     }

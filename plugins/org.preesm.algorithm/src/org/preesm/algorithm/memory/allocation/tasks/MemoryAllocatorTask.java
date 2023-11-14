@@ -153,7 +153,7 @@ import org.preesm.workflow.implement.AbstractTaskImplementation;
                 @Value(name = "Fixed:=n",
                     effect = "Where $$n\\in \\mathbb{N}^*$$. This forces the allocation algorithm to align all buffers"
                         + " on addresses that are multiples of n bits.") }),
-        @Parameter(name = "Nb of Shuffling Tested",
+        @Parameter(name = MemoryAllocatorTask.PARAM_NB_SHUFFLE,
             description = "Number of random order tested when using the Shuffle value for the Best/First Fit order"
                 + " parameter.",
             values = { @Value(name = "$$n\\in \\mathbb{N}^*$$", effect = "Number of random order.") }) },
@@ -350,10 +350,10 @@ public class MemoryAllocatorTask extends AbstractTaskImplementation {
     long tStart;
     final StringBuilder sb = new StringBuilder(allocator.getClass().getSimpleName());
 
-    if (allocator instanceof OrderedAllocator) {
-      sb.append("(" + ((OrderedAllocator) allocator).getOrder());
-      if (((OrderedAllocator) allocator).getOrder() == Order.SHUFFLE) {
-        sb.append(":" + ((OrderedAllocator) allocator).getNbShuffle());
+    if (allocator instanceof final OrderedAllocator orderedAllocator) {
+      sb.append("(" + orderedAllocator.getOrder());
+      if (orderedAllocator.getOrder() == Order.SHUFFLE) {
+        sb.append(":" + orderedAllocator.getNbShuffle());
       }
       sb.append(")");
     }
@@ -384,17 +384,18 @@ public class MemoryAllocatorTask extends AbstractTaskImplementation {
 
     String log = computeLog(allocator, tStart, sAllocator, tFinish);
 
-    if ((allocator instanceof OrderedAllocator) && (((OrderedAllocator) allocator).getOrder() == Order.SHUFFLE)) {
-      ((OrderedAllocator) allocator).setPolicy(Policy.WORST);
+    if ((allocator instanceof final OrderedAllocator orderedAllocator)
+        && (orderedAllocator.getOrder() == Order.SHUFFLE)) {
+      orderedAllocator.setPolicy(Policy.WORST);
       log += " worst: " + allocator.getMemorySizeInByte();
 
-      ((OrderedAllocator) allocator).setPolicy(Policy.MEDIANE);
+      orderedAllocator.setPolicy(Policy.MEDIANE);
       log += "(med: " + allocator.getMemorySizeInByte();
 
-      ((OrderedAllocator) allocator).setPolicy(Policy.AVERAGE);
+      orderedAllocator.setPolicy(Policy.AVERAGE);
       log += " avg: " + allocator.getMemorySizeInByte() + ")";
 
-      ((OrderedAllocator) allocator).setPolicy(Policy.BEST);
+      orderedAllocator.setPolicy(Policy.BEST);
     }
 
     this.logger.log(Level.INFO, log);
@@ -497,13 +498,10 @@ public class MemoryAllocatorTask extends AbstractTaskImplementation {
         final String msg = "Heat up MemEx for " + memoryBank + " memory bank.";
         this.logger.log(Level.INFO, msg);
       }
-      for (final MemoryExclusionVertex vertex : meg.vertexSet()) {
-        meg.getAdjacentVertexOf(vertex);
-      }
 
-      for (final MemoryAllocator allocator : this.allocators) {
-        allocateWith(allocator);
-      }
+      meg.vertexSet().stream().forEach(meg::getAdjacentVertexOf);
+
+      this.allocators.stream().forEach(this::allocateWith);
     }
 
     final Map<String, Object> output = new LinkedHashMap<>();

@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<scenario>
+    <flags>
+        <sizesAreInBit/>
+    </flags>
+    <files>
+        <algorithm url="/org.preesm.algorithm.memory.allocation.test/Algo/bufferAggregate.pi"/>
+        <architecture url="/org.preesm.algorithm.memory.allocation.test/Archi/1CoresX86.slam"/>
+        <codegenDirectory url="/org.preesm.algorithm.memory.allocation.test/Code/generated"/>
+    </files>
+    <constraints excelUrl="">
+        <constraintGroup>
+            <operator name="Core0"/>
+            <task name="bufferAggregate/Actor"/>
+            <task name="bufferAggregate/sink"/>
+            <task name="bufferAggregate/source0"/>
+            <task name="bufferAggregate"/>
+        </constraintGroup>
+    </constraints>
+    <timings excelUrl="">
+        <memcpyspeed opname="x86" setuptime="1" timeperunit="0.001"/>
+        <memcpyspeed opname="x86" setuptime="1" timeperunit="0.001"/>
+    </timings>
+    <simuParams>
+        <mainCore>Core0</mainCore>
+        <mainComNode>shared_mem</mainComNode>
+        <averageDataSize>1000</averageDataSize>
+        <dataTypes>
+            <dataType name="d128" size="128"/>
+            <dataType name="d192" size="192"/>
+            <dataType name="int" size="32"/>
+        </dataTypes>
+        <specialVertexOperators>
+            <specialVertexOperator path="Core0"/>
+            <specialVertexOperator path="Core0"/>
+        </specialVertexOperators>
+    </simuParams>
+    <parameterValues/>
+    <papifyConfigs xmlUrl=""/>
+    <energyConfigs xmlUrl="">
+        <performanceObjective objectiveEPS="0.0"/>
+        <peActorsEnergy/>
+    </energyConfigs>
+</scenario>

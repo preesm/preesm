@@ -70,8 +70,8 @@ public class DefaultTypeSizesTest {
     @Parameters(name = "Test {1} size = {0}")
     public static Collection<Object[]> data() {
       return Arrays.asList(new Object[][] { { "DEFAULT", ScenarioConstants.DEFAULT_DATA_TYPE_SIZE_VALUE },
-          { "void", 1 }, { "char", 8 }, { "unsigned char", 8 }, { "short", 16 }, { "unsigned short", 16 },
-          { "int", 32 }, { "unsigned int", 32 }, { "long", 64 }, { "unsigned long", 64 }, { "long long", 64 },
+          { "char", 8 }, { "unsigned char", 8 }, { "short", 16 }, { "unsigned short", 16 }, { "int", 32 },
+          { "unsigned int", 32 }, { "long", 64 }, { "unsigned long", 64 }, { "long long", 64 },
           { "unsigned long long", 64 }, { "float", 32 }, { "double", 64 }, { "long double", 128 }, { "int8_t", 8 },
           { "int16_t", 16 }, { "int32_t", 32 }, { "int64_t", 64 }, { "int_fast8_t", 8 }, { "int_fast16_t", 64 },
           { "int_fast32_t", 64 }, { "int_fast64_t", 64 }, { "int_least8_t", 8 }, { "int_least16_t", 16 },
@@ -93,6 +93,12 @@ public class DefaultTypeSizesTest {
     public void testUnknownTypeSize() {
       final long unknownTypeSize = DefaultTypeSizes.getInstance().getTypeSize("THIS_IS_AN_UNKNOWN_TYPENAME");
       Assert.assertEquals(DefaultTypeSizes.UNKNOWN_TYPE, unknownTypeSize);
+    }
+
+    @Test
+    public void testVoidTypeSize() {
+      final long voidTypeSize = DefaultTypeSizes.getInstance().getTypeSize("void");
+      Assert.assertEquals(DefaultTypeSizes.UNKNOWN_TYPE, voidTypeSize);
     }
 
     @Test

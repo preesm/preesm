@@ -13,13 +13,16 @@ import org.eclipse.graphiti.features.context.impl.MultiDeleteInfo;
 import org.eclipse.graphiti.features.custom.AbstractCustomFeature;
 import org.eclipse.graphiti.mm.pictograms.PictogramElement;
 import org.eclipse.xtext.xbase.lib.Pair;
+import org.preesm.model.pisdf.Actor;
+import org.preesm.model.pisdf.CHeaderRefinement;
 import org.preesm.model.pisdf.ExecutableActor;
+import org.preesm.model.pisdf.FunctionPrototype;
 import org.preesm.model.pisdf.Port;
 import org.preesm.model.pisdf.PortKind;
 
 /**
  * Exchange the port category (from data to config. and vice versa).
- * 
+ *
  * @author ahonorat
  */
 public class ExchangePortCategory extends AbstractCustomFeature {
@@ -68,14 +71,13 @@ public class ExchangePortCategory extends AbstractCustomFeature {
     boolean ret = false;
     final PictogramElement[] pes = context.getPictogramElements();
     if ((pes != null) && (pes.length > 0)) {
-      for (PictogramElement pe : pes) {
+      for (final PictogramElement pe : pes) {
         final Object bo = getBusinessObjectForPictogramElement(pe);
-        if ((bo instanceof Port) && ((Port) bo).eContainer() instanceof ExecutableActor) {
-          ret = true;
-        } else {
+        if (!(bo instanceof final Port port) || !(port.eContainer() instanceof ExecutableActor)) {
           ret = false;
           break;
         }
+        ret = true;
       }
     }
     return ret;
@@ -89,30 +91,39 @@ public class ExchangePortCategory extends AbstractCustomFeature {
       final Map<ExecutableActor, List<Pair<String, PortKind>>> actorsToNewPorts = new LinkedHashMap<>();
 
       // store new ports to create
-      for (PictogramElement pe : pes) {
+      for (final PictogramElement pe : pes) {
         final Object bo = getBusinessObjectForPictogramElement(pe);
-        if ((bo instanceof Port) && ((Port) bo).eContainer() instanceof ExecutableActor) {
-          final Port portToExchange = (Port) bo;
-          final ExecutableActor actor = (ExecutableActor) (portToExchange.eContainer());
+        if ((bo instanceof final Port portToExchange)
+            && (portToExchange.eContainer() instanceof final ExecutableActor executableActor)) {
 
-          final List<Pair<String, PortKind>> newPorts = actorsToNewPorts.computeIfAbsent(actor, k -> new ArrayList<>());
+          final List<Pair<String, PortKind>> newPorts = actorsToNewPorts.computeIfAbsent(executableActor,
+              k -> new ArrayList<>());
 
           // Switch Port into opposite category
           switch (portToExchange.getKind()) {
-            case DATA_INPUT:
-              newPorts.add(new Pair<>(portToExchange.getName(), PortKind.CFG_INPUT));
-              break;
-            case DATA_OUTPUT:
-              newPorts.add(new Pair<>(portToExchange.getName(), PortKind.CFG_OUTPUT));
-              break;
-            case CFG_INPUT:
-              newPorts.add(new Pair<>(portToExchange.getName(), PortKind.DATA_INPUT));
-              break;
-            case CFG_OUTPUT:
-              newPorts.add(new Pair<>(portToExchange.getName(), PortKind.DATA_OUTPUT));
-              break;
-            default:
-              break;
+            case DATA_INPUT -> newPorts.add(new Pair<>(portToExchange.getName(), PortKind.CFG_INPUT));
+            case DATA_OUTPUT -> newPorts.add(new Pair<>(portToExchange.getName(), PortKind.CFG_OUTPUT));
+            case CFG_INPUT -> newPorts.add(new Pair<>(portToExchange.getName(), PortKind.DATA_INPUT));
+            case CFG_OUTPUT -> newPorts.add(new Pair<>(portToExchange.getName(), PortKind.DATA_OUTPUT));
+            default -> {
+              // empty
+            }
+          }
+
+          // Need to also change the direction in the refinement
+          if ((executableActor instanceof final Actor actor)
+              && (actor.getRefinement() instanceof final CHeaderRefinement cRef) && (cRef.getLoopPrototype() != null)) {
+            final FunctionPrototype fp = cRef.getLoopPrototype();
+
+            final Boolean isConfig = switch (portToExchange.getKind()) {
+              case DATA_INPUT -> true;
+              case DATA_OUTPUT -> true;
+              case CFG_INPUT -> false;
+              case CFG_OUTPUT -> false;
+            };
+
+            fp.getArguments().stream().filter(fa -> fa.getName().equals(portToExchange.getName())).findFirst()
+                .ifPresent(fa -> fa.setIsConfigurationParameter(isConfig));
           }
         }
       }
@@ -125,7 +136,7 @@ public class ExchangePortCategory extends AbstractCustomFeature {
   }
 
   protected void deletePortsToExchange(final PictogramElement[] ports) {
-    for (PictogramElement pe : ports) {
+    for (final PictogramElement pe : ports) {
       final DeleteActorPortFeature delPortFeature = new DeleteActorPortFeature(getFeatureProvider());
       final DeleteContext delCtxt = new DeleteContext(pe);
       final MultiDeleteInfo multi = new MultiDeleteInfo(false, false, 0);

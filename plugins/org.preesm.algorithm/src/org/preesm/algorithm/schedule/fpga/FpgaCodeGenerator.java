@@ -482,11 +482,11 @@ public class FpgaCodeGenerator {
       final long srcRate = f.getSourcePort().getExpression().evaluate();
       final long srcII = scenario.getTimings().evaluateTimingOrDefault((AbstractActor) f.getSource(), fpga,
           TimingType.INITIATION_INTERVAL);
-      final long srcLambda = AdfgFpgaFifoEvaluator.computeLambda(srcRate, srcII).longValue();
+      final long srcLambda = AdfgUtils.computeLambda(srcRate, srcII).longValue();
       final long snkRate = f.getTargetPort().getExpression().evaluate();
       final long snkII = scenario.getTimings().evaluateTimingOrDefault((AbstractActor) f.getTarget(), fpga,
           TimingType.INITIATION_INTERVAL);
-      final long snkLambda = AdfgFpgaFifoEvaluator.computeLambda(snkRate, snkII).longValue();
+      final long snkLambda = AdfgUtils.computeLambda(snkRate, snkII).longValue();
       lambdaArgs.add(Long.toString(srcLambda + snkLambda));
       widthArgs.add(Long.toString(scenario.getSimulationInfo().getDataTypeSizeInBit(f.getType())));
     });

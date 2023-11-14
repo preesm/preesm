@@ -44,7 +44,6 @@ import java.util.List;
 import org.junit.Assert;
 import org.junit.Test;
 import org.preesm.model.pisdf.AbstractActor;
-import org.preesm.model.pisdf.Actor;
 import org.preesm.model.pisdf.DataInputPort;
 import org.preesm.model.pisdf.DataOutputPort;
 import org.preesm.model.pisdf.Fifo;
@@ -60,51 +59,8 @@ import org.preesm.model.pisdf.util.topology.PiSDFTopologyHelper;
  */
 public class TopologyTest {
 
-  private PiGraph createGraph() {
-    final Actor actorA = PiMMUserFactory.instance.createActor("A");
-    final DataOutputPort aOut1 = PiMMUserFactory.instance.createDataOutputPort("A.out1");
-    final DataOutputPort aOut2 = PiMMUserFactory.instance.createDataOutputPort("A.out2");
-    actorA.getDataOutputPorts().add(aOut1);
-    actorA.getDataOutputPorts().add(aOut2);
-
-    final Actor actorB = PiMMUserFactory.instance.createActor("B");
-    final DataInputPort bIn = PiMMUserFactory.instance.createDataInputPort("B.in");
-    final DataOutputPort bOut = PiMMUserFactory.instance.createDataOutputPort("B.out");
-    actorB.getDataInputPorts().add(bIn);
-    actorB.getDataOutputPorts().add(bOut);
-
-    final Actor actorC = PiMMUserFactory.instance.createActor("C");
-    final DataInputPort cIn = PiMMUserFactory.instance.createDataInputPort("C.in");
-    final DataOutputPort cOut = PiMMUserFactory.instance.createDataOutputPort("C.out");
-    actorC.getDataInputPorts().add(cIn);
-    actorC.getDataOutputPorts().add(cOut);
-
-    final Actor actorD = PiMMUserFactory.instance.createActor("D");
-    final DataInputPort dIn1 = PiMMUserFactory.instance.createDataInputPort("D.in1");
-    final DataInputPort dIn2 = PiMMUserFactory.instance.createDataInputPort("D.in2");
-    actorD.getDataInputPorts().add(dIn1);
-    actorD.getDataInputPorts().add(dIn2);
-
-    final Fifo f1 = PiMMUserFactory.instance.createFifo(aOut1, bIn, "void");
-    final Fifo f2 = PiMMUserFactory.instance.createFifo(aOut2, cIn, "void");
-    final Fifo f3 = PiMMUserFactory.instance.createFifo(bOut, dIn1, "void");
-    final Fifo f4 = PiMMUserFactory.instance.createFifo(cOut, dIn2, "void");
-
-    final PiGraph graph = PiMMUserFactory.instance.createPiGraph();
-    graph.addActor(actorA);
-    graph.addActor(actorB);
-    graph.addActor(actorC);
-    graph.addActor(actorD);
-    graph.addFifo(f1);
-    graph.addFifo(f2);
-    graph.addFifo(f3);
-    graph.addFifo(f4);
-
-    return graph;
-  }
-
   private PiGraph createGraphNoDAG() {
-    final PiGraph createGraph = createGraph();
+    final PiGraph createGraph = PiGraphGenerator.createDiamondGraph();
 
     final AbstractActor actorA = VertexPath.lookup(createGraph, "A");
     final DataInputPort aIn = PiMMUserFactory.instance.createDataInputPort("A.in");
@@ -123,11 +79,10 @@ public class TopologyTest {
 
   @Test
   public void testDirectPredecessors() {
-    final PiGraph createGraph = createGraph();
+    final PiGraph createGraph = PiGraphGenerator.createDiamondGraph();
 
     final PiSDFTopologyHelper helper = new PiSDFTopologyHelper(createGraph);
-    List<AbstractActor> preds = helper
-        .getDirectPredecessorsOf(VertexPath.lookup(createGraph, "B"));
+    List<AbstractActor> preds = helper.getDirectPredecessorsOf(VertexPath.lookup(createGraph, "B"));
     Assert.assertEquals(Arrays.asList(VertexPath.lookup(createGraph, "A")), preds);
 
     preds = helper.getDirectPredecessorsOf(VertexPath.lookup(createGraph, "A"));
@@ -139,11 +94,10 @@ public class TopologyTest {
 
   @Test
   public void testAllPredecessors() {
-    final PiGraph createGraph = createGraph();
+    final PiGraph createGraph = PiGraphGenerator.createDiamondGraph();
 
     final PiSDFTopologyHelper helper = new PiSDFTopologyHelper(createGraph);
-    List<AbstractActor> preds = helper
-        .getAllPredecessorsOf(VertexPath.lookup(createGraph, "B"));
+    List<AbstractActor> preds = helper.getAllPredecessorsOf(VertexPath.lookup(createGraph, "B"));
     Assert.assertEquals(Arrays.asList(VertexPath.lookup(createGraph, "A")), preds);
 
     preds = helper.getAllPredecessorsOf(VertexPath.lookup(createGraph, "A"));
@@ -169,11 +123,10 @@ public class TopologyTest {
 
   @Test
   public void testDirectSuccessors() {
-    final PiGraph createGraph = createGraph();
+    final PiGraph createGraph = PiGraphGenerator.createDiamondGraph();
 
     final PiSDFTopologyHelper helper = new PiSDFTopologyHelper(createGraph);
-    List<AbstractActor> preds = helper
-        .getDirectSuccessorsOf(VertexPath.lookup(createGraph, "B"));
+    List<AbstractActor> preds = helper.getDirectSuccessorsOf(VertexPath.lookup(createGraph, "B"));
     Assert.assertEquals(Arrays.asList(VertexPath.lookup(createGraph, "D")), preds);
 
     preds = helper.getDirectSuccessorsOf(VertexPath.lookup(createGraph, "A"));
@@ -185,11 +138,10 @@ public class TopologyTest {
 
   @Test
   public void testAllSuccessors() {
-    final PiGraph createGraph = createGraph();
+    final PiGraph createGraph = PiGraphGenerator.createDiamondGraph();
 
     final PiSDFTopologyHelper helper = new PiSDFTopologyHelper(createGraph);
-    List<AbstractActor> preds = helper
-        .getAllSuccessorsOf(VertexPath.lookup(createGraph, "B"));
+    List<AbstractActor> preds = helper.getAllSuccessorsOf(VertexPath.lookup(createGraph, "B"));
     Assert.assertEquals(Arrays.asList(VertexPath.lookup(createGraph, "D")), preds);
 
     preds = helper.getAllSuccessorsOf(VertexPath.lookup(createGraph, "A"));
@@ -214,7 +166,7 @@ public class TopologyTest {
 
   @Test
   public void testAllOutFifos() {
-    final PiGraph createGraph = createGraph();
+    final PiGraph createGraph = PiGraphGenerator.createDiamondGraph();
     List<Fifo> outFifos;
     final Fifo fifo;
 
@@ -234,7 +186,7 @@ public class TopologyTest {
 
   @Test
   public void testAllInFifos() {
-    final PiGraph createGraph = createGraph();
+    final PiGraph createGraph = PiGraphGenerator.createDiamondGraph();
     List<Fifo> outFifos;
     final Fifo fifo;
 
@@ -248,7 +200,7 @@ public class TopologyTest {
 
   @Test
   public void testIsPredecessor() {
-    final PiGraph createGraph = createGraph();
+    final PiGraph createGraph = PiGraphGenerator.createDiamondGraph();
     final PiSDFTopologyHelper helper = new PiSDFTopologyHelper(createGraph);
     final boolean successor = helper.isPredecessor(VertexPath.lookup(createGraph, "D"),
         VertexPath.lookup(createGraph, "B"));
@@ -260,7 +212,7 @@ public class TopologyTest {
 
   @Test
   public void testIsSuccessor() {
-    final PiGraph createGraph = createGraph();
+    final PiGraph createGraph = PiGraphGenerator.createDiamondGraph();
     final PiSDFTopologyHelper helper = new PiSDFTopologyHelper(createGraph);
     final boolean successor = helper.isSuccessor(VertexPath.lookup(createGraph, "D"),
         VertexPath.lookup(createGraph, "B"));

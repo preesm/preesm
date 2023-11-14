@@ -1,4 +1,0 @@
-breathe
-doxypypy
-sphinx-rtd-theme
-

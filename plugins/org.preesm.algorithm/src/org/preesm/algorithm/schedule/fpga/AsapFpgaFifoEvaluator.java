@@ -28,7 +28,7 @@ import org.preesm.model.slam.ComponentInstance;
 
 /**
  * Class to evaluate buffer sizes thanks to an ASAP strategy.
- * 
+ *
  * @author ahonorat
  */
 public class AsapFpgaFifoEvaluator extends AbstractGenericFpgaFifoEvaluator {
@@ -72,17 +72,14 @@ public class AsapFpgaFifoEvaluator extends AbstractGenericFpgaFifoEvaluator {
     final HeuristicLoopBreakingDelays hlbd = new HeuristicLoopBreakingDelays();
     hlbd.performAnalysis(analysisResult.flatGraph, analysisResult.flatBrv);
 
-    AbstractAsapFpgaFifoEvaluator fifoEval;
-    if (FIFO_EVALUATOR_SDF.equalsIgnoreCase(fifoEvaluatorName)) {
-      fifoEval = new FifoEvaluatorAsArray(scenario, hlbd, mapActorNormalizedInfos);
-    } else if (FIFO_EVALUATOR_AVG.equalsIgnoreCase(fifoEvaluatorName)) {
-      fifoEval = new FifoEvaluatorAsAverage(scenario, hlbd, mapActorNormalizedInfos);
-    } else {
-      throw new PreesmRuntimeException("Could not recognize fifo evaluator name: " + fifoEvaluatorName);
-    }
+    final AbstractAsapFpgaFifoEvaluator fifoEval = switch (fifoEvaluatorName) {
+      case FIFO_EVALUATOR_SDF -> new FifoEvaluatorAsArray(scenario, hlbd, mapActorNormalizedInfos);
+      case FIFO_EVALUATOR_AVG -> new FifoEvaluatorAsAverage(scenario, hlbd, mapActorNormalizedInfos);
+      default -> throw new PreesmRuntimeException("Could not recognize fifo evaluator name: " + fifoEvaluatorName);
+    };
 
     // set min durations of all AsapFpgaIIevaluator.ActorScheduleInfos, with cycle latency if in a cycle
-    for (Entry<List<AbstractActor>, CycleInfos> e : hlbd.cyclesInfos.entrySet()) {
+    for (final Entry<List<AbstractActor>, CycleInfos> e : hlbd.cyclesInfos.entrySet()) {
       final long cycleLatency = fifoEval.computeCycleMinII(e.getKey(), e.getValue());
       PreesmLogger.getLogger()
           .info(() -> "Cycle starting from " + e.getKey().get(0).getVertexPath() + " has its II >= " + cycleLatency);
@@ -285,13 +282,13 @@ public class AsapFpgaFifoEvaluator extends AbstractGenericFpgaFifoEvaluator {
     if (actorTime > actorSequentialTime) {
       // not pipelined
       return "[- - -]";
-    } else if (actorTime > actorPipelinedTime) {
+    }
+    if (actorTime > actorPipelinedTime) {
       // not fully pipelined
       return "[-|-|-]";
-    } else {
-      // fully pipelined
-      return "[-----]";
     }
+    // fully pipelined
+    return "[-----]";
   }
 
 }
