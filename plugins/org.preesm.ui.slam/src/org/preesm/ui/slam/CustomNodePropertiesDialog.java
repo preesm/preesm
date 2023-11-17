@@ -58,7 +58,6 @@ public class CustomNodePropertiesDialog extends Dialog {
         public void widgetSelected(SelectionEvent e) {
           if (true) {
             final String nodeCommunicationRate = rateText.getText();
-            // Composite childrenContainer = container.get
             configureNode(parent, nodeIndex, Integer.parseInt(text.getText()), nodeCommunicationRate);
           }
         }
@@ -67,15 +66,6 @@ public class CustomNodePropertiesDialog extends Dialog {
 
     }
     return container;
-  }
-
-  private boolean isValidInput(String input) {
-    try {
-      final int value = Integer.parseInt(input);
-      return value > 0;
-    } catch (final NumberFormatException e) {
-      return false;
-    }
   }
 
   private void configureNode(Composite parent, int nodeIndex, int numCores, String nodeCommunicationRate) {
