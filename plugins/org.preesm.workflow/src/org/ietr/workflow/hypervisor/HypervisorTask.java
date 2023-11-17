@@ -41,23 +41,27 @@ import org.preesm.workflow.implement.AbstractTaskImplementation;
             values = { @Value(name = "integer", effect = "...") }),
         @Parameter(name = "Round", description = "Round", values = { @Value(name = "integer", effect = "...") }),
         @Parameter(name = "SimGrid", description = "PREESM or SimGrid simulator",
-            values = { @Value(name = "true/false", effect = "...") })
+            values = { @Value(name = "true/false", effect = "...") }),
+        @Parameter(name = "Scenario path", description = "path of the scenario",
+            values = { @Value(name = "String", effect = "...") })
 
     })
 public class HypervisorTask extends AbstractTaskImplementation {
-  public static final String LATENCY_DEFAULT   = "1";
-  public static final String LATENCY_PARAM     = "Latency Target";
-  public static final String DEVIATION_DEFAULT = "1";
-  public static final String DEVIATION_PARAM   = "Deviation Target";
-  public static final String ROUND_DEFAULT     = "1";
-  public static final String ROUND_PARAM       = "Round";
-  public static final String SIM_PARAM         = "SimGrid";
-  public static final String DSE_NAME          = "dse_trend.csv";
-  public static final String DSE_PART_NAME     = "dse_part_trend.csv";
-  List<Long>                 itationTime       = new ArrayList<>();
-  List<Long>                 nodePartTime      = new ArrayList<>();
-  List<Long>                 threadPartTime    = new ArrayList<>();
-  List<Long>                 simuTime          = new ArrayList<>();
+  public static final String LATENCY_DEFAULT       = "1";
+  public static final String LATENCY_PARAM         = "Latency Target";
+  public static final String DEVIATION_DEFAULT     = "1";
+  public static final String DEVIATION_PARAM       = "Deviation Target";
+  public static final String ROUND_DEFAULT         = "1";
+  public static final String ROUND_PARAM           = "Round";
+  public static final String SIM_PARAM             = "SimGrid";
+  public static final String DSE_NAME              = "dse_trend.csv";
+  public static final String DSE_PART_NAME         = "dse_part_trend.csv";
+  public static final String SCENARIO_PATH_DEFAULT = "";
+  public static final String SCENARIO_PATH_PARAM   = "archi path";
+  List<Long>                 itationTime           = new ArrayList<>();
+  List<Long>                 nodePartTime          = new ArrayList<>();
+  List<Long>                 threadPartTime        = new ArrayList<>();
+  List<Long>                 simuTime              = new ArrayList<>();
 
   @Override
   public Map<String, Object> execute(Map<String, Object> inputs, Map<String, String> parameters,
@@ -94,7 +98,7 @@ public class HypervisorTask extends AbstractTaskImplementation {
       }
       // Launch node partitioning
       String workflowPath = project + "/Workflows/NodePartitioning.workflow";
-      String scenarioPath = project + "/Scenarios/rfi.scenario";
+      String scenarioPath = project + parameters.get(SCENARIO_PATH_PARAM);
 
       final WorkflowManager workflowManager = new WorkflowManager();
       workflowManager.execute(workflowPath, scenarioPath, monitor);
@@ -172,6 +176,7 @@ public class HypervisorTask extends AbstractTaskImplementation {
     parameters.put(HypervisorTask.DEVIATION_PARAM, HypervisorTask.DEVIATION_DEFAULT);
     parameters.put(HypervisorTask.ROUND_PARAM, HypervisorTask.ROUND_DEFAULT);
     parameters.put(HypervisorTask.SIM_PARAM, "false");
+    parameters.put(SCENARIO_PATH_PARAM, SCENARIO_PATH_DEFAULT);
     return parameters;
   }
 
