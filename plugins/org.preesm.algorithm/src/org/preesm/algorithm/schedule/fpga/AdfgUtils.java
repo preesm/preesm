@@ -107,22 +107,60 @@ class AdfgUtils {
   }
 
   /**
-   * Increase actor II for small differences to avoid overflow in ADFG cycle computation
+   * Increase actor II for small differences to avoid overflow in ADFG
    *
    * @param mapActorNormalizedInfos
    *          Actors infos with II to update.
    */
-  static void equalizeII(final Map<AbstractActor, ActorNormalizedInfos> mapActorNormalizedInfos) {
+  static void overestimateIIToSimplifyADFG(final Map<AbstractActor, ActorNormalizedInfos> mapActorNormalizedInfos) {
+    final float overestimationRatio = (float) 1.005;
+
+    // Sort actors by rate to equalize them when close
     final List<ActorNormalizedInfos> listInfos = new ArrayList<>(mapActorNormalizedInfos.values());
     Collections.sort(listInfos, new DecreasingActorIIComparator());
-    for (int i = 0; i < listInfos.size() - 1; i++) {
+
+    for (int i = 0; i < listInfos.size(); i++) {
       final ActorNormalizedInfos current = listInfos.get(i);
-      final ActorNormalizedInfos next = listInfos.get(i + 1);
-      if (current.oriII != next.oriII && (float) current.oriII / next.oriII < 1.01) {
-        updateIIInfo(mapActorNormalizedInfos, next.aa, current.oriII);
-        listInfos.set(i + 1, mapActorNormalizedInfos.get(next.aa));
+      long updatedII = current.oriII;
+
+      // Step 1: Simplify the ratio between II and rate
+      updatedII = simplifyIIRateRatio(overestimationRatio, current, updatedII);
+
+      // Step 2: Equalize II for actors with close ratios
+      if (i > 0) {
+        final ActorNormalizedInfos previous = listInfos.get(i - 1);
+        if (updatedII != previous.oriII && (float) previous.oriII / updatedII < overestimationRatio) {
+          updatedII = previous.oriII;
+        }
+      }
+
+      // Update actor II if needed
+      if (updatedII != current.oriII) {
+        final String log = String.format("Update actor %s II from %l to %l to avoid overflow in ADFG",
+            current.aa.getName(), current.oriII, updatedII);
+        PreesmLogger.getLogger().finest(log);
+        updateIIInfo(mapActorNormalizedInfos, current.aa, updatedII);
+        listInfos.set(i, mapActorNormalizedInfos.get(current.aa));
       }
     }
+  }
+
+  private static long simplifyIIRateRatio(final float overestimationRatio, final ActorNormalizedInfos current,
+      long updatedII) {
+    for (final DataPort dp : current.aa.getAllDataPorts()) {
+      final long maxNumberOfSteps = 100;
+      final long limit = Math.min(updatedII + maxNumberOfSteps, (long) (current.oriII * overestimationRatio));
+      final long rate = dp.getExpression().evaluate();
+      long refFracNumerator = new BigFraction(updatedII, rate).getNumeratorAsLong();
+      for (long testII = updatedII; testII < limit; testII++) {
+        final BigFraction testFrac = new BigFraction(testII, rate);
+        if (testFrac.getNumeratorAsLong() < refFracNumerator) {
+          updatedII = testII;
+          refFracNumerator = new BigFraction(updatedII, rate).getNumeratorAsLong();
+        }
+      }
+    }
+    return updatedII;
   }
 
   /**
