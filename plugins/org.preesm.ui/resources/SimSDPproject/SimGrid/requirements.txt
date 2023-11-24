@@ -1,4 +1,0 @@
-networkx
-pytest
-seaborn
-
