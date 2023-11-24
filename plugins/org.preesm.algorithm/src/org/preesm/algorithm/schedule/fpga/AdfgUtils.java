@@ -136,7 +136,7 @@ class AdfgUtils {
 
       // Update actor II if needed
       if (updatedII != current.oriII) {
-        final String log = String.format("Update actor %s II from %l to %l to avoid overflow in ADFG",
+        final String log = String.format("Update actor %s II from %d to %d to avoid overflow in ADFG",
             current.aa.getName(), current.oriII, updatedII);
         PreesmLogger.getLogger().finest(log);
         updateIIInfo(mapActorNormalizedInfos, current.aa, updatedII);
