@@ -63,7 +63,7 @@ import org.preesm.ui.utils.DialogUtil;
 import org.preesm.ui.wizards.PreesmProjectNature;
 
 /**
- * Provides commands to generate default architectures.
+ * Provides commands to generate custom network architectures.
  *
  * @author orenaud
  *
@@ -84,7 +84,7 @@ public class ArchitectureGeneratorNetworkPopup extends AbstractHandler {
       // If it is a Preesm project, generate default design in Archi/ folder
       if (project.hasNature(PreesmProjectNature.ID)) {
         openGeneralNetworkPropertiesDialog();
-        PreesmLogger.getLogger().log(Level.INFO, "Generating hhh");
+        PreesmLogger.getLogger().log(Level.INFO, "Generate a custom network architecture file.");
       }
 
     } catch (final Exception e) {
@@ -138,17 +138,21 @@ public class ArchitectureGeneratorNetworkPopup extends AbstractHandler {
 
     final Label loopbackbandwidthLabel = new Label(shell, SWT.NONE);
     loopbackbandwidthLabel.setText("Enter loopback bandwidth:");
+    loopbackbandwidthLabel.setVisible(false);
 
     final Text loopbackbandwidthText = new Text(shell, SWT.BORDER);
     loopbackbandwidthText.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
     loopbackbandwidthText.setMessage("100MBps");
+    loopbackbandwidthText.setVisible(false);
 
     final Label loopbacklatencyLabel = new Label(shell, SWT.NONE);
     loopbacklatencyLabel.setText("Enter loopback latency:");
+    loopbacklatencyLabel.setVisible(false);
 
     final Text loopbacklatencyText = new Text(shell, SWT.BORDER);
     loopbacklatencyText.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
     loopbacklatencyText.setMessage("0us");
+    loopbacklatencyText.setVisible(false);
 
     toggleButton.addListener(SWT.Selection, event -> {
       final boolean isChecked = toggleButton.getSelection();
@@ -173,6 +177,14 @@ public class ArchitectureGeneratorNetworkPopup extends AbstractHandler {
     topoLabel.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
     final Text topoText = new Text(shell, SWT.BORDER);
     topoText.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
+    topoText.setVisible(false);
+
+    final Label bbLabel = new Label(shell, SWT.NONE);
+    bbLabel.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
+    bbLabel.setVisible(false);
+    final Text bbText = new Text(shell, SWT.BORDER);
+    bbText.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
+    bbText.setVisible(false);
 
     dropdown.addModifyListener(new ModifyListener() {
       @Override
@@ -181,23 +193,60 @@ public class ArchitectureGeneratorNetworkPopup extends AbstractHandler {
         final String selectedOption = dropdown.getText();
         switch (selectedOption) {
           case "Cluster with shared backbone":
-            topoLabel.setText("Sous-texte pour Option 1");
+            topoLabel.setText("Enter backbone bandwidth");
+            topoText.setMessage("2.25GBps");
             topoText.setVisible(true);
+            bbLabel.setText("Enter backbone latency");
+            bbLabel.setVisible(true);
+            bbText.setMessage("500us");
+            bbText.setVisible(true);
             break;
           case "Torus cluster":
             topoLabel.setText("Enter x,y,z size");
             topoText.setMessage("3,2,2");
             topoText.setVisible(true);
+            bbLabel.setVisible(false);
+            bbText.setVisible(false);
+            if (!topoText.getText().equals("")) {
+              final String[] xyz = topoText.getText().replaceAll("\"", "").split(",");
+
+              nodeText
+                  .setText(String.valueOf(Integer.decode(xyz[0]) * Integer.decode(xyz[1]) * Integer.decode(xyz[2])));
+
+            } else {
+              nodeText.setText(String.valueOf(3 * 2 * 2));
+            }
             break;
           case "Fat-tree cluster":
             topoLabel.setText("Enter nLevel;nDownlink,...;nUplink,...;//link,... parameter");
-            topoText.setMessage("2;4,4;1,2;1,2");
+            topoText.setMessage("2;2,2;1,1;1,1");
             topoText.setVisible(true);
+            bbLabel.setVisible(false);
+            bbText.setVisible(false);
+            if (!topoText.getText().equals("")) {
+              final String[] tree = topoText.getText().replaceAll("\"", "").split("[,;]");
+              int nNode = 0;
+              for (int i = 0; i < Integer.decode(tree[1]); i++) {
+                nNode *= Integer.decode(tree[i + 1]);
+              }
+              nodeText.setText(String.valueOf(nNode));
+            } else {
+              nodeText.setText(String.valueOf(2 * 2));
+            }
             break;
           case "Dragonfly cluster":
             topoLabel.setText("Enter nCluster,nLink;nChassis,nLink;nRouter,nlink;nNode parameter");
             topoText.setMessage("2,1;2,1;2,1;1");
             topoText.setVisible(true);
+            bbLabel.setVisible(false);
+            bbText.setVisible(false);
+            if (!topoText.getText().equals("")) {
+              final String[] dragon = topoText.getText().replaceAll("\"", "").split("[,;]");
+              nodeText.setText(String.valueOf(Integer.decode(dragon[0]) * Integer.decode(dragon[2])
+                  * Integer.decode(dragon[4]) * Integer.decode(dragon[6])));
+            } else {
+              nodeText.setText(String.valueOf(2 * 2 * 2 * 1));
+            }
             break;
           default:
             topoLabel.setText(""); // Aucun sous-texte pour l'option par défaut
@@ -243,6 +292,13 @@ public class ArchitectureGeneratorNetworkPopup extends AbstractHandler {
       } else {
         network.put("latency", latencyText.getMessage());
       }
+
+      if (toggleButton.isEnabled()) {
+        network.put("loopback", "true");
+      } else {
+        network.put("loopback", "false");
+      }
+
       if (!loopbackbandwidthText.getText().equals("")) {
         network.put("loopbackbandwidth", loopbackbandwidthText.getText());
       } else {
@@ -261,11 +317,12 @@ public class ArchitectureGeneratorNetworkPopup extends AbstractHandler {
       } else {
         network.put("topoparam", topoText.getMessage());
       }
-      final String speedValue = speedText.getText();
-      final String bandwidthValue = bandwidthText.getText();
+      if (!bbText.getText().equals("")) {
+        network.put("bbparam", bbText.getText());
+      } else {
+        network.put("bbparam", bbText.getMessage());
+      }
 
-      System.out.println("Speed: " + speedValue);
-      System.out.println("Bandwidth: " + bandwidthValue);
       final StringConcatenation content = processXml(network);
       PreesmIOHelper.getInstance().print(path, ARCHI_NAME, content);
       shell.close();
@@ -282,17 +339,21 @@ public class ArchitectureGeneratorNetworkPopup extends AbstractHandler {
     content.append("<platform version=\"4.1\">\n");
     content.append("<zone id=\"my zone\" routing=\"Floyd\">\n");
     content.append("<cluster id=\"" + network.get("topo") + "\" ");
-    content.append("prefix=\"node-\" radical=\"0-" + Integer.decode(network.get("node")) + " suffix=\".simgrid.org\"");
+    content
+        .append("prefix=\"node-\" radical=\"0-" + Integer.decode(network.get("node")) + "\" suffix=\".simgrid.org\"");
     content.append("speed=\"" + network.get("speed") + "\" ");
     content.append("bw=\"" + network.get("bandwith") + "\" ");
     content.append("lat=\"" + network.get("latency") + "\" ");
-    content.append("loopback_bw=\"" + network.get("loopbackbandwidth") + "\" ");
-    content.append("loopback_lat=\"" + network.get("loopbacklatency") + "\" ");
+
+    if (network.get("loopback").equals("true")) {
+      content.append("loopback_bw=\"" + network.get("loopbackbandwidth") + "\" ");
+      content.append("loopback_lat=\"" + network.get("loopbacklatency") + "\" ");
+    }
 
     final String selectedOption = network.get("topo");
     switch (selectedOption) {
       case "Cluster with shared backbone":
-        content.append("oui");
+        content.append("bb_bw=\"" + network.get("topoparam") + "\" bb_lat=\"" + network.get("bbparam") + "\"/>\n");
         break;
       case "Torus cluster":
         content.append("topology=\"TORUS\" ");
