@@ -148,7 +148,7 @@ class AdfgUtils {
   private static long simplifyIIRateRatio(final float overestimationRatio, final ActorNormalizedInfos current,
       long updatedII) {
     for (final DataPort dp : current.aa.getAllDataPorts()) {
-      final long maxNumberOfSteps = 100;
+      final long maxNumberOfSteps = 1000;
       final long limit = Math.min(updatedII + maxNumberOfSteps, (long) (current.oriII * overestimationRatio));
       final long rate = dp.getExpression().evaluate();
       long refFracNumerator = new BigFraction(updatedII, rate).getNumeratorAsLong();
