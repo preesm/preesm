@@ -53,6 +53,10 @@ public class AnalysisPage1 {
     return panel;
   }
 
+  public static int getIterationOptim() {
+    return iterationOptim;
+  }
+
   private String description() {
     return "<html>This chart gives an idea of the impact of the efficiency of the application"
         + " graph distribution on your set of nodes via the SimSDP method.<br>" + " The method has iterated over <b>"

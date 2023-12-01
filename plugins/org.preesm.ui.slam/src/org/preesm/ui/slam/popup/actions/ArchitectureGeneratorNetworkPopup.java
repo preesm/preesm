@@ -339,8 +339,7 @@ public class ArchitectureGeneratorNetworkPopup extends AbstractHandler {
     content.append("<platform version=\"4.1\">\n");
     content.append("<zone id=\"my zone\" routing=\"Floyd\">\n");
     content.append("<cluster id=\"" + network.get("topo") + "\" ");
-    content
-        .append("prefix=\"node-\" radical=\"0-" + Integer.decode(network.get("node")) + "\" suffix=\".simgrid.org\"");
+    content.append("prefix=\"Node\" radical=\"0-" + (Integer.decode(network.get("node")) - 1) + "\" suffix=\"\"");
     content.append("speed=\"" + network.get("speed") + "\" ");
     content.append("bw=\"" + network.get("bandwith") + "\" ");
     content.append("lat=\"" + network.get("latency") + "\" ");

@@ -100,13 +100,9 @@ public class AnalysisPage2 {
     final JFreeChart chart = ChartFactory.createBarChart(chartTitle, xAxisLabel, yAxisLabel, dataset,
         PlotOrientation.VERTICAL, true, true, false);
     final CategoryPlot plot = chart.getCategoryPlot();
-    // final XYPlot plot = chart.getXYPlot();
     plot.setBackgroundPaint(Color.white);
     plot.setDomainGridlinePaint(Color.lightGray);
     plot.setRangeGridlinePaint(Color.lightGray);
-    // final CategoryPlot catplot = chart.getCategoryPlot();
-    // final BarRenderer renderer = new BarRenderer();
-    // plot.setRenderer((XYItemRenderer) renderer);
     return chart;
   }
 
