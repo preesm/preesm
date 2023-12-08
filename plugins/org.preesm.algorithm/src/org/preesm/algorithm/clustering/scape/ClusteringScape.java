@@ -60,26 +60,19 @@ public class ClusteringScape {
    */
   private final int      mode;
 
-  /**
-   * Store the non cluster-able actor chosen manually by the operator.
-   */
-  private final List<AbstractActor> nonClusterableList;
-
   int                              clusterIndex   = -1;     // topological index
   private int                      clusterId      = 0;      // index cluster created
   private Map<Long, List<PiGraph>> hierarchicalLevelOrdered;
   private Long                     fulcrumLevelID = 0L;
   private Long                     coreEquivalent = 1L;
 
-  public ClusteringScape(Scenario scenario, Long stackSize, int mode, int levelNumber,
-      List<AbstractActor> nonClusterableList) {
+  public ClusteringScape(Scenario scenario, Long stackSize, int mode, int levelNumber) {
     this.graph = scenario.getAlgorithm();
     this.scenario = scenario;
     this.archi = scenario.getDesign();
     this.stackSize = stackSize;
     this.mode = mode;
     this.levelNumber = levelNumber;
-    this.nonClusterableList = nonClusterableList;
     this.hierarchicalLevelOrdered = new HashMap<>();
     this.coreEquivalent = EuclideTransfo.computeSingleNodeCoreEquivalent(scenario);
   }
@@ -100,7 +93,6 @@ public class ClusteringScape {
     final Map<AbstractVertex, Long> brv = PiBRV.compute(graph, BRVMethod.LCM);
     PiBRV.printRV(brv);
     return graph;
-
   }
 
   /**
@@ -129,8 +121,7 @@ public class ClusteringScape {
    *
    */
   private void executeMode2() {
-    final Long fulcrumLevel = fulcrumLevelID - 1;
-    for (Long i = fulcrumLevel; i >= 0L; i--) {
+    for (Long i = fulcrumLevelID - 1; i >= 0L; i--) {
       for (final PiGraph g : hierarchicalLevelOrdered.get(i)) {
         PiGraph newCluster = null;
         boolean isHasCluster = true;
@@ -139,16 +130,16 @@ public class ClusteringScape {
           final Map<AbstractVertex, Long> rv = PiBRV.compute(g, BRVMethod.LCM);
           newCluster = new ClusterPartitionerLOOP(g, scenario, coreEquivalent.intValue(), rv, clusterId).cluster();
           if (graph.getAllChildrenGraphs().size() == size) {
-            newCluster = new ClusterPartitionerURC(scenario, coreEquivalent.intValue(), rv, clusterId,
-                nonClusterableList, mode).cluster();// URC transfo
+            // URC transfo
+            newCluster = new ClusterPartitionerURC(scenario, coreEquivalent.intValue(), rv, clusterId, mode).cluster();
           }
           if (graph.getAllChildrenGraphs().size() == size) {
-            newCluster = new ClusterPartitionerSRV(scenario, coreEquivalent.intValue(), rv, clusterId,
-                nonClusterableList, mode).cluster();// SRV transfo
+            // SRV transfo
+            newCluster = new ClusterPartitionerSRV(scenario, coreEquivalent.intValue(), rv, clusterId, mode).cluster();
           }
           if (graph.getAllChildrenGraphs().size() == size) {
-            newCluster = new ClusterPartitionerSEQ(g, scenario, coreEquivalent.intValue(), rv, clusterId,
-                nonClusterableList).cluster();// SEQ transfo
+            // SEQ transfo
+            newCluster = new ClusterPartitionerSEQ(g, scenario, coreEquivalent.intValue()).cluster();
           }
           if (graph.getAllChildrenGraphs().size() == size) {
             isHasCluster = false;
@@ -169,25 +160,24 @@ public class ClusteringScape {
    *
    */
   private void executeMode1() {
-    final Long fulcrumLevel = fulcrumLevelID - 1;
-    for (final PiGraph g : hierarchicalLevelOrdered.get(fulcrumLevel)) {
+    for (final PiGraph piGraph : hierarchicalLevelOrdered.get(fulcrumLevelID - 1)) {
       PiGraph newCluster = null;
       boolean isHasCluster = true;
       do {
         final int size = graph.getAllChildrenGraphs().size();
-        final Map<AbstractVertex, Long> rv = PiBRV.compute(g, BRVMethod.LCM);
-        newCluster = new ClusterPartitionerLOOP(g, scenario, coreEquivalent.intValue(), rv, clusterId).cluster();
+        final Map<AbstractVertex, Long> rv = PiBRV.compute(piGraph, BRVMethod.LCM);
+        newCluster = new ClusterPartitionerLOOP(piGraph, scenario, coreEquivalent.intValue(), rv, clusterId).cluster();
         if (graph.getAllChildrenGraphs().size() == size) {
-          newCluster = new ClusterPartitionerURC(scenario, coreEquivalent.intValue(), rv, clusterId, nonClusterableList,
-              mode).cluster();// URC transfo
+          // URC transfo
+          newCluster = new ClusterPartitionerURC(scenario, coreEquivalent.intValue(), rv, clusterId, mode).cluster();
         }
         if (graph.getAllChildrenGraphs().size() == size) {
-          newCluster = new ClusterPartitionerSRV(scenario, coreEquivalent.intValue(), rv, clusterId, nonClusterableList,
-              mode).cluster();// SRV transfo
+          // SRV transfo
+          newCluster = new ClusterPartitionerSRV(scenario, coreEquivalent.intValue(), rv, clusterId, mode).cluster();
         }
         if (graph.getAllChildrenGraphs().size() == size) {
-          newCluster = new ClusterPartitionerSEQ(g, scenario, coreEquivalent.intValue(), rv, clusterId,
-              nonClusterableList).cluster();// SEQ transfo
+          // SEQ transfo
+          newCluster = new ClusterPartitionerSEQ(piGraph, scenario, coreEquivalent.intValue()).cluster();
         }
         if (graph.getAllChildrenGraphs().size() == size) {
           isHasCluster = false;
@@ -218,11 +208,11 @@ public class ClusteringScape {
       do {
         final int size = graph.getAllChildrenGraphs().size();
         final Map<AbstractVertex, Long> rv = PiBRV.compute(g, BRVMethod.LCM);
-        newCluster = new ClusterPartitionerURC(scenario, coreEquivalent.intValue(), rv, clusterId, nonClusterableList,
-            mode).cluster();// URC transfo
+        // URC transfo
+        newCluster = new ClusterPartitionerURC(scenario, coreEquivalent.intValue(), rv, clusterId, mode).cluster();
         if (graph.getAllChildrenGraphs().size() == size) {
-          newCluster = new ClusterPartitionerSRV(scenario, coreEquivalent.intValue(), rv, clusterId, nonClusterableList,
-              mode).cluster();// SRV transfo
+          // SRV transfo
+          newCluster = new ClusterPartitionerSRV(scenario, coreEquivalent.intValue(), rv, clusterId, mode).cluster();
         }
         if (graph.getAllChildrenGraphs().size() == size) {
           isHasCluster = false;
@@ -372,23 +362,24 @@ public class ClusteringScape {
       val.put(TimingType.EXECUTION_TIME, String.valueOf(0L));
       clusterTiming.put(opId, val);
     }
-    if (!scenario.getTimings().getActorTimings().isEmpty()) {
-      for (final AbstractActor actor : cluster.getOnlyActors()) {
-        if (actor instanceof Actor) {
-          AbstractActor aaa = null;
-          for (final AbstractActor aa : scenario.getTimings().getActorTimings().keySet()) {
-            if (actor.getName().equals(aa.getName())) {
-              aaa = aa;
-            }
-          }
-          for (final Component opId : archi.getProcessingElements()) {
-            final Long sum = scenario.getTimings().evaluateTimingOrDefault(aaa, opId, TimingType.EXECUTION_TIME)
-                * repetitionVector.get(actor);
-            clusterTiming.get(opId).replace(TimingType.EXECUTION_TIME, String.valueOf(sum));
-          }
+
+    if (scenario.getTimings().getActorTimings().isEmpty()) {
+      return clusterTiming; // Early exit
+    }
+
+    for (final AbstractActor actor : cluster.getOnlyActors()) {
+      if (actor instanceof Actor) {
+        final AbstractActor aaa = scenario.getTimings().getActorTimings().keySet().stream()
+            .filter(aa -> actor.getName().equals(aa.getName())).findFirst().orElse(null);
+
+        for (final Component opId : archi.getProcessingElements()) {
+          final Long sum = scenario.getTimings().evaluateTimingOrDefault(aaa, opId, TimingType.EXECUTION_TIME)
+              * repetitionVector.get(actor);
+          clusterTiming.get(opId).replace(TimingType.EXECUTION_TIME, String.valueOf(sum));
         }
       }
     }
+
     return clusterTiming;
   }
 

@@ -130,7 +130,7 @@ Export-Package: org.preesm.algorithm,
  org.preesm.algorithm.throughput.sdf,
  org.preesm.algorithm.throughput.sdf.tools,
  org.preesm.algorithm.transforms
-Bundle-RequiredExecutionEnvironment: JavaSE-1.8
+Bundle-RequiredExecutionEnvironment: JavaSE-17
 Bundle-ActivationPolicy: lazy
 Bundle-Activator: org.preesm.algorithm.PreesmAlgorithmPlugin
 Import-Package: org.preesm.ui.utils

@@ -7,7 +7,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.logging.Level;
 import org.preesm.algorithm.schedule.model.ScapeSchedule;
 import org.preesm.algorithm.schedule.model.ScheduleFactory;
 import org.preesm.commons.logger.PreesmLogger;
@@ -48,7 +47,7 @@ public class ScheduleScape {
 
   public List<ScapeSchedule> execute() {
     final String scheduleStr = pisdf2str();
-    PreesmLogger.getLogger().log(Level.INFO, "APGAN schedule: " + scheduleStr);
+    PreesmLogger.getLogger().info(() -> "APGAN schedule: " + scheduleStr);
 
     return str2schedule(scheduleStr);
 

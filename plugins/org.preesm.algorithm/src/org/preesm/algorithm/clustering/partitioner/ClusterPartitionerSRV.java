@@ -56,25 +56,12 @@ import org.preesm.model.slam.ComponentInstance;
  * @author orenaud
  *
  */
-public class ClusterPartitionerSRV {
-
-  /**
-   * Input graph.
-   */
-  private final PiGraph  graph;
-  /**
-   * Workflow scenario.
-   */
-  private final Scenario scenario;
-  /**
-   * Number of PEs in compute clusters.
-   */
-  private final int      numberOfPEs;
+public class ClusterPartitionerSRV extends ClusterPartitioner {
 
   private final Map<AbstractVertex, Long> brv;
 
   private final int clusterId;
-  private final int SCAPEmode;
+  private final int scapeMode;
 
   /**
    * Builds a ClusterPartitioner object.
@@ -88,22 +75,19 @@ public class ClusterPartitionerSRV {
    *          repetition vector
    * @param clusterId
    *          List of non clusterable actors
-   * @param nonClusterableList
-   *          List of non clusterable actors cluster identificator
    */
   public ClusterPartitionerSRV(final Scenario scenario, final int numberOfPEs, Map<AbstractVertex, Long> brv,
-      int clusterId, List<AbstractActor> nonClusterableList, int SCAPEmode) {
-    this.graph = scenario.getAlgorithm();
-    this.scenario = scenario;
-    this.numberOfPEs = numberOfPEs;
+      int clusterId, int scapeMode) {
+    super(scenario.getAlgorithm(), scenario, numberOfPEs);
     this.brv = brv;
     this.clusterId = clusterId;
-    this.SCAPEmode = SCAPEmode;
+    this.scapeMode = scapeMode;
   }
 
   /**
    * @return Clustered PiGraph.
    */
+  @Override
   public PiGraph cluster() {
 
     // Retrieve SRV first candidate in input graph and verify that actors share component constraints.
@@ -122,7 +106,7 @@ public class ClusterPartitionerSRV {
 
       // apply scaling
       final Long scale = ClusterPartitionerURC.computeScalingFactor(subGraph,
-          brv.get(subGraph.getExecutableActors().get(0)), (long) numberOfPEs, SCAPEmode);
+          brv.get(subGraph.getExecutableActors().get(0)), (long) numberOfPEs, scapeMode);
       for (final DataInputInterface din : subGraph.getDataInputInterfaces()) {
         din.getGraphPort().setExpression(
             din.getGraphPort().getExpression().evaluate() * brv.get(subGraph.getExecutableActors().get(0)) / scale);

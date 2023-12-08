@@ -52,7 +52,7 @@ import org.preesm.ui.wizards.PreesmProjectNature;
  * @author orenaud
  *
  */
-public class ArchitectureSimSDPGeneratorPopup extends AbstractHandler {
+public class ArchitectureGeneratorSimSDPPopup extends AbstractHandler {
 
   @Override
   public Object execute(ExecutionEvent event) throws ExecutionException {
@@ -68,7 +68,6 @@ public class ArchitectureSimSDPGeneratorPopup extends AbstractHandler {
         if (input == null || input.isEmpty()) {
           return null;
         }
-
       }
 
     } catch (final Exception e) {

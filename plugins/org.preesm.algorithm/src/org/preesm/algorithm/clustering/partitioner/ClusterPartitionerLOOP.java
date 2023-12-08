@@ -40,18 +40,19 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import org.preesm.algorithm.clustering.ClusteringHelper;
+import org.preesm.commons.math.MathFunctionsHelper;
 import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.AbstractVertex;
 import org.preesm.model.pisdf.ConfigInputPort;
 import org.preesm.model.pisdf.DataInputInterface;
 import org.preesm.model.pisdf.DataInputPort;
-import org.preesm.model.pisdf.DataOutputInterface;
 import org.preesm.model.pisdf.DataOutputPort;
 import org.preesm.model.pisdf.DataPort;
 import org.preesm.model.pisdf.Delay;
 import org.preesm.model.pisdf.DelayActor;
 import org.preesm.model.pisdf.Fifo;
 import org.preesm.model.pisdf.ForkActor;
+import org.preesm.model.pisdf.InterfaceActor;
 import org.preesm.model.pisdf.JoinActor;
 import org.preesm.model.pisdf.PersistenceLevel;
 import org.preesm.model.pisdf.PiGraph;
@@ -69,23 +70,15 @@ import org.preesm.model.slam.ComponentInstance;
  * @author orenaud
  *
  */
-public class ClusterPartitionerLOOP {
-
-  /**
-   * Input graph.
-   */
-  private final PiGraph  graph;
-  /**
-   * Workflow scenario.
-   */
-  private final Scenario scenario;
-  /**
-   * Number of PEs in compute clusters.
-   */
-  private final int      numberOfPEs;
+public class ClusterPartitionerLOOP extends ClusterPartitioner {
 
   private final Map<AbstractVertex, Long> brv;
   private int                             clusterId;
+
+  private static final String LOOP_PREFIX = "loop_";
+
+  // Needs to be declare as a member to be used and modified in lambda
+  private int pipelineStage;
 
   /**
    * Builds a ClusterPartitioner object.
@@ -99,9 +92,7 @@ public class ClusterPartitionerLOOP {
    */
   public ClusterPartitionerLOOP(final PiGraph graph, final Scenario scenario, int numberOfPEs,
       Map<AbstractVertex, Long> brv, int clusterId) {
-    this.graph = graph;
-    this.scenario = scenario;
-    this.numberOfPEs = numberOfPEs;
+    super(scenario.getAlgorithm(), scenario, numberOfPEs);
     this.brv = brv;
     this.clusterId = clusterId;
   }
@@ -109,11 +100,12 @@ public class ClusterPartitionerLOOP {
   /**
    * @return Clustered PiGraph.
    */
+  @Override
   public PiGraph cluster() {
     // retrieve tle cycle sequence to be coarsely clustered
     final List<AbstractActor> localPluralLOOPs = new LOOPSeeker(graph, numberOfPEs, brv).pluralLocalseek();
     if (!localPluralLOOPs.isEmpty()) {
-      final PiGraph subGraph = new PiSDFSubgraphBuilder(graph, localPluralLOOPs, "loop_" + clusterId).build();
+      final PiGraph subGraph = new PiSDFSubgraphBuilder(graph, localPluralLOOPs, LOOP_PREFIX + clusterId).build();
       extractDelay();
       // Add constraints of the cluster in the scenario.
       subGraph.setClusterValue(true);
@@ -131,7 +123,7 @@ public class ClusterPartitionerLOOP {
       // the cycle
       Long duplicationValue;
       if (brv.get(graphLocalSingleLOOPs.get(0)) > numberOfPEs) {
-        duplicationValue = ClusterPartitionerURC.gcd((long) numberOfPEs, brv.get(graphLocalSingleLOOPs.get(0)));
+        duplicationValue = MathFunctionsHelper.gcd(numberOfPEs, brv.get(graphLocalSingleLOOPs.get(0)));
       } else {
         duplicationValue = brv.get(graphLocalSingleLOOPs.get(0));
       }
@@ -156,12 +148,15 @@ public class ClusterPartitionerLOOP {
    *          highest divisor of brv(loop) just above the number of processing element
    */
   private void semiUnroll(AbstractActor loopActor, Long duplicationValue, Long originalLoopRv) {
+
+    final PiGraph containingGraph = loopActor.getContainingPiGraph();
+
     // duplicate actor
     final List<AbstractActor> dupActorsList = new LinkedList<>();
     for (int i = 1; i < duplicationValue; i++) {
       final AbstractActor dupActor = PiMMUserFactory.instance.copy(loopActor);
       dupActor.setName(loopActor.getName() + "_" + i);
-      dupActor.setContainingGraph(loopActor.getContainingGraph());
+      dupActor.setContainingGraph(containingGraph);
       dupActorsList.add(dupActor);
     }
     // connect data input
@@ -172,61 +167,57 @@ public class ClusterPartitionerLOOP {
     connectDuplicatedConfigInpuPort(loopActor, dupActorsList, duplicationValue);
 
     // remove empty fifo
-    ((PiGraph) loopActor.getContainingGraph()).getFifos().stream().filter(x -> x.getSourcePort() == null)
-        .forEach(x -> ((PiGraph) loopActor.getContainingGraph()).removeFifo(x));
-    ((PiGraph) loopActor.getContainingGraph()).getFifos().stream().filter(x -> x.getTargetPort() == null)
-        .forEach(x -> ((PiGraph) loopActor.getContainingGraph()).removeFifo(x));
+    containingGraph.getFifos().stream().filter(x -> x.getSourcePort() == null).forEach(containingGraph::removeFifo);
+    containingGraph.getFifos().stream().filter(x -> x.getTargetPort() == null).forEach(containingGraph::removeFifo);
+
     final List<PiGraph> pipList = new LinkedList<>();
     // generate subgraphs
     final List<AbstractActor> subloop = Collections.singletonList(loopActor);
-    final PiGraph subGraph = new PiSDFSubgraphBuilder(graph, subloop, "loop_" + clusterId).build();
+    final PiGraph subGraph = new PiSDFSubgraphBuilder(graph, subloop, LOOP_PREFIX + clusterId).build();
     pipList.add(subGraph);
     // Add constraints of the cluster in the scenario.
     subGraph.setClusterValue(true);
-    for (final ComponentInstance component : ClusteringHelper.getListOfCommonComponent(subloop, this.scenario)) {
-      this.scenario.getConstraints().addConstraint(component, subGraph);
-    }
+
+    ClusteringHelper.getListOfCommonComponent(subloop, this.scenario)
+        .forEach(c -> this.scenario.getConstraints().addConstraint(c, subGraph));
+
     clusterId++;
     for (final AbstractActor dupActor : dupActorsList) {
       final List<AbstractActor> subloopCopy = new LinkedList<>();
       subloopCopy.add(dupActor);
-      final PiGraph subGraphCopy = new PiSDFSubgraphBuilder(graph, subloopCopy, "loop_" + clusterId).build();
+      final PiGraph subGraphCopy = new PiSDFSubgraphBuilder(graph, subloopCopy, LOOP_PREFIX + clusterId).build();
       pipList.add(subGraphCopy);
       // Add constraints of the cluster in the scenario.
       subGraph.setClusterValue(true);
-      for (final ComponentInstance component : ClusteringHelper.getListOfCommonComponent(subloopCopy, this.scenario)) {
-        this.scenario.getConstraints().addConstraint(component, subGraphCopy);
-      }
+
+      ClusteringHelper.getListOfCommonComponent(subloop, this.scenario)
+          .forEach(c -> this.scenario.getConstraints().addConstraint(c, subGraph));
+
       clusterId++;
     }
 
     // Scale and pipeline each loop
     for (final PiGraph sub : pipList) {
-      for (final DataInputInterface input : sub.getDataInputInterfaces()) {
-
-        if (!input.getDataPort().getFifo().isHasADelay()) {
-          final Long scale = input.getGraphPort().getFifo().getSourcePort().getExpression().evaluate();
-          input.getGraphPort().setExpression(scale);
-          input.getDataPort().setExpression(input.getGraphPort().getExpression().evaluate());
-        }
-      }
-      for (final DataOutputInterface output : sub.getDataOutputInterfaces()) {
-
-        if (!output.getDataPort().getFifo().isHasADelay()) {
-          final Long scale = output.getGraphPort().getFifo().getTargetPort().getExpression().evaluate();
-          output.getGraphPort().setExpression(scale);
-          output.getDataPort().setExpression(output.getGraphPort().getExpression().evaluate());
+      for (final InterfaceActor iActor : sub.getDataInterfaces()) {
+        if (!iActor.getDataPort().getFifo().isHasADelay()) {
+          Long scale;
+          if (iActor instanceof DataInputInterface) {
+            scale = iActor.getGraphPort().getFifo().getSourcePort().getExpression().evaluate();
+          } else {
+            scale = iActor.getGraphPort().getFifo().getTargetPort().getExpression().evaluate();
+          }
+          iActor.getGraphPort().setExpression(scale);
+          iActor.getDataPort().setExpression(iActor.getGraphPort().getExpression().evaluate());
         }
       }
     }
-    int pipelineStage = 1;
-    for (final PiGraph sub : pipList) {
 
-      for (final DataOutputInterface out : sub.getDataOutputInterfaces()) {
-        createPipeline(sub, out.getDataPort(), out.getGraphPort(), pipelineStage);
-      }
+    pipelineStage = 1;
+    pipList.forEach(sub -> {
+      sub.getDataOutputInterfaces()
+          .forEach(doi -> createPipeline(sub, doi.getDataPort(), doi.getGraphPort(), pipelineStage));
       pipelineStage++;
-    }
+    });
 
   }
 
@@ -249,44 +240,15 @@ public class ClusterPartitionerLOOP {
     final Delay pipDelay = PiMMUserFactory.instance.createDelay();
     pipDelay.setName(graphPort.getContainingActor().getName() + "." + graphPort.getName() + "_"
         + graphPort.getContainingActor().getName() + "." + graphPort.getFifo().getSourcePort().getName());
-    pipDelay.setContainingGraph(sub.getContainingGraph());
+    pipDelay.setContainingGraph(sub.getContainingPiGraph());
     pipDelay.setLevel(PersistenceLevel.PERMANENT);
     if (dataPort.getFifo().getSourcePort().getContainingActor() instanceof DelayActor) {
       pipDelay.setExpression(dataPort.getExpression().evaluate());
     } else {
       pipDelay.setExpression(dataPort.getExpression().evaluate() * pipelineStage);
     }
-    pipDelay.getActor().setContainingGraph(sub.getContainingGraph());
+    pipDelay.getActor().setContainingGraph(sub.getContainingPiGraph());
     graphPort.getFifo().setDelay(pipDelay);
-  }
-
-  /**
-   * Add delay between each loop actor in order to create pipeline stage. if the output is not a loop output, then the
-   * delay must contain as many initial tokens as there are stages before the pipeline output. Otherwise the number of
-   * initial token to store equals the loop delay.
-   *
-   * @param sub
-   *          the subgraph as actor
-   * @param output
-   *          the output to pipeline
-   * @param pipelineStage
-   *          the number of stage already pipelined
-   *
-   */
-  private void createPipeline(AbstractActor sub, DataOutputPort output, int pipelineStage) {
-    final Delay pipDelay = PiMMUserFactory.instance.createDelay();
-    pipDelay.setName(output.getContainingActor().getName() + "." + output.getName() + "_"
-        + output.getContainingActor().getName() + "." + output.getFifo().getSourcePort().getName());
-    pipDelay.setContainingGraph(sub.getContainingGraph());
-    pipDelay.setLevel(PersistenceLevel.PERMANENT);
-    // if the output is not a loop output, then the delay must contain as many initial tokens as there are stages before
-    // the pipeline output.
-    // output.get
-    if (output.getFifo().isHasADelay()) {
-      pipDelay.setExpression(output.getExpression().evaluate() * pipelineStage);
-    }
-    pipDelay.getActor().setContainingGraph(sub.getContainingGraph());
-    output.getFifo().setDelay(pipDelay);
   }
 
   private void connectDuplicatedConfigInpuPort(AbstractActor loopActor, List<AbstractActor> dupActorsList,
@@ -296,7 +258,7 @@ public class ClusterPartitionerLOOP {
         dupActorsList.get(i - 1).getConfigInputPorts().stream().filter(x -> x.getName().equals(cfg.getName()))
             .forEach(x -> PiMMUserFactory.instance.createDependency(cfg.getIncomingDependency().getSetter(), x));
         dupActorsList.get(i - 1).getConfigInputPorts().stream().filter(x -> x.getName().equals(cfg.getName())).forEach(
-            x -> x.getIncomingDependency().setContainingGraph(cfg.getIncomingDependency().getContainingGraph()));
+            x -> x.getIncomingDependency().setContainingGraph(cfg.getIncomingDependency().getContainingPiGraph()));
       }
     }
   }
@@ -308,7 +270,7 @@ public class ClusterPartitionerLOOP {
       if (!out.getFifo().isHasADelay()) {
         final JoinActor jn = PiMMUserFactory.instance.createJoinActor();
         jn.setName("Join_loop_" + loopActor.getName() + index);
-        jn.setContainingGraph(loopActor.getContainingGraph());
+        jn.setContainingGraph(loopActor.getContainingPiGraph());
 
         // connect Join to dout
         final DataOutputPort dout = PiMMUserFactory.instance.createDataOutputPort();
@@ -319,7 +281,7 @@ public class ClusterPartitionerLOOP {
         fout.setType(out.getFifo().getType());
         fout.setSourcePort(dout);
         fout.setTargetPort(out.getFifo().getTargetPort());
-        fout.setContainingGraph(loopActor.getContainingGraph());
+        fout.setContainingGraph(loopActor.getContainingPiGraph());
 
         // connect oEmpty_0 to Join
         final DataInputPort din = PiMMUserFactory.instance.createDataInputPort();
@@ -330,7 +292,7 @@ public class ClusterPartitionerLOOP {
         final Fifo fin = PiMMUserFactory.instance.createFifo();
         fin.setSourcePort(out);
         fin.setTargetPort(din);
-        fin.setContainingGraph(loopActor.getContainingGraph());
+        fin.setContainingGraph(loopActor.getContainingPiGraph());
         out.getFifo().setType(fout.getType());
 
         // connect duplicated actors to Join
@@ -342,7 +304,7 @@ public class ClusterPartitionerLOOP {
           final Fifo finn = PiMMUserFactory.instance.createFifo();
           finn.setType(fout.getType());
           finn.setTargetPort(dinn);
-          finn.setContainingGraph(loopActor.getContainingGraph());
+          finn.setContainingGraph(loopActor.getContainingPiGraph());
           dupActorsList.get(i - 1).getDataOutputPorts().stream().filter(x -> x.getName().equals(out.getName()))
               .forEach(x -> x.setOutgoingFifo(finn));
           index++;
@@ -358,7 +320,7 @@ public class ClusterPartitionerLOOP {
       if (!in.getFifo().isHasADelay()) {
         final ForkActor frk = PiMMUserFactory.instance.createForkActor();
         frk.setName("Fork_loop_" + loopActor.getName() + index);
-        frk.setContainingGraph(loopActor.getContainingGraph());
+        frk.setContainingGraph(loopActor.getContainingPiGraph());
 
         // connect din to frk
         final DataInputPort din = PiMMUserFactory.instance.createDataInputPort();
@@ -371,7 +333,7 @@ public class ClusterPartitionerLOOP {
         fin.setSourcePort(in.getFifo().getSourcePort());
         fin.setTargetPort(din);
 
-        fin.setContainingGraph(loopActor.getContainingGraph());
+        fin.setContainingGraph(loopActor.getContainingPiGraph());
 
         // connect fork to oEmpty_0
         final DataOutputPort dout = PiMMUserFactory.instance.createDataOutputPort();
@@ -383,7 +345,7 @@ public class ClusterPartitionerLOOP {
         fout.setType(in.getFifo().getType());
         fout.setSourcePort(dout);
         fout.setTargetPort(in);
-        fout.setContainingGraph(loopActor.getContainingGraph());
+        fout.setContainingGraph(loopActor.getContainingPiGraph());
         // remove extra fifo --> non en fait c'est bon
 
         // connect fork to duplicated actors
@@ -395,7 +357,7 @@ public class ClusterPartitionerLOOP {
           final Fifo foutn = PiMMUserFactory.instance.createFifo();
           foutn.setType(in.getFifo().getType());
           foutn.setSourcePort(doutn);
-          foutn.setContainingGraph(loopActor.getContainingGraph());
+          foutn.setContainingGraph(loopActor.getContainingPiGraph());
           dupActorsList.get(i - 1).getDataInputPorts().stream().filter(x -> x.getName().equals(in.getName()))
               .forEach(x -> x.setIncomingFifo(foutn));
         }
@@ -406,13 +368,13 @@ public class ClusterPartitionerLOOP {
           final Fifo fdin = PiMMUserFactory.instance.createFifo();
           final String type = in.getFifo().getType();
           fdin.setType(type);
-          fdin.setContainingGraph(loopActor.getContainingGraph());
+          fdin.setContainingGraph(loopActor.getContainingPiGraph());
           final Delay copyDelay = PiMMUserFactory.instance.copy(in.getFifo().getDelay());
           copyDelay.setName(in.getFifo().getDelay().getName() + i);
-          copyDelay.setContainingGraph(loopActor.getContainingGraph());
+          copyDelay.setContainingGraph(loopActor.getContainingPiGraph());
           final DelayActor copyDelayActor = PiMMUserFactory.instance.copy(in.getFifo().getDelay().getActor());
           copyDelayActor.setName(in.getFifo().getDelay().getActor().getName() + i);
-          copyDelayActor.setContainingGraph(loopActor.getContainingGraph());
+          copyDelayActor.setContainingGraph(loopActor.getContainingPiGraph());
           copyDelay.setActor(copyDelayActor);
           fdin.assignDelay(copyDelay);
           // the getter of the initial delay is moved to get the delay of the copied actor
@@ -421,12 +383,12 @@ public class ClusterPartitionerLOOP {
           // the setter of the copied delay is the output of the initial delay
           final Fifo fDelayActorIn = PiMMUserFactory.instance.createFifo();
           fDelayActorIn.setType(type);
-          fDelayActorIn.setContainingGraph(loopActor.getContainingGraph());
+          fDelayActorIn.setContainingGraph(loopActor.getContainingPiGraph());
           fDelayActorIn.setSourcePort(in.getFifo().getDelay().getActor().getDataOutputPort());
           fDelayActorIn.setTargetPort(copyDelayActor.getDataInputPort());
           final Fifo fDelayActorOut = PiMMUserFactory.instance.createFifo();
           fDelayActorOut.setType(type);
-          fDelayActorOut.setContainingGraph(loopActor.getContainingGraph());
+          fDelayActorOut.setContainingGraph(loopActor.getContainingPiGraph());
           fDelayActorOut.setTargetPort(getterPort);
           fDelayActorOut.setSourcePort(copyDelayActor.getDataOutputPort());
 

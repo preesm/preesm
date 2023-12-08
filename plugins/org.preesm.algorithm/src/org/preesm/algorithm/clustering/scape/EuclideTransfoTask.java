@@ -74,10 +74,8 @@ public class EuclideTransfoTask extends AbstractTaskImplementation {
         final int k = size - i;
         gp.getValue().remove(k);
       }
-      for (final AbstractActor actor : transfo.getAllActors()) {
 
-        gp.getValue().add(actor);
-      }
+      transfo.getAllActors().forEach(actor -> gp.getValue().add(actor));
     }
 
     final PiGraphConsistenceChecker pgcc = new PiGraphConsistenceChecker(CheckerErrorLevel.FATAL_ALL,

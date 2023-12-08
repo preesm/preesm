@@ -37,32 +37,32 @@ import org.preesm.workflow.implement.AbstractTaskImplementation;
 @PreesmTask(id = "DeviationChartTask.identifier", name = "Deviation chart exporter",
     category = "Deviation chart exporters")
 public class DeviationChartTask extends AbstractTaskImplementation {
-  public static final String WORKLOAD_NAME   = "workload_trend.csv";
-  public static final String LATENCY_NAME    = "latency_trend.csv";
-  public static final String OCCUPATION_NAME = "occupation_trend.csv";
-  public static final String SPEEDUP_NAME    = "speedup_trend.csv";
-  public static final String DSE_NAME        = "dse_trend.csv";
-  public static final String DSE_PART_NAME   = "dse_part_trend.csv";
+  private static final String WORKLOAD_NAME   = "workload_trend.csv";
+  private static final String LATENCY_NAME    = "latency_trend.csv";
+  private static final String OCCUPATION_NAME = "occupation_trend.csv";
+  private static final String SPEEDUP_NAME    = "speedup_trend.csv";
+  private static final String DSE_NAME        = "dse_trend.csv";
+  private static final String DSE_PART_NAME   = "dse_part_trend.csv";
 
-  public static final String PAGE1_TITRE1 = "Internode Workload Standard Deviation over Iteration";
-  public static final String PAGE1_TITRE2 = "Internode Latency over Iteration";
-  public static final String PAGE2_TITRE1 = "Intranode Occupation over Iteration";
-  public static final String PAGE2_TITRE2 = "Intranode Speedups over Iteration";
-  public static final String PAGE3_TITRE1 = "Final Resource Allocation Time over Iteration";
-  public static final String PAGE3_TITRE2 = "Cumulative Resource Allocation Time over Iteration";
+  private static final String PAGE1_TITRE1 = "Internode Workload Standard Deviation over Iteration";
+  private static final String PAGE1_TITRE2 = "Internode Latency over Iteration";
+  private static final String PAGE2_TITRE1 = "Intranode Occupation over Iteration";
+  private static final String PAGE2_TITRE2 = "Intranode Speedups over Iteration";
+  private static final String PAGE3_TITRE1 = "Final Resource Allocation Time over Iteration";
+  private static final String PAGE3_TITRE2 = "Cumulative Resource Allocation Time over Iteration";
 
-  public static final String PAGE1 = "Internode Analysis";
-  public static final String PAGE2 = "Intranode Analysis";
-  public static final String PAGE3 = "DSE Analysis";
+  private static final String PAGE1 = "Internode Analysis";
+  private static final String PAGE2 = "Intranode Analysis";
+  private static final String PAGE3 = "DSE Analysis";
 
-  static String       path            = "";
-  static int          iterationNum    = 0;
-  static int          iterationOptim  = 0;
-  static Double       latencyOptim    = 0d;
-  static Double       workloadOptim   = 0d;
-  static List<Double> occupationOptim = new ArrayList<>();
-  static List<Double> speedupOptim    = new ArrayList<>();
-  static Double       finalDSE        = 0d;
+  private String             path            = "";
+  private int                iterationNum    = 0;
+  private int                iterationOptim  = 0;
+  private Double             latencyOptim    = 0d;
+  private Double             workloadOptim   = 0d;
+  private final List<Double> occupationOptim = new ArrayList<>();
+  private final List<Double> speedupOptim    = new ArrayList<>();
+  private Double             finalDSE        = 0d;
 
   @Override
   public Map<String, Object> execute(Map<String, Object> inputs, Map<String, String> parameters,
@@ -87,21 +87,21 @@ public class DeviationChartTask extends AbstractTaskImplementation {
     return new LinkedHashMap<>();
   }
 
-  private static JFrame createFrame() {
+  private JFrame createFrame() {
     final JFrame frame = new JFrame("SimSDP Curve");
     frame.setSize(1000, 800);
     frame.setLocationRelativeTo(null);
     return frame;
   }
 
-  private static void addTab(JTabbedPane tabbedPane, String title, JPanel panel, String tooltip) {
+  private void addTab(JTabbedPane tabbedPane, String title, JPanel panel, String tooltip) {
     tabbedPane.addTab(title, panel);
     if (tooltip != null) {
       tabbedPane.setToolTipTextAt(tabbedPane.indexOfComponent(panel), tooltip);
     }
   }
 
-  private static JPanel createTab(String chartTitle1, String chartTitle2) {
+  private JPanel createTab(String chartTitle1, String chartTitle2) {
     final JPanel panel = new JPanel();
     final XYSeriesCollection dataset1 = fillDataSet(chartTitle1);
     DefaultCategoryDataset dataset3 = null;
@@ -111,13 +111,11 @@ public class DeviationChartTask extends AbstractTaskImplementation {
     } else {
       dataset2 = fillDataSet(chartTitle2);
     }
-    String yAxisName1;
-    String yAxisName2;
-    yAxisName1 = getYAxisName(chartTitle1);
+    final String yAxisName1 = getYAxisName(chartTitle1);
     String description = getDescription(chartTitle1);
     createChart(panel, chartTitle1, yAxisName1, dataset1, description);
 
-    yAxisName2 = getYAxisName(chartTitle2);
+    final String yAxisName2 = getYAxisName(chartTitle2);
     description = getDescription(chartTitle2);
     if (chartTitle2.equals(PAGE3_TITRE2)) {
       createChart(panel, chartTitle2, yAxisName2, dataset3, description);
@@ -127,34 +125,27 @@ public class DeviationChartTask extends AbstractTaskImplementation {
     return panel;
   }
 
-  private static String getYAxisName(String chartTitle) {
+  private String getYAxisName(String chartTitle) {
     // Define Y-axis name based on chart title
-    if (chartTitle.equals(PAGE1_TITRE1)) {
-      return "Deviation from average (%)";
-    }
-    if (chartTitle.equals(PAGE1_TITRE2)) {
-      return "Latency (cycle)";
-    }
-    if (chartTitle.equals(PAGE2_TITRE1)) {
-      return "Occupation per operator (%)";
-    }
-    if (chartTitle.equals(PAGE2_TITRE2)) {
-      return "Speedup (%)";
-    }
-    if (chartTitle.equals(PAGE3_TITRE1) || chartTitle.equals(PAGE3_TITRE2)) {
-      return "Resource allocation time (s)";
-    }
-    return "";
+    return switch (chartTitle) {
+      case PAGE1_TITRE1 -> "Deviation from average (%)";
+      case PAGE1_TITRE2 -> "Latency (cycle)";
+      case PAGE2_TITRE1 -> "Occupation per operator (%)";
+      case PAGE2_TITRE2 -> "Speedup (%)";
+      case PAGE3_TITRE1, PAGE3_TITRE2 -> "Resource allocation time (s)";
+      default -> "";
+    };
   }
 
-  private static String getDescription(String chartTitle) {
+  private String getDescription(String chartTitle) {
     // Define description based on chart title
-    String description = "<html>This chart gives an idea of the impact of the efficiency of the application"
+    final StringBuilder builder = new StringBuilder();
+    builder.append("<html>This chart gives an idea of the impact of the efficiency of the application"
         + " graph distribution on your set of nodes via the SimSDP method.<br>" + " The method has iterated over <b>"
-        + iterationNum + "</b> iterations, ";
+        + iterationNum + "</b> iterations, ");
     final String optimStr = "The optimal configuration is achieved with the following attributes: <br>";
     if (chartTitle.equals(PAGE1_TITRE1)) {
-      description += "and here is the performance evaluation at inter-node level for each iteration.<br>"
+      builder.append("and here is the performance evaluation at inter-node level for each iteration.<br>"
 
           + "The upper graph show the the internode partitioning based on the computation "
           + "of the workload standard deviation.<br>"
@@ -166,46 +157,46 @@ public class DeviationChartTask extends AbstractTaskImplementation {
           + "The lower graph shows the simulated latency of your application execution<br><br>"
 
           + optimStr + "- Iteration: " + iterationOptim + " <br>" + " - Latency: " + latencyOptim + " cycles <br>"
-          + "- Inter-node Workload Deviation: " + String.format("%.2f", workloadOptim) + " %";
+          + "- Inter-node Workload Deviation: " + String.format("%.2f", workloadOptim) + " %");
     } else if (chartTitle.equals(PAGE2_TITRE1)) {
-      description += "and here is the performance evaluation at intra-node level for each iteration.<br>"
+      builder.append("and here is the performance evaluation at intra-node level for each iteration.<br>"
 
           + "The upper graph shows the percentage of occupancy per operator (node) over iterations.<br>"
           + "The lower graph shows the the possible speed-ups per node"
           + " and compare them to th achieved speed-ups over iterations.<br><br>" + optimStr + "- Iteration: "
-          + iterationOptim + " <br>" + " - Occupation: ";
+          + iterationOptim + " <br>" + " - Occupation: ");
       for (int i = 0; i < occupationOptim.size(); i++) {
-        description += " Node" + i + "->" + String.format("%.2f", occupationOptim.get(i)) + " %";
+        builder.append(" Node" + i + "->" + String.format("%.2f", occupationOptim.get(i)) + " %");
         if (i < occupationOptim.size() - 1) {
-          description += ", ";
+          builder.append(", ");
         }
       }
-      description += "  <br>" + "- Speed-ups: ";
+      builder.append("  <br>" + "- Speed-ups: ");
       int nodeIndex = 0;
       for (int i = 0; i < speedupOptim.size(); i++) {
         if (i % 2 == 0) {
-          description += " Node" + nodeIndex + "-> current: " + String.format("%.2f", speedupOptim.get(i)) + " %";
+          builder.append(" Node" + nodeIndex + "-> current: " + String.format("%.2f", speedupOptim.get(i)) + " %");
           nodeIndex++;
         } else {
-          description += "max: " + String.format("%.2f", speedupOptim.get(i)) + " %";
+          builder.append("max: " + String.format("%.2f", speedupOptim.get(i)) + " %");
         }
         if (i < speedupOptim.size() - 1) {
-          description += ", ";
+          builder.append(", ");
         }
 
       }
 
     } else {
-      description += "and here is the resource allocation time for each iteration.<br>"
+      builder.append("and here is the resource allocation time for each iteration.<br>"
 
           + "The graph shows the resource allocation process time over iterations.<br><br>" + optimStr + "- Iteration: "
-          + iterationOptim + " <br>" + " - Cumulative resource allocation time: " + finalDSE + " second <br>";
+          + iterationOptim + " <br>" + " - Cumulative resource allocation time: " + finalDSE + " second <br>");
     }
-    description += "</html>";
-    return description;
+    builder.append("</html>");
+    return builder.toString();
   }
 
-  private static void createChart(JPanel panel, String chartTitle, String yAxisName, XYSeriesCollection dataset,
+  private void createChart(JPanel panel, String chartTitle, String yAxisName, XYSeriesCollection dataset,
       String description) {
     JFreeChart chart;
 
@@ -225,7 +216,7 @@ public class DeviationChartTask extends AbstractTaskImplementation {
     panel.add(new ChartPanel(chart));
   }
 
-  private static void createChart(JPanel panel, String chartTitle, String yAxisName, DefaultCategoryDataset dataset,
+  private void createChart(JPanel panel, String chartTitle, String yAxisName, DefaultCategoryDataset dataset,
       String description) {
     JFreeChart chart;
     chart = createStackedBarChart(chartTitle, "Iteration", yAxisName, dataset);
@@ -244,13 +235,13 @@ public class DeviationChartTask extends AbstractTaskImplementation {
     panel.add(new ChartPanel(chart));
   }
 
-  private static JFreeChart createStackedBarChart(String chartTitle, String xAxisLabel, String yAxisLabel,
+  private JFreeChart createStackedBarChart(String chartTitle, String xAxisLabel, String yAxisLabel,
       DefaultCategoryDataset dataset) {
     return ChartFactory.createStackedBarChart(chartTitle, xAxisLabel, yAxisLabel, dataset, PlotOrientation.VERTICAL,
         true, true, false);
   }
 
-  private static void addDescriptionLabel(JPanel panel, String description, boolean b) {
+  private void addDescriptionLabel(JPanel panel, String description, boolean b) {
     if (b) {
 
       final JLabel descriptionLabel = new JLabel(description);
@@ -267,23 +258,32 @@ public class DeviationChartTask extends AbstractTaskImplementation {
     }
   }
 
-  private static XYSeriesCollection fillDataSet(String chartTitle) {
+  private XYSeriesCollection fillDataSet(String chartTitle) {
     final XYSeriesCollection dataset = new XYSeriesCollection();
-    if (chartTitle.equals(PAGE1_TITRE1)) {
-      fillWorkloadDeviationDataSet(dataset);
-    } else if (chartTitle.equals(PAGE1_TITRE2)) {
-      fillLatencyDataSet(dataset);
-    } else if (chartTitle.equals(PAGE2_TITRE1)) {
-      fillOccupationDataSet(dataset);
-    } else if (chartTitle.equals(PAGE2_TITRE2)) {
-      fillSpeedupDataSet(dataset);
-    } else if (chartTitle.equals(PAGE3_TITRE1)) {
-      fillDSEDataSet(dataset);
+
+    switch (chartTitle) {
+      case PAGE1_TITRE1:
+        fillWorkloadDeviationDataSet(dataset);
+        break;
+      case PAGE1_TITRE2:
+        fillLatencyDataSet(dataset);
+        break;
+      case PAGE2_TITRE1:
+        fillOccupationDataSet(dataset);
+        break;
+      case PAGE2_TITRE2:
+        fillSpeedupDataSet(dataset);
+        break;
+      case PAGE3_TITRE1:
+        fillDSEDataSet(dataset);
+        break;
+      default:
+        break;
     }
     return dataset;
   }
 
-  private static DefaultCategoryDataset fillDataSet(String chartTitle, int i) {
+  private DefaultCategoryDataset fillDataSet(String chartTitle, int i) {
 
     final DefaultCategoryDataset dataset = new DefaultCategoryDataset();
     if (chartTitle.equals(PAGE3_TITRE2)) {
@@ -292,7 +292,7 @@ public class DeviationChartTask extends AbstractTaskImplementation {
     return dataset;
   }
 
-  private static void fillDSEpartDataSet(DefaultCategoryDataset dataset) {
+  private void fillDSEpartDataSet(DefaultCategoryDataset dataset) {
     final String[] arrayDSE = PreesmIOHelper.getInstance().read(path, DSE_PART_NAME).split("\n");
 
     final String[] categories = { "node partitioning", "thread partitioning", "node simulation" };
@@ -305,7 +305,7 @@ public class DeviationChartTask extends AbstractTaskImplementation {
     }
   }
 
-  private static void fillDSEDataSet(XYSeriesCollection dataset) {
+  private void fillDSEDataSet(XYSeriesCollection dataset) {
     final String[] arrayDSE = PreesmIOHelper.getInstance().read(path, DSE_NAME).split("\n");
     finalDSE = 0d;
     final XYSeries serie = new XYSeries("Resource allocation time");
@@ -317,7 +317,7 @@ public class DeviationChartTask extends AbstractTaskImplementation {
 
   }
 
-  private static void fillWorkloadDeviationDataSet(XYSeriesCollection dataset) {
+  private void fillWorkloadDeviationDataSet(XYSeriesCollection dataset) {
     final String[] arrayWorkload = PreesmIOHelper.getInstance().read(path, WORKLOAD_NAME).split("\n");
     workloadOptim = 0d;
     final XYSeries serie = new XYSeries("Workload Deviation");
@@ -328,7 +328,7 @@ public class DeviationChartTask extends AbstractTaskImplementation {
     dataset.addSeries(serie);
   }
 
-  private static void fillLatencyDataSet(XYSeriesCollection dataset) {
+  private void fillLatencyDataSet(XYSeriesCollection dataset) {
     final String[] arrayLatency = PreesmIOHelper.getInstance().read(path, LATENCY_NAME).split("\n");
     final XYSeries serie = new XYSeries("Latency");
     Double minLatency = Double.MAX_VALUE;
@@ -345,7 +345,7 @@ public class DeviationChartTask extends AbstractTaskImplementation {
     dataset.addSeries(serie);
   }
 
-  private static void fillOccupationDataSet(XYSeriesCollection dataset) {
+  private void fillOccupationDataSet(XYSeriesCollection dataset) {
     final String[] arrayOccupation = PreesmIOHelper.getInstance().read(path, OCCUPATION_NAME).split("\n");
     String[] column = arrayOccupation[0].split(";");
     final List<XYSeries> series = new ArrayList<>();
@@ -368,7 +368,7 @@ public class DeviationChartTask extends AbstractTaskImplementation {
     }
   }
 
-  private static void fillSpeedupDataSet(XYSeriesCollection dataset) {
+  private void fillSpeedupDataSet(XYSeriesCollection dataset) {
     final String[] arrayOccupation = PreesmIOHelper.getInstance().read(path, SPEEDUP_NAME).split("\n");
     String[] column = arrayOccupation[0].split(";");
     final List<XYSeries> series = new ArrayList<>();

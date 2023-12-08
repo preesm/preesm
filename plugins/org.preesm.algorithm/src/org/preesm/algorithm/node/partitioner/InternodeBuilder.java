@@ -192,11 +192,9 @@ public class InternodeBuilder {
 
     for (final ComponentInstance coreId : coreIds) {
       for (final AbstractActor aa : topGraph.getAllActors()) {
-        if (aa instanceof Actor) {
-          if (coreId.getInstanceName().replace("Core", "").equals(aa.getName().replace("sub", ""))) {
-
-            topScenario.getConstraints().addConstraint(coreId, aa);
-          }
+        if (aa instanceof Actor
+            && (coreId.getInstanceName().replace("Core", "").equals(aa.getName().replace("sub", "")))) {
+          topScenario.getConstraints().addConstraint(coreId, aa);
         }
       }
       topScenario.getSimulationInfo().addSpecialVertexOperator(coreId);
