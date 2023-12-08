@@ -35,11 +35,7 @@
  */
 package org.preesm.algorithm.clustering.partitioner;
 
-import java.util.List;
-import java.util.Map;
 import org.preesm.algorithm.pisdf.autodelays.AutoDelaysTask;
-import org.preesm.model.pisdf.AbstractActor;
-import org.preesm.model.pisdf.AbstractVertex;
 import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.scenario.Scenario;
 import org.preesm.model.slam.Design;
@@ -53,27 +49,9 @@ import org.preesm.model.slam.check.SlamDesignPEtypeChecker;
  * @author orenaud
  *
  */
-public class ClusterPartitionerSEQ {
-
-  /**
-   * Input graph.
-   */
-  private final PiGraph  graph;
-  /**
-   * Workflow scenario.
-   */
-  private final Scenario scenario;
-  /**
-   * Number of PEs in compute clusters.
-   */
-  private final int      numberOfPEs;
+public class ClusterPartitionerSEQ extends ClusterPartitioner {
 
   private final Design archi;
-
-  private final Map<AbstractVertex, Long> brv;
-
-  private final int                 clusterId;
-  private final List<AbstractActor> nonClusterableList;
 
   /**
    * Builds a ClusterPartitioner object.
@@ -84,28 +62,17 @@ public class ClusterPartitionerSEQ {
    *          Workflow scenario.
    * @param numberOfPEs
    *          Number of processing elements in compute clusters.
-   * @param brv
-   *          repetition vector
-   * @param clusterId
-   *          cluster identification
-   * @param nonClusterableList
-   *          List of non able to be cluster actors
    *
    */
-  public ClusterPartitionerSEQ(final PiGraph graph, final Scenario scenario, final int numberOfPEs,
-      Map<AbstractVertex, Long> brv, int clusterId, List<AbstractActor> nonClusterableList) {
-    this.graph = graph;
-    this.scenario = scenario;
-    this.numberOfPEs = numberOfPEs;
-    this.brv = brv;
-    this.clusterId = clusterId;
-    this.nonClusterableList = nonClusterableList;
+  public ClusterPartitionerSEQ(final PiGraph graph, final Scenario scenario, final int numberOfPEs) {
+    super(scenario.getAlgorithm(), scenario, numberOfPEs);
     this.archi = scenario.getDesign();
   }
 
   /**
    * @return Clustered PiGraph.
    */
+  @Override
   public PiGraph cluster() {
 
     if (graph.getDelayIndex() == 0 && SlamDesignPEtypeChecker.isHomogeneousCPU(scenario.getDesign())) {

@@ -14,7 +14,6 @@ public class NodeCompararator {
     this.totalCoreCount = totalCoreCount;
     this.hierarchicalArchitecture = hierarchicalArchitecture;
     this.piGraphActorCount = graph.getActorIndex();
-
   }
 
   // Define a custom comparator for sorting the nodes

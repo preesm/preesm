@@ -10,9 +10,9 @@ import org.preesm.commons.files.PreesmIOHelper;
 import org.preesm.ui.utils.DialogUtil;
 
 public class NbNodesValidator implements IInputValidator {
-  public static final String errorInput = "/!\\ You must enter a strictly positive integer. /!\\";
-  public static final String ARCHI_NAME = "SimSDP_archi.csv";
-  String                     path       = "";
+  private static final String INPUT_ERROR = "/!\\ You must enter a strictly positive integer. /!\\";
+  private static final String ARCHI_NAME  = "SimSDP_archi.csv";
+  String                      path        = "";
 
   public NbNodesValidator(IProject project) {
     path = "/" + project.getName() + "/Archi/";
@@ -26,12 +26,12 @@ public class NbNodesValidator implements IInputValidator {
     try {
       final int a = Integer.parseInt(newText);
       if (a < 1) {
-        return errorInput;
+        return INPUT_ERROR;
       }
       openNodePropertiesDialog(a);
 
     } catch (final NumberFormatException e) {
-      return errorInput;
+      return INPUT_ERROR;
     }
     return null;
   }

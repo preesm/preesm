@@ -320,7 +320,7 @@ public class IntranodeBuilder {
 
     // 3. free subs (Interface --> sink; container)
     for (final PiGraph subgraph : sublist) {
-      final int index = Integer.valueOf(subgraph.getName().replace("sub", ""));
+      final int index = Integer.parseInt(subgraph.getName().replace("sub", ""));
       for (final DataInputInterface in : subgraph.getDataInputInterfaces()) {
         final Actor src = PiMMUserFactory.instance.createActor();
         src.setName("src_" + in.getName());
@@ -420,10 +420,10 @@ public class IntranodeBuilder {
       }
 
       // remove empty FIFO
-      subgraph.getFifos().stream().filter(x -> x.getSourcePort() == null).forEach(x -> subgraph.removeFifo(x));
+      subgraph.getFifos().stream().filter(x -> x.getSourcePort() == null).forEach(subgraph::removeFifo);
       subgraph.getFifos().stream().filter(x -> x.getTargetPort() == null).forEach(subgraph::removeFifo);
       subgraph.getAllActors().stream().filter(x -> x instanceof DataInputInterface || x instanceof DataOutputInterface)
-          .forEach(x -> subgraph.removeActor(x));
+          .forEach(subgraph::removeActor);
       // subgraph.remove
       PiBRV.compute(subgraph, BRVMethod.LCM);
       subgraph.setContainingGraph(null);
@@ -610,13 +610,13 @@ public class IntranodeBuilder {
       scenario.getTimings().setExecutionTime(copy, opId, scenario.getTimings().getExecutionTimeOrDefault(key, opId));
     }
     // remove delay
-    ((PiGraph) key.getContainingGraph()).getDelays().stream().filter(x -> x.getContainingFifo().getSourcePort() == null)
-        .forEach(x -> ((PiGraph) key.getContainingGraph()).removeDelay(x));
+    key.getContainingPiGraph().getDelays().stream().filter(x -> x.getContainingFifo().getSourcePort() == null)
+        .forEach(x -> key.getContainingPiGraph().removeDelay(x));
     // remove empty fifo
-    ((PiGraph) key.getContainingGraph()).getFifos().stream().filter(x -> x.getSourcePort() == null)
-        .forEach(x -> ((PiGraph) key.getContainingGraph()).removeFifo(x));
-    ((PiGraph) key.getContainingGraph()).getFifos().stream().filter(x -> x.getTargetPort() == null)
-        .forEach(x -> ((PiGraph) key.getContainingGraph()).removeFifo(x));
+    key.getContainingPiGraph().getFifos().stream().filter(x -> x.getSourcePort() == null)
+        .forEach(x -> key.getContainingPiGraph().removeFifo(x));
+    key.getContainingPiGraph().getFifos().stream().filter(x -> x.getTargetPort() == null)
+        .forEach(x -> key.getContainingPiGraph().removeFifo(x));
 
     return rv2 - rv1;
 

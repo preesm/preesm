@@ -112,8 +112,7 @@ public class ClusteringScapeTask extends AbstractTaskImplementation {
       }
     }
 
-    final PiGraph tempGraph = new ClusteringScape(scenario, stackSize, clusteringMode, clusterNumber,
-        nonClusterableList).execute();
+    final PiGraph tempGraph = new ClusteringScape(scenario, stackSize, clusteringMode, clusterNumber).execute();
 
     final Map<String, Object> output = new HashMap<>();
     // return topGraph

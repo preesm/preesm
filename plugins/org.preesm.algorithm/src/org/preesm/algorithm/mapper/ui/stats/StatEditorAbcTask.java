@@ -79,7 +79,7 @@ import org.preesm.workflow.implement.AbstractTaskImplementation;
 public class StatEditorAbcTask extends AbstractTaskImplementation {
   public static final String OCCUPATION_NAME = "occupation_trend.csv";
   public static final String SPEEDUP_NAME    = "speedup_trend.csv";
-  static String              path            = "";
+  private String             path            = "";
 
   @Override
   public Map<String, Object> execute(final Map<String, Object> inputs, final Map<String, String> parameters,
@@ -116,10 +116,10 @@ public class StatEditorAbcTask extends AbstractTaskImplementation {
     final Long implem = stat.getFinalTime();
     final Double currentSpeedup = (double) (workLength) / (double) (implem);
 
-    Double maxSpeedup = 0d;
     final int nbCore = abc.getArchitecture().getOperatorComponentInstances().size();
     final double absoluteBestSpeedup = ((double) workLength) / ((double) spanLength);
 
+    Double maxSpeedup;
     if (nbCore < absoluteBestSpeedup) {
       maxSpeedup = (double) nbCore;
     } else {
@@ -142,7 +142,7 @@ public class StatEditorAbcTask extends AbstractTaskImplementation {
     final Double occupy = (double) (sum)
         / (double) (max * abc.getArchitecture().getOperatorComponentInstances().size());
 
-    PreesmLogger.getLogger().log(Level.INFO, "Node occupation ==> " + occupy);
+    PreesmLogger.getLogger().info("Node occupation ==> " + occupy);
     for (final GanttComponent ci : abc.getGanttData().getComponents()) {
       Long sumCpt = 0L;
       Long sumCom = 0L;
@@ -153,8 +153,8 @@ public class StatEditorAbcTask extends AbstractTaskImplementation {
           sumCom += a.getDuration();
         }
       }
-      PreesmLogger.getLogger().log(Level.INFO, "Computation sum ==> " + sumCpt);
-      PreesmLogger.getLogger().log(Level.INFO, "Communication sum ==> " + sumCom);
+      PreesmLogger.getLogger().info("Computation sum ==> " + sumCpt);
+      PreesmLogger.getLogger().info("Communication sum ==> " + sumCom);
     }
     csvTrend(occupy.toString(), abc, OCCUPATION_NAME);
   }

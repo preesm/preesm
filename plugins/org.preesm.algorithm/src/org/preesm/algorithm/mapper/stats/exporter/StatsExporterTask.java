@@ -137,7 +137,6 @@ public class StatsExporterTask extends AbstractTaskImplementation {
   public Map<String, String> getDefaultParameters() {
     final Map<String, String> parameters = new LinkedHashMap<>();
     parameters.put(PARAM_PATH, DEFAULT_PATH);
-
     return parameters;
   }
 

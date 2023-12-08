@@ -39,10 +39,11 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import org.preesm.algorithm.clustering.ClusteringHelper;
+import org.preesm.commons.math.MathFunctionsHelper;
 import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.AbstractVertex;
 import org.preesm.model.pisdf.DataInputInterface;
-import org.preesm.model.pisdf.DataOutputInterface;
+import org.preesm.model.pisdf.InterfaceActor;
 import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.pisdf.brv.BRVMethod;
 import org.preesm.model.pisdf.brv.PiBRV;
@@ -59,20 +60,8 @@ import org.preesm.model.slam.ComponentInstance;
  * @author orenaud
  *
  */
-public class ClusterPartitionerURC {
+public class ClusterPartitionerURC extends ClusterPartitioner {
 
-  /**
-   * Input graph.
-   */
-  private final PiGraph             graph;
-  /**
-   * Workflow scenario.
-   */
-  private final Scenario            scenario;
-  /**
-   * Number of PEs in compute clusters.
-   */
-  private final int                 numberOfPEs;
   private Map<AbstractVertex, Long> brv;
   private final int                 clusterId;
   private final int                 scapeMode;
@@ -87,10 +76,8 @@ public class ClusterPartitionerURC {
    *          Number of processing elements in compute clusters.
    */
   public ClusterPartitionerURC(final Scenario scenario, final int numberOfPEs, Map<AbstractVertex, Long> brv,
-      int clusterId, List<AbstractActor> nonClusterableList, int scapeMode) {
-    this.graph = scenario.getAlgorithm();
-    this.scenario = scenario;
-    this.numberOfPEs = numberOfPEs;
+      int clusterId, int scapeMode) {
+    super(scenario.getAlgorithm(), scenario, numberOfPEs);
     this.brv = brv;
     this.clusterId = clusterId;
     this.scapeMode = scapeMode;
@@ -99,6 +86,7 @@ public class ClusterPartitionerURC {
   /**
    * @return Clustered PiGraph.
    */
+  @Override
   public PiGraph cluster() {
 
     // Retrieve URC chains in input graph and verify that actors share component constraints.
@@ -118,15 +106,11 @@ public class ClusterPartitionerURC {
       // apply scaling
       final Long scale = computeScalingFactor(subGraph, brv.get(subGraph.getExecutableActors().get(0)),
           (long) numberOfPEs, scapeMode);
-      for (final DataInputInterface din : subGraph.getDataInputInterfaces()) {
-        din.getGraphPort().setExpression(
-            din.getGraphPort().getExpression().evaluate() * brv.get(subGraph.getExecutableActors().get(0)) / scale);
-        din.getDataPort().setExpression(din.getGraphPort().getExpression().evaluate());
-      }
-      for (final DataOutputInterface dout : subGraph.getDataOutputInterfaces()) {
-        dout.getGraphPort().setExpression(
-            dout.getGraphPort().getExpression().evaluate() * brv.get(subGraph.getExecutableActors().get(0)) / scale);
-        dout.getDataPort().setExpression(dout.getGraphPort().getExpression().evaluate());
+
+      for (final InterfaceActor iActor : subGraph.getDataInterfaces()) {
+        iActor.getGraphPort().setExpression(
+            iActor.getGraphPort().getExpression().evaluate() * brv.get(subGraph.getExecutableActors().get(0)) / scale);
+        iActor.getDataPort().setExpression(iActor.getGraphPort().getExpression().evaluate());
       }
 
       subGraph.setClusterValue(true);
@@ -151,10 +135,9 @@ public class ClusterPartitionerURC {
   public static Long computeScalingFactor(PiGraph subGraph, Long clustredActorRepetition, Long nPE, int mode) {
 
     Long scale;
-    if (mode == 0 && subGraph.getDataInputInterfaces().stream().anyMatch(x -> x.getGraphPort().getFifo().isHasADelay())
-        && subGraph.getDataOutputInterfaces().stream().anyMatch(x -> x.getGraphPort().getFifo().isHasADelay())) {
+    if (mode == 0 && subGraph.getDataInterfaces().stream().anyMatch(x -> x.getGraphPort().getFifo().isHasADelay())) {
       final Long ratio = computeDelayRatio(subGraph);
-      scale = gcd(ratio, clustredActorRepetition);
+      scale = MathFunctionsHelper.gcd(ratio, clustredActorRepetition);
     } else {
       scale = ncDivisor(nPE, clustredActorRepetition);
     }
@@ -174,19 +157,6 @@ public class ClusterPartitionerURC {
       }
     }
     return count;
-  }
-
-  /**
-   * Used to compute the greatest common divisor between 2 values
-   *
-   */
-  public static Long gcd(Long a, Long b) {
-    while (b != 0L) {
-      final Long temp = b;
-      b = a % b;
-      a = temp;
-    }
-    return a;
   }
 
   /**
