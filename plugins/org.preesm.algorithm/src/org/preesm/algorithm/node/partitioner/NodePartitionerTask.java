@@ -39,7 +39,7 @@ public class NodePartitionerTask extends AbstractTaskImplementation {
 
     final String archipath = parameters.get(NodePartitionerTask.ARCHI_PATH_PARAM);
     if (archipath.isEmpty()) {
-      PreesmLogger.getLogger().log(Level.INFO,
+      PreesmLogger.getLogger().log(Level.SEVERE,
           "Please provide en temp CSV file, hierarchical architecture is not handle yet");
     }
 

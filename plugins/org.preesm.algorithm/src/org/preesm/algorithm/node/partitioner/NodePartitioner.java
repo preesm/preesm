@@ -13,6 +13,7 @@ import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.emf.common.util.EMap;
+import org.preesm.algorithm.clustering.scape.ClusteringScape;
 import org.preesm.algorithm.mapping.model.CoreMapping;
 import org.preesm.algorithm.mapping.model.MappingFactory;
 import org.preesm.algorithm.mapping.model.NodeMapping;
@@ -22,10 +23,19 @@ import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.AbstractVertex;
 import org.preesm.model.pisdf.Actor;
+import org.preesm.model.pisdf.DataInputInterface;
+import org.preesm.model.pisdf.DataInputPort;
+import org.preesm.model.pisdf.DataOutputInterface;
+import org.preesm.model.pisdf.DataOutputPort;
+import org.preesm.model.pisdf.Delay;
+import org.preesm.model.pisdf.DelayActor;
+import org.preesm.model.pisdf.Fifo;
 import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.pisdf.SpecialActor;
 import org.preesm.model.pisdf.brv.BRVMethod;
 import org.preesm.model.pisdf.brv.PiBRV;
+import org.preesm.model.pisdf.factory.PiMMUserFactory;
+import org.preesm.model.pisdf.util.PiSDFSubgraphBuilder;
 import org.preesm.model.scenario.Scenario;
 import org.preesm.model.slam.Component;
 import org.preesm.model.slam.Design;
@@ -76,9 +86,66 @@ public class NodePartitioner {
     final String[] uriString = graph.getUrl().split("/");
     scenariiPath = "/" + uriString[1] + "/Scenarios/generated/";
     archiPath = "/" + uriString[1] + "/Archi/";
-    // 0. check level
+    // Filter hierarchy
     if (!graph.getAllChildrenGraphs().isEmpty()) {
-      PreesmLogger.getLogger().log(Level.INFO, "Hierarchical graphs are not handle yet, please feed a flat version");
+      PreesmLogger.getLogger().log(Level.SEVERE, "Hierarchical graphs are not handle yet, please feed a flat version");
+    }
+    final PipelineCycleInfo pipelineCycleInfo = new PipelineCycleInfo(graph);
+    pipelineCycleInfo.execute();
+    // filter pipeline
+    if (!pipelineCycleInfo.getPipelineDelays().isEmpty()) {
+      PreesmLogger.getLogger().log(Level.SEVERE,
+          "SimSDP cannot compile if there are initial optimizations, please remove your pipelines");
+
+    }
+    // filter cycle
+    if (!pipelineCycleInfo.getCycleDelays().isEmpty()) {
+      int index = 0;
+      for (final List<AbstractActor> cycle : pipelineCycleInfo.getCycleActors()) {
+        final PiGraph subGraph = new PiSDFSubgraphBuilder(this.graph, cycle, "cycle_" + index++).build();
+        // extract delay
+        final Delay delay = subGraph.getDelays().get(0);
+        // connect target delay to a new input interface
+        final DataInputPort delayedActorPortIn = delay.getContainingFifo().getTargetPort();
+        final String type = delay.getContainingFifo().getType();
+        final Long expressionIn = delayedActorPortIn.getExpression().evaluate();
+
+        final DataInputInterface delayInterface = PiMMUserFactory.instance.createDataInputInterface();
+        delayInterface.setContainingGraph(subGraph);
+        delayInterface.getDataOutputPorts().get(0).setExpression(expressionIn);
+        delayInterface.getGraphPort().setExpression(expressionIn);
+        delayInterface.setName(delayedActorPortIn.getName());
+        delayInterface.getGraphPort().setName(delayedActorPortIn.getName());
+
+        final Fifo fifin = PiMMUserFactory.instance.createFifo(delayInterface.getDataOutputPorts().get(0),
+            delayedActorPortIn, type);
+        fifin.setContainingGraph(subGraph);
+
+        delay.getContainingFifo().setTargetPort((DataInputPort) delayInterface.getGraphPort());
+
+        // connect source delay to a new output interface
+        final DataOutputPort delayedActorPortout = delay.getContainingFifo().getSourcePort();
+        final Long expressionOut = delayedActorPortout.getExpression().evaluate();
+
+        final DataOutputInterface delayInterfaceOut = PiMMUserFactory.instance.createDataOutputInterface();
+        delayInterfaceOut.setContainingGraph(subGraph);
+        delayInterfaceOut.getDataInputPorts().get(0).setExpression(expressionOut);
+        delayInterfaceOut.getGraphPort().setExpression(expressionOut);
+        delayInterfaceOut.setName(delayedActorPortout.getName());
+        delayInterfaceOut.getGraphPort().setName(delayedActorPortout.getName());
+
+        final Fifo fifout = PiMMUserFactory.instance.createFifo(delayedActorPortout,
+            delayInterfaceOut.getDataInputPorts().get(0), type);
+        fifout.setContainingGraph(subGraph);
+
+        delay.getContainingFifo().setSourcePort((DataOutputPort) delayInterfaceOut.getGraphPort());
+
+        delay.setContainingGraph(graph);
+        delay.getActor().setContainingGraph(graph);
+        final Map<AbstractVertex, Long> rv = PiBRV.compute(subGraph, BRVMethod.LCM);
+        ClusteringScape.cluster(subGraph, scenario, 100000000000000L);
+      }
+
     }
 
     // 1. compute the number of equivalent core
@@ -93,6 +160,7 @@ public class NodePartitioner {
     computeWorkload();
     computeEqTime(sumNodeEquivalent);
     // 3. sort actor in topological as soon as possible order
+    filterCycles();
     computeTopoASAP();
     // 4. construct subGraphs
     final List<
@@ -103,7 +171,12 @@ public class NodePartitioner {
     // 9. generate main file
     new CodegenSimSDP(scenario, topGraph, nodeNames);
 
-    return null;
+    return topGraph;
+
+  }
+
+  private void filterCycles() {
+    // TODO Auto-generated method stub
 
   }
 
@@ -226,13 +299,18 @@ public class NodePartitioner {
     final List<AbstractActor> entry = new ArrayList<>();
     Long rank = 0L;
     for (final AbstractActor a : graph.getActors()) {
-      temp.add(a);
+      if (!(a instanceof DelayActor)) {
+        temp.add(a);
+      }
     }
     // feed the 1st rank
     for (final AbstractActor a : graph.getActors()) {
-      if (a.getDataInputPorts().isEmpty()) {
+      if (!(a instanceof DelayActor) && (a.getDataInputPorts().isEmpty()
+          || a.getDataInputPorts().stream().allMatch(x -> x.getFifo().isHasADelay()))) {
+        // if () {
         entry.add(a);
         temp.remove(a);
+        // }
       }
     }
     topoOrderASAP.put(rank, entry);
@@ -241,7 +319,7 @@ public class NodePartitioner {
       final List<AbstractActor> list = new ArrayList<>();
       for (final AbstractActor a : topoOrderASAP.get(rank)) {
         for (final Vertex aa : a.getDirectSuccessors()) {
-          // this is piece of art, don't remove
+
           final Long rankMatch = rank + 1;
           if (aa.getDirectPredecessors().stream().filter(x -> x instanceof Actor || x instanceof SpecialActor)
               .allMatch(x -> topoOrderASAP.entrySet().stream().filter(y -> y.getKey() < rankMatch)
