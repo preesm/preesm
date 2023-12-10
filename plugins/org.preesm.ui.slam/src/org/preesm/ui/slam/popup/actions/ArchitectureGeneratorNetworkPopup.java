@@ -352,24 +352,27 @@ public class ArchitectureGeneratorNetworkPopup extends AbstractHandler {
     final String selectedOption = network.get("topo");
     switch (selectedOption) {
       case "Cluster with shared backbone":
-        content.append("bb_bw=\"" + network.get("topoparam") + "\" bb_lat=\"" + network.get("bbparam") + "\"/>\n");
+        content.append("bb_bw=\"" + network.get("topoparam") + "\" bb_lat=\"" + network.get("bbparam") + "\">\n");
         break;
       case "Torus cluster":
         content.append("topology=\"TORUS\" ");
-        content.append("topo_parameters=\"" + network.get("topoparam") + "\"/>\n");
+        content.append("topo_parameters=\"" + network.get("topoparam") + "\">\n");
         break;
       case "Fat-tree cluster":
         content.append("topology=\"FAT_TREE\" ");
-        content.append("topo_parameters=\"" + network.get("topoparam") + "\"/>\n");
+        content.append("topo_parameters=\"" + network.get("topoparam") + "\">\n");
         break;
       case "Dragonfly cluster":
         content.append("topology=\"DRAGONFLY\" ");
-        content.append("topo_parameters=\"" + network.get("topoparam") + "\"/>\n");
+        content.append("topo_parameters=\"" + network.get("topoparam") + "\">\n");
         break;
       default:
-        content.append("/>\n");
+        content.append(">\n");
         break;
     }
+    content.append("<prop id=\"wattage_per_state\" value=\"90.0:90.0:150.0\" />\n");
+    content.append("<prop id=\"wattage_range\" value=\"100.0:200.0\" />\n");
+    content.append("</cluster>\n");
     content.append("</zone>\n");
     content.append("</platform>\n");
     return content;

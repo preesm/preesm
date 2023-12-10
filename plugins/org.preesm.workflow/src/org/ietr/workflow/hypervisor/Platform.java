@@ -235,8 +235,8 @@ public class Platform {
     content.append("<platform version=\"4.1\">\n");
     content.append("<zone id=\"my zone\" routing=\"Floyd\">\n");
     content.append("<cluster id=\"" + network.get("topo") + "\" ");
-    content
-        .append("prefix=\"node-\" radical=\"0-" + Integer.decode(network.get("node")) + "\" suffix=\".simgrid.org\"");
+    content.append(
+        "prefix=\"Node\" radical=\"0-" + (Integer.decode(network.get("node")) - 1) + "\" suffix=\".simgrid.org\"");
     content.append("speed=\"" + network.get("speed") + "\" ");
     content.append("bw=\"" + network.get("bandwith") + "\" ");
     content.append("lat=\"" + network.get("latency") + "\" ");
@@ -253,20 +253,23 @@ public class Platform {
         break;
       case "Torus cluster":
         content.append("topology=\"TORUS\" ");
-        content.append("topo_parameters=\"" + network.get("topoparam") + "\"/>\n");
+        content.append("topo_parameters=\"" + network.get("topoparam") + "\">\n");
         break;
       case "Fat-tree cluster":
         content.append("topology=\"FAT_TREE\" ");
-        content.append("topo_parameters=\"" + network.get("topoparam") + "\"/>\n");
+        content.append("topo_parameters=\"" + network.get("topoparam") + "\">\n");
         break;
       case "Dragonfly cluster":
         content.append("topology=\"DRAGONFLY\" ");
-        content.append("topo_parameters=\"" + network.get("topoparam") + "\"/>\n");
+        content.append("topo_parameters=\"" + network.get("topoparam") + "\">\n");
         break;
       default:
-        content.append("/>\n");
+        content.append(">\n");
         break;
     }
+    content.append("<prop id=\"wattage_per_state\" value=\"90.0:90.0:150.0\" />\n");
+    content.append("<prop id=\"wattage_range\" value=\"100.0:200.0\" />\n");
+    content.append("</cluster>\n");
     content.append("</zone>\n");
     content.append("</platform>\n");
     return content;
