@@ -15,6 +15,8 @@ import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
 import org.jfree.chart.plot.CategoryPlot;
 import org.jfree.chart.plot.PlotOrientation;
+import org.jfree.chart.renderer.category.BarRenderer;
+import org.jfree.chart.renderer.category.StandardBarPainter;
 import org.jfree.data.category.CategoryDataset;
 import org.jfree.data.category.DefaultCategoryDataset;
 import org.preesm.commons.files.PreesmIOHelper;
@@ -103,6 +105,8 @@ public class AnalysisPage2 {
     plot.setBackgroundPaint(Color.white);
     plot.setDomainGridlinePaint(Color.lightGray);
     plot.setRangeGridlinePaint(Color.lightGray);
+    final BarRenderer renderer = (BarRenderer) plot.getRenderer();
+    renderer.setBarPainter(new StandardBarPainter());
     return chart;
   }
 

@@ -3,6 +3,7 @@ package org.preesm.algorithm.node.simulator;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.GridLayout;
+import java.util.concurrent.TimeUnit;
 import javax.swing.BorderFactory;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -26,7 +27,7 @@ public class AnalysisPage3 {
   static int    iterationNum = 0;
   static int    iterationOptim;
   static String path;
-  static Double finalDSE     = 0d;
+  static long   finalDSE     = 0L;
 
   public AnalysisPage3(String path, int iterationOptim) {
     AnalysisPage3.path = path;
@@ -61,13 +62,24 @@ public class AnalysisPage3 {
 
         + "The graph shows the resource allocation process time over iterations.<br><br>"
         + "The optimal configuration is achieved with the following attributes: <br>" + "- Iteration: " + iterationOptim
-        + " <br>" + " - Cumulative resource allocation time: " + finalDSE + " second <br>" + "</html>";
+        + " <br>" + " - Cumulative resource allocation time: " + finalDSE + " ms <br>" + " - Formatted duration:"
+        + formatDuration() + "</html>";
+  }
+
+  private String formatDuration() {
+    final long milliseconds = finalDSE;
+    final long days = TimeUnit.MILLISECONDS.toDays(milliseconds);
+    final long hours = TimeUnit.MILLISECONDS.toHours(milliseconds) % 24;
+    final long minutes = TimeUnit.MILLISECONDS.toMinutes(milliseconds) % 60;
+    final long seconds = TimeUnit.MILLISECONDS.toSeconds(milliseconds) % 60;
+
+    return String.format("%d days %02d hours %02d min %02d sec", days, hours, minutes, seconds);
   }
 
   private JFreeChart barChart(DefaultCategoryDataset dataset) {
     JFreeChart chart;
     chart = ChartFactory.createStackedBarChart("Cumulative Resource Allocation Time over Iteration", "Iteration",
-        "Resource allocation time (s)", dataset, PlotOrientation.VERTICAL, true, true, false);
+        "Resource allocation time (ms)", dataset, PlotOrientation.VERTICAL, true, true, false);
     chart.getLegend().setPosition(RectangleEdge.RIGHT);
 
     final Plot plot = chart.getPlot();
@@ -79,6 +91,7 @@ public class AnalysisPage3 {
   }
 
   private static DefaultCategoryDataset fillDSEpartDataSet() {
+    finalDSE = 0L;
     final DefaultCategoryDataset dataset = new DefaultCategoryDataset();
 
     final String[] arrayDSE = PreesmIOHelper.getInstance().read(path, DSE_PART_NAME).split("\n");
@@ -89,6 +102,7 @@ public class AnalysisPage3 {
       final String[] column = arrayDSE[i].split(";");
       for (int j = 0; j < column.length; j++) {
         dataset.addValue(Double.valueOf(column[j]), categories[j], "Iteration " + (i + 1));
+        finalDSE += Double.valueOf(column[j]);
       }
     }
     return dataset;

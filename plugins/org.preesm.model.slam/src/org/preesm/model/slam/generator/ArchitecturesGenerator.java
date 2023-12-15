@@ -231,10 +231,14 @@ public class ArchitecturesGenerator {
       opZ.getInterfaces().add(mi);
 
       final ComponentInstance[] cores = new ComponentInstance[coreMap.getValue()];
+      String nodeID = "Core";
+      if (nodeName.equals("top")) {
+        nodeID = "Node";
+      }
       for (int i = i1; i < i1 + coreMap.getValue(); ++i) {
         cores[i - i1] = SlamFactory.eINSTANCE.createComponentInstance();
         cores[i - i1].setHardwareId(i);
-        cores[i - i1].setInstanceName("Core" + i);
+        cores[i - i1].setInstanceName(nodeID + i);
         design.getComponentInstances().add(cores[i - i1]);
         cores[i - i1].setComponent(opZ);
       }

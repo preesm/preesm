@@ -38,6 +38,8 @@ import org.preesm.model.pisdf.DataInputInterface;
 import org.preesm.model.pisdf.DataInputPort;
 import org.preesm.model.pisdf.DataOutputInterface;
 import org.preesm.model.pisdf.DataOutputPort;
+import org.preesm.model.pisdf.DataPort;
+import org.preesm.model.pisdf.DelayActor;
 import org.preesm.model.pisdf.Dependency;
 import org.preesm.model.pisdf.Direction;
 import org.preesm.model.pisdf.ExpressionHolder;
@@ -58,7 +60,6 @@ import org.preesm.model.pisdf.serialize.PiWriter;
 import org.preesm.model.pisdf.util.PiSDFSubgraphBuilder;
 import org.preesm.model.scenario.Scenario;
 import org.preesm.model.scenario.generator.ScenariosGenerator;
-import org.preesm.model.scenario.util.DefaultTypeSizes;
 import org.preesm.model.scenario.util.ScenarioUserFactory;
 import org.preesm.model.slam.Component;
 import org.preesm.model.slam.ComponentInstance;
@@ -119,10 +120,81 @@ public class IntranodeBuilder {
 
     constructSubs();
 
+    singleSourceGraphTransfo();
+
     exportSubs();
     sublist.add(topGraph);
     return sublist;
 
+  }
+
+  /**
+   * Transform multi source graph into single source graph
+   *
+   */
+  private void singleSourceGraphTransfo() {
+
+    int indexSub = 0;
+    for (final PiGraph subgraph : sublist) {
+      final List<AbstractActor> sourceList = new ArrayList<>();
+      // seek sources
+      for (final AbstractActor source : subgraph.getActors()) {
+        if (!(source instanceof DelayActor) && (source.getDataInputPorts().isEmpty()
+            || source.getDataInputPorts().stream().allMatch(x -> x.getFifo().isHasADelay()))) {
+          sourceList.add(source);
+        }
+      }
+      final Map<AbstractVertex, Long> subBrv = PiBRV.compute(subgraph, BRVMethod.LCM);
+      if (sourceList.size() > 1) {
+        // generate dummy single source
+        final Actor src = PiMMUserFactory.instance.createActor();
+        src.setName("single_source");
+        final Refinement refinement = PiMMUserFactory.instance.createCHeaderRefinement();
+        src.setRefinement(refinement);
+        final CHeaderRefinement cHeaderRefinement = (CHeaderRefinement) ((src).getRefinement());
+        final Prototype oEmptyPrototype = new Prototype();
+        oEmptyPrototype.setIsStandardC(true);
+
+        cHeaderRefinement.setFilePath(codegenPath + "interface/sub" + indexSub + "/" + src.getName() + ".h");
+        final FunctionPrototype functionPrototype = PiMMUserFactory.instance.createFunctionPrototype();
+        cHeaderRefinement.setLoopPrototype(functionPrototype);
+        functionPrototype.setName(src.getName());
+
+        src.setContainingGraph(subgraph);
+        int indexOutput = 0;
+        for (final AbstractActor actor : sourceList) {
+          // add output on single source actor
+          final DataOutputPort dout = PiMMUserFactory.instance.createDataOutputPort();
+          src.getDataOutputPorts().add(dout);
+
+          dout.setName("out_" + indexOutput);
+          dout.setExpression(1L * subBrv.get(actor));
+          // add input
+          final DataInputPort din = PiMMUserFactory.instance.createDataInputPort();
+          actor.getDataInputPorts().add(din);
+          din.setName("in");
+          din.setExpression(1L);
+
+          // connect
+          final Fifo fifo = PiMMUserFactory.instance.createFifo(dout, din, "char");
+          fifo.setContainingGraph(subgraph);
+          final FunctionArgument functionArgument = PiMMUserFactory.instance.createFunctionArgument();
+          functionArgument.setName(dout.getName());
+          functionArgument.setType("char");
+          functionArgument.setDirection(Direction.OUT);
+          functionPrototype.getArguments().add(functionArgument);
+
+          indexOutput++;
+        }
+
+        generateFileH(src, indexSub);
+        // set 1 because it's an interface
+        for (final Component opId : archi.getProcessingElements()) {
+          scenario.getTimings().setExecutionTime(src, opId, 1L);
+        }
+      }
+      indexSub++;
+    }
   }
 
   /**
@@ -199,10 +271,15 @@ public class IntranodeBuilder {
       // Add a average transfer size
       subScenario.getSimulationInfo().setAverageDataSize(scenario.getSimulationInfo().getAverageDataSize());
       // Set the default data type sizes
-      for (final Fifo f : subScenario.getAlgorithm().getAllFifos()) {
-        final String typeName = f.getType();
-        subScenario.getSimulationInfo().getDataTypes().put(typeName,
-            DefaultTypeSizes.getInstance().getTypeSize(typeName));
+      // for (final Fifo f : subScenario.getAlgorithm().getAllFifos()) {
+      // final String typeName = f.getType();
+      // subScenario.getSimulationInfo().getDataTypes().put(typeName,
+      // DefaultTypeSizes.getInstance().getTypeSize(typeName));
+      // }
+      for (final Entry<String, Long> element : scenario.getSimulationInfo().getDataTypes()) {
+        final String key = element.getKey();
+        final Long value = element.getValue();
+        subScenario.getSimulationInfo().getDataTypes().put(key, value);
       }
       // add constraint
       subScenario.getConstraints().setGroupConstraintsFileURL("");
@@ -623,12 +700,15 @@ public class IntranodeBuilder {
   }
 
   private void generateFileH(Actor actor, int index) {
-    final String content = "// jfécekejepeu \n #ifndef " + actor.getName().toUpperCase() + "_H \n #define "
-        + actor.getName().toUpperCase() + "_H \n void " + actor.getName() + "("
-        + actor.getAllDataPorts().get(0).getFifo().getType() + " " + actor.getAllDataPorts().get(0).getName()
-        + "); \n #endif";
+    String content = "// Interface actor file \n #ifndef " + actor.getName().toUpperCase() + "_H \n #define "
+        + actor.getName().toUpperCase() + "_H \n void " + actor.getName() + "(";
+    for (final DataPort dp : actor.getAllDataPorts()) {
+      content += dp.getFifo().getType() + " " + dp.getName() + ",";
+    }
+    String content2 = content.substring(0, content.length() - 1);
+    content2 += "); \n #endif";
 
-    PreesmIOHelper.getInstance().print(codegenPath + "interface/sub" + index + "/", actor.getName() + ".h", content);
+    PreesmIOHelper.getInstance().print(codegenPath + "interface/sub" + index + "/", actor.getName() + ".h", content2);
     PreesmLogger.getLogger().log(Level.INFO,
         "interface file print in : " + codegenPath + "interface/sub" + index + "/");
   }

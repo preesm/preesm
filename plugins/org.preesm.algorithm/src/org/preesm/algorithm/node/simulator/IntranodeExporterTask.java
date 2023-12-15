@@ -39,7 +39,7 @@ public class IntranodeExporterTask extends AbstractTaskImplementation {
   @Override
   public Map<String, Object> execute(Map<String, Object> inputs, Map<String, String> parameters,
       IProgressMonitor monitor, String nodeName, Workflow workflow) throws InterruptedException {
-    path = "/" + workflow.getProjectName() + "/Scenarios/generated/";
+    path = "/" + workflow.getProjectName() + "/Simulation/";
     final LatencyAbc abc = (LatencyAbc) inputs.get("ABC");
 
     // final IEditorInput input = new StatEditorInput(new StatGeneratorAbc(abc));

@@ -1,5 +1,6 @@
 package org.preesm.algorithm.node.simulator;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -20,6 +21,7 @@ import org.preesm.commons.doc.annotations.PreesmTask;
 import org.preesm.commons.doc.annotations.Value;
 import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.preesm.commons.files.PreesmIOHelper;
+import org.preesm.commons.files.WorkspaceUtils;
 import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.model.slam.ComponentInstance;
 import org.preesm.workflow.elements.Workflow;
@@ -42,28 +44,30 @@ import org.preesm.workflow.implement.AbstractWorkflowNodeImplementation;
         @Parameter(name = "SimGrid AG Path", description = "Installation path for adrien gougeon's project",
             values = { @Value(name = "path", effect = "change default path") }) })
 public class InternodeExporterTask extends AbstractTaskImplementation {
-  public static final String PARAM_SIMPATH    = "SimGrid Path";
-  public static final String PARAM_SIMAGPATH  = "SimGrid AG Path";
-  public static final String STD_NAME         = "std_trend.csv";
-  public static final String LATENCY_NAME     = "latency_trend.csv";
-  String                     simFolder        = "/Algo/generated/top";
-  String                     csvSimGridFolder = "/Simulation/simgrid.csv";
+  public static final String PARAM_SIMPATH   = "SimGrid Path";
+  public static final String PARAM_SIMAGPATH = "SimGrid AG Path";
+  public static final String STD_NAME        = "std_trend.csv";
+  public static final String LATENCY_NAME    = "latency_trend.csv";
+  // String simFolder = "/Algo/generated/top";
+  String              csvSimGridFolder = "Simulation/simgrid.csv";
+  Double              latency          = 0.0;
+  Map<String, Double> loadPerNode      = new HashMap<>();
 
   @Override
   public Map<String, Object> execute(Map<String, Object> inputs, Map<String, String> parameters,
       IProgressMonitor monitor, String nodeName, Workflow workflow) throws InterruptedException {
 
     final LatencyAbc abc = (LatencyAbc) inputs.get(AbstractWorkflowNodeImplementation.KEY_SDF_ABC);
-    final Double latency = 0.0;
-    final Map<String, Double> loadPerNode = new HashMap<>();
+
     // final Double sigma = 0.0;
 
     // Detect OS
     final String os = System.getProperty("os.name").toLowerCase();
     if (os.contains("win")) {
-      preesmSimulation(latency, loadPerNode, abc);
+      preesmSimulation(abc);
     } else if ((os.contains("nix") || os.contains("nux"))) {
       simgridSimulation(parameters, workflow);
+      simgridReader(workflow.getProjectName());
     } else {
       PreesmLogger.getLogger().log(Level.SEVERE, () -> "The operation system is not recognised to support SimSDP.");
     }
@@ -77,6 +81,22 @@ public class InternodeExporterTask extends AbstractTaskImplementation {
     // cumulated deviation
     final Map<String, Double> deviationPerNode = deviationPerNodeCompute(loadPerNode);
     return new LinkedHashMap<>();
+  }
+
+  private void simgridReader(String path) {
+    final String simcsv = PreesmIOHelper.getInstance().read(path + "/Simulation/", "simgrid.csv");
+    final String[] line = simcsv.split("\n");
+
+    latency = Double.valueOf(line[1].split(",")[2]);
+
+    for (int i = 2; i < line.length / 2; i++) {
+      final String[] column = line[i].split(",");
+      if (column[0].contains("Node")) {
+        loadPerNode.put(column[0], Double.valueOf(column[2]));
+      }
+
+    }
+
   }
 
   private Double sigma(Map<String, Double> loadPerNode) {
@@ -134,19 +154,35 @@ public class InternodeExporterTask extends AbstractTaskImplementation {
     final IWorkspaceRoot root = ResourcesPlugin.getWorkspace().getRoot();
     final IProject project = root.getProject(workflow.getProjectName());
     final String projectFullPath = project.getLocationURI().getPath() + "/";
+    // to run click on .sh otherwise check if folder exist
+    final File simgridBuildFolder = new File(projectFullPath + "SimGrid/simgrid");
+    if (!simgridBuildFolder.exists()) {
+      PreesmLogger.getLogger().log(Level.SEVERE,
+          "SimGrid is not installed in your system, please run: install_simgrid.sh");
+    }
+    final File simgridSimuFolder = new File(projectFullPath + "SimGrid/simsdp");
+    if (!simgridSimuFolder.exists()) {
+      PreesmLogger.getLogger().log(Level.SEVERE, "SimSDP is not linked to SimGrid, please run: install_simgridag.sh");
+    }
+    // check if the required files are at the right place
+    final File simFolder = new File(projectFullPath + "Algo/generated/top");
+    if (!simFolder.exists()) {
+      PreesmLogger.getLogger().log(Level.SEVERE,
+          "Missing top.pi and gantt.xml for simgrid simulation in folder: Algo/generated/top/");
+    }
 
-    // Check SimGrid Install
-    final String simpath = parameters.get(PARAM_SIMPATH);
-    bash("bash " + projectFullPath + simpath);
-    // Check @agougeon repository Install
-    final String simagpath = parameters.get(PARAM_SIMAGPATH);
-    bash("bash " + projectFullPath + simagpath);
+    final File xmlFolder = new File(projectFullPath + "Archi/SimSDP_network.xml");
+    if (!xmlFolder.exists()) {
+      PreesmLogger.getLogger().log(Level.SEVERE, "Missing simSDP_network.xml for simgrid simulation in folder: Archi/");
+    }
 
     // Load/Energy
-    bash("simsdp " + projectFullPath + simFolder + " -p simSDP_netork.xml - o -j" + csvSimGridFolder);
+    bash("simsdp " + projectFullPath + "Algo/generated/top" + " -p " + projectFullPath
+        + "Archi/SimSDP_network.xml -j -o " + projectFullPath + "Simulation/simgrid.csv");
+    WorkspaceUtils.updateWorkspace();
   }
 
-  private void preesmSimulation(Double latency, Map<String, Double> loadPerNode, LatencyAbc abc) {
+  private void preesmSimulation(LatencyAbc abc) {
 
     latency = maxLoad(abc);
     for (final ComponentInstance cp : abc.getArchitecture().getOperatorComponentInstances()) {
@@ -174,25 +210,29 @@ public class InternodeExporterTask extends AbstractTaskImplementation {
   }
 
   private void bash(String prompt) throws InterruptedException {
-    // if linux
-
     try {
-      PreesmLogger.getLogger().log(Level.INFO, "Running bash ...  ");
-
+      // Create a process builder for the command
       final ProcessBuilder processBuilder = new ProcessBuilder("/usr/bin/bash", "-c", prompt);
-      processBuilder.command("sudo", "-S", "bash", prompt);
 
+      // Start the process
       final Process process = processBuilder.start();
 
-      final int exitCode = process.waitFor();
-      // Vérification du code de sortie
-      if (exitCode != 0) {
-        PreesmLogger.getLogger().log(Level.INFO, "Bash failed exit code: " + exitCode);
-      }
+      // Read and print the output of the command
+      final java.io.InputStream inputStream = process.getInputStream();
+      final java.util.Scanner scanner = new java.util.Scanner(inputStream).useDelimiter("\\A");
+      final String output = scanner.hasNext() ? scanner.next() : "";
+      PreesmLogger.getLogger().log(Level.INFO, output);
 
+      // Wait for the process to complete
+      final int exitCode = process.waitFor();
+
+      // Print the exit code (0 usually means success)
+      PreesmLogger.getLogger().log(Level.INFO, () -> "Command exited with code: " + exitCode);
+      scanner.close();
     } catch (final IOException e) {
       throw new PreesmRuntimeException(e);
     }
+
   }
 
   @Override

@@ -18,7 +18,7 @@ import org.jfree.data.xy.XYSeriesCollection;
 import org.preesm.commons.files.PreesmIOHelper;
 
 public class AnalysisPage1 {
-  public static final String WORKLOAD_NAME = "workload_trend.csv";
+  public static final String WORKLOAD_NAME = "std_trend.csv";
   public static final String LATENCY_NAME  = "latency_trend.csv";
   static int                 iterationNum  = 0;
   static int                 iterationOptim;
@@ -80,10 +80,13 @@ public class AnalysisPage1 {
     final XYSeriesCollection dataset = new XYSeriesCollection();
     dataset.addSeries(series1);
     // Create the first Y axis
-    final JFreeChart chart = ChartFactory.createXYLineChart("Dual Axis Chart", "Iteration", "Throughput", dataset);
+    final JFreeChart chart = ChartFactory.createXYLineChart("Workload Deviation and Throughput Trends over Iteration",
+        "Iteration", "Throughput", dataset);
 
     chart.setBackgroundPaint(Color.white);
     chart.getTitle().setPaint(Color.black);
+    chart.getXYPlot().setBackgroundPaint(Color.white);
+    chart.getXYPlot().setDomainGridlinePaint(Color.lightGray);
 
     // Create and configure the second dataset
     chart.getXYPlot().setDataset(1, new XYSeriesCollection(series2));

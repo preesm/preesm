@@ -99,6 +99,36 @@ public class NodePartitioner {
 
     }
     // filter cycle
+    filterCycles(pipelineCycleInfo);
+
+    // 1. compute the number of equivalent core
+    final int sumNodeEquivalent = fillNodeMapping();
+    if (graph.getActorIndex() < sumNodeEquivalent) {
+      final String issue = "O(G_app)<O(G_archi) SimSDP 1.0 isn't appropriated (reduce archi or change method)";
+      PreesmLogger.getLogger().log(Level.INFO, issue);
+    }
+    exportArchitecture();
+    // 2. compute cumulative equivalent time
+    brv = PiBRV.compute(graph, BRVMethod.LCM);// test
+    computeWorkload();
+    computeEqTime(sumNodeEquivalent);
+    // 3. sort actor in topological as soon as possible order
+
+    computeTopoASAP();
+    // 4. construct subGraphs
+    final List<
+        PiGraph> subs = new IntranodeBuilder(scenario, brv, timeEq, archiList, topoOrderASAP, hierarchicalArchitecture)
+            .execute();
+    // 7. construct top
+    final PiGraph topGraph = new InternodeBuilder(scenario, subs, hierarchicalArchitecture).execute();
+    // 9. generate main file
+    new CodegenSimSDP(scenario, topGraph, nodeNames);
+
+    return topGraph;
+
+  }
+
+  private void filterCycles(PipelineCycleInfo pipelineCycleInfo) {
     if (!pipelineCycleInfo.getCycleDelays().isEmpty()) {
       int index = 0;
       for (final List<AbstractActor> cycle : pipelineCycleInfo.getCycleActors()) {
@@ -147,36 +177,6 @@ public class NodePartitioner {
       }
 
     }
-
-    // 1. compute the number of equivalent core
-    final int sumNodeEquivalent = fillNodeMapping();
-    if (graph.getActorIndex() < sumNodeEquivalent) {
-      final String issue = "O(G_app)<O(G_archi) SimSDP 1.0 isn't appropriated (reduce archi or change method)";
-      PreesmLogger.getLogger().log(Level.INFO, issue);
-    }
-    exportArchitecture();
-    // 2. compute cumulative equivalent time
-    brv = PiBRV.compute(graph, BRVMethod.LCM);// test
-    computeWorkload();
-    computeEqTime(sumNodeEquivalent);
-    // 3. sort actor in topological as soon as possible order
-    filterCycles();
-    computeTopoASAP();
-    // 4. construct subGraphs
-    final List<
-        PiGraph> subs = new IntranodeBuilder(scenario, brv, timeEq, archiList, topoOrderASAP, hierarchicalArchitecture)
-            .execute();
-    // 7. construct top
-    final PiGraph topGraph = new InternodeBuilder(scenario, subs, hierarchicalArchitecture).execute();
-    // 9. generate main file
-    new CodegenSimSDP(scenario, topGraph, nodeNames);
-
-    return topGraph;
-
-  }
-
-  private void filterCycles() {
-    // TODO Auto-generated method stub
 
   }
 
