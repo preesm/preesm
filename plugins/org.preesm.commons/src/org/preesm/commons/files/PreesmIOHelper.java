@@ -159,4 +159,26 @@ public class PreesmIOHelper {
     return reader;
   }
 
+  public void deleteFolder(String path) {
+    final IFolder iFolder = ResourcesPlugin.getWorkspace().getRoot().getFolder(new Path(path));
+    if (iFolder.exists()) {
+      try {
+        iFolder.delete(true, null);
+      } catch (final CoreException e) {
+        throw new PreesmRuntimeException(e);
+      }
+    }
+  }
+
+  public void deleteFile(String path) {
+    final IFile iFile = ResourcesPlugin.getWorkspace().getRoot().getFile(new Path(path));
+    if (iFile.exists()) {
+      try {
+        iFile.delete(true, null);
+      } catch (final CoreException e) {
+        throw new PreesmRuntimeException(e);
+      }
+    }
+  }
+
 }

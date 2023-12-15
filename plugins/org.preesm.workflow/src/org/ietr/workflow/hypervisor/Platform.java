@@ -7,12 +7,12 @@ import org.eclipse.xtend2.lib.StringConcatenation;
 public class Platform {
   int configID;
   int nodeNum;
-  int algo;
+  int algo = 1;
 
-  public Platform(int configID, int nodeNum, int algo) {
+  public Platform(int configID, int nodeNum) {
     this.configID = configID;
     this.nodeNum = nodeNum;
-    this.algo = algo;
+    // this.algo = algo;
   }
 
   public void execute() {
@@ -81,10 +81,10 @@ public class Platform {
     String config = "";
     switch (algo) {
       case 0:
-        config = binaryTree(nRouterPort);
+        config = kAryTree(nRouterPort);
         break;
       case 1:
-        config = kAryTree(nRouterPort);
+        config = fatTree(nRouterPort);
         break;
       case 2:
         config = PGFT(nRouterPort);
@@ -101,7 +101,7 @@ public class Platform {
     return null;
   }
 
-  private String kAryTree(int nRouterPort) {
+  private String fatTree(int nRouterPort) {
     final int nRouterPortSide = nRouterPort / 2;
     int nLevel;
     int[] m;
@@ -152,7 +152,7 @@ public class Platform {
     return config;
   }
 
-  private String binaryTree(int nRouterPort) {
+  private String kAryTree(int nRouterPort) {
     final int nRouterPortSide = nRouterPort / 2;
     int nLevel;
     int[] m;

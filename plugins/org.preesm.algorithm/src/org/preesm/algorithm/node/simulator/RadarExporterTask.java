@@ -52,7 +52,7 @@ public class RadarExporterTask extends AbstractTaskImplementation {
   }
 
   private void store(Map<String, String> metrics) {
-    final String data = "type;" + metrics.get("type") + "\n" + "througput;" + metrics.get("througput") + "\n"
+    final String data = "type;" + metrics.get("type") + "\n" + "throughput;" + metrics.get("throughput") + "\n"
         + "memory;" + metrics.get("memory") + "\n" + "energy;" + metrics.get("energy") + "\n" + "cost;"
         + metrics.get("cost") + "\n";
 
@@ -60,8 +60,8 @@ public class RadarExporterTask extends AbstractTaskImplementation {
   }
 
   private void configType(Map<String, String> metrics) {
-    final String simGridFile = PreesmIOHelper.getInstance().read(archiPath, simGcsv);
-    final String[] line = simGridFile.split("/n");
+    final String simGridFile = PreesmIOHelper.getInstance().read(archiPath, archiXml);
+    final String[] line = simGridFile.split("\n");
     final String type = line[0].replace("<!-- ", "").replace(" -->", "");
     metrics.put("type", type);
   }
@@ -86,10 +86,10 @@ public class RadarExporterTask extends AbstractTaskImplementation {
   private void SimGrid(Map<String, String> metrics) {
 
     final String simGridFile = PreesmIOHelper.getInstance().read(simulationPath, simGcsv);
-    final String[] line = simGridFile.split("/n");
-    metrics.put("cost", String.valueOf(line.length));
+    final String[] line = simGridFile.split("\n");
+    metrics.put("cost", String.valueOf((line.length - 2) / 2));
     double ener = 0.0;
-    for (int i = 1; i < line.length; i++) {
+    for (int i = line.length / 2 + 1; i < line.length; i++) {
       final String[] column = line[i].split(",");
       ener += Double.valueOf(column[2]);
     }
@@ -105,7 +105,7 @@ public class RadarExporterTask extends AbstractTaskImplementation {
 
     metrics.put("memory", String.valueOf(memory));
 
-    metrics.put("througput", String.valueOf(abc.getFinalLatency()));
+    metrics.put("throughput", String.valueOf(abc.getFinalLatency()));
   }
 
   @Override

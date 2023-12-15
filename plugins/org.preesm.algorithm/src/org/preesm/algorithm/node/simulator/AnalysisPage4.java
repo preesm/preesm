@@ -2,12 +2,15 @@ package org.preesm.algorithm.node.simulator;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
-import java.awt.GridLayout;
+import java.awt.FlowLayout;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import javax.swing.BorderFactory;
+import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.SwingConstants;
@@ -22,10 +25,12 @@ import org.jfree.data.xy.XYSeriesCollection;
 import org.preesm.commons.files.PreesmIOHelper;
 
 public class AnalysisPage4 {
-  static String              path;
-  public static final String NET_NAME              = "multicriteria.csv";
-  List<NetworkInfo>          networkInfoList       = new ArrayList<>();
-  static List<NetworkInfo>   networkInfoNormalList = new ArrayList<>();
+  static String                   path;
+  public static final String      NET_NAME                 = "multicriteria.csv";
+  List<NetworkInfo>               networkInfoList          = new ArrayList<>();
+  static List<NetworkInfo>        networkInfoNormalList    = new ArrayList<>();
+  Map<Integer, List<NetworkInfo>> nodeNetworkInfoNormalMap = new LinkedHashMap<>();
+  int                             nodeKey                  = 0;
 
   public AnalysisPage4(String path) {
     AnalysisPage4.path = path;
@@ -33,16 +38,20 @@ public class AnalysisPage4 {
   }
 
   public JPanel execute() {
+
     final JPanel panel = new JPanel();
     fillNetworkInfoList();
+    nodeKey = networkInfoList.get(0).getNode();
     networkInfoNormalList.clear();
     fillNetworkInfoNormalList();
+    nodeNetworkInfoNormalMap.clear();
+    fillNodeNetworkInfoNormalMap();
+
     final XYSeriesCollection dataset = fillMultiCriteriaDataSet();
 
     final JFreeChart chart = polarChart(dataset);
     panel.setBackground(Color.white);
-    panel.setLayout(new GridLayout(2, 1));
-    panel.add(new ChartPanel(chart));
+    panel.setLayout(new BorderLayout());
 
     final JLabel descriptionLabel = new JLabel(description());
     descriptionLabel.setForeground(Color.darkGray);
@@ -50,10 +59,59 @@ public class AnalysisPage4 {
     descriptionLabel.setVerticalAlignment(SwingConstants.TOP);
     final Border border = BorderFactory.createEmptyBorder(10, 10, 10, 10);
     descriptionLabel.setBorder(border);
-    descriptionLabel.setPreferredSize(descriptionLabel.getPreferredSize());
+    // descriptionLabel.setPreferredSize(descriptionLabel.getPreferredSize());
     panel.add(descriptionLabel, BorderLayout.NORTH);
 
+    panel.add(new ChartPanel(chart));
+
+    final JPanel textFieldPanel = createTextFieldPanel(chart, dataset);
+
+    panel.add(textFieldPanel, BorderLayout.SOUTH);
+
     return panel;
+  }
+
+  private void fillNodeNetworkInfoNormalMap() {
+    for (final NetworkInfo network : networkInfoNormalList) {
+      if (!nodeNetworkInfoNormalMap.containsKey(network.getNode())) {
+        final List<NetworkInfo> newList = new ArrayList<>();
+        newList.add(network);
+        nodeNetworkInfoNormalMap.put(network.getNode(), newList);
+      } else if (!nodeNetworkInfoNormalMap.get(network.getNode()).stream()
+          .anyMatch(x -> x.getType().equals(network.getType()))) {
+        nodeNetworkInfoNormalMap.get(network.getNode()).add(network);
+      }
+
+    }
+
+  }
+
+  private JPanel createTextFieldPanel(JFreeChart chart, XYSeriesCollection dataset) {
+    final JPanel textFieldPanel = new JPanel();
+    textFieldPanel.setLayout(new FlowLayout(FlowLayout.LEADING));
+    // textFieldPanel.setSize(200, 50);
+    final JLabel nodeSelect = new JLabel("Select the number of nodes for network analysis:");
+    textFieldPanel.add(nodeSelect);
+
+    final String[] nodeItems = new String[nodeNetworkInfoNormalMap.size()];
+    int index = 0;
+    for (final int i : nodeNetworkInfoNormalMap.keySet()) {
+      nodeItems[index] = i + " nodes";
+      index++;
+
+    }
+    final JComboBox<String> nodeCombo = new JComboBox<>(nodeItems);
+    nodeCombo.setBackground(Color.white);
+    textFieldPanel.add(nodeCombo);
+    textFieldPanel.setBackground(Color.white);
+
+    nodeCombo.addActionListener(e -> {
+      nodeKey = Integer.valueOf(nodeCombo.getSelectedItem().toString().replace(" nodes", ""));
+      updateDataset(dataset);
+      chart.fireChartChanged();
+    });
+
+    return textFieldPanel;
   }
 
   public static List<NetworkInfo> getNetworkInfoNormalList() {
@@ -107,66 +165,89 @@ public class AnalysisPage4 {
   }
 
   private void fillNetworkInfoList() {
-    final String[] arrayNet = PreesmIOHelper.getInstance().read(path, NET_NAME).split("\n");
-    String type = "";
-    int node = 0;
-    Double throughput = 0.0;
-    Double memory = 0.0;
-    Double energy = 0.0;
-    Double cost = 0.0;
-    for (int i = 0; i < arrayNet.length; i++) {
-      final String[] column = arrayNet[i].split(";");
+    final String[] Networklist = PreesmIOHelper.getInstance().read(path, NET_NAME).split("\n\n");
+    for (final String element : Networklist) {
 
-      switch (column[0]) {
-        case "type":
-          type = column[1];
-          break;
-        case "node":
-          node = Integer.valueOf(column[1]);
-          break;
-        case "throughput":
-          throughput = Double.valueOf(column[1]);
-          break;
-        case "memory":
-          memory = Double.valueOf(column[1]);
-          break;
-        case "energy":
-          energy = Double.valueOf(column[1]);
-          break;
-        case "cost":
-          cost = Double.valueOf(column[1]);
-          break;
-        default:
-          break;
-      }
+      String type = "";
+      int node = 0;
+      Double throughput = 0.0;
+      Double memory = 0.0;
+      Double energy = 0.0;
+      Double cost = 0.0;
+      final String[] NetworkArg = element.split("\n");
+      for (int indexArg = 0; indexArg < NetworkArg.length; indexArg++) {
+        final String[] column = NetworkArg[indexArg].split(";");
 
-      if ((i - 4) % 5 == 0) {
-        final NetworkInfo newNetwork = new NetworkInfo(type, node, throughput, memory, energy, cost);
-        networkInfoList.add(newNetwork);
+        switch (column[0]) {
+          case "type":
+            type = column[1].split(":")[0];
+            node = Integer.valueOf(column[1].split(":")[1]);
+            break;
+          case "throughput":
+            throughput = Double.valueOf(column[1]);
+            break;
+          case "memory":
+            memory = Double.valueOf(column[1]);
+            break;
+          case "energy":
+            energy = Double.valueOf(column[1]);
+            break;
+          case "cost":
+            cost = Double.valueOf(column[1]);
+            break;
+
+          default:
+            break;
+        }
+
+        if (indexArg == (NetworkArg.length - 1)) {
+          final NetworkInfo newNetwork = new NetworkInfo(type, node, throughput, memory, energy, cost);
+          networkInfoList.add(newNetwork);
+        }
       }
+    }
+
+  }
+
+  private void updateDataset(XYSeriesCollection dataset) {
+    dataset.removeAllSeries();
+    for (final NetworkInfo net : nodeNetworkInfoNormalMap.get(nodeKey)) {
+      final XYSeries s1 = new XYSeries(net.getType() + ":" + net.getNode());
+      s1.add(0.0, net.getThroughput());
+      s1.add(90.0, net.getMemory());
+      s1.add(180.0, net.getCost());
+      s1.add(270.0, net.getEnergy());
+      dataset.addSeries(s1);
     }
 
   }
 
   private XYSeriesCollection fillMultiCriteriaDataSet() {
-    final XYSeriesCollection result = new XYSeriesCollection();
-
-    for (final NetworkInfo net : AnalysisPage4.networkInfoNormalList) {
-      final XYSeries s1 = new XYSeries(net.getType());
+    final XYSeriesCollection dataset = new XYSeriesCollection();
+    for (final NetworkInfo net : nodeNetworkInfoNormalMap.get(nodeKey)) {
+      final XYSeries s1 = new XYSeries(net.getType() + ":" + net.getNode());
       s1.add(0.0, net.getThroughput());
       s1.add(90.0, net.getMemory());
       s1.add(180.0, net.getCost());
       s1.add(270.0, net.getEnergy());
-      result.addSeries(s1);
+      dataset.addSeries(s1);
     }
+    // for (final NetworkInfo net : AnalysisPage4.networkInfoNormalList) {
+    // final XYSeries s1 = new XYSeries(net.getType() + ":" + net.getNode());
+    // s1.add(0.0, net.getThroughput());
+    // s1.add(90.0, net.getMemory());
+    // s1.add(180.0, net.getCost());
+    // s1.add(270.0, net.getEnergy());
+    // result.addSeries(s1);
+    // }
 
-    return result;
+    return dataset;
   }
 
   private JFreeChart polarChart(XYSeriesCollection dataset) {
-    final JFreeChart chart = ChartFactory.createPolarChart("Polar Chart Example", // Titre du graphique
-        dataset, // Données
-        true, // Légende
+    final JFreeChart chart = ChartFactory.createPolarChart("Normalized Radar Chart: Network Topology Comparison",
+        dataset, // data
+        true, // legend
         true, // Infobulles
         false // URL
     );
@@ -190,7 +271,15 @@ public class AnalysisPage4 {
   }
 
   private String description() {
-    // TODO Auto-generated method stub
-    return null;
+    String description = "<html>";
+    description += "This chart gives a comprehensive comparison of the 5 main network topologies";
+    description += "(if they exist) concerning a selected number of nodes, dynamically chosen from a ComboBox.<br>";
+    description += "The topologies are: Cluster with a Crossbar,  Cluster with a Shared Backbone, Torus Cluster, ";
+    description += "Fat-Tree Cluster and Dragonfly Cluster.<br>";
+    description += "This visualization captures the normalized performance metrics of";
+    description += "Throughput, Memory, Energy, and Cost for each network configuration.<br>";
+    description += "Normalized value = (x - minvalue) / (maxvalue - minvalue)";
+    description += "</html>";
+    return description;
   }
 }

@@ -24,9 +24,10 @@ public class SimSDPChartTask extends AbstractTaskImplementation {
   @Override
   public Map<String, Object> execute(Map<String, Object> inputs, Map<String, String> parameters,
       IProgressMonitor monitor, String nodeName, Workflow workflow) throws InterruptedException {
-    final String path = "/" + workflow.getProjectName() + "/Scenarios/generated/";
+    final String path = "/" + workflow.getProjectName() + "/Simulation/";
     int iterationOptim = 0;
     final JFrame frame = createFrame();
+    frame.setSize(800, 800);
     final JTabbedPane tabbedPane = new JTabbedPane();
     final JPanel tab1 = new AnalysisPage1(path, iterationOptim).execute();
     iterationOptim = AnalysisPage1.getIterationOptim();

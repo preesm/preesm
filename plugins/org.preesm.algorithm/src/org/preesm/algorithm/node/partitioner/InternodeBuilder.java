@@ -8,6 +8,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 import java.util.logging.Level;
 import org.eclipse.core.resources.IFile;
@@ -40,7 +41,6 @@ import org.preesm.model.pisdf.factory.PiMMUserFactory;
 import org.preesm.model.pisdf.serialize.PiWriter;
 import org.preesm.model.scenario.Scenario;
 import org.preesm.model.scenario.generator.ScenariosGenerator;
-import org.preesm.model.scenario.util.DefaultTypeSizes;
 import org.preesm.model.scenario.util.ScenarioUserFactory;
 import org.preesm.model.slam.Component;
 import org.preesm.model.slam.ComponentInstance;
@@ -62,9 +62,12 @@ public class InternodeBuilder {
   }
 
   public PiGraph execute() {
+    final String[] uriString = scenario.getAlgorithm().getUrl().split("/");
+    final String projectPath = "/" + uriString[1] + "/" + uriString[2];// projectName/Algo
     final PiGraph topGraph = constructTop();
 
-    graphExporter(topGraph);
+    graphExporter(topGraph, projectPath, "/generated/");
+    graphExporter(topGraph, projectPath, "/generated/top/");// top folder used by SimGrid
     scenarioExporter(topGraph);
     return topGraph;
 
@@ -193,7 +196,7 @@ public class InternodeBuilder {
     for (final ComponentInstance coreId : coreIds) {
       for (final AbstractActor aa : topGraph.getAllActors()) {
         if (aa instanceof Actor) {
-          if (coreId.getInstanceName().replace("Core", "").equals(aa.getName().replace("sub", ""))) {
+          if (coreId.getInstanceName().replace("Node", "").equals(aa.getName().replace("sub", ""))) {
 
             topScenario.getConstraints().addConstraint(coreId, aa);
           }
@@ -204,10 +207,15 @@ public class InternodeBuilder {
     // Add a average transfer size
     topScenario.getSimulationInfo().setAverageDataSize(scenario.getSimulationInfo().getAverageDataSize());
     // Set the default data type sizes
-    for (final Fifo f : topScenario.getAlgorithm().getAllFifos()) {
-      final String typeName = f.getType();
-      topScenario.getSimulationInfo().getDataTypes().put(typeName,
-          DefaultTypeSizes.getInstance().getTypeSize(typeName));
+    // for (final Fifo f : topScenario.getAlgorithm().getAllFifos()) {
+    // final String typeName = f.getType();
+    // topScenario.getSimulationInfo().getDataTypes().put(typeName,
+    // DefaultTypeSizes.getInstance().getTypeSize(typeName));
+    // }
+    for (final Entry<String, Long> element : scenario.getSimulationInfo().getDataTypes()) {
+      final String key = element.getKey();
+      final Long value = element.getValue();
+      topScenario.getSimulationInfo().getDataTypes().put(key, value);
     }
 
     topScenario.setCodegenDirectory(scenario.getCodegenDirectory() + "/top");
@@ -232,9 +240,36 @@ public class InternodeBuilder {
 
   }
 
-  private void graphExporter(PiGraph printgraph) {
-    final String[] uriString = scenario.getAlgorithm().getUrl().split("/");
-    final String graphPath = "/" + uriString[1] + "/" + uriString[2] + "/generated/";
+  // private void graphExporter(PiGraph printgraph) {
+  // final String[] uriString = scenario.getAlgorithm().getUrl().split("/");
+  // final String graphPath = "/" + uriString[1] + "/" + uriString[2] + "/generated/";
+  // printgraph.setUrl(graphPath + printgraph.getName() + ".pi");
+  // PiBRV.compute(printgraph, BRVMethod.LCM);
+  //
+  // final IPath fromPortableString = Path.fromPortableString(graphPath);
+  // final IFile file = ResourcesPlugin.getWorkspace().getRoot().getFile(fromPortableString);
+  // final IProject iProject = file.getProject();
+  // final String fileName = printgraph.getName() + "" + ".pi";
+  // final URI uri = FileUtils.getPathToFileInFolder(iProject, fromPortableString, fileName);
+  //
+  // // Get the project
+  // final String platformString = uri.toPlatformString(true);
+  // final IFile documentFile = ResourcesPlugin.getWorkspace().getRoot().getFile(new Path(platformString));
+  // final String osString = documentFile.getLocation().toOSString();
+  // try (final OutputStream outStream = new FileOutputStream(osString);) {
+  // // Write the Graph to the OutputStream using the Pi format
+  // new PiWriter(uri).write(printgraph, outStream);
+  // } catch (final IOException e) {
+  // throw new PreesmRuntimeException("Could not open outputstream file " + uri.toPlatformString(false));
+  // }
+  //
+  // PreesmLogger.getLogger().log(Level.INFO, "top print in : " + graphPath);
+  // WorkspaceUtils.updateWorkspace();
+  //
+  // }
+  private void graphExporter(PiGraph printgraph, String projectPath, String folderPath) {
+    // final String[] uriString = scenario.getAlgorithm().getUrl().split("/");
+    final String graphPath = projectPath + folderPath;
     printgraph.setUrl(graphPath + printgraph.getName() + ".pi");
     PiBRV.compute(printgraph, BRVMethod.LCM);
 
