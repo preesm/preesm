@@ -3,6 +3,7 @@ package org.preesm.algorithm.node.simulator;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.GridLayout;
+import java.awt.Paint;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.List;
@@ -25,12 +26,14 @@ import org.jfree.data.category.DefaultCategoryDataset;
 public class AnalysisPage5 {
   List<NetworkInfo> networkInfoNormalList;
 
-  int                    kTh   = 4;
-  int                    kMem  = 3;
-  int                    kEner = 2;
-  int                    kC    = 1;
+  int                    kTh      = 4;
+  int                    kMem     = 3;
+  int                    kEner    = 2;
+  int                    kC       = 1;
   JFreeChart             chart;
   DefaultCategoryDataset dataset;
+  Double                 scoreMin = Double.MAX_VALUE;
+  Double                 scoreMax = 0d;
 
   public AnalysisPage5(List<NetworkInfo> networkInfoNormalList) {
     this.networkInfoNormalList = networkInfoNormalList;
@@ -70,11 +73,13 @@ public class AnalysisPage5 {
     textFieldPanel.setLayout(new GridLayout(4, 2, 0, 0));
     textFieldPanel.setSize(200, 200);
 
-    final JLabel thLabel = new JLabel("Enter the throughput weight:");
+    final JLabel thLabel = new JLabel("Enter the final latency weight:");
     textFieldPanel.add(thLabel);
 
     final JTextField thText = new JTextField();
-    thText.setColumns(10);
+    thText.setSize(thText.getHeight(), 5);
+    // thText.resize(thText.getHeight(), 5);
+    // thText.setColumns(10);
     textFieldPanel.add(thText);
 
     thText.addActionListener(new ActionListener() {
@@ -90,7 +95,7 @@ public class AnalysisPage5 {
     textFieldPanel.add(mLabel);
 
     final JTextField mText = new JTextField();
-    mText.setColumns(10);
+    mText.setColumns(5);
     textFieldPanel.add(mText);
 
     mText.addActionListener(new ActionListener() {
@@ -142,10 +147,10 @@ public class AnalysisPage5 {
     description += "This chart gives an idea of the pareto optimal network";
     description += " architecture for a given dataflow application.<br>";
     description += "The simulation assesses performance based on four primary criteria, ";
-    description += "each individually weighted: Throughput, Memory, Energy, and Cost.<br>";
+    description += "each individually weighted: Final latency, Memory, Energy, and Cost.<br>";
     description += "These criteria are combined in a weighted linear function, expressed as Pareto";
-    description += "(wT x Throughput + wM x Memory + wE x Energy + wC x Cost), ";
-    description += "where wT, wM, wE, and wC represent the respective weights assigned to each criterion.<br>";
+    description += "(wL x Final latency + wM x Memory + wE x Energy + wC x Cost), ";
+    description += "where wL, wM, wE, and wC represent the respective weights assigned to each criterion.<br>";
     description += "Configurations can be dynamically adjusted to observe how changes in weights impact the Pareto ";
     description += "front and guide decision-making in optimizing the application's deployment.";
     description += "</html>";
@@ -154,26 +159,50 @@ public class AnalysisPage5 {
 
   private JFreeChart barChart(CategoryDataset dataset) {
     final JFreeChart chart = ChartFactory.createBarChart(
-        "Pareto(wT x Throughput + wM x memory + wE x Energy + wC x Cost)", "Configuration", "Global score", dataset,
+        "Pareto(wL x Final latency + wM x memory + wE x Energy + wC x Cost)", "Configuration", "Global score", dataset,
         PlotOrientation.VERTICAL, true, true, false);
     final CategoryPlot plot = chart.getCategoryPlot();
     plot.setBackgroundPaint(Color.white);
     plot.setDomainGridlinePaint(Color.lightGray);
     plot.setRangeGridlinePaint(Color.lightGray);
-    final BarRenderer renderer = (BarRenderer) plot.getRenderer();
-    renderer.setBarPainter(new StandardBarPainter());
+
+    // Create a custom renderer
+    final BarRenderer customRenderer = new BarRenderer() {
+      @Override
+      public Paint getItemPaint(int row, int column) {
+        // Récupération de la valeur de la barre
+        final double value = dataset.getValue(row, column).doubleValue();
+
+        // Définition des couleurs en fonction de la valeur
+        if (value == scoreMin/* valeur initiale */) {
+          return Color.green;
+        }
+        if (value == scoreMax /* valeur maximale */) {
+          return Color.red;
+        }
+        // Couleur par défaut pour les autres valeurs
+        return Color.gray;
+      }
+    };
+
+    customRenderer.setBarPainter(new StandardBarPainter());
+    plot.setRenderer(customRenderer);
     return chart;
   }
 
   private void updateDataset(DefaultCategoryDataset dataset) {
     dataset.clear();
     for (final NetworkInfo net : networkInfoNormalList) {
-      // final int kMem = 3;
-      // final int kEner = 2;
-      // final int kC = 1;
+
       final Double score = net.getThroughput() * kTh + net.getMemory() * kMem + net.getEnergy() * kEner
           + net.getCost() * kC;
       dataset.addValue(score, "configuration", net.getType());
+      if (score != 0 && score < scoreMin) {
+        scoreMin = score;
+      }
+      if (score > scoreMax) {
+        scoreMax = score;
+      }
     }
   }
 
@@ -181,12 +210,15 @@ public class AnalysisPage5 {
     final DefaultCategoryDataset dataset = new DefaultCategoryDataset();
     for (final NetworkInfo net : networkInfoNormalList) {
 
-      // final int kMem = 3;
-      // final int kEner = 2;
-      // final int kC = 1;
       final Double score = net.getThroughput() * kTh + net.getMemory() * kMem + net.getEnergy() * kEner
           + net.getCost() * kC;
       dataset.addValue(score, "configuration", net.getType() + ":" + net.getNode());
+      if (score != 0 && score < scoreMin) {
+        scoreMin = score;
+      }
+      if (score > scoreMax) {
+        scoreMax = score;
+      }
     }
     return dataset;
   }
