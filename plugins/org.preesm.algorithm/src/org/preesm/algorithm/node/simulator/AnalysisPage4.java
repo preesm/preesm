@@ -157,8 +157,20 @@ public class AnalysisPage4 {
   }
 
   private Double findMin(List<Double> values) {
-    return values.stream().min(Double::compareTo).orElse(0.0);
+    if (values.size() < 2) {
+      // Gestion du cas où il y a moins de deux valeurs
+      return values.stream().findFirst().orElse(0.0);
+    }
+    // Retrouver le minimum entre les deux premières valeurs
+    final Double minBetweenFirstTwo = Math.min(values.get(0), values.get(1));
+
+    // Retrouver le minimum entre le minimum trouvé et le reste des valeurs
+    return values.stream().skip(2) // Ignorer les deux premières valeurs
+        .reduce(minBetweenFirstTwo, Math::min);
   }
+  // private Double findMin(List<Double> values) {
+  // return values.stream().min(Double::compareTo).orElse(0.0);
+  // }
 
   private Double normalize(Double value, Double min, Double max) {
     return (value - min) / (max - min);
@@ -264,7 +276,7 @@ public class AnalysisPage4 {
     plot.setRadiusGridlinePaint(Color.lightGray);
 
     plot.setAxis(0, new NumberAxis("Memory")); // 90
-    plot.setAxis(1, new NumberAxis("Throughput")); // 0
+    plot.setAxis(1, new NumberAxis("Final latency")); // 0
     plot.setAxis(2, new NumberAxis("Energy")); // 270
     plot.setAxis(3, new NumberAxis("Cost"));// 180
     return chart;
