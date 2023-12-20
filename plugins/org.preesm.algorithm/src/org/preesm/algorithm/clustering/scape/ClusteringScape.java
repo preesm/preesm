@@ -87,7 +87,8 @@ public class ClusteringScape {
   }
 
   public PiGraph execute() {
-
+    // final PiGraph singleBranch = new MultiBranch(graph).addInitialSource();
+    // scenario.setAlgorithm(singleBranch);
     final PiGraph euclide = new EuclideTransfo(scenario, mode, levelNumber).execute();
     scenario.setAlgorithm(euclide);
     // construct hierarchical structure
@@ -98,7 +99,8 @@ public class ClusteringScape {
     coarseCluster();
     // Pattern identification
     patternIDs();
-
+    // final PiGraph multiBranch = new MultiBranch(graph).removeInitialSource();
+    // scenario.setAlgorithm(multiBranch);
     final Map<AbstractVertex, Long> brv = PiBRV.compute(graph, BRVMethod.LCM);
     PiBRV.printRV(brv);
     final PiGraphConsistenceChecker pgcc = new PiGraphConsistenceChecker(CheckerErrorLevel.FATAL_ANALYSIS,

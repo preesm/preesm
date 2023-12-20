@@ -18,8 +18,8 @@ import org.preesm.workflow.elements.Workflow;
 import org.preesm.workflow.implement.AbstractTaskImplementation;
 
 /**
- * This class export the CSV file in order to generate the radar chart (throughput,memory,energy,cost per network) for
- * SIMSDP multinet analysis (Node simulation workflow)
+ * This class export the CSV file in order to generate the radar chart (final latency,memory,energy,cost per network)
+ * for SIMSDP multinet analysis (Node simulation workflow)
  *
  *
  * @author orenaud
@@ -44,15 +44,30 @@ public class RadarExporterTask extends AbstractTaskImplementation {
     final Map<String, String> metrics = new HashMap<>();
     configType(metrics);
     ABC(metrics, abc);
-    SimGrid(metrics);
+    if (ResourcesPlugin.getWorkspace().getRoot().getFile(new Path(simulationPath + simGcsv)).isAccessible()) {
+      SimGrid(metrics);
+    } else {
+      preesm(metrics, abc);
+    }
 
     store(metrics);
 
     return new LinkedHashMap<>();
   }
 
+  private void preesm(Map<String, String> metrics, LatencyAbc abc) {
+    metrics.put("cost", "0");
+    metrics.put("energy", "0");
+    Long maxLoad = Long.MIN_VALUE;
+    for (final ComponentInstance cp : abc.getArchitecture().getComponentInstances()) {
+      maxLoad = Math.max(abc.getLoad(cp), maxLoad);
+
+    }
+    metrics.put("finalLatency", String.valueOf(maxLoad));
+  }
+
   private void store(Map<String, String> metrics) {
-    final String data = "type;" + metrics.get("type") + "\n" + "throughput;" + metrics.get("throughput") + "\n"
+    final String data = "type;" + metrics.get("type") + "\n" + "finalLatency;" + metrics.get("finalLatency") + "\n"
         + "memory;" + metrics.get("memory") + "\n" + "energy;" + metrics.get("energy") + "\n" + "cost;"
         + metrics.get("cost") + "\n";
 
@@ -94,6 +109,8 @@ public class RadarExporterTask extends AbstractTaskImplementation {
       ener += Double.valueOf(column[2]);
     }
     metrics.put("energy", String.valueOf(ener));
+    final double latency = Double.valueOf(line[1].split(",")[2]);
+    metrics.put("finalLatency", String.valueOf(latency));
   }
 
   private void ABC(Map<String, String> metrics, LatencyAbc abc) {
@@ -105,7 +122,6 @@ public class RadarExporterTask extends AbstractTaskImplementation {
 
     metrics.put("memory", String.valueOf(memory));
 
-    metrics.put("throughput", String.valueOf(abc.getFinalLatency()));
   }
 
   @Override

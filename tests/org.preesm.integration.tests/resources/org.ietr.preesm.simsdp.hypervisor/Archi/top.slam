@@ -14,21 +14,21 @@
             <spirit:configurableElementValues/>
         </spirit:componentInstance>
         <spirit:componentInstance>
-            <spirit:instanceName>Core0</spirit:instanceName>
+            <spirit:instanceName>Node0</spirit:instanceName>
             <spirit:hardwareId>0</spirit:hardwareId>
             <spirit:componentRef spirit:library=""
                 spirit:name="node" spirit:vendor="" spirit:version=""/>
             <spirit:configurableElementValues/>
         </spirit:componentInstance>
         <spirit:componentInstance>
-            <spirit:instanceName>Core1</spirit:instanceName>
+            <spirit:instanceName>Node1</spirit:instanceName>
             <spirit:hardwareId>1</spirit:hardwareId>
             <spirit:componentRef spirit:library=""
                 spirit:name="node" spirit:vendor="" spirit:version=""/>
             <spirit:configurableElementValues/>
         </spirit:componentInstance>
         <spirit:componentInstance>
-            <spirit:instanceName>Core2</spirit:instanceName>
+            <spirit:instanceName>Node2</spirit:instanceName>
             <spirit:hardwareId>2</spirit:hardwareId>
             <spirit:componentRef spirit:library=""
                 spirit:name="node" spirit:vendor="" spirit:version=""/>
@@ -38,17 +38,17 @@
     <spirit:interconnections>
         <spirit:interconnection>
             <spirit:name>0</spirit:name>
-            <spirit:activeInterface spirit:busRef="BUSshared_mem" spirit:componentRef="Core0"/>
+            <spirit:activeInterface spirit:busRef="BUSshared_mem" spirit:componentRef="Node0"/>
             <spirit:activeInterface spirit:busRef="BUSshared_mem" spirit:componentRef="shared_mem"/>
         </spirit:interconnection>
         <spirit:interconnection>
             <spirit:name>1</spirit:name>
-            <spirit:activeInterface spirit:busRef="BUSshared_mem" spirit:componentRef="Core1"/>
+            <spirit:activeInterface spirit:busRef="BUSshared_mem" spirit:componentRef="Node1"/>
             <spirit:activeInterface spirit:busRef="BUSshared_mem" spirit:componentRef="shared_mem"/>
         </spirit:interconnection>
         <spirit:interconnection>
             <spirit:name>2</spirit:name>
-            <spirit:activeInterface spirit:busRef="BUSshared_mem" spirit:componentRef="Core2"/>
+            <spirit:activeInterface spirit:busRef="BUSshared_mem" spirit:componentRef="Node2"/>
             <spirit:activeInterface spirit:busRef="BUSshared_mem" spirit:componentRef="shared_mem"/>
         </spirit:interconnection>
     </spirit:interconnections>

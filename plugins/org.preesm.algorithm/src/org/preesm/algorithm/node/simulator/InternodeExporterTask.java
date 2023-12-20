@@ -44,11 +44,11 @@ import org.preesm.workflow.implement.AbstractWorkflowNodeImplementation;
         @Parameter(name = "SimGrid AG Path", description = "Installation path for adrien gougeon's project",
             values = { @Value(name = "path", effect = "change default path") }) })
 public class InternodeExporterTask extends AbstractTaskImplementation {
-  public static final String PARAM_SIMPATH   = "SimGrid Path";
-  public static final String PARAM_SIMAGPATH = "SimGrid AG Path";
+  public static final String PARAM_SIMPATH   = "SimGrid/install_simgrid.sh";
+  public static final String PARAM_SIMAGPATH = "SimGrid/install_simgag.sh";
   public static final String STD_NAME        = "std_trend.csv";
   public static final String LATENCY_NAME    = "latency_trend.csv";
-  // String simFolder = "/Algo/generated/top";
+
   String              csvSimGridFolder = "Simulation/simgrid.csv";
   Double              latency          = 0.0;
   Map<String, Double> loadPerNode      = new HashMap<>();
@@ -59,15 +59,18 @@ public class InternodeExporterTask extends AbstractTaskImplementation {
 
     final LatencyAbc abc = (LatencyAbc) inputs.get(AbstractWorkflowNodeImplementation.KEY_SDF_ABC);
 
-    // final Double sigma = 0.0;
-
     // Detect OS
     final String os = System.getProperty("os.name").toLowerCase();
-    if (os.contains("win")) {
+    Boolean simOk = false;
+    if ((os.contains("nix") || os.contains("nux"))) {
+      simOk = simgridSimulation(parameters, workflow);
+      if (simOk) {
+        simgridReader(workflow.getProjectName());
+      }
+    }
+
+    if (os.contains("win") || Boolean.TRUE.equals(!simOk)) {
       preesmSimulation(abc);
-    } else if ((os.contains("nix") || os.contains("nux"))) {
-      simgridSimulation(parameters, workflow);
-      simgridReader(workflow.getProjectName());
     } else {
       PreesmLogger.getLogger().log(Level.SEVERE, () -> "The operation system is not recognised to support SimSDP.");
     }
@@ -150,19 +153,21 @@ public class InternodeExporterTask extends AbstractTaskImplementation {
     }
   }
 
-  private void simgridSimulation(Map<String, String> parameters, Workflow workflow) throws InterruptedException {
+  private Boolean simgridSimulation(Map<String, String> parameters, Workflow workflow) throws InterruptedException {
     final IWorkspaceRoot root = ResourcesPlugin.getWorkspace().getRoot();
     final IProject project = root.getProject(workflow.getProjectName());
     final String projectFullPath = project.getLocationURI().getPath() + "/";
     // to run click on .sh otherwise check if folder exist
     final File simgridBuildFolder = new File(projectFullPath + "SimGrid/simgrid");
     if (!simgridBuildFolder.exists()) {
-      PreesmLogger.getLogger().log(Level.SEVERE,
+      PreesmLogger.getLogger().log(Level.INFO,
           "SimGrid is not installed in your system, please run: install_simgrid.sh");
+      return false;
     }
     final File simgridSimuFolder = new File(projectFullPath + "SimGrid/simsdp");
     if (!simgridSimuFolder.exists()) {
-      PreesmLogger.getLogger().log(Level.SEVERE, "SimSDP is not linked to SimGrid, please run: install_simgridag.sh");
+      PreesmLogger.getLogger().log(Level.INFO, "SimSDP is not linked to SimGrid, please run: install_simgridag.sh");
+      return false;
     }
     // check if the required files are at the right place
     final File simFolder = new File(projectFullPath + "Algo/generated/top");
@@ -180,6 +185,7 @@ public class InternodeExporterTask extends AbstractTaskImplementation {
     bash("simsdp " + projectFullPath + "Algo/generated/top" + " -p " + projectFullPath
         + "Archi/SimSDP_network.xml -j -o " + projectFullPath + "Simulation/simgrid.csv");
     WorkspaceUtils.updateWorkspace();
+    return true;
   }
 
   private void preesmSimulation(LatencyAbc abc) {
@@ -237,11 +243,7 @@ public class InternodeExporterTask extends AbstractTaskImplementation {
 
   @Override
   public Map<String, String> getDefaultParameters() {
-    final Map<String, String> parameters = new LinkedHashMap<>();
-    parameters.put(InternodeExporterTask.PARAM_SIMPATH, "SimGrid/install_simgrid.sh");
-    parameters.put(InternodeExporterTask.PARAM_SIMAGPATH, "SimGrid/install_simgag.sh");
-
-    return parameters;
+    return new LinkedHashMap<>();
   }
 
   @Override
