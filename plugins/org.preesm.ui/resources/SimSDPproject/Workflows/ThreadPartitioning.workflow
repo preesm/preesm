@@ -16,11 +16,11 @@
     </dftools:task>
     <dftools:task pluginId="pisdf-mapper.list" taskId="PiSDF Scheduling">
         <dftools:data key="variables">
-            <dftools:variable name="Check" value="True"/>
-            <dftools:variable name="Optimize synchronization" value="True"/>
+            <dftools:variable name="Check" value="true"/>
+            <dftools:variable name="Optimize synchronization" value="true"/>
             <dftools:variable name="balanceLoads" value="true"/>
             <dftools:variable name="edgeSchedType" value="Simple"/>
-            <dftools:variable name="simulatorType" value="ApproximatelyTimed"/>
+            <dftools:variable name="simulatorType" value="approximatelyTimed"/>
         </dftools:data>
     </dftools:task>
     <dftools:task
@@ -50,13 +50,13 @@
             <dftools:variable name="Verbose" value="True"/>
         </dftools:data>
     </dftools:task>
-    <dftools:task pluginId="NodeStatsExporterTask.identifier" taskId="CSV exporter">
-        <dftools:data key="variables">
-            <dftools:variable name="Multinode" value="true"/>
-            <dftools:variable name="Top" value="false"/>
-        </dftools:data>
-    </dftools:task>
     <dftools:task pluginId="org.ietr.preesm.plugin.mapper.plot" taskId="Gantt Display">
+        <dftools:data key="variables"/>
+    </dftools:task>
+    <dftools:task pluginId="IntranodeExporterTask.identifier" taskId="Intranode Stats exporter">
+        <dftools:data key="variables"/>
+    </dftools:task>
+    <dftools:task pluginId="TopTimingExporterTask.identifier" taskId="Top Timing Exporter">
         <dftools:data key="variables"/>
     </dftools:task>
     <dftools:dataTransfer from="scenario" sourceport="scenario"
@@ -84,9 +84,11 @@
     <dftools:dataTransfer from="scenario"
         sourceport="architecture" targetport="architecture" to="PiSDF Scheduling"/>
     <dftools:dataTransfer from="PiSDF Scheduling"
-        sourceport="ABC" targetport="ABC" to="CSV exporter"/>
-    <dftools:dataTransfer from="PiSDF Scheduling"
         sourceport="ABC" targetport="ABC" to="Gantt Display"/>
     <dftools:dataTransfer from="SCAPE" sourceport="scenario"
         targetport="scenario" to="Gantt Display"/>
+    <dftools:dataTransfer from="PiSDF Scheduling"
+        sourceport="ABC" targetport="ABC" to="Intranode Stats exporter"/>
+    <dftools:dataTransfer from="PiSDF Scheduling"
+        sourceport="ABC" targetport="ABC" to="Top Timing Exporter"/>
 </dftools:workflow>

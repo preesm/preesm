@@ -120,7 +120,7 @@ public class IntranodeBuilder {
 
     constructSubs();
 
-    singleSourceGraphTransfo();
+    // singleSourceGraphTransfo();
 
     exportSubs();
     sublist.add(topGraph);

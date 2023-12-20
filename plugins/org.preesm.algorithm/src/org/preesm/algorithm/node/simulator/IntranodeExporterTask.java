@@ -42,7 +42,6 @@ public class IntranodeExporterTask extends AbstractTaskImplementation {
     path = "/" + workflow.getProjectName() + "/Simulation/";
     final LatencyAbc abc = (LatencyAbc) inputs.get("ABC");
 
-    // final IEditorInput input = new StatEditorInput(new StatGeneratorAbc(abc));
     // export
     if (workflow.getWorkflowName().equals("ThreadPartitioning.workflow")) {
       nodeOccupationExport(abc);
