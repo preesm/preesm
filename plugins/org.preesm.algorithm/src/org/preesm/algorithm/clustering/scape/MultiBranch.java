@@ -5,7 +5,7 @@ import java.util.List;
 import java.util.Map;
 import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.AbstractVertex;
-import org.preesm.model.pisdf.DataInputInterface;
+import org.preesm.model.pisdf.Actor;
 import org.preesm.model.pisdf.DataInputPort;
 import org.preesm.model.pisdf.DataOutputPort;
 import org.preesm.model.pisdf.DelayActor;
@@ -36,15 +36,17 @@ public class MultiBranch {
     final List<AbstractActor> sourceList = new ArrayList<>();
     // seek sources
     for (final AbstractActor source : graph.getActors()) {
-      if (!(source instanceof DelayActor) && (source.getDataInputPorts().isEmpty()
-          || source.getDataInputPorts().stream().allMatch(x -> x.getFifo().isHasADelay()))) {
+      if (!(source instanceof DelayActor)
+          && (source.getDataInputPorts().isEmpty()
+              || source.getDataInputPorts().stream().allMatch(x -> x.getFifo().isHasADelay()))
+          && !(source.getDataOutputPorts().stream().anyMatch(x -> x.getFifo().getTarget() instanceof DelayActor))) {
         sourceList.add(source);
       }
     }
     final Map<AbstractVertex, Long> brv = PiBRV.compute(graph, BRVMethod.LCM);
 
     if (sourceList.size() > 1) {
-      final DataInputInterface src = PiMMUserFactory.instance.createDataInputInterface();
+      final Actor src = PiMMUserFactory.instance.createActor();
       src.setName("single_source");
       src.setContainingGraph(graph);
       int indexOutput = 0;
@@ -74,7 +76,7 @@ public class MultiBranch {
 
   public PiGraph removeInitialSource() {
     // Identify dummy source
-    for (final DataInputInterface dummySrc : graph.getDataInputInterfaces()) {
+    for (final AbstractActor dummySrc : graph.getActors()) {
       if (dummySrc.getName().equals("single_source")) {
         // delete port
 

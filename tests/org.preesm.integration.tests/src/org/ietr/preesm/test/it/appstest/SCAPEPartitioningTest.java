@@ -52,7 +52,7 @@ public class SCAPEPartitioningTest {
       "scape2.workflow", "scape2.workflow", "scape2.workflow", "schedule.workflow" };
   private final String[] scenario    = { "ABC_5CoresX86.scenario", "ABC_3CoresX86.scenario", "ABC_3CoresX86.scenario",
       "ABC_3CoresX86.scenario", "ABC_3CoresX86.scenario", "ABC_3CoresX86.scenario", "top_3CoresX86.scenario",
-      "ABC_3CoresX86.scenario" };
+      "ABC2_3CoresX86.scenario" };
   private final String   projectName = "org.ietr.preesm.scape";
 
   @Test
