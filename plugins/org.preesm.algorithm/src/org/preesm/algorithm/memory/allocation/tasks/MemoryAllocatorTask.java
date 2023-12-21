@@ -185,22 +185,22 @@ import org.preesm.workflow.implement.AbstractTaskImplementation;
             + "MPSoCs. Journal of Signal Processing Systems, Springer, 2014." })
 public class MemoryAllocatorTask extends AbstractTaskImplementation {
 
-  public static final String PARAM_VERBOSE                       = "Verbose";
-  public static final String VALUE_TRUE_FALSE_DEFAULT            = "? C {True, False}";
-  public static final String VALUE_TRUE                          = "True";
-  public static final String PARAM_ALLOCATORS                    = "Allocator(s)";
-  public static final String VALUE_ALLOCATORS_DEFAULT            = "BestFit";
-  public static final String VALUE_ALLOCATORS_BASIC              = "Basic";
-  public static final String VALUE_ALLOCATORS_BEST_FIT           = "BestFit";
-  public static final String VALUE_ALLOCATORS_FIRST_FIT          = "FirstFit";
-  public static final String VALUE_ALLOCATORS_DE_GREEF           = "DeGreef";
-  public static final String PARAM_XFIT_ORDER                    = "Best/First Fit order";
-  public static final String VALUE_XFIT_ORDER_DEFAULT            = "LargestFirst";
-  public static final String VALUE_XFIT_ORDER_APPROX_STABLE_SET  = "ApproxStableSet";
-  public static final String VALUE_XFIT_ORDER_LARGEST_FIRST      = "LargestFirst";
-  public static final String VALUE_XFIT_ORDER_SHUFFLE            = "Shuffle";
-  public static final String VALUE_XFIT_ORDER_EXACT_STABLE_SET   = "ExactStableSet";
-  public static final String VALUE_XFIT_ORDER_SCHEDULING         = "Scheduling";
+  public static final String PARAM_VERBOSE                      = "Verbose";
+  public static final String VALUE_TRUE_FALSE_DEFAULT           = "? C {True, False}";
+  public static final String VALUE_TRUE                         = "True";
+  public static final String PARAM_ALLOCATORS                   = "Allocator(s)";
+  public static final String VALUE_ALLOCATORS_DEFAULT           = "BestFit";
+  public static final String VALUE_ALLOCATORS_BASIC             = "Basic";
+  public static final String VALUE_ALLOCATORS_BEST_FIT          = "BestFit";
+  public static final String VALUE_ALLOCATORS_FIRST_FIT         = "FirstFit";
+  public static final String VALUE_ALLOCATORS_DE_GREEF          = "DeGreef";
+  public static final String PARAM_XFIT_ORDER                   = "Best/First Fit order";
+  public static final String VALUE_XFIT_ORDER_DEFAULT           = "LargestFirst";
+  public static final String VALUE_XFIT_ORDER_APPROX_STABLE_SET = "ApproxStableSet";
+  public static final String VALUE_XFIT_ORDER_LARGEST_FIRST     = "LargestFirst";
+  public static final String VALUE_XFIT_ORDER_SHUFFLE           = "Shuffle";
+  public static final String VALUE_XFIT_ORDER_EXACT_STABLE_SET  = "ExactStableSet";
+  // public static final String VALUE_XFIT_ORDER_SCHEDULING = "Scheduling";
   public static final String PARAM_NB_SHUFFLE                    = "Nb of Shuffling Tested";
   public static final String VALUE_NB_SHUFFLE_DEFAULT            = "10";
   public static final String PARAM_ALIGNMENT                     = "Data alignment";
@@ -258,20 +258,13 @@ public class MemoryAllocatorTask extends AbstractTaskImplementation {
     // Retrieve the alignment param
     final String valueAlignment = parameters.get(MemoryAllocatorTask.PARAM_ALIGNMENT);
 
-    switch (valueAlignment.substring(0, Math.min(valueAlignment.length(), 7))) {
-      case VALUE_ALIGNEMENT_NONE:
-        this.alignment = -1;
-        break;
-      case VALUE_ALIGNEMENT_DATA:
-        this.alignment = 0;
-        break;
-      case VALUE_ALIGNEMENT_FIXED:
-        final String fixedValue = valueAlignment.substring(7);
-        this.alignment = Long.parseLong(fixedValue);
-        break;
-      default:
-        this.alignment = -1;
-    }
+    this.alignment = switch (valueAlignment.substring(0, Math.min(valueAlignment.length(), 7))) {
+      case VALUE_ALIGNEMENT_NONE -> -1;
+      case VALUE_ALIGNEMENT_DATA -> 0;
+      case VALUE_ALIGNEMENT_FIXED -> Long.parseLong(valueAlignment.substring(7));
+      default -> -1;
+    };
+
     if (this.verbose) {
       this.logger.log(Level.INFO, () -> "Allocation with alignment:=" + this.alignment + " bits.");
     }
@@ -279,23 +272,31 @@ public class MemoryAllocatorTask extends AbstractTaskImplementation {
     // Retrieve the ordering policies to test
     this.nbShuffle = 0;
     this.ordering = new ArrayList<>();
-    if (valueXFitOrder.contains(MemoryAllocatorTask.VALUE_XFIT_ORDER_SHUFFLE)) {
-      this.nbShuffle = Integer.decode(valueNbShuffle);
-      this.ordering.add(Order.SHUFFLE);
-    }
-    if (valueXFitOrder.contains(MemoryAllocatorTask.VALUE_XFIT_ORDER_LARGEST_FIRST)) {
-      this.ordering.add(Order.LARGEST_FIRST);
-    }
-    if (valueXFitOrder.contains(MemoryAllocatorTask.VALUE_XFIT_ORDER_APPROX_STABLE_SET)) {
-      this.ordering.add(Order.STABLE_SET);
-    }
-    if (valueXFitOrder.contains(MemoryAllocatorTask.VALUE_XFIT_ORDER_EXACT_STABLE_SET)) {
-      this.ordering.add(Order.EXACT_STABLE_SET);
-    }
-    if (valueXFitOrder.contains(MemoryAllocatorTask.VALUE_XFIT_ORDER_SCHEDULING)) {
-      this.ordering.add(Order.SCHEDULING);
-    }
 
+    final Order schedulingOrder = switch (valueXFitOrder) {
+      case MemoryAllocatorTask.VALUE_XFIT_ORDER_SHUFFLE -> {
+        this.nbShuffle = Integer.decode(valueNbShuffle);
+        yield Order.SHUFFLE;
+      }
+      case MemoryAllocatorTask.VALUE_XFIT_ORDER_LARGEST_FIRST -> Order.LARGEST_FIRST;
+      case MemoryAllocatorTask.VALUE_XFIT_ORDER_APPROX_STABLE_SET -> Order.STABLE_SET;
+      case MemoryAllocatorTask.VALUE_XFIT_ORDER_EXACT_STABLE_SET -> Order.EXACT_STABLE_SET;
+      // case MemoryAllocatorTask.VALUE_XFIT_ORDER_SCHEDULING -> Order.SCHEDULING; // Not supported anymore
+      default -> throw new PreesmRuntimeException(schedulingOrderErrorMessage());
+    };
+
+    this.ordering.add(schedulingOrder);
+  }
+
+  private String schedulingOrderErrorMessage() {
+    final StringBuilder errorStringBuilder = new StringBuilder();
+    errorStringBuilder.append("Unrecognized Scheduling order parameter. Supported parameters are:\n");
+    errorStringBuilder.append(MemoryAllocatorTask.VALUE_XFIT_ORDER_SHUFFLE + "\n");
+    errorStringBuilder.append(MemoryAllocatorTask.VALUE_XFIT_ORDER_LARGEST_FIRST + "\n");
+    errorStringBuilder.append(MemoryAllocatorTask.VALUE_XFIT_ORDER_APPROX_STABLE_SET + "\n");
+    errorStringBuilder.append(MemoryAllocatorTask.VALUE_XFIT_ORDER_EXACT_STABLE_SET + "\n");
+    // errorStringBuilder.append(MemoryAllocatorTask.VALUE_XFIT_ORDER_SCHEDULING); // Not supported anymore
+    return errorStringBuilder.toString();
   }
 
   /**

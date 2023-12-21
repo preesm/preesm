@@ -250,7 +250,7 @@ public class LegacyMemoryAllocation implements IMemoryAllocation {
       case MemoryAllocatorTask.VALUE_XFIT_ORDER_LARGEST_FIRST -> Order.LARGEST_FIRST;
       case MemoryAllocatorTask.VALUE_XFIT_ORDER_APPROX_STABLE_SET -> Order.STABLE_SET;
       case MemoryAllocatorTask.VALUE_XFIT_ORDER_EXACT_STABLE_SET -> Order.EXACT_STABLE_SET;
-      case MemoryAllocatorTask.VALUE_XFIT_ORDER_SCHEDULING -> Order.SCHEDULING;
+      // case MemoryAllocatorTask.VALUE_XFIT_ORDER_SCHEDULING -> Order.SCHEDULING;
       default -> throw new IllegalArgumentException("unknown order " + valueXFitOrder);
     };
 
