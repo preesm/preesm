@@ -39,10 +39,8 @@
  */
 package org.preesm.algorithm.memory.allocation.tasks;
 
-import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
-import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
@@ -223,18 +221,18 @@ public class MemoryAllocatorTask extends AbstractTaskImplementation {
       + MemoryAllocatorTask.VALUE_DISTRIBUTION_DISTRIBUTED_ONLY + ", "
       + MemoryAllocatorTask.VALUE_DISTRIBUTION_MIXED_MERGED + "}";
 
-  protected Logger                logger = PreesmLogger.getLogger();
-  private String                  valueAllocators;
-  protected String                valueDistribution;
-  protected boolean               verbose;
-  protected long                  alignment;
-  private int                     nbShuffle;
-  private List<Order>             ordering;
-  protected List<MemoryAllocator> allocators;
+  protected Logger          logger = PreesmLogger.getLogger();
+  private String            valueAllocator;
+  protected String          valueDistribution;
+  protected boolean         verbose;
+  protected long            alignment;
+  private int               nbShuffle;
+  private Order             ordering;
+  protected MemoryAllocator allocator;
 
   /**
    * This method retrieves the value of task parameters from the workflow and stores them in local protected attributes.
-   * Some parameter {@link String} are also interpreted by this method (eg. {@link #verbose}, {@link #allocators}).
+   * Some parameter {@link String} are also interpreted by this method (eg. {@link #verbose}, {@link #allocator}).
    *
    * @param parameters
    *          the parameter {@link Map} given to the {@link #execute(Map, Map, IProgressMonitor, Workflow) execute()}
@@ -245,7 +243,7 @@ public class MemoryAllocatorTask extends AbstractTaskImplementation {
     final String valueVerbose = parameters.get(MemoryAllocatorTask.PARAM_VERBOSE);
     final String valueXFitOrder = parameters.get(MemoryAllocatorTask.PARAM_XFIT_ORDER);
     final String valueNbShuffle = parameters.get(MemoryAllocatorTask.PARAM_NB_SHUFFLE);
-    this.valueAllocators = parameters.get(MemoryAllocatorTask.PARAM_ALLOCATORS);
+    this.valueAllocator = parameters.get(MemoryAllocatorTask.PARAM_ALLOCATORS);
     this.valueDistribution = parameters.get(MemoryAllocatorTask.PARAM_DISTRIBUTION_POLICY);
 
     this.verbose = valueVerbose.equals(MemoryAllocatorTask.VALUE_TRUE);
@@ -271,9 +269,7 @@ public class MemoryAllocatorTask extends AbstractTaskImplementation {
 
     // Retrieve the ordering policies to test
     this.nbShuffle = 0;
-    this.ordering = new ArrayList<>();
-
-    final Order schedulingOrder = switch (valueXFitOrder) {
+    this.ordering = switch (valueXFitOrder) {
       case MemoryAllocatorTask.VALUE_XFIT_ORDER_SHUFFLE -> {
         this.nbShuffle = Integer.decode(valueNbShuffle);
         yield Order.SHUFFLE;
@@ -282,15 +278,13 @@ public class MemoryAllocatorTask extends AbstractTaskImplementation {
       case MemoryAllocatorTask.VALUE_XFIT_ORDER_APPROX_STABLE_SET -> Order.STABLE_SET;
       case MemoryAllocatorTask.VALUE_XFIT_ORDER_EXACT_STABLE_SET -> Order.EXACT_STABLE_SET;
       // case MemoryAllocatorTask.VALUE_XFIT_ORDER_SCHEDULING -> Order.SCHEDULING; // Not supported anymore
-      default -> throw new PreesmRuntimeException(schedulingOrderErrorMessage());
+      default -> throw new IllegalArgumentException(fitOrderNameErrorMessage());
     };
-
-    this.ordering.add(schedulingOrder);
   }
 
-  private String schedulingOrderErrorMessage() {
+  private String fitOrderNameErrorMessage() {
     final StringBuilder errorStringBuilder = new StringBuilder();
-    errorStringBuilder.append("Unrecognized Scheduling order parameter. Supported parameters are:\n");
+    errorStringBuilder.append("Unrecognized " + PARAM_XFIT_ORDER + " parameter. Supported parameters are:\n");
     errorStringBuilder.append(MemoryAllocatorTask.VALUE_XFIT_ORDER_SHUFFLE + "\n");
     errorStringBuilder.append(MemoryAllocatorTask.VALUE_XFIT_ORDER_LARGEST_FIRST + "\n");
     errorStringBuilder.append(MemoryAllocatorTask.VALUE_XFIT_ORDER_APPROX_STABLE_SET + "\n");
@@ -300,43 +294,45 @@ public class MemoryAllocatorTask extends AbstractTaskImplementation {
   }
 
   /**
-   * Based on allocators specified in the task parameters, and stored in the {@link #allocators} attribute, this method
-   * instantiate the {@link MemoryAllocator} that are to be executed on the given {@link MemoryExclusionGraph MEG}.
+   * Based on allocators specified in the task parameters, and stored in the {@link #allocator} attribute, this method
+   * instantiate the {@link MemoryAllocator} that is to be executed on the given {@link MemoryExclusionGraph MEG}.
    *
    * @param memEx
    *          the {@link MemoryExclusionGraph MEG} to allocate.
    */
-  protected void createAllocators(final MemoryExclusionGraph memEx) {
+  protected void createAllocator(final MemoryExclusionGraph memEx) {
     // Create all allocators
-    this.allocators = new ArrayList<>();
-    if (this.valueAllocators.contains(MemoryAllocatorTask.VALUE_ALLOCATORS_BASIC)) {
-      final MemoryAllocator alloc = new BasicAllocator(memEx);
-      alloc.setAlignment(this.alignment);
-      this.allocators.add(alloc);
-    }
-    if (this.valueAllocators.contains(MemoryAllocatorTask.VALUE_ALLOCATORS_FIRST_FIT)) {
-      for (final Order o : this.ordering) {
+
+    this.allocator = switch (valueAllocator) {
+      case MemoryAllocatorTask.VALUE_ALLOCATORS_BASIC -> new BasicAllocator(memEx);
+      case MemoryAllocatorTask.VALUE_ALLOCATORS_FIRST_FIT -> {
         final OrderedAllocator alloc = new FirstFitAllocator(memEx);
         alloc.setNbShuffle(this.nbShuffle);
-        alloc.setOrder(o);
-        alloc.setAlignment(this.alignment);
-        this.allocators.add(alloc);
+        alloc.setOrder(this.ordering);
+        yield alloc;
       }
-    }
-    if (this.valueAllocators.contains(MemoryAllocatorTask.VALUE_ALLOCATORS_BEST_FIT)) {
-      for (final Order o : this.ordering) {
+      case MemoryAllocatorTask.VALUE_ALLOCATORS_BEST_FIT -> {
         final OrderedAllocator alloc = new BestFitAllocator(memEx);
         alloc.setNbShuffle(this.nbShuffle);
-        alloc.setOrder(o);
-        alloc.setAlignment(this.alignment);
-        this.allocators.add(alloc);
+        alloc.setOrder(this.ordering);
+        yield alloc;
       }
-    }
-    if (this.valueAllocators.contains(MemoryAllocatorTask.VALUE_ALLOCATORS_DE_GREEF)) {
-      final MemoryAllocator alloc = new DeGreefAllocator(memEx);
-      alloc.setAlignment(this.alignment);
-      this.allocators.add(alloc);
-    }
+      case MemoryAllocatorTask.VALUE_ALLOCATORS_DE_GREEF -> new DeGreefAllocator(memEx);
+      default -> throw new IllegalArgumentException(allocatorNameErrorMessage());
+    };
+
+    this.allocator.setAlignment(this.alignment);
+  }
+
+  private String allocatorNameErrorMessage() {
+    final StringBuilder errorStringBuilder = new StringBuilder();
+    errorStringBuilder.append("Unrecognized Allocator name. Supported parameters are:\n");
+    errorStringBuilder.append(MemoryAllocatorTask.VALUE_ALLOCATORS_BASIC + "\n");
+    errorStringBuilder.append(MemoryAllocatorTask.VALUE_ALLOCATORS_BEST_FIT + "\n");
+    errorStringBuilder.append(MemoryAllocatorTask.VALUE_ALLOCATORS_DE_GREEF + "\n");
+    errorStringBuilder.append(MemoryAllocatorTask.VALUE_ALLOCATORS_DEFAULT + "\n");
+    errorStringBuilder.append(MemoryAllocatorTask.VALUE_ALLOCATORS_FIRST_FIT);
+    return errorStringBuilder.toString();
   }
 
   /**
@@ -493,7 +489,7 @@ public class MemoryAllocatorTask extends AbstractTaskImplementation {
       final String memoryBank = entry.getKey();
       final MemoryExclusionGraph meg = entry.getValue();
 
-      createAllocators(meg);
+      createAllocator(meg);
 
       if (this.verbose) {
         final String msg = "Heat up MemEx for " + memoryBank + " memory bank.";
@@ -502,7 +498,7 @@ public class MemoryAllocatorTask extends AbstractTaskImplementation {
 
       meg.vertexSet().stream().forEach(meg::getAdjacentVertexOf);
 
-      this.allocators.stream().forEach(this::allocateWith);
+      allocateWith(this.allocator);
     }
 
     final Map<String, Object> output = new LinkedHashMap<>();

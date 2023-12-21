@@ -53,21 +53,11 @@ public interface IMemoryAllocation {
   /**
    */
   public static long extractAlignment(final String valueAlignment) {
-    final long alignment;
-    switch (valueAlignment.substring(0, Math.min(valueAlignment.length(), 7))) {
-      case MemoryAllocatorTask.VALUE_ALIGNEMENT_NONE:
-        alignment = -1;
-        break;
-      case MemoryAllocatorTask.VALUE_ALIGNEMENT_DATA:
-        alignment = 0;
-        break;
-      case MemoryAllocatorTask.VALUE_ALIGNEMENT_FIXED:
-        final String fixedValue = valueAlignment.substring(7);
-        alignment = Long.parseLong(fixedValue);
-        break;
-      default:
-        alignment = -1;
-    }
-    return alignment;
+    return switch (valueAlignment.substring(0, Math.min(valueAlignment.length(), 7))) {
+      case MemoryAllocatorTask.VALUE_ALIGNEMENT_NONE -> -1;
+      case MemoryAllocatorTask.VALUE_ALIGNEMENT_DATA -> 0;
+      case MemoryAllocatorTask.VALUE_ALIGNEMENT_FIXED -> Long.parseLong(valueAlignment.substring(7));
+      default -> -1;
+    };
   }
 }

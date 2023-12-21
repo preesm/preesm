@@ -620,8 +620,7 @@ public abstract class MemoryAllocator {
           }
           i++;
 
-          // Both data and fixed alignment must be aligned on
-          // data typeSize
+          // Both data and fixed alignment must be aligned on data typeSize
           // Check the fixed alignment
           if (((this.alignment >= 0) && (((internalOffset + offset) % typeSize) != 0))
               || ((this.alignment > 0) && (((internalOffset + offset) % this.alignment) != 0))) {
