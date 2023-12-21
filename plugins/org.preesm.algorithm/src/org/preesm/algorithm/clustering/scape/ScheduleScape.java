@@ -1,22 +1,20 @@
 package org.preesm.algorithm.clustering.scape;
 
-import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
+import java.util.Map.Entry;
+import java.util.logging.Level;
+import org.chocosolver.solver.constraints.extension.Tuples;
 import org.preesm.algorithm.schedule.model.ScapeSchedule;
 import org.preesm.algorithm.schedule.model.ScheduleFactory;
+import org.preesm.commons.graph.Vertex;
 import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.AbstractVertex;
-import org.preesm.model.pisdf.Actor;
-import org.preesm.model.pisdf.DataInputInterface;
 import org.preesm.model.pisdf.DataOutputInterface;
-import org.preesm.model.pisdf.DataOutputPort;
 import org.preesm.model.pisdf.PiGraph;
-import org.preesm.model.pisdf.SpecialActor;
 import org.preesm.model.pisdf.brv.BRVMethod;
 import org.preesm.model.pisdf.brv.PiBRV;
 import org.preesm.model.pisdf.factory.PiMMUserFactory;
@@ -37,15 +35,61 @@ public class ScheduleScape {
   /**
    * Input graph.
    */
-  private final PiGraph graph;
+  private final PiGraph           graph;
+  final Map<AbstractVertex, Long> brv;
+  final Map<String, Long>         brvStr;
+  Map<String, Map<String, Long>>  rcStr;
 
   public ScheduleScape(PiGraph graph) {
     this.graph = graph;
+    this.brv = PiBRV.compute(graph, BRVMethod.LCM);
+    this.brvStr = initRepetitionVectorStr();
+    this.rcStr = initRepetitionCountStr();
+  }
+
+  /**
+   * Initialize the repetition count which is the greatest common divisor between the repetition vector coefficient of
+   * two linked actors
+   *
+   * @return repetitionCountStr the repetition count map
+   */
+  private Map<String, Map<String, Long>> initRepetitionCountStr() {
+    final Map<String, Map<String, Long>> repetitionCountStr = new LinkedHashMap<>();
+
+    for (final AbstractActor actor : graph.getAllExecutableActors()) {
+      for (final Vertex successor : actor.getDirectSuccessors()) {
+        if (!(successor instanceof DataOutputInterface)) {
+          final Long rep = gcd(brv.get(actor), brv.get(successor));
+
+          repetitionCountStr.computeIfAbsent(actor.getName(), k -> new LinkedHashMap<>())
+              .put(((AbstractVertex) successor).getName(), rep);
+        }
+      }
+    }
+    return repetitionCountStr;
+  }
+
+  /**
+   * Initialize the repetition vector coefficient to link actor's name to the computed value
+   *
+   * @return repetitionVectorStr the repetition vector map
+   */
+  private Map<String, Long> initRepetitionVectorStr() {
+    final Map<String, Long> repetitionVectorStr = new LinkedHashMap<>();
+
+    for (final Entry<AbstractVertex, Long> entry : brv.entrySet()) {
+      repetitionVectorStr.put(entry.getKey().getName(), entry.getValue());
+    }
+    return repetitionVectorStr;
   }
 
   public List<ScapeSchedule> execute() {
-    final String scheduleStr = pisdf2str();
-    PreesmLogger.getLogger().info(() -> "APGAN schedule: " + scheduleStr);
+    if (brv.size() > 2 && graph.getDelayIndex() > 0) {
+      PreesmLogger.getLogger().log(Level.SEVERE, "APGAN doesn't handle cycle except cycle of 1 actor");
+    }
+    final String scheduleStr = scheduleStr();
+    final String message = "APGAN schedule: " + scheduleStr;
+    PreesmLogger.getLogger().log(Level.INFO, message);
 
     return str2schedule(scheduleStr);
 
@@ -80,7 +124,7 @@ public class ScheduleScape {
       if (splitActor[i].contains(")")) {
         openLoopCounter--;
         sc.setEndLoop(true);
-        sc.setEndLoopNb(occurrency(splitActor[i], ')'));
+        sc.setEndLoopNb(occurrence(splitActor[i], ')'));
         splitActor[i] = splitActor[i].replace(")", "");
       } else {
         sc.setEndLoop(false);
@@ -104,443 +148,132 @@ public class ScheduleScape {
     return cs;
   }
 
-  public static int occurrency(String str, char seek) {
-    int nb = 0;
+  /**
+   * Count the number of time a char occur in a string
+   *
+   * @param str
+   *          the character sequence
+   * @param seek
+   *          the character to seek
+   * @return result the occurrence count
+   *
+   */
+  public static int occurrence(String str, char seek) {
+    int result = 0;
     for (int i = 0; i < str.length(); i++) {
       if (str.charAt(i) == seek) {
-        nb++;
+        result++;
       }
     }
-    return nb;
+    return result;
   }
 
   /**
-   * Used to compute the schedule of the cluster with APGAN method
+   * Compute the APGAN schedule and transform it as a string
    *
+   * @return combineName the APGAN schedule translation
    */
-  private String pisdf2str() {
-    final Map<AbstractVertex, Long> rv = PiBRV.compute(graph, BRVMethod.LCM);
-    // Schedule subgraph
-
-    StringBuilder result = new StringBuilder();
-    List<AbstractActor> actorList = graph.getAllExecutableActors();
-
-    if (rv.size() == 1) {
-      result.append(rv.get(actorList.get(0)) + "(" + actorList.get(0).getName() + ")");
-      return result.toString();
-
-    }
-    // Compute BRV
-
-    final Map<AbstractVertex, Long> repetitionVector = rv;
-
-    // compute repetition count (gcd(q(a),q(b)))
-    final Map<AbstractVertex, Map<AbstractVertex, Long>> repetitionCount = new LinkedHashMap<>();
-
-    for (final AbstractActor element : graph.getAllExecutableActors()) {
-
-      for (final DataOutputPort element2 : element.getDataOutputPorts()) {
-        if (!(element2.getFifo().getTarget() instanceof DataOutputInterface) && !element2.getFifo().isHasADelay()
-            && repetitionVector.containsKey(element) && repetitionVector.containsKey(element2.getFifo().getTarget())) {
-          final Long rep = gcd(repetitionVector.get(element), repetitionVector.get(element2.getFifo().getTarget()));
-
-          final Map<AbstractVertex, Long> map = new LinkedHashMap<>();
-          map.put((AbstractVertex) element2.getFifo().getTarget(), rep);
-          if (!repetitionCount.containsKey(element)) {
-            if (!element2.getFifo().isHasADelay()) {
-              repetitionCount.put(element, map);
-            }
-          } else if (!element2.getFifo().isHasADelay()) {
-            repetitionCount.get(element).put((AbstractVertex) element2.getFifo().getTarget(), rep);
-          }
-        }
-      }
+  private String scheduleStr() {
+    // final Map<AbstractVertex, Long> rv = PiBRV.compute(graph, BRVMethod.LCM);
+    if (graph.getExecutableActors().size() == 1) {
+      return brv.get(graph.getExecutableActors().get(0)) + "(" + graph.getExecutableActors().get(0).getName() + ")";
     }
 
-    // find actors in order of succession
+    final int iter = brv.size();
+    String combineName = "";
+    for (int i = 1; i < iter; i++) {
+      final Pair<String, String> pairMax = findMaxPair();
+      combineName = combineName(pairMax);
 
-    int totalsize = graph.getAllExecutableActors().size();// 5
-    final List<AbstractActor> actorListOrdered = new ArrayList<>();
-    int flag = 0;
-    if (!graph.getDataInputInterfaces().isEmpty()) {
-      for (int i = 0; i < graph.getActors().size(); i++) {
-        if (graph.getActors().get(i) instanceof DataInputInterface) {
-          flag = 0;
-          final AbstractActor curentActor = (AbstractActor) graph.getActors().get(i).getDataOutputPorts().get(0)
-              .getFifo().getTarget();
-          if (!actorListOrdered.contains(curentActor)) {
+    }
 
-            for (int iii = 0; iii < curentActor.getDataInputPorts().size(); iii++) {
-              if (actorListOrdered.contains(curentActor.getDataInputPorts().get(iii).getFifo().getSource())
-                  || curentActor.getDataInputPorts().get(iii).getFifo().getSource() instanceof DataInputInterface
-                  || curentActor.getDataInputPorts().get(iii).getFifo().isHasADelay()) {
-                flag++;
-              }
-            }
-            if (flag == curentActor.getDataInputPorts().size()) {
+    return combineName;
+  }
 
-              actorListOrdered.add(curentActor);// fill a
-              totalsize--;// 4
-            }
-          }
-        }
-      }
-      for (final AbstractActor a : actorList) {
-        flag = 0;
-        if (a.getDataInputPorts().isEmpty() && (!actorListOrdered.contains(a))) {
-          for (int i = 0; i < a.getDataInputPorts().size(); i++) {
-            if (actorListOrdered.contains(a.getDataInputPorts().get(i).getFifo().getSource())) {
-              flag++;
-            }
-          }
-          if (flag == a.getDataInputPorts().size()) {
-            actorListOrdered.add(a);
-            totalsize--;
-          }
+  /**
+   * The method iteratively combine the of actor's name and update the repetition count et the repetition vector
+   * coefficient of the combine actor
+   *
+   * @return combineName the combine name
+   */
+  private String combineName(Pair<String, String> pairMax) {
 
-        }
-      }
+    final String maxLeft = pairMax.getFirst();
+    final String maxRight = pairMax.getSecond();
+    final Long rv = gcd(brvStr.get(maxLeft), brvStr.get(maxRight));
+
+    String newName = "";
+    if (brvStr.get(maxLeft) / rv > 1) {
+      newName += brvStr.get(maxLeft) / rv + "(" + maxLeft + ")";
     } else {
-      for (final AbstractActor a : actorList) {
-        if (a.getDataInputPorts().isEmpty() && (!actorListOrdered.contains(a))) {
-          actorListOrdered.add(a);
-          totalsize--;
-
-        }
-      }
+      newName += maxLeft;
     }
-    int curentSize = actorListOrdered.size();// 1
-
-    for (int i = 0; i < curentSize; i++) {
-      for (int ii = 0; ii < actorListOrdered.get(i).getDataOutputPorts().size(); ii++) {
-        flag = 0;
-        final AbstractActor precActor = (AbstractActor) actorListOrdered.get(i).getDataOutputPorts().get(ii).getFifo()
-            .getTarget();
-        if (!actorListOrdered.contains(precActor)) {
-          for (int iii = 0; iii < precActor.getDataInputPorts().size(); iii++) {
-            if (actorListOrdered.contains(precActor.getDataInputPorts().get(iii).getFifo().getSource())
-                || precActor.getDataInputPorts().get(iii).getFifo().getSource() instanceof DataInputInterface
-                || precActor.getDataInputPorts().get(iii).getFifo().isHasADelay()) {
-              flag++;
-            }
-          }
-          if (flag == ((AbstractActor) actorListOrdered.get(i).getDataOutputPorts().get(ii).getFifo().getTarget())
-              .getDataInputPorts().size()) {
-            actorListOrdered
-                .add((AbstractActor) actorListOrdered.get(i).getDataOutputPorts().get(ii).getFifo().getTarget());// fill
-
-            totalsize--;// 3
-          }
-
-        }
-
-      }
+    if (brvStr.get(maxRight) / rv > 1) {
+      newName += "*" + brvStr.get(maxRight) / rv + "(" + maxRight + ")";
+    } else {
+      newName += "*" + maxRight;
     }
-    flag = 0;
-    int precSize = curentSize;
-    curentSize = actorListOrdered.size();// 2
-    while (totalsize > 0) {
-      for (int i = precSize; i < curentSize; i++) {
-        for (int ii = 0; ii < actorListOrdered.get(i).getDataOutputPorts().size(); ii++) {
-          flag = 0;
-          final AbstractActor curentActor = (AbstractActor) actorListOrdered.get(i).getDataOutputPorts().get(ii)
-              .getFifo().getTarget();
-          if (!actorListOrdered.contains(curentActor)) {
-            for (int iii = 0; iii < curentActor.getDataInputPorts().size(); iii++) {
-              final AbstractActor precActor = (AbstractActor) curentActor.getDataInputPorts().get(iii).getFifo()
-                  .getSource();
-              if (actorListOrdered.contains(precActor) || precActor instanceof DataInputInterface
-                  || curentActor.getDataInputPorts().get(iii).getFifo().isHasADelay()) {
-                flag++;
-              }
-            }
-            if (flag == curentActor.getDataInputPorts().size()) {
-              actorListOrdered
-                  .add((AbstractActor) actorListOrdered.get(i).getDataOutputPorts().get(ii).getFifo().getTarget());
+    // update repetition vector with merge actors
+    brvStr.remove(maxLeft);
+    brvStr.remove(maxRight);
+    brvStr.put(newName, rv);
 
-              totalsize--;// 2
-            }
-
-          }
-        }
-      }
-      precSize = curentSize;
-      curentSize = actorListOrdered.size();// 3++
+    // update repetition count with merge actors
+    rcStr.get(maxLeft).remove(maxRight);
+    Map<String, Long> omega = new LinkedHashMap<>();
+    if (!rcStr.get(maxLeft).isEmpty()) {
+      omega = rcStr.get(maxLeft);
     }
-    actorList = actorListOrdered;
-    Long lastIndex = (long) 0;
+    if (rcStr.containsKey(maxRight)) {
+      omega.putAll(rcStr.get(maxRight));
+    }
+    rcStr.remove(maxRight);
+    rcStr.remove(maxLeft);
+    if (!omega.isEmpty()) {
+      rcStr.put(newName, omega);
+    }
 
-    AbstractActor maxLeft = null;
-    AbstractActor maxRight = null;
-    Long max = (long) 0;
-    while (repetitionVector.size() > 1) {
-      boolean removeRight = false;
-
-      // find pair with the biggest repetition count
-
-      if (result.length() == 0) {
-        maxLeft = null;
-        maxRight = null;
-        max = (long) 0;
-        for (int i = 0; i < actorList.size(); i++) {
-          final int rang = actorList.size() - i - 1;
-
-          if (repetitionCount.containsKey(actorList.get(rang))) {
-            for (final AbstractVertex a : repetitionCount.get(actorList.get(rang)).keySet()) {
-              if (repetitionCount.get(actorList.get(rang)).get(a) > max) {
-
-                max = repetitionCount.get(actorList.get(rang)).get(a);
-                maxLeft = actorList.get(rang);
-                maxRight = (AbstractActor) a;
-
-              }
-            }
-          }
-        }
-
+    for (final Entry<String, Map<String, Long>> entry : rcStr.entrySet()) {
+      if (entry.getValue().containsKey(maxRight)) {
+        final Long save2 = entry.getValue().get(maxRight);
+        entry.getValue().remove(maxRight);
+        entry.getValue().put(newName, save2);
       }
-      if (repetitionCount.isEmpty()) {
-        for (int i = 0; i < actorList.size(); i++) {
-          final int rang = actorList.size() - i - 1;
-          if (actorList.get(rang) instanceof Actor || actorList.get(rang) instanceof SpecialActor) {
-            result.append("*" + actorList.get(rang).getName());
-          }
-        }
-        return result.toString();
-      }
-      if (repetitionVector.get(maxLeft) == null) {
-        boolean hasPredecessor = false;
-        for (int i = 0; i < actorList.size(); i++) {
-          final int rang = actorList.size() - i - 1;
-          if (repetitionCount.containsKey(actorList.get(rang))) {
-            if (repetitionCount.get(actorList.get(rang)).containsKey(maxRight) && !hasPredecessor) {
-              max = repetitionCount.get(actorList.get(rang)).get(maxRight);
-              maxLeft = actorList.get(rang);
-              hasPredecessor = true;
-
-            }
-
-          }
-        }
-        if (!hasPredecessor) {
-          for (final AbstractActor element : actorList) {
-
-            if (repetitionCount.containsKey(maxRight)) {
-              if (repetitionCount.get(maxRight).containsKey(element) && !hasPredecessor) {
-                max = repetitionCount.get(maxRight).get(element);
-                maxLeft = maxRight;
-                maxRight = element;
-                hasPredecessor = true;
-              }
-            }
-          }
-        }
-      } else if (repetitionVector.get(maxRight) == null) {
-        boolean hasSuccessor = false;
-        for (int i = 0; i < actorList.size(); i++) {
-          final int rang = actorList.size() - i - 1;
-          if (repetitionCount.containsKey(actorList.get(rang))) { // if maxLeft to right
-            if (repetitionCount.get(actorList.get(rang)).containsKey(maxLeft) && !hasSuccessor) {
-              max = repetitionCount.get(actorList.get(rang)).get(maxLeft);
-              maxRight = maxLeft;
-              maxLeft = actorList.get(rang);
-
-              hasSuccessor = true;
-            }
-
-          }
-        }
-        if (!hasSuccessor) {
-          for (final AbstractActor element : actorList) {
-            if (repetitionCount.containsKey(maxLeft)) { // if maxLeft to left
-              if (repetitionCount.get(maxLeft).containsKey(element) && !hasSuccessor) {
-                max = repetitionCount.get(maxLeft).get(element);
-                maxRight = element;
-                hasSuccessor = true;
-              }
-
-            }
-          }
-        }
-      }
-
-      // compute String schedule
-      if (result.length() == 0) {
-        if (max == 1) {
-          result.append(maxLeft.getName() + "*" + maxRight.getName());
-        } else {
-          result.append(String.valueOf(max) + "(" + maxLeft.getName() + "*" + maxRight.getName() + ")");
-        }
-        lastIndex = max;
-        if (maxRight.getDataInputPorts().size() > maxLeft.getDataOutputPorts().size()) {
-          removeRight = false;
-        } else {
-          removeRight = true;
-        }
-      } else {
-        if (repetitionVector.get(maxRight) == null || repetitionVector.get(maxLeft) == null) {
-          for (final AbstractVertex a : repetitionVector.keySet()) {
-            if (!result.toString().contains(a.getName())) {
-              result.append("*" + a.getName());
-            }
-          }
-          return result.toString();
-        }
-        if (repetitionVector.get(maxRight) == 1 && repetitionVector.get(maxLeft) == 1) {
-          // if rv = 1*
-          if (maxRight != null) {
-            if (!result.toString().contains(maxRight.getName())) {
-              result.append("*" + maxRight.getName());
-              removeRight = true;
-            } else {
-              result.insert(0, maxLeft.getName() + "*");
-            }
-          }
-          lastIndex = (long) 1;
-
-        } else if (repetitionVector.get(maxRight) > 1 || repetitionVector.get(maxLeft) > 1) {
-          // if same loop
-          if (!result.toString().contains(maxRight.getName())) { // ajout de maxRight
-            // add loop
-            if (Objects.equals(repetitionVector.get(maxRight), lastIndex)) {
-              if (repetitionVector.get(maxRight) > 1) {
-                if (result.toString().contains(repetitionVector.get(maxRight) + "(")
-                    && result.indexOf(String.valueOf(repetitionVector.get(maxRight))) == 0) {
-                  final String temp = result.toString().replace(repetitionVector.get(maxRight) + "(", "");
-                  final StringBuilder temp2 = new StringBuilder(temp.replaceFirst("\\)", ""));
-                  result = temp2;
-                  result.insert(0, repetitionVector.get(maxRight) + "(");
-                  result.append("*" + maxRight.getName() + ")");
-                } else if (result.toString().contains(repetitionVector.get(maxRight) + "(")
-                    && result.indexOf(String.valueOf(repetitionVector.get(maxRight))) != 0) {
-                  final char[] temp = result.toString().toCharArray();
-                  String tempi = "";
-                  for (int i = 0; i < temp.length - 2; i++) {
-                    tempi = tempi + temp[i];
-                  }
-                  result = new StringBuilder(tempi + "*" + maxRight.getName() + ")");
-                }
-
-                lastIndex = repetitionVector.get(maxRight);
-
-              } else {
-                result.append("*" + maxRight.getName());
-                lastIndex = (long) 1;
-              }
-            } else {
-              // add into prec loop
-              if (Long.valueOf(result.charAt(result.lastIndexOf("(") - 1)).equals(repetitionVector.get(maxRight))) {
-                result.toString().replace(repetitionVector.get(maxRight) + "(", "");
-
-              }
-              result.append("*" + repetitionVector.get(maxRight) + "(" + maxRight.getName() + ")");
-              lastIndex = repetitionVector.get(maxRight);
-            }
-            removeRight = true;
-          } else if (!result.toString().contains(maxLeft.getName())) { // ajout de maxLeft
-            if (Objects.equals(repetitionVector.get(maxLeft), lastIndex)) {
-              if (repetitionVector.get(maxLeft) > 1) {
-                if (result.toString().contains(repetitionVector.get(maxLeft) + "(")) {
-                  final StringBuilder temp = new StringBuilder(
-                      result.toString().replace(repetitionVector.get(maxLeft) + "(", ""));
-                  result = temp;
-                }
-                result.insert(0, repetitionVector.get(maxLeft) + "(" + maxLeft.getName() + "*");
-                lastIndex = repetitionVector.get(maxLeft);
-              } else {
-                result.insert(0, maxLeft.getName() + "*");
-                lastIndex = (long) 1;
-              }
-            } else {
-              final String[] temp = result.toString().split("\\(");
-              if (temp[0].equals(repetitionVector.get(maxLeft))) {
-
-                final StringBuilder tempo = new StringBuilder(
-                    result.toString().replace(repetitionVector.get(maxLeft) + "(", ""));
-                result = tempo;
-                result.insert(0, repetitionVector.get(maxLeft) + "(" + maxLeft.getName());
-                lastIndex = repetitionVector.get(maxLeft);
-              } else if (repetitionVector.get(maxLeft) > 1) {
-                result.insert(0, ")" + "*");
-                result.insert(0, repetitionVector.get(maxLeft) + "(" + maxLeft.getName());
-                lastIndex = repetitionVector.get(maxLeft);
-              } else {
-                result.insert(0, maxLeft.getName() + "*");
-                lastIndex = (long) 1;
-              }
-
-            }
-
-          }
-
-        } else if (!result.toString().contains(maxRight.getName())) {
-          if (Long.valueOf(result.charAt(result.lastIndexOf("(") - 1)).equals(repetitionVector.get(maxRight))) {
-
-            result.toString().replace(repetitionVector.get(maxRight) + "(", "");
-
-          } else {
-            result.insert(0, ")" + "*");
-          }
-          result.append("*" + repetitionVector.get(maxRight) + "(" + maxRight.getName() + ")");
-          removeRight = true;
-        } else {
-          if (result.toString().contains(repetitionVector.get(maxLeft) + "(")) {
-            final StringBuilder temp = new StringBuilder(
-                result.toString().replace(repetitionVector.get(maxLeft) + "(", ""));
-            result = temp;
-          } else {
-            result.insert(0, ")" + "*");
-          }
-          result.insert(0, repetitionVector.get(maxLeft) + "(" + maxLeft.getName());
-        }
-
-      }
-
-      // remove/replace clustered actor
-      if (!removeRight) {
-        repetitionVector.remove(maxLeft);
-        for (final AbstractActor a : graph.getAllExecutableActors()) {
-          if (repetitionCount.containsKey(a)) {
-            if (repetitionCount.get(a).containsKey(maxLeft)) {
-              for (final AbstractVertex aa : repetitionCount.get(maxLeft).keySet()) {
-                if (!a.equals(aa)) {
-                  repetitionCount.get(a).put(aa, repetitionCount.get(maxLeft).get(aa));
-                }
-              }
-              repetitionCount.get(a).remove(maxLeft);
-            }
-          }
-
-        }
-        repetitionCount.remove(maxLeft);
-        if (repetitionCount.containsKey(maxLeft)) {
-          repetitionCount.remove(maxLeft);
-        }
-
-      } else {
-        repetitionVector.remove(maxRight);
-        for (final AbstractActor a : graph.getAllExecutableActors()) {
-          if (repetitionCount.containsKey(a)) {
-            if (repetitionCount.get(a).containsKey(maxRight)) {
-              if (repetitionCount.containsKey(maxRight)) {
-                if (!repetitionCount.get(maxRight).entrySet().isEmpty()) {
-                  for (final AbstractVertex aa : repetitionCount.get(maxRight).keySet()) {
-                    if (!a.equals(aa)) {
-                      repetitionCount.get(a).put(aa, repetitionCount.get(maxRight).get(aa));
-                    }
-                  }
-                  repetitionCount.get(a).remove(maxRight);
-                }
-              }
-            }
-          }
-
-        }
-        repetitionCount.remove(maxRight);
+      if (entry.getValue().containsKey(maxLeft)) {
+        final Long save2 = entry.getValue().get(maxLeft);
+        entry.getValue().remove(maxLeft);
+        entry.getValue().put(newName, save2);
       }
     }
 
-    return result.toString();
+    return newName;
+  }
+
+  /**
+   * The method iteratively identify the pair of actor with the greatest repetition count in order to be cluster first.
+   *
+   * @return maxPair the identified pair of actor
+   */
+  private Pair<String, String> findMaxPair() {
+    Pair<String, String> maxPair = null;
+    Long maxValue = Long.MIN_VALUE;
+
+    for (final Map.Entry<String, Map<String, Long>> outerEntry : rcStr.entrySet()) {
+      final String outerKey = outerEntry.getKey();
+      final Map<String, Long> innerMap = outerEntry.getValue();
+
+      for (final Map.Entry<String, Long> innerEntry : innerMap.entrySet()) {
+        final String innerKey = innerEntry.getKey();
+        final Long value = innerEntry.getValue();
+
+        if (value > maxValue) {
+          maxValue = value;
+          maxPair = Tuples.create(outerKey, innerKey);
+        }
+      }
+    }
+    return maxPair;
+
   }
 
   /**
