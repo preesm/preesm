@@ -58,7 +58,7 @@ public class IntranodeExporterTask extends AbstractTaskImplementation {
     final Long implem = stat.getFinalTime();
     final Double currentSpeedup = (double) (workLength) / (double) (implem);
 
-    Double maxSpeedup = 0d;
+    Double maxSpeedup;
     final int nbCore = abc.getArchitecture().getOperatorComponentInstances().size();
     final double absoluteBestSpeedup = ((double) workLength) / ((double) spanLength);
 
@@ -83,8 +83,8 @@ public class IntranodeExporterTask extends AbstractTaskImplementation {
     }
     final Double occupy = (double) (sum)
         / (double) (max * abc.getArchitecture().getOperatorComponentInstances().size());
-
-    PreesmLogger.getLogger().log(Level.INFO, "Node occupation ==> " + occupy);
+    final String message = "Node occupation is: " + occupy;
+    PreesmLogger.getLogger().log(Level.INFO, message);
     for (final GanttComponent ci : abc.getGanttData().getComponents()) {
       Long sumCpt = 0L;
       Long sumCom = 0L;
@@ -95,15 +95,14 @@ public class IntranodeExporterTask extends AbstractTaskImplementation {
           sumCom += a.getDuration();
         }
       }
-      PreesmLogger.getLogger().log(Level.INFO, "Computation sum ==> " + sumCpt);
-      PreesmLogger.getLogger().log(Level.INFO, "Communication sum ==> " + sumCom);
+      final String message2 = "Computation sum is:" + sumCpt + " ,and communication sum is:" + sumCom;
+      PreesmLogger.getLogger().log(Level.INFO, message2);
     }
     csvTrend(occupy.toString(), abc, OCCUPATION_NAME);
   }
 
   private void csvTrend(String data, LatencyAbc abc, String fileName) {
     if (!abc.getArchitecture().getVlnv().getName().equals("top")) {
-      // final StringConcatenation content = new StringConcatenation();
       String content = "";
       final IFile iFile = ResourcesPlugin.getWorkspace().getRoot().getFile(new Path(path + fileName));
       final int nodeID = Integer.decode(abc.getArchitecture().getVlnv().getName().replace("Node", ""));
@@ -112,17 +111,13 @@ public class IntranodeExporterTask extends AbstractTaskImplementation {
         if (originalString.endsWith("\n")) {
           originalString = originalString.substring(0, originalString.length() - 1); // Retire le dernier "\n"
         }
-        // content.append(PreesmIOHelper.getInstance().read(path, fileName));
         if (nodeID == 0) {
           content += originalString + "\n" + data;
-          // content.append(PreesmIOHelper.getInstance().read(path, fileName) + "\n" + data);
         } else {
           content += originalString + ";" + data;
-          // content.append(PreesmIOHelper.getInstance().read(path, fileName) + ";" + data);
         }
       } else {
         content += data;
-        // content.append(data);
       }
       PreesmIOHelper.getInstance().print(path, fileName, content);
     }

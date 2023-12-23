@@ -16,8 +16,11 @@ import org.preesm.model.pisdf.brv.PiBRV;
 import org.preesm.model.pisdf.factory.PiMMUserFactory;
 
 /**
- * this class handles cases where dataflow applications present several branches that are clearly blocking the
- * clustering and pipeline heuristics.
+ * Handles cases where dataflow applications present several branches that are clearly blocking the clustering and
+ * pipeline heuristics.
+ *
+ * This class provides methods to add an initial source actor and connect it to multiple sources, as well as remove the
+ * initial source actor and clean up the connections.
  *
  * @author orenaud
  */
@@ -27,10 +30,21 @@ public class MultiBranch {
    */
   private final PiGraph graph;
 
+  /**
+   * Constructs a MultiBranch object with the given PiGraph.
+   *
+   * @param graph
+   *          The PiGraph to be processed.
+   */
   public MultiBranch(PiGraph graph) {
     this.graph = graph;
   }
 
+  /**
+   * Adds an initial source actor and connects it to multiple sources in the graph.
+   *
+   * @return The modified PiGraph after adding the initial source.
+   */
   public PiGraph addInitialSource() {
     // Identify multiple sources
     final List<AbstractActor> sourceList = new ArrayList<>();
@@ -74,6 +88,11 @@ public class MultiBranch {
     return graph;
   }
 
+  /**
+   * Removes the initial source actor and cleans up the connections in the graph.
+   *
+   * @return The modified PiGraph after removing the initial source.
+   */
   public PiGraph removeInitialSource() {
     // Identify dummy source
     for (final AbstractActor dummySrc : graph.getActors()) {

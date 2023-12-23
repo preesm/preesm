@@ -1,0 +1,36 @@
+type;Cluster with shared backbone:1:1:1
+finalLatency;412471679
+memory;786432000
+energy;1
+cost;1
+
+type;Cluster with crossbar:3:3:3
+finalLatency;158931665
+memory;1389363200
+energy;1
+cost;1
+
+type;Cluster with shared backbone:3:3:3
+finalLatency;158931665
+memory;1389363200
+energy;1
+cost;1
+
+type;Torus cluster:3:3:3
+finalLatency;158931665
+memory;1389363200
+energy;1
+cost;1
+
+type;Fat-tree cluster:3:3:3
+finalLatency;158931665
+memory;1389363200
+energy;1
+cost;1
+
+type;Dragonfly cluster:3:3:3
+finalLatency;158931665
+memory;1389363200
+energy;1
+cost;1
+

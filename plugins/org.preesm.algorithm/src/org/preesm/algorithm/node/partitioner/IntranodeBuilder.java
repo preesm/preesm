@@ -5,25 +5,20 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Set;
+import java.util.Objects;
+import java.util.Optional;
 import java.util.logging.Level;
 import org.eclipse.core.resources.IFile;
-import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.ResourcesPlugin;
-import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
-import org.eclipse.emf.common.util.EList;
-import org.eclipse.emf.common.util.EMap;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.xtend2.lib.StringConcatenation;
 import org.preesm.algorithm.codegen.idl.Prototype;
-import org.preesm.algorithm.mapping.model.NodeMapping;
 import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.preesm.commons.files.PreesmIOHelper;
 import org.preesm.commons.files.WorkspaceUtils;
@@ -39,7 +34,6 @@ import org.preesm.model.pisdf.DataInputPort;
 import org.preesm.model.pisdf.DataOutputInterface;
 import org.preesm.model.pisdf.DataOutputPort;
 import org.preesm.model.pisdf.DataPort;
-import org.preesm.model.pisdf.DelayActor;
 import org.preesm.model.pisdf.Dependency;
 import org.preesm.model.pisdf.Direction;
 import org.preesm.model.pisdf.ExpressionHolder;
@@ -49,22 +43,16 @@ import org.preesm.model.pisdf.FunctionArgument;
 import org.preesm.model.pisdf.FunctionPrototype;
 import org.preesm.model.pisdf.JoinActor;
 import org.preesm.model.pisdf.Parameter;
-import org.preesm.model.pisdf.PersistenceLevel;
 import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.pisdf.Refinement;
-import org.preesm.model.pisdf.SpecialActor;
 import org.preesm.model.pisdf.brv.BRVMethod;
 import org.preesm.model.pisdf.brv.PiBRV;
 import org.preesm.model.pisdf.factory.PiMMUserFactory;
 import org.preesm.model.pisdf.serialize.PiWriter;
 import org.preesm.model.pisdf.util.PiSDFSubgraphBuilder;
 import org.preesm.model.scenario.Scenario;
-import org.preesm.model.scenario.generator.ScenariosGenerator;
-import org.preesm.model.scenario.util.ScenarioUserFactory;
 import org.preesm.model.slam.Component;
-import org.preesm.model.slam.ComponentInstance;
 import org.preesm.model.slam.Design;
-import org.preesm.model.slam.TimingType;
 import org.preesm.ui.utils.FileUtils;
 
 /**
@@ -77,42 +65,38 @@ public class IntranodeBuilder {
   /**
    * Workflow scenario.
    */
-  private final Scenario          scenario;
-  private final List<NodeMapping> hierarchicalArchitecture;
+  private final Scenario scenario;
 
   private final Design                                 archi;
   private final PiGraph                                graph;
-  private PiGraph                                      topGraph     = null;
+  private PiGraph                                      topGraph       = null;
   private final Map<AbstractVertex, Long>              brv;
-  private final Map<Integer, Long>                     timeEq;
+  private final Map<Integer, Long>                     equivalentTimings;
   private final List<Design>                           archiList;
   private final Map<Long, List<AbstractActor>>         topoOrderASAP;
-  private final Map<Integer, Map<AbstractActor, Long>> subs         = new HashMap<>();
-  Map<Integer, Map<AbstractActor, Long>>               subsCopy     = new HashMap<>();
-  List<PiGraph>                                        sublist      = new ArrayList<>();
-  private String                                       codegenPath  = "";
-  private String                                       graphPath    = "";
-  static String                                        fileError    = "Error occurred during file generation: ";
-  private String                                       scenariiPath = "";
+  private final Map<Integer, Map<AbstractActor, Long>> subs           = new HashMap<>();
+  Map<Integer, Map<AbstractActor, Long>>               subsCopy       = new HashMap<>();
+  List<PiGraph>                                        sublist        = new ArrayList<>();
+  private String                                       codegenPath    = "";
+  private String                                       graphPath      = "";
+  static String                                        fileError      = "Error occurred during file generation: ";
+  private String                                       scenariiPath   = "";
+  private static final String                          INTERFACE_PATH = "interface/sub";
 
   public IntranodeBuilder(Scenario scenario, Map<AbstractVertex, Long> brv, Map<Integer, Long> timeEq,
-      List<Design> archiList, Map<Long, List<AbstractActor>> topoOrderASAP,
-      List<NodeMapping> hierarchicalArchitecture) {
+      List<Design> archiList, Map<Long, List<AbstractActor>> topoOrderASAP) {
+
     this.scenario = scenario;
     this.graph = scenario.getAlgorithm();
     this.archi = scenario.getDesign();
     this.brv = brv;
-    this.timeEq = timeEq;
+    this.equivalentTimings = timeEq;
     this.archiList = archiList;
     this.topoOrderASAP = topoOrderASAP;
-    this.hierarchicalArchitecture = hierarchicalArchitecture;
   }
 
   public List<PiGraph> execute() {
-    final String[] uriString = graph.getUrl().split("/");
-    graphPath = "/" + uriString[1] + "/" + uriString[2] + "/generated/";
-    scenariiPath = "/" + uriString[1] + "/Scenarios/generated/";
-    codegenPath = uriString[1] + "/Code/generated/";
+    initPath();
 
     computeSubs();
 
@@ -120,81 +104,18 @@ public class IntranodeBuilder {
 
     constructSubs();
 
-    // singleSourceGraphTransfo();
-
     exportSubs();
     sublist.add(topGraph);
     return sublist;
 
   }
 
-  /**
-   * Transform multi source graph into single source graph
-   *
-   */
-  private void singleSourceGraphTransfo() {
+  private void initPath() {
+    final String[] uriString = graph.getUrl().split("/");
+    graphPath = "/" + uriString[1] + "/" + uriString[2] + "/generated/";
+    scenariiPath = "/" + uriString[1] + "/Scenarios/generated/";
+    codegenPath = uriString[1] + "/Code/generated/";
 
-    int indexSub = 0;
-    for (final PiGraph subgraph : sublist) {
-      final List<AbstractActor> sourceList = new ArrayList<>();
-      // seek sources
-      for (final AbstractActor source : subgraph.getActors()) {
-        if (!(source instanceof DelayActor) && (source.getDataInputPorts().isEmpty()
-            || source.getDataInputPorts().stream().allMatch(x -> x.getFifo().isHasADelay()))) {
-          sourceList.add(source);
-        }
-      }
-      final Map<AbstractVertex, Long> subBrv = PiBRV.compute(subgraph, BRVMethod.LCM);
-      if (sourceList.size() > 1) {
-        // generate dummy single source
-        final Actor src = PiMMUserFactory.instance.createActor();
-        src.setName("single_source");
-        final Refinement refinement = PiMMUserFactory.instance.createCHeaderRefinement();
-        src.setRefinement(refinement);
-        final CHeaderRefinement cHeaderRefinement = (CHeaderRefinement) ((src).getRefinement());
-        final Prototype oEmptyPrototype = new Prototype();
-        oEmptyPrototype.setIsStandardC(true);
-
-        cHeaderRefinement.setFilePath(codegenPath + "interface/sub" + indexSub + "/" + src.getName() + ".h");
-        final FunctionPrototype functionPrototype = PiMMUserFactory.instance.createFunctionPrototype();
-        cHeaderRefinement.setLoopPrototype(functionPrototype);
-        functionPrototype.setName(src.getName());
-
-        src.setContainingGraph(subgraph);
-        int indexOutput = 0;
-        for (final AbstractActor actor : sourceList) {
-          // add output on single source actor
-          final DataOutputPort dout = PiMMUserFactory.instance.createDataOutputPort();
-          src.getDataOutputPorts().add(dout);
-
-          dout.setName("out_" + indexOutput);
-          dout.setExpression(1L * subBrv.get(actor));
-          // add input
-          final DataInputPort din = PiMMUserFactory.instance.createDataInputPort();
-          actor.getDataInputPorts().add(din);
-          din.setName("in");
-          din.setExpression(1L);
-
-          // connect
-          final Fifo fifo = PiMMUserFactory.instance.createFifo(dout, din, "char");
-          fifo.setContainingGraph(subgraph);
-          final FunctionArgument functionArgument = PiMMUserFactory.instance.createFunctionArgument();
-          functionArgument.setName(dout.getName());
-          functionArgument.setType("char");
-          functionArgument.setDirection(Direction.OUT);
-          functionPrototype.getArguments().add(functionArgument);
-
-          indexOutput++;
-        }
-
-        generateFileH(src, indexSub);
-        // set 1 because it's an interface
-        for (final Component opId : archi.getProcessingElements()) {
-          scenario.getTimings().setExecutionTime(src, opId, 1L);
-        }
-      }
-      indexSub++;
-    }
   }
 
   /**
@@ -204,308 +125,244 @@ public class IntranodeBuilder {
   private void exportSubs() {
     for (final PiGraph subgraph : sublist) {
       graphExporter(subgraph);
-      scenarioExporter(subgraph);
-    }
-
-  }
-
-  /**
-   * Build and export scenario for the newly created subgraphs
-   *
-   * @param subgraph
-   *          Graph to consider.
-   *
-   */
-  private void scenarioExporter(PiGraph subgraph) {
-    // generate subscenario only if subgraph contain actor
-
-    if (!subgraph.getActors().isEmpty()) {
-      final Scenario subScenario = ScenarioUserFactory.createScenario();
       final String indexStr = subgraph.getName().replace("sub", "");
       final Long indexL = Long.decode(indexStr);
       final Design subArchi = archiList.get(indexL.intValue());
-      subScenario.setDesign(subArchi);
-
-      subScenario.setAlgorithm(subgraph);
-      // Get com nodes and cores names
-      final List<ComponentInstance> coreIds = new ArrayList<>(subArchi.getOperatorComponentInstances());
-      final List<ComponentInstance> comNodeIds = subArchi.getCommunicationComponentInstances();
-
-      // Set default values for constraints, timings and simulation parameters
-
-      // Add a main core (first of the list)
-      if (!coreIds.isEmpty()) {
-        subScenario.getSimulationInfo().setMainOperator(coreIds.get(0));
-      }
-      if (!comNodeIds.isEmpty()) {
-        subScenario.getSimulationInfo().setMainComNode(comNodeIds.get(0));
-      }
-
-      for (final Component opId : subArchi.getProcessingElements()) {
-        for (final AbstractActor aa : subgraph.getAllActors()) {
-          if (aa instanceof Actor) {
-            subScenario.getTimings().setExecutionTime(aa, opId, this.scenario.getTimings().getExecutionTimeOrDefault(aa,
-                archi.getProcessingElement(opId.getVlnv().getName())));
-          }
-        }
-
-        // subScenario.getTimings().getMemTimings().put(opId, scenario.getTimings().getMemTimings().get(0).getValue());
-        // final MemoryCopySpeedValue createMemoryCopySpeedValue = ScenarioUserFactory.createMemoryCopySpeedValue();
-        // createMemoryCopySpeedValue.setSetupTime(1L);
-        // createMemoryCopySpeedValue.setTimePerUnit(1. / 10);
-        // subScenario.getTimings().getMemTimings().put(opId, createMemoryCopySpeedValue);
-      }
-
-      // store timing in case
-      csvGenerator(subScenario, subgraph, subArchi);
-      for (final ComponentInstance coreId : coreIds) {
-        for (final AbstractActor aa : subgraph.getAllActors()) {
-          if (aa instanceof Actor) {
-            subScenario.getConstraints().addConstraint(coreId, aa);
-          }
-        }
-        subScenario.getConstraints().addConstraint(coreId, subgraph);
-        subScenario.getSimulationInfo().addSpecialVertexOperator(coreId);
-      }
-
-      // Add a average transfer size
-      subScenario.getSimulationInfo().setAverageDataSize(scenario.getSimulationInfo().getAverageDataSize());
-      // Set the default data type sizes
-      // for (final Fifo f : subScenario.getAlgorithm().getAllFifos()) {
-      // final String typeName = f.getType();
-      // subScenario.getSimulationInfo().getDataTypes().put(typeName,
-      // DefaultTypeSizes.getInstance().getTypeSize(typeName));
-      // }
-      for (final Entry<String, Long> element : scenario.getSimulationInfo().getDataTypes()) {
-        final String key = element.getKey();
-        final Long value = element.getValue();
-        subScenario.getSimulationInfo().getDataTypes().put(key, value);
-      }
-      // add constraint
-      subScenario.getConstraints().setGroupConstraintsFileURL("");
-      for (final Entry<ComponentInstance, EList<AbstractActor>> gp : subScenario.getConstraints()
-          .getGroupConstraints()) {
-        for (final AbstractActor actor : subgraph.getAllActors()) {
-          gp.getValue().add(actor);
-        }
-      }
-      final String[] uriString = graph.getUrl().split("/");
-      subScenario.setCodegenDirectory("/" + uriString[1] + "/Code/generated/" + subgraph.getName());
-      subScenario.setSizesAreInBit(true);
-      final IPath fromPortableString = Path.fromPortableString(scenariiPath);
-      final IFile file = ResourcesPlugin.getWorkspace().getRoot().getFile(fromPortableString);
-      final IProject iProject = file.getProject();
-      subScenario.setScenarioURL(scenariiPath + subScenario.getScenarioName() + ".scenario");
-      final ScenariosGenerator s = new ScenariosGenerator(iProject);
-      final IFolder scenarioDir = iProject.getFolder("Scenarios/generated");
-      final Set<Scenario> scenarios = new HashSet<>();
-      scenarios.add(subScenario);
-      try {
-        s.saveScenarios(scenarios, scenarioDir);
-      } catch (final CoreException e) {
-        final String errorMessage = fileError + e.getMessage();
-        PreesmLogger.getLogger().log(Level.INFO, errorMessage);
-      }
-      PreesmLogger.getLogger().log(Level.INFO, "sub scenario print in : " + scenariiPath);
+      new ScenarioBuilder(subgraph, subArchi, scenariiPath, codegenPath + subgraph.getName(), this.scenario)
+          .subExecute();
     }
-  }
-
-  /**
-   * export CSV file containing subgraph actor timing
-   *
-   * @param scenar
-   *          scenario to consider.
-   * @param pigraph
-   *          Graph to consider.
-   * @param architecture
-   *          architecture to consider.
-   *
-   */
-  private void csvGenerator(Scenario scenar, PiGraph pigraph, Design architecture) {
-    // Create the list of core_types
-    final List<Component> coreTypes = new ArrayList<>(architecture.getProcessingElements()); // List of core_types
-
-    // Create the CSV header
-    final StringConcatenation content = new StringConcatenation();
-    content.append("Actors;");
-    for (final Component coreType : coreTypes) {
-      coreType.getVlnv().getName();
-      content.append(coreType.getVlnv().getName() + ";");
-    }
-
-    content.append("\n");
-
-    // Create data rows
-    for (final AbstractActor actor : pigraph.getActors()) {
-      if (actor instanceof Actor && !(actor instanceof SpecialActor)) {
-        content.append(actor.getVertexPath().replace(graph.getName() + "/", "") + ";");
-
-        for (final Component coreType : coreTypes) {
-          final String executionTime = scenar.getTimings().getExecutionTimeOrDefault(actor, coreType);
-          content.append(executionTime + ";");
-        }
-
-        content.append("\n");
-      }
-    }
-
-    scenar.getTimings().setExcelFileURL(scenariiPath + pigraph.getName() + ".csv");
-    PreesmIOHelper.getInstance().print(scenariiPath, pigraph.getName() + ".csv", content);
-    PreesmLogger.getLogger().log(Level.INFO, "sub csv print in : " + scenariiPath);
 
   }
 
   /**
-   * Localize splitting of split-able actor in order to obtain balanced subgraphs formation
-   *
-   *
+   * Computes splits in the graph by generating subgraphs for specific actors based on their instances. 1. Splits tasks
+   * if required by generating subgraphs and updating actor instances. 2. Generates subgraphs for each split and stores
+   * them in the 'sublist'. 3. Stores the top graph to preserve inter-subgraph connections.
    */
   private void computeSplits() {
-    // 1. split tasks if it's required
-    for (final Entry<Integer, Map<AbstractActor, Long>> a : subs.entrySet()) {
-      final Map<AbstractActor, Long> newValue = new HashMap<>(a.getValue());
-      subsCopy.put(a.getKey(), newValue);
+    // Step 1: Split tasks if required
+    for (final Entry<Integer, Map<AbstractActor, Long>> entry : subs.entrySet()) {
+      final Map<AbstractActor, Long> newValue = new HashMap<>(entry.getValue());
+      subsCopy.put(entry.getKey(), newValue);
     }
+
     for (Integer subRank = 0; subRank < subs.size(); subRank++) {
-      for (final Entry<AbstractActor, Long> a : subs.get(subRank).entrySet()) {
-        if (a.getValue() < brv.get(a.getKey())) {
-          brv.replace(a.getKey(), split(a.getKey(), a.getValue(), brv.get(a.getKey()), subRank));
+      for (final Entry<AbstractActor, Long> entry : subs.get(subRank).entrySet()) {
+        // If instances are less than required, split the actor and update instances
+        if (entry.getValue() < brv.get(entry.getKey())) {
+          brv.replace(entry.getKey(), split(entry.getKey(), entry.getValue(), brv.get(entry.getKey()), subRank));
         }
       }
     }
+
+    // Step 2: Generate subgraphs
     for (Integer subRank = 0; subRank < subs.size(); subRank++) {
-      // 2. generate subs
       final List<AbstractActor> list = new ArrayList<>();
-      for (final AbstractActor a : subsCopy.get(subRank).keySet()) {
-        list.add(a);
+      for (final AbstractActor actor : subsCopy.get(subRank).keySet()) {
+        list.add(actor);
       }
       final PiGraph subgraph = new PiSDFSubgraphBuilder(graph, list, "sub" + subRank).build();
-
       sublist.add(subgraph);
-
     }
-    // store the topgraph in order to preserve inter-subgraphs connections
+
+    // Step 3: Store the top graph to preserve inter-subgraph connections
     this.topGraph = PiMMUserFactory.instance.copyPiGraphWithHistory(graph);
   }
 
   /**
-   * Isolate subgraphs in order to obtain consistent graphs able to be code generated
+   * Constructs interfaces for the generated subgraphs.
    *
+   * Step 1: Free subs (Interface --> sink; container) - Iterate over sublist and create source and sink actors for each
+   * DataInputInterface and DataOutputInterface. - Generate CHeaderRefinement and associated files for each actor. - Set
+   * execution time for the interface actors.
    *
+   * Step 2: Merge CFG - Rename dependencies and ports for inter-subgraph connections.
+   *
+   * Step 3: Remove Duplicate Parameters - Eliminate duplicate parameters and merge their dependencies.
+   *
+   * Step 4: Convert ConfigInputPorts to Parameters - Replace ConfigInputPorts that are not Parameters with equivalent
+   * Parameter instances.
+   *
+   * Step 5: Remove Empty FIFOs and Interface Actors - Remove FIFOs with null source or target ports. - Remove
+   * DataInputInterface and DataOutputInterface actors.
+   *
+   * Step 6: Compute BRV for Subgraph - Compute the Buffer Read Volume (BRV) for the subgraph using the LCM method. -
+   * Set the containing graph of the subgraph to null.
    */
   private void constructSubs() {
-
-    // 3. free subs (Interface --> sink; container)
+    // Step 1: Free subs (Interface --> sink; container)
     for (final PiGraph subgraph : sublist) {
-      final int index = Integer.valueOf(subgraph.getName().replace("sub", ""));
+      final int index = Integer.parseInt(subgraph.getName().replace("sub", ""));
+
+      // Create source actors for DataInputInterfaces
       for (final DataInputInterface in : subgraph.getDataInputInterfaces()) {
-        final Actor src = PiMMUserFactory.instance.createActor();
-        src.setName("src_" + in.getName());
-        final Refinement refinement = PiMMUserFactory.instance.createCHeaderRefinement();
-        src.setRefinement(refinement);
-        final CHeaderRefinement cHeaderRefinement = (CHeaderRefinement) ((src).getRefinement());
-        final Prototype oEmptyPrototype = new Prototype();
-        oEmptyPrototype.setIsStandardC(true);
-
-        cHeaderRefinement.setFilePath(codegenPath + "interface/sub" + index + "/" + src.getName() + ".h");
-        final FunctionPrototype functionPrototype = PiMMUserFactory.instance.createFunctionPrototype();
-        cHeaderRefinement.setLoopPrototype(functionPrototype);
-        functionPrototype.setName(src.getName());
-
-        src.setContainingGraph(in.getDirectSuccessors().get(0).getContainingGraph());
-        final DataOutputPort dout = PiMMUserFactory.instance.createDataOutputPort();
-        src.getDataOutputPorts().add(dout);
-        dout.setName("out");
-        dout.setExpression(in.getDataPort().getExpression());
-        in.getDataOutputPorts().get(0).getFifo().setSourcePort(dout);
-        final FunctionArgument functionArgument = PiMMUserFactory.instance.createFunctionArgument();
-        functionArgument.setName(src.getAllPorts().get(0).getName());
-        functionArgument.setType(dout.getFifo().getType());
-        functionArgument.setDirection(Direction.OUT);
-        functionPrototype.getArguments().add(functionArgument);
-        generateFileH(src, index);
-        // set 1 because it's an interface
-        for (final Component opId : archi.getProcessingElements()) {
-          scenario.getTimings().setExecutionTime(src, opId, 1L);
-        }
-
+        final Actor src = createSourceActor(in, index);
+        setExecutionTimeForInterface(src);
       }
+
+      // Create sink actors for DataOutputInterfaces
       for (final DataOutputInterface out : subgraph.getDataOutputInterfaces()) {
-        final Actor snk = PiMMUserFactory.instance.createActor();
-        snk.setName("snk_" + out.getName());
-        final Refinement refinement = PiMMUserFactory.instance.createCHeaderRefinement();
-        snk.setRefinement(refinement);
-        final CHeaderRefinement cHeaderRefinement = (CHeaderRefinement) (snk.getRefinement());
-        final Prototype oEmptyPrototype = new Prototype();
-        oEmptyPrototype.setIsStandardC(true);
-
-        cHeaderRefinement.setFilePath(codegenPath + "interface/sub" + index + "/" + snk.getName() + ".h");
-        final FunctionPrototype functionPrototype = PiMMUserFactory.instance.createFunctionPrototype();
-        cHeaderRefinement.setLoopPrototype(functionPrototype);
-        functionPrototype.setName(snk.getName());
-
-        snk.setContainingGraph(out.getContainingGraph());
-        final DataInputPort din = PiMMUserFactory.instance.createDataInputPort();
-        snk.getDataInputPorts().add(din);
-        din.setName("in");
-        din.setExpression(out.getDataPort().getExpression());
-        out.getDataInputPorts().get(0).getFifo().setTargetPort(din);
-        final FunctionArgument functionArgument = PiMMUserFactory.instance.createFunctionArgument();
-        functionArgument.setName(snk.getAllPorts().get(0).getName());
-        functionArgument.setType(din.getFifo().getType());
-        functionArgument.setDirection(Direction.IN);
-        functionPrototype.getArguments().add(functionArgument);
-        generateFileH(snk, index);
-        // set 1 because it's an interface
-        for (final Component opId : archi.getProcessingElements()) {
-          scenario.getTimings().setExecutionTime(snk, opId, 1L);
-        }
-      }
-      // merge cfg
-      for (final Dependency dep : subgraph.getDependencies()) {
-        ((AbstractVertex) dep.getSetter()).setName(dep.getGetter().getName());
-        ((ConfigInputInterface) dep.getSetter()).getGraphPort().setName(dep.getGetter().getName());
-
-      }
-      int paramSize = subgraph.getParameters().size();
-      for (int i = 0; i < paramSize; i++) {
-        for (int j = i + 1; j < paramSize; j++) {
-          if (subgraph.getParameters().get(i).getName().equals(subgraph.getParameters().get(j).getName())) {
-            subgraph.getParameters().get(i).getOutgoingDependencies()
-                .add(subgraph.getParameters().get(j).getOutgoingDependencies().get(0));
-            subgraph.removeParameter(subgraph.getParameters().get(j));
-            paramSize--;
-            j--;
-          }
-        }
-      }
-      for (int i = 0; i < subgraph.getConfigInputPorts().size(); i++) {
-        if (!(subgraph.getConfigInputPorts().get(i) instanceof Parameter)) {
-          final Parameter p = PiMMUserFactory.instance.createParameter(subgraph.getParameters().get(i).getName(),
-              subgraph.getParameters().get(i).getExpression().evaluate());
-          final Long exp = ((ExpressionHolder) subgraph.getConfigInputPorts().get(i).getIncomingDependency()
-              .getSetter()).getExpression().evaluate();
-          for (int j = 0; j < subgraph.getParameters().get(i).getOutgoingDependencies().size(); j++) {
-            p.getOutgoingDependencies().add(subgraph.getParameters().get(i).getOutgoingDependencies().get(j));
-            j--;
-          }
-          p.setExpression(exp);
-          subgraph.addParameter(p);
-          subgraph.removeParameter(subgraph.getParameters().get(i));
-          i--;
-        }
+        final Actor snk = createSinkActor(out, index);
+        setExecutionTimeForInterface(snk);
       }
 
-      // remove empty FIFO
-      subgraph.getFifos().stream().filter(x -> x.getSourcePort() == null).forEach(x -> subgraph.removeFifo(x));
-      subgraph.getFifos().stream().filter(x -> x.getTargetPort() == null).forEach(subgraph::removeFifo);
-      subgraph.getAllActors().stream().filter(x -> x instanceof DataInputInterface || x instanceof DataOutputInterface)
-          .forEach(x -> subgraph.removeActor(x));
-      // subgraph.remove
+      // Step 2: Merge CFG (rename dependencies and ports for inter-subgraph connections)
+      mergeCFG(subgraph);
+
+      // Step 3: Remove Duplicate Parameters
+      removeDuplicateParameters(subgraph);
+
+      // Step 4: Convert ConfigInputPorts to Parameters
+      convertConfigInputPortsToParameters(subgraph);
+
+      // Step 5: Remove Empty FIFOs and Interface Actors
+      removeEmptyFIFOsAndInterfaceActors(subgraph);
+
+      // Step 6: Compute BRV for Subgraph
       PiBRV.compute(subgraph, BRVMethod.LCM);
       subgraph.setContainingGraph(null);
-
     }
+  }
+
+  // Helper method to create a source actor for a DataInputInterface
+  private Actor createSourceActor(DataInputInterface in, int index) {
+    final Actor src = PiMMUserFactory.instance.createActor();
+    src.setName("src_" + in.getName());
+    final Refinement refinement = PiMMUserFactory.instance.createCHeaderRefinement();
+    src.setRefinement(refinement);
+    final CHeaderRefinement cHeaderRefinement = (CHeaderRefinement) (src).getRefinement();
+    final Prototype oEmptyPrototype = new Prototype();
+    oEmptyPrototype.setIsStandardC(true);
+
+    cHeaderRefinement.setFilePath(codegenPath + INTERFACE_PATH + index + "/" + src.getName() + ".h");
+    final FunctionPrototype functionPrototype = PiMMUserFactory.instance.createFunctionPrototype();
+    cHeaderRefinement.setLoopPrototype(functionPrototype);
+    functionPrototype.setName(src.getName());
+
+    src.setContainingGraph(in.getDirectSuccessors().get(0).getContainingGraph());
+    final DataOutputPort dout = PiMMUserFactory.instance.createDataOutputPort();
+    src.getDataOutputPorts().add(dout);
+    dout.setName("out");
+    dout.setExpression(in.getDataPort().getExpression());
+    in.getDataOutputPorts().get(0).getFifo().setSourcePort(dout);
+    final FunctionArgument functionArgument = PiMMUserFactory.instance.createFunctionArgument();
+    functionArgument.setName(src.getAllPorts().get(0).getName());
+    functionArgument.setType(dout.getFifo().getType());
+    functionArgument.setDirection(Direction.OUT);
+    functionPrototype.getArguments().add(functionArgument);
+    generateFileH(src, index);
+
+    // Set 1 because it's an interface
+    for (final Component opId : archi.getProcessingElements()) {
+      scenario.getTimings().setExecutionTime(src, opId, 1L);
+    }
+
+    return src;
+  }
+
+  // Helper method to create a sink actor for a DataOutputInterface
+  private Actor createSinkActor(DataOutputInterface out, int index) {
+    final Actor snk = PiMMUserFactory.instance.createActor();
+    snk.setName("snk_" + out.getName());
+    final Refinement refinement = PiMMUserFactory.instance.createCHeaderRefinement();
+    snk.setRefinement(refinement);
+    final CHeaderRefinement cHeaderRefinement = (CHeaderRefinement) (snk.getRefinement());
+    final Prototype oEmptyPrototype = new Prototype();
+    oEmptyPrototype.setIsStandardC(true);
+
+    cHeaderRefinement.setFilePath(codegenPath + INTERFACE_PATH + index + "/" + snk.getName() + ".h");
+    final FunctionPrototype functionPrototype = PiMMUserFactory.instance.createFunctionPrototype();
+    cHeaderRefinement.setLoopPrototype(functionPrototype);
+    functionPrototype.setName(snk.getName());
+
+    snk.setContainingGraph(out.getContainingGraph());
+    final DataInputPort din = PiMMUserFactory.instance.createDataInputPort();
+    snk.getDataInputPorts().add(din);
+    din.setName("in");
+    din.setExpression(out.getDataPort().getExpression());
+    out.getDataInputPorts().get(0).getFifo().setTargetPort(din);
+    final FunctionArgument functionArgument = PiMMUserFactory.instance.createFunctionArgument();
+    functionArgument.setName(snk.getAllPorts().get(0).getName());
+    functionArgument.setType(din.getFifo().getType());
+    functionArgument.setDirection(Direction.IN);
+    functionPrototype.getArguments().add(functionArgument);
+    generateFileH(snk, index);
+
+    // Set 1 because it's an interface
+    for (final Component opId : archi.getProcessingElements()) {
+      scenario.getTimings().setExecutionTime(snk, opId, 1L);
+    }
+
+    return snk;
+  }
+
+  // Helper method to set execution time for interface actors
+  private void setExecutionTimeForInterface(Actor actor) {
+    // Set execution time for interface actors (set to 1 as they are interfaces)
+    for (final Component opId : archi.getProcessingElements()) {
+      scenario.getTimings().setExecutionTime(actor, opId, 1L);
+    }
+  }
+
+  // Helper method to merge CFG (rename dependencies and ports for inter-subgraph connections)
+  private void mergeCFG(PiGraph subgraph) {
+    // Iterate through dependencies and rename setter names to getter names
+    for (final Dependency dep : subgraph.getDependencies()) {
+      ((AbstractVertex) dep.getSetter()).setName(dep.getGetter().getName());
+      ((ConfigInputInterface) dep.getSetter()).getGraphPort().setName(dep.getGetter().getName());
+    }
+  }
+
+  // Helper method to remove duplicate parameters
+  private void removeDuplicateParameters(PiGraph subgraph) {
+    // Implementation to eliminate duplicate parameters and merge their dependencies
+    int paramSize = subgraph.getParameters().size();
+    for (int i = 0; i < paramSize; i++) {
+      for (int j = i + 1; j < paramSize; j++) {
+        if (subgraph.getParameters().get(i).getName().equals(subgraph.getParameters().get(j).getName())) {
+          subgraph.getParameters().get(i).getOutgoingDependencies()
+              .add(subgraph.getParameters().get(j).getOutgoingDependencies().get(0));
+          subgraph.removeParameter(subgraph.getParameters().get(j));
+          paramSize--;
+          j--;
+        }
+      }
+    }
+  }
+
+  // Helper method to convert ConfigInputPorts to Parameters
+  private void convertConfigInputPortsToParameters(PiGraph subgraph) {
+    // Implementation to replace ConfigInputPorts that are not Parameters with equivalent Parameter instances
+    for (int i = 0; i < subgraph.getConfigInputPorts().size(); i++) {
+      if (!(subgraph.getConfigInputPorts().get(i) instanceof Parameter)) {
+        // Convert ConfigInputPort to Parameter and set necessary properties
+        final Parameter parameter = PiMMUserFactory.instance.createParameter(subgraph.getParameters().get(i).getName(),
+            subgraph.getParameters().get(i).getExpression().evaluate());
+
+        // Set the expression and add outgoing dependencies
+        final Long exp = ((ExpressionHolder) subgraph.getConfigInputPorts().get(i).getIncomingDependency().getSetter())
+            .getExpression().evaluate();
+        for (int j = 0; j < subgraph.getParameters().get(i).getOutgoingDependencies().size(); j++) {
+          parameter.getOutgoingDependencies().add(subgraph.getParameters().get(i).getOutgoingDependencies().get(j));
+          j--;
+        }
+        parameter.setExpression(exp);
+
+        // Remove the original ConfigInputPort and add the new Parameter
+        subgraph.addParameter(parameter);
+        subgraph.removeParameter(subgraph.getParameters().get(i));
+        i--;
+      }
+    }
+  }
+
+  // Helper method to remove empty FIFOs and interface actors
+  private void removeEmptyFIFOsAndInterfaceActors(PiGraph subgraph) {
+    // Implementation to remove FIFOs with null source or target ports
+    subgraph.getFifos().stream().filter(x -> x.getSourcePort() == null).forEach(subgraph::removeFifo);
+    subgraph.getFifos().stream().filter(x -> x.getTargetPort() == null).forEach(subgraph::removeFifo);
+    subgraph.getAllActors().stream().filter(x -> x instanceof DataInputInterface || x instanceof DataOutputInterface)
+        .forEach(subgraph::removeActor);
 
   }
 
@@ -535,8 +392,8 @@ public class IntranodeBuilder {
     } catch (final IOException e) {
       throw new PreesmRuntimeException("Could not open outputstream file " + uri.toPlatformString(false));
     }
-
-    PreesmLogger.getLogger().log(Level.INFO, "sub print in : " + graphPath);
+    final String message = "sub print in : " + graphPath;
+    PreesmLogger.getLogger().log(Level.INFO, message);
     WorkspaceUtils.updateWorkspace();
   }
 
@@ -554,8 +411,6 @@ public class IntranodeBuilder {
     // if data pattern
     // copy instance
     final AbstractActor copy = PiMMUserFactory.instance.copy(key);
-    // copy.setName(key.getName()+"n2");
-    // brv.put(copy, rv2);
     copy.setContainingGraph(key.getContainingGraph());
     int index = 0;
     for (final DataInputPort in : key.getDataInputPorts()) {
@@ -653,16 +508,8 @@ public class IntranodeBuilder {
         copy.getDataOutputPorts().stream().filter(x -> x.getName().equals(out.getName()))
             .forEach(x -> x.setOutgoingFifo(finn));
         brv.put(jn, 1L);
+        updateSubsCopy(subRank, key, jn, rv1, rv2, copy);
 
-        if (subsCopy.get(subRank + 1) == null) {
-          subsCopy.get(subRank).put(jn, 1L);
-          subsCopy.get(subRank).remove(key);
-          subsCopy.get(subRank).put(copy, rv2 - rv1);
-        } else {
-          subsCopy.get(subRank + 1).put(jn, 1L);
-          subsCopy.get(subRank + 1).remove(key);
-          subsCopy.get(subRank + 1).put(copy, rv2 - rv1);
-        }
         index++;
       } else {
 
@@ -682,103 +529,141 @@ public class IntranodeBuilder {
 
     }
 
-    // set 1 because it's an interface
-    for (final Component opId : archi.getProcessingElements()) {
-      scenario.getTimings().setExecutionTime(copy, opId, scenario.getTimings().getExecutionTimeOrDefault(key, opId));
-    }
-    // remove delay
-    ((PiGraph) key.getContainingGraph()).getDelays().stream().filter(x -> x.getContainingFifo().getSourcePort() == null)
-        .forEach(x -> ((PiGraph) key.getContainingGraph()).removeDelay(x));
-    // remove empty fifo
-    ((PiGraph) key.getContainingGraph()).getFifos().stream().filter(x -> x.getSourcePort() == null)
-        .forEach(x -> ((PiGraph) key.getContainingGraph()).removeFifo(x));
-    ((PiGraph) key.getContainingGraph()).getFifos().stream().filter(x -> x.getTargetPort() == null)
-        .forEach(x -> ((PiGraph) key.getContainingGraph()).removeFifo(x));
+    setExecutionTimeForDuplicatedActor(key, copy);
+    removeDelayAndEmptyFIFOs(key);
 
     return rv2 - rv1;
 
   }
 
-  private void generateFileH(Actor actor, int index) {
-    String content = "// Interface actor file \n #ifndef " + actor.getName().toUpperCase() + "_H \n #define "
-        + actor.getName().toUpperCase() + "_H \n void " + actor.getName() + "(";
-    for (final DataPort dp : actor.getAllDataPorts()) {
-      content += dp.getFifo().getType() + " " + dp.getName() + ",";
+  // Helper method to update subsCopy based on subRank and subRank+1
+  private void updateSubsCopy(Integer subRank, AbstractActor key, JoinActor jn, Long rv1, Long rv2,
+      AbstractActor copy) {
+    if (subsCopy.get(subRank + 1) == null) {
+      subsCopy.get(subRank).put(jn, 1L);
+      subsCopy.get(subRank).remove(key);
+      subsCopy.get(subRank).put(copy, rv2 - rv1);
+    } else {
+      subsCopy.get(subRank + 1).put(jn, 1L);
+      subsCopy.get(subRank + 1).remove(key);
+      subsCopy.get(subRank + 1).put(copy, rv2 - rv1);
     }
-    String content2 = content.substring(0, content.length() - 1);
-    content2 += "); \n #endif";
+  }
 
-    PreesmIOHelper.getInstance().print(codegenPath + "interface/sub" + index + "/", actor.getName() + ".h", content2);
-    PreesmLogger.getLogger().log(Level.INFO,
-        "interface file print in : " + codegenPath + "interface/sub" + index + "/");
+  // Helper method to set execution time for the duplicated actor (copy)
+  private void setExecutionTimeForDuplicatedActor(AbstractActor key, AbstractActor copy) {
+    // Set 1 because it's an interface
+    for (final Component opId : archi.getProcessingElements()) {
+      scenario.getTimings().setExecutionTime(copy, opId, scenario.getTimings().getExecutionTimeOrDefault(key, opId));
+    }
+  }
+
+  // Helper method to remove delay and empty FIFOs from the containing graph
+  private void removeDelayAndEmptyFIFOs(AbstractActor key) {
+    // Remove delay
+    ((PiGraph) key.getContainingGraph()).getDelays().stream().filter(x -> x.getContainingFifo().getSourcePort() == null)
+        .forEach(((PiGraph) key.getContainingGraph())::removeDelay);
+
+    // Remove empty FIFOs
+    ((PiGraph) key.getContainingGraph()).getFifos().stream().filter(x -> x.getSourcePort() == null)
+        .forEach(((PiGraph) key.getContainingGraph())::removeFifo);
+
+    ((PiGraph) key.getContainingGraph()).getFifos().stream().filter(x -> x.getTargetPort() == null)
+        .forEach(((PiGraph) key.getContainingGraph())::removeFifo);
   }
 
   /**
-   * Constructs the structure associating each sub-graph with a list of actors and their recalculated repetition
-   * (according to the division undergone)
+   * Generates the C header file for an interface actor.
+   *
+   * This method creates a C header file for the specified interface actor, including function prototype, input/output
+   * ports, and their types. The generated file is printed to the designated code generation path under the "interface"
+   * directory for the specified subgraph index.
+   *
+   * @param actor
+   *          The interface actor for which the C header file is generated.
+   * @param index
+   *          The index of the subgraph to which the actor belongs.
+   */
+  private void generateFileH(Actor actor, int index) {
+    final StringConcatenation content = new StringConcatenation();
+    content.append("// Interface actor file \n #ifndef " + actor.getName().toUpperCase() + "_H \n #define "
+        + actor.getName().toUpperCase() + "_H \n void " + actor.getName() + "(");
+
+    for (int i = 0; i < actor.getAllDataPorts().size(); i++) {
+      final DataPort dp = actor.getAllDataPorts().get(i);
+      content.append(dp.getFifo().getType() + " " + dp.getName());
+      if (i == actor.getAllDataPorts().size() - 1) {
+        content.append(",");
+      }
+    }
+    content.append("); \n #endif");
+
+    PreesmIOHelper.getInstance().print(codegenPath + INTERFACE_PATH + index + "/", actor.getName() + ".h", content);
+    final String message = "interface file print in : " + codegenPath + INTERFACE_PATH + index + "/";
+    PreesmLogger.getLogger().log(Level.INFO, message);
+  }
+
+  /**
+   * Computes the sub-timings for each node based on the topological order and equivalent timings. The function iterates
+   * over actors in topological ASAP order, adding instances to reach target times.
    */
   private void computeSubs() {
     Integer nodeID = 0;
-    Long timTemp = 0L;
-    preprocessCycle();
+    final Integer LastNodeID = equivalentTimings.size() - 1;
+    Long subTimings = 0L;
     Map<AbstractActor, Long> list = new HashMap<>();
-    final Long lastEntry = (long) (topoOrderASAP.entrySet().size() - 1);
-    final int lastKey = (topoOrderASAP.get(lastEntry).size() - 1);
-    final AbstractActor lastActor = topoOrderASAP.get(lastEntry).get(lastKey);
+    // add actor in topological ASAP order
     for (final Entry<Long, List<AbstractActor>> entry : topoOrderASAP.entrySet()) {
-      Long count = 0L;
+      // add actor instance by instance
       for (final AbstractActor a : entry.getValue()) {
-        count = 0L;
-        if (nodeID < (timeEq.size() - 1)) {
-          while (count < brv.get(a)) {
-            // 1. compute actor timing on slowest core
-            Long slow = 0L;
-            if (a instanceof Actor) {
-              if (scenario.getTimings().getActorTimings().get(a) != null) {
-                slow = Long.valueOf(
-                    scenario.getTimings().getActorTimings().get(a).get(0).getValue().get(TimingType.EXECUTION_TIME));
-                for (final Entry<Component, EMap<TimingType, String>> element : scenario.getTimings().getActorTimings()
-                    .get(a)) {
-                  final Long timeSeek = Long.valueOf(element.getValue().get(TimingType.EXECUTION_TIME));
-                  if (timeSeek < slow) {
-                    slow = timeSeek;
-                  }
-                }
-              } else {
-                slow = 100L;
-              }
-            }
-            // add instance while lower than target sub time
-            Long i;
-            for (i = 0L; count + i < brv.get(a) && timTemp < timeEq.get(nodeID); i++) {
-              timTemp = timTemp + slow;
-            }
-            count = count + i;
-            list.put(a, i);
-            if (timTemp > timeEq.get(nodeID) || a.equals(lastActor)) {
 
-              subs.put(nodeID, list);
-              nodeID++;
-              list = new HashMap<>();
-              timTemp = 0L;
-            }
-          }
+        // compute actor timing on slowest core
+        final Long slow = (a instanceof Actor) ? NodePartitioner.slowestTime(a, scenario) : 0L;
+        // compute number of instance to add to reach target time
+        final Long nodeCapacity = (a instanceof Actor) && slow > 0L
+            ? (equivalentTimings.get(nodeID) - subTimings) / slow
+            : brv.get(a);
+        // add all instance if last node or node has the capacity
+        if (Objects.equals(nodeID, LastNodeID) || brv.get(a) <= nodeCapacity) {
+          list.put(a, brv.get(a));
+          subTimings += slow * brv.get(a);
         } else {
-          list.put(a, brv.get(a) - count);
+          // add actor until reach node capacity
+          list = processActorList(list, a, nodeCapacity);
+
+          subs.put(nodeID, list);
+          // fill the next node
+          nodeID++;
+          list = new HashMap<>();
+          // Fill the list with remaining instances
+          final Long remainingInstance = brv.get(a) - nodeCapacity;
+          list.put(a, remainingInstance);
+          subTimings = remainingInstance * slow;
         }
+
       }
     }
+    // Put the final node and its sub-timings into the map
     subs.put(nodeID, list);
   }
 
   /**
-   * the method can only split data parallelism that are not unrolled by a global cycle.
+   * Processes the actor based on the given node capacity, updating the list if the capacity is greater than zero.
+   *
+   * @param currentList
+   *          The current list of actors and their instances.
+   * @param actor
+   *          The actor to be processed.
+   * @param nodeCapacity
+   *          The computed node capacity.
+   * @return The updated list after processing the actor.
    */
-  private void preprocessCycle() {
-    if (graph.getDelays().stream().anyMatch(x -> x.getLevel().equals(PersistenceLevel.PERMANENT))) {
-      PreesmLogger.getLogger().log(Level.INFO, "cycles are not handle yet");
-    }
+  private Map<AbstractActor, Long> processActorList(Map<AbstractActor, Long> list, AbstractActor a, Long nodeCapacity) {
 
+    return Optional.ofNullable(nodeCapacity).filter(capacity -> capacity > 0).map(capacity -> {
+      list.put(a, capacity);
+      return list;
+    }).orElse(list);
   }
 
 }

@@ -7,13 +7,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.logging.Level;
+import java.util.stream.Collectors;
 import org.eclipse.core.resources.IFile;
-import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.ResourcesPlugin;
-import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.emf.common.util.EMap;
-import org.preesm.algorithm.clustering.scape.ClusteringScape;
 import org.preesm.algorithm.mapping.model.CoreMapping;
 import org.preesm.algorithm.mapping.model.MappingFactory;
 import org.preesm.algorithm.mapping.model.NodeMapping;
@@ -23,19 +21,11 @@ import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.AbstractVertex;
 import org.preesm.model.pisdf.Actor;
-import org.preesm.model.pisdf.DataInputInterface;
-import org.preesm.model.pisdf.DataInputPort;
-import org.preesm.model.pisdf.DataOutputInterface;
-import org.preesm.model.pisdf.DataOutputPort;
-import org.preesm.model.pisdf.Delay;
 import org.preesm.model.pisdf.DelayActor;
-import org.preesm.model.pisdf.Fifo;
 import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.pisdf.SpecialActor;
 import org.preesm.model.pisdf.brv.BRVMethod;
 import org.preesm.model.pisdf.brv.PiBRV;
-import org.preesm.model.pisdf.factory.PiMMUserFactory;
-import org.preesm.model.pisdf.util.PiSDFSubgraphBuilder;
 import org.preesm.model.scenario.Scenario;
 import org.preesm.model.slam.Component;
 import org.preesm.model.slam.Design;
@@ -63,10 +53,9 @@ public class NodePartitioner {
 
   private final List<Design> archiList = new ArrayList<>();
 
-  static String                       fileError    = "No such File find in folder: ";
-  private String                      archiPath    = "";
-  private String                      scenariiPath = "";
-  Map<Long, Map<AbstractActor, Long>> subsCopy     = new HashMap<>();
+  private String archiPath      = "";
+  private String scenariiPath   = "";
+  private String simulationPath = "";
 
   public NodePartitioner(Scenario scenario, String archicsvpath) {
     this.graph = scenario.getAlgorithm();
@@ -86,11 +75,16 @@ public class NodePartitioner {
     final String[] uriString = graph.getUrl().split("/");
     scenariiPath = "/" + uriString[1] + "/Scenarios/generated/";
     archiPath = "/" + uriString[1] + "/Archi/";
+    simulationPath = "/" + uriString[1] + "/Simulation/";
+    if (!scenario.getDesign().getProcessingElements().stream().allMatch(x -> x.getVlnv().getName().contains("_f"))) {
+      PreesmLogger.getLogger().log(Level.SEVERE,
+          "In order to handle heterogeneous core frequencies add _f[i] in the slam processing element definition");
+    }
     // Filter hierarchy
     if (!graph.getAllChildrenGraphs().isEmpty()) {
       PreesmLogger.getLogger().log(Level.SEVERE, "Hierarchical graphs are not handle yet, please feed a flat version");
     }
-    final PipelineCycleInfo pipelineCycleInfo = new PipelineCycleInfo(graph);
+    final PipelineCycleInfo pipelineCycleInfo = new PipelineCycleInfo(scenario);
     pipelineCycleInfo.execute();
     // filter pipeline
     if (!pipelineCycleInfo.getPipelineDelays().isEmpty()) {
@@ -98,8 +92,7 @@ public class NodePartitioner {
           "SimSDP cannot compile if there are initial optimizations, please remove your pipelines");
 
     }
-    // filter cycle
-    filterCycles(pipelineCycleInfo);
+    pipelineCycleInfo.removeCycle();
 
     // 1. compute the number of equivalent core
     final int sumNodeEquivalent = fillNodeMapping();
@@ -116,9 +109,7 @@ public class NodePartitioner {
 
     computeTopoASAP();
     // 4. construct subGraphs
-    final List<
-        PiGraph> subs = new IntranodeBuilder(scenario, brv, timeEq, archiList, topoOrderASAP, hierarchicalArchitecture)
-            .execute();
+    final List<PiGraph> subs = new IntranodeBuilder(scenario, brv, timeEq, archiList, topoOrderASAP).execute();
     // 7. construct top
     final PiGraph topGraph = new InternodeBuilder(scenario, subs, hierarchicalArchitecture).execute();
     // 9. generate main file
@@ -128,64 +119,10 @@ public class NodePartitioner {
 
   }
 
-  private void filterCycles(PipelineCycleInfo pipelineCycleInfo) {
-    if (!pipelineCycleInfo.getCycleDelays().isEmpty()) {
-      int index = 0;
-      for (final List<AbstractActor> cycle : pipelineCycleInfo.getCycleActors()) {
-        final PiGraph subGraph = new PiSDFSubgraphBuilder(this.graph, cycle, "cycle_" + index++).build();
-        // extract delay
-        final Delay delay = subGraph.getDelays().get(0);
-        // connect target delay to a new input interface
-        final DataInputPort delayedActorPortIn = delay.getContainingFifo().getTargetPort();
-        final String type = delay.getContainingFifo().getType();
-        final Long expressionIn = delayedActorPortIn.getExpression().evaluate();
-
-        final DataInputInterface delayInterface = PiMMUserFactory.instance.createDataInputInterface();
-        delayInterface.setContainingGraph(subGraph);
-        delayInterface.getDataOutputPorts().get(0).setExpression(expressionIn);
-        delayInterface.getGraphPort().setExpression(expressionIn);
-        delayInterface.setName(delayedActorPortIn.getName());
-        delayInterface.getGraphPort().setName(delayedActorPortIn.getName());
-
-        final Fifo fifin = PiMMUserFactory.instance.createFifo(delayInterface.getDataOutputPorts().get(0),
-            delayedActorPortIn, type);
-        fifin.setContainingGraph(subGraph);
-
-        delay.getContainingFifo().setTargetPort((DataInputPort) delayInterface.getGraphPort());
-
-        // connect source delay to a new output interface
-        final DataOutputPort delayedActorPortout = delay.getContainingFifo().getSourcePort();
-        final Long expressionOut = delayedActorPortout.getExpression().evaluate();
-
-        final DataOutputInterface delayInterfaceOut = PiMMUserFactory.instance.createDataOutputInterface();
-        delayInterfaceOut.setContainingGraph(subGraph);
-        delayInterfaceOut.getDataInputPorts().get(0).setExpression(expressionOut);
-        delayInterfaceOut.getGraphPort().setExpression(expressionOut);
-        delayInterfaceOut.setName(delayedActorPortout.getName());
-        delayInterfaceOut.getGraphPort().setName(delayedActorPortout.getName());
-
-        final Fifo fifout = PiMMUserFactory.instance.createFifo(delayedActorPortout,
-            delayInterfaceOut.getDataInputPorts().get(0), type);
-        fifout.setContainingGraph(subGraph);
-
-        delay.getContainingFifo().setSourcePort((DataOutputPort) delayInterfaceOut.getGraphPort());
-
-        delay.setContainingGraph(graph);
-        delay.getActor().setContainingGraph(graph);
-        final Map<AbstractVertex, Long> rv = PiBRV.compute(subGraph, BRVMethod.LCM);
-        ClusteringScape.cluster(subGraph, scenario, 100000000000000L);
-      }
-
-    }
-
-  }
-
   private void exportArchitecture() {
     for (final NodeMapping node : hierarchicalArchitecture) {
-      final IPath fromPortableString = Path.fromPortableString(scenariiPath);
-      final IFile file = ResourcesPlugin.getWorkspace().getRoot().getFile(fromPortableString);
-      final IProject iProject = file.getProject();
-      final ArchitecturesGenerator a = new ArchitecturesGenerator(iProject);
+
+      final ArchitecturesGenerator a = new ArchitecturesGenerator(ScenarioBuilder.iproject(scenariiPath));
       final Map<String, Integer> type2nb = new HashMap<>();
       for (final CoreMapping core : node.getCores()) {
         if (type2nb.containsKey(core.getCoreType())) {
@@ -207,28 +144,32 @@ public class NodePartitioner {
 
   private int fillNodeMapping() {
     final String content = PreesmIOHelper.getInstance().read(archiPath, archicsvpath);
-    final String[] line = content.split("[\n]");
+    final String[] line = content.split("\n");
+    if (!line[0].equals("Node name;Core ID;Core frequency;Intranode rate;Internode rate")) {
+      PreesmLogger.getLogger().log(Level.SEVERE,
+          "Missing the first line: Node name;Core ID;Core frequency;Intranode rate;Internode rate");
+    }
     int coreID = 0;
-    for (final String l : line) {
-      final String[] element = l.split("[,]");
+    for (int i = 1; i < line.length; i++) {
+      final String[] column = line[i].split(";");
       final int lastIndex = hierarchicalArchitecture.size() - 1;
 
-      if ((lastIndex == -1) || !element[0].equals(hierarchicalArchitecture.get(lastIndex).getNodeName())) {
+      if ((lastIndex == -1) || !column[0].equals(hierarchicalArchitecture.get(lastIndex).getNodeName())) {
         final NodeMapping newNode = MappingFactory.eINSTANCE.createNodeMapping();
-        newNode.setNodeName(element[0]);
-        newNode.setNodeCommunicationRate(Double.valueOf(element[4]));
+        newNode.setNodeName(column[0]);
+        newNode.setNodeCommunicationRate(Double.valueOf(column[4]));
         final CoreMapping newCore = MappingFactory.eINSTANCE.createCoreMapping();
-        newCore.setID(Integer.valueOf(element[1]));
-        newCore.setCoreFrequency(Double.valueOf(element[2]));
-        newCore.setCoreCommunicationRate(Double.valueOf(element[3]));
+        newCore.setID(Integer.valueOf(column[1]));
+        newCore.setCoreFrequency(Double.valueOf(column[2]));
+        newCore.setCoreCommunicationRate(Double.valueOf(column[3]));
         newCore.setID(coreID);
         newNode.getCores().add(newCore);
         hierarchicalArchitecture.add(newNode);
       } else {
         final CoreMapping newCore = MappingFactory.eINSTANCE.createCoreMapping();
-        newCore.setID(Integer.valueOf(element[1]));
-        newCore.setCoreFrequency(Double.valueOf(element[2]));
-        newCore.setCoreCommunicationRate(Double.valueOf(element[3]));
+        newCore.setID(Integer.valueOf(column[1]));
+        newCore.setCoreFrequency(Double.valueOf(column[2]));
+        newCore.setCoreCommunicationRate(Double.valueOf(column[3]));
         newCore.setID(coreID);
         hierarchicalArchitecture.get(lastIndex).getCores().add(newCore);
       }
@@ -277,73 +218,84 @@ public class NodePartitioner {
    * load.
    */
   private void computeWorkload() {
-    // 1. read file
-    final IFile iFile = ResourcesPlugin.getWorkspace().getRoot().getFile(new Path(scenariiPath + "workload.csv"));
+    final IFile iFile = ResourcesPlugin.getWorkspace().getRoot().getFile(new Path(simulationPath + "workload.csv"));
     if (iFile.isAccessible()) {
-      final String content = PreesmIOHelper.getInstance().read(scenariiPath, "workload.csv");
-      final String[] line = content.split("\\n");
-      for (final String element : line) {
-        final String[] split = element.split(";");
-        if (!split[0].equals("Nodes") && !split[0].equals("Latency") && !split[0].equals("SigmaW")) {
-          final Integer node = Integer.valueOf(split[0].replace("node", ""));
-          final Double workload = Double.valueOf(split[1]);
-          load.put(node, workload);
-        }
+      final String content = PreesmIOHelper.getInstance().read(simulationPath, "workload.csv");
+      final String[] lines = content.split("\n");
+      for (final String line : lines) {
+        final String[] columns = line.split(";");
+
+        load.put(Integer.valueOf(columns[0].replace("node", "")), Double.valueOf(columns[1]));
       }
+
     }
 
   }
 
   private void computeTopoASAP() {
-    final List<AbstractActor> temp = new ArrayList<>();
-    final List<AbstractActor> entry = new ArrayList<>();
+    // Utilisation d'une expression lambda pour filtrer les acteurs qui ne sont pas des instances de DelayActor
+    final List<AbstractActor> fullList = graph.getActors().stream().filter(actor -> !(actor instanceof DelayActor))
+        .collect(Collectors.toList());
+    final List<AbstractActor> rankList = new ArrayList<>();
     Long rank = 0L;
-    for (final AbstractActor a : graph.getActors()) {
-      if (!(a instanceof DelayActor)) {
-        temp.add(a);
-      }
-    }
+
     // feed the 1st rank
     for (final AbstractActor a : graph.getActors()) {
       if (!(a instanceof DelayActor) && (a.getDataInputPorts().isEmpty()
           || a.getDataInputPorts().stream().allMatch(x -> x.getFifo().isHasADelay()))) {
-        // if () {
-        entry.add(a);
-        temp.remove(a);
-        // }
+        rankList.add(a);
+        fullList.remove(a);
       }
     }
-    topoOrderASAP.put(rank, entry);
+    topoOrderASAP.put(rank, rankList);
     // feed the rest
-    while (!temp.isEmpty()) {
+
+    while (!fullList.isEmpty()) {
       final List<AbstractActor> list = new ArrayList<>();
+
       for (final AbstractActor a : topoOrderASAP.get(rank)) {
-        for (final Vertex aa : a.getDirectSuccessors()) {
-
-          final Long rankMatch = rank + 1;
-          if (aa.getDirectPredecessors().stream().filter(x -> x instanceof Actor || x instanceof SpecialActor)
-              .allMatch(x -> topoOrderASAP.entrySet().stream().filter(y -> y.getKey() < rankMatch)
-                  .anyMatch(y -> y.getValue().contains(x)))
-              && (!list.contains(aa))) {
-            list.add((AbstractActor) aa);
-            temp.remove(aa);
-
-          }
-        }
+        processDirectSuccessors(a, rank, list, fullList);
       }
-      // orders the list in descending order of the execution time of the actors in the rank
-      final List<AbstractActor> sortedList = new ArrayList<>(list);
-      Collections.sort(sortedList, (actor1, actor2) -> {
-        final double time1 = slowestTime(actor1);
-        final double time2 = slowestTime(actor2);
-        return Double.compare(time2, time1);
-      });
+
       rank++;
-      topoOrderASAP.put(rank, sortedList);
+      topoOrderASAP.put(rank, orderRank(list));
     }
   }
 
-  private Long slowestTime(AbstractActor actor) {
+  private void processDirectSuccessors(AbstractActor a, Long rank, List<AbstractActor> list,
+      List<AbstractActor> fullList) {
+    for (final Vertex aa : a.getDirectSuccessors()) {
+      final Long rankMatch = rank + 1;
+
+      if (isValidSuccessor(aa, rankMatch) && (!list.contains(aa))) {
+        list.add((AbstractActor) aa);
+        fullList.remove(aa);
+      }
+    }
+  }
+
+  private boolean isValidSuccessor(Vertex aa, Long rankMatch) {
+    return aa.getDirectPredecessors().stream().filter(x -> x instanceof Actor || x instanceof SpecialActor)
+        .allMatch(x -> isPredecessorInPreviousRanks(x, rankMatch));
+  }
+
+  private boolean isPredecessorInPreviousRanks(Vertex x, Long rankMatch) {
+    return topoOrderASAP.entrySet().stream().filter(y -> y.getKey() < rankMatch)
+        .anyMatch(y -> y.getValue().contains(x));
+  }
+
+  private List<AbstractActor> orderRank(List<AbstractActor> list) {
+    // orders the list in descending order of the execution time of the actors in the rank
+    final List<AbstractActor> sortedList = new ArrayList<>(list);
+    Collections.sort(sortedList, (actor1, actor2) -> {
+      final double time1 = slowestTime(actor1, scenario);
+      final double time2 = slowestTime(actor2, scenario);
+      return Double.compare(time2, time1);
+    });
+    return sortedList;
+  }
+
+  public static Long slowestTime(AbstractActor actor, Scenario scenario) {
     Long slow;
     if (scenario.getTimings().getActorTimings().get(actor) != null) {
       slow = Long
@@ -366,21 +318,7 @@ public class NodePartitioner {
     Long totTCeq = 0L;
     for (final AbstractActor a : graph.getExecutableActors()) {
       if (a instanceof Actor) {
-        Long slow;
-        if (scenario.getTimings().getActorTimings().get(a) != null) {
-          slow = Long
-              .valueOf(scenario.getTimings().getActorTimings().get(a).get(0).getValue().get(TimingType.EXECUTION_TIME));
-          for (final Entry<Component, EMap<TimingType, String>> element : scenario.getTimings().getActorTimings()
-              .get(a)) {
-            final Long timeSeek = Long.valueOf(element.getValue().get(TimingType.EXECUTION_TIME));
-            if (timeSeek < slow) {
-              slow = timeSeek;
-            }
-          }
-        } else {
-          slow = 100L;
-        }
-        totTCeq = slow * brv.get(a) + totTCeq;
+        totTCeq = slowestTime(a, scenario) * brv.get(a) + totTCeq;
       }
     }
     // construct structure

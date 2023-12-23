@@ -4,8 +4,6 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.GridLayout;
 import java.awt.Paint;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.util.List;
 import javax.swing.BorderFactory;
 import javax.swing.JLabel;
@@ -23,6 +21,15 @@ import org.jfree.chart.renderer.category.StandardBarPainter;
 import org.jfree.data.category.CategoryDataset;
 import org.jfree.data.category.DefaultCategoryDataset;
 
+/**
+ * Represents the analysis page for visualizing Pareto optimal network architectures. The page includes a bar chart
+ * showing the global score based on weighted criteria (Final latency, Memory, Energy, and Cost) for different network
+ * configurations. Users can dynamically adjust weights to observe the impact on the Pareto front.
+ *
+ * The chart is created using JFreeChart library.
+ *
+ * @author orenaud
+ */
 public class AnalysisPage5 {
   List<NetworkInfo> networkInfoNormalList;
 
@@ -35,10 +42,22 @@ public class AnalysisPage5 {
   Double                 scoreMin = Double.MAX_VALUE;
   Double                 scoreMax = 0d;
 
+  /**
+   * Constructs an instance of AnalysisPage5 with the given list of NetworkInfo objects.
+   *
+   * @param networkInfoNormalList
+   *          List of NetworkInfo objects to analyze.
+   */
   public AnalysisPage5(List<NetworkInfo> networkInfoNormalList) {
     this.networkInfoNormalList = networkInfoNormalList;
   }
 
+  /**
+   * Executes the analysis and generates a JPanel containing the Pareto chart, description label, and weight adjustment
+   * text fields.
+   *
+   * @return JPanel containing the visual elements of the analysis page.
+   */
   public JPanel execute() {
     final JPanel panel = new JPanel();
 
@@ -56,8 +75,6 @@ public class AnalysisPage5 {
     descriptionLabel.setVerticalAlignment(SwingConstants.TOP);
     final Border border = BorderFactory.createEmptyBorder(10, 10, 10, 10);
     descriptionLabel.setBorder(border);
-    // descriptionLabel.setSize(new Dimension(600, descriptionLabel.getHeight()));
-    // descriptionLabel.setPreferredSize(descriptionLabel.getPreferredSize());
     panel.add(descriptionLabel, BorderLayout.NORTH);
 
     final JPanel textFieldPanel = createTextFieldPanel(chart, dataset);
@@ -67,6 +84,15 @@ public class AnalysisPage5 {
     return panel;
   }
 
+  /**
+   * Creates a JPanel containing text fields for adjusting weights and listening for user input.
+   *
+   * @param chart
+   *          The JFreeChart instance associated with the analysis.
+   * @param dataset
+   *          The dataset containing network configuration scores.
+   * @return JPanel with weight adjustment text fields.
+   */
   private JPanel createTextFieldPanel(JFreeChart chart, DefaultCategoryDataset dataset) {
 
     final JPanel textFieldPanel = new JPanel();
@@ -78,17 +104,13 @@ public class AnalysisPage5 {
 
     final JTextField thText = new JTextField();
     thText.setSize(thText.getHeight(), 5);
-    // thText.resize(thText.getHeight(), 5);
-    // thText.setColumns(10);
     textFieldPanel.add(thText);
 
-    thText.addActionListener(new ActionListener() {
-      @Override
-      public void actionPerformed(ActionEvent e) {
-        kTh = Integer.valueOf(thText.getText());
-        updateDataset(dataset);
-        chart.fireChartChanged(); // Notify the chart that the dataset has changed
-      }
+    thText.addActionListener(e -> {
+      kTh = Integer.valueOf(thText.getText());
+      updateDataset(dataset);
+      chart.fireChartChanged(); // Notify the chart that the dataset has changed
+
     });
 
     final JLabel mLabel = new JLabel("Enter the memory weight:");
@@ -98,13 +120,10 @@ public class AnalysisPage5 {
     mText.setColumns(5);
     textFieldPanel.add(mText);
 
-    mText.addActionListener(new ActionListener() {
-      @Override
-      public void actionPerformed(ActionEvent e) {
-        kMem = Integer.valueOf(mText.getText());
-        updateDataset(dataset);
-        chart.fireChartChanged(); // Notify the chart that the dataset has changed
-      }
+    mText.addActionListener(e -> {
+      kMem = Integer.valueOf(mText.getText());
+      updateDataset(dataset);
+      chart.fireChartChanged(); // Notify the chart that the dataset has changed
     });
 
     final JLabel eLabel = new JLabel("Enter the energy weight:");
@@ -114,13 +133,11 @@ public class AnalysisPage5 {
     eText.setColumns(10);
     textFieldPanel.add(eText);
 
-    eText.addActionListener(new ActionListener() {
-      @Override
-      public void actionPerformed(ActionEvent e) {
-        kEner = Integer.valueOf(eText.getText());
-        updateDataset(dataset);
-        chart.fireChartChanged(); // Notify the chart that the dataset has changed
-      }
+    eText.addActionListener(e -> {
+      kEner = Integer.valueOf(eText.getText());
+      updateDataset(dataset);
+      chart.fireChartChanged(); // Notify the chart that the dataset has changed
+
     });
 
     final JLabel cLabel = new JLabel("Enter the cost weight:");
@@ -130,18 +147,21 @@ public class AnalysisPage5 {
     cText.setColumns(10);
     textFieldPanel.add(cText);
 
-    cText.addActionListener(new ActionListener() {
-      @Override
-      public void actionPerformed(ActionEvent e) {
-        kC = Integer.valueOf(cText.getText());
-        updateDataset(dataset);
-        chart.fireChartChanged(); // Notify the chart that the dataset has changed
-      }
+    cText.addActionListener(e -> {
+      kC = Integer.valueOf(cText.getText());
+      updateDataset(dataset);
+      chart.fireChartChanged(); // Notify the chart that the dataset has changed
+
     });
     textFieldPanel.setBackground(Color.white);
     return textFieldPanel;
   }
 
+  /**
+   * Generates the description label for the analysis page.
+   *
+   * @return HTML-formatted string describing the purpose and functionality of the analysis.
+   */
   private String description() {
     String description = "<html>";
     description += "This chart gives an idea of the pareto optimal network";
@@ -151,23 +171,34 @@ public class AnalysisPage5 {
     description += "These criteria are combined in a weighted linear function, expressed as Pareto";
     description += "(wL x Final latency + wM x Memory + wE x Energy + wC x Cost), ";
     description += "where wL, wM, wE, and wC represent the respective weights assigned to each criterion.<br>";
+    description += "Configuration ID are: 1: Cluster with Crossbar, 2: Cluster with a shared backbone, ";
+    description += "3: Torus cluster, 4: Fat-tree cluster, 5: Dragonfly cluster<br>";
     description += "Configurations can be dynamically adjusted to observe how changes in weights impact the Pareto ";
     description += "front and guide decision-making in optimizing the application's deployment.";
     description += "</html>";
     return description;
   }
 
+  /**
+   * Creates a JFreeChart bar chart based on the provided dataset.
+   *
+   * @param dataset
+   *          The dataset containing network configuration scores.
+   * @return JFreeChart instance representing the Pareto chart.
+   */
   private JFreeChart barChart(CategoryDataset dataset) {
-    final JFreeChart chart = ChartFactory.createBarChart(
+    final JFreeChart jChart = ChartFactory.createBarChart(
         "Pareto(wL x Final latency + wM x memory + wE x Energy + wC x Cost)", "Configuration", "Global score", dataset,
         PlotOrientation.VERTICAL, true, true, false);
-    final CategoryPlot plot = chart.getCategoryPlot();
+    final CategoryPlot plot = jChart.getCategoryPlot();
     plot.setBackgroundPaint(Color.white);
     plot.setDomainGridlinePaint(Color.lightGray);
     plot.setRangeGridlinePaint(Color.lightGray);
 
     // Create a custom renderer
     final BarRenderer customRenderer = new BarRenderer() {
+      private static final long serialVersionUID = 1L;
+
       @Override
       public Paint getItemPaint(int row, int column) {
         // Récupération de la valeur de la barre
@@ -186,17 +217,25 @@ public class AnalysisPage5 {
     };
 
     customRenderer.setBarPainter(new StandardBarPainter());
+    customRenderer.setShadowVisible(false);
     plot.setRenderer(customRenderer);
-    return chart;
+    return jChart;
   }
 
+  /**
+   * Updates the dataset based on user-adjusted weights and notifies the chart of the changes.
+   *
+   * @param dataset
+   *          The dataset containing network configuration scores.
+   */
   private void updateDataset(DefaultCategoryDataset dataset) {
     dataset.clear();
     for (final NetworkInfo net : networkInfoNormalList) {
 
-      final Double score = net.getThroughput() * kTh + net.getMemory() * kMem + net.getEnergy() * kEner
+      final Double score = net.getFinalLatency() * kTh + net.getMemory() * kMem + net.getEnergy() * kEner
           + net.getCost() * kC;
-      dataset.addValue(score, "configuration", net.getType());
+      dataset.addValue(score, "configuration",
+          net.getTypeID() + ":" + net.getNode() + ":" + net.getCore() + ":" + net.getCoreFrequency());
       if (score != 0 && score < scoreMin) {
         scoreMin = score;
       }
@@ -206,13 +245,19 @@ public class AnalysisPage5 {
     }
   }
 
+  /**
+   * Fills the initial Pareto dataset based on the original network configurations.
+   *
+   * @return DefaultCategoryDataset containing the initial network configuration scores.
+   */
   private DefaultCategoryDataset fillParetoDataSet() {
-    final DefaultCategoryDataset dataset = new DefaultCategoryDataset();
+    final DefaultCategoryDataset defaultDataset = new DefaultCategoryDataset();
     for (final NetworkInfo net : networkInfoNormalList) {
 
-      final Double score = net.getThroughput() * kTh + net.getMemory() * kMem + net.getEnergy() * kEner
+      final Double score = net.getFinalLatency() * kTh + net.getMemory() * kMem + net.getEnergy() * kEner
           + net.getCost() * kC;
-      dataset.addValue(score, "configuration", net.getType() + ":" + net.getNode());
+      defaultDataset.addValue(score, "configuration ID : number of nodes : number of cores : core frequency",
+          net.getTypeID() + ":" + net.getNode() + ":" + net.getCore() + ":" + net.getCoreFrequency());
       if (score != 0 && score < scoreMin) {
         scoreMin = score;
       }
@@ -220,7 +265,7 @@ public class AnalysisPage5 {
         scoreMax = score;
       }
     }
-    return dataset;
+    return defaultDataset;
   }
 
 }

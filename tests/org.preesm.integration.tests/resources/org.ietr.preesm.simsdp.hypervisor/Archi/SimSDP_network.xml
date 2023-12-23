@@ -1,4 +1,4 @@
-<!-- Cluster with shared backbone:3 -->
+<!-- Cluster with shared backbone:3:3:3 -->
 <?xml version='1.0'?>
 <!DOCTYPE platform SYSTEM "https://simgrid.org/simgrid.dtd">
 <platform version="4.1">
