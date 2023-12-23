@@ -2,7 +2,7 @@ package org.preesm.algorithm.node.simulator;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
-import java.awt.FlowLayout;
+import java.awt.GridLayout;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -24,32 +24,57 @@ import org.jfree.data.xy.XYSeries;
 import org.jfree.data.xy.XYSeriesCollection;
 import org.preesm.commons.files.PreesmIOHelper;
 
+/**
+ * This class represents the fourth page of the analysis results. It includes visualizations of a radar chart comparing
+ * different network topologies.
+ *
+ * @author orenaud
+ */
 public class AnalysisPage4 {
-  static String                   path;
-  public static final String      NET_NAME                 = "multicriteria.csv";
-  List<NetworkInfo>               networkInfoList          = new ArrayList<>();
-  static List<NetworkInfo>        networkInfoNormalList    = new ArrayList<>();
-  Map<Integer, List<NetworkInfo>> nodeNetworkInfoNormalMap = new LinkedHashMap<>();
-  int                             nodeKey                  = 0;
+  static String                                               path;
+  public static final String                                  NET_NAME                 = "multicriteria.csv";
+  List<NetworkInfo>                                           networkInfoList          = new ArrayList<>();
+  static List<NetworkInfo>                                    networkInfoNormalList    = new ArrayList<>();
+  Map<Integer, Map<Integer, Map<Integer, List<NetworkInfo>>>> nodeNetworkInfoNormalMap = new LinkedHashMap<>();
+  int                                                         nodeKey                  = 0;
+  int                                                         coreKey                  = 0;
+  int                                                         coreFrequencyKey         = 0;
+  JFreeChart                                                  chart;
+  XYSeriesCollection                                          dataset;
 
+  /**
+   * Constructs an AnalysisPage4 object with the given parameters.
+   *
+   * @param path
+   *          The file path for reading data.
+   */
   public AnalysisPage4(String path) {
     AnalysisPage4.path = path;
 
   }
 
+  /**
+   * Executes the analysis and returns a JPanel containing radar chart visualizations.
+   *
+   * @return A JPanel with radar chart visualizations.
+   */
   public JPanel execute() {
 
     final JPanel panel = new JPanel();
     fillNetworkInfoList();
     nodeKey = networkInfoList.get(0).getNode();
+    coreKey = networkInfoList.get(0).getCore();
+    coreFrequencyKey = networkInfoList.get(0).getCoreFrequency();
     networkInfoNormalList.clear();
     fillNetworkInfoNormalList();
     nodeNetworkInfoNormalMap.clear();
     fillNodeNetworkInfoNormalMap();
 
-    final XYSeriesCollection dataset = fillMultiCriteriaDataSet();
+    // final XYSeriesCollection
+    dataset = fillMultiCriteriaDataSet();
 
-    final JFreeChart chart = polarChart(dataset);
+    // final JFreeChart
+    chart = polarChart(dataset);
     panel.setBackground(Color.white);
     panel.setLayout(new BorderLayout());
 
@@ -59,7 +84,6 @@ public class AnalysisPage4 {
     descriptionLabel.setVerticalAlignment(SwingConstants.TOP);
     final Border border = BorderFactory.createEmptyBorder(10, 10, 10, 10);
     descriptionLabel.setBorder(border);
-    // descriptionLabel.setPreferredSize(descriptionLabel.getPreferredSize());
     panel.add(descriptionLabel, BorderLayout.NORTH);
 
     panel.add(new ChartPanel(chart));
@@ -71,55 +95,151 @@ public class AnalysisPage4 {
     return panel;
   }
 
+  /**
+   * Fills the nodeNetworkInfoNormalMap with network information for each node.
+   */
   private void fillNodeNetworkInfoNormalMap() {
     for (final NetworkInfo network : networkInfoNormalList) {
+      final List<NetworkInfo> newList = new ArrayList<>();
+      newList.add(network);
+      final Map<Integer, List<NetworkInfo>> newMap = new LinkedHashMap<>();
+      newMap.put(network.getCoreFrequency(), newList);
+      final Map<Integer, Map<Integer, List<NetworkInfo>>> newMapMap = new LinkedHashMap<>();
+      newMapMap.put(network.getCore(), newMap);
+
       if (!nodeNetworkInfoNormalMap.containsKey(network.getNode())) {
-        final List<NetworkInfo> newList = new ArrayList<>();
-        newList.add(network);
-        nodeNetworkInfoNormalMap.put(network.getNode(), newList);
-      } else if (!nodeNetworkInfoNormalMap.get(network.getNode()).stream()
-          .anyMatch(x -> x.getType().equals(network.getType()))) {
-        nodeNetworkInfoNormalMap.get(network.getNode()).add(network);
+
+        nodeNetworkInfoNormalMap.put(network.getNode(), newMapMap);
+      } else if (!nodeNetworkInfoNormalMap.get(network.getNode()).containsKey(network.getCore())) {
+
+        nodeNetworkInfoNormalMap.get(network.getNode()).put(network.getCore(), newMap);
+
+      } else if (!nodeNetworkInfoNormalMap.get(network.getNode()).get(network.getCore())
+          .containsKey(network.getCoreFrequency())) {
+        nodeNetworkInfoNormalMap.get(network.getNode()).get(network.getCore()).put(network.getCoreFrequency(), newList);
+      } else if (nodeNetworkInfoNormalMap.get(network.getNode()).get(network.getCore()).get(network.getCoreFrequency())
+          .stream().noneMatch(x -> x.getType().equals(network.getType()))) {
+        nodeNetworkInfoNormalMap.get(network.getNode()).get(network.getCore()).get(network.getCoreFrequency())
+            .add(network);
       }
 
     }
 
   }
 
+  /**
+   * Creates a JPanel with a ComboBox for selecting the number of nodes for network analysis.
+   *
+   * @param chart
+   *          The radar chart.
+   * @param dataset
+   *          The dataset for the chart.
+   * @return A JPanel with a ComboBox for node selection.
+   */
   private JPanel createTextFieldPanel(JFreeChart chart, XYSeriesCollection dataset) {
+
     final JPanel textFieldPanel = new JPanel();
-    textFieldPanel.setLayout(new FlowLayout(FlowLayout.LEADING));
-    // textFieldPanel.setSize(200, 50);
-    final JLabel nodeSelect = new JLabel("Select the number of nodes for network analysis:");
-    textFieldPanel.add(nodeSelect);
+    textFieldPanel.setLayout(new GridLayout(3, 2, 0, 0));
 
-    final String[] nodeItems = new String[nodeNetworkInfoNormalMap.size()];
-    int index = 0;
-    for (final int i : nodeNetworkInfoNormalMap.keySet()) {
-      nodeItems[index] = i + " nodes";
-      index++;
+    final JComboBox<String> nodeCombo = addComboBoxWithLabel(textFieldPanel,
+        "Select the number of nodes for network analysis:", nodeNetworkInfoNormalMap);
+    final JComboBox<String> coreCombo = addComboBoxWithLabel(textFieldPanel,
+        "Select the number of cores for network analysis:", nodeNetworkInfoNormalMap.get(nodeKey));
+    final JComboBox<String> coreFreqCombo = addComboBoxWithLabel(textFieldPanel,
+        "Select the core frequency for network analysis:", nodeNetworkInfoNormalMap.get(nodeKey).get(coreKey));
 
-    }
-    final JComboBox<String> nodeCombo = new JComboBox<>(nodeItems);
-    nodeCombo.setBackground(Color.white);
-    textFieldPanel.add(nodeCombo);
-    textFieldPanel.setBackground(Color.white);
+    // node selection
 
     nodeCombo.addActionListener(e -> {
-      nodeKey = Integer.valueOf(nodeCombo.getSelectedItem().toString().replace(" nodes", ""));
+      nodeKey = Integer.valueOf(nodeCombo.getSelectedItem().toString());
+      coreKey = nodeNetworkInfoNormalMap.get(nodeKey).keySet().stream().findFirst().orElseThrow();
+      updateCoreComboItems(coreCombo);
       updateDataset(dataset);
       chart.fireChartChanged();
     });
 
+    // core selection
+
+    coreCombo.addActionListener(e -> {
+      coreKey = Integer.valueOf(coreCombo.getSelectedItem().toString());
+      coreFrequencyKey = nodeNetworkInfoNormalMap.get(nodeKey).get(coreKey).keySet().stream().findFirst().orElseThrow();
+      updateCoreFreqComboItems(coreFreqCombo);
+      updateDataset(dataset);
+      chart.fireChartChanged();
+    });
+    // core frequency selection
+
+    coreFreqCombo.addActionListener(e -> {
+      coreFrequencyKey = Integer.valueOf(coreFreqCombo.getSelectedItem().toString());
+      updateDataset(dataset);
+      chart.fireChartChanged();
+    });
+
+    textFieldPanel.setBackground(Color.white);
     return textFieldPanel;
   }
 
+  private JComboBox<String> addComboBoxWithLabel(JPanel panel, String labelText, Map<Integer, ?> dataMap) {
+    final JLabel label = new JLabel(labelText);
+    panel.add(label);
+
+    final String[] items = dataMap.keySet().stream().map(String::valueOf).toArray(String[]::new);
+    final JComboBox<String> comboBox = new JComboBox<>(items);
+    comboBox.setBackground(Color.white);
+    panel.add(comboBox);
+
+    return comboBox;
+  }
+
+  private void updateCoreFreqComboItems(JComboBox<String> combo) {
+    final String selectedItem = (String) combo.getSelectedItem();
+    combo.removeAllItems();
+    for (final int i : nodeNetworkInfoNormalMap.get(nodeKey).get(coreKey).keySet()) {
+
+      combo.addItem(String.valueOf(i));
+    }
+    // Set back the selected item if it exists in the new items
+    if (selectedItem != null) {
+      for (int i = 0; i < combo.getItemCount(); i++) {
+        if (selectedItem.equals(combo.getItemAt(i))) {
+          combo.setSelectedItem(selectedItem);
+          break;
+        }
+      }
+    }
+  }
+
+  private void updateCoreComboItems(JComboBox<String> combo) {
+    final String selectedItem = (String) combo.getSelectedItem();
+    combo.removeAllItems();
+    for (final int i : nodeNetworkInfoNormalMap.get(nodeKey).keySet()) {
+      combo.addItem(String.valueOf(i));
+    }
+    // Set back the selected item if it exists in the new items
+    if (selectedItem != null) {
+      for (int i = 0; i < combo.getItemCount(); i++) {
+        if (selectedItem.equals(combo.getItemAt(i))) {
+          combo.setSelectedItem(selectedItem);
+          break;
+        }
+      }
+    }
+  }
+
+  /**
+   * Returns the list of normalized network information.
+   *
+   * @return The list of normalized network information.
+   */
   public static List<NetworkInfo> getNetworkInfoNormalList() {
     return networkInfoNormalList;
   }
 
+  /**
+   * Fills the networkInfoNormalList with normalized values.
+   */
   private void fillNetworkInfoNormalList() {
-    final List<Double> throughputs = extractMetrics(networkInfoList, NetworkInfo::getThroughput);
+    final List<Double> throughputs = extractMetrics(networkInfoList, NetworkInfo::getFinalLatency);
     final List<Double> memorys = extractMetrics(networkInfoList, NetworkInfo::getMemory);
     final List<Double> energys = extractMetrics(networkInfoList, NetworkInfo::getEnergy);
     final List<Double> costs = extractMetrics(networkInfoList, NetworkInfo::getCost);
@@ -139,63 +259,102 @@ public class AnalysisPage4 {
     cMin = cMin.equals(cMax) ? 0.0 : cMin;
 
     for (final NetworkInfo net : networkInfoList) {
-      final Double throughput = normalize(net.getThroughput(), thMin, thMax);
+      final Double throughput = normalize(net.getFinalLatency(), thMin, thMax);
       final Double memory = normalize(net.getMemory(), mMin, mMax);
       final Double energy = normalize(net.getEnergy(), enerMin, enerMax);
       final Double cost = normalize(net.getCost(), cMin, cMax);
-      final NetworkInfo newNetwork = new NetworkInfo(net.getType(), net.getNode(), throughput, memory, energy, cost);
+      final NetworkInfo newNetwork = new NetworkInfo(net.getType(), net.getNode(), net.getCore(),
+          net.getCoreFrequency(), throughput, memory, energy, cost);
       networkInfoNormalList.add(newNetwork);
     }
   }
 
+  /**
+   * Extracts a specific metric from the network information list.
+   *
+   * @param networkInfoList
+   *          The list of network information.
+   * @param extractor
+   *          The function to extract the metric.
+   * @return The list of extracted metrics.
+   */
   private List<Double> extractMetrics(List<NetworkInfo> networkInfoList, Function<NetworkInfo, Double> extractor) {
     return networkInfoList.stream().map(extractor).collect(Collectors.toList());
   }
 
+  /**
+   * Finds the maximum value in a list of doubles.
+   *
+   * @param values
+   *          The list of values.
+   * @return The maximum value.
+   */
   private Double findMax(List<Double> values) {
     return values.stream().max(Double::compareTo).orElse(0.0);
   }
 
+  /**
+   * Finds the minimum value in a list of doubles.
+   *
+   * @param values
+   *          The list of values.
+   * @return The minimum value.
+   */
   private Double findMin(List<Double> values) {
     if (values.size() < 2) {
-      // Gestion du cas où il y a moins de deux valeurs
+      // Handle the case where there are fewer than two values
       return values.stream().findFirst().orElse(0.0);
     }
-    // Retrouver le minimum entre les deux premières valeurs
+    // Find the minimum between the first two values
     final Double minBetweenFirstTwo = Math.min(values.get(0), values.get(1));
 
-    // Retrouver le minimum entre le minimum trouvé et le reste des valeurs
-    return values.stream().skip(2) // Ignorer les deux premières valeurs
+    // Find the minimum between the found minimum and the rest of the values
+    return values.stream().skip(2) // Ignore the first two values
         .reduce(minBetweenFirstTwo, Math::min);
   }
-  // private Double findMin(List<Double> values) {
-  // return values.stream().min(Double::compareTo).orElse(0.0);
-  // }
 
+  /**
+   * Normalizes a value between 0 and 1.
+   *
+   * @param value
+   *          The value to normalize.
+   * @param min
+   *          The minimum value in the range.
+   * @param max
+   *          The maximum value in the range.
+   * @return The normalized value.
+   */
   private Double normalize(Double value, Double min, Double max) {
     return (value - min) / (max - min);
   }
 
+  /**
+   * Fills the networkInfoList with data from the input file.
+   */
   private void fillNetworkInfoList() {
-    final String[] Networklist = PreesmIOHelper.getInstance().read(path, NET_NAME).split("\n\n");
-    for (final String element : Networklist) {
+    final String[] networklist = PreesmIOHelper.getInstance().read(path, NET_NAME).split("\n\n");
+    for (final String element : networklist) {
 
       String type = "";
       int node = 0;
+      int core = 0;
+      int coreFrequency = 0;
       Double throughput = 0.0;
       Double memory = 0.0;
       Double energy = 0.0;
       Double cost = 0.0;
-      final String[] NetworkArg = element.split("\n");
-      for (int indexArg = 0; indexArg < NetworkArg.length; indexArg++) {
-        final String[] column = NetworkArg[indexArg].split(";");
+      final String[] networkArg = element.split("\n");
+      for (int indexArg = 0; indexArg < networkArg.length; indexArg++) {
+        final String[] column = networkArg[indexArg].split(";");
 
         switch (column[0]) {
           case "type":
             type = column[1].split(":")[0];
             node = Integer.valueOf(column[1].split(":")[1]);
+            core = Integer.valueOf(column[1].split(":")[2]);
+            coreFrequency = Integer.valueOf(column[1].split(":")[3]);
             break;
-          case "throughput":
+          case "finalLatency":
             throughput = Double.valueOf(column[1]);
             break;
           case "memory":
@@ -212,8 +371,9 @@ public class AnalysisPage4 {
             break;
         }
 
-        if (indexArg == (NetworkArg.length - 1)) {
-          final NetworkInfo newNetwork = new NetworkInfo(type, node, throughput, memory, energy, cost);
+        if (indexArg == (networkArg.length - 1)) {
+          final NetworkInfo newNetwork = new NetworkInfo(type, node, core, coreFrequency, throughput, memory, energy,
+              cost);
           networkInfoList.add(newNetwork);
         }
       }
@@ -221,11 +381,18 @@ public class AnalysisPage4 {
 
   }
 
+  /**
+   * Updates the dataset based on the selected node key.
+   *
+   * @param dataset
+   *          The dataset to update.
+   */
   private void updateDataset(XYSeriesCollection dataset) {
     dataset.removeAllSeries();
-    for (final NetworkInfo net : nodeNetworkInfoNormalMap.get(nodeKey)) {
-      final XYSeries s1 = new XYSeries(net.getType() + ":" + net.getNode());
-      s1.add(0.0, net.getThroughput());
+    for (final NetworkInfo net : nodeNetworkInfoNormalMap.get(nodeKey).get(coreKey).get(coreFrequencyKey)) {
+      final XYSeries s1 = new XYSeries(
+          net.getTypeID() + ":" + net.getNode() + ":" + net.getCore() + ":" + net.getCoreFrequency());
+      s1.add(0.0, net.getFinalLatency());
       s1.add(90.0, net.getMemory());
       s1.add(180.0, net.getCost());
       s1.add(270.0, net.getEnergy());
@@ -234,33 +401,38 @@ public class AnalysisPage4 {
 
   }
 
+  /**
+   * Fills the dataset with multi-criteria network information.
+   *
+   * @return The XYSeriesCollection containing multi-criteria network information.
+   */
   private XYSeriesCollection fillMultiCriteriaDataSet() {
     final XYSeriesCollection dataset = new XYSeriesCollection();
-    for (final NetworkInfo net : nodeNetworkInfoNormalMap.get(nodeKey)) {
-      final XYSeries s1 = new XYSeries(net.getType() + ":" + net.getNode());
-      s1.add(0.0, net.getThroughput());
+    for (final NetworkInfo net : nodeNetworkInfoNormalMap.get(nodeKey).get(coreKey).get(coreFrequencyKey)) {
+      final XYSeries s1 = new XYSeries(
+          net.getTypeID() + ":" + net.getNode() + ":" + net.getCore() + ":" + net.getCoreFrequency());
+      s1.add(0.0, net.getFinalLatency());
       s1.add(90.0, net.getMemory());
       s1.add(180.0, net.getCost());
       s1.add(270.0, net.getEnergy());
       dataset.addSeries(s1);
     }
-    // for (final NetworkInfo net : AnalysisPage4.networkInfoNormalList) {
-    // final XYSeries s1 = new XYSeries(net.getType() + ":" + net.getNode());
-    // s1.add(0.0, net.getThroughput());
-    // s1.add(90.0, net.getMemory());
-    // s1.add(180.0, net.getCost());
-    // s1.add(270.0, net.getEnergy());
-    // result.addSeries(s1);
-    // }
 
     return dataset;
   }
 
+  /**
+   * Creates a polar chart with the given dataset.
+   *
+   * @param dataset
+   *          The XYSeriesCollection dataset.
+   * @return The JFreeChart radar chart.
+   */
   private JFreeChart polarChart(XYSeriesCollection dataset) {
     final JFreeChart chart = ChartFactory.createPolarChart("Normalized Radar Chart: Network Topology Comparison",
         dataset, // data
         true, // legend
-        true, // Infobulles
+        true, // tooltips
         false // URL
     );
     chart.setBorderPaint(Color.white);
@@ -282,6 +454,11 @@ public class AnalysisPage4 {
     return chart;
   }
 
+  /**
+   * Generates the description text for the analysis page.
+   *
+   * @return The description text in HTML format.
+   */
   private String description() {
     String description = "<html>";
     description += "This chart gives a comprehensive comparison of the 5 main network topologies";

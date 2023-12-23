@@ -66,7 +66,7 @@ public class EuclideTransfoTask extends AbstractTaskImplementation {
       PreesmLogger.getLogger().log(Level.SEVERE, errorMessage);
     }
     final Scenario scenario = (Scenario) inputs.get("scenario");
-    final PiGraph transfo = new EuclideTransfo(scenario, mode, cluster).execute();
+    final PiGraph transfo = new EuclideTransfo(scenario).execute();
 
     for (final Entry<ComponentInstance, EList<AbstractActor>> gp : scenario.getConstraints().getGroupConstraints()) {
       final int size = gp.getValue().size();

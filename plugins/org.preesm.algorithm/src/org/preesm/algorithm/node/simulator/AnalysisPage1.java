@@ -17,6 +17,12 @@ import org.jfree.data.xy.XYSeries;
 import org.jfree.data.xy.XYSeriesCollection;
 import org.preesm.commons.files.PreesmIOHelper;
 
+/**
+ * This class represents the first page of the analysis results. It includes visualizations of workload deviation trends
+ * and simulated latency over iterations.
+ *
+ * @author orenaud
+ */
 public class AnalysisPage1 {
   public static final String WORKLOAD_NAME = "std_trend.csv";
   public static final String LATENCY_NAME  = "latency_trend.csv";
@@ -26,11 +32,24 @@ public class AnalysisPage1 {
   static Double              workloadOptim = 0d;
   static String              path;
 
+  /**
+   * Constructs an AnalysisPage1 object with the given parameters.
+   *
+   * @param path
+   *          The file path for reading data.
+   * @param iterationOptim
+   *          The iteration for optimization.
+   */
   public AnalysisPage1(String path, int iterationOptim) {
     AnalysisPage1.path = path;
     AnalysisPage1.iterationOptim = iterationOptim;
   }
 
+  /**
+   * Executes the analysis and returns a JPanel containing visualizations.
+   *
+   * @return A JPanel with workload deviation and latency visualizations.
+   */
   public JPanel execute() {
     final JPanel panel = new JPanel();
     final XYSeries series1 = fillLatencyDataSet();
@@ -53,10 +72,20 @@ public class AnalysisPage1 {
     return panel;
   }
 
+  /**
+   * Gets the best iteration.
+   *
+   * @return The optimal iteration.
+   */
   public static int getIterationOptim() {
     return iterationOptim;
   }
 
+  /**
+   * Generates the description text for the analysis page.
+   *
+   * @return The description text in HTML format.
+   */
   private String description() {
     return "<html>This chart gives an idea of the impact of the efficiency of the application"
         + " graph distribution on your set of nodes via the SimSDP method.<br>" + " The method has iterated over <b>"
@@ -76,6 +105,15 @@ public class AnalysisPage1 {
         + String.format("%.2f", workloadOptim) + " %" + "</html>";
   }
 
+  /**
+   * Creates a JFreeChart with two Y-axes for workload deviation and throughput trends.
+   *
+   * @param series1
+   *          The series for workload deviation.
+   * @param series2
+   *          The series for throughput.
+   * @return The configured JFreeChart.
+   */
   private JFreeChart doubleAxisChart(XYSeries series1, XYSeries series2) {
     final XYSeriesCollection dataset = new XYSeriesCollection();
     dataset.addSeries(series1);
@@ -100,6 +138,11 @@ public class AnalysisPage1 {
     return chart;
   }
 
+  /**
+   * Fills the dataset with workload deviation values.
+   *
+   * @return The XYSeries containing workload deviation data.
+   */
   private static XYSeries fillWorkloadDeviationDataSet() {
     final String[] arrayWorkload = PreesmIOHelper.getInstance().read(path, WORKLOAD_NAME).split("\n");
     workloadOptim = 0d;
@@ -111,6 +154,11 @@ public class AnalysisPage1 {
     return serie;
   }
 
+  /**
+   * Fills the dataset with latency values.
+   *
+   * @return The XYSeries containing latency data.
+   */
   private static XYSeries fillLatencyDataSet() {
     final String[] arrayLatency = PreesmIOHelper.getInstance().read(path, LATENCY_NAME).split("\n");
     final XYSeries serie = new XYSeries("Latency");

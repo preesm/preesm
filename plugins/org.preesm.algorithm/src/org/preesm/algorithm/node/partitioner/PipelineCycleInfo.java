@@ -2,10 +2,19 @@ package org.preesm.algorithm.node.partitioner;
 
 import java.util.ArrayList;
 import java.util.List;
+import org.preesm.algorithm.clustering.scape.ClusteringScape;
 import org.preesm.commons.graph.Vertex;
 import org.preesm.model.pisdf.AbstractActor;
+import org.preesm.model.pisdf.DataInputInterface;
+import org.preesm.model.pisdf.DataInputPort;
+import org.preesm.model.pisdf.DataOutputInterface;
+import org.preesm.model.pisdf.DataOutputPort;
 import org.preesm.model.pisdf.Delay;
+import org.preesm.model.pisdf.Fifo;
 import org.preesm.model.pisdf.PiGraph;
+import org.preesm.model.pisdf.factory.PiMMUserFactory;
+import org.preesm.model.pisdf.util.PiSDFSubgraphBuilder;
+import org.preesm.model.scenario.Scenario;
 
 /**
  * This Class identifies cycles and pipelines in the graph
@@ -17,6 +26,10 @@ public class PipelineCycleInfo {
    * Input graph.
    */
   PiGraph                                 graph;
+  /**
+   * Input scenario.
+   */
+  Scenario                                scenario;
   /**
    * List of pipeline delays
    */
@@ -30,8 +43,10 @@ public class PipelineCycleInfo {
    */
   private final List<List<AbstractActor>> cycleActors;
 
-  public PipelineCycleInfo(PiGraph graph) {
-    this.graph = graph;
+  public PipelineCycleInfo(Scenario scenario) {
+    this.scenario = scenario;
+    this.graph = scenario.getAlgorithm();
+
     this.pipelineDelays = new ArrayList<>();
     this.cycleDelays = new ArrayList<>();
     this.cycleActors = new ArrayList<>();
@@ -39,7 +54,6 @@ public class PipelineCycleInfo {
 
   public void execute() {
     for (final Delay delay : graph.getAllDelays()) {
-      // if (delay.getLevel().equals(PersistenceLevel.PERMANENT)) {
       final List<AbstractActor> visitedActors = new ArrayList<>();
       final AbstractActor a = (AbstractActor) delay.getContainingFifo().getSource();
       final AbstractActor b = (AbstractActor) delay.getContainingFifo().getTarget();
@@ -49,7 +63,6 @@ public class PipelineCycleInfo {
         cycleDelays.add(delay);
         cycleActors.add(visitedActors);
       }
-      // }
     }
   }
 
@@ -87,6 +100,56 @@ public class PipelineCycleInfo {
 
   public static boolean isPipeline(AbstractActor a, AbstractActor b, List<AbstractActor> visitedActors) {
     return !hasPathToA(b, a, visitedActors);
+  }
+
+  public void removeCycle() {
+    if (!cycleActors.isEmpty()) {
+      int index = 0;
+      for (final List<AbstractActor> cycle : cycleActors) {
+        final PiGraph subGraph = new PiSDFSubgraphBuilder(this.graph, cycle, "cycle_" + index++).build();
+        // extract delay
+        final Delay delay = subGraph.getDelays().get(0);
+        // connect target delay to a new input interface
+        final DataInputPort delayedActorPortIn = delay.getContainingFifo().getTargetPort();
+        final String type = delay.getContainingFifo().getType();
+        final Long expressionIn = delayedActorPortIn.getExpression().evaluate();
+
+        final DataInputInterface delayInterface = PiMMUserFactory.instance.createDataInputInterface();
+        delayInterface.setContainingGraph(subGraph);
+        delayInterface.getDataOutputPorts().get(0).setExpression(expressionIn);
+        delayInterface.getGraphPort().setExpression(expressionIn);
+        delayInterface.setName(delayedActorPortIn.getName() + "_in");
+        delayInterface.getGraphPort().setName(delayedActorPortIn.getName() + "_in");
+
+        final Fifo fifin = PiMMUserFactory.instance.createFifo(delayInterface.getDataOutputPorts().get(0),
+            delayedActorPortIn, type);
+        fifin.setContainingGraph(subGraph);
+
+        delay.getContainingFifo().setTargetPort((DataInputPort) delayInterface.getGraphPort());
+
+        // connect source delay to a new output interface
+        final DataOutputPort delayedActorPortout = delay.getContainingFifo().getSourcePort();
+        final Long expressionOut = delayedActorPortout.getExpression().evaluate();
+
+        final DataOutputInterface delayInterfaceOut = PiMMUserFactory.instance.createDataOutputInterface();
+        delayInterfaceOut.setContainingGraph(subGraph);
+        delayInterfaceOut.getDataInputPorts().get(0).setExpression(expressionOut);
+        delayInterfaceOut.getGraphPort().setExpression(expressionOut);
+        delayInterfaceOut.setName(delayedActorPortout.getName() + "_out");
+        delayInterfaceOut.getGraphPort().setName(delayedActorPortout.getName() + "_out");
+
+        final Fifo fifout = PiMMUserFactory.instance.createFifo(delayedActorPortout,
+            delayInterfaceOut.getDataInputPorts().get(0), type);
+        fifout.setContainingGraph(subGraph);
+
+        delay.getContainingFifo().setSourcePort((DataOutputPort) delayInterfaceOut.getGraphPort());
+
+        delay.setContainingGraph(graph);
+        delay.getActor().setContainingGraph(graph);
+        ClusteringScape.cluster(subGraph, scenario, 100000000000000L);
+      }
+
+    }
   }
 
   public List<Delay> getPipelineDelays() {

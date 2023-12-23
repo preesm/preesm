@@ -46,13 +46,15 @@ import org.junit.Test;
  *
  * @author orenaud
  */
-public class SCAPEPartitioningTest {
 
-  private final String[] workflow    = { "euclide.workflow", "data.workflow", "pip.workflow", "scape1.workflow",
-      "scape2.workflow", "scape2.workflow", "scape2.workflow", "schedule.workflow" };
-  private final String[] scenario    = { "ABC_5CoresX86.scenario", "ABC_3CoresX86.scenario", "ABC_3CoresX86.scenario",
-      "ABC_3CoresX86.scenario", "ABC_3CoresX86.scenario", "ABC_3CoresX86.scenario", "top_3CoresX86.scenario",
-      "ABC2_3CoresX86.scenario" };
+public class SCAPEPartitioningTest {
+  private static final String SCAPE2 = "scape2.workflow";
+  private static final String ABC_3C = "ABC_3CoresX86.scenario";
+
+  private final String[] workflow    = { "euclide.workflow", "data.workflow", "pip.workflow", "scape1.workflow", SCAPE2,
+      SCAPE2, SCAPE2, "schedule.workflow" };
+  private final String[] scenario    = { "ABC_5CoresX86.scenario", ABC_3C, ABC_3C, ABC_3C, ABC_3C, ABC_3C,
+      "top_3CoresX86.scenario", "ABC2_3CoresX86.scenario" };
   private final String   projectName = "org.ietr.preesm.scape";
 
   @Test
