@@ -174,7 +174,6 @@ public class ScheduleScape {
    * @return combineName the APGAN schedule translation
    */
   private String scheduleStr() {
-    // final Map<AbstractVertex, Long> rv = PiBRV.compute(graph, BRVMethod.LCM);
     if (graph.getExecutableActors().size() == 1) {
       return brv.get(graph.getExecutableActors().get(0)) + "(" + graph.getExecutableActors().get(0).getName() + ")";
     }

@@ -530,11 +530,11 @@
       </handler>
 
       <handler
-            class="org.preesm.ui.slam.popup.actions.ArchitectureSimSDPGeneratorPopup"
+            class="org.preesm.ui.slam.popup.actions.ArchitectureSimSDPnodeGeneratorPopup"
             commandId="org.preesm.ui.slam.command.ArchitectureSimSDPGenerator">
       </handler>
       <handler
-            class="org.preesm.ui.slam.popup.actions.ArchitectureGeneratorNetworkPopup"
+            class="org.preesm.ui.slam.popup.actions.ArchitectureSimSDPnetworkGeneratorPopup"
             commandId="org.preesm.ui.slam.command.ArchitectureSimSDPMultinetGenerator">
       </handler>
       

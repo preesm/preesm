@@ -35,12 +35,14 @@
  */
 package org.preesm.ui.slam.popup.actions;
 
+<<<<<<<< HEAD:plugins/org.preesm.ui.slam/src/org/preesm/ui/slam/popup/actions/ArchitectureGeneratorSimSDPPopup.java
 import java.awt.Button;
 import java.awt.GridLayout;
 import java.awt.Label;
 import java.util.ArrayList;
+========
+>>>>>>>> f2ba9f123 (adding multinet integration test):plugins/org.preesm.ui.slam/src/org/preesm/ui/slam/popup/actions/ArchitectureSimSDPnodeGeneratorPopup.java
 import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.concurrent.ExecutionException;
@@ -50,10 +52,6 @@ import org.eclipse.core.commands.ExecutionEvent;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.jface.viewers.TreeSelection;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.ModifyEvent;
-import org.eclipse.swt.events.ModifyListener;
-import org.eclipse.swt.events.SelectionAdapter;
-import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Display;
@@ -69,20 +67,43 @@ import org.preesm.ui.wizards.PreesmProjectNature;
 import org.w3c.dom.Text;
 
 /**
- * Provides commands to generate custom multinode architectures.
+ * This class provides commands to generate custom multinode architectures in a Preesm project. It extends
+ * AbstractHandler to implement the execution logic for the architecture generation popup.
+ *
+ * The architecture generation involves specifying the number of nodes, internode communication rate, and customizing
+ * each node and its cores, including core communication rate, frequency, and type.
+ *
+ * The generated architecture information is saved to a CSV file named "SimSDP_node.csv" in the Archi directory.
  *
  * @author orenaud
- *
  */
+<<<<<<<< HEAD:plugins/org.preesm.ui.slam/src/org/preesm/ui/slam/popup/actions/ArchitectureGeneratorSimSDPPopup.java
 
 public class ArchitectureSimSDPGeneratorPopup extends AbstractHandler {
+========
+public class ArchitectureSimSDPnodeGeneratorPopup extends AbstractHandler {
+  // Constants
+>>>>>>>> f2ba9f123 (adding multinet integration test):plugins/org.preesm.ui.slam/src/org/preesm/ui/slam/popup/actions/ArchitectureSimSDPnodeGeneratorPopup.java
   String                     path       = "";
-  public static final String ARCHI_NAME = "SimSDP_archi.csv";
+  public static final String ARCHI_NAME = "SimSDP_node.csv";
 
-  final Map<Integer, List<CoreInfo>> nodeInfoList = new LinkedHashMap<>();
-  private List<CoreInfo>             coreInfoList = new ArrayList<>();
-  CoreInfo                           coreInfo     = new CoreInfo("", "", "", "", "", "", "");
+  // Data structures for storing architecture information
+  final Map<Integer, Map<Integer, CoreInfo>> nodeInfoList        = new LinkedHashMap<>();
+  private CoreInfo                           activeCoreInfo      = new CoreInfo("", "", "", "", "", "", "");
+  Integer                                    activeNodeId        = 0;
+  Integer                                    activeCoreId        = 0;
+  String                                     internodeRate       = "0";
+  String                                     activeIntranodeRate = "0";
 
+  /**
+   * Executes the architecture generation logic when the corresponding command is triggered.
+   *
+   * @param event
+   *          The execution event triggering the command.
+   * @return null, as no specific return value is expected.
+   * @throws ExecutionException
+   *           If an exception occurs during execution.
+   */
   @Override
   public Object execute(ExecutionEvent event) throws ExecutionException {
     try {
@@ -104,6 +125,9 @@ public class ArchitectureSimSDPGeneratorPopup extends AbstractHandler {
     return null;
   }
 
+  /**
+   * Opens the architecture properties dialog to gather user input for custom multinode architecture generation.
+   */
   private void openMutinodePropertiesDialog() {
 
     final Shell parentShell = DialogUtil.getShell();
@@ -116,7 +140,7 @@ public class ArchitectureSimSDPGeneratorPopup extends AbstractHandler {
     nodeLabel.setText("Enter the number of nodes:");
 
     final Text nodeText = new Text(shell, SWT.BORDER);
-    nodeText.setMessage("3");
+    nodeText.setMessage("3");// display example
     nodeText.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
 
     final Label ratelabel = new Label(shell, SWT.NONE);
@@ -125,12 +149,7 @@ public class ArchitectureSimSDPGeneratorPopup extends AbstractHandler {
     final Text nodeRateText = new Text(shell, SWT.BORDER);
     nodeRateText.setMessage("9.42");
     nodeRateText.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
-    nodeRateText.addModifyListener(new ModifyListener() {
-      @Override
-      public void modifyText(ModifyEvent e) {
-        coreInfo.setNodeCommunicationRate(nodeRateText.getText());
-      }
-    });
+    nodeRateText.addModifyListener(e -> internodeRate = nodeRateText.getText());
 
     final Label nodeCombolabel = new Label(shell, SWT.NONE);
     nodeCombolabel.setText("Customize the selected node:");
@@ -139,53 +158,24 @@ public class ArchitectureSimSDPGeneratorPopup extends AbstractHandler {
     final GridData comboData = new GridData(SWT.FILL, SWT.CENTER, true, false);
     comboData.horizontalSpan = 1;
     nodeCombo.setLayoutData(comboData);
+    nodeText.addModifyListener(e -> updateComboItems(nodeCombo, nodeText.getText()));
+    nodeCombo.addModifyListener(e -> initNodeInfo(nodeCombo));
 
-    nodeText.addModifyListener(new ModifyListener() {
-      @Override
-      public void modifyText(ModifyEvent e) {
-        updateComboItems(nodeCombo, nodeText.getText());
-        for (int i = 0; i < Integer.valueOf(nodeText.getText()); i++) {
-          final CoreInfo newCoreInfo = new CoreInfo("Node" + i, "9.42", "Core0", "0", "2000", "472.0", "x86");
-          final List<CoreInfo> newCoreInfoList = new ArrayList<>();
-          newCoreInfoList.add(newCoreInfo);
-          nodeInfoList.put(i, newCoreInfoList);
-        }
-        coreInfoList = nodeInfoList.get(0);
-        coreInfo = coreInfoList.get(0);
-      }
-    });
-    if (!nodeCombo.getText().isEmpty()) {
-      final int nodeIndex = Integer.parseInt(nodeCombo.getText().replace("Node", ""));
-
-      nodeCombo.addSelectionListener(new SelectionAdapter() {
-        @Override
-        public void widgetSelected(SelectionEvent e) {
-          coreInfoList = nodeInfoList.get(nodeIndex);
-          coreInfo = coreInfoList.get(0);
-
-        }
-      });
-    }
     final Label coreLabel = new Label(shell, SWT.NONE);
     coreLabel.setText("Enter the number of cores:");
 
     final Text coreText = new Text(shell, SWT.BORDER);
-    coreText.setMessage(String.valueOf(coreInfoList.size()));
+    coreText.setMessage("2");
     coreText.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
 
     final Label rateCoreLabel = new Label(shell, SWT.NONE);
     rateCoreLabel.setText("Enter the core communication rate ");
 
     final Text coreRateText = new Text(shell, SWT.BORDER);
-    coreRateText.setMessage(coreInfo.getCoreCommunicationRate());
+    coreRateText.setMessage(activeCoreInfo.getCoreCommunicationRate());
     coreRateText.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
-
-    coreRateText.addModifyListener(new ModifyListener() {
-      @Override
-      public void modifyText(ModifyEvent e) {
-        coreInfo.setCoreCommunicationRate(coreRateText.getText());
-      }
-    });
+    coreRateText.addModifyListener(e -> activeCoreInfo.setCoreCommunicationRate(coreRateText.getText()));
+    coreRateText.addModifyListener(e -> activeIntranodeRate = coreRateText.getText());
 
     final Label coreCombolabel = new Label(shell, SWT.NONE);
     coreCombolabel.setText("Customize the selected core:");
@@ -193,72 +183,27 @@ public class ArchitectureSimSDPGeneratorPopup extends AbstractHandler {
     final GridData coreData = new GridData(SWT.FILL, SWT.CENTER, true, false);
     coreData.horizontalSpan = 1;
     coreCombo.setLayoutData(coreData);
-
-    coreText.addModifyListener(new ModifyListener() {
-      @Override
-      public void modifyText(ModifyEvent e) {
-        updateCoreComboItems(coreCombo, coreText.getText());
-        for (int i = 0; i < Integer.valueOf(coreText.getText()); i++) {
-          final CoreInfo newCoreInfo = new CoreInfo(nodeCombo.getText(), nodeRateText.getText(), "Core" + i,
-              String.valueOf(i), "2000", "472", "x86");
-          final int nodeIndex = Integer.parseInt(nodeCombo.getText().replace("Node", ""));
-          nodeInfoList.get(nodeIndex).add(newCoreInfo);
-        }
-      }
-    });
+    coreText.addModifyListener(e -> updateCoreComboItems(coreCombo, coreText.getText()));
+    coreCombo.addModifyListener(e -> initCoreInfo(nodeCombo, coreCombo));
 
     final Label freqLabel = new Label(shell, SWT.NONE);
     freqLabel.setText("Enter the core frequency ");
     final Text freqText = new Text(shell, SWT.BORDER);
-    freqText.setMessage(coreInfo.getCoreFrequency());
+    freqText.setMessage(activeCoreInfo.getCoreFrequency());
     freqText.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
 
-    freqText.addModifyListener(new ModifyListener() {
-      @Override
-      public void modifyText(ModifyEvent e) {
-        coreInfo.setCoreFrequency(freqText.getText());
-      }
-    });
+    freqText.addModifyListener(e -> activeCoreInfo.setCoreFrequency(freqText.getText()));
 
     final Label typeLabel = new Label(shell, SWT.NONE);
     typeLabel.setText("Enter the type of core ");
     final Combo comboType = new Combo(shell, SWT.READ_ONLY);
-
     comboType.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
-    coreCombo.addSelectionListener(new SelectionAdapter() {
-      @Override
-      public void widgetSelected(SelectionEvent e) {
-
-        final int i = 0;
-      }
-    });
-
     // Add options
     comboType.add("x86");
     comboType.add("CC66");
     comboType.add("FPGA");
     if (!nodeCombo.getText().isEmpty()) {
-      comboType.addModifyListener(e -> {
-        coreInfo.setCoreType(comboType.getText());
-
-        // final CoreInfo coreInfoUpdate = new CoreInfo(nodeCombo.getText(), nodeRateText.getText(),
-        // coreCombo.getText(),
-        // coreCombo.getText().replace("Core", ""), coreRateText.getText(), freqText.getText(), comboType.getText());
-        //
-        // coreInfoList = nodeInfoList.get(nodeIndex);
-        //
-        // boolean coreExists = false;
-        // for (int i = 0; i < coreInfoList.size(); i++) {
-        // if (coreInfoList.get(i).getCoreName().equals(coreInfoUpdate.getCoreName())) {
-        // coreInfoList.set(i, coreInfoUpdate);
-        // coreExists = true;
-        // break;
-        // }
-        // }
-        // if (!coreExists) {
-        // coreInfoList.add(coreInfoUpdate);
-        // }
-      });
+      comboType.addModifyListener(e -> activeCoreInfo.setCoreType(comboType.getText()));
     }
     final Button cancelButton = new Button(shell, SWT.PUSH);
     cancelButton.setText("Cancel");
@@ -279,11 +224,66 @@ public class ArchitectureSimSDPGeneratorPopup extends AbstractHandler {
 
   }
 
+  /**
+   * Initializes core information based on user input from the architecture properties dialog.
+   *
+   * @param nodeCombo
+   *          The Combo box for selecting nodes.
+   * @param coreCombo
+   *          The Combo box for selecting cores.
+   */
+  protected void initCoreInfo(Combo nodeCombo, Combo coreCombo) {
+    activeCoreId = Integer.parseInt(coreCombo.getText().replace("Core", ""));
+
+    if (!nodeInfoList.containsKey(activeNodeId) && nodeInfoList.get(activeNodeId).containsKey(activeCoreId)) {
+      activeCoreInfo = nodeInfoList.get(activeNodeId).get(activeCoreId);
+
+    } else {
+      final CoreInfo newCoreInfo = new CoreInfo(nodeCombo.getText(), "9.42", "Core" + activeCoreId,
+          String.valueOf(activeCoreId), "2000", activeIntranodeRate, "x86");
+      nodeInfoList.get(activeNodeId).put(activeCoreId, newCoreInfo);
+      activeCoreInfo = newCoreInfo;
+    }
+
+  }
+
+  /**
+   * Initializes node information based on user input from the architecture properties dialog.
+   *
+   * @param nodeCombo
+   *          The Combo box for selecting nodes.
+   */
+  protected void initNodeInfo(Combo nodeCombo) {
+    if (!nodeCombo.getText().isEmpty()) {
+      activeNodeId = Integer.parseInt(nodeCombo.getText().replace("Node", ""));
+
+      if (nodeInfoList.containsKey(activeNodeId)) {
+        activeCoreInfo = nodeInfoList.get(activeNodeId).get(0);
+
+      } else {
+        final CoreInfo newCoreInfo = new CoreInfo(nodeCombo.getText(), "9.42", "Core0", "0", "2000", "472.0", "x86");
+        final Map<Integer, CoreInfo> newMap = new LinkedHashMap<>();
+        newMap.put(0, newCoreInfo);
+        nodeInfoList.put(activeNodeId, newMap);
+        activeCoreInfo = newCoreInfo;
+      }
+    }
+
+  }
+
+  /**
+   * Updates the items in the core Combo box based on the number of cores specified.
+   *
+   * @param combo
+   *          The Combo box for selecting cores.
+   * @param text
+   *          The user-specified number of cores.
+   */
   protected void updateCoreComboItems(Combo combo, String text) {
     try {
-      final int numberOfCodes = Integer.parseInt(text);
+      final int numberOfCores = Integer.parseInt(text);
       combo.removeAll();
-      for (int i = 0; i < numberOfCodes; i++) {
+      for (int i = 0; i < numberOfCores; i++) {
         combo.add("Core" + i);
       }
       combo.select(0);
@@ -292,6 +292,14 @@ public class ArchitectureSimSDPGeneratorPopup extends AbstractHandler {
     }
   }
 
+  /**
+   * Updates the items in the node Combo box based on the number of nodes specified.
+   *
+   * @param combo
+   *          The Combo box for selecting nodes.
+   * @param text
+   *          The user-specified number of nodes.
+   */
   protected void updateComboItems(Combo combo, String text) {
     try {
       final int numberOfNodes = Integer.parseInt(text);
@@ -305,12 +313,21 @@ public class ArchitectureSimSDPGeneratorPopup extends AbstractHandler {
     }
   }
 
-  private StringConcatenation processCsv(Map<Integer, List<CoreInfo>> nodeInfoList2) {
+  /**
+   * Processes the architecture information and generates a CSV content for saving to a file.
+   *
+   * @param nodeInfoList2
+   *          The map containing architecture information.
+   * @return The generated CSV content.
+   */
+  private StringConcatenation processCsv(Map<Integer, Map<Integer, CoreInfo>> nodeInfoList2) {
     final StringConcatenation content = new StringConcatenation();
-    for (final Entry<Integer, List<CoreInfo>> node : nodeInfoList2.entrySet()) {
-      for (final CoreInfo core : node.getValue()) {
-        content.append(core.getNodeName() + "," + core.getCoreID() + "," + core.getCoreFrequency() + ","
-            + core.getCoreCommunicationRate() + "," + core.getNodeCommunicationRate() + "\n");
+    content.append("Node name;Core ID;Core frequency;Intranode rate;Internode rate\n");
+    for (final Entry<Integer, Map<Integer, CoreInfo>> node : nodeInfoList2.entrySet()) {
+      for (final Entry<Integer, CoreInfo> core : node.getValue().entrySet()) {
+        final CoreInfo coreInfo = core.getValue();
+        content.append(coreInfo.getNodeName() + ";" + coreInfo.getCoreID() + ";" + coreInfo.getCoreFrequency() + ";"
+            + coreInfo.getCoreCommunicationRate() + ";" + internodeRate + "\n");
       }
     }
     return content;

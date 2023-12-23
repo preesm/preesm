@@ -1,2 +1,7 @@
+<<<<<<< HEAD
 Final Latency;Memory;Energy;Cost; Max speedup 
 260223641;246415360;1;1;37
+=======
+Final Latency;Memory;Energy;Cost 
+412471679;786432000;1;1
+>>>>>>> f2ba9f123 (adding multinet integration test)

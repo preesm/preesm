@@ -82,7 +82,7 @@ public class ClusteringScape {
   public PiGraph execute() {
     final PiGraph singleBranch = new MultiBranch(graph).addInitialSource();
     scenario.setAlgorithm(singleBranch);
-    final PiGraph euclide = new EuclideTransfo(scenario, mode, levelNumber).execute();
+    final PiGraph euclide = new EuclideTransfo(scenario).execute();
     scenario.setAlgorithm(euclide);
     // construct hierarchical structure
     hierarchicalLevelOrdered = HierarchicalRoute.fillHierarchicalStructure(graph);

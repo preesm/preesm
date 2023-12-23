@@ -10,6 +10,7 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.SwingConstants;
 import javax.swing.border.Border;
+import org.eclipse.xtend2.lib.StringConcatenation;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
@@ -21,6 +22,12 @@ import org.jfree.data.category.CategoryDataset;
 import org.jfree.data.category.DefaultCategoryDataset;
 import org.preesm.commons.files.PreesmIOHelper;
 
+/**
+ * This class represents the second page of the analysis results. It includes visualizations of intra-node occupation
+ * and speedup trends over iterations.
+ *
+ * @author orenaud
+ */
 public class AnalysisPage2 {
   static String              path;
   static int                 iterationOptim;
@@ -31,12 +38,26 @@ public class AnalysisPage2 {
   static List<Double>        speedupOptim    = new ArrayList<>();
   public static final String PAGE2_TITRE1    = "Intranode Occupation over Iteration";
   public static final String PAGE2_TITRE2    = "Intranode Speedups over Iteration";
+  public static final String ITERATION       = "Iteration ";
 
+  /**
+   * Constructs an AnalysisPage2 object with the given parameters.
+   *
+   * @param path
+   *          The file path for reading data.
+   * @param iterationOptim
+   *          The iteration for optimization.
+   */
   public AnalysisPage2(String path, int iterationOptim) {
     AnalysisPage2.path = path;
     AnalysisPage2.iterationOptim = iterationOptim;
   }
 
+  /**
+   * Executes the analysis and returns a JPanel containing visualizations.
+   *
+   * @return A JPanel with intra-node occupation and speedup visualizations.
+   */
   public JPanel execute() {
     final JPanel panel = new JPanel();
     final CategoryDataset series1 = fillOccupationDataSet();
@@ -61,41 +82,59 @@ public class AnalysisPage2 {
     return panel;
   }
 
+  /**
+   * Generates the description text for the analysis page.
+   *
+   * @return The description text in HTML format.
+   */
   private String description() {
-    String description = "<html>This chart gives an idea of the impact of the efficiency of the application"
+    final StringConcatenation description = new StringConcatenation();
+    description.append("<html>This chart gives an idea of the impact of the efficiency of the application"
         + " graph distribution on your set of nodes via the SimSDP method.<br>" + " The method has iterated over <b>"
-        + iterationNum + "</b> iterations, ";
-    description += "and here is the performance evaluation at intra-node level for each iteration.<br>"
+        + iterationNum + "</b> iterations, ");
+
+    description.append("and here is the performance evaluation at intra-node level for each iteration.<br>"
 
         + "The upper graph shows the percentage of occupancy per operator (node) over iterations.<br>"
         + "The lower graph shows the the possible speed-ups per node"
         + " and compare them to th achieved speed-ups over iterations.<br><br>"
         + "The optimal configuration is achieved with the following attributes: <br>" + "- Iteration: " + iterationOptim
-        + " <br>" + " - Occupation: ";
+        + " <br>" + " - Occupation: ");
     for (int i = 0; i < occupationOptim.size(); i++) {
-      description += " Node" + i + "->" + String.format("%.2f", occupationOptim.get(i)) + " %";
+      description.append(" Node" + i + "->" + String.format("%.2f", occupationOptim.get(i)) + " %");
       if (i < occupationOptim.size() - 1) {
-        description += ", ";
+        description.append(", ");
       }
     }
-    description += "  <br>" + "- Speed-ups: ";
+    description.append("  <br>" + "- Speed-ups: ");
     int nodeIndex = 0;
     for (int i = 0; i < speedupOptim.size(); i++) {
       if (i % 2 == 0) {
-        description += " Node" + nodeIndex + "-> current: " + String.format("%.2f", speedupOptim.get(i)) + " %";
+        description.append(" Node" + nodeIndex + "-> current: " + String.format("%.2f", speedupOptim.get(i)) + " %");
         nodeIndex++;
       } else {
-        description += "max: " + String.format("%.2f", speedupOptim.get(i)) + " %";
+        description.append("max: " + String.format("%.2f", speedupOptim.get(i)) + " %");
       }
       if (i < speedupOptim.size() - 1) {
-        description += ", ";
+        description.append(", ");
       }
 
     }
-    description += "</html>";
-    return description;
+    description.append("</html>");
+    return description.toString();
   }
 
+  /**
+   * Creates a JFreeChart for a bar chart with a given dataset, chart title, and y-axis label.
+   *
+   * @param dataset
+   *          The category dataset.
+   * @param chartTitle
+   *          The title of the chart.
+   * @param yAxisLabel
+   *          The label for the y-axis.
+   * @return The configured JFreeChart.
+   */
   private JFreeChart barChart(CategoryDataset dataset, String chartTitle, String yAxisLabel) {
     final String xAxisLabel = "Iteration";
 
@@ -110,6 +149,11 @@ public class AnalysisPage2 {
     return chart;
   }
 
+  /**
+   * Fills the dataset with intra-node occupation values.
+   *
+   * @return The CategoryDataset containing intra-node occupation data.
+   */
   private static CategoryDataset fillOccupationDataSet() {
     final DefaultCategoryDataset dataset = new DefaultCategoryDataset();
     occupationOptim.clear();
@@ -117,7 +161,7 @@ public class AnalysisPage2 {
     for (int i = 0; i < arrayOccupation.length; i++) {
       final String[] column = arrayOccupation[i].split(";");
       for (int j = 0; j < column.length; j++) {
-        dataset.addValue(Double.valueOf(column[j]), "Occupation on Node" + j, "Iteration " + (i + 1));
+        dataset.addValue(Double.valueOf(column[j]), "Occupation on Node" + j, ITERATION + (i + 1));
         if (i == iterationOptim) {
           occupationOptim.add(Double.valueOf(column[j]));
         }
@@ -126,6 +170,11 @@ public class AnalysisPage2 {
     return dataset;
   }
 
+  /**
+   * Fills the dataset with intra-node speedup values.
+   *
+   * @return The CategoryDataset containing intra-node speedup data.
+   */
   private static CategoryDataset fillSpeedupDataSet() {
     final DefaultCategoryDataset dataset = new DefaultCategoryDataset();
     speedupOptim.clear();
@@ -136,11 +185,11 @@ public class AnalysisPage2 {
       for (int j = 0; j < column.length; j++) {
         if (j % 2 == 0) {
           dataset.addValue(Double.valueOf(column[j]), "Currently Obtained Speedup on Node" + nodeIndex,
-              "Iteration " + (i + 1));
+              ITERATION + (i + 1));
 
         } else {
           dataset.addValue(Double.valueOf(column[j]), "Maximum Achievable Speedup on Node" + nodeIndex,
-              "Iteration " + (i + 1));
+              ITERATION + (i + 1));
           nodeIndex++;
         }
         if (i == iterationOptim) {

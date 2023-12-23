@@ -49,6 +49,7 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Path;
+import org.eclipse.xtend2.lib.StringConcatenation;
 import org.preesm.commons.exceptions.PreesmRuntimeException;
 
 /**
@@ -136,14 +137,43 @@ public class PreesmIOHelper {
     return content.toString();
   }
 
+  /**
+   * Appends data to a file, creating the file if it does not exist.
+   *
+   * @param filePath
+   *          The path of the file.
+   * @param fileName
+   *          The name of the file.
+   * @param data
+   *          The data to be appended to the file.
+   * @return The IFile object representing the appended file.
+   */
+  public IFile append(final String filePath, final String fileName, final String data) {
+    final StringConcatenation content = new StringConcatenation();
+
+    // if the file exists, we write to it otherwise we create the template
+    final IFile iFile = ResourcesPlugin.getWorkspace().getRoot().getFile(new Path(filePath + fileName));
+    if (iFile.isAccessible()) {
+      content.append(PreesmIOHelper.getInstance().read(filePath, fileName));
+      content.append(data + "\n");
+      PreesmIOHelper.getInstance().print(filePath, fileName, content);
+    } else {
+
+      content.append(data + "\n");
+      PreesmIOHelper.getInstance().print(filePath, fileName, content);
+
+    }
+    return iFile;
+  }
+
   // See
   // https://stackoverflow.com/questions/68075036/eclipse-plugin-how-do-i-create-all-folders-ifolders-in-a-given-path-ipath
   public static void createFolderRecursively(IFolder folder, boolean force, boolean local, IProgressMonitor monitor)
       throws CoreException {
     if (!folder.exists()) {
       final IContainer parent = folder.getParent();
-      if (parent instanceof IFolder) {
-        createFolderRecursively((IFolder) parent, force, local, null);
+      if (parent instanceof final IFolder ifolder) {
+        createFolderRecursively(ifolder, force, local, null);
       }
       folder.create(force, local, monitor);
     }
