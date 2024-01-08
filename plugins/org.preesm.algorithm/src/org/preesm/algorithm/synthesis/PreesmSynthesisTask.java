@@ -97,6 +97,14 @@ import org.preesm.workflow.implement.AbstractWorkflowNodeImplementation;
         @Port(name = "Allocation", type = Allocation.class) })
 public class PreesmSynthesisTask extends AbstractTaskImplementation {
 
+  public static final String VALUE_ALLOCATORS_SIMPLE = "simple";
+  public static final String VALUE_ALLOCATORS_LEGACY = "legacy";
+
+  public static final String VALUE_SCHEDULER_SIMPLE   = "simple";
+  public static final String VALUE_SCHEDULER_LEGACY   = "legacy";
+  public static final String VALUE_SCHEDULER_PERIODIC = "periodic";
+  public static final String VALUE_SCHEDULER_CHOCO    = "choco";
+
   @Override
   public Map<String, Object> execute(final Map<String, Object> inputs, final Map<String, String> parameters,
       final IProgressMonitor monitor, final String nodeName, final Workflow workflow) {
@@ -138,47 +146,28 @@ public class PreesmSynthesisTask extends AbstractTaskImplementation {
   }
 
   private IScheduler selectScheduler(final String schedulerName) {
-    final IScheduler scheduler;
-    switch (schedulerName) {
-      case "simple":
-        scheduler = new SimpleScheduler();
-        break;
-      case "legacy":
-        scheduler = new LegacyListScheduler();
-        break;
-      case "periodic":
-        scheduler = new PeriodicScheduler();
-        break;
-      case "choco":
-        scheduler = new ChocoScheduler();
-        break;
-      default:
-        throw new PreesmRuntimeException("unknown scheduler: " + schedulerName);
-    }
-    return scheduler;
+    return switch (schedulerName) {
+      case VALUE_SCHEDULER_SIMPLE -> new SimpleScheduler();
+      case VALUE_SCHEDULER_LEGACY -> new LegacyListScheduler();
+      case VALUE_SCHEDULER_PERIODIC -> new PeriodicScheduler();
+      case VALUE_SCHEDULER_CHOCO -> new ChocoScheduler();
+      default -> throw new PreesmRuntimeException("unknown scheduler: " + schedulerName);
+    };
   }
 
   private IMemoryAllocation selectAllocation(final String allocationName) {
-    final IMemoryAllocation alloc;
-    switch (allocationName) {
-      case "simple":
-        alloc = new SimpleMemoryAllocation();
-        break;
-      case "legacy":
-        alloc = new LegacyMemoryAllocation();
-        break;
-
-      default:
-        throw new PreesmRuntimeException("unknown allocation: " + allocationName);
-    }
-    return alloc;
+    return switch (allocationName) {
+      case VALUE_ALLOCATORS_SIMPLE -> new SimpleMemoryAllocation();
+      case VALUE_ALLOCATORS_LEGACY -> new LegacyMemoryAllocation();
+      default -> throw new PreesmRuntimeException("unknown allocation: " + allocationName);
+    };
   }
 
   @Override
   public Map<String, String> getDefaultParameters() {
     final Map<String, String> res = new LinkedHashMap<>();
-    res.put("scheduler", "simple");
-    res.put("allocation", "simple");
+    res.put("scheduler", VALUE_SCHEDULER_SIMPLE);
+    res.put("allocation", VALUE_ALLOCATORS_SIMPLE);
     return res;
   }
 

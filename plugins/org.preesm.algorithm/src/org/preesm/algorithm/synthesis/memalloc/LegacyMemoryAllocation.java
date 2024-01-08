@@ -250,7 +250,7 @@ public class LegacyMemoryAllocation implements IMemoryAllocation {
       case MemoryAllocatorTask.VALUE_XFIT_ORDER_LARGEST_FIRST -> Order.LARGEST_FIRST;
       case MemoryAllocatorTask.VALUE_XFIT_ORDER_APPROX_STABLE_SET -> Order.STABLE_SET;
       case MemoryAllocatorTask.VALUE_XFIT_ORDER_EXACT_STABLE_SET -> Order.EXACT_STABLE_SET;
-      case MemoryAllocatorTask.VALUE_XFIT_ORDER_SCHEDULING -> Order.SCHEDULING;
+      // case MemoryAllocatorTask.VALUE_XFIT_ORDER_SCHEDULING -> Order.SCHEDULING;
       default -> throw new IllegalArgumentException("unknown order " + valueXFitOrder);
     };
 
@@ -259,7 +259,7 @@ public class LegacyMemoryAllocation implements IMemoryAllocation {
       final String memoryBank = entry.getKey();
       final PiMemoryExclusionGraph meg = entry.getValue();
 
-      final PiMemoryAllocator allocator = createAllocators(valueAllocators, alignment, ordering, nbShuffle, meg);
+      final PiMemoryAllocator allocator = createAllocator(valueAllocators, alignment, ordering, nbShuffle, meg);
 
       final String msg = "Heat up MemEx for " + memoryBank + " memory bank.";
       PreesmLogger.getLogger().log(Level.INFO, msg);
@@ -276,34 +276,43 @@ public class LegacyMemoryAllocation implements IMemoryAllocation {
   }
 
   /**
-   * Based on allocators specified in the task parameters, and stored in the {@link #allocators} attribute, this method
+   * Based on allocators specified in the task parameters, and stored in the {@link #allocator} attribute, this method
    * instantiate the {@link MemoryAllocator} that are to be executed on the given {@link MemoryExclusionGraph MEG}.
    *
    * @param memEx
    *          the {@link MemoryExclusionGraph MEG} to allocate.
    */
-  protected PiMemoryAllocator createAllocators(final String value, final long alignment, final Order o,
+  protected PiMemoryAllocator createAllocator(final String value, final long alignment, final Order o,
       final int nbShuffle, final PiMemoryExclusionGraph memEx) {
-    if (MemoryAllocatorTask.VALUE_ALLOCATORS_BASIC.equalsIgnoreCase(value)) {
-      final PiMemoryAllocator alloc = new PiBasicAllocator(memEx);
-      alloc.setAlignment(alignment);
-      return alloc;
-    }
-    if (MemoryAllocatorTask.VALUE_ALLOCATORS_FIRST_FIT.equalsIgnoreCase(value)) {
-      final PiOrderedAllocator alloc = new PiFirstFitAllocator(memEx);
-      alloc.setNbShuffle(nbShuffle);
-      alloc.setOrder(o);
-      alloc.setAlignment(alignment);
-      return alloc;
-    }
-    if (MemoryAllocatorTask.VALUE_ALLOCATORS_BEST_FIT.equalsIgnoreCase(value)) {
-      final PiOrderedAllocator alloc = new PiBestFitAllocator(memEx);
-      alloc.setNbShuffle(nbShuffle);
-      alloc.setOrder(o);
-      alloc.setAlignment(alignment);
-      return alloc;
-    }
-    throw new IllegalArgumentException("unknonwn allocator " + value);
+
+    final PiMemoryAllocator alloc = switch (value) {
+      case MemoryAllocatorTask.VALUE_ALLOCATORS_BASIC -> new PiBasicAllocator(memEx);
+      case MemoryAllocatorTask.VALUE_ALLOCATORS_FIRST_FIT -> {
+        final PiOrderedAllocator orderedAlloc = new PiFirstFitAllocator(memEx);
+        orderedAlloc.setNbShuffle(nbShuffle);
+        orderedAlloc.setOrder(o);
+        yield orderedAlloc;
+      }
+      case MemoryAllocatorTask.VALUE_ALLOCATORS_BEST_FIT -> {
+        final PiOrderedAllocator orderedAlloc = new PiBestFitAllocator(memEx);
+        orderedAlloc.setNbShuffle(nbShuffle);
+        orderedAlloc.setOrder(o);
+        yield orderedAlloc;
+      }
+      default -> throw new IllegalArgumentException(allocatorNameErrorMessage());
+    };
+
+    alloc.setAlignment(alignment);
+    return alloc;
+  }
+
+  private String allocatorNameErrorMessage() {
+    final StringBuilder errorStringBuilder = new StringBuilder();
+    errorStringBuilder.append("Unrecognized Allocator name. Supported parameters are:\n");
+    errorStringBuilder.append(MemoryAllocatorTask.VALUE_ALLOCATORS_BASIC + "\n");
+    errorStringBuilder.append(MemoryAllocatorTask.VALUE_ALLOCATORS_BEST_FIT + "\n");
+    errorStringBuilder.append(MemoryAllocatorTask.VALUE_ALLOCATORS_FIRST_FIT);
+    return errorStringBuilder.toString();
   }
 
   /**
@@ -318,10 +327,10 @@ public class LegacyMemoryAllocation implements IMemoryAllocation {
     long tStart;
     final StringBuilder sb = new StringBuilder(allocator.getClass().getSimpleName());
 
-    if (allocator instanceof PiOrderedAllocator) {
-      sb.append("(" + ((PiOrderedAllocator) allocator).getOrder());
-      if (((PiOrderedAllocator) allocator).getOrder() == Order.SHUFFLE) {
-        sb.append(":" + ((PiOrderedAllocator) allocator).getNbShuffle());
+    if (allocator instanceof final PiOrderedAllocator piOrderedAllocator) {
+      sb.append("(" + piOrderedAllocator.getOrder());
+      if (piOrderedAllocator.getOrder() == Order.SHUFFLE) {
+        sb.append(":" + piOrderedAllocator.getNbShuffle());
       }
       sb.append(")");
     }
@@ -352,17 +361,18 @@ public class LegacyMemoryAllocation implements IMemoryAllocation {
 
     String log = computeLog(allocator, tStart, sAllocator, tFinish);
 
-    if ((allocator instanceof PiOrderedAllocator) && (((PiOrderedAllocator) allocator).getOrder() == Order.SHUFFLE)) {
-      ((PiOrderedAllocator) allocator).setPolicy(Policy.WORST);
+    if ((allocator instanceof final PiOrderedAllocator piOrderedAllocator)
+        && (piOrderedAllocator.getOrder() == Order.SHUFFLE)) {
+      piOrderedAllocator.setPolicy(Policy.WORST);
       log += " worst: " + allocator.getMemorySizeInByte();
 
-      ((PiOrderedAllocator) allocator).setPolicy(Policy.MEDIANE);
+      piOrderedAllocator.setPolicy(Policy.MEDIANE);
       log += "(med: " + allocator.getMemorySizeInByte();
 
-      ((PiOrderedAllocator) allocator).setPolicy(Policy.AVERAGE);
+      piOrderedAllocator.setPolicy(Policy.AVERAGE);
       log += " avg: " + allocator.getMemorySizeInByte() + ")";
 
-      ((PiOrderedAllocator) allocator).setPolicy(Policy.BEST);
+      piOrderedAllocator.setPolicy(Policy.BEST);
     }
 
     PreesmLogger.getLogger().log(Level.INFO, log);
@@ -397,9 +407,7 @@ public class LegacyMemoryAllocation implements IMemoryAllocation {
           .getValue(PiMemoryExclusionGraph.HOST_MEMORY_OBJECT_PROPERTY);
       if (hostBuffers != null) {
         for (final Entry<PiMemoryExclusionVertex, Set<PiMemoryExclusionVertex>> entry : hostBuffers.entrySet()) {
-          // Since host vertices are naturally aligned, no need to
-          // restore
-          // them
+          // Since host vertices are naturally aligned, no need to restore them
 
           // Restore the real size of hosted vertices
           final Set<PiMemoryExclusionVertex> vertices = entry.getValue();
