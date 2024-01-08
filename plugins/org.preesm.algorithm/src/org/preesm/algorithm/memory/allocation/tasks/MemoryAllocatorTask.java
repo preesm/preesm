@@ -85,70 +85,73 @@ import org.preesm.workflow.implement.AbstractTaskImplementation;
             + "allocation information (i.e. buffer addresses, etc.).") },
 
     parameters = {
-        @Parameter(name = "Verbose", description = "Verbosity of the task.",
+        @Parameter(name = MemoryAllocatorTask.PARAM_VERBOSE, description = "Verbosity of the task.",
             values = { @Value(name = "True", effect = "Detailed statistics of the allocation process are logged"),
                 @Value(name = "False", effect = "Logged information is kept to a minimum") }),
-        @Parameter(name = "Allocator(s)",
+        @Parameter(name = MemoryAllocatorTask.PARAM_ALLOCATORS,
             description = "Specify which memory allocation algorithm(s) should be used. If the string value of the "
                 + "parameters contains several algorithm names, all will be executed one by one.",
-            values = { @Value(name = "Basic",
+            values = { @Value(name = MemoryAllocatorTask.VALUE_ALLOCATORS_BASIC,
                 effect = "Each memory object is allocated in a dedicated memory space. Memory allocated for a given "
                     + "object is not reused for other."),
-                @Value(name = "BestFit",
+                @Value(name = MemoryAllocatorTask.VALUE_ALLOCATORS_BEST_FIT,
                     effect = "Memory objects are allocated one by one; allocating each object to the available space "
                         + "in memory whose size is the closest to the size of the allocated object. If MEG exclusions"
                         + " permit it, memory allocated for a memory object may be reused for others."),
-                @Value(name = "FirstFit",
+                @Value(name = MemoryAllocatorTask.VALUE_ALLOCATORS_FIRST_FIT,
                     effect = "Memory objects are allocated one by one; allocating each object to the first available "
                         + "space in memory whose size is the large enough to allocate the object. If MEG exclusions"
                         + " permit it, memory allocated for a memory object may be reused for others."),
-                @Value(name = "DeGreef",
+                @Value(name = MemoryAllocatorTask.VALUE_ALLOCATORS_DE_GREEF,
                     effect = "Algorithm adapted from DeGreef (1997)}. If MEG exclusions permit it, memory allocated"
                         + " for a memory object may be reused for others.") }),
-        @Parameter(name = "Distribution",
+        @Parameter(name = MemoryAllocatorTask.PARAM_DISTRIBUTION_POLICY,
             description = "Specify which memory architecture should be used to allocate the memory.",
-            values = { @Value(name = "SharedOnly",
+            values = { @Value(name = MemoryAllocatorTask.VALUE_DISTRIBUTION_SHARED_ONLY,
                 effect = "(Default) All memory objects are allocated in a single memory bank accessible to all PE."),
-                @Value(name = "DistributedOnly",
+                @Value(name = MemoryAllocatorTask.VALUE_DISTRIBUTION_DISTRIBUTED_ONLY,
                     effect = "Each PE is associated to a private memory bank that no other PE can access. "
                         + "(Currently supported only in the MPPA code generation.)"),
-                @Value(name = "Mixed",
+                @Value(name = MemoryAllocatorTask.VALUE_DISTRIBUTION_MIXED,
                     effect = "Both private memory banks and a shared memory can be used for allocating memory."),
-                @Value(name = "MixedMerged",
+                @Value(name = MemoryAllocatorTask.VALUE_DISTRIBUTION_MIXED_MERGED,
                     effect = "Same as mixed, but the memory allocation algorithm favors buffer merging over"
                         + " memory distribution.") }),
-        @Parameter(name = "Best/First Fit order",
+        @Parameter(name = MemoryAllocatorTask.PARAM_XFIT_ORDER,
             description = "When using FirstFit or BestFit memory allocators, this parameter specifies in which order"
                 + " the memory objects will be fed to the allocation algorithm. If the string value associated to the "
                 + "parameters contains several order names, all will be executed one by one.",
             values = {
-                @Value(name = "ApproxStableSet",
+                @Value(name = MemoryAllocatorTask.VALUE_XFIT_ORDER_APPROX_STABLE_SET,
                     effect = "Memory objects are sorted into disjoint stable sets. Stable sets are formed one after the"
                         + " other, each with the largest possible number of object. Memory objects are fed to the "
                         + "allocator set by set and in the largest first order within each stable set."),
-                @Value(name = "ExactStableSet",
-                    effect = "Similar to 'ApproxStableSet'. Stable set are built using an exact algorithm instead of a"
-                        + " heuristic."),
-                @Value(name = "LargestFirst",
+                @Value(name = MemoryAllocatorTask.VALUE_XFIT_ORDER_EXACT_STABLE_SET,
+                    effect = "Similar to '" + MemoryAllocatorTask.VALUE_XFIT_ORDER_APPROX_STABLE_SET
+                        + "'. Stable set are built using an exact algorithm instead of a heuristic."),
+                @Value(name = MemoryAllocatorTask.VALUE_XFIT_ORDER_LARGEST_FIRST,
                     effect = "Memory objects are allocated in decreasing order of their size."),
-                @Value(name = "Shuffle",
+                @Value(name = MemoryAllocatorTask.VALUE_XFIT_ORDER_SHUFFLE,
                     effect = "Memory objects are allocated in a random order. Using the 'Nb of Shuffling Tested' "
                         + "parameter, it is possible to test several random orders and only keep the best memory"
                         + " allocation."),
-                @Value(name = "Scheduling",
-                    effect = "Memory objects are allocated in scheduling order of their 'birth'. The 'birth' of a "
-                        + "memory object is the instant when its memory would be allocated by a dynamic allocator. "
-                        + "This option can be used to mimic the behavior of a dynamic allocator. (Only available for "
-                        + "MEG updated with scheduling information).") }),
-        @Parameter(name = "Data alignment",
+            // @Value(name = MemoryAllocatorTask.VALUE_XFIT_ORDER_SCHEDULING,
+            // effect = "Memory objects are allocated in scheduling order of their 'birth'. The 'birth' of a "
+            // + "memory object is the instant when its memory would be allocated by a dynamic allocator. "
+            // + "This option can be used to mimic the behavior of a dynamic allocator. (Only available for "
+            // + "MEG updated with scheduling information).")
+            }),
+        @Parameter(name = MemoryAllocatorTask.PARAM_ALIGNMENT,
             description = "Option used to force the allocation of buffers (i.e. Memory objects) with aligned addresses."
                 + " The data alignment property should always have the same value as the one set in the properties of "
                 + "the Memory Scripts task.",
-            values = { @Value(name = "None", effect = "No special care is taken to align the buffers in memory."),
-                @Value(name = "Data",
+            values = {
+                @Value(name = MemoryAllocatorTask.VALUE_ALIGNEMENT_NONE,
+                    effect = "No special care is taken to align the buffers in memory."),
+                @Value(name = MemoryAllocatorTask.VALUE_ALIGNEMENT_DATA,
                     effect = "All buffers are aligned on addresses that are multiples of their size. For example, a 32 "
                         + "bites integer is aligned on 32 bits address."),
-                @Value(name = "Fixed:=n",
+                @Value(name = MemoryAllocatorTask.VALUE_ALIGNEMENT_FIXED + "n",
                     effect = "Where $$n\\in \\mathbb{N}^*$$. This forces the allocation algorithm to align all buffers"
                         + " on addresses that are multiples of n bits.") }),
         @Parameter(name = MemoryAllocatorTask.PARAM_NB_SHUFFLE,
@@ -216,10 +219,9 @@ public class MemoryAllocatorTask extends AbstractTaskImplementation {
    */
   public static final String VALUE_DISTRIBUTION_MIXED_MERGED = "MixedMerged";
 
-  public static final String VALUE_DISTRIBUTION_DEFAULT = "? C {" + MemoryAllocatorTask.VALUE_DISTRIBUTION_SHARED_ONLY
-      + ", " + MemoryAllocatorTask.VALUE_DISTRIBUTION_MIXED + ", "
-      + MemoryAllocatorTask.VALUE_DISTRIBUTION_DISTRIBUTED_ONLY + ", "
-      + MemoryAllocatorTask.VALUE_DISTRIBUTION_MIXED_MERGED + "}";
+  public static final String VALUE_DISTRIBUTION_DEFAULT = "? C {" + VALUE_DISTRIBUTION_SHARED_ONLY + ", "
+      + VALUE_DISTRIBUTION_MIXED + ", " + VALUE_DISTRIBUTION_DISTRIBUTED_ONLY + ", " + VALUE_DISTRIBUTION_MIXED_MERGED
+      + "}";
 
   protected Logger          logger = PreesmLogger.getLogger();
   private String            valueAllocator;
@@ -240,21 +242,21 @@ public class MemoryAllocatorTask extends AbstractTaskImplementation {
    */
   protected void init(final Map<String, String> parameters) {
     // Retrieve parameters from workflow
-    final String valueVerbose = parameters.get(MemoryAllocatorTask.PARAM_VERBOSE);
-    final String valueXFitOrder = parameters.get(MemoryAllocatorTask.PARAM_XFIT_ORDER);
-    final String valueNbShuffle = parameters.get(MemoryAllocatorTask.PARAM_NB_SHUFFLE);
-    this.valueAllocator = parameters.get(MemoryAllocatorTask.PARAM_ALLOCATORS);
-    this.valueDistribution = parameters.get(MemoryAllocatorTask.PARAM_DISTRIBUTION_POLICY);
+    final String valueVerbose = parameters.get(PARAM_VERBOSE);
+    final String valueXFitOrder = parameters.get(PARAM_XFIT_ORDER);
+    final String valueNbShuffle = parameters.get(PARAM_NB_SHUFFLE);
+    this.valueAllocator = parameters.get(PARAM_ALLOCATORS);
+    this.valueDistribution = parameters.get(PARAM_DISTRIBUTION_POLICY);
 
-    this.verbose = valueVerbose.equals(MemoryAllocatorTask.VALUE_TRUE);
+    this.verbose = valueVerbose.equals(VALUE_TRUE);
 
     // Correct default distribution policy
-    if (this.valueDistribution.equals(MemoryAllocatorTask.VALUE_DISTRIBUTION_DEFAULT)) {
-      this.valueDistribution = MemoryAllocatorTask.VALUE_DISTRIBUTION_SHARED_ONLY;
+    if (this.valueDistribution.equals(VALUE_DISTRIBUTION_DEFAULT)) {
+      this.valueDistribution = VALUE_DISTRIBUTION_SHARED_ONLY;
     }
 
     // Retrieve the alignment param
-    final String valueAlignment = parameters.get(MemoryAllocatorTask.PARAM_ALIGNMENT);
+    final String valueAlignment = parameters.get(PARAM_ALIGNMENT);
 
     this.alignment = switch (valueAlignment.substring(0, Math.min(valueAlignment.length(), 7))) {
       case VALUE_ALIGNEMENT_NONE -> -1;
@@ -270,13 +272,13 @@ public class MemoryAllocatorTask extends AbstractTaskImplementation {
     // Retrieve the ordering policies to test
     this.nbShuffle = 0;
     this.ordering = switch (valueXFitOrder) {
-      case MemoryAllocatorTask.VALUE_XFIT_ORDER_SHUFFLE -> {
+      case VALUE_XFIT_ORDER_SHUFFLE -> {
         this.nbShuffle = Integer.decode(valueNbShuffle);
         yield Order.SHUFFLE;
       }
-      case MemoryAllocatorTask.VALUE_XFIT_ORDER_LARGEST_FIRST -> Order.LARGEST_FIRST;
-      case MemoryAllocatorTask.VALUE_XFIT_ORDER_APPROX_STABLE_SET -> Order.STABLE_SET;
-      case MemoryAllocatorTask.VALUE_XFIT_ORDER_EXACT_STABLE_SET -> Order.EXACT_STABLE_SET;
+      case VALUE_XFIT_ORDER_LARGEST_FIRST -> Order.LARGEST_FIRST;
+      case VALUE_XFIT_ORDER_APPROX_STABLE_SET -> Order.STABLE_SET;
+      case VALUE_XFIT_ORDER_EXACT_STABLE_SET -> Order.EXACT_STABLE_SET;
       // case MemoryAllocatorTask.VALUE_XFIT_ORDER_SCHEDULING -> Order.SCHEDULING; // Not supported anymore
       default -> throw new IllegalArgumentException(fitOrderNameErrorMessage());
     };
@@ -285,10 +287,10 @@ public class MemoryAllocatorTask extends AbstractTaskImplementation {
   private String fitOrderNameErrorMessage() {
     final StringBuilder errorStringBuilder = new StringBuilder();
     errorStringBuilder.append("Unrecognized " + PARAM_XFIT_ORDER + " parameter. Supported parameters are:\n");
-    errorStringBuilder.append(MemoryAllocatorTask.VALUE_XFIT_ORDER_SHUFFLE + "\n");
-    errorStringBuilder.append(MemoryAllocatorTask.VALUE_XFIT_ORDER_LARGEST_FIRST + "\n");
-    errorStringBuilder.append(MemoryAllocatorTask.VALUE_XFIT_ORDER_APPROX_STABLE_SET + "\n");
-    errorStringBuilder.append(MemoryAllocatorTask.VALUE_XFIT_ORDER_EXACT_STABLE_SET + "\n");
+    errorStringBuilder.append(VALUE_XFIT_ORDER_SHUFFLE + "\n");
+    errorStringBuilder.append(VALUE_XFIT_ORDER_LARGEST_FIRST + "\n");
+    errorStringBuilder.append(VALUE_XFIT_ORDER_APPROX_STABLE_SET + "\n");
+    errorStringBuilder.append(VALUE_XFIT_ORDER_EXACT_STABLE_SET + "\n");
     // errorStringBuilder.append(MemoryAllocatorTask.VALUE_XFIT_ORDER_SCHEDULING); // Not supported anymore
     return errorStringBuilder.toString();
   }
@@ -304,20 +306,20 @@ public class MemoryAllocatorTask extends AbstractTaskImplementation {
     // Create all allocators
 
     this.allocator = switch (valueAllocator) {
-      case MemoryAllocatorTask.VALUE_ALLOCATORS_BASIC -> new BasicAllocator(memEx);
-      case MemoryAllocatorTask.VALUE_ALLOCATORS_FIRST_FIT -> {
+      case VALUE_ALLOCATORS_BASIC -> new BasicAllocator(memEx);
+      case VALUE_ALLOCATORS_FIRST_FIT -> {
         final OrderedAllocator alloc = new FirstFitAllocator(memEx);
         alloc.setNbShuffle(this.nbShuffle);
         alloc.setOrder(this.ordering);
         yield alloc;
       }
-      case MemoryAllocatorTask.VALUE_ALLOCATORS_BEST_FIT -> {
+      case VALUE_ALLOCATORS_BEST_FIT -> {
         final OrderedAllocator alloc = new BestFitAllocator(memEx);
         alloc.setNbShuffle(this.nbShuffle);
         alloc.setOrder(this.ordering);
         yield alloc;
       }
-      case MemoryAllocatorTask.VALUE_ALLOCATORS_DE_GREEF -> new DeGreefAllocator(memEx);
+      case VALUE_ALLOCATORS_DE_GREEF -> new DeGreefAllocator(memEx);
       default -> throw new IllegalArgumentException(allocatorNameErrorMessage());
     };
 
@@ -327,11 +329,11 @@ public class MemoryAllocatorTask extends AbstractTaskImplementation {
   private String allocatorNameErrorMessage() {
     final StringBuilder errorStringBuilder = new StringBuilder();
     errorStringBuilder.append("Unrecognized Allocator name. Supported parameters are:\n");
-    errorStringBuilder.append(MemoryAllocatorTask.VALUE_ALLOCATORS_BASIC + "\n");
-    errorStringBuilder.append(MemoryAllocatorTask.VALUE_ALLOCATORS_BEST_FIT + "\n");
-    errorStringBuilder.append(MemoryAllocatorTask.VALUE_ALLOCATORS_DE_GREEF + "\n");
-    errorStringBuilder.append(MemoryAllocatorTask.VALUE_ALLOCATORS_DEFAULT + "\n");
-    errorStringBuilder.append(MemoryAllocatorTask.VALUE_ALLOCATORS_FIRST_FIT);
+    errorStringBuilder.append(VALUE_ALLOCATORS_BASIC + "\n");
+    errorStringBuilder.append(VALUE_ALLOCATORS_BEST_FIT + "\n");
+    errorStringBuilder.append(VALUE_ALLOCATORS_DE_GREEF + "\n");
+    errorStringBuilder.append(VALUE_ALLOCATORS_DEFAULT + "\n");
+    errorStringBuilder.append(VALUE_ALLOCATORS_FIRST_FIT);
     return errorStringBuilder.toString();
   }
 
@@ -420,12 +422,12 @@ public class MemoryAllocatorTask extends AbstractTaskImplementation {
   @Override
   public Map<String, String> getDefaultParameters() {
     final Map<String, String> parameters = new LinkedHashMap<>();
-    parameters.put(MemoryAllocatorTask.PARAM_VERBOSE, MemoryAllocatorTask.VALUE_TRUE_FALSE_DEFAULT);
-    parameters.put(MemoryAllocatorTask.PARAM_ALLOCATORS, MemoryAllocatorTask.VALUE_ALLOCATORS_DEFAULT);
-    parameters.put(MemoryAllocatorTask.PARAM_XFIT_ORDER, MemoryAllocatorTask.VALUE_XFIT_ORDER_DEFAULT);
-    parameters.put(MemoryAllocatorTask.PARAM_NB_SHUFFLE, MemoryAllocatorTask.VALUE_NB_SHUFFLE_DEFAULT);
-    parameters.put(MemoryAllocatorTask.PARAM_ALIGNMENT, MemoryAllocatorTask.VALUE_ALIGNEMENT_DEFAULT);
-    parameters.put(MemoryAllocatorTask.PARAM_DISTRIBUTION_POLICY, MemoryAllocatorTask.VALUE_DISTRIBUTION_DEFAULT);
+    parameters.put(PARAM_VERBOSE, VALUE_TRUE_FALSE_DEFAULT);
+    parameters.put(PARAM_ALLOCATORS, VALUE_ALLOCATORS_DEFAULT);
+    parameters.put(PARAM_XFIT_ORDER, VALUE_XFIT_ORDER_DEFAULT);
+    parameters.put(PARAM_NB_SHUFFLE, VALUE_NB_SHUFFLE_DEFAULT);
+    parameters.put(PARAM_ALIGNMENT, VALUE_ALIGNEMENT_DEFAULT);
+    parameters.put(PARAM_DISTRIBUTION_POLICY, VALUE_DISTRIBUTION_DEFAULT);
     return parameters;
   }
 
@@ -446,7 +448,7 @@ public class MemoryAllocatorTask extends AbstractTaskImplementation {
     // Create several MEGs according to the selected distribution policy
     // Each created MEG corresponds to a single memory bank
     // Log the distribution policy used
-    if (this.verbose && !this.valueDistribution.equals(MemoryAllocatorTask.VALUE_DISTRIBUTION_SHARED_ONLY)) {
+    if (this.verbose && !this.valueDistribution.equals(VALUE_DISTRIBUTION_SHARED_ONLY)) {
       final String msg = "Split MEG with " + this.valueDistribution + " policy";
       this.logger.log(Level.INFO, msg);
     }
@@ -456,7 +458,7 @@ public class MemoryAllocatorTask extends AbstractTaskImplementation {
         MemoryExclusionGraph> megs = Distributor.distributeMeg(this.valueDistribution, memEx, this.alignment);
 
     // Log results
-    if (this.verbose && !this.valueDistribution.equals(MemoryAllocatorTask.VALUE_DISTRIBUTION_SHARED_ONLY)) {
+    if (this.verbose && !this.valueDistribution.equals(VALUE_DISTRIBUTION_SHARED_ONLY)) {
       final String msg = "Created " + megs.keySet().size() + " MemExes";
       this.logger.log(Level.INFO, msg);
       for (final Entry<String, MemoryExclusionGraph> entry : megs.entrySet()) {
@@ -474,7 +476,7 @@ public class MemoryAllocatorTask extends AbstractTaskImplementation {
     megs.forEach((bank, meg) -> verticesInMegs.addAll(meg.getTotalSetOfVertices()));
 
     // Check that the total number of vertices is unchanged
-    if (!this.valueDistribution.equals(MemoryAllocatorTask.VALUE_DISTRIBUTION_SHARED_ONLY)
+    if (!this.valueDistribution.equals(VALUE_DISTRIBUTION_SHARED_ONLY)
         && ((verticesBeforeDistribution.size() != verticesAfterDistribution.size())
             || (verticesBeforeDistribution.size() != verticesInMegs.size()))) {
       // Compute the list of missing vertices
