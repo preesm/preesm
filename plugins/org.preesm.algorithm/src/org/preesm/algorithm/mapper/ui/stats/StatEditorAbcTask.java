@@ -43,21 +43,14 @@ import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.logging.Level;
-import org.eclipse.core.resources.IFile;
-import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.core.runtime.Path;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.PlatformUI;
 import org.preesm.algorithm.mapper.abc.impl.latency.LatencyAbc;
-import org.preesm.algorithm.mapper.gantt.GanttComponent;
-import org.preesm.algorithm.mapper.gantt.GanttTask;
 import org.preesm.commons.doc.annotations.Port;
 import org.preesm.commons.doc.annotations.PreesmTask;
-import org.preesm.commons.files.PreesmIOHelper;
 import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.model.scenario.Scenario;
-import org.preesm.model.slam.ComponentInstance;
 import org.preesm.workflow.elements.Workflow;
 import org.preesm.workflow.implement.AbstractTaskImplementation;
 
@@ -77,24 +70,14 @@ import org.preesm.workflow.implement.AbstractTaskImplementation;
     seeAlso = { "**Speedup assessment chart**: Maxime Pelcat. Prototypage Rapide et Génération de Code pour DSP Multi-"
         + "Coeurs Appliqués à la Couche Physique des Stations de Base 3GPP LTE. PhD thesis, INSA de Rennes, 2010." })
 public class StatEditorAbcTask extends AbstractTaskImplementation {
-  public static final String OCCUPATION_NAME = "occupation_trend.csv";
-  public static final String SPEEDUP_NAME    = "speedup_trend.csv";
-  private String             path            = "";
 
   @Override
   public Map<String, Object> execute(final Map<String, Object> inputs, final Map<String, String> parameters,
       final IProgressMonitor monitor, final String nodeName, final Workflow workflow) {
-    path = "/" + workflow.getProjectName() + "/Scenarios/generated/";
 
     final LatencyAbc abc = (LatencyAbc) inputs.get("ABC");
 
     final IEditorInput input = new StatEditorInput(new StatGeneratorAbc(abc));
-
-    // export
-    if (workflow.getWorkflowName().equals("ThreadPartitioning.workflow")) {
-      nodeOccupationExport(abc);
-      nodeSpeedupExport(abc);
-    }
 
     // Check if the workflow is running in command line mode
     try {
@@ -106,84 +89,6 @@ public class StatEditorAbcTask extends AbstractTaskImplementation {
     }
 
     return new LinkedHashMap<>();
-  }
-
-  private void nodeSpeedupExport(LatencyAbc abc) {
-    final StatGeneratorAbc stat = new StatGeneratorAbc(abc);
-
-    final Long workLength = stat.getDAGWorkLength();
-    final long spanLength = stat.getDAGSpanLength();
-    final Long implem = stat.getFinalTime();
-    final Double currentSpeedup = (double) (workLength) / (double) (implem);
-
-    final int nbCore = abc.getArchitecture().getOperatorComponentInstances().size();
-    final double absoluteBestSpeedup = ((double) workLength) / ((double) spanLength);
-
-    Double maxSpeedup;
-    if (nbCore < absoluteBestSpeedup) {
-      maxSpeedup = (double) nbCore;
-    } else {
-      maxSpeedup = absoluteBestSpeedup;
-    }
-    final String data = currentSpeedup + ";" + maxSpeedup;
-
-    csvTrend(data, abc, SPEEDUP_NAME);
-  }
-
-  private void nodeOccupationExport(LatencyAbc abc) {
-    final StatGeneratorAbc stat = new StatGeneratorAbc(abc);
-    long sum = 0L;
-    Long max = Long.MIN_VALUE;
-    for (final ComponentInstance ci : abc.getArchitecture().getOperatorComponentInstances()) {
-      sum += stat.getLoad(ci);
-      max = Math.max(stat.getLoad(ci), max);
-
-    }
-    final Double occupy = (double) (sum)
-        / (double) (max * abc.getArchitecture().getOperatorComponentInstances().size());
-
-    PreesmLogger.getLogger().info("Node occupation ==> " + occupy);
-    for (final GanttComponent ci : abc.getGanttData().getComponents()) {
-      Long sumCpt = 0L;
-      Long sumCom = 0L;
-      for (final GanttTask a : ci.getTasks()) {
-        if (a.getColor() == null) {
-          sumCpt += a.getDuration();
-        } else {
-          sumCom += a.getDuration();
-        }
-      }
-      PreesmLogger.getLogger().info("Computation sum ==> " + sumCpt);
-      PreesmLogger.getLogger().info("Communication sum ==> " + sumCom);
-    }
-    csvTrend(occupy.toString(), abc, OCCUPATION_NAME);
-  }
-
-  private void csvTrend(String data, LatencyAbc abc, String fileName) {
-    if (!abc.getArchitecture().getVlnv().getName().equals("top")) {
-      // final StringConcatenation content = new StringConcatenation();
-      String content = "";
-      final IFile iFile = ResourcesPlugin.getWorkspace().getRoot().getFile(new Path(path + fileName));
-      final int nodeID = Integer.decode(abc.getArchitecture().getVlnv().getName().replace("Node", ""));
-      if (iFile.isAccessible()) {
-        String originalString = PreesmIOHelper.getInstance().read(path, fileName); // Votre chaîne d'origine
-        if (originalString.endsWith("\n")) {
-          originalString = originalString.substring(0, originalString.length() - 1); // Retire le dernier "\n"
-        }
-        // content.append(PreesmIOHelper.getInstance().read(path, fileName));
-        if (nodeID == 0) {
-          content += originalString + "\n" + data;
-          // content.append(PreesmIOHelper.getInstance().read(path, fileName) + "\n" + data);
-        } else {
-          content += originalString + ";" + data;
-          // content.append(PreesmIOHelper.getInstance().read(path, fileName) + ";" + data);
-        }
-      } else {
-        content += data;
-        // content.append(data);
-      }
-      PreesmIOHelper.getInstance().print(path, fileName, content);
-    }
   }
 
   @Override

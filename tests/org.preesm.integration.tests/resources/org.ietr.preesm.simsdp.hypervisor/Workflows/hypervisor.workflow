@@ -3,17 +3,19 @@
     <dftools:scenario pluginId="org.ietr.preesm.scenario.task"/>
     <dftools:task pluginId="hypervisor.task.identifier" taskId="hypervisor">
         <dftools:data key="variables">
-            <dftools:variable name="Deviation Target" value="1"/>
-            <dftools:variable name="Latency Target" value="1"/>
-            <dftools:variable name="Round" value="1"/>
-            <dftools:variable name="SimGrid" value="false"/>
+            <dftools:variable name="Iteration" value="2"/>
+            <dftools:variable name="Multinet" value="false"/>
+            <dftools:variable name="Node capacity" value="1.0"/>
+            <dftools:variable name="Node max" value="1"/>
+            <dftools:variable name="Node min" value="1"/>
+            <dftools:variable name="archi path" value="/Scenarios/initialisation.scenario"/>
         </dftools:data>
     </dftools:task>
-    <dftools:task pluginId="DeviationChartTask.identifier" taskId="chart">
+    <dftools:task pluginId="SimSDPChartTask.identifier" taskId="SimSDP chart">
         <dftools:data key="variables"/>
     </dftools:task>
     <dftools:dataTransfer from="scenario" sourceport="void"
         targetport="void" to="hypervisor"/>
     <dftools:dataTransfer from="hypervisor" sourceport="void"
-        targetport="void" to="chart"/>
+        targetport="void" to="SimSDP chart"/>
 </dftools:workflow>

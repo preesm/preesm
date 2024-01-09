@@ -39,6 +39,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
 import org.preesm.model.pisdf.AbstractActor;
+import org.preesm.model.pisdf.AbstractVertex;
 import org.preesm.model.pisdf.DelayActor;
 import org.preesm.model.pisdf.ExecutableActor;
 import org.preesm.model.pisdf.Fifo;
@@ -92,7 +93,10 @@ public class URCSeeker extends PiMMSwitch<Boolean> {
 
   @Override
   public Boolean caseAbstractActor(AbstractActor base) {
-
+    if (base.getName().equals("single_source") || base.getDataInputPorts().stream()
+        .anyMatch(x -> ((AbstractVertex) x.getFifo().getSource()).getName().equals("single_source"))) {
+      return false;
+    }
     // Check that all fifos are homogeneous and without delay
     final boolean homogeneousRates = base.getDataOutputPorts().stream()
         .allMatch(x -> doSwitch(x.getFifo()).booleanValue());

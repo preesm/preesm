@@ -5,16 +5,12 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.logging.Level;
 import org.eclipse.core.resources.IFile;
-import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.ResourcesPlugin;
-import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.emf.common.util.URI;
@@ -39,11 +35,6 @@ import org.preesm.model.pisdf.brv.PiBRV;
 import org.preesm.model.pisdf.factory.PiMMUserFactory;
 import org.preesm.model.pisdf.serialize.PiWriter;
 import org.preesm.model.scenario.Scenario;
-import org.preesm.model.scenario.generator.ScenariosGenerator;
-import org.preesm.model.scenario.util.DefaultTypeSizes;
-import org.preesm.model.scenario.util.ScenarioUserFactory;
-import org.preesm.model.slam.Component;
-import org.preesm.model.slam.ComponentInstance;
 import org.preesm.model.slam.Design;
 import org.preesm.model.slam.generator.ArchitecturesGenerator;
 import org.preesm.ui.utils.FileUtils;
@@ -51,9 +42,13 @@ import org.preesm.ui.utils.FileUtils;
 public class InternodeBuilder {
   private final Scenario          scenario;
   private final List<PiGraph>     subGraphs;
-  int                             nodeIndex = 0;
+  int                             nodeIndex    = 0;
   private final List<NodeMapping> hierarchicalArchitecture;
-  static String                   fileError = "Error occurred during file generation: ";
+  static String                   fileError    = "Error occurred during file generation: ";
+  private String                  codegenPath  = "";
+  private String                  graphPath    = "";
+  private String                  scenarioPath = "";
+  private String                  archiPath    = "";
 
   public InternodeBuilder(Scenario scenario, List<PiGraph> subGraphs, List<NodeMapping> hierarchicalArchitecture) {
     this.subGraphs = subGraphs;
@@ -62,11 +57,22 @@ public class InternodeBuilder {
   }
 
   public PiGraph execute() {
+    initPath();
     final PiGraph topGraph = constructTop();
 
-    graphExporter(topGraph);
+    graphExporter(topGraph, graphPath);
+    graphExporter(topGraph, graphPath + "top/");// top folder used by SimGrid
     scenarioExporter(topGraph);
     return topGraph;
+
+  }
+
+  private void initPath() {
+    final String[] uriString = scenario.getAlgorithm().getUrl().split("/");
+    graphPath = "/" + uriString[1] + "/" + uriString[2] + "/generated/";
+    scenarioPath = "/" + uriString[1] + "/Scenarios/generated/";
+    codegenPath = uriString[1] + "/Code/generated/top";
+    archiPath = uriString[1] + "/Archi/";
 
   }
 
@@ -162,10 +168,8 @@ public class InternodeBuilder {
   }
 
   private void scenarioExporter(PiGraph topGraph) {
-    final String[] uriString = scenario.getAlgorithm().getUrl().split("/");
-    final String scenariiPath = "/" + uriString[1] + "/Scenarios/generated/";
-    final String archiPath = "/" + uriString[1] + "/Archi/";
-    final IPath fromPortableString = Path.fromPortableString(scenariiPath);
+
+    final IPath fromPortableString = Path.fromPortableString(archiPath);
     final IFile file2 = ResourcesPlugin.getWorkspace().getRoot().getFile(fromPortableString);
     final IProject iProject = file2.getProject();
     final ArchitecturesGenerator a = new ArchitecturesGenerator(iProject);
@@ -176,63 +180,12 @@ public class InternodeBuilder {
     a.saveArchitecture(topArchi);
     topArchi.setUrl(archiPath + "top.slam");
     // 4. generate scenario
-    final Scenario topScenario = ScenarioUserFactory.createScenario();
-    topScenario.setAlgorithm(topGraph);
-    topScenario.setDesign(topArchi);
-    final List<ComponentInstance> coreIds = new ArrayList<>(topArchi.getOperatorComponentInstances());
-    final List<ComponentInstance> comNodeIds = topArchi.getCommunicationComponentInstances();
 
-    // Add a main core (first of the list)
-    if (!coreIds.isEmpty()) {
-      topScenario.getSimulationInfo().setMainOperator(coreIds.get(0));
-    }
-    if (!comNodeIds.isEmpty()) {
-      topScenario.getSimulationInfo().setMainComNode(comNodeIds.get(0));
-    }
-
-    for (final ComponentInstance coreId : coreIds) {
-      for (final AbstractActor aa : topGraph.getAllActors()) {
-        if (aa instanceof Actor
-            && (coreId.getInstanceName().replace("Core", "").equals(aa.getName().replace("sub", "")))) {
-          topScenario.getConstraints().addConstraint(coreId, aa);
-        }
-      }
-      topScenario.getSimulationInfo().addSpecialVertexOperator(coreId);
-    }
-    // Add a average transfer size
-    topScenario.getSimulationInfo().setAverageDataSize(scenario.getSimulationInfo().getAverageDataSize());
-    // Set the default data type sizes
-    for (final Fifo f : topScenario.getAlgorithm().getAllFifos()) {
-      final String typeName = f.getType();
-      topScenario.getSimulationInfo().getDataTypes().put(typeName,
-          DefaultTypeSizes.getInstance().getTypeSize(typeName));
-    }
-
-    topScenario.setCodegenDirectory(scenario.getCodegenDirectory() + "/top");
-    topScenario.setSizesAreInBit(true);
-    topScenario.setScenarioURL(scenariiPath + topScenario.getScenarioName() + ".scenario");
-    topScenario.getTimings().setExcelFileURL(scenariiPath + "top_tim.csv");
-    for (final Component opId : topArchi.getProcessingElements()) {
-      // topScenario.getTimings().getMemTimings().put(opId, scenario.getTimings().getMemTimings().get(0).getValue());
-    }
-
-    final ScenariosGenerator s = new ScenariosGenerator(iProject);
-    final IFolder scenarioDir = iProject.getFolder("Scenarios/generated");
-    final Set<Scenario> scenarios = new HashSet<>();
-    scenarios.add(topScenario);
-    try {
-      s.saveScenarios(scenarios, scenarioDir);
-    } catch (final CoreException e) {
-      final String errorMessage = fileError + e.getMessage();
-      PreesmLogger.getLogger().log(Level.INFO, errorMessage);
-    }
-    PreesmLogger.getLogger().log(Level.INFO, "top scenario print in : " + scenariiPath);
+    new ScenarioBuilder(topGraph, topArchi, scenarioPath, codegenPath + topGraph.getName(), this.scenario).topExecute();
 
   }
 
-  private void graphExporter(PiGraph printgraph) {
-    final String[] uriString = scenario.getAlgorithm().getUrl().split("/");
-    final String graphPath = "/" + uriString[1] + "/" + uriString[2] + "/generated/";
+  private void graphExporter(PiGraph printgraph, String graphPath) {
     printgraph.setUrl(graphPath + printgraph.getName() + ".pi");
     PiBRV.compute(printgraph, BRVMethod.LCM);
 

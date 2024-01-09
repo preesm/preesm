@@ -9,20 +9,20 @@ if [ ! -d "simgrid" ]; then
     sudo make install -j$(nproc) -C build
     pip install .
     sudo ldconfig
-else
-    # If the folder exists, move to it
-    cd simgrid
-    # Faire des opérations supplémentaires si nécessaire
+
+
 fi
 
 # Move to specified directory to test platform
-cd SimGrid/simgrid/examples/cpp/trace-platform
+cd simgrid/examples/cpp/trace-platform
+
 
 # Compiling the cpp file
 g++ -o s4u-trace-platform s4u-trace-platform.cpp -lsimgrid
 
 # Run the compiled file with simSDP_network.xml as argument
 ./s4u-trace-platform simSDP_network.xml
+
 
 
 

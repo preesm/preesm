@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<scenario>
+    <flags>
+        <sizesAreInBit/>
+    </flags>
+    <files>
+        <algorithm url="/org.ietr.preesm.pipeline_cycle/Algo/ABC.pi"/>
+        <architecture url="/org.ietr.preesm.pipeline_cycle/Archi/1CoresX86.slam"/>
+        <codegenDirectory url="/org.ietr.preesm.pipeline_cycle/Code/generated/"/>
+    </files>
+    <constraints excelUrl="">
+        <constraintGroup>
+            <operator name="Core0"/>
+            <task name="ABC/A"/>
+            <task name="ABC/B"/>
+            <task name="ABC/C"/>
+            <task name="ABC/D"/>
+            <task name="ABC/E"/>
+        </constraintGroup>
+    </constraints>
+    <timings excelUrl="">
+        <timing opname="x86" time="100"
+            timingtype="EXECUTION_TIME" vertexname="ABC/A"/>
+        <timing opname="x86" time="100"
+            timingtype="EXECUTION_TIME" vertexname="ABC/B"/>
+        <timing opname="x86" time="100"
+            timingtype="EXECUTION_TIME" vertexname="ABC/C"/>
+        <timing opname="x86" time="100"
+            timingtype="EXECUTION_TIME" vertexname="ABC/D"/>
+        <timing opname="x86" time="100"
+            timingtype="EXECUTION_TIME" vertexname="ABC/E"/>
+        <timing opname="x86" time="100"
+            timingtype="EXECUTION_TIME" vertexname="ABC/C_outD__A_outD"/>
+        <timing opname="x86" time="100"
+            timingtype="EXECUTION_TIME" vertexname="ABC/C_out__E_in"/>
+    </timings>
+    <simuParams>
+        <mainCore>Core0</mainCore>
+        <mainComNode>shared_mem</mainComNode>
+        <averageDataSize>1000</averageDataSize>
+        <dataTypes>
+            <dataType name="char" size="8"/>
+            <dataType name="void" size="8"/>
+        </dataTypes>
+        <specialVertexOperators>
+            <specialVertexOperator path="Core0"/>
+        </specialVertexOperators>
+    </simuParams>
+    <parameterValues/>
+    <papifyConfigs xmlUrl=""/>
+    <energyConfigs xmlUrl="">
+        <performanceObjective objectiveEPS="0.0"/>
+        <peActorsEnergy/>
+    </energyConfigs>
+</scenario>

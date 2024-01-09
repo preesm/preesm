@@ -14,6 +14,9 @@ import org.preesm.model.pisdf.PiGraph;
  */
 
 public class HierarchicalRoute {
+  private HierarchicalRoute() {
+
+  }
 
   /**
    * Order the hierarchical subgraph in order to compute cluster in the bottom up way
@@ -36,11 +39,9 @@ public class HierarchicalRoute {
       }
 
     }
-    // if (graph.getAllChildrenGraphs().isEmpty()) {
     final List<PiGraph> list = new ArrayList<>();
     list.add(graph);
     hierarchicalLevelOrdered.put(0L, list);
-    // }
     return hierarchicalLevelOrdered;
   }
 

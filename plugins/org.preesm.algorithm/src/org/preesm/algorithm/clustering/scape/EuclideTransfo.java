@@ -43,15 +43,6 @@ public class EuclideTransfo {
    */
   private final Scenario scenario;
 
-  /**
-   * Number of hierarchical level.
-   */
-  private final int levelNumber;
-  /**
-   * SCAPE mode : 1 (...); 2 (...); 3 (...).
-   */
-  private final int mode;
-
   private Map<Long, List<PiGraph>> hierarchicalLevelOrdered = new HashMap<>();
 
   private Long levelBound = 0L;
@@ -63,11 +54,9 @@ public class EuclideTransfo {
    *          Workflow scenario.
    *
    */
-  public EuclideTransfo(Scenario scenario, int mode, int levelNumber) {
+  public EuclideTransfo(Scenario scenario) {
     this.graph = scenario.getAlgorithm();
     this.scenario = scenario;
-    this.mode = mode;
-    this.levelNumber = levelNumber;
 
   }
 

@@ -25,6 +25,8 @@ import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.pisdf.Refinement;
 import org.preesm.model.pisdf.brv.BRVMethod;
 import org.preesm.model.pisdf.brv.PiBRV;
+import org.preesm.model.pisdf.check.CheckerErrorLevel;
+import org.preesm.model.pisdf.check.PiGraphConsistenceChecker;
 import org.preesm.model.pisdf.factory.PiMMUserFactory;
 import org.preesm.model.scenario.Scenario;
 import org.preesm.model.scenario.ScenarioFactory;
@@ -78,8 +80,9 @@ public class ClusteringScape {
   }
 
   public PiGraph execute() {
-
-    final PiGraph euclide = new EuclideTransfo(scenario, mode, levelNumber).execute();
+    final PiGraph singleBranch = new MultiBranch(graph).addInitialSource();
+    scenario.setAlgorithm(singleBranch);
+    final PiGraph euclide = new EuclideTransfo(scenario).execute();
     scenario.setAlgorithm(euclide);
     // construct hierarchical structure
     hierarchicalLevelOrdered = HierarchicalRoute.fillHierarchicalStructure(graph);
@@ -89,9 +92,13 @@ public class ClusteringScape {
     coarseCluster();
     // Pattern identification
     patternIDs();
-
+    final PiGraph multiBranch = new MultiBranch(graph).removeInitialSource();
+    scenario.setAlgorithm(multiBranch);
     final Map<AbstractVertex, Long> brv = PiBRV.compute(graph, BRVMethod.LCM);
     PiBRV.printRV(brv);
+    final PiGraphConsistenceChecker pgcc = new PiGraphConsistenceChecker(CheckerErrorLevel.FATAL_ANALYSIS,
+        CheckerErrorLevel.NONE);
+    pgcc.check(graph);
     return graph;
   }
 
@@ -145,7 +152,7 @@ public class ClusteringScape {
             isHasCluster = false;
           }
           if (!newCluster.getChildrenGraphs().isEmpty()) {
-            cluster(newCluster.getChildrenGraphs().get(0));
+            cluster(newCluster.getChildrenGraphs().get(0), scenario, stackSize);
             clusterId++;
           }
         } while (isHasCluster);
@@ -185,7 +192,7 @@ public class ClusteringScape {
         if (!newCluster.getChildrenGraphs().isEmpty()) {
           final int newSize = graph.getAllChildrenGraphs().size();
           for (int i = 0; i < (newSize - size); i++) {
-            cluster(newCluster.getChildrenGraphs().get(0));
+            cluster(newCluster.getChildrenGraphs().get(0), scenario, stackSize);
           }
           clusterId++;
         }
@@ -218,7 +225,7 @@ public class ClusteringScape {
           isHasCluster = false;
         }
         if (!newCluster.getChildrenGraphs().isEmpty()) {
-          cluster(newCluster.getChildrenGraphs().get(0));
+          cluster(newCluster.getChildrenGraphs().get(0), scenario, stackSize);
           clusterId++;
         }
       } while (isHasCluster);
@@ -236,7 +243,7 @@ public class ClusteringScape {
       final Long fulcrumLevel = fulcrumLevelID - 2;
       for (Long i = totalLevelNumber; i > fulcrumLevel; i--) {
         for (final PiGraph g : hierarchicalLevelOrdered.get(i)) {
-          cluster(g);
+          cluster(g, scenario, stackSize);
         }
       }
     }
@@ -248,19 +255,19 @@ public class ClusteringScape {
    * @param g
    *          The identify clustered subgraph
    */
-  private void cluster(PiGraph g) {
+  public static void cluster(PiGraph g, Scenario scenario, Long stackSize) {
     // compute the cluster schedule
 
     final List<ScapeSchedule> schedule = new ScheduleScape(g).execute();
-    final Scenario clusterScenario = lastLevelScenario(g);
+    final Scenario clusterScenario = lastLevelScenario(g, scenario);
     // retrieve cluster timing
     final Map<AbstractVertex, Long> rv = PiBRV.compute(g, BRVMethod.LCM);
-    final Map<Component, Map<TimingType, String>> sumTiming = clusterTiming(rv, g);
+    final Map<Component, Map<TimingType, String>> sumTiming = clusterTiming(rv, g, scenario);
 
     new CodegenScape(clusterScenario, g, schedule, stackSize);
 
-    replaceBehavior(g);
-    updateTiming(sumTiming, g);
+    replaceBehavior(g, scenario);
+    updateTiming(sumTiming, g, scenario);
 
   }
 
@@ -271,7 +278,8 @@ public class ClusteringScape {
    *          The identify clustered subgraph
    */
 
-  private void replaceBehavior(PiGraph g) {
+  private static void replaceBehavior(PiGraph g, Scenario scenario) {
+    final PiGraph graph = scenario.getAlgorithm();
     final Actor oEmpty = PiMMUserFactory.instance.createActor();
     oEmpty.setName(g.getName());
     // add refinement
@@ -327,7 +335,10 @@ public class ClusteringScape {
    * @param lastLevel
    *          PiGraph of the cluster
    */
-  private void updateTiming(Map<Component, Map<TimingType, String>> sumTiming, PiGraph lastLevel) {
+  private static void updateTiming(Map<Component, Map<TimingType, String>> sumTiming, PiGraph lastLevel,
+      Scenario scenario) {
+    final PiGraph graph = scenario.getAlgorithm();
+    final Design archi = scenario.getDesign();
     AbstractActor aaa = null;
     if (sumTiming != null) {
       for (final AbstractActor aa : graph.getAllActors()) {
@@ -353,8 +364,9 @@ public class ClusteringScape {
    * @param scenario2
    *          contains list of timing
    */
-  private Map<Component, Map<TimingType, String>> clusterTiming(Map<AbstractVertex, Long> repetitionVector,
-      PiGraph cluster) {
+  private static Map<Component, Map<TimingType, String>> clusterTiming(Map<AbstractVertex, Long> repetitionVector,
+      PiGraph cluster, Scenario scenario) {
+    final Design archi = scenario.getDesign();
     final Map<Component, Map<TimingType, String>> clusterTiming = new HashMap<>();
     // Initialise
     for (final Component opId : archi.getProcessingElements()) {
@@ -389,7 +401,8 @@ public class ClusteringScape {
    * @param subgraph
    *          PiGraph of the cluster
    */
-  private Scenario lastLevelScenario(PiGraph subgraph) {
+  private static Scenario lastLevelScenario(PiGraph subgraph, Scenario scenario) {
+    final Design archi = scenario.getDesign();
     final Scenario clusterScenario = ScenarioUserFactory.createScenario();
     clusterScenario.setCodegenDirectory(scenario.getCodegenDirectory());
 

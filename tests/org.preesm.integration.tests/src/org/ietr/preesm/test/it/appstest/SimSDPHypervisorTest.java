@@ -49,16 +49,8 @@ import org.junit.Test;
 public class SimSDPHypervisorTest {
 
   private final String workflow    = "hypervisor.workflow";
-  private final String scenario    = "rfi.scenario";
+  private final String scenario    = "initialisation.scenario";
   private final String projectName = "org.ietr.preesm.simsdp.hypervisor";
-
-  /**
-   */
-  // public SimSDPTest(final String workflow, final String scenario, final String projectName) {
-  // this.scenario = scenario;
-  // this.workflow = workflow;
-  // this.projectName = projectName;
-  // }
 
   @Test
   public void testSimSDPHypervisorTest() throws IOException, CoreException {
