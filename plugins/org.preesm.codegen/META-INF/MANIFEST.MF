@@ -20,7 +20,7 @@ Require-Bundle: org.eclipse.core.runtime,
  org.preesm.model.slam,
  org.preesm.model.scenario
 Bundle-ActivationPolicy: lazy
-Bundle-RequiredExecutionEnvironment: JavaSE-1.8
+Bundle-RequiredExecutionEnvironment: JavaSE-17
 Bundle-ClassPath: .
 Bundle-Vendor: %providerName
 Bundle-Localization: plugin

@@ -10,17 +10,18 @@ if [ ! -d "simgrid" ]; then
     pip install .
     sudo ldconfig
 
+
 fi
 
 # Move to specified directory to test platform
 cd simgrid/examples/cpp/trace-platform
+
 
 # Compiling the cpp file
 g++ -o s4u-trace-platform s4u-trace-platform.cpp -lsimgrid
 
 # Run the compiled file with simSDP_network.xml as argument
 ./s4u-trace-platform simSDP_network.xml
-
 
 
 

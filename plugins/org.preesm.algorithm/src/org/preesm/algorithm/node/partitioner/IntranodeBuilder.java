@@ -195,6 +195,7 @@ public class IntranodeBuilder {
       final int index = Integer.parseInt(subgraph.getName().replace("sub", ""));
 
       // Create source actors for DataInputInterfaces
+
       for (final DataInputInterface in : subgraph.getDataInputInterfaces()) {
         final Actor src = createSourceActor(in, index);
         setExecutionTimeForInterface(src);
@@ -219,6 +220,7 @@ public class IntranodeBuilder {
       removeEmptyFIFOsAndInterfaceActors(subgraph);
 
       // Step 6: Compute BRV for Subgraph
+
       PiBRV.compute(subgraph, BRVMethod.LCM);
       subgraph.setContainingGraph(null);
     }

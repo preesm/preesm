@@ -444,11 +444,11 @@
                </visibleWhen>
             </command>
             <command
-                  commandId="org.preesm.ui.slam.command.ArchitectureSimSDPGenerator"
+                  commandId="org.preesm.ui.slam.command.ArchitectureGeneratorSimSDP"
                   icon="resources/icons/graphiti.gif"
                   label="Generate custom SimSDP architecture"
                   tooltip="Generate a custom SimSDP architecture in this project."
-         style="push">
+         		  style="push">
                <visibleWhen
                      checkEnabled="true">
                   <with
@@ -507,6 +507,7 @@
             name="Architecture Generator FPGA">
       </command>
       <command
+
             id="org.preesm.ui.slam.command.ArchitectureSimSDPGenerator"
             name="Architecture Generator SimSDP">
       </command>
@@ -514,6 +515,7 @@
             id="org.preesm.ui.slam.command.ArchitectureSimSDPMultinetGenerator"
             name="Architecture Generator network">
       </command>
+
    </extension>
 
    <!-- Preesm command handlers (for menus) -->
@@ -527,9 +529,11 @@
             class="org.preesm.ui.slam.popup.actions.ArchitectureGeneratorFpgaPopup"
             commandId="org.preesm.ui.slam.command.ArchitectureGeneratorFpga">
       </handler>
+
       <handler
             class="org.preesm.ui.slam.popup.actions.ArchitectureSimSDPnodeGeneratorPopup"
             commandId="org.preesm.ui.slam.command.ArchitectureSimSDPGenerator">
+
       </handler>
       <handler
             class="org.preesm.ui.slam.popup.actions.ArchitectureSimSDPnetworkGeneratorPopup"

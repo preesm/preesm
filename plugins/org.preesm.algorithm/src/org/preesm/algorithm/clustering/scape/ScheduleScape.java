@@ -85,6 +85,7 @@ public class ScheduleScape {
   }
 
   public List<ScapeSchedule> execute() {
+
     if (brv.size() > 2 && graph.getDelayIndex() > 0) {
       PreesmLogger.getLogger().log(Level.SEVERE, "APGAN doesn't handle cycle except cycle of 1 actor");
     }

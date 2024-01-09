@@ -66,15 +66,15 @@ public class ClusterPartitioner {
   /**
    * Input graph.
    */
-  private final PiGraph  graph;
+  protected final PiGraph  graph;
   /**
    * Workflow scenario.
    */
-  private final Scenario scenario;
+  protected final Scenario scenario;
   /**
    * Number of PEs in compute clusters.
    */
-  private final int      numberOfPEs;
+  protected final int      numberOfPEs;
 
   /**
    * Builds a ClusterPartitioner object.

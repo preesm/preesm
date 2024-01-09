@@ -180,6 +180,7 @@ public class InternodeBuilder {
     a.saveArchitecture(topArchi);
     topArchi.setUrl(archiPath + "top.slam");
     // 4. generate scenario
+
     new ScenarioBuilder(topGraph, topArchi, scenarioPath, codegenPath + topGraph.getName(), this.scenario).topExecute();
 
   }

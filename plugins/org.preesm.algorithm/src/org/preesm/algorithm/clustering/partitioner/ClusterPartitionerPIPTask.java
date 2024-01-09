@@ -98,9 +98,9 @@ public class ClusterPartitionerPIPTask extends AbstractTaskImplementation {
       }
     }
     // Cluster input graph
+
+    new ClusterPartitionerSEQ(inputGraph, scenario, Integer.parseInt(nbPE)).cluster();
     Map<AbstractVertex, Long> brv = PiBRV.compute(inputGraph, BRVMethod.LCM);
-    new ClusterPartitionerSEQ(inputGraph, scenario, Integer.parseInt(nbPE), brv, 0, nonClusterableList).cluster();
-    brv = PiBRV.compute(inputGraph, BRVMethod.LCM);
     final PiGraph outputGraph = new ClusterPartitionerLOOP(inputGraph, scenario, Integer.parseInt(nbPE), brv, 0)
         .cluster();
     final PiGraphConsistenceChecker pgcc = new PiGraphConsistenceChecker(CheckerErrorLevel.FATAL_ALL,

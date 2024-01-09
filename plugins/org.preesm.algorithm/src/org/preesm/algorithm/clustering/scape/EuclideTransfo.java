@@ -308,10 +308,10 @@ public class EuclideTransfo {
     }
 
     // remove empty introduced fifo
-    ((PiGraph) a.getContainingGraph()).getFifos().stream().filter(x -> x.getSourcePort() == null)
-        .forEach(x -> ((PiGraph) a.getContainingGraph()).removeFifo(x));
-    ((PiGraph) a.getContainingGraph()).getFifos().stream().filter(x -> x.getTargetPort() == null)
-        .forEach(x -> ((PiGraph) a.getContainingGraph()).removeFifo(x));
+    a.getContainingPiGraph().getFifos().stream().filter(x -> x.getSourcePort() == null)
+        .forEach(x -> a.getContainingPiGraph().removeFifo(x));
+    a.getContainingPiGraph().getFifos().stream().filter(x -> x.getTargetPort() == null)
+        .forEach(x -> a.getContainingPiGraph().removeFifo(x));
 
   }
 
