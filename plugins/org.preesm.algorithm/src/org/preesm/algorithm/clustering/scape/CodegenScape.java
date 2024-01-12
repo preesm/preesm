@@ -63,6 +63,7 @@ public class CodegenScape {
         }
       }
     }
+    result.append("#include \"preesm_gen.h\"\n");
 
     result.append("#endif \n");
     return result;
