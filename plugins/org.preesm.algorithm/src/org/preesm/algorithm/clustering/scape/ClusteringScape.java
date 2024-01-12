@@ -60,18 +60,11 @@ public class ClusteringScape extends ClusterPartitioner {
   private int                      clusterId      = 0;      // index cluster created
   private Map<Long, List<PiGraph>> hierarchicalLevelOrdered;
   private Long                     fulcrumLevelID = 0L;
-  private Long                     coreEquivalent = 1L;
-  private final Map<Actor, Long>   clusterMemory;
+  private final Long               coreEquivalent = 1L;
 
-  public ClusteringScape(Scenario scenario, Long stackSize, ScapeMode scapeMode, int levelNumber) {
-    super(scenario.getAlgorithm(), scenario, EuclideTransfo.computeSingleNodeCoreEquivalent(scenario).intValue());
+  public Map<Actor, Long>          clusterMemory  = new HashMap<>();
 
-    this.stackSize = stackSize;
-    this.scapeMode = scapeMode;
-    this.levelNumber = levelNumber;
-    this.hierarchicalLevelOrdered = new HashMap<>();
-    this.coreEquivalent = EuclideTransfo.computeSingleNodeCoreEquivalent(scenario);
-    this.clusterMemory = new LinkedHashMap<>();
+  this.stackSize=stackSize;this.scapeMode=scapeMode;this.levelNumber=levelNumber;this.hierarchicalLevelOrdered=new HashMap<>();this.coreEquivalent=EuclideTransfo.computeSingleNodeCoreEquivalent(scenario);this.clusterMemory=new LinkedHashMap<>();
   }
 
   public PiGraph execute() {

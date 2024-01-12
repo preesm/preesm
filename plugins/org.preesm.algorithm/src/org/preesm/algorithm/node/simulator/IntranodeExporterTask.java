@@ -70,7 +70,7 @@ public class IntranodeExporterTask extends AbstractTaskImplementation {
       memory += i.getValue();
     }
 
-    csvTrend(String.valueOf(memory), abc, MEMORY_NAME);
+    csvTrend(String.valueOf(memory), abc, SPEEDUP_NAME);
 
   }
 
