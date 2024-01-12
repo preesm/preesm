@@ -52,11 +52,12 @@ public class ClusteringScape extends ClusterPartitioner {
 
   ScapeMode scapeMode;
 
-  int                              clusterIndex   = -1;     // topological index
-  private int                      clusterId      = 0;      // index cluster created
+  int                              clusterIndex   = -1;             // topological index
+  private int                      clusterId      = 0;              // index cluster created
   private Map<Long, List<PiGraph>> hierarchicalLevelOrdered;
   private Long                     fulcrumLevelID = 0L;
   private Long                     coreEquivalent = 1L;
+  public Map<Actor, Long>          clusterMemory  = new HashMap<>();
 
   public ClusteringScape(Scenario scenario, Long stackSize, ScapeMode scapeMode, int levelNumber) {
     super(scenario.getAlgorithm(), scenario, EuclideTransfo.computeSingleNodeCoreEquivalent(scenario).intValue());
@@ -89,6 +90,10 @@ public class ClusteringScape extends ClusterPartitioner {
         CheckerErrorLevel.NONE);
     pgcc.check(graph);
     return graph;
+  }
+
+  public Map<Actor, Long> getClusterMemory() {
+    return clusterMemory;
   }
 
   /**
