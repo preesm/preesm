@@ -62,11 +62,12 @@ public class ClusteringScape {
    */
   private final int      mode;
 
-  int                              clusterIndex   = -1;     // topological index
-  private int                      clusterId      = 0;      // index cluster created
+  int                              clusterIndex   = -1;             // topological index
+  private int                      clusterId      = 0;              // index cluster created
   private Map<Long, List<PiGraph>> hierarchicalLevelOrdered;
   private Long                     fulcrumLevelID = 0L;
   private Long                     coreEquivalent = 1L;
+  public Map<Actor, Long>          clusterMemory  = new HashMap<>();
 
   public ClusteringScape(Scenario scenario, Long stackSize, int mode, int levelNumber) {
     this.graph = scenario.getAlgorithm();
@@ -100,6 +101,10 @@ public class ClusteringScape {
         CheckerErrorLevel.NONE);
     pgcc.check(graph);
     return graph;
+  }
+
+  public Map<Actor, Long> getClusterMemory() {
+    return clusterMemory;
   }
 
   /**
