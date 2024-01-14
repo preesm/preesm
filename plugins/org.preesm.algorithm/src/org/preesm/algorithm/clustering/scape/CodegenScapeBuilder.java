@@ -235,7 +235,10 @@ public class CodegenScapeBuilder {
   private StringConcatenation processActor(ScapeSchedule sc) {
     Long scale = 1L;
     final StringConcatenation actorImplem = new StringConcatenation();
-    final String funcName = ((CHeaderRefinement) ((Actor) sc.getActor()).getRefinement()).getLoopPrototype().getName();
+    String funcName = sc.getActor().getName();
+    if (((CHeaderRefinement) ((Actor) sc.getActor()).getRefinement()).getLoopPrototype() != null) {
+      funcName = ((CHeaderRefinement) ((Actor) sc.getActor()).getRefinement()).getLoopPrototype().getName();
+    }
 
     actorImplem.append(funcName + "(");
     final int nbArg = sc.getActor().getConfigInputPorts().size() + sc.getActor().getDataInputPorts().size()

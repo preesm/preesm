@@ -134,7 +134,7 @@ public class ClusteringScapeTask extends AbstractTaskImplementation {
 
     // return scenario updated
     output.put("scenario", scenario);
-    output.put("cMeM", clusterMemory);
+    output.put("cMem", clusterMemory);
     return output;
   }
 
