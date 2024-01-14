@@ -12,7 +12,6 @@ import org.preesm.algorithm.clustering.partitioner.ClusterPartitionerLOOP;
 import org.preesm.algorithm.clustering.partitioner.ClusterPartitionerSEQ;
 import org.preesm.algorithm.clustering.partitioner.ClusterPartitionerSRV;
 import org.preesm.algorithm.clustering.partitioner.ClusterPartitionerURC;
-import org.preesm.algorithm.clustering.partitioner.ScapeMode;
 import org.preesm.algorithm.codegen.idl.Prototype;
 import org.preesm.algorithm.schedule.model.ScapeSchedule;
 import org.preesm.commons.exceptions.PreesmRuntimeException;
@@ -54,17 +53,24 @@ public class ClusteringScape extends ClusterPartitioner {
    */
   private final int  levelNumber;
 
-  ScapeMode scapeMode;
-
   int                              clusterIndex   = -1;     // topological index
   private int                      clusterId      = 0;      // index cluster created
   private Map<Long, List<PiGraph>> hierarchicalLevelOrdered;
   private Long                     fulcrumLevelID = 0L;
-  private final Long               coreEquivalent = 1L;
 
-  public Map<Actor, Long>          clusterMemory  = new HashMap<>();
+  private Long                   coreEquivalent = 1L;
+  private final Map<Actor, Long> clusterMemory;
 
-  this.stackSize=stackSize;this.scapeMode=scapeMode;this.levelNumber=levelNumber;this.hierarchicalLevelOrdered=new HashMap<>();this.coreEquivalent=EuclideTransfo.computeSingleNodeCoreEquivalent(scenario);this.clusterMemory=new LinkedHashMap<>();
+  public ClusteringScape(Scenario scenario, Long stackSize, int mode, int levelNumber) {
+    this.graph = scenario.getAlgorithm();
+    this.scenario = scenario;
+    this.archi = scenario.getDesign();
+    this.stackSize = stackSize;
+    this.mode = mode;
+    this.levelNumber = levelNumber;
+    this.hierarchicalLevelOrdered = new HashMap<>();
+    this.coreEquivalent = EuclideTransfo.computeSingleNodeCoreEquivalent(scenario);
+    this.clusterMemory = new LinkedHashMap<>();
   }
 
   public PiGraph execute() {
@@ -107,6 +113,100 @@ public class ClusteringScape extends ClusterPartitioner {
       case DATA_PIPELINE_HIERARCHY -> executeMode2();
       default -> throw new PreesmRuntimeException("Unrecognized Scape mode.");
 
+    }
+
+    if (mode == 1) {
+      executeMode1();
+
+    }
+    if (mode == 2) {
+      executeMode2();
+
+    }
+  }
+
+  /**
+   * The second extension of the SCAPE method takes into account the hierarchical context when choosing the clustering
+   * approach. This allows for the adaptation of parallelism or the coarsening of identified hierarchical levels based
+   * on the context.
+   *
+   */
+  private void executeMode2() {
+    for (Long i = fulcrumLevelID - 1; i >= 0L; i--) {
+      for (final PiGraph g : hierarchicalLevelOrdered.get(i)) {
+        PiGraph newCluster = null;
+        boolean isHasCluster = true;
+        do {
+          final int size = graph.getAllChildrenGraphs().size();
+          final Map<AbstractVertex, Long> rv = PiBRV.compute(g, BRVMethod.LCM);
+          newCluster = new ClusterPartitionerLOOP(g, scenario, coreEquivalent.intValue(), rv, clusterId).cluster();
+          if (graph.getAllChildrenGraphs().size() == size) {
+            // URC transfo
+            newCluster = new ClusterPartitionerURC(scenario, coreEquivalent.intValue(), rv, clusterId, mode).cluster();
+          }
+          if (graph.getAllChildrenGraphs().size() == size) {
+            // SRV transfo
+            newCluster = new ClusterPartitionerSRV(scenario, coreEquivalent.intValue(), rv, clusterId, mode).cluster();
+          }
+          if (graph.getAllChildrenGraphs().size() == size) {
+            // SEQ transfo
+            newCluster = new ClusterPartitionerSEQ(g, scenario, coreEquivalent.intValue()).cluster();
+          }
+          if (graph.getAllChildrenGraphs().size() == size) {
+            isHasCluster = false;
+          }
+          if (!newCluster.getChildrenGraphs().isEmpty()) {
+            final Long mem = mem(newCluster.getChildrenGraphs().get(0));
+            final String clusterName = newCluster.getChildrenGraphs().get(0).getName();
+            cluster(newCluster.getChildrenGraphs().get(0), scenario, stackSize);
+            clusterMemory.put(findCluster(clusterName), mem);
+            clusterId++;
+          }
+        } while (isHasCluster);
+      }
+    }
+  }
+
+  /**
+   * The first extension introduces two additional patterns to the original SCAPE method: LOOP for cycles and SEQ for
+   * sequential parts. This extended method retains its parameterised nature, with the aim of reducing data parallelism
+   * and enhancing pipeline parallelism to align with the intended target.
+   *
+   */
+  private void executeMode1() {
+    for (final PiGraph piGraph : hierarchicalLevelOrdered.get(fulcrumLevelID - 1)) {
+      PiGraph newCluster = null;
+      boolean isHasCluster = true;
+      do {
+        final int size = graph.getAllChildrenGraphs().size();
+        final Map<AbstractVertex, Long> rv = PiBRV.compute(piGraph, BRVMethod.LCM);
+        newCluster = new ClusterPartitionerLOOP(piGraph, scenario, coreEquivalent.intValue(), rv, clusterId).cluster();
+        if (graph.getAllChildrenGraphs().size() == size) {
+          // URC transfo
+          newCluster = new ClusterPartitionerURC(scenario, coreEquivalent.intValue(), rv, clusterId, mode).cluster();
+        }
+        if (graph.getAllChildrenGraphs().size() == size) {
+          // SRV transfo
+          newCluster = new ClusterPartitionerSRV(scenario, coreEquivalent.intValue(), rv, clusterId, mode).cluster();
+        }
+        if (graph.getAllChildrenGraphs().size() == size) {
+          // SEQ transfo
+          newCluster = new ClusterPartitionerSEQ(piGraph, scenario, coreEquivalent.intValue()).cluster();
+        }
+        if (graph.getAllChildrenGraphs().size() == size) {
+          isHasCluster = false;
+        }
+        if (!newCluster.getChildrenGraphs().isEmpty()) {
+          final int newSize = graph.getAllChildrenGraphs().size();
+          for (int i = 0; i < (newSize - size); i++) {
+            final Long mem = mem(newCluster.getChildrenGraphs().get(0));
+            final String clusterName = newCluster.getChildrenGraphs().get(0).getName();
+            cluster(newCluster.getChildrenGraphs().get(0), scenario, stackSize);
+            clusterMemory.put(findCluster(clusterName), mem);
+          }
+          clusterId++;
+        }
+      } while (isHasCluster);
     }
   }
 
@@ -153,93 +253,6 @@ public class ClusteringScape extends ClusterPartitioner {
       }
     }
     return null;
-  }
-
-  /**
-   * The first extension introduces two additional patterns to the original SCAPE method: LOOP for cycles and SEQ for
-   * sequential parts. This extended method retains its parameterised nature, with the aim of reducing data parallelism
-   * and enhancing pipeline parallelism to align with the intended target.
-   *
-   */
-  private void executeMode1() {
-    for (final PiGraph piGraph : hierarchicalLevelOrdered.get(fulcrumLevelID - 1)) {
-      PiGraph newCluster = null;
-      boolean isHasCluster = true;
-
-      while (isHasCluster) {
-
-        final int size = graph.getAllChildrenGraphs().size();
-
-        newCluster = applyClusterPartitioners(piGraph);
-
-        if (graph.getAllChildrenGraphs().size() == size) {
-          isHasCluster = false;
-        }
-        if (!newCluster.getChildrenGraphs().isEmpty()) {
-          final int newSize = graph.getAllChildrenGraphs().size();
-          for (int i = 0; i < (newSize - size); i++) {
-            cluster(newCluster.getChildrenGraphs().get(0), scenario, stackSize);
-          }
-          clusterId++;
-        }
-      }
-    }
-  }
-
-  /**
-   * The second extension of the SCAPE method takes into account the hierarchical context when choosing the clustering
-   * approach. This allows for the adaptation of parallelism or the coarsening of identified hierarchical levels based
-   * on the context.
-   *
-   */
-  private void executeMode2() {
-    for (Long i = fulcrumLevelID - 1; i >= 0L; i--) {
-      for (final PiGraph piGraph : hierarchicalLevelOrdered.get(i)) {
-        PiGraph newCluster = null;
-        boolean isHasCluster = true;
-        while (isHasCluster) {
-
-          final int size = graph.getAllChildrenGraphs().size();
-
-          newCluster = applyClusterPartitioners(piGraph);
-
-          if (graph.getAllChildrenGraphs().size() == size) {
-            isHasCluster = false;
-          }
-          if (!newCluster.getChildrenGraphs().isEmpty()) {
-            cluster(newCluster.getChildrenGraphs().get(0), scenario, stackSize);
-            clusterId++;
-          }
-        }
-      }
-    }
-  }
-
-  private PiGraph applyClusterPartitioners(PiGraph piGraph) {
-
-    PiGraph newCluster;
-
-    final int size = graph.getAllChildrenGraphs().size();
-    final Map<AbstractVertex, Long> rv = PiBRV.compute(piGraph, BRVMethod.LCM);
-
-    newCluster = new ClusterPartitionerLOOP(piGraph, scenario, coreEquivalent.intValue(), rv, clusterId).cluster();
-
-    if (graph.getAllChildrenGraphs().size() == size) {
-      // URC transfo
-      newCluster = new ClusterPartitionerURC(scenario, coreEquivalent.intValue(), rv, clusterId, scapeMode).cluster();
-    }
-
-    if (graph.getAllChildrenGraphs().size() == size) {
-      // SRV transfo
-      newCluster = new ClusterPartitionerSRV(scenario, coreEquivalent.intValue(), rv, clusterId, scapeMode).cluster();
-    }
-
-    if (graph.getAllChildrenGraphs().size() == size) {
-      // SEQ transfo
-      newCluster = new ClusterPartitionerSEQ(piGraph, scenario, coreEquivalent.intValue()).cluster();
-    }
-
-    return newCluster;
   }
 
   /**
