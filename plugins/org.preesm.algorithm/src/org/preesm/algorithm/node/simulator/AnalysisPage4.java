@@ -33,7 +33,7 @@ import org.preesm.commons.files.PreesmIOHelper;
 public class AnalysisPage4 {
   static String                                               path;
   public static final String                                  NET_NAME                 = "multicriteria.csv";
-  List<NetworkInfo>                                           networkInfoList          = new ArrayList<>();
+  static List<NetworkInfo>                                    networkInfoList          = new ArrayList<>();
   static List<NetworkInfo>                                    networkInfoNormalList    = new ArrayList<>();
   Map<Integer, Map<Integer, Map<Integer, List<NetworkInfo>>>> nodeNetworkInfoNormalMap = new LinkedHashMap<>();
   int                                                         nodeKey                  = 0;
@@ -233,6 +233,10 @@ public class AnalysisPage4 {
    */
   public static List<NetworkInfo> getNetworkInfoNormalList() {
     return networkInfoNormalList;
+  }
+
+  public static List<NetworkInfo> getnetworkInfoList() {
+    return networkInfoList;
   }
 
   /**
