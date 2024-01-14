@@ -28,11 +28,13 @@ import org.preesm.workflow.implement.AbstractTaskImplementation;
 
 public class SimSDPChartTask extends AbstractTaskImplementation {
 
-  public static final String PAGE1 = "Internode Analysis";
-  public static final String PAGE2 = "Intranode Analysis";
-  public static final String PAGE3 = "DSE Analysis";
-  public static final String PAGE4 = "Network Analysis";
-  public static final String PAGE5 = "Pareto Analysis";
+  public static final String PAGE1     = "Internode Analysis";
+  public static final String PAGE2     = "Intranode Analysis";
+  public static final String PAGE3     = "DSE Analysis";
+  public static final String PAGE4     = "Network Analysis";
+  public static final String PAGE5     = "Weighted Pareto Analysis";
+  public static final String PAGE6     = "Raw Pareto Analysis";
+  public static final String PAGE_LAST = "Thank you";
 
   /**
    * Executes the deviation chart export task.
@@ -68,12 +70,15 @@ public class SimSDPChartTask extends AbstractTaskImplementation {
     final JPanel tab4 = page4.execute();
     final List<NetworkInfo> networkInfoNormalList = page4.getNetworkInfoNormalList();
     final JPanel tab5 = new AnalysisPage5(networkInfoNormalList).execute();
+    final List<NetworkInfo> networkInfoList = AnalysisPage4.getnetworkInfoList();
+    final JPanel tab6 = new AnalysisPage6(networkInfoList).execute();
 
     addTab(tabbedPane, PAGE1, tab1, "Description de la page 1");
     addTab(tabbedPane, PAGE2, tab2, "Description de la page 2");
     addTab(tabbedPane, PAGE3, tab3, "Description de la page 3");
     addTab(tabbedPane, PAGE4, tab4, "Description de la page 4");
     addTab(tabbedPane, PAGE5, tab5, "Description de la page 5");
+    addTab(tabbedPane, PAGE6, tab6, "Description de la page 6");
 
     frame.add(tabbedPane);
 
