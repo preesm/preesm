@@ -91,4 +91,6 @@
         sourceport="ABC" targetport="ABC" to="Intranode Stats exporter"/>
     <dftools:dataTransfer from="PiSDF Scheduling"
         sourceport="ABC" targetport="ABC" to="Top Timing Exporter"/>
+    <dftools:dataTransfer from="SCAPE" sourceport="cMem"
+        targetport="cMem" to="Intranode Stats exporter"/>
 </dftools:workflow>

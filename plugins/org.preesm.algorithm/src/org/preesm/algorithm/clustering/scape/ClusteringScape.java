@@ -3,6 +3,7 @@ package org.preesm.algorithm.clustering.scape;
 import java.util.ArrayList;
 import java.util.EnumMap;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import org.preesm.algorithm.clustering.partitioner.ClusterPartitioner;
@@ -20,6 +21,7 @@ import org.preesm.model.pisdf.Actor;
 import org.preesm.model.pisdf.CHeaderRefinement;
 import org.preesm.model.pisdf.ConfigInputPort;
 import org.preesm.model.pisdf.DataInputPort;
+import org.preesm.model.pisdf.DataOutputInterface;
 import org.preesm.model.pisdf.DataOutputPort;
 import org.preesm.model.pisdf.Direction;
 import org.preesm.model.pisdf.FunctionArgument;
@@ -52,12 +54,12 @@ public class ClusteringScape extends ClusterPartitioner {
 
   ScapeMode scapeMode;
 
-  int                              clusterIndex   = -1;             // topological index
-  private int                      clusterId      = 0;              // index cluster created
+  int                              clusterIndex   = -1;     // topological index
+  private int                      clusterId      = 0;      // index cluster created
   private Map<Long, List<PiGraph>> hierarchicalLevelOrdered;
   private Long                     fulcrumLevelID = 0L;
   private Long                     coreEquivalent = 1L;
-  public Map<Actor, Long>          clusterMemory  = new HashMap<>();
+  private final Map<Actor, Long>   clusterMemory;
 
   public ClusteringScape(Scenario scenario, Long stackSize, ScapeMode scapeMode, int levelNumber) {
     super(scenario.getAlgorithm(), scenario, EuclideTransfo.computeSingleNodeCoreEquivalent(scenario).intValue());
@@ -67,6 +69,7 @@ public class ClusteringScape extends ClusterPartitioner {
     this.levelNumber = levelNumber;
     this.hierarchicalLevelOrdered = new HashMap<>();
     this.coreEquivalent = EuclideTransfo.computeSingleNodeCoreEquivalent(scenario);
+    this.clusterMemory = new LinkedHashMap<>();
   }
 
   public PiGraph execute() {
@@ -106,6 +109,7 @@ public class ClusteringScape extends ClusterPartitioner {
       case DATA_PIPELINE -> executeMode1();
       case DATA_PIPELINE_HIERARCHY -> executeMode2();
       default -> throw new PreesmRuntimeException("Unrecognized Scape mode.");
+
     }
   }
 
@@ -135,11 +139,23 @@ public class ClusteringScape extends ClusterPartitioner {
           isHasCluster = false;
         }
         if (!newCluster.getChildrenGraphs().isEmpty()) {
+          final Long mem = mem(newCluster.getChildrenGraphs().get(0));
+          final String clusterName = newCluster.getChildrenGraphs().get(0).getName();
           cluster(newCluster.getChildrenGraphs().get(0), scenario, stackSize);
+          clusterMemory.put(findCluster(clusterName), mem);
           clusterId++;
         }
       } while (isHasCluster);
     }
+  }
+
+  private Actor findCluster(String clusterName) {
+    for (final AbstractActor a : graph.getAllExecutableActors()) {
+      if (a.getName().equals(clusterName)) {
+        return (Actor) a;
+      }
+    }
+    return null;
   }
 
   /**
@@ -240,10 +256,27 @@ public class ClusteringScape extends ClusterPartitioner {
       final Long fulcrumLevel = fulcrumLevelID - 2;
       for (Long i = totalLevelNumber; i > fulcrumLevel; i--) {
         for (final PiGraph g : hierarchicalLevelOrdered.get(i)) {
+          final Long mem = mem(g);
+          final String clusterName = g.getName();
           cluster(g, scenario, stackSize);
+          clusterMemory.put(findCluster(clusterName), mem);
         }
       }
     }
+  }
+
+  private Long mem(PiGraph g) {
+    Long mem = 0L;
+    for (final AbstractActor a : g.getExecutableActors()) {
+      for (final DataOutputPort out : a.getDataOutputPorts()) {
+        if (!(out.getFifo().getTarget() instanceof DataOutputInterface)) {
+          final Long typeInBit = scenario.getSimulationInfo().getDataTypeSizeInBit(out.getFifo().getType());
+          mem += out.getExpression().evaluate() * typeInBit;
+        }
+      }
+
+    }
+    return mem;
   }
 
   /**
@@ -253,6 +286,7 @@ public class ClusteringScape extends ClusterPartitioner {
    *          The identify clustered subgraph
    */
   public static void cluster(PiGraph g, Scenario scenario, Long stackSize) {
+
     // compute the cluster schedule
 
     final List<ScapeSchedule> schedule = new ScheduleScape(g).execute();
