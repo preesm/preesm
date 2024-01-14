@@ -32,10 +32,10 @@ import org.preesm.commons.files.PreesmIOHelper;
  */
 public class AnalysisPage4 {
 
-  private final String                   path;
-  private static final String            NET_NAME              = "multicriteria.csv";
-  private static final List<NetworkInfo> networkInfoList       = new ArrayList<>();
-  private final List<NetworkInfo>        networkInfoNormalList = new ArrayList<>();
+  static String              path;
+  public static final String NET_NAME              = "multicriteria.csv";
+  static List<NetworkInfo>   networkInfoList       = new ArrayList<>();
+  static List<NetworkInfo>   networkInfoNormalList = new ArrayList<>();
 
   Map<Integer, Map<Integer, Map<Integer, List<NetworkInfo>>>> nodeNetworkInfoNormalMap = new LinkedHashMap<>();
   int                                                         nodeKey                  = 0;
