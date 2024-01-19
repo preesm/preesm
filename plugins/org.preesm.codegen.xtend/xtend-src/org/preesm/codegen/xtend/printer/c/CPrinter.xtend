@@ -278,10 +278,15 @@ class CPrinter extends BlankPrinter {
 	extern pthread_barrier_t iter_barrier;
 	extern int preesmStopThreads;
 	«ELSE»
-	#include "sub«printedCoreBlock.getNodeID()».h"
+
 	extern pthread_barrier_t iter_barrier«printedCoreBlock.getNodeID()»;
 	extern int initNode«printedCoreBlock.getNodeID()»;
-
+	typedef struct {
+		«var initBlock = engine.codeBlocks.get(0)»
+	 	«FOR buffer : (initBlock as CoreBlock).getTopBuffers»
+	 	«buffer.getType()» *«buffer.getComment()»;
+	 	«ENDFOR»
+	} ThreadParams;
 	«ENDIF »
 	
 	
@@ -315,11 +320,12 @@ class CPrinter extends BlankPrinter {
 		if (arg != NULL) {
 			printf("Warning: expecting NULL arguments\n"); fflush(stdout);
 		}
-	«ELSE»
-		ThreadParams«printedCoreBlock.getNodeID()» *params = (ThreadParams«printedCoreBlock.getNodeID()»*)arg;
+
+	«IF printedCoreBlock.isMultinode()»
+		ThreadParams *params = (ThreadParams*)arg;
 		«var initBlock = engine.codeBlocks.get(0)»
 	 	«FOR buffer : (initBlock as CoreBlock).getTopBuffers»
-	 	«buffer.getType()» *«buffer.getName()» = params->«buffer.getComment()» ;
+	 	«buffer.getType()» *«buffer.getName()» = params->«buffer.getComment()»;
 	 	«ENDFOR»
 	«ENDIF »
 
@@ -336,7 +342,8 @@ class CPrinter extends BlankPrinter {
 		«ELSE»
 		if(initNode«printedCoreBlock.getNodeID()»==1){
 			«IF !callBlock.codeElts.empty»// Initialisation(s)«"\n\n"»«ENDIF»
-			
+
+			}
 		«ENDIF»
 	'''
 
@@ -415,9 +422,7 @@ class CPrinter extends BlankPrinter {
 		'''
 		
 	override printCoreLoopBlockHeader(LoopBlock block2, int nodeID) '''
-«IF printedCoreBlock.isMultinode()»
-	}
-«ENDIF »
+
 	// Begin the execution loop«"\n\t"»
 	pthread_barrier_wait(&iter_barrier«nodeID»);
 	
@@ -1014,7 +1019,13 @@ class CPrinter extends BlankPrinter {
 		#include "preesm_gen.h"
 		«ELSE»
 		 #include "preesm_gen«(block as CoreBlock).getNodeID()».h"
-		 #include "sub«(block as CoreBlock).getNodeID()».h"
+
+		 typedef struct {
+		 	«var initBlock = engine.codeBlocks.get(0)»
+		 	«FOR buffer : (initBlock as CoreBlock).getTopBuffers»
+		 	«buffer.getType()» *«buffer.getComment()»;
+		 	«ENDFOR»
+		 } ThreadParams;
 		 
 		 «ENDIF»
 		// Declare computation thread functions
@@ -1057,7 +1068,9 @@ class CPrinter extends BlankPrinter {
 		«IF !(block as CoreBlock).isMultinode()»
 		unsigned int launch(unsigned int core_id, pthread_t * thread, void *(*start_routine) (void *)) {
 		«ELSE»
-		unsigned int launch«(block as CoreBlock).getNodeID()»(unsigned int core_id, pthread_t * thread, void *(*start_routine) (void *), ThreadParams«(block as CoreBlock).getNodeID()» *params) {
+
+		unsigned int launch«(block as CoreBlock).getNodeID()»(unsigned int core_id, pthread_t * thread, void *(*start_routine) (void *), ThreadParams *params) {
+
 		«ENDIF »
 			// init pthread attributes
 			pthread_attr_t attr;
@@ -1105,10 +1118,12 @@ class CPrinter extends BlankPrinter {
 		«ELSE»
 		void «engine.algo.name»(«printNodeArg()») {
 			
-			ThreadParams«(block as CoreBlock).getNodeID()» threadParams;
+
+			ThreadParams threadParams;
 			«var initBlock = engine.codeBlocks.get(0)»
 					 	«FOR buffer : (initBlock as CoreBlock).getTopBuffers»
-					 	threadParams.«buffer.getComment()» = «buffer.getComment()»;
+					 	threadParams.«buffer.getComment()» = «buffer.getName()»;
+
 					 	«ENDFOR»
 					 	
 		«ENDIF»
@@ -1226,28 +1241,22 @@ class CPrinter extends BlankPrinter {
 	'''
 		
 		def String printNodeArg() {
-    var funcStr = ""
-    val firstBlock = (this.engine.codeBlocks.head as CoreBlock)
-    val srcArgs = firstBlock.topBuffers.filter[buf | buf.comment.contains("src")]
 
-    for (var i = 0; i < srcArgs.size; i++) {
-        val index = i
-        val buff =srcArgs.findFirst[Buffer buf | buf.comment == ("src_in_"  + index)]
-        funcStr += buff.type + " *" + buff.comment + ","
-    }
-
-    val snkArgs = firstBlock.topBuffers.filter[buf | buf.comment.contains("snk")]
-    for (var i = 0; i < snkArgs.size; i++) {
-        val index = i
-        val buff =snkArgs.findFirst[Buffer buf | buf.comment == ("snk_out_" + index)]
-        funcStr += buff.type + " *" + buff.comment + ","
-    }
-
-    if (funcStr.endsWith(",")) {
-        funcStr = funcStr.substring(0, funcStr.length - 1)
-    }
-
-        return funcStr
+			var str = ""
+			//for(block:this.engine.codeBlocks){
+				
+				val firstBlock = this.engine.codeBlocks.head
+				for(topBuffer: (firstBlock as CoreBlock).topBuffers){
+					str = str + topBuffer.type + " *"+ topBuffer.name+",";
+				}
+			//}
+			
+			if(str==""){
+				str="void"
+			}
+			if(str.endsWith(","))
+				str = str.substring(0, str.length() - 1);
+			return str
 
 		}
 

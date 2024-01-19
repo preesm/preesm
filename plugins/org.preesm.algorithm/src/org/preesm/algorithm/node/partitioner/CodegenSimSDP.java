@@ -40,12 +40,12 @@ public class CodegenSimSDP {
   private StringConcatenation buildContent() {
     mappingPort();
     final StringConcatenation result = new StringConcatenation();
-    result.append(header());
-    result.append(includes());
-    result.append(globalDefinition());
-    result.append(bufferDeclaration());
-    result.append(loop());
-    result.append(exeNode());
+
+    result.append(init(topGraph));
+    result.append(initNode(nodeNames, topGraph));
+    result.append(buffer(topGraph));
+    result.append(mpiEnv());
+    result.append(exeNode(topGraph));
     return result;
   }
 
@@ -224,43 +224,37 @@ public class CodegenSimSDP {
       final String indexStr = node.getName().replace("sub", "");
       final Long indexL = Long.decode(indexStr);
       result.append("if (rank ==" + indexL + "){ \n");
-      if (!node.getDataInputPorts().isEmpty()) {
-        result.append("int src = " + (indexL - 1) + ";\n");
+
+      for (final DataInputPort din : node.getDataInputPorts()) {
+        result.append("MPI_Recv(" + din.getFifo().getSourcePort().getName() + "," + din.getExpression().evaluate() + ","
+            + "MPI_" + din.getFifo().getType().toUpperCase() + "," + (indexL - 1)
+            + ", MPI_ANY_TAG, MPI_COMM_WORLD, MPI_STATUS_IGNORE);\n");
+
       }
       result.append(mpiRecv(node));
 
       result.append(node.getName() + "(");
-      if (portRank.containsKey(node.getName())) {
 
-        for (int i = 0; i < portRank.get(node.getName()).size(); i++) {
-
-          final Port port = portRank.get(node.getName()).get(i);
-          String bufferName = "";
-          if (port instanceof final DataOutputPort dout) {
-            bufferName = node.getName() + "_" + port.getName() + "__"
-                + ((AbstractActor) dout.getFifo().getTarget()).getName() + "_"
-                + dout.getFifo().getTargetPort().getName();
-          } else if (port instanceof final DataInputPort din) {
-            bufferName = ((AbstractActor) din.getFifo().getSource()).getName() + "_"
-                + din.getFifo().getSourcePort().getName() + "__" + node.getName() + "_" + din.getName();
-          }
-
-          result.append(bufferName + ",");
-        }
+      // for (final ConfigInputPort cfg : node.getConfigInputPorts()) {
+      // result.append(cfg.getName() + ",");
+      // }
+      for (final DataInputPort din : node.getDataInputPorts()) {
+        result.append(din.getFifo().getSourcePort().getName() + ",");
       }
-      /*
-       * for (final DataInputPort din : node.getDataInputPorts()) {
-       * result.append(din.getFifo().getSourcePort().getName() + ","); } for (final DataOutputPort dout :
-       * node.getDataOutputPorts()) { result.append(dout.getName() + ","); }
-       */
+      for (final DataOutputPort dout : node.getDataOutputPorts()) {
+        result.append(dout.getName() + ",");
+      }
       String temp = result.toString();
       if (result.toString().endsWith(",")) {
         temp = result.toString().substring(0, result.length() - 1);
       }
       result = new StringConcatenation();
       result.append(temp + ");\n");
-      if (!node.getDataOutputPorts().isEmpty()) {
-        result.append("int dest =" + (indexL + 1) + ";\n");
+
+      for (final DataOutputPort dout : node.getDataOutputPorts()) {
+        result.append("MPI_Ssend(" + dout.getName() + "," + dout.getExpression().evaluate() + "," + "MPI_"
+            + dout.getFifo().getType().toUpperCase() + "," + (indexL + 1) + ",0, MPI_COMM_WORLD);\n");
+
       }
       result.append(mpiSend(node));
 
@@ -284,13 +278,27 @@ public class CodegenSimSDP {
 
   private StringConcatenation free(AbstractActor node) {
     final StringConcatenation result = new StringConcatenation();
-    for (final DataOutputPort dout : node.getDataOutputPorts()) {
-      final String bufferName = node.getName() + "_" + dout.getName() + "__"
-          + ((AbstractActor) dout.getFifo().getTarget()).getName() + "_" + dout.getFifo().getTargetPort().getName();
 
-      result.append("free(" + bufferName + ");\n");
+    result.append("// Get the name of the processor \n");
+    result.append("char processor_name[MPI_MAX_PROCESSOR_NAME]; \n");
+    result.append("int name_len; \n");
+    // result.append("int rank = 0; \n");
 
-    }
+    result.append("MPI_Get_processor_name(processor_name, &name_len); \n");
+    result.append("int rank = -1; \n");
+    result.append("for (int index = 0; index < sizeof(nodeset) / sizeof(nodeset[0]); index++) { \n");
+    result.append("if (strcmp(processor_name, nodeset[index]) == 0) { \n");
+    result.append("rank = index; \n");
+    result.append("break;  // If the match is found, exit the loop\n");
+    result.append("} \n } \n");
+
+    result.append("if (rank != -1) { \n");
+    result.append("printf(\"Processor name %s found at rank %d\\n\", processor_name, rank); \n");
+    result.append("} else { \n");
+    result.append("printf(\"Processor name %s not found in nodeset\\n\", processor_name); \n");
+    result.append("} \n");
+
+    result.append("for(int index=0; index< MPI_LOOP_SIZE;index++) { \n");
     return result;
   }
 
@@ -311,14 +319,61 @@ public class CodegenSimSDP {
       if (isHomogeneous) {
         source = "find_rank_by_processor_name(nodeset[" + src + "])";
       }
-      String type = din.getFifo().getType();
-      if ("uchar".equals(type)) {
-        type = "unsigned_char";
+
+    }
+    return result;
+  }
+
+  private StringConcatenation init(PiGraph topGraph) {
+    final StringConcatenation result = new StringConcatenation();
+    result.append("#include <stdio.h> \n");
+    result.append("#include <mpi.h> \n");
+    result.append("#include \"stdlib.h\" \n");
+
+    for (int i = 0; i < topGraph.getExecutableActors().size(); i++) {
+      result.append("#include \"sub" + i + "/preesm_gen" + i + ".h\" \n");
+      result.append("#include \"sub" + i + "/sub" + i + ".h\" \n");
+    }
+    result.append("#define MPI_LOOP_SIZE 1 \n\n");
+    return result;
+  }
+
+  private StringConcatenation initNode(Map<Long, String> nodeNames, PiGraph topGraph) {
+    final StringConcatenation result = new StringConcatenation();
+    result.append("int MPIStopNode = 0;\n");
+    for (int i = 0; i < topGraph.getExecutableActors().size(); i++) {
+
+      result.append("int initNode" + i + " = 1;\n");
+
+    }
+    String str = "";
+    if (nodeNames.size() > 0) {
+      result.append("const char *nodeset[" + nodeNames.size() + "] = {");
+
+      for (Long i = 0L; i < nodeNames.size(); i++) {
+        str += "\"" + nodeNames.get(i) + "\",";
+
+      }
+
+    } else {
+      result.append("const char *nodeset[" + topGraph.getExecutableActors().size() + "] = {");
+      for (Long i = 0L; i < topGraph.getExecutableActors().size(); i++) {
+        str += "\"Node" + i + "\",";
       }
 
       result.append("MPI_Recv(" + bufferName + "," + din.getExpression().evaluate() + "," + "MPI_" + type.toUpperCase()
           + "," + source + ", label, MPI_COMM_WORLD, &status);\n");
     }
+
+    if (str.endsWith(",")) {
+      str = str.substring(0, str.length() - 1);
+    }
+    result.append(str);
+
+    result.append("};// rename the node e.g.:\"po-eii26\" \n\n");
+    result.append("int main(int argc, char **argv) { \n");
+    result.append("// Initialize the MPI environment \n");
+    result.append("MPI_Init(NULL, NULL); \n");
     return result;
   }
 

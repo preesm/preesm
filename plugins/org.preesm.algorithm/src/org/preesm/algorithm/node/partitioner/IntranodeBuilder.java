@@ -564,8 +564,9 @@ public class IntranodeBuilder {
 
   private void generateFileC(Actor actor, int index) {
     final StringConcatenation content = new StringConcatenation();
-    content.append("// Interface actor file \n #include \"" + actor.getName() + ".h\" \n " + " void "
-        + actor.getContainingPiGraph().getName() + "_" + actor.getName() + "(");
+
+    content.append(
+        "// Interface actor file \n #include \"" + actor.getName() + ".h\" \n " + " void " + actor.getName() + "(");
 
     for (int i = 0; i < actor.getAllDataPorts().size(); i++) {
       final DataPort dp = actor.getAllDataPorts().get(i);
