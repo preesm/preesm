@@ -239,6 +239,7 @@ public class IntranodeBuilder {
     functionArgument.setDirection(Direction.OUT);
     functionPrototype.getArguments().add(functionArgument);
     generateFileH(src, index);
+    generateFileC(src, index);
 
     // Set 1 because it's an interface
     for (final Component opId : archi.getProcessingElements()) {
@@ -275,7 +276,7 @@ public class IntranodeBuilder {
     functionArgument.setDirection(Direction.IN);
     functionPrototype.getArguments().add(functionArgument);
     generateFileH(snk, index);
-
+    generateFileC(snk, index);
     // Set 1 because it's an interface
     for (final Component opId : archi.getProcessingElements()) {
       scenario.getTimings().setExecutionTime(snk, opId, 1L);
@@ -530,8 +531,8 @@ public class IntranodeBuilder {
 
     for (int i = 0; i < actor.getAllDataPorts().size(); i++) {
       final DataPort dp = actor.getAllDataPorts().get(i);
-      content.append(dp.getFifo().getType() + " " + dp.getName());
-      if (i == actor.getAllDataPorts().size() - 1) {
+      content.append(dp.getFifo().getType() + " *" + dp.getName());
+      if (i == actor.getAllDataPorts().size() - 2) {
         content.append(",");
       }
     }
@@ -543,6 +544,24 @@ public class IntranodeBuilder {
         content);
     final String message = "interface file print in : " + codegenPath + INTERFACE_PATH + index + File.separator;
     PreesmLogger.getLogger().log(Level.INFO, message);
+  }
+
+  private void generateFileC(Actor actor, int index) {
+    final StringConcatenation content = new StringConcatenation();
+    content.append(
+        "// Interface actor file \n #include \"" + actor.getName() + ".h\" \n " + " void " + actor.getName() + "(");
+
+    for (int i = 0; i < actor.getAllDataPorts().size(); i++) {
+      final DataPort dp = actor.getAllDataPorts().get(i);
+      content.append(dp.getFifo().getType() + " *" + dp.getName());
+      if (i == actor.getAllDataPorts().size() - 2) {
+        content.append(",");
+      }
+    }
+    content.append(") {\n //This function is empty since it is just an interface\n }");
+
+    PreesmIOHelper.getInstance().print(codegenPath + INTERFACE_PATH + index + "/", actor.getName() + ".c", content);
+
   }
 
   /**

@@ -339,10 +339,14 @@ public abstract class CodegenAbstractPrinter extends CodegenSwitch<CharSequence>
   public abstract Map<String, CharSequence> createSecondaryFiles(List<Block> printerBlocks,
       Collection<Block> allBlocks);
 
+  // public abstract Map<String, CharSequence> generateStandardLibFiles();
+
   /**
+   * @param path
+   *          path of the generated clusters
    *
    */
-  public abstract Map<String, CharSequence> generateStandardLibFiles();
+  public abstract Map<String, CharSequence> generateStandardLibFiles(String path);
 
   @Override
   public CharSequence defaultCase(final EObject object) {
@@ -483,7 +487,12 @@ public abstract class CodegenAbstractPrinter extends CodegenSwitch<CharSequence>
     String indentation;
     boolean hasNewLine;
     setState(PrinterState.PRINTING_LOOP_BLOCK);
-    final CharSequence coreLoopHeader = printCoreLoopBlockHeader(coreBlock.getLoopBlock());
+    final CharSequence coreLoopHeader;
+    if (!coreBlock.isMultinode()) {
+      coreLoopHeader = printCoreLoopBlockHeader(coreBlock.getLoopBlock());
+    } else {
+      coreLoopHeader = printCoreLoopBlockHeader(coreBlock.getLoopBlock(), coreBlock.getNodeID());
+    }
     result.append(coreLoopHeader, indentationCoreBlock);
     if (coreLoopHeader.length() > 0) {
       indentation = CodegenAbstractPrinter.getLastLineIndentation(result);
@@ -498,7 +507,12 @@ public abstract class CodegenAbstractPrinter extends CodegenSwitch<CharSequence>
       result.newLineIfNotEmpty();
       result.append(indentationCoreBlock);
     }
-    result.append(printCoreLoopBlockFooter(coreBlock.getLoopBlock()), indentationCoreBlock);
+    if (!coreBlock.isMultinode()) {
+      result.append(printCoreLoopBlockFooter(coreBlock.getLoopBlock()), indentationCoreBlock);
+    } else {
+      result.append(printCoreLoopBlockFooter(coreBlock.getLoopBlock(), coreBlock.getNodeID()), indentationCoreBlock);
+    }
+
     setState(PrinterState.IDLE);
     return result;
   }
@@ -1093,6 +1107,8 @@ public abstract class CodegenAbstractPrinter extends CodegenSwitch<CharSequence>
    */
   public abstract CharSequence printCoreLoopBlockFooter(LoopBlock loopBlock);
 
+  public abstract CharSequence printCoreLoopBlockFooter(LoopBlock loopBlock, int nodeID);
+
   /**
    * Method called before printing all {@link CodeElt} belonging to the {@link CoreBlock#getLoopBlock() loopBlock}
    * {@link CallBlock} of a {@link CoreBlock}.
@@ -1102,6 +1118,8 @@ public abstract class CodegenAbstractPrinter extends CodegenSwitch<CharSequence>
    * @return the printed {@link CharSequence}
    */
   public abstract CharSequence printCoreLoopBlockHeader(LoopBlock loopBlock);
+
+  public abstract CharSequence printCoreLoopBlockHeader(LoopBlock loopBlock, int nodeID);
 
   /**
    * Method called after printing all {@link Variable} belonging to the {@link CoreBlock#getDeclarations() declarations}

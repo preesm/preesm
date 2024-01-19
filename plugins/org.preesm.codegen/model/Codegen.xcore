@@ -222,6 +222,7 @@ class CoreBlock extends Block {
 	refers Buffer[] topBuffers//opr
 	boolean multinode//opr
 	unordered id int coreID
+	unordered int nodeID//opr
 }
 
 class ClusterBlock extends Block {

@@ -3,6 +3,7 @@ package org.preesm.algorithm.clustering.scape;
 import java.io.File;
 import java.util.Date;
 import java.util.List;
+import org.eclipse.xtend2.lib.StringConcatenation;
 import org.preesm.algorithm.schedule.model.ScapeBuilder;
 import org.preesm.algorithm.schedule.model.ScapeSchedule;
 import org.preesm.algorithm.schedule.model.ScheduleFactory;
@@ -34,7 +35,7 @@ public class CodegenScape {
     PreesmIOHelper.getInstance().print(clusterPath, cfile, clusterCContent);
     // print H file
     final String hfile = clusterName + ".h";
-    final StringBuilder clusterHContent = buildHContent(build, subGraph);
+    final StringConcatenation clusterHContent = buildHContent(build, subGraph);
     PreesmIOHelper.getInstance().print(clusterPath, hfile, clusterHContent);
   }
 
@@ -47,9 +48,15 @@ public class CodegenScape {
    *          Graph to consider.
    * @return The string content of the .h file.
    */
-  private StringBuilder buildHContent(ScapeBuilder build, PiGraph subGraph) {
-    final StringBuilder result = new StringBuilder();
+
+  private StringConcatenation buildHContent(ScapeBuilder build, PiGraph subGraph) {
+
+    final StringConcatenation result = new StringConcatenation();
+
     result.append(header(subGraph));
+    final String nodeId = nodeIdentifier(subGraph);
+
+    result.append("#include \"preesm_gen" + nodeId + ".h\"\n");
     final String upper = subGraph.getName().toUpperCase() + "_H";
 
     result.append("#ifndef " + upper + "\n");
@@ -64,10 +71,22 @@ public class CodegenScape {
         }
       }
     }
-    result.append("#include \"preesm_gen.h\"\n");
 
     result.append("#endif \n");
     return result;
+  }
+
+  private String nodeIdentifier(PiGraph subGraph) {
+    PiGraph tempg = subGraph;
+    while (tempg.getContainingPiGraph() != null) {
+      tempg = tempg.getContainingPiGraph();
+
+    }
+    if (tempg.getName().contains("sub")) {
+      return tempg.getName().replace("sub", "");
+    }
+
+    return "";
   }
 
   /**

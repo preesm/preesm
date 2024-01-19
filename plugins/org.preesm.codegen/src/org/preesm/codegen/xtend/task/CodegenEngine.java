@@ -312,13 +312,15 @@ public class CodegenEngine {
         }
 
         // Add standard files for this printer
-        final Map<String, CharSequence> generateStandardLibFiles = printer.generateStandardLibFiles();
+        final Map<String, CharSequence> generateStandardLibFiles = printer.generateStandardLibFiles("");
         for (final Entry<String, CharSequence> entry : generateStandardLibFiles.entrySet()) {
           final String fileName = entry.getKey();
           final IFile iFile = PreesmIOHelper.getInstance().print(this.codegenPath, fileName, entry.getValue());
           CodeFormatterAndPrinter.format(iFile);
         }
       } else {
+        final String path = this.algo.getName() + "/";
+
         // Print secondary files (main file)
         final Map<String, CharSequence> createSecondaryFiles = printer.createSecondaryFiles(printerAndBlocks.getValue(),
             this.codeBlocks);
@@ -326,6 +328,19 @@ public class CodegenEngine {
 
           final String fileName = this.algo.getName() + ".c";
           final IFile iFile = PreesmIOHelper.getInstance().print(this.codegenPath, fileName, entry.getValue());
+          CodeFormatterAndPrinter.format(iFile);
+        }
+        final String mainCodegenPath = this.codegenPath.replace(this.algo.getName() + "/", "");
+        // Add standard files for this printer
+        final Map<String, CharSequence> generateStandardLibFiles = printer.generateStandardLibFiles(path);
+        for (final Entry<String, CharSequence> entry : generateStandardLibFiles.entrySet()) {
+          String fileName = entry.getKey();
+          String filePath = mainCodegenPath;
+          if (fileName.equals("preesm_gen.h")) {
+            filePath = this.codegenPath;
+            fileName = "preesm_gen" + this.algo.getName().replace("sub", "") + ".h";
+          }
+          final IFile iFile = PreesmIOHelper.getInstance().print(filePath, fileName, entry.getValue());
           CodeFormatterAndPrinter.format(iFile);
         }
       }

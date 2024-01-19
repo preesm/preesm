@@ -52,16 +52,21 @@ import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.IExtensionRegistry;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.Platform;
+import org.eclipse.xtend2.lib.StringConcatenation;
 import org.preesm.algorithm.mapper.model.MapperDAG;
 import org.preesm.algorithm.memory.exclusiongraph.MemoryExclusionGraph;
 import org.preesm.algorithm.model.dag.DirectedAcyclicGraph;
 import org.preesm.codegen.model.Block;
+import org.preesm.codegen.model.Buffer;
+import org.preesm.codegen.model.CoreBlock;
 import org.preesm.codegen.model.generator.CodegenModelGenerator;
 import org.preesm.commons.doc.annotations.Parameter;
 import org.preesm.commons.doc.annotations.Port;
 import org.preesm.commons.doc.annotations.PreesmTask;
 import org.preesm.commons.doc.annotations.Value;
 import org.preesm.commons.exceptions.PreesmRuntimeException;
+import org.preesm.commons.files.PreesmIOHelper;
+import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.scenario.Scenario;
 import org.preesm.model.slam.Design;
 import org.preesm.workflow.elements.Workflow;
@@ -168,6 +173,12 @@ public class CodegenSimSDPTask extends AbstractTaskImplementation {
     generator.registerMultinode(multinode);
 
     final Collection<Block> codeBlocks = generator.generate();
+    for (final Block block : codeBlocks) {
+      if (block instanceof final CoreBlock coreBlock) {
+        final int nodeID = Integer.parseInt(scenario.getAlgorithm().getName().replace("sub", ""));
+        coreBlock.setNodeID(nodeID);
+      }
+    }
 
     // Retrieve the desired printer and target folder path
     final String selectedPrinter = parameters.get(CodegenSimSDPTask.PARAM_PRINTER);
@@ -187,8 +198,40 @@ public class CodegenSimSDPTask extends AbstractTaskImplementation {
     engine.preprocessPrinters();
     engine.print();
 
+    headerPrint(codegenPath, scenario.getAlgorithm(), codeBlocks);
+
     // Create empty output map (codegen doesn't have output)
     return new LinkedHashMap<>();
+  }
+
+  private void headerPrint(String codegenPath, PiGraph subGraph, Collection<Block> codeBlocks) {
+    final StringConcatenation content = new StringConcatenation();
+    content.append("#include \"preesm.h\"\n");
+    content.append("#include \"stdlib.h\"\n");
+    content.append("#include <stdio.h>\n");
+    final String upper = subGraph.getName().toUpperCase() + "_H";
+    content.append("#ifndef " + upper + "\n", "");
+    content.append("#define " + upper + "\n", "");
+    content.append("void " + subGraph.getName() + "(" + printNodeArg(subGraph, codeBlocks) + "); \n");
+    content.append("#endif \n", "");
+
+    PreesmIOHelper.getInstance().print(codegenPath, subGraph.getName() + ".h", content);
+
+  }
+
+  private String printNodeArg(PiGraph node, Collection<Block> codeBlocks) {
+
+    String str = "";
+
+    final CoreBlock firstBlock = (CoreBlock) codeBlocks.stream().findFirst().get();
+    for (final Buffer topBuffer : firstBlock.getTopBuffers()) {
+      str += topBuffer.getType() + " *" + topBuffer.getName() + ",";
+    }
+
+    if (str.endsWith(",")) {
+      str = str.substring(0, str.length() - 1);
+    }
+    return str;
   }
 
   /*
