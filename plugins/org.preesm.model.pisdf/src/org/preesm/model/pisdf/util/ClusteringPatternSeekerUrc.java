@@ -88,8 +88,17 @@ public class ClusteringPatternSeekerUrc extends ClusteringPatternSeeker {
 
   @Override
   public Boolean caseAbstractActor(AbstractActor base) {
+    // filter dummy single source starter
     if (base.getName().equals("single_source") || base.getDataInputPorts().stream()
         .anyMatch(x -> ((AbstractVertex) x.getFifo().getSource()).getName().equals("single_source"))) {
+      return false;
+    }
+    // filter multinode interface
+    if (base.getName().startsWith("src_") || base.getName().startsWith("snk_")
+        || base.getDataInputPorts().stream()
+            .anyMatch(x -> ((AbstractVertex) x.getFifo().getSource()).getName().startsWith("src_"))
+        || base.getDataInputPorts().stream()
+            .anyMatch(x -> ((AbstractVertex) x.getFifo().getSource()).getName().startsWith("snk_"))) {
       return false;
     }
     // Check that all fifos are homogeneous and without delay
@@ -102,6 +111,9 @@ public class ClusteringPatternSeekerUrc extends ClusteringPatternSeeker {
 
     // Get the candidate i.e. the following actor in the topological order
     final AbstractActor candidate = (AbstractActor) base.getDataOutputPorts().get(0).getFifo().getTarget();
+    if (candidate.getName().startsWith("snk_")) {
+      return false;
+    }
 
     // Check that the actually processed actor as only fifos outgoing to the candidate actor
     final boolean allOutputGoesToCandidate = base.getDataOutputPorts().stream()

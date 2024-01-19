@@ -96,6 +96,11 @@ public class BlankPrinter extends CodegenAbstractPrinter {
     return new LinkedHashMap<>();
   }
 
+  @Override
+  public Map<String, CharSequence> generateStandardLibFiles(String path) {
+    return new LinkedHashMap<>();
+  }
+
   public CharSequence printBroadcast(SpecialCall call) {
     return "";
   }
@@ -180,7 +185,17 @@ public class BlankPrinter extends CodegenAbstractPrinter {
     return "";
   }
 
+  @Override
+  public CharSequence printCoreLoopBlockFooter(LoopBlock loopBlock, int nodeID) {
+    return "";
+  }
+
   public CharSequence printCoreLoopBlockHeader(LoopBlock block2) {
+    return "";
+  }
+
+  @Override
+  public CharSequence printCoreLoopBlockHeader(LoopBlock loopBlock, int nodeID) {
     return "";
   }
 
@@ -351,4 +366,5 @@ public class BlankPrinter extends CodegenAbstractPrinter {
   public CharSequence printPostFunctionCall(FunctionCall functionCall) {
     return "";
   }
+
 }

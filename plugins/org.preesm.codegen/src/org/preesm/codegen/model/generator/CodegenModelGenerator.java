@@ -49,7 +49,6 @@ import com.google.common.collect.HashBiMap;
 import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -201,6 +200,8 @@ public class CodegenModelGenerator extends AbstractCodegenModelGenerator {
    * This {@link BiMap} associates each {@link DAGEdge} to its corresponding {@link Buffer}.
    */
   private final BiMap<DAGEdge, Buffer> dagEdgeBuffers;
+  private final BiMap<DAGEdge, Buffer> dagEdgeTopBuffers;
+  private final List<Buffer>           topBuffer;
 
   /**
    * This {@link Map} associates each {@link Pair} of init and end {@link DAGVertex} to their corresponding {@link Pair}
@@ -275,6 +276,7 @@ public class CodegenModelGenerator extends AbstractCodegenModelGenerator {
     this.coreBlocks = new LinkedHashMap<>();
     this.srSDFEdgeBuffers = new LinkedHashMap<>();
     this.dagEdgeBuffers = HashBiMap.create(algo.edgeSet().size());
+    this.dagEdgeTopBuffers = HashBiMap.create(algo.edgeSet().size());
     this.dagFifoBuffers = new LinkedHashMap<>();
     this.dagVertexCalls = HashBiMap.create(algo.vertexSet().size());
     this.communications = new LinkedHashMap<>();
@@ -285,6 +287,7 @@ public class CodegenModelGenerator extends AbstractCodegenModelGenerator {
     this.papifyActive = false;
     this.scheduleMapping = scheduleMapping;
     this.multinode = false;
+    this.topBuffer = new ArrayList<>();
   }
 
   /**
@@ -459,7 +462,13 @@ public class CodegenModelGenerator extends AbstractCodegenModelGenerator {
           final String vertKind = vert.getPropertyBean().getValue(AbstractVertex.KIND_LITERAL).toString();
           switch (vertKind) {
             case DAGVertex.DAG_VERTEX:
+              // if(vert.getName().startsWith("src")||vert.getName().startsWith("snk")) {
+              // generateInterfaceFiring();
+              // }else {
+
               generateActorFiring(operatorBlock, vert);
+
+              // }
               break;
             case MapperDAGVertex.DAG_FORK_VERTEX:
             case MapperDAGVertex.DAG_JOIN_VERTEX:
@@ -488,18 +497,34 @@ public class CodegenModelGenerator extends AbstractCodegenModelGenerator {
           throw new PreesmRuntimeException("Vertex " + vert + " has an unknown type: " + vert.getKind());
       }
     });
-
+    generateTopBuffers();
     final List<Block> resultList = this.coreBlocks.entrySet().stream()
         .sorted((e1, e2) -> e1.getKey().getHardwareId() - e2.getKey().getHardwareId()).map(Entry::getValue)
         .collect(Collectors.toList());
 
     // 3 - Put the buffer definition in their right place
+    // generateTopBuffers(resultList);
     generateBufferDefinitions();
-    generateTopBuffers(resultList);
+
     // 4 - Set enough info to compact instrumentation code
     compactPapifyUsage(resultList);
 
     return Collections.unmodifiableList(resultList);
+  }
+
+  private void generateTopBuffers() {
+    for (final AbstractActor interfaceActor : this.scenario.getAlgorithm().getExecutableActors()) {
+      if (interfaceActor.getName().contains("snk") || interfaceActor.getName().contains("src")) {
+
+        // final Buffer buffer = CodegenModelUserFactory.eINSTANCE.createBuffer();
+        // buffer.setName(interfaceActor.getName() + "_" + interfaceActor.getAllDataPorts().get(0).getName());
+        // buffer.setType(interfaceActor.getAllDataPorts().get(0).getFifo().getType());
+        for (final Entry<ComponentInstance, CoreBlock> entry : this.coreBlocks.entrySet()) {
+          entry.getValue().getTopBuffers().addAll(this.topBuffer);
+        }
+      }
+    }
+
   }
 
   void compactPapifyUsage(List<Block> allBlocks) {
@@ -884,6 +909,9 @@ public class CodegenModelGenerator extends AbstractCodegenModelGenerator {
 
       final Buffer mainBuffer = CodegenModelUserFactory.eINSTANCE.createBuffer();
       mainBuffer.setName(memoryBank);
+      if (this.multinode == true) {
+        mainBuffer.setName(memoryBank + this.scenario.getAlgorithm().getName().replace("sub", ""));
+      }
       mainBuffer.setType("char");
       mainBuffer.setTokenTypeSizeInBit(8); // char is 8 bits
 
@@ -922,6 +950,7 @@ public class CodegenModelGenerator extends AbstractCodegenModelGenerator {
           final DAGVertex originalSource = this.algo.getVertex(source.getName());
           final DAGVertex originalTarget = this.algo.getVertex(target.getName());
           final DAGEdge originalDagEdge = this.algo.getEdge(originalSource, originalTarget);
+
           if (!this.dagEdgeBuffers.containsKey(originalDagEdge)) {
             // Generate subsubbuffers. Each subsubbuffer corresponds to
             // an edge of the single rate SDF Graph
@@ -931,7 +960,17 @@ public class CodegenModelGenerator extends AbstractCodegenModelGenerator {
             // dagEdgeBuffer.setSize(dagEdgeSize);
             dagEdgeBuffer
                 .setNbToken((long) Math.ceil((double) dagEdgeSize / (double) dagEdgeBuffer.getTokenTypeSizeInBit()));
-            this.dagEdgeBuffers.put(originalDagEdge, dagEdgeBuffer);
+            if (!dagEdgeBuffer.getName().contains("src") && !dagEdgeBuffer.getName().contains("snk")) {
+              this.dagEdgeBuffers.put(originalDagEdge, dagEdgeBuffer);
+            } else {
+
+              // if (dagEdgeBuffer.getName().contains("src")) {
+              // dagEdgeBuffer.setName(source.getName());
+              // } else {
+              // dagEdgeBuffer.setName(target.getName());
+              // }
+              this.dagEdgeTopBuffers.put(originalDagEdge, dagEdgeBuffer);
+            }
           } else {
             if (!showWarningOnce) {
               PreesmLogger.getLogger().info(
@@ -1027,24 +1066,6 @@ public class CodegenModelGenerator extends AbstractCodegenModelGenerator {
           this.dagFifoBuffers.put(key, new Pair<>(fifoBuffer, value.getValue()));
         } else {
           this.dagFifoBuffers.put(key, new Pair<>(value.getKey(), fifoBuffer));
-        }
-      }
-    }
-  }
-
-  private void generateTopBuffers(List<Block> resultList) {
-    if (multinode) {
-      for (final Block block : resultList) {
-        final CoreBlock coreBlock = (CoreBlock) block;
-
-        final Iterator<Buffer> iterBuffer = coreBlock.getSinkFifoBuffers().iterator();
-        while (iterBuffer.hasNext()) {
-          final Buffer buffer = iterBuffer.next();
-
-          if (buffer.getComment().contains("> snk")) {
-            coreBlock.getTopBuffers().add(buffer);
-            iterBuffer.remove();
-          }
         }
       }
     }
@@ -1159,6 +1180,12 @@ public class CodegenModelGenerator extends AbstractCodegenModelGenerator {
         throw new PreesmRuntimeException(
             "Edge connected to " + arg.getDirection() + " port " + arg.getName() + " of DAG Actor " + dagVertex
                 + " is not present in the input MemEx.\n" + "There is something wrong in the Memory Allocation task.");
+      }
+      if (dagVertex.getName().startsWith("src") || dagVertex.getName().startsWith("snk")) {
+        final Buffer topBuf = (Buffer) var;
+        topBuf.setComment(dagVertex.getName().replace("_0", ""));
+        this.topBuffer.add(topBuf);
+
       }
 
       variableList.put(prototype.getArguments().get(arg), var);
@@ -1385,6 +1412,7 @@ public class CodegenModelGenerator extends AbstractCodegenModelGenerator {
    */
   protected void generateCommunication(final CoreBlock operatorBlock, final DAGVertex dagVertex,
       final String direction) {
+
     // Create the communication
     final SharedMemoryCommunication newComm = CodegenModelUserFactory.eINSTANCE.createSharedMemoryCommunication();
     final Direction dir = (direction.equals(VertexType.TYPE_SEND)) ? Direction.SEND : Direction.RECEIVE;
@@ -1403,65 +1431,70 @@ public class CodegenModelGenerator extends AbstractCodegenModelGenerator {
     // Find the corresponding DAGEdge buffer(s)
     final DAGEdge dagEdge = dagVertex.getPropertyBean()
         .getValue(ImplementationPropertyNames.SendReceive_correspondingDagEdge);
-    final Buffer buffer = this.dagEdgeBuffers.get(dagEdge);
-    if (buffer == null) {
-      throw new PreesmRuntimeException("No buffer found for edge" + dagEdge);
-    }
-    newComm.setData(buffer);
-    newComm.getParameters().clear();
-    if (buffer != null) {
-      newComm.addParameter(buffer, PortDirection.NONE);
-    }
+    if (this.dagEdgeBuffers.containsKey(dagEdge)) {
+      final Buffer buffer = this.dagEdgeBuffers.get(dagEdge);
+      // if (buffer == null) {
+      // buffer = this.dagEdgeTopBuffers.get(dagEdge);
+      // }
+      if (buffer == null) {
+        throw new PreesmRuntimeException("No buffer found for edge" + dagEdge);
+      }
+      newComm.setData(buffer);
+      newComm.getParameters().clear();
+      if (buffer != null) {
+        newComm.addParameter(buffer, PortDirection.NONE);
+      }
 
-    // Set the name of the communication
-    // SS <=> Start Send
-    // RE <=> Receive End
-    String commName = "__" + buffer.getName();
-    commName += "__" + operatorBlock.getName();
-    newComm.setName(((newComm.getDirection().equals(Direction.SEND)) ? "SS" : "RE") + commName);
+      // Set the name of the communication
+      // SS <=> Start Send
+      // RE <=> Receive End
+      String commName = "__" + buffer.getName();
+      commName += "__" + operatorBlock.getName();
+      newComm.setName(((newComm.getDirection().equals(Direction.SEND)) ? "SS" : "RE") + commName);
 
-    // Find corresponding communications (SS/SE/RS/RE)
-    registerCommunication(newComm, dagEdge, dagVertex);
+      // Find corresponding communications (SS/SE/RS/RE)
+      registerCommunication(newComm, dagEdge, dagVertex);
 
-    // Insert the new communication to the loop of the codeblock
-    insertCommunication(operatorBlock, dagVertex, newComm);
+      // Insert the new communication to the loop of the codeblock
+      insertCommunication(operatorBlock, dagVertex, newComm);
 
-    // Register the dag buffer to the core
-    registerCallVariableToCoreBlock(operatorBlock, newComm);
+      // Register the dag buffer to the core
+      registerCallVariableToCoreBlock(operatorBlock, newComm);
 
-    // Create the corresponding SE or RS
-    final SharedMemoryCommunication newCommZoneComplement = CodegenModelUserFactory.eINSTANCE
-        .createSharedMemoryCommunication();
-    newCommZoneComplement.setDirection(dir);
-    newCommZoneComplement.setDelimiter((delimiter.equals(Delimiter.START)) ? Delimiter.END : Delimiter.START);
-    newCommZoneComplement.setData(buffer);
-    newCommZoneComplement.getParameters().clear();
-    if (buffer != null) {
-      newCommZoneComplement.addParameter(buffer, PortDirection.NONE);
-    }
+      // Create the corresponding SE or RS
+      final SharedMemoryCommunication newCommZoneComplement = CodegenModelUserFactory.eINSTANCE
+          .createSharedMemoryCommunication();
+      newCommZoneComplement.setDirection(dir);
+      newCommZoneComplement.setDelimiter((delimiter.equals(Delimiter.START)) ? Delimiter.END : Delimiter.START);
+      newCommZoneComplement.setData(buffer);
+      newCommZoneComplement.getParameters().clear();
+      if (buffer != null) {
+        newCommZoneComplement.addParameter(buffer, PortDirection.NONE);
+      }
 
-    newCommZoneComplement.setName(((newComm.getDirection().equals(Direction.SEND)) ? "SE" : "RS") + commName);
-    for (final ComponentInstance comp : routeStep.getNodes()) {
-      final CommunicationNode comNode = CodegenModelUserFactory.eINSTANCE.createCommunicationNode();
-      comNode.setName(comp.getInstanceName());
-      comNode.setType(comp.getComponent().getVlnv().getName());
-      newCommZoneComplement.getNodes().add(comNode);
-    }
+      newCommZoneComplement.setName(((newComm.getDirection().equals(Direction.SEND)) ? "SE" : "RS") + commName);
+      for (final ComponentInstance comp : routeStep.getNodes()) {
+        final CommunicationNode comNode = CodegenModelUserFactory.eINSTANCE.createCommunicationNode();
+        comNode.setName(comp.getInstanceName());
+        comNode.setType(comp.getComponent().getVlnv().getName());
+        newCommZoneComplement.getNodes().add(comNode);
+      }
 
-    // Find corresponding communications (SS/SE/RS/RE)
-    registerCommunication(newCommZoneComplement, dagEdge, dagVertex);
+      // Find corresponding communications (SS/SE/RS/RE)
+      registerCommunication(newCommZoneComplement, dagEdge, dagVertex);
 
-    // Insert the new communication to the loop of the codeblock
-    insertCommunication(operatorBlock, dagVertex, newCommZoneComplement);
+      // Insert the new communication to the loop of the codeblock
+      insertCommunication(operatorBlock, dagVertex, newCommZoneComplement);
 
-    // No semaphore here, semaphore are only for SS->RE and RE->SR
+      // No semaphore here, semaphore are only for SS->RE and RE->SR
 
-    // Check if this is a redundant communication
-    final Boolean b = dagVertex.getPropertyBean().getValue("Redundant");
-    if (b != null && b.equals(Boolean.valueOf(true))) {
-      // Mark communication are redundant.
-      newComm.setRedundant(true);
-      newCommZoneComplement.setRedundant(true);
+      // Check if this is a redundant communication
+      final Boolean b = dagVertex.getPropertyBean().getValue("Redundant");
+      if (b != null && b.equals(Boolean.valueOf(true))) {
+        // Mark communication are redundant.
+        newComm.setRedundant(true);
+        newCommZoneComplement.setRedundant(true);
+      }
     }
   }
 
@@ -2628,6 +2661,9 @@ public class CodegenModelGenerator extends AbstractCodegenModelGenerator {
   protected String generateUniqueBufferName(final String name) {
     int idx;
     String key = name;
+    if (this.multinode == true) {
+      key = this.scenario.getAlgorithm().getName() + "_" + name;
+    }
     if (key.length() > 58) {
       key = key.substring(0, 58);
     }
