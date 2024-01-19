@@ -120,6 +120,7 @@ public class NodePartitioner {
   }
 
   private void exportArchitecture() {
+    int coreIDStart = 0;
     for (final NodeMapping node : hierarchicalArchitecture) {
 
       final ArchitecturesGenerator a = new ArchitecturesGenerator(ScenarioBuilder.iproject(scenariiPath));
@@ -131,14 +132,16 @@ public class NodePartitioner {
           type2nb.put(core.getCoreType(), 1);
         }
       }
+
       final Design subArchi = ArchitecturesGenerator.generateArchitecture(type2nb, "Node" + node.getID(),
-          node.getCores().get(0).getCoreCommunicationRate());
+          node.getCores().get(0).getCoreCommunicationRate(), coreIDStart);
 
       subArchi.setUrl(archiPath + "Node" + node.getID() + ".slam");
       archiList.add(subArchi);
       a.saveArchitecture(subArchi);
-      a.generateAndSaveArchitecture(type2nb, "Node" + node.getID(), node.getCores().get(0).getCoreCommunicationRate());
-
+      a.generateAndSaveArchitecture(type2nb, "Node" + node.getID(), node.getCores().get(0).getCoreCommunicationRate(),
+          coreIDStart);
+      coreIDStart += node.getCores().size();
     }
   }
 

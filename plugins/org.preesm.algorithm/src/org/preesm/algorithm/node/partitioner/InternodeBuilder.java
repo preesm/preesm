@@ -176,7 +176,7 @@ public class InternodeBuilder {
     final Map<String, Integer> nodeList = new HashMap<>();
     nodeList.put("node", nodeIndex);
     final Design topArchi = ArchitecturesGenerator.generateArchitecture(nodeList, "top",
-        hierarchicalArchitecture.get(0).getNodeCommunicationRate());
+        hierarchicalArchitecture.get(0).getNodeCommunicationRate(), 0);
     a.saveArchitecture(topArchi);
     topArchi.setUrl(archiPath + "top.slam");
     // 4. generate scenario

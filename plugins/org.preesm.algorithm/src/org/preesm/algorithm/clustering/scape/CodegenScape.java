@@ -49,8 +49,13 @@ public class CodegenScape {
    * @return The string content of the .h file.
    */
   private StringConcatenation buildHContent(ScapeBuilder build, PiGraph subGraph) {
+
     final StringConcatenation result = new StringConcatenation();
+
     result.append(header(subGraph));
+    final String nodeId = nodeIdentifier(subGraph);
+
+    result.append("#include \"preesm_gen" + nodeId + ".h\"\n");
     final String upper = subGraph.getName().toUpperCase() + "_H";
     result.append("#ifndef " + upper + "\n", "");
     result.append("#define " + upper + "\n", "");
@@ -64,10 +69,22 @@ public class CodegenScape {
         }
       }
     }
-    result.append("#include \"preesm_gen.h\"\n");
 
     result.append("#endif \n", "");
     return result;
+  }
+
+  private String nodeIdentifier(PiGraph subGraph) {
+    PiGraph tempg = subGraph;
+    while (tempg.getContainingPiGraph() != null) {
+      tempg = tempg.getContainingPiGraph();
+
+    }
+    if (tempg.getName().contains("sub")) {
+      return tempg.getName().replace("sub", "");
+    }
+
+    return "";
   }
 
   /**
