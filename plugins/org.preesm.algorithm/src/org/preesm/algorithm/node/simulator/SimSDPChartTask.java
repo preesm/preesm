@@ -62,9 +62,11 @@ public class SimSDPChartTask extends AbstractTaskImplementation {
     final JFrame frame = createFrame();
     frame.setSize(800, 800);
     final JTabbedPane tabbedPane = new JTabbedPane();
-    final AnalysisPage1 page1 = new AnalysisPage1(path, iterationOptim);
-    final JPanel tab1 = page1.execute();
-    iterationOptim = page1.getIterationOptim();
+
+    final JPanel tab1 = new AnalysisPage1(path, iterationOptim).execute();
+    final JPanel tab1bis = new AnalysisPage1bis(path).execute();
+
+    iterationOptim = AnalysisPage1.getIterationOptim();
 
     final JPanel tab2 = new AnalysisPage2(path, iterationOptim).execute();
     final JPanel tab3 = new AnalysisPage3(path, iterationOptim).execute();
@@ -76,6 +78,7 @@ public class SimSDPChartTask extends AbstractTaskImplementation {
     final JPanel tab6 = new AnalysisPage6(networkInfoList).execute();
 
     addTab(tabbedPane, PAGE1, tab1, "Description de la page 1");
+    addTab(tabbedPane, PAGE1bis, tab1bis, "Description de la page 1 bis");
     addTab(tabbedPane, PAGE2, tab2, "Description de la page 2");
     addTab(tabbedPane, PAGE3, tab3, "Description de la page 3");
     addTab(tabbedPane, PAGE4, tab4, "Description de la page 4");
