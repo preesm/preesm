@@ -26,6 +26,7 @@ import org.preesm.workflow.implement.AbstractTaskImplementation;
     category = "Deviation chart exporters")
 public class SimSDPChartTask extends AbstractTaskImplementation {
   public static final String PAGE1     = "Internode Analysis";
+  public static final String PAGE1bis  = "Correlation Analysis";
   public static final String PAGE2     = "Intranode Analysis";
   public static final String PAGE3     = "DSE Analysis";
   public static final String PAGE4     = "Network Analysis";
@@ -59,6 +60,8 @@ public class SimSDPChartTask extends AbstractTaskImplementation {
     frame.setSize(800, 800);
     final JTabbedPane tabbedPane = new JTabbedPane();
     final JPanel tab1 = new AnalysisPage1(path, iterationOptim).execute();
+    final JPanel tab1bis = new AnalysisPage1bis(path).execute();
+
     iterationOptim = AnalysisPage1.getIterationOptim();
     final JPanel tab2 = new AnalysisPage2(path, iterationOptim).execute();
     final JPanel tab3 = new AnalysisPage3(path, iterationOptim).execute();
@@ -70,6 +73,7 @@ public class SimSDPChartTask extends AbstractTaskImplementation {
 
     final JPanel tabLast = new AnalysisLastPage().execute();
     addTab(tabbedPane, PAGE1, tab1, "Description de la page 1");
+    addTab(tabbedPane, PAGE1bis, tab1bis, "Description de la page 1 bis");
     addTab(tabbedPane, PAGE2, tab2, "Description de la page 2");
     addTab(tabbedPane, PAGE3, tab3, "Description de la page 3");
     addTab(tabbedPane, PAGE4, tab4, "Description de la page 4");

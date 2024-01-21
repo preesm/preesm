@@ -22,3 +22,9 @@ memory;1022361600
 energy;0
 cost;0
 
+type;<?xml version='1.0'?>
+finalLatency;114803084
+memory;1022361600
+energy;1
+cost;1
+

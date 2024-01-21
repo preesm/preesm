@@ -47,13 +47,15 @@ import org.preesm.workflow.implement.AbstractWorkflowNodeImplementation;
         @Parameter(name = "SimGrid AG Path", description = "Installation path for adrien gougeon's project",
             values = { @Value(name = "path", effect = "change default path") }) })
 public class InternodeExporterTask extends AbstractTaskImplementation {
-  public static final String STD_NAME      = "std_trend.csv";
-  public static final String LATENCY_NAME  = "latency_trend.csv";
-  public static final String WORKLOAD_NAME = "workload.csv";
-  public static final String FOLDER        = "/Simulation/";
+  public static final String STD_NAME         = "std_trend.csv";
+  public static final String LATENCY_NAME     = "latency_trend.csv";
+  public static final String WORKLOAD_NAME    = "workload.csv";
+  public static final String CORRELATION_NAME = "correlation.csv";
+  public static final String FOLDER           = "/Simulation/";
 
   Double              latency     = 0.0;
   Map<String, Double> loadPerNode = new HashMap<>();
+  Map<String, Double> loadPerLink = new HashMap<>();
 
   @Override
   public Map<String, Object> execute(Map<String, Object> inputs, Map<String, String> parameters,
@@ -79,6 +81,7 @@ public class InternodeExporterTask extends AbstractTaskImplementation {
     final Double sigma = sigma(loadPerNode);
     PreesmIOHelper.getInstance().append(workflow.getProjectName() + FOLDER, LATENCY_NAME, String.valueOf(latency));
     PreesmIOHelper.getInstance().append(workflow.getProjectName() + FOLDER, STD_NAME, String.valueOf(sigma));
+    fillCorrelation(sigma(loadPerNode), sigma(loadPerLink), latency, workflow.getProjectName() + FOLDER);
 
     final Boolean singlenet = processWorkflowFile(workflow);
 
@@ -87,8 +90,21 @@ public class InternodeExporterTask extends AbstractTaskImplementation {
       final Map<String, Double> deviationPerNode = deviationPerNodeCompute(loadPerNode);
       final Map<String, Double> previousdeviationPerNode = previousDeviationPerNodeCompute(workflow.getProjectName());
       fillWorkload(deviationPerNode, previousdeviationPerNode, workflow.getProjectName() + FOLDER);
+
     }
     return new LinkedHashMap<>();
+  }
+
+  private void fillCorrelation(Double sigma, Double sigma2, Double latency2, String filePath) {
+    final IFile iFile = ResourcesPlugin.getWorkspace().getRoot().getFile(new Path(filePath + CORRELATION_NAME));
+    final StringConcatenation content = new StringConcatenation();
+    if (!iFile.exists()) {
+      // If the file does not exist, append the header
+      content.append("STD workload;STD link load;Final latency;\n");
+    }
+    content.append(sigma + ";" + sigma2 + ";" + latency2 + ";");
+    PreesmIOHelper.getInstance().append(filePath, CORRELATION_NAME, content.toString());
+
   }
 
   private boolean processWorkflowFile(Workflow workflow) {
@@ -104,7 +120,7 @@ public class InternodeExporterTask extends AbstractTaskImplementation {
       return taskNode.getParameter("Multinet").equals("false");
 
     }
-    return false; // Indiquer que le traitement a échoué
+    return false;
   }
 
   /**
@@ -196,6 +212,11 @@ public class InternodeExporterTask extends AbstractTaskImplementation {
       if (columns[0].contains("Node")) {
         // Add node and corresponding load information to the map
         loadPerNode.put(columns[0], Double.valueOf(columns[2]));
+      }
+
+      if (columns[0].contains("link")) {
+        // Add node and corresponding load information to the map
+        loadPerLink.put(columns[0], Double.valueOf(columns[2]));
       }
     }
   }
