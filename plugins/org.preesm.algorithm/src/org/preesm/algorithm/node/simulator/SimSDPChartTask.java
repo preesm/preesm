@@ -29,6 +29,7 @@ import org.preesm.workflow.implement.AbstractTaskImplementation;
 public class SimSDPChartTask extends AbstractTaskImplementation {
 
   public static final String PAGE1     = "Internode Analysis";
+  public static final String PAGE1bis  = "Correlation Analysis";
   public static final String PAGE2     = "Intranode Analysis";
   public static final String PAGE3     = "DSE Analysis";
   public static final String PAGE4     = "Network Analysis";
@@ -64,6 +65,7 @@ public class SimSDPChartTask extends AbstractTaskImplementation {
     final AnalysisPage1 page1 = new AnalysisPage1(path, iterationOptim);
     final JPanel tab1 = page1.execute();
     iterationOptim = page1.getIterationOptim();
+
     final JPanel tab2 = new AnalysisPage2(path, iterationOptim).execute();
     final JPanel tab3 = new AnalysisPage3(path, iterationOptim).execute();
     final AnalysisPage4 page4 = new AnalysisPage4(path);
