@@ -66,9 +66,11 @@ public class CodegenScape {
     for (final AbstractActor actor : subGraph.getOnlyActors()) {
       if (actor instanceof Actor) {
         final CHeaderRefinement cHeaderRefinement = (CHeaderRefinement) (((Actor) actor).getRefinement());
+
         if (cHeaderRefinement.getInitPrototype() != null) {
           result.append("#include \"" + cHeaderRefinement.getFileName() + "\" \n\n");
         }
+
       }
     }
 
@@ -136,8 +138,10 @@ public class CodegenScape {
 
     result.append("// free buffer  \n ");
     for (final String buffer : build.getDynmicBuffer()) {
+
       final String buff = buffer.split("[\\s\\[\\]]")[1];
       result.append("free(" + buff + "); \n ");
+
     }
 
     result.append("}\n");

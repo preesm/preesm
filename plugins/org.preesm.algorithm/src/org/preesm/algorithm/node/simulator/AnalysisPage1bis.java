@@ -60,6 +60,9 @@ public class AnalysisPage1bis {
   }
 
   private String description() {
+    if (correlation.getCorrelationMatrix() == null) {
+      return "Correlation analysis need at list 2 rows and 2 cols";
+    }
     final double[][] correlationMatrix = correlation.getCorrelationMatrix().getData();
     String description = "<html>Correlaton matrix: </b>";
     for (final double[] element : correlationMatrix) {
@@ -151,7 +154,9 @@ public class AnalysisPage1bis {
       xyz[2][i] = Double.valueOf(column[2]);
     }
     dataset.addSeries("Series", xyz);
-    correlation = new PearsonsCorrelation(xyz);
+    if (size >= 2) {
+      correlation = new PearsonsCorrelation(xyz);
+    }
 
     return dataset;
   }
