@@ -459,7 +459,8 @@ public class IntranodeBuilder {
         foutn.setContainingGraph(key.getContainingGraph());
         copy.getDataInputPorts().stream().filter(x -> x.getName().equals(in.getName()))
             .forEach(x -> x.setIncomingFifo(foutn));
-
+        // final Long expressionWithoutFalseParam = foutn.getTargetPort().getExpression().evaluate();
+        // foutn.getTargetPort().setExpression(expressionWithoutFalseParam);
         subsCopy.get(subRank).put(frk, 1L);
         brv.put(frk, 1L);
         index++;
@@ -589,6 +590,7 @@ public class IntranodeBuilder {
    */
   private void generateFileH(Actor actor, int index) {
     final StringConcatenation content = new StringConcatenation();
+    content.append("#include \"preesm.h\"\n");
     content.append("// Interface actor file \n #ifndef " + actor.getName().toUpperCase() + "_H \n #define "
         + actor.getName().toUpperCase() + "_H \n void " + actor.getName() + "(");
 
@@ -650,14 +652,16 @@ public class IntranodeBuilder {
           subTimings += slow * brv.get(a);
         } else {
           // add actor until reach node capacity
-          list = processActorList(list, a, nodeCapacity);
+          // final Long dividend = findClosestDivisor(brv.get(a), nodeCapacity);
+          final Long dividend = nodeCapacity;
+          list = processActorList(list, a, dividend);
 
           subs.put(nodeID, list);
           // fill the next node
           nodeID++;
           list = new HashMap<>();
           // Fill the list with remaining instances
-          final Long remainingInstance = brv.get(a) - nodeCapacity;
+          final Long remainingInstance = brv.get(a) - dividend;
           list.put(a, remainingInstance);
           subTimings = remainingInstance * slow;
         }
@@ -666,6 +670,33 @@ public class IntranodeBuilder {
     }
     // Put the final node and its sub-timings into the map
     subs.put(nodeID, list);
+  }
+
+  private Long findClosestDivisor(Long value, Long targetValue) {
+    final List<Long> divisors = getDivisors(value);
+
+    Long closestDivisor = divisors.get(0); // Initialisation avec le premier diviseur
+    Long minDifference = Math.abs(targetValue - closestDivisor);
+
+    for (final Long divisor : divisors) {
+      final Long difference = Math.abs(targetValue - divisor);
+      if (difference < minDifference) {
+        minDifference = difference;
+        closestDivisor = divisor;
+      }
+    }
+
+    return closestDivisor;
+  }
+
+  private List<Long> getDivisors(Long value) {
+    final List<Long> divisors = new ArrayList<>();
+    for (Long i = 1L; i <= value; i++) {
+      if (value % i == 0) {
+        divisors.add(i);
+      }
+    }
+    return divisors;
   }
 
   /**

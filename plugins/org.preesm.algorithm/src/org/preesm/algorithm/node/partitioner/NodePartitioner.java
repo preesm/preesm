@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Random;
 import java.util.logging.Level;
 import java.util.stream.Collectors;
 import org.eclipse.core.resources.IFile;
@@ -22,6 +23,9 @@ import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.AbstractVertex;
 import org.preesm.model.pisdf.Actor;
 import org.preesm.model.pisdf.DelayActor;
+import org.preesm.model.pisdf.Dependency;
+import org.preesm.model.pisdf.Fifo;
+import org.preesm.model.pisdf.Parameter;
 import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.pisdf.SpecialActor;
 import org.preesm.model.pisdf.brv.BRVMethod;
@@ -43,6 +47,7 @@ public class NodePartitioner {
   private final Scenario scenario;
 
   private final String archicsvpath;
+  private final String partitioningMode;
   List<NodeMapping>    hierarchicalArchitecture;
 
   private final Map<Integer, Long>             timeEq;       // id node/cumulative time
@@ -57,10 +62,11 @@ public class NodePartitioner {
   private String scenariiPath   = "";
   private String simulationPath = "";
 
-  public NodePartitioner(Scenario scenario, String archicsvpath) {
+  public NodePartitioner(Scenario scenario, String archicsvpath, String partitioningMode) {
     this.graph = scenario.getAlgorithm();
     this.scenario = scenario;
     this.archicsvpath = archicsvpath;
+    this.partitioningMode = partitioningMode;
 
     this.timeEq = new HashMap<>();
     this.load = new HashMap<>();
@@ -72,6 +78,25 @@ public class NodePartitioner {
   }
 
   public PiGraph execute() {
+    // prevent wrong dependency assignment
+    for (final Fifo fifo : graph.getAllFifos()) {
+      final Long realExpressionIn = fifo.getSourcePort().getExpression().evaluate();
+      fifo.getSourcePort().setExpression(realExpressionIn);
+      final Long realExpressionOut = fifo.getTargetPort().getExpression().evaluate();
+      fifo.getTargetPort().setExpression(realExpressionOut);
+    }
+    for (final Dependency dependencies : graph.getAllDependencies()) {
+
+      if (!((Parameter) dependencies.getSetter()).getName().equals(dependencies.getGetter().getName())
+          && (dependencies.getGetter() instanceof Parameter)) {
+
+        final String message = "Parameter name:" + ((Parameter) dependencies.getSetter()).getName()
+            + " should correspond to configuration port name" + dependencies.getGetter().getName()
+            + ", and fit the function prototype";
+        PreesmLogger.getLogger().log(Level.SEVERE, message);
+      }
+    }
+
     final String[] uriString = graph.getUrl().split("/");
     scenariiPath = "/" + uriString[1] + "/Scenarios/generated/";
     archiPath = "/" + uriString[1] + "/Archi/";
@@ -227,8 +252,15 @@ public class NodePartitioner {
       final String[] lines = content.split("\n");
       for (final String line : lines) {
         final String[] columns = line.split(";");
+        Double value;
+        if (this.partitioningMode.equals("equivalentTimed")) {
+          value = Double.valueOf(columns[1]);
+        } else {
+          final Random random = new Random();
+          value = random.nextDouble();
+        }
 
-        load.put(Integer.valueOf(columns[0].replace("node", "")), Double.valueOf(columns[1]));
+        load.put(Integer.valueOf(columns[0].replace("Node", "")), value);
       }
 
     }

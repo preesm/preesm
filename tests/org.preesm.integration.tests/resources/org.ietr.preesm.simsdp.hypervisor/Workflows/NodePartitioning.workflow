@@ -3,6 +3,7 @@
     <dftools:scenario pluginId="org.ietr.preesm.scenario.task"/>
     <dftools:task pluginId="node.partitioner.task.identifier" taskId="NodePartitioner">
         <dftools:data key="variables">
+            <dftools:variable name="Partitioning mode" value="equivalentTimed"/>
             <dftools:variable name="archi path" value="SimSDP_node.csv"/>
         </dftools:data>
     </dftools:task>

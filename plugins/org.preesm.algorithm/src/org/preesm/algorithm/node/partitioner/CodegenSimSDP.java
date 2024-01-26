@@ -40,18 +40,27 @@ public class CodegenSimSDP {
       if (!(node instanceof Actor)) {
         continue;
       }
+      // for (final AbstractActor node : topGraph.getOnlyActors()) {
+
+      // }
+
       final String indexStr = node.getName().replace("sub", "");
       final Long indexL = Long.decode(indexStr);
       result.append("if (rank ==" + indexL + "){ \n");
+      if (!node.getDataInputPorts().isEmpty()) {
+        result.append("int src = " + (indexL - 1) + ";\n");
+      }
       for (final DataInputPort din : node.getDataInputPorts()) {
+        String type = din.getFifo().getType();
+        if ("uchar".equals(type)) {
+          type = "unsigned_char";
+        }
+
         result.append("MPI_Recv(" + din.getFifo().getSourcePort().getName() + "," + din.getExpression().evaluate() + ","
-            + "MPI_" + din.getFifo().getType().toUpperCase() + "," + (indexL - 1)
-            + ", MPI_ANY_TAG, MPI_COMM_WORLD, MPI_STATUS_IGNORE);\n");
+            + "MPI_" + type.toUpperCase() + ",src, label, MPI_COMM_WORLD, &status);\n");
       }
       result.append(node.getName() + "(");
-      // for (final ConfigInputPort cfg : node.getConfigInputPorts()) {
-      // result.append(cfg.getName() + ",");
-      // }
+
       for (final DataInputPort din : node.getDataInputPorts()) {
         result.append(din.getFifo().getSourcePort().getName() + ",");
       }
@@ -64,10 +73,17 @@ public class CodegenSimSDP {
       }
       result = new StringConcatenation();
       result.append(temp + ");\n");
-
+      if (!node.getDataOutputPorts().isEmpty()) {
+        result.append("int dest =" + (indexL + 1) + ";\n");
+      }
       for (final DataOutputPort dout : node.getDataOutputPorts()) {
-        result.append("MPI_Ssend(" + dout.getName() + "," + dout.getExpression().evaluate() + "," + "MPI_"
-            + dout.getFifo().getType().toUpperCase() + "," + (indexL + 1) + ",0, MPI_COMM_WORLD);\n");
+        String type = dout.getFifo().getType();
+        if ("uchar".equals(type)) {
+          type = "unsigned_char";
+        }
+
+        result.append("MPI_Send(" + dout.getName() + "," + dout.getExpression().evaluate() + "," + "MPI_"
+            + type.toUpperCase() + ",dest ,label, MPI_COMM_WORLD);\n");
       }
       result.append("initNode" + indexL + " = 0;\n }\n");
 
@@ -76,12 +92,13 @@ public class CodegenSimSDP {
     for (final AbstractActor node : topGraph.getOnlyActors()) {
       if (node instanceof Actor) {
         for (final DataOutputPort dout : node.getDataOutputPorts()) {
-          result.append("MPI_Free_mem(" + dout.getName() + ");\n");
+          result.append("free(" + dout.getName() + ");\n");
 
         }
       }
     }
-    result.append("MPI_Finalize();\n }");
+    result.append("MPI_Finalize();\n ");
+    result.append("return 0;\n }");
 
     return result;
   }
@@ -107,7 +124,8 @@ public class CodegenSimSDP {
     result.append("printf(\"Processor name %s not found in nodeset\\n\", processor_name); \n");
     result.append("} \n");
 
-    result.append("for(int index=0; index< MPI_LOOP_SIZE;index++) { \n");
+    // result.append("for(int index=0; index< MPI_LOOP_SIZE;index++) { \n");
+    result.append("while(!MPIStopNode) { \n");
     return result;
   }
 
@@ -117,9 +135,10 @@ public class CodegenSimSDP {
     for (final AbstractActor node : topGraph.getOnlyActors()) {
       if (node instanceof Actor) {
         for (final DataOutputPort dout : node.getDataOutputPorts()) {
-          result.append(dout.getFifo().getType() + " *" + dout.getName() + ";\n");
-          result.append("MPI_Alloc_mem(" + dout.getExpression().evaluate() + " * sizeof(" + dout.getFifo().getType()
-              + "), MPI_INFO_NULL, &" + dout.getName() + "); \n");
+          result.append(dout.getFifo().getType() + " *" + dout.getName() + "=(" + dout.getFifo().getType() + "*)malloc("
+              + dout.getExpression().evaluate() + " * sizeof(" + dout.getFifo().getType() + "));\n");
+          // result.append("MPI_Alloc_mem(" + dout.getExpression().evaluate() + " * sizeof(" + dout.getFifo().getType()
+          // + "), MPI_INFO_NULL, &" + dout.getName() + "); \n");
         }
       }
     }
@@ -168,10 +187,19 @@ public class CodegenSimSDP {
     }
     result.append(str);
 
-    result.append("};// rename the node e.g.:\"po-eii26\" \n\n");
+    result.append("};// rename the node e.g.:\"po-eii26\" or \"paravance-25.rennes.grid5000.fr\" \n\n");
     result.append("int main(int argc, char **argv) { \n");
+    result.append("int label = 100;\n");
+    result.append("MPI_Status status;\n");
+    // for (final AbstractActor node : topGraph.getOnlyActors()) {
+    // if (node instanceof Actor) {
+    // for (final DataOutputPort dout : node.getDataOutputPorts()) {
+    // result.append(dout.getFifo().getType() + " *" + dout.getName() + "= NULL;\n");
+    // }
+    // }
+    // }
     result.append("// Initialize the MPI environment \n");
-    result.append("MPI_Init(NULL, NULL); \n");
+    result.append("MPI_Init(&argc, &argv); \n");
     return result;
   }
 }
