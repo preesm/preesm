@@ -270,7 +270,8 @@ public class CodegenScapeBuilder {
 
         buffname = ((AbstractVertex) in.getFifo().getSource()).getName() + "_" + in.getFifo().getSourcePort().getName()
 
-            + "__" + sc.getActor() + "_" + in.getName();
+            + "__" + sc.getActor().getName() + "_" + in.getName();
+
       }
       if (sc.isLoopPrec() || sc.isBeginLoop() || sc.isEndLoop()) {
 

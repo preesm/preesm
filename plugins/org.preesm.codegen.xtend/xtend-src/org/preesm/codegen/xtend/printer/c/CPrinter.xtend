@@ -321,7 +321,7 @@ class CPrinter extends BlankPrinter {
 			printf("Warning: expecting NULL arguments\n"); fflush(stdout);
 		}
 
-	«IF printedCoreBlock.isMultinode()»
+	«ELSE»
 		ThreadParams *params = (ThreadParams*)arg;
 		«var initBlock = engine.codeBlocks.get(0)»
 	 	«FOR buffer : (initBlock as CoreBlock).getTopBuffers»
@@ -343,7 +343,6 @@ class CPrinter extends BlankPrinter {
 		if(initNode«printedCoreBlock.getNodeID()»==1){
 			«IF !callBlock.codeElts.empty»// Initialisation(s)«"\n\n"»«ENDIF»
 
-			}
 		«ENDIF»
 	'''
 
@@ -422,7 +421,9 @@ class CPrinter extends BlankPrinter {
 		'''
 		
 	override printCoreLoopBlockHeader(LoopBlock block2, int nodeID) '''
-
+«IF printedCoreBlock.isMultinode()»
+	}
+«ENDIF »
 	// Begin the execution loop«"\n\t"»
 	pthread_barrier_wait(&iter_barrier«nodeID»);
 	

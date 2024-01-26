@@ -25,8 +25,9 @@ import org.preesm.workflow.implement.AbstractTaskImplementation;
     inputs = { @Port(name = "scenario", type = Scenario.class) },
 
     parameters = {
-        @Parameter(name = NodePartitionerTask.ARCHI_NAME_PARAM,
-            description = "Browse the CSV file containing hierarchical architecture info",
+
+        @Parameter(name = "Archi name", description = "Browse the CSV file containing hierarchical architecture info",
+
             values = { @Value(name = "String", effect = "Read file") }),
         @Parameter(name = "Partitioning mode",
             description = "equivalentTimed : estimate balanced worload partitioning,"
@@ -36,8 +37,10 @@ import org.preesm.workflow.implement.AbstractTaskImplementation;
     })
 public class NodePartitionerTask extends AbstractTaskImplementation {
 
-  public static final String ARCHI_NAME_DEFAULT        = "SimSDP_node.csv";
-  public static final String ARCHI_NAME_PARAM          = "archi name";
+  public static final String ARCHI_NAME_DEFAULT = "SimSDP_node.csv";
+
+  public static final String ARCHI_NAME_PARAM = "archi path";
+
   public static final String PARTITIONING_MODE_DEFAULT = "";
   public static final String PARTITIONING_MODE_PARAM   = "Partitioning mode";
 

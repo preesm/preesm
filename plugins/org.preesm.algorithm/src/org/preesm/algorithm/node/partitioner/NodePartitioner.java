@@ -23,6 +23,9 @@ import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.AbstractVertex;
 import org.preesm.model.pisdf.Actor;
 import org.preesm.model.pisdf.DelayActor;
+import org.preesm.model.pisdf.Dependency;
+import org.preesm.model.pisdf.Fifo;
+import org.preesm.model.pisdf.Parameter;
 import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.pisdf.SpecialActor;
 import org.preesm.model.pisdf.brv.BRVMethod;
@@ -77,13 +80,29 @@ public class NodePartitioner {
 
   public PiGraph execute() {
 
-    final String scenarioFilePath = scenario.getScenarioURL();
-    scenariiPath = scenarioFilePath.substring(0, scenarioFilePath.lastIndexOf("/") + 1) + "generated/";
+    // prevent wrong dependency assignment
+    for (final Fifo fifo : graph.getAllFifos()) {
+      final Long realExpressionIn = fifo.getSourcePort().getExpression().evaluate();
+      fifo.getSourcePort().setExpression(realExpressionIn);
+      final Long realExpressionOut = fifo.getTargetPort().getExpression().evaluate();
+      fifo.getTargetPort().setExpression(realExpressionOut);
+    }
+    for (final Dependency dependencies : graph.getAllDependencies()) {
 
-    final String archiFilePath = scenario.getDesign().getUrl();
-    archiPath = archiFilePath.substring(0, archiFilePath.lastIndexOf("/") + 1);
+      if (!((Parameter) dependencies.getSetter()).getName().equals(dependencies.getGetter().getName())
+          && (dependencies.getGetter() instanceof Parameter)) {
 
-    simulationPath = scenarioFilePath.substring(0, scenarioFilePath.lastIndexOf("/Scenarios/") + 1) + "Simulation/";
+        final String message = "Parameter name:" + ((Parameter) dependencies.getSetter()).getName()
+            + " should correspond to configuration port name" + dependencies.getGetter().getName()
+            + ", and fit the function prototype";
+        PreesmLogger.getLogger().log(Level.SEVERE, message);
+      }
+    }
+
+    final String[] uriString = graph.getUrl().split("/");
+    scenariiPath = "/" + uriString[1] + "/Scenarios/generated/";
+    archiPath = "/" + uriString[1] + "/Archi/";
+    simulationPath = "/" + uriString[1] + "/Simulation/";
 
     if (!scenario.getDesign().getProcessingElements().stream().allMatch(x -> x.getVlnv().getName().contains("_f"))) {
       PreesmLogger.getLogger().log(Level.SEVERE,

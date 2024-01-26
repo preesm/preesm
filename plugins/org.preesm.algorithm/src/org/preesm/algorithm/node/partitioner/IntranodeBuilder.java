@@ -37,7 +37,6 @@ import org.preesm.model.pisdf.DataPort;
 import org.preesm.model.pisdf.Dependency;
 import org.preesm.model.pisdf.Direction;
 import org.preesm.model.pisdf.Fifo;
-import org.preesm.model.pisdf.ForkActor;
 import org.preesm.model.pisdf.FunctionArgument;
 import org.preesm.model.pisdf.FunctionPrototype;
 import org.preesm.model.pisdf.InterfaceActor;
@@ -416,15 +415,6 @@ public class IntranodeBuilder {
         foutn.setSourcePort(doutn);
         copy.getDataInputPorts().stream().filter(x -> x.getName().equals(in.getName()))
             .forEach(x -> x.setIncomingFifo(foutn));
-
-        piGraph.addFifo(foutn);
-
-        final ForkActor frk = PiMMUserFactory.instance.createForkActor();
-        frk.setName("Fork_" + key.getName() + index);
-        frk.getDataInputPorts().add(din);
-        frk.getDataOutputPorts().add(dout);
-        frk.getDataOutputPorts().add(doutn);
-        piGraph.addActor(frk);
 
         subsCopy.get(subRank).put(frk, 1L);
         brv.put(frk, 1L);
