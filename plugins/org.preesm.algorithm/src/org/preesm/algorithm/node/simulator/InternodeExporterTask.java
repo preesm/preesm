@@ -87,7 +87,7 @@ public class InternodeExporterTask extends AbstractTaskImplementation {
 
     final Boolean singlenet = processWorkflowFile(workflow);
 
-    if (workflow.getWorkflowName().equals("ThreadPartitioning.workflow") && Boolean.TRUE.equals(singlenet)) {
+    if (Boolean.TRUE.equals(singlenet)) {
       // cumulated deviation
       final Map<String, Double> deviationPerNode = deviationPerNodeCompute(loadPerNode);
       final Map<String, Double> previousdeviationPerNode = previousDeviationPerNodeCompute(workflow.getProjectName());

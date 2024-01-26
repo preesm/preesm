@@ -325,6 +325,9 @@ public class ClusteringScape extends ClusterPartitioner {
     cHeaderRefinement.setLoopPrototype(functionPrototype);
     functionPrototype.setName(oEmpty.getName());
 
+    if (((PiGraph) g.getContainingGraph()).getName().contains("sub")) {
+      functionPrototype.setName("Cluster_" + ((PiGraph) g.getContainingGraph()).getName() + "_" + oEmpty.getName());
+    }
     // fill port
     for (final ConfigInputPort cfg : g.getConfigInputPorts()) {
       final ConfigInputPort cfgInputPort = PiMMUserFactory.instance.copy(cfg);

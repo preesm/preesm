@@ -3,11 +3,8 @@
     <dftools:scenario pluginId="org.ietr.preesm.scenario.task"/>
     <dftools:task pluginId="hypervisor.task.identifier" taskId="hypervisor">
         <dftools:data key="variables">
-            <dftools:variable name="Iteration" value="2"/>
+            <dftools:variable name="Iteration" value="10"/>
             <dftools:variable name="Multinet" value="false"/>
-            <dftools:variable name="Node capacity" value="1.0"/>
-            <dftools:variable name="Node max" value="1"/>
-            <dftools:variable name="Node min" value="1"/>
             <dftools:variable name="archi path" value="/Scenarios/initialisation.scenario"/>
         </dftools:data>
     </dftools:task>

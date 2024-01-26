@@ -1,0 +1,20 @@
+name,kind,value
+latency,time (s),214736968.20908
+Node0,load (%),0.0
+Node1,load (%),2.97
+Node2,load (%),100.0
+local_link_from_router_0_to_node_0_0_DOWN,load (%),0.0
+local_link_from_router_0_to_node_0_0_UP,load (%),0.0
+local_link_from_router_0_to_node_1_1_DOWN,load (%),0.0
+local_link_from_router_0_to_node_1_1_UP,load (%),0.0
+local_link_from_router_0_to_node_2_2_DOWN,load (%),0.0
+local_link_from_router_0_to_node_2_2_UP,load (%),0.0
+Node0,energy (J),19326333138.82
+Node1,energy (J),19708537578.82
+Node2,energy (J),32210163018.82
+local_link_from_router_0_to_node_0_0_DOWN,energy (J),21473696820.91
+local_link_from_router_0_to_node_0_0_UP,energy (J),21473696820.91
+local_link_from_router_0_to_node_1_1_DOWN,energy (J),21473696820.91
+local_link_from_router_0_to_node_1_1_UP,energy (J),21473700329.15
+local_link_from_router_0_to_node_2_2_DOWN,energy (J),21473700329.15
+local_link_from_router_0_to_node_2_2_UP,energy (J),21473696820.91

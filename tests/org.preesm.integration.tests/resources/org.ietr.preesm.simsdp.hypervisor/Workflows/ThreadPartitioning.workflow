@@ -50,9 +50,6 @@
             <dftools:variable name="Verbose" value="True"/>
         </dftools:data>
     </dftools:task>
-    <dftools:task pluginId="org.ietr.preesm.plugin.mapper.plot" taskId="Gantt Display">
-        <dftools:data key="variables"/>
-    </dftools:task>
     <dftools:task pluginId="IntranodeExporterTask.identifier" taskId="Intranode Stats exporter">
         <dftools:data key="variables"/>
     </dftools:task>
@@ -83,10 +80,6 @@
         targetport="scenario" to="Code Generation"/>
     <dftools:dataTransfer from="scenario"
         sourceport="architecture" targetport="architecture" to="PiSDF Scheduling"/>
-    <dftools:dataTransfer from="PiSDF Scheduling"
-        sourceport="ABC" targetport="ABC" to="Gantt Display"/>
-    <dftools:dataTransfer from="SCAPE" sourceport="scenario"
-        targetport="scenario" to="Gantt Display"/>
     <dftools:dataTransfer from="PiSDF Scheduling"
         sourceport="ABC" targetport="ABC" to="Intranode Stats exporter"/>
     <dftools:dataTransfer from="PiSDF Scheduling"

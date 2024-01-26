@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Random;
 import java.util.logging.Level;
 import java.util.stream.Collectors;
 import org.eclipse.core.resources.IFile;
@@ -43,6 +44,7 @@ public class NodePartitioner {
   private final Scenario scenario;
 
   private final String archicsvpath;
+  private final String partitioningMode;
   List<NodeMapping>    hierarchicalArchitecture;
 
   private final Map<Integer, Long>             timeEq;       // id node/cumulative time
@@ -57,10 +59,11 @@ public class NodePartitioner {
   private String scenariiPath   = "";
   private String simulationPath = "";
 
-  public NodePartitioner(Scenario scenario, String archicsvpath) {
+  public NodePartitioner(Scenario scenario, String archicsvpath, String partitioningMode) {
     this.graph = scenario.getAlgorithm();
     this.scenario = scenario;
     this.archicsvpath = archicsvpath;
+    this.partitioningMode = partitioningMode;
 
     this.timeEq = new HashMap<>();
     this.load = new HashMap<>();
@@ -118,7 +121,7 @@ public class NodePartitioner {
     // 7. construct top
     final PiGraph topGraph = new InternodeBuilder(scenario, subs, hierarchicalArchitecture).execute();
     // 9. generate main file
-    new CodegenSimSDP(scenario, topGraph, nodeNames);
+    new CodegenSimSDP(scenario, topGraph, nodeNames, false);
 
     return topGraph;
 
@@ -228,8 +231,15 @@ public class NodePartitioner {
       final String[] lines = content.split("\n");
       for (final String line : lines) {
         final String[] columns = line.split(";");
+        Double value;
+        if (this.partitioningMode.equals("equivalentTimed")) {
+          value = Double.valueOf(columns[1]);
+        } else {
+          final Random random = new Random();
+          value = random.nextDouble();
+        }
 
-        load.put(Integer.valueOf(columns[0].replace("node", "")), Double.valueOf(columns[1]));
+        load.put(Integer.valueOf(columns[0].replace("Node", "")), value);
       }
     }
 

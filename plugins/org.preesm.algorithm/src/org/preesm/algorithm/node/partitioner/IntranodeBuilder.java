@@ -17,6 +17,7 @@ import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.emf.common.util.URI;
+import org.eclipse.xtend2.lib.StringConcatenation;
 import org.preesm.algorithm.codegen.idl.Prototype;
 import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.preesm.commons.files.PreesmIOHelper;
@@ -402,6 +403,7 @@ public class IntranodeBuilder {
         foutn.setSourcePort(doutn);
         copy.getDataInputPorts().stream().filter(x -> x.getName().equals(in.getName()))
             .forEach(x -> x.setIncomingFifo(foutn));
+
         piGraph.addFifo(foutn);
 
         final ForkActor frk = PiMMUserFactory.instance.createForkActor();
@@ -523,11 +525,11 @@ public class IntranodeBuilder {
    *          The index of the subgraph to which the actor belongs.
    */
   private void generateFileH(Actor actor, int index) {
-    final StringBuilder content = new StringBuilder();
-    content.append("// Interface actor file \n");
-    content.append("#ifndef " + actor.getName().toUpperCase() + "_H\n");
-    content.append("#define " + actor.getName().toUpperCase() + "_H\n");
-    content.append("void " + actor.getName() + "(");
+
+    final StringConcatenation content = new StringConcatenation();
+    content.append("#include \"preesm.h\"\n");
+    content.append("// Interface actor file \n #ifndef " + actor.getName().toUpperCase() + "_H \n #define "
+        + actor.getName().toUpperCase() + "_H \n void " + actor.getName() + "(");
 
     for (int i = 0; i < actor.getAllDataPorts().size(); i++) {
       final DataPort dp = actor.getAllDataPorts().get(i);
@@ -591,14 +593,16 @@ public class IntranodeBuilder {
           subTimings += slow * brv.get(a);
         } else {
           // add actor until reach node capacity
-          list = processActorList(list, a, nodeCapacity);
+          // final Long dividend = findClosestDivisor(brv.get(a), nodeCapacity);
+          final Long dividend = nodeCapacity;
+          list = processActorList(list, a, dividend);
 
           subs.put(nodeID, list);
           // fill the next node
           nodeID++;
           list = new HashMap<>();
           // Fill the list with remaining instances
-          final Long remainingInstance = brv.get(a) - nodeCapacity;
+          final Long remainingInstance = brv.get(a) - dividend;
           list.put(a, remainingInstance);
           subTimings = remainingInstance * slow;
         }
@@ -607,6 +611,33 @@ public class IntranodeBuilder {
     }
     // Put the final node and its sub-timings into the map
     subs.put(nodeID, list);
+  }
+
+  private Long findClosestDivisor(Long value, Long targetValue) {
+    final List<Long> divisors = getDivisors(value);
+
+    Long closestDivisor = divisors.get(0); // Initialisation avec le premier diviseur
+    Long minDifference = Math.abs(targetValue - closestDivisor);
+
+    for (final Long divisor : divisors) {
+      final Long difference = Math.abs(targetValue - divisor);
+      if (difference < minDifference) {
+        minDifference = difference;
+        closestDivisor = divisor;
+      }
+    }
+
+    return closestDivisor;
+  }
+
+  private List<Long> getDivisors(Long value) {
+    final List<Long> divisors = new ArrayList<>();
+    for (Long i = 1L; i <= value; i++) {
+      if (value % i == 0) {
+        divisors.add(i);
+      }
+    }
+    return divisors;
   }
 
   /**
