@@ -103,7 +103,7 @@ public class SimSDPnetwork {
     while (n > ROUTER_PORT) {
       if (n % ROUTER_PORT == 0) {
         // If the number of nodes per router is a multiple of 4, reduce the number of routers
-        n *= 2;
+        // n *= 2;
         n /= 2;
       } else {
         // Otherwise, increase the number of chassis and reduce the number of nodes per router
@@ -176,10 +176,13 @@ public class SimSDPnetwork {
    */
   private String torusConfiguration() {
     int x = 1;
+    if (nodeNum == 1) {
+      return "\"2,1,1\"";
+    }
 
     int nNode = nodeNum;
-
-    final int n = (int) Math.ceil(Math.pow(nNode, 1.0 / 3.0)); // Initial approximation of cube root of nNode
+    // Initial approximation of cube root of nNode 1/3 bc. 3 axes
+    final int n = (int) Math.ceil(Math.pow(nNode, 1.0 / 3.0));
 
     while (true) {
       for (x = n; x >= 2; x--) {

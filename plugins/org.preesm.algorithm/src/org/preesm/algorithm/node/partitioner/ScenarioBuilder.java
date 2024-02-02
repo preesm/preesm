@@ -85,8 +85,12 @@ public class ScenarioBuilder {
 
       final List<ComponentInstance> coreIds = new ArrayList<>(archi.getOperatorComponentInstances());
       // for all different type of cores, allow mapping on it
+      final ComponentInstance mainOp = coreIds.get(0);
       for (final ComponentInstance coreId : coreIds) {
         for (final AbstractActor aa : graph.getAllActors()) {
+          if ((aa.getName().contains("src_") || aa.getName().contains("snk_")) && coreId != mainOp) {
+            continue;
+          }
           subScenario.getConstraints().addConstraint(coreId, aa);
 
         }

@@ -63,6 +63,7 @@ public class HypervisorTask extends AbstractTaskImplementation {
   Double                                         finalLatency     = Double.MAX_VALUE;
   int                                            nodeMax          = Integer.MAX_VALUE;
   int                                            coreMax          = Integer.MAX_VALUE;
+  int                                            coreMin          = 1;
   int                                            configCount      = 0;
 
   @Override
@@ -94,9 +95,15 @@ public class HypervisorTask extends AbstractTaskImplementation {
     archiParams.execute();
     nodeMax = archiParams.getNodeMax();
     coreMax = archiParams.getCoreMax();
+    coreMin = archiParams.getCoreMin();
+    // nodeMin = archiParams.getNodeMin();
     for (int nodeIndex = archiParams.getNodeMin(); nodeIndex <= nodeMax; nodeIndex += archiParams.getNodeStep()) {
+      // int coreMin = archiParams.getCoreMin();
+      if (nodeIndex == 1 && coreMin == 1) {
+        coreMin++;
+      }
 
-      for (int coreIndex = archiParams.getCoreMin(); coreIndex <= coreMax; coreIndex += archiParams.getCoreStep()) {
+      for (int coreIndex = coreMin; coreIndex <= coreMax; coreIndex += archiParams.getCoreStep()) {
         for (int corefreqIndex = archiParams.getCoreFreqMin(); corefreqIndex <= archiParams.getCoreFreqMax();
             corefreqIndex += archiParams.getCoreFreqStep()) {
           if (Boolean.TRUE.equals(multinet)) {
@@ -106,7 +113,8 @@ public class HypervisorTask extends AbstractTaskImplementation {
           iterativePartitioning(nodeIndex, coreIndex, corefreqIndex, iteration, project, monitor, workflowManager);
 
         }
-        processParallelismMaxBoundary(project + "/Simulation/", nodeIndex, coreIndex);
+
+        // processParallelismMaxBoundary(project + "/Simulation/", nodeIndex, coreIndex);
       }
 
     }
@@ -119,8 +127,9 @@ public class HypervisorTask extends AbstractTaskImplementation {
     final String[] line = content.split("\n");
     final Double curentFinalLatency = Double.valueOf(line[line.length - 1]);
     int maximalParallelism = 0;
-    if (curentFinalLatency > finalLatency && Boolean.TRUE.equals(!parallelismFound)) {
-      maximalParallelism = nodeIndex * coreIndex;
+
+    if (coreIndex != coreMin && curentFinalLatency >= finalLatency && Boolean.TRUE.equals(!parallelismFound)) {
+      maximalParallelism = nodeIndex * coreIndex - 1;
       parallelismFound = true;
     } else {
 
@@ -130,7 +139,12 @@ public class HypervisorTask extends AbstractTaskImplementation {
     if (maximalParallelism > 0) {
       nodeMax = maximalParallelism / coreIndex;
       coreMax = maximalParallelism / nodeIndex;
+      coreMin = coreMax;
+    } else if (coreIndex == coreMax) {
+      final int val = (int) Math.ceil((double) coreIndex * nodeIndex / (nodeIndex + 1));
+      coreMin = Math.max(val, coreMin);
     }
+
   }
 
   private void initialisationLauncher(WorkflowManager workflowManager, IProgressMonitor monitor, String project) {
