@@ -82,7 +82,8 @@ public class ClusteringScape extends ClusterPartitioner {
     hierarchicalLevelOrdered = HierarchicalRoute.fillHierarchicalStructure(graph);
     // compute cluster-able level ID
 
-    fulcrumLevelID = HierarchicalRoute.computeClusterableLevel(graph, scapeMode, levelNumber, hierarchicalLevelOrdered);
+    fulcrumLevelID = HierarchicalRoute.computeClusterableLevel(graph, scenario, mode, levelNumber,
+        hierarchicalLevelOrdered);
 
     // Coarse clustering while cluster-able level are not reached
     coarseCluster();

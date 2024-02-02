@@ -131,7 +131,7 @@ public class RadarExporterTask extends AbstractTaskImplementation {
     final String[] line = simGridFile.split("\n");
     final String type = line[0].replace("<!-- ", "").replace(" -->", "");
 
-    metrics.put(TYPE, type);
+    metrics.put("type", type);
     final String xmlString = line[5];
     final String topoParameter = topo(xmlString);
     final Long cost = estimateCost(type, topoParameter);
@@ -244,7 +244,9 @@ public class RadarExporterTask extends AbstractTaskImplementation {
       final String lineToConsider = lines[lines.length - 1];
       final String[] memPerNode = lineToConsider.split(";");
       for (final String element : memPerNode) {
-        memory += Long.parseLong(element);
+
+        memory += Integer.parseInt(element);
+
       }
 
     }

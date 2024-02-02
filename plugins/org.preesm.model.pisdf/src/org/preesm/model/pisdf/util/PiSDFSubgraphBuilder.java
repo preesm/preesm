@@ -113,7 +113,7 @@ public class PiSDFSubgraphBuilder extends PiMMSwitch<Boolean> {
   /**
    * Repetition count of the subgraph.
    */
-  private final long subGraphRepetition;
+  private long subGraphRepetition;
 
   /**
    * Builds a PiSDFSubgraphBuilder object.
@@ -139,8 +139,11 @@ public class PiSDFSubgraphBuilder extends PiMMSwitch<Boolean> {
     // Compute BRV for the parent graph
     this.repetitionVector = PiBRV.compute(parentGraph, BRVMethod.LCM);
     // Compute repetition count of the subgraph with great common divisor over all subgraph actors repetition counts
-    this.subGraphRepetition = subGraphName.matches("^sub\\d+") ? 1L
-        : MathFunctionsHelper.gcd(CollectionUtil.mapGetAll(repetitionVector, subGraphActors));
+
+    this.subGraphRepetition = MathFunctionsHelper.gcd(CollectionUtil.mapGetAll(repetitionVector, subGraphActors));
+    if (subGraphName.contains("sub")) {
+      this.subGraphRepetition = 1L;
+    }
 
   }
 

@@ -279,14 +279,11 @@ class CPrinter extends BlankPrinter {
 	extern int preesmStopThreads;
 	«ELSE»
 
+	#include "sub«printedCoreBlock.getNodeID()».h"
+
 	extern pthread_barrier_t iter_barrier«printedCoreBlock.getNodeID()»;
 	extern int initNode«printedCoreBlock.getNodeID()»;
-	typedef struct {
-		«var initBlock = engine.codeBlocks.get(0)»
-	 	«FOR buffer : (initBlock as CoreBlock).getTopBuffers»
-	 	«buffer.getType()» *«buffer.getComment()»;
-	 	«ENDFOR»
-	} ThreadParams;
+
 	«ENDIF »
 	
 	
@@ -322,10 +319,10 @@ class CPrinter extends BlankPrinter {
 		}
 
 	«ELSE»
-		ThreadParams *params = (ThreadParams*)arg;
+		ThreadParams«printedCoreBlock.getNodeID()» *params = (ThreadParams«printedCoreBlock.getNodeID()»*)arg;
 		«var initBlock = engine.codeBlocks.get(0)»
 	 	«FOR buffer : (initBlock as CoreBlock).getTopBuffers»
-	 	«buffer.getType()» *«buffer.getName()» = params->«buffer.getComment()»;
+	 	«buffer.getType()» *«buffer.getName()» = params->«buffer.getName()» ;
 	 	«ENDFOR»
 	«ENDIF »
 
@@ -1021,12 +1018,8 @@ class CPrinter extends BlankPrinter {
 		«ELSE»
 		 #include "preesm_gen«(block as CoreBlock).getNodeID()».h"
 
-		 typedef struct {
-		 	«var initBlock = engine.codeBlocks.get(0)»
-		 	«FOR buffer : (initBlock as CoreBlock).getTopBuffers»
-		 	«buffer.getType()» *«buffer.getComment()»;
-		 	«ENDFOR»
-		 } ThreadParams;
+		 #include "sub«(block as CoreBlock).getNodeID()».h"
+
 		 
 		 «ENDIF»
 		// Declare computation thread functions
@@ -1070,7 +1063,7 @@ class CPrinter extends BlankPrinter {
 		unsigned int launch(unsigned int core_id, pthread_t * thread, void *(*start_routine) (void *)) {
 		«ELSE»
 
-		unsigned int launch«(block as CoreBlock).getNodeID()»(unsigned int core_id, pthread_t * thread, void *(*start_routine) (void *), ThreadParams *params) {
+		unsigned int launch«(block as CoreBlock).getNodeID()»(unsigned int core_id, pthread_t * thread, void *(*start_routine) (void *), ThreadParams«(block as CoreBlock).getNodeID()» *params) {
 
 		«ENDIF »
 			// init pthread attributes
@@ -1120,10 +1113,10 @@ class CPrinter extends BlankPrinter {
 		void «engine.algo.name»(«printNodeArg()») {
 			
 
-			ThreadParams threadParams;
+			ThreadParams«(block as CoreBlock).getNodeID()» threadParams;
 			«var initBlock = engine.codeBlocks.get(0)»
 					 	«FOR buffer : (initBlock as CoreBlock).getTopBuffers»
-					 	threadParams.«buffer.getComment()» = «buffer.getName()»;
+					 	threadParams.«buffer.getName()» = «buffer.getName()»;
 
 					 	«ENDFOR»
 					 	

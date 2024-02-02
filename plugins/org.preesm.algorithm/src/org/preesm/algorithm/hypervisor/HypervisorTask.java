@@ -70,7 +70,20 @@ public class HypervisorTask extends AbstractTaskImplementation {
   int     coreMax                  = Integer.MAX_VALUE;
   int     coreMin                  = Integer.MAX_VALUE;
   int     configCount              = 0;
-  int     deltaCount;
+  int     deltaCount;=======
+  Long                                           initTime         = 0L;
+  Map<Integer, Map<Integer, Long>>               nodePartTime     = new LinkedHashMap<>();
+  Map<Integer, Map<Integer, Map<Integer, Long>>> threadPartTime   = new LinkedHashMap<>();
+  Map<Integer, Map<Integer, Long>>               simuTime         = new LinkedHashMap<>();
+  public static final String                     DSE_PART_NAME    = "dse_part_trend.csv";
+  Boolean                                        multinet         = false;
+  Boolean                                        parallelismFound = false;
+  String                                         scenarioName     = "";
+  Double                                         finalLatency     = Double.MAX_VALUE;
+  int                                            nodeMax          = Integer.MAX_VALUE;
+  int                                            coreMax          = Integer.MAX_VALUE;
+  int                                            coreMin          = 1;
+  int                                            configCount      = 0;>>>>>>>82faf38d5 (fail):plugins/org.preesm.workflow/src/org/ietr/workflow/hypervisor/HypervisorTask.java
 
   @Override
   public Map<String, Object> execute(Map<String, Object> inputs, Map<String, String> parameters,
@@ -130,10 +143,17 @@ public class HypervisorTask extends AbstractTaskImplementation {
     nodeMax = archiParams.getNodeMax();
     coreMax = archiParams.getCoreMax();
     coreMin = archiParams.getCoreMin();
+
+    // nodeMin = archiParams.getNodeMin();
+
     for (int nodeIndex = archiParams.getNodeMin(); nodeIndex <= nodeMax; nodeIndex += archiParams.getNodeStep()) {
+      // int coreMin = archiParams.getCoreMin();
+      if (nodeIndex == 1 && coreMin == 1) {
+        coreMin++;
+      }
 
       for (int coreIndex = coreMin; coreIndex <= coreMax; coreIndex += archiParams.getCoreStep()) {
-        coreIndex = nodeIndex == 1 && coreMin == 1 ? coreIndex + 1 : coreIndex;
+
         for (int corefreqIndex = archiParams.getCoreFreqMin(); corefreqIndex <= archiParams.getCoreFreqMax();
             corefreqIndex += archiParams.getCoreFreqStep()) {
           if (Boolean.TRUE.equals(multinet)) {
@@ -145,13 +165,19 @@ public class HypervisorTask extends AbstractTaskImplementation {
 
         }
 
+
+        // processParallelismMaxBoundary(project + "/Simulation/", nodeIndex, coreIndex);
+      }
+
+
         // refineCoreMin(coreIndex, nodeIndex);
         // refineCoreMax(coreIndex, nodeIndex, project + "/Simulation/");
 
       }
     }
 
-    return new LinkedHashMap<>();
+  return new LinkedHashMap<>();
+
   }
 
   private Pair<Integer, Integer> findClosestPair(Integer parallelismMaxTh, ArchiMoldableParameter archiParams) {
@@ -177,7 +203,14 @@ public class HypervisorTask extends AbstractTaskImplementation {
     final String content = PreesmIOHelper.getInstance().read(path, "latency_trend.csv");
     final String[] line = content.split("\n");
     final Double curentFinalLatency = Double.valueOf(line[line.length - 1]);
-    final int delta = 3;
+
+    int maximalParallelism = 0;
+
+    if (coreIndex != coreMin && curentFinalLatency >= finalLatency && Boolean.TRUE.equals(!parallelismFound)) {
+      maximalParallelism = nodeIndex * coreIndex - 1;
+      parallelismFound = true;
+    } else {
+
 
     if (coreIndex != coreMin && curentFinalLatency <= initialfinalLatencyOptim
         && curentFinalLatency < BestfinalLatency) {
@@ -190,12 +223,17 @@ public class HypervisorTask extends AbstractTaskImplementation {
       parallelismMax = nodeIndex * coreIndex - 1;
     }
 
-    BestfinalLatency = curentFinalLatency < BestfinalLatency ? curentFinalLatency : BestfinalLatency;
 
-    if (parallelismMax != 0) {
-      nodeMax = parallelismMax / coreIndex;
-      coreMax = parallelismMax / nodeIndex;
+    if (maximalParallelism > 0) {
+      nodeMax = maximalParallelism / coreIndex;
+      coreMax = maximalParallelism / nodeIndex;
+      coreMin = coreMax;
+    } else if (coreIndex == coreMax) {
+      final int val = (int) Math.ceil((double) coreIndex * nodeIndex / (nodeIndex + 1));
+      coreMin = Math.max(val, coreMin);
+
     }
+
   }
 
   private void refineCoreMin(int coreIndex, int nodeIndex) {
