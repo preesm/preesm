@@ -165,11 +165,23 @@ public class IntranodeBuilder {
         list.add(actor);
       }
       final PiGraph subgraph = new PiSDFSubgraphBuilder(graph, list, "sub" + subRank).build();
+      // homogeneous(subgraph);
       sublist.add(subgraph);
     }
 
     // Step 3: Store the top graph to preserve inter-subgraph connections
     this.topGraph = PiMMUserFactory.instance.copyPiGraphWithHistory(graph);
+  }
+
+  private void homogeneous(PiGraph subgraph) {
+    final Map<AbstractVertex, Long> repetitionVector = PiBRV.compute(subgraph, BRVMethod.LCM);
+    final Long subRV = repetitionVector.get(subgraph);
+    if (repetitionVector.get(subgraph) != 1) {
+      for (final DataPort port : subgraph.getAllDataPorts()) {
+        final long val = port.getExpression().evaluate();
+        port.setExpression(val * subRV);
+      }
+    }
   }
 
   /**

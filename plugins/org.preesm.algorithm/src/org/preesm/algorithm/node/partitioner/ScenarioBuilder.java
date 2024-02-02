@@ -65,8 +65,10 @@ public class ScenarioBuilder {
   }
 
   public void subExecute() {
+
     if (graph.getActors().isEmpty()) {
       return;
+
     }
 
     final Scenario subScenario = ScenarioUserFactory.createScenario();
