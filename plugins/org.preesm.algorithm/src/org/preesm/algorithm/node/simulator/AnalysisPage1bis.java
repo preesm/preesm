@@ -33,7 +33,10 @@ import org.preesm.commons.files.PreesmIOHelper;
 public class AnalysisPage1bis {
   public static final String CORRELATION_NAME = "correlation.csv";
   static String              path;
-  PearsonsCorrelation        correlation      = new PearsonsCorrelation();
+  // PearsonsCorrelation correlation = new PearsonsCorrelation();
+  double correlationWorkloadLinkload = 0d;
+  double correlationWorkloadLatency  = 0d;
+  double correlationLinkloadLatency  = 0d;
 
   public AnalysisPage1bis(String path) {
     AnalysisPage1bis.path = path;
@@ -60,16 +63,11 @@ public class AnalysisPage1bis {
   }
 
   private String description() {
-    if (correlation.getCorrelationMatrix() == null) {
-      return "Correlation analysis need at list 2 rows and 2 cols";
-    }
-    final double[][] correlationMatrix = correlation.getCorrelationMatrix().getData();
-    String description = "<html>Correlaton matrix: </b>";
-    for (final double[] element : correlationMatrix) {
-      for (final double element2 : element) {
-        description += element2 + " </b>";
-      }
-    }
+
+    String description = "<html>Correlaton coefficient: </br>";
+    description += "workload - linkload: " + correlationWorkloadLinkload + "</br>";
+    description += "workload - final latency: " + correlationWorkloadLatency + "</br>";
+    description += "linkload - final latency: " + correlationLinkloadLatency + "</br>";
     description += "</html>";
     return description;
   }
@@ -155,7 +153,11 @@ public class AnalysisPage1bis {
     }
     dataset.addSeries("Series", xyz);
     if (size >= 2) {
-      correlation = new PearsonsCorrelation(xyz);
+      final PearsonsCorrelation pearsonsCorrelation = new PearsonsCorrelation();
+      correlationWorkloadLinkload = pearsonsCorrelation.correlation(xyz[0], xyz[1]);
+      correlationWorkloadLatency = pearsonsCorrelation.correlation(xyz[0], xyz[2]);
+      correlationLinkloadLatency = pearsonsCorrelation.correlation(xyz[1], xyz[2]);
+      // correlation = new PearsonsCorrelation(xyz);
     }
 
     return dataset;

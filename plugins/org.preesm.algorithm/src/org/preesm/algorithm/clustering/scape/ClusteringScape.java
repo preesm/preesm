@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
 import org.preesm.algorithm.clustering.partitioner.ClusterPartitioner;
 import org.preesm.algorithm.clustering.partitioner.ClusterPartitionerLOOP;
 import org.preesm.algorithm.clustering.partitioner.ClusterPartitionerSEQ;
@@ -15,6 +16,7 @@ import org.preesm.algorithm.clustering.partitioner.ScapeMode;
 import org.preesm.algorithm.codegen.idl.Prototype;
 import org.preesm.algorithm.schedule.model.ScapeSchedule;
 import org.preesm.commons.exceptions.PreesmRuntimeException;
+import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.AbstractVertex;
 import org.preesm.model.pisdf.Actor;
@@ -80,7 +82,9 @@ public class ClusteringScape extends ClusterPartitioner {
     // construct hierarchical structure
     hierarchicalLevelOrdered = HierarchicalRoute.fillHierarchicalStructure(graph);
     // compute cluster-able level ID
+
     fulcrumLevelID = HierarchicalRoute.computeClusterableLevel(graph, scapeMode, levelNumber, hierarchicalLevelOrdered);
+
     // Coarse clustering while cluster-able level are not reached
     coarseCluster();
     // Pattern identification
@@ -415,19 +419,30 @@ public class ClusteringScape extends ClusterPartitioner {
     if (scenario.getTimings().getActorTimings().isEmpty()) {
       return clusterTiming; // Early exit
     }
+    // For each processing element
+    for (final Component opId : archi.getProcessingElements()) {
+      // sum the actor timing contained in the cluster
+      Long sum = 0L;
+      for (final AbstractActor actor : cluster.getOnlyActors()) {
+        if (actor instanceof Actor) {
+          final AbstractActor aaa = scenario.getTimings().getActorTimings().keySet().stream()
+              .filter(aa -> actor.getName().equals(aa.getName())).findFirst().orElse(null);
 
-    for (final AbstractActor actor : cluster.getOnlyActors()) {
-      if (actor instanceof Actor) {
-        final AbstractActor aaa = scenario.getTimings().getActorTimings().keySet().stream()
-            .filter(aa -> actor.getName().equals(aa.getName())).findFirst().orElse(null);
-
-        for (final Component opId : archi.getProcessingElements()) {
-          final Long sum = scenario.getTimings().evaluateTimingOrDefault(aaa, opId, TimingType.EXECUTION_TIME)
+          sum += scenario.getTimings().evaluateTimingOrDefault(aaa, opId, TimingType.EXECUTION_TIME)
               * repetitionVector.get(actor);
-          clusterTiming.get(opId).replace(TimingType.EXECUTION_TIME, String.valueOf(sum));
+
+          PreesmLogger.getLogger().log(Level.INFO,
+              "On" + cluster.getName() + ": " + "Timing " + actor.getName() + ": "
+                  + scenario.getTimings().evaluateTimingOrDefault(aaa, opId, TimingType.EXECUTION_TIME) + "*"
+                  + repetitionVector.get(actor));
+
         }
+        clusterTiming.get(opId).replace(TimingType.EXECUTION_TIME, String.valueOf(sum));
+
       }
     }
+    PreesmLogger.getLogger().log(Level.INFO,
+        "Timing " + cluster.getName() + ": " + clusterTiming.get(archi.getProcessingElements().get(0)));
 
     return clusterTiming;
   }
