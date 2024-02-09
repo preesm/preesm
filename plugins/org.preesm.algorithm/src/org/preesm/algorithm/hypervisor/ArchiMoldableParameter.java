@@ -11,10 +11,8 @@ import org.preesm.commons.logger.PreesmLogger;
 
 public class ArchiMoldableParameter {
 
-  String  projectPath;
-  Boolean multinet;
-  long    initMemory;
-
+  String                     projectPath;
+  Boolean                    multinet;
   public static final String MP_NAME = "SimSDP_moldable.csv";
 
   private int nodeMin  = 1;
@@ -29,13 +27,13 @@ public class ArchiMoldableParameter {
   private int coreFreqMax  = 1;
   private int coreFreqStep = 1;
 
-  private int topoMin  = 1;
-  private int topoMax  = 1;
-  private int topoStep = 1;
+  int topoMin  = 1;
+  int topoMax  = 1;
+  int topoStep = 1;
 
-  private long nodeMemMin  = 0;
-  private long nodeMemMax  = 0;
-  private long nodeMemStep = 1;
+  long nodeMemMin  = 0;
+  long nodeMemMax  = 0;
+  long nodeMemStep = 1;
 
   public ArchiMoldableParameter(String projectPath, Boolean multinet) {
     this.projectPath = projectPath;
@@ -81,10 +79,6 @@ public class ArchiMoldableParameter {
           default:
             break;
         }
-      }
-
-      if (nodeMax < nodeMin) {
-        nodeMax = nodeMin;
       }
 
     } else {

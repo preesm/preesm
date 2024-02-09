@@ -1,6 +1,7 @@
 package org.preesm.algorithm.node.partitioner;
 
 import java.io.File;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -179,9 +180,17 @@ public class CodegenSimSDP {
 
   private StringConcatenation mpiRecv(AbstractActor node) {
     final StringConcatenation result = new StringConcatenation();
-    for (final DataInputPort din : node.getDataInputPorts()) {
+    final Object[] args = node.getDataInputPorts().toArray();
+    for (int i = 0; i < args.length; i++) {
+      final int index = i;
+      final DataInputPort din = node.getDataInputPorts().stream()
+          .sorted(Comparator
+              .comparing(port -> Integer.parseInt(port.getFifo().getSourcePort().getName().replace("out_", ""))))
+          .skip(index).findFirst().orElse(null);
+
       final String bufferName = ((AbstractActor) din.getFifo().getSource()).getName() + "_"
           + din.getFifo().getSourcePort().getName() + "__" + node.getName() + "_" + din.getName();
+      final int src = Integer.valueOf(((AbstractActor) din.getFifo().getSource()).getName().replace("sub", ""));
 
       String type = din.getFifo().getType();
       if ("uchar".equals(type)) {
@@ -189,24 +198,28 @@ public class CodegenSimSDP {
       }
 
       result.append("MPI_Recv(" + bufferName + "," + din.getExpression().evaluate() + "," + "MPI_" + type.toUpperCase()
-          + ",src, label, MPI_COMM_WORLD, &status);\n");
+          + "," + src + ", label, MPI_COMM_WORLD, &status);\n");
     }
     return result;
   }
 
   private StringConcatenation mpiSend(AbstractActor node) {
     final StringConcatenation result = new StringConcatenation();
+    final Object[] args = node.getDataOutputPorts().toArray();
+    for (int i = 0; i < args.length; i++) {
+      final int index = i;
+      final DataOutputPort dout = node.getDataOutputPorts().stream().filter(x -> x.getName().equals("out_" + index))
+          .findFirst().orElseThrow();
 
-    for (final DataOutputPort dout : node.getDataOutputPorts()) {
       final String bufferName = node.getName() + "_" + dout.getName() + "__"
           + ((AbstractActor) dout.getFifo().getTarget()).getName() + "_" + dout.getFifo().getTargetPort().getName();
-
+      final int dest = Integer.valueOf(((AbstractActor) dout.getFifo().getTarget()).getName().replace("sub", ""));
       String type = dout.getFifo().getType();
       if ("uchar".equals(type)) {
         type = "unsigned_char";
       }
       result.append("MPI_Send(" + bufferName + "," + dout.getExpression().evaluate() + "," + "MPI_" + type.toUpperCase()
-          + ",dest ,label, MPI_COMM_WORLD);\n");
+          + "," + dest + " ,label, MPI_COMM_WORLD);\n");
     }
     return result;
   }
@@ -233,9 +246,9 @@ public class CodegenSimSDP {
     result.append(" } else { \n");
     result.append("   printf(\"Processor name %s not found in nodeset\\n\", processor_name); \n");
     result.append(" } \n");
-    result.append(" //for(int index=0; index< MPI_LOOP_SIZE;index++) { \n");
-    result.append(" while(!MPIStopNode) { \n");
 
+    result.append(" for(int index=0; index< MPI_LOOP_SIZE;index++) { \n");
+    result.append(" //while(!MPIStopNode) { \n");
     return result;
   }
 
@@ -269,7 +282,7 @@ public class CodegenSimSDP {
       result.append("#include \"sub" + i + "/preesm_gen" + i + ".h\" \n");
       result.append("#include \"sub" + i + "/sub" + i + ".h\" \n");
     }
-    result.append("#define MPI_LOOP_SIZE 1 \n\n");
+    result.append("#define MPI_LOOP_SIZE 100 \n\n");
     return result;
   }
 

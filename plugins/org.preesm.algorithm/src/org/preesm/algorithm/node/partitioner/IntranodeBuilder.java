@@ -203,17 +203,16 @@ public class IntranodeBuilder {
       // Create source/sink actors for DataInterfaces
       for (final InterfaceActor dataInterface : subgraph.getDataInterfaces()) {
 
-        Actor actor;
 
-        if (dataInterface instanceof final DataInputInterface dii) {
-          actor = createSourceActor(dii, index, subgraph);
-        } else {
-          // If dataInterface instanceof DataOutputInterface
-          actor = createSinkActor((DataOutputInterface) dataInterface, index, subgraph);
-        }
-        subgraph.removeActor(dataInterface);
-        archi.getProcessingElements().stream().forEach(opId -> scenario.getTimings().setExecutionTime(actor, opId, 1L));
+      for (final DataInputInterface in : subgraph.getDataInputInterfaces()) {
+        final Actor src = createSourceActor(in, index, subgraph);
+        setExecutionTimeForInterface(src);
+      }
 
+      // Create sink actors for DataOutputInterfaces
+      for (final DataOutputInterface out : subgraph.getDataOutputInterfaces()) {
+        final Actor snk = createSinkActor(out, index, subgraph);
+        setExecutionTimeForInterface(snk);
       }
 
       // Step 2: Merge CFG (rename dependencies and ports for inter-subgraph connections)
@@ -555,8 +554,8 @@ public class IntranodeBuilder {
   private void generateFileC(Actor actor, int index) {
     final StringConcatenation content = new StringConcatenation();
 
-    content.append(
-        "// Interface actor file \n #include \"" + actor.getName() + ".h\" \n " + " void " + actor.getName() + "(");
+    content.append("// Interface actor file \n #include \"" + actor.getName() + ".h\" \n " + " void "
+        + actor.getContainingPiGraph().getName() + "_" + actor.getName() + "(");
 
     for (int i = 0; i < actor.getAllDataPorts().size(); i++) {
       final DataPort dp = actor.getAllDataPorts().get(i);
