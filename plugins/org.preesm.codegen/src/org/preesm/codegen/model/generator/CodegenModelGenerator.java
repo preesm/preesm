@@ -1113,7 +1113,7 @@ public class CodegenModelGenerator extends AbstractCodegenModelGenerator {
       }
       if (dagVertex.getName().startsWith("src") || dagVertex.getName().startsWith("snk")) {
         final Buffer topBuf = (Buffer) var;
-        topBuf.setComment(dagVertex.getName().replace("_0", ""));
+        topBuf.setComment(dagVertex.getName().replaceFirst("_0", ""));
         this.topBuffer.add(topBuf);
 
       }

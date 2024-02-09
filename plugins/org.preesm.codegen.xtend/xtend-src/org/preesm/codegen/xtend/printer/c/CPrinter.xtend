@@ -319,7 +319,7 @@ class CPrinter extends BlankPrinter {
 		ThreadParams«printedCoreBlock.getNodeID()» *params = (ThreadParams«printedCoreBlock.getNodeID()»*)arg;
 		«var initBlock = engine.codeBlocks.get(0)»
 	 	«FOR buffer : (initBlock as CoreBlock).getTopBuffers»
-	 	«buffer.getType()» *«buffer.getName()» = params->«buffer.getName()» ;
+	 	«buffer.getType()» *«buffer.getName()» = params->«buffer.getComment()» ;
 	 	«ENDFOR»
 	«ENDIF »
 
@@ -1108,7 +1108,7 @@ class CPrinter extends BlankPrinter {
 			ThreadParams«(block as CoreBlock).getNodeID()» threadParams;
 			«var initBlock = engine.codeBlocks.get(0)»
 					 	«FOR buffer : (initBlock as CoreBlock).getTopBuffers»
-					 	threadParams.«buffer.getName()» = «buffer.getName()»;
+					 	threadParams.«buffer.getComment()» = «buffer.getComment()»;
 					 	«ENDFOR»
 					 	
 		«ENDIF»
@@ -1226,21 +1226,29 @@ class CPrinter extends BlankPrinter {
 	'''
 		
 		def String printNodeArg() {
-			var str = ""
-			//for(block:this.engine.codeBlocks){
-				
-				val firstBlock = this.engine.codeBlocks.head
-				for(topBuffer: (firstBlock as CoreBlock).topBuffers){
-					str = str + topBuffer.type + " *"+ topBuffer.name+",";
-				}
-			//}
-			
-			if(str==""){
-				str="void"
-			}
-			if(str.endsWith(","))
-				str = str.substring(0, str.length() - 1);
-			return str
+    var funcStr = ""
+    val firstBlock = (this.engine.codeBlocks.head as CoreBlock)
+    val srcArgs = firstBlock.topBuffers.filter[buf | buf.comment.contains("src")]
+
+    for (var i = 0; i < srcArgs.size; i++) {
+        val index = i
+        val buff =srcArgs.findFirst[Buffer buf | buf.comment == ("src_in_"  + index)]
+        funcStr += buff.type + " *" + buff.comment + ","
+    }
+
+    val snkArgs = firstBlock.topBuffers.filter[buf | buf.comment.contains("snk")]
+    for (var i = 0; i < snkArgs.size; i++) {
+        val index = i
+        val buff =snkArgs.findFirst[Buffer buf | buf.comment == ("snk_out_" + index)]
+        funcStr += buff.type + " *" + buff.comment + ","
+    }
+
+    if (funcStr.endsWith(",")) {
+        funcStr = funcStr.substring(0, funcStr.length - 1)
+    }
+
+        return funcStr
+
 		}
 
 

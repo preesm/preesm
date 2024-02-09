@@ -29,14 +29,17 @@ public class ArchiMoldableParameter {
   private int coreFreqMax  = 1;
   private int coreFreqStep = 1;
 
+  private int topoMin  = 1;
+  private int topoMax  = 1;
+  private int topoStep = 1;
+
   private long nodeMemMin  = 0;
   private long nodeMemMax  = 0;
   private long nodeMemStep = 1;
 
-  public ArchiMoldableParameter(String projectPath, Boolean multinet, long initMemory) {
+  public ArchiMoldableParameter(String projectPath, Boolean multinet) {
     this.projectPath = projectPath;
     this.multinet = multinet;
-    this.initMemory = initMemory;
   }
 
   public void execute() {
@@ -65,6 +68,11 @@ public class ArchiMoldableParameter {
             coreFreqMax = Integer.valueOf(column[2]);
             coreFreqStep = Integer.valueOf(column[3]);
             break;
+          case "network topology":
+            topoMin = Integer.valueOf(column[1]);
+            topoMax = Integer.valueOf(column[2]);
+            topoStep = Integer.valueOf(column[3]);
+            break;
           case "node memory":
             nodeMemMin = Long.valueOf(column[1]);
             nodeMemMax = Long.valueOf(column[2]);
@@ -74,8 +82,6 @@ public class ArchiMoldableParameter {
             break;
         }
       }
-
-      nodeMin = processNodeMin(nodeMin);
 
       if (nodeMax < nodeMin) {
         nodeMax = nodeMin;
@@ -87,10 +93,11 @@ public class ArchiMoldableParameter {
     }
   }
 
-  private int processNodeMin(Integer minEntry) {
+  public void refine(long initMemory) {
     final int minimalNodeRequired = (int) Math.ceil((double) initMemory / nodeMemMin);
+    nodeMin = minimalNodeRequired > nodeMin ? minimalNodeRequired : nodeMin;
 
-    return minimalNodeRequired > minEntry ? minimalNodeRequired : minEntry;
+    nodeMax = nodeMin > nodeMax ? nodeMin : nodeMax;
   }
 
   /**
@@ -157,6 +164,18 @@ public class ArchiMoldableParameter {
 
   public int getCoreFreqStep() {
     return coreFreqStep;
+  }
+
+  public int getTopoMin() {
+    return topoMin;
+  }
+
+  public int getTopoMax() {
+    return topoMax;
+  }
+
+  public int getTopoStep() {
+    return topoStep;
   }
 
   public long getNodeMemMin() {
