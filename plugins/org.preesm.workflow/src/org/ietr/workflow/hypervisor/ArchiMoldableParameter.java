@@ -12,7 +12,6 @@ import org.preesm.commons.logger.PreesmLogger;
 public class ArchiMoldableParameter {
   String                     projectPath;
   Boolean                    multinet;
-  long                       initMemory;
   public static final String MP_NAME = "SimSDP_moldable.csv";
 
   int nodeMin  = 1;
@@ -27,14 +26,17 @@ public class ArchiMoldableParameter {
   int coreFreqMax  = 1;
   int coreFreqStep = 1;
 
+  int topoMin  = 1;
+  int topoMax  = 1;
+  int topoStep = 1;
+
   long nodeMemMin  = 0;
   long nodeMemMax  = 0;
   long nodeMemStep = 1;
 
-  public ArchiMoldableParameter(String projectPath, Boolean multinet, long initMemory) {
+  public ArchiMoldableParameter(String projectPath, Boolean multinet) {
     this.projectPath = projectPath;
     this.multinet = multinet;
-    this.initMemory = initMemory;
   }
 
   public void execute() {
@@ -63,6 +65,11 @@ public class ArchiMoldableParameter {
             coreFreqMax = Integer.valueOf(column[2]);
             coreFreqStep = Integer.valueOf(column[3]);
             break;
+          case "network topology":
+            topoMin = Integer.valueOf(column[1]);
+            topoMax = Integer.valueOf(column[2]);
+            topoStep = Integer.valueOf(column[3]);
+            break;
           case "node memory":
             nodeMemMin = Long.valueOf(column[1]);
             nodeMemMax = Long.valueOf(column[2]);
@@ -73,24 +80,17 @@ public class ArchiMoldableParameter {
         }
       }
 
-      nodeMin = processNodeMin(nodeMin);
-      // final int result = (int) Math.ceil((double) initMemory / nodeMemMin);
-      // if (nodeMin < result) {
-      // nodeMin = result;
-      // }
-      if (nodeMax < nodeMin) {
-        nodeMax = nodeMin;
-      }
     } else {
       nodeMin = singleNetInitNode(projectPath);
       nodeMax = nodeMin;
     }
   }
 
-  private int processNodeMin(Integer minEntry) {
+  public void refine(long initMemory) {
     final int minimalNodeRequired = (int) Math.ceil((double) initMemory / nodeMemMin);
+    nodeMin = minimalNodeRequired > nodeMin ? minimalNodeRequired : nodeMin;
 
-    return minimalNodeRequired > minEntry ? minimalNodeRequired : minEntry;
+    nodeMax = nodeMin > nodeMax ? nodeMin : nodeMax;
   }
 
   /**
@@ -157,6 +157,18 @@ public class ArchiMoldableParameter {
 
   public int getCoreFreqStep() {
     return coreFreqStep;
+  }
+
+  public int getTopoMin() {
+    return topoMin;
+  }
+
+  public int getTopoMax() {
+    return topoMax;
+  }
+
+  public int getTopoStep() {
+    return topoStep;
   }
 
   public long getNodeMemMin() {

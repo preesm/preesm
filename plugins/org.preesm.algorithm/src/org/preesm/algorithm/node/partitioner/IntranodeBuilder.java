@@ -209,13 +209,13 @@ public class IntranodeBuilder {
       // Create source actors for DataInputInterfaces
 
       for (final DataInputInterface in : subgraph.getDataInputInterfaces()) {
-        final Actor src = createSourceActor(in, index);
+        final Actor src = createSourceActor(in, index, subgraph);
         setExecutionTimeForInterface(src);
       }
 
       // Create sink actors for DataOutputInterfaces
       for (final DataOutputInterface out : subgraph.getDataOutputInterfaces()) {
-        final Actor snk = createSinkActor(out, index);
+        final Actor snk = createSinkActor(out, index, subgraph);
         setExecutionTimeForInterface(snk);
       }
 
@@ -239,7 +239,7 @@ public class IntranodeBuilder {
   }
 
   // Helper method to create a source actor for a DataInputInterface
-  private Actor createSourceActor(DataInputInterface in, int index) {
+  private Actor createSourceActor(DataInputInterface in, int index, PiGraph subgraph) {
     final Actor src = PiMMUserFactory.instance.createActor();
     src.setName("src_" + in.getName());
     final Refinement refinement = PiMMUserFactory.instance.createCHeaderRefinement();
@@ -251,7 +251,7 @@ public class IntranodeBuilder {
     cHeaderRefinement.setFilePath(codegenPath + INTERFACE_PATH + index + "/" + src.getName() + ".h");
     final FunctionPrototype functionPrototype = PiMMUserFactory.instance.createFunctionPrototype();
     cHeaderRefinement.setLoopPrototype(functionPrototype);
-    functionPrototype.setName(src.getName());
+    functionPrototype.setName(subgraph.getName() + "_" + src.getName());
 
     src.setContainingGraph(in.getDirectSuccessors().get(0).getContainingGraph());
     final DataOutputPort dout = PiMMUserFactory.instance.createDataOutputPort();
@@ -276,7 +276,7 @@ public class IntranodeBuilder {
   }
 
   // Helper method to create a sink actor for a DataOutputInterface
-  private Actor createSinkActor(DataOutputInterface out, int index) {
+  private Actor createSinkActor(DataOutputInterface out, int index, PiGraph subgraph) {
     final Actor snk = PiMMUserFactory.instance.createActor();
     snk.setName("snk_" + out.getName());
     final Refinement refinement = PiMMUserFactory.instance.createCHeaderRefinement();
@@ -288,7 +288,7 @@ public class IntranodeBuilder {
     cHeaderRefinement.setFilePath(codegenPath + INTERFACE_PATH + index + "/" + snk.getName() + ".h");
     final FunctionPrototype functionPrototype = PiMMUserFactory.instance.createFunctionPrototype();
     cHeaderRefinement.setLoopPrototype(functionPrototype);
-    functionPrototype.setName(snk.getName());
+    functionPrototype.setName(subgraph.getName() + "_" + snk.getName());
 
     snk.setContainingGraph(out.getContainingGraph());
     final DataInputPort din = PiMMUserFactory.instance.createDataInputPort();
@@ -604,7 +604,8 @@ public class IntranodeBuilder {
     final StringConcatenation content = new StringConcatenation();
     content.append("#include \"preesm.h\"\n");
     content.append("// Interface actor file \n #ifndef " + actor.getName().toUpperCase() + "_H \n #define "
-        + actor.getName().toUpperCase() + "_H \n void " + actor.getName() + "(");
+        + actor.getName().toUpperCase() + "_H \n void " + actor.getContainingPiGraph().getName() + "_" + actor.getName()
+        + "(");
 
     for (int i = 0; i < actor.getAllDataPorts().size(); i++) {
       final DataPort dp = actor.getAllDataPorts().get(i);
@@ -622,8 +623,8 @@ public class IntranodeBuilder {
 
   private void generateFileC(Actor actor, int index) {
     final StringConcatenation content = new StringConcatenation();
-    content.append(
-        "// Interface actor file \n #include \"" + actor.getName() + ".h\" \n " + " void " + actor.getName() + "(");
+    content.append("// Interface actor file \n #include \"" + actor.getName() + ".h\" \n " + " void "
+        + actor.getContainingPiGraph().getName() + "_" + actor.getName() + "(");
 
     for (int i = 0; i < actor.getAllDataPorts().size(); i++) {
       final DataPort dp = actor.getAllDataPorts().get(i);

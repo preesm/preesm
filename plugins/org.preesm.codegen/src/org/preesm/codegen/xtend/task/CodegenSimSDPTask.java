@@ -213,7 +213,7 @@ public class CodegenSimSDPTask extends AbstractTaskImplementation {
     final String upper = subGraph.getName().toUpperCase() + "_H";
     content.append("#ifndef " + upper + "\n", "");
     content.append("#define " + upper + "\n", "");
-    content.append("void " + subGraph.getName() + "(" + printNodeArg(subGraph, codeBlocks) + "); \n");
+    content.append("void " + subGraph.getName() + "(" + printNodeArg(subGraph, codeBlocks, 0) + "); \n");
     content.append(struct(subGraph, codeBlocks));
     content.append("#endif \n", "");
 
@@ -224,10 +224,8 @@ public class CodegenSimSDPTask extends AbstractTaskImplementation {
   private StringConcatenation struct(PiGraph subGraph, Collection<Block> codeBlocks) {
     final StringConcatenation result = new StringConcatenation();
     result.append("typedef struct {\n");
-    final CoreBlock firstBlock = (CoreBlock) codeBlocks.stream().findFirst().get();
-    for (final Buffer topBuffer : firstBlock.getTopBuffers()) {
-      result.append(topBuffer.getType() + " *" + topBuffer.getName() + ";\n");
-    }
+
+    result.append(printNodeArg(subGraph, codeBlocks, 1));
 
     result.append("} ThreadParams" + subGraph.getName().replace("sub", "") + ";\n");
     return result;
@@ -243,19 +241,36 @@ public class CodegenSimSDPTask extends AbstractTaskImplementation {
     return result;
   }
 
-  private String printNodeArg(PiGraph node, Collection<Block> codeBlocks) {
-
-    String str = "";
-
+  private String printNodeArg(PiGraph node, Collection<Block> codeBlocks, int arg) {
+    String funcStr = "";
+    String structStr = "";
     final CoreBlock firstBlock = (CoreBlock) codeBlocks.stream().findFirst().get();
-    for (final Buffer topBuffer : firstBlock.getTopBuffers()) {
-      str += topBuffer.getType() + " *" + topBuffer.getName() + ",";
+    final Object[] srcArgs = firstBlock.getTopBuffers().stream().filter(x -> x.getComment().contains("src")).toArray();
+
+    for (int i = 0; i < srcArgs.length; i++) {
+      final int index = i;
+      final Buffer buff = firstBlock.getTopBuffers().stream().filter(x -> x.getComment().equals("src_in_" + index))
+          .findFirst().orElseThrow();
+      funcStr += buff.getType() + " *" + buff.getComment() + ",";
+      structStr += buff.getType() + " *" + buff.getComment() + ";\n";
+
+    }
+    final Object[] snkArgs = firstBlock.getTopBuffers().stream().filter(x -> x.getComment().contains("snk")).toArray();
+    for (int i = 0; i < snkArgs.length; i++) {
+      final int index = i;
+      final Buffer buff = firstBlock.getTopBuffers().stream().filter(x -> x.getComment().equals("snk_out_" + index))
+          .findFirst().orElseThrow();
+      funcStr += buff.getType() + " *" + buff.getComment() + ",";
+      structStr += buff.getType() + " *" + buff.getComment() + ";\n ";
     }
 
-    if (str.endsWith(",")) {
-      str = str.substring(0, str.length() - 1);
+    if (funcStr.endsWith(",")) {
+      funcStr = funcStr.substring(0, funcStr.length() - 1);
     }
-    return str;
+    if (arg == 0) {
+      return funcStr;
+    }
+    return structStr;
   }
 
   /*

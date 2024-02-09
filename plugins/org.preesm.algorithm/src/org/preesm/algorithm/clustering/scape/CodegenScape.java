@@ -120,9 +120,9 @@ public class CodegenScape {
     for (final String buffer : build.getBuffer()) {
       result.append(buffer + "\n ", "");
     }
-    for (final String buffer : build.getDynmicBuffer()) {
-      result.append(buffer + "\n ", "");
-    }
+    // for (final String buffer : build.getDynmicBuffer()) {
+    // result.append(buffer + "\n ", "");
+    // }
     result.append("// body \n ", "");
     final String body = build.getBody();
     result.append(body + "\n\n ", "");

@@ -10,13 +10,14 @@ import org.preesm.model.pisdf.AbstractVertex;
 import org.preesm.model.pisdf.Actor;
 import org.preesm.model.pisdf.BroadcastActor;
 import org.preesm.model.pisdf.CHeaderRefinement;
-import org.preesm.model.pisdf.ConfigInputPort;
 import org.preesm.model.pisdf.DataInputInterface;
 import org.preesm.model.pisdf.DataInputPort;
 import org.preesm.model.pisdf.DataOutputInterface;
 import org.preesm.model.pisdf.DataOutputPort;
 import org.preesm.model.pisdf.Delay;
 import org.preesm.model.pisdf.ForkActor;
+import org.preesm.model.pisdf.FunctionArgument;
+import org.preesm.model.pisdf.FunctionPrototype;
 import org.preesm.model.pisdf.JoinActor;
 import org.preesm.model.pisdf.Parameter;
 import org.preesm.model.pisdf.PiGraph;
@@ -239,7 +240,9 @@ public class CodegenScapeBuilder {
     Long scale = 1L;
     final StringConcatenation actorImplem = new StringConcatenation();
     String funcName = sc.getActor().getName();
+    FunctionPrototype loopPrototype = null;
     if (((CHeaderRefinement) ((Actor) sc.getActor()).getRefinement()).getLoopPrototype() != null) {
+      loopPrototype = ((CHeaderRefinement) ((Actor) sc.getActor()).getRefinement()).getLoopPrototype();
       funcName = ((CHeaderRefinement) ((Actor) sc.getActor()).getRefinement()).getLoopPrototype().getName();
     }
 
@@ -247,13 +250,20 @@ public class CodegenScapeBuilder {
     final int nbArg = sc.getActor().getConfigInputPorts().size() + sc.getActor().getDataInputPorts().size()
         + sc.getActor().getDataOutputPorts().size();
     int countArg = 1;
-    for (final ConfigInputPort cfg : sc.getActor().getConfigInputPorts()) {
-      actorImplem.append(((AbstractVertex) cfg.getIncomingDependency().getSource()).getName());
+    for (final FunctionArgument arg : loopPrototype.getInputConfigParameters()) {
+      actorImplem.append(arg.getName());
       if (countArg < nbArg) {
         actorImplem.append(",");
       }
       countArg++;
     }
+    // for (final ConfigInputPort cfg : sc.getActor().getConfigInputPorts()) {
+    // actorImplem.append(((AbstractVertex) cfg.getIncomingDependency().getSource()).getName());
+    // if (countArg < nbArg) {
+    // actorImplem.append(",");
+    // }
+    // countArg++;
+    // }
     for (final DataInputPort in : sc.getActor().getDataInputPorts()) {
       String buffname = "";
       scale = 1L;
