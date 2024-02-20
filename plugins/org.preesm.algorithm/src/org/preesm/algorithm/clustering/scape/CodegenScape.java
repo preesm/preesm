@@ -3,7 +3,6 @@ package org.preesm.algorithm.clustering.scape;
 import java.io.File;
 import java.util.Date;
 import java.util.List;
-import org.eclipse.xtend2.lib.StringConcatenation;
 import org.preesm.algorithm.schedule.model.ScapeBuilder;
 import org.preesm.algorithm.schedule.model.ScapeSchedule;
 import org.preesm.algorithm.schedule.model.ScheduleFactory;
@@ -31,11 +30,11 @@ public class CodegenScape {
     final ScapeBuilder build = ScheduleFactory.eINSTANCE.createScapeBuilder();
     new CodegenScapeBuilder(build, schedule, subGraph, stackSize);
 
-    final StringConcatenation clusterCContent = buildCContent(build, subGraph);
+    final StringBuilder clusterCContent = buildCContent(build, subGraph);
     PreesmIOHelper.getInstance().print(clusterPath, cfile, clusterCContent);
     // print H file
     final String hfile = clusterName + ".h";
-    final StringConcatenation clusterHContent = buildHContent(build, subGraph);
+    final StringBuilder clusterHContent = buildHContent(build, subGraph);
     PreesmIOHelper.getInstance().print(clusterPath, hfile, clusterHContent);
   }
 
@@ -48,15 +47,25 @@ public class CodegenScape {
    *          Graph to consider.
    * @return The string content of the .h file.
    */
-  private StringConcatenation buildHContent(ScapeBuilder build, PiGraph subGraph) {
-    final StringConcatenation result = new StringConcatenation();
+  private StringBuilder buildHContent(ScapeBuilder build, PiGraph subGraph) {
+    final StringBuilder result = new StringBuilder();
     result.append(header(subGraph));
     final String upper = subGraph.getName().toUpperCase() + "_H";
-    result.append("#ifndef " + upper + "\n", "");
-    result.append("#define " + upper + "\n", "");
-    result.append(build.getInitFunc() + ";\n ", "");
-    result.append(build.getLoopFunc() + ";\n ", "");
-    result.append("#endif \n", "");
+
+    result.append("#ifndef " + upper + "\n");
+    result.append("#define " + upper + "\n");
+    result.append(build.getInitFunc() + ";\n ");
+    result.append(build.getLoopFunc() + ";\n ");
+    for (final AbstractActor actor : subGraph.getOnlyActors()) {
+      if (actor instanceof Actor) {
+        final CHeaderRefinement cHeaderRefinement = (CHeaderRefinement) (((Actor) actor).getRefinement());
+        if (cHeaderRefinement.getInitPrototype() != null) {
+          result.append("#include \"" + cHeaderRefinement.getFileName() + "\" \n\n");
+        }
+      }
+    }
+
+    result.append("#endif \n");
     return result;
   }
 
@@ -69,42 +78,49 @@ public class CodegenScape {
    *          Graph to consider.
    * @return The string content of the .c file.
    */
-  private StringConcatenation buildCContent(ScapeBuilder build, PiGraph subGraph) {
+  private StringBuilder buildCContent(ScapeBuilder build, PiGraph subGraph) {
 
-    final StringConcatenation result = new StringConcatenation();
+    final StringBuilder result = new StringBuilder();
     result.append(header(subGraph));
     result.append("#include " + "\"Cluster_" + subGraph.getContainingPiGraph().getName() + "_" + subGraph.getName()
         + ".h\" \n\n");
     final String initFunc = build.getInitFunc();
-    result.append(initFunc + "{\n ", "");
+    result.append(initFunc + "{\n ");
     for (final AbstractActor actor : subGraph.getOnlyActors()) {
       if (actor instanceof Actor) {
         final CHeaderRefinement cHeaderRefinement = (CHeaderRefinement) (((Actor) actor).getRefinement());
         if (cHeaderRefinement.getInitPrototype() != null) {
-          result.append(cHeaderRefinement.getInitPrototype().getName() + "; \n\n", "");
+
+          result.append(cHeaderRefinement.getInitPrototype().getName() + "(); \n\n");
+
         }
       }
     }
 
-    result.append("}\n ", "");
+    result.append("}\n ");
 
     final String loopFunc = build.getLoopFunc();
-    result.append(loopFunc + "{ \n\n", "");
+    result.append(loopFunc + "{ \n\n");
 
-    result.append("// buffer declaration \n\n ", "");
+    result.append("// buffer declaration \n\n ");
     for (final String buffer : build.getBuffer()) {
-      result.append(buffer + "\n ", "");
+      result.append(buffer + "\n ");
     }
-    result.append("// body \n ", "");
+
+    for (final String buffer : build.getDynmicBuffer()) {
+      result.append(buffer + "\n ");
+    }
+    result.append("// body \n ");
     final String body = build.getBody();
-    result.append(body + "\n\n ", "");
+    result.append(body + "\n\n ");
 
-    result.append("// free buffer  \n ", "");
-    for (final String buffer : build.getBuffer()) {
-      result.append(buffer + "\n ", "");
+    result.append("// free buffer  \n ");
+    for (final String buffer : build.getDynmicBuffer()) {
+      final String buff = buffer.split("[\\s\\[\\]]")[1];
+      result.append("free(" + buff + "); \n ");
     }
 
-    result.append("}\n", "");
+    result.append("}\n");
     return result;
   }
 
@@ -115,14 +131,14 @@ public class CodegenScape {
    *          Graph to consider.
    * @return The string content of the header file.
    */
-  private StringConcatenation header(PiGraph subGraph) {
-    final StringConcatenation result = new StringConcatenation();
+  private StringBuilder header(PiGraph subGraph) {
+    final StringBuilder result = new StringBuilder();
     result.append("/** \n");
     result.append(
-        "* @file " + "/Cluster_" + subGraph.getContainingPiGraph().getName() + "_" + subGraph.getName() + ".c/h \n");
+        "* @file " + "/Cluster_" + subGraph.getContainingPiGraph().getName() + "_" + subGraph.getName() + ".c/h\n");
     result.append("* @generated by " + this.getClass().getSimpleName() + "\n");
     result.append("* @date " + new Date() + "\n");
-    result.append("*/ \n\n");
+    result.append("*/\n\n");
     return result;
   }
 

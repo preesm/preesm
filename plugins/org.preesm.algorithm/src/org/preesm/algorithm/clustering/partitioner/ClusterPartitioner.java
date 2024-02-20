@@ -47,9 +47,9 @@ import org.preesm.model.pisdf.AbstractVertex;
 import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.pisdf.brv.BRVMethod;
 import org.preesm.model.pisdf.brv.PiBRV;
+import org.preesm.model.pisdf.util.ClusteringPatternSeekerUrc;
 import org.preesm.model.pisdf.util.PiGraphFiringBalancer;
 import org.preesm.model.pisdf.util.PiSDFSubgraphBuilder;
-import org.preesm.model.pisdf.util.URCSeeker;
 import org.preesm.model.scenario.Scenario;
 import org.preesm.model.slam.ComponentInstance;
 
@@ -99,7 +99,7 @@ public class ClusterPartitioner {
 
     // Look for actor groups other than URC chains.
     // Retrieve URC chains in input graph and verify that actors share component constraints.
-    final List<List<AbstractActor>> graphURCs = new URCSeeker(this.graph).seek();
+    final List<List<AbstractActor>> graphURCs = new ClusteringPatternSeekerUrc(this.graph).seek();
     final List<List<AbstractActor>> constrainedURCs = new LinkedList<>();
     for (final List<AbstractActor> URC : graphURCs) {
       if (!ClusteringHelper.getListOfCommonComponent(URC, this.scenario).isEmpty()) {

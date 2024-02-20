@@ -36,30 +36,58 @@
 package org.ietr.preesm.test.it.appstest;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 import org.eclipse.core.runtime.CoreException;
 import org.ietr.preesm.test.it.api.WorkflowRunner;
 import org.junit.Assert;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
+import org.junit.runners.Parameterized.Parameters;
 
 /**
  * Testing SimSDP hypervisor process
  *
  * @author orenaud
  */
+@RunWith(Parameterized.class)
 public class SimSDPHypervisorMultinetTest {
 
-  private final String[] workflow    = { "hypervisor.workflow", "platform.workflow" };
-  private final String   scenario    = "initialisation.scenario";
-  private final String   projectName = "org.ietr.preesm.simsdp.hypervisor.multinet";
+  final String workflow;
+  final String scenario;
+  final String projectName;
+
+  /**
+   */
+  public SimSDPHypervisorMultinetTest(final String workflow, final String scenario, final String projectName) {
+    this.scenario = scenario;
+    this.workflow = workflow;
+    this.projectName = projectName;
+  }
+
+  @Parameters(name = "{2} - {0} - {1}")
+  public static Collection<Object[]> data() {
+
+    final List<Object[]> params = new ArrayList<>();
+
+    final String testProjectName = "org.ietr.preesm.simsdp.hypervisor.multinet";
+    final String testScenarios = "initialisation.scenario";
+    final String[] testWorkflows = new String[] { "hypervisor.workflow", "platform.workflow" };
+    for (final String workflow : testWorkflows) {
+      params.add(new Object[] { workflow, testScenarios, testProjectName });
+    }
+
+    return params;
+  }
 
   @Test
-  public void testSimSDPHypervisorTest() throws IOException, CoreException {
-    for (int i = 0; i < 2; i++) {
-      final String workflowFilePathStr = "/Workflows/" + workflow[i];
-      final String scenarioFilePathStr = "/Scenarios/" + scenario;
-
-      final boolean success = WorkflowRunner.runWorkFlow(null, projectName, workflowFilePathStr, scenarioFilePathStr);
-      Assert.assertTrue("Workflow [" + workflow[i] + "] with scenario [" + scenario + "] caused failure", success);
-    }
+  public void test() throws IOException, CoreException {
+    final String workflowFilePathStr = "/Workflows/" + workflow;
+    final String scenarioFilePathStr = "/Scenarios/" + scenario;
+    final boolean success = WorkflowRunner.runWorkFlow(null, projectName, workflowFilePathStr, scenarioFilePathStr);
+    Assert.assertTrue("Workflow [" + workflow + "] with scenario [" + scenario + "] caused failure", success);
   }
+
 }

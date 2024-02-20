@@ -35,13 +35,10 @@
  */
 package org.preesm.ui.slam.popup.actions;
 
-<<<<<<<< HEAD:plugins/org.preesm.ui.slam/src/org/preesm/ui/slam/popup/actions/ArchitectureGeneratorSimSDPPopup.java
 import java.awt.Button;
 import java.awt.GridLayout;
 import java.awt.Label;
-import java.util.ArrayList;
-========
->>>>>>>> f2ba9f123 (adding multinet integration test):plugins/org.preesm.ui.slam/src/org/preesm/ui/slam/popup/actions/ArchitectureSimSDPnodeGeneratorPopup.java
+import java.io.File;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -57,7 +54,6 @@ import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.IWorkbenchPage;
-import org.eclipse.xtend2.lib.StringConcatenation;
 import org.preesm.commons.files.PreesmIOHelper;
 import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.ui.PreesmUIPlugin;
@@ -77,13 +73,8 @@ import org.w3c.dom.Text;
  *
  * @author orenaud
  */
-<<<<<<<< HEAD:plugins/org.preesm.ui.slam/src/org/preesm/ui/slam/popup/actions/ArchitectureGeneratorSimSDPPopup.java
-
-public class ArchitectureSimSDPGeneratorPopup extends AbstractHandler {
-========
-public class ArchitectureSimSDPnodeGeneratorPopup extends AbstractHandler {
+public class ArchitectureGeneratorSimSDPNodePopup extends AbstractHandler {
   // Constants
->>>>>>>> f2ba9f123 (adding multinet integration test):plugins/org.preesm.ui.slam/src/org/preesm/ui/slam/popup/actions/ArchitectureSimSDPnodeGeneratorPopup.java
   String                     path       = "";
   public static final String ARCHI_NAME = "SimSDP_node.csv";
 
@@ -111,10 +102,9 @@ public class ArchitectureSimSDPnodeGeneratorPopup extends AbstractHandler {
       final IWorkbenchPage page = PreesmUIPlugin.getDefault().getWorkbench().getActiveWorkbenchWindow().getActivePage();
       final TreeSelection selection = (TreeSelection) page.getSelection();
       final IProject project = (IProject) selection.getFirstElement();
-      path = "/" + project.getName() + "/Archi/";
+      path = File.separator + project.getName() + "/Archi/";
       // If it is a Preesm project, generate default design in Archi/ folder
       if (project.hasNature(PreesmProjectNature.ID)) {
-
         openMutinodePropertiesDialog();
         PreesmLogger.getLogger().log(Level.INFO, "Generate a custom multinode architecture file.");
       }
@@ -214,7 +204,7 @@ public class ArchitectureSimSDPnodeGeneratorPopup extends AbstractHandler {
     okButton.setBackground(Display.getCurrent().getSystemColor(SWT.COLOR_DARK_GREEN));
     okButton.setForeground(Display.getCurrent().getSystemColor(SWT.COLOR_WHITE));
     okButton.addListener(SWT.Selection, event -> {
-      final StringConcatenation content = processCsv(nodeInfoList);
+      final StringBuilder content = processCsv(nodeInfoList);
       PreesmIOHelper.getInstance().print(path, ARCHI_NAME, content);
       shell.close();
     });
@@ -320,8 +310,8 @@ public class ArchitectureSimSDPnodeGeneratorPopup extends AbstractHandler {
    *          The map containing architecture information.
    * @return The generated CSV content.
    */
-  private StringConcatenation processCsv(Map<Integer, Map<Integer, CoreInfo>> nodeInfoList2) {
-    final StringConcatenation content = new StringConcatenation();
+  private StringBuilder processCsv(Map<Integer, Map<Integer, CoreInfo>> nodeInfoList2) {
+    final StringBuilder content = new StringBuilder();
     content.append("Node name;Core ID;Core frequency;Intranode rate;Internode rate\n");
     for (final Entry<Integer, Map<Integer, CoreInfo>> node : nodeInfoList2.entrySet()) {
       for (final Entry<Integer, CoreInfo> core : node.getValue().entrySet()) {

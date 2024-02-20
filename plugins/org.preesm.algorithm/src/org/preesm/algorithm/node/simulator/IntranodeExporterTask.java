@@ -1,5 +1,6 @@
 package org.preesm.algorithm.node.simulator;
 
+import java.io.File;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.logging.Level;
@@ -31,15 +32,18 @@ import org.preesm.workflow.implement.AbstractTaskImplementation;
     inputs = { @Port(name = "ABC", type = LatencyAbc.class) },
 
     shortDescription = "This task exports scheduling results as a *.csv file .")
+
 public class IntranodeExporterTask extends AbstractTaskImplementation {
+
   public static final String OCCUPATION_NAME = "occupation_trend.csv";
   public static final String SPEEDUP_NAME    = "speedup_trend.csv";
-  static String              path            = "";
+
+  private String path = "";
 
   @Override
   public Map<String, Object> execute(Map<String, Object> inputs, Map<String, String> parameters,
       IProgressMonitor monitor, String nodeName, Workflow workflow) throws InterruptedException {
-    path = "/" + workflow.getProjectName() + "/Simulation/";
+    path = File.separator + workflow.getProjectName() + "/Simulation/";
     final LatencyAbc abc = (LatencyAbc) inputs.get("ABC");
 
     // export

@@ -10,6 +10,13 @@ package org.preesm.algorithm.node.simulator;
  * @author orenaud
  */
 public class NetworkInfo {
+
+  public static final String CLUSTER_CROSSBAR = "Cluster with crossbar";
+  public static final String CLUSTER_SHARED   = "Cluster with shared backbone";
+  public static final String TORUS            = "Torus cluster";
+  public static final String FAT_TREE         = "Fat-tree cluster";
+  public static final String DRAGONFLY        = "Dragonfly cluster";
+
   String type;
   int    node;
   int    core;
@@ -62,21 +69,14 @@ public class NetworkInfo {
    * @return The corresponding type ID.
    */
   public int getTypeID() {
-    switch (type) {
-      case "Cluster with crossbar":
-        return 1;
-      case "Cluster with shared backbone":
-        return 2;
-      case "Torus cluster":
-        return 3;
-      case "Fat-tree cluster":
-        return 4;
-      case "Dragonfly cluster":
-        return 5;
-      default:
-        return 0;
-    }
-
+    return switch (type) {
+      case CLUSTER_CROSSBAR -> 1;
+      case CLUSTER_SHARED -> 2;
+      case TORUS -> 3;
+      case FAT_TREE -> 4;
+      case DRAGONFLY -> 5;
+      default -> 0;
+    };
   }
 
   /**

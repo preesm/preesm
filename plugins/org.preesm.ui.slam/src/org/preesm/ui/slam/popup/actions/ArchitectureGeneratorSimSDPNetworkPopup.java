@@ -35,6 +35,7 @@
  */
 package org.preesm.ui.slam.popup.actions;
 
+import java.io.File;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.logging.Level;
@@ -53,7 +54,7 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.IWorkbenchPage;
-import org.eclipse.xtend2.lib.StringConcatenation;
+import org.preesm.algorithm.node.simulator.NetworkInfo;
 import org.preesm.commons.files.PreesmIOHelper;
 import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.ui.PreesmUIPlugin;
@@ -74,16 +75,18 @@ import org.preesm.ui.wizards.PreesmProjectNature;
  *
  * @author orenaud
  */
-public class ArchitectureSimSDPnetworkGeneratorPopup extends AbstractHandler {
+public class ArchitectureGeneratorSimSDPNetworkPopup extends AbstractHandler {
 
   // Constants
   private String             path;
-  public static final String ARCHI_NAME     = "SimSDP_network.xml";
-  public static final String TOPO_NAME1     = "Cluster with crossbar";
-  public static final String TOPO_NAME2     = "Cluster with shared backbone";
-  public static final String TOPO_NAME3     = "Torus cluster";
-  public static final String TOPO_NAME4     = "Fat-tree cluster";
-  public static final String TOPO_NAME5     = "Dragonfly cluster";
+  public static final String ARCHI_NAME = "SimSDP_network.xml";
+
+  public static final String CLUSTER_CROSSBAR = NetworkInfo.CLUSTER_CROSSBAR;
+  public static final String CLUSTER_SHARED   = NetworkInfo.CLUSTER_SHARED;
+  public static final String TORUS            = NetworkInfo.TORUS;
+  public static final String FAT_TREE         = NetworkInfo.FAT_TREE;
+  public static final String DRAGONFLY        = NetworkInfo.DRAGONFLY;
+
   public static final String TOPO_PARAM_KEY = "topoparam";
 
   /**
@@ -103,7 +106,7 @@ public class ArchitectureSimSDPnetworkGeneratorPopup extends AbstractHandler {
       final IWorkbenchPage page = PreesmUIPlugin.getDefault().getWorkbench().getActiveWorkbenchWindow().getActivePage();
       final TreeSelection selection = (TreeSelection) page.getSelection();
       final IProject project = (IProject) selection.getFirstElement();
-      path = "/" + project.getName() + "/Archi/";
+      path = File.separator + project.getName() + "/Archi/";
       // If it is a Preesm project, generate default design in Archi/ folder
       if (project.hasNature(PreesmProjectNature.ID)) {
         openGeneralNetworkPropertiesDialog();
@@ -171,7 +174,7 @@ public class ArchitectureSimSDPnetworkGeneratorPopup extends AbstractHandler {
     label.setText("Select Option:");
 
     final Combo dropdown = new Combo(shell, SWT.DROP_DOWN | SWT.READ_ONLY);
-    dropdown.setItems(TOPO_NAME1, TOPO_NAME2, TOPO_NAME3, TOPO_NAME4, TOPO_NAME5);
+    dropdown.setItems(CLUSTER_CROSSBAR, CLUSTER_SHARED, TORUS, FAT_TREE, DRAGONFLY);
     dropdown.select(0);
     dropdown.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
 
@@ -220,7 +223,7 @@ public class ArchitectureSimSDPnetworkGeneratorPopup extends AbstractHandler {
       network.put(TOPO_PARAM_KEY, !topoText.getText().equals("") ? topoText.getText() : topoText.getMessage());
       network.put("bbparam", !bbText.getText().equals("") ? bbText.getText() : bbText.getMessage());
 
-      final StringConcatenation content = processXml(network);
+      final StringBuilder content = processXml(network);
       PreesmIOHelper.getInstance().print(path, ARCHI_NAME, content);
       shell.close();
     });
@@ -295,7 +298,7 @@ public class ArchitectureSimSDPnetworkGeneratorPopup extends AbstractHandler {
   protected void updateTopoParamInfo(String selectedOption, Label topoLabel, Text topoText, Label bbLabel, Text bbText,
       Text nodeText) {
     switch (selectedOption) {
-      case TOPO_NAME2:
+      case CLUSTER_SHARED:
         topoLabel.setText("Enter backbone bandwidth");
         topoText.setMessage("2.25GBps");
         topoText.setVisible(true);
@@ -304,7 +307,8 @@ public class ArchitectureSimSDPnetworkGeneratorPopup extends AbstractHandler {
         bbText.setMessage("500us");
         bbText.setVisible(true);
         break;
-      case TOPO_NAME3:
+
+      case TORUS:
         topoLabel.setText("Enter x,y,z size");
         topoText.setMessage("3,2,2");
         topoText.setVisible(true);
@@ -312,14 +316,13 @@ public class ArchitectureSimSDPnetworkGeneratorPopup extends AbstractHandler {
         bbText.setVisible(false);
         if (!topoText.getText().equals("")) {
           final String[] xyz = topoText.getText().replace("\"", "").split(",");
-
           nodeText.setText(String.valueOf(Integer.decode(xyz[0]) * Integer.decode(xyz[1]) * Integer.decode(xyz[2])));
-
         } else {
           nodeText.setText(String.valueOf(3 * 2 * 2));
         }
         break;
-      case TOPO_NAME4:
+
+      case FAT_TREE:
         topoLabel.setText("Enter nLevel;nDownlink,...;nUplink,...;//link,... parameter");
         topoText.setMessage("2;2,2;1,1;1,1");
         topoText.setVisible(true);
@@ -336,7 +339,8 @@ public class ArchitectureSimSDPnetworkGeneratorPopup extends AbstractHandler {
           nodeText.setText(String.valueOf(2 * 2));
         }
         break;
-      case TOPO_NAME5:
+
+      case DRAGONFLY:
         topoLabel.setText("Enter nCluster,nLink;nChassis,nLink;nRouter,nlink;nNode parameter");
         topoText.setMessage("2,1;2,1;2,1;1");
         topoText.setVisible(true);
@@ -350,11 +354,11 @@ public class ArchitectureSimSDPnetworkGeneratorPopup extends AbstractHandler {
           nodeText.setText(String.valueOf(2 * 2 * 2 * 1));
         }
         break;
+
       default:
         topoLabel.setText("");
         topoText.setVisible(false);
         break;
-
     }
 
   }
@@ -366,8 +370,8 @@ public class ArchitectureSimSDPnetworkGeneratorPopup extends AbstractHandler {
    *          The network map containing various parameters.
    * @return The generated XML content.
    */
-  private StringConcatenation processXml(Map<String, String> network) {
-    final StringConcatenation content = new StringConcatenation();
+  private StringBuilder processXml(Map<String, String> network) {
+    final StringBuilder content = new StringBuilder();
     content.append("<!-- " + network.get("topo") + ":" + network.get("node") + " -->\n");
     content.append("<?xml version='1.0'?>\n");
     content.append("<!DOCTYPE platform SYSTEM \"https://simgrid.org/simgrid.dtd\">\n");
@@ -386,25 +390,25 @@ public class ArchitectureSimSDPnetworkGeneratorPopup extends AbstractHandler {
 
     final String selectedOption = network.get("topo");
     switch (selectedOption) {
-      case TOPO_NAME2:
+      case CLUSTER_SHARED:
         content.append("bb_bw=\"" + network.get(TOPO_PARAM_KEY) + "\" bb_lat=\"" + network.get("bbparam") + "\"");
         break;
-      case TOPO_NAME3:
+      case TORUS:
         content.append("topology=\"TORUS\" ");
         content.append("topo_parameters=\"" + network.get(TOPO_PARAM_KEY) + "\"");
         break;
-      case TOPO_NAME4:
+      case FAT_TREE:
         content.append("topology=\"FAT_TREE\" ");
         content.append("topo_parameters=\"" + network.get(TOPO_PARAM_KEY) + "\"");
         break;
-      case TOPO_NAME5:
+      case DRAGONFLY:
         content.append("topology=\"DRAGONFLY\" ");
         content.append("topo_parameters=\"" + network.get(TOPO_PARAM_KEY) + "\"");
         break;
       default:
-
         break;
     }
+
     content.append(">\n");
     content.append("<prop id=\"wattage_per_state\" value=\"90.0:90.0:150.0\" />\n");
     content.append("<prop id=\"wattage_range\" value=\"100.0:200.0\" />\n");

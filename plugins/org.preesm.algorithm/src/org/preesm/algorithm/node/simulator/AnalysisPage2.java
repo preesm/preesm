@@ -10,7 +10,6 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.SwingConstants;
 import javax.swing.border.Border;
-import org.eclipse.xtend2.lib.StringConcatenation;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
@@ -29,16 +28,15 @@ import org.preesm.commons.files.PreesmIOHelper;
  * @author orenaud
  */
 public class AnalysisPage2 {
-  static String              path;
-  static int                 iterationOptim;
-  static int                 iterationNum    = 0;
-  public static final String OCCUPATION_NAME = "occupation_trend.csv";
-  public static final String SPEEDUP_NAME    = "speedup_trend.csv";
-  static List<Double>        occupationOptim = new ArrayList<>();
-  static List<Double>        speedupOptim    = new ArrayList<>();
-  public static final String PAGE2_TITRE1    = "Intranode Occupation over Iteration";
-  public static final String PAGE2_TITRE2    = "Intranode Speedups over Iteration";
-  public static final String ITERATION       = "Iteration ";
+  private final String        path;
+  private final int           iterationOptim;
+  private static final String OCCUPATION_NAME = "occupation_trend.csv";
+  private static final String SPEEDUP_NAME    = "speedup_trend.csv";
+  private final List<Double>  occupationOptim = new ArrayList<>();
+  private final List<Double>  speedupOptim    = new ArrayList<>();
+  private static final String PAGE2_TITRE1    = "Intranode Occupation over Iteration";
+  private static final String PAGE2_TITRE2    = "Intranode Speedups over Iteration";
+  private static final String ITERATION       = "Iteration ";
 
   /**
    * Constructs an AnalysisPage2 object with the given parameters.
@@ -49,8 +47,8 @@ public class AnalysisPage2 {
    *          The iteration for optimization.
    */
   public AnalysisPage2(String path, int iterationOptim) {
-    AnalysisPage2.path = path;
-    AnalysisPage2.iterationOptim = iterationOptim;
+    this.path = path;
+    this.iterationOptim = iterationOptim;
   }
 
   /**
@@ -88,10 +86,10 @@ public class AnalysisPage2 {
    * @return The description text in HTML format.
    */
   private String description() {
-    final StringConcatenation description = new StringConcatenation();
+    final StringBuilder description = new StringBuilder();
     description.append("<html>This chart gives an idea of the impact of the efficiency of the application"
         + " graph distribution on your set of nodes via the SimSDP method.<br>" + " The method has iterated over <b>"
-        + iterationNum + "</b> iterations, ");
+        + iterationOptim + "</b> iterations, ");
 
     description.append("and here is the performance evaluation at intra-node level for each iteration.<br>"
 
@@ -100,6 +98,7 @@ public class AnalysisPage2 {
         + " and compare them to th achieved speed-ups over iterations.<br><br>"
         + "The optimal configuration is achieved with the following attributes: <br>" + "- Iteration: " + iterationOptim
         + " <br>" + " - Occupation: ");
+
     for (int i = 0; i < occupationOptim.size(); i++) {
       description.append(" Node" + i + "->" + String.format("%.2f", occupationOptim.get(i)) + " %");
       if (i < occupationOptim.size() - 1) {
@@ -154,7 +153,7 @@ public class AnalysisPage2 {
    *
    * @return The CategoryDataset containing intra-node occupation data.
    */
-  private static CategoryDataset fillOccupationDataSet() {
+  private CategoryDataset fillOccupationDataSet() {
     final DefaultCategoryDataset dataset = new DefaultCategoryDataset();
     occupationOptim.clear();
     final String[] arrayOccupation = PreesmIOHelper.getInstance().read(path, OCCUPATION_NAME).split("\n");
@@ -175,7 +174,7 @@ public class AnalysisPage2 {
    *
    * @return The CategoryDataset containing intra-node speedup data.
    */
-  private static CategoryDataset fillSpeedupDataSet() {
+  private CategoryDataset fillSpeedupDataSet() {
     final DefaultCategoryDataset dataset = new DefaultCategoryDataset();
     speedupOptim.clear();
     final String[] arraySpeedup = PreesmIOHelper.getInstance().read(path, SPEEDUP_NAME).split("\n");

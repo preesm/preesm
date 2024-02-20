@@ -13,7 +13,6 @@ import org.eclipse.core.resources.IWorkspaceRoot;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.Path;
-import org.eclipse.xtend2.lib.StringConcatenation;
 import org.preesm.algorithm.mapper.abc.impl.latency.LatencyAbc;
 import org.preesm.commons.doc.annotations.Parameter;
 import org.preesm.commons.doc.annotations.Port;
@@ -40,17 +39,18 @@ import org.preesm.workflow.implement.AbstractWorkflowNodeImplementation;
  * @author orenaud
  */
 @PreesmTask(id = "InternodeExporterTask.identifier", name = "Internode Stats exporter", category = "SimGrid bash",
-    inputs = { @Port(name = "ABC", type = LatencyAbc.class) }, parameters = {
-
+    inputs = { @Port(name = "ABC", type = LatencyAbc.class) },
+    parameters = {
         @Parameter(name = "SimGrid Path", description = "Simgrid installation path",
             values = { @Value(name = "path", effect = "change default path") }),
         @Parameter(name = "SimGrid AG Path", description = "Installation path for adrien gougeon's project",
             values = { @Value(name = "path", effect = "change default path") }) })
+
 public class InternodeExporterTask extends AbstractTaskImplementation {
-  public static final String STD_NAME      = "std_trend.csv";
-  public static final String LATENCY_NAME  = "latency_trend.csv";
-  public static final String WORKLOAD_NAME = "workload.csv";
-  public static final String FOLDER        = "/Simulation/";
+  private static final String STD_NAME      = "std_trend.csv";
+  private static final String LATENCY_NAME  = "latency_trend.csv";
+  private static final String WORKLOAD_NAME = "workload.csv";
+  private static final String FOLDER        = "/Simulation/";
 
   Double              latency     = 0.0;
   Map<String, Double> loadPerNode = new HashMap<>();
@@ -151,7 +151,7 @@ public class InternodeExporterTask extends AbstractTaskImplementation {
   private void fillWorkload(Map<String, Double> deviationPerNode, Map<String, Double> previousDeviationPerNode,
       String path) {
     // Initialize a string concatenation for building the content
-    final StringConcatenation content = new StringConcatenation();
+    final StringBuilder content = new StringBuilder();
 
     // Process each entry in the deviationPerNode map
     for (final Entry<String, Double> entry : deviationPerNode.entrySet()) {
@@ -267,7 +267,7 @@ public class InternodeExporterTask extends AbstractTaskImplementation {
     final IWorkspaceRoot root = ResourcesPlugin.getWorkspace().getRoot();
     // Get the project from the workspace
     final IProject project = root.getProject(workflow.getProjectName());
-    final String projectFullPath = project.getLocationURI().getPath() + "/";
+    final String projectFullPath = project.getLocationURI().getPath() + File.separator;
 
     // Check if SimGrid is installed
     final File simgridBuildFolder = new File(projectFullPath + "SimGrid/simgrid");

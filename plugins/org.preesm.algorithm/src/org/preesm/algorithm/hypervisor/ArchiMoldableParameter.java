@@ -1,4 +1,4 @@
-package org.ietr.workflow.hypervisor;
+package org.preesm.algorithm.hypervisor;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -10,26 +10,28 @@ import org.preesm.commons.files.PreesmIOHelper;
 import org.preesm.commons.logger.PreesmLogger;
 
 public class ArchiMoldableParameter {
-  String                     projectPath;
-  Boolean                    multinet;
-  long                       initMemory;
+
+  String  projectPath;
+  Boolean multinet;
+  long    initMemory;
+
   public static final String MP_NAME = "SimSDP_moldable.csv";
 
-  int nodeMin  = 1;
-  int nodeMax  = 0;
-  int nodeStep = 1;
+  private int nodeMin  = 1;
+  private int nodeMax  = 0;
+  private int nodeStep = 1;
 
-  int coreMin  = 1;
-  int coreMax  = 1;
-  int coreStep = 1;
+  private int coreMin  = 1;
+  private int coreMax  = 1;
+  private int coreStep = 1;
 
-  int coreFreqMin  = 1;
-  int coreFreqMax  = 1;
-  int coreFreqStep = 1;
+  private int coreFreqMin  = 1;
+  private int coreFreqMax  = 1;
+  private int coreFreqStep = 1;
 
-  long nodeMemMin  = 0;
-  long nodeMemMax  = 0;
-  long nodeMemStep = 1;
+  private long nodeMemMin  = 0;
+  private long nodeMemMax  = 0;
+  private long nodeMemStep = 1;
 
   public ArchiMoldableParameter(String projectPath, Boolean multinet, long initMemory) {
     this.projectPath = projectPath;
@@ -74,13 +76,11 @@ public class ArchiMoldableParameter {
       }
 
       nodeMin = processNodeMin(nodeMin);
-      // final int result = (int) Math.ceil((double) initMemory / nodeMemMin);
-      // if (nodeMin < result) {
-      // nodeMin = result;
-      // }
+
       if (nodeMax < nodeMin) {
         nodeMax = nodeMin;
       }
+
     } else {
       nodeMin = singleNetInitNode(projectPath);
       nodeMax = nodeMin;

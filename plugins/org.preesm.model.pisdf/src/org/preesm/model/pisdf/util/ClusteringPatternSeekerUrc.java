@@ -53,12 +53,7 @@ import org.preesm.model.pisdf.PiGraph;
  * @author dgageot
  *
  */
-public class URCSeeker extends PiMMSwitch<Boolean> {
-
-  /**
-   * Input graph.
-   */
-  final PiGraph graph;
+public class ClusteringPatternSeekerUrc extends ClusteringPatternSeeker {
 
   /**
    * List of identified URCs.
@@ -71,8 +66,8 @@ public class URCSeeker extends PiMMSwitch<Boolean> {
    * @param inputGraph
    *          Input graph to search in.
    */
-  public URCSeeker(final PiGraph inputGraph) {
-    this.graph = inputGraph;
+  public ClusteringPatternSeekerUrc(final PiGraph inputGraph) {
+    super(inputGraph);
     this.identifiedURCs = new LinkedList<>();
   }
 

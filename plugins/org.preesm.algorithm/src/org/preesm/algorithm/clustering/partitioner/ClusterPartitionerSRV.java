@@ -43,8 +43,8 @@ import org.preesm.model.pisdf.AbstractVertex;
 import org.preesm.model.pisdf.DataInputInterface;
 import org.preesm.model.pisdf.DataOutputInterface;
 import org.preesm.model.pisdf.PiGraph;
+import org.preesm.model.pisdf.util.ClusteringPatternSeekerSrv;
 import org.preesm.model.pisdf.util.PiSDFSubgraphBuilder;
-import org.preesm.model.pisdf.util.SRVSeeker;
 import org.preesm.model.scenario.Scenario;
 import org.preesm.model.slam.ComponentInstance;
 
@@ -60,8 +60,8 @@ public class ClusterPartitionerSRV extends ClusterPartitioner {
 
   private final Map<AbstractVertex, Long> brv;
 
-  private final int clusterId;
-  private final int scapeMode;
+  private final int       clusterId;
+  private final ScapeMode scapeMode;
 
   /**
    * Builds a ClusterPartitioner object.
@@ -77,7 +77,7 @@ public class ClusterPartitionerSRV extends ClusterPartitioner {
    *          List of non clusterable actors
    */
   public ClusterPartitionerSRV(final Scenario scenario, final int numberOfPEs, Map<AbstractVertex, Long> brv,
-      int clusterId, int scapeMode) {
+      int clusterId, ScapeMode scapeMode) {
     super(scenario.getAlgorithm(), scenario, numberOfPEs);
     this.brv = brv;
     this.clusterId = clusterId;
@@ -91,7 +91,7 @@ public class ClusterPartitionerSRV extends ClusterPartitioner {
   public PiGraph cluster() {
 
     // Retrieve SRV first candidate in input graph and verify that actors share component constraints.
-    final List<AbstractActor> graphSRVs = new SRVSeeker(this.graph, this.numberOfPEs, this.brv).seek();
+    final List<AbstractActor> graphSRVs = new ClusteringPatternSeekerSrv(this.graph, this.numberOfPEs, this.brv).seek();
 
     // Cluster constrained SRV chains.
     if (!graphSRVs.isEmpty()) {

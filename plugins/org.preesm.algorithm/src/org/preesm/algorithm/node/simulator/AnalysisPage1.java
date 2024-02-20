@@ -24,13 +24,12 @@ import org.preesm.commons.files.PreesmIOHelper;
  * @author orenaud
  */
 public class AnalysisPage1 {
-  public static final String WORKLOAD_NAME = "std_trend.csv";
-  public static final String LATENCY_NAME  = "latency_trend.csv";
-  static int                 iterationNum  = 0;
-  static int                 iterationOptim;
-  static Double              latencyOptim  = 0d;
-  static Double              workloadOptim = 0d;
-  static String              path;
+  private static final String WORKLOAD_NAME = "std_trend.csv";
+  private static final String LATENCY_NAME  = "latency_trend.csv";
+  private int                 iterationOptim;
+  private Double              latencyOptim  = 0d;
+  private Double              workloadOptim = 0d;
+  private final String        path;
 
   /**
    * Constructs an AnalysisPage1 object with the given parameters.
@@ -41,8 +40,8 @@ public class AnalysisPage1 {
    *          The iteration for optimization.
    */
   public AnalysisPage1(String path, int iterationOptim) {
-    AnalysisPage1.path = path;
-    AnalysisPage1.iterationOptim = iterationOptim;
+    this.path = path;
+    this.iterationOptim = iterationOptim;
   }
 
   /**
@@ -77,7 +76,7 @@ public class AnalysisPage1 {
    *
    * @return The optimal iteration.
    */
-  public static int getIterationOptim() {
+  public int getIterationOptim() {
     return iterationOptim;
   }
 
@@ -87,22 +86,30 @@ public class AnalysisPage1 {
    * @return The description text in HTML format.
    */
   private String description() {
-    return "<html>This chart gives an idea of the impact of the efficiency of the application"
-        + " graph distribution on your set of nodes via the SimSDP method.<br>" + " The method has iterated over <b>"
-        + iterationNum + "</b> iterations, "
-        + "and here is the performance evaluation at inter-node level for each iteration.<br>"
 
-        + "The upper graph show the the internode partitioning based on the computation "
-        + "of the workload standard deviation.<br>"
-        + "Given that the workload is represented as a percentage, in a well-balanced workload, "
-        + "the deviation tends to approach zero.<br>"
-        + "Such as: &sigma; = &radic;( (1/N) &sum; (x<sub>i</sub> - &mu;)<sup>2</sup> ) <br>"
-        + "Where N is the number of nodes, x<sub>i</sub> is the % of load per node,"
-        + " &mu is the average of % of load.<br>"
-        + "The lower graph shows the simulated latency of your application execution<br><br>"
-        + "The optimal configuration is achieved with the following attributes: <br>" + "- Iteration: " + iterationOptim
-        + " <br>" + " - Latency: " + latencyOptim + " cycles <br>" + "- Inter-node Workload Deviation: "
-        + String.format("%.2f", workloadOptim) + " %" + "</html>";
+    return """
+        <html>
+          <p align="justify">
+            This chart gives an idea of the impact of the efficiency of the
+            application graph distribution on your set of nodes via the SimSDP method.<br>
+            The method has iterated over <b> %d </b> iterations, and here is the
+            performance evaluation at inter-node level for each iteration.<br>
+
+            The upper graph show the the internode partitioning based on the computation of the
+            workload standard deviation.<br>
+            Given that the workload is represented as a percentage, in a well-balanced workload,
+            the deviation tends to approach zero.<br>
+            Such as: &sigma; = &radic;( (1/N) &sum; (x<sub>i</sub> - &mu;)<sup>2</sup> ) <br>
+            Where N is the number of nodes, x<sub>i</sub> is the %% of load per node, &mu is
+            the average of %% of load.<br>
+            The lower graph shows the simulated latency of your application execution<br><br>
+            The optimal configuration is achieved with the following attributes: <br>
+            - Iteration: %d <br>
+            - Latency: %.0f cycles <br>
+            - Inter-node Workload Deviation: %.2f %%
+          </p>
+        </html>
+            """.formatted(iterationOptim, iterationOptim, latencyOptim, workloadOptim);
   }
 
   /**
@@ -143,7 +150,7 @@ public class AnalysisPage1 {
    *
    * @return The XYSeries containing workload deviation data.
    */
-  private static XYSeries fillWorkloadDeviationDataSet() {
+  private XYSeries fillWorkloadDeviationDataSet() {
     final String[] arrayWorkload = PreesmIOHelper.getInstance().read(path, WORKLOAD_NAME).split("\n");
     workloadOptim = 0d;
     final XYSeries serie = new XYSeries("Workload Deviation");
@@ -159,18 +166,16 @@ public class AnalysisPage1 {
    *
    * @return The XYSeries containing latency data.
    */
-  private static XYSeries fillLatencyDataSet() {
+  private XYSeries fillLatencyDataSet() {
     final String[] arrayLatency = PreesmIOHelper.getInstance().read(path, LATENCY_NAME).split("\n");
     final XYSeries serie = new XYSeries("Latency");
     Double minLatency = Double.MAX_VALUE;
-    iterationNum = arrayLatency.length;
     for (int i = 0; i < arrayLatency.length; i++) {
       serie.add(i, Double.valueOf(arrayLatency[i]));
       if (Double.valueOf(arrayLatency[i]) < minLatency) {
         minLatency = Double.valueOf(arrayLatency[i]);
         iterationOptim = i;
         latencyOptim = minLatency;
-
       }
     }
     return serie;

@@ -49,7 +49,6 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Path;
-import org.eclipse.xtend2.lib.StringConcatenation;
 import org.preesm.commons.exceptions.PreesmRuntimeException;
 
 /**
@@ -149,7 +148,7 @@ public class PreesmIOHelper {
    * @return The IFile object representing the appended file.
    */
   public IFile append(final String filePath, final String fileName, final String data) {
-    final StringConcatenation content = new StringConcatenation();
+    final StringBuilder content = new StringBuilder();
 
     // if the file exists, we write to it otherwise we create the template
     final IFile iFile = ResourcesPlugin.getWorkspace().getRoot().getFile(new Path(filePath + fileName));
