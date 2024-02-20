@@ -1,6 +1,5 @@
-package org.ietr.workflow.hypervisor;
+package org.preesm.algorithm.hypervisor;
 
-import org.eclipse.xtend2.lib.StringConcatenation;
 import org.preesm.commons.files.PreesmIOHelper;
 
 /**
@@ -9,7 +8,7 @@ import org.preesm.commons.files.PreesmIOHelper;
  *
  * @author orenaud
  */
-public class SimSDPnode {
+public class SimSDPNode {
   int    nodeNum;     // Number of nodes
   int    coreNum;     // Number of cores per node
   int    coreFreq;    // Core frequency
@@ -27,7 +26,7 @@ public class SimSDPnode {
    * @param projectPath
    *          Project path.
    */
-  public SimSDPnode(int nodeNum, int coreNum, int coreFreq, String projectPath) {
+  public SimSDPNode(int nodeNum, int coreNum, int coreFreq, String projectPath) {
     this.nodeNum = nodeNum;
     this.coreNum = coreNum;
     this.coreFreq = coreFreq;
@@ -40,7 +39,6 @@ public class SimSDPnode {
   public void execute() {
     final String content = processCSV();
     PreesmIOHelper.getInstance().print(projectPath + "/Archi/", "SimSDP_node.csv", content);
-
   }
 
   /**
@@ -49,17 +47,15 @@ public class SimSDPnode {
    * @return CSV content as a string.
    */
   private String processCSV() {
-    final StringConcatenation content = new StringConcatenation();
+    final StringBuilder content = new StringBuilder();
     content.append("Node name;Core ID;Core frequency;Intranode rate;Internode rate\n");
-    int cc = 0;
-    int ccc = 0;
+
     for (int n = 0; n < nodeNum; n++) {
       for (int c = 0; c < coreNum; c++) {
         content.append("Node" + n + ";" + (c + n * coreNum) + ";" + coreFreq + ";" + "500.0;10.0 \n");
-        cc = c;
       }
-      ccc = cc;
     }
+
     return content.toString();
   }
 

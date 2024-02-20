@@ -1,11 +1,11 @@
-package org.ietr.workflow.hypervisor;
+package org.preesm.algorithm.hypervisor;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
-import org.eclipse.xtend2.lib.StringConcatenation;
+import org.preesm.algorithm.node.simulator.NetworkInfo;
 import org.preesm.commons.files.PreesmIOHelper;
 
-public class SimSDPnetwork {
+public class SimSDPNetwork {
   int    configID;
   int    nodeNum;
   int    coreNum;
@@ -13,17 +13,18 @@ public class SimSDPnetwork {
   int    algo = 1;
   String projectPath;
 
-  public static final String TOPO_NAME1     = "Cluster with crossbar";
-  public static final String TOPO_NAME2     = "Cluster with shared backbone";
-  public static final String TOPO_NAME3     = "Torus cluster";
-  public static final String TOPO_NAME4     = "Fat-tree cluster";
-  public static final String TOPO_NAME5     = "Dragonfly cluster";
+  private static final String CLUSTER_CROSSBAR = NetworkInfo.CLUSTER_CROSSBAR;
+  private static final String CLUSTER_SHARED   = NetworkInfo.CLUSTER_SHARED;
+  private static final String TORUS            = NetworkInfo.TORUS;
+  private static final String FAT_TREE         = NetworkInfo.FAT_TREE;
+  private static final String DRAGONFLY        = NetworkInfo.DRAGONFLY;
+
   public static final String TOPO_PARAM_KEY = "topoparam";
   static final Integer       ROUTER_PORT    = 4;
 
   Integer findNode = 2;
 
-  public SimSDPnetwork(int configID, int nodeNum, int coreNum, int coreFreq, String projectPath) {
+  public SimSDPNetwork(int configID, int nodeNum, int coreNum, int coreFreq, String projectPath) {
     this.configID = configID;
     this.nodeNum = nodeNum;
     this.coreNum = coreNum;
@@ -35,7 +36,7 @@ public class SimSDPnetwork {
     final Map<String, String> network = new LinkedHashMap<>();
     final Boolean existingNetwork = feedNetwork(network);
 
-    final StringConcatenation content = processXml(network);
+    final StringBuilder content = processXml(network);
     PreesmIOHelper.getInstance().print(projectPath + "/Archi/", "SimSDP_network.xml", content);
     return existingNetwork;
   }
@@ -49,25 +50,25 @@ public class SimSDPnetwork {
     network.put("loopback", "false");
     switch (configID) {
       case 0:
-        network.put("topo", TOPO_NAME1);
+        network.put("topo", CLUSTER_CROSSBAR);
         return check();
       case 1:
-        network.put("topo", TOPO_NAME2);
+        network.put("topo", CLUSTER_SHARED);
         network.put(TOPO_PARAM_KEY, "2.25GBps");
         network.put("bbparam", "500us");
         return check();
       case 2:
-        network.put("topo", TOPO_NAME3);
+        network.put("topo", TORUS);
         network.put(TOPO_PARAM_KEY, torusConfiguration());
         network.put("node", String.valueOf(findNode));
         break;
       case 3:
-        network.put("topo", TOPO_NAME4);
+        network.put("topo", FAT_TREE);
         network.put(TOPO_PARAM_KEY, fatTreeConfiguration());
         network.put("node", String.valueOf(findNode));
         break;
       case 4:
-        network.put("topo", TOPO_NAME5);
+        network.put("topo", DRAGONFLY);
         network.put(TOPO_PARAM_KEY, dragonflyConfiguration());
         network.put("node", String.valueOf(findNode));
         break;
@@ -221,8 +222,8 @@ public class SimSDPnetwork {
     return null;
   }
 
-  private StringConcatenation processXml(Map<String, String> network) {
-    final StringConcatenation content = new StringConcatenation();
+  private StringBuilder processXml(Map<String, String> network) {
+    final StringBuilder content = new StringBuilder();
     content.append("<!-- " + network.get("topo") + ":" + nodeNum + ":" + coreNum + ":" + coreFreq + " -->\n");
     content.append("<?xml version='1.0'?>\n");
     content.append("<!DOCTYPE platform SYSTEM \"https://simgrid.org/simgrid.dtd\">\n");
@@ -241,18 +242,18 @@ public class SimSDPnetwork {
 
     final String selectedOption = network.get("topo");
     switch (selectedOption) {
-      case TOPO_NAME2:
+      case CLUSTER_SHARED:
         content.append("bb_bw=\"" + network.get(TOPO_PARAM_KEY) + "\" bb_lat=\"" + network.get("bbparam") + "\"");
         break;
-      case TOPO_NAME3:
+      case TORUS:
         content.append("topology=\"TORUS\" ");
         content.append("topo_parameters=" + network.get(TOPO_PARAM_KEY));
         break;
-      case TOPO_NAME4:
+      case FAT_TREE:
         content.append("topology=\"FAT_TREE\" ");
         content.append("topo_parameters=\"" + network.get(TOPO_PARAM_KEY) + "\"");
         break;
-      case TOPO_NAME5:
+      case DRAGONFLY:
         content.append("topology=\"DRAGONFLY\" ");
         content.append("topo_parameters=" + network.get(TOPO_PARAM_KEY));
         break;

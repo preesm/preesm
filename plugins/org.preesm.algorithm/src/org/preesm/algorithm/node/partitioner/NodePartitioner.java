@@ -72,10 +72,15 @@ public class NodePartitioner {
   }
 
   public PiGraph execute() {
-    final String[] uriString = graph.getUrl().split("/");
-    scenariiPath = "/" + uriString[1] + "/Scenarios/generated/";
-    archiPath = "/" + uriString[1] + "/Archi/";
-    simulationPath = "/" + uriString[1] + "/Simulation/";
+
+    final String scenarioFilePath = scenario.getScenarioURL();
+    scenariiPath = scenarioFilePath.substring(0, scenarioFilePath.lastIndexOf("/") + 1) + "generated/";
+
+    final String archiFilePath = scenario.getDesign().getUrl();
+    archiPath = archiFilePath.substring(0, archiFilePath.lastIndexOf("/") + 1);
+
+    simulationPath = scenarioFilePath.substring(0, scenarioFilePath.lastIndexOf("/Scenarios/") + 1) + "Simulation/";
+
     if (!scenario.getDesign().getProcessingElements().stream().allMatch(x -> x.getVlnv().getName().contains("_f"))) {
       PreesmLogger.getLogger().log(Level.SEVERE,
           "In order to handle heterogeneous core frequencies add _f[i] in the slam processing element definition");
@@ -90,8 +95,8 @@ public class NodePartitioner {
     if (!pipelineCycleInfo.getPipelineDelays().isEmpty()) {
       PreesmLogger.getLogger().log(Level.SEVERE,
           "SimSDP cannot compile if there are initial optimizations, please remove your pipelines");
-
     }
+
     pipelineCycleInfo.removeCycle();
 
     // 1. compute the number of equivalent core
@@ -154,23 +159,19 @@ public class NodePartitioner {
       final String[] column = line[i].split(";");
       final int lastIndex = hierarchicalArchitecture.size() - 1;
 
+      final CoreMapping newCore = MappingFactory.eINSTANCE.createCoreMapping();
+      newCore.setID(Integer.valueOf(column[1]));
+      newCore.setCoreFrequency(Double.valueOf(column[2]));
+      newCore.setCoreCommunicationRate(Double.valueOf(column[3]));
+      newCore.setID(coreID);
+
       if ((lastIndex == -1) || !column[0].equals(hierarchicalArchitecture.get(lastIndex).getNodeName())) {
         final NodeMapping newNode = MappingFactory.eINSTANCE.createNodeMapping();
         newNode.setNodeName(column[0]);
         newNode.setNodeCommunicationRate(Double.valueOf(column[4]));
-        final CoreMapping newCore = MappingFactory.eINSTANCE.createCoreMapping();
-        newCore.setID(Integer.valueOf(column[1]));
-        newCore.setCoreFrequency(Double.valueOf(column[2]));
-        newCore.setCoreCommunicationRate(Double.valueOf(column[3]));
-        newCore.setID(coreID);
         newNode.getCores().add(newCore);
         hierarchicalArchitecture.add(newNode);
       } else {
-        final CoreMapping newCore = MappingFactory.eINSTANCE.createCoreMapping();
-        newCore.setID(Integer.valueOf(column[1]));
-        newCore.setCoreFrequency(Double.valueOf(column[2]));
-        newCore.setCoreCommunicationRate(Double.valueOf(column[3]));
-        newCore.setID(coreID);
         hierarchicalArchitecture.get(lastIndex).getCores().add(newCore);
       }
       coreID++;
@@ -227,7 +228,6 @@ public class NodePartitioner {
 
         load.put(Integer.valueOf(columns[0].replace("node", "")), Double.valueOf(columns[1]));
       }
-
     }
 
   }

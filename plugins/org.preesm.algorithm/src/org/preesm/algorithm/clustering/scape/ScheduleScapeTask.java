@@ -26,7 +26,8 @@ import org.preesm.workflow.implement.AbstractTaskImplementation;
  */
 @PreesmTask(id = "scape.scedule.task.identifier", name = "SCAPE schedule Task",
     inputs = { @Port(name = "scenario", type = Scenario.class) },
-    outputs = { @Port(name = "schedule", type = List.class) }, parameters = {})
+    outputs = { @Port(name = "schedule", type = List.class) })
+
 public class ScheduleScapeTask extends AbstractTaskImplementation {
 
   @Override

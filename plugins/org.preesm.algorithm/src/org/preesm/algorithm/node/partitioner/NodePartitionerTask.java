@@ -23,9 +23,9 @@ import org.preesm.workflow.implement.AbstractTaskImplementation;
 
 @PreesmTask(id = "node.partitioner.task.identifier", name = "Node Partitioner",
     inputs = { @Port(name = "scenario", type = Scenario.class) },
-    parameters = {
-        @Parameter(name = "Archi path", description = "Browse the CSV file containing hierarchical architecture info",
-            values = { @Value(name = "String", effect = "Read file") }),
+    parameters = { @Parameter(name = NodePartitionerTask.ARCHI_PATH_PARAM,
+        description = "Browse the CSV file containing hierarchical architecture info",
+        values = { @Value(name = "String", effect = "Read file") }),
 
     })
 public class NodePartitionerTask extends AbstractTaskImplementation {

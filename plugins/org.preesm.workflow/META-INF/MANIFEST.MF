@@ -19,4 +19,3 @@ Export-Package: org.preesm.workflow,
 Bundle-Activator: org.preesm.workflow.WorkflowPlugin
 Bundle-ActivationPolicy: lazy
 Bundle-Vendor: IETR / INSA Rennes - VAADER
-Import-Package: org.eclipse.xtend2.lib

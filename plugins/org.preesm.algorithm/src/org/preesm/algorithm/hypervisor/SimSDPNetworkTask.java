@@ -1,5 +1,6 @@
-package org.ietr.workflow.hypervisor;
+package org.preesm.algorithm.hypervisor;
 
+import java.io.File;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -19,21 +20,17 @@ import org.preesm.workflow.implement.AbstractTaskImplementation;
 @PreesmTask(id = "SimSDPnetworkTask.identifier", name = "SimSDP network",
 
     parameters = {
-
         @Parameter(name = "config ID", description = "ID =[0;4]",
             values = { @Value(name = "integer", effect = "...") }),
-
         @Parameter(name = "number of nodes", description = "number of nodes",
             values = { @Value(name = "integer", effect = "...") }),
-
         @Parameter(name = "number of cores", description = "number of cores per node",
             values = { @Value(name = "integer", effect = "...") }),
-
         @Parameter(name = "core frequency", description = "core frequency",
-            values = { @Value(name = "integer", effect = "...") })
+            values = { @Value(name = "integer", effect = "...") }) })
 
-    })
-public class SimSDPnetworkTask extends AbstractTaskImplementation {
+public class SimSDPNetworkTask extends AbstractTaskImplementation {
+
   public static final String CONFIG_ID_DEFAULT = "1";
   public static final String CONFIG_ID_PARAM   = "config ID";
   public static final String NODE_NB_DEFAULT   = "2";
@@ -46,12 +43,12 @@ public class SimSDPnetworkTask extends AbstractTaskImplementation {
   @Override
   public Map<String, Object> execute(Map<String, Object> inputs, Map<String, String> parameters,
       IProgressMonitor monitor, String nodeName, Workflow workflow) throws InterruptedException {
-    final String project = "/" + workflow.getProjectName();
+    final String project = File.separator + workflow.getProjectName();
     final int config = Integer.parseInt(parameters.get(CONFIG_ID_PARAM));
     final int node = Integer.parseInt(parameters.get(NODE_NB_PARAM));
     final int core = Integer.parseInt(parameters.get(CORE_NB_PARAM));
     final int cFreq = Integer.parseInt(parameters.get(CORE_FC_PARAM));
-    final SimSDPnetwork simSDPnetwork = new SimSDPnetwork(config, core, cFreq, node, project);
+    final SimSDPNetwork simSDPnetwork = new SimSDPNetwork(config, core, cFreq, node, project);
     simSDPnetwork.execute();
     return new LinkedHashMap<>();
   }

@@ -85,7 +85,7 @@ import org.preesm.workflow.implement.AbstractTaskImplementation;
         + "*  **PREESM_LOOP_SIZE** : when set to an integer value $$n > 0$$, the application will terminate after"
         + " $$n$$ executions of the graph.\n"
         + "*  **PREESM_NO_AFFINITY** : if defined, the part of the code that sets the affinity to specific cores "
-        + "will be skipped;\n" + "\n"
+        + "will be skipped;\n\n"
         + "When the loop size macro is omitted, the execution can be stopped by setting the global variable "
         + "**preesmStopThreads** to 1. This variable is defined in the **main.c** generated file, and should be "
         + "accessed using extern keyword.",
@@ -113,6 +113,7 @@ import org.preesm.workflow.implement.AbstractTaskImplementation;
             values = { @Value(name = "true/false",
                 effect = "Print C code with Apollo function calls. " + "Currently compatibe with x86") }),
         @Parameter(name = "Multinode", description = "oué", values = { @Value(name = "true/false", effect = "oué") }) })
+
 public class CodegenSimSDPTask extends AbstractTaskImplementation {
 
   /** The Constant PARAM_PRINTER. */

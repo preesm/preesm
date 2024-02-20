@@ -50,15 +50,10 @@ import org.preesm.model.pisdf.PiGraph;
  * @author orenaud
  *
  */
-public class SRVSeeker extends PiMMSwitch<Boolean> {
+public class ClusteringPatternSeekerSrv extends ClusteringPatternSeeker {
 
-  /**
-   * Input graph.
-   */
-  final PiGraph graph;
-
-  final int                       nPEs;
-  final Map<AbstractVertex, Long> brv;
+  private final long                      nPEs;
+  private final Map<AbstractVertex, Long> brv;
 
   /**
    * Builds a SRVSeeker based on a input graph.
@@ -70,9 +65,8 @@ public class SRVSeeker extends PiMMSwitch<Boolean> {
    * @param brv
    *          repetition vector
    */
-  public SRVSeeker(final PiGraph inputGraph, int numberOfPEs, Map<AbstractVertex, Long> brv) {
-    this.graph = inputGraph;
-
+  public ClusteringPatternSeekerSrv(final PiGraph inputGraph, long numberOfPEs, Map<AbstractVertex, Long> brv) {
+    super(inputGraph);
     this.nPEs = numberOfPEs;
     this.brv = brv;
   }
@@ -87,9 +81,9 @@ public class SRVSeeker extends PiMMSwitch<Boolean> {
 
     for (final AbstractActor srvCandidate : graph.getExecutableActors()) {
       if (brv.get(srvCandidate) > nPEs
-          && srvCandidate.getDirectSuccessors().stream().filter(x -> x instanceof Actor)
+          && srvCandidate.getDirectSuccessors().stream().filter(Actor.class::isInstance)
               .noneMatch(x -> brv.get(x).equals(brv.get(srvCandidate)))
-          && srvCandidate.getDirectPredecessors().stream().filter(x -> x instanceof Actor)
+          && srvCandidate.getDirectPredecessors().stream().filter(Actor.class::isInstance)
               .noneMatch(x -> brv.get(x).equals(brv.get(srvCandidate)))) {
         actorSRV.add(srvCandidate);
         return actorSRV;

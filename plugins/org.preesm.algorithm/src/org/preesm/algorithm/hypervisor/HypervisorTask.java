@@ -1,4 +1,4 @@
-package org.ietr.workflow.hypervisor;
+package org.preesm.algorithm.hypervisor;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -6,7 +6,6 @@ import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.Path;
-import org.eclipse.xtend2.lib.StringConcatenation;
 import org.preesm.commons.doc.annotations.Parameter;
 import org.preesm.commons.doc.annotations.PreesmTask;
 import org.preesm.commons.doc.annotations.Value;
@@ -28,19 +27,13 @@ import org.preesm.workflow.implement.AbstractTaskImplementation;
  *
  */
 
-@PreesmTask(id = "hypervisor.task.identifier", name = "SimSDP Hypervisor",
+@PreesmTask(id = "hypervisor.task.identifier", name = "SimSDP Hypervisor", parameters = {
+    @Parameter(name = "Iteration", description = "Iteration", values = { @Value(name = "integer", effect = "...") }),
+    @Parameter(name = "Scenario path", description = "path of the scenario",
+        values = { @Value(name = "String", effect = "...") }),
+    @Parameter(name = "Multinet", description = "activate multinet node",
+        values = { @Value(name = "Boolean", effect = "...") }) })
 
-    parameters = {
-
-        @Parameter(name = "Iteration", description = "Iteration",
-            values = { @Value(name = "integer", effect = "...") }),
-
-        @Parameter(name = "Scenario path", description = "path of the scenario",
-            values = { @Value(name = "String", effect = "...") }),
-        @Parameter(name = "Multinet", description = "activate multinet node",
-            values = { @Value(name = "Boolean", effect = "...") })
-
-    })
 public class HypervisorTask extends AbstractTaskImplementation {
   // global task parameter
   public static final String ITERATION_DEFAULT = "1";
@@ -52,18 +45,20 @@ public class HypervisorTask extends AbstractTaskImplementation {
   public static final String SCENARIO_PATH_PARAM   = "archi path";
 
   // global file export data
-  Long                                           initTime         = 0L;
-  Map<Integer, Map<Integer, Long>>               nodePartTime     = new LinkedHashMap<>();
-  Map<Integer, Map<Integer, Map<Integer, Long>>> threadPartTime   = new LinkedHashMap<>();
-  Map<Integer, Map<Integer, Long>>               simuTime         = new LinkedHashMap<>();
-  public static final String                     DSE_PART_NAME    = "dse_part_trend.csv";
-  Boolean                                        multinet         = false;
-  Boolean                                        parallelismFound = false;
-  String                                         scenarioName     = "";
-  Double                                         finalLatency     = Double.MAX_VALUE;
-  int                                            nodeMax          = Integer.MAX_VALUE;
-  int                                            coreMax          = Integer.MAX_VALUE;
-  int                                            configCount      = 0;
+  Long                                           initTime       = 0L;
+  Map<Integer, Map<Integer, Long>>               nodePartTime   = new LinkedHashMap<>();
+  Map<Integer, Map<Integer, Map<Integer, Long>>> threadPartTime = new LinkedHashMap<>();
+  Map<Integer, Map<Integer, Long>>               simuTime       = new LinkedHashMap<>();
+
+  public static final String DSE_PART_NAME = "dse_part_trend.csv";
+
+  Boolean multinet         = false;
+  Boolean parallelismFound = false;
+  String  scenarioName     = "";
+  Double  finalLatency     = Double.MAX_VALUE;
+  int     nodeMax          = Integer.MAX_VALUE;
+  int     coreMax          = Integer.MAX_VALUE;
+  int     configCount      = 0;
 
   @Override
   public Map<String, Object> execute(Map<String, Object> inputs, Map<String, String> parameters,
@@ -100,7 +95,7 @@ public class HypervisorTask extends AbstractTaskImplementation {
         for (int corefreqIndex = archiParams.getCoreFreqMin(); corefreqIndex <= archiParams.getCoreFreqMax();
             corefreqIndex += archiParams.getCoreFreqStep()) {
           if (Boolean.TRUE.equals(multinet)) {
-            final SimSDPnode simSDPnode = new SimSDPnode(nodeIndex, coreIndex, corefreqIndex, project);
+            final SimSDPNode simSDPnode = new SimSDPNode(nodeIndex, coreIndex, corefreqIndex, project);
             simSDPnode.execute();
           }
           iterativePartitioning(nodeIndex, coreIndex, corefreqIndex, iteration, project, monitor, workflowManager);
@@ -233,7 +228,7 @@ public class HypervisorTask extends AbstractTaskImplementation {
     for (int i = 0; i < config; i++) {
       Boolean isExistingNetwork = true;
       if (Boolean.TRUE.equals(multinet)) {
-        isExistingNetwork = new SimSDPnetwork(i, nNode, nCore, cFreq, project).execute();
+        isExistingNetwork = new SimSDPNetwork(i, nNode, nCore, cFreq, project).execute();
       }
 
       final String workflowPath = project + "/Workflows/NodeSimulator.workflow";
@@ -257,7 +252,7 @@ public class HypervisorTask extends AbstractTaskImplementation {
    *          the number of iteration
    */
   private void exportDSE(String path, int iteration, int nbNode) {
-    final StringConcatenation content = new StringConcatenation();
+    final StringBuilder content = new StringBuilder();
     content.append("Step;Duration(ms)\n");
     content.append("initialisation:0;" + initTime + "\n");
     for (int i = 1; i <= iteration; i++) {

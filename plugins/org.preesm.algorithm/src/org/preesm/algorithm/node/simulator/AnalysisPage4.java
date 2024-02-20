@@ -8,7 +8,6 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
-import java.util.stream.Collectors;
 import javax.swing.BorderFactory;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
@@ -31,16 +30,26 @@ import org.preesm.commons.files.PreesmIOHelper;
  * @author orenaud
  */
 public class AnalysisPage4 {
-  static String                                               path;
-  public static final String                                  NET_NAME                 = "multicriteria.csv";
-  List<NetworkInfo>                                           networkInfoList          = new ArrayList<>();
-  static List<NetworkInfo>                                    networkInfoNormalList    = new ArrayList<>();
+  private final String                                        path;
+  private static final String                                 NET_NAME                 = "multicriteria.csv";
+  private final List<NetworkInfo>                             networkInfoList          = new ArrayList<>();
+  private final List<NetworkInfo>                             networkInfoNormalList    = new ArrayList<>();
   Map<Integer, Map<Integer, Map<Integer, List<NetworkInfo>>>> nodeNetworkInfoNormalMap = new LinkedHashMap<>();
   int                                                         nodeKey                  = 0;
   int                                                         coreKey                  = 0;
   int                                                         coreFrequencyKey         = 0;
-  JFreeChart                                                  chart;
-  XYSeriesCollection                                          dataset;
+
+  private static final String DESCRIPTION = """
+      <html>
+      This chart gives a comprehensive comparison of the 5 main network topologies
+      if they exist) concerning a selected number of nodes, dynamically chosen from a ComboBox.<br>
+      The topologies are: Cluster with a Crossbar,  Cluster with a Shared Backbone, Torus Cluster,
+      Fat-Tree Cluster and Dragonfly Cluster.<br>
+      This visualisation captures the normalised performance metrics of
+      Throughput, Memory, Energy, and Cost for each network configuration.<br>
+      Normalised value = (x - minvalue) / (maxvalue - minvalue)
+      </html>
+      """;
 
   /**
    * Constructs an AnalysisPage4 object with the given parameters.
@@ -49,8 +58,7 @@ public class AnalysisPage4 {
    *          The file path for reading data.
    */
   public AnalysisPage4(String path) {
-    AnalysisPage4.path = path;
-
+    this.path = path;
   }
 
   /**
@@ -70,15 +78,13 @@ public class AnalysisPage4 {
     nodeNetworkInfoNormalMap.clear();
     fillNodeNetworkInfoNormalMap();
 
-    // final XYSeriesCollection
-    dataset = fillMultiCriteriaDataSet();
+    final XYSeriesCollection dataset = fillMultiCriteriaDataSet();
 
-    // final JFreeChart
-    chart = polarChart(dataset);
+    final JFreeChart chart = polarChart(dataset);
     panel.setBackground(Color.white);
     panel.setLayout(new BorderLayout());
 
-    final JLabel descriptionLabel = new JLabel(description());
+    final JLabel descriptionLabel = new JLabel(DESCRIPTION);
     descriptionLabel.setForeground(Color.darkGray);
     descriptionLabel.setHorizontalAlignment(SwingConstants.CENTER);
     descriptionLabel.setVerticalAlignment(SwingConstants.TOP);
@@ -122,7 +128,6 @@ public class AnalysisPage4 {
         nodeNetworkInfoNormalMap.get(network.getNode()).get(network.getCore()).get(network.getCoreFrequency())
             .add(network);
       }
-
     }
 
   }
@@ -231,7 +236,7 @@ public class AnalysisPage4 {
    *
    * @return The list of normalized network information.
    */
-  public static List<NetworkInfo> getNetworkInfoNormalList() {
+  public List<NetworkInfo> getNetworkInfoNormalList() {
     return networkInfoNormalList;
   }
 
@@ -279,7 +284,7 @@ public class AnalysisPage4 {
    * @return The list of extracted metrics.
    */
   private List<Double> extractMetrics(List<NetworkInfo> networkInfoList, Function<NetworkInfo, Double> extractor) {
-    return networkInfoList.stream().map(extractor).collect(Collectors.toList());
+    return networkInfoList.stream().map(extractor).toList();
   }
 
   /**
@@ -301,16 +306,7 @@ public class AnalysisPage4 {
    * @return The minimum value.
    */
   private Double findMin(List<Double> values) {
-    if (values.size() < 2) {
-      // Handle the case where there are fewer than two values
-      return values.stream().findFirst().orElse(0.0);
-    }
-    // Find the minimum between the first two values
-    final Double minBetweenFirstTwo = Math.min(values.get(0), values.get(1));
-
-    // Find the minimum between the found minimum and the rest of the values
-    return values.stream().skip(2) // Ignore the first two values
-        .reduce(minBetweenFirstTwo, Math::min);
+    return values.stream().min(Double::compareTo).orElse(0.0);
   }
 
   /**
@@ -366,7 +362,6 @@ public class AnalysisPage4 {
           case "cost":
             cost = Double.valueOf(column[1]);
             break;
-
           default:
             break;
         }
@@ -389,6 +384,7 @@ public class AnalysisPage4 {
    */
   private void updateDataset(XYSeriesCollection dataset) {
     dataset.removeAllSeries();
+
     for (final NetworkInfo net : nodeNetworkInfoNormalMap.get(nodeKey).get(coreKey).get(coreFrequencyKey)) {
       final XYSeries s1 = new XYSeries(
           net.getTypeID() + ":" + net.getNode() + ":" + net.getCore() + ":" + net.getCoreFrequency());
@@ -408,6 +404,7 @@ public class AnalysisPage4 {
    */
   private XYSeriesCollection fillMultiCriteriaDataSet() {
     final XYSeriesCollection dataset = new XYSeriesCollection();
+
     for (final NetworkInfo net : nodeNetworkInfoNormalMap.get(nodeKey).get(coreKey).get(coreFrequencyKey)) {
       final XYSeries s1 = new XYSeries(
           net.getTypeID() + ":" + net.getNode() + ":" + net.getCore() + ":" + net.getCoreFrequency());
@@ -454,21 +451,4 @@ public class AnalysisPage4 {
     return chart;
   }
 
-  /**
-   * Generates the description text for the analysis page.
-   *
-   * @return The description text in HTML format.
-   */
-  private String description() {
-    String description = "<html>";
-    description += "This chart gives a comprehensive comparison of the 5 main network topologies";
-    description += "(if they exist) concerning a selected number of nodes, dynamically chosen from a ComboBox.<br>";
-    description += "The topologies are: Cluster with a Crossbar,  Cluster with a Shared Backbone, Torus Cluster, ";
-    description += "Fat-Tree Cluster and Dragonfly Cluster.<br>";
-    description += "This visualization captures the normalized performance metrics of";
-    description += "Throughput, Memory, Energy, and Cost for each network configuration.<br>";
-    description += "Normalized value = (x - minvalue) / (maxvalue - minvalue)";
-    description += "</html>";
-    return description;
-  }
 }

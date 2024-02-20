@@ -1,5 +1,6 @@
 package org.preesm.algorithm.node.simulator;
 
+import java.io.File;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -27,17 +28,20 @@ import org.preesm.workflow.implement.AbstractTaskImplementation;
 @PreesmTask(id = "RadarExporterTask.identifier", name = "Multicriteria Stats exporter", category = "Gantt exporters",
 
     inputs = { @Port(name = "ABC", type = LatencyAbc.class) })
+
 public class RadarExporterTask extends AbstractTaskImplementation {
   // File names and paths
-  String                     simGcsv          = "simgrid.csv";
-  String                     simulationPath   = "";
-  String                     archiPath        = "";
-  String                     multicriteriacsv = "multicriteria.csv";
-  String                     archiXml         = "SimSDP_network.xml";
-  public static final String FINAL_LATENCY    = "finalLatency";
-  public static final String ENERGY           = "energy";
-  public static final String COST             = "cost";
-  public static final String MEMORY           = "memory";
+  String simGcsv          = "simgrid.csv";
+  String simulationPath   = "";
+  String archiPath        = "";
+  String multicriteriacsv = "multicriteria.csv";
+  String archiXml         = "SimSDP_network.xml";
+
+  public static final String TYPE          = "type";
+  public static final String FINAL_LATENCY = "finalLatency";
+  public static final String ENERGY        = "energy";
+  public static final String COST          = "cost";
+  public static final String MEMORY        = "memory";
 
   /**
    * Executes the radar exporter task.
@@ -59,8 +63,8 @@ public class RadarExporterTask extends AbstractTaskImplementation {
   @Override
   public Map<String, Object> execute(Map<String, Object> inputs, Map<String, String> parameters,
       IProgressMonitor monitor, String nodeName, Workflow workflow) throws InterruptedException {
-    simulationPath = "/" + workflow.getProjectName() + "/Simulation/";
-    archiPath = "/" + workflow.getProjectName() + "/Archi/";
+    simulationPath = File.separator + workflow.getProjectName() + "/Simulation/";
+    archiPath = File.separator + workflow.getProjectName() + "/Archi/";
     final LatencyAbc abc = (LatencyAbc) inputs.get("ABC");
     final Map<String, String> metrics = new HashMap<>();
     configType(metrics);
@@ -103,11 +107,14 @@ public class RadarExporterTask extends AbstractTaskImplementation {
    *          The map containing the metrics.
    */
   private void store(Map<String, String> metrics) {
-    final String data = "type;" + metrics.get("type") + "\n" + "finalLatency;" + metrics.get(FINAL_LATENCY) + "\n"
-        + "memory;" + metrics.get(MEMORY) + "\n" + "energy;" + metrics.get(ENERGY) + "\n" + "cost;" + metrics.get(COST)
-        + "\n";
+    final StringBuilder data = new StringBuilder();
+    data.append(TYPE + ";" + metrics.get(TYPE) + "\n");
+    data.append(FINAL_LATENCY + ";" + metrics.get(FINAL_LATENCY) + "\n");
+    data.append(MEMORY + ";" + metrics.get(MEMORY) + "\n");
+    data.append(ENERGY + ";" + metrics.get(ENERGY) + "\n");
+    data.append(COST + ";" + metrics.get(COST) + "\n");
 
-    PreesmIOHelper.getInstance().append(simulationPath, multicriteriacsv, data);
+    PreesmIOHelper.getInstance().append(simulationPath, multicriteriacsv, data.toString());
   }
 
   /**
@@ -120,7 +127,7 @@ public class RadarExporterTask extends AbstractTaskImplementation {
     final String simGridFile = PreesmIOHelper.getInstance().read(archiPath, archiXml);
     final String[] line = simGridFile.split("\n");
     final String type = line[0].replace("<!-- ", "").replace(" -->", "");
-    metrics.put("type", type);
+    metrics.put(TYPE, type);
   }
 
   /**

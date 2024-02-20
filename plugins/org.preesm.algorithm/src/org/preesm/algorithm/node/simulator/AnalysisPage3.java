@@ -30,12 +30,11 @@ import org.preesm.commons.files.PreesmIOHelper;
 public class AnalysisPage3 {
   public static final String DSE_PART_NAME = "dse_part_trend.csv";
 
-  static int                    iterationNum     = 0;
-  static int                    iterationOptim;
-  static String                 path;
-  static long                   finalDSE         = 0L;
-  static DefaultCategoryDataset iterationDataset = new DefaultCategoryDataset();
-  static DefaultCategoryDataset fullDataset      = new DefaultCategoryDataset();
+  private final int                    iterationOptim;
+  private final String                 path;
+  private long                         finalDSE         = 0L;
+  private final DefaultCategoryDataset iterationDataset = new DefaultCategoryDataset();
+  private final DefaultCategoryDataset fullDataset      = new DefaultCategoryDataset();
 
   /**
    * Constructs an AnalysisPage3 object with the given parameters.
@@ -46,8 +45,8 @@ public class AnalysisPage3 {
    *          The iteration for optimization.
    */
   public AnalysisPage3(String path, int iterationOptim) {
-    AnalysisPage3.path = path;
-    AnalysisPage3.iterationOptim = iterationOptim;
+    this.path = path;
+    this.iterationOptim = iterationOptim;
   }
 
   /**
@@ -87,7 +86,7 @@ public class AnalysisPage3 {
   private String description() {
     return "<html>This chart gives an idea of the impact of the efficiency of the application"
         + " graph distribution on your set of nodes via the SimSDP method.<br>" + " The method has iterated over <b>"
-        + iterationNum + "</b> iterations, " + "and here is the resource allocation time for each iteration.<br>"
+        + iterationOptim + "</b> iterations, " + "and here is the resource allocation time for each iteration.<br>"
 
         + "The graph shows the resource allocation process time over iterations.<br><br>"
         + "The optimal configuration is achieved with the following attributes: <br>" + "- Iteration: " + iterationOptim
@@ -139,7 +138,7 @@ public class AnalysisPage3 {
    * Fills the dataset with cumulative resource allocation time values.
    *
    */
-  private static void fillDSEpartDataSet() {
+  private void fillDSEpartDataSet() {
     finalDSE = 0L;
 
     final String[] line = PreesmIOHelper.getInstance().read(path, DSE_PART_NAME).split("\n");

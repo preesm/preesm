@@ -2,9 +2,7 @@ package org.preesm.model.pisdf.util;
 
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 import org.preesm.model.pisdf.AbstractActor;
-import org.preesm.model.pisdf.AbstractVertex;
 import org.preesm.model.pisdf.Delay;
 import org.preesm.model.pisdf.PersistenceLevel;
 import org.preesm.model.pisdf.PiGraph;
@@ -16,30 +14,17 @@ import org.preesm.model.pisdf.PiGraph;
  * @author orenaud
  *
  */
-public class LOOPSeeker extends PiMMSwitch<Boolean> {
+public class ClusteringPatternSeekerLoop extends ClusteringPatternSeeker {
 
   /**
-   * Input graph.
-   */
-  final PiGraph graph;
-
-  final int                       nPEs;
-  final Map<AbstractVertex, Long> brv;
-
-  /**
-   * Builds a SRVSeeker based on a input graph.
+   * Builds a LoopSeeker based on a input graph.
    *
    * @param inputGraph
    *          Input graph to search in.
-   * @param brv
-   *          repetition vector
-   * @param numberOfPEs
    *
    */
-  public LOOPSeeker(final PiGraph inputGraph, int numberOfPEs, Map<AbstractVertex, Long> brv) {
-    this.graph = inputGraph;
-    this.nPEs = numberOfPEs;
-    this.brv = brv;
+  public ClusteringPatternSeekerLoop(final PiGraph inputGraph) {
+    super(inputGraph);
   }
 
   public List<AbstractActor> singleLocalseek() {

@@ -36,38 +36,57 @@
 package org.ietr.preesm.test.it.appstest;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 import org.eclipse.core.runtime.CoreException;
 import org.ietr.preesm.test.it.api.WorkflowRunner;
 import org.junit.Assert;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
+import org.junit.runners.Parameterized.Parameters;
 
 /**
  * Testing SimSDP Node Partitioner workflow
  *
  * @author orenaud
  */
+
+@RunWith(Parameterized.class)
 public class SimSDPThreadPartitioningTest {
 
-  private final String   workflow    = "ThreadPartitioning.workflow";
-  private final String[] scenario    = { "sub0_Node0.scenario", "sub1_Node1.scenario", "sub2_Node2.scenario" };
-  private final String   projectName = "org.ietr.preesm.simsdp.threadpartitioning";
+  final String workflow;
+  final String scenario;
+  final String projectName;
 
-  /**
-   */
-  // public SimSDPTest(final String workflow, final String scenario, final String projectName) {
-  // this.scenario = scenario;
-  // this.workflow = workflow;
-  // this.projectName = projectName;
-  // }
+  public SimSDPThreadPartitioningTest(final String workflow, final String scenario, final String projectName) {
+    this.scenario = scenario;
+    this.workflow = workflow;
+    this.projectName = projectName;
+  }
+
+  @Parameters(name = "{2} - {0} - {1}")
+  public static Collection<Object[]> data() {
+
+    final List<Object[]> params = new ArrayList<>();
+
+    final String testProjectName = "org.ietr.preesm.simsdp.threadpartitioning";
+    final String[] testScenarios = { "sub0_Node0.scenario", "sub1_Node1.scenario", "sub2_Node2.scenario" };
+    final String testWorkflows = "ThreadPartitioning.workflow";
+    for (final String scenario : testScenarios) {
+      params.add(new Object[] { testWorkflows, scenario, testProjectName });
+    }
+
+    return params;
+  }
 
   @Test
-  public void testSimSDPThreadPartitioningTest() throws IOException, CoreException {
-    for (int i = 0; i < 3; i++) {
-      final String workflowFilePathStr = "/Workflows/" + workflow;
-      final String scenarioFilePathStr = "/Scenarios/generated/" + scenario[i];
-
-      final boolean success = WorkflowRunner.runWorkFlow(null, projectName, workflowFilePathStr, scenarioFilePathStr);
-      Assert.assertTrue("Workflow [" + workflow + "] with scenario [" + scenario[i] + "] caused failure", success);
-    }
+  public void test() throws IOException, CoreException {
+    final String workflowFilePathStr = "/Workflows/" + workflow;
+    final String scenarioFilePathStr = "/Scenarios/generated/" + scenario;
+    final boolean success = WorkflowRunner.runWorkFlow(null, projectName, workflowFilePathStr, scenarioFilePathStr);
+    Assert.assertTrue("Workflow [" + workflow + "] with scenario [" + scenario + "] caused failure", success);
   }
+
 }

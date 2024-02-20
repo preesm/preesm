@@ -12,5 +12,5 @@ Bundle-Vendor: IETR / INSA Rennes - VAADER
 Export-Package: org.preesm.ui.slam,
  org.preesm.ui.slam.filters,
  org.preesm.ui.slam.properties
-Import-Package: org.eclipse.xtend2.lib;version="2.27.0",
- org.preesm.ui.utils
+Import-Package: org.preesm.ui.utils,
+ org.preesm.algorithm.node.simulator
