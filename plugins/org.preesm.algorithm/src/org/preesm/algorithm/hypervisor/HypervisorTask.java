@@ -1,5 +1,6 @@
 package org.preesm.algorithm.hypervisor;
 
+import java.io.File;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import org.eclipse.core.resources.IFile;
@@ -50,6 +51,11 @@ public class HypervisorTask extends AbstractTaskImplementation {
   Map<Integer, Map<Integer, Map<Integer, Long>>> threadPartTime = new LinkedHashMap<>();
   Map<Integer, Map<Integer, Long>>               simuTime       = new LinkedHashMap<>();
 
+  private static final String SIMULATION_PATH         = File.separator + "Simulation" + File.separator;
+  private static final String SCENARIO_GENERATED_PATH = File.separator + "Scenarios" + File.separator + "generated"
+      + File.separator;
+  private static final String WORKFLOW_PATH           = File.separator + "Workflows" + File.separator;
+
   public static final String DSE_PART_NAME = "dse_part_trend.csv";
 
   Boolean multinet         = false;
@@ -73,13 +79,13 @@ public class HypervisorTask extends AbstractTaskImplementation {
     final WorkflowManager workflowManager = new WorkflowManager();
     // clean project
 
-    PreesmIOHelper.getInstance().deleteFolder(project + "/Simulation");
+    PreesmIOHelper.getInstance().deleteFolder(project + SIMULATION_PATH);
     long initMemory = 0L;
     if (Boolean.TRUE.equals(multinet)) {
       final long startTimeInit = System.currentTimeMillis();
       initialisationLauncher(workflowManager, monitor, project);
       initTime = System.currentTimeMillis() - startTimeInit;
-      final String content = PreesmIOHelper.getInstance().read(project + "/Simulation/", "initialisation.csv");
+      final String content = PreesmIOHelper.getInstance().read(project + SIMULATION_PATH, "initialisation.csv");
       final String[] line = content.split("\n");
       final String[] column = line[1].split(";");
       initMemory = Long.decode(column[1]);
@@ -101,9 +107,8 @@ public class HypervisorTask extends AbstractTaskImplementation {
           iterativePartitioning(nodeIndex, coreIndex, corefreqIndex, iteration, project, monitor, workflowManager);
 
         }
-        processParallelismMaxBoundary(project + "/Simulation/", nodeIndex, coreIndex);
+        processParallelismMaxBoundary(project + SIMULATION_PATH, nodeIndex, coreIndex);
       }
-
     }
 
     return new LinkedHashMap<>();
@@ -129,7 +134,7 @@ public class HypervisorTask extends AbstractTaskImplementation {
   }
 
   private void initialisationLauncher(WorkflowManager workflowManager, IProgressMonitor monitor, String project) {
-    final String workflowPath = project + "/Workflows/Initialisation.workflow";
+    final String workflowPath = project + WORKFLOW_PATH + "Initialisation.workflow";
     final String scenarioPath = project + scenarioName;
     workflowManager.execute(workflowPath, scenarioPath, monitor);
 
@@ -142,7 +147,7 @@ public class HypervisorTask extends AbstractTaskImplementation {
     for (int iter = 0; iter < iterativeBound; iter++) {
 
       // delete generated
-      PreesmIOHelper.getInstance().deleteFolder(project + "/Scenarios/generated");
+      PreesmIOHelper.getInstance().deleteFolder(project + SCENARIO_GENERATED_PATH);
       PreesmIOHelper.getInstance().deleteFolder(project + "/Algo/generated");
 
       // Launch node partitioning
@@ -172,12 +177,12 @@ public class HypervisorTask extends AbstractTaskImplementation {
       }
 
     }
-    exportDSE(project + "/Simulation/", iterativeBound, nNode);
+    exportDSE(project + SIMULATION_PATH, iterativeBound, nNode);
 
   }
 
   private void nodePartitioningLauncher(WorkflowManager workflowManager, IProgressMonitor monitor, String project) {
-    final String workflowPath = project + "/Workflows/NodePartitioning.workflow";
+    final String workflowPath = project + WORKFLOW_PATH + "NodePartitioning.workflow";
     final String scenarioPath = project + scenarioName;
     workflowManager.execute(workflowPath, scenarioPath, monitor);
 
@@ -188,8 +193,8 @@ public class HypervisorTask extends AbstractTaskImplementation {
     final Map<Integer, Long> part = new LinkedHashMap<>();
     for (int i = 0; i < nbNode; i++) {
       final long startTimeThreadPartitioning = System.currentTimeMillis();
-      final String workflowPath = project + "/Workflows/ThreadPartitioning.workflow";
-      final String scenarioPath = project + "/Scenarios/generated/sub" + i + "_Node" + i + ".scenario";
+      final String workflowPath = project + WORKFLOW_PATH + "ThreadPartitioning.workflow";
+      final String scenarioPath = project + SCENARIO_GENERATED_PATH + "sub" + i + "_Node" + i + ".scenario";
       // it's possible that all node are not exploited
       final IFile iFile = ResourcesPlugin.getWorkspace().getRoot().getFile(new Path(scenarioPath));
       if (iFile.exists()) {
@@ -231,9 +236,9 @@ public class HypervisorTask extends AbstractTaskImplementation {
         isExistingNetwork = new SimSDPNetwork(i, nNode, nCore, cFreq, project).execute();
       }
 
-      final String workflowPath = project + "/Workflows/NodeSimulator.workflow";
+      final String workflowPath = project + WORKFLOW_PATH + "NodeSimulator.workflow";
 
-      final String scenarioPath = project + "/Scenarios/generated/top_top.scenario";
+      final String scenarioPath = project + SCENARIO_GENERATED_PATH + "top_top.scenario";
       if (Boolean.TRUE.equals(isExistingNetwork)) {
         workflowManager.execute(workflowPath, scenarioPath, monitor);
       }
