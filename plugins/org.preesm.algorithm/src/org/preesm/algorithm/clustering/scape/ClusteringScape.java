@@ -49,13 +49,8 @@ public class ClusteringScape extends ClusterPartitioner {
    * Number of hierarchical level.
    */
   private final int  levelNumber;
-  /**
-   * SCAPE mode : 1 (...); 2 (...); 3 (...).
-   */
-  // private final int mode;
-  // ClusterData, ClusterData+Pipeline, ClusterData+Pipeline+Hierarchy
 
-  ScapeMode          scapeMode;
+  ScapeMode scapeMode;
 
   int                              clusterIndex   = -1;     // topological index
   private int                      clusterId      = 0;      // index cluster created
@@ -152,24 +147,13 @@ public class ClusteringScape extends ClusterPartitioner {
     for (final PiGraph piGraph : hierarchicalLevelOrdered.get(fulcrumLevelID - 1)) {
       PiGraph newCluster = null;
       boolean isHasCluster = true;
-      do {
+
+      while (isHasCluster) {
+
         final int size = graph.getAllChildrenGraphs().size();
-        final Map<AbstractVertex, Long> rv = PiBRV.compute(piGraph, BRVMethod.LCM);
-        newCluster = new ClusterPartitionerLOOP(piGraph, scenario, coreEquivalent.intValue(), rv, clusterId).cluster();
-        if (graph.getAllChildrenGraphs().size() == size) {
-          // URC transfo
-          newCluster = new ClusterPartitionerURC(scenario, coreEquivalent.intValue(), rv, clusterId, scapeMode)
-              .cluster();
-        }
-        if (graph.getAllChildrenGraphs().size() == size) {
-          // SRV transfo
-          newCluster = new ClusterPartitionerSRV(scenario, coreEquivalent.intValue(), rv, clusterId, scapeMode)
-              .cluster();
-        }
-        if (graph.getAllChildrenGraphs().size() == size) {
-          // SEQ transfo
-          newCluster = new ClusterPartitionerSEQ(piGraph, scenario, coreEquivalent.intValue()).cluster();
-        }
+
+        newCluster = applyClusterPartitioners(piGraph);
+
         if (graph.getAllChildrenGraphs().size() == size) {
           isHasCluster = false;
         }
@@ -180,7 +164,7 @@ public class ClusteringScape extends ClusterPartitioner {
           }
           clusterId++;
         }
-      } while (isHasCluster);
+      }
     }
   }
 
@@ -192,27 +176,15 @@ public class ClusteringScape extends ClusterPartitioner {
    */
   private void executeMode2() {
     for (Long i = fulcrumLevelID - 1; i >= 0L; i--) {
-      for (final PiGraph g : hierarchicalLevelOrdered.get(i)) {
+      for (final PiGraph piGraph : hierarchicalLevelOrdered.get(i)) {
         PiGraph newCluster = null;
         boolean isHasCluster = true;
-        do {
+        while (isHasCluster) {
+
           final int size = graph.getAllChildrenGraphs().size();
-          final Map<AbstractVertex, Long> rv = PiBRV.compute(g, BRVMethod.LCM);
-          newCluster = new ClusterPartitionerLOOP(g, scenario, coreEquivalent.intValue(), rv, clusterId).cluster();
-          if (graph.getAllChildrenGraphs().size() == size) {
-            // URC transfo
-            newCluster = new ClusterPartitionerURC(scenario, coreEquivalent.intValue(), rv, clusterId, scapeMode)
-                .cluster();
-          }
-          if (graph.getAllChildrenGraphs().size() == size) {
-            // SRV transfo
-            newCluster = new ClusterPartitionerSRV(scenario, coreEquivalent.intValue(), rv, clusterId, scapeMode)
-                .cluster();
-          }
-          if (graph.getAllChildrenGraphs().size() == size) {
-            // SEQ transfo
-            newCluster = new ClusterPartitionerSEQ(g, scenario, coreEquivalent.intValue()).cluster();
-          }
+
+          newCluster = applyClusterPartitioners(piGraph);
+
           if (graph.getAllChildrenGraphs().size() == size) {
             isHasCluster = false;
           }
@@ -220,9 +192,36 @@ public class ClusteringScape extends ClusterPartitioner {
             cluster(newCluster.getChildrenGraphs().get(0), scenario, stackSize);
             clusterId++;
           }
-        } while (isHasCluster);
+        }
       }
     }
+  }
+
+  private PiGraph applyClusterPartitioners(PiGraph piGraph) {
+
+    PiGraph newCluster;
+
+    final int size = graph.getAllChildrenGraphs().size();
+    final Map<AbstractVertex, Long> rv = PiBRV.compute(piGraph, BRVMethod.LCM);
+
+    newCluster = new ClusterPartitionerLOOP(piGraph, scenario, coreEquivalent.intValue(), rv, clusterId).cluster();
+
+    if (graph.getAllChildrenGraphs().size() == size) {
+      // URC transfo
+      newCluster = new ClusterPartitionerURC(scenario, coreEquivalent.intValue(), rv, clusterId, scapeMode).cluster();
+    }
+
+    if (graph.getAllChildrenGraphs().size() == size) {
+      // SRV transfo
+      newCluster = new ClusterPartitionerSRV(scenario, coreEquivalent.intValue(), rv, clusterId, scapeMode).cluster();
+    }
+
+    if (graph.getAllChildrenGraphs().size() == size) {
+      // SEQ transfo
+      newCluster = new ClusterPartitionerSEQ(piGraph, scenario, coreEquivalent.intValue()).cluster();
+    }
+
+    return newCluster;
   }
 
   /**
@@ -272,8 +271,8 @@ public class ClusteringScape extends ClusterPartitioner {
 
   private static void replaceBehavior(PiGraph g, Scenario scenario) {
     final PiGraph graph = scenario.getAlgorithm();
-    final Actor oEmpty = PiMMUserFactory.instance.createActor();
-    oEmpty.setName(g.getName());
+    final Actor oEmpty = PiMMUserFactory.instance.createActor(g.getName());
+
     // add refinement
     final Refinement refinement = PiMMUserFactory.instance.createCHeaderRefinement();
     oEmpty.setRefinement(refinement);
