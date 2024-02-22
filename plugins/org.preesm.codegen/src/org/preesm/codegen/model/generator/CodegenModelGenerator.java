@@ -49,6 +49,7 @@ import com.google.common.collect.HashBiMap;
 import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -1035,18 +1036,18 @@ public class CodegenModelGenerator extends AbstractCodegenModelGenerator {
     if (multinode) {
       for (final Block block : resultList) {
         final CoreBlock coreBlock = (CoreBlock) block;
-        for (int i = 0; i < coreBlock.getSinkFifoBuffers().size(); i++) {
-          // for (final Buffer buffer : coreBlock.getSinkFifoBuffers()) {
-          if (coreBlock.getSinkFifoBuffers().get(i).getComment().contains("> snk")) {
-            coreBlock.getTopBuffers().add(coreBlock.getSinkFifoBuffers().get(i));
-            coreBlock.getSinkFifoBuffers().remove(coreBlock.getSinkFifoBuffers().get(i));
-            i--;
+
+        final Iterator<Buffer> iterBuffer = coreBlock.getSinkFifoBuffers().iterator();
+        while (iterBuffer.hasNext()) {
+          final Buffer buffer = iterBuffer.next();
+
+          if (buffer.getComment().contains("> snk")) {
+            coreBlock.getTopBuffers().add(buffer);
+            iterBuffer.remove();
           }
         }
       }
-
     }
-
   }
 
   /**
