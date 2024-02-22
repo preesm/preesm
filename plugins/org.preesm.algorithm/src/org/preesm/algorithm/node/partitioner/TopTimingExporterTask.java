@@ -58,7 +58,7 @@ public class TopTimingExporterTask extends AbstractTaskImplementation {
     // Append the timing information for the topgraph 1 node by 1 node
     content.append("top/" + abc.getScenario().getAlgorithm().getName() + ";" + abc.getFinalLatency() + "; \n");
     PreesmIOHelper.getInstance().append(scenarioPath, fileName, content.toString());
-    // PreesmIOHelper.getInstance().print(scenarioPath, fileName, content);
+
     // Retrieve the corresponding scenario
     final String scenarioName = "top_top.scenario";
     final IFile iFileScenario = ResourcesPlugin.getWorkspace().getRoot().getFile(new Path(filePath + scenarioName));
