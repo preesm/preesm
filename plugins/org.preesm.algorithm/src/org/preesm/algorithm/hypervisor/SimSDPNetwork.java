@@ -79,7 +79,7 @@ public class SimSDPNetwork {
   }
 
   private Boolean check() {
-    return (nodeNum > ROUTER_PORT) ? false : true;
+    return (nodeNum <= ROUTER_PORT);
   }
 
   /**
