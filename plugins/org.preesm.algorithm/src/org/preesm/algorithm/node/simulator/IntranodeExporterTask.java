@@ -83,10 +83,9 @@ public class IntranodeExporterTask extends AbstractTaskImplementation {
     for (final ComponentInstance ci : abc.getArchitecture().getOperatorComponentInstances()) {
       sum += stat.getLoad(ci);
       max = Math.max(stat.getLoad(ci), max);
-
     }
-    final Double occupy = (double) (sum)
-        / (double) (max * abc.getArchitecture().getOperatorComponentInstances().size());
+
+    final Double occupy = sum / (double) (max * abc.getArchitecture().getOperatorComponentInstances().size());
     final String message = "Node occupation is: " + occupy;
     PreesmLogger.getLogger().log(Level.INFO, message);
     for (final GanttComponent ci : abc.getGanttData().getComponents()) {
