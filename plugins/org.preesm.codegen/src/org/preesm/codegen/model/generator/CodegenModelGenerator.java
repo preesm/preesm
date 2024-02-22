@@ -51,6 +51,7 @@ import java.awt.Component;
 import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -1023,6 +1024,24 @@ public class CodegenModelGenerator extends AbstractCodegenModelGenerator {
           this.dagFifoBuffers.put(key, new Pair<>(fifoBuffer, value.getValue()));
         } else {
           this.dagFifoBuffers.put(key, new Pair<>(value.getKey(), fifoBuffer));
+        }
+      }
+    }
+  }
+
+  private void generateTopBuffers(List<Block> resultList) {
+    if (multinode) {
+      for (final Block block : resultList) {
+        final CoreBlock coreBlock = (CoreBlock) block;
+
+        final Iterator<Buffer> iterBuffer = coreBlock.getSinkFifoBuffers().iterator();
+        while (iterBuffer.hasNext()) {
+          final Buffer buffer = iterBuffer.next();
+
+          if (buffer.getComment().contains("> snk")) {
+            coreBlock.getTopBuffers().add(buffer);
+            iterBuffer.remove();
+          }
         }
       }
     }
