@@ -65,7 +65,6 @@ public class InitialisationExporterTask extends AbstractTaskImplementation {
   }
 
   private void plateformInit(String path) {
-    // final StringBuilder content = new StringBuilder();
     final String content = """
         <!-- Cluster with crossbar:1:1:1 -->
         <?xml version='1.0'?>
