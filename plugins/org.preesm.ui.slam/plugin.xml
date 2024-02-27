@@ -207,6 +207,47 @@
                type="java.lang.String">
             </parameter>
          </vertexType>
+         <vertexType
+               name="GPU">
+            <color
+                  blue="230"
+                  green="185"
+                  red="112">
+            </color>
+            <shape
+                  type="roundedBox">
+            </shape>
+            <parameter
+                  name="hardwareId"
+                  type="java.lang.String">
+            </parameter>
+            <parameter
+                  name="id"
+                  type="java.lang.String">
+            </parameter>
+            <size
+                  height="40"
+                  width="40">
+            </size>
+            <parameter
+                  name="refinement"
+                  type="java.lang.String">
+            </parameter>
+            <parameter
+                  name="definition"
+                  type="java.lang.String">
+            </parameter>
+            <parameter
+                  name="custom parameters"
+                  type="java.util.Map">
+            </parameter>
+            <parameter name="frequency"
+               type="java.lang.String">
+            </parameter>
+            <parameter name="memory"
+               type="java.lang.String">
+            </parameter>
+         </vertexType>
          <vertexType name="Mem">
             <color blue="173" green="237" red="198">
             </color>

@@ -7,7 +7,7 @@
     <key attr.name="graph_desc" attr.type="string" for="node"/>
     <graph edgedefault="directed">
         <data key="name">rfi</data>
-        <node expr="200" id="N_BLOCKS" kind="param"/>
+        <node expr="20" id="N_BLOCKS" kind="param"/>
         <node expr="2048" id="N_SAMPLES" kind="param"/>
         <node expr="0" id="MODE" kind="param"/>
         <node expr="4096" id="HEADER_SIZE" kind="param"/>

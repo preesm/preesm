@@ -32,6 +32,9 @@
     <dftools:task pluginId="org.ietr.preesm.plugin.mapper.plot" taskId="Gantt Display">
         <dftools:data key="variables"/>
     </dftools:task>
+    <dftools:task pluginId="FullPipelineTask.identifier" taskId="AutoDelay">
+        <dftools:data key="variables"/>
+    </dftools:task>
     <dftools:dataTransfer from="PiMM2SrDAG" sourceport="PiMM"
         targetport="PiMM" to="PiSDF Scheduling"/>
     <dftools:dataTransfer from="scenario"
@@ -48,10 +51,16 @@
         sourceport="ABC" targetport="ABC" to="Internode Stats exporter"/>
     <dftools:dataTransfer from="PiSDF Scheduling"
         sourceport="ABC" targetport="ABC" to="Gantt Display"/>
-    <dftools:dataTransfer from="scenario" sourceport="PiMM"
-        targetport="PiMM" to="PiMM2SrDAG"/>
     <dftools:dataTransfer from="scenario" sourceport="scenario"
         targetport="scenario" to="Gantt Display"/>
     <dftools:dataTransfer from="scenario" sourceport="scenario"
         targetport="scenario" to="PiSDF Scheduling"/>
+    <dftools:dataTransfer from="scenario" sourceport="PiMM"
+        targetport="PiMM" to="AutoDelay"/>
+    <dftools:dataTransfer from="scenario"
+        sourceport="architecture" targetport="architecture" to="AutoDelay"/>
+    <dftools:dataTransfer from="scenario" sourceport="scenario"
+        targetport="scenario" to="AutoDelay"/>
+    <dftools:dataTransfer from="AutoDelay" sourceport="PiMM"
+        targetport="PiMM" to="PiMM2SrDAG"/>
 </dftools:workflow>

@@ -19,7 +19,7 @@ public class SimSDPnetwork {
   public static final String TOPO_NAME4     = "Fat-tree cluster";
   public static final String TOPO_NAME5     = "Dragonfly cluster";
   public static final String TOPO_PARAM_KEY = "topoparam";
-  static final Integer       ROUTER_PORT    = 4;
+  static final Integer       ROUTER_PORT    = 8;
 
   Integer findNode = 2;
 
