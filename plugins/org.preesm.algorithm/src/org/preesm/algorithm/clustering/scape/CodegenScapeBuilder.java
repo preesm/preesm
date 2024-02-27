@@ -250,20 +250,16 @@ public class CodegenScapeBuilder {
     final int nbArg = sc.getActor().getConfigInputPorts().size() + sc.getActor().getDataInputPorts().size()
         + sc.getActor().getDataOutputPorts().size();
     int countArg = 1;
-    for (final FunctionArgument arg : loopPrototype.getInputConfigParameters()) {
-      actorImplem.append(arg.getName());
-      if (countArg < nbArg) {
-        actorImplem.append(",");
+    if (loopPrototype != null) {
+      for (final FunctionArgument arg : loopPrototype.getInputConfigParameters()) {
+        actorImplem.append(arg.getName());
+        if (countArg < nbArg) {
+          actorImplem.append(",");
+        }
+        countArg++;
       }
-      countArg++;
     }
-    // for (final ConfigInputPort cfg : sc.getActor().getConfigInputPorts()) {
-    // actorImplem.append(((AbstractVertex) cfg.getIncomingDependency().getSource()).getName());
-    // if (countArg < nbArg) {
-    // actorImplem.append(",");
-    // }
-    // countArg++;
-    // }
+
     for (final DataInputPort in : sc.getActor().getDataInputPorts()) {
       String buffname = "";
       scale = 1L;

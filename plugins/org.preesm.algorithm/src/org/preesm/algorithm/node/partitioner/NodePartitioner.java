@@ -58,6 +58,7 @@ public class NodePartitioner {
   private String archiPath      = "";
   private String scenariiPath   = "";
   private String simulationPath = "";
+  boolean        isHomogeneous  = true;
 
   public NodePartitioner(Scenario scenario, String archicsvpath, String partitioningMode) {
     this.graph = scenario.getAlgorithm();
@@ -121,7 +122,8 @@ public class NodePartitioner {
     // 7. construct top
     final PiGraph topGraph = new InternodeBuilder(scenario, subs, hierarchicalArchitecture).execute();
     // 9. generate main file
-    new CodegenSimSDP(scenario, topGraph, nodeNames, false);
+
+    new CodegenSimSDP(scenario, topGraph, nodeNames, isHomogeneous);
 
     return topGraph;
 
@@ -208,8 +210,16 @@ public class NodePartitioner {
       sumNodeEquivalent += coreEquivalent;
     }
     // Sort list by nbCoreEquivalent in descending order
-    Collections.sort(hierarchicalArchitecture,
-        (node1, node2) -> Integer.compare(node2.getNbCoreEquivalent(), node1.getNbCoreEquivalent()));
+    Collections.sort(hierarchicalArchitecture, (node1, node2) -> {
+      final int comparisonResult = Integer.compare(node2.getNbCoreEquivalent(), node1.getNbCoreEquivalent());
+
+      // If node1 is greater than node2, set isHomogeneous to false
+      if (comparisonResult < 0) {
+        isHomogeneous = false;
+      }
+
+      return comparisonResult;
+    });
     // Assign ascending IDs based on sorting
     int rank = 0;
     for (final NodeMapping node : hierarchicalArchitecture) {

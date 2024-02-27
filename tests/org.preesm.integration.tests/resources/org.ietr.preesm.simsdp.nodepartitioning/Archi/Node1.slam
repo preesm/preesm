@@ -14,22 +14,22 @@
             <spirit:configurableElementValues/>
         </spirit:componentInstance>
         <spirit:componentInstance>
-            <spirit:instanceName>Core0</spirit:instanceName>
-            <spirit:hardwareId>0</spirit:hardwareId>
+            <spirit:instanceName>Core3</spirit:instanceName>
+            <spirit:hardwareId>3</spirit:hardwareId>
             <spirit:componentRef spirit:library=""
                 spirit:name="x86_f1" spirit:vendor="" spirit:version=""/>
             <spirit:configurableElementValues/>
         </spirit:componentInstance>
         <spirit:componentInstance>
-            <spirit:instanceName>Core1</spirit:instanceName>
-            <spirit:hardwareId>1</spirit:hardwareId>
+            <spirit:instanceName>Core4</spirit:instanceName>
+            <spirit:hardwareId>4</spirit:hardwareId>
             <spirit:componentRef spirit:library=""
                 spirit:name="x86_f1" spirit:vendor="" spirit:version=""/>
             <spirit:configurableElementValues/>
         </spirit:componentInstance>
         <spirit:componentInstance>
-            <spirit:instanceName>Core2</spirit:instanceName>
-            <spirit:hardwareId>2</spirit:hardwareId>
+            <spirit:instanceName>Core5</spirit:instanceName>
+            <spirit:hardwareId>5</spirit:hardwareId>
             <spirit:componentRef spirit:library=""
                 spirit:name="x86_f1" spirit:vendor="" spirit:version=""/>
             <spirit:configurableElementValues/>
@@ -37,18 +37,18 @@
     </spirit:componentInstances>
     <spirit:interconnections>
         <spirit:interconnection>
-            <spirit:name>0</spirit:name>
-            <spirit:activeInterface spirit:busRef="BUSshared_mem" spirit:componentRef="Core0"/>
+            <spirit:name>3</spirit:name>
+            <spirit:activeInterface spirit:busRef="BUSshared_mem" spirit:componentRef="Core3"/>
             <spirit:activeInterface spirit:busRef="BUSshared_mem" spirit:componentRef="shared_mem"/>
         </spirit:interconnection>
         <spirit:interconnection>
-            <spirit:name>1</spirit:name>
-            <spirit:activeInterface spirit:busRef="BUSshared_mem" spirit:componentRef="Core1"/>
+            <spirit:name>4</spirit:name>
+            <spirit:activeInterface spirit:busRef="BUSshared_mem" spirit:componentRef="Core4"/>
             <spirit:activeInterface spirit:busRef="BUSshared_mem" spirit:componentRef="shared_mem"/>
         </spirit:interconnection>
         <spirit:interconnection>
-            <spirit:name>2</spirit:name>
-            <spirit:activeInterface spirit:busRef="BUSshared_mem" spirit:componentRef="Core2"/>
+            <spirit:name>5</spirit:name>
+            <spirit:activeInterface spirit:busRef="BUSshared_mem" spirit:componentRef="Core5"/>
             <spirit:activeInterface spirit:busRef="BUSshared_mem" spirit:componentRef="shared_mem"/>
         </spirit:interconnection>
     </spirit:interconnections>
@@ -64,11 +64,11 @@
         </slam:componentDescriptions>
         <slam:linkDescriptions>
             <slam:linkDescription slam:directedLink="undirected"
-                slam:linkType="DataLink" slam:referenceId="0"/>
+                slam:linkType="DataLink" slam:referenceId="3"/>
             <slam:linkDescription slam:directedLink="undirected"
-                slam:linkType="DataLink" slam:referenceId="1"/>
+                slam:linkType="DataLink" slam:referenceId="4"/>
             <slam:linkDescription slam:directedLink="undirected"
-                slam:linkType="DataLink" slam:referenceId="2"/>
+                slam:linkType="DataLink" slam:referenceId="5"/>
         </slam:linkDescriptions>
         <slam:designDescription>
             <slam:parameters/>
