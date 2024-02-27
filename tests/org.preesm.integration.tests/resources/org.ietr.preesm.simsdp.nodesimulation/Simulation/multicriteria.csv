@@ -28,12 +28,4 @@ memory;1022361600
 energy;1
 cost;1
 
-<<<<<<< HEAD
-type;Cluster with shared backbone:3:3:1
-finalLatency;114803084
-memory;1022361600
-energy;1
-cost;1
 
-=======
->>>>>>> 3f16af141 (adding correlation analysis)
