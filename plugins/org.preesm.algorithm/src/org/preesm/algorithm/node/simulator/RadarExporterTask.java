@@ -244,7 +244,7 @@ public class RadarExporterTask extends AbstractTaskImplementation {
       final String lineToConsider = lines[lines.length - 1];
       final String[] memPerNode = lineToConsider.split(";");
       for (final String element : memPerNode) {
-        memory += Integer.parseInt(element);
+        memory += Long.parseLong(element);
       }
 
     }

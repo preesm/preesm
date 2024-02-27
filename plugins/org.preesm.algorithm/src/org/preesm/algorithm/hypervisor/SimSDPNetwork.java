@@ -20,7 +20,7 @@ public class SimSDPNetwork {
   private static final String DRAGONFLY        = NetworkInfo.DRAGONFLY;
 
   public static final String TOPO_PARAM_KEY = "topoparam";
-  static final Integer       ROUTER_PORT    = 4;
+  static final Integer       ROUTER_PORT    = 8;
 
   Integer findNode = 2;
 
