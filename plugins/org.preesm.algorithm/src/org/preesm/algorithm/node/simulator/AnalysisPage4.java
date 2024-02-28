@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.function.Function;
 import javax.swing.BorderFactory;
 import javax.swing.JComboBox;
@@ -44,7 +45,7 @@ public class AnalysisPage4 {
   private static final String DESCRIPTION = """
       <html>
       This chart gives a comprehensive comparison of the 5 main network topologies
-      if they exist) concerning a selected number of nodes, dynamically chosen from a ComboBox.<br>
+      (if they exist) concerning a selected number of nodes, dynamically chosen from a ComboBox.<br>
       The topologies are: Cluster with a Crossbar,  Cluster with a Shared Backbone, Torus Cluster,
       Fat-Tree Cluster and Dragonfly Cluster.<br>
       This visualisation captures the normalised performance metrics of
@@ -146,38 +147,16 @@ public class AnalysisPage4 {
   private JPanel createTextFieldPanel(JFreeChart chart, XYSeriesCollection dataset) {
 
     final JPanel textFieldPanel = new JPanel();
-    textFieldPanel.setLayout(new GridLayout(3, 2, 0, 0));
-
-    final JComboBox<String> nodeCombo = addComboBoxWithLabel(textFieldPanel,
-        "Select the number of nodes for network analysis:", nodeNetworkInfoNormalMap);
-    final JComboBox<String> coreCombo = addComboBoxWithLabel(textFieldPanel,
-        "Select the number of cores for network analysis:", nodeNetworkInfoNormalMap.get(nodeKey));
-    final JComboBox<String> coreFreqCombo = addComboBoxWithLabel(textFieldPanel,
-        "Select the core frequency for network analysis:", nodeNetworkInfoNormalMap.get(nodeKey).get(coreKey));
-
+    textFieldPanel.setLayout(new GridLayout(1, 2, 0, 0));
+    final JComboBox<String> archiCombo = addComboBoxWithLabel(textFieldPanel,
+        "Select the number of nodes:cores:frequency for network analysis:", nodeNetworkInfoNormalMap);
     // node selection
 
-    nodeCombo.addActionListener(e -> {
-      nodeKey = Integer.valueOf(nodeCombo.getSelectedItem().toString());
-      coreKey = nodeNetworkInfoNormalMap.get(nodeKey).keySet().stream().findFirst().orElseThrow();
-      updateCoreNodeComboItems(coreCombo);
-      updateDataset(dataset);
-      chart.fireChartChanged();
-    });
-
-    // core selection
-
-    coreCombo.addActionListener(e -> {
-      coreKey = Integer.valueOf(coreCombo.getSelectedItem().toString());
-      coreFrequencyKey = nodeNetworkInfoNormalMap.get(nodeKey).get(coreKey).keySet().stream().findFirst().orElseThrow();
-      updateCoreFreqComboItems(coreFreqCombo);
-      updateDataset(dataset);
-      chart.fireChartChanged();
-    });
-    // core frequency selection
-
-    coreFreqCombo.addActionListener(e -> {
-      coreFrequencyKey = Integer.valueOf(coreFreqCombo.getSelectedItem().toString());
+    archiCombo.addActionListener(e -> {
+      final String[] key = archiCombo.getSelectedItem().toString().split(":");
+      nodeKey = Integer.valueOf(key[0]);
+      coreKey = Integer.valueOf(key[1]);
+      coreFrequencyKey = Integer.valueOf(key[2]);
       updateDataset(dataset);
       chart.fireChartChanged();
     });
@@ -189,47 +168,24 @@ public class AnalysisPage4 {
   private JComboBox<String> addComboBoxWithLabel(JPanel panel, String labelText, Map<Integer, ?> dataMap) {
     final JLabel label = new JLabel(labelText);
     panel.add(label);
+    String[] items;
+    final List<String> itemList = new ArrayList<>();
+    for (final Entry<Integer, Map<Integer, Map<Integer, List<NetworkInfo>>>> node : nodeNetworkInfoNormalMap
+        .entrySet()) {
+      for (final Entry<Integer, Map<Integer, List<NetworkInfo>>> core : node.getValue().entrySet()) {
+        for (final int freq : core.getValue().keySet()) {
+          itemList.add(node.getKey() + ":" + core.getKey() + ":" + freq);
+        }
 
-    final String[] items = dataMap.keySet().stream().map(String::valueOf).toArray(String[]::new);
+      }
+    }
+    items = itemList.toArray(new String[0]);
+
     final JComboBox<String> comboBox = new JComboBox<>(items);
     comboBox.setBackground(Color.white);
     panel.add(comboBox);
 
     return comboBox;
-  }
-
-  private void updateCoreFreqComboItems(JComboBox<String> combo) {
-    final String selectedItem = (String) combo.getSelectedItem();
-    combo.removeAllItems();
-    for (final int i : nodeNetworkInfoNormalMap.get(nodeKey).get(coreKey).keySet()) {
-      combo.addItem(String.valueOf(i));
-    }
-    // Set back the selected item if it exists in the new items
-    if (selectedItem != null) {
-      for (int i = 0; i < combo.getItemCount(); i++) {
-        if (selectedItem.equals(combo.getItemAt(i))) {
-          combo.setSelectedItem(selectedItem);
-          break;
-        }
-      }
-    }
-  }
-
-  private void updateCoreNodeComboItems(JComboBox<String> combo) {
-    final String selectedItem = (String) combo.getSelectedItem();
-    combo.removeAllItems();
-    for (final int i : nodeNetworkInfoNormalMap.get(nodeKey).keySet()) {
-      combo.addItem(String.valueOf(i));
-    }
-    // Set back the selected item if it exists in the new items
-    if (selectedItem != null) {
-      for (int i = 0; i < combo.getItemCount(); i++) {
-        if (selectedItem.equals(combo.getItemAt(i))) {
-          combo.setSelectedItem(selectedItem);
-          break;
-        }
-      }
-    }
   }
 
   /**

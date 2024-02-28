@@ -218,7 +218,7 @@ public class IntranodeBuilder {
       }
 
       // Step 2: Merge CFG (rename dependencies and ports for inter-subgraph connections)
-      convertAndMergeConfigInput(subgraph);
+      // convertAndMergeConfigInput(subgraph);
 
       // Step 3: Compute BRV for Subgraph
       PiBRV.compute(subgraph, BRVMethod.LCM);
