@@ -158,7 +158,7 @@ public class AnalysisPage4 {
     nodeCombo.addActionListener(e -> {
       nodeKey = Integer.valueOf(nodeCombo.getSelectedItem().toString());
       coreKey = nodeNetworkInfoNormalMap.get(nodeKey).keySet().stream().findFirst().orElseThrow();
-      updateCoreComboItems(coreCombo);
+      updateCoreNodeComboItems(coreCombo);
       updateDataset(dataset);
       chart.fireChartChanged();
     });
@@ -200,7 +200,6 @@ public class AnalysisPage4 {
     final String selectedItem = (String) combo.getSelectedItem();
     combo.removeAllItems();
     for (final int i : nodeNetworkInfoNormalMap.get(nodeKey).get(coreKey).keySet()) {
-
       combo.addItem(String.valueOf(i));
     }
     // Set back the selected item if it exists in the new items
@@ -214,7 +213,7 @@ public class AnalysisPage4 {
     }
   }
 
-  private void updateCoreComboItems(JComboBox<String> combo) {
+  private void updateCoreNodeComboItems(JComboBox<String> combo) {
     final String selectedItem = (String) combo.getSelectedItem();
     combo.removeAllItems();
     for (final int i : nodeNetworkInfoNormalMap.get(nodeKey).keySet()) {
