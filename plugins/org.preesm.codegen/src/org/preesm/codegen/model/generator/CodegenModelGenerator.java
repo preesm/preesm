@@ -171,6 +171,13 @@ public class CodegenModelGenerator extends AbstractCodegenModelGenerator {
   private static final String ERROR_PATTERN_1 = "MemEx graph memory object (%s) refers to a DAG Vertex %s that does "
       + "not exist in the input DAG.\n" + "Make sure that the MemEx is derived from the input DAG of the codegen.";
 
+  private static final String ERROR_NO_REFINEMENT = "Actor (%s) has no valid refinement (.idl, .h or .graphml)."
+      + " Associate a refinement to this actor before generating code.";
+
+  private static final String ERROR_NO_LOOP_INTERFACE = "Actor (%s) has no loop interface in its IDL refinement.";
+
+  private static final String ERROR_NON_C_REFINEMENT = "Actor (%s) has a non standard C refinement.";
+
   /**
    * {@link Map} of the main {@link Buffer} for the code generation. Each {@link Buffer} in this {@link List} contains
    * one or more {@link SubBuffer} and is associated to a unique memory bank, whose name is given by the associated
@@ -623,7 +630,8 @@ public class CodegenModelGenerator extends AbstractCodegenModelGenerator {
     } else {
       ActorPrototypes prototypes = null;
       // If the actor has an IDL refinement
-      if ((refinement instanceof final CodeRefinement cRef) && (cRef.getLanguage() == Language.IDL)) {
+
+      if ((refinement instanceof final CodeRefinement cr) && (cr.getLanguage() == Language.IDL)) {
         // Retrieve the prototypes associated to the actor
         prototypes = getActorPrototypes(dagVertex);
       } else if (refinement instanceof final ActorPrototypes actorProto) {
@@ -634,16 +642,15 @@ public class CodegenModelGenerator extends AbstractCodegenModelGenerator {
 
       if (prototypes == null) {
         // If the actor has no refinement
-        throw new PreesmRuntimeException("Actor (" + dagVertex + ") has no valid refinement (.idl, .h or .graphml)."
-            + " Associate a refinement to this actor before generating code.");
+        throw new PreesmRuntimeException(ERROR_NO_REFINEMENT.formatted(dagVertex));
       }
       // Generate the loop functionCall
       final Prototype loopPrototype = prototypes.getLoopPrototype();
       if (loopPrototype == null) {
-        throw new PreesmRuntimeException("The actor " + dagVertex + " has no loop interface in its IDL refinement.");
+        throw new PreesmRuntimeException(ERROR_NO_LOOP_INTERFACE.formatted(dagVertex));
       }
       if (!loopPrototype.getIsStandardC()) {
-        throw new PreesmRuntimeException("The actor " + dagVertex + " has a non standard C refinement.");
+        throw new PreesmRuntimeException(ERROR_NON_C_REFINEMENT.formatted(dagVertex));
       }
       // adding the call to the FPGA load functions only once. The printFpgaLoad will
       // return a no-null string only with the right printer and nothing for the others

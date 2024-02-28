@@ -124,9 +124,8 @@ public class AnalysisPage5 {
 
     thText.addActionListener(e -> {
       kTh = Integer.valueOf(thText.getText());
-      updateDataset(dataset);
+      updateDatasetUser(dataset);
       chart.fireChartChanged(); // Notify the chart that the dataset has changed
-
     });
 
     final JLabel mLabel = new JLabel("Enter the memory weight:");
@@ -138,7 +137,7 @@ public class AnalysisPage5 {
 
     mText.addActionListener(e -> {
       kMem = Integer.valueOf(mText.getText());
-      updateDataset(dataset);
+      updateDatasetUser(dataset);
       chart.fireChartChanged(); // Notify the chart that the dataset has changed
     });
 
@@ -151,7 +150,7 @@ public class AnalysisPage5 {
 
     eText.addActionListener(e -> {
       kEner = Integer.valueOf(eText.getText());
-      updateDataset(dataset);
+      updateDatasetUser(dataset);
       chart.fireChartChanged(); // Notify the chart that the dataset has changed
 
     });
@@ -165,7 +164,7 @@ public class AnalysisPage5 {
 
     cText.addActionListener(e -> {
       kC = Integer.valueOf(cText.getText());
-      updateDataset(dataset);
+      updateDatasetUser(dataset);
       chart.fireChartChanged(); // Notify the chart that the dataset has changed
 
     });
@@ -222,21 +221,10 @@ public class AnalysisPage5 {
    * @param dataset
    *          The dataset containing network configuration scores.
    */
-  private void updateDataset(DefaultCategoryDataset dataset) {
+  private void updateDatasetUser(DefaultCategoryDataset dataset) {
     dataset.clear();
-    for (final NetworkInfo net : networkInfoNormalList) {
 
-      final Double score = net.getFinalLatency() * kTh + net.getMemory() * kMem + net.getEnergy() * kEner
-          + net.getCost() * kC;
-      dataset.addValue(score, "configuration",
-          net.getTypeID() + ":" + net.getNode() + ":" + net.getCore() + ":" + net.getCoreFrequency());
-      if (score != 0 && score < scoreMin) {
-        scoreMin = score;
-      }
-      if (score > scoreMax) {
-        scoreMax = score;
-      }
-    }
+    updateDataset(dataset, "configuration");
   }
 
   /**
@@ -246,11 +234,16 @@ public class AnalysisPage5 {
    */
   private DefaultCategoryDataset fillParetoDataSet() {
     final DefaultCategoryDataset defaultDataset = new DefaultCategoryDataset();
+
+    return updateDataset(defaultDataset, "configuration ID : number of nodes : number of cores : core frequency");
+  }
+
+  private DefaultCategoryDataset updateDataset(DefaultCategoryDataset dataset, String rowKey) {
     for (final NetworkInfo net : networkInfoNormalList) {
 
       final Double score = net.getFinalLatency() * kTh + net.getMemory() * kMem + net.getEnergy() * kEner
           + net.getCost() * kC;
-      defaultDataset.addValue(score, "configuration ID : number of nodes : number of cores : core frequency",
+      dataset.addValue(score, rowKey,
           net.getTypeID() + ":" + net.getNode() + ":" + net.getCore() + ":" + net.getCoreFrequency());
       if (score != 0 && score < scoreMin) {
         scoreMin = score;
@@ -259,7 +252,7 @@ public class AnalysisPage5 {
         scoreMax = score;
       }
     }
-    return defaultDataset;
+    return dataset;
   }
 
 }
