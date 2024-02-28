@@ -335,7 +335,7 @@ public class InternodeExporterTask extends AbstractTaskImplementation {
   private void preesmSimulation(LatencyAbc abc) {
     latency = maxLoad(abc);
     for (final ComponentInstance cp : abc.getArchitecture().getOperatorComponentInstances()) {
-      loadPerNode.put("node" + cp.getHardwareId(), abc.getLoad(cp) / latency);
+      loadPerNode.put("Node" + cp.getHardwareId(), abc.getLoad(cp) / latency);
     }
   }
 
