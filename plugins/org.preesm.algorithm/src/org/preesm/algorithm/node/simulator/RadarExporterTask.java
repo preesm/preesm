@@ -132,6 +132,7 @@ public class RadarExporterTask extends AbstractTaskImplementation {
     final String type = line[0].replace("<!-- ", "").replace(" -->", "");
 
     metrics.put(TYPE, type);
+
     final String xmlString = line[5];
     final String topoParameter = topo(xmlString);
     final Long cost = estimateCost(type, topoParameter);

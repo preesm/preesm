@@ -115,6 +115,7 @@ public class ClusteringScape extends ClusterPartitioner {
       default -> throw new PreesmRuntimeException("Unrecognized Scape mode.");
 
     }
+
   }
 
   /**

@@ -84,7 +84,6 @@ public class HypervisorTask extends AbstractTaskImplementation {
     final String project = "/" + workflow.getProjectName();
     final WorkflowManager workflowManager = new WorkflowManager();
     // clean project
-
     PreesmIOHelper.getInstance().deleteFolder(project + "/Simulation");
 
     // Initialize the search to evaluate memory requirement fix minimal node boundary
@@ -147,7 +146,6 @@ public class HypervisorTask extends AbstractTaskImplementation {
 
         // refineCoreMin(coreIndex, nodeIndex);
         // refineCoreMax(coreIndex, nodeIndex, project + "/Simulation/");
-
       }
     }
 
@@ -324,6 +322,7 @@ public class HypervisorTask extends AbstractTaskImplementation {
       if (Boolean.TRUE.equals(multinet)) {
 
         isExistingNetwork = new SimSDPNetwork(indexTopo, nNode, nCore, cFreq, project).execute();
+
       }
 
       final String workflowPath = project + WORKFLOW_PATH + "NodeSimulator.workflow";

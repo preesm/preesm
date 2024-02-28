@@ -250,6 +250,7 @@ public class CodegenScapeBuilder {
     final int nbArg = sc.getActor().getConfigInputPorts().size() + sc.getActor().getDataInputPorts().size()
         + sc.getActor().getDataOutputPorts().size();
     int countArg = 1;
+
     if (loopPrototype != null) {
       for (final FunctionArgument arg : loopPrototype.getInputConfigParameters()) {
         actorImplem.append(arg.getName());

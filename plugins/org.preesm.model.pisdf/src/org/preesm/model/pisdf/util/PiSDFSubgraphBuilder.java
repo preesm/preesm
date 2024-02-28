@@ -137,6 +137,7 @@ public class PiSDFSubgraphBuilder extends PiMMSwitch<Boolean> {
     // Compute BRV for the parent graph
     this.repetitionVector = PiBRV.compute(parentGraph, BRVMethod.LCM);
     // Compute repetition count of the subgraph with great common divisor over all subgraph actors repetition counts
+
     this.subGraphRepetition = subGraphName.matches("^sub\\d+") ? 1L
         : MathFunctionsHelper.gcd(CollectionUtil.mapGetAll(repetitionVector, subGraphActors));
 
@@ -154,6 +155,9 @@ public class PiSDFSubgraphBuilder extends PiMMSwitch<Boolean> {
     for (final AbstractActor actor : this.subGraphActors) {
       doSwitch(actor);
     }
+    // this.parentGraph.getDependencies()
+    // .remove(this.parentGraph.getDependencies().stream().allMatch(x -> x.getGetter() == null));
+
     // Check consistency of parent graph
     // Check consistency of the graph (throw exception if recoverable or fatal error)
     final PiGraphConsistenceChecker pgcc = new PiGraphConsistenceChecker(CheckerErrorLevel.FATAL_ANALYSIS,

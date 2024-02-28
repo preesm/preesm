@@ -120,6 +120,7 @@ public class ClusteringScapeTask extends AbstractTaskImplementation {
     }
 
     final ClusteringScape clusteringScape = new ClusteringScape(scenario, stackSize, scapeMode, clusterNumber);
+
     final PiGraph tempGraph = clusteringScape.execute();
     final Map<Actor, Long> clusterMemory = clusteringScape.getClusterMemory();
 
