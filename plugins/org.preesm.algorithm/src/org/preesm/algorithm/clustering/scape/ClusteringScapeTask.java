@@ -15,6 +15,7 @@ import org.preesm.commons.doc.annotations.PreesmTask;
 import org.preesm.commons.doc.annotations.Value;
 import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.preesm.model.pisdf.AbstractActor;
+import org.preesm.model.pisdf.Actor;
 import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.scenario.Scenario;
 import org.preesm.model.slam.ComponentInstance;
@@ -35,7 +36,8 @@ import org.preesm.workflow.implement.AbstractTaskImplementation;
  */
 @PreesmTask(id = "scape.task.identifier", name = "Clustering Task",
     inputs = { @Port(name = "scenario", type = Scenario.class) },
-    outputs = { @Port(name = "PiMM", type = PiGraph.class), @Port(name = "scenario", type = Scenario.class) },
+    outputs = { @Port(name = "PiMM", type = PiGraph.class), @Port(name = "scenario", type = Scenario.class),
+        @Port(name = "cMem", type = Map.class) },
 
     parameters = {
 
@@ -117,7 +119,9 @@ public class ClusteringScapeTask extends AbstractTaskImplementation {
       }
     }
 
-    final PiGraph tempGraph = new ClusteringScape(scenario, stackSize, scapeMode, clusterNumber).execute();
+    final ClusteringScape clusteringScape = new ClusteringScape(scenario, stackSize, scapeMode, clusterNumber);
+    final PiGraph tempGraph = clusteringScape.execute();
+    final Map<Actor, Long> clusterMemory = clusteringScape.getClusterMemory();
 
     final Map<String, Object> output = new HashMap<>();
     // return topGraph
@@ -136,6 +140,7 @@ public class ClusteringScapeTask extends AbstractTaskImplementation {
 
     // return scenario updated
     output.put("scenario", scenario);
+    output.put("cMem", clusterMemory);
     return output;
   }
 

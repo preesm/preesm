@@ -44,16 +44,16 @@ public class InitialisationExporterTask extends AbstractTaskImplementation {
     long mem = 0L;
 
     // Initialize CSV content with header
-    String content = "Final Latency;Memory;Energy;Cost \n";
+    String content = "Final Latency;Memory;Energy;Cost; Max speedup \n";
 
     // Generate stats for each operator component instance
     final StatGeneratorAbc stat = new StatGeneratorAbc(abc);
     for (final ComponentInstance ci : abc.getArchitecture().getOperatorComponentInstances()) {
       mem += stat.getMem(ci);
     }
-
+    final Long speed = stat.getDAGWorkLength() / stat.getDAGSpanLength();
     // Append metrics to CSV content
-    content += lat + ";" + mem + ";" + 1 + ";" + 1;
+    content += lat + ";" + mem + ";" + 1 + ";" + 1 + ";" + speed;
 
     // Export content to CSV file
     PreesmIOHelper.getInstance().print(path, "initialisation.csv", content);
