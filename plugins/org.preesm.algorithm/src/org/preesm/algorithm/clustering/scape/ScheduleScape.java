@@ -117,11 +117,11 @@ public class ScheduleScape {
         sc.setBeginLoop(true);
         openLoopCounter++;
         splitRate = splitActor[i].split("\\(");
-        sc.setIterator(Integer.parseInt(splitRate[0]));
+        sc.setRepetition(Integer.parseInt(splitRate[0]));
         splitActor[i] = splitRate[1];
       } else {
         sc.setBeginLoop(false);
-        sc.setIterator(1);
+        sc.setRepetition(1);
       }
       if (splitActor[i].contains(")")) {
         openLoopCounter--;
@@ -131,8 +131,7 @@ public class ScheduleScape {
       } else {
         sc.setEndLoop(false);
       }
-      sc.setActor(PiMMUserFactory.instance.createActor());
-      sc.getActor().setName(splitActor[i]);
+      sc.setActor(PiMMUserFactory.instance.createActor(splitActor[i]));
 
       sc.setLoopPrec((openLoopCounter >= 1 && !sc.isBeginLoop()));
 
