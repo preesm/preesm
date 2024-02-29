@@ -63,6 +63,8 @@ public class NodePartitioner {
   private String simulationPath = "";
   boolean        isHomogeneous  = true;
 
+  private final Random random = new Random();
+
   public NodePartitioner(Scenario scenario, String archicsvpath, String partitioningMode) {
     this.graph = scenario.getAlgorithm();
     this.scenario = scenario;
@@ -264,7 +266,6 @@ public class NodePartitioner {
         if (this.partitioningMode.equals("equivalentTimed")) {
           value = Double.valueOf(columns[1]);
         } else {
-          final Random random = new Random();
           value = random.nextDouble();
         }
 
