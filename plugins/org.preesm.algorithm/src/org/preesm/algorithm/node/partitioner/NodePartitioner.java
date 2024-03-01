@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Random;
 import java.util.logging.Level;
 import java.util.stream.Collectors;
 import org.eclipse.core.resources.IFile;
@@ -43,6 +44,7 @@ public class NodePartitioner {
   private final Scenario scenario;
 
   private final String archicsvpath;
+  private final String partitioningMode;
   List<NodeMapping>    hierarchicalArchitecture;
 
   private final Map<Integer, Long>             timeEq;       // id node/cumulative time
@@ -56,11 +58,15 @@ public class NodePartitioner {
   private String archiPath      = "";
   private String scenariiPath   = "";
   private String simulationPath = "";
+  boolean        isHomogeneous  = true;
 
-  public NodePartitioner(Scenario scenario, String archicsvpath) {
+  private final Random random = new Random();
+
+  public NodePartitioner(Scenario scenario, String archicsvpath, String partitioningMode) {
     this.graph = scenario.getAlgorithm();
     this.scenario = scenario;
     this.archicsvpath = archicsvpath;
+    this.partitioningMode = partitioningMode;
 
     this.timeEq = new HashMap<>();
     this.load = new HashMap<>();
@@ -72,10 +78,15 @@ public class NodePartitioner {
   }
 
   public PiGraph execute() {
-    final String[] uriString = graph.getUrl().split("/");
-    scenariiPath = "/" + uriString[1] + "/Scenarios/generated/";
-    archiPath = "/" + uriString[1] + "/Archi/";
-    simulationPath = "/" + uriString[1] + "/Simulation/";
+
+    final String scenarioFilePath = scenario.getScenarioURL();
+    scenariiPath = scenarioFilePath.substring(0, scenarioFilePath.lastIndexOf("/") + 1) + "generated/";
+
+    final String archiFilePath = scenario.getDesign().getUrl();
+    archiPath = archiFilePath.substring(0, archiFilePath.lastIndexOf("/") + 1);
+
+    simulationPath = scenarioFilePath.substring(0, scenarioFilePath.lastIndexOf("/Scenarios/") + 1) + "Simulation/";
+
     if (!scenario.getDesign().getProcessingElements().stream().allMatch(x -> x.getVlnv().getName().contains("_f"))) {
       PreesmLogger.getLogger().log(Level.SEVERE,
           "In order to handle heterogeneous core frequencies add _f[i] in the slam processing element definition");
@@ -90,8 +101,8 @@ public class NodePartitioner {
     if (!pipelineCycleInfo.getPipelineDelays().isEmpty()) {
       PreesmLogger.getLogger().log(Level.SEVERE,
           "SimSDP cannot compile if there are initial optimizations, please remove your pipelines");
-
     }
+
     pipelineCycleInfo.removeCycle();
 
     // 1. compute the number of equivalent core
@@ -113,13 +124,15 @@ public class NodePartitioner {
     // 7. construct top
     final PiGraph topGraph = new InternodeBuilder(scenario, subs, hierarchicalArchitecture).execute();
     // 9. generate main file
-    new CodegenSimSDP(scenario, topGraph, nodeNames);
+
+    new CodegenSimSDP(scenario, topGraph, nodeNames, isHomogeneous);
 
     return topGraph;
 
   }
 
   private void exportArchitecture() {
+    int coreIDStart = 0;
     for (final NodeMapping node : hierarchicalArchitecture) {
 
       final ArchitecturesGenerator a = new ArchitecturesGenerator(ScenarioBuilder.iproject(scenariiPath));
@@ -131,14 +144,16 @@ public class NodePartitioner {
           type2nb.put(core.getCoreType(), 1);
         }
       }
+
       final Design subArchi = ArchitecturesGenerator.generateArchitecture(type2nb, "Node" + node.getID(),
-          node.getCores().get(0).getCoreCommunicationRate());
+          node.getCores().get(0).getCoreCommunicationRate(), coreIDStart);
 
       subArchi.setUrl(archiPath + "Node" + node.getID() + ".slam");
       archiList.add(subArchi);
       a.saveArchitecture(subArchi);
-      a.generateAndSaveArchitecture(type2nb, "Node" + node.getID(), node.getCores().get(0).getCoreCommunicationRate());
-
+      a.generateAndSaveArchitecture(type2nb, "Node" + node.getID(), node.getCores().get(0).getCoreCommunicationRate(),
+          coreIDStart);
+      coreIDStart += node.getCores().size();
     }
   }
 
@@ -154,23 +169,19 @@ public class NodePartitioner {
       final String[] column = line[i].split(";");
       final int lastIndex = hierarchicalArchitecture.size() - 1;
 
+      final CoreMapping newCore = MappingFactory.eINSTANCE.createCoreMapping();
+      newCore.setID(Integer.valueOf(column[1]));
+      newCore.setCoreFrequency(Double.valueOf(column[2]));
+      newCore.setCoreCommunicationRate(Double.valueOf(column[3]));
+      newCore.setID(coreID);
+
       if ((lastIndex == -1) || !column[0].equals(hierarchicalArchitecture.get(lastIndex).getNodeName())) {
         final NodeMapping newNode = MappingFactory.eINSTANCE.createNodeMapping();
         newNode.setNodeName(column[0]);
         newNode.setNodeCommunicationRate(Double.valueOf(column[4]));
-        final CoreMapping newCore = MappingFactory.eINSTANCE.createCoreMapping();
-        newCore.setID(Integer.valueOf(column[1]));
-        newCore.setCoreFrequency(Double.valueOf(column[2]));
-        newCore.setCoreCommunicationRate(Double.valueOf(column[3]));
-        newCore.setID(coreID);
         newNode.getCores().add(newCore);
         hierarchicalArchitecture.add(newNode);
       } else {
-        final CoreMapping newCore = MappingFactory.eINSTANCE.createCoreMapping();
-        newCore.setID(Integer.valueOf(column[1]));
-        newCore.setCoreFrequency(Double.valueOf(column[2]));
-        newCore.setCoreCommunicationRate(Double.valueOf(column[3]));
-        newCore.setID(coreID);
         hierarchicalArchitecture.get(lastIndex).getCores().add(newCore);
       }
       coreID++;
@@ -201,8 +212,16 @@ public class NodePartitioner {
       sumNodeEquivalent += coreEquivalent;
     }
     // Sort list by nbCoreEquivalent in descending order
-    Collections.sort(hierarchicalArchitecture,
-        (node1, node2) -> Integer.compare(node2.getNbCoreEquivalent(), node1.getNbCoreEquivalent()));
+    Collections.sort(hierarchicalArchitecture, (node1, node2) -> {
+      final int comparisonResult = Integer.compare(node2.getNbCoreEquivalent(), node1.getNbCoreEquivalent());
+
+      // If node1 is greater than node2, set isHomogeneous to false
+      if (comparisonResult < 0) {
+        isHomogeneous = false;
+      }
+
+      return comparisonResult;
+    });
     // Assign ascending IDs based on sorting
     int rank = 0;
     for (final NodeMapping node : hierarchicalArchitecture) {
@@ -224,10 +243,15 @@ public class NodePartitioner {
       final String[] lines = content.split("\n");
       for (final String line : lines) {
         final String[] columns = line.split(";");
+        Double value;
+        if (this.partitioningMode.equals("equivalentTimed")) {
+          value = Double.valueOf(columns[1]);
+        } else {
+          value = random.nextDouble();
+        }
 
-        load.put(Integer.valueOf(columns[0].replace("node", "")), Double.valueOf(columns[1]));
+        load.put(Integer.valueOf(columns[0].replace("Node", "")), value);
       }
-
     }
 
   }

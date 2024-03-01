@@ -15,9 +15,6 @@
             <dftools:variable name="simulatorType" value="AccuratelyTimed"/>
         </dftools:data>
     </dftools:task>
-    <dftools:task pluginId="org.ietr.preesm.plugin.mapper.plot" taskId="Gantt Display">
-        <dftools:data key="variables"/>
-    </dftools:task>
     <dftools:task
         pluginId="org.ietr.preesm.stats.exporter.StatsExporterTask" taskId="Gantt Exporter">
         <dftools:data key="variables">
@@ -44,10 +41,6 @@
         targetport="scenario" to="PiSDF Scheduling"/>
     <dftools:dataTransfer from="scenario"
         sourceport="architecture" targetport="architecture" to="PiSDF Scheduling"/>
-    <dftools:dataTransfer from="PiSDF Scheduling"
-        sourceport="ABC" targetport="ABC" to="Gantt Display"/>
-    <dftools:dataTransfer from="scenario" sourceport="scenario"
-        targetport="scenario" to="Gantt Display"/>
     <dftools:dataTransfer from="PiSDF Scheduling"
         sourceport="ABC" targetport="ABC" to="Gantt Exporter"/>
     <dftools:dataTransfer from="scenario" sourceport="scenario"

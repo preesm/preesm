@@ -57,7 +57,7 @@ import org.preesm.model.pisdf.JoinActor;
 import org.preesm.model.pisdf.PersistenceLevel;
 import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.pisdf.factory.PiMMUserFactory;
-import org.preesm.model.pisdf.util.LOOPSeeker;
+import org.preesm.model.pisdf.util.ClusteringPatternSeekerLoop;
 import org.preesm.model.pisdf.util.PiSDFSubgraphBuilder;
 import org.preesm.model.scenario.Scenario;
 import org.preesm.model.slam.ComponentInstance;
@@ -77,7 +77,7 @@ public class ClusterPartitionerLOOP extends ClusterPartitioner {
 
   private static final String LOOP_PREFIX = "loop_";
 
-  // Needs to be declare as a member to be used and modified in lambda
+  // Needs to be declare as a class member to be used and modified in lambda
   private int pipelineStage;
 
   /**
@@ -103,7 +103,7 @@ public class ClusterPartitionerLOOP extends ClusterPartitioner {
   @Override
   public PiGraph cluster() {
     // retrieve tle cycle sequence to be coarsely clustered
-    final List<AbstractActor> localPluralLOOPs = new LOOPSeeker(graph, numberOfPEs, brv).pluralLocalseek();
+    final List<AbstractActor> localPluralLOOPs = new ClusteringPatternSeekerLoop(graph).pluralLocalseek();
     if (!localPluralLOOPs.isEmpty()) {
       final PiGraph subGraph = new PiSDFSubgraphBuilder(graph, localPluralLOOPs, LOOP_PREFIX + clusterId).build();
       extractDelay();
@@ -117,7 +117,7 @@ public class ClusterPartitionerLOOP extends ClusterPartitioner {
       return this.graph;
     }
     // retrieve the obtained or existing single local cycle to be semi-unrolled
-    final List<AbstractActor> graphLocalSingleLOOPs = new LOOPSeeker(graph, numberOfPEs, brv).singleLocalseek();
+    final List<AbstractActor> graphLocalSingleLOOPs = new ClusteringPatternSeekerLoop(graph).singleLocalseek();
     if (!graphLocalSingleLOOPs.isEmpty()) {
       // if the cycle is divisible by the number of process divide the cycle by the number of process otherwise divide
       // the cycle

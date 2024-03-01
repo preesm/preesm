@@ -273,6 +273,12 @@ public final class PiMMUserFactory extends PiMMFactoryImpl implements PreesmUser
     return res;
   }
 
+  public DataInputPort createDataInputPort(final String name, final Long value) {
+    final DataInputPort res = createDataInputPort(name);
+    res.setExpression(value);
+    return res;
+  }
+
   /**
    * Method to create a data input port with its expression linked to a delay
    *
@@ -301,6 +307,12 @@ public final class PiMMUserFactory extends PiMMFactoryImpl implements PreesmUser
   public DataOutputPort createDataOutputPort(final String name) {
     final DataOutputPort res = this.createDataOutputPort();
     res.setName(name);
+    return res;
+  }
+
+  public DataOutputPort createDataOutputPort(final String name, final Long value) {
+    final DataOutputPort res = createDataOutputPort(name);
+    res.setExpression(value);
     return res;
   }
 

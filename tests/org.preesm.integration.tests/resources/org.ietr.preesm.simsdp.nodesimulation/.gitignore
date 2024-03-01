@@ -1,2 +1,8 @@
 !Algo/generated/
-!Scenarios/generated/
+Algo/generated/*
+!Algo/generated/top.pi
+!Scenarios/generated
+Scenarios/generated/*
+!Scenarios/generated/top_top.scenario
+SimGrid/
+Simulation/

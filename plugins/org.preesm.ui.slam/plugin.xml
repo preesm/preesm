@@ -207,6 +207,47 @@
                type="java.lang.String">
             </parameter>
          </vertexType>
+         <vertexType
+               name="GPU">
+            <color
+                  blue="128"
+                  green="122"
+                  red="38">
+            </color>
+            <shape
+                  type="roundedBox">
+            </shape>
+            <parameter
+                  name="hardwareId"
+                  type="java.lang.String">
+            </parameter>
+            <parameter
+                  name="id"
+                  type="java.lang.String">
+            </parameter>
+            <size
+                  height="40"
+                  width="40">
+            </size>
+            <parameter
+                  name="refinement"
+                  type="java.lang.String">
+            </parameter>
+            <parameter
+                  name="definition"
+                  type="java.lang.String">
+            </parameter>
+            <parameter
+                  name="custom parameters"
+                  type="java.util.Map">
+            </parameter>
+            <parameter name="frequency"
+               type="java.lang.String">
+            </parameter>
+            <parameter name="memory"
+               type="java.lang.String">
+            </parameter>
+         </vertexType>
          <vertexType name="Mem">
             <color blue="173" green="237" red="198">
             </color>
@@ -444,7 +485,7 @@
                </visibleWhen>
             </command>
             <command
-                  commandId="org.preesm.ui.slam.command.ArchitectureGeneratorSimSDP"
+                  commandId="org.preesm.ui.slam.command.ArchitectureGeneratorSimSDPNode"
                   icon="resources/icons/graphiti.gif"
                   label="Generate custom SimSDP architecture"
                   tooltip="Generate a custom SimSDP architecture in this project."
@@ -468,7 +509,7 @@
                </visibleWhen>
             </command>
             <command
-                  commandId="org.preesm.ui.slam.command.ArchitectureSimSDPMultinetGenerator"
+                  commandId="org.preesm.ui.slam.command.ArchitectureGeneratorSimSDPNetwork"
                   icon="resources/icons/graphiti.gif"
                   label="Generate custom architecture network"
                   tooltip="Generate a custom architecture network in this project."
@@ -508,12 +549,12 @@
       </command>
       <command
 
-            id="org.preesm.ui.slam.command.ArchitectureSimSDPGenerator"
-            name="Architecture Generator SimSDP">
+            id="org.preesm.ui.slam.command.ArchitectureGeneratorSimSDPNetwork"
+            name="Architecture Generator SimSDP Network">
       </command>
       <command
-            id="org.preesm.ui.slam.command.ArchitectureSimSDPMultinetGenerator"
-            name="Architecture Generator network">
+            id="org.preesm.ui.slam.command.ArchitectureGeneratorSimSDPNode"
+            name="Architecture Generator SimSDP Node">
       </command>
 
    </extension>
@@ -531,13 +572,13 @@
       </handler>
 
       <handler
-            class="org.preesm.ui.slam.popup.actions.ArchitectureSimSDPnodeGeneratorPopup"
-            commandId="org.preesm.ui.slam.command.ArchitectureSimSDPGenerator">
+            class="org.preesm.ui.slam.popup.actions.ArchitectureGeneratorSimSDPNodePopup"
+            commandId="org.preesm.ui.slam.command.ArchitectureGeneratorSimSDPNode">
 
       </handler>
       <handler
-            class="org.preesm.ui.slam.popup.actions.ArchitectureSimSDPnetworkGeneratorPopup"
-            commandId="org.preesm.ui.slam.command.ArchitectureSimSDPMultinetGenerator">
+            class="org.preesm.ui.slam.popup.actions.ArchitectureGeneratorSimSDPNetworkPopup"
+            commandId="org.preesm.ui.slam.command.ArchitectureGeneratorSimSDPNetwork">
       </handler>
       
    </extension>

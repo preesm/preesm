@@ -53,7 +53,7 @@ import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.pisdf.check.CheckerErrorLevel;
 import org.preesm.model.pisdf.check.PiGraphConsistenceChecker;
 import org.preesm.model.pisdf.factory.PiMMUserFactory;
-import org.preesm.model.pisdf.util.URCSeeker;
+import org.preesm.model.pisdf.util.ClusteringPatternSeekerUrc;
 
 /**
  * @author dgageot
@@ -69,7 +69,7 @@ public class URCSeekerTest {
   private AbstractActor             actorE;
   private AbstractActor             actorF;
   private AbstractActor             actorG;
-  private URCSeeker                 seeker;
+  private ClusteringPatternSeekerUrc                 seeker;
   private List<List<AbstractActor>> seekerResults;
 
   /**
@@ -80,7 +80,7 @@ public class URCSeekerTest {
     // Create a chained actors PiGraph
     createChainedActorsPiGraph();
     // Build the URC seeker
-    this.seeker = new URCSeeker(this.topGraph);
+    this.seeker = new ClusteringPatternSeekerUrc(this.topGraph);
     // Retrieve list of URC chain in the graph
     seekerResults = this.seeker.seek();
   }

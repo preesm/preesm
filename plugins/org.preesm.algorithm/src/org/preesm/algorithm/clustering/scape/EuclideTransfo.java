@@ -177,23 +177,19 @@ public class EuclideTransfo {
         // connect din to frk
         final DataInputPort din = PiMMUserFactory.instance.createDataInputPort();
         din.setName("in");
-        //
         final Long dt = in.getExpression().evaluate() * rv.get(a);
-        final Long rt1 = in.getExpression().evaluate() * rv1;
-        final Long rt2 = in.getExpression().evaluate() * rv2;
         din.setExpression(dt);
-
         frk.getDataInputPorts().add(din);
         final Fifo fin = PiMMUserFactory.instance.createFifo();
         fin.setType(in.getFifo().getType());
         fin.setSourcePort(in.getFifo().getSourcePort());
         fin.setTargetPort(din);
-
         fin.setContainingGraph(a.getContainingGraph());
 
         // connect fork to oEmpty_0
         final DataOutputPort dout = PiMMUserFactory.instance.createDataOutputPort();
         dout.setName("out_0");
+        final Long rt1 = in.getExpression().evaluate() * rv1;
         dout.setExpression(rt1);
         frk.getDataOutputPorts().add(dout);
         final Fifo fout = PiMMUserFactory.instance.createFifo();
@@ -205,6 +201,7 @@ public class EuclideTransfo {
         // connect fork to duplicated actors
         final DataOutputPort doutn = PiMMUserFactory.instance.createDataOutputPort();
         doutn.setName("out_" + 1);
+        final Long rt2 = in.getExpression().evaluate() * rv2;
         doutn.setExpression(rt2);
         frk.getDataOutputPorts().add(doutn);
         final Fifo foutn = PiMMUserFactory.instance.createFifo();
@@ -261,11 +258,8 @@ public class EuclideTransfo {
 
         // connect Join to dout
         final DataOutputPort dout = PiMMUserFactory.instance.createDataOutputPort();
-
         dout.setName("out");
         final Long dt = out.getExpression().evaluate() * rv.get(a);
-        final Long rt1 = out.getExpression().evaluate() * rv1;
-        final Long rt2 = out.getExpression().evaluate() * rv2;
         dout.setExpression(dt);
         jn.getDataOutputPorts().add(dout);
         final Fifo fout = PiMMUserFactory.instance.createFifo();
@@ -277,6 +271,7 @@ public class EuclideTransfo {
         // connect oEmpty_0 to Join
         final DataInputPort din = PiMMUserFactory.instance.createDataInputPort();
         din.setName("in_0");
+        final Long rt1 = out.getExpression().evaluate() * rv1;
         din.setExpression(rt1);
         jn.getDataInputPorts().add(din);
         final Fifo fin = PiMMUserFactory.instance.createFifo();
@@ -288,6 +283,7 @@ public class EuclideTransfo {
         // connect duplicated actors to Join
         final DataInputPort dinn = PiMMUserFactory.instance.createDataInputPort();
         dinn.setName("in_" + 1);
+        final Long rt2 = out.getExpression().evaluate() * rv2;
         dinn.setExpression(rt2);
         jn.getDataInputPorts().add(dinn);
         final Fifo finn = PiMMUserFactory.instance.createFifo();
@@ -300,12 +296,12 @@ public class EuclideTransfo {
         index++;
       }
     }
+
     for (final ConfigInputPort cfg : a.getConfigInputPorts()) {
       copyActor.getConfigInputPorts().stream().filter(x -> x.getName().equals(cfg.getName()))
           .forEach(x -> PiMMUserFactory.instance.createDependency(cfg.getIncomingDependency().getSetter(), x));
       copyActor.getConfigInputPorts().stream().filter(x -> x.getName().equals(cfg.getName()))
           .forEach(x -> x.getIncomingDependency().setContainingGraph(cfg.getIncomingDependency().getContainingGraph()));
-
     }
 
     // remove empty introduced fifo
@@ -313,7 +309,6 @@ public class EuclideTransfo {
         .forEach(x -> a.getContainingPiGraph().removeFifo(x));
     a.getContainingPiGraph().getFifos().stream().filter(x -> x.getTargetPort() == null)
         .forEach(x -> a.getContainingPiGraph().removeFifo(x));
-
   }
 
 }

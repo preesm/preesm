@@ -254,6 +254,14 @@ class FPGA extends ProcessingElement {
 	String board
 }
 
+class GPU extends ProcessingElement {
+	op TimingType[] getTimingTypes() {
+		return #[TimingType.EXECUTION_TIME, TimingType.INITIATION_INTERVAL].toEList.unmodifiableEList
+	}
+	int frequency = "100"
+	int memory = "100"
+}
+
 class ComNode extends Component {
 	boolean parallel = "true"
 	float speed = "1"

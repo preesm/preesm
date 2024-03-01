@@ -1,4 +1,4 @@
-<?xml version='1.0'?>
+<!-- Cluster with shared backbone:3:3:1 -->
 <!DOCTYPE platform SYSTEM "https://simgrid.org/simgrid.dtd">
 <platform version="4.1">
 <zone id="my zone" routing="Floyd">

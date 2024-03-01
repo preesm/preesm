@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
@@ -42,13 +43,13 @@ import org.preesm.ui.utils.FileUtils;
 public class InternodeBuilder {
   private final Scenario          scenario;
   private final List<PiGraph>     subGraphs;
-  int                             nodeIndex    = 0;
+  int                             nodeIndex = 0;
   private final List<NodeMapping> hierarchicalArchitecture;
-  static String                   fileError    = "Error occurred during file generation: ";
-  private String                  codegenPath  = "";
-  private String                  graphPath    = "";
-  private String                  scenarioPath = "";
-  private String                  archiPath    = "";
+
+  private String codegenPath  = "";
+  private String graphPath    = "";
+  private String scenarioPath = "";
+  private String archiPath    = "";
 
   public InternodeBuilder(Scenario scenario, List<PiGraph> subGraphs, List<NodeMapping> hierarchicalArchitecture) {
     this.subGraphs = subGraphs;
@@ -68,22 +69,24 @@ public class InternodeBuilder {
   }
 
   private void initPath() {
-    final String[] uriString = scenario.getAlgorithm().getUrl().split("/");
-    graphPath = "/" + uriString[1] + "/" + uriString[2] + "/generated/";
-    scenarioPath = "/" + uriString[1] + "/Scenarios/generated/";
-    codegenPath = uriString[1] + "/Code/generated/top";
-    archiPath = uriString[1] + "/Archi/";
 
+    final String graphFilePath = scenario.getAlgorithm().getUrl();
+    graphPath = graphFilePath.substring(0, graphFilePath.lastIndexOf("/") + 1) + "generated/";
+
+    final String scenarioFilePath = scenario.getScenarioURL();
+    scenarioPath = scenarioFilePath.substring(0, scenarioFilePath.lastIndexOf("/") + 1) + "generated/";
+
+    codegenPath = scenario.getCodegenDirectory() + "/top/";
+
+    final String archiFilePath = scenario.getDesign().getUrl();
+    archiPath = archiFilePath.substring(0, archiFilePath.lastIndexOf("/") + 1);
   }
 
   private PiGraph constructTop() {
-    PiGraph topGraph = PiMMUserFactory.instance.createPiGraph();
 
-    for (final PiGraph sub : subGraphs) {
-      if (!sub.getName().contains("sub")) {
-        topGraph = sub;
-      }
-    }
+    final PiGraph topGraph = subGraphs.stream().filter(sub -> !sub.getName().contains("sub")).findAny()
+        .orElseThrow(PreesmRuntimeException::new);
+
     topGraph.setName("top");
     emptyTop(topGraph);
     // 2. insert delay
@@ -92,19 +95,23 @@ public class InternodeBuilder {
     // remove extra parameter
     for (final AbstractActor a : topGraph.getExecutableActors()) {
       final List<String> cfgOccur = new ArrayList<>();
-      for (int i = 0; i < a.getConfigInputPorts().size(); i++) {
-        a.getConfigInputPorts().get(i)
-            .setName(((AbstractVertex) a.getConfigInputPorts().get(i).getIncomingDependency().getSetter()).getName());
-        final String name = a.getConfigInputPorts().get(i).getName();
 
-        if (cfgOccur.contains(a.getConfigInputPorts().get(i).getName())) {
-          topGraph.removeDependency(a.getConfigInputPorts().get(i).getIncomingDependency());
-          a.getConfigInputPorts().remove(a.getConfigInputPorts().get(i));
-          i--;
+      final Iterator<ConfigInputPort> iter = a.getConfigInputPorts().iterator();
+      while (iter.hasNext()) {
+
+        final ConfigInputPort cin = iter.next();
+
+        cin.setName(((AbstractVertex) cin.getIncomingDependency().getSetter()).getName());
+        final String name = cin.getName();
+
+        if (cfgOccur.contains(cin.getName())) {
+          topGraph.removeDependency(cin.getIncomingDependency());
+          iter.remove();
         }
         cfgOccur.add(name);
       }
     }
+
     for (final Parameter param : topGraph.getAllParameters()) {
       for (final Dependency element : param.getOutgoingDependencies()) {
         if (element.getContainingGraph() != topGraph) {
@@ -112,8 +119,8 @@ public class InternodeBuilder {
         }
       }
     }
-    for (final Dependency i : topGraph.getAllDependencies()) {
 
+    for (final Dependency i : topGraph.getAllDependencies()) {
       final boolean getterContained = i.getGetter().getConfigurable() != null;
       if (!getterContained) {
         i.getSetter().getOutgoingDependencies().remove(i);
@@ -141,28 +148,32 @@ public class InternodeBuilder {
 
   private int emptyTop(PiGraph topGraph) {
 
-    final String[] uriString = scenario.getAlgorithm().getUrl().split("/");
-    final String graphPath = "/" + uriString[1] + "/" + uriString[2] + "/generated/";
     topGraph.setUrl(graphPath + topGraph.getName() + ".pi");
     for (final AbstractActor pi : topGraph.getActors()) {
-      if (pi instanceof PiGraph) {
-        final Actor aEmpty = PiMMUserFactory.instance.createActor();
-        aEmpty.setName(pi.getName());
-        for (int i = 0; i < pi.getDataInputPorts().size(); i++) {
-          final DataInputPort inputPort = PiMMUserFactory.instance.copy(pi.getDataInputPorts().get(i));
-          aEmpty.getDataInputPorts().add(inputPort);
-        }
-        for (int i = 0; i < pi.getDataOutputPorts().size(); i++) {
-          final DataOutputPort outputPort = PiMMUserFactory.instance.copy(pi.getDataOutputPorts().get(i));
-          aEmpty.getDataOutputPorts().add(outputPort);
-        }
-        for (int i = 0; i < pi.getConfigInputPorts().size(); i++) {
-          final ConfigInputPort cfgInputPort = PiMMUserFactory.instance.copy(pi.getConfigInputPorts().get(i));
-          aEmpty.getConfigInputPorts().add(cfgInputPort);
-        }
-        topGraph.replaceActor(pi, aEmpty);
-        nodeIndex++;
+      if (!(pi instanceof PiGraph)) {
+        continue;
       }
+
+      final Actor aEmpty = PiMMUserFactory.instance.createActor();
+      aEmpty.setName(pi.getName());
+
+      for (final DataInputPort din : pi.getDataInputPorts()) {
+        final DataInputPort inputPort = PiMMUserFactory.instance.copy(din);
+        aEmpty.getDataInputPorts().add(inputPort);
+      }
+
+      for (final DataOutputPort dout : pi.getDataOutputPorts()) {
+        final DataOutputPort outputPort = PiMMUserFactory.instance.copy(dout);
+        aEmpty.getDataOutputPorts().add(outputPort);
+      }
+
+      for (final ConfigInputPort cin : pi.getConfigInputPorts()) {
+        final ConfigInputPort cfgInputPort = PiMMUserFactory.instance.copy(cin);
+        aEmpty.getConfigInputPorts().add(cfgInputPort);
+      }
+
+      topGraph.replaceActor(pi, aEmpty);
+      nodeIndex++;
     }
     return nodeIndex;
   }
@@ -176,7 +187,7 @@ public class InternodeBuilder {
     final Map<String, Integer> nodeList = new HashMap<>();
     nodeList.put("node", nodeIndex);
     final Design topArchi = ArchitecturesGenerator.generateArchitecture(nodeList, "top",
-        hierarchicalArchitecture.get(0).getNodeCommunicationRate());
+        hierarchicalArchitecture.get(0).getNodeCommunicationRate(), 0);
     a.saveArchitecture(topArchi);
     topArchi.setUrl(archiPath + "top.slam");
     // 4. generate scenario
@@ -206,8 +217,8 @@ public class InternodeBuilder {
       throw new PreesmRuntimeException("Could not open outputstream file " + uri.toPlatformString(false));
     }
 
-    PreesmLogger.getLogger().log(Level.INFO, "top print in : " + graphPath);
+    PreesmLogger.getLogger().log(Level.INFO, () -> "top print in : " + graphPath);
     WorkspaceUtils.updateWorkspace();
-
   }
+
 }

@@ -47,8 +47,8 @@ import org.preesm.model.pisdf.InterfaceActor;
 import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.pisdf.brv.BRVMethod;
 import org.preesm.model.pisdf.brv.PiBRV;
+import org.preesm.model.pisdf.util.ClusteringPatternSeekerUrc;
 import org.preesm.model.pisdf.util.PiSDFSubgraphBuilder;
-import org.preesm.model.pisdf.util.URCSeeker;
 import org.preesm.model.scenario.Scenario;
 import org.preesm.model.slam.ComponentInstance;
 
@@ -64,10 +64,10 @@ public class ClusterPartitionerURC extends ClusterPartitioner {
 
   private Map<AbstractVertex, Long> brv;
   private final int                 clusterId;
-  private final int                 scapeMode;
+  private final ScapeMode           scapeMode;
 
   /**
-   * Builds a ClusterPartitioner object.
+   * Builds a ClusterPartitioner Unique Repetition Count object.
    *
    *
    * @param scenario
@@ -76,7 +76,7 @@ public class ClusterPartitionerURC extends ClusterPartitioner {
    *          Number of processing elements in compute clusters.
    */
   public ClusterPartitionerURC(final Scenario scenario, final int numberOfPEs, Map<AbstractVertex, Long> brv,
-      int clusterId, int scapeMode) {
+      int clusterId, ScapeMode scapeMode) {
     super(scenario.getAlgorithm(), scenario, numberOfPEs);
     this.brv = brv;
     this.clusterId = clusterId;
@@ -90,7 +90,7 @@ public class ClusterPartitionerURC extends ClusterPartitioner {
   public PiGraph cluster() {
 
     // Retrieve URC chains in input graph and verify that actors share component constraints.
-    final List<List<AbstractActor>> graphURCs = new URCSeeker(this.graph).seek();
+    final List<List<AbstractActor>> graphURCs = new ClusteringPatternSeekerUrc(this.graph).seek();
     final List<List<AbstractActor>> constrainedURCs = new LinkedList<>();
     if (!graphURCs.isEmpty()) {
       final List<AbstractActor> urc = graphURCs.get(0);// cluster one by one
@@ -132,10 +132,12 @@ public class ClusterPartitionerURC extends ClusterPartitioner {
    * @param clustredActorRepetition
    *          repetition vector coefficient of the clustered actors
    */
-  public static Long computeScalingFactor(PiGraph subGraph, Long clustredActorRepetition, Long nPE, int mode) {
+  public static Long computeScalingFactor(PiGraph subGraph, Long clustredActorRepetition, Long nPE,
+      ScapeMode scapeMode) {
 
     Long scale;
-    if (mode == 0 && subGraph.getDataInterfaces().stream().anyMatch(x -> x.getGraphPort().getFifo().isHasADelay())) {
+    if (scapeMode == ScapeMode.DATA
+        && subGraph.getDataInterfaces().stream().anyMatch(x -> x.getGraphPort().getFifo().isHasADelay())) {
       final Long ratio = computeDelayRatio(subGraph);
       scale = MathFunctionsHelper.gcd(ratio, clustredActorRepetition);
     } else {
@@ -171,7 +173,6 @@ public class ClusterPartitionerURC extends ClusterPartitioner {
         // Sélectionne le premier diviseur qui est plus grand que nC
         ncDivisor = i;
         break; // On sort de la boucle car on a trouvé le diviseur souhaité
-
       }
     }
     return ncDivisor;

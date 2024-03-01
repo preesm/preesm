@@ -99,8 +99,9 @@ public class ArchitecturesGenerator {
     saveArchitecture(generateFpgaArchitecture());
   }
 
-  public void generateAndSaveArchitecture(Map<String, Integer> cores, String nodeName, Double communicationRate) {
-    saveArchitecture(generateArchitecture(cores, nodeName, communicationRate));
+  public void generateAndSaveArchitecture(Map<String, Integer> cores, String nodeName, Double communicationRate,
+      int coreIDStart) {
+    saveArchitecture(generateArchitecture(cores, nodeName, communicationRate, coreIDStart));
   }
 
   /**
@@ -180,8 +181,9 @@ public class ArchitecturesGenerator {
     return design;
   }
 
-  public static Design generateArchitecture(Map<String, Integer> coresList, String nodeName, Double communicationRate) {
-    int i1 = 0;
+  public static Design generateArchitecture(Map<String, Integer> coresList, String nodeName, Double communicationRate,
+      int coreIDStart) {
+    int i1 = coreIDStart;
     final Design design = SlamFactory.eINSTANCE.createDesign();
     final ComponentHolder ch = SlamFactory.eINSTANCE.createComponentHolder();
     final ComInterface mi = SlamFactory.eINSTANCE.createComInterface();

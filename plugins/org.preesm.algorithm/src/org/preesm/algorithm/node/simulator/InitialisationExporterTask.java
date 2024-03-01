@@ -1,9 +1,9 @@
 package org.preesm.algorithm.node.simulator;
 
+import java.io.File;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.xtend2.lib.StringConcatenation;
 import org.preesm.algorithm.mapper.abc.impl.latency.LatencyAbc;
 import org.preesm.algorithm.mapper.ui.stats.StatGeneratorAbc;
 import org.preesm.commons.doc.annotations.Port;
@@ -25,18 +25,16 @@ import org.preesm.workflow.implement.AbstractTaskImplementation;
  * @author orenaud
  */
 @PreesmTask(id = "InitialisationExporterTask.identifier", name = "Initialisation Stats exporter",
-    category = "CSV exporters",
-
-    inputs = { @Port(name = "ABC", type = LatencyAbc.class) },
-
+    category = "CSV exporters", inputs = { @Port(name = "ABC", type = LatencyAbc.class) },
     shortDescription = "This task exports simulation metric on one core as a *.csv file .")
+
 public class InitialisationExporterTask extends AbstractTaskImplementation {
 
   @Override
   public Map<String, Object> execute(Map<String, Object> inputs, Map<String, String> parameters,
       IProgressMonitor monitor, String nodeName, Workflow workflow) throws InterruptedException {
     // Extract project name and initialize path
-    final String path = "/" + workflow.getProjectName() + "/Simulation/";
+    final String path = File.separator + workflow.getProjectName() + "/Simulation/";
 
     // Extract LatencyAbc input
     final LatencyAbc abc = (LatencyAbc) inputs.get("ABC");
@@ -46,16 +44,16 @@ public class InitialisationExporterTask extends AbstractTaskImplementation {
     long mem = 0L;
 
     // Initialize CSV content with header
-    String content = "Final Latency;Memory;Energy;Cost \n";
+    String content = "Final Latency;Memory;Energy;Cost; Max speedup \n";
 
     // Generate stats for each operator component instance
     final StatGeneratorAbc stat = new StatGeneratorAbc(abc);
     for (final ComponentInstance ci : abc.getArchitecture().getOperatorComponentInstances()) {
       mem += stat.getMem(ci);
     }
-
+    final Long speed = stat.getDAGWorkLength() / stat.getDAGSpanLength();
     // Append metrics to CSV content
-    content += lat + ";" + mem + ";" + 1 + ";" + 1;
+    content += lat + ";" + mem + ";" + 1 + ";" + 1 + ";" + speed;
 
     // Export content to CSV file
     PreesmIOHelper.getInstance().print(path, "initialisation.csv", content);
@@ -67,45 +65,49 @@ public class InitialisationExporterTask extends AbstractTaskImplementation {
   }
 
   private void plateformInit(String path) {
-    final StringConcatenation content = new StringConcatenation();
-    content.append("<!-- Cluster with crossbar:1:1:1 -->\n");
-    content.append("<?xml version='1.0'?>\n");
-    content.append("<!DOCTYPE platform SYSTEM \"https://simgrid.org/simgrid.dtd\">\n");
-    content.append("<platform version=\"4.1\">\n");
-    content.append("<zone id=\"my zone\" routing=\"Floyd\">\n");
-    content.append("<cluster id=\"Cluster with crossbar\" prefix=\"Node\" radical=\"0\" ");
-    content.append("suffix=\"\"speed=\"1f\" bw=\"125MBps\" lat=\"50us\" >\n");
-    content.append("      <prop id=\"wattage_per_state\" value=\"90.0:90.0:150.0\" />\n");
-    content.append("      <prop id=\"wattage_range\" value=\"100.0:200.0\" />\n");
-    content.append("  </cluster>\n");
-    content.append("</zone>\n");
-    content.append("</platform>");
+    final String content = """
+        <!-- Cluster with crossbar:1:1:1 -->
+        <?xml version='1.0'?>
+        <!DOCTYPE platform SYSTEM "https://simgrid.org/simgrid.dtd">
+        <platform version="4.1">
+          <zone id="my zone" routing="Floyd">
+            <cluster id="Cluster with crossbar" prefix="Node" radical="0" suffix="" speed="1f" bw="125MBps" lat="50us">
+              <prop id="wattage_per_state" value="90.0:90.0:150.0"/>
+              <prop id="wattage_range" value="100.0:200.0"/>
+            </cluster>
+          </zone>
+        </platform>
+        """;
     PreesmIOHelper.getInstance().print(path, "SimSDP_network.xml", content);
-
   }
 
   private void ganttInit(long lat, String path) {
-    final String content = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?>\n" + "<data>\n"
-        + "    <event color=\"#c896fa\" end=\"" + lat
-        + "\" mapping=\"Node0\" start=\"0\" title=\"top_0 (x1)\">Step_top_0_(x1).</event>\n"
-        + "    <perfs impl_length=\"" + lat + "\" impl_nbCores=\"1\" impl_nbUsedCores=\"1\" span=\"" + lat
-        + "\" work=\"" + lat + "\">\n" + "        <core id=\"Node0\" load=\"100\" used_mem=\"0\">Core_Node0.</core>\n"
-        + "    </perfs>\n" + "</data>";
+    final String content = """
+        <?xml version="1.0" encoding="UTF-8" standalone="no"?>
+        <data>
+            <event color="#c896fa" end="%d" mapping="Node0" start="0" title="top_0 (x1)">Step_top_0_(x1).</event>
+            <perfs impl_length="%d" impl_nbCores="1" impl_nbUsedCores="1" span="%d" work="%d">
+                <core id="Node0" load="100" used_mem="0">Core_Node0.</core>
+            </perfs>
+        </data>
+        """.formatted(lat, lat, lat, lat);
     PreesmIOHelper.getInstance().print(path, "top_top_stats_pgantt.xml", content);
   }
 
   private void pigraphInit(String path) {
-    final StringConcatenation content = new StringConcatenation();
-    content.append("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n");
-    content.append("<graphml xmlns=\"http://graphml.graphdrawing.org/xmlns\">\n");
-    content.append("    <key attr.name=\"parameters\" for=\"graph\" id=\"parameters\"/>\n");
-    content.append("    <key attr.name=\"variables\" for=\"graph\" id=\"variables\"/>\n");
-    content.append("    <key attr.name=\"arguments\" for=\"node\" id=\"arguments\"/>\n");
-    content.append("    <key attr.name=\"name\" attr.type=\"string\" for=\"graph\"/>\n");
-    content.append("    <graph edgedefault=\"directed\">\n");
-    content.append("        <data key=\"name\">init</data>\n");
-    content.append("        <node id=\"top\" kind=\"actor\"/>\n");
-    content.append("    </graph>\n" + "</graphml>");
+    final String content = """
+        <?xml version="1.0" encoding="UTF-8"?>
+        <graphml xmlns="http://graphml.graphdrawing.org/xmlns">
+            <key attr.name="parameters" for="graph" id="parameters"/>
+            <key attr.name="variables" for="graph" id="variables"/>
+            <key attr.name="arguments" for="node" id="arguments"/>
+            <key attr.name="name" attr.type="string" for="graph"/>
+            <graph edgedefault="directed">
+                <data key="name">init</data>
+                <node id="top" kind="actor"/>
+            </graph>
+        </graphml>
+        """;
     PreesmIOHelper.getInstance().print(path, "top.pi", content);
   }
 

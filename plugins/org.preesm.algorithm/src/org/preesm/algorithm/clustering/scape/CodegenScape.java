@@ -65,8 +65,13 @@ public class CodegenScape {
    * @return The string content of the .h file.
    */
   private StringConcatenation buildHContent(ScapeBuilder build, PiGraph subGraph) {
+
     final StringConcatenation result = new StringConcatenation();
+
     result.append(header(subGraph));
+    final String nodeId = nodeIdentifier(subGraph);
+
+    result.append("#include \"preesm_gen" + nodeId + ".h\"\n");
     final String upper = subGraph.getName().toUpperCase() + "_H";
     result.append("#ifndef " + upper + "\n", "");
     result.append("#define " + upper + "\n", "");
@@ -75,14 +80,25 @@ public class CodegenScape {
     for (final AbstractActor actor : subGraph.getOnlyActors()) {
       if (actor instanceof Actor) {
         final CHeaderRefinement cHeaderRefinement = (CHeaderRefinement) (((Actor) actor).getRefinement());
-        if (cHeaderRefinement.getInitPrototype() != null) {
-          result.append("#include \"" + cHeaderRefinement.getFileName() + "\" \n\n", "");
-        }
+        result.append("#include \"" + cHeaderRefinement.getFileName() + "\" \n\n", "");
       }
     }
 
     result.append("#endif \n", "");
     return result;
+  }
+
+  private String nodeIdentifier(PiGraph subGraph) {
+    PiGraph tempg = subGraph;
+    while (tempg.getContainingPiGraph() != null) {
+      tempg = tempg.getContainingPiGraph();
+
+    }
+    if (tempg.getName().contains("sub")) {
+      return tempg.getName().replace("sub", "");
+    }
+
+    return "";
   }
 
   /**
@@ -120,16 +136,17 @@ public class CodegenScape {
     for (final String buffer : build.getBuffer()) {
       result.append(buffer + "\n ", "");
     }
-    for (final String buffer : build.getDynmicBuffer()) {
-      result.append(buffer + "\n ", "");
-    }
+    // for (final String buffer : build.getDynmicBuffer()) {
+    // result.append(buffer + "\n ", "");
+    // }
     result.append("// body \n ", "");
     final String body = build.getBody();
     result.append(body + "\n\n ", "");
 
     result.append("// free buffer  \n ", "");
     for (final String buffer : build.getDynmicBuffer()) {
-      final String buff = buffer.split("\\s|\\[|\\]")[1];
+      // final String buff = buffer.split("\\s|\\[|\\]")[1];
+      final String buff = buffer;
       result.append("free(" + buff + "); \n ", "");
     }
 

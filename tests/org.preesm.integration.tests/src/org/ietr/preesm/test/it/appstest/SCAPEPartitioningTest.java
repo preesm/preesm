@@ -36,10 +36,16 @@
 package org.ietr.preesm.test.it.appstest;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 import org.eclipse.core.runtime.CoreException;
 import org.ietr.preesm.test.it.api.WorkflowRunner;
 import org.junit.Assert;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
+import org.junit.runners.Parameterized.Parameters;
 
 /**
  * Testing SCAPE graph transformation
@@ -47,25 +53,44 @@ import org.junit.Test;
  * @author orenaud
  */
 
+@RunWith(Parameterized.class)
 public class SCAPEPartitioningTest {
-  private static final String SCAPE2 = "scape2.workflow";
-  private static final String ABC_3C = "ABC_3CoresX86.scenario";
 
-  private final String[] workflow    = { "euclide.workflow", "data.workflow", "pip.workflow", "scape1.workflow", SCAPE2,
-      SCAPE2, SCAPE2, "schedule.workflow" };
-  private final String[] scenario    = { "ABC_5CoresX86.scenario", ABC_3C, ABC_3C, ABC_3C, ABC_3C, ABC_3C,
-      "top_3CoresX86.scenario", "ABC2_3CoresX86.scenario" };
-  private final String   projectName = "org.ietr.preesm.scape";
+  final String workflow;
+  final String scenario;
+  final String projectName;
+
+  public SCAPEPartitioningTest(final String workflow, final String scenario, final String projectName) {
+    this.scenario = scenario;
+    this.workflow = workflow;
+    this.projectName = projectName;
+  }
+
+  @Parameters(name = "{2} - {0} - {1}")
+  public static Collection<Object[]> data() {
+
+    final String SCAPE2 = "scape2.workflow";
+    final String ABC_3C = "ABC_3CoresX86.scenario";
+
+    final List<Object[]> params = new ArrayList<>();
+
+    final String testProjectName = "org.ietr.preesm.scape";
+    final String[] testScenarios = new String[] { "ABC_5CoresX86.scenario", ABC_3C, ABC_3C, ABC_3C, ABC_3C, ABC_3C,
+        "top_3CoresX86.scenario", "ABC2_3CoresX86.scenario" };
+    final String[] testWorkflows = new String[] { "euclide.workflow", "data.workflow", "pip.workflow",
+        "scape1.workflow", SCAPE2, SCAPE2, SCAPE2, "schedule.workflow" };
+    for (int i = 0; i < testScenarios.length; i++) {
+      params.add(new Object[] { testWorkflows[i], testScenarios[i], testProjectName });
+    }
+
+    return params;
+  }
 
   @Test
-  public void testSCAPEPartitioningTest() throws IOException, CoreException {
-
-    for (int i = 0; i < 8; i++) {
-      final String workflowFilePathStr = "/Workflows/" + workflow[i];
-      final String scenarioFilePathStr = "/Scenarios/" + scenario[i];
-
-      final boolean success = WorkflowRunner.runWorkFlow(null, projectName, workflowFilePathStr, scenarioFilePathStr);
-      Assert.assertTrue("Workflow [" + workflow[i] + "] with scenario [" + scenario + "] caused failure", success);
-    }
+  public void test() throws IOException, CoreException {
+    final String workflowFilePathStr = "/Workflows/" + workflow;
+    final String scenarioFilePathStr = "/Scenarios/" + scenario;
+    final boolean success = WorkflowRunner.runWorkFlow(null, projectName, workflowFilePathStr, scenarioFilePathStr);
+    Assert.assertTrue("Workflow [" + workflow + "] with scenario [" + scenario + "] caused failure", success);
   }
 }

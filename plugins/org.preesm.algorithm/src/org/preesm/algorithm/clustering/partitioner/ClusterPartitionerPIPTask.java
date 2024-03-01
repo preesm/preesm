@@ -39,7 +39,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import org.eclipse.core.runtime.IProgressMonitor;
-import org.preesm.algorithm.clustering.scape.ClusteringScapeTask;
 import org.preesm.commons.doc.annotations.Parameter;
 import org.preesm.commons.doc.annotations.Port;
 import org.preesm.commons.doc.annotations.PreesmTask;
@@ -53,7 +52,6 @@ import org.preesm.model.pisdf.check.CheckerErrorLevel;
 import org.preesm.model.pisdf.check.PiGraphConsistenceChecker;
 import org.preesm.model.scenario.Scenario;
 import org.preesm.workflow.elements.Workflow;
-import org.preesm.workflow.implement.AbstractTaskImplementation;
 
 /**
  * Cluster Partitioner Task
@@ -61,21 +59,22 @@ import org.preesm.workflow.implement.AbstractTaskImplementation;
  * @author orenaud
  *
  */
-@PreesmTask(id = "cluster-partitioner-PIP", name = "Cluster Partitioner",
+@PreesmTask(id = "cluster-partitioner-PIP", name = "Cluster Partitioner PIP",
     inputs = { @Port(name = "scenario", type = Scenario.class, description = "Scenario") },
     outputs = { @Port(name = "PiMM", type = PiGraph.class, description = "Output PiSDF graph") },
     parameters = {
-        @Parameter(name = "Number of PEs in clusters",
+        @Parameter(name = ClusterPartitionerTask.NB_PE,
             description = "The number of PEs in compute clusters. This information is used to balance actor firings"
                 + " between coarse and fine-grained levels.",
             values = { @Value(name = "Fixed:=n", effect = "Where $$n\\in \\mathbb{N}^*$$.") }),
-        @Parameter(name = "Non-cluster actor", description = "does not allow to group the actors entered in parameter",
+        @Parameter(name = ClusterPartitionerDATATask.NON_CLUSTER_PARAM,
+            description = "does not allow to group the actors entered in parameter",
             values = { @Value(name = "String", effect = "disable cluster") }) })
-public class ClusterPartitionerPIPTask extends AbstractTaskImplementation {
-  public static final String NB_PE               = "Number of PEs in compute clusters";
-  public static final String DEFAULT_NB_PE       = "1";
-  public static final String NON_CLUSTER_DEFAULT = "";
+
+public class ClusterPartitionerPIPTask extends ClusterPartitionerTask {
+
   public static final String NON_CLUSTER_PARAM   = "Non-cluster actor";
+  public static final String NON_CLUSTER_DEFAULT = "";
 
   @Override
   public Map<String, Object> execute(Map<String, Object> inputs, Map<String, String> parameters,
@@ -87,7 +86,7 @@ public class ClusterPartitionerPIPTask extends AbstractTaskImplementation {
 
     // Parameters
     final String nbPE = parameters.get(NB_PE);
-    final String nonClusterable = parameters.get(ClusteringScapeTask.NON_CLUSTER_PARAM);
+    final String nonClusterable = parameters.get(NON_CLUSTER_PARAM);
     final String[] nonClusterableListStr = nonClusterable.split("\\*");
     final List<AbstractActor> nonClusterableList = new LinkedList<>();
     for (final String element : nonClusterableListStr) {

@@ -1,7 +1,0 @@
-Step;Duration(ms)
-initialisation:0;21522
-node partitioning:1;7487
-thread partitioning node0:1;7260
-thread partitioning node1:1;28991
-thread partitioning node2:1;8221
-simulation:1;5004

@@ -42,6 +42,22 @@ public class AnalysisPage5 {
   Double                 scoreMin = Double.MAX_VALUE;
   Double                 scoreMax = 0d;
 
+  private static final String DESCRIPTION = """
+      <html>
+      This chart gives an idea of the pareto optimal network
+       architecture for a given dataflow application.<br>
+      The simulation assesses performance based on four primary criteria,
+      each individually weighted: Final latency, Memory, Energy, and Cost.<br>
+      These criteria are combined in a weighted linear function, expressed as Pareto
+      (wL x Final latency + wM x Memory + wE x Energy + wC x Cost),
+      where wL, wM, wE, and wC represent the respective weights assigned to each criterion.<br>
+      Configuration ID are: 1: Cluster with Crossbar, 2: Cluster with a shared backbone,
+      3: Torus cluster, 4: Fat-tree cluster, 5: Dragonfly cluster<br>
+      Configurations can be dynamically adjusted to observe how changes in weights impact the Pareto
+      front and guide decision-making in optimizing the application's deployment.
+      </html>
+      """;
+
   /**
    * Constructs an instance of AnalysisPage5 with the given list of NetworkInfo objects.
    *
@@ -69,7 +85,7 @@ public class AnalysisPage5 {
     final ChartPanel chartPanel = new ChartPanel(chart);
     panel.add(chartPanel);
 
-    final JLabel descriptionLabel = new JLabel(description());
+    final JLabel descriptionLabel = new JLabel(DESCRIPTION);
     descriptionLabel.setForeground(Color.darkGray);
     descriptionLabel.setHorizontalAlignment(SwingConstants.CENTER);
     descriptionLabel.setVerticalAlignment(SwingConstants.TOP);
@@ -108,9 +124,8 @@ public class AnalysisPage5 {
 
     thText.addActionListener(e -> {
       kTh = Integer.valueOf(thText.getText());
-      updateDataset(dataset);
+      updateDatasetUser(dataset);
       chart.fireChartChanged(); // Notify the chart that the dataset has changed
-
     });
 
     final JLabel mLabel = new JLabel("Enter the memory weight:");
@@ -122,7 +137,7 @@ public class AnalysisPage5 {
 
     mText.addActionListener(e -> {
       kMem = Integer.valueOf(mText.getText());
-      updateDataset(dataset);
+      updateDatasetUser(dataset);
       chart.fireChartChanged(); // Notify the chart that the dataset has changed
     });
 
@@ -135,7 +150,7 @@ public class AnalysisPage5 {
 
     eText.addActionListener(e -> {
       kEner = Integer.valueOf(eText.getText());
-      updateDataset(dataset);
+      updateDatasetUser(dataset);
       chart.fireChartChanged(); // Notify the chart that the dataset has changed
 
     });
@@ -149,34 +164,12 @@ public class AnalysisPage5 {
 
     cText.addActionListener(e -> {
       kC = Integer.valueOf(cText.getText());
-      updateDataset(dataset);
+      updateDatasetUser(dataset);
       chart.fireChartChanged(); // Notify the chart that the dataset has changed
 
     });
     textFieldPanel.setBackground(Color.white);
     return textFieldPanel;
-  }
-
-  /**
-   * Generates the description label for the analysis page.
-   *
-   * @return HTML-formatted string describing the purpose and functionality of the analysis.
-   */
-  private String description() {
-    String description = "<html>";
-    description += "This chart gives an idea of the pareto optimal network";
-    description += " architecture for a given dataflow application.<br>";
-    description += "The simulation assesses performance based on four primary criteria, ";
-    description += "each individually weighted: Final latency, Memory, Energy, and Cost.<br>";
-    description += "These criteria are combined in a weighted linear function, expressed as Pareto";
-    description += "(wL x Final latency + wM x Memory + wE x Energy + wC x Cost), ";
-    description += "where wL, wM, wE, and wC represent the respective weights assigned to each criterion.<br>";
-    description += "Configuration ID are: 1: Cluster with Crossbar, 2: Cluster with a shared backbone, ";
-    description += "3: Torus cluster, 4: Fat-tree cluster, 5: Dragonfly cluster<br>";
-    description += "Configurations can be dynamically adjusted to observe how changes in weights impact the Pareto ";
-    description += "front and guide decision-making in optimizing the application's deployment.";
-    description += "</html>";
-    return description;
   }
 
   /**
@@ -228,21 +221,10 @@ public class AnalysisPage5 {
    * @param dataset
    *          The dataset containing network configuration scores.
    */
-  private void updateDataset(DefaultCategoryDataset dataset) {
+  private void updateDatasetUser(DefaultCategoryDataset dataset) {
     dataset.clear();
-    for (final NetworkInfo net : networkInfoNormalList) {
 
-      final Double score = net.getFinalLatency() * kTh + net.getMemory() * kMem + net.getEnergy() * kEner
-          + net.getCost() * kC;
-      dataset.addValue(score, "configuration",
-          net.getTypeID() + ":" + net.getNode() + ":" + net.getCore() + ":" + net.getCoreFrequency());
-      if (score != 0 && score < scoreMin) {
-        scoreMin = score;
-      }
-      if (score > scoreMax) {
-        scoreMax = score;
-      }
-    }
+    updateDataset(dataset, "configuration");
   }
 
   /**
@@ -252,11 +234,16 @@ public class AnalysisPage5 {
    */
   private DefaultCategoryDataset fillParetoDataSet() {
     final DefaultCategoryDataset defaultDataset = new DefaultCategoryDataset();
+
+    return updateDataset(defaultDataset, "configuration ID : number of nodes : number of cores : core frequency");
+  }
+
+  private DefaultCategoryDataset updateDataset(DefaultCategoryDataset dataset, String rowKey) {
     for (final NetworkInfo net : networkInfoNormalList) {
 
       final Double score = net.getFinalLatency() * kTh + net.getMemory() * kMem + net.getEnergy() * kEner
           + net.getCost() * kC;
-      defaultDataset.addValue(score, "configuration ID : number of nodes : number of cores : core frequency",
+      dataset.addValue(score, rowKey,
           net.getTypeID() + ":" + net.getNode() + ":" + net.getCore() + ":" + net.getCoreFrequency());
       if (score != 0 && score < scoreMin) {
         scoreMin = score;
@@ -265,7 +252,7 @@ public class AnalysisPage5 {
         scoreMax = score;
       }
     }
-    return defaultDataset;
+    return dataset;
   }
 
 }

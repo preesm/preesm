@@ -3,7 +3,7 @@
 <!DOCTYPE platform SYSTEM "https://simgrid.org/simgrid.dtd">
 <platform version="4.1">
 <zone id="my zone" routing="Floyd">
-<cluster id="Cluster with shared backbone" prefix="Node" radical="0-2" suffix=""speed="1f" bw="125MBps" lat="50us" loopback_bw="100MBps" loopback_lat="0us" bb_bw="2.25GBps" bb_lat="500us">
+<cluster id="Dragonfly cluster" prefix="Node" radical="0-2" suffix="" speed="1f" bw="125MBps" lat="50us" topology="DRAGONFLY" topo_parameters="1,3;1,2;1,1;3">
       <prop id="wattage_per_state" value="90.0:90.0:150.0" />
       <prop id="wattage_range" value="100.0:200.0" />
   </cluster>

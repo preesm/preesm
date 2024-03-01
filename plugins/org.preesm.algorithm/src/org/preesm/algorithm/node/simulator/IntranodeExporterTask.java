@@ -1,7 +1,9 @@
 package org.preesm.algorithm.node.simulator;
 
+import java.io.File;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.logging.Level;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.ResourcesPlugin;
@@ -15,6 +17,7 @@ import org.preesm.commons.doc.annotations.Port;
 import org.preesm.commons.doc.annotations.PreesmTask;
 import org.preesm.commons.files.PreesmIOHelper;
 import org.preesm.commons.logger.PreesmLogger;
+import org.preesm.model.pisdf.Actor;
 import org.preesm.model.slam.ComponentInstance;
 import org.preesm.workflow.elements.Workflow;
 import org.preesm.workflow.implement.AbstractTaskImplementation;
@@ -28,26 +31,47 @@ import org.preesm.workflow.implement.AbstractTaskImplementation;
  */
 @PreesmTask(id = "IntranodeExporterTask.identifier", name = "Intranode Stats exporter", category = "CSV exporters",
 
-    inputs = { @Port(name = "ABC", type = LatencyAbc.class) },
+    inputs = { @Port(name = "ABC", type = LatencyAbc.class), @Port(name = "cMem", type = Map.class) },
 
     shortDescription = "This task exports scheduling results as a *.csv file .")
+
 public class IntranodeExporterTask extends AbstractTaskImplementation {
+
   public static final String OCCUPATION_NAME = "occupation_trend.csv";
   public static final String SPEEDUP_NAME    = "speedup_trend.csv";
-  static String              path            = "";
+
+  public static final String MEMORY_NAME = "memory_trend.csv";
+  static String              path        = "";
 
   @Override
   public Map<String, Object> execute(Map<String, Object> inputs, Map<String, String> parameters,
       IProgressMonitor monitor, String nodeName, Workflow workflow) throws InterruptedException {
-    path = "/" + workflow.getProjectName() + "/Simulation/";
+    path = File.separator + workflow.getProjectName() + "/Simulation/";
     final LatencyAbc abc = (LatencyAbc) inputs.get("ABC");
-
+    final Map<Actor, Long> clusterMemory = (Map<Actor, Long>) inputs.get("cMem");
     // export
     if (workflow.getWorkflowName().equals("ThreadPartitioning.workflow")) {
       nodeOccupationExport(abc);
       nodeSpeedupExport(abc);
+      nodeMemoryExport(abc, clusterMemory);
     }
     return new LinkedHashMap<>();
+  }
+
+  private void nodeMemoryExport(LatencyAbc abc, Map<Actor, Long> clusterMemory) {
+    final StatGeneratorAbc stat = new StatGeneratorAbc(abc);
+    long memory = 0L;
+    // retrieve intranode memory from ABC estimator (sum of all buffers allocated by the mapping)
+    for (final ComponentInstance op : abc.getArchitecture().getOperatorComponentInstances()) {
+      memory += stat.getMem(op);
+    }
+    // retrieve memory inside cluster
+    for (final Entry<Actor, Long> i : clusterMemory.entrySet()) {
+      memory += i.getValue();
+    }
+
+    csvTrend(String.valueOf(memory), abc, MEMORY_NAME);
+
   }
 
   private void nodeSpeedupExport(LatencyAbc abc) {
@@ -79,10 +103,9 @@ public class IntranodeExporterTask extends AbstractTaskImplementation {
     for (final ComponentInstance ci : abc.getArchitecture().getOperatorComponentInstances()) {
       sum += stat.getLoad(ci);
       max = Math.max(stat.getLoad(ci), max);
-
     }
-    final Double occupy = (double) (sum)
-        / (double) (max * abc.getArchitecture().getOperatorComponentInstances().size());
+
+    final Double occupy = sum / (double) (max * abc.getArchitecture().getOperatorComponentInstances().size());
     final String message = "Node occupation is: " + occupy;
     PreesmLogger.getLogger().log(Level.INFO, message);
     for (final GanttComponent ci : abc.getGanttData().getComponents()) {

@@ -43,6 +43,7 @@ import org.preesm.commons.doc.annotations.Parameter;
 import org.preesm.commons.doc.annotations.Port;
 import org.preesm.commons.doc.annotations.PreesmTask;
 import org.preesm.commons.doc.annotations.Value;
+import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.AbstractVertex;
 import org.preesm.model.pisdf.PiGraph;
@@ -52,7 +53,6 @@ import org.preesm.model.pisdf.check.CheckerErrorLevel;
 import org.preesm.model.pisdf.check.PiGraphConsistenceChecker;
 import org.preesm.model.scenario.Scenario;
 import org.preesm.workflow.elements.Workflow;
-import org.preesm.workflow.implement.AbstractTaskImplementation;
 
 /**
  * Cluster Partitioner Task
@@ -60,28 +60,27 @@ import org.preesm.workflow.implement.AbstractTaskImplementation;
  * @author orenaud
  *
  */
-@PreesmTask(id = "cluster-partitioner-DATA", name = "Cluster Partitioner",
+@PreesmTask(id = "cluster-partitioner-DATA", name = "Cluster Partitioner DATA",
     inputs = { @Port(name = "scenario", type = Scenario.class, description = "Scenario") },
     outputs = { @Port(name = "PiMM", type = PiGraph.class, description = "Output PiSDF graph") },
     parameters = {
-        @Parameter(name = "Number of PEs in clusters",
+        @Parameter(name = ClusterPartitionerTask.NB_PE,
             description = "The number of PEs in compute clusters. This information is used to balance actor firings"
                 + " between coarse and fine-grained levels.",
             values = { @Value(name = "Fixed:=n", effect = "Where $$n\\in \\mathbb{N}^*$$.") }),
-        @Parameter(name = "SCAPE mode",
+        @Parameter(name = ClusterPartitionerDATATask.CLUSTERING_PARAM,
             description = "choose the clustering mode : 1 = set of clustering config + only fit data parallelism,"
                 + " 2 = set of clustering config + fit data & pip parallelism, 3 = best clustering config ",
             values = { @Value(name = "Fixed:=n", effect = "switch of clustering algorithm") }),
-        @Parameter(name = "Non-cluster actor", description = "does not allow to group the actors entered in parameter",
+        @Parameter(name = ClusterPartitionerDATATask.NON_CLUSTER_PARAM,
+            description = "does not allow to group the actors entered in parameter",
             values = { @Value(name = "String", effect = "disable cluster") }) })
-public class ClusterPartitionerDATATask extends AbstractTaskImplementation {
+public class ClusterPartitionerDATATask extends ClusterPartitionerTask {
 
-  public static final String NB_PE                   = "Number of PEs in compute clusters";
-  public static final String DEFAULT_NB_PE           = "1";
-  public static final String CLUSTERING_MODE_DEFAULT = "0";                                // SCAPE1
   public static final String CLUSTERING_PARAM        = "SCAPE mode";
-  public static final String NON_CLUSTER_DEFAULT     = "";
+  public static final String CLUSTERING_MODE_DEFAULT = "0";                // SCAPE1
   public static final String NON_CLUSTER_PARAM       = "Non-cluster actor";
+  public static final String NON_CLUSTER_DEFAULT     = "";
 
   @Override
   public Map<String, Object> execute(Map<String, Object> inputs, Map<String, String> parameters,
@@ -95,6 +94,14 @@ public class ClusterPartitionerDATATask extends AbstractTaskImplementation {
     final String modeStr = parameters.get(ClusterPartitionerDATATask.CLUSTERING_PARAM);
     final String nonClusterable = parameters.get(ClusterPartitionerDATATask.NON_CLUSTER_PARAM);
     final String[] nonClusterableListStr = nonClusterable.split("\\*");
+
+    final ScapeMode scapeMode = switch (modeStr) {
+      case "0" -> ScapeMode.DATA;
+      case "1" -> ScapeMode.DATA_PIPELINE;
+      case "2" -> ScapeMode.DATA_PIPELINE_HIERARCHY;
+      default -> throw new PreesmRuntimeException("Unrecognized Scape mode.");
+    };
+
     final List<AbstractActor> nonClusterableList = new LinkedList<>();
     for (final String element : nonClusterableListStr) {
       for (final AbstractActor a : scenario.getAlgorithm().getExecutableActors()) {
@@ -105,9 +112,9 @@ public class ClusterPartitionerDATATask extends AbstractTaskImplementation {
     }
     Map<AbstractVertex, Long> brv = PiBRV.compute(inputGraph, BRVMethod.LCM);
     // Cluster input graph
-    new ClusterPartitionerURC(scenario, Integer.parseInt(nbPE), brv, 0, Integer.decode(modeStr)).cluster();
-    final PiGraph outputGraph = new ClusterPartitionerSRV(scenario, Integer.parseInt(nbPE), brv, 0,
-        Integer.decode(modeStr)).cluster();
+    new ClusterPartitionerURC(scenario, Integer.parseInt(nbPE), brv, 0, scapeMode).cluster();
+    final PiGraph outputGraph = new ClusterPartitionerSRV(scenario, Integer.parseInt(nbPE), brv, 0, scapeMode)
+        .cluster();
     final PiGraphConsistenceChecker pgcc = new PiGraphConsistenceChecker(CheckerErrorLevel.FATAL_ALL,
         CheckerErrorLevel.FATAL_ALL);
     pgcc.check(outputGraph);

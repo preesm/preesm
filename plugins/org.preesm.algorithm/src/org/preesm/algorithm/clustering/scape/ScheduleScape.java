@@ -12,6 +12,7 @@ import org.preesm.algorithm.schedule.model.ScapeSchedule;
 import org.preesm.algorithm.schedule.model.ScheduleFactory;
 import org.preesm.commons.graph.Vertex;
 import org.preesm.commons.logger.PreesmLogger;
+import org.preesm.commons.math.MathFunctionsHelper;
 import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.AbstractVertex;
 import org.preesm.model.pisdf.DataOutputInterface;
@@ -32,6 +33,7 @@ import org.preesm.model.pisdf.factory.PiMMUserFactory;
  * @author orenaud
  *
  */
+
 public class ScheduleScape {
   /**
    * Input graph.
@@ -49,7 +51,7 @@ public class ScheduleScape {
   }
 
   /**
-   * Initialize the repetition count which is the greatest common divisor between the repetition vector coefficient of
+   * Initialise the repetition count which is the greatest common divisor between the repetition vector coefficient of
    * two linked actors
    *
    * @return repetitionCountStr the repetition count map
@@ -60,7 +62,7 @@ public class ScheduleScape {
     for (final AbstractActor actor : graph.getAllExecutableActors()) {
       for (final Vertex successor : actor.getDirectSuccessors()) {
         if (!(successor instanceof DataOutputInterface)) {
-          final Long rep = gcd(brv.get(actor), brv.get(successor));
+          final Long rep = MathFunctionsHelper.gcd(brv.get(actor), brv.get(successor));
 
           repetitionCountStr.computeIfAbsent(actor.getName(), k -> new LinkedHashMap<>())
               .put(((AbstractVertex) successor).getName(), rep);
@@ -71,7 +73,7 @@ public class ScheduleScape {
   }
 
   /**
-   * Initialize the repetition vector coefficient to link actor's name to the computed value
+   * Initialise the repetition vector coefficient to link actor's name to the computed value
    *
    * @return repetitionVectorStr the repetition vector map
    */
@@ -87,7 +89,7 @@ public class ScheduleScape {
   public List<ScapeSchedule> execute() {
 
     if (brv.size() > 2 && graph.getDelayIndex() > 0) {
-      PreesmLogger.getLogger().log(Level.SEVERE, "APGAN doesn't handle cycle except cycle of 1 actor");
+      PreesmLogger.getLogger().log(Level.SEVERE, () -> "APGAN doesn't handle cycle except cycle of 1 actor");
     }
     final String scheduleStr = scheduleStr();
     final String message = "APGAN schedule: " + scheduleStr;
@@ -117,11 +119,11 @@ public class ScheduleScape {
         sc.setBeginLoop(true);
         openLoopCounter++;
         splitRate = splitActor[i].split("\\(");
-        sc.setIterator(Integer.parseInt(splitRate[0]));
+        sc.setRepetition(Integer.parseInt(splitRate[0]));
         splitActor[i] = splitRate[1];
       } else {
         sc.setBeginLoop(false);
-        sc.setIterator(1);
+        sc.setRepetition(1);
       }
       if (splitActor[i].contains(")")) {
         openLoopCounter--;
@@ -131,8 +133,7 @@ public class ScheduleScape {
       } else {
         sc.setEndLoop(false);
       }
-      sc.setActor(PiMMUserFactory.instance.createActor());
-      sc.getActor().setName(splitActor[i]);
+      sc.setActor(PiMMUserFactory.instance.createActor(splitActor[i]));
 
       sc.setLoopPrec((openLoopCounter >= 1 && !sc.isBeginLoop()));
 
@@ -185,14 +186,13 @@ public class ScheduleScape {
     for (int i = 1; i < iter; i++) {
       final Pair<String, String> pairMax = findMaxPair();
       combineName = combineName(pairMax);
-
     }
 
     return combineName;
   }
 
   /**
-   * The method iteratively combine the of actor's name and update the repetition count et the repetition vector
+   * The method iteratively combine the of actor's name and update the repetition count and the repetition vector
    * coefficient of the combine actor
    *
    * @return combineName the combine name
@@ -201,7 +201,7 @@ public class ScheduleScape {
 
     final String maxLeft = pairMax.getFirst();
     final String maxRight = pairMax.getSecond();
-    final Long rv = gcd(brvStr.get(maxLeft), brvStr.get(maxRight));
+    final Long rv = MathFunctionsHelper.gcd(brvStr.get(maxLeft), brvStr.get(maxRight));
 
     String newName = "";
     if (brvStr.get(maxLeft) / rv > 1) {
@@ -273,23 +273,8 @@ public class ScheduleScape {
         }
       }
     }
+
     return maxPair;
-
-  }
-
-  /**
-   * Used to compute the greatest common denominator between 2 long values
-   *
-   * @param long1
-   *          long value 1
-   * @param long2
-   *          long value 2
-   */
-  private Long gcd(Long long1, Long long2) {
-    if (long2 == 0) {
-      return long1;
-    }
-    return gcd(long2, long1 % long2);
   }
 
 }

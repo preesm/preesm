@@ -3,20 +3,25 @@ package org.preesm.algorithm.clustering.scape;
 import java.util.ArrayList;
 import java.util.EnumMap;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import org.preesm.algorithm.clustering.partitioner.ClusterPartitioner;
 import org.preesm.algorithm.clustering.partitioner.ClusterPartitionerLOOP;
 import org.preesm.algorithm.clustering.partitioner.ClusterPartitionerSEQ;
 import org.preesm.algorithm.clustering.partitioner.ClusterPartitionerSRV;
 import org.preesm.algorithm.clustering.partitioner.ClusterPartitionerURC;
+import org.preesm.algorithm.clustering.partitioner.ScapeMode;
 import org.preesm.algorithm.codegen.idl.Prototype;
 import org.preesm.algorithm.schedule.model.ScapeSchedule;
+import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.AbstractVertex;
 import org.preesm.model.pisdf.Actor;
 import org.preesm.model.pisdf.CHeaderRefinement;
 import org.preesm.model.pisdf.ConfigInputPort;
 import org.preesm.model.pisdf.DataInputPort;
+import org.preesm.model.pisdf.DataOutputInterface;
 import org.preesm.model.pisdf.DataOutputPort;
 import org.preesm.model.pisdf.Direction;
 import org.preesm.model.pisdf.FunctionArgument;
@@ -36,47 +41,35 @@ import org.preesm.model.slam.ComponentInstance;
 import org.preesm.model.slam.Design;
 import org.preesm.model.slam.TimingType;
 
-public class ClusteringScape {
-  /**
-   * Input graph.
-   */
-  private final PiGraph  graph;
-  /**
-   * Workflow scenario.
-   */
-  private final Scenario scenario;
-  /**
-   * Architecture design.
-   */
-  private final Design   archi;
+public class ClusteringScape extends ClusterPartitioner {
+
   /**
    * Size of the stack.
    */
-  private final Long     stackSize;
+  private final Long stackSize;
   /**
    * Number of hierarchical level.
    */
-  private final int      levelNumber;
-  /**
-   * SCAPE mode : 1 (...); 2 (...); 3 (...).
-   */
-  private final int      mode;
+  private final int  levelNumber;
+
+  ScapeMode scapeMode;
 
   int                              clusterIndex   = -1;     // topological index
   private int                      clusterId      = 0;      // index cluster created
   private Map<Long, List<PiGraph>> hierarchicalLevelOrdered;
   private Long                     fulcrumLevelID = 0L;
   private Long                     coreEquivalent = 1L;
+  private final Map<Actor, Long>   clusterMemory;           // store cluster memory for later simulation
 
-  public ClusteringScape(Scenario scenario, Long stackSize, int mode, int levelNumber) {
-    this.graph = scenario.getAlgorithm();
-    this.scenario = scenario;
-    this.archi = scenario.getDesign();
+  public ClusteringScape(Scenario scenario, Long stackSize, ScapeMode scapeMode, int levelNumber) {
+    super(scenario.getAlgorithm(), scenario, EuclideTransfo.computeSingleNodeCoreEquivalent(scenario).intValue());
+
     this.stackSize = stackSize;
-    this.mode = mode;
+    this.scapeMode = scapeMode;
     this.levelNumber = levelNumber;
     this.hierarchicalLevelOrdered = new HashMap<>();
     this.coreEquivalent = EuclideTransfo.computeSingleNodeCoreEquivalent(scenario);
+    this.clusterMemory = new LinkedHashMap<>();
   }
 
   public PiGraph execute() {
@@ -87,7 +80,9 @@ public class ClusteringScape {
     // construct hierarchical structure
     hierarchicalLevelOrdered = HierarchicalRoute.fillHierarchicalStructure(graph);
     // compute cluster-able level ID
-    fulcrumLevelID = HierarchicalRoute.computeClusterableLevel(graph, mode, levelNumber, hierarchicalLevelOrdered);
+
+    fulcrumLevelID = HierarchicalRoute.computeClusterableLevel(graph, scapeMode, levelNumber, hierarchicalLevelOrdered);
+
     // Coarse clustering while cluster-able level are not reached
     coarseCluster();
     // Pattern identification
@@ -102,102 +97,23 @@ public class ClusteringScape {
     return graph;
   }
 
+  public Map<Actor, Long> getClusterMemory() {
+    return clusterMemory;
+  }
+
   /**
    * Enable specific cluster on specific hierarchical level according to the chosen SCAPE mode
    */
   private void patternIDs() {
 
-    if (mode == 0) {
-      executeMode0();
+    switch (scapeMode) {
+      case DATA -> executeMode0();
+      case DATA_PIPELINE -> executeMode1();
+      case DATA_PIPELINE_HIERARCHY -> executeMode2();
+      default -> throw new PreesmRuntimeException("Unrecognized Scape mode.");
 
     }
-    if (mode == 1) {
-      executeMode1();
 
-    }
-    if (mode == 2) {
-      executeMode2();
-
-    }
-  }
-
-  /**
-   * The second extension of the SCAPE method takes into account the hierarchical context when choosing the clustering
-   * approach. This allows for the adaptation of parallelism or the coarsening of identified hierarchical levels based
-   * on the context.
-   *
-   */
-  private void executeMode2() {
-    for (Long i = fulcrumLevelID - 1; i >= 0L; i--) {
-      for (final PiGraph g : hierarchicalLevelOrdered.get(i)) {
-        PiGraph newCluster = null;
-        boolean isHasCluster = true;
-        do {
-          final int size = graph.getAllChildrenGraphs().size();
-          final Map<AbstractVertex, Long> rv = PiBRV.compute(g, BRVMethod.LCM);
-          newCluster = new ClusterPartitionerLOOP(g, scenario, coreEquivalent.intValue(), rv, clusterId).cluster();
-          if (graph.getAllChildrenGraphs().size() == size) {
-            // URC transfo
-            newCluster = new ClusterPartitionerURC(scenario, coreEquivalent.intValue(), rv, clusterId, mode).cluster();
-          }
-          if (graph.getAllChildrenGraphs().size() == size) {
-            // SRV transfo
-            newCluster = new ClusterPartitionerSRV(scenario, coreEquivalent.intValue(), rv, clusterId, mode).cluster();
-          }
-          if (graph.getAllChildrenGraphs().size() == size) {
-            // SEQ transfo
-            newCluster = new ClusterPartitionerSEQ(g, scenario, coreEquivalent.intValue()).cluster();
-          }
-          if (graph.getAllChildrenGraphs().size() == size) {
-            isHasCluster = false;
-          }
-          if (!newCluster.getChildrenGraphs().isEmpty()) {
-            cluster(newCluster.getChildrenGraphs().get(0), scenario, stackSize);
-            clusterId++;
-          }
-        } while (isHasCluster);
-      }
-    }
-  }
-
-  /**
-   * The first extension introduces two additional patterns to the original SCAPE method: LOOP for cycles and SEQ for
-   * sequential parts. This extended method retains its parameterised nature, with the aim of reducing data parallelism
-   * and enhancing pipeline parallelism to align with the intended target.
-   *
-   */
-  private void executeMode1() {
-    for (final PiGraph piGraph : hierarchicalLevelOrdered.get(fulcrumLevelID - 1)) {
-      PiGraph newCluster = null;
-      boolean isHasCluster = true;
-      do {
-        final int size = graph.getAllChildrenGraphs().size();
-        final Map<AbstractVertex, Long> rv = PiBRV.compute(piGraph, BRVMethod.LCM);
-        newCluster = new ClusterPartitionerLOOP(piGraph, scenario, coreEquivalent.intValue(), rv, clusterId).cluster();
-        if (graph.getAllChildrenGraphs().size() == size) {
-          // URC transfo
-          newCluster = new ClusterPartitionerURC(scenario, coreEquivalent.intValue(), rv, clusterId, mode).cluster();
-        }
-        if (graph.getAllChildrenGraphs().size() == size) {
-          // SRV transfo
-          newCluster = new ClusterPartitionerSRV(scenario, coreEquivalent.intValue(), rv, clusterId, mode).cluster();
-        }
-        if (graph.getAllChildrenGraphs().size() == size) {
-          // SEQ transfo
-          newCluster = new ClusterPartitionerSEQ(piGraph, scenario, coreEquivalent.intValue()).cluster();
-        }
-        if (graph.getAllChildrenGraphs().size() == size) {
-          isHasCluster = false;
-        }
-        if (!newCluster.getChildrenGraphs().isEmpty()) {
-          final int newSize = graph.getAllChildrenGraphs().size();
-          for (int i = 0; i < (newSize - size); i++) {
-            cluster(newCluster.getChildrenGraphs().get(0), scenario, stackSize);
-          }
-          clusterId++;
-        }
-      } while (isHasCluster);
-    }
   }
 
   /**
@@ -216,20 +132,126 @@ public class ClusteringScape {
         final int size = graph.getAllChildrenGraphs().size();
         final Map<AbstractVertex, Long> rv = PiBRV.compute(g, BRVMethod.LCM);
         // URC transfo
-        newCluster = new ClusterPartitionerURC(scenario, coreEquivalent.intValue(), rv, clusterId, mode).cluster();
+        newCluster = new ClusterPartitionerURC(scenario, coreEquivalent.intValue(), rv, clusterId, scapeMode).cluster();
         if (graph.getAllChildrenGraphs().size() == size) {
           // SRV transfo
-          newCluster = new ClusterPartitionerSRV(scenario, coreEquivalent.intValue(), rv, clusterId, mode).cluster();
+          newCluster = new ClusterPartitionerSRV(scenario, coreEquivalent.intValue(), rv, clusterId, scapeMode)
+              .cluster();
         }
         if (graph.getAllChildrenGraphs().size() == size) {
           isHasCluster = false;
         }
         if (!newCluster.getChildrenGraphs().isEmpty()) {
+          final Long mem = mem(newCluster.getChildrenGraphs().get(0));
+          final String clusterName = newCluster.getChildrenGraphs().get(0).getName();
           cluster(newCluster.getChildrenGraphs().get(0), scenario, stackSize);
+          clusterMemory.put(findCluster(clusterName), mem);
           clusterId++;
         }
       } while (isHasCluster);
     }
+  }
+
+  private Actor findCluster(String clusterName) {
+    for (final AbstractActor a : graph.getAllExecutableActors()) {
+      if (a.getName().equals(clusterName)) {
+        return (Actor) a;
+      }
+    }
+    return null;
+  }
+
+  /**
+   * The first extension introduces two additional patterns to the original SCAPE method: LOOP for cycles and SEQ for
+   * sequential parts. This extended method retains its parameterised nature, with the aim of reducing data parallelism
+   * and enhancing pipeline parallelism to align with the intended target.
+   *
+   */
+  private void executeMode1() {
+    for (final PiGraph piGraph : hierarchicalLevelOrdered.get(fulcrumLevelID - 1)) {
+      PiGraph newCluster = null;
+      boolean isHasCluster = true;
+
+      while (isHasCluster) {
+
+        final int size = graph.getAllChildrenGraphs().size();
+
+        newCluster = applyClusterPartitioners(piGraph);
+
+        if (graph.getAllChildrenGraphs().size() == size) {
+          isHasCluster = false;
+        }
+        if (!newCluster.getChildrenGraphs().isEmpty()) {
+          final int newSize = graph.getAllChildrenGraphs().size();
+          for (int i = 0; i < (newSize - size); i++) {
+            final Long mem = mem(newCluster.getChildrenGraphs().get(0));
+            final String clusterName = newCluster.getChildrenGraphs().get(0).getName();
+            cluster(newCluster.getChildrenGraphs().get(0), scenario, stackSize);
+            clusterMemory.put(findCluster(clusterName), mem);
+          }
+          clusterId++;
+        }
+      }
+    }
+  }
+
+  /**
+   * The second extension of the SCAPE method takes into account the hierarchical context when choosing the clustering
+   * approach. This allows for the adaptation of parallelism or the coarsening of identified hierarchical levels based
+   * on the context.
+   *
+   */
+  private void executeMode2() {
+    for (Long i = fulcrumLevelID - 1; i >= 0L; i--) {
+      for (final PiGraph piGraph : hierarchicalLevelOrdered.get(i)) {
+        PiGraph newCluster = null;
+        boolean isHasCluster = true;
+        while (isHasCluster) {
+
+          final int size = graph.getAllChildrenGraphs().size();
+
+          newCluster = applyClusterPartitioners(piGraph);
+
+          if (graph.getAllChildrenGraphs().size() == size) {
+            isHasCluster = false;
+          }
+          if (!newCluster.getChildrenGraphs().isEmpty()) {
+            final Long mem = mem(newCluster.getChildrenGraphs().get(0));
+            final String clusterName = newCluster.getChildrenGraphs().get(0).getName();
+            cluster(newCluster.getChildrenGraphs().get(0), scenario, stackSize);
+            clusterMemory.put(findCluster(clusterName), mem);
+            clusterId++;
+          }
+        }
+      }
+    }
+  }
+
+  private PiGraph applyClusterPartitioners(PiGraph piGraph) {
+
+    PiGraph newCluster;
+
+    final int size = graph.getAllChildrenGraphs().size();
+    final Map<AbstractVertex, Long> rv = PiBRV.compute(piGraph, BRVMethod.LCM);
+
+    newCluster = new ClusterPartitionerLOOP(piGraph, scenario, coreEquivalent.intValue(), rv, clusterId).cluster();
+
+    if (graph.getAllChildrenGraphs().size() == size) {
+      // URC transfo
+      newCluster = new ClusterPartitionerURC(scenario, coreEquivalent.intValue(), rv, clusterId, scapeMode).cluster();
+    }
+
+    if (graph.getAllChildrenGraphs().size() == size) {
+      // SRV transfo
+      newCluster = new ClusterPartitionerSRV(scenario, coreEquivalent.intValue(), rv, clusterId, scapeMode).cluster();
+    }
+
+    if (graph.getAllChildrenGraphs().size() == size) {
+      // SEQ transfo
+      newCluster = new ClusterPartitionerSEQ(piGraph, scenario, coreEquivalent.intValue()).cluster();
+    }
+
+    return newCluster;
   }
 
   /**
@@ -243,10 +265,27 @@ public class ClusteringScape {
       final Long fulcrumLevel = fulcrumLevelID - 2;
       for (Long i = totalLevelNumber; i > fulcrumLevel; i--) {
         for (final PiGraph g : hierarchicalLevelOrdered.get(i)) {
+          final Long mem = mem(g);
+          final String clusterName = g.getName();
           cluster(g, scenario, stackSize);
+          clusterMemory.put(findCluster(clusterName), mem);
         }
       }
     }
+  }
+
+  private Long mem(PiGraph g) {
+    Long mem = 0L;
+    for (final AbstractActor a : g.getExecutableActors()) {
+      for (final DataOutputPort out : a.getDataOutputPorts()) {
+        if (!(out.getFifo().getTarget() instanceof DataOutputInterface)) {
+          final Long typeInBit = scenario.getSimulationInfo().getDataTypeSizeInBit(out.getFifo().getType());
+          mem += out.getExpression().evaluate() * typeInBit;
+        }
+      }
+
+    }
+    return mem;
   }
 
   /**
@@ -256,6 +295,7 @@ public class ClusteringScape {
    *          The identify clustered subgraph
    */
   public static void cluster(PiGraph g, Scenario scenario, Long stackSize) {
+
     // compute the cluster schedule
 
     final List<ScapeSchedule> schedule = new ScheduleScape(g).execute();
@@ -268,7 +308,6 @@ public class ClusteringScape {
 
     replaceBehavior(g, scenario);
     updateTiming(sumTiming, g, scenario);
-
   }
 
   /**
@@ -280,8 +319,8 @@ public class ClusteringScape {
 
   private static void replaceBehavior(PiGraph g, Scenario scenario) {
     final PiGraph graph = scenario.getAlgorithm();
-    final Actor oEmpty = PiMMUserFactory.instance.createActor();
-    oEmpty.setName(g.getName());
+    final Actor oEmpty = PiMMUserFactory.instance.createActor(g.getName());
+
     // add refinement
     final Refinement refinement = PiMMUserFactory.instance.createCHeaderRefinement();
     oEmpty.setRefinement(refinement);
@@ -294,6 +333,10 @@ public class ClusteringScape {
     final FunctionPrototype functionPrototype = PiMMUserFactory.instance.createFunctionPrototype();
     cHeaderRefinement.setLoopPrototype(functionPrototype);
     functionPrototype.setName(oEmpty.getName());
+
+    if (((PiGraph) g.getContainingGraph()).getName().matches("^sub\\d+")) {
+      functionPrototype.setName("Cluster_" + ((PiGraph) g.getContainingGraph()).getName() + "_" + oEmpty.getName());
+    }
     // fill port
     for (final ConfigInputPort cfg : g.getConfigInputPorts()) {
       final ConfigInputPort cfgInputPort = PiMMUserFactory.instance.copy(cfg);
@@ -305,14 +348,17 @@ public class ClusteringScape {
       functionArgument.setIsConfigurationParameter(true);
       functionPrototype.getArguments().add(functionArgument);
     }
+
     for (final DataInputPort in : g.getDataInputPorts()) {
       final DataInputPort inputPort = PiMMUserFactory.instance.copy(in);
       oEmpty.getDataInputPorts().add(inputPort);
       final FunctionArgument functionArgument = PiMMUserFactory.instance.createFunctionArgument();
       functionArgument.setName(inputPort.getName());
       functionArgument.setType(in.getFifo().getType());
+      functionArgument.setDirection(Direction.IN);
       functionPrototype.getArguments().add(functionArgument);
     }
+
     for (final DataOutputPort out : g.getDataOutputPorts()) {
       final DataOutputPort outputPort = PiMMUserFactory.instance.copy(out);
       oEmpty.getDataOutputPorts().add(outputPort);
@@ -324,7 +370,6 @@ public class ClusteringScape {
     }
 
     graph.replaceActor(g, oEmpty);
-
   }
 
   /**
@@ -378,17 +423,21 @@ public class ClusteringScape {
     if (scenario.getTimings().getActorTimings().isEmpty()) {
       return clusterTiming; // Early exit
     }
+    // For each processing element
+    for (final Component opId : archi.getProcessingElements()) {
+      // sum the actor timing contained in the cluster
+      Long sum = 0L;
+      for (final AbstractActor actor : cluster.getOnlyActors()) {
+        if (actor instanceof Actor) {
+          final AbstractActor aaa = scenario.getTimings().getActorTimings().keySet().stream()
+              .filter(aa -> actor.getName().equals(aa.getName())).findFirst().orElse(null);
 
-    for (final AbstractActor actor : cluster.getOnlyActors()) {
-      if (actor instanceof Actor) {
-        final AbstractActor aaa = scenario.getTimings().getActorTimings().keySet().stream()
-            .filter(aa -> actor.getName().equals(aa.getName())).findFirst().orElse(null);
-
-        for (final Component opId : archi.getProcessingElements()) {
-          final Long sum = scenario.getTimings().evaluateTimingOrDefault(aaa, opId, TimingType.EXECUTION_TIME)
+          sum += scenario.getTimings().evaluateTimingOrDefault(aaa, opId, TimingType.EXECUTION_TIME)
               * repetitionVector.get(actor);
-          clusterTiming.get(opId).replace(TimingType.EXECUTION_TIME, String.valueOf(sum));
+
         }
+        clusterTiming.get(opId).replace(TimingType.EXECUTION_TIME, String.valueOf(sum));
+
       }
     }
 
@@ -417,18 +466,8 @@ public class ClusteringScape {
       for (final AbstractActor actor : subgraph.getAllActors()) {
         // Add constraint
         clusterScenario.getConstraints().addConstraint(coreId, actor);
-
       }
     }
-    clusterScenario.getSimulationInfo().getDataTypes().map().put("uchar", (long) 8);
-    clusterScenario.getSimulationInfo().getDataTypes().map().put("char", (long) 8);
-    clusterScenario.getSimulationInfo().getDataTypes().map().put("unsigned char", (long) 8);
-    clusterScenario.getSimulationInfo().getDataTypes().map().put("int", (long) 32);
-    clusterScenario.getSimulationInfo().getDataTypes().map().put("float", (long) 32);
-    clusterScenario.getSimulationInfo().getDataTypes().map().put("double", (long) 64);
-    clusterScenario.getSimulationInfo().getDataTypes().map().put("SiftKpt", (long) 4448);
-    clusterScenario.getSimulationInfo().getDataTypes().map().put("coord", (long) 64);
-    clusterScenario.getSimulationInfo().getDataTypes().map().put("coordf", (long) 64);
     return clusterScenario;
   }
 

@@ -59,32 +59,36 @@ public class MultiBranch {
     }
     final Map<AbstractVertex, Long> brv = PiBRV.compute(graph, BRVMethod.LCM);
 
-    if (sourceList.size() > 1) {
-      final Actor src = PiMMUserFactory.instance.createActor();
-      src.setName("single_source");
-      src.setContainingGraph(graph);
-      int indexOutput = 0;
-      // connect to multiple sources
-      for (final AbstractActor actor : sourceList) {
-        // add output on single source actor
-        final DataOutputPort dout = PiMMUserFactory.instance.createDataOutputPort();
-        src.getDataOutputPorts().add(dout);
-
-        dout.setName("out_" + indexOutput);
-        dout.setExpression(1L * brv.get(actor));
-        // add input
-        final DataInputPort din = PiMMUserFactory.instance.createDataInputPort();
-        actor.getDataInputPorts().add(din);
-        din.setName("in");
-        din.setExpression(1L);
-
-        // connect
-        final Fifo fifo = PiMMUserFactory.instance.createFifo(dout, din, "char");
-        fifo.setContainingGraph(graph);
-
-        indexOutput++;
-      }
+    if (sourceList.size() <= 1) {
+      return graph;
     }
+
+    final Actor src = PiMMUserFactory.instance.createActor();
+    src.setName("single_source");
+    src.setContainingGraph(graph);
+    int indexOutput = 0;
+    // connect to multiple sources
+    for (final AbstractActor actor : sourceList) {
+
+      // add output on single source actor
+      final DataOutputPort dout = PiMMUserFactory.instance.createDataOutputPort();
+      src.getDataOutputPorts().add(dout);
+      dout.setName("out_" + indexOutput);
+      dout.setExpression(1L * brv.get(actor));
+
+      // add input
+      final DataInputPort din = PiMMUserFactory.instance.createDataInputPort();
+      actor.getDataInputPorts().add(din);
+      din.setName("in");
+      din.setExpression(1L);
+
+      // connect
+      final Fifo fifo = PiMMUserFactory.instance.createFifo(dout, din, "char");
+      fifo.setContainingGraph(graph);
+
+      indexOutput++;
+    }
+
     return graph;
   }
 
