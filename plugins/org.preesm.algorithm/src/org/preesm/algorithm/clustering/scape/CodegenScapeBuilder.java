@@ -91,6 +91,7 @@ public class CodegenScapeBuilder {
             if (sc.isOnGPU()) {
               final int nbExec = 10; // TODO
               for (final DataInputPort in : actor.getDataInputPorts()) {
+
                 String buffname = "";
                 if (in.getFifo().getSource() instanceof final DataInputInterface din) {
                   buffname = "d_" + in.getName();
