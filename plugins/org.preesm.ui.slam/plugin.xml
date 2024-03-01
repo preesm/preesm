@@ -210,9 +210,9 @@
          <vertexType
                name="GPU">
             <color
-                  blue="230"
-                  green="185"
-                  red="112">
+                  blue="128"
+                  green="122"
+                  red="38">
             </color>
             <shape
                   type="roundedBox">
