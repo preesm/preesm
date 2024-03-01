@@ -116,7 +116,7 @@ public abstract class AbstractMappingFromDAG extends AbstractTaskImplementation 
 
     // this is currently true for all tasks implementing this abstraction and their derived classes
     // if a new subclass supports FPGA, this check will have to be duplicated in all subclasses
-    if (!SlamDesignPEtypeChecker.isOnlyCPU(architecture)) {
+    if (!SlamDesignPEtypeChecker.isDualCPUGPU(architecture)) {
       throw new PreesmRuntimeException(
           "This task must be called with architectures containing only CPU processing elements.");
     }
@@ -136,30 +136,28 @@ public abstract class AbstractMappingFromDAG extends AbstractTaskImplementation 
     if (!couldConstructInitialLists) {
       final String msg = "Error in scheduling";
       throw new PreesmRuntimeException(msg);
-    } else {
-
-      // Using topological task scheduling in list scheduling: the t-level
-      // order of the infinite homogeneous simulation
-      final TopologicalTaskSched taskSched = new TopologicalTaskSched(simu.getTotalOrder());
-      simu.resetDAG();
-
-      final String msg = "Mapping " + dag.vertexSet().size() + " tasks.";
-      PreesmLogger.getLogger().log(Level.INFO, msg);
-      final LatencyAbc resSimu = schedule(outputs, parameters, initial, scenario, abcParams, dag, architecture,
-          taskSched);
-      resSimu.setBestLatency(bestLatency);
-      PreesmLogger.getLogger().log(Level.INFO, "Mapping finished, now add communications tasks.");
-
-      final MapperDAG resDag = resSimu.getDAG();
-      final TagDAG tagSDF = new TagDAG();
-      tagSDF.tag(dag, architecture, scenario, resSimu, abcParams.getEdgeSchedType());
-      outputs.put(AbstractWorkflowNodeImplementation.KEY_SDF_ABC, resSimu);
-      outputs.put(AbstractWorkflowNodeImplementation.KEY_SDF_DAG, dag);
-
-      PreesmLogger.getLogger().log(Level.INFO, "DAG fully mapped, now removes useless sync and check schedules.");
-      removeRedundantSynchronization(parameters, dag);
-      checkSchedulingResult(parameters, resDag);
     }
+    // Using topological task scheduling in list scheduling: the t-level
+    // order of the infinite homogeneous simulation
+    final TopologicalTaskSched taskSched = new TopologicalTaskSched(simu.getTotalOrder());
+    simu.resetDAG();
+
+    final String msg = "Mapping " + dag.vertexSet().size() + " tasks.";
+    PreesmLogger.getLogger().log(Level.INFO, msg);
+    final LatencyAbc resSimu = schedule(outputs, parameters, initial, scenario, abcParams, dag, architecture,
+        taskSched);
+    resSimu.setBestLatency(bestLatency);
+    PreesmLogger.getLogger().log(Level.INFO, "Mapping finished, now add communications tasks.");
+
+    final MapperDAG resDag = resSimu.getDAG();
+    final TagDAG tagSDF = new TagDAG();
+    tagSDF.tag(dag, architecture, scenario, resSimu, abcParams.getEdgeSchedType());
+    outputs.put(AbstractWorkflowNodeImplementation.KEY_SDF_ABC, resSimu);
+    outputs.put(AbstractWorkflowNodeImplementation.KEY_SDF_DAG, dag);
+
+    PreesmLogger.getLogger().log(Level.INFO, "DAG fully mapped, now removes useless sync and check schedules.");
+    removeRedundantSynchronization(parameters, dag);
+    checkSchedulingResult(parameters, resDag);
     return outputs;
   }
 
