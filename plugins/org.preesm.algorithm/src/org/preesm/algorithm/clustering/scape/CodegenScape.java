@@ -3,11 +3,13 @@ package org.preesm.algorithm.clustering.scape;
 import java.io.File;
 import java.util.Date;
 import java.util.List;
+import java.util.logging.Level;
 import org.eclipse.xtend2.lib.StringConcatenation;
 import org.preesm.algorithm.schedule.model.ScapeBuilder;
 import org.preesm.algorithm.schedule.model.ScapeSchedule;
 import org.preesm.algorithm.schedule.model.ScheduleFactory;
 import org.preesm.commons.files.PreesmIOHelper;
+import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.Actor;
 import org.preesm.model.pisdf.CHeaderRefinement;
@@ -37,6 +39,20 @@ public class CodegenScape {
     final String hfile = clusterName + ".h";
     final StringConcatenation clusterHContent = buildHContent(build, subGraph);
     PreesmIOHelper.getInstance().print(clusterPath, hfile, clusterHContent);
+
+    // Ewen Cu File
+
+    for (final ScapeSchedule sche : schedule) {
+      PreesmLogger.getLogger().log(Level.INFO, "set on gpu : " + sche.toString());
+      sche.setOnGPU(true);
+    }
+
+    final ScapeBuilder build2 = ScheduleFactory.eINSTANCE.createScapeBuilder();
+    new CodegenScapeBuilder(build2, schedule, subGraph, stackSize);
+
+    final String cufile = clusterName + ".cu";
+    final StringConcatenation clusterCuContent = buildCuContent(build2, subGraph);
+    PreesmIOHelper.getInstance().print(clusterPath, cufile, clusterCuContent);
   }
 
   /**
@@ -118,6 +134,61 @@ public class CodegenScape {
     }
 
     result.append("}\n", "");
+    return result;
+  }
+
+  /**
+   * The .cu file contains scheduled functions call associated with the GPU actors contained in the cluster. Ewen
+   *
+   * @param build
+   *          Clustering structure
+   * @param subGraph
+   *          Graph to consider.
+   * @return The string content of the .cu file.
+   */
+  private StringConcatenation buildCuContent(ScapeBuilder build, PiGraph subGraph) {
+
+    final StringConcatenation result = new StringConcatenation();
+
+    result.append(header(subGraph));
+    result.append("#include " + "\"Cluster_" + subGraph.getContainingPiGraph().getName() + "_" + subGraph.getName()
+        + ".h\" \n\n");
+    final String initFunc = build.getInitFunc();
+    result.append(initFunc + "{\n ", "");
+    for (final AbstractActor actor : subGraph.getOnlyActors()) {
+      if (actor instanceof Actor) {
+        final CHeaderRefinement cHeaderRefinement = (CHeaderRefinement) (((Actor) actor).getRefinement());
+        if (cHeaderRefinement.getInitPrototype() != null) {
+          result.append(cHeaderRefinement.getInitPrototype().getName() + "(); \n\n", "");
+        }
+      }
+    }
+
+    result.append("}\n ", "");
+
+    final String loopFunc = build.getLoopFunc();
+    result.append(loopFunc + "{ \n\n", "");
+
+    result.append("// buffer declaration \n\n ", "");
+    for (final String buffer : build.getBuffer()) {
+      result.append(buffer + "\n ", "");
+    }
+    for (final String buffer : build.getDynmicBuffer()) {
+      result.append(buffer + "\n ", "");
+    }
+
+    result.append("// body \n ", "");
+    final String body = build.getBody();
+    result.append(body + "\n\n ", "");
+
+    result.append("// free buffer  \n ", "");
+    for (final String buffer : build.getDynmicBuffer()) {
+      final String buff = buffer.split("\\s|\\[|\\]")[1];
+      result.append("free(" + buff + "); \n ", "");
+    }
+
+    result.append("}\n", "");
+
     return result;
   }
 
