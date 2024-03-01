@@ -122,7 +122,7 @@ interface Schedule {
 }
 
 class ScapeSchedule{
-		int iterator
+		int repetition
 		refers AbstractActor actor
 		boolean beginLoop
 		boolean endLoop
@@ -130,6 +130,7 @@ class ScapeSchedule{
 		int endLoopNb
 		refers ComponentInstance cmp	
 }
+
 class ScapeBuilder{
 	String initFunc
 	String[] subInit
