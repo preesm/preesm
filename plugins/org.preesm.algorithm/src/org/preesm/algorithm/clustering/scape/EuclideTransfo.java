@@ -131,7 +131,7 @@ public class EuclideTransfo {
    * cores in the target.
    *
    * @param coreEquivalent
-   *
+   *          number of equivalent cores
    */
   private void divideIDs(Long coreEquivalent) {
     for (Long i = levelBound; i >= 0L; i--) {
