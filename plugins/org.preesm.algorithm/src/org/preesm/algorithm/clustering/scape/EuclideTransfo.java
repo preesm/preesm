@@ -77,6 +77,7 @@ public class EuclideTransfo {
 
     // compute Euclide-able level ID
     divideIDs(coreEquivalent);
+
     // check consistency
     final Map<AbstractVertex, Long> brv = PiBRV.compute(graph, BRVMethod.LCM);
     final PiGraphConsistenceChecker pgcc = new PiGraphConsistenceChecker(CheckerErrorLevel.FATAL_ALL,
