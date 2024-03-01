@@ -136,22 +136,18 @@ public class ClusteringScapeTask extends AbstractTaskImplementation {
     }
     // add all actor on all resources if full CPU
     if (SlamDesignPEtypeChecker.isOnlyCPU(scenario.getDesign())) {
-      scenario.getConstraints().getGroupConstraints().forEach(groupConstraint -> {
-        tempGraph.getAllActors().forEach(actor -> {
-          groupConstraint.getValue().add(actor);
-        });
-      });
+      scenario.getConstraints().getGroupConstraints()
+          .forEach(groupConstraint -> tempGraph.getAllActors().forEach(actor -> groupConstraint.getValue().add(actor)));
       // temporary force srv/urc cluster to be map on GPU other on CPU if dual design
       // TODO: implementing smarter allocation
     } else if (SlamDesignPEtypeChecker.isDualCPUGPU(scenario.getDesign())) {
-      scenario.getConstraints().getGroupConstraints().forEach(gp -> {
-        tempGraph.getAllActors().stream()
-            .filter(actor -> (gp.getKey().getComponent() instanceof GPU
-                && (actor.getName().contains("srv") || actor.getName().contains("urc")))
-                || (gp.getKey().getComponent() instanceof CPU
-                    && !(actor.getName().contains("srv") || actor.getName().contains("urc"))))
-            .forEach(gp.getValue()::add);
-      });
+      scenario.getConstraints().getGroupConstraints()
+          .forEach(gp -> tempGraph.getAllActors().stream()
+              .filter(actor -> (gp.getKey().getComponent() instanceof GPU
+                  && (actor.getName().contains("srv") || actor.getName().contains("urc")))
+                  || (gp.getKey().getComponent() instanceof CPU
+                      && !(actor.getName().contains("srv") || actor.getName().contains("urc"))))
+              .forEach(gp.getValue()::add));
     }
 
     // return scenario updated
