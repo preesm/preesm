@@ -40,6 +40,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import org.preesm.algorithm.clustering.ClusteringHelper;
+import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.preesm.commons.math.MathFunctionsHelper;
 import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.AbstractVertex;
@@ -265,48 +266,48 @@ public class ClusterPartitionerLOOP extends ClusterPartitioner {
 
   private void connectDuplicatedDataOutputPort(AbstractActor loopActor, List<AbstractActor> dupActorsList,
       Long duplicationValue, Long originalLoopRv) {
+
+    final PiGraph containingGraph = loopActor.getContainingPiGraph();
+
     int index = 0;
     for (final DataOutputPort out : loopActor.getDataOutputPorts()) {
       if (!out.getFifo().isHasADelay()) {
+
         final JoinActor jn = PiMMUserFactory.instance.createJoinActor();
         jn.setName("Join_loop_" + loopActor.getName() + index);
         jn.setContainingGraph(loopActor.getContainingPiGraph());
 
         // connect Join to dout
-        final DataOutputPort dout = PiMMUserFactory.instance.createDataOutputPort();
-        dout.setName("out");
-        dout.setExpression(out.getExpression().evaluate() * originalLoopRv);
+        final DataOutputPort dout = PiMMUserFactory.instance.createDataOutputPort("out",
+            out.getExpression().evaluate() * originalLoopRv);
+
         jn.getDataOutputPorts().add(dout);
-        final Fifo fout = PiMMUserFactory.instance.createFifo();
-        fout.setType(out.getFifo().getType());
-        fout.setSourcePort(dout);
-        fout.setTargetPort(out.getFifo().getTargetPort());
-        fout.setContainingGraph(loopActor.getContainingPiGraph());
+
+        final Fifo fout = PiMMUserFactory.instance.createFifo(dout, out.getFifo().getTargetPort(),
+            out.getFifo().getType());
+        containingGraph.addFifo(fout);
 
         // connect oEmpty_0 to Join
-        final DataInputPort din = PiMMUserFactory.instance.createDataInputPort();
-        din.setName("in_0");
         final Long rateJoinIn = out.getExpression().evaluate() * originalLoopRv / duplicationValue;
-        din.setExpression(rateJoinIn);
+        final DataInputPort din = PiMMUserFactory.instance.createDataInputPort("in_0", rateJoinIn);
+
         jn.getDataInputPorts().add(din);
-        final Fifo fin = PiMMUserFactory.instance.createFifo();
-        fin.setSourcePort(out);
-        fin.setTargetPort(din);
-        fin.setContainingGraph(loopActor.getContainingPiGraph());
-        out.getFifo().setType(fout.getType());
+
+        final Fifo fin = PiMMUserFactory.instance.createFifo(out, din, fout.getType());
+        containingGraph.addFifo(fin);
 
         // connect duplicated actors to Join
         for (int i = 1; i < duplicationValue; i++) {
-          final DataInputPort dinn = PiMMUserFactory.instance.createDataInputPort();
-          dinn.setName("in_" + i);
-          dinn.setExpression(rateJoinIn);
+
+          final DataInputPort dinn = PiMMUserFactory.instance.createDataInputPort("in_" + i, rateJoinIn);
           jn.getDataInputPorts().add(dinn);
-          final Fifo finn = PiMMUserFactory.instance.createFifo();
-          finn.setType(fout.getType());
-          finn.setTargetPort(dinn);
-          finn.setContainingGraph(loopActor.getContainingPiGraph());
-          dupActorsList.get(i - 1).getDataOutputPorts().stream().filter(x -> x.getName().equals(out.getName()))
-              .forEach(x -> x.setOutgoingFifo(finn));
+
+          final DataOutputPort doutt = dupActorsList.get(i - 1).getDataOutputPorts().stream()
+              .filter(x -> x.getName().equals(out.getName())).findAny().orElseThrow(PreesmRuntimeException::new);
+
+          final Fifo finn = PiMMUserFactory.instance.createFifo(doutt, dinn, fout.getType());
+          containingGraph.addFifo(finn);
+
           index++;
         }
       }
@@ -315,89 +316,86 @@ public class ClusterPartitionerLOOP extends ClusterPartitioner {
 
   private void connectDuplicatedDataInputPort(AbstractActor loopActor, List<AbstractActor> dupActorsList,
       Long duplicationValue, Long originalLoopRv) {
+
+    final PiGraph containingGraph = loopActor.getContainingPiGraph();
+
     int index = 0;
     for (final DataInputPort in : loopActor.getDataInputPorts()) {
       if (!in.getFifo().isHasADelay()) {
+
         final ForkActor frk = PiMMUserFactory.instance.createForkActor();
         frk.setName("Fork_loop_" + loopActor.getName() + index);
-        frk.setContainingGraph(loopActor.getContainingPiGraph());
+        containingGraph.addActor(frk);
 
         // connect din to frk
-        final DataInputPort din = PiMMUserFactory.instance.createDataInputPort();
-        din.setName("in");
-        din.setExpression(in.getExpression().evaluate() * originalLoopRv);
+        final DataInputPort din = PiMMUserFactory.instance.createDataInputPort("in",
+            in.getExpression().evaluate() * originalLoopRv);
 
         frk.getDataInputPorts().add(din);
-        final Fifo fin = PiMMUserFactory.instance.createFifo();
-        fin.setType(in.getFifo().getType());
-        fin.setSourcePort(in.getFifo().getSourcePort());
-        fin.setTargetPort(din);
 
-        fin.setContainingGraph(loopActor.getContainingPiGraph());
+        final Fifo fin = PiMMUserFactory.instance.createFifo(in.getFifo().getSourcePort(), din, in.getFifo().getType());
+        containingGraph.addFifo(fin);
+
+        final Long rateForkOut = in.getExpression().evaluate() * originalLoopRv / duplicationValue;
 
         // connect fork to oEmpty_0
-        final DataOutputPort dout = PiMMUserFactory.instance.createDataOutputPort();
-        dout.setName("out_0");
-        final Long rateForkOut = in.getExpression().evaluate() * originalLoopRv / duplicationValue;
-        dout.setExpression(rateForkOut);
+        final DataOutputPort dout = PiMMUserFactory.instance.createDataOutputPort("out_0", rateForkOut);
         frk.getDataOutputPorts().add(dout);
-        final Fifo fout = PiMMUserFactory.instance.createFifo();
-        fout.setType(in.getFifo().getType());
-        fout.setSourcePort(dout);
-        fout.setTargetPort(in);
-        fout.setContainingGraph(loopActor.getContainingPiGraph());
+
+        final Fifo fout = PiMMUserFactory.instance.createFifo(dout, in, in.getFifo().getType());
+        containingGraph.addFifo(fout);
         // remove extra fifo --> non en fait c'est bon
 
         // connect fork to duplicated actors
         for (int i = 1; i < duplicationValue; i++) {
-          final DataOutputPort doutn = PiMMUserFactory.instance.createDataOutputPort();
-          doutn.setName("out_" + i);
-          doutn.setExpression(rateForkOut);
+
+          final DataOutputPort doutn = PiMMUserFactory.instance.createDataOutputPort("out_" + i, rateForkOut);
           frk.getDataOutputPorts().add(doutn);
-          final Fifo foutn = PiMMUserFactory.instance.createFifo();
-          foutn.setType(in.getFifo().getType());
-          foutn.setSourcePort(doutn);
-          foutn.setContainingGraph(loopActor.getContainingPiGraph());
-          dupActorsList.get(i - 1).getDataInputPorts().stream().filter(x -> x.getName().equals(in.getName()))
-              .forEach(x -> x.setIncomingFifo(foutn));
+
+          final DataInputPort dinn = dupActorsList.get(i - 1).getDataInputPorts().stream()
+              .filter(x -> x.getName().equals(in.getName())).findAny().orElseThrow(PreesmRuntimeException::new);
+          final Fifo foutn = PiMMUserFactory.instance.createFifo(doutn, dinn, in.getFifo().getType());
+          containingGraph.addFifo(foutn);
         }
         index++;
       } else {
         // copy delay
         for (int i = 1; i < duplicationValue; i++) {
-          final Fifo fdin = PiMMUserFactory.instance.createFifo();
+
           final String type = in.getFifo().getType();
-          fdin.setType(type);
-          fdin.setContainingGraph(loopActor.getContainingPiGraph());
+
           final Delay copyDelay = PiMMUserFactory.instance.copy(in.getFifo().getDelay());
           copyDelay.setName(in.getFifo().getDelay().getName() + i);
           copyDelay.setContainingGraph(loopActor.getContainingPiGraph());
+
           final DelayActor copyDelayActor = PiMMUserFactory.instance.copy(in.getFifo().getDelay().getActor());
           copyDelayActor.setName(in.getFifo().getDelay().getActor().getName() + i);
           copyDelayActor.setContainingGraph(loopActor.getContainingPiGraph());
           copyDelay.setActor(copyDelayActor);
-          fdin.assignDelay(copyDelay);
+
           // the getter of the initial delay is moved to get the delay of the copied actor
           final DataInputPort getterPort = in.getFifo().getDelay().getActor().getDataOutputPort().getFifo()
               .getTargetPort();
+
           // the setter of the copied delay is the output of the initial delay
-          final Fifo fDelayActorIn = PiMMUserFactory.instance.createFifo();
-          fDelayActorIn.setType(type);
-          fDelayActorIn.setContainingGraph(loopActor.getContainingPiGraph());
-          fDelayActorIn.setSourcePort(in.getFifo().getDelay().getActor().getDataOutputPort());
-          fDelayActorIn.setTargetPort(copyDelayActor.getDataInputPort());
-          final Fifo fDelayActorOut = PiMMUserFactory.instance.createFifo();
-          fDelayActorOut.setType(type);
-          fDelayActorOut.setContainingGraph(loopActor.getContainingPiGraph());
-          fDelayActorOut.setTargetPort(getterPort);
-          fDelayActorOut.setSourcePort(copyDelayActor.getDataOutputPort());
+          final Fifo fDelayActorIn = PiMMUserFactory.instance.createFifo(
+              in.getFifo().getDelay().getActor().getDataOutputPort(), copyDelayActor.getDataInputPort(), type);
+          containingGraph.addFifo(fDelayActorIn);
+
+          final Fifo fDelayActorOut = PiMMUserFactory.instance.createFifo(copyDelayActor.getDataOutputPort(),
+              getterPort, type);
+          containingGraph.addFifo(fDelayActorOut);
 
           // connect delay to actor
-          dupActorsList.get(i - 1).getDataInputPorts().stream().filter(x -> x.getName().equals(in.getName()))
-              .forEach(x -> x.setIncomingFifo(fdin));
-          dupActorsList.get(i - 1).getDataOutputPorts().stream()
-              .filter(x -> x.getName().equals(in.getFifo().getSourcePort().getName()))
-              .forEach(x -> x.setOutgoingFifo(fdin));
+          final DataInputPort dinn = dupActorsList.get(i - 1).getDataInputPorts().stream()
+              .filter(x -> x.getName().equals(in.getName())).findAny().orElseThrow(PreesmRuntimeException::new);
+          final DataOutputPort doutt = dupActorsList.get(i - 1).getDataOutputPorts().stream()
+              .filter(x -> x.getName().equals(in.getFifo().getSourcePort().getName())).findAny()
+              .orElseThrow(PreesmRuntimeException::new);
+
+          final Fifo fdin = PiMMUserFactory.instance.createFifo(doutt, dinn, type);
+          containingGraph.addFifo(fdin);
+          fdin.assignDelay(copyDelay);
         }
       }
     }
