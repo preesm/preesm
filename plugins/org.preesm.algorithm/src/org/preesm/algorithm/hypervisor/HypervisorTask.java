@@ -3,6 +3,7 @@ package org.preesm.algorithm.hypervisor;
 import java.io.File;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import org.apache.commons.math3.primes.Primes;
 import org.apache.commons.math3.util.Pair;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.ResourcesPlugin;
@@ -48,22 +49,29 @@ public class HypervisorTask extends AbstractTaskImplementation {
 
   // global file export data
 
-  Long                                           initTime                 = 0L;
-  Map<Integer, Map<Integer, Long>>               nodePartTime             = new LinkedHashMap<>();
-  Map<Integer, Map<Integer, Map<Integer, Long>>> threadPartTime           = new LinkedHashMap<>();
-  Map<Integer, Map<Integer, Long>>               simuTime                 = new LinkedHashMap<>();
-  public static final String                     DSE_PART_NAME            = "dse_part_trend.csv";
-  Boolean                                        multinet                 = false;
-  Boolean                                        parallelismFound         = false;
-  String                                         scenarioName             = "";
-  int                                            parallelismMax           = 0;
-  Double                                         BestfinalLatency         = Double.MAX_VALUE;
-  Double                                         initialfinalLatencyOptim = Double.MAX_VALUE;
-  int                                            nodeMax                  = Integer.MAX_VALUE;
-  int                                            coreMax                  = Integer.MAX_VALUE;
-  int                                            coreMin                  = 1;
-  int                                            configCount              = 0;
-  int                                            deltaCount;
+  Long                                           initTime       = 0L;
+  Map<Integer, Map<Integer, Long>>               nodePartTime   = new LinkedHashMap<>();
+  Map<Integer, Map<Integer, Map<Integer, Long>>> threadPartTime = new LinkedHashMap<>();
+  Map<Integer, Map<Integer, Long>>               simuTime       = new LinkedHashMap<>();
+
+  private static final String SIMULATION_PATH         = File.separator + "Simulation" + File.separator;
+  private static final String SCENARIO_GENERATED_PATH = File.separator + "Scenarios" + File.separator + "generated"
+      + File.separator;
+  private static final String WORKFLOW_PATH           = File.separator + "Workflows" + File.separator;
+
+  public static final String DSE_PART_NAME = "dse_part_trend.csv";
+
+  Boolean multinet                 = false;
+  Boolean parallelismFound         = false;
+  String  scenarioName             = "";
+  int     parallelismMax           = 0;
+  Double  bestFinalLatency         = Double.MAX_VALUE;
+  Double  initialfinalLatencyOptim = Double.MAX_VALUE;
+  int     nodeMax                  = Integer.MAX_VALUE;
+  int     coreMax                  = Integer.MAX_VALUE;
+  int     coreMin                  = Integer.MAX_VALUE;
+  int     configCount              = 0;
+  int     deltaCount;
 
   @Override
   public Map<String, Object> execute(Map<String, Object> inputs, Map<String, String> parameters,
@@ -77,43 +85,41 @@ public class HypervisorTask extends AbstractTaskImplementation {
     final String project = "/" + workflow.getProjectName();
     final WorkflowManager workflowManager = new WorkflowManager();
     // clean project
-    PreesmIOHelper.getInstance().deleteFolder(project + "/Simulation");
+    PreesmIOHelper.getInstance().deleteFolder(project + SIMULATION_PATH);
 
     // Initialize the search to evaluate memory requirement fix minimal node boundary
 
     final ArchiMoldableParameter archiParams = new ArchiMoldableParameter(project, multinet);
     archiParams.execute();
-    if (Boolean.TRUE.equals(multinet)) {
 
+    if (Boolean.TRUE.equals(multinet)) {
       final long startTimeInit = System.currentTimeMillis();
+
       // Simulate dataflow graph on 1core
       initialisationLauncher(workflowManager, monitor, project, "Initialisation");
       initTime = System.currentTimeMillis() - startTimeInit;
-      String content = PreesmIOHelper.getInstance().read(project + "/Simulation/", "initialisation.csv");
+      String content = PreesmIOHelper.getInstance().read(project + SIMULATION_PATH, "initialisation.csv");
       String[] line = content.split("\n");
       String[] column = line[1].split(";");
       final long initMemory = Long.decode(column[1]);
 
       // Simulate full pipeline dataflow graph on 1 core
       initialisationLauncher(workflowManager, monitor, project, "Initialisation2");
-      content = PreesmIOHelper.getInstance().read(project + "/Simulation/", "initialisation.csv");
+      content = PreesmIOHelper.getInstance().read(project + SIMULATION_PATH, "initialisation.csv");
       line = content.split("\n");
       column = line[1].split(";");
       final long speedupMax = Long.decode(column[4]);
 
       // Simulate theoretical maximum parallelism
-      final Integer parallelismMaxTh = isPrime((int) Math.ceil(speedupMax));
+      final Integer parallelismMaxTh = getNextCompositeNumber((int) speedupMax);
 
       final Pair<Integer, Integer> closestPair = findClosestPair(parallelismMaxTh, archiParams);
       final int node = closestPair.getKey();
       final int core = closestPair.getValue();
-      /*
-       * for (int c = archiParams.getCoreMin(); c <= archiParams.getCoreMax(); c++) { node = parallelismMaxTh / c; if
-       * (node * c == parallelismMaxTh) { core = c; } }
-       */
+
       iterativePartitioning(node, core, archiParams.getCoreFreqMax(), iteration, archiParams, project, monitor,
           workflowManager);
-      content = PreesmIOHelper.getInstance().read(project + "/Simulation/", "latency_trend.csv");
+      content = PreesmIOHelper.getInstance().read(project + SIMULATION_PATH, "latency_trend.csv");
       line = content.split("\n");
       initialfinalLatencyOptim = Double.valueOf(line[line.length - 1]);
       archiParams.refine(initMemory);
@@ -128,6 +134,7 @@ public class HypervisorTask extends AbstractTaskImplementation {
       for (int coreIndex = coreMin; coreIndex <= coreMax; coreIndex += archiParams.getCoreStep()) {
 
         coreIndex = nodeIndex == 1 && coreMin == 1 ? coreIndex + 1 : coreIndex;
+
         for (int corefreqIndex = archiParams.getCoreFreqMin(); corefreqIndex <= archiParams.getCoreFreqMax();
             corefreqIndex += archiParams.getCoreFreqStep()) {
           if (Boolean.TRUE.equals(multinet)) {
@@ -139,8 +146,8 @@ public class HypervisorTask extends AbstractTaskImplementation {
 
         }
 
-        // refineCoreMin(coreIndex, nodeIndex);
-        // refineCoreMax(coreIndex, nodeIndex, project + "/Simulation/");
+        refineCoreMin(coreIndex, nodeIndex);
+        refineCoreMax(coreIndex, nodeIndex, project + SIMULATION_PATH);
       }
 
 
@@ -164,8 +171,6 @@ public class HypervisorTask extends AbstractTaskImplementation {
 
         if (currentDifference < closestDifference) {
           closestPair = new Pair<>(node, core);
-          // closestPairCore = core;
-          // closestPairNode = node;
           closestDifference = currentDifference;
         }
       }
@@ -181,7 +186,7 @@ public class HypervisorTask extends AbstractTaskImplementation {
     final int delta = 3;
 
     if (coreIndex != coreMin && curentFinalLatency <= initialfinalLatencyOptim
-        && curentFinalLatency < BestfinalLatency) {
+        && curentFinalLatency < bestFinalLatency) {
       deltaCount++;
 
     } else {
@@ -197,7 +202,7 @@ public class HypervisorTask extends AbstractTaskImplementation {
 
 
 
-    BestfinalLatency = curentFinalLatency < BestfinalLatency ? curentFinalLatency : BestfinalLatency;
+    bestFinalLatency = curentFinalLatency < bestFinalLatency ? curentFinalLatency : bestFinalLatency;
 
     if (parallelismMax != 0) {
       nodeMax = parallelismMax / coreIndex;
@@ -214,21 +219,18 @@ public class HypervisorTask extends AbstractTaskImplementation {
 
   }
 
-  private Integer isPrime(int n) {
-    if (n <= 1) {
-      return 2;
+  private Integer getNextCompositeNumber(int n) {
+
+    if (Primes.isPrime(n)) {
+      return n + 1;
     }
-    for (int i = 2; i <= Math.sqrt(n); i++) {
-      if (n % i == 0) {
-        return n;
-      }
-    }
-    return n + 1;
+
+    return n;
   }
 
   private void initialisationLauncher(WorkflowManager workflowManager, IProgressMonitor monitor, String project,
       String initName) {
-    final String workflowPath = project + "/Workflows/" + initName + ".workflow";
+    final String workflowPath = project + WORKFLOW_PATH + initName + ".workflow";
 
     final String scenarioPath = project + scenarioName;
     workflowManager.execute(workflowPath, scenarioPath, monitor);
@@ -323,14 +325,15 @@ public class HypervisorTask extends AbstractTaskImplementation {
   private void simulationLauncher(int nNode, int nCore, int cFreq, ArchiMoldableParameter archiParams,
       WorkflowManager workflowManager, IProgressMonitor monitor, String project) {
     // Original simSDP --> 1 config, simSDP multinet --> 5 config
-    // final int config = Boolean.TRUE.equals(multinet) ? 5 : 1;
 
     for (int indexTopo = archiParams.getTopoMin(); indexTopo <= archiParams.getTopoMax();
         indexTopo += archiParams.getTopoStep()) {
       Boolean isExistingNetwork = true;
+
       if (Boolean.TRUE.equals(multinet)) {
 
-        isExistingNetwork = new SimSDPnetwork(indexTopo, nNode, nCore, cFreq, project).execute();
+        isExistingNetwork = new SimSDPNetwork(indexTopo, nNode, nCore, cFreq, project).execute();
+
       }
 
       final String workflowPath = project + WORKFLOW_PATH + "NodeSimulator.workflow";
