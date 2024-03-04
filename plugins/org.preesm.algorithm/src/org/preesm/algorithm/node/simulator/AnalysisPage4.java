@@ -32,15 +32,17 @@ import org.preesm.commons.files.PreesmIOHelper;
  */
 public class AnalysisPage4 {
 
-  private final String                   path;
-  private static final String            NET_NAME              = "multicriteria.csv";
-  private static final List<NetworkInfo> networkInfoList       = new ArrayList<>();
-  private final List<NetworkInfo>        networkInfoNormalList = new ArrayList<>();
+  private final String        path;
+  private static final String NET_NAME = "multicriteria.csv";
+
+  private final List<NetworkInfo> networkInfoList       = new ArrayList<>();
+  private final List<NetworkInfo> networkInfoNormalList = new ArrayList<>();
 
   Map<Integer, Map<Integer, Map<Integer, List<NetworkInfo>>>> nodeNetworkInfoNormalMap = new LinkedHashMap<>();
-  int                                                         nodeKey                  = 0;
-  int                                                         coreKey                  = 0;
-  int                                                         coreFrequencyKey         = 0;
+
+  int nodeKey          = 0;
+  int coreKey          = 0;
+  int coreFrequencyKey = 0;
 
   private static final String DESCRIPTION = """
       <html>
@@ -149,7 +151,7 @@ public class AnalysisPage4 {
     final JPanel textFieldPanel = new JPanel();
     textFieldPanel.setLayout(new GridLayout(1, 2, 0, 0));
     final JComboBox<String> archiCombo = addComboBoxWithLabel(textFieldPanel,
-        "Select the number of nodes:cores:frequency for network analysis:", nodeNetworkInfoNormalMap);
+        "Select the number of nodes:cores:frequency for network analysis:");
     // node selection
 
     archiCombo.addActionListener(e -> {
@@ -165,7 +167,7 @@ public class AnalysisPage4 {
     return textFieldPanel;
   }
 
-  private JComboBox<String> addComboBoxWithLabel(JPanel panel, String labelText, Map<Integer, ?> dataMap) {
+  private JComboBox<String> addComboBoxWithLabel(JPanel panel, String labelText) {
     final JLabel label = new JLabel(labelText);
     panel.add(label);
     String[] items;
@@ -197,7 +199,7 @@ public class AnalysisPage4 {
     return networkInfoNormalList;
   }
 
-  public static List<NetworkInfo> getnetworkInfoList() {
+  public List<NetworkInfo> getnetworkInfoList() {
     return networkInfoList;
   }
 
