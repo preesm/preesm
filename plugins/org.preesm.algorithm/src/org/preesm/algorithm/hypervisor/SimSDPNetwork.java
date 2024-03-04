@@ -104,7 +104,6 @@ public class SimSDPNetwork {
     while (n > ROUTER_PORT) {
       if (n % ROUTER_PORT == 0) {
         // If the number of nodes per router is a multiple of 4, reduce the number of routers
-        // n *= 2;
         n /= 2;
       } else {
         // Otherwise, increase the number of chassis and reduce the number of nodes per router

@@ -41,7 +41,7 @@ public class IntranodeExporterTask extends AbstractTaskImplementation {
   public static final String SPEEDUP_NAME    = "speedup_trend.csv";
 
   public static final String MEMORY_NAME = "memory_trend.csv";
-  static String              path        = "";
+  private String             path        = "";
 
   @Override
   public Map<String, Object> execute(Map<String, Object> inputs, Map<String, String> parameters,
