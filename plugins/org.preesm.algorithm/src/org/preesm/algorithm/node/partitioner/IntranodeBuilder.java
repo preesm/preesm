@@ -17,7 +17,10 @@ import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.IPath;
-import org.eclipse.xtend2.lib.StringConcatenation;
+
+import org.eclipse.core.runtime.Path;
+import org.eclipse.emf.common.util.URI;
+
 import org.preesm.algorithm.codegen.idl.Prototype;
 import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.preesm.commons.files.PreesmIOHelper;
@@ -164,23 +167,11 @@ public class IntranodeBuilder {
         list.add(actor);
       }
       final PiGraph subgraph = new PiSDFSubgraphBuilder(graph, list, "sub" + subRank).build();
-      // homogeneous(subgraph);
       sublist.add(subgraph);
     }
 
     // Step 3: Store the top graph to preserve inter-subgraph connections
     this.topGraph = PiMMUserFactory.instance.copyPiGraphWithHistory(graph);
-  }
-
-  private void homogeneous(PiGraph subgraph) {
-    final Map<AbstractVertex, Long> repetitionVector = PiBRV.compute(subgraph, BRVMethod.LCM);
-    final Long subRV = repetitionVector.get(subgraph);
-    if (repetitionVector.get(subgraph) != 1) {
-      for (final DataPort port : subgraph.getAllDataPorts()) {
-        final long val = port.getExpression().evaluate();
-        port.setExpression(val * subRV);
-      }
-    }
   }
 
   /**
@@ -226,8 +217,9 @@ public class IntranodeBuilder {
 
   // Helper method to create a source actor for a DataInputInterface
   private Actor createSourceActor(DataInputInterface in, int index, PiGraph subgraph) {
-    final Actor src = PiMMUserFactory.instance.createActor();
-    src.setName("src_" + in.getName());
+    final Actor src = PiMMUserFactory.instance.createActor("src_" + in.getName());
+    in.getContainingPiGraph().addActor(src);
+
     final Refinement refinement = PiMMUserFactory.instance.createCHeaderRefinement();
     src.setRefinement(refinement);
     final CHeaderRefinement cHeaderRefinement = (CHeaderRefinement) (src).getRefinement();
@@ -239,11 +231,9 @@ public class IntranodeBuilder {
     cHeaderRefinement.setLoopPrototype(functionPrototype);
     functionPrototype.setName(subgraph.getName() + "_" + src.getName());
 
-    in.getContainingPiGraph().addActor(src);
-    final DataOutputPort dout = PiMMUserFactory.instance.createDataOutputPort();
+    final DataOutputPort dout = PiMMUserFactory.instance.createDataOutputPort("out", in.getDataPort().getExpression());
     src.getDataOutputPorts().add(dout);
-    dout.setName("out");
-    dout.setExpression(in.getDataPort().getExpression());
+
     in.getDataOutputPorts().get(0).getFifo().setSourcePort(dout);
     final FunctionArgument functionArgument = PiMMUserFactory.instance.createFunctionArgument();
     functionArgument.setName(src.getAllPorts().get(0).getName());
@@ -263,8 +253,7 @@ public class IntranodeBuilder {
 
   // Helper method to create a sink actor for a DataOutputInterface
   private Actor createSinkActor(DataOutputInterface out, int index, PiGraph subgraph) {
-    final Actor snk = PiMMUserFactory.instance.createActor();
-    snk.setName("snk_" + out.getName());
+    final Actor snk = PiMMUserFactory.instance.createActor("snk_" + out.getName());
     final Refinement refinement = PiMMUserFactory.instance.createCHeaderRefinement();
     snk.setRefinement(refinement);
     final CHeaderRefinement cHeaderRefinement = (CHeaderRefinement) (snk.getRefinement());
@@ -277,10 +266,8 @@ public class IntranodeBuilder {
     functionPrototype.setName(subgraph.getName() + "_" + snk.getName());
 
     out.getContainingPiGraph().addActor(snk);
-    final DataInputPort din = PiMMUserFactory.instance.createDataInputPort();
+    final DataInputPort din = PiMMUserFactory.instance.createDataInputPort("in", out.getDataPort().getExpression());
     snk.getDataInputPorts().add(din);
-    din.setName("in");
-    din.setExpression(out.getDataPort().getExpression());
     out.getDataInputPorts().get(0).getFifo().setTargetPort(din);
     final FunctionArgument functionArgument = PiMMUserFactory.instance.createFunctionArgument();
     functionArgument.setName(snk.getAllPorts().get(0).getName());
@@ -311,16 +298,13 @@ public class IntranodeBuilder {
       if (p == null) {
         // If no such named Parameter exists, creating it.
 
-        // Creating replacement parameter
-        final Parameter parameter = PiMMUserFactory.instance.createParameter();
-        parameter.setName(cii.getName());
-
         // In case dependency source is config out
         if (!(cii.getGraphPort().getIncomingDependency().getSource() instanceof Parameter)) {
           throw new PreesmRuntimeException("Config output interface/port are not supported in this context.");
         }
 
-        parameter.setExpression(
+        // Creating replacement parameter
+        final Parameter parameter = PiMMUserFactory.instance.createParameter(cii.getName(),
             ((Parameter) cii.getGraphPort().getIncomingDependency().getSource()).getExpression().evaluate());
 
         // Adding replacement parameter to graph
@@ -335,7 +319,6 @@ public class IntranodeBuilder {
       // Removing ConfigInputInterface from the graph, will also remove the associated ConfigInputPort
       subgraph.removeParameter(cii);
     }
-
   }
 
   /**
@@ -351,7 +334,7 @@ public class IntranodeBuilder {
     final IPath fromPortableString = Path.fromPortableString(graphPath);
     final IFile file = ResourcesPlugin.getWorkspace().getRoot().getFile(fromPortableString);
     final IProject iProject = file.getProject();
-    final String fileName = printgraph.getName() + "" + ".pi";
+    final String fileName = printgraph.getName() + ".pi";
     final URI uri = FileUtils.getPathToFileInFolder(iProject, fromPortableString, fileName);
 
     // Get the project
@@ -528,11 +511,12 @@ public class IntranodeBuilder {
    */
   private void generateFileH(Actor actor, int index) {
 
-    final StringConcatenation content = new StringConcatenation();
+    final StringBuilder content = new StringBuilder();
     content.append("#include \"preesm.h\"\n");
-    content.append("// Interface actor file \n #ifndef " + actor.getName().toUpperCase() + "_H \n #define "
-        + actor.getName().toUpperCase() + "_H \n void " + actor.getContainingPiGraph().getName() + "_" + actor.getName()
-        + "(");
+    content.append("// Interface actor file\n");
+    content.append("#ifndef " + actor.getName().toUpperCase() + "_H\n");
+    content.append("#define " + actor.getName().toUpperCase() + "_H\n");
+    content.append("void " + actor.getContainingPiGraph().getName() + "_" + actor.getName() + "(");
 
     for (int i = 0; i < actor.getAllDataPorts().size(); i++) {
       final DataPort dp = actor.getAllDataPorts().get(i);
@@ -552,10 +536,11 @@ public class IntranodeBuilder {
   }
 
   private void generateFileC(Actor actor, int index) {
-    final StringConcatenation content = new StringConcatenation();
 
-    content.append("// Interface actor file \n #include \"" + actor.getName() + ".h\" \n " + " void "
-        + actor.getContainingPiGraph().getName() + "_" + actor.getName() + "(");
+    final StringBuilder content = new StringBuilder();
+    content.append("// Interface actor file\n");
+    content.append("#include \"" + actor.getName() + ".h\"\n");
+    content.append("void " + actor.getContainingPiGraph().getName() + "_" + actor.getName() + "(");
 
     for (int i = 0; i < actor.getAllDataPorts().size(); i++) {
       final DataPort dp = actor.getAllDataPorts().get(i);
@@ -564,10 +549,9 @@ public class IntranodeBuilder {
         content.append(",");
       }
     }
-    content.append(") {\n //This function is empty since it is just an interface\n }");
+    content.append(") {\n//This function is empty since it is just an interface\n }");
 
     PreesmIOHelper.getInstance().print(codegenPath + INTERFACE_PATH + index + "/", actor.getName() + ".c", content);
-
   }
 
   /**
@@ -597,7 +581,6 @@ public class IntranodeBuilder {
           subTimings += slow * brv.get(a);
         } else {
           // add actor until reach node capacity
-          // final Long dividend = findClosestDivisor(brv.get(a), nodeCapacity);
           final Long dividend = nodeCapacity;
           list = processActorList(list, a, dividend);
 
@@ -615,33 +598,6 @@ public class IntranodeBuilder {
     }
     // Put the final node and its sub-timings into the map
     subs.put(nodeID, list);
-  }
-
-  private Long findClosestDivisor(Long value, Long targetValue) {
-    final List<Long> divisors = getDivisors(value);
-
-    Long closestDivisor = divisors.get(0); // Initialisation avec le premier diviseur
-    Long minDifference = Math.abs(targetValue - closestDivisor);
-
-    for (final Long divisor : divisors) {
-      final Long difference = Math.abs(targetValue - divisor);
-      if (difference < minDifference) {
-        minDifference = difference;
-        closestDivisor = divisor;
-      }
-    }
-
-    return closestDivisor;
-  }
-
-  private List<Long> getDivisors(Long value) {
-    final List<Long> divisors = new ArrayList<>();
-    for (Long i = 1L; i <= value; i++) {
-      if (value % i == 0) {
-        divisors.add(i);
-      }
-    }
-    return divisors;
   }
 
   /**
