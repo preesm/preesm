@@ -1242,14 +1242,14 @@ class CPrinter extends BlankPrinter {
 
     for (var i = 0; i < srcArgs.size; i++) {
         val index = i
-        val buff =srcArgs.findFirst[Buffer buf | buf.comment == ("src_in_"  + index)]
+        val buff =srcArgs.findFirst[Buffer buf | buf.comment.equals("src_in_"  + index)]
         funcStr += buff.type + " *" + buff.comment + ","
     }
 
     val snkArgs = firstBlock.topBuffers.filter[buf | buf.comment.contains("snk")]
     for (var i = 0; i < snkArgs.size; i++) {
         val index = i
-        val buff =snkArgs.findFirst[Buffer buf | buf.comment == ("snk_out_" + index)]
+        val buff =snkArgs.findFirst[Buffer buf | buf.comment.equals("snk_out_" + index)]
         funcStr += buff.type + " *" + buff.comment + ","
     }
 

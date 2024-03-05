@@ -262,10 +262,13 @@ public class CodegenSimSDPTask extends AbstractTaskImplementation {
     final Object[] snkArgs = firstBlock.getTopBuffers().stream().filter(x -> x.getComment().contains("snk")).toArray();
     for (int i = 0; i < snkArgs.length; i++) {
       final int index = i;
+
       final Buffer buff = firstBlock.getTopBuffers().stream().filter(x -> x.getComment().equals("snk_out_" + index))
           .findFirst().orElseThrow();
-      funcStr += buff.getType() + " *" + buff.getComment() + ",";
-      structStr += buff.getType() + " *" + buff.getComment() + ";\n ";
+      if (buff != null) {
+        funcStr += buff.getType() + " *" + buff.getComment() + ",";
+        structStr += buff.getType() + " *" + buff.getComment() + ";\n ";
+      }
     }
 
     if (funcStr.endsWith(",")) {

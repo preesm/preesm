@@ -1056,6 +1056,50 @@ public class CodegenModelGenerator extends AbstractCodegenModelGenerator {
     }
   }
 
+
+  /**
+   * This method retrieve the sink and source actor involved in the communication internode (in multinode context). To
+   * simplify the later allocation communication buffer are indexed on the first block
+   *
+   * @param resultList
+   *          the list of block
+   *
+   */
+  private void generateTopBuffers(List<Block> resultList) {
+    if (multinode) {
+      final CoreBlock firstBlock = (CoreBlock) resultList.stream().findFirst().get();
+      for (final Block block : resultList) {
+        final CoreBlock coreBlock = (CoreBlock) block;
+
+        final Iterator<Buffer> iterBuffer = coreBlock.getSinkFifoBuffers().iterator();
+        while (iterBuffer.hasNext()) {
+          final Buffer buffer = iterBuffer.next();
+
+          if (buffer.getComment().contains("> snk")) {
+            final String[] split = buffer.getComment().split(">");
+            buffer.setComment(split[1].replace("_0_in", "").replaceAll(" ", ""));
+            firstBlock.getTopBuffers().add(buffer);
+            iterBuffer.remove();
+          }
+        }
+        for (final Variable var : coreBlock.getDeclarations()) {
+          if (var instanceof final Buffer buffer && buffer.getComment() != null) {
+            if (buffer.getComment().startsWith("src")) {
+              final String[] split = buffer.getComment().split(">");
+              if (split[0].contains("_0_out")) {
+                buffer.setComment(split[0].replace("_0_out", "").replaceAll(" ", ""));
+                if (firstBlock.getTopBuffers().stream().noneMatch(x -> x.getComment().equals(buffer.getComment()))) {
+                  firstBlock.getTopBuffers().add(buffer);
+                }
+              }
+            }
+          }
+        }
+
+      }
+    }
+  }
+
   /**
    * This method generates the list of variable corresponding to a prototype of the {@link DAGVertex} firing. The
    * {@link Prototype} passed as a parameter must belong to the processed {@link DAGVertex}.
