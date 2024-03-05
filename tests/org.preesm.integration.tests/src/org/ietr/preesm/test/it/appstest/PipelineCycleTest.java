@@ -48,12 +48,12 @@ import org.junit.Test;
  */
 public class PipelineCycleTest {
 
-  private final String workflow    = "pipeline_cycle.workflow";
-  private final String scenario    = "ABC_1CoresX86.scenario";
-  private final String projectName = "org.ietr.preesm.pipeline_cycle";
-
   @Test
   public void testSimSDPNodePartitioningTest() throws IOException, CoreException {
+
+    final String workflow = "pipeline_cycle.workflow";
+    final String scenario = "ABC_1CoresX86.scenario";
+    final String projectName = "org.ietr.preesm.pipeline_cycle";
 
     final String workflowFilePathStr = "/Workflows/" + workflow;
     final String scenarioFilePathStr = "/Scenarios/" + scenario;

@@ -48,12 +48,12 @@ import org.junit.Test;
  */
 public class SimSDPHypervisorTest {
 
-  private final String workflow    = "hypervisor.workflow";
-  private final String scenario    = "initialisation.scenario";
-  private final String projectName = "org.ietr.preesm.simsdp.hypervisor";
-
   @Test
   public void testSimSDPHypervisorTest() throws IOException, CoreException {
+
+    final String workflow = "hypervisor.workflow";
+    final String scenario = "initialisation.scenario";
+    final String projectName = "org.ietr.preesm.simsdp.hypervisor";
 
     final String workflowFilePathStr = "/Workflows/" + workflow;
     final String scenarioFilePathStr = "/Scenarios/" + scenario;

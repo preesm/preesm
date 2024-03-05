@@ -48,12 +48,12 @@ import org.junit.Test;
  */
 public class SimSDPNodePartitioningTest {
 
-  private final String workflow    = "NodePartitioning.workflow";
-  private final String scenario    = "rfi.scenario";
-  private final String projectName = "org.ietr.preesm.simsdp.nodepartitioning";
-
   @Test
   public void testSimSDPNodePartitioningTest() throws IOException, CoreException {
+
+    final String workflow = "NodePartitioning.workflow";
+    final String scenario = "rfi.scenario";
+    final String projectName = "org.ietr.preesm.simsdp.nodepartitioning";
 
     final String workflowFilePathStr = "/Workflows/" + workflow;
     final String scenarioFilePathStr = "/Scenarios/" + scenario;

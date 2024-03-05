@@ -75,6 +75,7 @@ public class ArchitecturesGenerator {
 
   /** The Constant scenarioDirName. */
   private static final String ARCHI_DIR_NAME = "Archi";
+  private static final String LIBRARY_NAME   = "preesm";
 
   final IFolder archiDir;
 
@@ -122,7 +123,7 @@ public class ArchitecturesGenerator {
 
     rootVLNV.setName(nbX86cores + "CoresX86");
 
-    rootVLNV.setLibrary("preesm");
+    rootVLNV.setLibrary(LIBRARY_NAME);
     rootVLNV.setVendor("ietr");
     rootVLNV.setVersion("1");
 
@@ -215,7 +216,7 @@ public class ArchitecturesGenerator {
       final VLNV rootVLNV = SlamFactory.eINSTANCE.createVLNV();
       rootVLNV.setName(nodeName);
 
-      rootVLNV.setLibrary("preesm");
+      rootVLNV.setLibrary(LIBRARY_NAME);
       rootVLNV.setVendor("ietr");
       rootVLNV.setVersion("1");
 
@@ -270,7 +271,7 @@ public class ArchitecturesGenerator {
   public static Design generateFpgaArchitecture() {
     final VLNV rootVLNV = SlamFactory.eINSTANCE.createVLNV();
     rootVLNV.setName("fpga");
-    rootVLNV.setLibrary("preesm");
+    rootVLNV.setLibrary(LIBRARY_NAME);
     rootVLNV.setVendor("ietr");
     rootVLNV.setVersion("1");
 
