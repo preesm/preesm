@@ -127,6 +127,7 @@ class ScapeSchedule{
 		boolean beginLoop
 		boolean endLoop
 		boolean LoopPrec
+		boolean onGPU
 		int endLoopNb
 		refers ComponentInstance cmp	
 }

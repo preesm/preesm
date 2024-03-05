@@ -3,13 +3,11 @@ package org.preesm.algorithm.clustering.scape;
 import java.io.File;
 import java.util.Date;
 import java.util.List;
-import java.util.logging.Level;
 import org.eclipse.xtend2.lib.StringConcatenation;
 import org.preesm.algorithm.schedule.model.ScapeBuilder;
 import org.preesm.algorithm.schedule.model.ScapeSchedule;
 import org.preesm.algorithm.schedule.model.ScheduleFactory;
 import org.preesm.commons.files.PreesmIOHelper;
-import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.Actor;
 import org.preesm.model.pisdf.CHeaderRefinement;
@@ -43,7 +41,6 @@ public class CodegenScape {
     // Ewen Cu File
 
     for (final ScapeSchedule sche : schedule) {
-      PreesmLogger.getLogger().log(Level.INFO, "set on gpu : " + sche.toString());
       sche.setOnGPU(true);
     }
 
