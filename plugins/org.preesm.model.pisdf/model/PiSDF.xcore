@@ -189,6 +189,7 @@ abstract class Configurable extends AbstractVertex, Parameterizable {
 }
 
 abstract class AbstractActor extends Configurable {
+	boolean onGPU
 	contains DataInputPort[] dataInputPorts
 	contains DataOutputPort[] dataOutputPorts
 	contains ConfigOutputPort[] configOutputPorts

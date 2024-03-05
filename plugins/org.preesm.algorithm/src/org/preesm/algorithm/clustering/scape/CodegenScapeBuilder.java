@@ -1,5 +1,6 @@
 package org.preesm.algorithm.clustering.scape;
 
+import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
@@ -19,6 +20,7 @@ import org.preesm.model.pisdf.DataOutputInterface;
 import org.preesm.model.pisdf.DataOutputPort;
 import org.preesm.model.pisdf.Delay;
 import org.preesm.model.pisdf.ExecutableActor;
+import org.preesm.model.pisdf.Fifo;
 import org.preesm.model.pisdf.ForkActor;
 import org.preesm.model.pisdf.FunctionArgument;
 import org.preesm.model.pisdf.FunctionPrototype;
@@ -58,6 +60,12 @@ public class CodegenScapeBuilder {
     final Set<String> GPUFree = new LinkedHashSet<>();
     boolean synchro = false;
 
+    // TEST
+
+    final Map<String, String> ratePort = new HashMap<>();
+
+    // END TEST
+
     for (final AbstractActor actor : subGraph.getExecutableActors()) {
       for (final DataOutputPort dout : actor.getDataOutputPorts()) {
         String buff = "";
@@ -88,12 +96,48 @@ public class CodegenScapeBuilder {
           final Set<String> buffGPU = new LinkedHashSet<>();
 
           for (final ScapeSchedule sc : cs) {
-            if (sc.isOnGPU()) {
-              final int nbExec = 10; // TODO
-              for (final DataInputPort in : actor.getDataInputPorts()) {
 
+            if (sc.isOnGPU()) {
+              for (final Fifo topGraphFifo : subGraph.getContainingPiGraph().getAllFifos()) {
+                for (final AbstractActor topGraphActors : subGraph.getContainingPiGraph().getActors()) {
+
+                  if (topGraphActors.getName().equals(subGraph.getName())) {
+                    if (topGraphFifo.getTargetPort().getContainingActor().getName().equals(subGraph.getName())
+                        && Integer.parseInt(
+                            topGraphFifo.getSourcePort().getPortRateExpression().getExpressionAsString()) > Integer
+                                .parseInt(
+                                    topGraphFifo.getTargetPort().getPortRateExpression().getExpressionAsString())) {
+
+                      ratePort.put(topGraphFifo.getSourcePort().getName(),
+                          topGraphFifo.getSourcePort().getPortRateExpression().getExpressionAsString());
+
+                      ((AbstractActor) topGraphFifo.getTarget()).setOnGPU(true);
+                      topGraphActors.setOnGPU(true);
+                      sc.getActor().setOnGPU(true);
+                      sc.getActor().getContainingPiGraph().setOnGPU(true);
+                      for (final AbstractActor teeest : sc.getActor().getContainingPiGraph().getContainingPiGraph()
+                          .getActors()) {
+                        teeest.setOnGPU(true);
+                      }
+                      subGraph.setOnGPU(true);
+
+                      for (final AbstractActor subGraphActors : subGraphplugins / org.preesm.algorithm / src / org
+                          / preesm / algorithm / clustering / scape / CodegenScapeBuilder.java.getExecutableActors()) {
+                        subGraphActors.setOnGPU(true);
+                      }
+                    }
+                  }
+                }
+              }
+            }
+
+            // if (sc.getActor().isOnGPU()) {
+            if (subGraph.isOnGPU()) {
+              int nbExec = 1;
+              for (final DataInputPort in : actor.getDataInputPorts()) {
+                nbExec = Integer.parseInt(ratePort.get(in.getName()));
                 String buffname = "";
-                if (in.getFifo().getSource() instanceof final DataInputInterface din) {
+                if (in.getFifo().getSource() instanceof final DataInputInterface) {
                   buffname = "d_" + in.getName();
                 } else if (in.getFifo().isHasADelay()) {
                   final Delay delay = in.getFifo().getDelay();
@@ -184,7 +228,8 @@ public class CodegenScapeBuilder {
 
       if (!sc.getActor().getName().isEmpty()) {
 
-        if (sc.isOnGPU()) {
+        // if (sc.getActor().isOnGPU()) {
+        if (sc.getActor().getContainingPiGraph().isOnGPU()) {
 
           final StringConcatenation actor = new StringConcatenation();
           final int nbArg = sc.getActor().getConfigInputPorts().size() + sc.getActor().getDataInputPorts().size()
@@ -222,7 +267,6 @@ public class CodegenScapeBuilder {
             }
             countArg++;
           }
-          String memcpy = "";
           for (final DataOutputPort out : sc.getActor().getDataOutputPorts()) {
             String buffname = "";
             if (out.getFifo().getTarget() instanceof final DataOutputInterface dout) {
@@ -240,24 +284,25 @@ public class CodegenScapeBuilder {
               actor.append(",");
             }
             countArg++;
-            if (out.getFifo().isHasADelay()) {
-              final Delay delay = out.getFifo().getDelay();
-              memcpy += "memcpy(" + delay.getActor().getSetterActor().getName() + ","
-                  + delay.getActor().getGetterActor().getName() + ","
-                  + out.getFifo().getDelay().getExpression().evaluate() + "); \n";
-
-            }
           }
           actor.append("); \n");
-          body.append(actor, "");
-          body.append(memcpy);
+
+          bodyGPU.append(actor, "");
           synchro = true;
 
         } else {
-          if (sc.isBeginLoop()) {
-            final String bodyLine = "for(int index" + sc.getActor().getName() + " = 0; index <" + sc.getIterator()
-                + ";index++){\n";
-            body.append(bodyLine, "");
+
+          boolean isGPU = false;
+          for (final AbstractActor prout : sc.getActor().getContainingPiGraph().getContainingPiGraph().getActors()) {
+            if (prout.isOnGPU()) {
+              isGPU = true;
+            }
+          }
+
+          if (sc.isBeginLoop() && !isGPU) {
+            final String bodyLine = "for(int index" + sc.getActor().getName() + " = 0; index" + sc.getActor().getName()
+                + "<" + sc.getRepetition() + ";index" + sc.getActor().getName() + "++){\n";
+            body.append(bodyLine);
 
           }
 
@@ -327,14 +372,18 @@ public class CodegenScapeBuilder {
           actor.append("); \n");
           body.append(actor, "");
           body.append(memcpy);
-          for (int i = 0; i < sc.getEndLoopNb(); i++) {
-            body.append("\n }");
+          if (!isGPU) {
+            for (int i = 0; i < sc.getEndLoopNb(); i++) {
+              body.append("\n }");
+            }
           }
         }
       }
+
     }
     if (synchro) {
       body.append("cudaDeviceSynchronize(); \n");
+      return bodyGPU.toString();
     }
 
     return body.toString();
@@ -547,6 +596,13 @@ public class CodegenScapeBuilder {
 
     final StringBuilder actorImplem = new StringBuilder();
 
+    boolean isGPU = false;
+    for (final AbstractActor prout : sc.getActor().getContainingPiGraph().getContainingPiGraph().getActors()) {
+      if (prout.isOnGPU()) {
+        isGPU = true;
+      }
+    }
+
     for (final DataInputPort in : sc.getActor().getDataInputPorts()) {
       String buffname = "";
       Long scale = 1L;
@@ -564,7 +620,7 @@ public class CodegenScapeBuilder {
 
       }
 
-      if (sc.isLoopPrec() || sc.isBeginLoop() || sc.isEndLoop()) {
+      if ((sc.isLoopPrec() || sc.isBeginLoop() || sc.isEndLoop()) && !isGPU) {
         buffname += " + index" + sc.getActor().getName() + "*" + scale;
       }
 
