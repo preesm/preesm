@@ -74,7 +74,9 @@ public class SimSDPHypervisorMultinetTest {
 
     final String testProjectName = "org.ietr.preesm.simsdp.hypervisor.multinet";
     final String testScenarios = "initialisation.scenario";
-    final String[] testWorkflows = new String[] { "hypervisor.workflow", "platform.workflow" };
+    final String[] testWorkflows = new String[] { "hypervisor.workflow", "platform_cluster_crossbar.workflow",
+        "platform_cluster_shared.workflow", "platform_torus.workflow", "platform_fat_tree.workflow",
+        "platform_dragonfly.workflow" };
     for (final String workflow : testWorkflows) {
       params.add(new Object[] { workflow, testScenarios, testProjectName });
     }

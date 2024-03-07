@@ -294,7 +294,7 @@ public class AnalysisPage4 {
     final String[] networklist = PreesmIOHelper.getInstance().read(path, NET_NAME).split("\n\n");
     for (final String element : networklist) {
 
-      String type = "";
+      String typeName = "";
       int node = 0;
       int core = 0;
       int coreFrequency = 0;
@@ -308,7 +308,7 @@ public class AnalysisPage4 {
 
         switch (column[0]) {
           case "type":
-            type = column[1].split(":")[0];
+            typeName = column[1].split(":")[0];
             node = Integer.valueOf(column[1].split(":")[1]);
             core = Integer.valueOf(column[1].split(":")[2]);
             coreFrequency = Integer.valueOf(column[1].split(":")[3]);
@@ -330,8 +330,8 @@ public class AnalysisPage4 {
         }
 
         if (indexArg == (networkArg.length - 1)) {
-          final NetworkInfo newNetwork = new NetworkInfo(type, node, core, coreFrequency, throughput, memory, energy,
-              cost);
+          final NetworkInfo newNetwork = new NetworkInfo(NetworkInfo.getTypeFromString(typeName), node, core,
+              coreFrequency, throughput, memory, energy, cost);
           networkInfoList.add(newNetwork);
         }
       }
@@ -350,7 +350,7 @@ public class AnalysisPage4 {
 
     for (final NetworkInfo net : nodeNetworkInfoNormalMap.get(nodeKey).get(coreKey).get(coreFrequencyKey)) {
       final XYSeries s1 = new XYSeries(
-          net.getTypeID() + ":" + net.getNode() + ":" + net.getCore() + ":" + net.getCoreFrequency());
+          net.getType() + ":" + net.getNode() + ":" + net.getCore() + ":" + net.getCoreFrequency());
       s1.add(0.0, net.getFinalLatency());
       s1.add(90.0, net.getMemory());
       s1.add(180.0, net.getCost());
@@ -370,7 +370,7 @@ public class AnalysisPage4 {
 
     for (final NetworkInfo net : nodeNetworkInfoNormalMap.get(nodeKey).get(coreKey).get(coreFrequencyKey)) {
       final XYSeries s1 = new XYSeries(
-          net.getTypeID() + ":" + net.getNode() + ":" + net.getCore() + ":" + net.getCoreFrequency());
+          net.getType() + ":" + net.getNode() + ":" + net.getCore() + ":" + net.getCoreFrequency());
       s1.add(0.0, net.getFinalLatency());
       s1.add(90.0, net.getMemory());
       s1.add(180.0, net.getCost());

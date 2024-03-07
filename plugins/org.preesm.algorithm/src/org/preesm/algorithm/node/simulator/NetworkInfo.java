@@ -11,20 +11,24 @@ package org.preesm.algorithm.node.simulator;
  */
 public class NetworkInfo {
 
+  public enum NetworkConfig {
+    CLUSTER_CROSSBAR, CLUSTER_SHARED, TORUS, FAT_TREE, DRAGONFLY
+  }
+
   public static final String CLUSTER_CROSSBAR = "Cluster with crossbar";
   public static final String CLUSTER_SHARED   = "Cluster with shared backbone";
   public static final String TORUS            = "Torus cluster";
   public static final String FAT_TREE         = "Fat-tree cluster";
   public static final String DRAGONFLY        = "Dragonfly cluster";
 
-  String type;
-  int    node;
-  int    core;
-  int    coreFrequency;
-  Double finalLatency;
-  Double memory;
-  Double energy;
-  Double cost;
+  NetworkConfig type;
+  int           node;
+  int           core;
+  int           coreFrequency;
+  Double        finalLatency;
+  Double        memory;
+  Double        energy;
+  Double        cost;
 
   /**
    * Constructs a NetworkInfo object with the given parameters.
@@ -42,7 +46,7 @@ public class NetworkInfo {
    * @param cost
    *          The cost of the network.
    */
-  public NetworkInfo(String type, int node, int core, int coreFrequency, Double throughput, Double memory,
+  public NetworkInfo(NetworkConfig type, int node, int core, int coreFrequency, Double throughput, Double memory,
       Double energy, Double cost) {
     this.type = type;
     this.node = node;
@@ -59,23 +63,29 @@ public class NetworkInfo {
    *
    * @return The network type.
    */
-  public String getType() {
+  public NetworkConfig getType() {
     return type;
   }
 
-  /**
-   * Maps a network type to a unique identifier (type ID).
-   *
-   * @return The corresponding type ID.
-   */
-  public int getTypeID() {
-    return switch (type) {
-      case CLUSTER_CROSSBAR -> 1;
-      case CLUSTER_SHARED -> 2;
-      case TORUS -> 3;
-      case FAT_TREE -> 4;
-      case DRAGONFLY -> 5;
-      default -> 0;
+  public static NetworkConfig getTypeFromString(String typeName) {
+    return switch (typeName) {
+      case CLUSTER_CROSSBAR -> NetworkConfig.CLUSTER_CROSSBAR;
+      case CLUSTER_SHARED -> NetworkConfig.CLUSTER_SHARED;
+      case TORUS -> NetworkConfig.TORUS;
+      case FAT_TREE -> NetworkConfig.FAT_TREE;
+      case DRAGONFLY -> NetworkConfig.DRAGONFLY;
+      default -> NetworkConfig.CLUSTER_CROSSBAR;
+    };
+  }
+
+  public static NetworkConfig getTypeFromID(int typeID) {
+    return switch (typeID) {
+      case 0 -> NetworkConfig.CLUSTER_CROSSBAR;
+      case 1 -> NetworkConfig.CLUSTER_SHARED;
+      case 2 -> NetworkConfig.TORUS;
+      case 3 -> NetworkConfig.FAT_TREE;
+      case 4 -> NetworkConfig.DRAGONFLY;
+      default -> NetworkConfig.CLUSTER_CROSSBAR;
     };
   }
 
