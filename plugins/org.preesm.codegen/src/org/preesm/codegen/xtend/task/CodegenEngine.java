@@ -44,6 +44,7 @@
  */
 package org.preesm.codegen.xtend.task;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -215,9 +216,8 @@ public class CodegenEngine {
       throw new PreesmRuntimeException(
           "Could not find a printer for language \"" + selectedPrinter + "\" and core type \"" + coreType + "\".");
     }
-    if (!this.registeredPrintersAndBlocks.containsKey(foundPrinter)) {
-      this.registeredPrintersAndBlocks.put(foundPrinter, new ArrayList<>());
-    }
+    this.registeredPrintersAndBlocks.computeIfAbsent(foundPrinter, k -> new ArrayList<>());
+
     final List<Block> blocks = this.registeredPrintersAndBlocks.get(foundPrinter);
     blocks.add(b);
   }
@@ -288,14 +288,17 @@ public class CodegenEngine {
         final String fileName = b.getName() + extension;
         final IFile iFile = PreesmIOHelper.getInstance().print(this.codegenPath, fileName, fileContentString);
         CodeFormatterAndPrinter.format(iFile);
-        if (b instanceof CoreBlock) {
-          multinode = ((CoreBlock) b).isMultinode();
+        if (b instanceof final CoreBlock cb) {
+          multinode = cb.isMultinode();
         }
       }
+
+      // Print secondary files
+      final Map<String, CharSequence> createSecondaryFiles = printer.createSecondaryFiles(printerAndBlocks.getValue(),
+          this.codeBlocks);
+
       if (!multinode) {
-        // Print secondary files
-        final Map<String, CharSequence> createSecondaryFiles = printer.createSecondaryFiles(printerAndBlocks.getValue(),
-            this.codeBlocks);
+
         for (final Entry<String, CharSequence> entry : createSecondaryFiles.entrySet()) {
           final String fileName = entry.getKey();
           final IFile iFile = PreesmIOHelper.getInstance().print(this.codegenPath, fileName, entry.getValue());
@@ -310,19 +313,16 @@ public class CodegenEngine {
           CodeFormatterAndPrinter.format(iFile);
         }
       } else {
-        final String path = this.algo.getName() + "/";
 
-        // Print secondary files (main file)
-        final Map<String, CharSequence> createSecondaryFiles = printer.createSecondaryFiles(printerAndBlocks.getValue(),
-            this.codeBlocks);
         for (final Entry<String, CharSequence> entry : createSecondaryFiles.entrySet()) {
-
           final String fileName = this.algo.getName() + ".c";
           final IFile iFile = PreesmIOHelper.getInstance().print(this.codegenPath, fileName, entry.getValue());
           CodeFormatterAndPrinter.format(iFile);
         }
-        final String mainCodegenPath = this.codegenPath.replace(this.algo.getName() + "/", "");
+        final String mainCodegenPath = this.codegenPath.replace(this.algo.getName() + File.separator, "");
+
         // Add standard files for this printer
+        final String path = this.algo.getName() + File.separator;
         final Map<String, CharSequence> generateStandardLibFiles = printer.generateStandardLibFiles(path);
         for (final Entry<String, CharSequence> entry : generateStandardLibFiles.entrySet()) {
           String fileName = entry.getKey();
