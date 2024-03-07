@@ -34,8 +34,6 @@ public class SimSDPChartTask extends AbstractTaskImplementation {
   public static final String PAGE3     = "DSE Analysis";
   public static final String PAGE4     = "Network Analysis";
   public static final String PAGE5     = "Weighted Pareto Analysis";
-  public static final String PAGE6     = "Raw Pareto Analysis";
-  public static final String PAGE_LAST = "Thank you";
 
   /**
    * Executes the deviation chart export task.
