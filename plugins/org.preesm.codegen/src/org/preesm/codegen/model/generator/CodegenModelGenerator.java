@@ -1015,36 +1015,38 @@ public class CodegenModelGenerator extends AbstractCodegenModelGenerator {
    *
    */
   private void generateTopBuffers(List<Block> resultList) {
-    if (multinode) {
-      final CoreBlock firstBlock = (CoreBlock) resultList.stream().findFirst().get();
-      for (final Block block : resultList) {
-        final CoreBlock coreBlock = (CoreBlock) block;
+    if (!multinode) {
+      return;
+    }
 
-        final Iterator<Buffer> iterBuffer = coreBlock.getSinkFifoBuffers().iterator();
-        while (iterBuffer.hasNext()) {
-          final Buffer buffer = iterBuffer.next();
+    final CoreBlock firstBlock = (CoreBlock) resultList.stream().findFirst().orElseThrow();
 
-          if (buffer.getComment().contains("> snk")) {
-            final String[] split = buffer.getComment().split(">");
-            buffer.setComment(split[1].replace("_0_in", "").replaceAll(" ", ""));
+    for (final Block block : resultList) {
+      final CoreBlock coreBlock = (CoreBlock) block;
+
+      final Iterator<Buffer> iterBuffer = coreBlock.getSinkFifoBuffers().iterator();
+      while (iterBuffer.hasNext()) {
+        final Buffer buffer = iterBuffer.next();
+
+        if (buffer.getComment().contains("> snk")) {
+          buffer.setComment(buffer.getComment().replaceAll(".* > |_\\d+_in", ""));
+          firstBlock.getTopBuffers().add(buffer);
+          iterBuffer.remove();
+        }
+      }
+
+      for (final Variable v : coreBlock.getDeclarations()) {
+
+        if (!(v instanceof final Buffer buffer) || ((Buffer) v).getComment() == null) {
+          continue;
+        }
+
+        if (buffer.getComment().matches("src.*_0_out >.*")) {
+          buffer.setComment(buffer.getComment().replaceFirst("_0_out >.*", ""));
+          if (firstBlock.getTopBuffers().stream().noneMatch(x -> x.getComment().equals(buffer.getComment()))) {
             firstBlock.getTopBuffers().add(buffer);
-            iterBuffer.remove();
           }
         }
-        for (final Variable var : coreBlock.getDeclarations()) {
-          if (var instanceof final Buffer buffer && buffer.getComment() != null) {
-            if (buffer.getComment().startsWith("src")) {
-              final String[] split = buffer.getComment().split(">");
-              if (split[0].contains("_0_out")) {
-                buffer.setComment(split[0].replace("_0_out", "").replaceAll(" ", ""));
-                if (firstBlock.getTopBuffers().stream().noneMatch(x -> x.getComment().equals(buffer.getComment()))) {
-                  firstBlock.getTopBuffers().add(buffer);
-                }
-              }
-            }
-          }
-        }
-
       }
     }
   }
