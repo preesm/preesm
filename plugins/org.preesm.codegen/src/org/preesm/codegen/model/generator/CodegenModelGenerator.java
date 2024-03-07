@@ -1080,7 +1080,8 @@ public class CodegenModelGenerator extends AbstractCodegenModelGenerator {
         final Buffer buffer = iterBuffer.next();
 
         if (buffer.getComment().contains("> snk")) {
-          buffer.setComment(buffer.getComment().replaceAll(".* > |_\\d+_in", ""));
+          buffer.setComment(buffer.getComment().replaceFirst("^.* > ", ""));
+          buffer.setComment(buffer.getComment().replaceFirst("_\\d+_in$", ""));
           firstBlock.getTopBuffers().add(buffer);
           iterBuffer.remove();
         }
@@ -1092,8 +1093,8 @@ public class CodegenModelGenerator extends AbstractCodegenModelGenerator {
           continue;
         }
 
-        if (buffer.getComment().matches("src.*_0_out >.*")) {
-          buffer.setComment(buffer.getComment().replaceFirst("_0_out >.*", ""));
+        if (buffer.getComment().matches("^src.*_0_out >.*")) {
+          buffer.setComment(buffer.getComment().replaceFirst("_0_out >.*$", ""));
           if (firstBlock.getTopBuffers().stream().noneMatch(x -> x.getComment().equals(buffer.getComment()))) {
             firstBlock.getTopBuffers().add(buffer);
           }

@@ -249,25 +249,27 @@ public class CodegenSimSDPTask extends AbstractTaskImplementation {
 
     final CoreBlock firstBlock = (CoreBlock) codeBlocks.stream().findFirst().orElseThrow();
 
+    String preffix = "\t";
     String suffix = ";\n";
     if (functionArg) {
+      preffix = "";
       suffix = ", ";
     }
 
     final List<
-        Buffer> srcBuffList = firstBlock.getTopBuffers().stream().filter(x -> x.getComment().matches("src_in_\\d+"))
+        Buffer> srcBuffList = firstBlock.getTopBuffers().stream().filter(x -> x.getComment().matches("^src_in_\\d+$"))
             .sorted((b1, b2) -> b1.getComment().compareTo(b2.getComment())).toList();
 
     for (final Buffer buff : srcBuffList) {
-      str.append(buff.getType() + " *" + buff.getComment() + suffix);
+      str.append(preffix + buff.getType() + " *" + buff.getComment() + suffix);
     }
 
     final List<
-        Buffer> snkBuffList = firstBlock.getTopBuffers().stream().filter(x -> x.getComment().matches("snk_out_\\d+"))
+        Buffer> snkBuffList = firstBlock.getTopBuffers().stream().filter(x -> x.getComment().matches("^snk_out_\\d+$"))
             .sorted((b1, b2) -> b1.getComment().compareTo(b2.getComment())).toList();
 
     for (final Buffer buff : snkBuffList) {
-      str.append(buff.getType() + " *" + buff.getComment() + suffix);
+      str.append(preffix + buff.getType() + " *" + buff.getComment() + suffix);
     }
 
     // Removes the last ", " suffix
