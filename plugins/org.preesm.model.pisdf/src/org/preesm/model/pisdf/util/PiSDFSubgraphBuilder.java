@@ -158,8 +158,6 @@ public class PiSDFSubgraphBuilder extends PiMMSwitch<Boolean> {
     for (final AbstractActor actor : this.subGraphActors) {
       doSwitch(actor);
     }
-    // this.parentGraph.getDependencies()
-    // .remove(this.parentGraph.getDependencies().stream().allMatch(x -> x.getGetter() == null));
 
     // Check consistency of parent graph
     // Check consistency of the graph (throw exception if recoverable or fatal error)
