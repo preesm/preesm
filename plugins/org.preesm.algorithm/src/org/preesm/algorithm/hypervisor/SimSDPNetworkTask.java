@@ -4,6 +4,7 @@ import java.io.File;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.preesm.algorithm.node.simulator.NetworkInfo;
 import org.preesm.commons.doc.annotations.Parameter;
 import org.preesm.commons.doc.annotations.PreesmTask;
 import org.preesm.commons.doc.annotations.Value;
@@ -48,7 +49,8 @@ public class SimSDPNetworkTask extends AbstractTaskImplementation {
     final int node = Integer.parseInt(parameters.get(NODE_NB_PARAM));
     final int core = Integer.parseInt(parameters.get(CORE_NB_PARAM));
     final int cFreq = Integer.parseInt(parameters.get(CORE_FC_PARAM));
-    final SimSDPNetwork simSDPnetwork = new SimSDPNetwork(config, core, cFreq, node, project);
+    final SimSDPNetwork simSDPnetwork = new SimSDPNetwork(NetworkInfo.getTypeFromID(config), core, cFreq, node,
+        project);
     simSDPnetwork.execute();
     return new LinkedHashMap<>();
   }

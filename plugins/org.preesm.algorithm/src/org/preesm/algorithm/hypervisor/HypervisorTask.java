@@ -9,6 +9,7 @@ import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.Path;
+import org.preesm.algorithm.node.simulator.NetworkInfo;
 import org.preesm.commons.doc.annotations.Parameter;
 import org.preesm.commons.doc.annotations.PreesmTask;
 import org.preesm.commons.doc.annotations.Value;
@@ -317,7 +318,8 @@ public class HypervisorTask extends AbstractTaskImplementation {
       Boolean isExistingNetwork = true;
 
       if (Boolean.TRUE.equals(multinet)) {
-        isExistingNetwork = new SimSDPNetwork(indexTopo, nNode, nCore, cFreq, project).execute();
+        isExistingNetwork = new SimSDPNetwork(NetworkInfo.getTypeFromID(indexTopo), nNode, nCore, cFreq, project)
+            .execute();
       }
 
       final String workflowPath = project + WORKFLOW_PATH + "NodeSimulator.workflow";
