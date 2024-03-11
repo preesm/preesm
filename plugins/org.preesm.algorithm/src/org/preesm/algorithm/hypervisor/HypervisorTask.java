@@ -134,7 +134,10 @@ public class HypervisorTask extends AbstractTaskImplementation {
 
       for (int coreIndex = coreMin; coreIndex <= coreMax; coreIndex += archiParams.getCoreStep()) {
 
-        coreIndex = nodeIndex == 1 && coreMin == 1 ? coreIndex + 1 : coreIndex;
+        // Skipping 1:1
+        if (nodeIndex == 1 && coreMin == 1) {
+          continue;
+        }
 
         for (int corefreqIndex = archiParams.getCoreFreqMin(); corefreqIndex <= archiParams.getCoreFreqMax();
             corefreqIndex += archiParams.getCoreFreqStep()) {
@@ -144,7 +147,6 @@ public class HypervisorTask extends AbstractTaskImplementation {
           }
           iterativePartitioning(nodeIndex, coreIndex, corefreqIndex, iteration, archiParams, project, monitor,
               workflowManager);
-
         }
 
         refineCoreMin(coreIndex, nodeIndex);
