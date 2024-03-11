@@ -35,8 +35,13 @@
  */
 package org.preesm.model.pisdf.test;
 
+import java.util.Arrays;
+import java.util.Collection;
 import org.junit.Assert;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
+import org.junit.runners.Parameterized.Parameters;
 import org.preesm.commons.math.ExpressionEvaluationException;
 import org.preesm.model.pisdf.Expression;
 import org.preesm.model.pisdf.factory.PiMMUserFactory;
@@ -44,9 +49,28 @@ import org.preesm.model.pisdf.factory.PiMMUserFactory;
 /**
  *
  */
+@RunWith(Parameterized.class)
 public class JEPCustomFunctionTest {
 
-  private void testEvaluation(final String input, final long expected) {
+  private final String input;
+  private final long   expected;
+
+  public JEPCustomFunctionTest(String input, long expected) {
+    this.input = input;
+    this.expected = expected;
+  }
+
+  @Parameters(name = "Expression: {0}, expected = {1}")
+  public static Collection<Object[]> data() {
+    return Arrays.asList(new Object[][] { { "floor(0)", 0 }, { "floor(0)", 0 }, { "floor(-1)", -1 },
+        { "floor(1.2)", 1 }, { "floor(1.9)", 1 }, { "floor(-1.9)", -2 }, { "floor(-1.1)", -2 }, { "floor(-2.1)", -3 },
+        { "floor(5/2)", 2 }, { "floor(5/-2)", -3 }, { "ceil(5/2)", 3 }, { "min(min(1,-3),-2)", -3 },
+        { "max(10, max(1,-3))", 10 }, { "1000*geo_sum(3,1/2,4)", 5625 }, { "geo_sum(3,2,4)", 45 },
+        { "geo_sum(512000,0.25,7)", 682625 }, { "pow_div_max(2, 72)", 3 }, { "pow_div_max(2, 73)", 0 } });
+  }
+
+  @Test
+  public void testEvaluation() {
     long evaluate = 0;
     final Expression createExpression = PiMMUserFactory.instance.createExpression(input);
     try {
@@ -55,96 +79,6 @@ public class JEPCustomFunctionTest {
       Assert.fail();
     }
     Assert.assertEquals(expected, evaluate);
-  }
-
-  @Test
-  public void jepFloorTest1() {
-    testEvaluation("floor(0)", 0);
-  }
-
-  @Test
-  public void jepFloorTest2() {
-    testEvaluation("floor(0)", 0);
-  }
-
-  @Test
-  public void jepFloorTest3() {
-    testEvaluation("floor(-1)", -1);
-  }
-
-  @Test
-  public void jepFloorTest4() {
-    testEvaluation("floor(1.2)", 1);
-  }
-
-  @Test
-  public void jepFloorTest5() {
-    testEvaluation("floor(1.9)", 1);
-  }
-
-  @Test
-  public void jepFloorTest6() {
-    testEvaluation("floor(-1.9)", -2);
-  }
-
-  @Test
-  public void jepFloorTest7() {
-    testEvaluation("floor(-1.1)", -2);
-  }
-
-  @Test
-  public void jepFloorTest8() {
-    testEvaluation("floor(-2.1)", -3);
-  }
-
-  @Test
-  public void jepFloorTest9() {
-    testEvaluation("floor(5/2)", 2);
-  }
-
-  @Test
-  public void jepFloorTest10() {
-    testEvaluation("floor(5/-2)", -3);
-  }
-
-  @Test
-  public void jepCeilTest() {
-    testEvaluation("ceil(5/2)", 3);
-  }
-
-  @Test
-  public void jepMinTest() {
-    testEvaluation("min(min(1,-3),-2)", -3);
-  }
-
-  @Test
-  public void jepMaxTest() {
-    testEvaluation("max(10, max(1,-3))", 10);
-  }
-
-  @Test
-  public void jepGeoSumTest1() {
-    testEvaluation("1000*geo_sum(3,1/2,4)", 5625);
-  }
-
-  @Test
-  public void jepGeoSumTest2() {
-    testEvaluation("geo_sum(3,2,4)", 45);
-  }
-
-  @Test
-  public void jepGeoSumTest3() {
-    testEvaluation("geo_sum(512000,0.25,7)", 682625);
-  }
-
-  @Test
-  public void jepPowDivMax1() {
-    testEvaluation("pow_div_max(2, 72)", 3);
-  }
-
-  @Test
-  public void jepPowDivMax2() {
-    testEvaluation("pow_div_max(2, 73)", 0);
   }
 
 }
