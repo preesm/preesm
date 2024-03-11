@@ -146,11 +146,9 @@ public class CodegenTask extends AbstractTaskImplementation {
     final DirectedAcyclicGraph algoDAG = (DirectedAcyclicGraph) inputs.get("DAG");
     @SuppressWarnings("unchecked")
     final Map<String, MemoryExclusionGraph> megs = (Map<String, MemoryExclusionGraph>) inputs.get("MEGs");
-    if (!(algoDAG instanceof MapperDAG)) {
+    if (!(algoDAG instanceof final MapperDAG algo)) {
       throw new PreesmRuntimeException("The input DAG has not been scheduled");
     }
-    final MapperDAG algo = (MapperDAG) algoDAG;
-
     // Generate intermediate model
     final CodegenModelGenerator generator = new CodegenModelGenerator(archi, algo, megs, scenario, null);
     // Retrieve the PAPIFY flag
@@ -212,6 +210,7 @@ public class CodegenTask extends AbstractTaskImplementation {
     parameters.put(CodegenTask.PARAM_PRINTER, avilableLanguages.toString());
     // Papify default
     parameters.put(CodegenTask.PARAM_PAPIFY, "false");
+
     return parameters;
   }
 

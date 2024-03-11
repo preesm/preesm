@@ -51,7 +51,7 @@ public class PiSDFSRDAGComputePopup extends AbstractGenericMultiplePiHandler {
 
   @Override
   public void processPiSDF(final PiGraph pigraph, final IProject iProject, final Shell shell) {
-    PreesmLogger.getLogger().log(Level.INFO, "Computing Single Rate DAG for " + pigraph.getName());
+    PreesmLogger.getLogger().info(() -> "Computing Single Rate DAG for " + pigraph.getName());
 
     final boolean locallyStatic = pigraph.isLocallyStatic();
     if (!locallyStatic) {

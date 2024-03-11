@@ -39,6 +39,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
 import org.preesm.model.pisdf.AbstractActor;
+import org.preesm.model.pisdf.AbstractVertex;
+import org.preesm.model.pisdf.DelayActor;
 import org.preesm.model.pisdf.ExecutableActor;
 import org.preesm.model.pisdf.Fifo;
 import org.preesm.model.pisdf.PiGraph;
@@ -47,16 +49,11 @@ import org.preesm.model.pisdf.PiGraph;
  * This class is used to seek chain of actors in a given PiGraph that form a Uniform Repetition Count (URC) without
  * internal state (see the article of Pino et al. "A Hierarchical Multiprocessor Scheduling System For DSP
  * Applications").
- * 
+ *
  * @author dgageot
  *
  */
-public class URCSeeker extends PiMMSwitch<Boolean> {
-
-  /**
-   * Input graph.
-   */
-  final PiGraph graph;
+public class ClusteringPatternSeekerUrc extends ClusteringPatternSeeker {
 
   /**
    * List of identified URCs.
@@ -65,47 +62,64 @@ public class URCSeeker extends PiMMSwitch<Boolean> {
 
   /**
    * Builds a URCSeeker based on a input graph.
-   * 
+   *
    * @param inputGraph
    *          Input graph to search in.
    */
-  public URCSeeker(final PiGraph inputGraph) {
-    this.graph = inputGraph;
+  public ClusteringPatternSeekerUrc(final PiGraph inputGraph) {
+    super(inputGraph);
     this.identifiedURCs = new LinkedList<>();
   }
 
   /**
    * Seek for URC chain in the input graph.
-   * 
+   *
    * @return List of identified URC chain.
    */
   public List<List<AbstractActor>> seek() {
     // Clear the list of identified URCs
     this.identifiedURCs.clear();
     // Explore all executable actors of the graph
-    this.graph.getActors().stream().filter(x -> x instanceof ExecutableActor).forEach(x -> doSwitch(x));
+    this.graph.getActors().stream().filter(x -> x instanceof ExecutableActor && !(x instanceof DelayActor))
+        .forEach(x -> doSwitch(x));
     // Return identified URCs
     return identifiedURCs;
   }
 
   @Override
   public Boolean caseAbstractActor(AbstractActor base) {
-
+    // filter dummy single source starter
+    if (base.getName().equals("single_source") || base.getDataInputPorts().stream()
+        .anyMatch(x -> ((AbstractVertex) x.getFifo().getSource()).getName().equals("single_source"))) {
+      return false;
+    }
+    // filter multinode interface
+    if (base.getName().startsWith("src_") || base.getName().startsWith("snk_")
+        || base.getDataInputPorts().stream()
+            .anyMatch(x -> ((AbstractVertex) x.getFifo().getSource()).getName().startsWith("src_"))
+        || base.getDataInputPorts().stream()
+            .anyMatch(x -> ((AbstractVertex) x.getFifo().getSource()).getName().startsWith("snk_"))) {
+      return false;
+    }
     // Check that all fifos are homogeneous and without delay
-    boolean homogeneousRates = base.getDataOutputPorts().stream().allMatch(x -> doSwitch(x.getFifo()).booleanValue());
+    final boolean homogeneousRates = base.getDataOutputPorts().stream()
+        .allMatch(x -> doSwitch(x.getFifo()).booleanValue());
     // Return false if rates are not homogeneous or that the corresponding actor was a sink (no output)
     if (!homogeneousRates || base.getDataOutputPorts().isEmpty()) {
       return false;
     }
 
     // Get the candidate i.e. the following actor in the topological order
-    AbstractActor candidate = (AbstractActor) base.getDataOutputPorts().get(0).getFifo().getTarget();
+    final AbstractActor candidate = (AbstractActor) base.getDataOutputPorts().get(0).getFifo().getTarget();
+    if (candidate.getName().startsWith("snk_")) {
+      return false;
+    }
 
     // Check that the actually processed actor as only fifos outgoing to the candidate actor
-    boolean allOutputGoesToCandidate = base.getDataOutputPorts().stream()
+    final boolean allOutputGoesToCandidate = base.getDataOutputPorts().stream()
         .allMatch(x -> x.getFifo().getTarget().equals(candidate));
     // Check that the candidate actor as only fifos incoming from the base actor
-    boolean allInputComeFromBase = candidate.getDataInputPorts().stream()
+    final boolean allInputComeFromBase = candidate.getDataInputPorts().stream()
         .allMatch(x -> x.getFifo().getSource().equals(base));
 
     // If the candidate agree with the conditions, register this URC
@@ -114,7 +128,7 @@ public class URCSeeker extends PiMMSwitch<Boolean> {
       List<AbstractActor> actorURC = new LinkedList<>();
 
       // URC found with base actor in it?
-      Optional<
+      final Optional<
           List<AbstractActor>> actorListOpt = this.identifiedURCs.stream().filter(x -> x.contains(base)).findFirst();
       if (actorListOpt.isPresent()) {
         actorURC = actorListOpt.get();
@@ -127,10 +141,10 @@ public class URCSeeker extends PiMMSwitch<Boolean> {
       }
 
       // URC found with candidate actor in it?
-      Optional<List<AbstractActor>> candidateListOpt = this.identifiedURCs.stream().filter(x -> x.contains(candidate))
-          .findFirst();
+      final Optional<List<AbstractActor>> candidateListOpt = this.identifiedURCs.stream()
+          .filter(x -> x.contains(candidate)).findFirst();
       if (candidateListOpt.isPresent()) {
-        List<AbstractActor> candidateURC = candidateListOpt.get();
+        final List<AbstractActor> candidateURC = candidateListOpt.get();
         // Remove the list from identified URCs
         this.identifiedURCs.remove(candidateURC);
         // Add all elements to the list of actor
@@ -149,7 +163,7 @@ public class URCSeeker extends PiMMSwitch<Boolean> {
   public Boolean caseFifo(Fifo fifo) {
     // Return true if rates are homogeneous and that no delay is involved
     return (fifo.getSourcePort().getExpression().evaluate() == fifo.getTargetPort().getExpression().evaluate())
-        && (fifo.getDelay() == null);
+        && (fifo.getDelay() == null) && !(fifo.getTarget() instanceof DelayActor);
   }
 
 }

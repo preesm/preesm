@@ -95,9 +95,7 @@ class DevelopperPrinter extends CodegenAbstractPrinter {
 
 	/**
 	 */
-	override generateStandardLibFiles() {
-		return new LinkedHashMap<String,CharSequence>
-	}
+
 
 
 	/**
@@ -236,5 +234,17 @@ class DevelopperPrinter extends CodegenAbstractPrinter {
 	override printPreFunctionCall(FunctionCall functionCall) ''''''
 	// nothing on post by default
 	override printPostFunctionCall(FunctionCall functionCall) ''''''
+	
+	override generateStandardLibFiles(String path) {
+		throw new UnsupportedOperationException("TODO: auto-generated method stub")
+	}
+	
+	override printCoreLoopBlockFooter(LoopBlock loopBlock, int nodeID) {
+		throw new UnsupportedOperationException("TODO: auto-generated method stub")
+	}
+	
+	override printCoreLoopBlockHeader(LoopBlock loopBlock, int nodeID) {
+		throw new UnsupportedOperationException("TODO: auto-generated method stub")
+	}
 
 }

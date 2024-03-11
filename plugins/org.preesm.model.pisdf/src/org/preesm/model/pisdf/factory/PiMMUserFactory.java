@@ -246,7 +246,7 @@ public final class PiMMUserFactory extends PiMMFactoryImpl implements PreesmUser
   }
 
   /**
-   * 
+   *
    */
   public MalleableParameter createMalleableParameter(final String name, final long evaluate) {
     final MalleableParameter res = super.createMalleableParameter();
@@ -270,6 +270,18 @@ public final class PiMMUserFactory extends PiMMFactoryImpl implements PreesmUser
   public DataInputPort createDataInputPort(final String name) {
     final DataInputPort res = this.createDataInputPort();
     res.setName(name);
+    return res;
+  }
+
+  public DataInputPort createDataInputPort(final String name, final Long value) {
+    final DataInputPort res = createDataInputPort(name);
+    res.setExpression(value);
+    return res;
+  }
+
+  public DataInputPort createDataInputPort(final String name, final Expression value) {
+    final DataInputPort res = createDataInputPort(name);
+    res.setExpression(value);
     return res;
   }
 
@@ -301,6 +313,18 @@ public final class PiMMUserFactory extends PiMMFactoryImpl implements PreesmUser
   public DataOutputPort createDataOutputPort(final String name) {
     final DataOutputPort res = this.createDataOutputPort();
     res.setName(name);
+    return res;
+  }
+
+  public DataOutputPort createDataOutputPort(final String name, final Long value) {
+    final DataOutputPort res = createDataOutputPort(name);
+    res.setExpression(value);
+    return res;
+  }
+
+  public DataOutputPort createDataOutputPort(final String name, final Expression value) {
+    final DataOutputPort res = createDataOutputPort(name);
+    res.setExpression(value);
     return res;
   }
 

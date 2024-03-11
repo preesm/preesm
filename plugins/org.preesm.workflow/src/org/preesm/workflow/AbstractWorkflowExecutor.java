@@ -47,6 +47,7 @@ import java.util.logging.Logger;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.preesm.commons.exceptions.PreesmException;
 import org.preesm.commons.exceptions.PreesmFrameworkException;
+import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.preesm.commons.files.WorkspaceUtils;
 import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.commons.messages.PreesmMessages;
@@ -233,7 +234,7 @@ public abstract class AbstractWorkflowExecutor {
    */
   public boolean execute(final String workflowPath, final String scenarioPath, final IProgressMonitor monitor) {
     final Workflow workflow = new WorkflowParser().parse(workflowPath);
-
+    final long startTime = System.currentTimeMillis();
     boolean result = initAndCheck(workflowPath, monitor, workflow);
     if (!result) {
       return false;
@@ -248,7 +249,7 @@ public abstract class AbstractWorkflowExecutor {
       final Iterator<AbstractWorkflowNode<?>> iterator = workflow.vertexTopologicalList().iterator();
 
       while (result && iterator.hasNext()) {
-        AbstractWorkflowNode<?> node = iterator.next();
+        final AbstractWorkflowNode<?> node = iterator.next();
         result = executeNode(scenarioPath, monitor, workflow, node);
       }
 
@@ -267,6 +268,10 @@ public abstract class AbstractWorkflowExecutor {
       this.logger.removeHandler(eowHandler);
       this.logger.setLevel(oldLevel);
     }
+    final long endTime = System.currentTimeMillis();
+    final String timing = String.valueOf(endTime - startTime);
+    final String message = "Total elapsed time in execution of workflow is : " + timing + " ms";
+    PreesmLogger.getLogger().log(Level.INFO, message);
     return result;
   }
 
@@ -415,10 +420,14 @@ public abstract class AbstractWorkflowExecutor {
           } catch (final PreesmException e) {
             getLogger().log(Level.SEVERE, e.getMessage(), e);
             nodeResult = false;
+          } catch (final InterruptedException e) {
+            Thread.currentThread().interrupt();
+            throw new PreesmRuntimeException("Unexpected error, please contact PREESM developers.", e);
           } catch (final Exception e) {
+            nodeResult = false;
             getLogger().log(Level.SEVERE, "Unexpected Exception: " + e.getClass().getCanonicalName() + ":"
                 + e.getMessage() + "\n Contact Preesm developers if you cannot solve the problem.", e);
-            nodeResult = false;
+
           }
         }
       }

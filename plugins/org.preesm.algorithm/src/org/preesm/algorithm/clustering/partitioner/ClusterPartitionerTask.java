@@ -50,7 +50,7 @@ import org.preesm.workflow.implement.AbstractTaskImplementation;
 
 /**
  * Cluster Partitioner Task
- * 
+ *
  * @author dgageot
  *
  */
@@ -58,7 +58,7 @@ import org.preesm.workflow.implement.AbstractTaskImplementation;
     inputs = { @Port(name = "PiMM", type = PiGraph.class, description = "Input PiSDF graph"),
         @Port(name = "scenario", type = Scenario.class, description = "Scenario") },
     outputs = { @Port(name = "PiMM", type = PiGraph.class, description = "Output PiSDF graph") },
-    parameters = { @Parameter(name = "Number of PEs in clusters",
+    parameters = { @Parameter(name = ClusterPartitionerTask.NB_PE,
         description = "The number of PEs in compute clusters. This information is used to balance actor firings"
             + " between coarse and fine-grained levels.",
         values = { @Value(name = "Fixed:=n", effect = "Where $$n\\in \\mathbb{N}^*$$.") }) })
@@ -71,17 +71,17 @@ public class ClusterPartitionerTask extends AbstractTaskImplementation {
   public Map<String, Object> execute(Map<String, Object> inputs, Map<String, String> parameters,
       IProgressMonitor monitor, String nodeName, Workflow workflow) {
     // Task inputs
-    PiGraph inputGraph = (PiGraph) inputs.get("PiMM");
-    Scenario scenario = (Scenario) inputs.get("scenario");
+    final PiGraph inputGraph = (PiGraph) inputs.get("PiMM");
+    final Scenario scenario = (Scenario) inputs.get("scenario");
 
     // Parameters
-    String nbPE = parameters.get(NB_PE);
+    final String nbPE = parameters.get(NB_PE);
 
     // Cluster input graph
-    PiGraph outputGraph = new ClusterPartitioner(inputGraph, scenario, Integer.parseInt(nbPE)).cluster();
+    final PiGraph outputGraph = new ClusterPartitioner(inputGraph, scenario, Integer.parseInt(nbPE)).cluster();
 
     // Build output map
-    Map<String, Object> output = new HashMap<>();
+    final Map<String, Object> output = new HashMap<>();
     output.put("PiMM", outputGraph);
 
     return output;
@@ -89,7 +89,7 @@ public class ClusterPartitionerTask extends AbstractTaskImplementation {
 
   @Override
   public Map<String, String> getDefaultParameters() {
-    Map<String, String> defaultParams = new LinkedHashMap<>();
+    final Map<String, String> defaultParams = new LinkedHashMap<>();
     defaultParams.put(NB_PE, DEFAULT_NB_PE);
     return defaultParams;
   }

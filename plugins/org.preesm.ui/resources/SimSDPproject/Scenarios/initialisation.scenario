@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<scenario>
+    <flags>
+        <sizesAreInBit/>
+    </flags>
+    <files>
+        <architecture url="/simsdp/Archi/1CoresX86.slam"/>
+        <codegenDirectory url=""/>
+    </files>
+    <constraints excelUrl=""/>
+    <timings excelUrl=""/>
+    <simuParams>
+        <mainCore/>
+        <mainComNode/>
+        <averageDataSize>1000</averageDataSize>
+        <dataTypes/>
+        <specialVertexOperators/>
+    </simuParams>
+    <parameterValues/>
+    <papifyConfigs xmlUrl=""/>
+    <energyConfigs xmlUrl="">
+        <performanceObjective objectiveEPS="0.0"/>
+        <peActorsEnergy/>
+    </energyConfigs>
+</scenario>

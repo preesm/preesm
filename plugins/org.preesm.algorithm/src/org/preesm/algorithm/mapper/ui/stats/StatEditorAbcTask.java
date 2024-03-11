@@ -58,7 +58,7 @@ import org.preesm.workflow.implement.AbstractTaskImplementation;
  * Displays the gantt chart of the given mapped dag
  *
  * TODO: remove scenario from inputs (already contained in ABC)
- * 
+ *
  * @author mpelcat
  */
 @PreesmTask(id = "org.ietr.preesm.plugin.mapper.plot", name = "ABC Gantt displayer", category = "Gantt exporters",

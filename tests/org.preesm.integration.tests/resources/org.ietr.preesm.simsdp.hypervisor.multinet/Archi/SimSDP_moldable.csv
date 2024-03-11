@@ -1,0 +1,5 @@
+Parameters;min;max;step
+number of nodes;3;3;1
+number of cores;3;3;1
+core frequency;3;3;1
+node memory;9727215104;9727215104;9727215104
