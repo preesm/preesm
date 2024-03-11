@@ -60,7 +60,7 @@ public class JavaExpressionParserTest {
   public static void beforeTest() throws IOException, URISyntaxException {
 
     final InputStream inputStream = JavaExpressionParserTest.class.getClassLoader()
-        .getResourceAsStream("../resources/expression.traces");
+        .getResourceAsStream("resources/expression.traces");
 
     bufferedReader = new BufferedReader(new InputStreamReader(inputStream));
   }
