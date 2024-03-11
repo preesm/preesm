@@ -35,6 +35,7 @@
 package org.preesm.model.pisdf.test;
 
 import org.junit.Assert;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.mockito.Mockito;
 import org.preesm.model.pisdf.AbstractActor;
@@ -50,17 +51,24 @@ import org.preesm.model.pisdf.util.VertexPath;
  */
 public class PiGraphLookupTest {
 
-  @Test
-  public void testLookup() {
-    final PiGraph topGraph = PiMMUserFactory.instance.createPiGraph();
+  static PiGraph topGraph;
+  static PiGraph secondLevelGraph;
+
+  static Actor actor1;
+  static Actor actor2;
+  static Actor actor3;
+
+  @BeforeClass
+  public static void testSetup() {
+    topGraph = PiMMUserFactory.instance.createPiGraph();
     topGraph.setName("topGraph");
-    final Actor actor1 = PiMMUserFactory.instance.createActor();
+    actor1 = PiMMUserFactory.instance.createActor();
     actor1.setName("toto");
     topGraph.addActor(actor1);
-    final PiGraph secondLevelGraph = PiMMUserFactory.instance.createPiGraph();
+    secondLevelGraph = PiMMUserFactory.instance.createPiGraph();
     secondLevelGraph.setName("secondLevelGraph");
     topGraph.addActor(secondLevelGraph);
-    final Actor actor2 = PiMMUserFactory.instance.createActor();
+    actor2 = PiMMUserFactory.instance.createActor();
     actor2.setName("titi");
     secondLevelGraph.addActor(actor2);
 
@@ -70,12 +78,14 @@ public class PiGraphLookupTest {
     Mockito.when(pisdfRefinmentMock.getAbstractActor()).thenReturn(refinementGraph);
     Mockito.when(pisdfRefinmentMock.isHierarchical()).thenReturn(true);
     actor2.setRefinement(pisdfRefinmentMock);
-    final Actor actor3 = PiMMUserFactory.instance.createActor();
+    actor3 = PiMMUserFactory.instance.createActor();
     actor3.setName("tutu");
     refinementGraph.addActor(actor3);
+  }
 
+  @Test
+  public void testLookupUsualRequests() {
     // usual requests
-
     final AbstractActor query1 = VertexPath.lookup(topGraph, "topGraph");
     Assert.assertNotNull(query1);
     Assert.assertEquals(topGraph, query1);
@@ -111,8 +121,11 @@ public class PiGraphLookupTest {
     Assert.assertNotNull(query3_4);
     Assert.assertEquals(actor3, query3_4);
 
-    // unusual requests
+  }
 
+  @Test
+  public void testLookupUnusualRequests() {
+    // unusual requests
     final AbstractActor query4 = VertexPath.lookup(topGraph, "topGraph/");
     Assert.assertNotNull(query4);
     Assert.assertEquals(topGraph, query4);
