@@ -20,16 +20,16 @@ jobs:
     runs-on: ${{ matrix.os }}
     steps:
       - name: Set up JDK
-        uses: actions/setup-java@v3
+        uses: actions/setup-java@v4
         with:
           distribution: 'zulu'
           java-version: 17
       - name: Git Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           fetch-depth: 0  # Shallow clones should be disabled for a better relevancy of analysis
       - name: Set up Maven
-        uses: stCarolas/setup-maven@v4.5
+        uses: stCarolas/setup-maven@v5
         with:
           maven-version: 3.6.3
       - name: Build & Test
@@ -46,22 +46,22 @@ jobs:
       #     name: preesm-products
       #     path: releng/org.preesm.product/target/org.preesm.product-*.zip
       - name: Archive Linux product
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: linux-products
           path: releng/org.preesm.product/target/products/preesm-*-linux.gtk.x86_64.zip
       - name: Archive macOS aarch64 product
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: mac-aarch64-products
           path: releng/org.preesm.product/target/products/preesm-*-macosx.cocoa.aarch64.zip
       - name: Archive macOS x86_64 product
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: mac-x86-products
           path: releng/org.preesm.product/target/products/preesm-*-macosx.cocoa.x86_64.zip
       - name: Archive Windows product
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: windows-products
           path: releng/org.preesm.product/target/products/preesm-*-win32.win32.x86_64.zip
@@ -71,7 +71,7 @@ jobs:
         run: git log $(git describe --tags --abbrev=0)..HEAD --oneline --no-decorate > dev-changelog.txt
 
       - name: Upload changelog
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: changelog
           path: dev-changelog.txt
@@ -85,24 +85,24 @@ jobs:
     runs-on: ubuntu-20.04
     steps:
       - name: Download Linux artifacts
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: linux-products
       - name: Download Mac aarch64 artifacts
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: mac-aarch64-products
       - name: Download Mac x86 artifacts
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: mac-x86-products
       - name: Download Windows artifacts
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: windows-products
 
       - name: Download changelog
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: changelog
 
@@ -113,10 +113,11 @@ jobs:
         run: |
           echo "release_tag=DevBuild_$(date +"%Y.%m.%d_%H-%M")" >> $GITHUB_OUTPUT
       - name: Release
-        uses: softprops/action-gh-release@v1
+        uses: softprops/action-gh-release@v2
         with:
           fail_on_unmatched_files: true
-          prerelease: true
+          draft: true
+          prerelease: false
           tag_name: ${{ steps.tag.outputs.release_tag }}
           #body: Check commit history for detailled changes.
           body_path: dev-changelog.txt
