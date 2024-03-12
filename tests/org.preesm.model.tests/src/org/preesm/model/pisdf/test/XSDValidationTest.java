@@ -69,29 +69,10 @@ public class XSDValidationTest {
    */
   @Parameters
   public static Collection<Object[]> data() {
-    Object[][] data = new Object[][] {
+    final Object[][] data = new Object[][] { { "actor_mlp.pi" }, { "top_display.pi" }, { "adam.pi" },
+        { "layer_gradients.pi" }, { "mlp_raw.pi" }, { "mlp.pi" }, { "network_train.pi" }, { "output_gradients.pi" },
+        { "prediction.pi" }, { "training.pi" }, { "weight_generator.pi" } };
 
-        { "actor_mlp.pi" },
-
-        { "top_display.pi" },
-
-        { "adam.pi" },
-
-        { "layer_gradients.pi" },
-
-        { "mlp_raw.pi" },
-
-        { "mlp.pi" },
-
-        { "network_train.pi" },
-
-        { "output_gradients.pi" },
-
-        { "prediction.pi" },
-
-        { "training.pi" },
-
-        { "weight_generator.pi" } };
     return Arrays.asList(data);
   }
 
@@ -102,10 +83,9 @@ public class XSDValidationTest {
     }
     try {
       PiSDFXSDValidator.validate(this.pisdURL);
-    } catch (PiSDFXSDValidationException e) {
+    } catch (final PiSDFXSDValidationException e) {
       e.printStackTrace();
-      System.out.println("Error on " + pisdURL.getFile() + ":\n" + e.getCause().getMessage());
-      Assert.fail(e.getMessage());
+      Assert.fail("Error on " + pisdURL.getFile() + ":\n" + e.getCause().getMessage() + ":" + e.getMessage());
     }
   }
 }
