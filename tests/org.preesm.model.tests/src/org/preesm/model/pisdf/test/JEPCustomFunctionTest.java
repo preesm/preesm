@@ -62,11 +62,13 @@ public class JEPCustomFunctionTest {
 
   @Parameters(name = "Expression: {0}, expected = {1}")
   public static Collection<Object[]> data() {
-    return Arrays.asList(new Object[][] { { "floor(0)", 0 }, { "floor(0)", 0 }, { "floor(-1)", -1 },
+    final Object[][] data = new Object[][] { { "floor(0)", 0 }, { "floor(0)", 0 }, { "floor(-1)", -1 },
         { "floor(1.2)", 1 }, { "floor(1.9)", 1 }, { "floor(-1.9)", -2 }, { "floor(-1.1)", -2 }, { "floor(-2.1)", -3 },
         { "floor(5/2)", 2 }, { "floor(5/-2)", -3 }, { "ceil(5/2)", 3 }, { "min(min(1,-3),-2)", -3 },
         { "max(10, max(1,-3))", 10 }, { "1000*geo_sum(3,1/2,4)", 5625 }, { "geo_sum(3,2,4)", 45 },
-        { "geo_sum(512000,0.25,7)", 682625 }, { "pow_div_max(2, 72)", 3 }, { "pow_div_max(2, 73)", 0 } });
+        { "geo_sum(512000,0.25,7)", 682625 }, { "pow_div_max(2, 72)", 3 }, { "pow_div_max(2, 73)", 0 } };
+
+    return Arrays.asList(data);
   }
 
   @Test

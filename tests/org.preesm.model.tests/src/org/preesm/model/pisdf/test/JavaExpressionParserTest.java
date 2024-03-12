@@ -35,10 +35,8 @@
 package org.preesm.model.pisdf.test;
 
 import java.io.BufferedReader;
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.net.URISyntaxException;
 import java.util.stream.Stream;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
@@ -57,7 +55,7 @@ public class JavaExpressionParserTest {
   private static BufferedReader bufferedReader;
 
   @BeforeAll
-  public static void beforeTest() throws IOException, URISyntaxException {
+  public static void beforeTest() {
 
     final InputStream inputStream = JavaExpressionParserTest.class.getClassLoader()
         .getResourceAsStream("resources/expression.traces");
@@ -66,7 +64,7 @@ public class JavaExpressionParserTest {
   }
 
   @TestFactory
-  Stream<DynamicTest> JEPTestFactory() {
+  Stream<DynamicTest> jepTestFactory() {
 
     return bufferedReader.lines()
         .map(testLine -> DynamicTest.dynamicTest("Running JEP test for input: " + testLine, () -> {
