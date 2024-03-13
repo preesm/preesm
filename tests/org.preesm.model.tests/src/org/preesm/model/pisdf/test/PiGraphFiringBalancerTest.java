@@ -42,6 +42,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import org.junit.After;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.preesm.commons.exceptions.PreesmRuntimeException;
@@ -97,7 +98,7 @@ public class PiGraphFiringBalancerTest {
   @Test
   public void testFactor2() {
     new PiGraphFiringBalancer(this.subGraph, 2).balance();
-    Map<AbstractVertex, Long> brv = PiBRV.compute(topGraph, BRVMethod.LCM);
+    final Map<AbstractVertex, Long> brv = PiBRV.compute(topGraph, BRVMethod.LCM);
     assertEquals(Long.valueOf(128), brv.get(this.subGraph));
     assertEquals(Long.valueOf(2), brv.get(this.actorB));
     assertEquals(Long.valueOf(2), brv.get(this.actorC));
@@ -106,7 +107,7 @@ public class PiGraphFiringBalancerTest {
   @Test
   public void testFactor4() {
     new PiGraphFiringBalancer(this.subGraph, 4).balance();
-    Map<AbstractVertex, Long> brv = PiBRV.compute(topGraph, BRVMethod.LCM);
+    final Map<AbstractVertex, Long> brv = PiBRV.compute(topGraph, BRVMethod.LCM);
     assertEquals(Long.valueOf(64), brv.get(this.subGraph));
     assertEquals(Long.valueOf(4), brv.get(this.actorB));
     assertEquals(Long.valueOf(4), brv.get(this.actorC));
@@ -115,7 +116,7 @@ public class PiGraphFiringBalancerTest {
   @Test
   public void testFactor8() {
     new PiGraphFiringBalancer(this.subGraph, 8).balance();
-    Map<AbstractVertex, Long> brv = PiBRV.compute(topGraph, BRVMethod.LCM);
+    final Map<AbstractVertex, Long> brv = PiBRV.compute(topGraph, BRVMethod.LCM);
     assertEquals(Long.valueOf(32), brv.get(this.subGraph));
     assertEquals(Long.valueOf(8), brv.get(this.actorB));
     assertEquals(Long.valueOf(8), brv.get(this.actorC));
@@ -124,7 +125,7 @@ public class PiGraphFiringBalancerTest {
   @Test
   public void testFactor16() {
     new PiGraphFiringBalancer(this.subGraph, 16).balance();
-    Map<AbstractVertex, Long> brv = PiBRV.compute(topGraph, BRVMethod.LCM);
+    final Map<AbstractVertex, Long> brv = PiBRV.compute(topGraph, BRVMethod.LCM);
     assertEquals(Long.valueOf(16), brv.get(this.subGraph));
     assertEquals(Long.valueOf(16), brv.get(this.actorB));
     assertEquals(Long.valueOf(16), brv.get(this.actorC));
@@ -135,25 +136,15 @@ public class PiGraphFiringBalancerTest {
     try {
       new PiGraphFiringBalancer(this.subGraph, 15).balance();
       assertTrue(false);
-    } catch (PreesmRuntimeException e) {
+    } catch (final PreesmRuntimeException e) {
       assertTrue(true);
     }
   }
 
   @Test
   public void testExceptionGraph() {
-    try {
-      new PiGraphFiringBalancer(this.topGraph, 16).balance();
-      assertTrue(false);
-    } catch (PreesmRuntimeException e) {
-      assertTrue(true);
-    }
-    try {
-      new PiGraphFiringBalancer(null, 16).balance();
-      assertTrue(false);
-    } catch (PreesmRuntimeException e) {
-      assertTrue(true);
-    }
+    Assert.assertThrows(PreesmRuntimeException.class, () -> new PiGraphFiringBalancer(this.topGraph, 16));
+    Assert.assertThrows(PreesmRuntimeException.class, () -> new PiGraphFiringBalancer(null, 16));
   }
 
   private void createTestEnvironment() {
@@ -169,18 +160,18 @@ public class PiGraphFiringBalancerTest {
     this.actorD = PiMMUserFactory.instance.createActor("D");
 
     // Create a list for the actors to easily add them to the top graph
-    List<AbstractActor> actorsList = Arrays.asList(this.actorA, this.actorB, this.actorC, this.actorD);
+    final List<AbstractActor> actorsList = Arrays.asList(this.actorA, this.actorB, this.actorC, this.actorD);
 
     // Add actors to the top graph
     actorsList.stream().forEach(x -> this.topGraph.addActor(x));
 
     // Create data output and input ports
-    DataOutputPort outputA = PiMMUserFactory.instance.createDataOutputPort("out");
-    DataOutputPort outputB = PiMMUserFactory.instance.createDataOutputPort("out");
-    DataOutputPort outputC = PiMMUserFactory.instance.createDataOutputPort("out");
-    DataInputPort inputB = PiMMUserFactory.instance.createDataInputPort("in");
-    DataInputPort inputC = PiMMUserFactory.instance.createDataInputPort("in");
-    DataInputPort inputD = PiMMUserFactory.instance.createDataInputPort("in");
+    final DataOutputPort outputA = PiMMUserFactory.instance.createDataOutputPort("out");
+    final DataOutputPort outputB = PiMMUserFactory.instance.createDataOutputPort("out");
+    final DataOutputPort outputC = PiMMUserFactory.instance.createDataOutputPort("out");
+    final DataInputPort inputB = PiMMUserFactory.instance.createDataInputPort("in");
+    final DataInputPort inputC = PiMMUserFactory.instance.createDataInputPort("in");
+    final DataInputPort inputD = PiMMUserFactory.instance.createDataInputPort("in");
 
     // Attach them to actors
     this.actorA.getDataOutputPorts().add(outputA);
@@ -191,12 +182,12 @@ public class PiGraphFiringBalancerTest {
     this.actorD.getDataInputPorts().add(inputD);
 
     // Create fifos and form a chain such as A -> B -> C -> D
-    Fifo fifoAB = PiMMUserFactory.instance.createFifo(outputA, inputB, "void");
-    Fifo fifoBC = PiMMUserFactory.instance.createFifo(outputB, inputC, "void");
-    Fifo fifoCD = PiMMUserFactory.instance.createFifo(outputC, inputD, "void");
+    final Fifo fifoAB = PiMMUserFactory.instance.createFifo(outputA, inputB, "void");
+    final Fifo fifoBC = PiMMUserFactory.instance.createFifo(outputB, inputC, "void");
+    final Fifo fifoCD = PiMMUserFactory.instance.createFifo(outputC, inputD, "void");
 
     // Create a list for the fifos to easily add them to the top graph
-    List<Fifo> fifosList = Arrays.asList(fifoAB, fifoBC, fifoCD);
+    final List<Fifo> fifosList = Arrays.asList(fifoAB, fifoBC, fifoCD);
 
     // Add fifos to the top graph
     fifosList.stream().forEach(x -> this.topGraph.addFifo(x));
