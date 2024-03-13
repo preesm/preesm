@@ -582,11 +582,13 @@ public class SDFGraph extends AbstractGraph<SDFAbstractVertex, SDFEdge> {
       subgraph.stream().filter(vertex -> !(vertex instanceof SDFInterfaceVertex)).forEach(subgraphWOInterfaces::add);
 
       final double[][] topologyMatrix = getTopologyMatrix(subgraphWOInterfaces);
-      final Array2DRowRealMatrix topoMatrix = new Array2DRowRealMatrix(topologyMatrix);
-      final RRQRDecomposition decomp = new RRQRDecomposition(topoMatrix);
 
       final int length = topologyMatrix.length;
       if (length > 0) {
+
+        final Array2DRowRealMatrix topoMatrix = new Array2DRowRealMatrix(topologyMatrix);
+        final RRQRDecomposition decomp = new RRQRDecomposition(topoMatrix);
+
         final int rank = decomp.getRank(0.1);
         final int expectedRankValue = subgraphWOInterfaces.size() - 1;
         if (rank == expectedRankValue) {
