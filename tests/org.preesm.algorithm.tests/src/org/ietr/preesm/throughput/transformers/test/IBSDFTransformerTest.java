@@ -38,8 +38,6 @@ package org.ietr.preesm.throughput.transformers.test;
 import org.junit.Assert;
 import org.junit.Test;
 import org.preesm.algorithm.deadlock.IBSDFConsistency;
-import org.preesm.algorithm.model.sdf.SDFAbstractVertex;
-import org.preesm.algorithm.model.sdf.SDFEdge;
 import org.preesm.algorithm.model.sdf.SDFGraph;
 import org.preesm.algorithm.throughput.sdf.tools.GraphStructureHelper;
 import org.preesm.algorithm.throughput.sdf.tools.IBSDFTransformer;
@@ -64,13 +62,6 @@ public class IBSDFTransformerTest {
     // check the number of actors and the number of edges
     // actors 53 = 2 + 3*(1 + 2 + 6 + 4 + 1 + 2) + 3
     // edges 176
-    for (final SDFAbstractVertex a : flatSrSDF.vertexSet()) {
-      System.out.println("Actor " + a.getId());
-    }
-
-    for (final SDFEdge e : flatSrSDF.edgeSet()) {
-      System.out.println("Edge " + e.toString());
-    }
 
     final int nbActor = flatSrSDF.vertexSet().size();
     final int nbEdges = flatSrSDF.edgeSet().size();
