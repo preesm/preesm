@@ -55,33 +55,28 @@ public class SDFConsistencyTest {
   @Test
   public void testRVShouldBeComputed() {
     // generate the SDF graph ABC326
-    final SDFGraph ABC = generateSDFGraphABC326();
+    final SDFGraph graphABC = generateSDFGraphABC326();
     // compute the repetition vector (RV) of ABC326
-    SDFConsistency.computeRV(ABC);
+    SDFConsistency.computeRV(graphABC);
     // check the RV value
-    Assert.assertEquals(3L, ABC.getVertex("A").getNbRepeat());
-    Assert.assertEquals(2L, ABC.getVertex("B").getNbRepeat());
-    Assert.assertEquals(6L, ABC.getVertex("C").getNbRepeat());
+    Assert.assertEquals(3L, graphABC.getVertex("A").getNbRepeat());
+    Assert.assertEquals(2L, graphABC.getVertex("B").getNbRepeat());
+    Assert.assertEquals(6L, graphABC.getVertex("C").getNbRepeat());
   }
 
   @Test
   public void testConsistencyShouldBeEvaluated() {
     // generate the SDF graph ABC326 (consistent)
-    final SDFGraph ABC = generateSDFGraphABC326();
+    final SDFGraph graphABC = generateSDFGraphABC326();
     // evaluate the consistency
-    Boolean consistent = SDFConsistency.computeRV(ABC);
+    final Boolean consistent = SDFConsistency.computeRV(graphABC);
     Assert.assertTrue(consistent);
 
     // change the consumption rate of a random edge so that the graph becomes non consistent
-    ABC.edgeSet().iterator().next().setCons(new LongEdgePropertyType(10));
-    // evaluate the consistency
+    graphABC.edgeSet().iterator().next().setCons(new LongEdgePropertyType(10));
 
-    try {
-      SDFConsistency.computeRV(ABC);
-      Assert.fail();
-    } catch (PreesmException e) {
-      // success
-    }
+    // evaluate the consistency
+    Assert.assertThrows(PreesmException.class, () -> SDFConsistency.computeRV(graphABC));
   }
 
   /**

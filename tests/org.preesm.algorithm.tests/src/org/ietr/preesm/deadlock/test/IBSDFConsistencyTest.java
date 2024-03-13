@@ -57,26 +57,26 @@ public class IBSDFConsistencyTest {
   @Test
   public void testRVShouldBeComputed() {
     // generate the IBSDF graph AB[DEF]C
-    final SDFGraph ABC = generateIBSDFGraph();
+    final SDFGraph graphABC = generateIBSDFGraph();
     // compute the repetition vector (RV) of AB[DEF]C
-    IBSDFConsistency.computeRV(ABC);
+    IBSDFConsistency.computeRV(graphABC);
     // check the RV value of the top-graph
-    Assert.assertEquals(2L, ABC.getVertex("A").getNbRepeat());
-    Assert.assertEquals(3L, ABC.getVertex("B").getNbRepeat());
-    Assert.assertEquals(3L, ABC.getVertex("C").getNbRepeat());
+    Assert.assertEquals(2L, graphABC.getVertex("A").getNbRepeat());
+    Assert.assertEquals(3L, graphABC.getVertex("B").getNbRepeat());
+    Assert.assertEquals(3L, graphABC.getVertex("C").getNbRepeat());
 
     // check the RV value of the sub-graph
-    final SDFGraph DEF = (SDFGraph) ABC.getVertex("B").getGraphDescription();
-    Assert.assertEquals(2L, DEF.getVertex("D").getNbRepeat());
-    Assert.assertEquals(6L, DEF.getVertex("E").getNbRepeat());
-    Assert.assertEquals(4L, DEF.getVertex("F").getNbRepeat());
+    final SDFGraph graphDEF = (SDFGraph) graphABC.getVertex("B").getGraphDescription();
+    Assert.assertEquals(2L, graphDEF.getVertex("D").getNbRepeat());
+    Assert.assertEquals(6L, graphDEF.getVertex("E").getNbRepeat());
+    Assert.assertEquals(4L, graphDEF.getVertex("F").getNbRepeat());
 
     // TODO: check the consumption/production rates of interfaces
-    final SDFAbstractVertex in = DEF.getVertex("a");
+    final SDFAbstractVertex in = graphDEF.getVertex("a");
     SDFEdge e = in.getAssociatedEdge(in.getSinks().iterator().next());
     Assert.assertEquals(6L, e.getProd().longValue());
 
-    final SDFAbstractVertex out = DEF.getVertex("c");
+    final SDFAbstractVertex out = graphDEF.getVertex("c");
     e = out.getAssociatedEdge(out.getSources().iterator().next());
     Assert.assertEquals(12L, e.getCons().longValue());
   }
@@ -86,22 +86,16 @@ public class IBSDFConsistencyTest {
     // generate the IBSDF graph AB[DEF]C (consistent)
     final SDFGraph ibsdf = generateIBSDFGraph();
     // evaluate the consistency
-    Boolean consistent = IBSDFConsistency.computeRV(ibsdf);
+    final Boolean consistent = IBSDFConsistency.computeRV(ibsdf);
     Assert.assertTrue(consistent);
 
     // change the production rate of the edge EF so that the subgraph becomes non consistent
     final SDFGraph subgraph = (SDFGraph) ibsdf.getVertex("B").getGraphDescription();
-    final SDFAbstractVertex E = subgraph.getVertex("E");
-    E.getAssociatedEdge(E.getSinks().iterator().next()).setProd(new LongEdgePropertyType(10));
+    final SDFAbstractVertex vertexE = subgraph.getVertex("E");
+    vertexE.getAssociatedEdge(vertexE.getSinks().iterator().next()).setProd(new LongEdgePropertyType(10));
 
     // evaluate the consistency
-    try {
-      IBSDFConsistency.computeRV(ibsdf);
-      Assert.fail();
-    } catch (PreesmException e) {
-      // success
-    }
-
+    Assert.assertThrows(PreesmException.class, () -> IBSDFConsistency.computeRV(ibsdf));
   }
 
   /**

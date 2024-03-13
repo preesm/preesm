@@ -57,31 +57,24 @@ public class SDFLivenessTest {
   @Test
   public void testLivenessShouldReturnTrue() {
     // generate the SDF graph ABC326
-    final SDFGraph ABC = generateSDFGraphABC326();
+    final SDFGraph graphABC = generateSDFGraphABC326();
+
     // check the liveness of the graph
-    try {
-      SDFLiveness.evaluate(ABC);
-    } catch (final PreesmException e) {
-      Assert.fail();
-    }
+    SDFLiveness.evaluate(graphABC);
+    Assert.assertTrue(true);
   }
 
   @Test
   public void testLivenessShouldReturnFalse() {
     // generate the SDF graph ABC326
-    final SDFGraph ABC = generateSDFGraphABC326();
+    final SDFGraph graphABC = generateSDFGraphABC326();
     // remove the initial delays
-    for (final SDFEdge e : ABC.edgeSet()) {
+    for (final SDFEdge e : graphABC.edgeSet()) {
       e.setDelay(new LongEdgePropertyType(0));
     }
-    // check the liveness of the graph
 
-    try {
-      SDFLiveness.evaluate(ABC);
-      Assert.fail();
-    } catch (final PreesmException e) {
-      // success
-    }
+    // check the liveness of the graph
+    Assert.assertThrows(PreesmException.class, () -> SDFLiveness.evaluate(graphABC));
   }
 
   /**
