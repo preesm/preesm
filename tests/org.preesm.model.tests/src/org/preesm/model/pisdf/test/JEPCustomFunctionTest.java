@@ -42,7 +42,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
-import org.preesm.commons.math.ExpressionEvaluationException;
 import org.preesm.model.pisdf.Expression;
 import org.preesm.model.pisdf.factory.PiMMUserFactory;
 
@@ -73,13 +72,9 @@ public class JEPCustomFunctionTest {
 
   @Test
   public void testEvaluation() {
-    long evaluate = 0;
     final Expression createExpression = PiMMUserFactory.instance.createExpression(input);
-    try {
-      evaluate = createExpression.evaluate();
-    } catch (final ExpressionEvaluationException e) {
-      Assert.fail();
-    }
+    final long evaluate = createExpression.evaluate();
+
     Assert.assertEquals(expected, evaluate);
   }
 
