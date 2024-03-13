@@ -37,7 +37,6 @@ package org.preesm.algorithm.model.sdf;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
-import java.util.logging.Level;
 import org.preesm.algorithm.mapper.graphtransfo.ImplementationPropertyNames;
 import org.preesm.algorithm.model.AbstractVertex;
 import org.preesm.algorithm.model.IInterface;
@@ -79,7 +78,7 @@ public abstract class SDFAbstractVertex extends AbstractVertex<SDFGraph> {
   /**
    * Constructs a new SDFAbstractVertex using the given Edge Factory ef.
    */
-  public SDFAbstractVertex(org.preesm.model.pisdf.AbstractVertex origVertex) {
+  protected SDFAbstractVertex(org.preesm.model.pisdf.AbstractVertex origVertex) {
     super();
     this.origVertex = origVertex;
     this.sinks = new ArrayList<>();
@@ -98,15 +97,14 @@ public abstract class SDFAbstractVertex extends AbstractVertex<SDFGraph> {
       @SuppressWarnings("unchecked")
       final T res = (T) this.origVertex;
       return res;
-    } else {
-      final SDFGraph base = (SDFGraph) this.getBase();
-      final PiGraph referencePiMMGraph = base.getReferencePiMMGraph();
-
-      @SuppressWarnings("unchecked")
-      final T res = (T) VertexPath.lookup(referencePiMMGraph,
-          this.getPropertyStringValue(ImplementationPropertyNames.Vertex_originalVertexId));
-      return res;
     }
+    final SDFGraph base = (SDFGraph) this.getBase();
+    final PiGraph referencePiMMGraph = base.getReferencePiMMGraph();
+
+    @SuppressWarnings("unchecked")
+    final T res = (T) VertexPath.lookup(referencePiMMGraph,
+        this.getPropertyStringValue(ImplementationPropertyNames.Vertex_originalVertexId));
+    return res;
   }
 
   /*
@@ -118,7 +116,8 @@ public abstract class SDFAbstractVertex extends AbstractVertex<SDFGraph> {
   public boolean addInterface(final IInterface port) {
     if (port.getDirection().equals(InterfaceDirection.INPUT)) {
       return addSource((SDFSourceInterfaceVertex) port);
-    } else if (port.getDirection().equals(InterfaceDirection.OUTPUT)) {
+    }
+    if (port.getDirection().equals(InterfaceDirection.OUTPUT)) {
       return addSink((SDFSinkInterfaceVertex) port);
     }
     return false;
@@ -140,9 +139,8 @@ public abstract class SDFAbstractVertex extends AbstractVertex<SDFGraph> {
     this.sinks.add(sink);
     if ((getGraphDescription() != null) && (getGraphDescription().getVertex(sink.getName()) == null)) {
       return getGraphDescription().addVertex(sink);
-    } else {
-      return false;
     }
+    return false;
   }
 
   /**
@@ -161,9 +159,8 @@ public abstract class SDFAbstractVertex extends AbstractVertex<SDFGraph> {
     this.sources.add(src);
     if ((getGraphDescription() != null) && (getGraphDescription().getVertex(src.getName()) == null)) {
       return getGraphDescription().addVertex(src);
-    } else {
-      return false;
     }
+    return false;
   }
 
   /**
@@ -353,9 +350,8 @@ public abstract class SDFAbstractVertex extends AbstractVertex<SDFGraph> {
     }
     if (getPropertyBean().getValue(SDFAbstractVertex.NB_REPEAT) instanceof Number) {
       return getPropertyBean().<Number>getValue(SDFAbstractVertex.NB_REPEAT).longValue();
-    } else {
-      return 1;
     }
+    return 1;
   }
 
   /**
@@ -396,12 +392,12 @@ public abstract class SDFAbstractVertex extends AbstractVertex<SDFGraph> {
       if (getGraphDescription() != null) {
         final AbstractVertex truePort = getGraphDescription().getVertex(source.getName());
         if (getGraphDescription().outgoingEdgesOf(truePort).isEmpty()) {
-          if (PreesmLogger.getLogger() != null) {
-            PreesmLogger.getLogger().log(Level.INFO,
-                "The interface " + source.getName()
-                    + " has no inside connection and will be removed for further processing.\n "
-                    + "Outside connection has been taken into account for reptition factor computation");
-          }
+
+          PreesmLogger.getLogger()
+              .info(() -> "The interface " + source.getName()
+                  + " has no inside connection and will be removed for further processing.\n "
+                  + "Outside connection has been taken into account for reptition factor computation");
+
           this.sources.remove(i);
           getGraphDescription().removeVertex(source);
           getBase().removeEdge(outsideEdge);
@@ -421,6 +417,7 @@ public abstract class SDFAbstractVertex extends AbstractVertex<SDFGraph> {
         }
       }
     }
+
     if (getArguments() != null) {
       for (final Argument arg : getArguments().values()) {
         try {

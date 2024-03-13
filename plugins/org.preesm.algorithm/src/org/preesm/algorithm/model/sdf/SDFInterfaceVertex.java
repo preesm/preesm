@@ -63,7 +63,7 @@ public abstract class SDFInterfaceVertex extends SDFAbstractVertex implements II
   /**
    * Creates a new SDFInterfaceVertex with the default direction (SINK).
    */
-  public SDFInterfaceVertex(org.preesm.model.pisdf.AbstractVertex origVertex) {
+  protected SDFInterfaceVertex(org.preesm.model.pisdf.AbstractVertex origVertex) {
     super(origVertex);
     setKind(SDFInterfaceVertex.PORT);
     setDirection(InterfaceDirection.OUTPUT);
@@ -84,12 +84,10 @@ public abstract class SDFInterfaceVertex extends SDFAbstractVertex implements II
    */
   @Override
   public boolean equals(final Object e) {
-    if (e instanceof SDFInterfaceVertex) {
-      return (((SDFInterfaceVertex) e).getName().equals(getName())
-          && ((SDFInterfaceVertex) e).getDirection().equals(getDirection()));
-    } else {
-      return false;
+    if (e instanceof final SDFInterfaceVertex sdfIfaceVertex) {
+      return (sdfIfaceVertex.getName().equals(getName()) && sdfIfaceVertex.getDirection().equals(getDirection()));
     }
+    return false;
   }
 
   @Override
@@ -165,8 +163,8 @@ public abstract class SDFInterfaceVertex extends SDFAbstractVertex implements II
    */
   @Override
   public void setPropertyValue(final String propertyName, final Object value) {
-    if (propertyName.equals(SDFInterfaceVertex.PORT_DIRECTION) && (value instanceof String)) {
-      super.setPropertyValue(propertyName, InterfaceDirection.fromString((String) value));
+    if (propertyName.equals(SDFInterfaceVertex.PORT_DIRECTION) && (value instanceof final String str)) {
+      super.setPropertyValue(propertyName, InterfaceDirection.fromString(str));
     } else {
       super.setPropertyValue(propertyName, value);
     }

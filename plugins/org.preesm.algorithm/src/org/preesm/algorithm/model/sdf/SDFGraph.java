@@ -35,6 +35,7 @@
 package org.preesm.algorithm.model.sdf;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
@@ -43,7 +44,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.logging.Level;
-import java.util.stream.Collectors;
 import org.apache.commons.math3.linear.Array2DRowRealMatrix;
 import org.apache.commons.math3.linear.RRQRDecomposition;
 import org.preesm.algorithm.model.AbstractEdge;
@@ -243,12 +243,12 @@ public class SDFGraph extends AbstractGraph<SDFAbstractVertex, SDFEdge> {
    */
   public void clean() {
     final ArrayList<SDFEdge> edges = new ArrayList<>(edgeSet());
-    for (int i = 0; i < edges.size(); i++) {
-      this.removeEdge(edges.get(i));
+    for (final SDFEdge edge : edges) {
+      this.removeEdge(edge);
     }
     final ArrayList<SDFAbstractVertex> vertices = new ArrayList<>(vertexSet());
-    for (int i = 0; i < vertices.size(); i++) {
-      removeVertex(vertices.get(i));
+    for (final SDFAbstractVertex element : vertices) {
+      removeVertex(element);
     }
   }
 
@@ -505,7 +505,7 @@ public class SDFGraph extends AbstractGraph<SDFAbstractVertex, SDFEdge> {
     final Map<SDFInterfaceVertex, ArrayList<SDFEdge>> connections = new LinkedHashMap<>();
     for (final SDFEdge edge : outgoingEdgesOf(vertex)) {
       if (connections.get(edge.getSourceInterface()) == null) {
-        connections.put(edge.getSourceInterface(), new ArrayList<SDFEdge>());
+        connections.put(edge.getSourceInterface(), new ArrayList<>());
       }
       connections.get(edge.getSourceInterface()).add(edge);
     }
@@ -579,11 +579,7 @@ public class SDFGraph extends AbstractGraph<SDFAbstractVertex, SDFEdge> {
     for (final List<SDFAbstractVertex> subgraph : subgraphs) {
 
       final List<SDFAbstractVertex> subgraphWOInterfaces = new ArrayList<>();
-      for (final SDFAbstractVertex vertex : subgraph) {
-        if (!(vertex instanceof SDFInterfaceVertex)) {
-          subgraphWOInterfaces.add(vertex);
-        }
-      }
+      subgraph.stream().filter(vertex -> !(vertex instanceof SDFInterfaceVertex)).forEach(subgraphWOInterfaces::add);
 
       final double[][] topologyMatrix = getTopologyMatrix(subgraphWOInterfaces);
       final Array2DRowRealMatrix topoMatrix = new Array2DRowRealMatrix(topologyMatrix);
@@ -597,7 +593,7 @@ public class SDFGraph extends AbstractGraph<SDFAbstractVertex, SDFEdge> {
           schedulable &= true;
         } else {
           schedulable &= false;
-          PreesmLogger.getLogger().log(Level.WARNING, "Graph " + getName() + " is not schedulable");
+          PreesmLogger.getLogger().warning(() -> "Graph " + getName() + " is not schedulable");
         }
       }
     }
@@ -624,26 +620,27 @@ public class SDFGraph extends AbstractGraph<SDFAbstractVertex, SDFEdge> {
     final SDFAbstractVertex targetVertex = edge.getTarget();
     final boolean res = super.removeEdge(edge);
     if (res) {
-      if (sourceVertex instanceof SDFVertex) {
-        ((SDFVertex) sourceVertex).removeSink(edge);
+      if (sourceVertex instanceof final SDFVertex sdfVertex) {
+        sdfVertex.removeSink(edge);
       }
-      if (targetVertex instanceof SDFVertex) {
-        ((SDFVertex) targetVertex).removeSource(edge);
+      if (targetVertex instanceof final SDFVertex sdfVertex) {
+        sdfVertex.removeSource(edge);
       }
 
-      if (sourceVertex instanceof SDFForkVertex) {
-        ((SDFForkVertex) sourceVertex).connectionRemoved(edge);
+      if (sourceVertex instanceof final SDFForkVertex sdfFork) {
+        sdfFork.connectionRemoved(edge);
       }
-      if (targetVertex instanceof SDFJoinVertex) {
-        ((SDFJoinVertex) targetVertex).connectionRemoved(edge);
+      if (targetVertex instanceof final SDFJoinVertex sdfJoin) {
+        sdfJoin.connectionRemoved(edge);
       }
 
       // Beware of the Broadcast - RoundBuffer inheritance
-      if ((sourceVertex instanceof SDFBroadcastVertex) && !(sourceVertex instanceof SDFRoundBufferVertex)) {
-        ((SDFBroadcastVertex) sourceVertex).connectionRemoved(edge);
+      if ((sourceVertex instanceof final SDFBroadcastVertex sdfBrd)
+          && !(sourceVertex instanceof SDFRoundBufferVertex)) {
+        sdfBrd.connectionRemoved(edge);
       }
-      if (targetVertex instanceof SDFRoundBufferVertex) {
-        ((SDFRoundBufferVertex) targetVertex).connectionRemoved(edge);
+      if (targetVertex instanceof final SDFRoundBufferVertex sdfRb) {
+        sdfRb.connectionRemoved(edge);
       }
 
     }
@@ -669,61 +666,57 @@ public class SDFGraph extends AbstractGraph<SDFAbstractVertex, SDFEdge> {
   @SuppressWarnings("rawtypes")
   @Override
   public void update(final AbstractGraph<?, ?> observable, final Object arg) {
-    if (arg != null) {
-      if (arg instanceof AbstractVertex) {
-        if (observable.vertexSet().contains(arg)) {
-          final SDFVertex newVertex = new SDFVertex(null);
-          newVertex.setName(((AbstractVertex) arg).getName());
-          newVertex.setId(((AbstractVertex) arg).getId());
-          newVertex.setRefinement(((AbstractVertex) arg).getRefinement());
-          addVertex(newVertex);
+    if (arg == null) {
+      return;
+    }
+    if (arg instanceof final AbstractVertex av) {
+      if (observable.vertexSet().contains(arg)) {
+        final SDFVertex newVertex = new SDFVertex(null);
+        newVertex.setName(av.getName());
+        newVertex.setId(av.getId());
+        newVertex.setRefinement(av.getRefinement());
+        addVertex(newVertex);
+      } else {
+        removeVertex(getVertex(av.getName()));
+      }
+    } else if (arg instanceof AbstractEdge) {
+
+      if (arg instanceof final SDFEdge sdfEdge) {
+        final SDFAbstractVertex source = sdfEdge.getSource();
+        final SDFAbstractVertex target = sdfEdge.getTarget();
+        final SDFAbstractVertex newSource = getVertex(source.getName());
+        final SDFAbstractVertex newTarget = getVertex(target.getName());
+
+        if (observable.edgeSet().contains(sdfEdge)) {
+          this.addEdge(newSource, newTarget, sdfEdge);
         } else {
-          removeVertex(getVertex(((AbstractVertex) arg).getName()));
+          getAllEdges(newSource, newTarget).stream()
+              .filter(e -> e.getSourceInterface().getName().equals(sdfEdge.getSourceInterface().getName())
+                  && e.getTargetInterface().getName().equals(sdfEdge.getTargetInterface().getName()))
+              .findAny().ifPresent(this::removeEdge);
         }
-      } else if (arg instanceof AbstractEdge) {
-        if (observable.edgeSet().contains(arg)) {
-          if (arg instanceof SDFEdge) {
-            final SDFAbstractVertex source = ((SDFEdge) arg).getSource();
-            final SDFAbstractVertex target = ((SDFEdge) arg).getTarget();
-            final SDFAbstractVertex newSource = getVertex(source.getName());
-            final SDFAbstractVertex newTarget = getVertex(target.getName());
-            this.addEdge(newSource, newTarget, (SDFEdge) arg);
-          } else if (arg instanceof DAGEdge) {
-            final DAGVertex source = ((DAGEdge) arg).getSource();
-            final DAGVertex target = ((DAGEdge) arg).getTarget();
-            final SDFAbstractVertex newSource = getVertex(source.getName());
-            final SDFAbstractVertex newTarget = getVertex(target.getName());
-            for (final AbstractEdge edge : ((DAGEdge) arg).getAggregate()) {
-              final SDFEdge newEdge = this.addEdge(newSource, newTarget);
-              newEdge.copyProperties(edge);
-            }
+
+      } else if (arg instanceof final DAGEdge dagEdge) {
+        final DAGVertex source = dagEdge.getSource();
+        final DAGVertex target = dagEdge.getTarget();
+        final SDFAbstractVertex newSource = getVertex(source.getName());
+        final SDFAbstractVertex newTarget = getVertex(target.getName());
+
+        if (observable.edgeSet().contains(dagEdge)) {
+          for (final AbstractEdge edge : dagEdge.getAggregate()) {
+            final SDFEdge newEdge = this.addEdge(newSource, newTarget);
+            newEdge.copyProperties(edge);
           }
         } else {
-          if (arg instanceof SDFEdge) {
-            final SDFAbstractVertex source = ((SDFEdge) arg).getSource();
-            final SDFAbstractVertex target = ((SDFEdge) arg).getTarget();
-            final SDFAbstractVertex newSource = getVertex(source.getName());
-            final SDFAbstractVertex newTarget = getVertex(target.getName());
-            for (final SDFEdge edge : getAllEdges(newSource, newTarget)) {
-              if (edge.getSourceInterface().getName().equals(((SDFEdge) arg).getSourceInterface().getName())
-                  && edge.getTargetInterface().getName().equals(((SDFEdge) arg).getTargetInterface().getName())) {
-                this.removeEdge(edge);
-                break;
-              }
-            }
-          } else if (arg instanceof DAGEdge) {
-            final DAGVertex source = ((DAGEdge) arg).getSource();
-            final DAGVertex target = ((DAGEdge) arg).getTarget();
-            final SDFAbstractVertex newSource = getVertex(source.getName());
-            final SDFAbstractVertex newTarget = getVertex(target.getName());
-            this.removeAllEdges(newSource, newTarget);
-          }
+          this.removeAllEdges(newSource, newTarget);
         }
-      } else if (arg instanceof String) {
-        final Object property = observable.getPropertyBean().getValue((String) arg);
-        if (property != null) {
-          getPropertyBean().setValue((String) arg, property);
-        }
+
+      }
+
+    } else if (arg instanceof final String str) {
+      final Object property = observable.getPropertyBean().getValue(str);
+      if (property != null) {
+        getPropertyBean().setValue(str, property);
       }
     }
 
@@ -734,8 +727,6 @@ public class SDFGraph extends AbstractGraph<SDFAbstractVertex, SDFEdge> {
    *
    * @param child
    *          the child
-   * @param logger
-   *          the logger
    */
   private void validateChild(final SDFAbstractVertex child) {
 
@@ -758,9 +749,7 @@ public class SDFGraph extends AbstractGraph<SDFAbstractVertex, SDFEdge> {
       final boolean disjoint = Collections.disjoint(validatedInputs, validatedOutputs);
       if (!disjoint) {
         validatedInputs.retainAll(validatedOutputs);
-        final List<SDFAbstractVertex> multiplyDefinedEdges = validatedInputs.stream().peek(AbstractVertex::getName)
-            .collect(Collectors.toList());
-        throw new PreesmRuntimeException(multiplyDefinedEdges + " are multiply connected, consider using broadcast ");
+        throw new PreesmRuntimeException(validatedInputs + " are multiply connected, consider using broadcast ");
       }
     } else {
       // validate concrete actor implementation
@@ -778,9 +767,8 @@ public class SDFGraph extends AbstractGraph<SDFAbstractVertex, SDFEdge> {
       if (validatedOutInterfaces.contains(subGraphSinkInterface)) {
         throw new PreesmRuntimeException(
             subGraphSinkInterfaceName + " is multiply connected, consider using broadcast ");
-      } else {
-        validatedOutInterfaces.add(subGraphSinkInterface);
       }
+      validatedOutInterfaces.add(subGraphSinkInterface);
       if (subGraph.getVertex(subGraphSinkInterfaceName) != null) {
         final AbstractEdgePropertyType<?> actorOutEdgeProdExpr = actorOutgoingEdge.getProd();
         final long actorOutEdgeProdRate = actorOutEdgeProdExpr.longValue();
@@ -812,9 +800,8 @@ public class SDFGraph extends AbstractGraph<SDFAbstractVertex, SDFEdge> {
       if (validatedInInterfaces.contains(subGraphSourceInterface)) {
         throw new PreesmRuntimeException(
             subGraphSourceInterfaceName + " is multiply connected, consider using broadcast ");
-      } else {
-        validatedInInterfaces.add(subGraphSourceInterface);
       }
+      validatedInInterfaces.add(subGraphSourceInterface);
       if (subGraph.getVertex(subGraphSourceInterfaceName) != null) {
         final AbstractEdgePropertyType<?> actorInEdgeConsExpr = actorIncomingEdge.getCons();
         final long actorInEdgeConsRate = actorInEdgeConsExpr.longValue();
@@ -871,18 +858,11 @@ public class SDFGraph extends AbstractGraph<SDFAbstractVertex, SDFEdge> {
         descritption.insertBroadcasts();
       }
       // solving all the parameter for the rest of the processing ...
-      int i = 0;
-      while (i < array.size()) {
-        final SDFAbstractVertex vertex = array.get(i);
-        /*
-         * (15/01/14) Removed by jheulot: allowing unconnected actor
-         */
-        if (vertex instanceof SDFVertex) {
-          insertBroadcast((SDFVertex) vertex);
-        }
-        i++;
-      }
 
+      /*
+       * (15/01/14) Removed by jheulot: allowing unconnected actor
+       */
+      array.stream().filter(SDFVertex.class::isInstance).map(SDFVertex.class::cast).forEach(this::insertBroadcast);
     }
   }
 }
