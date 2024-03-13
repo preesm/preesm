@@ -88,7 +88,7 @@ class TopologyBasedBRV extends PiBRV {
         final double[][] topologyMatrix = getTopologyMatrix(listFifo, subgraph);
         final Array2DRowRealMatrix topoMatrix = new Array2DRowRealMatrix(topologyMatrix);
         final RRQRDecomposition decomp = new RRQRDecomposition(topoMatrix);
-        final int rank = decomp.getRank(0.1);
+        final int rank = decomp.getRank(1);
 
         if (rank != (subgraph.size() - 1)) {
           throw new PreesmRuntimeException("Graph not consitent. rank: " + Long.toString(rank) + ", expected: "
