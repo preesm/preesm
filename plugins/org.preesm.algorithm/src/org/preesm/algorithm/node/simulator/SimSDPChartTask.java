@@ -29,13 +29,11 @@ import org.preesm.workflow.implement.AbstractTaskImplementation;
 public class SimSDPChartTask extends AbstractTaskImplementation {
 
   public static final String PAGE1     = "Internode Analysis";
-  public static final String PAGE1bis  = "Correlation Analysis";
+  public static final String PAGE1_BIS = "Correlation Analysis";
   public static final String PAGE2     = "Intranode Analysis";
   public static final String PAGE3     = "DSE Analysis";
   public static final String PAGE4     = "Network Analysis";
   public static final String PAGE5     = "Weighted Pareto Analysis";
-  public static final String PAGE6     = "Raw Pareto Analysis";
-  public static final String PAGE_LAST = "Thank you";
 
   /**
    * Executes the deviation chart export task.

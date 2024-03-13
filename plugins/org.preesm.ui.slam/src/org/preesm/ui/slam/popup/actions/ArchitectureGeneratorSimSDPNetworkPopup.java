@@ -87,7 +87,8 @@ public class ArchitectureGeneratorSimSDPNetworkPopup extends AbstractHandler {
   public static final String FAT_TREE         = NetworkInfo.FAT_TREE;
   public static final String DRAGONFLY        = NetworkInfo.DRAGONFLY;
 
-  public static final String TOPO_PARAM_KEY = "topoparam";
+  private static final String TOPO_PARAM_KEY  = "topoparam";
+  private static final String TOPO_PARAM_NAME = "topo_parameters";
 
   /**
    * Executes the network architecture generation logic when the corresponding command is triggered.
@@ -395,15 +396,15 @@ public class ArchitectureGeneratorSimSDPNetworkPopup extends AbstractHandler {
         break;
       case TORUS:
         content.append("topology=\"TORUS\" ");
-        content.append("topo_parameters=\"" + network.get(TOPO_PARAM_KEY) + "\"");
+        content.append(TOPO_PARAM_NAME + "=\"" + network.get(TOPO_PARAM_KEY) + "\"");
         break;
       case FAT_TREE:
         content.append("topology=\"FAT_TREE\" ");
-        content.append("topo_parameters=\"" + network.get(TOPO_PARAM_KEY) + "\"");
+        content.append(TOPO_PARAM_NAME + "=\"" + network.get(TOPO_PARAM_KEY) + "\"");
         break;
       case DRAGONFLY:
         content.append("topology=\"DRAGONFLY\" ");
-        content.append("topo_parameters=\"" + network.get(TOPO_PARAM_KEY) + "\"");
+        content.append(TOPO_PARAM_NAME + "=\"" + network.get(TOPO_PARAM_KEY) + "\"");
         break;
       default:
         break;

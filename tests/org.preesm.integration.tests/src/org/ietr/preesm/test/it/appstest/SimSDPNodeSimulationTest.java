@@ -48,15 +48,15 @@ import org.junit.Test;
  */
 public class SimSDPNodeSimulationTest {
 
-  private final String workflow    = "NodeSimulator.workflow";
-  private final String scenario    = "top_top.scenario";
-  private final String projectName = "org.ietr.preesm.simsdp.nodesimulation";
-
   /**
    */
 
   @Test
   public void testSimSDPNodeSimulationTest() throws IOException, CoreException {
+
+    final String workflow = "NodeSimulator.workflow";
+    final String scenario = "top_top.scenario";
+    final String projectName = "org.ietr.preesm.simsdp.nodesimulation";
 
     final String workflowFilePathStr = "/Workflows/" + workflow;
     final String scenarioFilePathStr = "/Scenarios/generated/" + scenario;

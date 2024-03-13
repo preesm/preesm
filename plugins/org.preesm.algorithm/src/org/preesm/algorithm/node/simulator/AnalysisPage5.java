@@ -244,7 +244,7 @@ public class AnalysisPage5 {
       final Double score = net.getFinalLatency() * kTh + net.getMemory() * kMem + net.getEnergy() * kEner
           + net.getCost() * kC;
       dataset.addValue(score, rowKey,
-          net.getTypeID() + ":" + net.getNode() + ":" + net.getCore() + ":" + net.getCoreFrequency());
+          net.getType() + ":" + net.getNode() + ":" + net.getCore() + ":" + net.getCoreFrequency());
       if (score != 0 && score < scoreMin) {
         scoreMin = score;
       }

@@ -32,15 +32,17 @@ import org.preesm.commons.files.PreesmIOHelper;
  */
 public class AnalysisPage4 {
 
-  private final String                   path;
-  private static final String            NET_NAME              = "multicriteria.csv";
-  private static final List<NetworkInfo> networkInfoList       = new ArrayList<>();
-  private final List<NetworkInfo>        networkInfoNormalList = new ArrayList<>();
+  private final String        path;
+  private static final String NET_NAME = "multicriteria.csv";
+
+  private final List<NetworkInfo> networkInfoList       = new ArrayList<>();
+  private final List<NetworkInfo> networkInfoNormalList = new ArrayList<>();
 
   Map<Integer, Map<Integer, Map<Integer, List<NetworkInfo>>>> nodeNetworkInfoNormalMap = new LinkedHashMap<>();
-  int                                                         nodeKey                  = 0;
-  int                                                         coreKey                  = 0;
-  int                                                         coreFrequencyKey         = 0;
+
+  int nodeKey          = 0;
+  int coreKey          = 0;
+  int coreFrequencyKey = 0;
 
   private static final String DESCRIPTION = """
       <html>
@@ -149,7 +151,7 @@ public class AnalysisPage4 {
     final JPanel textFieldPanel = new JPanel();
     textFieldPanel.setLayout(new GridLayout(1, 2, 0, 0));
     final JComboBox<String> archiCombo = addComboBoxWithLabel(textFieldPanel,
-        "Select the number of nodes:cores:frequency for network analysis:", nodeNetworkInfoNormalMap);
+        "Select the number of nodes:cores:frequency for network analysis:");
     // node selection
 
     archiCombo.addActionListener(e -> {
@@ -165,7 +167,7 @@ public class AnalysisPage4 {
     return textFieldPanel;
   }
 
-  private JComboBox<String> addComboBoxWithLabel(JPanel panel, String labelText, Map<Integer, ?> dataMap) {
+  private JComboBox<String> addComboBoxWithLabel(JPanel panel, String labelText) {
     final JLabel label = new JLabel(labelText);
     panel.add(label);
     String[] items;
@@ -197,7 +199,7 @@ public class AnalysisPage4 {
     return networkInfoNormalList;
   }
 
-  public static List<NetworkInfo> getnetworkInfoList() {
+  public List<NetworkInfo> getnetworkInfoList() {
     return networkInfoList;
   }
 
@@ -292,7 +294,7 @@ public class AnalysisPage4 {
     final String[] networklist = PreesmIOHelper.getInstance().read(path, NET_NAME).split("\n\n");
     for (final String element : networklist) {
 
-      String type = "";
+      String typeName = "";
       int node = 0;
       int core = 0;
       int coreFrequency = 0;
@@ -306,7 +308,7 @@ public class AnalysisPage4 {
 
         switch (column[0]) {
           case "type":
-            type = column[1].split(":")[0];
+            typeName = column[1].split(":")[0];
             node = Integer.valueOf(column[1].split(":")[1]);
             core = Integer.valueOf(column[1].split(":")[2]);
             coreFrequency = Integer.valueOf(column[1].split(":")[3]);
@@ -328,8 +330,8 @@ public class AnalysisPage4 {
         }
 
         if (indexArg == (networkArg.length - 1)) {
-          final NetworkInfo newNetwork = new NetworkInfo(type, node, core, coreFrequency, throughput, memory, energy,
-              cost);
+          final NetworkInfo newNetwork = new NetworkInfo(NetworkInfo.getTypeFromString(typeName), node, core,
+              coreFrequency, throughput, memory, energy, cost);
           networkInfoList.add(newNetwork);
         }
       }
@@ -348,7 +350,7 @@ public class AnalysisPage4 {
 
     for (final NetworkInfo net : nodeNetworkInfoNormalMap.get(nodeKey).get(coreKey).get(coreFrequencyKey)) {
       final XYSeries s1 = new XYSeries(
-          net.getTypeID() + ":" + net.getNode() + ":" + net.getCore() + ":" + net.getCoreFrequency());
+          net.getType() + ":" + net.getNode() + ":" + net.getCore() + ":" + net.getCoreFrequency());
       s1.add(0.0, net.getFinalLatency());
       s1.add(90.0, net.getMemory());
       s1.add(180.0, net.getCost());
@@ -368,7 +370,7 @@ public class AnalysisPage4 {
 
     for (final NetworkInfo net : nodeNetworkInfoNormalMap.get(nodeKey).get(coreKey).get(coreFrequencyKey)) {
       final XYSeries s1 = new XYSeries(
-          net.getTypeID() + ":" + net.getNode() + ":" + net.getCore() + ":" + net.getCoreFrequency());
+          net.getType() + ":" + net.getNode() + ":" + net.getCore() + ":" + net.getCoreFrequency());
       s1.add(0.0, net.getFinalLatency());
       s1.add(90.0, net.getMemory());
       s1.add(180.0, net.getCost());

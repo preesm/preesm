@@ -31,7 +31,7 @@
         </dftools:data>
     </dftools:task>
     <dftools:task
-        pluginId="org.ietr.preesm.codegen.xtend.task.CodegenTask" taskId="Code Generation">
+        pluginId="org.ietr.preesm.codegen.xtend.task.CodegenSimSDPTask" taskId="Code Generation">
         <dftools:data key="variables">
             <dftools:variable name="Multinode" value="true"/>
             <dftools:variable name="Papify" value="false"/>

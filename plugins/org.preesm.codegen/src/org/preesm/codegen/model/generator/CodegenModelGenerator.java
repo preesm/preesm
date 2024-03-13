@@ -1006,18 +1006,46 @@ public class CodegenModelGenerator extends AbstractCodegenModelGenerator {
     }
   }
 
+  /**
+   * This method retrieve the sink and source actor involved in the communication internode (in multinode context). To
+   * simplify the later allocation communication buffer are indexed on the first block
+   *
+   * @param resultList
+   *          the list of block
+   *
+   */
   private void generateTopBuffers(List<Block> resultList) {
-    if (multinode) {
-      for (final Block block : resultList) {
-        final CoreBlock coreBlock = (CoreBlock) block;
+    if (!multinode) {
+      return;
+    }
 
-        final Iterator<Buffer> iterBuffer = coreBlock.getSinkFifoBuffers().iterator();
-        while (iterBuffer.hasNext()) {
-          final Buffer buffer = iterBuffer.next();
+    final CoreBlock firstBlock = (CoreBlock) resultList.stream().findFirst().orElseThrow();
 
-          if (buffer.getComment().contains("> snk")) {
-            coreBlock.getTopBuffers().add(buffer);
-            iterBuffer.remove();
+    for (final Block block : resultList) {
+      final CoreBlock coreBlock = (CoreBlock) block;
+
+      final Iterator<Buffer> iterBuffer = coreBlock.getSinkFifoBuffers().iterator();
+      while (iterBuffer.hasNext()) {
+        final Buffer buffer = iterBuffer.next();
+
+        if (buffer.getComment().contains("> snk")) {
+          buffer.setComment(buffer.getComment().replaceFirst("^.* > ", ""));
+          buffer.setComment(buffer.getComment().replaceFirst("_\\d+_in$", ""));
+          firstBlock.getTopBuffers().add(buffer);
+          iterBuffer.remove();
+        }
+      }
+
+      for (final Variable v : coreBlock.getDeclarations()) {
+
+        if (!(v instanceof final Buffer buffer) || ((Buffer) v).getComment() == null) {
+          continue;
+        }
+
+        if (buffer.getComment().matches("^src.*_0_out >.*")) {
+          buffer.setComment(buffer.getComment().replaceFirst("_0_out >.*$", ""));
+          if (firstBlock.getTopBuffers().stream().noneMatch(x -> x.getComment().equals(buffer.getComment()))) {
+            firstBlock.getTopBuffers().add(buffer);
           }
         }
       }

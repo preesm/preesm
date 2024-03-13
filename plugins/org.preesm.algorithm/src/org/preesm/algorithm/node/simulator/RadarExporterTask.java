@@ -144,8 +144,7 @@ public class RadarExporterTask extends AbstractTaskImplementation {
     final Pattern pattern = Pattern.compile(regex);
     final Matcher matcher = pattern.matcher(xmlString);
     if (matcher.find()) {
-      final String topoParametersValue = matcher.group(1);
-      return topoParametersValue;
+      return matcher.group(1);
 
     }
     return "";
@@ -154,27 +153,27 @@ public class RadarExporterTask extends AbstractTaskImplementation {
 
   private Long estimateCost(String type, String topoParameter) {
     final String[] column = type.split(":");
-    Long nRouter = 0L;
-    Long nLink = 0L;
+    Long nRouter;
+    Long nLink;
     Long cost = 0L;
     final Long nNode = Long.valueOf(column[1]);
     final Long nCore = Long.valueOf(column[2]);
     switch (column[0]) {
-      case "Cluster with crossbar":
+      case NetworkInfo.CLUSTER_CROSSBAR:
         nRouter = 1L;
         nLink = 1L;
         cost = nNode * nCore + nRouter + nLink + 1;
         break;
-      case "Cluster with shared backbone":
+      case NetworkInfo.CLUSTER_SHARED:
         nRouter = 1L;
         nLink = 1L;
         cost = nNode * nCore + nRouter + nLink;
         break;
-      case "Torus cluster":
+      case NetworkInfo.TORUS:
         nLink = nNode;
         cost = nNode * nCore + nLink;
         break;
-      case "Fat-tree cluster":
+      case NetworkInfo.FAT_TREE:
         final String[] row = topoParameter.split(";");
         final Long com = Long.valueOf(row[2].split(",")[0]);
         final Long nodesPerRouterLeaf = Long.valueOf(row[1].split(",")[0]);
@@ -182,7 +181,7 @@ public class RadarExporterTask extends AbstractTaskImplementation {
         nLink = com * com + com * nodesPerRouterLeaf;
         cost = nNode * nCore + nRouter + nLink;
         break;
-      case "Dragonfly cluster":
+      case NetworkInfo.DRAGONFLY:
         final String[] row1 = topoParameter.split(";");
         final Long g = Long.valueOf(row1[0].split(",")[0]);
         final Long gl = Long.valueOf(row1[0].split(",")[1]);
@@ -210,7 +209,7 @@ public class RadarExporterTask extends AbstractTaskImplementation {
 
     final String simGridFile = PreesmIOHelper.getInstance().read(simulationPath, simGcsv);
     final String[] line = simGridFile.split("\n");
-    // metrics.put(COST, String.valueOf((line.length - 2) / 2));
+
     double ener = 0.0;
     for (final String element : line) {
       final String[] column = element.split(",");

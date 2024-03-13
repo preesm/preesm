@@ -3,10 +3,12 @@ package org.preesm.algorithm.hypervisor;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import org.preesm.algorithm.node.simulator.NetworkInfo;
+import org.preesm.algorithm.node.simulator.NetworkInfo.NetworkConfig;
 import org.preesm.commons.files.PreesmIOHelper;
 
 public class SimSDPNetwork {
-  int    configID;
+  NetworkConfig configID;
+
   int    nodeNum;
   int    coreNum;
   int    coreFreq;
@@ -24,7 +26,7 @@ public class SimSDPNetwork {
 
   Integer findNode = 2;
 
-  public SimSDPNetwork(int configID, int nodeNum, int coreNum, int coreFreq, String projectPath) {
+  public SimSDPNetwork(NetworkConfig configID, int nodeNum, int coreNum, int coreFreq, String projectPath) {
     this.configID = configID;
     this.nodeNum = nodeNum;
     this.coreNum = coreNum;
@@ -49,25 +51,25 @@ public class SimSDPNetwork {
     network.put("latency", "50us");
     network.put("loopback", "false");
     switch (configID) {
-      case 0:
+      case CLUSTER_CROSSBAR:
         network.put("topo", CLUSTER_CROSSBAR);
         return check();
-      case 1:
+      case CLUSTER_SHARED:
         network.put("topo", CLUSTER_SHARED);
         network.put(TOPO_PARAM_KEY, "2.25GBps");
         network.put("bbparam", "500us");
         return check();
-      case 2:
+      case TORUS:
         network.put("topo", TORUS);
         network.put(TOPO_PARAM_KEY, torusConfiguration());
         network.put("node", String.valueOf(findNode));
         break;
-      case 3:
+      case FAT_TREE:
         network.put("topo", FAT_TREE);
         network.put(TOPO_PARAM_KEY, fatTreeConfiguration());
         network.put("node", String.valueOf(findNode));
         break;
-      case 4:
+      case DRAGONFLY:
         network.put("topo", DRAGONFLY);
         network.put(TOPO_PARAM_KEY, dragonflyConfiguration());
         network.put("node", String.valueOf(findNode));
@@ -104,7 +106,6 @@ public class SimSDPNetwork {
     while (n > ROUTER_PORT) {
       if (n % ROUTER_PORT == 0) {
         // If the number of nodes per router is a multiple of 4, reduce the number of routers
-        // n *= 2;
         n /= 2;
       } else {
         // Otherwise, increase the number of chassis and reduce the number of nodes per router

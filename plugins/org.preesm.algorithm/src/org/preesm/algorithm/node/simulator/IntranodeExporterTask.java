@@ -41,7 +41,7 @@ public class IntranodeExporterTask extends AbstractTaskImplementation {
   public static final String SPEEDUP_NAME    = "speedup_trend.csv";
 
   public static final String MEMORY_NAME = "memory_trend.csv";
-  static String              path        = "";
+  private String             path        = "";
 
   @Override
   public Map<String, Object> execute(Map<String, Object> inputs, Map<String, String> parameters,
@@ -49,6 +49,7 @@ public class IntranodeExporterTask extends AbstractTaskImplementation {
     path = File.separator + workflow.getProjectName() + "/Simulation/";
     final LatencyAbc abc = (LatencyAbc) inputs.get("ABC");
     final Map<Actor, Long> clusterMemory = (Map<Actor, Long>) inputs.get("cMem");
+
     // export
     if (workflow.getWorkflowName().equals("ThreadPartitioning.workflow")) {
       nodeOccupationExport(abc);
@@ -118,7 +119,7 @@ public class IntranodeExporterTask extends AbstractTaskImplementation {
           sumCom += a.getDuration();
         }
       }
-      final String message2 = "Computation sum is:" + sumCpt + " ,and communication sum is:" + sumCom;
+      final String message2 = "Computation sum:" + sumCpt + ", communication sum:" + sumCom;
       PreesmLogger.getLogger().log(Level.INFO, message2);
     }
     csvTrend(occupy.toString(), abc, OCCUPATION_NAME);
