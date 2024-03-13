@@ -589,7 +589,7 @@ public class SDFGraph extends AbstractGraph<SDFAbstractVertex, SDFEdge> {
         final Array2DRowRealMatrix topoMatrix = new Array2DRowRealMatrix(topologyMatrix);
         final RRQRDecomposition decomp = new RRQRDecomposition(topoMatrix);
 
-        final int rank = decomp.getRank(0.1);
+        final int rank = decomp.getRank(1);
         final int expectedRankValue = subgraphWOInterfaces.size() - 1;
         if (rank == expectedRankValue) {
           schedulable &= true;
