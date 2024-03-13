@@ -44,8 +44,8 @@ import java.util.Map.Entry;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.stream.Collectors;
-import org.math.array.DoubleArray;
-import org.math.array.LinearAlgebra;
+import org.apache.commons.math3.linear.Array2DRowRealMatrix;
+import org.apache.commons.math3.linear.RRQRDecomposition;
 import org.preesm.algorithm.model.AbstractEdge;
 import org.preesm.algorithm.model.AbstractEdgePropertyType;
 import org.preesm.algorithm.model.AbstractGraph;
@@ -456,7 +456,10 @@ public class SDFGraph extends AbstractGraph<SDFAbstractVertex, SDFEdge> {
       final SDFAbstractVertex source = getEdgeSource(edge);
       final SDFAbstractVertex target = getEdgeTarget(edge);
       if (subgraph.contains(source) && subgraph.contains(target) && !source.equals(target)) {
-        final double[] line = DoubleArray.fill(subgraph.size(), 0);
+
+        final double[] line = new double[subgraph.size()];
+        Arrays.fill(line, 0);
+
         final long prodIntValue = edge.getProd().longValue();
         final long consIntValue = edge.getCons().longValue();
         line[subgraph.indexOf(source)] += prodIntValue;
@@ -583,10 +586,12 @@ public class SDFGraph extends AbstractGraph<SDFAbstractVertex, SDFEdge> {
       }
 
       final double[][] topologyMatrix = getTopologyMatrix(subgraphWOInterfaces);
+      final Array2DRowRealMatrix topoMatrix = new Array2DRowRealMatrix(topologyMatrix);
+      final RRQRDecomposition decomp = new RRQRDecomposition(topoMatrix);
 
       final int length = topologyMatrix.length;
       if (length > 0) {
-        final int rank = LinearAlgebra.rank(topologyMatrix);
+        final int rank = decomp.getRank(0.1);
         final int expectedRankValue = subgraphWOInterfaces.size() - 1;
         if (rank == expectedRankValue) {
           schedulable &= true;

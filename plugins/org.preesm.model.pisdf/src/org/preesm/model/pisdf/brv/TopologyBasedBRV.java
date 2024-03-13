@@ -44,7 +44,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
-import org.math.array.LinearAlgebra;
+import org.apache.commons.math3.linear.Array2DRowRealMatrix;
+import org.apache.commons.math3.linear.RRQRDecomposition;
 import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.preesm.commons.math.LongFraction;
 import org.preesm.commons.math.MathFunctionsHelper;
@@ -63,7 +64,7 @@ class TopologyBasedBRV extends PiBRV {
 
   @Override
   public Map<AbstractVertex, Long> computeBRV(final PiGraph piGraph) {
-    Map<AbstractVertex, Long> graphBRV = new LinkedHashMap<>();
+    final Map<AbstractVertex, Long> graphBRV = new LinkedHashMap<>();
     if (piGraph == null) {
       final String msg = "cannot compute BRV for null graph.";
       throw new PreesmRuntimeException(msg);
@@ -85,7 +86,10 @@ class TopologyBasedBRV extends PiBRV {
         graphBRV.put(subgraph.get(0), 1L);
       } else {
         final double[][] topologyMatrix = getTopologyMatrix(listFifo, subgraph);
-        final long rank = LinearAlgebra.rank(topologyMatrix);
+        final Array2DRowRealMatrix topoMatrix = new Array2DRowRealMatrix(topologyMatrix);
+        final RRQRDecomposition decomp = new RRQRDecomposition(topoMatrix);
+        final int rank = decomp.getRank(0.1);
+
         if (rank != (subgraph.size() - 1)) {
           throw new PreesmRuntimeException("Graph not consitent. rank: " + Long.toString(rank) + ", expected: "
               + Integer.toString(subgraph.size() - 1));
