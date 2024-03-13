@@ -35,10 +35,10 @@
 package org.preesm.algorithm.model.sdf;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import org.preesm.algorithm.model.sdf.esdf.SDFSinkInterfaceVertex;
 import org.preesm.algorithm.model.sdf.esdf.SDFSourceInterfaceVertex;
 import org.preesm.commons.exceptions.PreesmRuntimeException;
@@ -93,11 +93,7 @@ public interface SDFMath {
       final SDFGraph graph) {
 
     final List<SDFAbstractVertex> subgraphWOInterfaces = new ArrayList<>();
-    for (final SDFAbstractVertex vertex : subgraph) {
-      if (!(vertex instanceof SDFInterfaceVertex)) {
-        subgraphWOInterfaces.add(vertex);
-      }
-    }
+    subgraph.stream().filter(v -> !(v instanceof SDFInterfaceVertex)).forEach(subgraphWOInterfaces::add);
 
     final Map<SDFAbstractVertex, Long> vrb = SDFMath.computeRationnalVRB(subgraphWOInterfaces, graph);
 
@@ -163,9 +159,7 @@ public interface SDFMath {
 
     final List<LongFraction> nullSpace = MathFunctionsHelper.computeRationnalNullSpace(interfaceArrayTopology);
     final List<Long> result = MathFunctionsHelper.toNatural(nullSpace);
-    for (final Entry<SDFAbstractVertex, Long> e : vrb.entrySet()) {
-      vrb.put(e.getKey(), e.getValue() * result.get(result.size() - 1));
-    }
+    vrb.entrySet().forEach(e -> vrb.put(e.getKey(), e.getValue() * result.get(result.size() - 1)));
 
     return vrb;
   }
