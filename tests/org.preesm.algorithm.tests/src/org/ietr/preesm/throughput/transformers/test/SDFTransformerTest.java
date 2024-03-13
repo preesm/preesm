@@ -53,6 +53,9 @@ public class SDFTransformerTest {
 
   @Test
   public void testSDFGraphShouldBeNormalized() {
+
+    final String normalizedRate = "normalizedRate";
+
     // generate a SDF graph
     final SDFGraph sdf = generateSDFGraphABC326();
 
@@ -60,18 +63,18 @@ public class SDFTransformerTest {
     SDFTransformer.normalize(sdf);
 
     // check the value of the normalized rate of each vertex
-    final double Za = (double) sdf.getVertex("A").getPropertyBean().getValue("normalizedRate");
+    final double Za = (double) sdf.getVertex("A").getPropertyBean().getValue(normalizedRate);
     Assert.assertEquals(2, Za, 0);
 
-    final double Zb = (double) sdf.getVertex("B").getPropertyBean().getValue("normalizedRate");
+    final double Zb = (double) sdf.getVertex("B").getPropertyBean().getValue(normalizedRate);
     Assert.assertEquals(3, Zb, 0);
 
-    final double Zc = (double) sdf.getVertex("C").getPropertyBean().getValue("normalizedRate");
+    final double Zc = (double) sdf.getVertex("C").getPropertyBean().getValue(normalizedRate);
     Assert.assertEquals(1, Zc, 0);
 
     // check the normalization factor of each edge
     for (final SDFEdge e : sdf.edgeSet()) {
-      final double Zt = (double) e.getSource().getPropertyBean().getValue("normalizedRate");
+      final double Zt = (double) e.getSource().getPropertyBean().getValue(normalizedRate);
       final double alpha_expected = Zt / e.getProd().longValue();
       final double alpha_current = (double) e.getPropertyBean().getValue("normalizationFactor");
       Assert.assertEquals(alpha_expected, alpha_current, 0);
