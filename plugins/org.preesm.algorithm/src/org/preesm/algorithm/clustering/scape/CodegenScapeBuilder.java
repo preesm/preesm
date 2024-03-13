@@ -58,139 +58,38 @@ public class CodegenScapeBuilder {
     Long count = 0L;
 
     final Set<String> GPUFree = new LinkedHashSet<>();
+    final Set<String> buffGPU = new LinkedHashSet<>();
+    final Set<String> gpuToCpu = new LinkedHashSet<>();
     boolean synchro = false;
-
-    // TEST
-
-    final Map<String, String> ratePort = new HashMap<>();
-
-    // END TEST
 
     for (final AbstractActor actor : subGraph.getExecutableActors()) {
       for (final DataOutputPort dout : actor.getDataOutputPorts()) {
         String buff = "";
         if (!(dout.getOutgoingFifo().getTarget() instanceof DataOutputInterface) && !dout.getFifo().isHasADelay()) {
           // Classic CPU
-          final String buffName = dout.getContainingActor().getName() + "_" + dout.getName() + "__"
-              + ((AbstractVertex) dout.getFifo().getTarget()).getName() + "_"
-              + dout.getFifo().getTargetPort().getName();
-          final Long nbToken = dout.getExpression().evaluate() * brv.get(dout.getContainingActor());
-          if (count < stackSize) {
-            buff = dout.getOutgoingFifo().getType() + " " + buffName + "[" + nbToken + "];\n";
-          } else {
-            buff = dout.getOutgoingFifo().getType() + " *" + buffName + " = (" + dout.getOutgoingFifo().getType()
-                + " *)malloc(" + nbToken + SIZEOF_TEXT + dout.getOutgoingFifo().getType() + "));\n";
-            build.getDynmicBuffer().add(buffName);
-          }
-          count += nbToken;
+          if (!cs.get(0).isOnGPU()) {
+            final String buffName = dout.getContainingActor().getName() + "_" + dout.getName() + "__"
+                + ((AbstractVertex) dout.getFifo().getTarget()).getName() + "_"
+                + dout.getFifo().getTargetPort().getName();
+            final Long nbToken = dout.getExpression().evaluate() * brv.get(dout.getContainingActor());
+            if (count < stackSize) {
+              buff = dout.getOutgoingFifo().getType() + " " + buffName + "[" + nbToken + "];\n";
+            } else {
+              buff = dout.getOutgoingFifo().getType() + " *" + buffName + " = (" + dout.getOutgoingFifo().getType()
+                  + " *)malloc(" + nbToken + SIZEOF_TEXT + dout.getOutgoingFifo().getType() + "));\n";
+              build.getDynmicBuffer().add(buffName);
+            }
+            count += nbToken;
 
-          // GPU test
-          // dout.getContainingActor().getName() = vectorAdd
-          // + "_"
-          // + dout.getName() // name of output port : c
-          // + "__"
-          // +((AbstractVertex) dout.getFifo().getTarget()).getName() // name of other func : displayvect
-          // + "_"
-          // + dout.getFifo().getTargetPort().getName(); // same as above
-          final Set<String> buffGPU = new LinkedHashSet<>();
+          }
+
+          // GPU Exec
 
           for (final ScapeSchedule sc : cs) {
-
             if (sc.isOnGPU()) {
-              for (final Fifo topGraphFifo : subGraph.getContainingPiGraph().getAllFifos()) {
-                for (final AbstractActor topGraphActors : subGraph.getContainingPiGraph().getActors()) {
-
-                  if (topGraphActors.getName().equals(subGraph.getName())) {
-                    if (topGraphFifo.getTargetPort().getContainingActor().getName().equals(subGraph.getName())
-                        && Integer.parseInt(
-                            topGraphFifo.getSourcePort().getPortRateExpression().getExpressionAsString()) > Integer
-                                .parseInt(
-                                    topGraphFifo.getTargetPort().getPortRateExpression().getExpressionAsString())) {
-
-                      ratePort.put(topGraphFifo.getSourcePort().getName(),
-                          topGraphFifo.getSourcePort().getPortRateExpression().getExpressionAsString());
-
-                      ((AbstractActor) topGraphFifo.getTarget()).setOnGPU(true);
-                      topGraphActors.setOnGPU(true);
-                      sc.getActor().setOnGPU(true);
-                      sc.getActor().getContainingPiGraph().setOnGPU(true);
-                      for (final AbstractActor teeest : sc.getActor().getContainingPiGraph().getContainingPiGraph()
-                          .getActors()) {
-                        teeest.setOnGPU(true);
-                      }
-                      subGraph.setOnGPU(true);
-
-                      for (final AbstractActor subGraphActors : subGraph.getExecutableActors()) {
-                        subGraphActors.setOnGPU(true);
-                      }
-                    }
-                  }
-                }
-              }
+              setActorsOnGPU(subGraph, sc);
+              synchro = processGPUBuffer(cs, sc, buffGPU, GPUFree, gpuToCpu, subGraph, actor, dout);
             }
-
-            // if (sc.getActor().isOnGPU()) {
-            if (subGraph.isOnGPU()) {
-              int nbExec = 1;
-              for (final DataInputPort in : actor.getDataInputPorts()) {
-                nbExec = Integer.parseInt(ratePort.get(in.getName()));
-                String buffname = "";
-                if (in.getFifo().getSource() instanceof final DataInputInterface) {
-                  buffname = "d_" + in.getName();
-                } else if (in.getFifo().isHasADelay()) {
-                  final Delay delay = in.getFifo().getDelay();
-                  buffname = "d_" + delay.getActor().getSetterActor().getName();
-                } else {
-
-                  buffname = "d_" + ((AbstractVertex) in.getFifo().getSource()).getName() + "_"
-                      + in.getFifo().getSourcePort().getName() + "__" + sc.getActor().getName() + "_" + in.getName();
-                }
-
-                final String buffer = in.getIncomingFifo().getType() + " *" + buffname + " = NULL;";
-                final String cudaMallocBuffers = "cudaMalloc(&" + buffname + ", sizeof("
-                    + in.getIncomingFifo().getType() + ") *" + nbExec + ");";
-                final String cudaFreeBuffers = "cudaFree(" + buffname + ");\n";
-
-                buffGPU.add(buffer);
-                buffGPU.add(cudaMallocBuffers);
-                GPUFree.add(cudaFreeBuffers);
-
-                final String cudaMemcpyBuffers = "cudaMemcpy(" + buffname + ", " + in.getName() + ", sizeof("
-                    + in.getIncomingFifo().getType() + ") *" + nbExec + ", cudaMemcpyHostToDevice);\n";
-
-                buffGPU.add(cudaMemcpyBuffers);
-                synchro = true;
-              }
-
-              for (final DataOutputPort out2 : sc.getActor().getDataOutputPorts()) {
-                String buffname = "";
-                if (out2.getFifo().getTarget() instanceof final DataOutputInterface dout2) {
-                  buffname = "d_" + dout2.getName();
-                } else if (out2.getFifo().isHasADelay()) {
-                  final Delay delay = out2.getFifo().getDelay();
-                  buffname = "d_" + delay.getActor().getGetterActor().getName();
-                } else {
-                  buffname = "d_" + sc.getActor().getName() + "_" + out2.getName() + "__"
-                      + ((AbstractVertex) out2.getFifo().getTarget()).getName() + "_"
-                      + out2.getFifo().getTargetPort().getName();
-                }
-
-                final String buffer = dout.getOutgoingFifo().getType() + " *" + buffname + " = NULL;";
-                final String cudaMallocBuffers = "cudaMalloc(&" + buffname + ", sizeof("
-                    + dout.getOutgoingFifo().getType() + ") *" + nbExec + ");";
-                final String cudaFreeBuffers = "cudaFree(" + buffname + ");\n";
-
-                buffGPU.add(buffer);
-                buffGPU.add(cudaMallocBuffers);
-                GPUFree.add(cudaFreeBuffers);
-                synchro = true;
-              }
-            }
-          }
-
-          for (final String i : buffGPU) {
-            build.getBuffer().add(i);
-
           }
 
           build.getBuffer().add(buff);
@@ -198,15 +97,28 @@ public class CodegenScapeBuilder {
       }
     }
 
+    for (final String i : buffGPU) {
+      build.getBuffer().add(i);
+
+    }
+
     if (synchro) {
-      build.getBuffer().add("cudaDeviceSynchronize();");
+      build.getBuffer().add("cudaDeviceSynchronize(); \n");
     }
 
     // build body
     String body = bodyFunction(cs);
 
-    for (final String free : GPUFree) {
-      body += free;
+    if (synchro) {
+      body += "\n // GPU to CPU buffer synchro \n";
+      for (final String toCpu : gpuToCpu) {
+        body += toCpu;
+      }
+
+      body += "\n // GPU buffer free \n";
+      for (final String free : GPUFree) {
+        body += free;
+      }
     }
 
     build.setBody(body);
@@ -238,9 +150,30 @@ public class CodegenScapeBuilder {
               + sc.getActor().getDataOutputPorts().size();
           int countArg = 1;
 
-          final int blockDim = 1;
-          final int gridDim = 10;
-          actor.append(sc.getActor().getName() + "<<<" + blockDim + ", " + gridDim + ">>>(");
+          final Map<String, Long> rateActor = new HashMap<>();
+          for (final DataInputPort in : sc.getActor().getDataInputPorts()) {
+            final Long nbExec = in.getExpression().evaluate();
+            rateActor.put(sc.getActor().getName(), nbExec);
+          }
+          for (final DataOutputPort out2 : sc.getActor().getDataOutputPorts()) {
+            final Long nbExec = out2.getExpression().evaluate();
+
+            rateActor.put(((AbstractVertex) out2.getFifo().getTarget()).getName(), nbExec);
+          }
+
+          final int blockDim = (int) Math.min(1024, rateActor.get(sc.getActor().getName()));
+
+          String funcName = sc.getActor().getName();
+          if (((CHeaderRefinement) ((Actor) sc.getActor()).getRefinement()).getLoopPrototype() != null) {
+            funcName = ((CHeaderRefinement) ((Actor) sc.getActor()).getRefinement()).getLoopPrototype().getName();
+          }
+
+          actor.append(" dim3 block_dim" + sc.getActor().getName() + " (" + blockDim + ", 1, 1); " + "\n dim3 grid_dim"
+              + sc.getActor().getName() + " ( \n " + rateActor.get(sc.getActor().getName()) + "/ block_dim"
+              + sc.getActor().getName() + ".x, \n 1, \n 1); \n");
+
+          actor.append(
+              funcName + "<<<grid_dim" + sc.getActor().getName() + ", block_dim" + sc.getActor().getName() + ">>>(");
 
           for (final ConfigInputPort cfg : sc.getActor().getConfigInputPorts()) {
             actor.append(((AbstractVertex) cfg.getIncomingDependency().getSource()).getName());
@@ -252,7 +185,7 @@ public class CodegenScapeBuilder {
 
           for (final DataInputPort in : sc.getActor().getDataInputPorts()) {
             String buffname = "";
-            if (in.getFifo().getSource() instanceof final DataInputInterface din) {
+            if (in.getFifo().getSource() instanceof final DataInputInterface) {
 
               buffname = "d_" + in.getName();
             } else if (in.getFifo().isHasADelay()) {
@@ -287,15 +220,15 @@ public class CodegenScapeBuilder {
             }
             countArg++;
           }
-          actor.append("); \n");
+          actor.append("); \n\n");
           bodyGPU.append(actor, "");
           synchro = true;
 
         } else {
 
           boolean isGPU = false;
-          for (final AbstractActor prout : sc.getActor().getContainingPiGraph().getContainingPiGraph().getActors()) {
-            if (prout.isOnGPU()) {
+          for (final AbstractActor act : sc.getActor().getContainingPiGraph().getContainingPiGraph().getActors()) {
+            if (act.isOnGPU()) {
               isGPU = true;
             }
           }
@@ -330,7 +263,7 @@ public class CodegenScapeBuilder {
 
     }
     if (synchro) {
-      body.append("cudaDeviceSynchronize(); \n");
+      bodyGPU.append("cudaDeviceSynchronize(); \n");
       return bodyGPU.toString();
     }
 
@@ -640,6 +573,128 @@ public class CodegenScapeBuilder {
 
     funcLoop.append(")");
     return funcLoop.toString();
+  }
+
+  private void setActorsOnGPU(PiGraph subGraph, ScapeSchedule sc) {
+    for (final Fifo topGraphFifo : subGraph.getContainingPiGraph().getAllFifos()) {
+      for (final AbstractActor topGraphActors : subGraph.getContainingPiGraph().getActors()) {
+
+        if (topGraphActors.getName().equals(subGraph.getName())) {
+
+          final boolean force = true;
+
+          if ((topGraphFifo.getTargetPort().getContainingActor().getName().equals(subGraph.getName())
+              && topGraphFifo.getSourcePort().getPortRateExpression().evaluate() > topGraphFifo.getTargetPort()
+                  .getPortRateExpression().evaluate())
+              || force) {
+
+            ((AbstractActor) topGraphFifo.getTarget()).setOnGPU(true);
+            topGraphActors.setOnGPU(true);
+            sc.getActor().setOnGPU(true);
+            sc.getActor().getContainingPiGraph().setOnGPU(true);
+            sc.getActor().getContainingPiGraph().getContainingPiGraph().getActors()
+                .forEach(actor -> actor.setOnGPU(true));
+            subGraph.setOnGPU(true);
+            subGraph.getExecutableActors().forEach(actor -> actor.setOnGPU(true));
+          }
+        }
+      }
+    }
+  }
+
+  private boolean processGPUBuffer(List<ScapeSchedule> cs, ScapeSchedule sc, Set<String> buffGPU, Set<String> GPUFree,
+      Set<String> gpuToCpu, PiGraph subGraph, AbstractActor actor, DataOutputPort dout) {
+
+    boolean synchro = false;
+
+    if (subGraph.isOnGPU()) {
+      buffGPU.add("// GPU Input Buffer Declaration \n");
+      synchro = processInputPorts(actor, sc, buffGPU, GPUFree, cs);
+
+      buffGPU.add("// GPU Output Buffer Declaration \n");
+      synchro = processOutputPorts(actor, sc, buffGPU, GPUFree, gpuToCpu, cs, dout);
+    }
+
+    return synchro;
+
+  }
+
+  private boolean processOutputPorts(AbstractActor actor, ScapeSchedule sc, Set<String> buffGPU, Set<String> GPUFree,
+      Set<String> gpuToCpu, List<ScapeSchedule> cs, DataOutputPort dout) {
+
+    boolean synchro = false;
+    for (final DataOutputPort out2 : sc.getActor().getDataOutputPorts()) {
+      String buffname = "";
+      final Long nbExec = out2.getExpression().evaluate();
+      if (out2.getFifo().getTarget() instanceof final DataOutputInterface dout2) {
+        buffname = "d_" + dout2.getName();
+        String cudaToCPU = "cudaMemcpy(" + dout2.getName() + ", " + buffname + ", sizeof("
+            + dout.getOutgoingFifo().getType() + ") *" + nbExec + ", cudaMemcpyDeviceToHost);\n";
+        cudaToCPU += "cudaDeviceSynchronize(); \n";
+        gpuToCpu.add(cudaToCPU);
+      } else if (out2.getFifo().isHasADelay()) {
+        final Delay delay = out2.getFifo().getDelay();
+        buffname = "d_" + delay.getActor().getGetterActor().getName();
+      } else if (!sc.getActor().getName().equals(((AbstractVertex) out2.getFifo().getTarget()).getName())) {
+        buffname = "d_" + sc.getActor().getName() + "_" + out2.getName() + "__"
+            + ((AbstractVertex) out2.getFifo().getTarget()).getName() + "_" + out2.getFifo().getTargetPort().getName();
+      }
+
+      if (!buffname.equals("")) {
+        final String buffer = dout.getOutgoingFifo().getType() + " *" + buffname + " = NULL;";
+        final String cudaMallocBuffers = "cudaMalloc(&" + buffname + ", sizeof(" + dout.getOutgoingFifo().getType()
+            + ") *" + nbExec + ");";
+        final String cudaFreeBuffers = "cudaFree(" + buffname + ");\n";
+
+        buffGPU.add(buffer);
+        buffGPU.add(cudaMallocBuffers);
+        GPUFree.add(cudaFreeBuffers);
+        synchro = true;
+      }
+    }
+    return synchro;
+  }
+
+  private boolean processInputPorts(AbstractActor actor, ScapeSchedule sc, Set<String> buffGPU, Set<String> GPUFree,
+      List<ScapeSchedule> cs) {
+
+    boolean synchro = false;
+    for (final DataInputPort in : actor.getDataInputPorts()) {
+      final Long nbExec = in.getExpression().evaluate();
+      String buffname = "";
+      if (in.getFifo().getSource() instanceof final DataInputInterface) {
+        buffname = "d_" + in.getName();
+      } else if (in.getFifo().isHasADelay()) {
+        final Delay delay = in.getFifo().getDelay();
+        buffname = "d_" + delay.getActor().getSetterActor().getName();
+      } else if (!sc.getActor().getName().equals(((AbstractVertex) in.getFifo().getSource()).getName())) {
+
+        buffname = "d_" + ((AbstractVertex) in.getFifo().getSource()).getName() + "_"
+            + in.getFifo().getSourcePort().getName() + "__" + sc.getActor().getName() + "_" + in.getName();
+      }
+
+      if (!buffname.equals("")) {
+        final String buffer = in.getIncomingFifo().getType() + " *" + buffname + " = NULL;";
+        final String cudaMallocBuffers = "cudaMalloc(&" + buffname + ", sizeof(" + in.getIncomingFifo().getType()
+            + ") *" + nbExec + ");";
+        final String cudaFreeBuffers = "cudaFree(" + buffname + ");\n";
+
+        buffGPU.add(buffer);
+        buffGPU.add(cudaMallocBuffers);
+        GPUFree.add(cudaFreeBuffers);
+
+        if (cs.get(0) != null && sc.getActor().getName().equals(cs.get(0).getActor().getName())) {
+          final String cudaMemcpyBuffers = "cudaMemcpy(" + buffname + ", " + in.getName() + ", sizeof("
+              + in.getIncomingFifo().getType() + ") *" + nbExec + ", cudaMemcpyHostToDevice);\n";
+
+          buffGPU.add(cudaMemcpyBuffers);
+        }
+
+        synchro = true;
+      }
+
+    }
+    return synchro;
   }
 
 }

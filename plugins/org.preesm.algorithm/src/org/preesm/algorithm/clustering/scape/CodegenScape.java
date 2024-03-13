@@ -194,12 +194,6 @@ public class CodegenScape {
     final String body = build.getBody();
     result.append(body + "\n\n ", "");
 
-    result.append("// free buffer  \n ", "");
-    for (final String buffer : build.getDynmicBuffer()) {
-      final String buff = buffer.split("\\s|\\[|\\]")[1];
-      result.append("free(" + buff + "); \n ", "");
-    }
-
     result.append("}\n", "");
 
     return result;
