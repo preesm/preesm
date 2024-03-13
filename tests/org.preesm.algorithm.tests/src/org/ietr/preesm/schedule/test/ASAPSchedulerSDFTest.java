@@ -47,7 +47,7 @@ import org.preesm.algorithm.throughput.sdf.tools.GraphStructureHelper;
  * @author hderoui
  *
  */
-public class ASAPScheduler_SDFTest {
+public class ASAPSchedulerSDFTest {
 
   @Test
   public void testIterationDurationShouldBeComputed() {
