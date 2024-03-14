@@ -429,14 +429,12 @@ public class GraphStructureHelperTest {
     final List<SDFAbstractVertex> partialTopologicalSorting = GraphStructureHelper
         .partialTopologicalSorting(dag.getVertex("0"));
 
-    // {0=0.0, 1=3.0, 2=9.0, 3=14.0, 4=14.0, 5=14.0}
     final Map<String,
-        Double> ExpectedAllLongestPaths = Map.of("0", 0.0, "1", 3.0, "2", 9.0, "3", 14.0, "4", 14.0, "5", 14.0);
+        Double> expectedAllLongestPaths = Map.of("0", 0.0, "1", 3.0, "2", 9.0, "3", 14.0, "4", 14.0, "5", 14.0);
     final Map<String, Double> allLongestPaths = GraphStructureHelper.getLongestPathToAllTargets(dag.getVertex("0"),
         null, partialTopologicalSorting);
-    Assert.assertEquals(ExpectedAllLongestPaths, allLongestPaths);
+    Assert.assertEquals(expectedAllLongestPaths, allLongestPaths);
 
-    // 15
     final double longestPath = GraphStructureHelper.getLongestPath(dag, null, null);
     Assert.assertEquals(15.0, longestPath, 0.1);
   }
