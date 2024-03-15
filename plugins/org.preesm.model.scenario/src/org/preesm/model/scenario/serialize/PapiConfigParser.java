@@ -98,7 +98,7 @@ public class PapiConfigParser {
   private List<PapiEventModifier>    modifiers;
 
   /**
-   * @return
+   * @return PapiEventInfo
    *
    */
   public final PapiEventInfo parse(final String filePath) {

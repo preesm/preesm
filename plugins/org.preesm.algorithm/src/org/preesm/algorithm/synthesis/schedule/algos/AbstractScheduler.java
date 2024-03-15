@@ -90,7 +90,8 @@ public abstract class AbstractScheduler implements IScheduler {
     if (!PiGraphSRDAGChecker.isPiGraphSRADG(piGraph)) {
       throw new PreesmSynthesisException(
           "Synthesis can be applied only on SRADG graphs (no hierarchy, single-rate, no cycles, no delays). Please "
-          + "consider using the output of the pisdf-srdag workflow task as an output of the synthesis workflow task.");
+              + "consider using the output of the pisdf-srdag workflow task as an output of  "
+              + "the synthesis workflow task.");
     }
 
     /*
@@ -145,14 +146,14 @@ public abstract class AbstractScheduler implements IScheduler {
           + "' which is not in the authorized components list '" + possibleMappings + "'.");
     }
 
-    if (actor instanceof InitActor) {
-      final AbstractActor endReference = ((InitActor) actor).getEndReference();
+    if (actor instanceof final InitActor initActor) {
+      final AbstractActor endReference = initActor.getEndReference();
       final List<ComponentInstance> targetMappings = new ArrayList<>(mapping.getMapping(endReference));
       if (!targetMappings.equals(actorMapping)) {
         throw new PreesmSynthesisException("Init and End actors are not mapped onto the same PE.");
       }
-    } else if (actor instanceof EndActor) {
-      final AbstractActor initReference = ((EndActor) actor).getInitReference();
+    } else if (actor instanceof final EndActor endActor) {
+      final AbstractActor initReference = endActor.getInitReference();
       final List<ComponentInstance> targetMappings = new ArrayList<>(mapping.getMapping(initReference));
       if (!targetMappings.equals(actorMapping)) {
         throw new PreesmSynthesisException("Init and End actors are not mapped onto the same PE.");
