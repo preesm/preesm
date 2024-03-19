@@ -40,7 +40,7 @@ public class CodegenScapeBuilder {
     final Map<AbstractVertex, Long> brv = PiBRV.compute(subGraph, BRVMethod.LCM);
     // build initial function
     String funcI = " void " + subGraph.getName() + "Init()";
-    if (subGraph.getContainingPiGraph().getName().contains("sub")) {
+    if (subGraph.getContainingPiGraph() != null && subGraph.getContainingPiGraph().getName().contains("sub")) {
       funcI = " void " + "Cluster_" + subGraph.getContainingPiGraph().getName() + "_" + subGraph.getName() + "Init()";
     }
     build.setInitFunc(funcI);
@@ -109,7 +109,7 @@ public class CodegenScapeBuilder {
         body.append(actor);
         body.append(memcpy);
         for (int i = 0; i < sc.getEndLoopNb(); i++) {
-          body.append("\n }");
+          body.append("} \n");
         }
       }
     }
@@ -399,7 +399,7 @@ public class CodegenScapeBuilder {
    */
   private String loopFunction(PiGraph subGraph) {
     final StringBuilder funcLoop = new StringBuilder();
-    if (!subGraph.getContainingPiGraph().getName().contains("sub")) {
+    if (subGraph.getContainingPiGraph() == null || !subGraph.getContainingPiGraph().getName().contains("sub")) {
       funcLoop.append("void " + subGraph.getName() + "(");
     } else {
       funcLoop

@@ -224,9 +224,11 @@ public class CodegenEngine {
 
     this.registeredPrintersAndBlocks.computeIfAbsent(foundPrinter, k -> new ArrayList<>());
 
-    final List<Block> blocks = this.registeredPrintersAndBlocks.get(foundPrinter);
-    blocks.add(coreBlock);
-
+    // prevents the generation of a GPU file, the code is already generated when the clusters are created
+    if (!coreType.equals("cuda")) {
+      final List<Block> blocks = this.registeredPrintersAndBlocks.get(foundPrinter);
+      blocks.add(b);
+    }
   }
 
   private Set<IConfigurationElement> getLanguagePrinter(final String selectedPrinter) {

@@ -292,7 +292,8 @@ public class PiSDFSubgraphBuilder extends PiMMSwitch<Boolean> {
       this.subGraph.addParameter(inputInterface);
     }
 
-    if (this.subGraph.getName().matches("^sub\\d+")) {
+    if (this.subGraph.getName().matches("^sub\\d+")
+        || this.subGraph.getName().matches(".*srv.*|.*urc.*|.*loop.|.*coarse.*")) {
       // Setup the input configuration interface
       Boolean interfaceExist = false;
       ConfigInputInterface inputInterface = PiMMUserFactory.instance.createConfigInputInterface();
