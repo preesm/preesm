@@ -8,6 +8,7 @@ Bundle-Vendor: IETR / INSA Rennes - VAADER
 Bundle-RequiredExecutionEnvironment: JavaSE-17
 Require-Bundle: org.junit;bundle-version="4.13.2",
  org.mockito.mockito-core,
+ org.eclipse.xtext.xbase.lib,
  org.preesm.model.pisdf,
  org.preesm.model.slam,
  org.preesm.model.scenario,
