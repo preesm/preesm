@@ -40,7 +40,6 @@
 package org.preesm.ui.pisdf.features;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
@@ -211,7 +210,7 @@ public class SetActorRefinementFeature extends AbstractCustomFeature {
     if (acceptPiFiles) {
       fileExtensions.add("pi");
     }
-    fileExtensions.addAll(Arrays.asList(RefinementChecker.acceptedHeaderExtensions));
+    fileExtensions.addAll(RefinementChecker.getAcceptedHeaderExtensions());
     return FileUtils.browseFiles(PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell(), dialogTitle, question,
         fileExtensions);
   }
@@ -231,7 +230,7 @@ public class SetActorRefinementFeature extends AbstractCustomFeature {
       return;
     }
 
-    boolean acceptPiFiles = actor instanceof Actor;
+    final boolean acceptPiFiles = actor instanceof Actor;
     boolean validRefinement = false;
     do {
       // If the file is a C/C++ header
