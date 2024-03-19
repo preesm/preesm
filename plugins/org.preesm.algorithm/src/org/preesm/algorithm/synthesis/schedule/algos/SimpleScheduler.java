@@ -90,6 +90,7 @@ public class SimpleScheduler extends AbstractScheduler {
         cmpSchedules.put(targetCmpIntance, createActorSchedule);
         topParallelSchedule.getScheduleTree().add(createActorSchedule);
       }
+
       // append the actor in the schedule of the component
       cmpSchedules.get(targetCmpIntance).getActorList().add(orderedActor);
     }

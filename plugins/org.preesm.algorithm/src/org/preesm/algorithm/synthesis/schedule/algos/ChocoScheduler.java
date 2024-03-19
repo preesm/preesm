@@ -69,14 +69,13 @@ import org.preesm.model.slam.check.SlamDesignPEtypeChecker;
  * This class performs scheduling thanks to a choco constraint programming formulation.
  * <p>
  * Be aware that the mapping constraints specified by the user will not be respected!
- * 
+ *
  * @author ahonorat
  */
 public class ChocoScheduler extends PeriodicScheduler {
 
-  public static final long    maxSolution  = 100L;
-  public static final long    maxSolveTime = 3600000L; // 1 hour (in ms)
-  public static final boolean verbose      = true;
+  private static final long    MAX_SOLUTION = 100L;
+  private static final boolean VERBOSE      = true;
 
   @Override
   protected SynthesisResult exec(PiGraph piGraph, Design slamDesign, Scenario scenario) {
@@ -85,11 +84,11 @@ public class ChocoScheduler extends PeriodicScheduler {
       throw new PreesmSchedulingException("This task must be called with a homogeneous CPU architecture, abandon.");
     }
 
-    int nbCores = slamDesign.getProcessingElements().get(0).getInstances().size();
-    PreesmLogger.getLogger().log(Level.INFO, "Found " + nbCores + " cores.");
+    final int nbCores = slamDesign.getProcessingElements().get(0).getInstances().size();
+    PreesmLogger.getLogger().info(() -> "Found " + nbCores + " cores.");
 
-    long graphPeriod = piGraph.getPeriod().evaluate();
-    PreesmLogger.getLogger().log(Level.INFO, "Graph period is: " + graphPeriod);
+    final long graphPeriod = piGraph.getPeriod().evaluate();
+    PreesmLogger.getLogger().info(() -> "Graph period is: " + graphPeriod);
 
     this.piGraph = piGraph;
     this.slamDesign = slamDesign;
@@ -101,16 +100,16 @@ public class ChocoScheduler extends PeriodicScheduler {
     // initializes component operators and related attributes
     cores = new ArrayList<>();
     ciTOca = new HashMap<>();
-    List<List<Task>> coreSchedules = new ArrayList<>();
+    final List<List<Task>> coreSchedules = new ArrayList<>();
 
     // the constraints in scenario are actually NOT respected in this scheduler
     possibleMappings = new TreeMap<>(new AbstractActorNameComparator());
     topParallelSchedule = ScheduleFactory.eINSTANCE.createParallelHiearchicalSchedule();
     resultMapping = MappingFactory.eINSTANCE.createMapping();
-    for (ComponentInstance ci : slamDesign.getProcessingElements().get(0).getInstances()) {
+    for (final ComponentInstance ci : slamDesign.getProcessingElements().get(0).getInstances()) {
       final ActorSchedule createActorSchedule = ScheduleFactory.eINSTANCE.createSequentialActorSchedule();
       topParallelSchedule.getScheduleTree().add(createActorSchedule);
-      CoreAbstraction ca = new CoreAbstraction(ci, createActorSchedule);
+      final CoreAbstraction ca = new CoreAbstraction(ci, createActorSchedule);
       cores.add(ca);
       ciTOca.put(ci, ca);
       coreSchedules.add(new ArrayList<>());
@@ -126,11 +125,11 @@ public class ChocoScheduler extends PeriodicScheduler {
         "Starting to schedule and map " + absGraph.vertexSet().size() + " actors.");
 
     // initializes total load, source and sinks nodes
-    Ctot = 0;
+    cTot = 0;
     firstNodes = new ArrayList<>();
     lastNodes = new ArrayList<>();
-    for (VertexAbstraction va : absGraph.vertexSet()) {
-      Ctot += va.load;
+    for (final VertexAbstraction va : absGraph.vertexSet()) {
+      cTot += va.load;
       if (absGraph.incomingEdgesOf(va).isEmpty()) {
         firstNodes.add(va);
       }
@@ -142,33 +141,33 @@ public class ChocoScheduler extends PeriodicScheduler {
     // initializes and check horizon
     horizon = graphPeriod;
     if (horizon <= 0) {
-      horizon = Ctot;
-      PreesmLogger.getLogger().log(Level.INFO,
-          "No period found: scheduling performed with sequential worst case: " + Ctot + " time unit.");
-    } else if (Ctot / (double) nbCores > horizon) {
+      horizon = cTot;
+      PreesmLogger.getLogger()
+          .info(() -> "No period found: scheduling performed with sequential worst case: " + cTot + " time unit.");
+    } else if (cTot / (double) nbCores > horizon) {
       throw new PreesmSchedulingException(
           "Your graph is clearly not schedulable: utilization factor is higher than number of cores. Total load: "
-              + Ctot);
+              + cTot);
     }
 
     // initializes min/max/averageStartTime of all actors (and updates the periodic one)
     setAbsGraph(absGraph, horizon, firstNodes, lastNodes);
 
-    SortedMap<Integer, Task> tasks = createTasksFromAbsGraph(absGraph);
+    final SortedMap<Integer, Task> tasks = createTasksFromAbsGraph(absGraph);
 
-    long solverHorizon = (graphPeriod > 0) ? 0 : horizon;
+    final long solverHorizon = (graphPeriod > 0) ? 0 : horizon;
 
-    ChocoSchedModel csm = new ChocoSchedModel("testExprt", tasks, nbCores, Ints.saturatedCast(solverHorizon));
-    Model schedModel = csm.generateModel();
-    PreesmLogger.getLogger().info("Model built with " + nbCores + " cores.");
+    final ChocoSchedModel csm = new ChocoSchedModel("testExprt", tasks, nbCores, Ints.saturatedCast(solverHorizon));
+    final Model schedModel = csm.generateModel();
+    PreesmLogger.getLogger().info(() -> "Model built with " + nbCores + " cores.");
 
     // use ParallelPortfolio?
-    Solver solver = schedModel.getSolver();
+    final Solver solver = schedModel.getSolver();
     // solver.limitTime(maxSolveTime);
-    solver.limitSolution(maxSolution);
+    solver.limitSolution(MAX_SOLUTION);
     long time = System.nanoTime();
 
-    Solution s = new Solution(schedModel);
+    final Solution s = new Solution(schedModel);
     while (solver.solve()) {
       s.record();
       // if there was a graph period, then we just look for one solution
@@ -177,29 +176,29 @@ public class ChocoScheduler extends PeriodicScheduler {
       }
     }
 
-    if (verbose) {
+    if (VERBOSE) {
       solver.printStatistics();
     }
 
-    long solutionCount = solver.getSolutionCount();
+    final long solutionCount = solver.getSolutionCount();
 
     if (solutionCount > 0) {
       // do something, e.g. print out variable values
       time = System.nanoTime() - time;
       PreesmLogger.getLogger().info("Time+ " + Math.round(time / 1e6) + " ms.");
-      PreesmLogger.getLogger().info("Model solved with " + nbCores + " cores.");
+      PreesmLogger.getLogger().info(() -> "Model solved with " + nbCores + " cores.");
 
       if (graphPeriod <= 0) {
         // in this case there is an objective in the model and several iterations, print the values
-        int latency = solver.getObjectiveManager().getBestSolutionValue().intValue();
-        PreesmLogger.getLogger().info("Model solved with latency of " + latency + " time units.");
-        PreesmLogger.getLogger().info("Solver iterated " + solutionCount + " times to get a good result.");
+        final int latency = solver.getObjectiveManager().getBestSolutionValue().intValue();
+        PreesmLogger.getLogger().info(() -> "Model solved with latency of " + latency + " time units.");
+        PreesmLogger.getLogger().info(() -> "Solver iterated " + solutionCount + " times to get a good result.");
       }
 
       for (int i = 0; i < csm.nbTasks; i++) {
-        int start = s.getIntVal(csm.startTimeVars[i]);
-        Task t = tasks.get(i);
-        VertexAbstraction va = t.va;
+        final int start = s.getIntVal(csm.startTimeVars[i]);
+        final Task t = tasks.get(i);
+        final VertexAbstraction va = t.va;
         // update start time
         va.startTime = start;
         t.st = start;
@@ -210,7 +209,7 @@ public class ChocoScheduler extends PeriodicScheduler {
               throw new PreesmSchedulingException("Mapping error for task: " + i + "\n");
             }
             core = j;
-            CoreAbstraction ca = cores.get(j);
+            final CoreAbstraction ca = cores.get(j);
             // update mapping directly
             resultMapping.getMappings().put(va.aa, ECollections.singletonEList(ca.ci));
 
@@ -234,8 +233,8 @@ public class ChocoScheduler extends PeriodicScheduler {
 
     // recopy task in schedule
     for (int j = 0; j < nbCores; j++) {
-      CoreAbstraction ca = cores.get(j);
-      for (Task t : coreSchedules.get(j)) {
+      final CoreAbstraction ca = cores.get(j);
+      for (final Task t : coreSchedules.get(j)) {
         ca.coreSched.getActorList().add(t.va.aa);
       }
     }
@@ -246,7 +245,7 @@ public class ChocoScheduler extends PeriodicScheduler {
 
   /**
    * Stores info for the choco model.
-   * 
+   *
    * @author ahonorat
    *
    */
@@ -285,27 +284,27 @@ public class ChocoScheduler extends PeriodicScheduler {
     // set ids and create task set
     List<VertexAbstraction> toVisit = new LinkedList<>(firstNodes);
     while (!toVisit.isEmpty()) {
-      VertexAbstraction va = toVisit.remove(0);
-      Set<Integer> predId = new HashSet<>();
+      final VertexAbstraction va = toVisit.remove(0);
+      final Set<Integer> predId = new HashSet<>();
       // TODO unsafe cast to int
-      Task t = new Task(tid, Ints.saturatedCast(va.load), Ints.saturatedCast(va.minStartTime),
+      final Task t = new Task(tid, Ints.saturatedCast(va.load), Ints.saturatedCast(va.minStartTime),
           Ints.saturatedCast(va.maxStartTime), predId, va);
       res.put(tid, t);
       vaTOtask.put(va, t);
       tid++;
 
-      for (EdgeAbstraction ea : absGraph.outgoingEdgesOf(va)) {
-        VertexAbstraction oppositeva = absGraph.getEdgeTarget(ea);
+      for (final EdgeAbstraction ea : absGraph.outgoingEdgesOf(va)) {
+        final VertexAbstraction oppositeva = absGraph.getEdgeTarget(ea);
         updateNbVisits(absGraph, oppositeva, false, toVisit);
       }
     }
     // set predId
     toVisit = new LinkedList<>(lastNodes);
     while (!toVisit.isEmpty()) {
-      VertexAbstraction va = toVisit.remove(0);
-      Task tva = vaTOtask.get(va);
-      for (EdgeAbstraction ea : absGraph.incomingEdgesOf(va)) {
-        VertexAbstraction oppositeva = absGraph.getEdgeSource(ea);
+      final VertexAbstraction va = toVisit.remove(0);
+      final Task tva = vaTOtask.get(va);
+      for (final EdgeAbstraction ea : absGraph.incomingEdgesOf(va)) {
+        final VertexAbstraction oppositeva = absGraph.getEdgeSource(ea);
         tva.predId.add(vaTOtask.get(oppositeva).id);
         tva.allPredId.add(vaTOtask.get(oppositeva).id);
         updateNbVisits(absGraph, oppositeva, true, toVisit);
@@ -314,10 +313,10 @@ public class ChocoScheduler extends PeriodicScheduler {
     // set allPredId
     toVisit = new LinkedList<>(firstNodes);
     while (!toVisit.isEmpty()) {
-      VertexAbstraction va = toVisit.remove(0);
-      Task tva = vaTOtask.get(va);
-      for (EdgeAbstraction ea : absGraph.outgoingEdgesOf(va)) {
-        VertexAbstraction oppositeva = absGraph.getEdgeTarget(ea);
+      final VertexAbstraction va = toVisit.remove(0);
+      final Task tva = vaTOtask.get(va);
+      for (final EdgeAbstraction ea : absGraph.outgoingEdgesOf(va)) {
+        final VertexAbstraction oppositeva = absGraph.getEdgeTarget(ea);
         vaTOtask.get(oppositeva).allPredId.addAll(tva.predId);
         updateNbVisits(absGraph, oppositeva, false, toVisit);
       }
@@ -328,13 +327,14 @@ public class ChocoScheduler extends PeriodicScheduler {
 
   // ascending startTime
   protected static void insertTaskInSchedule(Task t, List<Task> queue) {
-    ListIterator<Task> it = queue.listIterator();
+    final ListIterator<Task> it = queue.listIterator();
     while (it.hasNext()) {
-      Task next = it.next();
+      final Task next = it.next();
       if (next.st < t.st) {
         // continue until we are smaller than the next start time
         continue;
-      } else if ((next.st > t.st) || ((next.st == t.st) && (next.id > t.id))) {
+      }
+      if ((next.st > t.st) || ((next.st == t.st) && (next.id > t.id))) {
         // at equal start time (may happen if some load = 0), we respect the graph topological order
         it.previous();
         break;
