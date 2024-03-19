@@ -77,7 +77,7 @@ import org.preesm.model.pisdf.Refinement;
 public class RefinementChecker extends AbstractPiSDFObjectChecker {
 
   /** All accepted header file extensions. */
-  public static final String[] acceptedHeaderExtensions = { "h", "hpp", "hxx", "h++", "hh", "H" };
+  private static final String[] acceptedHeaderExtensions = { "h", "hpp", "hxx", "h++", "hh", "H" };
 
   /** In templates, the FIFO_TYPE can be replaced automatically only if starting with this prefix. */
   public static final String FIFO_TYPE_TEMPLATED_PREFIX = "FIFO_TYPE_";
@@ -90,13 +90,17 @@ public class RefinementChecker extends AbstractPiSDFObjectChecker {
 
   /**
    * Check if the given C/C++ header file extension is supported.
-   * 
+   *
    * @param extension
    *          The extension to check (as "hxx" for "MyHeader.hxx").
    * @return Whether or not the file extension is supported.
    */
   public static boolean isAsupportedHeaderFileExtension(final String extension) {
     return Arrays.asList(acceptedHeaderExtensions).stream().anyMatch(x -> x.equals(extension));
+  }
+
+  public static List<String> getAcceptedHeaderExtensions() {
+    return Collections.unmodifiableList(Arrays.asList(acceptedHeaderExtensions));
   }
 
   /**
