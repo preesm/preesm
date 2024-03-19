@@ -33,6 +33,7 @@ import org.preesm.model.pisdf.brv.PiBRV;
 import org.preesm.model.pisdf.check.CheckerErrorLevel;
 import org.preesm.model.pisdf.check.PiGraphConsistenceChecker;
 import org.preesm.model.pisdf.factory.PiMMUserFactory;
+import org.preesm.model.pisdf.util.PiSDFSubgraphBuilder;
 import org.preesm.model.scenario.Scenario;
 import org.preesm.model.scenario.ScenarioFactory;
 import org.preesm.model.scenario.util.ScenarioUserFactory;
@@ -87,6 +88,7 @@ public class ClusteringScape extends ClusterPartitioner {
     coarseCluster();
     // Pattern identification
     patternIDs();
+
     final PiGraph multiBranch = new MultiBranch(graph).removeInitialSource();
     scenario.setAlgorithm(multiBranch);
     final Map<AbstractVertex, Long> brv = PiBRV.compute(graph, BRVMethod.LCM);
@@ -125,33 +127,64 @@ public class ClusteringScape extends ClusterPartitioner {
    */
   private void executeMode0() {
     final Long fulcrumLevel = fulcrumLevelID - 1;
-    for (final PiGraph g : hierarchicalLevelOrdered.get(fulcrumLevel)) {
-      PiGraph newCluster = null;
-      boolean isHasCluster = true;
-      do {
-        final int size = graph.getAllChildrenGraphs().size();
-        final Map<AbstractVertex, Long> rv = PiBRV.compute(g, BRVMethod.LCM);
-        // URC transfo
-        newCluster = new ClusterPartitionerURC(scenario, coreEquivalent.intValue(), rv, clusterId, scapeMode).cluster();
-        if (graph.getAllChildrenGraphs().size() == size) {
-          // SRV transfo
-          newCluster = new ClusterPartitionerSRV(scenario, coreEquivalent.intValue(), rv, clusterId, scapeMode)
+    if (hierarchicalLevelOrdered.containsKey(fulcrumLevel)) {
+      for (final PiGraph g : hierarchicalLevelOrdered.get(fulcrumLevel)) {
+        PiGraph newCluster = null;
+        boolean isHasCluster = true;
+        do {
+          final int size = graph.getAllChildrenGraphs().size();
+          final Map<AbstractVertex, Long> rv = PiBRV.compute(g, BRVMethod.LCM);
+          // URC transfo
+          newCluster = new ClusterPartitionerURC(scenario, coreEquivalent.intValue(), rv, clusterId, scapeMode)
               .cluster();
-        }
-        if (graph.getAllChildrenGraphs().size() == size) {
-          isHasCluster = false;
-        }
-        if (!newCluster.getChildrenGraphs().isEmpty()) {
-          final Long mem = mem(newCluster.getChildrenGraphs().get(0));
-          final String clusterName = newCluster.getChildrenGraphs().get(0).getName();
-          cluster(newCluster.getChildrenGraphs().get(0), scenario, stackSize);
-          clusterMemory.put(findCluster(clusterName), mem);
-          clusterId++;
-        }
-      } while (isHasCluster);
+          if (graph.getAllChildrenGraphs().size() == size) {
+            // SRV transfo
+            newCluster = new ClusterPartitionerSRV(scenario, coreEquivalent.intValue(), rv, clusterId, scapeMode)
+                .cluster();
+          }
+          if (graph.getAllChildrenGraphs().size() == size) {
+            isHasCluster = false;
+          }
+          if (!newCluster.getChildrenGraphs().isEmpty()) {
+            final Long mem = mem(newCluster.getChildrenGraphs().get(0));
+            final String clusterName = newCluster.getChildrenGraphs().get(0).getName();
+            cluster(newCluster.getChildrenGraphs().get(0), scenario, stackSize);
+            clusterMemory.put(findCluster(clusterName), mem);
+            clusterId++;
+          }
+        } while (isHasCluster);
+      }
     }
+    topCluster();
   }
 
+  /**
+   * SCAPE 0 has a not clever hierarchical management i.e. the identification of the clusters is done on a Parameterized
+   * hierarchical level i.e. if you want to roughly group all the graph the parameter must be greater than the number of
+   * hierarchical levels in the graph here the function generates a sub-graph of the top hierarchical level once all the
+   * children have been grouped.
+   */
+  private void topCluster() {
+    if (levelNumber > hierarchicalLevelOrdered.size()) {
+
+      final List<AbstractActor> graphTOPs = graph.getActors();
+      final PiGraph subGraph = new PiSDFSubgraphBuilder(this.graph, graphTOPs, "coarse_" + clusterId).build();
+      final Long mem = mem(subGraph);
+      final String clusterName = subGraph.getName();
+      cluster(subGraph, scenario, stackSize);
+      clusterMemory.put(findCluster(clusterName), mem);
+    }
+
+  }
+
+  /**
+   * The function retrieve the clustered original actor based on name matching in order return clustered memory for
+   * later analysis
+   *
+   * @param clusterName
+   *          name of the cluster
+   * @return original actor
+   */
   private Actor findCluster(String clusterName) {
     for (final AbstractActor a : graph.getAllExecutableActors()) {
       if (a.getName().equals(clusterName)) {
@@ -328,13 +361,14 @@ public class ClusteringScape extends ClusterPartitioner {
     final Prototype oEmptyPrototype = new Prototype();
     oEmptyPrototype.setIsStandardC(true);
     final String strPath = scenario.getCodegenDirectory();
-    cHeaderRefinement.setFilePath(
-        strPath + "/Cluster_" + ((PiGraph) g.getContainingGraph()).getName() + "_" + oEmpty.getName() + ".h");
+    final String nameGraph = (((PiGraph) g.getContainingGraph()) != null) ? ((PiGraph) g.getContainingGraph()).getName()
+        : g.getName();
+    cHeaderRefinement.setFilePath(strPath + "/Cluster_" + nameGraph + "_" + oEmpty.getName() + ".h");
     final FunctionPrototype functionPrototype = PiMMUserFactory.instance.createFunctionPrototype();
     cHeaderRefinement.setLoopPrototype(functionPrototype);
     functionPrototype.setName(oEmpty.getName());
 
-    if (((PiGraph) g.getContainingGraph()).getName().matches("^sub\\d+")) {
+    if (nameGraph.matches("^sub\\d+")) {
       functionPrototype.setName("Cluster_" + ((PiGraph) g.getContainingGraph()).getName() + "_" + oEmpty.getName());
     }
     // fill port

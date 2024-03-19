@@ -275,7 +275,8 @@ public class PiSDFSubgraphBuilder extends PiMMSwitch<Boolean> {
   public Boolean caseConfigInputPort(ConfigInputPort object) {
     // case subgraph from simSDP, cfg are named and merged correctly
 
-    if (this.subGraph.getName().matches("^sub\\d+")) {
+    if (this.subGraph.getName().matches("^sub\\d+")
+        || this.subGraph.getName().matches(".*srv.*|.*urc.*|.*loop.|.*coarse.*")) {
       // Setup the input configuration interface
       Boolean interfaceExist = false;
       ConfigInputInterface inputInterface = PiMMUserFactory.instance.createConfigInputInterface();

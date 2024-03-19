@@ -217,9 +217,11 @@ public class CodegenEngine {
           "Could not find a printer for language \"" + selectedPrinter + "\" and core type \"" + coreType + "\".");
     }
     this.registeredPrintersAndBlocks.computeIfAbsent(foundPrinter, k -> new ArrayList<>());
-
-    final List<Block> blocks = this.registeredPrintersAndBlocks.get(foundPrinter);
-    blocks.add(b);
+    // prevents the generation of a GPU file, the code is already generated when the clusters are created
+    if (!coreType.equals("cuda")) {
+      final List<Block> blocks = this.registeredPrintersAndBlocks.get(foundPrinter);
+      blocks.add(b);
+    }
   }
 
   private Set<IConfigurationElement> getLanguagePrinter(final String selectedPrinter) {
