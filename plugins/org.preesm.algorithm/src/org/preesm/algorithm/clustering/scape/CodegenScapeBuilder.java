@@ -144,86 +144,8 @@ public class CodegenScapeBuilder {
 
         // if (sc.getActor().isOnGPU()) {
         if (sc.getActor().getContainingPiGraph().isOnGPU()) {
-
-          final StringConcatenation actor = new StringConcatenation();
-          final int nbArg = sc.getActor().getConfigInputPorts().size() + sc.getActor().getDataInputPorts().size()
-              + sc.getActor().getDataOutputPorts().size();
-          int countArg = 1;
-
-          final Map<String, Long> rateActor = new HashMap<>();
-          for (final DataInputPort in : sc.getActor().getDataInputPorts()) {
-            final Long nbExec = in.getExpression().evaluate();
-            rateActor.put(sc.getActor().getName(), nbExec);
-          }
-          for (final DataOutputPort out2 : sc.getActor().getDataOutputPorts()) {
-            final Long nbExec = out2.getExpression().evaluate();
-
-            rateActor.put(((AbstractVertex) out2.getFifo().getTarget()).getName(), nbExec);
-          }
-
-          final int blockDim = (int) Math.min(1024, rateActor.get(sc.getActor().getName()));
-
-          String funcName = sc.getActor().getName();
-          if (((CHeaderRefinement) ((Actor) sc.getActor()).getRefinement()).getLoopPrototype() != null) {
-            funcName = ((CHeaderRefinement) ((Actor) sc.getActor()).getRefinement()).getLoopPrototype().getName();
-          }
-
-          actor.append(" dim3 block_dim" + sc.getActor().getName() + " (" + blockDim + ", 1, 1); " + "\n dim3 grid_dim"
-              + sc.getActor().getName() + " ( \n " + rateActor.get(sc.getActor().getName()) + "/ block_dim"
-              + sc.getActor().getName() + ".x, \n 1, \n 1); \n");
-
-          actor.append(
-              funcName + "<<<grid_dim" + sc.getActor().getName() + ", block_dim" + sc.getActor().getName() + ">>>(");
-
-          for (final ConfigInputPort cfg : sc.getActor().getConfigInputPorts()) {
-            actor.append(((AbstractVertex) cfg.getIncomingDependency().getSource()).getName());
-            if (countArg < nbArg) {
-              actor.append(",");
-            }
-            countArg++;
-          }
-
-          for (final DataInputPort in : sc.getActor().getDataInputPorts()) {
-            String buffname = "";
-            if (in.getFifo().getSource() instanceof final DataInputInterface) {
-
-              buffname = "d_" + in.getName();
-            } else if (in.getFifo().isHasADelay()) {
-              final Delay delay = in.getFifo().getDelay();
-              buffname = "d_" + delay.getActor().getSetterActor().getName();
-            } else {
-
-              buffname = "d_" + ((AbstractVertex) in.getFifo().getSource()).getName() + "_"
-                  + in.getFifo().getSourcePort().getName() + "__" + sc.getActor().getName() + "_" + in.getName();
-            }
-            actor.append(buffname);
-            if (countArg < nbArg) {
-              actor.append(",");
-            }
-            countArg++;
-          }
-          for (final DataOutputPort out : sc.getActor().getDataOutputPorts()) {
-            String buffname = "";
-            if (out.getFifo().getTarget() instanceof final DataOutputInterface dout) {
-              buffname = "d_" + dout.getName();
-            } else if (out.getFifo().isHasADelay()) {
-              final Delay delay = out.getFifo().getDelay();
-              buffname = "d_" + delay.getActor().getGetterActor().getName();
-            } else {
-              buffname = "d_" + sc.getActor().getName() + "_" + out.getName() + "__"
-                  + ((AbstractVertex) out.getFifo().getTarget()).getName() + "_"
-                  + out.getFifo().getTargetPort().getName();
-            }
-            actor.append(buffname);
-            if (countArg < nbArg) {
-              actor.append(",");
-            }
-            countArg++;
-          }
-          actor.append("); \n\n");
-          bodyGPU.append(actor, "");
+          buildGPUBody(sc, bodyGPU);
           synchro = true;
-
         } else {
 
           boolean isGPU = false;
@@ -695,6 +617,96 @@ public class CodegenScapeBuilder {
 
     }
     return synchro;
+  }
+
+  private void buildGPUBody(ScapeSchedule sc, StringConcatenation bodyGPU) {
+
+    final StringConcatenation actor = new StringConcatenation();
+    final int nbArg = sc.getActor().getConfigInputPorts().size() + sc.getActor().getDataInputPorts().size()
+        + sc.getActor().getDataOutputPorts().size();
+    int countArg = 1;
+
+    final Map<String, Long> rateActor = new HashMap<>();
+    for (final DataInputPort in : sc.getActor().getDataInputPorts()) {
+      final Long nbExec = in.getExpression().evaluate();
+      rateActor.put(sc.getActor().getName(), nbExec);
+
+    }
+    for (final DataOutputPort out2 : sc.getActor().getDataOutputPorts()) {
+      final Long nbExec = out2.getExpression().evaluate();
+
+      rateActor.put(((AbstractVertex) out2.getFifo().getTarget()).getName(), nbExec);
+
+      if ((rateActor.get(sc.getActor().getName()) == null) || (rateActor.get(sc.getActor().getName()) < nbExec)) {
+        rateActor.put(sc.getActor().getName(), nbExec);
+      }
+    }
+
+    final int blockDim = (int) Math.min(1024, rateActor.get(sc.getActor().getName()));
+
+    String funcName = sc.getActor().getName();
+    if (((CHeaderRefinement) ((Actor) sc.getActor()).getRefinement()).getLoopPrototype() != null) {
+      funcName = ((CHeaderRefinement) ((Actor) sc.getActor()).getRefinement()).getLoopPrototype().getName();
+    }
+
+    // int block_size = 1024; // Fixed block size
+    // dim3 block_dimSobel(block_size);
+    // dim3 grid_dimSobel((cfg_0 * cfg_1 + block_size - 1) / block_size);
+
+    actor.append(" int block_size" + sc.getActor().getName() + " = " + blockDim + "; \n");
+
+    actor.append(" dim3 block_dim" + sc.getActor().getName() + " (block_size" + sc.getActor().getName() + "); "
+        + "\n dim3 grid_dim" + sc.getActor().getName() + " ((" + rateActor.get(sc.getActor().getName()) + "+ block_size"
+        + sc.getActor().getName() + " - 1 ) / block_size" + sc.getActor().getName() + "); \n");
+
+    actor.append(funcName + "<<<grid_dim" + sc.getActor().getName() + ", block_dim" + sc.getActor().getName() + ">>>(");
+
+    for (final ConfigInputPort cfg : sc.getActor().getConfigInputPorts()) {
+      actor.append(((AbstractVertex) cfg.getIncomingDependency().getSource()).getName());
+      if (countArg < nbArg) {
+        actor.append(",");
+      }
+      countArg++;
+    }
+
+    for (final DataInputPort in : sc.getActor().getDataInputPorts()) {
+      String buffname = "";
+      if (in.getFifo().getSource() instanceof final DataInputInterface) {
+
+        buffname = "d_" + in.getName();
+      } else if (in.getFifo().isHasADelay()) {
+        final Delay delay = in.getFifo().getDelay();
+        buffname = "d_" + delay.getActor().getSetterActor().getName();
+      } else {
+
+        buffname = "d_" + ((AbstractVertex) in.getFifo().getSource()).getName() + "_"
+            + in.getFifo().getSourcePort().getName() + "__" + sc.getActor().getName() + "_" + in.getName();
+      }
+      actor.append(buffname);
+      if (countArg < nbArg) {
+        actor.append(",");
+      }
+      countArg++;
+    }
+    for (final DataOutputPort out : sc.getActor().getDataOutputPorts()) {
+      String buffname = "";
+      if (out.getFifo().getTarget() instanceof final DataOutputInterface dout) {
+        buffname = "d_" + dout.getName();
+      } else if (out.getFifo().isHasADelay()) {
+        final Delay delay = out.getFifo().getDelay();
+        buffname = "d_" + delay.getActor().getGetterActor().getName();
+      } else {
+        buffname = "d_" + sc.getActor().getName() + "_" + out.getName() + "__"
+            + ((AbstractVertex) out.getFifo().getTarget()).getName() + "_" + out.getFifo().getTargetPort().getName();
+      }
+      actor.append(buffname);
+      if (countArg < nbArg) {
+        actor.append(",");
+      }
+      countArg++;
+    }
+    actor.append("); \n\n");
+    bodyGPU.append(actor, "");
   }
 
 }
