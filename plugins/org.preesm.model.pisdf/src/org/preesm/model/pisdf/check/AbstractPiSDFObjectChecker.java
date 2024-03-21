@@ -22,7 +22,7 @@ import org.preesm.model.pisdf.util.PiMMSwitch;
  * here because then we would not check the other faulty elements (lazy evaluation), but prefer an hand-made reduction
  * ensuring a complete evaluation. Similarly, DO NOT USE lazy boolean evaluation as {@code &&} but prefer bit-wise
  * boolean evaluation with {@code &} and bit-wise assignment with {@code &=}.
- * 
+ *
  * @author ahonorat
  */
 public abstract class AbstractPiSDFObjectChecker extends PiMMSwitch<Boolean> {
@@ -47,11 +47,12 @@ public abstract class AbstractPiSDFObjectChecker extends PiMMSwitch<Boolean> {
   protected CheckerErrorLevel throwExceptionLevel;
   protected CheckerErrorLevel loggerLevel;
 
-  public AbstractPiSDFObjectChecker() {
+  protected AbstractPiSDFObjectChecker() {
     this(CheckerErrorLevel.NONE, CheckerErrorLevel.NONE);
   }
 
-  public AbstractPiSDFObjectChecker(final CheckerErrorLevel throwExceptionLevel, final CheckerErrorLevel loggerLevel) {
+  protected AbstractPiSDFObjectChecker(final CheckerErrorLevel throwExceptionLevel,
+      final CheckerErrorLevel loggerLevel) {
     this.throwExceptionLevel = throwExceptionLevel;
     this.loggerLevel = loggerLevel;
     fatalErrors = new LinkedHashMap<>();
@@ -62,7 +63,7 @@ public abstract class AbstractPiSDFObjectChecker extends PiMMSwitch<Boolean> {
 
   /**
    * Report an error.
-   * 
+   *
    * @param level
    *          Level of the error (if {@link CheckerErrorLevel.NONE}, returns immediately).
    * @param obj
@@ -96,30 +97,19 @@ public abstract class AbstractPiSDFObjectChecker extends PiMMSwitch<Boolean> {
 
   /**
    * Get a map (indexed per object) of all errors of a given level.
-   * 
+   *
    * @param level
    *          Only level to consider.
    * @return The corresponding map or {@code null} if none.
    */
   public Map<EObject, List<String>> getErrorMap(final CheckerErrorLevel level) {
-    Map<EObject, List<String>> mapError = null;
-    switch (level) {
-      case FATAL_ALL:
-        mapError = fatalErrors;
-        break;
-      case FATAL_ANALYSIS:
-        mapError = fatalAnalysisErrors;
-        break;
-      case FATAL_CODEGEN:
-        mapError = fatalCodegenErrors;
-        break;
-      case WARNING:
-        mapError = warnings;
-        break;
-      default:
-        break;
-    }
-    return mapError;
+    return switch (level) {
+      case FATAL_ALL -> fatalErrors;
+      case FATAL_ANALYSIS -> fatalAnalysisErrors;
+      case FATAL_CODEGEN -> fatalCodegenErrors;
+      case WARNING -> warnings;
+      default -> null;
+    };
   }
 
   @Override
