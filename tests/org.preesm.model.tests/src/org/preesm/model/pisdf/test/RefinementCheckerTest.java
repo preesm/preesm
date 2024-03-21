@@ -28,11 +28,11 @@ public class RefinementCheckerTest {
         { "hls::stream<ap_uint<10>>", new Pair<>("ap_uint<10>", null) },
         { "hls::stream<ap_fixed<32,16>>", new Pair<>("ap_fixed<32,16>", null) },
         { "hls::stream<filter_t>", new Pair<>("filter_t", null) },
-        { "hls::stream<char, PARAMETER>", new Pair<>("char", "PARAMETER") },
+        { "hls::stream<char, PARAM1>", new Pair<>("char", "PARAM1") },
         { "hls::stream<unsigned char, 20>", new Pair<>("unsigned char", "20") },
-        { "hls::stream<ap_uint<10>, PARAMETER>", new Pair<>("ap_uint<10>", "PARAMETER") },
-        { "hls::stream<ap_fixed<32,16>, PARAMETER>", new Pair<>("ap_fixed<32,16>", "PARAMETER") },
-        { "hls::stream<filter_t, PARAMETER>", new Pair<>("filter_t", "PARAMETER") } };
+        { "hls::stream<ap_uint<10>, PARAM2>", new Pair<>("ap_uint<10>", "PARAM2") },
+        { "hls::stream<ap_fixed<32,16>, PARAM3>", new Pair<>("ap_fixed<32,16>", "PARAM3") },
+        { "hls::stream<filter_t, PARAM4>", new Pair<>("filter_t", "PARAM4") } };
 
     return Arrays.asList(data);
   }
