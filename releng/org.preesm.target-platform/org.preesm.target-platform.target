@@ -152,6 +152,7 @@
 				    <groupId>org.apache.commons</groupId>
 				    <artifactId>commons-text</artifactId>
 				    <version>1.11.0</version>
+				    <type>jar</type>
 				</dependency>
 				<dependency>
 					<!-- Required by jgrapht.io -->
@@ -165,6 +166,7 @@
 				    <groupId>org.apfloat</groupId>
 				    <artifactId>apfloat</artifactId>
 				    <version>1.13.0</version>
+				    <type>jar</type>
 				</dependency>
 				<dependency>
 					<groupId>org.jheaps</groupId>
@@ -207,6 +209,7 @@
 					<groupId>net.sf.trove4j</groupId>
 					<artifactId>trove4j</artifactId>
 					<version>3.0.1</version>
+					<type>jar</type>
 				</dependency>
 			</dependencies>
 		</location>
