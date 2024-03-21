@@ -39,7 +39,6 @@ package org.preesm.algorithm.mapper.stats.exporter;
 
 import java.awt.Color;
 import java.io.File;
-import java.util.logging.Level;
 import javax.xml.XMLConstants;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -67,6 +66,10 @@ import org.w3c.dom.Element;
  */
 public class XMLStatsExporter {
 
+  private XMLStatsExporter() {
+    // Forbid instantiation
+  }
+
   /** The Constant TASKCOLOR. */
   private static final String TASKCOLOR = "#c896fa";
 
@@ -78,28 +81,28 @@ public class XMLStatsExporter {
    */
   public static void exportXMLStats(final File file, final IStatGenerator statGen) {
 
-    DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
+    final DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
     dbFactory.setAttribute(XMLConstants.ACCESS_EXTERNAL_DTD, "");
     dbFactory.setAttribute(XMLConstants.ACCESS_EXTERNAL_SCHEMA, "");
     DocumentBuilder dBuilder;
     try {
       dBuilder = dbFactory.newDocumentBuilder();
-    } catch (ParserConfigurationException e) {
+    } catch (final ParserConfigurationException e) {
       throw new PreesmRuntimeException(e);
     }
-    Document content = dBuilder.newDocument();
+    final Document content = dBuilder.newDocument();
 
     // Generate the stats to write in an xml file
     generateXMLStats(content, statGen);
 
     // Write the file
-    TransformerFactory transformerFactory = TransformerFactory.newInstance();
+    final TransformerFactory transformerFactory = TransformerFactory.newInstance();
     transformerFactory.setAttribute(XMLConstants.ACCESS_EXTERNAL_DTD, "");
     transformerFactory.setAttribute(XMLConstants.ACCESS_EXTERNAL_STYLESHEET, "");
     try {
-      Transformer transformer = transformerFactory.newTransformer();
-      DOMSource source = new DOMSource(content);
-      StreamResult result = new StreamResult(file);
+      final Transformer transformer = transformerFactory.newTransformer();
+      final DOMSource source = new DOMSource(content);
+      final StreamResult result = new StreamResult(file);
       transformer.setOutputProperty(OutputKeys.ENCODING, "UTF-8");
       transformer.setOutputProperty(OutputKeys.INDENT, "yes");
       transformer.transform(source, result);
@@ -117,7 +120,7 @@ public class XMLStatsExporter {
    * @return a String containing the stats at an xml format
    */
   private static void generateXMLStats(Document doc, final IStatGenerator statGen) {
-    Element root = doc.createElement("data");
+    final Element root = doc.createElement("data");
     doc.appendChild(root);
 
     // Generate scheduling stats (when and on which core a given task is
@@ -139,14 +142,14 @@ public class XMLStatsExporter {
   private static void generatePerformanceStats(final Document doc, final Element root, final IStatGenerator statGen) {
     // Starting the performace stats
 
-    Element perfs = doc.createElement("perfs");
+    final Element perfs = doc.createElement("perfs");
     root.appendChild(perfs);
     // Work length
     long work = -1;
     try {
       work = statGen.getDAGWorkLength();
     } catch (final PreesmException e) {
-      PreesmLogger.getLogger().log(Level.WARNING, "Could not generate work length perf stats.\n" + e.toString());
+      PreesmLogger.getLogger().warning(() -> "Could not generate work length perf stats.\n" + e.toString());
     }
     perfs.setAttribute("work", Long.toString(work));
     // Span length
@@ -174,7 +177,7 @@ public class XMLStatsExporter {
   private static void generateCoreLoad(final Document doc, final Element root, final ComponentInstance op,
       final IStatGenerator statGen) {
     // Starting core load stat
-    Element core = doc.createElement("core");
+    final Element core = doc.createElement("core");
     root.appendChild(core);
     // Id of the core
     core.setAttribute("id", op.getInstanceName());
@@ -211,7 +214,7 @@ public class XMLStatsExporter {
   private static void generateTaskStats(final Document doc, final Element root, final GanttTask task,
       final String componentID) {
     // Starting task
-    Element event = doc.createElement("event");
+    final Element event = doc.createElement("event");
     root.appendChild(event);
     // Start time
     event.setAttribute("start", Long.toString(task.getStartTime()));
@@ -222,15 +225,15 @@ public class XMLStatsExporter {
     // Core
     event.setAttribute("mapping", componentID);
     // Color
-    Color c = task.getColor();
+    final Color c = task.getColor();
     if (c == null) {
       event.setAttribute("color", XMLStatsExporter.TASKCOLOR);
     } else {
-      int r = c.getRed();
-      int g = c.getGreen();
-      int b = c.getBlue();
+      final int r = c.getRed();
+      final int g = c.getGreen();
+      final int b = c.getBlue();
       // a bit ugly an unsafe, but it seems to work
-      String colHexa = "#" + Integer.toHexString(r) + Integer.toHexString(g) + Integer.toHexString(b);
+      final String colHexa = "#" + Integer.toHexString(r) + Integer.toHexString(g) + Integer.toHexString(b);
       event.setAttribute("color", colHexa);
     }
     // Gantt ID for the task
