@@ -5,6 +5,10 @@ on:
   schedule:
     - cron:  '0 7 * * MON'
     
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   build:
     # Prevent workflow from running twice when push to PR from main repo,
