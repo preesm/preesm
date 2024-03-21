@@ -85,6 +85,8 @@ public class NewSynthesisTest {
       }
     }
 
+    params.add(new Object[] { "NEWSynthesisAPI_choco.workflow", "1core_choco.scenario", "org.ietr.preesm.sobel" });
+
     return params;
   }
 
