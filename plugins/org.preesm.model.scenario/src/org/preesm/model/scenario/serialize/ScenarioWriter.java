@@ -78,6 +78,7 @@ import org.w3c.dom.bootstrap.DOMImplementationRegistry;
 public class ScenarioWriter {
 
   private static final String PE_TYPE_LITERAL = "peType";
+  private static final String OPNAME          = "opname";
 
   /** Current document. */
   private Document dom;
@@ -171,7 +172,7 @@ public class ScenarioWriter {
     // - if the parameter is actor dependent, there is no default value
     // - otherwise, compare the kept value to the parameter expression
     boolean needToBeSerialized = false;
-    String valueToPrint = "";
+    String valueToPrint;
     valueToPrint = "" + value.getValue();
     if (!value.getKey().getExpression().getExpressionAsString().equals(valueToPrint)) {
       needToBeSerialized = true;
@@ -295,7 +296,7 @@ public class ScenarioWriter {
       final Element peType = this.dom.createElement(PE_TYPE_LITERAL);
       energyModelPETypeElt.appendChild(peType);
       peType.setAttribute(PE_TYPE_LITERAL, slamComponent.getVlnv().getName());
-      for (ComponentInstance compInstance : slamComponent.getInstances()) {
+      for (final ComponentInstance compInstance : slamComponent.getInstances()) {
         final Element peInstance = this.dom.createElement("peInstance");
         peType.appendChild(peInstance);
         peInstance.setAttribute("peInstance", compInstance.getInstanceName());
@@ -501,7 +502,7 @@ public class ScenarioWriter {
     final Element constraints = this.dom.createElement("constraints");
     parent.appendChild(constraints);
 
-    String groupConstraintsFileURL = this.scenario.getConstraints().getGroupConstraintsFileURL();
+    final String groupConstraintsFileURL = this.scenario.getConstraints().getGroupConstraintsFileURL();
     constraints.setAttribute("excelUrl", groupConstraintsFileURL);
 
     for (final Entry<ComponentInstance, EList<AbstractActor>> cst : this.scenario.getConstraints()
@@ -552,7 +553,7 @@ public class ScenarioWriter {
     final Element timingsElement = this.dom.createElement("timings");
     parent.appendChild(timingsElement);
 
-    String excelFileURL = this.scenario.getTimings().getExcelFileURL();
+    final String excelFileURL = this.scenario.getTimings().getExcelFileURL();
     timingsElement.setAttribute("excelUrl", excelFileURL);
 
     final EMap<AbstractActor,
@@ -586,7 +587,7 @@ public class ScenarioWriter {
     final Element timingelt = this.dom.createElement("timing");
     parent.appendChild(timingelt);
     timingelt.setAttribute("vertexname", actor.getVertexPath());
-    timingelt.setAttribute("opname", component.getVlnv().getName());
+    timingelt.setAttribute(OPNAME, component.getVlnv().getName());
     timingelt.setAttribute("timingtype", timingType.getName());
     timingelt.setAttribute("time", timing);
   }
@@ -608,7 +609,7 @@ public class ScenarioWriter {
 
     final Element timingelt = this.dom.createElement("memcpyspeed");
     parent.appendChild(timingelt);
-    timingelt.setAttribute("opname", opDef.getVlnv().getName());
+    timingelt.setAttribute(OPNAME, opDef.getVlnv().getName());
     timingelt.setAttribute("setuptime", Long.toString(memcpySetupTime));
     timingelt.setAttribute("timeperunit", Double.toString(memcpyTimePerUnit));
   }
@@ -676,7 +677,7 @@ public class ScenarioWriter {
     final Element pePowerElt = this.dom.createElement("pePower");
     parent.appendChild(pePowerElt);
 
-    pePowerElt.setAttribute("opName", opDefName);
+    pePowerElt.setAttribute(OPNAME, opDefName);
     pePowerElt.setAttribute("pePower", Double.toString(pePower));
   }
 
@@ -699,7 +700,7 @@ public class ScenarioWriter {
     parent.appendChild(peActorEnergy);
 
     peActorEnergy.setAttribute("vertexname", actor.getVertexPath());
-    peActorEnergy.setAttribute("opname", component.getVlnv().getName());
+    peActorEnergy.setAttribute(OPNAME, component.getVlnv().getName());
     peActorEnergy.setAttribute("energy", pePower);
   }
 
