@@ -305,14 +305,11 @@ public class PiParser {
         throw new UnsupportedOperationException("Unsupported refinement extension " + refinementExtension);
       }
 
-    } else {
-      // if there is no refinement property
-      // set by default a C header refinement with empty file path
-      if (!(actor instanceof DelayActor)) {
-        final CHeaderRefinement hr = PiMMUserFactory.instance.createCHeaderRefinement();
-        hr.setFilePath(null);
-        actor.setRefinement(hr);
-      }
+    } else if (!(actor instanceof DelayActor)) {
+      // if there is no refinement property, set by default a C header refinement with empty file path
+      final CHeaderRefinement hr = PiMMUserFactory.instance.createCHeaderRefinement();
+      hr.setFilePath(null);
+      actor.setRefinement(hr);
     }
   }
 
@@ -473,9 +470,8 @@ public class PiParser {
       if (targetFifo.getDelay() == null) {
         throw new PreesmRuntimeException(
             "Dependency fifo target " + getterName + " has no delay to receive the dependency.");
-      } else {
-        target = targetFifo.getDelay();
       }
+      target = targetFifo.getDelay();
     }
 
     // Get the sourcePort and targetPort
@@ -789,7 +785,7 @@ public class PiParser {
    *          The deserialized {@link PiGraph}
    */
   private void parseNode(final Element nodeElt, final PiGraph graph) {
-    String nodeName = nodeElt.getNodeName();
+    final String nodeName = nodeElt.getNodeName();
     // Identify if the node is an actor or a parameter
     final String nodeKind = nodeElt.getAttribute(PiIdentifiers.NODE_KIND);
     Configurable vertex;
@@ -856,7 +852,8 @@ public class PiParser {
     if ((vertex instanceof BroadcastActor) && (((AbstractActor) vertex).getDataInputPorts().size() > 1)) {
       throw new PreesmRuntimeException("Broadcast with multiple input detected [" + vertex.getName()
           + "].\n Broadcast actors can only have one input!");
-    } else if ((vertex instanceof ForkActor) && (((AbstractActor) vertex).getDataInputPorts().size() > 1)) {
+    }
+    if ((vertex instanceof ForkActor) && (((AbstractActor) vertex).getDataInputPorts().size() > 1)) {
       throw new PreesmRuntimeException(
           "ForkActor with multiple input detected [" + vertex.getName() + "].\n Fork actors can only have one input!");
     }
@@ -877,7 +874,7 @@ public class PiParser {
     param.setExpression(nodeElt.getAttribute(PiIdentifiers.PARAMETER_EXPRESSION));
 
     // Get the actor properties
-    String name = nodeElt.getAttribute(PiIdentifiers.PARAMETER_NAME);
+    final String name = nodeElt.getAttribute(PiIdentifiers.PARAMETER_NAME);
     NameCheckerC.checkValidName(Parameter.class.getName(), name);
     param.setName(name);
 
@@ -902,10 +899,10 @@ public class PiParser {
     param.setExpression(nodeElt.getAttribute(PiIdentifiers.PARAMETER_EXPRESSION));
 
     // Get the actor properties
-    String name = nodeElt.getAttribute(PiIdentifiers.PARAMETER_NAME);
+    final String name = nodeElt.getAttribute(PiIdentifiers.PARAMETER_NAME);
     NameCheckerC.checkValidName(MalleableParameter.class.getName(), name);
     param.setName(name);
-    String userExpression = nodeElt.getAttribute(PiIdentifiers.MALLEABLE_PARAMETER_EXPRESSION);
+    final String userExpression = nodeElt.getAttribute(PiIdentifiers.MALLEABLE_PARAMETER_EXPRESSION);
     param.setUserExpression(userExpression);
 
     // Add the actor to the parsed graph
@@ -1106,7 +1103,7 @@ public class PiParser {
     final String nodeKind = nodeElt.getAttribute(PiIdentifiers.NODE_KIND);
     AbstractActor actor = null;
 
-    String name = nodeElt.getAttribute(PiIdentifiers.ACTOR_NAME);
+    final String name = nodeElt.getAttribute(PiIdentifiers.ACTOR_NAME);
     NameCheckerC.checkValidName("Special actor", name);
 
     // Instantiate the actor.
