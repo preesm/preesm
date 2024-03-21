@@ -68,15 +68,15 @@ import org.preesm.model.pisdf.util.PiSDFSubgraphBuilder;
  */
 public class PiSDFSubgraphBuilderTest {
 
-  private PiGraph       topGraph;
-  private PiGraph       subGraph;
-  private AbstractActor actorA;
-  private AbstractActor actorB;
-  private AbstractActor actorC;
-  private AbstractActor actorD;
-  private Parameter     param;
-  private final String  topGraphName = "topgraph";
-  private final String  subGraphName = "B_C";
+  private PiGraph             topGraph;
+  private PiGraph             subGraph;
+  private AbstractActor       actorA;
+  private AbstractActor       actorB;
+  private AbstractActor       actorC;
+  private AbstractActor       actorD;
+  private Parameter           param;
+  private static final String TOP_GRAPH_NAME = "topgraph";
+  private static final String SUB_GRAPH_NAME = "B_C";
 
   /**
    * Set-up the test environnement
@@ -89,15 +89,15 @@ public class PiSDFSubgraphBuilderTest {
     this.actorB = (AbstractActor) topGraph.lookupAllVertex("B");
     this.actorC = (AbstractActor) topGraph.lookupAllVertex("C");
     this.actorD = (AbstractActor) topGraph.lookupAllVertex("D");
-    this.param = topGraph.lookupParameterGivenGraph("useless", topGraphName);
+    this.param = topGraph.lookupParameterGivenGraph("useless", TOP_GRAPH_NAME);
     // Regroup the two reference in a list
     final List<AbstractActor> subGraphActors = Arrays.asList(actorB, actorC);
     // Build a PiSDFSubgraphBuilder
-    final PiSDFSubgraphBuilder subgraphBuilder = new PiSDFSubgraphBuilder(topGraph, subGraphActors, subGraphName);
+    final PiSDFSubgraphBuilder subgraphBuilder = new PiSDFSubgraphBuilder(topGraph, subGraphActors, SUB_GRAPH_NAME);
     // Process the transformation
     subgraphBuilder.build();
     // Keep a reference to the builded subgraph
-    this.subGraph = (PiGraph) topGraph.lookupAllVertex(subGraphName);
+    this.subGraph = (PiGraph) topGraph.lookupAllVertex(SUB_GRAPH_NAME);
   }
 
   /**
@@ -123,7 +123,7 @@ public class PiSDFSubgraphBuilderTest {
   @Test
   public void testNameOfSubGraph() {
     // Check if the subgraph is called "B_C"
-    Assert.assertEquals(subGraph.getName(), subGraphName);
+    Assert.assertEquals(SUB_GRAPH_NAME, subGraph.getName());
   }
 
   @Test
@@ -263,8 +263,8 @@ public class PiSDFSubgraphBuilderTest {
   private PiGraph createChainedActorsPiGraph() {
     // Create the top graph
     final PiGraph chainedActorGraph = PiMMUserFactory.instance.createPiGraph();
-    chainedActorGraph.setName(topGraphName);
-    chainedActorGraph.setUrl(topGraphName);
+    chainedActorGraph.setName(TOP_GRAPH_NAME);
+    chainedActorGraph.setUrl(TOP_GRAPH_NAME);
     // Create 4 actors
     final AbstractActor chainA = PiMMUserFactory.instance.createActor("A");
     final AbstractActor chainB = PiMMUserFactory.instance.createActor("B");
