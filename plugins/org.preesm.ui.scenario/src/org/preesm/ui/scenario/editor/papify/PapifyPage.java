@@ -116,7 +116,7 @@ public class PapifyPage extends ScenarioPage {
 
   /** String to name the first cell in the KPI estimation models section */
 
-  private final String firstCellName = "PE Type \\ PAPI event";
+  private static final String FIRST_CELL_NAME = "PE Type \\ PAPI event";
 
   /** The table viewer. */
 
@@ -467,7 +467,7 @@ public class PapifyPage extends ScenarioPage {
       if (!text.getText().equals(this.scenario.getPapifyConfig().getXmlFileURL())
           && (this.papiEvents.getComponents() != null)) {
 
-        PreesmLogger.getLogger().log(Level.INFO, "Loading Papi configuration from '" + text.getText() + "'");
+        PreesmLogger.getLogger().info(() -> "Loading Papi configuration from '" + text.getText() + "'");
 
         this.scenario.getPapifyConfig().clear();
         this.scenario.getPapifyConfig().setXmlFileURL(text.getText());
@@ -484,7 +484,7 @@ public class PapifyPage extends ScenarioPage {
         firePropertyChange(IEditorPart.PROP_DIRTY);
       }
     } else {
-      PreesmLogger.getLogger().log(Level.WARNING, "Could not locate file under '" + text.getText() + "'");
+      PreesmLogger.getLogger().warning(() -> "Could not locate file under '" + text.getText() + "'");
     }
   }
 
@@ -768,11 +768,11 @@ public class PapifyPage extends ScenarioPage {
     }
 
     final TableColumn columnInitial = new TableColumn(table, SWT.NONE, 0);
-    columnInitial.setText(firstCellName);
-    columnInitial.setWidth(firstCellName.length() * 8);
+    columnInitial.setText(FIRST_CELL_NAME);
+    columnInitial.setWidth(FIRST_CELL_NAME.length() * 8);
 
     int columnCounter = 1;
-    int totalWidth = firstCellName.length() * 8;
+    int totalWidth = FIRST_CELL_NAME.length() * 8;
 
     for (final PapiComponent oneComponent : this.papiEvents.getComponents().values()) {
       if (!oneComponent.getEventSets().isEmpty()) {
@@ -803,7 +803,7 @@ public class PapifyPage extends ScenarioPage {
           final PapiEvent event = PapifyPage.this.scenario.getPapifyConfig().getEventByName(property);
           boolean dirty = false;
           double parseDouble = 0.0;
-          if (!firstCellName.equals(property)) {
+          if (!FIRST_CELL_NAME.equals(property)) {
             double oldModelParamPE;
             if (modelPeType.getValue().containsKey(event)) {
               oldModelParamPE = modelPeType.getValue().get(event);
@@ -845,20 +845,19 @@ public class PapifyPage extends ScenarioPage {
 
       @Override
       public Object getValue(final Object element, final String property) {
-        if (element instanceof final PapifyPeTypeEnergyModelImpl modelPeType) {
-          if (!firstCellName.equals(property)) {
-            final PapiEvent event = PapifyPage.this.scenario.getPapifyConfig().getEventByName(property);
-            if (modelPeType.getValue().containsKey(event)) {
-              return Double.toString(modelPeType.getValue().get(event));
-            }
+        if (element instanceof final PapifyPeTypeEnergyModelImpl modelPeType && (!FIRST_CELL_NAME.equals(property))) {
+          final PapiEvent event = PapifyPage.this.scenario.getPapifyConfig().getEventByName(property);
+          if (modelPeType.getValue().containsKey(event)) {
+            return Double.toString(modelPeType.getValue().get(event));
           }
+
         }
         return "";
       }
 
       @Override
       public boolean canModify(final Object element, final String property) {
-        return !property.contentEquals(firstCellName);
+        return !property.contentEquals(FIRST_CELL_NAME);
       }
     });
 
