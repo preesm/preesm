@@ -102,6 +102,8 @@ public class ScenarioParser {
   /** scenario being retrieved. */
   private Scenario scenario = null;
 
+  private static final String OPNAME = "opname";
+
   /**
    * Instantiates a new scenario parser.
    */
@@ -159,37 +161,20 @@ public class ScenarioParser {
         if (node instanceof final Element elt) {
           final String type = elt.getTagName();
           switch (type) {
-            case "files":
-              parseFileNames(elt);
-              break;
-            case "constraints":
-              parseConstraintGroups(elt);
-              break;
-            case "timings":
-              parseTimings(elt);
-              break;
-            case "simuParams":
-              parseSimuParams(elt);
-              break;
-            case "parameterValues":
-              parseParameterValues(elt);
-              break;
-            case "papifyConfigs":
-              parsePapifyConfigs(elt);
-              break;
-            case "energyConfigs":
-              parseEnergyConfigs(elt);
-              break;
-            case "variables":
+            case "files" -> parseFileNames(elt);
+            case "constraints" -> parseConstraintGroups(elt);
+            case "timings" -> parseTimings(elt);
+            case "simuParams" -> parseSimuParams(elt);
+            case "parameterValues" -> parseParameterValues(elt);
+            case "papifyConfigs" -> parsePapifyConfigs(elt);
+            case "energyConfigs" -> parseEnergyConfigs(elt);
+            case "variables", "relativeconstraints" -> {
               // deprecated
-              break;
-            case "relativeconstraints":
-              // deprecated
-              break;
-            case "flags":
-              parseFlags(elt);
-              break;
-            default:
+            }
+            case "flags" -> parseFlags(elt);
+            default -> {
+              // empty
+            }
           }
         }
 
@@ -197,7 +182,7 @@ public class ScenarioParser {
       }
     }
 
-    if (!this.scenario.getSizesAreInBit()) {
+    if (this.scenario.getSizesAreInBit() == Boolean.FALSE) {
       PreesmLogger.getLogger()
           .severe(() -> "The Scenario was created with an older version of PREESM."
               + " Change the datatype sizes from bytes to bits in the Simulation tab and save the Scenario."
@@ -220,11 +205,7 @@ public class ScenarioParser {
     final PiGraph graph = scenario.getAlgorithm();
     if (graph != null) {
       final Set<Parameter> parameters = new LinkedHashSet<>();
-      for (final Parameter p : graph.getAllParameters()) {
-        if (!p.isConfigurationInterface()) {
-          parameters.add(p);
-        }
-      }
+      graph.getAllParameters().stream().filter(p -> !p.isConfigurationInterface()).forEach(parameters::add);
 
       while (node != null) {
         if (node instanceof final Element elt) {
@@ -238,11 +219,8 @@ public class ScenarioParser {
         node = node.getNextSibling();
       }
 
-      // Create a parameter value foreach parameter not yet in the
-      // scenario
-      for (final Parameter p : parameters) {
-        this.scenario.getParameterValues().put(p, p.getExpression().getExpressionAsString());
-      }
+      // Create a parameter value foreach parameter not yet in the scenario
+      parameters.forEach(p -> this.scenario.getParameterValues().put(p, p.getExpression().getExpressionAsString()));
     }
   }
 
@@ -363,17 +341,15 @@ public class ScenarioParser {
 
       if (node instanceof final Element elt) {
         final String type = elt.getTagName();
-        if (type.equals("specialVertexOperator")) {
+        if (type.equals("specialVertexOperator") && elt.getAttribute("path") != null) {
           final String path = elt.getAttribute("path");
 
-          if (path != null) {
-            final ComponentInstance componentInstance = design.getComponentInstance(path);
-            if (componentInstance != null) {
-              this.scenario.getSimulationInfo().addSpecialVertexOperator(componentInstance);
-            } else {
-              PreesmLogger.getLogger().log(Level.WARNING,
-                  () -> "Could not add special vertex operator '" + path + "' as it is not part of the design");
-            }
+          final ComponentInstance componentInstance = design.getComponentInstance(path);
+          if (componentInstance != null) {
+            this.scenario.getSimulationInfo().addSpecialVertexOperator(componentInstance);
+          } else {
+            PreesmLogger.getLogger()
+                .warning(() -> "Could not add special vertex operator '" + path + "' as it is not part of the design");
           }
         }
       }
@@ -386,9 +362,8 @@ public class ScenarioParser {
      * are!!
      */
     if (this.scenario.getSimulationInfo().getSpecialVertexOperators().isEmpty()) {
-      for (final ComponentInstance opId : design.getOperatorComponentInstances()) {
-        this.scenario.getSimulationInfo().addSpecialVertexOperator(opId);
-      }
+      design.getOperatorComponentInstances()
+          .forEach(opId -> this.scenario.getSimulationInfo().addSpecialVertexOperator(opId));
     }
   }
 
@@ -527,16 +502,12 @@ public class ScenarioParser {
         final String type = elt.getTagName();
 
         switch (type) {
-          case "papifyConfigActor":
-            parsePapifyConfigActor(elt);
-            break;
-          case "papifyConfigPE":
-            parsePapifyConfigPE(elt);
-            break;
-          case "energyModelPEType":
-            parsePapifyEnergyKPIModel(elt);
-            break;
-          default:
+          case "papifyConfigActor" -> parsePapifyConfigActor(elt);
+          case "papifyConfigPE" -> parsePapifyConfigPE(elt);
+          case "energyModelPEType" -> parsePapifyEnergyKPIModel(elt);
+          default -> {
+            // empty
+          }
         }
       }
 
@@ -572,9 +543,7 @@ public class ScenarioParser {
               if (typeEvents.equals("component")) {
                 final String component = eltEvents.getAttribute("component");
                 final List<PapiEvent> eventList = getPapifyEvents(eltEvents);
-                for (final PapiEvent event : eventList) {
-                  this.scenario.getPapifyConfig().addActorConfigEvent(lookup, component, event);
-                }
+                eventList.forEach(e -> this.scenario.getPapifyConfig().addActorConfigEvent(lookup, component, e));
               }
             }
             nodeEvents = nodeEvents.getNextSibling();
@@ -770,22 +739,30 @@ public class ScenarioParser {
     while (node != null) {
       if (node instanceof final Element elt) {
         final String type = elt.getTagName();
-        if (type.equals("eventDescription")) {
-          final String eventDescription = elt.getAttribute("eventDescription");
-          event.setDescription(eventDescription);
-        } else if (type.equals("eventId")) {
-          final String eventId = elt.getAttribute("eventId");
-          event.setIndex(Integer.valueOf(eventId));
-        } else if (type.equals("eventName")) {
-          final String eventName = elt.getAttribute("eventName");
-          event.setName(eventName);
-        } else if (type.equals("eventModifier")) {
-          final PapiEventModifier eventModifer = ScenarioFactory.eINSTANCE.createPapiEventModifier();
-          final String description = elt.getAttribute("description");
-          eventModifer.setDescription(description);
-          final String name = elt.getAttribute("name");
-          eventModifer.setName(name);
-          eventModiferList.add(eventModifer);
+        switch (type) {
+          case "eventDescription" -> {
+            final String eventDescription = elt.getAttribute("eventDescription");
+            event.setDescription(eventDescription);
+          }
+          case "eventId" -> {
+            final String eventId = elt.getAttribute("eventId");
+            event.setIndex(Integer.valueOf(eventId));
+          }
+          case "eventName" -> {
+            final String eventName = elt.getAttribute("eventName");
+            event.setName(eventName);
+          }
+          case "eventModifier" -> {
+            final PapiEventModifier eventModifer = ScenarioFactory.eINSTANCE.createPapiEventModifier();
+            final String description = elt.getAttribute("description");
+            eventModifer.setDescription(description);
+            final String name = elt.getAttribute("name");
+            eventModifer.setName(name);
+            eventModiferList.add(eventModifer);
+          }
+          default -> {
+            // empty
+          }
         }
       }
       node = node.getNextSibling();
@@ -835,7 +812,7 @@ public class ScenarioParser {
       final String type = timingElt.getTagName();
       if (type.equals("timing")) {
         final String vertexpath = timingElt.getAttribute("vertexname");
-        final String opdefname = timingElt.getAttribute("opname");
+        final String opdefname = timingElt.getAttribute(OPNAME);
         final String timingTypeName = timingElt.getAttribute("timingtype");
         final String stringValue = timingElt.getAttribute("time");
 
@@ -884,7 +861,7 @@ public class ScenarioParser {
     if (scenario.isProperlySet()) {
       final String type = timingElt.getTagName();
       if (type.equals("memcpyspeed")) {
-        final String opdefname = timingElt.getAttribute("opname");
+        final String opdefname = timingElt.getAttribute(OPNAME);
         final String sSetupTime = timingElt.getAttribute("setuptime");
         final String sTimePerUnit = timingElt.getAttribute("timeperunit");
         long setupTime;
@@ -929,14 +906,14 @@ public class ScenarioParser {
 
       if (node instanceof final Element elt) {
         final String type = elt.getTagName();
-        if (type.equals("performanceObjective")) {
-          parsePerformanceObjective(elt);
-        } else if (type.equals("pePower")) {
-          parsePlatformPower(elt);
-        } else if (type.equals("peActorsEnergy")) {
-          parsePeActorEnergy(elt);
-        } else if (type.equals("peTypeCommsEnergy")) {
-          parsePeCommsEnergy(elt);
+        switch (type) {
+          case "performanceObjective" -> parsePerformanceObjective(elt);
+          case "pePower" -> parsePlatformPower(elt);
+          case "peActorsEnergy" -> parsePeActorEnergy(elt);
+          case "peTypeCommsEnergy" -> parsePeCommsEnergy(elt);
+          default -> {
+            // empty
+          }
         }
       }
 
@@ -970,7 +947,7 @@ public class ScenarioParser {
    */
   private void parsePlatformPower(final Element platformPowerElt) {
 
-    final Node nodeOpName = platformPowerElt.getAttributeNode("opName");
+    final Node nodeOpName = platformPowerElt.getAttributeNode(OPNAME);
     final Node nodePePower = platformPowerElt.getAttributeNode("pePower");
     if (nodeOpName != null && nodePePower != null) {
       final String opName = nodeOpName.getNodeValue();
@@ -1012,7 +989,7 @@ public class ScenarioParser {
   private void parseActorEnergy(final Element actorEnergyElt) {
 
     final Node nodeEnergyValue = actorEnergyElt.getAttributeNode("energy");
-    final Node nodeOpName = actorEnergyElt.getAttributeNode("opname");
+    final Node nodeOpName = actorEnergyElt.getAttributeNode(OPNAME);
     final Node nodeVertexPath = actorEnergyElt.getAttributeNode("vertexname");
 
     if (nodeEnergyValue != null && nodeOpName != null && nodeVertexPath != null) {
