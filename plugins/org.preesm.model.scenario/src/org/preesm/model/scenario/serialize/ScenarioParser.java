@@ -61,6 +61,7 @@ import org.eclipse.emf.common.util.ECollections;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
+import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.Actor;
@@ -101,8 +102,6 @@ public class ScenarioParser {
 
   /** scenario being retrieved. */
   private Scenario scenario = null;
-
-  private static final String OPNAME = "opname";
 
   /**
    * Instantiates a new scenario parser.
@@ -161,18 +160,20 @@ public class ScenarioParser {
         if (node instanceof final Element elt) {
           final String type = elt.getTagName();
           switch (type) {
-            case "files" -> parseFileNames(elt);
-            case "constraints" -> parseConstraintGroups(elt);
-            case "timings" -> parseTimings(elt);
-            case "simuParams" -> parseSimuParams(elt);
-            case "parameterValues" -> parseParameterValues(elt);
-            case "papifyConfigs" -> parsePapifyConfigs(elt);
-            case "energyConfigs" -> parseEnergyConfigs(elt);
-            case "variables", "relativeconstraints" -> {
+            case ScenarioConstants.FILES -> parseFileNames(elt);
+            case ScenarioConstants.CONSTRAINTS -> parseConstraintGroups(elt);
+            case ScenarioConstants.TIMINGS -> parseTimings(elt);
+            case ScenarioConstants.SIMU_PARAMS -> parseSimuParams(elt);
+            case ScenarioConstants.PARAMETER_VALUES -> parseParameterValues(elt);
+            case ScenarioConstants.PAPIFY_CONFIGS -> parsePapifyConfigs(elt);
+            case ScenarioConstants.ENERGY_CONFIGS -> parseEnergyConfigs(elt);
+            case ScenarioConstants.VARIABLES, ScenarioConstants.RELATIVE_CONSTRAINTS -> {
               // deprecated
             }
-            case "flags" -> parseFlags(elt);
+            case ScenarioConstants.FLAGS -> parseFlags(elt);
             default -> {
+              throw new PreesmRuntimeException(
+                  "Unrecognized tag name in scenario: " + type + " in " + file.getFullPath().toString());
               // empty
             }
           }
@@ -210,7 +211,7 @@ public class ScenarioParser {
       while (node != null) {
         if (node instanceof final Element elt) {
           final String type = elt.getTagName();
-          if (type.equals("parameter")) {
+          if (type.equals(ScenarioConstants.PARAMETER)) {
             final Parameter justParsed = parseParameterValue(elt, graph);
             parameters.remove(justParsed);
           }
@@ -240,9 +241,9 @@ public class ScenarioParser {
 
     Parameter currentParameter;
 
-    final String parent = paramValueElt.getAttribute("parent");
-    final String name = paramValueElt.getAttribute("name");
-    final String stringValue = paramValueElt.getAttribute("value");
+    final String parent = paramValueElt.getAttribute(ScenarioConstants.PARENT);
+    final String name = paramValueElt.getAttribute(ScenarioConstants.NAME);
+    final String stringValue = paramValueElt.getAttribute(ScenarioConstants.VALUE);
 
     currentParameter = graph.lookupParameterGivenGraph(name, parent);
     if (currentParameter == null) {
@@ -272,24 +273,17 @@ public class ScenarioParser {
           final String type = elt.getTagName();
           final String content = elt.getTextContent();
           switch (type) {
-            case "mainCore":
-              final ComponentInstance mainCore = scenario.getDesign().getComponentInstance(content);
-              this.scenario.getSimulationInfo().setMainOperator(mainCore);
-              break;
-            case "mainComNode":
-              final ComponentInstance mainComNode = scenario.getDesign().getComponentInstance(content);
-              this.scenario.getSimulationInfo().setMainComNode(mainComNode);
-              break;
-            case "averageDataSize":
+            case ScenarioConstants.MAIN_CORE ->
+              this.scenario.getSimulationInfo().setMainOperator(scenario.getDesign().getComponentInstance(content));
+            case ScenarioConstants.MAIN_COM_NODE ->
+              this.scenario.getSimulationInfo().setMainComNode(scenario.getDesign().getComponentInstance(content));
+            case ScenarioConstants.AVERAGE_DATA_SIZE ->
               this.scenario.getSimulationInfo().setAverageDataSize(Long.valueOf(content));
-              break;
-            case "dataTypes":
-              parseDataTypes(elt);
-              break;
-            case "specialVertexOperators":
-              parseSpecialVertexOperators(elt);
-              break;
-            default:
+            case ScenarioConstants.DATA_TYPES -> parseDataTypes(elt);
+            case ScenarioConstants.SPECIAL_VERTEX_OPERATORS -> parseSpecialVertexOperators(elt);
+            default -> {
+              // empty
+            }
           }
         }
 
@@ -312,9 +306,9 @@ public class ScenarioParser {
 
       if (node instanceof final Element elt) {
         final String type = elt.getTagName();
-        if (type.equals("dataType")) {
-          final String name = elt.getAttribute("name");
-          final String size = elt.getAttribute("size");
+        if (type.equals(ScenarioConstants.DATA_TYPE)) {
+          final String name = elt.getAttribute(ScenarioConstants.NAME);
+          final String size = elt.getAttribute(ScenarioConstants.SIZE);
 
           if (!name.isEmpty() && !size.isEmpty()) {
             this.scenario.getSimulationInfo().getDataTypes().put(name, Long.parseLong(size));
@@ -341,8 +335,9 @@ public class ScenarioParser {
 
       if (node instanceof final Element elt) {
         final String type = elt.getTagName();
-        if (type.equals("specialVertexOperator") && elt.getAttribute("path") != null) {
-          final String path = elt.getAttribute("path");
+        if (type.equals(ScenarioConstants.SPECIAL_VERTEX_OPERATOR)
+            && elt.getAttribute(ScenarioConstants.PATH) != null) {
+          final String path = elt.getAttribute(ScenarioConstants.PATH);
 
           final ComponentInstance componentInstance = design.getComponentInstance(path);
           if (componentInstance != null) {
@@ -385,7 +380,7 @@ public class ScenarioParser {
 
       if (node instanceof final Element elt) {
         final String type = elt.getTagName();
-        final String url = elt.getAttribute("url");
+        final String url = elt.getAttribute(ScenarioConstants.URL);
 
         final URI uri = URI.createPlatformResourceURI(url, true);
 
@@ -395,14 +390,19 @@ public class ScenarioParser {
 
         if (!url.isEmpty()) {
 
-          if (type.equals("algorithm") && Boolean.TRUE.equals(exists)) {
-            this.scenario.setAlgorithm(PiParser.getPiGraphWithReconnection(url));
-          } else if (type.equals("architecture") && Boolean.TRUE.equals(exists)) {
-            initializeArchitectureInformation(url);
-          } else if (type.equals("codegenDirectory")) {
-            this.scenario.setCodegenDirectory(url);
-          } else {
-            PreesmLogger.getLogger().log(Level.WARNING, () -> "Could not find file: " + url);
+          switch (type) {
+            case ScenarioConstants.ALGORITHM -> {
+              if (Boolean.TRUE.equals(exists)) {
+                this.scenario.setAlgorithm(PiParser.getPiGraphWithReconnection(url));
+              }
+            }
+            case ScenarioConstants.ARCHITECTURE -> {
+              if (Boolean.TRUE.equals(exists)) {
+                initializeArchitectureInformation(url);
+              }
+            }
+            case ScenarioConstants.CODEGEN_DIRECTORY -> this.scenario.setCodegenDirectory(url);
+            default -> PreesmLogger.getLogger().log(Level.WARNING, () -> "Could not find file: " + url);
           }
         }
       }
@@ -430,7 +430,7 @@ public class ScenarioParser {
    */
   private void parseConstraintGroups(final Element cstGroupsElt) {
 
-    final String excelFileUrl = cstGroupsElt.getAttribute("excelUrl");
+    final String excelFileUrl = cstGroupsElt.getAttribute(ScenarioConstants.EXCEL_URL);
     this.scenario.getConstraints().setGroupConstraintsFileURL(excelFileUrl);
 
     Node node = cstGroupsElt.getFirstChild();
@@ -439,7 +439,7 @@ public class ScenarioParser {
 
       if (node instanceof final Element elt) {
         final String type = elt.getTagName();
-        if (type.equals("constraintGroup")) {
+        if (type.equals(ScenarioConstants.CONSTRAINT_GROUP)) {
           parseConstraintGroup(elt);
         }
       }
@@ -465,13 +465,14 @@ public class ScenarioParser {
       while (node != null) {
         if (node instanceof final Element elt) {
           final String type = elt.getTagName();
-          final String name = elt.getAttribute("name");
-          if (type.equals("task")) {
+          final String name = elt.getAttribute(ScenarioConstants.NAME);
+          if (type.equals(ScenarioConstants.TASK)) {
             final AbstractActor actorFromPath = getActorFromPath(name);
             if (actorFromPath instanceof Actor || actorFromPath instanceof PiGraph) {
               actors.add(actorFromPath);
             }
-          } else if (type.equals("operator") && this.scenario.getDesign().containsComponentInstance(name)) {
+          } else if (type.equals(ScenarioConstants.OPERATOR)
+              && this.scenario.getDesign().containsComponentInstance(name)) {
             opId = this.scenario.getDesign().getComponentInstance(name);
           }
         }
@@ -491,7 +492,7 @@ public class ScenarioParser {
    */
   private void parsePapifyConfigs(final Element papifyConfigsElt) {
 
-    final String xmlFileURL = papifyConfigsElt.getAttribute("xmlUrl");
+    final String xmlFileURL = papifyConfigsElt.getAttribute(ScenarioConstants.XML_URL);
     this.scenario.getPapifyConfig().setXmlFileURL(xmlFileURL);
 
     Node node = papifyConfigsElt.getFirstChild();
@@ -502,9 +503,9 @@ public class ScenarioParser {
         final String type = elt.getTagName();
 
         switch (type) {
-          case "papifyConfigActor" -> parsePapifyConfigActor(elt);
-          case "papifyConfigPE" -> parsePapifyConfigPE(elt);
-          case "energyModelPEType" -> parsePapifyEnergyKPIModel(elt);
+          case ScenarioConstants.PAPIFY_CONFIG_ACTOR -> parsePapifyConfigActor(elt);
+          case ScenarioConstants.PAPIFY_CONFIG_PE -> parsePapifyConfigPE(elt);
+          case ScenarioConstants.ENERGY_MODEL_PE_TYPE -> parsePapifyEnergyKPIModel(elt);
           default -> {
             // empty
           }
@@ -530,8 +531,8 @@ public class ScenarioParser {
       if (node instanceof final Element elt) {
         final String type = elt.getTagName();
         String actorPath = "";
-        if (type.equals("actorPath")) {
-          actorPath = elt.getAttribute("actorPath");
+        if (type.equals(ScenarioConstants.ACTOR_PATH)) {
+          actorPath = elt.getAttribute(ScenarioConstants.ACTOR_PATH);
 
           final AbstractActor lookup = VertexPath.lookup(this.scenario.getAlgorithm(), actorPath);
 
@@ -540,8 +541,8 @@ public class ScenarioParser {
 
             if (nodeEvents instanceof final Element eltEvents) {
               final String typeEvents = eltEvents.getTagName();
-              if (typeEvents.equals("component")) {
-                final String component = eltEvents.getAttribute("component");
+              if (typeEvents.equals(ScenarioConstants.COMPONENT)) {
+                final String component = eltEvents.getAttribute(ScenarioConstants.COMPONENT);
                 final List<PapiEvent> eventList = getPapifyEvents(eltEvents);
                 eventList.forEach(e -> this.scenario.getPapifyConfig().addActorConfigEvent(lookup, component, e));
               }
@@ -570,7 +571,7 @@ public class ScenarioParser {
 
     while (node != null) {
       if (node instanceof final Element elt) {
-        final String peType = elt.getAttribute("peType");
+        final String peType = elt.getAttribute(ScenarioConstants.PE_TYPE);
         slamComponent = this.scenario.getDesign().getComponent(peType);
         parsePAPIComponents(elt, slamComponent);
       }
@@ -593,7 +594,7 @@ public class ScenarioParser {
 
     while (node != null) {
       if (node instanceof final Element elt) {
-        final String peType = elt.getAttribute("peType");
+        final String peType = elt.getAttribute(ScenarioConstants.PE_TYPE);
         slamComponent = this.scenario.getDesign().getComponent(peType);
         parsePapifyEnergyKPIModelParameter(elt, slamComponent);
       }
@@ -614,7 +615,7 @@ public class ScenarioParser {
     while (node != null) {
       if (node instanceof final Element elt) {
         final String type = elt.getTagName();
-        if (type.equals("PAPIComponent")) {
+        if (type.equals(ScenarioConstants.PAPI_COMPONENT)) {
           parsePapifyComponent(elt, slamComponent);
         }
       }
@@ -635,7 +636,7 @@ public class ScenarioParser {
     while (node != null) {
       if (node instanceof final Element elt) {
         final String type = elt.getTagName();
-        if (type.equals("modelParameter")) {
+        if (type.equals(ScenarioConstants.MODEL_PARAMETER)) {
           parsePapifyModelParameter(elt, slamComponent);
         }
       }
@@ -652,9 +653,9 @@ public class ScenarioParser {
    */
   private void parsePapifyComponent(final Element papifyComponentElt, Component slamComponent) {
 
-    final String componentId = papifyComponentElt.getAttribute("componentId");
-    final String componentIndex = papifyComponentElt.getAttribute("componentIndex");
-    final String componentType = papifyComponentElt.getAttribute("componentType");
+    final String componentId = papifyComponentElt.getAttribute(ScenarioConstants.COMPONENT_ID);
+    final String componentIndex = papifyComponentElt.getAttribute(ScenarioConstants.COMPONENT_INDEX);
+    final String componentType = papifyComponentElt.getAttribute(ScenarioConstants.COMPONENT_TYPE);
 
     final PapiComponent component = ScenarioFactory.eINSTANCE.createPapiComponent();
     component.setIndex(Integer.valueOf(componentIndex));
@@ -666,7 +667,7 @@ public class ScenarioParser {
     Node node = papifyComponentElt.getFirstChild();
     while (node != null) {
       if (node instanceof final Element elt) {
-        final String type = elt.getAttribute("type");
+        final String type = elt.getAttribute(ScenarioConstants.TYPE);
         final PapiEventSet eventSet = ScenarioFactory.eINSTANCE.createPapiEventSet();
 
         final List<PapiEvent> eventList = getPapifyEvents(elt);
@@ -695,7 +696,7 @@ public class ScenarioParser {
     while (papiEventNode != null) {
       if (papiEventNode instanceof final Element elt) {
         final PapiEvent papiEvent = getPapifyEvent(elt);
-        final String paramValueRead = papifyParameterElt.getAttribute("paramValue");
+        final String paramValueRead = papifyParameterElt.getAttribute(ScenarioConstants.PARAM_VALUE);
         final double paramValue = Double.parseDouble(paramValueRead);
         this.scenario.getPapifyConfig().addEnergyParam(slamComponent, papiEvent, paramValue);
       }
@@ -740,23 +741,16 @@ public class ScenarioParser {
       if (node instanceof final Element elt) {
         final String type = elt.getTagName();
         switch (type) {
-          case "eventDescription" -> {
-            final String eventDescription = elt.getAttribute("eventDescription");
-            event.setDescription(eventDescription);
-          }
-          case "eventId" -> {
-            final String eventId = elt.getAttribute("eventId");
-            event.setIndex(Integer.valueOf(eventId));
-          }
-          case "eventName" -> {
-            final String eventName = elt.getAttribute("eventName");
-            event.setName(eventName);
-          }
-          case "eventModifier" -> {
+          case ScenarioConstants.EVENT_DESCRIPTION ->
+            event.setDescription(elt.getAttribute(ScenarioConstants.EVENT_DESCRIPTION));
+          case ScenarioConstants.EVENT_ID ->
+            event.setIndex(Integer.valueOf(elt.getAttribute(ScenarioConstants.EVENT_ID)));
+          case ScenarioConstants.EVENT_NAME -> event.setName(elt.getAttribute(ScenarioConstants.EVENT_NAME));
+          case ScenarioConstants.EVENT_MODIFIER -> {
             final PapiEventModifier eventModifer = ScenarioFactory.eINSTANCE.createPapiEventModifier();
-            final String description = elt.getAttribute("description");
+            final String description = elt.getAttribute(ScenarioConstants.DESCRIPTION);
             eventModifer.setDescription(description);
-            final String name = elt.getAttribute("name");
+            final String name = elt.getAttribute(ScenarioConstants.NAME);
             eventModifer.setName(name);
             eventModiferList.add(eventModifer);
           }
@@ -779,7 +773,7 @@ public class ScenarioParser {
    */
   private void parseTimings(final Element timingsElt) {
 
-    final String timingFileUrl = timingsElt.getAttribute("excelUrl");
+    final String timingFileUrl = timingsElt.getAttribute(ScenarioConstants.EXCEL_URL);
     this.scenario.getTimings().setExcelFileURL(timingFileUrl);
 
     Node node = timingsElt.getFirstChild();
@@ -788,9 +782,9 @@ public class ScenarioParser {
 
         if (node instanceof final Element elt) {
           final String type = elt.getTagName();
-          if (type.equals("timing")) {
+          if (type.equals(ScenarioConstants.TIMING)) {
             parseTiming(elt);
-          } else if (type.equals("memcpyspeed")) {
+          } else if (type.equals(ScenarioConstants.MEMCPY_SPEED)) {
             retrieveMemcpySpeed(this.scenario.getTimings(), elt);
           }
         }
@@ -810,11 +804,11 @@ public class ScenarioParser {
   private void parseTiming(final Element timingElt) {
     if (scenario.getAlgorithm() != null) {
       final String type = timingElt.getTagName();
-      if (type.equals("timing")) {
-        final String vertexpath = timingElt.getAttribute("vertexname");
-        final String opdefname = timingElt.getAttribute(OPNAME);
-        final String timingTypeName = timingElt.getAttribute("timingtype");
-        final String stringValue = timingElt.getAttribute("time");
+      if (type.equals(ScenarioConstants.TIMING)) {
+        final String vertexpath = timingElt.getAttribute(ScenarioConstants.VERTEX_NAME);
+        final String opdefname = timingElt.getAttribute(ScenarioConstants.OPNAME);
+        final String timingTypeName = timingElt.getAttribute(ScenarioConstants.TIMING_TYPE);
+        final String stringValue = timingElt.getAttribute(ScenarioConstants.TIME);
 
         final Design design = this.scenario.getDesign();
         final boolean contains = design.containsComponent(opdefname);
@@ -860,10 +854,10 @@ public class ScenarioParser {
 
     if (scenario.isProperlySet()) {
       final String type = timingElt.getTagName();
-      if (type.equals("memcpyspeed")) {
-        final String opdefname = timingElt.getAttribute(OPNAME);
-        final String sSetupTime = timingElt.getAttribute("setuptime");
-        final String sTimePerUnit = timingElt.getAttribute("timeperunit");
+      if (type.equals(ScenarioConstants.MEMCPY_SPEED)) {
+        final String opdefname = timingElt.getAttribute(ScenarioConstants.OPNAME);
+        final String sSetupTime = timingElt.getAttribute(ScenarioConstants.SETUP_TIME);
+        final String sTimePerUnit = timingElt.getAttribute(ScenarioConstants.TIME_PER_UNIT);
         long setupTime;
         double timePerUnit;
 
@@ -897,7 +891,7 @@ public class ScenarioParser {
    */
   private void parseEnergyConfigs(final Element energyConfigsElt) {
 
-    final String xmlFileURL = energyConfigsElt.getAttribute("xmlUrl");
+    final String xmlFileURL = energyConfigsElt.getAttribute(ScenarioConstants.XML_URL);
     this.scenario.getEnergyConfig().setExcelFileURL(xmlFileURL);
 
     Node node = energyConfigsElt.getFirstChild();
@@ -907,10 +901,10 @@ public class ScenarioParser {
       if (node instanceof final Element elt) {
         final String type = elt.getTagName();
         switch (type) {
-          case "performanceObjective" -> parsePerformanceObjective(elt);
-          case "pePower" -> parsePlatformPower(elt);
-          case "peActorsEnergy" -> parsePeActorEnergy(elt);
-          case "peTypeCommsEnergy" -> parsePeCommsEnergy(elt);
+          case ScenarioConstants.PERF_OBJECTIVE -> parsePerformanceObjective(elt);
+          case ScenarioConstants.PE_POWER -> parsePlatformPower(elt);
+          case ScenarioConstants.PE_ACTORS_ENERGY -> parsePeActorEnergy(elt);
+          case ScenarioConstants.PE_TYPE_COMMS_ENERGY -> parsePeCommsEnergy(elt);
           default -> {
             // empty
           }
@@ -930,7 +924,7 @@ public class ScenarioParser {
    */
   private void parsePerformanceObjective(final Element performanceObjectiveElt) {
 
-    final Node node = performanceObjectiveElt.getAttributeNode("objectiveEPS");
+    final Node node = performanceObjectiveElt.getAttributeNode(ScenarioConstants.OBJECTIVE_EPS);
     if (node != null) {
       final String objectiveEPS = node.getNodeValue();
       final double objectiveEPSValue = Double.parseDouble(objectiveEPS);
@@ -947,8 +941,8 @@ public class ScenarioParser {
    */
   private void parsePlatformPower(final Element platformPowerElt) {
 
-    final Node nodeOpName = platformPowerElt.getAttributeNode(OPNAME);
-    final Node nodePePower = platformPowerElt.getAttributeNode("pePower");
+    final Node nodeOpName = platformPowerElt.getAttributeNode(ScenarioConstants.OP_NAME);
+    final Node nodePePower = platformPowerElt.getAttributeNode(ScenarioConstants.PE_POWER);
     if (nodeOpName != null && nodePePower != null) {
       final String opName = nodeOpName.getNodeValue();
       final String pePower = nodePePower.getNodeValue();
@@ -971,7 +965,7 @@ public class ScenarioParser {
     while (nodeChild != null) {
       if (nodeChild instanceof final Element elt) {
         final String type = elt.getTagName();
-        if (type.equals("peActorEnergy")) {
+        if (type.equals(ScenarioConstants.PE_ACTOR_ENERGY)) {
           parseActorEnergy(elt);
         }
       }
@@ -988,9 +982,9 @@ public class ScenarioParser {
    */
   private void parseActorEnergy(final Element actorEnergyElt) {
 
-    final Node nodeEnergyValue = actorEnergyElt.getAttributeNode("energy");
-    final Node nodeOpName = actorEnergyElt.getAttributeNode(OPNAME);
-    final Node nodeVertexPath = actorEnergyElt.getAttributeNode("vertexname");
+    final Node nodeEnergyValue = actorEnergyElt.getAttributeNode(ScenarioConstants.ENERGY);
+    final Node nodeOpName = actorEnergyElt.getAttributeNode(ScenarioConstants.OP_NAME);
+    final Node nodeVertexPath = actorEnergyElt.getAttributeNode(ScenarioConstants.VERTEX_NAME);
 
     if (nodeEnergyValue != null && nodeOpName != null && nodeVertexPath != null) {
       final String energyValue = nodeEnergyValue.getNodeValue();
@@ -1011,14 +1005,14 @@ public class ScenarioParser {
    */
   private void parsePeCommsEnergy(final Element peCommsEnergy) {
 
-    final Node nodeSourcePeType = peCommsEnergy.getAttributeNode("sourcePeType");
+    final Node nodeSourcePeType = peCommsEnergy.getAttributeNode(ScenarioConstants.SOURCE_PE_TYPE);
     final String sourcePeType = nodeSourcePeType.getNodeValue();
     Node nodeChild = peCommsEnergy.getFirstChild();
 
     while (nodeChild != null) {
       if (nodeChild instanceof final Element elt) {
         final String type = elt.getTagName();
-        if (type.equals("destinationType")) {
+        if (type.equals(ScenarioConstants.DESTINATION_TYPE)) {
           parseCommNodeEnergy(elt, sourcePeType);
         }
       }
@@ -1037,8 +1031,8 @@ public class ScenarioParser {
    */
   private void parseCommNodeEnergy(final Element commNodeEnergyElt, final String sourcePeType) {
 
-    final Node nodeEnergyValue = commNodeEnergyElt.getAttributeNode("energyValue");
-    final Node nodeDestinationPeType = commNodeEnergyElt.getAttributeNode("destinationPeType");
+    final Node nodeEnergyValue = commNodeEnergyElt.getAttributeNode(ScenarioConstants.ENERGY_VALUE);
+    final Node nodeDestinationPeType = commNodeEnergyElt.getAttributeNode(ScenarioConstants.DESTINATION_PE_TYPE);
     if (nodeEnergyValue != null && nodeDestinationPeType != null) {
       final String energyValue = nodeEnergyValue.getNodeValue();
       final String destinationPeType = nodeDestinationPeType.getNodeValue();
@@ -1062,11 +1056,8 @@ public class ScenarioParser {
       if (node instanceof final Element elt) {
         final String type = elt.getTagName();
 
-        switch (type) {
-          case "sizesAreInBit":
-            this.scenario.setSizesAreInBit(true);
-            break;
-          default:
+        if (type.equals(ScenarioConstants.SIZE_ARE_IN_BIT)) {
+          this.scenario.setSizesAreInBit(true);
         }
       }
 
