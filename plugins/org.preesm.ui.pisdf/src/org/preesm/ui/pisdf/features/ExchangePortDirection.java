@@ -43,7 +43,9 @@ public class ExchangePortDirection extends ExchangePortCategory {
    */
   @Override
   public String getName() {
-    return "Exchange Port Direction In/Out";
+    // Should be "Exchange Port Direction In/Out\tCtrl+Arrow Right" but printing keyboard shortcut involving arrows
+    // seems complicated.
+    return "Exchange Port Direction In/Out (Ctrl+Arrow Right)";
   }
 
   /*

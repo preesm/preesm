@@ -78,7 +78,8 @@ public class MoveDownActorPortFeature extends MoveUpActorPortFeature {
    */
   @Override
   public String getName() {
-    return "Move down Port\tCtrl+Down_Arrow";
+    // Should be "Move up Port\tCtrl+Arrow Down" but printing keyboard shortcut involving arrows seems complicated.
+    return "Move down Port (Ctrl+Arrow Down)";
   }
 
   /*

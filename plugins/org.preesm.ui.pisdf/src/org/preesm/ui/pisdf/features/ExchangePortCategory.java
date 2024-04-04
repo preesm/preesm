@@ -47,7 +47,9 @@ public class ExchangePortCategory extends AbstractCustomFeature {
    */
   @Override
   public String getName() {
-    return "Exchange Port Category Data/Config.";
+    // Should be "Exchange Port Category Data/Config.\tCtrl+Arrow Left" but printing keyboard shortcut involving arrows
+    // seems complicated.
+    return "Exchange Port Category Data/Config (Ctrl+Arrow Left)";
   }
 
   /*

@@ -92,7 +92,8 @@ public class MoveUpActorPortFeature extends AbstractCustomFeature {
    */
   @Override
   public String getName() {
-    return "Move up Port\tCtrl+Up_Arrow";
+    // Should be "Move up Port\tCtrl+Arrow Up" but printing keyboard shortcut involving arrows seems complicated.
+    return "Move up Port (Ctrl+Arrow Up)";
   }
 
   /*
