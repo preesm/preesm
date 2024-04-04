@@ -6,7 +6,7 @@ Element-Version: 3.0
 External-Reference: 
 Id: _c95JAOUIEe2gVs9UH7tlOw
 Runtime-Version: 2.5.4.202210020716
-Save-Time: 4/28/23, 12:51 PM
+Save-Time: 4/4/24, 7:38 PM
 Testcase-Type: ecl
 Verifications: _TqXjYOWxEe2yotkpYlnSWQ
 
@@ -61,7 +61,7 @@ with [get-editor bottom] {
     }
     with [get-palette] {
         get-palette-entry Parameter | mouse-move 66 22 -height 24 -width 130
-        get-palette-entry "Malleable Parameter" | mouse-move 74 40 -height 41 -width 130
+        get-palette-entry "Moldable Parameter" | mouse-move 74 40 -height 41 -width 130
         with [get-palette-entry "Config. Input Interface"] {
             mouse-move 74 8 -height 41 -width 130
             mouse-hover 74 8 -height 41 -width 130

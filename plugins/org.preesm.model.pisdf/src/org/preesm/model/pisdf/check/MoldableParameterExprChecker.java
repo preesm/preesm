@@ -39,16 +39,16 @@ import java.util.SortedSet;
 import java.util.TreeSet;
 import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.preesm.commons.math.ExpressionEvaluationException;
-import org.preesm.model.pisdf.MalleableParameter;
+import org.preesm.model.pisdf.MoldableParameter;
 
 /**
- * Provide syntax checker and utils for malleable parameters.
+ * Provide syntax checker and utils for moldable parameters.
  *
  * @author ahonorat
  */
-public class MalleableParameterExprChecker {
+public class MoldableParameterExprChecker {
 
-  private MalleableParameterExprChecker() {
+  private MoldableParameterExprChecker() {
     // Forbids instantiation
   }
 
@@ -60,18 +60,18 @@ public class MalleableParameterExprChecker {
   }
 
   /**
-   * Chcek if the expression of a given MalleableParameter is valid. If valid, the default expression is set to the
-   * first one, otherwise, it is set to the first invalid expression.
+   * Chcek if the expression of a given MoldableParameter is valid. If valid, the default expression is set to the first
+   * one, otherwise, it is set to the first invalid expression.
    *
    * @param mp
-   *          MalleableParameter to check.
+   *          MoldableParameter to check.
    * @return {@code null} if no problem, the first exception encountered if there is a problem.
    */
-  public static Exception isValid(MalleableParameter mp) {
+  public static Exception isValid(MoldableParameter mp) {
     return checkEachParameter(mp);
   }
 
-  private static Exception checkEachParameter(MalleableParameter mp) {
+  private static Exception checkEachParameter(MoldableParameter mp) {
     final String[] strValues = mp.getUserExpression().split(";");
     for (final String str : strValues) {
       mp.setExpression(str);
@@ -90,10 +90,10 @@ public class MalleableParameterExprChecker {
   }
 
   /**
-   * Compute and returns list of long values, being possible values of a malleable parameter.
+   * Compute and returns list of long values, being possible values of a moldable parameter.
    *
    * @param userExpression
-   *          The malleable parameter userExpression.
+   *          The moldable parameter userExpression.
    * @return The values, without repetition, in ascending order.
    */
   public static final SortedSet<Long> getUniqueValues(String userExpression) {
@@ -109,16 +109,16 @@ public class MalleableParameterExprChecker {
         res.add(value);
       }
     } catch (final NumberFormatException e) {
-      throw new PreesmRuntimeException("A number in a malleable parameter expression cannot be converted to long.", e);
+      throw new PreesmRuntimeException("A number in a moldable parameter expression cannot be converted to long.", e);
     }
     return res;
   }
 
   /**
-   * Returns the default expression of a malleable parameter.
+   * Returns the default expression of a moldable parameter.
    *
    * @param userExpression
-   *          The malleable parameter userExpression.
+   *          The moldable parameter userExpression.
    * @return The first expression.
    */
   public static final String getFirstExpr(String userExpression) {

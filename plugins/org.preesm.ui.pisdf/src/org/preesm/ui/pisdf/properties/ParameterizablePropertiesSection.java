@@ -56,10 +56,10 @@ import org.preesm.model.pisdf.DataPort;
 import org.preesm.model.pisdf.Delay;
 import org.preesm.model.pisdf.Expression;
 import org.preesm.model.pisdf.InterfaceActor;
-import org.preesm.model.pisdf.MalleableParameter;
+import org.preesm.model.pisdf.MoldableParameter;
 import org.preesm.model.pisdf.Parameter;
 import org.preesm.model.pisdf.Port;
-import org.preesm.model.pisdf.check.MalleableParameterExprChecker;
+import org.preesm.model.pisdf.check.MoldableParameterExprChecker;
 
 // TODO: Auto-generated Javadoc
 /**
@@ -86,7 +86,7 @@ public class ParameterizablePropertiesSection extends DataPortPropertiesUpdater 
   CLabel lblValueObj;
 
   /** The first column width. */
-  final int FIRST_COLUMN_WIDTH = 200;
+  static final int FIRST_COLUMN_WIDTH = 200;
 
   /**
    * A text expression can be as an expression: value numbers, trigonometric functions, expression of condition "if
@@ -96,7 +96,7 @@ public class ParameterizablePropertiesSection extends DataPortPropertiesUpdater 
 
   TabbedPropertySheetWidgetFactory factory   = null;
   Composite                        composite = null;
-  /** Used only for malleable parameter due to stupid restriction of the UI with ECore */
+  /** Used only for moldable parameter due to stupid restriction of the UI with ECore */
   Exception                        errorMP   = null;
 
   /*
@@ -162,13 +162,13 @@ public class ParameterizablePropertiesSection extends DataPortPropertiesUpdater 
 
   }
 
-  protected void setNewMalleableParameterUserExpression(final MalleableParameter mp, final String value) {
+  protected void setNewMoldableParameterUserExpression(final MoldableParameter mp, final String value) {
     final TransactionalEditingDomain editingDomain = getDiagramTypeProvider().getDiagramBehavior().getEditingDomain();
     editingDomain.getCommandStack().execute(new RecordingCommand(editingDomain) {
       @Override
       protected void doExecute() {
         mp.setUserExpression(value);
-        errorMP = MalleableParameterExprChecker.isValid(mp);
+        errorMP = MoldableParameterExprChecker.isValid(mp);
       }
     });
   }
@@ -181,25 +181,23 @@ public class ParameterizablePropertiesSection extends DataPortPropertiesUpdater 
     final PictogramElement pe = getSelectedPictogramElement();
 
     if (pe != null) {
-      EObject bo = Graphiti.getLinkService().getBusinessObjectForLinkedPictogramElement(pe);
+      final EObject bo = Graphiti.getLinkService().getBusinessObjectForLinkedPictogramElement(pe);
       if (bo == null) {
         return;
       }
-      if (bo instanceof InterfaceActor) {
-        DataPort dp = ((InterfaceActor) bo).getDataPort();
+      if (bo instanceof final InterfaceActor iActor) {
+        final DataPort dp = iActor.getDataPort();
         updateDataPortProperties(dp, txtExpression);
-      } else if (bo instanceof MalleableParameter) {
-        MalleableParameter mp = (MalleableParameter) bo;
+      } else if (bo instanceof final MoldableParameter mp) {
         if (mp.getUserExpression().compareTo(this.txtExpression.getText()) != 0) {
-          setNewMalleableParameterUserExpression(mp, this.txtExpression.getText());
+          setNewMoldableParameterUserExpression(mp, this.txtExpression.getText());
           getDiagramTypeProvider().getDiagramBehavior().refreshRenderingDecorators(pe);
         }
-      } else if (bo instanceof Parameter) {
+      } else if (bo instanceof final Parameter param) {
         if ((bo instanceof ConfigInputInterface)) {
           this.lblValueObj.setText(
               "Default value is a Long Integer, only used for the computation of subsequent parameters in the GUI.");
         }
-        final Parameter param = (Parameter) bo;
         if (param.getValueExpression().getExpressionAsString().compareTo(this.txtExpression.getText()) != 0) {
           setNewExpression(param, this.txtExpression.getText());
           getDiagramTypeProvider().getDiagramBehavior().refreshRenderingDecorators(pe);
@@ -231,11 +229,10 @@ public class ParameterizablePropertiesSection extends DataPortPropertiesUpdater 
         return;
       }
 
-      if (businessObject instanceof Parameter) {
-        elementName = ((Parameter) businessObject).getName();
+      if (businessObject instanceof final Parameter param) {
+        elementName = param.getName();
         elementValueExpression = ((Parameter) businessObject).getValueExpression();
-      } else if (businessObject instanceof InterfaceActor) {
-        final InterfaceActor iface = ((InterfaceActor) businessObject);
+      } else if (businessObject instanceof final InterfaceActor iface) {
         elementName = iface.getName();
         elementValueExpression = iface.getDataPort().getPortRateExpression();
       } else {
@@ -246,8 +243,7 @@ public class ParameterizablePropertiesSection extends DataPortPropertiesUpdater 
       if (elementValueExpression != null) {
         this.txtExpression.setEnabled(true);
 
-        if (businessObject instanceof MalleableParameter) {
-          final MalleableParameter mp = (MalleableParameter) businessObject;
+        if (businessObject instanceof final MoldableParameter mp) {
           final String eltExprString = mp.getUserExpression();
           if (this.txtExpression.getText().compareTo(eltExprString) != 0) {
             this.txtExpression.setText(eltExprString);
@@ -259,13 +255,12 @@ public class ParameterizablePropertiesSection extends DataPortPropertiesUpdater 
               lblValueObj.setText(Long.toString(evaluate));
               txtExpression.setBackground(new Color(null, 255, 255, 255));
             } catch (final ExpressionEvaluationException e) {
-              lblValueObj
-                  .setText("A malleable is a sequence of expression separated by ';'. Error : " + e.getMessage());
+              lblValueObj.setText("A moldable is a sequence of expression separated by ';'. Error : " + e.getMessage());
               txtExpression.setBackground(new Color(null, 240, 150, 150));
             }
           } else {
             lblValueObj
-                .setText("A malleable is a sequence of expression separated by ';'. Error : " + errorMP.getMessage());
+                .setText("A moldable is a sequence of expression separated by ';'. Error : " + errorMP.getMessage());
             txtExpression.setBackground(new Color(null, 240, 150, 150));
           }
         } else {

@@ -24,25 +24,25 @@ import org.preesm.model.scenario.Scenario;
 import org.preesm.model.slam.Design;
 
 /**
- * This class computes and set the best values of malleable parameters.
- * 
+ * This class computes and set the best values of moldable parameters.
+ *
  * @author ahonorat
  */
-public class SetMalleableParameters {
+public class SetMoldableParameters {
 
   /**
    * Defines the minimal number of points to be in a cluster. If higher than 1, there might be no cluster at all with a
    * too short distance.
    */
-  public final int NB_POINTS_MIN_CLUSTERING = 2;
+  public static final int NB_POINTS_MIN_CLUSTERING = 2;
 
-  protected final Scenario                   scenario;
-  protected final PiGraph                    graph;
-  protected final Design                     architecture;
-  protected final List<MalleableParameterIR> mparamsIR;
-  protected final DSEpointGlobalComparator   globalComparator;
-  protected final DSEpointParetoComparator   paretoComparator;
-  protected final boolean                    delayRetryValue;
+  protected final Scenario                  scenario;
+  protected final PiGraph                   graph;
+  protected final Design                    architecture;
+  protected final List<MoldableParameterIR> mparamsIR;
+  protected final DSEpointGlobalComparator  globalComparator;
+  protected final DSEpointParetoComparator  paretoComparator;
+  protected final boolean                   delayRetryValue;
 
   protected final Map<Parameter, String> backupParamOverride;
 
@@ -51,7 +51,7 @@ public class SetMalleableParameters {
 
   /**
    * Set the right attributes for the DSE.
-   * 
+   *
    * @param scenario
    *          Scenario to be used.
    * @param graph
@@ -59,14 +59,14 @@ public class SetMalleableParameters {
    * @param architecture
    *          Architecture to be used.
    * @param mparamsIR
-   *          Malleable parameters IR to be used.
+   *          Moldable parameters IR to be used.
    * @param globalComparator
    *          Global comparator
    * @param delayRetryValue
    *          If cuts should be added.
    */
-  public SetMalleableParameters(final Scenario scenario, final PiGraph graph, final Design architecture,
-      final List<MalleableParameterIR> mparamsIR, final DSEpointGlobalComparator globalComparator,
+  public SetMoldableParameters(final Scenario scenario, final PiGraph graph, final Design architecture,
+      final List<MoldableParameterIR> mparamsIR, final DSEpointGlobalComparator globalComparator,
       final boolean delayRetryValue) {
 
     this.scenario = scenario;
@@ -79,7 +79,7 @@ public class SetMalleableParameters {
 
     // set the scenario graph since it is used for timings
     backupParamOverride = new HashMap<>();
-    for (Entry<Parameter, String> e : scenario.getParameterValues().entrySet()) {
+    for (final Entry<Parameter, String> e : scenario.getParameterValues().entrySet()) {
       backupParamOverride.put(e.getKey(), e.getValue());
     }
 
@@ -89,7 +89,7 @@ public class SetMalleableParameters {
 
   /**
    * Get the log of DSE points explored for the comparator log.
-   * 
+   *
    * @return The log in a CSV format.
    */
   public StringBuilder getComparatorLog() {
@@ -98,7 +98,7 @@ public class SetMalleableParameters {
 
   /**
    * Get the log of DSE points on the Pareto front of the metrics only.
-   * 
+   *
    * @return The log in a CSV format.
    */
   public StringBuilder getParetorFrontLog() {
@@ -109,7 +109,7 @@ public class SetMalleableParameters {
 
   /**
    * Run the exhaustive DSE.
-   * 
+   *
    * @param confSched
    *          The configuration scheduler to be used.
    * @return The PiGraph set with values of best parameter.
@@ -139,7 +139,7 @@ public class SetMalleableParameters {
     if (bestConfig == null) {
       resetAllMparams(mparamsIR);
       scenario.getParameterValues().putAll(backupParamOverride);
-      PreesmLogger.getLogger().warning("No configuration was good, default malleable parameter values are put back.");
+      PreesmLogger.getLogger().warning("No configuration was good, default moldable parameter values are put back.");
     }
 
     return logAndSetBestPoint(pce, bestPoint, bestConfig);
@@ -148,7 +148,7 @@ public class SetMalleableParameters {
 
   /**
    * Run the DSE with number heuristics.
-   * 
+   *
    * @param confSched
    *          The configuration scheduler to be used.
    * @return The PiGraph set with values of best parameter.
@@ -168,7 +168,7 @@ public class SetMalleableParameters {
     int indexRound = 0;
     do {
       indexRound++;
-      PreesmLogger.getLogger().log(Level.INFO, "New DSE heuristic round: " + indexRound);
+      PreesmLogger.getLogger().info("New DSE heuristic round: " + indexRound);
 
       bestLocalPoint = new DSEpointIR();
       bestLocalConfig = null;
@@ -177,7 +177,7 @@ public class SetMalleableParameters {
         indexTot++;
 
         final DSEpointIR dsep = runAndRetryConfiguration(confSched, indexTot);
-        PreesmLogger.getLogger().log(Level.FINE, dsep::toString);
+        PreesmLogger.getLogger().info(dsep::toString);
         if (dsep.isSchedulable) {
           if (globalComparator.compare(dsep, bestPoint) < 0) {
             bestConfig = pce.recordConfiguration();
@@ -194,13 +194,12 @@ public class SetMalleableParameters {
       if (bestConfig == null) {
         resetAllMparams(mparamsIR);
         scenario.getParameterValues().putAll(backupParamOverride);
-        PreesmLogger.getLogger().warning("No configuration was good, default malleable parameter values are put back.");
+        PreesmLogger.getLogger().warning("No configuration was good, default moldable parameter values are put back.");
         break;
       }
     } while (pce.setForNextPartialDSEround(bestLocalConfig));
 
     return logAndSetBestPoint(bestPceRound, bestPoint, bestConfig);
-
   }
 
   protected void paretoFrontierUpdate(final List<DSEpointIRclusteringProxy> listPareto, final DSEpointIR dsep,
@@ -233,10 +232,7 @@ public class SetMalleableParameters {
 
   protected DSEpointIR runAndRetryConfiguration(final AbstractConfigurationScheduler confSched, final int index) {
 
-    PreesmLogger.getLogger().fine("==> Testing combination: " + index);
-    // for (Parameter p : graph.getAllParameters()) {
-    // PreesmLogger.getLogger().fine(p.getVertexPath() + ": " + p.getExpression().getExpressionAsString());
-    // }
+    PreesmLogger.getLogger().fine(() -> "==> Testing combination: " + index);
 
     final PiGraph graphResolvedCopy = PiMMUserFactory.instance.copyPiGraphWithHistory(graph);
     PiMMHelper.resolveAllParameters(graphResolvedCopy);
@@ -254,13 +250,12 @@ public class SetMalleableParameters {
       final int nbCore = architecture.getProcessingElements().get(0).getInstances().size();
       final int iterationDelay = res.latency; // is greater or equal to 1
       int maxCuts = globalComparator.getMaximumLatency(); // so -1 is performed in following test
-      if (maxCuts > iterationDelay) {
-        // ensure we can add at least one cut
-        maxCuts -= iterationDelay;
-      } else {
+      if (maxCuts <= iterationDelay) {
         // we cannot add delays, so no retry
         return res;
       }
+      // ensure we can add at least one cut
+      maxCuts -= iterationDelay;
 
       final Pair<Long, Long> maxLoads = confSched.getLastMaxLoads();
       final int nbCuts = globalComparator.computeCutsAmount(maxCuts, nbCore, confSched.getLastEndTime(),
@@ -301,8 +296,8 @@ public class SetMalleableParameters {
   }
 
   /**
-   * Overrides malleable parameters values, also in scenario. Does nothing if bestConfig is null.
-   * 
+   * Overrides moldalbe parameters values, also in scenario. Does nothing if bestConfig is null.
+   *
    * @param pce
    *          used to set the bestConfig.
    * @param bestPoint
@@ -315,14 +310,13 @@ public class SetMalleableParameters {
       final List<Integer> bestConfig) {
     if (bestConfig != null) {
       pce.setConfiguration(bestConfig);
-      PreesmLogger.getLogger().log(Level.INFO, "Best configuration has metrics: " + bestPoint);
-      PreesmLogger.getLogger().log(Level.WARNING,
-          "The malleable parameters value have been overriden in the scenario!");
+      PreesmLogger.getLogger().info(() -> "Best configuration has metrics: " + bestPoint);
+      PreesmLogger.getLogger().warning("The moldable parameters value have been overriden in the scenario!");
       if (!globalComparator.areAllThresholdMet(bestPoint)) {
-        PreesmLogger.getLogger().log(Level.WARNING, "Best configuration does not respect all thresholds.");
+        PreesmLogger.getLogger().warning("Best configuration does not respect all thresholds.");
       }
       if (bestPoint.askedCuts != 0) {
-        PreesmLogger.getLogger().log(Level.WARNING,
+        PreesmLogger.getLogger().warning(
             "Delays have been added to the graph (implies graph flattening and parameter expression resolution "
                 + "in output graph)!");
 
@@ -341,17 +335,17 @@ public class SetMalleableParameters {
   }
 
   protected static void logCsvContentMparams(final StringBuilder logDSEpoints,
-      final List<MalleableParameterIR> mparamsIR, final DSEpointIR point) {
-    for (MalleableParameterIR mpir : mparamsIR) {
+      final List<MoldableParameterIR> mparamsIR, final DSEpointIR point) {
+    for (final MoldableParameterIR mpir : mparamsIR) {
       logDSEpoints.append(mpir.mp.getExpression().evaluate() + ";");
     }
     logDSEpoints.append(point.toCsvContentString() + "\n");
   }
 
-  protected static void resetAllMparams(List<MalleableParameterIR> mparamsIR) {
-    // we need to consider exprs only since values may be in a different order (if sorted, or if overriden in
-    // MalleableParameterNumberIR)
-    for (MalleableParameterIR mpir : mparamsIR) {
+  protected static void resetAllMparams(List<MoldableParameterIR> mparamsIR) {
+    // we need to consider exprs only since values may be in a different order (if sorted, or if overridden in
+    // MoldableParameterNumberIR)
+    for (final MoldableParameterIR mpir : mparamsIR) {
       if (!mpir.exprs.isEmpty()) {
         mpir.mp.setExpression(mpir.exprs.get(0));
       }
@@ -380,7 +374,7 @@ public class SetMalleableParameters {
     final List<Cluster<DSEpointIRclusteringProxy>> clusters = clusterer.cluster(paretoFrontAndDsecr);
     // TODO change method, asks nbClusters instead of distance? seems inefficient currently
     // TODO properly log the clusters
-    PreesmLogger.getLogger().info("The clustering algorithm found: " + clusters.size() + " clusters.");
+    PreesmLogger.getLogger().info(() -> "The clustering algorithm found: " + clusters.size() + " clusters.");
   }
 
 }

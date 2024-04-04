@@ -618,8 +618,8 @@ class PiGraph extends AbstractActor, Graph, PeriodicElement {
 		return parameters.filter(it|!((it instanceof ConfigInputInterface) || (it instanceof ConfigOutputInterface) )).
 			toEList.unmodifiableView
 	}
-	op unique MalleableParameter[] getMalleableParameters() {
-		return parameters.filter[it instanceof MalleableParameter].map[it as MalleableParameter].toEList.unmodifiableView
+	op unique MoldableParameter[] getMoldableParameters() {
+		return parameters.filter[it instanceof MoldableParameter].map[it as MoldableParameter].toEList.unmodifiableView
 	}
 
 	op unique Parameter[] getInputParameters() {
@@ -1138,7 +1138,7 @@ class Parameter extends Vertex, Configurable, ISetter, ExpressionHolder {
 	}
 }
 
-class MalleableParameter extends Parameter {
+class MoldableParameter extends Parameter {
 	String userExpression
 	op String[] getStrExpressions() {
 		return userExpression.split(";").filter[!it.isEmpty()].toEList.unmodifiableView

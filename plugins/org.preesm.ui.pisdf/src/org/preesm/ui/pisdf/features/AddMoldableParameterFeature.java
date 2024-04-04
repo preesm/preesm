@@ -54,16 +54,16 @@ import org.eclipse.graphiti.services.IGaService;
 import org.eclipse.graphiti.services.IPeCreateService;
 import org.eclipse.graphiti.util.ColorConstant;
 import org.eclipse.graphiti.util.IColorConstant;
-import org.preesm.model.pisdf.MalleableParameter;
+import org.preesm.model.pisdf.MoldableParameter;
 import org.preesm.model.pisdf.PiGraph;
 
 // TODO: Auto-generated Javadoc
 /**
- * Add feature to add a {@link MalleableParameter} to the Diagram.
+ * Add feature to add a {@link MoldableParameter} to the Diagram.
  *
  * @author kdesnos
  */
-public class AddMalleableParameterFeature extends AbstractAddFeature {
+public class AddMoldableParameterFeature extends AbstractAddFeature {
 
   /** The Constant PARAMETER_TEXT_FOREGROUND. */
   public static final IColorConstant PARAMETER_TEXT_FOREGROUND = IColorConstant.BLACK;
@@ -78,12 +78,12 @@ public class AddMalleableParameterFeature extends AbstractAddFeature {
   public static final int PARAM_HEIGHT = 50;
 
   /**
-   * Default constructor of the {@link AddMalleableParameterFeature}.
+   * Default constructor of the {@link AddMoldableParameterFeature}.
    *
    * @param fp
    *          the feature provider
    */
-  public AddMalleableParameterFeature(final IFeatureProvider fp) {
+  public AddMoldableParameterFeature(final IFeatureProvider fp) {
     super(fp);
   }
 
@@ -95,7 +95,7 @@ public class AddMalleableParameterFeature extends AbstractAddFeature {
   @Override
   public boolean canAdd(final IAddContext context) {
     // Check that the user wants to add a Parameter to the Diagram
-    return (context.getNewObject() instanceof MalleableParameter) && (context.getTargetContainer() instanceof Diagram);
+    return (context.getNewObject() instanceof MoldableParameter) && (context.getTargetContainer() instanceof Diagram);
   }
 
   /*
@@ -105,7 +105,7 @@ public class AddMalleableParameterFeature extends AbstractAddFeature {
    */
   @Override
   public PictogramElement add(final IAddContext context) {
-    final MalleableParameter addedParameter = (MalleableParameter) context.getNewObject();
+    final MoldableParameter addedParameter = (MoldableParameter) context.getNewObject();
     final Diagram targetDiagram = (Diagram) context.getTargetContainer();
 
     // CONTAINER SHAPE WITH Triangle
@@ -120,12 +120,12 @@ public class AddMalleableParameterFeature extends AbstractAddFeature {
     Polygon house;
     {
       // Create a house shaped polygon
-      final int[] xy = new int[] { 12, 0, 24, 26, 24, AddMalleableParameterFeature.PARAM_HEIGHT, 0,
-          AddMalleableParameterFeature.PARAM_HEIGHT, 0, 26 };
+      final int[] xy = new int[] { 12, 0, 24, 26, 24, AddMoldableParameterFeature.PARAM_HEIGHT, 0,
+          AddMoldableParameterFeature.PARAM_HEIGHT, 0, 26 };
       house = gaService.createPolygon(containerShape, xy);
 
-      house.setBackground(manageColor(AddMalleableParameterFeature.PARAMETER_BACKGROUND));
-      house.setForeground(manageColor(AddMalleableParameterFeature.PARAMETER_FOREGROUND));
+      house.setBackground(manageColor(AddMoldableParameterFeature.PARAMETER_BACKGROUND));
+      house.setForeground(manageColor(AddMoldableParameterFeature.PARAMETER_FOREGROUND));
       house.setLineWidth(2);
       gaService.setLocationAndSize(house, context.getX(), context.getY(), width, height);
 
@@ -147,7 +147,7 @@ public class AddMalleableParameterFeature extends AbstractAddFeature {
 
       // create and set text graphics algorithm
       final Text text = gaService.createText(shape, addedParameter.getName());
-      text.setForeground(manageColor(AddMalleableParameterFeature.PARAMETER_TEXT_FOREGROUND));
+      text.setForeground(manageColor(AddMoldableParameterFeature.PARAMETER_TEXT_FOREGROUND));
       text.setHorizontalAlignment(Orientation.ALIGNMENT_CENTER);
 
       // vertical alignment has as default value "center"

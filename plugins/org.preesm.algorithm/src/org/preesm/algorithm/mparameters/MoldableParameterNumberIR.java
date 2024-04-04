@@ -37,14 +37,14 @@ package org.preesm.algorithm.mparameters;
 
 import java.util.ArrayList;
 import java.util.List;
-import org.preesm.model.pisdf.MalleableParameter;
+import org.preesm.model.pisdf.MoldableParameter;
 
 /**
- * This class stores intermediate results on malleable parameters being numbers only.
- * 
+ * This class stores intermediate results on moldable parameters being numbers only.
+ *
  * @author ahonorat
  */
-public class MalleableParameterNumberIR extends MalleableParameterIR {
+public class MoldableParameterNumberIR extends MoldableParameterIR {
 
   final List<Long> oriValues;
   int              startIndex; // including itself, < oriValues.size(), >= 0
@@ -52,7 +52,7 @@ public class MalleableParameterNumberIR extends MalleableParameterIR {
   int              indexLow;   // >= startIndex, <= indexHigh (equal only if one value
   int              indexHigh;  // <= endIndex, >= indexLow (equal only if one value)
 
-  MalleableParameterNumberIR(MalleableParameter mp) {
+  MoldableParameterNumberIR(MoldableParameter mp) {
     super(mp);
     oriValues = values;
     startIndex = 0;

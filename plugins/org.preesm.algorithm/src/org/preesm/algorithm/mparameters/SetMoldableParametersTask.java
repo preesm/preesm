@@ -57,10 +57,10 @@ import org.preesm.commons.doc.annotations.PreesmTask;
 import org.preesm.commons.doc.annotations.Value;
 import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.preesm.commons.logger.PreesmLogger;
-import org.preesm.model.pisdf.MalleableParameter;
+import org.preesm.model.pisdf.MoldableParameter;
 import org.preesm.model.pisdf.Parameter;
 import org.preesm.model.pisdf.PiGraph;
-import org.preesm.model.pisdf.check.MalleableParameterExprChecker;
+import org.preesm.model.pisdf.check.MoldableParameterExprChecker;
 import org.preesm.model.scenario.Scenario;
 import org.preesm.model.slam.Design;
 import org.preesm.workflow.elements.Workflow;
@@ -68,14 +68,14 @@ import org.preesm.workflow.implement.AbstractTaskImplementation;
 import org.preesm.workflow.implement.AbstractWorkflowNodeImplementation;
 
 /**
- * This task computes and set the best values of malleable parameters.
- * 
+ * This task computes and set the best values of moldable parameters.
+ *
  * @author ahonorat
  */
-@PreesmTask(id = "pisdf-mparams.setter", name = "Malleable Parameters setter",
-    shortDescription = "Set the malleable parameters default value according to the best schedule found.",
+@PreesmTask(id = "pisdf-mparams.setter", name = "Moldable Parameters setter",
+    shortDescription = "Set the moldable parameters default value according to the best schedule found.",
 
-    description = "Set the malleable parameters default value in the scenario according to the best schedule found."
+    description = "Set the moldable parameters default value in the scenario according to the best schedule found."
         + "Works only on homogeneous architectures. "
         + "Different strategies are possible, exhaustive search or heuristics.",
 
@@ -85,48 +85,48 @@ import org.preesm.workflow.implement.AbstractWorkflowNodeImplementation;
     outputs = { @Port(name = "PiMM", type = PiGraph.class) },
 
     parameters = {
-        @org.preesm.commons.doc.annotations.Parameter(name = SetMalleableParametersTask.DEFAULT_COMPARISONS_NAME,
+        @org.preesm.commons.doc.annotations.Parameter(name = SetMoldableParametersTask.DEFAULT_COMPARISONS_NAME,
             description = "Order of comparisons of the metrics (T for throughput or P for power or E for energy "
                 + "or L for latency or M for makespan, separated by >). Latency is indexed from 1 to "
                 + "the maximum number of pipeline stages allowed.",
-            values = { @Value(name = SetMalleableParametersTask.DEFAULT_COMPARISONS_VALUE,
+            values = { @Value(name = SetMoldableParametersTask.DEFAULT_COMPARISONS_VALUE,
                 effect = "Metrics are compare from left to right.") }),
-        @org.preesm.commons.doc.annotations.Parameter(name = SetMalleableParametersTask.DEFAULT_THRESHOLDS_NAME,
+        @org.preesm.commons.doc.annotations.Parameter(name = SetMoldableParametersTask.DEFAULT_THRESHOLDS_NAME,
             description = "Objectives of the metrics. "
                 + "Threshold if it is any integer higher than 0, minimize it otherwise.",
-            values = { @Value(name = SetMalleableParametersTask.DEFAULT_THRESHOLDS_VALUE,
+            values = { @Value(name = SetMoldableParametersTask.DEFAULT_THRESHOLDS_VALUE,
                 effect = "In the same order as the metrics.") }),
-        @org.preesm.commons.doc.annotations.Parameter(name = SetMalleableParametersTask.DEFAULT_PARAMS_OBJVS_NAME,
+        @org.preesm.commons.doc.annotations.Parameter(name = SetMoldableParametersTask.DEFAULT_PARAMS_OBJVS_NAME,
             description = "Tells to minimize (-) or maximize (+) a parameter (after main objectives). May be empty.",
-            values = { @Value(name = SetMalleableParametersTask.DEFAULT_PARAMS_OBJVS_VALUE,
+            values = { @Value(name = SetMoldableParametersTask.DEFAULT_PARAMS_OBJVS_VALUE,
                 effect = "Syntax: >+parentGraphName/parameterName>-...") }),
-        @org.preesm.commons.doc.annotations.Parameter(name = SetMalleableParametersTask.DEFAULT_HEURISTIC_NAME,
-            description = "Use a DSE heuristic on all malleable parameter expressions which are integer numbers. "
+        @org.preesm.commons.doc.annotations.Parameter(name = SetMoldableParametersTask.DEFAULT_HEURISTIC_NAME,
+            description = "Use a DSE heuristic on all moldable parameter expressions which are integer numbers. "
                 + "Only a subset of their expressions are explored.",
-            values = { @Value(name = SetMalleableParametersTask.DEFAULT_HEURISTIC_VALUE,
+            values = { @Value(name = SetMoldableParametersTask.DEFAULT_HEURISTIC_VALUE,
                 effect = "False disables the heuristic.") }),
-        @org.preesm.commons.doc.annotations.Parameter(name = SetMalleableParametersTask.DEFAULT_DELAY_RETRY_NAME,
+        @org.preesm.commons.doc.annotations.Parameter(name = SetMoldableParametersTask.DEFAULT_DELAY_RETRY_NAME,
             description = "Use a DSE heuristic to try to add delays if it improves the throughput. "
                 + "See workflow task pisdf-delays.setter. Number of pipelines is inferred automatically.",
-            values = { @Value(name = SetMalleableParametersTask.DEFAULT_DELAY_RETRY_VALUE,
+            values = { @Value(name = SetMoldableParametersTask.DEFAULT_DELAY_RETRY_VALUE,
                 effect = "False disables the heuristic.") }),
-        @org.preesm.commons.doc.annotations.Parameter(name = SetMalleableParametersTask.DEFAULT_SCHEDULER_NAME,
+        @org.preesm.commons.doc.annotations.Parameter(name = SetMoldableParametersTask.DEFAULT_SCHEDULER_NAME,
             description = "Set the scheduler used to estimate each configuration point.",
             values = {
-                @Value(name = SetMalleableParametersTask.SCHEDULER_PARAM_VALUE_FPGA,
+                @Value(name = SetMoldableParametersTask.SCHEDULER_PARAM_VALUE_FPGA,
                     effect = "Single FPGA average scheduler."),
-                @Value(name = SetMalleableParametersTask.SCHEDULER_PARAM_VALUE_LIST,
+                @Value(name = SetMoldableParametersTask.SCHEDULER_PARAM_VALUE_LIST,
                     effect = "Homogeneous periodic list scheduler.") }),
-        @org.preesm.commons.doc.annotations.Parameter(name = SetMalleableParametersTask.DEFAULT_CLUSTER_DISTANCE_NAME,
+        @org.preesm.commons.doc.annotations.Parameter(name = SetMoldableParametersTask.DEFAULT_CLUSTER_DISTANCE_NAME,
             description = "Set the clustering (positive) distance to be used"
                 + "for DSE points on the metrics Pareto front.",
-            values = { @Value(name = SetMalleableParametersTask.DEFAULT_CLUSTER_DISTANCE_VALUE,
+            values = { @Value(name = SetMoldableParametersTask.DEFAULT_CLUSTER_DISTANCE_VALUE,
                 effect = "Disables clustering if zero.") }),
-        @org.preesm.commons.doc.annotations.Parameter(name = SetMalleableParametersTask.DEFAULT_LOG_NAME,
+        @org.preesm.commons.doc.annotations.Parameter(name = SetMoldableParametersTask.DEFAULT_LOG_NAME,
             description = "Export all explored points with associated metrics in a csv file.",
-            values = { @Value(name = SetMalleableParametersTask.DEFAULT_LOG_VALUE,
+            values = { @Value(name = SetMoldableParametersTask.DEFAULT_LOG_VALUE,
                 effect = "Path relative to the project root.") }) })
-public class SetMalleableParametersTask extends AbstractTaskImplementation {
+public class SetMoldableParametersTask extends AbstractTaskImplementation {
 
   public static final String SCHEDULER_PARAM_VALUE_LIST = "homogeneousListPeriodic";
   public static final String SCHEDULER_PARAM_VALUE_FPGA = "singleFPGAavegarge";
@@ -164,8 +164,8 @@ public class SetMalleableParametersTask extends AbstractTaskImplementation {
     final Map<String, Object> output = new LinkedHashMap<>();
     output.put(AbstractWorkflowNodeImplementation.KEY_PI_GRAPH, graph);
 
-    List<MalleableParameter> mparams = graph.getAllParameters().stream().filter(x -> x instanceof MalleableParameter)
-        .map(x -> (MalleableParameter) x).collect(Collectors.toList());
+    final List<MoldableParameter> mparams = graph.getAllParameters().stream()
+        .filter(x -> x instanceof MoldableParameter).map(x -> (MoldableParameter) x).collect(Collectors.toList());
 
     if (mparams.isEmpty()) {
       return output;
@@ -173,32 +173,31 @@ public class SetMalleableParametersTask extends AbstractTaskImplementation {
 
     if (mparams.stream().anyMatch(x -> !x.isLocallyStatic())) {
       throw new PreesmRuntimeException(
-          "One or more malleable parameter is not locally static, this is not allowed in this task.");
+          "One or more moldable parameter is not locally static, this is not allowed in this task.");
     }
 
-    List<MalleableParameterIR> mparamsIR = null;
+    List<MoldableParameterIR> mparamsIR = null;
     final boolean allNumbers = mparams.stream()
-        .allMatch(x -> MalleableParameterExprChecker.isOnlyNumbers(x.getUserExpression()));
+        .allMatch(x -> MoldableParameterExprChecker.isOnlyNumbers(x.getUserExpression()));
     if (allNumbers) {
       PreesmLogger.getLogger().log(Level.INFO,
-          "All malleable parameters are numbers, allowing non exhaustive heuristics.");
+          "All moldable parameters are numbers, allowing non exhaustive heuristics.");
     }
     final String heuristicStr = parameters.get(DEFAULT_HEURISTIC_NAME);
-    boolean heuristicValue = Boolean.parseBoolean(heuristicStr);
+    final boolean heuristicValue = Boolean.parseBoolean(heuristicStr);
     if (heuristicValue) {
       mparamsIR = mparams.stream().map(x -> {
-        if (MalleableParameterExprChecker.isOnlyNumbers(x.getUserExpression())) {
-          return new MalleableParameterNumberIR(x);
-        } else {
-          return new MalleableParameterIR(x);
+        if (MoldableParameterExprChecker.isOnlyNumbers(x.getUserExpression())) {
+          return new MoldableParameterNumberIR(x);
         }
+        return new MoldableParameterIR(x);
       }).collect(Collectors.toList());
     } else {
-      mparamsIR = mparams.stream().map(MalleableParameterIR::new).collect(Collectors.toList());
+      mparamsIR = mparams.stream().map(MoldableParameterIR::new).collect(Collectors.toList());
     }
 
     long nbCombinations = 1;
-    for (MalleableParameterIR mpir : mparamsIR) {
+    for (final MoldableParameterIR mpir : mparamsIR) {
       nbCombinations *= mpir.nbValues;
     }
     PreesmLogger.getLogger().log(Level.INFO, "The number of parameter combinations is: " + nbCombinations);
@@ -206,7 +205,7 @@ public class SetMalleableParametersTask extends AbstractTaskImplementation {
     final String delayRetryStr = parameters.get(DEFAULT_DELAY_RETRY_NAME);
     boolean delayRetryValue = Boolean.parseBoolean(delayRetryStr);
     final String comparisons = parameters.get(DEFAULT_COMPARISONS_NAME);
-    boolean shouldEstimateMemory = comparisons.contains("S");
+    final boolean shouldEstimateMemory = comparisons.contains("S");
     final DSEpointGlobalComparator globalComparator = getGlobalComparator(parameters, graph);
 
     final String schedulerName = parameters.get(DEFAULT_SCHEDULER_NAME).toLowerCase();
@@ -232,7 +231,7 @@ public class SetMalleableParametersTask extends AbstractTaskImplementation {
     }
 
     PiGraph outputGraph; // different of input graph only if delays has been added by the heuristic
-    final SetMalleableParameters smp = new SetMalleableParameters(scenario, graph, architecture, mparamsIR,
+    final SetMoldableParameters smp = new SetMoldableParameters(scenario, graph, architecture, mparamsIR,
         globalComparator, delayRetryValue);
 
     String suffix = "";
@@ -265,10 +264,10 @@ public class SetMalleableParametersTask extends AbstractTaskImplementation {
     return output;
   }
 
-  protected void logCsvFile(final StringBuilder logDSEpoints, final List<MalleableParameterIR> mparamsIR,
+  protected void logCsvFile(final StringBuilder logDSEpoints, final List<MoldableParameterIR> mparamsIR,
       final Workflow workflow, final Scenario scenario, final String logPath, final String suffix) {
     final StringBuilder header = new StringBuilder();
-    for (MalleableParameterIR mpir : mparamsIR) {
+    for (final MoldableParameterIR mpir : mparamsIR) {
       header.append(mpir.mp.getName() + ";");
     }
     header.append(DSEpointIR.CSV_HEADER_STRING + "\n");
@@ -281,7 +280,7 @@ public class SetMalleableParametersTask extends AbstractTaskImplementation {
     final IProject project = root.getProject(projectName);
 
     // Get a complete valid path with all folders existing
-    String exportAbsolutePath = project.getLocation() + logPath;
+    final String exportAbsolutePath = project.getLocation() + logPath;
     final File parent = new File(exportAbsolutePath);
     parent.mkdirs();
 
@@ -290,7 +289,7 @@ public class SetMalleableParametersTask extends AbstractTaskImplementation {
     try (final FileWriter fw = new FileWriter(file, true)) {
       fw.write(header.toString());
       fw.write(logDSEpoints.toString());
-    } catch (IOException e) {
+    } catch (final IOException e) {
       PreesmLogger.getLogger().log(Level.SEVERE,
           "Unhable to write the DSE task log in file:" + exportAbsolutePath + fileName);
     }
@@ -299,7 +298,7 @@ public class SetMalleableParametersTask extends AbstractTaskImplementation {
 
   /**
    * Instantiate the global comparator, based on parameters.
-   * 
+   *
    * @param parameters
    *          User parameters.
    * @param graph
@@ -331,19 +330,19 @@ public class SetMalleableParametersTask extends AbstractTaskImplementation {
       if (charComparisons[i] != 'P') {
         try {
           numberThresholds[i] = Long.parseLong(tabThresholds[i]);
-        } catch (NumberFormatException e) {
+        } catch (final NumberFormatException e) {
           throw new PreesmRuntimeException("Threshold n°" + i + " must be an integer number.");
         }
       } else {
         try {
           numberThresholds[i] = Double.parseDouble(tabThresholds[i]);
-        } catch (NumberFormatException e) {
+        } catch (final NumberFormatException e) {
           throw new PreesmRuntimeException("Threshold n°" + i + " must be a float number.");
         }
       }
     }
 
-    List<Comparator<DSEpointIR>> listComparators = new ArrayList<>();
+    final List<Comparator<DSEpointIR>> listComparators = new ArrayList<>();
     for (int i = 0; i < charComparisons.length; i++) {
       final Number thresholdI = numberThresholds[i];
       if (thresholdI.doubleValue() == 0.0D) {
@@ -401,7 +400,7 @@ public class SetMalleableParametersTask extends AbstractTaskImplementation {
     if (!params.matches(PARAMS_REGEX)) {
       throw new PreesmRuntimeException("Parameters string is not correct. Accepted regex: " + PARAMS_REGEX);
     }
-    LinkedHashMap<Pair<String, String>, Character> paramsObjvs = new LinkedHashMap<>();
+    final LinkedHashMap<Pair<String, String>, Character> paramsObjvs = new LinkedHashMap<>();
     final String[] tabParams = params.split(">");
     for (final String tabParam : tabParams) {
       if (tabParam.isEmpty()) {
@@ -415,7 +414,7 @@ public class SetMalleableParametersTask extends AbstractTaskImplementation {
       }
       final char minOrMax = parentAndParamNames[0].charAt(0);
       final String parent = parentAndParamNames[0].substring(1);
-      Parameter param = graph.lookupParameterGivenGraph(parentAndParamNames[1], parent);
+      final Parameter param = graph.lookupParameterGivenGraph(parentAndParamNames[1], parent);
       if (param == null) {
         PreesmLogger.getLogger().log(Level.WARNING, "Parameter: " + tabParam + " has not been found, ignored.");
       } else {
@@ -442,7 +441,7 @@ public class SetMalleableParametersTask extends AbstractTaskImplementation {
 
   @Override
   public String monitorMessage() {
-    return "Computing best values of malleable parameters.";
+    return "Computing best values of moldable parameters.";
   }
 
 }

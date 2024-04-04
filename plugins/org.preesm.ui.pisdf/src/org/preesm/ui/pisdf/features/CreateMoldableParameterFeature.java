@@ -43,7 +43,7 @@ import org.eclipse.graphiti.features.context.ICreateContext;
 import org.eclipse.graphiti.features.impl.AbstractCreateFeature;
 import org.eclipse.graphiti.func.ICreate;
 import org.eclipse.graphiti.mm.pictograms.Diagram;
-import org.preesm.model.pisdf.MalleableParameter;
+import org.preesm.model.pisdf.MoldableParameter;
 import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.pisdf.factory.PiMMUserFactory;
 import org.preesm.ui.pisdf.util.VertexNameValidator;
@@ -51,30 +51,30 @@ import org.preesm.ui.utils.DialogUtil;
 
 // TODO: Auto-generated Javadoc
 /**
- * Create Feature for {@link MalleableParameter}s.
+ * Create Feature for {@link MoldableParameter}s.
  *
  * @author kdesnos
  * @author jheulot
  */
-public class CreateMalleableParameterFeature extends AbstractCreateFeature {
+public class CreateMoldableParameterFeature extends AbstractCreateFeature {
 
   /** The Constant FEATURE_NAME. */
-  private static final String FEATURE_NAME = "Malleable Parameter";
+  private static final String FEATURE_NAME = "Moldable Parameter";
 
   /** The Constant FEATURE_DESCRIPTION. */
-  private static final String FEATURE_DESCRIPTION = "Create Malleable Parameter";
+  private static final String FEATURE_DESCRIPTION = "Create Moldable Parameter";
 
   /** The has done changes. */
   protected Boolean hasDoneChanges;
 
   /**
-   * Default constructor for the {@link CreateMalleableParameterFeature}.
+   * Default constructor for the {@link CreateMoldableParameterFeature}.
    *
    * @param fp
    *          the feature provider
    */
-  public CreateMalleableParameterFeature(final IFeatureProvider fp) {
-    super(fp, CreateMalleableParameterFeature.FEATURE_NAME, CreateMalleableParameterFeature.FEATURE_DESCRIPTION);
+  public CreateMoldableParameterFeature(final IFeatureProvider fp) {
+    super(fp, CreateMoldableParameterFeature.FEATURE_NAME, CreateMoldableParameterFeature.FEATURE_DESCRIPTION);
     this.hasDoneChanges = false;
   }
 
@@ -99,8 +99,8 @@ public class CreateMalleableParameterFeature extends AbstractCreateFeature {
     final PiGraph graph = (PiGraph) getBusinessObjectForPictogramElement(getDiagram());
 
     // Ask user for Parameter name until a valid name is entered.
-    final String question = "Enter new malleable parameter name";
-    String newParameterName = "MalleableParameterName";
+    final String question = "Enter new moldable parameter name";
+    String newParameterName = "MoldableParameterName";
 
     // TODO create a parameter name validator
     newParameterName = DialogUtil.askString("Create Parameter", question, newParameterName,
@@ -112,7 +112,7 @@ public class CreateMalleableParameterFeature extends AbstractCreateFeature {
     }
 
     // create Parameter
-    final MalleableParameter newParameter = PiMMUserFactory.instance.createMalleableParameter();
+    final MoldableParameter newParameter = PiMMUserFactory.instance.createMoldableParameter();
     newParameter.setName(newParameterName);
     // this parameter
 

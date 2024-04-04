@@ -89,7 +89,7 @@ import org.preesm.model.pisdf.ISetter;
 import org.preesm.model.pisdf.InitActor;
 import org.preesm.model.pisdf.InterfaceActor;
 import org.preesm.model.pisdf.InterfaceKind;
-import org.preesm.model.pisdf.MalleableParameter;
+import org.preesm.model.pisdf.MoldableParameter;
 import org.preesm.model.pisdf.Parameter;
 import org.preesm.model.pisdf.PersistenceLevel;
 import org.preesm.model.pisdf.PiGraph;
@@ -825,8 +825,8 @@ public class PiParser {
         case PiIdentifiers.PARAMETER:
           vertex = parseParameter(nodeElt, graph);
           break;
-        case PiIdentifiers.MALLEABLE_PARAMETER:
-          vertex = parseMalleableParameter(nodeElt, graph);
+        case PiIdentifiers.MOLDABLE_PARAMETER:
+          vertex = parseMoldableParameter(nodeElt, graph);
           break;
         case PiIdentifiers.DELAY:
           parseDelay(nodeElt, graph);
@@ -885,24 +885,24 @@ public class PiParser {
   }
 
   /**
-   * Parse a {@link MalleableParameter} of the Pi File.
+   * Parse a {@link MoldableParameter} of the Pi File.
    *
    * @param nodeElt
-   *          The node {@link Element} holding the {@link MalleableParameter} properties.
+   *          The node {@link Element} holding the {@link MoldableParameter} properties.
    * @param graph
    *          the deserialized {@link PiGraph}.
-   * @return the {@link AbstractVertex} of the {@link MalleableParameter}.
+   * @return the {@link AbstractVertex} of the {@link MoldableParameter}.
    */
-  private MalleableParameter parseMalleableParameter(final Element nodeElt, final PiGraph graph) {
+  private MoldableParameter parseMoldableParameter(final Element nodeElt, final PiGraph graph) {
     // Instantiate the new Parameter
-    final MalleableParameter param = PiMMUserFactory.instance.createMalleableParameter();
+    final MoldableParameter param = PiMMUserFactory.instance.createMoldableParameter();
     param.setExpression(nodeElt.getAttribute(PiIdentifiers.PARAMETER_EXPRESSION));
 
     // Get the actor properties
     final String name = nodeElt.getAttribute(PiIdentifiers.PARAMETER_NAME);
-    NameCheckerC.checkValidName(MalleableParameter.class.getName(), name);
+    NameCheckerC.checkValidName(MoldableParameter.class.getName(), name);
     param.setName(name);
-    final String userExpression = nodeElt.getAttribute(PiIdentifiers.MALLEABLE_PARAMETER_EXPRESSION);
+    final String userExpression = nodeElt.getAttribute(PiIdentifiers.MOLDABLE_PARAMETER_EXPRESSION);
     param.setUserExpression(userExpression);
 
     // Add the actor to the parsed graph

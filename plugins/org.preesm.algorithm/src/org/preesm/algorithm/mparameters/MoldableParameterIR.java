@@ -37,26 +37,26 @@ package org.preesm.algorithm.mparameters;
 
 import java.util.ArrayList;
 import java.util.List;
-import org.preesm.model.pisdf.MalleableParameter;
-import org.preesm.model.pisdf.check.MalleableParameterExprChecker;
+import org.preesm.model.pisdf.MoldableParameter;
+import org.preesm.model.pisdf.check.MoldableParameterExprChecker;
 
 /**
- * This class stores intermediate results on malleable parameters.
- * 
+ * This class stores intermediate results on moldable parameters.
+ *
  * @author ahonorat
  */
-class MalleableParameterIR {
+class MoldableParameterIR {
 
-  final MalleableParameter mp;               // original malleable parameter
-  final List<String>       exprs;            // expressions stored in mp
-  List<Long>               values;           // evaluated expressions, if only numbers
-  int                      nbValues;         // size of the number of exprs/values (redundant)
-  int                      currentExprIndex; // index from 0 to nbValues (included)
+  final MoldableParameter mp;               // original moldable parameter
+  final List<String>      exprs;            // expressions stored in mp
+  List<Long>              values;           // evaluated expressions, if only numbers
+  int                     nbValues;         // size of the number of exprs/values (redundant)
+  int                     currentExprIndex; // index from 0 to nbValues (included)
 
-  MalleableParameterIR(MalleableParameter mp) {
+  MoldableParameterIR(MoldableParameter mp) {
     this.mp = mp;
     exprs = mp.getStrExpressions();
-    values = new ArrayList<>(MalleableParameterExprChecker.getUniqueValues(mp.getUserExpression()));
+    values = new ArrayList<>(MoldableParameterExprChecker.getUniqueValues(mp.getUserExpression()));
     if (!values.isEmpty()) {
       nbValues = values.size();
     } else {

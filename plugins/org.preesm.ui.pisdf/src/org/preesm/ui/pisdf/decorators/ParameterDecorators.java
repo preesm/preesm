@@ -47,7 +47,7 @@ import org.eclipse.graphiti.tb.ImageDecorator;
 import org.preesm.commons.math.ExpressionEvaluationException;
 import org.preesm.model.pisdf.Dependency;
 import org.preesm.model.pisdf.Expression;
-import org.preesm.model.pisdf.MalleableParameter;
+import org.preesm.model.pisdf.MoldableParameter;
 import org.preesm.model.pisdf.Parameter;
 import org.preesm.model.pisdf.util.DependencyCycleDetector;
 import org.preesm.ui.pisdf.diagram.PiMMImageProvider;
@@ -84,10 +84,10 @@ public class ParameterDecorators {
     if (cycleDecorator != null) {
       decorators.add(cycleDecorator);
     } else {
-      // check if MalleableParameter
-      final IDecorator malleableParamDecorator = ParameterDecorators.getMalleableParamDecorator(parameter, pe);
-      if (malleableParamDecorator != null) {
-        decorators.add(malleableParamDecorator);
+      // check if MoldableParameter
+      final IDecorator moldableParamDecorator = ParameterDecorators.getMoldableParamDecorator(parameter, pe);
+      if (moldableParamDecorator != null) {
+        decorators.add(moldableParamDecorator);
       }
       // Check if the parameter expression is correct
       final IDecorator expressionDecorator = ParameterDecorators.getExpressionDecorator(parameter, pe);
@@ -131,19 +131,19 @@ public class ParameterDecorators {
   }
 
   /**
-   * Get the {@link IDecorator} indicating if the parameter is {@link MalleableParameter}.
+   * Get the {@link IDecorator} indicating if the parameter is {@link MoldableParameter}.
    *
    * @param parameter
    *          the {@link Parameter} to test
    * @param pe
    *          the {@link PictogramElement} of the tested {@link Parameter}
-   * @return the {@link IDecorator} if {@link MalleableParameter} , else <code>null</code>.
+   * @return the {@link IDecorator} if {@link MoldableParameter} , else <code>null</code>.
    */
-  protected static IDecorator getMalleableParamDecorator(final Parameter parameter, final PictogramElement pe) {
-    if (parameter instanceof MalleableParameter) {
+  protected static IDecorator getMoldableParamDecorator(final Parameter parameter, final PictogramElement pe) {
+    if (parameter instanceof MoldableParameter) {
       final ImageDecorator imageRenderingDecorator = new ImageDecorator(PiMMImageProvider.IMG_CURLY_BRACES);
 
-      imageRenderingDecorator.setMessage("Malleable Parameter");
+      imageRenderingDecorator.setMessage("Moldable Parameter");
       imageRenderingDecorator.setX((pe.getGraphicsAlgorithm().getWidth() / 2) - 12);
       imageRenderingDecorator.setY(5);
 
@@ -169,20 +169,7 @@ public class ParameterDecorators {
     detector.doSwitch(parameter);
     if (detector.cyclesDetected()) {
       for (final List<Parameter> cycle : detector.getCycles()) {
-        if (cycle.contains(parameter)) {
-          final ImageDecorator imageRenderingDecorator = new ImageDecorator(
-              IPlatformImageConstants.IMG_ECLIPSE_ERROR_TSK);
-          final StringBuilder message = new StringBuilder("Parameter belongs to a cycle: ");
-          for (final Parameter param : cycle) {
-            message.append(param.getName() + ">");
-          }
-          message.append(parameter.getName());
-          imageRenderingDecorator.setMessage(message.toString());
-          imageRenderingDecorator.setX((pe.getGraphicsAlgorithm().getWidth() / 2) - 8);
-          imageRenderingDecorator.setY(8);
-
-          return imageRenderingDecorator;
-        } else {
+        if (!cycle.contains(parameter)) {
           // If the parameter is not contained in a detected cycle but
           // cycles were detected
           // its locally static status cannot be determined
@@ -195,6 +182,18 @@ public class ParameterDecorators {
 
           return imageRenderingDecorator;
         }
+        final ImageDecorator imageRenderingDecorator = new ImageDecorator(
+            IPlatformImageConstants.IMG_ECLIPSE_ERROR_TSK);
+        final StringBuilder message = new StringBuilder("Parameter belongs to a cycle: ");
+        for (final Parameter param : cycle) {
+          message.append(param.getName() + ">");
+        }
+        message.append(parameter.getName());
+        imageRenderingDecorator.setMessage(message.toString());
+        imageRenderingDecorator.setX((pe.getGraphicsAlgorithm().getWidth() / 2) - 8);
+        imageRenderingDecorator.setY(8);
+
+        return imageRenderingDecorator;
       }
     }
     return null;

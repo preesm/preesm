@@ -81,7 +81,7 @@ import org.preesm.model.pisdf.InitActor;
 import org.preesm.model.pisdf.InterfaceActor;
 import org.preesm.model.pisdf.InterfaceKind;
 import org.preesm.model.pisdf.JoinActor;
-import org.preesm.model.pisdf.MalleableParameter;
+import org.preesm.model.pisdf.MoldableParameter;
 import org.preesm.model.pisdf.Parameter;
 import org.preesm.model.pisdf.Parameterizable;
 import org.preesm.model.pisdf.PiGraph;
@@ -650,11 +650,10 @@ public class PiWriter {
     paramElt.setAttribute(PiIdentifiers.PARAMETER_NAME, param.getName());
 
     // Set the kind of the node
-    if (param instanceof MalleableParameter) {
-      paramElt.setAttribute(PiIdentifiers.NODE_KIND, PiIdentifiers.MALLEABLE_PARAMETER);
+    if (param instanceof final MoldableParameter mParam) {
+      paramElt.setAttribute(PiIdentifiers.NODE_KIND, PiIdentifiers.MOLDABLE_PARAMETER);
       paramElt.setAttribute(PiIdentifiers.PARAMETER_EXPRESSION, param.getValueExpression().getExpressionAsString());
-      paramElt.setAttribute(PiIdentifiers.MALLEABLE_PARAMETER_EXPRESSION,
-          ((MalleableParameter) param).getUserExpression());
+      paramElt.setAttribute(PiIdentifiers.MOLDABLE_PARAMETER_EXPRESSION, mParam.getUserExpression());
     } else if (!param.isConfigurationInterface()) {
       paramElt.setAttribute(PiIdentifiers.NODE_KIND, PiIdentifiers.PARAMETER);
       paramElt.setAttribute(PiIdentifiers.PARAMETER_EXPRESSION, param.getValueExpression().getExpressionAsString());
