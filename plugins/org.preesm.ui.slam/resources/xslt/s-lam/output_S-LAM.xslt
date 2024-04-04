@@ -155,6 +155,13 @@
                 <xsl:attribute name="slam:part" select="parameters/parameter[@name = 'part']/@value"/>
                 <xsl:attribute name="slam:board" select="parameters/parameter[@name = 'board']/@value"/>
             </xsl:if>
+            
+            <xsl:if test="contains(@type,'GPU')">
+                <xsl:attribute name="slam:unifiedMemSpeed" select="parameters/parameter[@name = 'unifiedMemSpeed']/@value"/>
+                <xsl:attribute name="slam:dedicatedMemSpeed" select="parameters/parameter[@name = 'dedicatedMemSpeed']/@value"/>
+                <xsl:attribute name="slam:memSize" select="parameters/parameter[@name = 'memSize']/@value"/>
+                <xsl:attribute name="slam:memoryToUse" select="parameters/parameter[@name = 'memoryToUse']/@value"/>
+            </xsl:if>
         </xsl:element>
     </xsl:template>
 

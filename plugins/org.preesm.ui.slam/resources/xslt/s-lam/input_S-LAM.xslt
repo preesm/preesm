@@ -245,6 +245,26 @@
                         <xsl:attribute name="value" select="//slam:componentDescription[@slam:componentRef=$componentName]/@slam:board"/>
                     </xsl:element>
                 </xsl:if>
+                
+                <!-- node parameters -->
+                <xsl:if test="$componentType='GPU'">
+                    <xsl:element name="parameter">
+                        <xsl:attribute name="name">memSize</xsl:attribute>
+                        <xsl:attribute name="value" select="//slam:componentDescription[@slam:componentRef=$componentName]/@slam:memSize"/>
+                    </xsl:element>
+                    <xsl:element name="parameter">
+                        <xsl:attribute name="name">unifiedMemSpeed</xsl:attribute>
+                        <xsl:attribute name="value" select="//slam:componentDescription[@slam:componentRef=$componentName]/@slam:unifiedMemSpeed"/>
+                    </xsl:element>
+                    <xsl:element name="parameter">
+                        <xsl:attribute name="name">dedicatedMemSpeed</xsl:attribute>
+                        <xsl:attribute name="value" select="//slam:componentDescription[@slam:componentRef=$componentName]/@slam:dedicatedMemSpeed"/>
+                    </xsl:element>
+                    <xsl:element name="parameter">
+                        <xsl:attribute name="name">memoryToUse</xsl:attribute>
+                        <xsl:attribute name="value" select="//slam:componentDescription[@slam:componentRef=$componentName]/@slam:memoryToUse"/>
+                    </xsl:element>
+                </xsl:if>
 
             </xsl:element>
         </xsl:element>
