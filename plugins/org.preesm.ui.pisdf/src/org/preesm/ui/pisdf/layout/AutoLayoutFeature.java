@@ -135,8 +135,8 @@ public class AutoLayoutFeature extends AbstractCustomFeature {
      */
     @Override
     public boolean equals(final Object obj) {
-      if (obj instanceof Range) {
-        return ((((Range) obj).start == this.start) && (((Range) obj).end == this.end));
+      if (obj instanceof final Range range) {
+        return ((range.start == this.start) && (range.end == this.end));
       }
       return false;
     }
@@ -657,10 +657,10 @@ public class AutoLayoutFeature extends AbstractCustomFeature {
         continue;
       }
 
-      if (containingActor instanceof DelayActor) {
+      if (containingActor instanceof final DelayActor delayActor) {
         final int currentX = bendpoints.get(0).getX();
         final int currentY = bendpoints.get(0).getY();
-        layoutFifoToDelay(diagram, currentY, currentX, ffc, ((DelayActor) containingActor).getLinkedDelay());
+        layoutFifoToDelay(diagram, currentY, currentX, ffc, delayActor.getLinkedDelay());
       }
 
       final int index = bendpoints.size() < 2 ? 0 : bendpoints.size() - 2;
@@ -754,9 +754,7 @@ public class AutoLayoutFeature extends AbstractCustomFeature {
     });
 
     // Add new gap on top of all stages
-    for (final List<Range> gaps : stagesGaps) {
-      gaps.add(new Range(0, AutoLayoutFeature.X_INIT));
-    }
+    stagesGaps.forEach(g -> g.add(new Range(0, AutoLayoutFeature.X_INIT)));
 
     // Layout feedback FIFOs one by one, from short to long distances
     for (final Fifo fifo : sortedFifos) {
@@ -1047,7 +1045,7 @@ public class AutoLayoutFeature extends AbstractCustomFeature {
     while (!paramPoolList.isEmpty()) {
       /* Get only the parameter that can be added to the current stage due to their dependencies */
       final List<Parameter> nextStageParamList = paramPoolList.stream().filter(x -> x.getInputDependentParameters()
-          .stream().filter(in -> processedParams.contains(in)).count() == x.getInputDependentParameters().size())
+          .stream().filter(processedParams::contains).count() == x.getInputDependentParameters().size())
           .collect(Collectors.toList());
       processedParams.addAll(nextStageParamList);
       stages.add(nextStageParamList);

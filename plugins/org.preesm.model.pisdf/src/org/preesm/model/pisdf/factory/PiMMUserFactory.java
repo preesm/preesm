@@ -83,6 +83,7 @@ public final class PiMMUserFactory extends PiMMFactoryImpl implements PreesmUser
     // forbid instantiation
   }
 
+  @Override
   public <T extends EObject> T copyWithHistory(final T eObject) {
     final T copy = PreesmUserFactory.super.copyWithHistory(eObject);
 

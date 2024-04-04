@@ -100,7 +100,7 @@ public abstract class AbstractAddActorPortFeature extends AbstractCustomFeature 
   public static final IColorConstant PORT_BACKGROUND = IColorConstant.BLACK;
 
   /** The port font height. */
-  protected static int PORT_FONT_HEIGHT;
+  protected static int portFontHeight;
 
   /** Size of the space between the label of a port and the GA. */
   public static final int PORT_LABEL_GA_SPACE = 2;
@@ -316,7 +316,7 @@ public abstract class AbstractAddActorPortFeature extends AbstractCustomFeature 
     final IGaService gaService = Graphiti.getGaService();
     final Font font = gaService.manageDefaultFont(getDiagram(), false, false);
 
-    AbstractAddActorPortFeature.PORT_FONT_HEIGHT = GraphitiUi.getUiLayoutService().calculateTextSize("Abcq", font)
+    AbstractAddActorPortFeature.portFontHeight = GraphitiUi.getUiLayoutService().calculateTextSize("Abcq", font)
         .getHeight();
 
     return font;

@@ -130,6 +130,8 @@ public class ActorPropertiesSection extends GFPropertySection implements ITabbed
   /** The first column width. */
   private static final int FIRST_COLUMN_WIDTH = 150;
 
+  private static final String NONE = "(none)";
+
   /*
    * (non-Javadoc)
    *
@@ -568,8 +570,8 @@ public class ActorPropertiesSection extends GFPropertySection implements ITabbed
             refinement = ((RefinementContainer) bo).getRefinement();
           }
           if ((refinement == null) || (refinement.getFilePath() == null)) {
-            this.lblRefinementObj.setText("(none)");
-            this.lblRefinementView.setText("(none)");
+            this.lblRefinementObj.setText(NONE);
+            this.lblRefinementView.setText(NONE);
             this.butRefinementClear.setEnabled(false);
             this.butRefinementBrowse.setEnabled(enabled);
             this.butRefinementOpen.setEnabled(false);
@@ -612,7 +614,7 @@ public class ActorPropertiesSection extends GFPropertySection implements ITabbed
 
           if (bo instanceof final Actor actor) {
             if (actor.getMemoryScriptPath() == null) {
-              this.lblMemoryScriptObj.setText("(none)");
+              this.lblMemoryScriptObj.setText(NONE);
               this.butMemoryScriptClear.setEnabled(false);
               this.butMemoryScriptBrowse.setEnabled(true);
               this.butMemoryScriptOpen.setEnabled(false);

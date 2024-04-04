@@ -40,6 +40,7 @@
 package org.preesm.ui.pisdf.diagram;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.graphiti.dt.IDiagramTypeProvider;
@@ -420,9 +421,7 @@ public class PiMMFeatureProvider extends DefaultFeatureProvider {
         final ICustomFeature[] actorFeatures = new ICustomFeature[] { new AddConfigInputPortFeature(this),
             new AddConfigOutputPortFeature(this), new AddDataInputPortFeature(this),
             new AddDataOutputPortFeature(this), };
-        for (final ICustomFeature feature : actorFeatures) {
-          features.add(feature);
-        }
+        features.addAll(Arrays.asList(actorFeatures));
       }
       if (obj instanceof InitActor) {
         features.add(new SetActorRefinementFeature(this));
@@ -434,9 +433,7 @@ public class PiMMFeatureProvider extends DefaultFeatureProvider {
             new ClearActorRefinementFeature(this), new OpenRefinementFeature(this),
             new SetActorMemoryScriptFeature(this), new ClearActorMemoryScriptFeature(this),
             new OpenMemoryScriptFeature(this) };
-        for (final ICustomFeature feature : actorFeatures) {
-          features.add(feature);
-        }
+        features.addAll(Arrays.asList(actorFeatures));
       }
 
       if (obj instanceof Parameter) {

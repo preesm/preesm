@@ -198,7 +198,7 @@ public class LayoutActorFeature extends AbstractLayoutFeature implements LayoutA
               // PORT_FONT_HEIGHT will remain equal to 0 until a
               // port
               // is added to the graph
-              AbstractAddActorPortFeature.PORT_FONT_HEIGHT = size.getHeight();
+              AbstractAddActorPortFeature.portFontHeight = size.getHeight();
               final EObject obj = (EObject) getBusinessObjectForPictogramElement(anchor);
 
               switch (obj.eClass().getClassifierID()) {
@@ -493,7 +493,7 @@ public class LayoutActorFeature extends AbstractLayoutFeature implements LayoutA
     final int maxNbConfigPort = Math.max(nbConfigInput, nbConfigOutput);
 
     // Place the inputs
-    final int portFontHeight = AbstractAddActorPortFeature.PORT_FONT_HEIGHT;
+    final int portFontHeight = AbstractAddActorPortFeature.portFontHeight;
     // The first port is placed below the name
     int y = portFontHeight + LayoutActorFeature.PORT_GAP + LayoutActorFeature.INITIAL_GAP;
     for (int i = 0; i < inputs.size(); i++) {

@@ -75,15 +75,13 @@ public class ExchangePortDirection extends ExchangePortCategory {
               k -> new ArrayList<>());
 
           // Switch Port into opposite direction
-          switch (portToExchange.getKind()) {
-            case DATA_INPUT -> newPorts.add(new Pair<>(portToExchange.getName(), PortKind.DATA_OUTPUT));
-            case DATA_OUTPUT -> newPorts.add(new Pair<>(portToExchange.getName(), PortKind.DATA_INPUT));
-            case CFG_INPUT -> newPorts.add(new Pair<>(portToExchange.getName(), PortKind.CFG_OUTPUT));
-            case CFG_OUTPUT -> newPorts.add(new Pair<>(portToExchange.getName(), PortKind.CFG_INPUT));
-            default -> {
-              // empty
-            }
-          }
+          final PortKind portKind = switch (portToExchange.getKind()) {
+            case DATA_INPUT -> PortKind.DATA_OUTPUT;
+            case DATA_OUTPUT -> PortKind.DATA_INPUT;
+            case CFG_INPUT -> PortKind.CFG_OUTPUT;
+            case CFG_OUTPUT -> PortKind.CFG_INPUT;
+          };
+          newPorts.add(new Pair<>(portToExchange.getName(), portKind));
 
           // Need to also change the direction in the refinement
           if ((executableActor instanceof final Actor actor)

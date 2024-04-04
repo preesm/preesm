@@ -217,17 +217,13 @@ public class PiWriter {
   protected Element createKeyElt(final GMLKey key) {
     // Check if the element already has a Key list
     if (this.elementKeys.get(key.getApplyTo()) == null) {
-      // If not, create the Key list for this element and add it to
-      // elementKeys
+      // If not, create the Key list for this element and add it to elementKeys
       final ArrayList<GMLKey> keys = new ArrayList<>();
       this.elementKeys.put(key.getApplyTo(), keys);
-    } else {
-      // If the element already exists
-      // Check if this key is already in its Key list
-      if (this.elementKeys.get(key.getApplyTo()).contains(key)) {
-        // The element already exists, no need to create a new one
-        return null;
-      }
+    } else if (this.elementKeys.get(key.getApplyTo()).contains(key)) {
+      // If the element already exists, check if this key is already in its Key list
+      // The element already exists, no need to create a new one
+      return null;
     }
 
     // If this code is reached, the new element must be created
@@ -319,14 +315,14 @@ public class PiWriter {
 
     // Add the name in the data of the node
 
-    if (abstractActor instanceof PiGraph) {
-      writePiGraphAsHActor(vertexElt, (PiGraph) abstractActor);
-    } else if (abstractActor instanceof Actor) {
-      writeActor(vertexElt, (Actor) abstractActor);
+    if (abstractActor instanceof final PiGraph piGraph) {
+      writePiGraphAsHActor(vertexElt, piGraph);
+    } else if (abstractActor instanceof final Actor actor) {
+      writeActor(vertexElt, actor);
     } else if (abstractActor instanceof ExecutableActor) {
       writeSpecialActor(vertexElt, abstractActor);
-    } else if (abstractActor instanceof InterfaceActor) {
-      writeInterfaceVertex(vertexElt, (InterfaceActor) abstractActor);
+    } else if (abstractActor instanceof final InterfaceActor iActor) {
+      writeInterfaceVertex(vertexElt, iActor);
     }
   }
 
@@ -494,8 +490,7 @@ public class PiWriter {
     }
 
     final Parameterizable target = (Parameterizable) getter.eContainer();
-    if (target instanceof AbstractVertex) {
-      final AbstractVertex vertex = (AbstractVertex) target;
+    if (target instanceof final AbstractVertex vertex) {
       dependencyElt.setAttribute(PiIdentifiers.DEPENDENCY_TARGET, vertex.getName());
 
       if (target instanceof ExecutableActor) {
@@ -507,8 +502,7 @@ public class PiWriter {
       }
     }
 
-    if (target instanceof Delay) {
-      final Delay d = (Delay) target;
+    if (target instanceof final Delay d) {
       dependencyElt.setAttribute(PiIdentifiers.DEPENDENCY_TARGET, d.getActor().getName());
     }
   }
@@ -701,22 +695,17 @@ public class PiWriter {
       portElt.setAttribute(PiIdentifiers.PORT_KIND, port.getKind().getLiteral());
 
       switch (port.getKind()) {
-        case DATA_INPUT:
-        case DATA_OUTPUT:
+        case DATA_INPUT, DATA_OUTPUT:
           final Expression portRateExpression = ((DataPort) port).getPortRateExpression();
           final String expressionAsString = portRateExpression.getExpressionAsString();
           portElt.setAttribute(PiIdentifiers.PORT_EXPRESSION, expressionAsString);
           break;
-        case CFG_INPUT:
-        case CFG_OUTPUT:
+        case CFG_INPUT, CFG_OUTPUT:
         default:
           break;
       }
-      if (port instanceof DataPort) {
-        final DataPort dataPort = (DataPort) port;
-        if (dataPort.getAnnotation() != null) {
-          portElt.setAttribute(PiIdentifiers.PORT_MEMORY_ANNOTATION, dataPort.getAnnotation().toString());
-        }
+      if (port instanceof final DataPort dataPort && (dataPort.getAnnotation() != null)) {
+        portElt.setAttribute(PiIdentifiers.PORT_MEMORY_ANNOTATION, dataPort.getAnnotation().toString());
       }
     }
   }
@@ -738,8 +727,7 @@ public class PiWriter {
       // The makeRelative() call ensures that the path is relative to the
       // project.
       writeDataElt(vertexElt, PiIdentifiers.REFINEMENT, refinementPath.makeRelative().toPortableString());
-      if (refinement instanceof CHeaderRefinement) {
-        final CHeaderRefinement hrefinement = (CHeaderRefinement) refinement;
+      if (refinement instanceof final CHeaderRefinement hrefinement) {
         // Special case of the delay that only has an INIT refinement
         if (hrefinement.getLoopPrototype() != null) {
           writeFunctionPrototype(vertexElt, hrefinement.getLoopPrototype(), PiIdentifiers.REFINEMENT_LOOP);
@@ -840,15 +828,13 @@ public class PiWriter {
       kind = PiIdentifiers.FORK;
     } else if (actor instanceof RoundBufferActor) {
       kind = PiIdentifiers.ROUND_BUFFER;
-    } else if (actor instanceof EndActor) {
+    } else if (actor instanceof final EndActor endActor) {
       kind = PiIdentifiers.END;
-      final EndActor endActor = (EndActor) actor;
       if (endActor.getInitReference() != null) {
         vertexElt.setAttribute(PiIdentifiers.INIT_END_REF, endActor.getInitReference().getName());
       }
-    } else if (actor instanceof InitActor) {
+    } else if (actor instanceof final InitActor initActor) {
       kind = PiIdentifiers.INIT;
-      final InitActor initActor = (InitActor) actor;
       if (initActor.getEndReference() != null) {
         vertexElt.setAttribute(PiIdentifiers.INIT_END_REF, initActor.getEndReference().getName());
       }

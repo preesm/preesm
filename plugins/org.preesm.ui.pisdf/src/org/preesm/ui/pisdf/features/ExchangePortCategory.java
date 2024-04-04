@@ -102,15 +102,13 @@ public class ExchangePortCategory extends AbstractCustomFeature {
               k -> new ArrayList<>());
 
           // Switch Port into opposite category
-          switch (portToExchange.getKind()) {
-            case DATA_INPUT -> newPorts.add(new Pair<>(portToExchange.getName(), PortKind.CFG_INPUT));
-            case DATA_OUTPUT -> newPorts.add(new Pair<>(portToExchange.getName(), PortKind.CFG_OUTPUT));
-            case CFG_INPUT -> newPorts.add(new Pair<>(portToExchange.getName(), PortKind.DATA_INPUT));
-            case CFG_OUTPUT -> newPorts.add(new Pair<>(portToExchange.getName(), PortKind.DATA_OUTPUT));
-            default -> {
-              // empty
-            }
-          }
+          final PortKind portKind = switch (portToExchange.getKind()) {
+            case DATA_INPUT -> PortKind.CFG_INPUT;
+            case DATA_OUTPUT -> PortKind.CFG_OUTPUT;
+            case CFG_INPUT -> PortKind.DATA_INPUT;
+            case CFG_OUTPUT -> PortKind.DATA_OUTPUT;
+          };
+          newPorts.add(new Pair<>(portToExchange.getName(), portKind));
 
           // Need to also change the direction in the refinement
           if ((executableActor instanceof final Actor actor)

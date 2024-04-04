@@ -501,8 +501,8 @@ public class PiParser {
       dependency.setGetter(iPort);
     }
 
-    if (target instanceof DelayActor) {
-      target = ((DelayActor) target).getLinkedDelay();
+    if (target instanceof final DelayActor delayActor) {
+      target = delayActor.getLinkedDelay();
     }
 
     if ((target instanceof Parameter) || (target instanceof InterfaceActor) || (target instanceof Delay)) {
@@ -589,7 +589,7 @@ public class PiParser {
     // Get the type
     String type = edgeElt.getAttribute(PiIdentifiers.FIFO_TYPE);
     // If none is find, add the default type
-    if ((type == null) || type.equals("")) {
+    if ((type == null) || type.isBlank()) {
       type = "void";
     }
     // Get the sourcePort and targetPort
@@ -792,34 +792,20 @@ public class PiParser {
 
     final InterfaceKind ik = InterfaceKind.get(nodeKind);
     if (ik != null) {
-      switch (ik) {
-        case DATA_INPUT:
-          vertex = parseSourceInterface(nodeElt, graph);
-          break;
-        case DATA_OUTPUT:
-          vertex = parseSinkInterface(nodeElt, graph);
-          break;
-        case CFG_INPUT:
-          vertex = parseConfigInputInterface(nodeElt, graph);
-          break;
-        case CFG_OUTPUT:
-          vertex = parseConfigOutputInterface(nodeElt, graph);
-          break;
-
-        default:
-          throw new PreesmRuntimeException("Parsed node " + nodeName + " has an unknown kind: " + nodeKind);
-      }
+      vertex = switch (ik) {
+        case DATA_INPUT -> parseSourceInterface(nodeElt, graph);
+        case DATA_OUTPUT -> parseSinkInterface(nodeElt, graph);
+        case CFG_INPUT -> parseConfigInputInterface(nodeElt, graph);
+        case CFG_OUTPUT -> parseConfigOutputInterface(nodeElt, graph);
+        default -> throw new PreesmRuntimeException("Parsed node " + nodeName + " has an unknown kind: " + nodeKind);
+      };
     } else {
       switch (nodeKind) {
         case PiIdentifiers.ACTOR:
           vertex = parseActor(nodeElt, graph);
           break;
-        case PiIdentifiers.BROADCAST:
-        case PiIdentifiers.FORK:
-        case PiIdentifiers.JOIN:
-        case PiIdentifiers.ROUND_BUFFER:
-        case PiIdentifiers.END:
-        case PiIdentifiers.INIT:
+        case PiIdentifiers.BROADCAST, PiIdentifiers.FORK, PiIdentifiers.JOIN, PiIdentifiers.ROUND_BUFFER,
+            PiIdentifiers.END, PiIdentifiers.INIT:
           vertex = parseSpecialActor(nodeElt, graph);
           break;
         case PiIdentifiers.PARAMETER:
@@ -953,8 +939,7 @@ public class PiParser {
         final DataInputPort iPort;
 
         // Do not create data ports for InterfaceActor since the unique port
-        // is automatically created when the vertex is instantiated
-        // same for delays
+        // is automatically created when the vertex is instantiated same for delays
         if (!(vertex instanceof InterfaceActor)) {
           iPort = PiMMUserFactory.instance.createDataInputPort();
           ((AbstractActor) vertex).getDataInputPorts().add(iPort);
@@ -1101,54 +1086,46 @@ public class PiParser {
   private AbstractActor parseSpecialActor(final Element nodeElt, final PiGraph graph) {
     // Identify if the node is an actor or a parameter
     final String nodeKind = nodeElt.getAttribute(PiIdentifiers.NODE_KIND);
-    AbstractActor actor = null;
 
     final String name = nodeElt.getAttribute(PiIdentifiers.ACTOR_NAME);
     NameCheckerC.checkValidName("Special actor", name);
 
     // Instantiate the actor.
-    switch (nodeKind) {
-      case PiIdentifiers.BROADCAST:
-        actor = PiMMUserFactory.instance.createBroadcastActor();
-        break;
-      case PiIdentifiers.FORK:
-        actor = PiMMUserFactory.instance.createForkActor();
-        break;
-      case PiIdentifiers.JOIN:
-        actor = PiMMUserFactory.instance.createJoinActor();
-        break;
-      case PiIdentifiers.ROUND_BUFFER:
-        actor = PiMMUserFactory.instance.createRoundBufferActor();
-        break;
-      case PiIdentifiers.INIT:
-        actor = PiMMUserFactory.instance.createInitActor();
+    final AbstractActor actor = switch (nodeKind) {
+      case PiIdentifiers.BROADCAST -> PiMMUserFactory.instance.createBroadcastActor();
+      case PiIdentifiers.FORK -> PiMMUserFactory.instance.createForkActor();
+      case PiIdentifiers.JOIN -> PiMMUserFactory.instance.createJoinActor();
+      case PiIdentifiers.ROUND_BUFFER -> PiMMUserFactory.instance.createRoundBufferActor();
+      case PiIdentifiers.INIT -> {
+        final InitActor initActor = PiMMUserFactory.instance.createInitActor();
         final String endRef = nodeElt.getAttribute(PiIdentifiers.INIT_END_REF);
         if (endRef != null) {
           final AbstractVertex lookupVertex = graph.lookupVertex(endRef);
           if (lookupVertex != null) {
-            ((InitActor) actor).setEndReference((AbstractActor) lookupVertex);
-            if (lookupVertex instanceof EndActor) {
-              ((EndActor) lookupVertex).setInitReference(actor);
+            initActor.setEndReference((AbstractActor) lookupVertex);
+            if (lookupVertex instanceof final EndActor endActor) {
+              endActor.setInitReference(initActor);
             }
           }
         }
-        break;
-      case PiIdentifiers.END:
-        actor = PiMMUserFactory.instance.createEndActor();
+        yield initActor;
+      }
+      case PiIdentifiers.END -> {
+        final EndActor endActor = PiMMUserFactory.instance.createEndActor();
         final String initRef = nodeElt.getAttribute(PiIdentifiers.INIT_END_REF);
         if (initRef != null) {
           final AbstractVertex lookupVertex = graph.lookupVertex(initRef);
           if (lookupVertex != null) {
-            ((EndActor) actor).setInitReference((AbstractActor) lookupVertex);
-            if (lookupVertex instanceof InitActor) {
-              ((InitActor) lookupVertex).setEndReference(actor);
+            endActor.setInitReference((AbstractActor) lookupVertex);
+            if (lookupVertex instanceof final InitActor initActor) {
+              initActor.setEndReference(endActor);
             }
           }
         }
-        break;
-      default:
-        throw new IllegalArgumentException("Given node element has an unknown kind");
-    }
+        yield endActor;
+      }
+      default -> throw new IllegalArgumentException("Given node element has an unknown kind");
+    };
 
     // Get the actor properties
     actor.setName(name);

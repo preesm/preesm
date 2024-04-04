@@ -118,7 +118,7 @@ public class ParameterizablePropertiesSection extends DataPortPropertiesUpdater 
     /**** NAME ****/
     this.lblNameObj = factory.createCLabel(composite, " ");
     data = new FormData();
-    data.left = new FormAttachment(0, this.FIRST_COLUMN_WIDTH);
+    data.left = new FormAttachment(0, FIRST_COLUMN_WIDTH);
     data.right = new FormAttachment(100, 0);
     this.lblNameObj.setLayoutData(data);
 
@@ -131,7 +131,7 @@ public class ParameterizablePropertiesSection extends DataPortPropertiesUpdater 
     /**** EXPRESION ****/
     this.txtExpression = factory.createText(composite, "");
     data = new FormData();
-    data.left = new FormAttachment(0, this.FIRST_COLUMN_WIDTH);
+    data.left = new FormAttachment(0, FIRST_COLUMN_WIDTH);
     data.right = new FormAttachment(100, 0);
     data.top = new FormAttachment(this.lblNameObj);
     this.txtExpression.setLayoutData(data);
@@ -148,7 +148,7 @@ public class ParameterizablePropertiesSection extends DataPortPropertiesUpdater 
     /**** VALUE ****/
     this.lblValueObj = factory.createCLabel(composite, "");
     data = new FormData();
-    data.left = new FormAttachment(0, this.FIRST_COLUMN_WIDTH);
+    data.left = new FormAttachment(0, FIRST_COLUMN_WIDTH);
     data.right = new FormAttachment(100, 0);
     data.top = new FormAttachment(this.txtExpression);
     this.lblValueObj.setLayoutData(data);
@@ -180,32 +180,33 @@ public class ParameterizablePropertiesSection extends DataPortPropertiesUpdater 
   void updateProperties() {
     final PictogramElement pe = getSelectedPictogramElement();
 
-    if (pe != null) {
-      final EObject bo = Graphiti.getLinkService().getBusinessObjectForLinkedPictogramElement(pe);
-      if (bo == null) {
-        return;
-      }
-      if (bo instanceof final InterfaceActor iActor) {
-        final DataPort dp = iActor.getDataPort();
-        updateDataPortProperties(dp, txtExpression);
-      } else if (bo instanceof final MoldableParameter mp) {
-        if (mp.getUserExpression().compareTo(this.txtExpression.getText()) != 0) {
-          setNewMoldableParameterUserExpression(mp, this.txtExpression.getText());
-          getDiagramTypeProvider().getDiagramBehavior().refreshRenderingDecorators(pe);
-        }
-      } else if (bo instanceof final Parameter param) {
-        if ((bo instanceof ConfigInputInterface)) {
-          this.lblValueObj.setText(
-              "Default value is a Long Integer, only used for the computation of subsequent parameters in the GUI.");
-        }
-        if (param.getValueExpression().getExpressionAsString().compareTo(this.txtExpression.getText()) != 0) {
-          setNewExpression(param, this.txtExpression.getText());
-          getDiagramTypeProvider().getDiagramBehavior().refreshRenderingDecorators(pe);
-        }
-      } // end Parameter
-
-      refresh();
+    if (pe == null) {
+      return;
     }
+    final EObject bo = Graphiti.getLinkService().getBusinessObjectForLinkedPictogramElement(pe);
+    if (bo == null) {
+      return;
+    }
+    if (bo instanceof final InterfaceActor iActor) {
+      final DataPort dp = iActor.getDataPort();
+      updateDataPortProperties(dp, txtExpression);
+    } else if (bo instanceof final MoldableParameter mp) {
+      if (mp.getUserExpression().compareTo(this.txtExpression.getText()) != 0) {
+        setNewMoldableParameterUserExpression(mp, this.txtExpression.getText());
+        getDiagramTypeProvider().getDiagramBehavior().refreshRenderingDecorators(pe);
+      }
+    } else if (bo instanceof final Parameter param) {
+      if ((bo instanceof ConfigInputInterface)) {
+        this.lblValueObj.setText(
+            "Default value is a Long Integer, only used for the computation of subsequent parameters in the GUI.");
+      }
+      if (param.getValueExpression().getExpressionAsString().compareTo(this.txtExpression.getText()) != 0) {
+        setNewExpression(param, this.txtExpression.getText());
+        getDiagramTypeProvider().getDiagramBehavior().refreshRenderingDecorators(pe);
+      }
+    } // end Parameter
+
+    refresh();
   }
 
   /*

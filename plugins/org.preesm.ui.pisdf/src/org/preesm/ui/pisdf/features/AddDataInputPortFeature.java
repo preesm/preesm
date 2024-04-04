@@ -128,7 +128,7 @@ public class AddDataInputPortFeature extends AbstractAddActorPortFeature {
     rectangle.setForeground(manageColor(AddDataInputPortFeature.DATA_INPUT_PORT_FOREGROUND));
     rectangle.setBackground(manageColor(AddDataInputPortFeature.DATA_INPUT_PORT_BACKGROUND));
     rectangle.setLineWidth(1);
-    final int portFontHeight = AbstractAddActorPortFeature.PORT_FONT_HEIGHT;
+    final int portFontHeight = AbstractAddActorPortFeature.portFontHeight;
     gaService.setSize(rectangle, AbstractAddActorPortFeature.PORT_ANCHOR_GA_SIZE,
         AbstractAddActorPortFeature.PORT_ANCHOR_GA_SIZE);
     gaService.setLocation(rectangle, 0, 1 + ((portFontHeight - AbstractAddActorPortFeature.PORT_ANCHOR_GA_SIZE) / 2));
@@ -153,7 +153,7 @@ public class AddDataInputPortFeature extends AbstractAddActorPortFeature {
     text.setForeground(manageColor(AbstractAddActorPortFeature.PORT_TEXT_FOREGROUND));
 
     // Layout the text
-    final int portFontHeight = AbstractAddActorPortFeature.PORT_FONT_HEIGHT;
+    final int portFontHeight = AbstractAddActorPortFeature.portFontHeight;
     text.setHorizontalAlignment(Orientation.ALIGNMENT_RIGHT);
     gaService.setHeight(text, portFontHeight);
 
