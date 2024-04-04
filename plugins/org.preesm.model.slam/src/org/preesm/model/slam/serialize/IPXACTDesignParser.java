@@ -70,6 +70,7 @@ import org.preesm.model.slam.ComponentInstance;
 import org.preesm.model.slam.Design;
 import org.preesm.model.slam.Dma;
 import org.preesm.model.slam.FPGA;
+import org.preesm.model.slam.GPU;
 import org.preesm.model.slam.HierarchyPort;
 import org.preesm.model.slam.Link;
 import org.preesm.model.slam.Mem;
@@ -309,15 +310,36 @@ public class IPXACTDesignParser extends IPXACTParser {
         if (component instanceof final ComNode comNode) {
           comNode.setSpeed(Float.valueOf(description.getSpecificParameter("slam:speed")));
           final boolean equals = "contention".equals(description.getSpecificParameter("ComNodeType"));
-          comNode.setParallel(!equals);
-        } else if (component instanceof final Mem mem) {
-          mem.setSize(Integer.valueOf(description.getSpecificParameter("slam:size")));
-        } else if (component instanceof final Dma dma) {
-          dma.setSetupTime(Integer.valueOf(description.getSpecificParameter("slam:setupTime")));
-        } else if (component instanceof final FPGA fpga) {
-          fpga.setFrequency(Integer.valueOf(description.getSpecificParameter("slam:frequency")));
-          fpga.setPart(description.getSpecificParameter("slam:part"));
-          fpga.setBoard(description.getSpecificParameter("slam:board"));
+
+          ((ComNode) component).setParallel(!equals);
+        } else if (component instanceof Mem) {
+          ((Mem) component).setSize(Integer.valueOf(description.getSpecificParameter("slam:size")));
+        } else if (component instanceof Dma) {
+          ((Dma) component).setSetupTime(Integer.valueOf(description.getSpecificParameter("slam:setupTime")));
+        } else if (component instanceof FPGA) {
+          ((FPGA) component).setFrequency(Integer.valueOf(description.getSpecificParameter("slam:frequency")));
+          ((FPGA) component).setPart(description.getSpecificParameter("slam:part"));
+          ((FPGA) component).setBoard(description.getSpecificParameter("slam:board"));
+        } else if (component instanceof GPU) {
+          try {
+            ((GPU) component).setMemSize(Integer.valueOf(description.getSpecificParameter("slam:memSize")));
+          } catch (final NumberFormatException e) {
+            ((GPU) component).setMemSize(1);
+          }
+          try {
+            ((GPU) component)
+                .setDedicatedMemSpeed(Integer.valueOf(description.getSpecificParameter("slam:dedicatedMemSpeed")));
+          } catch (final NumberFormatException e) {
+            ((GPU) component).setDedicatedMemSpeed(1);
+          }
+          try {
+            ((GPU) component)
+                .setUnifiedMemSpeed(Integer.valueOf(description.getSpecificParameter("slam:unifiedMemSpeed")));
+          } catch (final NumberFormatException e) {
+            ((GPU) component).setUnifiedMemSpeed(1);
+          }
+
+          ((GPU) component).setMemoryToUse(description.getSpecificParameter("slam:memoryToUse"));
         }
       } catch (final NumberFormatException e) {
         throw new PreesmRuntimeException("Could not parse a numeric property of component instance <"

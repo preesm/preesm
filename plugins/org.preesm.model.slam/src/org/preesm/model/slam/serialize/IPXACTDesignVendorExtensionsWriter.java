@@ -46,6 +46,7 @@ import org.preesm.model.slam.Component;
 import org.preesm.model.slam.Design;
 import org.preesm.model.slam.Dma;
 import org.preesm.model.slam.FPGA;
+import org.preesm.model.slam.GPU;
 import org.preesm.model.slam.Link;
 import org.preesm.model.slam.Mem;
 import org.w3c.dom.Document;
@@ -171,16 +172,22 @@ public class IPXACTDesignVendorExtensionsWriter {
     componentElt.setAttribute("slam:refinement", refinementPath);
 
     // Managing specific component properties
-    if (component instanceof final ComNode comNode) {
-      componentElt.setAttribute("slam:speed", Float.toString(comNode.getSpeed()));
-    } else if (component instanceof final Mem mem) {
-      componentElt.setAttribute("slam:size", Long.toString(mem.getSize()));
-    } else if (component instanceof final Dma dma) {
-      componentElt.setAttribute("slam:setupTime", Integer.toString(dma.getSetupTime()));
-    } else if (component instanceof final FPGA fpga) {
-      componentElt.setAttribute("slam:frequency", Integer.toString(fpga.getFrequency()));
-      componentElt.setAttribute("slam:part", fpga.getPart());
-      componentElt.setAttribute("slam:board", fpga.getBoard());
+
+    if (component instanceof ComNode) {
+      componentElt.setAttribute("slam:speed", Float.toString(((ComNode) component).getSpeed()));
+    } else if (component instanceof Mem) {
+      componentElt.setAttribute("slam:size", Long.toString(((Mem) component).getSize()));
+    } else if (component instanceof Dma) {
+      componentElt.setAttribute("slam:setupTime", Integer.toString(((Dma) component).getSetupTime()));
+    } else if (component instanceof FPGA) {
+      componentElt.setAttribute("slam:frequency", Integer.toString(((FPGA) component).getFrequency()));
+      componentElt.setAttribute("slam:part", ((FPGA) component).getPart());
+      componentElt.setAttribute("slam:board", ((FPGA) component).getBoard());
+    } else if (component instanceof GPU) {
+      componentElt.setAttribute("slam:memSize", Integer.toString(((GPU) component).getMemSize()));
+      componentElt.setAttribute("slam:unifiedMemSpeed", Integer.toString(((GPU) component).getUnifiedMemSpeed()));
+      componentElt.setAttribute("slam:dedicatedMemSpeed", Integer.toString(((GPU) component).getDedicatedMemSpeed()));
+      componentElt.setAttribute("slam:memoryToUse", ((GPU) component).getMemoryToUse());
     }
   }
 
