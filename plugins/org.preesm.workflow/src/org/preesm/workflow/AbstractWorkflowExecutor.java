@@ -248,7 +248,7 @@ public abstract class AbstractWorkflowExecutor {
       final Iterator<AbstractWorkflowNode<?>> iterator = workflow.vertexTopologicalList().iterator();
 
       while (result && iterator.hasNext()) {
-        AbstractWorkflowNode<?> node = iterator.next();
+        final AbstractWorkflowNode<?> node = iterator.next();
         result = executeNode(scenarioPath, monitor, workflow, node);
       }
 
@@ -310,10 +310,8 @@ public abstract class AbstractWorkflowExecutor {
             outputs = scenario.extractData(scenarioPath);
 
             // Filter only outputs required in the workflow
-            final Map<String, Object> outs = outputs; // final
-            // reference
-            // for
-            // predicate
+            final Map<String, Object> outs = outputs;
+            // final reference for predicate
             final Set<WorkflowEdge> edges = new LinkedHashSet<>(workflow.outgoingEdgesOf(scenarioNode));
             edges.removeIf(edge -> !outs.containsKey(edge.getSourcePort()));
 

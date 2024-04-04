@@ -112,7 +112,7 @@ public class AddConfigOutputInterfaceFeature extends AbstractAddFeature {
     {
       final BoxRelativeAnchor boxAnchor = peCreateService.createBoxRelativeAnchor(containerShape);
       boxAnchor.setRelativeWidth(0.0);
-      boxAnchor.setRelativeHeight((((double) invisibRectHeight - (double) height)) / 2.0 / invisibRectHeight);
+      boxAnchor.setRelativeHeight(((double) invisibRectHeight - (double) height) / 2.0 / invisibRectHeight);
       boxAnchor.setReferencedGraphicsAlgorithm(invisibleRectangle);
 
       // create and set graphics algorithm for the anchor

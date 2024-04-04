@@ -59,7 +59,7 @@ import org.preesm.model.pisdf.PeriodicElement;
 
 /**
  * Period tab of Actor properties.
- * 
+ *
  * @author ahonorat
  */
 public class ActorPeriodPropertiesSection extends GFPropertySection implements ITabbedPropertyConstants {
@@ -152,8 +152,7 @@ public class ActorPeriodPropertiesSection extends GFPropertySection implements I
         return;
       }
 
-      if (bo instanceof PeriodicElement) {
-        final PeriodicElement periodEl = (PeriodicElement) bo;
+      if (bo instanceof final PeriodicElement periodEl) {
         final Expression periodicExp = periodEl.getExpression();
         final String strPeriod = this.txtPeriod.getText();
         if (strPeriod.compareTo(periodicExp.getExpressionAsString()) != 0) {
@@ -173,63 +172,65 @@ public class ActorPeriodPropertiesSection extends GFPropertySection implements I
   public void refresh() {
     final PictogramElement pe = getSelectedPictogramElement();
 
-    if (pe != null) {
-      final Object bo = Graphiti.getLinkService().getBusinessObjectForLinkedPictogramElement(pe);
-      if (bo == null) {
-        return;
-      }
-
-      final Actor actor = (Actor) bo;
-
-      final Point selelection = this.txtPeriod.getSelection();
-      final boolean expressionHasFocus = this.txtPeriod.isFocusControl();
-
-      boolean periodVisible = false;
-      if (actor instanceof PeriodicElement && !actor.isHierarchical() && !actor.isConfigurationActor()) {
-        periodVisible = true;
-        final PeriodicElement periodEl = (PeriodicElement) bo;
-        final Expression periodicExp = periodEl.getExpression();
-
-        if (periodicExp != null) {
-          this.txtPeriod.setEnabled(true);
-
-          final String eltExprString = periodicExp.getExpressionAsString();
-          if (this.txtPeriod.getText().compareTo(eltExprString) != 0) {
-            this.txtPeriod.setText(eltExprString);
-          }
-
-          try {
-            // try out evaluating the expression
-            final long evaluate = periodicExp.evaluate();
-            if (evaluate < 0) {
-              throw new IllegalArgumentException("Period cannot be negative: either positive or 0 if aperiodic.");
-            }
-            // if evaluation went well, just write the result
-            if (evaluate == 0) {
-              this.lblPeriodValueObj.setText("0 (aperiodic)");
-            } else {
-              this.lblPeriodValueObj.setText(Long.toString(evaluate));
-            }
-            this.txtPeriod.setBackground(new Color(null, 255, 255, 255));
-          } catch (final ExpressionEvaluationException e) {
-            // otherwise print error message and put red background
-            this.lblPeriodValueObj.setText("Error : " + e.getMessage());
-            this.txtPeriod.setBackground(new Color(null, 240, 150, 150));
-          }
-
-          if (expressionHasFocus) {
-            this.txtPeriod.setFocus();
-            this.txtPeriod.setSelection(selelection);
-          }
-        }
-
-      } // end PeriodicElement
-
-      this.lblPeriod.setVisible(periodVisible);
-      this.txtPeriod.setVisible(periodVisible);
-      this.lblPeriodValue.setVisible(periodVisible);
-      this.lblPeriodValueObj.setVisible(periodVisible);
+    if (pe == null) {
+      return;
     }
 
+    final Object bo = Graphiti.getLinkService().getBusinessObjectForLinkedPictogramElement(pe);
+    if (bo == null) {
+      return;
+    }
+
+    final Actor actor = (Actor) bo;
+
+    final Point selelection = this.txtPeriod.getSelection();
+    final boolean expressionHasFocus = this.txtPeriod.isFocusControl();
+
+    boolean periodVisible = false;
+    if (actor instanceof PeriodicElement && !actor.isHierarchical() && !actor.isConfigurationActor()) {
+      periodVisible = true;
+      final PeriodicElement periodEl = (PeriodicElement) bo;
+      final Expression periodicExp = periodEl.getExpression();
+
+      if (periodicExp != null) {
+        this.txtPeriod.setEnabled(true);
+
+        final String eltExprString = periodicExp.getExpressionAsString();
+        if (this.txtPeriod.getText().compareTo(eltExprString) != 0) {
+          this.txtPeriod.setText(eltExprString);
+        }
+
+        try {
+          // try out evaluating the expression
+          final long evaluate = periodicExp.evaluate();
+          if (evaluate < 0) {
+            throw new IllegalArgumentException("Period cannot be negative: either positive or 0 if aperiodic.");
+          }
+          // if evaluation went well, just write the result
+          if (evaluate == 0) {
+            this.lblPeriodValueObj.setText("0 (aperiodic)");
+          } else {
+            this.lblPeriodValueObj.setText(Long.toString(evaluate));
+          }
+          this.txtPeriod.setBackground(new Color(null, 255, 255, 255));
+        } catch (final ExpressionEvaluationException e) {
+          // otherwise print error message and put red background
+          this.lblPeriodValueObj.setText("Error : " + e.getMessage());
+          this.txtPeriod.setBackground(new Color(null, 240, 150, 150));
+        }
+
+        if (expressionHasFocus) {
+          this.txtPeriod.setFocus();
+          this.txtPeriod.setSelection(selelection);
+        }
+      }
+
+    } // end PeriodicElement
+
+    this.lblPeriod.setVisible(periodVisible);
+    this.txtPeriod.setVisible(periodVisible);
+    this.lblPeriodValue.setVisible(periodVisible);
+    this.lblPeriodValueObj.setVisible(periodVisible);
   }
+
 }

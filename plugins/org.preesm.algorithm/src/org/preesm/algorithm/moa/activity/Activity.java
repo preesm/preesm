@@ -101,52 +101,41 @@ public class Activity {
    * Generating a string in CSV format from token information If human_readable=true, the names of the architecture
    * components are displayed.
    */
-  public String tokensString(final boolean human_readable) {
-    String str = "";
-
+  public String tokensString(final boolean humanReadable) {
     final List<String> sortedNames = new ArrayList<>(this.tokens.keySet());
     Collections.sort(sortedNames);
 
-    if (human_readable) {
-      for (final String name : sortedNames) {
-        str += name + ",";
-      }
-      str = str.substring(0, str.length() - 1);
-      str = str + "\n";
-    }
-
-    for (final String name : sortedNames) {
-      str += this.tokens.get(name) + ",";
-    }
-    str = str.substring(0, str.length() - 1);
-    str = str + "\n";
-
-    return str;
+    return generateString(sortedNames, humanReadable);
   }
 
   /**
    * Generating a string in CSV format from quanta information If human_readable=true, the names of the architecture
    * components are displayed.
    */
-  public String quantaString(final boolean human_readable) {
-    String str = "";
+  public String quantaString(final boolean humanReadable) {
     final List<String> sortedNames = new ArrayList<>(this.quanta.keySet());
     Collections.sort(sortedNames);
 
-    if (human_readable) {
+    return generateString(sortedNames, humanReadable);
+  }
+
+  private String generateString(List<String> sortedNames, final boolean humanReadable) {
+    final StringBuilder builder = new StringBuilder();
+
+    if (humanReadable) {
       for (final String name : sortedNames) {
-        str += name + ",";
+        builder.append(name + ",");
       }
-      str = str.substring(0, str.length() - 1);
-      str = str + "\n";
+      builder.append(builder.substring(0, builder.length() - 1));
+      builder.append("\n");
     }
 
     for (final String name : sortedNames) {
-      str += this.quanta.get(name) + ",";
+      builder.append(this.tokens.get(name) + ",");
     }
-    str = str.substring(0, str.length() - 1);
-    str = str + "\n";
+    builder.append(builder.substring(0, builder.length() - 1));
+    builder.append("\n");
 
-    return str;
+    return builder.toString();
   }
 }

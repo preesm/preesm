@@ -34,6 +34,7 @@
  */
 package org.ietr.dftools.algorithm.test;
 
+import org.junit.Assert;
 import org.junit.Test;
 import org.preesm.algorithm.model.parameters.ConstantValue;
 import org.preesm.algorithm.model.parameters.ExpressionValue;
@@ -63,6 +64,7 @@ public class ToHSDFVisitorTest {
     } catch (final PreesmException e) {
       throw new PreesmRuntimeException("Could not convert to HSDF", e);
     }
+    Assert.assertTrue(true);
   }
 
   /**

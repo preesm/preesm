@@ -59,6 +59,10 @@ import org.preesm.ui.pisdf.diagram.PiMMImageProvider;
  */
 public class ActorDecorators {
 
+  private ActorDecorators() {
+    // Forbids instantiation
+  }
+
   /**
    * Get the {@link IDecorator} indicating if the {@link Actor#isConfigurationActor()}.
    *

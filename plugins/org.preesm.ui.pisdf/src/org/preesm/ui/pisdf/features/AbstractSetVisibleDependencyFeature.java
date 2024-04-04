@@ -63,7 +63,7 @@ public abstract class AbstractSetVisibleDependencyFeature extends AbstractCustom
    * @param visible
    *          the visible
    */
-  public AbstractSetVisibleDependencyFeature(final IFeatureProvider fp, final boolean visible) {
+  protected AbstractSetVisibleDependencyFeature(final IFeatureProvider fp, final boolean visible) {
     super(fp);
     this.fp = fp;
     this.visible = visible;

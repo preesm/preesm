@@ -82,7 +82,7 @@ public abstract class AbstractAddDataInterfacefeature extends AbstractAddFeature
 
   protected abstract int getX();
 
-  public AbstractAddDataInterfacefeature(final IFeatureProvider fp) {
+  protected AbstractAddDataInterfacefeature(final IFeatureProvider fp) {
     super(fp);
   }
 

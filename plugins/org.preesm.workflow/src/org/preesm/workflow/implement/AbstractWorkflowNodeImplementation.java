@@ -80,7 +80,7 @@ public abstract class AbstractWorkflowNodeImplementation {
   /**
    * Instantiates a new abstract workflow node implementation.
    */
-  public AbstractWorkflowNodeImplementation() {
+  protected AbstractWorkflowNodeImplementation() {
     this.outputPrototype = new LinkedHashMap<>();
   }
 

@@ -91,7 +91,7 @@ public abstract class AbstractVertex<G> extends Observable
   /**
    * Creates a new Instance of Abstract vertex.
    */
-  public AbstractVertex() {
+  protected AbstractVertex() {
     this.properties = new PropertyBean();
     this.interfaces = new ArrayList<>();
   }
@@ -230,11 +230,10 @@ public abstract class AbstractVertex<G> extends Observable
    */
   @SuppressWarnings("rawtypes")
   public AbstractGraph getGraphDescription() {
-    if (this.refinement instanceof AbstractGraph) {
-      return (AbstractGraph) this.refinement;
-    } else {
-      return null;
+    if (this.refinement instanceof final AbstractGraph abstractGraph) {
+      return abstractGraph;
     }
+    return null;
   }
 
   /**
@@ -285,8 +284,8 @@ public abstract class AbstractVertex<G> extends Observable
   @Override
   @SuppressWarnings("rawtypes")
   public void update(final Observable o, final Object arg) {
-    if ((arg instanceof String) && (o instanceof AbstractEdge)) {
-      final Object property = ((AbstractVertex) o).getPropertyBean().getValue((String) arg);
+    if ((arg instanceof final String str) && (o instanceof final AbstractEdge abstractEdge)) {
+      final Object property = abstractEdge.getPropertyBean().getValue(str);
       if (property != null) {
         this.getPropertyBean().setValue((String) arg, property);
       }
@@ -398,11 +397,10 @@ public abstract class AbstractVertex<G> extends Observable
   @Override
   @SuppressWarnings("rawtypes")
   public boolean equals(final Object e) {
-    if (e instanceof AbstractVertex) {
-      return ((AbstractVertex) e).getName().equals(this.getName());
-    } else {
-      return false;
+    if (e instanceof final AbstractVertex abstractVertex) {
+      return abstractVertex.getName().equals(this.getName());
     }
+    return false;
   }
 
   @Override

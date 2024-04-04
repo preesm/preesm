@@ -20,7 +20,7 @@ import org.preesm.model.scenario.Scenario;
 /**
  * This class is a base class for the evaluation of FIFO, i.e. computation of start and finish time of a producer
  * considering a consumer, and computation of the fifo size.
- * 
+ *
  * @author ahonorat
  */
 public abstract class AbstractAsapFpgaFifoEvaluator {
@@ -55,7 +55,7 @@ public abstract class AbstractAsapFpgaFifoEvaluator {
 
   /**
    * Builds a fifo evaluator to perform scheduling and compute sizes.
-   * 
+   *
    * @param scenario
    *          Scenario (especially used for size of data types).
    * @param hlbd
@@ -63,7 +63,7 @@ public abstract class AbstractAsapFpgaFifoEvaluator {
    * @param mapActorNormalizedInfos
    *          Normalized informations about II and ET of actors.
    */
-  public AbstractAsapFpgaFifoEvaluator(final Scenario scenario, final HeuristicLoopBreakingDelays hlbd,
+  protected AbstractAsapFpgaFifoEvaluator(final Scenario scenario, final HeuristicLoopBreakingDelays hlbd,
       final Map<AbstractActor, ActorNormalizedInfos> mapActorNormalizedInfos) {
     this.scenario = scenario;
     this.hlbd = hlbd;
@@ -72,7 +72,7 @@ public abstract class AbstractAsapFpgaFifoEvaluator {
 
   /**
    * Compute and set the minimum start and finish time of a consumer wrt. a producer actor.
-   * 
+   *
    * @param producer
    *          Schedule informations about producer (to be read).
    * @param fifoAbs
@@ -105,22 +105,12 @@ public abstract class AbstractAsapFpgaFifoEvaluator {
       consumer.minInFinishTimes.add(sf.getValue());
     }
     // should we consider the previous value?
-    long minStartTime = 0;
-    // TODO only first dependency for ALAP?
-    // if (isReversedALAP) {
-    // minStartTime = consumer.minInStartTimes.stream().min(Long::compare).orElse(consumer.startTime);
-    // } else {
-    minStartTime = consumer.minInStartTimes.stream().max(Long::compare).orElse(consumer.startTime);
-    // }
+    final long minStartTime = consumer.minInStartTimes.stream().max(Long::compare).orElse(consumer.startTime);
+
     consumer.startTime = Math.max(consumer.startTime, minStartTime);
 
-    long minFinishTime = 0;
-    // TODO only first dependency for ALAP?
-    // if (isReversedALAP) {
-    // minFinishTime = consumer.minInFinishTimes.stream().min(Long::compare).orElse(consumer.finishTime);
-    // } else {
-    minFinishTime = consumer.minInFinishTimes.stream().max(Long::compare).orElse(consumer.finishTime);
-    // }
+    final long minFinishTime = consumer.minInFinishTimes.stream().max(Long::compare).orElse(consumer.finishTime);
+
     consumer.finishTime = Math.max(minFinishTime, consumer.startTime + consumer.minDuration);
   }
 
@@ -128,7 +118,7 @@ public abstract class AbstractAsapFpgaFifoEvaluator {
 
   /**
    * Compute the list of fifo sizes between a producer and a consumer.
-   * 
+   *
    * @param producer
    *          Schedule informations about producer (to be read).
    * @param fifoAbs
@@ -145,7 +135,7 @@ public abstract class AbstractAsapFpgaFifoEvaluator {
     final long nbFiringsProdForFirstFiringCons = nbfOpposite(fifoAbs, 1L, true, false);
     final long nbFiringsConsForLastFiringProd = nbfOpposite(fifoAbs, 1L, false, false);
 
-    List<Long> fifoSizes = new ArrayList<>();
+    final List<Long> fifoSizes = new ArrayList<>();
     for (final Fifo fifo : fifoAbs.fifos) {
       final FifoInformations fifoInfos = new FifoInformations(producer, mapActorNormalizedInfos.get(src),
           nbFiringsProdForFirstFiringCons, fifo, nbFiringsConsForLastFiringProd, consumer,
@@ -162,7 +152,7 @@ public abstract class AbstractAsapFpgaFifoEvaluator {
   /**
    * Get the number of firings of the consumer triggered by executing {@code nbfiringsOpposite} last firings of the
    * producer, without considering delays.
-   * 
+   *
    * @param fa
    *          Fifo abstraction to consider.
    * @param nbfiringsOpposite
@@ -190,7 +180,7 @@ public abstract class AbstractAsapFpgaFifoEvaluator {
 
   /**
    * Compute the cycle minimal II for an entry of {@link HeuristicLoopBreakingDelays#cyclesInfos}.
-   * 
+   *
    * @param cycleActors
    *          List of actors in the cycle.
    * @param cycleInfos

@@ -47,9 +47,9 @@ public class DelayActorTransform extends ActorConstructTransform {
     scenario.getTimings().setTiming(delayActor, target.getComponent(), TimingType.INITIATION_INTERVAL, "1");
 
     // Connect size parameters
-    final Parameter init_size = PiMMUserFactory.instance
+    final Parameter initSize = PiMMUserFactory.instance
         .createParameter(delay.getContainingFifo().getId() + "_init_size", delay.getExpression().evaluate());
-    connectParameter(delayActor, init_size, "INIT_S");
+    connectParameter(delayActor, initSize, "INIT_S");
 
     // Create data ports
     final DataInputPort delayActorInput = createDataInputPort(delayActor, 1);

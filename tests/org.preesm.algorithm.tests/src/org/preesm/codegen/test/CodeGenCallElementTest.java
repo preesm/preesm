@@ -48,7 +48,7 @@ public class CodeGenCallElementTest {
     final CodeGenCallElement codeGenCallElement = new CodeGenCallElement(inputString);
     final String name = codeGenCallElement.getName();
     Assert.assertNotNull(name);
-    Assert.assertTrue(inputString.equals(name));
+    Assert.assertEquals(inputString, name);
   }
 
 }

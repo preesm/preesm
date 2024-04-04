@@ -99,41 +99,24 @@ public class MoveDownActorPortFeature extends MoveUpActorPortFeature {
    */
   @Override
   public boolean canExecute(final ICustomContext context) {
-    // allow move up if exactly one pictogram element
-    // representing a Port is selected
-    // and it is not the first port
-    boolean ret = false;
+    // allow move up if exactly one pictogram element representing a Port is selected and it is not the first port
     final PictogramElement[] pes = context.getPictogramElements();
     if ((pes != null) && (pes.length == 1)) {
       final Object bo = getBusinessObjectForPictogramElement(pes[0]);
-      if (bo instanceof Port) {
-        final Port port = (Port) bo;
-        if (port.eContainer() instanceof ExecutableActor) {
-          final ExecutableActor actor = (ExecutableActor) (port.eContainer());
-          switch (port.getKind()) {
-            case CFG_INPUT:
-              ret = actor.getConfigInputPorts().size() > 1;
-              ret = ret && (actor.getConfigInputPorts().indexOf(port) < (actor.getConfigInputPorts().size() - 1));
-              break;
-            case CFG_OUTPUT:
-              ret = actor.getConfigOutputPorts().size() > 1;
-              ret = ret && (actor.getConfigOutputPorts().indexOf(port) < (actor.getConfigOutputPorts().size() - 1));
-              break;
-            case DATA_INPUT:
-              ret = actor.getDataInputPorts().size() > 1;
-              ret = ret && (actor.getDataInputPorts().indexOf(port) < (actor.getDataInputPorts().size() - 1));
-              break;
-            case DATA_OUTPUT:
-              ret = actor.getDataOutputPorts().size() > 1;
-              ret = ret && (actor.getDataOutputPorts().indexOf(port) < (actor.getDataOutputPorts().size() - 1));
-              break;
-            default:
-              throw new UnsupportedOperationException("Port kind " + port.getKind() + " not supported.");
-          }
-        }
+      if (bo instanceof final Port port && (port.eContainer() instanceof final ExecutableActor actor)) {
+        return switch (port.getKind()) {
+          case CFG_INPUT -> actor.getConfigInputPorts().size() > 1
+              && (actor.getConfigInputPorts().indexOf(port) < (actor.getConfigInputPorts().size() - 1));
+          case CFG_OUTPUT -> actor.getConfigOutputPorts().size() > 1
+              && (actor.getConfigOutputPorts().indexOf(port) < (actor.getConfigOutputPorts().size() - 1));
+          case DATA_INPUT -> actor.getDataInputPorts().size() > 1
+              && (actor.getDataInputPorts().indexOf(port) < (actor.getDataInputPorts().size() - 1));
+          case DATA_OUTPUT -> actor.getDataOutputPorts().size() > 1
+              && (actor.getDataOutputPorts().indexOf(port) < (actor.getDataOutputPorts().size() - 1));
+        };
       }
     }
-    return ret;
+    return false;
   }
 
   /*
@@ -147,54 +130,55 @@ public class MoveDownActorPortFeature extends MoveUpActorPortFeature {
 
     // Re-check if only one element is selected
     final PictogramElement[] pes = context.getPictogramElements();
-    if ((pes != null) && (pes.length == 1)) {
-      final PictogramElement anchorToMoveDown = pes[0];
-      final Object bo = getBusinessObjectForPictogramElement(anchorToMoveDown);
-      if (bo instanceof Port) {
-        Port portToMoveDown = null;
-        Port portToMoveUp = null;
-        int portToMoveDownIndex = -1;
-        ExecutableActor actor;
 
-        portToMoveDown = (Port) bo;
-        actor = (ExecutableActor) (portToMoveDown.eContainer());
-        // Switch Port into Actor Object
-        switch (portToMoveDown.getKind()) {
-          case DATA_INPUT:
-            portToMoveDownIndex = actor.getDataInputPorts().indexOf(portToMoveDown);
-            portToMoveUp = actor.getDataInputPorts().get(portToMoveDownIndex + 1);
-            break;
-          case DATA_OUTPUT:
-            portToMoveDownIndex = actor.getDataOutputPorts().indexOf(portToMoveDown);
-            portToMoveUp = actor.getDataOutputPorts().get(portToMoveDownIndex + 1);
-            break;
-          case CFG_INPUT:
-            portToMoveDownIndex = actor.getConfigInputPorts().indexOf(portToMoveDown);
-            portToMoveUp = actor.getConfigInputPorts().get(portToMoveDownIndex + 1);
-            break;
-          case CFG_OUTPUT:
-            portToMoveDownIndex = actor.getConfigOutputPorts().indexOf(portToMoveDown);
-            portToMoveUp = actor.getConfigOutputPorts().get(portToMoveDownIndex + 1);
-            break;
-          default:
-        }
-        // Change context to use portToMoveUp feature
-        // Get Graphical Elements
-        final ContainerShape csActor = (ContainerShape) ((BoxRelativeAnchor) anchorToMoveDown)
-            .getReferencedGraphicsAlgorithm().getPictogramElement();
-        final EList<Anchor> anchors = csActor.getAnchors();
+    if ((pes == null) || (pes.length != 1)) {
+      return;
+    }
 
-        Anchor anchorToMoveUp = null;
-        for (final Anchor a : anchors) {
-          if (a.getLink().getBusinessObjects().get(0).equals(portToMoveUp)) {
-            anchorToMoveUp = a;
-            break;
-          }
-        }
+    final PictogramElement anchorToMoveDown = pes[0];
+    final Object bo = getBusinessObjectForPictogramElement(anchorToMoveDown);
+    if (bo instanceof final Port portToMoveDown) {
+      Port portToMoveUp = null;
+      int portToMoveDownIndex = -1;
+      ExecutableActor actor;
 
-        context.getPictogramElements()[0] = anchorToMoveUp;
-        super.execute(context);
+      actor = (ExecutableActor) (portToMoveDown.eContainer());
+      // Switch Port into Actor Object
+      switch (portToMoveDown.getKind()) {
+        case DATA_INPUT:
+          portToMoveDownIndex = actor.getDataInputPorts().indexOf(portToMoveDown);
+          portToMoveUp = actor.getDataInputPorts().get(portToMoveDownIndex + 1);
+          break;
+        case DATA_OUTPUT:
+          portToMoveDownIndex = actor.getDataOutputPorts().indexOf(portToMoveDown);
+          portToMoveUp = actor.getDataOutputPorts().get(portToMoveDownIndex + 1);
+          break;
+        case CFG_INPUT:
+          portToMoveDownIndex = actor.getConfigInputPorts().indexOf(portToMoveDown);
+          portToMoveUp = actor.getConfigInputPorts().get(portToMoveDownIndex + 1);
+          break;
+        case CFG_OUTPUT:
+          portToMoveDownIndex = actor.getConfigOutputPorts().indexOf(portToMoveDown);
+          portToMoveUp = actor.getConfigOutputPorts().get(portToMoveDownIndex + 1);
+          break;
+        default:
       }
+      // Change context to use portToMoveUp feature
+      // Get Graphical Elements
+      final ContainerShape csActor = (ContainerShape) ((BoxRelativeAnchor) anchorToMoveDown)
+          .getReferencedGraphicsAlgorithm().getPictogramElement();
+      final EList<Anchor> anchors = csActor.getAnchors();
+
+      Anchor anchorToMoveUp = null;
+      for (final Anchor a : anchors) {
+        if (a.getLink().getBusinessObjects().get(0).equals(portToMoveUp)) {
+          anchorToMoveUp = a;
+          break;
+        }
+      }
+
+      context.getPictogramElements()[0] = anchorToMoveUp;
+      super.execute(context);
     }
   }
 }

@@ -64,7 +64,7 @@ public abstract class AbstractEdge<G, V extends AbstractVertex> extends Observab
   /**
    * Creates a new AbstractEdge.
    */
-  public AbstractEdge() {
+  protected AbstractEdge() {
     this.property = new PropertyBean();
   }
 
@@ -183,10 +183,10 @@ public abstract class AbstractEdge<G, V extends AbstractVertex> extends Observab
    */
   @Override
   public void update(final Observable o, final Object arg) {
-    if ((arg instanceof String) && (o instanceof AbstractEdge)) {
-      final Object propertyValue = ((AbstractEdge) o).getPropertyBean().getValue((String) arg);
+    if ((arg instanceof final String str) && (o instanceof final AbstractEdge ae)) {
+      final Object propertyValue = ae.getPropertyBean().getValue(str);
       if (propertyValue != null) {
-        this.getPropertyBean().setValue((String) arg, propertyValue);
+        this.getPropertyBean().setValue(str, propertyValue);
       }
     }
   }

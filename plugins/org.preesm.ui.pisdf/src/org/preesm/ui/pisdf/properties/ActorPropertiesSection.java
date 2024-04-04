@@ -544,8 +544,8 @@ public class ActorPropertiesSection extends GFPropertySection implements ITabbed
       if (bo instanceof ExecutableActor || bo instanceof Delay) {
 
         AbstractActor executableActor = null;
-        if (bo instanceof Delay) {
-          executableActor = ((Delay) bo).getActor();
+        if (bo instanceof final Delay delay) {
+          executableActor = delay.getActor();
         } else {
           executableActor = (AbstractActor) bo;
         }
@@ -561,9 +561,9 @@ public class ActorPropertiesSection extends GFPropertySection implements ITabbed
 
           Refinement refinement = null;
           boolean enabled = true;
-          if (bo instanceof Delay) {
-            enabled = ((Delay) bo).getLevel() == PersistenceLevel.PERMANENT;
-            refinement = ((Delay) bo).getActor().getRefinement();
+          if (bo instanceof final Delay delay) {
+            enabled = delay.getLevel() == PersistenceLevel.PERMANENT;
+            refinement = delay.getActor().getRefinement();
           } else {
             refinement = ((RefinementContainer) bo).getRefinement();
           }
@@ -580,20 +580,18 @@ public class ActorPropertiesSection extends GFPropertySection implements ITabbed
 
             String view = "";
 
-            if (refinement instanceof CHeaderRefinement) {
+            if (refinement instanceof final CHeaderRefinement cHeaderRefinement) {
               String tooltip = "";
               // Max length
               int maxLength = (int) ((this.composite.getBounds().width - FIRST_COLUMN_WIDTH) * 0.17);
               maxLength = Math.max(maxLength, 40);
-              if (((CHeaderRefinement) refinement).getLoopPrototype() != null) {
-                final String loop = "loop: "
-                    + PrototypeFormatter.format(((CHeaderRefinement) refinement).getLoopPrototype());
+              if (cHeaderRefinement.getLoopPrototype() != null) {
+                final String loop = "loop: " + PrototypeFormatter.format(cHeaderRefinement.getLoopPrototype());
                 view += (loop.length() <= maxLength) ? loop : loop.substring(0, maxLength) + "...";
                 tooltip = loop;
               }
-              if (((CHeaderRefinement) refinement).getInitPrototype() != null) {
-                final String init = "\ninit: "
-                    + PrototypeFormatter.format(((CHeaderRefinement) refinement).getInitPrototype());
+              if (cHeaderRefinement.getInitPrototype() != null) {
+                final String init = "\ninit: " + PrototypeFormatter.format(cHeaderRefinement.getInitPrototype());
                 view += (init.length() <= maxLength) ? init : init.substring(0, maxLength) + "...";
                 tooltip += init;
               }
@@ -612,8 +610,7 @@ public class ActorPropertiesSection extends GFPropertySection implements ITabbed
           this.butRefinementBrowse.setVisible(true);
           this.butRefinementOpen.setVisible(true);
 
-          if (bo instanceof Actor) {
-            final Actor actor = (Actor) bo;
+          if (bo instanceof final Actor actor) {
             if (actor.getMemoryScriptPath() == null) {
               this.lblMemoryScriptObj.setText("(none)");
               this.butMemoryScriptClear.setEnabled(false);

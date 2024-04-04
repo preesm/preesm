@@ -41,7 +41,7 @@ import org.preesm.model.slam.Design;
 
 /**
  * Generates stats for the mapper UI (abstract)
- * 
+ *
  * @author ahonorat
  */
 public abstract class AbstractStatGenerator implements IStatGenerator {
@@ -49,7 +49,7 @@ public abstract class AbstractStatGenerator implements IStatGenerator {
   protected final Design   architecture;
   protected final Scenario scenario;
 
-  public AbstractStatGenerator(final Design architecture, final Scenario scenario) {
+  protected AbstractStatGenerator(final Design architecture, final Scenario scenario) {
     this.architecture = architecture;
     this.scenario = scenario;
   }
@@ -60,7 +60,7 @@ public abstract class AbstractStatGenerator implements IStatGenerator {
    * @return the nb main type operators
    */
   public int getNbMainTypeOperators() {
-    int nbMainTypeOperators = 0;
+    int nbMainTypeOperators;
     final ComponentInstance mainOp = scenario.getSimulationInfo().getMainOperator();
     nbMainTypeOperators = architecture.getComponentInstancesOfType(mainOp.getComponent()).size();
     return nbMainTypeOperators;

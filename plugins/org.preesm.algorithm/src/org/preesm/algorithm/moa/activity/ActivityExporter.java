@@ -102,12 +102,12 @@ public class ActivityExporter extends AbstractTaskImplementation {
   /**
    * Storing the graph vertices already explored
    */
-  private Set<MapperDAGVertex> visited = new LinkedHashSet<>();
+  private final Set<MapperDAGVertex> visited = new LinkedHashSet<>();
 
   /**
    * Currently retrieved activity
    */
-  private Activity activity = new Activity();
+  private final Activity activity = new Activity();
 
   /**
    * Exporting in a CSV file tokens and quanta information
@@ -212,9 +212,8 @@ public class ActivityExporter extends AbstractTaskImplementation {
 
       // Counting tokens and quanta for each elements in the route between 2 processors for an edge
       for (final SlamRouteStep step : route.getRouteSteps()) {
-        if (step instanceof SlamMessageRouteStep) {
+        if (step instanceof final SlamMessageRouteStep mstep) {
           // a step is internally composed of several communication nodes
-          final SlamMessageRouteStep mstep = (SlamMessageRouteStep) step;
           for (final ComponentInstance node : mstep.getNodes()) {
             this.activity.addTokenNumber(node.getInstanceName(), 1);
             this.activity.addQuantaNumber(node.getInstanceName(), size);

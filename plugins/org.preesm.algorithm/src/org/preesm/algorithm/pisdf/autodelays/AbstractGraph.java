@@ -55,14 +55,18 @@ import org.preesm.model.pisdf.PiGraph;
 
 /**
  * To ease the analysis, the PiGraph is transformed into JGraphT graph thanks to this abstract graph class.
- * 
+ *
  * @author ahonorat
  */
 public class AbstractGraph {
 
+  private AbstractGraph() {
+    // Forbids instantiation
+  }
+
   /**
    * Fifo abstraction to get used in the analysis of this package.
-   * 
+   *
    * @author ahonorat
    */
   public static class FifoAbstraction {
@@ -119,7 +123,7 @@ public class AbstractGraph {
 
   /**
    * Creates an abstract graph from the given PiGraph.
-   * 
+   *
    * @param graph
    *          PiGraph to abstract. Fifo with rates equal to 0 are ignored.
    * @param brv
@@ -146,7 +150,7 @@ public class AbstractGraph {
         final long srcRate = dop.getPortRateExpression().evaluate();
         final long tgtRate = dip.getPortRateExpression().evaluate();
         if (srcRate > 0 && tgtRate > 0) {
-          long gcd = MathFunctionsHelper.gcd(srcRate, tgtRate);
+          final long gcd = MathFunctionsHelper.gcd(srcRate, tgtRate);
           if (fa == null) {
             fa = new FifoAbstraction();
             fa.prodRate = srcRate / gcd;
@@ -190,7 +194,7 @@ public class AbstractGraph {
 
   /**
    * Computes a subpart of an abstract graph.
-   * 
+   *
    * @param absGraph
    *          The given abstract graph.
    * @param start
@@ -229,34 +233,35 @@ public class AbstractGraph {
     }
 
     for (final FifoAbstraction fa : edges) {
-      if (!fifosToIgnore.contains(fa)) {
-        AbstractActor opposite = null;
-        if (reverse) {
-          opposite = absGraph.getEdgeSource(fa);
-        } else {
-          opposite = absGraph.getEdgeTarget(fa);
-        }
-        if (visitPathStack.contains(opposite)) {
-          throw new PreesmRuntimeException("SubGraph is not a DAG, abandon.");
-        }
-        final boolean mustGoDeeper = !subGraph.vertexSet().contains(opposite);
-        if (mustGoDeeper) {
-          subGraph.addVertex(opposite);
-          visitPathStack.add(0, opposite);
-        }
-        subGraph.addEdge(currentNode, opposite, fa);
-        if (mustGoDeeper) {
-          subGraphDFS(absGraph, subGraph, fifosToIgnore, reverse, visitPathStack);
-        }
-
+      if (fifosToIgnore.contains(fa)) {
+        continue;
       }
+      AbstractActor opposite = null;
+      if (reverse) {
+        opposite = absGraph.getEdgeSource(fa);
+      } else {
+        opposite = absGraph.getEdgeTarget(fa);
+      }
+      if (visitPathStack.contains(opposite)) {
+        throw new PreesmRuntimeException("SubGraph is not a DAG, abandon.");
+      }
+      final boolean mustGoDeeper = !subGraph.vertexSet().contains(opposite);
+      if (mustGoDeeper) {
+        subGraph.addVertex(opposite);
+        visitPathStack.add(0, opposite);
+      }
+      subGraph.addEdge(currentNode, opposite, fa);
+      if (mustGoDeeper) {
+        subGraphDFS(absGraph, subGraph, fifosToIgnore, reverse, visitPathStack);
+      }
+
     }
     visitPathStack.remove(currentNode);
   }
 
   /**
    * Shallow copy of a graph.
-   * 
+   *
    * @param absGraph
    *          Graph to be copied.
    * @return Shallow copy of the input.
@@ -282,7 +287,7 @@ public class AbstractGraph {
    * <p>
    * If two FifoAbstracttion are present in the original graph (going in opposite directions by construction), then only
    * the first encountered one is copied.
-   * 
+   *
    * @param absGraph
    *          Graph to be copied with undirected edges.
    * @return Shallow copy of the input as an undirected graph.

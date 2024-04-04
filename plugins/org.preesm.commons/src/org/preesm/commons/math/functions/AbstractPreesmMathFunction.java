@@ -49,7 +49,7 @@ public abstract class AbstractPreesmMathFunction extends PostfixMathCommand {
   /**
    * Properly initialize number of argument with abstract method
    */
-  public AbstractPreesmMathFunction() {
+  protected AbstractPreesmMathFunction() {
     super();
     this.numberOfParameters = getArgCount();
   }
@@ -69,11 +69,10 @@ public abstract class AbstractPreesmMathFunction extends PostfixMathCommand {
     final double[] args = new double[getArgCount()];
     for (int i = 0; i < getArgCount(); i++) {
       final Object arg = stack.pop();
-      if (!(arg instanceof Number)) {
+      if (!(arg instanceof final Number nb)) {
         throw new ParseException(
             "Argument must be a number, whereas it is " + arg + "(" + arg.getClass().getName() + ")");
       }
-      Number nb = (Number) arg;
       args[i] = nb.doubleValue();
     }
     final double result = compute(args);

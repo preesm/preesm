@@ -137,9 +137,8 @@ public class AutoLayoutFeature extends AbstractCustomFeature {
     public boolean equals(final Object obj) {
       if (obj instanceof Range) {
         return ((((Range) obj).start == this.start) && (((Range) obj).end == this.end));
-      } else {
-        return false;
       }
+      return false;
     }
 
     @Override
@@ -482,7 +481,7 @@ public class AutoLayoutFeature extends AbstractCustomFeature {
     // 0. Disconnect all delays from FIFOs
     final List<Fifo> fifos = graph.getFifos();
     for (final Fifo fifo : fifos) {
-      Delay delay = fifo.getDelay();
+      final Delay delay = fifo.getDelay();
       if (delay != null) {
         final ContainerShape cs = DiagramPiGraphLinkHelper.getDelayPE(diagram, fifo);
 
@@ -651,7 +650,7 @@ public class AutoLayoutFeature extends AbstractCustomFeature {
       final Fifo fifo = iter.next();
       final FreeFormConnection ffc = fifoFfcMap.get(fifo);
 
-      AbstractActor containingActor = fifo.getTargetPort().getContainingActor();
+      final AbstractActor containingActor = fifo.getTargetPort().getContainingActor();
 
       final EList<Point> bendpoints = ffc.getBendpoints();
       if (bendpoints.isEmpty()) {
@@ -769,7 +768,7 @@ public class AutoLayoutFeature extends AbstractCustomFeature {
       // Do the layout for each stage
       for (int stageIdx = srcStage; stageIdx >= dstStage; stageIdx--) {
         // Find the closest gap to the feedback fifo
-        int fccBpsize = ffc.getBendpoints().size();
+        final int fccBpsize = ffc.getBendpoints().size();
         if (fccBpsize < 2) {
           break;
         }
@@ -975,7 +974,7 @@ public class AutoLayoutFeature extends AbstractCustomFeature {
     // Retrieve the last bendpoint of the ffc (added when
     // the
     // actor was moved.)
-    int fccBpSize = ffc.getBendpoints().size();
+    final int fccBpSize = ffc.getBendpoints().size();
     if (fccBpSize > 0) {
       final Point lastBp = ffc.getBendpoints().get(fccBpSize - 1);
       // Move it

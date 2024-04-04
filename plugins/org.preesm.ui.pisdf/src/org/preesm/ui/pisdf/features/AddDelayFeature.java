@@ -126,7 +126,7 @@ public class AddDelayFeature extends AbstractCustomFeature {
     final PictogramElement[] pes = context.getPictogramElements();
     if ((pes != null) && (pes.length == 1)) {
       final Object bo = getBusinessObjectForPictogramElement(pes[0]);
-      if (bo instanceof Fifo && ((Fifo) bo).getDelay() == null) {
+      if (bo instanceof final Fifo fifo && fifo.getDelay() == null) {
         // Check that the Fifo has no existing delay
         ret = true;
       }

@@ -98,7 +98,7 @@ public abstract class GMLImporter<G extends AbstractGraph<?, ?>, V extends Abstr
    * Creates a new GMLImporter.
    *
    */
-  public GMLImporter() {
+  protected GMLImporter() {
     this.classKeySet = new LinkedHashMap<>();
   }
 
@@ -325,7 +325,7 @@ public abstract class GMLImporter<G extends AbstractGraph<?, ?>, V extends Abstr
         for (int j = 0; j < argsList.getLength(); j++) {
           if (argsList.item(j).getNodeName().equals("argument")) {
             final Element arg = (Element) argsList.item(j);
-            final Argument vArg = vertex.getBase().getArgumentFactory(vertex).create(arg.getAttribute("name"),
+            final Argument vArg = vertex.getBase().getArgumentFactory().create(arg.getAttribute("name"),
                 arg.getAttribute("value"));
             vertex.addArgument(vArg);
           }
@@ -393,8 +393,8 @@ public abstract class GMLImporter<G extends AbstractGraph<?, ?>, V extends Abstr
         final NodeList argsList = childList.item(i).getChildNodes();
         for (int j = 0; j < argsList.getLength(); j++) {
           if (argsList.item(j).getNodeName().equals("variable")) {
-            final Element var = (Element) argsList.item(j);
-            graph.addVariable(new Variable(var.getAttribute("name"), var.getAttribute("value")));
+            final Element variable = (Element) argsList.item(j);
+            graph.addVariable(new Variable(variable.getAttribute("name"), variable.getAttribute("value")));
           }
         }
       }

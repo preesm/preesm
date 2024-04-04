@@ -71,7 +71,7 @@ public class AddActorFeature extends AbstractAddFeature {
 
   /** The Constant ACTOR_BACKGROUND. */
   public static final IColorConstant ACTOR_BACKGROUND = new ColorConstant(237, 237, 237);
-  // 187, 218, 247);
+  // 187, 218, 247); // Light blue
 
   /** The Constant HIERARCHICAL_ACTOR_FOREGROUND. */
   public static final IColorConstant HIERARCHICAL_ACTOR_FOREGROUND = new ColorConstant(128, 100, 162);

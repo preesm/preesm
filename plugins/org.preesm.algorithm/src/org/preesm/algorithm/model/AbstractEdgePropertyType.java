@@ -54,7 +54,7 @@ public abstract class AbstractEdgePropertyType<T> implements CloneableProperty<A
   /**
    * Creates a new AbstractEdgePropertyType without specifyiong any value.
    */
-  public AbstractEdgePropertyType() {
+  protected AbstractEdgePropertyType() {
     this.value = null;
   }
 
@@ -64,17 +64,9 @@ public abstract class AbstractEdgePropertyType<T> implements CloneableProperty<A
    * @param val
    *          the val
    */
-  public AbstractEdgePropertyType(final T val) {
+  protected AbstractEdgePropertyType(final T val) {
     this.value = val;
   }
-
-  /*
-   * (non-Javadoc)
-   *
-   * @see java.lang.Object#clone()
-   */
-  @Override
-  public abstract AbstractEdgePropertyType<T> copy();
 
   /**
    * Gives this AbstractEdgePropertyType value.

@@ -72,7 +72,7 @@ public abstract class AbstractAddActorPortFeature extends AbstractCustomFeature 
 
   /**
    * Force the name of the new port, bypassing the dialog box if not null.
-   * 
+   *
    * @param forcedName
    *          Name of the port, overriding the default.
    */
@@ -123,7 +123,7 @@ public abstract class AbstractAddActorPortFeature extends AbstractCustomFeature 
    * @param fp
    *          the fp
    */
-  public AbstractAddActorPortFeature(final IFeatureProvider fp) {
+  protected AbstractAddActorPortFeature(final IFeatureProvider fp) {
     super(fp);
   }
 
