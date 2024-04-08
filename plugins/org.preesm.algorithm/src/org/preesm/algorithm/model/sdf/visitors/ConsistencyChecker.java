@@ -34,7 +34,6 @@
  */
 package org.preesm.algorithm.model.sdf.visitors;
 
-import java.util.logging.Level;
 import org.preesm.algorithm.model.IGraphVisitor;
 import org.preesm.algorithm.model.sdf.SDFAbstractVertex;
 import org.preesm.algorithm.model.sdf.SDFEdge;
@@ -52,6 +51,11 @@ public class ConsistencyChecker implements IGraphVisitor<SDFGraph, SDFAbstractVe
 
   /** The is consistent. */
   private boolean isConsistent;
+
+  private static final String ERROR_MESSAGE_IF_VERTEX = "Interface %s does not exist in vertex %s hierarchy";
+
+  private static final String ERROR_MESSAGE_IF_EXIST = "Interface %s does not exist,"
+      + " or is not connected in vertex %s hierarchy";
 
   /*
    * (non-Javadoc)
@@ -75,37 +79,41 @@ public class ConsistencyChecker implements IGraphVisitor<SDFGraph, SDFAbstractVe
   public void visit(final SDFAbstractVertex sdfVertex) {
     final SDFGraph graphDescription = (SDFGraph) sdfVertex.getGraphDescription();
     final SDFGraph base = (SDFGraph) sdfVertex.getBase();
-    if (graphDescription != null) {
-      for (final SDFEdge edge : base.incomingEdgesOf(sdfVertex)) {
-        if (graphDescription.getVertex(edge.getTargetInterface().getName()) == null) {
-          PreesmLogger.getLogger().log(Level.SEVERE, "Interface " + edge.getTargetInterface().getName()
-              + " does not exist in vertex " + sdfVertex.getName() + " hierarchy");
-          this.isConsistent &= false;
-        } else if (graphDescription.getVertex(edge.getTargetInterface().getName()) != null) {
-          final SDFAbstractVertex sourceNode = graphDescription.getVertex(edge.getTargetInterface().getName());
-          if (graphDescription.outgoingEdgesOf(sourceNode).isEmpty()) {
-            PreesmLogger.getLogger().log(Level.SEVERE, "Interface " + edge.getTargetInterface().getName()
-                + " does not exist, or is not connect in vertex " + sdfVertex.getName() + " hierarchy");
-            this.isConsistent &= false;
-          }
-        }
-      }
-      for (final SDFEdge edge : base.outgoingEdgesOf(sdfVertex)) {
-        if (graphDescription.getVertex(edge.getSourceInterface().getName()) == null) {
-          PreesmLogger.getLogger().log(Level.SEVERE, "Interface " + edge.getSourceInterface().getName()
-              + " does not exist in vertex " + sdfVertex.getName() + " hierarchy");
-          this.isConsistent &= false;
-        } else if (graphDescription.getVertex(edge.getSourceInterface().getName()) != null) {
-          final SDFAbstractVertex sinkNode = graphDescription.getVertex(edge.getSourceInterface().getName());
-          if (graphDescription.incomingEdgesOf(sinkNode).isEmpty()) {
-            PreesmLogger.getLogger().log(Level.SEVERE, "Interface " + edge.getSourceInterface().getName()
-                + " does not exist, or is not connect in vertex " + sdfVertex.getName() + " hierarchy");
-            this.isConsistent &= false;
-          }
-        }
-      }
-      graphDescription.accept(this);
+    if (graphDescription == null) {
+      return;
     }
+
+    for (final SDFEdge edge : base.incomingEdgesOf(sdfVertex)) {
+      if (graphDescription.getVertex(edge.getTargetInterface().getName()) == null) {
+        PreesmLogger.getLogger()
+            .severe(() -> ERROR_MESSAGE_IF_VERTEX.formatted(edge.getTargetInterface().getName(), sdfVertex.getName()));
+        this.isConsistent &= false;
+      } else if (graphDescription.getVertex(edge.getTargetInterface().getName()) != null) {
+        final SDFAbstractVertex sourceNode = graphDescription.getVertex(edge.getTargetInterface().getName());
+        if (graphDescription.outgoingEdgesOf(sourceNode).isEmpty()) {
+          PreesmLogger.getLogger()
+              .severe(() -> ERROR_MESSAGE_IF_EXIST.formatted(edge.getTargetInterface().getName(), sdfVertex.getName()));
+          this.isConsistent &= false;
+        }
+      }
+    }
+
+    for (final SDFEdge edge : base.outgoingEdgesOf(sdfVertex)) {
+      if (graphDescription.getVertex(edge.getSourceInterface().getName()) == null) {
+        PreesmLogger.getLogger()
+            .severe(() -> ERROR_MESSAGE_IF_VERTEX.formatted(edge.getSourceInterface().getName(), sdfVertex.getName()));
+        this.isConsistent &= false;
+      } else if (graphDescription.getVertex(edge.getSourceInterface().getName()) != null) {
+        final SDFAbstractVertex sinkNode = graphDescription.getVertex(edge.getSourceInterface().getName());
+        if (graphDescription.incomingEdgesOf(sinkNode).isEmpty()) {
+          PreesmLogger.getLogger()
+              .severe(() -> ERROR_MESSAGE_IF_EXIST.formatted(edge.getSourceInterface().getName(), sdfVertex.getName()));
+          this.isConsistent &= false;
+        }
+      }
+    }
+    graphDescription.accept(this);
+
   }
 
   /**

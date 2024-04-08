@@ -44,7 +44,6 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Level;
 import org.preesm.commons.IntegerName;
 import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.preesm.commons.logger.PreesmLogger;
@@ -218,8 +217,8 @@ public class PiSDFFlattener extends PiMMSwitch<Boolean> {
     final long value = d.getExpression().evaluate();
     dExt.setActor(null);
     if (dExt.getExpression().evaluate() != value) {
-      PreesmLogger.getLogger().log(Level.WARNING,
-          "A delay actor loop  on <" + da.getName() + "had a wrong delay size, it is removed anyway.");
+      PreesmLogger.getLogger()
+          .warning(() -> "A delay actor loop  on <" + da.getName() + "had a wrong delay size, it is removed anyway.");
     }
     graph.removeDelay(dExt);
     graph.removeFifo(f1);
@@ -258,10 +257,10 @@ public class PiSDFFlattener extends PiMMSwitch<Boolean> {
    */
   @Override
   public Boolean caseAbstractActor(final AbstractActor actor) {
-    if (actor instanceof PiGraph) {
+    if (actor instanceof final PiGraph piGraph) {
       // Here we handle the replacement of the interfaces by what should be
       // Copy the actor, should we use copyPiGraphWithHistory() instead ?
-      final PiGraph copyActor = PiMMUserFactory.instance.copyWithHistory((PiGraph) actor);
+      final PiGraph copyActor = PiMMUserFactory.instance.copyWithHistory(piGraph);
       copyActor.setName(graphPrefix + actor.getName());
       // Add the actor to the graph
       this.result.addActor(copyActor);
@@ -289,10 +288,9 @@ public class PiSDFFlattener extends PiMMSwitch<Boolean> {
       final Parameter parameter = param2param.get(setter);
       if (parameter == null) {
         throw new PreesmRuntimeException();
-      } else {
-        final Dependency dep = PiMMUserFactory.instance.createDependency(parameter, port);
-        this.result.addDependency(dep);
       }
+      final Dependency dep = PiMMUserFactory.instance.createDependency(parameter, port);
+      this.result.addDependency(dep);
     }
 
   }
@@ -517,8 +515,8 @@ public class PiSDFFlattener extends PiMMSwitch<Boolean> {
   }
 
   private AbstractActor getActorFromActor(final AbstractActor actor, final DataPort port) {
-    if (actor instanceof PiGraph) {
-      final AbstractVertex ifActor = ((PiGraph) actor).lookupVertex(port.getName());
+    if (actor instanceof final PiGraph piGraph) {
+      final AbstractVertex ifActor = piGraph.lookupVertex(port.getName());
       return this.actor2actor.get(ifActor);
     }
     return this.actor2actor.get(actor);

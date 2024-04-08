@@ -148,8 +148,8 @@ public class GMLSDFExporter extends GMLExporter<SDFAbstractVertex, SDFEdge> {
   protected Element exportNode(final SDFAbstractVertex vertex, final Element parentELement) {
 
     final Element vertexElt = createNode(parentELement, vertex.getName());
-    if (vertex instanceof SDFInterfaceVertex) {
-      vertexElt.setAttribute("port_direction", ((SDFInterfaceVertex) vertex).getDirection().toString());
+    if (vertex instanceof final SDFInterfaceVertex sdfIVertex) {
+      vertexElt.setAttribute("port_direction", sdfIVertex.getDirection().toString());
     }
 
     if ((vertex.getGraphDescription() != null) && (vertex.getGraphDescription().getName().length() > 0)) {

@@ -81,8 +81,7 @@ public class StatEditor extends SharedHeaderFormEditor implements IPropertyListe
     setInput(input);
     setPartName(input.getName());
 
-    if (input instanceof StatEditorInput) {
-      final StatEditorInput statInput = (StatEditorInput) input;
+    if (input instanceof final StatEditorInput statInput) {
       this.statGen = statInput.getStatGenerator();
     }
   }

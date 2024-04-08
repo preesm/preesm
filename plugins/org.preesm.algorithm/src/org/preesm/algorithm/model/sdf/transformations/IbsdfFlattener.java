@@ -209,7 +209,7 @@ public class IbsdfFlattener {
    */
   private static void addInterfaceSubstitutes(final SDFGraph subgraph) {
     final List<SDFInterfaceVertex> ifaceList = subgraph.vertexSet().stream()
-        .filter(v -> v instanceof SDFInterfaceVertex).map(SDFInterfaceVertex.class::cast).collect(Collectors.toList());
+        .filter(SDFInterfaceVertex.class::isInstance).map(SDFInterfaceVertex.class::cast).collect(Collectors.toList());
     for (final SDFInterfaceVertex iface : ifaceList) {
       if (iface instanceof SDFSourceInterfaceVertex) {
         addSourceInterface(subgraph, iface);
@@ -501,14 +501,14 @@ public class IbsdfFlattener {
 
     // In fifo prod/cons rates (expressions)
     for (final SDFEdge fifo : subgraph.edgeSet()) {
-      if (fifo.getCons() instanceof ExpressionEdgePropertyType) {
-        ((ExpressionEdgePropertyType) fifo.getCons()).getValue().setValue(((ExpressionEdgePropertyType) fifo.getCons())
-            .getValue().getValue().replaceAll(oldNameRegex, replacementString));
+      if (fifo.getCons() instanceof final ExpressionEdgePropertyType exprEdgePropType) {
+        exprEdgePropType.getValue()
+            .setValue(exprEdgePropType.getValue().getValue().replaceAll(oldNameRegex, replacementString));
       }
 
-      if (fifo.getProd() instanceof ExpressionEdgePropertyType) {
-        ((ExpressionEdgePropertyType) fifo.getProd()).getValue().setValue(((ExpressionEdgePropertyType) fifo.getProd())
-            .getValue().getValue().replaceAll(oldNameRegex, replacementString));
+      if (fifo.getProd() instanceof final ExpressionEdgePropertyType exprEdgePropType) {
+        exprEdgePropType.getValue()
+            .setValue(exprEdgePropType.getValue().getValue().replaceAll(oldNameRegex, replacementString));
       }
     }
 
@@ -549,7 +549,7 @@ public class IbsdfFlattener {
 
     // Connect FIFO that were connected to ports of the flattened actor
     // and those connected to interfaces in the subgraph
-    for (final SDFAbstractVertex iface : subgraph.vertexSet().stream().filter(it -> it instanceof SDFInterfaceVertex)
+    for (final SDFAbstractVertex iface : subgraph.vertexSet().stream().filter(SDFInterfaceVertex.class::isInstance)
         .collect(Collectors.toList())) {
       connectFifos(hierActor, subgraph, clones, iface);
     }

@@ -392,9 +392,7 @@ public abstract class AbstractWorkflowExecutor {
 
                 // Filter only outputs required in the workflow
                 final Map<String, Object> outs = outputs; // final
-                // reference
-                // for
-                // predicate
+                // reference for predicate
                 final Set<WorkflowEdge> edges = new LinkedHashSet<>(workflow.outgoingEdgesOf(taskNode));
                 edges.removeIf(edge -> !outs.containsKey(edge.getSourcePort()));
 

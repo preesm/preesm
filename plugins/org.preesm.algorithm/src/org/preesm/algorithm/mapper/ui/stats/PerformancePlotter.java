@@ -71,6 +71,10 @@ import org.preesm.commons.logger.PreesmLogger;
  */
 public class PerformancePlotter {
 
+  private PerformancePlotter() {
+    // Forbids instantiation
+  }
+
   /**
    * Initial dimensions of the window
    */
@@ -213,8 +217,8 @@ public class PerformancePlotter {
     }
     if (frame != null) {
       // plot inside the window
-      JRootPane root = new JRootPane();
-      Container awtContainer = root.getContentPane();
+      final JRootPane root = new JRootPane();
+      final Container awtContainer = root.getContentPane();
       awtContainer.add(cp);
       frame.add(root);
       ChartPanelPlotterUtils.plotFrameCP(frame, cp);

@@ -150,8 +150,8 @@ public class SetMoldableParametersTask extends AbstractTaskImplementation {
   public static final String DEFAULT_LOG_NAME              = "8. Log path";
 
   public static final String COMPARISONS_REGEX = "[EPLTMS](>[EPLTMS])*";
-  public static final String THRESHOLDS_REGEX  = "[0-9]+(.[0-9]+)?(>[0-9]+(.[0-9]+))*";
-  public static final String PARAMS_REGEX      = ">|(>[+-][a-zA-Z0-9_]+/[a-zA-Z0-9_]+)*";
+  public static final String THRESHOLDS_REGEX  = "\\d+(.\\d+)?(>\\d+(.\\d+))*";
+  public static final String PARAMS_REGEX      = ">|(>[+-]\\w+/\\w+)*";
 
   @Override
   public Map<String, Object> execute(Map<String, Object> inputs, Map<String, String> parameters,
@@ -165,7 +165,7 @@ public class SetMoldableParametersTask extends AbstractTaskImplementation {
     output.put(AbstractWorkflowNodeImplementation.KEY_PI_GRAPH, graph);
 
     final List<MoldableParameter> mparams = graph.getAllParameters().stream()
-        .filter(x -> x instanceof MoldableParameter).map(x -> (MoldableParameter) x).collect(Collectors.toList());
+        .filter(MoldableParameter.class::isInstance).map(x -> (MoldableParameter) x).collect(Collectors.toList());
 
     if (mparams.isEmpty()) {
       return output;
@@ -290,8 +290,8 @@ public class SetMoldableParametersTask extends AbstractTaskImplementation {
       fw.write(header.toString());
       fw.write(logDSEpoints.toString());
     } catch (final IOException e) {
-      PreesmLogger.getLogger().log(Level.SEVERE,
-          "Unhable to write the DSE task log in file:" + exportAbsolutePath + fileName);
+      PreesmLogger.getLogger()
+          .severe(() -> "Unhable to write the DSE task log in file:" + exportAbsolutePath + fileName);
     }
 
   }
@@ -347,50 +347,29 @@ public class SetMoldableParametersTask extends AbstractTaskImplementation {
       final Number thresholdI = numberThresholds[i];
       if (thresholdI.doubleValue() == 0.0D) {
         switch (charComparisons[i]) {
-          case 'E':
-            listComparators.add(new DSEpointIR.EnergyMinComparator());
-            break;
-          case 'P':
-            listComparators.add(new DSEpointIR.PowerMinComparator());
-            break;
-          case 'L':
-            listComparators.add(new DSEpointIR.LatencyMinComparator());
-            break;
-          case 'M':
-            listComparators.add(new DSEpointIR.MakespanMinComparator());
-            break;
-          case 'T':
-            listComparators.add(new DSEpointIR.ThroughputMaxComparator());
-            break;
-          case 'S':
-            listComparators.add(new DSEpointIR.MemoryMinComparator());
-            break;
-          default:
-            break;
+          case 'E' -> listComparators.add(new DSEpointIR.EnergyMinComparator());
+          case 'P' -> listComparators.add(new DSEpointIR.PowerMinComparator());
+          case 'L' -> listComparators.add(new DSEpointIR.LatencyMinComparator());
+          case 'M' -> listComparators.add(new DSEpointIR.MakespanMinComparator());
+          case 'T' -> listComparators.add(new DSEpointIR.ThroughputMaxComparator());
+          case 'S' -> listComparators.add(new DSEpointIR.MemoryMinComparator());
+          default -> {
+            // empty
+          }
         }
       } else if (thresholdI.doubleValue() > 0.0D) {
         switch (charComparisons[i]) {
-          case 'E':
-            listComparators.add(new DSEpointIR.EnergyAtMostComparator(thresholdI.longValue()));
-            break;
-          case 'P':
-            listComparators.add(new DSEpointIR.PowerAtMostComparator(thresholdI.doubleValue()));
-            break;
-          case 'L':
-            listComparators.add(new DSEpointIR.LatencyAtMostComparator(thresholdI.intValue()));
-            break;
-          case 'M':
-            listComparators.add(new DSEpointIR.MakespanAtMostComparator(thresholdI.longValue()));
-            break;
-          case 'T':
-            listComparators.add(new DSEpointIR.ThroughputAtLeastComparator(thresholdI.longValue()));
-            break;
-          case 'S':
-            listComparators.add(new DSEpointIR.MemoryAtMostComparator(thresholdI.longValue()));
-            break;
-          default:
-            break;
+          case 'E' -> listComparators.add(new DSEpointIR.EnergyAtMostComparator(thresholdI.longValue()));
+          case 'P' -> listComparators.add(new DSEpointIR.PowerAtMostComparator(thresholdI.doubleValue()));
+          case 'L' -> listComparators.add(new DSEpointIR.LatencyAtMostComparator(thresholdI.intValue()));
+          case 'M' -> listComparators.add(new DSEpointIR.MakespanAtMostComparator(thresholdI.longValue()));
+          case 'T' -> listComparators.add(new DSEpointIR.ThroughputAtLeastComparator(thresholdI.longValue()));
+          case 'S' -> listComparators.add(new DSEpointIR.MemoryAtMostComparator(thresholdI.longValue()));
+          default -> {
+            // empty
+          }
         }
+
       } else {
         throw new PreesmRuntimeException("Threshold n°" + i + " has an incorrect negative value.");
       }

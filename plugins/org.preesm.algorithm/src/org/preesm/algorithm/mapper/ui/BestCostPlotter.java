@@ -230,14 +230,13 @@ public class BestCostPlotter extends ApplicationFrame implements ActionListener,
   public void update(final Observable o, final Object arg) {
 
     // FAST
-    if (o instanceof FastAlgorithm) {
-      final FastAlgorithm fast = (FastAlgorithm) o;
+    if (o instanceof final FastAlgorithm fast) {
       fast.countObservers();
 
-      if (arg instanceof Long) {
+      if (arg instanceof final Long l) {
 
         final int i = 0;
-        this.lastValue[i] = ((Long) arg).doubleValue();
+        this.lastValue[i] = l.doubleValue();
 
         final Millisecond milli = new Millisecond();
 
@@ -247,14 +246,13 @@ public class BestCostPlotter extends ApplicationFrame implements ActionListener,
     }
 
     // PFAST
-    if (o instanceof PFastAlgorithm) {
-      final PFastAlgorithm pfast = (PFastAlgorithm) o;
+    if (o instanceof final PFastAlgorithm pfast) {
       pfast.countObservers();
 
-      if (arg instanceof Long) {
+      if (arg instanceof final Long l) {
 
         final int i = 0;
-        this.lastValue[i] = ((Long) arg).doubleValue();
+        this.lastValue[i] = l.doubleValue();
         this.datasets[i].getSeries(0).addOrUpdate(new Millisecond(), this.lastValue[i]);
 
       }

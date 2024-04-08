@@ -95,6 +95,10 @@ import org.preesm.commons.logger.PreesmLogger;
  */
 public class GanttPlotter {
 
+  private GanttPlotter() {
+    // Forbids instantiation
+  }
+
   /**
    * Initial dimensions of the window
    */
@@ -209,6 +213,7 @@ public class GanttPlotter {
    * @param managedForm
    *          the parent control, may be null (then opens a new window)
    */
+  @SuppressWarnings("unused")
   public static void plotDeployment(final GanttData ganttData, final IManagedForm managedForm) {
 
     // JChart init

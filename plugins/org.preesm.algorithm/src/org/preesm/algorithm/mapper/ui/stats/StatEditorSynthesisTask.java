@@ -66,7 +66,7 @@ import org.preesm.workflow.implement.AbstractTaskImplementation;
 
 /**
  * Task to display and export Gantt from new synthesis results.
- * 
+ *
  * @author ahonorat
  */
 @PreesmTask(id = "gantt-output", name = "Synthesis Gantt displayer and exporter", category = "Gantt exporters",
@@ -109,14 +109,14 @@ public class StatEditorSynthesisTask extends AbstractTaskImplementation {
 
     if (isDisplay || isExport) {
 
-      PreesmLogger.getLogger().log(Level.INFO, " -- Latency evaluation");
+      PreesmLogger.getLogger().info(" -- Latency evaluation");
       final ScheduleOrderManager scheduleOM = new ScheduleOrderManager(algorithm, schedule);
 
       final LatencyCost evaluate = new SimpleLatencyEvaluation().evaluate(algorithm, architecture, scenario, mapping,
           scheduleOM);
-      PreesmLogger.getLogger().log(Level.INFO, "Simple latency evaluation : " + evaluate.getValue());
+      PreesmLogger.getLogger().info(() -> "Simple latency evaluation : " + evaluate.getValue());
 
-      PreesmLogger.getLogger().log(Level.INFO, "-- Output of Gantt");
+      PreesmLogger.getLogger().info("-- Output of Gantt");
 
       final IStatGenerator statGen = new StatGeneratorSynthesis(architecture, scenario, mapping, memAlloc, evaluate);
       if (isDisplay) {
@@ -141,7 +141,7 @@ public class StatEditorSynthesisTask extends AbstractTaskImplementation {
         final IProject project = root.getProject(projectName);
 
         // Get a complete valid path with all folders existing
-        String exportAbsolutePath = project.getLocation() + exportPath;
+        final String exportAbsolutePath = project.getLocation() + exportPath;
         final File parent = new File(exportAbsolutePath);
         parent.mkdirs();
 

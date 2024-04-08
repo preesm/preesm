@@ -684,17 +684,17 @@ public class PiMMHelper {
     if (mapGraphPeriods.size() == 1) {
       final long period = mapGraphPeriods.keySet().stream().findAny().orElse(0L);
       if (graphPeriod != 0 && period != 0 && graphPeriod != period) {
-        PreesmLogger.getLogger().log(Level.SEVERE,
-            "Graph period " + graphPeriod + " is different from the one derived from actors: " + period);
+        PreesmLogger.getLogger()
+            .severe(() -> "Graph period " + graphPeriod + " is different from the one derived from actors: " + period);
         throw new PreesmRuntimeException(
             "Periods are not consistent (graph period different from actors periods), abandon.");
       }
       if (graphPeriod == 0 && period != 0) {
         piGraph.setExpression(period);
-        PreesmLogger.getLogger().log(Level.INFO, () -> ("The graph period is set to: " + period));
+        PreesmLogger.getLogger().info(() -> ("The graph period is set to: " + period));
       }
     } else if (graphPeriod == 0) {
-      PreesmLogger.getLogger().log(Level.INFO, "No period for the graph.");
+      PreesmLogger.getLogger().info("No period for the graph.");
     }
   }
 

@@ -14,23 +14,23 @@ import org.preesm.model.slam.Design;
  */
 public class StatGeneratorPrecomputed extends AbstractStatGenerator {
 
-  public final long                         DAGSpanLength;
-  public final long                         DAGWorkLength;
-  public final long                         FinalTime;
+  public final long                         dagSpanLength;
+  public final long                         dagWorkLength;
+  public final long                         finalTime;
   public final int                          nbUsedOperators;
   public final Map<ComponentInstance, Long> loads;
   public final Map<ComponentInstance, Long> mems;
 
   public final GanttData gantt;
 
-  public StatGeneratorPrecomputed(final Design architecture, final Scenario scenario, final long DAGSpanLength,
-      final long DAGWorkLength, final long FinalTime, final int nbUsedOperators,
+  public StatGeneratorPrecomputed(final Design architecture, final Scenario scenario, final long dagSpanLength,
+      final long dagWorkLength, final long finalTime, final int nbUsedOperators,
       final Map<ComponentInstance, Long> loads, final Map<ComponentInstance, Long> mems, final GanttData gantt) {
     super(architecture, scenario);
 
-    this.DAGSpanLength = DAGSpanLength;
-    this.DAGWorkLength = DAGWorkLength;
-    this.FinalTime = FinalTime;
+    this.dagSpanLength = dagSpanLength;
+    this.dagWorkLength = dagWorkLength;
+    this.finalTime = finalTime;
     this.nbUsedOperators = nbUsedOperators;
     this.loads = new HashMap<>(loads);
     this.mems = new HashMap<>(mems);
@@ -39,17 +39,17 @@ public class StatGeneratorPrecomputed extends AbstractStatGenerator {
 
   @Override
   public long getDAGSpanLength() {
-    return DAGSpanLength;
+    return dagSpanLength;
   }
 
   @Override
   public long getDAGWorkLength() {
-    return DAGWorkLength;
+    return dagWorkLength;
   }
 
   @Override
   public long getFinalTime() {
-    return FinalTime;
+    return finalTime;
   }
 
   @Override

@@ -65,7 +65,7 @@ public class DeploymentProperties implements IStructuredContentProvider, ITableL
   private final IStatGenerator               statGen;
   private final Map<ComponentInstance, Long> loads;
   private final Map<ComponentInstance, Long> memoryNeeds;
-  private long                               repetitionPeriod;
+  private final long                         repetitionPeriod;
 
   public void setColumnOrder(final String columnOrder) {
     this.columnOrder = columnOrder;
@@ -137,8 +137,7 @@ public class DeploymentProperties implements IStructuredContentProvider, ITableL
   public String getColumnText(final Object element, final int columnIndex) {
     String text = "";
 
-    if (element instanceof ComponentInstance) {
-      final ComponentInstance op = (ComponentInstance) element;
+    if (element instanceof final ComponentInstance op) {
 
       if (columnIndex == 0) {
         text = op.getInstanceName();
