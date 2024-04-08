@@ -180,8 +180,7 @@ public class SetMoldableParametersTask extends AbstractTaskImplementation {
     final boolean allNumbers = mparams.stream()
         .allMatch(x -> MoldableParameterExprChecker.isOnlyNumbers(x.getUserExpression()));
     if (allNumbers) {
-      PreesmLogger.getLogger().log(Level.INFO,
-          "All moldable parameters are numbers, allowing non exhaustive heuristics.");
+      PreesmLogger.getLogger().info("All moldable parameters are numbers, allowing non exhaustive heuristics.");
     }
     final String heuristicStr = parameters.get(DEFAULT_HEURISTIC_NAME);
     final boolean heuristicValue = Boolean.parseBoolean(heuristicStr);
@@ -196,11 +195,9 @@ public class SetMoldableParametersTask extends AbstractTaskImplementation {
       mparamsIR = mparams.stream().map(MoldableParameterIR::new).collect(Collectors.toList());
     }
 
-    long nbCombinations = 1;
-    for (final MoldableParameterIR mpir : mparamsIR) {
-      nbCombinations *= mpir.nbValues;
-    }
-    PreesmLogger.getLogger().log(Level.INFO, "The number of parameter combinations is: " + nbCombinations);
+    final long nbCombinations = mparamsIR.stream().map(mpir -> mpir.nbValues).reduce(1, (prod, e) -> prod * e);
+
+    PreesmLogger.getLogger().info(() -> "The number of parameter combinations is: " + nbCombinations);
 
     final String delayRetryStr = parameters.get(DEFAULT_DELAY_RETRY_NAME);
     boolean delayRetryValue = Boolean.parseBoolean(delayRetryStr);
@@ -220,14 +217,14 @@ public class SetMoldableParametersTask extends AbstractTaskImplementation {
     }
 
     if (shouldEstimateMemory && !acs.supportsMemoryEstimation()) {
-      PreesmLogger.getLogger().log(Level.WARNING, "Your DSE comparison objectives asks for memory estimation "
+      PreesmLogger.getLogger().warning("Your DSE comparison objectives asks for memory estimation "
           + "but the scheduler you asked does not support it, ignoring it.");
     }
 
     if (delayRetryValue && !acs.supportsExtraDelayCuts()) {
       delayRetryValue = false;
-      PreesmLogger.getLogger().log(Level.WARNING,
-          "You ask for extra delays/cuts but the scheduler you asked does not support it, ignoring it.");
+      PreesmLogger.getLogger()
+          .warning("You ask for extra delays/cuts but the scheduler you asked does not support it, ignoring it.");
     }
 
     PiGraph outputGraph; // different of input graph only if delays has been added by the heuristic
@@ -252,8 +249,8 @@ public class SetMoldableParametersTask extends AbstractTaskImplementation {
         smp.clusterParetoFront(dist);
       }
     } catch (final NumberFormatException e) {
-      PreesmLogger.getLogger().log(Level.WARNING,
-          "The clustering distance could not be parsed to a number, ignoring this step. " + e.getMessage());
+      PreesmLogger.getLogger().warning(
+          () -> "The clustering distance could not be parsed to a number, ignoring this step. " + e.getMessage());
     }
 
     // exports log

@@ -66,6 +66,8 @@ public class GMLSDFImporterTest {
 
   final String fileName;
 
+  private static final String GRAPHML_EXT = ".graphml";
+
   public GMLSDFImporterTest(String fileName) {
     this.fileName = fileName;
   }
@@ -86,7 +88,7 @@ public class GMLSDFImporterTest {
 
   @Test
   public void test() throws IOException, PreesmException {
-    testImport("./resources/" + this.fileName + ".graphml");
+    testImport("./resources/" + this.fileName + GRAPHML_EXT);
   }
 
   private void testImport(final String filePath) throws FileNotFoundException, IOException, PreesmException {
@@ -97,9 +99,9 @@ public class GMLSDFImporterTest {
     if (SystemUtils.IS_OS_UNIX) {
       final FileAttribute<Set<PosixFilePermission>> attr = PosixFilePermissions
           .asFileAttribute(PosixFilePermissions.fromString("rw-------"));
-      createTempFile = Files.createTempFile("export_test_", ".graphml", attr).toFile();
+      createTempFile = Files.createTempFile("export_test_", GRAPHML_EXT, attr).toFile();
     } else {
-      createTempFile = Files.createTempFile("export_test_", ".graphml").toFile();
+      createTempFile = Files.createTempFile("export_test_", GRAPHML_EXT).toFile();
 
       boolean success = true;
 

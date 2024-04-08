@@ -118,7 +118,7 @@ public class PiSDFXSDValidator {
       validator.setProperty(XMLConstants.ACCESS_EXTERNAL_SCHEMA, "");
       validator.validate(xmlFile);
     } catch (final SAXException e) {
-      throw new PiSDFXSDValidationException("Could not validate PiSDF", e);
+      throw new PiSDFXSDValidationException("Could not validate PiSDF: " + e.getMessage(), e);
     }
     pisdfStreamed.reset();
   }

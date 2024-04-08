@@ -1,12 +1,12 @@
 package org.preesm.algorithm.mparameters;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.logging.Level;
+import java.util.stream.Collectors;
 import org.apache.commons.math3.ml.clustering.Cluster;
 import org.apache.commons.math3.ml.clustering.Clusterable;
 import org.apache.commons.math3.ml.clustering.DBSCANClusterer;
@@ -78,10 +78,8 @@ public class SetMoldableParameters {
     this.delayRetryValue = delayRetryValue;
 
     // set the scenario graph since it is used for timings
-    backupParamOverride = new HashMap<>();
-    for (final Entry<Parameter, String> e : scenario.getParameterValues().entrySet()) {
-      backupParamOverride.put(e.getKey(), e.getValue());
-    }
+    backupParamOverride = scenario.getParameterValues().entrySet().stream()
+        .collect(Collectors.toMap(Entry::getKey, Entry::getValue));
 
     logComparator = new StringBuilder();
     paretoFrontAndDsecr = new ArrayList<>();
