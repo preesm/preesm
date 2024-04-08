@@ -1,0 +1,236 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<scenario>
+    <flags>
+        <sizesAreInBit/>
+    </flags>
+    <files>
+        <algorithm url="/preesmSiftMparam/Algo/Hvideo.pi"/>
+        <architecture url="/preesmSiftMparam/Archi/1CoresX86.slam"/>
+        <codegenDirectory url="/preesmSiftMparam/Code/generated/"/>
+    </files>
+    <constraints excelUrl="">
+        <constraintGroup>
+            <operator name="Core0"/>
+            <task name="Hvideo/read_yuv_frame"/>
+            <task name="Hvideo/draw_keypoints_to_rgb"/>
+            <task name="Hvideo/yuv_to_rgb"/>
+            <task name="Hvideo/display_rgb"/>
+            <task name="Hvideo/SIFT"/>
+            <task name="Hvideo/SIFT/compute_gaussian_coefs"/>
+            <task name="Hvideo/SIFT/extract_descriptor"/>
+            <task name="Hvideo/SIFT/detect_keypoints"/>
+            <task name="Hvideo/SIFT/ITERATOR_detect_keypoints"/>
+            <task name="Hvideo/SIFT/build_dog_pyr"/>
+            <task name="Hvideo/SIFT/ITERATOR_build_dog_pyr"/>
+            <task name="Hvideo/SIFT/build_grd_rot_pyr"/>
+            <task name="Hvideo/SIFT/ITERATOR_build_grd_rot_pyr"/>
+            <task name="Hvideo/SIFT/MERGE_gpyr"/>
+            <task name="Hvideo/SIFT/upsample2x"/>
+            <task name="Hvideo/SIFT/downsample2xN"/>
+            <task name="Hvideo/SIFT/seq_blur1"/>
+            <task name="Hvideo/SIFT/downsample2x1"/>
+            <task name="Hvideo/SIFT/seq_blurN"/>
+            <task name="Hvideo/SIFT/counterGpyrLayer"/>
+            <task name="Hvideo/SIFT/counterOctaveDownN"/>
+            <task name="Hvideo/SIFT/MERGE_keypoints"/>
+            <task name="Hvideo/SIFT/BarrierCounterGpyr"/>
+            <task name="Hvideo/SIFT/SPLIT_upsample2x"/>
+            <task name="Hvideo/SIFT/counterPLevels"/>
+            <task name="Hvideo/SIFT/Blur2x"/>
+            <task name="Hvideo/SIFT/Blur"/>
+            <task name="Hvideo/SIFT/Blur2x/row_filter_transpose2x_1"/>
+            <task name="Hvideo/SIFT/Blur2x/row_filter_transpose2x_2"/>
+            <task name="Hvideo/SIFT/Blur2x/BarrierTranspose2x_1"/>
+            <task name="Hvideo/SIFT/Blur2x/BarrierTranspose2x_2"/>
+            <task name="Hvideo/SIFT/Blur/row_filter_transpose_1"/>
+            <task name="Hvideo/SIFT/Blur/row_filter_transpose_2"/>
+            <task name="Hvideo/SIFT/Blur/BarrierTranspose_1"/>
+            <task name="Hvideo/SIFT/Blur/BarrierTranspose_2"/>
+            <task name="Hvideo/to_grey_float"/>
+            <task name="Hvideo/record_rgb_as_yuv"/>
+        </constraintGroup>
+    </constraints>
+    <timings excelUrl="">
+        <timing opname="x86" time="100"
+            timingtype="EXECUTION_TIME" vertexname="Hvideo/read_yuv_frame"/>
+        <timing opname="x86" time="100"
+            timingtype="EXECUTION_TIME" vertexname="Hvideo/BdOriginalImage"/>
+        <timing opname="x86" time="100"
+            timingtype="EXECUTION_TIME" vertexname="Hvideo/draw_keypoints_to_rgb"/>
+        <timing opname="x86" time="100"
+            timingtype="EXECUTION_TIME" vertexname="Hvideo/yuv_to_rgb"/>
+        <timing opname="x86" time="100"
+            timingtype="EXECUTION_TIME" vertexname="Hvideo/display_rgb"/>
+        <timing opname="x86" time="100"
+            timingtype="EXECUTION_TIME" vertexname="Hvideo/SIFT"/>
+        <timing opname="x86" time="100"
+            timingtype="EXECUTION_TIME" vertexname="Hvideo/SIFT/compute_gaussian_coefs"/>
+        <timing opname="x86" time="100"
+            timingtype="EXECUTION_TIME" vertexname="Hvideo/SIFT/extract_descriptor"/>
+        <timing opname="x86" time="100"
+            timingtype="EXECUTION_TIME" vertexname="Hvideo/SIFT/detect_keypoints"/>
+        <timing opname="x86" time="100"
+            timingtype="EXECUTION_TIME" vertexname="Hvideo/SIFT/ITERATOR_detect_keypoints"/>
+        <timing opname="x86" time="100"
+            timingtype="EXECUTION_TIME" vertexname="Hvideo/SIFT/BdRot"/>
+        <timing opname="x86" time="100"
+            timingtype="EXECUTION_TIME" vertexname="Hvideo/SIFT/BdGrd"/>
+        <timing opname="x86" time="100"
+            timingtype="EXECUTION_TIME" vertexname="Hvideo/SIFT/build_dog_pyr"/>
+        <timing opname="x86" time="100"
+            timingtype="EXECUTION_TIME" vertexname="Hvideo/SIFT/ITERATOR_build_dog_pyr"/>
+        <timing opname="x86" time="100"
+            timingtype="EXECUTION_TIME" vertexname="Hvideo/SIFT/build_grd_rot_pyr"/>
+        <timing opname="x86" time="100"
+            timingtype="EXECUTION_TIME" vertexname="Hvideo/SIFT/ITERATOR_build_grd_rot_pyr"/>
+        <timing opname="x86" time="100"
+            timingtype="EXECUTION_TIME" vertexname="Hvideo/SIFT/BdGpyr"/>
+        <timing opname="x86" time="100"
+            timingtype="EXECUTION_TIME" vertexname="Hvideo/SIFT/MERGE_gpyr"/>
+        <timing opname="x86" time="100"
+            timingtype="EXECUTION_TIME" vertexname="Hvideo/SIFT/BdFloatImg"/>
+        <timing opname="x86" time="100"
+            timingtype="EXECUTION_TIME" vertexname="Hvideo/SIFT/upsample2x"/>
+        <timing opname="x86" time="100"
+            timingtype="EXECUTION_TIME" vertexname="Hvideo/SIFT/downsample2xN"/>
+        <timing opname="x86" time="100"
+            timingtype="EXECUTION_TIME" vertexname="Hvideo/SIFT/BdCoefs"/>
+        <timing opname="x86" time="100"
+            timingtype="EXECUTION_TIME" vertexname="Hvideo/SIFT/BdSizes"/>
+        <timing opname="x86" time="100"
+            timingtype="EXECUTION_TIME" vertexname="Hvideo/SIFT/BdBlurUp2x"/>
+        <timing opname="x86" time="100"
+            timingtype="EXECUTION_TIME" vertexname="Hvideo/SIFT/BdBlurDown2x1"/>
+        <timing opname="x86" time="100"
+            timingtype="EXECUTION_TIME" vertexname="Hvideo/SIFT/seq_blur1"/>
+        <timing opname="x86" time="100"
+            timingtype="EXECUTION_TIME" vertexname="Hvideo/SIFT/downsample2x1"/>
+        <timing opname="x86" time="100"
+            timingtype="EXECUTION_TIME" vertexname="Hvideo/SIFT/seq_blurN"/>
+        <timing opname="x86" time="100"
+            timingtype="EXECUTION_TIME" vertexname="Hvideo/SIFT/BdBlurDown2xN"/>
+        <timing opname="x86" time="100"
+            timingtype="EXECUTION_TIME" vertexname="Hvideo/SIFT/counterGpyrLayer"/>
+        <timing opname="x86" time="100"
+            timingtype="EXECUTION_TIME" vertexname="Hvideo/SIFT/BdCounterGpyr"/>
+        <timing opname="x86" time="100"
+            timingtype="EXECUTION_TIME" vertexname="Hvideo/SIFT/counterOctaveDownN"/>
+        <timing opname="x86" time="100"
+            timingtype="EXECUTION_TIME" vertexname="Hvideo/SIFT/keypoints"/>
+        <timing opname="x86" time="100"
+            timingtype="EXECUTION_TIME" vertexname="Hvideo/SIFT/image"/>
+        <timing opname="x86" time="100"
+            timingtype="EXECUTION_TIME" vertexname="Hvideo/SIFT/BdGT"/>
+        <timing opname="x86" time="100"
+            timingtype="EXECUTION_TIME" vertexname="Hvideo/SIFT/BdGT_2x"/>
+        <timing opname="x86" time="100"
+            timingtype="EXECUTION_TIME" vertexname="Hvideo/SIFT/BdBlurred1"/>
+        <timing opname="x86" time="100"
+            timingtype="EXECUTION_TIME" vertexname="Hvideo/SIFT/BdBlurredN"/>
+        <timing opname="x86" time="100"
+            timingtype="EXECUTION_TIME" vertexname="Hvideo/SIFT/BdOctaveDown"/>
+        <timing opname="x86" time="100"
+            timingtype="EXECUTION_TIME" vertexname="Hvideo/SIFT/nbKeypoints"/>
+        <timing opname="x86" time="100"
+            timingtype="EXECUTION_TIME" vertexname="Hvideo/SIFT/MERGE_keypoints"/>
+        <timing opname="x86" time="100"
+            timingtype="EXECUTION_TIME" vertexname="Hvideo/SIFT/BdCounterGpyrXOctave"/>
+        <timing opname="x86" time="100"
+            timingtype="EXECUTION_TIME" vertexname="Hvideo/SIFT/BdDoG"/>
+        <timing opname="x86" time="100"
+            timingtype="EXECUTION_TIME" vertexname="Hvideo/SIFT/BarrierCounterGpyr"/>
+        <timing opname="x86" time="100"
+            timingtype="EXECUTION_TIME" vertexname="Hvideo/SIFT/SPLIT_upsample2x"/>
+        <timing opname="x86" time="100"
+            timingtype="EXECUTION_TIME" vertexname="Hvideo/SIFT/counterPLevels"/>
+        <timing opname="x86" time="100"
+            timingtype="EXECUTION_TIME" vertexname="Hvideo/SIFT/RbExitBlur2x"/>
+        <timing opname="x86" time="100"
+            timingtype="EXECUTION_TIME" vertexname="Hvideo/SIFT/delay_BdBlurDown2xN_forRec__downsample2xN_imgDownPrev"/>
+        <timing opname="x86" time="100"
+            timingtype="EXECUTION_TIME" vertexname="Hvideo/SIFT/delay_BdBlurred1_forRec__seq_blur1_imgBlurPrev"/>
+        <timing opname="x86" time="100"
+            timingtype="EXECUTION_TIME" vertexname="Hvideo/SIFT/delay_BdBlurredN_forRec__seq_blurN_imgBlurPrev"/>
+        <timing opname="x86" time="100"
+            timingtype="EXECUTION_TIME" vertexname="Hvideo/SIFT/delay_BdGT_forRec__Blur_iterPrev"/>
+        <timing opname="x86" time="100"
+            timingtype="EXECUTION_TIME" vertexname="Hvideo/SIFT/delay_BdGT_2x_forRec__Blur2x_iterPrev"/>
+        <timing opname="x86" time="100"
+            timingtype="EXECUTION_TIME" vertexname="Hvideo/SIFT/Blur2x"/>
+        <timing opname="x86" time="100"
+            timingtype="EXECUTION_TIME" vertexname="Hvideo/SIFT/Blur"/>
+        <timing opname="x86" time="100"
+            timingtype="EXECUTION_TIME" vertexname="Hvideo/SIFT/Blur2x/row_filter_transpose2x_1"/>
+        <timing opname="x86" time="100"
+            timingtype="EXECUTION_TIME" vertexname="Hvideo/SIFT/Blur2x/row_filter_transpose2x_2"/>
+        <timing opname="x86" time="100"
+            timingtype="EXECUTION_TIME" vertexname="Hvideo/SIFT/Blur2x/BarrierTranspose2x_1"/>
+        <timing opname="x86" time="100"
+            timingtype="EXECUTION_TIME" vertexname="Hvideo/SIFT/Blur2x/BarrierTranspose2x_2"/>
+        <timing opname="x86" time="100"
+            timingtype="EXECUTION_TIME" vertexname="Hvideo/SIFT/Blur2x/imgBlurred"/>
+        <timing opname="x86" time="100"
+            timingtype="EXECUTION_TIME" vertexname="Hvideo/SIFT/Blur2x/gauss_coefs1"/>
+        <timing opname="x86" time="100"
+            timingtype="EXECUTION_TIME" vertexname="Hvideo/SIFT/Blur2x/imgOri"/>
+        <timing opname="x86" time="100"
+            timingtype="EXECUTION_TIME" vertexname="Hvideo/SIFT/Blur2x/col_sizes1"/>
+        <timing opname="x86" time="100"
+            timingtype="EXECUTION_TIME" vertexname="Hvideo/SIFT/Blur2x/iterPrev"/>
+        <timing opname="x86" time="100"
+            timingtype="EXECUTION_TIME" vertexname="Hvideo/SIFT/Blur2x/iter_nb1"/>
+        <timing opname="x86" time="100"
+            timingtype="EXECUTION_TIME" vertexname="Hvideo/SIFT/Blur2x/col_sizes2"/>
+        <timing opname="x86" time="100"
+            timingtype="EXECUTION_TIME" vertexname="Hvideo/SIFT/Blur2x/gauss_coefs2"/>
+        <timing opname="x86" time="100"
+            timingtype="EXECUTION_TIME" vertexname="Hvideo/SIFT/Blur2x/iter_nb2"/>
+        <timing opname="x86" time="100"
+            timingtype="EXECUTION_TIME" vertexname="Hvideo/SIFT/Blur/row_filter_transpose_1"/>
+        <timing opname="x86" time="100"
+            timingtype="EXECUTION_TIME" vertexname="Hvideo/SIFT/Blur/row_filter_transpose_2"/>
+        <timing opname="x86" time="100"
+            timingtype="EXECUTION_TIME" vertexname="Hvideo/SIFT/Blur/BarrierTranspose_1"/>
+        <timing opname="x86" time="100"
+            timingtype="EXECUTION_TIME" vertexname="Hvideo/SIFT/Blur/BarrierTranspose_2"/>
+        <timing opname="x86" time="100"
+            timingtype="EXECUTION_TIME" vertexname="Hvideo/SIFT/Blur/imgBlurred"/>
+        <timing opname="x86" time="100"
+            timingtype="EXECUTION_TIME" vertexname="Hvideo/SIFT/Blur/gauss_coefs1"/>
+        <timing opname="x86" time="100"
+            timingtype="EXECUTION_TIME" vertexname="Hvideo/SIFT/Blur/imgOri"/>
+        <timing opname="x86" time="100"
+            timingtype="EXECUTION_TIME" vertexname="Hvideo/SIFT/Blur/col_sizes1"/>
+        <timing opname="x86" time="100"
+            timingtype="EXECUTION_TIME" vertexname="Hvideo/SIFT/Blur/iterPrev"/>
+        <timing opname="x86" time="100"
+            timingtype="EXECUTION_TIME" vertexname="Hvideo/SIFT/Blur/iter_nb1"/>
+        <timing opname="x86" time="100"
+            timingtype="EXECUTION_TIME" vertexname="Hvideo/SIFT/Blur/iter_nb2"/>
+        <timing opname="x86" time="100"
+            timingtype="EXECUTION_TIME" vertexname="Hvideo/SIFT/Blur/gauss_coefs2"/>
+        <timing opname="x86" time="100"
+            timingtype="EXECUTION_TIME" vertexname="Hvideo/SIFT/Blur/col_sizes2"/>
+        <memcpyspeed opname="x86" setuptime="1" timeperunit="0.001"/>
+    </timings>
+    <simuParams>
+        <mainCore>Core0</mainCore>
+        <mainComNode>shared_mem</mainComNode>
+        <averageDataSize>1000</averageDataSize>
+        <dataTypes>
+            <dataType name="unsigned char" size="8"/>
+            <dataType name="int" size="32"/>
+            <dataType name="SiftKpt" size="4448"/>
+            <dataType name="float" size="32"/>
+        </dataTypes>
+        <specialVertexOperators>
+            <specialVertexOperator path="Core0"/>
+        </specialVertexOperators>
+    </simuParams>
+    <parameterValues/>
+    <papifyConfigs xmlUrl=""/>
+    <energyConfigs xmlUrl="">
+        <performanceObjective objectiveEPS="0.0"/>
+        <peActorsEnergy/>
+    </energyConfigs>
+</scenario>

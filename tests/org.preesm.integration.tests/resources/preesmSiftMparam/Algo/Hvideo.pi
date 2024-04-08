@@ -1,0 +1,359 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<graphml xmlns="http://graphml.graphdrawing.org/xmlns">
+    <key attr.name="parameters" for="graph" id="parameters"/>
+    <key attr.name="variables" for="graph" id="variables"/>
+    <key attr.name="arguments" for="node" id="arguments"/>
+    <key attr.name="name" attr.type="string" for="graph"/>
+    <key attr.name="graph_desc" attr.type="string" for="node"/>
+    <key attr.name="delay" attr.type="string" for="edge"/>
+    <graph edgedefault="directed">
+        <data key="name">Hvideo</data>
+        <node expr="80" id="nKeypointsMaxUser"
+            kind="moldable_param" moldable_expr="80;160"/>
+        <node expr="640" id="image_width" kind="moldable_param" moldable_expr="640;320"/>
+        <node
+            expr="(image_width*AspectRatioDenominator)/AspectRatioNumerator"
+            id="image_height" kind="param"/>
+        <node expr="image_width*image_height" id="tot_image_size" kind="param"/>
+        <node expr="1" id="parallelismLevel"
+            kind="moldable_param" moldable_expr="1;10"/>
+        <node
+            expr="max(1, floor(nKeypointsMaxUser/parallelismLevel))"
+            id="nLocalKptMax" kind="param"/>
+        <node expr="parallelismLevel*nLocalKptMax"
+            id="nKeypointsMax" kind="param"/>
+        <node expr="16" id="AspectRatioNumerator" kind="param"/>
+        <node expr="9" id="AspectRatioDenominator"
+            kind="moldable_param" moldable_expr="9;12"/>
+        <node expr="0" id="delayRead" kind="moldable_param" moldable_expr="0;1"/>
+        <node expr="0" id="delayDisplay" kind="moldable_param" moldable_expr="0;1"/>
+        <node expr="4" id="DenominatorFrequency" kind="param"/>
+        <node expr="3" id="NumeratorFrequency"
+            kind="moldable_param" moldable_expr="3;5"/>
+        <node expr="307200" id="RefTotSize" kind="param"/>
+        <node expr="100" id="RefNbKeypointsMax" kind="param"/>
+        <node id="read_yuv_frame" kind="actor">
+            <data key="graph_desc">Code/include/ezsift-preesm.h</data>
+            <loop name="read_yuv_frame">
+                <param direction="OUT" isConfig="false"
+                    name="img" type="unsigne char "/>
+            </loop>
+            <init name="initWebcam">
+                <param direction="IN" isConfig="true"
+                    name="image_height" type="int"/>
+                <param direction="IN" isConfig="true"
+                    name="image_width" type="int"/>
+            </init>
+            <port kind="cfg_input" name="tot_image_size"/>
+            <port kind="cfg_input" name="image_height"/>
+            <port kind="cfg_input" name="image_width"/>
+            <port annotation="WRITE_ONLY" expr="tot_image_size*2"
+                kind="output" name="img"/>
+        </node>
+        <node id="BdOriginalImage" kind="broadcast">
+            <port kind="cfg_input" name="tot_image_size"/>
+            <port annotation="READ_ONLY" expr="tot_image_size*3"
+                kind="input" name="originalImage"/>
+            <port annotation="WRITE_ONLY" expr="tot_image_size*3"
+                kind="output" name="forSift"/>
+            <port annotation="WRITE_ONLY" expr="tot_image_size*3"
+                kind="output" name="forDump"/>
+        </node>
+        <node id="draw_keypoints_to_rgb" kind="actor">
+            <data key="graph_desc">Code/include/ezsift-preesm.h</data>
+            <loop name="draw_keypoints_to_rgb">
+                <param direction="IN" isConfig="true"
+                    name="nKeypointsMax" type="int"/>
+                <param direction="IN" isConfig="true"
+                    name="tot_image_size" type="int"/>
+                <param direction="IN" isConfig="true"
+                    name="image_width" type="int"/>
+                <param direction="IN" isConfig="true"
+                    name="image_height" type="int"/>
+                <param direction="IN" isConfig="false"
+                    name="keypoints" type="struct SiftKeypoint "/>
+                <param direction="IN" isConfig="false"
+                    name="nbKeypoints" type="int "/>
+                <param direction="IN" isConfig="false"
+                    name="image" type="unsigned char "/>
+                <param direction="OUT" isConfig="false"
+                    name="rgb" type="unsigned char "/>
+            </loop>
+            <port kind="cfg_input" name="image_height"/>
+            <port kind="cfg_input" name="image_width"/>
+            <port kind="cfg_input" name="nKeypointsMax"/>
+            <port kind="cfg_input" name="tot_image_size"/>
+            <port annotation="READ_ONLY" expr="nKeypointsMax"
+                kind="input" name="keypoints"/>
+            <port annotation="READ_ONLY" expr="1" kind="input" name="nbKeypoints"/>
+            <port annotation="READ_ONLY" expr="tot_image_size*3"
+                kind="input" name="image"/>
+            <port annotation="WRITE_ONLY" expr="tot_image_size*3"
+                kind="output" name="rgb"/>
+        </node>
+        <node id="SIFT" kind="actor">
+            <data key="graph_desc">Algo/Htop_sift.pi</data>
+            <port kind="cfg_input" name="nKeypointsMax"/>
+            <port kind="cfg_input" name="nLocalKptMax"/>
+            <port kind="cfg_input" name="parallelismLevel"/>
+            <port kind="cfg_input" name="image_width"/>
+            <port kind="cfg_input" name="image_height"/>
+            <port kind="cfg_input" name="tot_image_size"/>
+            <port kind="cfg_input" name="DenominatorFrequency"/>
+            <port kind="cfg_input" name="NumeratorFrequency"/>
+            <port kind="cfg_input" name="RefTotSize"/>
+            <port kind="cfg_input" name="RefNbKeypointsMax"/>
+            <port annotation="READ_ONLY" expr="tot_image_size"
+                kind="input" name="image"/>
+            <port annotation="WRITE_ONLY" expr="nKeypointsMax"
+                kind="output" name="keypoints"/>
+            <port annotation="WRITE_ONLY" expr="1" kind="output" name="nbKeypoints"/>
+        </node>
+        <node id="yuv_to_rgb" kind="actor">
+            <data key="graph_desc">Code/include/ezsift-preesm.h</data>
+            <loop name="v4lconvert_yuyv_to_rgb24">
+                <param direction="IN" isConfig="true"
+                    name="parallelismLevel" type="int"/>
+                <param direction="IN" isConfig="true"
+                    name="image_width" type="int"/>
+                <param direction="IN" isConfig="true"
+                    name="image_height" type="int"/>
+                <param direction="IN" isConfig="false" name="src" type="unsigned char "/>
+                <param direction="OUT" isConfig="false"
+                    name="dest" type="unsigned char "/>
+            </loop>
+            <port kind="cfg_input" name="parallelismLevel"/>
+            <port kind="cfg_input" name="tot_image_size"/>
+            <port kind="cfg_input" name="image_width"/>
+            <port kind="cfg_input" name="image_height"/>
+            <port annotation="READ_ONLY"
+                expr="(tot_image_size*2)/parallelismLevel"
+                kind="input" name="src"/>
+            <port annotation="WRITE_ONLY"
+                expr="(tot_image_size*3)/parallelismLevel"
+                kind="output" name="dest"/>
+        </node>
+        <node id="display_rgb" kind="actor">
+            <data key="graph_desc">Code/include/ezsift-preesm.h</data>
+            <loop name="displayRGB">
+                <param direction="IN" isConfig="false" name="rgb" type="unsigned char "/>
+            </loop>
+            <init name="displayRGBInit">
+                <param direction="IN" isConfig="true"
+                    name="image_height" type="int"/>
+                <param direction="IN" isConfig="true"
+                    name="image_width" type="int"/>
+            </init>
+            <port kind="cfg_input" name="tot_image_size"/>
+            <port kind="cfg_input" name="image_width"/>
+            <port kind="cfg_input" name="image_height"/>
+            <port annotation="READ_ONLY" expr="tot_image_size*3"
+                kind="input" name="rgb"/>
+        </node>
+        <node id="to_grey_float" kind="actor">
+            <data key="graph_desc">Code/include/ezsift-preesm.h</data>
+            <loop name="to_grey_float">
+                <param direction="IN" isConfig="true"
+                    name="parallelismLevel" type="int"/>
+                <param direction="IN" isConfig="true"
+                    name="image_width" type="int"/>
+                <param direction="IN" isConfig="true"
+                    name="image_height" type="int"/>
+                <param direction="IN" isConfig="false"
+                    name="uchar_rgb_img" type="unsigned char "/>
+                <param direction="OUT" isConfig="false"
+                    name="float_img" type="float "/>
+            </loop>
+            <port kind="cfg_input" name="parallelismLevel"/>
+            <port kind="cfg_input" name="image_width"/>
+            <port kind="cfg_input" name="image_height"/>
+            <port kind="cfg_input" name="tot_image_size"/>
+            <port annotation="READ_ONLY"
+                expr="(tot_image_size*3)/parallelismLevel"
+                kind="input" name="uchar_rgb_img"/>
+            <port annotation="WRITE_ONLY"
+                expr="tot_image_size/parallelismLevel"
+                kind="output" name="float_img"/>
+        </node>
+        <node id="BroadcastRGBresult" kind="broadcast">
+            <port kind="cfg_input" name="tot_image_size"/>
+            <port annotation="READ_ONLY" expr="tot_image_size*3"
+                kind="input" name="rgb"/>
+            <port annotation="WRITE_ONLY" expr="tot_image_size*3"
+                kind="output" name="out_display"/>
+            <port annotation="WRITE_ONLY" expr="tot_image_size*3"
+                kind="output" name="out_record"/>
+        </node>
+        <node id="record_rgb_as_yuv" kind="actor">
+            <data key="graph_desc">Code/include/ezsift-preesm.h</data>
+            <loop name="Bitmap2Yuv420p_calc2">
+                <param direction="IN" isConfig="false" name="rgb" type="unsigned char "/>
+                <param direction="IN" isConfig="true"
+                    name="image_height" type="int"/>
+                <param direction="IN" isConfig="true"
+                    name="image_width" type="int"/>
+            </loop>
+            <init name="initRGBtoYUV"/>
+            <port kind="cfg_input" name="tot_image_size"/>
+            <port kind="cfg_input" name="image_height"/>
+            <port kind="cfg_input" name="image_width"/>
+            <port annotation="READ_ONLY" expr="tot_image_size*3"
+                kind="input" name="rgb"/>
+        </node>
+        <node expr="tot_image_size*3*(delayRead+delayDisplay)"
+            getter=""
+            id="BdOriginalImage_forDump__draw_keypoints_to_rgb_image"
+            kind="delay" level="permanent" setter="">
+            <port annotation="NONE"
+                expr="tot_image_size*3*(delayRead+delayDisplay)"
+                kind="input" name="set"/>
+            <port annotation="NONE"
+                expr="tot_image_size*3*(delayRead+delayDisplay)"
+                kind="output" name="get"/>
+        </node>
+        <node expr="tot_image_size*delayRead" getter=""
+            id="to_grey_float_float_img__SIFT_image" kind="delay"
+            level="permanent" setter="">
+            <port annotation="NONE"
+                expr="tot_image_size*delayRead" kind="input" name="set"/>
+            <port annotation="NONE"
+                expr="tot_image_size*delayRead" kind="output" name="get"/>
+        </node>
+        <node expr="nKeypointsMax*delayDisplay" getter=""
+            id="SIFT_keypoints__draw_keypoints_to_rgb_keypoints"
+            kind="delay" level="permanent" setter="">
+            <port annotation="NONE"
+                expr="nKeypointsMax*delayDisplay" kind="input" name="set"/>
+            <port annotation="NONE"
+                expr="nKeypointsMax*delayDisplay" kind="output" name="get"/>
+        </node>
+        <node expr="delayDisplay" getter=""
+            id="SIFT_nbKeypoints__draw_keypoints_to_rgb_nbKeypoints"
+            kind="delay" level="permanent" setter="">
+            <port annotation="NONE" expr="delayDisplay"
+                kind="input" name="set"/>
+            <port annotation="NONE" expr="delayDisplay"
+                kind="output" name="get"/>
+        </node>
+        <edge expr="tot_image_size*3*(delayRead+delayDisplay)"
+            kind="fifo" source="BdOriginalImage"
+            sourceport="forDump" target="draw_keypoints_to_rgb"
+            targetport="image" type="unsigned char">
+            <data key="delay">BdOriginalImage_forDump__draw_keypoints_to_rgb_image</data>
+        </edge>
+        <edge expr="delayDisplay" kind="fifo" source="SIFT"
+            sourceport="nbKeypoints"
+            target="draw_keypoints_to_rgb"
+            targetport="nbKeypoints" type="int">
+            <data key="delay">SIFT_nbKeypoints__draw_keypoints_to_rgb_nbKeypoints</data>
+        </edge>
+        <edge expr="nKeypointsMax*delayDisplay" kind="fifo"
+            source="SIFT" sourceport="keypoints"
+            target="draw_keypoints_to_rgb" targetport="keypoints" type="SiftKpt">
+            <data key="delay">SIFT_keypoints__draw_keypoints_to_rgb_keypoints</data>
+        </edge>
+        <edge expr="tot_image_size*delayRead" kind="fifo"
+            source="to_grey_float" sourceport="float_img"
+            target="SIFT" targetport="image" type="float">
+            <data key="delay">to_grey_float_float_img__SIFT_image</data>
+        </edge>
+        <edge kind="fifo" source="read_yuv_frame"
+            sourceport="img" target="yuv_to_rgb" targetport="src" type="unsigned char"/>
+        <edge kind="fifo" source="yuv_to_rgb" sourceport="dest"
+            target="BdOriginalImage" targetport="originalImage" type="unsigned char"/>
+        <edge kind="fifo" source="BdOriginalImage"
+            sourceport="forSift" target="to_grey_float"
+            targetport="uchar_rgb_img" type="unsigned char"/>
+        <edge kind="fifo" source="draw_keypoints_to_rgb"
+            sourceport="rgb" target="BroadcastRGBresult"
+            targetport="rgb" type="unsigned char"/>
+        <edge kind="fifo" source="BroadcastRGBresult"
+            sourceport="out_display" target="display_rgb"
+            targetport="rgb" type="unsigned char"/>
+        <edge kind="fifo" source="BroadcastRGBresult"
+            sourceport="out_record" target="record_rgb_as_yuv"
+            targetport="rgb" type="unsigned char"/>
+        <edge kind="dependency" source="nKeypointsMax"
+            target="SIFT" targetport="nKeypointsMax"/>
+        <edge kind="dependency" source="nLocalKptMax"
+            target="SIFT" targetport="nLocalKptMax"/>
+        <edge kind="dependency" source="parallelismLevel"
+            target="SIFT" targetport="parallelismLevel"/>
+        <edge kind="dependency" source="image_width"
+            target="SIFT" targetport="image_width"/>
+        <edge kind="dependency" source="image_height"
+            target="SIFT" targetport="image_height"/>
+        <edge kind="dependency" source="image_height"
+            target="draw_keypoints_to_rgb" targetport="image_height"/>
+        <edge kind="dependency" source="image_width"
+            target="draw_keypoints_to_rgb" targetport="image_width"/>
+        <edge kind="dependency" source="nKeypointsMax"
+            target="draw_keypoints_to_rgb" targetport="nKeypointsMax"/>
+        <edge kind="dependency" source="tot_image_size"
+            target="SIFT" targetport="tot_image_size"/>
+        <edge kind="dependency" source="image_width" target="tot_image_size"/>
+        <edge kind="dependency" source="image_height" target="tot_image_size"/>
+        <edge kind="dependency" source="tot_image_size"
+            target="read_yuv_frame" targetport="tot_image_size"/>
+        <edge kind="dependency" source="tot_image_size"
+            target="BdOriginalImage" targetport="tot_image_size"/>
+        <edge kind="dependency" source="tot_image_size"
+            target="draw_keypoints_to_rgb" targetport="tot_image_size"/>
+        <edge kind="dependency" source="nKeypointsMaxUser" target="nLocalKptMax"/>
+        <edge kind="dependency" source="parallelismLevel" target="nLocalKptMax"/>
+        <edge kind="dependency" source="nLocalKptMax" target="nKeypointsMax"/>
+        <edge kind="dependency" source="parallelismLevel" target="nKeypointsMax"/>
+        <edge kind="dependency" source="parallelismLevel"
+            target="yuv_to_rgb" targetport="parallelismLevel"/>
+        <edge kind="dependency" source="tot_image_size"
+            target="yuv_to_rgb" targetport="tot_image_size"/>
+        <edge kind="dependency" source="image_width"
+            target="yuv_to_rgb" targetport="image_width"/>
+        <edge kind="dependency" source="image_height"
+            target="yuv_to_rgb" targetport="image_height"/>
+        <edge kind="dependency" source="tot_image_size"
+            target="display_rgb" targetport="tot_image_size"/>
+        <edge kind="dependency" source="image_height"
+            target="read_yuv_frame" targetport="image_height"/>
+        <edge kind="dependency" source="image_width"
+            target="read_yuv_frame" targetport="image_width"/>
+        <edge kind="dependency" source="image_width"
+            target="display_rgb" targetport="image_width"/>
+        <edge kind="dependency" source="image_height"
+            target="display_rgb" targetport="image_height"/>
+        <edge kind="dependency" source="AspectRatioNumerator" target="image_height"/>
+        <edge kind="dependency" source="image_width" target="image_height"/>
+        <edge kind="dependency" source="AspectRatioDenominator" target="image_height"/>
+        <edge kind="dependency" source="parallelismLevel"
+            target="to_grey_float" targetport="parallelismLevel"/>
+        <edge kind="dependency" source="image_width"
+            target="to_grey_float" targetport="image_width"/>
+        <edge kind="dependency" source="image_height"
+            target="to_grey_float" targetport="image_height"/>
+        <edge kind="dependency" source="tot_image_size"
+            target="to_grey_float" targetport="tot_image_size"/>
+        <edge kind="dependency" source="DenominatorFrequency"
+            target="SIFT" targetport="DenominatorFrequency"/>
+        <edge kind="dependency" source="NumeratorFrequency"
+            target="SIFT" targetport="NumeratorFrequency"/>
+        <edge kind="dependency" source="RefTotSize" target="SIFT" targetport="RefTotSize"/>
+        <edge kind="dependency" source="delayRead" target="BdOriginalImage_forDump__draw_keypoints_to_rgb_image"/>
+        <edge kind="dependency" source="delayDisplay" target="BdOriginalImage_forDump__draw_keypoints_to_rgb_image"/>
+        <edge kind="dependency" source="tot_image_size" target="BdOriginalImage_forDump__draw_keypoints_to_rgb_image"/>
+        <edge kind="dependency" source="delayRead" target="to_grey_float_float_img__SIFT_image"/>
+        <edge kind="dependency" source="tot_image_size" target="to_grey_float_float_img__SIFT_image"/>
+        <edge kind="dependency" source="nKeypointsMax" target="SIFT_keypoints__draw_keypoints_to_rgb_keypoints"/>
+        <edge kind="dependency" source="delayDisplay" target="SIFT_keypoints__draw_keypoints_to_rgb_keypoints"/>
+        <edge kind="dependency" source="delayDisplay" target="SIFT_nbKeypoints__draw_keypoints_to_rgb_nbKeypoints"/>
+        <edge kind="dependency" source="RefNbKeypointsMax"
+            target="SIFT" targetport="RefNbKeypointsMax"/>
+        <edge kind="dependency" source="tot_image_size"
+            target="BroadcastRGBresult" targetport="tot_image_size"/>
+        <edge kind="dependency" source="tot_image_size"
+            target="record_rgb_as_yuv" targetport="tot_image_size"/>
+        <edge kind="dependency" source="image_height"
+            target="record_rgb_as_yuv" targetport="image_height"/>
+        <edge kind="dependency" source="image_width"
+            target="record_rgb_as_yuv" targetport="image_width"/>
+    </graph>
+</graphml>
