@@ -121,9 +121,7 @@ public class SetActorMemoryScriptFeature extends AbstractCustomFeature {
     final PictogramElement[] pes = context.getPictogramElements();
     if ((pes != null) && (pes.length == 1)) {
       final Object bo = getBusinessObjectForPictogramElement(pes[0]);
-      if (bo instanceof Actor) {
-        final Actor actor = (Actor) bo;
-
+      if (bo instanceof final Actor actor) {
         final String dialogTitle = "Select a memory script";
         askMemoryScript(actor, dialogTitle);
 
@@ -151,7 +149,7 @@ public class SetActorMemoryScriptFeature extends AbstractCustomFeature {
         dialogTitle, fileExtensions);
 
     final String filePathString = newFilePath.toString();
-    if ((filePathString != null) && (newFilePath.toString() != actor.getMemoryScriptPath())) {
+    if ((filePathString != null) && (!newFilePath.toString().equals(actor.getMemoryScriptPath()))) {
       this.hasDoneChanges = true;
       actor.setMemoryScriptPath(newFilePath.toString());
     }

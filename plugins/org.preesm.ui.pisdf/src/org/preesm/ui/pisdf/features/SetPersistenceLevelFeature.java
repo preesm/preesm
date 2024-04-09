@@ -115,8 +115,8 @@ public class SetPersistenceLevelFeature extends AbstractCustomFeature {
     final PictogramElement[] pes = context.getPictogramElements();
     if ((pes != null) && (pes.length == 1)) {
       final Object bo = getBusinessObjectForPictogramElement(pes[0]);
-      if (bo instanceof Delay) {
-        ((Delay) bo).setLevel(this.currentPL);
+      if (bo instanceof final Delay delay) {
+        delay.setLevel(this.currentPL);
         this.currentPL = null;
         // Call the layout feature
         layoutPictogramElement(pes[0]);

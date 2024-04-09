@@ -102,11 +102,10 @@ public class ExportSVGFeature extends AbstractCustomFeature {
   public boolean canExecute(final ICustomContext context) {
     final PictogramElement[] pes = context.getPictogramElements();
     final Object bo = getBusinessObjectForPictogramElement(pes[0]);
-    if (bo instanceof EObject) {
-      return new ContainingPiGraphLookup().doSwitch((EObject) bo) != null;
-    } else {
-      return false;
+    if (bo instanceof final EObject eObject) {
+      return new ContainingPiGraphLookup().doSwitch(eObject) != null;
     }
+    return false;
   }
 
   /*
@@ -130,8 +129,8 @@ public class ExportSVGFeature extends AbstractCustomFeature {
     /* Get PiGraph */
     final PictogramElement[] pes = context.getPictogramElements();
     final Object bo = getBusinessObjectForPictogramElement(pes[0]);
-    if (bo instanceof EObject) {
-      final PiGraph graph = new ContainingPiGraphLookup().doSwitch((EObject) bo);
+    if (bo instanceof final EObject eObject) {
+      final PiGraph graph = new ContainingPiGraphLookup().doSwitch(eObject);
       if (graph != null) {
 
         final SVGExporterSwitch visitor = new SVGExporterSwitch(this);

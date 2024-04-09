@@ -43,6 +43,7 @@ package org.preesm.ui.pisdf.features;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -126,35 +127,31 @@ public class MoveAbstractActorFeature extends DefaultMoveShapeFeature
       final Set<FreeFormConnection> connectionSet = new HashSet<>();
 
       final FreeFormConnection[] containerConnections = calculateContainerConnectionsLocal(context);
-      for (final FreeFormConnection containerConnection : containerConnections) {
-        connectionSet.add(containerConnection);
-      }
+      Collections.addAll(connectionSet, containerConnections);
 
       final FreeFormConnection[] connectedConnections = calculateConnectedConnectionsLocal(context);
-      for (final FreeFormConnection connectedConnection : connectedConnections) {
-        connectionSet.add(connectedConnection);
-      }
+      Collections.addAll(connectionSet, connectedConnections);
 
       // Check if the delay is selected in the graphical interface
       final PictogramElement[] selectedPictogramElements = getDiagramBehavior().getDiagramContainer()
           .getSelectedPictogramElements();
 
       final List<PictogramElement> selectedPEs = new ArrayList<>(Arrays.asList(selectedPictogramElements));
-      List<Object> listBO = selectedPEs.stream().map(e -> getBusinessObjectForPictogramElement(e))
+      final List<Object> listBO = selectedPEs.stream().map(e -> getBusinessObjectForPictogramElement(e))
           .collect(Collectors.toList());
 
-      for (Delay d : implicitlyMovedDelay) {
+      for (final Delay d : implicitlyMovedDelay) {
         if (!listBO.contains(d)) {
           listBO.add(d);
-          ContainerShape cs = DiagramPiGraphLinkHelper.getDelayPE(getDiagram(), d.getContainingFifo());
+          final ContainerShape cs = DiagramPiGraphLinkHelper.getDelayPE(getDiagram(), d.getContainingFifo());
           selectedPEs.add(cs);
         }
       }
 
-      List<Object> listBOd = new ArrayList<>();
-      for (Object o : listBO) {
-        if (o instanceof Delay) {
-          listBOd.add(((Delay) o).getActor());
+      final List<Object> listBOd = new ArrayList<>();
+      for (final Object o : listBO) {
+        if (o instanceof final Delay delay) {
+          listBOd.add(delay.getActor());
         } else {
           listBOd.add(o);
         }
@@ -165,14 +162,9 @@ public class MoveAbstractActorFeature extends DefaultMoveShapeFeature
           implicitlyMovedDelay);
 
       // Move implicitlyMovedDelays
-      for (final Delay del : implicitlyMovedDelay) {
-        moveDelay(context, del);
-      }
+      implicitlyMovedDelay.forEach(del -> moveDelay(context, del));
 
-      for (final FreeFormConnection conn : connectionSet) {
-        moveAllBendpointsOnFFConnectionLocal(conn, deltaX, deltaY);
-      }
-
+      connectionSet.forEach(conn -> moveAllBendpointsOnFFConnectionLocal(conn, deltaX, deltaY));
     }
   }
 
@@ -180,7 +172,7 @@ public class MoveAbstractActorFeature extends DefaultMoveShapeFeature
    * We also move fifo between delays and setter/getter, and delays that they may contain.
    * <p>
    * This function may not be complete.
-   * 
+   *
    * @param delaysToTest
    *          The current list of delays to test.
    * @param listBOd
@@ -191,62 +183,59 @@ public class MoveAbstractActorFeature extends DefaultMoveShapeFeature
   protected void findExtraConnectedDelaysAndConnections(final Set<Delay> delaysToTest, final List<Object> listBOd,
       final List<PictogramElement> selectedPEs, Set<FreeFormConnection> allConnections, Set<Delay> allDelays) {
 
-    Set<FreeFormConnection> newConnections = new HashSet<>();
-    Set<Delay> newDelays = new HashSet<>();
+    final Set<FreeFormConnection> newConnections = new HashSet<>();
+    final Set<Delay> newDelays = new HashSet<>();
 
-    for (Delay del : delaysToTest) {
-      ContainerShape cs = DiagramPiGraphLinkHelper.getDelayPE(getDiagram(), del.getContainingFifo());
+    for (final Delay del : delaysToTest) {
+      final ContainerShape cs = DiagramPiGraphLinkHelper.getDelayPE(getDiagram(), del.getContainingFifo());
 
-      int indexSetter = listBOd.indexOf(del.getSetterActor());
+      final int indexSetter = listBOd.indexOf(del.getSetterActor());
       if (indexSetter >= 0) {
-        PictogramElement setter = selectedPEs.get(indexSetter);
-        for (Anchor ac : cs.getAnchors()) {
-          for (Connection in : ac.getIncomingConnections()) {
+        final PictogramElement setter = selectedPEs.get(indexSetter);
+        for (final Anchor ac : cs.getAnchors()) {
+          for (final Connection in : ac.getIncomingConnections()) {
 
-            Object o = getBusinessObjectForPictogramElement(in);
-            if (o instanceof Fifo) {
-              Fifo f = (Fifo) o;
-              Delay d = f.getDelay();
+            final Object o = getBusinessObjectForPictogramElement(in);
+            if (o instanceof final Fifo f) {
+              final Delay d = f.getDelay();
               Connection opposite = null;
               if (d != null && !allDelays.contains(d)) {
                 newDelays.add(d);
                 opposite = getSourceConnection(this, d, in.getStart().getParent(), in);
               }
-              Connection testSetterCo = opposite == null ? in : opposite;
+              final Connection testSetterCo = opposite == null ? in : opposite;
 
               if (testSetterCo.getStart().getParent() == setter) {
-                if (!allConnections.contains((FreeFormConnection) in)) {
+                if (!allConnections.contains(in)) {
                   newConnections.add((FreeFormConnection) in);
                 }
                 if (opposite != null) {
                   newConnections.add((FreeFormConnection) opposite);
                 }
               }
-
             }
-
           }
         }
       }
-      int indexGetter = listBOd.indexOf(del.getGetterActor());
-      if (indexGetter >= 0 && !(del.getGetterActor() instanceof DelayActor)) {
-        PictogramElement getter = selectedPEs.get(indexGetter);
-        for (Anchor ac : cs.getAnchors()) {
-          for (Connection out : ac.getOutgoingConnections()) {
 
-            Object o = getBusinessObjectForPictogramElement(out);
-            if (o instanceof Fifo) {
-              Fifo f = (Fifo) o;
-              Delay d = f.getDelay();
+      final int indexGetter = listBOd.indexOf(del.getGetterActor());
+      if (indexGetter >= 0 && !(del.getGetterActor() instanceof DelayActor)) {
+        final PictogramElement getter = selectedPEs.get(indexGetter);
+        for (final Anchor ac : cs.getAnchors()) {
+          for (final Connection out : ac.getOutgoingConnections()) {
+
+            final Object o = getBusinessObjectForPictogramElement(out);
+            if (o instanceof final Fifo f) {
+              final Delay d = f.getDelay();
               Connection opposite = null;
               if (d != null && !allDelays.contains(d)) {
                 newDelays.add(d);
                 opposite = getTargetConnection(this, d, out.getEnd().getParent(), out);
               }
-              Connection testGetterCo = opposite == null ? out : opposite;
+              final Connection testGetterCo = opposite == null ? out : opposite;
 
               if (testGetterCo.getEnd().getParent() == getter) {
-                if (!allConnections.contains((FreeFormConnection) out)) {
+                if (!allConnections.contains(out)) {
                   newConnections.add((FreeFormConnection) out);
                 }
                 if (opposite != null) {
@@ -357,16 +346,15 @@ public class MoveAbstractActorFeature extends DefaultMoveShapeFeature
           final Object objFifo = getBusinessObjectForPictogramElement(connection);
           Connection targetConnection = null;
           Delay delay = null;
-          if (objFifo instanceof Fifo) {
-            final Fifo fifo = (Fifo) objFifo;
+          if (objFifo instanceof final Fifo fifo) {
             delay = fifo.getDelay();
             if (delay != null) {
               // Is the second half of the connection the one given to the delete
               // context, except if delay on setter.
-              AnchorContainer parent = connection.getEnd().getParent();
-              Object obj = getBusinessObjectForPictogramElement(parent);
-              if (obj instanceof Delay && obj == delay) {
-                targetConnection = getTargetConnection(this, (Delay) obj, parent, connection);
+              final AnchorContainer parent = connection.getEnd().getParent();
+              final Object obj = getBusinessObjectForPictogramElement(parent);
+              if (obj instanceof final Delay d && obj == delay) {
+                targetConnection = getTargetConnection(this, d, parent, connection);
               }
             }
           }
@@ -374,14 +362,14 @@ public class MoveAbstractActorFeature extends DefaultMoveShapeFeature
           for (final Anchor anchorTo : anchorsTo) {
 
             final Collection<Connection> incomingConnections = anchorTo.getIncomingConnections();
-            if (incomingConnections.contains(connection) && connection instanceof FreeFormConnection) {
-              retList.add((FreeFormConnection) connection);
+            if (incomingConnections.contains(connection) && connection instanceof final FreeFormConnection ffc) {
+              retList.add(ffc);
             }
 
             if (targetConnection != null && incomingConnections.contains(targetConnection)
-                && targetConnection instanceof FreeFormConnection) {
+                && targetConnection instanceof final FreeFormConnection targetFfc) {
               this.implicitlyMovedDelay.add(delay);
-              retList.add((FreeFormConnection) targetConnection);
+              retList.add(targetFfc);
               retList.add((FreeFormConnection) connection);
               // we do not add self connections to the list of moved connections since we want the bendpoints
               // to be recreated (they will be aligned and removed otherwise)
@@ -421,11 +409,9 @@ public class MoveAbstractActorFeature extends DefaultMoveShapeFeature
         for (final PictogramElement selectedPictogramElement : selectedPictogramElements) {
           final PictogramElement selPe = selectedPictogramElement;
           final Object objSel = getBusinessObjectForPictogramElement(selPe);
-          if (selPe != shapeToMove && (selPe instanceof Shape) && !(selPe instanceof Diagram)
+          if (selPe != shapeToMove && (selPe instanceof final Shape selShape) && !(selPe instanceof Diagram)
               && !(objSel instanceof Delay)) {
-            final Shape selShape = (Shape) selPe;
-
-            List<Anchor> selShapeAnchors = getAnchorsLocal(selShape);
+            final List<Anchor> selShapeAnchors = getAnchorsLocal(selShape);
             for (final Anchor toAnchor : selShapeAnchors) {
               final EList<Connection> incomingConnections = toAnchor.getIncomingConnections();
               for (final Connection inConn : incomingConnections) {
@@ -434,16 +420,15 @@ public class MoveAbstractActorFeature extends DefaultMoveShapeFeature
                   final Object objFifo = getBusinessObjectForPictogramElement(inConn);
                   Connection sourceConnection = null;
                   Delay delay = null;
-                  if (objFifo instanceof Fifo) {
-                    final Fifo fifo = (Fifo) objFifo;
+                  if (objFifo instanceof final Fifo fifo) {
                     delay = fifo.getDelay();
                     if (delay != null) {
                       // Is the second half of the inConn the one given to the delete
                       // context, except if delay on setter.
-                      AnchorContainer parent = inConn.getStart().getParent();
-                      Object obj = getBusinessObjectForPictogramElement(parent);
-                      if (obj instanceof Delay && obj == delay) {
-                        sourceConnection = getSourceConnection(this, (Delay) obj, parent, inConn);
+                      final AnchorContainer parent = inConn.getStart().getParent();
+                      final Object obj = getBusinessObjectForPictogramElement(parent);
+                      if (obj instanceof final Delay d && obj == delay) {
+                        sourceConnection = getSourceConnection(this, d, parent, inConn);
                       }
                     }
                   }
@@ -476,15 +461,12 @@ public class MoveAbstractActorFeature extends DefaultMoveShapeFeature
   }
 
   private List<Anchor> getAnchorsLocal(Shape theShape) {
-    List<Anchor> ret = new ArrayList<>();
-    ret.addAll(theShape.getAnchors());
-
-    if (theShape instanceof ContainerShape) {
-      ContainerShape containerShape = (ContainerShape) theShape;
-      List<Shape> children = containerShape.getChildren();
-      for (Shape shape : children) {
+    final List<Anchor> ret = new ArrayList<>(theShape.getAnchors());
+    if (theShape instanceof final ContainerShape containerShape) {
+      final List<Shape> children = containerShape.getChildren();
+      for (final Shape shape : children) {
         if (shape instanceof ContainerShape) {
-          ret.addAll(getAnchorsLocal((ContainerShape) shape));
+          ret.addAll(getAnchorsLocal(shape));
         } else {
           ret.addAll(shape.getAnchors());
         }

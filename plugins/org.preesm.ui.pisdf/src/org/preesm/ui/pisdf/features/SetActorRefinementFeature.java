@@ -143,7 +143,7 @@ public class SetActorRefinementFeature extends AbstractCustomFeature {
     if ((pes != null) && (pes.length == 1)) {
       final Object bo = getBusinessObjectForPictogramElement(pes[0]);
       if (bo instanceof Actor || bo instanceof InitActor
-          || (bo instanceof Delay && ((Delay) bo).getLevel() == PersistenceLevel.PERMANENT)) {
+          || (bo instanceof final Delay delay && delay.getLevel() == PersistenceLevel.PERMANENT)) {
         ret = true;
       }
     }
@@ -161,34 +161,37 @@ public class SetActorRefinementFeature extends AbstractCustomFeature {
 
     // Re-check if only one element is selected
     final PictogramElement[] pes = context.getPictogramElements();
-    if ((pes != null) && (pes.length == 1)) {
-      final Object bo = getBusinessObjectForPictogramElement(pes[0]);
-      if (bo instanceof Actor || bo instanceof Delay || bo instanceof InitActor) {
-        RefinementContainer rc = null;
-        boolean acceptPiFiles = false;
-        if (bo instanceof Delay) {
-          rc = ((Delay) bo).getActor();
-          if (rc == null) {
-            return;
-          }
-        } else if (bo instanceof Actor) {
-          rc = (Actor) bo;
-          acceptPiFiles = true;
-        } else if (bo instanceof InitActor) {
-          rc = (InitActor) bo;
-        }
-
-        final String question = "Please select a valid refinement file (.h/hpp, or .pi if Actor)";
-        final String dialogTitle = "Select a refinement file";
-        final IPath path = askRefinement(question, dialogTitle, acceptPiFiles);
-        if (path != null) {
-          setActorRefinement(rc, path);
-        }
-
-        // Call the layout feature
-        layoutPictogramElement(pes[0]);
-      }
+    if ((pes == null) || (pes.length != 1)) {
+      return;
     }
+
+    final Object bo = getBusinessObjectForPictogramElement(pes[0]);
+    RefinementContainer rc = null;
+    boolean acceptPiFiles = false;
+    if (bo instanceof final Delay delay) {
+      rc = delay.getActor();
+      if (rc == null) {
+        return;
+      }
+    } else if (bo instanceof final Actor actor) {
+      rc = actor;
+      acceptPiFiles = true;
+    } else if (bo instanceof final InitActor iActor) {
+      rc = iActor;
+    } else {
+      // If not Delay or not Actor or not InitActor
+      return;
+    }
+
+    final String question = "Please select a valid refinement file (.h/hpp, or .pi if Actor)";
+    final String dialogTitle = "Select a refinement file";
+    final IPath path = askRefinement(question, dialogTitle, acceptPiFiles);
+    if (path != null) {
+      setActorRefinement(rc, path);
+    }
+
+    // Call the layout feature
+    layoutPictogramElement(pes[0]);
   }
 
   /**
@@ -345,25 +348,13 @@ public class SetActorRefinementFeature extends AbstractCustomFeature {
   private List<FunctionPrototype> getPrototypes(final RefinementContainer actor, final PrototypeFilter prototypeFilter,
       final List<FunctionPrototype> allPrototypes) {
 
-    List<FunctionPrototype> result = null;
-
-    switch (prototypeFilter) {
-      case INIT_ACTOR:
-        result = HeaderParser.filterInitPrototypesFor((AbstractActor) actor, allPrototypes);
-        break;
-      case LOOP_ACTOR:
-        result = HeaderParser.filterLoopPrototypesFor((AbstractActor) actor, allPrototypes);
-        break;
-      case INIT:
-        result = HeaderParser.filterInitPrototypes(allPrototypes);
-        break;
-      case INIT_DELAY_ACTOR:
-        result = HeaderParser.filterInitBufferPrototypes(allPrototypes);
-        break;
-      case NONE:
-        break;
-      default:
-    }
+    final List<FunctionPrototype> result = switch (prototypeFilter) {
+      case INIT_ACTOR -> HeaderParser.filterInitPrototypesFor((AbstractActor) actor, allPrototypes);
+      case LOOP_ACTOR -> HeaderParser.filterLoopPrototypesFor((AbstractActor) actor, allPrototypes);
+      case INIT -> HeaderParser.filterInitPrototypes(allPrototypes);
+      case INIT_DELAY_ACTOR -> HeaderParser.filterInitBufferPrototypes(allPrototypes);
+      case NONE -> null;
+    };
 
     if (result == null) {
       throw new PreesmRuntimeException();

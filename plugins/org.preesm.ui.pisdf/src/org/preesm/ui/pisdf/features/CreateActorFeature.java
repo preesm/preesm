@@ -102,7 +102,8 @@ public class CreateActorFeature extends AbstractCreateFeature {
     final String question = "Enter new actor name";
     String newActorName = "ActorName";
 
-    newActorName = DialogUtil.askString("Create Actor", question, newActorName, new VertexNameValidator(graph, null));
+    newActorName = DialogUtil.askString(FEATURE_DESCRIPTION, question, newActorName,
+        new VertexNameValidator(graph, null));
     if ((newActorName == null) || (newActorName.trim().length() == 0)) {
       this.hasDoneChanges = false; // If this is not done, the graph is considered modified.
       return ICreate.EMPTY;

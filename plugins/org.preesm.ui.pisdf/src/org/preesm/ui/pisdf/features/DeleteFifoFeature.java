@@ -94,7 +94,7 @@ public class DeleteFifoFeature extends DeletePiMMelementFeature implements Delay
     AnchorContainer delayFeature = null;
     Connection targetConnection = null;
 
-    Delay delay = fifo.getDelay();
+    final Delay delay = fifo.getDelay();
 
     // If the Fifo has a delay, first delete it.
     if (delay != null) {
@@ -111,9 +111,9 @@ public class DeleteFifoFeature extends DeletePiMMelementFeature implements Delay
       // context, except if delay on setter.
       parent = connection.getEnd().getParent();
       obj = getBusinessObjectForPictogramElement(parent);
-      if (obj instanceof Delay && obj == delay) {
+      if (obj instanceof final Delay d && obj == delay) {
         delayFeature = parent;
-        targetConnection = getTargetConnection(this, (Delay) obj, delayFeature, connection);
+        targetConnection = getTargetConnection(this, d, delayFeature, connection);
       }
 
       final DeleteContext delCtxt = new DeleteContext(delayFeature);
@@ -125,11 +125,10 @@ public class DeleteFifoFeature extends DeletePiMMelementFeature implements Delay
       if (targetConnection != null) {
         final IRemoveContext rmCtxt = new RemoveContext(targetConnection);
         final IRemoveFeature rmFeature = getFeatureProvider().getRemoveFeature(rmCtxt);
-        if (rmFeature.canRemove(rmCtxt)) {
-          rmFeature.remove(rmCtxt);
-        } else {
+        if (!rmFeature.canRemove(rmCtxt)) {
           throw new PreesmRuntimeException("Could not delete a connection.");
         }
+        rmFeature.remove(rmCtxt);
       }
     }
 

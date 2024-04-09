@@ -89,12 +89,11 @@ public class UpdatePortFeature extends AbstractUpdateFeature {
     // retrieve name from pictogram model
     String pictogramName = null;
     final PictogramElement pictogramElement = context.getPictogramElement();
-    if (pictogramElement instanceof BoxRelativeAnchor) {
-      final BoxRelativeAnchor bra = (BoxRelativeAnchor) pictogramElement;
+    if (pictogramElement instanceof final BoxRelativeAnchor bra) {
       // The label of the port is the only child with type Text
       for (final GraphicsAlgorithm ga : bra.getGraphicsAlgorithm().getGraphicsAlgorithmChildren()) {
-        if (ga instanceof Text) {
-          pictogramName = ((Text) ga).getValue();
+        if (ga instanceof final Text text) {
+          pictogramName = text.getValue();
         }
       }
     }
@@ -102,13 +101,11 @@ public class UpdatePortFeature extends AbstractUpdateFeature {
     // retrieve Port name from business model (from the graph)
     String businessName = null;
     final Object bo = getBusinessObjectForPictogramElement(pictogramElement);
-    if (bo instanceof Port) {
-      // if the container actor is a data interface
-      // then the port has no name.
+    if (bo instanceof final Port port) {
+      // if the container actor is a data interface then the port has no name.
       if (((Port) bo).eContainer() instanceof InterfaceActor) {
         businessName = null;
       } else {
-        final Port port = (Port) bo;
         businessName = port.getName();
       }
     }
@@ -118,9 +115,8 @@ public class UpdatePortFeature extends AbstractUpdateFeature {
         || ((pictogramName != null) && !pictogramName.equals(businessName)));
     if (updateNameNeeded) {
       return Reason.createTrueReason("Name <" + pictogramName + "> is out of date\nNew name: " + businessName);
-    } else {
-      return Reason.createFalseReason();
     }
+    return Reason.createFalseReason();
   }
 
   /*
@@ -134,18 +130,16 @@ public class UpdatePortFeature extends AbstractUpdateFeature {
     String businessName = null;
     final PictogramElement pictogramElement = context.getPictogramElement();
     final Object bo = getBusinessObjectForPictogramElement(pictogramElement);
-    if (bo instanceof Port) {
-      final Port port = (Port) bo;
+    if (bo instanceof final Port port) {
       businessName = port.getName();
     }
 
     // Set name in pictogram model
-    if (pictogramElement instanceof BoxRelativeAnchor) {
-      final BoxRelativeAnchor bra = (BoxRelativeAnchor) pictogramElement;
+    if (pictogramElement instanceof final BoxRelativeAnchor bra) {
       // The label of the port is the only child with type Text
       for (final GraphicsAlgorithm ga : bra.getGraphicsAlgorithm().getGraphicsAlgorithmChildren()) {
-        if (ga instanceof Text) {
-          ((Text) ga).setValue(businessName);
+        if (ga instanceof final Text text) {
+          text.setValue(businessName);
         }
       }
     }

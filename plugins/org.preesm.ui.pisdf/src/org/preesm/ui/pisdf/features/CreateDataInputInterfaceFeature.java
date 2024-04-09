@@ -100,8 +100,7 @@ public class CreateDataInputInterfaceFeature extends AbstractCreateFeature {
     final String question = "Enter new Source Interface name";
     String newSrcName = "SrcInterfaceName";
 
-    newSrcName = DialogUtil.askString("Create Source Interface", question, newSrcName,
-        new VertexNameValidator(graph, null));
+    newSrcName = DialogUtil.askString(FEATURE_DESCRIPTION, question, newSrcName, new VertexNameValidator(graph, null));
     if ((newSrcName == null) || (newSrcName.trim().length() == 0)) {
       this.hasDoneChanges = false; // If this is not done, the graph is
       // considered modified.

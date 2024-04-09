@@ -44,6 +44,7 @@ import org.eclipse.graphiti.mm.pictograms.ContainerShape;
 import org.eclipse.graphiti.mm.pictograms.Diagram;
 import org.eclipse.graphiti.mm.pictograms.Shape;
 import org.eclipse.graphiti.services.Graphiti;
+import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.preesm.model.pisdf.Actor;
 import org.preesm.model.pisdf.SpecialActor;
 
@@ -65,25 +66,25 @@ public class UpdateDiagramFeature extends DefaultUpdateDiagramFeature {
 
   /** The global version key. */
   // Name of the property of the diagram giving its version
-  private static String GLOBAL_VERSION_KEY = "editor_version";
+  private static final String GLOBAL_VERSION_KEY = "editor_version";
   /*
    * Versions number of the diagram editor
    */
   /** The version 1. */
   // First version
-  private static int VERSION_1 = 1;
+  private static final int VERSION_1 = 1;
 
   /** The version 2. */
   // Second version: anchors added on actors
-  private static int VERSION_2 = 2;
+  private static final int VERSION_2 = 2;
 
   /** The version 3. */
   // Third version: anchors added special actors
-  private static int VERSION_3 = 3;
+  private static final int VERSION_3 = 3;
 
   /** The current editor version. */
   // Current version
-  private static int CURRENT_EDITOR_VERSION = UpdateDiagramFeature.VERSION_3;
+  private static final int CURRENT_EDITOR_VERSION = UpdateDiagramFeature.VERSION_3;
 
   /** The has done changes. */
   private boolean hasDoneChanges;
@@ -118,7 +119,7 @@ public class UpdateDiagramFeature extends DefaultUpdateDiagramFeature {
   @Override
   public boolean update(final IUpdateContext context) {
     if (!(context.getPictogramElement() instanceof Diagram)) {
-      throw new RuntimeException("UpdateDiagramFeature has been used with a non Diagram parameter: "
+      throw new PreesmRuntimeException("UpdateDiagramFeature has been used with a non Diagram parameter: "
           + context.getPictogramElement().getClass().toString());
     }
 
@@ -147,7 +148,7 @@ public class UpdateDiagramFeature extends DefaultUpdateDiagramFeature {
     }
 
     // The diagram is up-to-date, nothing to do
-    if (UpdateDiagramFeature.CURRENT_EDITOR_VERSION == version) {
+    if (version == UpdateDiagramFeature.CURRENT_EDITOR_VERSION) {
       return;
     }
 
@@ -197,8 +198,7 @@ public class UpdateDiagramFeature extends DefaultUpdateDiagramFeature {
     for (final Shape s : diagram.getChildren()) {
       if (s instanceof ContainerShape) {
         final Object o = getBusinessObjectForPictogramElement(s);
-        if (o instanceof Actor) {
-          final Actor actor = (Actor) o;
+        if (o instanceof final Actor actor) {
           final ChopboxAnchor cba = Graphiti.getPeCreateService().createChopboxAnchor(s);
           link(cba, actor);
         }
@@ -218,8 +218,7 @@ public class UpdateDiagramFeature extends DefaultUpdateDiagramFeature {
     for (final Shape s : diagram.getChildren()) {
       if (s instanceof ContainerShape) {
         final Object o = getBusinessObjectForPictogramElement(s);
-        if (o instanceof SpecialActor) {
-          final SpecialActor actor = (SpecialActor) o;
+        if (o instanceof final SpecialActor actor) {
           final ChopboxAnchor cba = Graphiti.getPeCreateService().createChopboxAnchor(s);
           link(cba, actor);
         }

@@ -132,7 +132,7 @@ public class CreateDependencyFeature extends AbstractCreateConnectionFeature {
     // True if the target is a ConfigInputPort of an actor (and the source
     // is not a ConfigOutpuPort
     final Port target = getPort(context.getTargetAnchor());
-    final boolean targetOK = ((target != null) && (target instanceof ConfigInputPort));
+    final boolean targetOK = target instanceof ConfigInputPort;
     if (targetOK) {
       // Check that no dependency is connected to the ports
       if (((ConfigInputPort) target).getIncomingDependency() != null) {
@@ -153,7 +153,7 @@ public class CreateDependencyFeature extends AbstractCreateConnectionFeature {
     }
 
     // False if target is a config input/output interface
-    if (((targetObj instanceof Parameter) && ((Parameter) targetObj).isConfigurationInterface())
+    if (((targetObj instanceof final Parameter param) && param.isConfigurationInterface())
         || (targetObj instanceof ConfigOutputInterface)) {
       PiMMUtil.setToolTip(getFeatureProvider(), context.getTargetPictogramElement().getGraphicsAlgorithm(),
           getDiagramBehavior(),
@@ -172,7 +172,6 @@ public class CreateDependencyFeature extends AbstractCreateConnectionFeature {
       // Create tooltip message
       PiMMUtil.setToolTip(getFeatureProvider(), context.getTargetAnchor().getGraphicsAlgorithm(), getDiagramBehavior(),
           "A Dependency cannot end at a data port");
-      return false;
     }
 
     // TODO Check if the target can create a port
@@ -212,7 +211,6 @@ public class CreateDependencyFeature extends AbstractCreateConnectionFeature {
       // Create tooltip message
       PiMMUtil.setToolTip(getFeatureProvider(), context.getSourceAnchor().getGraphicsAlgorithm(), getDiagramBehavior(),
           "A Dependency cannot start at an data output port");
-      return false;
     }
 
     return false;
@@ -249,9 +247,8 @@ public class CreateDependencyFeature extends AbstractCreateConnectionFeature {
       // Create a configInputPort
       final PictogramElement tgtPE = context.getTargetPictogramElement();
       final Object tgtObj = getBusinessObjectForPictogramElement(tgtPE);
-      if (tgtObj instanceof Configurable) {
-        // The target can be: A Parameter, A Fifo, An Actor, An
-        // interface.
+      if (tgtObj instanceof final Configurable configurable) {
+        // The target can be: A Parameter, A Fifo, An Actor, An interface.
 
         // If the getter is an actor
         if (tgtObj instanceof ExecutableActor) {
@@ -261,8 +258,8 @@ public class CreateDependencyFeature extends AbstractCreateConnectionFeature {
           if (addPortFeature != null) {
             final CustomContext targetContext = new CustomContext(new PictogramElement[] { tgtPE });
             // If Src is a Parameter (or config inputPort), give it as default port name
-            if (setter instanceof Parameter) {
-              addPortFeature.execute(targetContext, ((Parameter) setter).getName());
+            if (setter instanceof final Parameter param) {
+              addPortFeature.execute(targetContext, param.getName());
             } else {
               addPortFeature.execute(targetContext);
             }
@@ -276,7 +273,7 @@ public class CreateDependencyFeature extends AbstractCreateConnectionFeature {
         if ((tgtObj instanceof Parameter) || (tgtObj instanceof InterfaceActor) || (tgtObj instanceof Delay)) {
           // Create a ConfigInputPort
           getter = PiMMUserFactory.instance.createConfigInputPort();
-          ((Configurable) tgtObj).getConfigInputPorts().add((ConfigInputPort) getter);
+          configurable.getConfigInputPorts().add((ConfigInputPort) getter);
         }
 
         // TODO implement the creation of configInputPort
@@ -287,14 +284,14 @@ public class CreateDependencyFeature extends AbstractCreateConnectionFeature {
     // failed or was aborted)
 
     if (getter instanceof DataPort) {
-      MessageDialog.openWarning(null, "Preesm Error",
-          "Can not connect dependencies to data ports. Try connecting the dependency to the containing actor.\n"
-              + "\nNote: if you are trying to connect the dependency to an interface, drop its end on the "
-              + "interface name.");
+      MessageDialog.openWarning(null, "Preesm Error", """
+          Can not connect dependencies to data ports. Try connecting the dependency to the containing actor.
+          Note: if you are trying to connect the dependency to an interface, drop its end on the interface name.
+          """);
       return null;
     }
 
-    if ((getter != null) && (setter != null)) {
+    if (getter != null) {
       // Create new business object
       final Dependency dependendy = createDependency(setter, (ConfigInputPort) getter);
       // add connection for business object
@@ -319,8 +316,8 @@ public class CreateDependencyFeature extends AbstractCreateConnectionFeature {
   protected Port getPort(final Anchor anchor) {
     if (anchor != null) {
       final Object obj = getBusinessObjectForPictogramElement(anchor);
-      if (obj instanceof Port) {
-        return (Port) obj;
+      if (obj instanceof final Port port) {
+        return port;
       }
     }
     return null;
@@ -336,8 +333,8 @@ public class CreateDependencyFeature extends AbstractCreateConnectionFeature {
   protected ISetter getSetter(final Anchor anchor) {
     if (anchor != null) {
       final Object obj = getBusinessObjectForPictogramElement(anchor);
-      if (obj instanceof ISetter) {
-        return (ISetter) obj;
+      if (obj instanceof final ISetter iSetter) {
+        return iSetter;
       }
     }
     return null;
@@ -412,8 +409,7 @@ public class CreateDependencyFeature extends AbstractCreateConnectionFeature {
     }
     if (canCreatePort) {
       return addPortFeature;
-    } else {
-      return null;
     }
+    return null;
   }
 }

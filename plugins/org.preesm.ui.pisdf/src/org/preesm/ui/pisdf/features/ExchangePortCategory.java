@@ -157,33 +157,18 @@ public class ExchangePortCategory extends AbstractCustomFeature {
         // we need a new context since the original one may have more than one pe,
         // which is not supported by the add features
         final CustomContext cc = new CustomContext(peActor);
-        switch (kind) {
-          case DATA_INPUT:
-            final AddDataInputPortFeature adipf = new AddDataInputPortFeature(getFeatureProvider());
-            adipf.setGivenName(name);
-            adipf.execute(cc);
-            break;
-          case DATA_OUTPUT:
-            final AddDataOutputPortFeature adopf = new AddDataOutputPortFeature(getFeatureProvider());
-            adopf.setGivenName(name);
-            adopf.execute(cc);
-            break;
-          case CFG_INPUT:
-            final AddConfigInputPortFeature acipf = new AddConfigInputPortFeature(getFeatureProvider());
-            acipf.setGivenName(name);
-            acipf.execute(cc);
-            break;
-          case CFG_OUTPUT:
-            final AddConfigOutputPortFeature acopf = new AddConfigOutputPortFeature(getFeatureProvider());
-            acopf.setGivenName(name);
-            acopf.execute(cc);
-            break;
-          default:
-            break;
-        }
+
+        final AbstractAddActorPortFeature aaapf = switch (kind) {
+          case DATA_INPUT -> new AddDataInputPortFeature(getFeatureProvider());
+          case DATA_OUTPUT -> new AddDataOutputPortFeature(getFeatureProvider());
+          case CFG_INPUT -> new AddConfigInputPortFeature(getFeatureProvider());
+          case CFG_OUTPUT -> new AddConfigOutputPortFeature(getFeatureProvider());
+        };
+
+        aaapf.setGivenName(name);
+        aaapf.execute(cc);
       }
     }
-
   }
 
 }

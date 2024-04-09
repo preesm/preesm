@@ -98,7 +98,7 @@ public class ClearActorMemoryScriptFeature extends AbstractCustomFeature {
     final PictogramElement[] pes = context.getPictogramElements();
     if ((pes != null) && (pes.length == 1)) {
       final Object bo = getBusinessObjectForPictogramElement(pes[0]);
-      if ((bo instanceof Actor) && (((Actor) bo).getMemoryScriptPath() != null)) {
+      if ((bo instanceof final Actor actor) && (actor.getMemoryScriptPath() != null)) {
         ret = true;
       }
     }
@@ -118,8 +118,7 @@ public class ClearActorMemoryScriptFeature extends AbstractCustomFeature {
     final PictogramElement[] pes = context.getPictogramElements();
     if ((pes != null) && (pes.length == 1)) {
       final Object bo = getBusinessObjectForPictogramElement(pes[0]);
-      if (bo instanceof Actor) {
-        final Actor actor = (Actor) bo;
+      if (bo instanceof final Actor actor) {
         actor.setMemoryScriptPath(null);
 
         // Call the layout feature

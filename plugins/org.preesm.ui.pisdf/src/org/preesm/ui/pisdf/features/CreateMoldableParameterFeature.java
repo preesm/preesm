@@ -103,7 +103,7 @@ public class CreateMoldableParameterFeature extends AbstractCreateFeature {
     String newParameterName = "MoldableParameterName";
 
     // TODO create a parameter name validator
-    newParameterName = DialogUtil.askString("Create Parameter", question, newParameterName,
+    newParameterName = DialogUtil.askString(FEATURE_DESCRIPTION, question, newParameterName,
         new VertexNameValidator(graph, null));
     if ((newParameterName == null) || (newParameterName.trim().length() == 0)) {
       this.hasDoneChanges = false; // If this is not done, the graph is

@@ -85,8 +85,7 @@ public class UpdateAbstractVertexFeature extends AbstractUpdateFeature {
    */
   @Override
   public IReason updateNeeded(final IUpdateContext context) {
-    final IReason ret = nameUpdateNeeded(context);
-    return ret;
+    return nameUpdateNeeded(context);
   }
 
   /*
@@ -112,11 +111,9 @@ public class UpdateAbstractVertexFeature extends AbstractUpdateFeature {
     // retrieve name from pictogram model
     String pictogramName = null;
     final PictogramElement pictogramElement = context.getPictogramElement();
-    if (pictogramElement instanceof ContainerShape) {
-      final ContainerShape cs = (ContainerShape) pictogramElement;
+    if (pictogramElement instanceof final ContainerShape cs) {
       for (final Shape shape : cs.getChildren()) {
-        if (shape.getGraphicsAlgorithm() instanceof Text) {
-          final Text text = (Text) shape.getGraphicsAlgorithm();
+        if (shape.getGraphicsAlgorithm() instanceof final Text text) {
           pictogramName = text.getValue();
         }
       }
@@ -125,8 +122,7 @@ public class UpdateAbstractVertexFeature extends AbstractUpdateFeature {
     // retrieve AbstractVertex name from business model (from the graph)
     String businessName = null;
     final Object bo = getBusinessObjectForPictogramElement(pictogramElement);
-    if (bo instanceof AbstractVertex) {
-      final AbstractVertex vertex = (AbstractVertex) bo;
+    if (bo instanceof final AbstractVertex vertex) {
       businessName = vertex.getName();
       // if it is a delay actor, no need to do that since name is not printed.
       if (bo instanceof Delay) {
@@ -156,17 +152,14 @@ public class UpdateAbstractVertexFeature extends AbstractUpdateFeature {
     String businessName = null;
     final PictogramElement pictogramElement = context.getPictogramElement();
     final Object bo = getBusinessObjectForPictogramElement(pictogramElement);
-    if (bo instanceof AbstractVertex) {
-      final AbstractVertex vertex = (AbstractVertex) bo;
+    if (bo instanceof final AbstractVertex vertex) {
       businessName = vertex.getName();
     }
 
     // Set name in pictogram model
-    if (pictogramElement instanceof ContainerShape) {
-      final ContainerShape cs = (ContainerShape) pictogramElement;
+    if (pictogramElement instanceof final ContainerShape cs) {
       for (final Shape shape : cs.getChildren()) {
-        if (shape.getGraphicsAlgorithm() instanceof Text) {
-          final Text text = (Text) shape.getGraphicsAlgorithm();
+        if (shape.getGraphicsAlgorithm() instanceof final Text text) {
           text.setValue(businessName);
           return true;
         }

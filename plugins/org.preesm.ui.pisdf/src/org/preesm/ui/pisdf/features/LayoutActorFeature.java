@@ -55,7 +55,6 @@ import org.eclipse.graphiti.mm.algorithms.styles.Orientation;
 import org.eclipse.graphiti.mm.pictograms.Anchor;
 import org.eclipse.graphiti.mm.pictograms.BoxRelativeAnchor;
 import org.eclipse.graphiti.mm.pictograms.ContainerShape;
-import org.eclipse.graphiti.mm.pictograms.FreeFormConnection;
 import org.eclipse.graphiti.mm.pictograms.PictogramElement;
 import org.eclipse.graphiti.mm.pictograms.Shape;
 import org.eclipse.graphiti.services.Graphiti;
@@ -153,9 +152,9 @@ public class LayoutActorFeature extends AbstractLayoutFeature implements LayoutA
       for (final Shape shape : childrenShapes) {
         final GraphicsAlgorithm child = shape.getGraphicsAlgorithm();
         // The name should be the only children with type text
-        if (child instanceof Text) {
-          final String text = ((Text) child).getValue();
-          final Font font = ((Text) child).getFont();
+        if (child instanceof final Text cText) {
+          final String text = cText.getValue();
+          final Font font = cText.getFont();
 
           // Retrieve the size of the text
           final IDimension size = GraphitiUi.getUiLayoutService().calculateTextSize(text, font);
@@ -187,17 +186,14 @@ public class LayoutActorFeature extends AbstractLayoutFeature implements LayoutA
           for (final GraphicsAlgorithm child : anchorChildren) {
             // The Label of the anchor should be the only child with
             // type Text
-            if (child instanceof Text) {
+            if (child instanceof final Text cText) {
               // Retrieve the size of the text
-              final String text = ((Text) child).getValue();
-              final Font font = ((Text) child).getFont();
+              final String text = cText.getValue();
+              final Font font = cText.getFont();
               final IDimension size = GraphitiUi.getUiLayoutService().calculateTextSize(text, font);
-              // Write the port font height in
-              // AbstractAddActorPortFeature. This is needed when
-              // opening a saved graph because in such case
-              // PORT_FONT_HEIGHT will remain equal to 0 until a
-              // port
-              // is added to the graph
+              // Write the port font height in AbstractAddActorPortFeature.
+              // This is needed when opening a saved graph because in such case
+              // PORT_FONT_HEIGHT will remain equal to 0 until a port is added to the graph
               AbstractAddActorPortFeature.portFontHeight = size.getHeight();
               final EObject obj = (EObject) getBusinessObjectForPictogramElement(anchor);
 
@@ -208,7 +204,6 @@ public class LayoutActorFeature extends AbstractLayoutFeature implements LayoutA
                 case PiMMPackage.CONFIG_OUTPUT_PORT:
                   cfgOutputsHeight += size.getHeight() + LayoutActorFeature.PORT_GAP;
                   break;
-
                 case PiMMPackage.DATA_INPUT_PORT:
                   inputsHeight += size.getHeight() + LayoutActorFeature.PORT_GAP;
                   break;
@@ -254,9 +249,9 @@ public class LayoutActorFeature extends AbstractLayoutFeature implements LayoutA
       for (final Shape shape : childrenShapes) {
         final GraphicsAlgorithm child = shape.getGraphicsAlgorithm();
         // The name should be the only children with type text
-        if (child instanceof Text) {
-          final String text = ((Text) child).getValue();
-          final Font font = ((Text) child).getFont();
+        if (child instanceof final Text cText) {
+          final String text = cText.getValue();
+          final Font font = cText.getFont();
 
           // Retrieve the size of the text
           final IDimension size = GraphitiUi.getUiLayoutService().calculateTextSize(text, font);
@@ -284,19 +279,16 @@ public class LayoutActorFeature extends AbstractLayoutFeature implements LayoutA
         // connections without ports do not have any GraphicAlgorithm
         // Only process anchors with a GraphicAlgorithm
         if (anchor.getGraphicsAlgorithm() != null) {
-          // Retrieve the children of the invisible rectangle of the
-          // anchor
+          // Retrieve the children of the invisible rectangle of the anchor
           final EList<GraphicsAlgorithm> anchorChildren = anchor.getGraphicsAlgorithm().getGraphicsAlgorithmChildren();
 
-          // Scan the children of the invisible rectangle looking for
-          // the label
+          // Scan the children of the invisible rectangle looking for the label
           for (final GraphicsAlgorithm child : anchorChildren) {
-            // The Label of the anchor should be the only child with
-            // type Text
-            if (child instanceof Text) {
+            // The Label of the anchor should be the only child with type Text
+            if (child instanceof final Text cText) {
               // Retrieve the size of the text
-              final String text = ((Text) child).getValue();
-              final Font font = ((Text) child).getFont();
+              final String text = cText.getValue();
+              final Font font = cText.getFont();
               final IDimension size = GraphitiUi.getUiLayoutService().calculateTextSize(text, font);
 
               if (((BoxRelativeAnchor) anchor).getRelativeWidth() == 0.0) {
@@ -354,8 +346,7 @@ public class LayoutActorFeature extends AbstractLayoutFeature implements LayoutA
     containerGa.setHeight(newHeight);
 
     final EObject bo = containerShape.getLink().getBusinessObjects().get(0);
-    if (bo instanceof Actor) {
-      final Actor actor = (Actor) bo;
+    if (bo instanceof final Actor actor) {
       layoutActor(actor, childrenShapes, containerGa);
     } else if (bo instanceof ExecutableActor) {
       layoutSpecialActor((AbstractActor) bo, childrenShapes, containerGa);
@@ -363,7 +354,7 @@ public class LayoutActorFeature extends AbstractLayoutFeature implements LayoutA
 
     // If Anything changed, call the move feature to layout connections
     if (anythingChanged) {
-      layoutShapeConnectedToBendpoints(containerShape, this, new ArrayList<FreeFormConnection>());
+      layoutShapeConnectedToBendpoints(containerShape, this, new ArrayList<>());
     }
 
     return anythingChanged;
@@ -408,8 +399,8 @@ public class LayoutActorFeature extends AbstractLayoutFeature implements LayoutA
     for (final Shape shape : childrenShapes) {
       final GraphicsAlgorithm child = shape.getGraphicsAlgorithm();
       final IGaService gaService = Graphiti.getGaService();
-      if (child instanceof Text) {
-        ((Text) child).setFont(gaService.manageDefaultFont(getDiagram(), false, true));
+      if (child instanceof final Text text) {
+        text.setFont(gaService.manageDefaultFont(getDiagram(), false, true));
       }
     }
     final RoundedRectangle roundedRectangle = (RoundedRectangle) containerGa;
@@ -441,8 +432,8 @@ public class LayoutActorFeature extends AbstractLayoutFeature implements LayoutA
     for (final Shape shape : childrenShapes) {
       final GraphicsAlgorithm child = shape.getGraphicsAlgorithm();
       final IGaService gaService = Graphiti.getGaService();
-      if (child instanceof Text) {
-        ((Text) child).setFont(gaService.manageDefaultFont(getDiagram(), isHactor, true));
+      if (child instanceof final Text text) {
+        text.setFont(gaService.manageDefaultFont(getDiagram(), isHactor, true));
       }
     }
     final RoundedRectangle roundedRectangle = (RoundedRectangle) containerGa;
@@ -534,8 +525,8 @@ public class LayoutActorFeature extends AbstractLayoutFeature implements LayoutA
     // Scan the children shapes
     for (final Shape shape : childrenShapes) {
       final GraphicsAlgorithm child = shape.getGraphicsAlgorithm();
-      if (child instanceof Text) {
-        final Orientation align = ((Text) child).getHorizontalAlignment();
+      if (child instanceof final Text text) {
+        final Orientation align = text.getHorizontalAlignment();
 
         // If the text is the name of the object
         if (align == Orientation.ALIGNMENT_CENTER) {

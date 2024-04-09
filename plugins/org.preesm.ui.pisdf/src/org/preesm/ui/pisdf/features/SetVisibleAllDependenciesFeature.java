@@ -38,7 +38,6 @@ package org.preesm.ui.pisdf.features;
 import org.eclipse.graphiti.features.IFeatureProvider;
 import org.eclipse.graphiti.features.context.ICustomContext;
 import org.eclipse.graphiti.mm.pictograms.PictogramElement;
-import org.preesm.model.pisdf.Dependency;
 import org.preesm.model.pisdf.PiGraph;
 
 // TODO: Auto-generated Javadoc
@@ -68,9 +67,8 @@ public class SetVisibleAllDependenciesFeature extends AbstractSetVisibleDependen
   public String getName() {
     if (this.visible) {
       return "Show all dependencies";
-    } else {
-      return "Hide all dependencies";
     }
+    return "Hide all dependencies";
   }
 
   /*
@@ -82,9 +80,8 @@ public class SetVisibleAllDependenciesFeature extends AbstractSetVisibleDependen
   public String getDescription() {
     if (this.visible) {
       return "Show all dependencies in the graph.";
-    } else {
-      return "Hide all dependencies in the graph.";
     }
+    return "Hide all dependencies in the graph.";
   }
 
   /*
@@ -119,9 +116,7 @@ public class SetVisibleAllDependenciesFeature extends AbstractSetVisibleDependen
     final PictogramElement[] pes = context.getPictogramElements();
     final Object bo = getBusinessObjectForPictogramElement(pes[0]);
     final PiGraph graph = (PiGraph) bo;
-    for (final Dependency d : graph.getDependencies()) {
-      setVisible(d);
-    }
+    graph.getDependencies().forEach(d -> setVisible(d));
   }
 
 }

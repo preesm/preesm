@@ -88,15 +88,13 @@ public class ReconnectionDependencyFeature extends DefaultReconnectionFeature {
    */
   @Override
   public boolean canReconnect(final IReconnectionContext context) {
-    // If the new anchor is the same as the old one, reconnection
-    // is possible
+    // If the new anchor is the same as the old one, reconnection is possible
     if (context.getOldAnchor().equals(context.getNewAnchor())) {
       return true;
     }
 
-    // The create dependency feature is used to check the
-    // reconnection feasibility with the same criteria as the creation
-    // of a new dependency.
+    // The create dependency feature is used to check the reconnection feasibility
+    // with the same criteria as the creation of a new dependency.
     final CreateDependencyFeature createFeature = new CreateDependencyFeature(getFeatureProvider());
     final CreateConnectionContext createContext = new CreateConnectionContext();
     createContext.setTargetAnchor(context.getConnection().getEnd());
@@ -105,31 +103,7 @@ public class ReconnectionDependencyFeature extends DefaultReconnectionFeature {
     createContext.setSourcePictogramElement(context.getConnection().getStart());
 
     // Check whether the setter or the getter is reconnected.
-    if (context.getConnection().getStart() == context.getOldAnchor()) {
-      // The setter is reconnected
-      createContext.setSourceAnchor(context.getNewAnchor());
-      createContext.setSourceLocation(context.getTargetLocation());
-      createContext.setSourcePictogramElement(context.getTargetPictogramElement());
-
-      if (createFeature.canStartConnection(createContext)) {
-        // Check that the new source is not the getter
-        if (context.getConnection().getEnd() == context.getNewAnchor()) {
-          return false;
-        }
-
-        // If the getter is an actor port, check that the setter
-        // is not a configuration actor
-        if ((getBusinessObjectForPictogramElement(context.getConnection().getEnd()) instanceof ConfigInputPort)
-            && (getBusinessObjectForPictogramElement(context.getNewAnchor()) instanceof ConfigOutputPort)) {
-          return false;
-        }
-
-        // No special case prevents the the reconnection.
-        return true;
-      } else {
-        return false;
-      }
-    } else {
+    if (context.getConnection().getStart() != context.getOldAnchor()) {
       // The getter is reconnected
       createContext.setTargetAnchor(context.getNewAnchor());
       createContext.setTargetLocation(context.getTargetLocation());
@@ -137,8 +111,21 @@ public class ReconnectionDependencyFeature extends DefaultReconnectionFeature {
 
       return createFeature.canCreate(createContext);
     }
+    // The setter is reconnected
+    createContext.setSourceAnchor(context.getNewAnchor());
+    createContext.setSourceLocation(context.getTargetLocation());
+    createContext.setSourcePictogramElement(context.getTargetPictogramElement());
 
-    // return false;
+    // Check that the new source is not the getter
+    // If the getter is an actor port, check that the setter is not a configuration actor
+    if (!createFeature.canStartConnection(createContext) || (context.getConnection().getEnd() == context.getNewAnchor())
+        || ((getBusinessObjectForPictogramElement(context.getConnection().getEnd()) instanceof ConfigInputPort)
+            && (getBusinessObjectForPictogramElement(context.getNewAnchor()) instanceof ConfigOutputPort))) {
+      return false;
+    }
+
+    // No special case prevents the the reconnection.
+    return true;
   }
 
   /*
@@ -161,8 +148,8 @@ public class ReconnectionDependencyFeature extends DefaultReconnectionFeature {
   protected Port getPort(final Anchor anchor) {
     if (anchor != null) {
       final Object obj = getBusinessObjectForPictogramElement(anchor);
-      if (obj instanceof Port) {
-        return (Port) obj;
+      if (obj instanceof final Port port) {
+        return port;
       }
     }
     return null;
@@ -193,8 +180,7 @@ public class ReconnectionDependencyFeature extends DefaultReconnectionFeature {
 
       if ((getter == null) && (getterObject instanceof Parameterizable)) {
 
-        // The target can be: A Parameter, A Fifo, An Actor, An
-        // interface.
+        // The target can be: A Parameter, A Fifo, An Actor, An interface.
 
         // If the getter is an actor
         if (getterObject instanceof ExecutableActor) {
@@ -208,8 +194,7 @@ public class ReconnectionDependencyFeature extends DefaultReconnectionFeature {
             getter = addPortFeature.getCreatedPort();
           }
 
-          // if getter is null (in case a port creation
-          // failed or was aborted)
+          // if getter is null (in case a port creation failed or was aborted)
           if (getter == null) {
             ((ReconnectionContext) context).setNewAnchor(context.getOldAnchor());
           }

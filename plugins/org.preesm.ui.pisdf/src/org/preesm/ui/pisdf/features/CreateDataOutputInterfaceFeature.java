@@ -100,8 +100,7 @@ public class CreateDataOutputInterfaceFeature extends AbstractCreateFeature {
     final String question = "Enter new Sink Interface name";
     String newSnkName = "SnkInterfaceName";
 
-    newSnkName = DialogUtil.askString("Create Sink Interface", question, newSnkName,
-        new VertexNameValidator(graph, null));
+    newSnkName = DialogUtil.askString(FEATURE_DESCRIPTION, question, newSnkName, new VertexNameValidator(graph, null));
     if ((newSnkName == null) || (newSnkName.trim().length() == 0)) {
       this.hasDoneChanges = false; // If this is not done, the graph is
       // considered modified.

@@ -112,9 +112,9 @@ public class LayoutParameterFeature extends AbstractLayoutFeature {
     for (final Shape shape : childrenShapes) {
       final GraphicsAlgorithm child = shape.getGraphicsAlgorithm();
       // The name should be the only children with type text
-      if (child instanceof Text) {
-        final String text = ((Text) child).getValue();
-        final Font font = ((Text) child).getFont();
+      if (child instanceof final Text cText) {
+        final String text = cText.getValue();
+        final Font font = cText.getFont();
 
         // Retrieve the size of the text
         nameSize = GraphitiUi.getUiLayoutService().calculateTextSize(text, font);
@@ -169,8 +169,8 @@ public class LayoutParameterFeature extends AbstractLayoutFeature {
     // Scan the children shapes
     for (final Shape shape : childrenShapes) {
       final GraphicsAlgorithm child = shape.getGraphicsAlgorithm();
-      if (child instanceof Text) {
-        final Orientation align = ((Text) child).getHorizontalAlignment();
+      if (child instanceof final Text text) {
+        final Orientation align = text.getHorizontalAlignment();
 
         // If the text is the name of the object
         if (align == Orientation.ALIGNMENT_CENTER) {

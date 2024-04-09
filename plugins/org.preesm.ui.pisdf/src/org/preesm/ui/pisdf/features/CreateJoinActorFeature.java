@@ -100,7 +100,7 @@ public class CreateJoinActorFeature extends AbstractCreateFeature {
     final String question = "Enter new join actor name";
     String newActorName = "JoinActorName";
 
-    newActorName = DialogUtil.askString("Create Join Actor", question, newActorName,
+    newActorName = DialogUtil.askString(FEATURE_DESCRIPTION, question, newActorName,
         new VertexNameValidator(graph, null));
     if ((newActorName == null) || (newActorName.trim().length() == 0)) {
       this.hasDoneChanges = false; // If this is not done, the graph is considered modified.

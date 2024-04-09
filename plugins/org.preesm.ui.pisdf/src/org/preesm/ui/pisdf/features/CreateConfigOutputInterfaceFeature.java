@@ -64,7 +64,7 @@ public class CreateConfigOutputInterfaceFeature extends AbstractCreateFeature {
   private static final String FEATURE_NAME = "Config Output Interface";
 
   /** The Constant FEATURE_DESCRIPTION. */
-  private static final String FEATURE_DESCRIPTION = "Create Config Output Interface";
+  private static final String FEATURE_DESCRIPTION = "Create Config. Output Interface";
 
   /**
    * the Default constructor of {@link CreateConfigOutputInterfaceFeature}.
@@ -101,7 +101,7 @@ public class CreateConfigOutputInterfaceFeature extends AbstractCreateFeature {
     final String question = "Enter new Config. Output Interface name";
     String newCfgOutName = "cfgOutIfName";
 
-    newCfgOutName = DialogUtil.askString("Create Config. Output Interface", question, newCfgOutName,
+    newCfgOutName = DialogUtil.askString(FEATURE_DESCRIPTION, question, newCfgOutName,
         new VertexNameValidator(graph, null));
     if ((newCfgOutName == null) || (newCfgOutName.trim().length() == 0)) {
       this.hasDoneChanges = false; // If this is not done, the graph is

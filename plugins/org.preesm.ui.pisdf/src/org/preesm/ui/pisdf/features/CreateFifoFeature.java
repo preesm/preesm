@@ -107,7 +107,7 @@ public class CreateFifoFeature extends AbstractCreateConnectionFeature {
     final Port target = getTargetPort(context, context.getTargetAnchor());
 
     // False if the target is an outputPort
-    if ((target != null) && (target instanceof DataOutputPort)) {
+    if (target instanceof DataOutputPort) {
       // Create tooltip message
       PiMMUtil.setToolTip(getFeatureProvider(), context.getTargetAnchor().getGraphicsAlgorithm(), getDiagramBehavior(),
           "A FIFO cannot end at an output port");
@@ -115,14 +115,14 @@ public class CreateFifoFeature extends AbstractCreateConnectionFeature {
     }
 
     // False if the target is a config input port
-    if ((target != null) && (target instanceof ConfigInputPort)) {
+    if (target instanceof ConfigInputPort) {
       // Create tooltip message
       PiMMUtil.setToolTip(getFeatureProvider(), context.getTargetAnchor().getGraphicsAlgorithm(), getDiagramBehavior(),
           "A FIFO cannot end at an config. input port");
       return false;
     }
 
-    final boolean targetOK = ((target != null) && (target instanceof DataInputPort));
+    final boolean targetOK = target instanceof DataInputPort;
     if (targetOK) {
       // Check that no Fifo is connected to the ports
       if (((DataInputPort) target).getIncomingFifo() != null) {
@@ -135,7 +135,7 @@ public class CreateFifoFeature extends AbstractCreateConnectionFeature {
       // Same check that the one in the canStartConnection
       final DataInputPort targetPort = (DataInputPort) target;
       final AbstractActor targetActor = targetPort.getContainingActor();
-      if (targetActor instanceof DelayActor) {
+      if (targetActor instanceof final DelayActor delayActor) {
         final DataOutputPort source = (DataOutputPort) getSourcePort(context, context.getSourceAnchor());
         if (source != null) {
           final AbstractActor sourceActor = source.getContainingActor();
@@ -145,7 +145,7 @@ public class CreateFifoFeature extends AbstractCreateConnectionFeature {
             return false;
           }
         }
-        final Delay delay = ((DelayActor) targetActor).getLinkedDelay();
+        final Delay delay = delayActor.getLinkedDelay();
         if (delay.getLevel().equals(PersistenceLevel.LOCAL) || delay.getLevel().equals(PersistenceLevel.PERMANENT)) {
           PiMMUtil.setToolTip(getFeatureProvider(), context.getTargetPictogramElement().getGraphicsAlgorithm(),
               getDiagramBehavior(),
@@ -202,9 +202,8 @@ public class CreateFifoFeature extends AbstractCreateConnectionFeature {
     }
     if (canCreatePort) {
       return addPortFeature;
-    } else {
-      return null;
     }
+    return null;
   }
 
   /**
@@ -323,7 +322,7 @@ public class CreateFifoFeature extends AbstractCreateConnectionFeature {
 
     // Return true if the connection starts at an output port (config or
     // not)
-    Anchor sourceAnchor = context.getSourceAnchor();
+    final Anchor sourceAnchor = context.getSourceAnchor();
     final Port source = getSourcePort(context, sourceAnchor);
 
     if ((source != null) && ((source instanceof DataInputPort) || (source instanceof ConfigInputPort))) {
@@ -339,39 +338,35 @@ public class CreateFifoFeature extends AbstractCreateConnectionFeature {
       return true;
     }
 
-    if ((source != null) && (source instanceof DataOutputPort)) {
+    if (source instanceof final DataOutputPort sourcePort) {
       // Check that no Fifo is connected to the ports
-      if (((DataOutputPort) source).getOutgoingFifo() == null) {
-        // Check if the outputPort is a configurationOutputPort wit no
-        // outgoing dependency
-        if ((source instanceof ConfigOutputPort) && !((ConfigOutputPort) source).getOutgoingDependencies().isEmpty()) {
-          // Karol: I deliberately left the possibility for a
-          // ConfigOutputPort to be connected both with a Fifo and
-          // dependencies.
-          // Indeed, it seems to me that the coexistence of a unique
-          // fifo and one or several dependencies is not a problem
-          // since each connection has a very precise semantics.
-        }
-
-        // we need to check if we start from a delay that it is allowed
-        final DataOutputPort sourcePort = (DataOutputPort) source;
-        final AbstractActor sourceActor = sourcePort.getContainingActor();
-        if (sourceActor instanceof DelayActor) {
-          final Delay delay = ((DelayActor) sourceActor).getLinkedDelay();
-          if (delay.getLevel().equals(PersistenceLevel.LOCAL) || delay.getLevel().equals(PersistenceLevel.PERMANENT)) {
-            PiMMUtil.setToolTip(getFeatureProvider(), context.getSourcePictogramElement().getGraphicsAlgorithm(),
-                getDiagramBehavior(),
-                "A delay with local or permanent data tokens persistence can not have a getter actor.");
-            return false;
-          }
-        }
-        return true;
-      } else {
+      if (sourcePort.getOutgoingFifo() != null) {
         // Create tooltip message
         PiMMUtil.setToolTip(getFeatureProvider(), context.getSourceAnchor().getGraphicsAlgorithm(),
             getDiagramBehavior(), "A port cannot be connected to several FIFOs");
         return false;
       }
+      // Check if the outputPort is a configurationOutputPort wit no
+      // outgoing dependency
+      if ((source instanceof final ConfigOutputPort cop) && !cop.getOutgoingDependencies().isEmpty()) {
+        // Karol: I deliberately left the possibility for a ConfigOutputPort to be connected both with a Fifo and
+        // dependencies.
+        // Indeed, it seems to me that the coexistence of a unique fifo and one or several dependencies is not a problem
+        // since each connection has a very precise semantics.
+      }
+
+      // we need to check if we start from a delay that it is allowed
+      final AbstractActor sourceActor = sourcePort.getContainingActor();
+      if (sourceActor instanceof final DelayActor delayActor) {
+        final Delay delay = delayActor.getLinkedDelay();
+        if (delay.getLevel().equals(PersistenceLevel.LOCAL) || delay.getLevel().equals(PersistenceLevel.PERMANENT)) {
+          PiMMUtil.setToolTip(getFeatureProvider(), context.getSourcePictogramElement().getGraphicsAlgorithm(),
+              getDiagramBehavior(),
+              "A delay with local or permanent data tokens persistence can not have a getter actor.");
+          return false;
+        }
+      }
+      return true;
     }
 
     return false;

@@ -6,7 +6,7 @@ Element-Version: 3.0
 External-Reference: 
 Id: _c95JAOUIEe2gVs9UH7tlOw
 Runtime-Version: 2.5.4.202210020716
-Save-Time: 4/4/24, 7:38 PM
+Save-Time: 4/9/24, 6:20 PM
 Testcase-Type: ecl
 Verifications: _TqXjYOWxEe2yotkpYlnSWQ
 
@@ -115,7 +115,7 @@ with [get-editor bottom] {
         mouse-release 115 238 button1 "" -height 387 -width 630
     }
 }
-with [get-window "Create Source Interface"] {
+with [get-window "Create Data Input Interface"] {
     get-editbox -after [get-label "Enter new Source Interface name"] | set-text dataIn
     get-button OK | click
 }
@@ -137,7 +137,7 @@ with [get-editor bottom] {
         mouse-release 504 283 button1 "" -height 387 -width 630
     }
 }
-with [get-window "Create Sink Interface"] {
+with [get-window "Create Data Output Interface"] {
     get-editbox -after [get-label "Enter new Sink Interface name"] | set-text dataOut
     get-button OK | click -metaKeys ""
 }

@@ -36,6 +36,7 @@
  */
 package org.preesm.ui.pisdf.features;
 
+import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -105,19 +106,10 @@ public class PasteFeature extends AbstractPasteFeature {
   }
 
   private PiGraph getOriginalPiGraph() {
-    PiGraph result = null;
     final Object[] originalObjects = getFromClipboard();
-    for (final Object o : originalObjects) {
-      if (o instanceof VertexCopy) {
-        final EObject eContainer = ((VertexCopy) o).getOriginalPiGraph();
-        result = (PiGraph) eContainer;
-        break;
-      }
-    }
-    if (result == null) {
-      throw new IllegalStateException();
-    }
-    return result;
+
+    return Arrays.stream(originalObjects).filter(VertexCopy.class::isInstance)
+        .map(o -> ((VertexCopy) o).getOriginalPiGraph()).findFirst().orElseThrow(IllegalStateException::new);
   }
 
   private final Map<EObject, PictogramElement>  links         = new LinkedHashMap<>();
@@ -131,12 +123,9 @@ public class PasteFeature extends AbstractPasteFeature {
     // (only copy the pictogram element, not the business object)
     // then create new pictogram elements using the add feature
     final Object[] objects = getFromClipboard();
-    final List<VertexCopy> copies = new LinkedList<>();
-    for (final Object object : objects) {
-      if (object instanceof VertexCopy) {
-        copies.add((VertexCopy) object);
-      }
-    }
+
+    final List<VertexCopy> copies = Arrays.stream(objects).filter(VertexCopy.class::isInstance).map(o -> (VertexCopy) o)
+        .toList();
 
     final Map<VertexCopy, Pair<Integer, Integer>> caluclatePositions = caluclatePositions(context, copies);
 
@@ -148,9 +137,9 @@ public class PasteFeature extends AbstractPasteFeature {
       copy.setName(name);
 
       // If the vertex to copy is a Delay, creating a copy of the DelayActor and attaching it to the Delay copy
-      if (copy instanceof Delay) {
-        final DelayActor delayActorCopy = PiMMUserFactory.instance.copy(((Delay) vertex).getActor());
-        delayActorCopy.setName(name);
+      if (vertex instanceof final Delay delay) {
+        final DelayActor delayActorCopy = PiMMUserFactory.instance.copy(delay.getActor());
+        delayActorCopy.setName(name); // Delay and associated DelayActor have the same name
         ((Delay) copy).setActor(delayActorCopy);
       }
 
@@ -248,12 +237,11 @@ public class PasteFeature extends AbstractPasteFeature {
     final Configurable copiedParameterizable = this.copiedObjects.get(targetParameterizable);
     // lookup copied setter
     ISetter copiedSetter = null;
-    if (setter instanceof Parameter) {
-      final Parameter param = (Parameter) setter;
+    if (setter instanceof final Parameter param) {
       copiedSetter = (Parameter) this.copiedObjects.get(param);
-    } else if (setter instanceof ConfigOutputPort) {
+    } else if (setter instanceof final ConfigOutputPort cop) {
       final AbstractActor originalActor = (AbstractActor) setter.eContainer();
-      final ConfigOutputPort originalConfigPort = (ConfigOutputPort) setter;
+      final ConfigOutputPort originalConfigPort = cop;
       final AbstractActor copiedActor = (AbstractActor) this.copiedObjects.get(originalActor);
       final ConfigOutputPort lookupConfigOutputPort = lookupConfigOutputPort(copiedActor, originalConfigPort);
       copiedSetter = lookupConfigOutputPort;
@@ -269,8 +257,7 @@ public class PasteFeature extends AbstractPasteFeature {
 
   private boolean shouldConnectDep(final ISetter setter, final Parameterizable targetParameterizable) {
     final boolean sourceOk;
-    if (setter instanceof Parameter) {
-      final Parameter param = (Parameter) setter;
+    if (setter instanceof final Parameter param) {
       sourceOk = this.copiedObjects.containsKey(param);
     } else if (setter instanceof ConfigOutputPort) {
       sourceOk = this.copiedObjects.containsKey(setter.eContainer());
@@ -281,8 +268,8 @@ public class PasteFeature extends AbstractPasteFeature {
     final boolean targetOk;
     if (targetParameterizable instanceof AbstractVertex) {
       targetOk = this.copiedObjects.containsKey(targetParameterizable);
-    } else if (targetParameterizable instanceof Delay) {
-      final Fifo fifo = ((Delay) targetParameterizable).getContainingFifo();
+    } else if (targetParameterizable instanceof final Delay delay) {
+      final Fifo fifo = delay.getContainingFifo();
       final EObject fifoSource = fifo.getSourcePort().eContainer();
       final EObject fifoTarget = fifo.getTargetPort().eContainer();
       targetOk = this.copiedObjects.containsKey(fifoSource) && this.copiedObjects.containsKey(fifoTarget);
@@ -403,49 +390,42 @@ public class PasteFeature extends AbstractPasteFeature {
       final DataInputPort targetPort = fifo.getTargetPort();
       final EObject sourceVertex = sourcePort.eContainer();
       final EObject targetVertex = targetPort.eContainer();
-      if ((sourceVertex instanceof AbstractActor) && (targetVertex instanceof AbstractActor)) {
-        // ok
-        final AbstractActor source = (AbstractActor) sourceVertex;
-        final AbstractActor target = (AbstractActor) targetVertex;
-
-        // Checking if source is NOT in the list of copied AbstractActor and
-        // if it is a DelayActor belonging to a Delay which is NOT in the list of copied AbstractActor
-        if (!((this.copiedObjects.containsKey(source)) || ((source instanceof DelayActor)
-            && (this.copiedObjects.containsKey(((DelayActor) source).getLinkedDelay()))))) {
-          continue;
-        }
-
-        // Checking if target is NOT in the list of copied AbstractActor and
-        // if it is a DelayActor belonging to a Delay which is NOT in the list of copied AbstractActor
-        if (!((this.copiedObjects.containsKey(target)) || ((target instanceof DelayActor)
-            && (this.copiedObjects.containsKey(((DelayActor) target).getLinkedDelay()))))) {
-          continue;
-        }
-
-        AbstractActor sourceCopy;
-        AbstractActor targetCopy;
-
-        if (source instanceof DelayActor) {
-          sourceCopy = ((Delay) this.copiedObjects.get(((DelayActor) source).getLinkedDelay())).getActor();
-        } else {
-          sourceCopy = (AbstractActor) this.copiedObjects.get(source);
-        }
-
-        if (target instanceof DelayActor) {
-          targetCopy = ((Delay) this.copiedObjects.get(((DelayActor) target).getLinkedDelay())).getActor();
-        } else {
-          targetCopy = (AbstractActor) this.copiedObjects.get(target);
-        }
-
-        final DataOutputPort sourcePortCopy = lookupDataOutputPort(sourceCopy, sourcePort);
-        final DataInputPort targetPortCopy = lookupDataInputPort(targetCopy, targetPort);
-
-        final Fifo copiedFifo = PiMMUserFactory.instance.createFifo(sourcePortCopy, targetPortCopy, fifo.getType());
-        newFifos.put(copiedFifo, fifo);
-      } else {
+      if (!(sourceVertex instanceof final AbstractActor source)
+          || !(targetVertex instanceof final AbstractActor target)) {
         // not supported
         throw new UnsupportedOperationException();
       }
+      // Checking if source is NOT in the list of copied AbstractActor and
+      // if it is a DelayActor belonging to a Delay which is NOT in the list of copied AbstractActor
+      // Checking if target is NOT in the list of copied AbstractActor and
+      // if it is a DelayActor belonging to a Delay which is NOT in the list of copied AbstractActor
+      if (!((this.copiedObjects.containsKey(source)) || ((source instanceof DelayActor)
+          && (this.copiedObjects.containsKey(((DelayActor) source).getLinkedDelay()))))
+          || !((this.copiedObjects.containsKey(target)) || ((target instanceof DelayActor)
+              && (this.copiedObjects.containsKey(((DelayActor) target).getLinkedDelay()))))) {
+        continue;
+      }
+
+      AbstractActor sourceCopy;
+      AbstractActor targetCopy;
+
+      if (source instanceof DelayActor) {
+        sourceCopy = ((Delay) this.copiedObjects.get(((DelayActor) source).getLinkedDelay())).getActor();
+      } else {
+        sourceCopy = (AbstractActor) this.copiedObjects.get(source);
+      }
+
+      if (target instanceof DelayActor) {
+        targetCopy = ((Delay) this.copiedObjects.get(((DelayActor) target).getLinkedDelay())).getActor();
+      } else {
+        targetCopy = (AbstractActor) this.copiedObjects.get(target);
+      }
+
+      final DataOutputPort sourcePortCopy = lookupDataOutputPort(sourceCopy, sourcePort);
+      final DataInputPort targetPortCopy = lookupDataInputPort(targetCopy, targetPort);
+
+      final Fifo copiedFifo = PiMMUserFactory.instance.createFifo(sourcePortCopy, targetPortCopy, fifo.getType());
+      newFifos.put(copiedFifo, fifo);
     }
   }
 
@@ -454,11 +434,7 @@ public class PasteFeature extends AbstractPasteFeature {
 
     // Early exit to prevent an issue where Delay with a dependency wouldn't be pasted.
     // TODO Fix this issue
-    if (originalParameterizable instanceof Delay) {
-      return;
-    }
-
-    if (getPiGraph() != getOriginalPiGraph()) {
+    if ((originalParameterizable instanceof Delay) || (getPiGraph() != getOriginalPiGraph())) {
       return;
     }
 
@@ -560,12 +536,11 @@ public class PasteFeature extends AbstractPasteFeature {
     }
 
     final ConfigInputPort target;
-    if (origConfigInputPorts.contains(getter)) {
-      final int indexOf = origConfigInputPorts.indexOf(getter);
-      target = copiedConfigInputPorts.get(indexOf);
-    } else {
+    if (!origConfigInputPorts.contains(getter)) {
       throw new IllegalStateException();
     }
+    final int indexOf = origConfigInputPorts.indexOf(getter);
+    target = copiedConfigInputPorts.get(indexOf);
 
     return target;
   }
@@ -589,12 +564,11 @@ public class PasteFeature extends AbstractPasteFeature {
     }
 
     final ConfigOutputPort source;
-    if (origConfigOutputPorts.contains(setter)) {
-      final int indexOf = origConfigOutputPorts.indexOf(setter);
-      source = copiedConfigOutputPorts.get(indexOf);
-    } else {
+    if (!origConfigOutputPorts.contains(setter)) {
       throw new IllegalStateException();
     }
+    final int indexOf = origConfigOutputPorts.indexOf(setter);
+    source = copiedConfigOutputPorts.get(indexOf);
 
     return source;
   }
@@ -609,12 +583,11 @@ public class PasteFeature extends AbstractPasteFeature {
     }
 
     final DataInputPort target;
-    if (origConfigInputPorts.contains(getter)) {
-      final int indexOf = origConfigInputPorts.indexOf(getter);
-      target = copiedConfigInputPorts.get(indexOf);
-    } else {
+    if (!origConfigInputPorts.contains(getter)) {
       throw new IllegalStateException();
     }
+    final int indexOf = origConfigInputPorts.indexOf(getter);
+    target = copiedConfigInputPorts.get(indexOf);
 
     return target;
   }
@@ -629,12 +602,11 @@ public class PasteFeature extends AbstractPasteFeature {
     }
 
     final DataOutputPort target;
-    if (origConfigInputPorts.contains(getter)) {
-      final int indexOf = origConfigInputPorts.indexOf(getter);
-      target = copiedConfigInputPorts.get(indexOf);
-    } else {
+    if (!origConfigInputPorts.contains(getter)) {
       throw new IllegalStateException();
     }
+    final int indexOf = origConfigInputPorts.indexOf(getter);
+    target = copiedConfigInputPorts.get(indexOf);
 
     return target;
   }
@@ -667,8 +639,7 @@ public class PasteFeature extends AbstractPasteFeature {
 
     vertexChildrenElements.forEachRemaining(childElement -> {
       final PictogramElement pe;
-      if (childElement instanceof Port) {
-        final Port copiedPort = (Port) childElement;
+      if (childElement instanceof final Port copiedPort) {
         if (vertexModelCopy instanceof ExecutableActor) {
           final AbstractAddActorPortFeature addPortFeature;
           switch (copiedPort.getKind()) {
@@ -691,11 +662,10 @@ public class PasteFeature extends AbstractPasteFeature {
         } else if (vertexModelCopy instanceof InterfaceActor) {
           // the AddIn/OutInterfaceFeature creates an anchor for the only in/out port and place it first in the list
           final EList<Anchor> anchors = ((AnchorContainer) newVertexPE).getAnchors();
-          if (!anchors.isEmpty()) {
-            pe = anchors.get(0);
-          } else {
+          if (anchors.isEmpty()) {
             throw new IllegalStateException();
           }
+          pe = anchors.get(0);
         } else if (vertexModelCopy instanceof Delay) {
           // Dirty fix for Delay with dependency
           return;

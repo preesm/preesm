@@ -89,10 +89,9 @@ public class OpenMemoryScriptFeature extends AbstractCustomFeature {
     // first check, if one Actor is selected
     if ((pes != null) && (pes.length == 1)) {
       final Object bo = getBusinessObjectForPictogramElement(pes[0]);
-      if (bo instanceof Actor) {
+      if (bo instanceof final Actor actor) {
         // Check if the actor has a valid memory script
-        final IPath memoryScriptPath = Optional.ofNullable(((Actor) bo).getMemoryScriptPath()).map(Path::new)
-            .orElse(null);
+        final IPath memoryScriptPath = Optional.ofNullable(actor.getMemoryScriptPath()).map(Path::new).orElse(null);
         if (memoryScriptPath != null) {
           return true;
         }
@@ -113,10 +112,9 @@ public class OpenMemoryScriptFeature extends AbstractCustomFeature {
     // first check, if one Actor is selected
     if ((pes != null) && (pes.length == 1)) {
       final Object bo = getBusinessObjectForPictogramElement(pes[0]);
-      if (bo instanceof Actor) {
+      if (bo instanceof final Actor actor) {
         // Check if the actor has a valid path to memory script
-        final IPath memoryScriptPath = Optional.ofNullable(((Actor) bo).getMemoryScriptPath()).map(Path::new)
-            .orElse(null);
+        final IPath memoryScriptPath = Optional.ofNullable(actor.getMemoryScriptPath()).map(Path::new).orElse(null);
         if (memoryScriptPath != null) {
           final IWorkbenchWindow dw = PlatformUI.getWorkbench().getActiveWorkbenchWindow();
 

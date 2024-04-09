@@ -100,7 +100,7 @@ public class CreateRoundBufferActorFeature extends AbstractCreateFeature {
     final String question = "Enter new round buffer actor name";
     String newActorName = "RoundBufferActorName";
 
-    newActorName = DialogUtil.askString("Create Round Buffer Actor", question, newActorName,
+    newActorName = DialogUtil.askString(FEATURE_DESCRIPTION, question, newActorName,
         new VertexNameValidator(graph, null));
     if ((newActorName == null) || (newActorName.trim().length() == 0)) {
       this.hasDoneChanges = false; // If this is not done, the graph is considered modified.
