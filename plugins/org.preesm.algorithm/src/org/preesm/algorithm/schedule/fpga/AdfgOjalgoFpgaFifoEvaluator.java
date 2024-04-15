@@ -62,8 +62,8 @@ public class AdfgOjalgoFpgaFifoEvaluator extends AbstractGenericFpgaFifoEvaluato
         FifoAbstraction> ddg = AbstractGraph.createAbsGraph(analysisResult.flatGraph, analysisResult.flatBrv);
     final DefaultUndirectedGraph<AbstractActor, FifoAbstraction> dug = AbstractGraph.undirectedGraph(ddg);
 
-    // Increase actor II for small differences to avoid overflow in ADFG cycle computation
-    AdfgUtils.equalizeII(mapActorNormalizedInfos);
+    // Increase actor II for small differences to avoid overflow in ADFG
+    AdfgUtils.overestimateIIToSimplifyADFG(mapActorNormalizedInfos);
 
     // compute the lambda of each actor
     final Map<DataPort, BigFraction> lambdaPerPort = AdfgUtils.computeAndLogLambdas(mapActorNormalizedInfos);
