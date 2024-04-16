@@ -78,7 +78,7 @@ public class GraphObserver extends AdapterImpl {
    * Private static class attribute holding the only instance of {@link GraphObserver}. Use to ensure that only a single
    * instance of {@link GraphObserver} is created.
    */
-  private static GraphObserver _instance = null;
+  private static GraphObserver instance = null;
 
   /**
    * Method to return the current instance of the {@link GraphObserver} class if one has been instantiated or, if not,
@@ -87,10 +87,10 @@ public class GraphObserver extends AdapterImpl {
    * @return The single globally-accessible instance of {@link GraphObserver}
    */
   public static GraphObserver getInstance() {
-    if (_instance == null) {
-      _instance = new GraphObserver();
+    if (instance == null) {
+      instance = new GraphObserver();
     }
-    return _instance;
+    return instance;
   }
 
   /**
@@ -116,19 +116,19 @@ public class GraphObserver extends AdapterImpl {
   protected void addVertex(final AbstractVertex vertex, final PiGraph graph) {
 
     if ((vertex instanceof AbstractActor) && !(vertex instanceof DelayActor)) {
-      if (vertex instanceof InterfaceActor) {
+      if (vertex instanceof final InterfaceActor iActorVertex) {
         // If the added vertex is an Interface of the graph
-        addInterfaceActor((InterfaceActor) vertex, graph);
+        addInterfaceActor(iActorVertex, graph);
       }
-      graph.incrementActorIndex();
-    } else if ((vertex instanceof Parameter)) {
-      if (((Parameter) vertex).isConfigurationInterface()) {
+      graph.updateActorIndex();
+    } else if (vertex instanceof final Parameter paramVertex) {
+      if (paramVertex.isConfigurationInterface()) {
         // If the added vertex is an Parameter and an Interface of the graph
         addParamInterfaceActor((ConfigInputInterface) vertex, graph);
       }
-      graph.incrementParameterIndex();
+      graph.updateParameterIndex();
     } else if ((vertex instanceof Delay)) {
-      graph.incrementDelayIndex();
+      graph.updateDelayIndex();
     }
   }
 
@@ -144,11 +144,11 @@ public class GraphObserver extends AdapterImpl {
    */
   protected void addEdge(final Edge edge, final PiGraph graph) {
 
-    if (edge instanceof Fifo) {
-      if (((Fifo) edge).isHasADelay() == true) {
-        graph.incrementFifoWithDelayIndex();
+    if (edge instanceof final Fifo fifo) {
+      if (fifo.isHasADelay()) {
+        graph.updateFifoWithDelayIndex();
       } else {
-        graph.incrementFifoWithoutDelayIndex();
+        graph.updateFifoWithoutDelayIndex();
       }
     } else if (edge instanceof Dependency) {
       // Nothing to do
@@ -211,25 +211,20 @@ public class GraphObserver extends AdapterImpl {
 
     // Check if the vertices or Parameters are concerned by this
     // notification
-    if ((notification.getNotifier() instanceof PiGraph)
+    if ((notification.getNotifier() instanceof final PiGraph graph)
         && (notification.getFeatureID(null) == PiMMPackage.PI_GRAPH__VERTICES)) {
-
-      final PiGraph graph = (PiGraph) notification.getNotifier();
 
       switch (notification.getEventType()) {
         case Notification.ADD:
           // It is safe to cast because we already checked that the
-          // notification
-          // was caused by an addition to the graph vertices.
+          // notification was caused by an addition to the graph vertices.
           final AbstractVertex vertextoAdd = (AbstractVertex) notification.getNewValue();
           addVertex(vertextoAdd, graph);
           break;
 
         case Notification.ADD_MANY:
           final List<?> listToAdd = (List<?>) notification.getNewValue();
-          for (final Object object : listToAdd) {
-            addVertex((AbstractVertex) object, graph);
-          }
+          listToAdd.forEach(o -> addVertex((AbstractVertex) o, graph));
           break;
 
         case Notification.REMOVE:
@@ -239,33 +234,26 @@ public class GraphObserver extends AdapterImpl {
 
         case Notification.REMOVE_MANY:
           final List<?> listToRemove = (List<?>) notification.getOldValue();
-          for (final Object object : listToRemove) {
-            removeVertex((AbstractVertex) object, graph);
-          }
+          listToRemove.forEach(o -> removeVertex((AbstractVertex) o, graph));
           break;
 
         default:
           // nothing
       }
-    } else if ((notification.getNotifier() instanceof PiGraph)
+    } else if ((notification.getNotifier() instanceof final PiGraph graph)
         && (notification.getFeatureID(null) == PiMMPackage.PI_GRAPH__EDGES)) {
-
-      final PiGraph graph = (PiGraph) notification.getNotifier();
 
       switch (notification.getEventType()) {
         case Notification.ADD:
           // It is safe to cast because we already checked that the
-          // notification
-          // was caused by an addition to the graph edge.
+          // notification was caused by an addition to the graph edge.
           final Edge edgetoAdd = (Edge) notification.getNewValue();
           addEdge(edgetoAdd, graph);
           break;
 
         case Notification.ADD_MANY:
           final List<?> listToAdd = (List<?>) notification.getNewValue();
-          for (final Object object : listToAdd) {
-            addEdge((Edge) object, graph);
-          }
+          listToAdd.forEach(o -> addEdge((Edge) o, graph));
           break;
 
         case Notification.REMOVE:
@@ -275,51 +263,51 @@ public class GraphObserver extends AdapterImpl {
 
         case Notification.REMOVE_MANY:
           final List<?> listToRemove = (List<?>) notification.getOldValue();
-          for (final Object object : listToRemove) {
-            removeEdge((Edge) object, graph);
-          }
+          listToRemove.forEach(o -> removeEdge((Edge) o, graph));
           break;
 
         default:
           // nothing
       }
-    } else if ((notification.getNotifier() instanceof Fifo)
+    } else if ((notification.getNotifier() instanceof final Fifo fifo)
         && (notification.getFeatureID(null) == PiMMPackage.FIFO__DELAY)) {
 
-      final Fifo fifo = (Fifo) notification.getNotifier();
       final PiGraph graph = fifo.getContainingPiGraph();
 
       // if the fifo isn't in a graph, nothing to do
-      if (graph != null) {
-
-        final Delay oldDelay = (Delay) notification.getOldValue();
-        final Delay newDelay = (Delay) notification.getNewValue();
-
-        switch (notification.getEventType()) {
-          case Notification.SET:
-            // If a delay as been added to the fifo
-            if ((oldDelay == null) && (newDelay != null)) {
-              // The delay was attached to the fifo
-              graph.removeFifo(fifo);
-              fifo.setHasADelay(true);
-              graph.addFifo(fifo);
-            } else if ((oldDelay != null) && (newDelay != null)) {
-              // The fifo had its delay replaced by another
-              // Nothing to do
-            }
-            if ((oldDelay != null) && (newDelay == null)) {
-              // The delay was removed from the fifo
-              graph.removeFifo(fifo);
-              fifo.setHasADelay(false);
-              graph.addFifo(fifo);
-            } else {
-              // should never go there
-            }
-            break;
-          default:
-        }
+      if (graph == null) {
+        return;
       }
 
+      final Delay oldDelay = (Delay) notification.getOldValue();
+      final Delay newDelay = (Delay) notification.getNewValue();
+
+      // Only the SET event is checked
+      if (notification.getEventType() == Notification.SET) {
+        // If a delay as been added to the fifo
+        if ((oldDelay == null) && (newDelay != null)) {
+          // The delay was attached to the fifo
+          graph.removeFifo(fifo);
+          fifo.setHasADelay(true);
+          graph.addFifo(fifo);
+        } else if ((oldDelay != null) && (newDelay != null)) {
+          // The fifo had its delay replaced by another
+          // Nothing to do
+        }
+        if ((oldDelay != null) && (newDelay == null)) {
+          // The delay was removed from the fifo
+
+          // Ensuring the Fifo to remove is still tagged as a Fifo with delay
+          // The Undo feature will untag the fifo before removing it from the graph
+          fifo.setHasADelay(true);
+
+          graph.removeFifo(fifo);
+          fifo.setHasADelay(false);
+          graph.addFifo(fifo);
+        } else {
+          // should never go there
+        }
+      }
     }
 
     // TODO Add support when a Parameter changes from a config interface to a non config param
@@ -338,19 +326,19 @@ public class GraphObserver extends AdapterImpl {
    *          The {@link PiGraph}
    */
   protected void removeVertex(final AbstractVertex vertex, final PiGraph graph) {
-    if ((vertex instanceof Parameter)) {
-      if (((Parameter) vertex).isConfigurationInterface()) {
+    if ((vertex instanceof final Parameter paramVertex)) {
+      if (paramVertex.isConfigurationInterface()) {
         // If the added vertex is an Parameter and an Interface of the graph
         removeParamInterfaceActor((ConfigInputInterface) vertex, graph);
       }
-      graph.decrementParameterIndex();
+      graph.updateParameterIndex();
     } else if ((vertex instanceof AbstractActor) && !(vertex instanceof DelayActor)) {
-      if (vertex instanceof InterfaceActor) {
-        removeInterfaceActor((InterfaceActor) vertex, graph);
+      if (vertex instanceof final InterfaceActor iActorVertex) {
+        removeInterfaceActor(iActorVertex, graph);
       }
-      graph.decrementActorIndex();
-    } else if ((vertex instanceof Delay)) {
-      graph.decrementDelayIndex();
+      graph.updateActorIndex();
+    } else if (vertex instanceof Delay) {
+      graph.updateDelayIndex();
     }
   }
 
@@ -365,12 +353,12 @@ public class GraphObserver extends AdapterImpl {
    *          The {@link PiGraph}
    */
   protected void removeEdge(final Edge edge, final PiGraph graph) {
-    if (edge instanceof Fifo) {
+    if (edge instanceof final Fifo fifo) {
       // If the added vertex is an Interface of the graph
-      if (((Fifo) edge).isHasADelay() == true) {
-        graph.decrementFifoWithDelayIndex();
+      if (fifo.isHasADelay()) {
+        graph.updateFifoWithDelayIndex();
       } else {
-        graph.decrementFifoWithoutDelayIndex();
+        graph.updateFifoWithoutDelayIndex();
       }
     } else if (edge instanceof Dependency) {
       // Nothing to do

@@ -60,6 +60,7 @@ import org.preesm.model.pisdf.expression.ExpressionEvaluator
 import org.preesm.model.pisdf.factory.PiMMUserFactory
 import org.preesm.model.pisdf.util.RefinementResolver
 import org.preesm.commons.logger.PreesmLogger
+import java.util.AbstractCollection
 
 // !!! This is needed as of the current versions of xcore/xtext
 // For some reason when using the default String/... (i.e. without the following)
@@ -235,154 +236,28 @@ class PiGraph extends AbstractActor, Graph, PeriodicElement {
 	/* Index used to know where to insert {@link Fifo} without {@link Delay} into the {@link PiGraph#edges} */
 	int fifoWithoutDelayIndex = "0"
 
-	/*
-	 * Increment the parameter storage index {@link PiGraph#parameterIndex} used when adding a {@link Parameter} to {@link PiGraph#vertices}.
-	 * <br>
-	 * Called by {@link org.preesm.model.pisdf.adapter.GraphObserver#addVertex(AbstractVertex, PiGraph) <em>GraphObserver.addVertex(AbstractVertex, PiGraph)</em>}.
-	 * 
-	 * @see org.preesm.model.pisdf.adapter.GraphObserver#addVertex(AbstractVertex, PiGraph)
-	 * 		org.preesm.model.pisdf.adapter.GraphObserver.addVertex(AbstractVertex, PiGraph)
-	 */
-	op void incrementParameterIndex() {
-		parameterIndex = parameterIndex + 1
+	// Set of functions to update indexes. Theses functions are called by the observer.
+	op void updateActorIndex() {
+		actorIndex = vertices.filter(AbstractActor).filter(aa | !(aa instanceof DelayActor)).length
+	}
+	op void updateDelayIndex() {
+		delayIndex = vertices.filter(Delay).length
+	}
+	op void updateParameterIndex() {
+		parameterIndex = vertices.filter(Parameter).length
+	}
+	op void updateFifoWithDelayIndex() {
+		fifoWithDelayIndex = edges.filter(Fifo).filter(f | f.getDelay() !== null).length
+	}
+	op void updateFifoWithoutDelayIndex() {
+		fifoWithoutDelayIndex = edges.filter(Fifo).filter(f | f.getDelay() === null).length
 	}
 
-	/*
-	 * Increment the actor storage index {@link PiGraph#actorIndex} used when adding an {@link AbstractActor} to {@link PiGraph#vertices}, but not a {@link DelayActor}.
-	 * <br>
-	 * Called by {@link org.preesm.model.pisdf.adapter.GraphObserver#addVertex(AbstractVertex, PiGraph) <em>GraphObserver.addVertex(AbstractVertex, PiGraph)</em>}.
-	 * 
-	 * @see org.preesm.model.pisdf.adapter.GraphObserver#addVertex(AbstractVertex, PiGraph)
-	 * 		org.preesm.model.pisdf.adapter.GraphObserver.addVertex(AbstractVertex, PiGraph)
-	 */
-	op void incrementActorIndex() {
-		actorIndex = actorIndex + 1
-	}
-
-	/*
-	 * Increment the delay storage index {@link PiGraph#delayIndex} used when adding an {@link Delay} to {@link PiGraph#vertices}.
-	 * <br>
-	 * Called by {@link org.preesm.model.pisdf.adapter.GraphObserver#addVertex(AbstractVertex, PiGraph) <em>GraphObserver.addVertex(AbstractVertex, PiGraph)</em>}.
-	 * 
-	 * @see org.preesm.model.pisdf.adapter.GraphObserver#addVertex(AbstractVertex, PiGraph)
-	 * 		org.preesm.model.pisdf.adapter.GraphObserver.addVertex(AbstractVertex, PiGraph)
-	 */
-	op void incrementDelayIndex() {
-		delayIndex = delayIndex + 1
-	}
-
-	/*
-	 * Increment the fifo (WITH delay) storage index {@link PiGraph#fifoWithDelayIndex} used when adding an {@link Fifo} to {@link PiGraph#edges}.
-	 * <br>
-	 * Called by {@link org.preesm.model.pisdf.adapter.GraphObserver#addEdge(Edge, PiGraph) <em>GraphObserver.addEdge(Edge, PiGraph)</em>}.
-	 * 
-	 * @see org.preesm.model.pisdf.adapter.GraphObserver#addEdge(Edge, PiGraph)
-	 * 		org.preesm.model.pisdf.adapter.GraphObserver.addEdge(Edge, PiGraph)
-	 */
-	op void incrementFifoWithDelayIndex() {
-		fifoWithDelayIndex = fifoWithDelayIndex + 1
-	}
-
-	/*
-	 * Increment the fifo (WITHOUT delay) storage index {@link PiGraph#fifoWithoutDelayIndex} used when adding an {@link Fifo} to {@link PiGraph#edges}.
-	 * <br>
-	 * Called by {@link org.preesm.model.pisdf.adapter.GraphObserver#addEdge(Edge, PiGraph) <em>GraphObserver.addEdge(Edge, PiGraph)</em>}.
-	 * 
-	 * @see org.preesm.model.pisdf.adapter.GraphObserver#addEdge(Edge, PiGraph)
-	 * 		org.preesm.model.pisdf.adapter.GraphObserver.addEdge(Edge, PiGraph)
-	 */
-	op void incrementFifoWithoutDelayIndex() {
-		fifoWithoutDelayIndex = fifoWithoutDelayIndex + 1
-	}
-
-	/*
-	 * Decrement the parameter storage index {@link PiGraph#parameterIndex} used when adding a {@link Parameter} to {@link PiGraph#vertices}.
-	 * <br>
-	 * Called by {@link org.preesm.model.pisdf.adapter.GraphObserver#removeVertex(AbstractVertex, PiGraph) <em>GraphObserver.removeVertex(AbstractVertex, PiGraph)</em>}.
-	 * 
-	 * @throws PreesmRuntimeException If the {@link PiGraph#parameterIndex} is already at 0.
-	 * 
-	 * @see org.preesm.model.pisdf.adapter.GraphObserver#removeVertex(AbstractVertex, PiGraph)
-	 * 		org.preesm.model.pisdf.adapter.GraphObserver.removeVertex(AbstractVertex, PiGraph)
-	 */
-	op void decrementParameterIndex() {
-		if (parameterIndex === 0) {
-			throw new PreesmRuntimeException("Parameter removal anomaly")
-		}
-		parameterIndex = parameterIndex - 1
-	}
-	/*
-	 * Decrement the actor storage index {@link PiGraph#actorIndex} used when adding an {@link AbstractActor} to {@link PiGraph#vertices}, but not a {@link DelayActor}.
-	 * <br>
-	 * Called by {@link org.preesm.model.pisdf.adapter.GraphObserver#removeVertex(AbstractVertex, PiGraph) <em>GraphObserver.removeVertex(AbstractVertex, PiGraph)</em>}.
-	 * 
-	 * @throws PreesmRuntimeException If the {@link PiGraph#actorIndex} is already at 0.
-	 * 
-	 * @see org.preesm.model.pisdf.adapter.GraphObserver#removeVertex(AbstractVertex, PiGraph)
-	 * 		org.preesm.model.pisdf.adapter.GraphObserver.removeVertex(AbstractVertex, PiGraph)
-	 */
-	op void decrementActorIndex() {
-		if (actorIndex === 0) {
-			throw new PreesmRuntimeException("Actor removal anomaly")
-		}
-		actorIndex = actorIndex - 1
-	}
-
-	/*
-	 * Decrement the delay storage index {@link PiGraph#delayIndex} used when adding a {@link Delay} to {@link PiGraph#vertices}.
-	 * <br>
-	 * Called by {@link org.preesm.model.pisdf.adapter.GraphObserver#removeVertex(AbstractVertex, PiGraph) <em>GraphObserver.removeVertex(AbstractVertex, PiGraph)</em>}.
-	 * 
-	 * @throws PreesmRuntimeException If the {@link PiGraph#delayIndex} is already at 0.
-	 * 
-	 * @see org.preesm.model.pisdf.adapter.GraphObserver#removeVertex(AbstractVertex, PiGraph)
-	 * 		org.preesm.model.pisdf.adapter.GraphObserver.removeVertex(AbstractVertex, PiGraph)
-	 */
-	op void decrementDelayIndex() {
-		if (delayIndex === 0) {
-			throw new PreesmRuntimeException("Delay removal anomaly")
-		}
-		delayIndex = delayIndex - 1
-	}
-
-	/*
-	 * Decrement the fifo (WITH delay) storage index {@link PiGraph#fifoWithDelayIndex} used when adding a {@link Fifo} to {@link PiGraph#edges}.
-	 * <br>
-	 * Called by {@link org.preesm.model.pisdf.adapter.GraphObserver#removeEdge(Edge, PiGraph) <em>GraphObserver.removeEdge(Edge, PiGraph)</em>}.
-	 * 
-	 * @throws PreesmRuntimeException If the {@link PiGraph#fifoWithDelayIndex} is already at 0.
-	 * 
-	 * @see org.preesm.model.pisdf.adapter.GraphObserver#removeEdge(Edge, PiGraph)
-	 * 		org.preesm.model.pisdf.adapter.GraphObserver.removeEdge(Edge, PiGraph)
-	 */
-	op void decrementFifoWithDelayIndex() {
-		if (fifoWithDelayIndex === 0) {
-			throw new PreesmRuntimeException("Fifo (with delay) removal anomaly")
-		}
-		fifoWithDelayIndex = fifoWithDelayIndex - 1
-	}
-
-	/*
-	 * Decrement the fifo (WITHOUT delay) storage index {@link PiGraph#fifoWithoutDelayIndex} used when adding a {@link Fifo} to {@link PiGraph#edges}.
-	 * <br>
-	 * Called by {@link org.preesm.model.pisdf.adapter.GraphObserver#removeEdge(Edge, PiGraph) <em>GraphObserver.removeEdge(Edge, PiGraph)</em>}.
-	 * 
-	 * @throws PreesmRuntimeException If the {@link PiGraph#fifoWithoutDelayIndex} is already at 0.
-	 * 
-	 * @see org.preesm.model.pisdf.adapter.GraphObserver#removeEdge(Edge, PiGraph)
-	 * 		org.preesm.model.pisdf.adapter.GraphObserver.removeEdge(Edge, PiGraph)
-	 */
-	op void decrementFifoWithoutDelayIndex() {
-		if (fifoWithoutDelayIndex === 0) {
-			throw new PreesmRuntimeException("Fifo (without delay) removal anomaly")
-		}
-		fifoWithoutDelayIndex = fifoWithoutDelayIndex - 1
-	}
 
 	op boolean isCluster() {
 		return clusterValue
 	}
-	
+
 	op String getPiGraphName() {
 		var graphName = url.substring(url.lastIndexOf('/') + 1, url.length - 3);
 		if (!graphName.isEmpty) {
@@ -420,7 +295,7 @@ class PiGraph extends AbstractActor, Graph, PeriodicElement {
 			// Happens when actor is a PiGraph
 			if (oldActorIndex == this.actorIndex) {
 				PreesmLogger.getLogger().warning("The GraphObserver didn't catch actor " + actor.getName() + " insertion.")
-				incrementActorIndex()
+				updateActorIndex()
 			}
 			return actor.equals(vertices.get(parameterIndex + actorIndex - 1))
 		} else {
@@ -552,7 +427,7 @@ class PiGraph extends AbstractActor, Graph, PeriodicElement {
 		// Happens when actor is a PiGraph
 		if (actorRemoved && (oldActorIndex == this.actorIndex) && !(actor instanceof DelayActor)) {
 			PreesmLogger.getLogger().warning("The GraphObserver didn't catch actor " + actor.getName() + " removal.")
-			decrementActorIndex()
+			updateActorIndex()
 		}
 		return actorRemoved
 	}
