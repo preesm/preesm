@@ -51,7 +51,6 @@ import org.eclipse.graphiti.features.IFeatureProvider;
 import org.eclipse.graphiti.features.context.IPasteContext;
 import org.eclipse.graphiti.features.context.impl.AddConnectionContext;
 import org.eclipse.graphiti.features.context.impl.AddContext;
-import org.eclipse.graphiti.features.context.impl.CustomContext;
 import org.eclipse.graphiti.mm.pictograms.Anchor;
 import org.eclipse.graphiti.mm.pictograms.AnchorContainer;
 import org.eclipse.graphiti.mm.pictograms.ContainerShape;
@@ -127,7 +126,7 @@ public class PasteFeature extends AbstractPasteFeature {
     final List<VertexCopy> copies = Arrays.stream(objects).filter(VertexCopy.class::isInstance).map(o -> (VertexCopy) o)
         .toList();
 
-    final Map<VertexCopy, Pair<Integer, Integer>> caluclatePositions = caluclatePositions(context, copies);
+    final Map<VertexCopy, Pair<Integer, Integer>> calculatePositions = calculatePositions(context, copies);
 
     for (final VertexCopy vertexCopy : copies) {
       final Configurable vertex = vertexCopy.getOriginalVertex();
@@ -143,16 +142,18 @@ public class PasteFeature extends AbstractPasteFeature {
         ((Delay) copy).setActor(delayActorCopy);
       }
 
-      final Pair<Integer, Integer> pair = caluclatePositions.get(vertexCopy);
+      final Pair<Integer, Integer> pair = calculatePositions.get(vertexCopy);
       final Integer x = pair.getKey();
       final Integer y = pair.getValue();
       addGraphicalRepresentationForVertex(copy, x, y);
       this.copiedObjects.put(vertex, copy);
-
-      autoConnectInputConfigPorts(vertex, copy);
     }
 
     connectFifos();
+
+    // Actual auto connection of dependencies is postponed until after Delays
+    // have had their PictogramElement created and linked to the vertexCopy
+    this.copiedObjects.forEach(this::autoConnectInputConfigPorts);
 
     if (getPiGraph() != getOriginalPiGraph()) {
       connectDependencies();
@@ -164,7 +165,7 @@ public class PasteFeature extends AbstractPasteFeature {
     this.links.clear();
   }
 
-  private Map<VertexCopy, Pair<Integer, Integer>> caluclatePositions(final IPasteContext context,
+  private Map<VertexCopy, Pair<Integer, Integer>> calculatePositions(final IPasteContext context,
       final List<VertexCopy> copies) {
     final Map<VertexCopy, Pair<Integer, Integer>> positions = new LinkedHashMap<>();
     // determine the surrounding box
@@ -304,11 +305,7 @@ public class PasteFeature extends AbstractPasteFeature {
       if (delay != null) {
         final Delay delayCopy = (Delay) this.copiedObjects.get(delay);
         addGraphicalRepresentationForDelay(copiedFifo, addGraphicalRepresentationForFifo, delayCopy);
-        // Commented out the next line to prevent an issue where Delay with a dependency wouldn't be pasted.
-        // TODO Fix this issue
-        // autoConnectInputConfigPorts(delay, delayCopy);
       }
-
     }
   }
 
@@ -339,30 +336,25 @@ public class PasteFeature extends AbstractPasteFeature {
   public void addGraphicalRepresentationForDelay(final Fifo copiedFifo, final FreeFormConnection fifoConnection,
       final Delay delayCopy) {
 
-    // the add delay feature can only execute if the fifos delay is null.
-    copiedFifo.setDelay(null);
-
-    // add graphical element for delay
-    final AddDelayFeature addDelayFeature = new AddDelayFeature(getFeatureProvider());
-    final CustomContext customContext = new CustomContext(new PictogramElement[] { fifoConnection });
     final ILocation connectionMidpoint = GraphitiUi.getPeService().getConnectionMidpoint(fifoConnection, 0.5);
-    customContext.setLocation(connectionMidpoint.getX(), connectionMidpoint.getY());
-    addDelayFeature.execute(customContext);
 
-    // Remove the secondary delay that was created in addDelayFeature
-    copiedFifo.getContainingPiGraph().removeDelay(copiedFifo.getDelay());
-    copiedFifo.setDelay(null);
-
-    // one delay is created during the addDelayFeature: overwrite it with the copy
     copiedFifo.setDelay(delayCopy);
     copiedFifo.getContainingPiGraph().addDelay(delayCopy);
 
-    // also overwrite Graphiti links
+    final AddDelayFeature addDelayFeature = new AddDelayFeature(getFeatureProvider());
+    final AddContext addCtxt = new AddContext();
+
+    final Diagram diagram = getDiagram();
+
+    addCtxt.setTargetConnection(fifoConnection);
+    addCtxt.setLocation(connectionMidpoint.getX(), connectionMidpoint.getY());
+    addCtxt.setTargetContainer(diagram);
+    addCtxt.setNewObject(delayCopy);
+
+    final PictogramElement newDelayPE = addDelayFeature.add(addCtxt);
+    this.links.put(delayCopy, newDelayPE);
+
     final List<PictogramElement> createdPEs = addDelayFeature.getCreatedPEs();
-    for (final PictogramElement pe : createdPEs) {
-      pe.getLink().getBusinessObjects().clear();
-      pe.getLink().getBusinessObjects().add(delayCopy);
-    }
 
     // add input port anchors
     final EList<ConfigInputPort> configInputPorts = delayCopy.getConfigInputPorts();
@@ -409,14 +401,14 @@ public class PasteFeature extends AbstractPasteFeature {
       AbstractActor sourceCopy;
       AbstractActor targetCopy;
 
-      if (source instanceof DelayActor) {
-        sourceCopy = ((Delay) this.copiedObjects.get(((DelayActor) source).getLinkedDelay())).getActor();
+      if (source instanceof final DelayActor sourceDelayActor) {
+        sourceCopy = ((Delay) this.copiedObjects.get(sourceDelayActor.getLinkedDelay())).getActor();
       } else {
         sourceCopy = (AbstractActor) this.copiedObjects.get(source);
       }
 
-      if (target instanceof DelayActor) {
-        targetCopy = ((Delay) this.copiedObjects.get(((DelayActor) target).getLinkedDelay())).getActor();
+      if (target instanceof final DelayActor targetDelayActor) {
+        targetCopy = ((Delay) this.copiedObjects.get(targetDelayActor.getLinkedDelay())).getActor();
       } else {
         targetCopy = (AbstractActor) this.copiedObjects.get(target);
       }
@@ -432,9 +424,7 @@ public class PasteFeature extends AbstractPasteFeature {
   private void autoConnectInputConfigPorts(final Configurable originalParameterizable,
       final Configurable parameterizableCopy) {
 
-    // Early exit to prevent an issue where Delay with a dependency wouldn't be pasted.
-    // TODO Fix this issue
-    if ((originalParameterizable instanceof Delay) || (getPiGraph() != getOriginalPiGraph())) {
+    if (getPiGraph() != getOriginalPiGraph()) {
       return;
     }
 
@@ -477,8 +467,8 @@ public class PasteFeature extends AbstractPasteFeature {
     final Anchor setterPE;
     if ((setter instanceof ConfigInputInterface) || (setter instanceof Parameter)) {
       final PictogramElement pe = findPE(setter);
-      if (pe instanceof Anchor) {
-        setterPE = (Anchor) pe;
+      if (pe instanceof final Anchor anchor) {
+        setterPE = anchor;
       } else {
         final ContainerShape findPE = (ContainerShape) pe;
         final EList<Anchor> anchors = findPE.getAnchors();
@@ -626,6 +616,12 @@ public class PasteFeature extends AbstractPasteFeature {
    * Add graphical representation for the vertex copy and its content (that is the input/output ports/configs)
    */
   public void addGraphicalRepresentationForVertex(final AbstractVertex vertexModelCopy, final int x, final int y) {
+
+    // Delays are handled with addGraphicalRepresentationForDelay when adding copied fifos
+    if (vertexModelCopy instanceof Delay) {
+      return;
+    }
+
     final AddContext addCtxt = new AddContext();
     final Diagram diagram = getDiagram();
 
@@ -641,23 +637,14 @@ public class PasteFeature extends AbstractPasteFeature {
       final PictogramElement pe;
       if (childElement instanceof final Port copiedPort) {
         if (vertexModelCopy instanceof ExecutableActor) {
-          final AbstractAddActorPortFeature addPortFeature;
-          switch (copiedPort.getKind()) {
-            case DATA_INPUT:
-              addPortFeature = new AddDataInputPortFeature(getFeatureProvider());
-              break;
-            case DATA_OUTPUT:
-              addPortFeature = new AddDataOutputPortFeature(getFeatureProvider());
-              break;
-            case CFG_INPUT:
-              addPortFeature = new AddConfigInputPortFeature(getFeatureProvider());
-              break;
-            case CFG_OUTPUT:
-              addPortFeature = new AddConfigOutputPortFeature(getFeatureProvider());
-              break;
-            default:
-              throw new UnsupportedOperationException("Port kind [" + copiedPort.getKind() + "] not supported.");
-          }
+
+          final AbstractAddActorPortFeature addPortFeature = switch (copiedPort.getKind()) {
+            case DATA_INPUT -> new AddDataInputPortFeature(getFeatureProvider());
+            case DATA_OUTPUT -> new AddDataOutputPortFeature(getFeatureProvider());
+            case CFG_INPUT -> new AddConfigInputPortFeature(getFeatureProvider());
+            case CFG_OUTPUT -> new AddConfigOutputPortFeature(getFeatureProvider());
+          };
+
           pe = addPortFeature.addPictogramElement(newVertexPE, copiedPort);
         } else if (vertexModelCopy instanceof InterfaceActor) {
           // the AddIn/OutInterfaceFeature creates an anchor for the only in/out port and place it first in the list
@@ -666,9 +653,6 @@ public class PasteFeature extends AbstractPasteFeature {
             throw new IllegalStateException();
           }
           pe = anchors.get(0);
-        } else if (vertexModelCopy instanceof Delay) {
-          // Dirty fix for Delay with dependency
-          return;
         } else {
           final IPeService peService = GraphitiUi.getPeService();
           final Anchor chopboxAnchor = peService.getChopboxAnchor((AnchorContainer) newVertexPE);

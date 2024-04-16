@@ -137,6 +137,7 @@ import org.preesm.ui.pisdf.features.CreateConfigInputInterfaceFeature;
 import org.preesm.ui.pisdf.features.CreateConfigOutputInterfaceFeature;
 import org.preesm.ui.pisdf.features.CreateDataInputInterfaceFeature;
 import org.preesm.ui.pisdf.features.CreateDataOutputInterfaceFeature;
+import org.preesm.ui.pisdf.features.CreateDelayFeature;
 import org.preesm.ui.pisdf.features.CreateDependencyFeature;
 import org.preesm.ui.pisdf.features.CreateFifoFeature;
 import org.preesm.ui.pisdf.features.CreateForkActorFeature;
@@ -297,6 +298,11 @@ public class PiMMFeatureProvider extends DefaultFeatureProvider {
       return new AddDependencyFeature(PiMMFeatureProvider.this);
     }
 
+    @Override
+    public IAddFeature caseDelay(final Delay object) {
+      return new AddDelayFeature(PiMMFeatureProvider.this);
+    }
+
   }
 
   /*
@@ -452,7 +458,7 @@ public class PiMMFeatureProvider extends DefaultFeatureProvider {
       }
 
       if (obj instanceof Fifo) {
-        features.add(new AddDelayFeature(this));
+        features.add(new CreateDelayFeature(this));
       }
 
       if (obj instanceof Delay) {
@@ -471,7 +477,6 @@ public class PiMMFeatureProvider extends DefaultFeatureProvider {
     }
 
     return features.toArray(new ICustomFeature[features.size()]);
-
   }
 
   /**
