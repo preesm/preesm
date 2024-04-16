@@ -128,8 +128,7 @@ public class AddActorFeature extends AbstractAddFeature {
       roundedRectangle.setLineWidth(2);
       gaService.setLocationAndSize(roundedRectangle, context.getX(), context.getY(), width, height);
 
-      // if added Class has no resource we add it to the resource
-      // of the diagram
+      // if added Class has no resource we add it to the resource of the diagram
       // in a real scenario the business model would have its own resource
       if (addedActor.eResource() == null) {
         final PiGraph graph = (PiGraph) getBusinessObjectForPictogramElement(getDiagram());

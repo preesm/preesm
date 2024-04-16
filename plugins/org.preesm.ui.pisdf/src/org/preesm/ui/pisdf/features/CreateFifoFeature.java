@@ -96,8 +96,7 @@ public class CreateFifoFeature extends AbstractCreateConnectionFeature {
    */
   @Override
   public boolean canCreate(final ICreateConnectionContext context) {
-    // This function is called when selecting the end of a created
-    // connection.
+    // This function is called when selecting the end of a created connection.
     // We assume that the canStartConnection is already true
 
     // Refresh to remove all remaining tooltip
@@ -161,13 +160,8 @@ public class CreateFifoFeature extends AbstractCreateConnectionFeature {
     final boolean targetCanCreatePort = (CreateFifoFeature.canCreatePort(context.getTargetPictogramElement(),
         getFeatureProvider(), PortKind.DATA_INPUT) != null);
 
-    // The method also returns true if the the target can
-    // create a new port.
-    if ((targetCanCreatePort || targetOK)) {
-      return true;
-    }
-
-    return false;
+    // The method also returns true if the the target can create a new port.
+    return targetCanCreatePort || targetOK;
   }
 
   /**
@@ -190,13 +184,13 @@ public class CreateFifoFeature extends AbstractCreateConnectionFeature {
 
     // Create the FeatureProvider
     final CustomContext sourceContext = new CustomContext(new PictogramElement[] { peSource });
-    AbstractAddActorPortFeature addPortFeature = null;
-    if (direction.equals(PortKind.DATA_INPUT)) {
-      addPortFeature = new AddDataInputPortFeature(fp);
-    }
-    if (direction.equals(PortKind.DATA_OUTPUT)) {
-      addPortFeature = new AddDataOutputPortFeature(fp);
-    }
+
+    final AbstractAddActorPortFeature addPortFeature = switch (direction) {
+      case DATA_INPUT -> new AddDataInputPortFeature(fp);
+      case DATA_OUTPUT -> new AddDataOutputPortFeature(fp);
+      default -> null;
+    };
+
     if (addPortFeature != null) {
       canCreatePort = addPortFeature.canExecute(sourceContext);
     }
@@ -216,8 +210,8 @@ public class CreateFifoFeature extends AbstractCreateConnectionFeature {
   protected Port getPort(final Anchor anchor) {
     if (anchor != null) {
       final Object obj = getBusinessObjectForPictogramElement(anchor);
-      if (obj instanceof Port) {
-        return (Port) obj;
+      if (obj instanceof final Port port) {
+        return port;
       }
     }
     return null;
@@ -226,8 +220,8 @@ public class CreateFifoFeature extends AbstractCreateConnectionFeature {
   protected Port getSourcePort(final ICreateConnectionContext context, Anchor sourceAnchor) {
     final PictogramElement sourcePe = context.getSourcePictogramElement();
     final Object obj = getBusinessObjectForPictogramElement(sourcePe);
-    if (obj instanceof Delay) {
-      final DelayActor actor = ((Delay) obj).getActor();
+    if (obj instanceof final Delay delay) {
+      final DelayActor actor = delay.getActor();
       return actor.getDataOutputPort();
     }
     return getPort(sourceAnchor);
@@ -236,8 +230,8 @@ public class CreateFifoFeature extends AbstractCreateConnectionFeature {
   protected Port getTargetPort(final ICreateConnectionContext context, Anchor targetAnchor) {
     final PictogramElement targetPe = context.getTargetPictogramElement();
     final Object obj = getBusinessObjectForPictogramElement(targetPe);
-    if (obj instanceof Delay) {
-      final DelayActor actor = ((Delay) obj).getActor();
+    if (obj instanceof final Delay delay) {
+      final DelayActor actor = delay.getActor();
       return actor.getDataInputPort();
     }
     return getPort(targetAnchor);
@@ -285,10 +279,10 @@ public class CreateFifoFeature extends AbstractCreateConnectionFeature {
       }
     }
 
-    if ((source != null) && (target != null) && (source instanceof DataOutputPort)
-        && (target instanceof DataInputPort)) {
+    if ((source != null) && (target != null) && (source instanceof final DataOutputPort dopSource)
+        && (target instanceof final DataInputPort dipTarget)) {
       // create new business object
-      final Fifo fifo = createFifo((DataOutputPort) source, (DataInputPort) target);
+      final Fifo fifo = createFifo(dopSource, dipTarget);
 
       // add connection for business object
       final AddConnectionContext addContext = new AddConnectionContext(sourceAnchor, targetAnchor);
