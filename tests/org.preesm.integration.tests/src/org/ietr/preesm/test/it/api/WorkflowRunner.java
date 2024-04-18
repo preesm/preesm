@@ -127,7 +127,7 @@ public class WorkflowRunner {
       final String workflowPath = "/" + projectName + workflowFilePathStr;
       final String scenarioPath = "/" + projectName + scenarioFilePathStr;
 
-      final boolean success = workflowManager.execute(workflowPath, scenarioPath, null);
+      final boolean success = workflowManager.execute(workflowPath, scenarioPath, null, false);
 
       return success;
     } finally {

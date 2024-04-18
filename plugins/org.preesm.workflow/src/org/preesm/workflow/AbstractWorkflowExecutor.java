@@ -231,7 +231,8 @@ public abstract class AbstractWorkflowExecutor {
    *          the monitor
    * @return true, if successful
    */
-  public boolean execute(final String workflowPath, final String scenarioPath, final IProgressMonitor monitor) {
+  public boolean execute(final String workflowPath, final String scenarioPath, final IProgressMonitor monitor,
+      final boolean printLog) {
     final Workflow workflow = new WorkflowParser().parse(workflowPath);
 
     boolean result = initAndCheck(workflowPath, monitor, workflow);
@@ -242,7 +243,11 @@ public abstract class AbstractWorkflowExecutor {
     final Level oldLevel = Optional.ofNullable(this.logger.getLevel()).orElse(Level.INFO);
     try {
       // read and apply workflow parameters
-      this.logger.setLevel(workflow.getOutputLevel());
+      if (printLog) {
+        this.logger.setLevel(workflow.getOutputLevel());
+      } else {
+        this.logger.setLevel(Level.OFF);
+      }
       WorkspaceUtils.updateWorkspace();
 
       final Iterator<AbstractWorkflowNode<?>> iterator = workflow.vertexTopologicalList().iterator();

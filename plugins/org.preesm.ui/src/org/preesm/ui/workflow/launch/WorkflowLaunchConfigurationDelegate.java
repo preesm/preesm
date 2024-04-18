@@ -83,6 +83,6 @@ public class WorkflowLaunchConfigurationDelegate implements ILaunchConfiguration
     final String scenarioPath = configuration.getAttribute(ScenarioConfiguration.ATTR_SCENARIO_FILE_NAME, "");
 
     final WorkflowManager workflowManager = new WorkflowManager();
-    workflowManager.execute(workflowPath, scenarioPath, monitor);
+    workflowManager.execute(workflowPath, scenarioPath, monitor, true);
   }
 }

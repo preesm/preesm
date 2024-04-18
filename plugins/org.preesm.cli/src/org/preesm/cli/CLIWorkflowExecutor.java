@@ -161,7 +161,7 @@ public class CLIWorkflowExecutor extends AbstractWorkflowExecutor implements IAp
     // Launch the execution of the workflos with the scenarios
     for (final String wPath : workflowPaths) {
       for (final String sPath : scenarioPaths) {
-        if (!execute(wPath, sPath, null)) {
+        if (!execute(wPath, sPath, null, true)) {
           final String message = "Workflow " + wPath + " did not complete its execution normally with scenario " + sPath
               + ".";
           getLogger().log(Level.SEVERE, message);
