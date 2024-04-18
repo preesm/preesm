@@ -130,14 +130,9 @@ public class PapiConfigParser {
 
   private final void switchRootChildren(final Node node) {
     switch (node.getNodeName()) {
-      case "hardware":
-        visitHardware(node);
-        break;
-      case "component":
-        visitComponent(node);
-        break;
-      default:
-        throw new UnsupportedOperationException();
+      case "hardware" -> visitHardware(node);
+      case "component" -> visitComponent(node);
+      default -> throw new UnsupportedOperationException();
     }
   }
 
@@ -200,66 +195,30 @@ public class PapiConfigParser {
 
   private void switchHWChildren(final Node node) {
     switch (node.getNodeName()) {
-      case "vendor":
-        visitVendor(node);
-        break;
-      case "vendorCode":
-        visitVendorCode(node);
-        break;
-      case "model":
-        visitModel(node);
-        break;
-      case "modelCode":
-        visitModelCode(node);
-        break;
-      case "cpuRevision":
-        visitCpuRevision(node);
-        break;
-      case "cpuID":
-        visitCpuID(node);
-        break;
-      case "cpuMaxMegahertz":
-        visitCpuMaxMegahertz(node);
-        break;
-      case "cpuMinMegahertz":
-        visitCpuMinMegahertz(node);
-        break;
-      case "threads":
-        visitThreads(node);
-        break;
-      case "cores":
-        visitCores(node);
-        break;
-      case "sockets":
-        visitSockets(node);
-        break;
-      case "nodes":
-        visitNodes(node);
-        break;
-      case "cpuPerNode":
-        visitCpuPerNode(node);
-        break;
-      case "totalCPUs":
-        visitTotalCPUs(node);
-        break;
-      default:
-        throw new UnsupportedOperationException();
+      case "vendor" -> visitVendor(node);
+      case "vendorCode" -> visitVendorCode(node);
+      case "model" -> visitModel(node);
+      case "modelCode" -> visitModelCode(node);
+      case "cpuRevision" -> visitCpuRevision(node);
+      case "cpuID" -> visitCpuID(node);
+      case "cpuMaxMegahertz" -> visitCpuMaxMegahertz(node);
+      case "cpuMinMegahertz" -> visitCpuMinMegahertz(node);
+      case "threads" -> visitThreads(node);
+      case "cores" -> visitCores(node);
+      case "sockets" -> visitSockets(node);
+      case "nodes" -> visitNodes(node);
+      case "cpuPerNode" -> visitCpuPerNode(node);
+      case "totalCPUs" -> visitTotalCPUs(node);
+      default -> throw new UnsupportedOperationException();
     }
   }
 
   private void switchCpuIDChildren(final Node node) {
     switch (node.getNodeName()) {
-      case "family":
-        visitCpuIDFamily(node);
-        break;
-      case "model":
-        visitCpuIDModel(node);
-        break;
-      case "stepping":
-        visitCpuIDStepping(node);
-        break;
-      default:
-        throw new UnsupportedOperationException();
+      case "family" -> visitCpuIDFamily(node);
+      case "model" -> visitCpuIDModel(node);
+      case "stepping" -> visitCpuIDStepping(node);
+      default -> throw new UnsupportedOperationException();
     }
   }
 

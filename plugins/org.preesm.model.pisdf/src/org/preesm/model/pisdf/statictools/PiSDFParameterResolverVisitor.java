@@ -43,7 +43,6 @@ package org.preesm.model.pisdf.statictools;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.logging.Level;
 import org.eclipse.emf.common.util.EList;
 import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.preesm.commons.logger.PreesmLogger;
@@ -156,20 +155,18 @@ public class PiSDFParameterResolverVisitor extends PiMMSwitch<Boolean> {
     final Dependency incomingDependency = graphPort.getIncomingDependency();
     Parameter paramToEvaluate = cii;
     if (incomingDependency == null) {
-      PreesmLogger.getLogger().log(Level.WARNING,
-          cii.eContainer() + " has a config input port without incoming dependency: " + graphPort.getName()
-              + "\n Default value is used instead.");
+      PreesmLogger.getLogger().warning(() -> cii.eContainer() + " has a config input port without incoming dependency: "
+          + graphPort.getName() + "\nDefault value is used instead.");
     } else {
       // regular case
       final ISetter setter = incomingDependency.getSetter();
       // Setter of an incoming dependency into a ConfigInputInterface must be
       // a parameter
-      if (setter instanceof Parameter) {
-        paramToEvaluate = ((Parameter) setter);
-      } else {
+      if (!(setter instanceof Parameter)) {
         throw new UnsupportedOperationException(
             "In a static PiMM graph, setter of an incomming dependency must be a parameter.");
       }
+      paramToEvaluate = ((Parameter) setter);
     }
     // When we arrive here all upper graphs have been processed.
     // We can then directly evaluate parameter expression here.
@@ -187,14 +184,13 @@ public class PiSDFParameterResolverVisitor extends PiMMSwitch<Boolean> {
     // We have to fetch the corresponding parameter port for normal actors
     for (final Parameter p : actor.getInputParameters()) {
       final EList<ConfigInputPort> ports = actor.lookupConfigInputPortsConnectedWithParameter(p);
-      for (ConfigInputPort port : ports) {
+      for (final ConfigInputPort port : ports) {
         portValues.put(port.getName(), this.parameterValues.get(p));
       }
     }
     resolveActorPorts(actor, portValues);
     // Resolve actor period
-    if (actor instanceof PeriodicElement) {
-      PeriodicElement pe = (PeriodicElement) actor;
+    if (actor instanceof final PeriodicElement pe) {
       resolveExpression(pe, portValues);
     }
     return true;
@@ -254,7 +250,7 @@ public class PiSDFParameterResolverVisitor extends PiMMSwitch<Boolean> {
     // Port of a parameter may have a dependency to higher level parameter
     for (final Parameter p : graph.getInputParameters()) {
       final EList<ConfigInputPort> ports = graph.lookupConfigInputPortsConnectedWithParameter(p);
-      for (ConfigInputPort port : ports) {
+      for (final ConfigInputPort port : ports) {
         portValues.put(port.getName(), this.parameterValues.get(p));
       }
     }
