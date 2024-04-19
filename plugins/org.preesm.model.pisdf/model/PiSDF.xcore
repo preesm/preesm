@@ -60,7 +60,6 @@ import org.preesm.model.pisdf.expression.ExpressionEvaluator
 import org.preesm.model.pisdf.factory.PiMMUserFactory
 import org.preesm.model.pisdf.util.RefinementResolver
 import org.preesm.commons.logger.PreesmLogger
-import java.util.AbstractCollection
 
 // !!! This is needed as of the current versions of xcore/xtext
 // For some reason when using the default String/... (i.e. without the following)
@@ -909,6 +908,15 @@ interface InterfaceActor extends NonExecutableActor {
 		return allDataPorts.get(0)
 	}
 	op InterfaceKind getKind()
+
+	// Properly rename the inner port during copy/pasting
+	op void setName(String newName){
+		super.name = newName
+
+		if (!allDataPorts.empty) {
+			getDataPort().name = newName
+		}
+	}
 }
 
 class DataInputInterface extends InterfaceActor {
