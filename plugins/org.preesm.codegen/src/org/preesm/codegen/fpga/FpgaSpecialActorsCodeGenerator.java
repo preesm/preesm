@@ -1,4 +1,4 @@
-package org.preesm.algorithm.schedule.fpga;
+package org.preesm.codegen.fpga;
 
 import java.util.Map;
 import org.preesm.model.pisdf.AbstractActor;

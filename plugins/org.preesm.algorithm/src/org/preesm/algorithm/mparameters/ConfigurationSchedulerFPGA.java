@@ -4,7 +4,7 @@ import java.util.logging.Level;
 import java.util.stream.Collectors;
 import org.preesm.algorithm.schedule.fpga.AbstractGenericFpgaFifoEvaluator.AnalysisResultFPGA;
 import org.preesm.algorithm.schedule.fpga.AsapFpgaFifoEvaluator;
-import org.preesm.algorithm.schedule.fpga.FpgaAnalysisMainTask;
+import org.preesm.algorithm.schedule.fpga.FpgaAnalysis;
 import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.model.pisdf.PiGraph;
@@ -31,8 +31,8 @@ public class ConfigurationSchedulerFPGA extends AbstractConfigurationScheduler {
 
     AnalysisResultFPGA res = null;
     try {
-      res = FpgaAnalysisMainTask.checkAndAnalyzeAlgorithm(graph, scenario, AsapFpgaFifoEvaluator.FIFO_EVALUATOR_AVG);
-    } catch (PreesmRuntimeException e) {
+      res = FpgaAnalysis.checkAndAnalyzeAlgorithm(graph, scenario, AsapFpgaFifoEvaluator.FIFO_EVALUATOR_AVG);
+    } catch (final PreesmRuntimeException e) {
       // put back all messages
       PreesmLogger.getLogger().setLevel(backupLevel);
       PreesmLogger.getLogger().log(Level.WARNING, "Scheduling was impossible.", e);
@@ -44,8 +44,8 @@ public class ConfigurationSchedulerFPGA extends AbstractConfigurationScheduler {
     final int latency = res.statGenerator.getNbUsedOperators();
     // and the final time is actually the graph durationII
     lastEndTime = res.statGenerator.getFinalTime();
-    long memory = architecture.getOperatorComponentInstances().stream().filter(x -> (x.getComponent() instanceof FPGA))
-        .collect(Collectors.summingLong(res.statGenerator::getMem));
+    final long memory = architecture.getOperatorComponentInstances().stream()
+        .filter(x -> (x.getComponent() instanceof FPGA)).collect(Collectors.summingLong(res.statGenerator::getMem));
 
     // put back all messages
     PreesmLogger.getLogger().setLevel(backupLevel);
