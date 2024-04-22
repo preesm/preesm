@@ -1,36 +1,30 @@
-package org.preesm.algorithm.schedule.fpga;
+package org.preesm.codegen.fpga;
 
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.PlatformUI;
-import org.eclipse.xtext.xbase.lib.Pair;
 import org.preesm.algorithm.mapper.ui.stats.EditorRunnable;
 import org.preesm.algorithm.mapper.ui.stats.StatEditorInput;
 import org.preesm.algorithm.schedule.fpga.AbstractGenericFpgaFifoEvaluator.AnalysisResultFPGA;
+import org.preesm.algorithm.schedule.fpga.AdfgOjalgoFpgaFifoEvaluator;
+import org.preesm.algorithm.schedule.fpga.AsapFpgaFifoEvaluator;
+import org.preesm.algorithm.schedule.fpga.FpgaAnalysis;
+import org.preesm.algorithm.schedule.fpga.TokenPackingAnalysis;
 import org.preesm.algorithm.schedule.fpga.TokenPackingAnalysis.PackedFifoConfig;
+import org.preesm.algorithm.schedule.fpga.TokenPackingTransform;
 import org.preesm.commons.doc.annotations.Parameter;
 import org.preesm.commons.doc.annotations.Port;
 import org.preesm.commons.doc.annotations.PreesmTask;
 import org.preesm.commons.doc.annotations.Value;
 import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.preesm.commons.logger.PreesmLogger;
-import org.preesm.model.pisdf.AbstractVertex;
-import org.preesm.model.pisdf.DataInputPort;
-import org.preesm.model.pisdf.DataOutputPort;
-import org.preesm.model.pisdf.DataPort;
-import org.preesm.model.pisdf.InterfaceActor;
-import org.preesm.model.pisdf.PersistenceLevel;
 import org.preesm.model.pisdf.PiGraph;
-import org.preesm.model.pisdf.brv.BRVMethod;
-import org.preesm.model.pisdf.brv.PiBRV;
-import org.preesm.model.pisdf.statictools.PiSDFFlattener;
 import org.preesm.model.scenario.Scenario;
-import org.preesm.model.scenario.check.FifoTypeChecker;
 import org.preesm.model.slam.Design;
 import org.preesm.model.slam.FPGA;
 import org.preesm.model.slam.check.SlamDesignPEtypeChecker;
@@ -90,7 +84,7 @@ public class FpgaAnalysisMainTask extends AbstractTaskImplementation {
 
     // check everything and perform analysis
     final FPGA fpga = checkAndGetSingleFPGA(architecture);
-    AnalysisResultFPGA res = checkAndAnalyzeAlgorithm(algorithm, scenario, fifoEvaluatorName);
+    AnalysisResultFPGA res = FpgaAnalysis.checkAndAnalyzeAlgorithm(algorithm, scenario, fifoEvaluatorName);
 
     // optionally pack tokens in BRAM
     final String packTokensStr = parameters.get(PACK_TOKENS_PARAM_NAME);
@@ -110,7 +104,7 @@ public class FpgaAnalysisMainTask extends AbstractTaskImplementation {
         }
 
         // Rerun adfg to get new fifo depth with modified timing (because of packer/unpacker delay)
-        res = checkAndAnalyzeAlgorithm(algorithm, scenario, fifoEvaluatorName);
+        res = FpgaAnalysis.checkAndAnalyzeAlgorithm(algorithm, scenario, fifoEvaluatorName);
         // res.flatGraph is new, so actor from worklist do not match with res.flatGraph anymore
         // Workaround is to generate a new worklist2 from the new res, which SHOULD match with worklist
         // A better solution would be to match worklist actors (from the previous res.flatGraph) to the new
@@ -148,43 +142,6 @@ public class FpgaAnalysisMainTask extends AbstractTaskImplementation {
   }
 
   /**
-   * Check the inputs and analyze the graph for FPGA scheduling + buffer sizing.
-   *
-   * @param algorithm
-   *          Graph to be analyzed (will be flattened).
-   * @param scenario
-   *          Application informations.
-   * @param fifoEvaluatorName
-   *          String representing the evaluator to be used (for scheduling and fifo sizing).
-   * @return The analysis results.
-   */
-  public static AnalysisResultFPGA checkAndAnalyzeAlgorithm(final PiGraph algorithm, final Scenario scenario,
-      final String fifoEvaluatorName) {
-    if (algorithm.getAllDelays().stream().anyMatch(x -> (x.getLevel() != PersistenceLevel.PERMANENT))) {
-      throw new PreesmRuntimeException("This task must be called on PiGraph with only permanent delays.");
-    }
-    FifoTypeChecker.checkMissingFifoTypeSizes(scenario);
-
-    // Flatten the graph
-    final PiGraph flatGraph = PiSDFFlattener.flatten(algorithm, true);
-    // Expose delays as actors on the graph
-    DelayActorTransform.transform(scenario, flatGraph);
-    // check interfaces
-    final Map<AbstractVertex, Long> brv = PiBRV.compute(flatGraph, BRVMethod.LCM);
-    final Map<InterfaceActor, Pair<Long, Long>> interfaceRates = checkInterfaces(flatGraph, brv);
-    if (interfaceRates.values().stream().anyMatch(Objects::isNull)) {
-      throw new PreesmRuntimeException("Some interfaces have weird rates (see log), abandon.");
-    }
-
-    // schedule the graph
-    final AbstractGenericFpgaFifoEvaluator evaluator = AbstractGenericFpgaFifoEvaluator
-        .getEvaluatorInstance(fifoEvaluatorName);
-    final AnalysisResultFPGA resHolder = new AnalysisResultFPGA(flatGraph, brv, interfaceRates);
-    evaluator.performAnalysis(scenario, resHolder);
-    return resHolder;
-  }
-
-  /**
    * Check that platform is composed of single FPGA and returns it
    *
    * @param architecture
@@ -196,35 +153,6 @@ public class FpgaAnalysisMainTask extends AbstractTaskImplementation {
       throw new PreesmRuntimeException("This task must be called with a single FPGA architecture, abandon.");
     }
     return (FPGA) architecture.getProcessingElements().get(0);
-  }
-
-  private static Map<InterfaceActor, Pair<Long, Long>> checkInterfaces(final PiGraph flatGraph,
-      final Map<AbstractVertex, Long> brv) {
-    final Map<InterfaceActor, Pair<Long, Long>> result = new LinkedHashMap<>();
-    flatGraph.getActors().stream().filter(InterfaceActor.class::isInstance).forEach(x -> {
-      final InterfaceActor ia = (InterfaceActor) x;
-      final DataPort iaPort = ia.getDataPort();
-      if (iaPort.getFifo() == null) {
-        return; // if not connected, we do not care
-      }
-      DataPort aaPort = null;
-      if (iaPort instanceof DataInputPort) {
-        aaPort = iaPort.getFifo().getSourcePort();
-      }
-      if (iaPort instanceof DataOutputPort) {
-        aaPort = iaPort.getFifo().getTargetPort();
-      }
-      final long aaRate = brv.get(aaPort.getContainingActor()) * aaPort.getExpression().evaluate();
-      final long iaRate = iaPort.getExpression().evaluate();
-      if (aaRate % iaRate != 0) {
-        PreesmLogger.getLogger().warning(
-            "Interface rate of " + ia.getName() + " does not divide the total rate of the actor connected to it.");
-        result.put(ia, null);
-      } else {
-        result.put(ia, new Pair<>(iaRate, (aaRate / iaRate)));
-      }
-    });
-    return result;
   }
 
   @Override

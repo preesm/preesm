@@ -1,4 +1,4 @@
-package org.preesm.algorithm.schedule.fpga;
+package org.preesm.codegen.fpga;
 
 import java.util.Map;
 import org.preesm.model.pisdf.AbstractActor;
@@ -69,7 +69,8 @@ public class FpgaSpecialActorsCodeGenerator {
   protected static String generateBroadcastCall(final AbstractActor aa) {
     final String name = aa.getName();
     final Fifo inputFifo = aa.getDataInputPorts().get(0).getFifo();
-    final StringBuilder call = new StringBuilder(name + "(" + FpgaCodeGenerator.getFifoStreamName(inputFifo));
+    final StringBuilder call = new StringBuilder(
+        "hls_thread_local hls::task " + name + "_task(" + name + "," + FpgaCodeGenerator.getFifoStreamName(inputFifo));
     for (final DataPort dp : aa.getDataOutputPorts()) {
       call.append(", " + FpgaCodeGenerator.getFifoStreamName(dp.getFifo()));
     }
