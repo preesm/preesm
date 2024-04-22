@@ -892,11 +892,8 @@ public class FpgaCodeGenerator {
     final StringBuilder sb = new StringBuilder();
     allFifoDepths.forEach((x, y) -> {
       final String sizeValue = getFifoStreamSizeNameMacro(x);
-      final String sizeName = sizeValue.toLowerCase();
       sb.append(getFifoStreamDeclaration(x));
-      // Use const variable to store macro value, to be used in pragma
-      sb.append("  const int " + sizeName + " = " + sizeValue + ";\n");
-      sb.append("#pragma HLS stream variable=" + getFifoStreamName(x) + " depth=" + sizeName + "\n");
+      sb.append("#pragma HLS stream variable=" + getFifoStreamName(x) + " depth=" + sizeValue + "\n");
     });
     return sb.toString();
   }
