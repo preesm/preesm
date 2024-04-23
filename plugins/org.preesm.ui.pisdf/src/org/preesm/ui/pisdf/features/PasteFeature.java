@@ -398,8 +398,8 @@ public class PasteFeature extends AbstractPasteFeature {
         continue;
       }
 
-      AbstractActor sourceCopy;
-      AbstractActor targetCopy;
+      final AbstractActor sourceCopy;
+      final AbstractActor targetCopy;
 
       if (source instanceof final DelayActor sourceDelayActor) {
         sourceCopy = ((Delay) this.copiedObjects.get(sourceDelayActor.getLinkedDelay())).getActor();
@@ -527,18 +527,11 @@ public class PasteFeature extends AbstractPasteFeature {
     final Configurable eContainer = getter.getConfigurable();
     final EList<ConfigInputPort> origConfigInputPorts = eContainer.getConfigInputPorts();
 
-    if (copiedConfigInputPorts.size() != origConfigInputPorts.size()) {
-      throw new IllegalStateException();
-    }
-
-    final ConfigInputPort target;
-    if (!origConfigInputPorts.contains(getter)) {
+    if ((copiedConfigInputPorts.size() != origConfigInputPorts.size()) || !origConfigInputPorts.contains(getter)) {
       throw new IllegalStateException();
     }
     final int indexOf = origConfigInputPorts.indexOf(getter);
-    target = copiedConfigInputPorts.get(indexOf);
-
-    return target;
+    return copiedConfigInputPorts.get(indexOf);
   }
 
   /**
@@ -555,56 +548,35 @@ public class PasteFeature extends AbstractPasteFeature {
     final AbstractActor eContainer = (AbstractActor) setter.eContainer();
     final EList<ConfigOutputPort> origConfigOutputPorts = eContainer.getConfigOutputPorts();
 
-    if (copiedConfigOutputPorts.size() != origConfigOutputPorts.size()) {
-      throw new IllegalStateException();
-    }
-
-    final ConfigOutputPort source;
-    if (!origConfigOutputPorts.contains(setter)) {
+    if ((copiedConfigOutputPorts.size() != origConfigOutputPorts.size()) || !origConfigOutputPorts.contains(setter)) {
       throw new IllegalStateException();
     }
     final int indexOf = origConfigOutputPorts.indexOf(setter);
-    source = copiedConfigOutputPorts.get(indexOf);
-
-    return source;
+    return copiedConfigOutputPorts.get(indexOf);
   }
 
   private DataInputPort lookupDataInputPort(final AbstractActor vertexCopy, final DataInputPort getter) {
-    final EList<DataInputPort> copiedConfigInputPorts = vertexCopy.getDataInputPorts();
+    final EList<DataInputPort> copiedDataInputPorts = vertexCopy.getDataInputPorts();
     final AbstractActor eContainer = (AbstractActor) getter.eContainer();
-    final EList<DataInputPort> origConfigInputPorts = eContainer.getDataInputPorts();
+    final EList<DataInputPort> origDataInputPorts = eContainer.getDataInputPorts();
 
-    if (copiedConfigInputPorts.size() != origConfigInputPorts.size()) {
+    if ((copiedDataInputPorts.size() != origDataInputPorts.size()) || !origDataInputPorts.contains(getter)) {
       throw new IllegalStateException();
     }
-
-    final DataInputPort target;
-    if (!origConfigInputPorts.contains(getter)) {
-      throw new IllegalStateException();
-    }
-    final int indexOf = origConfigInputPorts.indexOf(getter);
-    target = copiedConfigInputPorts.get(indexOf);
-
-    return target;
+    final int indexOf = origDataInputPorts.indexOf(getter);
+    return copiedDataInputPorts.get(indexOf);
   }
 
   private DataOutputPort lookupDataOutputPort(final AbstractActor vertexCopy, final DataOutputPort getter) {
-    final EList<DataOutputPort> copiedConfigInputPorts = vertexCopy.getDataOutputPorts();
+    final EList<DataOutputPort> copiedDataOutputPorts = vertexCopy.getDataOutputPorts();
     final AbstractActor eContainer = (AbstractActor) getter.eContainer();
-    final EList<DataOutputPort> origConfigInputPorts = eContainer.getDataOutputPorts();
+    final EList<DataOutputPort> origDataOutputPorts = eContainer.getDataOutputPorts();
 
-    if (copiedConfigInputPorts.size() != origConfigInputPorts.size()) {
+    if ((copiedDataOutputPorts.size() != origDataOutputPorts.size()) || !origDataOutputPorts.contains(getter)) {
       throw new IllegalStateException();
     }
-
-    final DataOutputPort target;
-    if (!origConfigInputPorts.contains(getter)) {
-      throw new IllegalStateException();
-    }
-    final int indexOf = origConfigInputPorts.indexOf(getter);
-    target = copiedConfigInputPorts.get(indexOf);
-
-    return target;
+    final int indexOf = origDataOutputPorts.indexOf(getter);
+    return copiedDataOutputPorts.get(indexOf);
   }
 
   private String computeUniqueNameForCopy(final AbstractVertex vertex) {
