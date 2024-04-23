@@ -329,11 +329,12 @@ public class GraphObserver extends AdapterImpl {
     if ((vertex instanceof final Parameter paramVertex)) {
       if (paramVertex.isConfigurationInterface()) {
         // If the added vertex is an Parameter and an Interface of the graph
-        removeParamInterfaceActor((ConfigInputInterface) vertex, graph);
+        removeInputParamInterfaceActor((ConfigInputInterface) vertex, graph);
       }
       graph.updateParameterIndex();
     } else if ((vertex instanceof AbstractActor) && !(vertex instanceof DelayActor)) {
       if (vertex instanceof final InterfaceActor iActorVertex) {
+        // Targets DataInputInterface, DataOutputInterface AND ConfigOutputInterface
         removeInterfaceActor(iActorVertex, graph);
       }
       graph.updateActorIndex();
@@ -377,6 +378,7 @@ public class GraphObserver extends AdapterImpl {
     // We remove from both list, but only one will actually remove something.
     graph.getDataInputPorts().remove(iActor.getGraphPort());
     graph.getDataOutputPorts().remove(iActor.getGraphPort());
+    graph.getConfigOutputPorts().remove(iActor.getGraphPort());
   }
 
   /**
@@ -387,7 +389,7 @@ public class GraphObserver extends AdapterImpl {
    * @param graph
    *          the observed {@link PiGraph}
    */
-  protected void removeParamInterfaceActor(final ConfigInputInterface param, final PiGraph graph) {
+  protected void removeInputParamInterfaceActor(final ConfigInputInterface param, final PiGraph graph) {
     graph.getConfigInputPorts().remove(param.getGraphPort());
   }
 }
