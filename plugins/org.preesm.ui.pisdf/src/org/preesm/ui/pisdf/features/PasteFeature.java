@@ -413,7 +413,13 @@ public class PasteFeature extends AbstractPasteFeature {
         targetCopy = (AbstractActor) this.copiedObjects.get(target);
       }
 
-      final DataOutputPort sourcePortCopy = lookupDataOutputPort(sourceCopy, sourcePort);
+      final DataOutputPort sourcePortCopy;
+      if (sourcePort instanceof final ConfigOutputPort configSourcePort) {
+        sourcePortCopy = lookupConfigOutputPort(sourceCopy, configSourcePort);
+      } else {
+        sourcePortCopy = lookupDataOutputPort(sourceCopy, sourcePort);
+      }
+
       final DataInputPort targetPortCopy = lookupDataInputPort(targetCopy, targetPort);
 
       final Fifo copiedFifo = PiMMUserFactory.instance.createFifo(sourcePortCopy, targetPortCopy, fifo.getType());
