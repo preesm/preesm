@@ -164,6 +164,12 @@ public class GraphObserver extends AdapterImpl {
    *          the observed {@link PiGraph}
    */
   protected void addInterfaceActor(final InterfaceActor iActor, final PiGraph graph) {
+
+    // In case of UNDO action, the graph port associated with the interface actor as already been readded
+    if (iActor.getGraphPort() != null && graph.getAllPorts().contains(iActor.getGraphPort())) {
+      return;
+    }
+
     // Create the Associated port and store it in the appropriate List
     DataPort port;
     switch (iActor.getKind()) {
