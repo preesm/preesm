@@ -52,7 +52,6 @@ import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.ConfigInputInterface;
 import org.preesm.model.pisdf.ConfigInputPort;
 import org.preesm.model.pisdf.DataPort;
-import org.preesm.model.pisdf.Delay;
 import org.preesm.model.pisdf.DelayActor;
 import org.preesm.model.pisdf.Dependency;
 import org.preesm.model.pisdf.ExecutableActor;
@@ -100,10 +99,8 @@ public class PiSDFParameterResolverVisitor extends PiMMSwitch<Boolean> {
     }
 
     // Parse delays as well
-    if (actor instanceof PiGraph) {
-      for (final Delay d : ((PiGraph) actor).getDelays()) {
-        resolveExpression(d, paramValues);
-      }
+    if (actor instanceof final PiGraph piGraph) {
+      piGraph.getDelays().forEach(d -> resolveExpression(d, paramValues));
     }
   }
 
@@ -142,6 +139,7 @@ public class PiSDFParameterResolverVisitor extends PiMMSwitch<Boolean> {
       p.setExpression(value);
       this.parameterValues.put(p, value);
     }
+
     return true;
   }
 

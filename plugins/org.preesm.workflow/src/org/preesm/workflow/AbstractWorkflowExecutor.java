@@ -577,7 +577,7 @@ public abstract class AbstractWorkflowExecutor {
    *          the variables
    */
   protected void log(Level level, String msgKey, String... variables) {
-    getLogger().log(level, PreesmMessages.getString(msgKey, variables));
+    getLogger().log(level, () -> PreesmMessages.getString(msgKey, variables));
   }
 
 }

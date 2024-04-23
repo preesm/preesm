@@ -163,40 +163,42 @@ public class DependencyCycleDetector extends PiMMSwitch<Void> {
   @Override
   public Void caseParameter(final Parameter parameter) {
     // Visit the parameter and its successors if it was not already done
-    if (!this.visited.contains(parameter)) {
-      // Check if the parameter is already in the branch (i.e. check if
-      // there is a cycle)
-      if (this.branch.contains(parameter)) {
-        // There is a cycle
-        addCycle(parameter);
-        return null;
-      }
-
-      // Add the parameter to the visited branch
-      this.branch.add(parameter);
-
-      // Visit all parameters influencing the current one.
-      for (final ConfigInputPort port : parameter.getConfigInputPorts()) {
-        final Dependency incomingDependency = port.getIncomingDependency();
-        if (incomingDependency != null) {
-          final ISetter setter = incomingDependency.getSetter();
-          if (setter != null) {
-            doSwitch(setter);
-          }
-        }
-
-        // If fast detection is activated and a cycle was detected, get
-        // out of here!
-        if (this.fastDetection && cyclesDetected()) {
-          break;
-        }
-      }
-
-      // Remove the parameter from the branch.
-      this.branch.remove(this.branch.size() - 1);
-      // Add the parameter to the visited list
-      this.visited.add(parameter);
+    if (this.visited.contains(parameter)) {
+      return null;
     }
+    // Check if the parameter is already in the branch (i.e. check if
+    // there is a cycle)
+    if (this.branch.contains(parameter)) {
+      // There is a cycle
+      addCycle(parameter);
+      return null;
+    }
+
+    // Add the parameter to the visited branch
+    this.branch.add(parameter);
+
+    // Visit all parameters influencing the current one.
+    for (final ConfigInputPort port : parameter.getConfigInputPorts()) {
+      final Dependency incomingDependency = port.getIncomingDependency();
+      if (incomingDependency != null) {
+        final ISetter setter = incomingDependency.getSetter();
+        if (setter != null) {
+          doSwitch(setter);
+        }
+      }
+
+      // If fast detection is activated and a cycle was detected, get
+      // out of here!
+      if (this.fastDetection && cyclesDetected()) {
+        break;
+      }
+    }
+
+    // Remove the parameter from the branch.
+    this.branch.remove(this.branch.size() - 1);
+    // Add the parameter to the visited list
+    this.visited.add(parameter);
+
     return null;
   }
 

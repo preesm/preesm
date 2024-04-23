@@ -40,7 +40,6 @@ package org.preesm.model.pisdf.statictools;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.preesm.commons.doc.annotations.Parameter;
@@ -61,9 +60,10 @@ import org.preesm.workflow.implement.AbstractWorkflowNodeImplementation;
  */
 @PreesmTask(id = "pisdf-srdag", name = "PiSDF Single-Rate Transformation", category = "Graph Transformation",
 
-    inputs = { @Port(name = "PiMM", type = PiGraph.class) }, outputs = { @Port(name = "PiMM", type = PiGraph.class) },
+    inputs = { @Port(name = AbstractWorkflowNodeImplementation.KEY_PI_GRAPH, type = PiGraph.class) },
+    outputs = { @Port(name = AbstractWorkflowNodeImplementation.KEY_PI_GRAPH, type = PiGraph.class) },
 
-    parameters = { @Parameter(name = "Consistency_Method",
+    parameters = { @Parameter(name = PiSDFToSingleRateTask.CONSISTENCY_METHOD,
         values = { @Value(name = "LCM", effect = ""), @Value(name = "Topology", effect = "") }) })
 public class PiSDFToSingleRateTask extends AbstractTaskImplementation {
 
@@ -74,8 +74,8 @@ public class PiSDFToSingleRateTask extends AbstractTaskImplementation {
   @Override
   public Map<String, Object> execute(final Map<String, Object> inputs, final Map<String, String> parameters,
       final IProgressMonitor monitor, final String nodeName, final Workflow workflow) {
-    final PiGraph graph = (PiGraph) inputs.get(AbstractWorkflowNodeImplementation.KEY_PI_GRAPH);
-    logger.log(Level.INFO, "Computing Repetition Vector for graph [" + graph.getName() + "]");
+    final PiGraph graph = (PiGraph) inputs.get(KEY_PI_GRAPH);
+    logger.info(() -> "Computing Repetition Vector for graph [" + graph.getName() + "]");
 
     final String consistencyMethod = parameters.get(CONSISTENCY_METHOD);
     final BRVMethod method = BRVMethod.getByName(consistencyMethod);
@@ -87,7 +87,7 @@ public class PiSDFToSingleRateTask extends AbstractTaskImplementation {
     final PiGraph result = PiSDFToSingleRate.compute(graph, method);
 
     final Map<String, Object> output = new LinkedHashMap<>();
-    output.put(AbstractWorkflowNodeImplementation.KEY_PI_GRAPH, result);
+    output.put(KEY_PI_GRAPH, result);
     return output;
   }
 

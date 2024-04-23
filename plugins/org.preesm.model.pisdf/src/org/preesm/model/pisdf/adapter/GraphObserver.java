@@ -124,7 +124,7 @@ public class GraphObserver extends AdapterImpl {
     } else if (vertex instanceof final Parameter paramVertex) {
       if (paramVertex.isConfigurationInterface()) {
         // If the added vertex is an Parameter and an Interface of the graph
-        addParamInterfaceActor((ConfigInputInterface) vertex, graph);
+        addInputParamInterfaceActor((ConfigInputInterface) vertex, graph);
       }
       graph.updateParameterIndex();
     } else if ((vertex instanceof Delay)) {
@@ -202,7 +202,7 @@ public class GraphObserver extends AdapterImpl {
    * @param graph
    *          the observed {@link PiGraph}
    */
-  protected void addParamInterfaceActor(final ConfigInputInterface param, final PiGraph graph) {
+  protected void addInputParamInterfaceActor(final ConfigInputInterface param, final PiGraph graph) {
     final ConfigInputPort port = PiMMUserFactory.instance.createConfigInputPort();
     port.setName(param.getName());
     graph.getConfigInputPorts().add(port);

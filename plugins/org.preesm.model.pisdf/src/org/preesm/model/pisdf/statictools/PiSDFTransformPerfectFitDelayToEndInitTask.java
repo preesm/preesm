@@ -43,6 +43,7 @@ import org.preesm.commons.doc.annotations.PreesmTask;
 import org.preesm.model.pisdf.PiGraph;
 import org.preesm.workflow.elements.Workflow;
 import org.preesm.workflow.implement.AbstractTaskImplementation;
+import org.preesm.workflow.implement.AbstractWorkflowNodeImplementation;
 
 /**
  * @author dgageot
@@ -51,19 +52,20 @@ import org.preesm.workflow.implement.AbstractTaskImplementation;
 @PreesmTask(id = "org.ietr.preesm.pisdf.transformperfectfitdelay",
     name = "PiSDF Transform Perfect Fit Delay To End Init", category = "Graph Transformation",
 
-    inputs = { @Port(name = "PiMM", type = PiGraph.class) }, outputs = { @Port(name = "PiMM", type = PiGraph.class) })
+    inputs = { @Port(name = AbstractWorkflowNodeImplementation.KEY_PI_GRAPH, type = PiGraph.class) },
+    outputs = { @Port(name = AbstractWorkflowNodeImplementation.KEY_PI_GRAPH, type = PiGraph.class) })
 public class PiSDFTransformPerfectFitDelayToEndInitTask extends AbstractTaskImplementation {
 
   @Override
   public Map<String, Object> execute(Map<String, Object> inputs, Map<String, String> parameters,
       IProgressMonitor monitor, String nodeName, Workflow workflow) {
-    final PiGraph algorithm = (PiGraph) inputs.get("PiMM");
+    final PiGraph algorithm = (PiGraph) inputs.get(KEY_PI_GRAPH);
     // Process graph
-    PiSDFTransformPerfectFitDelayToEndInit process = new PiSDFTransformPerfectFitDelayToEndInit(algorithm);
-    PiGraph processedAlgorithm = process.replacePerfectFitDelay();
+    final PiSDFTransformPerfectFitDelayToEndInit process = new PiSDFTransformPerfectFitDelayToEndInit(algorithm);
+    final PiGraph processedAlgorithm = process.replacePerfectFitDelay();
     // Return processed graph
-    Map<String, Object> outputs = new HashMap<>();
-    outputs.put("PiMM", processedAlgorithm);
+    final Map<String, Object> outputs = new HashMap<>();
+    outputs.put(KEY_PI_GRAPH, processedAlgorithm);
     return outputs;
   }
 

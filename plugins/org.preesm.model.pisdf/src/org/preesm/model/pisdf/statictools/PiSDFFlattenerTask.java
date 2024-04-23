@@ -41,7 +41,6 @@ package org.preesm.model.pisdf.statictools;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.preesm.commons.doc.annotations.Parameter;
@@ -61,9 +60,10 @@ import org.preesm.workflow.implement.AbstractWorkflowNodeImplementation;
 @PreesmTask(id = "org.ietr.preesm.pimm.algorithm.pimm2flat.StaticPiMM2FlatPiMMTask", name = "PiSDF Flattener",
     category = "Graph Transformation",
 
-    inputs = { @Port(name = "PiMM", type = PiGraph.class) }, outputs = { @Port(name = "PiMM", type = PiGraph.class) },
+    inputs = { @Port(name = AbstractWorkflowNodeImplementation.KEY_PI_GRAPH, type = PiGraph.class) },
+    outputs = { @Port(name = AbstractWorkflowNodeImplementation.KEY_PI_GRAPH, type = PiGraph.class) },
 
-    parameters = { @Parameter(name = "Perform optimizations", values = { @Value(name = "true / false",
+    parameters = { @Parameter(name = PiSDFFlattenerTask.OPTIM_CHOICE, values = { @Value(name = "true / false",
         effect = "If true, tries to remove redundant special actors and self loops on delays.") }) })
 public class PiSDFFlattenerTask extends AbstractTaskImplementation {
 
@@ -86,8 +86,8 @@ public class PiSDFFlattenerTask extends AbstractTaskImplementation {
   public Map<String, Object> execute(final Map<String, Object> inputs, final Map<String, String> parameters,
       final IProgressMonitor monitor, final String nodeName, final Workflow workflow) {
     final PiGraph graph = (PiGraph) inputs.get(AbstractWorkflowNodeImplementation.KEY_PI_GRAPH);
-    logger.log(Level.INFO, "Computing Repetition Vector for graph [" + graph.getName() + "]");
-    String paramOptim = parameters.getOrDefault(OPTIM_CHOICE, Boolean.toString(DEFAULT_OPTIM));
+    logger.info(() -> "Computing Repetition Vector for graph [" + graph.getName() + "]");
+    final String paramOptim = parameters.getOrDefault(OPTIM_CHOICE, Boolean.toString(DEFAULT_OPTIM));
 
     // Flatten the graph
     final PiGraph result = PiSDFFlattener.flatten(graph, Boolean.parseBoolean(paramOptim));
@@ -99,7 +99,7 @@ public class PiSDFFlattenerTask extends AbstractTaskImplementation {
 
   @Override
   public Map<String, String> getDefaultParameters() {
-    Map<String, String> defaultParams = new LinkedHashMap<>();
+    final Map<String, String> defaultParams = new LinkedHashMap<>();
     defaultParams.put(OPTIM_CHOICE, Boolean.toString(DEFAULT_OPTIM));
     return defaultParams;
   }

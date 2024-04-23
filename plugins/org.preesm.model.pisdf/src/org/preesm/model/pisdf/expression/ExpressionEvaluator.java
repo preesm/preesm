@@ -105,7 +105,7 @@ public class ExpressionEvaluator {
   /**
    * Will lookup parameter values if needed (see
    * {@link InternalExpressionEvaluationVisitor#caseStringExpression(StringExpression)}).
-   * 
+   *
    * @throws ExpressionEvaluationException
    *           If the expression cannot be evaluated.
    */
@@ -120,21 +120,19 @@ public class ExpressionEvaluator {
    */
   public static Parameter lookupFirstNonInterfaceParent(final ConfigInputInterface cii) {
     Parameter parent = cii;
-    while (parent instanceof ConfigInputInterface) {
-      final ConfigInputPort graphPort = ((ConfigInputInterface) parent).getGraphPort();
+    while (parent instanceof final ConfigInputInterface configInputInterface) {
+      final ConfigInputPort graphPort = configInputInterface.getGraphPort();
       final Dependency incomingDependency = graphPort.getIncomingDependency();
-      if (incomingDependency != null) {
-        final ISetter setter = incomingDependency.getSetter();
-        if (setter instanceof ConfigOutputPort) {
-          throw new ExpressionEvaluationException("Cannot evaluate expression of a dynamic Setter");
-        } else {
-          parent = (Parameter) setter;
-          if (!(parent instanceof ConfigInputInterface)) {
-            return parent;
-          }
-        }
-      } else {
+      if (incomingDependency == null) {
         return null;
+      }
+      final ISetter setter = incomingDependency.getSetter();
+      if (setter instanceof ConfigOutputPort) {
+        throw new ExpressionEvaluationException("Cannot evaluate expression of a dynamic Setter");
+      }
+      parent = (Parameter) setter;
+      if (!(parent instanceof ConfigInputInterface)) {
+        return parent;
       }
     }
     return null;
@@ -181,8 +179,8 @@ public class ExpressionEvaluator {
   private static void lookupActorAndDataPort(final Parameterizable parameterizable, final Map<String, Double> res,
       final Parameter param, final double evaluate) {
     final AbstractActor actor;
-    if (parameterizable instanceof AbstractActor) {
-      actor = (AbstractActor) parameterizable;
+    if (parameterizable instanceof final AbstractActor abstractActor) {
+      actor = abstractActor;
     } else {
       actor = ((DataPort) parameterizable).getContainingActor();
     }
@@ -190,7 +188,7 @@ public class ExpressionEvaluator {
       res.put(param.getName(), evaluate);
     } else {
       final List<ConfigInputPort> inputPorts = actor.lookupConfigInputPortsConnectedWithParameter(param);
-      for (ConfigInputPort cip : inputPorts) {
+      for (final ConfigInputPort cip : inputPorts) {
         final String name = cip.getName();
         res.put(name, evaluate);
       }
@@ -200,8 +198,7 @@ public class ExpressionEvaluator {
   private static double evaluateExpression(final Map<Parameter, String> overridenValues, final Parameter param,
       final String paramExpressionValue) {
     final double evaluate;
-    if (param instanceof ConfigInputInterface) {
-      final ConfigInputInterface configInputInterface = (ConfigInputInterface) param;
+    if (param instanceof final ConfigInputInterface configInputInterface) {
       evaluate = evaluateConfigInputInterface(overridenValues, configInputInterface);
     } else {
       evaluate = evaluate(param, paramExpressionValue, overridenValues);

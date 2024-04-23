@@ -177,58 +177,61 @@ public class FifoCycleDetector extends PiMMSwitch<Void> {
   @Override
   public Void caseAbstractActor(final AbstractActor actor) {
     // Visit the AbstractActor and its successors if it was not already done
-    if (!this.visited.contains(actor)) {
-      // Check if the AbstractActor is already in the branch
-      // (i.e. check if there is a cycle)
-      if (this.branch.contains(actor)) {
-        // There is a cycle
-        addCycle(actor);
-        return null;
-      }
-
-      // Add the AbstractActor to the visited branch
-      this.branch.add(actor);
-
-      // Visit all AbstractActor depending on the current one.
-      // first, compute all successors
-      final Set<AbstractActor> successors = new LinkedHashSet<>();
-      for (final DataOutputPort port : actor.getDataOutputPorts()) {
-        final Fifo outgoingFifo = port.getOutgoingFifo();
-        if ((outgoingFifo != null)) {
-          if (!this.ignoredFifos.contains(outgoingFifo)) {
-            final DataInputPort dp = outgoingFifo.getTargetPort();
-            if (dp.eContainer() instanceof AbstractActor) {
-              successors.add((AbstractActor) dp.eContainer());
-            }
-          }
-          // if there is a delay actor, it may also introduce a dependency by its setter or getter
-          final Delay delay = outgoingFifo.getDelay();
-          if (delay != null) {
-            final AbstractActor getter = delay.getGetterActor();
-            if (getter != null && !this.ignoredFifos.contains(delay.getActor().getDataOutputPort().getFifo())) {
-              final Set<
-                  AbstractActor> lSources = gettersToSourceActors.computeIfAbsent(getter, x -> new LinkedHashSet<>());
-              lSources.add(actor);
-              successors.add(getter);
-            }
-          }
-        }
-      }
-      // second, visit all successors
-      for (final AbstractActor aa : successors) {
-        doSwitch(aa);
-        // If fast detection is activated and a cycle was detected, get
-        // out of here!
-        if (this.fastDetection && cyclesDetected()) {
-          break;
-        }
-      }
-
-      // Remove the AbstractActor from the branch.
-      this.branch.remove(this.branch.size() - 1);
-      // Add the AbstractActor to the visited list
-      this.visited.add(actor);
+    if (this.visited.contains(actor)) {
+      return null;
     }
+
+    // Check if the AbstractActor is already in the branch
+    // (i.e. check if there is a cycle)
+    if (this.branch.contains(actor)) {
+      // There is a cycle
+      addCycle(actor);
+      return null;
+    }
+
+    // Add the AbstractActor to the visited branch
+    this.branch.add(actor);
+
+    // Visit all AbstractActor depending on the current one.
+    // first, compute all successors
+    final Set<AbstractActor> successors = new LinkedHashSet<>();
+    for (final DataOutputPort port : actor.getDataOutputPorts()) {
+      final Fifo outgoingFifo = port.getOutgoingFifo();
+      if ((outgoingFifo != null)) {
+        if (!this.ignoredFifos.contains(outgoingFifo)) {
+          final DataInputPort dp = outgoingFifo.getTargetPort();
+          if (dp.eContainer() instanceof AbstractActor) {
+            successors.add((AbstractActor) dp.eContainer());
+          }
+        }
+        // if there is a delay actor, it may also introduce a dependency by its setter or getter
+        final Delay delay = outgoingFifo.getDelay();
+        if (delay != null) {
+          final AbstractActor getter = delay.getGetterActor();
+          if (getter != null && !this.ignoredFifos.contains(delay.getActor().getDataOutputPort().getFifo())) {
+            final Set<
+                AbstractActor> lSources = gettersToSourceActors.computeIfAbsent(getter, x -> new LinkedHashSet<>());
+            lSources.add(actor);
+            successors.add(getter);
+          }
+        }
+      }
+    }
+    // second, visit all successors
+    for (final AbstractActor aa : successors) {
+      doSwitch(aa);
+      // If fast detection is activated and a cycle was detected, get
+      // out of here!
+      if (this.fastDetection && cyclesDetected()) {
+        break;
+      }
+    }
+
+    // Remove the AbstractActor from the branch.
+    this.branch.remove(this.branch.size() - 1);
+    // Add the AbstractActor to the visited list
+    this.visited.add(actor);
+
     return null;
   }
 
@@ -248,9 +251,9 @@ public class FifoCycleDetector extends PiMMSwitch<Void> {
     final Fifo relatedFifo = da.getLinkedDelay().getContainingFifo();
     if (relatedFifo != null) {
       final DataInputPort dp = relatedFifo.getTargetPort();
-      if (dp.eContainer() instanceof AbstractActor) {
+      if (dp.eContainer() instanceof final AbstractActor aa) {
         final Set<AbstractActor> lTargets = settersToTargetActors.computeIfAbsent(setter, x -> new LinkedHashSet<>());
-        lTargets.add((AbstractActor) dp.eContainer());
+        lTargets.add(aa);
         doSwitch(dp.eContainer());
       }
     }
@@ -306,7 +309,7 @@ public class FifoCycleDetector extends PiMMSwitch<Void> {
 
   /**
    * Calling {@link #findCycleFeedbackFifos(List)} will set this variable.
-   * 
+   *
    * @return Whether or not at least of the cycles checked by {@link #findCycleFeedbackFifos(List)} are involving a
    *         Delay Actor.
    */
@@ -350,7 +353,7 @@ public class FifoCycleDetector extends PiMMSwitch<Void> {
 
     // Find a list of FIFO between a pair of actor with delays on all FIFOs
     List<Fifo> feedbackFifos = null;
-    List<Integer> feedbackFifosIndex = new ArrayList<>();
+    final List<Integer> feedbackFifosIndex = new ArrayList<>();
     int indexFF = -1;
     for (final List<Fifo> edgeFifos : cycleFifosPerEdge) {
       indexFF += 1;
@@ -372,12 +375,15 @@ public class FifoCycleDetector extends PiMMSwitch<Void> {
     }
 
     if (!involvesDA) {
-      int breakingFifoIndex = FifoBreakingCycleDetector.retrieveBreakingFifoWhenDifficult(cycle, cycleFifosPerEdge);
+      final int breakingFifoIndex = FifoBreakingCycleDetector.retrieveBreakingFifoWhenDifficult(cycle,
+          cycleFifosPerEdge);
       if (feedbackFifosIndex.contains(breakingFifoIndex)) {
         return cycleFifosPerEdge.get(breakingFifoIndex);
-      } else if (feedbackFifos != null) {
+      }
+      if (feedbackFifos != null) {
         return feedbackFifos;
-      } else if (breakingFifoIndex >= 0) {
+      }
+      if (breakingFifoIndex >= 0) {
         return cycleFifosPerEdge.get(breakingFifoIndex);
       }
     }

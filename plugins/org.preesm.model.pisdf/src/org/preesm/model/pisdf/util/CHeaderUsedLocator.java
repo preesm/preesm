@@ -60,9 +60,8 @@ public class CHeaderUsedLocator {
   public static final List<IPath> findAllCHeadersUsed(final PiGraph graph) {
     final List<IPath> result = new ArrayList<>();
     graph.eAllContents().forEachRemaining(element -> {
-      if (element instanceof CHeaderRefinement) {
-        final IPath filePath = Optional.ofNullable(((CHeaderRefinement) element).getFilePath()).map(Path::new)
-            .orElse(null);
+      if (element instanceof final CHeaderRefinement cHeaderRef) {
+        final IPath filePath = Optional.ofNullable(cHeaderRef.getFilePath()).map(Path::new).orElse(null);
         if ((filePath != null) && !(result.contains(filePath))) {
           result.add(filePath);
         }

@@ -75,17 +75,11 @@ public abstract class PiBRV {
    * @return the BRV as a Map that associates a long value (the repetition value) for every AbstractVertex
    */
   public static final Map<AbstractVertex, Long> compute(final PiGraph piGraph, final BRVMethod method) {
-    final PiBRV piBRVAlgo;
-    switch (method) {
-      case LCM:
-        piBRVAlgo = new LCMBasedBRV();
-        break;
-      case TOPOLOGY:
-        piBRVAlgo = new TopologyBasedBRV();
-        break;
-      default:
-        throw new PreesmRuntimeException("unexpected value for BRV method: [" + method + "]");
-    }
+    final PiBRV piBRVAlgo = switch (method) {
+      case LCM -> new LCMBasedBRV();
+      case TOPOLOGY -> new TopologyBasedBRV();
+      default -> throw new PreesmRuntimeException("unexpected value for BRV method: [" + method + "]");
+    };
     return piBRVAlgo.computeBRV(piGraph);
   }
 
@@ -98,9 +92,9 @@ public abstract class PiBRV {
     for (final Entry<AbstractVertex, Long> en : brv.entrySet()) {
       final AbstractVertex av = en.getKey();
       final PiGraph container = av.getContainingPiGraph();
-      if (!levelRV.containsKey(container)) {
-        levelRV.put(container, PiMMHelper.getHierarchichalRV(container, brv));
-      }
+
+      levelRV.computeIfAbsent(container, c -> PiMMHelper.getHierarchichalRV(c, brv));
+
       final long actorRV = en.getValue();
       final long actorFullRV = actorRV * levelRV.get(container);
       final String msg = av.getVertexPath() + " x" + actorRV + " (total: x" + actorFullRV + ")";
@@ -115,13 +109,10 @@ public abstract class PiBRV {
     final Map<AbstractVertex, Long> resultBrv = new LinkedHashMap<>();
     for (final AbstractActor actor : parentGraph.getActors()) {
       PiGraph childGraph = null;
-      if (actor instanceof PiGraph) {
-        childGraph = (PiGraph) actor;
-      } else if (actor instanceof Actor) {
-        final Actor act = (Actor) actor;
-        if (act.isHierarchical()) {
-          childGraph = act.getSubGraph();
-        }
+      if (actor instanceof final PiGraph piGraph) {
+        childGraph = piGraph;
+      } else if (actor instanceof final Actor act && (act.isHierarchical())) {
+        childGraph = act.getSubGraph();
       }
       if (childGraph != null) {
         if (parentBRV.get(actor) == 0L) {
@@ -166,7 +157,7 @@ public abstract class PiBRV {
         final long newRV = graphBRV.get(actor) * scaleFactorMaxS;
         graphBRV.put(actor, newRV);
         if ((actor instanceof DelayActor) && (newRV > 1)) {
-          String message = "Inconsistent graph. DelayActor [" + actor.getName() + "] with a repetition vector of "
+          final String message = "Inconsistent graph. DelayActor [" + actor.getName() + "] with a repetition vector of "
               + Long.toString(newRV);
           throw new PreesmRuntimeException(message);
         }
@@ -185,13 +176,14 @@ public abstract class PiBRV {
    *          Rate of the interface to check.
    */
   private static void checkOppositeInterfaceRate(PiGraph graph, InterfaceActor ia, long rate) {
-    PiGraph motherGraph = graph.getContainingPiGraph();
+    final PiGraph motherGraph = graph.getContainingPiGraph();
     if (motherGraph != null) {
       // otherwise it means that we compute a local BRV (from GUI)
-      DataPort opposite = ia.getGraphPort();
-      long oppositeRate = opposite.getExpression().evaluate();
+      final DataPort opposite = ia.getGraphPort();
+      final long oppositeRate = opposite.getExpression().evaluate();
       if (/* motherGraph != graph && */oppositeRate != rate) {
-        String msg = "DataPort [" + opposite.getName() + "] of actor [" + opposite.getContainingActor().getVertexPath()
+        final String msg = "DataPort [" + opposite.getName() + "] of actor ["
+            + opposite.getContainingActor().getVertexPath()
             + "] has different rates from inner interface definition: inner " + rate + " -- outer " + oppositeRate;
         throw new PreesmRuntimeException(msg);
       }
@@ -215,7 +207,7 @@ public abstract class PiBRV {
    */
   private static long getOutputInterfacesScaleFactor(final PiGraph graph, final List<AbstractActor> subgraph,
       final long inscaleFactor, final Map<AbstractVertex, Long> graphBRV, final boolean emitWarningsForSpecialActors) {
-    SortedSet<Long> scaleScaleFactors = new TreeSet<>();
+    final SortedSet<Long> scaleScaleFactors = new TreeSet<>();
     scaleScaleFactors.add(1L);
     for (final DataOutputInterface out : graph.getDataOutputInterfaces()) {
       final DataInputPort dataInputPort = (DataInputPort) out.getDataPort();
@@ -225,32 +217,34 @@ public abstract class PiBRV {
       final DataOutputPort sourcePort = fifo.getSourcePort();
       final AbstractActor sourceActor = sourcePort.getContainingActor();
 
-      if (!(sourceActor instanceof InterfaceActor) && subgraph.contains(sourceActor)) {
-        final long prod = sourcePort.getPortRateExpression().evaluate();
-        final long sourceRV = graphBRV.get(sourceActor);
-        final long tmp = inscaleFactor * prod * sourceRV;
-        if (tmp > 0) {
-          long scaleScaleFactor = 1L;
-          if (tmp < cons) {
-            scaleScaleFactor = (cons + tmp - 1) / tmp;
-            scaleScaleFactors.add(scaleScaleFactor);
+      if (sourceActor instanceof InterfaceActor || !subgraph.contains(sourceActor)) {
+        continue;
+      }
+
+      final long prod = sourcePort.getPortRateExpression().evaluate();
+      final long sourceRV = graphBRV.get(sourceActor);
+      final long tmp = inscaleFactor * prod * sourceRV;
+      if (tmp > 0) {
+        long scaleScaleFactor = 1L;
+        if (tmp < cons) {
+          scaleScaleFactor = (cons + tmp - 1) / tmp;
+          scaleScaleFactors.add(scaleScaleFactor);
+        }
+        final boolean higherProd = tmp > cons && emitWarningsForSpecialActors;
+        final boolean lowerUndivisorProd = tmp < cons && cons % tmp != 0;
+        if (higherProd || lowerUndivisorProd) {
+          // we emit a warning only if producing too much, or not enough but with a wrong multiplicity
+          // note that it is not allowed to produce less than the consumed tokens on the output interface
+          // at the opposite, if more are produced, a roundbuffer is added.
+          String message = String.format(
+              "The output interface [%s] does not correspond to its source total production (%d vs %d).",
+              out.getVertexPath(), cons, tmp);
+          if (higherProd) {
+            message += " A Roundbuffer will be added in SRDAG.";
+          } else {
+            message += String.format(" Scaling factor (>= x%d) is needed.", scaleScaleFactor);
           }
-          final boolean higherProd = tmp > cons && emitWarningsForSpecialActors;
-          final boolean lowerUndivisorProd = tmp < cons && cons % tmp != 0;
-          if (higherProd || lowerUndivisorProd) {
-            // we emit a warning only if producing too much, or not enough but with a wrong multiplicity
-            // note that it is not allowed to produce less than the consumed tokens on the output interface
-            // at the opposite, if more are produced, a roundbuffer is added.
-            String message = String.format(
-                "The output interface [%s] does not correspond to its source total production (%d vs %d).",
-                out.getVertexPath(), cons, tmp);
-            if (higherProd) {
-              message += " A Roundbuffer will be added in SRDAG.";
-            } else {
-              message += String.format(" Scaling factor (>= x%d) is needed.", scaleScaleFactor);
-            }
-            PreesmLogger.getLogger().log(Level.INFO, message);
-          }
+          PreesmLogger.getLogger().log(Level.INFO, message);
         }
       }
     }
@@ -275,7 +269,7 @@ public abstract class PiBRV {
    */
   private static long getInputInterfacesScaleFactor(final PiGraph graph, final List<AbstractActor> subgraph,
       final long inscaleFactor, final Map<AbstractVertex, Long> graphBRV, final boolean emitWarningsForSpecialActors) {
-    SortedSet<Long> scaleScaleFactors = new TreeSet<>();
+    final SortedSet<Long> scaleScaleFactors = new TreeSet<>();
     scaleScaleFactors.add(1L);
     for (final DataInputInterface in : graph.getDataInputInterfaces()) {
       final DataOutputPort dataOutputPort = (DataOutputPort) in.getDataPort();
@@ -284,34 +278,38 @@ public abstract class PiBRV {
       final Fifo fifo = dataOutputPort.getOutgoingFifo();
       final DataInputPort targetPort = fifo.getTargetPort();
       final AbstractActor targetActor = targetPort.getContainingActor();
-      if (!(targetActor instanceof InterfaceActor) && subgraph.contains(targetActor)) {
-        final long targetRV = graphBRV.get(targetActor);
-        final long cons = targetPort.getPortRateExpression().evaluate();
-        final long tmp = inscaleFactor * cons * targetRV;
-        if (tmp > 0) {
-          long scaleScaleFactor = 1L;
-          if (tmp < prod) {
-            scaleScaleFactor = (prod + tmp - 1) / tmp;
-            scaleScaleFactors.add(scaleScaleFactor);
+
+      if (targetActor instanceof InterfaceActor || !subgraph.contains(targetActor)) {
+        continue;
+      }
+
+      final long targetRV = graphBRV.get(targetActor);
+      final long cons = targetPort.getPortRateExpression().evaluate();
+      final long tmp = inscaleFactor * cons * targetRV;
+      if (tmp > 0) {
+        long scaleScaleFactor = 1L;
+        if (tmp < prod) {
+          scaleScaleFactor = (prod + tmp - 1) / tmp;
+          scaleScaleFactors.add(scaleScaleFactor);
+        }
+        final boolean higherCons = tmp > prod && emitWarningsForSpecialActors;
+        final boolean lowerUndivisorCons = tmp < prod && prod % tmp != 0;
+        if (higherCons || lowerUndivisorCons) {
+          // we emit a warning only if consuming too much, or not enough but with a wrong multiplicity
+          // note that it is not allowed to leave unconsumed tokens on the input interface
+          // at the opposite, if more are consumed, a broadcast is added.
+          String message = String.format(
+              "The input interface [%s] does not correspond to its target total production (%d vs %d).",
+              in.getVertexPath(), prod, tmp);
+          if (higherCons) {
+            message += " A Broadcast will be added in SRDAG.";
+          } else {
+            message += String.format(" Scaling factor (>= x%d) is needed.", scaleScaleFactor);
           }
-          final boolean higherCons = tmp > prod && emitWarningsForSpecialActors;
-          final boolean lowerUndivisorCons = tmp < prod && prod % tmp != 0;
-          if (higherCons || lowerUndivisorCons) {
-            // we emit a warning only if consuming too much, or not enough but with a wrong multiplicity
-            // note that it is not allowed to leave unconsumed tokens on the input interface
-            // at the opposite, if more are consumed, a broadcast is added.
-            String message = String.format(
-                "The input interface [%s] does not correspond to its target total production (%d vs %d).",
-                in.getVertexPath(), prod, tmp);
-            if (higherCons) {
-              message += " A Broadcast will be added in SRDAG.";
-            } else {
-              message += String.format(" Scaling factor (>= x%d) is needed.", scaleScaleFactor);
-            }
-            PreesmLogger.getLogger().log(Level.INFO, message);
-          }
+          PreesmLogger.getLogger().log(Level.INFO, message);
         }
       }
+
     }
     return inscaleFactor * scaleScaleFactors.last();
   }

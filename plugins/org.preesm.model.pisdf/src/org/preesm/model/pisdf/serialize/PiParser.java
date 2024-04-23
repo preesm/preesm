@@ -534,14 +534,9 @@ public class PiParser {
     final String edgeKind = edgeElt.getAttribute(PiIdentifiers.EDGE_KIND);
 
     switch (edgeKind) {
-      case PiIdentifiers.FIFO:
-        parseFifo(edgeElt, graph);
-        break;
-      case PiIdentifiers.DEPENDENCY:
-        parseDependencies(edgeElt, graph);
-        break;
-      default:
-        throw new PreesmRuntimeException("Parsed edge has an unknown kind: " + edgeKind);
+      case PiIdentifiers.FIFO -> parseFifo(edgeElt, graph);
+      case PiIdentifiers.DEPENDENCY -> parseDependencies(edgeElt, graph);
+      default -> throw new PreesmRuntimeException("Parsed edge has an unknown kind: " + edgeKind);
     }
   }
 
@@ -555,12 +550,7 @@ public class PiParser {
    * @return Found DataPort if any, null else
    */
   private static DataPort lookForPort(final List<? extends DataPort> ports, final String name) {
-    for (final DataPort dp : ports) {
-      if (dp.getName().equals(name)) {
-        return dp;
-      }
-    }
-    return null;
+    return ports.stream().filter(dp -> dp.getName().equals(name)).findAny().orElse(null);
   }
 
   /**
@@ -797,7 +787,6 @@ public class PiParser {
         case DATA_OUTPUT -> parseSinkInterface(nodeElt, graph);
         case CFG_INPUT -> parseConfigInputInterface(nodeElt, graph);
         case CFG_OUTPUT -> parseConfigOutputInterface(nodeElt, graph);
-        default -> throw new PreesmRuntimeException("Parsed node " + nodeName + " has an unknown kind: " + nodeKind);
       };
     } else {
       switch (nodeKind) {
