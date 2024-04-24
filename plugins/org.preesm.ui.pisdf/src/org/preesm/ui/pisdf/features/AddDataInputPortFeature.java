@@ -143,19 +143,9 @@ public class AddDataInputPortFeature extends AbstractAddActorPortFeature {
    */
   @Override
   public GraphicsAlgorithm addPortLabel(final GraphicsAlgorithm containerShape, final String portName) {
-    // Get the GaService
-    final IGaService gaService = Graphiti.getGaService();
 
-    // Create the text
-    final Text text = gaService.createText(containerShape);
-    text.setValue(portName);
-    text.setFont(getPortFont());
-    text.setForeground(manageColor(AbstractAddActorPortFeature.PORT_TEXT_FOREGROUND));
-
-    // Layout the text
-    final int portFontHeight = AbstractAddActorPortFeature.portFontHeight;
+    final Text text = (Text) super.addPortLabel(containerShape, portName);
     text.setHorizontalAlignment(Orientation.ALIGNMENT_RIGHT);
-    gaService.setHeight(text, portFontHeight);
 
     return text;
   }

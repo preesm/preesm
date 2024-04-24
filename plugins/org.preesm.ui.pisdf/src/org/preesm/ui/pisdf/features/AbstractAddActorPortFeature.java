@@ -43,6 +43,7 @@ import org.eclipse.graphiti.features.context.ICustomContext;
 import org.eclipse.graphiti.features.custom.AbstractCustomFeature;
 import org.eclipse.graphiti.mm.algorithms.GraphicsAlgorithm;
 import org.eclipse.graphiti.mm.algorithms.Rectangle;
+import org.eclipse.graphiti.mm.algorithms.Text;
 import org.eclipse.graphiti.mm.algorithms.styles.Font;
 import org.eclipse.graphiti.mm.pictograms.Anchor;
 import org.eclipse.graphiti.mm.pictograms.BoxRelativeAnchor;
@@ -146,7 +147,22 @@ public abstract class AbstractAddActorPortFeature extends AbstractCustomFeature 
    *          the port name
    * @return the graphics algorithm
    */
-  public abstract GraphicsAlgorithm addPortLabel(GraphicsAlgorithm containerShape, String portName);
+  public GraphicsAlgorithm addPortLabel(final GraphicsAlgorithm containerShape, final String portName) {
+    // Get the GaService
+    final IGaService gaService = Graphiti.getGaService();
+
+    // Create the text
+    final Text text = gaService.createText(containerShape);
+    text.setValue(portName);
+    text.setFont(getPortFont());
+    text.setForeground(manageColor(AbstractAddActorPortFeature.PORT_TEXT_FOREGROUND));
+
+    // Layout the text
+    final int thisPortFontHeight = AbstractAddActorPortFeature.portFontHeight;
+    gaService.setHeight(text, thisPortFontHeight);
+
+    return text;
+  }
 
   /*
    * (non-Javadoc)
