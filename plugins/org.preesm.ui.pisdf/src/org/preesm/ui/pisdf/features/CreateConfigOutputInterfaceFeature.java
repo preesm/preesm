@@ -39,32 +39,25 @@
 package org.preesm.ui.pisdf.features;
 
 import org.eclipse.graphiti.features.IFeatureProvider;
-import org.eclipse.graphiti.features.context.ICreateContext;
-import org.eclipse.graphiti.features.impl.AbstractCreateFeature;
-import org.eclipse.graphiti.func.ICreate;
-import org.eclipse.graphiti.mm.pictograms.Diagram;
 import org.preesm.model.pisdf.ConfigOutputInterface;
-import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.pisdf.factory.PiMMUserFactory;
-import org.preesm.ui.pisdf.util.VertexNameValidator;
-import org.preesm.ui.utils.DialogUtil;
 
-// TODO: Auto-generated Javadoc
 /**
  * Create feature for {@link ConfigOutputInterface}.
  *
  * @author kdesnos
  */
-public class CreateConfigOutputInterfaceFeature extends AbstractCreateFeature {
-
-  /** The has done changes. */
-  boolean hasDoneChanges = false;
+public class CreateConfigOutputInterfaceFeature extends AbstractCreateConfigurableFeature {
 
   /** The Constant FEATURE_NAME. */
-  private static final String FEATURE_NAME = "Config Output Interface";
+  private static final String FEATURE_NAME = "Config. Output Interface";
 
   /** The Constant FEATURE_DESCRIPTION. */
   private static final String FEATURE_DESCRIPTION = "Create Config. Output Interface";
+
+  private static final String DEFAULT_NAME = "cfgOutIfName";
+
+  private static final String QUESTION = "Enter new configuration output interface name";
 
   /**
    * the Default constructor of {@link CreateConfigOutputInterfaceFeature}.
@@ -73,67 +66,28 @@ public class CreateConfigOutputInterfaceFeature extends AbstractCreateFeature {
    *          the feature provider
    */
   public CreateConfigOutputInterfaceFeature(final IFeatureProvider fp) {
-    super(fp, CreateConfigOutputInterfaceFeature.FEATURE_NAME, CreateConfigOutputInterfaceFeature.FEATURE_DESCRIPTION);
+    super(fp, FEATURE_NAME, FEATURE_DESCRIPTION);
+    this.hasDoneChanges = false;
   }
 
-  /*
-   * (non-Javadoc)
-   *
-   * @see org.eclipse.graphiti.func.ICreate#canCreate(org.eclipse.graphiti.features.context.ICreateContext)
-   */
   @Override
-  public boolean canCreate(final ICreateContext context) {
-    return context.getTargetContainer() instanceof Diagram;
+  String getFeatureDescription() {
+    return FEATURE_DESCRIPTION;
   }
 
-  /*
-   * (non-Javadoc)
-   *
-   * @see org.eclipse.graphiti.func.ICreate#create(org.eclipse.graphiti.features.context.ICreateContext)
-   */
   @Override
-  public Object[] create(final ICreateContext context) {
-    // Retrieve the graph
-    final PiGraph graph = (PiGraph) getBusinessObjectForPictogramElement(getDiagram());
-
-    // Ask user for ConfigOutputInterface name until a valid name is
-    // entered.
-    final String question = "Enter new Config. Output Interface name";
-    String newCfgOutName = "cfgOutIfName";
-
-    newCfgOutName = DialogUtil.askString(FEATURE_DESCRIPTION, question, newCfgOutName,
-        new VertexNameValidator(graph, null));
-    if ((newCfgOutName == null) || (newCfgOutName.trim().length() == 0)) {
-      this.hasDoneChanges = false; // If this is not done, the graph is
-      // considered modified.
-      return ICreate.EMPTY;
-    }
-
-    // create ConfigOutInterface
-    final ConfigOutputInterface newCfgOutIf = PiMMUserFactory.instance.createConfigOutputInterface();
-    newCfgOutIf.setName(newCfgOutName);
-    newCfgOutIf.getDataPort().setName(newCfgOutName);
-
-    // Add new ConfigOutInterface to the graph.
-    if (graph.addActor(newCfgOutIf)) {
-      this.hasDoneChanges = true;
-    }
-
-    // do the add to the Diagram
-    addGraphicalRepresentation(context, newCfgOutIf);
-
-    // return newly created business object(s)
-    return new Object[] { newCfgOutIf };
+  String getDefaultName() {
+    return DEFAULT_NAME;
   }
 
-  /*
-   * (non-Javadoc)
-   *
-   * @see org.eclipse.graphiti.features.impl.AbstractFeature#hasDoneChanges()
-   */
   @Override
-  public boolean hasDoneChanges() {
-    return this.hasDoneChanges;
+  String getQuestion() {
+    return QUESTION;
+  }
+
+  @Override
+  ConfigOutputInterface createConfigurable(String newCoiName) {
+    return PiMMUserFactory.instance.createConfigOutputInterface(newCoiName);
   }
 
 }

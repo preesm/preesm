@@ -46,6 +46,7 @@ import org.preesm.commons.model.PreesmCopyTracker;
 import org.preesm.commons.model.PreesmUserFactory;
 import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.Actor;
+import org.preesm.model.pisdf.BroadcastActor;
 import org.preesm.model.pisdf.ConfigInputInterface;
 import org.preesm.model.pisdf.ConfigInputPort;
 import org.preesm.model.pisdf.ConfigOutputInterface;
@@ -60,12 +61,15 @@ import org.preesm.model.pisdf.DelayLinkedExpression;
 import org.preesm.model.pisdf.Dependency;
 import org.preesm.model.pisdf.Expression;
 import org.preesm.model.pisdf.Fifo;
+import org.preesm.model.pisdf.ForkActor;
 import org.preesm.model.pisdf.ISetter;
+import org.preesm.model.pisdf.JoinActor;
 import org.preesm.model.pisdf.LongExpression;
 import org.preesm.model.pisdf.MoldableParameter;
 import org.preesm.model.pisdf.Parameter;
 import org.preesm.model.pisdf.PersistenceLevel;
 import org.preesm.model.pisdf.PiGraph;
+import org.preesm.model.pisdf.RoundBufferActor;
 import org.preesm.model.pisdf.StringExpression;
 import org.preesm.model.pisdf.adapter.GraphObserver;
 import org.preesm.model.pisdf.impl.PiMMFactoryImpl;
@@ -211,6 +215,10 @@ public final class PiMMUserFactory extends PiMMFactoryImpl implements PreesmUser
     return createParameter(null, 0);
   }
 
+  public Parameter createParameter(final String name) {
+    return createParameter(name, 0);
+  }
+
   /**
    *
    */
@@ -225,6 +233,10 @@ public final class PiMMUserFactory extends PiMMFactoryImpl implements PreesmUser
   @Override
   public MoldableParameter createMoldableParameter() {
     return createMoldableParameter(null, 0);
+  }
+
+  public MoldableParameter createMoldableParameter(final String name) {
+    return createMoldableParameter(name, 0);
   }
 
   /**
@@ -369,6 +381,30 @@ public final class PiMMUserFactory extends PiMMFactoryImpl implements PreesmUser
     return res;
   }
 
+  public BroadcastActor createBroadcastActor(final String name) {
+    final BroadcastActor res = super.createBroadcastActor();
+    res.setName(name);
+    return res;
+  }
+
+  public ForkActor createForkActor(final String name) {
+    final ForkActor res = super.createForkActor();
+    res.setName(name);
+    return res;
+  }
+
+  public JoinActor createJoinActor(final String name) {
+    final JoinActor res = super.createJoinActor();
+    res.setName(name);
+    return res;
+  }
+
+  public RoundBufferActor createRoundBufferActor(final String name) {
+    final RoundBufferActor res = super.createRoundBufferActor();
+    res.setName(name);
+    return res;
+  }
+
   public Expression createExpression() {
     return createExpression(0L);
   }
@@ -404,11 +440,23 @@ public final class PiMMUserFactory extends PiMMFactoryImpl implements PreesmUser
     return res;
   }
 
+  public DataInputInterface createDataInputInterface(final String name) {
+    final DataInputInterface res = createDataInputInterface();
+    res.setName(name);
+    return res;
+  }
+
   @Override
   public DataOutputInterface createDataOutputInterface() {
     final DataOutputInterface res = super.createDataOutputInterface();
     final DataInputPort port = PiMMUserFactory.instance.createDataInputPort();
     res.getDataInputPorts().add(port);
+    return res;
+  }
+
+  public DataOutputInterface createDataOutputInterface(final String name) {
+    final DataOutputInterface res = createDataOutputInterface();
+    res.setName(name);
     return res;
   }
 
@@ -420,12 +468,24 @@ public final class PiMMUserFactory extends PiMMFactoryImpl implements PreesmUser
     return res;
   }
 
+  public ConfigInputInterface createConfigInputInterface(final String name) {
+    final ConfigInputInterface res = createConfigInputInterface();
+    res.setName(name);
+    return res;
+  }
+
   @Override
   public ConfigOutputInterface createConfigOutputInterface() {
     final ConfigOutputInterface res = super.createConfigOutputInterface();
     final DataInputPort port = PiMMUserFactory.instance.createDataInputPort();
     port.setExpression(1L);
     res.getDataInputPorts().add(port);
+    return res;
+  }
+
+  public ConfigOutputInterface createConfigOutputInterface(final String name) {
+    final ConfigOutputInterface res = createConfigOutputInterface();
+    res.setName(name);
     return res;
   }
 

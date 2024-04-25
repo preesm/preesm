@@ -39,24 +39,16 @@
 package org.preesm.ui.pisdf.features;
 
 import org.eclipse.graphiti.features.IFeatureProvider;
-import org.eclipse.graphiti.features.context.ICreateContext;
-import org.eclipse.graphiti.features.impl.AbstractCreateFeature;
-import org.eclipse.graphiti.func.ICreate;
-import org.eclipse.graphiti.mm.pictograms.Diagram;
 import org.preesm.model.pisdf.Parameter;
-import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.pisdf.factory.PiMMUserFactory;
-import org.preesm.ui.pisdf.util.VertexNameValidator;
-import org.preesm.ui.utils.DialogUtil;
 
-// TODO: Auto-generated Javadoc
 /**
  * Create Feature for {@link Parameter}s.
  *
  * @author kdesnos
  * @author jheulot
  */
-public class CreateParameterFeature extends AbstractCreateFeature {
+public class CreateParameterFeature extends AbstractCreateConfigurableFeature {
 
   /** The Constant FEATURE_NAME. */
   private static final String FEATURE_NAME = "Parameter";
@@ -64,8 +56,9 @@ public class CreateParameterFeature extends AbstractCreateFeature {
   /** The Constant FEATURE_DESCRIPTION. */
   private static final String FEATURE_DESCRIPTION = "Create Parameter";
 
-  /** The has done changes. */
-  protected Boolean hasDoneChanges;
+  private static final String DEFAULT_NAME = "ParameterName";
+
+  private static final String QUESTION = "Enter new parameter name";
 
   /**
    * Default constructor for the {@link CreateParameterFeature}.
@@ -74,58 +67,28 @@ public class CreateParameterFeature extends AbstractCreateFeature {
    *          the feature provider
    */
   public CreateParameterFeature(final IFeatureProvider fp) {
-    super(fp, CreateParameterFeature.FEATURE_NAME, CreateParameterFeature.FEATURE_DESCRIPTION);
+    super(fp, FEATURE_NAME, FEATURE_DESCRIPTION);
     this.hasDoneChanges = false;
   }
 
-  /*
-   * (non-Javadoc)
-   *
-   * @see org.eclipse.graphiti.func.ICreate#canCreate(org.eclipse.graphiti.features.context.ICreateContext)
-   */
   @Override
-  public boolean canCreate(final ICreateContext context) {
-    return context.getTargetContainer() instanceof Diagram;
+  String getFeatureDescription() {
+    return FEATURE_DESCRIPTION;
   }
 
-  /*
-   * (non-Javadoc)
-   *
-   * @see org.eclipse.graphiti.func.ICreate#create(org.eclipse.graphiti.features.context.ICreateContext)
-   */
   @Override
-  public Object[] create(final ICreateContext context) {
-    // Retrieve the graph
-    final PiGraph graph = (PiGraph) getBusinessObjectForPictogramElement(getDiagram());
+  String getDefaultName() {
+    return DEFAULT_NAME;
+  }
 
-    // Ask user for Parameter name until a valid name is entered.
-    final String question = "Enter new parameter name";
-    String newParameterName = "ParameterName";
+  @Override
+  String getQuestion() {
+    return QUESTION;
+  }
 
-    // TODO create a parameter name validator
-    newParameterName = DialogUtil.askString(FEATURE_DESCRIPTION, question, newParameterName,
-        new VertexNameValidator(graph, null));
-    if ((newParameterName == null) || (newParameterName.trim().length() == 0)) {
-      this.hasDoneChanges = false; // If this is not done, the graph is
-      // considered modified.
-      return ICreate.EMPTY;
-    }
-
-    // create Parameter
-    final Parameter newParameter = PiMMUserFactory.instance.createParameter();
-    newParameter.setName(newParameterName);
-    // this parameter
-
-    // Add new parameter to the graph.
-    if (graph.addParameter(newParameter)) {
-      this.hasDoneChanges = true;
-    }
-
-    // do the add to the Diagram
-    addGraphicalRepresentation(context, newParameter);
-
-    // return newly created business object(s)
-    return new Object[] { newParameter };
+  @Override
+  Parameter createConfigurable(final String newParamName) {
+    return PiMMUserFactory.instance.createParameter(newParamName);
   }
 
 }

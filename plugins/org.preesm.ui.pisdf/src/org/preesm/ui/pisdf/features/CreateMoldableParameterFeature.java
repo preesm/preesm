@@ -39,24 +39,16 @@
 package org.preesm.ui.pisdf.features;
 
 import org.eclipse.graphiti.features.IFeatureProvider;
-import org.eclipse.graphiti.features.context.ICreateContext;
-import org.eclipse.graphiti.features.impl.AbstractCreateFeature;
-import org.eclipse.graphiti.func.ICreate;
-import org.eclipse.graphiti.mm.pictograms.Diagram;
 import org.preesm.model.pisdf.MoldableParameter;
-import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.pisdf.factory.PiMMUserFactory;
-import org.preesm.ui.pisdf.util.VertexNameValidator;
-import org.preesm.ui.utils.DialogUtil;
 
-// TODO: Auto-generated Javadoc
 /**
  * Create Feature for {@link MoldableParameter}s.
  *
  * @author kdesnos
  * @author jheulot
  */
-public class CreateMoldableParameterFeature extends AbstractCreateFeature {
+public class CreateMoldableParameterFeature extends AbstractCreateConfigurableFeature {
 
   /** The Constant FEATURE_NAME. */
   private static final String FEATURE_NAME = "Moldable Parameter";
@@ -64,8 +56,9 @@ public class CreateMoldableParameterFeature extends AbstractCreateFeature {
   /** The Constant FEATURE_DESCRIPTION. */
   private static final String FEATURE_DESCRIPTION = "Create Moldable Parameter";
 
-  /** The has done changes. */
-  protected Boolean hasDoneChanges;
+  private static final String DEFAULT_NAME = "MoldableParameterName";
+
+  private static final String QUESTION = "Enter new moldable parameter name";
 
   /**
    * Default constructor for the {@link CreateMoldableParameterFeature}.
@@ -74,58 +67,28 @@ public class CreateMoldableParameterFeature extends AbstractCreateFeature {
    *          the feature provider
    */
   public CreateMoldableParameterFeature(final IFeatureProvider fp) {
-    super(fp, CreateMoldableParameterFeature.FEATURE_NAME, CreateMoldableParameterFeature.FEATURE_DESCRIPTION);
+    super(fp, FEATURE_NAME, FEATURE_DESCRIPTION);
     this.hasDoneChanges = false;
   }
 
-  /*
-   * (non-Javadoc)
-   *
-   * @see org.eclipse.graphiti.func.ICreate#canCreate(org.eclipse.graphiti.features.context.ICreateContext)
-   */
   @Override
-  public boolean canCreate(final ICreateContext context) {
-    return context.getTargetContainer() instanceof Diagram;
+  String getFeatureDescription() {
+    return FEATURE_DESCRIPTION;
   }
 
-  /*
-   * (non-Javadoc)
-   *
-   * @see org.eclipse.graphiti.func.ICreate#create(org.eclipse.graphiti.features.context.ICreateContext)
-   */
   @Override
-  public Object[] create(final ICreateContext context) {
-    // Retrieve the graph
-    final PiGraph graph = (PiGraph) getBusinessObjectForPictogramElement(getDiagram());
+  String getDefaultName() {
+    return DEFAULT_NAME;
+  }
 
-    // Ask user for Parameter name until a valid name is entered.
-    final String question = "Enter new moldable parameter name";
-    String newParameterName = "MoldableParameterName";
+  @Override
+  String getQuestion() {
+    return QUESTION;
+  }
 
-    // TODO create a parameter name validator
-    newParameterName = DialogUtil.askString(FEATURE_DESCRIPTION, question, newParameterName,
-        new VertexNameValidator(graph, null));
-    if ((newParameterName == null) || (newParameterName.trim().length() == 0)) {
-      this.hasDoneChanges = false; // If this is not done, the graph is
-      // considered modified.
-      return ICreate.EMPTY;
-    }
-
-    // create Parameter
-    final MoldableParameter newParameter = PiMMUserFactory.instance.createMoldableParameter();
-    newParameter.setName(newParameterName);
-    // this parameter
-
-    // Add new parameter to the graph.
-    if (graph.addParameter(newParameter)) {
-      this.hasDoneChanges = true;
-    }
-
-    // do the add to the Diagram
-    addGraphicalRepresentation(context, newParameter);
-
-    // return newly created business object(s)
-    return new Object[] { newParameter };
+  @Override
+  MoldableParameter createConfigurable(final String newMoldParamName) {
+    return PiMMUserFactory.instance.createMoldableParameter(newMoldParamName);
   }
 
 }
