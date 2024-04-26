@@ -39,7 +39,6 @@ package org.preesm.algorithm.memory.allocation.tasks;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.logging.Level;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.preesm.algorithm.memory.bounds.MemoryBoundsEstimatorEngine;
 import org.preesm.algorithm.memory.exclusiongraph.MemoryExclusionGraph;
@@ -62,10 +61,11 @@ import org.preesm.workflow.implement.AbstractWorkflowNodeImplementation;
 @PreesmTask(id = "org.ietr.preesm.memory.bounds.MemoryBoundsEstimator", name = "Memory Bounds Estimator",
     category = "Memory Optimization",
 
-    inputs = { @Port(name = "MemEx", type = MemoryExclusionGraph.class) },
+    inputs = { @Port(name = AbstractWorkflowNodeImplementation.KEY_MEM_EX, type = MemoryExclusionGraph.class) },
 
-    outputs = { @Port(name = "MemEx", type = MemoryExclusionGraph.class), @Port(name = "BoundMin", type = Long.class),
-        @Port(name = "BoundMax", type = Long.class) },
+    outputs = { @Port(name = AbstractWorkflowNodeImplementation.KEY_MEM_EX, type = MemoryExclusionGraph.class),
+        @Port(name = AbstractWorkflowNodeImplementation.KEY_BOUND_MIN, type = Long.class),
+        @Port(name = AbstractWorkflowNodeImplementation.KEY_BOUND_MAX, type = Long.class) },
 
     shortDescription = "Compute bounds of the amount of memory needed to allocate the MEG",
 
@@ -123,7 +123,7 @@ public class MemoryBoundsEstimator extends AbstractTaskImplementation {
     final String valueVerbose = parameters.get(MemoryBoundsEstimator.PARAM_VERBOSE);
     final String valueSolver = parameters.get(MemoryBoundsEstimator.PARAM_SOLVER);
 
-    final MemoryExclusionGraph memEx = (MemoryExclusionGraph) inputs.get("MemEx");
+    final MemoryExclusionGraph memEx = (MemoryExclusionGraph) inputs.get(AbstractWorkflowNodeImplementation.KEY_MEM_EX);
 
     final MemoryBoundsEstimatorEngine engine = new MemoryBoundsEstimatorEngine(memEx, valueVerbose);
     engine.selectSolver(valueSolver);
@@ -133,8 +133,7 @@ public class MemoryBoundsEstimator extends AbstractTaskImplementation {
 
     final long maxBound = engine.getMaxBound();
 
-    final String message = "Bound_Max = " + maxBound + " Bound_Min = " + minBound;
-    PreesmLogger.getLogger().log(Level.INFO, message);
+    PreesmLogger.getLogger().info(() -> "Bound_Max = " + maxBound + " bits, Bound_Min = " + minBound + " bits.");
 
     // Generate output
     final Map<String, Object> output = new LinkedHashMap<>();

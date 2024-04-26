@@ -37,7 +37,6 @@
  */
 package org.preesm.algorithm.memory.bounds;
 
-import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.jgrapht.graph.DefaultEdge;
 import org.preesm.algorithm.memory.exclusiongraph.MemoryExclusionGraph;
@@ -74,13 +73,10 @@ public class MemoryBoundsEstimatorEngine {
   public void selectSolver(final String valueSolver) {
     if (this.verbose) {
       switch (valueSolver) {
-        case MemoryBoundsEstimatorEngine.VALUE_SOLVER_DEFAULT ->
-          this.logger.log(Level.INFO, "No solver specified. Heuristic solver used by default.");
-        case MemoryBoundsEstimatorEngine.VALUE_SOLVER_HEURISTIC, MemoryBoundsEstimatorEngine.VALUE_SOLVER_OSTERGARD,
-            MemoryBoundsEstimatorEngine.VALUE_SOLVER_YAMAGUCHI ->
-          this.logger.log(Level.INFO, () -> valueSolver + " solver used.");
-        default ->
-          this.logger.log(Level.INFO, () -> "Incorrect solver :" + valueSolver + ". Heuristic solver used by default.");
+        case VALUE_SOLVER_DEFAULT -> this.logger.info("No solver specified. Heuristic solver used by default.");
+        case VALUE_SOLVER_HEURISTIC, VALUE_SOLVER_OSTERGARD, VALUE_SOLVER_YAMAGUCHI ->
+          this.logger.info(() -> valueSolver + " solver used.");
+        default -> this.logger.info(() -> "Incorrect solver :" + valueSolver + ". Heuristic solver used by default.");
       }
     }
 
@@ -96,7 +92,7 @@ public class MemoryBoundsEstimatorEngine {
    */
   public void solve() {
     if (this.verbose) {
-      this.logger.log(Level.INFO, "Maximum-Weight Clique Problem : start solving");
+      this.logger.info("Maximum-Weight Clique Problem : start solving");
     }
 
     this.solver.solve();
