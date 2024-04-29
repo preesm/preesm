@@ -153,8 +153,12 @@ public class PasteFeature extends AbstractPasteFeature {
 
     // Actual auto connection of dependencies is postponed until after Delays
     // have had their PictogramElement created and linked to the vertexCopy
+
+    // Connect dependency if target graph == source graph
+    // Connect dependency with parameter copy if it exists, otherwise to original parameter
     this.copiedObjects.forEach(this::autoConnectInputConfigPorts);
 
+    // Connect dependency if target graph != source graph
     if (getPiGraph() != getOriginalPiGraph()) {
       connectDependencies();
     }
@@ -440,7 +444,13 @@ public class PasteFeature extends AbstractPasteFeature {
     for (final Dependency dep : pigraph.getDependencies()) {
       final ConfigInputPort getter = dep.getGetter();
       if (originalParameterizable.getConfigInputPorts().contains(getter)) {
-        final ISetter setter = dep.getSetter();
+        ISetter setter = dep.getSetter();
+
+        // If dependency setter is
+        if (setter instanceof final Configurable cSetter && this.copiedObjects.containsKey(cSetter)) {
+          setter = (ISetter) this.copiedObjects.get(cSetter);
+        }
+
         final ConfigInputPort getterCopy = lookupConfigInputPort(parameterizableCopy, getter);
         final Dependency newDep = PiMMUserFactory.instance.createDependency(setter, getterCopy);
 
