@@ -75,6 +75,12 @@ public class AddDelayFeature extends AbstractAddFeature {
   /** The Constant DELAY_SIZE. */
   public static final int DELAY_SIZE = 16;
 
+  /** The Constant FEATURE_NAME. */
+  private static final String FEATURE_NAME = "Add Delay";
+
+  /** The Constant FEATURE_DESCRIPTION. */
+  private static final String FEATURE_DESCRIPTION = "Add a Delay to the Fifo";
+
   /**
    * XXX Hack to keep track of created PEs in order to link them with the proper delay (not the one created in the
    * execute() method...)
@@ -98,7 +104,7 @@ public class AddDelayFeature extends AbstractAddFeature {
    */
   @Override
   public String getName() {
-    return "Add Delay";
+    return FEATURE_NAME;
   }
 
   /*
@@ -108,30 +114,8 @@ public class AddDelayFeature extends AbstractAddFeature {
    */
   @Override
   public String getDescription() {
-    return "Add a Delay to the Fifo";
+    return FEATURE_DESCRIPTION;
   }
-
-  /*
-   * (non-Javadoc)
-   *
-   * @see org.eclipse.graphiti.features.custom.AbstractCustomFeature#canExecute(org.eclipse.graphiti.features.context.
-   * ICustomContext)
-   */
-  // @Override
-  // public boolean canExecute(final ICustomContext context) {
-  // // allow if exactly one pictogram element
-  // // representing a Fifo is selected
-  // boolean ret = false;
-  // final PictogramElement[] pes = context.getPictogramElements();
-  // if ((pes != null) && (pes.length == 1)) {
-  // final Object bo = getBusinessObjectForPictogramElement(pes[0]);
-  // if (bo instanceof final Fifo fifo && fifo.getDelay() == null) {
-  // // Check that the Fifo has no existing delay
-  // ret = true;
-  // }
-  // }
-  // return ret;
-  // }
 
   /*
    * (non-Javadoc)
@@ -142,7 +126,6 @@ public class AddDelayFeature extends AbstractAddFeature {
   public boolean canAdd(final IAddContext context) {
     // Check that the user wants to add a Delay to the Diagram
     return (context.getNewObject() instanceof Delay) && (context.getTargetContainer() instanceof Diagram);
-    // return true;
   }
 
   /*
