@@ -132,10 +132,9 @@ public class CreateDependencyFeature extends AbstractCreateConnectionFeature {
     // True if the target is a ConfigInputPort of an actor (and the source
     // is not a ConfigOutpuPort
     final Port target = getPort(context.getTargetAnchor());
-    final boolean targetOK = target instanceof ConfigInputPort;
-    if (targetOK) {
+    if (target instanceof final ConfigInputPort cii) {
       // Check that no dependency is connected to the ports
-      if (((ConfigInputPort) target).getIncomingDependency() != null) {
+      if (cii.getIncomingDependency() != null) {
         // Create tooltip message
         PiMMUtil.setToolTip(getFeatureProvider(), context.getTargetAnchor().getGraphicsAlgorithm(),
             getDiagramBehavior(), "A config port cannot be connected to several Dependencies");
@@ -235,17 +234,24 @@ public class CreateDependencyFeature extends AbstractCreateConnectionFeature {
     final ISetter setter = getSetter(setterAnchor);
     Port getter = getPort(getterAnchor);
 
+    PictogramElement tgtPE = context.getTargetPictogramElement();
+
     // If setter is null, something went wrong
     // TODO implement the creation of configOutputPort
     if (setter == null) {
       return null;
     }
 
+    // If getter is the DataPort of a DataInterface, change getter to be the interface
+    if (getter instanceof final DataPort dataPort && dataPort.getContainingActor() instanceof InterfaceActor) {
+      getterAnchor = getterAnchor.getParent().getAnchors().get(1);
+      getter = getPort(getterAnchor);
+      tgtPE = getterAnchor.getParent();
+    }
+
     // If getter port is null
     if (getter == null) {
-      // If the target is a Parameterizable item
-      // Create a configInputPort
-      final PictogramElement tgtPE = context.getTargetPictogramElement();
+      // If the target is a Parameterizable item, create a configInputPort
       final Object tgtObj = getBusinessObjectForPictogramElement(tgtPE);
       if (tgtObj instanceof final Configurable configurable) {
         // The target can be: A Parameter, A Fifo, An Actor, An interface.
@@ -284,10 +290,8 @@ public class CreateDependencyFeature extends AbstractCreateConnectionFeature {
     // failed or was aborted)
 
     if (getter instanceof DataPort) {
-      MessageDialog.openWarning(null, "Preesm Error", """
-          Can not connect dependencies to data ports. Try connecting the dependency to the containing actor.
-          Note: if you are trying to connect the dependency to an interface, drop its end on the interface name.
-          """);
+      MessageDialog.openWarning(null, "Preesm Error",
+          "Can not connect dependencies to data ports. Try connecting the dependency to the containing actor.");
       return null;
     }
 
