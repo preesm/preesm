@@ -65,14 +65,12 @@ public class DataPortPropertiesUpdater extends GFPropertySection {
       setNewExpression(port, textToUpdate.getText());
       // If port is contained by an DataInterface, we should
       // also update the graph port of the DataInterface
-      if (port.eContainer() instanceof DataOutputInterface) {
-        final DataOutputInterface doi = (DataOutputInterface) port.eContainer();
+      if (port.eContainer() instanceof final DataOutputInterface doi) {
         final DataOutputPort oPort = (DataOutputPort) doi.getGraphPort();
         if (!oPort.getPortRateExpression().getExpressionAsString().equals(textToUpdate.getText())) {
           setNewExpression(oPort, textToUpdate.getText());
         }
-      } else if (port.eContainer() instanceof DataInputInterface) {
-        final DataInputInterface dii = (DataInputInterface) port.eContainer();
+      } else if (port.eContainer() instanceof final DataInputInterface dii) {
         final DataInputPort iPort = (DataInputPort) dii.getGraphPort();
         if (!iPort.getPortRateExpression().getExpressionAsString().equals(textToUpdate.getText())) {
           setNewExpression(iPort, textToUpdate.getText());

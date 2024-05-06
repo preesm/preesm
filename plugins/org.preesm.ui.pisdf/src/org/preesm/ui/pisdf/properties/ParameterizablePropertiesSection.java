@@ -223,75 +223,76 @@ public class ParameterizablePropertiesSection extends DataPortPropertiesUpdater 
     final Point selelection = this.txtExpression.getSelection();
     this.txtExpression.setEnabled(false);
 
-    if (pictogramElement != null) {
-      final Object businessObject = Graphiti.getLinkService()
-          .getBusinessObjectForLinkedPictogramElement(pictogramElement);
-      if (businessObject == null) {
-        return;
-      }
+    if (pictogramElement == null) {
+      return;
+    }
 
-      if (businessObject instanceof final Parameter param) {
-        elementName = param.getName();
-        elementValueExpression = ((Parameter) businessObject).getValueExpression();
-      } else if (businessObject instanceof final InterfaceActor iface) {
-        elementName = iface.getName();
-        elementValueExpression = iface.getDataPort().getPortRateExpression();
+    final Object businessObject = Graphiti.getLinkService()
+        .getBusinessObjectForLinkedPictogramElement(pictogramElement);
+    if (businessObject == null) {
+      return;
+    }
+
+    if (businessObject instanceof final Parameter param) {
+      elementName = param.getName();
+      elementValueExpression = ((Parameter) businessObject).getValueExpression();
+    } else if (businessObject instanceof final InterfaceActor iface) {
+      elementName = iface.getName();
+      elementValueExpression = iface.getDataPort().getPortRateExpression();
+    } else {
+      throw new UnsupportedOperationException();
+    }
+
+    this.lblNameObj.setText(elementName == null ? " " : elementName);
+    if (elementValueExpression == null) {
+      return;
+    }
+    this.txtExpression.setEnabled(true);
+
+    if (businessObject instanceof final MoldableParameter mp) {
+      final String eltExprString = mp.getUserExpression();
+      if (this.txtExpression.getText().compareTo(eltExprString) != 0) {
+        this.txtExpression.setText(eltExprString);
+      }
+      if (errorMP == null) {
+        // we need to check, since isValid method is called only if an update is done
+        try {
+          final long evaluate = mp.getExpression().evaluate();
+          lblValueObj.setText(Long.toString(evaluate));
+          txtExpression.setBackground(new Color(null, 255, 255, 255));
+        } catch (final ExpressionEvaluationException e) {
+          lblValueObj.setText("A moldable is a sequence of expression separated by ';'. Error : " + e.getMessage());
+          txtExpression.setBackground(new Color(null, 240, 150, 150));
+        }
       } else {
-        throw new UnsupportedOperationException();
+        lblValueObj.setText("A moldable is a sequence of expression separated by ';'. Error : " + errorMP.getMessage());
+        txtExpression.setBackground(new Color(null, 240, 150, 150));
+      }
+    } else {
+
+      final String eltExprString = elementValueExpression.getExpressionAsString();
+      if (this.txtExpression.getText().compareTo(eltExprString) != 0) {
+        this.txtExpression.setText(eltExprString);
       }
 
-      this.lblNameObj.setText(elementName == null ? " " : elementName);
-      if (elementValueExpression != null) {
-        this.txtExpression.setEnabled(true);
-
-        if (businessObject instanceof final MoldableParameter mp) {
-          final String eltExprString = mp.getUserExpression();
-          if (this.txtExpression.getText().compareTo(eltExprString) != 0) {
-            this.txtExpression.setText(eltExprString);
-          }
-          if (errorMP == null) {
-            // we need to check, since isValid method is called only if an update is done
-            try {
-              final long evaluate = mp.getExpression().evaluate();
-              lblValueObj.setText(Long.toString(evaluate));
-              txtExpression.setBackground(new Color(null, 255, 255, 255));
-            } catch (final ExpressionEvaluationException e) {
-              lblValueObj.setText("A moldable is a sequence of expression separated by ';'. Error : " + e.getMessage());
-              txtExpression.setBackground(new Color(null, 240, 150, 150));
-            }
-          } else {
-            lblValueObj
-                .setText("A moldable is a sequence of expression separated by ';'. Error : " + errorMP.getMessage());
-            txtExpression.setBackground(new Color(null, 240, 150, 150));
-          }
-        } else {
-
-          final String eltExprString = elementValueExpression.getExpressionAsString();
-          if (this.txtExpression.getText().compareTo(eltExprString) != 0) {
-            this.txtExpression.setText(eltExprString);
-          }
-
-          try {
-            // try out evaluating the expression
-            final long evaluate = elementValueExpression.evaluate();
-            // if evaluation went well, just write the result
-            if (!(businessObject instanceof ConfigInputInterface)) {
-              this.lblValueObj.setText(Long.toString(evaluate));
-            }
-            this.txtExpression.setBackground(new Color(null, 255, 255, 255));
-          } catch (final ExpressionEvaluationException e) {
-            // otherwise print error message and put red background
-            this.lblValueObj.setText("Error : " + e.getMessage());
-            this.txtExpression.setBackground(new Color(null, 240, 150, 150));
-          }
+      try {
+        // try out evaluating the expression
+        final long evaluate = elementValueExpression.evaluate();
+        // if evaluation went well, just write the result
+        if (!(businessObject instanceof ConfigInputInterface)) {
+          this.lblValueObj.setText(Long.toString(evaluate));
         }
-
-        if (expressionHasFocus) {
-          this.txtExpression.setFocus();
-          this.txtExpression.setSelection(selelection);
-        }
-
+        this.txtExpression.setBackground(new Color(null, 255, 255, 255));
+      } catch (final ExpressionEvaluationException e) {
+        // otherwise print error message and put red background
+        this.lblValueObj.setText("Error : " + e.getMessage());
+        this.txtExpression.setBackground(new Color(null, 240, 150, 150));
       }
+    }
+
+    if (expressionHasFocus) {
+      this.txtExpression.setFocus();
+      this.txtExpression.setSelection(selelection);
     }
   }
 

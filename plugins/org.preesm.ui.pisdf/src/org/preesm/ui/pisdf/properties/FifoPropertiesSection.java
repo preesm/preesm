@@ -97,7 +97,7 @@ public class FifoPropertiesSection extends DataPortPropertiesUpdater implements 
   private CLabel lblTargetPortValue;
 
   /** The first column width. */
-  private final int FIRST_COLUMN_WIDTH = 150;
+  private static final int FIRST_COLUMN_WIDTH = 150;
 
   /*
    * (non-Javadoc)
@@ -117,7 +117,7 @@ public class FifoPropertiesSection extends DataPortPropertiesUpdater implements 
     /**** TYPE ****/
     this.txtTypeObj = factory.createText(composite, "");
     data = new FormData();
-    data.left = new FormAttachment(0, this.FIRST_COLUMN_WIDTH);
+    data.left = new FormAttachment(0, FIRST_COLUMN_WIDTH);
     data.right = new FormAttachment(25, 0);
     this.txtTypeObj.setLayoutData(data);
     this.txtTypeObj.setEnabled(true);
@@ -132,7 +132,7 @@ public class FifoPropertiesSection extends DataPortPropertiesUpdater implements 
     /**** EXPRESSION ****/
     this.txtSourcePortExpression = factory.createText(composite, "");
     data = new FormData();
-    data.left = new FormAttachment(0, this.FIRST_COLUMN_WIDTH);
+    data.left = new FormAttachment(0, FIRST_COLUMN_WIDTH);
     data.right = new FormAttachment(100, 0);
     data.top = new FormAttachment(this.txtTypeObj);
     this.txtSourcePortExpression.setLayoutData(data);
@@ -148,7 +148,7 @@ public class FifoPropertiesSection extends DataPortPropertiesUpdater implements 
     /**** VALUE ****/
     this.lblSourcePortValueObj = factory.createCLabel(composite, "");
     data = new FormData();
-    data.left = new FormAttachment(0, this.FIRST_COLUMN_WIDTH);
+    data.left = new FormAttachment(0, FIRST_COLUMN_WIDTH);
     data.right = new FormAttachment(100, 0);
     data.top = new FormAttachment(this.txtSourcePortExpression);
     this.lblSourcePortValueObj.setLayoutData(data);
@@ -164,7 +164,7 @@ public class FifoPropertiesSection extends DataPortPropertiesUpdater implements 
     /**** EXPRESION ****/
     this.txtTargetPortExpression = factory.createText(composite, "");
     data = new FormData();
-    data.left = new FormAttachment(0, this.FIRST_COLUMN_WIDTH);
+    data.left = new FormAttachment(0, FIRST_COLUMN_WIDTH);
     data.right = new FormAttachment(100, 0);
     data.top = new FormAttachment(this.lblSourcePortValueObj);
     this.txtTargetPortExpression.setLayoutData(data);
@@ -180,7 +180,7 @@ public class FifoPropertiesSection extends DataPortPropertiesUpdater implements 
     /**** VALUE ****/
     this.lblTargetPortValueObj = factory.createCLabel(composite, "");
     data = new FormData();
-    data.left = new FormAttachment(0, this.FIRST_COLUMN_WIDTH);
+    data.left = new FormAttachment(0, FIRST_COLUMN_WIDTH);
     data.right = new FormAttachment(100, 0);
     data.top = new FormAttachment(this.txtTargetPortExpression);
     this.lblTargetPortValueObj.setLayoutData(data);
@@ -195,64 +195,68 @@ public class FifoPropertiesSection extends DataPortPropertiesUpdater implements 
     /*** Type box listener ***/
     this.txtTypeObj.addModifyListener(e -> {
       final PictogramElement pe = getSelectedPictogramElement();
-      if (pe != null) {
-        final EObject bo = Graphiti.getLinkService().getBusinessObjectForLinkedPictogramElement(pe);
-        if (bo == null) {
-          return;
-        }
-
-        if (bo instanceof Fifo) {
-          final Fifo fifo = (Fifo) bo;
-          if (!FifoPropertiesSection.this.txtTypeObj.getText().equals(fifo.getType())) {
-            setNewType(fifo, FifoPropertiesSection.this.txtTypeObj.getText().trim());
-            getDiagramTypeProvider().getDiagramBehavior().refreshContent();
-          }
-        }
+      if (pe == null) {
+        return;
       }
+
+      final EObject bo = Graphiti.getLinkService().getBusinessObjectForLinkedPictogramElement(pe);
+      if ((bo == null) || !(bo instanceof final Fifo fifo)) {
+        return;
+      }
+
+      if (!FifoPropertiesSection.this.txtTypeObj.getText().equals(fifo.getType())) {
+        setNewType(fifo, FifoPropertiesSection.this.txtTypeObj.getText().trim());
+        getDiagramTypeProvider().getDiagramBehavior().refreshContent();
+      }
+
       // no refresh, otherwise infinite loop occurs
     });
 
     /** SourcePort expression listener */
     this.txtSourcePortExpression.addModifyListener(e -> {
       final PictogramElement pe = getSelectedPictogramElement();
-      if (pe != null) {
-        final EObject bo = Graphiti.getLinkService().getBusinessObjectForLinkedPictogramElement(pe);
-        if (bo == null) {
-          return;
-        }
-        if (bo instanceof Fifo) {
-          final DataPort port = ((Fifo) bo).getSourcePort();
-          updateDataPortProperties(port, FifoPropertiesSection.this.txtSourcePortExpression);
-          final List<PictogramElement> picts = Graphiti.getLinkService().getPictogramElements(getDiagram(), port);
-          // at most one port, none if delay actor
-          if (!picts.isEmpty()) {
-            getDiagramTypeProvider().getDiagramBehavior()
-                .refreshRenderingDecorators((PictogramElement) picts.get(0).eContainer());
-          }
-        }
+      if (pe == null) {
+        return;
       }
+
+      final EObject bo = Graphiti.getLinkService().getBusinessObjectForLinkedPictogramElement(pe);
+      if ((bo == null) || !(bo instanceof final Fifo fifo)) {
+        return;
+      }
+
+      final DataPort port = fifo.getSourcePort();
+      updateDataPortProperties(port, FifoPropertiesSection.this.txtSourcePortExpression);
+      final List<PictogramElement> picts = Graphiti.getLinkService().getPictogramElements(getDiagram(), port);
+      // at most one port, none if delay actor
+      if (!picts.isEmpty()) {
+        getDiagramTypeProvider().getDiagramBehavior()
+            .refreshRenderingDecorators((PictogramElement) picts.get(0).eContainer());
+      }
+
       refresh();
     });
 
     /** TargetPort expression listener */
     this.txtTargetPortExpression.addModifyListener(e -> {
       final PictogramElement pe = getSelectedPictogramElement();
-      if (pe != null) {
-        final EObject bo = Graphiti.getLinkService().getBusinessObjectForLinkedPictogramElement(pe);
-        if (bo == null) {
-          return;
-        }
-        if (bo instanceof Fifo) {
-          final DataPort port = ((Fifo) bo).getTargetPort();
-          updateDataPortProperties(port, FifoPropertiesSection.this.txtTargetPortExpression);
-          final List<PictogramElement> picts = Graphiti.getLinkService().getPictogramElements(getDiagram(), port);
-          // at most one port, none if delay actor
-          if (!picts.isEmpty()) {
-            getDiagramTypeProvider().getDiagramBehavior()
-                .refreshRenderingDecorators((PictogramElement) picts.get(0).eContainer());
-          }
-        }
+      if (pe == null) {
+        return;
       }
+
+      final EObject bo = Graphiti.getLinkService().getBusinessObjectForLinkedPictogramElement(pe);
+      if ((bo == null) || !(bo instanceof final Fifo fifo)) {
+        return;
+      }
+
+      final DataPort port = fifo.getTargetPort();
+      updateDataPortProperties(port, FifoPropertiesSection.this.txtTargetPortExpression);
+      final List<PictogramElement> picts = Graphiti.getLinkService().getPictogramElements(getDiagram(), port);
+      // at most one port, none if delay actor
+      if (!picts.isEmpty()) {
+        getDiagramTypeProvider().getDiagramBehavior()
+            .refreshRenderingDecorators((PictogramElement) picts.get(0).eContainer());
+      }
+
       refresh();
     });
 
@@ -320,74 +324,70 @@ public class FifoPropertiesSection extends DataPortPropertiesUpdater implements 
    */
   @Override
   public void refresh() {
+
     final PictogramElement pe = getSelectedPictogramElement();
+    if (pe == null) {
+      return;
+    }
+    final Object bo = Graphiti.getLinkService().getBusinessObjectForLinkedPictogramElement(pe);
+    if ((bo == null) || !(bo instanceof final Fifo fifo)) {
+      return;
+    }
 
-    if (pe != null) {
-      final Object bo = Graphiti.getLinkService().getBusinessObjectForLinkedPictogramElement(pe);
-      if (bo == null) {
-        return;
-      }
+    final DataPort srcPort = fifo.getSourcePort();
+    final Expression srcRate = srcPort.getPortRateExpression();
+    final String srcExprString = srcRate.getExpressionAsString();
 
-      if (bo instanceof Fifo) {
-        final Fifo fifo = (Fifo) bo;
+    this.txtSourcePortExpression.setEnabled(true);
+    if (!this.txtSourcePortExpression.getText().equals(srcExprString)) {
+      this.txtSourcePortExpression.setText(srcExprString);
+    }
 
-        final DataPort srcPort = fifo.getSourcePort();
-        final Expression srcRate = srcPort.getPortRateExpression();
-        final String srcExprString = srcRate.getExpressionAsString();
+    final DataPort tgtPort = fifo.getTargetPort();
+    final Expression tgtRate = tgtPort.getPortRateExpression();
+    final String tgtExprString = tgtRate.getExpressionAsString();
 
-        this.txtSourcePortExpression.setEnabled(true);
-        if (!this.txtSourcePortExpression.getText().equals(srcExprString)) {
-          this.txtSourcePortExpression.setText(srcExprString);
-        }
+    this.txtTargetPortExpression.setEnabled(true);
+    if (!this.txtTargetPortExpression.getText().equals(tgtExprString)) {
+      this.txtTargetPortExpression.setText(tgtExprString);
+    }
 
-        final DataPort tgtPort = fifo.getTargetPort();
-        final Expression tgtRate = tgtPort.getPortRateExpression();
-        final String tgtExprString = tgtRate.getExpressionAsString();
+    this.txtTypeObj.setText(fifo.getType());
 
-        this.txtTargetPortExpression.setEnabled(true);
-        if (!this.txtTargetPortExpression.getText().equals(tgtExprString)) {
-          this.txtTargetPortExpression.setText(tgtExprString);
-        }
+    try {
+      // try out evaluating the expression
+      // if evaluation went well, just write the result
+      final long evaluate = srcRate.evaluate();
+      this.lblSourcePortValueObj.setText(Long.toString(evaluate));
+      this.txtSourcePortExpression.setBackground(new Color(null, 255, 255, 255));
+    } catch (final ExpressionEvaluationException e) {
+      // otherwise print error message and put red background
+      this.lblSourcePortValueObj.setText("Error : " + e.getMessage());
+      this.txtSourcePortExpression.setBackground(new Color(null, 240, 150, 150));
+    }
+    try {
+      // try out evaluating the expression
+      final long evaluate = tgtRate.evaluate();
+      // if evaluation went well, just write the result
+      this.lblTargetPortValueObj.setText(Long.toString(evaluate));
+      this.txtTargetPortExpression.setBackground(new Color(null, 255, 255, 255));
+    } catch (final ExpressionEvaluationException e) {
+      // otherwise print error message and put red background
+      this.lblTargetPortValueObj.setText("Error : " + e.getMessage());
+      this.txtTargetPortExpression.setBackground(new Color(null, 240, 150, 150));
+    }
 
-        this.txtTypeObj.setText(fifo.getType());
+    if (srcPort instanceof ConfigOutputPort) {
+      this.txtSourcePortExpression.setEnabled(false);
+      this.txtTypeObj.setEnabled(false);
+      this.lblSourcePortValueObj.setText("Rate of a config output port is always 1 long.");
+    }
 
-        try {
-          // try out evaluating the expression
-          // if evaluation went well, just write the result
-          final long evaluate = srcRate.evaluate();
-          this.lblSourcePortValueObj.setText(Long.toString(evaluate));
-          this.txtSourcePortExpression.setBackground(new Color(null, 255, 255, 255));
-        } catch (final ExpressionEvaluationException e) {
-          // otherwise print error message and put red background
-          this.lblSourcePortValueObj.setText("Error : " + e.getMessage());
-          this.txtSourcePortExpression.setBackground(new Color(null, 240, 150, 150));
-        }
-        try {
-          // try out evaluating the expression
-          final long evaluate = tgtRate.evaluate();
-          // if evaluation went well, just write the result
-          this.lblTargetPortValueObj.setText(Long.toString(evaluate));
-          this.txtTargetPortExpression.setBackground(new Color(null, 255, 255, 255));
-        } catch (final ExpressionEvaluationException e) {
-          // otherwise print error message and put red background
-          this.lblTargetPortValueObj.setText("Error : " + e.getMessage());
-          this.txtTargetPortExpression.setBackground(new Color(null, 240, 150, 150));
-        }
-
-        if (srcPort instanceof ConfigOutputPort) {
-          this.txtSourcePortExpression.setEnabled(false);
-          this.txtTypeObj.setEnabled(false);
-          this.lblSourcePortValueObj.setText("Rate of a config output port is always 1 long.");
-        }
-
-        if (tgtPort.getContainingActor() instanceof ConfigOutputInterface) {
-          this.txtTargetPortExpression.setEnabled(false);
-          this.txtTypeObj.setEnabled(false);
-          this.lblTargetPortValueObj.setText("Rate of a config output interface is always 1 long.");
-        }
-
-      }
-
+    if (tgtPort.getContainingActor() instanceof ConfigOutputInterface) {
+      this.txtTargetPortExpression.setEnabled(false);
+      this.txtTypeObj.setEnabled(false);
+      this.lblTargetPortValueObj.setText("Rate of a config output interface is always 1 long.");
     }
   }
+
 }

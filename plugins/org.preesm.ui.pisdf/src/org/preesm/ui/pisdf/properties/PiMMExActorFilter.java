@@ -61,12 +61,7 @@ public class PiMMExActorFilter extends AbstractPropertySectionFilter {
   protected boolean accept(final PictogramElement pictogramElement) {
     final EObject eObject = Graphiti.getLinkService().getBusinessObjectForLinkedPictogramElement(pictogramElement);
 
-    // ExecutableActor.
-    if (eObject instanceof ExecutableActor) {
-      return true;
-    }
-
-    return false;
+    // instanceof returns false in case of null
+    return eObject instanceof ExecutableActor;
   }
-
 }

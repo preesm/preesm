@@ -61,7 +61,7 @@ import org.preesm.ui.pisdf.features.SetPortMemoryAnnotationFeature;
 
 /**
  * GUI properties section of ports.
- * 
+ *
  * @author ahonorat
  */
 public class DataPortPropertiesSection extends ParameterizablePropertiesSection {
@@ -92,7 +92,7 @@ public class DataPortPropertiesSection extends ParameterizablePropertiesSection 
     }
 
     data = new FormData();
-    data.left = new FormAttachment(0, this.FIRST_COLUMN_WIDTH);
+    data.left = new FormAttachment(0, FIRST_COLUMN_WIDTH);
     data.right = new FormAttachment(25, 0);
     data.top = new FormAttachment(this.lblValueObj);
     this.memoryComboAnnotation.setLayoutData(data);
@@ -116,25 +116,16 @@ public class DataPortPropertiesSection extends ParameterizablePropertiesSection 
             .getCustomFeatures(context);
 
         for (final ICustomFeature feature : setPotMemoryAnnotationFeature) {
-          if (feature instanceof SetPortMemoryAnnotationFeature) {
-            PortMemoryAnnotation pma = null;
-            switch (((CCombo) e.getSource()).getSelectionIndex()) {
-              case PortMemoryAnnotation.READ_ONLY_VALUE:
-                pma = PortMemoryAnnotation.READ_ONLY;
-                break;
-              case PortMemoryAnnotation.WRITE_ONLY_VALUE:
-                pma = PortMemoryAnnotation.WRITE_ONLY;
-                break;
-              case PortMemoryAnnotation.UNUSED_VALUE:
-                pma = PortMemoryAnnotation.UNUSED;
-                break;
-              default:
-                break;
+          if (feature instanceof final SetPortMemoryAnnotationFeature setPMAFeature) {
+            final PortMemoryAnnotation pma = switch (((CCombo) e.getSource()).getSelectionIndex()) {
+              case PortMemoryAnnotation.READ_ONLY_VALUE -> PortMemoryAnnotation.READ_ONLY;
+              case PortMemoryAnnotation.WRITE_ONLY_VALUE -> PortMemoryAnnotation.WRITE_ONLY;
+              case PortMemoryAnnotation.UNUSED_VALUE -> PortMemoryAnnotation.UNUSED;
+              default -> null;
+            };
+            setPMAFeature.setCurrentPMA(pma);
 
-            }
-            ((SetPortMemoryAnnotationFeature) feature).setCurrentPMA(pma);
-
-            getDiagramTypeProvider().getDiagramBehavior().executeFeature(feature, context);
+            getDiagramTypeProvider().getDiagramBehavior().executeFeature(setPMAFeature, context);
             // final LayoutContext contextLayout = new LayoutContext(getSelectedPictogramElement());
             // final ILayoutFeature layoutFeature = getDiagramTypeProvider().getFeatureProvider()
             // .getLayoutFeature(contextLayout);
@@ -147,6 +138,7 @@ public class DataPortPropertiesSection extends ParameterizablePropertiesSection 
 
       @Override
       public void widgetDefaultSelected(final SelectionEvent e) {
+        // nothing by default
       }
     });
 
@@ -161,20 +153,21 @@ public class DataPortPropertiesSection extends ParameterizablePropertiesSection 
   void updateProperties() {
     final PictogramElement pe = getSelectedPictogramElement();
 
-    if (pe != null) {
-      EObject bo = Graphiti.getLinkService().getBusinessObjectForLinkedPictogramElement(pe);
-      if (bo == null) {
-        return;
-      }
-
-      if (bo instanceof DataPort) {
-        final DataPort port = (DataPort) bo;
-        updateDataPortProperties(port, txtExpression);
-        getDiagramTypeProvider().getDiagramBehavior().refreshRenderingDecorators((PictogramElement) (pe.eContainer()));
-        this.memoryComboAnnotation.select(((DataPort) bo).getAnnotation().getValue());
-      }
-      refresh();
+    if (pe == null) {
+      return;
     }
+
+    final EObject bo = Graphiti.getLinkService().getBusinessObjectForLinkedPictogramElement(pe);
+    if (bo == null) {
+      return;
+    }
+
+    if (bo instanceof final DataPort port) {
+      updateDataPortProperties(port, txtExpression);
+      getDiagramTypeProvider().getDiagramBehavior().refreshRenderingDecorators((PictogramElement) (pe.eContainer()));
+      this.memoryComboAnnotation.select(((DataPort) bo).getAnnotation().getValue());
+    }
+    refresh();
 
   }
 
@@ -187,75 +180,75 @@ public class DataPortPropertiesSection extends ParameterizablePropertiesSection 
   public void refresh() {
     final PictogramElement pictogramElement = getSelectedPictogramElement();
     String elementName = null;
-    Expression elementValueExpression = null;
+    Expression elementValueExpression;
     final boolean expressionHasFocus = txtExpression.isFocusControl();
     final Point selelection = txtExpression.getSelection();
     txtExpression.setEnabled(false);
 
-    if (pictogramElement != null) {
-      final Object businessObject = Graphiti.getLinkService()
-          .getBusinessObjectForLinkedPictogramElement(pictogramElement);
-      if (businessObject == null) {
-        return;
-      }
-      if (businessObject instanceof DataPort) {
-        final DataPort iPort = ((DataPort) businessObject);
+    if (pictogramElement == null) {
+      return;
+    }
 
-        if (iPort.eContainer() instanceof InterfaceActor) {
-          elementName = ((InterfaceActor) iPort.eContainer()).getName();
-        } else {
-          elementName = iPort.getName();
+    final Object businessObject = Graphiti.getLinkService()
+        .getBusinessObjectForLinkedPictogramElement(pictogramElement);
 
-          boolean isHierarchicalActor = false;
-          if (iPort.eContainer() instanceof Actor) {
-            final Actor actor = (Actor) iPort.eContainer();
-            if (actor.isHierarchical()) {
-              isHierarchicalActor = true;
-            }
-          }
-          if (!isHierarchicalActor) {
-            this.memoryComboAnnotation.setVisible(true);
-            this.memoryComboAnnotation.setEnabled(true);
-            this.memoryLabelAnnotation.setVisible(true);
-            this.memoryLabelAnnotation.setEnabled(true);
-          }
-        }
+    if (businessObject == null) {
+      return;
+    }
 
-        elementValueExpression = iPort.getPortRateExpression();
+    if (!(businessObject instanceof final DataPort iPort)) {
+      throw new UnsupportedOperationException();
+    }
 
-        this.memoryComboAnnotation.select(((DataPort) businessObject).getAnnotation().getValue());
+    if (iPort.eContainer() instanceof final InterfaceActor iActor) {
+      elementName = iActor.getName();
+    } else {
+      elementName = iPort.getName();
 
-        lblNameObj.setText(elementName == null ? " " : elementName);
-
-        if (elementValueExpression != null) {
-          this.txtExpression.setEnabled(true);
-
-          final String eltExprString = elementValueExpression.getExpressionAsString();
-          if (txtExpression.getText().compareTo(eltExprString) != 0) {
-            txtExpression.setText(eltExprString);
-          }
-
-          try {
-            // try out evaluating the expression
-            final long evaluate = elementValueExpression.evaluate();
-            lblValueObj.setText(Long.toString(evaluate));
-            txtExpression.setBackground(new Color(null, 255, 255, 255));
-          } catch (final ExpressionEvaluationException e) {
-            // otherwise print error message and put red background
-            lblValueObj.setText("Error : " + e.getMessage());
-            txtExpression.setBackground(new Color(null, 240, 150, 150));
-          }
-
-          if (expressionHasFocus) {
-            txtExpression.setFocus();
-            txtExpression.setSelection(selelection);
-          }
-        }
-
-      } else {
-        throw new UnsupportedOperationException();
+      boolean isHierarchicalActor = false;
+      if (iPort.eContainer() instanceof final Actor actor && actor.isHierarchical()) {
+        isHierarchicalActor = true;
       }
 
+      if (!isHierarchicalActor) {
+        this.memoryComboAnnotation.setVisible(true);
+        this.memoryComboAnnotation.setEnabled(true);
+        this.memoryLabelAnnotation.setVisible(true);
+        this.memoryLabelAnnotation.setEnabled(true);
+      }
+    }
+
+    elementValueExpression = iPort.getPortRateExpression();
+
+    this.memoryComboAnnotation.select(iPort.getAnnotation().getValue());
+
+    lblNameObj.setText(elementName == null ? " " : elementName);
+
+    if (elementValueExpression == null) {
+      return;
+    }
+
+    this.txtExpression.setEnabled(true);
+
+    final String eltExprString = elementValueExpression.getExpressionAsString();
+    if (txtExpression.getText().compareTo(eltExprString) != 0) {
+      txtExpression.setText(eltExprString);
+    }
+
+    try {
+      // try out evaluating the expression
+      final long evaluate = elementValueExpression.evaluate();
+      lblValueObj.setText(Long.toString(evaluate));
+      txtExpression.setBackground(new Color(null, 255, 255, 255));
+    } catch (final ExpressionEvaluationException e) {
+      // otherwise print error message and put red background
+      lblValueObj.setText("Error : " + e.getMessage());
+      txtExpression.setBackground(new Color(null, 240, 150, 150));
+    }
+
+    if (expressionHasFocus) {
+      txtExpression.setFocus();
+      txtExpression.setSelection(selelection);
     }
   }
 

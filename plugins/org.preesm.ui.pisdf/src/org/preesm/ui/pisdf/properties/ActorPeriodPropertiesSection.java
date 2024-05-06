@@ -65,7 +65,6 @@ import org.preesm.model.pisdf.PeriodicElement;
 public class ActorPeriodPropertiesSection extends GFPropertySection implements ITabbedPropertyConstants {
 
   /** Items of the {@link ActorPropertiesSection}. */
-  private Composite composite;
 
   /** The lbl for the actor period. */
   private CLabel lblPeriod;
@@ -95,12 +94,12 @@ public class ActorPeriodPropertiesSection extends GFPropertySection implements I
     super.createControls(parent, tabbedPropertySheetPage);
 
     final TabbedPropertySheetWidgetFactory factory = getWidgetFactory();
-    this.composite = factory.createFlatFormComposite(parent);
+    final Composite composite = factory.createFlatFormComposite(parent);
 
     FormData data;
 
     /**** Period ****/
-    this.txtPeriod = factory.createText(this.composite, "0");
+    this.txtPeriod = factory.createText(composite, "0");
     data = new FormData();
     data.left = new FormAttachment(0, FIRST_COLUMN_WIDTH);
     data.right = new FormAttachment(50, 0);
@@ -109,7 +108,7 @@ public class ActorPeriodPropertiesSection extends GFPropertySection implements I
     this.txtPeriod.setToolTipText("Enter a positive expression if this actor is periodic.\n"
         + "Any negative or zero value means it is aperiodic.");
 
-    this.lblPeriod = factory.createCLabel(this.composite, "Period expression:");
+    this.lblPeriod = factory.createCLabel(composite, "Period expression:");
     data = new FormData();
     data.left = new FormAttachment(0, 0);
     data.right = new FormAttachment(this.txtPeriod, -ITabbedPropertyConstants.HSPACE);
@@ -118,14 +117,14 @@ public class ActorPeriodPropertiesSection extends GFPropertySection implements I
     /*** Period box listener ***/
     this.txtPeriod.addModifyListener(e -> updatePeriod());
 
-    this.lblPeriodValueObj = factory.createCLabel(this.composite, "0");
+    this.lblPeriodValueObj = factory.createCLabel(composite, "0");
     data = new FormData();
     data.left = new FormAttachment(0, FIRST_COLUMN_WIDTH);
     data.right = new FormAttachment(50, 0);
     data.top = new FormAttachment(lblPeriod);
     this.lblPeriodValueObj.setLayoutData(data);
 
-    this.lblPeriodValue = factory.createCLabel(this.composite, "Period value:");
+    this.lblPeriodValue = factory.createCLabel(composite, "Period value:");
     data = new FormData();
     data.left = new FormAttachment(0, 0);
     data.right = new FormAttachment(this.lblPeriodValueObj, -ITabbedPropertyConstants.HSPACE);
@@ -146,21 +145,23 @@ public class ActorPeriodPropertiesSection extends GFPropertySection implements I
 
   private void updatePeriod() {
     final PictogramElement pe = getSelectedPictogramElement();
-    if (pe != null) {
-      final EObject bo = Graphiti.getLinkService().getBusinessObjectForLinkedPictogramElement(pe);
-      if (bo == null) {
-        return;
-      }
-
-      if (bo instanceof final PeriodicElement periodEl) {
-        final Expression periodicExp = periodEl.getExpression();
-        final String strPeriod = this.txtPeriod.getText();
-        if (strPeriod.compareTo(periodicExp.getExpressionAsString()) != 0) {
-          setNewPeriod(periodEl, strPeriod);
-          refresh();
-        }
-      } // end PeriodicElement
+    if (pe == null) {
+      return;
     }
+
+    final EObject bo = Graphiti.getLinkService().getBusinessObjectForLinkedPictogramElement(pe);
+    if (bo == null) {
+      return;
+    }
+
+    if (bo instanceof final PeriodicElement periodEl) {
+      final Expression periodicExp = periodEl.getExpression();
+      final String strPeriod = this.txtPeriod.getText();
+      if (strPeriod.compareTo(periodicExp.getExpressionAsString()) != 0) {
+        setNewPeriod(periodEl, strPeriod);
+        refresh();
+      }
+    } // end PeriodicElement
   }
 
   /*
@@ -170,8 +171,8 @@ public class ActorPeriodPropertiesSection extends GFPropertySection implements I
    */
   @Override
   public void refresh() {
-    final PictogramElement pe = getSelectedPictogramElement();
 
+    final PictogramElement pe = getSelectedPictogramElement();
     if (pe == null) {
       return;
     }

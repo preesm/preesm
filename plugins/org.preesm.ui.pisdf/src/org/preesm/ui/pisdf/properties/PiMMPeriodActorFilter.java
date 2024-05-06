@@ -63,14 +63,10 @@ public class PiMMPeriodActorFilter extends AbstractPropertySectionFilter {
     final EObject eObject = Graphiti.getLinkService().getBusinessObjectForLinkedPictogramElement(pictogramElement);
 
     // ExecutableActor.
-    if (eObject instanceof Actor) {
-      Actor actor = (Actor) eObject;
-      if (actor instanceof PeriodicElement && !actor.isHierarchical() && !actor.isConfigurationActor()) {
-        return true;
-      }
+    if (eObject instanceof final Actor actor) {
+      return actor instanceof PeriodicElement && !actor.isHierarchical() && !actor.isConfigurationActor();
     }
 
     return false;
   }
-
 }
