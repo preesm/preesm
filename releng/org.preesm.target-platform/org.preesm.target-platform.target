@@ -230,8 +230,8 @@
 			</repositories>
 		</location>
 		<location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="planner" includeSource="false" type="InstallableUnit">
-			<repository location="https://download.eclipse.org/justj/jres/17/updates/release/17.0.10"/>
-			<unit id="org.eclipse.justj.openjdk.hotspot.jre.full.stripped.feature.group" version="17.0.10.v20240120-1143"/>
+			<repository location="https://download.eclipse.org/justj/jres/17/updates/release/17.0.11"/>
+			<unit id="org.eclipse.justj.openjdk.hotspot.jre.full.stripped.feature.group" version="17.0.11.v20240426-1830"/>
 		</location>
 	</locations>
 </target>
