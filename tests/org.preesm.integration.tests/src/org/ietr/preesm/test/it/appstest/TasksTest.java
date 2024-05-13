@@ -6,13 +6,13 @@ import org.ietr.preesm.test.it.api.WorkflowRunner;
 import org.junit.Assert;
 import org.junit.Test;
 
-public class ActivityTaskTest {
+public class TasksTest {
 
   @Test
   public void testThroughputShouldBeComputedDuringWorkflow() throws IOException, CoreException {
     final String projectName = "org.ietr.preesm.sobel";
     final String scenario = "1core.scenario";
-    final String workflow = "ActivityTask.workflow";
+    final String workflow = "Tasks.workflow";
 
     final String workflowFilePathStr = "/Workflows/" + workflow;
     final String scenarioFilePathStr = "/Scenarios/" + scenario;

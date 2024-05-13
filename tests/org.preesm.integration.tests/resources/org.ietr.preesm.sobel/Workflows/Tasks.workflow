@@ -49,6 +49,11 @@
             <dftools:variable name="path" value="stats/mat/activity"/>
         </dftools:data>
     </dftools:task>
+    <dftools:task pluginId="pisdf-brv-export" taskId="PiSDF BRV Exporter">
+        <dftools:data key="variables">
+            <dftools:variable name="path" value="/stat/xml/"/>
+        </dftools:data>
+    </dftools:task>
     <dftools:dataTransfer from="scenario"
         sourceport="architecture" targetport="architecture" to="Scheduling"/>
     <dftools:dataTransfer from="scenario" sourceport="scenario"
@@ -65,4 +70,6 @@
         targetport="ABC" to="MonoActivityExporter"/>
     <dftools:dataTransfer from="Scheduling" sourceport="ABC"
         targetport="ABC" to="MonoActivityExporter2"/>
+    <dftools:dataTransfer from="PiMM to SRDAG" sourceport="PiMM"
+        targetport="PiMM" to="PiSDF BRV Exporter"/>
 </dftools:workflow>
