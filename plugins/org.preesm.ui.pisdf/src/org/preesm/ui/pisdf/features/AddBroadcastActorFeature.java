@@ -39,28 +39,16 @@ package org.preesm.ui.pisdf.features;
 
 import org.eclipse.graphiti.features.IFeatureProvider;
 import org.eclipse.graphiti.features.context.IAddContext;
-import org.eclipse.graphiti.features.impl.AbstractAddFeature;
-import org.eclipse.graphiti.mm.algorithms.RoundedRectangle;
-import org.eclipse.graphiti.mm.algorithms.Text;
-import org.eclipse.graphiti.mm.algorithms.styles.Orientation;
-import org.eclipse.graphiti.mm.pictograms.ChopboxAnchor;
-import org.eclipse.graphiti.mm.pictograms.ContainerShape;
 import org.eclipse.graphiti.mm.pictograms.Diagram;
-import org.eclipse.graphiti.mm.pictograms.PictogramElement;
-import org.eclipse.graphiti.mm.pictograms.Shape;
-import org.eclipse.graphiti.services.Graphiti;
-import org.eclipse.graphiti.services.IGaService;
-import org.eclipse.graphiti.services.IPeCreateService;
 import org.eclipse.graphiti.util.ColorConstant;
 import org.eclipse.graphiti.util.IColorConstant;
 import org.preesm.model.pisdf.BroadcastActor;
-import org.preesm.model.pisdf.PiGraph;
 
 // TODO: Auto-generated Javadoc
 /**
  * The Class AddBroadcastActorFeature.
  */
-public class AddBroadcastActorFeature extends AbstractAddFeature {
+public class AddBroadcastActorFeature extends AbstractAddConfigurableFeature {
 
   /** The Constant BROADCAST_ACTOR_TEXT_FOREGROUND. */
   public static final IColorConstant BROADCAST_ACTOR_TEXT_FOREGROUND = IColorConstant.BLACK;
@@ -71,6 +59,10 @@ public class AddBroadcastActorFeature extends AbstractAddFeature {
 
   /** The Constant BROADCAST_ACTOR_BACKGROUND. */
   public static final IColorConstant BROADCAST_ACTOR_BACKGROUND = new ColorConstant(222, 184, 135);
+
+  private static final int DEFAULT_WIDTH = 70;
+
+  private static final int DEFAULT_HEIGHT = 50;
 
   /**
    * Instantiates a new adds the broadcast actor feature.
@@ -93,73 +85,29 @@ public class AddBroadcastActorFeature extends AbstractAddFeature {
     return (context.getNewObject() instanceof BroadcastActor) && (context.getTargetContainer() instanceof Diagram);
   }
 
-  /*
-   * (non-Javadoc)
-   *
-   * @see org.eclipse.graphiti.func.IAdd#add(org.eclipse.graphiti.features.context.IAddContext)
-   */
   @Override
-  public PictogramElement add(final IAddContext context) {
-    final BroadcastActor addedActor = (BroadcastActor) context.getNewObject();
-    final Diagram targetDiagram = (Diagram) context.getTargetContainer();
+  int getDefaultWidth() {
+    return DEFAULT_WIDTH;
+  }
 
-    // CONTAINER SHAPE WITH ROUNDED RECTANGLE
-    final IPeCreateService peCreateService = Graphiti.getPeCreateService();
-    final ContainerShape containerShape = peCreateService.createContainerShape(targetDiagram, true);
+  @Override
+  int getDefaultHeight() {
+    return DEFAULT_HEIGHT;
+  }
 
-    // define a default size for the shape
-    final int width = 70;
-    final int height = 50;
-    final IGaService gaService = Graphiti.getGaService();
+  @Override
+  IColorConstant getForegroundColor() {
+    return BROADCAST_ACTOR_FOREGROUND;
+  }
 
-    RoundedRectangle roundedRectangle; // need to access it later
-    {
-      // create and set graphics algorithm
-      roundedRectangle = gaService.createRoundedRectangle(containerShape, 5, 5);
-      roundedRectangle.setForeground(manageColor(AddBroadcastActorFeature.BROADCAST_ACTOR_FOREGROUND));
-      roundedRectangle.setBackground(manageColor(AddBroadcastActorFeature.BROADCAST_ACTOR_BACKGROUND));
-      roundedRectangle.setLineWidth(2);
-      gaService.setLocationAndSize(roundedRectangle, context.getX(), context.getY(), width, height);
+  @Override
+  IColorConstant getBackgroundColor() {
+    return BROADCAST_ACTOR_BACKGROUND;
+  }
 
-      // if added Class has no resource we add it to the resource
-      // of the diagram
-      // in a real scenario the business model would have its own resource
-      if (addedActor.eResource() == null) {
-        final PiGraph graph = (PiGraph) getBusinessObjectForPictogramElement(getDiagram());
-        graph.addActor(addedActor);
-      }
-      // create link and wire it
-      link(containerShape, addedActor);
-    }
-
-    // Name of the actor - SHAPE WITH TEXT
-    {
-      // create shape for text
-      final Shape shape = peCreateService.createShape(containerShape, false);
-
-      // create and set text graphics algorithm
-      final Text text = gaService.createText(shape, addedActor.getName());
-      text.setForeground(manageColor(AddBroadcastActorFeature.BROADCAST_ACTOR_TEXT_FOREGROUND));
-      text.setHorizontalAlignment(Orientation.ALIGNMENT_CENTER);
-      // vertical alignment has as default value "center"
-      text.setFont(gaService.manageDefaultFont(getDiagram(), false, true));
-      gaService.setLocationAndSize(text, 0, 0, width, 20);
-
-      // create link and wire it
-      link(shape, addedActor);
-    }
-
-    // Add a ChopBoxAnchor for the actor
-    // this ChopBoxAnchor is used to create connection from an actor to
-    // another rather than between ports (output and input ports are then
-    // created)
-    final ChopboxAnchor cba = peCreateService.createChopboxAnchor(containerShape);
-    link(cba, addedActor);
-
-    // Call the layout feature
-    layoutPictogramElement(containerShape);
-
-    return containerShape;
+  @Override
+  IColorConstant getTextForegroundColor() {
+    return BROADCAST_ACTOR_TEXT_FOREGROUND;
   }
 
 }

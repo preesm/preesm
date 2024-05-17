@@ -358,14 +358,12 @@ public class PasteFeature extends AbstractPasteFeature {
     final PictogramElement newDelayPE = addDelayFeature.add(addCtxt);
     this.links.put(delayCopy, newDelayPE);
 
-    final List<PictogramElement> createdPEs = addDelayFeature.getCreatedPEs();
-
     // add input port anchors
     final EList<ConfigInputPort> configInputPorts = delayCopy.getConfigInputPorts();
     for (final ConfigInputPort port : configInputPorts) {
       final IPeService peService = GraphitiUi.getPeService();
-      final Anchor chopboxAnchor = peService.getChopboxAnchor((AnchorContainer) createdPEs.get(0));
-      chopboxAnchor.setReferencedGraphicsAlgorithm(createdPEs.get(0).getGraphicsAlgorithm());
+      final Anchor chopboxAnchor = peService.getChopboxAnchor((AnchorContainer) newDelayPE);
+      chopboxAnchor.setReferencedGraphicsAlgorithm(newDelayPE.getGraphicsAlgorithm());
       this.links.put(port, chopboxAnchor);
     }
 
@@ -374,8 +372,8 @@ public class PasteFeature extends AbstractPasteFeature {
     final EList<DataPort> delayPorts = actor.getAllDataPorts();
     for (final DataPort port : delayPorts) {
       final IPeService peService = GraphitiUi.getPeService();
-      final Anchor chopboxAnchor = peService.getChopboxAnchor((AnchorContainer) createdPEs.get(0));
-      chopboxAnchor.setReferencedGraphicsAlgorithm(createdPEs.get(0).getGraphicsAlgorithm());
+      final Anchor chopboxAnchor = peService.getChopboxAnchor((AnchorContainer) newDelayPE);
+      chopboxAnchor.setReferencedGraphicsAlgorithm(newDelayPE.getGraphicsAlgorithm());
       this.links.put(port, chopboxAnchor);
     }
   }

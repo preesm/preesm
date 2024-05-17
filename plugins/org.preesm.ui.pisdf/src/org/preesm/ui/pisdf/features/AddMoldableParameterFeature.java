@@ -40,22 +40,10 @@ package org.preesm.ui.pisdf.features;
 
 import org.eclipse.graphiti.features.IFeatureProvider;
 import org.eclipse.graphiti.features.context.IAddContext;
-import org.eclipse.graphiti.features.impl.AbstractAddFeature;
-import org.eclipse.graphiti.mm.algorithms.Polygon;
-import org.eclipse.graphiti.mm.algorithms.Text;
-import org.eclipse.graphiti.mm.algorithms.styles.Orientation;
-import org.eclipse.graphiti.mm.pictograms.ChopboxAnchor;
-import org.eclipse.graphiti.mm.pictograms.ContainerShape;
 import org.eclipse.graphiti.mm.pictograms.Diagram;
-import org.eclipse.graphiti.mm.pictograms.PictogramElement;
-import org.eclipse.graphiti.mm.pictograms.Shape;
-import org.eclipse.graphiti.services.Graphiti;
-import org.eclipse.graphiti.services.IGaService;
-import org.eclipse.graphiti.services.IPeCreateService;
 import org.eclipse.graphiti.util.ColorConstant;
 import org.eclipse.graphiti.util.IColorConstant;
 import org.preesm.model.pisdf.MoldableParameter;
-import org.preesm.model.pisdf.PiGraph;
 
 // TODO: Auto-generated Javadoc
 /**
@@ -63,7 +51,7 @@ import org.preesm.model.pisdf.PiGraph;
  *
  * @author kdesnos
  */
-public class AddMoldableParameterFeature extends AbstractAddFeature {
+public class AddMoldableParameterFeature extends AddParameterFeature {
 
   /** The Constant PARAMETER_TEXT_FOREGROUND. */
   public static final IColorConstant PARAMETER_TEXT_FOREGROUND = IColorConstant.BLACK;
@@ -73,9 +61,6 @@ public class AddMoldableParameterFeature extends AbstractAddFeature {
 
   /** The Constant PARAMETER_BACKGROUND. */
   public static final IColorConstant PARAMETER_BACKGROUND = new ColorConstant(185, 206, 172);
-
-  /** The Constant PARAM_HEIGHT. */
-  public static final int PARAM_HEIGHT = 50;
 
   /**
    * Default constructor of the {@link AddMoldableParameterFeature}.
@@ -98,73 +83,14 @@ public class AddMoldableParameterFeature extends AbstractAddFeature {
     return (context.getNewObject() instanceof MoldableParameter) && (context.getTargetContainer() instanceof Diagram);
   }
 
-  /*
-   * (non-Javadoc)
-   *
-   * @see org.eclipse.graphiti.func.IAdd#add(org.eclipse.graphiti.features.context.IAddContext)
-   */
   @Override
-  public PictogramElement add(final IAddContext context) {
-    final MoldableParameter addedParameter = (MoldableParameter) context.getNewObject();
-    final Diagram targetDiagram = (Diagram) context.getTargetContainer();
+  IColorConstant getForegroundColor() {
+    return PARAMETER_FOREGROUND;
+  }
 
-    // CONTAINER SHAPE WITH Triangle
-    final IPeCreateService peCreateService = Graphiti.getPeCreateService();
-    final ContainerShape containerShape = peCreateService.createContainerShape(targetDiagram, true);
-
-    // define a default size for the shape
-    final int width = 80;
-    final int height = 40;
-    final IGaService gaService = Graphiti.getGaService();
-
-    Polygon house;
-    {
-      // Create a house shaped polygon
-      final int[] xy = new int[] { 12, 0, 24, 26, 24, AddMoldableParameterFeature.PARAM_HEIGHT, 0,
-          AddMoldableParameterFeature.PARAM_HEIGHT, 0, 26 };
-      house = gaService.createPolygon(containerShape, xy);
-
-      house.setBackground(manageColor(AddMoldableParameterFeature.PARAMETER_BACKGROUND));
-      house.setForeground(manageColor(AddMoldableParameterFeature.PARAMETER_FOREGROUND));
-      house.setLineWidth(2);
-      gaService.setLocationAndSize(house, context.getX(), context.getY(), width, height);
-
-      // if added Class has no resource we add it to the resource
-      // of the graph
-      if (addedParameter.eResource() == null) {
-        final PiGraph graph = (PiGraph) getBusinessObjectForPictogramElement(getDiagram());
-        graph.addParameter(addedParameter);
-      }
-
-      // create link and wire it
-      link(containerShape, addedParameter);
-    }
-
-    // Name of the actor - SHAPE WITH TEXT
-    {
-      // create shape for text
-      final Shape shape = peCreateService.createShape(containerShape, false);
-
-      // create and set text graphics algorithm
-      final Text text = gaService.createText(shape, addedParameter.getName());
-      text.setForeground(manageColor(AddMoldableParameterFeature.PARAMETER_TEXT_FOREGROUND));
-      text.setHorizontalAlignment(Orientation.ALIGNMENT_CENTER);
-
-      // vertical alignment has as default value "center"
-      text.setFont(gaService.manageDefaultFont(getDiagram(), false, true));
-      text.getWidth();
-      gaService.setLocationAndSize(text, 0, height - 18, width, 20);
-
-      // create link and wire it
-      link(shape, addedParameter);
-    }
-
-    // Add a ChopBoxAnchor for the parameter
-    final ChopboxAnchor cba = peCreateService.createChopboxAnchor(containerShape);
-    link(cba, addedParameter);
-
-    layoutPictogramElement(containerShape);
-    return containerShape;
+  @Override
+  IColorConstant getBackgroundColor() {
+    return PARAMETER_BACKGROUND;
   }
 
 }

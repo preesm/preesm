@@ -40,16 +40,15 @@
 package org.preesm.ui.pisdf.features;
 
 import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.List;
 import org.eclipse.graphiti.datatypes.ILocation;
 import org.eclipse.graphiti.features.IFeatureProvider;
 import org.eclipse.graphiti.features.context.IAddContext;
-import org.eclipse.graphiti.features.impl.AbstractAddFeature;
 import org.eclipse.graphiti.mm.algorithms.Ellipse;
 import org.eclipse.graphiti.mm.algorithms.Polyline;
 import org.eclipse.graphiti.mm.algorithms.styles.LineStyle;
 import org.eclipse.graphiti.mm.algorithms.styles.Point;
+import org.eclipse.graphiti.mm.pictograms.AnchorContainer;
 import org.eclipse.graphiti.mm.pictograms.ChopboxAnchor;
 import org.eclipse.graphiti.mm.pictograms.ContainerShape;
 import org.eclipse.graphiti.mm.pictograms.Diagram;
@@ -57,8 +56,9 @@ import org.eclipse.graphiti.mm.pictograms.FreeFormConnection;
 import org.eclipse.graphiti.mm.pictograms.PictogramElement;
 import org.eclipse.graphiti.services.Graphiti;
 import org.eclipse.graphiti.services.IGaService;
-import org.eclipse.graphiti.services.IPeCreateService;
 import org.eclipse.graphiti.services.IPeLayoutService;
+import org.eclipse.graphiti.ui.services.GraphitiUi;
+import org.eclipse.graphiti.util.IColorConstant;
 import org.preesm.model.pisdf.Delay;
 import org.preesm.model.pisdf.Fifo;
 import org.preesm.model.pisdf.PiGraph;
@@ -70,7 +70,7 @@ import org.preesm.model.pisdf.PiGraph;
  * @author jheulot
  *
  */
-public class AddDelayFeature extends AbstractAddFeature {
+public class AddDelayFeature extends AbstractAddConfigurableFeature {
 
   /** The Constant DELAY_SIZE. */
   public static final int DELAY_SIZE = 16;
@@ -81,11 +81,15 @@ public class AddDelayFeature extends AbstractAddFeature {
   /** The Constant FEATURE_DESCRIPTION. */
   private static final String FEATURE_DESCRIPTION = "Add a Delay to the Fifo";
 
-  /**
-   * XXX Hack to keep track of created PEs in order to link them with the proper delay (not the one created in the
-   * execute() method...)
-   */
-  private List<PictogramElement> createdPEs;
+  /** The Constant JOIN_ACTOR_FOREGROUND. */
+  public static final IColorConstant DELAY_FOREGROUND = AddActorFeature.ACTOR_FOREGROUND;
+
+  /** The Constant JOIN_ACTOR_BACKGROUND. */
+  public static final IColorConstant DELAY_BACKGROUND = AddActorFeature.ACTOR_FOREGROUND;
+
+  private static final int DEFAULT_WIDTH = DELAY_SIZE;
+
+  private static final int DEFAULT_HEIGHT = DELAY_SIZE;
 
   /**
    * The default constructor for {@link AddDelayFeature}.
@@ -135,45 +139,12 @@ public class AddDelayFeature extends AbstractAddFeature {
    */
   @Override
   public PictogramElement add(final IAddContext context) {
+
+    final PictogramElement containerShape = super.add(context);
+
+    final ChopboxAnchor cba = (ChopboxAnchor) GraphitiUi.getPeService()
+        .getChopboxAnchor((AnchorContainer) containerShape);
     final Delay addedDelay = (Delay) context.getNewObject();
-    final Diagram targetDiagram = (Diagram) context.getTargetContainer();
-
-    this.createdPEs = new LinkedList<>();
-
-    final IPeCreateService peCreateService = Graphiti.getPeCreateService();
-    final ContainerShape containerShape = peCreateService.createContainerShape(targetDiagram, true);
-
-    final IGaService gaService = Graphiti.getGaService();
-
-    Ellipse ellipse;
-    {
-      ellipse = gaService.createEllipse(containerShape);
-      ellipse.setBackground(manageColor(AddActorFeature.ACTOR_FOREGROUND));
-      ellipse.setForeground(manageColor(AddActorFeature.ACTOR_FOREGROUND));
-      ellipse.setLineWidth(1);
-      ellipse.setLineVisible(false);
-      gaService.setLocationAndSize(ellipse, context.getX() - (AddDelayFeature.DELAY_SIZE / 2),
-          context.getY() - (AddDelayFeature.DELAY_SIZE / 2), AddDelayFeature.DELAY_SIZE, AddDelayFeature.DELAY_SIZE);
-
-      // if added Class has no resource we add it to the resource
-      // of the graph
-      if (addedDelay.eResource() == null) {
-        final PiGraph graph = (PiGraph) getBusinessObjectForPictogramElement(getDiagram());
-        graph.addDelay(addedDelay);
-      }
-
-      // create link and wire it
-      link(containerShape, addedDelay);
-      this.createdPEs.add(containerShape);
-    }
-
-    // Add a ChopBoxAnchor for the parameter
-    final ChopboxAnchor cba = peCreateService.createChopboxAnchor(containerShape);
-    link(cba, addedDelay);
-    this.createdPEs.add(cba);
-
-    layoutPictogramElement(containerShape);
-
     final FreeFormConnection connection = (FreeFormConnection) context.getTargetConnection();
 
     if (connection != null) {
@@ -186,6 +157,65 @@ public class AddDelayFeature extends AbstractAddFeature {
     }
 
     return containerShape;
+  }
+
+  @Override
+  void createConfigurableShape(IAddContext context, ContainerShape containerShape) {
+
+    final Delay addedDelay = (Delay) context.getNewObject();
+    final IGaService gaService = Graphiti.getGaService();
+
+    final int width = getDefaultWidth();
+    final int height = getDefaultHeight();
+
+    final Ellipse ellipse = gaService.createEllipse(containerShape);
+    ellipse.setBackground(manageColor(AddActorFeature.ACTOR_FOREGROUND));
+    ellipse.setForeground(manageColor(AddActorFeature.ACTOR_FOREGROUND));
+    ellipse.setLineWidth(1);
+    ellipse.setLineVisible(false);
+    gaService.setLocationAndSize(ellipse, context.getX() - (AddDelayFeature.DELAY_SIZE / 2),
+        context.getY() - (AddDelayFeature.DELAY_SIZE / 2), width, height);
+
+    // if added Class has no resource we add it to the resource
+    // of the graph
+    if (addedDelay.eResource() == null) {
+      final PiGraph graph = (PiGraph) getBusinessObjectForPictogramElement(getDiagram());
+      graph.addDelay(addedDelay);
+    }
+
+    // create link and wire it
+    link(containerShape, addedDelay);
+  }
+
+  @Override
+  void createConfigurableText(IAddContext context, ContainerShape containerShape) {
+    // No actor text
+  }
+
+  @Override
+  int getDefaultWidth() {
+    return DEFAULT_WIDTH;
+  }
+
+  @Override
+  int getDefaultHeight() {
+    return DEFAULT_HEIGHT;
+  }
+
+  @Override
+  IColorConstant getForegroundColor() {
+    return DELAY_FOREGROUND;
+  }
+
+  @Override
+  IColorConstant getBackgroundColor() {
+    return DELAY_BACKGROUND;
+  }
+
+  @Override
+  IColorConstant getTextForegroundColor() {
+    // No text for delay
+    return null;
   }
 
   /**
@@ -275,7 +305,4 @@ public class AddDelayFeature extends AbstractAddFeature {
     connection.setStart(cba);
   }
 
-  public List<PictogramElement> getCreatedPEs() {
-    return this.createdPEs;
-  }
 }
