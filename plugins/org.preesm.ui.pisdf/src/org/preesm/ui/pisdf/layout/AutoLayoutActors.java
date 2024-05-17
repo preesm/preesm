@@ -54,10 +54,14 @@ import org.preesm.model.pisdf.PiGraph;
 
 /**
  * Methods for {@link AutoLayoutFeature}, dedicated to actors
- * 
+ *
  * @author ahonorat, kdesnos
  */
 public class AutoLayoutActors {
+
+  private AutoLayoutActors() {
+    // Prevents instantiation
+  }
 
   /**
    * Create the stages of {@link AbstractActor}. An actor can be put in a stage if all its predecessors have been put in
@@ -81,8 +85,8 @@ public class AutoLayoutActors {
     final List<AbstractActor> srcActors = findSrcActors(feedbackFifos, actors);
 
     // 4. BFS-style stage by stage construction
-    List<List<AbstractActor>> res = createActorStages(feedbackFifos, actors, srcActors);
-    for (List<AbstractActor> l : res) {
+    final List<List<AbstractActor>> res = createActorStages(feedbackFifos, actors, srcActors);
+    for (final List<AbstractActor> l : res) {
       l.sort(new ComparatorInOutsAndName());
     }
 
@@ -91,7 +95,7 @@ public class AutoLayoutActors {
 
   /**
    * Compare actors per number of input/outputs and per name
-   * 
+   *
    * @author ahonorat
    *
    */
@@ -99,8 +103,8 @@ public class AutoLayoutActors {
 
     @Override
     public int compare(AbstractActor arg0, AbstractActor arg1) {
-      int nb0 = arg0.getAllDataPorts().size();
-      int nb1 = arg1.getAllDataPorts().size();
+      final int nb0 = arg0.getAllDataPorts().size();
+      final int nb1 = arg1.getAllDataPorts().size();
       if (nb0 != nb1) {
         // actors with more connections first.
         return Integer.compare(nb1, nb0);
@@ -159,13 +163,13 @@ public class AutoLayoutActors {
     final List<List<AbstractActor>> stages = new ArrayList<>();
 
     final List<AbstractActor> processedActors = new ArrayList<>();
-    List<AbstractActor> dataInputInterfaces = new ArrayList<>();
+    final List<AbstractActor> dataInputInterfaces = new ArrayList<>();
     List<AbstractActor> previousStage = dataInputInterfaces;
     Set<AbstractActor> currentStage = new LinkedHashSet<>();
     final List<AbstractActor> dataOutputInterfaces = new ArrayList<>();
 
     // Keep DataInputInterfaces for the first stage
-    for (AbstractActor aa : srcActors) {
+    for (final AbstractActor aa : srcActors) {
       if (aa instanceof DataInputInterface) {
         dataInputInterfaces.add(aa);
         processedActors.add(aa);
@@ -245,9 +249,9 @@ public class AutoLayoutActors {
   private static Set<AbstractActor> check(final List<Fifo> feedbackFifos, final List<AbstractActor> processedActors,
       final Set<AbstractActor> currentStage, final List<AbstractActor> dataOutputInterfaces) {
 
-    Set<AbstractActor> nextStage = new LinkedHashSet<>();
+    final Set<AbstractActor> nextStage = new LinkedHashSet<>();
 
-    Iterator<AbstractActor> iter = currentStage.iterator();
+    final Iterator<AbstractActor> iter = currentStage.iterator();
     while (iter.hasNext()) {
       final AbstractActor actor = iter.next();
       boolean hasUnstagedPredecessor = false;
@@ -274,8 +278,8 @@ public class AutoLayoutActors {
       }
       // For delay actor, we wait that the token source has been processed
       // but then we introduce a useless gap of one actor width :/
-      if (actor instanceof DelayActor && !hasUnstagedPredecessor) {
-        final AbstractActor incomingActor = ((DelayActor) actor).getLinkedDelay().getContainingFifo().getSourcePort()
+      if (actor instanceof final DelayActor delayActor && !hasUnstagedPredecessor) {
+        final AbstractActor incomingActor = delayActor.getLinkedDelay().getContainingFifo().getSourcePort()
             .getContainingActor();
         if (!processedActors.contains(incomingActor)) {
           hasUnstagedPredecessor |= true;

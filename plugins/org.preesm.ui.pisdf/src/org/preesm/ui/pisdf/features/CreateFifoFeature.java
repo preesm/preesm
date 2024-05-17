@@ -314,8 +314,7 @@ public class CreateFifoFeature extends AbstractCreateConnectionFeature {
   @Override
   public boolean canStartConnection(final ICreateConnectionContext context) {
 
-    // Return true if the connection starts at an output port (config or
-    // not)
+    // Return true if the connection starts at an output port (config or not)
     final Anchor sourceAnchor = context.getSourceAnchor();
     final Port source = getSourcePort(context, sourceAnchor);
 

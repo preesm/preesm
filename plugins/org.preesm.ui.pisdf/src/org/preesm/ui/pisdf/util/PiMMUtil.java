@@ -57,10 +57,14 @@ import org.preesm.ui.utils.DialogUtil;
 
 /**
  * A few functions used for GUI: ask user or warn user.
- * 
+ *
  * @author ahonorat
  */
 public class PiMMUtil {
+
+  private PiMMUtil() {
+    // Forbids instantiation
+  }
 
   /**
    * Select function.
@@ -85,11 +89,10 @@ public class PiMMUtil {
 
           @Override
           public String getText(final Object element) {
-            if (element instanceof FunctionPrototype) {
-              return PrototypeFormatter.format((FunctionPrototype) element);
-            } else {
-              return "";
+            if (element instanceof final FunctionPrototype funcProto) {
+              return PrototypeFormatter.format(funcProto);
             }
+            return "";
           }
         }) {
 

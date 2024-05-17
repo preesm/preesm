@@ -308,7 +308,7 @@ class PiGraph extends AbstractActor, Graph, PeriodicElement {
 	 * {@link Parameter} => {@link AbstractActor} => {@link Delay} => {@link DelayActor} order.
 	 * <br>
 	 * 
-	 * @param actor
+	 * @param parameter
 	 * 			The {@link Parameter} to be added to {@link PiGraph#vertices}
 	 * 
 	 * @return true is the {@link Parameter} was successfully added, false otherwise
@@ -320,6 +320,25 @@ class PiGraph extends AbstractActor, Graph, PeriodicElement {
 			return false
 		}
 		return true
+	}
+
+	/*
+	 * Add the {@link Configurable} to the graph.
+	 * <br>
+	 *
+	 * @param configurable
+	 * 			The {@link Configurable} to be added to {@link PiGraph#vertices}
+	 *
+	 * @return true is the {@link Configurable} was successfully added, false otherwise
+	 */
+	op unique boolean addConfigurable(Configurable configurable) {
+
+		if (configurable instanceof AbstractActor) {
+			return addActor(configurable)
+		} else if (configurable instanceof Parameter) {
+			return addParameter(configurable)
+		}
+		throw new PreesmRuntimeException(configurable.toString + "is not a Configurable.")
 	}
 
 	/*

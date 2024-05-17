@@ -5,10 +5,7 @@ import org.eclipse.graphiti.features.context.ICreateContext;
 import org.eclipse.graphiti.features.impl.AbstractCreateFeature;
 import org.eclipse.graphiti.func.ICreate;
 import org.eclipse.graphiti.mm.pictograms.Diagram;
-import org.preesm.commons.exceptions.PreesmRuntimeException;
-import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.Configurable;
-import org.preesm.model.pisdf.Parameter;
 import org.preesm.model.pisdf.PiGraph;
 import org.preesm.ui.pisdf.util.VertexNameValidator;
 import org.preesm.ui.utils.DialogUtil;
@@ -63,16 +60,8 @@ public abstract class AbstractCreateConfigurableFeature extends AbstractCreateFe
     final Configurable newConfigurable = createConfigurable(newConfigurableName);
 
     // Add new configurable to the graph.
-    if (newConfigurable instanceof final AbstractActor newActor) {
-      if (graph.addActor(newActor)) {
-        this.hasDoneChanges = true;
-      }
-    } else if (newConfigurable instanceof final Parameter newParameter) {
-      if (graph.addParameter(newParameter)) {
-        this.hasDoneChanges = true;
-      }
-    } else {
-      throw new PreesmRuntimeException();
+    if (graph.addConfigurable(newConfigurable)) {
+      this.hasDoneChanges = true;
     }
 
     // do the add to the Diagram

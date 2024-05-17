@@ -181,7 +181,6 @@ public class PiMMToolBehaviorProvider extends DefaultToolBehaviorProvider {
     }
 
     if (bo instanceof final Parameter param && !param.isConfigurationInterface()) {
-
       result = ParameterDecorators.getDecorators(param, pe);
       this.decoratorAdapter.getPesAndDecorators().put(pe, result);
     }
@@ -200,7 +199,7 @@ public class PiMMToolBehaviorProvider extends DefaultToolBehaviorProvider {
   }
 
   private IDecorator[] decorateActor(final PictogramElement pe, final Object bo) {
-    IDecorator[] result;
+
     // Add decorators for each ports of the actor
     final List<IDecorator> decorators = new ArrayList<>();
     for (final Anchor a : ((ContainerShape) pe).getAnchors()) {
@@ -220,7 +219,7 @@ public class PiMMToolBehaviorProvider extends DefaultToolBehaviorProvider {
       }
     }
 
-    result = new IDecorator[decorators.size()];
+    final IDecorator[] result = new IDecorator[decorators.size()];
     decorators.toArray(result);
     this.decoratorAdapter.getPesAndDecorators().put(pe, result);
     return result;

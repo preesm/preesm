@@ -740,8 +740,7 @@ public class AutoLayoutFeature extends AbstractCustomFeature {
    */
   private void layoutFeedbackFifos(final Diagram diagram, final List<Fifo> feedbackFifos,
       final List<List<AbstractActor>> stagedActors, final List<List<Range>> stagesGaps, final List<Range> stageWidth) {
-    // Sort FIFOs according to the number of stages through which they're
-    // going
+    // Sort FIFOs according to the number of stages through which they're going
     final List<Fifo> sortedFifos = new ArrayList<>(feedbackFifos);
     sortedFifos.sort((f1, f2) -> {
       final int srcStage1 = getActorStage((AbstractActor) f1.getSourcePort().eContainer(), stagedActors);
@@ -1045,8 +1044,7 @@ public class AutoLayoutFeature extends AbstractCustomFeature {
     while (!paramPoolList.isEmpty()) {
       /* Get only the parameter that can be added to the current stage due to their dependencies */
       final List<Parameter> nextStageParamList = paramPoolList.stream().filter(x -> x.getInputDependentParameters()
-          .stream().filter(processedParams::contains).count() == x.getInputDependentParameters().size())
-          .collect(Collectors.toList());
+          .stream().filter(processedParams::contains).count() == x.getInputDependentParameters().size()).toList();
       processedParams.addAll(nextStageParamList);
       stages.add(nextStageParamList);
       paramPoolList.removeAll(nextStageParamList);
