@@ -14,6 +14,7 @@ import org.preesm.model.pisdf.DataInputPort;
 import org.preesm.model.pisdf.DataOutputInterface;
 import org.preesm.model.pisdf.DataOutputPort;
 import org.preesm.model.pisdf.Delay;
+import org.preesm.model.pisdf.ExecutableActor;
 import org.preesm.model.pisdf.ForkActor;
 import org.preesm.model.pisdf.FunctionArgument;
 import org.preesm.model.pisdf.FunctionPrototype;
@@ -280,51 +281,42 @@ public class CodegenScapeBuilder {
     return memcpy.toString();
   }
 
-  <<<<<<<HEAD
-
-  private StringConcatenation processActor(ScapeSchedule sc) {
-    Long scale = 1L;
-    final StringConcatenation actorImplem = new StringConcatenation();
-
-=======
-
   private StringBuilder processActor(ScapeSchedule sc) {
 
     final StringBuilder actorImplem = new StringBuilder();
->>>>>>> afa7490f9 (Code cleaning final in CodegenScapeBuilder)
-    String funcName = sc.getActor().getName();
-    FunctionPrototype loopPrototype = null;
-    if (((CHeaderRefinement) ((Actor) sc.getActor()).getRefinement()).getLoopPrototype() != null) {
-      loopPrototype = ((CHeaderRefinement) ((Actor) sc.getActor()).getRefinement()).getLoopPrototype();
-      funcName = ((CHeaderRefinement) ((Actor) sc.getActor()).getRefinement()).getLoopPrototype().getName();
-    }
 
-    actorImplem.append(funcName + "(");
-
-    final int nbArg = sc.getActor().getConfigInputPorts().size() + sc.getActor().getDataInputPorts().size()
-        + sc.getActor().getDataOutputPorts().size();
-
-    if (nbArg == 0) {
-      actorImplem.append(");\n");
-      return actorImplem;
-    }
-
-
-    if (loopPrototype != null) {
-      for (final FunctionArgument arg : loopPrototype.getInputConfigParameters()) {
-        actorImplem.append(arg.getName());
-        actorImplem.append(",");
+    if (sc.getActor() instanceof ExecutableActor) {
+      String funcName = sc.getActor().getName();
+      FunctionPrototype loopPrototype = null;
+      if (((CHeaderRefinement) ((Actor) sc.getActor()).getRefinement()).getLoopPrototype() != null) {
+        loopPrototype = ((CHeaderRefinement) ((Actor) sc.getActor()).getRefinement()).getLoopPrototype();
+        funcName = ((CHeaderRefinement) ((Actor) sc.getActor()).getRefinement()).getLoopPrototype().getName();
       }
-      countArg++;
+
+      actorImplem.append(funcName + "(");
+
+      final int nbArg = sc.getActor().getConfigInputPorts().size() + sc.getActor().getDataInputPorts().size()
+          + sc.getActor().getDataOutputPorts().size();
+
+      if (nbArg == 0) {
+        actorImplem.append(");\n");
+        return actorImplem;
+      }
+
+      if (loopPrototype != null) {
+        for (final FunctionArgument arg : loopPrototype.getInputConfigParameters()) {
+          actorImplem.append(arg.getName());
+          actorImplem.append(",");
+        }
+      }
+
+      actorImplem.append(processActorDataInputPorts(sc));
+      actorImplem.append(processActorDataOutputPorts(sc));
+
+      actorImplem.deleteCharAt(actorImplem.length() - 1);
+
+      actorImplem.append(");\n");
     }
-
-
-    actorImplem.append(processActorDataInputPorts(sc));
-    actorImplem.append(processActorDataOutputPorts(sc));
-
-    actorImplem.deleteCharAt(actorImplem.length() - 1);
-
-    actorImplem.append(");\n");
     return actorImplem;
   }
 

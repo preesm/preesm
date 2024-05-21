@@ -40,7 +40,6 @@ import java.util.List;
 import java.util.Map;
 import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.AbstractVertex;
-import org.preesm.model.pisdf.Actor;
 import org.preesm.model.pisdf.PiGraph;
 
 /**
@@ -80,11 +79,7 @@ public class ClusteringPatternSeekerSrv extends ClusteringPatternSeeker {
     final List<AbstractActor> actorSRV = new LinkedList<>();
 
     for (final AbstractActor srvCandidate : graph.getExecutableActors()) {
-      if (brv.get(srvCandidate) > nPEs
-          && srvCandidate.getDirectSuccessors().stream().filter(Actor.class::isInstance)
-              .noneMatch(x -> brv.get(x).equals(brv.get(srvCandidate)))
-          && srvCandidate.getDirectPredecessors().stream().filter(Actor.class::isInstance)
-              .noneMatch(x -> brv.get(x).equals(brv.get(srvCandidate)))) {
+      if (brv.get(srvCandidate) > nPEs) {
         actorSRV.add(srvCandidate);
         return actorSRV;
       }

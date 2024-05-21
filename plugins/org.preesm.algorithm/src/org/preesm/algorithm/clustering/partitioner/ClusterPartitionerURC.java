@@ -65,22 +65,26 @@ public class ClusterPartitionerURC extends ClusterPartitioner {
   private Map<AbstractVertex, Long> brv;
   private final int                 clusterId;
   private final ScapeMode           scapeMode;
+  private final PiGraph             graph;
 
   /**
    * Builds a ClusterPartitioner Unique Repetition Count object.
    *
+   * @param graph
+   *          Subgraph if it's a hierarchical graph, otherwise the full graph
    *
    * @param scenario
    *          Workflow scenario.
    * @param numberOfPEs
    *          Number of processing elements in compute clusters.
    */
-  public ClusterPartitionerURC(final Scenario scenario, final int numberOfPEs, Map<AbstractVertex, Long> brv,
-      int clusterId, ScapeMode scapeMode) {
+  public ClusterPartitionerURC(PiGraph graph, final Scenario scenario, final int numberOfPEs,
+      Map<AbstractVertex, Long> brv, int clusterId, ScapeMode scapeMode) {
     super(scenario.getAlgorithm(), scenario, numberOfPEs);
     this.brv = brv;
     this.clusterId = clusterId;
     this.scapeMode = scapeMode;
+    this.graph = graph;
   }
 
   /**
@@ -90,7 +94,7 @@ public class ClusterPartitionerURC extends ClusterPartitioner {
   public PiGraph cluster() {
 
     // Retrieve URC chains in input graph and verify that actors share component constraints.
-    final List<List<AbstractActor>> graphURCs = new ClusteringPatternSeekerUrc(this.graph).seek();
+    final List<List<AbstractActor>> graphURCs = new ClusteringPatternSeekerUrc(this.graph, brv).seek();
     final List<List<AbstractActor>> constrainedURCs = new LinkedList<>();
     if (!graphURCs.isEmpty()) {
       final List<AbstractActor> urc = graphURCs.get(0);// cluster one by one

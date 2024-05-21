@@ -3,12 +3,16 @@ package org.preesm.algorithm.clustering.scape;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
+import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.AbstractVertex;
 import org.preesm.model.pisdf.Actor;
+import org.preesm.model.pisdf.DataInputInterface;
 import org.preesm.model.pisdf.DataInputPort;
 import org.preesm.model.pisdf.DataOutputPort;
 import org.preesm.model.pisdf.DelayActor;
+import org.preesm.model.pisdf.ExecutableActor;
 import org.preesm.model.pisdf.Fifo;
 import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.pisdf.brv.BRVMethod;
@@ -46,14 +50,24 @@ public class MultiBranch {
    * @return The modified PiGraph after adding the initial source.
    */
   public PiGraph addInitialSource() {
+    if (!graph.getChildrenGraphs().isEmpty()) {
+      PreesmLogger.getLogger().log(Level.INFO, () -> "only flat graphs or subgraphs can be processed");
+
+    }
     // Identify multiple sources
     final List<AbstractActor> sourceList = new ArrayList<>();
     // seek sources
     for (final AbstractActor source : graph.getActors()) {
-      if (!(source instanceof DelayActor)
-          && (source.getDataInputPorts().isEmpty()
-              || source.getDataInputPorts().stream().allMatch(x -> x.getFifo().isHasADelay()))
-          && !(source.getDataOutputPorts().stream().anyMatch(x -> x.getFifo().getTarget() instanceof DelayActor))) {
+      // candidate is a source if
+      // - it s not a delay or an interface
+      // - it doesnot have inputport or it should be a delay or a data input interface
+      if (!(source instanceof DelayActor) && !(source instanceof DataInputInterface)
+          && ((source instanceof ExecutableActor
+              && (source.getDataInputPorts().isEmpty() || source.getDataInputPorts().stream()
+                  .allMatch(x -> x.getFifo().isHasADelay() || x.getFifo().getSource() instanceof DataInputInterface))))
+      // || (source instanceof final PiGraph pigraph && pigraph.getDataInputPorts().isEmpty()))
+      // && !(source.getDataOutputPorts().stream().anyMatch(x -> x.getFifo().getTarget() instanceof DelayActor))
+      ) {
         sourceList.add(source);
       }
     }

@@ -75,7 +75,8 @@ public class ClusterPartitionerSEQ extends ClusterPartitioner {
   @Override
   public PiGraph cluster() {
 
-    if (graph.getDelayIndex() == 0 && SlamDesignPEtypeChecker.isHomogeneousCPU(scenario.getDesign())) {
+    if (graph.getDelayIndex() == 0 && SlamDesignPEtypeChecker.isHomogeneousCPU(scenario.getDesign())
+        && graph.getChildrenGraphs().isEmpty()) {
       final int numberOfCut = numberOfPEs;
       final int maxCut = numberOfPEs - 1;
       return AutoDelaysTask.addDelays(graph, archi, scenario, false, false, false, numberOfPEs, numberOfCut, maxCut);
