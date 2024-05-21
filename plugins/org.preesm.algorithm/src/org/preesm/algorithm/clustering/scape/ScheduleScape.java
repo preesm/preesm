@@ -273,7 +273,6 @@ public class ScheduleScape {
         }
       }
     }
-
     return maxPair;
   }
 
