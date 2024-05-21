@@ -112,9 +112,9 @@ public class ClusterPartitionerDATATask extends ClusterPartitionerTask {
     }
     Map<AbstractVertex, Long> brv = PiBRV.compute(inputGraph, BRVMethod.LCM);
     // Cluster input graph
-    new ClusterPartitionerURC(scenario, Integer.parseInt(nbPE), brv, 0, scapeMode).cluster();
-    final PiGraph outputGraph = new ClusterPartitionerSRV(scenario, Integer.parseInt(nbPE), brv, 0, scapeMode)
-        .cluster();
+    new ClusterPartitionerURC(inputGraph, scenario, Integer.parseInt(nbPE), brv, 0, scapeMode).cluster();
+    final PiGraph outputGraph = new ClusterPartitionerSRV(inputGraph, scenario, Integer.parseInt(nbPE), brv, 0,
+        scapeMode).cluster();
     final PiGraphConsistenceChecker pgcc = new PiGraphConsistenceChecker(CheckerErrorLevel.FATAL_ALL,
         CheckerErrorLevel.FATAL_ALL);
     pgcc.check(outputGraph);

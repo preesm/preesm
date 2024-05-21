@@ -62,11 +62,13 @@ public class ClusterPartitionerSRV extends ClusterPartitioner {
 
   private final int       clusterId;
   private final ScapeMode scapeMode;
+  private final PiGraph   graph;
 
   /**
    * Builds a ClusterPartitioner object.
    *
-   *
+   * @param graph
+   *          pigraph
    * @param scenario
    *          Workflow scenario.
    * @param numberOfPEs
@@ -76,12 +78,13 @@ public class ClusterPartitionerSRV extends ClusterPartitioner {
    * @param clusterId
    *          List of non clusterable actors
    */
-  public ClusterPartitionerSRV(final Scenario scenario, final int numberOfPEs, Map<AbstractVertex, Long> brv,
-      int clusterId, ScapeMode scapeMode) {
+  public ClusterPartitionerSRV(PiGraph graph, final Scenario scenario, final int numberOfPEs,
+      Map<AbstractVertex, Long> brv, int clusterId, ScapeMode scapeMode) {
     super(scenario.getAlgorithm(), scenario, numberOfPEs);
     this.brv = brv;
     this.clusterId = clusterId;
     this.scapeMode = scapeMode;
+    this.graph = graph;
   }
 
   /**

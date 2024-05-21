@@ -11,79 +11,93 @@
     <constraints excelUrl="">
         <constraintGroup>
             <operator name="Core3"/>
-            <task name="sub1/STD_Computation"/>
             <task name="sub1/MAD_Computation"/>
+            <task name="sub1/Plot_Threshold"/>
+            <task name="sub1/RFI_Filter"/>
+            <task name="sub1/STD_Computation"/>
             <task name="sub1/src_in_0"/>
             <task name="sub1/src_in_1"/>
             <task name="sub1/src_in_2"/>
             <task name="sub1/src_in_3"/>
             <task name="sub1/src_in_4"/>
             <task name="sub1/src_in_5"/>
+            <task name="sub1/src_in_6"/>
+            <task name="sub1/src_in_7"/>
+            <task name="sub1/src_in_8"/>
+            <task name="sub1/src_in_9"/>
             <task name="sub1/snk_out_0"/>
             <task name="sub1/snk_out_1"/>
             <task name="sub1/snk_out_2"/>
             <task name="sub1/snk_out_3"/>
-            <task name="sub1/snk_out_4"/>
-            <task name="sub1/snk_out_5"/>
-            <task name="sub1/snk_out_6"/>
-            <task name="sub1/snk_out_7"/>
         </constraintGroup>
         <constraintGroup>
             <operator name="Core4"/>
-            <task name="sub1/STD_Computation"/>
             <task name="sub1/MAD_Computation"/>
+            <task name="sub1/Plot_Threshold"/>
+            <task name="sub1/RFI_Filter"/>
+            <task name="sub1/STD_Computation"/>
             <task name="sub1/src_in_0"/>
             <task name="sub1/src_in_1"/>
             <task name="sub1/src_in_2"/>
             <task name="sub1/src_in_3"/>
             <task name="sub1/src_in_4"/>
             <task name="sub1/src_in_5"/>
+            <task name="sub1/src_in_6"/>
+            <task name="sub1/src_in_7"/>
+            <task name="sub1/src_in_8"/>
+            <task name="sub1/src_in_9"/>
             <task name="sub1/snk_out_0"/>
             <task name="sub1/snk_out_1"/>
             <task name="sub1/snk_out_2"/>
             <task name="sub1/snk_out_3"/>
-            <task name="sub1/snk_out_4"/>
-            <task name="sub1/snk_out_5"/>
-            <task name="sub1/snk_out_6"/>
-            <task name="sub1/snk_out_7"/>
         </constraintGroup>
         <constraintGroup>
             <operator name="Core5"/>
-            <task name="sub1/STD_Computation"/>
             <task name="sub1/MAD_Computation"/>
+            <task name="sub1/Plot_Threshold"/>
+            <task name="sub1/RFI_Filter"/>
+            <task name="sub1/STD_Computation"/>
             <task name="sub1/src_in_0"/>
             <task name="sub1/src_in_1"/>
             <task name="sub1/src_in_2"/>
             <task name="sub1/src_in_3"/>
             <task name="sub1/src_in_4"/>
             <task name="sub1/src_in_5"/>
+            <task name="sub1/src_in_6"/>
+            <task name="sub1/src_in_7"/>
+            <task name="sub1/src_in_8"/>
+            <task name="sub1/src_in_9"/>
             <task name="sub1/snk_out_0"/>
             <task name="sub1/snk_out_1"/>
             <task name="sub1/snk_out_2"/>
             <task name="sub1/snk_out_3"/>
-            <task name="sub1/snk_out_4"/>
-            <task name="sub1/snk_out_5"/>
-            <task name="sub1/snk_out_6"/>
-            <task name="sub1/snk_out_7"/>
         </constraintGroup>
     </constraints>
     <timings excelUrl="/org.ietr.preesm.simsdp.hypervisor/Scenarios/generated/sub1.csv">
         <timing opname="x86_f1" time="100"
-            timingtype="EXECUTION_TIME" vertexname="sub1/Brd_MAD_I"/>
-        <timing opname="x86_f1" time="100"
-            timingtype="EXECUTION_TIME" vertexname="sub1/Brd_STD_R"/>
-        <timing opname="x86_f1" time="100"
-            timingtype="EXECUTION_TIME" vertexname="sub1/Join_MAD_Computation0"/>
-        <timing opname="x86_f1" time="100"
             timingtype="EXECUTION_TIME" vertexname="sub1/Join_MAD_Computation1"/>
-        <timing opname="x86_f1" time="300964"
-            timingtype="EXECUTION_TIME" vertexname="sub1/STD_Computation"/>
         <timing opname="x86_f1" time="100"
             timingtype="EXECUTION_TIME" vertexname="sub1/Brd_MAD_R"/>
         <timing opname="x86_f1" time="100"
-            timingtype="EXECUTION_TIME" vertexname="sub1/Brd_STD_I"/>
+            timingtype="EXECUTION_TIME" vertexname="sub1/Brd_Res_Real"/>
+        <timing opname="x86_f1" time="100"
+            timingtype="EXECUTION_TIME" vertexname="sub1/Join_MAD_Computation0"/>
+        <timing opname="x86_f1" time="100"
+            timingtype="EXECUTION_TIME" vertexname="sub1/Brd_MAD_I"/>
+        <timing opname="x86_f1" time="100"
+            timingtype="EXECUTION_TIME" vertexname="sub1/Brd_Res_Im"/>
         <timing opname="x86_f1" time="476205"
             timingtype="EXECUTION_TIME" vertexname="sub1/MAD_Computation"/>
+        <timing opname="x86_f1" time="77213526"
+            timingtype="EXECUTION_TIME" vertexname="sub1/Plot_Threshold"/>
+        <timing opname="x86_f1" time="100"
+            timingtype="EXECUTION_TIME" vertexname="sub1/Brd_STD_I"/>
+        <timing opname="x86_f1" time="68244"
+            timingtype="EXECUTION_TIME" vertexname="sub1/RFI_Filter"/>
+        <timing opname="x86_f1" time="100"
+            timingtype="EXECUTION_TIME" vertexname="sub1/Brd_STD_R"/>
+        <timing opname="x86_f1" time="300964"
+            timingtype="EXECUTION_TIME" vertexname="sub1/STD_Computation"/>
         <timing opname="x86_f1" time="1"
             timingtype="EXECUTION_TIME" vertexname="sub1/src_in_0"/>
         <timing opname="x86_f1" time="1"
@@ -97,6 +111,14 @@
         <timing opname="x86_f1" time="1"
             timingtype="EXECUTION_TIME" vertexname="sub1/src_in_5"/>
         <timing opname="x86_f1" time="1"
+            timingtype="EXECUTION_TIME" vertexname="sub1/src_in_6"/>
+        <timing opname="x86_f1" time="1"
+            timingtype="EXECUTION_TIME" vertexname="sub1/src_in_7"/>
+        <timing opname="x86_f1" time="1"
+            timingtype="EXECUTION_TIME" vertexname="sub1/src_in_8"/>
+        <timing opname="x86_f1" time="1"
+            timingtype="EXECUTION_TIME" vertexname="sub1/src_in_9"/>
+        <timing opname="x86_f1" time="1"
             timingtype="EXECUTION_TIME" vertexname="sub1/snk_out_0"/>
         <timing opname="x86_f1" time="1"
             timingtype="EXECUTION_TIME" vertexname="sub1/snk_out_1"/>
@@ -104,14 +126,6 @@
             timingtype="EXECUTION_TIME" vertexname="sub1/snk_out_2"/>
         <timing opname="x86_f1" time="1"
             timingtype="EXECUTION_TIME" vertexname="sub1/snk_out_3"/>
-        <timing opname="x86_f1" time="1"
-            timingtype="EXECUTION_TIME" vertexname="sub1/snk_out_4"/>
-        <timing opname="x86_f1" time="1"
-            timingtype="EXECUTION_TIME" vertexname="sub1/snk_out_5"/>
-        <timing opname="x86_f1" time="1"
-            timingtype="EXECUTION_TIME" vertexname="sub1/snk_out_6"/>
-        <timing opname="x86_f1" time="1"
-            timingtype="EXECUTION_TIME" vertexname="sub1/snk_out_7"/>
     </timings>
     <simuParams>
         <mainCore>Core3</mainCore>

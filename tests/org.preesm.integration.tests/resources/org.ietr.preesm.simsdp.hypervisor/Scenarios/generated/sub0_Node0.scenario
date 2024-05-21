@@ -11,8 +11,8 @@
     <constraints excelUrl="">
         <constraintGroup>
             <operator name="Core0"/>
-            <task name="sub0/MAD_Computation"/>
             <task name="sub0/Data_Acquisition"/>
+            <task name="sub0/MAD_Computation"/>
             <task name="sub0/Plot_RnI_Histo"/>
             <task name="sub0/snk_out_0"/>
             <task name="sub0/snk_out_1"/>
@@ -27,8 +27,8 @@
         </constraintGroup>
         <constraintGroup>
             <operator name="Core1"/>
-            <task name="sub0/MAD_Computation"/>
             <task name="sub0/Data_Acquisition"/>
+            <task name="sub0/MAD_Computation"/>
             <task name="sub0/Plot_RnI_Histo"/>
             <task name="sub0/snk_out_0"/>
             <task name="sub0/snk_out_1"/>
@@ -43,8 +43,8 @@
         </constraintGroup>
         <constraintGroup>
             <operator name="Core2"/>
-            <task name="sub0/MAD_Computation"/>
             <task name="sub0/Data_Acquisition"/>
+            <task name="sub0/MAD_Computation"/>
             <task name="sub0/Plot_RnI_Histo"/>
             <task name="sub0/snk_out_0"/>
             <task name="sub0/snk_out_1"/>
@@ -59,18 +59,18 @@
         </constraintGroup>
     </constraints>
     <timings excelUrl="/org.ietr.preesm.simsdp.hypervisor/Scenarios/generated/sub0.csv">
+        <timing opname="x86_f1" time="6370070"
+            timingtype="EXECUTION_TIME" vertexname="sub0/Data_Acquisition"/>
         <timing opname="x86_f1" time="100"
             timingtype="EXECUTION_TIME" vertexname="sub0/Brd_Acq_Im"/>
-        <timing opname="x86_f1" time="100"
-            timingtype="EXECUTION_TIME" vertexname="sub0/Fork_MAD_Computation0"/>
+        <timing opname="x86_f1" time="476205"
+            timingtype="EXECUTION_TIME" vertexname="sub0/MAD_Computation"/>
         <timing opname="x86_f1" time="100"
             timingtype="EXECUTION_TIME" vertexname="sub0/Fork_MAD_Computation1"/>
         <timing opname="x86_f1" time="100"
+            timingtype="EXECUTION_TIME" vertexname="sub0/Fork_MAD_Computation0"/>
+        <timing opname="x86_f1" time="100"
             timingtype="EXECUTION_TIME" vertexname="sub0/Brd_Acq_Real"/>
-        <timing opname="x86_f1" time="476205"
-            timingtype="EXECUTION_TIME" vertexname="sub0/MAD_Computation"/>
-        <timing opname="x86_f1" time="6370070"
-            timingtype="EXECUTION_TIME" vertexname="sub0/Data_Acquisition"/>
         <timing opname="x86_f1" time="77213526"
             timingtype="EXECUTION_TIME" vertexname="sub0/Plot_RnI_Histo"/>
         <timing opname="x86_f1" time="1"

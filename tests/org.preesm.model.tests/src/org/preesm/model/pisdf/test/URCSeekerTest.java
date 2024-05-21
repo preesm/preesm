@@ -50,6 +50,8 @@ import org.preesm.model.pisdf.DataOutputPort;
 import org.preesm.model.pisdf.Delay;
 import org.preesm.model.pisdf.Fifo;
 import org.preesm.model.pisdf.PiGraph;
+import org.preesm.model.pisdf.brv.BRVMethod;
+import org.preesm.model.pisdf.brv.PiBRV;
 import org.preesm.model.pisdf.check.CheckerErrorLevel;
 import org.preesm.model.pisdf.check.PiGraphConsistenceChecker;
 import org.preesm.model.pisdf.factory.PiMMUserFactory;
@@ -61,16 +63,16 @@ import org.preesm.model.pisdf.util.ClusteringPatternSeekerUrc;
  */
 public class URCSeekerTest {
 
-  private PiGraph                   topGraph;
-  private AbstractActor             actorA;
-  private AbstractActor             actorB;
-  private AbstractActor             actorC;
-  private AbstractActor             actorD;
-  private AbstractActor             actorE;
-  private AbstractActor             actorF;
-  private AbstractActor             actorG;
-  private ClusteringPatternSeekerUrc                 seeker;
-  private List<List<AbstractActor>> seekerResults;
+  private PiGraph                    topGraph;
+  private AbstractActor              actorA;
+  private AbstractActor              actorB;
+  private AbstractActor              actorC;
+  private AbstractActor              actorD;
+  private AbstractActor              actorE;
+  private AbstractActor              actorF;
+  private AbstractActor              actorG;
+  private ClusteringPatternSeekerUrc seeker;
+  private List<List<AbstractActor>>  seekerResults;
 
   /**
    * Set-up the test environnement
@@ -80,7 +82,7 @@ public class URCSeekerTest {
     // Create a chained actors PiGraph
     createChainedActorsPiGraph();
     // Build the URC seeker
-    this.seeker = new ClusteringPatternSeekerUrc(this.topGraph);
+    this.seeker = new ClusteringPatternSeekerUrc(this.topGraph, PiBRV.compute(this.topGraph, BRVMethod.LCM));
     // Retrieve list of URC chain in the graph
     seekerResults = this.seeker.seek();
   }

@@ -91,12 +91,12 @@ public class PiSDFSubgraphBuilder extends PiMMSwitch<Boolean> {
   /**
    * Number of input interface of builded subgraph.
    */
-  private int nbInputInterface;
+  private final int nbInputInterface;
 
   /**
    * Number of output interface of builded subgraph.
    */
-  private int nbOutputInterface;
+  private final int nbOutputInterface;
 
   /**
    * Number of input configuration interface of builded subgraph.
@@ -179,7 +179,8 @@ public class PiSDFSubgraphBuilder extends PiMMSwitch<Boolean> {
     if (doSwitch(object.getFifo())) {
       // Setup the input interface
       final DataInputInterface inputInterface = PiMMUserFactory.instance.createDataInputInterface();
-      final String inputName = "in_" + this.nbInputInterface++;
+      final String inputName = object.getContainingActor().getName() + "_" + object.getName();
+      // final String inputName = "in_" + this.nbInputInterface++;
       inputInterface.setName(inputName);
       inputInterface.getDataPort().setName(inputName);
       this.subGraph.addActor(inputInterface);
@@ -228,7 +229,8 @@ public class PiSDFSubgraphBuilder extends PiMMSwitch<Boolean> {
     if (doSwitch(object.getFifo())) {
       // Setup the output interface
       final DataOutputInterface outputInterface = PiMMUserFactory.instance.createDataOutputInterface();
-      final String outputName = "out_" + this.nbOutputInterface++;
+      final String outputName = object.getContainingActor().getName() + "_" + object.getName();
+      // final String outputName = "out_" + this.nbOutputInterface++;
       outputInterface.setName(outputName);
       outputInterface.getDataPort().setName(outputName);
       this.subGraph.addActor(outputInterface);

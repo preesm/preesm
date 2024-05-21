@@ -99,7 +99,8 @@ public class ClusterPartitioner {
 
     // Look for actor groups other than URC chains.
     // Retrieve URC chains in input graph and verify that actors share component constraints.
-    final List<List<AbstractActor>> graphURCs = new ClusteringPatternSeekerUrc(this.graph).seek();
+    final List<List<AbstractActor>> graphURCs = new ClusteringPatternSeekerUrc(this.graph,
+        PiBRV.compute(this.graph, BRVMethod.LCM)).seek();
     final List<List<AbstractActor>> constrainedURCs = new LinkedList<>();
     for (final List<AbstractActor> URC : graphURCs) {
       if (!ClusteringHelper.getListOfCommonComponent(URC, this.scenario).isEmpty()) {

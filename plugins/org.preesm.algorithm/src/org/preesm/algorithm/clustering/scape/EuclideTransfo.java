@@ -71,6 +71,7 @@ public class EuclideTransfo {
     }
     final Long coreEquivalent = computeSingleNodeCoreEquivalent(scenario);
     // construct hierarchical structure
+
     hierarchicalLevelOrdered = HierarchicalRoute.fillHierarchicalStructure(graph);
     levelBound = (long) (hierarchicalLevelOrdered.size() - 1);
 

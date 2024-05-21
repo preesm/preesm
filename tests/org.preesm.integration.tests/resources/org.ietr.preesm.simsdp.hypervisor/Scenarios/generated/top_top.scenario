@@ -22,7 +22,14 @@
             <task name="top/sub2"/>
         </constraintGroup>
     </constraints>
-    <timings excelUrl="/org.ietr.preesm.simsdp.hypervisor/Scenarios/generated/top_tim.csv"/>
+    <timings excelUrl="/org.ietr.preesm.simsdp.hypervisor/Scenarios/generated/top_tim.csv">
+        <timing opname="node" time="83583696"
+            timingtype="EXECUTION_TIME" vertexname="top/sub0"/>
+        <timing opname="node" time="117555776"
+            timingtype="EXECUTION_TIME" vertexname="top/sub1"/>
+        <timing opname="node" time="77213527"
+            timingtype="EXECUTION_TIME" vertexname="top/sub2"/>
+    </timings>
     <simuParams>
         <mainCore>Node0</mainCore>
         <mainComNode>shared_mem</mainComNode>

@@ -11,75 +11,37 @@
     <constraints excelUrl="">
         <constraintGroup>
             <operator name="Core6"/>
-            <task name="sub2/Data_Restitution"/>
-            <task name="sub2/RFI_Filter"/>
             <task name="sub2/Plot_Filtered_Data"/>
-            <task name="sub2/Plot_Threshold"/>
+            <task name="sub2/Data_Restitution"/>
             <task name="sub2/src_in_0"/>
             <task name="sub2/src_in_1"/>
             <task name="sub2/src_in_2"/>
             <task name="sub2/src_in_3"/>
-            <task name="sub2/src_in_4"/>
-            <task name="sub2/src_in_5"/>
-            <task name="sub2/src_in_6"/>
-            <task name="sub2/src_in_7"/>
-            <task name="sub2/src_in_8"/>
-            <task name="sub2/src_in_9"/>
-            <task name="sub2/src_in_10"/>
-            <task name="sub2/src_in_11"/>
         </constraintGroup>
         <constraintGroup>
             <operator name="Core7"/>
-            <task name="sub2/Data_Restitution"/>
-            <task name="sub2/RFI_Filter"/>
             <task name="sub2/Plot_Filtered_Data"/>
-            <task name="sub2/Plot_Threshold"/>
+            <task name="sub2/Data_Restitution"/>
             <task name="sub2/src_in_0"/>
             <task name="sub2/src_in_1"/>
             <task name="sub2/src_in_2"/>
             <task name="sub2/src_in_3"/>
-            <task name="sub2/src_in_4"/>
-            <task name="sub2/src_in_5"/>
-            <task name="sub2/src_in_6"/>
-            <task name="sub2/src_in_7"/>
-            <task name="sub2/src_in_8"/>
-            <task name="sub2/src_in_9"/>
-            <task name="sub2/src_in_10"/>
-            <task name="sub2/src_in_11"/>
         </constraintGroup>
         <constraintGroup>
             <operator name="Core8"/>
-            <task name="sub2/Data_Restitution"/>
-            <task name="sub2/RFI_Filter"/>
             <task name="sub2/Plot_Filtered_Data"/>
-            <task name="sub2/Plot_Threshold"/>
+            <task name="sub2/Data_Restitution"/>
             <task name="sub2/src_in_0"/>
             <task name="sub2/src_in_1"/>
             <task name="sub2/src_in_2"/>
             <task name="sub2/src_in_3"/>
-            <task name="sub2/src_in_4"/>
-            <task name="sub2/src_in_5"/>
-            <task name="sub2/src_in_6"/>
-            <task name="sub2/src_in_7"/>
-            <task name="sub2/src_in_8"/>
-            <task name="sub2/src_in_9"/>
-            <task name="sub2/src_in_10"/>
-            <task name="sub2/src_in_11"/>
         </constraintGroup>
     </constraints>
     <timings excelUrl="/org.ietr.preesm.simsdp.hypervisor/Scenarios/generated/sub2.csv">
-        <timing opname="x86_f1" time="100"
-            timingtype="EXECUTION_TIME" vertexname="sub2/Brd_Res_Im"/>
-        <timing opname="x86_f1" time="5011027"
-            timingtype="EXECUTION_TIME" vertexname="sub2/Data_Restitution"/>
-        <timing opname="x86_f1" time="100"
-            timingtype="EXECUTION_TIME" vertexname="sub2/Brd_Res_Real"/>
-        <timing opname="x86_f1" time="68244"
-            timingtype="EXECUTION_TIME" vertexname="sub2/RFI_Filter"/>
         <timing opname="x86_f1" time="77213526"
             timingtype="EXECUTION_TIME" vertexname="sub2/Plot_Filtered_Data"/>
-        <timing opname="x86_f1" time="77213526"
-            timingtype="EXECUTION_TIME" vertexname="sub2/Plot_Threshold"/>
+        <timing opname="x86_f1" time="5011027"
+            timingtype="EXECUTION_TIME" vertexname="sub2/Data_Restitution"/>
         <timing opname="x86_f1" time="1"
             timingtype="EXECUTION_TIME" vertexname="sub2/src_in_0"/>
         <timing opname="x86_f1" time="1"
@@ -88,22 +50,6 @@
             timingtype="EXECUTION_TIME" vertexname="sub2/src_in_2"/>
         <timing opname="x86_f1" time="1"
             timingtype="EXECUTION_TIME" vertexname="sub2/src_in_3"/>
-        <timing opname="x86_f1" time="1"
-            timingtype="EXECUTION_TIME" vertexname="sub2/src_in_4"/>
-        <timing opname="x86_f1" time="1"
-            timingtype="EXECUTION_TIME" vertexname="sub2/src_in_5"/>
-        <timing opname="x86_f1" time="1"
-            timingtype="EXECUTION_TIME" vertexname="sub2/src_in_6"/>
-        <timing opname="x86_f1" time="1"
-            timingtype="EXECUTION_TIME" vertexname="sub2/src_in_7"/>
-        <timing opname="x86_f1" time="1"
-            timingtype="EXECUTION_TIME" vertexname="sub2/src_in_8"/>
-        <timing opname="x86_f1" time="1"
-            timingtype="EXECUTION_TIME" vertexname="sub2/src_in_9"/>
-        <timing opname="x86_f1" time="1"
-            timingtype="EXECUTION_TIME" vertexname="sub2/src_in_10"/>
-        <timing opname="x86_f1" time="1"
-            timingtype="EXECUTION_TIME" vertexname="sub2/src_in_11"/>
     </timings>
     <simuParams>
         <mainCore>Core6</mainCore>
