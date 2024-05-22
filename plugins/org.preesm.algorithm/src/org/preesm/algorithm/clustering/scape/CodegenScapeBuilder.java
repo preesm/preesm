@@ -19,11 +19,8 @@ import org.preesm.model.pisdf.DataInputPort;
 import org.preesm.model.pisdf.DataOutputInterface;
 import org.preesm.model.pisdf.DataOutputPort;
 import org.preesm.model.pisdf.Delay;
-//<<<<<<< HEAD
 import org.preesm.model.pisdf.ExecutableActor;
-//=======
 import org.preesm.model.pisdf.Fifo;
-//>>>>>>> origin/gpucodegen
 import org.preesm.model.pisdf.ForkActor;
 import org.preesm.model.pisdf.FunctionArgument;
 import org.preesm.model.pisdf.FunctionPrototype;
@@ -39,6 +36,7 @@ import org.preesm.model.pisdf.brv.PiBRV;
  * This class fill the clustering SCAPE structure
  *
  * @author orenaud
+ * @author emichel
  *
  */
 public class CodegenScapeBuilder {
@@ -139,12 +137,7 @@ public class CodegenScapeBuilder {
 
     final StringConcatenation bodyGPU = new StringConcatenation();
     boolean synchro = false;
-    // <<<<<<< HEAD
-    // body.append(actor);
-    // body.append(memcpy);
-    // for (int i = 0; i < sc.getEndLoopNb(); i++) {
-    // body.append("} \n");
-    // =======
+
     final StringBuilder body = new StringBuilder();
 
     for (final ScapeSchedule sc : cs) {
@@ -169,12 +162,6 @@ public class CodegenScapeBuilder {
                 + "<" + sc.getRepetition() + ";index" + sc.getActor().getName() + "++){\n";
             body.append(bodyLine);
 
-            // <<<<<<< HEAD
-            // body.append(actor);
-            // body.append(memcpy);
-            // for (int i = 0; i < sc.getEndLoopNb(); i++) {
-            // body.append("} \n");
-            // =======
           }
 
           StringBuilder actor = new StringBuilder();

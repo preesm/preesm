@@ -276,10 +276,10 @@ public class ClusteringScape extends ClusterPartitioner {
             isHasCluster = false;
           }
           if (!newGraph.getChildrenGraphs().isEmpty() && isHasCluster) {
-            final int clusterIndex = newGraph.getChildrenGraphs().size() - 1;
-            final Long mem = mem(newGraph.getChildrenGraphs().get(clusterIndex));
-            final String clusterName = newGraph.getChildrenGraphs().get(clusterIndex).getName();
-            cluster(newGraph.getChildrenGraphs().get(clusterIndex), scenario, stackSize);
+            final int lastChildrenGraphCreated = newGraph.getChildrenGraphs().size() - 1;
+            final Long mem = mem(newGraph.getChildrenGraphs().get(lastChildrenGraphCreated));
+            final String clusterName = newGraph.getChildrenGraphs().get(lastChildrenGraphCreated).getName();
+            cluster(newGraph.getChildrenGraphs().get(lastChildrenGraphCreated), scenario, stackSize);
             clusterMemory.put(findCluster(clusterName), mem);
             clusterId++;
           }
@@ -326,7 +326,6 @@ public class ClusteringScape extends ClusterPartitioner {
     final Long totalLevelNumber = (long) hierarchicalLevelOrdered.size() - 1;
     if (fulcrumLevelID < totalLevelNumber) {
 
-      final Long fulcrumLevel = fulcrumLevelID - 2;
       for (Long i = totalLevelNumber; i > fulcrumLevelID; i--) {
         for (final PiGraph g : hierarchicalLevelOrdered.get(i)) {
           final Long mem = mem(g);
@@ -362,7 +361,6 @@ public class ClusteringScape extends ClusterPartitioner {
 
     // compute the cluster schedule
     final PiGraph singleBranch = new MultiBranch(g).addInitialSource();
-    // final PiGraph singleBranch = g;
     final List<ScapeSchedule> schedule = new ScheduleScape(singleBranch).execute();
     final Scenario clusterScenario = lastLevelScenario(singleBranch, scenario);
     // retrieve cluster timing

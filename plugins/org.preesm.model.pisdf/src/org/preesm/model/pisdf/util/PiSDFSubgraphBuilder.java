@@ -89,16 +89,6 @@ public class PiSDFSubgraphBuilder extends PiMMSwitch<Boolean> {
   private final List<Fifo> visitedFifo;
 
   /**
-   * Number of input interface of builded subgraph.
-   */
-  private final int nbInputInterface;
-
-  /**
-   * Number of output interface of builded subgraph.
-   */
-  private final int nbOutputInterface;
-
-  /**
    * Number of input configuration interface of builded subgraph.
    */
   private int nbInputCfgInterface;
@@ -131,8 +121,6 @@ public class PiSDFSubgraphBuilder extends PiMMSwitch<Boolean> {
     this.subGraph.setName(subGraphName);
     this.subGraph.setUrl(this.parentGraph.getUrl() + "/" + subGraphName + ".pi");
     this.visitedFifo = new LinkedList<>();
-    this.nbInputInterface = 0;
-    this.nbOutputInterface = 0;
     this.nbInputCfgInterface = 0;
     // Compute BRV for the parent graph
     this.repetitionVector = PiBRV.compute(parentGraph, BRVMethod.LCM);
@@ -176,11 +164,10 @@ public class PiSDFSubgraphBuilder extends PiMMSwitch<Boolean> {
   @Override
   public Boolean caseDataInputPort(DataInputPort object) {
     // If caseFifo returns true, it means that the port lead to an actor outside the subgraph
-    if (doSwitch(object.getFifo())) {
+    if (Boolean.TRUE.equals(doSwitch(object.getFifo()))) {
       // Setup the input interface
       final DataInputInterface inputInterface = PiMMUserFactory.instance.createDataInputInterface();
       final String inputName = object.getContainingActor().getName() + "_" + object.getName();
-      // final String inputName = "in_" + this.nbInputInterface++;
       inputInterface.setName(inputName);
       inputInterface.getDataPort().setName(inputName);
       this.subGraph.addActor(inputInterface);
@@ -226,11 +213,10 @@ public class PiSDFSubgraphBuilder extends PiMMSwitch<Boolean> {
   @Override
   public Boolean caseDataOutputPort(DataOutputPort object) {
     // If caseFifo returns true, it means that the port lead to an actor outside the subgraph
-    if (doSwitch(object.getFifo())) {
+    if (Boolean.TRUE.equals(doSwitch(object.getFifo()))) {
       // Setup the output interface
       final DataOutputInterface outputInterface = PiMMUserFactory.instance.createDataOutputInterface();
       final String outputName = object.getContainingActor().getName() + "_" + object.getName();
-      // final String outputName = "out_" + this.nbOutputInterface++;
       outputInterface.setName(outputName);
       outputInterface.getDataPort().setName(outputName);
       this.subGraph.addActor(outputInterface);
