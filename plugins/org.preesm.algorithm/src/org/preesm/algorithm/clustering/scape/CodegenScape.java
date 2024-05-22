@@ -12,12 +12,15 @@ import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.Actor;
 import org.preesm.model.pisdf.CHeaderRefinement;
 import org.preesm.model.pisdf.PiGraph;
+import org.preesm.model.pisdf.SpecialActor;
 import org.preesm.model.scenario.Scenario;
+import org.preesm.model.slam.check.SlamDesignPEtypeChecker;
 
 /**
  * This class generates additional .c and .h files for the identified cluster.
  *
  * @author orenaud
+ * @author emichel
  *
  */
 public class CodegenScape {
@@ -40,10 +43,14 @@ public class CodegenScape {
     final StringBuilder clusterHContent = buildHContent(build, subGraph);
     PreesmIOHelper.getInstance().print(clusterPath, hfile, clusterHContent);
 
-    // Ewen Cu File
-
-    for (final ScapeSchedule sche : schedule) {
-      sche.setOnGPU(true);
+    // A cluster can be mapped on a GPU if:
+    // - the architecture contains GPU
+    // - it contains only executable actor (maybe check later the delay etc ...)
+    if (SlamDesignPEtypeChecker.isDualCPUGPU(scenario.getDesign())
+        && subGraph.getAllActors().stream().noneMatch(x -> x instanceof SpecialActor)) {
+      for (final ScapeSchedule sche : schedule) {
+        sche.setOnGPU(true);
+      }
     }
 
     final ScapeBuilder build2 = ScheduleFactory.eINSTANCE.createScapeBuilder();

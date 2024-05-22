@@ -35,6 +35,7 @@ import org.preesm.model.pisdf.brv.PiBRV;
  * This class fill the clustering SCAPE structure
  *
  * @author orenaud
+ * @author emichel
  *
  */
 public class CodegenScapeBuilder {
@@ -136,6 +137,9 @@ public class CodegenScapeBuilder {
 
     final StringConcatenation body = new StringConcatenation();
     boolean synchro = false;
+
+    final StringBuilder body = new StringBuilder();
+
     for (final ScapeSchedule sc : cs) {
 
       if (!sc.getActor().getName().isEmpty()) {

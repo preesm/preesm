@@ -83,11 +83,13 @@ public class SlamDesignPEtypeChecker {
    *
    * @param design
    *          the design
-   * @return true if dual CPU GPU (at least one)
+   * @return true if dual CPU GPU (at least one each)
    */
   public static boolean isDualCPUGPU(final Design design) {
     final List<ProcessingElement> pes = design.getProcessingElements();
-    return (!pes.isEmpty() && pes.stream().allMatch(x -> ((x instanceof CPU) || (x instanceof GPU)))
+    return (!pes.isEmpty() && pes.stream().anyMatch(CPU.class::isInstance)
+        && pes.stream().anyMatch(GPU.class::isInstance)
+        && pes.stream().allMatch(x -> ((x instanceof CPU) || (x instanceof GPU)))
         && pes.stream().anyMatch(x -> !x.getInstances().isEmpty()));
   }
 
