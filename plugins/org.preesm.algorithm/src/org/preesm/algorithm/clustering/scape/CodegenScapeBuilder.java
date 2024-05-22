@@ -550,14 +550,22 @@ public class CodegenScapeBuilder {
       Set<String> gpuToCpu, List<ScapeSchedule> cs, DataOutputPort dout) {
 
     boolean synchro = false;
+    final boolean localMem = true;
     for (final DataOutputPort out2 : sc.getActor().getDataOutputPorts()) {
       String buffname = "";
       final Long nbExec = out2.getExpression().evaluate();
       if (out2.getFifo().getTarget() instanceof final DataOutputInterface dout2) {
         buffname = "d_" + dout2.getName();
-        String cudaToCPU = "cudaMemcpy(" + dout2.getName() + ", " + buffname + ", sizeof("
-            + dout.getOutgoingFifo().getType() + ") *" + nbExec + ", cudaMemcpyDeviceToHost);\n";
-        cudaToCPU += "cudaDeviceSynchronize(); \n";
+        String cudaToCPU = "";
+        if (localMem) {
+          cudaToCPU = "cudaMemcpy(" + dout2.getName() + ", " + buffname + ", sizeof(" + dout.getOutgoingFifo().getType()
+              + ") *" + nbExec + ", cudaMemcpyDeviceToHost);\n";
+          cudaToCPU += "cudaDeviceSynchronize(); \n";
+        } else {
+          cudaToCPU = "memcpy(" + dout2.getName() + ", " + buffname + ", sizeof(" + dout.getOutgoingFifo().getType()
+              + ") *" + nbExec + ");\n";
+        }
+
         gpuToCpu.add(cudaToCPU);
       } else if (out2.getFifo().isHasADelay()) {
         final Delay delay = out2.getFifo().getDelay();
@@ -569,8 +577,15 @@ public class CodegenScapeBuilder {
 
       if (!buffname.equals("")) {
         final String buffer = dout.getOutgoingFifo().getType() + " *" + buffname + " = NULL;";
-        final String cudaMallocBuffers = "cudaMalloc(&" + buffname + ", sizeof(" + dout.getOutgoingFifo().getType()
-            + ") *" + nbExec + ");";
+        String cudaMallocBuffers = "";
+        if (localMem) {
+          cudaMallocBuffers = "cudaMalloc(&" + buffname + ", sizeof(" + dout.getOutgoingFifo().getType() + ") *"
+              + nbExec + ");";
+        } else {
+          cudaMallocBuffers = "cudaMallocManaged(&" + buffname + ", sizeof(" + dout.getOutgoingFifo().getType() + ") *"
+              + nbExec + ");";
+        }
+
         final String cudaFreeBuffers = "cudaFree(" + buffname + ");\n";
 
         buffGPU.add(buffer);
@@ -601,9 +616,17 @@ public class CodegenScapeBuilder {
       }
 
       if (!buffname.equals("")) {
+        final boolean localMem = true;
+
         final String buffer = in.getIncomingFifo().getType() + " *" + buffname + " = NULL;";
-        final String cudaMallocBuffers = "cudaMalloc(&" + buffname + ", sizeof(" + in.getIncomingFifo().getType()
-            + ") *" + nbExec + ");";
+        String cudaMallocBuffers = "";
+        if (localMem) {
+          cudaMallocBuffers = "cudaMalloc(&" + buffname + ", sizeof(" + in.getIncomingFifo().getType() + ") *" + nbExec
+              + ");";
+        } else {
+          cudaMallocBuffers = "cudaMallocManaged(&" + buffname + ", sizeof(" + in.getIncomingFifo().getType() + ") *"
+              + nbExec + ");";
+        }
         final String cudaFreeBuffers = "cudaFree(" + buffname + ");\n";
 
         buffGPU.add(buffer);
@@ -611,8 +634,14 @@ public class CodegenScapeBuilder {
         GPUFree.add(cudaFreeBuffers);
 
         if (cs.get(0) != null && sc.getActor().getName().equals(cs.get(0).getActor().getName())) {
-          final String cudaMemcpyBuffers = "cudaMemcpy(" + buffname + ", " + in.getName() + ", sizeof("
-              + in.getIncomingFifo().getType() + ") *" + nbExec + ", cudaMemcpyHostToDevice);\n";
+          String cudaMemcpyBuffers = "";
+          if (localMem) {
+            cudaMemcpyBuffers = "cudaMemcpy(" + buffname + ", " + in.getName() + ", sizeof("
+                + in.getIncomingFifo().getType() + ") *" + nbExec + ", cudaMemcpyHostToDevice);\n";
+          } else {
+            cudaMemcpyBuffers = "memcpy(" + buffname + ", " + in.getName() + ", sizeof("
+                + in.getIncomingFifo().getType() + ") *" + nbExec + ");\n";
+          }
 
           buffGPU.add(cudaMemcpyBuffers);
         }

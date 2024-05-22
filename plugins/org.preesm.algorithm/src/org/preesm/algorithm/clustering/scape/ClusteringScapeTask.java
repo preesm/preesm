@@ -8,6 +8,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.emf.common.util.EList;
+import org.eclipse.emf.common.util.EMap;
 import org.preesm.algorithm.clustering.partitioner.ScapeMode;
 import org.preesm.commons.doc.annotations.Parameter;
 import org.preesm.commons.doc.annotations.Port;
@@ -18,9 +19,12 @@ import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.Actor;
 import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.scenario.Scenario;
+import org.preesm.model.scenario.Timings;
 import org.preesm.model.slam.CPU;
+import org.preesm.model.slam.Component;
 import org.preesm.model.slam.ComponentInstance;
 import org.preesm.model.slam.GPU;
+import org.preesm.model.slam.TimingType;
 import org.preesm.model.slam.check.SlamDesignPEtypeChecker;
 import org.preesm.workflow.elements.Workflow;
 import org.preesm.workflow.implement.AbstractTaskImplementation;
@@ -134,12 +138,50 @@ public class ClusteringScapeTask extends AbstractTaskImplementation {
       gp.getValue().clear();
     }
     // add all actor on all resources if full CPU
-    if (SlamDesignPEtypeChecker.isOnlyCPU(scenario.getDesign())) {
+    // Smarter alloc : Ewen (smart)
+
+    final Timings time = scenario.getTimings();
+
+    final EMap<AbstractActor, EMap<Component, EMap<TimingType, String>>> map = time.getActorTimings();
+
+    int timingOnCPU = 0;
+    int timingOnGPU = 0;
+
+    for (final Entry<AbstractActor, EMap<Component, EMap<TimingType, String>>> actorEntry : map.entrySet()) {
+      final AbstractActor actor = actorEntry.getKey();
+      final EMap<Component, EMap<TimingType, String>> componentMap = actorEntry.getValue();
+
+      for (final Entry<Component, EMap<TimingType, String>> componentEntry : componentMap.entrySet()) {
+        final Component component = componentEntry.getKey();
+        final EMap<TimingType, String> timingMap = componentEntry.getValue();
+
+        for (final Entry<TimingType, String> timingEntry : timingMap.entrySet()) {
+          final TimingType timingType = timingEntry.getKey();
+          final String timingValue = timingEntry.getValue();
+
+          if (component.toString().contains("CPU")) {
+            if (actor.getName().contains("srv") || actor.getName().contains("urc")) {
+              timingOnCPU += Integer.parseInt(timingValue);
+            }
+          } else if (component.toString().contains("GPU")) {
+            if (actor.getName().contains("srv") || actor.getName().contains("urc")) {
+              timingOnGPU += Integer.parseInt(timingValue);
+            }
+          }
+        }
+      }
+    }
+
+    // End of smarter alloc
+
+    if (SlamDesignPEtypeChecker.isOnlyCPU(scenario.getDesign())
+        || (SlamDesignPEtypeChecker.isDualCPUGPU(scenario.getDesign()) && timingOnGPU > timingOnCPU)) {
       scenario.getConstraints().getGroupConstraints()
           .forEach(groupConstraint -> tempGraph.getAllActors().forEach(actor -> groupConstraint.getValue().add(actor)));
       // temporary force srv/urc cluster to be map on GPU other on CPU if dual design
       // TODO: implementing smarter allocation
-    } else if (SlamDesignPEtypeChecker.isDualCPUGPU(scenario.getDesign())) {
+
+    } else if (SlamDesignPEtypeChecker.isDualCPUGPU(scenario.getDesign()) && timingOnGPU < timingOnCPU) {
       scenario.getConstraints().getGroupConstraints()
           .forEach(gp -> tempGraph.getAllActors().stream()
               .filter(actor -> (gp.getKey().getComponent() instanceof GPU

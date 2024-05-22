@@ -67,6 +67,7 @@ import org.preesm.model.slam.ComponentInstance;
 import org.preesm.model.slam.Design;
 import org.preesm.model.slam.Dma;
 import org.preesm.model.slam.FPGA;
+import org.preesm.model.slam.GPU;
 import org.preesm.model.slam.HierarchyPort;
 import org.preesm.model.slam.Link;
 import org.preesm.model.slam.Mem;
@@ -208,8 +209,7 @@ public class IPXACTDesignParser extends IPXACTParser {
     Node node = parent.getFirstChild();
 
     while (node != null) {
-      if (node instanceof Element) {
-        final Element element = (Element) node;
+      if (node instanceof final Element element) {
         final String type = element.getTagName();
         if (type.equals("spirit:componentInstance")) {
           parseComponentInstance(element, design);
@@ -266,8 +266,7 @@ public class IPXACTDesignParser extends IPXACTParser {
     Node node = parent.getFirstChild();
 
     while (node != null) {
-      if (node instanceof Element) {
-        final Element elt = (Element) node;
+      if (node instanceof final Element elt) {
         final String type = elt.getTagName();
         if ("spirit:configurableElementValues".equals(type)) {
           parseParameters(elt, instance);
@@ -317,6 +316,26 @@ public class IPXACTDesignParser extends IPXACTParser {
           ((FPGA) component).setFrequency(Integer.valueOf(description.getSpecificParameter("slam:frequency")));
           ((FPGA) component).setPart(description.getSpecificParameter("slam:part"));
           ((FPGA) component).setBoard(description.getSpecificParameter("slam:board"));
+        } else if (component instanceof GPU) {
+          try {
+            ((GPU) component).setMemSize(Integer.valueOf(description.getSpecificParameter("slam:memSize")));
+          } catch (final NumberFormatException e) {
+            ((GPU) component).setMemSize(1);
+          }
+          try {
+            ((GPU) component)
+                .setDedicatedMemSpeed(Integer.valueOf(description.getSpecificParameter("slam:dedicatedMemSpeed")));
+          } catch (final NumberFormatException e) {
+            ((GPU) component).setDedicatedMemSpeed(1);
+          }
+          try {
+            ((GPU) component)
+                .setUnifiedMemSpeed(Integer.valueOf(description.getSpecificParameter("slam:unifiedMemSpeed")));
+          } catch (final NumberFormatException e) {
+            ((GPU) component).setUnifiedMemSpeed(1);
+          }
+
+          ((GPU) component).setMemoryToUse(description.getSpecificParameter("slam:memoryToUse"));
         }
       } catch (final NumberFormatException e) {
         throw new PreesmRuntimeException("Could not parse a numeric property of component instance <"
@@ -387,8 +406,7 @@ public class IPXACTDesignParser extends IPXACTParser {
     String name = "";
 
     while (node != null) {
-      if (node instanceof Element) {
-        final Element elt = (Element) node;
+      if (node instanceof final Element elt) {
         final String type = elt.getTagName();
         if (type.equals("spirit:instanceName")) {
           name = elt.getTextContent();
@@ -405,8 +423,7 @@ public class IPXACTDesignParser extends IPXACTParser {
     int id = -1;
 
     while (node != null) {
-      if (node instanceof Element) {
-        final Element elt = (Element) node;
+      if (node instanceof final Element elt) {
         final String type = elt.getTagName();
         if (type.equals("spirit:hardwareId")) {
           final String textContent = elt.getTextContent();
@@ -443,8 +460,7 @@ public class IPXACTDesignParser extends IPXACTParser {
     Node node = parent.getFirstChild();
 
     while (node != null) {
-      if (node instanceof Element) {
-        final Element elt = (Element) node;
+      if (node instanceof final Element elt) {
         final String type = elt.getTagName();
         if (type.equals("spirit:configurableElementValue")) {
           final String name = elt.getAttribute("spirit:referenceId");
@@ -472,14 +488,11 @@ public class IPXACTDesignParser extends IPXACTParser {
 
     Node node = parent.getFirstChild();
     while (node != null) {
-      if (node instanceof Element) {
-        final Element elt = (Element) node;
+      if (node instanceof final Element elt) {
         final String type = elt.getTagName();
         if (type.equals("spirit:name")) {
           linkUuid = elt.getTextContent();
-        } else if (type.equals("spirit:displayName")) {
-          // nothing
-        } else if (type.equals("spirit:description")) {
+        } else if (type.equals("spirit:displayName") || type.equals("spirit:description")) {
           // nothing
         } else if (type.equals("spirit:activeInterface")) {
           comItfs.add(elt.getAttribute("spirit:busRef"));
@@ -548,8 +561,7 @@ public class IPXACTDesignParser extends IPXACTParser {
   private void parseLinks(final Element parent, final Design design) {
     Node node = parent.getFirstChild();
     while (node != null) {
-      if (node instanceof Element) {
-        final Element elt = (Element) node;
+      if (node instanceof final Element elt) {
         final String type = elt.getTagName();
         if (type.equals("spirit:interconnection")) {
           parseLink(elt, design);
@@ -585,14 +597,9 @@ public class IPXACTDesignParser extends IPXACTParser {
 
     Node node = parent.getFirstChild();
     while (node != null) {
-      if (node instanceof Element) {
-        final Element elt = (Element) node;
+      if (node instanceof final Element elt) {
         final String type = elt.getTagName();
-        if (type.equals("spirit:name")) {
-          // nothing
-        } else if (type.equals("spirit:displayName")) {
-          // nothing
-        } else if (type.equals("spirit:description")) {
+        if (type.equals("spirit:name") || type.equals("spirit:displayName") || type.equals("spirit:description")) {
           // nothing
         } else if (type.equals("spirit:activeInterface")) {
           internalInterfaceName = elt.getAttribute("spirit:busRef");
@@ -628,8 +635,7 @@ public class IPXACTDesignParser extends IPXACTParser {
   private void parseHierarchicalPorts(final Element parent, final Design design) {
     Node node = parent.getFirstChild();
     while (node != null) {
-      if (node instanceof Element) {
-        final Element elt = (Element) node;
+      if (node instanceof final Element elt) {
         final String type = elt.getTagName();
         if (type.equals("spirit:hierConnection")) {
           parseHierarchicalPort(elt, design);

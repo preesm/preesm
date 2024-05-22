@@ -24,6 +24,7 @@ import org.preesm.model.pisdf.DataInputInterface;
 import org.preesm.model.pisdf.DataInputPort;
 import org.preesm.model.pisdf.DataOutputInterface;
 import org.preesm.model.pisdf.DataOutputPort;
+import org.preesm.model.pisdf.DataPort;
 import org.preesm.model.pisdf.Direction;
 import org.preesm.model.pisdf.FunctionArgument;
 import org.preesm.model.pisdf.FunctionPrototype;
@@ -43,6 +44,7 @@ import org.preesm.model.slam.Component;
 import org.preesm.model.slam.ComponentInstance;
 import org.preesm.model.slam.Design;
 import org.preesm.model.slam.TimingType;
+import org.preesm.model.slam.impl.GPUImpl;
 
 public class ClusteringScape extends ClusterPartitioner {
 
@@ -488,6 +490,21 @@ public class ClusteringScape extends ClusterPartitioner {
     if (scenario.getTimings().getActorTimings().isEmpty()) {
       return clusterTiming; // Early exit
     }
+
+    final Design design = scenario.getDesign();
+    Long dedicatedMemSpeed = 0L;
+    Long unifiedMemSpeed = 0L;
+    Long memSize = 0L;
+    String memoryToUse = "";
+    for (final Component comp : design.getComponents()) {
+      if (comp instanceof GPUImpl) {
+        memSize = (long) ((GPUImpl) comp).getMemSize();
+        dedicatedMemSpeed = (long) ((GPUImpl) comp).getDedicatedMemSpeed();
+        unifiedMemSpeed = (long) ((GPUImpl) comp).getUnifiedMemSpeed();
+        memoryToUse = ((GPUImpl) comp).getMemoryToUse();
+      }
+    }
+
     // For each processing element
     for (final Component opId : archi.getProcessingElements()) {
       // sum the actor timing contained in the cluster
@@ -499,10 +516,25 @@ public class ClusteringScape extends ClusterPartitioner {
 
           sum += scenario.getTimings().evaluateTimingOrDefault(aaa, opId, TimingType.EXECUTION_TIME)
               * repetitionVector.get(actor);
-
         }
+
         clusterTiming.get(opId).replace(TimingType.EXECUTION_TIME, String.valueOf(sum));
 
+      }
+      if (opId.getClass().getName().contains("GPU")) {
+        for (final DataPort test : cluster.getAllDataPorts()) {
+          final Long gpuInputSize = test.getPortRateExpression().evaluate();
+          double time;
+
+          if (memoryToUse.equalsIgnoreCase("unified")) {
+            time = ((double) gpuInputSize / (double) unifiedMemSpeed);
+          } else {
+            time = ((double) gpuInputSize / (double) dedicatedMemSpeed);
+          }
+
+          sum += (long) time;
+        }
+        clusterTiming.get(opId).replace(TimingType.EXECUTION_TIME, String.valueOf(sum));
       }
     }
 

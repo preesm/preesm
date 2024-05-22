@@ -44,6 +44,7 @@ import org.preesm.model.slam.Component;
 import org.preesm.model.slam.Design;
 import org.preesm.model.slam.Dma;
 import org.preesm.model.slam.FPGA;
+import org.preesm.model.slam.GPU;
 import org.preesm.model.slam.Link;
 import org.preesm.model.slam.Mem;
 import org.w3c.dom.Document;
@@ -179,6 +180,11 @@ public class IPXACTDesignVendorExtensionsWriter {
       componentElt.setAttribute("slam:frequency", Integer.toString(((FPGA) component).getFrequency()));
       componentElt.setAttribute("slam:part", ((FPGA) component).getPart());
       componentElt.setAttribute("slam:board", ((FPGA) component).getBoard());
+    } else if (component instanceof GPU) {
+      componentElt.setAttribute("slam:memSize", Integer.toString(((GPU) component).getMemSize()));
+      componentElt.setAttribute("slam:unifiedMemSpeed", Integer.toString(((GPU) component).getUnifiedMemSpeed()));
+      componentElt.setAttribute("slam:dedicatedMemSpeed", Integer.toString(((GPU) component).getDedicatedMemSpeed()));
+      componentElt.setAttribute("slam:memoryToUse", ((GPU) component).getMemoryToUse());
     }
   }
 

@@ -241,11 +241,21 @@
                   name="custom parameters"
                   type="java.util.Map">
             </parameter>
-            <parameter name="frequency"
-               type="java.lang.String">
+			<parameter
+                  name="memSize"
+                  type="java.lang.String">
             </parameter>
-            <parameter name="memory"
-               type="java.lang.String">
+            <parameter
+                  name="unifiedMemSpeed"
+                  type="java.lang.String">
+            </parameter>
+            <parameter
+                  name="dedicatedMemSpeed"
+                  type="java.lang.String">
+            </parameter>
+            <parameter
+                  name="memoryToUse"
+                  type="java.lang.String">
             </parameter>
          </vertexType>
          <vertexType name="Mem">
